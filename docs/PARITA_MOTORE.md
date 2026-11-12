@@ -38,7 +38,49 @@ powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 [-Game Doom]
 
 Per ogni voce e modo stampa `UGUALE` o la prima differenza. Con `-RefExe` la localizza da sola. Esempi reali (le quattro modifiche finte di sotto):
 
-SEGUONO_ESEMPI
+**1. Un tic di ritardo su una porta** (`Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas`: `TopCountdown := TopWait + 1`), demo `d1_demo1`, modo 8:
+
+```
+Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 274 (tic 272): total,rnd | expected: T 272 b210ee27f6e2ce00 mobj=c7265520 ... rnd=44 prnd=24 | actual: T 272 1f75708b18388782 ... rnd=45 ...
+      localizzazione: DIFFERENT at line 31696 (tic 272): total,rnd ...
+Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1738 (tic 1695): full,view ...
+      localizzazione: fotogramma del tic 1695: 827 pixel diversi, il primo in (532,148), contenuti in x 421..532 y 148..170
+```
+
+La prima differenza e' al tic 272 (il numero casuale "di presentazione" cambia perche' il suono della porta parte un tic dopo) e poi nel fotogramma del tic 1695 (la porta si vede). L'impronta dei settori cambia quando la porta si muove.
+
+**2. Un'unita' di differenza nella gravita' dei mostri** (`Doom\p_mobj.pas`: `grav := grav + 1` se `MF_COUNTKILL`):
+
+```
+Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 3562 (tic 3560): total,mobj | ...
+      localizzazione: DIFFERENT at line 19370 (tic 3560): mobj 10 momz | expected: D 3560 mobj 10 momz -131072 | actual: D 3560 mobj 10 momz -131074
+Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 3605 (tic 3562): full,view ...
+      localizzazione: fotogramma del tic 3562: 4 pixel diversi, il primo in (333,201), contenuti in x 333..336 y 201..201
+```
+
+Al tic giusto, sul mobj giusto (il decimo della lista dei thinker), nel campo giusto (`momz`).
+
+**3. Un `P_Random()` in piu' in `A_Chase`** (`Doom\p_enemy.pas`):
+
+```
+Doom  d1_demo1  modo  8 : STATO DIFFERENT at line 49 (tic 47): total,prnd | ... prnd=137 | ...
+      localizzazione: DIFFERENT at line 31771 (tic 47): total,prnd ...
+Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 115 (tic 72): full,view ...
+      localizzazione: fotogramma del tic 72: 2510 pixel diversi, il primo in (548,182), contenuti in x 534..576 y 182..285
+```
+
+L'indice del generatore del gioco (`prnd`) cambia al primo mostro che insegue: tic 47.
+
+**4. Un pixel diverso nella colonna di un muro** (`Base\r_batchcolumn.pas`: un pixel in (150,100) con `xor 1` dopo `R_DrawColumnMedium_Batch`):
+
+```
+Doom  d1_demo1  modo  8 : FOTOGRAMMA DIFFERENT at line 1021 (tic 978): full,view | ...
+      localizzazione: fotogramma del tic 978: 1 pixel diversi, il primo in (150,100), contenuti in x 150..150 y 100..100 (file: C:\ddparity\Doom\dump_ref.bmp e dump_new.bmp)
+```
+
+Lo stato non cambia (nessuna riga `STATO`): e' un difetto del solo renderer, visto dal fotogramma (l'impronta `view`, non `hud`) e localizzato al pixel; i due BMP si aprono per vedere la differenza.
+
+**Con le mani**, senza `-RefExe`: `ParityTool.exe compare golden.state.gz mio.state.txt` dice la prima riga diversa; si rilancia il gioco con `-statehash-detail primo ultimo` (e lo stesso con l'eseguibile di riferimento) e `ParityTool.exe compare` sui due file dice categoria, indice e campo; per un fotogramma `-framedump tic file.bmp` sui due eseguibili.
 
 ## 4. Misurare
 
@@ -50,4 +92,9 @@ Alterna vecchio e nuovo (ordine invertito a ogni coppia), un'esecuzione per volt
 
 ## 5. Limiti noti
 
-SEGUONO_LIMITI
+- **Solo software.** Impronte dei fotogrammi e `-framedump` sono per i renderer software (8 e 32 bit); negli eseguibili OpenGL dicono "non supportato" e restano il registratore delle chiamate GL (`Libs\OpenGl\Recorder`) e i suoi script. Lo stato, l'orologio, l'input e il pilota funzionano anche li' (non provato a runtime negli eseguibili GL: compilano).
+- **I fili.** Le impronte dei fotogrammi valgono solo con `usemultithread=0` (la configurazione fissa lo imposta). Con i fili accesi due esecuzioni danno pixel diversi (provato: con la configurazione di partenza, a 1920x1080 e con i fili accesi, 86 fotogrammi su 5070 di `d1_demo1` erano diversi tra due esecuzioni, per qualche pixel con il canale verde di una unita' in piu' o in meno).
+- **Memoria.** Il motore legge a volte memoria che non ha scritto o che e' oltre la fine di un buffer, e un `tracer`/`target` puo' restare puntato a un mobj liberato. Con un'opzione accesa le allocazioni partono da zero con 512 byte di zeri in coda e i riferimenti si controllano con la `key` del mobj (vedi `Libs\Parity\CLAUDE.md`); senza queste misure due esecuzioni dello stesso eseguibile davano impronte diverse in 5 voci su 88. Residuo: un indirizzo in `special1`/`special2` di Heretic o Hexen che non e' un mobj vivo si hasha com'e'.
+- **Percorsi.** Gli script usano `C:\ddparity` come cartella di lavoro (stesso percorso su ogni macchina) e nomi fissi per i log (`ps.txt`, `pf.txt`): la riga di comando fa parte dell'ambiente in cui gira il motore.
+- **Demo interne.** Quelle di Heretic (versione 0.03), Hexen (0.02) e Strife non sono riproducibili dal motore ("Demo is from an unsupported game version"): nel corpus ci sono solo quelle di Doom e Freedoom 2, piu' le demo del pilota. Le demo del pilota di Hexen e Strife finiscono presto quando il giocatore muore (la registrazione si chiude o il motore la prosegue da un altro livello): i tic sono in `Tests\Data\Parity\<Gioco>\golden.csv`.
+- **Rami non coperti dal corpus**: 3D floor (nessun livello dei cinque WAD li usa: sono di UDMF), poliobj (nessuna mappa di Hexen MAP01-04 ha un `PO_ANCHOR`/`PO_SPAWN`: `po_man` non e' esercitato), dialoghi di Strife (il pilota non parla con i personaggi: `p_dialog` non e' esercitato), script ACS di Hexen avviati da linee (solo gli script `OPEN` dei `BEHAVIOR` di MAP01-04 girano al caricamento; gli altri se il pilota passa sulla linea giusta: non misurato), salvataggi, rete e multigiocatore (le demo sono a un giocatore), UDMF, DECORATE/ACTORDEF con mappe proprie, difficolta' 4 e 5 (il pilota muore subito: le demo usano le difficolta' 1-3), modi video diversi da 640x480 (8 bit con `detaillevel=2`, 32 bit con `3`; `-detaillevel` 4 e 5 e le altre risoluzioni non provati), automap e menu aperti.

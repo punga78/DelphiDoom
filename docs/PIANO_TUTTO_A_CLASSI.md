@@ -191,7 +191,7 @@ Un merge non passa se un golden cambia senza che sia dichiarato e motivato (un d
 
 | Fase | Stato |
 |---|---|
-| 0 strumenti di parità | da fare |
+| 0 strumenti di parità | **fatta** (issue #185, 2026-11-12): `Libs\Parity`, `Tools\Verifica\185`, `Tools\Misura-Coppie.ps1`, `docs\PARITA_MOTORE.md`; golden per Doom, Heretic, Hexen e Strife (software, 8 e 32 bit) in `Tests\Data\Parity` (44 demo, 11,7 MB), 88 confronti su 88 uguali in una sessione nuova, quattro modifiche finte viste, costo a strumenti spenti nel rumore (+0,00%). Mancano per il renderer (fase 3): pixel-parity degli eseguibili OpenGL con questi strumenti (c'e' il registratore GL), 3D floor e poliobj nel corpus, dettagli video oltre 640x480 a 8 e 32 bit |
 | 1 freddo | da fare (80 unit su 181 usano già classi) |
 | 2 logica | da fare (thinker di luci, porte, piattaforme, teletrasporti già a classi in `Libs\Thinkers`) |
 | 3 renderer software | da fare (`Libs\Renderer` ha le prime fette fredde) |
