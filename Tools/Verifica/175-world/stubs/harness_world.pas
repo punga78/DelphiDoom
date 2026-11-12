@@ -30,6 +30,7 @@ function HarnessNextFrame: boolean;
 procedure HarnessReadKeys(var pressed: THarnessKeys);
 procedure HarnessSound(const n, variation, x, y: integer);
 procedure HarnessSong(const name: string);
+procedure HarnessTraceNote(const where: string);
 implementation
 uses
   g_delphi, constant, d_ints, d_misc, display, event, i_windows, protos_h, raven, r_conten, r_public, r_render,
@@ -396,6 +397,38 @@ begin
     History := (History xor ((value shr (8 * i)) and $FF)) * 16777619;
 end;
 
+// per-tic trace of the fields of the weapon: GREED_TRACE = "<first turn>-<last turn>", GREED_TRACE_FILE = the file
+procedure Trace(const where: string);
+var
+  w, a, b: integer;
+  s: string;
+  f: TextFile;
+begin
+  s := GetEnvironmentVariable('GREED_TRACE');
+  if s = '' then
+    exit;
+  a := StrToInt(Copy(s, 1, Pos('-', s) - 1));
+  b := StrToInt(Copy(s, Pos('-', s) + 1, 20));
+  if (Frame < a) or (Frame > b) then
+    exit;
+  w := player.weapons[player.currentweapon];
+  AssignFile(f, GetEnvironmentVariable('GREED_TRACE_FILE'));
+  if FileExists(GetEnvironmentVariable('GREED_TRACE_FILE')) then
+    Append(f)
+  else
+    Rewrite(f);
+  Writeln(f, where, ' w=', w, ' charge=', weapons[w].charge, '/', weapons[w].chargetime, ' mode=', weapmode, ' delay=',
+    weapdelay, ' action=', actionflag, ' ammo1=', player.ammo[1], ' cur=', player.currentweapon, ' chg=',
+    Ord(changingweapons), ' fire=', in_button[bt_fire], ' status=', player.status);
+  CloseFile(f);
+end;
+
+procedure HarnessTraceNote(const where: string);
+begin
+  Trace('N ' + IntToStr(Frame) + ' ' + where + ' tc ' + IntToStr(timecount) + ' actionflag-reallight=' +
+    IntToStr(NativeInt(@actionflag) - NativeInt(@reallight)) + ' size=' + IntToStr(SizeOf(reallight)));
+end;
+
 function HarnessNextFrame: boolean;
 var
   i: integer;
@@ -408,6 +441,7 @@ begin
     exit;
   end;
   LastPrinted := Frame;
+  Trace(Format('E %d end tc %d', [Frame, timecount]));
   // the state after the turn that has just ended (the turn 0 is the state before the first one)
   if Frame = HarnessDumpFrame then
   begin
@@ -435,6 +469,7 @@ begin
     inc(TotalTics);
     HarnessClock := ClockBase + LongWord(TotalTics) * 14;
     INT_TimerISR;
+    Trace(Format('T %d tic %d tc %d', [Frame, i, timecount]));
   end;
   Result := true;
 end;

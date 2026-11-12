@@ -584,8 +584,42 @@ var
   LHistory, LTotal, LClockBase: Cardinal;
   LValues: TStringList;
 
+  // per-tic trace of the fields of the weapon (GREED_TRACE = "<first turn>-<last turn>", GREED_TRACE_FILE): the
+  // same lines of the harness of the original, to find the first value that differs
+  procedure Trace(const AWhere: string);
+  var
+    LText, LFile: string;
+    LFirst, LLast, LWeapon: Integer;
+    LLines: TStringList;
+    LState: TGreedGameState;
+  begin
+    LText := GetEnvironmentVariable('GREED_TRACE');
+    LFile := GetEnvironmentVariable('GREED_TRACE_FILE');
+    if (LText = '') or (LFile = '') then
+      Exit;
+    LFirst := StrToInt(Copy(LText, 1, Pos('-', LText) - 1));
+    LLast := StrToInt(Copy(LText, Pos('-', LText) + 1, 20));
+    if (LFrameNumber < LFirst) or (LFrameNumber > LLast) then
+      Exit;
+    LState := LGame.State;
+    LWeapon := LState.Player.Weapons[LState.Player.CurrentWeapon];
+    LLines := TStringList.Create;
+    try
+      if FileExists(LFile) then
+        LLines.LoadFromFile(LFile);
+      LLines.Add(Format('%s w=%d charge=%d/%d mode=%d delay=%d action=%d ammo1=%d cur=%d chg=%d status=%d',
+        [AWhere, LWeapon, LState.Weapons[LWeapon].Charge, LState.Weapons[LWeapon].ChargeTime, LState.WeapMode,
+        LState.WeapDelay, Ord(LGame.Parts.Control.FirePending), LState.Player.Ammo[1], LState.Player.CurrentWeapon,
+        Ord(LState.ChangingWeapons), LState.Player.Status]));
+      LLines.SaveToFile(LFile);
+    finally
+      LLines.Free;
+    end;
+  end;
+
   procedure Note;
   begin
+    Trace(Format('E %d end tc %d', [LFrameNumber, LGame.State.TimeCount]));
     if LFrameNumber = FDumpFrame then
     begin
       LValues := TStringList.Create;
@@ -654,6 +688,7 @@ begin
         Inc(LTotalTics);
         LClock.Value := LClockBase + Cardinal(LTotalTics) * WORLD_CLOCK_PER_TIC;
         LGame.Tic;
+        Trace(Format('T %d tic %d tc %d', [LFrameNumber, LTic, LGame.State.TimeCount]));
       end;
       LGame.Frame(LFrame);
       Note;
