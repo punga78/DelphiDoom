@@ -743,6 +743,7 @@ uses
   DelphiDoom.Engine.Definitions.AnimCatalog in '..\Base\DelphiDoom.Engine.Definitions.AnimCatalog.pas',
   DelphiDoom.Palette.Types in '..\Libs\Palette\DelphiDoom.Palette.Types.pas',
   DelphiDoom.Palette.Intf in '..\Libs\Palette\DelphiDoom.Palette.Intf.pas',
+  DelphiDoom.Palette.ColorRegionLumps in '..\Libs\Palette\DelphiDoom.Palette.ColorRegionLumps.pas',
   DelphiDoom.Palette.GammaData in '..\Libs\Palette\DelphiDoom.Palette.GammaData.pas',
   DelphiDoom.Palette.Profiles in '..\Libs\Palette\DelphiDoom.Palette.Profiles.pas',
   DelphiDoom.Palette.ColorMatcher in '..\Libs\Palette\DelphiDoom.Palette.ColorMatcher.pas',

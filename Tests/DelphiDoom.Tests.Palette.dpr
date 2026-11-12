@@ -52,6 +52,8 @@ uses
   DelphiDoom.Tests.Sound.Digest in 'Source\DelphiDoom.Tests.Sound.Digest.pas',
   DelphiDoom.Tests.Font.Golden in 'Source\DelphiDoom.Tests.Font.Golden.pas',
   DelphiDoom.Tests.Font.Scenarios in 'Source\DelphiDoom.Tests.Font.Scenarios.pas',
+  DelphiDoom.Palette.ColorRegionLumps in '..\Libs\Palette\DelphiDoom.Palette.ColorRegionLumps.pas',
+  DelphiDoom.Tests.Palette.ColorRegionLumps in 'Source\DelphiDoom.Tests.Palette.ColorRegionLumps.pas',
   DelphiDoom.Tests.Palette.GamePalettes in 'Source\DelphiDoom.Tests.Palette.GamePalettes.pas';
 
 var

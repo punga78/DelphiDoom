@@ -201,6 +201,7 @@ implementation
 
 uses
   am_map,
+  DelphiDoom.Palette.ColorRegionLumps,
   m_argv,
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   r_hires,
@@ -267,6 +268,10 @@ var
 {$ENDIF}
   lump: integer;
   lump2: integer;
+  numcrlumps: integer;
+  crnames: TArray<string>;
+  crlengths: TArray<Integer>;
+  crsources: TArray<Integer>;
 {$IFDEF STRIFE}
   col1, col2: byte;
 {$ENDIF}
@@ -318,15 +323,36 @@ begin
   end
   else
   begin
+    // The WAD can have fewer color regions than the engine wants (the system WAD of Rad-X
+    // stops at CRBLUE2): the lumps after CR_END are not tables and are not read into the
+    // 256 bytes of a region (the heap of the zone was overwritten), the region stays identity
+    numcrlumps := 0;
+    SetLength(crnames, Ord(CR_LIMIT));
+    SetLength(crlengths, Ord(CR_LIMIT));
+    SetLength(crsources, Ord(CR_LIMIT));
     for i := 0 to Ord(CR_LIMIT) - 1 do
     begin
-      inc(lump);
-      lump2 := W_CheckNumForName(W_GetNameForNum(lump));
+      if lump + 1 + i >= W_NumLumps then
+        Break;
+      lump2 := W_CheckNumForName(W_GetNameForNum(lump + 1 + i));
+      crnames[i] := char8tostring(W_GetNameForNum(lump + 1 + i));
       if W_LumpLength(lump2) = 256 then
-        W_ReadLump(lump2, colorregions[i])
+        crsources[i] := lump2
       else
-        W_ReadLump(lump, colorregions[i]);
+        crsources[i] := lump + 1 + i;
+      crlengths[i] := W_LumpLength(crsources[i]);
+      inc(numcrlumps);
     end;
+    SetLength(crnames, numcrlumps);
+    SetLength(crlengths, numcrlumps);
+    numcrlumps := TColorRegionLumps.ValidCount(crnames, crlengths);
+
+    for i := 0 to Ord(CR_LIMIT) - 1 do
+      if i < numcrlumps then
+        W_ReadLump(crsources[i], colorregions[i])
+      else
+        for j := 0 to 255 do
+          colorregions[i][j] := j;
   end;
 
 end;
