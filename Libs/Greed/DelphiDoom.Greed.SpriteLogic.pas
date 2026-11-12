@@ -1274,14 +1274,12 @@ var
   LTiles: array[0..GREED_MAP_TILES - 1] of Byte;
   LSpot, LIndex: Integer;
   LSprite: PGreedSprite;
-  LWorld: IGreedWorld;
 begin
-  LWorld := FState.World;
   // one call for the plane instead of one for each tile
-  LWorld.CopyPlane(gpMapSprites, @LTiles[0]);
+  FState.World.CopyPlane(gpMapSprites, @LTiles[0]);
   for LSpot := 0 to GREED_MAP_TILES - 1 do
     if LTiles[LSpot] = MAP_SPRITE_MONSTER then
-      LWorld.SetValue(gpMapSprites, LSpot, 0);
+      FState.World.SetValue(gpMapSprites, LSpot, 0);
   LIndex := FState.Sprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin

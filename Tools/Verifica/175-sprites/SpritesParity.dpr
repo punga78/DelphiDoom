@@ -6,7 +6,7 @@ program SpritesParity;
 // lo sprites.pas ORIGINALE di xGreed, non modificato, e TGreedSpriteLogic di Libs\Greed, li confronta tic per tic
 // e scrive il golden (le impronte dell'originale). Il resto del gioco e' negli stub di stubs\ (spawn, utils, raven,
 // modplay, net) e in quelli di ..\175-render\stubs (d_disk, d_misc, d_ints ...).
-// Uso: SpritesParity [golden.txt] [primo scenario] [ultimo scenario]
+// Uso: SpritesParity <golden.txt | nessuno> [primo scenario] [ultimo scenario]
 uses
   SysUtils, Classes, Windows, Generics.Collections,
   g_delphi, protos_h, r_public_h, r_refdef, r_render, r_conten, r_public, raven, d_ints, d_misc, net, sprites,
@@ -24,6 +24,7 @@ type
     procedure GetPlayer(out APlayer: TScenarioPlayer); override;
     procedure SetPlayer(const APlayer: TScenarioPlayer); override;
     procedure SetGame(ATimeCount, ASpecialEffect: Integer); override;
+    procedure ProbeShot(const ASprite: TGreedSprite; ASteps: Integer); override;
     procedure Think; override;
     procedure TraceState; override;
   end;
@@ -221,6 +222,26 @@ begin
   specialeffect := ASpecialEffect;
 end;
 
+procedure TOriginalRunner.ProbeShot(const ASprite: TGreedSprite; ASteps: Integer);
+var
+  i, r: Integer;
+begin
+  FillChar(probe, SizeOf(probe), 0);
+  FromLibrary(ASprite, @probe);
+  msprite := @probe;
+  r := 0;
+  for i := 1 to ASteps do
+  begin
+    r := SP_Thrust;
+    if r <> 0 then
+      Break;
+  end;
+  Trace.Add(r, 'probe.result');
+  Trace.Add(probe.x, 'probe.x');
+  Trace.Add(probe.y, 'probe.y');
+  Trace.Add(probe.z, 'probe.z');
+end;
+
 procedure TOriginalRunner.Think;
 begin
   ScrubStack;
@@ -295,8 +316,12 @@ var
 begin
   try
     GoldenPath := ParamStr(1);
+    if GoldenPath = 'nessuno' then
+      GoldenPath := '';
     First := StrToIntDef(ParamStr(2), 0);
     Last := StrToIntDef(ParamStr(3), SPRITE_SCENARIO_COUNT - 1);
+    if Last > SPRITE_SCENARIO_COUNT - 1 then
+      Last := SPRITE_SCENARIO_COUNT - 1;
     InitOriginalTables;
     Golden := TStringList.Create;
     Golden.Add('# impronte FNV-1a, tic per tic, di sprites.pas ORIGINALE di xGreed sugli scenari di');
@@ -385,8 +410,12 @@ begin
     Writeln(Format('scenari %d, confrontati %d, saltati %d, tic %d, scenari con differenze %d',
       [Last - First + 1, Compared, Skipped, TotalTics, TotalDifferences]));
     if TotalTics > 0 then
+    begin
       Writeln(Format('tempo per tic (traccia compresa): originale %.1f us, libreria %.1f us',
         [OriginalTime * 1000000 / Frequency / TotalTics, LibTime * 1000000 / Frequency / TotalTics]));
+      Writeln(Format('MoveSprites da solo, per tic: originale %.1f us, libreria %.1f us',
+        [Original.ThinkMicroseconds / TotalTics, Lib.ThinkMicroseconds / TotalTics]));
+    end;
     if GoldenPath <> '' then
     begin
       Golden.SaveToFile(GoldenPath);

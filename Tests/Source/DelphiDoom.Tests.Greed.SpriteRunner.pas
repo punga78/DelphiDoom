@@ -83,6 +83,7 @@ type
     procedure GetPlayer(out APlayer: TScenarioPlayer); override;
     procedure SetPlayer(const APlayer: TScenarioPlayer); override;
     procedure SetGame(ATimeCount, ASpecialEffect: Integer); override;
+    procedure ProbeShot(const ASprite: TGreedSprite; ASteps: Integer); override;
     procedure Think; override;
     procedure TraceState; override;
   public
@@ -335,6 +336,24 @@ procedure TLibrarySpriteRunner.SetGame(ATimeCount, ASpecialEffect: Integer);
 begin
   FState.TimeCount := ATimeCount;
   FState.SpecialEffect := ASpecialEffect;
+end;
+
+procedure TLibrarySpriteRunner.ProbeShot(const ASprite: TGreedSprite; ASteps: Integer);
+var
+  LStep, LResult: Integer;
+begin
+  FState.Probe := ASprite;
+  LResult := 0;
+  for LStep := 1 to ASteps do
+  begin
+    LResult := FLogic.Movement.Thrust(@FState.Probe);
+    if LResult <> 0 then
+      Break;
+  end;
+  Trace.Add(LResult, 'probe.result');
+  Trace.Add(FState.Probe.X, 'probe.x');
+  Trace.Add(FState.Probe.Y, 'probe.y');
+  Trace.Add(FState.Probe.Z, 'probe.z');
 end;
 
 procedure TLibrarySpriteRunner.Think;

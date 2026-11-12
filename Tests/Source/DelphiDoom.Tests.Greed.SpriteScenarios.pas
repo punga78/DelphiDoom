@@ -18,12 +18,12 @@ unit DelphiDoom.Tests.Greed.SpriteScenarios;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Greed.Types,
+  System.SysUtils, System.Classes, System.Diagnostics, System.Generics.Collections, DelphiDoom.Greed.Types,
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.World.Intf;
 
 const
   /// <summary>How many scenarios the golden file has</summary>
-  SPRITE_SCENARIO_COUNT = 48;
+  SPRITE_SCENARIO_COUNT = 64;
   /// <summary>The driver stops a scenario that makes more sprites than this</summary>
   SPRITE_SCENARIO_MAX_SPRITES = 2500;
 
@@ -87,6 +87,8 @@ type
   TSpriteScenarioRunner = class
   strict private
     FTrace: TSpriteTrace;
+    FThinkTime: TStopwatch;
+    function GetThinkMicroseconds: Double;
   protected
     procedure LoadScenario(const AScenario: TSpriteScenario); virtual; abstract;
     /// <summary>A new sprite at the end of the list</summary>
@@ -97,6 +99,11 @@ type
     procedure GetPlayer(out APlayer: TScenarioPlayer); virtual; abstract;
     procedure SetPlayer(const APlayer: TScenarioPlayer); virtual; abstract;
     procedure SetGame(ATimeCount, ASpecialEffect: Integer); virtual; abstract;
+    /// <summary>
+    ///   The copy of a sprite looks for what a shot would hit: SP_Thrust on the probe, at most ASteps times;
+    ///   the result and the probe go in the trace
+    /// </summary>
+    procedure ProbeShot(const ASprite: TGreedSprite; ASteps: Integer); virtual; abstract;
     /// <summary>MoveSprites</summary>
     procedure Think; virtual; abstract;
     /// <summary>Sprites, player, doors, planes, lights, globals of sprites.pas and the random offset</summary>
@@ -111,6 +118,8 @@ type
     procedure Run(const AScenario: TSpriteScenario; AHashes: TList<Cardinal>; ADumpTic: Integer = -1;
       ADump: TStrings = nil);
     property Trace: TSpriteTrace read FTrace;
+    /// <summary>The time spent in Think (MoveSprites alone) by all the runs, in microseconds</summary>
+    property ThinkMicroseconds: Double read GetThinkMicroseconds;
     /// <summary>What the stand-in of SpawnSprite makes: a sprite that depends only on the arguments</summary>
     class procedure FillSpawned(out ASprite: TGreedSprite; AValue, AX, AY, AZ, AZAdjust, AAngle, AAngle2: Integer;
       AActive: Boolean; ASpawnId: Integer); static;
@@ -350,6 +359,12 @@ begin
   inherited Create;
   FTrace := TSpriteTrace.Create;
   FTrace.Reset(nil);
+  FThinkTime := TStopwatch.Create;
+end;
+
+function TSpriteScenarioRunner.GetThinkMicroseconds: Double;
+begin
+  Result := FThinkTime.ElapsedTicks * 1000000.0 / TStopwatch.Frequency;
 end;
 
 destructor TSpriteScenarioRunner.Destroy;
@@ -466,9 +481,18 @@ begin
         LShot.SpawnId := 200 + AScenario.PlayerNum;
       AppendSprite(LShot);
     end;
+    // ... or only looks at what a shot would hit
+    if Pick(LSeed, 5) = 0 then
+    begin
+      FillSpawned(LShot, GREED_S_BULLET1, LPlayer.X, LPlayer.Y, LPlayer.Z - LPlayer.Height, 24 * FRACUNIT,
+        LPlayer.Angle + Pick(LSeed, 129) - 64, Pick(LSeed, 17) - 8, True, AScenario.PlayerNum);
+      ProbeShot(LShot, 100 + Pick(LSeed, 400));
+    end;
     LTime := LTime + AScenario.TimeStep;
     SetGame(LTime, LEffect);
+    FThinkTime.Start;
     Think;
+    FThinkTime.Stop;
     TraceState;
     AHashes.Add(FTrace.Hash);
   end;
@@ -513,8 +537,8 @@ begin
           2: AScenario.Planes[gpFloorHeight][LSpot] := 4;
         end;
         // a few low ceilings
-        if Pick(ASeed, 60) = 0 then
-          AScenario.Planes[gpCeilingHeight][LSpot] := 60 + Pick(ASeed, 40);
+        if Pick(ASeed, 15) = 0 then
+          AScenario.Planes[gpCeilingHeight][LSpot] := 50 + Pick(ASeed, 60);
         // sloped and triangulated floors and ceilings (the shapes of mapflags)
         if Pick(ASeed, 25) = 0 then
           AScenario.MapFlags[LSpot] := Pick(ASeed, 4);
@@ -573,9 +597,9 @@ begin
     LDoor.TileX := FIRST_TILE + 2 + Pick(ASeed, LAST_TILE - FIRST_TILE - 3);
     LDoor.TileY := FIRST_TILE + 2 + Pick(ASeed, LAST_TILE - FIRST_TILE - 3);
     LDoor.Orientation := TGreedDoorOrientation(Pick(ASeed, 4));
-    LDoor.Open := Pick(ASeed, 4) = 0;
-    LDoor.Opening := Pick(ASeed, 5) = 0;
-    LDoor.Closing := Pick(ASeed, 5) = 0;
+    LDoor.Open := Pick(ASeed, 5) = 0;
+    LDoor.Opening := Pick(ASeed, 3) = 0;
+    LDoor.Closing := Pick(ASeed, 3) = 0;
     LDoor.Bumpable := Pick(ASeed, 4) <> 0;
     LDoor.Timer := Pick(ASeed, 300);
     LDoor.Position := Pick(ASeed, 65) * FRACUNIT;
@@ -694,6 +718,7 @@ begin
       begin
         // a clone of the player
         Result.Kind := GREED_S_CLONE;
+        Result.Active := Pick(ASeed, 2) = 0;
         Result.Intelligence := 7;
         Result.MoveSpeed := (2 + Pick(ASeed, 4)) * FRACUNIT;
         Result.MoveSize := 16 * FRACUNIT;
