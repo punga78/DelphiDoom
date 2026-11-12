@@ -80,6 +80,8 @@ type
     ColorMaps: TStringList;
     MonsterLoads: Integer;
     Backdrops: Integer;
+    EffectsTimeResets: Integer;
+    LastEffectsTime: Integer;
     constructor Create;
     destructor Destroy; override;
     function CreateRenderer(ASprites: TGreedLinkedPool<TGreedSprite>; const AClock: IGreedRenderClock;
@@ -93,6 +95,7 @@ type
     procedure LoadColorMaps(const ALumpName: string);
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
+    procedure SetEffectsTime(ATime: Integer);
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -386,6 +389,12 @@ end;
 procedure TFakeGameRenderer.SetActionHook(const AHook: IGreedRenderActionHook);
 begin
   FHook := AHook;
+end;
+
+procedure TFakeGameRenderer.SetEffectsTime(ATime: Integer);
+begin
+  Inc(EffectsTimeResets);
+  LastEffectsTime := ATime;
 end;
 
 procedure TFakeGameRenderer.DemandLoadMonster(ALump, ACount: Integer);

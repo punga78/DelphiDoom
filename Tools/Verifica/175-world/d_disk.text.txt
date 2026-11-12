@@ -1,0 +1,35 @@
+// HARNESS (Tools\Verifica\175-world): CA_LumpAsText and CA_FileAsText of the original with an AnsiString where the
+// bytes are read (the string of Delphi 7 was one): with the UTF-16 string of Delphi 11 the text of a script is lost
+function CA_LumpAsText(const lump: integer): string;
+var
+  len: integer;
+  bytes: AnsiString;
+begin
+  len := infotable[lump].size;
+  SetLength(bytes, len);
+  seek(cachehandle, infotable[lump].filepos);
+  if len > 0 then
+    fread(@bytes[1], len, 1, cachehandle);
+  result := string(bytes);
+end;
+
+function CA_FileAsText(const fname: string): string;
+var
+  f: file;
+  len: integer;
+  bytes: AnsiString;
+begin
+  if not fopen(f, fname, fOpenReadOnly) then
+  begin
+    result := '';
+    exit;
+  end;
+  len := ftell(f);
+  SetLength(bytes, len);
+  if len > 0 then
+    fread(@bytes[1], len, 1, f);
+  fclose(f);
+  result := string(bytes);
+end;
+
+end.

@@ -58,6 +58,9 @@ type
   ///   touch ComposeEngine nor TIdTechGeneration: Greed is not an id Tech 1 game
   /// </summary>
   TGreedComposition = class
+  strict private
+    class function PlayOn(const AArchive: IGreedArchive; const AFolders: array of string;
+      const AOptions: TGreedPlayOptions; ADemo: Boolean): Integer; static;
   public
     /// <summary>The name of the data file of the game</summary>
     const DataFileName = 'GREED.BLO';
@@ -93,7 +96,8 @@ uses
   DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.GameRendererFactory, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Game, DelphiDoom.Greed.GameLoop, DelphiDoom.Greed.HostWindow, DelphiDoom.Greed.HostControls,
   DelphiDoom.Greed.ScriptControls, DelphiDoom.Greed.PlainView, DelphiDoom.Greed.GameDump,
-  DelphiDoom.Greed.HostAudio, DelphiDoom.Greed.TrackerSongDecoder, DelphiDoom.GameHost.Events.Intf,
+  DelphiDoom.Greed.HostAudio, DelphiDoom.Greed.TrackerSongDecoder, DelphiDoom.Greed.DemoArchive,
+  DelphiDoom.GameHost.Events.Intf,
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
 
 const
@@ -159,6 +163,7 @@ type
     procedure LoadColorMaps(const ALumpName: string);
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
+    procedure SetEffectsTime(ATime: Integer);
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -311,6 +316,10 @@ procedure TGreedTopDownGameRenderer.SetActionHook(const AHook: IGreedRenderActio
 begin
 end;
 
+procedure TGreedTopDownGameRenderer.SetEffectsTime(ATime: Integer);
+begin
+end;
+
 procedure TGreedTopDownGameRenderer.DemandLoadMonster(ALump, ACount: Integer);
 begin
 end;
@@ -395,9 +404,23 @@ end;
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
   const AOptions: TGreedPlayOptions): Integer;
 var
+  LMapLump: Integer;
+begin
+  // the maps of a demo are files next to the archive (their lumps are empty), and its archive does not have
+  // every lump that the game names
+  LMapLump := AArchive.RequireIndexOf(GREED_LUMP_MAP) + AOptions.MapNumber + 1;
+  if (LMapLump < AArchive.LumpCount) and (AArchive.GetLumpSize(LMapLump) = 0) then
+    Result := PlayOn(TGreedDemoArchive.Create(AArchive), AFolders, AOptions, True)
+  else
+    Result := PlayOn(AArchive, AFolders, AOptions, False);
+end;
+
+class function TGreedComposition.PlayOn(const AArchive: IGreedArchive; const AFolders: array of string;
+  const AOptions: TGreedPlayOptions; ADemo: Boolean): Integer;
+var
   LPalette: TBytes;
   LColors: TGreedColors;
-  LIndex, LFrameWidth, LFrameHeight, LScale, LMapLump: Integer;
+  LIndex, LFrameWidth, LFrameHeight, LScale: Integer;
   LFiles: IGreedExternalFiles;
   LKeys: IGameHostKeyState;
   LWindow: TGameHostWinWindow;
@@ -536,10 +559,8 @@ begin
       LView as IGreedMessages);
     LTime.Game := LGame;
     LGame.LowResolution := AOptions.LowResolution;
-    // the maps of a demo are files next to the archive (their lumps are empty); the full game has three
-    // episodes that start at the maps 0, 8 and 16
-    LMapLump := AArchive.RequireIndexOf(GREED_LUMP_MAP) + AOptions.MapNumber + 1;
-    LDemo := (LMapLump < AArchive.LumpCount) and (AArchive.GetLumpSize(LMapLump) = 0);
+    // the full game has three episodes that start at the maps 0, 8 and 16
+    LDemo := ADemo;
     if AOptions.MapNumber >= FIRST_MAP_OF_GAME3 then
       LGame.SetEdition(LDemo, 3)
     else if AOptions.MapNumber >= FIRST_MAP_OF_GAME2 then

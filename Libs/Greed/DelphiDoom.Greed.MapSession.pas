@@ -235,7 +235,13 @@ var
 begin
   FHost.StartWait;
   for LIndex := Low(FState.SpriteLumps) to High(FState.SpriteLumps) do
-    FState.SpriteLumps[LIndex] := FArchive.RequireIndexOf(TGreedGameTables.SpriteLumpNames[LIndex]);
+    // the archive of a demo does not have every sprite of the game (the demo 2.0 has no "spreadshot"): the
+    // original, made for the full game, stops there with "not found"; a demo goes on, and a sprite that it does
+    // not have has the lump -1, which draws nothing
+    if FState.Demo then
+      FState.SpriteLumps[LIndex] := FArchive.IndexOf(TGreedGameTables.SpriteLumpNames[LIndex])
+    else
+      FState.SpriteLumps[LIndex] := FArchive.RequireIndexOf(TGreedGameTables.SpriteLumpNames[LIndex]);
   FState.GoalItem := -1;
   FOldGoalItem := -1;
   FState.ToggleGoalItem := True;

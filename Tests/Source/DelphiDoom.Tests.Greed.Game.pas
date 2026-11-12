@@ -89,6 +89,14 @@ type
     procedure DovrebbeDimezzareLoSguardoInBassaRisoluzione;
     [Test]
     procedure DovrebbeDareLaPosizioneDelGiocatoreAiSuoni;
+    [Test]
+    procedure DovrebbeDareAiColpiIlNumeroDelGiocatore;
+    [Test]
+    procedure DovrebbeAzzerareIlTempoDegliEffettiQuandoIlMotoreRiparte;
+    [Test]
+    procedure DovrebbeFinireSubitoSullaMappaDopoLUltima;
+    [Test]
+    procedure UnaPortaDovrebbeTenereICampiDellaPortaDiPrimaQuandoLaMappaRiparte;
   end;
 
 implementation
@@ -158,7 +166,7 @@ begin
   Assert.AreEqual(0, FSetup.Game.Map);
   Assert.IsFalse(FSetup.Game.Dead);
   Assert.IsFalse(FSetup.Game.QuitGame);
-  Assert.AreEqual(GREED_GAME_VIEW_HEIGHT, FSetup.Game.State.Player.ScrollMax);
+  Assert.AreEqual(GREED_GAME_START_WINDOW_HEIGHT, FSetup.Game.State.Player.ScrollMax);
   Assert.AreEqual(0, Integer(FSetup.Game.World.GetValue(gpMapSprites, FSetup.Game.State.Player.MapSpot)),
     'the start is not a thing of the map');
 end;
@@ -509,6 +517,89 @@ begin
   Assert.AreEqual(FSetup.Game.State.Player.X, FSetup.Game.Listener.GetX);
   Assert.AreEqual(FSetup.Game.State.Player.Y, FSetup.Game.Listener.GetY);
   Assert.AreEqual(FSetup.Game.State.Player.Angle, FSetup.Game.Listener.GetAngle);
+end;
+
+
+procedure TTestGreedGame.DovrebbeDareAiColpiIlNumeroDelGiocatore;
+var
+  LIndex: Integer;
+  LSprite: PGreedSprite;
+  LShots: Integer;
+begin
+  // playernum of the original is 1 in a game of one player: a shot with another number is the shot of somebody
+  // else, and can hit who shot it
+  Start;
+  FSetup.Play(1);
+  FSetup.Commands.Pressed := [gcFire];
+  FSetup.Play(2);
+  LShots := 0;
+  LIndex := FSetup.Game.State.Sprites.First;
+  while LIndex <> GREED_POOL_NIL do
+  begin
+    LSprite := PGreedSprite(FSetup.Game.State.Sprites.Item(LIndex));
+    if (LSprite^.Kind >= GREED_S_BULLET1) and (LSprite^.Kind <= GREED_S_BULLET18) or
+      (LSprite^.Kind = GREED_S_HANDBULLET) then
+    begin
+      Inc(LShots);
+      Assert.AreEqual(1, LSprite^.SpawnId);
+    end;
+    LIndex := FSetup.Game.State.Sprites.Next(LIndex);
+  end;
+  Assert.IsTrue(LShots > 0, 'a shot is flying');
+  Assert.AreEqual(1, FSetup.Game.State.PlayerNum);
+end;
+
+procedure TTestGreedGame.DovrebbeAzzerareIlTempoDegliEffettiQuandoIlMotoreRiparte;
+var
+  LResets: Integer;
+begin
+  // fxtimecount of the renderer goes back to 0 with the clock of the game (resetengine): without it the walls
+  // do not flicker again until the new clock passes the old one, and the game takes fewer random numbers
+  Start;
+  Assert.IsTrue(FSetup.Renderer.EffectsTimeResets >= 1);
+  Assert.AreEqual(0, FSetup.Renderer.LastEffectsTime);
+  LResets := FSetup.Renderer.EffectsTimeResets;
+  FSetup.Play(20);
+  FSetup.Game.State.Player.Angst := 0;
+  FSetup.Commands.Pressed := [gcRestart];
+  FSetup.Play(2);
+  Assert.IsTrue(FSetup.Renderer.EffectsTimeResets > LResets, 'the map started again');
+end;
+
+procedure TTestGreedGame.DovrebbeFinireSubitoSullaMappaDopoLUltima;
+begin
+  FSetup.CreateGame;
+  FSetup.Game.SetEdition(True, 1);
+  FSetup.Game.NewGame(3, 0, 2);
+  Assert.IsTrue(FSetup.Game.QuitGame, 'the map 3 of the demo is the end of the demo');
+  Assert.AreEqual(0, FSetup.Maps.Loads);
+  Assert.AreEqual(1, FSetup.View.CountOf('MissionBriefing 3'));
+  // nothing runs in the empty world
+  FSetup.Play(3);
+  Assert.AreEqual(0, FSetup.Renderer.Views);
+end;
+
+procedure TTestGreedGame.UnaPortaDovrebbeTenereICampiDellaPortaDiPrimaQuandoLaMappaRiparte;
+var
+  LDoor: TGreedDoor;
+begin
+  // kept defect of the original: the list of the doors is not cleaned, a door made again has the flags that the
+  // door with its number had before
+  FSetup.Maps.Put(gpMapSprites, FAKE_START_X + 5, FAKE_START_Y, GREED_S_HDOOR1);
+  Start;
+  LDoor := FSetup.Game.World.GetDoor(0);
+  Assert.IsFalse(LDoor.Open);
+  LDoor.Open := True;
+  LDoor.Locks := 3;
+  FSetup.Game.World.SetDoor(0, LDoor);
+  FSetup.Game.State.Player.Angst := 0;
+  FSetup.Commands.Pressed := [gcRestart];
+  FSetup.Play(2);
+  Assert.AreEqual(2, FSetup.Maps.Loads, 'the map was loaded again');
+  Assert.AreEqual(1, FSetup.Game.World.DoorCount);
+  LDoor := FSetup.Game.World.GetDoor(0);
+  Assert.AreEqual(3, Integer(LDoor.Locks), 'the locks of the door before');
+  Assert.AreEqual(64 * GREED_FRACUNIT, LDoor.Position, 'and placed as a closed door');
 end;
 
 end.

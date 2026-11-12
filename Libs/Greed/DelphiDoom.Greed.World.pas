@@ -145,8 +145,9 @@ begin
     raise EGreedDataException.CreateFmt(SGreedTileOutside, [ATileX, ATileY]);
   Result := FDoorCount;
   Inc(FDoorCount);
-  // the original does not clear the door: the list was cleared by RF_ClearWorld, here the record is zero too
-  FDoors[Result] := Default(TGreedDoor);
+  // kept defect of the original: RF_ClearWorld only sets the count of the doors to zero and RF_GetDoor only
+  // writes the tile, so a door keeps the fields that the door with the same number had in the map before (the
+  // same map loaded again after the player died: a door that was open is "open" again while it looks closed)
   FDoors[Result].TileX := ATileX;
   FDoors[Result].TileY := ATileY;
   FMapFlags[LSpot] := FMapFlags[LSpot] or GREED_FL_DOOR;

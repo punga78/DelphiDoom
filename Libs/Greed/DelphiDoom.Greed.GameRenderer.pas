@@ -47,6 +47,7 @@ type
     procedure LoadColorMaps(const ALumpName: string);
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
+    procedure SetEffectsTime(ATime: Integer);
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -135,6 +136,11 @@ end;
 procedure TGreedGameRenderer.SetActionHook(const AHook: IGreedRenderActionHook);
 begin
   FRenderer.ActionHook := AHook;
+end;
+
+procedure TGreedGameRenderer.SetEffectsTime(ATime: Integer);
+begin
+  FRenderer.State.FxTimeCount := ATime;
 end;
 
 procedure TGreedGameRenderer.DemandLoadMonster(ALump, ACount: Integer);

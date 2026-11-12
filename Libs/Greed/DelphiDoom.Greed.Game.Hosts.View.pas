@@ -29,6 +29,8 @@ type
     FParts: TGreedGameParts;
     function GetSystemClock: Cardinal;
     function IGreedMapSessionHost.GetClock = GetSystemClock;
+    procedure EngineWasReset;
+    procedure IGreedMapSessionHost.ResetMouse = EngineWasReset;
   public
     /// <summary>EArgumentNilException if AParts is nil</summary>
     constructor Create(AParts: TGreedGameParts);
@@ -105,6 +107,14 @@ procedure TGreedGameViewHost.ResetMouse;
 begin
   // ResetMouse of d_ints.pas puts the cursor of the system at the centre of the window: the commands of the
   // game come from IGreedControls, that gives movements and has no cursor
+end;
+
+procedure TGreedGameViewHost.EngineWasReset;
+begin
+  // the session asks for ResetMouse at the end of resetengine, where the original has put the clock of the game
+  // and fxtimecount back to 0: fxtimecount is of the renderer (the glow and the flicker of the walls)
+  FParts.Renderer.SetEffectsTime(FParts.Session.FxTimeCount);
+  ResetMouse;
 end;
 
 procedure TGreedGameViewHost.RefreshGoalItem;

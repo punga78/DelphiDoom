@@ -28,6 +28,11 @@ const
   /// <summary>MAX_VIEW_WIDTH and MAX_VIEW_HEIGHT: the view in which the weapon and the status bar are placed</summary>
   GREED_GAME_VIEW_WIDTH = 320;
   GREED_GAME_VIEW_HEIGHT = 200;
+  /// <summary>
+  ///   windowHeight when the program starts (RF_Startup sets the view of 640 x 400): newplayer of the first game
+  ///   puts it in player.scrollmax
+  /// </summary>
+  GREED_GAME_START_WINDOW_HEIGHT = 400;
   /// <summary>AMBIENTLIGHT: SC.ambientlight of a game without a configuration file</summary>
   GREED_GAME_AMBIENT_LIGHT = 2048;
 
@@ -229,7 +234,8 @@ begin
   FMapLoader := AMapLoader;
   FSaveGames := ASaveGames;
   FStatusBar := True;
-  FCameraDelay := TIC_RATE;
+  // SC.camdelay of InitDefaults
+  FCameraDelay := TIC_RATE div 2;
   Supports(AControls, IGreedControlsSampler, FSampler);
   FParts := TGreedGameParts.Create;
   FParts.Archive := AArchive;
@@ -246,6 +252,8 @@ begin
   FParts.Sprites := TGreedLinkedPool<TGreedSprite>.Create(GREED_MAX_SPRITES, 'sprites');
   FParts.Elevators := TGreedLinkedPool<TGreedElevator>.Create(GREED_MAX_ELEVATORS, 'elevators');
   FParts.State := TGreedGameState.Create(FParts.World, FParts.Sprites, FParts.Elevators);
+  // playernum of net.pas is 1 in a game that is not in a net: the shots and the mines of the player carry it
+  FParts.State.PlayerNum := 1;
   // InitDefaults of modplay.pas: the first newlights brings the light up to the one of the settings
   FParts.State.Lighting := 1;
   FParts.State.ChangeLight := FParts.AmbientLight;
@@ -456,7 +464,8 @@ begin
   S := FParts.State;
   // newplayer
   S.GameLoaded := True;
-  TGreedPlayerRules.NewPlayer(S.Player, AMap, ACharacter, ADifficulty, S.LevelScore, GREED_GAME_VIEW_HEIGHT);
+  TGreedPlayerRules.NewPlayer(S.Player, AMap, ACharacter, ADifficulty, S.LevelScore,
+    GREED_GAME_START_WINDOW_HEIGHT);
   FParts.Session.ResetEngine;
   (FViewHost as IGreedLevelHost).NewMap(S.Player.Map, 1);
   S.TimeCount := 0;
@@ -467,6 +476,11 @@ begin
   FParts.Control.NewLights;
   // PlayLoop
   S.TimeCount := 0;
+  // the map after the last one of the edition is not a map: newmap shows the end of the episode and loads
+  // nothing. The original gets there only from EndLevel, which ends the game; a game that starts there is over
+  // (the original would go on in an empty world, where CheckBonusItem never finds a tile)
+  if AMap = LastMap then
+    S.QuitGame := True;
 end;
 
 procedure TGreedGame.Tic;

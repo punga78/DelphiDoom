@@ -41,6 +41,11 @@ type
     procedure SetBackdrop(const APixels: TBytes);
     /// <summary>RF_CheckActionFlag is called on AHook while a view is drawn; nil for none</summary>
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
+    /// <summary>
+    ///   fxtimecount := time: the clock of the effects of the walls (glow, flicker), that resetengine puts back to 0
+    ///   with the clock of the game
+    /// </summary>
+    procedure SetEffectsTime(ATime: Integer);
   end;
 
   /// <summary>
