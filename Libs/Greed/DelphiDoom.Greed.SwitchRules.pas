@@ -58,7 +58,7 @@ type
     ///   that can be used now (False until SwitchTime)
     /// </summary>
     function CheckForSwitch(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
-    /// <summary>SwitchWall(x, y, angle, doubleswitch): the sound, and the picture of the wall in front changes</summary>
+    /// <summary>SwitchWall(x, y, angle, doubleswitch): the sound, and the picture of the wall in front</summary>
     procedure SwitchWall(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean);
     /// <summary>CheckHere(useit, cx, cy, angle): the place is in fixed point; AUseIt is the use key</summary>
     procedure CheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);

@@ -84,7 +84,7 @@ type
     procedure TimeUpdate;
     /// <summary>NewGoalItem: GoalItem goes to the next goal that the level has (-1 if there is none)</summary>
     procedure NewGoalItem;
-    /// <summary>startover(restartvalue): 1 keeps the player as it is (next level), another value starts it again</summary>
+    /// <summary>startover(restartvalue): 1 keeps the player as it is (next level), another value resets it</summary>
     procedure StartOver(ARestartValue: Integer);
     /// <summary>EndLevel: the screen fades, the map number goes up and the level starts</summary>
     procedure EndLevel;

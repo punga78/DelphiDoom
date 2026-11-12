@@ -190,7 +190,7 @@ type
     ///   time at 1000 and the bonus item far in the future
     /// </summary>
     procedure LoadEmpty;
-    /// <summary>A sprite of that kind at the centre of the tile, at the end of the list; the index in the pool</summary>
+    /// <summary>A sprite of that kind at the centre of the tile, at the end of the list; its index</summary>
     function AddSprite(AKind, ATileX, ATileY: Integer): Integer;
     /// <summary>The value of the plane of the sprites on the tile and its sprite</summary>
     function PutItem(AMapValue, ASpriteKind, ATileX, ATileY: Integer): Integer;
