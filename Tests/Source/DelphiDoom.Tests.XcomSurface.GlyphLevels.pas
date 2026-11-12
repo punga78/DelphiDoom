@@ -23,12 +23,12 @@ type
   public
     [Test]
     [TestCase('piena', '255,1')]
-    [TestCase('soglia del livello 1', '208,1')]
-    [TestCase('appena sotto', '207,2')]
-    [TestCase('soglia del livello 2', '144,2')]
-    [TestCase('sotto il 2', '143,3')]
-    [TestCase('soglia del corpo', '80,3')]
-    [TestCase('troppo poco', '79,0')]
+    [TestCase('soglia del livello 1', '120,1')]
+    [TestCase('appena sotto', '119,2')]
+    [TestCase('soglia del livello 2', '72,2')]
+    [TestCase('sotto il 2', '71,3')]
+    [TestCase('soglia del corpo', '40,3')]
+    [TestCase('troppo poco', '39,0')]
     [TestCase('niente', '0,0')]
     procedure DovrebbeDareIlLivelloDellaCopertura(ACoverage, ALevel: Integer);
     [Test]
@@ -91,7 +91,7 @@ procedure TTestXcomSurfaceGlyphLevels.DovrebbeRidurreSenzaContornoTenendoMisuraE
 var
   LResult: TXcomGlyphBitmap;
 begin
-  LResult := TXcomGlyphLevels.Reduce(Glyph(3, [255, 150, 100, 90, 0, 255], 3), False);
+  LResult := TXcomGlyphLevels.Reduce(Glyph(3, [255, 100, 50, 60, 0, 255], 3), False);
   Assert.AreEqual(3, LResult.Width);
   Assert.AreEqual(2, LResult.Height);
   Assert.AreEqual(3, LResult.Top);
@@ -124,7 +124,7 @@ var
   LResult: TXcomGlyphBitmap;
 begin
   // the first row and the first column are covered too little
-  LResult := TXcomGlyphLevels.Reduce(Glyph(5, [10, 20, 30, 40, 255, 150, 50, 150, 255], 3), False);
+  LResult := TXcomGlyphLevels.Reduce(Glyph(5, [10, 20, 30, 35, 255, 100, 30, 100, 255], 3), False);
   Assert.AreEqual(2, LResult.Width);
   Assert.AreEqual(2, LResult.Height);
   Assert.AreEqual(6, LResult.Top);
@@ -135,7 +135,7 @@ procedure TTestXcomSurfaceGlyphLevels.DovrebbeDareMisuraZeroSeNonRestaNulla;
 var
   LResult: TXcomGlyphBitmap;
 begin
-  LResult := TXcomGlyphLevels.Reduce(Glyph(0, [10, 20, 30, 40], 2), True);
+  LResult := TXcomGlyphLevels.Reduce(Glyph(0, [10, 20, 30, 39], 2), True);
   Assert.AreEqual(0, LResult.Width);
   Assert.AreEqual(0, LResult.Height);
   Assert.AreEqual(0, Integer(Length(LResult.Pixels)));

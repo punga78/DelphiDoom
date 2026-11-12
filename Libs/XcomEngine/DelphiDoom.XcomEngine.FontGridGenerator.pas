@@ -43,7 +43,7 @@ type
     /// <param name="AOverlay">The second source of the characters</param>
     constructor Create(const AFiles: IXcomFileSystem; const ALoader: IXcomSurfaceLoader;
       const AOverlay: IXcomFontOverlay; const AEncoder: IPngPaletteEncoder);
-    /// <summary>The name of the picture of a font made from its original picture AImage (FONT_BIG_0.png)</summary>
+    /// <summary>The name of the new picture number AImage of a font, counted from 0 (FONT_BIG_0.png)</summary>
     class function FileNameOf(const AFontId: string; AImage: Integer): string; static;
     /// <summary>
     ///   Writes AFolder\Language\Font.dat and the pictures, and gives how many pictures were written (0: the

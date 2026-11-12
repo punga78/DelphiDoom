@@ -69,6 +69,8 @@ type
     [Test]
     procedure DovrebbeSeguireLOpzioneDelContorno;
     [Test]
+    procedure DovrebbeNonPrendereUnPixelIsolatoPerUnContorno;
+    [Test]
     procedure DovrebbeTogliereIlContornoSeLeOpzioniLoDicono;
     [Test]
     [TestCase('come l''originale', '0,1,1')]
@@ -149,8 +151,13 @@ begin
     for LY := 1 to 4 do
       for LX := 1 to 2 do
         LSurface.SetPixel(LIndex mod COLUMNS * CELL_WIDTH + LX, LIndex div COLUMNS * CELL_HEIGHT + LY, 1);
+    // the outline on the two sides of the body: as many pixels as the body has
     if AOutlined then
-      LSurface.SetPixel(LIndex mod COLUMNS * CELL_WIDTH, LIndex div COLUMNS * CELL_HEIGHT + 1, 4);
+      for LY := 1 to 4 do
+      begin
+        LSurface.SetPixel(LIndex mod COLUMNS * CELL_WIDTH, LIndex div COLUMNS * CELL_HEIGHT + LY, 4);
+        LSurface.SetPixel(LIndex mod COLUMNS * CELL_WIDTH + 3, LIndex div COLUMNS * CELL_HEIGHT + LY, 4);
+      end;
   end;
   FFont.Init(FFont.AddImage(CELL_WIDTH, CELL_HEIGHT, ASpacing, LSurface), LCodes);
 end;
@@ -273,7 +280,7 @@ end;
 procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeTenereLOriginaleDiUnCarattereCopertoTroppoPoco;
 begin
   MakeFont('AB?', False);
-  FRasterizer.Define(Ord('B'), 3, 5, 2, 40);
+  FRasterizer.Define(Ord('B'), 3, 5, 2, 30);
   Assert.IsTrue(Apply);
   Assert.AreEqual(1, FReport.Missing);
   Assert.AreEqual(0, CharOf(Ord('B')).ImageIndex);
@@ -327,6 +334,16 @@ end;
 procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeNonMettereIlContornoSeLOriginaleNonLoHa;
 begin
   MakeFont('AB', False);
+  Assert.IsFalse(TXcomFontOverlayBuilder.IsOutlined(FFont));
+  Assert.IsTrue(Apply);
+  Assert.AreEqual(1, MaxLevel(1));
+end;
+
+procedure TTestXcomSurfaceFontOverlayBuilder.DovrebbeNonPrendereUnPixelIsolatoPerUnContorno;
+begin
+  // FontGeoSmall.png of OpenXcom has one pixel of level 4 and no outline
+  MakeFont('ABCD', False);
+  FFont.ImageSurface(0).SetPixel(5, 7, XCOM_GLYPH_LEVEL_OUTLINE);
   Assert.IsFalse(TXcomFontOverlayBuilder.IsOutlined(FFont));
   Assert.IsTrue(Apply);
   Assert.AreEqual(1, MaxLevel(1));

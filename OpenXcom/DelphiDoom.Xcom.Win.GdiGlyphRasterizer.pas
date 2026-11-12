@@ -14,9 +14,11 @@ uses
 
 type
   /// <summary>
-  ///   IXcomGlyphRasterizer on GDI: a font, a memory device context and a 32 bit bitmap where one character at a
-  ///   time is written in white on black; the green of a pixel is how much it is covered. The handles belong to
-  ///   the object and go with it; it must be created, used and freed by one thread
+  ///   IXcomGlyphRasterizer on GDI: a font and a memory device context. With antialiasing a scalable font gives
+  ///   the gray levels of its outlines (GetGlyphOutline, 65 levels, not hinted to whole pixels); without it, and
+  ///   for the bitmap fonts of Windows, one character at a time is written in white on black in a 32 bit bitmap
+  ///   (the pixels the system would draw: hinted, either on or off; the green of a pixel is how much it is
+  ///   covered). The handles belong to the object and go with it; it must be created, used and freed by one thread
   /// </summary>
   TXcomGdiGlyphRasterizer = class(TInterfacedObject, IXcomGlyphRasterizer)
   strict private
@@ -26,6 +28,7 @@ type
       MARGIN = 8;
       FIRST_RASTER_CHAR = 33;
       LAST_RASTER_CHAR = 126;
+      GRAY8_LEVELS = 64;
     var
       FDC: HDC;
       FFont: HFONT;
@@ -39,7 +42,13 @@ type
       FOriginY: Integer;
       FScalable: Boolean;
       FFaceName: string;
+      FAntialias: Boolean;
+      FAscent: Integer;
     procedure Release;
+    /// <summary>GetGlyphOutline: the gray levels of the outline of the character, whatever the size</summary>
+    function RasterizeOutline(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+    /// <summary>TextOut in the bitmap: the pixels the system draws (a bitmap font, or no antialiasing)</summary>
+    function RasterizeText(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
   public
     /// <param name="APixelSize">The height of the em square in pixels</param>
     /// <exception cref="EOSError">GDI could not create the context, the font or the bitmap</exception>
@@ -83,6 +92,8 @@ begin
     if not GetTextMetrics(FDC, LMetrics) then
       RaiseLastOSError;
     FScalable := LMetrics.tmPitchAndFamily and (TMPF_TRUETYPE or TMPF_VECTOR) <> 0;
+    FAntialias := AAntialias;
+    FAscent := LMetrics.tmAscent;
     FillChar(LName, SizeOf(LName), 0);
     GetTextFace(FDC, Length(LName), LName);
     FFaceName := LName;
@@ -160,7 +171,50 @@ begin
     (LIndex <> NO_GLYPH);
 end;
 
+function TXcomGdiGlyphRasterizer.RasterizeOutline(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+var
+  LMetrics: TGlyphMetrics;
+  LMatrix: TMat2;
+  LSize: DWORD;
+  LBuffer: TBytes;
+  LPitch: Integer;
+  LX: Integer;
+  LY: Integer;
+begin
+  AGlyph := TXcomGlyphBitmap.Make(0, 0, 0);
+  FillChar(LMatrix, SizeOf(LMatrix), 0);
+  LMatrix.eM11.value := 1;
+  LMatrix.eM22.value := 1;
+  FillChar(LMetrics, SizeOf(LMetrics), 0);
+  LSize := GetGlyphOutlineW(FDC, ACode, GGO_GRAY8_BITMAP, LMetrics, 0, nil, LMatrix);
+  // a space has no bitmap
+  if (LSize = GDI_ERROR) or (LSize = 0) then
+    Exit(False);
+  SetLength(LBuffer, LSize);
+  if GetGlyphOutlineW(FDC, ACode, GGO_GRAY8_BITMAP, LMetrics, LSize, @LBuffer[0], LMatrix) = GDI_ERROR then
+    Exit(False);
+  // the rows are aligned to four bytes and a pixel goes from 0 to 64
+  LPitch := (Integer(LMetrics.gmBlackBoxX) + 3) and not 3;
+  if Integer(LMetrics.gmBlackBoxY) * LPitch > Integer(LSize) then
+    Exit(False);
+  AGlyph := TXcomGlyphBitmap.Make(LMetrics.gmBlackBoxX, LMetrics.gmBlackBoxY, FAscent - LMetrics.gmptGlyphOrigin.Y);
+  for LY := 0 to AGlyph.Height - 1 do
+    for LX := 0 to AGlyph.Width - 1 do
+      AGlyph.Pixels[LY * AGlyph.Width + LX] := Byte(LBuffer[LY * LPitch + LX] * 255 div GRAY8_LEVELS);
+  Result := True;
+end;
+
 function TXcomGdiGlyphRasterizer.Rasterize(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+begin
+  // with antialiasing TextOut follows the font, and many fonts ask for none at the sizes of this screen (an N
+  // of Consolas 9 is a full rectangle): the outline in gray levels is asked for directly
+  if FScalable and FAntialias then
+    Result := RasterizeOutline(ACode, AGlyph)
+  else
+    Result := RasterizeText(ACode, AGlyph);
+end;
+
+function TXcomGdiGlyphRasterizer.RasterizeText(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
 var
   LChar: WideChar;
   LX: Integer;

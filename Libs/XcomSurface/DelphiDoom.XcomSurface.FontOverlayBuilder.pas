@@ -43,7 +43,13 @@ type
     procedure AddPage(AFont: TXcomFont; AEntries: TList<TEntry>; AWidthLimit, ATop, AHeight, ASpacing: Integer;
       var AReport: TXcomFontOverlayReport);
   public
-    /// <summary>Whether the pictures of a font use the levels of the outline (the big and small fonts do)</summary>
+    const
+      /// <summary>A font is outlined when at least one pixel in this many has a level of the outline</summary>
+      OUTLINE_SHARE = 4;
+    /// <summary>
+    ///   Whether the first picture of a font draws its characters with an outline (the big and small fonts do:
+    ///   seven pixels in ten are outline; the fonts of the geoscape have none)
+    /// </summary>
     class function IsOutlined(AFont: TXcomFont): Boolean; static;
     /// <summary>
     ///   Adds the pictures to AFont. False, and the font untouched, when the reference characters (the printable
@@ -90,12 +96,23 @@ end;
 class function TXcomFontOverlayBuilder.IsOutlined(AFont: TXcomFont): Boolean;
 var
   LPixel: Byte;
+  LInk: Integer;
+  LOutline: Integer;
 begin
+  LInk := 0;
+  LOutline := 0;
   if AFont.ImageCount > 0 then
     for LPixel in AFont.ImageSurface(0).Pixels do
+    begin
+      if LPixel <> 0 then
+        Inc(LInk);
       if (LPixel >= XCOM_GLYPH_LEVEL_OUTLINE) and (LPixel <= XCOM_GLYPH_LEVEL_LAST) then
-        Exit(True);
-  Result := False;
+        Inc(LOutline);
+    end;
+  // FontGeoSmall.png has one stray pixel of level 4 in 1615: an outline is most of the pixels of a character
+  Result := LOutline * OUTLINE_SHARE >= LInk;
+  if LInk = 0 then
+    Result := False;
 end;
 
 function TXcomFontOverlayBuilder.Collect(AFont: TXcomFont; AImage: Integer;

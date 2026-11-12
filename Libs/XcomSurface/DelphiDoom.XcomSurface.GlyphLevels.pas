@@ -20,7 +20,10 @@ type
   ///   (4 beside the body, 5 on its corners); the fonts of the geoscape have no outline and only use 1 and 2. A
   ///   rasterized character has 256 levels of coverage and is brought to the same convention: the body takes the
   ///   levels 1 to 3 and the levels 4 and 5 are left to the outline (on the buttons of the geoscape they are
-  ///   darker than the background: a half covered pixel drawn with them is a dark dot, not a lighter edge)
+  ///   darker than the background: a half covered pixel drawn with them is a dark dot, not a lighter edge).
+  ///   The thresholds are low on purpose: at the sizes of a 320 x 200 screen a stroke is thinner than a pixel,
+  ///   and with a threshold at half coverage the diagonals of x, w and M disappeared; a pixel of level 3 beside
+  ///   an outline of level 4 is nearly invisible, so most of the body must be 1 or 2
   /// </summary>
   TXcomGlyphLevels = class sealed
   strict private
@@ -29,9 +32,9 @@ type
   public
     const
       /// <summary>The least coverage of a pixel of the body (level 3), and the least of the levels 2 and 1</summary>
-      BODY_COVERAGE = 80;
-      BODY_LEVEL_2 = 144;
-      BODY_LEVEL_1 = 208;
+      BODY_COVERAGE = 40;
+      BODY_LEVEL_2 = 72;
+      BODY_LEVEL_1 = 120;
       BODY_LEVEL_LAST = 3;
     /// <summary>
     ///   The level of a pixel of the body, or 0 when it is covered too little to be drawn. A character without
