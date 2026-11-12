@@ -38,16 +38,16 @@ Stato di ogni unit dell'originale (righe dell'originale tra parentesi): **si'** 
 | `Greed\r_public` (709) | si' | `FixedMath`, `Render.Tables`, `World`, `Terrain`, `Slopes`, `LinkedPool`, `Render.FrameRenderer` |
 | `Greed\r_render`, `r_walls`, `r_plane`, `r_spans`, `r_conten`, `r_interpolate` (3746) | si' | `Render.*` (699 fotogrammi a zero differenze) |
 | `Greed\d_misc` (179) | parte | `Random` (`MS_RndT`); `MS_Error` = eccezioni, `MS_CheckParm` = `Libs\CommandLine` |
-| `Greed\modplay` (444) | si' (non collegato) | `Sound.Intf`, `TrigTables`, `SoundGeometry`, `SoundEffects`, `Music`, `SongSelector`, `SoundVolumes`, `AudioDevice`; manca il dispositivo nel programma |
+| `Greed\modplay` (444) | si' | `Sound.Intf`, `TrigTables`, `SoundGeometry`, `SoundEffects`, `Music`, `SongSelector`, `SoundVolumes`, `AudioDevice`; nel programma: `PcmMixer` + `Greed\HostAudio` + `Greed\TrackerSongDecoder` (musica della mappa in `-play`) |
 | `Base\bass` (1043) | fuori | `Libs\Mikmod` e uscita PCM di `Libs\GameHost` |
 | `Greed\m_defs` (446) | si' (non collegato) | `Settings`, `SettingsStore` |
-| `Greed\protos_h` (660) | parte | `SaveTypes` (`player_t`, `pevent_t`); le costanti e i prototipi vanno con le unit che li usano |
-| `Greed\constant` (938) | parte | le tabelle del giocatore in `PlayerRules`; mancano le tabelle di armi, mostri, oggetti, nomi delle missioni, testi |
-| `Greed\utils` (2785) | parte | fatti `DoLoadMapData`, `SaveGame`/`LoadGame` (record), `heal`, `medpaks`, `hurt`, `addscore`, `newplayer` (senza mappa), `KillSprite`, `selectsong`; mancano `newmap`, `ActivateSpritesFromMap`, `LoadTextures` (il renderer legge dai lump), `respawnplayer`, `loadweapon`, `MissionBriefing`, `EndGame1..3`, `SaveSprites`/ripristino, `ChangeViewSize` |
-| `Greed\raven` (4719) | parte | fatti `TryDoor`, `TryMove`, `ClipMove`, `Thrust`, `CheckElevators`, `CheckDoors`; mancano `ControlMovement`, `fireweapon` e i proiettili, `CheckItems`, `CheckForSwitch`/`SwitchWall`, `CheckWarps`, `CheckHere`, i trigger, i cheat, `PlayLoop`/`maingame`, `RearView`, demo `recording`/`playback` |
-| `Greed\spawn` (2703) | parte | solo le porte (`DoorSpawner`); manca `SpawnSprite` (ogni tipo di sprite, ascensori, aree di spawn, `DemandLoadMonster`) |
-| `Greed\sprites` (2783) | no | `MoveSprites`, `Int5`..`Int10`, `SP_Thrust`, `SP_TryMove*`, `ActivationSound`, il tiro dei mostri |
-| `Greed\event` (788) | no | `LoadScript`, `RunEvent`, `Process`, zone, trigger, interruttori |
+| `Greed\protos_h` (660) | si' | `SaveTypes` (`player_t`, `pevent_t`), `Game.Constants` (tutte le costanti, prefisso `GREED_`), `Game.Tables` (`IsMonster`, `weapon_t`), `Game.State` (`bonus_t`) |
+| `Greed\constant` (938) | si' | `Game.Tables` (`TGreedGameTables`: armi, stati, dondolio, nomi, testi delle missioni) |
+| `Greed\utils` (2785) | parte | fatti `DoLoadMapData`, `SaveGame`/`LoadGame` (record), `heal`, `medpaks`, `hurt`, `addscore`, `newplayer` (senza mappa), `KillSprite`, `selectsong`, `newmap`, `ActivateSpritesFromMap`, `respawnplayer`, `resetengine`, il riempimento e il ripristino di `savesprites` (`MapSession`), `loadweapon` come dati (`WeaponPictures`); mancano `MissionBriefing`, `EndGame1..3`, `ChangeViewSize` (`LoadTextures` non serve: il renderer legge dai lump) |
+| `Greed\raven` (4719) | parte | fatti `TryDoor`, `TryMove`, `ClipMove`, `Thrust`, `CheckElevators`, `CheckDoors`, `ControlMovement`, `ControlBobbing`, `PlayerCommand`, `fireweapon`, `GetTargetAngle` (`PlayerControl`, `PlayerWeapons`), `CheckItems`, `CheckWarps` (`ItemRules`), `CheckForSwitch`, `SwitchWall`, `CheckHere` (`SwitchRules`), `CheckSpawnAreas`, `CheckBonusItem`, `TimeUpdate`, `NewGoalItem`, `startover`, `EndLevel`, `WarpAnim`, `PrepareNexus`, `JamWarps` (`LevelRules`), `Special_Code` (`CheatCodes`); mancano `PlayLoop`/`UpdateView`/`maingame` (integrazione), `RearView`, `DrawHolo`, demo `recording`/`playback` (fuori) |
+| `Greed\spawn` (2703) | si' | `Spawner` (`TGreedSpawner`: ogni valore di `SpawnSprite`), `Spawner.Intf`, `MonsterPictureFix` (il ciclo di `DemandLoadMonster`), `DoorSpawner` |
+| `Greed\sprites` (2783) | si' | `SpriteLogic` (`MoveSprites`, `Int0`, `Int5`..`Int10`, `HitSprite`...), `SpriteMovement` (`SP_*`), `SpriteScan`, `TargetAngles` (`autoangle2`) |
+| `Greed\event` (788) | si' | `Events` (`TGreedEvents`: `LoadScript`, `RunEvent`, `AddProcess`, `Process`), `Events.Intf` |
 | `Greed\display` (2073) | no | HUD: barra di stato, inventario, bussola, mappa, modalita' heat/motion, `updatedisplay` |
 | `Greed\d_font` (401) | no | font, `writemsg` |
 | `Greed\d_video` (438) | parte | `PictureDecoder` (`pic_t`); mancano `VI_DrawMaskedPic*ToBuffer`, dissolvenze della palette |
@@ -59,5 +59,24 @@ Stato di ogni unit dell'originale (righe dell'originale tra parentesi): **si'** 
 | `Base\i_main`, `i_video`, `i_windows`, `DirectX` (17628) | fuori | `Libs\GameHost` (`Greed\DelphiDoom.Greed.HostWindow`) |
 | `Base\m_screenshot`, `pngimage`, `zlib\` | fuori | `Libs\Png` |
 | `Base\g_delphi` (847) | fuori | RTL; l'aritmetica in `FixedMath` |
-| `Base\scriptengine` (816) | no | lo scanner usato da `event.pas` (da valutare `Libs\Scanner`) |
+| `Base\scriptengine` (816) | parte | `ScriptScanner` (`TGreedScriptScanner`: i soli metodi che `event.pas` usa, su byte) |
 | `LaunchXG`, `FASTMM4` | fuori | il launcher VCL e il gestore di memoria non servono |
+
+## Mondo di gioco (resto di G10, 2026-11-12)
+
+La logica di `raven`, `spawn`, `sprites`, `event` e `utils` e' a classi sopra uno **stato condiviso** `TGreedGameState` (`DelphiDoom.Greed.Game.State`: i globali dell'originale come campi pubblici con i nomi dell'originale, come `TGreedRenderState`; mondo e pool non posseduti; un puntatore a sprite e' l'indice del pool, `GREED_POOL_NIL` = nil, `GREED_SPRITE_PROBE` = `@probe`; `triggers[x][y]` e `switches[x][y]` sono `[x * 64 + y]`; `PlayerNum` = 1) e i contratti di `DelphiDoom.Greed.Game.Intf` (`IGreedSpawner`, `IGreedGameSound`, `IGreedEventRunner`, `IGreedMessages`, `IGreedPlayerHealth`, `IGreedSpriteKiller`); ogni classe ha in piu' un suo host per cio' che chiede fuori (`*.Intf`). La rete (`netmode`, `Net*`), le demo (`recording`/`playback`) e il joystick non sono portati. **Parita'**: per ogni parte un harness in `Tools\Verifica\175-<parte>` (`Compila.ps1`) compila il codice ORIGINALE (routine ritagliate in una unit generata in `%TEMP%`, il resto stub; l'eseguibile e' GUI: si lancia con `cmd /c`) e produce un golden di impronte in `Tests\Data\Greed`; gli scenari stanno in `Tests\Source\DelphiDoom.Tests.Greed.*Scenarios` e sono condivisi tra harness e test.
+
+| Parte | Classi | Parita' con l'originale (zero differenze) |
+|---|---|---|
+| `spawn.pas` | `TGreedSpawner` | 5106 casi singoli (valori 0..700 in sei stati) e 200 sequenze da 120 chiamate (`175-spawn`, `spawn.golden.txt`) |
+| `sprites.pas` | `TGreedSpriteLogic`, `TGreedSpriteMovement`, `TGreedSpriteScan`, `TGreedTargetAngles` | 64 scenari, 14032 tic; copertura dell'originale 99% delle righe (`175-sprites`, `sprites.golden.txt`) |
+| giocatore e armi (`raven.pas`) | `TGreedPlayerControl`, `TGreedPlayerWeapons` (`IGreedControls`: 46 comandi) | 36 scenari, 45000 tic (`175-player`, `player.golden.txt`) |
+| livello (`raven.pas`) | `TGreedItemRules`, `TGreedSwitchRules`, `TGreedLevelRules`, `TGreedCheatCodes` | 32 scenari, 27422 fotogrammi (`175-level`, `level.golden.txt`) |
+| script (`event.pas`) | `TGreedEvents`, `TGreedScriptScanner` | 360 script sintetici per 240 tic; sui dati veri 32 mappe x 3 modi = 96 (`175-events`, `events.golden.txt`, `events.full.golden.txt`) |
+| mappa (`utils.pas`) | `TGreedMapSession`, `TGreedWeaponPictures` | 160 casi (newmap, respawn, save, load), 400 caricamenti di armi (`mapsession.golden.txt`, `weaponpictures.golden.txt`) |
+
+In questi confronti le altre parti sono **finti uguali sui due lati** (per esempio `SpawnSprite` che registra): la parita' del mondo intero e' un passo a parte (`175-world`). Lo script di una mappa e' il lump `lumpMappa - IndexOf('MAP') + IndexOf('SUX')` (non il `Trailer`). **Difetti dell'originale conservati** (i principali): `GetTargetAngle` non trova mai un bersaglio (legge gli `hitpoints` del segnaposto di fine lista); un'area di spawn non pronta e' rimandata di 7000 tic a ogni chiamata; la cassa degli oggetti da' solo gli oggetti 6 e 10; `ScanY` verso sud non ha limite; `playerhit` resta dal colpo precedente; chi corre a piu' di 16 unita' per tic attraversa i muri (`TryMove`); una partita caricata riparte dal tic 0. **Differenze volute**: una casella fuori dalla mappa legge 0 e non si scrive; l'arma 6 raccolta (l'originale scriveva in `player.bodycount`); un'area di spawn di tipo sconosciuto non fa nulla; pool pieno, piu' di 32 porte o 96 aree, script con `MS_Error` sono eccezioni `EGreed*`. **Prestazioni**: `MoveSprites` 36-41 microsecondi per tic contro 23-24 dell'originale (le chiamate a `IGreedWorld` per casella): lo 0,1% di un tic, ma 1,6 volte.
+
+**Audio nel programma**: `TGreedPcmMixer` (`IGreedSoundDevice`: WAV PCM 8/16 bit con volume e pan lineare come BASS, canzone da `IGreedSongDecoder`, statistiche) + `Greed\DelphiDoom.Greed.TrackerSongDecoder` (tracker di `Libs\Mikmod`) + `Greed\DelphiDoom.Greed.HostAudio` (`IGameHostPcmSource` dell'uscita waveOut di `Libs\GameHost`). `Greed32 -play N -musicvol 6 -sfxvol 6 -audiostats` (demo 2.0, mappa 0, 420 tic): dispositivo aperto, 254 buffer suonati, 260096 frame con musica su 264192, picco 339. Il parser WAV di `Libs\Audio` legge a parole lunghe e non trova un chunk `data` negli ultimi 8 byte del file (un WAV di pochi campioni e' rifiutato: i lump del gioco sono piu' lunghi).
+
+**Demo 1.016**: le sue mappe `.LVL` hanno 35 piani (143360 byte), il codice del gioco ne legge 18 e l'originale xGreed con quei dati si ferma prima (`MCURSOR not found`): `TGreedMapLoader` le riconosce dalla dimensione e lo dice (`SGreedMapOldDemo`).
