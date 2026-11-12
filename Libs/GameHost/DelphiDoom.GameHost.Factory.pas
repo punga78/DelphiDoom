@@ -1,7 +1,7 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: game host library - the factory of the window and of GDI         }
-{  The only place that knows the classes of the window                          }
+{  DelphiDoom: game host library - the factory of the window, GDI and sound     }
+{  The only place that knows the classes of the window and of the sound output  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -11,7 +11,8 @@ unit DelphiDoom.GameHost.Factory;
 interface
 
 uses
-  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.Window;
+  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Audio.Intf,
+  DelphiDoom.GameHost.Win.Window;
 
 type
   /// <summary>
@@ -28,13 +29,20 @@ type
       AHideCursor: Boolean): TGameHostWinWindow; static;
     /// <summary>The display on GDI in the window, which must outlive it</summary>
     class function CreateGdiDevice(AWindow: TGameHostWinWindow): IGameHostVideoDevice; static;
+    /// <summary>The sound output of Windows (waveOut), closed: Open starts to ask a source for samples</summary>
+    class function CreatePcmOutput: IGameHostPcmOutput; static;
   end;
 
 implementation
 
 uses
   DelphiDoom.GameHost.Win.Keyboard, DelphiDoom.GameHost.Win.MessageTranslator,
-  DelphiDoom.GameHost.Win.GdiVideoDevice;
+  DelphiDoom.GameHost.Win.GdiVideoDevice, DelphiDoom.GameHost.Win.PcmOutput;
+
+class function TGameHostFactory.CreatePcmOutput: IGameHostPcmOutput;
+begin
+  Result := TGameHostWinPcmOutput.Create;
+end;
 
 class function TGameHostFactory.CreateWindow(const ATitle: string; const AEvents: IGameHostEventSink;
   AHideCursor: Boolean): TGameHostWinWindow;

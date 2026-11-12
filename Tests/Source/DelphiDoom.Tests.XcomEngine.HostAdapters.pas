@@ -17,7 +17,7 @@ uses
   DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.MessageTranslator, DelphiDoom.Xcom.HostEventSink,
   DelphiDoom.Xcom.HostLog, DelphiDoom.Xcom.HostVideoDevice, DelphiDoom.Xcom.HostShaderLoader,
   DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.Yaml.Factory, DelphiDoom.Clock.Intf,
-  DelphiDoom.Xcom.HostClock;
+  DelphiDoom.Xcom.HostClock, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.Xcom.HostPcmOutput;
 
 type
   /// <summary>A keyboard that answers what the test says</summary>
@@ -98,6 +98,14 @@ type
     [Test]
     procedure LOrologioDovrebbeAspettareConQuelloDelMotore;
     [Test]
+    procedure LUscitaAudioDovrebbeChiedereICampioniAlMixer;
+    [Test]
+    procedure LUscitaAudioDovrebbeSuonareSilenzioSeIlMixerNonCEPiu;
+    [Test]
+    procedure LUscitaAudioGiaApertaNonDovrebbeRiaprirsi;
+    [Test]
+    procedure LUscitaAudioCheNonSiApreDovrebbeDareFalso;
+    [Test]
     procedure IlCaricatoreDovrebbeDareIDueProgrammiDelFile;
     [Test]
     procedure IlCaricatoreDovrebbeDireCheIlFileManca;
@@ -113,6 +121,29 @@ type
     function ScaledSteps(ARate, AScale: Integer): Integer;
     procedure Sleep(AMilliseconds: Integer);
     procedure Wait(AMilliseconds: Integer);
+  end;
+
+  /// <summary>A sound output of the host without a device: the test asks its source for samples</summary>
+  TFakeHostPcmOutput = class(TInterfacedObject, IGameHostPcmOutput)
+  strict private
+    [weak] FSource: IGameHostPcmSource;
+    FOpen: Boolean;
+  public
+    Refuses: Boolean;
+    Opens: Integer;
+    Rate: Integer;
+    function Open(ARate: Integer; const ASource: IGameHostPcmSource): Boolean;
+    procedure Close;
+    function IsOpen: Boolean;
+    function CompletedBuffers: Integer;
+    /// <summary>What the device thread does: four bytes of the source</summary>
+    function Pull: Cardinal;
+  end;
+
+  /// <summary>A mixer whose samples are all the same byte</summary>
+  TFakePcmSource = class(TInterfacedObject, IXcomPcmSource)
+  public
+    procedure Render(ABuffer: PByte; ABytes: Integer);
   end;
 
   /// <summary>A catalog with one shader file, or none</summary>
@@ -510,6 +541,128 @@ begin
   Assert.AreEqual(16, LEngine.Slept);
   LClock.Delay($FFFFFFFF);
   Assert.AreEqual(High(Integer), LEngine.Slept, 'un''attesa senza segno non diventa negativa');
+end;
+
+procedure TTestXcomHostAdapters.LUscitaAudioDovrebbeChiedereICampioniAlMixer;
+var
+  LHost: TFakeHostPcmOutput;
+  LHostRef: IGameHostPcmOutput;
+  LOutput: IXcomPcmOutput;
+  LMixer: IXcomPcmSource;
+begin
+  LHost := TFakeHostPcmOutput.Create;
+  LHostRef := LHost;
+  LOutput := TXcomHostPcmOutput.Create(LHostRef);
+  LMixer := TFakePcmSource.Create;
+  Assert.IsFalse(LOutput.IsOpen);
+  Assert.IsTrue(LOutput.Open(44100, LMixer));
+  Assert.IsTrue(LOutput.IsOpen);
+  Assert.AreEqual(44100, LHost.Rate);
+  Assert.AreEqual(Cardinal($5A5A5A5A), LHost.Pull);
+  LOutput.Close;
+  Assert.IsFalse(LHostRef.IsOpen);
+  Assert.WillRaise(
+    procedure
+    begin
+      TXcomHostPcmOutput.Create(nil);
+    end, EArgumentNilException);
+end;
+
+procedure TTestXcomHostAdapters.LUscitaAudioDovrebbeSuonareSilenzioSeIlMixerNonCEPiu;
+var
+  LHost: TFakeHostPcmOutput;
+  LHostRef: IGameHostPcmOutput;
+  LOutput: IXcomPcmOutput;
+  LMixer: IXcomPcmSource;
+begin
+  // the mixer owns the output: the output must not keep the mixer alive, nor ask one that is gone
+  LHost := TFakeHostPcmOutput.Create;
+  LHostRef := LHost;
+  LOutput := TXcomHostPcmOutput.Create(LHostRef);
+  LMixer := TFakePcmSource.Create;
+  LOutput.Open(22050, LMixer);
+  LMixer := nil;
+  Assert.AreEqual(Cardinal(0), LHost.Pull);
+end;
+
+procedure TTestXcomHostAdapters.LUscitaAudioGiaApertaNonDovrebbeRiaprirsi;
+var
+  LHost: TFakeHostPcmOutput;
+  LHostRef: IGameHostPcmOutput;
+  LOutput: IXcomPcmOutput;
+  LMixer: IXcomPcmSource;
+begin
+  LHost := TFakeHostPcmOutput.Create;
+  LHostRef := LHost;
+  LOutput := TXcomHostPcmOutput.Create(LHostRef);
+  LMixer := TFakePcmSource.Create;
+  Assert.IsTrue(LOutput.Open(44100, LMixer));
+  Assert.IsTrue(LOutput.Open(22050, LMixer));
+  Assert.AreEqual(1, LHost.Opens);
+  Assert.AreEqual(44100, LHost.Rate);
+  Assert.AreEqual(Cardinal($5A5A5A5A), LHost.Pull, 'la sorgente resta quella della prima apertura');
+end;
+
+procedure TTestXcomHostAdapters.LUscitaAudioCheNonSiApreDovrebbeDareFalso;
+var
+  LHost: TFakeHostPcmOutput;
+  LHostRef: IGameHostPcmOutput;
+  LOutput: IXcomPcmOutput;
+  LMixer: IXcomPcmSource;
+begin
+  LHost := TFakeHostPcmOutput.Create;
+  LHostRef := LHost;
+  LHost.Refuses := True;
+  LOutput := TXcomHostPcmOutput.Create(LHostRef);
+  LMixer := TFakePcmSource.Create;
+  Assert.IsFalse(LOutput.Open(44100, LMixer));
+  Assert.IsFalse(LOutput.IsOpen);
+end;
+
+{ TFakeHostPcmOutput }
+
+function TFakeHostPcmOutput.Open(ARate: Integer; const ASource: IGameHostPcmSource): Boolean;
+begin
+  Inc(Opens);
+  Result := not Refuses;
+  if not Result then
+    Exit;
+  Rate := ARate;
+  FSource := ASource;
+  FOpen := True;
+end;
+
+procedure TFakeHostPcmOutput.Close;
+begin
+  FOpen := False;
+  FSource := nil;
+end;
+
+function TFakeHostPcmOutput.IsOpen: Boolean;
+begin
+  Result := FOpen;
+end;
+
+function TFakeHostPcmOutput.CompletedBuffers: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeHostPcmOutput.Pull: Cardinal;
+var
+  LSource: IGameHostPcmSource;
+begin
+  Result := $FFFFFFFF;
+  LSource := FSource;
+  if LSource <> nil then
+    LSource.Render(@Result, SizeOf(Result));
+end;
+
+{ TFakePcmSource }
+
+procedure TFakePcmSource.Render(ABuffer: PByte; ABytes: Integer);
+begin
+  FillChar(ABuffer^, ABytes, $5A);
 end;
 
 { TFakeEngineClock }

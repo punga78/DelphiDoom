@@ -68,7 +68,8 @@ uses
   DelphiDoom.Clock.Factory,
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
-  DelphiDoom.Xcom.Win.PcmOutput in 'DelphiDoom.Xcom.Win.PcmOutput.pas',
+  DelphiDoom.Xcom.HostPcmOutput in 'DelphiDoom.Xcom.HostPcmOutput.pas',
+  DelphiDoom.GameHost.Audio.Intf,
   DelphiDoom.XcomAudio.Intf;
 
 const
@@ -263,7 +264,7 @@ begin
   Result := (AArguments.Settings.DataFolder <> '') and (AArguments.Settings.GameFolder <> '');
 end;
 
-procedure PrintAudio(const AMeter: IXcomMixerMeter; const AOutput: TXcomWinPcmOutput);
+procedure PrintAudio(const AMeter: IXcomMixerMeter; const AOutput: IGameHostPcmOutput);
 var
   LStatistics: TXcomMixerStatistics;
 begin
@@ -281,7 +282,7 @@ var
   LDevice: IXcomVideoDevice;
   LGame: TXcomGame;
   LSettings: TXcomGameSettings;
-  LOutput: TXcomWinPcmOutput;
+  LOutput: IGameHostPcmOutput;
   LOutputRef: IXcomPcmOutput;
   LMeter: IXcomMixerMeter;
   LClock: IClock;
@@ -289,8 +290,9 @@ var
 begin
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
-  LOutput := TXcomWinPcmOutput.Create;
-  LOutputRef := LOutput;
+  // waveOut of Libs\GameHost, which the mixer of the game sees through its adapter
+  LOutput := TGameHostFactory.CreatePcmOutput;
+  LOutputRef := TXcomHostPcmOutput.Create(LOutput);
   LSettings := AArguments.Settings;
   LSettings.WindowMode := True;
   LSettings.AudioOutput := LOutputRef;

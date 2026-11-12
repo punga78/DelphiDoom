@@ -29,6 +29,8 @@ uses
   DelphiDoom.GameHost.Win.Window in '..\Libs\GameHost\DelphiDoom.GameHost.Win.Window.pas',
   DelphiDoom.GameHost.Win.WindowDevice in '..\Libs\GameHost\DelphiDoom.GameHost.Win.WindowDevice.pas',
   DelphiDoom.GameHost.Win.GdiVideoDevice in '..\Libs\GameHost\DelphiDoom.GameHost.Win.GdiVideoDevice.pas',
+  DelphiDoom.GameHost.Audio.Intf in '..\Libs\GameHost\DelphiDoom.GameHost.Audio.Intf.pas',
+  DelphiDoom.GameHost.Win.PcmOutput in '..\Libs\GameHost\DelphiDoom.GameHost.Win.PcmOutput.pas',
   DelphiDoom.GameHost.Factory in '..\Libs\GameHost\DelphiDoom.GameHost.Factory.pas',
   DelphiDoom.Tests.GameHost.Fakes in 'Source\DelphiDoom.Tests.GameHost.Fakes.pas',
   DelphiDoom.Tests.GameHost.PictureLayout in 'Source\DelphiDoom.Tests.GameHost.PictureLayout.pas',

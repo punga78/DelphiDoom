@@ -1,25 +1,25 @@
 ﻿{******************************************************************************}
 {                                                                              }
-{  DelphiDoom: Xcom32 - the sound output of Windows (waveOut) that asks the    }
-{  mixer for samples, as the audio callback of SDL does                         }
+{  DelphiDoom: game host library - the sound output of Windows (waveOut) that  }
+{  asks the mixer of a game for samples, as the audio callback of SDL does      }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Xcom.Win.PcmOutput;
+unit DelphiDoom.GameHost.Win.PcmOutput;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.MMSystem, System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Intf;
+  Winapi.Windows, Winapi.MMSystem, System.SysUtils, System.Classes, DelphiDoom.GameHost.Audio.Intf;
 
 type
   /// <summary>
-  ///   IXcomPcmOutput on waveOut: four buffers of 1024 frames (16 bit stereo) that a thread keeps full by asking the
-  ///   source, so the music goes on while the game draws. The source is not owned (a weak reference: the mixer owns
-  ///   the output, not the other way round) and stops being asked before Close returns
+  ///   IGameHostPcmOutput on waveOut: four buffers of 1024 frames (16 bit stereo) that a thread keeps full by
+  ///   asking the source, so the music goes on while the game draws. The source is not owned (a weak reference:
+  ///   the mixer owns the output, not the other way round) and stops being asked before Close returns
   /// </summary>
-  TXcomWinPcmOutput = class(TInterfacedObject, IXcomPcmOutput)
+  TGameHostWinPcmOutput = class(TInterfacedObject, IGameHostPcmOutput)
   strict private
     const
       BUFFER_COUNT = 4;
@@ -28,14 +28,14 @@ type
     type
       TPumpThread = class(TThread)
       strict private
-        FOwner: TXcomWinPcmOutput;
+        FOwner: TGameHostWinPcmOutput;
       protected
         procedure Execute; override;
       public
-        constructor Create(AOwner: TXcomWinPcmOutput);
+        constructor Create(AOwner: TGameHostWinPcmOutput);
       end;
     var
-      [weak] FSource: IXcomPcmSource;
+      [weak] FSource: IGameHostPcmSource;
       FWave: HWAVEOUT;
       FHeaders: array[0..BUFFER_COUNT - 1] of TWaveHdr;
       FBuffers: array[0..BUFFER_COUNT - 1] of TBytes;
@@ -46,24 +46,24 @@ type
     procedure Fill(AIndex: Integer);
   public
     destructor Destroy; override;
-    function Open(ARate: Integer; const ASource: IXcomPcmSource): Boolean;
+    function Open(ARate: Integer; const ASource: IGameHostPcmSource): Boolean;
     procedure Close;
     function IsOpen: Boolean;
     /// <summary>The buffers the device has finished playing since it was opened (proof that the output consumes)</summary>
-    property CompletedBuffers: Integer read FCompleted;
+    function CompletedBuffers: Integer;
   end;
 
 implementation
 
-{ TXcomWinPcmOutput.TPumpThread }
+{ TGameHostWinPcmOutput.TPumpThread }
 
-constructor TXcomWinPcmOutput.TPumpThread.Create(AOwner: TXcomWinPcmOutput);
+constructor TGameHostWinPcmOutput.TPumpThread.Create(AOwner: TGameHostWinPcmOutput);
 begin
   inherited Create(False);
   FOwner := AOwner;
 end;
 
-procedure TXcomWinPcmOutput.TPumpThread.Execute;
+procedure TGameHostWinPcmOutput.TPumpThread.Execute;
 var
   LIndex: Integer;
 begin
@@ -79,17 +79,17 @@ begin
   end;
 end;
 
-{ TXcomWinPcmOutput }
+{ TGameHostWinPcmOutput }
 
-destructor TXcomWinPcmOutput.Destroy;
+destructor TGameHostWinPcmOutput.Destroy;
 begin
   Close;
   inherited Destroy;
 end;
 
-procedure TXcomWinPcmOutput.Fill(AIndex: Integer);
+procedure TGameHostWinPcmOutput.Fill(AIndex: Integer);
 var
-  LSource: IXcomPcmSource;
+  LSource: IGameHostPcmSource;
 begin
   LSource := FSource;
   if LSource <> nil then
@@ -99,7 +99,7 @@ begin
   waveOutWrite(FWave, @FHeaders[AIndex], SizeOf(TWaveHdr));
 end;
 
-function TXcomWinPcmOutput.Open(ARate: Integer; const ASource: IXcomPcmSource): Boolean;
+function TGameHostWinPcmOutput.Open(ARate: Integer; const ASource: IGameHostPcmSource): Boolean;
 var
   LFormat: TWaveFormatEx;
   LIndex: Integer;
@@ -141,7 +141,7 @@ begin
   Result := True;
 end;
 
-procedure TXcomWinPcmOutput.Close;
+procedure TGameHostWinPcmOutput.Close;
 var
   LIndex: Integer;
 begin
@@ -161,9 +161,14 @@ begin
   FSource := nil;
 end;
 
-function TXcomWinPcmOutput.IsOpen: Boolean;
+function TGameHostWinPcmOutput.IsOpen: Boolean;
 begin
   Result := FOpen;
+end;
+
+function TGameHostWinPcmOutput.CompletedBuffers: Integer;
+begin
+  Result := FCompleted;
 end;
 
 end.
