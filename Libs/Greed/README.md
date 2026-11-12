@@ -8,7 +8,7 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, comp
 
 **Licenza.** Le unit di xGreed hanno l'intestazione GPL v2 o successiva; il codice originale Raven 3D e' (c) 1996 Softdisk Publishing e il repository di xGreed non ha un file di licenza: **da chiarire con l'autore** (decisione di prodotto, non bloccante per queste fette, che leggono dati e non portano il motore). Le unit portate lo dichiarano nell'intestazione. `DelphiDoom.Greed.PstCorrection` e' la copia dei 10463 byte di `pst_corrected` di `g_fixlump.pas`. I dati di gioco (`GREED.BLO`, le musiche) non sono nel repository.
 
-## Stato: fette G0-G4 (issue #175)
+## Stato: fette G0-G4 (issue #175; l'elenco completo e lo stato sono sopra e in CLAUDE.md)
 
 | Fetta | Fatto | Dove |
 |---|---|---|
@@ -28,7 +28,7 @@ Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, comp
 | G12 (parziale) | ciclo di gioco a 70 tic, finestra GDI e vista in prima persona a 640x400 (`-topdown` per la vista dall'alto): `Greed32 -play` | `Frame.Intf`, `GameLoop`, `TopDownRenderer`, `MovementHost`, `Greed\DelphiDoom.Greed.HostWindow` (sulla finestra di `Libs\GameHost`), `AutoPlayInput` |
 | G4 | prova visiva: `Greed32 -data <cartella> [-list] [-map N] [-lump nome] [-png file]` | `PngEncoder`, `MapRenderer`, `PngExporter`, `Greed\` |
 
-**Non fatto (G5-G12)**: effetti sonori (`Libs\Sndfile`+`Libs\Audio`, volume e pan per distanza), musica (`Libs\Mikmod` al posto di BASS), asm di `r_public`/`g_delphi` -> `TFixedMath`, salvataggi (`player_t` packed), `LaunchXG` e configurazione, il mondo e la logica (`raven`, `spawn`, `sprites`: G10, XL), il renderer a livello di fotogramma e i FLI (G11), la presentazione del fotogramma senza DirectDraw (`IFramePresenter`, tolto `DirectX.pas`), il tempo e l'input al posto di `timer.pas`/`i_main`, Win64. `Greed32` non apre finestre e non gioca.
+**Stato (2026-11-12)**: tutte le unit di xGreed sono portate (censimento in [CLAUDE.md](CLAUDE.md)) e `Greed32` senza argomenti, con `GREED.BLO` accanto all'eseguibile, e' il gioco: titoli, menu, briefing, livelli, finali, salva e carica. Fette oltre la G4 (ognuna con parita' sull'originale): G5 audio (`SoundEffects`, `Music`, `PcmMixer`), G6 `FixedMath`, G7 salvataggi, G8 impostazioni, G9 mondo, G10 logica (`Spawner`, `SpriteLogic`, `PlayerControl`, `PlayerWeapons`, `ItemRules`, `SwitchRules`, `LevelRules`, `CheatCodes`, `Events`, `MapSession`), G11 renderer, HUD (`Canvas`, `Font`, `Hud`...), menu (`Menu*`), filmati (`FliDecoder`, `FliPlayer`), introduzione (`Intro`, `Briefing`, `EndGame`), `TGreedGame` e `TGreedApplication`. **Non fatto**: `RearView` (rendering), rete, demo registrate, joystick e mouse, Win64.
 
 ## Mappa nome Pascal originale -> classe
 
@@ -84,4 +84,4 @@ Il `GREED.BLO` del gioco completo (19.726.074 byte, forniti dall'utente: `Refere
 
 ## Da collegare / da fare
 
-`Greed32` e' solo una prova visiva dei dati. Per G5-G12 servono ancora: l'uscita video (`IFramePresenter` con `TFixedMath` per la matematica del renderer), il tempo (`Libs\Clock`) e l'input (`Libs\Input`), l'audio (effetti: i lump di `soundeffects` sembrano WAV completi, da verificare; musica `SONG*.S3M`), i salvataggi (`player_t`), il mondo e la logica, il renderer e i FLI. Dalle demo: la 2.0 e' completa per le fette fatte; la 1.016 si legge (archivio, immagini, muri, flat, sprite) ma le sue mappe `.LVL` hanno un altro layout (143360 byte) e non sono lette.
+Vedi lo stato sopra: resta il rendering di `RearView`, la rete, le demo registrate, joystick e mouse, Win64; la demo 1.016 ha mappe a 35 piani che il gioco non legge.
