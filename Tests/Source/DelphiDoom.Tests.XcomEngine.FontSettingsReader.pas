@@ -36,6 +36,8 @@ type
     [Test]
     procedure DovrebbeAccettareUnFileSenzaNome;
     [Test]
+    procedure DovrebbeLeggereLaTolleranzaScrittaELaRiduzione;
+    [Test]
     procedure DovrebbeLeggereIlContornoSpento;
     [Test]
     procedure DovrebbeLeggerePiuFontNellOrdineDelFile;
@@ -134,8 +136,23 @@ begin
   Assert.IsTrue(LFonts[0].Face.Antialias);
   Assert.AreEqual(Ord(goAuto), Ord(LFonts[0].Outline));
   Assert.IsFalse(LFonts[0].HasSpacing);
-  Assert.AreEqual(XCOM_FONT_DEFAULT_TOLERANCE, LFonts[0].Tolerance);
+  Assert.AreEqual(XCOM_FONT_AUTO_TOLERANCE, LFonts[0].Tolerance);
+  Assert.IsFalse(LFonts[0].Shrink);
   Assert.AreEqual(0, LFonts[0].OffsetY);
+end;
+
+procedure TTestXcomFontSettingsReader.DovrebbeLeggereLaTolleranzaScrittaELaRiduzione;
+var
+  LFonts: TArray<TXcomFontOverlaySettings>;
+begin
+  LFonts := Read('fonts:'#10'  - id: FONT_BIG'#10'    name: Consolas'#10'    size: 13'#10'    tolerance: 0'#10 +
+    '    shrink: true'#10'  - id: FONT_SMALL'#10'    name: Consolas'#10'    size: 9'#10'    tolerance: -30'#10);
+  Assert.AreEqual(2, Integer(Length(LFonts)));
+  // a tolerance that is written is a percent, also 0; a negative one is 0, not the default
+  Assert.AreEqual(0, LFonts[0].Tolerance);
+  Assert.IsTrue(LFonts[0].Shrink);
+  Assert.AreEqual(0, LFonts[1].Tolerance);
+  Assert.IsFalse(LFonts[1].Shrink);
 end;
 
 procedure TTestXcomFontSettingsReader.DovrebbeAccettareUnFileSenzaNome;

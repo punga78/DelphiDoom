@@ -181,6 +181,16 @@ begin
   if (FText <> '') and (FFont = FBig) and
     ((GetTextWidth > Width) or (GetTextHeight > Height)) and (FText[Length(FText)] <> '.') then
   begin
+    // Issue 184: a big font that got the characters of a font of the system is a little wider than the
+    // pictures of the game. A text that fitted with those is drawn with them, before going to the small font
+    // (the six time buttons of the geoscape: their small font has no lower case letters)
+    if Assigned(FBig.Original) then
+    begin
+      FFont := FBig.Original;
+      ProcessText;
+      if (GetTextWidth <= Width) and (GetTextHeight <= Height) then
+        Exit;
+    end;
     FFont := FSmall;
     ProcessText;
   end;

@@ -27,7 +27,9 @@ type
   ///       antialias: true     # false: the pixels of the system, on or off (bitmap fonts, sizes the font is hinted for)
   ///       outline: true       # the dark outline; without the key: as the original font
   ///       spacing: -1         # pixels between two characters; without the key: from the original font
-  ///       tolerance: 25       # percent the font may exceed the original cell before it is refused
+  ///       tolerance: 25       # percent the font may exceed the original cell before it is refused; without the
+  ///                           # key: 25 percent or 2 pixels, whichever is more
+  ///       shrink: false       # true: a font that does not fit is tried one pixel smaller until it does
   ///       offsetY: 0          # rows to move the characters down
   ///   </code>
   ///   A font of the game that is not listed keeps its pictures. An entry that cannot be used (no id, neither
@@ -82,7 +84,13 @@ begin
       end;
       LSettings.HasSpacing := TXcomYamlFields.Exists(LItem, 'spacing');
       LSettings.Spacing := TXcomYamlFields.ReadInteger(LItem, 'spacing', 0);
-      LSettings.Tolerance := TXcomYamlFields.ReadInteger(LItem, 'tolerance', XCOM_FONT_DEFAULT_TOLERANCE);
+      if TXcomYamlFields.Exists(LItem, 'tolerance') then
+      begin
+        LSettings.Tolerance := TXcomYamlFields.ReadInteger(LItem, 'tolerance', 0);
+        if LSettings.Tolerance < 0 then
+          LSettings.Tolerance := 0;
+      end;
+      LSettings.Shrink := TXcomYamlFields.ReadBoolean(LItem, 'shrink', False);
       LSettings.OffsetY := TXcomYamlFields.ReadInteger(LItem, 'offsetY', 0);
       LReason := '';
       if LSettings.FontId = '' then

@@ -19,8 +19,8 @@ type
   /// <summary>
   ///   IXcomFontOverlay for the fonts listed in the options: opens the font of the system, checks at the start
   ///   that it fits the cells of the original font and adds its characters. A font that is not there, or is too
-  ///   tall or too wide, leaves the original font as it is, with a warning in the log; so does a single character
-  ///   that the font does not have. The rasterizer of a font lives only during its Apply (the loading thread)
+  ///   tall or too wide (and not allowed to shrink until it fits), leaves the original font as it is, with a
+  ///   warning in the log; so does a single character that the font does not have. The rasterizer of a font lives only during its Apply (the loading thread)
   /// </summary>
   TXcomRasterFontOverlay = class(TInterfacedObject, IXcomFontOverlay)
   strict private
@@ -56,6 +56,7 @@ const
   SNoGlyphs = 'font %s: %s has none of the characters of the font: the original font stays';
   SApplied = 'font %s: %s, %d characters (%d x %d); from the original font: %d missing, %d too wide; %d cut';
   SPartial = 'font %s: %d characters are not in %s or are too wide and stay the original ones';
+  SShrunk = 'font %s: too large for the cells at %d pixels, reduced to %d';
 
 constructor TXcomRasterFontOverlay.Create(const ASettings: TArray<TXcomFontOverlaySettings>;
   const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog; const ADisplay: IXcomDetailLayers;
@@ -97,6 +98,9 @@ var
   LBuilder: TXcomFontOverlayBuilder;
   LReport: TXcomFontOverlayReport;
   LName: string;
+  LAsked: Integer;
+  LApplied: Boolean;
+  LRetry: Boolean;
 begin
   LFound := False;
   // the last entry of a font wins, as a key written twice
@@ -108,17 +112,28 @@ begin
     end;
   if not LFound then
     Exit;
-  LName := Describe(LSettings.Face);
-  LRasterizer := FFactory.CreateRasterizer(LSettings.Face, 1, LReason);
-  if not Assigned(LRasterizer) then
-  begin
-    Say(SLevelWarning, Format(SNotFound, [AFontId, LName, LReason]));
-    Exit;
-  end;
+  LAsked := LSettings.Face.Size;
   LBuilder := TXcomFontOverlayBuilder.Create;
   try
-    if LBuilder.Apply(AFont, LRasterizer, LSettings, LReport) then
+    repeat
+      LName := Describe(LSettings.Face);
+      LRasterizer := FFactory.CreateRasterizer(LSettings.Face, 1, LReason);
+      if not Assigned(LRasterizer) then
+      begin
+        Say(SLevelWarning, Format(SNotFound, [AFontId, LName, LReason]));
+        Exit;
+      end;
+      LApplied := LBuilder.Apply(AFont, LRasterizer, LSettings, LReport);
+      // the option of the font: one pixel smaller until it fits the cells, instead of the refusal
+      LRetry := (not LApplied) and LSettings.Shrink and (LReport.Refusal in [frTooTall, frTooWide])
+        and (LSettings.Face.Size > XCOM_FONT_SMALLEST_SIZE);
+      if LRetry then
+        Dec(LSettings.Face.Size);
+    until not LRetry;
+    if LApplied then
     begin
+      if LSettings.Face.Size <> LAsked then
+        Say(SLevelInfo, Format(SShrunk, [AFontId, LAsked, LSettings.Face.Size]));
       Say(SLevelInfo, Format(SApplied, [AFontId, LName, LReport.Replaced, LReport.Width, LReport.Height,
         LReport.Missing, LReport.TooWide, LReport.Clipped]));
       if LReport.Missing + LReport.TooWide > 0 then
