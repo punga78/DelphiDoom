@@ -297,6 +297,7 @@ uses
   gl_automap,
   DelphiDoom.GlAutomap.Factory,
   DelphiDoom.GlScene.Factory,
+  DelphiDoom.Engine.GlScene.FlatCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
 {$ENDIF}
   DelphiDoom.Automap.Intf,
@@ -1198,8 +1199,9 @@ end;
 
 procedure ComposeGlScene;
 begin
-  // a class and not an interface: gl_render calls it for every wall, flat and sprite of a frame, and owns it
+  // classes and not interfaces: gl_render calls them for every wall, flat and sprite of a frame, and owns them
   gld_ConfigureDrawList(TGlSceneFactory.CreateDrawList(gld_SceneItemSizes));
+  gld_ConfigureFlatCollector(TEngineGlSceneFlatCollector.Create(gld_SceneDrawList, gld_LightTable));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);

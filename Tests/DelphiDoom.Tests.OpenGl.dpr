@@ -51,6 +51,8 @@ uses
   DelphiDoom.GlScene.Types in '..\Libs\GlScene\DelphiDoom.GlScene.Types.pas',
   DelphiDoom.GlScene.DrawList in '..\Libs\GlScene\DelphiDoom.GlScene.DrawList.pas',
   DelphiDoom.GlScene.Factory in '..\Libs\GlScene\DelphiDoom.GlScene.Factory.pas',
+  DelphiDoom.GlScene.Light in '..\Libs\GlScene\DelphiDoom.GlScene.Light.pas',
+  DelphiDoom.Tests.OpenGl.SceneLight in 'Source\DelphiDoom.Tests.OpenGl.SceneLight.pas',
   DelphiDoom.Tests.OpenGl.OldSceneDrawList in 'Source\DelphiDoom.Tests.OpenGl.OldSceneDrawList.pas',
   DelphiDoom.Tests.OpenGl.SceneDrawList in 'Source\DelphiDoom.Tests.OpenGl.SceneDrawList.pas',
   DelphiDoom.Tests.OpenGl.OldFlatCarver in 'Source\DelphiDoom.Tests.OpenGl.OldFlatCarver.pas',

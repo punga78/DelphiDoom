@@ -43,7 +43,9 @@ uses
   DelphiDoom.GlLevel.Types,
   DelphiDoom.GlLevel.Intf,
   DelphiDoom.GlScene.Types,
-  DelphiDoom.GlScene.DrawList;
+  DelphiDoom.GlScene.DrawList,
+  DelphiDoom.Engine.GlScene.Types,
+  DelphiDoom.Engine.GlScene.FlatCollector;
 
 //==============================================================================
 //
@@ -64,6 +66,35 @@ function gld_SceneItemSizes: TGlSceneItemSizes;
 //
 //==============================================================================
 procedure gld_ConfigureDrawList(const ADrawList: TGlSceneDrawList);
+
+//==============================================================================
+//
+// gld_SceneDrawList
+//
+// The draw list given with gld_ConfigureDrawList: the composition root gives it to the
+// classes that collect the scene
+//
+//==============================================================================
+function gld_SceneDrawList: TGlSceneDrawList;
+
+//==============================================================================
+//
+// gld_LightTable
+//
+// The light table of the renderer (gamma, light level), for the classes that collect the scene
+//
+//==============================================================================
+function gld_LightTable: PGlSceneLightTable;
+
+//==============================================================================
+//
+// gld_ConfigureFlatCollector
+//
+// The class that collects the flats of a frame (gld_AddPlane): gl_render owns it from then on.
+// Without it the level stops with I_Error
+//
+//==============================================================================
+procedure gld_ConfigureFlatCollector(const ACollector: TEngineGlSceneFlatCollector);
 
 //==============================================================================
 //
@@ -311,6 +342,7 @@ uses
   r_renderstyle,
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
+  DelphiDoom.GlScene.Light,
   w_wad,
   z_zone;
 
@@ -524,7 +556,7 @@ const
 //==============================================================================
 function gld_CalcLightLevel(lightlevel: integer): float;
 begin
-  result := gl_lighttable[usegamma][gl_i_max(gl_i_min((lightlevel), 255), 0)];
+  result := TGlSceneLight.Level(@gl_lighttable, usegamma, lightlevel);
 end;
 
 //==============================================================================
@@ -1303,107 +1335,8 @@ type
     loop: GLLoopDef; // the loops itself
   end;
 
-  TGLSeg = record
-    x1, x2: float;
-    z1, z2: float;
-    frontsector: Psector_t;
-    backsector: Psector_t;
-  end;
-  PGLSeg = ^TGLSeg;
-  GLSegArray = array[0..$FFFF] of TGLSeg;
-  PGLSegArray = ^GLSegArray;
-
 var
   gl_segs: PGLSegArray = nil;
-
-const
-  GLDWF_TOP = 1;
-  GLDWF_M1S = 2;
-  GLDWF_MTS = 3;  // Thick Side
-  GLDWF_M2S = 4;
-  GLDWF_BOT = 5;
-  GLDWF_TOPFLUD = 6; //e6y: project the ceiling plane into the gap
-  GLDWF_BOTFLUD = 7; //e6y: project the floor plane into the gap
-  GLDWF_SKY = 8;
-  GLDWF_SKYFLIP = 9;
-
-type
-  glwalltype_t = (glwbottom, glwtop, glwmid);
-  GLWall = record
-    glseg: PGLSeg;
-    ytop, ybottom, ymid: float;
-    ul, ur, vt, vb: float;
-    light: float;
-    light2: float;
-    whitefog: boolean;  // JVAL: Mars fog sectors
-    whitefog2: boolean; // JVAL: Mars fog sectors
-    doublelight: boolean;
-    alpha: float;
-    skyymid: float;
-    skyyaw: float;
-    gltexture: PGLTexture;
-    flag: byte;
-    blend: boolean;
-  end;
-  PGLWall = ^GLWall;
-  GLWallArray = array[0..$FFFF] of GLWall;
-  PGLWallArray = ^GLWallArray;
-
-  GLFlat = record
-    sectornum: integer;
-    light: float; // the lightlevel of the flat
-    z: float; // the z position of the flat (height)
-    angle: float;
-    anglex, angley: float;
-    hasangle: boolean;
-    gltexture: PGLTexture;
-    {$IFNDEF HERETIC}
-    uoffs, voffs: float; // the texture coordinates
-    hasoffset: boolean;
-    {$ENDIF}
-    ripple: boolean;
-    whitefog: boolean; // JVAL: Mars fog sectors
-    ceiling: boolean;
-  end;
-  PGLFlat = ^GLFlat;
-  GLFlatArray = array[0..$FFFF] of GLFlat;
-  PGLFlatArray = ^GLFlatArray;
-
-const
-  GLS_SHADOW = 1;
-  GLS_TRANSPARENT = 2;
-  GLS_CLIPPED = 4;
-  GLS_WHITELIGHT = 8;
-  GLS_REDLIGHT = 16;
-  GLS_GREENLIGHT = 32;
-  GLS_BLUELIGHT = 64;
-  GLS_YELLOWLIGHT = 128;
-  GLS_LIGHT = GLS_WHITELIGHT or GLS_REDLIGHT or GLS_GREENLIGHT or GLS_BLUELIGHT or GLS_YELLOWLIGHT;
-  GLS_ADDITIVE = 256;
-  GLS_SUBTRACTIVE = 512;
-
-type
-  GLSprite = record
-    cm: integer;
-    x, y, z: float;
-    vt, vb: float;
-    ul, ur: float;
-    x1, y1: float;
-    x2, y2: float;
-    light: float;
-    scale: fixed_t;
-    gltexture: PGLTexture;
-    flags: integer;
-    alpha: float;
-    dlights: T2DNumberList;
-    models: TDNumberList;
-    voxels: TDNumberList;
-    mo: Pmobj_t;
-    aproxdist: fixed_t;
-  end;
-  PGLSprite = ^GLSprite;
-  GLSpriteArray = array[0..$FFFF] of GLSprite;
-  PGLSpriteArray = ^GLSpriteArray;
 
 type
   gl_strip_coords_t = record
@@ -1415,15 +1348,13 @@ type
 var
   // the walls, flats and sprites of the frame (Libs\GlScene), given by the composition root (gld_ConfigureDrawList)
   gld_drawlist: TGlSceneDrawList = nil;
+  // collects the flats of the frame, given by the composition root (gld_ConfigureFlatCollector)
+  gld_flats: TEngineGlSceneFlatCollector = nil;
 
 // this is the list for all sectors to the loops
   sectorloops: PGLSectorArray;
 
   rendermarker: byte = 0;
-  sectorrendered: PByteArray; // true if sector rendered (only here for malloc)
-  csectorrenderedflatex: PByteArray;
-  fsectorrenderedflatex: PByteArray;
-  sectorrenderedflatex2: PByteArray;
   segrendered: PByteArray; // true if sector rendered (only here for malloc)
 
 {*****************************
@@ -1485,6 +1416,38 @@ begin
   if gld_drawlist <> ADrawList then
     gld_drawlist.Free;
   gld_drawlist := ADrawList;
+end;
+
+//==============================================================================
+//
+// gld_SceneDrawList
+//
+//==============================================================================
+function gld_SceneDrawList: TGlSceneDrawList;
+begin
+  result := gld_drawlist;
+end;
+
+//==============================================================================
+//
+// gld_LightTable
+//
+//==============================================================================
+function gld_LightTable: PGlSceneLightTable;
+begin
+  result := @gl_lighttable;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureFlatCollector
+//
+//==============================================================================
+procedure gld_ConfigureFlatCollector(const ACollector: TEngineGlSceneFlatCollector);
+begin
+  if gld_flats <> ACollector then
+    gld_flats.Free;
+  gld_flats := ACollector;
 end;
 
 //==============================================================================
@@ -1575,25 +1538,7 @@ begin
     I_Error('gld_PreprocessSectors(): Not enough memory for array sectorloops');
   ZeroMemory(sectorloops, numsectors * SizeOf(GLSector));
 
-  sectorrendered := Z_Malloc2(numsectors * SizeOf(byte), PU_LEVEL, nil);
-  if sectorrendered = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array sectorrendered');
-  ZeroMemory(sectorrendered, numsectors * SizeOf(byte));
-
-  csectorrenderedflatex := Z_Malloc2(numsectors * SizeOf(byte), PU_LEVEL, nil);
-  if csectorrenderedflatex = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array csectorrenderedflatex');
-  ZeroMemory(csectorrenderedflatex, numsectors * SizeOf(byte));
-
-  fsectorrenderedflatex := Z_Malloc2(numsectors * SizeOf(byte), PU_LEVEL, nil);
-  if fsectorrenderedflatex = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array fsectorrenderedflatex');
-  ZeroMemory(fsectorrenderedflatex, numsectors * SizeOf(byte));
-
-  sectorrenderedflatex2 := Z_Malloc2(numsectors * SizeOf(byte), PU_LEVEL, nil);
-  if sectorrenderedflatex2 = nil then
-    I_Error('gld_PreprocessSectors(): Not enough memory for array sectorrenderedflatex2');
-  ZeroMemory(sectorrenderedflatex2, numsectors * SizeOf(byte));
+  gld_flats.BeginLevel(numsectors);
 
   segrendered := Z_Malloc2(numsegs * SizeOf(byte), PU_LEVEL, nil);
   if segrendered = nil then
@@ -1779,6 +1724,7 @@ begin
 
   inc(rendermarker);
   gld_drawlist.BeginFrame(rendermarker);
+  gld_flats.BeginFrame(rendermarker);
   dodrawsky := false;
   numdlitems := 0;
 
@@ -2734,187 +2680,6 @@ begin
 end;
 
 //==============================================================================
-//
-// gld_AddFlat_Extra
-//
-//==============================================================================
-procedure gld_AddFlat_Extra(sectornum: integer; pic, zheight: integer;
-  isfloor: boolean; ripple: boolean; angle: angle_t; anglex, angley: fixed_t);
-var
-  {$IFDEF DOOM_OR_STRIFE}
-  tempsec: sector_t; // needed for R_FakeFlat
-  {$ENDIF}
-  sector: Psector_t; // the sector we want to draw
-  flat: GLFlat;
-begin
-  if sectornum < 0 then
-    exit;
-
-  if isfloor then
-  begin
-    if fsectorrenderedflatex = nil then
-      exit;
-
-    if fsectorrenderedflatex[sectornum] = rendermarker then
-      exit;
-
-    fsectorrenderedflatex[sectornum] := rendermarker;
-  end
-  else
-  begin
-    if csectorrenderedflatex = nil then
-      exit;
-
-    if csectorrenderedflatex[sectornum] = rendermarker then
-      exit;
-
-    csectorrenderedflatex[sectornum] := rendermarker;
-  end;
-
-  flat.sectornum := sectornum;
-  sector := @sectors[sectornum]; // get the sector
-  {$IFDEF DOOM_OR_STRIFE}
-  sector := R_FakeFlat(sector, @tempsec, nil, nil, false); // for boom effects
-  {$ENDIF}
-  flat.ceiling := true;
-
-  // get the texture. flattranslation is maintained by doom and
-  // contains the number of the current animation frame
-  flat.gltexture := gld_RegisterFlat(R_GetLumpForFlat(pic), true, pic);
-  if flat.gltexture = nil then
-    exit;
-  // get the lightlevel
-  flat.light := gld_CalcLightLevel(sector.lightlevel + (extralight shl 5));
-  // calculate texture offsets
-  {$IFDEF DOOM_OR_STRIFE}
-  flat.hasoffset := (sector.ceiling_xoffs <> 0) or (sector.ceiling_yoffs <> 0);
-  if flat.hasoffset then
-  begin
-    flat.uoffs := sector.ceiling_xoffs / FLATUVSCALE;
-    flat.voffs := sector.ceiling_yoffs / FLATUVSCALE;
-  end
-  else
-  begin
-    flat.uoffs := 0.0;
-    flat.voffs := 0.0;
-  end;
-  {$ENDIF}
-  {$IFDEF HEXEN}
-  flat.hasoffset := false;
-  flat.uoffs := 0.0;
-  flat.voffs := 0.0;
-  {$ENDIF}
-  flat.ripple := ripple;
-
-  if angle <> 0 then
-  begin
-    flat.angle := (angle / ANGLE_MAX) * 360.0;
-    flat.anglex := anglex / FLATUVSCALE;
-    flat.angley := angley / FLATUVSCALE;
-    flat.hasangle := True;
-  end
-  else
-  begin
-    flat.angle := 0.0;
-    flat.anglex := 0.0;
-    flat.angley := 0.0;
-    flat.hasangle := False;
-  end;
-
-  // get height from plane
-  flat.z := zheight / MAP_SCALE;
-
-  flat.whitefog := sector.renderflags and SRF_FOG <> 0; // JVAL: Mars fog sectors
-
-  PGLFlat(gld_drawlist.AddFlat)^ := flat;
-end;
-
-//==============================================================================
-// gld_AddFlat_3dFloor
-//
-// For mid textures (3d Floors)
-//
-//==============================================================================
-procedure gld_AddFlat_3dFloor(sectornum: integer; pic, zheight: integer;
-  ripple: boolean; light: integer; angle: angle_t; anglex, angley: fixed_t;
-  whitefog: boolean);
-var
-  {$IFDEF DOOM_OR_STRIFE}
-  tempsec: sector_t; // needed for R_FakeFlat
-  sector: Psector_t; // the sector we want to draw
-  {$ENDIF}
-  flat: GLFlat;
-begin
-  if sectornum < 0 then
-    exit;
-
-  if sectorrenderedflatex2 = nil then
-    exit;
-
-  if sectorrenderedflatex2[sectornum] = rendermarker then
-    exit;
-
-  sectorrenderedflatex2[sectornum] := rendermarker;
-
-  flat.sectornum := sectornum;
-  {$IFDEF DOOM_OR_STRIFE}
-  sector := @sectors[sectornum]; // get the sector
-  sector := R_FakeFlat(sector, @tempsec, nil, nil, false); // for boom effects
-  {$ENDIF}
-  flat.ceiling := true;
-
-  // get the texture. flattranslation is maintained by doom and
-  // contains the number of the current animation frame
-  flat.gltexture := gld_RegisterFlat(R_GetLumpForFlat(pic), true, pic);
-  if flat.gltexture = nil then
-    exit;
-  // get the lightlevel
-  flat.light := gld_CalcLightLevel(light + (extralight shl 5));
-  // calculate texture offsets
-  {$IFDEF DOOM_OR_STRIFE}
-  flat.hasoffset := (sector.ceiling_xoffs <> 0) or (sector.ceiling_yoffs <> 0);
-  if flat.hasoffset then
-  begin
-    flat.uoffs := sector.ceiling_xoffs / FLATUVSCALE;
-    flat.voffs := sector.ceiling_yoffs / FLATUVSCALE;
-  end
-  else
-  begin
-    flat.uoffs := 0.0;
-    flat.voffs := 0.0;
-  end;
-  {$ENDIF}
-  {$IFDEF HEXEN}
-  flat.hasoffset := false;
-  flat.uoffs := 0.0;
-  flat.voffs := 0.0;
-  {$ENDIF}
-  flat.ripple := ripple;
-
-  if angle <> 0 then
-  begin
-    flat.angle := (angle / ANGLE_MAX) * 360.0;
-    flat.anglex := anglex / FLATUVSCALE;
-    flat.angley := angley / FLATUVSCALE;
-    flat.hasangle := True;
-  end
-  else
-  begin
-    flat.angle := 0.0;
-    flat.anglex := 0.0;
-    flat.angley := 0.0;
-    flat.hasangle := False;
-  end;
-
-  // get height from plane
-  flat.z := zheight / MAP_SCALE;
-
-  flat.whitefog := whitefog; // JVAL: Mars fog sectors
-
-  PGLFlat(gld_drawlist.AddFlat)^ := flat;
-end;
-
-//==============================================================================
 // gld_AddMidWall
 //
 // JVAL: 3d floors
@@ -3387,7 +3152,7 @@ bottomtexture:
         else if (backsector <> nil) and (seg.linedef.renderflags and LRF_ISOLATED = 0) and
                 (frontsector.ceilingpic <> skyflatnum) and (backsector.ceilingpic <> skyflatnum) then
         begin
-          gld_AddFlat_Extra(
+          gld_flats.AddExtra(
             seg.frontsector.iSectorID, seg.backsector.floorpic, seg.frontsector.floorheight,
             False, seg.frontsector.renderflags and SRF_RIPPLE_CEILING <> 0,
             seg.backsector.floorangle, seg.backsector.flooranglex, seg.backsector.floorangley);
@@ -3680,212 +3445,12 @@ end;
 
 //==============================================================================
 //
-// gld_AddFlat
-//
-// This draws on flat for the sector 'num'
-// The ceiling boolean indicates if the flat is a floor(false) or a ceiling(true)
-//
-//==============================================================================
-procedure gld_AddFlat(sectornum: integer; ceiling: boolean; plane: Pvisplane_t);
-var
-  {$IFDEF DOOM_OR_STRIFE}
-  tempsec: sector_t; // needed for R_FakeFlat
-  {$ENDIF}
-  sector: Psector_t; // the sector we want to draw
-  flat: GLFlat;
-  msec: Psector_t;  // JVAL: 3d Floors
-begin
-  if sectornum < 0 then
-    exit;
-
-  flat.sectornum := sectornum;
-  sector := @sectors[sectornum]; // get the sector
-  {$IFDEF DOOM_OR_STRIFE}
-  sector := R_FakeFlat(sector, @tempsec, nil, nil, false); // for boom effects
-  {$ENDIF}
-  flat.ceiling := ceiling;
-  if ceiling then // if it is a ceiling ...
-  begin
-    if sector.ceilingpic = skyflatnum then // don't draw if sky
-      exit;
-    // get the texture. flattranslation is maintained by doom and
-    // contains the number of the current animation frame
-    flat.gltexture := gld_RegisterFlat(R_GetLumpForFlat(sector.ceilingpic), true, sector.ceilingpic);
-    if flat.gltexture = nil then
-      exit;
-    // get the lightlevel from floorlightlevel
-    flat.light := gld_CalcLightLevel({$IFDEF DOOM_OR_STRIFE}sector.ceilinglightlevel{$ELSE}sector.lightlevel{$ENDIF} + (extralight shl 5));
-    // calculate texture offsets
-    {$IFDEF DOOM_OR_STRIFE}
-    flat.hasoffset := (sector.ceiling_xoffs <> 0) or (sector.ceiling_yoffs <> 0);
-    if flat.hasoffset then
-    begin
-      flat.uoffs := sector.ceiling_xoffs / FLATUVSCALE;
-      flat.voffs := sector.ceiling_yoffs / FLATUVSCALE;
-    end
-    else
-    begin
-      flat.uoffs := 0.0;
-      flat.voffs := 0.0;
-    end;
-    {$ENDIF}
-    {$IFDEF HEXEN}
-    flat.hasoffset := (plane.xoffs <> 0) or (plane.yoffs <> 0);
-    if flat.hasoffset then
-    begin
-      flat.uoffs := plane.xoffs / FLATUVSCALE;
-      flat.voffs := plane.yoffs / FLATUVSCALE;
-    end
-    else
-    begin
-      flat.uoffs := 0.0;
-      flat.voffs := 0.0;
-    end;
-    {$ENDIF}
-    flat.ripple := plane.renderflags and SRF_RIPPLE_CEILING <> 0;
-
-    if plane.angle <> 0 then
-    begin
-      flat.angle := (plane.angle / ANGLE_MAX) * 360.0;
-      flat.anglex := plane.anglex / FLATUVSCALE;
-      flat.angley := plane.angley / FLATUVSCALE;
-      flat.hasangle := True;
-    end
-    else
-    begin
-      flat.angle := 0.0;
-      flat.anglex := 0.0;
-      flat.angley := 0.0;
-      flat.hasangle := False;
-    end;
-    flat.whitefog := sector.renderflags and SRF_FOG <> 0; // JVAL: Mars fog sectors
-  end
-  else // if it is a floor ...
-  begin
-    if sector.floorpic = skyflatnum then // don't draw if sky
-      exit;
-    // get the texture. flattranslation is maintained by doom and
-    // contains the number of the current animation frame
-    flat.gltexture := gld_RegisterFlat(R_GetLumpForFlat(sector.floorpic), true, sector.floorpic);
-    if flat.gltexture = nil then
-      exit;
-    // get the lightlevel from ceilinglightlevel
-
-    if sector.midsec >= 0 then  // JVAL: 3d Floors
-    begin
-      msec := @sectors[sector.midsec];
-      flat.light := gld_CalcLightLevel({$IFDEF DOOM_OR_STRIFE}msec.floorlightlevel{$ELSE}msec.lightlevel{$ENDIF} + (extralight shl 5));
-      flat.whitefog := msec.renderflags and SRF_FOG <> 0; // JVAL: Mars fog sectors
-    end
-    else
-    begin
-      flat.light := gld_CalcLightLevel({$IFDEF DOOM_OR_STRIFE}sector.floorlightlevel{$ELSE}sector.lightlevel{$ENDIF} + (extralight shl 5));
-      flat.whitefog := sector.renderflags and SRF_FOG <> 0; // JVAL: Mars fog sectors
-    end;
-    // calculate texture offsets
-    {$IFDEF DOOM_OR_STRIFE}
-    flat.hasoffset := (sector.floor_xoffs <> 0) or (sector.floor_yoffs <> 0);
-    if flat.hasoffset then
-    begin
-      flat.uoffs := sector.floor_xoffs / FLATUVSCALE;
-      flat.voffs := sector.floor_yoffs / FLATUVSCALE;
-    end
-    else
-    begin
-      flat.uoffs := 0.0;
-      flat.voffs := 0.0;
-    end;
-    {$ENDIF}
-    {$IFDEF HEXEN}
-    flat.hasoffset := (plane.xoffs <> 0) or (plane.yoffs <> 0);
-    if flat.hasoffset then
-    begin
-      flat.uoffs := plane.xoffs / FLATUVSCALE;
-      flat.voffs := plane.yoffs / FLATUVSCALE;
-    end
-    else
-    begin
-      flat.uoffs := 0.0;
-      flat.voffs := 0.0;
-    end;
-    {$ENDIF}
-    flat.ripple := plane.renderflags and SRF_RIPPLE_FLOOR <> 0;
-
-    if plane.angle <> 0 then
-    begin
-      flat.angle := (plane.angle / ANGLE_MAX) * 360.0;
-      flat.anglex := plane.anglex / FLATUVSCALE;
-      flat.angley := plane.angley / FLATUVSCALE;
-      flat.hasangle := True;
-    end
-    else
-    begin
-      flat.angle := 0.0;
-      flat.anglex := 0.0;
-      flat.angley := 0.0;
-      flat.hasangle := False;
-    end;
-  end;
-
-  // get height from plane
-  flat.z := plane.height / MAP_SCALE;
-
-  PGLFlat(gld_drawlist.AddFlat)^ := flat;
-end;
-
-//==============================================================================
-//
 // gld_AddPlane
 //
 //==============================================================================
 procedure gld_AddPlane(subsectornum: integer; floor, ceiling: Pvisplane_t);
-var
-  subsector: Psubsector_t;
-  secID: integer;
-  sec: Psector_t;
-  msec: Psector_t; // JVAL: 3d floors
 begin
-  // check if all arrays are allocated
-  if sectorrendered = nil then
-    exit;
-
-  subsector := @subsectors[subsectornum];
-  {$IFDEF DEBUG}
-  if subsector = nil then // JVAL unused?
-    exit;
-  {$ENDIF}
-
-  sec := subsector.sector;
-  secID := sec.iSectorID;
-  if sectorrendered[secID] <> rendermarker then // if not already rendered
-  begin
-    // render the floor
-    if floor <> nil then
-      if (floor.height < viewz) or (sectors[secID].renderflags and SRF_SLOPEFLOOR <> 0) then
-        gld_AddFlat(secID, false, floor);
-    // render the ceiling
-    if ceiling <> nil then
-      if (ceiling.height > viewz)  or (sectors[secID].renderflags and SRF_SLOPECEILING <> 0) then
-        gld_AddFlat(secID, true, ceiling);
-
-    if sectors[secID].midsec >= 0 then
-    begin
-      msec := @sectors[sectors[secID].midsec];
-      if viewz < msec.floorheight then
-        gld_AddFlat_3dFloor(
-          secID, msec.floorpic, msec.floorheight, msec.renderflags and SRF_RIPPLE_FLOOR <> 0,
-          msec.lightlevel, msec.floorangle, msec.flooranglex, msec.floorangley,
-          msec.renderflags and SRF_FOG <> 0);
-      if viewz > msec.ceilingheight then
-        gld_AddFlat_3dFloor(
-          secID, msec.ceilingpic, msec.ceilingheight, msec.renderflags and SRF_RIPPLE_CEILING <> 0,
-          sectors[secID].lightlevel, msec.ceilingangle, msec.ceilinganglex, msec.ceilingangley,
-          sectors[secID].renderflags and SRF_FOG <> 0);
-    end;
-
-    // set rendered true
-    sectorrendered[secID] := rendermarker;
-  end;
+  gld_flats.AddPlane(subsectornum, floor, ceiling);
 end;
 
 (**********************************
@@ -5309,6 +4874,8 @@ procedure gld_PreprocessLevel;
 begin
   if gld_drawlist = nil then
     I_Error('gld_PreprocessLevel(): the draw list is not configured (ComposeEngine was not called)');
+  if gld_flats = nil then
+    I_Error('gld_PreprocessLevel(): the flat collector is not configured (ComposeEngine was not called)');
 
   // preload graphics
   // JVAL
@@ -5378,6 +4945,8 @@ end;
 initialization
 
 finalization
+  // the collectors use the draw list: they go first
+  gld_ConfigureFlatCollector(nil);
   gld_ConfigureDrawList(nil);
 
 end.

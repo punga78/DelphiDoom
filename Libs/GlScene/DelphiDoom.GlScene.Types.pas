@@ -47,6 +47,15 @@ type
     Sprite: Integer;
   end;
 
+const
+  /// <summary>The gamma levels the user can choose</summary>
+  GLSCENE_GAMMA_COUNT = 5;
+
+type
+  /// <summary>Brightness (0..1) of the 256 light levels of the map, one row per gamma level</summary>
+  TGlSceneLightTable = array[0..GLSCENE_GAMMA_COUNT - 1, 0..255] of Single;
+  PGlSceneLightTable = ^TGlSceneLightTable;
+
 implementation
 
 end.
