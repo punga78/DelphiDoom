@@ -60,7 +60,8 @@ const
   // fixed point 16.16: less than 4 units in 12 tics while running means that a wall is in the way
   STUCK_DISTANCE = 4 * 65536;
   STUCK_TICS = 12;
-  ESCAPE_TICS = 10;
+  ESCAPE_MIN_TICS = 8;
+  ESCAPE_MAX_TICS = 26;
   USE_PERIOD = 6;
   TURN_UNIT = 256;
   MAX_TURN_STEPS = 5;
@@ -134,7 +135,8 @@ begin
     LDistance := Abs(Int64(AView.X) - FLastX) + Abs(Int64(AView.Y) - FLastY);
     if (LDistance < STUCK_DISTANCE) and (FBehavior in [pbRun, pbCurveLeft, pbCurveRight, pbStrafe]) then
     begin
-      FEscapeLeft := ESCAPE_TICS;
+      // 8..26 tics of full turn: from about 55 to 180 degrees
+      FEscapeLeft := FRandom.NextBetween(ESCAPE_MIN_TICS, ESCAPE_MAX_TICS);
       if FRandom.NextBelow(2) = 0 then
         FEscapeDirection := 1
       else
@@ -163,7 +165,6 @@ begin
   begin
     Dec(FEscapeLeft);
     Result.Turn := FEscapeDirection * MAX_TURN_STEPS * TURN_UNIT;
-    Result.Forward := 25;
     Result.Use := (AView.Tic mod USE_PERIOD) = 0;
     Exit;
   end;

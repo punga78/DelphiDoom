@@ -99,6 +99,7 @@ uses
   DelphiDoom.Parity.SwitchEntropy,
   DelphiDoom.Engine.Parity.Adapter,
   DelphiDoom.Engine.Parity.InputGate,
+  DelphiDoom.Engine.Parity.LogSink,
   m_rnd,
   DelphiDoom.Thinkers.Light.Types,
   DelphiDoom.Thinkers.Light.Games,
@@ -1466,7 +1467,7 @@ begin
     TSystemEntropySource.Create(True), LParitySwitch, PARITY_ENTROPY_SEED));
   LParity.AttachRandom(LRandom);
   LContext := TEngineGameContext.Create;
-  LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
+  LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineParityLogSink.Create(TEngineLogSink.Create, LParitySwitch)),
     function: Boolean
     begin
       Result := LContext.IsDeveloperMode;

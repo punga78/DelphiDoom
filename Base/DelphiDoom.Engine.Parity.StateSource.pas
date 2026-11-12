@@ -45,6 +45,9 @@ type
     procedure PutIndexed(const APrefix: string; AIndex: Integer; AValue: Int64);
     function StateIndex(AState: Pstate_t): Integer;
     function MobjIndex(AMobj: Pmobj_t): Integer;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+    function MobjOrValue(AValue: Integer): Int64;
+{$IFEND}
     procedure PutMobj(const AMobj: mobj_t);
     procedure PutSector(const ASector: sector_t);
     procedure PutSide(const ASide: side_t);
@@ -67,11 +70,16 @@ uses
   doomdef,
   g_game,
   info,
+  m_fixed,
   p_mobj,
   p_setup,
   p_tick;
 
 const
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  // a special that points to the mobj number N is told as -MOBJ_LINK_BASE - N (a real special is never so small)
+  MOBJ_LINK_BASE = 1000000000;
+{$IFEND}
   KIND_MOBJ = 0;
   KIND_SECTOR = 1;
   KIND_SIDE = 2;
@@ -138,6 +146,20 @@ begin
     Result := -2;
 end;
 
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+function TEngineParityStateSource.MobjOrValue(AValue: Integer): Int64;
+var
+  LIndex: Integer;
+begin
+  // the specials of Heretic and Hexen hold sometimes the address of a mobj (a 32 bit address as an integer):
+  // an address changes from run to run, the number of the mobj does not
+  if (AValue <> 0) and FMobjIndexes.TryGetValue(Pointer(AValue), LIndex) then
+    Result := -MOBJ_LINK_BASE - LIndex
+  else
+    Result := AValue;
+end;
+{$IFEND}
+
 procedure TEngineParityStateSource.PutMobj(const AMobj: mobj_t);
 begin
   Put('type', AMobj._type);
@@ -172,8 +194,8 @@ begin
   Put('tracer', MobjIndex(AMobj.tracer));
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   Put('flags2', AMobj.flags2);
-  Put('special1', AMobj.special1);
-  Put('special2', AMobj.special2);
+  Put('special1', MobjOrValue(AMobj.special1));
+  Put('special2', MobjOrValue(AMobj.special2));
 {$ENDIF}
 end;
 
@@ -411,6 +433,22 @@ begin
       FSink.EndObject;
     end;
 
+  // where the first player is and how he is: it makes the logs readable and tells what a demo has visited
+  LIndex := 0;
+  while (LIndex < MAXPLAYERS - 1) and not playeringame[LIndex] do
+    Inc(LIndex);
+  if playeringame[LIndex] and (players[LIndex].mo <> nil) then
+  begin
+    FSink.Scalar('px', players[LIndex].mo.x div FRACUNIT);
+    FSink.Scalar('py', players[LIndex].mo.y div FRACUNIT);
+    FSink.Scalar('hp', players[LIndex].health);
+  end
+  else
+  begin
+    FSink.Scalar('px', 0);
+    FSink.Scalar('py', 0);
+    FSink.Scalar('hp', 0);
+  end;
   FSink.Scalar('lt', leveltime);
   FSink.Scalar('th', LThinkerCount);
   FSink.Scalar('mo', LMobjCount);

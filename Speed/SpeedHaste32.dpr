@@ -908,6 +908,7 @@ uses
   DelphiDoom.Engine.Parity.StateSource in '..\Base\DelphiDoom.Engine.Parity.StateSource.pas',
   DelphiDoom.Engine.Parity.FrameSource in '..\Base\DelphiDoom.Engine.Parity.FrameSource.pas',
   DelphiDoom.Engine.Parity.InputGate in '..\Base\DelphiDoom.Engine.Parity.InputGate.pas',
+  DelphiDoom.Engine.Parity.LogSink in '..\Base\DelphiDoom.Engine.Parity.LogSink.pas',
   DelphiDoom.Engine.Parity.PilotCommand in '..\Base\DelphiDoom.Engine.Parity.PilotCommand.pas',
   DelphiDoom.Engine.Parity.Adapter in '..\Base\DelphiDoom.Engine.Parity.Adapter.pas',
   DelphiDoom.Engine.Console.Intf in '..\Base\DelphiDoom.Engine.Console.Intf.pas',
