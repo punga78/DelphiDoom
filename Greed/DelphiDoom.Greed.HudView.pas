@@ -13,7 +13,7 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.Greed.Types, DelphiDoom.Greed.Intf, DelphiDoom.Greed.Frame.Intf,
   DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.Game, DelphiDoom.Greed.Canvas,
   DelphiDoom.Greed.Font, DelphiDoom.Greed.TextPrinter, DelphiDoom.Greed.Hud, DelphiDoom.Greed.MessageLine,
-  DelphiDoom.Greed.WeaponPainter;
+  DelphiDoom.Greed.WeaponPainter, DelphiDoom.Greed.Application.Intf;
 
 type
   /// <summary>
@@ -26,7 +26,7 @@ type
   ///   the menu and the quick exit end the game. Not drawn: the rear view camera (the game does not make its
   ///   picture)
   /// </summary>
-  TGreedHudView = class(TInterfacedObject, IGreedGameView, IGreedMessages)
+  TGreedHudView = class(TInterfacedObject, IGreedGameView, IGreedMessages, IGreedViewSize)
   strict private
     FArchive: IGreedArchive;
     FGame: TGreedGame;
@@ -71,6 +71,8 @@ type
     procedure ShowPause;
     function ConfirmQuit: Boolean;
     procedure DrawOverlay(var AFrame: TGreedFrame; const AOverlay: TGreedViewOverlay);
+    // IGreedViewSize
+    procedure SetSize(ASize: Integer);
     // IGreedMessages
     procedure WriteMessage(const AText: string);
     /// <summary>Every message of the game, in order (a list for the proofs without a window)</summary>
@@ -82,7 +84,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf;
+  DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.Game.Constants;
 
 const
   LUMP_TRANSPARENCY = 'TRANSPARENCY';
@@ -251,6 +253,21 @@ begin
   FHud.DrawOverlay;
   FLine.Rewrite(FHud.CurrentViewSize);
   FCanvas.ComposeOnto(AFrame);
+end;
+
+procedure TGreedHudView.SetSize(ASize: Integer);
+begin
+  if not Assigned(FHud) then
+    Exit;
+  // the loop of ChangeViewSize that the menu runs when it closes
+  while FHud.CurrentViewSize < ASize do
+  begin
+    FHud.ChangeViewSize(True);
+    if FHud.CurrentViewSize >= GREED_MAXVIEWSIZE - 1 then
+      Break;
+  end;
+  while FHud.CurrentViewSize > ASize do
+    FHud.ChangeViewSize(False);
 end;
 
 procedure TGreedHudView.WriteMessage(const AText: string);
