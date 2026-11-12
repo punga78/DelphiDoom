@@ -56,6 +56,10 @@ type
     DeadRestart: Boolean;
     NumProcesses: Integer;
     OldInventory, OldShots, OldGoalItem, TotalEffectTime: Integer;
+    // ---- the ones of the secret codes ----
+    GodMode, MidgetMode, Game1, Game2, Game3: Boolean;
+    EnemyViewMode, WeapMode, GameEpisode: Integer;
+    SecretBuf: string;
   end;
 
   TLevelWeaponCharge = record
@@ -85,6 +89,8 @@ type
     BonusTime, LevelScore: Integer;
     BonusFirstTime: Integer;
     Demo: Boolean;
+    /// <summary>1 .. 3: which of GAME1, GAME2 and GAME3 is set</summary>
+    Episode: Integer;
     AmbientLight: Integer;
     TimeCount, TimeStep: Integer;
     NumProcesses: Integer;
@@ -143,6 +149,11 @@ type
     class procedure RunEvent(ATriggers, ASwitches: PByte; AEvent: Integer); static;
     /// <summary>weaponpic[0].height after loadweapon(n)</summary>
     class function WeaponPictureHeight(AWeapon: Integer): Integer; static;
+    /// <summary>
+    ///   KillSprite: the sprite has no hit points any more; True, it is taken out of the list (the odd kinds),
+    ///   False, it stays as a corpse
+    /// </summary>
+    class function Kill(var ASprite: TGreedSprite; AWeapon: Integer): Boolean; static;
   end;
 
   /// <summary>
@@ -191,6 +202,7 @@ type
     procedure EndLevel; virtual; abstract;
     procedure StartOver(ARestartValue: Integer); virtual; abstract;
     procedure NewGoalItem; virtual; abstract;
+    procedure SpecialCode; virtual; abstract;
   public
     constructor Create;
     destructor Destroy; override;
@@ -219,6 +231,14 @@ const
   SWITCH_PICTURES: array[0..11] of Byte = (127, 128, 172, 173, 75, 76, 140, 141, 234, 235, 5, 0);
   AREA_KINDS: array[0..18] of Integer = (0, 1, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 100, 101);
   ANGLES_OF_COMPASS: array[0..7] of Integer = (0, 256, 512, 768, 100, 400, 700, 1000);
+  /// what the player types: the codes of the original, in both cases, with other letters around, and pieces
+  SECRETS: array[0..55] of string = (
+    'belfast', 'allahmode', 'god', 'GOD', 'channel7', 'lizardman', 'dominatrix', 'cyborg', 'mooman', 'raven',
+    'omni', 'kmfdm', 'beavis', 'gulliver', 'gulliver', 'gimme', 'taco', 'game1', 'game2', 'game3', 'score10000',
+    'score20000', 'score50000', 'go01', 'go02', 'go03', 'go04', 'go07', 'go08', 'go11', 'go15', 'go16', 'go22',
+    'go23', 'go28', 'go32', 'go33', 'blammo1', 'blammo2', 'blammo3', 'blammo4', 'blammo5', 'blammo6', 'blammo7',
+    'xxBeLfAsTyy', 'qqgo05go23', 'bla', 'bl', 'ago', 'zzz', 'x', 'godgimme', 'blammo4go02', 'GAME2x', 'ravenous',
+    '1234567890123456789');
 
 function NextRandom(var ASeed: Cardinal): Integer;
 begin
@@ -510,6 +530,14 @@ begin
   end;
 end;
 
+class function TLevelStandIns.Kill(var ASprite: TGreedSprite; AWeapon: Integer): Boolean;
+begin
+  ASprite.HitPoints := 0;
+  ASprite.Active := False;
+  ASprite.BasePic := ASprite.BasePic + AWeapon;
+  Result := Odd(ASprite.Kind);
+end;
+
 class function TLevelStandIns.WeaponPictureHeight(AWeapon: Integer): Integer;
 begin
   Result := 40 + AWeapon;
@@ -578,6 +606,15 @@ begin
   FTrace.Add(LGlobals.OldShots, 'oldshots');
   FTrace.Add(LGlobals.OldGoalItem, 'oldgoalitem');
   FTrace.Add(LGlobals.TotalEffectTime, 'totaleffecttime');
+  FTrace.Add(LGlobals.GodMode, 'godmode');
+  FTrace.Add(LGlobals.MidgetMode, 'midgetmode');
+  FTrace.Add(LGlobals.Game1, 'GAME1');
+  FTrace.Add(LGlobals.Game2, 'GAME2');
+  FTrace.Add(LGlobals.Game3, 'GAME3');
+  FTrace.Add(LGlobals.EnemyViewMode, 'enemyviewmode');
+  FTrace.Add(LGlobals.WeapMode, 'weapmode');
+  FTrace.Add(LGlobals.GameEpisode, 'gameepisode');
+  FTrace.AddText(LGlobals.SecretBuf, 'secretbuf');
   GetBonus(LBonus);
   FTrace.Add(LBonus.Time, 'bonus.time');
   FTrace.Add(LBonus.Score, 'bonus.score');
@@ -655,7 +692,7 @@ var
   LChoice, LSlot: Integer;
 begin
   LChoice := Pick(ASeed, 100);
-  if LChoice >= 24 then
+  if LChoice >= 30 then
     Exit;
   GetGlobals(LGlobals);
   GetPlayer(LPlayer);
@@ -706,6 +743,15 @@ begin
       LPlayer.Angst := LPlayer.MaxAngst;
     23:
       LGlobals.HurtBorder := False;
+    24..28:
+      // the player types something (the keyboard keeps the last 19 letters)
+      begin
+        LGlobals.SecretBuf := LGlobals.SecretBuf + SECRETS[Pick(ASeed, Length(SECRETS))];
+        if Length(LGlobals.SecretBuf) > 19 then
+          LGlobals.SecretBuf := Copy(LGlobals.SecretBuf, Length(LGlobals.SecretBuf) - 18, 19);
+      end;
+    29:
+      LGlobals.WeapMode := 1 + Pick(ASeed, 2);
   end;
   SetGlobals(LGlobals);
   SetPlayer(LPlayer);
@@ -786,6 +832,7 @@ begin
     LPlayer.MapSpot := (LPlayer.Y div TILE) * GREED_MAP_SIZE + (LPlayer.X div TILE);
     SetPlayer(LPlayer);
   end;
+  SpecialCode;
   TimeUpdate;
   GetPlayer(LPlayer);
   CheckWarps(LPlayer.X, LPlayer.Y);
@@ -1081,6 +1128,7 @@ begin
     Result.RandomOffset := Pick(LSeed, 512);
     Result.NumProcesses := AIndex mod 2;
     Result.Demo := AIndex mod 6 = 5;
+    Result.Episode := 1 + (AIndex div 2) mod 3;
     Result.AmbientLight := 1024 + Pick(LSeed, 9) * 128;
     Result.BonusTime := 40 + Pick(LSeed, 400);
     Result.BonusFirstTime := Result.TimeCount + Pick(LSeed, 120);

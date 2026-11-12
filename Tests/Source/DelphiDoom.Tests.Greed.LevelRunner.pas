@@ -24,6 +24,7 @@ uses
   DelphiDoom.Greed.Level.Intf, DelphiDoom.Greed.Elevator.Intf, DelphiDoom.Greed.Door.Intf,
   DelphiDoom.Greed.ElevatorRules, DelphiDoom.Greed.DoorRules, DelphiDoom.Greed.PlayerMovement,
   DelphiDoom.Greed.ItemRules, DelphiDoom.Greed.SwitchRules, DelphiDoom.Greed.LevelRules,
+  DelphiDoom.Greed.CheatCodes,
   DelphiDoom.Tests.Greed.LevelScenarios;
 
 const
@@ -39,7 +40,7 @@ type
   /// </summary>
   TFakeLevelGame = class(TInterfacedObject, IGreedSpawner, IGreedGameSound, IGreedEventRunner, IGreedMessages,
     IGreedPlayerHealth, IGreedSystemClock, IGreedItemHost, IGreedSwitchHost, IGreedTicParts, IGreedLevelHost,
-    IGreedElevatorHost, IGreedDoorHost, IGreedMovementHost)
+    IGreedElevatorHost, IGreedDoorHost, IGreedMovementHost, IGreedCheatHost, IGreedSpriteKiller)
   strict private
     FState: TGreedGameState;
     FTrace: TLevelTrace;
@@ -51,6 +52,8 @@ type
     FElevators: TGreedElevatorRules;
     FMovement: TGreedPlayerMovement;
     FLastSpawn: Integer;
+    FGameEpisode: Integer;
+    procedure IGreedCheatHost.NewMap = CheatNewMap;
     procedure Note(const AName: string; const AArguments: array of Integer);
   public
     constructor Create(AState: TGreedGameState; ATrace: TLevelTrace);
@@ -103,6 +106,11 @@ type
     // IGreedMovementHost
     function GetNetMode: Boolean;
     procedure NetOpenDoor(AX, AY: TGreedFixed);
+    // IGreedCheatHost (RefreshAmmo and LoadWeapon are above) and IGreedSpriteKiller
+    procedure SetGameEpisode(AEpisode: Integer);
+    procedure CheatNewMap(AMap, AActivate: Integer);
+    procedure RestoreTimerHook;
+    procedure KillSprite(ASprite, AWeapon: Integer);
     /// <summary>How many calls with that name are in Calls</summary>
     function CountOf(const AName: string): Integer;
     /// <summary>True if that call, written as its name and its arguments with spaces between, is in Calls</summary>
@@ -118,6 +126,7 @@ type
     property TotalEffectTime: Integer read FTotalEffectTime write FTotalEffectTime;
     property WeaponPictureHeight: Integer read FWeaponPictureHeight write FWeaponPictureHeight;
     property LastSpawn: Integer read FLastSpawn;
+    property GameEpisode: Integer read FGameEpisode write FGameEpisode;
     property Elevators: TGreedElevatorRules read FElevators write FElevators;
     property Movement: TGreedPlayerMovement read FMovement write FMovement;
   end;
@@ -139,6 +148,7 @@ type
     FItems: TGreedItemRules;
     FSwitches: TGreedSwitchRules;
     FLevel: TGreedLevelRules;
+    FCheats: TGreedCheatCodes;
     procedure Release;
   protected
     procedure LoadScenario(const AScenario: TLevelScenario); override;
@@ -172,6 +182,7 @@ type
     procedure EndLevel; override;
     procedure StartOver(ARestartValue: Integer); override;
     procedure NewGoalItem; override;
+    procedure SpecialCode; override;
   public
     destructor Destroy; override;
     /// <summary>
@@ -195,6 +206,7 @@ type
     property Items: TGreedItemRules read FItems;
     property Switches: TGreedSwitchRules read FSwitches;
     property Level: TGreedLevelRules read FLevel;
+    property Cheats: TGreedCheatCodes read FCheats;
   end;
 
 implementation
@@ -463,6 +475,32 @@ begin
   raise Exception.Create('NetOpenDoor');
 end;
 
+procedure TFakeLevelGame.SetGameEpisode(AEpisode: Integer);
+begin
+  FGameEpisode := AEpisode;
+end;
+
+procedure TFakeLevelGame.CheatNewMap(AMap, AActivate: Integer);
+begin
+  // a secret code calls newmap alone; the timer hook is asked for after
+  Note('newmap', [AMap, AActivate]);
+end;
+
+procedure TFakeLevelGame.RestoreTimerHook;
+begin
+  Note('INT_TimerHook', []);
+end;
+
+procedure TFakeLevelGame.KillSprite(ASprite, AWeapon: Integer);
+var
+  LSprite: PGreedSprite;
+begin
+  LSprite := PGreedSprite(FState.Sprites.Item(ASprite));
+  Note('KillSprite', [LSprite^.Kind, LSprite^.X, LSprite^.Y, AWeapon]);
+  if TLevelStandIns.Kill(LSprite^, AWeapon) then
+    FState.Sprites.Remove(ASprite);
+end;
+
 { TLibraryLevelRunner }
 
 destructor TLibraryLevelRunner.Destroy;
@@ -473,6 +511,7 @@ end;
 
 procedure TLibraryLevelRunner.Release;
 begin
+  FreeAndNil(FCheats);
   FreeAndNil(FLevel);
   FreeAndNil(FSwitches);
   FreeAndNil(FItems);
@@ -558,6 +597,11 @@ begin
   FItems := TGreedItemRules.Create(FState, FGame, FGame, FGame, FGame, FGame, FRandomIntf, FGame, FGame);
   FSwitches := TGreedSwitchRules.Create(FState, FGame, FGame, FGame);
   FLevel := TGreedLevelRules.Create(FState, FGame, FGame, FGame, FRandomIntf, FGame, FGame, FGame);
+  FCheats := TGreedCheatCodes.Create(FState, FGame, FGame, FGame, FGame);
+  FState.Game1 := AScenario.Episode = 1;
+  FState.Game2 := AScenario.Episode = 2;
+  FState.Game3 := AScenario.Episode = 3;
+  FGame.GameEpisode := AScenario.Episode;
 end;
 
 procedure TLibraryLevelRunner.LoadEmpty;
@@ -591,6 +635,7 @@ begin
   LScenario.Player.Weapons[4] := -1;
   LScenario.Player.Weapons[1] := 1;
   LScenario.TimeCount := 1000;
+  LScenario.Episode := 1;
   LScenario.BonusFirstTime := MaxInt;
   LScenario.AmbientLight := 2048;
   LoadScenario(LScenario);
@@ -678,6 +723,15 @@ begin
   AGlobals.OldShots := FGame.OldShots;
   AGlobals.OldGoalItem := FGame.OldGoalItem;
   AGlobals.TotalEffectTime := FGame.TotalEffectTime;
+  AGlobals.GodMode := FState.GodMode;
+  AGlobals.MidgetMode := FState.MidgetMode;
+  AGlobals.Game1 := FState.Game1;
+  AGlobals.Game2 := FState.Game2;
+  AGlobals.Game3 := FState.Game3;
+  AGlobals.EnemyViewMode := FState.EnemyViewMode;
+  AGlobals.WeapMode := FState.WeapMode;
+  AGlobals.GameEpisode := FGame.GameEpisode;
+  AGlobals.SecretBuf := FState.SecretBuf;
 end;
 
 procedure TLibraryLevelRunner.SetGlobals(const AGlobals: TLevelGlobals);
@@ -716,6 +770,15 @@ begin
   FGame.OldShots := AGlobals.OldShots;
   FGame.OldGoalItem := AGlobals.OldGoalItem;
   FGame.TotalEffectTime := AGlobals.TotalEffectTime;
+  FState.GodMode := AGlobals.GodMode;
+  FState.MidgetMode := AGlobals.MidgetMode;
+  FState.Game1 := AGlobals.Game1;
+  FState.Game2 := AGlobals.Game2;
+  FState.Game3 := AGlobals.Game3;
+  FState.EnemyViewMode := AGlobals.EnemyViewMode;
+  FState.WeapMode := AGlobals.WeapMode;
+  FGame.GameEpisode := AGlobals.GameEpisode;
+  FState.SecretBuf := AGlobals.SecretBuf;
 end;
 
 procedure TLibraryLevelRunner.GetPlayer(out APlayer: TGreedPlayerRecord);
@@ -906,6 +969,11 @@ end;
 procedure TLibraryLevelRunner.NewGoalItem;
 begin
   FLevel.NewGoalItem;
+end;
+
+procedure TLibraryLevelRunner.SpecialCode;
+begin
+  FCheats.SpecialCode;
 end;
 
 end.

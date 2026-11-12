@@ -139,6 +139,7 @@ uses
   DelphiDoom.Tests.Greed.ItemRules in 'Source\DelphiDoom.Tests.Greed.ItemRules.pas',
   DelphiDoom.Tests.Greed.SwitchRules in 'Source\DelphiDoom.Tests.Greed.SwitchRules.pas',
   DelphiDoom.Tests.Greed.LevelRules in 'Source\DelphiDoom.Tests.Greed.LevelRules.pas',
+  DelphiDoom.Tests.Greed.CheatCodes in 'Source\DelphiDoom.Tests.Greed.CheatCodes.pas',
   DelphiDoom.Tests.Greed.GameState in 'Source\DelphiDoom.Tests.Greed.GameState.pas',
   DelphiDoom.Tests.Greed.SpawnScenarios in 'Source\DelphiDoom.Tests.Greed.SpawnScenarios.pas',
   DelphiDoom.Tests.Greed.Spawner in 'Source\DelphiDoom.Tests.Greed.Spawner.pas',

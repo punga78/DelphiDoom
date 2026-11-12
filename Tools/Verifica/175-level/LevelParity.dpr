@@ -11,7 +11,7 @@ program LevelParity;
 uses
   SysUtils, Classes, Windows, Generics.Collections,
   g_delphi, protos_h, r_public_h, r_refdef, r_render, r_conten, r_public, raven, d_ints, d_misc, net, constant,
-  display, event, utils, modplay, harness_level,
+  display, event, utils, modplay, harness_level, harness_host,
   DelphiDoom.Greed.Types, DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.World.Intf,
   DelphiDoom.Tests.Greed.LevelScenarios, DelphiDoom.Tests.Greed.LevelRunner;
 
@@ -51,6 +51,7 @@ type
     procedure EndLevel; override;
     procedure StartOver(ARestartValue: Integer); override;
     procedure NewGoalItem; override;
+    procedure SpecialCode; override;
   end;
 
 { TOriginalLevelRunner }
@@ -162,6 +163,15 @@ begin
   oldgoalitem := 0;
   totaleffecttime := 0;
   weaponpic[0].height := 0;
+  GAME1 := AScenario.Episode = 1;
+  GAME2 := AScenario.Episode = 2;
+  GAME3 := AScenario.Episode = 3;
+  gameepisode := AScenario.Episode;
+  godmode := false;
+  midgetmode := false;
+  enemyviewmode := 0;
+  weapmode := 0;
+  secretbuf := '';
 end;
 
 procedure TOriginalLevelRunner.GetGlobals(out AGlobals: TLevelGlobals);
@@ -200,6 +210,15 @@ begin
   AGlobals.OldShots := oldshots;
   AGlobals.OldGoalItem := oldgoalitem;
   AGlobals.TotalEffectTime := totaleffecttime;
+  AGlobals.GodMode := godmode;
+  AGlobals.MidgetMode := midgetmode;
+  AGlobals.Game1 := GAME1;
+  AGlobals.Game2 := GAME2;
+  AGlobals.Game3 := GAME3;
+  AGlobals.EnemyViewMode := enemyviewmode;
+  AGlobals.WeapMode := weapmode;
+  AGlobals.GameEpisode := gameepisode;
+  AGlobals.SecretBuf := string(secretbuf);
 end;
 
 procedure TOriginalLevelRunner.SetGlobals(const AGlobals: TLevelGlobals);
@@ -238,6 +257,15 @@ begin
   oldshots := AGlobals.OldShots;
   oldgoalitem := AGlobals.OldGoalItem;
   totaleffecttime := AGlobals.TotalEffectTime;
+  godmode := AGlobals.GodMode;
+  midgetmode := AGlobals.MidgetMode;
+  GAME1 := AGlobals.Game1;
+  GAME2 := AGlobals.Game2;
+  GAME3 := AGlobals.Game3;
+  enemyviewmode := AGlobals.EnemyViewMode;
+  weapmode := AGlobals.WeapMode;
+  gameepisode := AGlobals.GameEpisode;
+  secretbuf := ShortString(AGlobals.SecretBuf);
 end;
 
 procedure TOriginalLevelRunner.GetPlayer(out APlayer: TGreedPlayerRecord);
@@ -440,6 +468,11 @@ end;
 procedure TOriginalLevelRunner.NewGoalItem;
 begin
   raven.NewGoalItem;
+end;
+
+procedure TOriginalLevelRunner.SpecialCode;
+begin
+  raven.Special_Code;
 end;
 
 var

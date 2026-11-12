@@ -1,7 +1,8 @@
 # Compila ed esegue il confronto tra le routine ORIGINALI di raven.pas di xGreed che fanno vivere il livello
 # (CheckItems, CheckWarps, CheckHere, CheckForSwitch, SwitchWall, CheckSpawnAreas, CheckBonusItem, TimeUpdate,
-# NewGoalItem, startover, EndLevel, WarpAnim, PrepareNexus, JamWarps, piu' CheckElevators, CheckDoors, TryDoor e
-# chargeweapons) e TGreedItemRules, TGreedSwitchRules e TGreedLevelRules di Libs\Greed (issue #175).
+# NewGoalItem, startover, EndLevel, WarpAnim, PrepareNexus, JamWarps, Check_Secret, Special_Code, piu'
+# CheckElevators, CheckDoors, TryDoor e chargeweapons) e TGreedItemRules, TGreedSwitchRules, TGreedLevelRules e
+# TGreedCheatCodes di Libs\Greed (issue #175).
 # Il codice originale resta in Reference\xGreed (sola lettura): le routine si ritagliano dal file originale, senza
 # cambiarle, dentro una unit "raven" generata in %TEMP%\LevelParity\src (variabili dell'interfaccia comprese); di
 # g_delphi.pas si genera la copia con i cambi che Delphi 11 richiede (FormatSettings). Il resto del gioco sono gli
@@ -36,6 +37,7 @@ $tagli = @(
   @('procedure CheckElevators;', 'function GetTargetAngle'),
   @('function FindWarpDestination', 'function TryMove'),
   @('procedure CheckHere', 'function ClipMove'),
+  @('function Check_Secret', 'procedure CheckSpawnAreas;'),
   @('procedure CheckSpawnAreas;', 'procedure RearView;'),
   @('procedure NewGoalItem;', 'procedure DrawHolo;'),
   @('procedure PrepareNexus;', 'procedure RunBrief;'),
