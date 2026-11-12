@@ -1399,7 +1399,9 @@ procedure ST_Ticker;
 begin
   inc(st_clock);
   st_randomnumber := M_Random;
+{$IFNDEF SPEED}
   ST_UpdateWidgets;
+{$ENDIF}
   if plyr <> nil then
     st_oldhealth := plyr.health;
 end;
@@ -1627,6 +1629,12 @@ procedure ST_Drawer(dopt: stdrawoptions_t; refresh: boolean);
 begin
   st_drawoptions := dopt;
   st_statusbaron := (dopt <> stdo_no) or (amstate = am_only);
+{$IFDEF SPEED}
+  // Speed Haste has no status bar (the old fork emptied this unit; the race has its own HUD,
+  // speed_hud, not ported yet): only the palette is kept
+  ST_DoPaletteStuff;
+  exit;
+{$ENDIF}
   {$IFDEF OPENGL}
   if not st_statusbaron then
   begin
@@ -1778,7 +1786,10 @@ end;
 procedure ST_LoadData;
 begin
   lu_palette := W_GetNumForName(PLAYPAL);
+{$IFNDEF SPEED}
+  // Speed Haste has none of the pictures of the status bar of Doom
   ST_LoadGraphics;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -2061,7 +2072,9 @@ begin
     ST_Stop;
 
   ST_InitData;
+{$IFNDEF SPEED}
   ST_CreateWidgets;
+{$ENDIF}
   st_stopped := false;
 end;
 

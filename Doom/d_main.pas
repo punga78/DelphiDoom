@@ -1145,9 +1145,11 @@ var
 //
 //==============================================================================
 procedure D_DoomLoop;
-{$IFNDEF DEBUG}
 var
+{$IFNDEF DEBUG}
   iscritical: boolean;
+{$ELSE}
+  erroraddress: string;
 {$ENDIF}
 begin
   if demorecording then
@@ -1185,7 +1187,10 @@ begin
 {$IFDEF DEBUG}
     except
       inc(internalerrors);
-      fprintf(debugfile, 'Internal Error No %d'#13#10, [internalerrors]);
+      // the class and the address (decimal, to look up in the .map) tell where it happened
+      Str(NativeUInt(ExceptAddr), erroraddress);
+      fprintf(debugfile, 'Internal Error No %d (%s at %s)'#13#10,
+        [internalerrors, string(ExceptObject.ClassName), erroraddress]);
     end;
 {$ENDIF}
   end;
