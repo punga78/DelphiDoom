@@ -16,12 +16,16 @@ uses
 
 type
   /// <summary>
-  ///   Gives the frame that the engine has just drawn (before it is blitted): in the modes of 8 bits the
-  ///   buffer of the indexes of the palette and the palette, in the modes of 32 bits the buffer of the pixels
+  ///   Gives the frame that the software renderer has just drawn (before it is blitted): in the modes of
+  ///   8 bits the buffer of the indexes of the palette and the palette, in the modes of 32 bits the buffer of
+  ///   the pixels. The OpenGL executables have no such frame (the calls to OpenGL are recorded by
+  ///   Libs\OpenGl\Recorder): there Capture says False and ReadRgb raises EParityException
   /// </summary>
   TEngineParityFrameSource = class
+{$IFNDEF OPENGL}
   strict private
     FRgb: TArray<Cardinal>;
+{$ENDIF}
   public
     /// <summary>
     ///   The pixels of the frame, how big they are (1 or 4 bytes), where the view is and the hash of the palette
@@ -34,6 +38,33 @@ type
   end;
 
 implementation
+
+{$IFDEF OPENGL}
+
+uses
+  System.SysUtils;
+
+const
+  SNoSoftwareFrame = 'The frame hash and the frame dump are for the software renderer; use the OpenGL recorder';
+
+{ TEngineParityFrameSource }
+
+function TEngineParityFrameSource.Capture(out APixels: Pointer; out ABytesPerPixel: Integer;
+  out ALayout: TParityFrameLayout; out APaletteHash: UInt64): Boolean;
+begin
+  APixels := nil;
+  ABytesPerPixel := 0;
+  ALayout := Default(TParityFrameLayout);
+  APaletteHash := 0;
+  Result := False;
+end;
+
+function TEngineParityFrameSource.ReadRgb(out AWidth, AHeight: Integer): Pointer;
+begin
+  raise EParityException.Create(SNoSoftwareFrame);
+end;
+
+{$ELSE}
 
 uses
   DelphiDoom.Parity.Hasher,
@@ -99,5 +130,7 @@ begin
   I_ReadScreen32(@FRgb[0]);
   Result := @FRgb[0];
 end;
+
+{$ENDIF}
 
 end.

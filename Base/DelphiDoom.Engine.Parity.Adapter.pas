@@ -79,6 +79,9 @@ uses
   DelphiDoom.Parity.BitmapWriter,
   DelphiDoom.Parity.Factory,
   DelphiDoom.Parity.OptionsParser,
+{$IFDEF HEXEN}
+  g_demo,
+{$ENDIF}
   g_game,
   i_system;
 

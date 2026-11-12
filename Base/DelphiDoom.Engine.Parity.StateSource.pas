@@ -231,7 +231,9 @@ begin
   Put('cheats', APlayer.cheats);
   Put('refire', APlayer.refire);
   Put('killcount', APlayer.killcount);
+{$IFNDEF STRIFE}
   Put('secretcount', APlayer.secretcount);
+{$ENDIF}
   Put('damagecount', APlayer.damagecount);
   Put('bonuscount', APlayer.bonuscount);
   Put('extralight', APlayer.extralight);
@@ -269,17 +271,17 @@ begin
     PutIndexed('ammo', LIndex, APlayer.ammo[LIndex]);
   for LIndex := 0 to High(APlayer.maxammo) do
     PutIndexed('maxammo', LIndex, APlayer.maxammo[LIndex]);
-  {$IF DEFINED(HERETIC)}
+{$IF DEFINED(HERETIC)}
   for LIndex := 0 to High(APlayer.keys) do
     PutIndexed('keys', LIndex, Ord(APlayer.keys[LIndex]));
   Put('itemcount', APlayer.itemcount);
-  {$ELSE}
+{$ELSE}
   for LIndex := 0 to High(APlayer.cards) do
     PutIndexed('cards', LIndex, Ord(APlayer.cards[LIndex]));
-    {$IFNDEF STRIFE}
+{$IFNDEF STRIFE}
   Put('itemcount', APlayer.itemcount);
-    {$ENDIF}
-  {$IFEND}
+{$ENDIF}
+{$IFEND}
 {$IFEND}
 end;
 
