@@ -95,7 +95,7 @@ uses
   DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState, DelphiDoom.Greed.GameView.Intf,
   DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.GameRendererFactory, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Game, DelphiDoom.Greed.GameLoop, DelphiDoom.Greed.HostWindow, DelphiDoom.Greed.HostControls,
-  DelphiDoom.Greed.ScriptControls, DelphiDoom.Greed.PlainView, DelphiDoom.Greed.GameDump,
+  DelphiDoom.Greed.ScriptControls, DelphiDoom.Greed.PlainView, DelphiDoom.Greed.HudView, DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.GameDump,
   DelphiDoom.Greed.HostAudio, DelphiDoom.Greed.TrackerSongDecoder, DelphiDoom.Greed.DemoArchive,
   DelphiDoom.GameHost.Events.Intf,
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
@@ -164,6 +164,8 @@ type
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
     procedure SetEffectsTime(ATime: Integer);
+    function WeaponLight: IGreedWeaponLight;
+    function TileLightReader: IGreedTileLights;
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -316,6 +318,16 @@ procedure TGreedTopDownGameRenderer.SetActionHook(const AHook: IGreedRenderActio
 begin
 end;
 
+function TGreedTopDownGameRenderer.WeaponLight: IGreedWeaponLight;
+begin
+  Result := nil;
+end;
+
+function TGreedTopDownGameRenderer.TileLightReader: IGreedTileLights;
+begin
+  Result := nil;
+end;
+
 procedure TGreedTopDownGameRenderer.SetEffectsTime(ATime: Integer);
 begin
 end;
@@ -442,8 +454,11 @@ var
   LMusic: IGreedMusic;
   LRandom: TGreedRandomTable;
   LRandomIntf: IGreedRandom;
-  LView: TGreedPlainView;
+  LHudView: TGreedHudView;
+  LPlain: TGreedPlainView;
   LViewIntf: IGreedGameView;
+  LMessages: IGreedMessages;
+  LLogged: TStringList;
   LRendererFactory: IGreedGameRendererFactory;
   LGame: TGreedGame;
   LLoop: TGreedGameLoop;
@@ -543,9 +558,25 @@ begin
     LRandom := TGreedRandomTable.Create;
     LRandomIntf := LRandom;
     LRandom.Offset := AOptions.Seed;
-    LView := TGreedPlainView.Create(AArchive);
-    LViewIntf := LView;
-    LView.Echo := AOptions.EchoMessages;
+    // the status bar, the weapon and the messages are drawn over the first person view; the view from above has
+    // no HUD
+    LHudView := nil;
+    if AOptions.TopDown then
+    begin
+      LPlain := TGreedPlainView.Create(AArchive);
+      LPlain.Echo := AOptions.EchoMessages;
+      LViewIntf := LPlain;
+      LMessages := LPlain;
+      LLogged := LPlain.Messages;
+    end
+    else
+    begin
+      LHudView := TGreedHudView.Create(AArchive);
+      LHudView.Echo := AOptions.EchoMessages;
+      LViewIntf := LHudView;
+      LMessages := LHudView;
+      LLogged := LHudView.Messages;
+    end;
     if AOptions.TopDown then
       LRendererFactory := TGreedTopDownGameRenderer.Create(TGreedTopDownRenderer.Create(
         NearestIndex(LPalette, 60, 60, 80), NearestIndex(LPalette, 240, 240, 240),
@@ -556,7 +587,9 @@ begin
     LGame := TGreedGame.Create(AArchive, TGreedFactory.CreateMapLoader(AArchive, LFiles), LRendererFactory,
       TGreedCommandState.Create(LSource), LEffects, LMusic, LRandomIntf,
       TGreedSaveGames.Create(TGreedSaveFolder.Create(GetCurrentDir), ggvDefault), LTime, LViewIntf,
-      LView as IGreedMessages);
+      LMessages);
+    if Assigned(LHudView) then
+      LHudView.Attach(LGame);
     LTime.Game := LGame;
     LGame.LowResolution := AOptions.LowResolution;
     // the full game has three episodes that start at the maps 0, 8 and 16
@@ -591,9 +624,9 @@ begin
           TGreedGameDump.Write(LGame, LLoop.Tics, LLoop.Frames, LRandom.Offset, LDump);
           LDump.Add(Format('effects.started=%d', [LStatistics.EffectsStarted]));
           LDump.Add(Format('songs.started=%d', [LStatistics.SongsStarted]));
-          LDump.Add(Format('messages=%d', [LView.Messages.Count]));
-          for LIndex := 0 to LView.Messages.Count - 1 do
-            LDump.Add(Format('message.%d=%s', [LIndex, LView.Messages[LIndex]]));
+          LDump.Add(Format('messages=%d', [LLogged.Count]));
+          for LIndex := 0 to LLogged.Count - 1 do
+            LDump.Add(Format('message.%d=%s', [LIndex, LLogged[LIndex]]));
           LDump.SaveToFile(AOptions.DumpPath);
         finally
           LDump.Free;

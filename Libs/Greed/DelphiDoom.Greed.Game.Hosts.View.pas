@@ -114,6 +114,7 @@ begin
   // the session asks for ResetMouse at the end of resetengine, where the original has put the clock of the game
   // and fxtimecount back to 0: fxtimecount is of the renderer (the glow and the flicker of the walls)
   FParts.Renderer.SetEffectsTime(FParts.Session.FxTimeCount);
+  FParts.View.ResetMessages;
   ResetMouse;
 end;
 

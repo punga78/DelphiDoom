@@ -1,6 +1,8 @@
 # Speed
 
-Speed Haste (Noriaworks 1995, fork GLSpeed di DelphiDoom, issue #168). **Non e ancora il gioco**: per ora un programma di prova nello stile di `Keen\Keen32` e `Greed\Greed32`, con composition root
+Due programmi: `Speed32` (da riga di comando, sotto) e `SpeedHaste32` (il gioco sul motore di Doom, in fondo: "SpeedHaste32").
+
+Speed Haste (Noriaworks 1995, fork GLSpeed di DelphiDoom, issue #168). `Speed32` **non e il gioco**: e un programma di prova nello stile di `Keen\Keen32` e `Greed\Greed32`, con composition root
 proprio (`DelphiDoom.Speed.Composition.pas`; non tocca `ComposeEngine` ne `TIdTechGeneration`).
 
 ```
@@ -23,3 +25,17 @@ Speed32 -jcl <...> -level 1..8 -laps 2 -cars 8 -tics 20000     una gara di auto 
 Il gioco su motore id Tech 1 (`GLSpeed32`): `m_base` con `_GAME`, profilo Iwad e `TSpeedLevelRules` in `ComposeLevelRules`; `mobj_t` e `player_t` propri (con `TRacingCarState` copiato da e verso l'oggetto);
 le azioni `A_*` di `speed_actions`, HUD (`speed_hud`), menu, schermate, intermission, `speed_end_screen`; il file dei record su disco (`TRacingScoreTableStore`); i savegame (`Libs\Serializer` con la tabella del
 gioco); l'adattatore OpenGL dei modelli I3D (`Libs\Models`). Vedi `Libs\Speed\README.md` e `Libs\Racing\README.md` ("Come si collega").
+
+## SpeedHaste32: il gioco sul motore di Doom (primo passo)
+
+```
+Tools\build.bat SpeedHaste32             (output bin\Speed\SpeedHaste32.exe; e nella lista "giochi")
+SpeedHaste32 -devparm -nomusic -nosound -warp 1 1
+```
+
+Accanto all'eseguibile servono `SPEEDH.JCL` (i dati del gioco, non sono nel repository) e `Speed32.swd` (per ora una copia di `Doom32.swd`).
+
+* `SpeedHaste32.dpr` e' il motore di Doom software con i define `DOOM;SPEED` (`_GAME = 'Speed'`), come `Radix\Radix32`; `Speed32` resta il programma da riga di comando (le sue uscite non cambiano).
+* `W_AddFile` traduce `SPEEDH.JCL` con `Libs\Speed` (`Base\DelphiDoom.Engine.Speed.DataConverter.pas`); il livello si carica con le regole di Doom piu' `DelphiDoom.Engine.Level.SpeedRules.pas` (in questa cartella), che legge il percorso della gara.
+* A runtime (shareware): carica E1M1 (88 punti di percorso, 19 posizioni di partenza) e resta nel livello; si vedono l'erba del circuito e i muri con i cartelloni. Non ci sono ancora le auto, la gara, l'HUD, il menu, il cielo del circuito: il giocatore e' il marine di Doom a piedi.
+* Che cosa manca e il censimento delle unit del fork: `Libs\Speed\CLAUDE.md`.

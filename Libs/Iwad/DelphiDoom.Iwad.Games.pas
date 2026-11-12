@@ -14,7 +14,7 @@ uses
   DelphiDoom.Iwad.Intf;
 
 type
-  TIwadGame = (igDoom, igHeretic, igHexen, igStrife, igRadix);
+  TIwadGame = (igDoom, igHeretic, igHexen, igStrife, igRadix, igSpeed);
 
   /// <summary>
   ///   The profile of each game: the IWADs it knows, in order of priority, the variables and
@@ -23,9 +23,9 @@ type
   /// </summary>
   TIwadGames = class
   public
-    /// <summary>DOOM, HERETIC, HEXEN, STRIFE or RADIX</summary>
+    /// <summary>DOOM, HERETIC, HEXEN, STRIFE, RADIX or SPEED</summary>
     class function NameOf(AGame: TIwadGame): string; static;
-    /// <summary>The game of a name, whatever the case of the letters; false if it is none of the five</summary>
+    /// <summary>The game of a name, whatever the case of the letters; false if it is none of the six</summary>
     class function TryFromName(const AName: string; out AGame: TIwadGame): Boolean; static;
     class function CreateProfile(AGame: TIwadGame): IIwadProfile; static;
   end;
@@ -36,7 +36,7 @@ uses
   System.SysUtils, DelphiDoom.Iwad.Types, DelphiDoom.Iwad.Profile;
 
 const
-  GAME_NAMES: array[TIwadGame] of string = ('DOOM', 'HERETIC', 'HEXEN', 'STRIFE', 'RADIX');
+  GAME_NAMES: array[TIwadGame] of string = ('DOOM', 'HERETIC', 'HEXEN', 'STRIFE', 'RADIX', 'SPEED');
 
 function WithSearchable(const AEntry: TIwadEntry; ASearchable: Boolean): TIwadEntry;
 begin
@@ -144,6 +144,20 @@ begin
     '');
 end;
 
+function SpeedProfile: IIwadProfile;
+begin
+  // Speed Haste has no IWAD: its data are SPEEDH.JCL, a container that the engine translates into
+  // a WAD in memory (Libs\Speed); shareware or registered is told by the circuits it has
+  Result := TIwadProfile.Create('SPEED',
+    TArray<TIwadEntry>.Create(
+      TIwadEntry.Make('speedh.jcl', igmIndetermined)),
+    TArray<TIwadCustomRule>.Create(),
+    TArray<string>.Create('SPEEDWADDIR', 'DOOMWADDIR'),
+    TArray<string>.Create('SPEEDWADPATH', 'DOOMWADPATH'),
+    TArray<Integer>.Create(),
+    '');
+end;
+
 { TIwadGames }
 
 class function TIwadGames.NameOf(AGame: TIwadGame): string;
@@ -174,6 +188,7 @@ begin
     igHeretic: Result := HereticProfile;
     igHexen: Result := HexenProfile;
     igRadix: Result := RadixProfile;
+    igSpeed: Result := SpeedProfile;
   else
     Result := StrifeProfile;
   end;

@@ -2115,6 +2115,13 @@ begin
 
   sprdef := @sprites[Ord(psp.state.sprite)];
 
+{$IFDEF SPEED}
+  // Speed Haste still has the weapons of the tables of Doom and none of their sprites (the car
+  // has no weapon): a sprite without frames is not drawn, as R_ProjectSprite does for the things
+  if (psp.state.frame and FF_FRAMEMASK) >= sprdef.numframes then
+    exit;
+{$ENDIF}
+
   sprframe := @sprdef.spriteframes[psp.state.frame and FF_FRAMEMASK];
 
   lump := sprframe.lump[0];

@@ -20,7 +20,7 @@ uses
   DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Random,
   DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Level.Intf, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.SpriteLogic.Intf,
-  DelphiDoom.Greed.CommandState, DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRenderer.Intf,
+  DelphiDoom.Greed.CommandState, DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf,
   DelphiDoom.Greed.Game;
 
 const
@@ -96,6 +96,8 @@ type
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
     procedure SetEffectsTime(ATime: Integer);
+    function WeaponLight: IGreedWeaponLight;
+    function TileLightReader: IGreedTileLights;
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -160,10 +162,10 @@ type
     QuitFromMenu: Boolean;
     constructor Create;
     destructor Destroy; override;
-    procedure RefreshInventory;
     procedure RefreshAmmo;
     procedure RefreshGoalItem;
     procedure ResetDisplay;
+    procedure ResetMessages;
     procedure SetTotalEffectTime(ATics: Integer);
     procedure MissionBriefing(AMap: Integer);
     procedure EndGame(AEpisode: Integer);
@@ -391,6 +393,16 @@ begin
   FHook := AHook;
 end;
 
+function TFakeGameRenderer.WeaponLight: IGreedWeaponLight;
+begin
+  Result := nil;
+end;
+
+function TFakeGameRenderer.TileLightReader: IGreedTileLights;
+begin
+  Result := nil;
+end;
+
 procedure TFakeGameRenderer.SetEffectsTime(ATime: Integer);
 begin
   Inc(EffectsTimeResets);
@@ -555,11 +567,6 @@ begin
       Inc(Result);
 end;
 
-procedure TFakeGameView.RefreshInventory;
-begin
-  Calls.Add('RefreshInventory');
-end;
-
 procedure TFakeGameView.RefreshAmmo;
 begin
   Calls.Add('RefreshAmmo');
@@ -568,6 +575,11 @@ end;
 procedure TFakeGameView.RefreshGoalItem;
 begin
   Calls.Add('RefreshGoalItem');
+end;
+
+procedure TFakeGameView.ResetMessages;
+begin
+  Calls.Add('ResetMessages');
 end;
 
 procedure TFakeGameView.ResetDisplay;

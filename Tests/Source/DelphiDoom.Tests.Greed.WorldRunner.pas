@@ -124,10 +124,10 @@ type
   /// <summary>Nothing is drawn around the view and nothing is shown between the maps</summary>
   TWorldView = class(TInterfacedObject, IGreedGameView, IGreedMessages)
   public
-    procedure RefreshInventory;
     procedure RefreshAmmo;
     procedure RefreshGoalItem;
     procedure ResetDisplay;
+    procedure ResetMessages;
     procedure SetTotalEffectTime(ATics: Integer);
     procedure MissionBriefing(AMap: Integer);
     procedure EndGame(AEpisode: Integer);
@@ -299,15 +299,15 @@ end;
 
 { TWorldView }
 
-procedure TWorldView.RefreshInventory;
-begin
-end;
-
 procedure TWorldView.RefreshAmmo;
 begin
 end;
 
 procedure TWorldView.RefreshGoalItem;
+begin
+end;
+
+procedure TWorldView.ResetMessages;
 begin
 end;
 

@@ -409,6 +409,9 @@ uses
   r_data,
   r_camera,
   r_lights,
+{$IFDEF RADIX}
+  radix_version,
+{$ENDIF}
   sounddata,
   s_sound,
   s_pk3sounds,
@@ -1145,9 +1148,11 @@ var
 //
 //==============================================================================
 procedure D_DoomLoop;
-{$IFNDEF DEBUG}
 var
+{$IFNDEF DEBUG}
   iscritical: boolean;
+{$ELSE}
+  erroraddress: string;
 {$ENDIF}
 begin
   if demorecording then
@@ -1185,7 +1190,10 @@ begin
 {$IFDEF DEBUG}
     except
       inc(internalerrors);
-      fprintf(debugfile, 'Internal Error No %d'#13#10, [internalerrors]);
+      // the class and the address (decimal, to look up in the .map) tell where it happened
+      Str(NativeUInt(ExceptAddr), erroraddress);
+      fprintf(debugfile, 'Internal Error No %d (%s at %s)'#13#10,
+        [internalerrors, string(ExceptObject.ClassName), erroraddress]);
     end;
 {$ENDIF}
   end;
@@ -1337,6 +1345,11 @@ begin
         G_DeferedPlayDemo('4');
       end;
   end;
+{$IFDEF RADIX}
+  // Radix has one page, the title: it stands for the credits and the help page of Doom
+  if demosequence in [2, 4] then
+    pagename := pg_TITLE;
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -2083,12 +2096,35 @@ begin
     SUC_SetGameMode('HACX');
 {$IFDEF RADIX}
   // the lumps of Radix come from RADIX.DAT (Libs\Radix): RADIXINF says so. The edition (shareware
-  // or registered) is told by the CRC of the file: not done yet, the shareware rules are used
+  // or registered) is told by the CRC of the file (radix_version); a file that the table does
+  // not have is registered when it has the third episode, as Rad-X did
   if (gamemode = indetermined) and (W_CheckNumForName('RADIXINF') <> -1) then
   begin
     gamemission := doom;
+    gamemode := RX_GameMode;
+    if gamemode <> indetermined then
+      SUC_SetGameMode(RX_VersionString)
+    else if W_CheckNumForName('e3m1') <> -1 then
+    begin
+      gamemode := registered;
+      SUC_SetGameMode('Radix Registered');
+    end
+    else
+    begin
+      gamemode := shareware;
+      SUC_SetGameMode('Radix Shareware');
+    end;
+    printf('%s'#13#10, [RX_VersionString]);
+  end;
+{$ENDIF}
+{$IFDEF SPEED}
+  // the lumps of Speed Haste come from SPEEDH.JCL (Libs\Speed): SPEEDINF says so. The edition
+  // (shareware or registered) is told by the circuits: not done yet, the shareware rules are used
+  if (gamemode = indetermined) and (W_CheckNumForName('SPEEDINF') <> -1) then
+  begin
+    gamemission := doom;
     gamemode := shareware;
-    SUC_SetGameMode('Radix - beyond the void');
+    SUC_SetGameMode('Speed Haste');
   end;
 {$ENDIF}
   if gamemode = indetermined then

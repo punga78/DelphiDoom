@@ -440,6 +440,13 @@ var
   name: string;
 {$ENDIF}
 begin
+{$IFDEF SPEED}
+{$IFNDEF OPENGL}
+  // Speed Haste has no pictures for the border of the view (brdr_t ...): nothing is drawn around it
+  needsbackscreen := false;
+  exit;
+{$ENDIF}
+{$ENDIF}
 {$IF DEFINED(DOOM)}
   {$IFDEF OPENGL}
   if not statusbarstretch then
@@ -467,10 +474,14 @@ begin
 {$ELSEIF DEFINED(STRIFE)}
   name := 'F_PAVE01'; // Border patch
 {$ELSE}
+{$IFDEF SPEED}
+  name := 'FLAT0001'; // Speed Haste has no border flat of its own: its first flat.
+{$ELSE}
   if gamemode = commercial then
     name := 'GRNROCK'   // DOOM II border patch.
   else
     name := 'FLOOR7_2'; // DOOM border patch.
+{$ENDIF}
 {$ENDIF}
 
 {$IFDEF OPENGL}
@@ -655,6 +666,11 @@ var
   patch: Ppatch_t;
   name: string;
 begin
+{$IFDEF SPEED}
+  // Speed Haste has no status bar: there is nothing to fill behind it
+  needsstatusbarback := false;
+  exit;
+{$ENDIF}
   if (oldstatusbarfillblocks <> 10) <> (screenblocks <> 10) then
   begin
     oldstatusbarfillblocks := screenblocks;
@@ -666,10 +682,14 @@ begin
 
   needsstatusbarback := false;
 
+{$IFDEF SPEED}
+  name := 'FLAT0001'; // Speed Haste has no border flat of its own: its first flat.
+{$ELSE}
   if gamemode = commercial then
     name := 'GRNROCK'   // DOOM II border patch.
   else
     name := 'FLOOR7_2'; // DOOM border patch.
+{$ENDIF}
 
   src := W_CacheLumpName(name, PU_STATIC);
 

@@ -34,10 +34,10 @@ type
     constructor Create(const AArchive: IGreedArchive);
     destructor Destroy; override;
     // IGreedGameView
-    procedure RefreshInventory;
     procedure RefreshAmmo;
     procedure RefreshGoalItem;
     procedure ResetDisplay;
+    procedure ResetMessages;
     procedure SetTotalEffectTime(ATics: Integer);
     procedure MissionBriefing(AMap: Integer);
     procedure EndGame(AEpisode: Integer);
@@ -84,10 +84,6 @@ begin
   inherited Destroy;
 end;
 
-procedure TGreedPlainView.RefreshInventory;
-begin
-end;
-
 procedure TGreedPlainView.RefreshAmmo;
 begin
 end;
@@ -97,6 +93,10 @@ begin
 end;
 
 procedure TGreedPlainView.ResetDisplay;
+begin
+end;
+
+procedure TGreedPlainView.ResetMessages;
 begin
 end;
 

@@ -287,7 +287,6 @@ begin
   Assert.AreEqual(1, FSetup.Game.State.Player.Inventory[4]);
   Assert.AreEqual(1, FSetup.SpritesOfKind(GREED_S_PROXMINE));
   Assert.IsTrue(FSetup.View.Messages.IndexOf('Dropped Proximity Mine') >= 0);
-  Assert.IsTrue(FSetup.View.CountOf('RefreshInventory') >= 1);
 end;
 
 procedure TTestGreedGame.DovrebbeLanciareLaGranataNelGiro;

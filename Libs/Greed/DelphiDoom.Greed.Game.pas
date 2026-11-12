@@ -87,7 +87,6 @@ type
     function LastMap: Integer;
     procedure ServeToggles;
     procedure ServeInventory;
-    procedure ThrowGrenade;
     procedure AnimateWalls;
     procedure ServeDisplayToggles;
     procedure ServeRearView;
@@ -301,7 +300,7 @@ begin
   P.WeaponsIntf := P.Weapons;
   P.Control := TGreedPlayerControl.Create(P.State, P.Movement, P.Controls, FLogicHost as IGreedPlayerControlHost,
     P.EventsIntf, P.WeaponsIntf);
-  P.Inventory := TGreedInventory.Create(P.State, P.SpawnerIntf, LSound, P.Messages, LHealth, P.View);
+  P.Inventory := TGreedInventory.Create(P.State, P.SpawnerIntf, LSound, LHealth, P.Messages);
   P.Items := TGreedItemRules.Create(P.State, P.SpawnerIntf, LSound, P.EventsIntf, P.Messages, LHealth, P.Random,
     P.Clock, FViewHost as IGreedItemHost);
   P.Switches := TGreedSwitchRules.Create(P.State, LSound, P.EventsIntf, FLogicHost as IGreedSwitchHost);
@@ -555,19 +554,6 @@ begin
   end;
 end;
 
-procedure TGreedGame.ThrowGrenade;
-var
-  S: TGreedGameState;
-begin
-  S := FParts.State;
-  FParts.SpawnerIntf.SpawnSprite(GREED_S_GRENADE, S.Player.X, S.Player.Y, S.Player.Z,
-    S.Player.Height - (50 * GREED_FRACUNIT), S.Player.Angle, (-S.Player.ScrollMin) and GREED_ANGLES, True,
-    S.PlayerNum);
-  FParts.Effects.Start(GREED_SN_GRENADE, 0, S.Player.X, S.Player.Y);
-  Dec(S.Player.Inventory[2]);
-  FParts.Inventory.FireGrenade := False;
-end;
-
 procedure TGreedGame.AnimateWalls;
 var
   S: TGreedGameState;
@@ -701,8 +687,10 @@ begin
   LOverlay.HeatMode := S.HeatMode;
   LOverlay.MotionMode := S.MotionMode;
   // displayinventory of the status bar
-  if FStatusBar then
-    FParts.Inventory.EnsureSelection;
+  // displayinventory of the status bar chooses an item when none is chosen or the chosen one is finished
+  if FStatusBar and ((FParts.Inventory.Cursor = GREED_INVENTORY_NONE) or
+    (S.Player.Inventory[FParts.Inventory.Cursor] = 0)) then
+    FParts.Inventory.Right;
   FParts.View.DrawOverlay(AFrame, LOverlay);
   FParts.Level.TimeUpdate;
 end;
@@ -825,7 +813,7 @@ begin
     S.SpecialEffectTime := SPECIAL_EFFECT_NEVER;
   end;
   if FParts.Inventory.FireGrenade then
-    ThrowGrenade;
+    FParts.Inventory.ThrowGrenade;
   if S.Warping <> 0 then
     FParts.Level.WarpAnim;
   // check special code flag

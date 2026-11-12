@@ -29,6 +29,11 @@ type
   public
     function Expand(const ASource: TBytes; ASourceOffset, ADestLength: Integer;
       ATag: Word): TBytes;
+    /// <summary>
+    ///   CA_RLEWCompress: a run of more than 3 equal words, or any run of the tag itself, becomes tag, count,
+    ///   value; shorter runs are copied. The result is the compressed words as bytes (little endian)
+    /// </summary>
+    class function Compress(const AWords: TArray<Word>; ATag: Word): TBytes; static;
   end;
 
 implementation
@@ -37,6 +42,51 @@ uses
   DelphiDoom.Keen.LittleEndian;
 
 { TKeenRlew }
+
+class function TKeenRlew.Compress(const AWords: TArray<Word>; ATag: Word): TBytes;
+var
+  LSource: Integer;
+  LCount: Integer;
+  LValue: Word;
+  LIndex: Integer;
+  LLength: Integer;
+
+  procedure Put(AWord: Word);
+  begin
+    if LLength + 2 > Length(Result) then
+      SetLength(Result, (Length(Result) + 64) * 2);
+    Result[LLength] := Byte(AWord);
+    Result[LLength + 1] := Byte(AWord shr 8);
+    Inc(LLength, 2);
+  end;
+
+begin
+  SetLength(Result, 0);
+  LLength := 0;
+  LSource := 0;
+  while LSource < Length(AWords) do
+  begin
+    LCount := 1;
+    LValue := AWords[LSource];
+    Inc(LSource);
+    // the count is a 16 bit number in the C; a plane of a map never has a run that long
+    while (LSource < Length(AWords)) and (AWords[LSource] = LValue) and (LCount < $FFFF) do
+    begin
+      Inc(LCount);
+      Inc(LSource);
+    end;
+    if (LCount > 3) or (LValue = ATag) then
+    begin
+      Put(ATag);
+      Put(Word(LCount));
+      Put(LValue);
+    end
+    else
+      for LIndex := 1 to LCount do
+        Put(LValue);
+  end;
+  SetLength(Result, LLength);
+end;
 
 function TKeenRlew.Expand(const ASource: TBytes; ASourceOffset, ADestLength: Integer;
   ATag: Word): TBytes;

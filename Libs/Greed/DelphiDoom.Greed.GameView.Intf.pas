@@ -45,12 +45,12 @@ type
   /// </summary>
   IGreedGameView = interface
     ['{D1B64E08-7A25-4C93-B0F6-3E8C5A91D274}']
-    /// <summary>oldinventory := -2: the inventory of the status bar is drawn again</summary>
-    procedure RefreshInventory;
     /// <summary>oldshots := -1: the ammunition is drawn again</summary>
     procedure RefreshAmmo;
     /// <summary>oldgoalitem := -1: the goal item is drawn again</summary>
     procedure RefreshGoalItem;
+    /// <summary>timemsg := 0 (resetengine): the message that was shown goes away</summary>
+    procedure ResetMessages;
     /// <summary>resetdisplay of display.pas: everything of the status bar is drawn again</summary>
     procedure ResetDisplay;
     /// <summary>totaleffecttime := n: how long the special effect that starts now lasts (its bar)</summary>

@@ -1,84 +1,97 @@
 {******************************************************************************}
 {                                                                              }
 {  DelphiDoom: greed library - the inventory of the player                      }
-{  Port of xGreed (Jim Valavanis, GPL v2 or later): inventoryright,             }
-{  inventoryleft and useinventory of display.pas (the logic, not the drawing)   }
+{  Port of xGreed (Jim Valavanis, GPL v2 or later): inventoryleft,              }
+{  inventoryright and useinventory of display.pas, and the grenade of PlayLoop  }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Greed.Inventory;
 
-// the positions are 16.16 fixed point numbers: the arithmetic wraps as in the original
-{$Q-}
-{$R-}
-
 interface
 
 uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool,
-  DelphiDoom.Greed.Game.Constants, DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State,
-  DelphiDoom.Greed.GameView.Intf;
+  DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Elevator.Intf, DelphiDoom.Greed.Game.Constants,
+  DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State;
 
 const
-  /// <summary>inventorycursor when no item is chosen</summary>
+  /// <summary>oldinventory after a change: the status bar draws the inventory again</summary>
+  GREED_INVENTORY_REDRAW = -2;
+  /// <summary>inventorycursor when the player has nothing</summary>
   GREED_INVENTORY_NONE = -1;
+
+  SGreedUsedMedtube = 'Used Medtube';
+  SGreedUsedShieldCharge = 'Used Shield Charge';
+  SGreedUsedReversoPill = 'Used Reverso Pill';
+  SGreedDroppedProximityMine = 'Dropped Proximity Mine';
+  SGreedDroppedTimeBomb = 'Dropped Time Bomb';
+  SGreedActivatedDecoy = 'Activated Decoy';
+  SGreedActivatedInstaWall = 'Activated InstaWall';
+  SGreedCloneActivated = 'Clone Activated';
+  SGreedHoloSuitActive = 'HoloSuit Active';
+  SGreedUnsuccessfulHolo = 'Unsuccessful Holo';
+  SGreedActivatedInvisibility = 'Activated Invisibility Shield';
+  SGreedUsedSoulStealer = 'Used Soul Stealer';
 
 type
   /// <summary>
-  ///   The item of the inventory that is chosen (inventorycursor) and what using it does: the medtube and the
-  ///   shield charge, the grenade (thrown by the loop of the game: FireGrenade), the reverso pill and the
-  ///   invisibility (special effects with a time), the mines, the decoy, the instawall and the clone (sprites next
-  ///   to the player), the holosuit (the player looks like the nearest corpse), the warp jammer (done by the loop:
-  ///   WarpJammer of the state) and the soul stealer (16 shots around).
-  ///   The status bar of the original chooses the first item when none is chosen, or when the chosen one is
-  ///   finished, while it draws (displayinventory): here that is EnsureSelection, which the game calls where the
-  ///   status bar is drawn. The net game is not ported.
-  ///   Kept defect: the scale of the holo picture is the one of the nearest corpse found, and is not initialized
-  ///   by the original when none is (here 0)
+  ///   The cursor on the 13 kinds of items of the player and what using one does. The fields are the globals of
+  ///   display.pas that are about the inventory, with the names of the original; the status bar (TGreedHud) reads
+  ///   Cursor and reads and writes OldInventory.
+  ///   Use (useinventory): medtube and shield charge only if they are needed; the grenade only sets FireGrenade
+  ///   (the game loop throws it: ThrowGrenade); the reverso pill and the invisibility start a special effect unless
+  ///   it is already running; mines, decoy, instawall and clone are sprites made where the player stands; the
+  ///   holosuit takes the picture of the nearest sprite that is not active and has no hit points; the warp jammer
+  ///   only sets the flag of the game (JamWarps of the level does the rest and takes the item); the soul stealer
+  ///   shoots 16 bullets around and plays its sound twice. After any use the cursor goes to the previous kind that
+  ///   the player has and then to the next one: it stays where it is if that kind is not finished.
+  ///   Not ported: the net game (NetSendSpawn, NetSoundEffect).
+  ///   Kept from the original: the scale of the holosuit is the one of the nearest sprite found, and the angle of
+  ///   the 16th bullet is not used after the loop
   /// </summary>
   TGreedInventory = class
   strict private
     FState: TGreedGameState;
     FSpawner: IGreedSpawner;
     FSound: IGreedGameSound;
-    FMessages: IGreedMessages;
     FHealth: IGreedPlayerHealth;
-    FView: IGreedGameView;
-    FCursor: Integer;
-    FFireGrenade: Boolean;
-    procedure UseOne(const AMessage: string);
-    procedure Drop(AKind, ASpawnId: Integer; const AMessage: string);
+    FMessages: IGreedMessages;
     procedure StartEffect(AEffect, ATics: Integer; const AMessage: string);
-    procedure HoloSuit;
-    procedure SoulStealer;
+    procedure Drop(AKind, ASpawnId: Integer; const AMessage: string);
+    procedure UseHoloSuit;
+    procedure UseSoulStealer;
   public
-    /// <summary>EArgumentNilException if one of the arguments is nil</summary>
+    /// <summary>inventorycursor: the kind of item that is chosen, GREED_INVENTORY_NONE if there is none</summary>
+    Cursor: Integer;
+    /// <summary>oldinventory: the cursor the status bar drew last, GREED_INVENTORY_REDRAW to draw it again</summary>
+    OldInventory: Integer;
+    /// <summary>totaleffecttime: how long the special effect that was started last lasts (the original never reads it)</summary>
+    TotalEffectTime: Integer;
+    /// <summary>firegrenade: a grenade was asked for and the game loop has not thrown it yet</summary>
+    FireGrenade: Boolean;
     constructor Create(AState: TGreedGameState; const ASpawner: IGreedSpawner; const ASound: IGreedGameSound;
-      const AMessages: IGreedMessages; const AHealth: IGreedPlayerHealth; const AView: IGreedGameView);
-    /// <summary>inventoryright: the next item that the player has, around the end; none if it has nothing</summary>
+      const AHealth: IGreedPlayerHealth; const AMessages: IGreedMessages);
+    /// <summary>inventoryright: the next kind the player has, going around; none if there is nothing</summary>
     procedure Right;
-    /// <summary>inventoryleft: the item before</summary>
+    /// <summary>inventoryleft: the previous kind the player has, going around; none if there is nothing</summary>
     procedure Left;
     /// <summary>useinventory</summary>
     procedure Use;
-    /// <summary>oldinventory := -2; inventoryleft; inventoryright: after the inventory changed</summary>
+    /// <summary>oldinventory := -2; inventoryleft; inventoryright (what picking up an item does)</summary>
     procedure Refresh;
-    /// <summary>The start of displayinventory: an item is chosen if none is, or if the chosen one is finished</summary>
-    procedure EnsureSelection;
-    /// <summary>inventorycursor: 0..12, or GREED_INVENTORY_NONE</summary>
-    property Cursor: Integer read FCursor write FCursor;
-    /// <summary>firegrenade: the loop of the game throws the grenade and clears it</summary>
-    property FireGrenade: Boolean read FFireGrenade write FFireGrenade;
+    /// <summary>
+    ///   "if firegrenade" of PlayLoop: the grenade is made at the player with his angles, its sound is played and
+    ///   one is taken from the inventory. Nothing if no grenade was asked for
+    /// </summary>
+    procedure ThrowGrenade;
   end;
 
 implementation
 
-uses
-  DelphiDoom.Greed.Player.Intf;
-
 const
-  TIC_RATE = 70;
+  // the kinds of items, in the order of player.inventory
   ITEM_MEDTUBE = 0;
   ITEM_SHIELD = 1;
   ITEM_GRENADE = 2;
@@ -92,13 +105,11 @@ const
   ITEM_INVISIBILITY = 10;
   ITEM_WARP_JAMMER = 11;
   ITEM_SOUL_STEALER = 12;
-  SOUL_BULLETS = 16;
 
 { TGreedInventory }
 
 constructor TGreedInventory.Create(AState: TGreedGameState; const ASpawner: IGreedSpawner;
-  const ASound: IGreedGameSound; const AMessages: IGreedMessages; const AHealth: IGreedPlayerHealth;
-  const AView: IGreedGameView);
+  const ASound: IGreedGameSound; const AHealth: IGreedPlayerHealth; const AMessages: IGreedMessages);
 begin
   inherited Create;
   if not Assigned(AState) then
@@ -107,182 +118,192 @@ begin
     raise EArgumentNilException.Create('ASpawner');
   if not Assigned(ASound) then
     raise EArgumentNilException.Create('ASound');
-  if not Assigned(AMessages) then
-    raise EArgumentNilException.Create('AMessages');
   if not Assigned(AHealth) then
     raise EArgumentNilException.Create('AHealth');
-  if not Assigned(AView) then
-    raise EArgumentNilException.Create('AView');
+  if not Assigned(AMessages) then
+    raise EArgumentNilException.Create('AMessages');
   FState := AState;
   FSpawner := ASpawner;
   FSound := ASound;
-  FMessages := AMessages;
   FHealth := AHealth;
-  FView := AView;
-  FCursor := GREED_INVENTORY_NONE;
+  FMessages := AMessages;
+  Cursor := GREED_INVENTORY_NONE;
 end;
 
 procedure TGreedInventory.Right;
 begin
-  if FCursor = GREED_INVENTORY_NONE then
-    FCursor := 0
+  if Cursor = GREED_INVENTORY_NONE then
+    Cursor := 0
   else
-    Inc(FCursor);
-  while (FCursor < GREED_MAXINVENTORY) and (FState.Player.Inventory[FCursor] = 0) do
-    Inc(FCursor);
-  if FCursor >= GREED_MAXINVENTORY then
+    Inc(Cursor);
+  while (Cursor < GREED_MAX_INVENTORY) and (FState.Player.Inventory[Cursor] = 0) do
+    Inc(Cursor);
+  if Cursor >= GREED_MAX_INVENTORY then
   begin
-    FCursor := 0;
-    while (FCursor < GREED_MAXINVENTORY) and (FState.Player.Inventory[FCursor] = 0) do
-      Inc(FCursor);
-    // nothing found
-    if FCursor = GREED_MAXINVENTORY then
-      FCursor := GREED_INVENTORY_NONE;
+    Cursor := 0;
+    while (Cursor < GREED_MAX_INVENTORY) and (FState.Player.Inventory[Cursor] = 0) do
+      Inc(Cursor);
+    if Cursor = GREED_MAX_INVENTORY then
+      Cursor := GREED_INVENTORY_NONE;
   end;
 end;
 
 procedure TGreedInventory.Left;
 begin
-  Dec(FCursor);
-  while (FCursor >= 0) and (FState.Player.Inventory[FCursor] = 0) do
-    Dec(FCursor);
-  if FCursor <= -1 then
+  Dec(Cursor);
+  while (Cursor >= 0) and (FState.Player.Inventory[Cursor] = 0) do
+    Dec(Cursor);
+  if Cursor <= -1 then
   begin
-    FCursor := GREED_MAXINVENTORY - 1;
-    while (FCursor >= 0) and (FState.Player.Inventory[FCursor] = 0) do
-      Dec(FCursor);
+    Cursor := GREED_MAX_INVENTORY - 1;
+    while (Cursor >= 0) and (FState.Player.Inventory[Cursor] = 0) do
+      Dec(Cursor);
   end;
 end;
 
 procedure TGreedInventory.Refresh;
 begin
-  FView.RefreshInventory;
+  OldInventory := GREED_INVENTORY_REDRAW;
   Left;
   Right;
 end;
 
-procedure TGreedInventory.EnsureSelection;
+procedure TGreedInventory.StartEffect(AEffect, ATics: Integer; const AMessage: string);
 begin
-  if (FCursor = GREED_INVENTORY_NONE) or (FState.Player.Inventory[FCursor] = 0) then
-    Right;
-end;
-
-procedure TGreedInventory.UseOne(const AMessage: string);
-begin
-  Dec(FState.Player.Inventory[FCursor]);
-  FMessages.WriteMessage(AMessage);
+  if FState.SpecialEffect <> AEffect then
+  begin
+    FState.SpecialEffect := AEffect;
+    FState.SpecialEffectTime := FState.TimeCount + ATics;
+    TotalEffectTime := ATics;
+    Dec(FState.Player.Inventory[Cursor]);
+    FMessages.WriteMessage(AMessage);
+  end;
 end;
 
 procedure TGreedInventory.Drop(AKind, ASpawnId: Integer; const AMessage: string);
 begin
   FSpawner.SpawnSprite(AKind, FState.Player.X, FState.Player.Y, 0, 0, 0, 0, False, ASpawnId);
-  UseOne(AMessage);
+  Dec(FState.Player.Inventory[Cursor]);
+  FMessages.WriteMessage(AMessage);
 end;
 
-procedure TGreedInventory.StartEffect(AEffect, ATics: Integer; const AMessage: string);
-begin
-  if FState.SpecialEffect = AEffect then
-    Exit;
-  FState.SpecialEffect := AEffect;
-  FState.SpecialEffectTime := FState.TimeCount + ATics;
-  FView.SetTotalEffectTime(ATics);
-  UseOne(AMessage);
-end;
-
-procedure TGreedInventory.HoloSuit;
+procedure TGreedInventory.UseHoloSuit;
 var
-  LIndex, LMinDistance, LDistance, LX, LY, LPicture, LScale: Integer;
-  LSprite: PGreedSprite;
+  LMinimum: Integer;
+  LPicture: Integer;
+  LScale: Integer;
+  LSprite: Integer;
+  LItem: PGreedSprite;
+  LX, LY: Integer;
+  LDistance: Integer;
 begin
-  LMinDistance := MaxInt;
+  LMinimum := MaxInt;
   LPicture := 0;
   LScale := 0;
-  LIndex := FState.Sprites.First;
-  while LIndex <> GREED_POOL_NIL do
+  LSprite := FState.Sprites.First;
+  while LSprite <> GREED_POOL_NIL do
   begin
-    LSprite := PGreedSprite(FState.Sprites.Item(LIndex));
-    if (not LSprite^.Active) and (LSprite^.HitPoints = 0) then
+    LItem := PGreedSprite(FState.Sprites.Item(LSprite));
+    if not LItem^.Active and (LItem^.HitPoints = 0) then
     begin
-      LX := (FState.Player.X - LSprite^.X) div GREED_FRACTILEUNIT;
-      LY := (FState.Player.Y - LSprite^.Y) div GREED_FRACTILEUNIT;
+      LX := (FState.Player.X - LItem^.X) div GREED_FRACTILEUNIT;
+      LY := (FState.Player.Y - LItem^.Y) div GREED_FRACTILEUNIT;
       LDistance := LX * LX + LY * LY;
-      if LDistance < LMinDistance then
+      if LDistance < LMinimum then
       begin
-        LPicture := LSprite^.BasePic;
-        LScale := LSprite^.Scale;
-        LMinDistance := LDistance;
+        LPicture := LItem^.BasePic;
+        LScale := LItem^.Scale;
+        LMinimum := LDistance;
       end;
     end;
-    LIndex := FState.Sprites.Next(LIndex);
+    LSprite := FState.Sprites.Next(LSprite);
   end;
-  if LMinDistance <> MaxInt then
+  if LMinimum <> MaxInt then
   begin
-    Dec(FState.Player.Inventory[FCursor]);
+    Dec(FState.Player.Inventory[Cursor]);
     FState.Player.HoloPic := LPicture;
     FState.Player.HoloScale := LScale;
-    FMessages.WriteMessage('HoloSuit Active');
+    FMessages.WriteMessage(SGreedHoloSuitActive);
   end
   else
-    FMessages.WriteMessage('Unsuccessful Holo');
+    FMessages.WriteMessage(SGreedUnsuccessfulHolo);
 end;
 
-procedure TGreedInventory.SoulStealer;
+procedure TGreedInventory.UseSoulStealer;
 var
-  LIndex, LAngle: Integer;
+  LAngle: Integer;
+  LIndex: Integer;
 begin
   LAngle := 0;
-  for LIndex := 0 to SOUL_BULLETS - 1 do
+  for LIndex := 0 to 15 do
   begin
     FSpawner.SpawnSprite(GREED_S_SOULBULLET, FState.Player.X, FState.Player.Y, FState.Player.Z,
       FState.Player.Height - (52 * GREED_FRACUNIT), LAngle, 0, True, FState.PlayerNum);
-    LAngle := LAngle + GREED_ANGLES div SOUL_BULLETS;
+    LAngle := LAngle + (GREED_ANGLES div 16);
   end;
   FSound.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
   FSound.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
-  UseOne('Used Soul Stealer');
+  Dec(FState.Player.Inventory[Cursor]);
+  FMessages.WriteMessage(SGreedUsedSoulStealer);
 end;
 
 procedure TGreedInventory.Use;
 begin
-  if (FCursor = GREED_INVENTORY_NONE) or (FState.Player.Inventory[FCursor] = 0) then
+  if (Cursor < 0) or (Cursor >= GREED_MAX_INVENTORY) or (FState.Player.Inventory[Cursor] = 0) then
     Exit;
-  case FCursor of
+  case Cursor of
     ITEM_MEDTUBE:
       if FState.Player.Angst < FState.Player.MaxAngst then
       begin
         FHealth.MedPaks(50);
-        UseOne('Used Medtube');
+        Dec(FState.Player.Inventory[Cursor]);
+        FMessages.WriteMessage(SGreedUsedMedtube);
       end;
     ITEM_SHIELD:
       if FState.Player.Shield < FState.Player.MaxShield then
       begin
         FHealth.Heal(50);
-        UseOne('Used Shield Charge');
+        Dec(FState.Player.Inventory[Cursor]);
+        FMessages.WriteMessage(SGreedUsedShieldCharge);
       end;
     ITEM_GRENADE:
-      FFireGrenade := True;
+      FireGrenade := True;
     ITEM_REVERSO_PILL:
-      StartEffect(GREED_SE_REVERSO_PILL, TIC_RATE * 15, 'Used Reverso Pill');
+      StartEffect(GREED_SE_REVERSOPILL, GREED_TIC_RATE * 15, SGreedUsedReversoPill);
     ITEM_PROXIMITY_MINE:
-      Drop(GREED_S_PROXMINE, FState.PlayerNum, 'Dropped Proximity Mine');
+      Drop(GREED_S_PROXMINE, FState.PlayerNum, SGreedDroppedProximityMine);
     ITEM_TIME_BOMB:
-      Drop(GREED_S_TIMEMINE, FState.PlayerNum, 'Dropped Time Bomb');
+      Drop(GREED_S_TIMEMINE, FState.PlayerNum, SGreedDroppedTimeBomb);
     ITEM_DECOY:
-      Drop(GREED_S_DECOY, FState.Player.CharType, 'Activated Decoy');
+      Drop(GREED_S_DECOY, FState.Player.CharType, SGreedActivatedDecoy);
     ITEM_INSTAWALL:
-      Drop(GREED_S_INSTAWALL, FState.PlayerNum, 'Activated InstaWall');
+      Drop(GREED_S_INSTAWALL, FState.PlayerNum, SGreedActivatedInstaWall);
     ITEM_CLONE:
-      Drop(GREED_S_CLONE, FState.Player.CharType, 'Clone Activated');
+      Drop(GREED_S_CLONE, FState.Player.CharType, SGreedCloneActivated);
     ITEM_HOLOSUIT:
-      HoloSuit;
+      UseHoloSuit;
     ITEM_INVISIBILITY:
-      StartEffect(GREED_SE_INVISIBILITY, TIC_RATE * 30, 'Activated Invisibility Shield');
+      StartEffect(GREED_SE_INVISIBILITY, GREED_TIC_RATE * 30, SGreedActivatedInvisibility);
     ITEM_WARP_JAMMER:
       FState.WarpJammer := True;
     ITEM_SOUL_STEALER:
-      SoulStealer;
+      UseSoulStealer;
   end;
-  Refresh;
+  OldInventory := GREED_INVENTORY_REDRAW;
+  Left;
+  Right;
+end;
+
+procedure TGreedInventory.ThrowGrenade;
+begin
+  if not FireGrenade then
+    Exit;
+  FSpawner.SpawnSprite(GREED_S_GRENADE, FState.Player.X, FState.Player.Y, FState.Player.Z,
+    FState.Player.Height - (50 * GREED_FRACUNIT), FState.Player.Angle, (-FState.Player.ScrollMin) and GREED_ANGLES,
+    True, FState.PlayerNum);
+  FSound.SoundEffect(GREED_SN_GRENADE, 0, FState.Player.X, FState.Player.Y);
+  Dec(FState.Player.Inventory[ITEM_GRENADE]);
+  FireGrenade := False;
 end;
 
 end.

@@ -17,7 +17,8 @@ uses
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf,
   DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Random, DelphiDoom.Greed.Render.Types,
   DelphiDoom.Greed.Render.Assets.Intf, DelphiDoom.Greed.Render.ArchiveAssets,
-  DelphiDoom.Greed.Render.FrameRenderer, DelphiDoom.Greed.SpriteLogic.Intf, DelphiDoom.Greed.GameRenderer.Intf;
+  DelphiDoom.Greed.Render.FrameRenderer, DelphiDoom.Greed.SpriteLogic.Intf, DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf,
+  DelphiDoom.Greed.WeaponLight;
 
 type
   /// <summary>
@@ -33,6 +34,8 @@ type
     FRenderer: TGreedFrameRenderer;
     FRendererIntf: IGreedFrameRenderer;
     FFixed: TArray<Boolean>;
+    FLight: TGreedWeaponLight;
+    FLightIntf: IGreedWeaponLight;
   public
     /// <summary>EArgumentNilException if the archive, the sprites, the clock or the random numbers are nil</summary>
     constructor Create(const AArchive: IGreedArchive; ASprites: TGreedLinkedPool<TGreedSprite>;
@@ -48,6 +51,8 @@ type
     procedure SetBackdrop(const APixels: TBytes);
     procedure SetActionHook(const AHook: IGreedRenderActionHook);
     procedure SetEffectsTime(ATime: Integer);
+    function WeaponLight: IGreedWeaponLight;
+    function TileLightReader: IGreedTileLights;
     procedure DemandLoadMonster(ALump, ACount: Integer);
   end;
 
@@ -72,6 +77,8 @@ begin
   FRenderer := TGreedFrameRenderer.Create(FAssetsIntf, ASprites, AClock, ARandom);
   FRendererIntf := FRenderer;
   SetLength(FFixed, AArchive.LumpCount);
+  FLight := TGreedWeaponLight.Create(FRenderer.State);
+  FLightIntf := FLight;
 end;
 
 procedure TGreedGameRenderer.Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord;
@@ -136,6 +143,16 @@ end;
 procedure TGreedGameRenderer.SetActionHook(const AHook: IGreedRenderActionHook);
 begin
   FRenderer.ActionHook := AHook;
+end;
+
+function TGreedGameRenderer.WeaponLight: IGreedWeaponLight;
+begin
+  Result := FLightIntf;
+end;
+
+function TGreedGameRenderer.TileLightReader: IGreedTileLights;
+begin
+  Result := FLight;
 end;
 
 procedure TGreedGameRenderer.SetEffectsTime(ATime: Integer);

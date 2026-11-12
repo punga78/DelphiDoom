@@ -60,6 +60,8 @@ const
   HU_FONTEND = '[';   // the last font characters
   HU_CFONTEND = '_';  // the last console font character
   HU_FONTCURSOR = 62; // Console cursor
+{$ELSEIF DEFINED(RADIX)}
+  HU_FONTEND = 'z'; // the last font characters (Radix: FNTAnnn has the small letters too)
 {$ELSE}
   HU_FONTEND = '_'; // the last font characters
 {$ENDIF}
@@ -303,6 +305,9 @@ uses
 {$ENDIF}
   r_draw,
   r_main,
+{$IFDEF RADIX}
+  radix_fonts,
+{$ENDIF}
 {$IF DEFINED(DOOM)}
   s_sound,
   st_stuff,
@@ -788,6 +793,11 @@ begin
     // how Rogue did it :P
     buffer[3] := 'B';
     yfont[i] := W_CacheLumpName(buffer, PU_STATIC);
+{$ELSEIF DEFINED(RADIX)}
+    // the small font of RADIX.DAT; a character it does not have is the empty sprite
+    buffer := 'FNTA';
+    hu_font[i] := W_CacheLumpNum(RX_FontLumpNum(buffer, j), PU_STATIC);
+    inc(j);
 {$ELSE}
     buffer := 'STCFN' + IntToStrZfill(3, j);
     inc(j);
@@ -800,6 +810,10 @@ begin
     m_font3[c] := W_CacheLumpName('FONT3_' + c, PU_STATIC);
   m_font3[Chr(Ord('Z') + 1)] := W_CacheLumpName('FONT3_!', PU_STATIC);
 {$ENDIF}
+{$IFDEF RADIX}
+
+  RX_InitFonts;
+{$ENDIF}
 
   for i := 0 to FPSSIZE - 1 do
     FPSHISTORY[i] := 0;
@@ -810,7 +824,12 @@ begin
     FPSHISTORY2[i] := 0;
 
   for i := 0 to 4 do
+{$IFDEF RADIX}
+    // the system WAD of Radix has no crosshairs of the engine (the cockpit draws its own)
+    crosshairs[i] := W_CacheLumpNum(RX_LumpNumOrEmpty('XCROSS' + itoa(i)), PU_STATIC);
+{$ELSE}
     crosshairs[i] := W_CacheLumpName('XCROSS' + itoa(i), PU_STATIC);
+{$ENDIF}
 
   C_AddCmd('fps', @HU_CmdFPS);
   C_AddCmd('playermessage', @HU_CmdPlayerMessage);

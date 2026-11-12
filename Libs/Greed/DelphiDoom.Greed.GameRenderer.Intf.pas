@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Actor.Types,
   DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Random,
-  DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.Spawner.Intf, DelphiDoom.Greed.SpriteLogic.Intf;
+  DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.Spawner.Intf, DelphiDoom.Greed.SpriteLogic.Intf, DelphiDoom.Greed.Hud.Intf;
 
 type
   /// <summary>
@@ -46,6 +46,10 @@ type
     ///   with the clock of the game
     /// </summary>
     procedure SetEffectsTime(ATime: Integer);
+    /// <summary>The light of the tile of the player on the weapon (the HUD paints the weapon); nil if there is none</summary>
+    function WeaponLight: IGreedWeaponLight;
+    /// <summary>reallight as the HUD reads it (the heat map); nil if there is none</summary>
+    function TileLightReader: IGreedTileLights;
   end;
 
   /// <summary>

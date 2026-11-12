@@ -247,7 +247,21 @@ Tolti in 4 lotti (build degli 8 giochi e degli strumenti verde dopo ognuno): 95 
 
 Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e numeri: `Libs\OpenGl\CLAUDE.md`.
 
-- Fatte: 0 (spostamento), 1 (registratore), 2 (mesh dei voxel), 3 (MODELDEF), 4 (geometria a freddo, tranne `gl_setup` e `gl_slopes`), 5 (buffer delle texture), 8 (automap: `Libs\GlAutomap` e `TEngineGlAutomapPainter`; restano gli `{$IFDEF OPENGL}` di `am_map` e `am_textured`, il cui altro ramo e' il disegno software per pixel).
-- Restano: 6 (lightmap dei voxel: manca un livello di prova con voxel e luci dinamiche), 7 (finestra e contesto: prove a mano di schermo intero, Alt+Tab, cambio di modo), 9 e 10 (la scena: raccolta e disegno, il percorso caldo vero), 11 (modelli), 12 (facciate, poi `Libs\OpenGl\Legacy` vuota).
+- Fatte: 0 (spostamento), 1 (registratore), 2 (mesh dei voxel), 3 (MODELDEF), 4 (geometria a freddo, tranne `gl_setup` e `gl_slopes`), 5 (buffer delle texture), 8 (automap: `Libs\GlAutomap` e `TEngineGlAutomapPainter`; restano gli `{$IFDEF OPENGL}` di `am_map` e `am_textured`, il cui altro ramo e' il disegno software per pixel). **9** (raccolta della scena: `Libs\GlScene` e le classi `DelphiDoom.Engine.GlScene.*`, chiamate direttamente da `gl_render`).
+- Restano: 6 (lightmap dei voxel: manca un livello di prova con voxel e luci dinamiche), 7 (finestra e contesto: prove a mano di schermo intero, Alt+Tab, cambio di modo), **10** (il disegno della scena, circa 2700 righe di `gl_render.pas`: non cominciata; l'ordine dei passi e' in `docs\OPENGL_PIANO.md`), 11 (modelli), 12 (facciate, poi `Libs\OpenGl\Legacy` vuota).
 - Non verificato della fetta 8: pavimenti ruotati o con scorrimento nell'automap a texture, automap in sovrapposizione, Win64.
+- Non verificato della fetta 9: 3d floor, flat ruotati, luci dinamiche da GLDEFS (rami senza chiamate GL nei livelli di prova), Win64; le classi di raccolta non hanno test DUnitX (leggono i record del motore): la prova e' il flusso GL. `gl_setup` e `gl_slopes` della fetta 4 restano come sono. Le `-timedemo` dei passi 9c e 9d sono state misurate con il PC carico (dispersione fino al 40%): da rifare a PC scarico.
 - Le misure di `-timedemo` sono fatte con l'OpenGL della VM (Mesa/SVGA3D, 12-14 fotogrammi al secondo) e con altri processi sul PC: la dispersione tra due esecuzioni uguali arriva al 2-3%.
+
+## Speed Haste sul motore (#168, 2026-11-12)
+
+- **Eccezione inghiottita nei `.dpr` dei giochi**: `try DoomMain except I_FlashCachedOutput; end;` (`Doom32.dpr`, `GLDoom32.dpr`, `Radix32.dpr`, `SpeedHaste32.dpr`...) cattura un'eccezione del ciclo principale in Release, non chiama il crash logger (`i_crashlog`) e il programma esce con codice 0 senza `crash.txt` ne' righe di chiusura. Trovato con `SpeedHaste32` (access violation in `R_DrawPSprite`). Proposta: nell'`except` scrivere classe e indirizzo su stderr e uscire con un codice diverso da 0. Non fatto: tocca i `.dpr` di tutti i giochi.
+- **`R_DrawPSprite` senza controllo dei fotogrammi** (`Base\r_things.pas`): uno sprite dell'arma senza fotogrammi (`numframes = 0`, `spriteframes = nil`) e' letto lo stesso; `R_ProjectSprite` ha gia' il ripiego. Ora la protezione c'e' solo sotto `{$IFDEF SPEED}` (per non cambiare il codice compilato degli altri giochi senza rifare le demo); va resa generale con una prova `-timedemo`.
+- **`Invalid WAD file speedh.jcl` / `Unknown file type`**: due avvisi all'avvio di `SpeedHaste32` (e di `Radix32` per `radix.dat`): dopo la traduzione il file dei dati e' proposto anche al lettore dei WAD e al file system PAK. Innocui, non indagati.
+- Speed: che cosa manca per il gioco e' in `Libs\Speed\CLAUDE.md` ("Cosa resta").
+
+## Radix (#169)
+
+- `Radix32 -warp 1 1`: `Z_CheckHeap(): Block 1303 of the table has the index 909128244 in its header` alla fine del caricamento del livello. Lo heap della zona e' sano dopo `M_Init` e rovinato alla fine di `R_Init` (controlli temporanei, non nel repository): da cercare tra i passi di `R_Init` con i dati di Radix (texture SKY oltre 64k, flat da 16384 byte, sprite, tabelle). Senza `-warp` il difetto non si vede.
+- Il comando `menu_main` in un file `-con` non lascia aperto il menu (visto in Radix32; non provato negli altri giochi).
+- Non verificati a runtime in Radix32: menu principale e menu delle opzioni (non catturati), carica/salva, le pagine di aiuto, l'automap, tutto cio' che viene dopo il caricamento di un livello. Stato e piano: `Libs\Radix\CLAUDE.md`.
