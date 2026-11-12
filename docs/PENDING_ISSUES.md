@@ -250,4 +250,5 @@ Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e num
 - Fatte: 0 (spostamento), 1 (registratore), 2 (mesh dei voxel), 3 (MODELDEF), 4 (geometria a freddo, tranne `gl_setup` e `gl_slopes`), 5 (buffer delle texture), 8 (automap: `Libs\GlAutomap` e `TEngineGlAutomapPainter`; restano gli `{$IFDEF OPENGL}` di `am_map` e `am_textured`, il cui altro ramo e' il disegno software per pixel).
 - Restano: 6 (lightmap dei voxel: manca un livello di prova con voxel e luci dinamiche), 7 (finestra e contesto: prove a mano di schermo intero, Alt+Tab, cambio di modo), 9 e 10 (la scena: raccolta e disegno, il percorso caldo vero), 11 (modelli), 12 (facciate, poi `Libs\OpenGl\Legacy` vuota).
 - Non verificato della fetta 8: pavimenti ruotati o con scorrimento nell'automap a texture, automap in sovrapposizione, Win64.
+- In corso (2026-11-12): fette 9 e 10 (scena), a passi piccoli con parita del flusso GL e `-timedemo demo3` a coppie dopo ogni passo.
 - Le misure di `-timedemo` sono fatte con l'OpenGL della VM (Mesa/SVGA3D, 12-14 fotogrammi al secondo) e con altri processi sul PC: la dispersione tra due esecuzioni uguali arriva al 2-3%.
