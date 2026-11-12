@@ -30,6 +30,24 @@ uses
 
 var
   Maps: array[1..6] of TSpawnMap;
+  Demands: TArray<TSpawnRow>;
+
+// the lumps that DemandLoadMonster cached in the last call are one demand: the first lump and how many. The cache
+// is emptied, so that the next call asks again (the library tells every demand to who keeps the pictures)
+procedure CollectDemand;
+var
+  i, n: integer;
+begin
+  if numcachedlumps = 0 then
+    exit;
+  for i := 1 to numcachedlumps - 1 do
+    if cachedlumps[i] <> cachedlumps[0] + i then
+      raise Exception.Create('DemandLoadMonster: the lumps are not in a row');
+  n := Length(Demands);
+  SetLength(Demands, n + 1);
+  Demands[n] := TSpawnRow.Create(SPAWN_CALL_DEMAND, cachedlumps[0], numcachedlumps, 0, 0);
+  CA_ForgetLumps;
+end;
 
 procedure Prepare(const ACase: TSpawnCase);
 var
@@ -40,6 +58,7 @@ begin
   FillChar(doorlist, SizeOf(doorlist), 0);
   FillChar(spawnareas, SizeOf(spawnareas), 0);
   CA_ForgetLumps;
+  Demands := nil;
   numsoundcalls := 0;
   Move(Maps[ACase.MapSeed].FloorHeight, floorheight, SPAWN_TILES);
   Move(Maps[ACase.MapSeed].CeilingHeight, ceilingheight, SPAWN_TILES);
@@ -149,15 +168,7 @@ begin
   Move(mapflags, tiles, SPAWN_TILES);
   Result.MapFlagsHash := TSpawnScenarios.HashTiles(tiles);
   Result.RandomUsed := rndofs - ACase.RandomOffset;
-  // the lumps that DemandLoadMonster cached are one call: the first lump and how many
-  if numcachedlumps > 0 then
-  begin
-    SetLength(Result.Calls, 1);
-    Result.Calls[0] := TSpawnRow.Create(SPAWN_CALL_DEMAND, cachedlumps[0], numcachedlumps, 0, 0);
-    for i := 1 to numcachedlumps - 1 do
-      if cachedlumps[i] <> cachedlumps[0] + i then
-        raise Exception.Create('DemandLoadMonster: the lumps are not in a row');
-  end;
+  Result.Calls := Copy(Demands);
   for i := 0 to numsoundcalls - 1 do
   begin
     n := Length(Result.Calls);
@@ -190,7 +201,7 @@ var
   LSnapshot: TSpawnSnapshot;
   LReturned: Pscaleobj_t;
   LFailed: boolean;
-  i, LFailures, LSprites: integer;
+  i, j, LFailures, LSprites, LSequenceFailures: integer;
 begin
   try
     if ParamCount < 1 then
@@ -222,6 +233,7 @@ begin
             inc(LFailures);
           end;
         end;
+        CollectDemand;
         if LReturned <> nil then
           inc(LSprites);
         LSnapshot := Snapshot(LCase, LReturned, LFailed);
@@ -232,11 +244,38 @@ begin
           LFull.Add(TSpawnScenarios.Describe(LSnapshot));
         end;
       end;
+      LGolden.Add('# sequences of calls in one world: S sequence failures sprites elevators doors areas random fingerprint');
+      for i := 0 to SPAWN_SEQUENCES - 1 do
+      begin
+        Prepare(TSpawnScenarios.SequenceStart(i));
+        LReturned := nil;
+        LSequenceFailures := 0;
+        for j := 0 to SPAWN_SEQUENCE_STEPS - 1 do
+        begin
+          LCase := TSpawnScenarios.SequenceStep(i, j);
+          LReturned := nil;
+          try
+            LReturned := SpawnSprite(LCase.Value, LCase.X, LCase.Y, LCase.Z, LCase.ZAdjust, LCase.Angle,
+              LCase.Angle2, LCase.Active, LCase.SpawnId);
+          except
+            on E: Exception do
+              inc(LSequenceFailures);
+          end;
+          CollectDemand;
+        end;
+        LSnapshot := Snapshot(TSpawnScenarios.SequenceStart(i), LReturned, LSequenceFailures > 0);
+        LGolden.Add(TSpawnScenarios.SequenceLine(i, LSequenceFailures, LSnapshot));
+        if ParamCount >= 2 then
+        begin
+          LFull.Add('== sequence ' + IntToStr(i));
+          LFull.Add(TSpawnScenarios.Describe(LSnapshot));
+        end;
+      end;
       LGolden.SaveToFile(ParamStr(1));
       if ParamCount >= 2 then
         LFull.SaveToFile(ParamStr(2));
-      Writeln(Format('%d cases, %d returned a sprite, %d stopped with MS_Error',
-        [TSpawnScenarios.CaseCount, LSprites, LFailures]));
+      Writeln(Format('%d cases, %d returned a sprite, %d stopped with MS_Error; %d sequences of %d calls',
+        [TSpawnScenarios.CaseCount, LSprites, LFailures, SPAWN_SEQUENCES, SPAWN_SEQUENCE_STEPS]));
     finally
       LFull.Free;
       LGolden.Free;

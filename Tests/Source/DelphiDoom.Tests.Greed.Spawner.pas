@@ -69,6 +69,9 @@ type
     FSpawner: IGreedSpawner;
     procedure NewGame;
     function Spawn(AValue, ATileX, ATileY: Integer; AActive: Boolean = True; ASpawnId: Integer = 0): Integer;
+    procedure PrepareCase(const ACase: TSpawnCase; const AMap: TSpawnMap);
+    function CallCase(const ACase: TSpawnCase; out AReturned: Integer): Boolean;
+    function TakeSnapshot(const AStart: TSpawnCase; AReturned: Integer; AFailed: Boolean): TSpawnSnapshot;
     function RunCase(const ACase: TSpawnCase; const AMap: TSpawnMap): TSpawnSnapshot;
   public
     [Setup]
@@ -119,6 +122,8 @@ type
     procedure DovrebbeAzzerareIContatori;
     [Test]
     procedure DovrebbeDareGliStessiRisultatiDelCodiceOriginale;
+    [Test]
+    procedure DovrebbeDareGliStessiRisultatiInSequenzaNelloStessoMondo;
   end;
 
 implementation
@@ -596,13 +601,9 @@ begin
     S.NewZ, S.NewAngle, S.NewAngle2, S.NewFloorZ, Ord(S.Grounded));
 end;
 
-function TTestGreedSpawner.RunCase(const ACase: TSpawnCase; const AMap: TSpawnMap): TSpawnSnapshot;
+procedure TTestGreedSpawner.PrepareCase(const ACase: TSpawnCase; const AMap: TSpawnMap);
 var
-  LSpot, LNumber, LIndex, LCount: Integer;
-  LTiles: TSpawnTiles;
-  LElevator: TGreedElevator;
-  LDoor: TGreedDoor;
-  LArea: TGreedSpawnArea;
+  LSpot, LNumber, LIndex: Integer;
 begin
   NewGame;
   for LSpot := 0 to SPAWN_TILES - 1 do
@@ -639,17 +640,44 @@ begin
   FSpawnerObject.BloodCount := ACase.BloodCount;
   FSpawnerObject.MetalCount := ACase.MetalCount;
   FRandom.Offset := ACase.RandomOffset;
+end;
 
-  Result := Default(TSpawnSnapshot);
-  Result.Returned := GREED_POOL_NIL;
+function TTestGreedSpawner.CallCase(const ACase: TSpawnCase; out AReturned: Integer): Boolean;
+begin
+  Result := True;
+  AReturned := GREED_POOL_NIL;
   try
-    Result.Returned := FSpawner.SpawnSprite(ACase.Value, ACase.X, ACase.Y, ACase.Z, ACase.ZAdjust, ACase.Angle,
+    AReturned := FSpawner.SpawnSprite(ACase.Value, ACase.X, ACase.Y, ACase.Z, ACase.ZAdjust, ACase.Angle,
       ACase.Angle2, ACase.Active, ACase.SpawnId);
   except
+    // where the original stops with MS_Error
     on EGreedException do
-      Result.Failed := True;
+      Result := False;
   end;
+end;
 
+function TTestGreedSpawner.RunCase(const ACase: TSpawnCase; const AMap: TSpawnMap): TSpawnSnapshot;
+var
+  LReturned: Integer;
+  LDone: Boolean;
+begin
+  PrepareCase(ACase, AMap);
+  LDone := CallCase(ACase, LReturned);
+  Result := TakeSnapshot(ACase, LReturned, not LDone);
+end;
+
+function TTestGreedSpawner.TakeSnapshot(const AStart: TSpawnCase; AReturned: Integer;
+  AFailed: Boolean): TSpawnSnapshot;
+var
+  LNumber, LIndex, LCount: Integer;
+  LTiles: TSpawnTiles;
+  LElevator: TGreedElevator;
+  LDoor: TGreedDoor;
+  LArea: TGreedSpawnArea;
+begin
+  Result := Default(TSpawnSnapshot);
+  Result.Returned := AReturned;
+  Result.Failed := AFailed;
   LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
@@ -687,7 +715,7 @@ begin
   Result.MapSpritesHash := TSpawnScenarios.HashTiles(LTiles);
   FWorld.CopyMapFlags(@LTiles[0]);
   Result.MapFlagsHash := TSpawnScenarios.HashTiles(LTiles);
-  Result.RandomUsed := FRandom.Offset - ACase.RandomOffset;
+  Result.RandomUsed := FRandom.Offset - AStart.RandomOffset;
   Result.Calls := FLog.Calls;
   SetLength(Result.Globals, 27);
   Result.Globals[0] := FState.Player.X;
@@ -727,7 +755,8 @@ begin
   LDump := TStringList.Create;
   try
     LGolden.LoadFromFile(TGreedRealData.GoldenPath(GOLDEN_NAME));
-    Assert.AreEqual(TSpawnScenarios.CaseCount + 1, LGolden.Count, 'the golden file is of another list of cases');
+    Assert.AreEqual(TSpawnScenarios.CaseCount + SPAWN_SEQUENCES + 2, LGolden.Count,
+      'the golden file is of another list of cases');
     LLine := 1;
     for LIndex := 0 to TSpawnScenarios.CaseCount - 1 do
     begin
@@ -760,6 +789,63 @@ begin
   Assert.AreEqual(0, LDifferences, Format('%d cases of %d differ; the first: %s', [LDifferences,
     TSpawnScenarios.CaseCount, LFirst]));
   Assert.IsTrue(LWithSprite > 1000, 'the cases must make sprites');
+end;
+
+procedure TTestGreedSpawner.DovrebbeDareGliStessiRisultatiInSequenzaNelloStessoMondo;
+var
+  LGolden, LDump: TStringList;
+  LMaps: array[1..6] of TSpawnMap;
+  LStart: TSpawnCase;
+  LSnapshot: TSpawnSnapshot;
+  LIndex, LStep, LReturned, LFailures, LDifferences, LSprites: Integer;
+  LFirst, LExpected, LActual, LDumpName: string;
+begin
+  for LIndex := Low(LMaps) to High(LMaps) do
+    TSpawnScenarios.BuildMap(LIndex, LMaps[LIndex]);
+  LDumpName := GetEnvironmentVariable(DUMP_VARIABLE);
+  LDifferences := 0;
+  LSprites := 0;
+  LFirst := '';
+  LGolden := TStringList.Create;
+  LDump := TStringList.Create;
+  try
+    LGolden.LoadFromFile(TGreedRealData.GoldenPath(GOLDEN_NAME));
+    Assert.AreEqual(TSpawnScenarios.CaseCount + SPAWN_SEQUENCES + 2, LGolden.Count,
+      'the golden file is of another list of cases');
+    for LIndex := 0 to SPAWN_SEQUENCES - 1 do
+    begin
+      LStart := TSpawnScenarios.SequenceStart(LIndex);
+      PrepareCase(LStart, LMaps[LStart.MapSeed]);
+      LFailures := 0;
+      LReturned := GREED_POOL_NIL;
+      for LStep := 0 to SPAWN_SEQUENCE_STEPS - 1 do
+        if not CallCase(TSpawnScenarios.SequenceStep(LIndex, LStep), LReturned) then
+          Inc(LFailures);
+      LSnapshot := TakeSnapshot(LStart, LReturned, LFailures > 0);
+      Inc(LSprites, Length(LSnapshot.Sprites));
+      LExpected := LGolden[TSpawnScenarios.CaseCount + 2 + LIndex];
+      LActual := TSpawnScenarios.SequenceLine(LIndex, LFailures, LSnapshot);
+      if LDumpName <> '' then
+      begin
+        LDump.Add('== sequence ' + IntToStr(LIndex));
+        LDump.Add(TSpawnScenarios.Describe(LSnapshot));
+      end;
+      if LExpected <> LActual then
+      begin
+        Inc(LDifferences);
+        if LFirst = '' then
+          LFirst := Format('sequence %d: original "%s", library "%s"', [LIndex, LExpected, LActual]);
+      end;
+    end;
+    if LDumpName <> '' then
+      LDump.SaveToFile(LDumpName + '.sequences');
+  finally
+    LDump.Free;
+    LGolden.Free;
+  end;
+  Assert.AreEqual(0, LDifferences, Format('%d sequences of %d differ; the first: %s', [LDifferences,
+    SPAWN_SEQUENCES, LFirst]));
+  Assert.IsTrue(LSprites > 5000, 'the sequences must make sprites');
 end;
 
 initialization

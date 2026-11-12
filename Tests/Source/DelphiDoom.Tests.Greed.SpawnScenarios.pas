@@ -27,6 +27,12 @@ const
   SPAWN_LAST_VALUE = 700;
   SPAWN_PASSES = 6;
   SPAWN_EXTRA_ROUNDS = 50;
+  /// <summary>
+  ///   After the single cases: SPAWN_SEQUENCES games where SPAWN_SEQUENCE_STEPS calls follow each other in the same
+  ///   world (as when a map is loaded), written down once at the end
+  /// </summary>
+  SPAWN_SEQUENCES = 200;
+  SPAWN_SEQUENCE_STEPS = 120;
   /// <summary>What a line of the calls of a snapshot is</summary>
   SPAWN_CALL_SOUND = 1;
   SPAWN_CALL_DEMAND = 2;
@@ -82,6 +88,12 @@ type
   public
     class function CaseCount: Integer; static;
     class function CaseAt(AIndex: Integer): TSpawnCase; static;
+    /// <summary>The state in which a sequence starts (its value and arguments are not used)</summary>
+    class function SequenceStart(ASequence: Integer): TSpawnCase; static;
+    /// <summary>The value and the arguments of a call of a sequence (its state is not used)</summary>
+    class function SequenceStep(ASequence, AStep: Integer): TSpawnCase; static;
+    /// <summary>The line of the golden file of a sequence; AFailures is how many calls stopped with an error</summary>
+    class function SequenceLine(ASequence, AFailures: Integer; const ASnapshot: TSpawnSnapshot): string; static;
     class procedure BuildMap(ASeed: Cardinal; out AMap: TSpawnMap); static;
     /// <summary>The kind of the sprite number AIndex that is in the list before the call</summary>
     class function PrefillKind(AIndex: Integer): Integer; static;
@@ -181,6 +193,58 @@ begin
   else
     Result.MetalCount := NextRandom(LSeed) mod 101;
   Result.Prefill := NextRandom(LSeed) mod 12;
+end;
+
+class function TSpawnScenarios.SequenceStart(ASequence: Integer): TSpawnCase;
+begin
+  Result := CaseAt(SPAWN_LAST_VALUE + 1 + ASequence * 7);
+  // the sequence fills the list by itself and the counters start as when a map is loaded
+  Result.Prefill := 0;
+  if ASequence and 1 = 0 then
+  begin
+    Result.BloodCount := 0;
+    Result.MetalCount := 0;
+  end;
+end;
+
+class function TSpawnScenarios.SequenceStep(ASequence, AStep: Integer): TSpawnCase;
+const
+  // the values that SpawnSprite knows, as ranges
+  LIVE_RANGES: array[0..19, 0..1] of Integer = (
+    (1, 8), (11, 13), (15, 16), (19, 24), (27, 28), (30, 31), (34, 39), (49, 73), (75, 103), (105, 123),
+    (133, 138), (140, 173), (200, 214), (241, 255), (400, 421), (513, 553), (600, 607), (10, 10), (532, 532),
+    (607, 607));
+var
+  LSeed: Cardinal;
+  LSingle, LPick, LRange, LSize: Integer;
+begin
+  LSingle := (SPAWN_LAST_VALUE + 1) * (SPAWN_PASSES - 1);
+  Result := CaseAt(SPAWN_LAST_VALUE + 1 + (ASequence * 977 + AStep * 131) mod LSingle);
+  LSeed := Cardinal(ASequence) * 40503 + Cardinal(AStep) * 69069 + 1;
+  // three calls in four are of a value that does something
+  if NextRandom(LSeed) and 3 = 0 then
+    Exit;
+  LSize := 0;
+  for LRange := Low(LIVE_RANGES) to High(LIVE_RANGES) do
+    Inc(LSize, LIVE_RANGES[LRange][1] - LIVE_RANGES[LRange][0] + 1);
+  LPick := NextRandom(LSeed) mod LSize;
+  for LRange := Low(LIVE_RANGES) to High(LIVE_RANGES) do
+  begin
+    LSize := LIVE_RANGES[LRange][1] - LIVE_RANGES[LRange][0] + 1;
+    if LPick < LSize then
+    begin
+      Result.Value := LIVE_RANGES[LRange][0] + LPick;
+      Exit;
+    end;
+    Dec(LPick, LSize);
+  end;
+end;
+
+class function TSpawnScenarios.SequenceLine(ASequence, AFailures: Integer; const ASnapshot: TSpawnSnapshot): string;
+begin
+  Result := Format('S %d %d %d %d %d %d %d %s', [ASequence, AFailures, Length(ASnapshot.Sprites),
+    Length(ASnapshot.Elevators), Length(ASnapshot.Doors), Length(ASnapshot.Areas), ASnapshot.RandomUsed,
+    IntToHex(Fingerprint(Describe(ASnapshot)), 8)]);
 end;
 
 class procedure TSpawnScenarios.BuildMap(ASeed: Cardinal; out AMap: TSpawnMap);

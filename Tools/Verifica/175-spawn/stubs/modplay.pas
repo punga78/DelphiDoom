@@ -9,7 +9,7 @@ type
   end;
 var
   SC: SoundCard;
-  soundcalls: array[0..63] of soundcall_t;
+  soundcalls: array[0..4095] of soundcall_t;
   numsoundcalls: integer = 0;
 procedure SoundEffect(const n: integer; const variation: integer; const x, y: fixed_t);
 implementation
