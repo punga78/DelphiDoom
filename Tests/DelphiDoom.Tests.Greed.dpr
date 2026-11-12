@@ -132,6 +132,8 @@ uses
   DelphiDoom.Greed.HostAudio in '..\Greed\DelphiDoom.Greed.HostAudio.pas',
   DelphiDoom.Greed.TrackerSongDecoder in '..\Greed\DelphiDoom.Greed.TrackerSongDecoder.pas',
   DelphiDoom.Tests.Greed.PcmMixer in 'Source\DelphiDoom.Tests.Greed.PcmMixer.pas',
+  DelphiDoom.Tests.Greed.PlayerScenarios in 'Source\DelphiDoom.Tests.Greed.PlayerScenarios.pas',
+  DelphiDoom.Tests.Greed.PlayerControl in 'Source\DelphiDoom.Tests.Greed.PlayerControl.pas',
   DelphiDoom.Tests.Greed.Doors in 'Source\DelphiDoom.Tests.Greed.Doors.pas',
   DelphiDoom.Tests.Greed.GameTables in 'Source\DelphiDoom.Tests.Greed.GameTables.pas',
   DelphiDoom.Tests.Greed.GameState in 'Source\DelphiDoom.Tests.Greed.GameState.pas',
