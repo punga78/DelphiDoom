@@ -33,7 +33,7 @@ implementation
 
 uses
   DelphiDoom.Keen.Factory, DelphiDoom.Keen.PngEncoder, DelphiDoom.Keen.MapExporter, DelphiDoom.Keen.ViewExporter,
-  DelphiDoom.Video.Factory, DelphiDoom.Png.Provider, DelphiDoom.Platform.Factory;
+  DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder, DelphiDoom.Platform.Factory;
 
 { TKeenComposition }
 
@@ -45,14 +45,14 @@ end;
 class function TKeenComposition.CreateMapExporter(const AData: IKeenGameData): IKeenMapExporter;
 begin
   Result := TKeenMapExporter.Create(AData, TKeenFactory.CreateMapRenderer,
-    TKeenPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client),
+    TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client)),
     TPlatformFactory.CreateFileStore);
 end;
 
 class function TKeenComposition.CreateViewExporter(const AData: IKeenGameData): IKeenViewExporter;
 begin
   Result := TKeenViewExporter.Create(AData,
-    TKeenPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client),
+    TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client)),
     TPlatformFactory.CreateFileStore);
 end;
 

@@ -46,8 +46,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.PngEncoder, DelphiDoom.Png.Intf, DelphiDoom.Png.Client, DelphiDoom.Png.Provider,
-  DelphiDoom.Video.Factory, DelphiDoom.Tests.Xcom.Builders;
+  DelphiDoom.Xcom.PngEncoder, DelphiDoom.Png.Intf, DelphiDoom.Png.Client, DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder,
+  DelphiDoom.Tests.Xcom.Builders;
 
 { TTestXcomPngEncoder }
 
@@ -66,7 +66,7 @@ end;
 
 procedure TTestXcomPngEncoder.Setup;
 begin
-  FEncoder := TXcomPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client);
+  FEncoder := TXcomPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
 end;
 
 procedure TTestXcomPngEncoder.TearDown;
@@ -138,12 +138,12 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      TXcomPngEncoder.Create(nil, TPngProvider.Client);
+      TXcomPngEncoder.Create(nil);
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TXcomPngEncoder.Create(TVideoFactory.CreatePaletteConverter, nil);
+      TPngIndexedEncoder.Create(nil);
     end, EArgumentNilException);
 end;
 

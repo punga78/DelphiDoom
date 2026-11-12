@@ -33,7 +33,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Xcom.Factory, DelphiDoom.Xcom.PngEncoder, DelphiDoom.Video.Factory, DelphiDoom.Png.Provider,
+  DelphiDoom.Xcom.Factory, DelphiDoom.Xcom.PngEncoder, DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder,
   DelphiDoom.Platform.Factory;
 
 { TXcomComposition }
@@ -46,7 +46,7 @@ end;
 class function TXcomComposition.CreateImageExporter: TXcomImageExporter;
 begin
   Result := TXcomImageExporter.Create(
-    TXcomPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client),
+    TXcomPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client)),
     TPlatformFactory.CreateFileStore);
 end;
 

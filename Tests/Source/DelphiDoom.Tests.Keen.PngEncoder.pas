@@ -45,14 +45,13 @@ implementation
 
 uses
   DelphiDoom.Keen.PngEncoder, DelphiDoom.Keen.EgaPalette, DelphiDoom.Png.Intf, DelphiDoom.Png.Client,
-  DelphiDoom.Png.Provider,
-  DelphiDoom.Video.Factory;
+  DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder;
 
 { TTestKeenPngEncoder }
 
 procedure TTestKeenPngEncoder.Setup;
 begin
-  FEncoder := TKeenPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client);
+  FEncoder := TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
 end;
 
 procedure TTestKeenPngEncoder.TearDown;
@@ -135,12 +134,12 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      TKeenPngEncoder.Create(nil, TPngProvider.Client);
+      TKeenPngEncoder.Create(nil);
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TKeenPngEncoder.Create(TVideoFactory.CreatePaletteConverter, nil);
+      TPngIndexedEncoder.Create(nil);
     end, EArgumentNilException);
 end;
 

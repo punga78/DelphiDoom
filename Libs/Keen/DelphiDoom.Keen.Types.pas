@@ -13,7 +13,7 @@ unit DelphiDoom.Keen.Types;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, DelphiDoom.Png.IndexedImage;
 
 const
   // ---- graphkdr.h: how many items the graphics file has ----
@@ -293,12 +293,9 @@ type
     Priority: Integer;
   end;
 
-  /// <summary>An image with one byte for each pixel: the EGA color 0..15, or KEEN_PIXEL_TRANSPARENT</summary>
-  TKeenChunkyImage = record
-    Width: Integer;
-    Height: Integer;
-    Pixels: TBytes;
-  end;
+  /// <summary>An image with one byte for each pixel: the EGA color 0..15, or KEEN_PIXEL_TRANSPARENT.
+  /// It is the common picture of Libs\Png (width, height, a byte for each pixel)</summary>
+  TKeenChunkyImage = TIndexedImage;
 
 implementation
 

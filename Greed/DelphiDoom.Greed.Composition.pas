@@ -42,7 +42,7 @@ implementation
 
 uses
   System.IOUtils, DelphiDoom.Greed.Factory, DelphiDoom.Greed.PngEncoder, DelphiDoom.Greed.PngExporter,
-  DelphiDoom.Video.Factory, DelphiDoom.Png.Provider, DelphiDoom.Platform.Factory, DelphiDoom.Clock.Factory,
+  DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder, DelphiDoom.Platform.Factory, DelphiDoom.Clock.Factory,
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.World,
   DelphiDoom.Greed.Palette, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.PlayerMovement,
   DelphiDoom.Greed.TopDownRenderer, DelphiDoom.Greed.GameLoop, DelphiDoom.Greed.MovementHost,
@@ -129,7 +129,7 @@ begin
   Result := TGreedPngExporter.Create(AArchive,
     TGreedFactory.CreateMapLoader(AArchive, TGreedFactory.CreateFolderFiles(AFolders)),
     TGreedFactory.CreateMapRenderer(AArchive), TGreedFactory.CreateLumpClassifier(AArchive),
-    TGreedPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client),
+    TGreedPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client)),
     TPlatformFactory.CreateFileStore);
 end;
 
@@ -263,7 +263,7 @@ begin
         LImage.OriginX := 0;
         LImage.OriginY := 0;
         LImage.Pixels := LLoop.FrameBuffer.Pixels;
-        LEncoder := TGreedPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client);
+        LEncoder := TGreedPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
         TFile.WriteAllBytes(AShotPath, LEncoder.Encode(LImage, LPalette, False));
       end;
     finally

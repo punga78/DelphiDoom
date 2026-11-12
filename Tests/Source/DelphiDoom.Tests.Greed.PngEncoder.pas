@@ -48,13 +48,13 @@ implementation
 
 uses
   DelphiDoom.Greed.PngEncoder, DelphiDoom.Greed.Palette, DelphiDoom.Png.Intf, DelphiDoom.Png.Client,
-  DelphiDoom.Png.Provider, DelphiDoom.Video.Factory, DelphiDoom.Tests.Greed.Builders;
+  DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder, DelphiDoom.Tests.Greed.Builders;
 
 { TTestGreedPngEncoder }
 
 procedure TTestGreedPngEncoder.Setup;
 begin
-  FEncoder := TGreedPngEncoder.Create(TVideoFactory.CreatePaletteConverter, TPngProvider.Client);
+  FEncoder := TGreedPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
   FPalette := TGreedPalette.FromLump(TGreedLumps.Palette);
 end;
 
@@ -140,8 +140,8 @@ end;
 
 procedure TTestGreedPngEncoder.DovrebbeVolereLeSueParti;
 begin
-  Assert.WillRaise(procedure begin TGreedPngEncoder.Create(nil, TPngProvider.Client); end, EArgumentNilException);
-  Assert.WillRaise(procedure begin TGreedPngEncoder.Create(TVideoFactory.CreatePaletteConverter, nil); end, EArgumentNilException);
+  Assert.WillRaise(procedure begin TGreedPngEncoder.Create(nil); end, EArgumentNilException);
+  Assert.WillRaise(procedure begin TPngIndexedEncoder.Create(nil); end, EArgumentNilException);
 end;
 
 initialization
