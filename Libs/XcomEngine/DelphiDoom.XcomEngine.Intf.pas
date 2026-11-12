@@ -122,13 +122,6 @@ type
     function Modes: TArray<TXcomDisplayMode>;
   end;
 
-  /// <summary>The clock in milliseconds (SDL_GetTicks) and the wait (SDL_Delay)</summary>
-  IXcomClock = interface
-    ['{E26B84A1-9F03-47D5-B618-3A5C0D7E92F4}']
-    function Ticks: Cardinal;
-    procedure Delay(AMilliseconds: Cardinal);
-  end;
-
   /// <summary>The audio output; OpenXcom plays sounds and music through it (not used by the menus)</summary>
   IXcomAudioDevice = interface
     ['{0C58D7E3-6B29-4A14-A3F0-9E81B2C45D76}']

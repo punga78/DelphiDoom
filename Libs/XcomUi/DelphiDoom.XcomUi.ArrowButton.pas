@@ -10,6 +10,7 @@ unit DelphiDoom.XcomUi.ArrowButton;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomUi.ScrollableList, DelphiDoom.XcomUi.ImageButton;
@@ -31,7 +32,7 @@ type
     procedure MouseRelease(AAction: TXcomAction); override;
     procedure MouseClick(AAction: TXcomAction); override;
   public
-    constructor Create(const AClock: IXcomClock; AShape: TXcomArrowShape; AWidth, AHeight: Integer; AX: Integer = 0;
+    constructor Create(const AClock: IClock; AShape: TXcomArrowShape; AWidth, AHeight: Integer; AX: Integer = 0;
       AY: Integer = 0);
     destructor Destroy; override;
     function IsButtonHandled(AButton: Integer = 0): Boolean; override;
@@ -45,7 +46,7 @@ type
 
 implementation
 
-constructor TXcomArrowButton.Create(const AClock: IXcomClock; AShape: TXcomArrowShape; AWidth, AHeight, AX,
+constructor TXcomArrowButton.Create(const AClock: IClock; AShape: TXcomArrowShape; AWidth, AHeight, AX,
   AY: Integer);
 begin
   inherited Create(AWidth, AHeight, AX, AY);

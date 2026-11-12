@@ -11,6 +11,7 @@ unit DelphiDoom.XcomBasescape.BaseView;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Generics.Collections, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomSurface.Font,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomSave.Base,
@@ -54,7 +55,7 @@ type
     procedure MouseOver(AAction: TXcomAction); override;
     procedure MouseOut(AAction: TXcomAction); override;
   public
-    constructor Create(const AClock: IXcomClock; ARuleset: TXcomRuleset; AWidth, AHeight, AX, AY: Integer);
+    constructor Create(const AClock: IClock; ARuleset: TXcomRuleset; AWidth, AHeight, AX, AY: Integer);
     destructor Destroy; override;
     procedure InitText(ABig, ASmall: TXcomFont; ALanguage: TXcomLanguage); override;
     procedure SetColor(AColor: Byte); override;
@@ -86,7 +87,7 @@ implementation
 uses
   System.Math, DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Types;
 
-constructor TXcomBaseView.Create(const AClock: IXcomClock; ARuleset: TXcomRuleset; AWidth, AHeight, AX, AY: Integer);
+constructor TXcomBaseView.Create(const AClock: IClock; ARuleset: TXcomRuleset; AWidth, AHeight, AX, AY: Integer);
 begin
   inherited Create(AWidth, AHeight, AX, AY);
   FRuleset := ARuleset;

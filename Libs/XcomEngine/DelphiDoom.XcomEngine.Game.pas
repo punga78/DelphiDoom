@@ -11,6 +11,7 @@ unit DelphiDoom.XcomEngine.Game;
 interface
 
 uses
+  DelphiDoom.Clock.Intf, DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
@@ -41,7 +42,7 @@ type
     FFpsCounter: TXcomInteractiveSurface;
     FLanguage: TXcomLanguage;
     FResources: IXcomResources;
-    FClock: IXcomClock;
+    FClock: IClock;
     FEvents: IXcomEventSource;
     FStates: TObjectList<TXcomState>;
     FDeleted: TObjectList<TXcomState>;
@@ -76,7 +77,7 @@ type
     ///   it is given (a first one, replaced when the data is loaded)
     /// </summary>
     constructor Create(AOptions: TXcomOptions; AScreen: TXcomScreen; ACursor, AFpsCounter: TXcomInteractiveSurface;
-      ALanguage: TXcomLanguage; const AClock: IXcomClock; const AEvents: IXcomEventSource);
+      ALanguage: TXcomLanguage; const AClock: IClock; const AEvents: IXcomEventSource);
     destructor Destroy; override;
     function Screen: TXcomScreen; override;
     function Cursor: TXcomInteractiveSurface; override;
@@ -84,7 +85,7 @@ type
     function Language: TXcomLanguage; override;
     function Resources: IXcomResources; override;
     function Options: TXcomOptions; override;
-    function Clock: IXcomClock; override;
+    function Clock: IClock; override;
     procedure PushState(AState: TXcomState); override;
     procedure PopState; override;
     procedure SetState(AState: TXcomState); override;
@@ -165,7 +166,7 @@ const
   MINIMIZED_RUN: array[0..3] of TXcomRunningState = (rsSlowed, rsPaused, rsPaused, rsPaused);
 
 constructor TXcomGame.Create(AOptions: TXcomOptions; AScreen: TXcomScreen; ACursor, AFpsCounter: TXcomInteractiveSurface;
-  ALanguage: TXcomLanguage; const AClock: IXcomClock; const AEvents: IXcomEventSource);
+  ALanguage: TXcomLanguage; const AClock: IClock; const AEvents: IXcomEventSource);
 begin
   inherited Create;
   FOptions := AOptions;
@@ -236,7 +237,7 @@ begin
   Result := FOptions;
 end;
 
-function TXcomGame.Clock: IXcomClock;
+function TXcomGame.Clock: IClock;
 begin
   Result := FClock;
 end;
@@ -667,12 +668,12 @@ begin
   FStates.Last.Think;
   FFpsCounter.Think;
   if FOptions.FPS > 0 then
-    LTimeUntilNextFrame := (1000.0 / FOptions.FPS) - (FClock.Ticks - FTimeOfLastFrame)
+    LTimeUntilNextFrame := (1000.0 / FOptions.FPS) - (TXcomTicks.Now(FClock) - FTimeOfLastFrame)
   else
     LTimeUntilNextFrame := 0;
   if FInit and (LTimeUntilNextFrame <= 0) then
   begin
-    FTimeOfLastFrame := FClock.Ticks;
+    FTimeOfLastFrame := TXcomTicks.Now(FClock);
     FFpsCounter.FrameAdded;
     Inc(FFrames);
     FScreen.Clear;
@@ -692,7 +693,7 @@ begin
   while not FQuit do
   begin
     RunFrame;
-    FClock.Delay(FrameDelay);
+    TXcomTicks.Delay(FClock, FrameDelay);
   end;
   SaveOptions;
 end;

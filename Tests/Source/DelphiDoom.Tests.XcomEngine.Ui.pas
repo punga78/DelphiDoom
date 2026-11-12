@@ -11,10 +11,11 @@ unit DelphiDoom.Tests.XcomEngine.Ui;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Types,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.State,
-  DelphiDoom.XcomEngine.ManualClock, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomUi.Types,
+  DelphiDoom.Clock.ManualClock, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomUi.Types,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.Frame,
   DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter,
   DelphiDoom.XcomUi.PaletteShift, DelphiDoom.XcomUi.ToggleTextButton, DelphiDoom.Tests.XcomEngine.World;
@@ -1078,11 +1079,11 @@ end;
 procedure TTestXcomSmallWidgets.IlContatoreDiFotogrammiMisuraAlSecondo;
 var
   LFps: TXcomFpsCounter;
-  LClock: TXcomManualClock;
-  LRef: IXcomClock;
+  LClock: TManualClock;
+  LRef: IClock;
   LIndex: Integer;
 begin
-  LClock := TXcomManualClock.Create;
+  LClock := TManualClock.Create;
   LRef := LClock;
   LFps := TXcomFpsCounter.Create(LRef, 15, 5, 0, 0, True, 288);
   try
@@ -1103,13 +1104,13 @@ end;
 procedure TTestXcomSmallWidgets.IlTastoDelContatoreLoMostraENascondeEntrambe;
 var
   LFps: TXcomFpsCounter;
-  LClock: TXcomManualClock;
-  LRef: IXcomClock;
+  LClock: TManualClock;
+  LRef: IClock;
   LEvent: TXcomInputEvent;
   LAction: TXcomAction;
   LColors: array[0..255] of TXcomColor;
 begin
-  LClock := TXcomManualClock.Create;
+  LClock := TManualClock.Create;
   LRef := LClock;
   LFps := TXcomFpsCounter.Create(LRef, 15, 5, 0, 0, False, 288);
   try

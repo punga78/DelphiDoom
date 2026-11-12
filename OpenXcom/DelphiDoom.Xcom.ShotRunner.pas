@@ -10,7 +10,7 @@ unit DelphiDoom.Xcom.ShotRunner;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
+  System.SysUtils, System.Classes, DelphiDoom.XcomEngine.Game, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Types,
   DelphiDoom.Xcom.ImageExporter;
 
@@ -28,7 +28,7 @@ type
   TXcomShotRunner = class
   strict private
     FGame: TXcomGame;
-    FClock: TXcomManualClock;
+    FClock: TManualClock;
     FEvents: TXcomQueueEventSource;
     FDevice: TXcomMemoryVideoDevice;
     FExporter: TXcomImageExporter;
@@ -49,7 +49,7 @@ type
     procedure Watch;
   public
     /// <summary>None of the arguments is owned</summary>
-    constructor Create(AGame: TXcomGame; AClock: TXcomManualClock; AEvents: TXcomQueueEventSource;
+    constructor Create(AGame: TXcomGame; AClock: TManualClock; AEvents: TXcomQueueEventSource;
       ADevice: TXcomMemoryVideoDevice; AExporter: TXcomImageExporter);
     destructor Destroy; override;
     /// <summary>Lets the time pass one millisecond at a time, running a turn of the game for each</summary>
@@ -84,7 +84,7 @@ const
   // KMOD_LCTRL of SDL 1.2
   XCOM_KMOD_LEFT_CTRL = $0040;
 
-constructor TXcomShotRunner.Create(AGame: TXcomGame; AClock: TXcomManualClock; AEvents: TXcomQueueEventSource;
+constructor TXcomShotRunner.Create(AGame: TXcomGame; AClock: TManualClock; AEvents: TXcomQueueEventSource;
   ADevice: TXcomMemoryVideoDevice; AExporter: TXcomImageExporter);
 begin
   inherited Create;
@@ -110,8 +110,8 @@ var
   LEnd: Cardinal;
 begin
   // by the clock: the time that the steps of an on: handler take is part of the wait they interrupt
-  LEnd := FClock.Ticks + Cardinal(AMilliseconds);
-  while FClock.Ticks < LEnd do
+  LEnd := FClock.Milliseconds + Cardinal(AMilliseconds);
+  while FClock.Milliseconds < LEnd do
   begin
     if FGame.IsQuitting then
       Exit;
@@ -126,7 +126,7 @@ end;
 procedure TXcomShotRunner.Say(const AText: string);
 begin
   if Assigned(FOnSay) then
-    FOnSay(Format('%d %s', [FClock.Ticks, AText]));
+    FOnSay(Format('%d %s', [FClock.Milliseconds, AText]));
 end;
 
 procedure TXcomShotRunner.Watch;
@@ -147,21 +147,21 @@ begin
       FLastTopName := LTop.ClassName
     else
       FLastTopName := '';
-    FTopSince := FClock.Ticks;
+    FTopSince := FClock.Milliseconds;
     FHandledAt := 0;
     if FTrace then
       Say('top ' + FLastTopName);
   end;
   if FInHandler or (FHandlers.Count = 0) or (FLastTopName = '') then
     Exit;
-  if FClock.Ticks - FTopSince < SETTLE_MILLISECONDS then
+  if FClock.Milliseconds - FTopSince < SETTLE_MILLISECONDS then
     Exit;
-  if (FHandledAt <> 0) and (FClock.Ticks - FHandledAt < AGAIN_MILLISECONDS) then
+  if (FHandledAt <> 0) and (FClock.Milliseconds - FHandledAt < AGAIN_MILLISECONDS) then
     Exit;
   for LIndex := 0 to FHandlers.Count - 1 do
     if FLastTopName.ToLowerInvariant.Contains(FHandlers.Names[LIndex]) then
     begin
-      FHandledAt := FClock.Ticks;
+      FHandledAt := FClock.Milliseconds;
       FInHandler := True;
       try
         for LStep in FHandlers.ValueFromIndex[LIndex].Split(['+']) do
@@ -184,11 +184,11 @@ begin
   if Length(LParts) <> 2 then
     raise Exception.Create('Bad step: until:' + AValue);
   LLimit := StrToInt(LParts[1]);
-  LStart := FClock.Ticks;
-  while (Integer(FClock.Ticks - LStart) < LLimit) and not FGame.IsQuitting
+  LStart := FClock.Milliseconds;
+  while (Integer(FClock.Milliseconds - LStart) < LLimit) and not FGame.IsQuitting
     and not FLastTopName.ToLowerInvariant.Contains(LParts[0].ToLowerInvariant) do
     Wait(1);
-  Say(Format('until %s: %d ms, top %s', [LParts[0], FClock.Ticks - LStart, FLastTopName]));
+  Say(Format('until %s: %d ms, top %s', [LParts[0], FClock.Milliseconds - LStart, FLastTopName]));
 end;
 
 procedure TXcomShotRunner.Move(AX, AY: Integer);

@@ -11,6 +11,7 @@ unit DelphiDoom.XcomBattleStates.WarningMessage;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomUi.Text;
 
@@ -27,7 +28,7 @@ type
     FFade: Byte;
     procedure Fade;
   public
-    constructor Create(const AClock: IXcomClock; AWidth, AHeight: Integer; AX: Integer = 0; AY: Integer = 0);
+    constructor Create(const AClock: IClock; AWidth, AHeight: Integer; AX: Integer = 0; AY: Integer = 0);
     destructor Destroy; override;
     /// <summary>setColor: the first color of the fading background</summary>
     procedure SetColor(AColor: Byte); override;
@@ -48,7 +49,7 @@ implementation
 uses
   DelphiDoom.XcomUi.Types;
 
-constructor TXcomWarningMessage.Create(const AClock: IXcomClock; AWidth, AHeight, AX, AY: Integer);
+constructor TXcomWarningMessage.Create(const AClock: IClock; AWidth, AHeight, AX, AY: Integer);
 begin
   inherited Create(AWidth, AHeight, AX, AY);
   FText := TXcomText.Create(AWidth, AHeight, 0, 0);

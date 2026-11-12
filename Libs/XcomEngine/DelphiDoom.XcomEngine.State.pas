@@ -11,6 +11,7 @@ unit DelphiDoom.XcomEngine.State;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Generics.Collections, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
@@ -36,7 +37,7 @@ type
     function Language: TXcomLanguage; virtual; abstract;
     function Resources: IXcomResources; virtual; abstract;
     function Options: TXcomOptions; virtual; abstract;
-    function Clock: IXcomClock; virtual; abstract;
+    function Clock: IClock; virtual; abstract;
     /// <summary>Game::pushState: the state is owned by the game from now on</summary>
     procedure PushState(AState: TXcomState); virtual; abstract;
     procedure PopState; virtual; abstract;

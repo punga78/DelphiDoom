@@ -10,6 +10,7 @@ unit DelphiDoom.Xcom.GameComposition;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.LoggingBattleAudio;
@@ -61,7 +62,7 @@ type
   public
     /// <summary>The game, with the start state on top; the caller owns it. The devices are not freed by the game</summary>
     class function CreateGame(const ASettings: TXcomGameSettings; const ADevice: IXcomVideoDevice;
-      const AClock: IXcomClock; AEvents: TXcomQueueEventSource): TXcomGame; static;
+      const AClock: IClock; AEvents: TXcomQueueEventSource): TXcomGame; static;
     /// <summary>
     ///   The display of the game in a window: GDI, or OpenGL when Options::useOpenGL asks for it and a context can
     ///   be made (the screen says which at every change of mode). The window is not owned: the caller frees it
@@ -193,7 +194,7 @@ begin
 end;
 
 class function TXcomGameComposition.CreateGame(const ASettings: TXcomGameSettings; const ADevice: IXcomVideoDevice;
-  const AClock: IXcomClock; AEvents: TXcomQueueEventSource): TXcomGame;
+  const AClock: IClock; AEvents: TXcomQueueEventSource): TXcomGame;
 var
   LOptions: TXcomOptions;
   LFiles: IXcomFileSystem;

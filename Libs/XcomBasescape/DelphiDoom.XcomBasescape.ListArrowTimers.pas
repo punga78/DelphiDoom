@@ -11,6 +11,7 @@ unit DelphiDoom.XcomBasescape.ListArrowTimers;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer,
   DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomUi.TextList;
 
@@ -44,7 +45,7 @@ type
     /// <param name="AList">The list (owned by the state), already with its arrow column</param>
     /// <param name="AIncrease">Increase the selected row by the quantity</param>
     /// <param name="ADecrease">Decrease the selected row by the quantity</param>
-    constructor Create(const AClock: IXcomClock; AOptions: TXcomOptions; AList: TXcomTextList;
+    constructor Create(const AClock: IClock; AOptions: TXcomOptions; AList: TXcomTextList;
       const AIncrease, ADecrease: TProc<Integer>; AWheelReversed: Boolean = False);
     destructor Destroy; override;
     procedure Think;
@@ -62,7 +63,7 @@ implementation
 
 { TXcomListArrowTimers }
 
-constructor TXcomListArrowTimers.Create(const AClock: IXcomClock; AOptions: TXcomOptions; AList: TXcomTextList;
+constructor TXcomListArrowTimers.Create(const AClock: IClock; AOptions: TXcomOptions; AList: TXcomTextList;
   const AIncrease, ADecrease: TProc<Integer>; AWheelReversed: Boolean);
 begin
   inherited Create;

@@ -43,7 +43,6 @@ uses
   System.SysUtils, System.Classes,
   DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Game,
-  DelphiDoom.XcomEngine.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.MemoryVideoDevice,
   DelphiDoom.Xcom.ImageExporter,
@@ -63,9 +62,9 @@ uses
   DelphiDoom.Xcom.HostEventSink in 'DelphiDoom.Xcom.HostEventSink.pas',
   DelphiDoom.GameHost.Factory,
   DelphiDoom.GameHost.Win.Window,
-  DelphiDoom.Xcom.HostClock in 'DelphiDoom.Xcom.HostClock.pas',
   DelphiDoom.Clock.Intf,
   DelphiDoom.Clock.Factory,
+  DelphiDoom.Clock.ManualClock,
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
   DelphiDoom.Xcom.HostPcmOutput in 'DelphiDoom.Xcom.HostPcmOutput.pas',
@@ -311,9 +310,9 @@ begin
       begin
         Say(ALine);
       end));
-    // the clock of Libs\Clock, for the game (through its adapter) and for the loop
+    // the clock of Libs\Clock, for the game and for the loop
     LClock := TClockFactory.CreateClock(nil);
-    LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomHostClock.Create(LClock), LEvents);
+    LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
     LStart := LClock.Seconds;
     while LWindow.Pump and not LGame.IsQuitting do
     begin
@@ -337,8 +336,8 @@ end;
 
 procedure RunShot(const AArguments: TArguments);
 var
-  LClock: TXcomManualClock;
-  LClockRef: IXcomClock;
+  LClock: TManualClock;
+  LClockRef: IClock;
   LEvents: TXcomQueueEventSource;
   LEventsRef: IXcomEventSource;
   LDevice: TXcomMemoryVideoDevice;
@@ -357,7 +356,7 @@ begin
     TXcomMemoryCount.Install;
   LOutput := nil;
   LSounds := nil;
-  LClock := TXcomManualClock.Create;
+  LClock := TManualClock.Create;
   LClockRef := LClock;
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
@@ -390,11 +389,11 @@ begin
           LActive := LMeter.ActiveChannels;
           LStarted := LMeter.Statistics.SoundsStarted;
         end;
-        LSounds.Add(Format('%d %s (channels playing %d, sounds started %d)', [LClock.Ticks, ALine, LActive,
+        LSounds.Add(Format('%d %s (channels playing %d, sounds started %d)', [LClock.Milliseconds, ALine, LActive,
           LStarted]));
       end;
   end;
-  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClock, LEvents);
+  LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClockRef, LEvents);
   LExporter := TXcomComposition.CreateImageExporter;
   LRunner := TXcomShotRunner.Create(LGame, LClock, LEvents, LDevice, LExporter);
   LRunner.OnSay := procedure(ALine: string)

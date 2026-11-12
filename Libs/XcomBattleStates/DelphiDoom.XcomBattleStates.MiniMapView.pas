@@ -11,6 +11,7 @@ unit DelphiDoom.XcomBattleStates.MiniMapView;
 interface
 
 uses
+  DelphiDoom.Clock.Intf, DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomBattlescape.Camera;
@@ -41,7 +42,7 @@ type
     FSet: TXcomSurfaceSet;
     FCamera: TXcomCamera;
     FBattle: TXcomSavedBattleGame;
-    FClock: IXcomClock;
+    FClock: IClock;
     FDrag: TXcomMiniMapDragOptions;
     FRedColor: Integer;
     FFrame: Integer;
@@ -69,7 +70,7 @@ type
     /// <param name="AClock">The time of the drag</param>
     /// <param name="ARedColor">Pathfinding::red: the color group of a big neutral unit</param>
     constructor Create(AWidth, AHeight, AX, AY: Integer; ASet: TXcomSurfaceSet; ACamera: TXcomCamera;
-      ABattle: TXcomSavedBattleGame; const AClock: IXcomClock; const ADrag: TXcomMiniMapDragOptions;
+      ABattle: TXcomSavedBattleGame; const AClock: IClock; const ADrag: TXcomMiniMapDragOptions;
       ARedColor: Integer);
     procedure Draw; override;
     /// <summary>up: the level above; gives the new level of the camera</summary>
@@ -103,7 +104,7 @@ const
   DISCOVERED_PART = 2;
 
 constructor TXcomMiniMapView.Create(AWidth, AHeight, AX, AY: Integer; ASet: TXcomSurfaceSet; ACamera: TXcomCamera;
-  ABattle: TXcomSavedBattleGame; const AClock: IXcomClock; const ADrag: TXcomMiniMapDragOptions;
+  ABattle: TXcomSavedBattleGame; const AClock: IClock; const ADrag: TXcomMiniMapDragOptions;
   ARedColor: Integer);
 begin
   inherited Create(AWidth, AHeight, AX, AY);
@@ -234,7 +235,7 @@ function TXcomMiniMapView.WasClick: Boolean;
 begin
   // the scrolling was too short in time and in space: it was a click
   Result := (not FMouseMovedOverThreshold) and
-    (Integer(FClock.Ticks - FMouseScrollingStartTime) <= FDrag.TimeTolerance);
+    (Integer(TXcomTicks.Now(FClock) - FMouseScrollingStartTime) <= FDrag.TimeTolerance);
 end;
 
 procedure TXcomMiniMapView.MousePress(AAction: TXcomAction);
@@ -252,7 +253,7 @@ begin
     FTotalMouseMoveX := 0;
     FTotalMouseMoveY := 0;
     FMouseMovedOverThreshold := False;
-    FMouseScrollingStartTime := FClock.Ticks;
+    FMouseScrollingStartTime := TXcomTicks.Now(FClock);
   end;
 end;
 

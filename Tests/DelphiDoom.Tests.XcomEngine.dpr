@@ -44,7 +44,6 @@ uses
   DelphiDoom.Xcom.HostVideoDevice in '..\OpenXcom\DelphiDoom.Xcom.HostVideoDevice.pas',
   DelphiDoom.Xcom.HostEventSink in '..\OpenXcom\DelphiDoom.Xcom.HostEventSink.pas',
   DelphiDoom.Xcom.HostLog in '..\OpenXcom\DelphiDoom.Xcom.HostLog.pas',
-  DelphiDoom.Xcom.HostClock in '..\OpenXcom\DelphiDoom.Xcom.HostClock.pas',
   DelphiDoom.Xcom.HostPcmOutput in '..\OpenXcom\DelphiDoom.Xcom.HostPcmOutput.pas',
   DelphiDoom.Xcom.HostShaderLoader in '..\OpenXcom\DelphiDoom.Xcom.HostShaderLoader.pas',
   DelphiDoom.Tests.XcomEngine.HostAdapters in 'Source\DelphiDoom.Tests.XcomEngine.HostAdapters.pas',

@@ -10,6 +10,7 @@ unit DelphiDoom.XcomUi.TextList;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Math, System.Generics.Collections, DelphiDoom.Xcom.Types,
   DelphiDoom.Xcom.Palette,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types,
@@ -68,7 +69,7 @@ type
     FArrowsRightEdge: Integer;
     FComboBox: IXcomComboBoxLink;
     FOptions: TXcomOptions;
-    FClock: IXcomClock;
+    FClock: IClock;
     procedure UpdateArrows;
     procedure UpdateVisible;
     procedure NewSelector(AHeight, AY: Integer);
@@ -88,7 +89,7 @@ type
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
   public
-    constructor Create(AOptions: TXcomOptions; const AClock: IXcomClock; AWidth, AHeight: Integer; AX: Integer = 0;
+    constructor Create(AOptions: TXcomOptions; const AClock: IClock; AWidth, AHeight: Integer; AX: Integer = 0;
       AY: Integer = 0);
     destructor Destroy; override;
     function GetArrowsLeftEdge: Integer;
@@ -160,7 +161,7 @@ type
 
 implementation
 
-constructor TXcomTextList.Create(AOptions: TXcomOptions; const AClock: IXcomClock; AWidth, AHeight, AX, AY: Integer);
+constructor TXcomTextList.Create(AOptions: TXcomOptions; const AClock: IClock; AWidth, AHeight, AX, AY: Integer);
 var
   LHeight: Integer;
 begin

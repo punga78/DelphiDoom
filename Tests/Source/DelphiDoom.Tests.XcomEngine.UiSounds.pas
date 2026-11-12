@@ -11,6 +11,7 @@ unit DelphiDoom.Tests.XcomEngine.UiSounds;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.InteractiveSurface,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
@@ -42,7 +43,7 @@ type
     function Language: TXcomLanguage; override;
     function Resources: IXcomResources; override;
     function Options: TXcomOptions; override;
-    function Clock: IXcomClock; override;
+    function Clock: IClock; override;
     procedure PushState(AState: TXcomState); override;
     procedure PopState; override;
     procedure SetState(AState: TXcomState); override;
@@ -155,7 +156,7 @@ begin
   Result := nil;
 end;
 
-function TSoundRecordingHost.Clock: IXcomClock;
+function TSoundRecordingHost.Clock: IClock;
 begin
   Result := nil;
 end;

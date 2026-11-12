@@ -12,11 +12,12 @@ unit DelphiDoom.Tests.XcomEngine.World;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Generics.Collections, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.RuleInterface,
-  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.ManualClock, DelphiDoom.XcomEngine.QueueEventSource,
+  DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.Clock.ManualClock, DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.InteractiveSurface;
 
 type
@@ -78,8 +79,8 @@ type
   /// <summary>The game of a test: everything the engine needs with fakes, and ways to push time and events</summary>
   TTestWorld = class
   strict private
-    FClock: TXcomManualClock;
-    FClockRef: IXcomClock;
+    FClock: TManualClock;
+    FClockRef: IClock;
     FEvents: TXcomQueueEventSource;
     FEventsRef: IXcomEventSource;
     FDevice: TXcomMemoryVideoDevice;
@@ -97,7 +98,7 @@ type
     function Pixel(AX, AY: Integer): Byte;
     class function Parse(const AText: string): IYamlNode; static;
     property Game: TXcomGame read FGame;
-    property Clock: TXcomManualClock read FClock;
+    property Clock: TManualClock read FClock;
     property Events: TXcomQueueEventSource read FEvents;
     property Device: TXcomMemoryVideoDevice read FDevice;
     property Resources: TFakeResources read FResources;
@@ -364,7 +365,7 @@ var
   LOptions: TXcomOptions;
 begin
   inherited Create;
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FClockRef := FClock;
   FEvents := TXcomQueueEventSource.Create;
   FEventsRef := FEvents;

@@ -12,6 +12,7 @@ unit DelphiDoom.XcomBattleStates.BattlescapeState;
 interface
 
 uses
+  DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Widget,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Timer,
@@ -836,7 +837,7 @@ end;
 function TXcomBattlescapeState.WasShortDrag: Boolean;
 begin
   Result := (not FMouseMovedOverThreshold) and
-    (Integer(Host.Clock.Ticks - FMouseScrollingStartTime) <= Option('dragScrollTimeTolerance'));
+    (Integer(TXcomTicks.Now(Host.Clock) - FMouseScrollingStartTime) <= Option('dragScrollTimeTolerance'));
 end;
 
 procedure TXcomBattlescapeState.StopScrolling;
@@ -866,7 +867,7 @@ begin
     FTotalMouseMoveX := 0;
     FTotalMouseMoveY := 0;
     FMouseMovedOverThreshold := False;
-    FMouseScrollingStartTime := Host.Clock.Ticks;
+    FMouseScrollingStartTime := TXcomTicks.Now(Host.Clock);
   end;
 end;
 

@@ -10,17 +10,18 @@ unit DelphiDoom.XcomEngine.Timer;
 interface
 
 uses
+  DelphiDoom.Clock.Intf, DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf;
 
 type
   /// <summary>
   ///   Calls a handler of a state or of a surface at a fixed interval of milliseconds, running it more than once
-  ///   to catch up (frame skipping) when the game is late. The time comes from an IXcomClock, so a test or a
+  ///   to catch up (frame skipping) when the game is late. The time comes from an IClock, so a test or a
   ///   screenshot can drive it. The "slow motion" divisor of the debug mode (Timer::gameSlowSpeed) is always 1
   /// </summary>
   TXcomTimer = class
   strict private
-    FClock: IXcomClock;
+    FClock: IClock;
     FStart: Cardinal;
     FFrameSkipStart: Int64;
     FInterval: Cardinal;
@@ -31,7 +32,7 @@ type
     FOnSurface: TXcomNotify;
   public
     /// <param name="AMaxFrameSkip">Options::maxFrameSkip, how many extra calls to catch up</param>
-    constructor Create(const AClock: IXcomClock; AInterval: Cardinal; AFrameSkipping: Boolean = False;
+    constructor Create(const AClock: IClock; AInterval: Cardinal; AFrameSkipping: Boolean = False;
       AMaxFrameSkip: Integer = 0);
     /// <summary>Timer::start</summary>
     procedure Start;
@@ -52,7 +53,7 @@ type
 
 implementation
 
-constructor TXcomTimer.Create(const AClock: IXcomClock; AInterval: Cardinal; AFrameSkipping: Boolean;
+constructor TXcomTimer.Create(const AClock: IClock; AInterval: Cardinal; AFrameSkipping: Boolean;
   AMaxFrameSkip: Integer);
 begin
   inherited Create;
@@ -64,7 +65,7 @@ end;
 
 procedure TXcomTimer.Start;
 begin
-  FStart := FClock.Ticks;
+  FStart := TXcomTicks.Now(FClock);
   FFrameSkipStart := FStart;
   FRunning := True;
 end;
@@ -78,7 +79,7 @@ end;
 function TXcomTimer.Time: Cardinal;
 begin
   if FRunning then
-    Result := FClock.Ticks - FStart
+    Result := TXcomTicks.Now(FClock) - FStart
   else
     Result := 0;
 end;
@@ -93,7 +94,7 @@ var
   LNow: Int64;
   LIndex: Integer;
 begin
-  LNow := FClock.Ticks;
+  LNow := TXcomTicks.Now(FClock);
   if FRunning and ((LNow - FFrameSkipStart) >= FInterval) then
   begin
     LIndex := 0;
@@ -108,7 +109,7 @@ begin
     end;
     if FRunning and ACallSurface and Assigned(FOnSurface) then
       FOnSurface();
-    FStart := FClock.Ticks;
+    FStart := TXcomTicks.Now(FClock);
     if FStart > FFrameSkipStart then
       FFrameSkipStart := FStart;
   end;

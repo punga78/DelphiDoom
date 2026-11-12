@@ -10,6 +10,7 @@ unit DelphiDoom.XcomUi.FpsCounter;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Math, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.InteractiveSurface,
   DelphiDoom.XcomUi.NumberText;
@@ -24,7 +25,7 @@ type
     FToggleKey: Integer;
     procedure Update;
   public
-    constructor Create(const AClock: IXcomClock; AWidth, AHeight, AX, AY: Integer; AVisible: Boolean;
+    constructor Create(const AClock: IClock; AWidth, AHeight, AX, AY: Integer; AVisible: Boolean;
       AToggleKey: Integer);
     destructor Destroy; override;
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256); override;
@@ -37,7 +38,7 @@ type
 
 implementation
 
-constructor TXcomFpsCounter.Create(const AClock: IXcomClock; AWidth, AHeight, AX, AY: Integer; AVisible: Boolean;
+constructor TXcomFpsCounter.Create(const AClock: IClock; AWidth, AHeight, AX, AY: Integer; AVisible: Boolean;
   AToggleKey: Integer);
 begin
   inherited Create(AWidth, AHeight, AX, AY);

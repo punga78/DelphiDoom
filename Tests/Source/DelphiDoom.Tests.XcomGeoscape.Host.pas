@@ -12,9 +12,10 @@ unit DelphiDoom.Tests.XcomGeoscape.Host;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Language,
-  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.ManualClock;
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.Clock.ManualClock;
 
 type
   /// <summary>
@@ -23,8 +24,8 @@ type
   /// </summary>
   TXcomClockHost = class(TXcomStateHost)
   strict private
-    FClockObject: TXcomManualClock;
-    FClock: IXcomClock;
+    FClockObject: TManualClock;
+    FClock: IClock;
   public
     constructor Create;
     /// <summary>Lets time pass on the clock</summary>
@@ -35,7 +36,7 @@ type
     function Language: TXcomLanguage; override;
     function Resources: IXcomResources; override;
     function Options: TXcomOptions; override;
-    function Clock: IXcomClock; override;
+    function Clock: IClock; override;
     procedure PushState(AState: TXcomState); override;
     procedure PopState; override;
     procedure SetState(AState: TXcomState); override;
@@ -49,7 +50,7 @@ implementation
 constructor TXcomClockHost.Create;
 begin
   inherited Create;
-  FClockObject := TXcomManualClock.Create(0);
+  FClockObject := TManualClock.Create(0);
   FClock := FClockObject;
 end;
 
@@ -88,7 +89,7 @@ begin
   Result := nil;
 end;
 
-function TXcomClockHost.Clock: IXcomClock;
+function TXcomClockHost.Clock: IClock;
 begin
   Result := FClock;
 end;

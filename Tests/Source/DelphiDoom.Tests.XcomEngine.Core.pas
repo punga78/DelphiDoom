@@ -11,12 +11,13 @@ unit DelphiDoom.Tests.XcomEngine.Core;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.LocalizedText,
   DelphiDoom.XcomEngine.LanguagePlurality, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Options,
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.YamlFields,
   DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.ManualClock;
+  DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.Clock.ManualClock, DelphiDoom.XcomEngine.Ticks;
 
 type
   [TestFixture]
@@ -936,15 +937,15 @@ end;
 
 procedure TTestXcomDevices.LOrologioManualeAvanzaSoloSeGliSiDice;
 var
-  LClock: TXcomManualClock;
-  LRef: IXcomClock;
+  LClock: TManualClock;
+  LRef: IClock;
 begin
-  LClock := TXcomManualClock.Create(100);
+  LClock := TManualClock.Create(100);
   LRef := LClock;
-  Assert.AreEqual(Cardinal(100), LRef.Ticks);
-  LRef.Delay(5);
+  Assert.AreEqual(Cardinal(100), TXcomTicks.Now(LRef));
+  TXcomTicks.Delay(LRef, 5);
   LClock.Advance(10);
-  Assert.AreEqual(Cardinal(115), LRef.Ticks);
+  Assert.AreEqual(Cardinal(115), TXcomTicks.Now(LRef));
 end;
 
 procedure TTestXcomDevices.IlVideoInMemoriaTieneLUltimaImmagine;

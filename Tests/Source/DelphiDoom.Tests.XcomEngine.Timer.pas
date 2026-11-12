@@ -10,14 +10,14 @@ unit DelphiDoom.Tests.XcomEngine.Timer;
 interface
 
 uses
-  DUnitX.TestFramework, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.ManualClock;
+  DUnitX.TestFramework, DelphiDoom.XcomEngine.Timer, DelphiDoom.Clock.ManualClock;
 
 type
   [TestFixture]
   [Category('XcomEngine')]
   TTestXcomTimer = class
   strict private
-    FClock: TXcomManualClock;
+    FClock: TManualClock;
     FInterface: IInterface;
     FCalls: Integer;
     FSurfaceCalls: Integer;
@@ -60,7 +60,7 @@ end;
 
 procedure TTestXcomTimer.Setup;
 begin
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FInterface := FClock;
   FCalls := 0;
   FSurfaceCalls := 0;

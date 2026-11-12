@@ -17,7 +17,7 @@ uses
   DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.MessageTranslator, DelphiDoom.Xcom.HostEventSink,
   DelphiDoom.Xcom.HostLog, DelphiDoom.Xcom.HostVideoDevice, DelphiDoom.Xcom.HostShaderLoader,
   DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.Yaml.Factory, DelphiDoom.Clock.Intf,
-  DelphiDoom.Xcom.HostClock, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.Xcom.HostPcmOutput;
+  DelphiDoom.XcomEngine.Ticks, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.Xcom.HostPcmOutput;
 
 type
   /// <summary>A keyboard that answers what the test says</summary>
@@ -504,42 +504,37 @@ end;
 procedure TTestXcomHostAdapters.LOrologioDovrebbeDareIMillisecondiDalPrimoUso;
 var
   LEngine: TFakeEngineClock;
-  LClock: IXcomClock;
+  LClock: IClock;
 begin
   LEngine := TFakeEngineClock.Create;
-  LClock := TXcomHostClock.Create(LEngine);
-  Assert.AreEqual(Cardinal(0), LClock.Ticks);
+  LClock := LEngine;
+  Assert.AreEqual(Cardinal(0), TXcomTicks.Now(LClock));
   LEngine.Now := 1.2349;
-  Assert.AreEqual(Cardinal(1234), LClock.Ticks);
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomHostClock.Create(nil);
-    end, EArgumentNilException);
+  Assert.AreEqual(Cardinal(1234), TXcomTicks.Now(LClock));
 end;
 
 procedure TTestXcomHostAdapters.LOrologioDovrebbeRipartireDaZeroDopo32Bit;
 var
   LEngine: TFakeEngineClock;
-  LClock: IXcomClock;
+  LClock: IClock;
 begin
   // SDL_GetTicks wraps around after about 49 days
   LEngine := TFakeEngineClock.Create;
-  LClock := TXcomHostClock.Create(LEngine);
+  LClock := LEngine;
   LEngine.Now := 4294967.2975;
-  Assert.AreEqual(Cardinal(1), LClock.Ticks);
+  Assert.AreEqual(Cardinal(1), TXcomTicks.Now(LClock));
 end;
 
 procedure TTestXcomHostAdapters.LOrologioDovrebbeAspettareConQuelloDelMotore;
 var
   LEngine: TFakeEngineClock;
-  LClock: IXcomClock;
+  LClock: IClock;
 begin
   LEngine := TFakeEngineClock.Create;
-  LClock := TXcomHostClock.Create(LEngine);
-  LClock.Delay(16);
+  LClock := LEngine;
+  TXcomTicks.Delay(LClock, 16);
   Assert.AreEqual(16, LEngine.Slept);
-  LClock.Delay($FFFFFFFF);
+  TXcomTicks.Delay(LClock, $FFFFFFFF);
   Assert.AreEqual(High(Integer), LEngine.Slept, 'un''attesa senza segno non diventa negativa');
 end;
 
@@ -674,7 +669,8 @@ end;
 
 function TFakeEngineClock.Steps(ARate: Integer): Integer;
 begin
-  Result := Trunc(Now * ARate);
+  // cut to 32 bits as the clock of a release build does
+  Result := Integer(Trunc(Now * ARate));
 end;
 
 function TFakeEngineClock.ScaledSteps(ARate, AScale: Integer): Integer;

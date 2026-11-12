@@ -12,6 +12,7 @@ unit DelphiDoom.XcomBattleStates.StageLauncher;
 interface
 
 uses
+  DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattleStates.Screens.Intf;
 
@@ -169,7 +170,7 @@ begin
   LEngineRef := LTileEngine;
   ABattle.TileEngine := LEngineRef;
   try
-    LLegacy := TXcomLegacyRandom.Create(Cardinal(AHost.Clock.Ticks));
+    LLegacy := TXcomLegacyRandom.Create(Cardinal(TXcomTicks.Now(AHost.Clock)));
     try
       LGenerator := TXcomBattlescapeGenerator.Create(TXcomStrategy.Ruleset(AHost), ABattle,
         TXcomStrategy.SavedGame(AHost), ABattle.Context, LEngine, LLegacy);

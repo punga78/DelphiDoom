@@ -11,10 +11,11 @@ unit DelphiDoom.Tests.XcomBattleStates.Inventory;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Xcom.Types,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Factory, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet,
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.ManualClock,
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Armor, DelphiDoom.XcomMod.RuleItem,
   DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomMod.RuleUnit, DelphiDoom.XcomMod.ModOffsets,
   DelphiDoom.XcomMod.RulesetSettings, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Intf,
@@ -26,8 +27,8 @@ type
   [Category('XcomBattleStates')]
   TTestXcomInventory = class
   strict private
-    FClock: TXcomManualClock;
-    FClockRef: IXcomClock;
+    FClock: TManualClock;
+    FClockRef: IClock;
     FGraphics: IXcomBattleGraphics;
     FContext: IXcomBattleContext;
     FOffsets: TXcomModOffsets;
@@ -356,7 +357,7 @@ var
   LColors: TXcomColors;
 begin
   FNextId := 1;
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FClockRef := FClock;
   FGraphics := TFakeGraphics.Create;
   FContext := TXcomBattleContext.Create(TFixedRandom.Create);

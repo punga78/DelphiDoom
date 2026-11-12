@@ -12,8 +12,9 @@ unit DelphiDoom.Tests.XcomBattleStates.MiniMapView;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Intf,
-  DelphiDoom.XcomEngine.ManualClock, DelphiDoom.XcomSurface.SurfaceSet,
+  DelphiDoom.Clock.ManualClock, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattleStates.MiniMapView,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
 
@@ -22,7 +23,7 @@ type
   [Category('XcomBattleStates')]
   TTestXcomMiniMapView = class
   strict private
-    FClock: IXcomClock;
+    FClock: IClock;
     FCamera: TXcomCamera;
     FView: TXcomMiniMapView;
     class function DragOptions: TXcomMiniMapDragOptions; static;
@@ -77,7 +78,7 @@ end;
 
 procedure TTestXcomMiniMapView.Setup;
 begin
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FCamera := TXcomCamera.Create(32, 40, 50, 50, MAP_LEVELS, 320, 200, 144, 320, 56);
   // no images and no battle: nothing of the battle is read
   FView := TXcomMiniMapView.Create(VIEW_WIDTH, VIEW_HEIGHT, 48, 16, nil, FCamera, nil, FClock, DragOptions, 3);

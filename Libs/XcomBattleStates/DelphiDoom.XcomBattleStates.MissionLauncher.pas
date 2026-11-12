@@ -12,6 +12,7 @@ unit DelphiDoom.XcomBattleStates.MissionLauncher;
 interface
 
 uses
+  DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.XcomBattleStates.Session.Intf,
   DelphiDoom.XcomBattleStates.Screens.Intf;
@@ -112,7 +113,7 @@ begin
     // the engine of the generator: the session makes its own once the map has its size
     LEngine := TXcomTileEngine.Create(LBattle, LContext, LGraphics.VoxelData);
     // the colors of the units come from the rand() of the C library: any seed does
-    LLegacy := TXcomLegacyRandom.Create(Cardinal(FHost.Clock.Ticks));
+    LLegacy := TXcomLegacyRandom.Create(Cardinal(TXcomTicks.Now(FHost.Clock)));
     try
       LGenerator := TXcomBattlescapeGenerator.Create(LRuleset, LBattle, LSave, LContext, LEngine, LLegacy);
       try

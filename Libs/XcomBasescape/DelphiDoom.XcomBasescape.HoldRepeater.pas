@@ -12,6 +12,7 @@ unit DelphiDoom.XcomBasescape.HoldRepeater;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Timer,
   DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomUi.ArrowButton;
 
@@ -30,7 +31,7 @@ type
   public
     /// <param name="AButton">The arrow (owned by the state)</param>
     /// <param name="AStep">What one step does; it can call Stop (for example when it shows an error)</param>
-    constructor Create(const AClock: IXcomClock; AButton: TXcomArrowButton; const AStep: TProc);
+    constructor Create(const AClock: IClock; AButton: TXcomArrowButton; const AStep: TProc);
     destructor Destroy; override;
     procedure Think;
     procedure Stop;
@@ -40,7 +41,7 @@ implementation
 
 { TXcomHoldRepeater }
 
-constructor TXcomHoldRepeater.Create(const AClock: IXcomClock; AButton: TXcomArrowButton; const AStep: TProc);
+constructor TXcomHoldRepeater.Create(const AClock: IClock; AButton: TXcomArrowButton; const AStep: TProc);
 begin
   inherited Create;
   FStep := AStep;

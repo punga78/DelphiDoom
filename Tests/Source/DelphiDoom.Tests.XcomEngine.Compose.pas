@@ -19,7 +19,7 @@ uses
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.PngSurfaceLoader, DelphiDoom.XcomEngine.TerminalFont,
-  DelphiDoom.XcomEngine.DosFontData, DelphiDoom.XcomEngine.ModResources, DelphiDoom.XcomEngine.ManualClock,
+  DelphiDoom.XcomEngine.DosFontData, DelphiDoom.XcomEngine.ModResources, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.PaletteShift,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Window, DelphiDoom.XcomUi.NumberText, DelphiDoom.XcomUi.Frame,
   DelphiDoom.XcomUi.Cursor, DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,

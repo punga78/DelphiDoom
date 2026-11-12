@@ -11,6 +11,7 @@ unit DelphiDoom.XcomMenu.VideoState;
 interface
 
 uses
+  DelphiDoom.XcomEngine.Ticks,
   System.SysUtils, DelphiDoom.Xcom.FlcDecoder, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomMenu.CutsceneCatalog.Intf;
 
@@ -265,7 +266,7 @@ begin
     EndVideo;
     Exit;
   end;
-  LNow := Host.Clock.Ticks;
+  LNow := TXcomTicks.Now(Host.Clock);
   if not FFrameReady then
   begin
     // the start of the loop of FlcPlayer::play: the callback of the audio sequence, or two audio chunks
@@ -309,7 +310,7 @@ procedure TXcomVideoState.EndVideo;
 begin
   if FUseUfoAudioSequence and (not FSkipped) then
   begin
-    FTailEnd := Host.Clock.Ticks + TAIL_MILLISECONDS;
+    FTailEnd := TXcomTicks.Now(Host.Clock) + TAIL_MILLISECONDS;
     FPhase := vpTail;
   end
   else
@@ -334,7 +335,7 @@ begin
   begin
     FFadePalette := Host.Screen.Palette^;
     FFadeStep := FADE_STEPS;
-    FFadeTick := Host.Clock.Ticks;
+    FFadeTick := TXcomTicks.Now(Host.Clock);
     FFadeKey := False;
     FPhase := vpFade;
   end
@@ -353,7 +354,7 @@ begin
     Finish;
     Exit;
   end;
-  if Integer(Host.Clock.Ticks - FFadeTick) < 0 then
+  if Integer(TXcomTicks.Now(Host.Clock) - FFadeTick) < 0 then
     Exit;
   if FFadeStep <= 0 then
   begin
@@ -369,7 +370,7 @@ begin
   end;
   Host.Screen.SetPalette(@LColors[0], 0, 256);
   Dec(FFadeStep);
-  FFadeTick := Host.Clock.Ticks + FADE_DELAY;
+  FFadeTick := TXcomTicks.Now(Host.Clock) + FADE_DELAY;
 end;
 
 procedure TXcomVideoState.Finish;
@@ -399,7 +400,7 @@ begin
     vpPlay:
       PlayStep;
     vpTail:
-      if FSkipped or (Integer(Host.Clock.Ticks - FTailEnd) >= 0) then
+      if FSkipped or (Integer(TXcomTicks.Now(Host.Clock) - FTailEnd) >= 0) then
         CloseVideo;
     vpFade:
       FadeStep;

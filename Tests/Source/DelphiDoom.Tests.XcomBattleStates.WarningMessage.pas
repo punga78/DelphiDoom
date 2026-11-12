@@ -10,7 +10,8 @@ unit DelphiDoom.Tests.XcomBattleStates.WarningMessage;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.ManualClock,
+  DelphiDoom.Clock.Intf,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Intf, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomBattleStates.WarningMessage;
 
 type
@@ -18,8 +19,8 @@ type
   [Category('XcomBattleStates')]
   TTestXcomWarningMessage = class
   strict private
-    FClock: TXcomManualClock;
-    FClockRef: IXcomClock;
+    FClock: TManualClock;
+    FClockRef: IClock;
     FMessage: TXcomWarningMessage;
   public
     [Setup]
@@ -45,7 +46,7 @@ const
 
 procedure TTestXcomWarningMessage.Setup;
 begin
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FClockRef := FClock;
   FMessage := TXcomWarningMessage.Create(FClockRef, 224, 24, 48, 32);
   FMessage.SetColor(BACKGROUND);

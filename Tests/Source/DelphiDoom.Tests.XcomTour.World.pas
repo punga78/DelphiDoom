@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.XcomTour.World;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.ManualClock,
+  DelphiDoom.Clock.Intf,
+  System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Widget,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Target,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.Globe;
@@ -29,8 +30,8 @@ type
   strict private
     FRoot: string;
     FUserFolder: string;
-    FClock: TXcomManualClock;
-    FClockRef: IXcomClock;
+    FClock: TManualClock;
+    FClockRef: IClock;
     FEvents: TXcomQueueEventSource;
     FEventsRef: IXcomEventSource;
     FDevice: TXcomMemoryVideoDevice;
@@ -185,7 +186,7 @@ begin
   end;
   FUserFolder := TPath.Combine(TPath.GetTempPath, 'DelphiDoomXcomTour_' + TGUID.NewGuid.ToString);
   TDirectory.CreateDirectory(FUserFolder);
-  FClock := TXcomManualClock.Create;
+  FClock := TManualClock.Create;
   FClockRef := FClock;
   FEvents := TXcomQueueEventSource.Create;
   FEventsRef := FEvents;

@@ -12,6 +12,7 @@ unit DelphiDoom.XcomBattleStates.Inventory;
 interface
 
 uses
+  DelphiDoom.Clock.Intf,
   System.SysUtils, System.Types, System.Generics.Collections, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Widget,
@@ -99,7 +100,7 @@ type
     /// <param name="AGraphics">BIGOBS.PCK and SCANG.DAT; a set that is missing draws nothing</param>
     /// <param name="ATranslate">Language::getString of an id</param>
     /// <param name="ABase">The inventory is called from the basescape</param>
-    constructor Create(const AClock: IXcomClock; const AInventories: TArray<TXcomRuleInventory>;
+    constructor Create(const AClock: IClock; const AInventories: TArray<TXcomRuleInventory>;
       const AGraphics: IXcomBattleGraphics; const ATranslate: TFunc<string, string>;
       const AStyle: TXcomInventoryStyle; AWidth, AHeight: Integer; AX: Integer = 0; AY: Integer = 0;
       ABase: Boolean = False);
@@ -180,7 +181,7 @@ const
   FAR_AWAY = 1000000;
   SInventoryMissing = 'Xcom: the rules have no inventory section %s';
 
-constructor TXcomInventory.Create(const AClock: IXcomClock; const AInventories: TArray<TXcomRuleInventory>;
+constructor TXcomInventory.Create(const AClock: IClock; const AInventories: TArray<TXcomRuleInventory>;
   const AGraphics: IXcomBattleGraphics; const ATranslate: TFunc<string, string>; const AStyle: TXcomInventoryStyle;
   AWidth, AHeight, AX, AY: Integer; ABase: Boolean);
 begin
