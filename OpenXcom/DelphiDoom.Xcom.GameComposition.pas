@@ -91,6 +91,12 @@ type
     /// </summary>
     class function CreateFontOverlay(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser): IXcomFontOverlay; static;
+    /// <summary>
+    ///   Xcom32 -fontgrid: the characters of the fonts of the options written as the pictures and the Font.dat of a
+    ///   mod, in AFolder\Language (to load with -modfolder, or to copy in a mod of OpenXcom). The number of pictures
+    /// </summary>
+    /// <exception cref="EXcomEngineException">The options list no font</exception>
+    class function GenerateFontGrids(const ASettings: TXcomGameSettings; const AFolder: string): Integer; static;
   end;
 
 implementation
@@ -121,11 +127,14 @@ DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, 
   DelphiDoom.XcomEngine.FolderShaderCatalog,
   DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.XcomSurface.Glyph.Types,
   DelphiDoom.XcomEngine.FontSettingsReader, DelphiDoom.XcomEngine.RasterFontOverlay,
-  DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory;
+  DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.PngSurfaceLoader,
+  DelphiDoom.XcomEngine.FontRuleReader, DelphiDoom.XcomEngine.FontGridGenerator, DelphiDoom.Png.PaletteEncoder,
+  DelphiDoom.Zlib.Provider;
 
 const
   KEY_FPS = 288;
   FONTS_FILE = 'fonts.cfg';
+  SNoFontsToDraw = 'No font to draw: -fontgrid needs a fonts.cfg (in the user folder, or -fonts) that lists a font';
 
 class function TXcomGameComposition.CreateFontOverlay(const ASettings: TXcomGameSettings;
   const AFiles: IXcomFileSystem; const AParser: IYamlParser): IXcomFontOverlay;
@@ -147,6 +156,38 @@ begin
   LFonts := TXcomFontSettingsReader.Read(AParser.Load(AFiles.ReadAll(LFile)), ASettings.Log);
   if Length(LFonts) > 0 then
     Result := TXcomRasterFontOverlay.Create(LFonts, TXcomGdiGlyphRasterizerFactory.Create, ASettings.Log);
+end;
+
+class function TXcomGameComposition.GenerateFontGrids(const ASettings: TXcomGameSettings;
+  const AFolder: string): Integer;
+var
+  LFiles: IXcomFileSystem;
+  LParser: IYamlParser;
+  LOverlay: IXcomFontOverlay;
+  LMap: TXcomFileMap;
+  LGenerator: TXcomFontGridGenerator;
+begin
+  LFiles := TXcomDiskFileSystem.Create;
+  LParser := TYamlFactory.CreateParser;
+  LOverlay := CreateFontOverlay(ASettings, LFiles, LParser);
+  if LOverlay = nil then
+    raise EXcomEngineException.Create(SNoFontsToDraw);
+  // only the common data: the folders of -modfolder are not read, so a folder can be made again over itself
+  LMap := TXcomFileMap.Create(LFiles);
+  try
+    LMap.AddRoot(TPath.Combine(ASettings.DataFolder, 'common'));
+    LGenerator := TXcomFontGridGenerator.Create(LFiles, TXcomPngSurfaceLoader.Create(LMap, TPngProvider.Client),
+      LOverlay, TPngPaletteEncoder.Create(TZlibProvider.Client));
+    try
+      Result := LGenerator.Generate(TXcomFontRuleReader.Read(LParser.Load(LMap.ReadAll(
+        TXcomFontGridGenerator.LANGUAGE_FOLDER + '/' + TXcomFontGridGenerator.FONT_FILE))), AFolder);
+    finally
+      // the generator holds the loader, that reads from the map
+      LGenerator.Free;
+    end;
+  finally
+    LMap.Free;
+  end;
 end;
 
 class function TXcomGameComposition.CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog;

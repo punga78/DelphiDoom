@@ -134,6 +134,7 @@ implementation
 
 uses
   System.IOUtils, System.Generics.Defaults, DelphiDoom.XcomEngine.YamlFields, DelphiDoom.Xcom.Factory,
+  DelphiDoom.XcomEngine.FontRuleReader,
   DelphiDoom.Xcom.BattlescapePalette;
 
 const
@@ -543,49 +544,21 @@ end;
 
 procedure TXcomModResources.LoadFonts;
 var
-  LDocument: IYamlNode;
-  LItem: IYamlNode;
-  LImage: IYamlNode;
-  LDefinition: TXcomFontDefinition;
-  LImageDefinition: TXcomFontImageDefinition;
-  LImages: TList<TXcomFontImageDefinition>;
-  LWidth: Integer;
-  LHeight: Integer;
-  LSpacing: Integer;
+  LRule: TXcomFontRule;
   LFont: TXcomFont;
 begin
-  LDocument := FParser.Load(FFiles.ReadAll('Language/' + FFontName));
-  for LItem in TXcomYamlFields.Sequence(LDocument, 'fonts') do
+  for LRule in TXcomFontRuleReader.Read(FParser.Load(FFiles.ReadAll('Language/' + FFontName))) do
   begin
-    LWidth := TXcomYamlFields.ReadInteger(LItem, 'width', 0);
-    LHeight := TXcomYamlFields.ReadInteger(LItem, 'height', 0);
-    LSpacing := TXcomYamlFields.ReadInteger(LItem, 'spacing', 0);
-    LDefinition.Monospace := TXcomYamlFields.ReadBoolean(LItem, 'monospace', False);
-    LImages := TList<TXcomFontImageDefinition>.Create;
-    try
-      for LImage in TXcomYamlFields.Sequence(LItem, 'images') do
-      begin
-        LImageDefinition.Width := TXcomYamlFields.ReadInteger(LImage, 'width', LWidth);
-        LImageDefinition.Height := TXcomYamlFields.ReadInteger(LImage, 'height', LHeight);
-        LImageDefinition.Spacing := TXcomYamlFields.ReadInteger(LImage, 'spacing', LSpacing);
-        LImageDefinition.FileName := TXcomYamlFields.ReadString(LImage, 'file', '');
-        LImageDefinition.Chars := TXcomYamlFields.ReadString(LImage, 'chars', '');
-        LImages.Add(LImageDefinition);
-      end;
-      LDefinition.Images := LImages.ToArray;
-    finally
-      LImages.Free;
-    end;
     LFont := TXcomFont.Create;
     try
-      LFont.Load(LDefinition, FFontLoader);
+      LFont.Load(LRule.Definition, FFontLoader);
       if Assigned(FFontOverlay) then
-        FFontOverlay.Apply(TXcomYamlFields.ReadString(LItem, 'id', ''), LFont);
+        FFontOverlay.Apply(LRule.Id, LFont);
     except
       LFont.Free;
       raise;
     end;
-    FFonts.AddOrSetValue(TXcomYamlFields.ReadString(LItem, 'id', ''), LFont);
+    FFonts.AddOrSetValue(LRule.Id, LFont);
   end;
 end;
 
