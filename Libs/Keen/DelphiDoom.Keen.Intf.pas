@@ -725,6 +725,12 @@ type
     procedure Stop;
   end;
 
+  /// <summary>The AdLib card as the sound manager writes to it (alOut): a value in a register of the YM3812</summary>
+  IKeenAdLibPort = interface
+    ['{D2B60F3E-4A17-4C95-8E26-1B7F09A5C3D8}']
+    procedure Write(ARegister, AValue: Byte);
+  end;
+
   /// <summary>The sound effects (id_sd.c): which sound plays, with its priority, and the service that the timer calls</summary>
   IKeenSoundManager = interface
     ['{3F7B91D4-C068-4E25-A1B9-08D7E5C42A63}']
@@ -740,7 +746,50 @@ type
     procedure Service;
     /// <summary>SD_WaitSoundDone</summary>
     procedure WaitSoundDone;
+    /// <summary>AdLibPresent: the manager was given an AdLib card</summary>
+    function AdLibPresent: Boolean;
+    /// <summary>
+    ///   SD_SetSoundMode: false, and nothing changes but the sound that stops, when the device of the mode is not
+    ///   there. A new mode shuts the old device and starts the new one
+    /// </summary>
+    function TrySetMode(AMode: TKeenSoundMode): Boolean;
+    /// <summary>
+    ///   SD_Default: the mode of the configuration file if it was read (AGotIt) and its device is there, otherwise
+    ///   the AdLib when there is one and the PC speaker when not
+    /// </summary>
+    procedure SetDefault(AGotIt: Boolean; AMode: TKeenSoundMode);
     property Mode: TKeenSoundMode read GetMode write SetMode;
+  end;
+
+  /// <summary>Something that makes sound: mono samples at the rate of the mixer</summary>
+  IKeenSampleSource = interface
+    ['{6C1F8A40-B2D5-4E97-9A03-58E7D1C4F2B6}']
+    /// <summary>Adds its next ACount samples to the first ACount entries of ABuffer</summary>
+    procedure AddSamples(const ABuffer: TArray<Integer>; ACount: Integer);
+  end;
+
+  /// <summary>
+  ///   What keeps the thread of the sound output and the one of the game from touching the sound manager at the
+  ///   same time (the C turns the interrupts off: pushf, cli ... popf). The same thread can enter more than once
+  /// </summary>
+  IKeenAudioLock = interface
+    ['{F05A3D71-6E28-4B4C-A7D9-0C13B8E652A4}']
+    procedure Enter;
+    procedure Leave;
+  end;
+
+  /// <summary>
+  ///   The timer interrupt of the sound manager as a stream of samples: for each 1/140 of a second of samples the
+  ///   service of the manager runs once and then the devices (PC speaker, AdLib) give their sound
+  /// </summary>
+  IKeenAudioMixer = interface
+    ['{84E7B2C9-103F-4D6A-B5E8-2A9C60D7F413}']
+    function GetRate: Integer;
+    /// <summary>Fills AByteCount bytes (a multiple of 4) with 16 bit samples, left and right</summary>
+    procedure Render(ABuffer: PByte; AByteCount: Integer);
+    /// <summary>What was rendered since the mixer was made: the proof that the sound runs, without ears</summary>
+    function Statistics: TKeenAudioStatistics;
+    property Rate: Integer read GetRate;
   end;
 
   /// <summary>ChangeToFlower: an enemy that a flower power hits becomes a flower for a while</summary>

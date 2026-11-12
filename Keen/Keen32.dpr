@@ -20,7 +20,9 @@ uses
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Keen.Types in '..\Libs\Keen\DelphiDoom.Keen.Types.pas',
+  DelphiDoom.Keen.GameTypes in '..\Libs\Keen\DelphiDoom.Keen.GameTypes.pas',
   DelphiDoom.Keen.Intf in '..\Libs\Keen\DelphiDoom.Keen.Intf.pas',
+  DelphiDoom.Keen.HostAudio in 'DelphiDoom.Keen.HostAudio.pas',
   DelphiDoom.Keen.Composition in 'DelphiDoom.Keen.Composition.pas';
 
 procedure ShowUsage;
@@ -31,6 +33,8 @@ begin
   Writeln('  -map    the map to draw (default 0)');
   Writeln('  -png    the file to write (default keen_map<number>.png)');
   Writeln('  -list   write the maps of the game and stop');
+  Writeln('  -sound  play a sound effect (0..27) and write what the mixer did; -pcspeaker for the PC speaker instead of');
+  Writeln('          the AdLib card, -nodevice to leave the sound output of the machine closed');
 end;
 
 var
@@ -46,6 +50,9 @@ var
   LData: IKeenGameData;
   LMap: IKeenMap;
   LNumber: Integer;
+  LSound: Integer;
+  LSoundMode: TKeenSoundMode;
+  LUseDevice: Boolean;
 
 begin
   try
@@ -55,6 +62,9 @@ begin
     LView := False;
     LViewX := 0;
     LViewY := 0;
+    LSound := -1;
+    LSoundMode := ksmAdLib;
+    LUseDevice := True;
     LCursor := TProgramCommandLineFactory.CreateCursor(TProgramCommandLineFactory.CreateProcessCommandLine);
     while LCursor.Next(LArgument) do
     begin
@@ -74,6 +84,12 @@ begin
         LViewX := StrToInt(LCursor.Value) * 256;
         LViewY := StrToInt(LCursor.Value) * 256;
       end
+      else if (LArgument = '-sound') and (LCursor.Remaining >= 1) then
+        LSound := StrToInt(LCursor.Value)
+      else if LArgument = '-pcspeaker' then
+        LSoundMode := ksmPC
+      else if LArgument = '-nodevice' then
+        LUseDevice := False
       else if LArgument = '-list' then
         LList := True
       else
@@ -96,6 +112,11 @@ begin
         LMap := LData.Maps.LoadMap(LNumber);
         Writeln(Format('%2d  %-18s %3d x %3d', [LNumber, LMap.Name, LMap.Width, LMap.Height]));
       end;
+      Exit;
+    end;
+    if LSound >= 0 then
+    begin
+      Writeln(TKeenComposition.PlaySoundReport(LData, LSound, LSoundMode, LUseDevice));
       Exit;
     end;
     if LView then

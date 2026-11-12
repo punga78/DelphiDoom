@@ -196,6 +196,8 @@ resourcestring
   SKeenInputBadScan = 'Keen: the scan code %d is not valid';
   SKeenSoundChunkShort = 'Keen: the chunk of a sound has %d bytes, 6 needed at least';
   SKeenSoundNotCached = 'Keen: SD_PlaySound() - Attempted to play an uncached sound (%d)';
+  SKeenAdLibSuspicious = 'Keen: SDL_ALPlaySound() - Seriously suspicious instrument';
+  SKeenSoundModeRefused = 'Keen: the device of the sound mode is not there';
 
 type
   /// <summary>Something wrong with the data or the arguments of the keen library</summary>

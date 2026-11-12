@@ -44,3 +44,19 @@ scrive il testo del porting e `Compare-Actions.ps1 -C <OUT.TXT> -Port <PORT.TXT>
   `temp1` e `temp2` fuori intervallo): il C legge altra memoria. Il porting maschera con `and 7` e `and 3`.
 - I puntatori del C nei `temp` (`new`, `ob`, `state`) sono indici di slot e di stato nel porting: il harness li scrive come
   numero (indice) per avere lo stesso testo.
+
+## K10: gli effetti AdLib (`audio\`)
+
+`audio\Run-AudioParity.ps1 [-Work <cartella>]` fa `Tests\Data\Keen\adlib.golden.txt`: il test `GeneraGliScenariPerIlC` di
+`DelphiDoom.Tests.Keen.AdLibParity` scrive `SCEN.TXT` (300 script; `DELPHIDOOM_KEEN_ADLIB_SCENARIOS`), `id_sd.c` di
+`Reference\_dati\keen_build\src` e' copiato nella cartella di lavoro come `ID_SD_P.C` con **una modifica**: la definizione di
+`alOut` (i due `out` alle porte 388h e 389h con i ritardi) e' rinominata `alOut_hw`; `sdharn.c` include quel file e ha
+l'`alOut` che scrive `w registro valore`. `Build-AudioHarness.cmd` compila con Open Watcom (`-mm -0 -zp1`, come il gioco),
+DOSBox esegue `SDHARN.EXE > OUT.TXT` e `New-ActionsGolden.ps1` fa una riga per script con l'FNV-1a. La cartella di lavoro e'
+fuori dal repository e da `Reference` (predefinita `%TEMP%\keen165-audio`).
+
+Lo script e' testo: `S nome tipo`, `D suono lunghezza priorita' 17 byte (strumento e blocco) n dati...`, `M modo`
+(`SD_SetSoundMode`: 0 spento, 2 AdLib), `P suono` (`SD_PlaySound`), `T n` (n volte `SDL_ALSoundService`: il timer non e'
+installato, i servizi li chiama lo script), `X` (`SD_StopSound`), `Q` (`SD_SoundPlaying`), `E`. All'inizio di ogni script il
+harness mette il modo a spento senza scrivere nel log. Per vedere una differenza: `DELPHIDOOM_KEEN_ADLIB_PORT_OUT=<file>` e
+il test `ScriviIlRisultatoDelPorting`, poi un diff con `OUT.TXT`.
