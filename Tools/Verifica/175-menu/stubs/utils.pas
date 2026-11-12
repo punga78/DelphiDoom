@@ -11,8 +11,11 @@ procedure ChangeViewSize(const MakeLarger: boolean);
 procedure SaveGame(const n: integer);
 procedure LoadGame(const n: integer);
 procedure newplayer(const map: integer; chartype: integer; const difficulty: integer);
+//INTERFACE-EXTRA
 implementation
-uses raven, harness_menu, DelphiDoom.Tests.Greed.MenuScenarios;
+uses raven, harness_menu, DelphiDoom.Tests.Greed.MenuScenarios
+//USES-EXTRA
+  ;
 procedure ChangeViewSize(const MakeLarger: boolean);
 begin
   if MakeLarger then inc(currentViewSize) else dec(currentViewSize);
@@ -24,9 +27,12 @@ end;
 procedure LoadGame(const n: integer);
 begin
   HTrace.Add(MENU_TRACE_LOAD_GAME); HTrace.Add(n);
+  if HIntroMode then gameloaded := true;
 end;
 procedure newplayer(const map: integer; chartype: integer; const difficulty: integer);
 begin
   HTrace.Add(MENU_TRACE_NEW_GAME); HTrace.Add(map); HTrace.Add(chartype); HTrace.Add(difficulty);
+  if HIntroMode then gameloaded := true;
 end;
+//IMPLEMENTATION-EXTRA
 end.

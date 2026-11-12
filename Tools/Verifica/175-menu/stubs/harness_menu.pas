@@ -11,6 +11,8 @@ var
   HTics: Integer;
   HNextKey: Integer;
   HDown: array[0..127] of Boolean;
+  // the intro: a new or loaded game sets gameloaded, as newplayer and LoadGame of the original do
+  HIntroMode: Boolean = False;
   // called before each tic: the dpr hashes the screen and the palette
   HCapture: procedure = nil;
 implementation

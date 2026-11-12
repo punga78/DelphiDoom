@@ -86,6 +86,11 @@ type
   public
     /// <summary>An archive with the lumps that menu.pas reads, made of generated pictures</summary>
     class function SyntheticArchive: IGreedArchive; static;
+    /// <summary>The lumps of SyntheticArchive, for an archive that has others as well</summary>
+    class procedure AddLumps(ABlo: TObject); static;
+    /// <summary>A generated picture and a generated lump of bytes</summary>
+    class function Picture(AWidth, AHeight, AOriginX, AOriginY, AZeroPercent: Integer; ASeed: Cardinal): TBytes; static;
+    class function RandomBytes(ASize: Integer; ASeed: Cardinal; ARange: Integer): TBytes; static;
     class function Scenario(AIndex: Integer): TMenuScenario; static;
     /// <summary>The screen before the menu opens</summary>
     class function Background(ASeed: Cardinal): TBytes; static;
@@ -173,6 +178,8 @@ type
   end;
 
 function MenuFnv(AHash: Cardinal; const AData; ASize: Integer): Cardinal;
+/// <summary>The same four bytes at a time (ASize is a multiple of 4): for the long scenarios</summary>
+function MenuFnv4(AHash: Cardinal; const AData; ASize: Integer): Cardinal;
 /// <summary>The lines of the golden file for an archive, computed with the library</summary>
 function MenuLibraryLines(const AArchive: IGreedArchive): TStringList;
 
@@ -207,6 +214,20 @@ begin
   begin
     Result := (Result xor LByte^) * 16777619;
     Inc(LByte);
+  end;
+end;
+
+function MenuFnv4(AHash: Cardinal; const AData; ASize: Integer): Cardinal;
+var
+  LIndex: Integer;
+  LWord: PCardinal;
+begin
+  Result := AHash;
+  LWord := @AData;
+  for LIndex := 0 to ASize div 4 - 1 do
+  begin
+    Result := (Result xor LWord^) * 16777619;
+    Inc(LWord);
   end;
 end;
 
@@ -336,7 +357,18 @@ begin
     Result[LIndex] := LRandom.Next(ARange);
 end;
 
-class function TMenuScenarios.SyntheticArchive: IGreedArchive;
+class function TMenuScenarios.Picture(AWidth, AHeight, AOriginX, AOriginY, AZeroPercent: Integer;
+  ASeed: Cardinal): TBytes;
+begin
+  Result := SyntheticPicture(AWidth, AHeight, AOriginX, AOriginY, AZeroPercent, ASeed);
+end;
+
+class function TMenuScenarios.RandomBytes(ASize: Integer; ASeed: Cardinal; ARange: Integer): TBytes;
+begin
+  Result := SyntheticBytes(ASize, ASeed, ARange);
+end;
+
+class procedure TMenuScenarios.AddLumps(ABlo: TObject);
 const
   OPTION_PICTURES: array[0..8] of string = ('menumussli', 'menusousli', 'menuvioon', 'menuviooff', 'menuanion',
     'menuanioff', 'menuambsli', 'menuscrsli', 'menucamsli');
@@ -353,35 +385,42 @@ var
   end;
 
 begin
+  LBlo := ABlo as TGreedBlo;
+  LBlo.Add('palette', SyntheticBytes(768, 11, 64));
+  LBlo.Add('FONT1', SyntheticFont(5, 21));
+  // VI_Init of the original reads it
+  LBlo.Add('TRANSPARENCY', SyntheticBytes(GREED_TRANSPARENCY_BYTES, 501, 256));
+  for LIndex := 0 to GREED_MENU_LEVELS - 1 do
+    LBlo.Add(Name('menumain', LIndex), SyntheticPicture(276, 164, 0, 0, 20, 100 + LIndex));
+  for LIndex := 0 to 7 do
+    LBlo.Add(Name('menuanim', LIndex), SyntheticPicture(276, 164, 0, 0, 80 - LIndex * 8, 120 + LIndex));
+  for LIndex := 0 to 2 do
+    LBlo.Add(Name('quit', LIndex), SyntheticPicture(98, 64, 0, 0, 25, 140 + LIndex));
+  for LIndex := 0 to 3 do
+    LBlo.Add(Name('pause', LIndex), SyntheticPicture(108, 56, 0, 0, 25, 150 + LIndex));
+  for LIndex := 0 to 3 do
+    LBlo.Add(Name('wait', LIndex), SyntheticPicture(108, 56, 2, 1, 25, 160 + LIndex));
+  for LIndex := 0 to High(OPTION_PICTURES) do
+    LBlo.Add(OPTION_PICTURES[LIndex], SyntheticPicture(72, 84, 0, 0, 30, 170 + LIndex));
+  for LIndex := 1 to 3 do
+  begin
+    LBlo.Add('INFO' + IntToStr(LIndex), SyntheticPicture(320, 200, 0, 0, 10, 190 + LIndex));
+    LBlo.Add('', SyntheticBytes(768, 200 + LIndex, 256));
+  end;
+end;
+
+class function TMenuScenarios.SyntheticArchive: IGreedArchive;
+var
+  LBlo: TGreedBlo;
+begin
   LBlo := TGreedBlo.Create;
   try
-    LBlo.Add('palette', SyntheticBytes(768, 11, 64));
-    LBlo.Add('FONT1', SyntheticFont(5, 21));
-    // VI_Init of the original reads it
-    LBlo.Add('TRANSPARENCY', SyntheticBytes(GREED_TRANSPARENCY_BYTES, 501, 256));
-    for LIndex := 0 to GREED_MENU_LEVELS - 1 do
-      LBlo.Add(Name('menumain', LIndex), SyntheticPicture(276, 164, 0, 0, 20, 100 + LIndex));
-    for LIndex := 0 to 7 do
-      LBlo.Add(Name('menuanim', LIndex), SyntheticPicture(276, 164, 0, 0, 80 - LIndex * 8, 120 + LIndex));
-    for LIndex := 0 to 2 do
-      LBlo.Add(Name('quit', LIndex), SyntheticPicture(98, 64, 0, 0, 25, 140 + LIndex));
-    for LIndex := 0 to 3 do
-      LBlo.Add(Name('pause', LIndex), SyntheticPicture(108, 56, 0, 0, 25, 150 + LIndex));
-    for LIndex := 0 to 3 do
-      LBlo.Add(Name('wait', LIndex), SyntheticPicture(108, 56, 2, 1, 25, 160 + LIndex));
-    for LIndex := 0 to High(OPTION_PICTURES) do
-      LBlo.Add(OPTION_PICTURES[LIndex], SyntheticPicture(72, 84, 0, 0, 30, 170 + LIndex));
-    for LIndex := 1 to 3 do
-    begin
-      LBlo.Add('INFO' + IntToStr(LIndex), SyntheticPicture(320, 200, 0, 0, 10, 190 + LIndex));
-      LBlo.Add('', SyntheticBytes(768, 200 + LIndex, 256));
-    end;
+    AddLumps(LBlo);
     Result := LBlo.Open;
   finally
     LBlo.Free;
   end;
 end;
-
 class function TMenuScenarios.Background(ASeed: Cardinal): TBytes;
 var
   LRandom: TMenuRandom;
