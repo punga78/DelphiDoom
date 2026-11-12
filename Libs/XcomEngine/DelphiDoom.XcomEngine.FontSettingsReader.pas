@@ -24,7 +24,7 @@ type
   ///       file: C:\x\my.ttf   # a file (with "name" when the family is not the one written in the file)
   ///       size: 8             # height of the em square in pixels of the 320 x 200 screen
   ///       bold: false
-  ///       antialias: true     # false for the "pixel" fonts
+  ///       antialias: true     # false: the pixels of the system, on or off (bitmap fonts, sizes the font is hinted for)
   ///       outline: true       # the dark outline; without the key: as the original font
   ///       spacing: -1         # pixels between two characters; without the key: from the original font
   ///       tolerance: 25       # percent the font may exceed the original cell before it is refused

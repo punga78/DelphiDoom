@@ -33,7 +33,11 @@ type
     /// <summary>The height of the em square in pixels of the 320 x 200 screen</summary>
     Size: Integer;
     Bold: Boolean;
-    /// <summary>Gray levels on the edges; without it a pixel is either in the character or not (the "pixel" fonts)</summary>
+    /// <summary>
+    ///   Gray levels from the outlines of the font; without it the pixels the system draws, each either in the
+    ///   character or not: right for the bitmap fonts and for a font at a size it is hinted for (below about 9
+    ///   pixels Tahoma and Verdana lose pieces of the letters), wrong for the rest
+    /// </summary>
     Antialias: Boolean;
   end;
 
