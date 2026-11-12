@@ -29,6 +29,8 @@ const
   GREED_MAP_PLANES = 18;
   /// <summary>Bytes of the planes of a map; a map in the archive can have more after them (its script)</summary>
   GREED_MAP_BYTES = GREED_MAP_PLANES * GREED_MAP_TILES;
+  /// <summary>The size of a .LVL map of the demo 1.016: 35 planes, a layout that the game does not read</summary>
+  GREED_MAP_BYTES_DEMO_1016 = 35 * GREED_MAP_TILES;
 
   /// <summary>Last angle: the circle has 1024 angles (ANGLES = 1023)</summary>
   GREED_ANGLES = 1023;
@@ -87,6 +89,9 @@ resourcestring
   SGreedMapInvalid = 'Greed: the map %d does not exist (the lumps after "map" are %d)';
   SGreedMapEmpty = 'Greed: the lump of the map %d (%s) has no data and there is no file with that name';
   SGreedMapFileSize = 'Greed: the file %s of a map has %d bytes, %d needed';
+  SGreedMapOldDemo = 'Greed: the file %s is a map of the demo 1.016 (%d bytes, 35 planes): a layout older than ' +
+    'the one of the game (18 planes, %d bytes) that the game does not read; use the data of the demo 2.0 or of the ' +
+    'full game';
   SGreedPlaneInvalid = 'Greed: the plane %d does not exist (a map has %d)';
   SGreedTileOutside = 'Greed: the tile (%d, %d) is outside the map';
   SGreedPaletteTooShort = 'Greed: the palette has %d bytes, %d needed';
