@@ -104,6 +104,7 @@ procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
 implementation
 
 uses
+  DelphiDoom.Engine.Parity.Hooks,
   doomdef,
   i_system,
   d_player,
@@ -353,6 +354,9 @@ begin
 
   // for par times
   inc(leveltime);
+
+  // the parity tools (nothing when they are off)
+  Parity_AfterTick;
 end;
 
 end.

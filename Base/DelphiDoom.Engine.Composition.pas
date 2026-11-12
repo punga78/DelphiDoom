@@ -92,6 +92,15 @@ uses
 {$ENDIF}
   DelphiDoom.MathCore.Intf,
   DelphiDoom.MathCore.Factory,
+  DelphiDoom.MathCore.SystemEntropySource,
+  DelphiDoom.Parity.Factory,
+  DelphiDoom.Parity.Intf,
+  DelphiDoom.Parity.SwitchClock,
+  DelphiDoom.Parity.SwitchEntropy,
+  DelphiDoom.Engine.Parity.Adapter,
+  DelphiDoom.Engine.Parity.InputGate,
+  DelphiDoom.Engine.Parity.LogSink,
+  DelphiDoom.Engine.Parity.Zone,
   m_rnd,
   DelphiDoom.Thinkers.Light.Types,
   DelphiDoom.Thinkers.Light.Games,
@@ -533,7 +542,11 @@ begin
   I_ConfigureNetGame(LNetGame);
 end;
 
-procedure ComposeInput(const ALog: ILog);
+const
+  // the seed of the unpredictable random numbers when the parity tools are on
+  PARITY_ENTROPY_SEED = $5EED1234;
+
+procedure ComposeInput(const ALog: ILog; const AParity: IParitySwitch);
 var
   LWindow: TFunc<THandle>;
   LPoller: IInputPoller;
@@ -547,7 +560,8 @@ begin
   // Windows: the choice of DirectInput (usedirectinput) was never set by anything
   LPoller := TInputFactory.CreatePoller(TInputFactory.CreateWindowsKeyboard,
     TInputFactory.CreateWindowsMouse, TInputFactory.CreateWindowsJoystick(LWindow),
-    TEngineInputGate.Create, TEngineScreenSize.Create, TEngineKeyMap.Create,
+    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create,
+    TEngineKeyMap.Create,
     TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
   I_ConfigureInput(LPoller);
   G_ConfigureInput(LPoller);
@@ -1416,12 +1430,19 @@ var
   LStore: IFileStore;
   LShutdown: IEngineShutdown;
   LScreens: IEngineScreens;
+  LParity: TEngineParity;
+  LParitySwitch: IParitySwitch;
+  LParityClock: TParitySwitchClock;
 begin
   // how a class of the engine stops the game: I_Error and I_Quit of i_system
   LShutdown := TEngineShutdown.Create;
   LScreens := TEngineScreens.Create;
+  // The parity tools (-statehash, -framehash, -autodemo...) are built when the command line says so: until
+  // then their switch is off and the zone, the clock, the input gate and the random numbers are the real ones
+  LParity := TEngineParity.Create(LShutdown);
+  LParitySwitch := LParity;
   // The zone first: whatever is built next can already allocate from it
-  LZoneCore := TZoneFactory.CreateAllocator(TEngineZoneMemory.Create);
+  LZoneCore := TEngineParityZone.Create(TZoneFactory.CreateAllocator(TEngineZoneMemory.Create), LParitySwitch);
   Z_ConfigureZone(LZoneCore);
   // the classes of the engine use the same allocator, with the I_Error of the Z_* functions
   LZone := TEngineZoneAllocator.Create(LZoneCore, LShutdown);
@@ -1443,9 +1464,12 @@ begin
       LStore.EnsureDirectory(APath);
     end, CD_WORKDIR);
   M_ConfigureArgv(TCommandLineFactory.CreateBuilder, LCommandLine, LSaveFileNames);
-  LRandom := TMathCoreFactory.CreateGameRandom;
+  LParity.AttachCommandLine(LCommandLine);
+  LRandom := TMathCoreFactory.CreateGameRandom(TParitySwitchEntropy.Create(
+    TSystemEntropySource.Create(True), LParitySwitch, PARITY_ENTROPY_SEED));
+  LParity.AttachRandom(LRandom);
   LContext := TEngineGameContext.Create;
-  LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineLogSink.Create),
+  LLog := TLogFactory.CreateLog(TArray<ILogSink>.Create(TEngineParityLogSink.Create(TEngineLogSink.Create, LParitySwitch)),
     function: Boolean
     begin
       Result := LContext.IsDeveloperMode;
@@ -1468,10 +1492,13 @@ begin
   ComposeOpenGl(LPreprocessor);
 {$ENDIF}
   LClock := TClockFactory.CreateClock(LLog);
+  LParityClock := TParityFactory.CreateSwitchClock(LClock, LParitySwitch, TICRATE);
+  LClock := LParityClock;
+  LParity.AttachClock(LParityClock);
   I_ConfigureClock(LClock);
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeDisplayModes;
-  ComposeInput(LLog);
+  ComposeInput(LLog, LParitySwitch);
   ComposeSound(LLog);
   ComposeMusic(LTempFiles, LCommandLine, LZone, LLog, LShutdown);
   S_ConfigurePK3Sounds(LTempFiles);

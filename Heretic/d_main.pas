@@ -352,6 +352,7 @@ procedure D_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.Engine.Parity.Hooks,
   d_delphi,
   DelphiDoom.CommandLine.FileList,
   DelphiDoom.Wad.Pak.GameDirectories,
@@ -771,6 +772,7 @@ var
 //==============================================================================
 procedure D_FinishUpdate;
 begin
+  Parity_AfterFrame; // the parity tools (nothing when they are off)
   if not noblit then
     I_FinishUpdate; // page flip or blit buffer
   if autoscreenshot then

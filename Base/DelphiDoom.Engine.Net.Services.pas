@@ -46,6 +46,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Engine.Parity.Hooks,
   d_delphi,
   d_event,
   d_main,
@@ -89,6 +90,7 @@ var
 begin
   FillChar(LCommand, SizeOf(LCommand), 0);
   G_BuildTiccmd(@LCommand);
+  Parity_BuildTicCmd(@LCommand);
   SetLength(Result, SizeOf(ticcmd_t));
   Move(LCommand, Result[0], SizeOf(ticcmd_t));
 end;
