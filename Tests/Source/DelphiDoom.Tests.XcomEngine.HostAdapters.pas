@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Events.Intf,
   DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.MessageTranslator, DelphiDoom.Xcom.HostEventSink,
   DelphiDoom.Xcom.HostLog, DelphiDoom.Xcom.HostVideoDevice, DelphiDoom.Xcom.HostShaderLoader,
-  DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.Yaml.Factory;
+  DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.Yaml.Factory, DelphiDoom.Clock.Intf,
+  DelphiDoom.Xcom.HostClock;
 
 type
   /// <summary>A keyboard that answers what the test says</summary>
@@ -91,9 +92,27 @@ type
     [Test]
     procedure IlDispositivoDovrebbePassareLaPalette;
     [Test]
+    procedure LOrologioDovrebbeDareIMillisecondiDalPrimoUso;
+    [Test]
+    procedure LOrologioDovrebbeRipartireDaZeroDopo32Bit;
+    [Test]
+    procedure LOrologioDovrebbeAspettareConQuelloDelMotore;
+    [Test]
     procedure IlCaricatoreDovrebbeDareIDueProgrammiDelFile;
     [Test]
     procedure IlCaricatoreDovrebbeDireCheIlFileManca;
+  end;
+
+  /// <summary>A clock of the engine whose time is what the test says</summary>
+  TFakeEngineClock = class(TInterfacedObject, IClock)
+  public
+    Now: Double;
+    Slept: Integer;
+    function Seconds: Double;
+    function Steps(ARate: Integer): Integer;
+    function ScaledSteps(ARate, AScale: Integer): Integer;
+    procedure Sleep(AMilliseconds: Integer);
+    procedure Wait(AMilliseconds: Integer);
   end;
 
   /// <summary>A catalog with one shader file, or none</summary>
@@ -449,6 +468,75 @@ begin
     TXcomShaderFileReader.Create(TYamlFactory.CreateParser), LLogRef);
   Assert.IsFalse(LLoader.TryLoad('Shaders/none.opengl.shader', LSource));
   Assert.AreEqual('ERROR:requested file not found: Shaders/none.opengl.shader|', LLog.Lines);
+end;
+
+procedure TTestXcomHostAdapters.LOrologioDovrebbeDareIMillisecondiDalPrimoUso;
+var
+  LEngine: TFakeEngineClock;
+  LClock: IXcomClock;
+begin
+  LEngine := TFakeEngineClock.Create;
+  LClock := TXcomHostClock.Create(LEngine);
+  Assert.AreEqual(Cardinal(0), LClock.Ticks);
+  LEngine.Now := 1.2349;
+  Assert.AreEqual(Cardinal(1234), LClock.Ticks);
+  Assert.WillRaise(
+    procedure
+    begin
+      TXcomHostClock.Create(nil);
+    end, EArgumentNilException);
+end;
+
+procedure TTestXcomHostAdapters.LOrologioDovrebbeRipartireDaZeroDopo32Bit;
+var
+  LEngine: TFakeEngineClock;
+  LClock: IXcomClock;
+begin
+  // SDL_GetTicks wraps around after about 49 days
+  LEngine := TFakeEngineClock.Create;
+  LClock := TXcomHostClock.Create(LEngine);
+  LEngine.Now := 4294967.2975;
+  Assert.AreEqual(Cardinal(1), LClock.Ticks);
+end;
+
+procedure TTestXcomHostAdapters.LOrologioDovrebbeAspettareConQuelloDelMotore;
+var
+  LEngine: TFakeEngineClock;
+  LClock: IXcomClock;
+begin
+  LEngine := TFakeEngineClock.Create;
+  LClock := TXcomHostClock.Create(LEngine);
+  LClock.Delay(16);
+  Assert.AreEqual(16, LEngine.Slept);
+  LClock.Delay($FFFFFFFF);
+  Assert.AreEqual(High(Integer), LEngine.Slept, 'un''attesa senza segno non diventa negativa');
+end;
+
+{ TFakeEngineClock }
+
+function TFakeEngineClock.Seconds: Double;
+begin
+  Result := Now;
+end;
+
+function TFakeEngineClock.Steps(ARate: Integer): Integer;
+begin
+  Result := Trunc(Now * ARate);
+end;
+
+function TFakeEngineClock.ScaledSteps(ARate, AScale: Integer): Integer;
+begin
+  Result := Trunc(Now * ARate * AScale);
+end;
+
+procedure TFakeEngineClock.Sleep(AMilliseconds: Integer);
+begin
+  Slept := AMilliseconds;
+end;
+
+procedure TFakeEngineClock.Wait(AMilliseconds: Integer);
+begin
+  Slept := AMilliseconds;
 end;
 
 { TFakeShaderCatalog }

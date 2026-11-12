@@ -63,7 +63,9 @@ uses
   DelphiDoom.Xcom.HostEventSink in 'DelphiDoom.Xcom.HostEventSink.pas',
   DelphiDoom.GameHost.Factory,
   DelphiDoom.GameHost.Win.Window,
-  DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
+  DelphiDoom.Xcom.HostClock in 'DelphiDoom.Xcom.HostClock.pas',
+  DelphiDoom.Clock.Intf,
+  DelphiDoom.Clock.Factory,
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
   DelphiDoom.Xcom.Win.PcmOutput in 'DelphiDoom.Xcom.Win.PcmOutput.pas',
@@ -282,7 +284,8 @@ var
   LOutput: TXcomWinPcmOutput;
   LOutputRef: IXcomPcmOutput;
   LMeter: IXcomMixerMeter;
-  LStart: Cardinal;
+  LClock: IClock;
+  LStart: Double;
 begin
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
@@ -306,13 +309,15 @@ begin
       begin
         Say(ALine);
       end));
-    LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomWinClock.Create, LEvents);
-    LStart := GetTickCount;
+    // the clock of Libs\Clock, for the game (through its adapter) and for the loop
+    LClock := TClockFactory.CreateClock(nil);
+    LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, TXcomHostClock.Create(LClock), LEvents);
+    LStart := LClock.Seconds;
     while LWindow.Pump and not LGame.IsQuitting do
     begin
       LGame.RunFrame;
-      Sleep(LGame.FrameDelay);
-      if (AArguments.QuitAfter > 0) and (GetTickCount - LStart > Cardinal(AArguments.QuitAfter)) then
+      LClock.Sleep(LGame.FrameDelay);
+      if (AArguments.QuitAfter > 0) and ((LClock.Seconds - LStart) * 1000 > AArguments.QuitAfter) then
         Break;
     end;
     // Options::save at the end of Game::run: also the size of a window that was resized
