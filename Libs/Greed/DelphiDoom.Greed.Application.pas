@@ -88,6 +88,7 @@ type
     FRedo: Boolean;
     FStopped: Boolean;
     FMode: TGreedApplicationMode;
+    FStoppedIn: TGreedApplicationMode;
     FTics: Integer;
     FFrames: Integer;
     function DueTics: Integer;
@@ -222,6 +223,8 @@ end;
 
 procedure TGreedApplication.Stop;
 begin
+  if not FStopped then
+    FStoppedIn := FMode;
   FStopped := True;
   FGame.State.QuitGame := True;
 end;
@@ -696,6 +699,7 @@ begin
   ALines.Add(Format('application.frames=%d', [FFrames]));
   ALines.Add(Format('application.redo=%d', [Ord(FRedo)]));
   ALines.Add(Format('application.stopped=%d', [Ord(FStopped)]));
+  ALines.Add(Format('application.stoppedin=%s', [MODE_NAMES[FStoppedIn]]));
   ALines.Add(Format('application.screenheld=%d', [Ord(FScreenHold)]));
   ALines.Add(Format('application.gameloaded=%d', [Ord(FGame.State.GameLoaded)]));
   ALines.Add(Format('application.quitgame=%d', [Ord(FGame.State.QuitGame)]));
