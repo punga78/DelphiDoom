@@ -66,8 +66,8 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMenu.BattlescapeTheme,
-  DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomMenu.OptionsDefaultsState, DelphiDoom.XcomMenu.OptionsConfirmState;
+  DelphiDoom.XcomMenu.BattlescapeTheme, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomEngine.ExtraChoiceOptions.Intf, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomMenu.OptionsDefaultsState, DelphiDoom.XcomMenu.OptionsConfirmState;
 
 function TXcomOptionsBaseState.TooltipText: string;
 begin
@@ -156,6 +156,7 @@ var
   LDX: Integer;
   LDY: Integer;
   LOptions: TXcomOptions;
+  LNotices: TArray<string>;
 begin
   LOptions := Host.Options;
   LOptions.SwitchDisplay;
@@ -171,6 +172,8 @@ begin
   if (Host.OptionsStore <> nil) then
     Host.OptionsStore.Save(LOptions);
   Host.LoadLanguages;
+  // the fonts chosen in the advanced options (not in OpenXcom): kept and laid over the fonts of the game
+  LNotices := Host.ReloadFonts;
   Host.Screen.ResetDisplay;
   Host.SetVolume(LOptions.SoundVolume, LOptions.MusicVolume, LOptions.UiVolume);
   // a change of the video options must be confirmed
@@ -180,10 +183,18 @@ begin
     Host.PushState(TXcomOptionsConfirmState.Create(Host, FOrigin, FNavigator))
   else
     FNavigator.Restart(FOrigin, Host);
+  // what could not be used as chosen is told over whatever the game shows now, instead of staying in the log
+  if Length(LNotices) > 0 then
+    Host.PushState(TXcomErrorMessageState.ForOrigin(Host, FOrigin, string.Join(' ', LNotices), Palette));
 end;
 
 procedure TXcomOptionsBaseState.CancelClick(AAction: TXcomAction);
+var
+  LChoices: IXcomExtraChoiceOptions;
 begin
+  // the fonts that were changed and not confirmed are forgotten
+  if Supports(Host.ExtraOptions, IXcomExtraChoiceOptions, LChoices) then
+    LChoices.Discard;
   Host.Options.Reload := False;
   if (Host.OptionsStore <> nil) then
     Host.OptionsStore.Load(Host.Options);

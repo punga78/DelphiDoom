@@ -20,7 +20,7 @@ uses
   DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Volume,
   DelphiDoom.XcomEngine.ModCatalog.Intf, DelphiDoom.XcomEngine.SoundFormats.Intf,
   DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomEngine.HostUiSounds,
-  DelphiDoom.XcomEngine.ExtraOptions.Intf;
+  DelphiDoom.XcomEngine.ExtraOptions.Intf, DelphiDoom.XcomEngine.FontReloader.Intf;
 
 type
   /// <summary>ApplicationState of Game::run: what the pauseMode option makes of a game without the focus</summary>
@@ -58,6 +58,7 @@ type
     FDisplayModes: IXcomDisplayModes;
     FShaderCatalog: IXcomShaderCatalog;
     FExtraOptions: IXcomExtraOptions;
+    FFontReloader: IXcomFontReloader;
     FOptionsStore: IXcomOptionsStore;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
@@ -99,6 +100,9 @@ type
     function DisplayModes: IXcomDisplayModes; override;
     function ShaderCatalog: IXcomShaderCatalog; override;
     function ExtraOptions: IXcomExtraOptions; override;
+    function ReloadFonts: TArray<string>; override;
+    /// <summary>What lays the fonts chosen in the options over the fonts of the game; nil, the default: none</summary>
+    procedure SetFontReloader(const AReloader: IXcomFontReloader);
     function OptionsStore: IXcomOptionsStore; override;
     procedure LoadLanguages; override;
     procedure SetVolume(ASound, AMusic, AUi: Integer); override;
@@ -445,6 +449,18 @@ end;
 function TXcomGame.ExtraOptions: IXcomExtraOptions;
 begin
   Result := FExtraOptions;
+end;
+
+function TXcomGame.ReloadFonts: TArray<string>;
+begin
+  Result := nil;
+  if Assigned(FFontReloader) then
+    Result := FFontReloader.Reload(FResources);
+end;
+
+procedure TXcomGame.SetFontReloader(const AReloader: IXcomFontReloader);
+begin
+  FFontReloader := AReloader;
 end;
 
 function TXcomGame.OptionsStore: IXcomOptionsStore;

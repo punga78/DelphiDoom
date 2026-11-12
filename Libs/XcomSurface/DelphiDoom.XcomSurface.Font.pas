@@ -74,6 +74,12 @@ type
     /// </summary>
     procedure KeepOriginal;
     /// <summary>
+    ///   Takes the font back to what it was at KeepOriginal: the pictures that were added are freed, the characters
+    ///   are the original ones, Detail is nil and Original is nil again (so a new font of the system can be laid
+    ///   over it; not in the C++, issue 184). Does nothing for a font that was never laid over
+    /// </summary>
+    procedure Restore;
+    /// <summary>
     ///   The font as it was at KeepOriginal (the pictures of the game under a font of the system), owned by this
     ///   font; nil, the default, when nothing was laid over it
     /// </summary>
@@ -159,6 +165,25 @@ begin
     FOriginal.FImages.Add(LImage);
   for LPair in FChars do
     FOriginal.FChars.Add(LPair.Key, LPair.Value);
+end;
+
+procedure TXcomFont.Restore;
+var
+  LIndex: Integer;
+  LPair: TPair<Cardinal, TXcomFontChar>;
+begin
+  if not Assigned(FOriginal) then
+    Exit;
+  FDetail := nil;
+  for LIndex := FImages.Count - 1 downto FOriginal.FImages.Count do
+  begin
+    FImages[LIndex].Surface.Free;
+    FImages.Delete(LIndex);
+  end;
+  FChars.Clear;
+  for LPair in FOriginal.FChars do
+    FChars.Add(LPair.Key, LPair.Value);
+  FreeAndNil(FOriginal);
 end;
 
 function TXcomFont.AddImage(AWidth, AHeight, ASpacing: Integer; ASurface: TXcomSurface): Integer;

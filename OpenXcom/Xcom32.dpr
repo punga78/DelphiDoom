@@ -90,6 +90,7 @@ uses
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
   DelphiDoom.Xcom.Win.GdiGlyphRasterizer in 'DelphiDoom.Xcom.Win.GdiGlyphRasterizer.pas',
   DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory in 'DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory.pas',
+  DelphiDoom.Xcom.Win.GdiSystemFonts in 'DelphiDoom.Xcom.Win.GdiSystemFonts.pas',
   DelphiDoom.Xcom.HostPcmOutput in 'DelphiDoom.Xcom.HostPcmOutput.pas',
   DelphiDoom.GameHost.Audio.Intf,
   DelphiDoom.XcomAudio.Intf;

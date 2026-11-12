@@ -20,7 +20,8 @@ uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.Rules.Intf,
   DelphiDoom.XcomEngine.GameRules, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.ModFiles.Intf, DelphiDoom.Png.Client, DelphiDoom.Xcom.CatArchive, DelphiDoom.XcomEngine.SoundSet,
-  DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.SoundFormats.Intf;
+  DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.SoundFormats.Intf,
+  DelphiDoom.XcomEngine.FontReapplier.Intf;
 
 type
   /// <summary>
@@ -39,7 +40,7 @@ type
   ///   chosen by the preferred format (ResolveSoundSets, IXcomSoundFormats)
   /// </summary>
   TXcomModResources = class(TInterfacedObject, IXcomResources, IXcomGameRules, IXcomExtraSurfaces,
-    IXcomSoundFormats)
+    IXcomSoundFormats, IXcomFontReapplier)
   strict private
     FRules: TXcomGameRules;
     FFiles: TXcomFileMap;
@@ -100,6 +101,8 @@ type
     property FontOverlay: IXcomFontOverlay read FFontOverlay write FFontOverlay;
     /// <summary>Reads the palettes, the rulesets and the fonts; EXcomEngineException when the data is not there</summary>
     procedure Load;
+    /// <summary>IXcomFontReapplier: the fonts go back to the pictures of the game and the overlay is laid again</summary>
+    procedure ReapplyFonts(const AOverlay: IXcomFontOverlay);
     function HasSoundDefinitions: Boolean;
     /// <summary>IXcomSoundFormats: the sets of a game without soundDefs are chosen again at the next sound</summary>
     procedure SetPreferredSound(AFormat: Integer);
@@ -559,6 +562,23 @@ begin
       raise;
     end;
     FFonts.AddOrSetValue(LRule.Id, LFont);
+  end;
+end;
+
+procedure TXcomModResources.ReapplyFonts(const AOverlay: IXcomFontOverlay);
+var
+  LPair: TPair<string, TXcomFont>;
+  LIndex: Integer;
+begin
+  for LPair in FFonts do
+  begin
+    LPair.Value.Restore;
+    if Assigned(AOverlay) then
+      AOverlay.Apply(LPair.Key, LPair.Value);
+    // the pictures that were added take the palette of the state, as SetPalette gave it to the others
+    if FHasStatePalette then
+      for LIndex := 0 to LPair.Value.ImageCount - 1 do
+        LPair.Value.ImageSurface(LIndex).SetColors(FStatePalette);
   end;
 end;
 

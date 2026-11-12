@@ -12,7 +12,7 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.OptionInfo, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text,
   DelphiDoom.XcomUi.TextList, DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.OptionsNavigator.Intf,
-  DelphiDoom.XcomMenu.OptionsBaseState;
+  DelphiDoom.XcomMenu.OptionsBaseState, DelphiDoom.XcomEngine.ExtraChoiceOptions.Intf;
 
 type
   /// <summary>
@@ -33,6 +33,9 @@ type
     function SettingOf(ARow: Integer; out AInfo: TXcomOptionInfo): Boolean;
     function ExtraRows: Integer;
     function ExtraOf(ARow: Integer; out AIndex: Integer): Boolean;
+    function ExtraKind(AIndex: Integer): TXcomExtraKind;
+    function ExtraValue(AIndex: Integer): string;
+    procedure RefreshExtra(ARow: Integer; AIndex: Integer);
     function YesNo(AValue: Boolean): string;
     procedure ListClick(AAction: TXcomAction);
     procedure ListMouseOver(AAction: TXcomAction);
@@ -141,7 +144,41 @@ begin
     LFirst := FSettingsGeneral.Count + 2 + FSettingsGeo.Count + 2 + FSettingsBattle.Count + 2;
     FList.SetCellColor(LFirst, 0, FColorGroup);
     for LIndex := 0 to ExtraRows - 1 do
-      FList.AddRow([Host.ExtraOptions.Title(LIndex), YesNo(Host.ExtraOptions.IsOn(LIndex))]);
+      FList.AddRow([Host.ExtraOptions.Title(LIndex), ExtraValue(LIndex)]);
+  end;
+end;
+
+function TXcomOptionsAdvancedState.ExtraKind(AIndex: Integer): TXcomExtraKind;
+var
+  LChoices: IXcomExtraChoiceOptions;
+begin
+  // a host that only knows yes/no rows has toggles
+  if Supports(Host.ExtraOptions, IXcomExtraChoiceOptions, LChoices) then
+    Result := LChoices.Kind(AIndex)
+  else
+    Result := ekToggle;
+end;
+
+function TXcomOptionsAdvancedState.ExtraValue(AIndex: Integer): string;
+begin
+  // a choice has its value in the title: the YES/NO column is only for the toggles
+  if ExtraKind(AIndex) = ekToggle then
+    Result := YesNo(Host.ExtraOptions.IsOn(AIndex))
+  else
+    Result := '';
+end;
+
+procedure TXcomOptionsAdvancedState.RefreshExtra(ARow: Integer; AIndex: Integer);
+var
+  LIndex: Integer;
+  LFirst: Integer;
+begin
+  // a change of one row can change the others (the font Original has no size)
+  LFirst := ARow - AIndex;
+  for LIndex := 0 to ExtraRows - 1 do
+  begin
+    FList.SetCellText(LFirst + LIndex, 0, Host.ExtraOptions.Title(LIndex));
+    FList.SetCellText(LFirst + LIndex, 1, ExtraValue(LIndex));
   end;
 end;
 
@@ -221,8 +258,17 @@ begin
   LRow := FList.GetSelectedRow;
   if ExtraOf(LRow, LExtra) then
   begin
-    Host.ExtraOptions.SetOn(LExtra, not Host.ExtraOptions.IsOn(LExtra));
-    FList.SetCellText(LRow, 1, YesNo(Host.ExtraOptions.IsOn(LExtra)));
+    case ExtraKind(LExtra) of
+      ekToggle:
+        Host.ExtraOptions.SetOn(LExtra, not Host.ExtraOptions.IsOn(LExtra));
+      ekChoice:
+        // left button: the next one, right button: the previous one
+        if LButton = XCOM_BUTTON_LEFT then
+          (Host.ExtraOptions as IXcomExtraChoiceOptions).Step(LExtra, 1)
+        else
+          (Host.ExtraOptions as IXcomExtraChoiceOptions).Step(LExtra, -1);
+    end;
+    RefreshExtra(LRow, LExtra);
     Exit;
   end;
   if not SettingOf(LRow, LInfo) then

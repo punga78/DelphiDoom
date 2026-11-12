@@ -15,7 +15,9 @@ uses
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.TrueColor.Intf,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.LoggingBattleAudio, DelphiDoom.Yaml.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf,
-  DelphiDoom.XcomSurface.FontDetail.Intf;
+  DelphiDoom.XcomSurface.FontDetail.Intf, DelphiDoom.XcomSurface.Glyph.Types,
+  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomEngine.FontSettingsSource.Intf,
+  DelphiDoom.XcomEngine.FontReloader.Intf;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -105,6 +107,18 @@ type
     class function CreateFontOverlay(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser; const AComposer: IXcomFrameComposer = nil): IXcomFontOverlay; static;
     /// <summary>
+    ///   The choice of the fonts: the entries of fonts.cfg of the user folder (or of -fonts, which then cannot be
+    ///   changed in the options), as the rows of the advanced options and as the source of the fonts
+    /// </summary>
+    class function CreateFontChoices(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
+      const AParser: IYamlParser): IXcomFontSettingsSource; static;
+    /// <summary>
+    ///   The overlay for some entries (nil for none); with a composer that composes in true color the fonts also
+    ///   draw their text at the resolution of the display
+    /// </summary>
+    class function MakeFontOverlay(const ASettings: TArray<TXcomFontOverlaySettings>; const ALog: IXcomLog;
+      const AFactory: IXcomGlyphRasterizerFactory; const AComposer: IXcomFrameComposer): IXcomFontOverlay; static;
+    /// <summary>
     ///   Xcom32 -fontgrid: the characters of the fonts of the options written as the pictures and the Font.dat of a
     ///   mod, in AFolder\Language (to load with -modfolder, or to copy in a mod of OpenXcom). The number of pictures
     /// </summary>
@@ -139,11 +153,12 @@ DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, 
   DelphiDoom.GameHost.OpenGl.Factory,
   DelphiDoom.Xcom.HostVideoDevice, DelphiDoom.Xcom.HostShaderLoader, DelphiDoom.Xcom.HostLog,
   DelphiDoom.XcomEngine.FolderShaderCatalog,
-  DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.XcomSurface.Glyph.Types,
-  DelphiDoom.XcomEngine.FontSettingsReader, DelphiDoom.XcomEngine.RasterFontOverlay,
+  DelphiDoom.XcomEngine.ShaderFileReader, DelphiDoom.XcomEngine.RasterFontOverlay,
   DelphiDoom.Xcom.Win.GdiGlyphRasterizerFactory, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.PngSurfaceLoader,
   DelphiDoom.XcomEngine.FontRuleReader, DelphiDoom.XcomEngine.FontGridGenerator, DelphiDoom.Png.PaletteEncoder,
-  DelphiDoom.Zlib.Provider;
+  DelphiDoom.Zlib.Provider, DelphiDoom.XcomEngine.FontChoices, DelphiDoom.XcomEngine.FontReloader,
+  DelphiDoom.XcomEngine.ExtraOptionSet, DelphiDoom.XcomEngine.ExtraOptions.Intf,
+  DelphiDoom.Xcom.Win.GdiSystemFonts;
 
 const
   KEY_FPS = 288;
@@ -154,30 +169,61 @@ class function TXcomGameComposition.CreateFontOverlay(const ASettings: TXcomGame
   const AFiles: IXcomFileSystem; const AParser: IYamlParser;
   const AComposer: IXcomFrameComposer): IXcomFontOverlay;
 var
+  LChoices: IXcomFontSettingsSource;
+begin
+  LChoices := CreateFontChoices(ASettings, AFiles, AParser);
+  Result := MakeFontOverlay(LChoices.Settings, ASettings.Log, TXcomGdiGlyphRasterizerFactory.Create, AComposer);
+end;
+
+class function TXcomGameComposition.CreateFontChoices(const ASettings: TXcomGameSettings;
+  const AFiles: IXcomFileSystem; const AParser: IYamlParser): IXcomFontSettingsSource;
+var
+  LPath: string;
+begin
+  LPath := '';
+  if ASettings.UserFolder <> '' then
+    LPath := TPath.Combine(ASettings.UserFolder, FONTS_FILE);
+  // a file that was asked for by name and is not there is said; the default one is simply optional
+  if (ASettings.FontsFile <> '') and not AFiles.FileExists(ASettings.FontsFile) and Assigned(ASettings.Log) then
+    ASettings.Log.Write('WARN', 'fonts: ' + ASettings.FontsFile + ' not found: the fonts are the pictures of the game');
+  Result := TXcomFontChoices.Create(AFiles, AParser, LPath, ASettings.FontsFile, TXcomGdiSystemFonts.Create,
+    ASettings.Log);
+end;
+
+class function TXcomGameComposition.MakeFontOverlay(const ASettings: TArray<TXcomFontOverlaySettings>;
+  const ALog: IXcomLog; const AFactory: IXcomGlyphRasterizerFactory;
+  const AComposer: IXcomFrameComposer): IXcomFontOverlay;
+var
   LInk: IXcomInkLayers;
-  LFile: string;
-  LFonts: TArray<TXcomFontOverlaySettings>;
 begin
   Result := nil;
-  LFile := ASettings.FontsFile;
-  if (LFile = '') and (ASettings.UserFolder <> '') then
-    LFile := TPath.Combine(ASettings.UserFolder, FONTS_FILE);
-  if (LFile = '') or not AFiles.FileExists(LFile) then
-  begin
-    // a file that was asked for by name and is not there is said; the default one is simply optional
-    if (ASettings.FontsFile <> '') and Assigned(ASettings.Log) then
-      ASettings.Log.Write('WARN', 'fonts: ' + LFile + ' not found: the fonts are the pictures of the game');
-    Exit;
-  end;
-  LFonts := TXcomFontSettingsReader.Read(AParser.Load(AFiles.ReadAll(LFile)), ASettings.Log);
-  if Length(LFonts) = 0 then
+  if Length(ASettings) = 0 then
     Exit;
   // with a screen that composes in true color the fonts also draw the text at the resolution of the display
   if Assigned(AComposer) and Supports(AComposer, IXcomInkLayers, LInk) then
-    Result := TXcomRasterFontOverlay.Create(LFonts, TXcomGdiGlyphRasterizerFactory.Create, ASettings.Log,
-      AComposer.DetailLayers, LInk)
+    Result := TXcomRasterFontOverlay.Create(ASettings, AFactory, ALog, AComposer.DetailLayers, LInk)
   else
-    Result := TXcomRasterFontOverlay.Create(LFonts, TXcomGdiGlyphRasterizerFactory.Create, ASettings.Log);
+    Result := TXcomRasterFontOverlay.Create(ASettings, AFactory, ALog);
+end;
+
+function CreateFontReloader(const ASettings: TXcomGameSettings; const AChoices: IXcomFontSettingsSource;
+  const AFactory: IXcomGlyphRasterizerFactory; const AComposerSource: TXcomFrameComposerSource): IXcomFontReloader;
+var
+  LLog: IXcomLog;
+begin
+  // In a function of its own (see CreateBattleScreens). The overlay is made when the options are confirmed, with
+  // the composer the screen has by then: turning "32-bit drawing" on and confirming gives the fonts their sharp text
+  LLog := ASettings.Log;
+  Result := TXcomFontReloader.Create(AChoices,
+    function(const AFonts: TArray<TXcomFontOverlaySettings>): IXcomFontOverlay
+    var
+      LComposer: IXcomFrameComposer;
+    begin
+      LComposer := nil;
+      if Assigned(AComposerSource) then
+        LComposer := AComposerSource();
+      Result := TXcomGameComposition.MakeFontOverlay(AFonts, LLog, AFactory, LComposer);
+    end);
 end;
 
 class function TXcomGameComposition.GenerateFontGrids(const ASettings: TXcomGameSettings;
@@ -367,6 +413,9 @@ var
   LComposer: IXcomFrameComposer;
   LComposerSource: TXcomFrameComposerSource;
   LScreen: TXcomScreen;
+  LFontChoices: IXcomFontSettingsSource;
+  LRasterizers: IXcomGlyphRasterizerFactory;
+  LFontRows: IXcomExtraOptions;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -410,7 +459,9 @@ begin
     LModLoader.LoadRules := True;
     // in a variable: an object made inside the argument of a const interface parameter is not counted
     LComposer := CreateFrameComposer(ASettings, LOptions, ADevice);
-    LModLoader.FontOverlay := CreateFontOverlay(ASettings, LFiles, LParser, LComposer);
+    LFontChoices := CreateFontChoices(ASettings, LFiles, LParser);
+    LRasterizers := TXcomGdiGlyphRasterizerFactory.Create;
+    LModLoader.FontOverlay := MakeFontOverlay(LFontChoices.Settings, ASettings.Log, LRasterizers, LComposer);
     LLoader := LModLoader;
     case ASettings.LoadMode of
       lmImmediate:
@@ -436,8 +487,10 @@ begin
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
     // the display filters of the video options: listed as in OpenXcom also when the display cannot use them
     Result.SetShaderCatalog(CreateShaderCatalog(ASettings));
-    // the one setting OpenXcom does not have: a row at the end of the advanced options
-    Result.SetExtraOptions(TXcomTrueColorOption.Create(LOptions));
+    // the settings OpenXcom does not have: rows at the end of the advanced options (32-bit drawing, the fonts)
+    Supports(LFontChoices, IXcomExtraOptions, LFontRows);
+    Result.SetExtraOptions(TXcomExtraOptionSet.Create([TXcomTrueColorOption.Create(LOptions), LFontRows]));
+    Result.SetFontReloader(CreateFontReloader(ASettings, LFontChoices, LRasterizers, LComposerSource));
     // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
     Result.SetModCatalog(TXcomDiskModCatalog.Create(
       [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],

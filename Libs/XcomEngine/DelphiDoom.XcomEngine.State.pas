@@ -59,6 +59,12 @@ type
     function ShaderCatalog: IXcomShaderCatalog; virtual;
     /// <summary>The settings the program adds to the ones of OpenXcom (nil when the host has none)</summary>
     function ExtraOptions: IXcomExtraOptions; virtual;
+    /// <summary>
+    ///   The options were confirmed: the fonts chosen in them are laid over the fonts of the game (not in
+    ///   OpenXcom). Gives what the player has to be told about the fonts that could not be used; empty when the host
+    ///   has no fonts to change
+    /// </summary>
+    function ReloadFonts: TArray<string>; virtual;
     /// <summary>Where the options are kept (nil: Options::save and load do nothing)</summary>
     function OptionsStore: IXcomOptionsStore; virtual;
     /// <summary>Game::loadLanguages: loads the language of Options::language and replaces the current one</summary>
@@ -211,6 +217,11 @@ begin
 end;
 
 function TXcomStateHost.ExtraOptions: IXcomExtraOptions;
+begin
+  Result := nil;
+end;
+
+function TXcomStateHost.ReloadFonts: TArray<string>;
 begin
   Result := nil;
 end;
