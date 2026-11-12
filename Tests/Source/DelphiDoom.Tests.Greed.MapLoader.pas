@@ -172,6 +172,13 @@ begin
   SetLength(LFiles.Bytes, 143360);
   LLoader := TGreedFactory.CreateMapLoader(FArchive, LFilesIntf);
   Assert.WillRaise(procedure begin LLoader.Load(1); end, EGreedDataException);
+  // and the message says which demo it is, not only the sizes
+  try
+    LLoader.Load(1);
+  except
+    on E: EGreedDataException do
+      Assert.Contains(E.Message, 'demo 1.016');
+  end;
 end;
 
 procedure TTestGreedMapLoader.DovrebbeVolereLeSueParti;
