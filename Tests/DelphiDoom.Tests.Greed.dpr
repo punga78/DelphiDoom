@@ -135,6 +135,9 @@ uses
   DelphiDoom.Tests.Greed.Doors in 'Source\DelphiDoom.Tests.Greed.Doors.pas',
   DelphiDoom.Tests.Greed.GameTables in 'Source\DelphiDoom.Tests.Greed.GameTables.pas',
   DelphiDoom.Tests.Greed.GameState in 'Source\DelphiDoom.Tests.Greed.GameState.pas',
+  DelphiDoom.Tests.Greed.SpawnScenarios in 'Source\DelphiDoom.Tests.Greed.SpawnScenarios.pas',
+  DelphiDoom.Tests.Greed.Spawner in 'Source\DelphiDoom.Tests.Greed.Spawner.pas',
+  DelphiDoom.Tests.Greed.MonsterPictureFix in 'Source\DelphiDoom.Tests.Greed.MonsterPictureFix.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
   DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
