@@ -15,11 +15,12 @@ param(
   [string]$Name = 'a_*',
   [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
   [string]$DataRoot = '',
-  [hashtable]$Exe = @{},
+  [object]$Exe = @{},
   [switch]$NoVerify
 )
 . (Join-Path $PSScriptRoot 'Parity-Common.ps1')
 # con powershell -File una lista separata da virgole arriva come una sola stringa
+$Exe = ConvertTo-ParityMap $Exe
 $Game = @($Game | ForEach-Object { $_ -split ',' } | Where-Object { $_ -ne '' })
 $root = Get-ParityRoot
 $games = Get-ParityGames
@@ -64,7 +65,13 @@ foreach ($gameName in $games.Keys) {
       $recorded = [int](& $tool count $stateFile)
       $replayed = [int](& $tool count $replay)
       if ($result -match 'EQUAL') { $note = 'riproduzione uguale' }
-      elseif ($result -match 'length of the log' -and ($replayed - $recorded) -eq 1) { $note = 'riproduzione uguale (un tic in piu)' }
+      elseif ($result -match 'length of the log' -and $result -match 'expected: \(end of the log\)' -and ($replayed - $recorded) -ge 1) { $note = 'riproduzione uguale (la registrazione e un prefisso: +' + ($replayed - $recorded) + ' tic)' }
+      # una demo non registra il comando di un giocatore morto (angleturn a 0 in riproduzione): cambia solo la
+      # categoria player, a salute <= 0 (il campo cmd_angleturn: provato con -statehash-detail); i golden sono
+      # comunque quelli della riproduzione, che e' ripetibile
+      elseif (($result -match 'DIFFERENT at line \d+ \(tic \d+\): total,player') -and ($result -match 'expected: .* hp=(-?\d+) ') -and ([int]$Matches[1] -le 0)) {
+        $note = 'riproduzione uguale salvo il comando del giocatore morto'
+      }
       else { $note = 'RIPRODUZIONE DIVERSA: ' + $result.Trim(); $failed++ }
       $tics = $recorded
     }

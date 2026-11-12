@@ -21,10 +21,11 @@ param(
   [int[]]$Modes = @(8, 32),
   [string]$WorkRoot = (Join-Path $env:TEMP 'ddparity'),
   [string]$DataRoot = '',
-  [hashtable]$Exe = @{},
+  [object]$Exe = @{},
   [string]$OutDir = ''
 )
 . (Join-Path $PSScriptRoot 'Parity-Common.ps1')
+$Exe = ConvertTo-ParityMap $Exe
 $Game = @($Game | ForEach-Object { $_ -split ',' } | Where-Object { $_ -ne '' })
 $root = Get-ParityRoot
 if ($OutDir -eq '') { $OutDir = Join-Path $root 'Tests\Data\Parity' }

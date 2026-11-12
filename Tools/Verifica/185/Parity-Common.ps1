@@ -23,6 +23,18 @@ $script:ParityGames = [ordered]@{
 
 function Get-ParityRoot { $script:ParityRoot }
 
+# Una tabella gioco -> percorso: una hashtable, oppure (con powershell -File) una stringa 'Doom=C:\a.exe;Hexen=C:\b.exe'.
+function ConvertTo-ParityMap {
+  param($Value)
+  if ($null -eq $Value) { return @{} }
+  if ($Value -is [hashtable]) { return $Value }
+  $map = @{}
+  foreach ($pair in ([string]$Value -split ';')) {
+    if ($pair -match '^\s*([^=]+)=(.+)$') { $map[$Matches[1].Trim()] = $Matches[2].Trim() }
+  }
+  $map
+}
+
 function Get-ParityGames { $script:ParityGames }
 
 function Get-ParityDataRoot {
@@ -138,7 +150,7 @@ function Invoke-ParityEntry {
     [Parameter(Mandatory = $true)][string]$StateFile,
     [Parameter(Mandatory = $true)][string]$FrameFile,
     [string]$Extra = '',
-    [int]$TimeoutSeconds = 900
+    [int]$TimeoutSeconds = 300
   )
   $demo = $Entry.Demo
   if ($Entry.ContainsKey('Auto')) {
