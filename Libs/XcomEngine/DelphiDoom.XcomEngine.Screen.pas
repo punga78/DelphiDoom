@@ -55,6 +55,8 @@ type
     FCursorLeftBlackBand: Integer;
     FDeferredPalette: TXcomColors;
     FScreenshotRequested: Boolean;
+    /// <summary>The composer showed the last frame: the scaled indexes are made when DisplayPixels is asked</summary>
+    FDisplayStale: Boolean;
     procedure Zoom(ADestWidth, ADestHeight, ALeft, ATop: Integer);
     procedure GiveDisplayFilter;
     procedure TakeDisplayFilter;
@@ -228,13 +230,17 @@ var
   LHeight: Integer;
   LBands: TXcomBlackBands;
 begin
+  // the frame in true color: the indexes are not scaled for nothing (DisplayPixels does it when asked)
+  if Assigned(FComposer) and FComposer.Present(FSurface, FDeferredPalette) then
+  begin
+    FDisplayStale := True;
+    Exit;
+  end;
+  FDisplayStale := False;
   LWidth := FDisplayWidth - FLeftBlackBand - FRightBlackBand;
   LHeight := FDisplayHeight - FTopBlackBand - FBottomBlackBand;
   if (LWidth > 0) and (LHeight > 0) then
     Zoom(LWidth, LHeight, FLeftBlackBand, FTopBlackBand);
-  // the frame in true color; the scaled indexes above stay what DisplayPixels gives
-  if Assigned(FComposer) and FComposer.Present(FSurface, FDeferredPalette) then
-    Exit;
   if Assigned(FFiltered) and FOptions.UseOpenGL then
   begin
     LBands.Top := FTopBlackBand;
@@ -416,7 +422,19 @@ begin
 end;
 
 function TXcomScreen.DisplayPixels: TBytes;
+var
+  LWidth: Integer;
+  LHeight: Integer;
 begin
+  if FDisplayStale then
+  begin
+    // what Flip does on the 8 bit path, for the frame the composer showed
+    FDisplayStale := False;
+    LWidth := FDisplayWidth - FLeftBlackBand - FRightBlackBand;
+    LHeight := FDisplayHeight - FTopBlackBand - FBottomBlackBand;
+    if (LWidth > 0) and (LHeight > 0) then
+      Zoom(LWidth, LHeight, FLeftBlackBand, FTopBlackBand);
+  end;
   Result := FDisplay;
 end;
 

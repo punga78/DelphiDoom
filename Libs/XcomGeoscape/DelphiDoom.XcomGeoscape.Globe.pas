@@ -454,6 +454,10 @@ begin
   // the C++ fills the six tables when it is built; here a table is made the first time its zoom is drawn
   if Length(FEarthData[AZoom]) = 0 then
   begin
+    // a globe that is the detail of another has large tables: it keeps one
+    if FDetailScale > 1 then
+      for LX := 0 to High(FEarthData) do
+        FEarthData[LX] := nil;
     SetLength(FEarthData[AZoom], Width * Height);
     for LY := 0 to Height - 1 do
       for LX := 0 to Width - 1 do
@@ -1653,45 +1657,60 @@ end;
 
 procedure TXcomGlobe.DrawShadowDetail;
 var
-  LEarth: TXcomCord;
+  LEarth: TArray<TXcomCord>;
   LSun: TXcomCord;
-  LX, LY, LShadow, LSplit, LEnd, LGroup, LTableX, LTableY: Integer;
+  LX, LY, LShadow, LSplit, LEnd, LGroup, LTableX, LTableY, LOffsetX, LOffsetY, LNoiseRow: Integer;
+  LNoiseColumn: TArray<Integer>;
   LDest: PByte;
   LOcean: Byte;
+  LOceanShading: Boolean;
 begin
-  // DrawShadow without the table of the earth (it would be the square of the scale times larger for each zoom):
-  // the point of the sphere is computed for each pixel, and the noise is the one of the game enlarged
+  // DrawShadow for a globe that is the detail of another: the same shade for every pixel of this one, with the
+  // noise of the game enlarged (a cell of noise covers a pixel of the game). Only the table of the zoom in use
+  // is kept: it is the square of the scale times the one of the game
+  LEarth := EarthData(FZoom);
   LSun := SunDirection(FCenLon, FCenLat);
   LOcean := FRules.OceanColor;
+  LOceanShading := FRules.OceanShading;
+  LOffsetX := FCenX - Width div 2;
+  LOffsetY := FCenY - Height div 2;
+  SetLength(LNoiseColumn, Width);
+  for LX := 0 to Width - 1 do
+    LNoiseColumn[LX] := (LX div FDetailScale) mod NOISE_SIZE;
   for LY := 0 to Height - 1 do
+  begin
+    LTableY := LY - LOffsetY;
+    if (LTableY < 0) or (LTableY >= Height) then
+      Continue;
+    LNoiseRow := ((LY div FDetailScale) mod NOISE_SIZE) * NOISE_SIZE;
+    LDest := PixelPointer(0, LY);
     for LX := 0 to Width - 1 do
     begin
-      LDest := PixelPointer(LX, LY);
-      LTableX := LX - (FCenX - Width div 2);
-      LTableY := LY - (FCenY - Height div 2);
-      if (LTableX < 0) or (LTableX >= Width) or (LTableY < 0) or (LTableY >= Height) then
-        Continue;
-      LEarth := CircleNorm(Width div 2, Height div 2, FRadius, LTableX + 0.5, LTableY + 0.5);
-      if (LDest^ <> 0) and (LEarth.Z <> 0) then
+      LTableX := LX - LOffsetX;
+      if (LTableX >= 0) and (LTableX < Width) then
       begin
-        LShadow := ShadowValue(LEarth, LSun,
-          FNoise[((LY div FDetailScale) mod NOISE_SIZE) * NOISE_SIZE + ((LX div FDetailScale) mod NOISE_SIZE)]);
-        if FRules.OceanShading and (LDest^ >= LOcean) and (LDest^ < LOcean + 32) then
-          LDest^ := Byte(LOcean + LShadow)
-        else if LShadow <> 0 then
+        if (LDest^ <> 0) and (LEarth[LTableY * Width + LTableX].Z <> 0) then
         begin
-          LSplit := LShadow div 3;
-          LEnd := LDest^ + LSplit;
-          LGroup := LDest^ and $F0;
-          if LEnd > LGroup + $0F then
-            LDest^ := Byte(LGroup + $0F)
-          else
-            LDest^ := Byte(LEnd);
-        end;
-      end
-      else
-        LDest^ := 0;
+          LShadow := ShadowValue(LEarth[LTableY * Width + LTableX], LSun, FNoise[LNoiseRow + LNoiseColumn[LX]]);
+          if LOceanShading and (LDest^ >= LOcean) and (LDest^ < LOcean + 32) then
+            LDest^ := Byte(LOcean + LShadow)
+          else if LShadow <> 0 then
+          begin
+            LSplit := LShadow div 3;
+            LEnd := LDest^ + LSplit;
+            LGroup := LDest^ and $F0;
+            if LEnd > LGroup + $0F then
+              LDest^ := Byte(LGroup + $0F)
+            else
+              LDest^ := Byte(LEnd);
+          end;
+        end
+        else
+          LDest^ := 0;
+      end;
+      Inc(LDest);
     end;
+  end;
 end;
 
 procedure TXcomGlobe.MouseClick(AAction: TXcomAction);

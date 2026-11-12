@@ -12,6 +12,7 @@ La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Loggin
 |---|---|
 | `DelphiDoom.GameHost.Types` | colori e palette, evento di input neutro (tasto virtuale di Windows, carattere, pulsante, posizione nell'immagine), filtro del display, bande nere, sorgente di uno shader, eccezioni |
 | `DelphiDoom.GameHost.Video.Intf` | `IGameHostVideoDevice` (modo, fotogramma, titolo), `IGameHostWindowStyle`, `IGameHostWindowPlacement`, `IGameHostFilteredDisplay`, `IGameHostShaderLoader` |
+| `DelphiDoom.GameHost.TrueColor.Intf` | `IGameHostTrueColorDisplay` (issue #183): interfaccia facoltativa di un dispositivo che mostra anche un'immagine a colori (`$FFRRGGBB` per pixel); la implementano GDI, OpenGL e il selettore |
 | `DelphiDoom.GameHost.Events.Intf` | `IGameHostEventSink` (dove vanno gli eventi), `IGameHostKeyboard` (modificatori e carattere di un tasto), `IGameHostKeyState` (tasti premuti), `TGameHostPump` |
 | `DelphiDoom.GameHost.Audio.Intf` | `IGameHostPcmSource`, `IGameHostPcmOutput` |
 | `DelphiDoom.GameHost.PictureLayout` | geometria pura: rettangolo dell'immagine a schermo intero, punto dell'area client -> punto dell'immagine |

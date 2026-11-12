@@ -142,3 +142,34 @@ TXcomScreen.Flip ── senza strategia ──> Zoom a indici ──> IXcomVideo
 ## 6. Stato
 
 - Fetta 1 (questo documento): fatta.
+- **Fetta 2 (composizione finale in RGBA): fatta.** Come al §3. `TXcomScreen` riceve il compositore dal composition
+  root (`TXcomGameComposition.CreateFrameComposer`: `-truecolor` o `trueColor: true` in `options.cfg`); senza, nulla
+  cambia. Rispetto al progetto: lo zoom a indici (`DisplayPixels`) con il compositore si fa solo a richiesta; le
+  bande nere hanno il colore 0 della palette come nel percorso a 8 bit. Numeri in `Libs\XcomEngine\CLAUDE.md`:
+  percorso a 8 bit 7 PNG su 7 identici byte per byte; con l'opzione a scala 1 e 2 zero pixel diversi dopo la palette
+  (tolto il globo fine a scala 2).
+- **Fetta 3 (scala intera piu' alta): fatto il globo del Geoscape**, come al §3 (secondo globo + strato di
+  dettaglio; `Libs\XcomGeoscape\CLAUDE.md`). La scala e' quella che il gioco ha gia' (misura della finestra diviso
+  misura dell'immagine: 640x400, 960x600, 1280x800 su 320x200), non un'opzione nuova. **Non fatto**: le linee dei
+  grafici (`GraphsState`: stesso meccanismo, uno strato per il riquadro del grafico), il radar del dogfight, la
+  minimappa. **Cornici e pulsanti: deciso di non farli.** Sono rettangoli allineati agli assi: l'ingrandimento col
+  pixel piu' vicino li rende gia' esatti, e ridisegnarli "alla risoluzione vera" li farebbe solo piu' sottili (un
+  bordo di 5 pixel veri invece di 5 pixel del gioco), cambiando le proporzioni dell'interfaccia senza guadagno.
+  Il testo e' della #184 (aggancio: `TXcomGlobe.BlitLabel` e, per i widget, `IXcomDetailLayers`).
+- **Fetta 4 (trasparenze ed effetti veri): non iniziata**, per scelta (la 3 non e' completa). Che cosa serve, in
+  ordine: (1) estendere lo strato di dettaglio a **BGRA con alpha** (`EndLayer` con pixel a colori; il compositore
+  fa `dst = dst*(1-a) + src*a` al posto della copia) - serve anche alla #184; (2) dare a `TXcomBattleMap` un
+  secondo bersaglio per fumo, fuoco e particelle: oggi `DrawParticles` scrive sulla mappa l'indice della tabella
+  di `TXcomTransparencyTable` e il fumo e' un fotogramma pieno di `SMOKE.PCK`; nel percorso nuovo li registrerebbe
+  (posizione, tinta, opacita' 1..4 o densita') in uno strato alla scala 1 che il compositore mescola in RGB, lasciando
+  invariato cio' che scrive sulla superficie a 8 bit; l'ordine per tegola resta giusto solo se lo strato ricorda
+  **dopo quale sprite** e' stato disegnato (stesso criterio "il pixel e' ancora quello che ho lasciato"); (3) la luce:
+  `TXcomSurfaceShader.Blit` con ombra `n` sposta l'indice di `n` nella rampa; per una luce continua serve, per ogni
+  blocco di 16 colori della palette, la curva di luminosita' della rampa (non e' lineare ne' uguale tra blocchi) e
+  uno strato che porti "indice base + ombra frazionaria": si interpola tra i due colori vicini della **stessa
+  rampa**, cosi' ai valori interi il risultato coincide col gioco. Il rischio e' quello detto al §2 (punti 2 e 3):
+  vanno fatti uno alla volta con un confronto visivo, non c'e' un riferimento con cui fare parita'.
+- **Prestazioni** (millisecondi per fotogramma, `-script`): opzione spenta invariata (menu 0,9, geoscape 1,7,
+  battaglia 25); accesa a 2x menu 1,4, battaglia 25,6, geoscape 5,4; geoscape a 3x 9,2 e a 4x 15,2 (il globo fine
+  si ridisegna per intero a ogni passo del tempo: e' il primo punto da ottimizzare, ridisegnando l'ombra solo
+  quando il sole si e' mosso di un livello).
