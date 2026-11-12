@@ -45,7 +45,9 @@ uses
   DelphiDoom.Tests.XcomSurface.Surface in 'Source\DelphiDoom.Tests.XcomSurface.Surface.pas',
   DelphiDoom.XcomSurface.SurfaceSet in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.SurfaceSet.pas',
   DelphiDoom.XcomSurface.Enlarger in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Enlarger.pas',
-  DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas';
+  DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas',
+  DelphiDoom.XcomSurface.Stroke in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Stroke.pas',
+  DelphiDoom.Tests.XcomSurface.Stroke in 'Source\DelphiDoom.Tests.XcomSurface.Stroke.pas';
 
 var
   Runner: ITestRunner;

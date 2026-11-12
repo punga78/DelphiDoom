@@ -249,6 +249,19 @@ begin
           Inc(LFrame, FDetailScale);
           Continue;
         end;
+        // a pixel the widget did not change: only what the detail draws is laid on the frame, which may already
+        // hold the finer drawing of a widget under this one (the lines of the graphs are a pile of surfaces)
+        if LBeforeRow[LX] = LAfterRow[LX] then
+        begin
+          for LSubX := 0 to FDetailScale - 1 do
+          begin
+            if LDetail^ <> 0 then
+              LFrame^ := AColors[LDetail^];
+            Inc(LDetail);
+            Inc(LFrame);
+          end;
+          Continue;
+        end;
         // where the detail draws nothing, what was there before the widget shows through
         LUnder := AColors[LBeforeRow[LX]];
         for LSubX := 0 to FDetailScale - 1 do

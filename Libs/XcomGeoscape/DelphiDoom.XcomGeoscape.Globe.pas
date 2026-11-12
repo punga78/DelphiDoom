@@ -147,6 +147,9 @@ type
     procedure DrawTarget(ATarget: TXcomTarget; ASurface: TXcomSurface);
     procedure DrawGlobeCircle(ALat, ALon, ARadius: Double; ASegments: Integer; AFraction: Integer = 1);
     procedure XuLine(ASurface, ASource: TXcomSurface; AX1, AY1, AX2, AY2: Double; AShade: Integer);
+    procedure XuLineWide(ASurface, ASource: TXcomSurface; AX1, AY1, AX2, AY2: Double; AShade, AWidth: Integer);
+    procedure RadarLine(ASurface: TXcomSurface; AX1, AY1, AX2, AY2: Double; AShade: Integer);
+    procedure BorderLine(AX1, AY1, AX2, AY2: Integer);
     function ClipLine(var AX1, AY1, AX2, AY2: Double): Boolean;
     function SunDirection(ALon, ALat: Double): TXcomCord;
     class function CircleNorm(AOx, AOy, ARadius, AX, AY: Double): TXcomCord; static;
@@ -250,7 +253,7 @@ uses
   DelphiDoom.XcomMod.RuleRegion, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleCountry,
   DelphiDoom.XcomMod.Polyline, DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.Country, DelphiDoom.XcomSave.Ufo,
   DelphiDoom.XcomSave.Waypoint, DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomSave.AlienBase,
-  DelphiDoom.XcomSurface.Gfx, DelphiDoom.XcomSurface.Enlarger, DelphiDoom.XcomEngine.Language,
+  DelphiDoom.XcomSurface.Gfx, DelphiDoom.XcomSurface.Enlarger, DelphiDoom.XcomSurface.Stroke, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomUi.Types;
 
 { TXcomCRandom }
@@ -1184,6 +1187,70 @@ begin
   end;
 end;
 
+procedure TXcomGlobe.RadarLine(ASurface: TXcomSurface; AX1, AY1, AX2, AY2: Double; AShade: Integer);
+begin
+  // the globe of the game: Globe::XuLine as it is. Its finer drawing: the same line with a pen that grows with
+  // the scale
+  if FDetailScale = 1 then
+    XuLine(ASurface, FLineSource, AX1, AY1, AX2, AY2, AShade)
+  else
+    XuLineWide(ASurface, FLineSource, AX1, AY1, AX2, AY2, AShade, TXcomStroke.WidthOf(FDetailScale));
+end;
+
+procedure TXcomGlobe.BorderLine(AX1, AY1, AX2, AY2: Integer);
+begin
+  if FDetailScale = 1 then
+    TXcomGfx.DrawLine(FCountries, AX1, AY1, AX2, AY2, FRules.LineColor)
+  else
+    TXcomStroke.Line(FCountries, AX1, AY1, AX2, AY2, TXcomStroke.WidthOf(FDetailScale), FRules.LineColor);
+end;
+
+procedure TXcomGlobe.XuLineWide(ASurface, ASource: TXcomSurface; AX1, AY1, AX2, AY2: Double; AShade,
+  AWidth: Integer);
+var
+  LSteps, LStep, LX, LY, LPenX, LPenY, LColor, LOcean, LEnd, LGroup: Integer;
+  LStepX, LStepY: Double;
+begin
+  // XuLine for the finer globe: the line goes between the same two points, every point of it is a square of
+  // AWidth pixels, and every pixel is the color under it made lighter as XuLine does
+  if not ClipLine(AX1, AY1, AX2, AY2) then
+    Exit;
+  LSteps := Abs(Trunc(AX2) - Trunc(AX1));
+  if Abs(Trunc(AY2) - Trunc(AY1)) > LSteps then
+    LSteps := Abs(Trunc(AY2) - Trunc(AY1));
+  if LSteps = 0 then
+    Exit;
+  LStepX := (AX2 - AX1) / LSteps;
+  LStepY := (AY2 - AY1) / LSteps;
+  LOcean := FRules.OceanColor;
+  for LStep := 0 to LSteps - 1 do
+  begin
+    LX := Trunc(AX1 + LStepX * LStep) - AWidth div 2;
+    LY := Trunc(AY1 + LStepY * LStep) - AWidth div 2;
+    for LPenY := LY to LY + AWidth - 1 do
+      for LPenX := LX to LX + AWidth - 1 do
+      begin
+        if (LPenX < 0) or (LPenY < 0) or (LPenX >= ASource.Width) or (LPenY >= ASource.Height) then
+          Continue;
+        LColor := ASource.GetPixel(LPenX, LPenY);
+        if LColor = 0 then
+          Continue;
+        if FRules.OceanShading and (LColor >= LOcean) and (LColor < LOcean + 32) then
+          LColor := Byte(LOcean + AShade + 8)
+        else if AShade <> 0 then
+        begin
+          LEnd := LColor + AShade;
+          LGroup := LColor and $F0;
+          if LEnd > LGroup + $0F then
+            LColor := LGroup + $0F
+          else
+            LColor := LEnd;
+        end;
+        ASurface.SetPixel(LPenX, LPenY, Byte(LColor));
+      end;
+  end;
+end;
+
 procedure TXcomGlobe.DrawGlobeCircle(ALat, ALon, ARadius: Double; ASegments, AFraction: Integer);
 var
   LX, LY, LX2, LY2, LLat1, LLon1, LSegment, LAzimuth: Double;
@@ -1192,7 +1259,9 @@ begin
   LX2 := 0;
   LY2 := 0;
   LIndex := 0;
-  LSegment := PI / (ASegments / 2);
+  // a globe that is the detail of another draws the circle with as many more sides as its scale (1 for the
+  // globe of the game): the radars are circles and not polygons of 24, 48 or 64 sides
+  LSegment := PI / ((ASegments * FDetailScale) / 2);
   LAzimuth := 0;
   while LAzimuth <= PI * 2 + 0.01 do
   begin
@@ -1206,8 +1275,8 @@ begin
     end
     else
     begin
-      if (not PointBack(LLon1, LLat1)) and (LIndex mod AFraction = 0) then
-        XuLine(FRadars, FLineSource, LX, LY, LX2, LY2, 6);
+      if (not PointBack(LLon1, LLat1)) and ((LIndex div FDetailScale) mod AFraction = 0) then
+        RadarLine(FRadars, LX, LY, LX2, LY2, 6);
       LX2 := LX;
       LY2 := LY;
       Inc(LIndex);
@@ -1268,7 +1337,7 @@ begin
     ToPolar(LA, LLon2, LLat2);
     PolarToCart(LLon2, LLat2, LX2, LY2);
     if not PointBack(LLon1, LLat1) and not PointBack(LLon2, LLat2) then
-      XuLine(ASurface, FLineSource, LX1, LY1, LX2, LY2, 8);
+      RadarLine(ASurface, LX1, LY1, LX2, LY2, 8);
     LLon1 := LLon2;
     LLat1 := LLat2;
     LX1 := LX2;
@@ -1450,7 +1519,7 @@ begin
           Continue;
         PolarToCart(LPolyline.GetLongitude(LPoint), LPolyline.GetLatitude(LPoint), LX[0], LY[0]);
         PolarToCart(LPolyline.GetLongitude(LPoint + 1), LPolyline.GetLatitude(LPoint + 1), LX[1], LY[1]);
-        TXcomGfx.DrawLine(FCountries, LX[0], LY[0], LX[1], LY[1], FRules.LineColor);
+        BorderLine(LX[0], LY[0], LX[1], LY[1]);
       end;
   if FZoom >= 2 then
   begin
