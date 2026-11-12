@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.CustomBase;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomBasescape.SelectStartFacilityState,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomBasescape.SelectStartFacilityState,
   DelphiDoom.Tests.XcomTour.World;
 
 type
@@ -73,7 +73,7 @@ function TTestXcomTourCustomBase.NewGame: Boolean;
 begin
   Result := FWorld.HasData;
   if not Result then
-    TXcomTestSkip.Ignore('the data of the game is not on this machine');
+    TTestSkip.Ignore('the data of the game is not on this machine');
   FWorld.Game.Options.SetBool('customInitialBase', True);
   FWorld.StartNewGame;
 end;
@@ -156,7 +156,7 @@ end;
 procedure TTestXcomTourCustomBase.SenzaLOpzioneLaPrimaBaseHaGiaLeSueStrutture;
 begin
   if not FWorld.HasData then
-    TXcomTestSkip.Ignore('the data of the game is not on this machine');
+    TTestSkip.Ignore('the data of the game is not on this machine');
   FWorld.StartNewGame;
   Assert.AreEqual('TXcomGeoscapeState', FWorld.Top);
   Assert.IsTrue(FWorld.FirstBase.Facilities.Count > 3);

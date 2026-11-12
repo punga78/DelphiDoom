@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomStrategy.Mission;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Convert,
+  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Convert,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleAlienMission, DelphiDoom.XcomMod.RuleRegion,
   DelphiDoom.XcomMod.UfoTrajectory, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.AlienMission,
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.LandMap.Intf,
@@ -219,7 +219,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
+    TTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   FLines := TStringList.Create;

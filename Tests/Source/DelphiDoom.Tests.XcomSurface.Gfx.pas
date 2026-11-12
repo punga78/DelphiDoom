@@ -18,6 +18,7 @@ unit DelphiDoom.Tests.XcomSurface.Gfx;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Fnv,
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomSurface.Surface;
 
 type
@@ -148,19 +149,8 @@ begin
 end;
 
 function TTestXcomGfx.Fnv(ASurface: TXcomSurface): string;
-var
-  LHash: UInt64;
-  LIndex: Integer;
-  LPixels: TBytes;
 begin
-  LHash := UInt64($CBF29CE484222325);
-  LPixels := ASurface.Pixels;
-  for LIndex := 0 to ASurface.Width * ASurface.Height - 1 do
-  begin
-    LHash := LHash xor LPixels[LIndex];
-    LHash := LHash * UInt64($100000001B3);
-  end;
-  Result := UIntToStr(LHash);
+  Result := UIntToStr(TTestFnv.Hash64(ASurface.Pixels, ASurface.Width * ASurface.Height));
 end;
 
 function TTestXcomGfx.RunCase(const ALine: string): string;

@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattle.RealGenerator;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleTerrain, DelphiDoom.XcomMod.RuleUfo,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.Ufo,
@@ -444,7 +444,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LDumpFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_GEN_DUMP');
@@ -509,7 +509,7 @@ begin
   if (ScenarioSubFolder <> '') or (not DirectoryExists(LFolder)) or (not Assigned(FRuleset)) or
     (Length(FVoxels) = 0) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LFolder := IncludeTrailingPathDelimiter(LFolder);

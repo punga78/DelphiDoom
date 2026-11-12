@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomEngine.RealFrames;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Factory,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Factory,
   DelphiDoom.Xcom.Types, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.Game,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.FolderLanguageProvider,DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.DiskModCatalog, DelphiDoom.Png.Provider,
@@ -252,7 +252,7 @@ procedure TTestXcomRealFrames.LaSchermataELaStessaDiOpenXcomVero(const AName, AS
 begin
   if FReference = '' then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.AreEqual(Golden(AName), Render(AName, ASteps));
@@ -269,7 +269,7 @@ var
 begin
   if FReference = '' then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   LSettings.DataFolder := FDataFolder;

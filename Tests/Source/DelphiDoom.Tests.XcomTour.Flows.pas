@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Flows;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -85,14 +85,14 @@ begin
   if Result then
     FWorld.StartNewGame
   else
-    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
+    TTestSkip.Ignore('i dati di TFTD non ci sono');
 end;
 
 function TTestXcomTourFlows.Variant(const AName: string): Boolean;
 begin
   Result := FWorld.HasData and FWorld.LoadVariant(AName);
   if not Result then
-    TXcomTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
+    TTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
 end;
 
 function TTestXcomTourFlows.RunUntil(const AClass: string; ASpeedY, ATurns: Integer): Boolean;

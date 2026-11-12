@@ -14,7 +14,7 @@ unit DelphiDoom.Tests.XcomStrategy.Dogfight;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  System.SysUtils, System.Classes, System.Math, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleAlienMission, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.AlienMission, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.CraftWeapon,
   DelphiDoom.XcomSave.CraftWeaponProjectile, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomStrategy.LandMap.Intf,
@@ -335,7 +335,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
+    TTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   FLines := TStringList.Create;

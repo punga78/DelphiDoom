@@ -13,6 +13,7 @@ unit DelphiDoom.Tests.XcomBattleStates.Battle;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, System.IOUtils, System.ZLib, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.RuleInterface,
@@ -115,7 +116,6 @@ type
     FScenario: string;
     FGame: TXcomSavedGame;
     FSession: IXcomBattleSession;
-    class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadGzip(const APath: string): TYamlText; static;
   public
     constructor Create;
@@ -384,22 +384,6 @@ end;
 
 { TTestBattle }
 
-class function TTestBattle.FindUp(const ARelative: string; AFolder: Boolean): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
-  begin
-    Result := LFolder + ARelative;
-    if (AFolder and DirectoryExists(Result)) or ((not AFolder) and FileExists(Result)) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
-
 class function TTestBattle.ReadGzip(const APath: string): TYamlText;
 var
   LSource: TFileStream;
@@ -436,8 +420,8 @@ var
 begin
   inherited Create;
   FData := TXcomRealData.Create('tftd.xcom2.golden.txt');
-  FScenario := FindUp('Tests\Data\XcomBattle\bg\g01_2\start.sav.gz', False);
-  LPath := FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
+  FScenario := TTestFiles.FindUp('Tests\Data\XcomBattle\bg\g01_2\start.sav.gz', False);
+  LPath := TTestFiles.FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
   if (FData.DataFolder = '') or (FScenario = '') or (LPath = '') then
     Exit;
   LBytes := TFile.ReadAllBytes(LPath);

@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.InventoryState;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.InteractiveSurface,
   DelphiDoom.XcomMod.RuleInventory, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.InventoryState,
@@ -122,7 +122,7 @@ begin
   Result := FBench.Available;
   if not Result then
   begin
-    TXcomTestSkip.Ignore('the data of TFTD are not here');
+    TTestSkip.Ignore('the data of TFTD are not here');
     Exit;
   end;
   FBench.Start;
@@ -447,7 +447,7 @@ begin
   Assert.IsNotNull(LWeapon);
   if (not LWeapon.NeedsAmmo) or (not Assigned(LWeapon.AmmoItem)) then
   begin
-    TXcomTestSkip.Ignore('the weapon of the soldier has no clip to unload');
+    TTestSkip.Ignore('the weapon of the soldier has no clip to unload');
     Exit;
   end;
   // the other hand must be free: what it holds goes to the ground
@@ -461,7 +461,7 @@ begin
   end;
   if Assigned(Soldier.GetItem('STR_LEFT_HAND')) then
   begin
-    TXcomTestSkip.Ignore('the left hand of the soldier cannot be emptied');
+    TTestSkip.Ignore('the left hand of the soldier cannot be emptied');
     Exit;
   end;
   LSection := FBench.Ruleset.Inventories.Find('STR_RIGHT_HAND');

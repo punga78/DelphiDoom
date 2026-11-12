@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomBattleStates.TurnScreens;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattleStates.BattlescapeState,
   DelphiDoom.Tests.XcomBattleStates.Bench;
 
@@ -99,7 +99,7 @@ function TTestXcomTurnScreens.Ready: Boolean;
 begin
   Result := Assigned(FState);
   if not Result then
-    TXcomTestSkip.Ignore('the data of TFTD are not here');
+    TTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomTurnScreens.PressKey(AKey: Integer);

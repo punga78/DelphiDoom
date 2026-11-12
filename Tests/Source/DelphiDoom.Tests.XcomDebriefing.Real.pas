@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IOUtils, System.RegularExpressions, System.ZLib, System.Generics.Collections,
-  DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
+  DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomSave.Base,
   DelphiDoom.XcomMod.StatString, DelphiDoom.XcomBattle.Context,
@@ -418,7 +418,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LFailed := RunFolder(LFolder, LFolder, LCount);
@@ -435,7 +435,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   // DELPHIDOOM_XCOMDEBRIEF_STAT: a folder written by debriefgen with DEBRIEF_STATSTRINGS (texts and saved games);
@@ -450,7 +450,7 @@ begin
     LTexts := LFolder + 'statstring\';
   if not DirectoryExists(LTexts) then
   begin
-    TXcomTestSkip.Ignore('Nessuna cartella con i testi delle stat string');
+    TTestSkip.Ignore('Nessuna cartella con i testi delle stat string');
     Exit;
   end;
   LFailed := RunFolder(LFolder, LTexts, LCount);

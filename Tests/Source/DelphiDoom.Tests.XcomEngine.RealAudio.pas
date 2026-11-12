@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomEngine.RealAudio;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Factory,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.ModGameLoader,
   DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Music.Intf,
@@ -135,7 +135,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   LRules := FResources.MusicRules;
@@ -160,7 +160,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   LRules := FResources.MusicRules;
@@ -179,7 +179,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   FDevice.SetVolume(84, 84, 84);
@@ -200,7 +200,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   FDevice.SetVolume(84, 84, 84);
@@ -227,7 +227,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   // preferredMusic 7: GM.CAT before ADLIB.CAT
@@ -266,7 +266,7 @@ var
 begin
   if not FReady then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   LDecoder := TXcomAudioFactory.CreateSoundDecoder;

@@ -16,6 +16,7 @@ unit DelphiDoom.Tests.XcomSurface.Golden;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.XcomSurface.Script;
 
 type
@@ -38,19 +39,8 @@ implementation
 { TTestXcomSurfaceGolden }
 
 function TTestXcomSurfaceGolden.DataFile(const AName: string): string;
-var
-  LFolder: string;
-  LLevel: Integer;
 begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 6 do
-  begin
-    Result := LFolder + 'Tests\Data\XcomSurface\' + AName;
-    if FileExists(Result) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  raise Exception.CreateFmt('Data file %s not found', [AName]);
+  Result := TTestFiles.DataFile('XcomSurface', AName);
 end;
 
 function TTestXcomSurfaceGolden.Lines(const AName: string): TStringList;

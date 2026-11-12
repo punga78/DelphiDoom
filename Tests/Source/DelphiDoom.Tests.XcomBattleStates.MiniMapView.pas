@@ -13,7 +13,7 @@ interface
 
 uses
   DelphiDoom.Clock.Intf,
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Intf,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.Clock.ManualClock, DelphiDoom.XcomSurface.SurfaceSet,
   DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattleStates.MiniMapView,
   DelphiDoom.Tests.XcomBattleStates.BattleWorld;
@@ -134,7 +134,7 @@ begin
   LWorld := TBattleTestWorld.TryCreate;
   if not Assigned(LWorld) then
   begin
-    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
+    TTestSkip.Ignore('The data of the real game are not on this machine');
     Exit;
   end;
   try
@@ -172,7 +172,7 @@ begin
   LWorld := TBattleTestWorld.TryCreate;
   if not Assigned(LWorld) then
   begin
-    TXcomTestSkip.Ignore('The data of the real game are not on this machine');
+    TTestSkip.Ignore('The data of the real game are not on this machine');
     Exit;
   end;
   try

@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.XcomBattle.RealAI;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  DelphiDoom.Tests.Shared.Files,
+  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Node, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomBattle.Types,
@@ -32,7 +33,6 @@ type
     FRules: TXcomRulesetRules;
     FVoxels: TArray<Word>;
     class function DataFolder: string; static;
-    class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function ReadBytes(const APath: string): TBytes; static;
     class function P3(const APosition: TXcomPosition): string; static;
@@ -56,22 +56,6 @@ implementation
 
 { TTestXcomRealAI }
 
-class function TTestXcomRealAI.FindUp(const ARelative: string; AFolder: Boolean): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
-  begin
-    Result := LFolder + ARelative;
-    if (AFolder and DirectoryExists(Result)) or (not AFolder and FileExists(Result)) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
-
 class function TTestXcomRealAI.DataFolder: string;
 var
   LFolder: string;
@@ -79,7 +63,7 @@ begin
   LFolder := GetEnvironmentVariable('DELPHIDOOM_XCOMBATTLE_AI');
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
-  LFolder := FindUp('Tests\Data\XcomBattle\ai', True);
+  LFolder := TTestFiles.FindUp('Tests\Data\XcomBattle\ai', True);
   if LFolder <> '' then
     LFolder := IncludeTrailingPathDelimiter(LFolder);
   Result := LFolder;
@@ -146,7 +130,7 @@ begin
   begin
     FRuleset := FData.Load;
     FRules := TXcomRulesetRules.Create(FRuleset);
-    LPath := FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
+    LPath := TTestFiles.FindUp('Reference\_dati\xcom_tftd\TFTD\TERRAIN\LOFTEMPS.DAT', False);
     if LPath <> '' then
     begin
       LBytes := TFile.ReadAllBytes(LPath);
@@ -428,7 +412,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;
@@ -453,7 +437,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) or (Length(FVoxels) = 0) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

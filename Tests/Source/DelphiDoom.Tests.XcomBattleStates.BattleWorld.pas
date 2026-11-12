@@ -13,6 +13,7 @@ unit DelphiDoom.Tests.XcomBattleStates.BattleWorld;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, System.ZLib, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomEngine.Types,
@@ -41,7 +42,6 @@ type
     class var FRules: TXcomRulesetRules;
     class var FSaveText: TYamlText;
     class var FLooked: Boolean;
-    class function FindUp(const ARelative: string): string; static;
     class function ReadGzip(const APath: string): TYamlText; static;
     class procedure Look; static;
   strict private
@@ -102,22 +102,6 @@ end;
 
 { TBattleTestWorld }
 
-class function TBattleTestWorld.FindUp(const ARelative: string): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
-  begin
-    Result := LFolder + ARelative;
-    if FileExists(Result) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
-
 class function TBattleTestWorld.ReadGzip(const APath: string): TYamlText;
 var
   LSource: TFileStream;
@@ -153,7 +137,7 @@ begin
   if FLooked then
     Exit;
   FLooked := True;
-  LPath := FindUp(SCENARIO);
+  LPath := TTestFiles.FindFileUp(SCENARIO);
   if LPath = '' then
     Exit;
   FData := TXcomRealData.Create('tftd.xcom2.golden.txt');

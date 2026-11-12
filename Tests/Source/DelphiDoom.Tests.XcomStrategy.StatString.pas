@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomStrategy.StatString;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Intf,
+  System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Intf,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.UnitStats,
   DelphiDoom.XcomMod.StatString, DelphiDoom.XcomMod.StatStringCalculator, DelphiDoom.Tests.XcomSave.Sim;
 
@@ -88,7 +88,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if LFolder = '' then
   begin
-    TXcomTestSkip.Ignore('senza i golden il confronto non si fa');
+    TTestSkip.Ignore('senza i golden il confronto non si fa');
     Exit;
   end;
   LStrings := Strings;

@@ -13,7 +13,8 @@ unit DelphiDoom.Tests.XcomEngine.RealSounds;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Factory,
+  DelphiDoom.Tests.Shared.Fnv,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Factory,
   DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.CatArchive, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Language,
   DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.ModGameLoader,
   DelphiDoom.XcomEngine.DiskFileSystem, DelphiDoom.XcomEngine.SoundConverter, DelphiDoom.XcomEngine.SoundSet,
@@ -109,14 +110,8 @@ begin
 end;
 
 function TTestXcomRealSounds.Fingerprint(const ASamples: TBytes): string;
-var
-  LHash: UInt64;
-  LIndex: Integer;
 begin
-  LHash := UInt64($CBF29CE484222325);
-  for LIndex := 0 to High(ASamples) do
-    LHash := (LHash xor UInt64(ASamples[LIndex])) * UInt64($100000001B3);
-  Result := IntToHex(Int64(LHash), 16);
+  Result := IntToHex(Int64(TTestFnv.Hash64(ASamples)), 16);
 end;
 
 function TTestXcomRealSounds.Convert(const ARaw: TBytes; AFormat: TXcomSoundSetFormat): TBytes;
@@ -184,7 +179,7 @@ procedure TTestXcomRealSounds.ISuoniDosDiUfoSonoQuelliDelVeroLoadCat;
 begin
   if (FUfoFolder = '') or (FGoldenFolder = '') then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.AreEqual(54, CheckCat(TPath.Combine(FUfoFolder, 'SOUND\SOUND1.CAT'), 'ufo_sound1.txt', sfDos));
@@ -196,7 +191,7 @@ procedure TTestXcomRealSounds.ISuoniDiTftdSonoQuelliDelVeroLoadCatByIndex;
 begin
   if (FTftdFolder = '') or (FGoldenFolder = '') then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.IsTrue(CheckCat(TPath.Combine(FTftdFolder, 'SOUND\SAMPLE.CAT'), 'tftd_sample.txt', sfIndexed) > 100);
@@ -243,7 +238,7 @@ var
 begin
   if not LoadUfo(LResources) then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.IsFalse(LResources.HasSoundDefinitions);
@@ -283,7 +278,7 @@ var
 begin
   if not LoadUfo(LResources) then
   begin
-    TXcomTestSkip.Ignore('no real data');
+    TTestSkip.Ignore('no real data');
     Exit;
   end;
   Assert.IsTrue(Supports(LResources, IXcomSoundFormats, LFormats));

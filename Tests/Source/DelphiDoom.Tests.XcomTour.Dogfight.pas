@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomTour.Dogfight;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -87,7 +87,7 @@ begin
   Result := FWorld.HasData and FWorld.LoadVariant('save02_dogfight');
   if not Result then
   begin
-    TXcomTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
+    TTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
     Exit;
   end;
   // the craft is over the UFO: the window opens by itself and grows to its size

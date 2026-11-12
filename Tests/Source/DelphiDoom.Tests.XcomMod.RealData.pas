@@ -12,6 +12,7 @@ unit DelphiDoom.Tests.XcomMod.RealData;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.XcomMod.ModOffsets,
   DelphiDoom.XcomMod.ModLoader, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModFiles.Intf;
 
@@ -39,7 +40,6 @@ type
     FSources: TList<TXcomModSource>;
     FDataFolder: string;
     FGameFolder: string;
-    class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ParseList(const AText: string): TArray<string>; static;
     procedure ParseManifest;
   public
@@ -85,22 +85,6 @@ end;
 
 { TXcomRealData }
 
-class function TXcomRealData.FindUp(const ARelative: string; AFolder: Boolean): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
-  begin
-    Result := LFolder + ARelative;
-    if (AFolder and DirectoryExists(Result)) or (not AFolder and FileExists(Result)) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
-
 class function TXcomRealData.ParseList(const AText: string): TArray<string>;
 var
   LInner: string;
@@ -129,7 +113,7 @@ begin
   FSounds := TDictionary<string, Integer>.Create;
   FSources := TList<TXcomModSource>.Create;
   // the golden is committed gzipped
-  LPath := FindUp('Tests\Data\XcomMod\' + AGoldenName + '.gz', False);
+  LPath := TTestFiles.FindUp('Tests\Data\XcomMod\' + AGoldenName + '.gz', False);
   if LPath = '' then
     raise Exception.CreateFmt('Golden %s not found', [AGoldenName]);
   LSource := TFileStream.Create(LPath, fmOpenRead or fmShareDenyWrite);
@@ -146,12 +130,12 @@ begin
   // the goldens of UFO (ufo.*) come from Reference\_dati\xcom_ufo\openxcom, the others from the TFTD one
   if Copy(AGoldenName, 1, 4) = 'ufo.' then
   begin
-    FDataFolder := FindUp('Reference\_dati\xcom_ufo\openxcom', True);
+    FDataFolder := TTestFiles.FindUp('Reference\_dati\xcom_ufo\openxcom', True);
     FGameFolder := 'UFO';
   end
   else
   begin
-    FDataFolder := FindUp('Reference\_dati\xcom_tftd\openxcom', True);
+    FDataFolder := TTestFiles.FindUp('Reference\_dati\xcom_tftd\openxcom', True);
     FGameFolder := 'TFTD';
   end;
   ParseManifest;

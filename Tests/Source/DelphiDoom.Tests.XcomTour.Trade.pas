@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Trade;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Base, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomSave.Base, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -86,7 +86,7 @@ function TTestXcomTourTrade.Ready: Boolean;
 begin
   Result := FWorld.HasData and FWorld.LoadVariant('save02_twobases');
   if not Result then
-    TXcomTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
+    TTestSkip.Ignore('i dati di TFTD o il salvataggio non ci sono');
 end;
 
 function TTestXcomTourTrade.Source: TXcomBase;

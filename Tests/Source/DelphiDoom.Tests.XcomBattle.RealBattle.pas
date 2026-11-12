@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattle.RealBattle;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapDataLoader, DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomMod.McdPatch,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf,
@@ -183,7 +183,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or not Assigned(FRuleset) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

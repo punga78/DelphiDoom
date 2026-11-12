@@ -12,6 +12,7 @@ unit DelphiDoom.Tests.XcomTour.World;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.Clock.ManualClock,
   DelphiDoom.XcomEngine.QueueEventSource, DelphiDoom.XcomEngine.MemoryVideoDevice, DelphiDoom.XcomEngine.Widget,
@@ -37,7 +38,6 @@ type
     FDevice: TXcomMemoryVideoDevice;
     FDeviceRef: IXcomVideoDevice;
     FGame: TXcomGame;
-    class function FindUp(const ARelative: string): string; static;
     function LoadSave(const AFolder, AName: string): Boolean;
     function TopWidgets: TArray<TXcomWidget>;
   public
@@ -154,30 +154,12 @@ uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState,
   DelphiDoom.Xcom.GameComposition;
 
-class function TXcomTourWorld.FindUp(const ARelative: string): string;
-var
-  LFolder: string;
-  LParent: string;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  while LFolder <> '' do
-  begin
-    if TDirectory.Exists(TPath.Combine(LFolder, ARelative)) then
-      Exit(TPath.Combine(LFolder, ARelative));
-    LParent := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-    if LParent = LFolder then
-      Break;
-    LFolder := LParent;
-  end;
-  Result := '';
-end;
-
 constructor TXcomTourWorld.Create;
 var
   LSettings: TXcomGameSettings;
 begin
   inherited Create;
-  FRoot := FindUp('Reference\_dati\xcom_tftd');
+  FRoot := TTestFiles.FindFolderUp('Reference\_dati\xcom_tftd');
   if (FRoot = '') or not TDirectory.Exists(TPath.Combine(FRoot, 'openxcom\standard\xcom2')) or
     not TDirectory.Exists(TPath.Combine(FRoot, 'TFTD\GEODATA')) then
   begin
@@ -303,7 +285,7 @@ var
   LFolder: string;
   LText: string;
 begin
-  LFolder := FindUp(AFolder);
+  LFolder := TTestFiles.FindFolderUp(AFolder);
   Result := (LFolder <> '') and TFile.Exists(TPath.Combine(LFolder, AName + '.sav'));
   if not Result then
     Exit;

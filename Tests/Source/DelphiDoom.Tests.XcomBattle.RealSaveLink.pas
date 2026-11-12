@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattle.RealSaveLink;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.RegularExpressions, System.ZLib, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types,
+  System.SysUtils, System.Classes, System.IOUtils, System.RegularExpressions, System.ZLib, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.Settings.Intf,
   DelphiDoom.XcomBattle.Context, DelphiDoom.XcomBattle.SavedBattleGame, DelphiDoom.XcomBattle.SaveLink,
@@ -192,7 +192,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or (not Assigned(FRuleset)) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

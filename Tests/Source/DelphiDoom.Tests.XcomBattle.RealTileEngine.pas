@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.XcomBattle.RealTileEngine;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  DelphiDoom.Tests.Shared.Files,
+  System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.XcomMod.Ruleset,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.MapDataLoader,
   DelphiDoom.XcomMod.MapDataSet, DelphiDoom.XcomMod.McdPatch, DelphiDoom.XcomSave.Soldier,
@@ -29,7 +30,6 @@ type
     FRuleset: TXcomRuleset;
     FVoxels: TArray<Word>;
     function DataFolder: string;
-    class function FindUp(const ARelative: string; AFolder: Boolean): string; static;
     class function ReadText(const APath: string): TYamlText; static;
     class function MapText(const ABattle: TXcomSavedBattleGame; AWhat: Integer): string; static;
     class function TileStateHash(const ABattle: TXcomSavedBattleGame): Cardinal; static;
@@ -80,22 +80,6 @@ end;
 
 { TTestXcomRealTileEngine }
 
-class function TTestXcomRealTileEngine.FindUp(const ARelative: string; AFolder: Boolean): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
-  begin
-    Result := LFolder + ARelative;
-    if (AFolder and DirectoryExists(Result)) or (not AFolder and FileExists(Result)) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
-
 function TTestXcomRealTileEngine.DataFolder: string;
 var
   LFolder: string;
@@ -103,7 +87,7 @@ begin
   LFolder := GetEnvironmentVariable(TXcomTestGame.FolderVariable('DELPHIDOOM_XCOMBATTLE_ENGINE', IsUfo));
   if LFolder <> '' then
     Exit(IncludeTrailingPathDelimiter(LFolder));
-  LFolder := FindUp('Tests\Data\XcomBattle\' + TXcomTestGame.ScenarioFolder('engine', IsUfo), True);
+  LFolder := TTestFiles.FindUp('Tests\Data\XcomBattle\' + TXcomTestGame.ScenarioFolder('engine', IsUfo), True);
   if LFolder <> '' then
     LFolder := IncludeTrailingPathDelimiter(LFolder);
   Result := LFolder;
@@ -129,7 +113,7 @@ begin
   if FData.DataFolder <> '' then
   begin
     FRuleset := FData.Load;
-    LPath := FindUp(TXcomTestGame.Loftemps(IsUfo), False);
+    LPath := TTestFiles.FindUp(TXcomTestGame.Loftemps(IsUfo), False);
     if LPath <> '' then
     begin
       LBytes := TFile.ReadAllBytes(LPath);
@@ -481,7 +465,7 @@ begin
   LFolder := DataFolder;
   if (LFolder = '') or not Assigned(FRuleset) or (Length(FVoxels) = 0) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

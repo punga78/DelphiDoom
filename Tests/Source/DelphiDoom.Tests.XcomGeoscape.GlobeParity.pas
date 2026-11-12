@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomGeoscape.GlobeParity;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomGeoscape.World;
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.XcomGeoscape.World;
 
 type
   /// <summary>
@@ -82,7 +82,7 @@ var
   LFirst: string;
 begin
   if not (FWorld.HasData and TFile.Exists(FramePath('newgame.png'))) then
-    TXcomTestSkip.Ignore('the data of the game is not on this machine');
+    TTestSkip.Ignore('the data of the game is not on this machine');
   LPalette := FWorld.GeoscapePalette;
   LFrame := TPngProvider.Client.DecodeIndexed(TFile.ReadAllBytes(FramePath('newgame.png')));
   LRules := TXcomRulesetRules.Create(FWorld.Rules.Ruleset);

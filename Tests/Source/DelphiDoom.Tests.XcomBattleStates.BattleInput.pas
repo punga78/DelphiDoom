@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomBattleStates.BattleInput;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.Tests.XcomBattleStates.Bench;
 
@@ -113,7 +113,7 @@ function TTestXcomBattleInput.Ready: Boolean;
 begin
   Result := Assigned(FState);
   if not Result then
-    TXcomTestSkip.Ignore('the data of TFTD are not here');
+    TTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomBattleInput.Mouse(AKind: TXcomEventKind; AX, AY, AButton: Integer);
@@ -382,7 +382,7 @@ begin
   end;
   if not LFree then
   begin
-    TXcomTestSkip.Ignore('no tile on the screen is free in this scenario');
+    TTestSkip.Ignore('no tile on the screen is free in this scenario');
     Exit;
   end;
   PressKey(Ord('w'), True);
@@ -424,7 +424,7 @@ begin
     Exit;
   if FBench.Session.Battle.MapSizeZ < 2 then
   begin
-    TXcomTestSkip.Ignore('the map of the scenario has one level');
+    TTestSkip.Ignore('the map of the scenario has one level');
     Exit;
   end;
   Mouse(ekMouseMotion, 300, 120, 0);

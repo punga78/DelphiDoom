@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomStrategy.Production;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleManufacture,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.RuleManufacture,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Production,
   DelphiDoom.XcomStrategy.Types, DelphiDoom.XcomStrategy.ProductionStepper, DelphiDoom.Tests.XcomSave.Sim;
 
@@ -121,7 +121,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
+    TTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   FLines := TStringList.Create;

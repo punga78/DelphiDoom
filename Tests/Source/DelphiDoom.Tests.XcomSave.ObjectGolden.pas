@@ -12,6 +12,8 @@ unit DelphiDoom.Tests.XcomSave.ObjectGolden;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Golden,
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.XcomSave.ObjectScenario;
 
 type
@@ -33,40 +35,21 @@ implementation
 { TTestXcomSaveObjectGolden }
 
 function TTestXcomSaveObjectGolden.DataFile(const AName: string): string;
-var
-  LFolder: string;
-  LLevel: Integer;
 begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 6 do
-  begin
-    Result := LFolder + 'Tests\Data\XcomSave\' + AName;
-    if FileExists(Result) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  raise Exception.CreateFmt('Data file %s not found', [AName]);
+  Result := TTestFiles.DataFile('XcomSave', AName);
 end;
 
 procedure TTestXcomSaveObjectGolden.DovrebbeDareLeStesseRigheDiOpenXcomSuTuttiICasi;
 var
   LGolden, LActual: TStringList;
   LRunner: TXcomSaveObjectScenario;
-  LIndex: Integer;
 begin
   LGolden := TStringList.Create;
   LRunner := TXcomSaveObjectScenario.Create;
   try
     LGolden.LoadFromFile(DataFile('objects.golden.txt'), TEncoding.UTF8);
     LActual := LRunner.Run(TFile.ReadAllBytes(DataFile('objects.corpus.txt')));
-    for LIndex := 0 to LGolden.Count - 1 do
-    begin
-      if LIndex >= LActual.Count then
-        Assert.Fail(Format('mancano le righe dalla %d: "%s"', [LIndex + 1, LGolden[LIndex]]));
-      if LGolden[LIndex] <> LActual[LIndex] then
-        Assert.Fail(Format('riga %d: atteso "%s" ottenuto "%s"', [LIndex + 1, LGolden[LIndex], LActual[LIndex]]));
-    end;
-    Assert.AreEqual(LGolden.Count, LActual.Count, 'numero di righe');
+    TTestGolden.AssertSameLines(LGolden, LActual);
   finally
     LRunner.Free;
     LGolden.Free;

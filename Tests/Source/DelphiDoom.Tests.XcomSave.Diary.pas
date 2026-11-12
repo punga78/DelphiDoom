@@ -12,6 +12,8 @@ unit DelphiDoom.Tests.XcomSave.Diary;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Golden,
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework,
   DelphiDoom.XcomSave.DiaryRules.Intf, DelphiDoom.XcomSave.SoldierDiary, DelphiDoom.XcomSave.MissionStatistics,
   DelphiDoom.XcomSave.BattleUnitStatistics, DelphiDoom.XcomSave.BattleUnitKills, DelphiDoom.XcomSave.UnitEnums,
@@ -44,19 +46,8 @@ implementation
 { TTestXcomDiary }
 
 function TTestXcomDiary.DataFile(const AName: string): string;
-var
-  LFolder: string;
-  LLevel: Integer;
 begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 6 do
-  begin
-    Result := LFolder + 'Tests\Data\XcomSave\' + AName;
-    if FileExists(Result) then
-      Exit;
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  raise Exception.CreateFmt('Data file %s not found', [AName]);
+  Result := TTestFiles.DataFile('XcomSave', AName);
 end;
 
 function TTestXcomDiary.MakeRules: IXcomDiaryRules;
@@ -68,7 +59,6 @@ procedure TTestXcomDiary.DovrebbeDareLeStesseRigheDelVeroOpenXcomSuTuttiIPercors
 var
   LGolden, LCorpus, LActual: TStringList;
   LScenario: TXcomDiaryScenario;
-  LIndex: Integer;
 begin
   LGolden := TStringList.Create;
   LCorpus := TStringList.Create;
@@ -78,14 +68,7 @@ begin
     LCorpus.LoadFromFile(DataFile('diary.corpus.txt'), TEncoding.UTF8);
     LActual := LScenario.Run(LCorpus);
     try
-      for LIndex := 0 to LGolden.Count - 1 do
-      begin
-        if LIndex >= LActual.Count then
-          Assert.Fail(Format('mancano le righe dalla %d: "%s"', [LIndex + 1, LGolden[LIndex]]));
-        if LGolden[LIndex] <> LActual[LIndex] then
-          Assert.Fail(Format('riga %d: atteso "%s" ottenuto "%s"', [LIndex + 1, LGolden[LIndex], LActual[LIndex]]));
-      end;
-      Assert.AreEqual(LGolden.Count, LActual.Count, 'numero di righe');
+      TTestGolden.AssertSameLines(LGolden, LActual);
     finally
       LActual.Free;
     end;

@@ -13,7 +13,8 @@ unit DelphiDoom.Tests.XcomDebriefing.Pixels;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip,
+  DelphiDoom.Tests.Shared.Files,
+  System.SysUtils, System.Classes, System.IOUtils, System.ZLib, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip,
   DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory, DelphiDoom.Xcom.Types,
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Resources.Intf,
@@ -42,7 +43,6 @@ type
     FWorld: TTestWorld;
     FRuleset: TXcomRuleset;
     FTallies: TDictionary<string, TXcomScreenTally>;
-    class function FindUp(const ARelative: string): string; static;
     class function ReadBytes(const APath: string): TBytes; static;
     class function HasFile(const APath: string): Boolean; static;
     procedure Compare(const AKind, ACase: string; AState: TXcomState; const AExpected: TBytes);
@@ -82,23 +82,6 @@ const
   /// <summary>The two medals that the harness makes (AwardTestMedals of debriefgen.cpp)</summary>
   MEDAL_PLAIN = 'STR_NEW_RANK';
   MEDAL_NOUN = 'STR_SPACE_USED';
-
-class function TTestXcomDebriefingPixels.FindUp(const ARelative: string): string;
-var
-  LFolder, LParent: string;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  while LFolder <> '' do
-  begin
-    if TDirectory.Exists(TPath.Combine(LFolder, ARelative)) then
-      Exit(TPath.Combine(LFolder, ARelative));
-    LParent := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-    if LParent = LFolder then
-      Break;
-    LFolder := LParent;
-  end;
-  Result := '';
-end;
 
 class function TTestXcomDebriefingPixels.HasFile(const APath: string): Boolean;
 begin
@@ -143,7 +126,7 @@ var
 begin
   FTallies := TDictionary<string, TXcomScreenTally>.Create;
   // the folder of the real program that the harness read: common, standard and the game in TFTD
-  LData := FindUp('Reference\_dati\xcom_tftd\openxcom');
+  LData := TTestFiles.FindFolderUp('Reference\_dati\xcom_tftd\openxcom');
   if (LData = '') or not TDirectory.Exists(TPath.Combine(LData, 'TFTD')) then
     Exit;
   LSettings.DataFolder := LData;
@@ -413,7 +396,7 @@ var
 begin
   if not Assigned(FWorld) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD il confronto dei pixel non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD il confronto dei pixel non si fa');
     Exit;
   end;
   // DELPHIDOOM_XCOMDEBRIEF_PIXELS: a folder written by debriefgen (the dumps with their .pre.sav and .txt); otherwise
@@ -426,7 +409,7 @@ begin
   end
   else
   begin
-    LInputs := FindUp('Tests\Data\XcomDebriefing');
+    LInputs := TTestFiles.FindFolderUp('Tests\Data\XcomDebriefing');
     Assert.AreNotEqual('', LInputs, 'Tests\Data\XcomDebriefing');
     LInputs := IncludeTrailingPathDelimiter(LInputs);
     LFolder := LInputs + 'pixels\';

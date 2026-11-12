@@ -19,7 +19,7 @@ unit DelphiDoom.Tests.Xcom.RealData;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Xcom.Intf;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Xcom.Intf;
 
 type
   TXcomRealData = class
@@ -173,7 +173,7 @@ end;
 procedure TTestXcomRealData.SkipIfMissing;
 begin
   if not Assigned(FData) then
-    TXcomTestSkip.Ignore('I dati di UFO o TFTD non ci sono su questo PC: prova saltata');
+    TTestSkip.Ignore('I dati di UFO o TFTD non ci sono su questo PC: prova saltata');
 end;
 
 procedure TTestXcomRealData.DovrebbeLeggereLeCinquePalettiDellaGeoscape;

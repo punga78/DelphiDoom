@@ -12,6 +12,7 @@ unit DelphiDoom.Tests.XcomGeoscape.World;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Files,
   System.SysUtils, DelphiDoom.XcomEngine.FileMap, DelphiDoom.XcomEngine.GameRules, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.Xcom.Intf, DelphiDoom.Xcom.Palette;
 
@@ -27,7 +28,6 @@ type
     FMap: TXcomFileMap;
     FRules: TXcomGameRules;
     FGameData: IXcomGameData;
-    class function FindUp(const ARelative: string): string; static;
   public
     /// <summary>The data is there; otherwise Rules is nil and the tests do nothing</summary>
     constructor Create;
@@ -48,30 +48,12 @@ uses
   System.IOUtils, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider, DelphiDoom.Xcom.Factory,
   DelphiDoom.XcomEngine.DiskFileSystem;
 
-class function TXcomGeoWorld.FindUp(const ARelative: string): string;
-var
-  LFolder: string;
-  LParent: string;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  while LFolder <> '' do
-  begin
-    if TDirectory.Exists(TPath.Combine(LFolder, ARelative)) then
-      Exit(TPath.Combine(LFolder, ARelative));
-    LParent := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-    if LParent = LFolder then
-      Break;
-    LFolder := LParent;
-  end;
-  Result := '';
-end;
-
 constructor TXcomGeoWorld.Create;
 var
   LData, LGame, LMod: string;
 begin
   inherited Create;
-  FRoot := FindUp('Reference\_dati\xcom_tftd');
+  FRoot := TTestFiles.FindFolderUp('Reference\_dati\xcom_tftd');
   if FRoot = '' then
     Exit;
   LData := TPath.Combine(FRoot, 'openxcom');

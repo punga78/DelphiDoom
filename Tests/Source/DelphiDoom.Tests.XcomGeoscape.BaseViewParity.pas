@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomGeoscape.BaseViewParity;
 interface
 
 uses
-  System.SysUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Tests.XcomGeoscape.World;
+  System.SysUtils, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.XcomGeoscape.World;
 
 type
   /// <summary>
@@ -68,7 +68,7 @@ var
 begin
   LPath := TPath.Combine(TPath.Combine(FWorld.Root, 'golden_geoscape'), 'base.png');
   if not (FWorld.HasData and TFile.Exists(LPath)) then
-    TXcomTestSkip.Ignore('the data of the game is not on this machine');
+    TTestSkip.Ignore('the data of the game is not on this machine');
   LFrame := TPngProvider.Client.DecodeIndexed(TFile.ReadAllBytes(LPath));
   // PAL_BASESCAPE is the second palette of PALETTES.DAT
   LPalette := FWorld.GamePalette(1);

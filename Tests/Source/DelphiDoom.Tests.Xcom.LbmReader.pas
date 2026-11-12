@@ -18,7 +18,8 @@ unit DelphiDoom.Tests.Xcom.LbmReader;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Xcom.Intf;
+  DelphiDoom.Tests.Shared.Fnv,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Xcom.Intf;
 
 type
   [TestFixture]
@@ -144,12 +145,7 @@ begin
     LColor := LPicture.Image.Palette.Colors[LIndex];
     Result := Result + LowerCase(IntToHex(LColor.Red, 2) + IntToHex(LColor.Green, 2) + IntToHex(LColor.Blue, 2));
   end;
-  LHash := UInt64($CBF29CE484222325);
-  for LIndex := 0 to High(LPicture.Image.Pixels) do
-  begin
-    LHash := LHash xor LPicture.Image.Pixels[LIndex];
-    LHash := LHash * UInt64($100000001B3);
-  end;
+  LHash := TTestFnv.Hash64(LPicture.Image.Pixels);
   Result := Result + ' ' + UIntToStr(LHash);
 end;
 
@@ -208,13 +204,13 @@ begin
   LFolder := TXcomRealData.Folder;
   if LFolder = '' then
   begin
-    TXcomTestSkip.Ignore('the real data of TFTD are not on this machine');
+    TTestSkip.Ignore('the real data of TFTD are not on this machine');
     Exit;
   end;
   LGoldenFile := TPath.GetFullPath(TPath.Combine(LFolder, '..\lbm_golden.txt'));
   if not TFile.Exists(LGoldenFile) then
   begin
-    TXcomTestSkip.Ignore('no lbm_golden.txt (lbmharness file) next to the data');
+    TTestSkip.Ignore('no lbm_golden.txt (lbmharness file) next to the data');
     Exit;
   end;
   LGolden := TStringList.Create;

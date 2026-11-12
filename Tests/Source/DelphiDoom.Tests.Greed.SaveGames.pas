@@ -13,6 +13,7 @@ unit DelphiDoom.Tests.Greed.SaveGames;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Fnv,
   System.SysUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.Greed.Types,
   DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Save.Intf;
 
@@ -82,14 +83,8 @@ uses
   System.Classes, DelphiDoom.Tests.Greed.RealData, DelphiDoom.Greed.SaveGames;
 
 function Fnv(const AData: Pointer; ASize: Integer): string;
-var
-  LHash: Cardinal;
-  LIndex: Integer;
 begin
-  LHash := $811C9DC5;
-  for LIndex := 0 to ASize - 1 do
-    LHash := (LHash xor PByte(PByte(AData) + LIndex)^) * 16777619;
-  Result := LowerCase(IntToHex(LHash, 8));
+  Result := LowerCase(IntToHex(TTestFnv.Hash32(AData, ASize), 8));
 end;
 
 // the same values as SaveGolden.dpr

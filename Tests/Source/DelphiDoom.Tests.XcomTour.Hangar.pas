@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomTour.Hangar;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomSave.Craft, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -96,7 +96,7 @@ begin
   if Result then
     FWorld.StartNewGame
   else
-    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
+    TTestSkip.Ignore('i dati di TFTD non ci sono');
 end;
 
 procedure TTestXcomTourHangar.OpenCraft(const AName: string);

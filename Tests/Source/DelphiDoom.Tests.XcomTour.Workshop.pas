@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.XcomTour.Workshop;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomSave.Production, DelphiDoom.Tests.XcomTour.World;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomSave.Production, DelphiDoom.Tests.XcomTour.World;
 
 type
   /// <summary>
@@ -84,7 +84,7 @@ var
 begin
   Result := FWorld.HasData;
   if not Result then
-    TXcomTestSkip.Ignore('i dati di TFTD non ci sono');
+    TTestSkip.Ignore('i dati di TFTD non ci sono');
   FWorld.StartNewGame;
   if AResearched then
   begin

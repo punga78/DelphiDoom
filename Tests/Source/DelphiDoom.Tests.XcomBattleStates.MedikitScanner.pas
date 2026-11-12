@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomBattleStates.MedikitScanner;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem,
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.Action,
   DelphiDoom.XcomBattleStates.BattlescapeState, DelphiDoom.XcomBattleStates.MedikitState,
@@ -138,7 +138,7 @@ function TTestXcomMedikitScanner.Ready: Boolean;
 begin
   Result := Assigned(FState) and Assigned(FActor) and Assigned(FTarget);
   if not Result then
-    TXcomTestSkip.Ignore('the data of TFTD are not here');
+    TTestSkip.Ignore('the data of TFTD are not here');
 end;
 
 procedure TTestXcomMedikitScanner.MakeItem(const AType: string);
@@ -317,7 +317,7 @@ begin
   LScreen := OpenMedikit;
   if FItem.Rules.StunRecovery <= 0 then
   begin
-    TXcomTestSkip.Ignore('the medi-kit of the rules does not heal the stun');
+    TTestSkip.Ignore('the medi-kit of the rules does not heal the stun');
     Exit;
   end;
   Click(LScreen.StimulantButton);

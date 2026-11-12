@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.XcomBattleStates.SpecialActions;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomMod.MapBlock, DelphiDoom.XcomMod.RuleItem,
   DelphiDoom.XcomMod.UnitStats, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model,
   DelphiDoom.XcomBattle.Action, DelphiDoom.XcomBattleStates.BattlescapeState,
@@ -109,7 +109,7 @@ begin
   Result := FBench.Available;
   if not Result then
   begin
-    TXcomTestSkip.Ignore('the data of TFTD are not here');
+    TTestSkip.Ignore('the data of TFTD are not here');
     Exit;
   end;
   FBench.Start(AScenario);

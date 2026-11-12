@@ -14,7 +14,7 @@ unit DelphiDoom.Tests.XcomStrategy.Report;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.Region, DelphiDoom.XcomSave.Country, DelphiDoom.XcomSave.BaseCapacity,
   DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.Tests.XcomSave.Sim;
 
@@ -89,7 +89,7 @@ begin
   LFolder := TXcomSim.GoldenFolder('XcomSave\sim');
   if not FSim.Available or (LFolder = '') then
   begin
-    TXcomTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
+    TTestSkip.Ignore('senza i dati di TFTD o i golden il confronto non si fa');
     Exit;
   end;
   LLines := TStringList.Create;

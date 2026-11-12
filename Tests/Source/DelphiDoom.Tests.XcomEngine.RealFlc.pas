@@ -12,7 +12,8 @@ unit DelphiDoom.Tests.XcomEngine.RealFlc;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Xcom.Types,
+  DelphiDoom.Tests.Shared.Fnv,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Xcom.Types,
   DelphiDoom.Xcom.FlcDecoder;
 
 type
@@ -64,14 +65,8 @@ begin
 end;
 
 class function TTestXcomRealFlc.Fingerprint(const ABytes: TBytes; ACount: Integer): string;
-var
-  LHash: UInt64;
-  LIndex: Integer;
 begin
-  LHash := UInt64($CBF29CE484222325);
-  for LIndex := 0 to ACount - 1 do
-    LHash := (LHash xor UInt64(ABytes[LIndex])) * UInt64($100000001B3);
-  Result := IntToHex(Int64(LHash), 16);
+  Result := IntToHex(Int64(TTestFnv.Hash64(ABytes, ACount)), 16);
 end;
 
 procedure TTestXcomRealFlc.OgniFotogrammaDellIntroduzioneDiUfoEQuelloDelVeroFlcPlayer;
@@ -87,7 +82,7 @@ var
 begin
   if (FUfoFolder = '') or (FGoldenFolder = '') then
   begin
-    TXcomTestSkip.Ignore('i dati di UFO non ci sono: test saltato');
+    TTestSkip.Ignore('i dati di UFO non ci sono: test saltato');
     Exit;
   end;
   SetLength(LScreen, SCREEN_WIDTH * SCREEN_HEIGHT);

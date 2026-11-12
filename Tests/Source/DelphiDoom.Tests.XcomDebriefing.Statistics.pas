@@ -13,7 +13,8 @@ unit DelphiDoom.Tests.XcomDebriefing.Statistics;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Xcom.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
+  DelphiDoom.Tests.Shared.Files,
+  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Factory,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.RulesetRules,
   DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomBasescape.GameStatistics, DelphiDoom.Tests.XcomMod.RealData,
   DelphiDoom.Tests.XcomBattle.RealBattle;
@@ -28,7 +29,6 @@ type
     FData: TXcomRealData;
     FRuleset: TXcomRuleset;
     FRules: TXcomRulesetRules;
-    class function FindUp(const ARelative: string): string; static;
     function Rows(const ASavePath: string): string;
   public
     [SetupFixture]
@@ -40,21 +40,6 @@ type
   end;
 
 implementation
-
-class function TTestXcomGameStatistics.FindUp(const ARelative: string): string;
-var
-  LFolder: string;
-  LLevel: Integer;
-begin
-  LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 0 to 7 do
-  begin
-    if DirectoryExists(LFolder + ARelative) then
-      Exit(LFolder + ARelative);
-    LFolder := ExtractFilePath(ExcludeTrailingPathDelimiter(LFolder));
-  end;
-  Result := '';
-end;
 
 procedure TTestXcomGameStatistics.SetupFixture;
 begin
@@ -110,11 +95,11 @@ var
   LLines, LClean: TStringList;
   LCount, LDots: Integer;
 begin
-  LSaves := FindUp('Tests\Data\XcomSave\realsave');
-  LExpectedFolder := FindUp('Tests\Data\XcomDebriefing\stat');
+  LSaves := TTestFiles.FindFolderUp('Tests\Data\XcomSave\realsave');
+  LExpectedFolder := TTestFiles.FindFolderUp('Tests\Data\XcomDebriefing\stat');
   if (LSaves = '') or (LExpectedFolder = '') or (not Assigned(FRuleset)) then
   begin
-    TXcomTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
+    TTestSkip.Ignore('Senza i dati di TFTD e i file di parita'' il confronto non si fa');
     Exit;
   end;
   LCount := 0;

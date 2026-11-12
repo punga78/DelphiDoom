@@ -13,6 +13,7 @@ unit DelphiDoom.Tests.XcomMod.ModDumpMisc;
 interface
 
 uses
+  DelphiDoom.Tests.Shared.Fnv,
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.XcomMod.Types,
   DelphiDoom.XcomMod.IntStringMap, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.ModOffsets,
   DelphiDoom.Tests.XcomMod.DumpWriter;
@@ -388,17 +389,8 @@ begin
 end;
 
 class procedure TXcomModDumpMisc.Mix(var AHash: UInt64; const AData; ASize: Integer);
-var
-  LBytes: PByte;
-  LIndex: Integer;
 begin
-  LBytes := @AData;
-  for LIndex := 0 to ASize - 1 do
-  begin
-    AHash := AHash xor LBytes^;
-    AHash := AHash * UInt64(1099511628211);
-    Inc(LBytes);
-  end;
+  TTestFnv.Mix64(AHash, @AData, ASize);
 end;
 
 procedure TXcomModDumpMisc.DumpPicks;
