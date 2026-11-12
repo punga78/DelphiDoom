@@ -1,0 +1,36 @@
+var
+  wpic: Ppic_t;
+  weapbob1, wx, wy: integer;
+
+function GetTargetAngle(const n: integer; pz: fixed_t): integer;
+procedure fireweapon;
+function TryDoor(const xcenter, ycenter: fixed_t): boolean;
+procedure CheckHere(const useit: boolean; const cx, cy: fixed_t; const angle: integer);
+procedure chargeweapons;
+function Thrust(const ang: integer; const speed: fixed_t): boolean;
+procedure ControlBobbing;
+procedure ControlMovement;
+procedure PlayerCommand;
+procedure newlights;
+procedure ChangeScroll;
+procedure H_WeaponView(const update: integer; var weaponx, weapony: integer);
+procedure H_WeaponMode;
+
+implementation
+
+uses
+  constant,
+  d_ints,
+  d_misc,
+  event,
+  modplay,
+  net,
+  r_conten,
+  r_public,
+  r_refdef,
+  r_render,
+  spawn,
+  sprites,
+  utils,
+  hoststub;
+
