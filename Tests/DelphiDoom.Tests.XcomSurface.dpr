@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom surface library (DUnitX)                  }
 {                                                                              }
@@ -32,7 +32,10 @@ uses
   DelphiDoom.Tests.XcomSurface.Script in 'Source\DelphiDoom.Tests.XcomSurface.Script.pas',
   DelphiDoom.Tests.XcomSurface.Golden in 'Source\DelphiDoom.Tests.XcomSurface.Golden.pas',
   DelphiDoom.Tests.XcomSurface.Gfx in 'Source\DelphiDoom.Tests.XcomSurface.Gfx.pas',
-  DelphiDoom.Tests.XcomSurface.Surface in 'Source\DelphiDoom.Tests.XcomSurface.Surface.pas';
+  DelphiDoom.Tests.XcomSurface.Surface in 'Source\DelphiDoom.Tests.XcomSurface.Surface.pas',
+  DelphiDoom.XcomSurface.SurfaceSet in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.SurfaceSet.pas',
+  DelphiDoom.XcomSurface.Enlarger in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Enlarger.pas',
+  DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas';
 
 var
   Runner: ITestRunner;
