@@ -46,9 +46,14 @@ uses
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.World,
   DelphiDoom.Greed.Palette, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.PlayerMovement,
   DelphiDoom.Greed.TopDownRenderer, DelphiDoom.Greed.GameLoop, DelphiDoom.Greed.MovementHost,
-  DelphiDoom.Greed.AutoPlayInput, DelphiDoom.Greed.Win.Window, DelphiDoom.Greed.Door.Intf,
+  DelphiDoom.Greed.AutoPlayInput, DelphiDoom.Greed.HostWindow, DelphiDoom.GameHost.Events.Intf,
+  DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory,
+  DelphiDoom.Greed.Door.Intf,
   DelphiDoom.Greed.DoorRules, DelphiDoom.Greed.DoorSpawner, DelphiDoom.Greed.Random, DelphiDoom.Greed.Render.Types,
   DelphiDoom.Greed.Render.Assets.Intf, DelphiDoom.Greed.Render.ArchiveAssets, DelphiDoom.Greed.Render.FrameRenderer;
+
+const
+  WINDOW_TITLE = 'Greed32';
 
 type
   /// <summary>The doors of the archive: the picture of a door is the wall of the lump door_1 .. door_7</summary>
@@ -177,6 +182,9 @@ var
   LScript: string;
   LBackdrop, LLump: Integer;
   LFrameWidth, LFrameHeight: Integer;
+  LScale: Integer;
+  LKeys: IGameHostKeyState;
+  LWindow: TGameHostWinWindow;
 begin
   LWorld := TGreedWorld.Create;
   LMap := TGreedFactory.CreateMapLoader(AArchive, TGreedFactory.CreateFolderFiles(AFolders)).Load(AMapNumber);
@@ -189,22 +197,34 @@ begin
   begin
     LFrameWidth := 640;
     LFrameHeight := 400;
-    LPresenter := TGreedWindow.Create('Greed32', 640, 400, 1);
+    LScale := 1;
   end
   else
   begin
     LFrameWidth := 320;
     LFrameHeight := 200;
-    LPresenter := TGreedWindow.Create('Greed32', 320, 200, 3);
+    LScale := 3;
   end;
-  LInput := LPresenter as IGreedInput;
-  if AAutoPlay then
-    LInput := TGreedAutoPlayInput.Create(LInput);
-  LPool := TGreedLinkedPool<TGreedElevator>.Create(GREED_MAX_ELEVATORS, 'elevators');
-  LSprites := TGreedLinkedPool<TGreedSprite>.Create(GREED_MAX_SPRITES, 'sprites');
-  LMovement := TGreedPlayerMovement.Create(LWorld, TGreedMovementHost.Create);
+  LPool := nil;
+  LSprites := nil;
+  LMovement := nil;
   LDoorRules := nil;
+  // The window of Libs\GameHost with its display on GDI; the keys it says are down are what the game reads. The
+  // system cursor stays visible: the game draws none
+  LKeys := TGameHostKeyState.Create;
+  LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
   try
+    LPresenter := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
+      function: Boolean
+      begin
+        Result := LWindow.Pump;
+      end, WINDOW_TITLE, LFrameWidth, LFrameHeight, LScale);
+    LInput := LPresenter as IGreedInput;
+    if AAutoPlay then
+      LInput := TGreedAutoPlayInput.Create(LInput);
+    LPool := TGreedLinkedPool<TGreedElevator>.Create(GREED_MAX_ELEVATORS, 'elevators');
+    LSprites := TGreedLinkedPool<TGreedSprite>.Create(GREED_MAX_SPRITES, 'sprites');
+    LMovement := TGreedPlayerMovement.Create(LWorld, TGreedMovementHost.Create);
     LTime := TGreedLoopTime.Create;
     LTimeIntf := LTime;
     LDoorRules := TGreedDoorRules.Create(LWorld, LTime);
@@ -256,6 +276,10 @@ begin
     LMovement.Free;
     LSprites.Free;
     LPool.Free;
+    // the display draws in the window: its last references go before the window
+    LInput := nil;
+    LPresenter := nil;
+    LWindow.Free;
   end;
 end;
 

@@ -11,7 +11,7 @@
         <AppType>Console</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\Greed;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\Greed;..\Libs\GameHost;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\Greed</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\Greed\Greed32\$(Config)</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

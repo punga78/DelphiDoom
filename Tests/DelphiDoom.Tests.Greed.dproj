@@ -12,7 +12,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Greed;..\Greed;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Greed;..\Libs\GameHost;..\Greed;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
