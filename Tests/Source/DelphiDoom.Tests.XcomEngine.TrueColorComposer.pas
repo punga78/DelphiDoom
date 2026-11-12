@@ -32,6 +32,8 @@ type
     procedure MakeScreen(ADisplayWidth, ADisplayHeight, ABaseWidth, ABaseHeight: Integer);
     procedure FillBase;
     function ColorOf(AIndex: Byte): Cardinal;
+    function FrameHas(AColor: Cardinal): Boolean;
+    function BlendLayers: IXcomBlendLayers;
     procedure AssertFrameIsDisplayAfterPalette;
   public
     [Setup]
@@ -97,6 +99,17 @@ type
     procedure UnoStratoCheSparisceDovrebbeRicomporreTutteLeRighe;
     [Test]
     procedure DopoUnCambioDiMisuraIlFotogrammaDovrebbeEssereRicompostoIntero;
+    [Test]
+    [TestCase('uno', '320,200')]
+    [TestCase('doppio', '640,400')]
+    [TestCase('non intero', '500,333')]
+    procedure UnaSfumaturaDovrebbeDareIlSuoColoreAiPixelDelloSchermo(ADisplayWidth, ADisplayHeight: Integer);
+    [Test]
+    procedure UnPixelCopertoDopoUnaSfumaturaDovrebbeRestareQuelloDellaBase;
+    [Test]
+    procedure UnaSfumaturaDiMisuraSbagliataDovrebbeEssereIgnorata;
+    [Test]
+    procedure UnaSfumaturaCheCambiaDovrebbeRicomporreLeSueRighe;
   end;
 
 implementation
@@ -148,6 +161,21 @@ begin
   for LY := 0 to FScreen.GetSurface.Height - 1 do
     for LX := 0 to FScreen.GetSurface.Width - 1 do
       FScreen.GetSurface.SetPixel(LX, LY, Byte((LX * 3 + LY * 5) mod 251 + 1));
+end;
+
+function TTestXcomTrueColorComposer.FrameHas(AColor: Cardinal): Boolean;
+var
+  LIndex: Integer;
+begin
+  Result := False;
+  for LIndex := 0 to High(FDevice.TrueColorPixels) do
+    if FDevice.TrueColorPixels[LIndex] = AColor then
+      Exit(True);
+end;
+
+function TTestXcomTrueColorComposer.BlendLayers: IXcomBlendLayers;
+begin
+  Assert.IsTrue(Supports(FComposerRef, IXcomBlendLayers, Result));
 end;
 
 function TTestXcomTrueColorComposer.ColorOf(AIndex: Byte): Cardinal;
@@ -545,6 +573,92 @@ begin
     LDetail.Free;
     LWidget.Free;
   end;
+end;
+
+procedure TTestXcomTrueColorComposer.UnaSfumaturaDovrebbeDareIlSuoColoreAiPixelDelloSchermo(ADisplayWidth,
+  ADisplayHeight: Integer);
+var
+  LValid: TBytes;
+  LColors: TXcomTrueColorPixels;
+  LDisplay: TBytes;
+  LIndex: Integer;
+begin
+  MakeScreen(ADisplayWidth, ADisplayHeight, 320, 200);
+  FillBase;
+  SetLength(LValid, 4 * 3);
+  SetLength(LColors, 4 * 3);
+  LValid[1 * 4 + 2] := 1;
+  LColors[1 * 4 + 2] := $FF123456;
+  BlendLayers.AddBlendLayer(FScreen.GetSurface, 10, 20, 4, 3, LValid, LColors, 4);
+  FScreen.Flip;
+  LDisplay := FScreen.DisplayPixels;
+  // the pixels of the display that take the pixel (12, 21) of the game picture have the color of the blend and
+  // only they differ from the palette
+  for LIndex := 0 to High(LDisplay) do
+    Assert.AreEqual(FDevice.TrueColorPixels[LIndex] = $FF123456,
+      FDevice.TrueColorPixels[LIndex] <> ColorOf(LDisplay[LIndex]), Format('pixel %d', [LIndex]));
+  Assert.IsTrue(FrameHas($FF123456));
+end;
+
+procedure TTestXcomTrueColorComposer.UnPixelCopertoDopoUnaSfumaturaDovrebbeRestareQuelloDellaBase;
+var
+  LValid: TBytes;
+  LColors: TXcomTrueColorPixels;
+begin
+  MakeScreen(640, 400, 320, 200);
+  FillBase;
+  SetLength(LValid, 4);
+  SetLength(LColors, 4);
+  LValid[0] := 1;
+  LColors[0] := $FF123456;
+  BlendLayers.AddBlendLayer(FScreen.GetSurface, 10, 20, 2, 2, LValid, LColors, 2);
+  // the pixel is drawn again after the widget
+  FScreen.GetSurface.SetPixel(10, 20, 77);
+  FScreen.Flip;
+  Assert.IsFalse(FrameHas($FF123456));
+  AssertFrameIsDisplayAfterPalette;
+end;
+
+procedure TTestXcomTrueColorComposer.UnaSfumaturaDiMisuraSbagliataDovrebbeEssereIgnorata;
+var
+  LValid: TBytes;
+  LColors: TXcomTrueColorPixels;
+begin
+  MakeScreen(640, 400, 320, 200);
+  FillBase;
+  SetLength(LValid, 3);
+  SetLength(LColors, 3);
+  FillChar(LValid[0], 3, 1);
+  // fewer values than the rectangle needs, a rectangle that leaves the picture
+  BlendLayers.AddBlendLayer(FScreen.GetSurface, 10, 20, 2, 2, LValid, LColors, 2);
+  BlendLayers.AddBlendLayer(FScreen.GetSurface, 319, 20, 2, 1, LValid, LColors, 2);
+  FScreen.Flip;
+  AssertFrameIsDisplayAfterPalette;
+end;
+
+procedure TTestXcomTrueColorComposer.UnaSfumaturaCheCambiaDovrebbeRicomporreLeSueRighe;
+var
+  LValid: TBytes;
+  LColors: TXcomTrueColorPixels;
+  LFrame: Integer;
+begin
+  MakeScreen(640, 400, 320, 200);
+  SetLength(LValid, 4);
+  SetLength(LColors, 4);
+  LValid[0] := 1;
+  for LFrame := 0 to 3 do
+  begin
+    FillBase;
+    LColors[0] := $FF123456;
+    if LFrame = 3 then
+      LColors[0] := $FF123457;
+    BlendLayers.AddBlendLayer(FScreen.GetSurface, 10, 20, 2, 2, LValid, LColors, 2);
+    FScreen.Flip;
+    if LFrame = 2 then
+      Assert.AreEqual(0, FComposer.ComposedRows, 'lo stesso colore: nessuna riga');
+  end;
+  Assert.AreEqual(1, FComposer.ComposedRows, 'il colore cambia: solo la riga della sfumatura');
+  Assert.IsTrue(FrameHas($FF123457));
 end;
 
 procedure TTestXcomTrueColorComposer.DopoUnCambioDiMisuraIlFotogrammaDovrebbeEssereRicompostoIntero;

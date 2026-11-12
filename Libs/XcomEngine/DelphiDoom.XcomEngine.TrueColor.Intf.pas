@@ -50,6 +50,23 @@ type
   end;
 
   /// <summary>
+  ///   Where a widget leaves the colors of its pixels that are no color of the palette (a veil of smoke over what
+  ///   is behind it: a blend). An optional interface of the composer; it works at every scale, 1 too. The widget
+  ///   calls it right after it blitted on the base surface: the pixels that still are the ones it left when the
+  ///   frame is composed take the color given, the ones something drawn later covered do not. The layers are of
+  ///   one frame
+  /// </summary>
+  IXcomBlendLayers = interface
+    ['{7F3B1C90-5A2E-4D67-8B14-183000000004}']
+    /// <param name="AX">The rectangle of the base surface (in its pixels) the widget blitted on</param>
+    /// <param name="AValid">Row after row from the top left corner of the rectangle, AStride bytes a row: not 0
+    /// where the pixel has a color of its own</param>
+    /// <param name="AColors">The colors ($FFRRGGBB) of those pixels, laid out as AValid</param>
+    procedure AddBlendLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer; const AValid: TBytes;
+      const AColors: TXcomTrueColorPixels; AStride: Integer);
+  end;
+
+  /// <summary>
   ///   The strategy the screen flips with when it is given one: it makes the final frame of colors from the base
   ///   surface and the palette (applied here, at the composition) and shows it. Without one the screen scales the
   ///   indexes and gives them to the device with the palette, as OpenXcom does

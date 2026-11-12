@@ -47,7 +47,9 @@ uses
   DelphiDoom.XcomSurface.Enlarger in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Enlarger.pas',
   DelphiDoom.Tests.XcomSurface.Enlarger in 'Source\DelphiDoom.Tests.XcomSurface.Enlarger.pas',
   DelphiDoom.XcomSurface.Stroke in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.Stroke.pas',
-  DelphiDoom.Tests.XcomSurface.Stroke in 'Source\DelphiDoom.Tests.XcomSurface.Stroke.pas';
+  DelphiDoom.Tests.XcomSurface.Stroke in 'Source\DelphiDoom.Tests.XcomSurface.Stroke.pas',
+  DelphiDoom.XcomSurface.BlendOverlay in '..\Libs\XcomSurface\DelphiDoom.XcomSurface.BlendOverlay.pas',
+  DelphiDoom.Tests.XcomSurface.BlendOverlay in 'Source\DelphiDoom.Tests.XcomSurface.BlendOverlay.pas';
 
 var
   Runner: ITestRunner;

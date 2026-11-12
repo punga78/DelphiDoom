@@ -99,6 +99,11 @@ type
     /// </summary>
     function DetailLayers: IXcomDetailLayers;
     /// <summary>
+    ///   Where a widget leaves the colors of its pixels that are blends (smoke over what is behind it); nil when
+    ///   the screen has no composer or the composer has no such thing
+    /// </summary>
+    function BlendLayers: IXcomBlendLayers;
+    /// <summary>
     ///   Asked for the composer at every ResetDisplay from when it is given (the options are confirmed with one):
     ///   without a source the screen keeps the composer of its constructor
     /// </summary>
@@ -389,6 +394,12 @@ begin
   LBands.Left := FLeftBlackBand;
   LBands.Right := FRightBlackBand;
   FComposer.SetGeometry(FBaseWidth, FBaseHeight, FDisplayWidth, FDisplayHeight, LBands);
+end;
+
+function TXcomScreen.BlendLayers: IXcomBlendLayers;
+begin
+  if not Supports(FComposer, IXcomBlendLayers, Result) then
+    Result := nil;
 end;
 
 function TXcomScreen.DetailLayers: IXcomDetailLayers;

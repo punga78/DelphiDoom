@@ -173,3 +173,33 @@ TXcomScreen.Flip ── senza strategia ──> Zoom a indici ──> IXcomVideo
   battaglia 25); accesa a 2x menu 1,4, battaglia 25,6, geoscape 5,4; geoscape a 3x 9,2 e a 4x 15,2 (il globo fine
   si ridisegna per intero a ogni passo del tempo: e' il primo punto da ottimizzare, ridisegnando l'ombra solo
   quando il sole si e' mosso di un livello).
+
+## 7. Seconda parte della #183 (stato per punto)
+
+1. **Prestazioni del globo fine: fatto.** Composizione per righe (`TXcomTrueColorComposer` ricorda base, palette, strati e sfumature
+   del fotogramma prima e ricompone solo le righe cambiate), terra del globo fine rasterizzata una volta per vista, ombra della
+   notte a numeri interi (`TXcomGlobeNightShade`: tabella di altezze a 16 bit al posto di 20 MB di normali) ridisegnata solo
+   quando il sole si sposta di un quarto di livello, `Overlay` che salta quattro pixel vuoti alla volta. Geoscape con
+   `-truecolor`, ms per fotogramma, minimo (mediana) su 3 corse, binario di partenza -> nuovo: 2x 4,73 (5,04) -> 1,68 (2,57);
+   3x 9,26 (9,78) -> 2,52 (2,79); 4x 15,42 (15,94) -> 3,06 (3,08). Col globo che **ruota** a 4x (rifa' la terra a ogni
+   passo) 38,5 (38,7) -> 15,0 (15,1); il pavimento a 8 bit di quella scena e' 6,7: restano 8 ms di terra del globo fine
+   (rasterizzare 1280x800 di poligoni; la misura per fase ha dato terra 4,2 e ombra 2,6 ms).
+2. **Opzione nel gioco: fatta.** Riga "32-bit drawing" in una sezione "DELPHIDOOM" **in fondo alle opzioni avanzate**
+   (`IXcomExtraOptions`, `TXcomTrueColorOption`: chiave `trueColor` di `options.cfg`); le schermate di OpenXcom sono quelle
+   di prima salvo il cursore della barra della lista avanzata (224 pixel, la lista ha righe in piu'). `TXcomScreen`
+   riceve il compositore a ogni `ResetDisplay` (`ComposerSource`): OK nelle opzioni accende e spegne senza riavviare.
+3. **Resto della fetta 3: fatto in parte.** Linee dei grafici (`TXcomLineWidget`: a 8 bit le stesse linee, in piu' lo strato
+   di dettaglio con penna larga quanto la scala), globo fine con confini, radar e rotte con penna `(scala+1)/2` e cerchi dei
+   radar con `lati x scala` lati. **Non fatti**: radar e proiettili del dogfight e minimappa del Battlescape sono bitmap fatte
+   pixel per pixel (nessuna linea vettoriale da rifare piu' fine); renderli piu' fini vorrebbe dire reinventarli.
+4. **Fetta 4: fatta in parte.** `IXcomBlendLayers` (interfaccia opzionale del compositore, funziona a ogni scala) e
+   `TXcomBlendOverlay`: la mappa del Battlescape dice quali pixel sono una sfumatura (**fumo e fuoco delle tegole** come veli
+   con opacita' dalla densita', **ombra ellittica sotto le unita'**) e quale colore hanno; lo sprite resta nella superficie a
+   8 bit come sempre, il compositore mette il colore mescolato dove il pixel e' ancora quello lasciato dal widget. L'ordine per
+   tegola e' quello dei blit (ogni sprite solido toglie la sfumatura che copre). **Non fatti**: la luce continua (resta a rampe
+   di 16: le rampe non sono lineari ne' uguali tra i blocchi e non c'e' un riferimento con cui controllare i colori), le
+   particelle del vapore sott'acqua (la tinta RGB sta nelle tabelle di trasparenza, non nell'indice). Il fumo non e' stato
+   visto in una battaglia vera (gli scenari di prova non ne hanno e non si riesce a metterne senza editare il formato
+   binario delle tegole): e' provato coi test dell'overlay e del compositore; l'ombra delle unita' si vede ma e' sottile.
+5. **Screenshot e shader: non fatto** (F12 salva ancora lo schermo a indici senza dettaglio; uno shader diverso da `Raw` con
+   `-truecolor` riceve il fotogramma gia' alla misura della finestra: non verificato).

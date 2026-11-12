@@ -26,7 +26,7 @@ type
   ///   The composer remembers what it composed the frame from (the base, the palette, the layers): the rows of the
   ///   game picture that are as they were keep the rows of the frame they have, only the others are composed again
   /// </summary>
-  TXcomTrueColorComposer = class(TInterfacedObject, IXcomFrameComposer, IXcomDetailLayers)
+  TXcomTrueColorComposer = class(TInterfacedObject, IXcomFrameComposer, IXcomDetailLayers, IXcomBlendLayers)
   public
     const
       /// <summary>The largest scale the detail layers are used at</summary>
@@ -41,6 +41,17 @@ type
         Before: TBytes;
         After: TBytes;
         Detail: TXcomSurface;
+      end;
+      /// <summary>The colors of the pixels of a widget that are blends: the rectangle, what the widget left there
+      /// (After) and, for the pixels that have one (Valid), the color</summary>
+      TBlend = record
+        X: Integer;
+        Y: Integer;
+        Width: Integer;
+        Height: Integer;
+        After: TBytes;
+        Valid: TBytes;
+        Colors: TXcomTrueColorPixels;
       end;
     var
       FDisplay: IXcomTrueColorDisplay;
@@ -65,6 +76,10 @@ type
       FLastLayerCount: Integer;
       FDirtyRows: TArray<Boolean>;
       FComposedRows: Integer;
+      FBlends: TArray<TBlend>;
+      FBlendCount: Integer;
+      FLastBlends: TArray<TBlend>;
+      FLastBlendCount: Integer;
     class function SourceIndexes(ASourceSize, ADestSize: Integer): TArray<Integer>; static;
     class procedure CopyRect(ABase: TXcomSurface; const ALayer: TLayer; var ATarget: TBytes); static;
     procedure ComposeLayer(ABase: TXcomSurface; const ALayer: TLayer; const AColors: array of Cardinal);
@@ -72,6 +87,8 @@ type
     function SameLayers: Boolean;
     procedure FindDirtyRows(const ASource: TBytes; const AColors: array of Cardinal);
     procedure RememberFrame(const ASource: TBytes; const AColors: array of Cardinal);
+    function SameBlends: Boolean;
+    procedure ComposeBlend(const ASource: TBytes; const ABlend: TBlend);
   public
     /// <param name="ADisplay">Where the frames go</param>
     constructor Create(const ADisplay: IXcomTrueColorDisplay);
@@ -82,6 +99,8 @@ type
     function DetailScale: Integer;
     procedure BeginLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer);
     procedure EndLayer(ABase, ADetail: TXcomSurface);
+    procedure AddBlendLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer; const AValid: TBytes;
+      const AColors: TXcomTrueColorPixels; AStride: Integer);
     /// <summary>The last frame that was composed (the size of the display)</summary>
     property Frame: TXcomTrueColorPixels read FFrame;
     /// <summary>How many rows of the game picture the last frame composed again (all of them: its height)</summary>
@@ -141,6 +160,8 @@ begin
   FOpenLayer := False;
   FLastValid := False;
   FLastLayerCount := 0;
+  FBlendCount := 0;
+  FLastBlendCount := 0;
   SetLength(FDirtyRows, ABaseHeight);
   SetLength(FFrame, ADisplayWidth * ADisplayHeight);
   for LIndex := 0 to High(FFrame) do
@@ -327,7 +348,8 @@ var
   LDetailBytes: Integer;
 begin
   FComposedRows := 0;
-  if (not FLastValid) or (not CompareMem(@AColors[0], @FLastColors[0], SizeOf(FLastColors))) or (not SameLayers) then
+  if (not FLastValid) or (not CompareMem(@AColors[0], @FLastColors[0], SizeOf(FLastColors))) or (not SameLayers)
+    or (not SameBlends) then
   begin
     for LRow := 0 to FBaseHeight - 1 do
       FDirtyRows[LRow] := True;
@@ -350,6 +372,18 @@ begin
         or (not CompareMem(@LDetail[LRow * LDetailBytes], @FLastDetails[LIndex][LRow * LDetailBytes],
         LDetailBytes))) then
         FDirtyRows[FLayers[LIndex].Y + LRow] := True;
+  end;
+  // and a row of blends when the widget left the same pixels with the same colors
+  for LIndex := 0 to FBlendCount - 1 do
+  begin
+    LWidth := FBlends[LIndex].Width;
+    for LRow := 0 to FBlends[LIndex].Height - 1 do
+      if (not FDirtyRows[FBlends[LIndex].Y + LRow])
+        and ((not CompareMem(@FBlends[LIndex].After[LRow * LWidth], @FLastBlends[LIndex].After[LRow * LWidth], LWidth))
+        or (not CompareMem(@FBlends[LIndex].Valid[LRow * LWidth], @FLastBlends[LIndex].Valid[LRow * LWidth], LWidth))
+        or (not CompareMem(@FBlends[LIndex].Colors[LRow * LWidth], @FLastBlends[LIndex].Colors[LRow * LWidth],
+        LWidth * SizeOf(Cardinal)))) then
+        FDirtyRows[FBlends[LIndex].Y + LRow] := True;
   end;
   for LRow := 0 to FBaseHeight - 1 do
     if FDirtyRows[LRow] then
@@ -384,8 +418,94 @@ begin
     if FComposedRows > 0 then
       Move(LDetail[0], FLastDetails[LIndex][0], Length(LDetail));
   end;
+  // the blends change hands whole: the next AddBlendLayer makes its own copies
+  if Length(FLastBlends) < FBlendCount then
+    SetLength(FLastBlends, FBlendCount);
+  for LIndex := 0 to FBlendCount - 1 do
+  begin
+    FLastBlends[LIndex] := FBlends[LIndex];
+    FBlends[LIndex].After := nil;
+    FBlends[LIndex].Valid := nil;
+    FBlends[LIndex].Colors := nil;
+  end;
+  FLastBlendCount := FBlendCount;
   FLastLayerCount := FLayerCount;
   FLastValid := True;
+end;
+
+function TXcomTrueColorComposer.SameBlends: Boolean;
+var
+  LIndex: Integer;
+begin
+  Result := FBlendCount = FLastBlendCount;
+  if Result then
+    for LIndex := 0 to FBlendCount - 1 do
+      if (FBlends[LIndex].X <> FLastBlends[LIndex].X) or (FBlends[LIndex].Y <> FLastBlends[LIndex].Y)
+        or (FBlends[LIndex].Width <> FLastBlends[LIndex].Width)
+        or (FBlends[LIndex].Height <> FLastBlends[LIndex].Height) then
+        Exit(False);
+end;
+
+procedure TXcomTrueColorComposer.AddBlendLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer;
+  const AValid: TBytes; const AColors: TXcomTrueColorPixels; AStride: Integer);
+var
+  LRow: Integer;
+  LLayer: TLayer;
+begin
+  // only on the picture of the screen, with a whole rectangle inside it and all its rows given
+  if (not Assigned(ABase)) or (ABase.Width <> FBaseWidth) or (ABase.Height <> FBaseHeight) or (AX < 0) or (AY < 0)
+    or (AWidth <= 0) or (AHeight <= 0) or (AX + AWidth > FBaseWidth) or (AY + AHeight > FBaseHeight)
+    or (AStride < AWidth) or (Length(AValid) < (AHeight - 1) * AStride + AWidth)
+    or (Length(AColors) < (AHeight - 1) * AStride + AWidth) then
+    Exit;
+  if FBlendCount = Length(FBlends) then
+    SetLength(FBlends, FBlendCount + 2);
+  FBlends[FBlendCount].X := AX;
+  FBlends[FBlendCount].Y := AY;
+  FBlends[FBlendCount].Width := AWidth;
+  FBlends[FBlendCount].Height := AHeight;
+  LLayer.X := AX;
+  LLayer.Y := AY;
+  LLayer.Width := AWidth;
+  LLayer.Height := AHeight;
+  CopyRect(ABase, LLayer, FBlends[FBlendCount].After);
+  SetLength(FBlends[FBlendCount].Valid, AWidth * AHeight);
+  SetLength(FBlends[FBlendCount].Colors, AWidth * AHeight);
+  for LRow := 0 to AHeight - 1 do
+  begin
+    Move(AValid[LRow * AStride], FBlends[FBlendCount].Valid[LRow * AWidth], AWidth);
+    Move(AColors[LRow * AStride], FBlends[FBlendCount].Colors[LRow * AWidth], AWidth * SizeOf(Cardinal));
+  end;
+  Inc(FBlendCount);
+end;
+
+procedure TXcomTrueColorComposer.ComposeBlend(const ASource: TBytes; const ABlend: TBlend);
+var
+  LX: Integer;
+  LY: Integer;
+  LBaseX: Integer;
+  LBaseY: Integer;
+  LCell: Integer;
+  LFrameRow: Integer;
+begin
+  // every pixel of the display takes the pixel of the game picture the scaler gives it: where that pixel has a
+  // color of its own and still is the one the widget left, the color goes in place of the one of the palette
+  for LY := 0 to High(FRows) do
+  begin
+    LBaseY := FRows[LY];
+    if (LBaseY < ABlend.Y) or (LBaseY >= ABlend.Y + ABlend.Height) or (not FDirtyRows[LBaseY]) then
+      Continue;
+    LFrameRow := (FBands.Top + LY) * FDisplayWidth + FBands.Left;
+    for LX := 0 to High(FColumns) do
+    begin
+      LBaseX := FColumns[LX];
+      if (LBaseX < ABlend.X) or (LBaseX >= ABlend.X + ABlend.Width) then
+        Continue;
+      LCell := (LBaseY - ABlend.Y) * ABlend.Width + LBaseX - ABlend.X;
+      if (ABlend.Valid[LCell] <> 0) and (ASource[LBaseY * FBaseWidth + LBaseX] = ABlend.After[LCell]) then
+        FFrame[LFrameRow + LX] := ABlend.Colors[LCell];
+    end;
+  end;
 end;
 
 function TXcomTrueColorComposer.Present(ABase: TXcomSurface; const APalette: TXcomColors): Boolean;
@@ -413,6 +533,8 @@ begin
     if FComposedRows > 0 then
     begin
       ComposeBase(LSource, LColors);
+      for LIndex := 0 to FBlendCount - 1 do
+        ComposeBlend(LSource, FBlends[LIndex]);
       for LIndex := 0 to FLayerCount - 1 do
         ComposeLayer(ABase, FLayers[LIndex], LColors);
     end;
@@ -423,6 +545,7 @@ begin
     for LIndex := 0 to FLayerCount - 1 do
       FLayers[LIndex].Detail := nil;
     FLayerCount := 0;
+    FBlendCount := 0;
     FOpenLayer := False;
   end;
 end;

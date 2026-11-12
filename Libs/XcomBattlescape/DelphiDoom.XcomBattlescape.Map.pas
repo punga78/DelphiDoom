@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: xcom battlescape drawing library - the map of the battlefield    }
 {  (Map: the tiles, the walls, the objects, the units, the smoke and the fire,  }
@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.Model, DelphiDoom.XcomBattle.SavedBattleGame,
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomBattlescape.Camera, DelphiDoom.XcomBattlescape.Sprites.Intf,
   DelphiDoom.XcomBattlescape.Particle, DelphiDoom.XcomBattlescape.Explosion, DelphiDoom.XcomBattle.TileEngine,
-  DelphiDoom.XcomBattle.Projectile;
+  DelphiDoom.XcomBattle.Projectile, DelphiDoom.XcomSurface.BlendOverlay;
 
 const
   /// <summary>Options::battleNewPreviewPath: the arrows of the previewed path</summary>
@@ -95,6 +95,8 @@ type
     FProjectileInFov: Boolean;
     FLaunch: Boolean;
     FSmoothCamera: Boolean;
+    FOverlay: TXcomBlendOverlay;
+    FInVeil: Boolean;
     FSmoothingEngaged: Boolean;
     FWaypoints: TList<TXcomPosition>;
     FNumberedWaypoints: Boolean;
@@ -186,6 +188,11 @@ type
     property ParticleRandom: IXcomRandom read FParticleRandom write FParticleRandom;
     property Camera: TXcomCamera read FCamera;
     property Surface: TXcomSurface read FSurface;
+    /// <summary>
+    ///   Where the map says which pixels of its picture are blends (smoke and fire over what is behind them, the
+    ///   shadows of the units): the picture itself is drawn as always. Not owned; nil: no blends are told
+    /// </summary>
+    property BlendOverlay: TXcomBlendOverlay read FOverlay write FOverlay;
     property CursorType: Integer read FCursorType;
     property AnimFrame: Integer read FAnimFrame;
     property UnitDying: Boolean read FUnitDying write FUnitDying;
@@ -238,6 +245,17 @@ const
   PART_NORTH_WALL = 2;
   PART_OBJECT = 3;
   BLOCK_COLOR_BLACK = 15;
+  // the shadow of a unit: an ellipse at the feet of its sprite, and how dark
+  SHADOW_X = 16;
+  SHADOW_Y = 29;
+  SHADOW_RADIUS_X = 13;
+  SHADOW_RADIUS_Y = 5;
+  SHADOW_OPACITY = 128;
+  // the smoke and the fire as veils: parts of 256 of the color of the sprite over what is behind
+  SMOKE_OPACITY_BASE = 48;
+  SMOKE_OPACITY_PER_DENSITY = 12;
+  SMOKE_OPACITY_MAX = 208;
+  FIRE_OPACITY = 208;
   BULLET_SPRITES = 35;
   ARROW_BOB: array[0..7] of Integer = (0, 1, 2, 1, 0, 1, 2, 1);
 
@@ -437,6 +455,8 @@ begin
     AShade := EnsureRange(AShade + FShadeDelta, 0, 16);
   end;
   TXcomSurfaceShader.Blit(ASource, FSurface, AX, AY, AShade, AHalf, ANewBaseColor);
+  if Assigned(FOverlay) and (not FInVeil) then
+    FOverlay.Cover(ASource, AX, AY, AHalf);
 end;
 
 function TXcomBattleMap.GetTerrainLevel(const APosition: TXcomPosition; ASize: Integer): Integer;
@@ -714,6 +734,8 @@ var
   procedure Mix(AX, AY: Integer);
   begin
     FSurface.SetPixel(AX, AY, FSettings.Transparencies[LBase + FSurface.GetPixel(AX, AY)]);
+    if Assigned(FOverlay) then
+      FOverlay.CoverPixel(AX, AY);
   end;
 
 begin
@@ -778,6 +800,8 @@ begin
   FRedraw := False;
   FBlitCount := 0;
   FSurface.Clear(BLOCK_COLOR_BLACK);
+  if Assigned(FOverlay) then
+    FOverlay.Clear;
   if (Assigned(FSave.SelectedUnit) and FSave.SelectedUnit.GetVisible) or FUnitDying or
     (not Assigned(FSave.SelectedUnit)) or FSave.DebugMode or FProjectileInFov or FExplosionInFov then
     DrawTerrain
@@ -948,14 +972,22 @@ begin
     FTrace.Add(Format('unit %d x=%d y=%d shade=%d mask=%d..%d,%d..%d', [LUnit.Id,
       LTileScreen.X + LOffset.X - FSpriteWidth div 2, LTileScreen.Y + LOffset.Y, LUnitShade, LMask.BegX, LMask.EndX,
       LMask.BegY, LMask.EndY]));
+  // the shadow of the unit on the ground, under it (a blend: the picture of the game has none)
+  if Assigned(FOverlay) and (LUnit.Status <> STATUS_FLYING) then
+    FOverlay.Darken(FSurface, LTileScreen.X + LOffset.X + SHADOW_X, LTileScreen.Y + LOffset.Y + SHADOW_Y,
+      SHADOW_RADIUS_X, SHADOW_RADIUS_Y, SHADOW_OPACITY);
   TXcomSurfaceShader.Blit(LCache, FSurface, LTileScreen.X + LOffset.X - FSpriteWidth div 2, LTileScreen.Y + LOffset.Y,
     LUnitShade, LMask);
+  if Assigned(FOverlay) then
+    FOverlay.Cover(LCache, LTileScreen.X + LOffset.X - FSpriteWidth div 2, LTileScreen.Y + LOffset.Y, LMask);
   // draw fire
   if LUnit.Fire > 0 then
   begin
     LFrameNumber := 4 + (FAnimFrame div 2);
     LFrame := FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber);
     TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y, 0, LMask);
+    if Assigned(FOverlay) then
+      FOverlay.Cover(LFrame, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y, LMask);
   end;
   if LUnit.BreathFrame > 0 then
   begin
@@ -968,6 +1000,8 @@ begin
       if Assigned(LFrame) then
         TXcomSurfaceShader.Blit(LFrame, FSurface, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y - 30, LTileShade,
           LMask);
+      if Assigned(FOverlay) then
+        FOverlay.Cover(LFrame, LTileScreen.X + LOffset.X, LTileScreen.Y + LOffset.Y - 30, LMask);
     end;
   end;
 end;
@@ -1191,7 +1225,27 @@ begin
             LFrameNumber := LFrameNumber + ((FAnimFrame div 2) + LTile.AnimationOffset - 4)
           else
             LFrameNumber := LFrameNumber + (FAnimFrame div 2) + LTile.AnimationOffset;
-          BlitShade(FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber), LScreen.X, LScreen.Y, LShade);
+          if Assigned(FOverlay) then
+          begin
+            // in true color the smoke and the fire are veils: the picture of the game gets the sprite as before,
+            // the overlay keeps what the pixels really are, a blend of the sprite and what was behind it
+            LFrame := FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber);
+            FOverlay.BeginVeil(FSurface, LScreen.X, LScreen.Y, LFrame.Width, LFrame.Height);
+            FInVeil := True;
+            try
+              BlitShade(LFrame, LScreen.X, LScreen.Y, LShade);
+            finally
+              FInVeil := False;
+            end;
+            if LTile.Fire = 0 then
+              FOverlay.EndVeil(FSurface, LFrame, LScreen.X, LScreen.Y,
+                Min(SMOKE_OPACITY_BASE + LTile.Smoke * SMOKE_OPACITY_PER_DENSITY, SMOKE_OPACITY_MAX),
+                FOverlay.Everything)
+            else
+              FOverlay.EndVeil(FSurface, LFrame, LScreen.X, LScreen.Y, FIRE_OPACITY, FOverlay.Everything);
+          end
+          else
+            BlitShade(FSprites.SurfaceSet('SMOKE.PCK').GetFrame(LFrameNumber), LScreen.X, LScreen.Y, LShade);
         end;
         // draw particle clouds
         DrawParticles(LTile, LScreen);
@@ -1314,6 +1368,8 @@ begin
       for LIndex := 0 to FSurface.Width * FSurface.Height - 1 do
         FSurface.SetPixel(LIndex mod FSurface.Width, LIndex div FSurface.Width,
           (FSurface.GetPixel(LIndex mod FSurface.Width, LIndex div FSurface.Width) div 16) * 16);
+      if Assigned(FOverlay) then
+        FOverlay.Clear;
       FFlashScreen := False;
     end
     else
