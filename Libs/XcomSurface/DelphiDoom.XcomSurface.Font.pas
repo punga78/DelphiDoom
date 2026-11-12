@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Surface,
-  DelphiDoom.XcomSurface.Intf;
+  DelphiDoom.XcomSurface.Intf, DelphiDoom.XcomSurface.FontDetail.Intf;
 
 type
   /// <summary>One picture of a font: the size of a character cell, its spacing and the surface with the cells</summary>
@@ -55,11 +55,17 @@ type
     FImages: TList<TXcomFontImage>;
     FChars: TDictionary<Cardinal, TXcomFontChar>;
     FMonospace: Boolean;
+    FDetail: IXcomFontDetail;
     function EntryOf(ACode: Cardinal): TXcomFontChar;
   public
     constructor Create;
     destructor Destroy; override;
     property Monospace: Boolean read FMonospace write FMonospace;
+    /// <summary>
+    ///   The same characters at the resolution of the display (not in the C++; issue 184): nil, the default, for a
+    ///   font that only has its pictures. Who draws a text asks it; the pictures and the sizes do not change
+    /// </summary>
+    property Detail: IXcomFontDetail read FDetail write FDetail;
     /// <summary>Adds a picture (taking its ownership) and returns its index</summary>
     function AddImage(AWidth, AHeight, ASpacing: Integer; ASurface: TXcomSurface): Integer;
     /// <summary>

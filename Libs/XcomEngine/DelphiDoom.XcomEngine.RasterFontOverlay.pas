@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Glyph.Types,
-  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf;
+  DelphiDoom.XcomSurface.GlyphRasterizer.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf,
+  DelphiDoom.XcomSurface.FontDetail.Intf, DelphiDoom.XcomEngine.TrueColor.Intf;
 
 type
   /// <summary>
@@ -26,19 +27,25 @@ type
     FSettings: TArray<TXcomFontOverlaySettings>;
     FFactory: IXcomGlyphRasterizerFactory;
     FLog: IXcomLog;
+    FDisplay: IXcomDetailLayers;
+    FLayers: IXcomInkLayers;
     procedure Say(const ALevel, AText: string);
     class function Describe(const AFace: TXcomFontFace): string; static;
   public
     /// <param name="ALog">nil for no log</param>
+    /// <param name="ADisplay">
+    ///   With ALayers: the fonts also get their characters at the resolution of the display (IXcomFontDetail),
+    ///   for a screen that composes in true color at a whole scale. nil, the default: only the pictures
+    /// </param>
     constructor Create(const ASettings: TArray<TXcomFontOverlaySettings>; const AFactory: IXcomGlyphRasterizerFactory;
-      const ALog: IXcomLog);
+      const ALog: IXcomLog; const ADisplay: IXcomDetailLayers = nil; const ALayers: IXcomInkLayers = nil);
     procedure Apply(const AFontId: string; AFont: TXcomFont);
   end;
 
 implementation
 
 uses
-  DelphiDoom.XcomSurface.FontOverlayBuilder;
+  DelphiDoom.XcomSurface.FontOverlayBuilder, DelphiDoom.XcomEngine.DetailFont;
 
 const
   SLevelWarning = 'WARN';
@@ -51,7 +58,8 @@ const
   SPartial = 'font %s: %d characters are not in %s or are too wide and stay the original ones';
 
 constructor TXcomRasterFontOverlay.Create(const ASettings: TArray<TXcomFontOverlaySettings>;
-  const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog);
+  const AFactory: IXcomGlyphRasterizerFactory; const ALog: IXcomLog; const ADisplay: IXcomDetailLayers;
+  const ALayers: IXcomInkLayers);
 begin
   inherited Create;
   if not Assigned(AFactory) then
@@ -59,6 +67,8 @@ begin
   FSettings := ASettings;
   FFactory := AFactory;
   FLog := ALog;
+  FDisplay := ADisplay;
+  FLayers := ALayers;
 end;
 
 procedure TXcomRasterFontOverlay.Say(const ALevel, AText: string);
@@ -113,6 +123,9 @@ begin
         LReport.Missing, LReport.TooWide, LReport.Clipped]));
       if LReport.Missing + LReport.TooWide > 0 then
         Say(SLevelWarning, Format(SPartial, [AFontId, LReport.Missing + LReport.TooWide, LName]));
+      // the same font draws the text again at the resolution of the display, when the screen has one
+      if Assigned(FDisplay) and Assigned(FLayers) then
+        AFont.Detail := TXcomDetailFont.Create(AFont, LSettings.Face, LReport, FFactory, FDisplay, FLayers, FLog);
     end
     else
       case LReport.Refusal of

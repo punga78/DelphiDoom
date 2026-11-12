@@ -29,6 +29,8 @@ type
     DefaultTop: Integer;
     /// <summary>How many characters were drawn</summary>
     Rasterized: Integer;
+    /// <summary>What Baseline answers</summary>
+    BaselineRow: Integer;
     constructor Create(AWidth, AHeight, ATop: Integer);
     destructor Destroy; override;
     /// <summary>A full rectangle of one coverage</summary>
@@ -38,12 +40,18 @@ type
     procedure Remove(ACode: Cardinal);
     function HasGlyph(ACode: Cardinal): Boolean;
     function Rasterize(ACode: Cardinal; out AGlyph: TXcomGlyphBitmap): Boolean;
+    function Baseline: Integer;
   end;
 
-  /// <summary>IXcomGlyphRasterizerFactory of the tests: gives the rasterizer it was given, or none with a reason</summary>
+  /// <summary>
+  ///   IXcomGlyphRasterizerFactory of the tests: gives the rasterizer it was given (the one of ByScale for a
+  ///   scale that has one), or none with a reason
+  /// </summary>
   TFakeGlyphRasterizerFactory = class(TInterfacedObject, IXcomGlyphRasterizerFactory)
   public
     Rasterizer: IXcomGlyphRasterizer;
+    /// <summary>The rasterizer of a scale, by index; nil or missing: Rasterizer</summary>
+    ByScale: TArray<IXcomGlyphRasterizer>;
     Reason: string;
     LastFace: TXcomFontFace;
     LastScale: Integer;
@@ -124,6 +132,11 @@ begin
   Result := True;
 end;
 
+function TFakeGlyphRasterizer.Baseline: Integer;
+begin
+  Result := BaselineRow;
+end;
+
 { TFakeGlyphRasterizerFactory }
 
 function TFakeGlyphRasterizerFactory.CreateRasterizer(const AFace: TXcomFontFace; AScale: Integer;
@@ -134,6 +147,8 @@ begin
   LastScale := AScale;
   AReason := Reason;
   Result := Rasterizer;
+  if (AScale >= 0) and (AScale < Length(ByScale)) and Assigned(ByScale[AScale]) then
+    Result := ByScale[AScale];
 end;
 
 end.

@@ -306,6 +306,10 @@ begin
       AReport.Refusal := frTooWide;
     if AReport.Refusal <> frNone then
       Exit(False);
+    AReport.FirstImage := LImageCount;
+    AReport.LineTop := LTop - ASettings.OffsetY;
+    AReport.Baseline := ARasterizer.Baseline;
+    AReport.Outlined := LOutline;
     for LImage := 0 to LImageCount - 1 do
     begin
       LSpacing := ASettings.Spacing;

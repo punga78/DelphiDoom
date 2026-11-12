@@ -13,7 +13,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.TrueColor.Intf;
+  DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.TrueColor.Intf, DelphiDoom.XcomSurface.Ink.Types,
+  DelphiDoom.XcomSurface.FontDetail.Intf;
 
 type
   /// <summary>
@@ -22,9 +23,10 @@ type
   ///   the base that the software scaler of the screen takes (Zoom::_zoomSurfaceY: the same steps), turned into a
   ///   color with the palette. So at any scale the frame is the 8 bit picture of the screen after its palette.
   ///   When the display is a whole number of times the base and has no bands, the layers the widgets left are laid
-  ///   over it (see IXcomDetailLayers)
+  ///   over it (see IXcomDetailLayers), and so is the ink of the texts (IXcomInkLayers, issue 184): a color of
+  ///   the palette mixed with what is under it by its coverage
   /// </summary>
-  TXcomTrueColorComposer = class(TInterfacedObject, IXcomFrameComposer, IXcomDetailLayers)
+  TXcomTrueColorComposer = class(TInterfacedObject, IXcomFrameComposer, IXcomDetailLayers, IXcomInkLayers)
   public
     const
       /// <summary>The largest scale the detail layers are used at</summary>
@@ -39,6 +41,12 @@ type
         Before: TBytes;
         After: TBytes;
         Detail: TXcomSurface;
+        /// <summary>An ink layer: the ink of the whole widget, where the rectangle (cut to the picture) is in it, the widget without text</summary>
+        IsInk: Boolean;
+        Ink: TXcomInkBuffer;
+        InkX: Integer;
+        InkY: Integer;
+        Under: TBytes;
       end;
     var
       FDisplay: IXcomTrueColorDisplay;
@@ -54,9 +62,16 @@ type
       FLayers: TArray<TLayer>;
       FLayerCount: Integer;
       FOpenLayer: Boolean;
+      FOpenInk: Boolean;
+      FInkWidth: Integer;
+      FInkHeight: Integer;
+      FBase: TXcomSurface;
+      FCellState: TBytes;
     class function SourceIndexes(ASourceSize, ADestSize: Integer): TArray<Integer>; static;
     class procedure CopyRect(ABase: TXcomSurface; const ALayer: TLayer; var ATarget: TBytes); static;
     procedure ComposeLayer(ABase: TXcomSurface; const ALayer: TLayer; const AColors: array of Cardinal);
+    procedure ComposeInk(ABase: TXcomSurface; const ALayer: TLayer; const AColors: array of Cardinal);
+    class function Mix(AUnder, AColor: Cardinal; AAlpha: Cardinal): Cardinal; static; inline;
   public
     /// <param name="ADisplay">Where the frames go</param>
     constructor Create(const ADisplay: IXcomTrueColorDisplay);
@@ -67,6 +82,12 @@ type
     function DetailScale: Integer;
     procedure BeginLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer);
     procedure EndLayer(ABase, ADetail: TXcomSurface);
+    /// <summary>
+    ///   IXcomInkLayers. Only on the picture the last frame was composed from, at a whole scale of 2 or more, and
+    ///   not inside another layer
+    /// </summary>
+    function BeginInk(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer): Boolean;
+    procedure EndInk(ABase: TXcomSurface; const AInk: TXcomInkBuffer; const AUnder: TBytes);
     /// <summary>The last frame that was composed (the size of the display)</summary>
     property Frame: TXcomTrueColorPixels read FFrame;
   end;
@@ -165,6 +186,7 @@ end;
 procedure TXcomTrueColorComposer.BeginLayer(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer);
 begin
   FOpenLayer := False;
+  FOpenInk := False;
   // only on the picture of the screen, with a whole rectangle inside it, and never one inside another
   if (FDetailScale < 2) or (not Assigned(ABase)) or (ABase.Width <> FBaseWidth) or (ABase.Height <> FBaseHeight)
     or (AX < 0) or (AY < 0) or (AWidth <= 0) or (AHeight <= 0) or (AX + AWidth > FBaseWidth)
@@ -177,6 +199,7 @@ begin
   FLayers[FLayerCount].Width := AWidth;
   FLayers[FLayerCount].Height := AHeight;
   FLayers[FLayerCount].Detail := nil;
+  FLayers[FLayerCount].IsInk := False;
   CopyRect(ABase, FLayers[FLayerCount], FLayers[FLayerCount].Before);
   FOpenLayer := True;
 end;
@@ -239,6 +262,192 @@ begin
     end;
 end;
 
+function TXcomTrueColorComposer.BeginInk(ABase: TXcomSurface; AX, AY, AWidth, AHeight: Integer): Boolean;
+var
+  LLeft: Integer;
+  LTop: Integer;
+  LRight: Integer;
+  LBottom: Integer;
+begin
+  Result := False;
+  FOpenInk := False;
+  // a text drawn on another surface (a button, a list) is not on the screen: its owner leaves the ink
+  if FOpenLayer or (FDetailScale < 2) or (not Assigned(ABase)) or (ABase <> FBase) or (ABase.Width <> FBaseWidth)
+    or (ABase.Height <> FBaseHeight) or (AWidth <= 0) or (AHeight <= 0) then
+    Exit;
+  // a widget may go out of the picture: the part that is in it
+  LLeft := AX;
+  if LLeft < 0 then
+    LLeft := 0;
+  LTop := AY;
+  if LTop < 0 then
+    LTop := 0;
+  LRight := AX + AWidth;
+  if LRight > FBaseWidth then
+    LRight := FBaseWidth;
+  LBottom := AY + AHeight;
+  if LBottom > FBaseHeight then
+    LBottom := FBaseHeight;
+  if (LRight <= LLeft) or (LBottom <= LTop) then
+    Exit;
+  if FLayerCount = Length(FLayers) then
+    SetLength(FLayers, FLayerCount + 16);
+  FLayers[FLayerCount].X := LLeft;
+  FLayers[FLayerCount].Y := LTop;
+  FLayers[FLayerCount].Width := LRight - LLeft;
+  FLayers[FLayerCount].Height := LBottom - LTop;
+  FLayers[FLayerCount].Detail := nil;
+  FLayers[FLayerCount].IsInk := True;
+  FLayers[FLayerCount].InkX := LLeft - AX;
+  FLayers[FLayerCount].InkY := LTop - AY;
+  CopyRect(ABase, FLayers[FLayerCount], FLayers[FLayerCount].Before);
+  FInkWidth := AWidth;
+  FInkHeight := AHeight;
+  FOpenInk := True;
+  Result := True;
+end;
+
+procedure TXcomTrueColorComposer.EndInk(ABase: TXcomSurface; const AInk: TXcomInkBuffer; const AUnder: TBytes);
+begin
+  if not FOpenInk then
+    Exit;
+  FOpenInk := False;
+  if (ABase <> FBase) or (AInk.Scale <> FDetailScale) or (AInk.Width <> FInkWidth) or (AInk.Height <> FInkHeight)
+    or (Length(AInk.Pixels) <> FInkWidth * FInkHeight * FDetailScale * FDetailScale)
+    or (Length(AInk.Cells) <> FInkWidth * FInkHeight)
+    or ((Length(AUnder) <> 0) and (Length(AUnder) <> FInkWidth * FInkHeight)) then
+    Exit;
+  CopyRect(ABase, FLayers[FLayerCount], FLayers[FLayerCount].After);
+  FLayers[FLayerCount].Ink := AInk;
+  FLayers[FLayerCount].Under := AUnder;
+  Inc(FLayerCount);
+end;
+
+class function TXcomTrueColorComposer.Mix(AUnder, AColor: Cardinal; AAlpha: Cardinal): Cardinal;
+var
+  LRest: Cardinal;
+begin
+  if AAlpha = 0 then
+    Exit(AUnder);
+  if AAlpha >= 255 then
+    Exit(AColor);
+  LRest := 255 - AAlpha;
+  Result := $FF000000 or
+    (((((AColor shr 16) and $FF) * AAlpha + ((AUnder shr 16) and $FF) * LRest + 127) div 255) shl 16) or
+    (((((AColor shr 8) and $FF) * AAlpha + ((AUnder shr 8) and $FF) * LRest + 127) div 255) shl 8) or
+    (((AColor and $FF) * AAlpha + (AUnder and $FF) * LRest + 127) div 255);
+end;
+
+procedure TXcomTrueColorComposer.ComposeInk(ABase: TXcomSurface; const ALayer: TLayer;
+  const AColors: array of Cardinal);
+const
+  COVERED = 0;
+  FREE_CELL = 1;
+  TEXT_CELL = 2;
+  // a pixel of ink beside no text of the picture is not trusted further than this many pixels of the game
+  NEIGHBOURHOOD = 2;
+var
+  LBase: TBytes;
+  LHasUnder: Boolean;
+  LX: Integer;
+  LY: Integer;
+  LCell: Integer;
+  LInkCell: Integer;
+  LUnder: Byte;
+  LState: Byte;
+  LNearX: Integer;
+  LNearY: Integer;
+  LNear: Boolean;
+  LSubX: Integer;
+  LSubY: Integer;
+  LInkRow: Integer;
+  LFrameRow: Integer;
+  LInkWidth: Integer;
+  LValue: TXcomInkPixel;
+  LColor: Cardinal;
+begin
+  LBase := ABase.Pixels;
+  LHasUnder := Length(ALayer.Under) <> 0;
+  LInkWidth := ALayer.Ink.Width * FDetailScale;
+  if Length(FCellState) < ALayer.Width * ALayer.Height then
+    SetLength(FCellState, ALayer.Width * ALayer.Height);
+  // first what every pixel of the game is now: covered by something drawn later, still the text of the picture
+  // (the widget changed it and it is not what shows without the text), or untouched
+  for LY := 0 to ALayer.Height - 1 do
+    for LX := 0 to ALayer.Width - 1 do
+    begin
+      LCell := LY * ALayer.Width + LX;
+      LState := COVERED;
+      if LBase[(ALayer.Y + LY) * FBaseWidth + ALayer.X + LX] = ALayer.After[LCell] then
+      begin
+        LUnder := ALayer.Before[LCell];
+        if LHasUnder and (ALayer.Under[(ALayer.InkY + LY) * ALayer.Ink.Width + ALayer.InkX + LX] <> 0) then
+          LUnder := ALayer.Under[(ALayer.InkY + LY) * ALayer.Ink.Width + ALayer.InkX + LX];
+        if LUnder <> ALayer.After[LCell] then
+          LState := TEXT_CELL
+        else
+          LState := FREE_CELL;
+      end;
+      FCellState[LCell] := LState;
+    end;
+  for LY := 0 to ALayer.Height - 1 do
+    for LX := 0 to ALayer.Width - 1 do
+    begin
+      LCell := LY * ALayer.Width + LX;
+      LState := FCellState[LCell];
+      if LState = COVERED then
+        Continue;
+      LInkCell := (ALayer.InkY + LY) * ALayer.Ink.Width + ALayer.InkX + LX;
+      if LState = TEXT_CELL then
+      begin
+        // the text of the picture goes away: what the widget shows without it comes back
+        LUnder := ALayer.Before[LCell];
+        if LHasUnder and (ALayer.Under[LInkCell] <> 0) then
+          LUnder := ALayer.Under[LInkCell];
+        LColor := AColors[LUnder];
+        for LSubY := 0 to FDetailScale - 1 do
+        begin
+          LFrameRow := ((ALayer.Y + LY) * FDetailScale + LSubY) * FDisplayWidth + (ALayer.X + LX) * FDetailScale;
+          for LSubX := 0 to FDetailScale - 1 do
+            FFrame[LFrameRow + LSubX] := LColor;
+        end;
+      end;
+      if ALayer.Ink.Cells[LInkCell] = 0 then
+        Continue;
+      if LState = FREE_CELL then
+      begin
+        // ink where the picture has no text (the edge of a character): only beside text that is still seen, so
+        // that something of the same color drawn over the widget is not taken for the widget
+        LNear := False;
+        for LNearY := LY - NEIGHBOURHOOD to LY + NEIGHBOURHOOD do
+          if (LNearY >= 0) and (LNearY < ALayer.Height) and not LNear then
+            for LNearX := LX - NEIGHBOURHOOD to LX + NEIGHBOURHOOD do
+              if (LNearX >= 0) and (LNearX < ALayer.Width)
+                and (FCellState[LNearY * ALayer.Width + LNearX] = TEXT_CELL) then
+              begin
+                LNear := True;
+                Break;
+              end;
+        if not LNear then
+          Continue;
+      end;
+      for LSubY := 0 to FDetailScale - 1 do
+      begin
+        LInkRow := ((ALayer.InkY + LY) * FDetailScale + LSubY) * LInkWidth + (ALayer.InkX + LX) * FDetailScale;
+        LFrameRow := ((ALayer.Y + LY) * FDetailScale + LSubY) * FDisplayWidth + (ALayer.X + LX) * FDetailScale;
+        for LSubX := 0 to FDetailScale - 1 do
+        begin
+          LValue := ALayer.Ink.Pixels[LInkRow + LSubX];
+          if LValue = 0 then
+            Continue;
+          // the outline first, the body over it
+          LColor := Mix(FFrame[LFrameRow + LSubX], AColors[LValue and $FF], (LValue shr 8) and $FF);
+          FFrame[LFrameRow + LSubX] := Mix(LColor, AColors[(LValue shr 16) and $FF], LValue shr 24);
+        end;
+      end;
+    end;
+end;
+
 function TXcomTrueColorComposer.Present(ABase: TXcomSurface; const APalette: TXcomColors): Boolean;
 var
   LColors: array[0..255] of Cardinal;
@@ -273,14 +482,24 @@ begin
         FFrame[LFrameRow + LX] := LColors[LSource[LSourceRow + FColumns[LX]]];
     end;
     for LIndex := 0 to FLayerCount - 1 do
-      ComposeLayer(ABase, FLayers[LIndex], LColors);
+      if FLayers[LIndex].IsInk then
+        ComposeInk(ABase, FLayers[LIndex], LColors)
+      else
+        ComposeLayer(ABase, FLayers[LIndex], LColors);
     Result := FDisplay.PresentTrueColor(FFrame, FDisplayWidth, FDisplayHeight);
   finally
     // the layers are of one frame: the widgets leave them again at every blit
     for LIndex := 0 to FLayerCount - 1 do
+    begin
       FLayers[LIndex].Detail := nil;
+      FLayers[LIndex].Ink := Default(TXcomInkBuffer);
+      FLayers[LIndex].Under := nil;
+    end;
     FLayerCount := 0;
     FOpenLayer := False;
+    FOpenInk := False;
+    // the widgets of the next frame leave their ink only on this picture
+    FBase := ABase;
   end;
 end;
 

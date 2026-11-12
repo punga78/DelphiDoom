@@ -12,7 +12,8 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomSurface.Types, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface,
-  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text;
+  DelphiDoom.XcomEngine.UiSounds.Intf, DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text,
+  DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomUi.WidgetInk;
 
 type
   TXcomTextButton = class;
@@ -36,6 +37,7 @@ type
     FGeoscapeButton: Boolean;
     FToggleCombo: TXcomNotify;
     FUiSounds: IXcomUiSounds;
+    FInk: TXcomWidgetInk;
   protected
     procedure MousePress(AAction: TXcomAction); override;
     procedure MouseRelease(AAction: TXcomAction); override;
@@ -63,6 +65,8 @@ type
     procedure SetGroup(AGroup: TXcomButtonGroup);
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256); override;
     procedure Draw; override;
+    /// <summary>Surface::blit; on the screen the button also leaves the characters of its text at the resolution of the display (issue 184)</summary>
+    procedure Blit(ATarget: TXcomSurface); override;
     /// <summary>
     ///   TextButton::setComboBox: the button opens a combo box; AToggle is what a press calls (nil: not a combo
     ///   box button). The text moves 6 pixels to the left
@@ -83,10 +87,12 @@ begin
   FText.SetAlign(haCenter);
   FText.SetVerticalAlign(vaMiddle);
   FText.SetWordWrap(True);
+  FInk := TXcomWidgetInk.Create;
 end;
 
 destructor TXcomTextButton.Destroy;
 begin
+  FInk.Free;
   FText.Free;
   inherited Destroy;
 end;
@@ -240,7 +246,30 @@ begin
       Invert(Byte(FColor + 3 * LMultiplier));
   end;
   FText.SetInvert(LPressed);
+  // for the text at the resolution of the display: the face of the button is what shows under it
+  FInk.Reset(Width, Height, FText.DetailScale);
+  FInk.SetUnder(Pixels);
   FText.Blit(Self);
+  FInk.Add(FText.Ink, FText.X, FText.Y, FText.Width, FText.Height);
+end;
+
+procedure TXcomTextButton.Blit(ATarget: TXcomSurface);
+begin
+  if Visible and not Hidden then
+  begin
+    // the window changed size after the button was drawn
+    if FText.DetailScale <> FInk.Scale then
+      Redraw := True;
+    if Redraw then
+      Draw;
+    if FInk.BeginLayer(ATarget, X, Y) then
+    begin
+      inherited Blit(ATarget);
+      FInk.EndLayer(ATarget);
+      Exit;
+    end;
+  end;
+  inherited Blit(ATarget);
 end;
 
 procedure TXcomTextButton.MousePress(AAction: TXcomAction);

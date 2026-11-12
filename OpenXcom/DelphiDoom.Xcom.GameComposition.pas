@@ -14,7 +14,8 @@ uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.TrueColor.Intf,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
-  DelphiDoom.Xcom.LoggingBattleAudio, DelphiDoom.Yaml.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf;
+  DelphiDoom.Xcom.LoggingBattleAudio, DelphiDoom.Yaml.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf,
+  DelphiDoom.XcomSurface.FontDetail.Intf;
 
 type
   /// <summary>How the loading of the data runs</summary>
@@ -102,7 +103,7 @@ type
     ///   format of the file), or nil when there is no file or it lists no font
     /// </summary>
     class function CreateFontOverlay(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
-      const AParser: IYamlParser): IXcomFontOverlay; static;
+      const AParser: IYamlParser; const AComposer: IXcomFrameComposer = nil): IXcomFontOverlay; static;
     /// <summary>
     ///   Xcom32 -fontgrid: the characters of the fonts of the options written as the pictures and the Font.dat of a
     ///   mod, in AFolder\Language (to load with -modfolder, or to copy in a mod of OpenXcom). The number of pictures
@@ -149,8 +150,10 @@ const
   SNoFontsToDraw = 'No font to draw: -fontgrid needs a fonts.cfg (in the user folder, or -fonts) that lists a font';
 
 class function TXcomGameComposition.CreateFontOverlay(const ASettings: TXcomGameSettings;
-  const AFiles: IXcomFileSystem; const AParser: IYamlParser): IXcomFontOverlay;
+  const AFiles: IXcomFileSystem; const AParser: IYamlParser;
+  const AComposer: IXcomFrameComposer): IXcomFontOverlay;
 var
+  LInk: IXcomInkLayers;
   LFile: string;
   LFonts: TArray<TXcomFontOverlaySettings>;
 begin
@@ -166,7 +169,13 @@ begin
     Exit;
   end;
   LFonts := TXcomFontSettingsReader.Read(AParser.Load(AFiles.ReadAll(LFile)), ASettings.Log);
-  if Length(LFonts) > 0 then
+  if Length(LFonts) = 0 then
+    Exit;
+  // with a screen that composes in true color the fonts also draw the text at the resolution of the display
+  if Assigned(AComposer) and Supports(AComposer, IXcomInkLayers, LInk) then
+    Result := TXcomRasterFontOverlay.Create(LFonts, TXcomGdiGlyphRasterizerFactory.Create, ASettings.Log,
+      AComposer.DetailLayers, LInk)
+  else
     Result := TXcomRasterFontOverlay.Create(LFonts, TXcomGdiGlyphRasterizerFactory.Create, ASettings.Log);
 end;
 
@@ -371,7 +380,9 @@ begin
     LModLoader := TXcomModGameLoader.Create(LLoaderSettings, LFiles, LParser, TPngProvider.Client);
     // the strategy screens need the ruleset of the mod
     LModLoader.LoadRules := True;
-    LModLoader.FontOverlay := CreateFontOverlay(ASettings, LFiles, LParser);
+    // in a variable: an object made inside the argument of a const interface parameter is not counted
+    LComposer := CreateFrameComposer(ASettings, LOptions, ADevice);
+    LModLoader.FontOverlay := CreateFontOverlay(ASettings, LFiles, LParser, LComposer);
     LLoader := LModLoader;
     case ASettings.LoadMode of
       lmImmediate:
@@ -384,8 +395,6 @@ begin
     LDosPath := ASettings.DosPath;
     if LDosPath = '' then
       LDosPath := DosPathOf(ParamStr(0));
-    // in a variable: an object made inside the argument of a const interface parameter is not counted
-    LComposer := CreateFrameComposer(ASettings, LOptions, ADevice);
     Result := TXcomGame.Create(LOptions, TXcomScreen.Create(LOptions, ADevice, LComposer),
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),

@@ -96,6 +96,15 @@ type
     /// <summary>The limits they were compared with</summary>
     HeightLimit: Integer;
     WidthLimit: Integer;
+    /// <summary>
+    ///   What the same text drawn at another scale needs to fall on the same cells: the first picture that was
+    ///   added, the row of the rasterizer that is the first row of a cell, the row of its baseline, and whether
+    ///   the characters got the outline
+    /// </summary>
+    FirstImage: Integer;
+    LineTop: Integer;
+    Baseline: Integer;
+    Outlined: Boolean;
   end;
 
 implementation
