@@ -158,7 +158,7 @@ DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, 
   DelphiDoom.XcomEngine.FontRuleReader, DelphiDoom.XcomEngine.FontGridGenerator, DelphiDoom.Png.PaletteEncoder,
   DelphiDoom.Zlib.Provider, DelphiDoom.XcomEngine.FontChoices, DelphiDoom.XcomEngine.FontReloader,
   DelphiDoom.XcomEngine.ExtraOptionSet, DelphiDoom.XcomEngine.ExtraOptions.Intf,
-  DelphiDoom.Xcom.Win.GdiSystemFonts;
+  DelphiDoom.Xcom.Win.GdiSystemFonts, DelphiDoom.XcomEngine.SystemFonts.Intf;
 
 const
   KEY_FPS = 288;
@@ -170,24 +170,28 @@ class function TXcomGameComposition.CreateFontOverlay(const ASettings: TXcomGame
   const AComposer: IXcomFrameComposer): IXcomFontOverlay;
 var
   LChoices: IXcomFontSettingsSource;
+  LRasterizers: IXcomGlyphRasterizerFactory;
 begin
   LChoices := CreateFontChoices(ASettings, AFiles, AParser);
-  Result := MakeFontOverlay(LChoices.Settings, ASettings.Log, TXcomGdiGlyphRasterizerFactory.Create, AComposer);
+  LRasterizers := TXcomGdiGlyphRasterizerFactory.Create;
+  Result := MakeFontOverlay(LChoices.Settings, ASettings.Log, LRasterizers, AComposer);
 end;
 
 class function TXcomGameComposition.CreateFontChoices(const ASettings: TXcomGameSettings;
   const AFiles: IXcomFileSystem; const AParser: IYamlParser): IXcomFontSettingsSource;
 var
   LPath: string;
+  LFonts: IXcomSystemFonts;
 begin
+  // in a variable: an object made inside the argument of a const interface parameter is not counted
+  LFonts := TXcomGdiSystemFonts.Create;
   LPath := '';
   if ASettings.UserFolder <> '' then
     LPath := TPath.Combine(ASettings.UserFolder, FONTS_FILE);
   // a file that was asked for by name and is not there is said; the default one is simply optional
   if (ASettings.FontsFile <> '') and not AFiles.FileExists(ASettings.FontsFile) and Assigned(ASettings.Log) then
     ASettings.Log.Write('WARN', 'fonts: ' + ASettings.FontsFile + ' not found: the fonts are the pictures of the game');
-  Result := TXcomFontChoices.Create(AFiles, AParser, LPath, ASettings.FontsFile, TXcomGdiSystemFonts.Create,
-    ASettings.Log);
+  Result := TXcomFontChoices.Create(AFiles, AParser, LPath, ASettings.FontsFile, LFonts, ASettings.Log);
 end;
 
 class function TXcomGameComposition.MakeFontOverlay(const ASettings: TArray<TXcomFontOverlaySettings>;

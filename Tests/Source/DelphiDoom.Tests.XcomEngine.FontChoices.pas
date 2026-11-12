@@ -339,11 +339,14 @@ begin
 end;
 
 function TTestXcomFontChoices.Choices(const AInstalled: TArray<string>; const AHand, ALocked: string): IXcomExtraOptions;
+var
+  LFonts: IXcomSystemFonts;
 begin
   if AHand <> '' then
     FFiles.Put(USER_FILE, AHand);
-  Result := TXcomFontChoices.Create(FFilesRef, TYamlFactory.CreateParser, USER_FILE, ALocked,
-    TFakeSystemFonts.Create(AInstalled), FLogRef);
+  // in a variable: an object made inside the argument of a const interface parameter is not counted
+  LFonts := TFakeSystemFonts.Create(AInstalled);
+  Result := TXcomFontChoices.Create(FFilesRef, TYamlFactory.CreateParser, USER_FILE, ALocked, LFonts, FLogRef);
 end;
 
 function TTestXcomFontChoices.Written: string;
@@ -746,12 +749,14 @@ end;
 { TTestXcomExtraOptionSet }
 
 procedure TTestXcomExtraOptionSet.Setup;
+var
+  LFonts: IXcomSystemFonts;
 begin
   FFiles := TFakeFileSystem.Create;
   FFilesRef := FFiles;
   FToggles := TFakeToggles.Create(2);
-  FChoices := TXcomFontChoices.Create(FFilesRef, TYamlFactory.CreateParser, '', '',
-    TFakeSystemFonts.Create(['Tahoma']), nil);
+  LFonts := TFakeSystemFonts.Create(['Tahoma']);
+  FChoices := TXcomFontChoices.Create(FFilesRef, TYamlFactory.CreateParser, '', '', LFonts, nil);
   FSet := TXcomExtraOptionSet.Create([FToggles, FChoices]);
 end;
 
