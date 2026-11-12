@@ -132,7 +132,7 @@ procedure W_Configure(const AServices: IEngineWadServices);
 //
 // W_ConfigureConverter
 // Gives the unit the converter of the data container of the game (Radix:
-// RADIX.DAT); a game whose data are WADs does not call it
+// RADIX.DAT, Speed: SPEEDH.JCL); a game whose data are WADs does not call it
 //
 //==============================================================================
 procedure W_ConfigureConverter(const AConverter: IEngineWadConverter);
@@ -548,7 +548,8 @@ begin
     exit;
   end;
 
-  if Assigned(wad_converter) and (strupper(fext(filename)) = '.DAT') and
+  if Assigned(wad_converter) and
+    ((strupper(fext(filename)) = '.DAT') or (strupper(fext(filename)) = '.JCL')) and
     wad_converter.TryConvert(filename, converted) then
   begin
     // the data of the game are not a WAD: the translated lumps are one, in memory

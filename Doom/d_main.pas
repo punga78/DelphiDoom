@@ -2091,6 +2091,16 @@ begin
     SUC_SetGameMode('Radix - beyond the void');
   end;
 {$ENDIF}
+{$IFDEF SPEED}
+  // the lumps of Speed Haste come from SPEEDH.JCL (Libs\Speed): SPEEDINF says so. The edition
+  // (shareware or registered) is told by the circuits: not done yet, the shareware rules are used
+  if (gamemode = indetermined) and (W_CheckNumForName('SPEEDINF') <> -1) then
+  begin
+    gamemission := doom;
+    gamemode := shareware;
+    SUC_SetGameMode('Speed Haste');
+  end;
+{$ENDIF}
   if gamemode = indetermined then
   begin
     if W_CheckNumForName('e4m1') <> -1 then

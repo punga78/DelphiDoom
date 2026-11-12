@@ -69,7 +69,12 @@ uses
   DelphiDoom.Speed.Sim.LogSink in '..\Speed\DelphiDoom.Speed.Sim.LogSink.pas',
   DelphiDoom.Speed.RaceSimulation in '..\Speed\DelphiDoom.Speed.RaceSimulation.pas',
   DelphiDoom.Speed.Composition in '..\Speed\DelphiDoom.Speed.Composition.pas',
-  DelphiDoom.Tests.Speed.RaceSimulation in 'Source\DelphiDoom.Tests.Speed.RaceSimulation.pas';
+  DelphiDoom.Tests.Speed.RaceSimulation in 'Source\DelphiDoom.Tests.Speed.RaceSimulation.pas',
+  DelphiDoom.Speed.DoomFontAliases in '..\Libs\Speed\DelphiDoom.Speed.DoomFontAliases.pas',
+  DelphiDoom.Engine.Wad.Converter.Intf in '..\Base\DelphiDoom.Engine.Wad.Converter.Intf.pas',
+  DelphiDoom.Engine.Speed.DataConverter in '..\Base\DelphiDoom.Engine.Speed.DataConverter.pas',
+  DelphiDoom.Tests.Speed.DoomFontAliases in 'Source\DelphiDoom.Tests.Speed.DoomFontAliases.pas',
+  DelphiDoom.Tests.Speed.EngineDataConverter in 'Source\DelphiDoom.Tests.Speed.EngineDataConverter.pas';
 
 var
   Runner: ITestRunner;
