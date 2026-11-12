@@ -39,6 +39,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Platform.FolderFiles.Factory,
   DelphiDoom.Xcom.FolderFiles, DelphiDoom.Xcom.ScrDecoder, DelphiDoom.Xcom.SpkDecoder, DelphiDoom.Xcom.BdyDecoder,
   DelphiDoom.Xcom.PckDecoder, DelphiDoom.Xcom.DatDecoder, DelphiDoom.Xcom.PaletteReader, DelphiDoom.Xcom.CatArchive,
   DelphiDoom.Xcom.MapReader, DelphiDoom.Xcom.RouteReader, DelphiDoom.Xcom.McdReader, DelphiDoom.Xcom.WorldReader,
@@ -48,7 +49,7 @@ uses
 
 class function TXcomFactory.CreateFolderFiles(const AFolders: array of string): IXcomDataFiles;
 begin
-  Result := TXcomFolderFiles.Create(AFolders);
+  Result := TXcomFolderFiles.Create(TFolderFilesFactory.CreateFolderFiles(AFolders));
 end;
 
 class function TXcomFactory.CreateScrDecoder: IXcomImageDecoder;

@@ -35,6 +35,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Platform.FolderFiles.Factory,
   DelphiDoom.Greed.LumpFixes, DelphiDoom.Greed.BloArchive, DelphiDoom.Greed.FolderFiles,
   DelphiDoom.Greed.MapReader, DelphiDoom.Greed.MapLoader, DelphiDoom.Greed.LumpClassifier,
   DelphiDoom.Greed.MapRenderer, DelphiDoom.Greed.FlatDecoder, DelphiDoom.Greed.WallDecoder;
@@ -63,7 +64,8 @@ end;
 
 class function TGreedFactory.CreateFolderFiles(const AFolders: array of string): IGreedExternalFiles;
 begin
-  Result := TGreedFolderFiles.Create(AFolders);
+  // the names come from the lumps of the archive: file names only
+  Result := TGreedFolderFiles.Create(TFolderFilesFactory.CreateFileNamesOnly(AFolders));
 end;
 
 class function TGreedFactory.CreateMapReader: IGreedMapReader;

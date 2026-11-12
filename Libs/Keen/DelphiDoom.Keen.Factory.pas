@@ -64,6 +64,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Platform.FolderFiles.Factory,
   DelphiDoom.Keen.Huffman, DelphiDoom.Keen.Rlew, DelphiDoom.Keen.FolderFiles, DelphiDoom.Keen.OffsetTable,
   DelphiDoom.Keen.GraphicsLayout, DelphiDoom.Keen.ExplicitLayout, DelphiDoom.Keen.ChunkSource,
   DelphiDoom.Keen.MapSource, DelphiDoom.Keen.Graphics, DelphiDoom.Keen.MapRenderer,
@@ -85,7 +86,7 @@ end;
 
 class function TKeenFactory.CreateFolderFiles(const AFolders: array of string): IKeenDataFiles;
 begin
-  Result := TKeenFolderFiles.Create(AFolders);
+  Result := TKeenFolderFiles.Create(TFolderFilesFactory.CreateFolderFiles(AFolders));
 end;
 
 class function TKeenFactory.CreateOffsetTable(const ABytes: TBytes;
