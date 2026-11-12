@@ -145,7 +145,9 @@ uses
   DelphiDoom.Tests.Greed.SpriteRunner in 'Source\DelphiDoom.Tests.Greed.SpriteRunner.pas',
   DelphiDoom.Tests.Greed.SpriteLogic in 'Source\DelphiDoom.Tests.Greed.SpriteLogic.pas',
   DelphiDoom.Tests.Greed.EventScenarios in 'Source\DelphiDoom.Tests.Greed.EventScenarios.pas',
+  DelphiDoom.Tests.Greed.SessionScenarios in 'Source\DelphiDoom.Tests.Greed.SessionScenarios.pas',
   DelphiDoom.Tests.Greed.Events in 'Source\DelphiDoom.Tests.Greed.Events.pas',
+  DelphiDoom.Tests.Greed.MapSession in 'Source\DelphiDoom.Tests.Greed.MapSession.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
   DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
 

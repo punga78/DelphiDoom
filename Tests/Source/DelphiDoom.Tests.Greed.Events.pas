@@ -50,6 +50,8 @@ type
     Script: TBytes;
     /// <summary>A sky lump that is shorter than a picture, to try what the library does with it</summary>
     ShortSky: Boolean;
+    /// <summary>Every name is a lump (TSessionScenarios.LumpNumber), for the scenarios of the life of a map</summary>
+    Lenient: Boolean;
     function GetLumpCount: Integer;
     function GetLumpInfo(AIndex: Integer): TGreedLumpInfo;
     function GetLumpName(AIndex: Integer): string;
@@ -165,7 +167,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Tests.Greed.RealData, DelphiDoom.Tests.Shared.Skip;
+  DelphiDoom.Tests.Greed.RealData, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.Greed.SessionScenarios;
 
 const
   GOLDEN_NAME = 'events.golden.txt';
@@ -255,12 +257,15 @@ end;
 
 function TEventFakeArchive.IndexOf(const AName: string): Integer;
 begin
-  Result := TEventScenarios.LumpNumber(AName);
+  if Lenient then
+    Result := TSessionScenarios.LumpNumber(AName)
+  else
+    Result := TEventScenarios.LumpNumber(AName);
 end;
 
 function TEventFakeArchive.RequireIndexOf(const AName: string): Integer;
 begin
-  Result := TEventScenarios.LumpNumber(AName);
+  Result := IndexOf(AName);
   if Result < 0 then
     raise EGreedNotFoundException.CreateFmt(SGreedLumpNotFound, [AName]);
 end;

@@ -48,7 +48,7 @@ type
   ///   32768 bytes leaves zeros (the original read what follows in the file); MS_Error is EGreedDataException for
   ///   the script and EGreedException for the processes
   /// </summary>
-  TGreedEvents = class(TInterfacedObject, IGreedEventRunner)
+  TGreedEvents = class(TInterfacedObject, IGreedEventRunner, IGreedMapScript)
   strict private
     FState: TGreedGameState;
     FArchive: IGreedArchive;

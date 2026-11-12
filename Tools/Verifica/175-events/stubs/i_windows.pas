@@ -3,5 +3,12 @@ unit i_windows;
 interface
 var
   cdr_drivenum: integer = 0;
+  ClockValue: LongWord = 0;
+// clock of i_windows.pas: the program sets its value
+function clock: LongWord;
 implementation
+function clock: LongWord;
+begin
+  Result := ClockValue;
+end;
 end.

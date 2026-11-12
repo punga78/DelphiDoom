@@ -1,0 +1,74 @@
+var
+  // oldgoalitem of display.pas
+  oldgoalitem: integer;
+
+procedure SaveGame(const n: integer);
+procedure LoadGame(const n: integer);
+procedure respawnplayer;
+procedure newmap(const map: integer; const activate: integer);
+procedure resetengine;
+procedure ActivateSpritesFromMap;
+procedure LoadNewMap(const lump: integer);
+
+implementation
+
+uses
+  g_delphi,
+  constant,
+  d_disk,
+  d_font,
+  d_ints,
+  d_misc,
+  event,
+  i_windows,
+  menu,
+  modplay,
+  net,
+  raven,
+  r_conten,
+  r_public,
+  r_render,
+  spawn,
+  calllog,
+  DelphiDoom.Tests.Greed.EventScenarios;
+
+procedure selectsong(const asongmap: integer);
+begin
+  Calls.AddCall(EVENT_CALL_SONG, [asongmap]);
+end;
+
+procedure MissionBriefing(const map: integer);
+begin
+  Calls.AddCall(EVENT_CALL_BRIEFING, [map]);
+end;
+
+procedure EndGame1;
+begin
+  Calls.AddCall(EVENT_CALL_END_GAME, [1]);
+end;
+
+procedure EndGame2;
+begin
+  Calls.AddCall(EVENT_CALL_END_GAME, [2]);
+end;
+
+procedure EndGame3;
+begin
+  Calls.AddCall(EVENT_CALL_END_GAME, [3]);
+end;
+
+procedure LoadTextures;
+begin
+  Calls.AddCall(EVENT_CALL_TEXTURES, []);
+end;
+
+procedure loadweapon(const n: integer);
+begin
+  Calls.AddCall(EVENT_CALL_LOAD_WEAPON, [n]);
+end;
+
+procedure ResetMouse;
+begin
+  Calls.AddCall(EVENT_CALL_RESET_MOUSE, []);
+end;
+

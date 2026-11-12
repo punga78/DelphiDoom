@@ -64,6 +64,16 @@ type
     procedure UpdateWait;
   end;
 
+  /// <summary>LoadScript of event.pas, for who loads a map (TGreedEvents)</summary>
+  IGreedMapScript = interface
+    ['{3F7A1D58-92C4-4E0B-B6A3-08D5C1E97F24}']
+    /// <summary>
+    ///   LoadScript(lump, newgame): ALump is the lump of the map (the lump "map" + the number of the map + 1);
+    ///   ANewGame is false when a saved game is loaded
+    /// </summary>
+    procedure LoadScript(ALump: Integer; ANewGame: Boolean);
+  end;
+
 implementation
 
 end.

@@ -20,7 +20,7 @@ unit DelphiDoom.Tests.Greed.EventScenarios;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, System.Classes;
 
 const
   EVENT_TILES = 4096;
@@ -43,6 +43,16 @@ const
   EVENT_CALL_FLI = 5;
   EVENT_CALL_WAIT = 6;
   EVENT_CALL_SCRIPT = 7;
+  // the calls of the life of a map (utils.pas), for the scenarios of TGreedMapSession
+  EVENT_CALL_START_WAIT = 8;
+  EVENT_CALL_END_WAIT = 9;
+  EVENT_CALL_SONG = 10;
+  EVENT_CALL_STOP_MUSIC = 11;
+  EVENT_CALL_BRIEFING = 12;
+  EVENT_CALL_END_GAME = 13;
+  EVENT_CALL_TEXTURES = 14;
+  EVENT_CALL_RESET_MOUSE = 15;
+  EVENT_CALL_LOAD_WEAPON = 16;
 
   // ---- the lumps of the archive of the scenarios ----
 
@@ -51,6 +61,8 @@ const
   EVENT_LUMP_FIRST_SKY = 100;
   EVENT_LUMP_LAST_SKY = 103;
   EVENT_SKY_LUMP_BYTES = 8 + 32768;
+  EVENT_LUMP_WALLS = 500;
+  EVENT_LUMP_FIRST_DOOR = 520;
 
   // ---- what the state has before a script is loaded: LoadScript must clear it ----
 
@@ -78,6 +90,8 @@ type
     procedure AddBoolean(AValue: Boolean);
     procedure AddBytes(const ABytes; ACount: Integer);
     procedure AddCall(AKind: Integer; const AArguments: array of Integer);
+    /// <summary>Writes the value so far in EventHashTrace, to look for the first thing that differs</summary>
+    procedure Mark(const AName: string);
   end;
 
   TEventMap = record
@@ -135,6 +149,10 @@ type
     class function FullLine(AMap, AVariant: Integer; ALoadFailed: Boolean; AZones, AProcesses, AEvents: Integer;
       ARunFailed: Boolean; ALoadHash, AFinalHash: Cardinal): string; static;
   end;
+
+var
+  /// <summary>Where TEventHash.Mark writes; nil (nothing is written) unless a difference is being looked for</summary>
+  EventHashTrace: TStrings = nil;
 
 implementation
 
@@ -225,6 +243,12 @@ begin
   Add(AKind);
   for LIndex := 0 to High(AArguments) do
     Add(AArguments[LIndex]);
+end;
+
+procedure TEventHash.Mark(const AName: string);
+begin
+  if Assigned(EventHashTrace) then
+    EventHashTrace.Add(AName + ' ' + IntToHex(Value, 8));
 end;
 
 { the scripts }
@@ -678,6 +702,11 @@ begin
     Result := 320
   else if LName = 'WIZ' then
     Result := 380
+  else if LName = 'STARTWALLS' then
+    Result := EVENT_LUMP_WALLS
+  else if (Length(LName) = 6) and (Copy(LName, 1, 5) = 'DOOR_') and (LName[6] >= '1') and (LName[6] <= '7') then
+    // the pictures of the doors, some lumps after the first wall
+    Result := EVENT_LUMP_FIRST_DOOR + (Ord(LName[6]) - Ord('1')) * 3
   else
     Result := -1;
 end;

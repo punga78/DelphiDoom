@@ -12,8 +12,10 @@ begin
 end;
 procedure StartWait;
 begin
+  Calls.AddCall(EVENT_CALL_START_WAIT, []);
 end;
 procedure EndWait;
 begin
+  Calls.AddCall(EVENT_CALL_END_WAIT, []);
 end;
 end.

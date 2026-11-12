@@ -25,5 +25,6 @@ var
   mapflags: packed array[0..MAPROWS * MAPCOLS - 1] of byte;
   spritelump, walllump, flatlump: integer;
   backdrop: packed array[0..256 * 256 - 1] of byte;
+  fxtimecount: integer;
 implementation
 end.
