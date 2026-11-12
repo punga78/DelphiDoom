@@ -1,0 +1,34 @@
+unit r_public;
+// made by Compila.ps1: the functions of the world of r_public.pas of xGreed, cut out of the original file as they
+// are (RF_ClearWorld .. RF_GetCeilingZ), after the declarations they need
+interface
+uses
+  g_delphi,
+  r_public_h,
+  r_refdef;
+var
+  scrollmin, scrollmax, bloodcount, metalcount: integer;
+const
+  MAXBLOODSPRITES = 200;
+function FIXEDMUL(const a, b: fixed_t): fixed_t;
+function RF_GetSprite: Pscaleobj_t;
+function RF_GetElevator: Pelevobj_t;
+procedure RF_RemoveElevator(const e: Pelevobj_t);
+function RF_GetFloorZ(const x, y: fixed_t): fixed_t;
+function RF_GetCeilingZ(const x, y: fixed_t): fixed_t;
+function RF_GetSpawnArea: Pspawnarea_t;
+procedure RF_RemoveSprite(const spr: Pscaleobj_t);
+procedure RF_ClearWorld;
+function RF_GetDoor(const tilex, tiley: integer): Pdoorobj_t;
+implementation
+uses
+  d_misc,
+  r_conten,
+  r_render;
+
+function FIXEDMUL(const a, b: fixed_t): fixed_t; assembler;
+asm
+  imul b
+  shrd eax, edx, 16
+end;
+

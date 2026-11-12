@@ -35,7 +35,8 @@ type
     ///   of the game, G11, is not ported). With AShotPath the last picture is saved as a PNG. Returns the tics played
     /// </summary>
     class function Play(const AArchive: IGreedArchive; const AFolders: array of string; AMapNumber, AMaxTics: Integer;
-      AAutoPlay: Boolean; const AShotPath: string; AFirstPerson: Boolean = True): Integer; static;
+      AAutoPlay: Boolean; const AShotPath: string; AFirstPerson: Boolean = True; AMusicVolume: Integer = -1;
+      ASfxVolume: Integer = -1; AAudioStatistics: Boolean = False): Integer; static;
   end;
 
 implementation
@@ -50,7 +51,10 @@ uses
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory,
   DelphiDoom.Greed.Door.Intf,
   DelphiDoom.Greed.DoorRules, DelphiDoom.Greed.DoorSpawner, DelphiDoom.Greed.Random, DelphiDoom.Greed.Render.Types,
-  DelphiDoom.Greed.Render.Assets.Intf, DelphiDoom.Greed.Render.ArchiveAssets, DelphiDoom.Greed.Render.FrameRenderer;
+  DelphiDoom.Greed.Render.Assets.Intf, DelphiDoom.Greed.Render.ArchiveAssets, DelphiDoom.Greed.Render.FrameRenderer,
+  DelphiDoom.Clock.Intf, DelphiDoom.Logging.Factory, DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.SoundEffects,
+  DelphiDoom.Greed.SoundVolumes, DelphiDoom.Greed.Music, DelphiDoom.Greed.SongSelector, DelphiDoom.Greed.PcmMixer,
+  DelphiDoom.Greed.HostAudio, DelphiDoom.Greed.TrackerSongDecoder, DelphiDoom.Greed.Game.Constants;
 
 const
   WINDOW_TITLE = 'Greed32';
@@ -65,10 +69,19 @@ type
     function PictureOf(ADoorKind: Integer): Integer;
   end;
 
-  /// <summary>The time of the game for the renderer and the doors: the tics of the loop (set when it is made)</summary>
-  TGreedLoopTime = class(TInterfacedObject, IGreedRenderClock, IGreedDoorHost)
+  /// <summary>
+  ///   The time of the game for the renderer and the doors: the tics of the loop (set when it is made); where the
+  ///   player hears from; the sound of the doors
+  /// </summary>
+  TGreedLoopTime = class(TInterfacedObject, IGreedRenderClock, IGreedDoorHost, IGreedListener, IGreedTics)
   public
     Loop: TGreedGameLoop;
+    Clock: IClock;
+    Effects: IGreedSoundEffects;
+    function GetX: TGreedFixed;
+    function GetY: TGreedFixed;
+    function GetAngle: Integer;
+    procedure Wait(ATics: Integer);
     function GetTimeCount: Integer;
     function GetSpriteMoveTime: Integer;
     procedure PlayDoorSound(AX, AY: TGreedFixed);
@@ -104,7 +117,39 @@ end;
 
 procedure TGreedLoopTime.PlayDoorSound(AX, AY: TGreedFixed);
 begin
-  // the sound device is not connected to the game
+  if Assigned(Effects) then
+    Effects.Start(GREED_SN_DOOR, 0, AX, AY);
+end;
+
+function TGreedLoopTime.GetX: TGreedFixed;
+begin
+  if Assigned(Loop) then
+    Result := Loop.Player.X
+  else
+    Result := 0;
+end;
+
+function TGreedLoopTime.GetY: TGreedFixed;
+begin
+  if Assigned(Loop) then
+    Result := Loop.Player.Y
+  else
+    Result := 0;
+end;
+
+function TGreedLoopTime.GetAngle: Integer;
+begin
+  if Assigned(Loop) then
+    Result := Loop.Player.Angle
+  else
+    Result := 0;
+end;
+
+procedure TGreedLoopTime.Wait(ATics: Integer);
+begin
+  // the fade of the music at the end: the tics are 70 a second
+  if Assigned(Clock) then
+    Clock.Wait(ATics * 1000 div GREED_LOOP_TIC_RATE);
 end;
 
 { TGreedComposition }
@@ -158,7 +203,8 @@ begin
 end;
 
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
-  AMapNumber, AMaxTics: Integer; AAutoPlay: Boolean; const AShotPath: string; AFirstPerson: Boolean): Integer;
+  AMapNumber, AMaxTics: Integer; AAutoPlay: Boolean; const AShotPath: string; AFirstPerson: Boolean;
+  AMusicVolume, ASfxVolume: Integer; AAudioStatistics: Boolean): Integer;
 var
   LWorld: IGreedWorld;
   LPalette: TBytes;
@@ -185,6 +231,18 @@ var
   LScale: Integer;
   LKeys: IGameHostKeyState;
   LWindow: TGameHostWinWindow;
+  LClock: IClock;
+  LMixer: IGreedPcmRenderer;
+  LDevice: IGreedSoundDevice;
+  LAudio: TGreedHostAudio;
+  LAudioSource: IInterface;
+  LVolumes: IGreedSoundVolumes;
+  LMusic: TGreedMusic;
+  LMusicIntf: IGreedMusic;
+  LSong: TGreedSong;
+  LFiles: IGreedExternalFiles;
+  LStatistics: TGreedMixerStatistics;
+  LDeviceOpen: Boolean;
 begin
   LWorld := TGreedWorld.Create;
   LMap := TGreedFactory.CreateMapLoader(AArchive, TGreedFactory.CreateFolderFiles(AFolders)).Load(AMapNumber);
@@ -227,6 +285,32 @@ begin
     LMovement := TGreedPlayerMovement.Create(LWorld, TGreedMovementHost.Create);
     LTime := TGreedLoopTime.Create;
     LTimeIntf := LTime;
+    LClock := TClockFactory.CreateClock(nil);
+    LTime.Clock := LClock;
+    // the sound: the mixer of the game on the PCM output of the host; without a device the game is silent
+    LFiles := TGreedFactory.CreateFolderFiles(AFolders);
+    LDevice := TGreedPcmMixer.Create(GREED_PCM_DEFAULT_RATE, TGreedTrackerSongDecoder.Create,
+      TLogFactory.CreateLog(nil, nil));
+    LMixer := LDevice as IGreedPcmRenderer;
+    LDevice.Initialize;
+    LAudio := TGreedHostAudio.Create(TGameHostFactory.CreatePcmOutput, LMixer);
+    LAudioSource := LAudio;
+    LDeviceOpen := LAudio.Open;
+    LVolumes := TGreedSoundVolumes.Create;
+    if (AMusicVolume >= 0) or (ASfxVolume >= 0) then
+    begin
+      if AMusicVolume < 0 then
+        AMusicVolume := LVolumes.MusicVolume;
+      if ASfxVolume < 0 then
+        ASfxVolume := LVolumes.SfxVolume;
+      LVolumes.SetVolumes(AMusicVolume, ASfxVolume);
+    end;
+    LTime.Effects := TGreedSoundEffects.Create(LDevice, AArchive, LTime, LVolumes);
+    LMusic := TGreedMusic.Create(LDevice, LFiles, LVolumes, LTime, False);
+    LMusicIntf := LMusic;
+    // the maps of a demo are files next to the archive: it has its own five songs
+    LSong := TGreedSongSelector.Select(AMapNumber, Length(LMap.Trailer) = 0, False);
+    LMusicIntf.Play(LSong.FileName, LSong.Pattern);
     LDoorRules := TGreedDoorRules.Create(LWorld, LTime);
     TGreedDoorSpawner.SpawnAll(LWorld, TGreedArchiveDoorPictures.Create(AArchive), 0);
     if AFirstPerson then
@@ -250,7 +334,7 @@ begin
       LRenderer := TGreedTopDownRenderer.Create(NearestIndex(LPalette, 60, 60, 80), NearestIndex(LPalette, 240, 240, 240),
         NearestIndex(LPalette, 230, 200, 40), NearestIndex(LPalette, 240, 40, 40));
     LLoop := TGreedGameLoop.Create(LWorld, LMovement, LPool, LRenderer, LPresenter, LInput,
-      TClockFactory.CreateClock(nil), LColors, LFrameWidth, LFrameHeight);
+      LClock, LColors, LFrameWidth, LFrameHeight);
     try
       LTime.Loop := LLoop;
       LLoop.Doors := LDoorRules;
@@ -267,6 +351,19 @@ begin
         TFile.WriteAllBytes(AShotPath, LEncoder.Encode(LImage, LPalette, False));
       end;
     finally
+      LStatistics := LMixer.Statistics;
+      if AAudioStatistics then
+        Writeln(Format('Audio: device %s, buffers played %d, frames %d (with sound %d, with music %d), peak %d, ' +
+          'clipped %d, effects started %d (refused %d, ended %d), songs started %d (refused %d)',
+          [BoolToStr(LDeviceOpen, True), LAudio.CompletedBuffers, LStatistics.FramesRendered,
+          LStatistics.FramesWithSound, LStatistics.FramesWithMusic, LStatistics.Peak, LStatistics.ClippedSamples,
+          LStatistics.EffectsStarted, LStatistics.EffectsRejected, LStatistics.EffectsEnded,
+          LStatistics.SongsStarted, LStatistics.SongsRejected]));
+      // the output asks the mixer from its thread: it is closed before the sounds go
+      LAudio.Close;
+      LTime.Effects.StopAll;
+      LTime.Effects := nil;
+      LDevice.Shutdown;
       LTime.Loop := nil;
       LLoop.Free;
     end;

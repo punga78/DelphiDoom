@@ -65,8 +65,11 @@ begin
   if (LName = '') or not Assigned(FFiles) or not FFiles.Exists(LName) then
     raise EGreedNotFoundException.CreateFmt(SGreedMapEmpty, [AMapNumber, LName]);
   LBytes := FFiles.ReadAll(LName);
-  // a .LAY file is the 18 planes and nothing else; another size is another layout (the .LVL of the demo 1.016 has
-  // 143360 bytes) that this reader does not know, and it would give a map of garbage
+  // a .LAY file is the 18 planes and nothing else; another size is another layout that this reader does not know,
+  // and it would give a map of garbage. The .LVL of the demo 1.016 (August 1995) has 35 planes: the code of the
+  // game (xGreed, from the sources of the release) reads 18 and stops before with that demo (MCURSOR not found)
+  if Length(LBytes) = GREED_MAP_BYTES_DEMO_1016 then
+    raise EGreedDataException.CreateFmt(SGreedMapOldDemo, [LName, Length(LBytes), GREED_MAP_BYTES]);
   if Length(LBytes) <> GREED_MAP_BYTES then
     raise EGreedDataException.CreateFmt(SGreedMapFileSize, [LName, Length(LBytes), GREED_MAP_BYTES]);
   Result := FReader.Read(LBytes);

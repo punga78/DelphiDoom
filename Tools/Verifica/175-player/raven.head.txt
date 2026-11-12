@@ -1,0 +1,12 @@
+unit raven;
+// made by Compila.ps1: the routines of raven.pas of xGreed that control the player and its weapons, cut out of the
+// original file as they are, after the variables of its interface (cut out too). H_WeaponView and H_WeaponMode are
+// the weapon part of UpdateView and the weapon loop at the end of PlayLoop, cut out and wrapped in a procedure
+interface
+uses
+  g_delphi,
+  d_ints_h,
+  d_video,
+  protos_h,
+  r_public_h;
+

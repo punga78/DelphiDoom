@@ -1,0 +1,8 @@
+unit calllog;
+// the calls that the original code makes to the parts of the game that are not in this program
+interface
+uses DelphiDoom.Tests.Greed.PlayerScenarios;
+var
+  Calls: TPlayerHash;
+implementation
+end.
