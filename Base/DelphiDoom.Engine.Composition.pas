@@ -22,6 +22,7 @@ implementation
 uses
 {$IFDEF RADIX}
   DelphiDoom.Engine.Radix.Composition,
+  DelphiDoom.Engine.Level.RadixRules,
 {$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
@@ -719,7 +720,11 @@ begin
     AShutdown);
 {$ENDIF}
 {$IF DEFINED(DOOM)}
+{$IFDEF RADIX}
+  Result := TRadixLevelRules.Create(
+{$ELSE}
   Result := TDoomLevelRules.Create(
+{$ENDIF}
     TEngineSwitchListLoader.Create(TDefinitionsFactory.CreateSwitchLumpReader(False),
       TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
       TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)),

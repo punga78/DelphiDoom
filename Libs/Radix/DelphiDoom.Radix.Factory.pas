@@ -33,6 +33,8 @@ type
     class function CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator; overload; static;
     /// <summary>An empty table of the names of RADIX.DAT (the lines of RADIXINF are added to it)</summary>
     class function CreateLumpAliases: IRadixLumpAliases; static;
+    /// <summary>The reader of the lump RMAP of a level (slopes, positions and flags of sectors and walls)</summary>
+    class function CreateMapInfoReader: IRadixMapInfoReader; static;
   end;
 
 implementation
@@ -47,9 +49,14 @@ uses
   DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
   DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
   DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator,
-  DelphiDoom.Radix.LumpAliases;
+  DelphiDoom.Radix.LumpAliases, DelphiDoom.Radix.MapInfo.Reader;
 
 { TRadixFactory }
+
+class function TRadixFactory.CreateMapInfoReader: IRadixMapInfoReader;
+begin
+  Result := TRadixMapInfoReader.Create;
+end;
 
 class function TRadixFactory.CreateLumpAliases: IRadixLumpAliases;
 begin

@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types;
+  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.MapInfo.Types;
 
 type
   /// <summary>
@@ -89,6 +89,16 @@ type
     /// <summary>The lump of a name of RADIX.DAT, without case; false when the table does not have it</summary>
     function TryResolve(const ARadixName: string; out ALumpName: string): Boolean;
     property Count: Integer read GetCount;
+  end;
+
+  /// <summary>
+  ///   Reads the lump RMAP that the translation writes for every level: what a sector and a wall
+  ///   of Radix have more than those of Doom (Rad-X: RX_LoadRadixMapInfo)
+  /// </summary>
+  IRadixMapInfoReader = interface
+    ['{B81F3D06-2A9C-4E57-9D40-6C3E1F7A85B9}']
+    /// <summary>ERadixException when a statement has no number where it wants one</summary>
+    function Read(const AText: string): TRadixMapInfo;
   end;
 
 implementation

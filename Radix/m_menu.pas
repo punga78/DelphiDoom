@@ -4912,7 +4912,6 @@ var
   ppos: menupos_t;
   rstr: string;
   rlen: integer;
-  lump: integer;
 begin
   // Horiz. & Vertically center string and print it.
   if messageToPrint <> 0 then

@@ -174,6 +174,8 @@ uses
   hu_lib in '..\Base\hu_lib.pas',
   hu_stuff in '..\Base\hu_stuff.pas',
   radix_fonts in 'radix_fonts.pas',
+  radix_map_extra in 'radix_map_extra.pas',
+  DelphiDoom.Engine.Level.RadixRules in 'DelphiDoom.Engine.Level.RadixRules.pas',
   radix_version in 'radix_version.pas',
   i_io in '..\Base\i_io.pas',
   i_main in '..\Base\i_main.pas',
