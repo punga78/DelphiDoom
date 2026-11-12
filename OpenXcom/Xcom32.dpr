@@ -15,7 +15,11 @@
 {           [-user <folder with options.cfg>] [-mod xcom2|xcom1]                }
 {           [-shot <file.png> [-ms <n>]] [-script step;step...]                 }
 {           [-seed <n>] [-quitafter <ms>] [-audiostats] [-listmodes]            }
-{           [-version <text>] [-dospath <text>] [-hold]                         }
+{           [-version <text>] [-dospath <text>] [-hold] [-truecolor]            }
+{                                                                              }
+{  -truecolor (or "trueColor: true" in options.cfg; issue 183): the game stays   }
+{  at 8 bits and the screen composes the final frame in true color; a shot is   }
+{  then an RGB picture. Without it the 8 bit path of OpenXcom, unchanged        }
 {                                                                              }
 {  The export: when the command line has -pck, -dat, -scr or -map, a data file  }
 {  of the game is decoded and saved as a PNG. Here -data (it can be repeated)   }
@@ -45,12 +49,17 @@ uses
   DelphiDoom.XcomEngine.Game,
   DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.MemoryVideoDevice,
+  DelphiDoom.XcomEngine.MemoryTrueColorVideoDevice,
+  DelphiDoom.XcomEngine.TrueColor.Intf,
+  DelphiDoom.Png.Provider,
+  DelphiDoom.Platform.Factory,
   DelphiDoom.Xcom.ImageExporter,
   DelphiDoom.Xcom.Composition in 'DelphiDoom.Xcom.Composition.pas',
   DelphiDoom.Xcom.ExportArguments in 'DelphiDoom.Xcom.ExportArguments.pas',
   DelphiDoom.Xcom.ExportTool in 'DelphiDoom.Xcom.ExportTool.pas',
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
+  DelphiDoom.Xcom.TrueColorShot in 'DelphiDoom.Xcom.TrueColorShot.pas',
   DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
   DelphiDoom.Xcom.MemoryCount in 'DelphiDoom.Xcom.MemoryCount.pas',
   DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',
@@ -131,7 +140,7 @@ begin
   Say('         [-shot <file.png> [-ms <n>]] [-script wait:ms;click:x,y;key:n;shot:file;...]');
   Say('         [-scriptfile <file with a step per line>]   (also trace:1, state:label, until:Name,ms, on:Name=step+step)');
   Say('         [-seed <n>] [-quitafter <ms>] [-audiostats] [-memstats] [-leaks] [-listmodes]');
-  Say('         [-version <text>] [-dospath <text>] [-hold]');
+  Say('         [-version <text>] [-dospath <text>] [-hold] [-truecolor]');
   TXcomExportTool.ShowUsage(
     procedure(AText: string)
     begin
@@ -254,6 +263,8 @@ begin
     end
     else if LName = '-soundlog' then
       AArguments.SoundLog := NextValue
+    else if LName = '-truecolor' then
+      AArguments.Settings.TrueColor := True
     else if LName = '-hold' then
       AArguments.Settings.LoadMode := lmHeld
     else
@@ -351,6 +362,7 @@ var
   LMeter: IXcomMixerMeter;
   LSounds: TStringList;
   LStatistics: TXcomMixerStatistics;
+  LTrueColorShot: TXcomTrueColorShot;
 begin
   if AArguments.MemoryStatistics then
     TXcomMemoryCount.Install;
@@ -360,7 +372,8 @@ begin
   LClockRef := LClock;
   LEvents := TXcomQueueEventSource.Create;
   LEventsRef := LEvents;
-  LDevice := TXcomMemoryVideoDevice.Create;
+  // also a display of colors: the composition chooses the path, the display serves both
+  LDevice := TXcomMemoryTrueColorVideoDevice.Create;
   LDeviceRef := LDevice;
   LSettings := AArguments.Settings;
   // the loading must be over when the clock says so: the task runs at once unless -hold asks otherwise
@@ -396,6 +409,12 @@ begin
   LGame := TXcomGameComposition.CreateGame(LSettings, LDevice, LClockRef, LEvents);
   LExporter := TXcomComposition.CreateImageExporter;
   LRunner := TXcomShotRunner.Create(LGame, LClock, LEvents, LDevice, LExporter);
+  LTrueColorShot := TXcomTrueColorShot.Create(TPngProvider.Client, TPlatformFactory.CreateFileStore);
+  LRunner.TrueColorSaver := procedure(const AFileName: string; const APixels: TXcomTrueColorPixels; AWidth,
+      AHeight: Integer)
+    begin
+      LTrueColorShot.Save(AFileName, APixels, AWidth, AHeight);
+    end;
   LRunner.OnSay := procedure(ALine: string)
     begin
       Say(ALine);
@@ -427,6 +446,7 @@ begin
     end;
   finally
     LRunner.Free;
+    LTrueColorShot.Free;
     LExporter.Free;
     LGame.Free;
     LMeter := nil;

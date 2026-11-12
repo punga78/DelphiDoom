@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, System.Math, DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options,
-  DelphiDoom.XcomEngine.Action;
+  DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.TrueColor.Intf;
 
 const
   XCOM_ORIGINAL_WIDTH = 320;
@@ -29,13 +29,16 @@ type
   ///   the aspect ratio is kept. The software filters (HQX, xBRZ, Scale2x) are not ported. With Options::useOpenGL
   ///   a device that is an IXcomFilteredDisplay receives the base surface and scales it itself (the OpenGL class of
   ///   the C++); the scaled picture is made all the same, for DisplayPixels. The palette is deferred as in the
-  ///   C++: it reaches the display with the next flip
+  ///   C++: it reaches the display with the next flip. A screen that is given an IXcomFrameComposer (issue 183)
+  ///   flips through it: the composer makes the frame of colors and shows it, and the path above is what is left
+  ///   when there is none or when it cannot
   /// </summary>
   TXcomScreen = class
   strict private
     FOptions: TXcomOptions;
     FDevice: IXcomVideoDevice;
     FFiltered: IXcomFilteredDisplay;
+    FComposer: IXcomFrameComposer;
     FSurface: TXcomSurface;
     FDisplay: TBytes;
     FDisplayWidth: Integer;
@@ -55,8 +58,11 @@ type
     procedure Zoom(ADestWidth, ADestHeight, ALeft, ATop: Integer);
     procedure GiveDisplayFilter;
     procedure TakeDisplayFilter;
+    procedure GiveGeometry;
   public
-    constructor Create(AOptions: TXcomOptions; const ADevice: IXcomVideoDevice);
+    /// <param name="AComposer">Makes and shows the frames in true color; nil: the 8 bit path of OpenXcom</param>
+    constructor Create(AOptions: TXcomOptions; const ADevice: IXcomVideoDevice;
+      const AComposer: IXcomFrameComposer = nil);
     destructor Destroy; override;
     /// <summary>Screen::getSurface: the base surface the states blit on</summary>
     function GetSurface: TXcomSurface;
@@ -84,6 +90,11 @@ type
     function DY: Integer;
     /// <summary>The last flipped picture: Width x Height indexed pixels of the display (what screenshot saves)</summary>
     function DisplayPixels: TBytes;
+    /// <summary>
+    ///   Where a widget leaves a finer drawing of itself for the frame in true color; nil when the screen has no
+    ///   composer (a widget then draws only on the game picture)
+    /// </summary>
+    function DetailLayers: IXcomDetailLayers;
     /// <summary>Screen::updateScale: the size of the game picture for a scale type</summary>
     class procedure UpdateScale(AOptions: TXcomOptions; AType: Integer; var AWidth, AHeight: Integer;
       AChange: Boolean); static;
@@ -91,11 +102,13 @@ type
 
 implementation
 
-constructor TXcomScreen.Create(AOptions: TXcomOptions; const ADevice: IXcomVideoDevice);
+constructor TXcomScreen.Create(AOptions: TXcomOptions; const ADevice: IXcomVideoDevice;
+  const AComposer: IXcomFrameComposer);
 begin
   inherited Create;
   FOptions := AOptions;
   FDevice := ADevice;
+  FComposer := AComposer;
   Supports(FDevice, IXcomFilteredDisplay, FFiltered);
   FBaseWidth := XCOM_ORIGINAL_WIDTH;
   FBaseHeight := XCOM_ORIGINAL_HEIGHT;
@@ -219,6 +232,9 @@ begin
   LHeight := FDisplayHeight - FTopBlackBand - FBottomBlackBand;
   if (LWidth > 0) and (LHeight > 0) then
     Zoom(LWidth, LHeight, FLeftBlackBand, FTopBlackBand);
+  // the frame in true color; the scaled indexes above stay what DisplayPixels gives
+  if Assigned(FComposer) and FComposer.Present(FSurface, FDeferredPalette) then
+    Exit;
   if Assigned(FFiltered) and FOptions.UseOpenGL then
   begin
     LBands.Top := FTopBlackBand;
@@ -345,6 +361,28 @@ begin
       FCursorTopBlackBand := FTopBlackBand;
     end;
   end;
+  GiveGeometry;
+end;
+
+procedure TXcomScreen.GiveGeometry;
+var
+  LBands: TXcomBlackBands;
+begin
+  if not Assigned(FComposer) then
+    Exit;
+  LBands.Top := FTopBlackBand;
+  LBands.Bottom := FBottomBlackBand;
+  LBands.Left := FLeftBlackBand;
+  LBands.Right := FRightBlackBand;
+  FComposer.SetGeometry(FBaseWidth, FBaseHeight, FDisplayWidth, FDisplayHeight, LBands);
+end;
+
+function TXcomScreen.DetailLayers: IXcomDetailLayers;
+begin
+  if Assigned(FComposer) then
+    Result := FComposer.DetailLayers
+  else
+    Result := nil;
 end;
 
 function TXcomScreen.XScale: Double;

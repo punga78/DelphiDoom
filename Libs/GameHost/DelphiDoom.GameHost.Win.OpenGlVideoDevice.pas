@@ -15,7 +15,7 @@ interface
 uses
   Winapi.Windows, System.Types, System.SysUtils, System.Math, dglOpenGL, DelphiDoom.Logging.Intf,
   DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.Window,
-  DelphiDoom.GameHost.Win.WindowDevice, DelphiDoom.GameHost.Win.OpenGlProgram;
+  DelphiDoom.GameHost.Win.WindowDevice, DelphiDoom.GameHost.Win.OpenGlProgram, DelphiDoom.GameHost.TrueColor.Intf;
 
 type
   /// <summary>
@@ -26,9 +26,11 @@ type
   ///   vertical sync of the filter, through the GLSL program of the shader of the filter when there is one (a
   ///   shader says by itself whether it wants the linear filter). When the device goes away the window handle goes
   ///   with it: a window that had an OpenGL pixel format cannot be drawn by GDI again. The floating point
-  ///   exceptions are masked while OpenGL is called and only then
+  ///   exceptions are masked while OpenGL is called and only then. A picture of colors
+  ///   (IGameHostTrueColorDisplay) is loaded in the same texture as it is and fills the rectangle
   /// </summary>
-  TGameHostWinOpenGlVideoDevice = class(TGameHostWinWindowDevice, IGameHostFilteredDisplay)
+  TGameHostWinOpenGlVideoDevice = class(TGameHostWinWindowDevice, IGameHostFilteredDisplay,
+    IGameHostTrueColorDisplay)
   strict private
     FLog: ILog;
     FShaders: IGameHostShaderLoader;
@@ -55,6 +57,8 @@ type
     procedure ResizeTexture(AWidth, AHeight: Integer);
     procedure Draw(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
       ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands);
+    procedure DrawColors(AColors: Pointer; AWidth, AHeight, ADisplayWidth, ADisplayHeight: Integer;
+      const ABands: TGameHostBlackBands);
   public
     /// <param name="AWindow">The window of the game; not owned</param>
     /// <param name="AShaders">Gives the shader that the filter names; nil: no shader is ever used</param>
@@ -69,6 +73,7 @@ type
     function DisplayFilter: TGameHostDisplayFilter;
     function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
       ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
+    function PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth, AHeight: Integer): Boolean;
   end;
 
 implementation
@@ -309,9 +314,6 @@ procedure TGameHostWinOpenGlVideoDevice.Draw(const APixels: TBytes; AWidth, AHei
 var
   LColors: array[0..255] of Cardinal;
   LIndex: Integer;
-  LOutput: TRect;
-  LClient: TRect;
-  LFilter: GLint;
 begin
   // the palette as the pixels of the texture: blue, green, red and alpha from the low byte
   for LIndex := 0 to 255 do
@@ -321,6 +323,18 @@ begin
     ResizeTexture(AWidth, AHeight);
   for LIndex := 0 to AWidth * AHeight - 1 do
     FBuffer[LIndex] := LColors[APixels[LIndex]];
+  DrawColors(@FBuffer[0], AWidth, AHeight, ADisplayWidth, ADisplayHeight, ABands);
+end;
+
+procedure TGameHostWinOpenGlVideoDevice.DrawColors(AColors: Pointer; AWidth, AHeight, ADisplayWidth,
+  ADisplayHeight: Integer; const ABands: TGameHostBlackBands);
+var
+  LOutput: TRect;
+  LClient: TRect;
+  LFilter: GLint;
+begin
+  if (FTexture = 0) or (FTextureWidth <> AWidth) or (FTextureHeight <> AHeight) then
+    ResizeTexture(AWidth, AHeight);
   LOutput := Window.OutputRect;
   if not GetClientRect(FContextWindow, LClient) then
     LClient := LOutput;
@@ -351,7 +365,7 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
   glPixelStorei(GL_UNPACK_ROW_LENGTH, AWidth);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, AWidth, AHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, @FBuffer[0]);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, AWidth, AHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, AColors);
   // the vertices turn the picture over: its first row is the top one
   if ABands.Left + ABands.Right + ABands.Top + ABands.Bottom = 0 then
   begin
@@ -394,6 +408,23 @@ begin
   LMask := SetExceptionMask(exAllArithmeticExceptions);
   try
     Draw(APixels, AWidth, AHeight, APalette, ADisplayWidth, ADisplayHeight, ABands);
+  finally
+    SetExceptionMask(LMask);
+  end;
+end;
+
+function TGameHostWinOpenGlVideoDevice.PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth,
+  AHeight: Integer): Boolean;
+var
+  LMask: TArithmeticExceptionMask;
+begin
+  Result := (FContext <> 0) and (AWidth > 0) and (AHeight > 0) and (Length(APixels) >= AWidth * AHeight);
+  if not Result then
+    Exit;
+  LMask := SetExceptionMask(exAllArithmeticExceptions);
+  try
+    // the picture is already what the display shows: it fills the rectangle, no bands
+    DrawColors(@APixels[0], AWidth, AHeight, AWidth, AHeight, Default(TGameHostBlackBands));
   finally
     SetExceptionMask(LMask);
   end;

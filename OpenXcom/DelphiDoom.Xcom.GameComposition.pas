@@ -12,6 +12,7 @@ interface
 uses
   DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.TrueColor.Intf,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.LoggingBattleAudio;
 
@@ -51,6 +52,11 @@ type
     Seed: UInt64;
     /// <summary>Starts the battle of a mission (the Battlescape's); nil: "Yes" of the landing confirmation does nothing</summary>
     MissionLauncher: IXcomMissionLauncher;
+    /// <summary>
+    ///   The frame is composed in true color (-truecolor, or "trueColor: true" in the options file; issue 183):
+    ///   the game stays at 8 bits and the screen makes the final picture of colors. Off: the 8 bit path of OpenXcom
+    /// </summary>
+    TrueColor: Boolean;
   end;
 
   /// <summary>
@@ -76,6 +82,12 @@ type
     class function CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog; static;
     /// <summary>CrossPlatform::getDosPath: the path of the program as a DOS prompt (names cut to 8 characters)</summary>
     class function DosPathOf(const AExecutable: string): string; static;
+    /// <summary>
+    ///   The strategy the screen flips with: a composer of frames in true color when the settings or the options
+    ///   file ask for it and the display can show them, nil (the 8 bit path) otherwise
+    /// </summary>
+    class function CreateFrameComposer(const ASettings: TXcomGameSettings; AOptions: TXcomOptions;
+      const ADevice: IXcomVideoDevice): IXcomFrameComposer; static;
   end;
 
 implementation
@@ -84,7 +96,7 @@ uses
   System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomMenu.CutsceneState,
   DelphiDoom.XcomBasescape.StatisticsState,
   DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.XcomUfopaedia.Factory, DelphiDoom.Yaml.Intf, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen,
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.TrueColorComposer,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
@@ -166,6 +178,24 @@ begin
   end;
 end;
 
+class function TXcomGameComposition.CreateFrameComposer(const ASettings: TXcomGameSettings;
+  AOptions: TXcomOptions; const ADevice: IXcomVideoDevice): IXcomFrameComposer;
+const
+  OPTION_TRUE_COLOR = 'trueColor';
+var
+  LValue: string;
+  LDisplay: IXcomTrueColorDisplay;
+begin
+  // the one place that chooses between the two ways to the display; the screen and the widgets only see whether
+  // they were given a composer
+  Result := nil;
+  if not (ASettings.TrueColor or (AOptions.UnknownOptions.TryGetValue(OPTION_TRUE_COLOR, LValue)
+    and SameText(LValue, 'true'))) then
+    Exit;
+  if Supports(ADevice, IXcomTrueColorDisplay, LDisplay) then
+    Result := TXcomTrueColorComposer.Create(LDisplay);
+end;
+
 function CreateBattleScreens(AGame: TXcomGame; const AVersionText: string;
   const ABattleAudio: IXcomBattleAudio): IXcomBattleScreens;
 begin
@@ -218,6 +248,7 @@ var
   LBattleAudio: IXcomBattleAudio;
   LBattleScreens: IXcomBattleScreens;
   LMissionLauncher: IXcomMissionLauncher;
+  LComposer: IXcomFrameComposer;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -270,7 +301,9 @@ begin
     LDosPath := ASettings.DosPath;
     if LDosPath = '' then
       LDosPath := DosPathOf(ParamStr(0));
-    Result := TXcomGame.Create(LOptions, TXcomScreen.Create(LOptions, ADevice),
+    // in a variable: an object made inside the argument of a const interface parameter is not counted
+    LComposer := CreateFrameComposer(ASettings, LOptions, ADevice);
+    Result := TXcomGame.Create(LOptions, TXcomScreen.Create(LOptions, ADevice, LComposer),
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),
       TXcomLanguage.Create('', LOptions.Wordwrap, LFiles, LParser), AClock, AEvents);

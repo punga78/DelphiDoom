@@ -12,55 +12,35 @@ unit DelphiDoom.GameHost.Win.GdiVideoDevice;
 interface
 
 uses
-  Winapi.Windows, System.Types, System.SysUtils, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Win.WindowDevice;
+  Winapi.Windows, System.Types, System.SysUtils, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Win.WindowDevice,
+  DelphiDoom.GameHost.TrueColor.Intf;
 
 type
   /// <summary>
   ///   The display of a game on GDI, the default one and the one used when OpenGL cannot be. A picture of the size
   ///   of the mode is copied to the window pixel by pixel; it is stretched to the picture rectangle of a full
-  ///   screen window, and to the mode when it has another size (a game that draws small and shows large)
+  ///   screen window, and to the mode when it has another size (a game that draws small and shows large). A
+  ///   picture of colors (IGameHostTrueColorDisplay) goes the same way as a 32 bit bitmap
   /// </summary>
-  TGameHostWinGdiVideoDevice = class(TGameHostWinWindowDevice)
+  TGameHostWinGdiVideoDevice = class(TGameHostWinWindowDevice, IGameHostTrueColorDisplay)
+  strict private
+    procedure Show(AInfo: PBitmapInfo; ABits: Pointer; AWidth, AHeight: Integer);
   public
     procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette); override;
+    function PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth, AHeight: Integer): Boolean;
   end;
 
 implementation
 
-procedure TGameHostWinGdiVideoDevice.Present(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TGameHostPalette);
-type
-  TInfo = record
-    Header: TBitmapInfoHeader;
-    Colors: array[0..255] of TRGBQuad;
-  end;
+procedure TGameHostWinGdiVideoDevice.Show(AInfo: PBitmapInfo; ABits: Pointer; AWidth, AHeight: Integer);
 var
-  LInfo: TInfo;
   LDevice: HDC;
-  LIndex: Integer;
   LOutput: TRect;
   LWhole: TRect;
   LHandle: HWND;
   LFullscreen: Boolean;
 begin
   LHandle := Window.Handle;
-  if (LHandle = 0) or (AWidth < 1) or (AHeight < 1) or (Length(APixels) < AWidth * AHeight) then
-    Exit;
-  FillChar(LInfo, SizeOf(LInfo), 0);
-  LInfo.Header.biSize := SizeOf(LInfo.Header);
-  LInfo.Header.biWidth := AWidth;
-  // a negative height: the rows go from the top, as in the pictures of the game
-  LInfo.Header.biHeight := -AHeight;
-  LInfo.Header.biPlanes := 1;
-  LInfo.Header.biBitCount := 8;
-  LInfo.Header.biCompression := BI_RGB;
-  LInfo.Header.biClrUsed := 256;
-  for LIndex := 0 to 255 do
-  begin
-    LInfo.Colors[LIndex].rgbRed := APalette[LIndex].Red;
-    LInfo.Colors[LIndex].rgbGreen := APalette[LIndex].Green;
-    LInfo.Colors[LIndex].rgbBlue := APalette[LIndex].Blue;
-  end;
   LFullscreen := Window.PictureRect(LOutput);
   if not LFullscreen then
     LOutput := Window.OutputRect;
@@ -78,14 +58,63 @@ begin
     begin
       SetStretchBltMode(LDevice, COLORONCOLOR);
       StretchDIBits(LDevice, LOutput.Left, LOutput.Top, LOutput.Width, LOutput.Height, 0, 0, AWidth, AHeight,
-        @APixels[0], PBitmapInfo(@LInfo)^, DIB_RGB_COLORS, SRCCOPY);
+        ABits, AInfo^, DIB_RGB_COLORS, SRCCOPY);
     end
     else
-      SetDIBitsToDevice(LDevice, 0, 0, AWidth, AHeight, 0, 0, 0, AHeight, @APixels[0], PBitmapInfo(@LInfo)^,
-        DIB_RGB_COLORS);
+      SetDIBitsToDevice(LDevice, 0, 0, AWidth, AHeight, 0, 0, 0, AHeight, ABits, AInfo^, DIB_RGB_COLORS);
   finally
     ReleaseDC(LHandle, LDevice);
   end;
+end;
+
+procedure TGameHostWinGdiVideoDevice.Present(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette);
+type
+  TInfo = record
+    Header: TBitmapInfoHeader;
+    Colors: array[0..255] of TRGBQuad;
+  end;
+var
+  LInfo: TInfo;
+  LIndex: Integer;
+begin
+  if (Window.Handle = 0) or (AWidth < 1) or (AHeight < 1) or (Length(APixels) < AWidth * AHeight) then
+    Exit;
+  FillChar(LInfo, SizeOf(LInfo), 0);
+  LInfo.Header.biSize := SizeOf(LInfo.Header);
+  LInfo.Header.biWidth := AWidth;
+  // a negative height: the rows go from the top, as in the pictures of the game
+  LInfo.Header.biHeight := -AHeight;
+  LInfo.Header.biPlanes := 1;
+  LInfo.Header.biBitCount := 8;
+  LInfo.Header.biCompression := BI_RGB;
+  LInfo.Header.biClrUsed := 256;
+  for LIndex := 0 to 255 do
+  begin
+    LInfo.Colors[LIndex].rgbRed := APalette[LIndex].Red;
+    LInfo.Colors[LIndex].rgbGreen := APalette[LIndex].Green;
+    LInfo.Colors[LIndex].rgbBlue := APalette[LIndex].Blue;
+  end;
+  Show(PBitmapInfo(@LInfo), @APixels[0], AWidth, AHeight);
+end;
+
+function TGameHostWinGdiVideoDevice.PresentTrueColor(const APixels: TGameHostTrueColorPixels; AWidth,
+  AHeight: Integer): Boolean;
+var
+  LInfo: TBitmapInfo;
+begin
+  Result := (Window.Handle <> 0) and (AWidth > 0) and (AHeight > 0) and (Length(APixels) >= AWidth * AHeight);
+  if not Result then
+    Exit;
+  FillChar(LInfo, SizeOf(LInfo), 0);
+  LInfo.bmiHeader.biSize := SizeOf(LInfo.bmiHeader);
+  LInfo.bmiHeader.biWidth := AWidth;
+  LInfo.bmiHeader.biHeight := -AHeight;
+  LInfo.bmiHeader.biPlanes := 1;
+  // blue, green, red and an unused byte: the values of the picture as they are
+  LInfo.bmiHeader.biBitCount := 32;
+  LInfo.bmiHeader.biCompression := BI_RGB;
+  Show(@LInfo, @APixels[0], AWidth, AHeight);
 end;
 
 end.
