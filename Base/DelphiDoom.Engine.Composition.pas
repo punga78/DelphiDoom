@@ -21,7 +21,8 @@ implementation
 
 uses
 {$IFDEF RADIX}
-  DelphiDoom.Engine.Radix.DataConverter,
+  DelphiDoom.Engine.Radix.Composition,
+  DelphiDoom.Engine.Level.RadixRules,
 {$ENDIF}
 {$IFDEF SPEED}
   DelphiDoom.Engine.Speed.DataConverter,
@@ -731,7 +732,11 @@ begin
     AShutdown);
 {$ENDIF}
 {$IF DEFINED(DOOM)}
+{$IFDEF RADIX}
+  Result := TRadixLevelRules.Create(
+{$ELSE}
   Result := TDoomLevelRules.Create(
+{$ENDIF}
     TEngineSwitchListLoader.Create(TDefinitionsFactory.CreateSwitchLumpReader(False),
       TDefinitionsFactory.CreateSwitchSelector(TEngineTextureLookup.Create, ALog),
       TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)),
@@ -1494,7 +1499,7 @@ begin
 
   W_Configure(LWadServices);
 {$IFDEF RADIX}
-  W_ConfigureConverter(TEngineRadixDataConverter.Create(LLog));
+  ComposeRadix(LLog, LLumps);
 {$ENDIF}
 {$IFDEF SPEED}
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));
