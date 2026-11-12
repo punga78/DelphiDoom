@@ -68,6 +68,7 @@ uses
   DelphiDoom.Xcom.GameComposition in 'DelphiDoom.Xcom.GameComposition.pas',
   DelphiDoom.Xcom.ShotRunner in 'DelphiDoom.Xcom.ShotRunner.pas',
   DelphiDoom.Xcom.TrueColorShot in 'DelphiDoom.Xcom.TrueColorShot.pas',
+  DelphiDoom.Xcom.TrueColorOption in 'DelphiDoom.Xcom.TrueColorOption.pas',
   DelphiDoom.Xcom.StackScan in 'DelphiDoom.Xcom.StackScan.pas',
   DelphiDoom.Xcom.MemoryCount in 'DelphiDoom.Xcom.MemoryCount.pas',
   DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',

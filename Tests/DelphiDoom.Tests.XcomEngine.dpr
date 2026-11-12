@@ -58,6 +58,8 @@ uses
   DelphiDoom.Tests.XcomEngine.WindowPlacement in 'Source\DelphiDoom.Tests.XcomEngine.WindowPlacement.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorComposer in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorComposer.pas',
   DelphiDoom.Tests.XcomEngine.TrueColorDisplay in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorDisplay.pas',
+  DelphiDoom.Xcom.TrueColorOption in '..\OpenXcom\DelphiDoom.Xcom.TrueColorOption.pas',
+  DelphiDoom.Tests.XcomEngine.TrueColorOption in 'Source\DelphiDoom.Tests.XcomEngine.TrueColorOption.pas',
   DelphiDoom.Tests.XcomSurface.FakeRasterizer in 'Source\DelphiDoom.Tests.XcomSurface.FakeRasterizer.pas',
   DelphiDoom.Tests.XcomEngine.FontFakes in 'Source\DelphiDoom.Tests.XcomEngine.FontFakes.pas',
   DelphiDoom.Tests.XcomEngine.FontSettingsReader in 'Source\DelphiDoom.Tests.XcomEngine.FontSettingsReader.pas',

@@ -65,6 +65,12 @@ type
     function DetailLayers: IXcomDetailLayers;
   end;
 
+  /// <summary>
+  ///   Gives the screen its composer each time the display is reset (the options can turn the composition in true
+  ///   color on and off while the game runs); nil: the 8 bit path
+  /// </summary>
+  TXcomFrameComposerSource = reference to function: IXcomFrameComposer;
+
 implementation
 
 end.

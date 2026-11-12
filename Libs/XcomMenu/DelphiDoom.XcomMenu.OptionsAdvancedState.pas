@@ -19,6 +19,8 @@ type
   ///   The list of the settings that are not keys and have a description (general, geoscape, battlescape): a click
   ///   toggles a yes/no or raises a number by one (the right button lowers it, the wheel of the speeds by ten); a
   ///   number that goes over its range wraps around. The tooltip is the description of the row under the mouse
+  ///   When the host has settings of its own (IXcomExtraOptions) they follow in a last section; without, the
+  ///   list is the one of OpenXcom
   /// </summary>
   TXcomOptionsAdvancedState = class(TXcomOptionsBaseState)
   strict private
@@ -29,6 +31,9 @@ type
     FColorGroup: Byte;
     procedure AddSettings(ASettings: TList<TXcomOptionInfo>);
     function SettingOf(ARow: Integer; out AInfo: TXcomOptionInfo): Boolean;
+    function ExtraRows: Integer;
+    function ExtraOf(ARow: Integer; out AIndex: Integer): Boolean;
+    function YesNo(AValue: Boolean): string;
     procedure ListClick(AAction: TXcomAction);
     procedure ListMouseOver(AAction: TXcomAction);
     procedure ListMouseOut(AAction: TXcomAction);
@@ -111,6 +116,9 @@ begin
 end;
 
 procedure TXcomOptionsAdvancedState.Init;
+var
+  LFirst: Integer;
+  LIndex: Integer;
 begin
   inherited Init;
   FList.ClearList;
@@ -125,6 +133,39 @@ begin
   FList.AddRow([Tr('STR_BATTLESCAPE').Text, '']);
   FList.SetCellColor(FSettingsGeneral.Count + 2 + FSettingsGeo.Count + 2, 0, FColorGroup);
   AddSettings(FSettingsBattle);
+  // the settings OpenXcom does not have, after its own
+  if ExtraRows > 0 then
+  begin
+    FList.AddRow(['', '']);
+    FList.AddRow([Host.ExtraOptions.Heading, '']);
+    LFirst := FSettingsGeneral.Count + 2 + FSettingsGeo.Count + 2 + FSettingsBattle.Count + 2;
+    FList.SetCellColor(LFirst, 0, FColorGroup);
+    for LIndex := 0 to ExtraRows - 1 do
+      FList.AddRow([Host.ExtraOptions.Title(LIndex), YesNo(Host.ExtraOptions.IsOn(LIndex))]);
+  end;
+end;
+
+function TXcomOptionsAdvancedState.ExtraRows: Integer;
+begin
+  if Host.ExtraOptions <> nil then
+    Result := Host.ExtraOptions.Count
+  else
+    Result := 0;
+end;
+
+function TXcomOptionsAdvancedState.ExtraOf(ARow: Integer; out AIndex: Integer): Boolean;
+begin
+  // after the last section: an empty row, the heading, then the rows
+  AIndex := ARow - (FSettingsGeneral.Count + 2 + FSettingsGeo.Count + 2 + FSettingsBattle.Count + 3);
+  Result := (AIndex >= 0) and (AIndex < ExtraRows);
+end;
+
+function TXcomOptionsAdvancedState.YesNo(AValue: Boolean): string;
+begin
+  if AValue then
+    Result := Tr('STR_YES').Text
+  else
+    Result := Tr('STR_NO').Text;
 end;
 
 procedure TXcomOptionsAdvancedState.AddSettings(ASettings: TList<TXcomOptionInfo>);
@@ -172,11 +213,18 @@ var
   LIncrement: Integer;
   LMin: Integer;
   LMax: Integer;
+  LExtra: Integer;
 begin
   LButton := AAction.Details^.Button;
   if (LButton <> XCOM_BUTTON_LEFT) and (LButton <> XCOM_BUTTON_RIGHT) then
     Exit;
   LRow := FList.GetSelectedRow;
+  if ExtraOf(LRow, LExtra) then
+  begin
+    Host.ExtraOptions.SetOn(LExtra, not Host.ExtraOptions.IsOn(LExtra));
+    FList.SetCellText(LRow, 1, YesNo(Host.ExtraOptions.IsOn(LExtra)));
+    Exit;
+  end;
   if not SettingOf(LRow, LInfo) then
     Exit;
   LText := '';
@@ -235,10 +283,13 @@ procedure TXcomOptionsAdvancedState.ListMouseOver(AAction: TXcomAction);
 var
   LInfo: TXcomOptionInfo;
   LDescription: string;
+  LExtra: Integer;
 begin
   LDescription := '';
   if SettingOf(FList.GetSelectedRow, LInfo) then
-    LDescription := Tr(LInfo.Description + '_DESC').Text;
+    LDescription := Tr(LInfo.Description + '_DESC').Text
+  else if ExtraOf(FList.GetSelectedRow, LExtra) then
+    LDescription := Host.ExtraOptions.Description(LExtra);
   FTxtTooltip.SetText(LDescription);
 end;
 

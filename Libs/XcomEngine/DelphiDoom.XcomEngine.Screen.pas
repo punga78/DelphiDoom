@@ -39,6 +39,7 @@ type
     FDevice: IXcomVideoDevice;
     FFiltered: IXcomFilteredDisplay;
     FComposer: IXcomFrameComposer;
+    FComposerSource: TXcomFrameComposerSource;
     FSurface: TXcomSurface;
     FDisplay: TBytes;
     FDisplayWidth: Integer;
@@ -97,6 +98,11 @@ type
     ///   composer (a widget then draws only on the game picture)
     /// </summary>
     function DetailLayers: IXcomDetailLayers;
+    /// <summary>
+    ///   Asked for the composer at every ResetDisplay from when it is given (the options are confirmed with one):
+    ///   without a source the screen keeps the composer of its constructor
+    /// </summary>
+    property ComposerSource: TXcomFrameComposerSource read FComposerSource write FComposerSource;
     /// <summary>Screen::updateScale: the size of the game picture for a scale type</summary>
     class procedure UpdateScale(AOptions: TXcomOptions; AType: Integer; var AWidth, AHeight: Integer;
       AChange: Boolean); static;
@@ -298,6 +304,8 @@ var
   LStyle: IXcomWindowStyle;
   LPlacement: IXcomWindowPlacement;
 begin
+  if Assigned(FComposerSource) then
+    FComposer := FComposerSource();
   LWidth := FOptions.DisplayWidth;
   LHeight := FOptions.DisplayHeight;
   FBaseWidth := FOptions.BaseXResolution;

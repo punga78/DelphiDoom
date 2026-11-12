@@ -118,6 +118,7 @@ uses
   DelphiDoom.XcomBasescape.StatisticsState,
   DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.XcomUfopaedia.Factory, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.TrueColorComposer,
+  DelphiDoom.Xcom.TrueColorOption,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
@@ -261,20 +262,40 @@ end;
 
 class function TXcomGameComposition.CreateFrameComposer(const ASettings: TXcomGameSettings;
   AOptions: TXcomOptions; const ADevice: IXcomVideoDevice): IXcomFrameComposer;
-const
-  OPTION_TRUE_COLOR = 'trueColor';
 var
-  LValue: string;
   LDisplay: IXcomTrueColorDisplay;
 begin
   // the one place that chooses between the two ways to the display; the screen and the widgets only see whether
   // they were given a composer
   Result := nil;
-  if not (ASettings.TrueColor or (AOptions.UnknownOptions.TryGetValue(OPTION_TRUE_COLOR, LValue)
-    and SameText(LValue, 'true'))) then
+  if not (ASettings.TrueColor or TXcomTrueColorOption.Wanted(AOptions)) then
     Exit;
   if Supports(ADevice, IXcomTrueColorDisplay, LDisplay) then
     Result := TXcomTrueColorComposer.Create(LDisplay);
+end;
+
+function ComposerSourceOf(const ASettings: TXcomGameSettings; AOptions: TXcomOptions;
+  const ADevice: IXcomVideoDevice): TXcomFrameComposerSource;
+var
+  LSettings: TXcomGameSettings;
+  LDevice: IXcomVideoDevice;
+  LComposer: IXcomFrameComposer;
+begin
+  // In a function of its own (see CreateBattleScreens). The screen asks at every reset of the display: the row
+  // of the advanced options turns the composition on and off while the game runs, and a composer is kept as long
+  // as it is wanted
+  LSettings := ASettings;
+  LDevice := ADevice;
+  LComposer := nil;
+  Result :=
+    function: IXcomFrameComposer
+    begin
+      if not (LSettings.TrueColor or TXcomTrueColorOption.Wanted(AOptions)) then
+        LComposer := nil
+      else if not Assigned(LComposer) then
+        LComposer := TXcomGameComposition.CreateFrameComposer(LSettings, AOptions, LDevice);
+      Result := LComposer;
+    end;
 end;
 
 function CreateBattleScreens(AGame: TXcomGame; const AVersionText: string;
@@ -329,7 +350,8 @@ var
   LBattleAudio: IXcomBattleAudio;
   LBattleScreens: IXcomBattleScreens;
   LMissionLauncher: IXcomMissionLauncher;
-  LComposer: IXcomFrameComposer;
+  LComposerSource: TXcomFrameComposerSource;
+  LScreen: TXcomScreen;
 begin
   LFiles := TXcomDiskFileSystem.Create;
   LParser := TYamlFactory.CreateParser;
@@ -385,8 +407,10 @@ begin
     if LDosPath = '' then
       LDosPath := DosPathOf(ParamStr(0));
     // in a variable: an object made inside the argument of a const interface parameter is not counted
-    LComposer := CreateFrameComposer(ASettings, LOptions, ADevice);
-    Result := TXcomGame.Create(LOptions, TXcomScreen.Create(LOptions, ADevice, LComposer),
+    LComposerSource := ComposerSourceOf(ASettings, LOptions, ADevice);
+    LScreen := TXcomScreen.Create(LOptions, ADevice, LComposerSource());
+    LScreen.ComposerSource := LComposerSource;
+    Result := TXcomGame.Create(LOptions, LScreen,
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),
       TXcomLanguage.Create('', LOptions.Wordwrap, LFiles, LParser), AClock, AEvents);
@@ -396,6 +420,8 @@ begin
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
     // the display filters of the video options: listed as in OpenXcom also when the display cannot use them
     Result.SetShaderCatalog(CreateShaderCatalog(ASettings));
+    // the one setting OpenXcom does not have: a row at the end of the advanced options
+    Result.SetExtraOptions(TXcomTrueColorOption.Create(LOptions));
     // the mods of the data folder and of the user (Options::refreshMods); the game that is installed is the master
     Result.SetModCatalog(TXcomDiskModCatalog.Create(
       [TPath.Combine(ASettings.DataFolder, 'standard'), TPath.Combine(ASettings.UserFolder, 'mods')],
