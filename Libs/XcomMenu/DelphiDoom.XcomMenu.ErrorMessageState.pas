@@ -34,6 +34,11 @@ type
     /// <param name="ABackgroundColor">The block of BACKPALS.DAT for the background colors, -1 for none</param>
     constructor Create(AHost: TXcomStateHost; const AMessage: string; APalette: PXcomColors; AColor: Byte;
       const ABackground: string; ABackgroundColor: Integer);
+    /// <summary>
+    ///   The message in the small font (not in OpenXcom: a long text, like the ones the options give about the
+    ///   fonts, does not fit the big one)
+    /// </summary>
+    procedure UseSmallFont;
     /// <summary>The error window of the geoscape or of the battlescape, with the colors of the interface "errorMessages" (plain colors when the ruleset has none)</summary>
     class function ForOrigin(AHost: TXcomStateHost; AOrigin: TXcomOptionsOrigin; const AMessage: string;
       AParentPalette: PXcomColors): TXcomErrorMessageState; static;
@@ -112,6 +117,11 @@ begin
   end;
   Result := TXcomErrorMessageState.Create(AHost, AMessage, AParentPalette, Byte(LColor.Color), LBackground,
     LPalette.Color);
+end;
+
+procedure TXcomErrorMessageState.UseSmallFont;
+begin
+  FMessage.SetSmall;
 end;
 
 procedure TXcomErrorMessageState.OkClick(AAction: TXcomAction);

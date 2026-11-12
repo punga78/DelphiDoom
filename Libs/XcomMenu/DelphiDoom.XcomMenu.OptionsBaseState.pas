@@ -157,6 +157,7 @@ var
   LDY: Integer;
   LOptions: TXcomOptions;
   LNotices: TArray<string>;
+  LNotice: TXcomErrorMessageState;
 begin
   LOptions := Host.Options;
   LOptions.SwitchDisplay;
@@ -185,7 +186,11 @@ begin
     FNavigator.Restart(FOrigin, Host);
   // what could not be used as chosen is told over whatever the game shows now, instead of staying in the log
   if Length(LNotices) > 0 then
-    Host.PushState(TXcomErrorMessageState.ForOrigin(Host, FOrigin, string.Join(' ', LNotices), Palette));
+  begin
+    LNotice := TXcomErrorMessageState.ForOrigin(Host, FOrigin, string.Join(#10#10, LNotices), Palette);
+    LNotice.UseSmallFont;
+    Host.PushState(LNotice);
+  end;
 end;
 
 procedure TXcomOptionsBaseState.CancelClick(AAction: TXcomAction);
