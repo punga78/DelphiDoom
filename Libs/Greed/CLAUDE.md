@@ -24,3 +24,40 @@
 **Finestra comune (issue #179)**: la finestra propria di Greed32 (`Greed\DelphiDoom.Greed.Win.Window.pas`, 202 righe) non c'e' piu'. `Greed32 -play` usa la finestra di `Libs\GameHost` (`TGameHostFactory.CreateWindow` e `CreateGdiDevice`) attraverso l'adattatore `Greed\DelphiDoom.Greed.HostWindow.pas` (`TGreedHostWindow`: `IGreedFramePresenter` e `IGreedInput` sopra `IGameHostVideoDevice`, `IGameHostKeyState` e la pompa dei messaggi; gli stessi tasti di prima). Differenze volute: il fotogramma va alla finestra come DIB a 8 bit con palette (prima convertito a 32 bit), i tasti si azzerano su `WM_ACTIVATE` inattiva (prima `WM_KILLFOCUS`), la classe della finestra e' `DelphiDoomGameHostWindow`. Verifica: `Greed32` 0 avvisi; suite 405 (389 + 16 di `DelphiDoom.Tests.Greed.HostWindow`, display finto, nessuna finestra); avvio con la demo 2.0 in prima persona (640x400) e `-topdown` (320x200 x3): il primo fotogramma catturato con `PrintWindow` e' identico pixel per pixel a quello della vecchia finestra, freccia su e Escape mandati con `PostMessage` muovono il giocatore e chiudono.
 
 **Issue #179 (seconda parte).** `TGreedFolderFiles` e' un adattatore sopra `IFolderFiles` di `Libs\Platform` (creato con `CreateFileNamesOnly`: un nome con una cartella non si trova, come prima; errori `EGreedNotFoundException`), `TGreedPngEncoder` delega a `IPngIndexedEncoder` di `Libs\Png`; `Greed32` legge gli argomenti con `ICommandLineCursor` di `Libs\CommandLine`. I PNG di `-map`, `-lump` e del primo fotogramma di `-play -shot` (prima persona e `-topdown`) e il testo di `-list` sono identici byte per byte a prima; suite 405. **`IGreedRenderClock` resta**: sono i tic del ciclo di gioco e lo `spritemovetime` (`TGreedLoopTime` nella composizione), cioe' tempo del gioco; la sorgente di tempo reale sotto il ciclo e' gia' l'`IClock` di `Libs\Clock`. Nota per le prove: `-play N -ticks T -autoplay -shot` con piu' di un tic dipende dall'orologio reale e non da' lo stesso PNG due volte (nemmeno col binario di prima).
+
+## Censimento delle unit di `Reference\xGreed` (issue #175, 2026-11-12)
+
+Stato di ogni unit dell'originale (righe dell'originale tra parentesi): **si'** = portata con parita', **parte** = portata in parte, **no** = non portata, **fuori** = sostituita da una libreria comune o non serve. E' il piano dei passi che restano: si aggiorna a ogni fetta.
+
+| Unit originale | Stato | Dove / cosa manca |
+|---|---|---|
+| `Greed\d_disk` (388) | si' | `BloArchive`, `LumpFixes`, `Palette`; `FindBLOFile`, `CA_LumpName`, `CA_LumpAsText` non portati (difettosi o inutili) |
+| `Base\g_fixlump` (783) | si' | `LumpFixes`, `PstCorrection` |
+| `Base\m_crc32` (116) | fuori | `TCrc32` di `Libs\MathCore` |
+| `Greed\r_public_h`, `r_refdef` (402) | si' | `Types`, `Actor.Types`, `Render.Types`, `Render.State` |
+| `Greed\r_public` (709) | si' | `FixedMath`, `Render.Tables`, `World`, `Terrain`, `Slopes`, `LinkedPool`, `Render.FrameRenderer` |
+| `Greed\r_render`, `r_walls`, `r_plane`, `r_spans`, `r_conten`, `r_interpolate` (3746) | si' | `Render.*` (699 fotogrammi a zero differenze) |
+| `Greed\d_misc` (179) | parte | `Random` (`MS_RndT`); `MS_Error` = eccezioni, `MS_CheckParm` = `Libs\CommandLine` |
+| `Greed\modplay` (444) | si' (non collegato) | `Sound.Intf`, `TrigTables`, `SoundGeometry`, `SoundEffects`, `Music`, `SongSelector`, `SoundVolumes`, `AudioDevice`; manca il dispositivo nel programma |
+| `Base\bass` (1043) | fuori | `Libs\Mikmod` e uscita PCM di `Libs\GameHost` |
+| `Greed\m_defs` (446) | si' (non collegato) | `Settings`, `SettingsStore` |
+| `Greed\protos_h` (660) | parte | `SaveTypes` (`player_t`, `pevent_t`); le costanti e i prototipi vanno con le unit che li usano |
+| `Greed\constant` (938) | parte | le tabelle del giocatore in `PlayerRules`; mancano le tabelle di armi, mostri, oggetti, nomi delle missioni, testi |
+| `Greed\utils` (2785) | parte | fatti `DoLoadMapData`, `SaveGame`/`LoadGame` (record), `heal`, `medpaks`, `hurt`, `addscore`, `newplayer` (senza mappa), `KillSprite`, `selectsong`; mancano `newmap`, `ActivateSpritesFromMap`, `LoadTextures` (il renderer legge dai lump), `respawnplayer`, `loadweapon`, `MissionBriefing`, `EndGame1..3`, `SaveSprites`/ripristino, `ChangeViewSize` |
+| `Greed\raven` (4719) | parte | fatti `TryDoor`, `TryMove`, `ClipMove`, `Thrust`, `CheckElevators`, `CheckDoors`; mancano `ControlMovement`, `fireweapon` e i proiettili, `CheckItems`, `CheckForSwitch`/`SwitchWall`, `CheckWarps`, `CheckHere`, i trigger, i cheat, `PlayLoop`/`maingame`, `RearView`, demo `recording`/`playback` |
+| `Greed\spawn` (2703) | parte | solo le porte (`DoorSpawner`); manca `SpawnSprite` (ogni tipo di sprite, ascensori, aree di spawn, `DemandLoadMonster`) |
+| `Greed\sprites` (2783) | no | `MoveSprites`, `Int5`..`Int10`, `SP_Thrust`, `SP_TryMove*`, `ActivationSound`, il tiro dei mostri |
+| `Greed\event` (788) | no | `LoadScript`, `RunEvent`, `Process`, zone, trigger, interruttori |
+| `Greed\display` (2073) | no | HUD: barra di stato, inventario, bussola, mappa, modalita' heat/motion, `updatedisplay` |
+| `Greed\d_font` (401) | no | font, `writemsg` |
+| `Greed\d_video` (438) | parte | `PictureDecoder` (`pic_t`); mancano `VI_DrawMaskedPic*ToBuffer`, dissolvenze della palette |
+| `Greed\menu` (1482) | no | menu, salva/carica (la directory dei nomi c'e' in `SaveGames`), opzioni, pausa, aiuto, uscita |
+| `Greed\intro` (902) | no | avvio, schermate, scelta del personaggio e della missione, `LoadData` |
+| `Greed\playfli` (416) | no | filmati FLI |
+| `Greed\net` (965) | fuori | rete IPX/seriale del DOS: non si porta (gli agganci `Net*` sono nell'host del movimento) |
+| `Greed\d_ints`, `d_ints_h`, `timer` (640) | fuori | `Libs\GameHost` (finestra, tasti) e `Libs\Clock`; resta la mappa dei tasti del gioco (`ckeys`, `bt_*`) |
+| `Base\i_main`, `i_video`, `i_windows`, `DirectX` (17628) | fuori | `Libs\GameHost` (`Greed\DelphiDoom.Greed.HostWindow`) |
+| `Base\m_screenshot`, `pngimage`, `zlib\` | fuori | `Libs\Png` |
+| `Base\g_delphi` (847) | fuori | RTL; l'aritmetica in `FixedMath` |
+| `Base\scriptengine` (816) | no | lo scanner usato da `event.pas` (da valutare `Libs\Scanner`) |
+| `LaunchXG`, `FASTMM4` | fuori | il launcher VCL e il gestore di memoria non servono |
