@@ -1,0 +1,13 @@
+procedure RF_SetActionHook(const hook: PProcedure);
+begin
+  actionhook := hook;
+  actionflag := 1;
+end;
+
+// the renderer is not in this program: the call is written in the log
+procedure RF_SetLights(const ablackz: fixed_t);
+begin
+  Calls.AddCall(PLAYER_CALL_SET_LIGHTS, [ablackz]);
+end;
+
+end.

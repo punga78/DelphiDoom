@@ -31,8 +31,9 @@ type
   ///   whole list of the sprites and then reads the hit points of the placeholder that ends the list, which are
   ///   always 0: the five probes (960 steps each, at the angle of the shot, 16 to each side and 8 to each side) only
   ///   move the probe and leave SpriteHit, SpriteLoc, PlayerHit, HitX and HitY of the last step, and the answer is
-  ///   always the angle of the look of the player. The weapons 0, 5 and 6 use the ammunition and shoot nothing; the
-  ///   weapon 18 shoots 12 times around the map, not where the player looks.
+  ///   always the angle of the look of the player. The probe goes through a wall when a solid sprite is in a tile
+  ///   that it looks at before the tile of the wall. The weapons 0, 5 and 6 use the ammunition and shoot nothing;
+  ///   the weapon 18 shoots 12 times around the map, not where the player looks.
   ///   Differences: a tile outside the map reads 0 (the original read the memory near the arrays); a probe that is
   ///   stopped by a wall is not moved again for the steps that are left (in the original every one of them gives
   ///   the same answer and changes nothing); a slot without a weapon (-1) does not shoot (the original read before

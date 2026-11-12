@@ -1,0 +1,27 @@
+unit sprites;
+// made by Compila.ps1: SP_TryDoor, SP_TryMove, SP_ClipMove and SP_Thrust of sprites.pas of xGreed, cut out of the
+// original file as they are, after the declarations of its interface
+interface
+uses
+  g_delphi,
+  r_public_h;
+var
+  msprite: Pscaleobj_t;
+  probe: scaleobj_t;
+  spritehit, playerhit: boolean;
+  hitx, hity, targx, targy, targz: fixed_t;
+  spriteloc: integer; // where did it hit on a sprite
+function SP_Thrust: byte;
+implementation
+uses
+  d_ints,
+  d_misc,
+  modplay,
+  net,
+  protos_h,
+  raven,
+  r_conten,
+  r_public,
+  r_refdef,
+  r_render;
+
