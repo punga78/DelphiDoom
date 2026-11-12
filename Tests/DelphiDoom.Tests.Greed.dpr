@@ -131,6 +131,7 @@ uses
   DelphiDoom.Greed.DoorSpawner in '..\Libs\Greed\DelphiDoom.Greed.DoorSpawner.pas',
   DelphiDoom.Tests.Greed.Doors in 'Source\DelphiDoom.Tests.Greed.Doors.pas',
   DelphiDoom.Tests.Greed.GameTables in 'Source\DelphiDoom.Tests.Greed.GameTables.pas',
+  DelphiDoom.Tests.Greed.GameState in 'Source\DelphiDoom.Tests.Greed.GameState.pas',
   DelphiDoom.Tests.Greed.Golden in 'Source\DelphiDoom.Tests.Greed.Golden.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
   DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
