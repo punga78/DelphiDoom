@@ -30,6 +30,10 @@ con i dati dei font). Questa libreria porta a classi il traduttore (completo, ve
 | `PalettePart`, `TexturePart`, `FlatPart`, `GraphicsPart`, `SmallFontPart`, `LumpGroupPart` | i passi: palette e traduzioni; texture dei muri, cieli, PNAMES e TEXTURE0; flat; schermate e immagini dei menu (`HELPnn`, `TITLEPIC`, `RADIXnnn`, `OBJnnPRI`); font piccolo; musica, testi e briefing copiati cosi' come sono |
 | `DelphiDoom.Radix.Translator` | `TRadixTranslator`: esegue i passi nell'ordine del vecchio codice e scrive `RADIXINF` (le righe `RDXW0001=nome`) |
 | `DelphiDoom.Radix.Factory` | `TRadixFactory`: l'unico punto che conosce le classi |
+| `DelphiDoom.Radix.Editions` | `TRadixEditions`: quale RADIX.DAT e' (1.0, 1.1, 2.0; shareware o registered) dal CRC-32 dell'intero file (`radix_version.pas`) |
+| `DelphiDoom.Radix.LumpAliases` | `TRadixLumpAliases` (`IRadixLumpAliases`): le righe `LUMP=nome` di `RADIXINF`; il gioco chiede un'immagine con il nome che ha in RADIX.DAT (`MainMenuButton1`) e ottiene il lump (`radix_alias.pas`) |
+| `DelphiDoom.Radix.MapInfo.Types`, `MapInfo.Reader` | `TRadixMapInfoReader` (`IRadixMapInfoReader`): il testo del lump `RMAP` di un livello (posizione, pendenze, angoli dei flat e flag dei settori; flag, punti ferita e trigger dei muri), cioe' il parser di `RX_LoadRadixMapInfo` |
+| `DelphiDoom.Radix.SlopePlanes` | `TRadixSlopePlanes`: il piano di un pavimento o soffitto inclinato dai tre punti del settore (`calc_radix_plane`, `RX_CalcFloorSlope`, `RX_CalcCeilingSlope`) e l'angolo di un flat nell'unita' del motore |
 
 Il costruttore di patch e il WAD in memoria sono quelli di `Libs\GameData` (`TGamePatchOptions.Radix`: buco 254, palette 0..255).
 
@@ -75,4 +79,8 @@ motore di Doom (che non e' quello del fork) i nomi che legge; l'uscita con i nom
 `Tests\Data\Radix\translation.v20.golden.txt` e `translation.v10.golden.txt` (numero, nome, dimensione e FNV-1a di ogni lump) e `radixinf.*.golden.txt` (testo di `RADIXINF`)
 sono l'uscita del **vecchio** `Radix2WAD_Game` (`Tools\Verifica\169`, compilato da una copia di `Reference\Rad-X` con le correzioni di `radx_crash.md`) su `RADIX.DAT` 2.0 e 1.0
 shareware (`Reference\_dati\radix`). Il test confronta ogni lump della libreria con il lump con lo stesso nome piu' avanti nel WAD vecchio (stesso ordine, stessa dimensione,
-stesso FNV-1a). Test in `Tests\DelphiDoom.Tests.Radix` (69; i due di parita' si saltano se `RADIX.DAT` manca).
+stesso FNV-1a). Test in `Tests\DelphiDoom.Tests.Radix` (255; quelli sui dati veri si saltano o si ignorano con il motivo se `RADIX.DAT` manca).
+
+Le classi del gioco (edizioni, alias, `RMAP`, piani delle pendenze) non hanno un'uscita del vecchio codice con cui confrontarsi (il vecchio eseguibile non arriva a
+caricare un livello): sono provate su casi sintetici e sui dati veri (il CRC del file 2.0 shareware, la tabella `RADIXINF` del golden, i nove `RMAP` del primo episodio:
+ogni settore e' nominato e ogni piano passa per i tre punti del suo settore entro mezza unita').

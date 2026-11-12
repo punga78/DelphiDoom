@@ -56,10 +56,18 @@ type
   /// </summary>
   TKeenActive = (kaNo, kaYes, kaAllways, kaRemovable);
 
-  /// <summary>SDMode: what plays the sound effects. Off and the PC speaker; the AdLib and the digitized sounds are not ported yet</summary>
-  TKeenSoundMode = (ksmOff, ksmPC);
+  /// <summary>SDMode: what plays the sound effects. Off, the PC speaker and the AdLib; the digitized sounds (Sound Blaster, Sound Source) are not ported: the shareware has no data for them</summary>
+  TKeenSoundMode = (ksmOff, ksmPC, ksmAdLib);
 
   /// <summary>gametype: what a saved game keeps of the game</summary>
+  /// <summary>What an audio mixer has done: services of the sound manager, frames, frames that are not silence, the loudest sample</summary>
+  TKeenAudioStatistics = record
+    Services: Int64;
+    Frames: Int64;
+    AudibleFrames: Int64;
+    Peak: Integer;
+  end;
+
   TKeenGameState = record
     WorldX: Word;
     WorldY: Word;
