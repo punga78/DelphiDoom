@@ -12,9 +12,12 @@
 #   g_delphi.pas  copia con i soli cambi che Delphi 11 richiede (FormatSettings)
 # Il resto sono gli stub di stubs\, spawn e net di ..\175-hud\stubs, d_misc e i_windows di ..\175-render\stubs; il
 # renderer (r_*) si compila com'e'. Le copie generate e l'eseguibile stanno in %TEMP%\MenuParity, fuori dal repository.
-# Uso: .\Compila.ps1 [-Dati <cartella con GREED.BLO>] [-Golden <file>]
+# -Parte fli: FliParity.dpr, i filmati (playfli.pas ORIGINALE copiato com'e') contro TGreedFliPlayer; -Dati e' allora
+# la cartella dei *.FLI del gioco.
+# Uso: .\Compila.ps1 [-Parte menu|fli] [-Dati <cartella con GREED.BLO>] [-Golden <file>]
 #   senza -Dati usa l'archivio sintetico degli scenari (font e immagini generati)
 param(
+  [ValidateSet('menu', 'fli', 'intro')][string]$Parte = 'menu',
   [string]$Dati = 'sintetico',
   [string]$Golden = 'nessuno',
   [string]$Riferimento = 'C:\Progetti\DelphiDoom\Reference\xGreed'
@@ -34,7 +37,7 @@ function Ritaglia([string]$testo, [string]$da, [string]$a, [int]$inizioRicerca) 
 $g = Get-Content "$Riferimento\Base\g_delphi.pas" -Raw
 $g = $g -replace '(?<![\.\w])ThousandSeparator', 'FormatSettings.ThousandSeparator' -replace '(?<![\.\w])DecimalSeparator', 'FormatSettings.DecimalSeparator'
 Set-Content "$uscita\src\g_delphi.pas" $g
-foreach ($f in 'd_font.pas', 'd_video.pas') { Copy-Item "$Riferimento\Greed\$f" "$uscita\src\$f" -Force }
+foreach ($f in 'd_font.pas', 'd_video.pas', 'playfli.pas') { Copy-Item "$Riferimento\Greed\$f" "$uscita\src\$f" -Force }
 # menu.pas: l'originale e' scritto per Delphi 7 (char a 8 bit); l'unico cambio e' il cast che Delphi 11 richiede dove
 # un carattere va dentro una string[22]
 $m = Get-Content "$Riferimento\Greed\menu.pas" -Raw
@@ -135,12 +138,13 @@ end;
 end.
 "@
 
+$programma = @{ menu = 'MenuParity'; fli = 'FliParity'; intro = 'IntroParity' }[$Parte]
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
 $libs = 'Greed', 'Platform', 'MathCore', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
 $u = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, l'harness e' un programma da console
-& $dcc -B -Q -CC -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\MenuParity.dpr" | Select-String 'Error|Fatal'
+& $dcc -B -Q -CC -H- -W- "-U$u" "-I$Riferimento;$uscita\src" "-N0$uscita" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\$programma.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }
 # attraverso cmd: l'eseguibile ha il sottosistema GUI di xGreed.inc e PowerShell non ne aspetta l'uscita
-cmd /c "`"$uscita\MenuParity.exe`" `"$Dati`" `"$Golden`""
+cmd /c "`"$uscita\$programma.exe`" `"$Dati`" `"$Golden`""
 exit $LASTEXITCODE

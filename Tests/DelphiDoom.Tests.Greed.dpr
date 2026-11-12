@@ -138,6 +138,8 @@ uses
   DelphiDoom.Tests.Greed.GameTables in 'Source\DelphiDoom.Tests.Greed.GameTables.pas',
   DelphiDoom.Tests.Greed.MenuScenarios in 'Source\DelphiDoom.Tests.Greed.MenuScenarios.pas',
   DelphiDoom.Tests.Greed.Menu in 'Source\DelphiDoom.Tests.Greed.Menu.pas',
+  DelphiDoom.Tests.Greed.FliScenarios in 'Source\DelphiDoom.Tests.Greed.FliScenarios.pas',
+  DelphiDoom.Tests.Greed.FliDecoder in 'Source\DelphiDoom.Tests.Greed.FliDecoder.pas',
   DelphiDoom.Tests.Greed.LevelScenarios in 'Source\DelphiDoom.Tests.Greed.LevelScenarios.pas',
   DelphiDoom.Tests.Greed.LevelRunner in 'Source\DelphiDoom.Tests.Greed.LevelRunner.pas',
   DelphiDoom.Tests.Greed.ItemRules in 'Source\DelphiDoom.Tests.Greed.ItemRules.pas',
