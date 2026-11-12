@@ -40,6 +40,15 @@ type
   end;
 
   /// <summary>
+  ///   doorsound, doorx and doory of raven.pas are globals of the game that TimeUpdate reads: who keeps them is told
+  ///   when the player bumps a door open
+  /// </summary>
+  IGreedDoorSoundSink = interface
+    ['{2D7F4A16-8B3C-4E59-A0D1-95C6E3B7F248}']
+    procedure DoorBumped(ADoorX, ADoorY: Integer);
+  end;
+
+  /// <summary>
   ///   Where the player can go: TryMove looks at the tiles under its square (walls that are not no-clip, solid
   ///   sprites, floors above the feet and ceilings under the head), TryDoor opens the doors that it bumps into
   ///   (and says so: DoorSound, DoorX and DoorY are doorsound, doorx and doory, for the sound of the door), ClipMove
@@ -53,6 +62,7 @@ type
     FDoorSound: Boolean;
     FDoorX: Integer;
     FDoorY: Integer;
+    FDoorSoundSink: IGreedDoorSoundSink;
     function OpenDoor(AIndex: Integer; ACenterX, ACenterY: TGreedFixed; AHorizontal: Boolean): Boolean;
   public
     constructor Create(const AWorld: IGreedWorld; const AHost: IGreedMovementHost);
@@ -70,6 +80,8 @@ type
     property DoorSound: Boolean read FDoorSound write FDoorSound;
     property DoorX: Integer read FDoorX;
     property DoorY: Integer read FDoorY;
+    /// <summary>nil (the default): the sound of the door stays in DoorSound, DoorX and DoorY only</summary>
+    property DoorSoundSink: IGreedDoorSoundSink read FDoorSoundSink write FDoorSoundSink;
   end;
 
 implementation
@@ -117,6 +129,8 @@ begin
     FDoorSound := True;
     FDoorX := LDoor.TileX * GREED_FRACTILEUNIT;
     FDoorY := LDoor.TileY * GREED_FRACTILEUNIT;
+    if Assigned(FDoorSoundSink) then
+      FDoorSoundSink.DoorBumped(FDoorX, FDoorY);
     if AHorizontal then
     begin
       if LDoor.Orientation = gdoHorizontal then

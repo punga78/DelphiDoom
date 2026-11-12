@@ -40,6 +40,8 @@ type
     FInterpolator: TGreedSpriteInterpolator;
     FClock: IGreedRenderClock;
     FRandom: IGreedRandom;
+    FActionHook: IGreedRenderActionHook;
+    procedure CheckActionFlag;
     procedure CopyLevel(const AWorld: IGreedWorld);
     function TransformVertex(ATileX, ATileY: Integer): PGreedRenderVertex;
     function ClipEdge: Boolean;
@@ -56,6 +58,17 @@ type
     ///   of the player (ScrollMin) moves the view up and down
     /// </summary>
     procedure Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
+    /// <summary>
+    ///   RF_RenderView(x, y, z, angle): the view from a place that is not the one of the record of the player (the
+    ///   game adds the bobbing of the head to z). The maps of the walls seen and the scroll are the ones of APlayer
+    /// </summary>
+    procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
+    /// <summary>
+    ///   Called where the original calls RF_CheckActionFlag; nil (the default) calls nothing. What it does can change
+    ///   the level: the planes are read again before the view flows through the tiles
+    /// </summary>
+    property ActionHook: IGreedRenderActionHook read FActionHook write FActionHook;
     /// <summary>What the game changes between pictures: the lights added by the sprites, the animation tables</summary>
     property State: TGreedRenderState read FState;
     property Planes: TGreedPlaneRenderer read FPlanes;
@@ -437,8 +450,20 @@ begin
   end;
 end;
 
+procedure TGreedFrameRenderer.CheckActionFlag;
+begin
+  if Assigned(FActionHook) then
+    FActionHook.CheckActionFlag;
+end;
+
 procedure TGreedFrameRenderer.Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord;
   var AFrame: TGreedFrame);
+begin
+  RenderView(AWorld, APlayer, APlayer.X, APlayer.Y, APlayer.Z, APlayer.Angle, AFrame);
+end;
+
+procedure TGreedFrameRenderer.RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
 var
   S: TGreedRenderState;
 begin
@@ -457,11 +482,18 @@ begin
   S.WestMap := @APlayer.WestMap[0];
   FContent.World := AWorld;
   FContent.RenderTime := FClock.GetTimeCount;
-  S.ViewX := APlayer.X;
-  S.ViewY := APlayer.Y;
-  S.ViewZ := APlayer.Z;
-  S.ViewAngle := APlayer.Angle and GREED_ANGLES;
+  S.ViewX := AX;
+  S.ViewY := AY;
+  S.ViewZ := AZ;
+  S.ViewAngle := AAngle and GREED_ANGLES;
+  CheckActionFlag;
   SetupFrame;
+  if Assigned(FActionHook) then
+  begin
+    FActionHook.CheckActionFlag;
+    // the original reads the planes of the map where they are: what the hooks changed is seen by the flow
+    CopyLevel(AWorld);
+  end;
   // the tile of the player has to be inside the map
   if S.ViewTileX < 0 then
     S.ViewTileX := 0
@@ -472,10 +504,12 @@ begin
   else if S.ViewTileY > GREED_MAP_SIZE - 1 then
     S.ViewTileY := GREED_MAP_SIZE - 1;
   FlowView;
+  CheckActionFlag;
   FInterpolator.Interpolate(AWorld);
   FContent.RenderSprites;
   FInterpolator.Restore;
   FDrawer.DrawSpans;
+  CheckActionFlag;
 end;
 
 end.

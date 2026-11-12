@@ -99,6 +99,16 @@ type
   end;
 
   /// <summary>
+  ///   INT_ReadControls of d_ints.pas: the timer of the original reads the keyboard and the mouse on the odd tics,
+  ///   before the command of the player. Who gives the commands and needs to know that moment (to tell a key that
+  ///   was just pressed from one that is held) has this too; the game asks for it with Supports
+  /// </summary>
+  IGreedControlsSampler = interface
+    ['{A3D58E0F-61B7-4C29-8F4A-07E2D9C5B163}']
+    procedure ReadControls;
+  end;
+
+  /// <summary>
   ///   What the control of the player calls in parts of the game that are other classes: the switches on the walls
   ///   (CheckForSwitch and SwitchWall of raven.pas) and the lights of the renderer (RF_SetLights of r_public.pas)
   /// </summary>
