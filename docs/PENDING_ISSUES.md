@@ -262,6 +262,6 @@ Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e num
 
 ## Radix (#169)
 
-- `Radix32 -warp 1 1`: `Z_CheckHeap(): Block 1303 of the table has the index 909128244 in its header` alla fine del caricamento del livello. Lo heap della zona e' sano dopo `M_Init` e rovinato alla fine di `R_Init` (controlli temporanei, non nel repository): da cercare tra i passi di `R_Init` con i dati di Radix (texture SKY oltre 64k, flat da 16384 byte, sprite, tabelle). Senza `-warp` il difetto non si vede.
+- `Radix32 -warp 1 1`: la corruzione della zone (`Z_CheckHeap(): Block ... has the index ...`) era in `R_InitTranslationTables` (regioni di colore lette oltre `CR_END`, corretta con `TColorRegionLumps`, #169). Ora il livello si carica e il gioco si ferma al primo disegno della barra di stato con `I_Error: STlib_updateBinIcon(): y - ST_Y < 0` (coordinate della barra di Doom con i dati di Radix).
 - Il comando `menu_main` in un file `-con` non lascia aperto il menu (visto in Radix32; non provato negli altri giochi).
 - Non verificati a runtime in Radix32: menu principale e menu delle opzioni (non catturati), carica/salva, le pagine di aiuto, l'automap, tutto cio' che viene dopo il caricamento di un livello. Stato e piano: `Libs\Radix\CLAUDE.md`.
