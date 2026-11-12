@@ -70,6 +70,7 @@ type
     FCameraDelay: Integer;
     FWeaponX: Integer;
     FWeaponY: Integer;
+    FStartPending: Boolean;
     function GetState: TGreedGameState;
     function GetWorld: IGreedWorld;
     function GetInventory: TGreedInventory;
@@ -121,6 +122,11 @@ type
     ///   that map (the first is 0), the map loaded with its script and its sprites, the clock at zero
     /// </summary>
     procedure NewGame(AMap, ACharacter, ADifficulty: Integer);
+    /// <summary>
+    ///   What maingame does before PlayLoop: the data of the loop (InitData) and the first light. NewGame already
+    ///   does it; a game loaded from the menu before play (LoadGame) needs it (StartPending) and clears the flag
+    /// </summary>
+    procedure StartPlay;
     /// <summary>INT_TimerISR: one tic of the timer. Nothing once the game is over (QuitGame)</summary>
     procedure Tic;
     /// <summary>
@@ -161,6 +167,8 @@ type
     property StatusBar: Boolean read FStatusBar write FStatusBar;
     /// <summary>SC.camdelay: tics between two pictures of the rear view (TICRATE = one picture and off)</summary>
     property CameraDelay: Integer read FCameraDelay write FCameraDelay;
+    /// <summary>A game was loaded (LoadGame) and StartPlay has not run since; NewGame clears it</summary>
+    property StartPending: Boolean read FStartPending;
     /// <summary>weaponx and weapony of the last view, in the 320 x 200 view</summary>
     property WeaponX: Integer read FWeaponX;
     property WeaponY: Integer read FWeaponY;
@@ -471,8 +479,7 @@ begin
   S.KeyboardDelay := 0;
   FParts.WeaponView.LoadWeapon(S.Player.Weapons[0]);
   // maingame
-  InitData;
-  FParts.Control.NewLights;
+  StartPlay;
   // PlayLoop
   S.TimeCount := 0;
   // the map after the last one of the edition is not a map: newmap shows the end of the episode and loads
@@ -480,6 +487,13 @@ begin
   // (the original would go on in an empty world, where CheckBonusItem never finds a tile)
   if AMap = LastMap then
     S.QuitGame := True;
+end;
+
+procedure TGreedGame.StartPlay;
+begin
+  InitData;
+  FParts.Control.NewLights;
+  FStartPending := False;
 end;
 
 procedure TGreedGame.Tic;
@@ -869,7 +883,10 @@ function TGreedGame.LoadGame(ANumber: Integer): Boolean;
 begin
   Result := FParts.Session.LoadGame(ANumber);
   if Result then
+  begin
+    FStartPending := True;
     FParts.Renderer.SetBackdrop(FParts.Events.Backdrop);
+  end;
 end;
 
 end.

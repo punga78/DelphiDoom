@@ -18,7 +18,7 @@ program Greed32;
 {$APPTYPE CONSOLE}
 
 uses
-  System.SysUtils,
+  System.SysUtils, System.IOUtils,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.ProgramFactory,
   DelphiDoom.Greed.Types in '..\Libs\Greed\DelphiDoom.Greed.Types.pas',
@@ -27,7 +27,15 @@ uses
 
 procedure ShowUsage;
 begin
+  Writeln('Greed32                  with no arguments: the game, from its menu, with GREED.BLO next to the program');
   Writeln('Greed32 [-data <folder>]... [-list] [-map <number>] [-lump <name or number>] [-png <file>]');
+  Writeln('  the game (none of -list, -map, -lump, -play): the titles, the menu, the briefings, the game, the endings;');
+  Writeln('          xGreed.ini and the saved games are in the folder DATA next to the program');
+  Writeln('  -skipintro  the game starts at once on the first map (with -play N on the map N), without titles and menu;');
+  Writeln('          with -script the keys go to the menus and to the game alike (see -script below)');
+  Writeln('  -nobriefing  no screens before a map');
+  Writeln('  -game1, -game2, -game3  the game (episode) of the full data');
+  Writeln('  -shotat  with -shot: the tics at which a picture is saved, as a list 100,300 (file_100.png ...)');
   Writeln('  -data   a folder with GREED.BLO (and the LEVEL*.LAY maps of the demos); default the current one');
   Writeln('  -list   write the lumps of the archive with their kind and stop');
   Writeln('  -map    the map to draw as a PNG (the first is 0)');
@@ -72,6 +80,8 @@ var
   LLumpIndex: Integer;
   LPlay: TGreedPlayOptions;
   LPlayed: Integer;
+  LProgram: Boolean;
+  LText: string;
 
 begin
 {$IFDEF DEBUG}
@@ -132,6 +142,24 @@ begin
         LPlay.EchoMessages := True
       else if LArgument = '-list' then
         LList := True
+      else if LArgument = '-skipintro' then
+        LPlay.SkipIntro := True
+      else if LArgument = '-nobriefing' then
+        LPlay.NoBriefing := True
+      else if LArgument = '-game1' then
+        LPlay.Game := 1
+      else if LArgument = '-game2' then
+        LPlay.Game := 2
+      else if LArgument = '-game3' then
+        LPlay.Game := 3
+      else if (LArgument = '-shotat') and (LCursor.Remaining >= 1) then
+      begin
+        for LText in LCursor.Value.Split([',']) do
+        begin
+          SetLength(LPlay.ShotTics, Length(LPlay.ShotTics) + 1);
+          LPlay.ShotTics[High(LPlay.ShotTics)] := StrToInt(LText);
+        end;
+      end
       else
       begin
         ShowUsage;
@@ -139,16 +167,19 @@ begin
         Exit;
       end;
     end;
+    // the data are next to the program, or in the current folder
     if Length(LFolders) = 0 then
-      LFolders := [GetCurrentDir];
-    if (not LList) and (LMapNumber < 0) and (LLump = '') and (LPlay.MapNumber < 0) then
+      LFolders := [ExcludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))), GetCurrentDir];
+    LProgram := (not LList) and (LMapNumber < 0) and (LLump = '') and
+      ((LPlay.MapNumber < 0) or LPlay.SkipIntro);
+    LArchive := TGreedComposition.OpenArchive(LFolders);
+    if LProgram then
     begin
-      ShowUsage;
-      System.ExitCode := 2;
+      LPlayed := TGreedComposition.RunProgram(LArchive, LFolders,
+        TPath.Combine(ExtractFilePath(ParamStr(0)), 'DATA'), LPlay);
+      Writeln('Ran ', LPlayed, ' tics');
       Exit;
     end;
-
-    LArchive := TGreedComposition.OpenArchive(LFolders);
     if LPlay.MapNumber >= 0 then
     begin
       LPlayed := TGreedComposition.Play(LArchive, LFolders, LPlay);
