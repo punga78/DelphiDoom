@@ -31,6 +31,8 @@ type
     class function CreateTranslator: IRadixTranslator; overload; static;
     /// <summary>The translator that gives the lumps the names that the engine reads (TRadixLumpNames)</summary>
     class function CreateTranslator(const ANames: TRadixLumpNames): IRadixTranslator; overload; static;
+    /// <summary>An empty table of the names of RADIX.DAT (the lines of RADIXINF are added to it)</summary>
+    class function CreateLumpAliases: IRadixLumpAliases; static;
   end;
 
 implementation
@@ -44,9 +46,15 @@ uses
   DelphiDoom.Radix.GraphicsPart, DelphiDoom.Radix.SmallFontPart, DelphiDoom.Radix.LumpGroupPart,
   DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
   DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
-  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator;
+  DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator,
+  DelphiDoom.Radix.LumpAliases;
 
 { TRadixFactory }
+
+class function TRadixFactory.CreateLumpAliases: IRadixLumpAliases;
+begin
+  Result := TRadixLumpAliases.Create;
+end;
 
 class function TRadixFactory.OpenContainer(const APath: string): IRadixContainer;
 begin

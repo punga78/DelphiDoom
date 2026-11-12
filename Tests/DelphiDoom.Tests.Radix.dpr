@@ -63,6 +63,8 @@ uses
   DelphiDoom.Radix.Level.Table in '..\Libs\Radix\DelphiDoom.Radix.Level.Table.pas',
   DelphiDoom.Radix.Level.Types in '..\Libs\Radix\DelphiDoom.Radix.Level.Types.pas',
   DelphiDoom.Radix.Level.Versions in '..\Libs\Radix\DelphiDoom.Radix.Level.Versions.pas',
+  DelphiDoom.Radix.Editions in '..\Libs\Radix\DelphiDoom.Radix.Editions.pas',
+  DelphiDoom.Radix.LumpAliases in '..\Libs\Radix\DelphiDoom.Radix.LumpAliases.pas',
   DelphiDoom.Radix.LevelPart in '..\Libs\Radix\DelphiDoom.Radix.LevelPart.pas',
   DelphiDoom.Radix.Translator in '..\Libs\Radix\DelphiDoom.Radix.Translator.pas',
   DelphiDoom.Radix.Factory in '..\Libs\Radix\DelphiDoom.Radix.Factory.pas',
@@ -88,6 +90,13 @@ uses
   DelphiDoom.Tests.Radix.LevelPart in 'Source\DelphiDoom.Tests.Radix.LevelPart.pas',
   DelphiDoom.Tests.Radix.LevelReader in 'Source\DelphiDoom.Tests.Radix.LevelReader.pas',
   DelphiDoom.Tests.Radix.LevelVersions in 'Source\DelphiDoom.Tests.Radix.LevelVersions.pas',
+  DelphiDoom.Tests.Shared.Skip in 'Source\DelphiDoom.Tests.Shared.Skip.pas',
+  DelphiDoom.Tests.Radix.Editions in 'Source\DelphiDoom.Tests.Radix.Editions.pas',
+  DelphiDoom.Tests.Radix.LumpAliases in 'Source\DelphiDoom.Tests.Radix.LumpAliases.pas',
+  DelphiDoom.Engine.Wad.Lumps.Intf in '..\Base\DelphiDoom.Engine.Wad.Lumps.Intf.pas',
+  DelphiDoom.Engine.Wad.Aliases.Intf in '..\Base\DelphiDoom.Engine.Wad.Aliases.Intf.pas',
+  DelphiDoom.Engine.Radix.LumpAliases in '..\Base\DelphiDoom.Engine.Radix.LumpAliases.pas',
+  DelphiDoom.Tests.Radix.EngineLumpAliases in 'Source\DelphiDoom.Tests.Radix.EngineLumpAliases.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var

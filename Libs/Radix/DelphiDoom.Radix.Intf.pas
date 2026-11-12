@@ -71,6 +71,26 @@ type
     property TextureNames: TArray<string> read GetTextureNames;
   end;
 
+  /// <summary>Tells whether the WAD has a lump with that name (the aliases of missing lumps are dropped)</summary>
+  TRadixLumpExists = reference to function(const ALumpName: string): Boolean;
+
+  /// <summary>
+  ///   The names that the pictures have in RADIX.DAT ("MainMenuButton1", longer than the 8
+  ///   characters of a lump) brought to the lumps of the translated WAD (Rad-X: radix_alias)
+  /// </summary>
+  IRadixLumpAliases = interface
+    ['{5C0B7E19-84D3-4A6F-9E21-3B7A60D4C8F2}']
+    function GetCount: Integer;
+    /// <summary>
+    ///   Adds the lines "LUMP=name" of a lump RADIXINF. A name already known is not changed.
+    ///   AExists (it can be nil: every line is taken) drops the lines of the lumps that are not there
+    /// </summary>
+    procedure AddText(const AText: string; const AExists: TRadixLumpExists);
+    /// <summary>The lump of a name of RADIX.DAT, without case; false when the table does not have it</summary>
+    function TryResolve(const ARadixName: string; out ALumpName: string): Boolean;
+    property Count: Integer read GetCount;
+  end;
+
 implementation
 
 end.

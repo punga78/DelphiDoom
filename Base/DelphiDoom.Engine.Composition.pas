@@ -21,7 +21,7 @@ implementation
 
 uses
 {$IFDEF RADIX}
-  DelphiDoom.Engine.Radix.DataConverter,
+  DelphiDoom.Engine.Radix.Composition,
 {$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
@@ -1468,7 +1468,7 @@ begin
 
   W_Configure(LWadServices);
 {$IFDEF RADIX}
-  W_ConfigureConverter(TEngineRadixDataConverter.Create(LLog));
+  ComposeRadix(LLog, LLumps);
 {$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);
