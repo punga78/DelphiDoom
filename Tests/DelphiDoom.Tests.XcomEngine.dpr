@@ -62,7 +62,11 @@ uses
   DelphiDoom.Tests.XcomEngine.FontFakes in 'Source\DelphiDoom.Tests.XcomEngine.FontFakes.pas',
   DelphiDoom.Tests.XcomEngine.FontSettingsReader in 'Source\DelphiDoom.Tests.XcomEngine.FontSettingsReader.pas',
   DelphiDoom.Tests.XcomEngine.RasterFontOverlay in 'Source\DelphiDoom.Tests.XcomEngine.RasterFontOverlay.pas',
-  DelphiDoom.Tests.XcomEngine.FontGridGenerator in 'Source\DelphiDoom.Tests.XcomEngine.FontGridGenerator.pas';
+  DelphiDoom.Tests.XcomEngine.FontGridGenerator in 'Source\DelphiDoom.Tests.XcomEngine.FontGridGenerator.pas',
+  DelphiDoom.Tests.XcomEngine.DetailFakes in 'Source\DelphiDoom.Tests.XcomEngine.DetailFakes.pas',
+  DelphiDoom.Tests.XcomEngine.DetailFont in 'Source\DelphiDoom.Tests.XcomEngine.DetailFont.pas',
+  DelphiDoom.Tests.XcomEngine.InkComposer in 'Source\DelphiDoom.Tests.XcomEngine.InkComposer.pas',
+  DelphiDoom.Tests.XcomEngine.TextDetail in 'Source\DelphiDoom.Tests.XcomEngine.TextDetail.pas';
 
 var
   Runner: ITestRunner;

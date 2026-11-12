@@ -326,16 +326,21 @@ end;
 class function TXcomTrueColorComposer.Mix(AUnder, AColor: Cardinal; AAlpha: Cardinal): Cardinal;
 var
   LRest: Cardinal;
+  LPair: Cardinal;
+  LGreen: Cardinal;
 begin
   if AAlpha = 0 then
     Exit(AUnder);
   if AAlpha >= 255 then
     Exit(AColor);
   LRest := 255 - AAlpha;
-  Result := $FF000000 or
-    (((((AColor shr 16) and $FF) * AAlpha + ((AUnder shr 16) and $FF) * LRest + 127) div 255) shl 16) or
-    (((((AColor shr 8) and $FF) * AAlpha + ((AUnder shr 8) and $FF) * LRest + 127) div 255) shl 8) or
-    (((AColor and $FF) * AAlpha + (AUnder and $FF) * LRest + 127) div 255);
+  // each channel is (color * alpha + under * rest) / 255 rounded to the nearest; red and blue are computed
+  // together, and (t + t shr 8) shr 8 with t = x + 128 is that division for every x up to 255 * 255
+  LPair := (AColor and $FF00FF) * AAlpha + (AUnder and $FF00FF) * LRest + $800080;
+  LPair := ((LPair + ((LPair shr 8) and $FF00FF)) shr 8) and $FF00FF;
+  LGreen := ((AColor shr 8) and $FF) * AAlpha + ((AUnder shr 8) and $FF) * LRest + $80;
+  LGreen := (LGreen + (LGreen shr 8)) and $FF00;
+  Result := $FF000000 or LPair or LGreen;
 end;
 
 procedure TXcomTrueColorComposer.ComposeInk(ABase: TXcomSurface; const ALayer: TLayer;
@@ -441,8 +446,12 @@ begin
           if LValue = 0 then
             Continue;
           // the outline first, the body over it
-          LColor := Mix(FFrame[LFrameRow + LSubX], AColors[LValue and $FF], (LValue shr 8) and $FF);
-          FFrame[LFrameRow + LSubX] := Mix(LColor, AColors[(LValue shr 16) and $FF], LValue shr 24);
+          LColor := FFrame[LFrameRow + LSubX];
+          if LValue and $FF00 <> 0 then
+            LColor := Mix(LColor, AColors[LValue and $FF], (LValue shr 8) and $FF);
+          if LValue shr 24 <> 0 then
+            LColor := Mix(LColor, AColors[(LValue shr 16) and $FF], LValue shr 24);
+          FFrame[LFrameRow + LSubX] := LColor;
         end;
       end;
     end;

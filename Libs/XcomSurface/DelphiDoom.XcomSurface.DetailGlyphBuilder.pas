@@ -20,7 +20,8 @@ type
   ///   as the text at the resolution of the display wants it. The coverage stays what it is: it becomes the alpha
   ///   of the color of the text, not one of the three levels of the pictures. The outline of the big and small
   ///   fonts, one pixel of the game wide, is AScale pixels wide here: the pixels within that distance of the body
-  ///   have the level 4, the ones only on its corners the level 5, as in the pictures of the game
+  ///   have the level 4, the ones a little farther (towards the corners) the level 5, as in the pictures of the
+  ///   game; the very corners of the square are left out, so the outline is round where the pictures are square
   /// </summary>
   TXcomDetailGlyphBuilder = class sealed
   public
@@ -46,6 +47,7 @@ var
   LFar: Byte;
   LValue: Byte;
   LIndex: Integer;
+  LDistance: Integer;
 begin
   LMargin := 0;
   if AOutline then
@@ -68,7 +70,8 @@ begin
   for LY := 0 to Result.Height - 1 do
     for LX := 0 to Result.Width - 1 do
     begin
-      // the strongest body pixel within the width of the outline (a disk) and within the square around it
+      // the strongest body pixel within the width of the outline (a disk) and a little beyond it, inside the
+      // square that the outline of the pictures fills
       LNear := 0;
       LFar := 0;
       for LDeltaY := -LMargin to LMargin do
@@ -77,9 +80,10 @@ begin
           LValue := ACoverage.At(LX - LMargin + LDeltaX, LY - LMargin + LDeltaY);
           if LValue = 0 then
             Continue;
-          if LValue > LFar then
+          LDistance := LDeltaX * LDeltaX + LDeltaY * LDeltaY;
+          if (LValue > LFar) and (3 * LDistance <= 4 * LMargin * LMargin) then
             LFar := LValue;
-          if (LValue > LNear) and (LDeltaX * LDeltaX + LDeltaY * LDeltaY <= LMargin * LMargin) then
+          if (LValue > LNear) and (LDistance <= LMargin * LMargin) then
             LNear := LValue;
         end;
       LIndex := LY * Result.Width + LX;
