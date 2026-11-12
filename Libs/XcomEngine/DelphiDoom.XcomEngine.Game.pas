@@ -93,6 +93,7 @@ type
     procedure SetState(AState: TXcomState); override;
     procedure Quit; override;
     function IsState(AState: TXcomState): Boolean; override;
+    function StateCount: Integer; override;
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); override;
     function LanguageProvider: IXcomLanguageProvider; override;
     function DisplayModes: IXcomDisplayModes; override;
@@ -275,6 +276,11 @@ end;
 function TXcomGame.IsState(AState: TXcomState): Boolean;
 begin
   Result := (FStates.Count > 0) and (FStates.Last = AState);
+end;
+
+function TXcomGame.StateCount: Integer;
+begin
+  Result := FStates.Count;
 end;
 
 procedure TXcomGame.AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage);

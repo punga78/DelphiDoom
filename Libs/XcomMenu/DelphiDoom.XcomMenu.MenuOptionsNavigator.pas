@@ -71,9 +71,20 @@ begin
 end;
 
 procedure TXcomMenuOptionsNavigator.Restart(AOrigin: TXcomOptionsOrigin; AHost: TXcomStateHost);
+var
+  LIndex: Integer;
 begin
   if AOrigin = ooMenu then
-    AHost.SetState(TXcomMainMenuState.Create(AHost, FVersionText));
+    AHost.SetState(TXcomMainMenuState.Create(AHost, FVersionText))
+  else
+  begin
+    // from the geoscape or a battle the options sit over the pause window (Origin, Pause, Options): both go and the
+    // state that opened them is on top again (it takes its Init). OpenXcom builds a new GeoscapeState (and
+    // BattlescapeState) here; the states of this port keep their game and are only shown again
+    for LIndex := 1 to 2 do
+      if AHost.StateCount > 1 then
+        AHost.PopState;
+  end;
 end;
 
 end.

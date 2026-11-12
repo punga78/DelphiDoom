@@ -218,6 +218,8 @@ type
     [Test]
     procedure IlNavigatoreDelMenuRiportaAlMenuPrincipale;
     [Test]
+    procedure LeOpzioniDiUnaBattagliaDovrebberoTornareAlloStatoCheLeHaAperte;
+    [Test]
     procedure LaPosizioneDellaFinestraSiImpostaConOk;
     [Test]
     procedure LaPosizioneDellaFinestraAnnullaChiamaIlGestore;
@@ -1214,10 +1216,29 @@ begin
   LNavigator.Restart(ooMenu, FWorld.Game);
   FWorld.Wait(400);
   Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
-  // the geoscape and the battlescape are not ported: nothing happens
+  // a single state is never taken away: the options of a geoscape or a battle go back to the state below them
   LNavigator.Restart(ooGeoscape, FWorld.Game);
   FWorld.Wait(100);
   Assert.IsTrue(FWorld.Game.TopState is TXcomMainMenuState);
+end;
+
+procedure TTestXcomOptionsMoreScreens.LeOpzioniDiUnaBattagliaDovrebberoTornareAlloStatoCheLeHaAperte;
+var
+  LNavigator: IXcomOptionsNavigator;
+  LOrigin: TXcomState;
+begin
+  // Origin (the geoscape or the battle), Pause, Options: OK of the options takes the last two away
+  LOrigin := TXcomMainMenuState.Create(FWorld.Game, 'v');
+  FWorld.Game.SetState(LOrigin);
+  FWorld.Game.PushState(TXcomMainMenuState.Create(FWorld.Game, 'v'));
+  FWorld.Game.PushState(TXcomMainMenuState.Create(FWorld.Game, 'v'));
+  FWorld.Wait(100);
+  Assert.AreEqual(3, FWorld.Game.StateCount);
+  LNavigator := TXcomMenuOptionsNavigator.Create('v');
+  LNavigator.Restart(ooBattlescape, FWorld.Game);
+  FWorld.Wait(100);
+  Assert.AreEqual(1, FWorld.Game.StateCount);
+  Assert.IsTrue(FWorld.Game.IsState(LOrigin));
 end;
 
 procedure TTestXcomOptionsMoreScreens.LaPosizioneDellaFinestraSiImpostaConOk;

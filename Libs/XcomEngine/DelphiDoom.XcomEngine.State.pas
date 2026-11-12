@@ -49,6 +49,8 @@ type
     procedure AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage); virtual; abstract;
     /// <summary>Game::isState: the state is the one on top</summary>
     function IsState(AState: TXcomState): Boolean; virtual; abstract;
+    /// <summary>How many states the game has (0 for a host that does not tell): the options use it to go back safely</summary>
+    function StateCount: Integer; virtual;
     /// <summary>The languages that can be chosen and loaded (nil when the host has none)</summary>
     function LanguageProvider: IXcomLanguageProvider; virtual;
     /// <summary>The full screen modes of the display (nil when the host cannot list them)</summary>
@@ -187,6 +189,11 @@ const
   PALETTE_BACKPALS = 'BACKPALS.DAT';
 
 { TXcomStateHost }
+
+function TXcomStateHost.StateCount: Integer;
+begin
+  Result := 0;
+end;
 
 function TXcomStateHost.LanguageProvider: IXcomLanguageProvider;
 begin

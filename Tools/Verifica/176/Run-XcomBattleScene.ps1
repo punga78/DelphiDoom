@@ -1,4 +1,4 @@
-<#
+﻿<#
   Carica un salvataggio di battaglia (testo .sav) in Xcom32 -script a una scala e con o senza -truecolor e salva le
   schermate (issue #183). Le coordinate dei passi sono quelle di una finestra 640x400 e il programma le porta alla
   scala chiesta (click/move/drag); le schermate vanno in <Out>\<nome>.png.
@@ -16,7 +16,7 @@ param(
   [string]$Game = 'TFTD',
   # folder of the game inside -Data (the UFO data of the repository keep it in 'openxcom\UFO')
   [string]$GameDir = '',
-  [int]$Scale = 2,
+  [double]$Scale = 2,
   [switch]$TrueColor,
   [string[]]$Option = @(),
   [string]$ExtraArgs = ''
