@@ -1,8 +1,8 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: unit tests of TXcomVideoDeviceSelector (the choice between the   }
-{  GDI and the OpenGL display of Xcom32) and of what TXcomScreen does with a    }
-{  display that scales the picture itself                                       }
+{  DelphiDoom: unit tests of the display of Libs\GameHost that chooses between  }
+{  GDI and OpenGL as Xcom32 uses it (through its adapter) and of what           }
+{  TXcomScreen does with a display that scales the picture itself               }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -12,40 +12,43 @@ unit DelphiDoom.Tests.XcomEngine.VideoDeviceSelector;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
-  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.Xcom.VideoDevice.Types,
-  DelphiDoom.Xcom.VideoDeviceSelector;
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Logging.Intf, DelphiDoom.XcomEngine.Intf,
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.GameHost.Types,
+  DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.VideoDeviceSelector, DelphiDoom.Xcom.HostVideoDevice;
 
 type
   /// <summary>A display that writes what it is asked in a journal; its SetMode can fail as an OpenGL one does</summary>
-  TFakeDisplay = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle, IXcomFilteredDisplay)
+  TFakeDisplay = class(TInterfacedObject, IGameHostVideoDevice, IGameHostWindowStyle, IGameHostFilteredDisplay)
   strict private
     FName: string;
     FJournal: TStrings;
     FFailure: string;
     FScales: Boolean;
     FRefusesShader: Boolean;
-    FFilter: TXcomDisplayFilter;
+    FFilter: TGameHostDisplayFilter;
   public
     constructor Create(const AName: string; AJournal: TStrings; const AFailure: string = ''; AScales: Boolean = False;
       ARefusesShader: Boolean = False);
     destructor Destroy; override;
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
-    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
+    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette);
     procedure SetTitle(const ATitle: string);
     procedure SetWindowStyle(ABorderless, AResizable: Boolean);
-    procedure SetDisplayFilter(const AFilter: TXcomDisplayFilter);
-    function DisplayFilter: TXcomDisplayFilter;
-    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
-      ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+    procedure SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
+    function DisplayFilter: TGameHostDisplayFilter;
+    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
+      ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
   end;
 
-  TFakeLog = class(TInterfacedObject, IXcomLog)
+  TFakeLog = class(TInterfacedObject, ILog)
   strict private
     FJournal: TStrings;
   public
     constructor Create(AJournal: TStrings);
-    procedure Write(const ALevel, AMessage: string);
+    procedure Info(const AText: string);
+    procedure Warning(const AText: string);
+    procedure DevWarning(const AText: string);
+    procedure Error(const AText: string);
   end;
 
   [TestFixture]
@@ -55,10 +58,11 @@ type
     FJournal: TStringList;
     FOpenGlFailure: string;
     FOpenGlRefusesShader: Boolean;
-    FSelector: TXcomVideoDeviceSelector;
-    FDevice: IXcomVideoDevice;
+    FSelector: TGameHostVideoDeviceSelector;
+    FDevice: IGameHostVideoDevice;
+    FXcomDevice: IXcomVideoDevice;
     function Journal: string;
-    function Filter(AOpenGl: Boolean; const AShader: string = ''): TXcomDisplayFilter;
+    function Filter(AOpenGl: Boolean; const AShader: string = ''): TGameHostDisplayFilter;
     procedure NewSelector(AWithOpenGl: Boolean = True);
     procedure SetMode(AWidth, AHeight: Integer);
   public
@@ -131,12 +135,12 @@ begin
     // what a display that fails half way could leave in the sizes
     AWidth := 1;
     AHeight := 1;
-    raise EXcomVideoDeviceException.Create(FFailure);
+    raise EGameHostVideoDeviceException.Create(FFailure);
   end;
   FJournal.Add(Format('mode:%s:%dx%d:%s', [FName, AWidth, AHeight, BoolToStr(AFullscreen, True)]));
 end;
 
-procedure TFakeDisplay.Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
+procedure TFakeDisplay.Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette);
 begin
   FJournal.Add(Format('present:%s:%dx%d', [FName, AWidth, AHeight]));
 end;
@@ -151,13 +155,13 @@ begin
   FJournal.Add(Format('style:%s:%s:%s', [FName, BoolToStr(ABorderless, True), BoolToStr(AResizable, True)]));
 end;
 
-procedure TFakeDisplay.SetDisplayFilter(const AFilter: TXcomDisplayFilter);
+procedure TFakeDisplay.SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
 begin
   FFilter := AFilter;
   FJournal.Add(Format('filter:%s:%s', [FName, AFilter.Shader]));
 end;
 
-function TFakeDisplay.DisplayFilter: TXcomDisplayFilter;
+function TFakeDisplay.DisplayFilter: TGameHostDisplayFilter;
 begin
   Result := FFilter;
   Result.UseOpenGL := FScales;
@@ -165,8 +169,8 @@ begin
     Result.Shader := '';
 end;
 
-function TFakeDisplay.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
-  ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+function TFakeDisplay.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
+  ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
 begin
   Result := FScales;
   if Result then
@@ -182,9 +186,24 @@ begin
   FJournal := AJournal;
 end;
 
-procedure TFakeLog.Write(const ALevel, AMessage: string);
+procedure TFakeLog.Info(const AText: string);
 begin
-  FJournal.Add(Format('log:%s:%s', [ALevel, AMessage]));
+  FJournal.Add('log:INFO:' + AText);
+end;
+
+procedure TFakeLog.Warning(const AText: string);
+begin
+  FJournal.Add('log:WARN:' + AText);
+end;
+
+procedure TFakeLog.DevWarning(const AText: string);
+begin
+  FJournal.Add('log:DEV:' + AText);
+end;
+
+procedure TFakeLog.Error(const AText: string);
+begin
+  FJournal.Add('log:ERROR:' + AText);
 end;
 
 { TTestXcomVideoDeviceSelector }
@@ -200,28 +219,31 @@ end;
 procedure TTestXcomVideoDeviceSelector.TearDown;
 begin
   FSelector := nil;
+  FXcomDevice := nil;
   FDevice := nil;
   FJournal.Free;
 end;
 
 procedure TTestXcomVideoDeviceSelector.NewSelector(AWithOpenGl: Boolean);
 var
-  LOpenGl: TXcomVideoDeviceFactory;
+  LOpenGl: TGameHostVideoDeviceFactory;
 begin
   LOpenGl := nil;
   if AWithOpenGl then
     LOpenGl :=
-      function: IXcomVideoDevice
+      function: IGameHostVideoDevice
       begin
         Result := TFakeDisplay.Create('gl', FJournal, FOpenGlFailure, True, FOpenGlRefusesShader);
       end;
-  FSelector := TXcomVideoDeviceSelector.Create(
-    function: IXcomVideoDevice
+  FSelector := TGameHostVideoDeviceSelector.Create(
+    function: IGameHostVideoDevice
     begin
       Result := TFakeDisplay.Create('gdi', FJournal);
     end, LOpenGl, TFakeLog.Create(FJournal));
   // one interface reference for the whole life of the object
   FDevice := FSelector;
+  // what the game sees: the adapter of Xcom32 on the display of the host
+  FXcomDevice := TXcomHostVideoDevice.Create(FDevice);
   FJournal.Clear;
 end;
 
@@ -230,9 +252,9 @@ begin
   Result := string.Join('|', FJournal.ToStringArray);
 end;
 
-function TTestXcomVideoDeviceSelector.Filter(AOpenGl: Boolean; const AShader: string): TXcomDisplayFilter;
+function TTestXcomVideoDeviceSelector.Filter(AOpenGl: Boolean; const AShader: string): TGameHostDisplayFilter;
 begin
-  Result := Default(TXcomDisplayFilter);
+  Result := Default(TGameHostDisplayFilter);
   Result.UseOpenGL := AOpenGl;
   Result.Shader := AShader;
 end;
@@ -348,8 +370,8 @@ end;
 
 procedure TTestXcomVideoDeviceSelector.DovrebbePropagareLErroreDelDispositivoSemplice;
 begin
-  FSelector := TXcomVideoDeviceSelector.Create(
-    function: IXcomVideoDevice
+  FSelector := TGameHostVideoDeviceSelector.Create(
+    function: IGameHostVideoDevice
     begin
       Result := TFakeDisplay.Create('gdi', FJournal, 'no window');
     end, nil);
@@ -358,7 +380,7 @@ begin
     procedure
     begin
       SetMode(640, 400);
-    end, EXcomVideoDeviceException, 'no window');
+    end, EGameHostVideoDeviceException, 'no window');
 end;
 
 procedure TTestXcomVideoDeviceSelector.DovrebbeRifiutareLaFabbricaSempliceNil;
@@ -366,35 +388,35 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      TXcomVideoDeviceSelector.Create(nil, nil);
+      TGameHostVideoDeviceSelector.Create(nil, nil);
     end, EArgumentNilException);
 end;
 
 procedure TTestXcomVideoDeviceSelector.DovrebbePresentareNonScalatoSoloConOpenGl;
 var
   LPixels: TBytes;
-  LPalette: TXcomColors;
+  LPalette: TGameHostPalette;
 begin
   SetLength(LPixels, 320 * 200);
   FillChar(LPalette, SizeOf(LPalette), 0);
   SetMode(640, 400);
-  Assert.IsFalse(FSelector.PresentUnscaled(LPixels, 320, 200, LPalette, 640, 400, Default(TXcomBlackBands)));
+  Assert.IsFalse(FSelector.PresentUnscaled(LPixels, 320, 200, LPalette, 640, 400, Default(TGameHostBlackBands)));
   FSelector.SetDisplayFilter(Filter(True));
   SetMode(640, 400);
   FJournal.Clear;
-  Assert.IsTrue(FSelector.PresentUnscaled(LPixels, 320, 200, LPalette, 640, 400, Default(TXcomBlackBands)));
+  Assert.IsTrue(FSelector.PresentUnscaled(LPixels, 320, 200, LPalette, 640, 400, Default(TGameHostBlackBands)));
   Assert.AreEqual('unscaled:gl:320x200>640x400:0,0,0,0', Journal);
 end;
 
 procedure TTestXcomVideoDeviceSelector.NonDovrebbePresentarePrimaDelModo;
 var
   LPixels: TBytes;
-  LPalette: TXcomColors;
+  LPalette: TGameHostPalette;
 begin
   SetLength(LPixels, 4);
   FillChar(LPalette, SizeOf(LPalette), 0);
   FSelector.Present(LPixels, 2, 2, LPalette);
-  Assert.IsFalse(FSelector.PresentUnscaled(LPixels, 2, 2, LPalette, 2, 2, Default(TXcomBlackBands)));
+  Assert.IsFalse(FSelector.PresentUnscaled(LPixels, 2, 2, LPalette, 2, 2, Default(TGameHostBlackBands)));
   Assert.AreEqual('', Journal);
 end;
 
@@ -408,7 +430,7 @@ begin
   LOptions := TXcomOptions.Create;
   try
     LOptions.UseOpenGL := True;
-    LScreen := TXcomScreen.Create(LOptions, FDevice);
+    LScreen := TXcomScreen.Create(LOptions, FXcomDevice);
     try
       Assert.IsFalse(LOptions.UseOpenGL);
       Assert.IsFalse(FSelector.IsOpenGl);
@@ -434,7 +456,7 @@ begin
   try
     LOptions.UseOpenGL := True;
     LOptions.UseOpenGLShader := 'Shaders/broken.opengl.shader';
-    LScreen := TXcomScreen.Create(LOptions, FDevice);
+    LScreen := TXcomScreen.Create(LOptions, FXcomDevice);
     try
       Assert.IsTrue(LOptions.UseOpenGL);
       Assert.AreEqual('', LOptions.UseOpenGLShader);
@@ -458,7 +480,7 @@ begin
     LOptions.DisplayHeight := 400;
     LOptions.BaseXResolution := 320;
     LOptions.BaseYResolution := 200;
-    LScreen := TXcomScreen.Create(LOptions, FDevice);
+    LScreen := TXcomScreen.Create(LOptions, FXcomDevice);
     try
       Assert.IsTrue(LOptions.UseOpenGL);
       Assert.AreEqual('Shaders/Raw.OpenGL.shader', LOptions.UseOpenGLShader);
@@ -483,7 +505,7 @@ var
 begin
   LOptions := TXcomOptions.Create;
   try
-    LScreen := TXcomScreen.Create(LOptions, FDevice);
+    LScreen := TXcomScreen.Create(LOptions, FXcomDevice);
     try
       Assert.AreEqual('create:gdi|style:gdi:False:False|filter:gdi:Shaders/Raw.OpenGL.shader|mode:gdi:640x400:False',
         Journal);

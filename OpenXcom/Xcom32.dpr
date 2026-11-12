@@ -57,13 +57,12 @@ uses
   DelphiDoom.Xcom.ScriptPcmOutput in 'DelphiDoom.Xcom.ScriptPcmOutput.pas',
   DelphiDoom.Xcom.LoggingBattleAudio in 'DelphiDoom.Xcom.LoggingBattleAudio.pas',
   DelphiDoom.Xcom.DelegateLog in 'DelphiDoom.Xcom.DelegateLog.pas',
-  DelphiDoom.Xcom.VideoDevice.Types in 'DelphiDoom.Xcom.VideoDevice.Types.pas',
-  DelphiDoom.Xcom.VideoDeviceSelector in 'DelphiDoom.Xcom.VideoDeviceSelector.pas',
-  DelphiDoom.Xcom.Win.Window in 'DelphiDoom.Xcom.Win.Window.pas',
-  DelphiDoom.Xcom.Win.WindowDevice in 'DelphiDoom.Xcom.Win.WindowDevice.pas',
-  DelphiDoom.Xcom.Win.VideoDevice in 'DelphiDoom.Xcom.Win.VideoDevice.pas',
-  DelphiDoom.Xcom.Win.OpenGlProgram in 'DelphiDoom.Xcom.Win.OpenGlProgram.pas',
-  DelphiDoom.Xcom.Win.OpenGlVideoDevice in 'DelphiDoom.Xcom.Win.OpenGlVideoDevice.pas',
+  DelphiDoom.Xcom.HostLog in 'DelphiDoom.Xcom.HostLog.pas',
+  DelphiDoom.Xcom.HostShaderLoader in 'DelphiDoom.Xcom.HostShaderLoader.pas',
+  DelphiDoom.Xcom.HostVideoDevice in 'DelphiDoom.Xcom.HostVideoDevice.pas',
+  DelphiDoom.Xcom.HostEventSink in 'DelphiDoom.Xcom.HostEventSink.pas',
+  DelphiDoom.GameHost.Factory,
+  DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.Win.Clock in 'DelphiDoom.Xcom.Win.Clock.pas',
   DelphiDoom.Xcom.Win.DisplayModes in 'DelphiDoom.Xcom.Win.DisplayModes.pas',
   DelphiDoom.Xcom.Win.FolderOpener in 'DelphiDoom.Xcom.Win.FolderOpener.pas',
@@ -276,7 +275,7 @@ procedure RunWindow(const AArguments: TArguments);
 var
   LEvents: TXcomQueueEventSource;
   LEventsRef: IXcomEventSource;
-  LWindow: TXcomWinWindow;
+  LWindow: TGameHostWinWindow;
   LDevice: IXcomVideoDevice;
   LGame: TXcomGame;
   LSettings: TXcomGameSettings;
@@ -297,7 +296,9 @@ begin
       LMeter := AMeter;
     end;
   LGame := nil;
-  LWindow := TXcomWinWindow.Create('OpenXcom ' + AArguments.Settings.VersionText, LEvents);
+  // the window of Libs\GameHost: its events reach the queue of the game as SDL made them, the cursor is the game's
+  LWindow := TGameHostFactory.CreateWindow('OpenXcom ' + AArguments.Settings.VersionText,
+    TXcomHostEventSink.Create(LEvents), True);
   try
     // GDI, or OpenGL when the options ask for it: which OpenGL is found, or why it is not used, is said
     LDevice := TXcomGameComposition.CreateWindowDevice(LWindow, LSettings, TXcomDelegateLog.Create(

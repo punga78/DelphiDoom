@@ -13,8 +13,8 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
-  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.Xcom.VideoDevice.Types,
-  DelphiDoom.Xcom.VideoDeviceSelector;
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.Screen, DelphiDoom.GameHost.Types,
+  DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.VideoDeviceSelector, DelphiDoom.Xcom.HostVideoDevice;
 
 type
   /// <summary>A display that records where it is told to put its window and the size it is given</summary>
@@ -30,6 +30,20 @@ type
     PlacedBeforeMode: Boolean;
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
     procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
+    procedure SetTitle(const ATitle: string);
+    procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+  end;
+
+  /// <summary>A display of Libs\GameHost that records where it is told to put its window</summary>
+  TFakeHostPlacedDisplay = class(TInterfacedObject, IGameHostVideoDevice, IGameHostWindowPlacement)
+  public
+    Placements: Integer;
+    Fixed: Boolean;
+    X: Integer;
+    Y: Integer;
+    PlacedBeforeMode: Boolean;
+    procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
+    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette);
     procedure SetTitle(const ATitle: string);
     procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
   end;
@@ -92,6 +106,29 @@ begin
 end;
 
 { TTestXcomWindowPlacement }
+
+procedure TFakeHostPlacedDisplay.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
+begin
+  PlacedBeforeMode := Placements > 0;
+end;
+
+procedure TFakeHostPlacedDisplay.Present(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette);
+begin
+end;
+
+procedure TFakeHostPlacedDisplay.SetTitle(const ATitle: string);
+begin
+end;
+
+procedure TFakeHostPlacedDisplay.SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+begin
+  Inc(Placements);
+  Fixed := AFixed;
+  X := AX;
+  Y := AY;
+end;
+
 
 procedure TTestXcomWindowPlacement.Setup;
 begin
@@ -173,29 +210,31 @@ end;
 
 procedure TTestXcomWindowPlacement.IlSelettorePassaLaPosizioneAlDispositivoCheCrea;
 var
-  LSelector: TXcomVideoDeviceSelector;
+  LHost: TFakeHostPlacedDisplay;
+  LHostRef: IGameHostVideoDevice;
   LDevice: IXcomVideoDevice;
-  LFactory: TXcomVideoDeviceFactory;
+  LFactory: TGameHostVideoDeviceFactory;
   LWidth, LHeight: Integer;
 begin
+  // the chain of Xcom32: the adapter of the game, the selector of Libs\GameHost, the display it makes
+  LHost := TFakeHostPlacedDisplay.Create;
+  LHostRef := LHost;
   LFactory :=
-    function: IXcomVideoDevice
+    function: IGameHostVideoDevice
     begin
-      Result := FDisplayRef;
+      Result := LHostRef;
     end;
-  LSelector := TXcomVideoDeviceSelector.Create(LFactory, nil);
-  // one interface reference for the whole life of the object
-  LDevice := LSelector;
-  LSelector.SetWindowPlacement(True, 33, 44, False);
-  Assert.AreEqual(0, FDisplay.Placements, 'nessun dispositivo prima del primo modo');
+  LDevice := TXcomHostVideoDevice.Create(TGameHostVideoDeviceSelector.Create(LFactory, nil));
+  (LDevice as IXcomWindowPlacement).SetWindowPlacement(True, 33, 44, False);
+  Assert.AreEqual(0, LHost.Placements, 'nessun dispositivo prima del primo modo');
   LWidth := 640;
   LHeight := 400;
   LDevice.SetMode(LWidth, LHeight, False);
-  Assert.AreEqual(1, FDisplay.Placements);
-  Assert.IsTrue(FDisplay.Fixed);
-  Assert.AreEqual(33, FDisplay.X);
-  Assert.AreEqual(44, FDisplay.Y);
-  Assert.IsTrue(FDisplay.PlacedBeforeMode);
+  Assert.AreEqual(1, LHost.Placements);
+  Assert.IsTrue(LHost.Fixed);
+  Assert.AreEqual(33, LHost.X);
+  Assert.AreEqual(44, LHost.Y);
+  Assert.IsTrue(LHost.PlacedBeforeMode);
 end;
 
 end.

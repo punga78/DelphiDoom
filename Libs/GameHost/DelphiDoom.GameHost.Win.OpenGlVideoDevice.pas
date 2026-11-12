@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: Xcom32 - the picture in the window with OpenGL                   }
+{  DelphiDoom: game host library - the picture in the window with OpenGL       }
 {  Port of the OpenGL class of OpenXcom (Engine\OpenGL.cpp, itself copied from  }
 {  the ruby library of bsnes, public domain) on WGL: OpenGL only presents the   }
 {  finished picture, the game stays at 8 bits with a palette                    }
@@ -8,33 +8,31 @@
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Xcom.Win.OpenGlVideoDevice;
+unit DelphiDoom.GameHost.Win.OpenGlVideoDevice;
 
 interface
 
 uses
-  Winapi.Windows, System.Types, System.SysUtils, System.Math, dglOpenGL, DelphiDoom.XcomEngine.Types,
-  DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Shader.Types, DelphiDoom.XcomEngine.ShaderFileReader,
-  DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.Win.Window, DelphiDoom.Xcom.Win.WindowDevice,
-  DelphiDoom.Xcom.Win.OpenGlProgram;
+  Winapi.Windows, System.Types, System.SysUtils, System.Math, dglOpenGL, DelphiDoom.Logging.Intf,
+  DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Win.Window,
+  DelphiDoom.GameHost.Win.WindowDevice, DelphiDoom.GameHost.Win.OpenGlProgram;
 
 type
   /// <summary>
-  ///   The display of the game on OpenGL (Options::useOpenGL). SetMode makes a WGL context in the window and raises
-  ///   EXcomVideoDeviceException, with the reason, when it cannot. The picture is turned into colors with its
-  ///   palette, loaded in a texture and drawn in the rectangle the GDI display uses (the picture rectangle of a full
-  ///   screen window, the black bands of the screen), with the nearest pixel or the linear filter and the vertical
-  ///   sync of the options, through the GLSL program of the shader file of the options when there is one (a file
-  ///   says by itself whether it wants the linear filter). When the device goes away the window handle goes with
-  ///   it: a window that had an OpenGL pixel format cannot be drawn by GDI again. The floating point exceptions are
-  ///   masked while OpenGL is called and only then
+  ///   The display of a game on OpenGL (Options::useOpenGL of OpenXcom). SetMode makes a WGL context in the window
+  ///   and raises EGameHostVideoDeviceException, with the reason, when it cannot. The picture is turned into colors
+  ///   with its palette, loaded in a texture and drawn in the rectangle the GDI display uses (the picture rectangle
+  ///   of a full screen window, the black bands of the screen), with the nearest pixel or the linear filter and the
+  ///   vertical sync of the filter, through the GLSL program of the shader of the filter when there is one (a
+  ///   shader says by itself whether it wants the linear filter). When the device goes away the window handle goes
+  ///   with it: a window that had an OpenGL pixel format cannot be drawn by GDI again. The floating point
+  ///   exceptions are masked while OpenGL is called and only then
   /// </summary>
-  TXcomWinOpenGlVideoDevice = class(TXcomWinWindowDevice, IXcomFilteredDisplay)
+  TGameHostWinOpenGlVideoDevice = class(TGameHostWinWindowDevice, IGameHostFilteredDisplay)
   strict private
-    FLog: IXcomLog;
-    FShaders: IXcomShaderCatalog;
-    FReader: TXcomShaderFileReader;
-    FProgram: TXcomWinOpenGlProgram;
+    FLog: ILog;
+    FShaders: IGameHostShaderLoader;
+    FProgram: TGameHostWinOpenGlProgram;
     FContextWindow: HWND;
     FDeviceContext: HDC;
     FContext: HGLRC;
@@ -43,43 +41,40 @@ type
     FTextureHeight: Integer;
     FBuffer: TArray<Cardinal>;
     FLinear: Boolean;
-    FWanted: TXcomDisplayFilter;
-    FActive: TXcomDisplayFilter;
+    FWanted: TGameHostDisplayFilter;
+    FActive: TGameHostDisplayFilter;
     class constructor Create;
     class function LastErrorText: string; static;
-    procedure Log(const ALevel, AMessage: string);
+    procedure LogInfo(const AMessage: string);
+    procedure LogError(const AMessage: string);
     procedure CreateContext;
     procedure DestroyContext;
     procedure InitializeState;
     procedure ApplyFilter;
     function LoadShader(const APath: string): Boolean;
     procedure ResizeTexture(AWidth, AHeight: Integer);
-    procedure Draw(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
-      ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands);
+    procedure Draw(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
+      ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands);
   public
     /// <param name="AWindow">The window of the game; not owned</param>
-    /// <param name="AShaders">Where the shader of the options is read; nil: no shader is ever used</param>
-    /// <param name="AReader">Reads the shader files; owned (freed with the device). nil: no shader is ever used</param>
+    /// <param name="AShaders">Gives the shader that the filter names; nil: no shader is ever used</param>
     /// <param name="ALog">Where the version of OpenGL and the problems go; nil for nowhere</param>
-    constructor Create(AWindow: TXcomWinWindow; const AShaders: IXcomShaderCatalog = nil;
-      AReader: TXcomShaderFileReader = nil; const ALog: IXcomLog = nil);
+    constructor Create(AWindow: TGameHostWinWindow; const AShaders: IGameHostShaderLoader = nil;
+      const ALog: ILog = nil);
     destructor Destroy; override;
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean); override;
     /// <summary>The picture already scaled by the screen: it fills the rectangle, no bands</summary>
-    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors); override;
-    procedure SetDisplayFilter(const AFilter: TXcomDisplayFilter);
-    function DisplayFilter: TXcomDisplayFilter;
-    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
-      ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette); override;
+    procedure SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
+    function DisplayFilter: TGameHostDisplayFilter;
+    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
+      ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
   end;
 
 implementation
 
 const
-  SLogInfo = 'INFO';
-  SLogError = 'ERROR';
   SNoShaderSupport = 'This OpenGL has no GLSL programs: the shader is not used';
-  SShaderNotFound = 'requested file not found: %s';
   SShaderInUse = 'OpenGL shader in use: %s';
   SShaderIncomplete = 'OpenGL shader in use without the part that did not compile: %s';
   SNoLibrary = 'opengl32.dll could not be loaded';
@@ -92,7 +87,7 @@ const
   // the masks the run time library starts with; see the class constructor
   DEFAULT_EXCEPTION_MASK = [exDenormalized, exUnderflow, exPrecision];
 
-class constructor TXcomWinOpenGlVideoDevice.Create;
+class constructor TGameHostWinOpenGlVideoDevice.Create;
 begin
   // The initialization of dglOpenGL masks every floating point exception for the whole program, only because the
   // unit is linked. The game must compute as it does without OpenGL (the display in memory, the GDI one): the
@@ -104,7 +99,7 @@ begin
 {$ENDIF}
 end;
 
-class function TXcomWinOpenGlVideoDevice.LastErrorText: string;
+class function TGameHostWinOpenGlVideoDevice.LastErrorText: string;
 var
   LCode: Cardinal;
 begin
@@ -112,17 +107,15 @@ begin
   Result := Format('%s (%d)', [SysErrorMessage(LCode), LCode]);
 end;
 
-constructor TXcomWinOpenGlVideoDevice.Create(AWindow: TXcomWinWindow; const AShaders: IXcomShaderCatalog;
-  AReader: TXcomShaderFileReader; const ALog: IXcomLog);
+constructor TGameHostWinOpenGlVideoDevice.Create(AWindow: TGameHostWinWindow;
+  const AShaders: IGameHostShaderLoader; const ALog: ILog);
 begin
-  // the reader is owned from here on, also when the window is missing
-  FReader := AReader;
   inherited Create(AWindow);
   FShaders := AShaders;
   FLog := ALog;
 end;
 
-destructor TXcomWinOpenGlVideoDevice.Destroy;
+destructor TGameHostWinOpenGlVideoDevice.Destroy;
 var
   LMask: TArithmeticExceptionMask;
 begin
@@ -132,27 +125,32 @@ begin
   finally
     SetExceptionMask(LMask);
   end;
-  FReader.Free;
   inherited Destroy;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.Log(const ALevel, AMessage: string);
+procedure TGameHostWinOpenGlVideoDevice.LogInfo(const AMessage: string);
 begin
   if Assigned(FLog) then
-    FLog.Write(ALevel, AMessage);
+    FLog.Info(AMessage);
 end;
 
-procedure TXcomWinOpenGlVideoDevice.CreateContext;
+procedure TGameHostWinOpenGlVideoDevice.LogError(const AMessage: string);
+begin
+  if Assigned(FLog) then
+    FLog.Error(AMessage);
+end;
+
+procedure TGameHostWinOpenGlVideoDevice.CreateContext;
 var
   LFormat: TPixelFormatDescriptor;
   LFormatIndex: Integer;
 begin
   if (GL_LibHandle = nil) and not InitOpenGL then
-    raise EXcomVideoDeviceException.Create(SNoLibrary);
+    raise EGameHostVideoDeviceException.Create(SNoLibrary);
   FContextWindow := Window.Handle;
   FDeviceContext := GetDC(FContextWindow);
   if FDeviceContext = 0 then
-    raise EXcomVideoDeviceException.CreateFmt(SNoDeviceContext, [LastErrorText]);
+    raise EGameHostVideoDeviceException.CreateFmt(SNoDeviceContext, [LastErrorText]);
   FillChar(LFormat, SizeOf(LFormat), 0);
   LFormat.nSize := SizeOf(LFormat);
   LFormat.nVersion := 1;
@@ -162,22 +160,22 @@ begin
   LFormat.iLayerType := PFD_MAIN_PLANE;
   LFormatIndex := ChoosePixelFormat(FDeviceContext, @LFormat);
   if LFormatIndex = 0 then
-    raise EXcomVideoDeviceException.CreateFmt(SNoPixelFormat, [LastErrorText]);
+    raise EGameHostVideoDeviceException.CreateFmt(SNoPixelFormat, [LastErrorText]);
   if not SetPixelFormat(FDeviceContext, LFormatIndex, @LFormat) then
-    raise EXcomVideoDeviceException.CreateFmt(SSetPixelFormat, [LastErrorText]);
+    raise EGameHostVideoDeviceException.CreateFmt(SSetPixelFormat, [LastErrorText]);
   FContext := dglOpenGL.wglCreateContext(FDeviceContext);
   if FContext = 0 then
-    raise EXcomVideoDeviceException.CreateFmt(SNoContext, [LastErrorText]);
+    raise EGameHostVideoDeviceException.CreateFmt(SNoContext, [LastErrorText]);
   if not dglOpenGL.wglMakeCurrent(FDeviceContext, FContext) then
-    raise EXcomVideoDeviceException.CreateFmt(SMakeCurrent, [LastErrorText]);
+    raise EGameHostVideoDeviceException.CreateFmt(SMakeCurrent, [LastErrorText]);
   // the entry points of the version and of the extensions of this context
   ReadExtensions;
-  Log(SLogInfo, Format(SContextInfo, [string(AnsiString(glGetString(GL_VERSION))),
+  LogInfo(Format(SContextInfo, [string(AnsiString(glGetString(GL_VERSION))),
     string(AnsiString(glGetString(GL_RENDERER))), string(AnsiString(glGetString(GL_VENDOR)))]));
   InitializeState;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.DestroyContext;
+procedure TGameHostWinOpenGlVideoDevice.DestroyContext;
 begin
   if FContext <> 0 then
   begin
@@ -202,10 +200,10 @@ begin
   end;
   FDeviceContext := 0;
   FContextWindow := 0;
-  FActive := Default(TXcomDisplayFilter);
+  FActive := Default(TGameHostDisplayFilter);
 end;
 
-procedure TXcomWinOpenGlVideoDevice.InitializeState;
+procedure TGameHostWinOpenGlVideoDevice.InitializeState;
 begin
   // OpenGL::init
   glDisable(GL_ALPHA_TEST);
@@ -217,7 +215,7 @@ begin
   glEnable(GL_TEXTURE_2D);
 end;
 
-procedure TXcomWinOpenGlVideoDevice.ApplyFilter;
+procedure TGameHostWinOpenGlVideoDevice.ApplyFilter;
 begin
   // Screen::resetDisplay after OpenGL::init
   FActive := FWanted;
@@ -232,28 +230,23 @@ begin
     wglSwapIntervalEXT(Ord(FWanted.VSync));
 end;
 
-function TXcomWinOpenGlVideoDevice.LoadShader(const APath: string): Boolean;
+function TGameHostWinOpenGlVideoDevice.LoadShader(const APath: string): Boolean;
 var
-  LBytes: TBytes;
-  LSource: TXcomShaderSource;
+  LSource: TGameHostShaderSource;
 begin
   // OpenGL::set_shader: false when there is no program to draw with (the screen then forgets the shader)
   Result := False;
-  if not (Assigned(FShaders) and Assigned(FReader)) then
+  if not Assigned(FShaders) then
     Exit;
-  if not TXcomWinOpenGlProgram.IsSupported then
+  if not TGameHostWinOpenGlProgram.IsSupported then
   begin
-    Log(SLogError, SNoShaderSupport);
+    LogError(SNoShaderSupport);
     Exit;
   end;
-  if not FShaders.TryRead(APath, LBytes) then
-  begin
-    Log(SLogError, Format(SShaderNotFound, [APath]));
+  // a loader that has no such shader, or cannot read it, has said so itself
+  if not FShaders.TryLoad(APath, LSource) then
     Exit;
-  end;
-  if not FReader.TryRead(APath, LBytes, LSource) then
-    Exit;
-  FProgram := TXcomWinOpenGlProgram.Create(FLog);
+  FProgram := TGameHostWinOpenGlProgram.Create(FLog);
   if not FProgram.Build(LSource) then
   begin
     FreeAndNil(FProgram);
@@ -261,13 +254,13 @@ begin
   end;
   FLinear := LSource.Linear;
   if FProgram.Incomplete then
-    Log(SLogError, Format(SShaderIncomplete, [APath]))
+    LogError(Format(SShaderIncomplete, [APath]))
   else
-    Log(SLogInfo, Format(SShaderInUse, [APath]));
+    LogInfo(Format(SShaderInUse, [APath]));
   Result := True;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.ResizeTexture(AWidth, AHeight: Integer);
+procedure TGameHostWinOpenGlVideoDevice.ResizeTexture(AWidth, AHeight: Integer);
 begin
   // OpenGL::resize
   if FTexture = 0 then
@@ -280,7 +273,7 @@ begin
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, AWidth, AHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, @FBuffer[0]);
 end;
 
-procedure TXcomWinOpenGlVideoDevice.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
+procedure TGameHostWinOpenGlVideoDevice.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
 var
   LMask: TArithmeticExceptionMask;
 begin
@@ -301,18 +294,18 @@ begin
   end;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.SetDisplayFilter(const AFilter: TXcomDisplayFilter);
+procedure TGameHostWinOpenGlVideoDevice.SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
 begin
   FWanted := AFilter;
 end;
 
-function TXcomWinOpenGlVideoDevice.DisplayFilter: TXcomDisplayFilter;
+function TGameHostWinOpenGlVideoDevice.DisplayFilter: TGameHostDisplayFilter;
 begin
   Result := FActive;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.Draw(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TXcomColors; ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands);
+procedure TGameHostWinOpenGlVideoDevice.Draw(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette; ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands);
 var
   LColors: array[0..255] of Cardinal;
   LIndex: Integer;
@@ -390,8 +383,8 @@ begin
   SwapBuffers(FDeviceContext);
 end;
 
-function TXcomWinOpenGlVideoDevice.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TXcomColors; ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+function TGameHostWinOpenGlVideoDevice.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette; ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
 var
   LMask: TArithmeticExceptionMask;
 begin
@@ -406,10 +399,10 @@ begin
   end;
 end;
 
-procedure TXcomWinOpenGlVideoDevice.Present(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TXcomColors);
+procedure TGameHostWinOpenGlVideoDevice.Present(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette);
 begin
-  PresentUnscaled(APixels, AWidth, AHeight, APalette, AWidth, AHeight, Default(TXcomBlackBands));
+  PresentUnscaled(APixels, AWidth, AHeight, APalette, AWidth, AHeight, Default(TGameHostBlackBands));
 end;
 
 end.

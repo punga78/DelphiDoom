@@ -1,18 +1,18 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: Xcom32 - the GLSL program of the display filter                  }
+{  DelphiDoom: game host library - the GLSL program of the display filter      }
 {  Port of the second half of OpenGL::set_shader, of createShader and of the    }
 {  uniforms of OpenGL::refresh of OpenXcom (Engine\OpenGL.cpp)                  }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Xcom.Win.OpenGlProgram;
+unit DelphiDoom.GameHost.Win.OpenGlProgram;
 
 interface
 
 uses
-  System.SysUtils, dglOpenGL, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Shader.Types;
+  System.SysUtils, dglOpenGL, DelphiDoom.Logging.Intf, DelphiDoom.GameHost.Types;
 
 type
   /// <summary>
@@ -20,9 +20,9 @@ type
   ///   context of the display current, the destructor too. As in the C++, a shader that does not compile is said
   ///   in the log with what the driver answers and left out, and only a program that does not link is a failure
   /// </summary>
-  TXcomWinOpenGlProgram = class
+  TGameHostWinOpenGlProgram = class
   strict private
-    FLog: IXcomLog;
+    FLog: ILog;
     FProgram: GLuint;
     FIncomplete: Boolean;
     procedure Log(const AMessage: string);
@@ -32,12 +32,12 @@ type
     procedure Release;
   public
     /// <param name="ALog">Where the answers of the compiler of the driver go; nil for nowhere</param>
-    constructor Create(const ALog: IXcomLog = nil);
+    constructor Create(const ALog: ILog = nil);
     destructor Destroy; override;
     /// <summary>The context has every entry point the program needs (shader_support of the C++)</summary>
     class function IsSupported: Boolean; static;
     /// <summary>Compiles and links; false when there is no program to use (nothing is left behind)</summary>
-    function Build(const ASource: TXcomShaderSource): Boolean;
+    function Build(const ASource: TGameHostShaderSource): Boolean;
     /// <summary>
     ///   Makes the program the current one and gives it the sizes that the shaders of bsnes read: rubyInputSize,
     ///   rubyOutputSize and rubyTextureSize
@@ -52,32 +52,31 @@ type
 implementation
 
 const
-  SLogError = 'ERROR';
   SNoProgram = 'Failed to create GLSL shader program';
   SCompileNoLog = 'OpenGL shader compilation failed: No log returned from driver';
   SCompileFailed = 'OpenGL shader compilation failed: "%s"';
   SLinkNoLog = 'OpenGL shader link failed: No log returned from driver';
   SLinkFailed = 'OpenGL shader link failed "%s"';
 
-constructor TXcomWinOpenGlProgram.Create(const ALog: IXcomLog);
+constructor TGameHostWinOpenGlProgram.Create(const ALog: ILog);
 begin
   inherited Create;
   FLog := ALog;
 end;
 
-destructor TXcomWinOpenGlProgram.Destroy;
+destructor TGameHostWinOpenGlProgram.Destroy;
 begin
   Release;
   inherited Destroy;
 end;
 
-procedure TXcomWinOpenGlProgram.Log(const AMessage: string);
+procedure TGameHostWinOpenGlProgram.Log(const AMessage: string);
 begin
   if Assigned(FLog) then
-    FLog.Write(SLogError, AMessage);
+    FLog.Error(AMessage);
 end;
 
-class function TXcomWinOpenGlProgram.IsSupported: Boolean;
+class function TGameHostWinOpenGlProgram.IsSupported: Boolean;
 begin
   Result := Assigned(glCreateProgram) and Assigned(glDeleteProgram) and Assigned(glUseProgram) and
     Assigned(glCreateShader) and Assigned(glDeleteShader) and Assigned(glShaderSource) and
@@ -86,14 +85,14 @@ begin
     Assigned(glGetShaderInfoLog) and Assigned(glGetProgramiv) and Assigned(glGetProgramInfoLog);
 end;
 
-procedure TXcomWinOpenGlProgram.Release;
+procedure TGameHostWinOpenGlProgram.Release;
 begin
   if FProgram <> 0 then
     glDeleteProgram(FProgram);
   FProgram := 0;
 end;
 
-function TXcomWinOpenGlProgram.CompileShader(AKind: GLenum; const AText: RawByteString): GLuint;
+function TGameHostWinOpenGlProgram.CompileShader(AKind: GLenum; const AText: RawByteString): GLuint;
 var
   LText: PAnsiChar;
   LStatus: GLint;
@@ -123,7 +122,7 @@ begin
   Result := 0;
 end;
 
-procedure TXcomWinOpenGlProgram.Attach(AKind: GLenum; const AText: RawByteString);
+procedure TGameHostWinOpenGlProgram.Attach(AKind: GLenum; const AText: RawByteString);
 var
   LShader: GLuint;
 begin
@@ -140,7 +139,7 @@ begin
   glDeleteShader(LShader);
 end;
 
-function TXcomWinOpenGlProgram.Build(const ASource: TXcomShaderSource): Boolean;
+function TGameHostWinOpenGlProgram.Build(const ASource: TGameHostShaderSource): Boolean;
 var
   LStatus: GLint;
   LLength: GLint;
@@ -182,7 +181,7 @@ begin
   Result := FProgram <> 0;
 end;
 
-procedure TXcomWinOpenGlProgram.SetSize(const AName: AnsiString; AWidth, AHeight: Integer);
+procedure TGameHostWinOpenGlProgram.SetSize(const AName: AnsiString; AWidth, AHeight: Integer);
 var
   LSize: array[0..1] of GLfloat;
 begin
@@ -192,7 +191,7 @@ begin
   glUniform2fv(glGetUniformLocation(FProgram, PAnsiChar(AName)), 1, @LSize[0]);
 end;
 
-procedure TXcomWinOpenGlProgram.Use(AInputWidth, AInputHeight, AOutputWidth, AOutputHeight, ATextureWidth,
+procedure TGameHostWinOpenGlProgram.Use(AInputWidth, AInputHeight, AOutputWidth, AOutputHeight, ATextureWidth,
   ATextureHeight: Integer);
 begin
   if FProgram = 0 then
@@ -203,7 +202,7 @@ begin
   SetSize('rubyTextureSize', ATextureWidth, ATextureHeight);
 end;
 
-procedure TXcomWinOpenGlProgram.Unuse;
+procedure TGameHostWinOpenGlProgram.Unuse;
 begin
   if FProgram <> 0 then
     glUseProgram(0);

@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.Xcom.Win.Window,
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.LoggingBattleAudio;
 
 type
@@ -69,7 +69,7 @@ type
     /// </summary>
     /// <param name="ASettings">The data folder: the shaders of the display filter are in its common\Shaders</param>
     /// <param name="ALog">Where the version of OpenGL and the reason of a fallback to GDI go; nil for nowhere</param>
-    class function CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
+    class function CreateWindowDevice(AWindow: TGameHostWinWindow; const ASettings: TXcomGameSettings;
       const ALog: IXcomLog): IXcomVideoDevice; static;
     /// <summary>The shaders that the video options list and the OpenGL display reads</summary>
     class function CreateShaderCatalog(const ASettings: TXcomGameSettings): IXcomShaderCatalog; static;
@@ -99,8 +99,10 @@ DelphiDoom.XcomGeoscape.NewGameStarter, DelphiDoom.XcomGeoscape.Navigator.Intf, 
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.DefaultSettings,
   DelphiDoom.XcomStrategy.Factory, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomGeoscape.Control.Intf,
   DelphiDoom.XcomGeoscape.PopupEvents, DelphiDoom.XcomGeoscape.PopupSimulation, DelphiDoom.XcomStrategy.DefaultSettings,
-  DelphiDoom.XcomEngine.State, DelphiDoom.Xcom.VideoDevice.Types, DelphiDoom.Xcom.VideoDeviceSelector,
-  DelphiDoom.Xcom.Win.VideoDevice, DelphiDoom.Xcom.Win.OpenGlVideoDevice, DelphiDoom.XcomEngine.FolderShaderCatalog,
+  DelphiDoom.XcomEngine.State, DelphiDoom.Logging.Intf, DelphiDoom.GameHost.Video.Intf,
+  DelphiDoom.GameHost.OpenGl.Factory,
+  DelphiDoom.Xcom.HostVideoDevice, DelphiDoom.Xcom.HostShaderLoader, DelphiDoom.Xcom.HostLog,
+  DelphiDoom.XcomEngine.FolderShaderCatalog,
   DelphiDoom.XcomEngine.ShaderFileReader;
 
 const
@@ -112,23 +114,19 @@ begin
     TXcomDiskFileSystem.Create);
 end;
 
-class function TXcomGameComposition.CreateWindowDevice(AWindow: TXcomWinWindow; const ASettings: TXcomGameSettings;
-  const ALog: IXcomLog): IXcomVideoDevice;
+class function TXcomGameComposition.CreateWindowDevice(AWindow: TGameHostWinWindow;
+  const ASettings: TXcomGameSettings; const ALog: IXcomLog): IXcomVideoDevice;
 var
-  LShaders: IXcomShaderCatalog;
+  LHostLog: ILog;
+  LShaders: IGameHostShaderLoader;
 begin
-  LShaders := CreateShaderCatalog(ASettings);
-  Result := TXcomVideoDeviceSelector.Create(
-    function: IXcomVideoDevice
-    begin
-      Result := TXcomWinVideoDevice.Create(AWindow);
-    end,
-    function: IXcomVideoDevice
-    begin
-      // the device owns its reader
-      Result := TXcomWinOpenGlVideoDevice.Create(AWindow, LShaders,
-        TXcomShaderFileReader.Create(TYamlFactory.CreateParser, ALog), ALog);
-    end, ALog);
+  // the display of Libs\GameHost speaks to the log and reads the shaders of the game through two adapters
+  LHostLog := nil;
+  if Assigned(ALog) then
+    LHostLog := TXcomHostLog.Create(ALog);
+  LShaders := TXcomHostShaderLoader.Create(CreateShaderCatalog(ASettings),
+    TXcomShaderFileReader.Create(TYamlFactory.CreateParser, ALog), ALog);
+  Result := TXcomHostVideoDevice.Create(TGameHostOpenGlFactory.CreateSelector(AWindow, LShaders, LHostLog));
 end;
 
 class function TXcomGameComposition.DosPathOf(const AExecutable: string): string;

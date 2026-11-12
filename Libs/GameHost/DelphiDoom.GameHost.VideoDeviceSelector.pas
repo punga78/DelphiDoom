@@ -1,37 +1,37 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: Xcom32 - the choice of the display (GDI or OpenGL)               }
-{  What Screen::resetDisplay did with SDL_OPENGL: the display follows           }
-{  Options::useOpenGL each time the mode is set, and goes back to the plain     }
+{  DelphiDoom: game host library - the choice of the display (GDI or OpenGL)   }
+{  What Screen::resetDisplay of OpenXcom did with SDL_OPENGL: the display      }
+{  follows the filter each time the mode is set, and goes back to the plain    }
 {  one when the OpenGL one cannot be made                                       }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Xcom.VideoDeviceSelector;
+unit DelphiDoom.GameHost.VideoDeviceSelector;
 
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.Xcom.VideoDevice.Types;
+  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf;
 
 type
   /// <summary>
   ///   The display the game sees: one of two displays made by the factories it is given, chosen at every SetMode by
   ///   the filter the screen gave before it. The plain display is the default; the OpenGL one is made when the
-  ///   filter asks for it, and when its SetMode raises EXcomVideoDeviceException the reason goes to the log and the
-  ///   plain display takes its place (DisplayFilter then says that OpenGL is not in use). A display is released
+  ///   filter asks for it, and when its SetMode raises EGameHostVideoDeviceException the reason goes to the log and
+  ///   the plain display takes its place (DisplayFilter then says that OpenGL is not in use). A display is released
   ///   before the other is made, because they share the window
   /// </summary>
-  TXcomVideoDeviceSelector = class(TInterfacedObject, IXcomVideoDevice, IXcomWindowStyle, IXcomWindowPlacement,
-    IXcomFilteredDisplay)
+  TGameHostVideoDeviceSelector = class(TInterfacedObject, IGameHostVideoDevice, IGameHostWindowStyle,
+    IGameHostWindowPlacement, IGameHostFilteredDisplay)
   strict private
-    FPlainFactory: TXcomVideoDeviceFactory;
-    FOpenGlFactory: TXcomVideoDeviceFactory;
-    FLog: IXcomLog;
-    FDevice: IXcomVideoDevice;
+    FPlainFactory: TGameHostVideoDeviceFactory;
+    FOpenGlFactory: TGameHostVideoDeviceFactory;
+    FLog: ILog;
+    FDevice: IGameHostVideoDevice;
     FDeviceIsOpenGl: Boolean;
-    FFilter: TXcomDisplayFilter;
+    FFilter: TGameHostDisplayFilter;
     FHasStyle: Boolean;
     FBorderless: Boolean;
     FResizable: Boolean;
@@ -47,17 +47,17 @@ type
     /// <param name="APlainFactory">Makes the display that always works (GDI)</param>
     /// <param name="AOpenGlFactory">Makes the OpenGL display; nil when the program has none</param>
     /// <param name="ALog">Where the reason of a fallback goes; nil for nowhere</param>
-    constructor Create(const APlainFactory, AOpenGlFactory: TXcomVideoDeviceFactory; const ALog: IXcomLog = nil);
+    constructor Create(const APlainFactory, AOpenGlFactory: TGameHostVideoDeviceFactory; const ALog: ILog = nil);
     procedure SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
-    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors);
+    procedure Present(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette);
     procedure SetTitle(const ATitle: string);
     procedure SetWindowStyle(ABorderless, AResizable: Boolean);
-    /// <summary>IXcomWindowPlacement: kept and given to the display that takes the next mode</summary>
+    /// <summary>IGameHostWindowPlacement: kept and given to the display that takes the next mode</summary>
     procedure SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
-    procedure SetDisplayFilter(const AFilter: TXcomDisplayFilter);
-    function DisplayFilter: TXcomDisplayFilter;
-    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TXcomColors;
-      ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+    procedure SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
+    function DisplayFilter: TGameHostDisplayFilter;
+    function PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer; const APalette: TGameHostPalette;
+      ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
     /// <summary>The display in use is the OpenGL one</summary>
     property IsOpenGl: Boolean read FDeviceIsOpenGl;
   end;
@@ -65,11 +65,10 @@ type
 implementation
 
 const
-  SLogWarning = 'WARN';
   SOpenGlFallback = 'OpenGL display not available, using GDI: %s';
 
-constructor TXcomVideoDeviceSelector.Create(const APlainFactory, AOpenGlFactory: TXcomVideoDeviceFactory;
-  const ALog: IXcomLog);
+constructor TGameHostVideoDeviceSelector.Create(const APlainFactory, AOpenGlFactory: TGameHostVideoDeviceFactory;
+  const ALog: ILog);
 begin
   inherited Create;
   if not Assigned(APlainFactory) then
@@ -79,11 +78,11 @@ begin
   FLog := ALog;
 end;
 
-procedure TXcomVideoDeviceSelector.Use(AOpenGl: Boolean);
+procedure TGameHostVideoDeviceSelector.Use(AOpenGl: Boolean);
 var
-  LStyle: IXcomWindowStyle;
-  LPlacement: IXcomWindowPlacement;
-  LFiltered: IXcomFilteredDisplay;
+  LStyle: IGameHostWindowStyle;
+  LPlacement: IGameHostWindowPlacement;
+  LFiltered: IGameHostFilteredDisplay;
 begin
   if (not Assigned(FDevice)) or (AOpenGl <> FDeviceIsOpenGl) then
   begin
@@ -97,15 +96,15 @@ begin
     if FHasTitle then
       FDevice.SetTitle(FTitle);
   end;
-  if FHasStyle and Supports(FDevice, IXcomWindowStyle, LStyle) then
+  if FHasStyle and Supports(FDevice, IGameHostWindowStyle, LStyle) then
     LStyle.SetWindowStyle(FBorderless, FResizable);
-  if FHasPlacement and Supports(FDevice, IXcomWindowPlacement, LPlacement) then
+  if FHasPlacement and Supports(FDevice, IGameHostWindowPlacement, LPlacement) then
     LPlacement.SetWindowPlacement(FPlacementFixed, FPlacementX, FPlacementY, FPlacementCentered);
-  if Supports(FDevice, IXcomFilteredDisplay, LFiltered) then
+  if Supports(FDevice, IGameHostFilteredDisplay, LFiltered) then
     LFiltered.SetDisplayFilter(FFilter);
 end;
 
-procedure TXcomVideoDeviceSelector.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
+procedure TGameHostVideoDeviceSelector.SetMode(var AWidth, AHeight: Integer; AFullscreen: Boolean);
 var
   LWidth: Integer;
   LHeight: Integer;
@@ -116,12 +115,12 @@ begin
   try
     FDevice.SetMode(AWidth, AHeight, AFullscreen);
   except
-    on E: EXcomVideoDeviceException do
+    on E: EGameHostVideoDeviceException do
     begin
       if not FDeviceIsOpenGl then
         raise;
       if Assigned(FLog) then
-        FLog.Write(SLogWarning, Format(SOpenGlFallback, [E.Message]));
+        FLog.Warning(Format(SOpenGlFallback, [E.Message]));
       AWidth := LWidth;
       AHeight := LHeight;
       Use(False);
@@ -130,14 +129,14 @@ begin
   end;
 end;
 
-procedure TXcomVideoDeviceSelector.Present(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TXcomColors);
+procedure TGameHostVideoDeviceSelector.Present(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette);
 begin
   if Assigned(FDevice) then
     FDevice.Present(APixels, AWidth, AHeight, APalette);
 end;
 
-procedure TXcomVideoDeviceSelector.SetTitle(const ATitle: string);
+procedure TGameHostVideoDeviceSelector.SetTitle(const ATitle: string);
 begin
   FTitle := ATitle;
   FHasTitle := True;
@@ -145,14 +144,14 @@ begin
     FDevice.SetTitle(ATitle);
 end;
 
-procedure TXcomVideoDeviceSelector.SetWindowStyle(ABorderless, AResizable: Boolean);
+procedure TGameHostVideoDeviceSelector.SetWindowStyle(ABorderless, AResizable: Boolean);
 begin
   FBorderless := ABorderless;
   FResizable := AResizable;
   FHasStyle := True;
 end;
 
-procedure TXcomVideoDeviceSelector.SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
+procedure TGameHostVideoDeviceSelector.SetWindowPlacement(AFixed: Boolean; AX, AY: Integer; ACentered: Boolean);
 begin
   FPlacementFixed := AFixed;
   FPlacementX := AX;
@@ -161,16 +160,16 @@ begin
   FHasPlacement := True;
 end;
 
-procedure TXcomVideoDeviceSelector.SetDisplayFilter(const AFilter: TXcomDisplayFilter);
+procedure TGameHostVideoDeviceSelector.SetDisplayFilter(const AFilter: TGameHostDisplayFilter);
 begin
   FFilter := AFilter;
 end;
 
-function TXcomVideoDeviceSelector.DisplayFilter: TXcomDisplayFilter;
+function TGameHostVideoDeviceSelector.DisplayFilter: TGameHostDisplayFilter;
 var
-  LFiltered: IXcomFilteredDisplay;
+  LFiltered: IGameHostFilteredDisplay;
 begin
-  if FDeviceIsOpenGl and Supports(FDevice, IXcomFilteredDisplay, LFiltered) then
+  if FDeviceIsOpenGl and Supports(FDevice, IGameHostFilteredDisplay, LFiltered) then
     Result := LFiltered.DisplayFilter
   else
   begin
@@ -181,12 +180,12 @@ begin
   end;
 end;
 
-function TXcomVideoDeviceSelector.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer;
-  const APalette: TXcomColors; ADisplayWidth, ADisplayHeight: Integer; const ABands: TXcomBlackBands): Boolean;
+function TGameHostVideoDeviceSelector.PresentUnscaled(const APixels: TBytes; AWidth, AHeight: Integer;
+  const APalette: TGameHostPalette; ADisplayWidth, ADisplayHeight: Integer; const ABands: TGameHostBlackBands): Boolean;
 var
-  LFiltered: IXcomFilteredDisplay;
+  LFiltered: IGameHostFilteredDisplay;
 begin
-  Result := FDeviceIsOpenGl and Supports(FDevice, IXcomFilteredDisplay, LFiltered) and
+  Result := FDeviceIsOpenGl and Supports(FDevice, IGameHostFilteredDisplay, LFiltered) and
     LFiltered.PresentUnscaled(APixels, AWidth, AHeight, APalette, ADisplayWidth, ADisplayHeight, ABands);
 end;
 
