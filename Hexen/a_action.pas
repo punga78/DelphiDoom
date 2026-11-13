@@ -484,7 +484,7 @@ begin
       check := pmo.angle - rp <= ANG45;
     if check and P_CheckSight(actor, pmo) then
     begin // Previous state (pottery bit waiting state)
-      st := (integer(actor.state) - integer(@states[0])) div SizeOf(state_t);
+      st := (NativeInt(actor.state) - NativeInt(@states[0])) div SizeOf(state_t);
       dec(st);
       P_SetMobjState(actor, statenum_t(st));
     end
@@ -509,7 +509,7 @@ begin
         check := pmo.angle - rp <= ANG45;
       if check and P_CheckSight(actor, pmo) then
       begin // Previous state (pottery bit waiting state)
-        st := (integer(actor.state) - integer(@states[0])) div SizeOf(state_t);
+        st := (NativeInt(actor.state) - NativeInt(@states[0])) div SizeOf(state_t);
         dec(st);
         P_SetMobjState(actor, statenum_t(st));
         exit;
@@ -1309,7 +1309,7 @@ begin
   actor.flags := 0;
   actor.flags2 := MF2_NOTELEPORT or MF2_FLOORCLIP or MF2_DONTDRAW;
   mo := P_SpawnMobj(actor.x, actor.y, actor.z, Ord(MT_DIRTCLUMP));
-  actor.special1 := integer(mo);
+  actor.special1 := NativeInt(mo);
 end;
 
 //==============================================================================

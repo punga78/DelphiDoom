@@ -1130,14 +1130,14 @@ begin
         if (thing.flags2_ex and MF2_EX_REFLECTIVE <> 0) and
            ((thing.player <> nil) or (thing.flags2 and MF2_BOSS <> 0) or (thing.flags_ex and MF_EX_BOSS <> 0)) then
         begin
-          tmthing.special1 := integer(tmthing.target);
+          tmthing.special1 := NativeInt(tmthing.target);
           tmthing.target := thing;
           result := true;
           exit;
         end;
 
         if (thing.flags and MF_COUNTKILL <> 0) or (thing.player <> nil) then
-          tmthing.special1 := integer(thing);
+          tmthing.special1 := NativeInt(thing);
 
         if P_Random < 96 then
         begin
@@ -1300,10 +1300,10 @@ begin
         begin
           if (tmthing.special2 <> 0) and
              (Pmobj_t(tmthing.special2).special1 = 0) then
-            Pmobj_t(tmthing.special2).special1 := integer(thing);
+            Pmobj_t(tmthing.special2).special1 := NativeInt(thing);
         end
         else if tmthing.special1 = 0 then
-          tmthing.special1 := integer(thing);
+          tmthing.special1 := NativeInt(thing);
       end;
       result := true; // lightning zaps through all sprites
       exit;
@@ -1319,10 +1319,10 @@ begin
           begin
             if (lmo.special2 <> 0) and
                (Pmobj_t(lmo.special2).special1 = 0) then
-              Pmobj_t(lmo.special2).special1 := integer(thing);
+              Pmobj_t(lmo.special2).special1 := NativeInt(thing);
           end
           else if lmo.special1 = 0 then
-            lmo.special1 := integer(thing);
+            lmo.special1 := NativeInt(thing);
           if leveltime and 3 = 0 then
             dec(lmo.health);
         end;

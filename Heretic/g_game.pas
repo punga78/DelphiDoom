@@ -2407,7 +2407,7 @@ begin
   end;
 
   len := G_Files.ReadFile(savename, pointer(savebuffer));
-  save_p := PByteArray(integer(savebuffer) + SAVESTRINGSIZE);
+  save_p := PByteArray(NativeInt(savebuffer) + SAVESTRINGSIZE);
 
   savegameversion := VERSION; // Assume current version
 
@@ -2458,26 +2458,26 @@ begin
       end;
     end;
 
-  save_p := PByteArray(integer(save_p) + VERSIONSIZE);
+  save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
 
   P_UnArchiveScreenShot;
 
   gameskill := skill_t(save_p[0]);
   defaultskill := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   gameepisode := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   gamemap := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   gamemapinfo := G_LookupMapinfo(gameepisode, gamemap);
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
     playeringame[i] := save_p[0] <> 0;
-    save_p := PByteArray(integer(save_p) + 1);
+    save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
   // load a base level
@@ -2485,13 +2485,13 @@ begin
 
   // get the times
   a := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   b := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   c := save_p[0];
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   leveltime := _SHL(a, 16) + _SHL(b, 8) + c;
 
@@ -2571,7 +2571,7 @@ begin
   if Length(adesc) > 0 then
     memcpy(save_p, @adesc[1], Length(adesc));
 
-  save_p := PByteArray(integer(save_p) + SAVESTRINGSIZE);
+  save_p := PByteArray(NativeInt(save_p) + SAVESTRINGSIZE);
   name2 := '';
 
   // JVAL
@@ -2585,70 +2585,70 @@ begin
   // The version is stored as 8 bit text
   aversion := AnsiString(name2);
   memcpy(save_p, @aversion[1], VERSIONSIZE);
-  save_p := PByteArray(integer(save_p) + VERSIONSIZE);
+  save_p := PByteArray(NativeInt(save_p) + VERSIONSIZE);
   P_ArchiveScreenShot;
 
   save_p[0] := Ord(gameskill);
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   save_p[0] := gameepisode;
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   save_p[0] := gamemap;
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   for i := 0 to MAXPLAYERS - 1 do
   begin
     save_p[0] := intval(playeringame[i]);
-    save_p := PByteArray(integer(save_p) + 1);
+    save_p := PByteArray(NativeInt(save_p) + 1);
   end;
 
   save_p[0] := _SHR(leveltime, 16);
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   save_p[0] := _SHR(leveltime, 8);
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
   save_p[0] := leveltime;
-  save_p := PByteArray(integer(save_p) + 1);
+  save_p := PByteArray(NativeInt(save_p) + 1);
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.WriteFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchivePlayers;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveWorld;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveThinkers;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveSpecials;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchiveVariables;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
   P_ArchivePSMapScript;
 
-  len := integer(save_p) - integer(savebuffer);
+  len := NativeInt(save_p) - NativeInt(savebuffer);
   G_Files.AppendFile(name, savebuffer, len);
   save_p := savebuffer;
 
@@ -2656,7 +2656,7 @@ begin
 
   save_p[0] := $1d; // consistancy marker
 
-  len := integer(save_p) - integer(savebuffer) + 1;
+  len := NativeInt(save_p) - NativeInt(savebuffer) + 1;
   if len > maxsize then
     I_Error('G_DoSaveGame(): Savegame buffer overrun');
   G_Files.AppendFile(name, savebuffer, len);
@@ -2980,7 +2980,7 @@ var
 begin
   // Find the current size
 
-  current_length := integer(demoend) - integer(demobuffer);
+  current_length := NativeInt(demoend) - NativeInt(demobuffer);
 
   // Generate a new buffer twice the size
   new_length := current_length + $80000;
@@ -2989,7 +2989,7 @@ begin
   if new_demobuffer = nil then
     G_CheckDemoStatus;
 
-  new_demop := @new_demobuffer[integer(demo_p) - integer(demobuffer)];
+  new_demop := @new_demobuffer[NativeInt(demo_p) - NativeInt(demobuffer)];
 
   // Copy over the old data
 
@@ -3047,7 +3047,7 @@ begin
 
   demo_p := demo_start;
 
-  if integer(demo_p) >= integer(demoend) - 2 * SizeOf(ticcmd_t) then
+  if NativeInt(demo_p) >= NativeInt(demoend) - 2 * SizeOf(ticcmd_t) then
     G_IncreaseDemoBuffer;
 
   G_ReadDemoTiccmd(cmd);  // make SURE it is exactly the same

@@ -17,5 +17,5 @@
       destl^ := r + g shl 8 + b;
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);

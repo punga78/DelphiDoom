@@ -46,6 +46,9 @@ program Doom32;
 uses
   i_crashlog in '..\Base\i_crashlog.pas',
   SysUtils,
+{$IFDEF CPUX64}
+  System.Math,
+{$ENDIF}
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',
   mp3_BitReserve in '..\Libs\Mp3\Decoder\mp3_BitReserve.pas',
   mp3_BitStream in '..\Libs\Mp3\Decoder\mp3_BitStream.pas',
@@ -1432,6 +1435,7 @@ uses
 
 var
   Saved8087CW: Word;
+  ExcF: TextFile;
 
 begin
   { The RTL memory manager locks only when IsMultiThread is set: the engine threads use CreateThread }
@@ -1445,6 +1449,10 @@ begin
   { Save the current FPU state and then disable FPU exceptions }
   Saved8087CW := Default8087CW;
   Set8087CW($133f); { Disable all fpu exceptions }
+{$IFDEF CPUX64}
+  { At 64 bit the SSE unit raises the exceptions: Set8087CW does not reach it }
+  SetExceptionMask(exAllArithmeticExceptions);
+{$ENDIF}
 
   FormatSettings.ThousandSeparator := #0;
   FormatSettings.DecimalSeparator := '.';
@@ -1452,7 +1460,16 @@ begin
   try
     DoomMain;
   except
-    I_FlashCachedOutput;
+    on E: Exception do
+      begin
+        AssignFile(ExcF, 'C:\ddparity\exc.txt');
+        Rewrite(ExcF);
+        WriteLn(ExcF, E.ClassName, ': ', E.Message, ' off=', IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) - $1000, 8));
+        CloseFile(ExcF);
+        I_FlashCachedOutput;
+      end
+    else
+      I_FlashCachedOutput;
   end;
 
   { Reset the FPU to the previous state }

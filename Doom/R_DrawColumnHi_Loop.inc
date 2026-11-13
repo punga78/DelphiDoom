@@ -4,7 +4,7 @@
     if lspot = spot then
     begin
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(frac, fracstep);
     end
     else
@@ -33,7 +33,7 @@
       ldest := destl^;
 {$ENDIF}
 
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(frac, fracstep);
 
 {$IFDEF SMALLSTEPOPTIMIZER}

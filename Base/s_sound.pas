@@ -1561,7 +1561,7 @@ begin
 
         // check non-local sounds for distance clipping
         //  or modify their params
-        if (c.origin <> nil) and (integer(listener_p) <> integer(c.origin)) then
+        if (c.origin <> nil) and (NativeInt(listener_p) <> NativeInt(c.origin)) then
         begin
           audible := S_AdjustSoundParams(listener, c.origin, @volume, @sep, @pitch);
 
@@ -2220,7 +2220,7 @@ begin
   begin
     if channels[i].origin = mobj then
     begin
-      c_id := (integer(channels[i].sfxinfo) - integer(@S_sfx[0])) div SizeOf(sfxinfo_t); // JVAL SOS
+      c_id := (NativeInt(channels[i].sfxinfo) - NativeInt(@S_sfx[0])) div SizeOf(sfxinfo_t); // JVAL SOS
       if c_id = sound_id then
         if S_SfxIsPlaying(channels[i].handle) then
         begin

@@ -8039,7 +8039,7 @@ procedure P_SetMobjRelativeState(const mo: Pmobj_t; const offset: integer);
 var
   cur: integer;
 begin
-  cur := (integer(mo.state) - integer(states)) div SizeOf(state_t);
+  cur := (NativeInt(mo.state) - NativeInt(states)) div SizeOf(state_t);
   P_SetMobjState(mo, statenum_t(cur + offset));
 end;
 
@@ -10318,7 +10318,7 @@ begin
 
   if not DEH_ActionEntry(state.action, deh_action) then
   begin
-    I_Warning('P_CheckStateArgs(): Unregistered function found in state "%d"'#13#10, [(Integer(state) - Integer(states)) div SizeOf(state_t)]);
+    I_Warning('P_CheckStateArgs(): Unregistered function found in state "%d"'#13#10, [(NativeInt(state) - NativeInt(states)) div SizeOf(state_t)]);
     state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
     result := false;
     exit;
@@ -10337,14 +10337,14 @@ begin
     begin
       if state.params.Count >= deh_argcount then
       begin
-        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. more than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
+        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. more than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (NativeInt(state) - NativeInt(states)) div SizeOf(state_t)]);
         state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
         result := false;
         exit;
       end
       else
       begin
-        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. less than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (Integer(state) - Integer(states)) div SizeOf(state_t)]);
+        I_Warning('P_CheckStateArgs(): Action has %d parameters, i.e. less than %d parameters in state "%d"'#13#10, [state.params.Count, deh_argcount, (NativeInt(state) - NativeInt(states)) div SizeOf(state_t)]);
         state.flags_ex := state.flags_ex or MF_EX_STATE_ARGS_ERROR;
         result := true;
         exit;

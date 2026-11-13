@@ -1471,7 +1471,7 @@ begin
     R_SetPalette(palette);
     {$ENDIF}
     p := W_CacheLumpNum(lu_palette, PU_STATIC);
-    pal := PByteArray(integer(p) + palette * 768);
+    pal := PByteArray(NativeInt(p) + palette * 768);
     {$IFDEF OPENGL}
     I_SetPalette(pal);
     V_SetPalette(pal);

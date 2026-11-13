@@ -1173,7 +1173,7 @@ begin
 
   destl := @((ylookupl[dc_yl]^)[columnofs[dc_x]]);
   pitch := num_batch_columns * SizeOf(LongWord);
-  deststop := PLongWord(integer(destl) + pitch);
+  deststop := PLongWord(NativeInt(destl) + pitch);
   swidth := SCREENWIDTH32PITCH - pitch;
   fracstep := dc_iscale;
   frac := dc_texturemid + (dc_yl - centery) * fracstep;
@@ -1183,7 +1183,7 @@ begin
   begin
     lastspot := 128;
     ldest := 0; // JVAL: avoid compiler warning
-    deststopX4 := PLongWord(integer(deststop) - 4 * SizeOf(pointer));
+    deststopX4 := PLongWord(NativeInt(deststop) - 4 * SizeOf(pointer));
     if lfactor >= 0 then
     begin
       R_GetPrecalc32Tables(lfactor, bf_r, bf_g, bf_b, dc_fog);  // JVAL: Mars fog sectors
@@ -1199,7 +1199,7 @@ begin
           lastspot := spot;
         end;
 
-        while integer(destl) <= integer(deststopX4) do
+        while NativeInt(destl) <= NativeInt(deststopX4) do
         begin
           PInt64(destl)^ := PInt64(@buf)^;
           inc(destl, 2);
@@ -1207,15 +1207,15 @@ begin
           inc(destl, 2);
         end;
 
-        while integer(destl) < integer(deststop) do
+        while NativeInt(destl) < NativeInt(deststop) do
         begin
           destl^ := ldest;
           inc(destl);
         end;
 
-        destl := PLongWord(integer(destl) + swidth);
-        deststop := PLongWord(integer(destl) + pitch);
-        deststopX4 := PLongWord(integer(deststop) - 4 * SizeOf(pointer));
+        destl := PLongWord(NativeInt(destl) + swidth);
+        deststop := PLongWord(NativeInt(destl) + pitch);
+        deststopX4 := PLongWord(NativeInt(deststop) - 4 * SizeOf(pointer));
         inc(frac, fracstep);
         dec(count);
       end;
@@ -1237,7 +1237,7 @@ begin
           lastspot := spot;
         end;
 
-        while integer(destl) < integer(deststopX4) do
+        while NativeInt(destl) < NativeInt(deststopX4) do
         begin
           PInt64(destl)^ := PInt64(@buf)^;
           inc(destl, 2);
@@ -1245,15 +1245,15 @@ begin
           inc(destl, 2);
         end;
 
-        while integer(destl) < integer(deststop) do
+        while NativeInt(destl) < NativeInt(deststop) do
         begin
           destl^ := ldest;
           inc(destl);
         end;
 
-        destl := PLongWord(integer(destl) + swidth);
-        deststop := PLongWord(integer(destl) + pitch);
-        deststopX4 := PLongWord(integer(deststop) - 4 * SizeOf(pointer));
+        destl := PLongWord(NativeInt(destl) + swidth);
+        deststop := PLongWord(NativeInt(destl) + pitch);
+        deststopX4 := PLongWord(NativeInt(deststop) - 4 * SizeOf(pointer));
         inc(frac, fracstep);
         dec(count);
       end;
@@ -1270,14 +1270,14 @@ begin
         c := pal[dc_source[spot]];
         ldest := bf_r[c and $FF] + bf_g[(c shr 8) and $FF] + bf_b[(c shr 16) and $FF];
 
-        while integer(destl) < integer(deststop) do
+        while NativeInt(destl) < NativeInt(deststop) do
         begin
           destl^ := ldest;
           inc(destl);
         end;
 
-        destl := PLongWord(integer(destl) + swidth);
-        deststop := PLongWord(integer(destl) + pitch);
+        destl := PLongWord(NativeInt(destl) + swidth);
+        deststop := PLongWord(NativeInt(destl) + pitch);
         inc(frac, fracstep);
         dec(count);
       end;
@@ -1293,14 +1293,14 @@ begin
         b1 := c shr 16;
         ldest := precal32_ic[r1 + g1 + b1];
 
-        while integer(destl) < integer(deststop) do
+        while NativeInt(destl) < NativeInt(deststop) do
         begin
           destl^ := ldest;
           inc(destl);
         end;
 
-        destl := PLongWord(integer(destl) + swidth);
-        deststop := PLongWord(integer(destl) + pitch);
+        destl := PLongWord(NativeInt(destl) + swidth);
+        deststop := PLongWord(NativeInt(destl) + pitch);
         inc(frac, fracstep);
         dec(count);
       end;
@@ -1577,7 +1577,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
 
     inc(frac, fracstep);
   end;
@@ -1698,7 +1698,7 @@ begin
       Inc(destb, 4);
     end;
 
-    destb := PByte(integer(destb) + swidth);
+    destb := PByte(NativeInt(destb) + swidth);
     inc(frac, fracstep);
     dec(count);
   end;
@@ -1832,7 +1832,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -2075,7 +2075,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -2146,7 +2146,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -2217,7 +2217,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -2409,7 +2409,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -2553,7 +2553,7 @@ begin
       dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;

@@ -722,7 +722,7 @@ begin
 
     if dc_yl <= dc_yh then
     begin
-      dc_source := PByteArray(integer(column) + 3);
+      dc_source := PByteArray(NativeInt(column) + 3);
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
       // Drawn by either R_DrawColumn
@@ -746,14 +746,14 @@ begin
     if not tallpatch then
     begin
       prevdelta := column.topdelta;
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
       if column.topdelta > prevdelta then
         delta := 0
       else
         tallpatch := true;
     end
     else
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
   end;
   dc_texturemid := basetexturemid;
 end;
@@ -856,7 +856,7 @@ begin
 
     if dc_yl <= dc_yh then
     begin
-      dc_source := PByteArray(integer(column) + 3);
+      dc_source := PByteArray(NativeInt(column) + 3);
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
       // Drawn by either R_DrawColumn
@@ -872,14 +872,14 @@ begin
     if not tallpatch then
     begin
       prevdelta := column.topdelta;
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
       if column.topdelta > prevdelta then
         delta := 0
       else
         tallpatch := true;
     end
     else
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
   end;
 
   dc_texturemid := basetexturemid;
@@ -978,7 +978,7 @@ begin
 
     if dc_yl <= dc_yh then
     begin
-      dc_source := PByteArray(integer(column) + 3);
+      dc_source := PByteArray(NativeInt(column) + 3);
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
 
@@ -991,14 +991,14 @@ begin
     if not tallpatch then
     begin
       prevdelta := column.topdelta;
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
       if column.topdelta > prevdelta then
         delta := 0
       else
         tallpatch := true;
     end
     else
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
   end;
 
   dc_texturemid := basetexturemid;
@@ -1054,7 +1054,7 @@ begin
 
     if dc_yl <= dc_yh then
     begin
-      dc_source := PByteArray(integer(column) + 3);
+      dc_source := PByteArray(NativeInt(column) + 3);
       dc_texturemid := basetexturemid - (delta * FRACUNIT);
       R_MaskedAdjustY(dc_yl, dc_yh);
       // Drawn by either R_DrawColumn
@@ -1078,14 +1078,14 @@ begin
     if not tallpatch then
     begin
       prevdelta := column.topdelta;
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
       if column.topdelta > prevdelta then
         delta := 0
       else
         tallpatch := true;
     end
     else
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
   end;
 
   dc_texturemid := basetexturemid;
@@ -1183,7 +1183,7 @@ begin
     end
     else
     begin
-      dc_translation := PByteArray(integer(translationtables) - 256 +
+      dc_translation := PByteArray(NativeInt(translationtables) - 256 +
         (_SHR((vis.mobjflags and MF_TRANSLATION), (MF_TRANSSHIFT - 8))));
       colfunc := fuzztranscolfunc;
       batchcolfunc := batchfuzztranscolfunc;
@@ -1199,7 +1199,7 @@ begin
   begin
     colfunc := transcolfunc;
     batchcolfunc := batchtranscolfunc;
-    dc_translation := PByteArray(integer(translationtables) - 256 +
+    dc_translation := PByteArray(NativeInt(translationtables) - 256 +
     {$IFDEF HEXEN}vis._class * ((MAXPLAYERS - 1) * 256) + {$ENDIF}
       (_SHR((vis.mobjflags and MF_TRANSLATION), (MF_TRANSSHIFT - 8))));
   end
@@ -1289,7 +1289,7 @@ begin
     begin
       texturecolumn := LongWord(frac) shr FRACBITS;
 
-      column := Pcolumn_t(integer(patch) + patch.columnofs[texturecolumn]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[texturecolumn]);
       dmcproc(column, dbscale, vismo, baseclip, renderflags);
       frac := frac + xiscale;
       inc(dc_x);
@@ -1320,7 +1320,7 @@ begin
         last_cc_x := mceilingclip[dc_x];
         save_dc_x := last_dc_x;
         last_dc_x := dc_x;
-        column := Pcolumn_t(integer(patch) + patch.columnofs[texturecolumn]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[texturecolumn]);
         dc_x := save_dc_x;
         if num_batch_columns > 1 then
           dmcproc_batch(column, vismo, dbscale, baseclip, renderflags)
@@ -1334,7 +1334,7 @@ begin
     num_batch_columns := dc_x - last_dc_x;
     if num_batch_columns > 0 then
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[last_texturecolumn]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[last_texturecolumn]);
       dc_x := last_dc_x;
       if num_batch_columns > 1 then
         dmcproc_batch(column, vismo, dbscale, baseclip, renderflags)

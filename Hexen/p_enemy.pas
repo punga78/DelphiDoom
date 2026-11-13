@@ -3786,7 +3786,7 @@ begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_BISH_FX));
   if mo <> nil then
   begin
-    mo.special1 := integer(actor.target);
+    mo.special1 := NativeInt(actor.target);
     mo.special2 := 16; // High word = x/y, Low word = z
   end;
   dec(actor.special1);
@@ -4031,7 +4031,7 @@ begin
       if bestArg <> -1 then
       begin
         search := -1;
-        actor.special1 := integer(P_FindMobjFromTID(target.args[bestArg], @search));
+        actor.special1 := NativeInt(P_FindMobjFromTID(target.args[bestArg], @search));
       end;
     end
     else
@@ -4040,7 +4040,7 @@ begin
         i := _SHR2(P_Random) mod 5;
       until target.args[i] <> 0;
       search := -1;
-      actor.special1 := integer(P_FindMobjFromTID(target.args[i], @search));
+      actor.special1 := NativeInt(P_FindMobjFromTID(target.args[i], @search));
     end;
   end;
 end;
@@ -4056,13 +4056,13 @@ var
 begin
   search := -1;
   repeat  // find the first tid identical to the dragon's tid
-    actor.special1 := integer(P_FindMobjFromTID(actor.tid, @search));
+    actor.special1 := NativeInt(P_FindMobjFromTID(actor.tid, @search));
     if search = -1 then
     begin
       P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
       exit;
     end;
-  until actor.special1 <> integer(actor);
+  until actor.special1 <> NativeInt(actor);
   P_RemoveMobjFromTIDList(actor);
 end;
 
@@ -5392,7 +5392,7 @@ begin
   if mo <> nil then
   begin
     mo.target := parent;
-    mo.special1 := integer(parent.target);
+    mo.special1 := NativeInt(parent.target);
     mo.args[4] := BOUNCE_TIME_UNIT;
     mo.args[3] := 15;        // Bounce time in seconds
   end;
@@ -5401,7 +5401,7 @@ begin
   if mo <> nil then
   begin
     mo.target := parent;
-    mo.special1 := integer(parent.target);
+    mo.special1 := NativeInt(parent.target);
     mo.args[4] := BOUNCE_TIME_UNIT;
     mo.args[3] := 15;        // Bounce time in seconds
   end;
@@ -6179,19 +6179,19 @@ begin
 
   spirit.health := KORAX_SPIRIT_LIFETIME;
 
-  spirit.special1 := integer(korax);        // Swarm around korax
+  spirit.special1 := NativeInt(korax);        // Swarm around korax
   spirit.special2 := 32 + (P_Random and 7); // Float bob index
   spirit.args[0] := 10; // initial turn value
   spirit.args[1] := 0;  // initial look angle
 
   // Spawn a tail for spirit
   tail := P_SpawnMobj(spirit.x, spirit.y, spirit.z, Ord(MT_HOLY_TAIL));
-  tail.special2 := integer(spirit); // parent
+  tail.special2 := NativeInt(spirit); // parent
   for i := 0 to 1 do
   begin
     next := P_SpawnMobj(spirit.x, spirit.y, spirit.z, Ord(MT_HOLY_TAIL));
     P_SetMobjState(next, statenum_t(next.info.spawnstate + 1));
-    tail.special1 := integer(next);
+    tail.special1 := NativeInt(next);
     tail := next;
   end;
   tail.special1 := 0; // last tail bit

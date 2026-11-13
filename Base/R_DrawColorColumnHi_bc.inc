@@ -41,7 +41,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -65,7 +65,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -116,7 +116,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -142,7 +142,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -195,7 +195,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -223,7 +223,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -278,7 +278,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -308,7 +308,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -365,7 +365,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -397,7 +397,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -456,7 +456,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -490,7 +490,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -551,7 +551,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -587,7 +587,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -650,7 +650,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -688,7 +688,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -753,7 +753,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -793,7 +793,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -860,7 +860,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -902,7 +902,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -971,7 +971,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1015,7 +1015,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1086,7 +1086,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1132,7 +1132,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1205,7 +1205,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1253,7 +1253,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1328,7 +1328,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1378,7 +1378,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1455,7 +1455,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1507,7 +1507,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1586,7 +1586,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1640,7 +1640,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1721,7 +1721,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1777,7 +1777,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1860,7 +1860,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1918,7 +1918,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2003,7 +2003,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2063,7 +2063,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2150,7 +2150,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2212,7 +2212,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2301,7 +2301,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2365,7 +2365,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2456,7 +2456,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2522,7 +2522,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2615,7 +2615,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2683,7 +2683,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2778,7 +2778,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -2848,7 +2848,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -2945,7 +2945,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3017,7 +3017,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -3116,7 +3116,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3190,7 +3190,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -3291,7 +3291,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3367,7 +3367,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -3470,7 +3470,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3548,7 +3548,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -3653,7 +3653,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3733,7 +3733,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -3840,7 +3840,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -3922,7 +3922,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -4031,7 +4031,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -4115,7 +4115,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -4226,7 +4226,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -4312,7 +4312,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -4425,7 +4425,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -4513,7 +4513,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -4628,7 +4628,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -4718,7 +4718,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -4835,7 +4835,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -4927,7 +4927,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -5046,7 +5046,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -5140,7 +5140,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -5261,7 +5261,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -5357,7 +5357,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -5480,7 +5480,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -5578,7 +5578,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -5703,7 +5703,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -5803,7 +5803,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -5930,7 +5930,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -6032,7 +6032,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -6161,7 +6161,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -6265,7 +6265,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -6396,7 +6396,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -6502,7 +6502,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -6635,7 +6635,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -6743,7 +6743,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -6878,7 +6878,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -6988,7 +6988,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -7125,7 +7125,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -7237,7 +7237,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -7376,7 +7376,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -7490,7 +7490,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -7631,7 +7631,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -7747,7 +7747,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -7890,7 +7890,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -8008,7 +8008,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -8153,7 +8153,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -8273,7 +8273,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -8420,7 +8420,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -8542,7 +8542,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -8691,7 +8691,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -8815,7 +8815,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -8966,7 +8966,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -9092,7 +9092,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -9245,7 +9245,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -9373,7 +9373,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -9528,7 +9528,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -9658,7 +9658,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -9815,7 +9815,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -9947,7 +9947,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -10106,7 +10106,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -10240,7 +10240,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -10401,7 +10401,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -10537,7 +10537,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -10700,7 +10700,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -10838,7 +10838,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -11003,7 +11003,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -11143,7 +11143,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -11310,7 +11310,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -11452,7 +11452,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;

@@ -511,7 +511,7 @@ begin
       x1 := patch.originx;
       x2 := x1 + Ppatch_t(@patchbytes[0]).width;
 
-      cofs := PIntegerArray(integer(@Ppatch_t(@patchbytes[0]).columnofs) - x1 * SizeOf(integer));
+      cofs := PIntegerArray(NativeInt(@Ppatch_t(@patchbytes[0]).columnofs) - x1 * SizeOf(integer));
 
       if x1 < 0 then
         x1 := 0;
@@ -676,14 +676,14 @@ begin
 
   if lump > 0 then
   begin
-    result := R_GetFixedColumn(PByteArray(integer(W_CacheLumpNum(lump, PU_LEVEL)) + ofs), tex, col, false);
+    result := R_GetFixedColumn(PByteArray(NativeInt(W_CacheLumpNum(lump, PU_LEVEL)) + ofs), tex, col, false);
     exit;
   end;
 
   if texturecomposite[tex] = nil then
     R_GenerateComposite(tex);
 
-  result := R_GetFixedColumn(PByteArray(integer(texturecomposite[tex]) + ofs), tex, col, true);
+  result := R_GetFixedColumn(PByteArray(NativeInt(texturecomposite[tex]) + ofs), tex, col, true);
 end;
 {$ENDIF}
 
@@ -787,7 +787,7 @@ begin
   ZeroMemory(@name, SizeOf(char8_t));
   names := W_CacheLumpName('PNAMES', PU_STATIC);
   nummappatches := PInteger(names)^;
-  name_p := PByteArray(integer(names) + 4);
+  name_p := PByteArray(NativeInt(names) + 4);
 
   patchlookup := malloc(nummappatches * SizeOf(integer));
 
@@ -831,7 +831,7 @@ begin
   maptex := maptex1;
   numtextures1 := maptex[0];
   maxoff := W_LumpLength(W_GetNumForName('TEXTURE1'));
-  directory := PintegerArray(integer(maptex) + SizeOf(integer));
+  directory := PintegerArray(NativeInt(maptex) + SizeOf(integer));
 
   t2lump := W_CheckNumForName('TEXTURE2');
   if t2lump <> -1 then
@@ -881,14 +881,14 @@ begin
       // Start looking in second texture file.
       maptex := maptex2;
       maxoff := maxoff2;
-      directory := PIntegerArray(integer(maptex) + SizeOf(integer));
+      directory := PIntegerArray(NativeInt(maptex) + SizeOf(integer));
     end;
     if i = numtextures1 + numtextures2 then
     begin
       // Start looking in third texture file.
       maptex := maptex3;
       maxoff := maxoff3;
-      directory := PIntegerArray(integer(maptex) + SizeOf(integer));
+      directory := PIntegerArray(NativeInt(maptex) + SizeOf(integer));
     end;
 
     offset := directory[0];
@@ -896,7 +896,7 @@ begin
     if offset > maxoff then
       I_Error('R_InitTextures(): bad texture directory');
 
-    mtexture2 := Pmaptexture2_t(integer(maptex) + offset);
+    mtexture2 := Pmaptexture2_t(NativeInt(maptex) + offset);
 
     textures[i] := malloc(SizeOf(texture_t) + SizeOf(texpatch_t) * (mtexture2.patchcount - 1));
     texture := textures[i];
@@ -975,7 +975,7 @@ begin
     realloc(pointer(texturecolumnheight), numtextures * SizeOf(integer), (numtextures0 + numtextures) * SizeOf(integer));
     realloc(pointer(texturecolumnheightfrac), numtextures * SizeOf(integer), (numtextures0 + numtextures) * SizeOf(integer));
 
-    mtexture := Pmaptexture_t(integer(maptex) + SizeOf(integer));
+    mtexture := Pmaptexture_t(NativeInt(maptex) + SizeOf(integer));
     for i := numtextures to numtextures0 + numtextures - 1 do
     begin
       textures[i] := malloc(SizeOf(texture_t) + SizeOf(texpatch_t));

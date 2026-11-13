@@ -1240,7 +1240,7 @@ begin
             invtail[1].sprite := invtail[0].sprite;
             invtail[1]._type := invtail[0]._type;
             invtail[1].amount := invtail[0].amount;
-            invtail := Pinventory_a(integer(invtail) - SizeOf(inventory_t));
+            invtail := Pinventory_a(NativeInt(invtail) - SizeOf(inventory_t));
           end;
         end;
 

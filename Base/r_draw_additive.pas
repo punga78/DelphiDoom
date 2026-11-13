@@ -315,7 +315,7 @@ begin
 
     destl^ := r + g shl 8 + b shl 16;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;
@@ -397,7 +397,7 @@ begin
       PByteArray(destl)[1] := add32_c[PByteArray(pl)[1] + PByteArray(destl)[1]];
       PByteArray(destl)[2] := add32_c[PByteArray(pl)[2] + PByteArray(destl)[2]];
 
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(frac, fracstep);
     end;
   end
@@ -432,7 +432,7 @@ begin
 
     destl^ := r + g shl 8 + b shl 16;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;

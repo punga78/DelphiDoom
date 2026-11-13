@@ -46,6 +46,9 @@ program SpeedHaste32;
 uses
   i_crashlog in '..\Base\i_crashlog.pas',
   SysUtils,
+{$IFDEF CPUX64}
+  System.Math,
+{$ENDIF}
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',
   mp3_BitReserve in '..\Libs\Mp3\Decoder\mp3_BitReserve.pas',
   mp3_BitStream in '..\Libs\Mp3\Decoder\mp3_BitStream.pas',
@@ -1445,6 +1448,10 @@ begin
   { Save the current FPU state and then disable FPU exceptions }
   Saved8087CW := Default8087CW;
   Set8087CW($133f); { Disable all fpu exceptions }
+{$IFDEF CPUX64}
+  { At 64 bit the SSE unit raises the exceptions: Set8087CW does not reach it }
+  SetExceptionMask(exAllArithmeticExceptions);
+{$ENDIF}
 
   FormatSettings.ThousandSeparator := #0;
   FormatSettings.DecimalSeparator := '.';

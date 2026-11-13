@@ -9,9 +9,9 @@
       if frac < 0 then
         frac := 0;
       limit := @PByteArray(dest)[range];
-      limit2 := PByte(Integer(limit) - 16);
+      limit2 := PByte(NativeInt(limit) - 16);
 
-      while integer(dest) < integer(limit2) do
+      while NativeInt(dest) < NativeInt(limit2) do
       begin
         fb.byte1 := buffer[frac div FRACUNIT];
         frac := frac + fracstep;
@@ -58,7 +58,7 @@
         Inc(dest, 4);
       end;
 
-      while integer(dest) < integer(limit) do
+      while NativeInt(dest) < NativeInt(limit) do
       begin
         dest^ := buffer[frac div FRACUNIT];
         frac := frac + fracstep;

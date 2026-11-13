@@ -1074,7 +1074,7 @@ begin
       c := videopal[color];
       dest := @fb32[0];
       deststop := @fb32[f_w * f_h];
-      while integer(dest) < integer(deststop) do
+      while NativeInt(dest) < NativeInt(deststop) do
       begin
         dest^ := c;
         inc(dest);

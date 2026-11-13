@@ -2027,7 +2027,7 @@ begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_MUMMYFX1));
   //mo = P_SpawnMissile(actor, actor.target, MT_EGGFX);
   if mo <> nil then
-    mo.special1 := integer(actor.target);
+    mo.special1 := NativeInt(actor.target);
 end;
 
 //==============================================================================
@@ -2645,7 +2645,7 @@ begin
     if mo <> nil then
     begin
       mo.z := mo.z - 32 * FRACUNIT;
-      mo.special1 := integer(target);
+      mo.special1 := NativeInt(target);
       mo.special2 := 50; // Timer for active sound
       mo.health := 20 * TICRATE; // Duration
       S_StartSound(actor, Ord(sfx_hedat3));
@@ -3063,7 +3063,7 @@ begin
   P_ThrustMobj(mo, LongWord(P_Random) * $1000000, $48000);
   S_StartSound(mo, Ord(sfx_newpod));
   inc(actor.special1); // Increment generated pod count
-  mo.special2 := integer(actor); // Link the generator to the pod
+  mo.special2 := NativeInt(actor); // Link the generator to the pod
 end;
 
 //==============================================================================

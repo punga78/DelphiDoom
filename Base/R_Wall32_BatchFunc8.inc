@@ -147,7 +147,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -264,7 +264,7 @@
         destl^ := bf_r8[c and $FF] + bf_g8[(c shr 8) and $FF] + bf_b8[(c shr 16) and $FF];
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -413,7 +413,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end
@@ -564,7 +564,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -713,7 +713,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end
@@ -891,7 +891,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -1032,7 +1032,7 @@
         destl^ := precal32_ic[r1 + g1 + b1];
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -1205,7 +1205,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end
     end
@@ -1380,7 +1380,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -1553,7 +1553,7 @@
         end;
         inc(frac8, fracstep8);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end;

@@ -214,7 +214,7 @@ uses
 procedure PADSAVEP;
 begin
   if savegameversion < VERSION115 then
-    save_p := PByteArray(integer(save_p) + ((4 - (integer(save_p) and 3) and 3)));
+    save_p := PByteArray(NativeInt(save_p) + ((4 - (NativeInt(save_p) and 3) and 3)));
 end;
 
 //==============================================================================
@@ -237,7 +237,7 @@ begin
 
     dest := Pplayer_t(save_p);
     memcpy(dest, @players[i], SizeOf(player_t));
-    save_p := PByteArray(integer(save_p) + SizeOf(player_t));
+    save_p := PByteArray(NativeInt(save_p) + SizeOf(player_t));
     for j := 0 to Ord(NUMPSPRITES) - 1 do
       if dest.psprites[j].state <> nil then
         dest.psprites[j].state := Pstate_t(pDiff(dest.psprites[j].state, @states[0], SizeOf(dest.psprites[j].state^)));
@@ -422,7 +422,7 @@ begin
 
     for j := 0 to Ord(NUMPSPRITES) - 1 do
       if players[i].psprites[j].state <> nil then
-        players[i].psprites[j].state := @states[integer(players[i].psprites[j].state)];
+        players[i].psprites[j].state := @states[NativeInt(players[i].psprites[j].state)];
 
     // JVAL: 202111224 - Load player history
     if savegameversion >= VERSION207 then
@@ -1236,7 +1236,7 @@ begin
 
           for i := 0 to MAXPLAYERS - 1 do
             if playeringame[i] then
-              players[i].plinetarget := P_FindMobjFromKey(integer(players[i].plinetarget));
+              players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
 
           exit; // end of list
         end;
@@ -1259,8 +1259,8 @@ begin
             mobj.key := P_GenGlobalMobjKey;
           P_NotifyMobjKey(mobj);
 
-          mobj.state := @states[integer(mobj.state)];
-          mobj.prevstate := @states[integer(mobj.prevstate)];
+          mobj.state := @states[NativeInt(mobj.state)];
+          mobj.prevstate := @states[NativeInt(mobj.prevstate)];
           mobj.info := @mobjinfo[Ord(mobj._type)];
 
           if mobj.customparams <> nil then
@@ -1275,7 +1275,7 @@ begin
 
           if mobj.player <> nil then
           begin
-            mobj.player := @players[integer(mobj.player) - 1];
+            mobj.player := @players[NativeInt(mobj.player) - 1];
 
             Pplayer_t(mobj.player).mo := mobj;
           end;
@@ -1597,7 +1597,7 @@ begin
       acs := Pacs_t(save_p);
       memcpy(acs, th, SizeOf(acs_t));
       incp(pointer(save_p), SizeOf(acs_t));
-      acs.ip := PInteger(LongWord(acs.ip) - LongWord(ActionCodeBase));
+      acs.ip := PInteger(NativeUInt(acs.ip) - LongWord(ActionCodeBase));
       if acs.line <> nil then
         acs.line := Pline_t(pDiff(acs.line, lines, SizeOf(line_t)))
       else
@@ -1700,7 +1700,7 @@ var
     if sec = Psector_t(-1) then
       result := nil
     else
-      result := @sectors[integer(sec)];
+      result := @sectors[NativeInt(sec)];
   end;
 
 begin
@@ -1721,7 +1721,7 @@ begin
           ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVEL, nil);
           memcpy(ceiling, save_p, SizeOf(ceiling_t));
           incp(pointer(save_p), SizeOf(ceiling_t));
-          ceiling.sector := @sectors[integer(ceiling.sector)];
+          ceiling.sector := @sectors[NativeInt(ceiling.sector)];
           ceiling.sector.specialdata := ceiling;
 
           if Assigned(ceiling.thinker._function.acp1) then // JVAL works ???
@@ -1737,7 +1737,7 @@ begin
           door := Z_Malloc(SizeOf(vldoor_t), PU_LEVEL, nil);
           memcpy(door, save_p, SizeOf(vldoor_t));
           incp(pointer(save_p), SizeOf(vldoor_t));
-          door.sector := @sectors[integer(door.sector)];
+          door.sector := @sectors[NativeInt(door.sector)];
           door.sector.specialdata := door;
           @door.thinker._function.acp1 := @T_VerticalDoor;
           P_AddThinker(@door.thinker);
@@ -1767,7 +1767,7 @@ begin
             memcpy(floor, save_p, SizeOf(floormove_t));
             incp(pointer(save_p), SizeOf(floormove_t));
           end;
-          floor.sector := @sectors[integer(floor.sector)];
+          floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.specialdata := floor;
           @floor.thinker._function.acp1 := @T_MoveFloor;
           P_AddThinker(@floor.thinker);
@@ -1779,7 +1779,7 @@ begin
           plat := Z_Malloc(SizeOf(plat_t), PU_LEVEL, nil);
           memcpy(plat, save_p, SizeOf(plat_t));
           incp(pointer(save_p), SizeOf(plat_t));
-          plat.sector := @sectors[integer(plat.sector)];
+          plat.sector := @sectors[NativeInt(plat.sector)];
           plat.sector.specialdata := plat;
 
           if Assigned(plat.thinker._function.acp1) then  // JVAL ??? from serialization
@@ -1795,7 +1795,7 @@ begin
           flash := Z_Malloc(Sizeof(lightflash_t), PU_LEVEL, nil);
           memcpy(flash, save_p, SizeOf(lightflash_t));
           incp(pointer(save_p), SizeOf(lightflash_t));
-          flash.sector := @sectors[integer(flash.sector)];
+          flash.sector := @sectors[NativeInt(flash.sector)];
           @flash.thinker._function.acp1 := @T_LightFlash;
           P_AddThinker(@flash.thinker);
         end;
@@ -1806,7 +1806,7 @@ begin
           strobe := Z_Malloc(SizeOf(strobe_t), PU_LEVEL, nil);
           memcpy(strobe, save_p, SizeOf(strobe_t));
           incp(pointer(save_p), SizeOf(strobe_t));
-          strobe.sector := @sectors[integer(strobe.sector)];
+          strobe.sector := @sectors[NativeInt(strobe.sector)];
           @strobe.thinker._function.acp1 := @T_StrobeFlash;
           P_AddThinker(@strobe.thinker);
         end;
@@ -1817,7 +1817,7 @@ begin
           glow := Z_Malloc(SizeOf(glow_t), PU_LEVEL, nil);
           memcpy(glow, save_p, SizeOf(glow_t));
           incp(pointer(save_p), SizeOf(glow_t));
-          glow.sector := @sectors[integer(glow.sector)];
+          glow.sector := @sectors[NativeInt(glow.sector)];
           @glow.thinker._function.acp1 := @T_Glow;
           P_AddThinker(@glow.thinker);
         end;
@@ -1833,7 +1833,7 @@ begin
           incp(pointer(save_p), SizeOf(fireflicker_t));
 
           @flicker.thinker._function.acp1 := @T_FireFlicker;
-          flicker.sector := @sectors[integer(flicker.sector)];
+          flicker.sector := @sectors[NativeInt(flicker.sector)];
           P_AddThinker(@flicker.thinker);
         end;
 
@@ -1942,13 +1942,13 @@ begin
           acs := Z_Malloc(SizeOf(acs_t), PU_LEVEL, nil);
           memcpy(acs, save_p, SizeOf(acs_t));
           incp(pointer(save_p), SizeOf(acs_t));
-          acs.ip := @ActionCodeBase[integer(acs.ip)];
-          if integer(acs.line) = -1 then
+          acs.ip := @ActionCodeBase[NativeInt(acs.ip)];
+          if NativeInt(acs.line) = -1 then
             acs.line := nil
           else
-            acs.line := @lines[integer(acs.line)];
+            acs.line := @lines[NativeInt(acs.line)];
           if acs.activator <> nil then
-            acs.activator := P_FindMobjFromKey(integer(acs.activator));
+            acs.activator := P_FindMobjFromKey(NativeInt(acs.activator));
 
           if Assigned(acs.thinker._function.acp1) then
             @acs.thinker._function.acp1 := @TH_InterpretACS;

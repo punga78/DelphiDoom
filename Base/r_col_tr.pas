@@ -139,7 +139,7 @@ begin
     // Thus the "green" ramp of the player 0 sprite
     //  is mapped to gray, red, black/indigo.
     destl^ := dc_colormap32[dc_translation[dc_source[(LongWord(frac) shr FRACBITS) and 127]]];
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
 
     inc(frac, fracstep);
   end;

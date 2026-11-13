@@ -1772,7 +1772,7 @@ begin
     begin
       if target = source then
       begin // Self-frag
-        dec(Pplayer_t(target.player).frags[(integer(target.player) - integer(@players[0])) div SizeOf(player_t)]);
+        dec(Pplayer_t(target.player).frags[(NativeInt(target.player) - NativeInt(@players[0])) div SizeOf(player_t)]);
         if cmdfrag and netgame and source.player = @players[consoleplayer] then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
@@ -1780,7 +1780,7 @@ begin
       end
       else
       begin
-        inc(source.player.frags[(integer(target.player) - integer(players)) div SizeOf(player_t)]);
+        inc(source.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
         if cmdfrag and netgame and (source.player = @players[consoleplayer]) then
         begin // Send out a frag count packet
           NET_SendFrags(source.player);
@@ -1795,7 +1795,7 @@ begin
 {
     if source = nil then
     begin // Self-frag
-      dec(target.player.frags[(integer(target.player) - integer(players)) div SizeOf(player_t)]);
+      dec(target.player.frags[(NativeInt(target.player) - NativeInt(players)) div SizeOf(player_t)]);
       if cmdfrag and netgame and (target.player = @players[consoleplayer]) then
       begin // Send out a frag count packet
         NET_SendFrags(target.player);

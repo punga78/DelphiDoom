@@ -167,7 +167,7 @@ var
     column, fixed: TArray<Byte>;
   begin
     // the posts end with 255 and each one takes its length plus 4 bytes
-    posts := PByteArray(integer(src) - 3);
+    posts := PByteArray(NativeInt(src) - 3);
     size := 0;
     while posts[size] <> $FF do
       size := size + posts[size + 1] + 4;

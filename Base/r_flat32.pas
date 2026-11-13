@@ -213,7 +213,7 @@ begin
 
   item1 := @flatcache32[0];
   item2 := @flatcache32[flatcachesize32 - 1];
-  while integer(item1) <= integer(item2) do
+  while NativeInt(item1) <= NativeInt(item2) do
   begin
     item1.func(item1);
     inc(item1);
@@ -548,7 +548,7 @@ begin
   item2 := @flatcache32[flatcachesize32 - 1];
   start := parms.start;
   finish := parms.stop;
-  while integer(item1) <= integer(item2) do
+  while NativeInt(item1) <= NativeInt(item2) do
   begin
     if item1.ds_y >= start then
       if item1.ds_y <= finish then

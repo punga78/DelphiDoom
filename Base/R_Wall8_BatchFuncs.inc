@@ -209,7 +209,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -261,7 +261,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ENDIF}
     inc(ypos);
@@ -304,7 +304,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
     PLongWord(dest)^ := PLongWord(@buf)^;
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ELSE}
 
@@ -340,7 +340,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
     {$ENDIF}
 
     inc(ypos);
@@ -404,7 +404,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -456,7 +456,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac8, fracstep8);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ENDIF}
     inc(ypos);
@@ -657,7 +657,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac7, fracstep7);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -703,7 +703,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac7, fracstep7);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -777,7 +777,7 @@ begin
 
     {$ENDIF}
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
     inc(ypos);
 
   end;
@@ -879,7 +879,7 @@ begin
 
     {$ENDIF}
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
     inc(ypos);
   end;
 
@@ -1067,7 +1067,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac6, fracstep6);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1107,7 +1107,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac6, fracstep6);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ENDIF}
     inc(ypos);
@@ -1143,7 +1143,7 @@ begin
     inc(frac6, fracstep6);
     PWord(dest)^ := PWord(@buf2)^;
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ELSE}
 
@@ -1171,7 +1171,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac6, fracstep6);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ENDIF}
 
@@ -1222,7 +1222,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac6, fracstep6);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1262,7 +1262,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac6, fracstep6);
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
 
     {$ENDIF}
 
@@ -1433,7 +1433,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1467,7 +1467,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -1499,7 +1499,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1523,7 +1523,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
     inc(ypos);
@@ -1566,7 +1566,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1600,7 +1600,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac5, fracstep5);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
     inc(ypos);
@@ -1755,7 +1755,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac4, fracstep4);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1783,7 +1783,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac4, fracstep4);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
     inc(ypos);
@@ -1866,7 +1866,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac4, fracstep4);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -1894,7 +1894,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac4, fracstep4);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
     inc(ypos);
@@ -2034,7 +2034,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2056,7 +2056,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -2080,7 +2080,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     buf.byte1 := dc_colormap1[dc_source1[(LongWord(frac1) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
@@ -2096,7 +2096,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2112,7 +2112,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     PByteArray(dest)[0] := dc_colormap1[dc_source1[(LongWord(frac1) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
@@ -2126,7 +2126,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -2150,7 +2150,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2166,7 +2166,7 @@ begin
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
     inc(ypos);
@@ -2194,7 +2194,7 @@ begin
       dest^ := dc_colormap3[dc_source3[(LongWord(frac3) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2215,7 +2215,7 @@ begin
       PByteArray(dest)[2] := dc_colormap3[dc_source3[(LongWord(frac3) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac3, fracstep3);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -2335,7 +2335,7 @@ begin
       dest^ := dc_colormap2[dc_source2[(LongWord(frac2) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac2, fracstep2);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2350,7 +2350,7 @@ begin
       PByteArray(dest)[1] := dc_colormap2[dc_source2[(LongWord(frac2) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac2, fracstep2);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 
@@ -2456,7 +2456,7 @@ begin
       dest^ := dc_colormap2[dc_source2[(LongWord(frac2) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac2, fracstep2);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ELSE}
 
@@ -2471,7 +2471,7 @@ begin
       PByteArray(dest)[1] := dc_colormap2[dc_source2[(LongWord(frac2) shr FRACBITS)
         {$IFDEF WALL8_TC}mod mod_height{$ELSE}and {$IFDEF WALL8_128}127{$ENDIF}{$IFDEF WALL8_256}255{$ENDIF}{$IFDEF WALL8_512}511{$ENDIF}{$ENDIF}]];
     inc(frac2, fracstep2);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
 
     {$ENDIF}
 

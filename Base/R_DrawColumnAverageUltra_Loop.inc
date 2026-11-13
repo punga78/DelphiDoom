@@ -14,5 +14,5 @@
     c4 := destl^;
     {$I R_ColorMidAverage.inc}
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);

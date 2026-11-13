@@ -825,7 +825,7 @@ begin
             mo.momy := FixedMul(_SHR1(mo.info.speed), finesine[angle]);
             if mo.flags2 and MF2_SEEKERMISSILE <> 0 then
             begin
-              mo.special1 := integer(mo.target);
+              mo.special1 := NativeInt(mo.target);
             end;
             mo.target := BlockingMobj;
             exit;
@@ -900,7 +900,7 @@ begin
   begin // If in a walking frame, stop moving
     if player <> nil then
     begin
-      if (integer(player.mo.state) - integer(@states[0])) div SizeOf(state_t) - Ord(PStateRun[Ord(player._class)]) < 4 then // JVAL SOS
+      if (NativeInt(player.mo.state) - NativeInt(@states[0])) div SizeOf(state_t) - Ord(PStateRun[Ord(player._class)]) < 4 then // JVAL SOS
         P_SetMobjState(player.mo, statenum_t(PStateNormal[Ord(player._class)]));
     end;
     mo.momx := 0;
