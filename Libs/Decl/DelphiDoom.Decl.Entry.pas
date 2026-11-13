@@ -21,7 +21,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.Decl.Types,
-  DelphiDoom.Decl.Intf, DelphiDoom.Decl.Source.Intf;
+  DelphiDoom.Decl.Intf, DelphiDoom.Decl.Source.Intf, DelphiDoom.Decl.FileScanner.Intf;
 
 type
   TDeclFile = class;
@@ -67,6 +67,10 @@ type
     FNumLines: Integer;
     FDecls: TList<TDeclEntry>;
     [weak] FHost: IDeclHost;
+    /// <summary>The scanner of the default type of this file, nil for the types read with the lexer of idLib</summary>
+    function FindScanner: IDeclFileScanner;
+    /// <summary>LoadAndParse for a type with its own syntax (<c>IDeclFileScanner</c>)</summary>
+    function LoadWithScanner(const AScanner: IDeclFileScanner; const ABuffer: AnsiString): Cardinal;
   public
     /// <summary>The file of the implicit decls has the name "&lt;implicit file&gt;" and the type DECL_MAX_TYPES</summary>
     constructor Create(const AHost: IDeclHost; const AFileName: AnsiString; const ADefaultType: Integer);
@@ -217,6 +221,81 @@ begin
   inherited Destroy;
 end;
 
+function TDeclFile.FindScanner: IDeclFileScanner;
+var
+  LType: IDeclType;
+begin
+  Result := nil;
+  if (FDefaultType < 0) or (FDefaultType >= DECL_MAX_TYPES) then
+    Exit;
+  LType := FHost.GetDeclTypeAt(FDefaultType);
+  if Assigned(LType) then
+    Supports(LType, IDeclFileScanner, Result);
+end;
+
+function TDeclFile.LoadWithScanner(const AScanner: IDeclFileScanner; const ABuffer: AnsiString): Cardinal;
+var
+  LBlocks: TArray<TDeclScannedBlock>;
+  LBlock: TDeclScannedBlock;
+  LNumLines: Integer;
+  LNewDecl, LDecl: TDeclEntry;
+  LReparse: Boolean;
+  LLog: IIdLibLog;
+begin
+  LLog := FHost.GetLog;
+  for LDecl in FDecls do
+    LDecl.RedefinedInReload := False;
+  FChecksum := TextChecksum(ABuffer);
+  FFileSize := Length(ABuffer);
+  LBlocks := AScanner.ScanFile(ABuffer, FFileName, FDefaultType, LLog, LNumLines);
+  for LBlock in LBlocks do
+  begin
+    LReparse := False;
+    LNewDecl := FHost.FindEntry(LBlock.TypeId, LBlock.Name, False);
+    if Assigned(LNewDecl) then
+    begin
+      if (LNewDecl.SourceFile <> Self) or LNewDecl.RedefinedInReload then
+      begin
+        if Assigned(LLog) then
+          LLog.Warning(Format('file %s, line %d: %s ''%s'' previously defined at %s:%d',
+            [string(FFileName), LBlock.Line, string(FHost.GetDeclTypeInfo(LBlock.TypeId).GetTypeName),
+            string(LBlock.Name), string(LNewDecl.SourceFile.FileName), LNewDecl.SourceLine]));
+        Continue;
+      end;
+      if LNewDecl.State <> dsUnparsed then
+        LReparse := True;
+    end
+    else
+    begin
+      LNewDecl := FHost.FindEntry(LBlock.TypeId, LBlock.Name, True);
+      FDecls.Add(LNewDecl);
+    end;
+    LNewDecl.RedefinedInReload := True;
+    LNewDecl.ClearText;
+    if LBlock.Text <> '' then
+      LNewDecl.SetTextLocal(LBlock.Text)
+    else
+      LNewDecl.SetTextLocal(Copy(ABuffer, LBlock.Offset + 1, LBlock.Length));
+    LNewDecl.SourceFile := Self;
+    LNewDecl.SourceTextOffset := LBlock.Offset;
+    LNewDecl.SourceTextLength := LBlock.Length;
+    LNewDecl.SourceLine := LBlock.Line;
+    LNewDecl.State := dsUnparsed;
+    if LReparse then
+      LNewDecl.ParseLocal;
+  end;
+  FNumLines := LNumLines;
+  for LDecl in FDecls do
+    if not LDecl.RedefinedInReload then
+    begin
+      LDecl.MakeDefault;
+      LDecl.SourceTextOffset := LDecl.SourceFile.FileSize;
+      LDecl.SourceTextLength := 0;
+      LDecl.SourceLine := LDecl.SourceFile.NumLines;
+    end;
+  Result := FChecksum;
+end;
+
 procedure TDeclFile.Reload(const AForce: Boolean);
 var
   LLength: Integer;
@@ -241,9 +320,13 @@ var
   LName: AnsiString;
   LNewDecl: TDeclEntry;
   LDecl: TDeclEntry;
+  LScanner: IDeclFileScanner;
 begin
   if not FHost.GetSource.TryReadFile(FFileName, LBuffer, FTimestamp) then
     raise EDeclException.CreateFmt(SCouldNotLoad, [string(FFileName)]);
+  LScanner := FindScanner;
+  if Assigned(LScanner) then
+    Exit(LoadWithScanner(LScanner, LBuffer));
   LSource := TIdLexer.Create(0, FHost.GetLog);
   try
     if not LSource.LoadMemory(LBuffer, Length(LBuffer), FFileName) then

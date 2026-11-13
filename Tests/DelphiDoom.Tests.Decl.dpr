@@ -59,6 +59,23 @@ uses
   DelphiDoom.Decl.Fx.ActionParser in '..\Libs\Decl\DelphiDoom.Decl.Fx.ActionParser.pas',
   DelphiDoom.Decl.Fx in '..\Libs\Decl\DelphiDoom.Decl.Fx.pas',
   DelphiDoom.Decl.Fx.Registration in '..\Libs\Decl\DelphiDoom.Decl.Fx.Registration.pas',
+  DelphiDoom.Decl.FileScanner.Intf in '..\Libs\Decl\DelphiDoom.Decl.FileScanner.Intf.pas',
+  DelphiDoom.Decl.Q3Shader.Types in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Types.pas',
+  DelphiDoom.Decl.Q3Shader.Intf in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Intf.pas',
+  DelphiDoom.Decl.Q3Shader.Tokenizer in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Tokenizer.pas',
+  DelphiDoom.Decl.Q3Shader.Context in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Context.pas',
+  DelphiDoom.Decl.Q3Shader.Names in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Names.pas',
+  DelphiDoom.Decl.Q3Shader.ValueParser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.ValueParser.pas',
+  DelphiDoom.Decl.Q3Shader.TexModParser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.TexModParser.pas',
+  DelphiDoom.Decl.Q3Shader.StageParser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.StageParser.pas',
+  DelphiDoom.Decl.Q3Shader.DeformParser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.DeformParser.pas',
+  DelphiDoom.Decl.Q3Shader.Parser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Parser.pas',
+  DelphiDoom.Decl.Q3Shader.Finisher in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Finisher.pas',
+  DelphiDoom.Decl.Q3Shader.Compressor in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Compressor.pas',
+  DelphiDoom.Decl.Q3Shader.FileScanner in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.FileScanner.pas',
+  DelphiDoom.Decl.Q3Shader in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.pas',
+  DelphiDoom.Decl.Q3Shader.DeclType in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.DeclType.pas',
+  DelphiDoom.Decl.Q3Shader.Registration in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Registration.pas',
   DelphiDoom.Decl.StandardTypes in '..\Libs\Decl\DelphiDoom.Decl.StandardTypes.pas',
   DelphiDoom.Decl.Factory in '..\Libs\Decl\DelphiDoom.Decl.Factory.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
@@ -75,7 +92,9 @@ uses
   DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas',
   DelphiDoom.Tests.Decl.EffectsSupport in 'Source\DelphiDoom.Tests.Decl.EffectsSupport.pas',
   DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas',
-  DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas';
+  DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas',
+  DelphiDoom.Tests.Decl.Q3Shader in 'Source\DelphiDoom.Tests.Decl.Q3Shader.pas',
+  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas';
 
 var
   Runner: ITestRunner;
