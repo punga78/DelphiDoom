@@ -1,0 +1,707 @@
+> reg\tt_string\thello\t128\ta plain string
+> reg\tt_bool\t1\t1\ta boolean
+> reg\tt_int\t5\t2\tan integer
+> reg\tt_float\t0.5\t4\ta float
+> regr\tt_irange\t5\t2\tinteger in range\t0\t10
+> regr\tt_frange\t0.5\t4\tfloat in range\t-1\t1
+> regr\tt_negrange\t50\t2\tinteger with minimum above maximum\t10\t-10
+> regs\tt_enum\tbeta\t128\ta list of strings\talpha|beta|gamma
+> reg\tt_arch\t3\t131074\tarchived integer
+> reg\tt_rom\tfixed\t65536\tread only
+> reg\tt_init\tboot\t32768\twrite protected
+> reg\tt_cheat\t1\t128\ta cheat by default
+> reg\tt_nocheat\t1\t16512\tnot a cheat
+> reg\tt_sync\t0\t2048\tsynced
+> reg\tt_user\tx\t512\tuser info
+> reg\tt_srv\ty\t1024\tserver info
+> reg\tt_tool\tz\t256\ttool
+> reg\tt_sys\ts\t8\tsystem
+> reg\tt_rend\tr\t16\trenderer
+> reg\tt_snd\td\t32\tsound
+> reg\tt_gui\tg\t64\tgui
+> get\tt_string
+G: t_string|hello|0|00000000|274560|3f800000|bf800000|a plain string
+> get\tt_bool
+G: t_bool|1|1|3f800000|274433|3f800000|bf800000|a boolean
+> get\tt_int
+G: t_int|5|5|40a00000|274434|3f800000|bf800000|an integer
+> get\tt_float
+G: t_float|0.5|0|3f000000|274436|3f800000|bf800000|a float
+> get\tt_irange
+G: t_irange|5|5|40a00000|274434|00000000|41200000|integer in range
+> get\tt_frange
+G: t_frange|0.5|0|3f000000|274436|bf800000|3f800000|float in range
+> get\tt_negrange
+G: t_negrange|50|50|42480000|274434|41200000|c1200000|integer with minimum above maximum
+> get\tt_enum
+G: t_enum|beta|1|3f800000|274560|3f800000|bf800000|a list of strings
+> get\tt_arch
+G: t_arch|3|3|40400000|397314|3f800000|bf800000|archived integer
+> get\tt_rom
+G: t_rom|fixed|0|00000000|331776|3f800000|bf800000|read only
+> get\tt_init
+G: t_init|boot|0|00000000|299008|3f800000|bf800000|write protected
+> get\tt_cheat
+G: t_cheat|1|1|3f800000|274560|3f800000|bf800000|a cheat by default
+> get\tt_nocheat
+G: t_nocheat|1|1|3f800000|282752|3f800000|bf800000|not a cheat
+> get\tt_sync
+G: t_sync|0|0|00000000|268288|3f800000|bf800000|synced
+> get\tmissing
+G: missing none
+> modified
+M: 0
+> cmd\tt_string
+P: "t_string" is:"hello"^7 default:"hello"\n
+P: ^7a plain string\n
+> cmd\tT_STRING new value here
+> get\tt_string
+G: t_string|new value here|0|00000000|274560|3f800000|bf800000|a plain string
+> cmd\tt_string
+P: "t_string" is:"new value here"^7 default:"hello"\n
+P: ^7a plain string\n
+> cmd\tt_bool 0
+> get\tt_bool
+G: t_bool|0|0|00000000|274433|3f800000|bf800000|a boolean
+> cmd\tt_bool yes
+> get\tt_bool
+G: t_bool|0|0|00000000|274433|3f800000|bf800000|a boolean
+> cmd\tt_bool 7
+> get\tt_bool
+G: t_bool|1|1|3f800000|274433|3f800000|bf800000|a boolean
+> cmd\tt_bool 0
+> cmd\tt_bool 0.9
+> get\tt_bool
+G: t_bool|0|0|00000000|274433|3f800000|bf800000|a boolean
+> cmd\tt_int 12abc
+> get\tt_int
+G: t_int|12|12|41400000|274434|3f800000|bf800000|an integer
+> cmd\tt_int 007
+> get\tt_int
+G: t_int|7|7|40e00000|274434|3f800000|bf800000|an integer
+> cmd\tt_int -3.7
+> get\tt_int
+G: t_int|-3|-3|c0400000|274434|3f800000|bf800000|an integer
+> cmd\tt_int .5
+> get\tt_int
+G: t_int|.5|0|00000000|274434|3f800000|bf800000|an integer
+> cmd\tt_int abc
+> get\tt_int
+G: t_int|0|0|00000000|274434|3f800000|bf800000|an integer
+> cmd\tt_int 2147483647
+> get\tt_int
+G: t_int|2147483647|2147483647|4f000000|274434|3f800000|bf800000|an integer
+> cmd\tt_float 2.5e1
+> get\tt_float
+G: t_float|25|25|41c80000|274436|3f800000|bf800000|a float
+> cmd\tt_float 3.
+> get\tt_float
+G: t_float|3.|3|40400000|274436|3f800000|bf800000|a float
+> cmd\tt_float 7xyz
+> get\tt_float
+G: t_float|7|7|40e00000|274436|3f800000|bf800000|a float
+> cmd\tt_float -.25
+> get\tt_float
+G: t_float|-.25|0|be800000|274436|3f800000|bf800000|a float
+> cmd\tt_float 0.100000
+> get\tt_float
+G: t_float|0.100000|0|3dcccccd|274436|3f800000|bf800000|a float
+> cmd\tt_irange 11
+> get\tt_irange
+G: t_irange|10|10|41200000|274434|00000000|41200000|integer in range
+> cmd\tt_irange -4
+> get\tt_irange
+G: t_irange|0|0|00000000|274434|00000000|41200000|integer in range
+> cmd\tt_irange 4.9
+> get\tt_irange
+G: t_irange|4|4|40800000|274434|00000000|41200000|integer in range
+> cmd\tt_frange 1.5
+> get\tt_frange
+G: t_frange|1|1|3f800000|274436|bf800000|3f800000|float in range
+> cmd\tt_frange -9
+> get\tt_frange
+G: t_frange|-1|-1|bf800000|274436|bf800000|3f800000|float in range
+> cmd\tt_frange 0.25
+> get\tt_frange
+G: t_frange|0.25|0|3e800000|274436|bf800000|3f800000|float in range
+> cmd\tt_negrange 500
+> get\tt_negrange
+G: t_negrange|500|500|43fa0000|274434|41200000|c1200000|integer with minimum above maximum
+> cmd\tt_enum GAMMA
+> get\tt_enum
+G: t_enum|gamma|2|40000000|274560|3f800000|bf800000|a list of strings
+> cmd\tt_enum delta
+> get\tt_enum
+G: t_enum|alpha|0|00000000|274560|3f800000|bf800000|a list of strings
+> cmd\tt_enum beta
+> get\tt_enum
+G: t_enum|beta|1|3f800000|274560|3f800000|bf800000|a list of strings
+> cmd\tt_rom 1
+P: t_rom is read only.\n
+> get\tt_rom
+G: t_rom|fixed|0|00000000|331776|3f800000|bf800000|read only
+> cmd\tt_init 1
+P: t_init is write protected.\n
+> get\tt_init
+G: t_init|boot|0|00000000|299008|3f800000|bf800000|write protected
+> setv\ts\tt_rom\tforced
+> get\tt_rom
+G: t_rom|forced|0|00000000|331776|3f800000|bf800000|read only
+> setv\ts\tt_init\tforced
+> get\tt_init
+G: t_init|forced|0|00000000|299008|3f800000|bf800000|write protected
+> setv\ti\tt_int\t42
+> setv\tf\tt_float\t0.75
+> setv\tb\tt_bool\t1
+> setv\ts\tt_string\tagain
+> setv\tb\tt_string\t1
+> setv\ti\tt_irange\t99
+> setv\tf\tt_frange\t12.5
+> setv\tf\tt_int\t2.9
+> setv\ts\tmissing\tx
+G: missing none
+> getv\tt_int
+V: 2|2|1
+> getv\tt_bool
+V: 1|1|1
+> getv\tt_float
+V: 0.75|0|0
+> getv\tt_string
+V: 1|1|1
+> getv\tnothing
+V: |0|0
+> modified
+M: 372871
+> clearmod\t2
+> modified
+M: 372869
+> clearmod\t-1
+> modified
+M: 0
+> setmod\t5
+> modified
+M: 5
+> setcvar\ts\tt_string\tvia-setcvar\t0
+> setcvar\ti\tt_int\t8\t0
+> setcvar\tf\tt_float\t1.5\t0
+> setcvar\tb\tt_bool\t0\t0
+> setcvar\ts\tcreated\tfresh\t131072
+> get\tcreated
+G: created|fresh|0|00000000|393216|3f800000|bf800000|
+> setcvar\ts\tcreated\tagain\t2
+> get\tcreated
+G: created|again|0|00000000|393218|3f800000|bf800000|
+> setcvar\ti\tt_rom\t3\t0
+> get\tt_rom
+G: t_rom|3|3|40400000|331776|3f800000|bf800000|read only
+> setcvar\ts\tt_string\tflagged\t256
+> get\tt_string
+G: t_string|flagged|0|00000000|274816|3f800000|bf800000|a plain string
+> cmd\tset made one two three
+> get\tmade
+G: made|one two three|0|00000000|270336|3f800000|bf800000|
+> cmd\tset made
+> get\tmade
+G: made||0|00000000|270336|3f800000|bf800000|
+> cmd\tset
+> cmd\tset
+> get
+G: ||0|00000000|270336|3f800000|bf800000|
+> cmd\tsets srv1 value1
+> get\tsrv1
+G: srv1|value1|0|00000000|402432|3f800000|bf800000|
+> cmd\tsetu usr1 value1
+> get\tusr1
+G: usr1|value1|0|00000000|401920|3f800000|bf800000|
+> cmd\tsett tool1 value1
+> get\ttool1
+G: tool1|value1|0|00000000|270592|3f800000|bf800000|
+> cmd\tseta arc1 value1
+> get\tarc1
+G: arc1|value1|0|00000000|270336|3f800000|bf800000|
+> cmd\tt_string
+P: "t_string" is:"flagged"^7 default:"hello"\n
+P: ^7a plain string\n
+> cmd\tt_bool
+P: "t_bool" is:"0"^7 default:"1"\n
+P: ^7a boolean\n
+> cmd\tt_enum
+P: "t_enum" is:"beta"^7 default:"beta"\n
+P: ^7a list of strings\n
+> cmd\tt_irange
+P: "t_irange" is:"10"^7 default:"5"\n
+P: ^7integer in range\n
+> cmd\ttoggle
+P: usage:\n   toggle <variable>  - toggles between 0 and 1\n   toggle <variable> <value> - toggles between 0 and <value>\n   toggle <variable> [string 1] [string 2]...[string n] - cycles through all strings\n
+> cmd\ttoggle missing
+W: Toggle_f: cvar "missing" not found
+> cmd\ttoggle t_bool
+P: set t_bool = 1.000000\n
+> get\tt_bool
+G: t_bool|1|1|3f800000|274433|3f800000|bf800000|a boolean
+> cmd\ttoggle t_bool
+P: set t_bool = 0.000000\n
+> get\tt_bool
+G: t_bool|0|0|00000000|274433|3f800000|bf800000|a boolean
+> cmd\ttoggle t_int 5
+P: set t_int = 0.000000\n
+> get\tt_int
+G: t_int|0|0|00000000|274434|3f800000|bf800000|an integer
+> cmd\ttoggle t_int 5
+P: set t_int = 5.000000\n
+> get\tt_int
+G: t_int|5|5|40a00000|274434|3f800000|bf800000|an integer
+> cmd\ttoggle t_float
+P: set t_float = 0.000000\n
+> get\tt_float
+G: t_float|0|0|00000000|274436|3f800000|bf800000|a float
+> cmd\ttoggle t_float 0.3
+P: set t_float = 0.300000\n
+> get\tt_float
+G: t_float|0.3|0|3e99999a|274436|3f800000|bf800000|a float
+> cmd\ttoggle t_enum alpha beta gamma
+P: set t_enum = gamma\n
+> get\tt_enum
+G: t_enum|gamma|2|40000000|274560|3f800000|bf800000|a list of strings
+> cmd\ttoggle t_enum alpha beta gamma
+P: set t_enum = alpha\n
+> get\tt_enum
+G: t_enum|alpha|0|00000000|274560|3f800000|bf800000|a list of strings
+> cmd\ttoggle t_enum alpha beta gamma
+P: set t_enum = beta\n
+> get\tt_enum
+G: t_enum|beta|1|3f800000|274560|3f800000|bf800000|a list of strings
+> cmd\ttoggle t_enum nothing here
+P: set t_enum = nothing\n
+> get\tt_enum
+G: t_enum|alpha|0|00000000|274560|3f800000|bf800000|a list of strings
+> cmd\ttoggle t_rom
+P: set t_rom = 0.000000\n
+P: t_rom is read only.\n
+> cmd\ttoggle t_string x y
+P: set t_string = x\n
+> get\tt_string
+G: t_string|x|0|00000000|274816|3f800000|bf800000|a plain string
+> cmd\treset
+P: usage: reset <variable>\n
+> cmd\treset t_int
+> get\tt_int
+G: t_int|5|5|40a00000|274434|3f800000|bf800000|an integer
+> cmd\treset t_rom
+> cmd\treset missing
+> cmd\treset t_enum
+> get\tt_enum
+G: t_enum|beta|1|3f800000|274560|3f800000|bf800000|a list of strings
+> cmd\treset t_int extra
+P: usage: reset <variable>\n
+> cmd\tlistCvars t_*
+P: t_arch                           ^7"3"\n
+P: t_bool                           ^7"0"\n
+P: t_cheat                          ^7"1"\n
+P: t_enum                           ^7"beta"\n
+P: t_float                          ^7"0.3"\n
+P: t_frange                         ^7"1"\n
+P: t_gui                            ^7"g"\n
+P: t_init                           ^7"forced"\n
+P: t_int                            ^7"5"\n
+P: t_irange                         ^7"10"\n
+P: t_negrange                       ^7"500"\n
+P: t_nocheat                        ^7"1"\n
+P: t_rend                           ^7"r"\n
+P: t_rom                            ^7"fixed"\n
+P: t_snd                            ^7"d"\n
+P: t_srv                            ^7"y"\n
+P: t_string                         ^7"x"\n
+P: t_sync                           ^7"0"\n
+P: t_sys                            ^7"s"\n
+P: t_tool                           ^7"z"\n
+P: t_user                           ^7"x"\n
+P: \n21 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars
+P:                                  ^7""\n
+P: arc1                             ^7"value1"\n
+P: created                          ^7"again"\n
+P: made                             ^7""\n
+P: srv1                             ^7"value1"\n
+P: t_arch                           ^7"3"\n
+P: t_bool                           ^7"0"\n
+P: t_cheat                          ^7"1"\n
+P: t_enum                           ^7"beta"\n
+P: t_float                          ^7"0.3"\n
+P: t_frange                         ^7"1"\n
+P: t_gui                            ^7"g"\n
+P: t_init                           ^7"forced"\n
+P: t_int                            ^7"5"\n
+P: t_irange                         ^7"10"\n
+P: t_negrange                       ^7"500"\n
+P: t_nocheat                        ^7"1"\n
+P: t_rend                           ^7"r"\n
+P: t_rom                            ^7"fixed"\n
+P: t_snd                            ^7"d"\n
+P: t_srv                            ^7"y"\n
+P: t_string                         ^7"x"\n
+P: t_sync                           ^7"0"\n
+P: t_sys                            ^7"s"\n
+P: t_tool                           ^7"z"\n
+P: t_user                           ^7"x"\n
+P: tool1                            ^7"value1"\n
+P: usr1                             ^7"value1"\n
+P: \n28 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars - help t_i*
+P: t_init                           ^7write protected\n
+P: t_int                            ^7an integer\n
+P: t_irange                         ^7integer in range\n
+P: \n3 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars / ? t_*
+P: t_arch                           ^7archived integer\n
+P: t_bool                           ^7a boolean\n
+P: t_cheat                          ^7a cheat by default\n
+P: t_enum                           ^7a list of strings\n
+P: t_float                          ^7a float\n
+P: t_frange                         ^7float in range\n
+P: t_gui                            ^7gui\n
+P: t_init                           ^7write protected\n
+P: t_int                            ^7an integer\n
+P: t_irange                         ^7integer in range\n
+P: t_negrange                       ^7integer with minimum above maximum\n
+P: t_nocheat                        ^7not a cheat\n
+P: t_rend                           ^7renderer\n
+P: t_rom                            ^7read only\n
+P: t_snd                            ^7sound\n
+P: t_srv                            ^7server info\n
+P: t_string                         ^7a plain string\n
+P: t_sync                           ^7synced\n
+P: t_sys                            ^7system\n
+P: t_tool                           ^7tool\n
+P: t_user                           ^7user info\n
+P: \n21 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars -type t_*
+P: t_arch                           ^2int\n
+P: t_bool                           ^5bool\n
+P: t_cheat                          ^7string\n
+P: t_enum                           ^7string ^7[
+P: ^7alpha
+P: ^7, beta
+P: ^7, gamma
+P: ^7]\n
+P: t_float                          ^1float\n
+P: t_frange                         ^1float ^7[-1, 1]\n
+P: t_gui                            ^7string\n
+P: t_init                           ^7string\n
+P: t_int                            ^2int\n
+P: t_irange                         ^2int ^7[0, 10]\n
+P: t_negrange                       ^2int\n
+P: t_nocheat                        ^7string\n
+P: t_rend                           ^7string\n
+P: t_rom                            ^7string\n
+P: t_snd                            ^7string\n
+P: t_srv                            ^7string\n
+P: t_string                         ^7string\n
+P: t_sync                           ^7string\n
+P: t_sys                            ^7string\n
+P: t_tool                           ^7string\n
+P: t_user                           ^7string\n
+P: \n21 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars - range t_*
+P: t_arch                           ^2int\n
+P: t_bool                           ^5bool\n
+P: t_cheat                          ^7string\n
+P: t_enum                           ^7string ^7[
+P: ^7alpha
+P: ^7, beta
+P: ^7, gamma
+P: ^7]\n
+P: t_float                          ^1float\n
+P: t_frange                         ^1float ^7[-1, 1]\n
+P: t_gui                            ^7string\n
+P: t_init                           ^7string\n
+P: t_int                            ^2int\n
+P: t_irange                         ^2int ^7[0, 10]\n
+P: t_negrange                       ^2int\n
+P: t_nocheat                        ^7string\n
+P: t_rend                           ^7string\n
+P: t_rom                            ^7string\n
+P: t_snd                            ^7string\n
+P: t_srv                            ^7string\n
+P: t_string                         ^7string\n
+P: t_sync                           ^7string\n
+P: t_sys                            ^7string\n
+P: t_tool                           ^7string\n
+P: t_user                           ^7string\n
+P: \n21 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars - flags t_*
+P: t_arch                           
+P: ^2I ^7           ST          AR MO \n
+P: t_bool                           
+P: ^5B ^7           ST CH          MO \n
+P: t_cheat                          
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_enum                           
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_float                          
+P: ^1F ^7           ST CH          MO \n
+P: t_frange                         
+P: ^1F ^7           ST CH          MO \n
+P: t_gui                            
+P: ^7S ^7GUI        ST CH          MO \n
+P: t_init                           
+P: ^7S ^7           ST    IN       MO \n
+P: t_int                            
+P: ^2I ^7           ST CH          MO \n
+P: t_irange                         
+P: ^2I ^7           ST CH          MO \n
+P: t_negrange                       
+P: ^2I ^7           ST CH          MO \n
+P: t_nocheat                        
+P: ^7S ^7GAME       ST             MO \n
+P: t_rend                           
+P: ^7S ^7RNDR       ST CH          MO \n
+P: t_rom                            
+P: ^7S ^7           ST       RO    MO \n
+P: t_snd                            
+P: ^7S ^7SND        ST CH          MO \n
+P: t_srv                            
+P: ^7S ^7        SI ST             MO \n
+P: t_string                         
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_sync                           
+P: ^7S ^7           ST             MO \n
+P: t_sys                            
+P: ^7S ^7SYS        ST CH          MO \n
+P: t_tool                           
+P: ^7S ^7TOOL       ST CH          MO \n
+P: t_user                           
+P: ^7S ^7     UI    ST             MO \n
+P: \n21 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars - nothing t_i*
+P: \n0 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> cmd\tlistCvars - flags
+P:                                  
+P: ^7S ^7              CH          MO \n
+P: arc1                             
+P: ^7S ^7              CH          MO \n
+P: created                          
+P: ^2I ^7                       AR MO \n
+P: made                             
+P: ^7S ^7              CH          MO \n
+P: srv1                             
+P: ^7S ^7        SI    CH       AR MO \n
+P: t_arch                           
+P: ^2I ^7           ST          AR MO \n
+P: t_bool                           
+P: ^5B ^7           ST CH          MO \n
+P: t_cheat                          
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_enum                           
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_float                          
+P: ^1F ^7           ST CH          MO \n
+P: t_frange                         
+P: ^1F ^7           ST CH          MO \n
+P: t_gui                            
+P: ^7S ^7GUI        ST CH          MO \n
+P: t_init                           
+P: ^7S ^7           ST    IN       MO \n
+P: t_int                            
+P: ^2I ^7           ST CH          MO \n
+P: t_irange                         
+P: ^2I ^7           ST CH          MO \n
+P: t_negrange                       
+P: ^2I ^7           ST CH          MO \n
+P: t_nocheat                        
+P: ^7S ^7GAME       ST             MO \n
+P: t_rend                           
+P: ^7S ^7RNDR       ST CH          MO \n
+P: t_rom                            
+P: ^7S ^7           ST       RO    MO \n
+P: t_snd                            
+P: ^7S ^7SND        ST CH          MO \n
+P: t_srv                            
+P: ^7S ^7        SI ST             MO \n
+P: t_string                         
+P: ^7S ^7GAME       ST CH          MO \n
+P: t_sync                           
+P: ^7S ^7           ST             MO \n
+P: t_sys                            
+P: ^7S ^7SYS        ST CH          MO \n
+P: t_tool                           
+P: ^7S ^7TOOL       ST CH          MO \n
+P: t_user                           
+P: ^7S ^7     UI    ST             MO \n
+P: tool1                            
+P: ^7S ^7TOOL          CH          MO \n
+P: usr1                             
+P: ^7S ^7     UI       CH       AR MO \n
+P: \n28 cvars listed\n\n
+P: listCvar [search string]          = list cvar values\nlistCvar -help [search string]    = list cvar descriptions\nlistCvar -type [search string]    = list cvar types\nlistCvar -flags [search string]   = list cvar flags\n
+> varlist
+K: t_string
+K: t_bool
+K: t_int
+K: t_float
+K: t_irange
+K: t_frange
+K: t_negrange
+K: t_enum
+K: t_arch
+K: t_rom
+K: t_init
+K: t_cheat
+K: t_nocheat
+K: t_sync
+K: t_user
+K: t_srv
+K: t_tool
+K: t_sys
+K: t_rend
+K: t_snd
+K: t_gui
+K: created
+K: made
+K: 
+K: srv1
+K: usr1
+K: tool1
+K: arc1
+> vargc\tt_bool
+K: t_bool 0
+K: t_bool 1
+> vargc\tT_BOOL x
+K: T_BOOL 0
+K: T_BOOL 1
+> vargc\tt_int
+> vargc\tmissing
+> rmcompl\t1
+> vargc\tt_bool
+> write\t131072\tseta
+F: seta t_arch "3"\n
+F: seta created "again"\n
+F: seta srv1 "value1"\n
+F: seta usr1 "value1"\n
+> write\t512\tsetu
+F: setu t_user "x"\n
+F: setu usr1 "value1"\n
+> write\t1024\tsets
+F: sets t_srv "y"\n
+F: sets srv1 "value1"\n
+> resetflagged\t131072
+> get\tt_arch
+G: t_arch|3|3|40400000|397314|3f800000|bf800000|archived integer
+> get\tt_int
+G: t_int|5|5|40a00000|274434|3f800000|bf800000|an integer
+> dict\t131072
+D: t_arch=3
+D: created=0
+D: srv1=value1
+D: usr1=value1
+> dict\t768
+D: t_string=x
+D: t_user=x
+D: t_tool=z
+D: usr1=value1
+D: tool1=value1
+> fromdict\tt_string=fromdict;t_int=77;unknown=1;t_rom=changed
+> get\tt_string
+G: t_string|fromdict|0|00000000|274816|3f800000|bf800000|a plain string
+> get\tt_int
+G: t_int|77|77|429a0000|274434|3f800000|bf800000|an integer
+> get\tt_rom
+G: t_rom|changed|0|00000000|331776|3f800000|bf800000|read only
+> get\tunknown
+G: unknown none
+> cmd\tcvar_restart
+> get\tt_string
+G: t_string|hello|0|00000000|274816|3f800000|bf800000|a plain string
+> get\tt_int
+G: t_int|5|5|40a00000|274434|3f800000|bf800000|an integer
+> get\tt_rom
+G: t_rom|changed|0|00000000|331776|3f800000|bf800000|read only
+> get\tt_init
+G: t_init|forced|0|00000000|299008|3f800000|bf800000|write protected
+> get\tmade
+G: made none
+> get\tcreated
+G: created none
+> get\tsrv1
+G: srv1 none
+> varlist
+K: t_string
+K: t_bool
+K: t_int
+K: t_float
+K: t_irange
+K: t_frange
+K: t_negrange
+K: t_enum
+K: t_arch
+K: t_rom
+K: t_init
+K: t_cheat
+K: t_nocheat
+K: t_sync
+K: t_user
+K: t_srv
+K: t_tool
+K: t_sys
+K: t_rend
+K: t_snd
+K: t_gui
+> mp\t1
+> cmd\tt_cheat 0
+P: t_cheat cannot be changed in multiplayer.\n
+> get\tt_cheat
+G: t_cheat|1|1|3f800000|274560|3f800000|bf800000|a cheat by default
+> cmd\tt_nocheat 0
+> get\tt_nocheat
+G: t_nocheat|0|0|00000000|282752|3f800000|bf800000|not a cheat
+> cmd\tt_sync 5
+> get\tt_sync
+G: t_sync|5|5|40a00000|268288|3f800000|bf800000|synced
+> client\t1
+> cmd\tt_sync 6
+P: t_sync is a synced over the network and cannot be changed on a multiplayer client.\n
+> get\tt_sync
+G: t_sync|5|5|40a00000|268288|3f800000|bf800000|synced
+> cmd\tt_nocheat 5
+> get\tt_nocheat
+G: t_nocheat|5|5|40a00000|282752|3f800000|bf800000|not a cheat
+> setv\ts\tt_cheat\tsrv
+P: t_cheat cannot be changed in multiplayer.\n
+> get\tt_cheat
+G: t_cheat|1|1|3f800000|274560|3f800000|bf800000|a cheat by default
+> setcvar\tb\tnet_allowCheats\t1\t0
+> cmd\tt_cheat 1
+> get\tt_cheat
+G: t_cheat|1|1|3f800000|274560|3f800000|bf800000|a cheat by default
+> client\t0
+> mp\t0
+> cmd\tt_cheat 2
+> get\tt_cheat
+G: t_cheat|2|2|40000000|274560|3f800000|bf800000|a cheat by default
+> reg\tt_string\thello\t128\ta plain string
+> reg\tt_string\tother\t128\tchanged declaration
+W: CVar 't_string' declared multiple times with different initial value
+> get\tt_string
+G: t_string|hello|0|00000000|274816|3f800000|bf800000|changed declaration
+> reg\tt_string\thello\t1\tdifferent type
+W: CVar 't_string' declared multiple times with different initial value
+W: CVar 't_string' declared multiple times with different type
+> regr\tt_irange\t5\t2\tagain\t0\t99
+W: CVar 't_irange' declared multiple times with different minimum/maximum
+> get\tt_irange
+G: t_irange|5|5|40a00000|274434|00000000|42c60000|again
+> reg\tt_late\t9\t2\tdeclared after the user set it
+> setcvar\ts\tt_user_made\t7\t0
+> get\tt_user_made
+G: t_user_made|7|7|40e00000|270336|3f800000|bf800000|
+> reg\tt_user_made\t3\t2\tnow declared
+> get\tt_user_made
+G: t_user_made|7|7|40e00000|274434|3f800000|bf800000|now declared

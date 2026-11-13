@@ -1,0 +1,120 @@
+#ifndef __PRECOMPILED_H__
+#define __PRECOMPILED_H__
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <float.h>
+#include <malloc.h>
+#include <stdint.h>
+#include <typeinfo>
+#include <time.h>
+#define ID_REDIRECT_NEWDELETE
+#define ID_INLINE inline
+#define ID_STATIC_TEMPLATE
+#define id_attribute(x)
+#define _alloca16(x) ((void *)((((uintptr_t)_alloca((x)+15)) + 15) & ~(uintptr_t)15))
+#define ID_FORCE_INLINE inline
+#define ID_TIME_T long
+#define ALIGN16(x) x
+#define ASSERT_ALIGN16(x)
+#define ID_MSVC_INLINE
+#define MAX_STRING_CHARS 1024
+typedef unsigned char byte; typedef unsigned short word; typedef unsigned int dword; typedef unsigned int uint; typedef unsigned long ulong;
+class idVec3; class idVec4; class idFile;
+#ifndef BIT
+#define BIT(num) (1<<(num))
+#endif
+class idException { public: char error[MAX_STRING_CHARS]; idException(const char*t=""){strcpy(error,t);} };
+template<class T> ID_INLINE T Max(T x,T y){return (x>y)?x:y;}
+template<class T> ID_INLINE T Min(T x,T y){return (x<y)?x:y;}
+class idCommon { public: void Printf(const char*,...); void DPrintf(const char*,...){} void Warning(const char*,...); void DWarning(const char*,...); void Error(const char*,...); void FatalError(const char*,...); };
+class idSys { public: const char* GetCallStackCurStr(int){return "";} public: void LockMemory(void*,int){} void UnlockMemory(void*,int){} };
+class idFileSystem;
+class idCVarSystem;
+class idLib { public: static idSys* sys; static idCommon* common; static idFileSystem* fileSystem; static idCVarSystem* cvarSystem; static void Error(const char*fmt,...); static void Warning(const char*fmt,...); };
+typedef int cpuid_t; enum { CPUID_NONE=0, CPUID_GENERIC=0 };
+#define MAX_WORLD_COORD (128*1024)
+#define PATHSEPERATOR_STR "\\"
+#define STRTABLE_ID "#str_"
+#define STRTABLE_ID_LENGTH 5
+inline int LittleLong(int l) { return l; }
+extern idCommon* common;
+#include "Heap.h"
+#include "containers/List.h"
+#include "math/Simd.h"
+#include "math/Math.h"
+#include "math/Random.h"
+#include "math/Complex.h"
+#include "math/Vector.h"
+#include "math/Matrix.h"
+#include "math/Angles.h"
+#include "math/Quat.h"
+#include "math/Rotation.h"
+#include "math/Plane.h"
+#include "math/Pluecker.h"
+#include "math/Polynomial.h"
+#include "math/Extrapolate.h"
+#include "math/Interpolate.h"
+#include "math/Curve.h"
+#include "math/Ode.h"
+#include "math/Lcp.h"
+#include "Str.h"
+typedef idList<idStr> idStrList;
+struct dominantTri_s { int v2, v3; float normalizationScale[3]; };
+#include "geometry/DrawVert.h"
+#include "geometry/JointTransform.h"
+struct Blob {
+	char *p; int n;
+	Blob() : p(0), n(0) {}
+	void Append(const char *s, int l) { p = (char *)realloc(p, n + l + 1); memcpy(p + n, s, l); n += l; p[n] = 0; }
+};
+class idFile {
+public:
+	Blob rd; int pos; char name[512]; Blob out; long ts;
+	idFile() : pos(0), ts(0) { name[0] = 0; }
+	int Length() { return rd.n; }
+	int Read(void *b, int l) { if (pos + l > rd.n) l = rd.n - pos; memcpy(b, rd.p + pos, l); pos += l; return l; }
+	int Write(const void *b, int l) { out.Append((const char *)b, l); return l; }
+	const char *GetFullPath() { return name; }
+	long Timestamp() { return ts; }
+	void Printf(const char *fmt, ...);
+};
+class idFileList {
+public:
+	int GetNumFiles() const { return 0; }
+	const char *GetFile(int) const { return ""; }
+};
+class idFileSystem {
+public:
+	idFile *OpenFileRead(const char *) { return 0; }
+	idFile *OpenExplicitFileRead(const char *) { return 0; }
+	void CloseFile(idFile *f) { delete f; }
+	int ReadFile(const char *n, void **b, ID_TIME_T *t = 0);
+	void FreeFile(void *b);
+	idFileList *ListFiles(const char *, const char *, bool = false, bool = false) { return new idFileList; }
+	void FreeFileList(idFileList *l) { delete l; }
+};
+extern idFileSystem *fileSystem;
+class idSession { public: virtual bool IsMultiplayer() { return mp; } bool mp; };
+extern idSession *session;
+class idAsyncClient { public: bool IsActive() { return active; } bool active; };
+class idAsyncNetwork { public: static idAsyncClient client; };
+enum declType_t { DECL_MAX_TYPES = 1 };
+class idDecl { public: const char *GetName() const { return ""; } };
+class idDeclManager { public: int GetNumDecls(declType_t) { return 0; } const idDecl *DeclByIndex(declType_t, int, bool) { return 0; } };
+extern idDeclManager *declManager;
+#include "hashing/CRC32.h"
+#include "containers/HashIndex.h"
+#include "containers/StrPool.h"
+#include "Token.h"
+#include "Lexer.h"
+#include "Parser.h"
+#include "CmdArgs.h"
+#include "Dict.h"
+#include "../framework/CmdSystem.h"
+#include "../framework/CVarSystem.h"
+#endif

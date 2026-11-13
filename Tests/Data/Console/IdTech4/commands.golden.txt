@@ -1,0 +1,377 @@
+> addcmd\tprobe\t0\tprobe
+> addcmd\tprobe\t0\tprobe
+> addcmd\tProbe\t0\tprobe
+> addcmd\tcheater\t1\tprobe
+> addcmd\ttooler\t32\tprobe
+> addcmd\tgamecmd\t16\tprobe
+> addcmd\tnofunc\t0\tnofunc
+> addcmd\tcb\t0\tcompbool
+> addcmd\tc3\t0\tcomp3
+> cmd\tprobe a b "c d" -5 -x
+A: 7|probe|a|b|c d|-5|-|x
+> cmd\tPROBE upper
+A: 2|PROBE|upper
+> cmd\tprobe
+A: 1|probe
+> cmd\tnothing at all
+P: Unknown command 'nothing'\n
+> cmd
+> cmd\tprobe $missing
+A: 2|probe|
+> cmd\tprobe "quoted \\"x"
+A: 3|probe|quoted |x
+> cmd\tprobe 12.5 /path/to/file 127.0.0.1:27960
+A: 4|probe|12.5|/path/to/file|127.0.0.1:27960
+> cmdlist
+K: Probe
+K: c3
+K: cb
+K: nofunc
+K: gamecmd
+K: tooler
+K: cheater
+K: probe
+K: cvar_restart
+K: listCvars
+K: reset
+K: seta
+K: sett
+K: setu
+K: sets
+K: set
+K: toggle
+K: wait
+K: parse
+K: echo
+K: vstr
+K: exec
+K: listToolCmds
+K: listGameCmds
+K: listSoundCmds
+K: listRendererCmds
+K: listSystemCmds
+K: listCmds
+> cmd\tprobe moved
+A: 2|probe|moved
+> cmdlist
+K: Probe
+K: c3
+K: cb
+K: nofunc
+K: gamecmd
+K: tooler
+K: cheater
+K: probe
+K: cvar_restart
+K: listCvars
+K: reset
+K: seta
+K: sett
+K: setu
+K: sets
+K: set
+K: toggle
+K: wait
+K: parse
+K: echo
+K: vstr
+K: exec
+K: listToolCmds
+K: listGameCmds
+K: listSoundCmds
+K: listRendererCmds
+K: listSystemCmds
+K: listCmds
+> argc\tcb x
+K: cb 0
+K: cb 1
+> argc\tCB
+K: CB 0
+K: CB 1
+> argc\tc3 1
+K: c3 1
+K: c3 2
+K: c3 3
+> argc\tprobe x
+> argc\tzzz
+> append\tprobe one;probe two\\n
+> append\tprobe three\\n
+> run
+A: 2|probe|one
+A: 2|probe|two
+A: 2|probe|three
+> append\tprobe "a;b" c;probe d\\n
+> append\tprobe e\\nprobe f\\rprobe g\\n
+> run
+A: 3|probe|a;b|c
+A: 2|probe|d
+A: 2|probe|e
+A: 2|probe|f
+A: 2|probe|g
+> append\tprobe "x\\ny"\\n
+> run
+A: 1|probe
+P: Unknown command 'y'\n
+> insert\tprobe inserted
+> append\tprobe tail\\n
+> insert\tprobe first
+> run
+A: 2|probe|first
+A: 2|probe|inserted
+A: 2|probe|tail
+> cmd\tnofunc
+P: Unknown command 'nofunc'\n
+> setcvar\ti\tnumvar\t7\t0
+> cmd\tnofunc
+P: Unknown command 'nofunc'\n
+> cmd\tnumvar
+P: "numvar" is:"7"^7 default:"7"\n
+> cmd\tnumvar 12
+> append\twait\\n
+> append\tprobe after-wait\\n
+> run
+> run
+A: 4|probe|after|-|wait
+> append\twait 3\\n
+> append\tprobe after-wait3\\n
+> run
+> run
+> run
+> run
+A: 4|probe|after|-|wait3
+> append\twait zz\\n
+> append\tprobe afterzz\\n
+> run
+A: 2|probe|afterzz
+> run
+> append\twait 1 2 3\\n
+> append\tprobe after-wait-bad\\n
+> run
+> run
+A: 6|probe|after|-|wait|-|bad
+> mp\t1
+> cmd\tcheater
+P: Command 'cheater' not valid in multiplayer mode.\n
+> cmd\ttooler
+P: Command 'tooler' not valid in multiplayer mode.\n
+> cmd\tgamecmd
+A: 1|gamecmd
+> setcvar\tb\tnet_allowCheats\t1\t0
+> cmd\tcheater
+A: 1|cheater
+> cmd\ttooler
+A: 1|tooler
+> setcvar\tb\tnet_allowCheats\t0\t0
+> cmd\tcheater
+P: Command 'cheater' not valid in multiplayer mode.\n
+> mp\t0
+> cmd\tcheater
+A: 1|cheater
+> rmcmd\tprobe
+> rmcmd\tmissing
+> cmd\tprobe x
+A: 2|probe|x
+> rmflagged\t16
+> cmd\tgamecmd
+P: Unknown command 'gamecmd'\n
+> rmflagged\t1
+> cmd\tcheater
+P: Unknown command 'cheater'\n
+> cmdlist
+K: Probe
+K: tooler
+K: wait
+K: nofunc
+K: c3
+K: cb
+K: cvar_restart
+K: listCvars
+K: reset
+K: seta
+K: sett
+K: setu
+K: sets
+K: set
+K: toggle
+K: parse
+K: echo
+K: vstr
+K: exec
+K: listToolCmds
+K: listGameCmds
+K: listSoundCmds
+K: listRendererCmds
+K: listSystemCmds
+K: listCmds
+> tokenized\tprobe "tok;en" z
+> tokenized\tcb 1
+> append\tprobe plain\\n
+> run
+A: 3|probe|tok;en|z
+A: 2|cb|1
+A: 2|probe|plain
+> setup\tprobe reload arg
+> post
+R: 1
+> run
+P: Unknown command 'reloadEngine'\n
+A: 3|probe|reload|arg
+> post
+R: 0
+> run
+> cmd\tlistCmds
+P:   cvar_restart          restart the cvar system\n
+P:   echo                  prints text\n
+P:   exec                  executes a config file\n
+P:   listCmds              lists commands\n
+P:   listCvars             lists cvars\n
+P:   listGameCmds          lists game commands\n
+P:   listRendererCmds      lists renderer commands\n
+P:   listSoundCmds         lists sound commands\n
+P:   listSystemCmds        lists system commands\n
+P:   listToolCmds          lists tool commands\n
+P:   parse                 prints tokenized string\n
+P:   reset                 resets a cvar\n
+P:   set                   sets a cvar\n
+P:   seta                  sets a cvar and flags it as archive\n
+P:   sets                  sets a cvar and flags it as server info\n
+P:   sett                  sets a cvar and flags it as tool\n
+P:   setu                  sets a cvar and flags it as user info\n
+P:   toggle                toggles a cvar\n
+P:   tooler                probe command\n
+P:   vstr                  inserts the current value of a cvar as command text\n
+P:   wait                  delays remaining buffered commands one or more frames\n
+P: 21 commands\n
+> cmd\tlistCmds pro
+P: 0 commands\n
+> cmd\tlistCmds p* c3
+P: 0 commands\n
+> cmd\tlistSystemCmds
+P:   cvar_restart          restart the cvar system\n
+P:   echo                  prints text\n
+P:   exec                  executes a config file\n
+P:   listCmds              lists commands\n
+P:   listCvars             lists cvars\n
+P:   listGameCmds          lists game commands\n
+P:   listRendererCmds      lists renderer commands\n
+P:   listSoundCmds         lists sound commands\n
+P:   listSystemCmds        lists system commands\n
+P:   listToolCmds          lists tool commands\n
+P:   parse                 prints tokenized string\n
+P:   reset                 resets a cvar\n
+P:   set                   sets a cvar\n
+P:   seta                  sets a cvar and flags it as archive\n
+P:   sets                  sets a cvar and flags it as server info\n
+P:   sett                  sets a cvar and flags it as tool\n
+P:   setu                  sets a cvar and flags it as user info\n
+P:   toggle                toggles a cvar\n
+P:   vstr                  inserts the current value of a cvar as command text\n
+P:   wait                  delays remaining buffered commands one or more frames\n
+P: 20 commands\n
+> cmd\tlistSystemCmds *
+P:   cvar_restart          restart the cvar system\n
+P:   echo                  prints text\n
+P:   exec                  executes a config file\n
+P:   listCmds              lists commands\n
+P:   listCvars             lists cvars\n
+P:   listGameCmds          lists game commands\n
+P:   listRendererCmds      lists renderer commands\n
+P:   listSoundCmds         lists sound commands\n
+P:   listSystemCmds        lists system commands\n
+P:   listToolCmds          lists tool commands\n
+P:   parse                 prints tokenized string\n
+P:   reset                 resets a cvar\n
+P:   set                   sets a cvar\n
+P:   seta                  sets a cvar and flags it as archive\n
+P:   sets                  sets a cvar and flags it as server info\n
+P:   sett                  sets a cvar and flags it as tool\n
+P:   setu                  sets a cvar and flags it as user info\n
+P:   toggle                toggles a cvar\n
+P:   vstr                  inserts the current value of a cvar as command text\n
+P:   wait                  delays remaining buffered commands one or more frames\n
+P: 20 commands\n
+> cmd\tlistRendererCmds
+P: 0 commands\n
+> cmd\tlistGameCmds
+P: 0 commands\n
+> cmd\tlistToolCmds
+P:   tooler                probe command\n
+P: 1 commands\n
+> cmd\tlistSoundCmds
+P: 0 commands\n
+> cmd\tparse a "b c" -3 x
+P: 0: parse\n
+P: 1: a\n
+P: 2: b c\n
+P: 3: -3\n
+P: 4: x\n
+> cmd\techo hello "big world" 5
+P: hello 
+P: big world 
+P: 5 
+P: \n
+> cmd\techo
+P: \n
+> file\tone.cfg\tprobe from-file-1\\nprobe from-file-2
+> file\ttwo.cfg\tprobe two-a;echo from two\\n
+> file\tloop.cfg\texec one
+> file\tsemi.cfg\tprobe a;probe b;probe "c;d"
+> cmd\texec one
+P: execing one\n
+> cmd\texec
+P: exec <filename> : execute a script file\n
+> cmd\texec one two
+P: exec <filename> : execute a script file\n
+> cmd\texec ONE.CFG
+P: execing ONE.CFG\n
+> cmd\texec missing
+P: couldn't exec missing\n
+> append\tprobe before\\n
+> append\texec two\\n
+> append\tprobe after\\n
+> run
+A: 5|probe|from|-|file|-1
+A: 5|probe|from|-|file|-2
+A: 5|probe|from|-|file|-1
+A: 5|probe|from|-|file|-2
+A: 2|probe|before
+P: execing two\n
+A: 4|probe|two|-|a
+P: from 
+P: two 
+P: \n
+A: 2|probe|after
+> cmd\texec semi
+P: execing semi\n
+> run
+A: 2|probe|a
+A: 2|probe|b
+A: 2|probe|c;d
+> append\texec one\\n
+> append\tprobe tailing\\n
+> run
+P: execing one\n
+A: 5|probe|from|-|file|-1
+A: 5|probe|from|-|file|-2
+A: 2|probe|tailing
+> setcvar\ts\tscript\tprobe by-vstr\t0
+> setcvar\ts\tempty\tx\t0
+> cmd\tvstr script
+> run
+A: 4|probe|by|-|vstr
+> cmd\tvstr
+P: vstr <variablename> : execute a variable command\n
+> cmd\tvstr missing
+> run
+> cmd\tvstr script extra
+P: vstr <variablename> : execute a variable command\n
+> cmd\tprobe $script
+A: 2|probe|probe by-vstr
+> cmd\tprobe $numvar
+A: 2|probe|12
+> cmd\tprobe x$numvar
+A: 3|probe|x|12
+> append\tprobe glue-1
+> append\tprobe glue-2
+> run
+A: 6|probe|glue|-1|probe|glue|-2
