@@ -80,6 +80,7 @@ uses
   DelphiDoom.Engine.Wad.Lumps,
   DelphiDoom.Threading.Intf,
   DelphiDoom.Threading.Factory,
+  DelphiDoom.Engine.Threading.Services,
   i_threads,
   mt_utils,
   z_zone,
@@ -1188,11 +1189,14 @@ end;
 procedure ComposeThreading;
 var
   LThreads: IWorkerThreadFactory;
+  LMessages: IWorkerMessages;
 begin
   // one factory of real threads for the TDThread of the renderer and for the pools of mt_utils
   LThreads := TThreadingFactory.CreateThreadFactory;
   I_ConfigureThreads(LThreads);
-  MT_ConfigureThreads(TThreadingFactory.CreatePoolFactory(LThreads));
+  LMessages := TEngineThreadServices.Create;
+  MT_ConfigureThreads(TThreadingFactory.CreatePoolFactory(LThreads), LMessages,
+    LMessages as IWorkerMemoryOps);
 end;
 
 procedure ComposeMathCore(const ARandom: IGameRandom);

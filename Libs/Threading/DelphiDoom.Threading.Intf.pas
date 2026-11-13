@@ -59,6 +59,30 @@ type
     property Workers[AIndex: Integer]: IWorkerThread read GetWorker; default;
   end;
 
+  /// <summary>
+  ///   Where the runners report a misuse. Error does not return in the engine (it stops the
+  ///   program); a fake may raise
+  /// </summary>
+  IWorkerMessages = interface
+    ['{5B1E84D3-0C72-4A9F-B6E8-3D40F1A7C592}']
+    procedure Warning(const AText: string);
+    procedure Error(const AText: string);
+  end;
+
+  /// <summary>
+  ///   The memory primitives the parallel fill and copy split among threads. The engine gives
+  ///   its own (d_delphi), so a chunk is filled exactly as the single thread fills it
+  /// </summary>
+  IWorkerMemoryOps = interface
+    ['{E7A03C58-61D4-4B2F-8F19-A5D6C0B93E74}']
+    procedure Zero(ADest: Pointer; ACount: Integer);
+    /// <summary>ACount bytes set to AValue</summary>
+    procedure Fill(ADest: Pointer; AValue, ACount: Integer);
+    /// <summary>ACount 32 bit integers set to AValue</summary>
+    procedure FillInteger(ADest: Pointer; AValue, ACount: Integer);
+    procedure Copy(ADest, ASource: Pointer; ACount: Integer);
+  end;
+
   /// <summary>Makes workers; the tests give a fake one</summary>
   IWorkerThreadFactory = interface
     ['{3E8F1A64-D2B7-4A09-9C45-B6E70D18F3A2}']
