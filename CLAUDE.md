@@ -65,7 +65,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Acs** — Compilatore ACS (ACC 1.10 di Raven) e interprete del bytecode BEHAVIOR di Hexen, a classi. [CLAUDE.md](Libs/Acs/CLAUDE.md), [README.md](Libs/Acs/README.md)
 - **Actions** — Registro delle azioni degli stati (`A_Look`, `A_Chase`, quelle di ACTORDEF e MBF21). [CLAUDE.md](Libs/Actions/CLAUDE.md), [README.md](Libs/Actions/README.md)
 - **ActorDef** — Parser di ACTORDEF/DECORATE e SNDINFO a classi. [CLAUDE.md](Libs/ActorDef/CLAUDE.md), [README.md](Libs/ActorDef/README.md)
-- **Audio** — Effetti sonori (canali, voci, dispositivo) e musica (backend e player) del motore. [CLAUDE.md](Libs/Audio/CLAUDE.md), [README.md](Libs/Audio/README.md)
+- **Audio** — Effetti sonori (canali, voci, dispositivo) e musica (backend e player) del motore; suono di Quake III a classi (`DelphiDoom.Audio.Q3.*`: canali, spazializzazione, loop con doppler, flusso grezzo per musica e video RoQ, mixaggio e ricampionamento, tempo e dispositivo iniettati; parita' sul C vero con gcc, issue #128, senza chiamanti nel motore). [CLAUDE.md](Libs/Audio/CLAUDE.md), [README.md](Libs/Audio/README.md)
 - **AudioMix** — Mixing audio comune a XcomAudio, War e Greed (issue #228, prima fetta): lista di voci con lucchetto, strategie di voce e di ricampionamento su un solo contratto, somma con saturazione. [CLAUDE.md](Libs/AudioMix/CLAUDE.md), [README.md](Libs/AudioMix/README.md)
 - **Automap** — Modello dell'automap (finestra sulla mappa, navigazione, segni, trasformazioni, ritaglio). [CLAUDE.md](Libs/Automap/CLAUDE.md), [README.md](Libs/Automap/README.md)
 - **Blockmap** — Costruzione e lettura della blockmap e rimozione delle slime trails. [CLAUDE.md](Libs/Blockmap/CLAUDE.md), [README.md](Libs/Blockmap/README.md)

@@ -124,3 +124,8 @@ Prodotti da un harness C++ **fuori dal repository** (contiene codice di OpenXcom
 ## Aas (issue #122)
 
 - `Aas\aas.golden.txt`: l'uscita di `Tools\Verifica\122\aasgen.exe` (gcc di w64devkit sul vero `be_aas_file.c` e `be_aas_sample.c` di Quake III) su quattro file `.aas` costruiti dal pilota piu' quattro rovinati: conteggi, CRC-32 dei 14 lump, punti, trace, facce, box e messaggi a seme fisso. Nessun file `.aas` e' nel repository: li costruisce `Tests\Source\DelphiDoom.Tests.Aas.Sample.pas` con la stessa ricetta. Come si rifa: `Tools\Verifica\122\LEGGIMI.md`.
+
+## Audio\Q3 (issue #128)
+
+- `Audio\Q3\scenario0..4.script.txt` (5 file, 15-38 KB) e `scenario0..4.golden.txt` (62-107 KB): gli script e le risposte del **codice di Quake III** (`snd_dma.c`, `snd_mix.c`, `snd_mem.c` e le funzioni di `q_math.c` che usa, funzioni intere incluse alla lettera) compilato con il gcc x64 di w64devkit e pilotato da `Tools\Verifica\128\q3snd.c`. Uno script e' una sequenza di operazioni casuali con seme fisso (`q3snd gen <scenario> <1000 + scenario>`); il golden ha, dopo ogni operazione, le impronte FNV-1a a 64 bit dei canali, dei canali dei loop, del buffer DMA e del flusso grezzo, i tempi e i volumi di `S_SpatializeOrigin`. Nessun materiale commerciale: i suoni degli script sono byte da un LCG. Due difetti di `S_StartSound` (letture fuori dall'array) sono corretti con `sed` nel harness, quindi i golden descrivono "il C senza quelle letture". Per rifarli: `Tools\Verifica\128\LEGGIMI.md`.
+- I `.wav` di OpenArena (`Reference\openarena\openarena-0.8.8\baseoa\pak*.pk3`) si leggono dove sono (`DELPHIDOOM_OPENARENA` o salendo dalla cartella dell'eseguibile) e il test si salta se mancano: nessun dato nel repository.
