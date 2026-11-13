@@ -1,0 +1,13 @@
+$d = 'C:\harness\aas'   # has idlib\ (copy of neo\idlib, with AASFile.h/.cpp, AASFile_local.h and AASFile_sample.cpp copied in and "../../../idlib/precompiled.h" changed to "precompiled.h"), data\ (aas_*.aas, aas_cases.txt as cases.txt)
+Set-Location "$d\idlib"
+New-Item -ItemType Directory -Force "$d\obj" | Out-Null
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$files = 'driver','Str','Token','Lexer','Dict','Heap','math\Math','math\Vector','math\Matrix','math\Angles','math\Quat','math\Rotation','math\Plane','math\Pluecker','math\Polynomial','math\Complex','math\Simd_Generic','hashing\CRC32','containers\HashIndex','geometry\JointTransform','geometry\DrawVert','bv\Bounds','AASFile','AASFile_sample'
+foreach ($f in $files) {
+  $o = "$d\obj\" + ($f -replace '\\','_') + '.o'
+  $out = & $B -c -w- -std=c++14 -I. "-o$o" "$f.cpp" 2>&1
+  if ($LASTEXITCODE -ne 0) { Write-Host "== $f exit $LASTEXITCODE"; $out | Select-String 'error' | Select-Object -First 6 | ForEach-Object { $_.Line } }
+}
+$all = Get-ChildItem "$d\obj\*.o" | ForEach-Object { $_.FullName }
+& $B -o "$d\aas.exe" @all
+& "$d\aas.exe" "$d\data" > "$d\aas.golden.txt"

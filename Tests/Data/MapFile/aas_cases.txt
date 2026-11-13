@@ -1,0 +1,10 @@
+# the .aas files that the real C++ loads (name and the CRC the caller expects, 0 = any)
+aas_rooms.aas 0
+aas_rooms.aas 2882400001
+aas_rooms.aas 5
+aas_minimal.aas 0
+aas_badversion.aas 0
+aas_notaas.aas 0
+aas_badtoken.aas 0
+aas_truncated.aas 0
+aas_missing.aas 0
