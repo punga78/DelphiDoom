@@ -42,7 +42,11 @@ nuovo con -timedemo e confronta i file riscritti all'uscita). Atteso: UGUALE per
   powershell -NoProfile -File Tools\Verifica\185\Confronta-Ini.ps1 -WorkRoot C:\ddparity_1c `
     -Exe    "Doom=<NEW>\bin\Doom\Doom32.exe;Heretic=<NEW>\bin\Heretic\Heretic32.exe;Hexen=<NEW>\bin\Hexen\Hexen32.exe;Strife=<NEW>\bin\Strife\Strife32.exe" `
     -RefExe "Doom=<REF>\bin\Doom\Doom32.exe;Heretic=<REF>\bin\Heretic\Heretic32.exe;Hexen=<REF>\bin\Hexen\Hexen32.exe;Strife=<REF>\bin\Strife\Strife32.exe"
-  (e lo stesso con -DefaultValues: il file scritto ha i valori di partenza di tutte le voci, in ordine)
+  (e lo stesso con -DefaultValues: -config indica un file che non esiste, il motore scrive all'uscita i valori di partenza di
+  tutte le voci, in ordine. L'opzione -defaultvalues del motore non serve a questa prova: con lei TEngineDefaults.Load
+  esce prima di ricordare il nome del file e all'uscita non scrive niente, nel vecchio come nel nuovo.)
+  Il corpo di prova fissa soft_fullscreen=0 e 640x480: con lo schermo intero esclusivo, se DirectDraw rifiuta il modo
+  (SetCooperativeLevel), i_video mette SCREENWIDTH := 640 e il valore scritto dipende dalla macchina e non dal codice.
 
 Lo stesso per gli eseguibili OpenGL (GLDoom32...: tabella con le voci gl_*): passare i GL in -Exe/-RefExe con i nomi
 dei giochi (lo script usa solo -timedemo, che negli eseguibili GL funziona; le impronte dei fotogrammi non servono).

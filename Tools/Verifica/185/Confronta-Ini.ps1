@@ -7,8 +7,9 @@
     2. lancia il vecchio sulla prima e il nuovo sulla seconda con la prima demo del corpus (-timedemo, che finisce con
        I_Quit e quindi salva la configurazione: niente -dontsavedefaults);
     3. confronta i due file scritti, e il numero di gametic della riga "timed".
-  Con -DefaultValues aggiunge -defaultvalues (tutti i valori di partenza, nessuna lettura del file): il file scritto
-  contiene allora i valori di partenza di ogni voce, in ordine, ed e' la prova "valore di partenza di ogni voce".
+  Con -DefaultValues il file indicato da -config non esiste: il motore parte dai valori di partenza di ogni voce e li scrive
+  all'uscita (e' la prova "valore di partenza di ogni voce"). Non si usa l'opzione -defaultvalues del motore: con lei
+  TEngineDefaults.Load esce prima di ricordare il nome del file e all'uscita non scrive niente (vecchio e nuovo uguali).
 
   Uso (riferimento: master 63a151cc):
     powershell -NoProfile -File Tools\Verifica\185\Confronta-Ini.ps1 `
@@ -53,21 +54,23 @@ foreach ($gameName in $games.Keys) {
   $results = @{}
   foreach ($side in 'ref', 'new') {
     $ini = "c1c_$side.ini"
-    [IO.File]::WriteAllText((Join-Path $dir $ini), $text)
+    Remove-Item (Join-Path $dir $ini) -ErrorAction SilentlyContinue
+    if (-not $DefaultValues) { [IO.File]::WriteAllText((Join-Path $dir $ini), $text) }
     $extra = ''
-    if ($DefaultValues) { $extra = '-defaultvalues' }
     if ($gameName -eq 'Hexen') { $extra = ($extra + ' -devparm').Trim() }
     $name = if ($side -eq 'ref') { $refName } else { $exeName }
     $arguments = "-iwad $($entry.Iwad) -config $ini -nomusic -nosound -noblit -timedemo $demo $extra"
     $run = Invoke-ParityGame -Exe (Join-Path $dir $name) -Arguments $arguments -WorkDir $dir -TimeoutSeconds 600
     $results[$side] = [pscustomobject]@{ Run = $run; File = (Join-Path $dir $ini) }
   }
-  $refBytes = [IO.File]::ReadAllBytes($results['ref'].File)
-  $newBytes = [IO.File]::ReadAllBytes($results['new'].File)
+  $refBytes = @(); $newBytes = @()
+  if (Test-Path $results['ref'].File) { $refBytes = [IO.File]::ReadAllBytes($results['ref'].File) }
+  if (Test-Path $results['new'].File) { $newBytes = [IO.File]::ReadAllBytes($results['new'].File) }
   $same = ($refBytes.Length -eq $newBytes.Length)
   if ($same) { for ($i = 0; $i -lt $refBytes.Length; $i++) { if ($refBytes[$i] -ne $newBytes[$i]) { $same = $false; break } } }
-  $written = -not ([IO.File]::ReadAllText($results['ref'].File) -eq $text)
-  $label = "{0,-8} {1}" -f $gameName, $(if ($DefaultValues) { '-defaultvalues' } else { 'file di prova' })
+  $written = (Test-Path $results['ref'].File) -and (Test-Path $results['new'].File)
+  if ($written -and -not $DefaultValues) { $written = -not ([IO.File]::ReadAllText($results['ref'].File) -eq $text) }
+  $label = "{0,-8} {1}" -f $gameName, $(if ($DefaultValues) { 'valori di partenza' } else { 'file di prova' })
   if ($results['ref'].Run.Crash -or $results['new'].Run.Crash -or $results['ref'].Run.Alive -or $results['new'].Run.Alive) {
     Write-Output "$label : ESECUZIONE NON RIUSCITA | vecchio: $($results['ref'].Run.Text) | nuovo: $($results['new'].Run.Text)"
     $failures++
