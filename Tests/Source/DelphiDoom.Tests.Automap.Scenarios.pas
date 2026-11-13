@@ -167,6 +167,7 @@ var
   LPrint: TFingerprint;
   LRound: Integer;
   LStep: Integer;
+  LFirst, LSecond: Integer;
   LValue: Integer;
   LValues: TArray<Integer>;
   LSnapshot: TArray<Integer>;
@@ -270,11 +271,17 @@ begin
           2:
             begin
               FDriver.SetPan(0, 0);
-              FDriver.Tick(RandomBetween(-100000000, 100000000), RandomBetween(-100000000, 100000000));
+              // the draws in the order of the 32 bit compiler (the second argument first): the order of
+              // evaluation of the arguments is not defined and the 64 bit compiler uses another one
+              LSecond := RandomBetween(-100000000, 100000000);
+              LFirst := RandomBetween(-100000000, 100000000);
+              FDriver.Tick(LFirst, LSecond);
             end;
         else
           FDriver.AddMarkAtCenter;
-          FDriver.SetPan(RandomBetween(-300, 300) * 4096, RandomBetween(-300, 300) * 4096);
+          LSecond := RandomBetween(-300, 300) * 4096;
+          LFirst := RandomBetween(-300, 300) * 4096;
+          FDriver.SetPan(LFirst, LSecond);
           FDriver.SetFollow(False);
           FDriver.Tick(0, 0);
         end;
