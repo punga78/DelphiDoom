@@ -392,7 +392,9 @@ uses
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
-  DelphiDoom.Engine.Audio.DirectSoundDevice,
+  DelphiDoom.Audio.Mixer,
+  DelphiDoom.GameHost.Win.PcmOutput,
+  DelphiDoom.Engine.Audio.WaveOutDevice,
   DelphiDoom.Engine.Audio.SfxSampleSource,
   DelphiDoom.M2m.Engine,
   DelphiDoom.Engine.Music.Intf,
@@ -423,6 +425,9 @@ uses
 {$ELSE}
   i_main,
   i_video,
+  DelphiDoom.Engine.Video.FramePresenter.Intf,
+  DelphiDoom.Engine.Video.GdiPresenter,
+  DelphiDoom.Engine.Video.DisplaySettings,
 {$ENDIF}
   m_menu,
   d_event,
@@ -533,6 +538,14 @@ begin
   GL_ConfigureDisplayModes(LCatalog);
 {$ELSE}
   I_ConfigureDisplayModes(LCatalog);
+  // the strategy of the video output: the frame in the window with GDI, the resolution with the display settings
+  I_ConfigureVideoOutput(
+    TEngineGdiFramePresenter.Create(
+      function: THandle
+      begin
+        Result := hMainWnd;
+      end),
+    TEngineDisplaySettingsResolution.Create);
 {$ENDIF}
   M_ConfigureDisplayModes(LCatalog);
   D_ConfigureNotifications(TVideoFactory.CreateDeferredNotifications(TEngineDisplayModeApplier.Create));
@@ -638,14 +651,10 @@ begin
 end;
 
 procedure ComposeSound(const ALog: ILog);
-var
-  LWindow: TFunc<THandle>;
+const
+  // frames per second of the sound output: the samples of the game (11025 Hz and the like) are resampled to it
+  SOUND_OUTPUT_RATE = 44100;
 begin
-  LWindow :=
-    function: THandle
-    begin
-      Result := hMainWnd;
-    end;
   S_ConfigureSound(
     function(AWithDevice: Boolean): ISfxPlayer
     var
@@ -654,7 +663,9 @@ begin
       LDevice := nil;
       if AWithDevice then
       begin
-        LDevice := TDirectSoundDevice.Create(LWindow, ALog);
+        // the strategy of the sound effects: a software mixer on the PCM output (waveOut) of the game host
+        LDevice := TEngineWaveOutSoundDevice.Create(TGameHostWinPcmOutput.Create,
+          TSfxMixer.Create(SOUND_OUTPUT_RATE), SOUND_OUTPUT_RATE, ALog);
         // no sound card: the game goes on without sound
         if not LDevice.Initialize then
           LDevice := nil;

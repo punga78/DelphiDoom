@@ -938,9 +938,6 @@ type
     od_lightmap,
 {$ENDIF}
     od_uncapped,
-{$IFNDEF OPENGL}
-    od_bltasync,
-{$ENDIF}
     od_usetransparentsprites,
 {$IFNDEF OPENGL}
     od_diher8bittransparency,
@@ -6019,16 +6016,6 @@ begin
   pmi.routine := @M_OptionsDisplayUncappedFrameRate;
   pmi.pBoolVal := nil;
   pmi.alphaKey := 'u';
-
-  {$IFNDEF OPENGL}
-  inc(pmi);
-  pmi.status := 1;
-  pmi.name := '!Asynchronous DirectX blit';
-  pmi.cmd := 'r_bltasync';
-  pmi.routine := @M_BoolCmd;
-  pmi.pBoolVal := @r_bltasync;
-  pmi.alphaKey := 'a';
-  {$ENDIF}
 
   inc(pmi);
   pmi.status := 1;

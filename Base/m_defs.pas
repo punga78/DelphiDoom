@@ -140,7 +140,6 @@ var
   r_lightmapfadeoutfunc: integer = 0;
   lightmapcolorintensity: integer = 128;
   lightwidthfactor: integer = 5;
-  r_bltasync: boolean = true;
   r_blitmultiplier: integer = 1;
   r_lightmaponmasked: boolean = true;
   r_lightmaponemitters: boolean = false;
@@ -191,13 +190,13 @@ type
 
 const
 {$IF DEFINED(HERETIC)}
-  NUMDEFAULTS = 224;
+  NUMDEFAULTS = 223;
 {$ELSEIF DEFINED(HEXEN)}
-  NUMDEFAULTS = 220;
+  NUMDEFAULTS = 219;
 {$ELSEIF DEFINED(STRIFE)}
-  NUMDEFAULTS = 235;
+  NUMDEFAULTS = 234;
 {$ELSE}
-  NUMDEFAULTS = {$IFDEF FPC}231{$ELSE}233{$ENDIF};
+  NUMDEFAULTS = {$IFDEF FPC}230{$ELSE}232{$ENDIF};
 {$ENDIF}
 
 // The declaration of the options of the game (issue #185): name, global, who can change it,
@@ -759,14 +758,6 @@ const
      setable: DFS_ALWAYS;
      defaultsvalue: '';
      defaultivalue: 0;
-     defaultbvalue: true;
-     _type: tBoolean),
-
-    (name: 'r_bltasync';
-     location: @r_bltasync;
-     setable: DFS_ALWAYS;
-     defaultsvalue: '';
-     defaultivalue: 1;
      defaultbvalue: true;
      _type: tBoolean),
 

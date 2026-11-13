@@ -57,7 +57,7 @@ Esempi di editing: <https://sourceforge.net/projects/delphidoom/files/Tools%2C%2
 
 ## Requisiti
 
-Windows con DirectX (renderer software) e scheda con OpenGL (renderer hardware). PC moderno con processore da 1,5 GHz; sfrutta i sistemi multiprocessore.
+Windows con GDI (renderer software) e scheda con OpenGL (renderer hardware). PC moderno con processore da 1,5 GHz; sfrutta i sistemi multiprocessore.
 
 ## Licenza e origini
 

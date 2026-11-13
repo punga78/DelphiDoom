@@ -22,7 +22,7 @@
 //
 //  DESCRIPTION:
 //   System specific interface stuff.
-//   DirectX DOOM graphics
+//   GDI DOOM graphics
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -38,7 +38,18 @@ uses
   SysUtils,
   Windows,
   d_delphi,
-  DelphiDoom.Video.Intf;
+  DelphiDoom.Video.Intf,
+  DelphiDoom.Engine.Video.FramePresenter.Intf;
+
+//==============================================================================
+//
+// I_ConfigureVideoOutput
+// Where the frame goes (the window) and who changes the resolution of the screen.
+// The composition root calls it; without it I_InitGraphics stops with I_Error
+//
+//==============================================================================
+procedure I_ConfigureVideoOutput(const APresenter: IEngineFramePresenter;
+  const AResolution: IEngineDisplayResolution);
 
 //==============================================================================
 //
@@ -118,14 +129,12 @@ procedure I_SetPalette64;
 
 var
   fixstallhack: boolean = true;
-  r_bltasync: boolean = true;
   r_blitmultiplier: integer = 1;
 
 implementation
 
 uses
   doomdef,
-  DirectX,
   mt_utils,
   i_system,
   i_main,
@@ -138,6 +147,21 @@ uses
 var
   // given by the composition root (I_ConfigureDisplayModes)
   video_displaymodes: IDisplayModeCatalog = nil;
+  // given by the composition root (I_ConfigureVideoOutput)
+  video_presenter: IEngineFramePresenter = nil;
+  video_resolution: IEngineDisplayResolution = nil;
+
+//==============================================================================
+//
+// I_ConfigureVideoOutput
+//
+//==============================================================================
+procedure I_ConfigureVideoOutput(const APresenter: IEngineFramePresenter;
+  const AResolution: IEngineDisplayResolution);
+begin
+  video_presenter := APresenter;
+  video_resolution := AResolution;
+end;
 
 //==============================================================================
 //
@@ -191,20 +215,15 @@ begin
 end;
 
 var
-  g_pDD: IDirectDraw7 = nil;                // DirectDraw object
-  g_pDDSPrimary: IDirectDrawSurface7 = nil; // DirectDraw primary surface
-  g_pDDScreen: IDirectDrawSurface7 = nil;   // DirectDraw surface
-  g_pDDClipper: IDirectDrawClipper = nil;   // Clipper
-
-var
-  bpp: integer;
+  graphics_started: boolean = false;
+  // the screen was set to another resolution (the exclusive full screen mode)
+  video_resolution_changed: boolean = false;
   dpi: integer;
 
 var
   s_alttab_disabled: boolean = false;
 
 var
-  screen16: PWordArray;
   screen: PLongWordArray;
   oscreen: pointer;
 
@@ -229,19 +248,6 @@ begin
     SetWindowLong(hMainWnd, GWL_STYLE, WINDOW_STYLE_FS);
     SetWindowPos(hMainWnd, HWND_TOP, 0, 0, WINDOWWIDTH, WINDOWHEIGHT, SWP_SHOWWINDOW);
   end;
-end;
-
-//==============================================================================
-//
-// I_SetClipper
-//
-//==============================================================================
-procedure I_SetClipper(const mode: integer);
-begin
-  if mode = FULLSCREEN_OFF then
-    g_pDDSPrimary.SetClipper(g_pDDClipper)
-  else
-    g_pDDSPrimary.SetClipper(nil);
 end;
 
 //==============================================================================
@@ -304,26 +310,19 @@ var
 //==============================================================================
 procedure I_ShutDownGraphics;
 begin
-  I_ClearInterface(IInterface(g_pDDScreen));
-  I_ClearInterface(IInterface(g_pDDSPrimary));
-  I_ClearInterface(IInterface(g_pDD));
-  I_ClearInterface(IInterface(g_pDDClipper));
+  // the screen goes back to the resolution of the desktop
+  if video_resolution_changed and (video_resolution <> nil) then
+    video_resolution.Restore;
+  video_resolution_changed := false;
+  graphics_started := false;
   I_EnableAltTab;
   if video_displaymodes <> nil then
     video_displaymodes.Clear;
   memfree(oscreen, allocscreensize);
-  if screen16 <> nil then
-    memfree(pointer(screen16), SCREENWIDTH * SCREENHEIGHT * 2);
 end;
 
 var
   stallhack: boolean;
-
-type
-  finishupdateparms_t = record
-    start, stop: integer;
-  end;
-  Pfinishupdateparms_t = ^finishupdateparms_t;
 
 var
   curpal64: array[0..$FFFF] of Int64;
@@ -349,49 +348,6 @@ begin
       idx.byte2 := j;
       pitem.longword2 := curpal[j];
       curpal64[PWord(@idx)^] := PInt64(@pitem)^;
-    end;
-  end;
-end;
-
-//==============================================================================
-// I_FinishUpdate8
-//
-// I_FinishUpdate
-//
-//==============================================================================
-procedure I_FinishUpdate8(parms: Pfinishupdateparms_t);
-var
-  dest: PLongWord;
-  destw: PWord;
-  pixel: LongWord;
-  r, g, b: LongWord;
-  src: PByte;
-  srcstop: PByte;
-begin
-  src := @(screens[SCN_FG][parms.start]);
-  srcstop := @(screens[SCN_FG][parms.stop]);
-  if bpp = 32 then
-  begin
-    dest := @screen[parms.start];
-    while NativeInt(src) < NativeInt(srcstop) do
-    begin
-      dest^ := curpal[src^];
-      inc(dest);
-      inc(src);
-    end;
-  end
-  else if bpp = 16 then
-  begin
-    destw := @screen16[parms.start];
-    while NativeInt(src) < NativeInt(srcstop) do
-    begin
-      pixel := curpal[src^];
-      r := (pixel shr 19) and 31;
-      g := (pixel shr 11) and 31;
-      b := (pixel shr 3) and 31;
-      destw^ := (r shl 11) or (g shl 6) or b;
-      inc(destw);
-      inc(src);
     end;
   end;
 end;
@@ -451,166 +407,96 @@ end;
 
 //==============================================================================
 //
-// I_Thr_FinishUpdate8
-//
-//==============================================================================
-function I_Thr_FinishUpdate8(parms: pointer): integer; stdcall;
-begin
-  I_FinishUpdate8(Pfinishupdateparms_t(parms));
-  result := 0;
-end;
-
-//==============================================================================
-//
-// I_FinishUpdate16
-//
-//==============================================================================
-procedure I_FinishUpdate16;
-var
-  i: integer;
-  destw: PWord;
-  pixel: LongWord;
-  r, g, b: LongWord;
-  srcl: PLongWord;
-begin
-  destw := @screen16[0];
-  srcl := @screen[0];
-  for i := 0 to SCREENWIDTH * SCREENHEIGHT - 1 do
-  begin
-    pixel := srcl^;
-    r := (pixel shr 19) and 31;
-    g := (pixel shr 11) and 31;
-    b := (pixel shr 3) and 31;
-    destw^ := (r shl 11) or (g shl 6) or b;
-    inc(destw);
-    inc(srcl);
-  end;
-end;
-
-//==============================================================================
-//
 // I_BlitBuffer
 //
 //==============================================================================
 procedure I_BlitBuffer;
 var
-  parms1, parms2: finishupdateparms_t;
   p1, p2, p3, p4, p5, p6, p7, p8: finishupdate8param_t;
 begin
   if (hMainWnd = 0) or (screens[SCN_FG] = nil) or (screen32 = nil) then
     exit;
 
-  if videomode = vm32bit then
+  // In 32 bit mode the renderer draws directly in the frame: nothing to do.
+  // The desktop depth does not matter: GDI converts the 32 bit frame when it shows it
+  if videomode <> vm32bit then
   begin
-    if bpp = 16 then
+    if usemultithread then
     begin
-    // JVAL
-    // Internal DelphiDoom hi-color rendering engine works in 32 bits
-    // If we have a 16 bit depth desktop we get a bit slower performance ....
-      I_FinishUpdate16;
-    end;
-    // if bpp = 32 <- we don't do nothing, directly drawing was performed
-  end
-  else
-  begin
-    if bpp = 32 then
-    begin
-      if usemultithread then
+      if I_GetNumCPUs <= 2 then
       begin
-        if I_GetNumCPUs <= 2 then
-        begin
-          p1.start := 0;
-          p1.finish := (SCREENWIDTH * SCREENHEIGHT div 2) and not 3;
-          p2.start := p1.finish + 1;
-          p2.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-          MT_Execute(
-            @I_FinishUpdate8_64a, @p1,
-            @I_FinishUpdate8_64a, @p2
-          );
-        end
-        else if I_GetNumCPUs <= 4 then
-        begin
-          p1.start := 0;
-          p1.finish := (SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
-          p2.start := p1.finish + 1;
-          p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
-          p3.start := p2.finish + 1;
-          p3.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-          MT_Execute(
-            @I_FinishUpdate8_64a, @p1,
-            @I_FinishUpdate8_64a, @p2,
-            @I_FinishUpdate8_64a, @p3
-          );
-        end
-        else if I_GetNumCPUs <= 6 then
-        begin
-          p1.start := 0;
-          p1.finish := (SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-          p2.start := p1.finish + 1;
-          p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-          p3.start := p2.finish + 1;
-          p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-          p4.start := p3.finish + 1;
-          p4.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-          MT_Execute(
-            @I_FinishUpdate8_64a, @p1,
-            @I_FinishUpdate8_64a, @p2,
-            @I_FinishUpdate8_64a, @p3,
-            @I_FinishUpdate8_64a, @p4
-          );
-        end
-        else
-        begin
-          p1.start := 0;
-          p1.finish := (SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p2.start := p1.finish + 1;
-          p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p3.start := p2.finish + 1;
-          p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p4.start := p3.finish + 1;
-          p4.finish := (4 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p5.start := p4.finish + 1;
-          p5.finish := (5 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p6.start := p5.finish + 1;
-          p6.finish := (6 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p7.start := p6.finish + 1;
-          p7.finish := (7 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-          p8.start := p7.finish + 1;
-          p8.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-          MT_Execute(
-            @I_FinishUpdate8_64a, @p1,
-            @I_FinishUpdate8_64a, @p2,
-            @I_FinishUpdate8_64a, @p3,
-            @I_FinishUpdate8_64a, @p4,
-            @I_FinishUpdate8_64a, @p5,
-            @I_FinishUpdate8_64a, @p6,
-            @I_FinishUpdate8_64a, @p7,
-            @I_FinishUpdate8_64a, @p8
-          );
-        end
-      end
-      else
-        I_FinishUpdate8_64
-    end
-    else
-    begin
-      parms1.start := 0;
-      if usemultithread then
-      begin
-        parms1.stop := SCREENWIDTH * SCREENHEIGHT div 2;
-        parms2.start := parms1.stop + 1;
-        parms2.stop := SCREENWIDTH * SCREENHEIGHT - 1;
+        p1.start := 0;
+        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 2) and not 3;
+        p2.start := p1.finish + 1;
+        p2.finish := SCREENWIDTH * SCREENHEIGHT - 1;
         MT_Execute(
-          @I_Thr_FinishUpdate8, @parms1,
-          @I_Thr_FinishUpdate8, @parms2
+          @I_FinishUpdate8_64a, @p1,
+          @I_FinishUpdate8_64a, @p2
+        );
+      end
+      else if I_GetNumCPUs <= 4 then
+      begin
+        p1.start := 0;
+        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
+        p2.start := p1.finish + 1;
+        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
+        p3.start := p2.finish + 1;
+        p3.finish := SCREENWIDTH * SCREENHEIGHT - 1;
+        MT_Execute(
+          @I_FinishUpdate8_64a, @p1,
+          @I_FinishUpdate8_64a, @p2,
+          @I_FinishUpdate8_64a, @p3
+        );
+      end
+      else if I_GetNumCPUs <= 6 then
+      begin
+        p1.start := 0;
+        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
+        p2.start := p1.finish + 1;
+        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
+        p3.start := p2.finish + 1;
+        p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
+        p4.start := p3.finish + 1;
+        p4.finish := SCREENWIDTH * SCREENHEIGHT - 1;
+        MT_Execute(
+          @I_FinishUpdate8_64a, @p1,
+          @I_FinishUpdate8_64a, @p2,
+          @I_FinishUpdate8_64a, @p3,
+          @I_FinishUpdate8_64a, @p4
         );
       end
       else
       begin
-        parms1.stop := SCREENWIDTH * SCREENHEIGHT - 1;
-        I_FinishUpdate8(@parms1);
-      end;
-    end;
+        p1.start := 0;
+        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p2.start := p1.finish + 1;
+        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p3.start := p2.finish + 1;
+        p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p4.start := p3.finish + 1;
+        p4.finish := (4 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p5.start := p4.finish + 1;
+        p5.finish := (5 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p6.start := p5.finish + 1;
+        p6.finish := (6 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p7.start := p6.finish + 1;
+        p7.finish := (7 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
+        p8.start := p7.finish + 1;
+        p8.finish := SCREENWIDTH * SCREENHEIGHT - 1;
+        MT_Execute(
+          @I_FinishUpdate8_64a, @p1,
+          @I_FinishUpdate8_64a, @p2,
+          @I_FinishUpdate8_64a, @p3,
+          @I_FinishUpdate8_64a, @p4,
+          @I_FinishUpdate8_64a, @p5,
+          @I_FinishUpdate8_64a, @p6,
+          @I_FinishUpdate8_64a, @p7,
+          @I_FinishUpdate8_64a, @p8
+        );
+      end
+    end
+    else
+      I_FinishUpdate8_64;
   end;
 end;
 
@@ -621,74 +507,26 @@ end;
 //==============================================================================
 procedure I_FinishUpdate;
 var
-  srcrect: TRect;
   destrect: TRect;
-  stretch: boolean;
-  surfacelost: boolean;
-  i: integer;
-  dw, dh: integer;
 begin
   I_BlitBuffer;
 
-  srcrect.Left := 0;
-  srcrect.Top := 0;
-  srcrect.Right := SCREENWIDTH;
-  srcrect.Bottom := SCREENHEIGHT;
-
-//  stretch := stallhack and fixstallhack and (WINDOWHEIGHT = SCREENHEIGHT);
-//  if not stretch then
-    stretch := (WINDOWWIDTH <> SCREENWIDTH) or (WINDOWHEIGHT <> SCREENHEIGHT);// or (fullscreen <> FULLSCREEN_EXCLUSIVE);
+  if video_presenter = nil then
+    I_Error('I_ConfigureVideoOutput() was not called: the video output is missing');
 
   r_blitmultiplier := GetIntegerInRange(r_blitmultiplier, 1, 4);
 
-  if stretch or (fullscreen = FULLSCREEN_OFF) then
-  begin
-    destrect.Left := 0;
-    destrect.Top := 0;
-    destrect.Right := WINDOWWIDTH;
-    destrect.Bottom := WINDOWHEIGHT;
+  // the frame goes to the client area of the window, stretched when the window has another size
+  destrect.Left := 0;
+  destrect.Top := 0;
+  destrect.Right := WINDOWWIDTH;
+  destrect.Bottom := WINDOWHEIGHT;
 
-    if fullscreen = FULLSCREEN_OFF then
-    begin
-      I_GetWindowPosition(windowxpos, windowypos);
-      I_GetWindowOffset(dw, dh);
-      Inc(destrect.Left, dw);
-      Inc(destrect.Right, dw);
-      Inc(destrect.Top, dh);
-      Inc(destrect.Bottom, dh);
-    end;
+  // the position of the window is saved in the configuration
+  if fullscreen = FULLSCREEN_OFF then
+    I_GetWindowPosition(windowxpos, windowypos);
 
-    for i := 0 to r_blitmultiplier - 1 do
-    begin
-      if r_bltasync then
-        surfacelost := g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLT_ASYNC, PDDBltFX(0)^) = DDERR_SURFACELOST
-      else
-        surfacelost := g_pDDSPrimary.Blt(destrect, g_pDDScreen, srcrect, DDBLT_WAIT, PDDBltFX(0)^) = DDERR_SURFACELOST;
-
-      if surfacelost then
-      begin
-        g_pDDSPrimary.Restore;
-        Break;
-      end;
-    end;
-  end
-  else
-  begin
-    for i := 0 to r_blitmultiplier - 1 do
-    begin
-      if r_bltasync then
-        surfacelost := g_pDDSPrimary.BltFast(0, 0, g_pDDScreen, srcrect, DDBLTFAST_DONOTWAIT or DDBLTFAST_NOCOLORKEY) = DDERR_SURFACELOST
-      else
-        surfacelost := g_pDDSPrimary.BltFast(0, 0, g_pDDScreen, srcrect, DDBLTFAST_WAIT or DDBLTFAST_NOCOLORKEY) = DDERR_SURFACELOST;
-
-      if surfacelost then
-      begin
-        g_pDDSPrimary.Restore;
-        Break;
-      end;
-    end;
-  end;
-
+  video_presenter.Present(screen32, SCREENWIDTH, SCREENHEIGHT, destrect, r_blitmultiplier);
 end;
 
 //==============================================================================
@@ -760,46 +598,19 @@ const
 //
 //==============================================================================
 procedure I_InitGraphics;
-var
-  hres: HRESULT;
-  ddsd: DDSURFACEDESC2;
-
-  procedure I_ErrorInitGraphics(const procname: string);
-  begin
-    I_Error('I_InitGraphics(): %s failed, result = %d', [procname, hres]);
-  end;
-
 begin
-  if g_pDD <> nil then
+  if graphics_started then
     exit;
+
+  if (video_presenter = nil) or (video_resolution = nil) then
+    I_Error('I_ConfigureVideoOutput() was not called: the video output is missing');
 
   ShowWindow(hMainWnd, SW_SHOW);
   UpdateWindow(hMainWnd);
 
-  printf('I_InitGraphics: Initializing directdraw.'#13#10);
+  printf('I_InitGraphics: Initializing the GDI display.'#13#10);
 
   I_DisplayModes.Refresh(MAXWIDTH, MAXHEIGHT);
-
-///////////////////////////////////////////////////////////////////////////
-// Create the main DirectDraw object
-///////////////////////////////////////////////////////////////////////////
-  hres := DirectDrawCreateEx(nil, g_pDD, IID_IDirectDraw7, nil);
-  if hres <> DD_OK then
-    I_ErrorInitGraphics('DirectDrawCreateEx');
-
-///////////////////////////////////////////////////////////////////////////
-// Create the clipper using the DirectDraw object
-///////////////////////////////////////////////////////////////////////////
-  hres := g_pDD.CreateClipper(0, g_pDDClipper, nil);
-  if hres <> DD_OK then
-    I_ErrorInitGraphics('CreateClipper');
-
-///////////////////////////////////////////////////////////////////////////
-// Assign your window's HWND to the clipper
-///////////////////////////////////////////////////////////////////////////
-  hres := g_pDDClipper.SetHWnd(0, hMainWnd);
-  if hres <> DD_OK then
-    I_ErrorInitGraphics('g_pDDClipper.SetHWnd');
 
   fullscreen := fullscreen mod NUMFULLSCREEN_MODES;
 
@@ -807,14 +618,14 @@ begin
   begin
     I_FindWindowSize(fullscreen);
 
-    // Get exclusive mode
-    hres := g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_ALLOWMODEX or DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN);
-    if hres <> DD_OK then
-      I_ErrorInitGraphics('SetCooperativeLevel');
-
     // Set the video mode to WINDOWWIDTH x WINDOWHEIGHT x 32
-    hres := g_pDD.SetDisplayMode(WINDOWWIDTH, WINDOWHEIGHT, 32, 0, 0);
-    if hres <> DD_OK then
+    if video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT) then
+    begin
+      video_resolution_changed := true;
+      I_RestoreWindowPos(fullscreen);
+      I_DisableAltTab;
+    end
+    else
     begin
     // Fullscreen mode failed, trying window mode
       fullscreen := FULLSCREEN_SHARED;
@@ -825,95 +636,24 @@ begin
       I_Warning('SetDisplayMode(): Failed to fullscreen %dx%dx%d, trying window mode...'#13#10,
         [WINDOWWIDTH, WINDOWHEIGHT, 32]);
       printf('Window Mode %dx%d'#13#10, [SCREENWIDTH, SCREENHEIGHT]);
-
-      hres := g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_NORMAL);
-      if hres <> DD_OK then
-      begin
-        I_Warning('SetDisplayMode(): Failed to window mode %dx%d...'#13#10, [SCREENWIDTH, SCREENHEIGHT]);
-        SCREENWIDTH := 640;
-        SCREENHEIGHT := 480;
-        V_ReInit;
-        hres := g_pDD.SetDisplayMode(WINDOWWIDTH, WINDOWHEIGHT, 32, 0, 0);
-        if hres <> DD_OK then
-          I_ErrorInitGraphics('SetDisplayMode');
-        printf('SetDisplayMode(): %dx%d...'#13#10, [WINDOWWIDTH, WINDOWHEIGHT]);
-      end;
-    end
-    else
-      I_DisableAltTab;
+    end;
   end
   else
   begin
     I_FindWindowSize(fullscreen);
     I_AdjustWindowMode;
     I_RestoreWindowPos(fullscreen);
-
-    hres := g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_NORMAL);
-    if hres <> DD_OK then
-      I_ErrorInitGraphics('SetCooperativeLevel');
   end;
 
   if I_MemoryStallHack then
     V_ReInit;
 
-  ZeroMemory(@ddsd, SizeOf(ddsd));
-  ddsd.dwSize := SizeOf(ddsd);
-  ddsd.dwFlags := DDSD_CAPS;
-  ddsd.ddsCaps.dwCaps := DDSCAPS_PRIMARYSURFACE or DDSCAPS_VIDEOMEMORY;
-  hres := g_pDD.CreateSurface(ddsd, g_pDDSPrimary, nil);
-  if hres <> DD_OK then
-  begin
-    I_Warning('I_InitGraphics(): Usage of video memory failed, trying system memory.'#13#10);
-    ddsd.ddsCaps.dwCaps := DDSCAPS_PRIMARYSURFACE;
-    hres := g_pDD.CreateSurface(ddsd, g_pDDSPrimary, nil);
-    if hres <> DD_OK then
-      I_ErrorInitGraphics('CreateSurface');
-  end;
-
-  ZeroMemory(@ddsd, SizeOf(ddsd));
-  ZeroMemory(@ddsd.ddpfPixelFormat, SizeOf(ddsd.ddpfPixelFormat));
-
-  ddsd.ddpfPixelFormat.dwSize := SizeOf(ddsd.ddpfPixelFormat);
-  g_pDDSPrimary.GetPixelFormat(ddsd.ddpfPixelFormat);
-
-  ddsd.dwSize := SizeOf(ddsd);
-  ddsd.dwFlags := DDSD_WIDTH or DDSD_HEIGHT or DDSD_LPSURFACE or
-                  DDSD_PITCH or DDSD_PIXELFORMAT or DDSD_CAPS;
-  ddsd.ddsCaps.dwCaps := DDSCAPS_OFFSCREENPLAIN or DDSCAPS_SYSTEMMEMORY;
-
-  bpp := ddsd.ddpfPixelFormat.dwRGBBitCount;
-
-  ddsd.dwWidth := SCREENWIDTH;
-  ddsd.dwHeight := SCREENHEIGHT;
-
-  if bpp = 32 then
-  begin
-    ddsd.lPitch := 4 * SCREENWIDTH; // Display is true color
-    screen16 := nil;
-  end
-  else if bpp = 16 then
-  begin
-    ddsd.lPitch := 2 * SCREENWIDTH;
-    screen16 := malloc(SCREENWIDTH * SCREENHEIGHT * 2);
-    I_Warning('I_InitGraphics(): using 16 bit color depth desktop in non fullscreen mode reduces performance'#13#10);
-  end
-  else
-    I_Error('I_InitGraphics(): invalid colordepth = %d, only 16 and 32 bit color depth allowed', [bpp]);
-
+  // The frame is always 32 bits: GDI converts it to the depth of the desktop
   allocscreensize := SCREENWIDTH * (SCREENHEIGHT + ERROR_OFFSET) * SizeOf(LongWord) and not (4095);
   screen := mallocA(allocscreensize, $10000, oscreen); // JVAL: Memory padding may increase performance until 4%
   screen32 := screen;
 
-  if bpp = 16 then
-    ddsd.lpSurface := screen16
-  else
-    ddsd.lpSurface := screen32;
-
-  hres := g_pDD.CreateSurface(ddsd, g_pDDScreen, nil);
-  if hres <> DD_OK then
-    I_ErrorInitGraphics('CreateSurface');
-
-  I_SetClipper(fullscreen);
+  graphics_started := true;
 
   dpi := I_GetWindowDPI(hMainWnd);
 end;
@@ -940,29 +680,12 @@ procedure I_ChangeFullScreen(const newmode: integer);
   end;
 
 var
-  hres: HRESULT;
-  ddsd: DDSURFACEDESC2;
   i: integer;
+  changed: boolean;
 
 begin
-  if newmode in [FULLSCREEN_SHARED, FULLSCREEN_OFF] then
-  begin
-    hres := g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_NORMAL);
-    if hres <> DD_OK then
-    begin
-      I_ChangeFullScreenError(false);
-      exit;
-    end;
-  end
-  else
-  begin
-    hres := g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN);
-    if hres <> DD_OK then
-    begin
-      I_ChangeFullScreenError(true);
-      exit;
-    end;
-  end;
+  if video_resolution = nil then
+    I_Error('I_ConfigureVideoOutput() was not called: the video output is missing');
 
   WINDOWWIDTH := SCREENWIDTH;
   WINDOWHEIGHT := SCREENHEIGHT;
@@ -972,12 +695,17 @@ begin
   I_RestoreWindowPos(newmode);
 
   if newmode = FULLSCREEN_EXCLUSIVE then
-    hres := g_pDD.SetDisplayMode(WINDOWWIDTH, WINDOWHEIGHT, 32, 0, 0)
+    changed := video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT)
   else
-    hres := g_pDD.SetDisplayMode(NATIVEWIDTH, NATIVEHEIGHT, 32, 0, 0);
-  if hres <> DD_OK then
   begin
+    // the desktop resolution is the native one
+    video_resolution.Restore;
+    video_resolution_changed := false;
+    changed := true;
+  end;
 
+  if not changed then
+  begin
     i := 0;
 
     // Determine a standard screen resolution
@@ -996,83 +724,21 @@ begin
       inc(i);
     end;
 
-    hres := g_pDD.SetDisplayMode(WINDOWWIDTH, WINDOWHEIGHT, 32, 0, 0);
-    if hres <> DD_OK then
+    if not video_resolution.Change(WINDOWWIDTH, WINDOWHEIGHT) then
     begin
       I_ChangeFullScreenError(fullscreen <> FULLSCREEN_OFF);
-      // Restore original window state
-      if fullscreen = FULLSCREEN_EXCLUSIVE then
-        g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN)
-      else
-        g_pDD.SetCooperativeLevel(hMainWnd, DDSCL_NORMAL);
-      I_SetClipper(fullscreen);
       exit;
     end;
   end;
 
-{  if newmode = FULLSCREEN_EXCLUSIVE then
+  if newmode = FULLSCREEN_EXCLUSIVE then
   begin
-    I_FindWindowSize(newmode);
+    video_resolution_changed := true;
+    // the system may have moved the window when the resolution changed
     I_RestoreWindowPos(newmode);
-    g_pDD.RestoreDisplayMode;
-  end;}
-  fullscreen := newmode;
-
-  ZeroMemory(@ddsd, SizeOf(ddsd));
-  ddsd.dwSize := SizeOf(ddsd);
-  ddsd.dwFlags := DDSD_CAPS;
-  ddsd.ddsCaps.dwCaps := DDSCAPS_PRIMARYSURFACE or DDSCAPS_VIDEOMEMORY;
-  hres := g_pDD.CreateSurface(ddsd, g_pDDSPrimary, nil);
-  if hres <> DD_OK then
-  begin
-    ddsd.ddsCaps.dwCaps := DDSCAPS_PRIMARYSURFACE;
-    hres := g_pDD.CreateSurface(ddsd, g_pDDSPrimary, nil);
-    if hres <> DD_OK then
-      I_Error('I_ChangeFullScreen(): CreateSurface failed');
   end;
 
-  ZeroMemory(@ddsd, SizeOf(ddsd));
-  ZeroMemory(@ddsd.ddpfPixelFormat, SizeOf(ddsd.ddpfPixelFormat));
-
-  ddsd.ddpfPixelFormat.dwSize := SizeOf(ddsd.ddpfPixelFormat);
-  g_pDDSPrimary.GetPixelFormat(ddsd.ddpfPixelFormat);
-
-  ddsd.dwSize := SizeOf(ddsd);
-  ddsd.dwFlags := DDSD_WIDTH or DDSD_HEIGHT or DDSD_LPSURFACE or
-                  DDSD_PITCH or DDSD_PIXELFORMAT or DDSD_CAPS;
-  ddsd.ddsCaps.dwCaps := DDSCAPS_OFFSCREENPLAIN or DDSCAPS_SYSTEMMEMORY;
-
-  bpp := ddsd.ddpfPixelFormat.dwRGBBitCount;
-
-  ddsd.dwWidth := SCREENWIDTH;
-  ddsd.dwHeight := SCREENHEIGHT;
-
-  if bpp = 32 then
-  begin
-    ddsd.lPitch := 4 * SCREENWIDTH; // Display is true color
-    if screen16 <> nil then
-      memfree(pointer(screen16), SCREENWIDTH * SCREENHEIGHT * 2);
-  end
-  else if bpp = 16 then
-  begin
-    ddsd.lPitch := 2 * SCREENWIDTH;
-    if screen16 = nil then
-      screen16 := malloc(SCREENWIDTH * SCREENHEIGHT * 2);
-    I_Warning('I_ChangeFullScreen(): using 16 bit color depth desktop in non fullscreen mode reduces performance'#13#10);
-  end
-  else
-    I_Error('I_ChangeFullScreen(): invalid colordepth = %d, only 16 and 32 bit color depth allowed', [bpp]);
-
-  if bpp = 16 then
-    ddsd.lpSurface := screen16
-  else
-    ddsd.lpSurface := screen32;
-
-  hres := g_pDD.CreateSurface(ddsd, g_pDDScreen, nil);
-  if hres <> DD_OK then
-    I_Error('I_ChangeFullScreen(): CreateSurface failed');
-
-  I_SetClipper(fullscreen);
+  fullscreen := newmode;
 
   dpi := I_GetWindowDPI(hMainWnd);
 end;

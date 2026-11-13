@@ -35,7 +35,12 @@ uses
   DelphiDoom.Tests.GameHost.Fakes in 'Source\DelphiDoom.Tests.GameHost.Fakes.pas',
   DelphiDoom.Tests.GameHost.PictureLayout in 'Source\DelphiDoom.Tests.GameHost.PictureLayout.pas',
   DelphiDoom.Tests.GameHost.MessageTranslator in 'Source\DelphiDoom.Tests.GameHost.MessageTranslator.pas',
-  DelphiDoom.Tests.GameHost.VideoDeviceSelector in 'Source\DelphiDoom.Tests.GameHost.VideoDeviceSelector.pas';
+  DelphiDoom.Tests.GameHost.VideoDeviceSelector in 'Source\DelphiDoom.Tests.GameHost.VideoDeviceSelector.pas',
+  DelphiDoom.GameHost.Win.GdiBlitter in '..\Libs\GameHost\DelphiDoom.GameHost.Win.GdiBlitter.pas',
+  DelphiDoom.Engine.Video.FramePresenter.Intf in '..\Base\DelphiDoom.Engine.Video.FramePresenter.Intf.pas',
+  DelphiDoom.Engine.Video.GdiPresenter in '..\Base\DelphiDoom.Engine.Video.GdiPresenter.pas',
+  DelphiDoom.Tests.GameHost.GdiBlitter in 'Source\DelphiDoom.Tests.GameHost.GdiBlitter.pas',
+  DelphiDoom.Tests.GameHost.EngineGdiPresenter in 'Source\DelphiDoom.Tests.GameHost.EngineGdiPresenter.pas';
 
 var
   Runner: ITestRunner;

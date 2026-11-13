@@ -723,7 +723,7 @@ procedure I_Init;
 begin
   printf('I_DetectOS: Detecting operating system.'#13#10);
   I_DetectOS;
-  printf('I_InitSound: Initializing DirectSound.'#13#10);
+  printf('I_InitSound: Initializing the sound output.'#13#10);
   S_InitSoundDevice;
   printf('I_InitMusic: Initializing music.'#13#10);
   S_InitMusicDevice;

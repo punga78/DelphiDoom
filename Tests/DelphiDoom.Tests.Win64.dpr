@@ -21,8 +21,6 @@ uses
   DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
 {$ENDIF}
   d_delphi in '..\Common\d_delphi.pas',
-  DirectX in '..\Common\DirectX.pas',
-  DelphiDoom.Tests.Win64.DirectDrawLayout in 'Source\DelphiDoom.Tests.Win64.DirectDrawLayout.pas',
   DelphiDoom.Tests.Win64.CommonPointers in 'Source\DelphiDoom.Tests.Win64.CommonPointers.pas';
 
 var
