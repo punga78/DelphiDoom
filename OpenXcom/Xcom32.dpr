@@ -381,12 +381,20 @@ begin
         Say('Screenshot saved: ' + LName);
       end;
     LStart := LClock.Seconds;
-    while LWindow.Pump and not LGame.IsQuitting do
-    begin
-      LGame.RunFrame;
-      LClock.Sleep(LGame.FrameDelay);
-      if (AArguments.QuitAfter > 0) and ((LClock.Seconds - LStart) * 1000 > AArguments.QuitAfter) then
-        Break;
+    try
+      while LWindow.Pump and not LGame.IsQuitting do
+      begin
+        LGame.RunFrame;
+        LClock.Sleep(LGame.FrameDelay);
+        if (AArguments.QuitAfter > 0) and ((LClock.Seconds - LStart) * 1000 > AArguments.QuitAfter) then
+          Break;
+      end;
+    except
+      // an error in a frame: the options the player set are written all the same, and the error goes on to the window
+      LGame.SaveOptionsAfterFailure;
+      if LGame.OptionsSaveError <> '' then
+        Say('options not saved after the error: ' + LGame.OptionsSaveError, True);
+      raise;
     end;
     // Options::save at the end of Game::run: also the size of a window that was resized
     LGame.SaveOptions;

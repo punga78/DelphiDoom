@@ -20,7 +20,7 @@ type
   /// <summary>
   ///   The Mods screen of the main menu: the combo box of the master mods (the base game), the list of the other mods
   ///   that work with that master (name, arrows that move the mod up and down, whether it is on) and OK and Cancel.
-  ///   The changes are in Options.Mods: OK saves them, Cancel loads the saved ones back
+  ///   The changes are in Options.Mods: OK saves them, Cancel puts back the mods of when the screen was opened
   /// </summary>
   TXcomModListState = class(TXcomState)
   strict private
@@ -36,6 +36,8 @@ type
     FCurrentMasterId: string;
     FCurrentMasterIndex: Integer;
     FReload: Boolean;
+    /// <summary>The mods when the screen was opened: what Cancel puts back (options.cfg is not read again)</summary>
+    FOpenMods: TArray<TXcomModSetting>;
     function MakeTooltip(AInfo: TXcomModInfo): string;
     procedure MasterHover(AAction: TXcomAction);
     procedure MasterChange(AAction: TXcomAction);
@@ -84,6 +86,7 @@ var
   LMods: TArray<TXcomModSetting>;
 begin
   inherited Create(AHost);
+  FOpenMods := Copy(Host.Options.Mods);
   FMasters := TList<TXcomModInfo>.Create;
   FMods := TList<TXcomModSetting>.Create;
   FWindow := TXcomWindow.Create(Self, 320, 200, 0, 0);
@@ -473,9 +476,9 @@ end;
 procedure TXcomModListState.CancelClick(AAction: TXcomAction);
 begin
   FReload := False;
-  // Options::load(): the saved mods come back
-  if Host.OptionsStore <> nil then
-    Host.OptionsStore.Load(Host.Options, 'mods-cancel');
+  // Options::load() in OpenXcom: the saved mods come back, and so does everything else that is not written yet. Here
+  // only the mods of this screen go back
+  Host.Options.Mods := Copy(FOpenMods);
   Host.PopState;
 end;
 

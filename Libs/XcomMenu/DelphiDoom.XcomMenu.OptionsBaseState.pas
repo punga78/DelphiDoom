@@ -172,6 +172,8 @@ begin
   Recenter(LDX, LDY);
   if (Host.OptionsStore <> nil) then
     Host.OptionsStore.Save(LOptions, 'ok');
+  // what the screens changed is kept: there is nothing left for Cancel to undo
+  LOptions.EndEdit;
   Host.LoadLanguages;
   // the fonts chosen in the advanced options (not in OpenXcom): kept and laid over the fonts of the game
   LNotices := Host.ReloadFonts;
@@ -201,7 +203,10 @@ begin
   if Supports(Host.ExtraOptions, IXcomExtraChoiceOptions, LChoices) then
     LChoices.Discard;
   Host.Options.Reload := False;
-  if (Host.OptionsStore <> nil) then
+  // OpenXcom reads options.cfg again here. That throws away everything in memory that is not written yet (the size of
+  // the window, a mod, "32-bit drawing"): only what the screens changed goes back, from the copy of BeginEdit. A flow
+  // that did not make the copy falls back to reading the file
+  if not Host.Options.CancelEdit and (Host.OptionsStore <> nil) then
     Host.OptionsStore.Load(Host.Options, 'cancel');
   TXcomScreen.UpdateScale(Host.Options, Host.Options.BattlescapeScale, Host.Options.BaseXBattlescape,
     Host.Options.BaseYBattlescape, FOrigin = ooBattlescape);

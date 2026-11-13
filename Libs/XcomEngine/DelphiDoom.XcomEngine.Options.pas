@@ -45,9 +45,16 @@ type
     FValues: TDictionary<string, Integer>;
     FTexts: TDictionary<string, string>;
     FUnknown: TDictionary<string, string>;
+    /// <summary>What the options were when the screens of the options were opened (BeginEdit); nil outside of them</summary>
+    FEditNumbers: TDictionary<string, Integer>;
+    FEditTexts: TDictionary<string, string>;
+    FEditUnknown: TDictionary<string, string>;
+    FEditMods: TArray<TXcomModSetting>;
     procedure RegisterFields;
     procedure ResetRegisteredDefaults;
     class function YamlScalar(const AValue: string): string; static;
+    /// <summary>The options that the window changes by itself (its size and place): a Cancel does not take them back</summary>
+    class function IsWindowOwned(const AId: string): Boolean; static;
   public
     DisplayWidth: Integer;
     DisplayHeight: Integer;
@@ -137,6 +144,21 @@ type
     /// <summary>Options::switchDisplay: swaps the current video options with the pending ones</summary>
     procedure SwitchDisplay;
     /// <summary>
+    ///   The screens of the options are opened: Options::backupDisplay (the pending video options start equal to the
+    ///   current ones) and a copy of every option, of the unknown keys and of the mods, for CancelEdit
+    /// </summary>
+    procedure BeginEdit;
+    /// <summary>
+    ///   Cancel in the options: what the screens changed goes back to what BeginEdit copied. Unlike Options::load in
+    ///   OpenXcom it does not read the file again, so a change made outside the screens and not written yet is kept.
+    ///   The size and place of the window (displayWidth, displayHeight, windowedModePositionX/Y) are the window's own
+    ///   and are never taken back: dragging its border while a screen is open is not an edit of the screen.
+    ///   False when BeginEdit was not called (nothing is changed)
+    /// </summary>
+    function CancelEdit: Boolean;
+    /// <summary>OK in the options: what was changed is kept and the copy of BeginEdit is dropped</summary>
+    procedure EndEdit;
+    /// <summary>
     ///   Options::load: reads the "options" map of an options.cfg (the node of the file); a key that is missing
     ///   or has a bad value keeps what it has
     /// </summary>
@@ -181,6 +203,9 @@ end;
 
 destructor TXcomOptions.Destroy;
 begin
+  FEditUnknown.Free;
+  FEditTexts.Free;
+  FEditNumbers.Free;
   FUnknown.Free;
   FTexts.Free;
   FValues.Free;
@@ -263,6 +288,69 @@ begin
   NewRootWindowedMode := RootWindowedMode;
   NewWindowedModePositionX := WindowedModePositionX;
   NewWindowedModePositionY := WindowedModePositionY;
+end;
+
+class function TXcomOptions.IsWindowOwned(const AId: string): Boolean;
+begin
+  Result := (AId = 'displayWidth') or (AId = 'displayHeight') or (AId = 'windowedModePositionX') or
+    (AId = 'windowedModePositionY');
+end;
+
+procedure TXcomOptions.EndEdit;
+begin
+  FreeAndNil(FEditNumbers);
+  FreeAndNil(FEditTexts);
+  FreeAndNil(FEditUnknown);
+  FEditMods := nil;
+end;
+
+procedure TXcomOptions.BeginEdit;
+var
+  LInfo: TXcomOptionInfo;
+  LId: string;
+  LField: TXcomOptionField;
+begin
+  SyncPendingDisplay;
+  EndEdit;
+  FEditNumbers := TDictionary<string, Integer>.Create;
+  FEditTexts := TDictionary<string, string>.Create;
+  FEditUnknown := TDictionary<string, string>.Create(FUnknown);
+  for LInfo in TXcomOptionTable.All do
+    if LInfo.Kind = okString then
+      FEditTexts.AddOrSetValue(LInfo.Id, GetText(LInfo.Id))
+    else
+      FEditNumbers.AddOrSetValue(LInfo.Id, GetValue(LInfo.Id));
+  // the fields that are not in the table
+  for LId in FFields.Keys do
+  begin
+    LField := FFields[LId];
+    if LField.Storage = osString then
+      FEditTexts.AddOrSetValue(LId, GetText(LId))
+    else
+      FEditNumbers.AddOrSetValue(LId, GetValue(LId));
+  end;
+  FEditMods := Copy(Mods);
+end;
+
+function TXcomOptions.CancelEdit: Boolean;
+var
+  LPair: TPair<string, Integer>;
+  LText: TPair<string, string>;
+begin
+  Result := Assigned(FEditNumbers);
+  if not Result then
+    Exit;
+  for LPair in FEditNumbers do
+    if not IsWindowOwned(LPair.Key) then
+      SetValue(LPair.Key, LPair.Value);
+  for LText in FEditTexts do
+    SetText(LText.Key, LText.Value);
+  FUnknown.Clear;
+  for LText in FEditUnknown do
+    FUnknown.Add(LText.Key, LText.Value);
+  Mods := Copy(FEditMods);
+  EndEdit;
+  SyncPendingDisplay;
 end;
 
 procedure TXcomOptions.SwitchDisplay;

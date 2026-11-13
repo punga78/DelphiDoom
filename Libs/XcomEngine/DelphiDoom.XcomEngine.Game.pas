@@ -60,6 +60,7 @@ type
     FExtraOptions: IXcomExtraOptions;
     FFontReloader: IXcomFontReloader;
     FOptionsStore: IXcomOptionsStore;
+    FOptionsSaveError: string;
     FAudio: IXcomAudioDevice;
     FMusic: IXcomMusicPlayer;
     FModCatalog: IXcomModCatalog;
@@ -153,6 +154,14 @@ type
     ///   calls it when the loop ends
     /// </summary>
     procedure SaveOptions(const AReason: string = 'exit');
+    /// <summary>
+    ///   The loop is leaving because something raised: the options are written all the same, so what the player set is
+    ///   not lost with the error. An error of the writing itself is kept in OptionsSaveError and not raised: the error
+    ///   that is on its way out is the one the player has to see
+    /// </summary>
+    procedure SaveOptionsAfterFailure;
+    /// <summary>The message of the error of SaveOptionsAfterFailure; empty when it wrote</summary>
+    property OptionsSaveError: string read FOptionsSaveError;
     /// <summary>The milliseconds to wait after a turn: 1 while running, 100 when slowed or paused (pauseMode)</summary>
     function FrameDelay: Integer;
     /// <summary>What pauseMode made of the game when the window lost the focus or was minimized</summary>
@@ -726,12 +735,29 @@ end;
 
 procedure TXcomGame.Run;
 begin
-  while not FQuit do
-  begin
-    RunFrame;
-    TXcomTicks.Delay(FClock, FrameDelay);
+  try
+    while not FQuit do
+    begin
+      RunFrame;
+      TXcomTicks.Delay(FClock, FrameDelay);
+    end;
+  except
+    // an error in a frame ends the game, and the options still go to the file; the error goes on
+    SaveOptionsAfterFailure;
+    raise;
   end;
   SaveOptions;
+end;
+
+procedure TXcomGame.SaveOptionsAfterFailure;
+begin
+  FOptionsSaveError := '';
+  try
+    SaveOptions('exit-after-error');
+  except
+    on E: Exception do
+      FOptionsSaveError := E.ClassName + ': ' + E.Message;
+  end;
 end;
 
 procedure TXcomGame.SaveOptions(const AReason: string);

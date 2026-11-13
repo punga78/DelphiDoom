@@ -112,6 +112,8 @@ type
     [Test]
     procedure CancelRimetteQuelliSalvati;
     [Test]
+    procedure CancelNonRileggeIlFileETieneLeModificheDiFuoriDallaSchermata;
+    [Test]
     procedure UnaFrecciaSpostaIlModInGiu;
     [Test]
     procedure UnaFrecciaSpostaIlModInSu;
@@ -601,6 +603,18 @@ begin
   // the mods of the file are back: only xcom2
   Assert.AreEqual(1, Integer(Length(FWorld.Game.Options.Mods)));
   Assert.AreEqual('xcom2', FWorld.Game.Options.Mods[0].Id);
+end;
+
+procedure TTestXcomModScreen.CancelNonRileggeIlFileETieneLeModificheDiFuoriDallaSchermata;
+begin
+  // a volume changed in memory and not written yet: Cancel of the mods must not read options.cfg (musicVolume: 10)
+  FWorld.Game.Options.MusicVolume := 55;
+  Open;
+  ClickAt(60, 40 + 4);
+  ClickAt(260, 184);
+  FWorld.Wait(50);
+  Assert.AreEqual(55, FWorld.Game.Options.MusicVolume);
+  Assert.AreEqual(1, Integer(Length(FWorld.Game.Options.Mods)));
 end;
 
 procedure TTestXcomModScreen.UnaFrecciaSpostaIlModInGiu;

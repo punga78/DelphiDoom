@@ -106,8 +106,9 @@ end;
 procedure TXcomMainMenuState.OptionsClick(AAction: TXcomAction);
 begin
   // Options::backupDisplay: the new display values (the ones that OK swaps with the current ones) start from the
-  // current ones. Without it a video option that is not touched takes the value of the previous change back
-  Host.Options.SyncPendingDisplay;
+  // current ones (without it a video option that is not touched takes the value of the previous change back), and
+  // the options are copied so that Cancel undoes what the screens change and nothing else
+  Host.Options.BeginEdit;
   Host.PushState(TXcomOptionsVideoState.Create(Host, ooMenu, TXcomMenuOptionsNavigator.Create(FVersionText)));
 end;
 

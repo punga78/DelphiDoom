@@ -132,8 +132,9 @@ begin
   if FNavigator = nil then
     Exit;
   // Options::backupDisplay: the new display values (the ones that OK swaps with the current ones) start from the
-  // current ones. Without it a video option that is not touched takes the value of the previous change back
-  Host.Options.SyncPendingDisplay;
+  // current ones (without it a video option that is not touched takes the value of the previous change back), and
+  // the options are copied so that Cancel undoes what the screens change and nothing else
+  Host.Options.BeginEdit;
   // OptionsGeoscapeState from the geoscape, OptionsBattlescapeState from a battle, OptionsVideoState otherwise
   case FOrigin of
     ooGeoscape:
