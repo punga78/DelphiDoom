@@ -98,6 +98,7 @@ uses
   DelphiDoom.Tests.Models.StaticSupport in 'Source\DelphiDoom.Tests.Models.StaticSupport.pas',
   DelphiDoom.Tests.Models.StaticLwo in 'Source\DelphiDoom.Tests.Models.StaticLwo.pas',
   DelphiDoom.Tests.Models.StaticAse in 'Source\DelphiDoom.Tests.Models.StaticAse.pas',
+  DelphiDoom.Tests.Models.StaticParity in 'Source\DelphiDoom.Tests.Models.StaticParity.pas',
   DelphiDoom.Tests.Models.Md5Golden in 'Source\DelphiDoom.Tests.Models.Md5Golden.pas',
   DelphiDoom.Tests.Models.Md5Parity in 'Source\DelphiDoom.Tests.Models.Md5Parity.pas',
   DelphiDoom.Tests.Models.Md5Skeleton in 'Source\DelphiDoom.Tests.Models.Md5Skeleton.pas',

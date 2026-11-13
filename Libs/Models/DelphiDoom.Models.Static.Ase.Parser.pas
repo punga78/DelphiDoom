@@ -364,16 +364,13 @@ begin
   FMesh.ColorsParsed := True;
   if AToken = '*MESH_VERTCOL' then
   begin
-    GetToken(False);
-    GetToken(False);
-    GetToken(False);
-    GetToken(False);
+    GetToken(False);    // skip number
     if FCurrentVertex >= Length(FMesh.CVertexes) then
       Fail(Format(SStaticAseOutOfRange, ['ase.currentVertex', FCurrentVertex, Length(FMesh.CVertexes)]));
-    // the original converts the name of the key (atof( token ) instead of ase.token): zero
-    FMesh.CVertexes[FCurrentVertex].X := TStaticNumbers.Atof(AToken);
-    FMesh.CVertexes[FCurrentVertex].Y := TStaticNumbers.Atof(AToken);
-    FMesh.CVertexes[FCurrentVertex].Z := TStaticNumbers.Atof(AToken);
+    // atof( token ) in the original reads ase.token, the token that was read last
+    FMesh.CVertexes[FCurrentVertex].X := NextFloat;
+    FMesh.CVertexes[FCurrentVertex].Y := NextFloat;
+    FMesh.CVertexes[FCurrentVertex].Z := NextFloat;
     Inc(FCurrentVertex);
   end
   else

@@ -83,6 +83,24 @@ function TArrayEquals(const ALeft, ARight: TBytes): Boolean;
 /// <summary>The cube as a LWO2 file: one surface, texture coordinates, flat or smoothed normals</summary>
 function BuildCubeLwo(const ASmooth: Single; const AWithColors: Boolean = False): TBytes;
 
+/// <summary>
+///   Five points and three triangles with two pairs of points that are within the welding
+///   tolerances (the point 3 is near the point 1, the uv too)
+/// </summary>
+function BuildWeldLwo: TBytes;
+
+/// <summary>Four triangles on three surfaces, two of which have the same name without case</summary>
+function BuildMergeLwo: TBytes;
+
+/// <summary>The cube smoothed at 1.6 radians with smoothing groups that alternate by polygon</summary>
+function BuildGroupsLwo: TBytes;
+
+/// <summary>Two copies of the cube object with the same material (merged by default)</summary>
+function BuildTwoObjectsAse: AnsiString;
+
+/// <summary>A triangle with vertex colours (CVERTLIST and CFACELIST)</summary>
+function BuildColorsAse: AnsiString;
+
 /// <summary>The cube as an ASE text: a material with a texture matrix, texture vertexes, normals</summary>
 function BuildCubeAse(const AWithNormals: Boolean; const AWithMaterial: Boolean = True): AnsiString;
 
@@ -343,6 +361,94 @@ begin
   finally
     LBuilder.Free;
   end;
+end;
+
+function BuildWeldLwo: TBytes;
+var
+  LBuilder: TLwoFileBuilder;
+begin
+  LBuilder := TLwoFileBuilder.Create;
+  try
+    LBuilder.AddTags(['textures/weld']);
+    LBuilder.AddLayer(0, 'weld');
+    LBuilder.AddPoints([0, 0, 0,  1, 0, 0,  0, 1, 0,  1.004, 0.003, 0,  1, 1, 0]);
+    LBuilder.AddTexCoords('uv', [0, 0,  1, 0,  0, 1,  1.0005, 0.0004,  1, 1]);
+    LBuilder.AddFaces([Tri(0, 1, 2), Tri(3, 4, 2), Tri(1, 3, 4)]);
+    LBuilder.AddSurfaceTags([0, 0, 0]);
+    LBuilder.AddSurface('textures/weld', 0.2, 0.4, 0.6, 0);
+    Result := LBuilder.Build;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+function BuildMergeLwo: TBytes;
+var
+  LBuilder: TLwoFileBuilder;
+begin
+  LBuilder := TLwoFileBuilder.Create;
+  try
+    LBuilder.AddTags(['tex/a', 'TEX/A', 'tex/b']);
+    LBuilder.AddLayer(0, 'merge');
+    LBuilder.AddPoints([0, 0, 0,  1, 0, 0,  0, 1, 0,  1, 1, 0]);
+    LBuilder.AddTexCoords('uv', [0, 0,  1, 0,  0, 1,  1, 1]);
+    LBuilder.AddFaces([Tri(0, 1, 2), Tri(1, 3, 2), Tri(0, 2, 1), Tri(1, 2, 3)]);
+    LBuilder.AddSurfaceTags([0, 1, 2, 0]);
+    LBuilder.AddSurface('tex/a', 1, 0, 0, 0);
+    LBuilder.AddSurface('TEX/A', 0, 1, 0, 0);
+    LBuilder.AddSurface('tex/b', 0, 0, 1, 0);
+    Result := LBuilder.Build;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+function BuildGroupsLwo: TBytes;
+var
+  LBuilder: TLwoFileBuilder;
+  LTags, LGroups: array[0..11] of Integer;
+  LIndex: Integer;
+begin
+  LBuilder := TLwoFileBuilder.Create;
+  try
+    LBuilder.AddTags(['textures/groups']);
+    LBuilder.AddLayer(0, 'cube');
+    LBuilder.AddPoints(CUBE_POINTS);
+    LBuilder.AddTexCoords('uv', CUBE_TEXCOORDS);
+    LBuilder.AddFaces(CUBE_TRIANGLES);
+    for LIndex := 0 to 11 do
+    begin
+      LTags[LIndex] := 0;
+      LGroups[LIndex] := LIndex mod 2;
+    end;
+    LBuilder.AddSurfaceTags(LTags);
+    LBuilder.AddSmoothingGroups(LGroups);
+    LBuilder.AddSurface('textures/groups', 1, 1, 1, 1.6);
+    Result := LBuilder.Build;
+  finally
+    LBuilder.Free;
+  end;
+end;
+
+function BuildTwoObjectsAse: AnsiString;
+var
+  LText: AnsiString;
+begin
+  LText := BuildCubeAse(True);
+  Result := LText + Copy(LText, Pos(AnsiString('*GEOMOBJECT'), LText), MaxInt);
+end;
+
+function BuildColorsAse: AnsiString;
+begin
+  Result := '*MATERIAL_LIST {'#10#9'*MATERIAL 0 {'#10#9#9'*MAP_DIFFUSE {'#10#9#9#9'*BITMAP "x.tga"'#10#9#9'}'#10#9'}'#10'}'#10 +
+    '*GEOMOBJECT {'#10'*NODE_TM {'#10'*TM_ROW0 1 0 0'#10'*TM_ROW1 0 1 0'#10'*TM_ROW2 0 0 1'#10'*TM_ROW3 0 0 0'#10'}'#10 +
+    '*MESH {'#10'*MESH_NUMVERTEX 3'#10'*MESH_NUMFACES 1'#10'*MESH_VERTEX_LIST {'#10'*MESH_VERTEX 0 0 0 0'#10 +
+    '*MESH_VERTEX 1 1 0 0'#10'*MESH_VERTEX 2 0 1 0'#10'}'#10'*MESH_FACE_LIST {'#10 +
+    '*MESH_FACE 0: A: 0 B: 1 C: 2 AB: 1 BC: 1 CA: 1'#10'}'#10'*MESH_NUMTVFACES 1'#10'*MESH_NUMTVERTEX 3'#10 +
+    '*MESH_TVERTLIST {'#10'*MESH_TVERT 0 0 0 0'#10'*MESH_TVERT 1 1 0 0'#10'*MESH_TVERT 2 0 1 0'#10'}'#10 +
+    '*MESH_TFACELIST {'#10'*MESH_TFACE 0 0 1 2'#10'}'#10'*MESH_NUMCVERTEX 3'#10'*MESH_CVERTLIST {'#10 +
+    '*MESH_VERTCOL 0 1.0 0.0 0.0'#10'*MESH_VERTCOL 1 0.0 1.0 0.0'#10'*MESH_VERTCOL 2 0.0 0.0 1.0'#10'}'#10 +
+    '*MESH_NUMCVFACES 1'#10'*MESH_CFACELIST {'#10'*MESH_CFACE 0 0 1 2'#10'}'#10'}'#10'*MATERIAL_REF 0'#10'}'#10;
 end;
 
 function BuildCubeAse(const AWithNormals: Boolean; const AWithMaterial: Boolean): AnsiString;

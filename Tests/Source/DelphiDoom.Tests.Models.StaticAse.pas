@@ -57,7 +57,7 @@ type
     [Test]
     procedure DovrebbeLeggereIFotogrammiDiUnaAnimazione;
     [Test]
-    procedure DovrebbeLeggereIColoriDeiVertexConIlDifettoDelCpp;
+    procedure DovrebbeLeggereIColoriDeiVertex;
     [Test]
     procedure DovrebbeRifiutareUnTokenSconosciutoNellaListaDeiVertexConLaRiga;
     [Test]
@@ -312,20 +312,21 @@ begin
   Assert.AreEqual<Single>(0, LModel.Objects[0].Mesh.Vertexes[0].Y, 'the frames do not touch the mesh');
 end;
 
-procedure TTestStaticAse.DovrebbeLeggereIColoriDeiVertexConIlDifettoDelCpp;
+procedure TTestStaticAse.DovrebbeLeggereIColoriDeiVertex;
 var
   LModel: IStaticModel;
 begin
-  // the original reads the colour from the name of the key: every colour is (0, 0, 0)
+  // the colour of the vertex 0 is (1, 0.5, 0.25) * 255 truncated; the alpha is not in the file
   LModel := Load(Wrap('*MESH_NUMVERTEX 3'#10'*MESH_NUMFACES 1'#10 +
     '*MESH_VERTEX_LIST {'#10'*MESH_VERTEX 0 0 0 0'#10'*MESH_VERTEX 1 1 0 0'#10'*MESH_VERTEX 2 0 1 0'#10'}'#10 +
     '*MESH_FACE_LIST {'#10'*MESH_FACE 0: A: 0 B: 1 C: 2 AB: 1'#10'}'#10 +
     '*MESH_NUMTVFACES 1'#10'*MESH_NUMCVERTEX 3'#10'*MESH_CVERTLIST {'#10'*MESH_VERTCOL 0 1.0 0.5 0.25'#10 +
     '*MESH_VERTCOL 1 1 1 1'#10'*MESH_VERTCOL 2 1 1 1'#10'}'#10'*MESH_NUMCVFACES 1'#10 +
     '*MESH_CFACELIST {'#10'*MESH_CFACE 0 0 1 2'#10'}'#10));
-  Assert.AreEqual<Integer>(0, LModel.Surfaces[0].Triangles.Verts[0].Color.R);
-  Assert.AreEqual<Integer>(0, LModel.Surfaces[0].Triangles.Verts[0].Color.G);
-  Assert.AreEqual<Integer>(0, LModel.Surfaces[0].Triangles.Verts[0].Color.B);
+  Assert.AreEqual<Integer>(255, LModel.Surfaces[0].Triangles.Verts[0].Color.R);
+  Assert.AreEqual<Integer>(127, LModel.Surfaces[0].Triangles.Verts[0].Color.G);
+  Assert.AreEqual<Integer>(63, LModel.Surfaces[0].Triangles.Verts[0].Color.B);
+  Assert.AreEqual<Integer>(0, LModel.Surfaces[0].Triangles.Verts[0].Color.A);
 end;
 
 procedure TTestStaticAse.DovrebbeRifiutareUnTokenSconosciutoNellaListaDeiVertexConLaRiga;
