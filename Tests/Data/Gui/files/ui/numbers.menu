@@ -1,0 +1,18 @@
+menuDef {
+	name "numbers"
+	rect 0x10 010 .5 100
+	border 0x1
+	borderSize -15.5
+	backcolor 1 - 2 3 4
+	forecolor 0.1 0.2 0.3 0.4
+	itemDef { name "n1" rect 1 2 3 4 style -3 textscale 1.5 textalignx -0.25 textaligny 12. }
+}
+menuDef {
+	name "numbers_after"
+	rect 1 2 3 4
+	fadeClamp 3.14159265358979
+	fadeAmount 16777217
+	fadeCycle 2147483647
+	border 4294967295
+	itemDef { name "n2" style 99999999999 textscale 0.1 textalignx 1.0000001 }
+}

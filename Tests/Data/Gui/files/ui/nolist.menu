@@ -1,0 +1,8 @@
+menuDef {
+	name "nolist"
+	itemDef {
+		name "button"
+		type 1
+		columns 1 1 1 1
+	}
+}

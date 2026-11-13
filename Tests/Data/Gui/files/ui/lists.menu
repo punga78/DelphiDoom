@@ -1,0 +1,32 @@
+// listbox items and the traps of the parser
+menuDef {
+	name "lists"
+	rect 0 0 640 480
+	fullscreen 1
+	visible 1
+	itemDef {
+		name "maplist"
+		type 6
+		rect 10 10 200 100
+		feeder 4
+		elementwidth 120
+		elementheight 20
+		elementtype 1
+		columns 3  2 40 10  50 60 20  120 10 5
+		notselectable
+		doubleclick { play "sound/misc/dbl.wav" ; uiScript LoadMap }
+		border 1
+	}
+	itemDef {
+		name "toomanycolumns"
+		type 6
+		columns 20 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5 6 6 6 7 7 7 8 8 8 9 9 9 10 10 10 11 11 11 12 12 12 13 13 13 14 14 14 15 15 15 16 16 16 17 17 17 18 18 18 19 19 19 20 20 20
+	}
+	itemDef {
+		name "unknownkeyword"
+		bogus 3
+		rect 1 2 3 4
+	}
+	menuDef_ignored
+	bogusmenu 1
+}

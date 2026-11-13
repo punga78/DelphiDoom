@@ -21,3 +21,4 @@ Tests/Data/MapFile/** -text
 Tests/Data/Cinematic/** -text
 Tests/Data/IdImages/** -text
 Tests/Data/Console/IdTech4/** -text
+Tests/Data/Gui/** -text

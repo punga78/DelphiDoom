@@ -1,0 +1,18 @@
+// assets of the test menus
+assetGlobalDef {
+	font "fonts/test" 16
+	smallFont "fonts/test" 24
+	bigFont "fonts/test" 16
+	gradientbar "ui/assets/gradient.tga"
+	menuEnterSound "sound/misc/enter.wav"
+	menuExitSound "sound/misc/exit.wav"
+	itemFocusSound "sound/misc/focus.wav"
+	menuBuzzSound "sound/misc/buzz.wav"
+	cursor "ui/assets/cursor.tga"
+	fadeClamp 0.75
+	fadeCycle 5
+	fadeAmount 0.25
+	shadowX 2
+	shadowY -3
+	shadowColor 0 0 0 0.5
+}

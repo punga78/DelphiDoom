@@ -1,0 +1,5 @@
+menuDef {
+	name "eof_inside"
+	itemDef {
+		name "y"
+		text "never closed"

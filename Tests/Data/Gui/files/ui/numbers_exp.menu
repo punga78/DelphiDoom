@@ -1,0 +1,4 @@
+menuDef {
+	name "exponent"
+	rect 1 2 1e2 4
+}

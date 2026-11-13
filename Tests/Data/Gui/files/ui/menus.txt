@@ -1,0 +1,12 @@
+// the list of menu files, as ui/menus.txt of a mod
+{
+	loadmenu { "ui/assets.menu" }
+	loadmenu { "ui/every.menu" }
+	loadmenu { "ui/lists.menu" }
+	loadmenu { "ui/scripts.menu" }
+	loadmenu { "ui/strings.menu" }
+	loadmenu { "ui/numbers.menu" }
+	loadmenu { "ui/include_loop.menu" "ui/numbers.menu" }
+	somethingelse { "ui/never.menu" }
+	loadmenu { "ui/after_something.menu" }
+}

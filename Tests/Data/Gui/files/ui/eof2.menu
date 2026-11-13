@@ -1,0 +1,3 @@
+menuDef {
+	name "eof_in_menu"
+	rect 1 2 3 4

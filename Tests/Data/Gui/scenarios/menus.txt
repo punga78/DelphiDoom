@@ -1,0 +1,6 @@
+# every keyword, lists, scripts: files read one by one with UI_ParseMenu
+menu ui/assets.menu
+menu ui/every.menu
+menu ui/lists.menu
+menu ui/scripts.menu
+dump

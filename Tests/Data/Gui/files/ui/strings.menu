@@ -1,0 +1,15 @@
+menuDef {
+	name "str1" "str2"
+	font "fonts\ttab"
+	soundLoop ""
+	cinematic "a" "b" "c"
+	onOpen { "quoted" word; semi ; /* c */ last // tail
+	}
+	itemDef { name "t" text "x" cvar "ui_x" cvarStrList { a b , c d } }
+}
+menuDef {
+	name "after_strings"
+	itemDef { name "u" type 12 cvarStrList { a b ; c d } cvarFloatList { x 1 } }
+	itemDef { name "v" type 6 elementtype 3 }
+	itemDef { name "w" type 4 text "A" "B" }
+}

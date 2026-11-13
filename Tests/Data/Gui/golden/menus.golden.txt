@@ -1,0 +1,220 @@
+> menu ui/assets.menu
+log Parsing menu file:ui/assets.menu
+log RE_RegisterFont: FreeType code not available
+reg shader 97 "ui/assets/gradient.tga"
+reg sound 1 "sound/misc/enter.wav" 0
+reg sound 2 "sound/misc/exit.wav" 0
+reg sound 3 "sound/misc/focus.wav" 0
+reg sound 4 "sound/misc/buzz.wav" 0
+reg shader 98 "ui/assets/cursor.tga"
+> menu ui/every.menu
+log Parsing menu file:ui/every.menu
+log ^1ERROR: ui/every.menu, line 4: unknown menu keyword 24
+reg shader 99 "gfx/menu_back"
+reg shader 100 "gfx/title_back"
+reg sound 5 "sound/misc/title.wav" 0
+reg model 1 "models/players/sarge/body.md3"
+reg shader 101 "gfx/shader"
+> menu ui/lists.menu
+log Parsing menu file:ui/lists.menu
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 17
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 17
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 17
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 18
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 18
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 18
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 19
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 19
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 19
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 20
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 20
+log ^1ERROR: ui/lists.menu, line 23: unknown menu item keyword 20
+log ^1ERROR: ui/lists.menu, line 27: unknown menu item keyword bogus
+log ^1ERROR: ui/lists.menu, line 27: unknown menu item keyword 3
+log ^1ERROR: ui/lists.menu, line 30: unknown menu keyword menuDef_ignored
+log ^1ERROR: ui/lists.menu, line 31: unknown menu keyword bogusmenu
+log ^1ERROR: ui/lists.menu, line 31: unknown menu keyword 1
+> menu ui/scripts.menu
+log Parsing menu file:ui/scripts.menu
+> dump
+menus 3
+menu 0
+ window name="every" group="" cinematicName="intro.roq" cinematic=-1 style=1 border=1 ownerDraw=3 ownerDrawFlags=10 borderSize=40200000 flags=2228740
+     rect=41200000,41a00000,43a00000,43480000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f000000,3e800000,3e000000 backColor=3dcccccd,3e4ccccd,3e99999a,3ecccccd borderColor=3dcccccd,3e4ccccd,3e99999a,3f800000 outlineColor=00000000,00000000,3f800000,3f800000 background=99
+  font="fonts/other" fullScreen=0 itemCount=9 fontIndex=0 cursorItem=-1 fadeCycle=2 fadeClamp=3f000000 fadeAmount=3e000000
+  onOpen="\"setcolor\" \"forecolor\" 1 1 1 1 ; \"uiScript\" \"StartGame\" \"easy\" " onClose="\"hide\" \"intro\" " onESC="\"close\" \"every\" " soundName="sound/music/loop.wav" focusColor=3f800000,3f800000,00000000,3f800000 disableColor=3f000000,3f000000,3f000000,3f800000
+  item 0
+   window name="title" group="heads" cinematicName="title.roq" cinematic=-1 style=3 border=2 ownerDraw=0 ownerDrawFlags=4 borderSize=3fc00000 flags=787988
+     rect=41980000,41f00000,40f00000,41000000 rectClient=40a00000,40c00000,40f00000,41000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,3f000000 borderColor=3f800000,00000000,00000000,3f800000 outlineColor=00000000,3f800000,00000000,3f800000 background=100
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=1 textalignment=2 textalignx=c0800000 textaligny=41400000 textscale=3ecccccd textStyle=3 asset=0 focusSound=5 special=40400000 cursorPos=0 cvarFlags=1
+    text="Test \"quoted\" title" cvar="ui_name" cvarTest="ui_mode" enableCvar="a ; b "
+    mouseEnterText="\"play\" \"sound/misc/a.wav\" " mouseExitText="\"play\" \"sound/misc/b.wav\" " mouseEnter="\"fadein\" \"extra\" " mouseExit="\"fadeout\" \"extra\" " action="\"exec\" \"map q3dm1\" ; \"close\" \"every\" ; \"open\" \"main\" " onFocus="\"show\" \"extra\" " leaveFocus="\"hide\" \"extra\" "
+    numColors=0
+   editfield minVal=bf800000 maxVal=bf800000 defVal=bf800000 range=00000000 maxChars=20 maxPaintChars=10 paintOffset=0
+  item 1
+   window name="edit" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41780000,41d40000,42800000,42000000 rectClient=40400000,40800000,42800000,42000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=4 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="ui_speed" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   editfield minVal=bf800000 maxVal=c1240000 defVal=3fc00000 range=00000000 maxChars=12 maxPaintChars=8 paintOffset=0
+  item 2
+   window name="negatives" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41380000,41a00000,c0400000,c0800000 rectClient=bf800000,c0200000,c0400000,c0800000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=bf000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+  item 3
+   window name="slider" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=10 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="r_gamma" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   editfield minVal=3f000000 maxVal=40400000 defVal=3f800000 range=00000000 maxChars=0 maxPaintChars=0 paintOffset=0
+  item 4
+   window name="owner" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=7 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,41200000,41200000 rectClient=00000000,00000000,41200000,41200000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=8 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=40800000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+  item 5
+   window name="multi" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=12 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   multi count=2 strDef=1
+   entry 0 cvar="Easy" str="0" value=00000000
+   entry 1 cvar="Hard" str="1" value=00000000
+  item 6
+   window name="multif" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=12 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   multi count=2 strDef=0
+   entry 0 cvar="Low" str="" value=3f800000
+   entry 1 cvar="High" str="" value=40200000
+  item 7
+   window name="model" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=7 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=101 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   model o0=3f800000 o1=c0000000 o2=40600000 fov_x=42200000 fov_y=424a0000 rotationSpeed=8
+  item 8
+   window name="colors" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41480000,41b40000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=8
+    text="" cvar="" cvarTest="" enableCvar="w "
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=2
+   colorRange 0 low=00000000 high=41200000 color=3f800000,00000000,00000000,3f800000
+   colorRange 1 low=41300000 high=41a00000 color=00000000,3f800000,00000000,3f800000
+menu 1
+ window name="lists" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=4
+     rect=00000000,00000000,44200000,43f00000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+  font="" fullScreen=1 itemCount=3 fontIndex=0 cursorItem=-1 fadeCycle=5 fadeClamp=3f400000 fadeAmount=3e800000
+  onOpen="" onClose="" onESC="" soundName="" focusColor=00000000,00000000,00000000,00000000 disableColor=00000000,00000000,00000000,00000000
+  item 0
+   window name="maplist" group="" cinematicName="" cinematic=-1 style=0 border=1 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=41300000,41300000,43480000,42c80000 rectClient=41200000,41200000,43480000,42c80000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=6 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=40800000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   listbox startPos=0 endPos=0 drawPadding=0 cursorPos=0 elementWidth=42f00000 elementHeight=41a00000 elementStyle=1 numColumns=3 doubleClick="\"play\" \"sound/misc/dbl.wav\" ; \"uiScript\" \"LoadMap\" " notselectable=1
+   column 0 pos=2 width=40 maxChars=10
+   column 1 pos=50 width=60 maxChars=20
+   column 2 pos=120 width=10 maxChars=5
+  item 1
+   window name="toomanycolumns" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=00000000,00000000,00000000,00000000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=6 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+   listbox startPos=0 endPos=0 drawPadding=0 cursorPos=0 elementWidth=00000000 elementHeight=00000000 elementStyle=0 numColumns=16 doubleClick="" notselectable=0
+   column 0 pos=1 width=1 maxChars=1
+   column 1 pos=2 width=2 maxChars=2
+   column 2 pos=3 width=3 maxChars=3
+   column 3 pos=4 width=4 maxChars=4
+   column 4 pos=5 width=5 maxChars=5
+   column 5 pos=6 width=6 maxChars=6
+   column 6 pos=7 width=7 maxChars=7
+   column 7 pos=8 width=8 maxChars=8
+   column 8 pos=9 width=9 maxChars=9
+   column 9 pos=10 width=10 maxChars=10
+   column 10 pos=11 width=11 maxChars=11
+   column 11 pos=12 width=12 maxChars=12
+   column 12 pos=13 width=13 maxChars=13
+   column 13 pos=14 width=14 maxChars=14
+   column 14 pos=15 width=15 maxChars=15
+   column 15 pos=16 width=16 maxChars=16
+  item 2
+   window name="unknownkeyword" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=0
+     rect=3f800000,40000000,40400000,40800000 rectClient=3f800000,40000000,40400000,40800000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+menu 2
+ window name="scripts" group="" cinematicName="" cinematic=-1 style=0 border=1 ownerDraw=0 ownerDrawFlags=0 borderSize=40800000 flags=4
+     rect=42c80000,42480000,43c80000,43960000 rectClient=00000000,00000000,00000000,00000000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+  font="" fullScreen=0 itemCount=4 fontIndex=0 cursorItem=-1 fadeCycle=5 fadeClamp=3f400000 fadeAmount=3e800000
+  onOpen="" onClose="" onESC="" soundName="" focusColor=3f800000,3f800000,00000000,3f800000 disableColor=00000000,00000000,00000000,00000000
+  item 0
+   window name="a" group="g1" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=4
+     rect=42e40000,42800000,42480000,41a00000 rectClient=41200000,41200000,42480000,41a00000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="\"setcolor\" \"backcolor\" 1 0 0 1 " leaveFocus="\"setcolor\" \"bordercolor\" 0 0 1 1 "
+    numColors=0
+  item 1
+   window name="b" group="g1" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=512
+     rect=42f80000,42a80000,42480000,41a00000 rectClient=41a00000,41f00000,42480000,41a00000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f000000,3f000000,3f000000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+  item 2
+   window name="c" group="g2" cinematicName="c.roq" cinematic=-1 style=0 border=1 ownerDraw=0 ownerDrawFlags=0 borderSize=40400000 flags=0
+     rect=43090000,42d60000,42480000,41a00000 rectClient=41f00000,42480000,42480000,41a00000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+  item 3
+   window name="d" group="" cinematicName="" cinematic=-1 style=0 border=0 ownerDraw=0 ownerDrawFlags=0 borderSize=3f800000 flags=16
+     rect=43100000,42f80000,42480000,41a00000 rectClient=42200000,428c0000,42480000,41a00000 rectEffects=00000000,00000000,00000000,00000000 rectEffects2=00000000,00000000,00000000,00000000 offsetTime=0 nextTime=0
+     foreColor=3f800000,3f800000,3f800000,3f800000 backColor=00000000,00000000,00000000,00000000 borderColor=00000000,00000000,00000000,00000000 outlineColor=00000000,00000000,00000000,00000000 background=0
+    textRect=00000000,00000000,00000000,00000000 type=0 alignment=0 textalignment=0 textalignx=00000000 textaligny=00000000 textscale=3f0ccccd textStyle=0 asset=0 focusSound=0 special=00000000 cursorPos=0 cvarFlags=0
+    text="" cvar="" cvarTest="" enableCvar=""
+    mouseEnterText="" mouseExitText="" mouseEnter="" mouseExit="" action="" onFocus="" leaveFocus=""
+    numColors=0
+assets fadeClamp=3f400000 fadeCycle=5 fadeAmount=3e800000 shadowX=40000000 shadowY=c0400000 shadowColor=00000000,00000000,00000000,3f000000 shadowFadeClamp=3f000000 cursorStr="ui/assets/cursor.tga" cursor=98 gradientBar=97 menuEnterSound=1 menuExitSound=2 menuBuzzSound=4 itemFocusSound=3 fontRegistered=1

@@ -1,0 +1,20 @@
+#include "ui/test_defs.h"
+#ifdef WIDE
+menuDef {
+	name "ifdef_menu"
+	rect 0 0 WIDE TALL
+	BOX(WIDE, TALL)
+}
+#else
+menuDef { name "wrong" }
+#endif
+#ifndef WIDE
+menuDef { name "wrong2" }
+#endif
+#define LATER 77
+menuDef {
+	name "later"
+	borderSize LATER
+	text "ignored"
+	rect STYLE_FILLED OWNER_ONE 1.0 FEEDER_MAPS
+}

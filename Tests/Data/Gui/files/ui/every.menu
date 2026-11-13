@@ -1,0 +1,131 @@
+#include "ui/test_defs.h"
+// every keyword of menuDef and of itemDef
+menuDef {
+	name "every"
+	font "fonts/other" 24
+	fullscreen 0
+	rect 10 20 HALFWIDE 200
+	style 1
+	visible 1
+	onOpen { setcolor forecolor 1 1 1 1 ; uiScript StartGame "easy" }
+	onClose { hide intro }
+	onESC { close every }
+	border 1
+	borderSize 2.5
+	backcolor 0.1 0.2 0.3 0.4
+	forecolor 1 0.5 0.25 0.125
+	bordercolor MYCOLOR
+	focuscolor 1 1 0 1
+	disablecolor 0.5 0.5 0.5 1
+	outlinecolor 0 0 1 1
+	background "gfx/menu_back"
+	ownerdraw 3
+	ownerdrawFlag 2
+	ownerdrawFlag 8
+	outOfBoundsClick
+	soundLoop "sound/music/loop.wav"
+	cinematic "intro.roq"
+	popup
+	fadeClamp 0.5
+	fadeCycle 2
+	fadeAmount 0.125
+
+	itemDef {
+		name "title"
+		text "Test \"quoted\" title"
+		group "heads"
+		rect 5 6 7.5 8
+		style 3
+		type 0
+		decoration
+		wrapped
+		autowrapped
+		horizontalscroll
+		visible 1
+		border 2
+		bordersize 1.5
+		align 1
+		textalign 2
+		textalignx -4
+		textaligny 12
+		textscale 0.4
+		textstyle 3
+		backcolor 0 0 0 0.5
+		forecolor 1 1 1 1
+		bordercolor 1 0 0 1
+		outlinecolor 0 1 0 1
+		background "gfx/title_back"
+		cinematic "title.roq"
+		onFocus { show extra }
+		leaveFocus { hide extra }
+		mouseEnter { fadein extra }
+		mouseExit { fadeout extra }
+		mouseEnterText { play "sound/misc/a.wav" }
+		mouseExitText { play "sound/misc/b.wav" }
+		action { exec "map q3dm1" ; close every ; open main }
+		special 3
+		cvarTest "ui_mode"
+		enableCvar { "a" ; "b" }
+		focusSound "sound/misc/title.wav"
+		cvar "ui_name"
+		maxChars 20
+		maxPaintChars 10
+		ownerdrawFlag 4
+	}
+	itemDef {
+		name "edit"
+		type 4
+		rect 0 0 100 20
+		BOX(3, 4)
+		cvarFloat "ui_speed" 1.5 -1 -10.25
+		maxChars 12
+		maxPaintChars 8
+	}
+	itemDef {
+		name "negatives"
+		rect -1 -2.5 -3 -4
+		textalignx -0.5
+		visible 0
+	}
+	itemDef {
+		name "slider"
+		type 10
+		cvarFloat "r_gamma" 1 0.5 3
+	}
+	itemDef {
+		name "owner"
+		ownerdraw OWNER_ONE
+		rect 0 0 10 10
+		special FEEDER_MAPS
+	}
+	itemDef {
+		name "multi"
+		type 12
+		cvarStrList { "Easy", "0", "Hard", "1" ; "Nightmare" "2" }
+	}
+	itemDef {
+		name "multif"
+		type 12
+		cvarFloatList { "Low" 1 "High" 2.5 }
+	}
+	itemDef {
+		name "model"
+		type 7
+		asset_model "models/players/sarge/body.md3"
+		model_origin 1 -2 3.5
+		model_fovx 40
+		model_fovy 50.5
+		model_rotation 8
+		model_angle 90
+		asset_shader "gfx/shader"
+	}
+	itemDef {
+		name "colors"
+		addColorRange 0 10 1 0 0 1
+		addColorRange 11 20 0 1 0 1
+		enableCvar { "x" }
+		disableCvar { "y" }
+		showCvar { "z" }
+		hideCvar { "w" }
+	}
+}

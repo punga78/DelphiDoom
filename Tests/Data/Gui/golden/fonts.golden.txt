@@ -1,0 +1,58 @@
+> font 16
+font result name="fonts/fontImage_16.dat" glyphScale=3f400000 glyphs=b2b114e3
+ glyph 0 height=3 top=126 bottom=13 pitch=64 xSkip=167 imageWidth=-14 imageHeight=49 s=3ef14120 t=3f79a027 s2=3ee92a30 t2=3d90624e glyph=1 shaderName=""
+ glyph 32 height=155 top=118 bottom=5 pitch=24 xSkip=111 imageWidth=146 imageHeight=137 s=3db5dcc6 t=3e998c7e s2=3f319ce0 t2=3cd288ce glyph=2 shaderName="gfx/f16_32"
+ glyph 65 height=16 top=-1 bottom=146 pitch=113 xSkip=-12 imageWidth=3 imageHeight=158 s=3f6e9e1b t=3dd5cfab s2=3ea816f0 t2=3edbda51 glyph=35 shaderName="gfx/f16_65"
+ glyph 200 height=155 top=94 bottom=93 pitch=-8 xSkip=15 imageWidth=82 imageHeight=73 s=3f7212d7 t=3f222d0e s2=3ef020c5 t2=3f00d845 glyph=1 shaderName=""
+ glyph 254 height=157 top=120 bottom=119 pitch=2 xSkip=169 imageWidth=44 imageHeight=-13 s=3df2e48f t=3f5f0d84 s2=3f7c01a3 t2=3f749ba6 glyph=1 shaderName=""
+ glyph 255 height=146 top=97 bottom=156 pitch=3 xSkip=-18 imageWidth=53 imageHeight=144 s=3f6f1412 t=3f4f9db2 s2=3f294af5 t2=3f6e6320 glyph=1255 shaderName="gfx/f16_255"
+> font 16
+font result name="fonts/fontImage_16.dat" glyphScale=3f400000 glyphs=b2b114e3
+ glyph 0 height=3 top=126 bottom=13 pitch=64 xSkip=167 imageWidth=-14 imageHeight=49 s=3ef14120 t=3f79a027 s2=3ee92a30 t2=3d90624e glyph=1 shaderName=""
+ glyph 32 height=155 top=118 bottom=5 pitch=24 xSkip=111 imageWidth=146 imageHeight=137 s=3db5dcc6 t=3e998c7e s2=3f319ce0 t2=3cd288ce glyph=2 shaderName="gfx/f16_32"
+ glyph 65 height=16 top=-1 bottom=146 pitch=113 xSkip=-12 imageWidth=3 imageHeight=158 s=3f6e9e1b t=3dd5cfab s2=3ea816f0 t2=3edbda51 glyph=35 shaderName="gfx/f16_65"
+ glyph 200 height=155 top=94 bottom=93 pitch=-8 xSkip=15 imageWidth=82 imageHeight=73 s=3f7212d7 t=3f222d0e s2=3ef020c5 t2=3f00d845 glyph=1 shaderName=""
+ glyph 254 height=157 top=120 bottom=119 pitch=2 xSkip=169 imageWidth=44 imageHeight=-13 s=3df2e48f t=3f5f0d84 s2=3f7c01a3 t2=3f749ba6 glyph=1 shaderName=""
+ glyph 255 height=146 top=97 bottom=156 pitch=3 xSkip=-18 imageWidth=53 imageHeight=144 s=3f6f1412 t=3f4f9db2 s2=3f294af5 t2=3f6e6320 glyph=1255 shaderName="gfx/f16_255"
+> font 12
+font result name="fonts/fontImage_12.dat" glyphScale=3f400000 glyphs=2d58fe30
+ glyph 0 height=103 top=106 bottom=57 pitch=140 xSkip=131 imageWidth=-10 imageHeight=13 s=3f160419 t=3efad42c s2=3f31eb85 t2=3f4d21ff glyph=1 shaderName=""
+ glyph 32 height=79 top=-6 bottom=113 pitch=20 xSkip=-5 imageWidth=70 imageHeight=109 s=3f5b3d08 t=3e1bf488 s2=3f38793e t2=3f1154ca glyph=97 shaderName="gfx/f12_32"
+ glyph 65 height=124 top=83 bottom=142 pitch=93 xSkip=144 imageWidth=-1 imageHeight=2 s=3e4ef34d t=3f6dfa44 s2=3def0069 t2=3f6ccccd glyph=130 shaderName="gfx/f12_65"
+ glyph 200 height=167 top=-6 bottom=129 pitch=-4 xSkip=163 imageWidth=6 imageHeight=117 s=3d7df3b6 t=3f0b8bac s2=3e41205c t2=3f10b780 glyph=1 shaderName=""
+ glyph 254 height=1 top=4 bottom=27 pitch=166 xSkip=5 imageWidth=128 imageHeight=135 s=3f37dbf5 t=3e46c227 s2=3f5ed289 t2=3f08c7e3 glyph=1 shaderName=""
+ glyph 255 height=174 top=117 bottom=88 pitch=159 xSkip=138 imageWidth=1 imageHeight=116 s=3e455326 t=3e3f1412 s2=3e1f06f7 t2=3d016f00 glyph=1255 shaderName="gfx/f12_255"
+> font 24
+log RE_RegisterFont: FreeType code not available
+font result name="" glyphScale=00000000 glyphs=105d42c5
+ glyph 0 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 32 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 65 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 200 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 254 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 255 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+> font 0
+font result name="fonts/fontImage_12.dat" glyphScale=3f400000 glyphs=2d58fe30
+ glyph 0 height=103 top=106 bottom=57 pitch=140 xSkip=131 imageWidth=-10 imageHeight=13 s=3f160419 t=3efad42c s2=3f31eb85 t2=3f4d21ff glyph=1 shaderName=""
+ glyph 32 height=79 top=-6 bottom=113 pitch=20 xSkip=-5 imageWidth=70 imageHeight=109 s=3f5b3d08 t=3e1bf488 s2=3f38793e t2=3f1154ca glyph=97 shaderName="gfx/f12_32"
+ glyph 65 height=124 top=83 bottom=142 pitch=93 xSkip=144 imageWidth=-1 imageHeight=2 s=3e4ef34d t=3f6dfa44 s2=3def0069 t2=3f6ccccd glyph=130 shaderName="gfx/f12_65"
+ glyph 200 height=167 top=-6 bottom=129 pitch=-4 xSkip=163 imageWidth=6 imageHeight=117 s=3d7df3b6 t=3f0b8bac s2=3e41205c t2=3f10b780 glyph=1 shaderName=""
+ glyph 254 height=1 top=4 bottom=27 pitch=166 xSkip=5 imageWidth=128 imageHeight=135 s=3f37dbf5 t=3e46c227 s2=3f5ed289 t2=3f08c7e3 glyph=1 shaderName=""
+ glyph 255 height=174 top=117 bottom=88 pitch=159 xSkip=138 imageWidth=1 imageHeight=116 s=3e455326 t=3e3f1412 s2=3e1f06f7 t2=3d016f00 glyph=1255 shaderName="gfx/f12_255"
+> font -5
+font result name="fonts/fontImage_12.dat" glyphScale=3f400000 glyphs=2d58fe30
+ glyph 0 height=103 top=106 bottom=57 pitch=140 xSkip=131 imageWidth=-10 imageHeight=13 s=3f160419 t=3efad42c s2=3f31eb85 t2=3f4d21ff glyph=1 shaderName=""
+ glyph 32 height=79 top=-6 bottom=113 pitch=20 xSkip=-5 imageWidth=70 imageHeight=109 s=3f5b3d08 t=3e1bf488 s2=3f38793e t2=3f1154ca glyph=97 shaderName="gfx/f12_32"
+ glyph 65 height=124 top=83 bottom=142 pitch=93 xSkip=144 imageWidth=-1 imageHeight=2 s=3e4ef34d t=3f6dfa44 s2=3def0069 t2=3f6ccccd glyph=130 shaderName="gfx/f12_65"
+ glyph 200 height=167 top=-6 bottom=129 pitch=-4 xSkip=163 imageWidth=6 imageHeight=117 s=3d7df3b6 t=3f0b8bac s2=3e41205c t2=3f10b780 glyph=1 shaderName=""
+ glyph 254 height=1 top=4 bottom=27 pitch=166 xSkip=5 imageWidth=128 imageHeight=135 s=3f37dbf5 t=3e46c227 s2=3f5ed289 t2=3f08c7e3 glyph=1 shaderName=""
+ glyph 255 height=174 top=117 bottom=88 pitch=159 xSkip=138 imageWidth=1 imageHeight=116 s=3e455326 t=3e3f1412 s2=3e1f06f7 t2=3d016f00 glyph=1255 shaderName="gfx/f12_255"
+> font 99
+log RE_RegisterFont: FreeType code not available
+font result name="" glyphScale=00000000 glyphs=105d42c5
+ glyph 0 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 32 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 65 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 200 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 254 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
+ glyph 255 height=0 top=0 bottom=0 pitch=0 xSkip=0 imageWidth=0 imageHeight=0 s=00000000 t=00000000 s2=00000000 t2=00000000 glyph=0 shaderName=""
