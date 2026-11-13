@@ -1,0 +1,81 @@
+Version 2
+// entity 0
+{
+"classname" "worldspawn"
+"name" "world"
+"message" "Test map for the map file library"
+// primitive 0
+{
+ brushDef3
+ {
+  ( 1 0 0 -64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( -1 0 0 0 ) ( ( 0.03125 0 0.5 ) ( 0 0.03125 0.25 ) ) "textures/test/wall" 0 0 0
+  ( 0 1 0 -64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/side" 0 0 0
+  ( 0 -1 0 0 ) ( ( 0.0625 0 0 ) ( 0 0.0625 0 ) ) "textures/test/side" 0 0 0
+  ( 0 0 1 -32 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/ceil" 0 0 0
+  ( 0 0 -1 0.1 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/floor" 0 0 0
+ }
+}
+// primitive 1
+{
+ brushDef3
+ {
+  "editor_color" "0.5 0.5 1"
+  ( 0.5773502588 0.5773502588 0.5773502588 -100.00048828125 ) ( ( 0.03125 0 0.5 ) ( 0 0.03125 0 ) ) "textures/test/slant" 0 0 0
+  ( -0.6 0.8 0 123456789 ) ( ( 0.02 0.01 0 ) ( -0.01 0.02 0.125 ) ) "textures/test/slant" 0 0 0
+  ( 0 0 1 0.00048828125 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/slant" 0 0 0
+ }
+}
+// primitive 2
+{
+ patchDef3
+ {
+  "textures/test/curve"
+  ( 3 3 4 5 0 0 0 )
+  (
+   ( ( 0 0 0 0 0 ) ( 0 32 0 0 1 ) ( 0 64 0 0 2 ) )
+   ( ( 32 0 16 1 0 ) ( 32 32 32.5 1 1 ) ( 32 64 16 1 2 ) )
+   ( ( 64 0 0 2 0 ) ( 64 32 0 2 1 ) ( 64 64 0.1 2 2 ) )
+  )
+ }
+}
+}
+// entity 1
+{
+"classname" "func_static"
+"name" "mover_1"
+"model" "mover_1"
+"origin" "64 32 16"
+// primitive 0
+{
+ brushDef3
+ {
+  ( 1 0 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( -1 0 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( 0 1 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( 0 -1 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( 0 0 1 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+  ( 0 0 -1 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+ }
+}
+// primitive 1
+{
+ patchDef2
+ {
+  "textures/test/curve2"
+  ( 3 2 0 0 0 )
+  (
+   ( ( 70 40 20 0 0 ) ( 70 50 24 0 1 ) )
+   ( ( 80 40 20 1 0 ) ( 80 50 28 1 1 ) )
+   ( ( 90 40 20 2 0 ) ( 90 50 24 2 1 ) )
+  )
+ }
+}
+}
+// entity 2
+{
+"classname" "light"
+"name" "light_1"
+"origin" "10.5 -20.25 30"
+"light_radius" "300 300 300"
+}

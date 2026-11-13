@@ -1,0 +1,36 @@
+Version 2
+{
+"classname"   "worldspawn"
+"trailing key  " "value with spaces   "
+"origin" "1.5 abc 3"
+"Name" "first"
+"name" "second"
+"dangling"
+"after" "x"
+"empty" ""
+// primitive 0
+{
+ brushDef3
+ {
+  "editor_note" "hello"
+  ( 0 0 1 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/m1" 0 0 0
+ }
+}
+}
+{
+"classname" "func_static"
+"origin" "10 20"
+// primitive 0
+{
+ patchDef3
+ {
+  "textures/test/p"
+  ( 2 2 1 1 0 0 0 )
+  (
+   ( ( 0 0 0 0 0 ) ( 0 8 0 0 1 ) )
+   ( ( 8 0 0 1 0 ) ( 8 8 0 1 1 ) )
+  )
+  "patch_key" "patch_value"
+ }
+}
+}

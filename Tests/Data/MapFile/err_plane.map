@@ -1,0 +1,10 @@
+Version 2
+{
+"classname" "worldspawn"
+{
+ brushDef3
+ {
+  ( 0 0 1 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/m" 0 0 0
+ }
+}
+}

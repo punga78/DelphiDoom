@@ -62,6 +62,7 @@ uses
   DelphiDoom.Geometry.Types in '..\Libs\Geometry\DelphiDoom.Geometry.Types.pas',
   DelphiDoom.Geometry.Plane in '..\Libs\Geometry\DelphiDoom.Geometry.Plane.pas',
   DelphiDoom.Geometry.Bounds in '..\Libs\Geometry\DelphiDoom.Geometry.Bounds.pas',
+  DelphiDoom.Geometry.Sphere in '..\Libs\Geometry\DelphiDoom.Geometry.Sphere.pas',
   DelphiDoom.Models.Md5.Types in '..\Libs\Models\DelphiDoom.Models.Md5.Types.pas',
   DelphiDoom.Models.Md5.JointQuat in '..\Libs\Models\DelphiDoom.Models.Md5.JointQuat.pas',
   DelphiDoom.Models.Md5.JointMat in '..\Libs\Models\DelphiDoom.Models.Md5.JointMat.pas',

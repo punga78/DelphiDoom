@@ -38,6 +38,7 @@
 *.apk
 *.drc
 *.map
+!Tests/Data/MapFile/*.map
 *.dres
 *.rsm
 *.tds

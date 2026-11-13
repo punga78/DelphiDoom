@@ -1,0 +1,65 @@
+Version 2
+// entity 0
+{
+"classname" "worldspawn"
+"removeEntities" "light"
+"removeEntities2" "info_player_start"
+"overrideMaterial" "textures/common/override"
+"forceEntityNames" "1"
+"moveFuncGroups" "1"
+// primitive 0
+{
+ brushDef3
+ {
+  ( 0 0 1 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/a" 0 0 0
+  ( 0 0 -1 0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/b" 0 0 0
+ }
+}
+}
+// entity 1
+{
+"classname" "light"
+"origin" "0 0 0"
+}
+// entity 2
+{
+"classname" "func_group"
+// primitive 0
+{
+ brushDef3
+ {
+  ( 1 0 0 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/c" 0 0 0
+ }
+}
+// primitive 1
+{
+ patchDef2
+ {
+  "textures/test/p"
+  ( 2 2 0 0 0 )
+  (
+   ( ( 0 0 0 0 0 ) ( 0 8 0 0 1 ) )
+   ( ( 8 0 0 1 0 ) ( 8 8 0 1 1 ) )
+  )
+ }
+}
+}
+// entity 3
+{
+"classname" "func_static"
+"model" "x"
+}
+// entity 4
+{
+"classname" "info_player_start"
+"origin" "1 2 3"
+}
+// entity 5
+{
+"classname" "func_static"
+"name" "already_named"
+}
+// entity 6
+{
+"classname" "light"
+}

@@ -17,6 +17,7 @@ uses
   DelphiDoom.Wad.Source.Wad in 'DelphiDoom.Wad.Source.Wad.pas',
   DelphiDoom.Wad.Source.Wad2 in 'DelphiDoom.Wad.Source.Wad2.pas',
   DelphiDoom.Wad.Source.Pak in 'DelphiDoom.Wad.Source.Pak.pas',
+  DelphiDoom.Wad.Zip.Intf in 'DelphiDoom.Wad.Zip.Intf.pas',
   DelphiDoom.Wad.Source.Zip in 'DelphiDoom.Wad.Source.Zip.pas',
   DelphiDoom.Wad.Source.Folder in 'DelphiDoom.Wad.Source.Folder.pas',
   DelphiDoom.Wad.Source.SingleFile in 'DelphiDoom.Wad.Source.SingleFile.pas',
