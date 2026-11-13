@@ -1,0 +1,228 @@
+void VPCALL idSIMD_Generic::DeriveTriPlanes( idPlane *planes, const idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes ) {
+	int i;
+
+	for ( i = 0; i < numIndexes; i += 3 ) {
+		const idDrawVert *a, *b, *c;
+		float d0[3], d1[3], f;
+		idVec3 n;
+
+		a = verts + indexes[i + 0];
+		b = verts + indexes[i + 1];
+		c = verts + indexes[i + 2];
+
+		d0[0] = b->xyz[0] - a->xyz[0];
+		d0[1] = b->xyz[1] - a->xyz[1];
+		d0[2] = b->xyz[2] - a->xyz[2];
+
+		d1[0] = c->xyz[0] - a->xyz[0];
+		d1[1] = c->xyz[1] - a->xyz[1];
+		d1[2] = c->xyz[2] - a->xyz[2];
+
+		n[0] = d1[1] * d0[2] - d1[2] * d0[1];
+		n[1] = d1[2] * d0[0] - d1[0] * d0[2];
+		n[2] = d1[0] * d0[1] - d1[1] * d0[0];
+
+		f = idMath::RSqrt( n.x * n.x + n.y * n.y + n.z * n.z );
+
+		n.x *= f;
+		n.y *= f;
+		n.z *= f;
+
+		planes->SetNormal( n );
+		planes->FitThroughPoint( a->xyz );
+		planes++;
+	}
+}
+void VPCALL idSIMD_Generic::DeriveTangents( idPlane *planes, idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes ) {
+	int i;
+
+	bool *used = (bool *)_alloca16( numVerts * sizeof( used[0] ) );
+	memset( used, 0, numVerts * sizeof( used[0] ) );
+
+	idPlane *planesPtr = planes;
+	for ( i = 0; i < numIndexes; i += 3 ) {
+		idDrawVert *a, *b, *c;
+		unsigned long signBit;
+		float d0[5], d1[5], f, area;
+		idVec3 n, t0, t1;
+
+		int v0 = indexes[i + 0];
+		int v1 = indexes[i + 1];
+		int v2 = indexes[i + 2];
+
+		a = verts + v0;
+		b = verts + v1;
+		c = verts + v2;
+
+		d0[0] = b->xyz[0] - a->xyz[0];
+		d0[1] = b->xyz[1] - a->xyz[1];
+		d0[2] = b->xyz[2] - a->xyz[2];
+		d0[3] = b->st[0] - a->st[0];
+		d0[4] = b->st[1] - a->st[1];
+
+		d1[0] = c->xyz[0] - a->xyz[0];
+		d1[1] = c->xyz[1] - a->xyz[1];
+		d1[2] = c->xyz[2] - a->xyz[2];
+		d1[3] = c->st[0] - a->st[0];
+		d1[4] = c->st[1] - a->st[1];
+
+		// normal
+		n[0] = d1[1] * d0[2] - d1[2] * d0[1];
+		n[1] = d1[2] * d0[0] - d1[0] * d0[2];
+		n[2] = d1[0] * d0[1] - d1[1] * d0[0];
+
+		f = idMath::RSqrt( n.x * n.x + n.y * n.y + n.z * n.z );
+
+		n.x *= f;
+		n.y *= f;
+		n.z *= f;
+
+		planesPtr->SetNormal( n );
+		planesPtr->FitThroughPoint( a->xyz );
+		planesPtr++;
+
+		// area sign bit
+		area = d0[3] * d1[4] - d0[4] * d1[3];
+		signBit = ( *(unsigned long *)&area ) & ( 1 << 31 );
+
+		// first tangent
+		t0[0] = d0[0] * d1[4] - d0[4] * d1[0];
+		t0[1] = d0[1] * d1[4] - d0[4] * d1[1];
+		t0[2] = d0[2] * d1[4] - d0[4] * d1[2];
+
+		f = idMath::RSqrt( t0.x * t0.x + t0.y * t0.y + t0.z * t0.z );
+		*(unsigned long *)&f ^= signBit;
+
+		t0.x *= f;
+		t0.y *= f;
+		t0.z *= f;
+
+		// second tangent
+		t1[0] = d0[3] * d1[0] - d0[0] * d1[3];
+		t1[1] = d0[3] * d1[1] - d0[1] * d1[3];
+		t1[2] = d0[3] * d1[2] - d0[2] * d1[3];
+
+		f = idMath::RSqrt( t1.x * t1.x + t1.y * t1.y + t1.z * t1.z );
+		*(unsigned long *)&f ^= signBit;
+
+		t1.x *= f;
+		t1.y *= f;
+		t1.z *= f;
+
+		if ( used[v0] ) {
+			a->normal += n;
+			a->tangents[0] += t0;
+			a->tangents[1] += t1;
+		} else {
+			a->normal = n;
+			a->tangents[0] = t0;
+			a->tangents[1] = t1;
+			used[v0] = true;
+		}
+
+		if ( used[v1] ) {
+			b->normal += n;
+			b->tangents[0] += t0;
+			b->tangents[1] += t1;
+		} else {
+			b->normal = n;
+			b->tangents[0] = t0;
+			b->tangents[1] = t1;
+			used[v1] = true;
+		}
+
+		if ( used[v2] ) {
+			c->normal += n;
+			c->tangents[0] += t0;
+			c->tangents[1] += t1;
+		} else {
+			c->normal = n;
+			c->tangents[0] = t0;
+			c->tangents[1] = t1;
+			used[v2] = true;
+		}
+	}
+}
+void VPCALL idSIMD_Generic::DeriveUnsmoothedTangents( idDrawVert *verts, const dominantTri_s *dominantTris, const int numVerts ) {
+	int i;
+
+	for ( i = 0; i < numVerts; i++ ) {
+		idDrawVert *a, *b, *c;
+		float d0, d1, d2, d3, d4;
+		float d5, d6, d7, d8, d9;
+		float s0, s1, s2;
+		float n0, n1, n2;
+		float t0, t1, t2;
+		float t3, t4, t5;
+
+		const dominantTri_s &dt = dominantTris[i];
+
+		a = verts + i;
+		b = verts + dt.v2;
+		c = verts + dt.v3;
+
+		d0 = b->xyz[0] - a->xyz[0];
+		d1 = b->xyz[1] - a->xyz[1];
+		d2 = b->xyz[2] - a->xyz[2];
+		d3 = b->st[0] - a->st[0];
+		d4 = b->st[1] - a->st[1];
+
+		d5 = c->xyz[0] - a->xyz[0];
+		d6 = c->xyz[1] - a->xyz[1];
+		d7 = c->xyz[2] - a->xyz[2];
+		d8 = c->st[0] - a->st[0];
+		d9 = c->st[1] - a->st[1];
+
+		s0 = dt.normalizationScale[0];
+		s1 = dt.normalizationScale[1];
+		s2 = dt.normalizationScale[2];
+
+		n0 = s2 * ( d6 * d2 - d7 * d1 );
+		n1 = s2 * ( d7 * d0 - d5 * d2 );
+		n2 = s2 * ( d5 * d1 - d6 * d0 );
+
+		t0 = s0 * ( d0 * d9 - d4 * d5 );
+		t1 = s0 * ( d1 * d9 - d4 * d6 );
+		t2 = s0 * ( d2 * d9 - d4 * d7 );
+
+#ifndef DERIVE_UNSMOOTHED_BITANGENT
+		t3 = s1 * ( d3 * d5 - d0 * d8 );
+		t4 = s1 * ( d3 * d6 - d1 * d8 );
+		t5 = s1 * ( d3 * d7 - d2 * d8 );
+#else
+		t3 = s1 * ( n2 * t1 - n1 * t2 );
+		t4 = s1 * ( n0 * t2 - n2 * t0 );
+		t5 = s1 * ( n1 * t0 - n0 * t1 );
+#endif
+
+		a->normal[0] = n0;
+		a->normal[1] = n1;
+		a->normal[2] = n2;
+
+		a->tangents[0][0] = t0;
+		a->tangents[0][1] = t1;
+		a->tangents[0][2] = t2;
+
+		a->tangents[1][0] = t3;
+		a->tangents[1][1] = t4;
+		a->tangents[1][2] = t5;
+	}
+}
+void VPCALL idSIMD_Generic::NormalizeTangents( idDrawVert *verts, const int numVerts ) {
+
+	for ( int i = 0; i < numVerts; i++ ) {
+		idVec3 &v = verts[i].normal;
+		float f;
+
+		f = idMath::RSqrt( v.x * v.x + v.y * v.y + v.z * v.z );
+		v.x *= f; v.y *= f; v.z *= f;
+
+		for ( int j = 0; j < 2; j++ ) {
+			idVec3 &t = verts[i].tangents[j];
+
+			t -= ( t * v ) * v;
+			f = idMath::RSqrt( t.x * t.x + t.y * t.y + t.z * t.z );
+			t.x *= f; t.y *= f; t.z *= f;
+		}
+	}
+}

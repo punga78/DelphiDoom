@@ -40,7 +40,7 @@ typedef struct srfTriangles_s {
 	int numVerts; int numIndexes; idDrawVert *verts; int *indexes; int *silIndexes;
 	int numMirroredVerts; int *mirroredVerts; int numDupVerts; int *dupVerts;
 	int numSilEdges; silEdge_t *silEdges; dominantTri_t *dominantTris; idPlane *facePlanes;
-	bool tangentsCalculated; bool facePlanesCalculated; bool perfectHull;
+	bool tangentsCalculated; bool facePlanesCalculated; bool perfectHull; idVec3 bounds[2];
 } srfTriangles_t;
 
 template<class T> struct TAlloc { T *Alloc(int n) { return (T *)calloc(n + 1, sizeof(T)); } void Free(T *p) { free(p); } };
@@ -66,6 +66,7 @@ typedef struct deformInfo_s {
 
 class idSIMDReal { public:
 	void Memcpy(void *d, const void *s, int n) { memcpy(d, s, n); }
+	void MinMax(idVec3 &mn, idVec3 &mx, const idDrawVert *v, const int n) { for (int k = 0; k < 3; k++) { mn[k] = idMath::INFINITY; mx[k] = -idMath::INFINITY; } for (int i = 0; i < n; i++) for (int k = 0; k < 3; k++) { if (v[i].xyz[k] < mn[k]) mn[k] = v[i].xyz[k]; if (v[i].xyz[k] > mx[k]) mx[k] = v[i].xyz[k]; } }
 	void DeriveTriPlanes(idPlane *planes, const idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes);
 	void DeriveTangents(idPlane *planes, idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes);
 	void DeriveUnsmoothedTangents(idDrawVert *verts, const dominantTri_s *dominantTris, const int numVerts);
@@ -83,6 +84,8 @@ void R_DeriveUnsmoothedTangents(srfTriangles_t *tri);
 #define DERIVE_UNSMOOTHED_BITANGENT
 #include "part1.inc"
 #include "part2.inc"
+#include "part3.inc"
+#include "cubeface.inc"
 
 static void F(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
 static void I(int i) { printf(" %d", i); }
@@ -95,7 +98,7 @@ static void build() {
 	Case &q = cases[0]; q.name = "mirror"; q.nv = 7;
 	float qv[7][5] = { {0,0,0,0,0}, {1,0,0,1,0}, {2,0,0,0,0}, {0,1,0,0,1}, {1,1,0,1,1}, {2,1,0,0,1}, {0,0,0,0.5f,0.25f} };
 	memcpy(q.xyzst, qv, sizeof(qv));
-	int qi[] = { 0,1,4, 0,4,3, 1,2,5, 1,5,4, 6,1,4 }; q.ni = 15; memcpy(q.idx, qi, sizeof(qi));
+	int qi[] = { 0,1,4, 0,4,3, 1,2,5, 1,5,4, 6,1,4, 1,6,0 }; q.ni = 18; memcpy(q.idx, qi, sizeof(qi));
 	// cube with 8 vertexes
 	Case &c = cases[1]; c.name = "cube"; c.nv = 8;
 	for (int i = 0; i < 8; i++) { c.xyzst[i][0] = (i & 1) ? 1.f : -1.f; c.xyzst[i][1] = (i & 2) ? 1.f : -1.f; c.xyzst[i][2] = (i & 4) ? 1.f : -1.f; c.xyzst[i][3] = (i & 1) ? 1.f : 0.f; c.xyzst[i][4] = (i & 2) ? 1.f : 0.f; }
@@ -150,9 +153,43 @@ int main() { idMath::Init();
 				printf("\n");
 			}
 		}
+		for (int mode = 0; mode < 4; mode++) {
+			bool createNormals = (mode & 1) == 0, unsm = (mode & 2) != 0;
+			srfTriangles_t tri; memset(&tri, 0, sizeof(tri));
+			tri.numVerts = cs.nv; R_AllocStaticTriSurfVerts(&tri, tri.numVerts);
+			for (int i = 0; i < cs.nv; i++) tri.verts[i] = src[i];
+			tri.numIndexes = cs.ni; R_AllocStaticTriSurfIndexes(&tri, tri.numIndexes);
+			for (int i = 0; i < cs.ni; i++) tri.indexes[i] = cs.idx[i];
+			R_CleanupTriangles(&tri, createNormals, true, unsm);
+			printf("%s cleanup %d %d | %d %d %d %d\n", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0, tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
+			printf("%s cleanup %d %d idx |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
+			printf("%s cleanup %d %d bounds |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
+			printf("%s cleanup %d %d verts |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0);
+			for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+			printf("\n");
+		}
+	}
+	{
+		// MakeDefaultModel: the cube of 8 units, then FinishSurfaces: R_CleanupTriangles with generated normals
+		srfTriangles_t tri; memset(&tri, 0, sizeof(tri));
+		R_AllocStaticTriSurfVerts(&tri, 24); R_AllocStaticTriSurfIndexes(&tri, 36);
+		AddCubeFace(&tri, idVec3(-1, 1, 1), idVec3(1, 1, 1), idVec3(1, -1, 1), idVec3(-1, -1, 1));
+		AddCubeFace(&tri, idVec3(-1, 1, -1), idVec3(-1, -1, -1), idVec3(1, -1, -1), idVec3(1, 1, -1));
+		AddCubeFace(&tri, idVec3(1, -1, 1), idVec3(1, 1, 1), idVec3(1, 1, -1), idVec3(1, -1, -1));
+		AddCubeFace(&tri, idVec3(-1, -1, 1), idVec3(-1, -1, -1), idVec3(-1, 1, -1), idVec3(-1, 1, 1));
+		AddCubeFace(&tri, idVec3(-1, -1, 1), idVec3(1, -1, 1), idVec3(1, -1, -1), idVec3(-1, -1, -1));
+		AddCubeFace(&tri, idVec3(-1, 1, 1), idVec3(-1, 1, -1), idVec3(1, 1, -1), idVec3(1, 1, 1));
+		R_CleanupTriangles(&tri, true, true, false);
+		printf("default | %d %d %d %d\n", tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
+		printf("default idx |"); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
+		printf("default bounds |"); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
+		printf("default verts |");
+		for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+		printf("\n");
 	}
 	return 0;
 }
+
 
 
 

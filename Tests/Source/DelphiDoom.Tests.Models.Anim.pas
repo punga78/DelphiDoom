@@ -87,6 +87,15 @@ type
     procedure DovrebbeContareEDarePoiIRiferimenti;
   end;
 
+  /// <summary>The lookup that accepts everything</summary>
+  [TestFixture]
+  [Category('Anim')]
+  TTestPermissiveLookup = class
+  public
+    [Test]
+    procedure DovrebbeAccettareTutto;
+  end;
+
   /// <summary>The frame commands of the original, one by one</summary>
   [TestFixture]
   [Category('Anim')]
@@ -575,6 +584,23 @@ begin
   Assert.AreEqual<Integer>(0, FManager.NumRefs(FMd5Anim));
 end;
 
+{ TTestPermissiveLookup }
+
+procedure TTestPermissiveLookup.DovrebbeAccettareTutto;
+var
+  LLookup: IModelDefGameLookup;
+  LArguments: Integer;
+begin
+  LLookup := TAnimFactory.CreatePermissiveLookup;
+  Assert.IsTrue(LLookup.FindScriptFunction('f'));
+  Assert.IsTrue(LLookup.FindEvent('e', LArguments));
+  Assert.AreEqual<Integer>(0, LArguments);
+  Assert.IsTrue(LLookup.FindSkin('s'));
+  Assert.IsTrue(LLookup.FindFx('x'));
+  Assert.IsTrue(LLookup.FindEntityDef('d'));
+  Assert.IsFalse(LLookup.IsSoundDefaulted('snd'));
+end;
+
 { TTestFrameCommandParser }
 
 procedure TTestFrameCommandParser.Setup;
@@ -1033,6 +1059,7 @@ end;
 initialization
   TDUnitX.RegisterTestFixture(TTestAnimManager);
   TDUnitX.RegisterTestFixture(TTestAnim);
+  TDUnitX.RegisterTestFixture(TTestPermissiveLookup);
   TDUnitX.RegisterTestFixture(TTestFrameCommandParser);
   TDUnitX.RegisterTestFixture(TTestModelDefParser);
 

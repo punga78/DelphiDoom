@@ -105,14 +105,15 @@ begin
     Exit;
   end;
   LModel := FSource.FindMd5Model(AFileName, LDefaulted);
-  if LModel = nil then
-  begin
-    ALexer.Warning('Model ''%s'' not found', [string(AFileName)]);
-    Exit;
-  end;
+  // the manager gives the default model for a file it cannot load: that is a defaulted model, not a missing one
   if LDefaulted then
   begin
     ALexer.Warning('Model ''%s'' defaulted', [string(AFileName)]);
+    Exit;
+  end;
+  if LModel = nil then
+  begin
+    ALexer.Warning('Model ''%s'' not found', [string(AFileName)]);
     Exit;
   end;
   if LModel.NumJoints = 0 then

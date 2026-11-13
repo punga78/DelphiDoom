@@ -95,10 +95,13 @@ function ShortAnimText: AnsiString;
 function RenamedJointAnimText: AnsiString;
 /// <summary>The synthetic cube model</summary>
 function CubeModelText: AnsiString;
+/// <summary>A file of Tests\Data\Models\ma as an 8-bit string</summary>
+function MaDataFile(const AName: string): AnsiString;
 
 implementation
 
 uses
+  System.IOUtils,
   DelphiDoom.Tests.Models.Md5Golden;
 
 function CubeAnimText: AnsiString;
@@ -109,6 +112,15 @@ end;
 function CubeModelText: AnsiString;
 begin
   Result := TMd5Golden.ReadText('cube.md5mesh');
+end;
+
+function MaDataFile(const AName: string): AnsiString;
+var
+  LBytes: TBytes;
+begin
+  LBytes := TFile.ReadAllBytes(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
+    '..\..\Tests\Data\Models\ma\' + AName)));
+  SetString(Result, PAnsiChar(@LBytes[0]), Length(LBytes));
 end;
 
 function ShortAnimText: AnsiString;
