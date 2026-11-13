@@ -33,7 +33,25 @@ uses
   DelphiDoom.Hud.Chat in '..\Libs\Hud\DelphiDoom.Hud.Chat.pas',
   DelphiDoom.Hud.View in '..\Libs\Hud\DelphiDoom.Hud.View.pas',
   DelphiDoom.Hud.HeadsUp in '..\Libs\Hud\DelphiDoom.Hud.HeadsUp.pas',
-  DelphiDoom.Hud.Factory in '..\Libs\Hud\DelphiDoom.Hud.Factory.pas';
+  DelphiDoom.Hud.Factory in '..\Libs\Hud\DelphiDoom.Hud.Factory.pas',
+  DelphiDoom.Tests.Hud.Fakes in 'Source\DelphiDoom.Tests.Hud.Fakes.pas',
+  DelphiDoom.Tests.Hud.Legacy in 'Source\DelphiDoom.Tests.Hud.Legacy.pas',
+  DelphiDoom.Tests.Hud.TextLine in 'Source\DelphiDoom.Tests.Hud.TextLine.pas',
+  DelphiDoom.Tests.Hud.ScrollingText in 'Source\DelphiDoom.Tests.Hud.ScrollingText.pas',
+  DelphiDoom.Tests.Hud.InputText in 'Source\DelphiDoom.Tests.Hud.InputText.pas',
+  DelphiDoom.Tests.Hud.Layout in 'Source\DelphiDoom.Tests.Hud.Layout.pas',
+  DelphiDoom.Tests.Hud.TextLayout in 'Source\DelphiDoom.Tests.Hud.TextLayout.pas',
+  DelphiDoom.Tests.Hud.FpsCounter in 'Source\DelphiDoom.Tests.Hud.FpsCounter.pas',
+  DelphiDoom.Tests.Hud.ChatQueue in 'Source\DelphiDoom.Tests.Hud.ChatQueue.pas',
+  DelphiDoom.Tests.Hud.KeyTables in 'Source\DelphiDoom.Tests.Hud.KeyTables.pas',
+  DelphiDoom.Tests.Hud.LevelTime in 'Source\DelphiDoom.Tests.Hud.LevelTime.pas',
+  DelphiDoom.Tests.Hud.MapTitle in 'Source\DelphiDoom.Tests.Hud.MapTitle.pas',
+  DelphiDoom.Tests.Hud.Crosshair in 'Source\DelphiDoom.Tests.Hud.Crosshair.pas',
+  DelphiDoom.Tests.Hud.MessageBar in 'Source\DelphiDoom.Tests.Hud.MessageBar.pas',
+  DelphiDoom.Tests.Hud.Chat in 'Source\DelphiDoom.Tests.Hud.Chat.pas',
+  DelphiDoom.Tests.Hud.HeadsUp in 'Source\DelphiDoom.Tests.Hud.HeadsUp.pas',
+  DelphiDoom.Tests.Hud.Factory in 'Source\DelphiDoom.Tests.Hud.Factory.pas',
+  DelphiDoom.Tests.Hud.Parity in 'Source\DelphiDoom.Tests.Hud.Parity.pas';
 
 var
   Runner: ITestRunner;

@@ -62,6 +62,10 @@ type
     function GetLevelTime: THudTextLine;
     function GetFpsText: string;
     procedure UpdateLevelTime(const ALevelTime: Integer);
+    /// <summary>The message bar, for the tests and the tools that look inside the model</summary>
+    property Bar: THudMessageBar read FBar;
+    /// <summary>The chat, for the tests and the tools that look inside the model</summary>
+    property Chat: THudChat read FChat;
   end;
 
 implementation

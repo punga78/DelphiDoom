@@ -141,7 +141,9 @@ end;
 
 class function THudKeyTables.ForeignTranslation(const AChar: Char): Char;
 begin
-  if AChar < #128 then
+  // the old code compared with #128, a constant that Delphi reads as the euro sign (code page 1252):
+  // every character below it, also the ones from 128 to 255, was taken from a table of 128 entries
+  if Ord(AChar) < HUD_SHIFT_TABLE_SIZE then
     Result := FRENCH_KEY_MAP[Ord(AChar)]
   else
     Result := AChar;

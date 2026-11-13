@@ -63,6 +63,10 @@ type
     function DequeueChar: Char;
     /// <summary>The line where the player types</summary>
     property Input: THudInputText read FInput;
+    /// <summary>The line where the text of a player is collected until the return key (w_inputbuffer)</summary>
+    function Buffer(const APlayer: Integer): THudInputText;
+    /// <summary>Who the player is writing to (chat_dest): a player number plus one, or the broadcast code</summary>
+    function Destination(const APlayer: Integer): Integer;
     /// <summary>The last message the player sent (lastmessage)</summary>
     property LastMessage: string read FLastMessage;
     /// <summary>Times the player tried to talk to himself (num_nobrainers)</summary>
@@ -149,6 +153,16 @@ end;
 function THudChat.DequeueChar: Char;
 begin
   Result := FQueue.Dequeue;
+end;
+
+function THudChat.Buffer(const APlayer: Integer): THudInputText;
+begin
+  Result := FBuffers[APlayer];
+end;
+
+function THudChat.Destination(const APlayer: Integer): Integer;
+begin
+  Result := FDestination[APlayer];
 end;
 
 function THudChat.CountPlayers: Integer;
