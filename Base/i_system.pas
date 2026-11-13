@@ -42,7 +42,8 @@ uses
   DelphiDoom.Clock.Intf,
   DelphiDoom.Video.Intf,
   DelphiDoom.Input.Intf,
-  DelphiDoom.Platform.Intf;
+  DelphiDoom.Platform.Intf,
+  DelphiDoom.EngineSystem.Intf;
 
 //==============================================================================
 //
@@ -454,11 +455,29 @@ procedure I_ConfigureNetGame(const ANetGame: IEngineNetGame);
 //==============================================================================
 procedure I_ConfigureDefaults(const ADefaults: IEngineDefaults);
 
+//==============================================================================
+//
+// I_ConfigureShutdown
+// The shutdown of the engine, given by the composition root: I_Destroy runs it
+//
+//==============================================================================
+procedure I_ConfigureShutdown(const ASequence: IShutdownSequence);
+
+//==============================================================================
+//
+// I_ConfigureFatalError
+// The handler of the fatal errors, given by the composition root: I_Error calls it
+//
+//==============================================================================
+procedure I_ConfigureFatalError(const AHandler: IFatalErrorHandler);
+
 implementation
 
 uses
   DelphiDoom.Console.Numbers,
   DelphiDoom.Platform.Types,
+  DelphiDoom.EngineSystem.Types,
+  DelphiDoom.EngineSystem.MachineProfileBuilder,
 {$IFDEF FPC}
   d_fpc,
 {$ENDIF}
@@ -466,27 +485,13 @@ uses
   Windows,
   Messages,
   doomdef,
-  m_argv,
   m_misc,
   m_fixed,
   s_sound,
   i_io,
   DelphiDoom.Input.Types,
-  i_tmp,
-{$IFNDEF FPC}
-  i_startup,
-{$ENDIF}
-{$IFDEF OPENGL}
-  gl_main,
-{$ELSE}
-  i_video,
-{$ENDIF}
   i_mainwindow,
   d_main,
-{$IFDEF HEXEN}
-  g_demo,
-{$ENDIF}
-  g_game,
   m_base;
 
 var
@@ -494,6 +499,9 @@ var
   // before ComposeEngine is done: I_Destroy then skips them, as the old code did
   i_netgame_ref: IEngineNetGame = nil;
   i_defaults_ref: IEngineDefaults = nil;
+  // the shutdown and the handler of the fatal errors (Libs\EngineSystem)
+  system_shutdown: IShutdownSequence = nil;
+  system_fatalerror: IFatalErrorHandler = nil;
 
 //==============================================================================
 //
@@ -515,6 +523,26 @@ begin
   i_defaults_ref := ADefaults;
 end;
 
+//==============================================================================
+//
+// I_ConfigureShutdown
+//
+//==============================================================================
+procedure I_ConfigureShutdown(const ASequence: IShutdownSequence);
+begin
+  system_shutdown := ASequence;
+end;
+
+//==============================================================================
+//
+// I_ConfigureFatalError
+//
+//==============================================================================
+procedure I_ConfigureFatalError(const AHandler: IFatalErrorHandler);
+begin
+  system_fatalerror := AHandler;
+end;
+
 var
   finished: boolean = false;
 
@@ -525,7 +553,7 @@ var
 //==============================================================================
 function I_GameFinished: boolean;
 begin
-  result := finished;
+  result := finished or ((system_shutdown <> nil) and system_shutdown.IsFinished);
 end;
 
 var
@@ -739,37 +767,11 @@ end;
 //==============================================================================
 procedure I_Destroy(const code: integer);
 begin
-  printf(#13#10'I_Destroy: Game finished.'#13#10#13#10);
+  // the sequence of Libs\EngineSystem writes what it does and ends the process; without it (an error
+  // before ComposeEngine) there is nothing to shut down
   finished := true;
-  printf('D_QuitNetGame: Quit network game.'#13#10);
-  if i_netgame_ref <> nil then
-    i_netgame_ref.Quit;
-  printf('I_ShutDownSound: Shut down sound.'#13#10);
-  S_ShutDownSoundDevice;
-  printf('I_ShutDownMusic: Shut down music.'#13#10);
-  S_ShutDownMusicDevice;
-  printf('I_ShutDownInput: Shut down input.'#13#10);
-  if system_input <> nil then
-    system_input.Shutdown;
-  if M_CheckParm('-dontsavedefaults') = 0 then
-  begin
-    printf('M_SaveDefaults: Saving defaults.'#13#10);
-    if i_defaults_ref <> nil then
-      i_defaults_ref.Save;
-  end;
-  printf('I_ShutDownGraphics: Shut down graphics.'#13#10);
-  I_ShutDownGraphics;
-  printf('D_ShutDown: Shut down doom engine.'#13#10);
-  D_ShutDown;
-  printf('I_ShutDownNetwork: Shut down network.'#13#10);
-  if i_netgame_ref <> nil then
-    i_netgame_ref.Shutdown;
-  printf('I_RestoreDesktop: Restoring desktop.'#13#10);
-  I_RestoreDesktop;
-  printf('I_ShutDownTempFiles: Shut down temporary file managment.'#13#10);
-  I_ShutDownTempFiles;
-  printf('I_ShutDownIO: Shut down input/output.'#13#10'Halt(%d)'#13#10, [code]);
-  I_ShutDownIO;
+  if system_shutdown <> nil then
+    system_shutdown.Run(code);
   Halt(code);
 end;
 
@@ -811,25 +813,20 @@ begin
   if in_i_error then
     exit;
 
-  I_FlashCachedOutput;
-
-  in_i_error := true;
-
   sprintf(msg, error, Args);
 
-  // ShutDown. Here might be other errors.
-  if demorecording then
-    G_CheckDemoStatus;
-
-  I_IOSetWindowHandle({$IFDEF FPC}0{$ELSE}SUC_GetHandle{$ENDIF});
-  // the error file, the message box and the output
-  if engine_log <> nil then
-    engine_log.Error(msg)
+  // the order of the steps is TFatalErrorHandler of Libs\EngineSystem; without it (an error before
+  // ComposeEngine) the message goes to the output and the game stops
+  if system_fatalerror <> nil then
+    system_fatalerror.Handle(msg)
   else
+  begin
+    in_i_error := true;
     printf('I_Error: ' + msg + #13#10);
-
-  I_Destroy(1);
+    I_Destroy(1);
+  end;
 end;
+
 //==============================================================================
 //
 // I_Error
@@ -1090,40 +1087,23 @@ var
 //==============================================================================
 procedure I_DetectCPU;
 var
-  cpu: ICpuInfo;
+  profile: TMachineProfile;
+  i: integer;
 begin
-  cpu := I_PlatformServices.Cpu;
-  if cpu.HasMmx then
+  profile := TMachineProfileBuilder.Detect(I_PlatformServices.Cpu,
+    (i_defaults_ref = nil) or i_defaults_ref.ConfigNotFound, usemultithread);
+  if profile.HasMmx then
     mmxMachine := 1
   else
     mmxMachine := 0;
-  if cpu.Has3DNow then
+  if profile.Has3DNow then
     AMD3DNowMachine := 1
   else
     AMD3DNowMachine := 0;
-
-  if mmxMachine <> 0 then
-    printf(' MMX extentions detected'#13#10);
-  if AMD3DNowMachine <> 0 then
-    printf(' AMD 3D Now! extentions detected'#13#10);
-
-  numcpus := cpu.ProcessorCount;
-
-  if numcpus > 1 then
-    printf(' Multi-core system detected (%d CPUs)'#13#10, [numcpus]);
-
-  if (i_defaults_ref = nil) or i_defaults_ref.ConfigNotFound then
-    usemultithread := numcpus > 1;
-
-  if usemultithread then
-    printf(' Multithreading mode ON'#13#10)
-  else
-  begin
-    if numcpus > 1 then
-      printf(' Multithreading mode OFF (will not use all cores)'#13#10)
-    else
-      printf(' Multithreading mode OFF'#13#10);
-  end;
+  numcpus := profile.ProcessorCount;
+  usemultithread := profile.UseMultithread;
+  for i := 0 to Length(profile.Lines) - 1 do
+    printf('%s', [profile.Lines[i]]);
 end;
 
 //==============================================================================

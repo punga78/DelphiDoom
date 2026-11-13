@@ -31,10 +31,22 @@
 
 unit i_net;
 
+// What is left of the facade of the network options (issue #185): the reading of the command line is
+// TNetCommandLineReader of Libs\EngineSystem, given by ComposeEngine (I_ConfigureNetOptions).
+
 interface
 
 uses
-  DelphiDoom.Net.Types;
+  DelphiDoom.Net.Types,
+  DelphiDoom.EngineSystem.Intf;
+
+//==============================================================================
+//
+// I_ConfigureNetOptions
+// Gives the unit the reader of the options of the network game. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureNetOptions(const AReader: INetCommandLineReader);
 
 //==============================================================================
 //
@@ -59,26 +71,24 @@ var
 implementation
 
 uses
-  d_delphi,
   g_game,
-  m_argv,
+  i_system,
   r_main,
   tables,
-  DelphiDoom.Net.NodeListParser;
+  DelphiDoom.EngineSystem.Types;
+
+var
+  // given by the composition root (I_ConfigureNetOptions)
+  net_reader: INetCommandLineReader = nil;
 
 //==============================================================================
 //
-// CheckIfDrone
+// I_ConfigureNetOptions
 //
 //==============================================================================
-procedure CheckIfDrone;
+procedure I_ConfigureNetOptions(const AReader: INetCommandLineReader);
 begin
-  if M_CheckParm('-left') > 0 then
-    R_SetViewAngleOffset(ANG90)
-  else if M_CheckParm('-right') > 0 then
-    R_SetViewAngleOffset(ANG270)
-  else if M_CheckParm('-back') > 0 then
-    R_SetViewAngleOffset(ANG180);
+  net_reader := AReader;
 end;
 
 //==============================================================================
@@ -88,68 +98,27 @@ end;
 //==============================================================================
 procedure I_InitNetwork;
 var
-  i: integer;
-  p: integer;
-  arguments: TArray<string>;
-  nodeno: integer;
+  options: TNetCommandLineOptions;
 begin
-  // set up for network
-  net_ticdup := 1;
-  i := M_CheckParm('-dup');
-  if (i > 0) and (i < myargc - 1) then
-  begin
-    net_ticdup := Ord(myargv[i + 1][1]) - Ord('0');
-    if net_ticdup < 1 then
-      net_ticdup := 1
-    else if net_ticdup > 9 then
-      net_ticdup := 9;
+  if net_reader = nil then
+    I_Error('I_InitNetwork(): the network options were not configured (ComposeEngine)');
+
+  options := net_reader.Read(net_port);
+
+  net_ticdup := options.TicDup;
+  net_extratics := options.ExtraTics;
+  net_port := options.Port;
+
+  case options.Drone of
+    ndvLeft: R_SetViewAngleOffset(ANG90);
+    ndvRight: R_SetViewAngleOffset(ANG270);
+    ndvBack: R_SetViewAngleOffset(ANG180);
   end;
 
-  if M_CheckParm('-extratic') > 0 then
-    net_extratics := 1
-  else
-    net_extratics := 0;
-
-  p := M_CheckParm('-port');
-  if (p > 0) and (p < myargc - 1) then
-  begin
-    net_port := atoi(myargv[p + 1]);
-    printf('Using Port %d'#13#10, [net_port]);
-  end;
-
-  CheckIfDrone;
-
-  // parse network game options,
-  //  -net <consoleplayer> <host> <host> ...
-  i := M_CheckParm('-net');
-  if i = 0 then
-  begin
-    // single player game
-    netgame := false;
-    net_numnodes := 1;
-    net_consoleplayer := 0;
-    net_peers := nil;
-    exit;
-  end;
-
-  netgame := true;
-
-  // parse player number and host list
-  net_consoleplayer := Ord(myargv[i + 1][1]) - Ord('1');
-  printf('console player number: %d'#13#10, [net_consoleplayer]);
-
-  SetLength(arguments, myargc);
-  for nodeno := 0 to myargc - 1 do
-    arguments[nodeno] := myargv[nodeno];
-  net_peers := TNetNodeListParser.Parse(arguments, i + 2, net_port);
-  net_numnodes := 1 + Length(net_peers);
-
-  for nodeno := 0 to Length(net_peers) - 1 do
-    if net_peers[nodeno].IsLiteral then
-      printf('Node number %d address %s'#13#10, [nodeno + 1, net_peers[nodeno].Host])
-    else
-      printf('Node number %d hostname %s'#13#10, [nodeno + 1, net_peers[nodeno].Host]);
-  printf('Total number of players : %d'#13#10, [net_numnodes]);
+  netgame := options.IsNetGame;
+  net_consoleplayer := options.ConsolePlayer;
+  net_numnodes := options.NumNodes;
+  net_peers := options.Peers;
 end;
 
 end.

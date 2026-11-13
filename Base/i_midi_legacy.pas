@@ -31,7 +31,22 @@
 
 unit i_midi_legacy;
 
+// The facade of the legacy MIDI player (issue #185): TLegacyMidiPlayer of Libs\EngineSystem does the
+// work (the play list, the MCI sequencer and the notification window), ComposeEngine gives it
+// (I_ConfigureLegacyMidi). i_midi chooses between this player and the internal one.
+
 interface
+
+uses
+  DelphiDoom.EngineSystem.Intf;
+
+//==============================================================================
+//
+// I_ConfigureLegacyMidi
+// Gives the unit the legacy MIDI player. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureLegacyMidi(const APlayer: ILegacyMidiPlayer);
 
 //==============================================================================
 //
@@ -106,163 +121,32 @@ procedure I_ProcessMidi_Legacy;
 implementation
 
 uses
-  Windows,
-  d_delphi,
-  Messages,
-  MMSystem;
+  i_system;
 
 var
-  wDeviceID: DWORD;
-  MidiFileNames: TDStringList;
-  MidiID: integer;
-  Window: HWnd;
-  fIsMidiPlaying: boolean;
-  WindowClass: TWndClass;
-  currentmidi: string;
-
-const
-  rsAppName = 'MIDIPLAYERWNDNOTIFY';
-  rsSequencer = 'sequencer';
-  rsWndTitle = 'Notify Window';
-  rsErrNoMIDIMapper = 'MIDI mapper unavailable';
-  rsErrOutOfRange = 'I_PlayMidi(index): index out of playlist range.';
+  // given by the composition root (I_ConfigureLegacyMidi)
+  legacy_player: ILegacyMidiPlayer = nil;
 
 //==============================================================================
-// playMIDIFile
 //
-// Plays a specified MIDI file by using MCI_OPEN and MCI_PLAY. Returns
-// as soon as playback begins. The window procedure function for the
-// specified window will be notified when playback is complete.
-// Returns 0L on success; otherwise, it returns an MCI error code.
+// I_ConfigureLegacyMidi
 //
 //==============================================================================
-function playMIDIFile(hWndNotify: HWnd; lpszMIDIFileName: string; doCheckMidiMapper: boolean = false): DWORD;
-var
-  mciOpenParms: MCI_OPEN_PARMS;
-  mciPlayParms: MCI_PLAY_PARMS;
-  mciStatusParms: MCI_STATUS_PARMS;
+procedure I_ConfigureLegacyMidi(const APlayer: ILegacyMidiPlayer);
 begin
-  // Open the device by specifying the device and filename.
-  // MCI will attempt to choose the MIDI mapper as the output port.
-  ZeroMemory(@mciOpenParms, SizeOf(MCI_OPEN_PARMS));
-  mciOpenParms.lpstrDeviceType := PChar(rssequencer);
-  mciOpenParms.lpstrElementName := PChar(lpszMIDIFileName);
-  result := mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE or MCI_OPEN_ELEMENT, DWORD(@mciOpenParms));
-  // Failed to open device. Don't close it; just return error.
-  if result <> 0 then
-    exit;
-
-  // The device opened successfully; get the device ID.
-  wDeviceID := mciOpenParms.wDeviceID;
-
-  if doCheckMidiMapper then
-  begin
-    // Check if the output port is the MIDI mapper.
-    mciStatusParms.dwItem := MCI_SEQ_STATUS_PORT;
-    result := mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM, DWORD(@mciStatusParms));
-    if result <> 0 then
-    begin
-      mciSendCommand(wDeviceID, MCI_CLOSE, 0, 0);
-      exit;
-    end
-    else if LOWORD(mciStatusParms.dwReturn) <> WORD(MIDI_MAPPER) then
-    // The output port is not the MIDI mapper.
-    begin
-      printf(rsErrNoMIDIMapper);
-      exit;
-    end;
-  end;
-
-  // Begin playback. The window procedure function for the parent
-  // window will be notified with an MM_MCINOTIFY message when
-  // playback is complete. At this time, the window procedure closes
-  // the device.
-  ZeroMemory(@mciPlayParms, SizeOf(MCI_PLAY_PARMS));
-  mciPlayParms.dwCallback := DWORD(hWndNotify);
-  result := mciSendCommand(wDeviceID, MCI_PLAY, MCI_NOTIFY, DWORD(@mciPlayParms));
-  if result > 0 then
-  begin
-    mciSendCommand(wDeviceID, MCI_CLOSE, 0, 0);
-    exit;
-  end;
-
-  currentmidi := strupper(lpszMIDIFileName);
+  legacy_player := APlayer;
 end;
 
 //==============================================================================
 //
-// restartMIDIFile
+// RequireLegacyPlayer
 //
 //==============================================================================
-function restartMIDIFile(hWndNotify: HWnd): DWORD;
-var
-  mciPlayParms: MCI_PLAY_PARMS;
-  mciSeekParms: MCI_SEEK_PARMS;
+function RequireLegacyPlayer: ILegacyMidiPlayer;
 begin
-  ZeroMemory(@mciSeekParms, SizeOf(MCI_SEEK_PARMS));
-  mciSeekParms.dwCallback := DWORD(hWndNotify);
-  result := mciSendCommand(wDeviceID, MCI_SEEK, MCI_NOTIFY or MCI_SEEK_TO_START, DWORD(@mciSeekParms));
-  if result > 0 then
-  begin
-    mciSendCommand(wDeviceID, MCI_CLOSE, 0, 0);
-    exit;
-  end;
-
-  ZeroMemory(@mciPlayParms, SizeOf(MCI_PLAY_PARMS));
-  mciPlayParms.dwCallback := DWORD(hWndNotify);
-  result := mciSendCommand(wDeviceID, MCI_PLAY, MCI_NOTIFY, DWORD(@mciPlayParms));
-  if result > 0 then
-    mciSendCommand(wDeviceID, MCI_CLOSE, 0, 0);
-end;
-
-//==============================================================================
-//
-// StopPlayingMidi
-//
-//==============================================================================
-procedure StopPlayingMidi;
-begin
-  mciSendCommand(wDeviceID, MCI_STOP, 0, 0);
-  mciSendCommand(wDeviceID, MCI_CLOSE, 0, 0);
-  currentmidi := '';
-end;
-
-//==============================================================================
-//
-// WindowProc
-//
-//==============================================================================
-function WindowProc(hWnd: HWND; Msg: UINT; wParam: WPARAM;
-  lParam: LPARAM): LRESULT; stdcall; export;
-var
-  newmidi: string;
-begin
-  case Msg of
-    MM_MCINOTIFY:
-      if (wParam = MCI_NOTIFY_SUCCESSFUL) then
-      begin
-        if MidiID >= MidiFileNames.Count - 1 then
-          MidiID := 0
-        else
-          inc(MidiID);
-        newmidi := strupper(MidiFileNames[MidiID]);
-        if newmidi = currentmidi then
-          restartMIDIFile(Window)
-        else
-        begin
-          StopPlayingMidi;
-          playMIDIFile(Window, newmidi);
-        end;
-      end;
-    WM_CLOSE:
-      begin
-        DestroyWindow(hWnd);
-        Window := 0;
-        result := 0;
-        exit;
-      end;
-  end;
-  result := DefWindowProc(hWnd, Msg, WParam, LParam);
+  if legacy_player = nil then
+    I_Error('The legacy MIDI player was not configured (ComposeEngine)');
+  result := legacy_player;
 end;
 
 //==============================================================================
@@ -272,9 +156,7 @@ end;
 //==============================================================================
 procedure AddMidiFileToPlayList_Legacy(const MidiFile: string);
 begin
-  if MidiFileNames = nil then
-    MidiFileNames := TDStringList.Create;
-  MidiFileNames.Add(MidiFile);
+  RequireLegacyPlayer.AddFile(MidiFile);
 end;
 
 //==============================================================================
@@ -284,8 +166,7 @@ end;
 //==============================================================================
 procedure ClearMidiFilePlayList_Legacy;
 begin
-  if MidiFileNames <> nil then
-    MidiFileNames.Clear;
+  RequireLegacyPlayer.ClearPlayList;
 end;
 
 //==============================================================================
@@ -295,43 +176,7 @@ end;
 //==============================================================================
 procedure I_PlayMidi_Legacy(index: integer);
 begin
-  I_StopMidi_Legacy;
-  ZeroMemory(@WindowClass, SizeOf(WindowClass));
-  if Window = 0 then
-  begin
-    WindowClass.style := CS_DBLCLKS;
-    WindowClass.lpfnWndProc := @WindowProc;
-    WindowClass.lpszClassName := PChar(rsAppName);
-    if HPrevInst = 0 then
-    begin
-      WindowClass.hInstance := HInstance;
-      WindowClass.hCursor := LoadCursor(0, idc_Arrow);
-      RegisterClass(WindowClass);
-    end;
-    Window := CreateWindowEx(
-      0,
-      WindowClass.lpszClassName,
-      PChar(rsWndTitle),
-      ws_OverlappedWindow,
-      integer(CW_USEDEFAULT),
-      integer(CW_USEDEFAULT),
-      integer(CW_USEDEFAULT),
-      integer(CW_USEDEFAULT),
-      0,
-      0,
-      HInstance,
-      nil);
-    ShowWindow(Window, SW_HIDE);
-  end;
-
-  if (index < MidiFileNames.Count) and (index > -1) then
-  begin
-    MidiID := index;
-    playMIDIFile(Window, MidiFileNames[MidiID], true);
-    fIsMidiPlaying := true;
-  end
-  else
-    printf(rsErrNoMIDIMapper);
+  RequireLegacyPlayer.Play(index);
 end;
 
 //==============================================================================
@@ -341,13 +186,7 @@ end;
 //==============================================================================
 procedure I_StopMidi_Legacy;
 begin
-  if Window <> 0 then
-  begin
-    StopPlayingMidi;
-    SendMessage(Window, WM_CLOSE, 0, 0);
-    Window := 0;
-    fIsMidiPlaying := false;
-  end;
+  RequireLegacyPlayer.Stop;
 end;
 
 //==============================================================================
@@ -357,7 +196,7 @@ end;
 //==============================================================================
 procedure I_ResumeMidi_Legacy;
 begin
-  mciSendCommand(wDeviceID, MCI_RESUME, 0, 0);
+  RequireLegacyPlayer.Resume;
 end;
 
 //==============================================================================
@@ -367,7 +206,7 @@ end;
 //==============================================================================
 procedure I_PauseMidi_Legacy;
 begin
-  mciSendCommand(wDeviceID, MCI_PAUSE, 0, 0);
+  RequireLegacyPlayer.Pause;
 end;
 
 //==============================================================================
@@ -377,10 +216,7 @@ end;
 //==============================================================================
 procedure I_InitMidi_Legacy;
 begin
-  Window := 0;
-  MidiFileNames := TDStringList.Create;
-  MidiID := 0;
-  fIsMidiPlaying := false;
+  RequireLegacyPlayer.Initialize;
 end;
 
 //==============================================================================
@@ -390,8 +226,7 @@ end;
 //==============================================================================
 procedure I_ShutDownMidi_Legacy;
 begin
-  StopPlayingMidi;
-  MidiFileNames.Free;
+  RequireLegacyPlayer.ShutDown;
 end;
 
 //==============================================================================
@@ -401,7 +236,7 @@ end;
 //==============================================================================
 procedure I_SetMusicVolumeMidi_Legacy(const v: integer);
 begin
-
+  RequireLegacyPlayer.SetVolume(v);
 end;
 
 //==============================================================================
@@ -411,7 +246,7 @@ end;
 //==============================================================================
 procedure I_ProcessMidi_Legacy;
 begin
-
+  RequireLegacyPlayer.Process;
 end;
 
 end.

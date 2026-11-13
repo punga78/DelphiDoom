@@ -34,6 +34,7 @@ unit i_midi;
 interface
 
 uses
+  DelphiDoom.CommandLine.Intf,
   DelphiDoom.Engine.Midi.Intf;
 
 const
@@ -122,6 +123,15 @@ function I_SelectDefaultMidiDevice: LongWord;
 //==============================================================================
 procedure I_ConfigureMidi(const APlayer: IEngineMidiSongPlayer);
 
+//==============================================================================
+//
+// I_ConfigureMidiOptions
+// Gives the unit the command line that chooses the MIDI player and the MIDI device
+// (TMidiPlayerSelection of Libs\EngineSystem). The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureMidiOptions(const ACommandLine: ICommandLine);
+
 var
   snd_uselegacymidiplayer: integer = 2;
 
@@ -132,13 +142,25 @@ uses
   Messages,
   MMSystem,
   d_delphi,
-  m_argv,
   i_system,
-  i_midi_legacy;
+  i_midi_legacy,
+  DelphiDoom.EngineSystem.MidiPlayerSelection;
 
 var
   uselegacymidiplayer: boolean = false;
   midiplayer: IEngineMidiSongPlayer = nil;
+  // given by the composition root (I_ConfigureMidiOptions)
+  midi_commandline: ICommandLine = nil;
+
+//==============================================================================
+//
+// I_ConfigureMidiOptions
+//
+//==============================================================================
+procedure I_ConfigureMidiOptions(const ACommandLine: ICommandLine);
+begin
+  midi_commandline := ACommandLine;
+end;
 
 //==============================================================================
 //
@@ -234,13 +256,9 @@ end;
 //==============================================================================
 procedure I_InitMidi;
 begin
-  if M_CheckParm('-uselegacymidiplayer') > 0 then
-    snd_uselegacymidiplayer := 1;
-  if M_CheckParm('-nouselegacymidiplayer') > 0 then
-    snd_uselegacymidiplayer := 0;
-  if M_CheckParm('-internalmidiplayer') > 0 then
-    snd_uselegacymidiplayer := 2;
-  uselegacymidiplayer := snd_uselegacymidiplayer = 1;
+  if midi_commandline <> nil then
+    snd_uselegacymidiplayer := TMidiPlayerSelection.ResolvePlayer(midi_commandline, snd_uselegacymidiplayer);
+  uselegacymidiplayer := TMidiPlayerSelection.IsLegacy(snd_uselegacymidiplayer);
   if uselegacymidiplayer then
   begin
     printf('Using legacy midi playback'#13#10);
@@ -307,13 +325,10 @@ end;
 //
 //==============================================================================
 function I_SelectDefaultMidiDevice: LongWord;
-var
-  p: integer;
 begin
   result := MIDI_MAPPER;
-  p := M_CheckParm('-mididevice');
-  if (p > 0) and (p < myargc) then
-    result := atoui(myargv[p + 1], MIDI_MAPPER);
+  if midi_commandline <> nil then
+    result := TMidiPlayerSelection.ResolveDevice(midi_commandline, MIDI_MAPPER);
 end;
 
 end.

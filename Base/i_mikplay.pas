@@ -31,7 +31,21 @@
 
 unit i_mikplay;
 
+// The facade of the tracker music (issue #185): TModuleMusicPlayer of Libs\EngineSystem does the work,
+// ComposeEngine gives it (I_ConfigureMik). The engine calls these routines from TModuleMusicBackend.
+
 interface
+
+uses
+  DelphiDoom.EngineSystem.Intf;
+
+//==============================================================================
+//
+// I_ConfigureMik
+// Gives the unit the tracker music player. The composition root calls it
+//
+//==============================================================================
+procedure I_ConfigureMik(const APlayer: IModuleMusicPlayer);
 
 //==============================================================================
 //
@@ -92,17 +106,21 @@ procedure I_ProcessMik;
 implementation
 
 uses
-  d_delphi,
-  DelphiDoom.Mikmod.Intf,
-  DelphiDoom.Mikmod.Provider,
-  i_system,
-  i_mainwindow;
+  i_system;
 
 var
-  mik_init: boolean = false;
+  // given by the composition root (I_ConfigureMik)
+  mik_player: IModuleMusicPlayer = nil;
 
-const
-  MIK_FREQ = 44100;
+//==============================================================================
+//
+// I_ConfigureMik
+//
+//==============================================================================
+procedure I_ConfigureMik(const APlayer: IModuleMusicPlayer);
+begin
+  mik_player := APlayer;
+end;
 
 //==============================================================================
 //
@@ -111,17 +129,9 @@ const
 //==============================================================================
 procedure I_InitMik;
 begin
-  try
-    TMikModProvider.Client.Initialize(MIK_FREQ, True, True, True,
-      NativeUInt(hMainWnd), 0);
-    mik_init := True;
-  except
-    on E: EMikModException do
-    begin
-      mik_init := False;
-      I_Warning('I_InitMik(): %s'#13#10, [E.Message]);
-    end;
-  end;
+  if mik_player = nil then
+    I_Error('I_InitMik(): the tracker music was not configured (ComposeEngine)');
+  mik_player.Initialize;
 end;
 
 //==============================================================================
@@ -131,8 +141,8 @@ end;
 //==============================================================================
 procedure I_ShutDownMik;
 begin
-  mik_init := False;
-  TMikModProvider.Release;
+  if mik_player <> nil then
+    mik_player.ShutDown;
 end;
 
 //==============================================================================
@@ -142,17 +152,8 @@ end;
 //==============================================================================
 procedure I_PlayMik(const data: pointer; const size: integer);
 begin
-  if not mik_init then
-    Exit;
-
-  // The tracker reads the module from memory: no temporary file
-  try
-    TMikModProvider.Client.LoadFromMemory(data, size);
-    TMikModProvider.Client.Play(True);
-  except
-    on E: EMikModException do
-      I_Warning('I_PlayMik(): %s'#13#10, [E.Message]);
-  end;
+  if mik_player <> nil then
+    mik_player.Play(data, size);
 end;
 
 //==============================================================================
@@ -162,16 +163,8 @@ end;
 //==============================================================================
 procedure I_PauseMik;
 begin
-  if not mik_init then
-    Exit;
-
-  try
-    if not TMikModProvider.Client.IsPaused then
-      TMikModProvider.Client.Pause;
-  except
-    on EMikModException do
-      ; // Nothing is loaded: there is nothing to pause
-  end;
+  if mik_player <> nil then
+    mik_player.Pause;
 end;
 
 //==============================================================================
@@ -181,16 +174,8 @@ end;
 //==============================================================================
 procedure I_ResumeMik;
 begin
-  if not mik_init then
-    Exit;
-
-  try
-    if TMikModProvider.Client.IsPaused then
-      TMikModProvider.Client.Resume;
-  except
-    on EMikModException do
-      ; // Nothing is loaded: there is nothing to resume
-  end;
+  if mik_player <> nil then
+    mik_player.Resume;
 end;
 
 //==============================================================================
@@ -200,24 +185,9 @@ end;
 //==============================================================================
 procedure I_StopMik;
 begin
-  if not mik_init then
-    Exit;
-
-  try
-    TMikModProvider.Client.Stop;
-  except
-    on EMikModException do
-      ; // Nothing is loaded: there is nothing to stop
-  end;
+  if mik_player <> nil then
+    mik_player.Stop;
 end;
-
-const
-  MIK_VOLUME_CONTROL: array[0..15] of word = (
-      0,     9,     17,    26,
-     34,    43,     51,    60,
-     68,    77,     85,    94,
-    102,   111,    119,   127
-  );
 
 //==============================================================================
 //
@@ -226,15 +196,8 @@ const
 //==============================================================================
 procedure I_SetMusicVolumeMik(volume: integer);
 begin
-  if not mik_init then
-    Exit;
-
-  try
-    TMikModProvider.Client.SetVolume(MIK_VOLUME_CONTROL[ibetween(volume, 1, 15)]);
-  except
-    on EMikModException do
-      ; // Nothing is loaded yet: the volume is set when the music starts
-  end;
+  if mik_player <> nil then
+    mik_player.SetVolume(volume);
 end;
 
 //==============================================================================
@@ -244,15 +207,8 @@ end;
 //==============================================================================
 procedure I_ProcessMik;
 begin
-  if not mik_init then
-    Exit;
-
-  try
-    TMikModProvider.Client.Update;
-  except
-    on EMikModException do
-      ; // Nothing is loaded: there is nothing to mix
-  end;
+  if mik_player <> nil then
+    mik_player.Process;
 end;
 
 end.

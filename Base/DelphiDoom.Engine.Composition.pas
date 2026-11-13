@@ -442,7 +442,14 @@ uses
   i_tmp,
   DelphiDoom.Platform.Intf,
   DelphiDoom.Platform.Factory,
-  DelphiDoom.Engine.Platform.TempDirectory;
+  DelphiDoom.Engine.Platform.TempDirectory,
+  i_mikplay,
+  i_midi_legacy,
+  i_net,
+  DelphiDoom.EngineSystem.Intf,
+  DelphiDoom.EngineSystem.Factory,
+  DelphiDoom.Engine.System.ShutdownPlan,
+  DelphiDoom.Engine.System.FatalErrorSteps;
 
 // The script preprocessor (given back: ActorDef, MapInfo, DynLights, VOXELDEF and MODELDEF use
 // it), the defines of the game that it reads, and the evaluator of the expressions in the
@@ -538,8 +545,28 @@ begin
 {$ENDIF}
 end;
 
-procedure ComposeNetGame(const AClock: IClock; const ALog: ILog; const AGame: IGameContext;
-  const AConsole: IEngineConsole; const AEndScreenTick: TProc; const AShutdown: IEngineShutdown);
+// The system of the process: the options of the network game, the shutdown (from the network to the files)
+// and the handler of the fatal errors. The handler is given first, as soon as the log exists, so that an error
+// of the composition itself is handled; the shutdown needs the network, the defaults and the input
+procedure ComposeFatalError(const ALog: ILog);
+begin
+  I_ConfigureFatalError(TEngineSystemFactory.CreateFatalErrorHandler(TEngineFatalErrorSteps.Create(ALog)));
+end;
+
+procedure ComposeSystem(const ALog: ILog; const ACommandLine: ICommandLine; const ANetGame: IEngineNetGame;
+  const ADefaults: IEngineDefaults; const AInput: IInputPoller);
+begin
+  I_ConfigureNetOptions(TEngineSystemFactory.CreateNetCommandLineReader(ACommandLine, ALog));
+  I_ConfigureShutdown(TEngineSystemFactory.CreateShutdownSequence(
+    TEngineShutdownPlan.Create(ANetGame, ADefaults, AInput, ACommandLine), ALog,
+    procedure(ACode: Integer)
+    begin
+      Halt(ACode);
+    end));
+end;
+
+function ComposeNetGame(const AClock: IClock; const ALog: ILog; const AGame: IGameContext;
+  const AConsole: IEngineConsole; const AEndScreenTick: TProc; const AShutdown: IEngineShutdown): IEngineNetGame;
 var
   LNetGame: IEngineNetGame;
 begin
@@ -548,13 +575,14 @@ begin
   G_ConfigureNetGame(LNetGame);
   R_ConfigureNetGame(LNetGame);
   I_ConfigureNetGame(LNetGame);
+  Result := LNetGame;
 end;
 
 const
   // the seed of the unpredictable random numbers when the parity tools are on
   PARITY_ENTROPY_SEED = $5EED1234;
 
-procedure ComposeInput(const ALog: ILog; const AParity: IParitySwitch);
+function ComposeInput(const ALog: ILog; const AParity: IParitySwitch): IInputPoller;
 var
   LWindow: TFunc<THandle>;
   LPoller: IInputPoller;
@@ -571,6 +599,7 @@ begin
     TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create,
     TEngineKeyMap.Create,
     TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
+  Result := LPoller;
   I_ConfigureInput(LPoller);
   G_ConfigureInput(LPoller);
 {$IFDEF OPENGL}
@@ -616,6 +645,15 @@ begin
   // are turned into the events of the stream by a sequencer for each song
   I_ConfigureMidi(TEngineMidiSongPlayer.Create(TMidiFactory.CreateSequencerFactory(ALog), ALog,
     I_SelectDefaultMidiDevice));
+  // the legacy player (snd_uselegacymidiplayer = 1) and the choice of the player and the device
+  I_ConfigureLegacyMidi(TEngineSystemFactory.CreateLegacyMidiPlayer(ALog));
+  I_ConfigureMidiOptions(ACommandLine);
+  // the tracker music (MOD, S3M, XM, IT)
+  I_ConfigureMik(TEngineSystemFactory.CreateModuleMusicPlayer(ALog,
+    function: NativeUInt
+    begin
+      Result := hMainWnd;
+    end));
   // the midi stream of the MUS songs is closed by the backends of the MIDI files
   LMidiStream := TMusMusicBackend.Create(TM2mEngine.Create, ACommandLine, ALog, AShutdown);
   LMus := LMidiStream as IMusicBackend;
@@ -1466,6 +1504,8 @@ var
   LParity: TEngineParity;
   LParitySwitch: IParitySwitch;
   LParityClock: TParitySwitchClock;
+  LNetGame: IEngineNetGame;
+  LInput: IInputPoller;
 begin
   // how a class of the engine stops the game: I_Error and I_Quit of i_system
   LShutdown := TEngineShutdown.Create;
@@ -1508,6 +1548,8 @@ begin
       Result := LContext.IsDeveloperMode;
     end);
   I_ConfigureLog(LLog);
+  // the fatal errors are handled from here on
+  ComposeFatalError(LLog);
   // The WAD services and the PAK file system: the classes that read files receive them
   LWadServices := TEngineWadServices.Create;
   ComposePak(LWadServices, LPakFiles, LPakContainers);
@@ -1531,7 +1573,7 @@ begin
   I_ConfigureClock(LClock);
   I_ConfigureVideo(TVideoFactory.CreateServices);
   ComposeDisplayModes;
-  ComposeInput(LLog, LParitySwitch);
+  LInput := ComposeInput(LLog, LParitySwitch);
   ComposeSound(LLog);
   ComposeMusic(LTempFiles, LCommandLine, LZone, LLog, LShutdown);
   S_ConfigurePK3Sounds(LTempFiles);
@@ -1551,7 +1593,8 @@ begin
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom, LZone), LLog));
   LEndScreenTick := ComposeEndoom(LLumps, LZone, LLog, LShutdown, LScreens);
-  ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
+  LNetGame := ComposeNetGame(LClock, LLog, LContext, LConsole, LEndScreenTick, LShutdown);
+  ComposeSystem(LLog, LCommandLine, LNetGame, LDefaults, LInput);
   ComposeVoxels(LLog, LPreprocessor, LPakFiles, LSaveFileNames, LLumps, LScreens, LTempFiles);
 {$IFDEF OPENGL}
   ComposeModels(LLog, LPreprocessor);
