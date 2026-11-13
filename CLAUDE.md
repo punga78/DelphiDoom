@@ -105,7 +105,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **MathCore** — Parti pure di generatore casuale, hash, CRC, SHA-1, tabelle trigonometriche, aritmetica fixed, vettori e bbox; in virgola mobile di id Tech 4 (issue #95, prima fetta: angoli, quaternioni, matrice 3x3, rotazione, complessi, polinomi). [CLAUDE.md](Libs/MathCore/CLAUDE.md), [README.md](Libs/MathCore/README.md)
 - **Midi** — Sequencer MIDI senza dispositivo, volume ed event feeder. [CLAUDE.md](Libs/Midi/CLAUDE.md), [README.md](Libs/Midi/README.md)
 - **Mikmod** — Lettore di moduli tracker (MOD, S3M, XM, IT) in Pascal. [CLAUDE.md](Libs/Mikmod/CLAUDE.md), [README.md](Libs/Mikmod/README.md) (paragrafo in `Libs\Zlib`)
-- **Models** — Lettura dei modelli 3D (MD2, liste di comandi procedurali, I3D di Speed). [CLAUDE.md](Libs/Models/CLAUDE.md), [README.md](Libs/Models/README.md)
+- **Models** — Lettura dei modelli 3D (MD2, liste di comandi procedurali, I3D di Speed, MD5 di id Tech 4: md5mesh, md5anim, scheletro e vertici; issue #104, prima fetta). [CLAUDE.md](Libs/Models/CLAUDE.md), [README.md](Libs/Models/README.md)
 - **Mp3** — Decoder MP3 (MPEG-1/2 layer III). [CLAUDE.md](Libs/Mp3/CLAUDE.md), [README.md](Libs/Mp3/README.md) (paragrafo in `Libs\Zlib`)
 - **MusInfo** — Lettura del lump MUSINFO. [CLAUDE.md](Libs/MusInfo/CLAUDE.md), [README.md](Libs/MusInfo/README.md)
 - **Net** — Trasporto UDP, protocollo dei pacchetti e sincronizzazione dei ticcmd. [CLAUDE.md](Libs/Net/CLAUDE.md), [README.md](Libs/Net/README.md) (paragrafo in `Libs\DynLights`)
