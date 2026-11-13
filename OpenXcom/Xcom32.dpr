@@ -55,6 +55,9 @@ uses
   System.SysUtils, System.Classes, System.IOUtils,
   DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Game,
+  DelphiDoom.XcomEngine.DiskFileSystem,
+  DelphiDoom.XcomEngine.ErrorLog,
+  DelphiDoom.XcomEngine.ErrorLog.Types,
   DelphiDoom.XcomEngine.QueueEventSource,
   DelphiDoom.XcomEngine.MemoryVideoDevice,
   DelphiDoom.XcomEngine.MemoryTrueColorVideoDevice,
@@ -150,6 +153,50 @@ begin
   end;
   LBytes := TEncoding.UTF8.GetBytes(AText + sLineBreak);
   WriteFile(LHandle, LBytes[0], Length(LBytes), LWritten, nil);
+end;
+
+var
+  /// <summary>The error that reached the main loop is already in xcom_errors.log (written where the game was alive)</summary>
+  GErrorLogged: Boolean = False;
+
+/// <summary>
+/// Adds the error to xcom_errors.log of the user folder (issue 187), besides the message box. Called inside the
+/// except block, where the address of the exception and the callers are still known. Never raises.
+/// </summary>
+procedure LogError(E: Exception; const AStates: TArray<string>; const AUserFolder, AVersion: string);
+var
+  LEntry: TXcomErrorEntry;
+  LLog: TXcomErrorLog;
+begin
+  GErrorLogged := True;
+  if AUserFolder = '' then
+    Exit;
+  try
+    LEntry.ExceptionClass := E.ClassName;
+    LEntry.ExceptionMessage := E.Message;
+    LEntry.MapAddress := '';
+    if ExceptAddr <> nil then
+      LEntry.MapAddress := IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) + $400000, 8);
+    LEntry.CallStack := TXcomStackScan.MapAddresses(E);
+    LEntry.States := AStates;
+    LEntry.Version := AVersion;
+    ForceDirectories(AUserFolder);
+    LLog := TXcomErrorLog.Create(TXcomDiskFileSystem.Create, TPath.Combine(AUserFolder, 'xcom_errors.log'),
+      function: string
+      begin
+        Result := FormatDateTime('yyyy-mm-dd hh:nn:ss', Now);
+      end);
+    try
+      if not LLog.Write(LEntry) then
+        Say('error log not written: ' + LLog.LastError, True);
+    finally
+      LLog.Free;
+    end;
+  except
+    // the file of errors must never hide the error that is being reported
+    on EWrite: Exception do
+      Say('error log not written: ' + EWrite.Message, True);
+  end;
 end;
 
 procedure ShowUsage;
@@ -390,11 +437,16 @@ begin
           Break;
       end;
     except
-      // an error in a frame: the options the player set are written all the same, and the error goes on to the window
-      LGame.SaveOptionsAfterFailure;
-      if LGame.OptionsSaveError <> '' then
-        Say('options not saved after the error: ' + LGame.OptionsSaveError, True);
-      raise;
+      on E: Exception do
+      begin
+        // the file of errors first: the game is alive here (its states are told) and nothing below can lose the entry
+        LogError(E, LGame.StateNames, AArguments.Settings.UserFolder, AArguments.Settings.VersionText);
+        // an error in a frame: the options the player set are written all the same, and the error goes on to the window
+        LGame.SaveOptionsAfterFailure;
+        if LGame.OptionsSaveError <> '' then
+          Say('options not saved after the error: ' + LGame.OptionsSaveError, True);
+        raise;
+      end;
     end;
     // Options::save at the end of Game::run: also the size of a window that was resized
     LGame.SaveOptions;
@@ -607,6 +659,9 @@ begin
       // the callers, nearest first (return addresses found on the stack when the exception was raised)
       if TXcomStackScan.MapAddresses(E) <> '' then
         Say('stack: ' + TXcomStackScan.MapAddresses(E), True);
+      // every error of the program is also in xcom_errors.log (the one of the game loop is there already)
+      if not LExport and not GErrorLogged then
+        LogError(E, nil, LArguments.Settings.UserFolder, LArguments.Settings.VersionText);
       // in the window mode nobody reads the standard error: the player must see why the game closed
       if not LExport and (LArguments.ShotFile = '') and (LArguments.Script = '') then
         MessageBox(0, PChar(E.ClassName + ': ' + E.Message), 'OpenXcom', MB_OK or MB_ICONERROR);

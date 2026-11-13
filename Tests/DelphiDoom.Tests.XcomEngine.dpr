@@ -22,6 +22,7 @@ uses
   DelphiDoom.Tests.XcomEngine.Core in 'Source\DelphiDoom.Tests.XcomEngine.Core.pas',
   DelphiDoom.Tests.XcomEngine.Game in 'Source\DelphiDoom.Tests.XcomEngine.Game.pas',
   DelphiDoom.Tests.XcomEngine.GamePause in 'Source\DelphiDoom.Tests.XcomEngine.GamePause.pas',
+  DelphiDoom.Tests.XcomEngine.ErrorLog in 'Source\DelphiDoom.Tests.XcomEngine.ErrorLog.pas',
   DelphiDoom.Tests.XcomEngine.Ui in 'Source\DelphiDoom.Tests.XcomEngine.Ui.pas',
   DelphiDoom.Tests.XcomEngine.Menu in 'Source\DelphiDoom.Tests.XcomEngine.Menu.pas',
   DelphiDoom.Tests.XcomEngine.Timer in 'Source\DelphiDoom.Tests.XcomEngine.Timer.pas',
