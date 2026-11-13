@@ -169,6 +169,8 @@ type
     function IsQuitting: Boolean;
     /// <summary>The state on top (nil when there is none)</summary>
     function TopState: TXcomState;
+    /// <summary>The class names of the states, the one on top first (for the file of errors, issue 187)</summary>
+    function StateNames: TArray<string>;
     procedure SetMouseActive(AActive: Boolean);
     /// <summary>How many frames were drawn</summary>
     property Frames: Integer read FFrames;
@@ -294,6 +296,15 @@ end;
 function TXcomGame.StateCount: Integer;
 begin
   Result := FStates.Count;
+end;
+
+function TXcomGame.StateNames: TArray<string>;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, FStates.Count);
+  for LIndex := 0 to FStates.Count - 1 do
+    Result[LIndex] := FStates[FStates.Count - 1 - LIndex].ClassName;
 end;
 
 procedure TXcomGame.AdoptData(const AResources: IXcomResources; ALanguage: TXcomLanguage);

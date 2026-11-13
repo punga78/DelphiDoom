@@ -11,7 +11,7 @@ unit DelphiDoom.XcomBattleStates.ActionMenuItem;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
+  System.SysUtils, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomBattleStates.OffsetBlit, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.RuleInterface,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.Frame;
 
@@ -48,6 +48,8 @@ type
     procedure SetPalette(AColors: PXcomColor; AFirst: Integer = 0; ACount: Integer = 256); override;
     /// <summary>draw: the frame and the texts over it (the surface is not cleared first, as in OpenXcom)</summary>
     procedure Draw; override;
+    /// <summary>The line, then its texts on the same target</summary>
+    procedure Blit(ATarget: TXcomSurface); override;
     /// <summary>getAction: BA_*</summary>
     property ActionType: Integer read FActionType;
     /// <summary>getTUs</summary>
@@ -121,10 +123,20 @@ end;
 
 procedure TXcomActionMenuItem.Draw;
 begin
+  // only the frame: the texts go on the target by Blit (issue 188)
   FFrame.Blit(Self);
-  FTxtDescription.Blit(Self);
-  FTxtAccuracy.Blit(Self);
-  FTxtTimeUnits.Blit(Self);
+end;
+
+procedure TXcomActionMenuItem.Blit(ATarget: TXcomSurface);
+begin
+  inherited Blit(ATarget);
+  // the texts are copied on the target itself, over the frame, so that their ink is left on the screen
+  if Visible and not Hidden then
+  begin
+    TXcomOffsetBlit.Blit(FTxtDescription, ATarget, X, Y);
+    TXcomOffsetBlit.Blit(FTxtAccuracy, ATarget, X, Y);
+    TXcomOffsetBlit.Blit(FTxtTimeUnits, ATarget, X, Y);
+  end;
 end;
 
 procedure TXcomActionMenuItem.MouseIn(AAction: TXcomAction);

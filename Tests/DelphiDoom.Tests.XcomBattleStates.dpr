@@ -40,7 +40,9 @@ uses
   DelphiDoom.Tests.XcomBattleStates.ActionMenuState in 'Source\DelphiDoom.Tests.XcomBattleStates.ActionMenuState.pas',
   DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState in 'Source\DelphiDoom.Tests.XcomBattleStates.PrimeGrenadeState.pas',
   DelphiDoom.Tests.XcomBattleStates.Inventory in 'Source\DelphiDoom.Tests.XcomBattleStates.Inventory.pas',
-  DelphiDoom.Tests.XcomBattleStates.Screens in 'Source\DelphiDoom.Tests.XcomBattleStates.Screens.pas';
+  DelphiDoom.Tests.XcomBattleStates.Screens in 'Source\DelphiDoom.Tests.XcomBattleStates.Screens.pas',
+  DelphiDoom.Tests.XcomEngine.DetailFakes in 'Source\DelphiDoom.Tests.XcomEngine.DetailFakes.pas',
+  DelphiDoom.Tests.XcomBattleStates.InkLayers in 'Source\DelphiDoom.Tests.XcomBattleStates.InkLayers.pas';
 
 var
   Runner: ITestRunner;

@@ -165,7 +165,8 @@ implementation
 
 uses
   System.Math, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomSurface.Shade, DelphiDoom.XcomMod.MapBlock,
-  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.InventoryRules;
+  DelphiDoom.XcomMod.RuleItem, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattle.InventoryRules,
+  DelphiDoom.XcomBattleStates.OffsetBlit;
 
 const
   SCREEN_WIDTH = 320;
@@ -561,10 +562,12 @@ begin
   FGrid.Blit(Self);
   FItems.Blit(Self);
   FSelection.Blit(Self);
-  FWarning.Blit(Self);
   // the layers are drawn when they change, never by the blit
   Redraw := False;
   inherited Blit(ATarget);
+  // the warning goes on the target after the inventory, not into it, so that its text is drawn at the resolution
+  // of the screen (issue 188); the order over the layers is the same
+  TXcomOffsetBlit.Blit(FWarning, ATarget, X, Y);
 end;
 
 procedure TXcomInventory.Hover(AMouseX, AMouseY: Integer);

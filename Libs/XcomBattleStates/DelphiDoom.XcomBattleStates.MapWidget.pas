@@ -94,7 +94,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomBattle.Types;
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomBattle.Types, DelphiDoom.XcomBattleStates.OffsetBlit;
 
 const
   SCROLL_INTERVAL = 15;
@@ -239,8 +239,9 @@ begin
   FHiddenMovement := not FMap.Draw;
   if FHiddenMovement then
   begin
+    // the message is not drawn here: it goes on the target by Blit, so that its text can be drawn at the
+    // resolution of the screen (issue 188)
     Clear(BACKGROUND_COLOR);
-    FMessage.Blit(Self);
   end
   else
     Move(FMap.Surface.PixelPointer(0, 0)^, PixelPointer(0, 0)^, Width * Height);
@@ -286,6 +287,10 @@ begin
   Redraw := True;
   inherited Blit(ATarget);
   LeaveBlends(ATarget);
+  // the hidden movement: the window and its text on the target itself (a separate layer over the map), as the text
+  // of a widget drawn on the screen leaves its ink only there
+  if FHiddenMovement and Visible and not Hidden then
+    TXcomOffsetBlit.Blit(FMessage, ATarget, X, Y);
 end;
 
 procedure TXcomMapWidget.RefreshSelectorPosition;

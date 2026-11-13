@@ -12,7 +12,7 @@ interface
 
 uses
   DelphiDoom.Clock.Intf,
-  System.SysUtils, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
+  System.SysUtils, DelphiDoom.XcomSurface.Font, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomBattleStates.OffsetBlit, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf,
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomUi.Text;
 
 type
@@ -40,6 +40,8 @@ type
     procedure ShowMessage(const AMessage: string);
     procedure Think; override;
     procedure Draw; override;
+    /// <summary>The box, then its text on the same target</summary>
+    procedure Blit(ATarget: TXcomSurface); override;
     /// <summary>The text shown (for the tests)</summary>
     function Text: string;
   end;
@@ -129,8 +131,17 @@ begin
     LShade := 12
   else
     LShade := FFade;
+  // only the box: the text goes on the target by Blit (issue 188)
   DrawRect(0, 0, Width, Height, Byte(FColor + LShade));
-  FText.Blit(Self);
+end;
+
+procedure TXcomWarningMessage.Blit(ATarget: TXcomSurface);
+begin
+  inherited Blit(ATarget);
+  // the text is placed in the box and copied on the target itself, so that its ink is left there (a text drawn
+  // inside the box would reach the screen as a picture of the game)
+  if Visible and not Hidden then
+    TXcomOffsetBlit.Blit(FText, ATarget, X, Y);
 end;
 
 end.
