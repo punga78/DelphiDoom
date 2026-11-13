@@ -115,3 +115,7 @@ Prodotti da un harness C++ **fuori dal repository** (contiene codice di OpenXcom
 
 - `Collision\q3world0.bsp` e `q3world1.bsp` sono BSP **sintetici** (nessuna mappa di gioco) scritti da `Tools\Verifica\118\cmgen.c` (`cmgen write <variante> <file>`): brush assiali e smussati, albero k-d, un modello interno fuori dall'albero, due patch, entita'; il primo ha la visibilita'.
 - `Collision\q3cm.golden.txt` e' l'uscita del **vero** `cm_load.c`, `cm_test.c`, `cm_trace.c` e `q_math.c` di Quake III compilati con il gcc di w64devkit (`cmgen run <bsp> <seme>`): una riga per interrogazione, `<interrogazione> | <risposta>`, float come i bit in esadecimale. Per rifarli: `sh Tools/Verifica/118/build.sh <cartella>` e `sh Tools/Verifica/118/make-golden.sh <cartella>` (vedi `Tools\Verifica\118\LEGGIMI.md`).
+
+## Aas (issue #122)
+
+- `Aas\aas.golden.txt`: l'uscita di `Tools\Verifica\122\aasgen.exe` (gcc di w64devkit sul vero `be_aas_file.c` e `be_aas_sample.c` di Quake III) su quattro file `.aas` costruiti dal pilota piu' quattro rovinati: conteggi, CRC-32 dei 14 lump, punti, trace, facce, box e messaggi a seme fisso. Nessun file `.aas` e' nel repository: li costruisce `Tests\Source\DelphiDoom.Tests.Aas.Sample.pas` con la stessa ricetta. Come si rifa: `Tools\Verifica\122\LEGGIMI.md`.
