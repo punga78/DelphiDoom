@@ -156,6 +156,28 @@ facce che usavano lo stesso vertice).
 creazione delle texture GL e dei `TBitmap` (`CreateTexture`, `i3d_textures`, `gld_RegisterI3DTexture`: sono del motore), `mdl_i3d`/`mn_drawmodel` (classe del
 motore sopra `TBaseModel`), e l'effetto di `carinfo_t` (le texture della livrea e `mobj.tiredistance` sono dati del gioco: `TI3dTireAnimator` li riceve come numeri).
 
+### 2c. Modelli MD5 di id Tech 4 (issue #104, prima fetta)
+
+`DelphiDoom.Models.Md5.*` legge i file `md5mesh` e `md5anim` di Doom 3 e calcola scheletro e vertici, senza OpenGL, senza materiali e senza chiamanti nel motore (percorso freddo). **Licenza**: derivate da `renderer\Model_md5.cpp`, `game\anim\Anim.cpp` e `idlib` di Doom 3 (GPL v3 con i termini aggiuntivi, intestazione "Based on the Doom 3 GPL Source Code (id Software)"); `Md5.Factory` e' nostra. Nel repository non c'e' nessun modello di Doom 3: i file di prova sono un cubo con due giunti scritto per i test (`Tests\Data\Models\md5`).
+
+| Unit | Contenuto | Originale C++ |
+|---|---|---|
+| `Md5.Types` | costanti (`MD5_VERSION`, bit `ANIM_*`), `TMd5Joint`, `TMd5FrameBlend`, `TMd5AnimJointInfo`, messaggi | `Model.h`, `Anim.h` |
+| `Md5.JointQuat`, `Md5.JointMat` | `TMd5JointQuat` (rotazione e traslazione relative), `TMd5JointMat` (3x4: `SetRotation`, `Rotate`, `Apply`, `TransformBy`/`UntransformBy` = `*=` e `/=`, `ToJointQuat`) | `JointTransform.h/.cpp` |
+| `Md5.Intf` | `IMd5Skeleton`, `IMd5Mesh`, `IMd5Model`, `IMd5Anim`, `IMd5ModelParser`, `IMd5AnimParser` | - |
+| `Md5.Skeleton` | `TMd5Skeleton`: da quaternioni a matrici, `TransformJoints`, `UntransformJoints`, `ToAbsolute`, `BlendJoints` (slerp e lerp) | `Simd_Generic.cpp` |
+| `Md5.Mesh`, `Md5.MeshParser` | punti di texture, triangoli, pesi gia' scalati; `TransformVerts`, `TransformScaledVerts`, `CalcBounds`, `NearestJoint` | `idMD5Mesh` |
+| `Md5.Model`, `Md5.ModelParser` | giunti, posa predefinita relativa, matrici assolute del file, bounds, ricerca del giunto per nome | `idRenderModelMD5` |
+| `Md5.Anim`, `Md5.AnimParser` | frame di base, componenti animati, bounds, tempo in fotogrammi, origine e rotazione della radice, fotogramma interpolato e singolo | `idMD5Anim` |
+| `Md5.Factory` | `TMd5Factory`: unico posto che conosce le classi concrete | - |
+
+La lettura usa `TIdLexer` di `Libs\IdLib` (stesse bandiere dell'originale); gli errori sono `EIdLexerException` con "file F, line N: testo". Vettori, quaternioni (`TIdQuat`, `Slerp`, `CalcW`), `TIdCQuat` e matrici (`TIdMat3`) sono quelli di `Libs\IdLib` e `Libs\MathCore`; i bounds sono `TGeoBounds` di `Libs\Geometry`.
+
+**Parita'**: le classi vere di `idlib` (idLexer, idQuat, idMat3, idJointMat, `idSIMD_Generic`) e le funzioni di `idMD5Anim` estratte per intervallo di righe da `Anim.cpp` (`LoadAnim`, `ConvertTimeToFrame`, `GetOrigin`, `GetOriginRotation`, `GetBounds`, `GetInterpolatedFrame`, `GetSingleFrame`) sono state compilate con `bcc32c` (`-std=c++17`, con un `precompiled.h` finto) in un harness **fuori dal repository**; `idMD5Mesh::ParseMesh` e `LoadModel` non si compilano da soli (dipendono dal renderer) e il loro calcolo (pose relative, pesi, `NearestJoint`) e' copiato nell'harness. L'uscita (347 righe, float come bit `#xxxxxxxx`) e' in `Tests\Data\Models\md5\cube.golden.txt`: pose, matrici assolute, pesi, vertici in posa di riferimento, bounds, `NearestJoint`, intestazione dell'animazione, 14 tempi per 3 numeri di cicli (blend, origine, rotazione, bounds, giunti interpolati, scheletro assoluto, vertici) e i fotogrammi singoli. **Tolleranza**: 2 ULP, oppure 4e-6 relativo, oppure 1e-5 assoluto (il clang di `bcc32c` arrotonda a `float` ogni operazione, l'x87 di Delphi tiene l'espressione in registro; l'assoluto serve alle cancellazioni vicino a zero). Win32 e Win64 passano.
+
+**Differenze volute dal C++** (dove l'originale legge memoria fuori dall'intervallo o non termina): una frequenza di fotogrammi 0 e' un errore (la lunghezza divide per essa); un genitore di un giunto non precedente nell'md5mesh, un indice di peso o di vertice fuori dall'intervallo, un peso con indici negativi e componenti di un giunto oltre quelle del fotogramma sono errori (`ParseMesh` mette solo un avviso e poi legge fuori, `LoadAnim` non controlla `firstComponent + componenti`); `ConvertTimeToFrame` moltiplica in `Int64` (in `int` il C++ va in overflow dopo circa un giorno di animazione); il messaggio di `Invalid size` di `ParseMesh` stampa il numero e non il nome dello shader. `TransformScaledVerts` e' scritto come voleva l'autore: nel C++ la funzione moltiplica una copia locale **non inizializzata** (`alloca` senza copia dei pesi), quindi il risultato originale e' indefinito. **Difetti conservati**: `NearestJoint` non guarda mai l'ultimo peso di un vertice (il ciclo `weightIndex[i*2+1] == 0` si ferma su di esso); il controllo del genitore `num >= joints.Num() - 1`; `NearestJoint` e' per indice di mesh, non per `surfaceNum` (che appartiene all'istanza dinamica del renderer).
+
+**Non portato** (resta nella #104): le normali, le tangenti e il resto di `R_BuildDeformInfo` (`R_DeriveTangents`, spigoli di sagoma, vertici specchiati: sono nel renderer e dipendono da `srfTriangles_t`), i materiali e `shader->UseUnsmoothedTangents`, `InstantiateDynamicModel`/`DrawJoints`, il caricamento da file system (`LoadModel` con `fileSystem->ReadFile`, il modello di riserva `MakeDefaultModel`), `idAnimManager`, `idAnimBlend`/canali e `CheckModelHierarchy` (si fa con `IMd5Model` + `IMd5Anim`), `GetOrigin`-correlati di `idAnim`, le esportazioni. Resta anche una issue per usare MD5 in MODELDEF (come dice la #104).
 ## 3. `Libs\GlMath`
 
 | Unit | Ruolo |

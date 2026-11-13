@@ -14,6 +14,12 @@ uses
   System.SysUtils,
   System.Generics.Collections;
 
+/// <summary>Assert.AreEqual of two values with a tolerance (the generic one does not take it)</summary>
+procedure CheckNear(const AExpected, AActual, ATolerance: Double; const AMessage: string = '');
+
+/// <summary>All the occurrences of AOld in an 8-bit text replaced by ANew</summary>
+function Replace8(const AText, AOld, ANew: AnsiString): AnsiString;
+
 type
   /// <summary>
   ///   Tests\Data\Models\md5\cube.golden.txt: the output of the real idTech 4 classes (see
@@ -52,6 +58,16 @@ uses
 function BitsOf(const AValue: Single): Cardinal;
 begin
   Result := PCardinal(@AValue)^;
+end;
+
+procedure CheckNear(const AExpected, AActual, ATolerance: Double; const AMessage: string);
+begin
+  Assert.AreEqual(AExpected, AActual, ATolerance, AMessage);
+end;
+
+function Replace8(const AText, AOld, ANew: AnsiString): AnsiString;
+begin
+  Result := AnsiString(StringReplace(string(AText), string(AOld), string(ANew), [rfReplaceAll]));
 end;
 
 { TMd5Golden }
