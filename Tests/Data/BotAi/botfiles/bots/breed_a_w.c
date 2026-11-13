@@ -1,0 +1,1 @@
+weight "X" { switch(1) { case 1: { switch(2) { case 1: return balance(100, 0, 200); default: return balance(10, 5, 15); } } default: return balance(50, 10, 90); } }

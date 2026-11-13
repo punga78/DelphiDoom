@@ -216,11 +216,11 @@ function TBotAiScenarioRunner.Inventory(const AFirst: Integer): TArray<Integer>;
 var
   LIndex: Integer;
 begin
-  // 64 integers, the rest zero
-  SetLength(Result, 64);
+  // 1024 integers, the rest zero
+  SetLength(Result, 1024);
   for LIndex := AFirst to High(FArgs) do
   begin
-    if LIndex - AFirst < 64 then
+    if LIndex - AFirst < 1024 then
       Result[LIndex - AFirst] := Integer(Num(LIndex));
   end;
 end;

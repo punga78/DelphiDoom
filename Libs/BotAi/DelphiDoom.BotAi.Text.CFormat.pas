@@ -11,7 +11,7 @@ unit DelphiDoom.BotAi.Text.CFormat;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, System.Math;
 
 type
   /// <summary>The conversions of printf that the messages and the dumps of the library use</summary>
@@ -29,6 +29,15 @@ implementation
 
 class function TBotCFormat.Fixed6(const AValue: Double): AnsiString;
 begin
+  // the runtime of the tool that made the golden files writes these as "nan", "inf" and "-inf"
+  if IsNan(AValue) then
+    Exit('nan');
+  if IsInfinite(AValue) then
+  begin
+    if AValue > 0 then
+      Exit('inf');
+    Exit('-inf');
+  end;
   // 18 digits: enough to round the exact decimal expansion of a double correctly at six decimals
   Result := AnsiString(FloatToStrF(AValue, ffFixed, 18, 6, TFormatSettings.Invariant));
   // printf keeps the sign of a negative number that rounds to zero ("-0.000000")

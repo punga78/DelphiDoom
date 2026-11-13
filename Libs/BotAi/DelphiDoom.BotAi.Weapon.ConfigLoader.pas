@@ -179,13 +179,8 @@ begin
   // initialize weapon config
   Result := TBotWeaponConfig.Create(LMaxWeapons, LMaxProjectiles);
   try
-    try
-      LRead := ReadDefinitions(LSource, Result, AFileName, LMaxWeapons, LMaxProjectiles);
-    except
-      // the source already printed the error (SourceError)
-      on EBotChatParseException do
-        LRead := False;
-    end;
+    // the structure reader catches the errors of the source (SourceError), which the original also prints
+    LRead := ReadDefinitions(LSource, Result, AFileName, LMaxWeapons, LMaxProjectiles);
   finally
     LSource.Free;
   end;

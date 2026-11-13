@@ -1085,6 +1085,264 @@ wread ok=1 same=-1
 > wfree|2
 > libset|bot_reloadcharacters|0
 > wshutdown
+> wread|0|bots/nest_w.c
+P1|loaded bots/nest_w.c\x0A
+wread ok=1 same=-1
+> wdump|0
+weights n=1 file=bots/nest_w.c
+w0 name=N1
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=41200000(10.000000) min=41200000(10.000000) max=41200000(10.000000)
+    idx=2 val=999999 type=1 w=41A00000(20.000000) min=41200000(10.000000) max=41F00000(30.000000)
+  idx=1 val=9 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=41F00000(30.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+    idx=2 val=999999 type=1 w=42200000(40.000000) min=41F00000(30.000000) max=42480000(50.000000)
+  idx=1 val=999999 type=0 w=42480000(50.000000) min=42480000(50.000000) max=42480000(50.000000)
+> wfuzzy|0|0|0|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|0|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|0|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|0|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|0|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|0|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|0|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|0|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|0|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|4|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|4|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|4|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|4|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|4|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|4|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|4|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|4|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|4|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|5|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|5|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|5|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|5|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|5|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|5|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|5|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|5|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|5|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|7|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|7|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|7|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|7|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|7|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|7|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|7|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|7|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|7|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|8|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|8|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|8|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|8|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|8|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|8|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|8|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|8|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|8|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|9|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|9|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|9|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|9|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|9|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|9|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|9|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|9|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|9|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|12|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|12|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|12|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|12|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|12|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|12|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|12|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|12|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|12|5
+wundecided=41F00000(30.000000)
+> wshutdown
+> libset|bot_reloadcharacters|1
+> wread|0|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wread|1|bots/breed_b_w.c
+P1|loaded bots/breed_b_w.c\x0A
+wread ok=1 same=-1
+> wread|2|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|1|2
+> wdump|2
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=43FA0000(500.000000) min=43FA0000(500.000000) max=43FA0000(500.000000)
+    idx=2 val=999999 type=1 w=41F00000(30.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+  idx=1 val=999999 type=1 w=42700000(60.000000) min=42700000(60.000000) max=42B40000(90.000000)
+> wread|3|bots/breed_c_w.c
+P1|loaded bots/breed_c_w.c\x0A
+wread ok=1 same=-1
+> wread|4|bots/breed_c_w.c
+P1|loaded bots/breed_c_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|3|2
+P3|cannot interbreed weight configs, unequal child\x0A
+> wbreed|3|0|4
+P3|cannot interbreed weight configs, unequal balance\x0A
+> wread|5|bots/breed_d_w.c
+P1|loaded bots/breed_d_w.c\x0A
+wread ok=1 same=-1
+> wread|8|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|5|8
+P3|cannot interbreed weight configs, unequal balance\x0A
+> wdump|8
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=42C80000(100.000000) min=00000000(0.000000) max=43480000(200.000000)
+    idx=2 val=999999 type=1 w=41200000(10.000000) min=40A00000(5.000000) max=41700000(15.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41200000(10.000000) max=42B40000(90.000000)
+> wread|6|bots/breed_e_w.c
+P1|loaded bots/breed_e_w.c\x0A
+wread ok=1 same=-1
+> wbreed|3|6|4
+P3|cannot interbreed weight configs, unequal next\x0A
+> wbreed|0|6|2
+P3|cannot interbreed weight configs, unequal child\x0A
+> wread|7|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|7|2
+P3|cannot interbreed weight configs, unequal numweights\x0A
+> wbreed|1|0|2
+> wdump|2
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=42C80000(100.000000) min=43FA0000(500.000000) max=43FA0000(500.000000)
+    idx=2 val=999999 type=1 w=41200000(10.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+  idx=1 val=999999 type=1 w=42700000(60.000000) min=42700000(60.000000) max=42B40000(90.000000)
+> wevolve|1|1
+> wevolve|1|2
+> wevolve|1|3
+> wevolve|1|4
+> wevolve|1|5
+> wevolve|1|6
+> wevolve|1|7
+> wevolve|1|8
+> wevolve|1|9
+> wevolve|1|10
+> wevolve|1|11
+> wevolve|1|12
+> wevolve|1|13
+> wevolve|1|14
+> wevolve|1|15
+> wevolve|1|16
+> wevolve|1|17
+> wevolve|1|18
+> wevolve|1|19
+> wevolve|1|20
+> wevolve|1|21
+> wevolve|1|22
+> wevolve|1|23
+> wevolve|1|24
+> wdump|1
+weights n=1 file=bots/breed_b_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=4352F97D(210.974564) min=4352F97D(210.974564) max=445A1CF9(872.452698)
+    idx=2 val=999999 type=1 w=42070BC5(33.761494) min=41368830(11.408249) max=4234691B(45.102642)
+  idx=1 val=999999 type=1 w=4290B487(72.352592) min=425C81D6(55.126793) max=42D00F38(104.029724)
+> wevolve|3|25
+> wevolve|3|26
+> wevolve|3|27
+> wevolve|3|28
+> wevolve|3|29
+> wevolve|3|30
+> wevolve|3|31
+> wevolve|3|32
+> wevolve|3|33
+> wevolve|3|34
+> wevolve|3|35
+> wevolve|3|36
+> wevolve|3|37
+> wevolve|3|38
+> wevolve|3|39
+> wevolve|3|40
+> wdump|3
+weights n=1 file=bots/breed_c_w.c
+w0 name=X
+  idx=1 val=1 type=1 w=C1A17600(-20.182617) min=C1A17600(-20.182617) max=40000000(2.000000)
+  idx=1 val=999999 type=1 w=409CAADD(4.895857) min=C06A94C7(-3.665331) max=41100000(9.000000)
+> libset|bot_reloadcharacters|0
+> wshutdown
 > libset|bot_reloadcharacters|1
 > wread|0|bots/test_w.c
 P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
@@ -3640,6 +3898,18 @@ noweaponconfig
 > wpshutdown
 > libset|max_weaponinfo|-5
 > libset|max_projectileinfo|-5
+> libget|max_weaponinfo
+libget text=-5 value=00000000(0.000000) changed=1
+> libset|weaponconfig|weapons_projonly.c
+> libset|max_weaponinfo|0
+> wpsetup
+P3|more than 0 projectiles defined in weapons_projonly.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|max_weaponinfo|-5
 > libset|weaponconfig|weapons.c
 > wpsetup
 P3|more than 0 projectiles defined in weapons.c\x0A

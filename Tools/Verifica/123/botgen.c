@@ -191,13 +191,13 @@ static unsigned fnv(const unsigned char *p, int n)
 	return h;
 }
 
-/* the inventory of the scenario: the arguments from `first`, the rest is zero as in the C harness */
-static int inventory[64];
+
+static int inventory[1024];
 static int *make_inventory(int first)
 {
 	int i;
 	memset(inventory, 0, sizeof(inventory));
-	for (i = first; i < numargs && i - first < 64; i++) inventory[i - first] = (int) strtol(args[i], NULL, 0);
+	for (i = first; i < numargs && i - first < 1024; i++) inventory[i - first] = (int) strtol(args[i], NULL, 0);
 	return inventory;
 }
 

@@ -105,6 +105,11 @@ Prodotti da un harness C++ **fuori dal repository** (contiene codice di OpenXcom
 - `War\autotile.tables.golden.txt` (le tabelle di `war_units.c`), `War\autotile.golden.txt` (120 scenari con seme 5000 + n: strade, muri, rovine e alberi di `war_roads.c`, `war_walls.c`, `war_ruins.c`, `war_trees.c`), `War\grid.golden.txt` (60 scenari, seme 9000 + n: `war_map_grid.c`). `Libs\War\DelphiDoom.War.Autotile.Data.pas` e' generato dalle tabelle.
 - Per rifarli: `Tools\Verifica\193\Registra-Golden.ps1 -Out <cartella nuova>` e poi `Make-WarTables.ps1` per le due unit di dati (vedi `Tools\Verifica\193\LEGGIMI.md`). Le estrazioni nel generatore di scenari sono istruzioni separate perche' l'ordine di valutazione degli argomenti in C non e' definito.
 
+## BotAi (issue #124 e #123)
+
+- `BotAi\botfiles`, `alt1`, `alt2` sono file di bot **scritti per i test** (chat, caratteri, pesi, armi, strutture), mai file di Quake III ne' di OpenArena. `scenario.txt` + `chat.golden.txt` (#124, la chat) e `botscenario.txt` + `botscenario.golden.txt`, `botscenario_alt.txt` + `botscenario_alt1.golden.txt` / `botscenario_alt2.golden.txt` (#123) sono le righe che il pilota del C e il test Delphi eseguono e l'uscita del **vero** `be_ai_chat.c`, `be_ai_char.c`, `be_ai_weight.c`, `be_ai_weap.c`, `l_struct.c`, `l_libvar.c`, `l_script.c` e `l_precomp.c` compilati con il gcc di w64devkit (float come bit esadecimali, stringhe con escape, impronte FNV-1a dei record delle armi).
+- Per rifarli: `sh Tools/Verifica/124/build.sh <cartella>` e `sh Tools/Verifica/123/build.sh <cartella>` (vedi i `LEGGIMI.md`: la redirezione dell'uscita va fatta con `cmd /c` o `sh`, non con il `>` di PowerShell 5.1). I file `*.golden.txt` sono `-text` e hanno le righe CR LF come li scrive il runtime del C.
+
 ## Gui (issue #125)
 
 - `Gui\files` sono menu e font **scritti per i test**, mai file di Team Arena o di OpenArena: `ui\*.menu` e `ui\*.h` (ogni parola chiave di `menuDef` e `itemDef`, liste, errori, numeri, stringhe, preprocessore, il limite di 96 item), `fonts\fontImage_12.dat` e `fontImage_16.dat` (20548 byte, valori da un generatore lineare con seme fisso: `Tools\Verifica\125\Make-Fonts.ps1`) e `fontImage_24.dat` (100 byte, lunghezza sbagliata).
