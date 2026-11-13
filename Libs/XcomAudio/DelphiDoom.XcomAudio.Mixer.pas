@@ -11,7 +11,8 @@ unit DelphiDoom.XcomAudio.Mixer;
 interface
 
 uses
-  System.SysUtils, System.SyncObjs, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomAudio.Intf;
+  System.SysUtils, System.SyncObjs, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomAudio.Intf,
+  DelphiDoom.AudioMix.StereoChannelVoice;
 
 type
   /// <summary>
@@ -34,24 +35,12 @@ type
       RESERVED_CHANNELS = 4;
       AMBIENT_CHANNEL = 3;
       MAX_VOLUME = 128;
-    type
-      TChannel = record
-        Samples: TArray<SmallInt>;
-        Position: Integer;
-        Active: Boolean;
-        /// <summary>Plays left: -1 forever</summary>
-        Plays: Integer;
-        /// <summary>The volume of the sound is already in the samples (PlayWave)</summary>
-        Baked: Boolean;
-        GainLeft: Single;
-        GainRight: Single;
-      end;
     var
       FOutput: IXcomPcmOutput;
       FRate: Integer;
       FDecoder: IXcomSampleDecoder;
       FLock: TCriticalSection;
-      FChannels: array[0..CHANNEL_COUNT - 1] of TChannel;
+      FChannels: array[0..CHANNEL_COUNT - 1] of TPcmStereoChannelVoice;
       FChannelVolume: array[0..CHANNEL_COUNT - 1] of Integer;
       FAmbientVolume: Double;
       FSilenced: Boolean;
@@ -63,9 +52,6 @@ type
       FSumSquares: Double;
       FSampleCount: Int64;
       FOpen: Boolean;
-    procedure Mix(ADestination: PSmallInt; ASamples: PSmallInt; ACount: Integer);
-    procedure MixChannel(ADestination: PSmallInt; AIndex, ACount: Integer);
-    procedure RenderChannel(ADestination: PSmallInt; AIndex, ACount: Integer);
     procedure Start(AIndex: Integer; const ASamples: TArray<SmallInt>; ALoops: Integer; ABaked: Boolean);
   public
     /// <param name="AOutput">Where the mix goes (nil: nothing plays, as with no audio device)</param>
@@ -101,7 +87,7 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.XcomEngine.Volume, DelphiDoom.XcomAudio.Types;
+  System.Math, DelphiDoom.XcomEngine.Volume, DelphiDoom.XcomAudio.Types, DelphiDoom.AudioMix.Saturation;
 
 { TXcomMixer }
 
@@ -120,13 +106,20 @@ begin
   // Game::setVolume without a battle: the ambience is half of the sounds
   FAmbientVolume := 0.5;
   for LIndex := 0 to CHANNEL_COUNT - 1 do
+  begin
     FChannelVolume[LIndex] := MAX_VOLUME;
+    FChannels[LIndex] := TPcmStereoChannelVoice.Create;
+  end;
 end;
 
 destructor TXcomMixer.Destroy;
+var
+  LIndex: Integer;
 begin
   Close;
   FTrack := nil;
+  for LIndex := 0 to CHANNEL_COUNT - 1 do
+    FChannels[LIndex].Free;
   FLock.Free;
   inherited Destroy;
 end;
@@ -186,16 +179,7 @@ end;
 
 procedure TXcomMixer.Start(AIndex: Integer; const ASamples: TArray<SmallInt>; ALoops: Integer; ABaked: Boolean);
 begin
-  FChannels[AIndex].Samples := ASamples;
-  FChannels[AIndex].Position := 0;
-  FChannels[AIndex].Active := True;
-  if ALoops < 0 then
-    FChannels[AIndex].Plays := -1
-  else
-    FChannels[AIndex].Plays := ALoops + 1;
-  FChannels[AIndex].Baked := ABaked;
-  FChannels[AIndex].GainLeft := 1;
-  FChannels[AIndex].GainRight := 1;
+  FChannels[AIndex].Start(ASamples, ALoops, ABaked);
   Inc(FStats.SoundsStarted);
 end;
 
@@ -261,8 +245,7 @@ begin
   LDistance := (255 - EnsureRange(ADistance, 0, 255)) / 255;
   FLock.Enter;
   try
-    FChannels[AChannel].GainLeft := (1 - Max(0, LPan)) * LDistance;
-    FChannels[AChannel].GainRight := (1 + Min(0, LPan)) * LDistance;
+    FChannels[AChannel].SetGains((1 - Max(0, LPan)) * LDistance, (1 + Min(0, LPan)) * LDistance);
   finally
     FLock.Leave;
   end;
@@ -277,8 +260,7 @@ begin
     for LIndex := 0 to CHANNEL_COUNT - 1 do
       if (AChannel < 0) or (AChannel = LIndex) then
       begin
-        FChannels[LIndex].Active := False;
-        FChannels[LIndex].Samples := nil;
+        FChannels[LIndex].Halt;
       end;
   finally
     FLock.Leave;
@@ -385,94 +367,6 @@ begin
   end;
 end;
 
-procedure TXcomMixer.Mix(ADestination: PSmallInt; ASamples: PSmallInt; ACount: Integer);
-var
-  LIndex: Integer;
-  LSum: Integer;
-begin
-  for LIndex := 0 to ACount - 1 do
-  begin
-    LSum := Integer(ADestination^) + Integer(ASamples^);
-    if LSum > 32767 then
-      LSum := 32767
-    else if LSum < -32768 then
-      LSum := -32768;
-    ADestination^ := SmallInt(LSum);
-    Inc(ADestination);
-    Inc(ASamples);
-  end;
-end;
-
-procedure TXcomMixer.MixChannel(ADestination: PSmallInt; AIndex, ACount: Integer);
-var
-  LIndex: Integer;
-  LSum: Integer;
-  LSource: PSmallInt;
-  LLeft: Single;
-  LRight: Single;
-  LVolume: Single;
-  LGain: Single;
-begin
-  LSource := @FChannels[AIndex].Samples[FChannels[AIndex].Position];
-  if FChannels[AIndex].Baked then
-  begin
-    // the volume is in the samples: with the sounds silenced (backgroundMute) nothing is added
-    if not FSilenced then
-      Mix(ADestination, LSource, ACount);
-    Exit;
-  end;
-  LVolume := FChannelVolume[AIndex] / MAX_VOLUME;
-  LLeft := FChannels[AIndex].GainLeft * LVolume;
-  LRight := FChannels[AIndex].GainRight * LVolume;
-  for LIndex := 0 to ACount - 1 do
-  begin
-    if (LIndex and 1) = 0 then
-      LGain := LLeft
-    else
-      LGain := LRight;
-    LSum := Integer(ADestination^) + Trunc(LSource^ * LGain);
-    ADestination^ := SmallInt(EnsureRange(LSum, -32768, 32767));
-    Inc(ADestination);
-    Inc(LSource);
-  end;
-end;
-
-procedure TXcomMixer.RenderChannel(ADestination: PSmallInt; AIndex, ACount: Integer);
-var
-  LTake: Integer;
-begin
-  while FChannels[AIndex].Active and (ACount > 0) do
-  begin
-    LTake := Length(FChannels[AIndex].Samples) - FChannels[AIndex].Position;
-    if LTake <= 0 then
-    begin
-      // nothing to play (an empty sound) or the end of a pass
-      if (Length(FChannels[AIndex].Samples) = 0) or (FChannels[AIndex].Plays = 1) then
-      begin
-        FChannels[AIndex].Active := False;
-        FChannels[AIndex].Samples := nil;
-        Exit;
-      end;
-      if FChannels[AIndex].Plays > 1 then
-        Dec(FChannels[AIndex].Plays);
-      FChannels[AIndex].Position := 0;
-      Continue;
-    end;
-    if LTake > ACount then
-      LTake := ACount;
-    MixChannel(ADestination, AIndex, LTake);
-    Inc(ADestination, LTake);
-    Inc(FChannels[AIndex].Position, LTake);
-    Dec(ACount, LTake);
-  end;
-  if FChannels[AIndex].Active and (FChannels[AIndex].Plays = 1) and
-    (FChannels[AIndex].Position >= Length(FChannels[AIndex].Samples)) then
-  begin
-    FChannels[AIndex].Active := False;
-    FChannels[AIndex].Samples := nil;
-  end;
-end;
-
 procedure TXcomMixer.Render(ABuffer: PByte; ABytes: Integer);
 var
   LCount: Integer;
@@ -493,10 +387,10 @@ begin
         SetLength(FTemp, LCount);
       FillChar(FTemp[0], ABytes, 0);
       FTrack.Render(@FTemp[0], ABytes, FMusicVolume);
-      Mix(PSmallInt(ABuffer), @FTemp[0], LCount);
+      TPcmSaturation.AddSaturated(PSmallInt(ABuffer), @FTemp[0], LCount);
     end;
     for LChannel := 0 to CHANNEL_COUNT - 1 do
-      RenderChannel(PSmallInt(ABuffer), LChannel, LCount);
+      FChannels[LChannel].Render(PSmallInt(ABuffer), LCount, FChannelVolume[LChannel] / MAX_VOLUME, FSilenced);
     LPointer := PSmallInt(ABuffer);
     for LIndex := 0 to LCount - 1 do
     begin
