@@ -1,0 +1,352 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idDeclManager *declManager = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void idCommon::Printf(const char *fmt, ...) {}
+void idCommon::Warning(const char *fmt, ...) {}
+void idCommon::DWarning(const char *fmt, ...) {}
+void idCommon::Error(const char *fmt, ...) { abort(); }
+void idCommon::FatalError(const char *fmt, ...) { abort(); }
+idFile *idFileSystem::OpenFileRead(const char *n) { return 0; }
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return 0; }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *n) { return 0; }
+void idFileSystem::CloseFile(idFile *f) {}
+int idFileSystem::ReadFile(const char *n, void **b, long *t) { return -1; }
+void idFileSystem::FreeFile(void *b) {}
+
+// ---------------------------------------------------------------- helpers
+static unsigned int rstate = 12345;
+static unsigned int rnext() { rstate = rstate * 1664525u + 1013904223u; return rstate; }
+static float rf(float range) { return (float)((double)(rnext() >> 8) / 8388608.0 - 1.0) * range; }
+static unsigned int bitsOf(float f) { unsigned int u; memcpy(&u, &f, 4); return u; }
+static void P(float f) { printf(" #%08x", bitsOf(f)); }
+static void PV(const float *a, int n) { for (int i = 0; i < n; i++) P(a[i]); }
+static void PI(int v) { printf(" %d", v); }
+static bool mergeOn = false;
+static void head(const char *name, const float *in, int n) { if (mergeOn) { printf(" ;%s", name); return; } printf("%s", name); PV(in, n); printf(" |"); }
+static void tail() { if (!mergeOn) printf("\n"); }
+static void beginCase(const char *prefix, const float *in, int n) { printf("%s_all", prefix); PV(in, n); printf(" |"); mergeOn = true; }
+static void endCase() { mergeOn = false; printf("\n"); }
+// random matrix of a few kinds: 0 random, 1 singular (two equal rows), 2 diagonal, 3 symmetric, 4 near identity, 5 grid of halves
+static void fillMat(float *a, int n, int kind) {
+	int i, j;
+	for (i = 0; i < n * n; i++) a[i] = rf(2.0f);
+	if (kind == 0 || kind == 3) for (i = 0; i < n; i++) a[i * n + i] += 3.0f;
+	switch (kind) {
+	case 1: for (j = 0; j < n; j++) a[(n > 1 ? 1 : 0) * n + j] = 0.0f; break;
+	case 2: for (i = 0; i < n; i++) for (j = 0; j < n; j++) if (i != j) a[i * n + j] = 0.0f; break;
+	case 3: for (i = 0; i < n; i++) for (j = 0; j < i; j++) a[i * n + j] = a[j * n + i]; break;
+	case 4: for (i = 0; i < n; i++) for (j = 0; j < n; j++) a[i * n + j] = (i == j ? 1.0f : 0.0f) + a[i * n + j] * 0.01f; break;
+	case 5: for (i = 0; i < n * n; i++) a[i] = (float)((int)(rnext() >> 29) % 5 - 2) * 0.5f; break;
+	}
+}
+// symmetric positive definite matrix B*B' + n*I
+static void fillSpd(float *a, int n) {
+	float b[100]; int i, j, k;
+	for (i = 0; i < n * n; i++) b[i] = rf(1.0f);
+	for (i = 0; i < n; i++) for (j = 0; j < n; j++) {
+		float s = 0.0f; for (k = 0; k < n; k++) s += b[i * n + k] * b[j * n + k];
+		a[i * n + j] = s + (i == j ? (float)n * 0.5f : 0.0f);
+	}
+}
+
+// ---------------------------------------------------------------- small fixed size matrices
+#define FIXEDTEST(N, MT, VT) \
+static void test##N(int cases) { \
+	for (int c = 0; c < cases; c++) { \
+		float a[N * N], b[N * N], v[N], in[2 * N * N + N]; \
+		fillMat(a, N, c % 6); fillMat(b, N, (c / 6) % 6); for (int i = 0; i < N; i++) v[i] = rf(2.0f); \
+		memcpy(in, a, sizeof a); memcpy(in + N * N, b, sizeof b); memcpy(in + 2 * N * N, v, sizeof v); \
+		beginCase("F" #N, in, 2 * N * N + N); MT m, m2, r; VT vv; memcpy(&m, a, sizeof a); memcpy(&m2, b, sizeof b); memcpy(&vv, v, sizeof v); \
+		head("F" #N "_det", in, 2 * N * N + N); P(m.Determinant()); tail(); \
+		r = m; bool ok = r.InverseSelf(); head("F" #N "_inv", in, 2 * N * N + N); PI(ok); PV((float *)&r, N * N); tail(); \
+		r = m; ok = r.InverseFastSelf(); head("F" #N "_invfast", in, 2 * N * N + N); PI(ok); PV((float *)&r, N * N); tail(); \
+		r = m.Transpose(); head("F" #N "_transpose", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		r = m * m2; head("F" #N "_mul", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		r = m + m2; head("F" #N "_add", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		r = m - m2; head("F" #N "_sub", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		r = m * 0.75f; head("F" #N "_scale", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		VT rv = m * vv; head("F" #N "_mulvec", in, 2 * N * N + N); PV((float *)&rv, N); tail(); \
+		head("F" #N "_misc", in, 2 * N * N + N); P(m.Trace()); PI(m.IsSymmetric()); PI(m.IsDiagonal()); PI(m.IsIdentity()); PI(m == m2); PI(m.Compare(m2, 1.0f)); tail(); \
+		r = m; r.TransposeSelf(); head("F" #N "_transposeself", in, 2 * N * N + N); PV((float *)&r, N * N); tail(); \
+		endCase(); \
+	} \
+}
+FIXEDTEST(2, idMat2, idVec2)
+FIXEDTEST(4, idMat4, idVec4)
+FIXEDTEST(5, idMat5, idVec5)
+FIXEDTEST(6, idMat6, idVec6)
+
+static void testMat46Extra(int cases) {
+	for (int c = 0; c < cases; c++) {
+		float in[36 + 4];
+		for (int i = 0; i < 36; i++) in[i] = rf(2.0f);
+		idMat3 m0, m1, m2, m3; memcpy(&m0, in, 36); memcpy(&m1, in + 9 * 1, 36); memcpy(&m2, in + 9 * 2, 36); memcpy(&m3, in + 9 * 3, 36);
+		idMat6 m6(m0, m1, m2, m3);
+		head("F6_blocks", in, 36); PV((float *)&m6, 36);
+		for (int n = 0; n < 4; n++) { idMat3 s = m6.SubMat3(n); PV((float *)&s, 9); } tail();
+		idVec3 t(in[0], in[10], in[20]);
+		idMat4 m4(m0, t);
+		head("F4_rt", in, 36); PV((float *)&m4, 16); idMat4 mm = m0.ToMat4(); PV((float *)&mm, 16); tail();
+		// 4x4 times 3d vector: general, w == 1 and w == 0
+		float in2[16 + 3]; for (int i = 0; i < 12; i++) in2[i] = rf(2.0f);
+		for (int k = 0; k < 3; k++) {
+			float row3[4] = { rf(2.0f), rf(2.0f), rf(2.0f), rf(2.0f) };
+			if (k == 1) { row3[0] = row3[1] = row3[2] = 0.0f; row3[3] = 1.0f; }
+			if (k == 2) { row3[0] = row3[1] = row3[2] = row3[3] = 0.0f; }
+			memcpy(in2 + 12, row3, 16); in2[16] = rf(2.0f); in2[17] = rf(2.0f); in2[18] = rf(2.0f);
+			idMat4 q; memcpy(&q, in2, 64); idVec3 vv(in2[16], in2[17], in2[18]); idVec3 r = q * vv;
+			head("F4_mulvec3", in2, 19); PV(r.ToFloatPtr(), 3);
+			idVec4 v4(in2[16], in2[17], in2[18], 1.0f), pr, up; q.ProjectVector(v4, pr); q.UnprojectVector(v4, up);
+			PV(pr.ToFloatPtr(), 4); PV(up.ToFloatPtr(), 4); PI(q.IsRotated()); tail();
+		}
+	}
+}
+
+static void testVec(int cases) {
+	for (int c = 0; c < cases; c++) {
+		float in[13];
+		for (int i = 0; i < 13; i++) in[i] = rf(3.0f);
+		idVec6 a(in[0], in[1], in[2], in[3], in[4], in[5]), b(in[6], in[7], in[8], in[9], in[10], in[11]);
+		float l = (c % 5 == 0) ? -0.5f : (c % 5 == 1 ? 1.5f : (in[12] * 0.3f + 0.5f));
+		in[12] = l;
+		idVec6 r;
+		head("V6_ops", in, 13);
+		r = a + b; PV(r.ToFloatPtr(), 6); r = a - b; PV(r.ToFloatPtr(), 6); r = -a; PV(r.ToFloatPtr(), 6);
+		r = a * 1.25f; PV(r.ToFloatPtr(), 6); r = a / 3.0f; PV(r.ToFloatPtr(), 6); P(a * b); P(a.Length()); P(a.LengthSqr());
+		PI(a == b); PI(a.Compare(b, 4.0f)); tail();
+		head("V6_norm", in, 13);
+		r = a; float len = r.Normalize(); P(len); PV(r.ToFloatPtr(), 6);
+		r = a; len = r.NormalizeFast(); P(len); PV(r.ToFloatPtr(), 6); tail();
+		idVec5 p5(in[0], in[1], in[2], in[3], in[4]), q5(in[6], in[7], in[8], in[9], in[10]), r5;
+		r5.Lerp(p5, q5, l);
+		head("V5_lerp", in, 13); PV((float *)&r5, 5); tail();
+		idPolar3 pol(fabs(in[0]) + 0.1f, in[1], in[2]);
+		idVec3 v3 = pol.ToVec3();
+		head("P3_tovec3", in, 3); PV(v3.ToFloatPtr(), 3); idPolar3 neg = -pol; v3 = neg.ToVec3(); PV(v3.ToFloatPtr(), 3); tail();
+	}
+}
+
+// ---------------------------------------------------------------- idVecX and idMatX
+static void putVecX(const idVecX &v) { PV(v.ToFloatPtr(), v.GetSize()); }
+static void putLower(const idMatX &m) { for (int i = 0; i < m.GetNumRows(); i++) for (int j = 0; j <= i; j++) P(m[i][j]); }
+// eigenvectors: each column printed with its largest component positive (the sign is not stable between compilers)
+static void putEigen(const idMatX &m) {
+	for (int j = 0; j < m.GetNumColumns(); j++) {
+		int best = 0; for (int i = 1; i < m.GetNumRows(); i++) if (fabsf(m[i][j]) > fabsf(m[best][j])) best = i;
+		float s = m[best][j] < 0.0f ? -1.0f : 1.0f;
+		for (int i = 0; i < m.GetNumRows(); i++) P(m[i][j] * s);
+	}
+}
+static void putMatX(const idMatX &m) { PV(m.ToFloatPtr(), m.GetNumRows() * m.GetNumColumns()); }
+static void headN(const char *name, int n, const float *in, int count) {
+	float tmp[400]; tmp[0] = (float)n; memcpy(tmp + 1, in, count * sizeof(float)); head(name, tmp, count + 1);
+}
+static void beginCaseN(const char *prefix, int n, const float *in, int count) {
+	float tmp[400]; tmp[0] = (float)n; memcpy(tmp + 1, in, count * sizeof(float)); beginCase(prefix, tmp, count + 1);
+}
+
+static void testMatX(int cases) {
+	for (int n = 1; n <= 8; n++) {
+		for (int c = 0; c < cases; c++) {
+			float a[81], b[9];
+			fillMat(a, n, c % 6); for (int i = 0; i < n; i++) b[i] = rf(2.0f);
+			float in[90]; memcpy(in, a, n * n * sizeof(float)); memcpy(in + n * n, b, n * sizeof(float));
+			int cnt = n * n + n;
+			idMatX mm; mm.Set(n, n, a); beginCaseN("X", n, in, cnt);
+			headN("X_det", n, in, cnt); P(mm.Determinant()); tail();
+			idMatX t; t = mm; bool ok = t.InverseSelf(); headN("X_inv", n, in, cnt); PI(ok); putMatX(t); tail();
+			t = mm; ok = t.Inverse_GaussJordan(); headN("X_gj", n, in, cnt); PI(ok); putMatX(t); tail();
+			{
+				int index[16]; float det = 0.0f; t = mm;
+				ok = t.LU_Factor(index, &det);
+				headN("X_lu", n, in, cnt); PI(ok);
+				if (ok) {
+					P(det); putMatX(t); for (int i = 0; i < n; i++) PI(index[i]);
+					idVecX x(n), bb(n); for (int i = 0; i < n; i++) bb[i] = b[i];
+					t.LU_Solve(x, bb, index); putVecX(x);
+					idMatX inv; t.LU_Inverse(inv, index); putMatX(inv);
+					idMatX L, U, back; t.LU_UnpackFactors(L, U); putMatX(L); putMatX(U);
+					t.LU_MultiplyFactors(back, index); putMatX(back);
+				}
+				tail();
+				t = mm; ok = t.LU_Factor(NULL, &det); headN("X_lunp", n, in, cnt); PI(ok); if (ok) { P(det); putMatX(t); } tail();
+			}
+			t = mm; ok = t.LowerTriangularInverse(); headN("X_lowinv", n, in, cnt); PI(ok); putMatX(t); tail();
+			t = mm; ok = t.UpperTriangularInverse(); headN("X_upinv", n, in, cnt); PI(ok); putMatX(t); tail();
+			{
+				idVecX vb(n), r(n); for (int i = 0; i < n; i++) vb[i] = b[i];
+				mm.Multiply(r, vb); headN("X_mulvec", n, in, cnt); putVecX(r);
+				mm.TransposeMultiply(r, vb); putVecX(r);
+				idVecX acc(n); for (int i = 0; i < n; i++) acc[i] = 1.0f; mm.MultiplyAdd(acc, vb); putVecX(acc);
+				mm.MultiplySub(acc, vb); putVecX(acc); mm.TransposeMultiplyAdd(acc, vb); putVecX(acc); mm.TransposeMultiplySub(acc, vb); putVecX(acc);
+				idMatX sq = mm * mm; putMatX(sq); idMatX tq = mm.TransposeMultiply(mm); putMatX(tq); idMatX tr = mm.Transpose(); putMatX(tr);
+				tail();
+			}
+			headN("X_is", n, in, cnt);
+			PI(mm.IsSquare()); PI(mm.IsZero()); PI(mm.IsDiagonal()); PI(mm.IsTriDiagonal()); PI(mm.IsSymmetric()); PI(mm.IsPMatrix(1e-6f)); PI(mm.IsZMatrix());
+			PI(mm.IsPositiveDefinite()); PI(mm.IsSymmetricPositiveDefinite()); PI(mm.IsPositiveSemiDefinite()); PI(mm.IsSymmetricPositiveSemiDefinite());
+			PI(mm.IsOrthogonal()); PI(mm.IsOrthonormal()); P(mm.Trace()); P(mm.MaxDifference(mm.Transpose())); tail(); endCase();
+		}
+	}
+}
+
+static void testMatXShape(int cases) {
+	for (int c = 0; c < cases; c++) {
+		int n = 2 + c % 6;
+		float a[64], d[64], in[400]; float v[8], w[8], v1[9], w1[9];
+		fillMat(a, n, 0); fillMat(d, n, 4); int r = (int)(rnext() % n);
+		for (int i = 0; i < n; i++) { v[i] = rf(1.0f); w[i] = rf(1.0f); } w[r] = 0.0f;
+		for (int i = 0; i <= n; i++) { v1[i] = rf(1.0f); w1[i] = rf(1.0f); } w1[n] = 0.0f;
+		int k = 0;
+		for (int i = 0; i < n * n; i++) in[k++] = a[i];
+		for (int i = 0; i < n * n; i++) in[k++] = d[i];
+		in[k++] = (float)r;
+		for (int i = 0; i < n; i++) in[k++] = v[i];
+		for (int i = 0; i < n; i++) in[k++] = w[i];
+		for (int i = 0; i <= n; i++) in[k++] = v1[i];
+		for (int i = 0; i <= n; i++) in[k++] = w1[i];
+		beginCaseN("XS", n, in, k);
+		idMatX m; m.Set(n, n, a);
+		idVecX vv(n), ww(n), vv1(n + 1), ww1(n + 1);
+		for (int i = 0; i < n; i++) { vv[i] = v[i]; ww[i] = w[i]; }
+		for (int i = 0; i <= n; i++) { vv1[i] = v1[i]; ww1[i] = w1[i]; }
+		idMatX t; t = m; t.RemoveRow(r); head("X_remrow", in, k); putMatX(t);
+		t = m; t.RemoveColumn(r); head("X_remcol", in, k); putMatX(t);
+		t = m; t.RemoveRowColumn(r); head("X_remrc", in, k); putMatX(t);
+		t = m; t.ChangeSize(n + 2, n + 1, true); head("X_grow", in, k); putMatX(t);
+		t = m; t.ChangeSize(n - 1, n - 1, false); head("X_shrink", in, k); putMatX(t);
+		t = m; t.SwapRows(0, r); t.SwapColumns(1, r); head("X_swap", in, k); putMatX(t);
+		t = m; t.ClearUpperTriangle(); head("X_clrup", in, k); putMatX(t);
+		t = m; t.ClearLowerTriangle(); head("X_clrlow", in, k); putMatX(t);
+		idMatX sub; sub.SquareSubMatrix(m, n - 1); head("X_sub", in, k); putMatX(sub);
+		t = m; t.Update_RankOne(vv, ww, 0.5f); head("X_updr1", in, k); putMatX(t);
+		t = m; t.Update_RankOneSymmetric(vv, -0.25f); head("X_updr1s", in, k); putMatX(t);
+		t = m; t.Update_RowColumn(vv, ww, r); head("X_updrc", in, k); putMatX(t);
+		t = m; t.Update_RowColumnSymmetric(vv, r); head("X_updrcs", in, k); putMatX(t);
+		t = m; t.Update_Increment(vv1, ww1); head("X_updinc", in, k); putMatX(t);
+		t = m; t.Update_IncrementSymmetric(vv1); head("X_updincs", in, k); putMatX(t);
+		{
+			idMatX im; im.Set(n, n, d); t = im; bool ok = t.InverseSelf(); idMatX inv; inv = t;
+			idMatX u; u = inv; ok = u.Inverse_UpdateRankOne(vv, ww, 0.5f); head("X_invupd1", in, k); PI(ok); putMatX(u);
+			u = inv; ok = u.Inverse_UpdateRowColumn(vv, ww, r); head("X_invupdrc", in, k); PI(ok); putMatX(u);
+			u = inv; ok = u.Inverse_UpdateDecrement(vv, ww, r); head("X_invupddec", in, k); PI(ok); putMatX(u);
+			u = inv; ok = u.Inverse_UpdateIncrement(vv1, ww1); head("X_invupdinc", in, k); PI(ok); putMatX(u);
+		}
+		endCase();
+	}
+}
+static void testCholLdlt(int cases) {
+	for (int n = 1; n <= 7; n++) for (int c = 0; c < cases; c++) {
+		float a[64]; fillSpd(a, n);
+		float b[8], v[9]; for (int i = 0; i < n; i++) b[i] = rf(2.0f); for (int i = 0; i <= n; i++) v[i] = rf(1.0f);
+		int r = (int)(rnext() % n); float alpha = (c & 1) ? 0.5f : -0.1f;
+		float in[200]; memcpy(in, a, n * n * sizeof(float)); memcpy(in + n * n, b, n * sizeof(float)); memcpy(in + n * n + n, v, (n + 1) * sizeof(float));
+		in[n * n + 2 * n + 1] = (float)r; in[n * n + 2 * n + 2] = alpha; int cnt = n * n + 2 * n + 3;
+		idMatX m; m.Set(n, n, a);
+		idVecX vb(n), vv(n + 1), x(n); for (int i = 0; i < n; i++) vb[i] = b[i]; for (int i = 0; i <= n; i++) vv[i] = v[i];
+		for (int kind = 0; kind < 2; kind++) {
+			const char *nm = kind ? "X_ldlt" : "X_chol"; beginCaseN(kind ? "XL" : "XC", n, in, cnt);
+			idMatX f; f = m;
+			bool ok = kind ? f.LDLT_Factor() : f.Cholesky_Factor();
+			headN(nm, n, in, cnt); PI(ok);
+			if (ok) {
+				putMatX(f);
+				if (kind) f.LDLT_Solve(x, vb); else f.Cholesky_Solve(x, vb); putVecX(x);
+				idMatX inv; if (kind) f.LDLT_Inverse(inv); else f.Cholesky_Inverse(inv); putMatX(inv);
+				idMatX back; if (kind) f.LDLT_MultiplyFactors(back); else f.Cholesky_MultiplyFactors(back); putMatX(back);
+				if (kind) { idMatX L, D; f.LDLT_UnpackFactors(L, D); putMatX(L); putMatX(D); }
+			}
+			tail();
+			if (!ok) { endCase(); continue; }
+			idVecX vn(n); for (int i = 0; i < n; i++) vn[i] = v[i];
+			idMatX u;
+			u = f; ok = kind ? u.LDLT_UpdateRankOne(vn, alpha, 0) : u.Cholesky_UpdateRankOne(vn, alpha, 0);
+			headN(kind ? "X_ldltr1" : "X_cholr1", n, in, cnt); PI(ok); putMatX(u); tail();
+			if (n > 1) { int off = r % n; u = f; ok = kind ? u.LDLT_UpdateRankOne(vn, alpha, off) : u.Cholesky_UpdateRankOne(vn, alpha, off);
+			  headN(kind ? "X_ldltr1o" : "X_cholr1o", n, in, cnt); PI(ok); putMatX(u); tail(); }
+			u = f; ok = kind ? u.LDLT_UpdateRowColumn(vn, r) : u.Cholesky_UpdateRowColumn(vn, r);
+			headN(kind ? "X_ldltrc" : "X_cholrc", n, in, cnt); PI(ok); putMatX(u); tail();
+			u = f; ok = kind ? u.LDLT_UpdateIncrement(vv) : u.Cholesky_UpdateIncrement(vv);
+			headN(kind ? "X_ldltinc" : "X_cholinc", n, in, cnt); PI(ok); if (ok) putLower(u); tail();
+			if (n > 1) { u = f; ok = kind ? u.LDLT_UpdateDecrement(vn, r) : u.Cholesky_UpdateDecrement(vn, r);
+			  headN(kind ? "X_ldltdec" : "X_choldec", n, in, cnt); PI(ok); putMatX(u); tail(); }
+			endCase();
+		}
+	}
+}
+
+static void testEigen(int cases) {
+	for (int n = 1; n <= 8; n++) for (int c = 0; c < cases; c++) {
+		float a[64], b[8], in[80]; fillMat(a, n, 3); for (int i = 0; i < n; i++) b[i] = rf(2.0f);
+		memcpy(in, a, n * n * sizeof(float)); memcpy(in + n * n, b, n * sizeof(float));
+		int cnt = n * n + n;
+		beginCaseN("XE", n, in, cnt);
+		idMatX m; m.Set(n, n, a); idVecX ev, vb(n); for (int i = 0; i < n; i++) vb[i] = b[i];
+		idMatX t; t = m; bool ok = t.Eigen_SolveSymmetric(ev);
+		head("X_eig", in, cnt); PI(ok);
+		if (ok) { t.Eigen_SortIncreasing(ev); putVecX(ev); putEigen(t); t.Eigen_SortDecreasing(ev); putVecX(ev); putEigen(t); }
+		// tri-diagonal part of the same matrix
+		idMatX td; td = m; td.TriDiagonal_ClearTriangles(); head("X_tri", in, cnt); putMatX(td);
+		idVecX x(n); ok = td.TriDiagonal_Solve(x, vb); PI(ok); if (ok) putVecX(x);
+		idMatX inv; td.TriDiagonal_Inverse(inv); head("X_triinv", in, cnt); putMatX(inv);
+		t = td; ok = t.Eigen_SolveSymmetricTriDiagonal(ev); head("X_eigtri", in, cnt); PI(ok); if (ok) { t.Eigen_SortIncreasing(ev); putVecX(ev); putEigen(t); }
+		endCase();
+	}
+}
+// ---------------------------------------------------------------- idLCP
+static void testLcp(int cases) {
+	for (int sym = 0; sym < 2; sym++) for (int c = 0; c < cases; c++) {
+		int n = 2 + c % 7;
+		float a[64], b[8], lo[8], hi[8]; int box[8];
+		// weakly dominant matrices make the solver change its mind: variables are clamped and unclamped again
+		fillSpd(a, n); for (int i = 0; i < n; i++) a[i * n + i] -= (float)n * 0.3f; for (int i = 0; i < n; i++) a[i * n + i] += 0.2f;
+		if (!sym) for (int i = 0; i < n; i++) for (int j = 0; j < i; j++) { float k = rf(0.3f); a[i * n + j] += k; a[j * n + i] -= k; }
+		for (int i = 0; i < n; i++) b[i] = rf(5.0f);
+		int mode = c % 6;
+		for (int i = 0; i < n; i++) {
+			lo[i] = -idMath::INFINITY; hi[i] = idMath::INFINITY; box[i] = -1;
+			if (mode == 1) lo[i] = 0.0f;
+			if (mode == 2) { lo[i] = -1.0f - (float)(i % 3); hi[i] = 0.5f + (float)(i % 2); }
+			if (mode == 3) { if (i % 2) { lo[i] = 0.0f; } else if (i % 3 == 0) { lo[i] = -0.5f; hi[i] = 0.5f; } }
+			if (mode == 4) { if (i < n - 1) { if (i % 2 == 0) lo[i] = 0.0f; } else { lo[i] = 0.4f; hi[i] = 0.9f; box[i] = 0; lo[0] = 0.0f; } }
+			if (mode == 5) { lo[i] = -rf(2.0f) - 0.1f; hi[i] = fabsf(rf(2.0f)) + 0.1f; if (lo[i] > 0) lo[i] = -lo[i]; }
+		}
+		float in[400]; int k = 0;
+		in[k++] = (float)n; for (int i = 0; i < n * n; i++) in[k++] = a[i];
+		for (int i = 0; i < n; i++) in[k++] = b[i]; for (int i = 0; i < n; i++) in[k++] = lo[i]; for (int i = 0; i < n; i++) in[k++] = hi[i];
+		for (int i = 0; i < n; i++) in[k++] = (float)box[i];
+		idMatX m; m.Set(n, n, a); idVecX x(n), vb(n), vlo(n), vhi(n);
+		for (int i = 0; i < n; i++) { vb[i] = b[i]; vlo[i] = lo[i]; vhi[i] = hi[i]; }
+		x.Zero();
+		idLCP *lcp = sym ? idLCP::AllocSymmetric() : idLCP::AllocSquare();
+		bool ok = lcp->Solve(m, x, vb, vlo, vhi, mode == 4 ? box : NULL);
+		head(sym ? "LCP_sym" : "LCP_sq", in, k); PI(mode == 4); PI(ok); putVecX(x);
+		// the matrix must be unchanged after the solve
+		PI(memcmp(a, m.ToFloatPtr(), n * n * sizeof(float)) == 0); tail();
+		delete lcp;
+	}
+}
+int main(int argc, char **argv) {
+	idMath::Init(); setvbuf(stdout, 0, _IONBF, 0);
+	testVec(20);
+	test2(24); test4(24); test5(24); test6(24);
+	testMat46Extra(12);
+	testMatX(5);
+	testMatXShape(12);
+	testCholLdlt(3);
+	testEigen(3);
+	testLcp(60);
+	return 0;
+}
+
