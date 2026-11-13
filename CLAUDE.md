@@ -73,6 +73,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Configuration** — Formato del file `.ini` del motore (lettura e scrittura) e tabella delle impostazioni a classi (#185, fetta 1c). [CLAUDE.md](Libs/Configuration/CLAUDE.md), [README.md](Libs/Configuration/README.md)
 - **Console** — Meccanismo della console: registro dei comandi, interprete, variabili, coda, cronologia, riga di input. [CLAUDE.md](Libs/Console/CLAUDE.md), [README.md](Libs/Console/README.md)
 - **Ddc** — Compilatore da riga di comando degli script (`ddc`, `ddc_base`, `dd_compiler`, `cmdline_compiler`). [CLAUDE.md](Libs/Ddc/CLAUDE.md), [README.md](Libs/Ddc/README.md) (paragrafo in `Libs\ScriptHost`)
+- **Decl** — Gestore delle dichiarazioni di id Tech 4 (issue #100, prima fetta): tipi registrati, lettura a richiesta, `table`, `skin`, `entityDef` con `inherit`, `pda`; parita' col vero DeclManager di Doom 3. [CLAUDE.md](Libs/Decl/CLAUDE.md), [README.md](Libs/Decl/README.md)
 - **Definitions** — Lettura di ANIMDEFS, della tabella degli interruttori e della tabella del terreno. [CLAUDE.md](Libs/Definitions/CLAUDE.md), [README.md](Libs/Definitions/README.md)
 - **Dehacked** — Parser delle patch DEHACKED/BEX con modello neutro. [CLAUDE.md](Libs/Dehacked/CLAUDE.md), [README.md](Libs/Dehacked/README.md)
 - **DynLights** — Parser e registro delle luci dinamiche (GLDEFS/LIGHTDEF). [CLAUDE.md](Libs/DynLights/CLAUDE.md), [README.md](Libs/DynLights/README.md)

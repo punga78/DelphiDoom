@@ -111,7 +111,7 @@ begin
   FSource.Add('other/z.x', '');
   FSource.Add('dd/q.x', '');
   LFiles := FSource.ListFiles('D', '.x');
-  Assert.AreEqual(3, Length(LFiles));
+  Assert.AreEqual<Integer>(3, Length(LFiles));
   Assert.AreEqual('a.x', string(LFiles[0]));
   Assert.AreEqual('b.x', string(LFiles[1]));
   Assert.AreEqual('s/c.X', string(LFiles[2]));

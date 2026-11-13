@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: declaration manager - TDeclTable, the "table" declaration       }
 {                                                                              }
@@ -29,7 +29,7 @@ type
     /// <summary>
     ///   The value at a position: interpolated between the two nearest entries, or the nearest one with
     ///   <c>snap</c>; a position outside 0..1 clamps with <c>clamp</c> and wraps otherwise. A table with
-    ///   fewer than three entries gives 1 (as the original does).
+    ///   one value (or none) gives 1 (as the original does).
     /// </summary>
     function TableLookup(const AIndex: Single): Single;
     function GetSnap: Boolean;

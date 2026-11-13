@@ -172,7 +172,7 @@ end;
 
 procedure TTestDeclManager.DovrebbeTroncareIlNomeLungo;
 begin
-  Assert.AreEqual(1023, Length(TDeclManager.MakeNameCanonical(AnsiString(StringOfChar('x', 2000)))));
+  Assert.AreEqual<Integer>(1023, Length(TDeclManager.MakeNameCanonical(AnsiString(StringOfChar('x', 2000)))));
 end;
 
 procedure TTestDeclManager.DovrebbeCrearePerDifettoUnaDichiarazioneMancante;

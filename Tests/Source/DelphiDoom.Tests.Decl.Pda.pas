@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the declaration manager - pda, email, video, audio     }
 {                                                                              }
@@ -55,6 +55,10 @@ type
     procedure DovrebbeUsareLeDefinizioniDiDefaultDiPdaEmailVideoAudio;
     [Test]
     procedure DovrebbeTenereICampiCheUnaNuovaLetturaNonImposta;
+    [Test]
+    procedure DovrebbeSegnalareUnErroreDelLexerInOgniTipo;
+    [Test]
+    procedure DovrebbeDareUnaDimensioneInMemoria;
   end;
 
 implementation
@@ -281,6 +285,41 @@ begin
   // FreeData of an e-mail frees nothing (as the original): the subject of the first parse is still there
   Assert.AreEqual('Hello', string(LMail.GetSubject));
   Assert.AreEqual('abc', string(LMail.GetBody));
+end;
+
+procedure TTestDeclPda.DovrebbeSegnalareUnErroreDelLexerInOgniTipo;
+const
+  TYPES: array[0..3] of Integer = (DECL_PDA, DECL_VIDEO, DECL_AUDIO, DECL_EMAIL);
+  NAMES: array[0..3] of string = ('PDA', 'Video', 'Audio', 'Email');
+var
+  LIndex: Integer;
+  LDecl: IDecl;
+begin
+  for LIndex := 0 to High(TYPES) do
+  begin
+    FKit.Lines.Clear;
+    LDecl := FKit.Manager.FindType(TYPES[LIndex], 'broken' + AnsiString(IntToStr(LIndex)));
+    // an unterminated string is an error of the lexer, which is a warning here (no fatal errors)
+    LDecl.SetText('x broken { name "never closed }');
+    LDecl.Invalidate;
+    LDecl.EnsureNotPurged;
+    Assert.IsTrue(Pos(NAMES[LIndex] + ' decl ''broken' + IntToStr(LIndex) + ''' had a parse error', FKit.LogText) > 0,
+      FKit.LogText);
+  end;
+end;
+
+procedure TTestDeclPda.DovrebbeDareUnaDimensioneInMemoria;
+var
+  LIndex: Integer;
+  LType: Integer;
+begin
+  for LType in [DECL_PDA, DECL_VIDEO, DECL_AUDIO, DECL_EMAIL, DECL_TABLE, DECL_SKIN, DECL_ENTITYDEF, DECL_MATERIAL] do
+    Assert.IsTrue(FKit.Manager.FindType(LType, 'sized').Size > 0);
+  LIndex := FKit.Manager.GetNumDecls(DECL_PDA);
+  Assert.AreEqual(2, LIndex);
+  FKit.Lines.Clear;
+  FKit.Manager.ListType(DECL_PDA, dlmAll);
+  Assert.IsTrue(Pos('P: sized\n', FKit.LogText) > 0, FKit.LogText);
 end;
 
 initialization

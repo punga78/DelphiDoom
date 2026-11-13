@@ -21,7 +21,7 @@ type
     class function CreateManager(const ASource: IDeclSource; const ALog: IIdLibLog = nil): IDeclManager; static;
     /// <summary>
     ///   A manager with the standard types of Doom 3 registered (<c>TDeclStandardTypes.RegisterTypes</c>) and, if
-    ///   <c>ALoadFolders</c>, the standard folders loaded; <c>ASkip</c> lists the type numbers left to the caller
+    ///   <c>ALoadFolders</c>, the standard folders loaded
     /// </summary>
     class function CreateStandardManager(const ASource: IDeclSource; const ALog: IIdLibLog = nil;
       const ALoadFolders: Boolean = True): IDeclManager; static;

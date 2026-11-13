@@ -374,7 +374,6 @@ var
   LOperations: TStringList;
   LFiles: TDictionary<string, string>;
   LFileOrder: TStringList;
-  LPair: TPair<string, string>;
   LName: string;
 begin
   Result := TStringList.Create;
