@@ -101,7 +101,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Logging** — Log del motore: `ILog`, canali e sink. [CLAUDE.md](Libs/Logging/CLAUDE.md), [README.md](Libs/Logging/README.md)
 - **M2m** — Convertitore MIDI in MUS. [CLAUDE.md](Libs/M2m/CLAUDE.md), [README.md](Libs/M2m/README.md) (paragrafo in `Libs\Zlib`)
 - **MapInfo** — Lettura di UMAPINFO e catalogo delle mappe. [CLAUDE.md](Libs/MapInfo/CLAUDE.md), [README.md](Libs/MapInfo/README.md)
-- **MathCore** — Parti pure di generatore casuale, hash, CRC, SHA-1, tabelle trigonometriche, aritmetica fixed, vettori e bbox. [CLAUDE.md](Libs/MathCore/CLAUDE.md), [README.md](Libs/MathCore/README.md)
+- **MathCore** — Parti pure di generatore casuale, hash, CRC, SHA-1, tabelle trigonometriche, aritmetica fixed, vettori e bbox; in virgola mobile di id Tech 4 (issue #95, prima fetta: angoli, quaternioni, matrice 3x3, rotazione, complessi, polinomi). [CLAUDE.md](Libs/MathCore/CLAUDE.md), [README.md](Libs/MathCore/README.md)
 - **Midi** — Sequencer MIDI senza dispositivo, volume ed event feeder. [CLAUDE.md](Libs/Midi/CLAUDE.md), [README.md](Libs/Midi/README.md)
 - **Mikmod** — Lettore di moduli tracker (MOD, S3M, XM, IT) in Pascal. [CLAUDE.md](Libs/Mikmod/CLAUDE.md), [README.md](Libs/Mikmod/README.md) (paragrafo in `Libs\Zlib`)
 - **Models** — Lettura dei modelli 3D (MD2, liste di comandi procedurali, I3D di Speed). [CLAUDE.md](Libs/Models/CLAUDE.md), [README.md](Libs/Models/README.md)
