@@ -1,0 +1,9 @@
+# Tests\Data\Models\static
+
+Dati di prova dei modelli statici (issue #105), **scritti per i test** (nessun dato di Doom 3 e' nel repository):
+
+- `cube.lwo`, `cube_smooth.lwo`, `cube_colors.lwo`, `weld.lwo`, `merge.lwo`, `groups.lwo`: file LWO2 costruiti dalle funzioni di `DelphiDoom.Tests.Models.StaticBuilders` (cubo con uv, smussatura di 1.6 radianti, mappa RGBA, punti da saldare, tre superfici di cui due con lo stesso nome senza maiuscole, gruppi di smussatura).
+- `cube.ase`, `cube_normals.ase`, `cube_nomaterial.ase`, `two_objects.ase`, `colors.ase`: file ASE costruiti dalle stesse funzioni. `cube_nomaterial.ase` non e' nel golden (il C++ legge il materiale 0 di una lista vuota).
+- `static.golden.txt`: l'uscita di un programma fuori dal repository (`harness\driver.cpp.txt` e `harness\precompiled.h.txt`, i due file scritti per il test, vanno nella cartella con `Model_lwo.cpp/.h`, `Model_ase.cpp/.h`, `idlib\` di `Reference\doom3\neo` e due estratti: `convert.inc` = righe di `Model.cpp` da `typedef struct matchVert_s` a prima di `ConvertLWOToASE`, `merge.inc` = `R_MergeSurfaceList` e `R_MergeTriangles` di `tr_trisurf.cpp`; `idlib\precompiled.h` e' sostituito dal file di stub; si compila con `bcc32c -w -I. -Iidlib -o drv.exe driver.cpp Model_lwo.cpp Model_ase.cpp containers/HashIndex.cpp math/Math.cpp`, senza `-std=c++14`) che legge un elenco `etichetta tipo file merge fast` e scrive righe `etichetta chiave | valori` (float come `#` e i 32 bit in esadecimale). L'harness usa memoria azzerata dove il C++ lascia memoria non inizializzata.
+
+I file sono marcati `-text` in `.gitattributes`. I file binari si rifanno con le funzioni `Build*` (vedi `StaticBuilders`); il test `DovrebbeLeggereIlCuboDelFileDiDati` controlla che `cube.lwo` sia quello del costruttore.

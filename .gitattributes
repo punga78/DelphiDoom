@@ -24,3 +24,4 @@ Tests/Data/IdImages/** -text
 Tests/Data/Console/IdTech4/** -text
 Tests/Data/BotAi/** -text
 Tests/Data/Gui/** -text
+Tests/Data/Models/static/** -text

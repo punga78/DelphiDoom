@@ -1,0 +1,136 @@
+#include "precompiled.h"
+#include <fstream>
+#include <sstream>
+#include "containers/VectorSet.h"
+
+class idException { public: char error[1024]; idException(const char *t) { strncpy(error, t, 1023); error[1023] = 0; } };
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+
+static std::string label;
+void idCommon::Printf(const char *fmt, ...) {}
+void idCommon::Warning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("%s warn | %s\n", label.c_str(), b); }
+void idCommon::DWarning(const char *fmt, ...) {}
+void idCommon::Error(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+void *Mem_Alloc(const int size) { return calloc(1, size); }
+void *Mem_ClearedAlloc(const int size) { return calloc(1, size); }
+void Mem_Free(void *p) { free(p); }
+void BigRevBytes(void *bp, int elsize, int elcount) {
+	unsigned char *p = (unsigned char *)bp;
+	for (int i = 0; i < elcount; i++, p += elsize) for (int j = 0; j < elsize / 2; j++) { unsigned char t = p[j]; p[j] = p[elsize - 1 - j]; p[elsize - 1 - j] = t; }
+}
+
+static std::vector<std::string> pool;
+static std::string readAll(const char *n) { std::ifstream f(n, std::ios::binary); std::stringstream ss; ss << f.rdbuf(); return ss.str(); }
+idFile *idFileSystem::OpenFileRead(const char *n) { idFile *f = new idFile; f->rd = readAll(n); if (f->rd.empty()) { delete f; return 0; } return f; }
+void idFileSystem::CloseFile(idFile *f) { delete f; }
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *ts) { std::string s = readAll(n); char *m = (char *)malloc(s.size() + 1); memcpy(m, s.data(), s.size()); m[s.size()] = 0; *b = m; if (ts) *ts = 0; return (int)s.size(); }
+void idFileSystem::FreeFile(void *b) { free(b); }
+const char *idFileSystem::OSPathToRelativePath(const char *p) { return p; }
+
+// ---- the renderer parts that the conversion uses
+struct idMaterial { std::string name; bool IsDiscrete() const { return false; } const char *GetRenderBump() const { return ""; } };
+class idDeclManager { public:
+	std::map<std::string, idMaterial *> m;
+	const idMaterial *FindMaterial(const char *n) { std::string k = n; for (size_t i = 0; i < k.size(); i++) k[i] = (char)tolower((unsigned char)k[i]); idMaterial *&r = m[k]; if (!r) { r = new idMaterial; r->name = n; } return r; }
+} theDecl, *declManager = &theDecl;
+struct { const idMaterial *defaultMaterial; } tr;
+
+typedef struct srfTriangles_s {
+	int numVerts; int numIndexes; idDrawVert *verts; int *indexes; bool generateNormals;
+} srfTriangles_t;
+typedef int glIndex_t;
+srfTriangles_t *R_AllocStaticTriSurf() { return (srfTriangles_t *)calloc(1, sizeof(srfTriangles_t)); }
+void R_AllocStaticTriSurfVerts(srfTriangles_t *t, int n) { t->verts = (idDrawVert *)calloc(n + 1, sizeof(idDrawVert)); }
+void R_AllocStaticTriSurfIndexes(srfTriangles_t *t, int n) { t->indexes = (int *)calloc(n + 1, sizeof(int)); }
+void R_FreeStaticTriSurf(srfTriangles_t *t) { free(t->verts); free(t->indexes); free(t); }
+void *R_StaticAlloc(int n) { return malloc(n); }
+void *R_ClearedStaticAlloc(int n) { return calloc(1, n); }
+void R_StaticFree(void *p) { free(p); }
+#include "merge.inc"
+
+static idSIMDStub theSimd; idSIMDStub *SIMDProcessor = &theSimd;
+
+typedef struct modelSurface_s { int id; const idMaterial *shader; srfTriangles_t *geometry; } modelSurface_t;
+struct cvar { float f; cvar(float v) : f(v) {} float GetFloat() const { return f; } bool GetBool() const { return f != 0; } };
+
+#include "Model_lwo.h"
+#include "Model_ase.h"
+
+class idRenderModelStatic {
+public:
+	idStr name; ID_TIME_T timeStamp; bool fastLoad;
+	idList<modelSurface_t> surfaces;
+	cvar r_mergeModelSurfaces, r_slopVertex, r_slopTexCoord, r_slopNormal;
+	idRenderModelStatic() : timeStamp(0), fastLoad(false), r_mergeModelSurfaces(1), r_slopVertex(0.01f), r_slopTexCoord(0.001f), r_slopNormal(0.02f) {}
+	int NumSurfaces() const { return surfaces.Num(); }
+	int AddSurface(modelSurface_t s) { return surfaces.Append(s); }
+	bool ConvertASEToModelSurfaces(const struct aseModel_s *ase);
+	bool ConvertLWOToModelSurfaces(const struct st_lwObject *lwo);
+};
+
+#include "convert.inc"
+
+static void hex(float f) { unsigned int u; memcpy(&u, &f, 4); printf(" #%08x", u); }
+
+static void dump(idRenderModelStatic &m, bool ok) {
+	printf("%s result | %d\n", label.c_str(), ok ? 1 : 0);
+	printf("%s surfaces | %d\n", label.c_str(), m.NumSurfaces());
+	for (int s = 0; s < m.NumSurfaces(); s++) {
+		modelSurface_t &ms = m.surfaces[s];
+		srfTriangles_t *t = ms.geometry;
+		printf("%s s%d info | %d %s\n", label.c_str(), s, ms.id, ((const idMaterial *)ms.shader)->name.c_str());
+		if (!t) { printf("%s s%d null | 1\n", label.c_str(), s); continue; }
+		printf("%s s%d counts | %d %d %d\n", label.c_str(), s, t->numVerts, t->numIndexes, t->generateNormals ? 1 : 0);
+		printf("%s s%d indexes |", label.c_str(), s);
+		for (int i = 0; i < t->numIndexes; i++) printf(" %d", t->indexes[i]);
+		printf("\n");
+		float mn[3] = { 1e30f, 1e30f, 1e30f }, mx[3] = { -1e30f, -1e30f, -1e30f };
+		for (int i = 0; i < t->numVerts; i++) {
+			idDrawVert &v = t->verts[i];
+			printf("%s s%d v%d |", label.c_str(), s, i);
+			hex(v.xyz.x); hex(v.xyz.y); hex(v.xyz.z); hex(v.st.x); hex(v.st.y); hex(v.normal.x); hex(v.normal.y); hex(v.normal.z);
+			printf(" %d %d %d %d\n", v.color[0], v.color[1], v.color[2], v.color[3]);
+			for (int k = 0; k < 3; k++) { if (v.xyz[k] < mn[k]) mn[k] = v.xyz[k]; if (v.xyz[k] > mx[k]) mx[k] = v.xyz[k]; }
+		}
+		printf("%s s%d bounds |", label.c_str(), s);
+		for (int k = 0; k < 3; k++) hex(mn[k]);
+		for (int k = 0; k < 3; k++) hex(mx[k]);
+		printf("\n");
+	}
+}
+
+int main(int argc, char **argv) {
+	idMath::Init(); idCommon theCommon; common = &theCommon; idLib::common = &theCommon;
+	idFileSystem theFs; fileSystem = &theFs; idLib::fileSystem = &theFs;
+	tr.defaultMaterial = declManager->FindMaterial("_default");
+	std::ifstream jobs(argv[1]);
+	std::string kind, path; int merge, fast;
+	while (jobs >> label >> kind >> path >> merge >> fast) {
+		idRenderModelStatic m;
+		m.r_mergeModelSurfaces.f = (float)merge; m.fastLoad = fast != 0;
+		bool ok = false;
+		try {
+			if (kind == "lwo") {
+				unsigned int failID = 0; int failpos = 0;
+				lwObject *lwo = lwGetObject(path.c_str(), &failID, &failpos);
+				if (!lwo) { printf("%s error | lwGetObject failed at %d\n", label.c_str(), failpos); continue; }
+				ok = m.ConvertLWOToModelSurfaces(lwo);
+			} else {
+				aseModel_t *ase = ASE_Load(path.c_str());
+				if (!ase) { printf("%s error | ASE_Load failed\n", label.c_str()); continue; }
+				ok = m.ConvertASEToModelSurfaces(ase);
+			}
+		} catch (idException &e) { printf("%s error | %s\n", label.c_str(), e.error); continue; }
+		dump(m, ok);
+	}
+	return 0;
+}
