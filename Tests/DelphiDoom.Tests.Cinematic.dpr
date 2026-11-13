@@ -32,6 +32,14 @@ uses
   DelphiDoom.Cinematic.Player in '..\Libs\Cinematic\DelphiDoom.Cinematic.Player.pas',
   DelphiDoom.Cinematic.AudioCollector in '..\Libs\Cinematic\DelphiDoom.Cinematic.AudioCollector.pas',
   DelphiDoom.Cinematic.Factory in '..\Libs\Cinematic\DelphiDoom.Cinematic.Factory.pas',
+  DelphiDoom.Xcom.Types in '..\Libs\XcomFormats\DelphiDoom.Xcom.Types.pas',
+  DelphiDoom.Xcom.FlcDecoder in '..\Libs\XcomFormats\DelphiDoom.Xcom.FlcDecoder.pas',
+  DelphiDoom.Cinematic.Flic.Types in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Types.pas',
+  DelphiDoom.Cinematic.Flic.Intf in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Intf.pas',
+  DelphiDoom.Cinematic.Flic.PixelConverter in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.PixelConverter.pas',
+  DelphiDoom.Cinematic.Flic.Decoder in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Decoder.pas',
+  DelphiDoom.Cinematic.Flic.Player in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Player.pas',
+  DelphiDoom.Cinematic.Flic.Factory in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Factory.pas',
   DelphiDoom.Tests.Cinematic.Support in 'Source\DelphiDoom.Tests.Cinematic.Support.pas',
   DelphiDoom.Tests.Cinematic.Types in 'Source\DelphiDoom.Tests.Cinematic.Types.pas',
   DelphiDoom.Tests.Cinematic.Sources in 'Source\DelphiDoom.Tests.Cinematic.Sources.pas',
@@ -43,7 +51,12 @@ uses
   DelphiDoom.Tests.Cinematic.Decoder in 'Source\DelphiDoom.Tests.Cinematic.Decoder.pas',
   DelphiDoom.Tests.Cinematic.Player in 'Source\DelphiDoom.Tests.Cinematic.Player.pas',
   DelphiDoom.Tests.Cinematic.AudioCollector in 'Source\DelphiDoom.Tests.Cinematic.AudioCollector.pas',
-  DelphiDoom.Tests.Cinematic.Parity in 'Source\DelphiDoom.Tests.Cinematic.Parity.pas';
+  DelphiDoom.Tests.Cinematic.Parity in 'Source\DelphiDoom.Tests.Cinematic.Parity.pas',
+  DelphiDoom.Tests.Cinematic.FlicSupport in 'Source\DelphiDoom.Tests.Cinematic.FlicSupport.pas',
+  DelphiDoom.Tests.Cinematic.FlicPixelConverter in 'Source\DelphiDoom.Tests.Cinematic.FlicPixelConverter.pas',
+  DelphiDoom.Tests.Cinematic.FlicDecoder in 'Source\DelphiDoom.Tests.Cinematic.FlicDecoder.pas',
+  DelphiDoom.Tests.Cinematic.FlicPlayer in 'Source\DelphiDoom.Tests.Cinematic.FlicPlayer.pas',
+  DelphiDoom.Tests.Cinematic.FlicParity in 'Source\DelphiDoom.Tests.Cinematic.FlicParity.pas';
 
 var
   Runner: ITestRunner;

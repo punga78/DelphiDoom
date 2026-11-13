@@ -1,0 +1,11 @@
+header type af12 frames 8 size 24x40 speed 70
+frame 0 pix 83dfcfc1 pal 2ea42191 delay 70
+frame 1 pix 962bb7f8 pal 2ea42191 delay 70
+frame 2 pix c5ddd214 pal 2ea42191 delay 70
+frame 3 pix 93b4e2da pal 2ea42191 delay 70
+frame 4 pix 83229233 pal 2ea42191 delay 70
+frame 5 pix c15884d3 pal 2ea42191 delay 70
+frame 6 pix 07b766b4 pal 2ea42191 delay 70
+frame 7 pix bac37866 pal 2ea42191 delay 70
+frame 8 pix 2dac5c18 pal 2ea42191 delay 70
+end frames 9

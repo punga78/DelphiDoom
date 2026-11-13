@@ -1,0 +1,17 @@
+header type af12 frames 14 size 100x30 speed 70
+frame 0 pix d96d9363 pal f53775fc delay 70
+frame 1 pix 0d994a87 pal f53775fc delay 70
+frame 2 pix 49bf9573 pal f53775fc delay 70
+frame 3 pix 6d38f62d pal f53775fc delay 70
+frame 4 pix fa37ccf9 pal f53775fc delay 70
+frame 5 pix b10d0363 pal f53775fc delay 70
+frame 6 pix 8549ded1 pal f53775fc delay 70
+frame 7 pix 7ddff680 pal f53775fc delay 70
+frame 8 pix d1d17860 pal f53775fc delay 70
+frame 9 pix 89503a3f pal f53775fc delay 70
+frame 10 pix 6007b213 pal f53775fc delay 70
+frame 11 pix 7ec50909 pal f53775fc delay 70
+frame 12 pix 78e821ca pal f53775fc delay 70
+frame 13 pix a4990e4b pal 772b5311 delay 70
+frame 14 pix 09a3724b pal 772b5311 delay 70
+end frames 15

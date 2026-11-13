@@ -1,0 +1,9 @@
+header type af11 frames 6 size 32x32 speed 3
+frame 0 pix b2ece92a pal ce11d3ad delay 42
+frame 1 pix 9418d77a pal ce11d3ad delay 7
+frame 2 pix 90a4da67 pal ce11d3ad delay 42
+frame 3 pix 3a41e007 pal ce11d3ad delay 2
+frame 4 pix efb5af2e pal ce11d3ad delay 42
+frame 5 pix 55d3d773 pal ce11d3ad delay 42
+frame 6 pix b7e36d4a pal ce11d3ad delay 1
+end frames 7

@@ -1,0 +1,13 @@
+header type af12 frames 10 size 320x144 speed 85
+frame 0 pix fc0fbbb0 pal d0cfc87c delay 85
+frame 1 pix 9cfa1bec pal d0cfc87c delay 85
+frame 2 pix 5f4afa3e pal d0cfc87c delay 85
+frame 3 pix e970cafc pal d0cfc87c delay 85
+frame 4 pix 9feeaa8a pal d0cfc87c delay 85
+frame 5 pix 84976944 pal d0cfc87c delay 85
+frame 6 pix d2db55d8 pal d0cfc87c delay 85
+frame 7 pix 6d516277 pal d0cfc87c delay 85
+frame 8 pix 7232796c pal d0cfc87c delay 85
+frame 9 pix 8efc202a pal d0cfc87c delay 85
+frame 10 pix fc0fbbb0 pal d0cfc87c delay 85
+end frames 11

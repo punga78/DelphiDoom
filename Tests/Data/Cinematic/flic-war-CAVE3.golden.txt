@@ -1,0 +1,31 @@
+header type af12 frames 28 size 320x144 speed 71
+frame 0 pix 9b0e75eb pal d0cfc87c delay 71
+frame 1 pix 9b0e75eb pal d0cfc87c delay 71
+frame 2 pix 9b0e75eb pal d0cfc87c delay 71
+frame 3 pix 9b0e75eb pal d0cfc87c delay 71
+frame 4 pix 9b0e75eb pal d0cfc87c delay 71
+frame 5 pix 9b0e75eb pal d0cfc87c delay 71
+frame 6 pix 9b0e75eb pal d0cfc87c delay 71
+frame 7 pix 9b0e75eb pal d0cfc87c delay 71
+frame 8 pix 9b0e75eb pal d0cfc87c delay 71
+frame 9 pix affc95d3 pal d0cfc87c delay 71
+frame 10 pix affc95d3 pal d0cfc87c delay 71
+frame 11 pix affc95d3 pal d0cfc87c delay 71
+frame 12 pix affc95d3 pal d0cfc87c delay 71
+frame 13 pix affc95d3 pal d0cfc87c delay 71
+frame 14 pix affc95d3 pal d0cfc87c delay 71
+frame 15 pix affc95d3 pal d0cfc87c delay 71
+frame 16 pix affc95d3 pal d0cfc87c delay 71
+frame 17 pix affc95d3 pal d0cfc87c delay 71
+frame 18 pix 346e977a pal d0cfc87c delay 71
+frame 19 pix 346e977a pal d0cfc87c delay 71
+frame 20 pix 346e977a pal d0cfc87c delay 71
+frame 21 pix 346e977a pal d0cfc87c delay 71
+frame 22 pix 346e977a pal d0cfc87c delay 71
+frame 23 pix 346e977a pal d0cfc87c delay 71
+frame 24 pix 346e977a pal d0cfc87c delay 71
+frame 25 pix 346e977a pal d0cfc87c delay 71
+frame 26 pix 346e977a pal d0cfc87c delay 71
+frame 27 pix 346e977a pal d0cfc87c delay 71
+frame 28 pix 9b0e75eb pal d0cfc87c delay 71
+end frames 29

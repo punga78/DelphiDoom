@@ -1,0 +1,16 @@
+header type af12 frames 13 size 320x144 speed 71
+frame 0 pix bb1557a8 pal 7ac5e398 delay 71
+frame 1 pix 6557397a pal 7ac5e398 delay 71
+frame 2 pix 2c132bf8 pal 7ac5e398 delay 71
+frame 3 pix 6b9ae763 pal 7ac5e398 delay 71
+frame 4 pix 32fc790d pal 7ac5e398 delay 71
+frame 5 pix 564c4ef3 pal 7ac5e398 delay 71
+frame 6 pix 5dda56fa pal 7ac5e398 delay 71
+frame 7 pix 6bc48c9b pal 7ac5e398 delay 71
+frame 8 pix cc7a37de pal 7ac5e398 delay 71
+frame 9 pix 19ee7404 pal 7ac5e398 delay 71
+frame 10 pix a8c49ea6 pal 7ac5e398 delay 71
+frame 11 pix 86308575 pal 7ac5e398 delay 71
+frame 12 pix 6bc48c9b pal 7ac5e398 delay 71
+frame 13 pix bb1557a8 pal 7ac5e398 delay 71
+end frames 14
