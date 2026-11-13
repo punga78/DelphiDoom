@@ -128,7 +128,20 @@ uses
   DelphiDoom.Tests.Audio.MusicPlayer in 'Source\DelphiDoom.Tests.Audio.MusicPlayer.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
   DelphiDoom.Tests.Audio.Efx in 'Source\DelphiDoom.Tests.Audio.Efx.pas',
-  DelphiDoom.Tests.Audio.WaveHeader in 'Source\DelphiDoom.Tests.Audio.WaveHeader.pas';
+  DelphiDoom.Tests.Audio.WaveHeader in 'Source\DelphiDoom.Tests.Audio.WaveHeader.pas',
+  DelphiDoom.AudioMix.Types in '..\Libs\AudioMix\DelphiDoom.AudioMix.Types.pas',
+  DelphiDoom.AudioMix.Intf in '..\Libs\AudioMix\DelphiDoom.AudioMix.Intf.pas',
+  DelphiDoom.AudioMix.VoiceList in '..\Libs\AudioMix\DelphiDoom.AudioMix.VoiceList.pas',
+  DelphiDoom.AudioMix.Saturation in '..\Libs\AudioMix\DelphiDoom.AudioMix.Saturation.pas',
+  DelphiDoom.Audio.Mixer.Intf in '..\Libs\Audio\DelphiDoom.Audio.Mixer.Intf.pas',
+  DelphiDoom.Audio.Mixer.Gains in '..\Libs\Audio\DelphiDoom.Audio.Mixer.Gains.pas',
+  DelphiDoom.Audio.Mixer.Voice in '..\Libs\Audio\DelphiDoom.Audio.Mixer.Voice.pas',
+  DelphiDoom.Audio.Mixer in '..\Libs\Audio\DelphiDoom.Audio.Mixer.pas',
+  DelphiDoom.GameHost.Audio.Intf in '..\Libs\GameHost\DelphiDoom.GameHost.Audio.Intf.pas',
+  DelphiDoom.Engine.Audio.WaveOutDevice in '..\Base\DelphiDoom.Engine.Audio.WaveOutDevice.pas',
+  DelphiDoom.Tests.Audio.Mixer.Gains in 'Source\DelphiDoom.Tests.Audio.Mixer.Gains.pas',
+  DelphiDoom.Tests.Audio.Mixer in 'Source\DelphiDoom.Tests.Audio.Mixer.pas',
+  DelphiDoom.Tests.Audio.WaveOutDevice in 'Source\DelphiDoom.Tests.Audio.WaveOutDevice.pas';
 
 var
   Runner: ITestRunner;
