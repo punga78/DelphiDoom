@@ -483,7 +483,7 @@ begin
   SetString(LText, PAnsiChar(@LBytes[0]), Length(LBytes));
   // the lines as they are, whatever the line end of the checkout (a CR before the LF is dropped)
   Result.LineBreak := #10;
-  Result.Text := string(StringReplace(LText, #13#10, #10, [rfReplaceAll]));
+  Result.Text := StringReplace(string(LText), #13#10, #10, [rfReplaceAll]);
 end;
 
 procedure TTestIdParserGolden.DovrebbeDareLeStesseRisposteDelVeroIdLib;

@@ -396,14 +396,14 @@ begin
   FDict.SetValue('Name', 'Imp');
   FDict.SetValue('empty', '');
   LBytes := FDict.WriteToBytes;
-  Assert.AreEqual(4 + 5 + 4 + 6 + 1, Length(LBytes));
+  Assert.AreEqual(4 + 5 + 4 + 6 + 1, Integer(Length(LBytes)));
   Assert.AreEqual(Byte(2), LBytes[0]);
   LOther := TIdDict.Create;
   try
     LOther.SetValue('junk', 'x');
     LPosition := 0;
     LOther.ReadFromBytes(LBytes, LPosition);
-    Assert.AreEqual(Length(LBytes), LPosition);
+    Assert.AreEqual(Integer(Length(LBytes)), LPosition);
     Assert.AreEqual(2, LOther.GetNumKeyVals);
     Assert.AreEqual('Imp', string(LOther.GetString('name')));
     Assert.AreEqual(FDict.Checksum, LOther.Checksum);
@@ -417,7 +417,7 @@ var
   LBytes: TBytes;
   LPosition: Integer;
 begin
-  FDict.SetValue('k', StringOfChar('x', 1100));
+  FDict.SetValue('k', AnsiString(StringOfChar('x', 1100)));
   Assert.WillRaise(
     procedure
     begin

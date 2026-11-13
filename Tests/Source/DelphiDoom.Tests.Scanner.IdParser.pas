@@ -800,8 +800,8 @@ begin
       LDefine.AddToken(LToken);
       Assert.AreEqual('NAME', string(LCopy.Name));
       Assert.AreEqual(1, LCopy.NumParms);
-      Assert.AreEqual(1, Length(LCopy.Tokens));
-      Assert.AreEqual(2, Length(LDefine.Tokens));
+      Assert.AreEqual(1, Integer(Length(LCopy.Tokens)));
+      Assert.AreEqual(2, Integer(Length(LDefine.Tokens)));
       Assert.AreEqual(DEFINE_FIXED, LCopy.Flags);
       Assert.AreEqual(3, LCopy.Builtin);
     finally
