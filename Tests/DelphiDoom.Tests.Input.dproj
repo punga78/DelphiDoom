@@ -7,7 +7,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
-        <TargetedPlatforms>1</TargetedPlatforms>
+        <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Console</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
@@ -29,6 +29,11 @@
         <DCC_Platform>x86</DCC_Platform>
         <DCC_MapFile>3</DCC_MapFile>
         <SanitizedProjectName>DelphiDoom.Tests.Input</SanitizedProjectName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base)'!='' And '$(Platform)'=='Win64'">
+        <DCC_Platform>x64</DCC_Platform>
+        <DCC_ExeOutput>..\bin\Win64\Tests</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\Win64\Tests\Input\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
