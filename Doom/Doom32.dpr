@@ -1435,7 +1435,6 @@ uses
 
 var
   Saved8087CW: Word;
-  ExcF: TextFile;
 
 begin
   { The RTL memory manager locks only when IsMultiThread is set: the engine threads use CreateThread }
@@ -1460,16 +1459,7 @@ begin
   try
     DoomMain;
   except
-    on E: Exception do
-      begin
-        AssignFile(ExcF, 'C:\ddparity\exc.txt');
-        Rewrite(ExcF);
-        WriteLn(ExcF, E.ClassName, ': ', E.Message, ' off=', IntToHex(NativeUInt(ExceptAddr) - NativeUInt(HInstance) - $1000, 8));
-        CloseFile(ExcF);
-        I_FlashCachedOutput;
-      end
-    else
-      I_FlashCachedOutput;
+    I_FlashCachedOutput;
   end;
 
   { Reset the FPU to the previous state }
