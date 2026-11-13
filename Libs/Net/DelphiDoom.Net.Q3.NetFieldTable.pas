@@ -26,11 +26,13 @@ type
   strict private
     FFields: TArray<TQ3NetField>;
     procedure Add(const AName: string; const ARecord; const AField; ABits: Integer);
+    procedure FillEntityState;
+    procedure FillPlayerState;
   public
     /// <summary>The table of entityState_t (51 fields)</summary>
-    constructor CreateEntityState;
+    class function ForEntityState: IQ3NetFieldTable; static;
     /// <summary>The table of playerState_t (48 fields)</summary>
-    constructor CreatePlayerState;
+    class function ForPlayerState: IQ3NetFieldTable; static;
     function Count: Integer;
     function GetField(AIndex: Integer): TQ3NetField;
   end;
@@ -38,6 +40,24 @@ type
 implementation
 
 { TQ3NetFieldTable }
+
+class function TQ3NetFieldTable.ForEntityState: IQ3NetFieldTable;
+var
+  LTable: TQ3NetFieldTable;
+begin
+  LTable := TQ3NetFieldTable.Create;
+  LTable.FillEntityState;
+  Result := LTable;
+end;
+
+class function TQ3NetFieldTable.ForPlayerState: IQ3NetFieldTable;
+var
+  LTable: TQ3NetFieldTable;
+begin
+  LTable := TQ3NetFieldTable.Create;
+  LTable.FillPlayerState;
+  Result := LTable;
+end;
 
 procedure TQ3NetFieldTable.Add(const AName: string; const ARecord; const AField; ABits: Integer);
 var
@@ -50,11 +70,10 @@ begin
   FFields[High(FFields)] := LField;
 end;
 
-constructor TQ3NetFieldTable.CreateEntityState;
+procedure TQ3NetFieldTable.FillEntityState;
 var
   E: TQ3EntityState;
 begin
-  inherited Create;
   FillChar(E, SizeOf(E), 0);
   Add('pos.trTime', E, E.Pos.TrTime, 32);
   Add('pos.trBase[0]', E, E.Pos.TrBase[0], 0);
@@ -109,11 +128,10 @@ begin
   Add('frame', E, E.Frame, 16);
 end;
 
-constructor TQ3NetFieldTable.CreatePlayerState;
+procedure TQ3NetFieldTable.FillPlayerState;
 var
   P: TQ3PlayerState;
 begin
-  inherited Create;
   FillChar(P, SizeOf(P), 0);
   Add('commandTime', P, P.CommandTime, 32);
   Add('origin[0]', P, P.Origin[0], 0);

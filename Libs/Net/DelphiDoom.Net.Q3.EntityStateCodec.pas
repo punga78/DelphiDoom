@@ -30,7 +30,7 @@ type
     FTable: IQ3NetFieldTable;
     class function FieldAt(AState: PQ3EntityState; const AField: TQ3NetField): PInteger; static; inline;
   public
-    /// <summary>ATable is the table of entityState_t (<c>TQ3NetFieldTable.CreateEntityState</c>)</summary>
+    /// <summary>ATable is the table of entityState_t (<c>TQ3NetFieldTable.ForEntityState</c>)</summary>
     constructor Create(const ATable: IQ3NetFieldTable);
     /// <summary>
     ///   Writes part of a packetentities message, entity number included. ATo = nil writes a remove of the

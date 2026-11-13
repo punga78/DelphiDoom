@@ -52,12 +52,12 @@ end;
 
 class function TQ3NetFactory.CreateEntityStateTable: IQ3NetFieldTable;
 begin
-  Result := TQ3NetFieldTable.CreateEntityState;
+  Result := TQ3NetFieldTable.ForEntityState;
 end;
 
 class function TQ3NetFactory.CreatePlayerStateTable: IQ3NetFieldTable;
 begin
-  Result := TQ3NetFieldTable.CreatePlayerState;
+  Result := TQ3NetFieldTable.ForPlayerState;
 end;
 
 class function TQ3NetFactory.CreateEntityStateCodec: TQ3EntityStateCodec;

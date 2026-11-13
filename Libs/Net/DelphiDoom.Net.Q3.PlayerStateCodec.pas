@@ -32,7 +32,7 @@ type
     class procedure WriteArray(AMessage: TQ3Message; const AFrom, ATo: array of Integer; ALongValues: Boolean); static;
     class procedure ReadArray(AMessage: TQ3Message; var AValues: array of Integer; ALongValues: Boolean); static;
   public
-    /// <summary>ATable is the table of playerState_t (<c>TQ3NetFieldTable.CreatePlayerState</c>)</summary>
+    /// <summary>ATable is the table of playerState_t (<c>TQ3NetFieldTable.ForPlayerState</c>)</summary>
     constructor Create(const ATable: IQ3NetFieldTable);
     /// <summary>A nil AFrom is the zero state</summary>
     procedure WriteDelta(AMessage: TQ3Message; AFrom, ATo: PQ3PlayerState);

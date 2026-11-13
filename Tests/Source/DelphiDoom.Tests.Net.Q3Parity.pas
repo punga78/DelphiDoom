@@ -690,7 +690,7 @@ var
   LI, LK, LJ, LNum, LForce, LN, LCount: Integer;
   LLine: string;
 begin
-  LTable := TQ3NetFieldTable.CreateEntityState;
+  LTable := TQ3NetFieldTable.ForEntityState;
   LCount := LTable.Count;
   LCodec := TQ3EntityStateCodec.Create(LTable);
   LBuffer := NewBuffer(4096);
@@ -812,7 +812,7 @@ var
   LI, LK, LJ, LN, LCount: Integer;
   LLine: string;
 begin
-  LTable := TQ3NetFieldTable.CreatePlayerState;
+  LTable := TQ3NetFieldTable.ForPlayerState;
   LCount := LTable.Count;
   LCodec := TQ3PlayerStateCodec.Create(LTable);
   LBuffer := NewBuffer(4096);
