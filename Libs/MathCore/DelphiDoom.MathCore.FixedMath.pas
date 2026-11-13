@@ -99,6 +99,13 @@ type
     class function Int64ToInteger(const X: Int64): Integer; static;
     /// <summary>Round(a / 65536 * b) in floating point on 64 bits (the old FixedMul64)</summary>
     class function Mul64(const A, B: Int64): Int64; static;
+    /// <summary>
+    ///   Double(Extended(A) / Extended(B)) as the 32 bit FPU computes it: the quotient is rounded to 64
+    ///   bits of mantissa and then to 53. The 64 bit compiler has no Extended and rounds once, which gives a
+    ///   number one bit away once in a thousand: here the double rounding is done on purpose, so the golden
+    ///   files made with the 32 bit code hold at 64 bit too
+    /// </summary>
+    class function ExtendedQuotient(const A, B: Double): Double; static;
     class function FloatDivide(const A, B: Double): Double; static;
     class function FloatMul(const A, B: Double): Double; static;
     /// <summary>a mod b guaranteed to be in 0..b-1 (the old FixedMod)</summary>
@@ -106,6 +113,11 @@ type
   end;
 
 implementation
+
+{$IF SizeOf(Extended) = SizeOf(Double)}
+uses
+  System.Math;
+{$IFEND}
 
 { TFixedMath }
 
@@ -284,6 +296,10 @@ class function TFixedMath.DivideEx(const A, B: TFixed): TFixed;
 var
   LValue: Double;
   LBits: Int64;
+  {$IF SizeOf(Extended) = SizeOf(Double)}
+  LFloor: Double;
+  LScaled: Integer;
+  {$IFEND}
 begin
   if B = 0 then
   begin
@@ -294,7 +310,7 @@ begin
   end
   else
   begin
-    LValue := (A / B) * FIXED_ONE;
+    LValue := ExtendedQuotient(A, B) * FIXED_ONE;
     if LValue < FIXED_MIN + 1 then
       Result := FIXED_MIN
     else if LValue > FIXED_MAX - 1 then
@@ -302,9 +318,26 @@ begin
     else
     begin
       // http://stereopsis.com/sree/fpu2006.html - fast round of a double
+      {$IF SizeOf(Extended) > SizeOf(Double)}
       LValue := LValue + 6755399441055744.0;
       Move(LValue, LBits, SizeOf(LBits));
       Result := Integer(LBits);
+      {$ELSE}
+      // The sum is made by the 32 bit FPU in 64 bits of mantissa (a step of 1/2048 at that magnitude) and then
+      // rounded to the 53 of the Double: a value that is a bit over (or under) the half of an integer is first
+      // brought to the half and then goes to the even one. Done here on purpose, to give the same number
+      LFloor := Floor(LValue);
+      LScaled := Round((LValue - LFloor) * 2048);
+      if LScaled > 1024 then
+        LBits := Trunc(LFloor) + 1
+      else if LScaled < 1024 then
+        LBits := Trunc(LFloor)
+      else if Odd(Trunc(LFloor)) then
+        LBits := Trunc(LFloor) + 1
+      else
+        LBits := Trunc(LFloor);
+      Result := Integer(LBits);
+      {$IFEND}
     end;
   end;
 end;
@@ -402,6 +435,68 @@ begin
     Result := Round(A / FIXED_ONE * B);
 end;
 
+class function TFixedMath.ExtendedQuotient(const A, B: Double): Double;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Extended(A) / Extended(B);
+end;
+{$ELSE}
+const
+  // 2^27 + 1: Dekker's split of a Double in two halves
+  SPLITTER = 134217729.0;
+var
+  LNumerator: Double;
+  LDenominator: Double;
+  LQuotient: Double;
+  LProduct: Double;
+  LError: Double;
+  LRemainder: Double;
+  LSplit: Double;
+  LQuotientHigh, LQuotientLow, LDenominatorHigh, LDenominatorLow: Double;
+  LMantissa: Double;
+  LExponent: Integer;
+  LUnit: Double;
+  LDelta: Double;
+begin
+  Result := A / B;
+  if (A = 0) or IsNan(Result) or IsInfinite(Result) or (Abs(Result) < 1E-290) then
+    Exit;
+  LNumerator := Abs(A);
+  LDenominator := Abs(B);
+  LQuotient := Abs(Result);
+
+  // the exact remainder of the numerator less quotient * denominator (the product has up to 106 bits)
+  LProduct := LQuotient * LDenominator;
+  LSplit := SPLITTER * LQuotient;
+  LQuotientHigh := LSplit - (LSplit - LQuotient);
+  LQuotientLow := LQuotient - LQuotientHigh;
+  LSplit := SPLITTER * LDenominator;
+  LDenominatorHigh := LSplit - (LSplit - LDenominator);
+  LDenominatorLow := LDenominator - LDenominatorHigh;
+  LError := ((LQuotientHigh * LDenominatorHigh - LProduct) + LQuotientHigh * LDenominatorLow +
+    LQuotientLow * LDenominatorHigh) + LQuotientLow * LDenominatorLow;
+  LRemainder := (LNumerator - LProduct) - LError;
+
+  // the exact quotient is LQuotient + LDelta. With 64 bits of mantissa it is first rounded to a multiple of
+  // a 2048th of the unit of the last place: when that gives the middle between two Doubles, the second
+  // rounding goes to the one with an even mantissa
+  LDelta := LRemainder / LDenominator;
+  Frexp(LQuotient, LMantissa, LExponent);
+  LUnit := Ldexp(1.0, LExponent - 53);
+  Result := LQuotient;
+  if Abs(LDelta) >= LUnit / 2 - LUnit / 4096 then
+    if Odd(Trunc(LQuotient / LUnit)) then
+    begin
+      if LDelta > 0 then
+        Result := LQuotient + LUnit
+      else
+        Result := LQuotient - LUnit;
+    end;
+  if (A < 0) <> (B < 0) then
+    Result := -Result;
+end;
+{$IFEND}
+
 class function TFixedMath.FloatDivide(const A, B: Double): Double;
 var
   LA: Double;
@@ -418,7 +513,7 @@ begin
   begin
     LA := A / FIXED_ONE;
     LB := B / FIXED_ONE;
-    Result := (LA / LB) * FIXED_ONE;
+    Result := ExtendedQuotient(LA, LB) * FIXED_ONE;
   end;
 end;
 

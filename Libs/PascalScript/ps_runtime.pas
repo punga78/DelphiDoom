@@ -581,6 +581,12 @@ type
     function RunProcP(const Params: array of Variant; const Procno: Cardinal): Variant;
     function RunProcPVar(var Params: array of Variant; const Procno: Cardinal): Variant;
     function RunProcPN(const Params: array of Variant; const ProcName: TbtString): Variant;
+    /// <summary>
+    ///   Runs a script procedure the way a call of a method of the host does it (the integers are the
+    ///   parameters in the order of the declaration, by value), in Pascal: it works at 32 and 64 bit, where
+    ///   the native thunk of GetProcAsMethod does not exist
+    /// </summary>
+    function RunProcHost(const Params: array of Integer; const ProcNo: Cardinal): Boolean;
     function FindType(StartAt: Cardinal; BaseType: TPSBaseType; var l: Cardinal): PIFTypeRec;
     function FindType2(BaseType: TPSBaseType): PIFTypeRec;
     function GetTypeNo(l: Cardinal): PIFTypeRec;
@@ -9915,6 +9921,85 @@ begin
   if ProcNo = InvalidVal then
     raise Exception.Create(RPS_UnknownProcedure);
   Result := RunProcP(Params, ProcNo);
+end;
+
+//==============================================================================
+//
+// TPSExec.RunProcHost
+//
+// The same job as the native thunk MyAllMethodsHandler (a script procedure called
+// as a method of the host), in Pascal: no assembler, so it works at 64 bit, where
+// the thunk is empty. The integers go to the parameters in the order of the
+// declaration, as raw bytes (like the registers of the thunk did).
+//
+//==============================================================================
+function TPSExec.RunProcHost(const Params: array of Integer; const ProcNo: Cardinal): Boolean;
+var
+  ParamList: TPSList;
+  Items: array of PPSVariant;
+  Proc: TPSInternalProcRec;
+  ct: PIFTypeRec;
+  pvar: PPSVariant;
+  s, res, e: TbtString;
+  i, c: Longint;
+  ex: TPSExceptionHandler;
+begin
+  if ProcNo >= FProcs.Count then
+    raise Exception.Create(RPS_UnknownProcedure);
+  Proc := GetProcNo(ProcNo) as TPSInternalProcRec;
+  ParamList := TPSList.Create;
+  try
+    s := Proc.ExportDecl;
+    res := GRFW(s);
+    c := 0;
+    while s <> '' do
+    begin
+      e := GRFW(s);
+      Delete(e, 1, 1);
+      ct := FTypes[StrToInt(e)];
+      if ct = nil then
+        raise Exception.Create(RPS_InvalidParameter);
+      SetLength(Items, c + 1);
+      Items[c] := CreateHeapVariant(ct);
+      ParamList.Add(Items[c]);
+      if (c <= High(Params)) and (ct.RealSize <= SizeOf(Integer)) and
+        (ct.BaseType in [btU8, btS8, btU16, btS16, btU32, btS32, btEnum, btChar]) then
+        Move(Params[c], PPSVariantData(Items[c])^.Data, ct.RealSize);
+      Inc(c);
+    end;
+    // the last parameter of the declaration is the first one on the stack
+    for i := 0 to c div 2 - 1 do
+    begin
+      pvar := ParamList[i];
+      ParamList[i] := ParamList[c - 1 - i];
+      ParamList[c - 1 - i] := pvar;
+    end;
+    if res <> '-1' then
+    begin
+      pvar := CreateHeapVariant(FTypes[StrToInt(res)]);
+      ParamList.Add(pvar);
+    end;
+
+    ex := TPSExceptionHandler.Create;
+    ex.FinallyOffset := InvalidVal;
+    ex.ExceptOffset := InvalidVal;
+    ex.Finally2Offset := InvalidVal;
+    ex.EndOfBlock := InvalidVal;
+    ex.CurrProc := nil;
+    ex.BasePtr := FCurrStackBase;
+    ex.StackSize := FStack.Count;
+    i := FExceptionStack.Add(ex);
+    Result := RunProc(ParamList, ProcNo);
+    if FExceptionStack[i] = ex then
+    begin
+      FExceptionStack.Remove(ex);
+      ex.Free;
+    end;
+
+    RaiseCurrentException;
+  finally
+    FreePIFVariantList(ParamList);
+  end;
 end;
 
 //==============================================================================
