@@ -15,9 +15,11 @@ interface
 type
   /// <summary>The few idMath functions and bit tricks the geometry and collision code use</summary>
   /// <remarks>
-  ///   InvSqrt of idlib is a table plus Newton steps with 32 bit precision: here it is 1/sqrt
-  ///   computed in Double and rounded to Single. The two can differ by one unit in the last
-  ///   place of a Single, so normalised vectors are not bit-identical to the C++ ones.
+  ///   <c>Sqrt</c>, <c>InvSqrt</c> and <c>Rint</c> are a bridge to <c>TIdMath</c> of <c>Libs\IdLib\Math</c>,
+  ///   the port of idMath that is verified bit for bit against the C++ (idMath::InvSqrt is a table plus
+  ///   two Newton steps, idMath::Sqrt is x * InvSqrt(x)): one implementation of those functions in the
+  ///   repository. Before the bridge they were computed in Double and rounded, one ULP away from the C++
+  ///   in some cases.
   /// </remarks>
   TGeoMath = class sealed
   public
@@ -42,7 +44,7 @@ type
 implementation
 
 uses
-  System.Math;
+  DelphiDoom.IdLib.Math.Math;
 
 { TGeoMath }
 
@@ -56,29 +58,17 @@ end;
 
 class function TGeoMath.Sqrt(AValue: Single): Single;
 begin
-  Result := System.Sqrt(Double(AValue));
+  Result := TIdMath.Sqrt(AValue);
 end;
 
 class function TGeoMath.InvSqrt(AValue: Single): Single;
 begin
-  if AValue = 0 then
-    Result := 1e30 // idlib "returns huge number when x == 0.0"
-  else
-    Result := 1.0 / System.Sqrt(Double(AValue));
+  Result := TIdMath.InvSqrt(AValue);
 end;
 
 class function TGeoMath.Rint(AValue: Single): Single;
-var
-  LSum: Single;
-  LValue: Double;
-  LFloor: Double;
 begin
-  LSum := AValue + 0.5;
-  LValue := LSum;
-  LFloor := Int(LValue);
-  if LFloor > LValue then
-    LFloor := LFloor - 1;
-  Result := LFloor;
+  Result := TIdMath.Rint(AValue);
 end;
 
 class function TGeoMath.FloatSignBitSet(AValue: Single): Cardinal;

@@ -14,7 +14,8 @@ unit DelphiDoom.Geometry.Winding;
 interface
 
 uses
-  DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Plane, DelphiDoom.Geometry.Bounds;
+  DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Plane, DelphiDoom.Geometry.Bounds,
+  DelphiDoom.Geometry.Pluecker;
 
 type
   /// <summary>A convex polygon as a list of points in order (idWinding and idFixedWinding)</summary>
@@ -48,7 +49,24 @@ type
     /// <summary>True when a point is outside of the world limits (idWinding::IsHuge)</summary>
     function IsHuge: Boolean;
     function Copy: TGeoWinding;
-  end;
+    /// <summary>The average of the points</summary>
+    function GetCenter: TGeoVec3;
+    /// <summary>
+    ///   The plane of the winding from the first two points and the centre (idWinding::GetPlane);
+    ///   a zero plane with fewer than three points
+    /// </summary>
+    procedure GetPlane(out APlane: TGeoPlane);
+    /// <summary>True when the point is inside the edges seen along the normal (idWinding::PointInside)</summary>
+    function PointInside(const ANormal, APoint: TGeoVec3; AEpsilon: Single): Boolean;
+    /// <summary>True when the segment crosses the winding plane inside the winding (idWinding::LineIntersection)</summary>
+    function LineIntersection(const AWindingPlane: TGeoPlane; const AStart, AEnd: TGeoVec3;
+      ABackFaceCull: Boolean = False): Boolean;
+    /// <summary>
+    ///   True when the ray goes through the winding (Pluecker side test); AScale is 0 when false
+    ///   (idWinding::RayIntersection)
+    /// </summary>
+    function RayIntersection(const AWindingPlane: TGeoPlane; const AStart, ADir: TGeoVec3; out AScale: Single;
+      ABackFaceCull: Boolean = False): Boolean;  end;
 
 implementation
 
@@ -271,6 +289,105 @@ begin
   Result := TGeoWinding.Create;
   for LIndex := 0 to FCount - 1 do
     Result.AddPoint(FPoints[LIndex]);
+end;
+
+function TGeoWinding.GetCenter: TGeoVec3;
+var
+  LIndex: Integer;
+begin
+  Result.Zero;
+  for LIndex := 0 to FCount - 1 do
+    Result := Result + FPoints[LIndex];
+  Result := Result * (1.0 / FCount);
+end;
+
+procedure TGeoWinding.GetPlane(out APlane: TGeoPlane);
+var
+  LCenter, LDir1, LDir2: TGeoVec3;
+begin
+  if FCount < 3 then
+  begin
+    APlane.Zero;
+    Exit;
+  end;
+  LCenter := GetCenter;
+  LDir1 := FPoints[0] - LCenter;
+  LDir2 := FPoints[1] - LCenter;
+  APlane.Zero;
+  APlane.SetNormal(LDir2.Cross(LDir1));
+  APlane.NormalizeSelf;
+  APlane.FitThroughPoint(FPoints[0]);
+end;
+
+function TGeoWinding.PointInside(const ANormal, APoint: TGeoVec3; AEpsilon: Single): Boolean;
+var
+  LIndex: Integer;
+  LDir, LNormal, LPointVec: TGeoVec3;
+begin
+  for LIndex := 0 to FCount - 1 do
+  begin
+    LDir := FPoints[(LIndex + 1) mod FCount] - FPoints[LIndex];
+    LPointVec := APoint - FPoints[LIndex];
+    LNormal := LDir.Cross(ANormal);
+    if LPointVec.Dot(LNormal) < -AEpsilon then
+      Exit(False);
+  end;
+  Result := True;
+end;
+
+function TGeoWinding.LineIntersection(const AWindingPlane: TGeoPlane; const AStart, AEnd: TGeoVec3;
+  ABackFaceCull: Boolean): Boolean;
+var
+  LFront, LBack, LFraction: Single;
+  LMid: TGeoVec3;
+begin
+  LFront := AWindingPlane.Distance(AStart);
+  LBack := AWindingPlane.Distance(AEnd);
+  // if both points are at the same side of the plane
+  if (LFront < 0) and (LBack < 0) then
+    Exit(False);
+  if (LFront > 0) and (LBack > 0) then
+    Exit(False);
+  // if back face culled
+  if ABackFaceCull and (LFront < 0) then
+    Exit(False);
+  // the point of intersection with the winding plane
+  if TGeoMath.Fabs(LFront - LBack) < 0.0001 then
+    LMid := AEnd
+  else
+  begin
+    LFraction := LFront / (LFront - LBack);
+    LMid.X := AStart.X + (AEnd.X - AStart.X) * LFraction;
+    LMid.Y := AStart.Y + (AEnd.Y - AStart.Y) * LFraction;
+    LMid.Z := AStart.Z + (AEnd.Z - AStart.Z) * LFraction;
+  end;
+  Result := PointInside(AWindingPlane.Normal, LMid, 0);
+end;
+
+function TGeoWinding.RayIntersection(const AWindingPlane: TGeoPlane; const AStart, ADir: TGeoVec3;
+  out AScale: Single; ABackFaceCull: Boolean): Boolean;
+var
+  LIndex: Integer;
+  LSide, LLastSide: Boolean;
+  LRay, LEdge: TGeoPluecker;
+begin
+  AScale := 0;
+  LLastSide := False;
+  LRay.FromRay(AStart, ADir);
+  for LIndex := 0 to FCount - 1 do
+  begin
+    LEdge.FromLine(FPoints[LIndex], FPoints[(LIndex + 1) mod FCount]);
+    LSide := LRay.PermutedInnerProduct(LEdge) > 0;
+    if (LIndex <> 0) and (LSide <> LLastSide) then
+      Exit(False);
+    LLastSide := LSide;
+  end;
+  if (not ABackFaceCull) or LLastSide then
+  begin
+    AWindingPlane.RayIntersection(AStart, ADir, AScale);
+    Exit(True);
+  end;
+  Result := False;
 end;
 
 end.
