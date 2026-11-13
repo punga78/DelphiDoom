@@ -84,3 +84,19 @@ Costo misurato: 123 dei 130 `.dproj` citano `Libs` in `DCC_UnitSearchPath` (242 
 **B. `Libs\` resta piatta, gli strati vanno in un manifesto con un controllo automatico.** Un file `Libs\STRATI.md` (o un `.psd1`) assegna ogni libreria a uno strato o a un modulo, e uno script (stile `Tools\Verifica\*`, derivato da quello usato per questo censimento) fallisce se una libreria usa uno strato più alto o un modulo. Costo molto più basso, niente `.dproj` da toccare, e i difetti del §5 diventano la lista dei "fuori regola". Si possono poi spostare le cartelle in un secondo tempo, con la regola già verificata.
 
 **Raccomandazione**: B subito (con le correzioni 1 e 3 del §5) e A come secondo passo, a fette, quando il controllo è verde. Non è una scelta irreversibile: B è il prerequisito di A.
+
+## 6. Librerie arrivate dopo il censimento (aggiornamento issue #229, 2026-11-13)
+
+Sei cartelle di `Libs\` sono nate dopo l'analisi dei punti 1-5 (che resta com'e'): non sono nei numeri di sopra. Classificazione per dominio e strato, dalle `uses` e dalle descrizioni dell'indice di `CLAUDE.md`; nessuna e' raggiunta dal motore o dai giochi non id (**non cambiano** le liste "usate da entrambi / solo id / non raggiunte" del punto 2, salvo `Cinematic` e `Flic` sotto).
+
+| Libreria | Dominio | Strato | Dipende da | Note |
+|---|---|---|---|---|
+| `Flic` (nuova, #229) | Formati e codec | L1 Formati | solo la RTL | decoder FLI/FLC spostato da `XcomFormats` (era `TXcomFlcDecoder`); usata da `XcomFormats` (adattatore) e `Cinematic`; `TGreedFliDecoder` resta separato, con motivo, in `Libs\Flic\CLAUDE.md` |
+| `Cinematic` (#114, #199) | Formati e codec (RoQ di id Tech 3/4 e FLIC) | L1 Formati | `Flic`, `IdLib`, `Imaging` | **violazione di strato risolta**: prima dipendeva da `XcomFormats` (una libreria di un gioco); ora no. Il RoQ e' di dominio id Tech 3/4, il FLIC e' generico: se cresce, il FLIC puo' stare nella sola `Flic` |
+| `Compression` (#98) | Formati e codec (compressori `idCompressor`) | L1 Formati (porta id Tech 4) | `IdLib` | senza chiamanti; accanto a `Zlib` ma con algoritmi propri di id |
+| `MapFile` (#106) | id Tech 4 (porta) | Modulo IdTech3/4 | `Geometry`, `IdLib`, `MathCore`, `Scanner` | file `.map`; senza chiamanti |
+| `Decl` (#100, #102, #119) | id Tech 4 (porta) | Modulo IdTech3/4 | `IdLib`, `Imaging`, `Scanner` | gestore delle dichiarazioni; senza chiamanti |
+| `Gui` (#111, #125) | id Tech 3 (porta) | Modulo IdTech3/4 | `IdLib`, `Scanner` | menu `.menu` di Team Arena e font `.dat`; nessun disegno, nessun input |
+| `BotAi` (#123, #124) | id Tech 3 (porta) | Modulo IdTech3/4 | `IdLib`, `Scanner` | chat dei bot di botlib; senza chiamanti |
+
+Da fare e non fatto qui: `Libs\Aas` (#122) e `AudioMix` (#228) erano in lavorazione in altri rami quando questa sezione e' stata scritta e non sono classificate; le sei librerie sopra non hanno cicli con le altre. **Duplicazioni viste in questo giro** (da unificare nelle fette seguenti della #229 o in altre issue): lettore ILBM (`XcomFormats.TXcomLbmReader` e `Keen.Shape`), lettore di byte (otto copie, fetta 2 della #229), decoder FLI (`Flic` e `Greed.FliDecoder`: differiscono nei byte, vedi `Libs\Flic\CLAUDE.md`).
