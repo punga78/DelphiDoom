@@ -1,0 +1,63 @@
+excl guis/main.gui 1
+excl sound/vo/line.ogg 1
+excl SOUND\VO\line.WAV 1
+excl sound/vox/line.ogg 1
+excl sound 0
+excl sound/ 1
+excl x\ 1
+excl fonts/a.tga 1
+excl fonts/a.dat 1
+excl FONTS/b.TGA 1
+excl dds/fonts/a.dds 1
+excl dds/fonts 0
+excl default.cfg 1
+excl Default.cfg 1
+excl default.cfg2 0
+excl textures/bigchars.tga 1
+excl guis/temp.guied 1
+excl readme.txt 0
+excl a.pd 1
+excl .pd 0
+excl a.pda 1
+excl maps/a.lang 1
+excl sound/feedback/x.ogg 1
+excl sound/feedbacks/x.ogg 1
+excl sound/xian/creepy/vocal_fx/a.wav 1
+excl sound/ed/marscity/vo_intro_cutscene.ogg 1
+excl sound/ed/marscity/vo_intro_cutscene.ogg2 0
+excl  0
+excl a 0
+status gui-only 3
+status pak-name 2
+status pak-slash 2
+status other 1
+status no-folder 2
+status empty 3
+chk [0x1A2B3C4D] 1 1a2b3c4d
+chk [0X1a2b] 1 1a2b
+chk [1a2b3c4d] 1 1a2b3c4d
+chk [0x] 1 0
+chk [xyz] 0 0
+chk [] 0 0
+chk [  0x10] 1 10
+chk [12zz] 1 12
+chk [0xffffffff] 1 ffffffff
+chk [0x1ffffffff] 1 ffffffff
+chk [-1] 1 ffffffff
+chk [0] 1 0
+chk [0xg] 1 0
+update server=11,22,55
+pure empty-clears reply=0 missing= server=
+pure same reply=0 missing= server=11,22,55
+pure same-fromdir reply=1 missing= server=11,22,55
+pure prepend reply=0 missing= server=33,11,22,55
+pure wrong-order reply=1 missing= server=11,22,55
+pure extra-local reply=1 missing= server=11,22,55
+pure missing-first reply=2 missing=99 server=11,22,55
+pure missing-two reply=2 missing=99,88 server=11,22,55
+pure addon-left-out reply=1 missing= server=66,11,22,55
+pure addon-after reply=1 missing= server=11,22,55
+pure never-pak-asked reply=0 missing= server=44,11,22,55
+pure swapped reply=1 missing= server=22,11,22,55
+pure lock-one reply=1 missing= server=22,11,22,55
+pure lock-extend reply=1 missing= server=33,22,11,22,55

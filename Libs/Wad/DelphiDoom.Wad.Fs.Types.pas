@@ -47,7 +47,66 @@ type
     Game: string;
     /// <summary>fs_searchAddons: the addon paks stay in the search list (the original disables the addon functionality)</summary>
     SearchAddons: Boolean;
+    /// <summary>
+    ///   addonChecksums: the addon paks (by checksum) to put in the search list together with the paks they
+    ///   depend on; used when <c>SearchAddons</c> is False (the original sets it for a restart with addons)
+    /// </summary>
+    AddonChecksums: TArray<Cardinal>;
+    /// <summary>
+    ///   The extension of the paks a game folder is searched for, with the dot ('.pk3' for Quake III, whose paks
+    ///   are the same ZIP as a PK4); empty means <c>GAMEFS_PAK_EXTENSION</c>
+    /// </summary>
+    PakExtension: string;
   end;
+
+  /// <summary>One mapDef of an addon.conf: the keys and values in the order they were set, the first key is "path"</summary>
+  TGameAddonMapDef = record
+    Keys: TArray<string>;
+    Values: TArray<string>;
+  end;
+
+  /// <summary>addonInfo_t: what an addon.conf says (the pak checksums it depends on and its map declarations)</summary>
+  TGameAddonInfo = record
+    Depends: TArray<Cardinal>;
+    MapDefs: TArray<TGameAddonMapDef>;
+  end;
+
+  /// <summary>idModList: the game folders that hold paks and their descriptions; the first entry is the base game</summary>
+  TGameModList = record
+    Mods: TArray<string>;
+    Descriptions: TArray<string>;
+  end;
+
+  /// <summary>pureStatus_t of a pak</summary>
+  TGamePureStatus = (
+    /// <summary>PURE_UNKNOWN: not examined yet</summary>
+    Unknown,
+    /// <summary>PURE_NEUTRAL: in the pure list only when it was referenced</summary>
+    Neutral,
+    /// <summary>PURE_ALWAYS: a pak* file that has files a pure server cares about</summary>
+    Always,
+    /// <summary>PURE_NEVER: only files that never count (guis, languages, voice over, fonts...)</summary>
+    Never);
+
+  /// <summary>fsPureReply_t (without PURE_NODLL: the game code pak is not ported)</summary>
+  TGamePureReply = (
+    /// <summary>PURE_OK: the pure list is the one of the server</summary>
+    Ok,
+    /// <summary>PURE_RESTART: a restart in pure mode is needed</summary>
+    Restart,
+    /// <summary>PURE_MISSING: some paks the server uses are not installed</summary>
+    Missing);
+
+  /// <summary>Where a file is written: the cvar the original reads the base folder from (fs_savepath if it is empty)</summary>
+  TGameWriteBase = (
+    /// <summary>fs_savepath</summary>
+    SavePath,
+    /// <summary>fs_devpath</summary>
+    DevPath,
+    /// <summary>fs_basepath</summary>
+    BasePath,
+    /// <summary>fs_cdpath</summary>
+    CdPath);
 
   /// <summary>The FSFLAG_* of the original (FSFLAG_BINARY_ONLY is not ported)</summary>
   TGameSearchFlag = (

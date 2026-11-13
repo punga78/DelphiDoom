@@ -21,7 +21,8 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Containers.HashIndex,
-  DelphiDoom.Decl.Types, DelphiDoom.Decl.Intf, DelphiDoom.Decl.Source.Intf, DelphiDoom.Decl.Entry;
+  DelphiDoom.Decl.Types, DelphiDoom.Decl.Intf, DelphiDoom.Decl.Source.Intf, DelphiDoom.Decl.Statistics.Intf,
+  DelphiDoom.Decl.Entry;
 
 type
   /// <summary>
@@ -34,7 +35,7 @@ type
   ///   <c>FindMaterial/FindSkin/FindSound</c> (they return the types of other issues), <c>Init</c>
   ///   (the standard types and folders are registered by <c>TDeclStandardTypes</c>).</para>
   /// </summary>
-  TDeclManager = class(TInterfacedObject, IDeclManager, IDeclFinder, IDeclRegistry, IDeclHost)
+  TDeclManager = class(TInterfacedObject, IDeclManager, IDeclFinder, IDeclRegistry, IDeclHost, IDeclStatistics)
   strict private
     FSource: IDeclSource;
     FLog: IIdLibLog;
@@ -73,6 +74,12 @@ type
       const AMakeDefault: Boolean = True): IDecl;
     function GetNumDecls(const AType: Integer): Integer;
     function DeclByIndex(const AType, AIndex: Integer; const AForceParse: Boolean = True): IDecl;
+    // IDeclStatistics
+    function GetTypeSlotCount: Integer;
+    function IsTypeRegistered(const AType: Integer): Boolean;
+    function GetTypeSize(const AType: Integer): NativeInt;
+    function GetLoadedFileCount: Integer;
+    function GetLoadedFilesSize: Int64;
     // IDeclManager
     function GetRegistry: IDeclRegistry;
     procedure Reload(const AForce: Boolean);
@@ -372,6 +379,44 @@ function TDeclManager.GetNumDecls(const AType: Integer): Integer;
 begin
   CheckType(AType, 'GetNumDecls');
   Result := FLinearLists[AType].Count;
+end;
+
+function TDeclManager.GetTypeSlotCount: Integer;
+begin
+  Result := FTypes.Count;
+end;
+
+function TDeclManager.IsTypeRegistered(const AType: Integer): Boolean;
+begin
+  Result := (AType >= 0) and (AType < FTypes.Count) and Assigned(FTypes[AType]);
+end;
+
+function TDeclManager.GetTypeSize(const AType: Integer): NativeInt;
+var
+  LEntry: TDeclEntry;
+begin
+  CheckType(AType, 'GetTypeSize');
+  Result := 0;
+  for LEntry in FLinearLists[AType] do
+  begin
+    Inc(Result, LEntry.Size);
+    if Assigned(LEntry.Decl) then
+      Inc(Result, LEntry.Decl.Size);
+  end;
+end;
+
+function TDeclManager.GetLoadedFileCount: Integer;
+begin
+  Result := FFiles.Count;
+end;
+
+function TDeclManager.GetLoadedFilesSize: Int64;
+var
+  LFile: TDeclFile;
+begin
+  Result := 0;
+  for LFile in FFiles do
+    Inc(Result, LFile.FileSize);
 end;
 
 function TDeclManager.DeclByIndex(const AType, AIndex: Integer; const AForceParse: Boolean): IDecl;

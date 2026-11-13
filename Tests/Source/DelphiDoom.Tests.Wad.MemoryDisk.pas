@@ -35,6 +35,10 @@ type
     /// <summary>Adds (or replaces) a file</summary>
     procedure AddFile(const APath: string; const AData: TBytes; ATimestamp: Int64 = 0);
     procedure AddText(const APath, AText: string);
+    /// <summary>True when the file is there</summary>
+    function Exists(const APath: string): Boolean;
+    /// <summary>Removes a file; False when it was not there</summary>
+    function Remove(const APath: string): Boolean;
     function ListFiles(const ADirectory, AExtension: string): TArray<string>;
     function OpenRead(const AFileName: string): TStream;
     function FileTimestamp(const AFileName: string): Int64;
@@ -93,6 +97,18 @@ end;
 procedure TMemoryGameDisk.AddText(const APath, AText: string);
 begin
   AddFile(APath, TMemoryZip.Bytes(AText));
+end;
+
+function TMemoryGameDisk.Exists(const APath: string): Boolean;
+begin
+  Result := FFiles.ContainsKey(Key(APath));
+end;
+
+function TMemoryGameDisk.Remove(const APath: string): Boolean;
+begin
+  Result := FFiles.ContainsKey(Key(APath));
+  if Result then
+    FFiles.Remove(Key(APath));
 end;
 
 function TMemoryGameDisk.ListFiles(const ADirectory, AExtension: string): TArray<string>;

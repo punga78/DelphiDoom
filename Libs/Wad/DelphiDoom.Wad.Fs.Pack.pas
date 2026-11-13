@@ -18,7 +18,7 @@ unit DelphiDoom.Wad.Fs.Pack;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Wad.Zip.Intf, DelphiDoom.Wad.Fs.Intf;
+  System.SysUtils, DelphiDoom.Wad.Zip.Intf, DelphiDoom.Wad.Fs.Types, DelphiDoom.Wad.Fs.Intf;
 
 type
   /// <summary>
@@ -35,6 +35,9 @@ type
     FChecksum: Cardinal;
     FIsAddon: Boolean;
     FReferenced: Boolean;
+    FHasAddonInfo: Boolean;
+    FAddonInfo: TGameAddonInfo;
+    procedure ReadAddonConfig;
   public
     /// <summary>ALength is the size of the file of the pak</summary>
     constructor Create(const AArchive: IZipArchive; ALength: Int64);
@@ -45,6 +48,8 @@ type
     function GetIsAddon: Boolean;
     function GetReferenced: Boolean;
     procedure SetReferenced(AValue: Boolean);
+    function GetHasAddonInfo: Boolean;
+    function GetAddonInfo: TGameAddonInfo;
     function EntryName(AIndex: Integer): string;
     function FindEntry(const ARelativePath: string): Integer;
     function EntrySize(AIndex: Integer): Int64;
@@ -54,7 +59,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Wad.Fs.Types, DelphiDoom.Wad.Fs.Paths, DelphiDoom.IdLib.Hashing.Md4;
+  DelphiDoom.Wad.Fs.Paths, DelphiDoom.Wad.Fs.AddonParser, DelphiDoom.IdLib.Hashing.Md4;
 
 { TGamePack }
 
@@ -86,6 +91,8 @@ begin
     FBuckets[LHash][High(FBuckets[LHash])] := LIndex;
   end;
   FIsAddon := FindEntry(GAMEFS_ADDON_CONFIG) >= 0;
+  if FIsAddon then
+    ReadAddonConfig;
   if LCount > 0 then
     FChecksum := TIdMd4.BlockChecksum(LCrcs[0], 4 * LCount)
   else
@@ -118,6 +125,32 @@ end;
 function TGamePack.GetIsAddon: Boolean;
 begin
   Result := FIsAddon;
+end;
+
+procedure TGamePack.ReadAddonConfig;
+var
+  LBytes: TBytes;
+  LText: AnsiString;
+begin
+  // may be just an empty file if you don't bother about the mapDef
+  LBytes := ReadEntry(FindEntry(GAMEFS_ADDON_CONFIG));
+  if Length(LBytes) = 0 then
+    Exit;
+  SetLength(LText, Length(LBytes));
+  Move(LBytes[0], LText[1], Length(LBytes));
+  FHasAddonInfo := TGameAddonParser.Parse(LText, FAddonInfo);
+  if not FHasAddonInfo then
+    FAddonInfo := Default(TGameAddonInfo);
+end;
+
+function TGamePack.GetHasAddonInfo: Boolean;
+begin
+  Result := FHasAddonInfo;
+end;
+
+function TGamePack.GetAddonInfo: TGameAddonInfo;
+begin
+  Result := FAddonInfo;
 end;
 
 function TGamePack.GetReferenced: Boolean;
