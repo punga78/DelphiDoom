@@ -57,6 +57,9 @@ uses
   DelphiDoom.Tests.Decl.EntityDef in 'Source\DelphiDoom.Tests.Decl.EntityDef.pas',
   DelphiDoom.Tests.Decl.Pda in 'Source\DelphiDoom.Tests.Decl.Pda.pas',
   DelphiDoom.Tests.Decl.Golden in 'Source\DelphiDoom.Tests.Decl.Golden.pas',
+  DelphiDoom.Tests.Decl.MaterialSupport in 'Source\DelphiDoom.Tests.Decl.MaterialSupport.pas',
+  DelphiDoom.Tests.Decl.MaterialExpressions in 'Source\DelphiDoom.Tests.Decl.MaterialExpressions.pas',
+  DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
   DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas';
 
 var

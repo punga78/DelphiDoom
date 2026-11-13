@@ -1,0 +1,247 @@
+// driver of the harness of the material of Doom 3 (written for the test; no code of Doom 3)
+#include "precompiled.h"
+#include "../renderer/tr_local.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+idGame theGame; idGame *game = &theGame;
+int com_editors = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+// renderer stubs
+static idImageManager theImages; idImageManager *globalImages = &theImages;
+static idUserInterfaceManager theUi; idUserInterfaceManager *uiManager = &theUi;
+glConfig_t glConfig;
+backEnd_t backEnd; tr_t tr;
+idBoolCVar r_useConstantMaterials;
+static idCVarSystem theCvars; idCVarSystem *cvarSystem = &theCvars;
+void *R_StaticAlloc( int bytes ) { return malloc( bytes ); }
+void *R_ClearedStaticAlloc( int bytes ) { void *p = malloc( bytes ); memset( p, 0, bytes ); return p; }
+void R_StaticFree( void *data ) { free( data ); }
+void R_LoadImage( const char *, byte **pic, int *, int *, ID_TIME_T *timestamp, bool ) { if ( pic ) *pic = NULL; if ( timestamp ) *timestamp = 0; }
+byte *R_Dropsample( const byte *, int, int, int, int ) { return NULL; }
+static std::vector<std::string> programs;
+int R_FindARBProgram( GLenum target, const char *program ) {
+	std::string key = std::string( target == GL_VERTEX_PROGRAM_ARB ? "v:" : "f:" ) + program;
+	for ( size_t i = 0; i < programs.size(); i++ ) if ( programs[i] == key ) return (int)i + 1;
+	programs.push_back( key );
+	return (int)programs.size();
+}
+static std::string programName( int id ) { return id ? programs[id - 1].substr( 2 ) : std::string( "-" ); }
+
+static idCommon theCommon;
+static idFileSystem theFs;
+struct MemFile { std::string text; long ts; };
+static std::map<std::string, MemFile> files;
+static long clockTicks = 1000;
+static bool quiet = false;
+
+static std::string lower(std::string s) { for (size_t i = 0; i < s.size(); i++) s[i] = (char)tolower((unsigned char)s[i]); return s; }
+static std::string norm(const char *n) { std::string s = n; for (size_t i = 0; i < s.size(); i++) if (s[i] == '\\') s[i] = '/'; return lower(s); }
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); if (quiet) return; printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) return 0;
+	idFile *f = new idFile; f->rd = it->second.text; f->name = n; f->ts = it->second.ts; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { idFile *f = new idFile; f->name = n; return f; }
+void idFileSystem::CloseFile(idFile *f) {
+	if (f->rd.empty() && !f->name.empty()) { MemFile m; m.text = f->out; m.ts = ++clockTicks; files[norm(f->name.c_str())] = m; }
+	delete f;
+}
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *ts) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) { if (b) *b = 0; return -1; }
+	if (ts) *ts = it->second.ts;
+	if (b) {
+		char *buf = (char *)malloc(it->second.text.size() + 1);
+		memcpy(buf, it->second.text.data(), it->second.text.size()); buf[it->second.text.size()] = 0;
+		*b = buf;
+	}
+	return (int)it->second.text.size();
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+idFileList *idFileSystem::ListFiles(const char *dir, const char *ext, bool sort) {
+	idFileList *l = new idFileList;
+	std::string prefix = norm(dir) + "/", e = lower(ext);
+	std::vector<std::string> names;
+	for (std::map<std::string, MemFile>::iterator it = files.begin(); it != files.end(); ++it) {
+		const std::string &n = it->first;
+		if (n.compare(0, prefix.size(), prefix) == 0 && n.size() >= prefix.size() + e.size() && n.compare(n.size() - e.size(), e.size(), e) == 0) names.push_back(n.substr(prefix.size()));
+	}
+	l->list = names;
+	return l;
+}
+
+static std::vector<std::string> splitWords(const std::string &s) {
+	std::vector<std::string> r; std::istringstream is(s); std::string w; while (is >> w) r.push_back(w); return r;
+}
+
+void DeclManager_Init(); void DeclManager_Shutdown();
+static declType_t typeOf(const std::string &n) { return declManager->GetDeclNameFromType(DECL_TABLE) && n == "table" ? DECL_TABLE : declManager->GetDeclTypeFromName(n.c_str()); }
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+static std::string imageText(const idImage *im) {
+	if (!im) return "-";
+	if (im == globalImages->defaultImage || im == globalImages->currentRenderImage) return "[" + esc(im->imgName.c_str()) + "]";
+	char b[128];
+	sprintf(b, " f=%d r=%d d=%d c=%d p=%d", (int)im->filter, (int)im->repeat, (int)im->depth, (int)im->cube, (int)im->picmip);
+	return "[" + esc(im->imgName.c_str()) + "]" + b;
+}
+
+static void dumpMaterial(const idMaterial *m) {
+	int n = m->GetNumStages();
+	printf("M %s state=%d stages=%d ambient=%d regs=%d\n", esc(m->GetName()).c_str(), (int)m->GetState(), n, (int)m->HasAmbient(), m->GetNumRegisters());
+	if (m->GetState() != DS_PARSED) return;
+	int wobble = 0;
+	std::string dname = ((m->Deform() == DFRM_TURB || m->Deform() == DFRM_PARTICLE || m->Deform() == DFRM_PARTICLE2) && m->GetDeformDecl()) ? esc(m->GetDeformDecl()->GetName()) : std::string("-");
+	std::string guiname = m->GlobalGui() ? esc(((idUserInterface *)m->GlobalGui())->name.c_str()) : std::string("-");
+	std::string falloff = m->LightFalloffImage() ? esc(m->LightFalloffImage()->imgName.c_str()) : std::string("-");
+	for (int i = 0; i < n; i++) if (m->GetStage(i)->texture.texgen == TG_WOBBLESKY_CUBE) wobble = 1;
+	printf("  gen surf=%d content=%d mflags=%d cover=%d sort=%s cull=%d deform=%d dreg=%d,%d,%d,%d dname=[%s]", m->GetSurfaceFlags(), m->GetContentFlags(), 0, (int)m->Coverage(), fb(m->GetSort()).c_str(), (int)m->GetCullType(), (int)m->Deform(),
+		m->GetDeformRegister(0), m->GetDeformRegister(1), m->GetDeformRegister(2), m->GetDeformRegister(3), dname.c_str());
+	if (wobble) printf(" texgenregs=%d,%d,%d", m->GetTexGenRegisters()[0], m->GetTexGenRegisters()[1], m->GetTexGenRegisters()[2]);
+	printf("\n");
+	printf("  flags polyoff=%d noshadows=%d forceshadows=%d noselfshadow=%d noportalfog=%d\n", (int)m->TestMaterialFlag(MF_POLYGONOFFSET), (int)m->TestMaterialFlag(MF_NOSHADOWS), (int)m->TestMaterialFlag(MF_FORCESHADOWS), (int)m->TestMaterialFlag(MF_NOSELFSHADOW), (int)m->TestMaterialFlag(MF_NOPORTALFOG));
+	printf("  misc desc=[%s] rb=[%s] egui=%d gui=[%s] spec=%d poff=%s fog=%d blend=%d amb=%d unsm=%d subv=%d overl=%d back=%d ealpha=%s supp=%d psky=%d eimg=%s img=[%s]\n",
+		esc(m->GetDescription()).c_str(), esc(m->GetRenderBump()).c_str(), m->GetEntityGui(), guiname.c_str(), m->Spectrum(), fb(m->GetPolygonOffset()).c_str(),
+		(int)m->IsFogLight(), (int)m->IsBlendLight(), (int)m->IsAmbientLight(), (int)m->UseUnsmoothedTangents(), (int)m->HasSubview(), (int)m->AllowOverlays(), (int)m->ShouldCreateBackSides(),
+		fb(m->GetEditorAlpha()).c_str(), (int)m->SuppressInSubview(), (int)m->IsPortalSky(), esc(m->GetEditorImage()->imgName.c_str()).c_str(), esc(m->ImageName()).c_str());
+	idLib::common = idLib::common;
+	printf("  falloff=%s\n", falloff.c_str());
+	decalInfo_t d = m->GetDecalInfo();
+	printf("  decal stay=%d fade=%d start=%s,%s,%s,%s end=%s,%s,%s,%s\n", d.stayTime, d.fadeTime, fb(d.start[0]).c_str(), fb(d.start[1]).c_str(), fb(d.start[2]).c_str(), fb(d.start[3]).c_str(), fb(d.end[0]).c_str(), fb(d.end[1]).c_str(), fb(d.end[2]).c_str(), fb(d.end[3]).c_str());
+	printf("  q drawn=%d gui=%d subview=%d casts=%d fog=%d lit=%d litback=%d discrete=%d nofrag=%d lcast=%d leffect=%d texgen=%d stype=%d bump=%d\n", (int)m->IsDrawn(), (int)m->HasGui(), (int)m->HasSubview(), (int)m->SurfaceCastsShadow(), (int)m->ReceivesFog(), (int)m->ReceivesLighting(), (int)m->ReceivesLightingOnBackSides(),
+		(int)m->IsDiscrete(), (int)m->NoFragment(), (int)m->LightCastsShadows(), (int)m->LightEffectsBackSides(), (int)m->Texgen(), (int)m->GetSurfaceType(), m->GetBumpStage() ? (int)(m->GetBumpStage() - m->GetStage(0)) : -1);
+	for (int i = 0; i < n; i++) {
+		const shaderStage_t *s = m->GetStage(i);
+		const textureStage_t *t = &s->texture;
+		printf("  stage %d cond=%d light=%d bits=%08X color=%d,%d,%d,%d atest=%d,%d vcol=%d iat=%d poff=%s texgen=%d dyn=%d wh=%d,%d", i, s->conditionRegister, (int)s->lighting, (unsigned)s->drawStateBits, s->color.registers[0], s->color.registers[1], s->color.registers[2], s->color.registers[3],
+			(int)s->hasAlphaTest, s->hasAlphaTest ? s->alphaTestRegister : 0, (int)s->vertexColor, (int)s->ignoreAlphaTest, fb(s->privatePolygonOffset).c_str(), (int)t->texgen, (int)t->dynamic, t->width, t->height);
+		printf(" matrix=%d", (int)t->hasMatrix);
+		if (t->hasMatrix) printf(":%d,%d,%d,%d,%d,%d", t->matrix[0][0], t->matrix[0][1], t->matrix[0][2], t->matrix[1][0], t->matrix[1][1], t->matrix[1][2]);
+		if (t->cinematic) { idCinematic *c = t->cinematic; printf(" cin=[%s] loop=%d snd=%d", esc(c->name.c_str()).c_str(), (int)c->loop, (int)(dynamic_cast<idSndWindow *>(c) != NULL)); }
+		printf(" img=%s", imageText(t->image).c_str());
+		if (s->newStage) {
+			const newShaderStage_t *ns = s->newStage;
+			printf(" new vp=%s fp=%s nvp=%d nfi=%d mega=%d", esc(programName(ns->vertexProgram).c_str()).c_str(), esc(programName(ns->fragmentProgram).c_str()).c_str(), ns->numVertexParms, ns->numFragmentProgramImages, (int)(ns->megaTexture != NULL));
+			for (int j = 0; j < ns->numVertexParms; j++) printf(" vparm%d=%d,%d,%d,%d", j, ns->vertexParms[j][0], ns->vertexParms[j][1], ns->vertexParms[j][2], ns->vertexParms[j][3]);
+			for (int j = 0; j < ns->numFragmentProgramImages; j++) printf(" fimg%d=%s", j, imageText(ns->fragmentProgramImages[j]).c_str());
+		}
+		printf("\n");
+	}
+	const float *c = m->ConstantRegisters();
+	printf("  const=%d", (int)(c != NULL));
+	if (c) for (int i = 0; i < m->GetNumRegisters(); i++) printf(" %s", fb(c[i]).c_str());
+	printf("\n");
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, 0, _IONBF, 0);
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon; fileSystem = &theFs;
+	glConfig.ARBFragmentProgramAvailable = true;
+	std::ifstream in(argv[1], std::ios::binary);
+	std::vector<std::string> lines; std::string ln;
+	while (std::getline(in, ln)) { if (!ln.empty() && ln[ln.size() - 1] == '\r') ln.erase(ln.size() - 1); lines.push_back(ln); }
+	size_t i = 0;
+	while (i < lines.size()) {
+		if (lines[i].compare(0, 6, "@case ") != 0) { i++; continue; }
+		std::string name = lines[i].substr(6); i++;
+		std::vector<std::string> ops; files.clear();
+		std::string curfile; MemFile *cur = 0;
+		while (i < lines.size() && lines[i] != "@end") {
+			const std::string &l = lines[i];
+			if (l.compare(0, 4, "@op ") == 0) { ops.push_back(l.substr(4)); cur = 0; }
+			else if (l.compare(0, 6, "@file ") == 0) { MemFile m; m.ts = ++clockTicks; curfile = norm(l.substr(6).c_str()); files[curfile] = m; cur = &files[curfile]; }
+			else if (cur) { cur->text += l; cur->text += "\n"; }
+			i++;
+		}
+		i++;
+		printf("## %s\n", name.c_str());
+		programs.clear();
+		quiet = true;
+		DeclManager_Init();
+		quiet = false;
+		for (size_t k = 0; k < ops.size(); k++) {
+			const std::string &op = ops[k];
+			std::string cmd = op, arg;
+			size_t sp = op.find(' ');
+			if (sp != std::string::npos) { cmd = op.substr(0, sp); arg = op.substr(sp + 1); }
+			std::vector<std::string> w = splitWords(arg);
+			printf("> %s\n", op.c_str());
+			try {
+				if (cmd == "dump") {
+					int n = declManager->GetNumDecls(DECL_MATERIAL);
+					printf("n=%d\n", n);
+					for (int q = 0; q < n; q++) dumpMaterial(static_cast<const idMaterial *>(declManager->DeclByIndex(DECL_MATERIAL, q, true)));
+				}
+				else if (cmd == "find") { const idMaterial *m = static_cast<const idMaterial *>(declManager->FindType(DECL_MATERIAL, w[0].c_str(), true)); dumpMaterial(m); }
+				else if (cmd == "print") { const idMaterial *m = static_cast<const idMaterial *>(declManager->FindType(DECL_MATERIAL, w[0].c_str(), true)); m->Print(); }
+				else if (cmd == "eval") {
+					const idMaterial *m = static_cast<const idMaterial *>(declManager->FindType(DECL_MATERIAL, w[0].c_str(), true));
+					float parms[MAX_ENTITY_SHADER_PARMS]; memset(parms, 0, sizeof(parms));
+					viewDef_t view; memset(&view, 0, sizeof(view));
+					idSoundEmitter emitter; emitter.amp = 0; bool hasEmitter = false;
+					for (size_t q = 1; q < w.size(); q++) {
+						std::string key = w[q].substr(0, w[q].find('=')); float v = (float)atof(w[q].substr(w[q].find('=') + 1).c_str());
+						if (key == "time") view.floatTime = v;
+						else if (key == "snd") { emitter.amp = v; hasEmitter = true; }
+						else if (key[0] == 'p') parms[atoi(key.c_str() + 1)] = v;
+						else if (key[0] == 'g') view.renderView.shaderParms[atoi(key.c_str() + 1)] = v;
+					}
+					std::vector<float> regs(m->GetNumRegisters() + 1);
+					m->EvaluateRegisters(&regs[0], parms, &view, hasEmitter ? &emitter : NULL);
+					printf("eval");
+					for (int q = 0; q < m->GetNumRegisters(); q++) printf(" %s", fb(regs[q]).c_str());
+					printf("\n");
+				}
+				else if (cmd == "remap") {
+					const idDeclSkin *s = static_cast<const idDeclSkin *>(declManager->FindType(DECL_SKIN, w[0].c_str(), true));
+					const idMaterial *m = static_cast<const idMaterial *>(declManager->FindType(DECL_MATERIAL, w[1].c_str(), true));
+					const idMaterial *r = s->RemapShaderBySkin(m);
+					printf("remap %s -> %s\n", esc(m->GetName()).c_str(), r ? esc(r->GetName()).c_str() : "null");
+				}
+				else if (cmd == "settext") { const idDecl *d = declManager->FindType(DECL_MATERIAL, w[0].c_str(), false); size_t p = arg.find(' '); std::string t = arg.substr(p + 1); std::string u; for (size_t z = 0; z < t.size(); z++) { if (t[z] == '\\' && z + 1 < t.size() && t[z + 1] == 'n') { u += '\n'; z++; } else u += t[z]; } const_cast<idDecl *>(d)->SetText(u.c_str()); const_cast<idDecl *>(d)->Invalidate(); }
+				else printf("unknown op\n");
+			} catch (idException &e) { printf("ERR %s\n", esc(e.error).c_str()); }
+		}
+		quiet = true;
+		DeclManager_Shutdown();
+		quiet = false;
+	}
+	return 0;
+}

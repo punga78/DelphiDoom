@@ -216,8 +216,8 @@ begin
     if LStage.HasNewStage then
     begin
       LText := LText + Format(' new vp=%s fp=%s nvp=%d nfi=%d mega=%d',
-        [Esc(IfThen(LStage.NewStage.VertexProgram <> '', string(LStage.NewStage.VertexProgram), '-')),
-         Esc(IfThen(LStage.NewStage.FragmentProgram <> '', string(LStage.NewStage.FragmentProgram), '-')),
+        [Esc(AnsiString(IfThen(LStage.NewStage.VertexProgram <> '', string(LStage.NewStage.VertexProgram), '-'))),
+         Esc(AnsiString(IfThen(LStage.NewStage.FragmentProgram <> '', string(LStage.NewStage.FragmentProgram), '-'))),
          LStage.NewStage.NumVertexParms, LStage.NewStage.NumFragmentImages,
          Flag(LStage.NewStage.MegaTexture <> '')]);
       for LParm := 0 to LStage.NewStage.NumVertexParms - 1 do
