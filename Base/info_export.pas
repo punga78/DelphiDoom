@@ -31,16 +31,17 @@ unit info_export;
 interface
 
 uses
-  DelphiDoom.TableExport.Intf;
+  DelphiDoom.TableExport.Intf,
+  DelphiDoom.TableExport.Saver.Intf;
 
 //==============================================================================
 //
 // Info_ConfigureExport
 //
-// The writer of the Pascal tables: ComposeEngine gives it
+// The writer of the Pascal tables and what saves it to a file: ComposeEngine gives them
 //
 //==============================================================================
-procedure Info_ConfigureExport(const AWriter: IExportPascalWriter);
+procedure Info_ConfigureExport(const AWriter: IExportPascalWriter; const ASaver: ITableExportSaver);
 
 //==============================================================================
 //
@@ -81,15 +82,17 @@ uses
 
 var
   pascal_writer: IExportPascalWriter;
+  pascal_saver: ITableExportSaver;
 
 //==============================================================================
 //
 // Info_ConfigureExport
 //
 //==============================================================================
-procedure Info_ConfigureExport(const AWriter: IExportPascalWriter);
+procedure Info_ConfigureExport(const AWriter: IExportPascalWriter; const ASaver: ITableExportSaver);
 begin
   pascal_writer := AWriter;
+  pascal_saver := ASaver;
 end;
 
 //==============================================================================
@@ -140,31 +143,15 @@ end;
 //
 //==============================================================================
 procedure Info_SavePascal(const fname: string; const s: string);
-var
-  fname1: string;
-  sl: TDStringList;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save info export'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.txt'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  sl := TDStringList.Create;
-  try
-    sl.Text := s;
-    sl.SaveToFile(fname1);
-    printf('Info settings saved to %s'#13#10, [fname1]);
-  finally
-    sl.Free;
-  end;
+  if not Assigned(pascal_saver) then
+    I_Error('Info_SavePascal(): the export is not configured (ComposeEngine was not called)');
+  pascal_saver.SaveText(fname, '.txt', 'Please specify the filename to save info export'#13#10,
+    'Info settings saved to %s'#13#10,
+    function: string
+    begin
+      Result := s;
+    end);
 end;
 
 //==============================================================================

@@ -147,6 +147,18 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `Libs\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
 
+### `Base\sc_tokens.pas`, `Base\sc_consts.pas`, `Base\sc_params.pas`, `Base\sc_states.pas` (facciate sopra `Libs\Scanner`, `Libs\ActorDef` e `Libs\Info`, #185 fetta 1b)
+
+**Facciate (#185)**: `TTokenList` (resta una `TDStringList`; `IndexOfToken` e `AllTokensWithIndex` usano `TScannerTokenEntry`), `SC_EvalueateIntToken`, `SC_InitConsts`/`SC_ShutDownConsts`/`SC_AddConst`/`SC_GetConst` (`TScannerConstTable`; i dati di `SC_InitConsts` restano), `TCustomParamList` (stesse proprieta', sopra `TActorDefParamList`) e `SC_EvalString` (`TActorDefParamString`) hanno le firme di prima. `P_GetStateFromName` e `P_GetStateFromNameWithOffsetCheck` chiamano `IEngineStateNames` (`TInfoStateNames` di `Libs\Info`), dato da `ComposeInfoTables` con `SC_ConfigureStateNames`; senza configurazione `I_Error`. Restano nell'unit di `sc_states` la lettura del lump `STATEDEF` e `SC_DefaultStatedefLump`/`SC_FillStateNames` (riempiono la lista globale `statenames`). Righe: `sc_tokens` 161 -> 119, `sc_consts` 326 -> 290, `sc_params` 998 -> 224, `sc_states` 358 -> 238.
+
+### `Base\info_common.pas`, `Base\info_fnd.pas`, `Base\info_rnd.pas`, `Base\info_export.pas` (facciate sopra `Libs\Info` e `Libs\TableExport`, #185 fetta 1b)
+
+**Facciate (#185)**: le ricerche (`Info_GetMobjNumForDoomNum`, `Info_GetMobjNumForName`, `Info_AddMobjNameAlias`, `Info_GetInheritance`, `Info_GetStatesForMobjInfo`, `Info_CheckStates`, `Info_FindStatesFromSprite`), i nomi dei gruppi (`Info_*GroupToString/ToInt`), i mostri a caso (`Info_InitRandom`, `Info_SelectRandomMonster`, `Info_IsMonster`) e il salvataggio di `Info_SavePascal` chiamano i servizi dati da `ComposeInfoTables` (`Info_ConfigureThings`, `Info_ConfigureStates`, `Info_ConfigureGroups`, `Info_ConfigureRandom`) e da `ComposeTableExport` (`Info_ConfigureExport` ha un parametro in piu'); senza configurazione `I_Error`. Restano storiche, perche' scrivono le tabelle o leggono i loro array: `Info_GetNewState`, `Info_GetNewMobjInfo`, `Info_GetSpriteNumForName`, `Info_CheckSpriteNumForName`, `Info_SetMobjName`, `Info_GetMobjName`, `Info_ShutDown`, `Info_AddStateOwner`, `Info_InitStateOwners`, `Info_SaveActions`, `Info_RestoreActions`, `Info_CheckStatesArgs`. Righe: `info_common` 1160 -> 858, `info_fnd` 126 -> 66, `info_rnd` 243 -> 150, `info_export` 233 -> 220 (i comandi di console restano).
+
+### `Base\deh_base.pas` (facciata sopra `Libs\Dehacked` e `Libs\TableExport`, #185 fetta 1b)
+
+**Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
+
 ### `Base\sc_utils.pas` - cancellata
 
 **Tolta (#144)**: il preprocessore dei testi e `IScriptTextPreprocessor` (`TScriptTextPreprocessor`, `ComposeScanner`), dato ai costruttori di chi legge script; `SC_Preprocess` non esiste piu.

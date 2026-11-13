@@ -1,0 +1,26 @@
+Patch File for DeHackEd v3.0
+Doom version = 21
+Patch format = 6
+
+# fetta 1b (issue #185): una patch che passa dai nomi dei tipi, dai nomi degli stati e dalle stringhe di deh_base
+# (DEH_CStringToString, DEH_StringValue); nessun dato di gioco
+
+Thing 1
+Name = Info1bPlayer
+Speed = 7
+
+Frame 10
+Duration = 5
+Next frame = 11
+
+Frame 11
+Duration = 6
+Next frame = 10
+
+[STRINGS]
+GOTARMOR = Info1b armor\nsecond line
+GOTMEGA = Info1b mega
+
+[CODEPTR]
+FRAME 10 = Look
+FRAME 11 = Chase

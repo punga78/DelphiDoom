@@ -77,6 +77,7 @@ var
   LInput: TStringList;
   LOut: TStringList;
   LExpected: TArray<string>;
+  LGolden: string;
   LIndex: Integer;
   LLine: string;
   LParams: TArray<string>;
@@ -113,8 +114,12 @@ begin
     if LRecorder.TextOf(TLogChannel.ErrorFile) <> '' then
       LOut.Add('W|Helpers|' + Quote(LRecorder.TextOf(TLogChannel.ErrorFile)));
 
-    LExpected := TFile.ReadAllText(DataPath('helpers.golden.txt'), TEncoding.ASCII)
-      .Split([#13#10], TStringSplitOptions.None);
+    // the golden file has the line break of the checkout (git does not convert it, -text)
+    LGolden := TFile.ReadAllText(DataPath('helpers.golden.txt'), TEncoding.ASCII);
+    if Pos(#13#10, LGolden) > 0 then
+      LExpected := LGolden.Split([#13#10], TStringSplitOptions.None)
+    else
+      LExpected := LGolden.Split([#10], TStringSplitOptions.None);
     if (Length(LExpected) > 0) and (LExpected[High(LExpected)] = '') then
       SetLength(LExpected, Length(LExpected) - 1);
     Assert.AreEqual(Length(LExpected), LOut.Count, 'the number of lines');

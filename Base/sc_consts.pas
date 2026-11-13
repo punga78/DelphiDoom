@@ -70,26 +70,12 @@ uses
   i_system,
   info_common,
   p_aaptr,
-  p_common;
-
-const
-  CONSTSHASHSIZE = 16;
+  p_common,
+  DelphiDoom.Scanner.ConstTable;
 
 var
-  constshashtable: array[0..CONSTSHASHSIZE - 1] of TDStringList;
-
-//==============================================================================
-//
-// _hash
-//
-//==============================================================================
-function _hash(const s: string): integer;
-var
-  len: integer;
-begin
-  len := Length(s);
-  result := (len + Ord(s[1]) + Ord(s[len])) and (CONSTSHASHSIZE - 1);
-end;
+  // the rules of the table (names, buckets, duplicates) are in Libs\Scanner
+  consts: TScannerConstTable = nil;
 
 //==============================================================================
 //
@@ -97,11 +83,9 @@ end;
 //
 //==============================================================================
 procedure SC_InitConsts;
-var
-  i: integer;
 begin
-  for i := 0 to CONSTSHASHSIZE - 1 do
-    constshashtable[i] := TDStringList.Create;
+  FreeAndNil(consts);
+  consts := TScannerConstTable.Create;
 
   SC_AddConst('C_ARG1', 0);
   SC_AddConst('C_ARG2', 1);
@@ -252,15 +236,8 @@ end;
 //
 //==============================================================================
 procedure SC_ShutDownConsts;
-var
-  i, j: integer;
 begin
-  for i := 0 to CONSTSHASHSIZE - 1 do
-  begin
-    for j := 0 to constshashtable[i].Count - 1 do
-      constshashtable[i].Objects[j].Free;
-    constshashtable[i].Free;
-  end;
+  FreeAndNil(consts);
 end;
 
 //==============================================================================
@@ -269,28 +246,25 @@ end;
 //
 //==============================================================================
 function SC_AddConst(const name: string; const value: integer): boolean;
-var
-  uToken: string;
-  hash: integer;
 begin
-  uToken := strupper(strtrim(name));
-  if uToken = '' then
-  begin
-    I_Warning('SC_AddConst(): Trying to add const in hash without a name, value="%d"'#13#10, [value]);
-    result := false;
-    exit;
-  end;
+  // without SC_InitConsts the old table was nil and the call crashed
+  if consts = nil then
+    consts := TScannerConstTable.Create;
 
-  hash := _hash(uToken);
-  if constshashtable[hash].IndexOf(uToken) >= 0 then
-  begin
-    I_Warning('SC_AddConst(): Trying to add const "%s" twice in hash, value="%d"'#13#10, [name, value]);
-    result := false;
-    exit;
+  case consts.Add(name, value) of
+    carEmptyName:
+      begin
+        I_Warning('SC_AddConst(): Trying to add const in hash without a name, value="%d"'#13#10, [value]);
+        result := false;
+      end;
+    carDuplicate:
+      begin
+        I_Warning('SC_AddConst(): Trying to add const "%s" twice in hash, value="%d"'#13#10, [name, value]);
+        result := false;
+      end;
+  else
+    result := true;
   end;
-
-  constshashtable[hash].AddObject(uToken, TInteger.Create(value));
-  result := true;
 end;
 
 //==============================================================================
@@ -300,27 +274,17 @@ end;
 //==============================================================================
 function SC_GetConst(const name: string; var value: integer): boolean;
 var
-  uToken: string;
-  hash: integer;
-  idx: integer;
+  v: integer;
 begin
-  uToken := strupper(strtrim(name));
-  if uToken = '' then
+  if consts = nil then
   begin
     result := false;
     exit;
   end;
 
-  hash := _hash(uToken);
-  idx := constshashtable[hash].IndexOf(uToken);
-  if idx >= 0 then
-  begin
-    value := (constshashtable[hash].Objects[idx] as TInteger).intnum;
-    result := true;
-    exit;
-  end;
-
-  result := false;
+  result := consts.TryGet(name, v);
+  if result then
+    value := v;
 end;
 
 end.

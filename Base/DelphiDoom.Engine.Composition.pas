@@ -349,6 +349,24 @@ uses
   DelphiDoom.Engine.TableExport.Settings,
   DelphiDoom.Engine.TableExport.Names,
   info_export,
+  DelphiDoom.TableExport.Saver.Intf,
+  DelphiDoom.TableExport.Saver,
+  DelphiDoom.Engine.TableExport.Output,
+  DelphiDoom.Info.Intf,
+  DelphiDoom.Engine.ActorDef.ParamRandom,
+  DelphiDoom.Engine.Info.Intf,
+  DelphiDoom.Engine.Info.Tables,
+  DelphiDoom.Engine.Info.Things,
+  DelphiDoom.Engine.Info.States,
+  DelphiDoom.Engine.Info.Groups,
+  DelphiDoom.Engine.Info.Random,
+  DelphiDoom.Engine.Info.RandomRules,
+  DelphiDoom.Engine.Info.StateTokens,
+  DelphiDoom.Engine.Info.StateText,
+  DelphiDoom.Engine.Info.StateNames,
+  info_common,
+  info_rnd,
+  sc_states,
   DelphiDoom.Voxel.Intf,
   DelphiDoom.Voxel.Factory,
   DelphiDoom.Engine.Voxel.FileSource,
@@ -1364,6 +1382,7 @@ var
   LWeapons: IExportWeaponSource;
   LNames: TEngineExportNames;
   LNamesRef: IInterface;
+  LSaver: ITableExportSaver;
 begin
   if not TExportProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.TableExport), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of the table exports', [_GAME]);
@@ -1372,6 +1391,7 @@ begin
   LWeapons := TEngineExportWeapons.Create;
   LNames := TEngineExportNames.Create;
   LNamesRef := LNames;
+  LSaver := TTableExportSaver.Create(TEngineExportOutput.Create);
   DEH_ConfigureExport(
     TTableExportFactory.CreateDehWriter(LGame, LThings, LStates, LWeapons,
       TEngineExportSettings.Create(ACommandLine),
@@ -1379,10 +1399,10 @@ begin
     TTableExportFactory.CreateCsvWriter(LStates, LNames),
     TTableExportFactory.CreateActorDefWriter(LThings, LStates, LNames, LNames, LNames),
     TTableExportFactory.CreateWeaponDefWriter(LGame, LWeapons, LStates, LNames, LNames),
-    TTableExportFactory.CreateStateOwnersWriter(LStates, LNames));
+    TTableExportFactory.CreateStateOwnersWriter(LStates, LNames), LSaver);
   Info_ConfigureExport(
     TTableExportFactory.CreatePascalWriter(LGame, LThings, TEngineExportThings.Create(True), LStates,
-      LNames, LNames, LNames));
+      LNames, LNames, LNames), LSaver);
 end;
 
 procedure ComposeIwad;
@@ -1434,6 +1454,35 @@ begin
   AFiles := LFileSystem;
   AContainers := LFileSystem;
   PAK_Configure(AFiles, AContainers);
+end;
+
+// The tables of things and states stay data (info.pas of the game); the searches, the names of
+// the groups, the monsters placed at random and the names of the states are the classes of
+// Libs\Info, and info_common, info_rnd, info_fnd and sc_states are facades over them (issue #185, slice 1b)
+procedure ComposeInfoTables;
+var
+  LTables: TEngineInfoTables;
+  LMobjs: IInfoMobjSource;
+  LStates: IInfoStateSource;
+  LSprites: IInfoSpriteSource;
+  LThings: IEngineInfoThings;
+  LThingNames: IInfoThingNames;
+  LInfoRandom: IInfoRandom;
+begin
+  // one object reads the three tables: the interfaces keep it alive
+  LTables := TEngineInfoTables.Create;
+  LMobjs := LTables;
+  LStates := LTables;
+  LSprites := LTables;
+  LThings := TEngineInfoThings.Create(LMobjs);
+  LThingNames := LThings as IInfoThingNames;
+  Info_ConfigureThings(LThings);
+  Info_ConfigureStates(TEngineInfoStates.Create(LMobjs, LStates, LSprites));
+  Info_ConfigureGroups(TEngineInfoGroups.Create);
+  LInfoRandom := TEngineParamRandom.Create;
+  Info_ConfigureRandom(TEngineInfoRandom.Create(LMobjs, TEngineInfoRandomRules.Create, LInfoRandom));
+  SC_ConfigureStateNames(TEngineStateNames.Create(LMobjs, TEngineInfoStateTokens.Create, LThingNames,
+    TEngineInfoStateText.Create));
 end;
 
 procedure ComposeEngine;
@@ -1547,6 +1596,7 @@ begin
   ComposeAutomap;
   ComposeHud;
   ComposeActorDef(LLog, LPreprocessor, LRegistry, LLumps);
+  ComposeInfoTables;
   ComposeTableExport(LCommandLine);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom, LZone), LLog));
