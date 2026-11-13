@@ -11,7 +11,7 @@ interface
 
 uses
   DelphiDoom.Gui.Intf, DelphiDoom.Gui.MenuSet, DelphiDoom.Gui.FontRegistry, DelphiDoom.Gui.MenuFileReader,
-  DelphiDoom.Gui.ScriptRunner, DelphiDoom.IdLib.Core.Intf;
+  DelphiDoom.Gui.ScriptRunner, DelphiDoom.Gui.Display, DelphiDoom.Gui.Display.Intf, DelphiDoom.IdLib.Core.Intf;
 
 type
   /// <summary>Builds the objects of the library from the services the caller owns</summary>
@@ -28,6 +28,9 @@ type
       const ALog: IGuiLog = nil): TGuiMenuFileReader; static;
     class function CreateScriptRunner(const AMenus: TGuiMenuSet; const AHost: IGuiScriptHost;
       const AMedia: IGuiMediaHost): TGuiScriptRunner; static;
+    /// <summary>The stack of the open menus, the focus, the pointer and the keys (the caller owns the result)</summary>
+    class function CreateDisplay(const AMenus: TGuiMenuSet; const ARunner: TGuiScriptRunner;
+      const AInput: IGuiInputHost; const AScript: IGuiScriptHost; const AMedia: IGuiMediaHost): TGuiDisplay; static;
   end;
 
 implementation
@@ -63,6 +66,12 @@ class function TGuiFactory.CreateScriptRunner(const AMenus: TGuiMenuSet; const A
   const AMedia: IGuiMediaHost): TGuiScriptRunner;
 begin
   Result := TGuiScriptRunner.Create(AMenus.Assets, AMenus.Registry, AMenus.Strings, AHost, AMedia);
+end;
+
+class function TGuiFactory.CreateDisplay(const AMenus: TGuiMenuSet; const ARunner: TGuiScriptRunner;
+  const AInput: IGuiInputHost; const AScript: IGuiScriptHost; const AMedia: IGuiMediaHost): TGuiDisplay;
+begin
+  Result := TGuiDisplay.Create(AMenus, ARunner, AInput, AScript, AMedia);
 end;
 
 end.

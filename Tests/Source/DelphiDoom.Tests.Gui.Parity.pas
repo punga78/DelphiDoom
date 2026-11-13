@@ -22,7 +22,7 @@ type
   TTestGuiParity = class(TObject)
   private
     function SameButLine(const AActual, AExpected: string): Boolean;
-    procedure Compare(const AScenario: string);
+    procedure Compare(const AScenario: string; const AInput: Boolean = False);
   public
     [Test]
     procedure DovrebbeLeggereTuttiIMenuComeIlCodiceDiQuake;
@@ -34,12 +34,16 @@ type
     procedure DovrebbeLeggereIFontComeRegisterFont;
     [Test]
     procedure DovrebbeEseguireGliScriptComeItemRunScript;
+    [Test]
+    procedure DovrebbeGestirePilaFocusMouseETastiComeIlCodiceDiQuake;
+    [Test]
+    procedure DovrebbeTrascinareBarreECampiDiTestoComeIlCodiceDiQuake;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Tests.Gui.Fakes, DelphiDoom.Tests.Gui.Scenario;
+  DelphiDoom.Tests.Gui.Fakes, DelphiDoom.Tests.Gui.Scenario, DelphiDoom.Tests.Gui.InputScenario;
 
 // The only declared tolerance: the line number of an error message may differ by one. The botlib precompiler
 // counts lines in its own way after "#" directives and at the end of the file (see README.md of the library);
@@ -73,7 +77,7 @@ begin
     (Copy(AActual, LActualEnd, MaxInt) = Copy(AExpected, LExpectedEnd, MaxInt));
 end;
 
-procedure TTestGuiParity.Compare(const AScenario: string);
+procedure TTestGuiParity.Compare(const AScenario: string; const AInput: Boolean);
 var
   LActual: TStringList;
   LExpected: TStringList;
@@ -85,7 +89,10 @@ begin
   LExpected := TStringList.Create;
   LFiltered := TStringList.Create;
   try
-    TGuiScenarioRunner.Run(GuiDataFolder + 'files\', GuiDataFolder + 'scenarios\' + AScenario + '.txt', LActual);
+    if AInput then
+      TGuiInputScenarioRunner.Run(GuiDataFolder + 'files\', GuiDataFolder + 'scenarios\' + AScenario + '.txt', LActual)
+    else
+      TGuiScenarioRunner.Run(GuiDataFolder + 'files\', GuiDataFolder + 'scenarios\' + AScenario + '.txt', LActual);
     LExpected.LoadFromFile(GuiDataFolder + 'golden\' + AScenario + '.golden.txt');
     // the C driver prints the milliseconds of UI_LoadMenus; the library does not measure time
     for LLine in LExpected do
@@ -130,6 +137,16 @@ end;
 procedure TTestGuiParity.DovrebbeEseguireGliScriptComeItemRunScript;
 begin
   Compare('scripts');
+end;
+
+procedure TTestGuiParity.DovrebbeGestirePilaFocusMouseETastiComeIlCodiceDiQuake;
+begin
+  Compare('input', True);
+end;
+
+procedure TTestGuiParity.DovrebbeTrascinareBarreECampiDiTestoComeIlCodiceDiQuake;
+begin
+  Compare('input2', True);
 end;
 
 initialization

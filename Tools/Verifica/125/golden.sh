@@ -6,7 +6,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 REPO=$(cd "$HERE/../../.." && pwd)
 OUT=${1:-$HERE/out}
 sh "$HERE/build.sh" "$OUT"
-for S in menus menulist broken fonts scripts; do
+for S in menus menulist broken fonts scripts input input2; do
   "$OUT/uiparse.exe" "$REPO/Tests/Data/Gui/files" "$REPO/Tests/Data/Gui/scenarios/$S.txt" > "$REPO/Tests/Data/Gui/golden/$S.golden.txt"
 done
 echo "goldens written"

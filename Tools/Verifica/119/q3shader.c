@@ -6,6 +6,10 @@
      detail 0|1       r_detailTextures
      scan             ScanAndLoadShaderFiles (the .shader files of <root>/scripts, sorted by name)
      find <name>      R_FindShader(name, LIGHTMAP_NONE, qtrue) and a dump of what it returns
+     internal         CreateInternalShaders ("<default>" is index 0, "<stencil shadow>" index 1)
+     reg <name> <lm>  RE_RegisterShaderLightMap; the images whose name begins with "nofile" do not exist
+     remap <name> <new name> [<time offset> | -]   R_RemapShader
+     remapdump        every shader: index, name, lightmap, default flag, remapped index, time offset
    The dump: every float as the hexadecimal bits, every string as it is. */
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +49,8 @@ void R_DecomposeSort(unsigned sort, int *entityNum, shader_t **shader, int *fogN
 
 image_t *R_FindImageFile(const char *name, qboolean mipmap, qboolean allowPicmip, int glWrapClampMode) {
 	int i;
+	/* the images whose name begins with "nofile" do not exist (the remap scenario of R_RemapShader) */
+	if (!strncmp(name, "nofile", 6)) return NULL;
 	for (i = 0; i < g_numImages; i++)
 		if (!strcmp(g_images[i].imgName, name)) return &g_images[i];
 	strncpy(g_images[g_numImages].imgName, name, MAX_QPATH - 1);
@@ -248,6 +254,40 @@ int main(int argc, char **argv) {
 		while (n > 0 && (line[n - 1] == '\n' || line[n - 1] == '\r')) line[--n] = 0;
 		if (!strncmp(line, "detail ", 7)) cv_detail.integer = atoi(line + 7);
 		else if (!strcmp(line, "scan")) ScanAndLoadShaderFiles();
+		else if (!strcmp(line, "internal")) {
+			/* CreateInternalShaders: "<default>" is index 0, "<stencil shadow>" index 1 */
+			memset(hashTable, 0, sizeof(hashTable));
+			CreateInternalShaders();
+		}
+		else if (!strncmp(line, "reg ", 4)) {
+			/* reg <name> <lightmap index>: RE_RegisterShaderLightMap */
+			char name[256];
+			int lm, h;
+			if (sscanf(line + 4, "%255s %d", name, &lm) == 2) {
+				if (setjmp(g_drop) == 0) {
+					h = RE_RegisterShaderLightMap(name, lm);
+					printf("reg %s %d -> %d\n", name, lm, h);
+				} else printf("drop\n");
+			}
+		}
+		else if (!strncmp(line, "remap ", 6)) {
+			/* remap <name> <new name> [<time offset> | -]: R_RemapShader */
+			char a[256], b[256], c[256];
+			int n = sscanf(line + 6, "%255s %255s %255s", a, b, c);
+			printf("remap %s %s %s\n", a, b, n == 3 ? c : "-");
+			if (setjmp(g_drop) == 0) R_RemapShader(a, b, (n == 3 && strcmp(c, "-")) ? c : NULL);
+			else printf("drop\n");
+		}
+		else if (!strcmp(line, "remapdump")) {
+			int i;
+			for (i = 0; i < tr.numShaders; i++) {
+				shader_t *s = tr.shaders[i];
+				printf("shader %d %s lm=%d default=%d remap=%d", i, s->name, s->lightmapIndex, s->defaultShader,
+					s->remappedShader ? s->remappedShader->index : -1);
+				bits(s->timeOffset);
+				printf("\n");
+			}
+		}
 		else if (!strncmp(line, "find ", 5)) find(line + 5);
 		else if (!strcmp(line, "findall")) {
 			/* every name of the scanned text, in the order of the text (a local check on real files) */
