@@ -100,7 +100,7 @@ type
     /// <summary>
     ///   The "%.Nf" of the C library for a float: the exact binary value rounded to N decimals with ties
     ///   to even (0.5 gives "0", 2.5 gives "2") and a minus sign for any negative value, also when the
-    ///   result is zero. Exact for N up to 9; outside that, the RTL formatting is used.
+    ///   result is zero. Exact for N up to 10 (the scaled value is exact in a Double: 24 bits times 5^10, 24 bits); outside that, the RTL formatting is used.
     /// </summary>
     class function FormatFixed(const AValue: Single; const APrecision: Integer): AnsiString; static;
     /// <summary>The text idStr(float) gives: "%f" without trailing zeros and dot</summary>
@@ -807,7 +807,7 @@ var
   LPower: Double;
   LIndex: Integer;
 begin
-  if (APrecision < 0) or (APrecision > 9) or (AValue <> AValue) or (Abs(AValue) > 3.4E38) then
+  if (APrecision < 0) or (APrecision > 10) or (AValue <> AValue) or (Abs(AValue) > 3.4E38) then
   begin
     // outside the range where the scaled value is exact: the RTL formatting (rounds ties away from zero)
     Exit(AnsiString(Format('%.*f', [APrecision, Double(AValue)], TFormatSettings.Invariant)));
