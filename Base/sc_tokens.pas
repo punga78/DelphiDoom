@@ -26,6 +26,10 @@
 
 {$I Doom32.inc}
 
+// Facade (issue #185, slice 1b): the rules of an entry with several names live in
+// Libs\Scanner\DelphiDoom.Scanner.TokenEntry; the list stays a TDStringList because the
+// callers read statenames and the other token lists with Strings, Add and Count.
+
 unit sc_tokens;
 
 interface
@@ -49,6 +53,9 @@ function SC_EvalueateIntToken(const token: string; const A: array of string): in
 
 implementation
 
+uses
+  DelphiDoom.Scanner.TokenEntry;
+
 //==============================================================================
 //
 // TTokenList.IndexOfToken
@@ -56,43 +63,18 @@ implementation
 //==============================================================================
 function TTokenList.IndexOfToken(const S: string): Integer;
 var
-  i, j: integer;
-  list: TDStringList;
-  stmp, stmp2: string;
+  i: integer;
 begin
   result := IndexOf(S);
   if result > -1 then
     exit;
 
-  list := TDStringList.Create;
-
   for i := 0 to Count - 1 do
-  begin
-    stmp := Strings[i];
-    if CharPos(',', stmp) > 0 then
+    if TScannerTokenEntry.ListsToken(Strings[i], S) then
     begin
-      stmp2 := '';
-      for j := 1 to Length(stmp) do
-        if stmp[j] = ',' then
-          stmp2 := stmp2 + #13#10
-        else
-          stmp2 := stmp2 + stmp[j];
-      stmp := strtrim(stmp2);
-      if stmp <> '' then
-      begin
-        list.Text := stmp;
-        for j := 0 to list.Count - 1 do
-          list.Strings[j] := strtrim(list.Strings[j]);
-        if list.IndexOf(S) > -1 then
-        begin
-          list.Free;
-          result := i;
-          exit;
-        end;
-      end;
+      result := i;
+      exit;
     end;
-  end;
-  list.Free;
 end;
 
 //==============================================================================
@@ -103,35 +85,16 @@ end;
 function TTokenList.AllTokensWithIndex: TDStringList;
 var
   i, j: integer;
-  list: TDStringList;
-  stmp, stmp2: string;
+  names: TArray<string>;
 begin
   Result := TDStringList.Create;
 
-  list := TDStringList.Create;
   for i := 0 to Count - 1 do
   begin
-    stmp := Strings[i];
-    if CharPos(',', stmp) = 0 then
-      Result.AddObject(strtrim(stmp), TInteger.Create(i))
-    else
-    begin
-      stmp2 := '';
-      for j := 1 to Length(stmp) do
-        if stmp[j] = ',' then
-          stmp2 := stmp2 + #13#10
-        else
-          stmp2 := stmp2 + stmp[j];
-      stmp := strtrim(stmp2);
-      if stmp <> '' then
-      begin
-        list.Text := stmp;
-        for j := 0 to list.Count - 1 do
-          Result.AddObject(strtrim(list.Strings[j]), TInteger.Create(i));
-      end;
-    end;
+    names := TScannerTokenEntry.Split(Strings[i]);
+    for j := 0 to Length(names) - 1 do
+      Result.AddObject(names[j], TInteger.Create(i));
   end;
-  list.Free;
 end;
 
 //==============================================================================
@@ -142,7 +105,6 @@ end;
 function SC_EvalueateIntToken(const token: string; const A: array of string): integer;
 var
   i: integer;
-  tt: TTokenList;
 begin
   i := atoi(token);
   if itoa(i) = token then
@@ -151,11 +113,7 @@ begin
     exit;
   end;
 
-  tt := TTokenList.Create;
-  for i := Low(A) to High(A) do
-    tt.Add(A[i]);
-  result := tt.IndexOfToken(token);
-  tt.Free;
+  result := TScannerTokenEntry.IndexOfToken(A, token);
 end;
 
 end.

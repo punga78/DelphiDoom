@@ -442,6 +442,8 @@ uses
   DelphiDoom.Engine.Scanner.ActorVariables in '..\Base\DelphiDoom.Engine.Scanner.ActorVariables.pas',
   DelphiDoom.Engine.Scanner.ActorFunctions in '..\Base\DelphiDoom.Engine.Scanner.ActorFunctions.pas',
   DelphiDoom.Scanner.Numbers in '..\Libs\Scanner\DelphiDoom.Scanner.Numbers.pas',
+  DelphiDoom.Scanner.ConstTable in '..\Libs\Scanner\DelphiDoom.Scanner.ConstTable.pas',
+  DelphiDoom.Scanner.TokenEntry in '..\Libs\Scanner\DelphiDoom.Scanner.TokenEntry.pas',
   DelphiDoom.Scanner.Expression.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Intf.pas',
   DelphiDoom.Scanner.Expression.Node in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Node.pas',
   DelphiDoom.Scanner.Expression.Builtins in '..\Libs\Scanner\DelphiDoom.Scanner.Expression.Builtins.pas',
