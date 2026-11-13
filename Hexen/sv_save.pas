@@ -549,7 +549,7 @@ type
   Pssthinker_t = ^ssthinker_t;
 
 type
-  TargetPlayerAddrs_t = array[0..$FFFF] of PInteger;
+  TargetPlayerAddrs_t = array[0..$FFFF] of PNativeInt;
   PTargetPlayerAddrs_t = ^TargetPlayerAddrs_t;
 
 var
@@ -587,15 +587,19 @@ end;
 // SetMobjPtr
 //
 //==============================================================================
-procedure SetMobjPtr(archiveNum: PInteger);
+procedure SetMobjPtr(archiveNum: PNativeInt);
+var
+  LNumber: integer;
 begin
-  if archiveNum^ = MOBJ_NULL then
+  // the archive number was read into the low 32 bits of the field (a pointer is 8 bytes at 64 bit)
+  LNumber := PInteger(archiveNum)^;
+  if LNumber = MOBJ_NULL then
   begin
     archiveNum^ := 0;
     exit;
   end;
 
-  if archiveNum^ = MOBJ_XX_PLAYER then
+  if LNumber = MOBJ_XX_PLAYER then
   begin
     if TargetPlayerCount = MAX_TARGET_PLAYERS then
       I_Error('RestoreMobj(): exceeded MAX_TARGET_PLAYERS');
@@ -605,8 +609,8 @@ begin
     archiveNum^ := 0;
     exit;
   end;
-  if archiveNum^ < MapMobjCount then
-    archiveNum^ := NativeInt(MapMobjList[archiveNum^])
+  if LNumber < MapMobjCount then
+    archiveNum^ := NativeInt(MapMobjList[LNumber])
   else
     archiveNum^ := 0;
 end;
@@ -632,9 +636,9 @@ begin
   mobj.info := @mobjinfo[mobj._type];
   mobj.floorz := P_3dFloorHeight(mobj);
   mobj.ceilingz := P_3dCeilingHeight(mobj);
-  SetMobjPtr(PInteger(@mobj.target));
-  SetMobjPtr(PInteger(@mobj.tracer));
-  SetMobjPtr(PInteger(@mobj.master));
+  SetMobjPtr(PNativeInt(@mobj.target));
+  SetMobjPtr(PNativeInt(@mobj.tracer));
+  SetMobjPtr(PNativeInt(@mobj.master));
   case mobj._type of
     Ord(MT_KORAX_SPIRIT1),
     Ord(MT_KORAX_SPIRIT2),
@@ -709,7 +713,7 @@ end;
 //==============================================================================
 procedure MangleScript(script: Pacs_t);
 begin
-  script.ip := PInteger(NativeUInt(script.ip) - LongWord(ActionCodeBase));
+  script.ip := PInteger(NativeUInt(script.ip) - NativeUInt(ActionCodeBase));
   if script.line <> nil then
     script.line :=  Pline_t((NativeUInt(script.line) - NativeUInt(@lines[0])) div SizeOf(line_t))
   else
@@ -729,7 +733,7 @@ begin
     script.line := nil
   else
     script.line := @lines[NativeInt(script.line)];
-  SetMobjPtr(PInteger(@script.activator));
+  SetMobjPtr(PNativeInt(@script.activator));
 end;
 
 //==============================================================================
@@ -1496,7 +1500,7 @@ var
   parm: mobjcustomparam_t;
 begin
   AssertSegment(ASEG_MOBJS);
-  TargetPlayerAddrs := Z_Malloc(MAX_TARGET_PLAYERS * SizeOf(PInteger), PU_STATIC, nil);
+  TargetPlayerAddrs := Z_Malloc(MAX_TARGET_PLAYERS * SizeOf(PNativeInt), PU_STATIC, nil);
   TargetPlayerCount := 0;
   MapMobjCount := GET_LONG;
   MapMobjList := Z_Malloc(MapMobjCount * SizeOf(Pmobj_t), PU_STATIC, nil);

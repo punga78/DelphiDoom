@@ -1597,7 +1597,7 @@ begin
       acs := Pacs_t(save_p);
       memcpy(acs, th, SizeOf(acs_t));
       incp(pointer(save_p), SizeOf(acs_t));
-      acs.ip := PInteger(NativeUInt(acs.ip) - LongWord(ActionCodeBase));
+      acs.ip := PInteger(NativeUInt(acs.ip) - NativeUInt(ActionCodeBase));
       if acs.line <> nil then
         acs.line := Pline_t(pDiff(acs.line, lines, SizeOf(line_t)))
       else
