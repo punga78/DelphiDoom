@@ -102,6 +102,28 @@ type
     property Modes[AIndex: Integer]: TDisplayMode read GetMode; default;
   end;
 
+  /// <summary>What the engine does when a deferred notification is run</summary>
+  IDisplayModeApplier = interface
+    ['{3D9B6E48-C0A1-4752-8F3E-A7D52B81F094}']
+    /// <summary>Changes the display mode of the screen to this size</summary>
+    procedure ApplyDisplayMode(AWidth, AHeight: Integer);
+    /// <summary>Tells the OpenGL window about its display mode (nothing without OpenGL)</summary>
+    procedure ApplyGLDisplayMode;
+  end;
+
+  /// <summary>
+  ///   Changes that the menus and the renderer ask for in the middle of a frame and that the game
+  ///   loop does between two frames (D_NotifyVideoModeChange, D_RunNotifications)
+  /// </summary>
+  IDeferredNotifications = interface
+    ['{91E5A0C3-48D7-4B2F-A6B9-2C70F3E8D15A}']
+    /// <summary>A new display mode is asked for: the last request before Run wins</summary>
+    procedure NotifyVideoModeChange(AWidth, AHeight: Integer);
+    procedure NotifyGLDisplayMode;
+    /// <summary>Does what is asked, the mode first, and forgets it</summary>
+    procedure Run;
+  end;
+
   /// <summary>What the video of the engine needs that does not depend on the graphics API</summary>
   IVideoServices = interface
     ['{A9F4C713-0D82-4E5B-96A7-1B3E58C2D406}']

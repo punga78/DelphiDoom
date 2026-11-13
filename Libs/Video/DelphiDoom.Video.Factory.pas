@@ -34,6 +34,8 @@ type
     class function CreateScreenSizeResolver(const ACommandLine: ICommandLine;
       const AMetrics: IDisplayMetrics; const ALimits: TScreenSizeLimits;
       const AParseNumber: TFunc<string, Integer>): IScreenSizeResolver; static;
+    /// <summary>The notifications that the game loop runs between two frames</summary>
+    class function CreateDeferredNotifications(const AApplier: IDisplayModeApplier): IDeferredNotifications; static;
     /// <summary>The services on the screen of Windows</summary>
     class function CreateServices: IVideoServices; static;
   end;
@@ -44,7 +46,8 @@ uses
   DelphiDoom.Video.PaletteConverter, DelphiDoom.Video.SizeLimiter,
   DelphiDoom.Video.MemoryStallHack, DelphiDoom.Video.WindowsDisplayMetrics,
   DelphiDoom.Video.Services, DelphiDoom.Video.DisplayModeCatalog,
-  DelphiDoom.Video.WindowsDisplayModeSource, DelphiDoom.Video.ScreenSizeResolver;
+  DelphiDoom.Video.WindowsDisplayModeSource, DelphiDoom.Video.ScreenSizeResolver,
+  DelphiDoom.Video.DeferredNotifications;
 
 { TVideoFactory }
 
@@ -84,6 +87,12 @@ class function TVideoFactory.CreateDisplayModeCatalog(
   const ASource: IDisplayModeSource): IDisplayModeCatalog;
 begin
   Result := TDisplayModeCatalog.Create(ASource);
+end;
+
+class function TVideoFactory.CreateDeferredNotifications(
+  const AApplier: IDisplayModeApplier): IDeferredNotifications;
+begin
+  Result := TDeferredNotifications.Create(AApplier);
 end;
 
 class function TVideoFactory.CreateServices: IVideoServices;

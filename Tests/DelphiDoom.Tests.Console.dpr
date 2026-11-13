@@ -38,6 +38,7 @@ uses
   DelphiDoom.Console.CheatSequence in '..\Libs\Console\DelphiDoom.Console.CheatSequence.pas',
   DelphiDoom.Console.CheatSequenceReader in '..\Libs\Console\DelphiDoom.Console.CheatSequenceReader.pas',
   DelphiDoom.Console.CheatTable in '..\Libs\Console\DelphiDoom.Console.CheatTable.pas',
+  DelphiDoom.Console.UtilityCommands in '..\Libs\Console\DelphiDoom.Console.UtilityCommands.pas',
   DelphiDoom.Console.Factory in '..\Libs\Console\DelphiDoom.Console.Factory.pas',
   DelphiDoom.Tests.Console.Fakes in 'Source\DelphiDoom.Tests.Console.Fakes.pas',
   DelphiDoom.Tests.Console.Golden in 'Source\DelphiDoom.Tests.Console.Golden.pas',
@@ -58,7 +59,8 @@ uses
   DelphiDoom.Tests.Console.CheatScrambler in 'Source\DelphiDoom.Tests.Console.CheatScrambler.pas',
   DelphiDoom.Tests.Console.CheatSequenceReader in 'Source\DelphiDoom.Tests.Console.CheatSequenceReader.pas',
   DelphiDoom.Tests.Console.CheatSequence in 'Source\DelphiDoom.Tests.Console.CheatSequence.pas',
-  DelphiDoom.Tests.Console.CheatTable in 'Source\DelphiDoom.Tests.Console.CheatTable.pas';
+  DelphiDoom.Tests.Console.CheatTable in 'Source\DelphiDoom.Tests.Console.CheatTable.pas',
+  DelphiDoom.Tests.Console.UtilityCommands in 'Source\DelphiDoom.Tests.Console.UtilityCommands.pas';
 
 var
   Runner: ITestRunner;

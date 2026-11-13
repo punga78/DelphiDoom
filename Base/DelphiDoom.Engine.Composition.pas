@@ -167,6 +167,8 @@ uses
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
   DelphiDoom.Engine.Console.FileSystem,
+  DelphiDoom.Engine.Console.FileLister,
+  DelphiDoom.Engine.Console.Browser,
   DelphiDoom.Engine.Console.Startup,
   DelphiDoom.Engine.Console.VariableSource,
   DelphiDoom.Engine.Console.Intf,
@@ -180,6 +182,9 @@ uses
   DelphiDoom.Engine.Palette.Intf,
   DelphiDoom.Engine.Palette.DefaultPalette,
   c_cmds,
+  c_utils,
+  d_notifications,
+  DelphiDoom.Engine.Video.DisplayModeApplier,
   r_translations,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   r_colormaps,
@@ -502,6 +507,7 @@ begin
   I_ConfigureDisplayModes(LCatalog);
 {$ENDIF}
   M_ConfigureDisplayModes(LCatalog);
+  D_ConfigureNotifications(TVideoFactory.CreateDeferredNotifications(TEngineDisplayModeApplier.Create));
 end;
 
 // The end screen; the result is its tic, that the loop of the network runs (nothing in Hexen,
@@ -894,6 +900,8 @@ begin
   AInterpreter := TConsoleFactory.CreateInterpreter(ARegistry);
   C_ConfigureCommands(ARegistry, AInterpreter);
   LOutput := TEngineConsoleOutput.Create;
+  C_ConfigureUtilityCommands(TConsoleFactory.CreateUtilityCommands(ARegistry, LOutput,
+    TEngineConsoleFileLister.Create, TEngineConsoleBrowser.Create, AInterpreter));
   LRunner := TConsoleFactory.CreateScriptRunner(AInterpreter, TEngineConsoleFileSystem.Create,
     LOutput, ALog);
   LVariables := TEngineConsoleVariableSource.Create;

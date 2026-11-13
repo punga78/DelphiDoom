@@ -147,6 +147,10 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `Libs\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
 
+### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
+
+`c_utils`: `C_RegisterUtilityCommands` chiama il gruppo `IConsoleCommandGroup` (`TConsoleUtilityCommands` di `Libs\Console`: `dir`, `cd`, `cat`, le pagine web; file e browser dietro `IConsoleFileLister` e `IConsoleBrowser`, adattatori `DelphiDoom.Engine.Console.FileLister` e `.Browser`) che `ComposeConsole` da' con `C_ConfigureUtilityCommands`. `d_notifications`: `D_NotifyVideoModeChange`, `D_NotifyGLDisplayMode` (solo GL) e `D_RunNotifications` chiamano `IDeferredNotifications` (`TDeferredNotifications` di `Libs\Video`, applicatore `DelphiDoom.Engine.Video.DisplayModeApplier` con gli `{$IFDEF OPENGL}`), dato da `ComposeDisplayModes` con `D_ConfigureNotifications`. Senza configurazione `I_Error`.
+
 ### `Base\sc_utils.pas` - cancellata
 
 **Tolta (#144)**: il preprocessore dei testi e `IScriptTextPreprocessor` (`TScriptTextPreprocessor`, `ComposeScanner`), dato ai costruttori di chi legge script; `SC_Preprocess` non esiste piu.
@@ -238,6 +242,8 @@ Per toglierla: percorso caldo OpenGL: resta sopra `IGlAngleClipper`.
 | `gld_GetGLVertexes` | 1 | gl_setup |
 
 ### `Base\vx_base.pas` - 7 funzioni pubbliche, 9 chiamate
+
+**Resta storica (#185, fetta 1e)**: e' il registro (`voxelmanager`, `voxelstates`) che i renderer leggono per ogni voxel disegnato, piu' `VX_CheckVoxelSprite` che scrive in `voxelspritenames` una lista che nessuno legge (dato morto: vedi `docs\PENDING_ISSUES.md`). Il parser e il sink sono gia' a classi (`Libs\Voxel`).
 
 Per toglierla: il registro dei voxel di VOXELDEF: voxel, poche chiamate, iniettare il servizio.
 
@@ -969,7 +975,7 @@ Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la 
 
 ### `Base\mt_utils.pas` - 18 funzioni pubbliche, 207 chiamate
 
-Per toglierla: dalla #148 i tre gruppi di thread sono `IWorkerPool` creati da `MT_Init` (`MT_ConfigureThreads`); `MT_Execute*`, `MT_Iterate` e i task sono chiamati dal renderer e dal disegno (percorso caldo): restano.
+**Facciata (#185, fetta 1e)**: dalla #148 i tre gruppi di thread sono `IWorkerPool` creati da `MT_Init`; ora il lavoro e' di `TWorkerJobRunner` (`MT_Execute*`, `MT_Iterate`), `TWorkerMemoryRunner` (`MT_ZeroMemory`, `MT_memset`, `MT_memseti`, `MT_memcpy`) e `TWorkerTaskScheduler` (i task) di `Libs\Threading`, che `MT_Init` crea (`MT_ConfigureThreads(fabbrica, messaggi, primitive di memoria)`; adattatore `DelphiDoom.Engine.Threading.Services`). Le routine pubbliche hanno le firme di prima (anche i 6 overload di `MT_Execute` e `MT_Execute4/6/8/12/16`): ognuna e' una chiamata al runner. Restano i tipi `iterator_t`, `mt_range_t` e `NUMEXECTHREADS`. Chiamate per fotogramma o per blocco, mai per elemento.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
