@@ -208,7 +208,7 @@ begin
   if count = 0 then
     exit;
 
-  TPixelBatch.AddSaturated(PByte(dest0), color, count);
+  TPixelBatch.AddSaturated(System.PByte(dest0), color, count);
 end;
 {$ENDIF}
 
@@ -344,7 +344,7 @@ begin
   if numbytes = 0 then
     exit;
 
-  TPixelBatch.HalveBytes(dest0, numbytes);
+  TPixelBatch.HalveBytes(System.PByte(dest0), numbytes);
 end;
 {$ENDIF}
 

@@ -724,7 +724,12 @@ type
   end;
 
 const
+{$IFDEF CPUX64}
+  // TStringItem is 16 bytes on 64 bit: keep the array type under 2 GB
+  MaxListSize = MAXINT div 32;
+{$ELSE}
   MaxListSize = MAXINT div 16;
+{$ENDIF}
 
 type
 { TDStrings class }
@@ -4703,17 +4708,17 @@ end;
 //==============================================================================
 procedure TDStringList.ExchangeItems(Index1, Index2: Integer);
 var
-  Temp: Integer;
+  Temp: Pointer;
   Item1, Item2: PStringItem;
 begin
   Item1 := @FList[Index1];
   Item2 := @FList[Index2];
-  Temp := Integer(Item1.FString);
-  Integer(Item1.FString) := Integer(Item2.FString);
-  Integer(Item2.FString) := Temp;
-  Temp := Integer(Item1.FObject);
-  Integer(Item1.FObject) := Integer(Item2.FObject);
-  Integer(Item2.FObject) := Temp;
+  Temp := Pointer(Item1.FString);
+  Pointer(Item1.FString) := Pointer(Item2.FString);
+  Pointer(Item2.FString) := Temp;
+  Temp := Pointer(Item1.FObject);
+  Pointer(Item1.FObject) := Pointer(Item2.FObject);
+  Pointer(Item2.FObject) := Temp;
 end;
 
 //==============================================================================
