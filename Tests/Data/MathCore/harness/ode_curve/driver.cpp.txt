@@ -1,0 +1,373 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+void idCommon::Printf(const char *, ...) {}
+void idCommon::Warning(const char *, ...) {}
+void idCommon::DWarning(const char *, ...) {}
+void idCommon::Error(const char *, ...) { abort(); }
+void idCommon::FatalError(const char *, ...) { abort(); }
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+// ---------------------------------------------------------------- helpers
+static unsigned st = 1;
+static unsigned nu() { st = st * 1664525u + 1013904223u; return st; }
+static float nf(float r) { unsigned b = nu() >> 8; return (float)(((b / 8388608.0) - 1.0) * r); }
+static float uf() { return (float)((nu() >> 8) / 16777216.0); }
+static void pf(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
+
+inline int dimOf(const float &) { return 1; }
+inline int dimOf(const idVec2 &) { return 2; }
+inline int dimOf(const idVec3 &) { return 3; }
+inline int dimOf(const idVec4 &) { return 4; }
+inline float getc(const float &v, int) { return v; }
+inline float getc(const idVec2 &v, int i) { return v[i]; }
+inline float getc(const idVec3 &v, int i) { return v[i]; }
+inline float getc(const idVec4 &v, int i) { return v[i]; }
+inline void setc(float &v, int, float f) { v = f; }
+inline void setc(idVec2 &v, int i, float f) { v[i] = f; }
+inline void setc(idVec3 &v, int i, float f) { v[i] = f; }
+inline void setc(idVec4 &v, int i, float f) { v[i] = f; }
+
+template<class T> T randv(float r) { T v; int d = dimOf(v); for (int i = 0; i < d; i++) setc(v, i, nf(r)); return v; }
+template<class T> void putv(const T &v) { int d = dimOf(v); for (int i = 0; i < d; i++) pf(getc(v, i)); }
+
+enum { K_BASE, K_BEZ, K_QBEZ, K_CBEZ, K_NAT, K_CR, K_KB, K_BS, K_UBS, K_NUBS, K_NURBS };
+static const char *kindName[] = { "base", "bezier", "qbezier", "cbezier", "natural", "catmull", "kb", "bspline", "ubspline", "nubs", "nurbs" };
+
+template<class T> struct Knots { int n; float t[16]; T v[16]; float w[16], te[16], co[16], bi[16]; };
+
+template<class T> void gen(Knots<T> &k, int n) {
+	k.n = n;
+	float t = nf(1.0f);
+	for (int i = 0; i < n; i++) {
+		k.t[i] = t;
+		t = t + (0.25f + 0.75f * uf());
+		k.v[i] = randv<T>(5.0f);
+		k.w[i] = 0.9f + 0.2f * uf();
+		k.te[i] = nf(0.5f); k.co[i] = nf(0.5f); k.bi[i] = nf(0.5f);
+	}
+}
+
+template<class T, class C> void fill(C &c, const Knots<T> &k) { for (int i = 0; i < k.n; i++) c.AddValue(k.t[i], k.v[i]); }
+template<class T> void fill(idCurve_NURBS<T> &c, const Knots<T> &k) { for (int i = 0; i < k.n; i++) c.AddValue(k.t[i], k.v[i], k.w[i]); }
+template<class T> void fill(idCurve_KochanekBartelsSpline<T> &c, const Knots<T> &k) { for (int i = 0; i < k.n; i++) c.AddValue(k.t[i], k.v[i], k.te[i], k.co[i], k.bi[i]); }
+
+template<class T> void header(const char *name, int kind, int bt, int order, float ct, const Knots<T> &k) {
+	T dummy;
+	printf("%s_%s %d %d %d", name, kindName[kind], dimOf(dummy), bt, order);
+	pf(ct);
+	printf(" %d", k.n);
+	for (int i = 0; i < k.n; i++) {
+		pf(k.t[i]); putv(k.v[i]);
+		if (kind == K_NURBS) pf(k.w[i]);
+		if (kind == K_KB) { pf(k.te[i]); pf(k.co[i]); pf(k.bi[i]); }
+	}
+}
+
+// query times; mode 0 wide, 1 natural spline (up to the last but one knot), 2 Kochanekbartels (after the first knot)
+template<class T> void makeQ(const Knots<T> &k, int mode, float *qt, int &q) {
+	float lo = k.t[0], hi = k.t[k.n - 1], span = hi - lo;
+	static const float fw[8] = { 0.5f, -0.2f, 0.0f, 0.31f, 1.0f, 0.66f, 1.15f, 0.9f };
+	static const float fk[6] = { 0.5f, 0.31f, 1.0f, 0.66f, 0.9f, 0.05f };
+	q = 0;
+	if (mode == 0) { for (int i = 0; i < 8; i++) qt[q++] = lo + span * fw[i]; }
+	else if (mode == 1) {
+		float top = k.t[k.n - 2] - lo;
+		qt[q++] = lo - 0.1f * span;
+		for (int i = 0; i < 6; i++) { float x = lo + top * fk[i]; if (x > k.t[k.n - 2]) x = k.t[k.n - 2]; qt[q++] = x; }
+	} else { for (int i = 0; i < 6; i++) { float x = lo + span * fk[i]; if (x > hi) x = hi; qt[q++] = x; } }
+}
+
+template<class T, class C> void evalLine(const char *name, int kind, int bt, int order, float ct, const Knots<T> &k, C &c, const float *qt, int q) {
+	header(name, kind, bt, order, ct, k);
+	printf(" %d", q);
+	for (int i = 0; i < q; i++) pf(qt[i]);
+	printf(" |");
+	for (int i = 0; i < q; i++) {
+		T v = c.GetCurrentValue(qt[i]); putv(v);
+		T d1 = c.GetCurrentFirstDerivative(qt[i]); putv(d1);
+		T d2 = c.GetCurrentSecondDerivative(qt[i]); putv(d2);
+		printf(" %d", c.IsDone(qt[i]) ? 1 : 0);
+	}
+	printf("\n");
+}
+
+template<class T, class C> void cfgSpline(C &c, int bt, float ct, int order, bool setOrder) {
+	c.SetBoundaryType((typename C::boundary_t)bt);
+	c.SetCloseTime(ct);
+}
+template<class T> void cfgSpline(idCurve_BSpline<T> &c, int bt, float ct, int order, bool setOrder) {
+	c.SetBoundaryType((typename idCurve_BSpline<T>::boundary_t)bt);
+	c.SetCloseTime(ct);
+	if (setOrder) c.SetOrder(order);
+}
+template<class T> void cfgSpline(idCurve_NonUniformBSpline<T> &c, int bt, float ct, int order, bool setOrder) {
+	c.SetBoundaryType((typename idCurve_BSpline<T>::boundary_t)bt);
+	c.SetCloseTime(ct);
+	if (setOrder) c.SetOrder(order);
+}
+template<class T> void cfgSpline(idCurve_NURBS<T> &c, int bt, float ct, int order, bool setOrder) {
+	c.SetBoundaryType((typename idCurve_BSpline<T>::boundary_t)bt);
+	c.SetCloseTime(ct);
+	if (setOrder) c.SetOrder(order);
+}
+
+// eval of one kind
+template<class T> void runEval(int kind, int bt, int order, float ct, int n) {
+	Knots<T> k; gen(k, n);
+	float qt[16]; int q;
+	switch (kind) {
+	case K_BASE: { idCurve<T> c; fill(c, k); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, 0, 0, 0.0f, k, c, qt, q); break; }
+	case K_BEZ: { idCurve_Bezier<T> c; fill(c, k); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, 0, 0, 0.0f, k, c, qt, q); break; }
+	case K_QBEZ: { idCurve_QuadraticBezier<T> c; fill(c, k); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, 0, 0, 0.0f, k, c, qt, q); break; }
+	case K_CBEZ: { idCurve_CubicBezier<T> c; fill(c, k); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, 0, 0, 0.0f, k, c, qt, q); break; }
+	case K_CR: { idCurve_CatmullRomSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, 0, false); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, bt, 0, ct, k, c, qt, q); break; }
+	case K_KB: { idCurve_KochanekBartelsSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, 0, false); makeQ(k, 2, qt, q); evalLine("CV_eval", kind, bt, 0, ct, k, c, qt, q); break; }
+	case K_BS: { idCurve_BSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, order, true); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, bt, order, ct, k, c, qt, q); break; }
+	case K_UBS: { idCurve_UniformCubicBSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, 0, false); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, bt, 4, ct, k, c, qt, q); break; }
+	case K_NUBS: { idCurve_NonUniformBSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, order, true); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, bt, order, ct, k, c, qt, q); break; }
+	case K_NURBS: { idCurve_NURBS<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, order, true); makeQ(k, 0, qt, q); evalLine("CV_eval", kind, bt, order, ct, k, c, qt, q); break; }
+	}
+}
+
+template<class T> void runNatural(int bt, float ct, int n) {
+	Knots<T> k; gen(k, n);
+	float qt[16]; int q;
+	idCurve_NaturalCubicSpline<T> c; fill(c, k); cfgSpline<T>(c, bt, ct, 0, false);
+	makeQ(k, 1, qt, q);
+	evalLine("CV_eval", K_NAT, bt, 0, ct, k, c, qt, q);
+}
+template<> void runNatural<float>(int, float, int) {}
+
+// lengths (needs GetDimension: not for float)
+template<class T, class C> void lenLine(int kind, int order, const Knots<T> &k, C &c) {
+	header("CV_len", kind, 0, order, 0.0f, k);
+	float lo = k.t[0], hi = k.t[k.n - 1], span = hi - lo;
+	float total = c.GetLengthBetweenKnots(0, k.n - 1);
+	float lt[3] = { lo + span * 0.35f, lo + span * 0.8f, hi };
+	printf(" |");
+	pf(total);
+	for (int i = 0; i < 3; i++) { pf(c.GetLengthForTime(lt[i])); }
+	float ls[4] = { total * 0.25f, total * 0.6f, total * 1.5f, -1.0f };
+	for (int i = 0; i < 4; i++) { pf(c.GetTimeForLength(ls[i], 0.01f)); }
+	pf(c.GetTimeForLength(total * 0.4f));
+	printf("\n");
+}
+template<class T> void runLen(int kind, int order, int n) {
+	Knots<T> k; gen(k, n);
+	switch (kind) {
+	case K_BEZ: { idCurve_Bezier<T> c; fill(c, k); lenLine(kind, 0, k, c); break; }
+	case K_QBEZ: { idCurve_QuadraticBezier<T> c; fill(c, k); lenLine(kind, 0, k, c); break; }
+	case K_CBEZ: { idCurve_CubicBezier<T> c; fill(c, k); lenLine(kind, 0, k, c); break; }
+	case K_CR: { idCurve_CatmullRomSpline<T> c; fill(c, k); lenLine(kind, 0, k, c); break; }
+	case K_UBS: { idCurve_UniformCubicBSpline<T> c; fill(c, k); lenLine(kind, 4, k, c); break; }
+	case K_NUBS: { idCurve_NonUniformBSpline<T> c; fill(c, k); c.SetOrder(order); lenLine(kind, order, k, c); break; }
+	case K_BS: { idCurve_BSpline<T> c; fill(c, k); c.SetOrder(order); lenLine(kind, order, k, c); break; }
+	case K_NURBS: { idCurve_NURBS<T> c; fill(c, k); c.SetOrder(order); lenLine(kind, order, k, c); break; }
+	}
+}
+template<> void runLen<float>(int, int, int) {}
+
+// SetConstantSpeed
+template<class T, class C> void constLine(int kind, int order, const Knots<T> &k, C &c, float total) {
+	header("CV_const", kind, 0, order, 0.0f, k);
+	pf(total);
+	printf(" |");
+	c.SetConstantSpeed(total);
+	for (int i = 0; i < k.n; i++) pf(c.GetTime(i));
+	pf(c.GetLengthBetweenKnots(0, k.n - 1));
+	for (int i = 0; i < k.n - 1; i++) pf(c.GetLengthBetweenKnots(i, i + 1));
+	printf("\n");
+}
+template<class T> void runConst(int kind, int n, float total) {
+	Knots<T> k; gen(k, n);
+	switch (kind) {
+	case K_CR: { idCurve_CatmullRomSpline<T> c; fill(c, k); constLine(kind, 0, k, c, total); break; }
+	case K_UBS: { idCurve_UniformCubicBSpline<T> c; fill(c, k); constLine(kind, 4, k, c, total); break; }
+	case K_NUBS: { idCurve_NonUniformBSpline<T> c; fill(c, k); constLine(kind, 4, k, c, total); break; }
+	case K_BEZ: { idCurve_Bezier<T> c; fill(c, k); constLine(kind, 0, k, c, total); break; }
+	}
+}
+template<> void runConst<float>(int, int, float) {}
+
+// editing: AddValue, RemoveIndex, Translate, ShiftTime, MakeUniform, IsDone, SetValue, Clear
+template<class T, class C> void editLine(int kind, const Knots<T> &k, C &c, float tx, const T &vx, const T &vt, float dt, float total) {
+	header("CV_edit", kind, 0, 0, 0.0f, k);
+	pf(tx); putv(vx); putv(vt); pf(dt); pf(total);
+	printf(" |");
+	int i1 = c.AddValue(tx, vx);
+	printf(" %d %d", i1, c.GetNumValues());
+	for (int i = 0; i < c.GetNumValues(); i++) { pf(c.GetTime(i)); putv(c.GetValue(i)); }
+	c.RemoveIndex(1);
+	printf(" %d", c.GetNumValues());
+	for (int i = 0; i < c.GetNumValues(); i++) pf(c.GetTime(i));
+	c.Translate(vt);
+	putv(c.GetValue(0)); putv(c.GetValue(c.GetNumValues() - 1));
+	c.ShiftTime(dt);
+	pf(c.GetTime(0)); pf(c.GetTime(c.GetNumValues() - 1));
+	c.MakeUniform(total);
+	for (int i = 0; i < c.GetNumValues(); i++) pf(c.GetTime(i));
+	printf(" %d %d %d", c.IsDone(total * 0.5f) ? 1 : 0, c.IsDone(total) ? 1 : 0, c.IsDone(total * 2.0f) ? 1 : 0);
+	putv(c.GetCurrentValue(total * 0.5f));
+	putv(c.GetCurrentFirstDerivative(total * 0.5f));
+	c.SetValue(0, vx);
+	putv(c.GetValue(0));
+	c.Clear();
+	printf(" %d", c.GetNumValues());
+	int a = c.AddValue(1.0f, vx);
+	int b = c.AddValue(0.5f, vt);
+	int d = c.AddValue(0.75f, vx);
+	printf(" %d %d %d %d", a, b, d, c.GetNumValues());
+	for (int i = 0; i < c.GetNumValues(); i++) pf(c.GetTime(i));
+	printf("\n");
+}
+template<class T> void runEdit(int kind) {
+	Knots<T> k; gen(k, 5);
+	T vx = randv<T>(5.0f), vt = randv<T>(2.0f);
+	float tx = 0.5f * (k.t[1] + k.t[2]);
+	float dt = nf(1.0f);
+	float total = 2.0f + uf() * 3.0f;
+	switch (kind) {
+	case K_BASE: { idCurve<T> c; fill(c, k); editLine(kind, k, c, tx, vx, vt, dt, total); break; }
+	case K_CR: { idCurve_CatmullRomSpline<T> c; fill(c, k); editLine(kind, k, c, tx, vx, vt, dt, total); break; }
+	case K_NURBS: { idCurve_NURBS<T> c; fill(c, k); editLine(kind, k, c, tx, vx, vt, dt, total); break; }
+	case K_KB: { idCurve_KochanekBartelsSpline<T> c; fill(c, k); editLine(kind, k, c, tx, vx, vt, dt, total); break; }
+	}
+}
+
+// ---------------------------------------------------------------- ODE
+static void derive0(const float t, const void *, const float *s, float *d) { d[0] = -0.7f * s[0]; }
+static void derive1(const float t, const void *, const float *s, float *d) { d[0] = s[1]; d[1] = -4.0f * s[0] - 0.1f * s[1]; }
+static void derive2(const float t, const void *, const float *s, float *d) { d[0] = s[1] - 0.3f * s[0]; d[1] = 0.1f * t - s[0]; d[2] = 0.05f * s[0] * s[1] - s[2]; }
+static void derive3(const float t, const void *, const float *s, float *d) { d[0] = -50.0f * (s[0] - t); }
+static deriveFunction_t derives[4] = { derive0, derive1, derive2, derive3 };
+static int sysDim[4] = { 1, 2, 3, 1 };
+
+static void runOde(int method, int sys, int steps, float h, float t0, float maxErr) {
+	static const char *mn[] = { "euler", "mid", "rk4", "rk4a" };
+	int dim = sysDim[sys];
+	float state[3], ns[3];
+	for (int i = 0; i < dim; i++) state[i] = nf(2.0f);
+	idODE *ode = 0;
+	idODE_RK4Adaptive *ad = 0;
+	if (method == 0) ode = new idODE_Euler(dim, derives[sys], 0);
+	else if (method == 1) ode = new idODE_Midpoint(dim, derives[sys], 0);
+	else if (method == 2) ode = new idODE_RK4(dim, derives[sys], 0);
+	else { ad = new idODE_RK4Adaptive(dim, derives[sys], 0); ode = ad; ad->SetMaxError(maxErr); }
+	printf("ODE_%s %d %d", mn[method], sys, steps);
+	pf(h); pf(t0); pf(maxErr);
+	printf(" %d", dim);
+	for (int i = 0; i < dim; i++) pf(state[i]);
+	printf(" |");
+	float t = t0;
+	for (int s = 0; s < steps; s++) {
+		float t1 = t + h;
+		float r = ode->Evaluate(state, ns, t, t1);
+		pf(r);
+		for (int i = 0; i < dim; i++) { pf(ns[i]); state[i] = ns[i]; }
+		t = t + r;
+	}
+	printf("\n");
+	delete ode;
+}
+
+int main(int argc, char **argv) {
+	idMath::Init();
+	const char *mode = argc > 1 ? argv[1] : "all";
+	if (!strcmp(mode, "ode") || !strcmp(mode, "all")) {
+		st = 777;
+		static const float hs[3] = { 0.25f, 0.1f, 0.03f };
+		static const float hs3[3] = { 0.03f, 0.015f, 0.005f };
+		static const float errs[3] = { -1.0f, 0.001f, 0.05f };
+		for (int sys = 0; sys < 4; sys++)
+			for (int method = 0; method < 4; method++)
+				for (int v = 0; v < 3; v++) {
+					float h = sys == 3 ? hs3[v] : hs[v];
+					float t0 = uf();
+					runOde(method, sys, 10, h, t0, errs[v]);
+				}
+		// large steps for the adaptive solver, which has to shorten them
+		for (int sys = 0; sys < 4; sys++) {
+			runOde(3, sys, 8, 1.0f, 0.0f, 0.0001f);
+			runOde(3, sys, 8, 0.1f, 0.5f, 1e-5f);
+		}
+	}
+	if (!strcmp(mode, "curve") || !strcmp(mode, "all")) {
+		st = 4242;
+		// Bezier of any degree, quadratic, cubic
+		for (int n = 2; n <= 7; n++) { runEval<idVec3>(K_BEZ, 0, 0, 0.0f, n); runEval<float>(K_BEZ, 0, 0, 0.0f, n); }
+		runEval<idVec4>(K_BEZ, 0, 0, 0.0f, 5); runEval<idVec2>(K_BEZ, 0, 0, 0.0f, 4);
+		for (int v = 0; v < 2; v++) { runEval<idVec3>(K_QBEZ, 0, 0, 0.0f, 3); runEval<float>(K_QBEZ, 0, 0, 0.0f, 3); runEval<idVec4>(K_QBEZ, 0, 0, 0.0f, 3);
+			runEval<idVec3>(K_CBEZ, 0, 0, 0.0f, 4); runEval<float>(K_CBEZ, 0, 0, 0.0f, 4); runEval<idVec4>(K_CBEZ, 0, 0, 0.0f, 4); }
+		// the base curve
+		runEval<float>(K_BASE, 0, 0, 0.0f, 4); runEval<idVec3>(K_BASE, 0, 0, 0.0f, 6); runEval<idVec4>(K_BASE, 0, 0, 0.0f, 5);
+		// splines: boundary 0 free, 1 clamped, 2 closed
+		static const int freeN[3] = { 2, 4, 8 };
+		static const int closedN[2] = { 8, 9 };
+		static const int orders[5] = { 4, 3, 2, 5, 6 };
+		int counter = 0;
+		int kinds[] = { K_CR, K_KB, K_BS, K_UBS, K_NUBS, K_NURBS, K_NAT };
+		for (int ki = 0; ki < 6; ki++) {
+			int kind = kinds[ki];
+			for (int bt = 0; bt < 3; bt++) {
+				int cnt = bt == 2 ? 2 : 3;
+				for (int j = 0; j < cnt; j++) {
+					int n = bt == 2 ? closedN[j] : freeN[j];
+					if (kind == K_KB && n < 2) continue;
+					for (int rep = 0; rep < 2; rep++) {
+						int order = orders[counter % 5];
+						if (kind == K_BS) { order = 2 + (counter % 4); if (order > 5) order = 5; }
+						if (bt == 2 && order > 6) order = 6;
+						float ct = 0.5f + uf();
+						counter++;
+						// closed with a high order needs enough knots: n >= 8 is fine for order <= 6
+						int type = (rep == 0) ? 3 : ((counter + ki) % 3);   // 3: vec3 ; else float, vec2, vec4
+						if (kind == K_NAT && type == 0) type = 2;
+						if (type == 3) runEval<idVec3>(kind, bt, order, ct, n);
+						else if (type == 0) runEval<float>(kind, bt, order, ct, n);
+						else if (type == 1) runEval<idVec2>(kind, bt, order, ct, n);
+						else runEval<idVec4>(kind, bt, order, ct, n);
+						if (kind == K_NAT) {
+							// same data through the natural spline template (it cannot be done for float)
+						}
+					}
+				}
+			}
+		}
+		// natural splines have their own entry (a template of the eval switch is not possible for float)
+		for (int bt = 0; bt < 3; bt++) {
+			int cnt = bt == 2 ? 2 : 3;
+			for (int j = 0; j < cnt; j++) {
+				int n = bt == 2 ? closedN[j] : freeN[j];
+				float ct = 0.5f + uf();
+				runNatural<idVec3>(bt, ct, n);
+				runNatural<idVec4>(bt, ct, n);
+				runNatural<idVec2>(bt, ct, n);
+			}
+		}
+		// lengths
+		int lk[] = { K_BEZ, K_QBEZ, K_CBEZ, K_CR, K_UBS, K_NUBS, K_BS, K_NURBS };
+		for (int i = 0; i < 8; i++) {
+			int kind = lk[i];
+			int n = kind == K_QBEZ ? 3 : kind == K_CBEZ ? 4 : 5;
+			runLen<idVec3>(kind, 4, n);
+			int extra = (kind == K_QBEZ || kind == K_CBEZ) ? 0 : 1;
+			runLen<idVec4>(kind, 3, n + extra);
+			runLen<idVec2>(kind, 5, n + 2 * extra);
+		}
+		// constant speed
+		runConst<idVec3>(K_CR, 6, 3.0f); runConst<idVec3>(K_UBS, 5, 2.0f); runConst<idVec3>(K_NUBS, 7, 4.0f); runConst<idVec3>(K_BEZ, 4, 3.0f);
+		runConst<idVec2>(K_CR, 5, 2.5f);
+		// editing
+		runEdit<float>(K_BASE); runEdit<idVec3>(K_BASE); runEdit<idVec4>(K_BASE);
+		runEdit<idVec3>(K_CR); runEdit<idVec3>(K_NURBS); runEdit<idVec3>(K_KB); runEdit<float>(K_CR);
+	}
+	return 0;
+}

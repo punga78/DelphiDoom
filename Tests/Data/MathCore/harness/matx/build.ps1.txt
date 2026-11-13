@@ -1,0 +1,16 @@
+$d = 'C:\harness\matx'
+Set-Location "$d\idlib"
+New-Item -ItemType Directory -Force "$d\obj" | Out-Null
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$files = 'driver','Str','Heap','math\Math','math\Vector','math\Matrix','math\Angles','math\Quat','math\Rotation','math\Plane','math\Pluecker','math\Polynomial','math\Complex','math\Simd_Generic','math\Lcp'
+if ($args.Count -gt 0) { $files = $args }
+foreach ($f in $files) {
+  $o = "$d\obj\" + ($f -replace '\\','_') + '.o'
+  $out = & $B -c -w- -std=c++14 -I. "-o$o" "$f.cpp" 2>&1
+  Write-Host "== $f exit $LASTEXITCODE"
+  if ($LASTEXITCODE -ne 0) { $out | Select-String 'error' | Select-Object -First 8 | ForEach-Object { $_.Line } }
+}
+$all = Get-ChildItem "$d\obj\*.o" | ForEach-Object { $_.FullName }
+$out = & $B -o "$d\matx.exe" @all 2>&1
+Write-Host "== link exit $LASTEXITCODE"
+$out | Select-Object -First 20 | ForEach-Object { Write-Host $_ }
