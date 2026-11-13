@@ -1,0 +1,198 @@
+#include "precompiled.h"
+#include "math/Matrix.h"
+#include "math/Plane.h"
+#include <string>
+#include <math.h>
+
+typedef struct dominantTri_s dominantTri_t;
+typedef struct { int v1, v2, nextSilEdge; } silEdge_t;
+typedef int glIndex_t;
+#define VPCALL
+#define idSIMD_Generic idSIMDReal
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+void idCommon::Printf(const char *fmt, ...) {}
+void idCommon::Warning(const char *fmt, ...) {}
+void idCommon::DWarning(const char *fmt, ...) {}
+void idCommon::Error(const char *fmt, ...) { printf("ERROR %s\n", fmt); abort(); }
+void idCommon::FatalError(const char *fmt, ...) { abort(); }
+void *Mem_Alloc(const int size) { return calloc(1, size); }
+void *Mem_ClearedAlloc(const int size) { return calloc(1, size); }
+void Mem_Free(void *p) { free(p); }
+void BigRevBytes(void *bp, int elsize, int elcount) {}
+idFile *idFileSystem::OpenFileRead(const char *n) { return 0; }
+void idFileSystem::CloseFile(idFile *f) {}
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *ts) { return 0; }
+void idFileSystem::FreeFile(void *b) {}
+const char *idFileSystem::OSPathToRelativePath(const char *p) { return p; }
+static idSIMDStub theSimd; idSIMDStub *SIMDProcessor = &theSimd;
+
+struct { struct { int c_tangentIndexes; } pc; } tr;
+struct cvar { bool GetBool() const { return true; } } r_useSilRemap;
+
+typedef struct srfTriangles_s {
+	int numVerts; int numIndexes; idDrawVert *verts; int *indexes; int *silIndexes;
+	int numMirroredVerts; int *mirroredVerts; int numDupVerts; int *dupVerts;
+	int numSilEdges; silEdge_t *silEdges; dominantTri_t *dominantTris; idPlane *facePlanes;
+	bool tangentsCalculated; bool facePlanesCalculated; bool perfectHull; idVec3 bounds[2];
+} srfTriangles_t;
+
+template<class T> struct TAlloc { T *Alloc(int n) { return (T *)calloc(n + 1, sizeof(T)); } void Free(T *p) { free(p); } };
+static TAlloc<int> triSilIndexAllocator, triMirroredVertAllocator, triDupVertAllocator;
+static TAlloc<idDrawVert> triVertexAllocator;
+static TAlloc<dominantTri_t> triDominantTrisAllocator;
+static TAlloc<idPlane> triPlaneAllocator;
+static TAlloc<silEdge_t> triSilEdgeAllocator;
+void R_AllocStaticTriSurfVerts(srfTriangles_t *t, int n) { t->verts = (idDrawVert *)calloc(n + 1, sizeof(idDrawVert)); }
+void R_AllocStaticTriSurfIndexes(srfTriangles_t *t, int n) { t->indexes = (int *)calloc(n + 1, sizeof(int)); }
+void R_AllocStaticTriSurfPlanes(srfTriangles_t *t, int n) { t->facePlanes = (idPlane *)calloc(n + 1, sizeof(idPlane)); }
+void *R_ClearedStaticAlloc(int n) { return calloc(1, n); }
+void *R_StaticAlloc(int n) { return malloc(n); }
+void R_StaticFree(void *p) { free(p); }
+void R_RangeCheckIndexes(const srfTriangles_t *) {}
+void R_IdentifySilEdges(srfTriangles_t *, bool) {}
+
+typedef struct deformInfo_s {
+	int numSourceVerts; int numOutputVerts; int numMirroredVerts; int *mirroredVerts;
+	int numIndexes; glIndex_t *indexes; glIndex_t *silIndexes; int numDupVerts; int *dupVerts;
+	int numSilEdges; silEdge_t *silEdges; dominantTri_t *dominantTris;
+} deformInfo_t;
+
+class idSIMDReal { public:
+	void Memcpy(void *d, const void *s, int n) { memcpy(d, s, n); }
+	void MinMax(idVec3 &mn, idVec3 &mx, const idDrawVert *v, const int n) { for (int k = 0; k < 3; k++) { mn[k] = idMath::INFINITY; mx[k] = -idMath::INFINITY; } for (int i = 0; i < n; i++) for (int k = 0; k < 3; k++) { if (v[i].xyz[k] < mn[k]) mn[k] = v[i].xyz[k]; if (v[i].xyz[k] > mx[k]) mx[k] = v[i].xyz[k]; } }
+	void DeriveTriPlanes(idPlane *planes, const idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes);
+	void DeriveTangents(idPlane *planes, idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes);
+	void DeriveUnsmoothedTangents(idDrawVert *verts, const dominantTri_s *dominantTris, const int numVerts);
+	void NormalizeTangents(idDrawVert *verts, const int numVerts);
+};
+static idSIMDReal theReal;
+#define SIMDProcessor (&theReal)
+#define DERIVE_UNSMOOTHED_BITANGENT
+#include "simd.inc"
+#undef DERIVE_UNSMOOTHED_BITANGENT
+
+void R_DeriveTangents(srfTriangles_t *tri, bool allocFacePlanes = true);
+void R_DeriveUnsmoothedTangents(srfTriangles_t *tri);
+#define USE_INVA
+#define DERIVE_UNSMOOTHED_BITANGENT
+#include "part1.inc"
+#include "part2.inc"
+#include "part3.inc"
+#include "cubeface.inc"
+
+static void F(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
+static void I(int i) { printf(" %d", i); }
+
+struct Case { const char *name; int nv; float xyzst[64][5]; int ni; int idx[128]; };
+static Case cases[3];
+
+static void build() {
+	// quad strip with a mirrored texture on the right quad and a seam copy of vertex 0
+	Case &q = cases[0]; q.name = "mirror"; q.nv = 7;
+	float qv[7][5] = { {0,0,0,0,0}, {1,0,0,1,0}, {2,0,0,0,0}, {0,1,0,0,1}, {1,1,0,1,1}, {2,1,0,0,1}, {0,0,0,0.5f,0.25f} };
+	memcpy(q.xyzst, qv, sizeof(qv));
+	int qi[] = { 0,1,4, 0,4,3, 1,2,5, 1,5,4, 6,1,4, 1,6,0 }; q.ni = 18; memcpy(q.idx, qi, sizeof(qi));
+	// cube with 8 vertexes
+	Case &c = cases[1]; c.name = "cube"; c.nv = 8;
+	for (int i = 0; i < 8; i++) { c.xyzst[i][0] = (i & 1) ? 1.f : -1.f; c.xyzst[i][1] = (i & 2) ? 1.f : -1.f; c.xyzst[i][2] = (i & 4) ? 1.f : -1.f; c.xyzst[i][3] = (i & 1) ? 1.f : 0.f; c.xyzst[i][4] = (i & 2) ? 1.f : 0.f; }
+	int ci[] = { 0,2,1, 1,2,3,  4,5,6, 5,7,6,  0,1,4, 1,5,4,  2,6,3, 3,6,7,  0,4,2, 2,4,6,  1,3,5, 3,7,5 };
+	c.ni = 36; memcpy(c.idx, ci, sizeof(ci));
+	// 4x4 grid, wavy
+	Case &g = cases[2]; g.name = "grid"; g.nv = 16; g.ni = 0;
+	for (int j = 0; j < 4; j++) for (int i = 0; i < 4; i++) { float *v = g.xyzst[j * 4 + i]; v[0] = i * 1.5f; v[1] = j * 1.25f; v[2] = ((i * 7 + j * 3) % 5) * 0.3f; v[3] = i / 3.f; v[4] = j / 3.f; }
+	for (int j = 0; j < 3; j++) for (int i = 0; i < 3; i++) { int a = j * 4 + i, b = a + 1, d = a + 4, e = d + 1; int *p = g.idx + g.ni; p[0] = a; p[1] = b; p[2] = e; p[3] = a; p[4] = e; p[5] = d; g.ni += 6; }
+}
+
+static unsigned lcg = 12345u; static float rnd() { lcg = lcg * 1664525u + 1013904223u; return (float)((lcg >> 8) & 1023) * 0.0009765625f; } static void perturb() {
+	// distinct areas for the triangles of a vertex: the order of equal ones is not defined by qsort
+	for (int k = 0; k < 3; k++) for (int i = 0; i < cases[k].nv; i++) { float *v = cases[k].xyzst[i]; if (k == 0 && i == 6) { for (int c = 0; c < 3; c++) v[c] = cases[0].xyzst[0][c]; continue; } v[0] += rnd() * 0.4f; v[1] += rnd() * 0.4f; v[2] += rnd() * 0.4f; }
+}
+int main() { idMath::Init();
+	build(); perturb();
+	for (int k = 0; k < 3; k++) {
+		Case &cs = cases[k];
+		idDrawVert *src = (idDrawVert *)calloc(cs.nv + 1, sizeof(idDrawVert));
+		printf("%s in verts |", cs.name);
+		for (int i = 0; i < cs.nv; i++) { src[i].Clear(); src[i].xyz.Set(cs.xyzst[i][0], cs.xyzst[i][1], cs.xyzst[i][2]); src[i].st.Set(cs.xyzst[i][3], cs.xyzst[i][4]); F(src[i].xyz.x); F(src[i].xyz.y); F(src[i].xyz.z); F(src[i].st.x); F(src[i].st.y); }
+		printf("\n%s in idx |", cs.name); for (int i = 0; i < cs.ni; i++) I(cs.idx[i]); printf("\n");
+		for (int unsm = 0; unsm < 2; unsm++) {
+			deformInfo_t *d = R_BuildDeformInfo(cs.nv, src, cs.ni, cs.idx, unsm != 0);
+			printf("%s %d deform | %d %d %d %d\n", cs.name, unsm, d->numSourceVerts, d->numOutputVerts, d->numMirroredVerts, d->numDupVerts);
+			printf("%s %d mirrored |", cs.name, unsm); for (int i = 0; i < d->numMirroredVerts; i++) I(d->mirroredVerts[i]); printf("\n");
+			printf("%s %d dup |", cs.name, unsm); for (int i = 0; i < d->numDupVerts * 2; i++) I(d->dupVerts[i]); printf("\n");
+			printf("%s %d idx |", cs.name, unsm); for (int i = 0; i < d->numIndexes; i++) I(d->indexes[i]); printf("\n");
+			printf("%s %d sil |", cs.name, unsm); for (int i = 0; i < d->numIndexes; i++) I(d->silIndexes[i]); printf("\n");
+			if (d->dominantTris) { printf("%s %d dominant |", cs.name, unsm); for (int i = 0; i < d->numOutputVerts; i++) { I(d->dominantTris[i].v2); I(d->dominantTris[i].v3); F(d->dominantTris[i].normalizationScale[0]); F(d->dominantTris[i].normalizationScale[1]); F(d->dominantTris[i].normalizationScale[2]); } printf("\n"); }
+			srfTriangles_t tri; memset(&tri, 0, sizeof(tri));
+			tri.numVerts = d->numOutputVerts; R_AllocStaticTriSurfVerts(&tri, tri.numVerts);
+			for (int i = 0; i < d->numSourceVerts; i++) tri.verts[i] = src[i];
+			int base = d->numOutputVerts - d->numMirroredVerts;
+			for (int i = 0; i < d->numMirroredVerts; i++) tri.verts[base + i] = tri.verts[d->mirroredVerts[i]];
+			tri.numIndexes = d->numIndexes; tri.indexes = d->indexes; tri.silIndexes = d->silIndexes;
+			tri.numMirroredVerts = d->numMirroredVerts; tri.mirroredVerts = d->mirroredVerts;
+			tri.numDupVerts = d->numDupVerts; tri.dupVerts = d->dupVerts; tri.dominantTris = d->dominantTris;
+			R_DeriveTangents(&tri);
+			printf("%s %d tangents |", cs.name, unsm);
+			for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+			printf("\n");
+			if (!unsm) {
+				printf("%s planes |", cs.name); for (int i = 0; i < tri.numIndexes / 3; i++) { F(tri.facePlanes[i][0]); F(tri.facePlanes[i][1]); F(tri.facePlanes[i][2]); F(tri.facePlanes[i][3]); } printf("\n");
+				tri.facePlanes = 0; R_DeriveFacePlanes(&tri);
+				printf("%s faceplanes |", cs.name); for (int i = 0; i < tri.numIndexes / 3; i++) { F(tri.facePlanes[i][0]); F(tri.facePlanes[i][1]); F(tri.facePlanes[i][2]); F(tri.facePlanes[i][3]); } printf("\n");
+				for (int i = 0; i < tri.numVerts; i++) { tri.verts[i].tangents[0].Zero(); tri.verts[i].tangents[1].Zero(); }
+				R_DeriveTangentsWithoutNormals(&tri);
+				printf("%s nonormals |", cs.name);
+				for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+				printf("\n");
+			}
+		}
+		for (int mode = 0; mode < 4; mode++) {
+			bool createNormals = (mode & 1) == 0, unsm = (mode & 2) != 0;
+			srfTriangles_t tri; memset(&tri, 0, sizeof(tri));
+			tri.numVerts = cs.nv; R_AllocStaticTriSurfVerts(&tri, tri.numVerts);
+			for (int i = 0; i < cs.nv; i++) tri.verts[i] = src[i];
+			tri.numIndexes = cs.ni; R_AllocStaticTriSurfIndexes(&tri, tri.numIndexes);
+			for (int i = 0; i < cs.ni; i++) tri.indexes[i] = cs.idx[i];
+			R_CleanupTriangles(&tri, createNormals, true, unsm);
+			printf("%s cleanup %d %d | %d %d %d %d\n", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0, tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
+			printf("%s cleanup %d %d idx |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
+			printf("%s cleanup %d %d bounds |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
+			printf("%s cleanup %d %d verts |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0);
+			for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+			printf("\n");
+		}
+	}
+	{
+		// MakeDefaultModel: the cube of 8 units, then FinishSurfaces: R_CleanupTriangles with generated normals
+		srfTriangles_t tri; memset(&tri, 0, sizeof(tri));
+		R_AllocStaticTriSurfVerts(&tri, 24); R_AllocStaticTriSurfIndexes(&tri, 36);
+		AddCubeFace(&tri, idVec3(-1, 1, 1), idVec3(1, 1, 1), idVec3(1, -1, 1), idVec3(-1, -1, 1));
+		AddCubeFace(&tri, idVec3(-1, 1, -1), idVec3(-1, -1, -1), idVec3(1, -1, -1), idVec3(1, 1, -1));
+		AddCubeFace(&tri, idVec3(1, -1, 1), idVec3(1, 1, 1), idVec3(1, 1, -1), idVec3(1, -1, -1));
+		AddCubeFace(&tri, idVec3(-1, -1, 1), idVec3(-1, -1, -1), idVec3(-1, 1, -1), idVec3(-1, 1, 1));
+		AddCubeFace(&tri, idVec3(-1, -1, 1), idVec3(1, -1, 1), idVec3(1, -1, -1), idVec3(-1, -1, -1));
+		AddCubeFace(&tri, idVec3(-1, 1, 1), idVec3(-1, 1, -1), idVec3(1, 1, -1), idVec3(1, 1, 1));
+		R_CleanupTriangles(&tri, true, true, false);
+		printf("default | %d %d %d %d\n", tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
+		printf("default idx |"); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
+		printf("default bounds |"); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
+		printf("default verts |");
+		for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
+		printf("\n");
+	}
+	return 0;
+}
+
+
+
+
+
+
+

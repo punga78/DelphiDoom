@@ -1,0 +1,161 @@
+static int *R_CreateSilRemap( const srfTriangles_t *tri ) {
+	int		c_removed, c_unique;
+	int		*remap;
+	int		i, j, hashKey;
+	const idDrawVert *v1, *v2;
+
+	remap = (int *)R_ClearedStaticAlloc( tri->numVerts * sizeof( remap[0] ) );
+
+	if ( !r_useSilRemap.GetBool() ) {
+		for ( i = 0 ; i < tri->numVerts ; i++ ) {
+			remap[i] = i;
+		}
+		return remap;
+	}
+
+	idHashIndex		hash( 1024, tri->numVerts );
+
+	c_removed = 0;
+	c_unique = 0;
+	for ( i = 0 ; i < tri->numVerts ; i++ ) {
+		v1 = &tri->verts[i];
+
+		// see if there is an earlier vert that it can map to
+		hashKey = hash.GenerateKey( v1->xyz );
+		for ( j = hash.First( hashKey ); j >= 0; j = hash.Next( j ) ) {
+			v2 = &tri->verts[j];
+			if ( v2->xyz[0] == v1->xyz[0]
+				&& v2->xyz[1] == v1->xyz[1]
+				&& v2->xyz[2] == v1->xyz[2] ) {
+				c_removed++;
+				remap[i] = j;
+				break;
+			}
+		}
+		if ( j < 0 ) {
+			c_unique++;
+			remap[i] = i;
+			hash.Add( hashKey, i );
+		}
+	}
+
+	return remap;
+}
+
+/*
+=================
+R_CreateSilIndexes
+
+Uniquing vertexes only on xyz before creating sil edges reduces
+the edge count by about 20% on Q3 models
+=================
+*/
+void R_CreateSilIndexes( srfTriangles_t *tri ) {
+	int		i;
+	int		*remap;
+
+	if ( tri->silIndexes ) {
+		triSilIndexAllocator.Free( tri->silIndexes );
+		tri->silIndexes = NULL;
+	}
+
+	remap = R_CreateSilRemap( tri );
+
+	// remap indexes to the first one
+	tri->silIndexes = triSilIndexAllocator.Alloc( tri->numIndexes );
+	for ( i = 0; i < tri->numIndexes; i++ ) {
+		tri->silIndexes[i] = remap[tri->indexes[i]];
+	}
+
+	R_StaticFree( remap );
+}
+
+/*
+=====================
+R_CreateDupVerts
+=====================
+*/
+void R_CreateDupVerts( srfTriangles_t *tri ) {
+	int i;
+
+	int *remap = (int *) _alloca16( tri->numVerts * sizeof( remap[0] ) );
+
+	// initialize vertex remap in case there are unused verts
+	for ( i = 0; i < tri->numVerts; i++ ) {
+		remap[i] = i;
+	}
+
+	// set the remap based on how the silhouette indexes are remapped
+	for ( i = 0; i < tri->numIndexes; i++ ) {
+		remap[tri->indexes[i]] = tri->silIndexes[i];
+	}
+
+	// create duplicate vertex index based on the vertex remap
+	int * tempDupVerts = (int *) _alloca16( tri->numVerts * 2 * sizeof( tempDupVerts[0] ) );
+	tri->numDupVerts = 0;
+	for ( i = 0; i < tri->numVerts; i++ ) {
+		if ( remap[i] != i ) {
+			tempDupVerts[tri->numDupVerts*2+0] = i;
+			tempDupVerts[tri->numDupVerts*2+1] = remap[i];
+			tri->numDupVerts++;
+		}
+	}
+
+	tri->dupVerts = triDupVertAllocator.Alloc( tri->numDupVerts * 2 );
+	memcpy( tri->dupVerts, tempDupVerts, tri->numDupVerts * 2 * sizeof( tri->dupVerts[0] ) );
+}
+void R_DeriveFacePlanes( srfTriangles_t *tri ) {
+	idPlane *	planes;
+
+	if ( !tri->facePlanes ) {
+		R_AllocStaticTriSurfPlanes( tri, tri->numIndexes );
+	}
+	planes = tri->facePlanes;
+
+#if 1
+
+	SIMDProcessor->DeriveTriPlanes( planes, tri->verts, tri->numVerts, tri->indexes, tri->numIndexes );
+
+#else
+
+	for ( int i = 0; i < tri->numIndexes; i+= 3, planes++ ) {
+		int		i1, i2, i3;
+		idVec3	d1, d2, normal;
+		idVec3	*v1, *v2, *v3;
+
+		i1 = tri->indexes[i + 0];
+		i2 = tri->indexes[i + 1];
+		i3 = tri->indexes[i + 2];
+
+		v1 = &tri->verts[i1].xyz;
+		v2 = &tri->verts[i2].xyz;
+		v3 = &tri->verts[i3].xyz;
+
+		d1[0] = v2->x - v1->x;
+		d1[1] = v2->y - v1->y;
+		d1[2] = v2->z - v1->z;
+
+		d2[0] = v3->x - v1->x;
+		d2[1] = v3->y - v1->y;
+		d2[2] = v3->z - v1->z;
+
+		normal[0] = d2.y * d1.z - d2.z * d1.y;
+		normal[1] = d2.z * d1.x - d2.x * d1.z;
+		normal[2] = d2.x * d1.y - d2.y * d1.x;
+
+		float sqrLength, invLength;
+
+		sqrLength = normal.x * normal.x + normal.y * normal.y + normal.z * normal.z;
+		invLength = idMath::RSqrt( sqrLength );
+
+		(*planes)[0] = normal[0] * invLength;
+		(*planes)[1] = normal[1] * invLength;
+		(*planes)[2] = normal[2] * invLength;
+
+		planes->FitThroughPoint( *v1 );
+	}
+
+#endif
+
+	tri->facePlanesCalculated = true;
+}

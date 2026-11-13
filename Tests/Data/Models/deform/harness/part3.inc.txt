@@ -1,0 +1,88 @@
+void R_BoundTriSurf( srfTriangles_t *tri ) {
+	SIMDProcessor->MinMax( tri->bounds[0], tri->bounds[1], tri->verts, tri->numVerts );
+}
+void R_RemoveDegenerateTriangles( srfTriangles_t *tri ) {
+	int		c_removed;
+	int		i;
+	int		a, b, c;
+
+	// check for completely degenerate triangles
+	c_removed = 0;
+	for ( i = 0; i < tri->numIndexes; i += 3 ) {
+		a = tri->silIndexes[i];
+		b = tri->silIndexes[i+1];
+		c = tri->silIndexes[i+2];
+		if ( a == b || a == c || b == c ) {
+			c_removed++;
+			memmove( tri->indexes + i, tri->indexes + i + 3, ( tri->numIndexes - i - 3 ) * sizeof( tri->indexes[0] ) );
+			if ( tri->silIndexes ) {
+				memmove( tri->silIndexes + i, tri->silIndexes + i + 3, ( tri->numIndexes - i - 3 ) * sizeof( tri->silIndexes[0] ) );
+			}
+			tri->numIndexes -= 3;
+			i -= 3;
+		}
+	}
+
+	// this doesn't free the memory used by the unused verts
+
+	if ( c_removed ) {
+		common->Printf( "removed %i degenerate triangles\n", c_removed );
+	}
+}
+void R_TestDegenerateTextureSpace( srfTriangles_t *tri ) {
+	int		c_degenerate;
+	int		i;
+
+	// check for triangles with a degenerate texture space
+	c_degenerate = 0;
+	for ( i = 0; i < tri->numIndexes; i += 3 ) {
+		const idDrawVert &a = tri->verts[tri->indexes[i+0]];
+		const idDrawVert &b = tri->verts[tri->indexes[i+1]];
+		const idDrawVert &c = tri->verts[tri->indexes[i+2]];
+
+		if ( a.st == b.st || b.st == c.st || c.st == a.st ) {
+			c_degenerate++;
+		}
+	}
+
+	if ( c_degenerate ) {
+//		common->Printf( "%d triangles with a degenerate texture space\n", c_degenerate );
+	}
+}
+void R_CleanupTriangles( srfTriangles_t *tri, bool createNormals, bool identifySilEdges, bool useUnsmoothedTangents ) {
+	R_RangeCheckIndexes( tri );
+
+	R_CreateSilIndexes( tri );
+
+//	R_RemoveDuplicatedTriangles( tri );	// this may remove valid overlapped transparent triangles
+
+	R_RemoveDegenerateTriangles( tri );
+
+	R_TestDegenerateTextureSpace( tri );
+
+//	R_RemoveUnusedVerts( tri );
+
+	if ( identifySilEdges ) {
+		R_IdentifySilEdges( tri, true );	// assume it is non-deformable, and omit coplanar edges
+	}
+
+	// bust vertexes that share a mirrored edge into separate vertexes
+	R_DuplicateMirroredVertexes( tri );
+
+	// optimize the index order (not working?)
+//	R_OrderIndexes( tri->numIndexes, tri->indexes );
+
+	R_CreateDupVerts( tri );
+
+	R_BoundTriSurf( tri );
+
+	if ( useUnsmoothedTangents ) {
+		R_BuildDominantTris( tri );
+		R_DeriveUnsmoothedTangents( tri );
+	} else if ( !createNormals ) {
+		R_DeriveFacePlanes( tri );
+		R_DeriveTangentsWithoutNormals( tri );
+	} else {
+		R_DeriveTangents( tri );
+	}
+}

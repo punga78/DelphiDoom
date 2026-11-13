@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: 3D models library - static models: the factory                  }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
@@ -28,11 +28,15 @@ type
     class function CreateAseLoader(const AOptions: TStaticLoadOptions;
       const AResolver: TStaticPathResolver = nil): IStaticModelLoader; overload; static;
     class function CreateAseLoader: IStaticModelLoader; overload; static;
+    /// <summary>The loader of Maya ASCII files (.ma); the resolver names the materials</summary>
+    class function CreateMaLoader(const AOptions: TStaticLoadOptions;
+      const AResolver: TStaticPathResolver = nil): IStaticModelLoader; overload; static;
+    class function CreateMaLoader: IStaticModelLoader; overload; static;
     /// <summary>The reader of Quake 3 models (.md3): frames, tags and the instances between frames</summary>
     class function CreateMd3Reader: IMd3Reader; static;
     /// <summary>The loader of .md3 files as static models (the first frame)</summary>
     class function CreateMd3Loader: IStaticModelLoader; static;
-    /// <summary>The loader for a file name by its extension (.lwo, .ase, .md3); nil for the others</summary>
+    /// <summary>The loader for a file name by its extension (.lwo, .ase, .ma, .md3); nil for the others</summary>
     class function CreateLoaderFor(const AFileName: string; const AOptions: TStaticLoadOptions): IStaticModelLoader; static;
   end;
 
@@ -41,6 +45,7 @@ implementation
 uses
   DelphiDoom.Models.Static.Lwo.Loader,
   DelphiDoom.Models.Static.Ase.Loader,
+  DelphiDoom.Models.Static.Ma.Loader,
   DelphiDoom.Models.Static.Md3.Loader;
 
 { TStaticModelFactory }
@@ -66,6 +71,17 @@ begin
   Result := CreateAseLoader(TStaticLoadOptions.Default);
 end;
 
+class function TStaticModelFactory.CreateMaLoader(const AOptions: TStaticLoadOptions;
+  const AResolver: TStaticPathResolver): IStaticModelLoader;
+begin
+  Result := TMaModelLoader.Create(AOptions, AResolver);
+end;
+
+class function TStaticModelFactory.CreateMaLoader: IStaticModelLoader;
+begin
+  Result := CreateMaLoader(TStaticLoadOptions.Default);
+end;
+
 class function TStaticModelFactory.CreateMd3Reader: IMd3Reader;
 begin
   Result := TMd3ModelLoader.Create;
@@ -86,6 +102,8 @@ begin
     Result := CreateLwoLoader(AOptions)
   else if SameText(LExtension, '.ase') then
     Result := CreateAseLoader(AOptions)
+  else if SameText(LExtension, '.ma') then
+    Result := CreateMaLoader(AOptions)
   else if SameText(LExtension, '.md3') then
     Result := CreateMd3Loader
   else

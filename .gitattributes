@@ -31,3 +31,5 @@ Tests/Data/Models/static/** -text
 Tests/Data/Aas/** -text
 Tests/Data/Decl/q3shader/** -text
 Tests/Data/Models/q3player/** -text
+Tests/Data/Models/deform/** -text
+Tests/Data/Models/ma/** -text
