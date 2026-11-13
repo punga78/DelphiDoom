@@ -26,6 +26,20 @@ uses
   DelphiDoom.War.Catalog.Data in '..\Libs\War\DelphiDoom.War.Catalog.Data.pas',
   DelphiDoom.War.Catalog in '..\Libs\War\DelphiDoom.War.Catalog.pas',
   DelphiDoom.War.Factory in '..\Libs\War\DelphiDoom.War.Factory.pas',
+  DelphiDoom.War.Graphics.Types in '..\Libs\War\DelphiDoom.War.Graphics.Types.pas',
+  DelphiDoom.War.Graphics.Intf in '..\Libs\War\DelphiDoom.War.Graphics.Intf.pas',
+  DelphiDoom.War.Graphics.PaletteDecoder in '..\Libs\War\DelphiDoom.War.Graphics.PaletteDecoder.pas',
+  DelphiDoom.War.Graphics.PaletteComposer in '..\Libs\War\DelphiDoom.War.Graphics.PaletteComposer.pas',
+  DelphiDoom.War.Graphics.ColorLookup in '..\Libs\War\DelphiDoom.War.Graphics.ColorLookup.pas',
+  DelphiDoom.War.Graphics.ImageDecoder in '..\Libs\War\DelphiDoom.War.Graphics.ImageDecoder.pas',
+  DelphiDoom.War.Graphics.SpriteDecoder in '..\Libs\War\DelphiDoom.War.Graphics.SpriteDecoder.pas',
+  DelphiDoom.War.Graphics.CursorDecoder in '..\Libs\War\DelphiDoom.War.Graphics.CursorDecoder.pas',
+  DelphiDoom.War.Graphics.TilesetDecoder in '..\Libs\War\DelphiDoom.War.Graphics.TilesetDecoder.pas',
+  DelphiDoom.War.Graphics in '..\Libs\War\DelphiDoom.War.Graphics.pas',
+  DelphiDoom.War.Font.Types in '..\Libs\War\DelphiDoom.War.Font.Types.pas',
+  DelphiDoom.War.Font.Intf in '..\Libs\War\DelphiDoom.War.Font.Intf.pas',
+  DelphiDoom.War.Font.Data in '..\Libs\War\DelphiDoom.War.Font.Data.pas',
+  DelphiDoom.War.Font.Metrics in '..\Libs\War\DelphiDoom.War.Font.Metrics.pas',
   DelphiDoom.Tests.War.Builders in 'Source\DelphiDoom.Tests.War.Builders.pas',
   DelphiDoom.Tests.War.RealData in 'Source\DelphiDoom.Tests.War.RealData.pas',
   DelphiDoom.Tests.War.Types in 'Source\DelphiDoom.Tests.War.Types.pas',
@@ -33,7 +47,13 @@ uses
   DelphiDoom.Tests.War.Archive in 'Source\DelphiDoom.Tests.War.Archive.pas',
   DelphiDoom.Tests.War.Catalog in 'Source\DelphiDoom.Tests.War.Catalog.pas',
   DelphiDoom.Tests.War.StreamSource in 'Source\DelphiDoom.Tests.War.StreamSource.pas',
-  DelphiDoom.Tests.War.Parity in 'Source\DelphiDoom.Tests.War.Parity.pas';
+  DelphiDoom.Tests.War.Parity in 'Source\DelphiDoom.Tests.War.Parity.pas',
+  DelphiDoom.Tests.War.PngWriter in 'Source\DelphiDoom.Tests.War.PngWriter.pas',
+  DelphiDoom.Tests.War.Palette in 'Source\DelphiDoom.Tests.War.Palette.pas',
+  DelphiDoom.Tests.War.Pixels in 'Source\DelphiDoom.Tests.War.Pixels.pas',
+  DelphiDoom.Tests.War.Graphics in 'Source\DelphiDoom.Tests.War.Graphics.pas',
+  DelphiDoom.Tests.War.Font in 'Source\DelphiDoom.Tests.War.Font.pas',
+  DelphiDoom.Tests.War.GraphicsParity in 'Source\DelphiDoom.Tests.War.GraphicsParity.pas';
 
 var
   Runner: ITestRunner;
