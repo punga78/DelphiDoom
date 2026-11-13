@@ -29,11 +29,13 @@ type
   ///   from the first element: the folders added last (fs_game over fs_game_base over base; save path
   ///   over dev path over base path over cd path) come first, and after each folder its paks from the
   ///   last in alphabetical order (pak1.pk4 before pak0.pk4). The disk and the loader of the paks are
-  ///   injected. Not ported: writing files (OpenFileWrite, WriteFile, fs_copyfiles), the pure server
-  ///   (checksums, restart, serverPaks), the parsing of addon.conf (an addon pak is only recognised),
-  ///   binary.conf, the journal, ListMods, the keys, FindDLL and the download of paks.
+  ///   injected. Writing is <c>TGameFileWriter</c>, the pure server <c>TGamePureServer</c>, ListMods
+  ///   <c>TGameModLister</c> (they read the game folder and the paks through <c>IGameFileSystemInspector</c>, which
+  ///   this class implements); an addon pak is read (<c>TGameAddonParser</c>) and the addons asked for by
+  ///   checksum, and the paks they depend on, stay in the search list. Not ported: fs_copyfiles, the restart
+  ///   in pure mode (restartChecksums), binary.conf, the journal, the keys, FindDLL and the download of paks.
   /// </summary>
-  TGameFileSystem = class(TInterfacedObject, IGameFileSystem)
+  TGameFileSystem = class(TInterfacedObject, IGameFileSystem, IGameFileSystemInspector)
   strict private
     type
       TSearchEntry = record
@@ -49,10 +51,12 @@ type
     FSearch: TList<TSearchEntry>;
     FAddons: TList<IGamePack>;
     FInitialized: Boolean;
+    FGameFolder: string;
     procedure EnsureInitialized;
     procedure AddGameDirectory(const APath, ADirectory: string);
     procedure SetupGameDirectories(const AGameName: string);
     procedure FilterAddons;
+    procedure FollowAddonDependencies(const APack: IGamePack; ASearched: TList<IGamePack>);
     function GetFileList(const ARelativePath: string; const AExtensions: TArray<string>; AList: TList<string>;
       ASeen: TDictionary<string, Integer>; AFullRelativePath: Boolean; const AGameDir: string): Integer;
     function GetFileListTree(const ARelativePath: string; const AExtensions: TArray<string>; AList: TList<string>;
@@ -78,6 +82,9 @@ type
     function SearchPaths: TArray<TGameSearchPath>;
     function PackChecksums: TArray<Cardinal>;
     function AddonPackFileNames: TArray<string>;
+    function GameFolder: string;
+    function Packs: TArray<IGamePack>;
+    function AddonPacks: TArray<IGamePack>;
   end;
 
 implementation
@@ -126,13 +133,17 @@ begin
   for LEntry in FSearch do
     if LEntry.IsDirectory and (LEntry.Path = APath) and (LEntry.GameDir = ADirectory) then
       Exit;
+  FGameFolder := ADirectory;
   LEntry := Default(TSearchEntry);
   LEntry.IsDirectory := True;
   LEntry.Path := APath;
   LEntry.GameDir := ADirectory;
   FSearch.Insert(0, LEntry);
   LPakDirectory := ExcludeTrailingPathDelimiter(TGameFsPaths.BuildOSPath(APath, ADirectory, ''));
-  LPakFiles := FDisk.ListFiles(LPakDirectory, GAMEFS_PAK_EXTENSION);
+  if FSettings.PakExtension <> '' then
+    LPakFiles := FDisk.ListFiles(LPakDirectory, FSettings.PakExtension)
+  else
+    LPakFiles := FDisk.ListFiles(LPakDirectory, GAMEFS_PAK_EXTENSION);
   // later names override earlier ones: pak1.pk4 over pak0.pk4 (the order ignores the case, as idStrList::Sort)
   TArray.Sort<string>(LPakFiles, TComparer<string>.Construct(
     function(const ALeft, ARight: string): Integer
@@ -163,25 +174,69 @@ begin
     AddGameDirectory(FSettings.SavePath, AGameName);
 end;
 
+procedure TGameFileSystem.FollowAddonDependencies(const APack: IGamePack; ASearched: TList<IGamePack>);
+var
+  LChecksum: Cardinal;
+  LEntry: TSearchEntry;
+  LDependency: IGamePack;
+begin
+  if not APack.HasAddonInfo then
+    Exit;
+  for LChecksum in APack.AddonInfo.Depends do
+  begin
+    LDependency := nil;
+    for LEntry in FSearch do
+      if Assigned(LEntry.Pack) and (LEntry.Pack.Checksum = LChecksum) then
+      begin
+        LDependency := LEntry.Pack;
+        Break;
+      end;
+    // a checksum that no pak has is "depends on unknown pak" in the original, a message only
+    if Assigned(LDependency) and not ASearched.Contains(LDependency) then
+    begin
+      ASearched.Add(LDependency);
+      FollowAddonDependencies(LDependency, ASearched);
+    end;
+  end;
+end;
+
 procedure TGameFileSystem.FilterAddons;
 var
   LIndex: Integer;
   LPack: IGamePack;
+  LChecksum: Cardinal;
+  LSearched: TList<IGamePack>;
 begin
   if FSettings.SearchAddons then
     Exit;
-  // no addon was asked for: they leave the search list for the list of addons (the last one out comes first)
-  LIndex := 0;
-  while LIndex < FSearch.Count do
-  begin
-    LPack := FSearch[LIndex].Pack;
-    if Assigned(LPack) and LPack.IsAddon then
+  LSearched := TList<IGamePack>.Create;
+  try
+    // the addons that were asked for (and the paks they depend on) stay in the search list
+    for LChecksum in FSettings.AddonChecksums do
+      for LIndex := 0 to FSearch.Count - 1 do
+      begin
+        LPack := FSearch[LIndex].Pack;
+        if Assigned(LPack) and LPack.IsAddon and (LPack.Checksum = LChecksum) and not LSearched.Contains(LPack) then
+        begin
+          LSearched.Add(LPack);
+          FollowAddonDependencies(LPack, LSearched);
+        end;
+      end;
+    // the others leave the search list for the list of addons (the last one out comes first)
+    LIndex := 0;
+    while LIndex < FSearch.Count do
     begin
-      FSearch.Delete(LIndex);
-      FAddons.Insert(0, LPack);
-    end
-    else
-      Inc(LIndex);
+      LPack := FSearch[LIndex].Pack;
+      if Assigned(LPack) and LPack.IsAddon and not LSearched.Contains(LPack) then
+      begin
+        FSearch.Delete(LIndex);
+        FAddons.Insert(0, LPack);
+      end
+      else
+        Inc(LIndex);
+    end;
+  finally
+    LSearched.Free;
   end;
 end;
 
@@ -189,6 +244,7 @@ procedure TGameFileSystem.Startup;
 begin
   FSearch.Clear;
   FAddons.Clear;
+  FGameFolder := '';
   SetupGameDirectories(GAMEFS_BASE_GAMEDIR);
   if (FSettings.GameBase <> '') and not TGameFsPaths.SameIgnoringCase(FSettings.GameBase, GAMEFS_BASE_GAMEDIR) then
     SetupGameDirectories(FSettings.GameBase);
@@ -203,6 +259,7 @@ procedure TGameFileSystem.Shutdown;
 begin
   FSearch.Clear;
   FAddons.Clear;
+  FGameFolder := '';
   FInitialized := False;
 end;
 
@@ -525,6 +582,31 @@ begin
   SetLength(Result, FAddons.Count);
   for LIndex := 0 to FAddons.Count - 1 do
     Result[LIndex] := FAddons[LIndex].FileName;
+end;
+
+function TGameFileSystem.GameFolder: string;
+begin
+  Result := FGameFolder;
+end;
+
+function TGameFileSystem.Packs: TArray<IGamePack>;
+var
+  LEntry: TSearchEntry;
+begin
+  EnsureInitialized;
+  Result := nil;
+  for LEntry in FSearch do
+    if Assigned(LEntry.Pack) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)] := LEntry.Pack;
+    end;
+end;
+
+function TGameFileSystem.AddonPacks: TArray<IGamePack>;
+begin
+  EnsureInitialized;
+  Result := FAddons.ToArray;
 end;
 
 end.

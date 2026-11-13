@@ -96,3 +96,22 @@ if Supports(Manager.FindType(DECL_SOUND, 'snd/door'), IDeclSound, LSound) then
   for LIndex := 0 to LSound.GetNumSounds - 1 do
     LName := LSound.GetSound(LIndex);          // prima i leadin, poi i campioni
 ```
+
+## File system, comandi di console e Save dei materiali (seconda fetta)
+
+```pascal
+// Doom 3: i file di decl da cartelle e PK4, scrittura in fs_devpath
+LManager := TDeclFactory.CreateStandardManagerOnDisk(LSettings);          // o ...OnFileSystem(FileSystem, Writer)
+LManager.GetRegistry.RegisterDeclFolder('def', '.def', DECL_ENTITYDEF);   // le cartelle del gioco le registra il gioco
+
+// Quake III: solo il tipo shader, dai PK3 (LSettings.Game := 'baseq3'; LSettings.PakExtension := '.pk3')
+LShaders := TDeclFactory.CreateQuake3ShaderManagerOnDisk(LSettings);
+
+// comandi: listDecls, reloadDecls, touch, list<Tipo>, print<Tipo> (il profilo id Tech 4 di Libs\Console)
+LCommands := TDeclConsoleCommands.Create(LManager, LConsole.Commands, LLog);
+LCommands.Register;
+```
+
+- `TDeclGameFileSource` (`IDeclSource` sopra `IGameFileSystem` di `Libs\Wad`: cartelle, PK4 e PK3, il primo della lista vince), `TDeclConsoleCommands` e `TDeclTypeCommands`, `IDeclStatistics` (i numeri di `listDecls`, implementata da `TDeclManager`).
+- Materiali: `IMaterialPersistence` (`Save` = `ReplaceSourceFileText`; `ReloadImages` consegna le immagini nominate a un `IMaterialImageReloader` del renderer, non ne carica).
+- Prova: `Tests\DelphiDoom.Tests.Decl` (408 test a 32 e a 64 bit, copertura 97%). I comandi non hanno un harness del C++ (`ListType` e `PrintType` si': nel golden del gestore). Dettagli, limiti e cosa resta: [CLAUDE.md](CLAUDE.md), sezione "File system, comandi di console e Save dei materiali".

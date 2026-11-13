@@ -26,10 +26,11 @@ type
   ///   <c>IDeclMaterial</c> and <c>IMaterialRegisters</c>. A material with an error is replaced by the default
   ///   material (one stage, <c>blend blend / map _default</c>) and the parse says false. A name without a
   ///   definition gets the implicit material that blends the image of the same name.
-  ///   <para>Not ported: loading images, cinematics, guis and programs (they are named), <c>Save</c>
-  ///   and the reference counting of images, <c>CinematicLength</c> and the other cinematic calls.</para>
+  ///   <para><c>Save</c> and <c>ReloadImages</c> are <c>IMaterialPersistence</c> (the images go to an injected
+  ///   <c>IMaterialImageReloader</c>). Not ported: loading images, cinematics, guis and programs (they are
+  ///   named), the reference counting of images, <c>CinematicLength</c> and the other cinematic calls.</para>
   /// </summary>
-  TDeclMaterial = class(TDecl, IDeclMaterial, IMaterialRegisters)
+  TDeclMaterial = class(TDecl, IDeclMaterial, IMaterialRegisters, IMaterialPersistence)
   strict private
     FNamer: IMaterialImageNamer;
     FOptions: TMaterialOptions;
@@ -96,6 +97,8 @@ type
     function GetParsedRegister(const AIndex: Integer): Single;
     procedure EvaluateRegisters(var ARegisters: TArray<Single>; const AInput: TMaterialEvaluationInput);
     function ConstantRegisters: TArray<Single>;
+    function Save(const AFileName: string = ''): Boolean;
+    procedure ReloadImages(const AReloader: IMaterialImageReloader; const AForce: Boolean);
     function SetDefaultText: Boolean; override;
     function DefaultDefinition: AnsiString; override;
     function Parse(const AText: AnsiString): Boolean; override;
@@ -137,6 +140,29 @@ end;
 function TDeclMaterial.GetNumStages: Integer;
 begin
   Result := Length(FData.Stages);
+end;
+
+function TDeclMaterial.Save(const AFileName: string): Boolean;
+begin
+  Result := ReplaceSourceFileText;
+end;
+
+procedure TDeclMaterial.ReloadImages(const AReloader: IMaterialImageReloader; const AForce: Boolean);
+var
+  LStage: TMaterialStage;
+  LIndex: Integer;
+begin
+  if not Assigned(AReloader) then
+    raise EArgumentNilException.Create('TDeclMaterial.ReloadImages: the reloader is nil');
+  for LStage in FData.Stages do
+    if LStage.HasNewStage then
+    begin
+      for LIndex := 0 to LStage.NewStage.NumFragmentImages - 1 do
+        if LStage.NewStage.FragmentImages[LIndex].Name <> '' then
+          AReloader.ReloadImage(LStage.NewStage.FragmentImages[LIndex], AForce);
+    end
+    else if LStage.Texture.HasImage then
+      AReloader.ReloadImage(LStage.Texture.Image, AForce);
 end;
 
 function TDeclMaterial.GetStage(const AIndex: Integer): TMaterialStage;

@@ -99,6 +99,33 @@ type
     function ImageName: AnsiString;
   end;
 
+  /// <summary>
+  ///   What the renderer does for <c>idImage::Reload( false, force )</c>: the images are only named in
+  ///   <c>Libs\Decl</c>, so the material hands each image of its stages to the one that can load them.
+  /// </summary>
+  IMaterialImageReloader = interface
+    ['{7A3B2C10-5D4E-4F61-9A72-8B1C0D3E4F04}']
+    procedure ReloadImage(const AImage: TMaterialImageReference; const AForce: Boolean);
+  end;
+
+  /// <summary>
+  ///   What <c>idMaterial::Save</c> and <c>ReloadImages</c> do (a different interface from the data of the
+  ///   material: ISP). Get it with <c>Supports(Decl, IMaterialPersistence, Persistence)</c>.
+  /// </summary>
+  IMaterialPersistence = interface
+    ['{7A3B2C10-5D4E-4F61-9A72-8B1C0D3E4F05}']
+    /// <summary>
+    ///   Save: writes the text of the material in its source file (<c>ReplaceSourceFileText</c>; the file name
+    ///   that the original takes is not used); false with a warning when the file cannot be written
+    /// </summary>
+    function Save(const AFileName: string = ''): Boolean;
+    /// <summary>
+    ///   ReloadImages: for each stage, the images of its fragment program if it has a program, else its image
+    ///   (a stage that is a video or a dynamic image has none) go to the reloader, in the order of the stages
+    /// </summary>
+    procedure ReloadImages(const AReloader: IMaterialImageReloader; const AForce: Boolean);
+  end;
+
   /// <summary>The expression registers of a material and their evaluation (a different interface: ISP)</summary>
   IMaterialRegisters = interface
     ['{7A3B2C10-5D4E-4F61-9A72-8B1C0D3E4F03}']

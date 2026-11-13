@@ -52,6 +52,8 @@ type
     function GetIsAddon: Boolean;
     function GetReferenced: Boolean;
     procedure SetReferenced(AValue: Boolean);
+    function GetHasAddonInfo: Boolean;
+    function GetAddonInfo: TGameAddonInfo;
     /// <summary>The name of entry AIndex as the file system compares it: lower case, '/' as separator</summary>
     function EntryName(AIndex: Integer): string;
     /// <summary>
@@ -75,6 +77,10 @@ type
     property IsAddon: Boolean read GetIsAddon;
     /// <summary>A file was read from it (the paks a pure server is told about)</summary>
     property Referenced: Boolean read GetReferenced write SetReferenced;
+    /// <summary>The addon.conf was read and understood (addon_info is not NULL)</summary>
+    property HasAddonInfo: Boolean read GetHasAddonInfo;
+    /// <summary>What the addon.conf of the pak says (empty when <c>HasAddonInfo</c> is False)</summary>
+    property AddonInfo: TGameAddonInfo read GetAddonInfo;
   end;
 
   /// <summary>LoadZipFile: makes a pak out of a file; nil when it cannot be opened or is not a ZIP</summary>
@@ -146,6 +152,21 @@ type
     function PackChecksums: TArray<Cardinal>;
     /// <summary>The addon paks that were left out of the search list</summary>
     function AddonPackFileNames: TArray<string>;
+  end;
+
+  /// <summary>
+  ///   What the file system knows about itself that the classes beside it need (the writer, the pure server):
+  ///   the game folder that writes go to, and the packs of the search list
+  /// </summary>
+  IGameFileSystemInspector = interface
+    ['{9D3E5B71-8A64-4C0F-A2D5-47E0B91C6F38}']
+    function IsInitialized: Boolean;
+    /// <summary>gameFolder: a single name without separators, the last game folder that was added to the search list</summary>
+    function GameFolder: string;
+    /// <summary>The paks of the search list, in the order they are searched</summary>
+    function Packs: TArray<IGamePack>;
+    /// <summary>The addon paks that were left out of the search list</summary>
+    function AddonPacks: TArray<IGamePack>;
   end;
 
 implementation
