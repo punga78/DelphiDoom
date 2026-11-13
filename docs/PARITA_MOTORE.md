@@ -36,7 +36,16 @@ powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 [-Game Doom]
    -Exe "Doom=<nuovo>\Doom32.exe" -RefExe "Doom=<riferimento>\Doom32.exe"
 ```
 
-Per ogni voce e modo stampa `UGUALE` o la prima differenza. Con `-RefExe` la localizza da sola. Esempi reali (le quattro modifiche finte di sotto):
+Per ogni voce e modo stampa `UGUALE` o la prima differenza. Con `-RefExe` la localizza da sola.
+
+**Altra configurazione (`-ExtraIni`).** I golden valgono per la configurazione fissa degli strumenti (`drawfps=0`, `screenblocks=10`...). Per coprire i rami che quella configurazione non esercita (contatore FPS, mirino, vista ridotta, avanzamento della demo, statistiche dell'automap...) si confrontano **vecchio e nuovo tra loro**, senza golden:
+
+```
+powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -ExtraIni 'drawfps=1;drawcrosshair=1;screenblocks=8' `
+   -Exe "Doom=<nuovo>\Doom32.exe" -RefExe "Doom=<riferimento>\Doom32.exe"
+```
+
+Le chiavi `chiave=valore` (separate da `;`) sostituiscono quelle di partenza o si aggiungono; `-RefExe` e' obbligatorio. Un solo modo per invocazione quando si usa `powershell -File` (la virgola di `-Modes 8,32` non separa). Esempi reali (le quattro modifiche finte di sotto):
 
 **1. Un tic di ritardo su una porta** (`Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas`: `TopCountdown := TopWait + 1`), demo `d1_demo1`, modo 8:
 

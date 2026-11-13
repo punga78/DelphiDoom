@@ -75,16 +75,27 @@ function Get-ParityTool {
 # Il contenuto di un file di configurazione: solo cio' che serve a un'esecuzione ripetibile. Ogni altra chiave
 # ha il suo valore di partenza. detaillevel 2 = modo a 8 bit, 3 = modo a 32 bit; niente fili (usemultithread=0),
 # niente interpolazione, finestra 640x480 (dimensione fissa, non dipende dal monitor).
+#
+# $ExtraIni: righe "chiave=valore" in piu' (per esempio drawfps=1, drawcrosshair=1, screenblocks=8): una chiave che
+# c'e' gia' prende il valore nuovo, una che non c'e' si aggiunge in fondo alla sezione [Display] (il motore legge
+# le sue chiavi da qualunque sezione). Serve a confrontare vecchio e nuovo con una configurazione diversa da quella
+# dei golden (Confronta-Golden.ps1 -ExtraIni ... -RefExe ...).
 function New-ParityConfigText {
-  param([string]$Header, [int]$Mode)
+  param([string]$Header, [int]$Mode, [string[]]$ExtraIni = @())
   $detail = 2
   if ($Mode -eq 32) { $detail = 3 }
-  @(
+  $lines = @(
     $Header, '', '[Display]',
     'soft_screenwidth=640', 'soft_screenheight=480', 'soft_fullscreen=0', 'soft_windowxpos=0', 'soft_windowypos=0',
     'interpolate=0', 'interpolateoncapped=0', 'screenblocks=10', "detaillevel=$detail", 'displaydiskbusyicon=0',
     'drawfps=0', 'usemultithread=0', 'r_bltasync=0', 'useglnodesifavailable=0', 'autoloadgwafiles=0'
-  ) -join "`r`n"
+  )
+  foreach ($extra in @($ExtraIni | Where-Object { $_ -and $_.Contains('=') })) {
+    $key = $extra.Substring(0, $extra.IndexOf('=')).Trim()
+    $lines = @($lines | Where-Object { -not $_.StartsWith($key + '=', [StringComparison]::OrdinalIgnoreCase) })
+    $lines += $extra.Trim()
+  }
+  $lines -join "`r`n"
 }
 
 # Cartella di lavoro di un gioco: WAD e .swd dei dati, p8.ini e p32.ini, e gli eseguibili (nome di destinazione =
@@ -94,7 +105,8 @@ function Initialize-ParityRunDir {
     [Parameter(Mandatory = $true)][string]$Game,
     [Parameter(Mandatory = $true)][string]$WorkRoot,
     [string]$DataRoot = '',
-    [hashtable]$Executables = @{}
+    [hashtable]$Executables = @{},
+    [string[]]$ExtraIni = @()
   )
   $info = $script:ParityGames[$Game]
   if ($null -eq $info) { throw "Gioco sconosciuto: $Game" }
@@ -108,7 +120,7 @@ function Initialize-ParityRunDir {
   }
   $header = (Get-Content (Join-Path $source $info.Ini) -TotalCount 1)
   foreach ($mode in 8, 32) {
-    [IO.File]::WriteAllText((Join-Path $dir "p$mode.ini"), (New-ParityConfigText $header $mode) + "`r`n")
+    [IO.File]::WriteAllText((Join-Path $dir "p$mode.ini"), (New-ParityConfigText $header $mode $ExtraIni) + "`r`n")
   }
   foreach ($name in $Executables.Keys) {
     Copy-Item $Executables[$name] (Join-Path $dir $name) -Force
