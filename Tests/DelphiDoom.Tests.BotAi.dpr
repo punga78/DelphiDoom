@@ -1,0 +1,94 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: unit tests of the bot AI library (DUnitX)                       }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+program DelphiDoom.Tests.BotAi;
+
+{$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
+
+uses
+  System.SysUtils,
+  DUnitX.Loggers.Console,
+  DUnitX.Loggers.Xml.NUnit,
+  DUnitX.TestFramework,
+  DelphiDoom.BotAi.Types in '..\Libs\BotAi\DelphiDoom.BotAi.Types.pas',
+  DelphiDoom.BotAi.Import.Intf in '..\Libs\BotAi\DelphiDoom.BotAi.Import.Intf.pas',
+  DelphiDoom.BotAi.Random.MsvcRand in '..\Libs\BotAi\DelphiDoom.BotAi.Random.MsvcRand.pas',
+  DelphiDoom.BotAi.LibVars.Table in '..\Libs\BotAi\DelphiDoom.BotAi.LibVars.Table.pas',
+  DelphiDoom.BotAi.Chat.Types in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Types.pas',
+  DelphiDoom.BotAi.Chat.Message in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Message.pas',
+  DelphiDoom.BotAi.Chat.ChatType in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ChatType.pas',
+  DelphiDoom.BotAi.Chat.Chat in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Chat.pas',
+  DelphiDoom.BotAi.Chat.ReplyChat in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ReplyChat.pas',
+  DelphiDoom.BotAi.Chat.SynonymList in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.SynonymList.pas',
+  DelphiDoom.BotAi.Chat.RandomList in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.RandomList.pas',
+  DelphiDoom.BotAi.Chat.Tables in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Tables.pas',
+  DelphiDoom.BotAi.Chat.Text in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Text.pas',
+  DelphiDoom.BotAi.Chat.ScriptCompressor in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptCompressor.pas',
+  DelphiDoom.BotAi.Chat.ScriptFileSystem in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptFileSystem.pas',
+  DelphiDoom.BotAi.Chat.ScriptLog in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptLog.pas',
+  DelphiDoom.BotAi.Chat.Source in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Source.pas',
+  DelphiDoom.BotAi.Chat.MessageReader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.MessageReader.pas',
+  DelphiDoom.BotAi.Chat.MatchPieceReader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.MatchPieceReader.pas',
+  DelphiDoom.BotAi.Chat.SynonymLoader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.SynonymLoader.pas',
+  DelphiDoom.BotAi.Chat.RandomListLoader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.RandomListLoader.pas',
+  DelphiDoom.BotAi.Chat.MatchTemplateLoader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.MatchTemplateLoader.pas',
+  DelphiDoom.BotAi.Chat.ReplyKeyChecker in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ReplyKeyChecker.pas',
+  DelphiDoom.BotAi.Chat.RandomStrings in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.RandomStrings.pas',
+  DelphiDoom.BotAi.Chat.IntegrityChecker in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.IntegrityChecker.pas',
+  DelphiDoom.BotAi.Chat.ReplyChatLoader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ReplyChatLoader.pas',
+  DelphiDoom.BotAi.Chat.InitialChatLoader in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.InitialChatLoader.pas',
+  DelphiDoom.BotAi.Chat.Matcher in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Matcher.pas',
+  DelphiDoom.BotAi.Chat.SynonymReplacer in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.SynonymReplacer.pas',
+  DelphiDoom.BotAi.Chat.MessageBuilder in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.MessageBuilder.pas',
+  DelphiDoom.BotAi.Chat.ConsoleHeap in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ConsoleHeap.pas',
+  DelphiDoom.BotAi.Chat.State in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.State.pas',
+  DelphiDoom.BotAi.Chat.Intf in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Intf.pas',
+  DelphiDoom.BotAi.Chat.System in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.System.pas',
+  DelphiDoom.BotAi.Chat.Factory in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Factory.pas',
+  DelphiDoom.Tests.BotAi.Support in 'Source\DelphiDoom.Tests.BotAi.Support.pas',
+  DelphiDoom.Tests.BotAi.ScenarioRunner in 'Source\DelphiDoom.Tests.BotAi.ScenarioRunner.pas',
+  DelphiDoom.Tests.BotAi.Text in 'Source\DelphiDoom.Tests.BotAi.Text.pas',
+  DelphiDoom.Tests.BotAi.Chat in 'Source\DelphiDoom.Tests.BotAi.Chat.pas',
+  DelphiDoom.Tests.BotAi.Source in 'Source\DelphiDoom.Tests.BotAi.Source.pas',
+  DelphiDoom.Tests.BotAi.OpenArena in 'Source\DelphiDoom.Tests.BotAi.OpenArena.pas',
+  DelphiDoom.Tests.BotAi.Parity in 'Source\DelphiDoom.Tests.BotAi.Parity.pas';
+
+var
+  Runner: ITestRunner;
+  Results: IRunResults;
+  Logger: ITestLogger;
+  NUnitLogger: ITestLogger;
+
+begin
+  try
+    TDUnitX.CheckCommandLine;
+    Runner := TDUnitX.CreateRunner;
+    Runner.UseRTTI := True;
+    Runner.FailsOnNoAsserts := False;
+
+    Logger := TDUnitXConsoleLogger.Create(True);
+    Runner.AddLogger(Logger);
+    NUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
+    Runner.AddLogger(NUnitLogger);
+
+    Results := Runner.Execute;
+    if not Results.AllPassed then
+      System.ExitCode := EXIT_ERRORS;
+
+    {$IFNDEF CI}
+    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
+    begin
+      System.Write('Done.. press <Enter> key to quit.');
+      System.Readln;
+    end;
+    {$ENDIF}
+  except
+    on E: Exception do
+      System.Writeln(E.ClassName, ': ', E.Message);
+  end;
+end.
