@@ -35,7 +35,11 @@ type
     /// <summary>
     ///   The old atoi: a decimal number, or 0x..., -0x..., #... ; 0 when it is not a number
     /// </summary>
-    class function ToInteger(const AText: string): Integer; static;
+    class function ToInteger(const AText: string): Integer; overload; static;
+    /// <summary>True if the text is made of decimal digits only and is not empty (the old StrIsLongWord)</summary>
+    class function IsDigits(const AText: string): Boolean; static;
+    /// <summary>The old atoi with a default: ADefault when the text is not a number</summary>
+    class function ToInteger(const AText: string; const ADefault: Integer): Integer; overload; static;
   end;
 
 implementation
@@ -120,7 +124,24 @@ begin
   end;
 end;
 
+class function TScannerStrings.IsDigits(const AText: string): Boolean;
+var
+  LIndex: Integer;
+begin
+  Result := False;
+  for LIndex := 1 to Length(AText) do
+    if CharInSet(AText[LIndex], ['0'..'9']) then
+      Result := True
+    else
+      Exit(False);
+end;
+
 class function TScannerStrings.ToInteger(const AText: string): Integer;
+begin
+  Result := ToInteger(AText, 0);
+end;
+
+class function TScannerStrings.ToInteger(const AText: string; const ADefault: Integer): Integer;
 var
   LCode: Integer;
   LOther: Integer;
@@ -128,7 +149,7 @@ begin
   Val(AText, Result, LCode);
   if LCode = 0 then
     Exit;
-  LOther := 0;
+  LOther := ADefault;
   if AText.StartsWith('0x') then
     Val('$' + Copy(AText, 3, MaxInt), LOther, LCode)
   else if AText.StartsWith('-0x') then
@@ -141,7 +162,7 @@ begin
   if LCode = 0 then
     Result := LOther
   else
-    Result := 0;
+    Result := ADefault;
 end;
 
 end.

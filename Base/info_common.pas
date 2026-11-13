@@ -33,7 +33,45 @@ interface
 uses
   d_delphi,
   doomtype,
-  info_h;
+  info_h,
+  DelphiDoom.Engine.Info.Intf;
+
+//==============================================================================
+//
+// Info_ConfigureThings
+//
+// What finds the things by editor number and by name, and their ancestors: ComposeEngine
+// gives it (issue #185, the rules are in Libs\Info)
+//
+//==============================================================================
+procedure Info_ConfigureThings(const AThings: IEngineInfoThings);
+
+//==============================================================================
+//
+// Info_ConfigureStates
+//
+// What walks the chains of states
+//
+//==============================================================================
+procedure Info_ConfigureStates(const AStates: IEngineInfoStates);
+
+//==============================================================================
+//
+// Info_ConfigureGroups
+//
+// The names of the MBF21 groups
+//
+//==============================================================================
+procedure Info_ConfigureGroups(const AGroups: IEngineInfoGroups);
+
+//==============================================================================
+//
+// Info_States
+//
+// The configured walker of the chains of states (info_fnd uses it)
+//
+//==============================================================================
+function Info_States: IEngineInfoStates;
 
 //==============================================================================
 //
@@ -263,22 +301,84 @@ implementation
 
 uses
   d_think,
-  deh_main,
   i_system,
   m_fixed,
-  p_spec,
   p_common,
-  sc_consts,
-  info;
+  p_spec,
+  info,
+  DelphiDoom.Info.SpriteNames;
 
 var
-  dnLookUp: PIntegerArray = nil; // JVAL: Doom Editor Number LookUp
+  // given by ComposeEngine (Info_ConfigureThings, Info_ConfigureStates, Info_ConfigureGroups)
+  things_service: IEngineInfoThings = nil;
+  states_service: IEngineInfoStates = nil;
+  groups_service: IEngineInfoGroups = nil;
 
-const
-  DNLOOKUPSIZE = $10000;
+//==============================================================================
+//
+// Info_ConfigureThings
+//
+//==============================================================================
+procedure Info_ConfigureThings(const AThings: IEngineInfoThings);
+begin
+  things_service := AThings;
+end;
 
-var
-  mobjinfo_aliases: TDStringList = nil;
+//==============================================================================
+//
+// Info_ConfigureStates
+//
+//==============================================================================
+procedure Info_ConfigureStates(const AStates: IEngineInfoStates);
+begin
+  states_service := AStates;
+end;
+
+//==============================================================================
+//
+// Info_ConfigureGroups
+//
+//==============================================================================
+procedure Info_ConfigureGroups(const AGroups: IEngineInfoGroups);
+begin
+  groups_service := AGroups;
+end;
+
+//==============================================================================
+//
+// Info_Things
+//
+//==============================================================================
+function Info_Things: IEngineInfoThings;
+begin
+  if things_service = nil then
+    I_Error('Info_Things(): the info tables are not configured (ComposeEngine was not called)');
+  result := things_service;
+end;
+
+//==============================================================================
+//
+// Info_States
+//
+//==============================================================================
+function Info_States: IEngineInfoStates;
+begin
+  if states_service = nil then
+    I_Error('Info_States(): the info tables are not configured (ComposeEngine was not called)');
+  result := states_service;
+end;
+
+//==============================================================================
+//
+// Info_Groups
+//
+//==============================================================================
+function Info_Groups: IEngineInfoGroups;
+begin
+  if groups_service = nil then
+    I_Error('Info_Groups(): the info tables are not configured (ComposeEngine was not called)');
+  result := groups_service;
+end;
 
 //==============================================================================
 //
@@ -287,11 +387,7 @@ var
 //==============================================================================
 procedure Info_InitDnLookUp;
 begin
-  if dnLookUp = nil then
-    dnLookUp := mallocz(DNLOOKUPSIZE * SizeOf(integer));
-
-  if mobjinfo_aliases = nil then
-    mobjinfo_aliases := TDStringList.Create;
+  Info_Things.Initialize;
 end;
 
 //==============================================================================
@@ -301,9 +397,8 @@ end;
 //==============================================================================
 procedure Info_ShutDownDnLookUp;
 begin
-  memfree(pointer(dnLookUp), DNLOOKUPSIZE * SizeOf(integer));
-  mobjinfo_aliases.Free;
-  mobjinfo_aliases := nil;
+  if things_service <> nil then
+    things_service.ShutDown;
 end;
 
 //==============================================================================
@@ -312,75 +407,8 @@ end;
 //
 //==============================================================================
 function Info_AddMobjNameAlias(const alias1: string; const alias2: string): boolean;
-var
-  num1, num2: integer;
-  str: string;
 begin
-  if mobjinfo_aliases = nil then
-  begin
-    result := false;
-    exit;
-  end;
-  num1 := Info_GetMobjNumForName(alias1);
-  if num1 >= 0 then
-  begin
-    str := strupper(strremovespaces(alias2)) + '=' + itoa(num1);
-    if mobjinfo_aliases.IndexOf(str) < 0 then
-      mobjinfo_aliases.Add(str);
-  end;
-  num2 := Info_GetMobjNumForName(alias2);
-  if num2 >= 0 then
-  begin
-    str := strupper(strremovespaces(alias1)) + '=' + itoa(num2);
-    if mobjinfo_aliases.IndexOf(str) < 0 then
-      mobjinfo_aliases.Add(str);
-  end;
-  result := (num1 >= 0) or (num2 >= 0);
-end;
-
-//==============================================================================
-//
-// Info_GetMobjNumForAlias
-//
-//==============================================================================
-function Info_GetMobjNumForAlias(const name: string): integer;
-const
-  DEH_ACTOR_PREFIX = 'DEH_ACTOR_';
-var
-  i: integer;
-  check: string;
-  snum: string;
-begin
-  if mobjinfo_aliases = nil then
-  begin
-    result := -1;
-    exit;
-  end;
-
-  check := strupper(strremovespaces(name));
-  if Pos1(DEH_ACTOR_PREFIX, check) then
-  begin
-    snum := Copy(check, Length(DEH_ACTOR_PREFIX) + 1, Length(check) - Length(DEH_ACTOR_PREFIX));
-    if StrIsLongWord(snum) then
-    begin
-      result := atoi(snum);
-      if IsIntegerInRange(result, 0, nummobjtypes - 1) then
-        exit;
-    end;
-  end;
-
-  check := check + '=';
-  for i := mobjinfo_aliases.Count - 1 downto 0 do
-  begin
-    if Pos1(check, mobjinfo_aliases.Strings[i]) then
-    begin
-      splitstring_ch(mobjinfo_aliases.Strings[i], check, snum, '=');
-      result := atoi(snum);
-      exit;
-    end;
-  end;
-
-  result := -1;
+  result := Info_Things.AddAlias(alias1, alias2);
 end;
 
 //==============================================================================
@@ -389,56 +417,8 @@ end;
 //
 //==============================================================================
 function Info_GetMobjNumForDoomNum(const dn: integer): integer;
-var
-  i: integer;
-  idx: integer;
 begin
-  if dnLookUp <> nil then
-  begin
-    idx := dn mod DNLOOKUPSIZE;
-    if (idx >= 0) and (idx < DNLOOKUPSIZE) then
-    begin
-      idx := dnLookUp[idx];
-      if (idx >= 0) and (idx < nummobjtypes) then
-        if mobjinfo[idx].doomednum = dn then
-        begin
-          result := idx;
-          Exit;
-        end;
-    end;
-  end;
-
-  // JVAL 20201215
-  // Changed traverse order of mobjinfo table.
-  // For custom content [Ord(DO_NUMMOBJTYPES)..nummobjtypes - 1] the search is
-  // done backwards.
-  // For build-in content [0..Ord(DO_NUMMOBJTYPES) - 1] the search is done
-  // forward
-
-  // First Backward search for custom content
-  for i := nummobjtypes - 1 downto Ord(DO_NUMMOBJTYPES) do
-  begin
-    if mobjinfo[i].doomednum = dn then
-    begin
-      result := i;
-      if dnLookUp <> nil then
-        dnLookUp[dn mod DNLOOKUPSIZE] := i;
-      Exit;
-    end;
-  end;
-
-  // Forward search for build-in content
-  for i := 1 to Ord(DO_NUMMOBJTYPES) - 1 do
-  begin
-    if mobjinfo[i].doomednum = dn then
-    begin
-      result := i;
-      if dnLookUp <> nil then
-        dnLookUp[dn mod DNLOOKUPSIZE] := i;
-      Exit;
-    end;
-  end;
-  result := -1;
+  result := Info_Things.ThingForDoomedNumber(dn);
 end;
 
 //==============================================================================
@@ -448,26 +428,12 @@ end;
 //==============================================================================
 procedure Info_CheckStates;
 var
+  endless: TArray<Integer>;
   i: integer;
-  loops: integer;
-  st: Pstate_t;
 begin
-  for i := 0 to numstates - 1 do
-  begin
-    loops := 0;
-    st := @states[i];
-    repeat
-      if st.nextstate = S_NULL then
-        break;
-      st := @states[Ord(st.nextstate)];
-      inc(loops);
-      if loops > $FFFF then
-      begin
-        I_Warning('Info_CheckStates(): State %d has possible infinite loop.'#13#10, [i]);
-        break;
-      end;
-    until st.tics <> 0;
-  end;
+  endless := Info_States.StatesWithEndlessChain;
+  for i := 0 to Length(endless) - 1 do
+    I_Warning('Info_CheckStates(): State %d has possible infinite loop.'#13#10, [endless[i]]);
 end;
 
 //==============================================================================
@@ -544,24 +510,14 @@ end;
 //==============================================================================
 function Info_GetSpriteNumForName(const name: string): integer;
 var
-  spr_name: string;
   i: integer;
   check: integer;
 begin
-  result := atoi(name, -1);
-
-  if (result >= 0) and (result < numsprites) and (itoa(result) = name) then
+  if TInfoSpriteNames.TryParseIndex(name, numsprites, result) then
     exit;
 
-  if Length(name) <> 4 then
+  if not TInfoSpriteNames.TryCode(name, check) then
     I_Error('Info_GetSpriteNumForName(): Sprite name "%s" must have 4 characters', [name]);
-
-  spr_name := strupper(name);
-
-  check := Ord(spr_name[1]) +
-           Ord(spr_name[2]) shl 8 +
-           Ord(spr_name[3]) shl 16 +
-           Ord(spr_name[4]) shl 24;
 
   for i := 0 to numsprites - 1 do
     if sprnames[i] = check then
@@ -584,15 +540,12 @@ end;
 //
 //==============================================================================
 function Info_GetSpriteNameForNum(const id: integer): string;
-var
-  check: LongWord;
 begin
   result := '';
   if (id < 0) or (id >= numsprites) then
     exit;
 
-  check := PLongWord(@sprnames[id])^;
-  result := Chr(check and $FF) + Chr((check shr 8) and $FF) + Chr((check shr 16) and $FF) + Chr((check shr 24) and $FF);
+  result := TInfoSpriteNames.NameOfCode(sprnames[id]);
 end;
 
 //==============================================================================
@@ -602,24 +555,14 @@ end;
 //==============================================================================
 function Info_CheckSpriteNumForName(const name: string): integer;
 var
-  spr_name: string;
   i: integer;
   check: integer;
 begin
-  result := atoi(name, -1);
-
-  if (result >= 0) and (result < numsprites) and (itoa(result) = name) then
+  if TInfoSpriteNames.TryParseIndex(name, numsprites, result) then
     exit;
 
-  if Length(name) <> 4 then
+  if not TInfoSpriteNames.TryCode(name, check) then
     I_Error('Info_CheckSpriteNumForName(): Sprite name "%s" must have 4 characters', [name]);
-
-  spr_name := strupper(name);
-
-  check := Ord(spr_name[1]) +
-           Ord(spr_name[2]) shl 8 +
-           Ord(spr_name[3]) shl 16 +
-           Ord(spr_name[4]) shl 24;
 
   for i := 0 to numsprites - 1 do
     if sprnames[i] = check then
@@ -637,51 +580,8 @@ end;
 //
 //==============================================================================
 function Info_GetMobjNumForName(const name: string): integer;
-var
-  mobj_name: string;
-  check: string;
-  i: integer;
 begin
-  if (name = '') or (name = '-1') then
-  begin
-    result := -1;
-    exit;
-  end;
-
-  result := atoi(name, -1);
-
-  if (result >= 0) and (result < nummobjtypes) and (itoa(result) = name) then
-    exit;
-
-  mobj_name := strupper(strtrim(name));
-  if Length(mobj_name) > MOBJINFONAMESIZE then
-    SetLength(mobj_name, MOBJINFONAMESIZE);
-  for i := nummobjtypes - 1 downto 0 do
-  begin
-    check := Info_GetMobjName(i);
-    trimprocU(check);
-    if check = mobj_name then
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-
-  mobj_name := strremovespaces(strupper(strtrim(name)));
-  if Length(mobj_name) > MOBJINFONAMESIZE then
-    SetLength(mobj_name, MOBJINFONAMESIZE);
-  for i := nummobjtypes - 1 downto 0 do
-  begin
-    check := Info_GetMobjName(i);
-    check := strremovespaces(strupper(strtrim(check)));
-    if check = mobj_name then
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-
-  result := Info_GetMobjNumForAlias(mobj_name);
+  result := Info_Things.ThingForName(name);
 end;
 
 //==============================================================================
@@ -784,36 +684,8 @@ end;
 //
 //==============================================================================
 function Info_GetInheritance(const imo: Pmobjinfo_t): integer;
-var
-  mo: Pmobjinfo_t;
-  loops: integer;
 begin
-  mo := imo;
-  result := mo.inheritsfrom;
-
-  if result <> -1 then
-  begin
-    loops := 0;
-    while true do
-    begin
-      mo := @mobjinfo[mo.inheritsfrom];
-      if mo.inheritsfrom = -1 then
-        exit
-      else
-        result := mo.inheritsfrom;
-      // JVAL: Prevent wrong inheritances of actordef lumps
-      inc(loops);
-      if loops > nummobjtypes then
-      begin
-        result := -1;
-        break;
-      end;
-    end;
-  end;
-
-  if result = -1 then
-    result :=  (integer(imo) - integer(@mobjinfo[0])) div SizeOf(mobjinfo_t);
-
+  result := Info_Things.RootOf((NativeInt(imo) - NativeInt(@mobjinfo[0])) div SizeOf(mobjinfo_t));
 end;
 
 //==============================================================================
@@ -824,55 +696,13 @@ end;
 function Info_GetStatesForMobjInfo(const mobjno: integer): TDNumberList;
 var
   N: TDNumberList;
-  st: integer;
-
-  procedure _AddStates(stnum: integer);
-  var
-    i: integer;
-  begin
-    for i := 0 to numstates - 1 do
-    begin
-      if N.IndexOf(stnum) >= 0 then
-        exit
-      else
-      begin
-        if stnum <= 0 then
-          exit;
-        N.Add(stnum);
-        stnum := Ord(states[stnum].nextstate);
-        if stnum <= 0 then
-          exit;
-      end;
-    end;
-  end;
-
+  found: TArray<Integer>;
+  i: integer;
 begin
   N := TDNumberList.Create;
-  if mobjno < 0 then
-  begin
-    result := N;
-    exit;
-  end;
-
-  _AddStates(mobjinfo[mobjno].spawnstate);
-  _AddStates(mobjinfo[mobjno].seestate);
-  _AddStates(mobjinfo[mobjno].painstate);
-  _AddStates(mobjinfo[mobjno].meleestate);
-  _AddStates(mobjinfo[mobjno].missilestate);
-  _AddStates(mobjinfo[mobjno].deathstate);
-  _AddStates(mobjinfo[mobjno].xdeathstate);
-  _AddStates(mobjinfo[mobjno].raisestate);
-  _AddStates(mobjinfo[mobjno].healstate);
-  _AddStates(mobjinfo[mobjno].crashstate);
-  _AddStates(mobjinfo[mobjno].crushstate);
-  _AddStates(mobjinfo[mobjno].interactstate);
-
-  for st := 0 to numstates - 1 do
-    if states[st].owners <> nil then
-      if N.IndexOf(st) < 0 then
-        if states[st].owners.IndexOf(mobjno) >= 0 then
-          N.Add(st);
-
+  found := Info_States.StatesOfThing(mobjno);
+  for i := 0 to Length(found) - 1 do
+    N.Add(found[i]);
   result := N;
 end;
 
@@ -972,14 +802,7 @@ end;
 //==============================================================================
 function Info_InfightingGroupToString(const i: integer): string;
 begin
-  if i = IG_DEFAULT then
-    result := 'IG_DEFAULT'
-  else if i = IG_INVALID then
-    result := 'IG_INVALID'
-  else if IsIntegerInRange(i, 0, infighting_groups.Count - 1) then
-    result := infighting_groups.Strings[i]
-  else
-    result := itoa(i);
+  result := Info_Groups.InfightingToText(i);
 end;
 
 //==============================================================================
@@ -988,38 +811,8 @@ end;
 //
 //==============================================================================
 function Info_InfightingGroupToInt(const s: string): integer;
-var
-  check: string;
 begin
-  check := strupper(s);
-  if not Pos1('IG_', check) then
-    check := 'IG_' + check;
-
-  if check = 'IG_DEFAULT' then
-  begin
-    result := IG_DEFAULT;
-    exit;
-  end;
-
-  if check = 'IG_INVALID' then
-  begin
-    result := IG_INVALID;
-    exit;
-  end;
-
-  result := infighting_groups.IndexOf(check);
-  if result >= 0 then
-    exit;
-
-  result := atoi(s);
-  if result < 0 then
-    result := IG_INVALID
-  else
-  begin
-    check := 'IG_' + itoa(result);
-    result := infighting_groups.Add(check);
-    SC_AddConst(check, result); // JVAL: 20220104 - Dynamically add const
-  end;
+  result := Info_Groups.InfightingToValue(s);
 end;
 
 //==============================================================================
@@ -1029,20 +822,7 @@ end;
 //==============================================================================
 function Info_ProjectileGroupToString(const i: integer): string;
 begin
-  if i = PG_GROUPLESS then
-    result := 'PG_GROUPLESS'
-  else if i = PG_INVALID then
-    result := 'PG_INVALID'
-  else if i = PG_DEFAULT then
-    result := 'PG_DEFAULT'
-  {$IFDEF DOOM}
-  else if i = PG_BARON then
-    result := 'PG_BARON'
-  {$ENDIF}
-  else if IsIntegerInRange(i, 0, projectile_groups.Count - 1) then
-    result := projectile_groups.Strings[i]
-  else
-    result := itoa(i);
+  result := Info_Groups.ProjectileToText(i);
 end;
 
 //==============================================================================
@@ -1051,52 +831,8 @@ end;
 //
 //==============================================================================
 function Info_ProjectileGroupToInt(const s: string): integer;
-var
-  check: string;
 begin
-  check := strupper(s);
-  if not Pos1('PG_', check) then
-    check := 'PG_' + check;
-
-  if check = 'PG_GROUPLESS' then
-  begin
-    result := PG_GROUPLESS;
-    exit;
-  end;
-
-  if check = 'PG_INVALID' then
-  begin
-    result := PG_INVALID;
-    exit;
-  end;
-
-  if check = 'PG_DEFAULT' then
-  begin
-    result := PG_DEFAULT;
-    exit;
-  end;
-
-  {$IFDEF DOOM}
-  if check = 'PG_BARON' then
-  begin
-    result := PG_BARON;
-    exit;
-  end;
-  {$ENDIF}
-
-  result := projectile_groups.IndexOf(check);
-  if result >= 0 then
-    exit;
-
-  result := atoi(s);
-  if result < 0 then
-    result := PG_GROUPLESS
-  else
-  begin
-    check := 'PG_' + itoa(result);
-    result := projectile_groups.Add(check);
-    SC_AddConst(check, result); // JVAL: 20220104 - Dynamically add const
-  end;
+  result := Info_Groups.ProjectileToValue(s);
 end;
 
 //==============================================================================
@@ -1106,14 +842,7 @@ end;
 //==============================================================================
 function Info_SplashGroupToString(const i: integer): string;
 begin
-  if i = SG_DEFAULT then
-    result := 'SG_DEFAULT'
-  else if i = SG_INVALID then
-    result := 'SG_INVALID'
-  else if IsIntegerInRange(i, 0, splash_groups.Count - 1) then
-    result := splash_groups.Strings[i]
-  else
-    result := itoa(i);
+  result := Info_Groups.SplashToText(i);
 end;
 
 //==============================================================================
@@ -1122,39 +851,8 @@ end;
 //
 //==============================================================================
 function Info_SplashGroupToInt(const s: string): integer;
-var
-  check: string;
 begin
-  check := strupper(s);
-  if not Pos1('SG_', check) then
-    check := 'SG_' + check;
-
-  if check = 'SG_DEFAULT' then
-  begin
-    result := SG_DEFAULT;
-    exit;
-  end;
-
-  if check = 'SG_INVALID' then
-  begin
-    result := SG_INVALID;
-    exit;
-  end;
-
-  result := splash_groups.IndexOf(check);
-  if result >= 0 then
-    exit;
-
-  result := atoi(s);
-  if result < 0 then
-    result := SG_INVALID
-  else
-  begin
-    check := 'SG_' + itoa(result);
-    result := splash_groups.Add(check);
-    SC_AddConst(check, result); // JVAL: 20220104 - Dynamically add const
-  end;
+  result := Info_Groups.SplashToValue(s);
 end;
 
 end.
-

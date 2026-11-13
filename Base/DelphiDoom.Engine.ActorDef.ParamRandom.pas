@@ -31,11 +31,12 @@ unit DelphiDoom.Engine.ActorDef.ParamRandom;
 interface
 
 uses
-  DelphiDoom.ActorDef.ParamList.Intf;
+  DelphiDoom.ActorDef.ParamList.Intf,
+  DelphiDoom.Info.Intf;
 
 type
-  /// <summary>The random numbers of the action parameters: N_Random, the generator outside the demos</summary>
-  TEngineParamRandom = class(TInterfacedObject, IActorDefParamRandom)
+  /// <summary>The random numbers of the action parameters and of the things placed at random: N_Random, the generator outside the demos</summary>
+  TEngineParamRandom = class(TInterfacedObject, IActorDefParamRandom, IInfoRandom)
   public
     function Next: Integer;
   end;

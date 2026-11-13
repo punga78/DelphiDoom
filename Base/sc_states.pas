@@ -39,12 +39,23 @@ interface
 
 uses
   p_mobj_h,
-  sc_tokens;
+  sc_tokens,
+  DelphiDoom.Engine.Info.Intf;
 
 var
   statenames: TTokenList;
   // the DECORATE lumps are read as ACTORDEF (an option of the .ini and of the menu; it was in sc_actordef)
   decorate_as_actordef: boolean = true;
+
+//==============================================================================
+//
+// SC_ConfigureStateNames
+//
+// What finds the state that a script names for an actor (the rules are in
+// Libs\Info\DelphiDoom.Info.StateNames): ComposeEngine gives it
+//
+//==============================================================================
+procedure SC_ConfigureStateNames(const AResolver: IEngineStateNames);
 
 //==============================================================================
 //
@@ -86,12 +97,11 @@ implementation
 uses
   TypInfo,
   d_delphi,
+  i_system,
   info_h,
   info,
-  info_common,
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
-  sc_params,
   w_wad;
 
 const
@@ -99,6 +109,30 @@ const
 
 var
   default_states_added: boolean = false;
+  // given by ComposeEngine (SC_ConfigureStateNames)
+  statenames_service: IEngineStateNames = nil;
+
+//==============================================================================
+//
+// SC_ConfigureStateNames
+//
+//==============================================================================
+procedure SC_ConfigureStateNames(const AResolver: IEngineStateNames);
+begin
+  statenames_service := AResolver;
+end;
+
+//==============================================================================
+//
+// StateNamesResolver
+//
+//==============================================================================
+function StateNamesResolver: IEngineStateNames;
+begin
+  if statenames_service = nil then
+    I_Error('P_GetStateFromName(): the names of the states are not configured (ComposeEngine was not called)');
+  result := statenames_service;
+end;
 
 //==============================================================================
 //
@@ -175,145 +209,8 @@ end;
 //
 //==============================================================================
 function P_GetStateFromName(const actor: Pmobj_t; const s1: string): integer;
-var
-  s, st: string;
-  fw, sw: string;
-  pps, ppp, ppb: integer;
-
-  function _stindex(const sss: string): integer;
-  var
-    sss1, sss2: string;
-    p, idx: integer;
-    inf: Pmobjinfo_t;
-  begin
-    result := statenames.IndexOfToken(sss);
-    if result >= 0 then
-      exit;
-
-    sss1 := strupper(sss);
-
-    p := Pos('::', sss1);
-    if p < 2 then // eg allow "goto ::spawn"
-      inf := actor.info
-    else
-    begin
-      sss2 := strtrim(Copy(sss1, 1, p - 1));
-      sss1 := Copy(sss1, p + 2, Length(sss1) - p - 3);
-      if sss2 = 'SUPER' then
-        idx := actor.info.inheritsfrom
-      else
-        idx := Info_GetMobjNumForName(sss2);
-      if (idx >= 0) and (idx < nummobjtypes) then
-        inf := @mobjinfo[idx]
-      else if sss2 = 'SELF' then // eg allow "goto self::spawn"
-        inf := actor.info
-      else
-        inf := nil;
-    end;
-
-    if inf <> nil then
-    begin
-      if sss1 = 'SPAWN' then
-      begin
-        result := inf.spawnstate;
-        exit;
-      end
-      else if sss1 = 'SEE' then
-      begin
-        result := inf.seestate;
-        exit;
-      end
-      else if sss1 = 'MELEE' then
-      begin
-        result := inf.meleestate;
-        exit;
-      end
-      else if sss1 = 'MISSILE' then
-      begin
-        result := inf.missilestate;
-        exit;
-      end
-      else if sss1 = 'MISSILE' then
-      begin
-        result := inf.missilestate;
-        exit;
-      end
-      else if sss1 = 'PAIN' then
-      begin
-        result := inf.painstate;
-        exit;
-      end
-      else if sss1 = 'DEATH' then
-      begin
-        result := inf.deathstate;
-        exit;
-      end
-      else if sss1 = 'XDEATH' then
-      begin
-        result := inf.xdeathstate;
-        exit;
-      end
-      else if sss1 = 'RAISE' then
-      begin
-        result := inf.raisestate;
-        exit;
-      end
-      else if sss1 = 'CRASH' then
-      begin
-        result := inf.crashstate;
-        exit;
-      end
-      else if sss1 = 'CRUSH' then
-      begin
-        result := inf.crushstate;
-        exit;
-      end
-      else if sss1 = 'INTERACT' then
-      begin
-        result := inf.interactstate;
-        exit;
-      end
-    end;
-
-    sss1 := 'S_' + strupper(actor.info.name) + '_' + sss;
-    result := statenames.IndexOfToken(sss1);
-    if result < 0 then
-      if StrIsLongWord(s1) then
-        result := atoi(s1);
-  end;
-
 begin
-  s := SC_EvalString(s1);
-  st := strupper(strtrim(s));
-  pps := CharPos('+', st);
-  ppp := CharPos('-', st);
-  ppb := CharPos(' ', st);
-  if (ppb = 0) and (ppp = 0) and (pps = 0) then
-  begin
-    Result := _stindex(st);
-    Exit;
-  end
-  else
-  // JVAL: 20170927 evaluate small expressions
-  //       20191003 rewritten, fixed
-  begin
-    st := strremovespaces(st);
-    pps := CharPos('+', st);
-    ppp := CharPos('-', st);
-    if pps > 0 then
-    begin
-      splitstring_ch(st, fw, sw, '+');
-      Result := _stindex(fw) + atoi(sw, 0);
-      Exit;
-    end;
-    if ppp > 0 then
-    begin
-      splitstring_ch(st, fw, sw, '-');
-      Result := _stindex(fw) - atoi(sw, 0);
-      Exit;
-    end;
-  end;
-  Result := -1; // JVAL: No match
+  result := StateNamesResolver.StateFromName(actor, s1);
 end;
 
 //==============================================================================
@@ -322,25 +219,8 @@ end;
 //
 //==============================================================================
 function P_GetStateFromNameWithOffsetCheck(const actor: Pmobj_t; const s1: string): integer;
-var
-  s: string;
-  check: string;
 begin
-  s := SC_EvalString(s1);
-  check := s;
-  if check = '' then
-  begin
-    Result := 0;
-    Exit;
-  end;
-
-  if check[1] in ['-', '+'] then
-    Delete(check, 1, 1);
-
-  if StrIsLongWord(check) then
-    Result := ((integer(actor.state) - integer(states)) div SizeOf(state_t)) + atoi(s)
-  else
-    Result := P_GetStateFromName(actor, s);
+  result := StateNamesResolver.StateFromNameWithOffset(actor, s1);
 end;
 
 //==============================================================================

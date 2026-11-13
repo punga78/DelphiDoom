@@ -26,14 +26,27 @@
 
 {$I Doom32.inc}
 
-unit info_rnd;
+// Facade (issue #185, slice 1b): the classes of monsters and the choice are
+// Libs\Info\DelphiDoom.Info.RandomMonsters; what changes from game to game is
+// Base\DelphiDoom.Engine.Info.RandomRules
 
 // JVAL: Random items
+
+unit info_rnd;
 
 interface
 
 uses
-  info_h;
+  DelphiDoom.Engine.Info.Intf;
+
+//==============================================================================
+//
+// Info_ConfigureRandom
+//
+// What chooses the monsters placed at random: ComposeEngine gives it
+//
+//==============================================================================
+procedure Info_ConfigureRandom(const ARandom: IEngineInfoRandom);
 
 //==============================================================================
 //
@@ -66,110 +79,31 @@ function Info_IsMonster(_type: integer): boolean;
 implementation
 
 uses
-  d_delphi,
-  doomdef,
-{$IFDEF HERETIC}
-  g_game,
-{$ENDIF}
-  info,
-  m_rnd,
-  p_setup,
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  p_mobj,
-{$ENDIF}
-  p_mobj_h;
-
-type
-  randompool_t = record
-    check: integer;
-    list: TDNumberList;
-  end;
-
-const
-  NUMMONSTERSCATEGORIES = 5;
+  i_system;
 
 var
-  rnd_monsters: array[0..NUMMONSTERSCATEGORIES - 1] of randompool_t;
-  rnd_monstersinitialized: boolean = false;
+  random_service: IEngineInfoRandom = nil;
 
 //==============================================================================
 //
-// Info_InitRandomMonsters
+// Info_ConfigureRandom
 //
 //==============================================================================
-procedure Info_InitRandomMonsters;
-var
-  i: integer;
-  idx: integer;
-  check: integer;
+procedure Info_ConfigureRandom(const ARandom: IEngineInfoRandom);
 begin
-  if rnd_monstersinitialized then
-    exit;
-
-{$IF DEFINED(HERETIC)}
-  if G_PlayingEngineVersion > VERSION110 then
-  begin
-    rnd_monsters[0].check := 90;
-    rnd_monsters[1].check := 120;
-    rnd_monsters[2].check := 220;
-    rnd_monsters[3].check := 1000;
-  end
-  else
-  begin
-    rnd_monsters[0].check := 80;
-    rnd_monsters[1].check := 400;
-    rnd_monsters[2].check := 1200;
-    rnd_monsters[3].check := 2500;
-  end;
-{$ELSEIF DEFINED(HEXEN)}
-{  rnd_monsters[0].check := 290;
-  rnd_monsters[1].check := 360;
-  rnd_monsters[2].check := 400;
-  rnd_monsters[3].check := 2000;}
-  rnd_monsters[0].check := 1000000;
-  rnd_monsters[1].check := 1000000;
-  rnd_monsters[2].check := 1000000;
-  rnd_monsters[3].check := 1000000;
-{$ELSE}
-  rnd_monsters[0].check := 80;
-  rnd_monsters[1].check := 400;
-  rnd_monsters[2].check := 1200;
-  rnd_monsters[3].check := 2500;
-{$ENDIF}
-  rnd_monsters[4].check := MAXINT;
-
-  for i := 0 to NUMMONSTERSCATEGORIES - 1 do
-    rnd_monsters[i].list := TDNumberList.Create;
-
-  rnd_monstersinitialized := true;
-
-  for i := 0 to nummobjtypes - 1 do
-    if Info_IsMonster(i) and P_GameValidThing(mobjinfo[i].doomednum) then
-    begin
-      check := mobjinfo[i].spawnhealth;
-      idx := 0;
-      while (idx < NUMMONSTERSCATEGORIES) and (check >= rnd_monsters[idx].check) do
-        inc(idx);
-      rnd_monsters[idx].list.Add(i);
-    end;
+  random_service := ARandom;
 end;
 
 //==============================================================================
 //
-// Info_ShutDownRandomMonsters
+// Info_Random
 //
 //==============================================================================
-procedure Info_ShutDownRandomMonsters;
-var
-  i: integer;
+function Info_Random: IEngineInfoRandom;
 begin
-  if not rnd_monstersinitialized then
-    exit;
-
-  for i := 0 to NUMMONSTERSCATEGORIES - 1 do
-    FreeAndNil(rnd_monsters[i].list);
-
-  rnd_monstersinitialized := false;
+  if random_service = nil then
+    I_Error('Info_Random(): the random monsters are not configured (ComposeEngine was not called)');
+  result := random_service;
 end;
 
 //==============================================================================
@@ -178,24 +112,8 @@ end;
 //
 //==============================================================================
 function Info_SelectRandomMonster(_type: integer): integer;
-var
-  idx: integer;
-  check: integer;
-{$IFNDEF HEXEN}
-  i: integer;
-{$ENDIF}
 begin
-  check := mobjinfo[_type].spawnhealth;
-  idx := 0;
-  while (idx < NUMMONSTERSCATEGORIES) and (check >= rnd_monsters[idx].check) do
-    inc(idx);
-{$IFNDEF HEXEN}
-
-  for i := 0 to M_GetSystemRandomSeed - 1 do
-    N_Random;
-{$ENDIF}
-
-  result := rnd_monsters[idx].list[N_Random mod rnd_monsters[idx].list.Count];
+  result := Info_Random.SelectMonster(_type);
 end;
 
 //==============================================================================
@@ -205,7 +123,7 @@ end;
 //==============================================================================
 procedure Info_InitRandom;
 begin
-  Info_InitRandomMonsters
+  Info_Random.Initialize;
 end;
 
 //==============================================================================
@@ -215,7 +133,8 @@ end;
 //==============================================================================
 procedure Info_ShutDownRandom;
 begin
-  Info_ShutDownRandomMonsters
+  if random_service <> nil then
+    random_service.ShutDown;
 end;
 
 //==============================================================================
@@ -225,19 +144,7 @@ end;
 //==============================================================================
 function Info_IsMonster(_type: integer): boolean;
 begin
-{$IFDEF HEXEN}
-  result := (mobjinfo[_type].doomednum > MAXPLAYERS) and      // Not player
-            (mobjinfo[_type].doomednum <> 9100) and           // Not player
-            (mobjinfo[_type].doomednum <> 9101) and           // Not player
-            (mobjinfo[_type].doomednum <> 9102) and           // Not player
-            (mobjinfo[_type].doomednum <> 9103) and           // Not player
-            (mobjinfo[_type].flags and MF_SHOOTABLE <> 0) and // Shootable
-            (mobjinfo[_type].flags and MF_COUNTKILL <> 0);    // Count kill or can attack
-{$ELSE}
-  result := (mobjinfo[_type].doomednum > MAXPLAYERS) and // Not player
-            (mobjinfo[_type].flags and MF_SHOOTABLE <> 0) and  // Shootable
-            ((mobjinfo[_type].flags and MF_COUNTKILL <> 0) or (mobjinfo[_type].missilestate <> 0) or (mobjinfo[_type].meleestate <> 0));  // Count kill or can attack
-{$ENDIF}
+  result := Info_Random.IsMonster(_type);
 end;
 
 end.

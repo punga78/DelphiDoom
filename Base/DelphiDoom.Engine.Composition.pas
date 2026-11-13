@@ -349,6 +349,21 @@ uses
   DelphiDoom.Engine.TableExport.Settings,
   DelphiDoom.Engine.TableExport.Names,
   info_export,
+  DelphiDoom.Info.Intf,
+  DelphiDoom.Engine.ActorDef.ParamRandom,
+  DelphiDoom.Engine.Info.Intf,
+  DelphiDoom.Engine.Info.Tables,
+  DelphiDoom.Engine.Info.Things,
+  DelphiDoom.Engine.Info.States,
+  DelphiDoom.Engine.Info.Groups,
+  DelphiDoom.Engine.Info.Random,
+  DelphiDoom.Engine.Info.RandomRules,
+  DelphiDoom.Engine.Info.StateTokens,
+  DelphiDoom.Engine.Info.StateText,
+  DelphiDoom.Engine.Info.StateNames,
+  info_common,
+  info_rnd,
+  sc_states,
   DelphiDoom.Voxel.Intf,
   DelphiDoom.Voxel.Factory,
   DelphiDoom.Engine.Voxel.FileSource,
@@ -1436,6 +1451,35 @@ begin
   PAK_Configure(AFiles, AContainers);
 end;
 
+// The tables of things and states stay data (info.pas of the game); the searches, the names of
+// the groups, the monsters placed at random and the names of the states are the classes of
+// Libs\Info, and info_common, info_rnd, info_fnd and sc_states are facades over them (issue #185, slice 1b)
+procedure ComposeInfoTables;
+var
+  LTables: TEngineInfoTables;
+  LMobjs: IInfoMobjSource;
+  LStates: IInfoStateSource;
+  LSprites: IInfoSpriteSource;
+  LThings: IEngineInfoThings;
+  LThingNames: IInfoThingNames;
+  LInfoRandom: IInfoRandom;
+begin
+  // one object reads the three tables: the interfaces keep it alive
+  LTables := TEngineInfoTables.Create;
+  LMobjs := LTables;
+  LStates := LTables;
+  LSprites := LTables;
+  LThings := TEngineInfoThings.Create(LMobjs);
+  LThingNames := LThings as IInfoThingNames;
+  Info_ConfigureThings(LThings);
+  Info_ConfigureStates(TEngineInfoStates.Create(LMobjs, LStates, LSprites));
+  Info_ConfigureGroups(TEngineInfoGroups.Create);
+  LInfoRandom := TEngineParamRandom.Create;
+  Info_ConfigureRandom(TEngineInfoRandom.Create(LMobjs, TEngineInfoRandomRules.Create, LInfoRandom));
+  SC_ConfigureStateNames(TEngineStateNames.Create(LMobjs, TEngineInfoStateTokens.Create, LThingNames,
+    TEngineInfoStateText.Create));
+end;
+
 procedure ComposeEngine;
 var
   LWadServices: IEngineWadServices;
@@ -1547,6 +1591,7 @@ begin
   ComposeAutomap;
   ComposeHud;
   ComposeActorDef(LLog, LPreprocessor, LRegistry, LLumps);
+  ComposeInfoTables;
   ComposeTableExport(LCommandLine);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),
     TAcsFactory.CreateMachine(TEngineAcsHost.Create(LRandom, LZone), LLog));

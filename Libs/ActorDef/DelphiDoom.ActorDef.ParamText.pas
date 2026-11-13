@@ -58,17 +58,8 @@ uses
 { TActorDefParamText }
 
 class function TActorDefParamText.IsLongWord(const AText: string): Boolean;
-var
-  LIndex: Integer;
 begin
-  Result := False;
-  for LIndex := 1 to Length(AText) do
-  begin
-    if CharInSet(AText[LIndex], ['0'..'9']) then
-      Result := True
-    else
-      Exit(False);
-  end;
+  Result := TScannerStrings.IsDigits(AText);
 end;
 
 class function TActorDefParamText.IsInteger(const AText: string): Boolean;
@@ -85,27 +76,8 @@ begin
 end;
 
 class function TActorDefParamText.ToInteger(const AText: string; const ADefault: Integer): Integer;
-var
-  LCode: Integer;
-  LOther: Integer;
 begin
-  Val(AText, Result, LCode);
-  if LCode = 0 then
-    Exit;
-  LOther := ADefault;
-  if AText.StartsWith('0x') then
-    Val('$' + Copy(AText, 3, MaxInt), LOther, LCode)
-  else if AText.StartsWith('-0x') then
-  begin
-    Val('$' + Copy(AText, 4, MaxInt), LOther, LCode);
-    LOther := -LOther;
-  end
-  else if (AText <> '') and (AText[1] = '#') then
-    Val(Copy(AText, 2, MaxInt), LOther, LCode);
-  if LCode = 0 then
-    Result := LOther
-  else
-    Result := ADefault;
+  Result := TScannerStrings.ToInteger(AText, ADefault);
 end;
 
 class function TActorDefParamText.ToFloat(const AText: string; const ADefault: Single): Single;
