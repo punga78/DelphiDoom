@@ -829,14 +829,20 @@ end;
 class function TIdMath.Floor(const AValue: Single): Single;
 begin
   Result := System.Int(AValue);
-  if (AValue < 0) and (Result <> AValue) then
+  if AValue = 0 then
+    // floor(-0) is -0 (the C function and the 32 bit Int); the 64 bit Int gives +0
+    Result := AValue
+  else if (AValue < 0) and (Result <> AValue) then
     Result := Result - 1;
 end;
 
 class function TIdMath.Ceil(const AValue: Single): Single;
 begin
   Result := System.Int(AValue);
-  if (AValue > 0) and (Result <> AValue) then
+  if AValue = 0 then
+    // ceil(-0) is -0 (the 64 bit Int gives +0)
+    Result := AValue
+  else if (AValue > 0) and (Result <> AValue) then
     Result := Result + 1
   else if (AValue < 0) and (Result = 0) then
     // ceil(-0.5) is -0 (the C function and the 32 bit Int); the 64 bit Int gives +0

@@ -26,17 +26,17 @@ type
   strict private
     FExec: TPSExec;
     FLog: ILog;
-    FProcActorDied: TMethod;
-    FProcPlayerEnter: TMethod;
-    FProcPlayerDied: TMethod;
-    FProcCrossLine: TMethod;
-    FProcShootLine: TMethod;
-    FProcUseLine: TMethod;
-    FProcTick: TMethod;
-    FProcTimerEverySecond: TMethod;
-    FProcTimerEveryMinute: TMethod;
-    FProcMapStart: TMethod;
-    procedure RunProc(const AProc: TMethod; const AParams: array of Integer);
+    FProcActorDied: Cardinal;
+    FProcPlayerEnter: Cardinal;
+    FProcPlayerDied: Cardinal;
+    FProcCrossLine: Cardinal;
+    FProcShootLine: Cardinal;
+    FProcUseLine: Cardinal;
+    FProcTick: Cardinal;
+    FProcTimerEverySecond: Cardinal;
+    FProcTimerEveryMinute: Cardinal;
+    FProcMapStart: Cardinal;
+    procedure RunProc(const AProc: Cardinal; const AParams: array of Integer);
   public
     /// <summary>The interpreter is not owned: it must live as long as the events</summary>
     constructor Create(const AExec: TPSExec; const ALog: ILog);
@@ -56,12 +56,8 @@ type
 
 implementation
 
-type
-  TScriptEvent = procedure of object;
-  TScriptEvent1I = procedure (AParam1: Integer) of object;
-  TScriptEvent2I = procedure (AParam1, AParam2: Integer) of object;
-  TScriptEvent3I = procedure (AParam1, AParam2, AParam3: Integer) of object;
-  TScriptEvent4I = procedure (AParam1, AParam2, AParam3, AParam4: Integer) of object;
+const
+  MAXIMUM_PARAMETERS = 4;
 
 { TScriptEvents }
 
@@ -79,52 +75,49 @@ end;
 
 procedure TScriptEvents.Clear;
 begin
-  FProcActorDied.Code := nil;
-  FProcPlayerEnter.Code := nil;
-  FProcPlayerDied.Code := nil;
-  FProcCrossLine.Code := nil;
-  FProcShootLine.Code := nil;
-  FProcUseLine.Code := nil;
-  FProcTick.Code := nil;
-  FProcTimerEverySecond.Code := nil;
-  FProcTimerEveryMinute.Code := nil;
-  FProcMapStart.Code := nil;
+  FProcActorDied := InvalidVal;
+  FProcPlayerEnter := InvalidVal;
+  FProcPlayerDied := InvalidVal;
+  FProcCrossLine := InvalidVal;
+  FProcShootLine := InvalidVal;
+  FProcUseLine := InvalidVal;
+  FProcTick := InvalidVal;
+  FProcTimerEverySecond := InvalidVal;
+  FProcTimerEveryMinute := InvalidVal;
+  FProcMapStart := InvalidVal;
 end;
 
 procedure TScriptEvents.LinkEvents;
 begin
-  FProcActorDied := FExec.GetProcAsMethodN('ONACTORDIED');
-  FProcPlayerEnter := FExec.GetProcAsMethodN('ONPLAYERENTER');
-  FProcPlayerDied := FExec.GetProcAsMethodN('ONPLAYERDIED');
-  FProcCrossLine := FExec.GetProcAsMethodN('ONCROSSLINE');
-  FProcShootLine := FExec.GetProcAsMethodN('ONSHOOTLINE');
-  FProcUseLine := FExec.GetProcAsMethodN('ONUSELINE');
-  FProcTick := FExec.GetProcAsMethodN('ONTICK');
-  FProcTimerEverySecond := FExec.GetProcAsMethodN('ONTIMEREVERYSECOND');
-  FProcTimerEveryMinute := FExec.GetProcAsMethodN('ONTIMEREVERYMINUTE');
-  FProcMapStart := FExec.GetProcAsMethodN('ONMAPSTART');
+  FProcActorDied := FExec.GetProc('ONACTORDIED');
+  FProcPlayerEnter := FExec.GetProc('ONPLAYERENTER');
+  FProcPlayerDied := FExec.GetProc('ONPLAYERDIED');
+  FProcCrossLine := FExec.GetProc('ONCROSSLINE');
+  FProcShootLine := FExec.GetProc('ONSHOOTLINE');
+  FProcUseLine := FExec.GetProc('ONUSELINE');
+  FProcTick := FExec.GetProc('ONTICK');
+  FProcTimerEverySecond := FExec.GetProc('ONTIMEREVERYSECOND');
+  FProcTimerEveryMinute := FExec.GetProc('ONTIMEREVERYMINUTE');
+  FProcMapStart := FExec.GetProc('ONMAPSTART');
 end;
 
-procedure TScriptEvents.RunProc(const AProc: TMethod; const AParams: array of Integer);
+procedure TScriptEvents.RunProc(const AProc: Cardinal; const AParams: array of Integer);
 var
   LExceptionProc: TPSProcRec;
   LMessage: string;
 begin
-  if AProc.Code = nil then
+  if AProc = InvalidVal then
     Exit;
 
   try
-    case Length(AParams) of
-      0: TScriptEvent(AProc);
-      1: TScriptEvent1I(AProc)(AParams[0]);
-      2: TScriptEvent2I(AProc)(AParams[0], AParams[1]);
-      3: TScriptEvent3I(AProc)(AParams[0], AParams[1], AParams[2]);
-      4: TScriptEvent4I(AProc)(AParams[0], AParams[1], AParams[2], AParams[3]);
-    else
+    if Length(AParams) > MAXIMUM_PARAMETERS then
+    begin
       FLog.Warning(Format('TScriptEvents.RunProc(): Invalid number of parameters %d'#13#10,
         [Length(AParams)]));
       Exit;
     end;
+    // in Pascal and not through a native method pointer: the thunk of GetProcAsMethod does not exist at 64 bit
+    FExec.RunProcHost(AParams, AProc);
   except
     on E: Exception do
     begin

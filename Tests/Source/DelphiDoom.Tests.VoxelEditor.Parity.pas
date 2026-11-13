@@ -103,7 +103,26 @@ uses
   DelphiDoom.VoxelEditor.Format.Kvx,
   DelphiDoom.VoxelEditor.Format.Vox,
   DelphiDoom.VoxelEditor.Format.Ddmesh,
-  DelphiDoom.Palette.GamePalettes;
+  DelphiDoom.Palette.GamePalettes,
+  DelphiDoom.MathCore.SoftExtended;
+
+// ADegrees / 360 * (2 * Pi) as the 32 bit compiler computes it: in Extended (Pi has 64 bits of mantissa) and rounded
+// to a Double when it is passed. At 64 bit Extended is a Double, which gives an angle one ULP away (and the sine of
+// 30 degrees is no longer 0.5): the same operations are done in software
+function RotationAngle(ADegrees: Integer): Double;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := ADegrees / 360 * (2 * Pi);
+end;
+{$ELSE}
+var
+  LTwoPi: TSoftExtended;
+begin
+  // Pi as the 32 bit compiler has it: $C90FDAA22168C235 * 2^-62
+  LTwoPi := TSoftExtended.FromMantissa($C90FDAA22168C235, -62) * TSoftExtended.FromInt64(2);
+  Result := (TSoftExtended.FromInt64(ADegrees) / TSoftExtended.FromInt64(360) * LTwoPi).ToDouble;
+end;
+{$IFEND}
 
 { TTestVoxelEditorParity }
 
@@ -521,7 +540,7 @@ begin
     begin
       LModel := NewModel(LModelIndex);
       try
-        TVoxelEditorRotator.Rotate(LModel, DEGREES[LIndex] / 360 * (2 * Pi));
+        TVoxelEditorRotator.Rotate(LModel, RotationAngle(DEGREES[LIndex]));
         Assert.AreEqual(Golden(Format('rotate %s %d', [TVoxelScenarios.ModelName(LModelIndex), DEGREES[LIndex]])),
           ModelHash(LModel), TVoxelScenarios.ModelName(LModelIndex) + ' ' + IntToStr(DEGREES[LIndex]));
       finally
@@ -546,7 +565,7 @@ begin
     begin
       LModel := NewModel(LModelIndex);
       try
-        TVoxelEditorRotator.RotateHighQuality(LModel, DEGREES[LIndex] / 360 * (2 * Pi));
+        TVoxelEditorRotator.RotateHighQuality(LModel, RotationAngle(DEGREES[LIndex]));
         Assert.AreEqual(Golden(Format('rotatehq %s %d', [TVoxelScenarios.ModelName(LModelIndex), DEGREES[LIndex]])),
           ModelHash(LModel), TVoxelScenarios.ModelName(LModelIndex) + ' ' + IntToStr(DEGREES[LIndex]));
       finally

@@ -22,6 +22,7 @@ uses
   DelphiDoom.VoxelEditor.Transforms in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Transforms.pas',
   DelphiDoom.VoxelEditor.Palettes in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Palettes.pas',
   DelphiDoom.VoxelEditor.Operations in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Operations.pas',
+  DelphiDoom.MathCore.SoftExtended in '..\Libs\MathCore\DelphiDoom.MathCore.SoftExtended.pas',
   DelphiDoom.VoxelEditor.Rotator in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Rotator.pas',
   DelphiDoom.VoxelEditor.Quantizer in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Quantizer.pas',
   DelphiDoom.VoxelEditor.ByteReader in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.ByteReader.pas',

@@ -37,7 +37,40 @@ type
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, System.Math, DelphiDoom.MathCore.SoftExtended;
+
+// Round(AMid + (AX - AMid) * AFirst - (AZ - AMid) * ASecond) when ASubtract, with a plus before the last term
+// otherwise. The old code evaluated it in the 64 bits of mantissa of the 32 bit FPU: on a half (the rotations by
+// multiples of 90 degrees land on them) the intermediates decide whether it goes up or down. At 64 bit, where
+// Extended is a Double, the cells that are near a half are computed again in software with the same roundings
+function RotatedCell(const AMid: Double; AX, AZ: Integer; const AFirst, ASecond: Double; ASubtract: Boolean): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  if ASubtract then
+    Result := Round(AMid + (AX - AMid) * AFirst - (AZ - AMid) * ASecond)
+  else
+    Result := Round(AMid + (AX - AMid) * AFirst + (AZ - AMid) * ASecond);
+end;
+{$ELSE}
+var
+  LValue: Double;
+  LMid, LSoft: TSoftExtended;
+begin
+  if ASubtract then
+    LValue := AMid + (AX - AMid) * AFirst - (AZ - AMid) * ASecond
+  else
+    LValue := AMid + (AX - AMid) * AFirst + (AZ - AMid) * ASecond;
+  if Abs(Frac(LValue) - 0.5) > 1E-6 then
+    Exit(Round(LValue));
+  LMid := TSoftExtended.FromDouble(AMid);
+  LSoft := LMid + (TSoftExtended.FromInt64(AX) - LMid) * TSoftExtended.FromDouble(AFirst);
+  if ASubtract then
+    LSoft := LSoft - (TSoftExtended.FromInt64(AZ) - LMid) * TSoftExtended.FromDouble(ASecond)
+  else
+    LSoft := LSoft + (TSoftExtended.FromInt64(AZ) - LMid) * TSoftExtended.FromDouble(ASecond);
+  Result := Integer(LSoft.Round);
+end;
+{$IFEND}
 
 { TVoxelEditorRotator }
 
@@ -58,8 +91,8 @@ begin
     for LX := 0 to LSize - 1 do
       for LZ := 0 to LSize - 1 do
       begin
-        LNewX := Round(LHalf + (LX - LHalf) * LCos - (LZ - LHalf) * LSin);
-        LNewZ := Round(LHalf + (LX - LHalf) * LSin + (LZ - LHalf) * LCos);
+        LNewX := RotatedCell(LHalf, LX, LZ, LCos, LSin, True);
+        LNewZ := RotatedCell(LHalf, LX, LZ, LSin, LCos, False);
         if (LNewX >= 0) and (LNewX < LSize) and (LNewZ >= 0) and (LNewZ < LSize) then
         begin
           LColor := AModel.Get(LNewX, LY, LNewZ);
@@ -108,8 +141,8 @@ begin
     for LX := 0 to LBig - 1 do
       for LZ := 0 to LBig - 1 do
       begin
-        LNewX := Round(LMid + (LX - LMid) * LCos - (LZ - LMid) * LSin);
-        LNewZ := Round(LMid + (LX - LMid) * LSin + (LZ - LMid) * LCos);
+        LNewX := RotatedCell(LMid, LX, LZ, LCos, LSin, True);
+        LNewZ := RotatedCell(LMid, LX, LZ, LSin, LCos, False);
         if (LNewX >= 0) and (LNewX < LBig) and (LNewZ >= 0) and (LNewZ < LBig) then
         begin
           LColor := LBlown[LNewX * LBig + LNewZ];

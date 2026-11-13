@@ -1,0 +1,3 @@
+softextended.operations=5AF4633C1965DFF2/475372
+softextended.chains=55EABC07AD4FF27E/348652
+softextended.sums=7D49AE8574B14FC6/239940

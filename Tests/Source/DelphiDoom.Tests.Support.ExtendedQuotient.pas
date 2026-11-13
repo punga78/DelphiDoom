@@ -25,67 +25,14 @@ type
 implementation
 
 uses
-  System.Math;
+  DelphiDoom.MathCore.FixedMath;
+
 
 { TExtendedQuotient }
 
 class function TExtendedQuotient.Divide(ANumerator: Integer; const ADenominator: Double): Double;
-{$IF SizeOf(Extended) > SizeOf(Double)}
 begin
-  Result := Extended(ANumerator) / Extended(ADenominator);
+  Result := TFixedMath.ExtendedQuotient(ANumerator, ADenominator);
 end;
-{$ELSE}
-const
-  // 2^27 + 1: Dekker's split of a Double in two halves
-  SPLITTER = 134217729.0;
-var
-  LNumerator: Double;
-  LQuotient: Double;
-  LProduct: Double;
-  LError: Double;
-  LRemainder: Double;
-  LSplit: Double;
-  LQuotientHigh, LQuotientLow, LDenominatorHigh, LDenominatorLow: Double;
-  LMantissa: Double;
-  LExponent: Integer;
-  LUnit: Double;
-  LDelta: Double;
-begin
-  if ANumerator = 0 then
-    Exit(0.0);
-  LNumerator := Abs(ANumerator);
-  LQuotient := LNumerator / ADenominator;
-
-  // the exact remainder of the numerator less quotient * denominator (the product has up to 106 bits)
-  LProduct := LQuotient * ADenominator;
-  LSplit := SPLITTER * LQuotient;
-  LQuotientHigh := LSplit - (LSplit - LQuotient);
-  LQuotientLow := LQuotient - LQuotientHigh;
-  LSplit := SPLITTER * ADenominator;
-  LDenominatorHigh := LSplit - (LSplit - ADenominator);
-  LDenominatorLow := ADenominator - LDenominatorHigh;
-  LError := ((LQuotientHigh * LDenominatorHigh - LProduct) + LQuotientHigh * LDenominatorLow +
-    LQuotientLow * LDenominatorHigh) + LQuotientLow * LDenominatorLow;
-  LRemainder := (LNumerator - LProduct) - LError;
-
-  // the exact quotient is LQuotient + LDelta. With 64 bits of mantissa it is first rounded to a multiple of
-  // a 2048th of the unit of the last place: when that gives the middle between two Doubles, the second
-  // rounding goes to the one with an even mantissa
-  LDelta := LRemainder / ADenominator;
-  Frexp(LQuotient, LMantissa, LExponent);
-  LUnit := Ldexp(1.0, LExponent - 53);
-  Result := LQuotient;
-  if Abs(LDelta) >= LUnit / 2 - LUnit / 4096 then
-    if Odd(Trunc(LQuotient / LUnit)) then
-    begin
-      if LDelta > 0 then
-        Result := LQuotient + LUnit
-      else
-        Result := LQuotient - LUnit;
-    end;
-  if ANumerator < 0 then
-    Result := -Result;
-end;
-{$IFEND}
 
 end.

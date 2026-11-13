@@ -12,6 +12,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.MathCore.SoftExtended,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Font.Types;
 
@@ -34,8 +35,8 @@ type
     /// <summary>
     ///   The gray level as people see it: 0.299 red + 0.587 green + 0.114 blue, cut to an integer. It is
     ///   computed with Extended as the original did: in 32 bits the result is the one of the original (a few
-    ///   levels, 63 for example, come out one less: 62.99999...), in 64 bits Extended is a Double and the level
-    ///   may differ by one on the same levels
+    ///   levels, 63 for example, come out one less: 62.99999...). In 64 bits Extended is a Double, so the sum
+    ///   is done with TSoftExtended, that rounds as the 64 bits of mantissa of the 32 bit FPU: the same level
     /// </summary>
     class function GrayLevel(ARed, AGreen, ABlue: Byte): Byte; static;
     /// <summary>The gray level of every pixel of the picture</summary>
@@ -65,12 +66,24 @@ uses
 { TFontColorizer }
 
 class function TFontColorizer.GrayLevel(ARed, AGreen, ABlue: Byte): Byte;
+{$IF SizeOf(Extended) > SizeOf(Double)}
 var
   LGray: Extended;
   LLevel: Integer;
 begin
   LGray := ARed * RED_WEIGHT + AGreen * GREEN_WEIGHT + ABlue * BLUE_WEIGHT;
   LLevel := Trunc(LGray);
+{$ELSE}
+var
+  LGray: TSoftExtended;
+  LLevel: Int64;
+begin
+  // the literals 0.299, 0.587 and 0.114 are the Extended that the 32 bit compiler makes of them
+  LGray := TSoftExtended.FromInt64(ARed) * TSoftExtended.FromRatio(299, 1000) +
+    TSoftExtended.FromInt64(AGreen) * TSoftExtended.FromRatio(587, 1000) +
+    TSoftExtended.FromInt64(ABlue) * TSoftExtended.FromRatio(114, 1000);
+  LLevel := LGray.Truncate;
+{$IFEND}
   if LLevel > FULL_LEVEL then
     LLevel := FULL_LEVEL;
   Result := Byte(LLevel);

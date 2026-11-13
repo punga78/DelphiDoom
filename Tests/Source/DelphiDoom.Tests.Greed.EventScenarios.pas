@@ -395,7 +395,8 @@ end;
 
 procedure TScriptWriter.RandomLine;
 var
-  LKeyword, LX, LY, LLayer: Integer;
+  LKeyword, LX, LY, LLayer, LNumber: Integer;
+  LName: AnsiString;
 begin
   LKeyword := Pick(KEYWORD_COUNT + 6);
   // the zones are tried more often than the rest
@@ -456,10 +457,19 @@ begin
       if ForceLoads < 16 then
       begin
         // one name in 40 is of a lump that does not exist
+        // the arguments of a call are evaluated from the last to the first by the 32 bit compiler and in the other
+        // order by the 64 bit one: the draws are made here, in the order of the 32 bit golden file
         if Pick(40) = 0 then
-          Line(16, [Pick(60)], MONSTER_NAMES[4])
+        begin
+          LName := MONSTER_NAMES[4];
+          LNumber := Pick(60);
+        end
         else
-          Line(16, [Pick(60)], MONSTER_NAMES[Pick(4)]);
+        begin
+          LName := MONSTER_NAMES[Pick(4)];
+          LNumber := Pick(60);
+        end;
+        Line(16, [LNumber], LName);
         Inc(ForceLoads);
       end;
     17:
@@ -576,6 +586,7 @@ var
   LSeed: Cardinal;
   LWriter: TScriptWriter;
   LIndex, LLines: Integer;
+  LHigh, LLow: Integer;
 begin
   Result := Default(TEventCase);
   Result.Index := AIndex;
@@ -584,8 +595,12 @@ begin
   Result.NewGame := AIndex mod 3 <> 1;
   Result.EventLoading := NextRandom(LSeed) mod 5 = 0;
   Result.Difficulty := NextRandom(LSeed) mod 6;
-  Result.PlayerX := ((NextRandom(LSeed) mod 64) shl 22) + (NextRandom(LSeed) and $3FFFFF);
-  Result.PlayerY := ((1 + NextRandom(LSeed) mod 61) shl 22) + (NextRandom(LSeed) and $3FFFFF);
+  LHigh := (NextRandom(LSeed) mod 64) shl 22;
+  LLow := NextRandom(LSeed) and $3FFFFF;
+  Result.PlayerX := LHigh + LLow;
+  LHigh := (1 + NextRandom(LSeed) mod 61) shl 22;
+  LLow := NextRandom(LSeed) and $3FFFFF;
+  Result.PlayerY := LHigh + LLow;
   Result.PlayerHeight := (30 + NextRandom(LSeed) mod 30) shl 16;
   Result.PlayerTime := NextRandom(LSeed) mod 100000;
   Result.TimeCount := NextRandom(LSeed) mod 100000;
@@ -595,8 +610,12 @@ begin
   Result.SpriteCount := NextRandom(LSeed) mod (EVENT_MAX_SPRITES + 1);
   for LIndex := 0 to Result.SpriteCount - 1 do
   begin
-    Result.Sprites[LIndex].X := ((NextRandom(LSeed) mod 64) shl 22) + (NextRandom(LSeed) and $3FFFFF);
-    Result.Sprites[LIndex].Y := ((NextRandom(LSeed) mod 64) shl 22) + (NextRandom(LSeed) and $3FFFFF);
+    LHigh := (NextRandom(LSeed) mod 64) shl 22;
+    LLow := NextRandom(LSeed) and $3FFFFF;
+    Result.Sprites[LIndex].X := LHigh + LLow;
+    LHigh := (NextRandom(LSeed) mod 64) shl 22;
+    LLow := NextRandom(LSeed) and $3FFFFF;
+    Result.Sprites[LIndex].Y := LHigh + LLow;
     Result.Sprites[LIndex].Z := NextRandom(LSeed);
     Result.Sprites[LIndex].MoveSpeed := (NextRandom(LSeed) mod 3) shl 16;
     Result.Sprites[LIndex].Kind := 75 + NextRandom(LSeed) mod 20;

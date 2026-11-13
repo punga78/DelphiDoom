@@ -52,6 +52,11 @@ type
 
 implementation
 
+const
+  // the positions of the UFOs are a sum of trigonometric terms: the C++ build is x87 with extended intermediates and
+  // the 64 bit build is SSE, so they differ in the last bit or two (radians)
+  POSITION_TOLERANCE = 1E-12;
+
 { TTestXcomMissionScenario }
 
 procedure TTestXcomMissionScenario.SetupFixture;
@@ -244,8 +249,9 @@ begin
               FLines[FLines.Count - 1]]);
         end;
         FLines.Add(Format('rng|%d|%s', [LVariant, UIntToStr(FRandom.Seed)]));
-        Assert.AreEqual('', TXcomSim.FirstDifference(string(TXcomSim.GoldenText(LFolder +
-          Format('sim%.2d.mission.txt', [LVariant]))), FLines.Text), Format('risposte del salvataggio %d', [LVariant]));
+        Assert.AreEqual('', TXcomSim.FirstDifferenceTolerant(string(TXcomSim.GoldenText(LFolder +
+          Format('sim%.2d.mission.txt', [LVariant]))), FLines.Text, POSITION_TOLERANCE),
+          Format('risposte del salvataggio %d', [LVariant]));
         Assert.AreEqual('', TXcomSim.CompareSave(LFolder + Format('sim%.2d.mission.sav', [LVariant]),
           FSim.SaveText(LGame, FRandom)), Format('stato finale del salvataggio %d', [LVariant]));
       finally

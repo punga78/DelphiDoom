@@ -237,7 +237,9 @@ begin
     not TryStrToFloat(Trim(Copy(ARight, Pos(':', ARight) + 1, MaxInt)), LRight, LFormat) then
     Exit(False);
   // the speeds come from a difference of terms that cancel when the UFO is near its destination: one ulp of
-  // the x87 of the C++ build (extended intermediates) becomes a few thousand ulps of a speed of 1e-4 radians
+  // the x87 of the C++ build (extended intermediates) becomes a few thousand ulps of a speed of 1e-4 radians.
+  // The positions (lon, lat, globeLon, globeLat) are a sum of such terms, and at 64 bit (SSE, no extended
+  // intermediates) they differ from the x87 golden in the last bit or two: the same relative tolerance
   Result := Abs(LLeft - LRight) <= 1E-11 * Abs(LLeft);
 end;
 
@@ -248,7 +250,8 @@ end;
 
 class function TXcomSim.SaveDifference(const AExpected, AActual: TYamlText): string;
 const
-  TOLERATED: array[0..2] of string = ('speedLon:', 'speedLat:', 'speedRadian:');
+  TOLERATED: array[0..6] of string = ('speedLon:', 'speedLat:', 'speedRadian:', 'lon:', 'lat:', 'globeLon:',
+    'globeLat:');
 var
   LExpected, LActual: TStringList;
   LIndex, LKey: Integer;
@@ -271,6 +274,9 @@ begin
       if LIndex < LActual.Count then
       begin
         LLine := Trim(LExpected[LIndex]);
+        // the first key of a list item
+        if LLine.StartsWith('- ') then
+          LLine := Copy(LLine, 3, MaxInt);
         for LKey := 0 to High(TOLERATED) do
           if LLine.StartsWith(TOLERATED[LKey]) and SameValue(LExpected[LIndex], LActual[LIndex]) then
             LAccepted := True;
@@ -369,7 +375,8 @@ var
   LAccepted: Boolean;
   LBytes: TBytes;
 const
-  TOLERATED: array[0..4] of string = ('lon:', 'lat:', 'speedLon:', 'speedLat:', 'speedRadian:');
+  TOLERATED: array[0..6] of string = ('lon:', 'lat:', 'speedLon:', 'speedLat:', 'speedRadian:', 'globeLon:',
+    'globeLat:');
 begin
   LFormat := TFormatSettings.Invariant;
   Result := '';
