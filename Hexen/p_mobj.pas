@@ -2498,8 +2498,12 @@ end;
 procedure P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
-  mo := P_SpawnMobj(x + _SHL(P_Random - 128, 11), y + _SHL(P_Random - 128, 11), z, Ord(MT_AXEBLOOD));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := y + _SHL(P_Random - 128, 11);
+  LX := x + _SHL(P_Random - 128, 11);
+  mo := P_SpawnMobj(LX, LY, z, Ord(MT_AXEBLOOD));
 
   if originator.bloodcolor <> 0 then
     R_SetMobjBloodTranslation(mo, originator.bloodcolor);

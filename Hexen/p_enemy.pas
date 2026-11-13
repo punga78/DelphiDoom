@@ -2763,9 +2763,13 @@ end;
 procedure A_MntrFloorFire(actor: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
   actor.z := actor.floorz;
-  mo := P_SpawnMobj(actor.x + (P_Random - P_Random) * 1024, actor.y + (P_Random - P_Random) * 1024, ONFLOORZ, Ord(MT_MNTRFX3));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + (P_Random - P_Random) * 1024;
+  LX := actor.x + (P_Random - P_Random) * 1024;
+  mo := P_SpawnMobj(LX, LY, ONFLOORZ, Ord(MT_MNTRFX3));
   mo.target := actor.target;
   mo.momx := 1; // Force block checking
   P_CheckMissileSpawn(mo);
@@ -3588,31 +3592,30 @@ end;
 procedure A_SerpentSpawnGibs(actor: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
-  mo := P_SpawnMobj(actor.x + ((P_Random - 128) * $1000),
-                    actor.y + ((P_Random - 128) * $1000),
-                    actor.floorz + FRACUNIT,
-                    Ord(MT_SERPENT_GIB1));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + ((P_Random - 128) * $1000);
+  LX := actor.x + ((P_Random - 128) * $1000);
+  mo := P_SpawnMobj(LX, LY, actor.floorz + FRACUNIT, Ord(MT_SERPENT_GIB1));
   if mo <> nil then
   begin
     mo.momx := (P_Random - 128) * 64;
     mo.momy := (P_Random - 128) * 64;
     mo.floorclip := 6 * FRACUNIT;
   end;
-  mo := P_SpawnMobj(actor.x + ((P_Random - 128) * $1000),
-                    actor.y + ((P_Random - 128) * $1000),
-                    actor.floorz + FRACUNIT,
-                    Ord(MT_SERPENT_GIB2));
+  LY := actor.y + ((P_Random - 128) * $1000);
+  LX := actor.x + ((P_Random - 128) * $1000);
+  mo := P_SpawnMobj(LX, LY, actor.floorz + FRACUNIT, Ord(MT_SERPENT_GIB2));
   if mo <> nil then
   begin
     mo.momx := (P_Random - 128) * 64;
     mo.momy := (P_Random - 128) * 64;
     mo.floorclip := 6 * FRACUNIT;
   end;
-  mo := P_SpawnMobj(actor.x + ((P_Random - 128) * $1000),
-                    actor.y + ((P_Random - 128) * $1000),
-                    actor.floorz + FRACUNIT,
-                    Ord(MT_SERPENT_GIB3));
+  LY := actor.y + ((P_Random - 128) * $1000);
+  LX := actor.x + ((P_Random - 128) * $1000);
+  mo := P_SpawnMobj(LX, LY, actor.floorz + FRACUNIT, Ord(MT_SERPENT_GIB3));
   if mo <> nil then
   begin
     mo.momx := (P_Random - 128) * 64;
@@ -3914,6 +3917,7 @@ end;
 procedure A_BishopPainBlur(actor: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY, LZ: fixed_t;
 begin
   if P_Random < 64 then
   begin
@@ -3921,10 +3925,11 @@ begin
     exit;
   end;
 
-  mo := P_SpawnMobj(actor.x + (P_Random - P_Random) * $1000,
-                    actor.y + (P_Random - P_Random) * $1000,
-                    actor.z + (P_Random - P_Random) * $800,
-                    Ord(MT_BISHOPPAINBLUR));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LZ := actor.z + (P_Random - P_Random) * $800;
+  LY := actor.y + (P_Random - P_Random) * $1000;
+  LX := actor.x + (P_Random - P_Random) * $1000;
+  mo := P_SpawnMobj(LX, LY, LZ, Ord(MT_BISHOPPAINBLUR));
   if mo <> nil then
     mo.angle := actor.angle;
 end;
@@ -4146,14 +4151,16 @@ var
   mo: Pmobj_t;
   i: integer;
   delay: integer;
+  LX, LY, LZ: fixed_t;
 begin
   delay := 16 + _SHR3(P_Random);
   for i := 1 + (P_Random and 3) downto 0 do
   begin
-    mo := P_SpawnMobj(actor.x + (P_Random - 128) * $4000,
-                      actor.y + (P_Random - 128) * $4000,
-                      actor.z + (P_Random - 128) * $1000,
-                      Ord(MT_DRAGON_FX2));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random - 128) * $1000;
+    LY := actor.y + (P_Random - 128) * $4000;
+    LX := actor.x + (P_Random - 128) * $4000;
+    mo := P_SpawnMobj(LX, LY, LZ, Ord(MT_DRAGON_FX2));
     if mo <> nil then
     begin
       mo.tics := delay + (P_Random and 3) * i * 2;
@@ -5960,6 +5967,7 @@ procedure A_FreezeDeathChunks(actor: Pmobj_t);
 var
   i: integer;
   mo: Pmobj_t;
+  LX, LY, LZ: fixed_t;
 begin
   if (actor.momx <> 0) or (actor.momy <> 0) or (actor.momz <> 0) then
   begin
@@ -5971,10 +5979,11 @@ begin
 
   for i := 12 + (P_Random and 15) downto 0 do
   begin
-    mo := P_SpawnMobj(actor.x + _SHR7((P_Random - 128) * actor.radius),
-                      actor.y + _SHR7((P_Random - 128) * actor.radius),
-                      actor.z + (P_Random * actor.height div 255),
-                      Ord(MT_ICECHUNK));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random * actor.height div 255);
+    LY := actor.y + _SHR7((P_Random - 128) * actor.radius);
+    LX := actor.x + _SHR7((P_Random - 128) * actor.radius);
+    mo := P_SpawnMobj(LX, LY, LZ, Ord(MT_ICECHUNK));
     if mo <> nil then
     begin
       P_SetMobjState(mo, statenum_t(mo.info.spawnstate + (P_Random mod 3)));
@@ -5987,10 +5996,11 @@ begin
 
   for i := 12 + (P_Random and 15) downto 0 do
   begin
-    mo := P_SpawnMobj(actor.x + _SHR7((P_Random - 128) * actor.radius),
-                      actor.y + _SHR7((P_Random - 128) * actor.radius),
-                      actor.z + (P_Random * actor.height div 255),
-                      Ord(MT_ICECHUNK));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random * actor.height div 255);
+    LY := actor.y + _SHR7((P_Random - 128) * actor.radius);
+    LX := actor.x + _SHR7((P_Random - 128) * actor.radius);
+    mo := P_SpawnMobj(LX, LY, LZ, Ord(MT_ICECHUNK));
     if mo <> nil then
     begin
       P_SetMobjState(mo, statenum_t(mo.info.spawnstate + (P_Random mod 3)));

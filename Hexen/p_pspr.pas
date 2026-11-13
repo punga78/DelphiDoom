@@ -1222,12 +1222,16 @@ end;
 procedure A_FSwordFlames(actor: Pmobj_t);
 var
   i: integer;
+  LX, LY, LZ: fixed_t;
 begin
   for i := 1 + (P_Random and 3) downto 0 do
-    P_SpawnMobj(actor.x + (P_Random - 128) * 4096,
-                actor.y + (P_Random - 128) * 4096,
-                actor.z + (P_Random - 128) * 2048,
-                Ord(MT_FSWORD_FLAME));
+  begin
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random - 128) * 2048;
+    LY := actor.y + (P_Random - 128) * 4096;
+    LX := actor.x + (P_Random - 128) * 4096;
+    P_SpawnMobj(LX, LY, LZ, Ord(MT_FSWORD_FLAME));
+  end;
 end;
 
 //==============================================================================
@@ -1334,6 +1338,7 @@ procedure A_LightningZap(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   deltaZ: fixed_t;
+  LX, LY: fixed_t;
 begin
   A_LightningClip(actor);
 
@@ -1349,10 +1354,10 @@ begin
   else
     deltaZ := -10 * FRACUNIT;
 
-  mo := P_SpawnMobj(actor.x + (P_Random - 128) * actor.radius div 256,
-                    actor.y + (P_Random - 128) * actor.radius div 256,
-                    actor.z + deltaZ,
-                    Ord(MT_LIGHTNING_ZAP));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + (P_Random - 128) * actor.radius div 256;
+  LX := actor.x + (P_Random - 128) * actor.radius div 256;
+  mo := P_SpawnMobj(LX, LY, actor.z + deltaZ, Ord(MT_LIGHTNING_ZAP));
   if mo <> nil then
   begin
     mo.special2 := NativeInt(actor);

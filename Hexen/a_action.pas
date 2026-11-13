@@ -572,14 +572,18 @@ procedure A_LeafSpawn(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
+  LX, LY, LZ: fixed_t;
+  LType: integer;
 begin
 
   for i := (P_Random and 3) + 1 downto 0 do
   begin
-    mo := P_SpawnMobj(actor.x + _SHL(P_Random - P_Random, 14),
-                      actor.y + _SHL(P_Random - P_Random, 14),
-                      actor.z + _SHL(P_Random, 14),
-                      Ord(MT_LEAF1) + (P_Random and 1));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LType := Ord(MT_LEAF1) + (P_Random and 1);
+    LZ := actor.z + _SHL(P_Random, 14);
+    LY := actor.y + _SHL(P_Random - P_Random, 14);
+    LX := actor.x + _SHL(P_Random - P_Random, 14);
+    mo := P_SpawnMobj(LX, LY, LZ, LType);
     if mo <> nil then
     begin
       P_ThrustMobj(mo, actor.angle, _SHL(P_Random, 9) + 3 * FRACUNIT);
@@ -1388,13 +1392,15 @@ procedure A_SoAExplode(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   i: integer;
+  LX, LY, LZ: fixed_t;
 begin
   for i := 0 to 9 do
   begin
-    mo := P_SpawnMobj(actor.x + _SHL(P_Random - 128, 12),
-                      actor.y + _SHL(P_Random - 128, 12),
-                      actor.z + (P_Random * actor.height div 256),
-                      Ord(MT_ZARMORCHUNK));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random * actor.height div 256);
+    LY := actor.y + _SHL(P_Random - 128, 12);
+    LX := actor.x + _SHL(P_Random - 128, 12);
+    mo := P_SpawnMobj(LX, LY, LZ, Ord(MT_ZARMORCHUNK));
     P_SetMobjState(mo, statenum_t(mo.info.spawnstate + i));
     if mo <> nil then
     begin
