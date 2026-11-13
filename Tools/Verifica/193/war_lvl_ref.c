@@ -633,7 +633,13 @@ static void runAutotile(void)
         memset(&theRuin, 0, sizeof(theRuin));
         int m = 1 + rngRange(4);
         for (int i = 0; i < m; i++)
-            we_addRuinsPieces(&ctx, &ruinEntity, rngRange(66), rngRange(66), 1 + rngRange(5));
+        {
+            /* l'ordine di valutazione degli argomenti non e' definito in C: le estrazioni sono istruzioni separate */
+            int rx = rngRange(66);
+            int ry = rngRange(66);
+            int dim = 1 + rngRange(5);
+            we_addRuinsPieces(&ctx, &ruinEntity, rx, ry, dim);
+        }
         int before = theRuin.pieces.count;
         we_determineRuinTypes(&ctx, &ruinEntity);
         crc = 0xFFFFFFFFu;
@@ -649,7 +655,10 @@ static void runAutotile(void)
         int t = 5 + rngRange(120);
         for (int i = 0; i < t; i++)
         {
-            WarTree tr = createTree(rngRange(66) - 1, rngRange(66) - 1, rngRange(4));
+            int tx = rngRange(66) - 1;
+            int ty = rngRange(66) - 1;
+            int ta = rngRange(4);
+            WarTree tr = createTree(tx, ty, ta);
             if (rngRange(8) == 0) tr.type = WAR_TREE_CHOPPED;
             if (!we_hasTreeAtPosition(&ctx, &forestEntity, tr.tilex, tr.tiley))
                 WarTreeListAdd(&theForest.trees, tr);
@@ -692,8 +701,12 @@ static void runGrid(void)
             e->enabled = rngRange(8) != 0;
             e->dying = rngRange(10) == 0;
             e->collapsing = rngRange(12) == 0;
-            e->tile.x = (f32)(rngRange(75) - 5) + (f32)rngRange(4) * 0.25f;
-            e->tile.y = (f32)(rngRange(75) - 5) + (f32)rngRange(4) * 0.25f;
+            int wx = rngRange(75) - 5;
+            int fx = rngRange(4);
+            int wy = rngRange(75) - 5;
+            int fy = rngRange(4);
+            e->tile.x = (f32)wx + (f32)fx * 0.25f;
+            e->tile.y = (f32)wy + (f32)fy * 0.25f;
             map.units.items[map.units.count++] = e;
         }
         wgrid_build(&ctx);
