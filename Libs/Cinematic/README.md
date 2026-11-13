@@ -44,3 +44,7 @@ Il decoder dei FLI/FLC (`DelphiDoom.Cinematic.Flic.*`) da' i fotogrammi dei film
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
 - Usa `Libs\Imaging` (`TImagingPixels`) e `Libs\IdLib\Math` (`TIdMath.Sar`); nei test `Libs\MathCore` (`TCrc32`).
+
+## Scena di filmato saltabile e presentazione (issue #199, seconda fetta)
+
+`TFlicSceneFactory.TryCreateScene(nome, sorgente, opzioni, voce)` da' un `IFlicScene` sopra il player FLIC: `Update(ms, salto)` torna lo stato (`fssPlaying`, `fssEnded`, `fssSkipped`), l'immagine e se il fotogramma e' cambiato; un salto la ferma, la fine la termina (e dice alla voce `SceneFinished`, una volta sola). `TFlicFolderSource` legge le animazioni per nome da una cartella (`CAVE1` + `.WAR`); un'animazione che manca da' `nil` (si salta). `TFlicPresenter.Present` mette l'immagine su uno schermo a 32 bit (adatta con le bande, multiplo intero o stira, pixel piu' vicino). Nessun orologio, nessuna tastiera, nessuna finestra. Il catalogo delle animazioni di Warcraft, le voci e la prova sui file veri sono in `Libs\War` (`TWarCinematicDirector`). Dettagli e cosa resta nel [CLAUDE.md](CLAUDE.md).

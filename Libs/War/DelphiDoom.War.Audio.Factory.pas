@@ -10,7 +10,7 @@ unit DelphiDoom.War.Audio.Factory;
 interface
 
 uses
-  DelphiDoom.GameHost.Audio.Intf, DelphiDoom.War.Intf, DelphiDoom.War.Audio.Intf;
+  DelphiDoom.GameHost.Audio.Intf, DelphiDoom.War.Intf, DelphiDoom.War.Audio.Intf, DelphiDoom.War.Music.Intf;
 
 type
   /// <summary>
@@ -28,7 +28,10 @@ type
       const AConverter: IWarMusicConverter): IWarAudioLibrary; overload; static;
     class function CreateMixer(const ALibrary: IWarAudioLibrary): IWarSoundMixer; static;
     /// <summary>The mixer for IGameHostPcmOutput.Open(WAR_PLAYBACK_RATE, ...)</summary>
-    class function CreatePcmSource(const AMixer: IWarSoundMixer): IGameHostPcmSource; static;
+    class function CreatePcmSource(const AMixer: IWarSoundMixer): IGameHostPcmSource; overload; static;
+    /// <summary>The same with a song mixed under the effects</summary>
+    class function CreatePcmSource(const AMixer: IWarSoundMixer; const AMusic: IWarMusicPlayer): IGameHostPcmSource;
+      overload; static;
   end;
 
 implementation
@@ -63,6 +66,12 @@ end;
 class function TWarAudioFactory.CreatePcmSource(const AMixer: IWarSoundMixer): IGameHostPcmSource;
 begin
   Result := TWarPcmSource.Create(AMixer);
+end;
+
+class function TWarAudioFactory.CreatePcmSource(const AMixer: IWarSoundMixer;
+  const AMusic: IWarMusicPlayer): IGameHostPcmSource;
+begin
+  Result := TWarPcmSource.Create(AMixer, AMusic);
 end;
 
 end.
