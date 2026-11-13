@@ -1,0 +1,41 @@
+#ifndef __SND_LOCAL_H__
+#define __SND_LOCAL_H__
+// stub of snd_local.h for the harness: what snd_shader.cpp and snd_efxfile.cpp use
+enum { FS_SEEK_CUR, FS_SEEK_END, FS_SEEK_SET };
+#define PACKED __attribute__((packed))
+#define private public
+// the declarations of waveformatex_t .. idWaveFile of the real snd_local.h: build.ps1.txt copies them to snd_local_wave.inc
+#include "snd_local_wave.inc"
+#undef private
+class idSoundSample {
+public:
+	idStr name;
+	waveformatex_t objectInfo;
+	int objectSize;
+	int objectMemSize;
+	bool defaultSound;
+	// the body of idSoundSample::LengthIn44kHzSamples of snd_cache.cpp
+	int LengthIn44kHzSamples( void ) const {
+		if ( objectInfo.nSamplesPerSec == 11025 ) return objectSize << 2;
+		else if ( objectInfo.nSamplesPerSec == 22050 ) return objectSize << 1;
+		else return objectSize << 0;
+	}
+};
+class idSoundCache { public: idSoundSample *FindSound( const idStr &filename, bool loadOnDemandOnly ); };
+const int PRIMARYFREQ = 44100;
+class idSoundSystemLocal {
+public:
+	static idCVar s_maxSoundsPerShader;
+	idSoundCache *soundCache;
+	int SamplesToMilliseconds( int samples ) const { return ( samples / (PRIMARYFREQ/1000) ); }
+};
+extern idSoundSystemLocal soundSystemLocal;
+extern idCVar com_makingBuild;
+class idCVarSystem { public: const char *GetCVarString( const char *name ); };
+extern idCVarSystem *cvarSystem;
+#define OPENAL 1
+typedef int ALenum; typedef unsigned int ALuint; typedef void ALvoid; typedef int ALint; typedef float ALfloat; typedef char ALboolean; typedef int ALsizei; typedef unsigned char ALubyte;
+#define Mem_Alloc(x) calloc(1, (x))
+#define Mem_Free(x) free(x)
+#include "../openal/include/efxlib.h"
+#endif

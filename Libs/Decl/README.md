@@ -72,3 +72,14 @@ if Supports(Manager.FindType(DECL_Q3SHADER, 'textures/foo/bar'), IDeclQ3Shader, 
 ```
 
 Non e' registrato da `TDeclStandardTypes` (aggiungerebbe il numero 30 ai tipi di Doom 3): un gioco di Quake III lo registra da se'. La sintassi di un `.shader` non e' quella di Doom 3 (nessuna parola di tipo, parole separate da blank, `//` e `/* */`, righe che contano): il file lo trova `TQ3ShaderFileScanner` (`IDeclFileScanner`, una strategia per tipo che il manager usa al posto del lexer di idLib) e lo shader lo legge `TQ3ShaderTokenizer` (`COM_ParseExt`). Dettagli, difetti del C e differenze: [CLAUDE.md](CLAUDE.md).
+
+## Sound shader (`sound`, issue #112, prima fetta)
+
+`TDeclSound` (`DelphiDoom.Decl.Sound.*`, `.sndshd`) legge i sound shader di Doom 3 come `snd_shader.cpp`: parametri (`mindistance`, `maxdistance`, `volume`, `shakes`, `soundClass`, `leadinVolume`), flag (`looping`, `global`, `omnidirectional`, `no_dups`...), maschere degli altoparlanti, `altSound`, `leadin`, i campioni `.wav` e `.ogg` (nomi canonici, cartella della lingua) e `minSamples`. Dai dati si passa per `Supports(Decl, IDeclSound, S)`. I campioni si cercano nella cache dei suoni e il file system della lingua si chiede a due interfacce piccole (`ISoundSampleCatalog`, `ISoundFileProbe`) e a `TSoundShaderOptions`; `TDeclStandardTypes` registra il tipo con il catalogo dei soli nomi. Non c'e' il suono 3D (emitter, portali): secondo passo. Parita' col vero `snd_shader.cpp` (`sound.golden.txt`, uguale bit per bit). Dettagli e difetti del C++ in `CLAUDE.md`.
+
+```pascal
+TDeclSoundRegistration.Register(Manager.GetRegistry, LCatalogoDellaCache, LFileSystem, LOpzioni);
+if Supports(Manager.FindType(DECL_SOUND, 'snd/door'), IDeclSound, LSound) then
+  for LIndex := 0 to LSound.GetNumSounds - 1 do
+    LName := LSound.GetSound(LIndex);          // prima i leadin, poi i campioni
+```

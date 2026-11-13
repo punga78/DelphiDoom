@@ -59,6 +59,12 @@ uses
   DelphiDoom.Decl.Fx.ActionParser in '..\Libs\Decl\DelphiDoom.Decl.Fx.ActionParser.pas',
   DelphiDoom.Decl.Fx in '..\Libs\Decl\DelphiDoom.Decl.Fx.pas',
   DelphiDoom.Decl.Fx.Registration in '..\Libs\Decl\DelphiDoom.Decl.Fx.Registration.pas',
+  DelphiDoom.Decl.Sound.Types in '..\Libs\Decl\DelphiDoom.Decl.Sound.Types.pas',
+  DelphiDoom.Decl.Sound.Intf in '..\Libs\Decl\DelphiDoom.Decl.Sound.Intf.pas',
+  DelphiDoom.Decl.Sound.NameCatalog in '..\Libs\Decl\DelphiDoom.Decl.Sound.NameCatalog.pas',
+  DelphiDoom.Decl.Sound.Parser in '..\Libs\Decl\DelphiDoom.Decl.Sound.Parser.pas',
+  DelphiDoom.Decl.Sound in '..\Libs\Decl\DelphiDoom.Decl.Sound.pas',
+  DelphiDoom.Decl.Sound.Registration in '..\Libs\Decl\DelphiDoom.Decl.Sound.Registration.pas',
   DelphiDoom.Decl.FileScanner.Intf in '..\Libs\Decl\DelphiDoom.Decl.FileScanner.Intf.pas',
   DelphiDoom.Decl.Q3Shader.Types in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Types.pas',
   DelphiDoom.Decl.Q3Shader.Intf in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Intf.pas',
@@ -94,7 +100,10 @@ uses
   DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas',
   DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas',
   DelphiDoom.Tests.Decl.Q3Shader in 'Source\DelphiDoom.Tests.Decl.Q3Shader.pas',
-  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas';
+  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas',
+  DelphiDoom.Tests.Decl.SoundSupport in 'Source\DelphiDoom.Tests.Decl.SoundSupport.pas',
+  DelphiDoom.Tests.Decl.SoundGolden in 'Source\DelphiDoom.Tests.Decl.SoundGolden.pas',
+  DelphiDoom.Tests.Decl.Sound in 'Source\DelphiDoom.Tests.Decl.Sound.pas';
 
 var
   Runner: ITestRunner;

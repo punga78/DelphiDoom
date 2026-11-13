@@ -1,0 +1,184 @@
+#include "precompiled.h"
+#include "../sound/snd_local.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static std::string lower(std::string s) { for (size_t i = 0; i < s.size(); i++) s[i] = (char)tolower((unsigned char)s[i]); return s; }
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i]; char b[8];
+		if (c == '\\') r += "\\\\"; else if (c == '\n') r += "\\n"; else if (c == '\r') r += "\\r"; else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; } else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+// ---- cvars ----
+idCVar idSoundSystemLocal::s_maxSoundsPerShader( "s_maxSoundsPerShader", "0", 0, "" );
+idCVar com_makingBuild( "com_makingBuild", "0", CVAR_BOOL, "" );
+static std::string sysLang = "english";
+const char *idCVarSystem::GetCVarString( const char *name ) { return sysLang.c_str(); }
+static idCVarSystem theCvars; idCVarSystem *cvarSystem = &theCvars;
+idSoundSystemLocal soundSystemLocal;
+
+// ---- files: the ones the case lists, with their sizes ----
+static std::map<std::string, int> files;
+idFile *idFileSystem::OpenFileRead(const char *) { return 0; }
+int idFileSystem::ReadFile(const char *name, void **buf, ID_TIME_T *t) {
+	printf("R %s\n", name);
+	std::map<std::string, int>::iterator it = files.find(lower(name));
+	return it == files.end() ? -1 : it->second;
+}
+static idFileSystem theFs; 
+
+// ---- the sound cache: a sample is made from its name ----
+static std::map<std::string, idSoundSample *> samples;
+idSoundSample *idSoundCache::FindSound( const idStr &filename, bool loadOnDemandOnly ) {
+	printf("S %s\n", filename.c_str());
+	idStr fname = filename; fname.BackSlashesToSlashes(); fname.ToLower();
+	std::map<std::string, idSoundSample *>::iterator it = samples.find(fname.c_str());
+	if (it != samples.end()) return it->second;
+	idSoundSample *s = new idSoundSample;
+	s->name = fname;
+	int sum = 0; for (int i = 0; i < fname.Length(); i++) sum += (unsigned char)fname[i];
+	s->objectSize = 1000 + sum * 37;
+	memset(&s->objectInfo, 0, sizeof(s->objectInfo));
+	s->objectInfo.nSamplesPerSec = fname.Find("11k") >= 0 ? 11025 : fname.Find("22k") >= 0 ? 22050 : 44100;
+	s->objectInfo.wFormatTag = fname.Find(".ogg") >= 0 ? WAVE_FORMAT_TAG_OGG : WAVE_FORMAT_TAG_PCM;
+	s->defaultSound = fname.Find("_default") >= 0;
+	s->objectMemSize = s->objectSize * 2 + (sum % 7) * 1024;
+	samples[fname.c_str()] = s;
+	return s;
+}
+static idSoundCache theCache;
+
+// ---- the declaration manager: a bare shader for any name ----
+static std::map<std::string, idSoundShader *> decls;
+const idDecl *idDeclManager::FindType( declType_t type, const char *name, bool makeDefault ) {
+	printf("F %d %s %d\n", (int)type, name, makeDefault ? 1 : 0);
+	std::string k = lower(name);
+	std::map<std::string, idSoundShader *>::iterator it = decls.find(k);
+	if (it != decls.end()) return it->second;
+	if (!makeDefault) return 0;
+	idSoundShader *d = new idSoundShader;
+	d->name = name;
+	decls[k] = d;
+	return d;
+}
+static idDeclManager theDeclManager; idDeclManager *declManager = &theDeclManager;
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+
+struct Obj { idSoundShader *decl; std::string text; };
+static std::map<std::string, Obj> objs;
+
+static void dump(idSoundShader *d) {
+	const soundShaderParms_t *p = d->GetParms();
+	printf("sound %s desc=[%s] min=%s max=%s vol=%s shk=%s flags=%d class=%d n=%d def=%d\n", d->GetName(), esc(d->GetDescription()).c_str(),
+		fb(p->minDistance).c_str(), fb(p->maxDistance).c_str(), fb(p->volume).c_str(), fb(p->shakes).c_str(), p->soundShaderFlags,
+		p->soundClass, d->GetNumSounds(), (int)d->HasDefaultSound());
+	const idSoundShader *alt = d->GetAltSound();
+	printf(" alt=%s dmin=%s dmax=%s mask=%d lead=%s\n", alt ? alt->GetName() : "(null)", fb(d->GetMinDistance()).c_str(), fb(d->GetMaxDistance()).c_str(), d->speakerMask, fb(d->leadinVolume).c_str());
+	for (int i = -1; i <= d->GetNumSounds(); i++) printf(" snd[%d]=[%s]\n", i, esc(d->GetSound(i)).c_str());
+}
+// the private fields the golden has to see (the shader declares them private: the harness reads them with a friend-less cast)
+#define private public
+#undef private
+
+static void handleOp(const std::vector<std::string> &t) {
+	{ std::string all; for (size_t i = 0; i < t.size(); i++) { if (i) all += " "; all += t[i]; } printf("> %s\n", all.c_str()); }
+	if (t[0] == "lang") { sysLang = t.size() > 1 ? t[1] : ""; return; }
+	if (t[0] == "maxsounds") { idSoundSystemLocal::s_maxSoundsPerShader.i = atoi(t[1].c_str()); return; }
+	if (t[0] == "building") { com_makingBuild.b = t[1] == "1"; return; }
+	if (t[0] == "file") { files[lower(t[1])] = atoi(t[2].c_str()); return; }
+	if (t[0] == "deftext" || t[0] == "deftextrep") {
+		idSoundShader d;
+		d.name = t[1];
+		if (t[0] == "deftextrep") d.name = t[1] + std::string(atoi(t[2].c_str()), 'a');
+		bool r = d.SetDefaultText();
+		printf("deftext ret=%d len=%d text=%s\n", (int)r, (int)d.text.size(), esc(d.text.c_str()).c_str());
+		return;
+	}
+	Obj &o = objs[t[1]];
+	if (t[0] == "list") { o.decl->List(); return; }
+	if (t[0] == "default") { o.decl->MakeDefault(); dump(o.decl); return; }
+	if (t[0] == "freedata") { o.decl->FreeData(); dump(o.decl); return; }
+	if (t[0] == "reparse") {
+		const std::string &src = t.size() > 2 ? objs[t[2]].text : o.text; bool ret = o.decl->Parse(src.c_str(), (int)src.size());
+		printf("ret=%d\n", (int)ret); dump(o.decl); return;
+	}
+	if (t[0] == "shakes") { printf("shakes ret=%d\n", (int)o.decl->CheckShakesAndOgg()); return; }
+}
+
+static void flush(bool &inDecl, const std::string &name, const std::string &text) {
+	if (!inDecl) return;
+	printf("> decl sound %s\n", name.c_str());
+	idSoundShader *d = new idSoundShader;
+	d->name = name;
+	bool ret = d->Parse(text.c_str(), (int)text.size());
+	printf("ret=%d\n", ret ? 1 : 0);
+	Obj o; o.decl = d; o.text = text; objs[name] = o;
+	decls[lower(name)] = d;
+	dump(d);
+	inDecl = false;
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, NULL, _IONBF, 0);
+	common = &theCommon; idLib::common = &theCommon; fileSystem = &theFs; idLib::fileSystem = &theFs;
+	soundSystemLocal.soundCache = &theCache;
+	idMath::Init();
+	std::ifstream in(argv[1]);
+	std::string line, curName, curText;
+	bool inDecl = false;
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) {
+			flush(inDecl, curName, curText);
+			objs.clear(); decls.clear(); samples.clear(); files.clear();
+			sysLang = "english"; idSoundSystemLocal::s_maxSoundsPerShader.i = 0; com_makingBuild.b = false;
+			printf("## %s\n", line.substr(6).c_str());
+			continue;
+		}
+		if (line == "@end") { flush(inDecl, curName, curText); continue; }
+		if (line.compare(0, 7, "@decl s") == 0) {
+			flush(inDecl, curName, curText);
+			std::stringstream ss(line.substr(6)); std::string type; ss >> type >> curName;
+			curText = "sound " + curName + "\n";
+			inDecl = true;
+			continue;
+		}
+		if (line.compare(0, 4, "@op ") == 0) {
+			flush(inDecl, curName, curText);
+			std::stringstream ss(line.substr(4)); std::vector<std::string> t; std::string w;
+			while (ss >> w) t.push_back(w);
+			try { handleOp(t); } catch (idException &e) { printf("ERR %s\n", e.error); }
+			continue;
+		}
+		if (inDecl) curText += line + "\n";
+	}
+	flush(inDecl, curName, curText);
+	return 0;
+}
+

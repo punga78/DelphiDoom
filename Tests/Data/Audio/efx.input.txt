@@ -1,0 +1,185 @@
+@case size
+@op size
+@end
+@case full
+@file efx/full.efx
+Version 1
+
+// every parameter of a reverb
+reverb "full room"
+{
+	"environment" 26
+	"environment size" 7.5
+	"environment diffusion" 0.875
+	"room" -1000
+	"room hf" -454
+	"room lf" -12
+	"decay time" 1.49
+	"decay hf ratio" 0.54
+	"decay lf ratio" 1.25
+	"reflections" -2273
+	"reflections delay" 0.007
+	"reflections pan" 0.25 -0.5 1
+	"reverb" 1700
+	"reverb delay" 0.011
+	"reverb pan" 0 0.125 -2
+	"echo time" 0.25
+	"echo depth" 0.5
+	"modulation time" 0.25
+	"modulation depth" 0.75
+	"air absorption hf" -5
+	"hf reference" 5000
+	"lf reference" 250
+	"room rolloff factor" 3.5
+	"flags" 0x3f
+}
+@op load efx/full.efx
+@op find full room
+@op find Full Room
+@op find
+@end
+@case defaults-and-order
+@file efx/a.efx
+Version 1
+reverb "sparse" { "room" 5 "room" 7 "decay time" 2 }
+reverb plain_name
+{
+}
+reverb
+{
+	"flags" 3
+}
+@op load efx/a.efx
+@op find sparse
+@op find plain_name
+@op find
+@end
+@case value-on-next-line
+@file efx/nl.efx
+Version 1
+reverb "one" { "flags" 5 }
+reverb "last" { "echo time" 1 "environment"
+5 "flags" 7 }
+@op load efx/nl.efx
+@op find one
+@op find last
+@end
+@case two-effects-same-name
+@file efx/dup.efx
+Version 1
+reverb "dup" { "room" 1 }
+reverb "other" { "room" 2 }
+reverb "dup" { "room" 3 }
+@op load efx/dup.efx
+@op find dup
+@op find other
+@op unload
+@op find dup
+@end
+@case append
+@file efx/one.efx
+Version 1
+reverb "one" { "room" 1 }
+@file efx/two.efx
+Version 1
+reverb "two" { "room" 2 }
+@op load efx/one.efx
+@op load efx/two.efx os
+@op load efx/one.efx
+@op unload
+@end
+@case numbers
+@file efx/n.efx
+"Version" 1
+reverb "n"
+{
+	"environment" 4294967295
+	"environment size" -3.25
+	"room" -2147483647
+	"room hf" 12
+	"reflections pan" 1 2 3
+	"reverb pan" -1 -2 -3
+	"hf reference" 1e3
+	"flags" 0
+}
+@op load efx/n.efx
+@end
+@case empty-and-missing
+@file efx/empty.efx
+Version 1
+@file efx/spaces.efx
+Version 1
+
+
+@op load efx/empty.efx
+@op load efx/spaces.efx
+@op load efx/nofile.efx
+@op find anything
+@end
+@case bad-version
+@file efx/v2.efx
+Version 2
+reverb "x" { }
+@file efx/nov.efx
+reverb "x" { }
+@file efx/vtext.efx
+Version one
+@op load efx/v2.efx
+@op load efx/nov.efx
+@op load efx/vtext.efx
+@end
+@case bad-effects
+@file efx/other.efx
+Version 1
+eax "x" { }
+@file efx/upper.efx
+Version 1
+REVERB "x" { }
+@file efx/nobrace.efx
+Version 1
+reverb "x" foo
+@file efx/eof1.efx
+Version 1
+reverb "x"
+@file efx/eof2.efx
+Version 1
+reverb "x" {
+	"room" 1
+@file efx/badparam.efx
+Version 1
+reverb "ok" { "room" 5 }
+reverb "x" { "wrong param" 1 }
+@file efx/badnumber.efx
+Version 1
+reverb "n" { "room" abc "decay time" "x" }
+@op load efx/other.efx
+@op load efx/upper.efx
+@op load efx/nobrace.efx
+@op load efx/eof1.efx
+@op load efx/eof2.efx
+@op load efx/badparam.efx
+@op load efx/badnumber.efx
+@end
+@case key-words
+@file efx/keys.efx
+Version 1
+reverb "k"
+{
+	"reverb" 9
+	"reverb delay" 0.5
+	"environment diffusion" 1
+	"environment" 1 "environment size" 2
+	"modulation time" 3
+	"modulation depth" 4
+	"air absorption hf" 5
+	"lf reference" 6
+	"room rolloff factor" 7
+	"reflections" 8
+	"reflections delay" 9
+	"room lf" 10
+	"decay lf ratio" 11
+	"decay hf ratio" 12
+	"echo depth" 13
+}
+@op load efx/keys.efx
+@end

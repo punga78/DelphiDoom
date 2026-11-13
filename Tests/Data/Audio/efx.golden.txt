@@ -1,0 +1,179 @@
+## size
+> size
+size=112
+## full
+> load efx/full.efx
+ret=1
+n=1
+fx 0 name=[full room] size=112
+ env=26 size=40F00000 diff=3F600000 room=-1000,-454,-12 decay=3FBEB852,3F0A3D71,3FA00000
+ refl=-2273,3BE56042 pan=3E800000,BF000000,3F800000 reverb=1700,3C343958 pan=00000000,3E000000,C0000000
+ echo=3E800000,3F000000 mod=3E800000,3F400000 air=C0A00000 hf=459C4000 lf=437A0000 rolloff=40600000 flags=63
+> find full room
+find ret=1 index=0
+> find Full Room
+find ret=0 index=-1
+> find
+find ret=0 index=-1
+## defaults-and-order
+> load efx/a.efx
+ret=1
+n=3
+fx 0 name=[sparse] size=112
+ env=0 size=00000000 diff=00000000 room=7,0,0 decay=40000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 1 name=[plain_name] size=112
+ env=0 size=00000000 diff=00000000 room=0,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 2 name=[] size=112
+ env=0 size=00000000 diff=00000000 room=0,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=3
+> find sparse
+find ret=1 index=0
+> find plain_name
+find ret=1 index=1
+> find
+find ret=1 index=2
+## value-on-next-line
+> load efx/nl.efx
+ERR file efx/nl.efx, line 4: idEFXFile::ReadEffect: Invalid parameter in reverb definition
+n=1
+fx 0 name=[one] size=112
+ env=0 size=00000000 diff=00000000 room=0,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=5
+> find one
+find ret=1 index=0
+> find last
+find ret=0 index=-1
+## two-effects-same-name
+> load efx/dup.efx
+ret=1
+n=3
+fx 0 name=[dup] size=112
+ env=0 size=00000000 diff=00000000 room=1,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 1 name=[other] size=112
+ env=0 size=00000000 diff=00000000 room=2,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 2 name=[dup] size=112
+ env=0 size=00000000 diff=00000000 room=3,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+> find dup
+find ret=1 index=0
+> find other
+find ret=1 index=1
+> unload
+n=0
+> find dup
+find ret=0 index=-1
+## append
+> load efx/one.efx
+ret=1
+n=1
+fx 0 name=[one] size=112
+ env=0 size=00000000 diff=00000000 room=1,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+> load efx/two.efx os
+ret=1
+n=2
+fx 0 name=[one] size=112
+ env=0 size=00000000 diff=00000000 room=1,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 1 name=[two] size=112
+ env=0 size=00000000 diff=00000000 room=2,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+> load efx/one.efx
+ret=1
+n=3
+fx 0 name=[one] size=112
+ env=0 size=00000000 diff=00000000 room=1,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 1 name=[two] size=112
+ env=0 size=00000000 diff=00000000 room=2,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+fx 2 name=[one] size=112
+ env=0 size=00000000 diff=00000000 room=1,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+> unload
+n=0
+## numbers
+> load efx/n.efx
+ret=1
+n=1
+fx 0 name=[n] size=112
+ env=4294967295 size=C0500000 diff=00000000 room=-2147483647,12,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=3F800000,40000000,40400000 reverb=0,00000000 pan=BF800000,C0000000,C0400000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=447A0000 lf=00000000 rolloff=00000000 flags=0
+## empty-and-missing
+> load efx/empty.efx
+ret=1
+n=0
+> load efx/spaces.efx
+ret=1
+n=0
+> load efx/nofile.efx
+ret=0
+n=0
+> find anything
+find ret=0 index=-1
+## bad-version
+> load efx/v2.efx
+ERR file efx/v2.efx, line 1: idEFXFile::LoadFile: Unknown file version
+n=0
+> load efx/nov.efx
+ERR file efx/nov.efx, line 1: expected 'Version' but found 'reverb'
+n=0
+> load efx/vtext.efx
+ERR file efx/vtext.efx, line 1: expected integer value, found 'one'
+n=0
+## bad-effects
+> load efx/other.efx
+ERR file efx/other.efx, line 2: idEFXFile::ReadEffect: Unknown effect definition
+n=0
+> load efx/upper.efx
+ERR file efx/upper.efx, line 2: idEFXFile::ReadEffect: Unknown effect definition
+n=0
+> load efx/nobrace.efx
+ERR file efx/nobrace.efx, line 2: idEFXFile::ReadEffect: { not found, found foo
+n=0
+> load efx/eof1.efx
+ret=1
+n=0
+> load efx/eof2.efx
+ERR file efx/eof2.efx, line 4: idEFXFile::ReadEffect: EOF without closing brace
+n=0
+> load efx/badparam.efx
+ERR file efx/badparam.efx, line 3: idEFXFile::ReadEffect: Invalid parameter in reverb definition
+n=1
+fx 0 name=[ok] size=112
+ env=0 size=00000000 diff=00000000 room=5,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+> load efx/badnumber.efx
+ERR file efx/badnumber.efx, line 2: expected integer value, found 'abc'
+n=1
+fx 0 name=[ok] size=112
+ env=0 size=00000000 diff=00000000 room=5,0,0 decay=00000000,00000000,00000000
+ refl=0,00000000 pan=00000000,00000000,00000000 reverb=0,00000000 pan=00000000,00000000,00000000
+ echo=00000000,00000000 mod=00000000,00000000 air=00000000 hf=00000000 lf=00000000 rolloff=00000000 flags=0
+## key-words
+> load efx/keys.efx
+ret=1
+n=1
+fx 0 name=[k] size=112
+ env=1 size=40000000 diff=3F800000 room=0,0,10 decay=00000000,41400000,41300000
+ refl=8,41100000 pan=00000000,00000000,00000000 reverb=9,3F000000 pan=00000000,00000000,00000000
+ echo=00000000,41500000 mod=40400000,40800000 air=40A00000 hf=00000000 lf=40C00000 rolloff=40E00000 flags=0

@@ -6,9 +6,10 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 
 ## Contenuto
 
-- Unit nella cartella: 10 (nome a punti `DelphiDoom.Audio.*`).
+- Unit nella cartella: 13 (nome a punti `DelphiDoom.Audio.*`).
 - Interfacce dichiarate: `IAudioVoice`, `IExternalMusicCache`, `IExternalMusicClip`, `IExternalMusicSource`, `IMusicBackend`, `IMusicPlayer`, `ISfxPlayer`, `ISfxSampleSource`.
 - Punto di creazione delle classi: `DelphiDoom.Audio.Factory`.
+- Preset di riverbero EFX (`DelphiDoom.Audio.Efx.*`: `TEfxEffectsFile`, `TEfxReverbProperties`) e intestazione WAVE come la legge la cache dei suoni di Doom 3 (`TWaveHeaderReader`): issue #112, senza chiamanti nel motore, parita' col vero C++ (`Tests\Data\Audio`). Vedi CLAUDE.md.
 
 ## Prova
 

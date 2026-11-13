@@ -1,0 +1,104 @@
+## sizes
+> size
+sizes pcm=16 ex=18
+## minimal-pcm
+> wave w/min.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=4 mem=8 base=44 cksize=8
+## field-values
+> wave w/fields.wav
+ret=0
+ fmt tag=1 ch=2 rate=305419896 avg=3405691582 align=4660 bits=43981 cb=0
+ size=500 mem=1000 base=44 cksize=1000
+## fmt-with-extra-bytes
+> wave w/extra.wav
+ret=0
+ fmt tag=1 ch=1 rate=11025 avg=22050 align=2 bits=16 cb=0
+ size=2 mem=4 base=48 cksize=4
+## data-inside-the-fmt-chunk
+> wave w/trap.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=816972032 mem=1633944065 base=44 cksize=1633944065
+## empty-chunk-before-fmt
+> wave w/empty.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=1 mem=2 base=52 cksize=2
+## chunk-with-data-before-fmt
+> wave w/list.wav
+ret=-1
+> wave w/list8.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=1 mem=2 base=60 cksize=2
+## other-formats
+> wave w/float.wav
+ret=-1
+> wave w/adpcm.wav
+ret=-1
+> wave w/zero.wav
+ret=-1
+## short-fmt
+> wave w/short.wav
+ret=-1
+> wave w/short15.wav
+ret=-1
+> wave w/truncated.wav
+ret=-1
+> wave w/header-only.wav
+ret=-1
+> wave w/riff-only.wav
+ret=-1
+## not-a-wave
+> wave w/notriff.wav
+ret=-1
+> wave w/notwave.wav
+ret=-1
+> wave w/empty.bin
+ret=-1
+> wave w/text.wav
+ret=-1
+> wave w/missing.wav
+ret=-1
+## no-fmt-chunk
+> wave w/nofmt.wav
+ret=-1
+> wave w/nodata.wav
+ret=-1
+## data-sizes
+> wave w/unknown.wav
+ret=-1
+> wave w/big.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=2147483647 mem=-2 base=44 cksize=4294967294
+> wave w/zerodata.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=0 mem=0 base=44 cksize=0
+> wave w/odd.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=3 mem=7 base=44 cksize=7
+> wave w/exact.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=0 mem=0 base=44 cksize=0
+## data-in-the-first-bytes
+> wave w/early.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=212156 mem=424313 base=46 cksize=424313
+> wave w/split.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=1 mem=2 base=47 cksize=2
+## fmt-after-eight-byte-steps
+> wave w/step.wav
+ret=0
+ fmt tag=1 ch=1 rate=22050 avg=44100 align=2 bits=16 cb=0
+ size=1 mem=2 base=68 cksize=2
+> wave w/mis.wav
+ret=-1
