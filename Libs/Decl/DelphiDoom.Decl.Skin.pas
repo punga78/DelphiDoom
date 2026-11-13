@@ -20,7 +20,7 @@ unit DelphiDoom.Decl.Skin;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Decl.Intf, DelphiDoom.Decl.Base;
+  System.SysUtils, DelphiDoom.Decl.Intf, DelphiDoom.Decl.Base, DelphiDoom.Decl.Material.Intf;
 
 type
   /// <summary>A skin: which material replaces which (idDeclSkin)</summary>
@@ -36,9 +36,14 @@ type
     /// <summary>
     ///   The material that stands for <c>AShader</c> (the first mapping whose "from" is it or the wildcard);
     ///   the shader itself when none matches or when it is not drawn (<c>AIsDrawn</c> is
-    ///   <c>idMaterial::IsDrawn</c>, which the material declaration of another library answers); nil for nil.
+    ///   <c>idMaterial::IsDrawn</c>); nil for nil.
     /// </summary>
-    function RemapShaderBySkin(const AShader: IDecl; const AIsDrawn: Boolean = True): IDecl;
+    function RemapShaderBySkin(const AShader: IDecl; const AIsDrawn: Boolean): IDecl; overload;
+    /// <summary>
+    ///   As above with <c>idMaterial::IsDrawn</c> asked to the shader itself (<c>IDeclMaterial</c>); a shader that
+    ///   is not a material counts as drawn.
+    /// </summary>
+    function RemapShaderBySkin(const AShader: IDecl): IDecl; overload;
   end;
 
   /// <summary>
@@ -56,7 +61,8 @@ type
     function GetNumMappings: Integer;
     function GetMappingFrom(const AIndex: Integer): IDecl;
     function GetMappingTo(const AIndex: Integer): IDecl;
-    function RemapShaderBySkin(const AShader: IDecl; const AIsDrawn: Boolean = True): IDecl;
+    function RemapShaderBySkin(const AShader: IDecl; const AIsDrawn: Boolean): IDecl; overload;
+    function RemapShaderBySkin(const AShader: IDecl): IDecl; overload;
     /// <summary>A skin with the name of a material gets the text "_default name" (the implicit skin)</summary>
     function SetDefaultText: Boolean; override;
     function DefaultDefinition: AnsiString; override;
@@ -118,6 +124,17 @@ begin
 
   // didn't find a match or wildcard, so stay the same
   Result := AShader;
+end;
+
+function TDeclSkin.RemapShaderBySkin(const AShader: IDecl): IDecl;
+var
+  LMaterial: IDeclMaterial;
+  LIsDrawn: Boolean;
+begin
+  LIsDrawn := True;
+  if Assigned(AShader) and Supports(AShader, IDeclMaterial, LMaterial) then
+    LIsDrawn := LMaterial.IsDrawn;
+  Result := RemapShaderBySkin(AShader, LIsDrawn);
 end;
 
 procedure TDeclSkin.FreeData;

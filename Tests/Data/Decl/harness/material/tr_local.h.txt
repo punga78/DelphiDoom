@@ -1,0 +1,110 @@
+// stub of the renderer for the harness of Material.cpp and Image_program.cpp (written for the test)
+#ifndef __TR_LOCAL_H__
+#define __TR_LOCAL_H__
+#include "../idlib/precompiled.h"
+#include "Material.h"
+
+const int GLS_SRCBLEND_ZERO						= 0x00000001;
+const int GLS_SRCBLEND_ONE						= 0x0;
+const int GLS_SRCBLEND_DST_COLOR				= 0x00000003;
+const int GLS_SRCBLEND_ONE_MINUS_DST_COLOR		= 0x00000004;
+const int GLS_SRCBLEND_SRC_ALPHA				= 0x00000005;
+const int GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA		= 0x00000006;
+const int GLS_SRCBLEND_DST_ALPHA				= 0x00000007;
+const int GLS_SRCBLEND_ONE_MINUS_DST_ALPHA		= 0x00000008;
+const int GLS_SRCBLEND_ALPHA_SATURATE			= 0x00000009;
+const int GLS_SRCBLEND_BITS						= 0x0000000f;
+const int GLS_DSTBLEND_ZERO						= 0x0;
+const int GLS_DSTBLEND_ONE						= 0x00000020;
+const int GLS_DSTBLEND_SRC_COLOR				= 0x00000030;
+const int GLS_DSTBLEND_ONE_MINUS_SRC_COLOR		= 0x00000040;
+const int GLS_DSTBLEND_SRC_ALPHA				= 0x00000050;
+const int GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA		= 0x00000060;
+const int GLS_DSTBLEND_DST_ALPHA				= 0x00000070;
+const int GLS_DSTBLEND_ONE_MINUS_DST_ALPHA		= 0x00000080;
+const int GLS_DSTBLEND_BITS						= 0x000000f0;
+const int GLS_DEPTHMASK							= 0x00000100;
+const int GLS_REDMASK							= 0x00000200;
+const int GLS_GREENMASK							= 0x00000400;
+const int GLS_BLUEMASK							= 0x00000800;
+const int GLS_ALPHAMASK							= 0x00001000;
+const int GLS_COLORMASK							= (GLS_REDMASK|GLS_GREENMASK|GLS_BLUEMASK);
+const int GLS_DEPTHFUNC_ALWAYS					= 0x00010000;
+const int GLS_DEPTHFUNC_EQUAL					= 0x00020000;
+const int GLS_DEPTHFUNC_LESS					= 0x0;
+
+#define	MAX_IMAGE_NAME	256
+typedef unsigned int GLenum;
+enum { GL_VERTEX_PROGRAM_ARB = 1, GL_FRAGMENT_PROGRAM_ARB = 2 };
+
+typedef enum { TD_SPECULAR, TD_DIFFUSE, TD_DEFAULT, TD_BUMP, TD_HIGH_QUALITY } textureDepth_t;
+typedef enum { CF_2D, CF_NATIVE, CF_CAMERA } cubeFiles_t;
+
+class idImage {
+public:
+	idStr imgName; int uploadWidth, uploadHeight;
+	textureFilter_t filter; textureRepeat_t repeat; textureDepth_t depth; cubeFiles_t cube; bool picmip;
+	idImage() : uploadWidth(0), uploadHeight(0), filter(TF_DEFAULT), repeat(TR_REPEAT), depth(TD_DEFAULT), cube(CF_2D), picmip(true) {}
+	void AddReference() {} void SetClassification(int) {} void Reload(bool, bool) {}
+};
+class idIntCVar { public: int v; idIntCVar() : v(0) {} int GetInteger() const { return v; } };
+class idImageManager {
+public:
+	idImage *defaultImage, *currentRenderImage;
+	idIntCVar image_ignoreHighQuality;
+	idImageManager() { defaultImage = new idImage; defaultImage->imgName = "_default"; currentRenderImage = new idImage; currentRenderImage->imgName = "_currentRender"; }
+	idImage *ImageFromFile( const char *_name, textureFilter_t filter, bool allowDownSize, textureRepeat_t repeat, textureDepth_t depth, cubeFiles_t cubeMap = CF_2D ) {
+		if ( !_name || !_name[0] || idStr::Icmp( _name, "default" ) == 0 || idStr::Icmp( _name, "_default" ) == 0 ) {
+			return defaultImage;
+		}
+		idStr name = _name;
+		name.Replace( ".tga", "" );
+		name.BackSlashesToSlashes();
+		if ( name.Icmp( "_currentRender" ) == 0 ) {
+			return currentRenderImage;
+		}
+		idImage *image = new idImage;
+		image->imgName = name; image->filter = filter; image->repeat = repeat; image->depth = depth; image->cube = cubeMap; image->picmip = allowDownSize;
+		return image;
+	}
+};
+extern idImageManager *globalImages;
+
+class idCinematic {
+public:
+	idStr name; bool loop;
+	static idCinematic *Alloc() { return new idCinematic; }
+	virtual ~idCinematic() {}
+	virtual bool InitFromFile( const char *qpath, bool looping ) { name = qpath; loop = looping; return true; }
+	virtual int AnimationLength() { return 0; }
+	virtual void Close() {} virtual void ResetTime( int ) {} virtual void ImageForTime( int ) {}
+};
+class idSndWindow : public idCinematic {};
+class idMegaTexture { public: bool InitFromMegaFile( const char * ) { return true; } };
+class idUserInterface { public: idStr name; };
+class idUserInterfaceManager { public: idUserInterface *FindGui( const char *qpath, bool autoLoad = false, bool needUnique = false, bool forceNOTUnique = false ) { idUserInterface *u = new idUserInterface; u->name = qpath; return u; } };
+extern idUserInterfaceManager *uiManager;
+class idSoundEmitter { public: float amp; float CurrentAmplitude() { return amp; } };
+struct renderView_t { float shaderParms[8]; };
+struct viewDef_s { float floatTime; renderView_t renderView; };
+typedef viewDef_s viewDef_t;
+struct glConfig_t { bool ARBFragmentProgramAvailable; };
+extern glConfig_t glConfig;
+struct backEnd_t { viewDef_t *viewDef; };
+extern backEnd_t backEnd;
+struct primaryRenderView_t { int time; };
+struct tr_t { primaryRenderView_t primaryRenderView; };
+extern tr_t tr;
+class idBoolCVar { public: bool GetBool() const { return true; } };
+extern idBoolCVar r_useConstantMaterials;
+class idCVarSystem { public: int GetCVarInteger( const char * ) { return 0; } };
+extern idCVarSystem *cvarSystem;
+
+void *R_StaticAlloc( int bytes );
+void *R_ClearedStaticAlloc( int bytes );
+void R_StaticFree( void *data );
+int R_FindARBProgram( GLenum target, const char *program );
+const char *R_ParsePastImageProgram( idLexer &src );
+void R_LoadImage( const char *name, byte **pic, int *width, int *height, ID_TIME_T *timestamp, bool makePowerOf2 );
+byte *R_Dropsample( const byte *in, int inwidth, int inheight, int outwidth, int outheight );
+#endif

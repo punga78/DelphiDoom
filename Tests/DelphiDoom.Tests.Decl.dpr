@@ -34,6 +34,19 @@ uses
   DelphiDoom.Decl.Email in '..\Libs\Decl\DelphiDoom.Decl.Email.pas',
   DelphiDoom.Decl.Video in '..\Libs\Decl\DelphiDoom.Decl.Video.pas',
   DelphiDoom.Decl.Audio in '..\Libs\Decl\DelphiDoom.Decl.Audio.pas',
+  DelphiDoom.Decl.Material.Types in '..\Libs\Decl\DelphiDoom.Decl.Material.Types.pas',
+  DelphiDoom.Decl.Material.Intf in '..\Libs\Decl\DelphiDoom.Decl.Material.Intf.pas',
+  DelphiDoom.Decl.Material.Registers in '..\Libs\Decl\DelphiDoom.Decl.Material.Registers.pas',
+  DelphiDoom.Decl.Material.ExpressionParser in '..\Libs\Decl\DelphiDoom.Decl.Material.ExpressionParser.pas',
+  DelphiDoom.Decl.Material.Evaluator in '..\Libs\Decl\DelphiDoom.Decl.Material.Evaluator.pas',
+  DelphiDoom.Decl.Material.SurfaceParms in '..\Libs\Decl\DelphiDoom.Decl.Material.SurfaceParms.pas',
+  DelphiDoom.Decl.Material.BlendModes in '..\Libs\Decl\DelphiDoom.Decl.Material.BlendModes.pas',
+  DelphiDoom.Decl.Material.StageParser in '..\Libs\Decl\DelphiDoom.Decl.Material.StageParser.pas',
+  DelphiDoom.Decl.Material.Data in '..\Libs\Decl\DelphiDoom.Decl.Material.Data.pas',
+  DelphiDoom.Decl.Material.Parser in '..\Libs\Decl\DelphiDoom.Decl.Material.Parser.pas',
+  DelphiDoom.Decl.Material.ImageNames in '..\Libs\Decl\DelphiDoom.Decl.Material.ImageNames.pas',
+  delphidoom.decl.material.imagenamer in '..\libs\decl\delphidoom.decl.material.imagenamer.pas',
+  DelphiDoom.Decl.Material in '..\Libs\Decl\DelphiDoom.Decl.Material.pas',
   DelphiDoom.Decl.StandardTypes in '..\Libs\Decl\DelphiDoom.Decl.StandardTypes.pas',
   DelphiDoom.Decl.Factory in '..\Libs\Decl\DelphiDoom.Decl.Factory.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
@@ -43,7 +56,11 @@ uses
   DelphiDoom.Tests.Decl.Types in 'Source\DelphiDoom.Tests.Decl.Types.pas',
   DelphiDoom.Tests.Decl.EntityDef in 'Source\DelphiDoom.Tests.Decl.EntityDef.pas',
   DelphiDoom.Tests.Decl.Pda in 'Source\DelphiDoom.Tests.Decl.Pda.pas',
-  DelphiDoom.Tests.Decl.Golden in 'Source\DelphiDoom.Tests.Decl.Golden.pas';
+  DelphiDoom.Tests.Decl.Golden in 'Source\DelphiDoom.Tests.Decl.Golden.pas',
+  DelphiDoom.Tests.Decl.MaterialSupport in 'Source\DelphiDoom.Tests.Decl.MaterialSupport.pas',
+  DelphiDoom.Tests.Decl.MaterialExpressions in 'Source\DelphiDoom.Tests.Decl.MaterialExpressions.pas',
+  DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
+  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas';
 
 var
   Runner: ITestRunner;
