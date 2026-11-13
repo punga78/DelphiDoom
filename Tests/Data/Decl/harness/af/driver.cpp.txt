@@ -1,0 +1,214 @@
+#include "precompiled.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <new>
+
+// DeclAF.cpp never initialises idDeclAF_Body::width and the spring values of idDeclAF_Constraint (the objects come
+// from "new" without a constructor): the allocator gives zeroed memory so that the run does not depend on the heap
+void *operator new( size_t n ) { void *p = calloc( 1, n ? n : 1 ); if ( !p ) throw std::bad_alloc(); return p; }
+void *operator new[]( size_t n ) { void *p = calloc( 1, n ? n : 1 ); if ( !p ) throw std::bad_alloc(); return p; }
+void operator delete( void *p ) throw() { free( p ); }
+void operator delete[]( void *p ) throw() { free( p ); }
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+#include "../fsfloat.inc"
+int idFile::WriteFloatString( const char *fmt, ... ) {
+	char buf[8192]; int len; va_list argPtr;
+	va_start( argPtr, fmt ); len = FS_WriteFloatString( buf, fmt, argPtr ); va_end( argPtr );
+	return Write( buf, len );
+}
+
+static idDeclManager theDeclManager; idDeclManager *declManager = &theDeclManager;
+const idDecl *idDeclManager::FindType( declType_t type, const char *name, bool makeDefault ) { return 0; }
+static idRenderModelManager theModels; idRenderModelManager *renderModelManager = &theModels;
+void *idRenderModelManager::FindModel( const char *name ) { return 0; }
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+static std::string fbs(const float *p, int n) { std::string r; for (int i = 0; i < n; i++) { if (i) r += ","; r += fb(p[i]); } return r; }
+
+static std::string vecLine(idAFVector &v) {
+	idStr s;
+	v.ToString( s, 3 );
+	return std::string("k=") + (char)('0' + (int)v.type) + " j1=[" + esc(v.joint1.c_str()) + "] j2=[" + esc(v.joint2.c_str()) + "] v=" +
+		fbs(v.ToVec3().ToFloatPtr(), 3) + " s=[" + esc(s.c_str()) + "]";
+}
+
+static void dumpAF(idDeclAF *d) {
+	printf("af %s mod=%d model=[%s] skin=[%s] mass=%s susp=%s,%s,%s,%s nm=%s,%s,%s mv=%s,%s cont=%d clip=%d self=%d nb=%d nc=%d\n",
+		d->GetName(), (int)d->modified, esc(d->model.c_str()).c_str(), esc(d->skin.c_str()).c_str(),
+		fb(d->totalMass).c_str(),
+		fb(d->suspendVelocity[0]).c_str(), fb(d->suspendVelocity[1]).c_str(), fb(d->suspendAcceleration[0]).c_str(), fb(d->suspendAcceleration[1]).c_str(),
+		fb(d->noMoveTime).c_str(), fb(d->noMoveTranslation).c_str(), fb(d->noMoveRotation).c_str(), fb(d->minMoveTime).c_str(), fb(d->maxMoveTime).c_str(),
+		d->contents, d->clipMask, (int)d->selfCollision, d->bodies.Num(), d->constraints.Num());
+	printf(" fr=%s,%s,%s,%s\n", fb(d->defaultLinearFriction).c_str(), fb(d->defaultAngularFriction).c_str(), fb(d->defaultContactFriction).c_str(), fb(d->defaultConstraintFriction).c_str());
+	for (int i = 0; i < d->bodies.Num(); i++) {
+		idDeclAF_Body *b = d->bodies[i];
+		printf("body %d name=[%s] joint=[%s] mod=%d mt=%d sides=%d width=%s dens=%s cont=%d clip=%d self=%d fr=%s,%s,%s ang=%s inertia=%s contained=[%s]\n",
+			i, esc(b->name.c_str()).c_str(), esc(b->jointName.c_str()).c_str(), (int)b->jointMod, b->modelType, b->numSides, fb(b->width).c_str(), fb(b->density).c_str(),
+			b->contents, b->clipMask, (int)b->selfCollision, fb(b->linearFriction).c_str(), fb(b->angularFriction).c_str(), fb(b->contactFriction).c_str(),
+			fbs(b->angles.ToFloatPtr(), 3).c_str(), fbs(b->inertiaScale[0].ToFloatPtr(), 9).c_str(), esc(b->containedJoints.c_str()).c_str());
+		printf(" v1 %s\n v2 %s\n org %s\n fdir %s\n mdir %s\n", vecLine(b->v1).c_str(), vecLine(b->v2).c_str(), vecLine(b->origin).c_str(),
+			vecLine(b->frictionDirection).c_str(), vecLine(b->contactMotorDirection).c_str());
+	}
+	for (int i = 0; i < d->constraints.Num(); i++) {
+		idDeclAF_Constraint *c = d->constraints[i];
+		printf("con %d name=[%s] type=%d b1=[%s] b2=[%s] fric=%s sc=%s,%s,%s,%s,%s,%s lim=%d la=%s,%s,%s\n",
+			i, esc(c->name.c_str()).c_str(), (int)c->type, esc(c->body1.c_str()).c_str(), esc(c->body2.c_str()).c_str(), fb(c->friction).c_str(),
+			fb(c->stretch).c_str(), fb(c->compress).c_str(), fb(c->damping).c_str(), fb(c->restLength).c_str(), fb(c->minLength).c_str(), fb(c->maxLength).c_str(),
+			(int)c->limit, fb(c->limitAngles[0]).c_str(), fb(c->limitAngles[1]).c_str(), fb(c->limitAngles[2]).c_str());
+		printf(" anchor %s\n anchor2 %s\n shaft0 %s\n shaft1 %s\n axis %s\n limaxis %s\n", vecLine(c->anchor).c_str(), vecLine(c->anchor2).c_str(),
+			vecLine(c->shaft[0]).c_str(), vecLine(c->shaft[1]).c_str(), vecLine(c->axis).c_str(), vecLine(c->limitAxis).c_str());
+	}
+}
+
+typedef std::map<std::string, idVec3> JointMap;
+static bool getJoint( void *model, const idJointMat *frame, const char *name, idVec3 &origin, idMat3 &axis ) {
+	JointMap *m = (JointMap *)model;
+	JointMap::iterator it = m->find( name );
+	if ( it == m->end() ) return false;
+	origin = it->second;
+	axis = mat3_identity;
+	return true;
+}
+
+static std::map<std::string, idDeclAF *> afs;
+
+static void flushDecl(bool &inDecl, const std::string &name, const std::string &text) {
+	if (!inDecl) return;
+	printf("> decl %s\n", name.c_str());
+	idDeclAF *d = new idDeclAF;
+	d->name = name;
+	d->text = text;
+	bool ret = d->Parse(text.c_str(), (int)text.size());
+	printf("ret=%d\n", ret ? 1 : 0);
+	afs[name] = d;
+	dumpAF(d);
+	inDecl = false;
+}
+
+static std::string rest(const std::vector<std::string> &t, size_t from) {
+	std::string r;
+	for (size_t i = from; i < t.size(); i++) { if (i > from) r += " "; r += t[i]; }
+	return r;
+}
+
+static void handleOp(const std::vector<std::string> &t) {
+	printf("> %s\n", rest(t, 0).c_str());
+	if (t[0] == "contents") {
+		int c = idDeclAF::ContentsFromString(rest(t, 1).c_str());
+		idStr s;
+		printf("contents %d -> [%s]\n", c, idDeclAF::ContentsToString(c, s));
+		return;
+	}
+	if (t[0] == "tostr") {
+		idStr s;
+		printf("tostr [%s]\n", idDeclAF::ContentsToString(atoi(t[1].c_str()), s));
+		return;
+	}
+	if (t[0] == "jointmod") {
+		declAFJointMod_t m = idDeclAF::JointModFromString(t[1].c_str());
+		printf("jointmod %d [%s]\n", (int)m, idDeclAF::JointModToString(m));
+		return;
+	}
+	idDeclAF *d = afs[t[1]];
+	if (t[0] == "dump") dumpAF(d);
+	else if (t[0] == "finish") {
+		JointMap m;
+		for (size_t i = 2; i < t.size(); i++) {
+			size_t e = t[i].find('=');
+			float v[3] = { 0, 0, 0 };
+			std::stringstream ss(t[i].substr(e + 1)); std::string p; int k = 0;
+			while (std::getline(ss, p, ',') && k < 3) v[k++] = (float)atof(p.c_str());
+			m[t[i].substr(0, e)] = idVec3(v[0], v[1], v[2]);
+		}
+		d->Finish(getJoint, 0, &m);
+		dumpAF(d);
+	}
+	else if (t[0] == "save") {
+		d->text = "";
+		d->modified = true;
+		d->Save();
+		printf("saved replaced=%d modified=%d text=%s\n", (int)d->replaced, (int)d->modified, esc(d->text.c_str()).c_str());
+	}
+	else if (t[0] == "newbody") { d->NewBody(t[2].c_str()); dumpAF(d); }
+	else if (t[0] == "renamebody") { d->RenameBody(t[2].c_str(), t[3].c_str()); dumpAF(d); }
+	else if (t[0] == "deletebody") { d->DeleteBody(t[2].c_str()); dumpAF(d); }
+	else if (t[0] == "newcon") { d->NewConstraint(t[2].c_str()); dumpAF(d); }
+	else if (t[0] == "renamecon") { d->RenameConstraint(t[2].c_str(), t[3].c_str()); dumpAF(d); }
+	else if (t[0] == "deletecon") { d->DeleteConstraint(t[2].c_str()); dumpAF(d); }
+	else if (t[0] == "freedata") { d->FreeData(); dumpAF(d); }
+	else if (t[0] == "reload") { d->FreeData(); bool r = d->Parse(d->text.c_str(), (int)d->text.size()); printf("ret=%d\n", r ? 1 : 0); dumpAF(d); }
+	else if (t[0] == "makedefault") { d->MakeDefault(); dumpAF(d); }
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, NULL, _IONBF, 0);
+	common = &theCommon; idLib::common = &theCommon;
+	idMath::Init();
+	std::ifstream in(argv[1]);
+	std::string line, curName, curText;
+	bool inDecl = false;
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) {
+			flushDecl(inDecl, curName, curText);
+			afs.clear();
+			printf("## %s\n", line.substr(6).c_str());
+			continue;
+		}
+		if (line == "@end") { flushDecl(inDecl, curName, curText); continue; }
+		if (line.compare(0, 6, "@decl ") == 0) {
+			flushDecl(inDecl, curName, curText);
+			std::stringstream ss(line.substr(6)); std::string type; ss >> type >> curName;
+			curText = "articulatedFigure " + curName + "\n";
+			inDecl = true;
+			continue;
+		}
+		if (line.compare(0, 4, "@op ") == 0) {
+			flushDecl(inDecl, curName, curText);
+			std::stringstream ss(line.substr(4)); std::vector<std::string> t; std::string w;
+			while (ss >> w) t.push_back(w);
+			try { handleOp(t); } catch (idException &e) { printf("ERR %s\n", e.error); }
+			continue;
+		}
+		if (inDecl) curText += line + "\n";
+	}
+	flushDecl(inDecl, curName, curText);
+	return 0;
+}

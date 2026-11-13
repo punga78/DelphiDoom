@@ -57,8 +57,21 @@ Gen.Frac := 0.4; Gen.Age := Gen.Frac * Stage.ParticleLife;
 Count := Generator.CreateParticle(Stage, Gen, Verts);   // 0, 4 o 8 vertici (o piu' con le code)
 ```
 
-Parita' col vero `DeclParticle.cpp` e `DeclFX.cpp` (`effects.golden.txt`, tolleranza relativa 2E-6 sui float per l'x87 del riferimento). Non portato: `articulatedFigure` (`DeclAF.cpp`, segnaposto), i modelli che gli effetti nominano, `Save` con un nome di file. Dettagli e difetti del C++ in `CLAUDE.md`.
+Parita' col vero `DeclParticle.cpp` e `DeclFX.cpp` (`effects.golden.txt`, tolleranza relativa 2E-6 sui float per l'x87 del riferimento). Non portato: i modelli che gli effetti nominano, `Save` con un nome di file. Dettagli e difetti del C++ in `CLAUDE.md`.
 
+## Figure articolate (`articulatedFigure`, issue #101)
+
+`TDeclArticulatedFigure` (`DelphiDoom.Decl.ArticulatedFigure`) legge `articulatedFigure nome { settings { } body "b" { } fixed|ballAndSocketJoint|universalJoint|hinge|slider|spring "c" { } }` come `idDeclAF` di Doom 3 (port di `DeclAF.cpp`, GPL v3 con termini aggiuntivi). Una classe per unit `DelphiDoom.Decl.ArticulatedFigure.*`: `Types` (record `TAfVector`, `TAfSettings`, `TAfBody`, `TAfConstraint`), `Intf` (`IDeclArticulatedFigure` per i dati e `Finish`, `IDeclArticulatedFigureEditor` per `NewBody`, `RenameBody`, `DeleteBody`, i vincoli, `RebuildTextSource`, `Save`; `IAfJointResolver` al posto di `getJointTransform_t`), `Contents`, `VectorParser`, `BodyParser`, `ConstraintParser`, `SettingsParser`, `Writer`, `Finisher`, `Registration`. La dichiarazione tiene il tipo e le misure della forma di ogni corpo (`TAfBodyModel`: box, ottaedro, dodecaedro, cilindro, cono, osso) ma non costruisce modelli di collisione: come l'originale, lascia al gioco `SetupBox` e simili.
+
+```pascal
+Supports(Manager.FindType(DECL_AF, 'zombie'), IDeclArticulatedFigure, Figure);
+Figure.Finish(MyJointResolver);          // joint(), bonecenter(), bonedir() -> coordinate
+Body := Figure.GetBody(0);               // copia del record
+Supports(Figure, IDeclArticulatedFigureEditor, Editor);
+Editor.Save;                             // testo come lo scrive l'editor di Doom 3
+```
+
+La cartella `af` (`.af`) la registra il gioco (`RegisterDeclFolder('af', '.af', DECL_AF)`), non il gestore. Parita' col vero `DeclAF.cpp` (`afs.golden.txt`, 2199 righe, confronto esatto). Dettagli, difetti del C++ e cosa manca in `CLAUDE.md`.
 ## Shader di Quake III (issue #119, prima fetta)
 
 Il tipo `shader` (`TDeclQ3Shader`, `DelphiDoom.Decl.Q3Shader.*`) legge i file `scripts/*.shader` di Quake III come `tr_shader.c`: `ParseShader`, `ParseStage`, `ParseTexMod`, `ParseDeform`, `ParseSkyParms`, `ParseSort`, `ParseSurfaceParm`, `ParseVector`, `ParseWaveForm` e la parte di dati di `FinishShader`. I **dati**, non il disegno: le immagini si nominano e non si caricano; onde, `tcMod` e deformazioni sono dati, non si calcolano ancora (restano di #119).

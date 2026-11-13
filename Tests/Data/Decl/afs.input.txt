@@ -1,0 +1,623 @@
+@case settings and every kind of body
+@decl articulatedFigure all_bodies
+{
+	settings {
+		mesh "meshes/x.mesh"
+		anim "anims/x.anim"
+		model "models/figure"
+		skin "skins/figure"
+		friction 0.1, 0.2, 0.3, 0.4
+		suspendSpeed 1, 2, 3, 4.5
+		noMoveTime 2.5
+		noMoveTranslation 7
+		noMoveRotation 8
+		minMoveTime 0.25
+		maxMoveTime 9
+		totalMass 120
+		contents body, corpse
+		clipMask solid, playerclip, monsterclip
+		selfCollision 0
+	}
+	body "hips" {
+		joint "pelvis"
+		mod position
+		model box( ( -1, -2, -3 ), ( 4, 5, 6 ) )
+		origin ( 1, 2, 3 )
+		angles ( 10, 20, 30 )
+		density 0.75
+		inertiaScale ( 1 0 0 0 2 0 0 0 3 )
+		friction 0.5, 0.6, 0.7
+		contents corpse
+		clipMask solid
+		selfCollision 1
+		containedJoints "pelvis spine"
+		frictionDirection ( 0, 0, 1 )
+		contactMotorDirection -( 1, 0, 0 )
+	}
+	body "head" {
+		joint "neck"
+		mod both
+		model octahedron( joint( "neck" ), bonedir( "neck", "head" ) )
+		origin bonecenter( "neck", "head" )
+	}
+	body "chest" {
+		joint "origin"
+		model dodecahedron( ( 0, 0, 0 ), ( 8, 8, 8 ) )
+	}
+	body "arm" {
+		joint "shoulder"
+		model cylinder( ( 0, 0, 0 ), ( 2, 2, 20 ), 8 )
+		mod orientation
+	}
+	body "horn" {
+		joint "skull"
+		model cone( ( 0, 0, 0 ), ( 2, 2, 20 ), 6 )
+	}
+	body "shin" {
+		joint "knee"
+		model bone( ( 0, 0, 0 ), ( 0, 0, 14 ), 3.5 )
+		mod weird
+	}
+@op dump all_bodies
+@op save all_bodies
+@end
+@case every kind of constraint
+@decl articulatedFigure all_constraints
+{
+	settings {
+		friction 0.2, 0.2, 0.9
+	}
+	body "a" { joint "j1" }
+	body "b" { joint "j2" }
+	fixed "f1" {
+		body1 "a"
+		body2 "b"
+	}
+	ballAndSocketJoint "bs1" {
+		body1 "a"
+		body2 "world"
+		anchor ( 1, 2, 3 )
+		friction 0.75
+	}
+	ballAndSocketJoint "bs2" {
+		body1 "a"
+		body2 "b"
+		anchor joint( "j1" )
+		conelimit ( 0, 0, 1 ), 45, ( 1, 0, 0 )
+	}
+	ballAndSocketJoint "bs3" {
+		body1 "b"
+		body2 "a"
+		pyramidlimit ( 0, 1, 0 ), 30, 40, 50, ( 0, 0, 1 )
+	}
+	universalJoint "u1" {
+		body1 "a"
+		body2 "b"
+		anchor ( 0, 0, 5 )
+		shafts ( 1, 0, 0 ), ( 0, 1, 0 )
+		friction 0.3
+	}
+	universalJoint "u2" {
+		body1 "a"
+		body2 "b"
+		conelimit ( 0, 0, 1 ), 60
+	}
+	universalJoint "u3" {
+		body1 "a"
+		body2 "b"
+		pyramidlimit ( 0, 0, 1 ), 10, 20, 30
+	}
+	hinge "h1" {
+		body1 "a"
+		body2 "b"
+		anchor bonecenter( "j1", "j2" )
+		axis -( 0, 1, 0 )
+		limit -30, 120, 0.5
+		friction 0.25
+	}
+	hinge "h2" {
+		body1 "b"
+		body2 "a"
+	}
+	slider "s1" {
+		body1 "a"
+		body2 "b"
+		axis ( 0, 0, 1 )
+		friction 2
+	}
+	spring "sp1" {
+		body1 "a"
+		body2 "b"
+		anchor1 ( 1, 0, 0 )
+		anchor2 ( 2, 0, 0 )
+		friction 0.1
+		stretch 11
+		compress 12
+		damping 13
+		restLength 14
+		minLength 15
+		maxLength 16
+	}
+	spring "sp2" {
+		body1 "a"
+		body2 "b"
+	}
+}
+@op dump all_constraints
+@op save all_constraints
+@op finish all_constraints j1=1,2,3 j2=5,6,9
+@op finish all_constraints j1=1,2,3 j2=5,6,9
+@end
+@case bodies and constraints in a different order
+@decl articulatedFigure origin_last
+{
+	body "first" { joint "j1" }
+	body "second" { joint "j2" }
+	body "third" { joint "origin" }
+	hinge "h" { body1 "third" body2 "first" }
+}
+@decl articulatedFigure origin_second
+{
+	body "first" { joint "j1" }
+	body "second" { joint "origin" }
+}
+@decl articulatedFigure origin_first
+{
+	body "first" { joint "origin" }
+	body "second" { joint "j2" }
+}
+@end
+@case defaults of an almost empty declaration
+@decl articulatedFigure empty
+{
+}
+@decl articulatedFigure only_a_body
+{
+	body "b" { joint "origin" }
+}
+@decl articulatedFigure no_braces_inside
+@end
+@case case and words
+@decl articulatedFigure Shouty
+{
+	SETTINGS { TotalMass 3  CONTENTS NONE  clipmask Solid, Corpse, Body }
+	BODY "B1" { JOINT "x" MODEL BOX( ( 1, 1, 1 ), ( 2, 2, 2 ) ) DENSITY 2 CONTAINEDJOINTS "x" }
+	Hinge "H1" { BODY1 "B1" BODY2 "world" LIMIT 1, 2, 3 }
+}
+@end
+@case syntax errors
+@decl articulatedFigure e1
+{
+	frobnicate "x"
+}
+@decl articulatedFigure e2
+{
+	body "origin" { joint "x" }
+}
+@decl articulatedFigure e3
+{
+	body "WORLD" { joint "x" }
+}
+@decl articulatedFigure e4
+{
+	body "nojoint" { density 3 }
+}
+@decl articulatedFigure e5
+{
+	body "b" { joint "x" model custom( 1 ) }
+}
+@decl articulatedFigure e6
+{
+	body "b" { joint "x" model sphere( 1 ) }
+}
+@decl articulatedFigure e7
+{
+	body "b" { joint "x" origin banana( 1 ) }
+}
+@decl articulatedFigure e8
+{
+	body "b" { joint "x" wobble 3 }
+}
+@decl articulatedFigure e9
+{
+	body "good" { joint "x" density 5 }
+	hinge "h" { body1 "good" body2 "world" sparkle 3 }
+}
+@decl articulatedFigure e10
+{
+	hinge h { }
+}
+@decl articulatedFigure e11
+{
+	settings { bogus 1 }
+}
+@decl articulatedFigure e12
+{
+	settings
+}
+@decl articulatedFigure e13
+{
+	body "b" { joint "x" model box( ( 1, 2, 3 ) ) }
+}
+@decl articulatedFigure e14
+{
+	body "b" { joint "x" density
+@decl articulatedFigure e15
+{
+	spring "sp" { body1 "a" body2 "b" stretch }
+}
+@decl articulatedFigure e16
+{
+	fixed "f" { body1 "a" body2 "b" speed 1 }
+}
+@decl articulatedFigure e17
+{
+	slider "s" { body1 "a" body2 "b" speed 1 }
+}
+@decl articulatedFigure e18
+{
+	universalJoint "u" { speed 1 }
+}
+@decl articulatedFigure e19
+{
+	ballAndSocketJoint "bb" { conelimit ( 0, 0, 1 ) 45 }
+}
+@decl articulatedFigure e20
+{
+	settings { friction 1, 2 3 }
+}
+@end
+@case warnings of the checks after the parse
+@decl articulatedFigure duplicates
+{
+	body "dup" { joint "a" }
+	body "dup" { joint "b" }
+	body "Dup" { joint "c" }
+	hinge "h" { body1 "dup" body2 "world" }
+	hinge "h" { body1 "dup" body2 "world" }
+	slider "s" { body1 "dup" }
+	fixed "n" { body2 "dup" }
+	spring "p" { }
+	slider "empty" { body1 "" body2 "" }
+}
+@end
+@case friction with four numbers and the vector forms
+@decl articulatedFigure vectors
+{
+	settings { friction 0.5, 0.6, 0.7 }
+	body "b" {
+		joint "j"
+		model box( -( 1, 2, 3 ), -joint( "knee" ) )
+		origin -bonedir( "a", "b" )
+		frictionDirection bonecenter( "p", "q" )
+		inertiaScale ( 1 2 3 4 5 6 7 8 9 )
+		angles -( 1, 2, 3 )
+	}
+	hinge "h" { body1 "b" body2 "world" anchor -( 4, 5, 6 ) axis joint( "ax" ) }
+}
+@op finish vectors knee=10,20,30 a=1,1,1 b=4,5,6 p=0,0,0 q=2,4,8 ax=0,0,1
+@op finish vectors knee=10,20,30 a=1,1,1 b=4,5,6 p=0,0,0 q=2,4,8 ax=0,0,1
+@end
+@case finish with joints the model does not have
+@decl articulatedFigure missing
+{
+	body "b" {
+		joint "j"
+		model box( joint( "gone1" ), bonecenter( "gone2", "here" ) )
+		origin bonedir( "here", "gone3" )
+	}
+	hinge "h" { body1 "b" body2 "world" anchor joint( "gone4" ) axis -joint( "here" ) }
+}
+@op finish missing here=3,3,3
+@end
+@case the editor
+@decl articulatedFigure edit
+{
+	settings { friction 0.3, 0.4, 0.5, 0.6 contents solid }
+	body "one" { joint "origin" }
+	body "two" { joint "j2" }
+	hinge "h1" { body1 "one" body2 "two" }
+	slider "s1" { body1 "two" body2 "world" }
+	slider "s2" { body1 "TWO" body2 "TWO" }
+}
+@op newbody edit three
+@op newcon edit c3
+@op renamebody edit two deux
+@op renamebody edit ONE un
+@op renamecon edit H1 hinge1
+@op renamecon edit nothing x
+@op deletecon edit s1
+@op deletecon edit nothing
+@op deletebody edit deux
+@op deletebody edit nothing
+@op save edit
+@op newbody edit again
+@op save edit
+@end
+@case save of a figure with a constraint that has no kind
+@decl articulatedFigure kindless
+{
+	body "b" { joint "j" }
+}
+@op newcon kindless k
+@op save kindless
+@end
+@case contents words
+@op contents solid
+@op contents solid, body
+@op contents corpse playerclip
+@op contents none
+@op contents solid, none, monsterclip
+@op contents SOLID , Corpse
+@op contents solid, banana, body
+@op contents banana
+@op contents
+@op tostr 0
+@op tostr 1
+@op tostr 1280
+@op tostr 1305
+@op tostr -1
+@op tostr 6
+@op jointmod orientation
+@op jointmod POSITION
+@op jointmod Both
+@op jointmod nonsense
+@end
+@case the default definition and a reload
+@decl articulatedFigure keep
+{
+	settings { model "m1" skin "s1" friction 9, 8, 7, 6 totalMass 77 }
+	body "b" { joint "j" }
+	hinge "h" { body1 "b" body2 "world" }
+}
+@op freedata keep
+@op reload keep
+@op makedefault keep
+@op reload keep
+@end
+@case a failed parse keeps what it read
+@decl articulatedFigure partial
+{
+	settings { model "partial" totalMass 5 }
+	body "ok" { joint "j" }
+	body "bad" { joint "j" wobble 1 }
+	body "never" { joint "k" }
+}
+@op makedefault partial
+@end
+@case a big body and large numbers
+@decl articulatedFigure numbers
+{
+	body "b" {
+		joint "j"
+		model cylinder( ( -0.000123456789, 1e3, 123456.789 ), ( 0.1, 0.2, 0.3 ), 24 )
+		density 0.00001
+		friction -1, 0.1, 0.2
+		angles ( 0, 0, 0.5 )
+	}
+	hinge "h" { body1 "b" body2 "world" friction 100000 limit 0, 0, 0 }
+}
+@op save numbers
+@end
+@case more syntax errors
+@decl articulatedFigure m1
+{
+	body "b" { joint "x" model "box" }
+}
+@decl articulatedFigure m2
+{
+	body "b" { joint "x" model octahedron( ( 1, 1, 1 ) ) }
+}
+@decl articulatedFigure m3
+{
+	body "b" { joint "x" model dodecahedron( ( 1, 1, 1 ), ( 2, 2, 2 ) 5 ) }
+}
+@decl articulatedFigure m4
+{
+	body "b" { joint "x" model cylinder( ( 0, 0, 0 ), ( 1, 1, 1 ) ) }
+}
+@decl articulatedFigure m5
+{
+	body "b" { joint "x" model cylinder( ( 0, 0, 0 ), ( 1, 1, 1 ), 8 9 ) }
+}
+@decl articulatedFigure m6
+{
+	body "b" { joint "x" model cone( ( 0, 0, 0 ), ( 1, 1, 1 ) ) }
+}
+@decl articulatedFigure m7
+{
+	body "b" { joint "x" model cone( ( 0, 0, 0 ), ( 1, 1, 1 ), 8 9 ) }
+}
+@decl articulatedFigure m8
+{
+	body "b" { joint "x" model bone( ( 0, 0, 0 ), ( 1, 1, 1 ) ) }
+}
+@decl articulatedFigure m9
+{
+	body "b" { joint "x" model bone( ( 0, 0, 0 ), ( 1, 1, 1 ), 2 9 ) }
+}
+@decl articulatedFigure m10
+{
+	body "b" { joint 5 }
+}
+@decl articulatedFigure m11
+{
+	body "b" { joint "x" mod }
+}
+@decl articulatedFigure m12
+{
+	body "b" { joint "x" containedjoints 5 }
+}
+@decl articulatedFigure m13
+{
+	body "b" { joint "x" frictionDirection banana }
+}
+@decl articulatedFigure m14
+{
+	body "b" { joint "x" contactMotorDirection banana }
+}
+@decl articulatedFigure m15
+{
+	body "b" { joint "x" angles banana }
+}
+@decl articulatedFigure m16
+{
+	body "b" { joint "x" origin ( 1 2 3 ) }
+}
+@decl articulatedFigure m17
+{
+	body b { }
+}
+@decl articulatedFigure m18
+{
+	body "b" x
+}
+@decl articulatedFigure m19
+{
+	body "b" { joint "x" origin -
+}
+@decl articulatedFigure m20
+{
+	body "b" { joint "x" origin
+}
+@decl articulatedFigure m21
+{
+	ballAndSocketJoint "b" { anchor banana }
+}
+@decl articulatedFigure m22
+{
+	ballAndSocketJoint "b" { conelimit banana }
+}
+@decl articulatedFigure m23
+{
+	ballAndSocketJoint "b" { conelimit ( 0, 0, 1 ), 45, banana }
+}
+@decl articulatedFigure m24
+{
+	ballAndSocketJoint "b" { conelimit ( 0, 0, 1 ), 45 ( 1, 0, 0 ) }
+}
+@decl articulatedFigure m25
+{
+	ballAndSocketJoint "b" { pyramidlimit banana }
+}
+@decl articulatedFigure m26
+{
+	ballAndSocketJoint "b" { pyramidlimit ( 0, 0, 1 ), 1 2 }
+}
+@decl articulatedFigure m27
+{
+	ballAndSocketJoint "b" { pyramidlimit ( 0, 0, 1 ), 1, 2 3 }
+}
+@decl articulatedFigure m28
+{
+	ballAndSocketJoint "b" { pyramidlimit ( 0, 0, 1 ), 1, 2, 3 ( 1, 0, 0 ) }
+}
+@decl articulatedFigure m29
+{
+	ballAndSocketJoint "b" { pyramidlimit ( 0, 0, 1 ), 1, 2, 3, banana }
+}
+@decl articulatedFigure m30
+{
+	universalJoint "u" { anchor banana }
+}
+@decl articulatedFigure m31
+{
+	universalJoint "u" { shafts banana }
+}
+@decl articulatedFigure m32
+{
+	universalJoint "u" { shafts ( 1, 0, 0 ) ( 0, 1, 0 ) }
+}
+@decl articulatedFigure m33
+{
+	universalJoint "u" { shafts ( 1, 0, 0 ), banana }
+}
+@decl articulatedFigure m34
+{
+	universalJoint "u" { conelimit banana }
+}
+@decl articulatedFigure m35
+{
+	universalJoint "u" { conelimit ( 0, 0, 1 ) 45 }
+}
+@decl articulatedFigure m36
+{
+	universalJoint "u" { pyramidlimit banana }
+}
+@decl articulatedFigure m37
+{
+	universalJoint "u" { pyramidlimit ( 0, 0, 1 ), 1 2 }
+}
+@decl articulatedFigure m38
+{
+	universalJoint "u" { pyramidlimit ( 0, 0, 1 ), 1, 2 3 }
+}
+@decl articulatedFigure m39
+{
+	hinge "h" { anchor banana }
+}
+@decl articulatedFigure m40
+{
+	hinge "h" { axis banana }
+}
+@decl articulatedFigure m41
+{
+	hinge "h" { limit 1 2 }
+}
+@decl articulatedFigure m42
+{
+	hinge "h" { limit 1, 2 3 }
+}
+@decl articulatedFigure m43
+{
+	slider "s" { axis banana }
+}
+@decl articulatedFigure m44
+{
+	spring "p" { anchor1 banana }
+}
+@decl articulatedFigure m45
+{
+	spring "p" { anchor2 banana }
+}
+@decl articulatedFigure m46
+{
+	spring "p" { body1 "a" body2 "b" speed 4 }
+}
+@decl articulatedFigure m47
+{
+	hinge "h" { body1 "a" body2 "b" speed 4 }
+}
+@decl articulatedFigure m48
+{
+	settings { mesh 5 }
+}
+@decl articulatedFigure m49
+{
+	settings { anim 5 }
+}
+@decl articulatedFigure m50
+{
+	settings { model 5 }
+}
+@decl articulatedFigure m51
+{
+	settings { skin 5 }
+}
+@decl articulatedFigure m52
+{
+	settings { friction 1 2 }
+}
+@decl articulatedFigure m53
+{
+	settings { suspendSpeed 1 2 3 4 }
+}
+@decl articulatedFigure m54
+{
+	settings { suspendSpeed 1, 2 3 4 }
+}
+@decl articulatedFigure m55
+{
+	settings { suspendSpeed 1, 2, 3 4 }
+}
+@end
