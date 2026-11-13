@@ -1,0 +1,176 @@
+@case sizes
+@op size
+@end
+@case minimal-pcm
+@file w/min.wav
+T:RIFF D:40 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:8 X:0102030405060708
+@op wave w/min.wav
+@end
+@case field-values
+@file w/fields.wav
+T:RIFF D:0xFFFFFFF0 T:WAVE
+T:fmt_ D:16 W:1 W:2 D:0x12345678 D:0xCAFEBABE W:0x1234 W:0xABCD
+T:data D:1000 X:00
+@op wave w/fields.wav
+@end
+@case fmt-with-extra-bytes
+@file w/extra.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:20 W:1 W:1 D:11025 D:22050 W:2 W:16 W:2 W:0
+T:data D:4 X:11223344
+@op wave w/extra.wav
+@end
+@case data-inside-the-fmt-chunk
+@file w/trap.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:22 W:1 W:1 D:22050 D:44100 W:2 W:16 T:data X:0102
+T:data D:4 X:11223344
+@op wave w/trap.wav
+@end
+@case empty-chunk-before-fmt
+@file w/empty.wav
+T:RIFF D:100 T:WAVE
+T:JUNK D:0
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:2 X:0102
+@op wave w/empty.wav
+@end
+@case chunk-with-data-before-fmt
+@file w/list.wav
+T:RIFF D:100 T:WAVE
+T:LIST D:4 T:INFO
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:2 X:0102
+@file w/list8.wav
+T:RIFF D:100 T:WAVE
+T:LIST D:8 T:INFOabcd
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:2 X:0102
+@op wave w/list.wav
+@op wave w/list8.wav
+@end
+@case other-formats
+@file w/float.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:3 W:1 D:22050 D:88200 W:4 W:32
+T:data D:4 X:00000000
+@file w/adpcm.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:2 W:1 D:22050 D:44100 W:2 W:4
+T:data D:4 X:00000000
+@file w/zero.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:0 W:1 D:22050 D:44100 W:2 W:16
+T:data D:4 X:00000000
+@op wave w/float.wav
+@op wave w/adpcm.wav
+@op wave w/zero.wav
+@end
+@case short-fmt
+@file w/short.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:14 W:1 W:1 D:22050 D:44100 W:2
+T:data D:4 X:00000000
+@file w/short15.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:15 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:4 X:00000000
+@file w/truncated.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050
+@file w/header-only.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16
+@file w/riff-only.wav
+T:RIFF D:100 T:WAVE
+@op wave w/short.wav
+@op wave w/short15.wav
+@op wave w/truncated.wav
+@op wave w/header-only.wav
+@op wave w/riff-only.wav
+@end
+@case not-a-wave
+@file w/notriff.wav
+T:RIFX D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:4 X:00000000
+@file w/notwave.wav
+T:RIFF D:100 T:AVI_
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:4 X:00000000
+@file w/empty.bin
+@file w/text.wav
+T:This T:isnt T:awav T:file
+@op wave w/notriff.wav
+@op wave w/notwave.wav
+@op wave w/empty.bin
+@op wave w/text.wav
+@op wave w/missing.wav
+@end
+@case no-fmt-chunk
+@file w/nofmt.wav
+T:RIFF D:100 T:WAVE
+T:data D:4 X:00000000
+T:data D:4 X:00000000
+@file w/nodata.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:LIST D:4 T:INFO
+@op wave w/nofmt.wav
+@op wave w/nodata.wav
+@end
+@case data-sizes
+@file w/unknown.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:0xFFFFFFFF X:00000000
+@file w/big.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:0xFFFFFFFE X:00000000
+@file w/zerodata.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:0
+@file w/odd.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:7 X:01020304050607
+@file w/exact.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data X:00000000
+@op wave w/unknown.wav
+@op wave w/big.wav
+@op wave w/zerodata.wav
+@op wave w/odd.wav
+@op wave w/exact.wav
+@end
+@case data-in-the-first-bytes
+@file w/early.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:xxdatayy D:6 X:010203040506
+@file w/split.wav
+T:RIFF D:100 T:WAVE
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:dat T:data D:2 X:0102
+@op wave w/early.wav
+@op wave w/split.wav
+@end
+@case fmt-after-eight-byte-steps
+@file w/step.wav
+T:RIFF D:100 T:WAVE
+T:xxxx D:1 T:yyyy D:2 T:zzzz D:3
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:2 X:0102
+@file w/mis.wav
+T:RIFF D:100 T:WAVE
+T:abc
+T:fmt_ D:16 W:1 W:1 D:22050 D:44100 W:2 W:16
+T:data D:2 X:0102
+@op wave w/step.wav
+@op wave w/mis.wav
+@end

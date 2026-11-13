@@ -66,8 +66,10 @@ begin
     // the materials of the golden of the C++ harness are stubs that keep the text and skip it
     FManager := TDeclFactory.CreateManager(FSource, FLog);
     // (the fx, the particles and the articulated figures of that harness are stubs as well)
-    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL, DECL_FX, DECL_PARTICLE, DECL_AF]);
+    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL, DECL_FX, DECL_PARTICLE, DECL_AF, DECL_SOUND]);
     TDeclStandardTypes.RegisterPlaceholderMaterial(FManager.GetRegistry);
+    // (and so are the sound shaders: the golden of the manager has no data of theirs)
+    FManager.GetRegistry.RegisterDeclType('sound', DECL_SOUND, function: IDecl begin Result := TDecl.Create; end);
     FManager.GetRegistry.RegisterDeclType('fx', DECL_FX, function: IDecl begin Result := TDecl.Create; end);
     FManager.GetRegistry.RegisterDeclType('particle', DECL_PARTICLE,
       function: IDecl begin Result := TDecl.Create; end);

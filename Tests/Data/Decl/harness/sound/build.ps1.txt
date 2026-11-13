@@ -1,0 +1,36 @@
+# Builds the three programs of the harness of the sound shader (Decl), the EFX file and the WAVE header (Audio).
+# $d is the folder that has idlib\ (a copy of neo\idlib with the changes of Tests\Data\Decl\README.md), sound\ (a copy of
+# neo\sound with snd_shader.cpp, snd_efxfile.cpp, snd_wavefile.cpp, sound.h and, as sound\snd_local.h, the stub
+# snd_local.h.txt of this folder) and openal\include\ (eax4.h and efxlib.h of neo\openal\include). The files of the
+# harness go in idlib\: precompiled.h.txt as precompiled.h, driver.cpp.txt as driver.cpp, and from
+# Tests\Data\Audio\harness driver_efx.cpp.txt as driver_efx.cpp and driver_wave.cpp.txt as driver_wave.cpp.
+$d = $PSScriptRoot
+# the declarations of idWaveFile (snd_wavefile.cpp includes them from snd_local.h) are taken from the reference, not stored here
+$neo = 'C:\Progetti\DelphiDoom\Reference\doom3\neo'
+$lines = Get-Content "$neo\sound\snd_local.h"
+$first = ($lines | Select-String -Pattern '^struct waveformatex_s' | Select-Object -First 1).LineNumber - 6
+$last = ($lines | Select-String -Pattern 'int\s+CloseOGG' | Select-Object -First 1).LineNumber + 1
+($lines[($first - 1)..($last - 1)]) -join "`r`n" | Set-Content -Encoding ascii "$d\sound\snd_local_wave.inc"
+Set-Location "$d\idlib"
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$common = 'Str','Token','Lexer','Heap','math\Math','math\Vector','math\Matrix','math\Angles','math\Quat','math\Rotation','math\Plane','math\Pluecker','math\Polynomial','math\Complex','math\Simd_Generic','geometry\JointTransform','bv\Bounds','bv\Sphere'
+$programs = @{ snd = @('driver','..\sound\snd_shader'); efx = @('driver_efx','..\sound\snd_efxfile'); wave = @('driver_wave','..\sound\snd_wavefile') }
+foreach ($name in $programs.Keys) {
+  $obj = "$d\obj_$name"
+  Remove-Item $obj -Recurse -Force -ErrorAction SilentlyContinue
+  New-Item -ItemType Directory -Force $obj | Out-Null
+  $failed = $false
+  foreach ($f in ($common + $programs[$name])) {
+    $o = "$obj\" + ($f -replace '\\','_' -replace '\.\.','') + '.o'
+    $out = & $B -c -w- -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I. "-o$o" "$f.cpp" 2>&1
+    if ($LASTEXITCODE -ne 0) { Write-Host "== $name $f exit $LASTEXITCODE"; $out | Select-String 'error' | Select-Object -First 8 | ForEach-Object { $_.Line }; $failed = $true }
+  }
+  if (-not $failed) {
+    $all = Get-ChildItem "$obj\*.o" | ForEach-Object { $_.FullName }
+    & $B -o "$d\$name.exe" @all 2>&1 | Out-Null
+    Write-Host "== $name link exit $LASTEXITCODE"
+  }
+}
+# snd.exe sound.input.txt > sound.golden.txt   (Tests\Data\Decl)
+# efx.exe efx.input.txt > efx.golden.txt       (Tests\Data\Audio)
+# wave.exe wave.input.txt > wave.golden.txt    (Tests\Data\Audio)

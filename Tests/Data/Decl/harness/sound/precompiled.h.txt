@@ -1,0 +1,147 @@
+#ifndef __PRECOMPILED_H__
+#define __PRECOMPILED_H__
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <float.h>
+#include <malloc.h>
+#include <stdint.h>
+#include <string>
+#include <map>
+#include <vector>
+#define ID_INLINE inline
+#define id_attribute(x)
+#define _alloca16(x) ((void *)((((uintptr_t)_alloca((x)+15)) + 15) & ~(uintptr_t)15))
+#define ID_FORCE_INLINE inline
+#define ID_TIME_T long
+#define ALIGN16(x) x
+#define ASSERT_ALIGN16(x)
+#define ID_MSVC_INLINE
+#define MAX_STRING_CHARS 1024
+typedef unsigned char byte; typedef unsigned short word; typedef unsigned int dword; typedef unsigned int uint; typedef unsigned long ulong;
+class idVec3; class idVec4; class idFile;
+#ifndef BIT
+#define BIT(num) (1<<(num))
+#endif
+class idException { public: char error[MAX_STRING_CHARS]; idException(const char*t=""){strcpy(error,t);} };
+template<class T> ID_INLINE T Max(T x,T y){return (x>y)?x:y;}
+template<class T> ID_INLINE T Min(T x,T y){return (x<y)?x:y;}
+class idCommon { public: void Printf(const char*,...); void DPrintf(const char*,...){} void Warning(const char*,...); void DWarning(const char*,...); void Error(const char*,...); void FatalError(const char*,...); };
+enum { CVAR_SYSTEM=1, CVAR_BOOL=2 };
+class idCVar { public: idCVar(const char*n,const char*v,int f,const char*d,float mn=0,float mx=0,void* c=0):b(v[0]=='1'),i(atoi(v)){} bool GetBool() const {return b;} int GetInteger() const {return i;} bool b; int i; };
+class idSys { public: const char* GetCallStackCurStr(int){return "";} public: void LockMemory(void*,int){} void UnlockMemory(void*,int){} };
+class idFileSystem;
+class idLib { public: static idSys* sys; static idCommon* common; static idFileSystem* fileSystem; static void Error(const char*fmt,...); static void Warning(const char*fmt,...); };
+typedef int cpuid_t; enum { CPUID_NONE=0, CPUID_GENERIC=0 };
+#define MAX_WORLD_COORD (128*1024)
+#define PATHSEPERATOR_STR "\\"
+#define STRTABLE_ID "#str_"
+#define STRTABLE_ID_LENGTH 5
+inline int LittleLong(int l) { return l; }
+inline short LittleShort(short l) { return l; }
+extern idCommon* common;
+#include "Heap.h"
+#include "containers/List.h"
+#include "math/Simd.h"
+#include "math/Math.h"
+#include "math/Random.h"
+#include "math/Complex.h"
+#include "math/Vector.h"
+#include "math/Matrix.h"
+#include "math/Angles.h"
+#include "math/Quat.h"
+#include "math/Rotation.h"
+#include "math/Plane.h"
+#include "math/Pluecker.h"
+#include "math/Polynomial.h"
+#include "math/Extrapolate.h"
+#include "math/Interpolate.h"
+#include "math/Curve.h"
+#include "math/Ode.h"
+#include "math/Lcp.h"
+#include "Str.h"
+typedef idList<idStr> idStrList;
+#include "bv/Sphere.h"
+#include "bv/Bounds.h"
+struct dominantTri_s { int v2, v3; float normalizationScale[3]; };
+#include "geometry/DrawVert.h"
+#include "geometry/JointTransform.h"
+void LittleRevBytes( void *bp, int elsize, int elcount );
+#include "Token.h"
+#include "Lexer.h"
+
+
+// ---- stubs of the declaration manager, the sound cache, the cvars and the files ----
+typedef enum {
+	DECL_TABLE = 0, DECL_MATERIAL, DECL_SKIN, DECL_SOUND, DECL_ENTITYDEF, DECL_MODELDEF, DECL_FX, DECL_PARTICLE,
+	DECL_AF, DECL_PDA, DECL_VIDEO, DECL_AUDIO, DECL_EMAIL, DECL_MODELEXPORT, DECL_MAPDEF
+} declType_t;
+const int DECL_LEXER_FLAGS	=	LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES |
+								LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS;
+class idDecl {
+public:
+	idDecl( void ) : replaced( false ), recursion( 0 ) {}
+	virtual ~idDecl( void ) {}
+	const char *GetName( void ) const { return name.c_str(); }
+	const char *GetFileName( void ) const { return "test.decl"; }
+	int GetLineNum( void ) const { return 1; }
+	int Index( void ) const { return 0; }
+	void SetText( const char *t ) { text = t; }
+	bool ReplaceSourceFileText( void ) { replaced = true; return true; }
+	void MakeDefault( void ) {
+		if ( ++recursion > 100 ) { recursion = 0; common->Error( "recursion" ); }
+		FreeData();
+		const char *d = DefaultDefinition();
+		Parse( d, (int)strlen( d ) );
+		--recursion;
+	}
+	virtual size_t Size( void ) const { return 0; }
+	virtual bool SetDefaultText( void ) { return false; }
+	virtual const char *DefaultDefinition( void ) const { return "{ }"; }
+	virtual bool Parse( const char *t, const int l ) { return true; }
+	virtual void FreeData( void ) {}
+	virtual void List( void ) const {}
+	virtual void Print( void ) const {}
+	std::string name, text;
+	bool replaced;
+	int recursion;
+};
+class idFile;
+class idDemoFile;
+class idRenderWorld;
+class idFile {
+public:
+	idFile() : pos(0) {}
+	int Length() { return (int)data.size(); }
+	int Read(void *b, int n) { int r = (int)data.size() - pos; if (r > n) r = n; if (r < 0) r = 0; memcpy(b, data.data() + pos, r); pos += r; return r; }
+	virtual int Seek(long, int) { return 0; }
+	virtual int Tell() { return 0; }
+	virtual ~idFile() {}
+	long Timestamp() { return 0; }
+	const char *GetFullPath() { return path.c_str(); }
+	std::string data, path; int pos;
+};
+class idFileSystem {
+public:
+	idFile *OpenFileRead(const char *name);
+	idFile *OpenExplicitFileRead(const char *name) { return OpenFileRead(name); }
+	void CloseFile(idFile *f) { delete f; }
+	int ReadFile(const char *name, void **buf, ID_TIME_T *t = 0);
+};
+extern idFileSystem *fileSystem;
+struct cinData_t; struct MemInfo_t;
+#define private public
+#include "../sound/sound.h"
+#undef private
+class idDeclManager {
+public:
+	const idDecl *FindType( declType_t type, const char *name, bool makeDefault = true );
+	const idSoundShader *FindSound( const char *name, bool makeDefault = true ) { return static_cast<const idSoundShader *>( FindType( DECL_SOUND, name, makeDefault ) ); }
+};
+extern idDeclManager *declManager;
+#endif
+

@@ -1,0 +1,332 @@
+@case basic
+@decl sound snd/basic
+{
+	description "a test sound"
+	mindistance 2.5
+	maxdistance 40
+	volume -3.5
+	soundClass 2
+	leadinVolume 6
+	mask_left
+	mask_center
+	leadin Sound\Lead\One.WAV
+	Sound\Weapons\Shot1.wav
+	sound/weapons/shot2.ogg
+}
+@op list snd/basic
+@end
+@case flags-and-masks
+@decl sound snd/flags
+{
+	no_dups no_flicker looping no_occlusion private antiPrivate playonce global unclamped omnidirectional
+	mask_center mask_left mask_right mask_backright mask_backleft mask_lfe
+	ordered plain onDemand
+	a.wav
+}
+@decl sound snd/flags2
+{
+	LOOPING Volume 2 MINDISTANCE 3 MaxDistance 30 GLOBAL
+	b.wav
+}
+@decl sound snd/empty
+{
+}
+@decl sound snd/commented
+{
+	// the volume is set below
+	volume 1 /* and the distance */ maxdistance 99
+	c.wav // the sample
+}
+@end
+@case shakes
+@decl sound snd/shake1
+{
+	shakes 2.5
+	a.wav
+}
+@decl sound snd/shake2
+{
+	shakes
+	looping
+	b.wav
+}
+@decl sound snd/shake3
+{
+	shakes 3
+	leadin lead.ogg
+	a.wav
+	b.OGG
+}
+@op shakes snd/shake3
+@op shakes snd/shake1
+@decl sound snd/shake4
+{
+	shakes -1
+	a.wav
+}
+@end
+@case alt-sound
+@decl sound snd/alt1
+{
+	altSound snd/other
+	a.wav
+}
+@decl sound snd/alt2
+{
+	altSound snd/alt2
+}
+@decl sound snd/alt3
+{
+	altSound snd/first
+	altSound snd/second
+}
+@decl sound snd/alt4
+{
+	altSound
+@end
+@case errors
+@decl sound snd/err1
+{
+	volume 4
+	wrongword
+	a.wav
+}
+@decl sound snd/err2
+{
+	soundClass 4
+	a.wav
+}
+@decl sound snd/err3
+{
+	soundClass -1
+	a.wav
+}
+@decl sound snd/err4
+{
+	soundClass 3
+	a.wav
+}
+@decl sound snd/err5
+{
+	reverb 1 2
+	a.wav
+}
+@decl sound snd/err6
+{
+	reverb 1 , 2
+	a.wav
+}
+@decl sound snd/err7
+{
+	leadin
+@decl sound snd/err8
+{
+	a.wav
+@decl sound snd/err9
+{
+	ogg
+}
+@decl sound snd/err10
+{
+	volume
+	a.wav
+}
+@decl sound snd/err11
+{
+	description
+	a.wav
+}
+@end
+@case description
+@decl sound snd/d1
+{
+	description plain
+	a.wav
+}
+@decl sound snd/d2
+{
+	description "two words" ignored
+	a.wav
+}
+@decl sound snd/d3
+{
+	description
+	"next line"
+	a.wav
+}
+@op list snd/d1
+@op list snd/d2
+@op list snd/d3
+@end
+@case max-samples
+@decl sound snd/m1
+{
+	a.wav b.wav c.wav d.wav e.wav
+}
+@op maxsounds 2
+@decl sound snd/m2
+{
+	leadin l1.wav leadin l2.wav leadin l3.wav
+	a.wav b.wav c.wav d.wav e.wav
+}
+@decl sound snd/m3
+{
+	minSamples 4
+	a.wav b.wav c.wav d.wav e.wav
+}
+@decl sound snd/m4
+{
+	minSamples 1
+	a.wav b.wav c.wav
+}
+@decl sound snd/m5
+{
+	minSamples -3
+	a.wav b.wav c.wav
+}
+@op building 1
+@decl sound snd/m6
+{
+	a.wav b.wav c.wav d.wav
+}
+@op building 0
+@op maxsounds 99
+@decl sound snd/m7
+{
+	a.wav b.wav c.wav d.wav
+}
+@op maxsounds 3
+@decl sound snd/m8
+{
+	minSamples 3
+	a.wav b.wav c.wav d.wav
+}
+@end
+@case many-samples
+@decl sound snd/many
+{
+	s01.wav s02.wav s03.wav s04.wav s05.wav s06.wav s07.wav s08.wav s09.wav s10.wav
+	s11.wav s12.wav s13.wav s14.wav s15.wav s16.wav s17.wav s18.wav s19.wav s20.wav
+	s21.wav s22.wav s23.wav s24.wav s25.wav s26.wav s27.wav s28.wav s29.wav s30.wav
+	s31.wav s32.wav s33.wav s34.wav s35.wav
+	leadin l01.wav leadin l02.wav
+}
+@end
+@case sample-words
+@decl sound snd/words
+{
+	x.wavx
+	Y.OGGY
+	dir.wav/z
+	sound\back\slash.wav
+	"quoted name.wav"
+}
+@decl sound snd/words2
+{
+	wav
+}
+@end
+@case language
+@decl sound snd/lang0
+{
+	sound/vo/Hello/World.wav
+}
+@op lang german
+@decl sound snd/lang1
+{
+	sound/vo/Hello/World.wav
+}
+@op file sound/vo/german/hello/world.wav 100
+@decl sound snd/lang2
+{
+	Sound\VO\Hello\World.wav
+}
+@op file sound/vo/german/hello/world.wav -1
+@op file sound/vo/german/hello/world.ogg 10
+@decl sound snd/lang3
+{
+	sound/vo/hello/world.wav
+}
+@op file sound/vo/german/hello/world.ogg 0
+@decl sound snd/lang4
+{
+	sound/vo/sound/vo/deep.wav
+}
+@op lang English
+@decl sound snd/lang5
+{
+	sound/vo/hello/world.wav
+}
+@op lang
+@decl sound snd/lang6
+{
+	sound/vo/hello/world.wav
+	sound/other/not_vo.wav
+}
+@end
+@case default-and-implicit
+@decl sound snd/def1
+{
+	volume 9
+	wrongword
+}
+@op default snd/def1
+@op freedata snd/def1
+@op deftext snd/foo
+@op deftext snd/foo.ogg
+@op deftext snd/foo.wav
+@op deftext snd\bar
+@op deftext Plain
+@op deftext snd/dir.v2/name
+@op deftextrep x 1100
+@op deftextrep snd/ 300
+@end
+@case list
+@decl sound snd/list1
+{
+	leadin lead11k.wav
+	leadin lead22k.wav
+	one11k.wav
+	two22k.wav
+	three.wav
+	four_default.wav
+	description "listed"
+}
+@op list snd/list1
+@decl sound snd/list2
+{
+	a.wav
+}
+@op list snd/list2
+@end
+@case reparse
+@decl sound snd/r1
+{
+	description "first"
+	leadinVolume 5
+	volume 3
+	mask_lfe
+	leadin a.wav
+	b.wav
+}
+@decl sound snd/r2
+{
+	volume 7
+	c.wav
+}
+@op reparse snd/r1 snd/r2
+@op freedata snd/r1
+@op reparse snd/r1 snd/r1
+@end
+@case has-default
+@decl sound snd/hd1
+{
+	a.wav
+	b_default.wav
+}
+@decl sound snd/hd2
+{
+	leadin x_default.wav
+	a.wav
+}
+@end

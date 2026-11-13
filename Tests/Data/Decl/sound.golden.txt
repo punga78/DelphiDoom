@@ -1,0 +1,692 @@
+## basic
+> decl sound snd/basic
+S Sound\Lead\One.WAV
+S Sound/Weapons/Shot1.wav
+S sound/weapons/shot2.ogg
+ret=1
+sound snd/basic desc=[a test sound] min=40200000 max=42200000 vol=C0600000 shk=00000000 flags=0 class=2 n=3 def=0
+ alt=(null) dmin=40200000 dmax=42200000 mask=5 lead=40C00000
+ snd[-1]=[]
+ snd[0]=[sound/lead/one.wav]
+ snd[1]=[sound/weapons/shot1.wav]
+ snd[2]=[sound/weapons/shot2.ogg]
+ snd[3]=[]
+> list snd/basic
+P:    0: snd/basic\n
+P:       description: a test sound\n
+P:        1498ms  133Kb sound/lead/one.wav (LEADIN)\n
+P:        1945ms  172Kb sound/weapons/shot1.wav\n
+P:        1932ms  169Kb sound/weapons/shot2.ogg\n
+## flags-and-masks
+> decl sound snd/flags
+S a.wav
+ret=1
+sound snd/flags desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=1023 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=63 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/flags2
+S b.wav
+ret=1
+sound snd/flags2 desc=[<no description>] min=40400000 max=41F00000 vol=40000000 shk=00000000 flags=40 class=0 n=1 def=0
+ alt=(null) dmin=40400000 dmax=41F00000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[b.wav]
+ snd[1]=[]
+> decl sound snd/empty
+ret=1
+sound snd/empty desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[]
+> decl sound snd/commented
+S c.wav
+ret=1
+sound snd/commented desc=[<no description>] min=3F800000 max=42C60000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=42C60000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[c.wav]
+ snd[1]=[]
+## shakes
+> decl sound snd/shake1
+S a.wav
+ret=1
+sound snd/shake1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=40200000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/shake2
+S b.wav
+ret=1
+sound snd/shake2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=3F800000 flags=32 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[b.wav]
+ snd[1]=[]
+> decl sound snd/shake3
+S lead.ogg
+S a.wav
+S b.OGG
+W: sound shader 'snd/shake3' has shakes and uses OGG file 'lead.ogg'
+W: sound shader 'snd/shake3' has shakes and uses OGG file 'b.ogg'
+ret=1
+sound snd/shake3 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=40400000 flags=0 class=0 n=3 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[lead.ogg]
+ snd[1]=[a.wav]
+ snd[2]=[b.ogg]
+ snd[3]=[]
+> shakes snd/shake3
+W: sound shader 'snd/shake3' has shakes and uses OGG file 'lead.ogg'
+W: sound shader 'snd/shake3' has shakes and uses OGG file 'b.ogg'
+shakes ret=1
+> shakes snd/shake1
+shakes ret=0
+> decl sound snd/shake4
+W: file test.decl, line 3: unknown token '-'
+S _default.wav
+ret=0
+sound snd/shake4 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+## alt-sound
+> decl sound snd/alt1
+F 3 snd/other 1
+S a.wav
+ret=1
+sound snd/alt1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=snd/other dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/alt2
+F 3 snd/alt2 1
+ret=1
+sound snd/alt2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=snd/alt2 dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[]
+> decl sound snd/alt3
+F 3 snd/first 1
+F 3 snd/second 1
+ret=1
+sound snd/alt3 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=snd/second dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[]
+> decl sound snd/alt4
+W: file test.decl, line 4: couldn't read expected token
+S _default.wav
+ret=0
+sound snd/alt4 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+## errors
+> decl sound snd/err1
+W: file test.decl, line 4: unknown token 'wrongword'
+S _default.wav
+ret=0
+sound snd/err1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err2
+W: file test.decl, line 3: SoundClass out of range
+S _default.wav
+ret=0
+sound snd/err2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err3
+W: file test.decl, line 3: SoundClass out of range
+S _default.wav
+ret=0
+sound snd/err3 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err4
+S a.wav
+ret=1
+sound snd/err4 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=3 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/err5
+W: file test.decl, line 3: expected ',' but found '2'
+S _default.wav
+ret=0
+sound snd/err5 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err6
+S a.wav
+ret=1
+sound snd/err6 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/err7
+W: file test.decl, line 4: Expected sound after leadin
+S _default.wav
+ret=0
+sound snd/err7 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err8
+S a.wav
+W: file test.decl, line 4: couldn't read expected token
+S _default.wav
+ret=0
+sound snd/err8 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err9
+W: file test.decl, line 3: unknown token 'ogg'
+S _default.wav
+ret=0
+sound snd/err9 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/err10
+W: file test.decl, line 4: expected float value, found 'a.wav'
+ret=1
+sound snd/err10 desc=[<no description>] min=3F800000 max=41200000 vol=00000000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[]
+> decl sound snd/err11
+S a.wav
+ret=1
+sound snd/err11 desc=[] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+## description
+> decl sound snd/d1
+S a.wav
+ret=1
+sound snd/d1 desc=[plain] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> decl sound snd/d2
+W: file test.decl, line 3: unknown token 'ignored'
+S _default.wav
+ret=0
+sound snd/d2 desc=[two words] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> decl sound snd/d3
+W: file test.decl, line 4: unknown token 'next line'
+S _default.wav
+ret=0
+sound snd/d3 desc=[] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> list snd/d1
+P:    0: snd/d1\n
+P:       description: plain\n
+P:         423ms   37Kb a.wav\n
+> list snd/d2
+P:    0: snd/d2\n
+P:       description: two words\n
+P:        1045ms   94Kb _default.wav\n
+> list snd/d3
+P:    0: snd/d3\n
+P:       description: \n
+P:        1045ms   94Kb _default.wav\n
+## max-samples
+> decl sound snd/m1
+S a.wav
+S b.wav
+S c.wav
+S d.wav
+S e.wav
+ret=1
+sound snd/m1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=5 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[c.wav]
+ snd[3]=[d.wav]
+ snd[4]=[e.wav]
+ snd[5]=[]
+> maxsounds 2
+> decl sound snd/m2
+S l1.wav
+S l2.wav
+S a.wav
+S b.wav
+ret=1
+sound snd/m2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=4 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[l1.wav]
+ snd[1]=[l2.wav]
+ snd[2]=[a.wav]
+ snd[3]=[b.wav]
+ snd[4]=[]
+> decl sound snd/m3
+S a.wav
+S b.wav
+S c.wav
+S d.wav
+ret=1
+sound snd/m3 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=4 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[c.wav]
+ snd[3]=[d.wav]
+ snd[4]=[]
+> decl sound snd/m4
+S a.wav
+S b.wav
+ret=1
+sound snd/m4 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[]
+> decl sound snd/m5
+S a.wav
+S b.wav
+ret=1
+sound snd/m5 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[]
+> building 1
+> decl sound snd/m6
+S a.wav
+S b.wav
+S c.wav
+S d.wav
+ret=1
+sound snd/m6 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=4 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[c.wav]
+ snd[3]=[d.wav]
+ snd[4]=[]
+> building 0
+> maxsounds 99
+> decl sound snd/m7
+S a.wav
+S b.wav
+S c.wav
+S d.wav
+ret=1
+sound snd/m7 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=4 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[c.wav]
+ snd[3]=[d.wav]
+ snd[4]=[]
+> maxsounds 3
+> decl sound snd/m8
+S a.wav
+S b.wav
+S c.wav
+ret=1
+sound snd/m8 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=3 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[c.wav]
+ snd[3]=[]
+## many-samples
+> decl sound snd/many
+S s01.wav
+S s02.wav
+S s03.wav
+S s04.wav
+S s05.wav
+S s06.wav
+S s07.wav
+S s08.wav
+S s09.wav
+S s10.wav
+S s11.wav
+S s12.wav
+S s13.wav
+S s14.wav
+S s15.wav
+S s16.wav
+S s17.wav
+S s18.wav
+S s19.wav
+S s20.wav
+S s21.wav
+S s22.wav
+S s23.wav
+S s24.wav
+S s25.wav
+S s26.wav
+S s27.wav
+S s28.wav
+S s29.wav
+S s30.wav
+S s31.wav
+S s32.wav
+S l01.wav
+S l02.wav
+ret=1
+sound snd/many desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=34 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[l01.wav]
+ snd[1]=[l02.wav]
+ snd[2]=[s01.wav]
+ snd[3]=[s02.wav]
+ snd[4]=[s03.wav]
+ snd[5]=[s04.wav]
+ snd[6]=[s05.wav]
+ snd[7]=[s06.wav]
+ snd[8]=[s07.wav]
+ snd[9]=[s08.wav]
+ snd[10]=[s09.wav]
+ snd[11]=[s10.wav]
+ snd[12]=[s11.wav]
+ snd[13]=[s12.wav]
+ snd[14]=[s13.wav]
+ snd[15]=[s14.wav]
+ snd[16]=[s15.wav]
+ snd[17]=[s16.wav]
+ snd[18]=[s17.wav]
+ snd[19]=[s18.wav]
+ snd[20]=[s19.wav]
+ snd[21]=[s20.wav]
+ snd[22]=[s21.wav]
+ snd[23]=[s22.wav]
+ snd[24]=[s23.wav]
+ snd[25]=[s24.wav]
+ snd[26]=[s25.wav]
+ snd[27]=[s26.wav]
+ snd[28]=[s27.wav]
+ snd[29]=[s28.wav]
+ snd[30]=[s29.wav]
+ snd[31]=[s30.wav]
+ snd[32]=[s31.wav]
+ snd[33]=[s32.wav]
+ snd[34]=[]
+## sample-words
+> decl sound snd/words
+S x.wavx
+S Y.OGGY
+S dir.wav/z
+S sound/back/slash.wav
+S quoted name.wav
+ret=1
+sound snd/words desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=5 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[x.wavx]
+ snd[1]=[y.oggy]
+ snd[2]=[dir.wav/z]
+ snd[3]=[sound/back/slash.wav]
+ snd[4]=[quoted name.wav]
+ snd[5]=[]
+> decl sound snd/words2
+W: file test.decl, line 3: unknown token 'wav'
+S _default.wav
+ret=0
+sound snd/words2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+## language
+> decl sound snd/lang0
+S sound/vo/Hello/World.wav
+ret=1
+sound snd/lang0 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/hello/world.wav]
+ snd[1]=[]
+> lang german
+> decl sound snd/lang1
+R sound/vo/german/hello/world.wav
+R sound/vo/german/hello/world.ogg
+S sound/vo/Hello/World.wav
+ret=1
+sound snd/lang1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/hello/world.wav]
+ snd[1]=[]
+> file sound/vo/german/hello/world.wav 100
+> decl sound snd/lang2
+R sound/vo/german/hello/world.wav
+S sound/vo/german/hello/world.wav
+ret=1
+sound snd/lang2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/german/hello/world.wav]
+ snd[1]=[]
+> file sound/vo/german/hello/world.wav -1
+> file sound/vo/german/hello/world.ogg 10
+> decl sound snd/lang3
+R sound/vo/german/hello/world.wav
+R sound/vo/german/hello/world.ogg
+S sound/vo/german/hello/world.ogg
+ret=1
+sound snd/lang3 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/german/hello/world.ogg]
+ snd[1]=[]
+> file sound/vo/german/hello/world.ogg 0
+> decl sound snd/lang4
+R sound/vo/german/deep.wav
+R sound/vo/german/deep.ogg
+S sound/vo/sound/vo/deep.wav
+ret=1
+sound snd/lang4 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/sound/vo/deep.wav]
+ snd[1]=[]
+> lang English
+> decl sound snd/lang5
+S sound/vo/hello/world.wav
+ret=1
+sound snd/lang5 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/hello/world.wav]
+ snd[1]=[]
+> lang
+> decl sound snd/lang6
+R sound/vo//hello/world.wav
+R sound/vo//hello/world.ogg
+S sound/vo/hello/world.wav
+S sound/other/not_vo.wav
+ret=1
+sound snd/lang6 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[sound/vo/hello/world.wav]
+ snd[1]=[sound/other/not_vo.wav]
+ snd[2]=[]
+## default-and-implicit
+> decl sound snd/def1
+W: file test.decl, line 4: unknown token 'wrongword'
+S _default.wav
+ret=0
+sound snd/def1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> default snd/def1
+S _default.wav
+sound snd/def1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[_default.wav]
+ snd[1]=[]
+> freedata snd/def1
+sound snd/def1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[]
+> deftext snd/foo
+deftext ret=1 len=54 text=sound snd/foo // IMPLICITLY GENERATED\n{\nsnd/foo.wav\n}\n
+> deftext snd/foo.ogg
+deftext ret=1 len=58 text=sound snd/foo.ogg // IMPLICITLY GENERATED\n{\nsnd/foo.ogg\n}\n
+> deftext snd/foo.wav
+deftext ret=1 len=58 text=sound snd/foo.wav // IMPLICITLY GENERATED\n{\nsnd/foo.wav\n}\n
+> deftext snd\bar
+deftext ret=1 len=54 text=sound snd\\bar // IMPLICITLY GENERATED\n{\nsnd\\bar.wav\n}\n
+> deftext Plain
+deftext ret=1 len=50 text=sound Plain // IMPLICITLY GENERATED\n{\nPlain.wav\n}\n
+> deftext snd/dir.v2/name
+deftext ret=1 len=66 text=sound snd/dir.v2/name // IMPLICITLY GENERATED\n{\nsnd/dir.v2/name\n}\n
+> deftextrep x 1100
+W: idStr::snPrintf: overflow of 2242 in 2048\n
+deftext ret=1 len=2047 text=sound xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa // IMPLICITLY GENERATED\n{\nxaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+> deftextrep snd/ 300
+deftext ret=1 len=648 text=sound snd/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa // IMPLICITLY GENERATED\n{\nsnd/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n}\n
+## list
+> decl sound snd/list1
+S lead11k.wav
+S lead22k.wav
+S one11k.wav
+S two22k.wav
+S three.wav
+S four_default.wav
+ret=1
+sound snd/list1 desc=[listed] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=6 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[lead11k.wav]
+ snd[1]=[lead22k.wav]
+ snd[2]=[one11k.wav]
+ snd[3]=[two22k.wav]
+ snd[4]=[three.wav]
+ snd[5]=[four_default.wav]
+ snd[6]=[]
+> list snd/list1
+P:    0: snd/list1\n
+P:       description: listed\n
+P:        3424ms   77Kb lead11k.wav (LEADIN)\n
+P:        1715ms   79Kb lead22k.wav (LEADIN)\n
+P:        3141ms   71Kb one11k.wav\n
+P:        1614ms   71Kb two22k.wav\n
+P:         793ms   74Kb three.wav\n
+P:        1418ms  122Kb four_default.wav\n
+> decl sound snd/list2
+S a.wav
+ret=1
+sound snd/list2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[]
+> list snd/list2
+P:    0: snd/list2\n
+P:         423ms   37Kb a.wav\n
+## reparse
+> decl sound snd/r1
+S a.wav
+S b.wav
+ret=1
+sound snd/r1 desc=[first] min=3F800000 max=41200000 vol=40400000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=8 lead=40A00000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[]
+> decl sound snd/r2
+S c.wav
+ret=1
+sound snd/r2 desc=[<no description>] min=3F800000 max=41200000 vol=40E00000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[c.wav]
+ snd[1]=[]
+> reparse snd/r1 snd/r2
+S c.wav
+ret=1
+sound snd/r1 desc=[first] min=3F800000 max=41200000 vol=40E00000 shk=00000000 flags=0 class=0 n=1 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=40A00000
+ snd[-1]=[]
+ snd[0]=[c.wav]
+ snd[1]=[]
+> freedata snd/r1
+sound snd/r1 desc=[first] min=3F800000 max=41200000 vol=40E00000 shk=00000000 flags=0 class=0 n=0 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=40A00000
+ snd[-1]=[]
+ snd[0]=[]
+> reparse snd/r1 snd/r1
+S a.wav
+S b.wav
+ret=1
+sound snd/r1 desc=[first] min=3F800000 max=41200000 vol=40400000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=8 lead=40A00000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b.wav]
+ snd[2]=[]
+## has-default
+> decl sound snd/hd1
+S a.wav
+S b_default.wav
+ret=1
+sound snd/hd1 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=2 def=1
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[a.wav]
+ snd[1]=[b_default.wav]
+ snd[2]=[]
+> decl sound snd/hd2
+S x_default.wav
+S a.wav
+ret=1
+sound snd/hd2 desc=[<no description>] min=3F800000 max=41200000 vol=3F800000 shk=00000000 flags=0 class=0 n=2 def=0
+ alt=(null) dmin=3F800000 dmax=41200000 mask=0 lead=00000000
+ snd[-1]=[]
+ snd[0]=[x_default.wav]
+ snd[1]=[a.wav]
+ snd[2]=[]

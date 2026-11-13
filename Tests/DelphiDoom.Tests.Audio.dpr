@@ -30,13 +30,19 @@ uses
   DelphiDoom.Audio.SoundParameters in '..\Libs\Audio\DelphiDoom.Audio.SoundParameters.pas',
   DelphiDoom.Audio.WaveParser in '..\Libs\Audio\DelphiDoom.Audio.WaveParser.pas',
   DelphiDoom.Audio.MusConverter in '..\Libs\Audio\DelphiDoom.Audio.MusConverter.pas',
+  DelphiDoom.Audio.Efx.Types in '..\Libs\Audio\DelphiDoom.Audio.Efx.Types.pas',
+  DelphiDoom.Audio.Efx.EffectsFile in '..\Libs\Audio\DelphiDoom.Audio.Efx.EffectsFile.pas',
+  DelphiDoom.Audio.WaveHeader in '..\Libs\Audio\DelphiDoom.Audio.WaveHeader.pas',
   DelphiDoom.Tests.Audio.Scenarios in 'Source\DelphiDoom.Tests.Audio.Scenarios.pas',
   DelphiDoom.Tests.Audio.WaveParser in 'Source\DelphiDoom.Tests.Audio.WaveParser.pas',
   DelphiDoom.Tests.Audio.MusConverter in 'Source\DelphiDoom.Tests.Audio.MusConverter.pas',
   DelphiDoom.Tests.Audio.Fakes in 'Source\DelphiDoom.Tests.Audio.Fakes.pas',
   DelphiDoom.Tests.Audio.SfxPlayer in 'Source\DelphiDoom.Tests.Audio.SfxPlayer.pas',
   DelphiDoom.Tests.Audio.ExternalMusicCache in 'Source\DelphiDoom.Tests.Audio.ExternalMusicCache.pas',
-  DelphiDoom.Tests.Audio.MusicPlayer in 'Source\DelphiDoom.Tests.Audio.MusicPlayer.pas';
+  DelphiDoom.Tests.Audio.MusicPlayer in 'Source\DelphiDoom.Tests.Audio.MusicPlayer.pas',
+  DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
+  DelphiDoom.Tests.Audio.Efx in 'Source\DelphiDoom.Tests.Audio.Efx.pas',
+  DelphiDoom.Tests.Audio.WaveHeader in 'Source\DelphiDoom.Tests.Audio.WaveHeader.pas';
 
 var
   Runner: ITestRunner;

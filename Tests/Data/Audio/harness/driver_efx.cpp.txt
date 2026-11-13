@@ -1,0 +1,107 @@
+#include "precompiled.h"
+#include "../sound/snd_local.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i]; char b[8];
+		if (c == '\\') r += "\\\\"; else if (c == '\n') r += "\\n"; else if (c == '\r') r += "\\r"; else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; } else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+// ---- files in memory ----
+static std::map<std::string, std::string> files;
+idFile *idFileSystem::OpenFileRead(const char *name) {
+	std::map<std::string, std::string>::iterator it = files.find(name);
+	if (it == files.end()) return 0;
+	idFile *f = new idFile; f->data = it->second; f->path = name;
+	return f;
+}
+static idFileSystem theFs;
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+
+static idEFXFile efx;
+
+static void dumpEffects() {
+	printf("n=%d\n", efx.effects.Num());
+	for (int i = 0; i < efx.effects.Num(); i++) {
+		idSoundEffect *e = efx.effects[i];
+		EAXREVERBPROPERTIES *r = (EAXREVERBPROPERTIES *)e->data;
+		printf("fx %d name=[%s] size=%d\n", i, esc(e->name.c_str()).c_str(), e->datasize);
+		printf(" env=%lu size=%s diff=%s room=%ld,%ld,%ld decay=%s,%s,%s\n", r->ulEnvironment, fb(r->flEnvironmentSize).c_str(), fb(r->flEnvironmentDiffusion).c_str(),
+			r->lRoom, r->lRoomHF, r->lRoomLF, fb(r->flDecayTime).c_str(), fb(r->flDecayHFRatio).c_str(), fb(r->flDecayLFRatio).c_str());
+		printf(" refl=%ld,%s pan=%s,%s,%s reverb=%ld,%s pan=%s,%s,%s\n", r->lReflections, fb(r->flReflectionsDelay).c_str(),
+			fb(r->vReflectionsPan.x).c_str(), fb(r->vReflectionsPan.y).c_str(), fb(r->vReflectionsPan.z).c_str(), r->lReverb, fb(r->flReverbDelay).c_str(),
+			fb(r->vReverbPan.x).c_str(), fb(r->vReverbPan.y).c_str(), fb(r->vReverbPan.z).c_str());
+		printf(" echo=%s,%s mod=%s,%s air=%s hf=%s lf=%s rolloff=%s flags=%lu\n", fb(r->flEchoTime).c_str(), fb(r->flEchoDepth).c_str(),
+			fb(r->flModulationTime).c_str(), fb(r->flModulationDepth).c_str(), fb(r->flAirAbsorptionHF).c_str(), fb(r->flHFReference).c_str(),
+			fb(r->flLFReference).c_str(), fb(r->flRoomRolloffFactor).c_str(), r->ulFlags);
+	}
+}
+
+static void handleOp(const std::vector<std::string> &t) {
+	{ std::string all; for (size_t i = 0; i < t.size(); i++) { if (i) all += " "; all += t[i]; } printf("> %s\n", all.c_str()); }
+	if (t[0] == "load") {
+		try { bool r = efx.LoadFile(t[1].c_str(), t.size() > 2 && t[2] == "os"); printf("ret=%d\n", (int)r); }
+		catch (idException &e) { printf("ERR %s\n", e.error); }
+		dumpEffects();
+	} else if (t[0] == "find") {
+		std::string nm; for (size_t i = 1; i < t.size(); i++) { if (i > 1) nm += " "; nm += t[i]; } idStr name = nm.c_str(); idSoundEffect *e = 0; int index = -1;
+		bool r = efx.FindEffect(name, &e, &index);
+		printf("find ret=%d index=%d\n", (int)r, index);
+	} else if (t[0] == "unload") { efx.UnloadFile(); dumpEffects(); }
+	else if (t[0] == "size") { printf("size=%d\n", (int)sizeof(EAXREVERBPROPERTIES)); }
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, NULL, _IONBF, 0);
+	common = &theCommon; idLib::common = &theCommon; fileSystem = &theFs; idLib::fileSystem = &theFs;
+	idMath::Init();
+	std::ifstream in(argv[1]);
+	std::string line, curFile;
+	bool inFile = false;
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) {
+			efx.UnloadFile(); files.clear(); inFile = false;
+			printf("## %s\n", line.substr(6).c_str());
+			continue;
+		}
+		if (line == "@end") { inFile = false; continue; }
+		if (line.compare(0, 6, "@file ") == 0) { curFile = line.substr(6); files[curFile] = ""; inFile = true; continue; }
+		if (line.compare(0, 4, "@op ") == 0) {
+			inFile = false;
+			std::stringstream ss(line.substr(4)); std::vector<std::string> t; std::string w;
+			while (ss >> w) t.push_back(w);
+			handleOp(t);
+			continue;
+		}
+		if (inFile) files[curFile] += line + "\n";
+	}
+	return 0;
+}

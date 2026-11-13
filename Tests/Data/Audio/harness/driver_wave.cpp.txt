@@ -1,0 +1,110 @@
+#include "precompiled.h"
+#include "../sound/snd_local.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i]; char b[8];
+		if (c == '\\') r += "\\\\"; else if (c == '\n') r += "\\n"; else if (c == '\r') r += "\\r"; else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; } else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+// ---- files in memory ----
+static std::map<std::string, std::string> files;
+class idFileMem : public idFile {
+public:
+	int Seek(long offset, int origin) { if (origin == FS_SEEK_SET) pos = (int)offset; else if (origin == FS_SEEK_CUR) pos += (int)offset; else pos = (int)data.size() + (int)offset; return 0; }
+	int Tell() { return pos; }
+};
+int idFileSystem::ReadFile(const char *name, void **buf, ID_TIME_T *t) { return -1; }
+idFile *idFileSystem::OpenFileRead(const char *name) {
+	std::map<std::string, std::string>::iterator it = files.find(name);
+	if (it == files.end()) return 0;
+	idFileMem *f = new idFileMem; f->data = it->second; f->path = name;
+	return f;
+}
+static idFileSystem theFs;
+int idWaveFile::OpenOGG( const char *, waveformatex_t * ) { return -1; }
+int idWaveFile::ReadOGG( byte *, int, int * ) { return -1; }
+int idWaveFile::CloseOGG( void ) { return 0; }
+
+static void putLE(std::string &s, unsigned long v, int n) { for (int i = 0; i < n; i++) s += (char)((v >> (8 * i)) & 0xFF); }
+
+static void handleOp(const std::vector<std::string> &t) {
+	{ std::string all; for (size_t i = 0; i < t.size(); i++) { if (i) all += " "; all += t[i]; } printf("> %s\n", all.c_str()); }
+	if (t[0] == "wave") {
+		idWaveFile w; waveformatex_t fmt; memset(&fmt, 0, sizeof(fmt));
+		int r = w.Open(t[1].c_str(), &fmt);
+		printf("ret=%d\n", r);
+		if (r == 0) {
+			printf(" fmt tag=%d ch=%d rate=%u avg=%u align=%d bits=%d cb=%d\n", fmt.wFormatTag, fmt.nChannels, (unsigned)fmt.nSamplesPerSec, (unsigned)fmt.nAvgBytesPerSec, fmt.nBlockAlign, fmt.wBitsPerSample, fmt.cbSize);
+			printf(" size=%d mem=%d base=%u cksize=%u\n", w.GetOutputSize(), w.GetMemorySize(), (unsigned)w.mseekBase, (unsigned)w.mck.cksize);
+		}
+		w.Close();
+	} else if (t[0] == "size") {
+		printf("sizes pcm=%d ex=%d\n", (int)sizeof(pcmwaveformat_t), (int)sizeof(waveformatex_t));
+	}
+}
+
+static unsigned long number(const std::string &s) { return strtoul(s.c_str(), 0, 0); }
+
+// @bytes tokens: T:abcd (four characters), B:n, W:n (16 bits), D:n (32 bits), Z:n (n zero bytes), X:hex
+static void addBytes(std::string &out, const std::string &line) {
+	std::stringstream ss(line); std::string w;
+	while (ss >> w) {
+		std::string v = w.substr(2);
+		if (w[0] == 'T') { for (size_t i = 0; i < v.size(); i++) out += (v[i] == '_' ? ' ' : v[i]); }
+		else if (w[0] == 'B') putLE(out, number(v), 1);
+		else if (w[0] == 'W') putLE(out, number(v), 2);
+		else if (w[0] == 'D') putLE(out, number(v), 4);
+		else if (w[0] == 'Z') out += std::string((size_t)number(v), '\0');
+		else if (w[0] == 'X') for (size_t i = 0; i + 1 < v.size(); i += 2) out += (char)strtoul(v.substr(i, 2).c_str(), 0, 16);
+	}
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, NULL, _IONBF, 0);
+	common = &theCommon; idLib::common = &theCommon; fileSystem = &theFs; idLib::fileSystem = &theFs;
+	std::ifstream in(argv[1]);
+	std::string line, curFile;
+	bool inFile = false;
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) { files.clear(); inFile = false; printf("## %s\n", line.substr(6).c_str()); continue; }
+		if (line == "@end") { inFile = false; continue; }
+		if (line.compare(0, 6, "@file ") == 0) { curFile = line.substr(6); files[curFile] = ""; inFile = true; continue; }
+		if (line.compare(0, 4, "@op ") == 0) {
+			inFile = false;
+			std::stringstream ss(line.substr(4)); std::vector<std::string> t; std::string w;
+			while (ss >> w) t.push_back(w);
+			handleOp(t);
+			continue;
+		}
+		if (inFile) addBytes(files[curFile], line);
+	}
+	return 0;
+}

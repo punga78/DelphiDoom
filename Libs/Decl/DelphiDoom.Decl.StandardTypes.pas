@@ -52,7 +52,8 @@ uses
   DelphiDoom.Decl.EntityDef, DelphiDoom.Decl.Pda, DelphiDoom.Decl.Email, DelphiDoom.Decl.Video,
   DelphiDoom.Decl.Audio, DelphiDoom.Decl.Material, DelphiDoom.Decl.Material.Intf,
   DelphiDoom.Decl.Material.ImageNamer, DelphiDoom.Decl.Fx.Registration, DelphiDoom.Decl.Particle.Registration,
-  DelphiDoom.Decl.ArticulatedFigure.Registration;
+  DelphiDoom.Decl.ArticulatedFigure.Registration,
+  DelphiDoom.Decl.Sound.Registration;
 
 { TDeclStandardTypes }
 
@@ -98,7 +99,8 @@ begin
       Result := TDeclMaterial.Create(TMaterialImageProgramNamer.Create, LMaterialOptions);
     end);
   Add('skin', DECL_SKIN, function: IDecl begin Result := TDeclSkin.Create; end);
-  Add('sound', DECL_SOUND, function: IDecl begin Result := TDecl.Create; end);
+  if not Skipped(DECL_SOUND) then
+    TDeclSoundRegistration.Register(ARegistry);
 
   Add('entityDef', DECL_ENTITYDEF, function: IDecl begin Result := TDeclEntityDef.Create; end);
   Add('mapDef', DECL_MAPDEF, function: IDecl begin Result := TDeclEntityDef.Create; end);
