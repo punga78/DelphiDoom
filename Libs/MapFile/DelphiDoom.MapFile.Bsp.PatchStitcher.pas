@@ -27,11 +27,11 @@ type
   ///   missing column or row with the grid editor of MathCore. A grid is a slot of an array
   ///   (nil for a surface that is not a grid), as the surfaces of the world in the original.
   ///   <para>
-  ///     Defect of the original, corrected: when the edge of the first grid is searched
-  ///     backwards (the third and fourth block of R_StitchPatches) the error of the new vertex is
-  ///     read at index k + 1, and for the last vertex that is one past the table (heap garbage in
-  ///     C). In range the index k + 1 is kept, since the golden depends on it; past the table the
-  ///     error of vertex k - 1, the one that is inserted, is used.
+  ///     Defect of the original, kept: when the edge of the first grid is searched backwards (the third
+  ///     and fourth block of R_StitchPatches) the error of the new vertex is read at index k + 1, and for
+  ///     the last vertex that is one past the table. The table is a zone block of its own, so what is
+  ///     read is the 4 byte marker the zone writes after every block (ZONEID, 0x001D4A11, a denormal
+  ///     float of 2.7e-39): here 0, which compares the same.
   ///   </para>
   /// </summary>
   TBspPatchStitcher = class(TInterfacedObject, IBspPatchStitcher)
@@ -40,8 +40,8 @@ type
     // lodStitched of each slot, only while StitchAll runs
     FStitched: TArray<Boolean>;
     class function PositionOf(const AGrid: IPatchGrid; const AIndex: Integer): TIdVec3; static;
-    class function WidthError(const AGrid: IPatchGrid; const AIndex, AFallback: Integer): Single; static;
-    class function HeightError(const AGrid: IPatchGrid; const AIndex, AFallback: Integer): Single; static;
+    class function WidthError(const AGrid: IPatchGrid; const AIndex: Integer): Single; static;
+    class function HeightError(const AGrid: IPatchGrid; const AIndex: Integer): Single; static;
     class function SameGroup(const AFirst, ASecond: IPatchGrid): Boolean; static;
     function TryEdge(var AGrids: TArray<IPatchGrid>; const ASecond: Integer;
       const AVertexA, AVertexB, AMiddle: TIdVec3; const ALodError: Single): Boolean;
@@ -70,22 +70,20 @@ begin
   Result := AGrid.Vertices[AIndex].Position;
 end;
 
-class function TBspPatchStitcher.WidthError(const AGrid: IPatchGrid; const AIndex,
-  AFallback: Integer): Single;
+class function TBspPatchStitcher.WidthError(const AGrid: IPatchGrid; const AIndex: Integer): Single;
 begin
   if AIndex < AGrid.Width then
     Result := AGrid.WidthLodError[AIndex]
   else
-    Result := AGrid.WidthLodError[AFallback];
+    Result := 0;
 end;
 
-class function TBspPatchStitcher.HeightError(const AGrid: IPatchGrid; const AIndex,
-  AFallback: Integer): Single;
+class function TBspPatchStitcher.HeightError(const AGrid: IPatchGrid; const AIndex: Integer): Single;
 begin
   if AIndex < AGrid.Height then
     Result := AGrid.HeightLodError[AIndex]
   else
-    Result := AGrid.HeightLodError[AFallback];
+    Result := 0;
 end;
 
 class function TBspPatchStitcher.SameGroup(const AFirst, ASecond: IPatchGrid): Boolean;
@@ -189,7 +187,7 @@ begin
     while LK < LWidth - 2 do
     begin
       if TryEdge(AGrids, ASecond, PositionOf(LGrid1, LK + LOffset1), PositionOf(LGrid1, LK + 2 + LOffset1),
-        PositionOf(LGrid1, LK + 1 + LOffset1), WidthError(LGrid1, LK + 1, LK - 1)) then
+        PositionOf(LGrid1, LK + 1 + LOffset1), WidthError(LGrid1, LK + 1)) then
         Exit(True);
       Inc(LK, 2);
     end;
@@ -209,7 +207,7 @@ begin
     begin
       if TryEdge(AGrids, ASecond, PositionOf(LGrid1, LWidth * LK + LOffset1),
         PositionOf(LGrid1, LWidth * (LK + 2) + LOffset1), PositionOf(LGrid1, LWidth * (LK + 1) + LOffset1),
-        HeightError(LGrid1, LK + 1, LK - 1)) then
+        HeightError(LGrid1, LK + 1)) then
         Exit(True);
       Inc(LK, 2);
     end;
@@ -228,7 +226,7 @@ begin
     while LK > 1 do
     begin
       if TryEdge(AGrids, ASecond, PositionOf(LGrid1, LK + LOffset1), PositionOf(LGrid1, LK - 2 + LOffset1),
-        PositionOf(LGrid1, LK - 1 + LOffset1), WidthError(LGrid1, LK + 1, LK - 1)) then
+        PositionOf(LGrid1, LK - 1 + LOffset1), WidthError(LGrid1, LK + 1)) then
         Exit(True);
       Dec(LK, 2);
     end;
@@ -248,7 +246,7 @@ begin
     begin
       if TryEdge(AGrids, ASecond, PositionOf(LGrid1, LWidth * LK + LOffset1),
         PositionOf(LGrid1, LWidth * (LK - 2) + LOffset1), PositionOf(LGrid1, LWidth * (LK - 1) + LOffset1),
-        HeightError(LGrid1, LK + 1, LK - 1)) then
+        HeightError(LGrid1, LK + 1)) then
         Exit(True);
       Dec(LK, 2);
     end;

@@ -124,7 +124,7 @@ begin
   LBuilder := TBspSampleBuilder.Create;
   try
     for LVariant := 0 to 2 do
-      Assert.AreEqual(0, Length(Issues(LBuilder.Build(LVariant))), 'variant ' + IntToStr(LVariant));
+      Assert.AreEqual<Integer>(0, Length(Issues(LBuilder.Build(LVariant))), 'variant ' + IntToStr(LVariant));
   finally
     LBuilder.Free;
   end;
@@ -190,7 +190,7 @@ end;
 procedure TTestBspValidator.DovrebbeTrovareUnLatoVisibileCheNonEDelBrush;
 begin
   ExpectIssue(Broken(LUMP_FOGS, 68, 6), 'fog 0: visible side 6');
-  Assert.AreEqual(0, Length(Broken(LUMP_FOGS, 68, 5)));
+  Assert.AreEqual<Integer>(0, Length(Broken(LUMP_FOGS, 68, 5)));
 end;
 
 procedure TTestBspValidator.DovrebbeTrovareUnaShaderNumSbagliataInUnaSuperficie;
@@ -244,7 +244,7 @@ begin
   BspPatchInt(LBytes, LUMP_BRUSHES, 8, 99);
   BspPatchInt(LBytes, LUMP_FOGS, 64, 99);
   LIssues := Issues(LBytes);
-  Assert.AreEqual(3, Length(LIssues));
+  Assert.AreEqual<Integer>(3, Length(LIssues));
 end;
 
 end.

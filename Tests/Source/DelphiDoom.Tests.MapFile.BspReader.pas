@@ -139,19 +139,19 @@ begin
   LFile := FReader.ParseBytes(FBytes, 'test.bsp');
   Assert.AreEqual(BSP_VERSION, LFile.Version);
   Assert.AreEqual(144, LFile.Lumps[LUMP_ENTITIES].FileOfs);
-  Assert.AreEqual(3, Length(LFile.Shaders));
-  Assert.AreEqual(8, Length(LFile.Planes));
-  Assert.AreEqual(1, Length(LFile.Nodes));
-  Assert.AreEqual(2, Length(LFile.Leafs));
-  Assert.AreEqual(8, Length(LFile.LeafSurfaces));
-  Assert.AreEqual(1, Length(LFile.LeafBrushes));
-  Assert.AreEqual(1, Length(LFile.Models));
-  Assert.AreEqual(1, Length(LFile.Brushes));
-  Assert.AreEqual(6, Length(LFile.BrushSides));
-  Assert.AreEqual(65, Length(LFile.DrawVerts));
-  Assert.AreEqual(6, Length(LFile.DrawIndexes));
-  Assert.AreEqual(1, Length(LFile.Fogs));
-  Assert.AreEqual(8, Length(LFile.Surfaces));
+  Assert.AreEqual<Integer>(3, Length(LFile.Shaders));
+  Assert.AreEqual<Integer>(8, Length(LFile.Planes));
+  Assert.AreEqual<Integer>(1, Length(LFile.Nodes));
+  Assert.AreEqual<Integer>(2, Length(LFile.Leafs));
+  Assert.AreEqual<Integer>(8, Length(LFile.LeafSurfaces));
+  Assert.AreEqual<Integer>(1, Length(LFile.LeafBrushes));
+  Assert.AreEqual<Integer>(1, Length(LFile.Models));
+  Assert.AreEqual<Integer>(1, Length(LFile.Brushes));
+  Assert.AreEqual<Integer>(6, Length(LFile.BrushSides));
+  Assert.AreEqual<Integer>(65, Length(LFile.DrawVerts));
+  Assert.AreEqual<Integer>(6, Length(LFile.DrawIndexes));
+  Assert.AreEqual<Integer>(1, Length(LFile.Fogs));
+  Assert.AreEqual<Integer>(8, Length(LFile.Surfaces));
 end;
 
 procedure TTestBspReader.DovrebbeDareIRecordPerIndice;
@@ -183,7 +183,7 @@ var
 begin
   LFile := FReader.ParseBytes(FBytes, 'test.bsp');
   Assert.IsTrue(string(LFile.EntityText).StartsWith('{'#10'"classname" "worldspawn"'));
-  Assert.AreEqual(Integer(LFile.Lumps[LUMP_ENTITIES].FileLen - 1), Length(LFile.EntityText),
+  Assert.AreEqual<Integer>(Integer(LFile.Lumps[LUMP_ENTITIES].FileLen - 1), Length(LFile.EntityText),
     'the text ends at the NUL');
   Assert.AreEqual('textures/test/wall', string(LFile.ShaderName(0)));
   Assert.AreEqual('textures/test/curve', string(LFile.ShaderName(2)));
@@ -196,11 +196,11 @@ var
 begin
   LFile := FReader.ParseBytes(FBytes, 'test.bsp');
   Assert.AreEqual(2, LFile.LightmapCount);
-  Assert.AreEqual(2 * BSP_LIGHTMAP_BYTES, Length(LFile.Lightmaps));
-  Assert.AreEqual(48, Length(LFile.LightGrid));
+  Assert.AreEqual<Integer>(2 * BSP_LIGHTMAP_BYTES, Length(LFile.Lightmaps));
+  Assert.AreEqual<Integer>(48, Length(LFile.LightGrid));
   Assert.AreEqual(2, LFile.NumClusters);
   Assert.AreEqual(8, LFile.ClusterBytes);
-  Assert.AreEqual(16, Length(LFile.Visibility));
+  Assert.AreEqual<Integer>(16, Length(LFile.Visibility));
 end;
 
 procedure TTestBspReader.DovrebbeDareIByteDiOgniLumpComeNelFile;
@@ -211,7 +211,7 @@ begin
   LFile := FReader.ParseBytes(FBytes, 'test.bsp');
   for LIndex := 0 to HEADER_LUMPS - 1 do
   begin
-    Assert.AreEqual(LFile.Lumps[LIndex].FileLen, Length(LFile.LumpData[LIndex]), 'lump ' + IntToStr(LIndex));
+    Assert.AreEqual<Integer>(LFile.Lumps[LIndex].FileLen, Length(LFile.LumpData[LIndex]), 'lump ' + IntToStr(LIndex));
     Assert.IsTrue(CompareMem(@FBytes[LFile.Lumps[LIndex].FileOfs], @LFile.LumpData[LIndex][0],
       LFile.Lumps[LIndex].FileLen), 'bytes of lump ' + IntToStr(LIndex));
   end;
@@ -232,8 +232,8 @@ begin
   LFile := FReader.ParseBytes(LBytes, 'test.bsp');
   Assert.AreEqual(0, LFile.LightmapCount);
   Assert.AreEqual(0, LFile.NumClusters);
-  Assert.AreEqual(0, Length(LFile.Visibility));
-  Assert.AreEqual(0, Length(LFile.Surfaces));
+  Assert.AreEqual<Integer>(0, Length(LFile.Visibility));
+  Assert.AreEqual<Integer>(0, Length(LFile.Surfaces));
   Assert.AreEqual('', string(LFile.EntityText));
 end;
 
@@ -249,7 +249,7 @@ begin
   LFileSystem.SetFile('maps/test.bsp', LData);
   LFile := TBspFactory.CreateReader(LFileSystem).Parse('maps/test.bsp');
   Assert.IsTrue(Assigned(LFile));
-  Assert.AreEqual(8, Length(LFile.Surfaces));
+  Assert.AreEqual<Integer>(8, Length(LFile.Surfaces));
 end;
 
 procedure TTestBspReader.DovrebbeDareNilPerUnFileCheNonEsiste;

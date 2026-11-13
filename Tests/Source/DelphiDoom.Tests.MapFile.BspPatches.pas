@@ -23,6 +23,7 @@ type
   strict private
     FBytes: TBytes;
     function Load(const ABytes: TBytes): IBspFile;
+    procedure ExpectLoadError(const ABytes: TBytes; const AMessagePart: string);
   public
     [Setup]
     procedure Setup;
@@ -65,7 +66,7 @@ type
     [Test]
     procedure DovrebbeLeggereLErroreInRangeAllIndiceKPiuUnoCome;
     [Test]
-    procedure DovrebbeUsareLErroreDelVerticeInseritoOltreLaTabellaDelC;
+    procedure DovrebbeLeggereZeroOltreLaTabellaDegliErroriComeFaIlC;
     [Test]
     procedure NonDovrebbeCucireGriglieDiGruppiDiversi;
     [Test]
@@ -142,13 +143,27 @@ begin
   Result := TBspFactory.CreateReader.ParseBytes(ABytes, 'test.bsp');
 end;
 
+procedure TTestBspPatchLoader.ExpectLoadError(const ABytes: TBytes; const AMessagePart: string);
+var
+  LMessage: string;
+begin
+  LMessage := '';
+  try
+    TBspFactory.CreatePatchLoader.LoadGrids(Load(ABytes));
+  except
+    on E: EBspFileException do
+      LMessage := E.Message;
+  end;
+  Assert.IsTrue(Pos(AMessagePart, LMessage) > 0, 'error was "' + LMessage + '"');
+end;
+
 procedure TTestBspPatchLoader.DovrebbeDareUnaGrigliaPerOgniPatchCheSiDisegna;
 var
   LGrids: TArray<IPatchGrid>;
   LIndex, LCount: Integer;
 begin
   LGrids := TBspFactory.CreatePatchLoader.LoadGrids(Load(FBytes));
-  Assert.AreEqual(8, Length(LGrids));
+  Assert.AreEqual<Integer>(8, Length(LGrids));
   LCount := 0;
   for LIndex := 0 to High(LGrids) do
     if Assigned(LGrids[LIndex]) then
@@ -256,11 +271,7 @@ var
 begin
   LBytes := Copy(FBytes);
   BspPatchInt(LBytes, LUMP_SURFACES, 3 * SURFACE_SIZE, 9);
-  Assert.WillRaiseWithMessageRegex(
-    procedure
-    begin
-      TBspFactory.CreatePatchLoader.LoadGrids(Load(LBytes));
-    end, EBspFileException, 'bad num 9');
+  ExpectLoadError(LBytes, 'bad num 9');
 end;
 
 procedure TTestBspPatchLoader.DovrebbeRifiutareUnTipoDiSuperficieSbagliato;
@@ -269,11 +280,7 @@ var
 begin
   LBytes := Copy(FBytes);
   BspPatchInt(LBytes, LUMP_SURFACES, SURFACE_SIZE + 8, 7);
-  Assert.WillRaiseWithMessageRegex(
-    procedure
-    begin
-      TBspFactory.CreatePatchLoader.LoadGrids(Load(LBytes));
-    end, EBspFileException, 'Bad surfaceType');
+  ExpectLoadError(LBytes, 'Bad surfaceType');
 end;
 
 procedure TTestBspPatchLoader.DovrebbeRifiutareUnaPatchConIVerticiFuoriDalLump;
@@ -282,11 +289,7 @@ var
 begin
   LBytes := Copy(FBytes);
   BspPatchInt(LBytes, LUMP_SURFACES, 3 * SURFACE_SIZE + 12, 60);
-  Assert.WillRaiseWithMessageRegex(
-    procedure
-    begin
-      TBspFactory.CreatePatchLoader.LoadGrids(Load(LBytes));
-    end, EBspFileException, 'needs vertices');
+  ExpectLoadError(LBytes, 'needs vertices');
 end;
 
 procedure TTestBspPatchLoader.DovrebbeRifiutareUnaPatchConDimensioniPari;
@@ -296,11 +299,7 @@ begin
   // the original lets the subdivider read points it never set
   LBytes := Copy(FBytes);
   BspPatchInt(LBytes, LUMP_SURFACES, 3 * SURFACE_SIZE + 96, 4);
-  Assert.WillRaiseWithMessageRegex(
-    procedure
-    begin
-      TBspFactory.CreatePatchLoader.LoadGrids(Load(LBytes));
-    end, EBspFileException, 'not a valid patch');
+  ExpectLoadError(LBytes, 'not a valid patch');
 end;
 
 procedure TTestBspPatchLoader.DovrebbeDareLeStesseGriglieDueVolte;
@@ -375,19 +374,19 @@ begin
   Assert.AreEqual<Single>(4, LGrids[1].WidthLodError[1]);
 end;
 
-procedure TTestBspPatchStitcher.DovrebbeUsareLErroreDelVerticeInseritoOltreLaTabellaDelC;
+procedure TTestBspPatchStitcher.DovrebbeLeggereZeroOltreLaTabellaDegliErroriComeFaIlC;
 var
   LStitcher: IBspPatchStitcher;
   LGrids: TArray<IPatchGrid>;
 begin
-  // k = Width - 1: the C reads widthLodError[Width], one past the table; here the error of the
-  // vertex that is inserted (k - 1)
+  // k = Width - 1: the C reads widthLodError[Width], one past the table: the ZONEID marker of the
+  // zone, a denormal float that is 0 for every comparison (a real map of OpenArena does it)
   LStitcher := TBspFactory.CreatePatchStitcher;
   SetLength(LGrids, 2);
   LGrids[0] := TFakeGrid.Create([0, 64, 128], [0, 64], [10, 20, 30], [0, 0]);
   LGrids[1] := TFakeGrid.Create([128, 0], [0, 64], [0, 0], [0, 0]);
   Assert.IsTrue(LStitcher.StitchPair(LGrids, 0, 1));
-  Assert.AreEqual<Single>(20, LGrids[1].WidthLodError[1]);
+  Assert.AreEqual<Single>(0, LGrids[1].WidthLodError[1]);
   Assert.AreEqual<Single>(64, LGrids[1].Vertices[1].Position.X);
 end;
 
