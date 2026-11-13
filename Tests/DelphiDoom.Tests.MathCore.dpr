@@ -72,7 +72,8 @@ uses
   DelphiDoom.MathCore.Float.Polynomial in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Polynomial.pas',
   DelphiDoom.MathCore.Float.Conversions in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Conversions.pas',
   DelphiDoom.Tests.IdLib.Golden in 'Source\DelphiDoom.Tests.IdLib.Golden.pas',
-  DelphiDoom.Tests.MathCore.Float.Parity in 'Source\DelphiDoom.Tests.MathCore.Float.Parity.pas';
+  DelphiDoom.Tests.MathCore.Float.Parity in 'Source\DelphiDoom.Tests.MathCore.Float.Parity.pas',
+  DelphiDoom.Tests.MathCore.Float.Values in 'Source\DelphiDoom.Tests.MathCore.Float.Values.pas';
 
 var
   Runner: ITestRunner;
