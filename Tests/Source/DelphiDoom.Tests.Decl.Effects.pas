@@ -57,6 +57,8 @@ type
     procedure DovrebbeSostituireIlFileConSave;
     [Test]
     procedure DovrebbeIgnorareLeMaiuscoleDelleParole;
+    [Test]
+    procedure DovrebbeScrivereTuttiICampiDiUnoStage;
   end;
 
   [TestFixture]
@@ -133,6 +135,9 @@ const
     'particle small'#10'{'#10#9'depthHack 2'#10#9'{'#10#9#9'material textures/spark'#10#9#9'count 12'#10 +
     #9#9'time 2'#10#9#9'speed 10 to 20'#10#9#9'gravity 0'#10#9'}'#10'}'#10 +
     'particle two'#10'{'#10#9'{'#10#9#9'count 5'#10#9#9'time 1'#10#9'}'#10#9'{'#10#9#9'count 6'#10#9#9'time 3'#10#9'}'#10'}'#10 +
+    'particle everything'#10'{'#10#9'{'#10#9#9'count 3'#10#9#9'time 2'#10#9#9'timeOffset 0.5'#10#9#9'deadTime 1'#10#9#9'animationFrames 4'#10 +
+    #9#9'animationRate 8'#10#9#9'orientation aimed 2 0.4'#10#9#9'direction outward 0.25'#10#9#9'customPath helix 1 2 3 4 5'#10 +
+    #9#9'entityColor 1'#10#9#9'rotation 10 to 30'#10#9#9'angle 15'#10#9#9'gravity world 3'#10#9'}'#10'}'#10 +
     'particle Shouty'#10'{'#10#9'{'#10#9#9'COUNT 7'#10#9#9'Time 1'#10#9#9'DISTRIBUTION SPHERE 4 4 4 0.5'#10#9'}'#10'}'#10;
   EFFECTS =
     'fx boom'#10'{'#10#9'bindto "body"'#10#9'{'#10#9#9'sound "sounds/boom"'#10#9#9'delay 0.5'#10#9'}'#10 +
@@ -295,6 +300,26 @@ begin
   LParticle := FEffects.Particle('Shouty');
   Assert.AreEqual(7, LParticle.GetStage(0).TotalParticles);
   Assert.AreEqual(Ord(TParticleDistribution.Sphere), Ord(LParticle.GetStage(0).DistributionType));
+end;
+
+procedure TTestDeclParticle.DovrebbeScrivereTuttiICampiDiUnoStage;
+var
+  LWriter: IDeclParticleWriter;
+  LText: string;
+begin
+  Supports(FEffects.Kit.Manager.FindType(DECL_PARTICLE, 'everything'), IDeclParticleWriter, LWriter);
+  LText := string(LWriter.RebuildTextSource);
+  Assert.IsTrue(LText.Contains(#9#9'animationFrames '#9'4'#10));
+  Assert.IsTrue(LText.Contains(#9#9'animationRate '#9#9'8.000'#10));
+  Assert.IsTrue(LText.Contains(#9#9'timeOffset'#9#9#9'0.500'#10));
+  Assert.IsTrue(LText.Contains(#9#9'deadTime'#9#9#9'1.000'#10));
+  Assert.IsTrue(LText.Contains(#9#9'orientation'#9#9#9'aimed 2.000 0.400 '#10));
+  Assert.IsTrue(LText.Contains(#9#9'direction'#9#9#9'outward "0.250" '#10));
+  Assert.IsTrue(LText.Contains(#9#9'customPath helix 1.000 2.000 3.000 4.000 5.000 '#10));
+  Assert.IsTrue(LText.Contains(#9#9'entityColor'#9#9#9'1'#10));
+  Assert.IsTrue(LText.Contains(#9#9'rotation'#9#9#9#9' "10.000"  to "30.000"'#10));
+  Assert.IsTrue(LText.Contains(#9#9'angle'#9#9#9#9'15.000'#10));
+  Assert.IsTrue(LText.Contains(#9#9'gravity '#9#9#9'world 3.000'#10));
 end;
 
 { TTestParticleGenerator }
