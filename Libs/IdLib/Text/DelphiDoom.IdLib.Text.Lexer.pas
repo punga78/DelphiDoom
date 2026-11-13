@@ -123,6 +123,8 @@ type
     property LineNum: Integer read FLine;
     /// <summary>The offset in the script (idLexer::GetFileOffset)</summary>
     function GetFileOffset: Integer;
+    /// <summary>The characters of the script from <c>AStart</c> up to (not including) <c>AEnd</c> (offsets in the script)</summary>
+    function GetBufferText(const AStart, AEnd: Integer): AnsiString;
     /// <summary>The base folder idLexer::SetBaseFolder sets (a static in the original)</summary>
     property BaseFolder: AnsiString read FBaseFolder write FBaseFolder;
   end;
@@ -1426,6 +1428,21 @@ end;
 function TIdLexer.GetFileOffset: Integer;
 begin
   Result := FScriptPosition;
+end;
+
+function TIdLexer.GetBufferText(const AStart, AEnd: Integer): AnsiString;
+var
+  LStart, LEnd: Integer;
+begin
+  LStart := AStart;
+  LEnd := AEnd;
+  if LStart < 0 then
+    LStart := 0;
+  if LEnd > System.Length(FBuffer) then
+    LEnd := System.Length(FBuffer);
+  if LEnd <= LStart then
+    Exit('');
+  Result := Copy(FBuffer, LStart + 1, LEnd - LStart);
 end;
 
 function TIdLexer.IsLoaded: Boolean;

@@ -1,0 +1,896 @@
+## tokens_basic
+loaded 1
+> tokens
+T 4 4 L1 X0 F0 i=0 f=#00000000 |name|
+T 4 6 L1 X0 F0 i=0 f=#00000000 |_under|
+T 4 2 L1 X0 F0 i=0 f=#00000000 |x1|
+T 3 65539 L1 X0 F0 i=123 f=#42f60000 |123|
+T 3 65541 L1 X0 F0 i=31 f=#41f80000 |0x1F|
+T 3 66178 L1 X0 F0 i=1 f=#3fc00000 |1.5|
+T 3 66178 L1 X0 F0 i=500 f=#43fa0000 |.5e3|
+T 1 8 L1 X0 F0 i=0 f=#00000000 |a string|
+T 2 99 L1 X0 F0 i=0 f=#00000000 |c|
+T 5 46 L1 X0 F0 i=0 f=#00000000 |{|
+T 5 47 L1 X0 F0 i=0 f=#00000000 |}|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 41 L1 X0 F0 i=0 f=#00000000 |;|
+T 5 40 L1 X0 F0 i=0 f=#00000000 |,|
+T 5 23 L1 X0 F0 i=0 f=#00000000 |->|
+T 5 24 L1 X0 F0 i=0 f=#00000000 |::|
+T 5 16 L1 X0 F0 i=0 f=#00000000 |++|
+T 5 2 L1 X0 F0 i=0 f=#00000000 |<<=|
+T 5 3 L1 X0 F0 i=0 f=#00000000 |...|
+T 4 6 L2 X1 F0 i=0 f=#00000000 |second|
+T 4 4 L2 X0 F0 i=0 f=#00000000 |line|
+T 4 5 L4 X2 F0 i=0 f=#00000000 |third|
+end n=23
+## define_object
+loaded 1
+> tokens
+T 4 1 L3 X1 F0 i=0 f=#00000000 |x|
+T 3 65539 L3 X0 F0 i=42 f=#42280000 |42|
+T 4 1 L3 X0 F0 i=0 f=#00000000 |y|
+T 3 65539 L3 X0 F0 i=42 f=#42280000 |42|
+T 5 29 L3 X0 F0 i=0 f=#00000000 |+|
+T 3 65539 L3 X0 F0 i=1 f=#3f800000 |1|
+T 4 1 L3 X0 F0 i=0 f=#00000000 |z|
+T 4 3 L5 X1 F0 i=0 f=#00000000 |FOO|
+end n=8
+## define_params
+loaded 1
+> tokens
+T 5 44 L4 X1 F0 i=0 f=#00000000 |(|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L4 X0 F0 i=1 f=#3f800000 |1|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 29 L4 X0 F0 i=0 f=#00000000 |+|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L4 X0 F0 i=2 f=#40000000 |2|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 4 1 L4 X0 F0 i=0 f=#00000000 |f|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L4 X0 F0 i=1 f=#3f800000 |1|
+T 5 40 L4 X0 F0 i=0 f=#00000000 |,|
+T 3 65539 L4 X0 F0 i=2 f=#40000000 |2|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 29 L4 X0 F0 i=0 f=#00000000 |+|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L4 X0 F0 i=3 f=#40400000 |3|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 4 3 L4 X0 F0 i=0 f=#00000000 |abc|
+T 4 3 L4 X0 F0 i=0 f=#00000000 |abc|
+T 4 7 L4 X0 F0 i=0 f=#00000000 |nothing|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+T 5 44 L5 X1 F0 i=0 f=#00000000 |(|
+T 5 44 L5 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L5 X0 F0 i=3 f=#40400000 |3|
+T 5 45 L5 X0 F0 i=0 f=#00000000 |)|
+T 5 29 L5 X0 F0 i=0 f=#00000000 |+|
+T 5 44 L5 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L5 X0 F0 i=4 f=#40800000 |4|
+T 5 45 L5 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L5 X0 F0 i=0 f=#00000000 |)|
+end n=37
+## define_stringize_merge
+loaded 1
+> tokens
+T 1 0 L4 X1 F0 i=0 f=#00000000 |helloworld|
+T 4 3 L4 X0 F0 i=0 f=#00000000 |foobar|
+T 3 65539 L4 X0 F0 i=1234 f=#449a4000 |1234|
+T 4 4 L4 X0 F0 i=0 f=#00000000 |var_7|
+T 1 1 L4 X0 F0 i=0 f=#00000000 |ab|
+end n=5
+## define_recursive
+loaded 1
+> tokens
+W: file test, line 1: recursive define (removed recursion)
+T 4 4 L2 X1 F1 i=0 f=#00000000 |LOOP|
+T 5 29 L2 X0 F0 i=0 f=#00000000 |+|
+T 3 65539 L2 X0 F0 i=1 f=#3f800000 |1|
+end n=3
+## define_redefine
+loaded 1
+> tokens
+W: file test, line 2: redefinition of 'X'
+T 3 65539 L3 X1 F0 i=2 f=#40000000 |2|
+end n=1
+## define_arg_counts
+loaded 1
+> tokens
+W: file test, line 2: too few define parameters
+T 3 65539 L2 X1 F0 i=1 f=#3f800000 |1|
+T 3 65539 L3 X1 F0 i=1 f=#3f800000 |1|
+T 3 65539 L3 X0 F0 i=2 f=#40000000 |2|
+W: file test, line 4: too many comma's
+W: file test, line 4: too few define parameters
+W: file test, line 6: define 'F2' missing parameters
+end n=3
+## ifdef_else
+loaded 1
+> tokens
+T 4 4 L3 X1 F0 i=0 f=#00000000 |in_a|
+T 4 6 L10 X1 F0 i=0 f=#00000000 |else_a|
+T 4 6 L15 X1 F0 i=0 f=#00000000 |elif_a|
+end n=3
+## ifdef_nested
+loaded 1
+> tokens
+T 4 1 L3 X1 F0 i=0 f=#00000000 |a|
+T 4 1 L7 X1 F0 i=0 f=#00000000 |c|
+T 4 1 L9 X1 F0 i=0 f=#00000000 |d|
+T 4 1 L16 X1 F0 i=0 f=#00000000 |z|
+end n=4
+## if_arith
+loaded 1
+> tokens
+T 4 3 L2 X1 F0 i=0 f=#00000000 |ok1|
+T 4 3 L5 X1 F0 i=0 f=#00000000 |ok2|
+T 4 3 L8 X1 F0 i=0 f=#00000000 |ok3|
+T 4 3 L11 X1 F0 i=0 f=#00000000 |ok4|
+T 4 3 L14 X1 F0 i=0 f=#00000000 |ok5|
+T 4 3 L17 X1 F0 i=0 f=#00000000 |ok6|
+T 4 3 L20 X1 F0 i=0 f=#00000000 |ok7|
+T 4 3 L23 X1 F0 i=0 f=#00000000 |ok8|
+T 4 3 L26 X1 F0 i=0 f=#00000000 |ok9|
+T 4 4 L32 X1 F0 i=0 f=#00000000 |ok11|
+T 4 4 L35 X1 F0 i=0 f=#00000000 |ok12|
+end n=11
+## if_defined_macros
+loaded 1
+> tokens
+T 4 3 L4 X1 F0 i=0 f=#00000000 |ok1|
+T 4 3 L7 X1 F0 i=0 f=#00000000 |ok2|
+T 4 3 L10 X1 F0 i=0 f=#00000000 |ok3|
+T 4 7 L16 X1 F0 i=0 f=#00000000 |SKIPPED|
+end n=4
+## if_elif_chain
+loaded 1
+> tokens
+T 4 3 L5 X1 F0 i=0 f=#00000000 |two|
+T 4 5 L9 X1 F0 i=0 f=#00000000 |other|
+T 4 11 L16 X1 F0 i=0 f=#00000000 |else_branch|
+end n=3
+## eval_directives
+loaded 1
+> tokens
+T 3 65571 L3 X0 F0 i=42 f=#42280000 |42|
+T 5 30 L4 X0 F0 i=0 f=#00000000 |-|
+T 3 65571 L4 X0 F0 i=7 f=#40e00000 |7|
+T 3 65698 L5 X0 F0 i=3 f=#40400000 |3.00|
+T 3 65698 L6 X0 F0 i=2 f=#40200000 |2.50|
+T 5 30 L7 X0 F0 i=0 f=#00000000 |-|
+T 3 65698 L7 X0 F0 i=2 f=#40100000 |2.25|
+T 4 1 L7 X1 F0 i=0 f=#00000000 |x|
+T 3 65571 L7 X0 F0 i=7 f=#40e00000 |7|
+T 4 1 L7 X0 F0 i=0 f=#00000000 |y|
+T 3 65571 L7 X0 F0 i=36 f=#42100000 |36|
+T 4 1 L7 X0 F0 i=0 f=#00000000 |z|
+T 3 65698 L7 X0 F0 i=3 f=#40400000 |3.00|
+T 4 1 L7 X0 F0 i=0 f=#00000000 |w|
+T 5 30 L7 X0 F0 i=0 f=#00000000 |-|
+T 3 65571 L7 X0 F0 i=3 f=#40400000 |3|
+ERR file test, line 9: trailing operator in #if/#elif
+## eval_nodollar
+loaded 1
+> tokens
+T 5 52 L1 X0 F0 i=0 f=#00000000 |$|
+T 4 7 L1 X0 F0 i=0 f=#00000000 |evalint|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+T 5 29 L1 X0 F0 i=0 f=#00000000 |+|
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+end n=7
+## builtins
+loaded 1
+> builtins
+> tokens
+T 4 4 L1 X0 F0 i=0 f=#00000000 |line|
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 8 L2 X0 F0 i=0 f=#00000000 |file.txt|
+T 4 1 L2 X0 F0 i=0 f=#00000000 |y|
+W: file file.txt, line 3: __STDC__ not supported\n
+T 4 1 L3 X0 F0 i=0 f=#00000000 |z|
+T 3 65539 L5 X2 F0 i=5 f=#40a00000 |5|
+W: file file.txt, line 6: can't undef '__LINE__'
+ERR file file.txt, line 7: can't redefine '__LINE__'
+## strings_concat
+loaded 1
+> tokens
+T 1 8 L1 X0 F0 i=0 f=#00000000 |abcdefxy|
+T 4 4 L3 X0 F0 i=0 f=#00000000 |name|
+T 1 11 L3 X0 F0 i=0 f=#00000000 |zabesc\n\t"q"|
+end n=3
+## strings_noconcat
+loaded 1
+> tokens
+T 1 3 L1 X0 F0 i=0 f=#00000000 |abc|
+T 1 3 L1 X0 F0 i=0 f=#00000000 |def|
+end n=2
+## include_basic
+loaded 1
+> tokens
+T 4 6 L1 X0 F0 i=0 f=#00000000 |before|
+T 4 4 L1 X0 F0 i=0 f=#00000000 |INC1|
+T 4 5 L3 X2 F0 i=0 f=#00000000 |after|
+T 3 65539 L2 X2 F0 i=9 f=#41100000 |9|
+T 4 3 L1 X0 F0 i=0 f=#00000000 |ABS|
+T 4 4 L4 X2 F0 i=0 f=#00000000 |done|
+end n=6
+## include_recursive
+loaded 1
+> tokens
+T 4 2 L1 X0 F0 i=0 f=#00000000 |A1|
+T 4 2 L1 X0 F0 i=0 f=#00000000 |B1|
+W: file b.txt, line 2: 'a.txt' recursively included
+T 4 2 L3 X1 F0 i=0 f=#00000000 |B2|
+T 4 2 L3 X2 F0 i=0 f=#00000000 |A2|
+end n=4
+## include_missing
+loaded 1
+> tokens
+W: file test, line 1: file 'nofile.txt' not found
+end n=0
+## include_angle
+loaded 1
+> incpath base/
+> tokens
+ERR file test, line 1: file 'base/sys.inc' not found
+## include_angle_nobase
+loaded 1
+> incpath base/
+> tokens
+T 4 3 L2 X1 F0 i=0 f=#00000000 |end|
+end n=1
+## include_ifdef_across
+loaded 1
+> tokens
+W: file inner.txt, line 3: missing #endif
+T 4 11 L2 X2 F0 i=0 f=#00000000 |after_inner|
+T 4 4 L1 X0 F0 i=0 f=#00000000 |fine|
+end n=2
+## directives_misc_fatal
+loaded 1
+> tokens
+ERR file test, line 1: #error: boom
+## line_continuation
+loaded 1
+> tokens
+T 4 1 L4 X1 F0 i=0 f=#00000000 |a|
+T 4 1 L4 X0 F0 i=0 f=#00000000 |b|
+T 4 1 L4 X0 F0 i=0 f=#00000000 |c|
+T 4 1 L5 X1 F0 i=0 f=#00000000 |x|
+end n=4
+## api_expect
+loaded 1
+> expect {
+r=1
+> parseint
+v=12
+> parseint
+v=-34
+> parsefloat
+v=#c0b00000
+> parsebool
+v=1
+> expect }
+r=1
+> expect missing
+ERR file test, line 2: couldn't find expected 'missing'
+## api_expect_nonfatal
+loaded 1
+> expect }
+W: file test, line 1: expected '}' but found 'abc'
+r=0
+> expect x
+W: file test, line 1: expected 'x' but found 'str'
+r=0
+> parseint
+W: file test, line 1: expected integer value, found 'word'
+v=0
+> parsefloat
+v=#3fc00000
+> parsebool
+W: file test, line 2: couldn't read expected token
+W: file test, line 2: couldn't read expected boolean
+v=0
+## api_braced
+loaded 1
+> braced -1
+s={\r\na b { c } "q" \r\nd \r\n} 
+> restofline
+s=tail words here
+## api_braced_tabs
+loaded 1
+> braced 2
+s={\r\n\t\ta \r\n\t\t{ \r\n\t\t\tb \r\n\t\t} \r\n\t\tc \r\n\t} 
+> pos
+file=test line=7
+## api_skip
+loaded 1
+> check foo
+r=0
+> check bar
+r=1
+> peek bar
+r=0
+> skipbraced
+r=1
+> readonline
+r=1
+T 4 1 L1 X0 F0 i=0 f=#00000000 |d|
+> readonline
+r=1
+T 4 1 L1 X0 F0 i=0 f=#00000000 |e|
+> skiprest
+r=1
+> skipuntil end
+r=1
+> readonline
+r=1
+T 4 1 L3 X0 F0 i=0 f=#00000000 |h|
+## api_marker
+loaded 1
+> tokens
+T 4 5 L1 X0 F0 i=0 f=#00000000 |alpha|
+T 4 4 L1 X0 F0 i=0 f=#00000000 |beta|
+end n=2
+## api_marker2
+loaded 1
+> marker
+> expect alpha
+r=1
+> expect beta
+r=1
+> frommarker
+s=alpha    beta
+> frommarkerclean
+s=alphabeta
+> whitespace
+s=    
+## api_free
+loaded 1
+> expect a
+r=1
+> free
+> expect b
+ERR idParser::ReadSourceToken: not loaded
+## adddef_before
+loaded 1
+> adddef TWO 2
+r=1
+> adddef SQ(x) ((x)*(x))
+r=1
+> adddef bad(
+ERR file *defineString, line 1: expected define parameter
+> tokens
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 26 L1 X0 F0 i=0 f=#00000000 |*|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=3 f=#40400000 |3|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 26 L1 X0 F0 i=0 f=#00000000 |*|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=3 f=#40400000 |3|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+end n=19
+## dict_parse
+loaded 1
+> dict
+dict ok=1 n=3 crc=-672698293
+  Name = Imp
+  health = 60
+  vec = 1 2 3
+## dict_parse_dup
+loaded 1
+> dict
+W: file test, line 3: 'A' already defined
+dict ok=0 n=2 crc=1831474871
+  a = 2
+  b = 3
+## dict_parse_errors
+loaded 1
+> dict
+ERR file test, line 3: Expected quoted string, but found 'name'
+## dict_ops
+loaded 1
+> dictops
+n=9 alpha=3 beta=2.500000 int=-7 bool=1 f=1.500000
+vec=1.000000 2.000000 3.000000
+vecdef=0.000000 0.000000 0.000000
+find=1 missing=-1
+m monster_a
+m monster_b
+m Monster_c
+after delete n=8 first=Alpha crc=-1884662131
+defaults n=9 alpha=zzz
+copy n=9 alpha=3
+## lang_load
+loaded 1
+> langload test.lang
+W: file test.lang, line 6: newline inside string
+W: file test.lang, line 7: newline inside string
+P: 3 strings read from test.lang\n
+r=1 n=3
+  #str_00001 = First
+  #str_00005 = Fifth\twith tab
+  #str_00001 = First again
+get1=First again
+W: Unknown string id #str_99999
+getx=#str_99999
+getp=plain
+add=#str_00000006
+add2=#str_00000006
+add3=12345
+add4=gui::x
+add5=#str_00000007
+SAVED saved.lang: // string table\n// english\n//\n\n{\n\t"#str_00001"\t"First"\n\t"#str_00005"\t"Fifth\\twith tab"\n\t"#str_00001"\t"First again"\n\t"#str_00000006"\t"Hello world"\n\t"#str_00000007"\t"Other text"\n\n}\n
+## lang_missing
+loaded 1
+> langload nofile.lang
+r=0 n=0
+W: Unknown string id #str_00001
+get1=#str_00001
+W: Unknown string id #str_99999
+getx=#str_99999
+getp=plain
+add=#str_00000000
+add2=#str_00000000
+add3=12345
+add4=gui::x
+add5=#str_00000001
+SAVED saved.lang: // string table\n// english\n//\n\n{\n\t"#str_00000000"\t"Hello world"\n\t"#str_00000001"\t"Other text"\n\n}\n
+## numbers_values
+loaded 1
+> tokens
+T 3 65545 L1 X0 F0 i=0 f=#00000000 |0|
+T 3 65539 L1 X0 F0 i=7 f=#40e00000 |7|
+T 3 65539 L1 X0 F0 i=123456 f=#47f12000 |123456|
+T 3 65539 L1 X0 F0 i=4294967295 f=#4f800000 |4294967295|
+T 3 65539 L1 X0 F0 i=0 f=#00000000 |4294967296|
+T 5 30 L1 X0 F0 i=0 f=#00000000 |-|
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+T 3 65541 L1 X0 F0 i=2147483647 f=#4f000000 |0x7FFFFFFF|
+T 3 65541 L1 X0 F0 i=4294967295 f=#4f800000 |0xFFFFFFFF|
+T 3 66178 L1 X0 F0 i=1 f=#3fc00000 |1.5|
+T 3 65922 L1 X0 F0 i=2 f=#40000000 |2.0|
+T 3 66178 L1 X0 F0 i=0 f=#3dcccccd |0.1|
+T 3 66178 L1 X0 F0 i=3 f=#40490fdb |3.14159265|
+end n=13
+## define_arg_nested_macro
+loaded 1
+> tokens
+T 3 65539 L4 X1 F0 i=1 f=#3f800000 |1|
+T 5 29 L4 X0 F0 i=0 f=#00000000 |+|
+T 3 65539 L4 X0 F0 i=1 f=#3f800000 |1|
+T 3 65539 L4 X0 F0 i=1 f=#3f800000 |1|
+T 5 29 L4 X0 F0 i=0 f=#00000000 |+|
+T 5 44 L4 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L4 X0 F0 i=2 f=#40000000 |2|
+T 5 40 L4 X0 F0 i=0 f=#00000000 |,|
+T 3 65539 L4 X0 F0 i=3 f=#40400000 |3|
+T 5 45 L4 X0 F0 i=0 f=#00000000 |)|
+end n=10
+## define_misplaced
+loaded 1
+> tokens
+W: file test, line 2: define with misplaced ##
+end n=0
+## skipped_conditionals
+loaded 1
+> tokens
+T 4 7 L9 X1 F0 i=0 f=#00000000 |visible|
+T 4 1 L11 X1 F0 i=0 f=#00000000 |Q|
+end n=2
+## define_err_1
+loaded 1
+> tokens
+ERR file test, line 2: #define without name
+## define_err_2
+loaded 1
+> tokens
+ERR file test, line 1: expected name after #define, found '123'
+## define_err_3
+loaded 1
+> tokens
+ERR file test, line 1: two the same define parameters
+## define_err_4
+loaded 1
+> tokens
+ERR file test, line 1: define not terminated
+## define_err_5
+loaded 1
+> tokens
+ERR file test, line 1: invalid define parameter
+## define_err_6
+loaded 1
+> tokens
+ERR file test, line 2: define with misplaced ##
+## define_err_7
+loaded 1
+> tokens
+ERR file test, line 2: define with misplaced ##
+## define_err_8
+loaded 1
+> tokens
+ERR file test, line 2: undef without name
+## define_err_9
+loaded 1
+> tokens
+ERR file test, line 1: expected name but found '5'
+## define_err_10
+loaded 1
+> tokens
+ERR file test, line 2: define parameters not terminated
+## define_err_11
+loaded 1
+> tokens
+ERR file test, line 2: expected define parameter
+## define_err_12
+loaded 1
+> tokens
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=1
+## if_err_1
+loaded 1
+> tokens
+ERR file test, line 2: divide by zero in #if/#elif\n
+## if_err_2
+loaded 1
+> tokens
+ERR file test, line 2: trailing operator in #if/#elif
+## if_err_3
+loaded 1
+> tokens
+ERR file test, line 2: too many ( in #if/#elif
+## if_err_4
+loaded 1
+> tokens
+ERR file test, line 2: too many ) in #if/#elsif
+## if_err_5
+loaded 1
+> tokens
+ERR file test, line 1: can't Evaluate 'UNDEFINED_NAME', not defined
+## if_err_6
+loaded 1
+> tokens
+ERR file test, line 2: ? after ? in #if/#elif
+## if_err_7
+loaded 1
+> tokens
+ERR file test, line 2: : without ? in #if/#elif
+## if_err_8
+loaded 1
+> tokens
+ERR file test, line 2: syntax error in #if/#elif
+## if_err_9
+loaded 1
+> tokens
+ERR file test, line 2: no value after #if/#elif
+## if_err_10
+loaded 1
+> tokens
+ERR file test, line 2: ++ or -- used in #if/#elif
+## if_err_11
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## if_err_12
+loaded 1
+> tokens
+ERR file test, line 1: can't Evaluate 'str'
+## if_err_13
+loaded 1
+> tokens
+ERR file test, line 2: divide by zero in #if/#elif\n
+## if_err_15
+loaded 1
+> tokens
+ERR file test, line 2: defined missing ) in #if/#elif
+## if_err_16
+loaded 1
+> tokens
+ERR file test, line 2: operator '==' after operator in #if/#elif
+## if_err_17
+loaded 1
+> tokens
+ERR file test, line 1: unknown punctuation @
+## if_err_18
+loaded 1
+> tokens
+ERR file test, line 2: misplaced minus sign in #if/#elif
+## if_err_19
+loaded 1
+> tokens
+ERR file test, line 2: trailing operator in #if/#elif
+## if_err_20
+loaded 1
+> tokens
+ERR file test, line 2: syntax error in #if/#elif
+## if_err_21
+loaded 1
+> tokens
+ERR file test, line 2: ! or ~ after value in #if/#elif
+## if_err_22
+loaded 1
+> tokens
+ERR file test, line 1: misplaced #elif
+## if_err_23
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## if_err_24
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## if_err_25
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## if_err_26
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## if_err_27
+loaded 1
+> tokens
+T 4 1 L2 X1 F0 i=0 f=#00000000 |x|
+T 4 5 L4 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## indent_err_1
+loaded 1
+> tokens
+ERR file test, line 1: misplaced #else
+## indent_err_2
+loaded 1
+> tokens
+ERR file test, line 1: misplaced #endif
+## indent_err_3
+loaded 1
+> tokens
+ERR file test, line 1: misplaced #elif
+## indent_err_4
+loaded 1
+> tokens
+ERR file test, line 2: #ifdef without name
+## indent_err_5
+loaded 1
+> tokens
+ERR file test, line 1: expected name after #ifdef, found '1'
+## indent_err_6
+loaded 1
+> tokens
+W: file test, line 3: missing #endif
+end n=0
+## indent_err_7
+loaded 1
+> tokens
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+W: file test, line 3: missing #endif
+end n=1
+## indent_else_else
+loaded 1
+> tokens
+ERR file test, line 3: #else after #else
+## indent_elif_after_else
+loaded 1
+> tokens
+ERR file test, line 3: misplaced #elif
+## eval_err_1
+loaded 1
+> tokens
+ERR file test, line 2: divide by zero in #if/#elif\n
+## eval_err_2
+loaded 1
+> tokens
+ERR file test, line 2: illigal operator '%' on floating point operands\n
+## eval_err_3
+loaded 1
+> tokens
+ERR file test, line 2: no value after #if/#elif
+## eval_err_4
+loaded 1
+> tokens
+W: file test, line 1: can't Evaluate 'NOPE', not defined
+T 5 52 L1 X0 F0 i=0 f=#00000000 |$|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=3
+## eval_err_5
+loaded 1
+> tokens
+T 5 52 L1 X0 F0 i=0 f=#00000000 |$|
+T 4 5 L1 X0 F0 i=0 f=#00000000 |other|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=3
+## eval_err_6
+loaded 1
+> tokens
+ERR file test, line 3: nothing to Evaluate
+## eval_err_7
+loaded 1
+> tokens
+W: file test, line 2: can't Evaluate 'after', not defined
+T 5 52 L1 X0 F0 i=0 f=#00000000 |$|
+end n=1
+## eval_err_8
+loaded 1
+> tokens
+ERR file test, line 1: divide by zero in #if/#elif\n
+## eval_err_9
+loaded 1
+> tokens
+T 5 30 L2 X0 F0 i=0 f=#00000000 |-|
+T 3 65571 L2 X0 F0 i=2212254720 f=#4f03dc54 |-2147483648|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=3
+## eval_err_10
+loaded 1
+> tokens
+T 3 65571 L2 X0 F0 i=7 f=#40e00000 |7|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## eval_err_11
+loaded 1
+> tokens
+T 3 65698 L2 X0 F0 i=7 f=#40e00000 |7.00|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## eval_err_12
+loaded 1
+> tokens
+T 3 65698 L2 X0 F0 i=0 f=#3df5c28f |0.12|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## eval_err_13
+loaded 1
+> tokens
+T 3 65698 L2 X0 F0 i=2 f=#402ae148 |2.67|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## eval_err_14
+loaded 1
+> tokens
+T 3 65698 L2 X0 F0 i=123456 f=#47f12065 |123456.79|
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=2
+## directive_1
+loaded 1
+> tokens
+W: file test, line 1: #error: stop here
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=1
+## directive_2
+loaded 1
+> tokens
+W: file test, line 2: #error without string
+end n=0
+## directive_3
+loaded 1
+> tokens
+W: file test, line 1: #warning: careful
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=1
+## directive_4
+loaded 1
+> tokens
+W: file test, line 2: #warning without string
+end n=0
+## directive_5
+loaded 1
+> tokens
+W: file test, line 1: #pragma directive not supported
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=1
+## directive_6
+loaded 1
+> tokens
+W: file test, line 1: #line directive not supported
+T 4 5 L2 X1 F0 i=0 f=#00000000 |after|
+end n=1
+## directive_7
+loaded 1
+> tokens
+W: file test, line 1: unknown precompiler directive 'unknown'
+end n=0
+## directive_8
+loaded 1
+> tokens
+W: file test, line 2: found '#' at end of line
+end n=0
+## directive_9
+loaded 1
+> tokens
+W: file test, line 2: #include without file name
+end n=0
+## directive_10
+loaded 1
+> tokens
+W: file test, line 1: #include without file name between < >
+end n=0
+## directive_11
+loaded 1
+> tokens
+W: file test, line 1: #include without file name
+end n=0
+## directive_12
+loaded 1
+> tokens
+W: file test, line 2: #include missing trailing >
+W: file test, line 2: file 'nofile' not found
+end n=0
+## global_defines_loaded
+gdef GLOBAL 7 -> 1
+gdef GF(a) a + 1 -> 1
+W: file *defineString, line 1: redefinition of 'GLOBAL'
+gdef GLOBAL 8 -> 1
+gdef GA 1 -> 1
+loaded 1
+> adddef LOCAL 3
+r=1
+> tokens
+T 3 65539 L1 X0 F0 i=7 f=#40e00000 |7|
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 5 29 L1 X0 F0 i=0 f=#00000000 |+|
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+T 4 2 L1 X0 F0 i=0 f=#00000000 |GA|
+T 4 5 L1 X0 F0 i=0 f=#00000000 |LOCAL|
+end n=6
+> rmgdef GLOBAL
+r=1
+> rmgdef NOTHERE
+r=0
+## global_defines_order
+gdef G1 1 -> 1
+gdef G2 2 -> 1
+gdef G3 3 -> 1
+gdef G4(x) x x -> 1
+loaded 1
+> tokens
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+T 3 65539 L1 X0 F0 i=2 f=#40000000 |2|
+T 4 2 L1 X0 F0 i=0 f=#00000000 |G3|
+T 4 2 L1 X0 F0 i=0 f=#00000000 |G4|
+T 5 44 L1 X0 F0 i=0 f=#00000000 |(|
+T 3 65539 L1 X0 F0 i=5 f=#40a00000 |5|
+T 5 45 L1 X0 F0 i=0 f=#00000000 |)|
+end n=7
+## global_defines_remove
+gdef GR 1 -> 1
+loaded 1
+> rmgdef GR
+r=1
+> rmgdef GR
+r=0
+> rmallgdef
+> tokens
+T 3 65539 L1 X0 F0 i=1 f=#3f800000 |1|
+end n=1

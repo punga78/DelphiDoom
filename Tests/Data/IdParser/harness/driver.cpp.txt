@@ -1,0 +1,167 @@
+#include "precompiled.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+static idCommon theCommon;
+static idFileSystem theFs;
+static std::map<std::string, std::string> files;
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	std::map<std::string, std::string>::iterator it = files.find(n);
+	if (it == files.end()) return 0;
+	idFile *f = new idFile; f->rd = it->second; f->name = n; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n) { idFile *f = new idFile; f->name = n; return f; }
+void idFileSystem::CloseFile(idFile *f) {
+	if (!f->out.empty() || f->rd.empty()) {
+		if (!f->name.empty() && f->rd.empty()) { printf("SAVED %s: %s\n", f->name.c_str(), esc(f->out.c_str(), (int)f->out.size()).c_str()); files[f->name] = f->out; }
+	}
+	delete f;
+}
+int idFileSystem::ReadFile(const char *n, void **b) {
+	std::map<std::string, std::string>::iterator it = files.find(n);
+	if (it == files.end()) { if (b) *b = 0; return -1; }
+	char *buf = (char *)malloc(it->second.size() + 1);
+	memcpy(buf, it->second.data(), it->second.size()); buf[it->second.size()] = 0;
+	if (b) *b = buf;
+	return (int)it->second.size();
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+
+static void printToken(const char *tag, idToken &t) {
+	unsigned int fb; float f = t.type == TT_NUMBER ? t.GetFloatValue() : 0.0f; memcpy(&fb, &f, 4);
+	unsigned long iv = t.type == TT_NUMBER ? t.GetUnsignedLongValue() : 0;
+	printf("%s %d %d L%d X%d F%d i=%lu f=#%08x |%s|\n", tag, t.type, t.subtype, t.line, t.linesCrossed, t.flags, iv, fb, esc(t.c_str(), t.Length()).c_str());
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, 0, _IONBF, 0);
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon;
+	idDict::Init();
+	std::ifstream in(argv[1], std::ios::binary);
+	std::vector<std::string> lines; std::string ln;
+	while (std::getline(in, ln)) { if (!ln.empty() && ln[ln.size() - 1] == '\r') ln.erase(ln.size() - 1); lines.push_back(ln); }
+	size_t i = 0;
+	while (i < lines.size()) {
+		if (lines[i].compare(0, 6, "@case ") != 0) { i++; continue; }
+		std::string name = lines[i].substr(6); i++;
+		int flags = 0; std::string text, srcname = "test"; std::vector<std::string> ops; std::vector<std::string> gdefs; files.clear();
+		std::string *cur = 0; std::string curfile;
+		while (i < lines.size() && lines[i] != "@end") {
+			const std::string &l = lines[i];
+			if (l.compare(0, 7, "@flags ") == 0) { flags = atoi(l.c_str() + 7); cur = 0; }
+			else if (l.compare(0, 6, "@name ") == 0) { srcname = l.substr(6); cur = 0; }
+			else if (l.compare(0, 4, "@op ") == 0) { ops.push_back(l.substr(4)); cur = 0; }
+			else if (l.compare(0, 6, "@gdef ") == 0) { gdefs.push_back(l.substr(6)); cur = 0; }
+			else if (l.compare(0, 6, "@file ") == 0) { curfile = l.substr(6); files[curfile] = ""; cur = &files[curfile]; }
+			else if (l == "@text") { text = ""; cur = &text; }
+			else if (cur) { *cur += l; *cur += "\n"; }
+			i++;
+		}
+		i++;
+		if (ops.empty()) ops.push_back("tokens");
+		printf("## %s\n", name.c_str());
+		idParser::RemoveAllGlobalDefines();
+		for (size_t g = 0; g < gdefs.size(); g++) { try { printf("gdef %s -> %d\n", gdefs[g].c_str(), idParser::AddGlobalDefine(gdefs[g].c_str())); } catch (idException &e) { printf("ERR %s\n", esc(e.error).c_str()); } }
+		idParser *p = new idParser(flags);
+		bool loaded = false;
+		try { loaded = p->LoadMemory(text.c_str(), (int)text.size(), srcname.c_str()) != 0; } catch (idException &e) { printf("ERR %s\n", esc(e.error).c_str()); }
+		printf("loaded %d\n", loaded);
+		for (size_t k = 0; k < ops.size(); k++) {
+			const std::string &op = ops[k];
+			std::string cmd = op, arg;
+			size_t sp = op.find(' ');
+			if (sp != std::string::npos) { cmd = op.substr(0, sp); arg = op.substr(sp + 1); }
+			printf("> %s\n", op.c_str());
+			try {
+				idToken t; idStr s;
+				if (cmd == "tokens") {
+					int n = 0;
+					while (p->ReadToken(&t)) { printToken("T", t); if (++n > 2000) break; }
+					printf("end n=%d\n", n);
+				} else if (cmd == "expect") printf("r=%d\n", p->ExpectTokenString(arg.c_str()));
+				else if (cmd == "check") printf("r=%d\n", p->CheckTokenString(arg.c_str()));
+				else if (cmd == "peek") printf("r=%d\n", p->PeekTokenString(arg.c_str()));
+				else if (cmd == "skipuntil") printf("r=%d\n", p->SkipUntilString(arg.c_str()));
+				else if (cmd == "skiprest") printf("r=%d\n", p->SkipRestOfLine());
+				else if (cmd == "skipbraced") printf("r=%d\n", p->SkipBracedSection(true));
+				else if (cmd == "parseint") printf("v=%d\n", p->ParseInt());
+				else if (cmd == "parsebool") printf("v=%d\n", (int)p->ParseBool());
+				else if (cmd == "parsefloat") { float f = p->ParseFloat(); unsigned int fb; memcpy(&fb, &f, 4); printf("v=#%08x\n", fb); }
+				else if (cmd == "braced") { p->ParseBracedSection(s, atoi(arg.c_str())); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "bracednotabs") { p->ParseBracedSection(s, -1); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "restofline") { p->ParseRestOfLine(s); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "readonline") { int r = p->ReadTokenOnLine(&t); printf("r=%d\n", r); if (r) printToken("T", t); }
+				else if (cmd == "adddef") printf("r=%d\n", p->AddDefine(arg.c_str()));
+				else if (cmd == "gdef") printf("r=%d\n", idParser::AddGlobalDefine(arg.c_str()));
+				else if (cmd == "rmgdef") printf("r=%d\n", idParser::RemoveGlobalDefine(arg.c_str()));
+				else if (cmd == "rmallgdef") idParser::RemoveAllGlobalDefines();
+				else if (cmd == "builtins") p->AddBuiltinDefines();
+				else if (cmd == "incpath") p->SetIncludePath(arg.c_str());
+				else if (cmd == "setflags") p->SetFlags(atoi(arg.c_str()));
+				else if (cmd == "marker") p->SetMarker();
+				else if (cmd == "frommarker") { s = ""; p->GetStringFromMarker(s, false); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "frommarkerclean") { s = ""; p->GetStringFromMarker(s, true); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "whitespace") { p->GetLastWhiteSpace(s); printf("s=%s\n", esc(s.c_str()).c_str()); }
+				else if (cmd == "pos") printf("file=%s line=%d\n", p->GetFileName(), p->GetLineNum());
+				else if (cmd == "free") { p->FreeSource(); }
+				else if (cmd == "freekeep") { p->FreeSource(true); }
+				else if (cmd == "dict") {
+					idDict d; bool ok = d.Parse(*p);
+					printf("dict ok=%d n=%d crc=%d\n", ok, d.GetNumKeyVals(), d.Checksum());
+					for (int q = 0; q < d.GetNumKeyVals(); q++) printf("  %s = %s\n", esc(d.GetKeyVal(q)->GetKey().c_str()).c_str(), esc(d.GetKeyVal(q)->GetValue().c_str()).c_str());
+				} else if (cmd == "dictops") {
+					idDict d;
+					d.Set("Alpha", "1"); d.Set("beta", "2.5"); d.Set("ALPHA", "3"); d.Set("", "x"); d.SetInt("n", -7); d.SetBool("b", true); d.SetFloat("f", 1.5f);
+					d.Set("vec", "1 2 3"); d.Set("monster_a", "a"); d.Set("monster_b", "b"); d.Set("Monster_c", "c");
+					printf("n=%d alpha=%s beta=%f int=%d bool=%d f=%f\n", d.GetNumKeyVals(), d.GetString("alpha"), d.GetFloat("beta"), d.GetInt("n"), d.GetBool("b"), d.GetFloat("f"));
+					idVec3 v = d.GetVector("vec"); printf("vec=%f %f %f\n", v.x, v.y, v.z);
+					idVec3 v2 = d.GetVector("none"); printf("vecdef=%f %f %f\n", v2.x, v2.y, v2.z);
+					printf("find=%d missing=%d\n", d.FindKeyIndex("BETA"), d.FindKeyIndex("zzz"));
+					const idKeyValue *kv = 0; int c = 0; while ((kv = d.MatchPrefix("monster_", kv)) != 0) { printf("m %s\n", kv->GetKey().c_str()); c++; }
+					d.Delete("beta"); printf("after delete n=%d first=%s crc=%d\n", d.GetNumKeyVals(), d.GetKeyVal(0)->GetKey().c_str(), d.Checksum());
+					idDict e; e.Set("alpha", "zzz"); e.Set("extra", "e"); e.SetDefaults(&d); printf("defaults n=%d alpha=%s\n", e.GetNumKeyVals(), e.GetString("alpha"));
+					e.Copy(d); printf("copy n=%d alpha=%s\n", e.GetNumKeyVals(), e.GetString("alpha"));
+				} else if (cmd == "langload") { idLangDict l; bool r = l.Load(arg.c_str(), true); printf("r=%d n=%d\n", r, l.GetNumKeyVals()); for (int q = 0; q < l.GetNumKeyVals(); q++) printf("  %s = %s\n", esc(l.GetKeyVal(q)->key.c_str()).c_str(), esc(l.GetKeyVal(q)->value.c_str()).c_str()); printf("get1=%s\n", esc(l.GetString("#str_00001")).c_str()); printf("getx=%s\n", esc(l.GetString("#str_99999")).c_str()); printf("getp=%s\n", esc(l.GetString("plain")).c_str());
+					printf("add=%s\n", l.AddString("Hello world")); printf("add2=%s\n", l.AddString("Hello world")); printf("add3=%s\n", l.AddString("12345")); printf("add4=%s\n", l.AddString("gui::x")); printf("add5=%s\n", l.AddString("Other text")); l.Save("saved.lang"); }
+				else printf("unknown op\n");
+			} catch (idException &e) { printf("ERR %s\n", esc(e.error).c_str()); }
+		}
+		delete p;
+	}
+	return 0;
+}

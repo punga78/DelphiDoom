@@ -1,0 +1,997 @@
+@case tokens_basic
+@text
+name _under x1 123 0x1F 1.5 .5e3 "a string" 'c' { } ( ) ; , -> :: ++ <<= ...
+second line // comment
+/* block
+comment */ third
+@end
+@case define_object
+@text
+#define FOO 42
+#define BAR FOO + 1
+x FOO y BAR z
+#undef FOO
+FOO
+@end
+@case define_params
+@text
+#define ADD(a, b) ((a) + (b))
+#define TWICE(x) x x
+#define NONE() nothing
+ADD(1, 2) ADD(f(1, 2), 3) TWICE(abc) NONE()
+ADD ( 3 , 4 )
+@end
+@case define_stringize_merge
+@text
+#define STR(x) #x
+#define CAT(a, b) a ## b
+#define NAMED(n) var_ ## n
+STR(hello world) CAT(foo, bar) CAT(12, 34) NAMED(7) CAT("a", "b")
+@end
+@case define_recursive
+@flags 0
+@text
+#define LOOP LOOP + 1
+LOOP
+@end
+@case define_redefine
+@text
+#define X 1
+#define X 2
+X
+@end
+@case define_arg_counts
+@flags 4
+@text
+#define F2(a, b) a b
+F2(1)
+F2(1, 2, 3)
+F2(,)
+F2
+F2(1, 2
+end
+@end
+@case ifdef_else
+@text
+#define A
+#ifdef A
+in_a
+#else
+not_a
+#endif
+#ifndef A
+not_defined_a
+#else
+else_a
+#endif
+#ifdef B
+in_b
+#elif defined(A)
+elif_a
+#else
+else_b
+#endif
+@end
+@case ifdef_nested
+@text
+#define OUT
+#ifdef OUT
+ a
+ #ifdef IN
+  b
+ #else
+  c
+ #endif
+ d
+#else
+ e
+ #ifdef IN
+  f
+ #endif
+#endif
+z
+@end
+@case if_arith
+@text
+#if 1 + 2 * 3 == 7
+ok1
+#endif
+#if (1 + 2) * 3 == 9
+ok2
+#endif
+#if 10 / 3 == 3 && 10 % 3 == 1
+ok3
+#endif
+#if 1 << 4 == 16 && 256 >> 4 == 16
+ok4
+#endif
+#if (6 & 3) == 2 && (6 | 3) == 7 && (6 ^ 3) == 5
+ok5
+#endif
+#if !0 && ~0 == -1 && -5 + 5 == 0
+ok6
+#endif
+#if 1 ? 2 : 3 == 2
+ok7
+#endif
+#if 0 ? 2 : 3
+ok8
+#endif
+#if 5 > 3 && 3 >= 3 && 2 < 3 && 2 <= 2 && 1 != 2
+ok9
+#endif
+#if 0 || 0
+bad10
+#endif
+#if 2 - 3 - 4 == -5
+ok11
+#endif
+#if 0x10 == 16 && 010 == 8
+ok12
+#endif
+@end
+@case if_defined_macros
+@text
+#define V 3
+#define W (V + 1)
+#if V == 3 && W == 4
+ok1
+#endif
+#if defined V && defined(W) && !defined(NOPE)
+ok2
+#endif
+#if defined( V )
+ok3
+#endif
+#if 0
+skipped #bogus directive
+#define SKIPPED
+#endif
+SKIPPED
+@end
+@case if_elif_chain
+@text
+#define N 2
+#if N == 1
+one
+#elif N == 2
+two
+#elif N == 3
+three
+#else
+other
+#endif
+#if N == 5
+five
+#elif N == 6
+six
+#else
+else_branch
+#endif
+@end
+@case eval_directives
+@text
+#define K 6
+#eval K * 7
+#eval 0 - (K + 1)
+#evalfloat 1.5 * 2
+#evalfloat 10 / 4
+#evalfloat -2.25
+x $evalint( 3 + 4 ) y $evalint(K * K) z $evalfloat(1.5 + 1.5) w $evalint(-3)
+$evalint(1 +
+@end
+@case eval_nodollar
+@flags 32
+@text
+$evalint(1 + 2)
+@end
+@case builtins
+@op builtins
+@op tokens
+@name file.txt
+@text
+line __LINE__
+  x __FILE__ y
+__STDC__ z
+#define LN __LINE__
+LN
+#undef __LINE__
+#define __LINE__ 5
+@end
+@case strings_concat
+@text
+"abc" "def"
+"x"
+"y" name "z"
+"a" /* c */ "b"
+"esc\n\t\"q\""
+@end
+@case strings_noconcat
+@flags 8
+@text
+"abc" "def"
+@end
+@case include_basic
+@file dir/main.txt
+before
+#include "inc.txt"
+after
+@file dir/inc.txt
+INC1
+#define FROM_INC 9
+@file other.txt
+ABS
+@text
+#include "dir/main.txt"
+FROM_INC
+#include "other.txt"
+done
+@end
+@case include_recursive
+@flags 4
+@file a.txt
+A1
+#include "b.txt"
+A2
+@file b.txt
+B1
+#include "a.txt"
+B2
+@text
+#include "a.txt"
+@end
+@case include_missing
+@flags 4
+@text
+#include "nofile.txt"
+#include
+#include 5
+#include <>
+x
+@end
+@case include_angle
+@file base/sys.inc
+SYS
+@op incpath base/
+@op tokens
+@text
+#include <sys.inc>
+end
+@end
+@case include_angle_nobase
+@flags 64
+@op incpath base/
+@op tokens
+@text
+#include <sys.inc>
+end
+@end
+@case include_ifdef_across
+@flags 4
+@file inner.txt
+#ifdef NOPE
+skipped
+@file ok.txt
+fine
+@text
+#include "inner.txt"
+after_inner
+#include "ok.txt"
+@end
+@case directives_misc_fatal
+@text
+#error "boom"
+after
+@end
+@case line_continuation
+@text
+#define LONG a \
+ b \
+ c
+LONG
+x
+@end
+@case api_expect
+@op expect {
+@op parseint
+@op parseint
+@op parsefloat
+@op parsebool
+@op expect }
+@op expect missing
+@text
+{ 12 -34 -5.5 1 }
+@end
+@case api_expect_nonfatal
+@flags 4
+@op expect }
+@op expect x
+@op parseint
+@op parsefloat
+@op parsebool
+@text
+abc "str" word 1.5
+@end
+@case api_braced
+@op braced -1
+@op restofline
+@text
+{
+	a b { c } "q"
+  d
+} tail words here
+more
+@end
+@case api_braced_tabs
+@op braced 2
+@op pos
+@text
+{
+ a
+ {
+  b
+ }
+ c
+}
+@end
+@case api_skip
+@op check foo
+@op check bar
+@op peek bar
+@op skipbraced
+@op readonline
+@op readonline
+@op skiprest
+@op skipuntil end
+@op readonline
+@text
+bar { a { b } c } d e
+f g
+end h
+@end
+@case api_marker
+@op tokens
+@text
+alpha beta
+@end
+@case api_marker2
+@op marker
+@op expect alpha
+@op expect beta
+@op frommarker
+@op frommarkerclean
+@op whitespace
+@text
+  alpha    beta gamma
+@end
+@case api_free
+@op expect a
+@op free
+@op expect b
+@text
+a b c
+@end
+@case adddef_before
+@op adddef TWO 2
+@op adddef SQ(x) ((x)*(x))
+@op adddef bad(
+@op tokens
+@flags 4
+@text
+TWO SQ(TWO) SQ(3)
+@end
+@case dict_parse
+@flags 8
+@op dict
+@text
+{
+	"Name" "Imp"
+	"health" "60"
+	"vec" "1 2 3"
+}
+@end
+@case dict_parse_dup
+@flags 8
+@op dict
+@text
+{
+	"a" "1"
+	"A" "2"
+	"b" "3"
+}
+@end
+@case dict_parse_errors
+@flags 8
+@op dict
+@text
+{
+	"a" "1"
+	name "x"
+	"unterminated"
+@end
+@case dict_ops
+@op dictops
+@text
+x
+@end
+@case lang_load
+@file test.lang
+// string table
+{
+	"#str_00001"	"First"
+	"#str_00005"	"Fifth\twith tab"
+	"#str_00001"	"First again"
+	"#str_00010"	"multi
+line"
+}
+@op langload test.lang
+@text
+x
+@end
+@case lang_missing
+@op langload nofile.lang
+@text
+x
+@end
+@case numbers_values
+@text
+0 7 123456 4294967295 4294967296 -1 0x7FFFFFFF 0xFFFFFFFF 1.5 2.0f 0.1 3.14159265
+@end
+@case define_arg_nested_macro
+@text
+#define ONE 1
+#define ID(x) x
+#define PLUS(a, b) a + b
+PLUS(ONE, ID(ONE)) PLUS(ID(1), (2, 3))
+@end
+@case define_misplaced
+@flags 4
+@text
+#define BAD1 ## x
+#define BAD2 x ##
+BAD1 BAD2
+#define OK(a) a ## a
+OK(q)
+#define CAT3(a, b, c) a ## b ## c
+CAT3(x, y, z) CAT3(1, 2, 3)
+#define NOMERGE(a, b) a ## b
+NOMERGE(+, -)
+@end
+@case skipped_conditionals
+@text
+#if 0
+#define Q 1
+#include "nofile"
+#error nope
+#if 1
+#else
+#endif
+#else
+visible
+#endif
+Q
+@end
+@case define_err_1
+@flags 0
+@text
+#define
+after
+@end
+@case define_err_2
+@flags 0
+@text
+#define 123
+after
+@end
+@case define_err_3
+@flags 0
+@text
+#define F(a, a) a
+after
+@end
+@case define_err_4
+@flags 0
+@text
+#define G(a b) a
+after
+@end
+@case define_err_5
+@flags 0
+@text
+#define H(a, ) a
+after
+@end
+@case define_err_6
+@flags 0
+@text
+#define M ## 1
+after
+@end
+@case define_err_7
+@flags 0
+@text
+#define N 1 ##
+after
+@end
+@case define_err_8
+@flags 0
+@text
+#undef
+after
+@end
+@case define_err_9
+@flags 0
+@text
+#undef 5
+after
+@end
+@case define_err_10
+@flags 0
+@text
+#define F(a
+after
+@end
+@case define_err_11
+@flags 0
+@text
+#define F(a,
+after
+@end
+@case define_err_12
+@flags 0
+@text
+#define F()
+after
+@end
+@case if_err_1
+@flags 0
+@text
+#if 1 / 0
+x
+#endif
+after
+@end
+@case if_err_2
+@flags 0
+@text
+#if 1 +
+x
+#endif
+after
+@end
+@case if_err_3
+@flags 0
+@text
+#if (1
+x
+#endif
+after
+@end
+@case if_err_4
+@flags 0
+@text
+#if 1)
+x
+#endif
+after
+@end
+@case if_err_5
+@flags 0
+@text
+#if UNDEFINED_NAME
+x
+#endif
+after
+@end
+@case if_err_6
+@flags 0
+@text
+#if 1 ? 2 ? 3 : 4 : 5
+x
+#endif
+after
+@end
+@case if_err_7
+@flags 0
+@text
+#if 1 : 2
+x
+#endif
+after
+@end
+@case if_err_8
+@flags 0
+@text
+#if 1 2
+x
+#endif
+after
+@end
+@case if_err_9
+@flags 0
+@text
+#if
+x
+#endif
+after
+@end
+@case if_err_10
+@flags 0
+@text
+#if 1 ++ 2
+x
+#endif
+after
+@end
+@case if_err_11
+@flags 0
+@text
+#if 1.5
+x
+#endif
+after
+@end
+@case if_err_12
+@flags 0
+@text
+#if "str"
+x
+#endif
+after
+@end
+@case if_err_13
+@flags 0
+@text
+#if 1 % 0
+x
+#endif
+after
+@end
+@case if_err_15
+@flags 0
+@text
+#if defined(A
+x
+#endif
+after
+@end
+@case if_err_16
+@flags 0
+@text
+#if 1 == == 2
+x
+#endif
+after
+@end
+@case if_err_17
+@flags 0
+@text
+#if 1 @ 2
+x
+#endif
+after
+@end
+@case if_err_18
+@flags 0
+@text
+#if - (1)
+x
+#endif
+after
+@end
+@case if_err_19
+@flags 0
+@text
+#if !
+x
+#endif
+after
+@end
+@case if_err_20
+@flags 0
+@text
+#if ~ 1 1
+x
+#endif
+after
+@end
+@case if_err_21
+@flags 0
+@text
+#if 1 ! 2
+x
+#endif
+after
+@end
+@case if_err_22
+@flags 0
+@text
+#elif 1
+x
+#endif
+after
+@end
+@case if_err_23
+@flags 0
+@text
+#if 1 << 33 == 2
+x
+#endif
+after
+@end
+@case if_err_24
+@flags 0
+@text
+#if 7 >> 33 == 3
+x
+#endif
+after
+@end
+@case if_err_25
+@flags 0
+@text
+#if (0 ? 5 : 6) == 6
+x
+#endif
+after
+@end
+@case if_err_26
+@flags 0
+@text
+#if 2147483647 + 1 < 0
+x
+#endif
+after
+@end
+@case if_err_27
+@flags 0
+@text
+#if -2147483647 - 1 == -2147483647 - 1
+x
+#endif
+after
+@end
+@case indent_err_1
+@flags 0
+@text
+#else
+after
+@end
+@case indent_err_2
+@flags 0
+@text
+#endif
+after
+@end
+@case indent_err_3
+@flags 0
+@text
+#elif 1
+after
+@end
+@case indent_err_4
+@flags 0
+@text
+#ifdef
+after
+@end
+@case indent_err_5
+@flags 0
+@text
+#ifdef 1
+after
+@end
+@case indent_err_6
+@flags 0
+@text
+#ifdef A
+after
+@end
+@case indent_err_7
+@flags 0
+@text
+#if 1
+after
+@end
+@case indent_else_else
+@flags 0
+@text
+#ifdef A
+#else
+#else
+#endif
+@end
+@case indent_elif_after_else
+@flags 0
+@text
+#ifdef A
+#else
+#elif 1
+#endif
+@end
+@case eval_err_1
+@flags 0
+@text
+#eval 1 / 0
+after
+@end
+@case eval_err_2
+@flags 0
+@text
+#evalfloat 1 % 2
+after
+@end
+@case eval_err_3
+@flags 0
+@text
+#eval
+after
+@end
+@case eval_err_4
+@flags 0
+@text
+$evalint(NOPE)
+after
+@end
+@case eval_err_5
+@flags 0
+@text
+$other
+after
+@end
+@case eval_err_6
+@flags 0
+@text
+$evalint
+after
+@end
+@case eval_err_7
+@flags 0
+@text
+$evalint(
+after
+@end
+@case eval_err_8
+@flags 0
+@text
+$evalfloat(1 / 0)
+after
+@end
+@case eval_err_9
+@flags 0
+@text
+#eval 2147483647 + 1
+after
+@end
+@case eval_err_10
+@flags 0
+@text
+#eval 5 > 3 ? 7 : 9
+after
+@end
+@case eval_err_11
+@flags 0
+@text
+#evalfloat 5 > 3 ? 7 : 9
+after
+@end
+@case eval_err_12
+@flags 0
+@text
+#evalfloat 0.125
+after
+@end
+@case eval_err_13
+@flags 0
+@text
+#evalfloat 2.675
+after
+@end
+@case eval_err_14
+@flags 0
+@text
+#evalfloat 123456.789
+after
+@end
+@case directive_1
+@flags 4
+@text
+#error "stop here"
+after
+@end
+@case directive_2
+@flags 4
+@text
+#error
+after
+@end
+@case directive_3
+@flags 4
+@text
+#warning "careful"
+after
+@end
+@case directive_4
+@flags 4
+@text
+#warning
+after
+@end
+@case directive_5
+@flags 4
+@text
+#pragma once
+after
+@end
+@case directive_6
+@flags 4
+@text
+#line 5
+after
+@end
+@case directive_7
+@flags 4
+@text
+#unknown stuff
+after
+@end
+@case directive_8
+@flags 4
+@text
+#
+after
+@end
+@case directive_9
+@flags 4
+@text
+#include
+after
+@end
+@case directive_10
+@flags 4
+@text
+#include <>
+after
+@end
+@case directive_11
+@flags 4
+@text
+#include 5
+after
+@end
+@case directive_12
+@flags 4
+@text
+#include <nofile
+after
+@end
+@case global_defines_loaded
+@gdef GLOBAL 7
+@gdef GF(a) a + 1
+@gdef GLOBAL 8
+@gdef GA 1
+@op adddef LOCAL 3
+@op tokens
+@op rmgdef GLOBAL
+@op rmgdef NOTHERE
+@text
+GLOBAL GF(2) GA LOCAL
+@end
+@case global_defines_order
+@gdef G1 1
+@gdef G2 2
+@gdef G3 3
+@gdef G4(x) x x
+@op tokens
+@text
+G1 G2 G3 G4(5)
+@end
+@case global_defines_remove
+@gdef GR 1
+@op rmgdef GR
+@op rmgdef GR
+@op rmallgdef
+@op tokens
+@text
+GR
+@end
