@@ -1,0 +1,664 @@
+op 3 sfx 0 length 2342
+op 4 sfx 1 length 7849
+op 5 sfx 2 length 1794
+op 6 sfx 3 length 996
+op 7 sfx 4 length 290
+op 8 sfx 5 length 2656
+op 9 sfx 6 length 2504
+op 10 sfx 7 length 7011
+op 11 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 0 soundtime 0 rawend 0
+op 12 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 0 soundtime 0 rawend 0
+op 13 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 5120 soundtime 0 rawend 0
+op 13 dma a369c18884ec2325
+op 14 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 14 dma a369c18884ec2325
+op 15 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 15 dma a369c18884ec2325
+op 16 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 16 dma a369c18884ec2325
+op 17 chan 7e203d891cdc1498 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 18 chan 7e203d891cdc1498 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 18 dma a369c18884ec2325
+op 19 chan 7e203d891cdc1498 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 19 dma a369c18884ec2325
+op 20 chan 7e203d891cdc1498 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 21 chan 7e203d891cdc1498 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 22 chan f34102571cf43c45 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 1024 soundtime 0 rawend 0
+op 23 chan eaee2dc94570852a loop 66ae1724ca8b612f active 2 num 1 doppler 0 painted 1024 soundtime 0 rawend 0
+op 24 chan eaee2dc94570852a loop 66ae1724ca8b612f active 2 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 24 raw 10e573da7a7cc318
+op 25 chan 74d79e96a1a22eba loop 66ae1724ca8b612f active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 26 chan 74d79e96a1a22eba loop 66ae1724ca8b612f active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 26 dma a369c18884ec2325
+op 27 chan 78c368d3ef3197e0 loop 1d38d9e66fa3195f active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 28 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 29 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 29 dma a369c18884ec2325
+op 30 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 30 dma a369c18884ec2325
+op 31 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 31 dma a369c18884ec2325
+op 32 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 33 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 33 dma a369c18884ec2325
+op 34 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 24
+op 35 chan ce595b3560d9f0fa loop be6cc21da62d1806 active 3 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 35 raw ce58682a7cd83c00
+op 36 chan df1c5ddc2c1a9804 loop be6cc21da62d1806 active 4 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 37 chan 2731cd7fa833b381 loop be6cc21da62d1806 active 5 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 38 chan cf4204a3fa17855a loop be6cc21da62d1806 active 6 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 39 chan cf4204a3fa17855a loop be6cc21da62d1806 active 6 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 40 chan cf4204a3fa17855a loop be6cc21da62d1806 active 6 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 41 chan 8d47a067af1ca214 loop be6cc21da62d1806 active 7 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 42 chan 59029a185a112d2d loop be6cc21da62d1806 active 8 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 43 chan 59029a185a112d2d loop be6cc21da62d1806 active 8 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 43 dma a369c18884ec2325
+op 44 chan 7432b06337cc65a2 loop be6cc21da62d1806 active 9 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 45 chan 7432b06337cc65a2 loop be6cc21da62d1806 active 9 num 1 doppler 0 painted 1024 soundtime 0 rawend 929
+op 46 chan 134472cb89240b1d loop f924abbfab857c4f active 9 num 2 doppler 0 painted 1024 soundtime 0 rawend 929
+op 47 chan 134472cb89240b1d loop f924abbfab857c4f active 9 num 2 doppler 0 painted 1024 soundtime 0 rawend 929
+op 47 dma a369c18884ec2325
+op 48 chan 134472cb89240b1d loop f924abbfab857c4f active 9 num 2 doppler 0 painted 1024 soundtime 0 rawend 929
+op 49 chan 134472cb89240b1d loop f924abbfab857c4f active 9 num 2 doppler 0 painted 1024 soundtime 0 rawend 929
+op 50 chan 5a52a07b010d57d7 loop f924abbfab857c4f active 10 num 2 doppler 0 painted 1024 soundtime 0 rawend 929
+op 51 chan 5a52a07b010d57d7 loop f924abbfab857c4f active 10 num 2 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 51 raw 14f7eeb9105cb96d
+op 52 chan 5a52a07b010d57d7 loop f924abbfab857c4f active 10 num 2 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 53 chan 5a52a07b010d57d7 loop f924abbfab857c4f active 10 num 2 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 54 chan 5a52a07b010d57d7 loop f924abbfab857c4f active 10 num 2 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 55 chan db62533cf8e172a0 loop fa1e0aa3534f6f8c active 10 num 3 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 56 spatial 0 0
+op 57 chan db62533cf8e172a0 loop fa1e0aa3534f6f8c active 10 num 3 doppler 0 painted 1024 soundtime 0 rawend 1086
+op 58 chan 4c84f9213991e900 loop fa1e0aa3534f6f8c active 10 num 3 doppler 0 painted 5120 soundtime 544 rawend 1086
+op 58 dma a68ffa63eb3b37b9
+op 59 chan 4c84f9213991e900 loop fa1e0aa3534f6f8c active 10 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 59 dma a68ffa63eb3b37b9
+op 60 chan 66b14b625dd1c3f0 loop fa1e0aa3534f6f8c active 11 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 61 chan 66b14b625dd1c3f0 loop fa1e0aa3534f6f8c active 11 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 61 dma a68ffa63eb3b37b9
+op 62 chan 66b14b625dd1c3f0 loop fa1e0aa3534f6f8c active 11 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 63 chan f647ba7698bff976 loop fa1e0aa3534f6f8c active 12 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 64 chan f647ba7698bff976 loop fa1e0aa3534f6f8c active 12 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 65 chan b2570fb862807df8 loop fa1e0aa3534f6f8c active 13 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 66 chan a5d0da3a74004a1f loop fa1e0aa3534f6f8c active 14 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 67 chan a7c038f57f59996c loop fa1e0aa3534f6f8c active 15 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 68 chan d6b181201d542416 loop fa1e0aa3534f6f8c active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 69 chan 99116368efb85467 loop bb86eff5eb1cf7f1 active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 70 chan 99116368efb85467 loop bb86eff5eb1cf7f1 active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 70 dma a68ffa63eb3b37b9
+op 71 chan 99116368efb85467 loop bb86eff5eb1cf7f1 active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 72 chan 99116368efb85467 loop bb86eff5eb1cf7f1 active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 73 chan 99116368efb85467 loop bb86eff5eb1cf7f1 active 16 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 74 chan fe365bf39c4d5528 loop bb86eff5eb1cf7f1 active 17 num 3 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 75 chan 226c9931be94a919 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 1568 soundtime 544 rawend 1086
+op 76 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 1086
+op 76 dma 8817fcdd8d75426d
+op 77 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 1086
+op 78 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2093
+op 78 raw ab07718b2d0cefd5
+op 79 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2093
+op 80 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2093
+op 81 chan 2d82b880c314d410 loop a971179ff2c5937f active 17 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 81 raw d251ca6ce88fd515
+op 82 chan c3cf1ef81e65ae24 loop a971179ff2c5937f active 18 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 83 chan c3cf1ef81e65ae24 loop a971179ff2c5937f active 18 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 84 chan 006affe5dbe4de0c loop a971179ff2c5937f active 19 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 85 chan 006affe5dbe4de0c loop a971179ff2c5937f active 19 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 86 chan f735f1549149971e loop a971179ff2c5937f active 20 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 87 chan 6f4eece8937e9df1 loop a971179ff2c5937f active 21 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 88 chan 8dc2420555c540f9 loop a971179ff2c5937f active 22 num 4 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 89 chan 8dc2420555c540f9 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 90 chan 8dc2420555c540f9 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 91 chan 121ce9145a343dce loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 92 spatial 2 3
+op 93 chan 121ce9145a343dce loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 94 chan b3514aa493a1613d loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 6144 soundtime 1089 rawend 2569
+op 95 spatial 0 0
+op 96 chan 8720969893b9647f loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 7168 soundtime 1871 rawend 2569
+op 96 dma 89a5a4233a72d68a
+op 97 chan afe669759fb9e4f3 loop 4d25767f9dce13f5 active 21 num 0 doppler 0 painted 7168 soundtime 1871 rawend 2569
+op 98 chan afe669759fb9e4f3 loop 4d25767f9dce13f5 active 21 num 0 doppler 0 painted 7168 soundtime 1871 rawend 2569
+op 99 chan afe669759fb9e4f3 loop 4d25767f9dce13f5 active 21 num 0 doppler 0 painted 7168 soundtime 1871 rawend 2569
+op 100 chan afe669759fb9e4f3 loop 4d25767f9dce13f5 active 21 num 0 doppler 0 painted 7168 soundtime 1871 rawend 2569
+op 101 chan 6ccd9d37b8797f98 loop 4d25767f9dce13f5 active 17 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 101 dma 44b49db3d18ea94c
+op 102 chan bb22648f6835b2b7 loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 103 chan bb22648f6835b2b7 loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 104 chan e3a54de53c7c86d3 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 105 chan e3a54de53c7c86d3 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 106 chan e3a54de53c7c86d3 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 107 chan e3a54de53c7c86d3 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 7168 soundtime 2507 rawend 2569
+op 108 chan e3a54de53c7c86d3 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 108 dma 44b49db3d18ea94c
+op 109 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 110 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 111 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 111 dma 44b49db3d18ea94c
+op 112 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 113 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 113 dma 44b49db3d18ea94c
+op 114 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 115 chan a342fe5a92d5f4b3 loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 116 chan 9fa84213fd70f943 loop 4d25767f9dce13f5 active 21 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 117 chan 80dc6ee6f3434ff6 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 118 chan 80dc6ee6f3434ff6 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 118 dma 44b49db3d18ea94c
+op 119 chan 0889b7fde4f1096d loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 120 chan 0889b7fde4f1096d loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 121 chan 0889b7fde4f1096d loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 122 chan 0889b7fde4f1096d loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3531 soundtime 2507 rawend 2569
+op 123 chan 60f8979865f93c45 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 8192 soundtime 2874 rawend 2569
+op 123 dma 1764d5cda07ff15f
+op 124 chan 60f8979865f93c45 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 8192 soundtime 2874 rawend 2569
+op 125 chan 60f8979865f93c45 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3898 soundtime 2874 rawend 2569
+op 125 dma 1764d5cda07ff15f
+op 126 chan 60f8979865f93c45 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3898 soundtime 2874 rawend 2569
+op 127 chan 60f8979865f93c45 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 3898 soundtime 2874 rawend 2569
+op 128 chan 4e8c5f2b29580a67 loop 4d25767f9dce13f5 active 15 num 0 doppler 0 painted 8192 soundtime 3563 rawend 2569
+op 128 dma 1764d5cda07ff15f
+op 129 chan 4e8c5f2b29580a67 loop 4d25767f9dce13f5 active 15 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 129 dma 1764d5cda07ff15f
+op 130 chan 4e8c5f2b29580a67 loop 4d25767f9dce13f5 active 15 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 130 dma 1764d5cda07ff15f
+op 131 chan 4e8c5f2b29580a67 loop 4d25767f9dce13f5 active 15 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 131 dma 1764d5cda07ff15f
+op 132 chan 43862d446ee2798f loop 4d25767f9dce13f5 active 16 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 133 chan 43862d446ee2798f loop 4d25767f9dce13f5 active 16 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 134 chan 43862d446ee2798f loop 4d25767f9dce13f5 active 16 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 134 dma 1764d5cda07ff15f
+op 135 chan 43862d446ee2798f loop 4d25767f9dce13f5 active 16 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 136 chan 43862d446ee2798f loop 4d25767f9dce13f5 active 16 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 137 chan 507dc6c5caa82709 loop 4d25767f9dce13f5 active 17 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 138 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 2569
+op 139 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 139 raw 11216ba3ebe548a3
+op 140 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 141 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 142 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 142 dma 1764d5cda07ff15f
+op 143 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 144 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 3586
+op 145 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 145 raw cc8ae24cd4bd6ceb
+op 146 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 147 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 147 dma 1764d5cda07ff15f
+op 148 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 148 dma 1764d5cda07ff15f
+op 149 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 150 chan b843567ac5f6e93e loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 151 chan da1cac20b2071bf8 loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 152 chan e3f718eda675dc1b loop 870af88512e6f311 active 19 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 153 chan 83662295864fefd8 loop 870af88512e6f311 active 20 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 154 chan f3caef1beb4ae506 loop 870af88512e6f311 active 21 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 155 chan a203353d523c477c loop 870af88512e6f311 active 22 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 156 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 157 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 158 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5003
+op 159 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 5580
+op 159 raw cead2283f8435021
+op 160 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 160 raw 6b5b30f13eb6973f
+op 161 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 162 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 162 dma 1764d5cda07ff15f
+op 163 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 163 dma 1764d5cda07ff15f
+op 164 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 165 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 166 chan 7b9973bc4b3f1d63 loop 870af88512e6f311 active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 166 dma 1764d5cda07ff15f
+op 167 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 168 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 169 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 170 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6029
+op 170 dma 1764d5cda07ff15f
+op 171 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 171 raw 8a9259e5229be4b1
+op 172 spatial 0 0
+op 173 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 173 dma 1764d5cda07ff15f
+op 174 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 175 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 176 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 177 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 178 chan d48b5aa3957e23d7 loop 4d96377092ec0d9c active 23 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 179 chan 14d5912025c59850 loop 4d96377092ec0d9c active 24 num 8 doppler 0 painted 4587 soundtime 3563 rawend 6243
+op 180 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 4587 soundtime 3563 rawend 0
+op 180 dma a369c18884ec2325
+op 181 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 181 dma a369c18884ec2325
+op 182 chan ea7bec3d238ddb81 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 183 chan a732c5a2be0f314a loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 184 chan afc63238626cbd28 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 185 spatial 0 0
+op 186 chan 3bf951a2e32411a1 loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 187 chan 3bf951a2e32411a1 loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 188 chan 3bf951a2e32411a1 loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 189 chan e7a2240b688070ce loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 190 chan b008b4e9b0834ff7 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 9216 soundtime 4039 rawend 0
+op 191 chan b008b4e9b0834ff7 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 9216 soundtime 4039 rawend 4931
+op 191 raw b57d52c742b421b9
+op 192 chan b008b4e9b0834ff7 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 192 dma a369c18884ec2325
+op 193 chan b008b4e9b0834ff7 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 193 dma a369c18884ec2325
+op 194 chan b008b4e9b0834ff7 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 194 dma a369c18884ec2325
+op 195 chan 779d9c56ed98cc17 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 196 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 197 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 197 dma a369c18884ec2325
+op 198 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 199 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 199 dma a369c18884ec2325
+op 200 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 200 dma a369c18884ec2325
+op 201 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 201 dma a369c18884ec2325
+op 202 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 202 dma a369c18884ec2325
+op 203 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 204 chan fc12d7f48a1b482b loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 205 chan 8a4aa75c876068b9 loop 4d25767f9dce13f5 active 7 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 206 chan 8a4aa75c876068b9 loop 4d25767f9dce13f5 active 7 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 207 chan 8a4aa75c876068b9 loop 4d25767f9dce13f5 active 7 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 208 chan ed70b671577cf085 loop 4d25767f9dce13f5 active 8 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 209 chan c10fab28b646072e loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 210 chan c10fab28b646072e loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 211 chan c10fab28b646072e loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 212 chan c10fab28b646072e loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5063 soundtime 4039 rawend 4931
+op 213 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 9216 soundtime 4381 rawend 4931
+op 213 dma cf947b484ce4b280
+op 214 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 214 dma cf947b484ce4b280
+op 215 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 215 dma cf947b484ce4b280
+op 216 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 216 dma cf947b484ce4b280
+op 217 spatial 0 0
+op 218 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 219 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 220 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 220 dma cf947b484ce4b280
+op 221 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 222 chan b0d9a8af695b83b8 loop 4d25767f9dce13f5 active 9 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 223 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 224 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 224 dma cf947b484ce4b280
+op 225 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 226 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 226 dma cf947b484ce4b280
+op 227 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 228 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 229 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 229 dma cf947b484ce4b280
+op 230 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 231 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 232 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 233 chan ac8f111673a33945 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 5405 soundtime 4381 rawend 4931
+op 234 chan 08237c9b0793ba95 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 10240 soundtime 5140 rawend 4931
+op 234 dma 80f89d18c07cc7dc
+op 235 chan 08237c9b0793ba95 loop 4d25767f9dce13f5 active 10 num 0 doppler 0 painted 10240 soundtime 5140 rawend 4931
+op 236 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 10240 soundtime 5140 rawend 0
+op 236 dma a369c18884ec2325
+op 237 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 10240 soundtime 5140 rawend 0
+op 238 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 238 dma a369c18884ec2325
+op 239 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 239 dma a369c18884ec2325
+op 240 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 241 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 242 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 243 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 244 chan 8c1573d25b6e927e loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 6164 soundtime 5140 rawend 0
+op 245 chan 8c1573d25b6e927e loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 6164 soundtime 5140 rawend 5570
+op 245 raw 4cac4ef22d195f3b
+op 246 chan ffe198fd5fd86ad1 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 6164 soundtime 5140 rawend 5570
+op 247 chan e5ff22c1230fdb05 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 11264 soundtime 6121 rawend 5570
+op 247 dma cbbede70cc8f4d7d
+op 248 chan e5ff22c1230fdb05 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 248 dma cbbede70cc8f4d7d
+op 249 chan e5ff22c1230fdb05 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 7268 soundtime 6121 rawend 5570
+op 249 dma cbbede70cc8f4d7d
+op 250 chan 6cf0a85b701db76f loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 7268 soundtime 6121 rawend 5570
+op 251 chan 6cf0a85b701db76f loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 251 dma cbbede70cc8f4d7d
+op 252 chan 6cf0a85b701db76f loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 253 spatial 0 0
+op 254 chan 0e16c691dd2e19e5 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 255 spatial 0 0
+op 256 chan 0e16c691dd2e19e5 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 257 chan 0e16c691dd2e19e5 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 257 dma cbbede70cc8f4d7d
+op 258 chan 0e16c691dd2e19e5 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 258 dma cbbede70cc8f4d7d
+op 259 chan 5789ce0ceda0e236 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 260 chan 49a84d8e4be8af64 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 261 chan 49a84d8e4be8af64 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 261 dma cbbede70cc8f4d7d
+op 262 chan 49a84d8e4be8af64 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 263 chan 49a84d8e4be8af64 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7145 soundtime 6121 rawend 5570
+op 264 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 11264 soundtime 6176 rawend 5570
+op 264 dma 9e6a90f11e5e0fbf
+op 265 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 11264 soundtime 6176 rawend 6432
+op 265 raw f617fd0ec0f7113e
+op 266 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6432
+op 266 dma 9e6a90f11e5e0fbf
+op 267 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6432
+op 268 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6432
+op 269 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6432
+op 270 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6432
+op 270 dma 9e6a90f11e5e0fbf
+op 271 chan adb00a79b59e6004 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 271 raw 487cb94e79942bbe
+op 272 chan f2ca74914faabb7e loop 4d25767f9dce13f5 active 7 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 273 chan c180e015f0b90d5a loop 4d25767f9dce13f5 active 8 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 274 chan c180e015f0b90d5a loop 4d25767f9dce13f5 active 8 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 274 dma 9e6a90f11e5e0fbf
+op 275 chan c180e015f0b90d5a loop 4d25767f9dce13f5 active 8 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 275 dma 9e6a90f11e5e0fbf
+op 276 chan c180e015f0b90d5a loop 4d25767f9dce13f5 active 8 num 0 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 276 dma 9e6a90f11e5e0fbf
+op 277 chan e5d2e2efdbfd0363 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 278 chan e5d2e2efdbfd0363 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 279 chan e5d2e2efdbfd0363 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 279 dma 9e6a90f11e5e0fbf
+op 280 chan e5d2e2efdbfd0363 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 280 dma 9e6a90f11e5e0fbf
+op 281 chan 068a6cff39e5d9b1 loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 282 chan 068a6cff39e5d9b1 loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 283 chan a22dd0e92cf9ccac loop de7f3344e42ae400 active 10 num 2 doppler 0 painted 7200 soundtime 6176 rawend 6716
+op 284 chan 216ac69bc55d3e6d loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 10240 soundtime 6829 rawend 6716
+op 284 dma 261574d822bec359
+op 285 chan 88f6dd35a8e440fc loop de7f3344e42ae400 active 10 num 2 doppler 0 painted 10240 soundtime 6829 rawend 6716
+op 286 chan 88f6dd35a8e440fc loop de7f3344e42ae400 active 10 num 2 doppler 0 painted 10240 soundtime 6829 rawend 6716
+op 287 chan b5ffbccb5c24ec1f loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 10240 soundtime 7163 rawend 6716
+op 287 dma b69ffd619681d01b
+op 288 chan b5ffbccb5c24ec1f loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 10240 soundtime 7163 rawend 6716
+op 289 chan b5ffbccb5c24ec1f loop de7f3344e42ae400 active 9 num 2 doppler 0 painted 10240 soundtime 7163 rawend 6716
+op 290 chan 419b59f3dbfb560d loop de7f3344e42ae400 active 10 num 2 doppler 0 painted 10240 soundtime 7163 rawend 6716
+op 291 chan 419b59f3dbfb560d loop de7f3344e42ae400 active 10 num 2 doppler 0 painted 10240 soundtime 7163 rawend 6716
+op 292 chan cdda757b39ccb024 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 11264 soundtime 7932 rawend 6716
+op 292 dma 7fadcea9a397cce2
+op 293 chan cdda757b39ccb024 loop de7f3344e42ae400 active 8 num 2 doppler 0 painted 8956 soundtime 7932 rawend 6716
+op 293 dma 7fadcea9a397cce2
+op 294 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 294 dma a369c18884ec2325
+op 295 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 296 chan cbf29ce484222325 loop 4d25767f9dce13f5 active 0 num 0 doppler 0 painted 11780 soundtime 7932 rawend 0
+op 296 dma a369c18884ec2325
+op 297 chan 6b31787a3fa9ecc9 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 11780 soundtime 7932 rawend 0
+op 298 chan 6b31787a3fa9ecc9 loop 4d25767f9dce13f5 active 1 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 298 dma a369c18884ec2325
+op 299 chan 3e90f1c5a30ddc83 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 300 chan 3e90f1c5a30ddc83 loop 4d25767f9dce13f5 active 2 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 301 chan 534cbbc6322b90b6 loop 4d25767f9dce13f5 active 3 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 302 chan 4910aea36f1379d8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 303 chan 4910aea36f1379d8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 304 chan 4910aea36f1379d8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 305 chan 4910aea36f1379d8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 306 chan 4910aea36f1379d8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 8956 soundtime 7932 rawend 0
+op 307 chan 144a4b0766ff9cd8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 14336 soundtime 9053 rawend 0
+op 307 dma e94ccf2011cf72a3
+op 308 chan 144a4b0766ff9cd8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 14336 soundtime 9053 rawend 0
+op 309 chan 144a4b0766ff9cd8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 14336 soundtime 9053 rawend 0
+op 310 spatial 0 0
+op 311 chan 144a4b0766ff9cd8 loop 4d25767f9dce13f5 active 4 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 311 dma e94ccf2011cf72a3
+op 312 chan 1e7f8447395be216 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 313 spatial 0 0
+op 314 chan 1e7f8447395be216 loop 4d25767f9dce13f5 active 5 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 315 chan eececb756da0cc38 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 316 chan eececb756da0cc38 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 316 dma e94ccf2011cf72a3
+op 317 chan eececb756da0cc38 loop 4d25767f9dce13f5 active 6 num 0 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 317 dma e94ccf2011cf72a3
+op 318 chan fd3390836b6a3f62 loop ede82041cc16982a active 6 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 319 chan fd3390836b6a3f62 loop ede82041cc16982a active 6 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 319 dma e94ccf2011cf72a3
+op 320 chan fd3390836b6a3f62 loop ede82041cc16982a active 6 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 321 chan 663df3d207226e74 loop ede82041cc16982a active 7 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 322 chan 9ddb3129ec48996e loop ede82041cc16982a active 8 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 323 chan 9ddb3129ec48996e loop ede82041cc16982a active 8 num 3 doppler 0 painted 10077 soundtime 9053 rawend 0
+op 324 chan e519a4f0fc9d3ec2 loop ede82041cc16982a active 8 num 3 doppler 0 painted 12288 soundtime 9580 rawend 0
+op 324 dma 34c8c7c91b643d60
+op 325 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 12288 soundtime 9580 rawend 0
+op 326 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 10604 soundtime 9580 rawend 0
+op 326 dma 34c8c7c91b643d60
+op 327 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 10604 soundtime 9580 rawend 0
+op 327 dma 34c8c7c91b643d60
+op 328 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 10604 soundtime 9580 rawend 0
+op 329 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 10604 soundtime 9580 rawend 9877
+op 329 raw 63e7f70a32bc6856
+op 330 chan fc7fff7e2a6d1163 loop ede82041cc16982a active 9 num 3 doppler 0 painted 10604 soundtime 9580 rawend 9877
+op 331 chan 2f552f36b116bda1 loop ede82041cc16982a active 8 num 3 doppler 0 painted 13312 soundtime 10045 rawend 9877
+op 331 dma d3b8a7244cbc91e0
+op 332 chan 2f552f36b116bda1 loop ede82041cc16982a active 8 num 3 doppler 0 painted 13312 soundtime 10045 rawend 9877
+op 333 chan 2f552f36b116bda1 loop ede82041cc16982a active 8 num 3 doppler 0 painted 14018 soundtime 10045 rawend 9877
+op 333 dma 6621486cff006abb
+op 334 chan 15eeef1e839ed593 loop ede82041cc16982a active 7 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 334 dma 6621486cff006abb
+op 335 chan 15eeef1e839ed593 loop ede82041cc16982a active 7 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 336 chan 15eeef1e839ed593 loop ede82041cc16982a active 7 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 337 chan 15eeef1e839ed593 loop ede82041cc16982a active 7 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 338 chan 15eeef1e839ed593 loop ede82041cc16982a active 7 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 339 chan da75756d641ddcbd loop ede82041cc16982a active 8 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 340 chan f997b585ef1b177e loop ede82041cc16982a active 9 num 3 doppler 0 painted 13312 soundtime 10574 rawend 9877
+op 341 chan f997b585ef1b177e loop ede82041cc16982a active 9 num 3 doppler 0 painted 11598 soundtime 10574 rawend 9877
+op 341 dma 6621486cff006abb
+op 342 chan e52203d842ed83d6 loop ede82041cc16982a active 10 num 3 doppler 0 painted 11598 soundtime 10574 rawend 9877
+op 343 chan e52203d842ed83d6 loop ede82041cc16982a active 10 num 3 doppler 0 painted 11598 soundtime 10574 rawend 9877
+op 344 chan e52203d842ed83d6 loop ede82041cc16982a active 10 num 3 doppler 0 painted 11598 soundtime 10574 rawend 9877
+op 344 dma 6621486cff006abb
+op 345 chan e52203d842ed83d6 loop ede82041cc16982a active 10 num 3 doppler 0 painted 11598 soundtime 10574 rawend 9877
+op 346 chan e52203d842ed83d6 loop ede82041cc16982a active 10 num 3 doppler 0 painted 11598 soundtime 10574 rawend 11691
+op 346 raw d415a0d7266ee57a
+op 347 chan d06d977236cb6cbe loop ede82041cc16982a active 10 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 347 dma c8badf28537902ef
+op 348 chan d06d977236cb6cbe loop ede82041cc16982a active 10 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 349 chan d97a0bf09d5dc232 loop ede82041cc16982a active 11 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 350 chan 3f8ac2aa7181d5b2 loop ede82041cc16982a active 12 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 351 chan 3f8ac2aa7181d5b2 loop ede82041cc16982a active 12 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 352 chan 3f8ac2aa7181d5b2 loop ede82041cc16982a active 12 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 353 chan a338b576d0680be2 loop ede82041cc16982a active 13 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 354 chan a338b576d0680be2 loop ede82041cc16982a active 13 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 355 chan a338b576d0680be2 loop ede82041cc16982a active 13 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 356 chan a37b7f8de9b62ce6 loop ede82041cc16982a active 14 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 357 chan a37b7f8de9b62ce6 loop ede82041cc16982a active 14 num 3 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 358 chan 4ca732cb03dc4c66 loop 07a0423f5e2ab19c active 14 num 4 doppler 0 painted 15360 soundtime 10826 rawend 11691
+op 359 chan 4ca732cb03dc4c66 loop 07a0423f5e2ab19c active 14 num 4 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 359 dma c8badf28537902ef
+op 360 chan 4ca732cb03dc4c66 loop 07a0423f5e2ab19c active 14 num 4 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 360 dma c8badf28537902ef
+op 361 chan 6e739a31f29798c9 loop 4ef5ff8789e5a21c active 14 num 4 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 362 chan 6e739a31f29798c9 loop 4ef5ff8789e5a21c active 14 num 4 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 363 chan bb300285c4c0426c loop 88df4255fa8e2419 active 14 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 364 chan bb300285c4c0426c loop 88df4255fa8e2419 active 14 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 365 spatial 0 0
+op 366 chan bd8bd2c3340ce993 loop 88df4255fa8e2419 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 367 chan bd8bd2c3340ce993 loop 88df4255fa8e2419 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 367 dma c8badf28537902ef
+op 368 spatial 0 0
+op 369 chan 8b18d8516b016f9a loop 5518ebbcc625c0a4 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 370 chan 8b18d8516b016f9a loop 5518ebbcc625c0a4 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 370 dma c8badf28537902ef
+op 371 chan 8b18d8516b016f9a loop 5518ebbcc625c0a4 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 372 chan 8b18d8516b016f9a loop 5518ebbcc625c0a4 active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 373 chan 707f762ffc3ea03d loop 62abfb8c7e8263be active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 374 chan 707f762ffc3ea03d loop 62abfb8c7e8263be active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 375 chan 41531c2ecc684380 loop 041eda46c3e69cba active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 376 chan 41531c2ecc684380 loop 041eda46c3e69cba active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 377 chan 41531c2ecc684380 loop 041eda46c3e69cba active 15 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 378 chan d91884641eb4c066 loop 041eda46c3e69cba active 16 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 379 chan d91884641eb4c066 loop 041eda46c3e69cba active 16 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11691
+op 380 chan d91884641eb4c066 loop 041eda46c3e69cba active 16 num 5 doppler 0 painted 11850 soundtime 10826 rawend 11974
+op 380 raw 95dbe886ccdb9e0e
+op 381 chan 4ca7c320eb0a7c4f loop 041eda46c3e69cba active 11 num 5 doppler 0 painted 17408 soundtime 12037 rawend 11974
+op 381 dma 1347c98f40dd35df
+op 382 chan 4ca7c320eb0a7c4f loop 041eda46c3e69cba active 11 num 5 doppler 0 painted 17408 soundtime 12037 rawend 11974
+op 383 spatial 0 0
+op 384 chan 4ca7c320eb0a7c4f loop 041eda46c3e69cba active 11 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 384 dma 1347c98f40dd35df
+op 385 chan 4ca7c320eb0a7c4f loop 041eda46c3e69cba active 11 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 385 dma 1347c98f40dd35df
+op 386 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 387 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 387 dma 1347c98f40dd35df
+op 388 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 389 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 390 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 391 chan 3a07257a797b1832 loop ff9b2134e326eece active 11 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 392 chan 14ecff4752040834 loop ff9b2134e326eece active 12 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 393 chan 14ecff4752040834 loop ff9b2134e326eece active 12 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 394 spatial 0 0
+op 395 chan 14ecff4752040834 loop ff9b2134e326eece active 12 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 396 chan 14ecff4752040834 loop ff9b2134e326eece active 12 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 397 chan 14ecff4752040834 loop ff9b2134e326eece active 12 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 398 chan 8b052b321b67f947 loop ff9b2134e326eece active 13 num 6 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 399 spatial 0 0
+op 400 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 401 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 402 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 402 dma 1347c98f40dd35df
+op 403 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 403 dma 1347c98f40dd35df
+op 404 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 404 dma 1347c98f40dd35df
+op 405 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 405 dma 1347c98f40dd35df
+op 406 chan ed0b82d044dea2cd loop 47d94b68699ccd5c active 13 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 406 dma 1347c98f40dd35df
+op 407 chan 9567a3290f9847a2 loop 47d94b68699ccd5c active 14 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 408 chan d656dcaaa33f922f loop 47d94b68699ccd5c active 15 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 409 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 410 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 411 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 411 dma 1347c98f40dd35df
+op 412 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 413 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 414 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 11974
+op 415 chan c2ee4ba741be1352 loop 47d94b68699ccd5c active 16 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 415 raw eea1ce852224d6a6
+op 416 chan 17ef1670d6bff93c loop 47d94b68699ccd5c active 17 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 417 chan 17ef1670d6bff93c loop 47d94b68699ccd5c active 17 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 418 chan 668cfd90786a08ff loop 47d94b68699ccd5c active 18 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 419 chan 668cfd90786a08ff loop 47d94b68699ccd5c active 18 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 420 chan abd7a1f114dcd5fc loop 47d94b68699ccd5c active 19 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 421 chan abd7a1f114dcd5fc loop 47d94b68699ccd5c active 19 num 5 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 422 chan abd7a1f114dcd5fc loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 423 chan 524075d2d316c42f loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 424 chan 524075d2d316c42f loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 425 chan 524075d2d316c42f loop 4d25767f9dce13f5 active 20 num 0 doppler 0 painted 13061 soundtime 12037 rawend 12833
+op 426 chan b8f0766ca4ebe082 loop 4d25767f9dce13f5 active 18 num 0 doppler 0 painted 17408 soundtime 12903 rawend 12833
+op 426 dma 888c8e414a3eeaab
+op 427 chan 9e5f7659c91a045e loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 17408 soundtime 12903 rawend 12833
+op 428 chan 9e5f7659c91a045e loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 428 dma 888c8e414a3eeaab
+op 429 chan 9e5f7659c91a045e loop 4d25767f9dce13f5 active 19 num 0 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 430 chan 54cb90adbcb176b7 loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 431 chan 54cb90adbcb176b7 loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 432 chan 54cb90adbcb176b7 loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 433 chan 54cb90adbcb176b7 loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 434 chan 54cb90adbcb176b7 loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 13927 soundtime 12903 rawend 12833
+op 435 chan 028e5da3ff6b3b8a loop 09f13a48df8558dc active 19 num 2 doppler 0 painted 18432 soundtime 13112 rawend 12833
+op 435 dma 51d124bb6e9beb8a
+op 436 chan 3794b3ffb57785ee loop 09f13a48df8558dc active 20 num 2 doppler 0 painted 18432 soundtime 13112 rawend 12833
+op 437 chan 4b4a3109ce073fff loop 09f13a48df8558dc active 21 num 2 doppler 0 painted 18432 soundtime 13112 rawend 12833
+op 438 chan 56ffe353c3360a7c loop 09f13a48df8558dc active 22 num 2 doppler 0 painted 18432 soundtime 13112 rawend 12833
+op 439 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 18432 soundtime 13112 rawend 12833
+op 440 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 440 dma 51d124bb6e9beb8a
+op 441 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 441 dma 51d124bb6e9beb8a
+op 442 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 442 dma 51d124bb6e9beb8a
+op 443 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 444 chan caa755d57b5df4d0 loop 09f13a48df8558dc active 23 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 444 dma 51d124bb6e9beb8a
+op 445 chan 1662f831e859564d loop 09f13a48df8558dc active 24 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 446 chan 1662f831e859564d loop 09f13a48df8558dc active 24 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 447 chan 1662f831e859564d loop 09f13a48df8558dc active 24 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 448 chan 792a93b4ffde9806 loop 09f13a48df8558dc active 25 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 449 chan 365d0d9fa92168c0 loop 09f13a48df8558dc active 26 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 450 chan 365d0d9fa92168c0 loop 09f13a48df8558dc active 26 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 450 dma 51d124bb6e9beb8a
+op 451 chan 365d0d9fa92168c0 loop 09f13a48df8558dc active 26 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 452 chan 365d0d9fa92168c0 loop 09f13a48df8558dc active 26 num 2 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 453 chan 365d0d9fa92168c0 loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 14136 soundtime 13112 rawend 12833
+op 454 chan a47d79502ed4e8a2 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 18432 soundtime 13336 rawend 12833
+op 454 dma 983974b2d863ae03
+op 455 chan a47d79502ed4e8a2 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 455 dma 983974b2d863ae03
+op 456 chan 22f92fbb96eda76f loop b4915441287e1ce2 active 23 num 2 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 457 chan 459aeea83e564a51 loop b4915441287e1ce2 active 24 num 2 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 458 chan 45499899dfc35073 loop b4915441287e1ce2 active 25 num 2 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 459 chan 45499899dfc35073 loop 4d25767f9dce13f5 active 25 num 0 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 460 chan af9107be1573d153 loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 461 chan af9107be1573d153 loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 14360 soundtime 13336 rawend 12833
+op 462 chan af9107be1573d153 loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 462 raw 84edf15ed9ee8d0e
+op 463 chan af9107be1573d153 loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 463 dma 983974b2d863ae03
+op 464 chan 87ff91898a50bb9c loop 4d25767f9dce13f5 active 27 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 465 chan 87ff91898a50bb9c loop 4d25767f9dce13f5 active 27 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 466 chan 87ff91898a50bb9c loop 4d25767f9dce13f5 active 27 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 467 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 468 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 468 dma 983974b2d863ae03
+op 469 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 469 dma 983974b2d863ae03
+op 470 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 471 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 13892
+op 472 chan 02c4d94fc2d5b767 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 14360 soundtime 13336 rawend 14082
+op 472 raw 6af7e6a22ea6cb52
+op 473 chan e36cfd3c6f470427 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 17408 soundtime 14024 rawend 14082
+op 473 dma 86118d444f56792d
+op 474 chan e36cfd3c6f470427 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 17408 soundtime 14024 rawend 14082
+op 475 chan e36cfd3c6f470427 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 17408 soundtime 14096 rawend 14082
+op 475 dma 86118d444f56792d
+op 476 chan e36cfd3c6f470427 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 17408 soundtime 14096 rawend 14082
+op 477 chan e36cfd3c6f470427 loop 4d25767f9dce13f5 active 22 num 0 doppler 0 painted 15120 soundtime 14096 rawend 14082
+op 477 dma 86118d444f56792d
+op 478 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 14082
+op 479 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 14082
+op 480 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 14082
+op 480 dma 86118d444f56792d
+op 481 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 14082
+op 482 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 482 raw 866ee2a59525d80a
+op 483 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 484 chan 0b9129771d7ed027 loop 4d25767f9dce13f5 active 23 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 484 dma 86118d444f56792d
+op 485 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 486 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 487 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 487 dma 86118d444f56792d
+op 488 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 489 spatial 1 0
+op 490 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 491 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 491 dma 86118d444f56792d
+op 492 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 493 chan 7f551bf30b3d507e loop 4d25767f9dce13f5 active 24 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 494 spatial 0 0
+op 495 chan 0e42f1eea16f8c43 loop 4d25767f9dce13f5 active 25 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 496 chan 0e42f1eea16f8c43 loop 4d25767f9dce13f5 active 25 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 496 dma 86118d444f56792d
+op 497 chan 0e42f1eea16f8c43 loop 4d25767f9dce13f5 active 25 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 498 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 499 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 500 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 501 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 502 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 503 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 504 chan 6ad4eac70100831c loop 4d25767f9dce13f5 active 26 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 504 dma 86118d444f56792d
+op 505 chan df7ccedc37c5a62c loop 4d25767f9dce13f5 active 27 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 506 chan df7ccedc37c5a62c loop 4d25767f9dce13f5 active 27 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 507 chan b9594b3e158fa6b1 loop 4d25767f9dce13f5 active 28 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 508 chan 300de1d8cd80a809 loop 4d25767f9dce13f5 active 29 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 509 chan 6fb50c3e8d83b3e8 loop 4d25767f9dce13f5 active 30 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 510 spatial 0 0
+op 511 chan 6fb50c3e8d83b3e8 loop 4d25767f9dce13f5 active 30 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
+op 512 chan 6fb50c3e8d83b3e8 loop 4d25767f9dce13f5 active 30 num 0 doppler 0 painted 15120 soundtime 14096 rawend 15676
