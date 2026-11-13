@@ -736,6 +736,9 @@ type
           ddckCKSrcBlt: TDDColorKey;     // color key for source blt use
           ddpfPixelFormat: TDDPixelFormat;// pixel format description of the surface
           ddsCaps: TDDSCaps;             // direct draw surface capabilities
+{$IFDEF CPUX64}
+          dwPadding: DWORD;              // the C structure is padded to 8 bytes at 64 bit (size 120)
+{$ENDIF}
           );
         1: (
           dwZBufferBitDepth: DWORD;      // depth of Z buffer requested
@@ -777,6 +780,9 @@ type
           ddpfPixelFormat: TDDPixelFormat;// pixel format description of the surface
           ddsCaps: TDDSCaps2;            // direct draw surface capabilities
           dwTextureStage: DWORD;         // stage in multitexture cascade
+{$IFDEF CPUX64}
+          dwPadding: DWORD;              // the C structure is padded to 8 bytes at 64 bit (size 136)
+{$ENDIF}
           );
         1: (
           dwRefreshRate: DWORD;          // refresh rate (used when display mode is described)

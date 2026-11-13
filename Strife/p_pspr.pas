@@ -816,9 +816,9 @@ begin
   dec(player.ammo[Ord(weaponinfo[Ord(player.readyweapon)].ammo)]);
 
   // set flash frame
-  st1 := @states[(integer(pspr.state) - integer(@states[0])) div SizeOf(state_t) + weaponinfo[Ord(player.readyweapon)].flashstate];
+  st1 := @states[(NativeInt(pspr.state) - NativeInt(@states[0])) div SizeOf(state_t) + weaponinfo[Ord(player.readyweapon)].flashstate];
   st2 := @states[weaponinfo[Ord(player.readyweapon)].atkstate];
-  P_SetPsprite(player, Ord(ps_flash), statenum_t((integer(st1) - integer(st2)) div SizeOf(state_t)));
+  P_SetPsprite(player, Ord(ps_flash), statenum_t((NativeInt(st1) - NativeInt(st2)) div SizeOf(state_t)));
 
   player.mo.z := player.mo.z + 32 * FRACUNIT; // ugh
   mo := P_SpawnMortar(player.mo, _type);

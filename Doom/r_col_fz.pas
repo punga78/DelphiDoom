@@ -231,7 +231,7 @@ begin
     c := destl^;
     {$I R_FuzzLight.inc}
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
 
   end;
 end;

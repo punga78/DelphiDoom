@@ -870,7 +870,7 @@ begin
   for row := 0 to desth - 1 do
   begin
     fracx := 0;
-    dest := PByte(integer(screens[destscrn]) + destw * row);
+    dest := PByte(NativeInt(screens[destscrn]) + destw * row);
     src := @scrA[(fracy div FRACUNIT) * width];
     for col := 0 to destw - 1 do
     begin
@@ -998,8 +998,8 @@ begin
               destw := destw div 2;
               for row := desty to desty + desth - 1 do
               begin
-                dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1017,8 +1017,8 @@ begin
               destw := destw div 4;
               for row := desty to desty + desth - 1 do
               begin
-                dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1036,8 +1036,8 @@ begin
               destw := destw div 6;
               for row := desty to desty + desth - 1 do
               begin
-                dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1057,8 +1057,8 @@ begin
               destw := destw div 8;
               for row := desty to desty + desth - 1 do
               begin
-                dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1079,8 +1079,8 @@ begin
               destw := destw div 12;
               for row := desty to desty + desth - 1 do
               begin
-                dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1106,8 +1106,8 @@ begin
       for row := desty to desty + desth - 1 do
       begin
         fracx := 0;
-        dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
           dest^ := src[LongWord(fracx) shr FRACBITS];
@@ -1121,14 +1121,14 @@ begin
   else
   begin
 
-    src := PByteArray(integer(screens[srcscrn]) + swidth * srcy + srcx);
-    destA := PByteArray(integer(screens[destscrn]) + dwidth * desty + destx);
+    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
+    destA := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
 
     while height > 0 do
     begin
       memcpy(destA, src, width);
-      src := PByteArray(integer(src) + swidth);
-      destA := PByteArray(integer(destA) + dwidth);
+      src := PByteArray(NativeInt(src) + swidth);
+      destA := PByteArray(NativeInt(destA) + dwidth);
       dec(height);
     end;
   end;
@@ -1193,8 +1193,8 @@ begin
               begin
                 if row mod numidxs = idx then
                 begin
-                  dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                   col := 0;
                   while col < destw do
                   begin
@@ -1215,8 +1215,8 @@ begin
               begin
                 if row mod numidxs = idx then
                 begin
-                  dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                   col := 0;
                   while col < destw do
                   begin
@@ -1237,8 +1237,8 @@ begin
               begin
                 if row mod numidxs = idx then
                 begin
-                  dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                   col := 0;
                   while col < destw do
                   begin
@@ -1261,8 +1261,8 @@ begin
               begin
                 if row mod numidxs = idx then
                 begin
-                  dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                   col := 0;
                   while col < destw do
                   begin
@@ -1286,8 +1286,8 @@ begin
               begin
                 if row mod numidxs = idx then
                 begin
-                  dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                   col := 0;
                   while col < destw do
                   begin
@@ -1316,8 +1316,8 @@ begin
         if row mod numidxs = idx then
         begin
           fracx := 0;
-          dest := PByte(integer(screens[destscrn]) + dwidth * row + destx);
-          src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+          dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
+          src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
           for col := 0 to destw - 1 do
           begin
             dest^ := src[LongWord(fracx) shr FRACBITS];
@@ -1332,15 +1332,15 @@ begin
   else
   begin
 
-    src := PByteArray(integer(screens[srcscrn]) + swidth * srcy + srcx);
-    destA := PByteArray(integer(screens[destscrn]) + dwidth * desty + destx);
+    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
+    destA := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
 
     while height > 0 do
     begin
       if height mod numidxs = idx then
         memcpy(destA, src, width);
-      src := PByteArray(integer(src) + swidth);
-      destA := PByteArray(integer(destA) + dwidth);
+      src := PByteArray(NativeInt(src) + swidth);
+      destA := PByteArray(NativeInt(destA) + dwidth);
       dec(height);
     end;
   end;
@@ -1417,7 +1417,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1439,7 +1439,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1461,7 +1461,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1485,7 +1485,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1509,7 +1509,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1535,7 +1535,7 @@ begin
             for row := desty to desty + desth - 1 do
             begin
               dest := @screen32[dwidth * row + destx];
-              src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
               col := 0;
               while col < destw do
               begin
@@ -1565,7 +1565,7 @@ begin
     begin
       fracx := 0;
       dest := @screen32[dwidth * row + destx];
-      src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
       for col := 0 to destw - 1 do
       begin
         dest^ := videopal[src[LongWord(fracx) shr FRACBITS]];
@@ -1651,7 +1651,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1676,7 +1676,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1701,7 +1701,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1728,7 +1728,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1755,7 +1755,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1784,7 +1784,7 @@ begin
               if row mod numidxs = idx then
               begin
                 dest := @screen32[dwidth * row + destx];
-                src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
                 col := 0;
                 while col < destw do
                 begin
@@ -1817,7 +1817,7 @@ begin
       begin
         fracx := 0;
         dest := @screen32[dwidth * row + destx];
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
           dest^ := videopal[src[LongWord(fracx) shr FRACBITS]];
@@ -2037,12 +2037,12 @@ begin
       begin
         fracx := 0;
         dest := @screen32[dwidth * row + destx];
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
           dest^ := R_ColorAverage(videopal[src[LongWord(fracx) shr FRACBITS]], dest^, addfactor);
           {$IFDEF OPENGL}
-          pb := PByte(integer(dest) + 3);
+          pb := PByte(NativeInt(dest) + 3);
           pb^ := bfactor;
           {$ENDIF}
           inc(dest);
@@ -2107,9 +2107,9 @@ begin
       for row := desty to desty + desth - 1 do
       begin
         fracx := 0;
-        dest := PByteArray(integer(screens[destscrn]) + dwidth * row + destx);
+        dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
         // Source is a 320 width screen
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
           srcb := src[LongWord(fracx) shr FRACBITS];
@@ -2124,8 +2124,8 @@ begin
   else
   begin
 
-    src := PByteArray(integer(screens[srcscrn]) + swidth * srcy + srcx);
-    dest := PByteArray(integer(screens[destscrn]) + dwidth * desty + destx);
+    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
+    dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
 
     while height > 0 do
     begin
@@ -2135,8 +2135,8 @@ begin
         if srcb <> 0 then
           dest[col] := srcb;
       end;
-      src := PByteArray(integer(src) + swidth);
-      dest := PByteArray(integer(dest) + dwidth);
+      src := PByteArray(NativeInt(src) + swidth);
+      dest := PByteArray(NativeInt(dest) + dwidth);
       dec(height);
     end;
   end;
@@ -2196,9 +2196,9 @@ begin
         if row mod numidxs = idx then
         begin
           fracx := 0;
-          dest := PByteArray(integer(screens[destscrn]) + dwidth * row + destx);
+          dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
           // Source is a 320 width screen
-          src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+          src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
           for col := 0 to destw - 1 do
           begin
             srcb := src[LongWord(fracx) shr FRACBITS];
@@ -2214,8 +2214,8 @@ begin
   else
   begin
 
-    src := PByteArray(integer(screens[srcscrn]) + swidth * srcy + srcx);
-    dest := PByteArray(integer(screens[destscrn]) + dwidth * desty + destx);
+    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
+    dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
 
     while height > 0 do
     begin
@@ -2228,8 +2228,8 @@ begin
             dest[col] := srcb;
         end;
       end;
-      src := PByteArray(integer(src) + swidth);
-      dest := PByteArray(integer(dest) + dwidth);
+      src := PByteArray(NativeInt(src) + swidth);
+      dest := PByteArray(NativeInt(dest) + dwidth);
       dec(height);
     end;
   end;
@@ -2305,7 +2305,7 @@ begin
     begin
       fracx := 0;
       dest := @screen32[dwidth * row + destx];
-      src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
       col := 0;
       while col < destw do
       begin
@@ -2411,7 +2411,7 @@ begin
       begin
         fracx := 0;
         dest := @screen32[dwidth * row + destx];
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         col := 0;
         while col < destw do
         begin
@@ -2599,9 +2599,9 @@ begin
     for row := desty to desty + desth - 1 do
     begin
       fracx := 0;
-      dest := PByteArray(integer(screens[destscrn]) + dwidth * row + destx);
+      dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
       // Source is a 320 width screen
-      src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
       for col := 0 to destw - 1 do
       begin
         srcb := src[LongWord(fracx) shr FRACBITS];
@@ -2657,9 +2657,9 @@ begin
       if row mod numidxs = idx then
       begin
         fracx := 0;
-        dest := PByteArray(integer(screens[destscrn]) + dwidth * row + destx);
+        dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
         // Source is a 320 width screen
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         for col := 0 to destw - 1 do
         begin
           srcb := src[LongWord(fracx) shr FRACBITS];
@@ -2719,7 +2719,7 @@ begin
     begin
       fracx := 0;
       dest := @screen32[dwidth * row + destx];
-      src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
       col := 0;
       while col < destw do
       begin
@@ -2801,7 +2801,7 @@ begin
       begin
         fracx := 0;
         dest := @screen32[dwidth * row + destx];
-        src := PByteArray(integer(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
+        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
         col := 0;
         while col < destw do
         begin
@@ -3105,8 +3105,8 @@ var
   dest: PByte;
   cnt: integer;
 begin
-  src := PByte(integer(screens[srcscrn]) +  srcoffs);
-  dest := PByte(integer(screens[destscrn]) + destoffs);
+  src := PByte(NativeInt(screens[srcscrn]) +  srcoffs);
+  dest := PByte(NativeInt(screens[destscrn]) + destoffs);
 
   if size = -1 then
     cnt := V_GetScreenWidth(srcscrn) * V_GetScreenHeight(srcscrn)
@@ -3152,7 +3152,7 @@ var
   dest: PLongWord;
   cnt: integer;
 begin
-  src := PByte(integer(screens[srcscrn]) +  srcoffs);
+  src := PByte(NativeInt(screens[srcscrn]) +  srcoffs);
   dest := @screen32[destoffs];
 
   if size = -1 then
@@ -3303,21 +3303,21 @@ begin
 
     col := 0;
 
-    desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+    desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
     w := patch.width;
 
     while col < w do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
       delta := 0;
       tallpatch := false;
     // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
-        dest := PByte(integer(desttop) + delta * swidth);
+        dest := PByte(NativeInt(desttop) + delta * swidth);
         count := column.length;
 
         while count > 0 do
@@ -3330,14 +3330,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       inc(col);
       inc(desttop);
@@ -3367,22 +3367,22 @@ begin
       fracystep := FRACUNIT * patch.height div ph;
 
       col := 0;
-      desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+      desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
       sheight := V_GetScreenHeight(scrn);
 
       while col < pw do
       begin
-        column := Pcolumn_t(integer(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
         delta := 0;
         tallpatch := false;
       // step through the posts in a column
         while column.topdelta <> $ff do
         begin
-          source := PByte(integer(column) + 3);
+          source := PByte(NativeInt(column) + 3);
           vs := v_translation[source^];
           delta := delta + column.topdelta;
-          dest := PByte(integer(desttop) + ((delta * sheight) div 200) * swidth);
+          dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
           count := column.length;
           fracy := 0;
           lasty := 0;
@@ -3404,14 +3404,14 @@ begin
           if not tallpatch then
           begin
             prevdelta := column.topdelta;
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
             if column.topdelta > prevdelta then
               delta := 0
             else
               tallpatch := true;
           end
           else
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
         end;
         inc(col);
         inc(desttop);
@@ -3465,13 +3465,13 @@ begin
 
     while col < w do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
       delta := 0;
       tallpatch := false;
     // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
         dest := @desttop[delta * swidth];
         count := column.length;
@@ -3499,14 +3499,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       inc(col);
       desttop := @desttop[1];
@@ -3541,13 +3541,13 @@ begin
       begin
         while col < pw do
         begin
-          column := Pcolumn_t(integer(patch) + patch.columnofs[fracx div FRACUNIT]);
+          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
           delta := 0;
           tallpatch := false;
         // step through the posts in a column
           while column.topdelta <> $ff do
           begin
-            source := PByte(integer(column) + 3);
+            source := PByte(NativeInt(column) + 3);
             vs := videopal[v_translation[source^]];
             delta := delta + column.topdelta;
             dest := @desttop[(Round(delta * sheight / 200) * swidth)];
@@ -3572,14 +3572,14 @@ begin
             if not tallpatch then
             begin
               prevdelta := column.topdelta;
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
               if column.topdelta > prevdelta then
                 delta := 0
               else
                 tallpatch := true;
             end
             else
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
           end;
           inc(col);
           desttop := @desttop[1];
@@ -3591,13 +3591,13 @@ begin
       begin
         while col < pw do
         begin
-          column := Pcolumn_t(integer(patch) + patch.columnofs[fracx div FRACUNIT]);
+          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
           delta := 0;
           tallpatch := false;
         // step through the posts in a column
           while column.topdelta <> $ff do
           begin
-            source := PByte(integer(column) + 3);
+            source := PByte(NativeInt(column) + 3);
             vs := videopal[source^];
             delta := delta + column.topdelta;
             dest := @desttop[(Round(delta * sheight / 200) * swidth)];
@@ -3622,14 +3622,14 @@ begin
             if not tallpatch then
             begin
               prevdelta := column.topdelta;
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
               if column.topdelta > prevdelta then
                 delta := 0
               else
                 tallpatch := true;
             end
             else
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
           end;
           inc(col);
           desttop := @desttop[1];
@@ -3725,21 +3725,21 @@ begin
 
     col := 0;
 
-    desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+    desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
     w := patch.width;
 
     while col < w do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
       delta := 0;
       tallpatch := false;
     // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
-        dest := PByte(integer(desttop) + delta * swidth);
+        dest := PByte(NativeInt(desttop) + delta * swidth);
         count := column.length;
 
         while count > 0 do
@@ -3752,14 +3752,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       inc(col);
       inc(desttop);
@@ -3789,22 +3789,22 @@ begin
       fracystep := FRACUNIT * patch.height div ph;
 
       col := 0;
-      desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+      desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
       sheight := V_GetScreenHeight(scrn);
 
       while col < pw do
       begin
-        column := Pcolumn_t(integer(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
         delta := 0;
         tallpatch := false;
       // step through the posts in a column
         while column.topdelta <> $ff do
         begin
-          source := PByte(integer(column) + 3);
+          source := PByte(NativeInt(column) + 3);
           vs := v_translation[source^];
           delta := delta + column.topdelta;
-          dest := PByte(integer(desttop) + ((delta * sheight) div 200) * swidth);
+          dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
           count := column.length;
           fracy := 0;
           lasty := 0;
@@ -3826,14 +3826,14 @@ begin
           if not tallpatch then
           begin
             prevdelta := column.topdelta;
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
             if column.topdelta > prevdelta then
               delta := 0
             else
               tallpatch := true;
           end
           else
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
         end;
         inc(col);
         inc(desttop);
@@ -3884,7 +3884,7 @@ begin
 
     col := 0;
 
-    desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+    desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
     w := patch.width;
 
@@ -3892,15 +3892,15 @@ begin
     begin
       if col mod numidxs = idx then
       begin
-        column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
         delta := 0;
         tallpatch := false;
       // step through the posts in a column
         while column.topdelta <> $ff do
         begin
-          source := PByte(integer(column) + 3);
+          source := PByte(NativeInt(column) + 3);
           delta := delta + column.topdelta;
-          dest := PByte(integer(desttop) + delta * swidth);
+          dest := PByte(NativeInt(desttop) + delta * swidth);
           count := column.length;
 
           while count > 0 do
@@ -3913,14 +3913,14 @@ begin
           if not tallpatch then
           begin
             prevdelta := column.topdelta;
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
             if column.topdelta > prevdelta then
               delta := 0
             else
               tallpatch := true;
           end
           else
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
         end;
       end;
       inc(col);
@@ -3951,7 +3951,7 @@ begin
       fracystep := FRACUNIT * patch.height div ph;
 
       col := 0;
-      desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+      desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
       sheight := V_GetScreenHeight(scrn);
 
@@ -3959,16 +3959,16 @@ begin
       begin
         if col mod numidxs = idx then
         begin
-          column := Pcolumn_t(integer(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
+          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[LongWord(fracx) shr FRACBITS]);
           delta := 0;
           tallpatch := false;
         // step through the posts in a column
           while column.topdelta <> $ff do
           begin
-            source := PByte(integer(column) + 3);
+            source := PByte(NativeInt(column) + 3);
             vs := v_translation[source^];
             delta := delta + column.topdelta;
-            dest := PByte(integer(desttop) + ((delta * sheight) div 200) * swidth);
+            dest := PByte(NativeInt(desttop) + ((delta * sheight) div 200) * swidth);
             count := column.length;
             fracy := 0;
             lasty := 0;
@@ -3990,14 +3990,14 @@ begin
             if not tallpatch then
             begin
               prevdelta := column.topdelta;
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
               if column.topdelta > prevdelta then
                 delta := 0
               else
                 tallpatch := true;
             end
             else
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
           end;
         end;
         inc(col);
@@ -4056,13 +4056,13 @@ begin
 
     while col < w do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
       delta := 0;
       tallpatch := false;
     // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
         dest := @desttop[delta * swidth];
         count := column.length;
@@ -4071,7 +4071,7 @@ begin
         begin
           dest^ := R_ColorMean(videopal[source^], dest^);
           {$IFDEF OPENGL}
-          pb := PByte(integer(dest) + 3);
+          pb := PByte(NativeInt(dest) + 3);
           pb^ := $80;
           {$ENDIF}
           inc(source);
@@ -4081,14 +4081,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       inc(col);
       desttop := @desttop[1];
@@ -4121,13 +4121,13 @@ begin
 
       while col < pw do
       begin
-        column := Pcolumn_t(integer(patch) + patch.columnofs[fracx div FRACUNIT]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
         delta := 0;
         tallpatch := false;
       // step through the posts in a column
         while column.topdelta <> $ff do
         begin
-          source := PByte(integer(column) + 3);
+          source := PByte(NativeInt(column) + 3);
           vs := videopal[source^];
           delta := delta + column.topdelta;
           dest := @desttop[((delta * sheight div 200) * swidth)];
@@ -4139,7 +4139,7 @@ begin
           begin
             dest^ := R_ColorMean(vs, dest^);
            {$IFDEF OPENGL}
-            pb := PByte(integer(dest) + 3);
+            pb := PByte(NativeInt(dest) + 3);
             pb^ := $80;
            {$ENDIF}
             inc(dest, swidth);
@@ -4156,14 +4156,14 @@ begin
           if not tallpatch then
           begin
             prevdelta := column.topdelta;
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
             if column.topdelta > prevdelta then
               delta := 0
             else
               tallpatch := true;
           end
           else
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
         end;
         inc(col);
         desttop := @desttop[1];
@@ -4225,13 +4225,13 @@ begin
     begin
       if col mod numidxs = idx then
       begin
-        column := Pcolumn_t(integer(patch) + patch.columnofs[col]);
+        column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
         delta := 0;
         tallpatch := false;
       // step through the posts in a column
         while column.topdelta <> $ff do
         begin
-          source := PByte(integer(column) + 3);
+          source := PByte(NativeInt(column) + 3);
           delta := delta + column.topdelta;
           dest := @desttop[delta * swidth];
           count := column.length;
@@ -4240,7 +4240,7 @@ begin
           begin
             dest^ := R_ColorMean(videopal[source^], dest^);
             {$IFDEF OPENGL}
-            pb := PByte(integer(dest) + 3);
+            pb := PByte(NativeInt(dest) + 3);
             pb^ := $80;
             {$ENDIF}
             inc(source);
@@ -4250,14 +4250,14 @@ begin
           if not tallpatch then
           begin
             prevdelta := column.topdelta;
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
             if column.topdelta > prevdelta then
               delta := 0
             else
               tallpatch := true;
           end
           else
-            column := Pcolumn_t(integer(column) + column.length + 4);
+            column := Pcolumn_t(NativeInt(column) + column.length + 4);
         end;
       end;
       inc(col);
@@ -4293,13 +4293,13 @@ begin
       begin
         if col mod numidxs = idx then
         begin
-          column := Pcolumn_t(integer(patch) + patch.columnofs[fracx div FRACUNIT]);
+          column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
           delta := 0;
           tallpatch := false;
         // step through the posts in a column
           while column.topdelta <> $ff do
           begin
-            source := PByte(integer(column) + 3);
+            source := PByte(NativeInt(column) + 3);
             vs := videopal[source^];
             delta := delta + column.topdelta;
             dest := @desttop[((delta * sheight div 200) * swidth)];
@@ -4311,7 +4311,7 @@ begin
             begin
               dest^ := R_ColorMean(vs, dest^);
              {$IFDEF OPENGL}
-              pb := PByte(integer(dest) + 3);
+              pb := PByte(NativeInt(dest) + 3);
               pb^ := $80;
              {$ENDIF}
               inc(dest, swidth);
@@ -4328,14 +4328,14 @@ begin
             if not tallpatch then
             begin
               prevdelta := column.topdelta;
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
               if column.topdelta > prevdelta then
                 delta := 0
               else
                 tallpatch := true;
             end
             else
-              column := Pcolumn_t(integer(column) + column.length + 4);
+              column := Pcolumn_t(NativeInt(column) + column.length + 4);
           end;
         end;
         inc(col);
@@ -4491,24 +4491,24 @@ begin
     swidth := V_GetScreenWidth(scrn);
     sheight := V_GetScreenHeight(scrn);
 
-    desttop := PByte(integer(screens[scrn]) + y * swidth + x);
+    desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
     col := 0;
 
     while col < pw do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[fracx shr FRACBITS]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx shr FRACBITS]);
       delta := 0;
       tallpatch := false;
       // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
         if preserve then
-          dest := PByte(integer(desttop) + ((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth)
+          dest := PByte(NativeInt(desttop) + ((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth)
         else
-          dest := PByte(integer(desttop) + (delta * fraczoom div FRACUNIT) * swidth);
+          dest := PByte(NativeInt(desttop) + (delta * fraczoom div FRACUNIT) * swidth);
         count := column.length;
         fracy := 0;
         lasty := 0;
@@ -4529,14 +4529,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       inc(desttop);
       inc(col);
@@ -4611,13 +4611,13 @@ begin
 
     while col < pw do
     begin
-      column := Pcolumn_t(integer(patch) + patch.columnofs[fracx div FRACUNIT]);
+      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[fracx div FRACUNIT]);
       delta := 0;
       tallpatch := false;
       // step through the posts in a column
       while column.topdelta <> $ff do
       begin
-        source := PByte(integer(column) + 3);
+        source := PByte(NativeInt(column) + 3);
         delta := delta + column.topdelta;
         if preserve then
           dest := @desttop[((delta * sheight) * fraczoom div FRACUNIT div 200) * swidth]
@@ -4643,14 +4643,14 @@ begin
         if not tallpatch then
         begin
           prevdelta := column.topdelta;
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
           if column.topdelta > prevdelta then
             delta := 0
           else
             tallpatch := true;
         end
         else
-          column := Pcolumn_t(integer(column) + column.length + 4);
+          column := Pcolumn_t(NativeInt(column) + column.length + 4);
       end;
       desttop := @desttop[1];
       inc(col);
@@ -4698,21 +4698,21 @@ begin
 
   col := 0;
 
-  desttop := PByte(integer(screens[scrn]) + y * 320 + x);
+  desttop := PByte(NativeInt(screens[scrn]) + y * 320 + x);
 
   w := patch.width;
 
   while col < w do
   begin
-    column := Pcolumn_t(integer(patch) + patch.columnofs[w - 1 - col]);
+    column := Pcolumn_t(NativeInt(patch) + patch.columnofs[w - 1 - col]);
     delta := 0;
     tallpatch := false;
   // step through the posts in a column
     while column.topdelta <> $ff do
     begin
-      source := PByte(integer(column) + 3);
+      source := PByte(NativeInt(column) + 3);
       delta := delta + column.topdelta;
-      dest := PByte(integer(desttop) + delta * 320);
+      dest := PByte(NativeInt(desttop) + delta * 320);
       count := column.length;
 
       while count > 0 do
@@ -4725,14 +4725,14 @@ begin
       if not tallpatch then
       begin
         prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         if column.topdelta > prevdelta then
           delta := 0
         else
           tallpatch := true;
       end
       else
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
     end;
     inc(col);
     inc(desttop);
@@ -5059,7 +5059,7 @@ begin
 {$ENDIF}
   src := palette;
   curgamma := @gammatable[usegamma];
-  while integer(src) < integer(@palette[256 * 3]) do
+  while NativeUInt(src) < NativeUInt(@palette[256 * 3]) do
   begin
     dest^ := (LongWord(curgamma[src[0]]) shl 16) or
              (LongWord(curgamma[src[1]]) shl 8) or
@@ -5071,7 +5071,7 @@ begin
     {$ENDIF}
     {$ENDIF}
     inc(dest);
-    src := PByteArray(integer(src) + 3);
+    src := PByteArray(NativeInt(src) + 3);
   end;
 {$IFNDEF OPENGL}
 {$IFDEF HEXEN}
@@ -5114,7 +5114,7 @@ begin
   end;
 
   p := W_CacheLumpNum(lu_palette, PU_STATIC);
-  palette := PByteArray(integer(p) + st_palette * 768);
+  palette := PByteArray(NativeInt(p) + st_palette * 768);
 
   dest := @cvideopal[0];
   curgamma := @gammatable[usegamma];

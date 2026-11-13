@@ -1054,7 +1054,7 @@ begin
       inc(destl);
       dec(cnt);
     end;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     cnt := num_batch_columns;
     while cnt > 0 do
     begin
@@ -1078,7 +1078,7 @@ begin
       inc(destl);
       dec(cnt);
     end;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     cnt := num_batch_columns;
     while cnt > 0 do
     begin
@@ -1129,7 +1129,7 @@ begin
     while cnt > 0 do
     begin
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1145,7 +1145,7 @@ begin
     while cnt > 0 do
     begin
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1193,7 +1193,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1211,7 +1211,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1261,7 +1261,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1281,7 +1281,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1333,7 +1333,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1355,7 +1355,7 @@ begin
       destl^ := ldest;
       Inc(destl);
       destl^ := ldest;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1409,7 +1409,7 @@ begin
     while cnt > 0 do
     begin
       FillDWord(destl, len, ldest);
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end
@@ -1425,7 +1425,7 @@ begin
     while cnt > 0 do
     begin
       FillDWord(destl, len, ldest);
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(cnt);
     end;
   end;
@@ -1501,83 +1501,83 @@ begin
 
     while count >= 8 do
     begin
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
       count := count - 8;
     end;
 
     while count >= 0 do
     begin
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
 
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       dec(count);
     end;
   end
@@ -1591,82 +1591,82 @@ begin
 
     while count >= 8 do
     begin
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
       count := count - 8;
     end;
 
     while count >= 0 do
     begin
-      deststop := PLongWord(integer(destl) + batch_pitch);
-      while integer(destl) <= integer(deststop) do
+      deststop := PLongWord(NativeInt(destl) + batch_pitch);
+      while NativeInt(destl) <= NativeInt(deststop) do
       begin
         destl^ := ldest;
         inc(destl);
       end;
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
 
       dec(count);
     end;

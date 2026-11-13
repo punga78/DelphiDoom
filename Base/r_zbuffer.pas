@@ -761,7 +761,8 @@ var
   pi, pistop: Pzbufferitem_t;
   i: integer;
 begin
-  FillDWord(@cache[yl], yh - yl + 1, LongWord(@stubzitem));
+  for i := yl to yh do
+    cache[i] := @stubzitem;
 
   Z := @Zcolumns[x];
   pi := @Z.items[0];

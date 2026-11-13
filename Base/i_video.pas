@@ -373,7 +373,7 @@ begin
   if bpp = 32 then
   begin
     dest := @screen[parms.start];
-    while integer(src) < integer(srcstop) do
+    while NativeInt(src) < NativeInt(srcstop) do
     begin
       dest^ := curpal[src^];
       inc(dest);
@@ -383,7 +383,7 @@ begin
   else if bpp = 16 then
   begin
     destw := @screen16[parms.start];
-    while integer(src) < integer(srcstop) do
+    while NativeInt(src) < NativeInt(srcstop) do
     begin
       pixel := curpal[src^];
       r := (pixel shr 19) and 31;
@@ -411,7 +411,7 @@ begin
   srcstop := @(screens[SCN_FG][SCREENWIDTH * SCREENHEIGHT - 1]);
 
   dest := @screen[0];
-  while integer(src) < integer(srcstop) do
+  while NativeInt(src) < NativeInt(srcstop) do
   begin
     dest^ := curpal64[src^];
     inc(dest);
@@ -440,7 +440,7 @@ begin
   srcstop := @(screens[SCN_FG][Pfinishupdate8param_t(p).finish]);
 
   dest := @screen[Pfinishupdate8param_t(p).start];
-  while integer(src) < integer(srcstop) do
+  while NativeInt(src) < NativeInt(srcstop) do
   begin
     dest^ := curpal64[src^];
     inc(dest);

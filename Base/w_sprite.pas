@@ -325,7 +325,7 @@ begin
     result := Z_Malloc(fs.Size + m.Size, tag, user);
 
     memcpy(result, fs.Memory, fs.Size);
-    memcpy(pointer(integer(result) + fs.Size), m.Memory, m.Size);
+    memcpy(pointer(NativeInt(result) + fs.Size), m.Memory, m.Size);
 
   finally
     m.Free;
@@ -350,7 +350,7 @@ var
   N: integer;
 begin
   data := spritecache.Items[lump];
-  if integer(data) > 1 then
+  if NativeInt(data) > 1 then
   begin
     result := data;
     Exit;
@@ -358,7 +358,7 @@ begin
   else
     result := W_CacheLumpNum(lump, tag);
 
-  if integer(data) = 1 then
+  if NativeInt(data) = 1 then
     Exit;
 
   spritecache.Items[lump] := Pointer($1);
@@ -486,12 +486,12 @@ begin
     else
       Continue;
 
-    column := Pcolumn_t(integer(newpatch) + offs);
+    column := Pcolumn_t(NativeInt(newpatch) + offs);
 
     // step through the posts in a column
     while column.topdelta <> $ff do
     begin
-      source := PByte(integer(column) + 3);
+      source := PByte(NativeInt(column) + 3);
       count := column.length;
 
       while count > 0 do
@@ -500,7 +500,7 @@ begin
         inc(source);
         dec(count);
       end;
-      column := Pcolumn_t(integer(column) + column.length + 4);
+      column := Pcolumn_t(NativeInt(column) + column.length + 4);
     end;
 
   end;

@@ -1716,7 +1716,7 @@ begin
 
         Ord(MT_MSTAFF_FX2):  // Reflect to originator
           begin
-            victim.special1 := integer(victim.target);
+            victim.special1 := NativeInt(victim.target);
             victim.target := source;
           end;
       end;
@@ -1725,7 +1725,7 @@ begin
     if victim._type = Ord(MT_HOLY_FX) then
       if Pmobj_t(victim.special1) = source then
       begin
-        victim.special1 := integer(victim.target);
+        victim.special1 := NativeInt(victim.target);
         victim.target := source;
       end;
 
@@ -2146,7 +2146,7 @@ begin
         if mo <> nil then
         begin
           mo.target := player.mo;
-          mo.special1 := integer(player.mo);
+          mo.special1 := NativeInt(player.mo);
           mo.momz := 5 * FRACUNIT;
         end;
       end;

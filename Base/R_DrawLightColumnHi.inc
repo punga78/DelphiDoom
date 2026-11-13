@@ -32,7 +32,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -41,7 +41,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -50,7 +50,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -59,7 +59,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -68,7 +68,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -77,7 +77,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -86,7 +86,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     //  Average with the next column and next pixel
@@ -95,7 +95,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
 
     count := count - 8;
@@ -109,7 +109,7 @@ begin
     c := destl^;
     {$I R_ColorBoost.inc}
     destl^ := r + g shl 8 + b shl 16;
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;

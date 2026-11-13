@@ -55,7 +55,7 @@ type
   TVoxelModel = class
   private
     fnumframes: integer;
-    frames: TDNumberList;
+    frames: TDPointerList;
   protected
     foffset: fixed_t;
     fscale: fixed_t;
@@ -750,7 +750,7 @@ var
   vbuf: voxelbuffer2D_p;
   mid: integer;
   col: voxelcolumn_p;
-  buf: TDNumberList;
+  buf: TDPointerList;
   rgb: array[0..9] of rgb_t;
   c: LongWord;
   blacks: integer;
@@ -760,7 +760,7 @@ var
 begin
   result := Z_Malloc(SizeOf(voxelcolumns_t), PU_STATIC, nil);
   vbuf := malloc(SizeOf(voxelbuffer2D_t));
-  buf := TDNumberList.Create;
+  buf := TDPointerList.Create;
   mid := voxelsize div 2;
 
   maxdist := 0;
@@ -782,7 +782,7 @@ begin
             maxdist := dist;
           col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
           col.scale := scale;
-          buf.Add(integer(col))
+          buf.Add(col)
         end;
       end;
   result.mips[0].numcolumns := buf.Count;
@@ -902,7 +902,7 @@ begin
             col.y := (zz - mid) * scale;
             col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
             col.scale := scale;
-            buf.Add(integer(col));
+            buf.Add(col);
           end;
         end;
       end;
@@ -999,7 +999,7 @@ begin
             col.y := (zz - mid) * scale;
             col.angle := Round(arctan2(col.y, col.x) * (ANG180 / D_PI));
             col.scale := scale;
-            buf.Add(integer(col));
+            buf.Add(col);
           end;
         end;
       end;
@@ -1089,7 +1089,7 @@ begin
   printf('  Found external voxel %s'#13#10, [name]);
 
   ext := strupper(fext(name));
-  frames := TDNumberList.Create;
+  frames := TDPointerList.Create;
   foffset := offset;
   fscale := scale;
   fflags := flags;
@@ -1097,16 +1097,16 @@ begin
   if ALoader.IsSupported(name) then
   begin
     fnumframes := 1;
-    frames.Add(integer(R_LoadVoxelColumns(name, offset, scale, ALoader, ACubes)));
+    frames.Add(R_LoadVoxelColumns(name, offset, scale, ALoader, ACubes));
   end
   else
     I_Error('TVoxelModel.Create(): Can not identify voxel type "%s"', [name]);
 
   fradius := 0;
   for i := 0 to frames.Count - 1 do
-    if frames.Numbers[i] <> 0 then // a voxel file that is not there has no columns
-      if voxelcolumns_p(frames.Numbers[i]).range > fradius then
-      fradius := voxelcolumns_p(frames.Numbers[i]).range;
+    if frames.Pointers[i] <> nil then // a voxel file that is not there has no columns
+      if voxelcolumns_p(frames.Pointers[i]).range > fradius then
+      fradius := voxelcolumns_p(frames.Pointers[i]).range;
 end;
 
 //==============================================================================
@@ -1238,7 +1238,7 @@ begin
     exit;
   end;
 
-  clms := voxelcolumns_p(voxelinf.voxel.frames.Numbers[info.frame]);
+  clms := voxelcolumns_p(voxelinf.voxel.frames.Pointers[info.frame]);
   if clms <> nil then
   begin
     angleadd := voxelinf.angleoffset * ANG1;
@@ -1981,7 +1981,7 @@ begin
     end
     else
     begin
-      dc_translation := PByteArray(integer(translationtables) - 256 +
+      dc_translation := PByteArray(NativeInt(translationtables) - 256 +
         (_SHR((vis.mobjflags and MF_TRANSLATION), (MF_TRANSSHIFT - 8))));
       batchcolfunc := batchfuzztranscolfunc;
     end;
@@ -1994,7 +1994,7 @@ begin
   else if vis.mobjflags and MF_TRANSLATION <> 0 then
   begin
     batchcolfunc := batchtranscolfunc;
-    dc_translation := PByteArray(integer(translationtables) - 256 +
+    dc_translation := PByteArray(NativeInt(translationtables) - 256 +
     {$IFDEF HEXEN}vis._class * ((MAXPLAYERS - 1) * 256) + {$ENDIF}
       (_SHR((vis.mobjflags and MF_TRANSLATION), (MF_TRANSSHIFT - 8))));
   end

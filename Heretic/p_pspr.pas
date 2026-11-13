@@ -1409,7 +1409,7 @@ begin
     mo.momy := mo.momy + player.mo.momy;
     mo.momz := 2 * FRACUNIT + (player.lookdir * 2048);
     if linetarget <> nil then
-      mo.special1 := integer(linetarget);
+      mo.special1 := NativeInt(linetarget);
   end;
   S_StartSound(player.mo, Ord(sfx_lobsht));
 end;
@@ -1458,7 +1458,7 @@ begin
         P_AimLineAttack(ball, angle, 10 * 64 * FRACUNIT);
         if (linetarget <> nil) and (ball.target <> linetarget) then
         begin
-          ball.special1 := integer(linetarget);
+          ball.special1 := NativeInt(linetarget);
           angle := R_PointToAngle2(ball.x, ball.y, linetarget.x, linetarget.y);
           newAngle := true;
           break;
@@ -1622,7 +1622,7 @@ begin
     MissileMobj.special2 := 2;
 
   if linetarget <> nil then
-    MissileMobj.special1 := integer(linetarget);
+    MissileMobj.special1 := NativeInt(linetarget);
 
   S_StartSound(MissileMobj, Ord(sfx_hrnpow));
 end;

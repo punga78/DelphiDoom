@@ -1146,16 +1146,16 @@ type
     flags_ex: integer;    // JVAL extended flags (MF_EX_????)
     flags2_ex: integer;   // JVAL extended flags (MF2_EX_????)
     damage: integer;
-    special1: integer;
-    special2: integer;
+    special1: NativeInt; // holds object pointers in Heretic and Hexen
+    special2: NativeInt; // holds object pointers in Heretic and Hexen
 {$ELSEIF DEFINED(HEXEN)}
     damage: integer;
     flags: integer;
     flags2: integer;
     flags_ex: integer;    // JVAL extended flags (MF_EX_????)
     flags2_ex: integer;   // JVAL extended flags (MF2_EX_????)
-    special1: integer;
-    special2: integer;
+    special1: NativeInt; // holds object pointers in Heretic and Hexen
+    special2: NativeInt; // holds object pointers in Heretic and Hexen
 {$ELSEIF DEFINED(STRIFE)}
     prevstate: Pstate_t;
     flags: LongWord;

@@ -628,8 +628,8 @@ begin
 
   ss := R_PointInSubsector(plyr.mo.x, plyr.mo.y);
   sprintf(buf, 'ssector = %d, sector = %d'#13#10, [
-          (integer(ss) - integer(@subsectors[0])) div SizeOf(subsector_t),
-          (integer(ss.sector) - integer(@sectors[0])) div SizeOf(sector_t)]);
+          (NativeInt(ss) - NativeInt(@subsectors[0])) div SizeOf(subsector_t),
+          (NativeInt(ss.sector) - NativeInt(@sectors[0])) div SizeOf(sector_t)]);
   printf(buf);
 end;
 
@@ -1177,7 +1177,7 @@ begin
     R_SetPalette(palette);
     {$ENDIF}
     p := W_CacheLumpNum(lu_palette, PU_STATIC);
-    pal := PByteArray(integer(p) + palette * 768);
+    pal := PByteArray(NativeInt(p) + palette * 768);
     {$IFDEF OPENGL}
     I_SetPalette(pal);
     V_SetPalette(pal);

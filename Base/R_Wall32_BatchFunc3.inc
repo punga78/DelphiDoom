@@ -56,7 +56,7 @@
           destl^ := bf_r3[c and $FF] + bf_g3[(c shr 8) and $FF] + bf_b3[(c shr 16) and $FF];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -103,7 +103,7 @@
         destl^ := bf_r3[c and $FF] + bf_g3[(c shr 8) and $FF] + bf_b3[(c shr 16) and $FF];
         inc(frac3, fracstep3);
 
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -161,7 +161,7 @@
           destl^ := bf_r3[c and $FF] + bf_g3[(c shr 8) and $FF] + bf_b3[(c shr 16) and $FF];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end
@@ -221,7 +221,7 @@
           destl^ := bf_r3[c and $FF] + bf_g3[(c shr 8) and $FF] + bf_b3[(c shr 16) and $FF];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -279,7 +279,7 @@
           destl^ := bf_r3[c and $FF] + bf_g3[(c shr 8) and $FF] + bf_b3[(c shr 16) and $FF];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end
@@ -351,7 +351,7 @@
           destl^ := precal32_ic[r1 + g1 + b1];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -406,7 +406,7 @@
         b1 := c shr 16;
         destl^ := precal32_ic[r1 + g1 + b1];
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -473,7 +473,7 @@
           destl^ := precal32_ic[r1 + g1 + b1];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end
     end
@@ -542,7 +542,7 @@
           destl^ := precal32_ic[r1 + g1 + b1];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
 
@@ -609,7 +609,7 @@
           destl^ := precal32_ic[r1 + g1 + b1];
         end;
         inc(frac3, fracstep3);
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(ypos);
       end;
     end;

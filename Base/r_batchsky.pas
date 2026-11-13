@@ -257,7 +257,7 @@ begin
       dest^ := dc_source8[spot];
 
     inc(frac, fracstep);
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
     inc(ypos);
   end;
 
@@ -283,7 +283,7 @@ begin
     buf.byte4 := dc_source8[spot];
     PLongWord(dest)^ := PLongWord(@buf)^;
 
-    dest := PByte(integer(dest) + swidth2);
+    dest := PByte(NativeInt(dest) + swidth2);
     inc(frac, fracstep);
     inc(ypos);
 
@@ -337,7 +337,7 @@ begin
     if (ypos >= sk.dc_yl) and (ypos <= sk.dc_yh) then
       dest^ := dc_source8[spot];
 
-    dest := PByte(integer(dest) + swidth);
+    dest := PByte(NativeInt(dest) + swidth);
     inc(frac, fracstep);
     inc(ypos);
   end;

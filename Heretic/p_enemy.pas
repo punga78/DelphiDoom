@@ -1660,10 +1660,12 @@ end;
 procedure A_DripBlood(actor: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
-  mo := P_SpawnMobj(actor.x + ((P_Random-P_Random) shl 11),
-                    actor.y + ((P_Random - P_Random) shl 11),
-                    actor.z, Ord(MT_BLOOD));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + ((P_Random - P_Random) shl 11);
+  LX := actor.x + ((P_Random-P_Random) shl 11);
+  mo := P_SpawnMobj(LX, LY, actor.z, Ord(MT_BLOOD));
   mo.momx := (P_Random - P_Random) shl 10;
   mo.momy := (P_Random - P_Random) shl 10;
   mo.flags2 := mo.flags2 or MF2_LOGRAV;
@@ -1725,12 +1727,16 @@ end;
 //
 //==============================================================================
 procedure A_BeastPuff(actor: Pmobj_t);
+var
+  LX, LY, LZ: fixed_t;
 begin
   if P_Random > 64 then
   begin
-    P_SpawnMobj(actor.x + ((P_Random-P_Random) shl 10),
-                actor.y + ((P_Random-P_Random) shl 10),
-                actor.z + ((P_Random-P_Random) shl 10), Ord(MT_PUFFY));
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + ((P_Random-P_Random) shl 10);
+    LY := actor.y + ((P_Random-P_Random) shl 10);
+    LX := actor.x + ((P_Random-P_Random) shl 10);
+    P_SpawnMobj(LX, LY, LZ, Ord(MT_PUFFY));
   end;
 end;
 
@@ -2027,7 +2033,7 @@ begin
   mo := P_SpawnMissile(actor, actor.target, Ord(MT_MUMMYFX1));
   //mo = P_SpawnMissile(actor, actor.target, MT_EGGFX);
   if mo <> nil then
-    mo.special1 := integer(actor.target);
+    mo.special1 := NativeInt(actor.target);
 end;
 
 //==============================================================================
@@ -2545,9 +2551,13 @@ end;
 procedure A_MntrFloorFire(actor: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
   actor.z := actor.floorz;
-  mo := P_SpawnMobj(actor.x + ((P_Random - P_Random) * 1024), actor.y + ((P_Random - P_Random) * 1024), ONFLOORZ, Ord(MT_MNTRFX3));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + ((P_Random - P_Random) * 1024);
+  LX := actor.x + ((P_Random - P_Random) * 1024);
+  mo := P_SpawnMobj(LX, LY, ONFLOORZ, Ord(MT_MNTRFX3));
   mo.target := actor.target;
   mo.momx := 1; // Force block checking
   P_CheckMissileSpawn(mo);
@@ -2645,7 +2655,7 @@ begin
     if mo <> nil then
     begin
       mo.z := mo.z - 32 * FRACUNIT;
-      mo.special1 := integer(target);
+      mo.special1 := NativeInt(target);
       mo.special2 := 50; // Timer for active sound
       mo.health := 20 * TICRATE; // Duration
       S_StartSound(actor, Ord(sfx_hedat3));
@@ -3063,7 +3073,7 @@ begin
   P_ThrustMobj(mo, LongWord(P_Random) * $1000000, $48000);
   S_StartSound(mo, Ord(sfx_newpod));
   inc(actor.special1); // Increment generated pod count
-  mo.special2 := integer(actor); // Link the generator to the pod
+  mo.special2 := NativeInt(actor); // Link the generator to the pod
 end;
 
 //==============================================================================
@@ -3250,10 +3260,12 @@ end;
 procedure P_SpawnTeleGlitter(actor: Pmobj_t; _type: integer);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
-  mo := P_SpawnMobj(actor.x + ((P_Random and 31) - 16) * FRACUNIT,
-                    actor.y + ((P_Random and 31) - 16) * FRACUNIT,
-                    Psubsector_t(actor.subsector).sector.floorheight, _type);
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + ((P_Random and 31) - 16) * FRACUNIT;
+  LX := actor.x + ((P_Random and 31) - 16) * FRACUNIT;
+  mo := P_SpawnMobj(LX, LY, Psubsector_t(actor.subsector).sector.floorheight, _type);
   if mo <> nil then // JVAL: should never happen
     mo.momz := FRACUNIT div 4;
 end;

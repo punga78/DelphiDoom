@@ -724,7 +724,12 @@ type
   end;
 
 const
+{$IFDEF CPUX64}
+  // TStringItem is 16 bytes on 64 bit: keep the array type under 2 GB
+  MaxListSize = MAXINT div 32;
+{$ELSE}
   MaxListSize = MAXINT div 16;
+{$ENDIF}
 
 type
 { TDStrings class }
@@ -1845,7 +1850,7 @@ begin
   dest := PByte(dest0);
   count := count0;
 
-  while (count > 0) and (integer(dest) and 7 <> 0) do
+  while (count > 0) and (NativeInt(dest) and 7 <> 0) do
   begin
     dest^ := val;
     inc(dest);
@@ -1987,7 +1992,7 @@ begin
   dest := PByte(dest0);
   count := count0 * 2;
 
-  while (count > 0) and (integer(dest) and 7 <> 0) do
+  while (count > 0) and (NativeInt(dest) and 7 <> 0) do
   begin
     PSmallInt(dest)^ := val;
     inc(dest, 2);
@@ -2123,7 +2128,7 @@ begin
     exit;
   end;
 
-  if integer(dest) and 7 <> 0 then
+  if NativeInt(dest) and 7 <> 0 then
   begin
     for i := 0 to count - 1 do
       PIntegerArray(dest)[i] := val;
@@ -2257,7 +2262,7 @@ begin
   result := malloc(Size);
   original := result;
   if result <> nil then
-    result := pointer(integer(result) and (1 - Align) + Align);
+    result := pointer(NativeInt(result) and (1 - Align) + Align);
 end;
 
 //==============================================================================
@@ -2451,7 +2456,7 @@ end;
 //==============================================================================
 function incp(var p: pointer; const size: integer = 1): pointer;
 begin
-  result := Pointer(integer(p) + size);
+  result := Pointer(NativeInt(p) + size);
   p := result;
 end;
 
@@ -2462,7 +2467,7 @@ end;
 //==============================================================================
 function pDiff(const p1, p2: pointer; const size: integer): integer;
 begin
-  result := (Integer(p1) - Integer(p2)) div size;
+  result := (NativeInt(p1) - NativeInt(p2)) div size;
 end;
 
 //==============================================================================
@@ -2555,7 +2560,7 @@ begin
   else
     result := Count;
 
-  memcpy(@Buffer, pointer(integer(FMemory) + FPosition), result);
+  memcpy(@Buffer, pointer(NativeInt(FMemory) + FPosition), result);
   FPosition := FPosition + result;
 end;
 
@@ -2568,7 +2573,7 @@ function TDMemoryStream.Write(const Buffer; Count: Longint): Longint;
 begin
   if Count + FPosition > FSize then
     resize(Count + FPosition);
-  memcpy(pointer(integer(FMemory) + FPosition), @Buffer, Count);
+  memcpy(pointer(NativeInt(FMemory) + FPosition), @Buffer, Count);
   FPosition := FPosition + Count;
   result := Count;
 end;
@@ -2662,7 +2667,7 @@ begin
   else
     result := Count;
 
-  memcpy(@Buffer, pointer(integer(FMemory) + FPosition), result);
+  memcpy(@Buffer, pointer(NativeInt(FMemory) + FPosition), result);
   FPosition := FPosition + result;
 end;
 
@@ -2681,7 +2686,7 @@ begin
   if result <= 0 then
     Exit;
 
-  memcpy(pointer(integer(FMemory) + FPosition), @Buffer, result);
+  memcpy(pointer(NativeInt(FMemory) + FPosition), @Buffer, result);
   FPosition := FPosition + result;
 end;
 
@@ -2888,13 +2893,14 @@ end;
 //==============================================================================
 function TCachedFile.Read(var Buffer; Count: Longint): Longint;
 var
+  src: System.PByte;
   x: Longint;
 begin
 // Buffer hit
   if (fPosition >= fBufferStart) and (fPosition + Count <= fBufferEnd) then
   begin
-    x := LongInt(fBuffer) + fPosition - fBufferStart;
-    Move(Pointer(x)^, Buffer, Count);
+    src := System.PByte(fBuffer) + (fPosition - fBufferStart);
+    Move(src^, Buffer, Count);
     fPosition := fPosition + Count;
     result := Count;
   end
@@ -4591,10 +4597,10 @@ begin
   Clear;
   P := PAnsiChar(@A[0]);
   if P <> nil then
-    while (P^ <> #0) and (integer(P) <> integer(@A[Size])) do
+    while (P^ <> #0) and (NativeUInt(P) <> NativeUInt(@A[Size])) do
     begin
       Start := P;
-      while (not (P^ in [#0, #10, #13])) and (integer(P) <> integer(@A[Size])) do inc(P);
+      while (not (P^ in [#0, #10, #13])) and (NativeUInt(P) <> NativeUInt(@A[Size])) do inc(P);
       SetString(S, Start, P - Start);
       Add(string(S));
       if P^ = #13 then inc(P);
@@ -4703,17 +4709,17 @@ end;
 //==============================================================================
 procedure TDStringList.ExchangeItems(Index1, Index2: Integer);
 var
-  Temp: Integer;
+  Temp: Pointer;
   Item1, Item2: PStringItem;
 begin
   Item1 := @FList[Index1];
   Item2 := @FList[Index2];
-  Temp := Integer(Item1.FString);
-  Integer(Item1.FString) := Integer(Item2.FString);
-  Integer(Item2.FString) := Temp;
-  Temp := Integer(Item1.FObject);
-  Integer(Item1.FObject) := Integer(Item2.FObject);
-  Integer(Item2.FObject) := Temp;
+  Temp := Pointer(Item1.FString);
+  Pointer(Item1.FString) := Pointer(Item2.FString);
+  Pointer(Item2.FString) := Temp;
+  Temp := Pointer(Item1.FObject);
+  Pointer(Item1.FObject) := Pointer(Item2.FObject);
+  Pointer(Item2.FObject) := Temp;
 end;
 
 //==============================================================================
@@ -5424,7 +5430,7 @@ begin
   dest := PByte(dest0);
   count := count0;
 
-  while (count > 0) and (integer(dest) and 7 <> 0) do
+  while (count > 0) and (NativeInt(dest) and 7 <> 0) do
   begin
     dest^ := 0;
     inc(dest);

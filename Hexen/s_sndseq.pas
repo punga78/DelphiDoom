@@ -245,7 +245,7 @@ var
 //==============================================================================
 procedure VerifySequencePtr(base: PIntegerArray; ptr: PInteger);
 begin
-  if integer(ptr) - integer(base) > SS_TEMPBUFFER_SIZE * SizeOf(integer) then
+  if NativeInt(ptr) - NativeInt(base) > SS_TEMPBUFFER_SIZE * SizeOf(integer) then
     I_Error('VerifySequencePtr:  tempPtr >= %d', [SS_TEMPBUFFER_SIZE]);
 end;
 
@@ -415,7 +415,7 @@ begin
     begin
       tempDataPtr^ := Ord(SS_CMD_END);
       inc(tempDataPtr);
-      dataSize := integer(tempDataPtr) - integer(tempDataStart);
+      dataSize := NativeInt(tempDataPtr) - NativeInt(tempDataStart);
       SequenceData[freeSequence] := PIntegerArray(Z_Malloc(dataSize, PU_STATIC, nil));
       memcpy(SequenceData[freeSequence], tempDataStart, dataSize);
       Z_Free(tempDataStart);
@@ -638,7 +638,7 @@ end;
 //==============================================================================
 function S_GetSequenceOffset(sequence: integer; sequencePtr: PInteger): integer;
 begin
-  result := (integer(sequencePtr) - integer(SequenceData[SequenceTranslate[sequence].scriptNum])) div SizeOf(integer);
+  result := (NativeInt(sequencePtr) - integer(SequenceData[SequenceTranslate[sequence].scriptNum])) div SizeOf(integer);
 end;
 
 //==============================================================================

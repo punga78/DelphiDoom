@@ -522,7 +522,7 @@ begin
   item2 := @flatcache8[flatcachesize8 - 1];
   start := parms.start;
   finish := parms.stop;
-  while integer(item1) <= integer(item2) do
+  while NativeInt(item1) <= NativeInt(item2) do
   begin
     if item1.ds_y >= start then
       if item1.ds_y <= finish then

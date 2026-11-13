@@ -289,7 +289,7 @@ begin
     end;
 
     pds.size := flats[flats[flat].translation].size;
-    if useexternaltextures and (integer(t) > $1) then // if we have a hi resolution flat
+    if useexternaltextures and (NativeInt(t) > $1) then // if we have a hi resolution flat
     begin
       fsize := t.GetWidth;
       if pds.size > 0 then
@@ -319,8 +319,8 @@ begin
         plw := @pds32[0];
         tpal := PLongWordArray(t.GetTransformedPalette);
         pb := PByte(t.GetImage);
-        pbstop := PByte(integer(pb) + numpixels);
-        while integer(pb) < integer(pbstop) do
+        pbstop := PByte(NativeInt(pb) + numpixels);
+        while NativeInt(pb) < NativeInt(pbstop) do
         begin
           plw^ := tpal[pb^];
           inc(plw);

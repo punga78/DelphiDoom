@@ -60,7 +60,7 @@ type
     function MobjIndex(AMobj: Pmobj_t): Integer;
     function RefIndex(const AHolder: mobj_t; ASlot: Integer; ARef: Pmobj_t): Integer;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    function MobjOrValue(AValue: Integer): Int64;
+    function MobjOrValue(AValue: NativeInt): Int64;
 {$IFEND}
     procedure PutMobj(const AMobj: mobj_t);
     procedure PutSector(const ASector: sector_t);
@@ -194,7 +194,7 @@ begin
 end;
 
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-function TEngineParityStateSource.MobjOrValue(AValue: Integer): Int64;
+function TEngineParityStateSource.MobjOrValue(AValue: NativeInt): Int64;
 var
   LIndex: Integer;
 begin

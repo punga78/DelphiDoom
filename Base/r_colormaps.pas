@@ -299,7 +299,7 @@ begin
         else if level >= NUMCOLORMAPS then
           level := NUMCOLORMAPS - 1;
 
-        customcolormap.zlight[i][j] := PByteArray(integer(customcolormap.colormap) + level * 256);
+        customcolormap.zlight[i][j] := PByteArray(NativeInt(customcolormap.colormap) + level * 256);
       end;
     end;
   end;
@@ -324,7 +324,7 @@ begin
             level := NUMCOLORMAPS - 1;
         end;
 
-        customcolormap.scalelight[i][j] := PByteArray(integer(customcolormap.colormap) + level * 256);
+        customcolormap.scalelight[i][j] := PByteArray(NativeInt(customcolormap.colormap) + level * 256);
       end;
     end;
   end;

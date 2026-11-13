@@ -8,7 +8,7 @@
       while frac <= fraclimit2 do
       begin
         destl^ := ldest;
-        destl := PLongWord(integer(destl) + swidth);
+        destl := PLongWord(NativeInt(destl) + swidth);
         inc(frac, fracstep);
       end;
     end
@@ -35,7 +35,7 @@
 
       ldest := destl^;
 
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(frac, fracstep);
 
     end;

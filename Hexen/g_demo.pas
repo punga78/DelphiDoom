@@ -327,7 +327,7 @@ var
 begin
   // Find the current size
 
-  current_length := integer(demoend) - integer(demobuffer);
+  current_length := NativeInt(demoend) - NativeInt(demobuffer);
 
   // Generate a new buffer twice the size
   new_length := current_length + $80000;
@@ -336,7 +336,7 @@ begin
   if new_demobuffer = nil then
     G_CheckDemoStatus;
 
-  new_demop := @new_demobuffer[integer(demo_p) - integer(demobuffer)];
+  new_demop := @new_demobuffer[NativeInt(demo_p) - NativeInt(demobuffer)];
 
   // Copy over the old data
 
@@ -395,7 +395,7 @@ begin
 
   demo_p := demo_start;
 
-  if integer(demo_p) >= integer(demoend) - 2 * SizeOf(ticcmd_t) then
+  if NativeInt(demo_p) >= NativeInt(demoend) - 2 * SizeOf(ticcmd_t) then
     G_IncreaseDemoBuffer;
 
   G_ReadDemoTiccmd(cmd);  // make SURE it is exactly the same

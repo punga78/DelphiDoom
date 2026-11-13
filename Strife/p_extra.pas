@@ -584,6 +584,7 @@ var
   mult_h, mult_v: fixed_t;
   mobj_no: integer;
   mo: Pmobj_t;
+  LX, LY, LZ: fixed_t;
 begin
   if not P_CheckStateParams(actor) then
     exit;
@@ -612,9 +613,11 @@ begin
 
   for i := 0 to count - 1 do
   begin
-    mo := P_SpawnMobj(actor.x + ((N_Random - 128) shr 12),
-           actor.y + ((N_Random - 128) shr 12),
-           actor.z + ((N_Random * actor.height) div 256), mobj_no);
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + ((N_Random * actor.height) div 256);
+    LY := actor.y + ((N_Random - 128) shr 12);
+    LX := actor.x + ((N_Random - 128) shr 12);
+    mo := P_SpawnMobj(LX, LY, LZ, mobj_no);
     if mo <> nil then
     begin
       mo.momz := FixedMul(mult_v, ((N_Random and 7) + 5) * FRACUNIT);

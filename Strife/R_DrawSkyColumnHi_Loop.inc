@@ -3,5 +3,5 @@
 
     destl^ := dc_source32[spot];
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);

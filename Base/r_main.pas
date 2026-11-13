@@ -3504,14 +3504,14 @@ begin
   begin
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
     fixedcolormap := PByteArray(
-      integer(colormaps) + fixedcolormapnum * 256);
+      NativeInt(colormaps) + fixedcolormapnum * 256);
 {$ELSE}
     if customcolormap <> nil then
       fixedcolormap := PByteArray(
-        integer(customcolormap.colormap) + fixedcolormapnum * 256)
+        NativeInt(customcolormap.colormap) + fixedcolormapnum * 256)
     else
       fixedcolormap := PByteArray(
-        integer(colormaps) + fixedcolormapnum * 256);
+        NativeInt(colormaps) + fixedcolormapnum * 256);
 {$ENDIF}
 
     {$IFNDEF OPENGL}
@@ -3576,11 +3576,11 @@ begin
   else
   begin
     // JVAL: Mars fog sectors
-    m := (integer(cmap) - integer(colormaps));
+    m := (NativeInt(cmap) - NativeInt(colormaps));
     if (m >= 0) and (m <= NUMCOLORMAPS * 256) then
-      result := FRACUNIT - (integer(cmap) - integer(colormaps)) div 256 * FRACUNIT div NUMCOLORMAPS
+      result := FRACUNIT - (NativeInt(cmap) - NativeInt(colormaps)) div 256 * FRACUNIT div NUMCOLORMAPS
     else
-      result := FRACUNIT - (integer(cmap) - integer(fog_colormaps)) div 256 * FRACUNIT div NUMCOLORMAPS;
+      result := FRACUNIT - (NativeInt(cmap) - NativeInt(fog_colormaps)) div 256 * FRACUNIT div NUMCOLORMAPS;
   end;
 end;
 
@@ -3604,12 +3604,12 @@ begin
   else
   begin
     // JVAL: Mars fog sectors
-    m := (integer(cmap) - integer(colormaps));
+    m := (NativeInt(cmap) - NativeInt(colormaps));
     if (m >= 0) and (m <= NUMCOLORMAPS * 256) then
       result := @colormaps32[m]
     else
     begin
-      m := (integer(cmap) - integer(fog_colormaps));
+      m := (NativeInt(cmap) - NativeInt(fog_colormaps));
       result := @fog_colormaps32[m];
     end;
   end;

@@ -825,7 +825,7 @@ begin
             mo.momy := FixedMul(_SHR1(mo.info.speed), finesine[angle]);
             if mo.flags2 and MF2_SEEKERMISSILE <> 0 then
             begin
-              mo.special1 := integer(mo.target);
+              mo.special1 := NativeInt(mo.target);
             end;
             mo.target := BlockingMobj;
             exit;
@@ -900,7 +900,7 @@ begin
   begin // If in a walking frame, stop moving
     if player <> nil then
     begin
-      if (integer(player.mo.state) - integer(@states[0])) div SizeOf(state_t) - Ord(PStateRun[Ord(player._class)]) < 4 then // JVAL SOS
+      if (NativeInt(player.mo.state) - NativeInt(@states[0])) div SizeOf(state_t) - Ord(PStateRun[Ord(player._class)]) < 4 then // JVAL SOS
         P_SetMobjState(player.mo, statenum_t(PStateNormal[Ord(player._class)]));
     end;
     mo.momx := 0;
@@ -2498,8 +2498,12 @@ end;
 procedure P_BloodSplatter2(x, y, z: fixed_t; originator: Pmobj_t);
 var
   mo: Pmobj_t;
+  LX, LY: fixed_t;
 begin
-  mo := P_SpawnMobj(x + _SHL(P_Random - 128, 11), y + _SHL(P_Random - 128, 11), z, Ord(MT_AXEBLOOD));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := y + _SHL(P_Random - 128, 11);
+  LX := x + _SHL(P_Random - 128, 11);
+  mo := P_SpawnMobj(LX, LY, z, Ord(MT_AXEBLOOD));
 
   if originator.bloodcolor <> 0 then
     R_SetMobjBloodTranslation(mo, originator.bloodcolor);

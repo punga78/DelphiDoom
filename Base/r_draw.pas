@@ -303,7 +303,7 @@ begin
   translationtables := Z_Malloc(256 * 8, PU_STATIC, nil);
 {$ELSE}
   translationtables := Z_Malloc(256 * 3 + 255, PU_STATIC, nil);
-  translationtables := PByteArray((integer(translationtables) + 255 ) and not 255);
+  translationtables := PByteArray((NativeInt(translationtables) + 255 ) and not 255);
 {$ENDIF}
   // the color ramps of the players, mapped by Libs\Palette
   tables := player_translations.Build;
@@ -405,7 +405,7 @@ begin
   // Preclaculate all row offsets.
   for i := 0 to height - 1 do
   begin
-    ylookup[i] := PByteArray(integer(screens[SCN_FG]) + (i + viewwindowy) * SCREENWIDTH);
+    ylookup[i] := PByteArray(NativeInt(screens[SCN_FG]) + (i + viewwindowy) * SCREENWIDTH);
     ylookupl[i] := PLongWordArray(@screen32[(i + viewwindowy) * SCREENWIDTH]);
   end;
 {$ENDIF}
@@ -538,12 +538,12 @@ begin
   begin
     for x := 0 to 320 div 64 - 1 do
     begin
-      memcpy(dest, PByteArray(integer(src) + _SHL(y and 63, 6)), 64);
+      memcpy(dest, PByteArray(NativeInt(src) + _SHL(y and 63, 6)), 64);
       dest := @dest[64];
     end;
     if 320 and 63 <> 0 then
     begin
-      memcpy(dest, PByteArray(integer(src) + _SHL(y and 63, 6)), 320 and 63);
+      memcpy(dest, PByteArray(NativeInt(src) + _SHL(y and 63, 6)), 320 and 63);
       dest := @dest[64];
     end;
   end;
@@ -725,7 +725,7 @@ begin
   begin
     for x := 0 to 320 div 64 - 1 do
     begin
-      memcpy(dest, PByteArray(integer(src) + _SHL(y and 63, 6)), 64);
+      memcpy(dest, PByteArray(NativeInt(src) + _SHL(y and 63, 6)), 64);
       dest := @dest[64];
     end;
   end;
@@ -770,7 +770,7 @@ begin
   if videomode = vm32bit then
   begin
 {$ENDIF}
-    src := PByte(integer(screens[SCN_BG]) + ofs);
+    src := PByte(NativeInt(screens[SCN_BG]) + ofs);
     dest := @screen32[ofs];
     for i := 1 to count do
     begin
@@ -781,7 +781,7 @@ begin
 {$IFNDEF OPENGL}
   end
   else
-    memcpy(Pointer(integer(screens[SCN_FG]) + ofs), Pointer(integer(screens[SCN_BG]) + ofs), count);
+    memcpy(Pointer(NativeInt(screens[SCN_FG]) + ofs), Pointer(NativeInt(screens[SCN_BG]) + ofs), count);
 {$ENDIF}
 end;
 

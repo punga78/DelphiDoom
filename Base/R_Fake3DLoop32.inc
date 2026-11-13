@@ -11,7 +11,7 @@
       limit := @PLongWordArray(dest)[range];
       limit2 := @PLongWordArray(dest)[range - 16];
 
-      while integer(dest) < integer(limit2) do
+      while NativeInt(dest) < NativeInt(limit2) do
       begin
         dest^ := buffer[frac div FRACUNIT];
         frac := frac + fracstep;
@@ -63,7 +63,7 @@
         Inc(dest);
       end;
 
-      while integer(dest) < integer(limit) do
+      while NativeInt(dest) < NativeInt(limit) do
       begin
         dest^ := buffer[frac div FRACUNIT];
         frac := frac + fracstep;

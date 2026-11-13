@@ -96,7 +96,7 @@ begin
       Dec(cnt);
     end;
 
-    destl := PLongWord(integer(destl) + swidth);
+    destl := PLongWord(NativeInt(destl) + swidth);
     inc(frac, fracstep);
   end;
 end;

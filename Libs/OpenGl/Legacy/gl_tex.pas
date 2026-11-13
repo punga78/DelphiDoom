@@ -1472,7 +1472,7 @@ begin
   ZeroMemory(hitlist, numflats);
 
   psec := @sectors[numsectors];
-  while integer(psec) <> integer(sectors) do
+  while integer(psec) <> NativeInt(sectors) do
   begin
     dec(psec);
     hitlist[psec.floorpic] := true;

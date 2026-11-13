@@ -965,8 +965,8 @@ var
   angle: angle_t;
 begin
   // Change player from attack state
-  if (LongWord(player.mo.state) >= LongWord(@states[Ord(PStateAttack[Ord(player._class)])])) and
-     (LongWord(player.mo.state) <= LongWord(@states[Ord(PStateAttackEnd[Ord(player._class)])])) then
+  if (NativeUInt(player.mo.state) >= NativeUInt(@states[Ord(PStateAttack[Ord(player._class)])])) and
+     (NativeUInt(player.mo.state) <= NativeUInt(@states[Ord(PStateAttackEnd[Ord(player._class)])])) then
   begin
     P_SetMobjState(player.mo, PStateNormal[Ord(player._class)]);
   end;
@@ -1222,12 +1222,16 @@ end;
 procedure A_FSwordFlames(actor: Pmobj_t);
 var
   i: integer;
+  LX, LY, LZ: fixed_t;
 begin
   for i := 1 + (P_Random and 3) downto 0 do
-    P_SpawnMobj(actor.x + (P_Random - 128) * 4096,
-                actor.y + (P_Random - 128) * 4096,
-                actor.z + (P_Random - 128) * 2048,
-                Ord(MT_FSWORD_FLAME));
+  begin
+    // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+    LZ := actor.z + (P_Random - 128) * 2048;
+    LY := actor.y + (P_Random - 128) * 4096;
+    LX := actor.x + (P_Random - 128) * 4096;
+    P_SpawnMobj(LX, LY, LZ, Ord(MT_FSWORD_FLAME));
+  end;
 end;
 
 //==============================================================================
@@ -1334,6 +1338,7 @@ procedure A_LightningZap(actor: Pmobj_t);
 var
   mo: Pmobj_t;
   deltaZ: fixed_t;
+  LX, LY: fixed_t;
 begin
   A_LightningClip(actor);
 
@@ -1349,13 +1354,13 @@ begin
   else
     deltaZ := -10 * FRACUNIT;
 
-  mo := P_SpawnMobj(actor.x + (P_Random - 128) * actor.radius div 256,
-                    actor.y + (P_Random - 128) * actor.radius div 256,
-                    actor.z + deltaZ,
-                    Ord(MT_LIGHTNING_ZAP));
+  // the arguments are evaluated from right to left by the 32 bit compiler: keep that order at 64 bit
+  LY := actor.y + (P_Random - 128) * actor.radius div 256;
+  LX := actor.x + (P_Random - 128) * actor.radius div 256;
+  mo := P_SpawnMobj(LX, LY, actor.z + deltaZ, Ord(MT_LIGHTNING_ZAP));
   if mo <> nil then
   begin
-    mo.special2 := integer(actor);
+    mo.special2 := NativeInt(actor);
     mo.momx := actor.momx;
     mo.momy := actor.momy;
     mo.target := actor.target;
@@ -1384,14 +1389,14 @@ begin
   if fmo <> nil then
   begin
     fmo.special1 := 0;
-    fmo.special2 := integer(cmo);
+    fmo.special2 := NativeInt(cmo);
     A_LightningZap(fmo);
   end;
 
   if cmo <> nil then
   begin
     cmo.special1 := 0;  // mobj that it will track
-    cmo.special2 := integer(fmo);
+    cmo.special2 := NativeInt(fmo);
     A_LightningZap(cmo);
   end;
 
@@ -1421,7 +1426,7 @@ begin
   mo := Pmobj_t(actor.special2);
   if mo <> nil then
   begin
-    if (LongWord(mo.state) >= LongWord(@states[mo.info.deathstate])) or
+    if (NativeUInt(mo.state) >= NativeUInt(@states[mo.info.deathstate])) or
        (mo.state = @states[Ord(S_FREETARGMOBJ)]) then
     begin
       P_ExplodeMissile(actor);
@@ -1481,7 +1486,7 @@ begin
   if mo <> nil then
   begin
     mo.target := pmo;
-    mo.special1 := integer(P_RoughMonsterSearch(mo, 10));
+    mo.special1 := NativeInt(P_RoughMonsterSearch(mo, 10));
   end;
 end;
 
@@ -1531,7 +1536,7 @@ var
 begin
   if player = @players[consoleplayer] then
   begin
-    pl := STARTSCOURGEPAL + (integer(psp.state) - integer(@states[Ord(S_MSTAFFATK_2)])) div SizeOf(state_t);
+    pl := STARTSCOURGEPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_MSTAFFATK_2)])) div SizeOf(state_t);
     R_SetPalette(pl);
     if pl = STARTSCOURGEPAL + 3 then
     begin // reset back to original playpal
@@ -1583,7 +1588,7 @@ end;
 procedure A_MStaffTrack(actor: Pmobj_t);
 begin
   if (actor.special1 = 0) and (P_Random < 50) then
-    actor.special1 := integer(P_RoughMonsterSearch(actor, 10));
+    actor.special1 := NativeInt(P_RoughMonsterSearch(actor, 10));
   P_SeekerMissile(actor, ANG1 * 2, ANG1 * 10);
 end;
 
@@ -1600,7 +1605,7 @@ begin
   if mo <> nil then
   begin
     mo.target := actor;
-    mo.special1 := integer(P_RoughMonsterSearch(mo, 10));
+    mo.special1 := NativeInt(P_RoughMonsterSearch(mo, 10));
   end;
 end;
 
@@ -2134,18 +2139,18 @@ begin
 
     if linetarget <> nil then
     begin
-      mo.special1 := integer(linetarget);
+      mo.special1 := NativeInt(linetarget);
       mo.flags := mo.flags or MF_NOCLIP or MF_SKULLFLY;
       mo.flags := mo.flags and not MF_MISSILE;
     end;
 
     tail := P_SpawnMobj(mo.x, mo.y, mo.z, Ord(MT_HOLY_TAIL));
-    tail.special2 := integer(mo); // parent
+    tail.special2 := NativeInt(mo); // parent
     for i := 0 to 1 do
     begin
       next := P_SpawnMobj(mo.x, mo.y, mo.z, Ord(MT_HOLY_TAIL));
       P_SetMobjState(next, statenum_t(next.info.spawnstate + 1));
-      tail.special1 := integer(next);
+      tail.special1 := NativeInt(next);
       tail := next;
     end;
     tail.special1 := 0; // last tail bit
@@ -2192,7 +2197,7 @@ var
 begin
   if player = @players[consoleplayer] then
   begin
-    pl := STARTHOLYPAL + (integer(psp.state) - integer(@states[Ord(S_CHOLYATK_6)])) div SizeOf(state_t);
+    pl := STARTHOLYPAL + (NativeInt(psp.state) - NativeInt(@states[Ord(S_CHOLYATK_6)])) div SizeOf(state_t);
     if pl = STARTHOLYPAL + 3 then
     begin // reset back to original playpal
       pl := 0;
@@ -2218,7 +2223,7 @@ begin
   target := P_RoughMonsterSearch(actor, 6);
   if target <> nil then
   begin
-    actor.special1 := integer(target);
+    actor.special1 := NativeInt(target);
     actor.flags := actor.flags or MF_NOCLIP or MF_SKULLFLY;
     actor.flags := actor.flags and not MF_MISSILE;
   end;
@@ -2424,7 +2429,7 @@ begin
 
   if parent <> nil then
   begin
-    if LongWord(parent.state) >= LongWord(@states[parent.info.deathstate]) then
+    if NativeUInt(parent.state) >= NativeUInt(@states[parent.info.deathstate]) then
     begin // Ghost removed, so remove all tail parts
       P_CHolyTailRemove(actor);
       exit;

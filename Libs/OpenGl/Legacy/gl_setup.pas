@@ -313,7 +313,7 @@ begin
   else
   begin
     if glnodesver = 3 then
-      ml3 := PGLSeg3_t(Integer(data) + 4)
+      ml3 := PGLSeg3_t(NativeInt(data) + 4)
     else
       ml3 := PGLSeg3_t(data);
     li := @segs[0];
@@ -392,7 +392,7 @@ begin
   data := W_CacheLumpNum(lump, PU_STATIC);
 
   if glnodesver = 3 then
-    ms := PGLSubSector3_t(integer(data) + 4)
+    ms := PGLSubSector3_t(NativeInt(data) + 4)
   else
     ms := PGLSubSector3_t(data);
   ZeroMemory(subsectors, numsubsectors * SizeOf(subsector_t));

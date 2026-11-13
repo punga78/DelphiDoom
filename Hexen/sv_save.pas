@@ -276,7 +276,7 @@ end;
 function GET_BYTE: byte; overload;
 begin
   result := PByte(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(byte));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(byte));
 end;
 
 //==============================================================================
@@ -288,7 +288,7 @@ function GET_BYTE(b: PByte): byte; overload;
 begin
   result := PByte(saveptr)^;
   b^ := result;
-  saveptr := pointer(integer(saveptr) + SizeOf(byte));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(byte));
 end;
 
 //==============================================================================
@@ -299,7 +299,7 @@ end;
 function GET_BOOLEAN: boolean;
 begin
   result := PBoolean(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(boolean));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(boolean));
 end;
 
 //==============================================================================
@@ -310,7 +310,7 @@ end;
 function GET_WORD: word;
 begin
   result := PWord(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(word));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(word));
 end;
 
 //==============================================================================
@@ -321,7 +321,7 @@ end;
 function GET_LONG: integer;
 begin
   result := PInteger(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(integer));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(integer));
 end;
 
 //==============================================================================
@@ -332,7 +332,7 @@ end;
 function GET_LONGWORD: LongWord;
 begin
   result := PLongWord(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(LongWord));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(LongWord));
 end;
 
 //==============================================================================
@@ -390,7 +390,7 @@ end;
 function GET_FLOAT: float;
 begin
   result := Pfloat(saveptr)^;
-  saveptr := pointer(integer(saveptr) + SizeOf(float));
+  saveptr := pointer(NativeInt(saveptr) + SizeOf(float));
 end;
 
 //
@@ -549,7 +549,7 @@ type
   Pssthinker_t = ^ssthinker_t;
 
 type
-  TargetPlayerAddrs_t = array[0..$FFFF] of PInteger;
+  TargetPlayerAddrs_t = array[0..$FFFF] of PNativeInt;
   PTargetPlayerAddrs_t = ^TargetPlayerAddrs_t;
 
 var
@@ -587,15 +587,19 @@ end;
 // SetMobjPtr
 //
 //==============================================================================
-procedure SetMobjPtr(archiveNum: PInteger);
+procedure SetMobjPtr(archiveNum: PNativeInt);
+var
+  LNumber: integer;
 begin
-  if archiveNum^ = MOBJ_NULL then
+  // the archive number was read into the low 32 bits of the field (a pointer is 8 bytes at 64 bit)
+  LNumber := PInteger(archiveNum)^;
+  if LNumber = MOBJ_NULL then
   begin
     archiveNum^ := 0;
     exit;
   end;
 
-  if archiveNum^ = MOBJ_XX_PLAYER then
+  if LNumber = MOBJ_XX_PLAYER then
   begin
     if TargetPlayerCount = MAX_TARGET_PLAYERS then
       I_Error('RestoreMobj(): exceeded MAX_TARGET_PLAYERS');
@@ -605,8 +609,8 @@ begin
     archiveNum^ := 0;
     exit;
   end;
-  if archiveNum^ < MapMobjCount then
-    archiveNum^ := integer(MapMobjList[archiveNum^])
+  if LNumber < MapMobjCount then
+    archiveNum^ := NativeInt(MapMobjList[LNumber])
   else
     archiveNum^ := 0;
 end;
@@ -618,13 +622,13 @@ end;
 //==============================================================================
 procedure RestoreMobj(mobj: Pmobj_t);
 begin
-  mobj.state := @states[integer(mobj.state)];
+  mobj.state := @states[NativeInt(mobj.state)];
   mobj.validcount := 0;
   mobj.lightvalidcount := 0;
   mobj.rendervalidcount := 0;
   if mobj.player <> nil then
   begin
-    mobj.player := @players[integer(mobj.player) - 1];
+    mobj.player := @players[NativeInt(mobj.player) - 1];
     Pplayer_t(mobj.player).mo := mobj;
   end;
   R_InitMobjTranslation(mobj);
@@ -632,9 +636,9 @@ begin
   mobj.info := @mobjinfo[mobj._type];
   mobj.floorz := P_3dFloorHeight(mobj);
   mobj.ceilingz := P_3dCeilingHeight(mobj);
-  SetMobjPtr(PInteger(@mobj.target));
-  SetMobjPtr(PInteger(@mobj.tracer));
-  SetMobjPtr(PInteger(@mobj.master));
+  SetMobjPtr(PNativeInt(@mobj.target));
+  SetMobjPtr(PNativeInt(@mobj.tracer));
+  SetMobjPtr(PNativeInt(@mobj.master));
   case mobj._type of
     Ord(MT_KORAX_SPIRIT1),
     Ord(MT_KORAX_SPIRIT2),
@@ -678,7 +682,7 @@ end;
 //==============================================================================
 procedure MangleSSThinker(sst: Pssthinker_t);
 begin
-  sst.sector := Psector_t((LongWord(sst.sector) - LongWord(@sectors[0])) div SizeOf(sector_t));
+  sst.sector := Psector_t((NativeUInt(sst.sector) - NativeUInt(@sectors[0])) div SizeOf(sector_t));
 end;
 
 //==============================================================================
@@ -688,7 +692,7 @@ end;
 //==============================================================================
 procedure RestoreSSThinker(sst: Pssthinker_t);
 begin
-  sst.sector := @sectors[integer(sst.sector)];
+  sst.sector := @sectors[NativeInt(sst.sector)];
   sst.sector.specialdata := @sst.thinker._function.acp1;
 end;
 
@@ -699,7 +703,7 @@ end;
 //==============================================================================
 procedure RestoreSSThinkerNoSD(sst: Pssthinker_t);
 begin
-  sst.sector := @sectors[integer(sst.sector)];
+  sst.sector := @sectors[NativeInt(sst.sector)];
 end;
 
 //==============================================================================
@@ -709,9 +713,9 @@ end;
 //==============================================================================
 procedure MangleScript(script: Pacs_t);
 begin
-  script.ip := PInteger(LongWord(script.ip) - LongWord(ActionCodeBase));
+  script.ip := PInteger(NativeUInt(script.ip) - NativeUInt(ActionCodeBase));
   if script.line <> nil then
-    script.line :=  Pline_t((LongWord(script.line) - LongWord(@lines[0])) div SizeOf(line_t))
+    script.line :=  Pline_t((NativeUInt(script.line) - NativeUInt(@lines[0])) div SizeOf(line_t))
   else
     script.line := Pline_t(-1);
   script.activator := Pmobj_t(GetMobjNum(script.activator));
@@ -724,12 +728,12 @@ end;
 //==============================================================================
 procedure RestoreScript(script: Pacs_t);
 begin
-  script.ip := @ActionCodeBase[integer(script.ip)];
-  if integer(script.line) = -1 then
+  script.ip := @ActionCodeBase[NativeInt(script.ip)];
+  if NativeInt(script.line) = -1 then
     script.line := nil
   else
-    script.line := @lines[integer(script.line)];
-  SetMobjPtr(PInteger(@script.activator));
+    script.line := @lines[NativeInt(script.line)];
+  SetMobjPtr(PNativeInt(@script.activator));
 end;
 
 //==============================================================================
@@ -739,7 +743,7 @@ end;
 //==============================================================================
 procedure RestorePlatRaise(plat: Pplat_t);
 begin
-  plat.sector := @sectors[integer(plat.sector)];
+  plat.sector := @sectors[NativeInt(plat.sector)];
   plat.sector.specialdata := @TH_PlatRaise;
   PH_AddActivePlat(plat);
 end;
@@ -751,7 +755,7 @@ end;
 //==============================================================================
 procedure RestoreMoveCeiling(ceiling: Pceiling_t);
 begin
-  ceiling.sector := @sectors[integer(ceiling.sector)];
+  ceiling.sector := @sectors[NativeInt(ceiling.sector)];
   ceiling.sector.specialdata := @TH_MoveCeiling;
   PH_AddActiveCeiling(ceiling);
 end;
@@ -913,7 +917,7 @@ begin
     begin
       if tempPlayer.psprites[j].state <> nil then
       begin
-        tempPlayer.psprites[j].state := Pstate_t((LongWord(tempPlayer.psprites[j].state) - LongWord(@states[0])) div SizeOf(state_t));
+        tempPlayer.psprites[j].state := Pstate_t((NativeUInt(tempPlayer.psprites[j].state) - NativeUInt(@states[0])) div SizeOf(state_t));
       end;
     end;
     if tempPlayer.plinetarget <> nil then
@@ -1022,7 +1026,7 @@ begin
     begin
       if players[i].psprites[j].state <> nil then
       begin
-        players[i].psprites[j].state := @states[integer(players[i].psprites[j].state)];
+        players[i].psprites[j].state := @states[NativeInt(players[i].psprites[j].state)];
       end;
     end;
   end;
@@ -1349,10 +1353,10 @@ var
   corpse: boolean;
 begin
   corpse := mobj.flags and MF_CORPSE <> 0;
-  mobj.state := Pstate_t((LongWord(mobj.state) - LongWord(@states[0])) div SizeOf(state_t));
+  mobj.state := Pstate_t((NativeUInt(mobj.state) - NativeUInt(@states[0])) div SizeOf(state_t));
   if mobj.player <> nil then
   begin
-    mobj.player := pointer((LongWord(mobj.player) - LongWord(@players[0])) div SizeOf(player_t) + 1);
+    mobj.player := pointer((NativeUInt(mobj.player) - NativeUInt(@players[0])) div SizeOf(player_t) + 1);
   end;
   if corpse then
   begin
@@ -1496,7 +1500,7 @@ var
   parm: mobjcustomparam_t;
 begin
   AssertSegment(ASEG_MOBJS);
-  TargetPlayerAddrs := Z_Malloc(MAX_TARGET_PLAYERS * SizeOf(PInteger), PU_STATIC, nil);
+  TargetPlayerAddrs := Z_Malloc(MAX_TARGET_PLAYERS * SizeOf(PNativeInt), PU_STATIC, nil);
   TargetPlayerCount := 0;
   MapMobjCount := GET_LONG;
   MapMobjList := Z_Malloc(MapMobjCount * SizeOf(Pmobj_t), PU_STATIC, nil);
@@ -1720,7 +1724,7 @@ begin
 
   for i := 0 to MAXPLAYERS - 1 do
     if playeringame[i] then
-      players[i].plinetarget := P_FindMobjFromKey(integer(players[i].plinetarget));
+      players[i].plinetarget := P_FindMobjFromKey(NativeInt(players[i].plinetarget));
 
   P_CreateTIDList;
   P_InitCreatureCorpseQueue(true); // true := scan for corpses
@@ -2063,7 +2067,7 @@ begin
     if i = po_NumPolyobjs then
     begin // Sound is attached to a sector, not a polyobj
       sec := R_PointInSubsector(node.mobj.x, node.mobj.y).sector;
-      difference := (LongWord(sec) - LongWord(@sectors[0])) div SizeOf(sector_t);
+      difference := (NativeUInt(sec) - NativeUInt(@sectors[0])) div SizeOf(sector_t);
       StreamOutLong(0); // 0 -- sector sound origin
     end
     else
@@ -2673,7 +2677,7 @@ begin
   if TargetPlayerAddrs <> nil then
   begin
     for i := 0 to TargetPlayerCount - 1 do
-      TargetPlayerAddrs[i]^ := integer(targetPlayerMobj);
+      TargetPlayerAddrs[i]^ := NativeInt(targetPlayerMobj);
     Z_Free(TargetPlayerAddrs);
   end;
 
@@ -2799,7 +2803,7 @@ procedure P_UnArchiveScreenShot;
 begin
   // Nothing to do, just inc the buffer
   if LOADVERSION >= VERSION206 then
-    saveptr := pointer(integer(saveptr) + SizeOf(menuscreenbuffer_t));
+    saveptr := pointer(NativeInt(saveptr) + SizeOf(menuscreenbuffer_t));
 end;
 
 end.

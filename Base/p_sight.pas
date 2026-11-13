@@ -510,7 +510,8 @@ begin
   while list^ <> -1 do
 {$ELSE}
   // check lines
-  seg := @segs[sub.firstline - 1];
+  seg := @segs[sub.firstline];
+  dec(seg); // firstline is unsigned: firstline - 1 would not wrap to -1 as a 64 bit index
   for i := 0 to sub.numlines - 1 do
 {$ENDIF}
   begin
@@ -1438,8 +1439,8 @@ begin
   s1 := pDiff(Psubsector_t(t1.subsector).sector, @sectors[0], SizeOf(sectors[0]));
   s2 := pDiff(Psubsector_t(t2.subsector).sector, @sectors[0], SizeOf(sectors[0]));
 {$ELSEIF DEFINED(HEXEN)}
-  s1 := (integer(Psubsector_t(t1.subsector).sector) - integer(sectors)) div SizeOf(sector_t);
-  s2 := (integer(Psubsector_t(t2.subsector).sector) - integer(sectors)) div SizeOf(sector_t);
+  s1 := (NativeInt(Psubsector_t(t1.subsector).sector) - NativeInt(sectors)) div SizeOf(sector_t);
+  s2 := (NativeInt(Psubsector_t(t2.subsector).sector) - NativeInt(sectors)) div SizeOf(sector_t);
 {$ELSE}
   s1 := pDiff(Psubsector_t(t1.subsector).sector, sectors, SizeOf(sector_t));
   s2 := pDiff(Psubsector_t(t2.subsector).sector, sectors, SizeOf(sector_t));

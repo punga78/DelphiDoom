@@ -14,7 +14,7 @@
       c := dc_source32_1[spot];
       destl^ := bf_r1[c and $FF] + bf_g1[(c shr 8) and $FF] + bf_b1[(c shr 16) and $FF];
       inc(frac1, fracstep1);
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(ypos);
     end;
   end
@@ -37,7 +37,7 @@
       b1 := c shr 16;
       destl^ := precal32_ic[r1 + g1 + b1];
       inc(frac1, fracstep1);
-      destl := PLongWord(integer(destl) + swidth);
+      destl := PLongWord(NativeInt(destl) + swidth);
       inc(ypos);
     end;
   end;

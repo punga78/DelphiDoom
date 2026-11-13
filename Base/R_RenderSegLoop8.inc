@@ -183,8 +183,8 @@ begin
 {$IFDEF FLOORS3DVIS}
       if pds.midvis <> nil then
       begin
-        R_SubtractRange(yh, yl, integer(segloopcolormap1),
-                        pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], integer(segloopcolormap2),
+        R_SubtractRange(yh, yl, NativeInt(segloopcolormap1),
+                        pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], NativeInt(segloopcolormap2),
                         @r, totalclip);
 
         if r.count <> 0 then
@@ -288,8 +288,8 @@ begin
     {$IFDEF FLOORS3DVIS}
           if pds.midvis <> nil then
           begin
-            R_SubtractRange(mid, yl, integer(segloopcolormap1),
-                            pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], integer(segloopcolormap2),
+            R_SubtractRange(mid, yl, NativeInt(segloopcolormap1),
+                            pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], NativeInt(segloopcolormap2),
                             @r, totalclip);
 
             if r.count <> 0 then
@@ -429,8 +429,8 @@ begin
     {$IFDEF FLOORS3DVIS}
           if pds.midvis <> nil then
           begin
-            R_SubtractRange(yh, mid, integer(segloopcolormap1),
-                            pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], integer(segloopcolormap2),
+            R_SubtractRange(yh, mid, NativeInt(segloopcolormap1),
+                            pds.midvis.realbottom[rwx], pds.midvis.realtop[rwx], NativeInt(segloopcolormap2),
                             @r, totalclip);
 
             if r.count <> 0 then
