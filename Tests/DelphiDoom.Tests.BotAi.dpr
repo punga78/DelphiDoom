@@ -54,6 +54,8 @@ uses
   DelphiDoom.Tests.BotAi.ScenarioRunner in 'Source\DelphiDoom.Tests.BotAi.ScenarioRunner.pas',
   DelphiDoom.Tests.BotAi.Text in 'Source\DelphiDoom.Tests.BotAi.Text.pas',
   DelphiDoom.Tests.BotAi.Chat in 'Source\DelphiDoom.Tests.BotAi.Chat.pas',
+  DelphiDoom.Tests.BotAi.Source in 'Source\DelphiDoom.Tests.BotAi.Source.pas',
+  DelphiDoom.Tests.BotAi.OpenArena in 'Source\DelphiDoom.Tests.BotAi.OpenArena.pas',
   DelphiDoom.Tests.BotAi.Parity in 'Source\DelphiDoom.Tests.BotAi.Parity.pas';
 
 var

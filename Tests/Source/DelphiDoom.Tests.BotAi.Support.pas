@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.BotAi.Support;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.BotAi.Import.Intf;
+  System.SysUtils, System.Classes, System.Zip, System.Generics.Collections, DelphiDoom.BotAi.Import.Intf;
 
 type
   /// <summary>A fake IBotImport that writes what the library prints, logs and sends as lines (P level|text, L|text, E client|command)</summary>
@@ -48,6 +48,18 @@ type
   public
     constructor Create(const AFolder: string);
     function TryReadFile(const APath: AnsiString; out AData: TBytes): Boolean;
+  end;
+
+  /// <summary>The files of a pk3 (a zip) by path</summary>
+  TZipBotFiles = class(TInterfacedObject, IBotFileSource)
+  strict private
+    FZip: TZipFile;
+  public
+    constructor Create(const APk3: string);
+    destructor Destroy; override;
+    function TryReadFile(const APath: AnsiString; out AData: TBytes): Boolean;
+    /// <summary>The paths of the entries of the zip</summary>
+    function Names: TArray<string>;
   end;
 
   /// <summary>A generator that gives the given numbers in turn (the last one for ever)</summary>
@@ -173,6 +185,37 @@ begin
   Result := TFile.Exists(LPath);
   if Result then
     AData := TFile.ReadAllBytes(LPath);
+end;
+
+{ TZipBotFiles }
+
+constructor TZipBotFiles.Create(const APk3: string);
+begin
+  inherited Create;
+  FZip := TZipFile.Create;
+  FZip.Open(APk3, zmRead);
+end;
+
+destructor TZipBotFiles.Destroy;
+begin
+  FZip.Free;
+  inherited Destroy;
+end;
+
+function TZipBotFiles.TryReadFile(const APath: AnsiString; out AData: TBytes): Boolean;
+begin
+  Result := FZip.IndexOf(string(APath)) >= 0;
+  if Result then
+    FZip.Read(string(APath), AData);
+end;
+
+function TZipBotFiles.Names: TArray<string>;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, FZip.FileCount);
+  for LIndex := 0 to FZip.FileCount - 1 do
+    Result[LIndex] := FZip.FileNames[LIndex];
 end;
 
 { TSequenceRandom }

@@ -27,11 +27,11 @@ type
   TBotChatText = class
   public
     /// <summary>The character at a 0-based position, #0 after the end</summary>
-    class function CharAt(const AText: AnsiString; const APosition: Integer): AnsiChar; static; inline;
+    class function CharAt(const AText: AnsiString; const APosition: Integer): AnsiChar; static;
     /// <summary>A char of C (signed): the bytes from 128 are negative</summary>
-    class function SignedChar(const AChar: AnsiChar): Integer; static; inline;
+    class function SignedChar(const AChar: AnsiChar): Integer; static;
     /// <summary>toupper in the C locale</summary>
-    class function UpperAscii(const AChar: AnsiChar): AnsiChar; static; inline;
+    class function UpperAscii(const AChar: AnsiChar): AnsiChar; static;
     /// <summary>Q_stricmp = 0: equal without case (ASCII)</summary>
     class function SameTextAscii(const ALeft, ARight: AnsiString): Boolean; static;
     /// <summary>IsWhiteSpace: everything but letters, digits and ( ) ? : ' / , . [ ] - _ + =</summary>
