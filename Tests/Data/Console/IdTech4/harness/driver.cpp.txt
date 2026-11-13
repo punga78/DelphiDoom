@@ -1,0 +1,191 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCVarSystem *idLib::cvarSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+idSession theSession; idSession *session = &theSession;
+idAsyncClient idAsyncNetwork::client;
+idDeclManager *declManager = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static idFileSystem theFs;
+
+// in-memory files
+static char *fileNames[64]; static char *fileTexts[64]; static int fileCount = 0;
+
+static void lowerInto(char *dst, const char *s) { int i = 0; for (; s[i]; i++) dst[i] = (char)tolower((unsigned char)s[i]); dst[i] = 0; }
+
+// escapes into a static ring of buffers
+static char escBuf[4][65536]; static int escIx = 0;
+static const char *esc(const char *s) {
+	char *r = escBuf[escIx++ & 3]; int n = 0;
+	for (; *s; s++) {
+		unsigned char c = (unsigned char)*s;
+		if (c == '\\') { r[n++] = '\\'; r[n++] = '\\'; }
+		else if (c == '\n') { r[n++] = '\\'; r[n++] = 'n'; }
+		else if (c == '\r') { r[n++] = '\\'; r[n++] = 'r'; }
+		else if (c == '\t') { r[n++] = '\\'; r[n++] = 't'; }
+		else if (c < 32 || c > 126) { n += sprintf(r + n, "\\x%02X", c); }
+		else r[n++] = (char)c;
+	}
+	r[n] = 0;
+	return r;
+}
+// in place
+static void unesc(char *s) {
+	char *w = s;
+	for (char *r = s; *r; r++) {
+		if (*r == '\\' && r[1]) {
+			r++;
+			if (*r == 'n') *w++ = '\n'; else if (*r == 'r') *w++ = '\r'; else if (*r == 't') *w++ = '\t'; else if (*r == '0') *w++ = '\0'; else *w++ = *r;
+		} else *w++ = *r;
+	}
+	*w = 0;
+}
+
+void idCommon::Printf(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b)); }
+void idCommon::Warning(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::DWarning(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::Error(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idFile::Printf(const char *fmt, ...) { static char b[65536]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("F: %s\n", esc(b)); }
+
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *) {
+	char low[512]; lowerInto(low, n);
+	for (int i = 0; i < fileCount; i++) {
+		if (strcmp(fileNames[i], low) == 0) {
+			int len = (int)strlen(fileTexts[i]);
+			if (b) { char *buf = (char *)malloc(len + 1); memcpy(buf, fileTexts[i], len + 1); *b = buf; }
+			return len;
+		}
+	}
+	if (b) *b = 0;
+	return -1;
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+
+// test commands
+static void Probe_f(const idCmdArgs &args) {
+	printf("A: %d", args.Argc());
+	for (int i = 0; i < args.Argc(); i++) printf("|%s", esc(args.Argv(i)));
+	printf("\n");
+}
+static void PrintCompletion(const char *s) { printf("K: %s\n", esc(s)); }
+
+static void PrintVar(const char *name) {
+	idCVar *c = cvarSystem->Find(name);
+	if (!c) { printf("G: %s none\n", esc(name)); return; }
+	float f = c->GetFloat(); unsigned int bits; memcpy(&bits, &f, 4);
+	float mn = c->GetMinValue(), mx = c->GetMaxValue(); unsigned int bmn, bmx; memcpy(&bmn, &mn, 4); memcpy(&bmx, &mx, 4);
+	printf("G: %s|", esc(c->GetName()));
+	printf("%s|%d|%08x|%d|%08x|%08x|", esc(c->GetString()), c->GetInteger(), bits, c->GetFlags(), bmn, bmx);
+	printf("%s\n", esc(c->GetDescription()));
+}
+
+#define MAXF 16
+int main(int argc, char **argv) {
+	idLib::common = common = &theCommon;
+	idLib::fileSystem = fileSystem = &theFs;
+	idLib::cvarSystem = cvarSystem;
+	cmdSystem->Init();
+	cvarSystem->Init();
+	idCVar::RegisterStaticVars();
+	FILE *in = fopen(argv[1], "rb");
+	static char line[65536];
+	while (fgets(line, sizeof(line), in)) {
+		int len = (int)strlen(line);
+		while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) line[--len] = 0;
+		if (len == 0 || line[0] == '#') continue;
+		printf("> %s\n", esc(line));
+		char *f[MAXF]; int nf = 0;
+		f[nf++] = line;
+		for (char *p = line; *p && nf < MAXF; p++) if (*p == '\t') { *p = 0; f[nf++] = p + 1; }
+		for (int i = nf; i < MAXF; i++) f[i] = (char *)"";
+		for (int i = 1; i < nf; i++) unesc(f[i]);
+		const char *op = f[0];
+		try {
+			if (!strcmp(op, "reg")) new idCVar(strdup(f[1]), strdup(f[2]), atoi(f[3]), strdup(f[4]));
+			else if (!strcmp(op, "regr")) new idCVar(strdup(f[1]), strdup(f[2]), atoi(f[3]), strdup(f[4]), (float)atof(f[5]), (float)atof(f[6]));
+			else if (!strcmp(op, "regs")) {
+				const char **strs = (const char **)malloc(32 * sizeof(char *)); int n = 0;
+				char *tmp = strdup(f[5]); char *q = tmp;
+				strs[n++] = q;
+				for (; *q; q++) if (*q == '|') { *q = 0; strs[n++] = q + 1; }
+				strs[n] = 0;
+				new idCVar(strdup(f[1]), strdup(f[2]), atoi(f[3]), strdup(f[4]), strs);
+			}
+			else if (!strcmp(op, "cmd")) cmdSystem->BufferCommandText(CMD_EXEC_NOW, f[1]);
+			else if (!strcmp(op, "append")) cmdSystem->BufferCommandText(CMD_EXEC_APPEND, f[1]);
+			else if (!strcmp(op, "insert")) cmdSystem->BufferCommandText(CMD_EXEC_INSERT, f[1]);
+			else if (!strcmp(op, "run")) cmdSystem->ExecuteCommandBuffer();
+			else if (!strcmp(op, "get")) PrintVar(f[1]);
+			else if (!strcmp(op, "setcvar")) {
+				int fl = atoi(f[4]);
+				if (!strcmp(f[1], "s")) cvarSystem->SetCVarString(f[2], f[3], fl);
+				else if (!strcmp(f[1], "b")) cvarSystem->SetCVarBool(f[2], !strcmp(f[3], "1"), fl);
+				else if (!strcmp(f[1], "i")) cvarSystem->SetCVarInteger(f[2], atoi(f[3]), fl);
+				else if (!strcmp(f[1], "f")) cvarSystem->SetCVarFloat(f[2], (float)atof(f[3]), fl);
+			}
+			else if (!strcmp(op, "setv")) {
+				idCVar *c = cvarSystem->Find(f[2]);
+				if (!c) printf("G: %s none\n", esc(f[2]));
+				else if (!strcmp(f[1], "s")) c->SetString(f[3]);
+				else if (!strcmp(f[1], "b")) c->SetBool(!strcmp(f[3], "1"));
+				else if (!strcmp(f[1], "i")) c->SetInteger(atoi(f[3]));
+				else if (!strcmp(f[1], "f")) c->SetFloat((float)atof(f[3]));
+			}
+			else if (!strcmp(op, "getv")) printf("V: %s|%d|%d\n", esc(cvarSystem->GetCVarString(f[1])), cvarSystem->GetCVarInteger(f[1]), cvarSystem->GetCVarBool(f[1]) ? 1 : 0);
+			else if (!strcmp(op, "mp")) theSession.mp = !strcmp(f[1], "1");
+			else if (!strcmp(op, "client")) idAsyncNetwork::client.active = !strcmp(f[1], "1");
+			else if (!strcmp(op, "file")) { char low[512]; lowerInto(low, f[1]); fileNames[fileCount] = strdup(low); fileTexts[fileCount] = strdup(f[2]); fileCount++; }
+			else if (!strcmp(op, "cmdlist")) cmdSystem->CommandCompletion(PrintCompletion);
+			else if (!strcmp(op, "varlist")) cvarSystem->CommandCompletion(PrintCompletion);
+			else if (!strcmp(op, "argc")) cmdSystem->ArgCompletion(f[1], PrintCompletion);
+			else if (!strcmp(op, "vargc")) cvarSystem->ArgCompletion(f[1], PrintCompletion);
+			else if (!strcmp(op, "modified")) printf("M: %d\n", cvarSystem->GetModifiedFlags());
+			else if (!strcmp(op, "setmod")) cvarSystem->SetModifiedFlags(atoi(f[1]));
+			else if (!strcmp(op, "clearmod")) cvarSystem->ClearModifiedFlags(atoi(f[1]));
+			else if (!strcmp(op, "resetflagged")) cvarSystem->ResetFlaggedVariables(atoi(f[1]));
+			else if (!strcmp(op, "rmcompl")) cvarSystem->RemoveFlaggedAutoCompletion(atoi(f[1]));
+			else if (!strcmp(op, "write")) { idFile fl; cvarSystem->WriteFlaggedVariables(atoi(f[1]), f[2], &fl); }
+			else if (!strcmp(op, "dict")) {
+				const idDict *d = cvarSystem->MoveCVarsToDict(atoi(f[1]));
+				for (int i = 0; i < d->GetNumKeyVals(); i++) { printf("D: %s=", esc(d->GetKeyVal(i)->GetKey().c_str())); printf("%s\n", esc(d->GetKeyVal(i)->GetValue().c_str())); }
+			}
+			else if (!strcmp(op, "fromdict")) {
+				idDict d; char *p = f[1];
+				while (*p) {
+					char *semi = strchr(p, ';'); if (semi) *semi = 0;
+					char *eq = strchr(p, '='); *eq = 0;
+					d.Set(p, eq + 1);
+					if (!semi) break;
+					p = semi + 1;
+				}
+				cvarSystem->SetCVarsFromDict(d);
+			}
+			else if (!strcmp(op, "addcmd")) {
+				int fl = atoi(f[2]);
+				if (!strcmp(f[3], "probe")) cmdSystem->AddCommand(strdup(f[1]), Probe_f, fl, "probe command");
+				else if (!strcmp(f[3], "nofunc")) cmdSystem->AddCommand(strdup(f[1]), NULL, fl, "no function");
+				else if (!strcmp(f[3], "compbool")) cmdSystem->AddCommand(strdup(f[1]), Probe_f, fl, "bool completion", idCmdSystem::ArgCompletion_Boolean);
+				else if (!strcmp(f[3], "comp3")) cmdSystem->AddCommand(strdup(f[1]), Probe_f, fl, "int completion", idCmdSystem::ArgCompletion_Integer<1, 3>);
+			}
+			else if (!strcmp(op, "rmcmd")) cmdSystem->RemoveCommand(f[1]);
+			else if (!strcmp(op, "rmflagged")) cmdSystem->RemoveFlaggedCommands(atoi(f[1]));
+			else if (!strcmp(op, "setup")) { idCmdArgs a; a.TokenizeString(f[1], false); cmdSystem->SetupReloadEngine(a); }
+			else if (!strcmp(op, "post")) printf("R: %d\n", cmdSystem->PostReloadEngine() ? 1 : 0);
+			else if (!strcmp(op, "tokenized")) { idCmdArgs a; a.TokenizeString(f[1], false); cmdSystem->BufferCommandArgs(CMD_EXEC_APPEND, a); }
+			else printf("? %s\n", op);
+		} catch (idException &e) { printf("X: %s\n", esc(e.error)); }
+	}
+	return 0;
+}

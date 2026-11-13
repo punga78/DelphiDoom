@@ -229,7 +229,7 @@ begin
   // "Probe" and "probe" are two commands (AddCommand compares with Cmp), the execution finds the first
   FCommands.AddCommand('probe', FProbe.First, 0, 'd');
   FCommands.AddCommand('Probe', FProbe.Second, 0, 'd');
-  Assert.AreEqual(2, Length(FCommands.Commands));
+  Assert.AreEqual<Integer>(2, Length(FCommands.Commands));
   FBuffer.BufferCommandText(ceNow, 'probe');
   Assert.AreEqual('second', FProbe.Calls[0], 'the last added is the first of the list');
 end;
@@ -252,7 +252,7 @@ begin
   FCommands.AddCommand('b', FProbe.First, 0, '');
   FCommands.RemoveCommand('a');
   FCommands.RemoveCommand('missing');
-  Assert.AreEqual(1, Length(FCommands.Commands));
+  Assert.AreEqual<Integer>(1, Length(FCommands.Commands));
   Assert.AreEqual('b', string(FCommands.Commands[0].Name));
 end;
 
@@ -262,7 +262,7 @@ begin
   FCommands.AddCommand('b', FProbe.First, CMD_FL_SOUND, '');
   FCommands.AddCommand('c', FProbe.First, CMD_FL_GAME or CMD_FL_TOOL, '');
   FCommands.RemoveFlaggedCommands(CMD_FL_GAME);
-  Assert.AreEqual(1, Length(FCommands.Commands));
+  Assert.AreEqual<Integer>(1, Length(FCommands.Commands));
   Assert.AreEqual('b', string(FCommands.Commands[0].Name));
 end;
 
@@ -431,14 +431,18 @@ end;
 procedure TTestCmdSystem.DovrebbeRifiutareGliArgomentiInInserimento;
 var
   LArgs: TIdCmdArgs;
+  LRaised: Boolean;
 begin
   LArgs := TIdCmdArgs.Create;
   try
-    Assert.WillRaise(
-      procedure
-      begin
-        FBuffer.BufferCommandArgs(ceInsert, LArgs);
-      end, ECmdSystemException);
+    LRaised := False;
+    try
+      FBuffer.BufferCommandArgs(ceInsert, LArgs);
+    except
+      on ECmdSystemException do
+        LRaised := True;
+    end;
+    Assert.IsTrue(LRaised);
   finally
     LArgs.Free;
   end;
@@ -497,7 +501,7 @@ begin
   FSystem.Shutdown;
   FBuffer.ExecuteCommandBuffer;
   Assert.AreEqual(0, FProbe.Calls.Count);
-  Assert.AreEqual(0, Length(FCommands.Commands));
+  Assert.AreEqual<Integer>(0, Length(FCommands.Commands));
 end;
 
 procedure TTestCmdSystem.DovrebbeUsareLoStesso_net_allowCheatsPerIComandiCheat;

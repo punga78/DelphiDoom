@@ -78,7 +78,11 @@ uses
   DelphiDoom.Tests.Console.CheatTable in 'Source\DelphiDoom.Tests.Console.CheatTable.pas',
   DelphiDoom.Tests.Console.UtilityCommands in 'Source\DelphiDoom.Tests.Console.UtilityCommands.pas',
   DelphiDoom.Tests.Console.IdTech4.Fakes in 'Source\DelphiDoom.Tests.Console.IdTech4.Fakes.pas',
-  DelphiDoom.Tests.Console.CmdSystem in 'Source\DelphiDoom.Tests.Console.CmdSystem.pas';
+  DelphiDoom.Tests.Console.CmdSystem in 'Source\DelphiDoom.Tests.Console.CmdSystem.pas',
+  DelphiDoom.Tests.Console.IdTech4.Scenario in 'Source\DelphiDoom.Tests.Console.IdTech4.Scenario.pas',
+  DelphiDoom.Tests.Console.IdTech4.Golden in 'Source\DelphiDoom.Tests.Console.IdTech4.Golden.pas',
+  DelphiDoom.Tests.Console.CVar in 'Source\DelphiDoom.Tests.Console.CVar.pas',
+  DelphiDoom.Tests.Console.CmdSystem.Standard in 'Source\DelphiDoom.Tests.Console.CmdSystem.Standard.pas';
 
 var
   Runner: ITestRunner;

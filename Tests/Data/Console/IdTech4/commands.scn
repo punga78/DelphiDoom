@@ -1,0 +1,134 @@
+# scenario of the command system, written for the tests (no text of Doom 3)
+# fields are separated by a tab; in a field \n \t \r \\ are escapes
+addcmd	probe	0	probe
+addcmd	probe	0	probe
+addcmd	Probe	0	probe
+addcmd	cheater	1	probe
+addcmd	tooler	32	probe
+addcmd	gamecmd	16	probe
+addcmd	nofunc	0	nofunc
+addcmd	cb	0	compbool
+addcmd	c3	0	comp3
+cmd	probe a b "c d" -5 -x
+cmd	PROBE upper
+cmd	probe
+cmd	nothing at all
+cmd
+cmd	probe $missing
+cmd	probe "quoted \"x"
+cmd	probe 12.5 /path/to/file 127.0.0.1:27960
+cmdlist
+cmd	probe moved
+cmdlist
+argc	cb x
+argc	CB
+argc	c3 1
+argc	probe x
+argc	zzz
+append	probe one;probe two\n
+append	probe three\n
+run
+append	probe "a;b" c;probe d\n
+append	probe e\nprobe f\rprobe g\n
+run
+append	probe "x\ny"\n
+run
+insert	probe inserted
+append	probe tail\n
+insert	probe first
+run
+cmd	nofunc
+setcvar	i	numvar	7	0
+cmd	nofunc
+cmd	numvar
+cmd	numvar 12
+append	wait\n
+append	probe after-wait\n
+run
+run
+append	wait 3\n
+append	probe after-wait3\n
+run
+run
+run
+run
+append	wait zz\n
+append	probe afterzz\n
+run
+run
+append	wait 1 2 3\n
+append	probe after-wait-bad\n
+run
+run
+mp	1
+cmd	cheater
+cmd	tooler
+cmd	gamecmd
+setcvar	b	net_allowCheats	1	0
+cmd	cheater
+cmd	tooler
+setcvar	b	net_allowCheats	0	0
+cmd	cheater
+mp	0
+cmd	cheater
+rmcmd	probe
+rmcmd	missing
+cmd	probe x
+rmflagged	16
+cmd	gamecmd
+rmflagged	1
+cmd	cheater
+cmdlist
+tokenized	probe "tok;en" z
+tokenized	cb 1
+append	probe plain\n
+run
+setup	probe reload arg
+post
+run
+post
+run
+cmd	listCmds
+cmd	listCmds pro
+cmd	listCmds p* c3
+cmd	listSystemCmds
+cmd	listSystemCmds *
+cmd	listRendererCmds
+cmd	listGameCmds
+cmd	listToolCmds
+cmd	listSoundCmds
+cmd	parse a "b c" -3 x
+cmd	echo hello "big world" 5
+cmd	echo
+file	one.cfg	probe from-file-1\nprobe from-file-2
+file	two.cfg	probe two-a;echo from two\n
+file	loop.cfg	exec one
+file	semi.cfg	probe a;probe b;probe "c;d"
+cmd	exec one
+cmd	exec
+cmd	exec one two
+cmd	exec ONE.CFG
+cmd	exec missing
+append	probe before\n
+append	exec two\n
+append	probe after\n
+run
+cmd	exec semi
+run
+append	exec one\n
+append	probe tailing\n
+run
+setcvar	s	script	probe by-vstr	0
+setcvar	s	empty	x	0
+cmd	vstr script
+run
+cmd	vstr
+cmd	vstr missing
+run
+cmd	vstr script extra
+cmd	probe $script
+cmd	probe $numvar
+cmd	probe x$numvar
+append	probe glue-1
+append	probe glue-2
+run

@@ -1,0 +1,258 @@
+# scenario of the cvar system, written for the tests (no text of Doom 3)
+# flags: BOOL 1, INTEGER 2, FLOAT 4, SYSTEM 8, RENDERER 16, SOUND 32, GUI 64, GAME 128, TOOL 256, USERINFO 512,
+# SERVERINFO 1024, NETWORKSYNC 2048, STATIC 4096, CHEAT 8192, NOCHEAT 16384, INIT 32768, ROM 65536, ARCHIVE 131072
+reg	t_string	hello	128	a plain string
+reg	t_bool	1	1	a boolean
+reg	t_int	5	2	an integer
+reg	t_float	0.5	4	a float
+regr	t_irange	5	2	integer in range	0	10
+regr	t_frange	0.5	4	float in range	-1	1
+regr	t_negrange	50	2	integer with minimum above maximum	10	-10
+regs	t_enum	beta	128	a list of strings	alpha|beta|gamma
+reg	t_arch	3	131074	archived integer
+reg	t_rom	fixed	65536	read only
+reg	t_init	boot	32768	write protected
+reg	t_cheat	1	128	a cheat by default
+reg	t_nocheat	1	16512	not a cheat
+reg	t_sync	0	2048	synced
+reg	t_user	x	512	user info
+reg	t_srv	y	1024	server info
+reg	t_tool	z	256	tool
+reg	t_sys	s	8	system
+reg	t_rend	r	16	renderer
+reg	t_snd	d	32	sound
+reg	t_gui	g	64	gui
+get	t_string
+get	t_bool
+get	t_int
+get	t_float
+get	t_irange
+get	t_frange
+get	t_negrange
+get	t_enum
+get	t_arch
+get	t_rom
+get	t_init
+get	t_cheat
+get	t_nocheat
+get	t_sync
+get	missing
+modified
+cmd	t_string
+cmd	T_STRING new value here
+get	t_string
+cmd	t_string
+cmd	t_bool 0
+get	t_bool
+cmd	t_bool yes
+get	t_bool
+cmd	t_bool 7
+get	t_bool
+cmd	t_bool 0
+cmd	t_bool 0.9
+get	t_bool
+cmd	t_int 12abc
+get	t_int
+cmd	t_int 007
+get	t_int
+cmd	t_int -3.7
+get	t_int
+cmd	t_int .5
+get	t_int
+cmd	t_int abc
+get	t_int
+cmd	t_int 2147483647
+get	t_int
+cmd	t_float 2.5e1
+get	t_float
+cmd	t_float 3.
+get	t_float
+cmd	t_float 7xyz
+get	t_float
+cmd	t_float -.25
+get	t_float
+cmd	t_float 0.100000
+get	t_float
+cmd	t_irange 11
+get	t_irange
+cmd	t_irange -4
+get	t_irange
+cmd	t_irange 4.9
+get	t_irange
+cmd	t_frange 1.5
+get	t_frange
+cmd	t_frange -9
+get	t_frange
+cmd	t_frange 0.25
+get	t_frange
+cmd	t_negrange 500
+get	t_negrange
+cmd	t_enum GAMMA
+get	t_enum
+cmd	t_enum delta
+get	t_enum
+cmd	t_enum beta
+get	t_enum
+cmd	t_rom 1
+get	t_rom
+cmd	t_init 1
+get	t_init
+setv	s	t_rom	forced
+get	t_rom
+setv	s	t_init	forced
+get	t_init
+setv	i	t_int	42
+setv	f	t_float	0.75
+setv	b	t_bool	1
+setv	s	t_string	again
+setv	b	t_string	1
+setv	i	t_irange	99
+setv	f	t_frange	12.5
+setv	f	t_int	2.9
+setv	s	missing	x
+getv	t_int
+getv	t_bool
+getv	t_float
+getv	t_string
+getv	nothing
+modified
+clearmod	2
+modified
+clearmod	-1
+modified
+setmod	5
+modified
+setcvar	s	t_string	via-setcvar	0
+setcvar	i	t_int	8	0
+setcvar	f	t_float	1.5	0
+setcvar	b	t_bool	0	0
+setcvar	s	created	fresh	131072
+get	created
+setcvar	s	created	again	2
+get	created
+setcvar	i	t_rom	3	0
+get	t_rom
+setcvar	s	t_string	flagged	256
+get	t_string
+cmd	set made one two three
+get	made
+cmd	set made
+get	made
+cmd	set
+cmd	set
+get
+cmd	sets srv1 value1
+get	srv1
+cmd	setu usr1 value1
+get	usr1
+cmd	sett tool1 value1
+get	tool1
+cmd	seta arc1 value1
+get	arc1
+cmd	t_string
+cmd	t_bool
+cmd	t_enum
+cmd	t_irange
+cmd	toggle
+cmd	toggle missing
+cmd	toggle t_bool
+get	t_bool
+cmd	toggle t_bool
+get	t_bool
+cmd	toggle t_int 5
+get	t_int
+cmd	toggle t_int 5
+get	t_int
+cmd	toggle t_float
+get	t_float
+cmd	toggle t_float 0.3
+get	t_float
+cmd	toggle t_enum alpha beta gamma
+get	t_enum
+cmd	toggle t_enum alpha beta gamma
+get	t_enum
+cmd	toggle t_enum alpha beta gamma
+get	t_enum
+cmd	toggle t_enum nothing here
+get	t_enum
+cmd	toggle t_rom
+cmd	toggle t_string x y
+get	t_string
+cmd	reset
+cmd	reset t_int
+get	t_int
+cmd	reset t_rom
+cmd	reset missing
+cmd	reset t_enum
+get	t_enum
+cmd	reset t_int extra
+cmd	listCvars t_*
+cmd	listCvars
+cmd	listCvars - help t_i*
+cmd	listCvars / ? t_*
+cmd	listCvars -type t_*
+cmd	listCvars - range t_*
+cmd	listCvars - flags t_*
+cmd	listCvars - nothing t_i*
+cmd	listCvars - flags
+varlist
+vargc	t_bool
+vargc	T_BOOL x
+vargc	t_int
+vargc	missing
+rmcompl	1
+vargc	t_bool
+write	131072	seta
+write	512	setu
+write	1024	sets
+resetflagged	131072
+get	t_arch
+get	t_int
+dict	131072
+dict	768
+fromdict	t_string=fromdict;t_int=77;unknown=1;t_rom=changed
+get	t_string
+get	t_int
+get	t_rom
+get	unknown
+cmd	cvar_restart
+get	t_string
+get	t_int
+get	t_rom
+get	t_init
+get	made
+get	created
+get	srv1
+varlist
+mp	1
+cmd	t_cheat 0
+get	t_cheat
+cmd	t_nocheat 0
+get	t_nocheat
+cmd	t_sync 5
+get	t_sync
+client	1
+cmd	t_sync 6
+get	t_sync
+cmd	t_nocheat 5
+get	t_nocheat
+setv	s	t_cheat	srv
+get	t_cheat
+setcvar	b	net_allowCheats	1	0
+cmd	t_cheat 1
+get	t_cheat
+client	0
+mp	0
+cmd	t_cheat 2
+get	t_cheat
+reg	t_string	hello	128	a plain string
+reg	t_string	other	128	changed declaration
+get	t_string
+reg	t_string	hello	1	different type
+regr	t_irange	5	2	again	0	99
+get	t_irange
+reg	t_late	9	2	declared after the user set it
+setcvar	s	t_user_made	7	0
+get	t_user_made
+reg	t_user_made	3	2	now declared
+get	t_user_made

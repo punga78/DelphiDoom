@@ -245,7 +245,9 @@ begin
       for LIndex := 0 to High(LList) do
       begin
         LVariable := LList[LIndex];
-        LLine := PadRight(LVariable.Name, NAME_WIDTH) + ' ';
+        // the name and the flags are two calls of Printf in the original
+        Print(PadRight(LVariable.Name, NAME_WIDTH) + ' ');
+        LLine := '';
         if (LVariable.Flags and CVAR_BOOL) <> 0 then
           LLine := LLine + '^5B '
         else if (LVariable.Flags and CVAR_INTEGER) <> 0 then
