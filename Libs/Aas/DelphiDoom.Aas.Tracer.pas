@@ -255,15 +255,8 @@ begin
     TAasVectorMath.Subtract(AEntry.Start, AStart, LV2);
     LLength := TAasVectorMath.Length(LV2);
     LNormalLength := TAasVectorMath.Normalize(LV1);
-    if LNormalLength = 0 then
-    begin
-      if LLength = 0 then
-        ATrace.Fraction := NaN
-      else
-        ATrace.Fraction := Infinity;
-    end
-    else
-      ATrace.Fraction := LLength / LNormalLength;
+    // the piece does not start at the start, so the line has a length: no division by zero
+    ATrace.Fraction := LLength / LNormalLength;
     TAasVectorMath.MultiplyAdd(AEntry.Start, LV1, -0.125, AEntry.Start);
   end;
   ATrace.EndPos := AEntry.Start;

@@ -77,8 +77,9 @@ type
     /// </summary>
     function Load(const AFileName: AnsiString; out AFile: IAasFile): Integer;
     /// <summary>
-    ///   Reads a file that is already in memory: the same checks without the printing. A
-    ///   file that is not valid raises EAasFileException with the BLERR_ code
+    ///   Reads a file that is already in memory: the same checks, but a file that is not
+    ///   valid raises EAasFileException with the BLERR_ code instead of printing (the warning
+    ///   about lumps that are not in sequence is still printed)
     /// </summary>
     function ParseBytes(const AData: TBytes; const AName: AnsiString; const ABspChecksum: Integer): IAasFile;
   end;
