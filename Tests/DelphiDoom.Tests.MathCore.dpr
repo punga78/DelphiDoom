@@ -85,7 +85,18 @@ uses
   DelphiDoom.Tests.MathCore.Geometry.Parity in 'Source\DelphiDoom.Tests.MathCore.Geometry.Parity.pas',
   DelphiDoom.Tests.MathCore.Geometry.Values in 'Source\DelphiDoom.Tests.MathCore.Geometry.Values.pas',
   DelphiDoom.Tests.MathCore.Float.Parity in 'Source\DelphiDoom.Tests.MathCore.Float.Parity.pas',
-  DelphiDoom.Tests.MathCore.Float.Values in 'Source\DelphiDoom.Tests.MathCore.Float.Values.pas';
+  DelphiDoom.Tests.MathCore.Float.Values in 'Source\DelphiDoom.Tests.MathCore.Float.Values.pas',
+  DelphiDoom.MathCore.Patch.Types in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Types.pas',
+  DelphiDoom.MathCore.Patch.Intf in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Intf.pas',
+  DelphiDoom.MathCore.Patch.VertexMath in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.VertexMath.pas',
+  DelphiDoom.MathCore.Patch.ControlMesh in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.ControlMesh.pas',
+  DelphiDoom.MathCore.Patch.Normals in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Normals.pas',
+  DelphiDoom.MathCore.Patch.Grid in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Grid.pas',
+  DelphiDoom.MathCore.Patch.Subdivider in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Subdivider.pas',
+  DelphiDoom.MathCore.Patch.GridEditor in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.GridEditor.pas',
+  DelphiDoom.MathCore.Patch.Factory in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Factory.pas',
+  DelphiDoom.Tests.MathCore.Patch.Parity in 'Source\DelphiDoom.Tests.MathCore.Patch.Parity.pas',
+  DelphiDoom.Tests.MathCore.Patch.Values in 'Source\DelphiDoom.Tests.MathCore.Patch.Values.pas';
 
 var
   Runner: ITestRunner;

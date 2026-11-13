@@ -61,3 +61,7 @@ Se si cambia un ingresso (`Samples`) vanno rifatti tutti i file.
 ## `geometry.golden.txt` (issue #96)
 
 Risposte di `idPlane`, `idBounds`, `idSphere` e `idBox` veri (compilati con `bcc32c`, x87): 9109 righe `nome ingressi | uscite`, float come `#` più i bit in esadecimale, interi e flag in chiaro; gli ingressi stanno sulla riga. Test: `DelphiDoom.Tests.MathCore.Geometry.Parity`. Dettagli e tolleranze in `Libs\MathCore\CLAUDE.md`.
+
+## `patch.golden.txt` (issue #117)
+
+Risposte vere di `R_SubdividePatchToGrid`, `R_GridInsertColumn` e `R_GridInsertRow` di Quake III (`tr_curve.c`, compilato con il gcc di w64devkit a 64 bit, SSE): 45 casi, per ognuno dimensioni, tabelle degli errori, bounds, origine, raggio, hash FNV-1a dei vertici e tre vertici, float come bit. Prodotto da `Tools\Verifica\117` (vedi `LEGGIMI.md` li'). Test: `DelphiDoom.Tests.MathCore.Patch.Parity`, confronto esatto.
