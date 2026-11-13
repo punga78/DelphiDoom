@@ -1,0 +1,53 @@
+MD5Version 10
+commandline "synthetic cube written for the tests of Libs\Models (not a commercial model)"
+
+numJoints 2
+numMeshes 1
+
+joints {
+	"origin"	-1 ( 1 2 3 ) ( 0 0 0.38268343 )		// 
+	"arm"	0 ( 4 2 3.5 ) ( 0.1 0.2 0.3 )		// origin
+}
+
+mesh {
+	// meshes: cube
+	shader "models/test/cube"
+
+	numverts 8
+	vert 0 ( 0.0 0.0 ) 0 1
+	vert 1 ( 1.0 0.0 ) 1 1
+	vert 2 ( 1.0 1.0 ) 2 1
+	vert 3 ( 0.0 1.0 ) 3 1
+	vert 4 ( 0.0 0.0 ) 4 2
+	vert 5 ( 1.0 0.0 ) 6 2
+	vert 6 ( 1.0 1.0 ) 8 2
+	vert 7 ( 0.0 1.0 ) 10 2
+
+	numtris 12
+	tri 0 0 1 2
+	tri 1 0 2 3
+	tri 2 4 6 5
+	tri 3 4 7 6
+	tri 4 0 4 5
+	tri 5 0 5 1
+	tri 6 1 5 6
+	tri 7 1 6 2
+	tri 8 2 6 7
+	tri 9 2 7 3
+	tri 10 3 7 4
+	tri 11 3 4 0
+
+	numweights 12
+	weight 0 0 1.0 ( -1 -1 -1 )
+	weight 1 0 1.0 ( 1 -1 -1 )
+	weight 2 0 1.0 ( 1 1 -1 )
+	weight 3 0 1.0 ( -1 1 -1 )
+	weight 4 0 0.3 ( -1 -1 1 )
+	weight 5 1 0.7 ( -0.5 -0.25 0.75 )
+	weight 6 0 0.3 ( 1 -1 1 )
+	weight 7 1 0.7 ( 0.5 -0.25 0.75 )
+	weight 8 0 0.3 ( 1 1 1 )
+	weight 9 1 0.7 ( 0.5 0.25 0.75 )
+	weight 10 0 0.3 ( -1 1 1 )
+	weight 11 1 0.7 ( -0.5 0.25 0.75 )
+}
