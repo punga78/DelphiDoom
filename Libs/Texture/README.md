@@ -114,3 +114,8 @@ Collegato: i quattro giochi (software e OpenGL) e i `ddc_*`. Verifica:
   con un'immagine a palette, OpenGL con texture esterne (si avvia e non va in crash, ma le texture non sono state guardate).
 - I due `Decoder` PCX non fanno 16 e 32 bit né i file a 4 bit.
 - `T_DrawFullScreenPatch` non è stato spostato (vedi sopra).
+
+## DDS e TGA di id Tech 4 (issue #103)
+
+- `Dds.Types`, `Dds.BlockDecoder`, `Dds.Reader`, `Dds.Writer`, `Decoder.Dds`, `Tga.IdReader`: lettura DDS (DXT1/3/5, non compresso, mipmap), decompressione dei blocchi, scrittura di un DDS BGRA e lettore TGA di Doom 3. Il DDS si legge dalla descrizione del formato (Doom 3 non lo legge), il resto viene da Doom 3. Dettagli, limiti e prove in [CLAUDE.md](CLAUDE.md). Non registrati in `TTextureFactory`, senza chiamanti nel motore.
+- Test: `Tests\DelphiDoom.Tests.Texture` (250 test).

@@ -124,7 +124,7 @@ begin
   Assert.AreEqual<Integer>(Ord(TDdsFormat.Uncompressed), Ord(LImage.Format));
   Assert.IsTrue(LImage.HasAlpha);
   Assert.IsFalse(LImage.IsMonochrome);
-  Assert.AreEqual(1, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(1, Length(LImage.Levels));
   Assert.AreEqual(16, LImage.Levels[0].Width);
   Assert.AreEqual<Integer>(3, LImage.Levels[0].Pixels[0]);
   Assert.AreEqual<Integer>(2, LImage.Levels[0].Pixels[1]);
@@ -149,7 +149,7 @@ begin
   LImage := TDdsReader.Read(Combine(TIdImagesGolden.HeaderBytes('ddshead4'), LData));
   Assert.AreEqual<Integer>(Ord(TDdsFormat.Dxt5), Ord(LImage.Format));
   Assert.IsTrue(LImage.HasAlpha);
-  Assert.AreEqual(6, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(6, Length(LImage.Levels));
   Assert.AreEqual(32, LImage.Levels[0].Width);
   Assert.AreEqual(1, LImage.Levels[5].Width);
   Assert.AreEqual(2, LImage.Levels[4].Height);
@@ -181,7 +181,7 @@ begin
   LImage := TDdsReader.Read(Combine(TIdImagesGolden.HeaderBytes('ddshead5'), LData));
   Assert.AreEqual<Integer>(Ord(TDdsFormat.Dxt1), Ord(LImage.Format));
   Assert.IsFalse(LImage.HasAlpha);
-  Assert.AreEqual(6, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(6, Length(LImage.Levels));
   Assert.AreEqual<Integer>(255, LImage.Levels[0].Pixels[3]);
 end;
 
@@ -195,7 +195,7 @@ begin
   LData[1] := 20; // G
   LData[2] := 30; // R
   LImage := TDdsReader.Read(Combine(TIdImagesGolden.HeaderBytes('ddshead6'), LData));
-  Assert.AreEqual(4, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(4, Length(LImage.Levels));
   Assert.IsFalse(LImage.HasAlpha);
   Assert.AreEqual<Integer>(30, LImage.Levels[0].Pixels[0]);
   Assert.AreEqual<Integer>(20, LImage.Levels[0].Pixels[1]);
@@ -225,7 +225,7 @@ var
 begin
   LImage := TDdsReader.Read(Combine(TIdImagesGolden.HeaderBytes('ddshead2'), TBytes.Create(1, 2, 3, 4)));
   Assert.IsTrue(LImage.IsMonochrome);
-  Assert.AreEqual(1, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(1, Length(LImage.Levels));
 end;
 
 procedure TTestDdsReader.DovrebbeLeggereIMaschereDi16Bit;
@@ -281,7 +281,7 @@ begin
   LHeader.PixelFormat.ABitMask := $FF000000;
   LImage := TDdsReader.Read(FileWith(LHeader, TBytes.Create(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0)));
-  Assert.AreEqual(2, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(2, Length(LImage.Levels));
 end;
 
 procedure TTestDdsReader.DovrebbeLeggereUnSoloLivelloSenzaLaBandieraDeiMipmap;
@@ -298,7 +298,7 @@ begin
   LHeader.PixelFormat.BBitMask := $000000FF;
   LImage := TDdsReader.Read(FileWith(LHeader, TBytes.Create(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0)));
-  Assert.AreEqual(1, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(1, Length(LImage.Levels));
 end;
 
 procedure TTestDdsReader.DovrebbeContareILivelli;

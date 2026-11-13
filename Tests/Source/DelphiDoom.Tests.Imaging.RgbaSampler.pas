@@ -173,7 +173,7 @@ var
   LImage: TImagingRgbaImage;
 begin
   LImage := TImagingRgbaImage.Create(3, 2);
-  Assert.AreEqual(24, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(24, Length(LImage.Pixels));
   Assert.AreEqual<Integer>(0, LImage.Pixels[23]);
   Assert.IsFalse(LImage.IsEmpty);
 end;

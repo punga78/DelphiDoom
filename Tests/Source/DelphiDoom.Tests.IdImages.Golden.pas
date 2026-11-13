@@ -119,7 +119,7 @@ var
   LIndex, LDifferent, LDistance: Integer;
 begin
   LHex := Value(AName);
-  Assert.AreEqual(Length(AImage.Pixels) * 2, Length(LHex), AName + ' length');
+  Assert.AreEqual<Integer>(Length(AImage.Pixels) * 2, Length(LHex), AName + ' length');
   LDifferent := 0;
   for LIndex := 0 to High(AImage.Pixels) do
   begin

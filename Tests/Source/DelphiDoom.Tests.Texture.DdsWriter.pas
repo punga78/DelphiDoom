@@ -120,7 +120,7 @@ begin
   LImage.Pixels[2] := 30;
   LImage.Pixels[3] := 40;
   LFile := TDdsWriter.WriteUncompressed([LImage]);
-  Assert.AreEqual(DDS_FILE_PREFIX_SIZE + 4, Length(LFile));
+  Assert.AreEqual<Integer>(DDS_FILE_PREFIX_SIZE + 4, Length(LFile));
   Assert.AreEqual<Integer>(30, LFile[DDS_FILE_PREFIX_SIZE]);
   Assert.AreEqual<Integer>(20, LFile[DDS_FILE_PREFIX_SIZE + 1]);
   Assert.AreEqual<Integer>(10, LFile[DDS_FILE_PREFIX_SIZE + 2]);
@@ -135,7 +135,7 @@ var
 begin
   LLevels := Chain(8, 4, 4);
   LImage := TDdsReader.Read(TDdsWriter.WriteUncompressed(LLevels, True));
-  Assert.AreEqual(4, Length(LImage.Levels));
+  Assert.AreEqual<Integer>(4, Length(LImage.Levels));
   Assert.IsTrue(LImage.IsMonochrome);
   Assert.IsTrue(LImage.HasAlpha);
   for LIndex := 0 to 3 do
