@@ -110,3 +110,7 @@ Prodotti da un harness C++ **fuori dal repository** (contiene codice di OpenXcom
 - `Gui\files` sono menu e font **scritti per i test**, mai file di Team Arena o di OpenArena: `ui\*.menu` e `ui\*.h` (ogni parola chiave di `menuDef` e `itemDef`, liste, errori, numeri, stringhe, preprocessore, il limite di 96 item), `fonts\fontImage_12.dat` e `fontImage_16.dat` (20548 byte, valori da un generatore lineare con seme fisso: `Tools\Verifica\125\Make-Fonts.ps1`) e `fontImage_24.dat` (100 byte, lunghezza sbagliata).
 - `Gui\scenarios\*.txt` sono le righe (`menu`, `menus`, `font`, `run`, `dump`, `state`, `reset`) che il pilota del C e il test Delphi eseguono; `Gui\golden\*.golden.txt` sono l'uscita del **vero** `ui_shared.c`, del precompilatore di botlib (`l_script.c`, `l_precomp.c`), di `q_shared.c` e di ritagli di `ui_main.c` e `tr_font.c` compilati con il gcc di w64devkit (float come bit esadecimali, stringhe con escape).
 - Per rifarli: `sh Tools/Verifica/125/golden.sh <cartella di lavoro>` (vedi `Tools\Verifica\125\LEGGIMI.md`).
+
+## Aas (issue #122)
+
+- `Aas\aas.golden.txt`: l'uscita di `Tools\Verifica\122\aasgen.exe` (gcc di w64devkit sul vero `be_aas_file.c` e `be_aas_sample.c` di Quake III) su quattro file `.aas` costruiti dal pilota piu' quattro rovinati: conteggi, CRC-32 dei 14 lump, punti, trace, facce, box e messaggi a seme fisso. Nessun file `.aas` e' nel repository: li costruisce `Tests\Source\DelphiDoom.Tests.Aas.Sample.pas` con la stessa ricetta. Come si rifa: `Tools\Verifica\122\LEGGIMI.md`.

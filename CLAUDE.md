@@ -61,6 +61,7 @@ Sezioni trasversali (non di una singola libreria), in [docs/CLAUDE_TRASVERSALI.m
 
 Librerie (CLAUDE.md di dettaglio, README):
 
+- **Aas** — AAS di Quake III Arena (botlib): file `.aas` in lettura e campionamento (area di un punto, trace, facce, aree di un box), senza chiamanti nel motore; parita' sul vero `be_aas_file.c`/`be_aas_sample.c`. [CLAUDE.md](Libs/Aas/CLAUDE.md), [README.md](Libs/Aas/README.md)
 - **Acs** — Compilatore ACS (ACC 1.10 di Raven) e interprete del bytecode BEHAVIOR di Hexen, a classi. [CLAUDE.md](Libs/Acs/CLAUDE.md), [README.md](Libs/Acs/README.md)
 - **Actions** — Registro delle azioni degli stati (`A_Look`, `A_Chase`, quelle di ACTORDEF e MBF21). [CLAUDE.md](Libs/Actions/CLAUDE.md), [README.md](Libs/Actions/README.md)
 - **ActorDef** — Parser di ACTORDEF/DECORATE e SNDINFO a classi. [CLAUDE.md](Libs/ActorDef/CLAUDE.md), [README.md](Libs/ActorDef/README.md)

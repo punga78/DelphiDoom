@@ -37,7 +37,8 @@ uses
   DelphiDoom.Tests.Aas.ScenarioRunner in 'Source\DelphiDoom.Tests.Aas.ScenarioRunner.pas',
   DelphiDoom.Tests.Aas.Golden in 'Source\DelphiDoom.Tests.Aas.Golden.pas',
   DelphiDoom.Tests.Aas.Reader in 'Source\DelphiDoom.Tests.Aas.Reader.pas',
-  DelphiDoom.Tests.Aas.Sampling in 'Source\DelphiDoom.Tests.Aas.Sampling.pas';
+  DelphiDoom.Tests.Aas.Sampling in 'Source\DelphiDoom.Tests.Aas.Sampling.pas',
+  DelphiDoom.Tests.Aas.OpenArena in 'Source\DelphiDoom.Tests.Aas.OpenArena.pas';
 
 var
   Runner: ITestRunner;
