@@ -320,6 +320,14 @@ uses
   DelphiDoom.Automap.Intf,
   DelphiDoom.Automap.Factory,
   am_map,
+  DelphiDoom.Hud.Types,
+  DelphiDoom.Hud.Intf,
+  DelphiDoom.Hud.View,
+  DelphiDoom.Hud.Factory,
+  DelphiDoom.Engine.Hud.Rules,
+  DelphiDoom.Engine.Hud.Environment,
+  DelphiDoom.Engine.Hud.Drawer,
+  hu_stuff,
   DelphiDoom.ActorDef.Types,
   DelphiDoom.ActorDef.Intf,
   DelphiDoom.ActorDef.Profiles,
@@ -1274,6 +1282,31 @@ begin
   AM_Configure(LView, LNavigator, TAutomapFactory.CreateMarks);
 end;
 
+procedure ComposeHud;
+var
+  LEnvironment: TEngineHudEnvironment;
+  LFlags: IHudFlags;
+  LPlayers: IHudPlayers;
+  LMessages: IHudPlayerMessage;
+  LSettings: IHudSettings;
+  LSound: IHudChatSound;
+  LEcho: IHudEcho;
+  LHeadsUp: IHeadsUp;
+  LView: IHudView;
+begin
+  // one object answers the six contracts: the interfaces keep it alive
+  LEnvironment := TEngineHudEnvironment.Create;
+  LFlags := LEnvironment;
+  LPlayers := LEnvironment;
+  LMessages := LEnvironment;
+  LSettings := LEnvironment;
+  LSound := LEnvironment;
+  LEcho := LEnvironment;
+  THudFactory.CreateHeadsUp(TEngineHudRules.Build, LFlags, LPlayers, LMessages, LSettings, LSound,
+    LEcho, LHeadsUp, LView);
+  HU_Configure(LHeadsUp, TEngineHudDrawer.Create(LView, LEnvironment));
+end;
+
 procedure ComposeActorDef(const ALog: ILog; const APreprocessor: IScriptTextPreprocessor;
   const ARegistry: ICommandRegistry; const ALumps: IEngineLumps);
 var
@@ -1512,6 +1545,7 @@ begin
   LMusInfo := ComposeMusInfo(LLog, LLumps);
   ComposeDynLights(LLog, LContext, LPreprocessor, LPakFiles, LRandom, LLumps);
   ComposeAutomap;
+  ComposeHud;
   ComposeActorDef(LLog, LPreprocessor, LRegistry, LLumps);
   ComposeTableExport(LCommandLine);
   P_ConfigureAcs(TAcsFactory.CreateCompiler(TEngineAcsSourceProvider.Create, LLog),

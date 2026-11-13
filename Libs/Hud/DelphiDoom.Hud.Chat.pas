@@ -201,7 +201,7 @@ begin
       LKeyCode := FSettings.DestinationKeyCode(LIndex);
       if (LKeyCode >= 0) and (AKey = LKeyCode) then
       begin
-        if FPlayers.IsInGame(LIndex) and (LIndex <> FPlayers.ConsolePlayer) then
+        if FPlayers.IsInGame(LIndex) and (LIndex <> FPlayers.ConsolePlayerIndex) then
         begin
           Result := True;
           FFlags.ChatOn := True;
@@ -209,7 +209,7 @@ begin
           QueueChar(Chr(LIndex + 1));
           Break;
         end
-        else if LIndex = FPlayers.ConsolePlayer then
+        else if LIndex = FPlayers.ConsolePlayerIndex then
           TalkToSelf;
       end;
     end;
@@ -315,7 +315,7 @@ begin
   if LBuffer.KeyIn(LCode) and (LCode = FRules.Keys.Enter) then
   begin
     if (LBuffer.Line.Length <> 0) and
-      ((FDestination[APlayer] = FPlayers.ConsolePlayer + 1) or
+      ((FDestination[APlayer] = FPlayers.ConsolePlayerIndex + 1) or
        (FDestination[APlayer] = FRules.Broadcast)) then
     begin
       FTarget.PostChat(FSettings.PlayerName(APlayer), string(LBuffer.Line.Text));
@@ -338,7 +338,7 @@ begin
     if not FPlayers.IsInGame(LIndex) then
       Continue;
     LCode := FPlayers.ChatChar(LIndex);
-    if (LIndex <> FPlayers.ConsolePlayer) and (LCode <> 0) then
+    if (LIndex <> FPlayers.ConsolePlayerIndex) and (LCode <> 0) then
     begin
       if LCode <= FRules.LastDestination then
         FDestination[LIndex] := LCode

@@ -37,7 +37,7 @@ type
     /// <summary>The game is played on the network (netgame)</summary>
     function IsNetGame: Boolean;
     /// <summary>Number of the player of this computer (consoleplayer)</summary>
-    function ConsolePlayer: Integer;
+    function ConsolePlayerIndex: Integer;
     /// <summary>The player takes part in the game (playeringame)</summary>
     function IsInGame(const AIndex: Integer): Boolean;
     /// <summary>The character the player typed in the last tic (cmd.chatchar), zero if none</summary>
@@ -63,7 +63,7 @@ type
     /// <summary>The language is French: the keyboard map changes (language = french)</summary>
     function IsFrench: Boolean;
     /// <summary>The messages are shown (showMessages is not zero)</summary>
-    function ShowMessages: Boolean;
+    function AreMessagesShown: Boolean;
     /// <summary>
     ///   The code of the key that starts a message to the player, -1 if there is none (the first
     ///   character of destination_keys or key_multi_msgplayer)

@@ -29,6 +29,7 @@
 
 {$I Doom32.inc}
 
+
 unit hu_stuff;
 
 interface
@@ -36,7 +37,9 @@ interface
 uses
   doomdef,
   d_event,
-  r_defs;
+  r_defs,
+  DelphiDoom.Hud.Intf,
+  DelphiDoom.Engine.Hud.Intf;
 
 {$IFDEF HEXEN}
 //-----------------------------------------------------------------------------
@@ -102,6 +105,16 @@ const
 {$ENDIF}
 
 //==============================================================================
+//
+// HU_Configure
+//
+// The heads-up display is Libs\Hud (the model) and DelphiDoom.Engine.Hud.* (the
+// drawing): ComposeEngine gives them here. Without it HU_Init stops with I_Error.
+//
+//==============================================================================
+procedure HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen);
+
+//==============================================================================
 // HU_Init
 //
 // HEADS UP TEXT
@@ -149,6 +162,18 @@ function HU_Height: integer;
 {$ENDIF}
 
 {$ENDIF}
+{$IFDEF STRIFE}
+
+//==============================================================================
+//
+// HU_DrawYellowText
+//
+// hu_lib.pas gives HUlib_drawYellowText to it
+//
+//==============================================================================
+procedure HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer);
+{$ENDIF}
+
 //==============================================================================
 //
 // HU_dequeueChatChar
@@ -182,9 +207,7 @@ var
 
   chat_on: boolean;
 
-  message_on: boolean;
   message_dontfuckwithme: boolean;
-  message_nottobefuckedwith: boolean;
 
 {$IF DEFINED(HERETIC)}
 var
@@ -255,7 +278,7 @@ var
   drawfps: boolean;
   drawcrosshair: boolean;
 {$IF DEFINED(DOOM)}
-  amdrawstats: boolean; 
+  amdrawstats: boolean;
 {$ELSEIF DEFINED(STRIFE)}
 {$ELSE}
 
@@ -278,7 +301,6 @@ uses
 {$ENDIF}
   i_system,
   doomstat,
-  am_map,
 {$IF DEFINED(HERETIC)}
   h_strings,
 {$ELSEIF DEFINED(HEXEN)}
@@ -291,55 +313,53 @@ uses
   d_main,
 {$ENDIF}
   g_game,
-  hu_lib,
-  m_menu,
-  m_fixed,
-{$IFNDEF DOOM}
-  p_mobj_h,
-{$ENDIF}
-  p_tick,
-{$IF DEFINED(DOOM)}
-  p_mobj_h,
-{$ELSEIF DEFINED(HEXEN)}
+{$IFDEF HEXEN}
   p_mapinfo,
 {$ENDIF}
-  r_draw,
-  r_main,
 {$IFDEF RADIX}
   radix_fonts,
-{$ENDIF}
-{$IF DEFINED(DOOM)}
-  s_sound,
-  st_stuff,
-  sounddata,
-{$ELSEIF DEFINED(STRIFE)}
-  s_sound,
-  sounddata,
 {$ENDIF}
   v_data,
 {$IFDEF HEXEN}
   v_video,
   w_wad,
-  z_zone;
+  z_zone,
 {$ELSE}
-  v_video;
+  v_video,
 {$ENDIF}
+  DelphiDoom.Hud.Types,
+  DelphiDoom.Hud.MapTitle;
 
-// FPS Stuff
-
-const
-  FPSSIZE = 128;
-{$IFDEF HEXEN}
-  FPSSIZE2 = 128;
-{$ELSE}
-  FPSSIZE2 = 512;
-{$ENDIF}
-
+// The heads-up display (issue #185, slice 1a): the model is in Libs\Hud (THeadsUp) and
+// the drawing in DelphiDoom.Engine.Hud.Drawer. What stays here is what is tied to the
+// globals that other units own: the fonts and their loading, the tables of names that the
+// Dehacked patches change, chat_on and message_dontfuckwithme (the menu writes them), the
+// geometry of the widgets (it reads the fonts and the screen) and the routines that call.
 var
-  FPSHISTORY: array[0..FPSSIZE - 1] of integer;
-  FPSHISTORY2: array[0..FPSSIZE2 - 1] of integer;
-  fpshead: integer = -1;
-  fpshead2: integer = -1;
+  GHeadsUp: IHeadsUp = nil;
+  GScreen: IHudScreen = nil;
+
+//==============================================================================
+//
+// HU_Configure
+//
+//==============================================================================
+procedure HU_Configure(const AHeadsUp: IHeadsUp; const AScreen: IHudScreen);
+begin
+  GHeadsUp := AHeadsUp;
+  GScreen := AScreen;
+end;
+
+//==============================================================================
+//
+// HU_CheckConfigured
+//
+//==============================================================================
+procedure HU_CheckConfigured;
+begin
+  if (GHeadsUp = nil) or (GScreen = nil) then
+    I_Error('HU_CheckConfigured(): the heads-up display is not configured (HU_Configure)');
+end;
 
 //==============================================================================
 //
@@ -347,14 +367,9 @@ var
 //
 //==============================================================================
 procedure HU_DoFPSStuff;
-var
-  ftime: integer;
 begin
-  ftime := I_GetFracTime;
-  fpshead := (fpshead + 1) mod FPSSIZE;
-  FPSHISTORY[fpshead] := ftime;
-  fpshead2 := (fpshead2 + 1) mod FPSSIZE2;
-  FPSHISTORY2[fpshead2] := ftime;
+  HU_CheckConfigured;
+  GHeadsUp.RecordFrameTime(I_GetFracTime);
 end;
 
 //==============================================================================
@@ -363,22 +378,9 @@ end;
 //
 //==============================================================================
 function HU_FPS: integer;
-var
-  fpsdiff: integer;
 begin
-  fpsdiff := FPSHISTORY[fpshead] - FPSHISTORY[(fpshead + 1) mod FPSSIZE] + 1;
-  if fpsdiff > 0 then
-  begin
-    result :=  TICRATE * FPSSIZE * FRACUNIT div fpsdiff;
-    if result > FPSSIZE then
-    begin
-      fpsdiff := FPSHISTORY2[fpshead2] - FPSHISTORY2[(fpshead2 + 1) mod FPSSIZE2] + 1;
-      if fpsdiff > 0 then
-        result :=  TICRATE * FPSSIZE2 * FRACUNIT div fpsdiff;
-    end;
-  end
-  else
-    result := TICRATE;
+  HU_CheckConfigured;
+  result := GHeadsUp.FramesPerSecond;
 end;
 
 //==============================================================================
@@ -407,10 +409,6 @@ end;
 //
 //==============================================================================
 function HU_TITLE: string;
-{$IFDEF DOOM}
-var
-  x: integer;
-{$ENDIF}
 begin
 {$IF DEFINED(HERETIC)}
   result := mapnames[(gameepisode - 1) * 9 + gamemap - 1];
@@ -419,12 +417,10 @@ begin
 {$ELSEIF DEFINED(STRIFE)}
   result := mapnames[gamemap - 1];
 {$ELSE}
-  x := (gameepisode - 1) * 9 + gamemap - 1;
-  if IsIntegerInRange(x, 0, NUM_MAPNAMES - 1) then
-    result := mapnames[x]
-  else
-    sprintf(result, 'Episode %d - Map %d', [gameepisode, gamemap]);
+  result := THudMapTitle.ForEpisode(mapnames, gameepisode, gamemap);
+{$ENDIF}
 end;
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN) OR DEFINED(STRIFE))}
 
 //==============================================================================
 //
@@ -433,10 +429,7 @@ end;
 //==============================================================================
 function HU_TITLE2: string;
 begin
-  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMES2) then
-    result := mapnames2[gamemap - 1]
-  else
-    sprintf(result, 'Map %d', [gamemap]);
+  result := THudMapTitle.ForMap(mapnames2, gamemap);
 end;
 
 //==============================================================================
@@ -446,10 +439,7 @@ end;
 //==============================================================================
 function HU_TITLEP: string;
 begin
-  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMESP) then
-    result := mapnamesp[gamemap - 1]
-  else
-    sprintf(result, 'Map %d', [gamemap]);
+  result := THudMapTitle.ForMap(mapnamesp, gamemap);
 end;
 
 //==============================================================================
@@ -459,35 +449,10 @@ end;
 //==============================================================================
 function HU_TITLET: string;
 begin
-  if IsIntegerInRange(gamemap, 1, NUM_MAPNAMEST) then
-    result := mapnamest[gamemap - 1]
-  else
-    sprintf(result, 'Map %d', [gamemap]);
-{$ENDIF}
+  result := THudMapTitle.ForMap(mapnamest, gamemap);
 end;
-
-var
-  plr: Pplayer_t;
-  w_title: hu_textline_t;
-  w_leveltime: hu_textline_t;
-  w_chat: hu_itext_t;
-{$IFDEF HERETIC}
-  always_off: boolean;
-{$ELSE}
-  always_off: boolean = false;
 {$ENDIF}
-  chat_dest: array[0..MAXPLAYERS - 1] of Char;
-  w_inputbuffer: array[0..MAXPLAYERS - 1] of hu_itext_t;
 
-  w_message: hu_stext_t;
-  message_counter: integer;
-
-  headsupactive: boolean = false;
-
-{$IFDEF STRIFE}
-  hu_setting_name: boolean = false;
-
-{$ENDIF}
 const
   HU_TITLEHEIGHT = 1;
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -541,9 +506,6 @@ begin
 {$ENDIF}
 end;
 
-const
-  HU_INPUTTOGGLE: char = 't';
-
 //==============================================================================
 //
 // HU_INPUTX
@@ -564,123 +526,6 @@ begin
   result := HU_MSGY + HU_MSGHEIGHT * (hu_font[0].height + 1)
 end;
 
-const
-  HU_INPUTWIDTH = 64;
-  HU_INPUTHEIGHT = 1;
-
-const
-  french_shiftxform: array[0..127] of Char = (
-    #0,
-    #1, #2, #3, #4, #5, #6, #7, #8, #9, #10,
-    #11, #12, #13, #14, #15, #16, #17, #18, #19, #20,
-    #21, #22, #23, #24, #25, #26, #27, #28, #29, #30,
-    #31,
-    ' ', '!', '"', '#', '$', '%', '&',
-    '"', // shift-'
-    '(', ')', '*', '+',
-    '?', // shift-,
-    '_', // shift--
-    '>', // shift-.
-    '?', // shift-/
-    '0', // shift-0
-    '1', // shift-1
-    '2', // shift-2
-    '3', // shift-3
-    '4', // shift-4
-    '5', // shift-5
-    '6', // shift-6
-    '7', // shift-7
-    '8', // shift-8
-    '9', // shift-9
-    '/',
-    '.', // shift-;
-    '<',
-    '+', // shift-=
-    '>', '?', '@',
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    '[', // shift-[
-    '!', // shift-backslash - OH MY GOD DOES WATCOM SUCK
-    ']', // shift-]
-    '"', '_',
-    '''', // shift-`
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    '{', '|', '}', '~', #127
-  );
-
-const
-  english_shiftxform: array[0..127] of Char = (
-    #0,
-    #1, #2, #3, #4, #5, #6, #7, #8, #9, #10,
-    #11, #12, #13, #14, #15, #16, #17, #18, #19, #20,
-    #21, #22, #23, #24, #25, #26, #27, #28, #29, #30,
-    #31,
-    ' ', '!', '"', '#', '$', '%', '&',
-    '"', // shift-'
-    '(', ')', '*', '+',
-    '<', // shift-,
-    '_', // shift--
-    '>', // shift-.
-    '?', // shift-/
-    ')', // shift-0
-    '!', // shift-1
-    '@', // shift-2
-    '#', // shift-3
-    '$', // shift-4
-    '%', // shift-5
-    '^', // shift-6
-    '&', // shift-7
-    '*', // shift-8
-    '(', // shift-9
-    ':',
-    ':', // shift-;
-    '<',
-    '+', // shift-=
-    '>', '?', '@',
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    '[', // shift-[
-    '!', // shift-backslash - OH MY GOD DOES WATCOM SUCK
-    ']', // shift-]
-    '"', '_',
-    '''', // shift-`
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    '{', '|', '}', '~', #127
-  );
-
-const
-  frenchKeyMap: array[0..127] of Char = (
-    #0,
-    #1,#2,#3,#4,#5,#6,#7,#8,#9,#10,
-    #11,#12,#13,#14,#15,#16,#17,#18,#19,#20,
-    #21,#22,#23,#24,#25,#26,#27,#28,#29,#30,
-    #31,
-    ' ','!','"','#','$','%','&','%','(',')','*','+',';','-',':','!',
-    '0','1','2','3','4','5','6','7','8','9',':','M','<','=','>','?',
-    '@','Q','B','C','D','E','F','G','H','I','J','K','L',',','N','O',
-    'P','A','R','S','T','U','V','Z','X','Y','W','^','\','$','^','_',
-    '@','Q','B','C','D','E','F','G','H','I','J','K','L',',','N','O',
-    'P','A','R','S','T','U','V','Z','X','Y','W','^','\','$','^',#127
-  );
-
-//==============================================================================
-//
-// ForeignTranslation
-//
-//==============================================================================
-function ForeignTranslation(ch: char): char;
-begin
-  if ch < #128 then
-    result := frenchKeyMap[Ord(ch)]
-  else
-    result := ch;
-end;
-
-var
-  crosshairs: array[0..4] of Ppatch_t;
-
 //==============================================================================
 //
 // HU_Init
@@ -698,17 +543,15 @@ var
 {$IFDEF STRIFE}
   c: char;
 {$ENDIF}
+  shifttable: THudShiftTable;
 begin
-  if language = french then
-  begin
-    for i := 0 to 127 do
-      shiftxform[i] := french_shiftxform[i];
-  end
-  else
-  begin
-    for i := 0 to 127 do
-      shiftxform[i] := english_shiftxform[i];
-  end;
+  HU_CheckConfigured;
+
+  // the keyboard map of the language and the history of the frame times
+  GHeadsUp.Initialize;
+  shifttable := GHeadsUp.GetShiftTable;
+  for i := 0 to 127 do
+    shiftxform[i] := shifttable[i];
 
   // load the heads-up font
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
@@ -815,34 +658,12 @@ begin
   RX_InitFonts;
 {$ENDIF}
 
-  for i := 0 to FPSSIZE - 1 do
-    FPSHISTORY[i] := 0;
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
-{$ENDIF}
-  for i := 0 to FPSSIZE2 - 1 do
-    FPSHISTORY2[i] := 0;
-
-  for i := 0 to 4 do
-{$IFDEF RADIX}
-    // the system WAD of Radix has no crosshairs of the engine (the cockpit draws its own)
-    crosshairs[i] := W_CacheLumpNum(RX_LumpNumOrEmpty('XCROSS' + itoa(i)), PU_STATIC);
-{$ELSE}
-    crosshairs[i] := W_CacheLumpName('XCROSS' + itoa(i), PU_STATIC);
-{$ENDIF}
+  // the widths of the glyphs and the crosshairs
+  GScreen.Initialize;
 
   C_AddCmd('fps', @HU_CmdFPS);
   C_AddCmd('playermessage', @HU_CmdPlayerMessage);
-end;
-
-//==============================================================================
-//
-// HU_Stop
-//
-//==============================================================================
-procedure HU_Stop;
-begin
-  headsupactive := false;
 end;
 
 //==============================================================================
@@ -852,61 +673,14 @@ end;
 //==============================================================================
 procedure HU_Start;
 var
-  i: integer;
+  params: THudStartParams;
   s: string;
 begin
-  if headsupactive then
-    HU_Stop;
-
-  plr := @players[consoleplayer];
-  message_on := false;
-  message_dontfuckwithme := false;
-  message_nottobefuckedwith := false;
-  chat_on := false;
-
-  // create the message widget
-  HUlib_initSText(@w_message,
-    HU_MSGX, HU_MSGY, HU_MSGHEIGHT,
-    @hu_font,
-    Ord(HU_FONTSTART), @message_on);
-
-  // create the map title widget
-  HUlib_initTextLine(@w_title,
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    HU_TITLEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF}, HU_TITLEY,
-{$ELSE}
-    HU_TITLEX, HU_TITLEY,
-{$ENDIF}
-    @hu_font,
-    Ord(HU_FONTSTART));
-
-  HUlib_initTextLine(@w_leveltime,
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    HU_LEVELTIMEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF}, HU_LEVELTIMEY,
-{$ELSE}
-    HU_LEVELTIMEX, HU_LEVELTIMEY,
-{$ENDIF}
-    @hu_font,
-    Ord(HU_FONTSTART));
+  HU_CheckConfigured;
 
 {$IF DEFINED(DOOM)}
   if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
-  begin
-    if gamemapinfo.mlabel <> '' then
-      s := gamemapinfo.mlabel
-    else
-      s := gamemapinfo.mapname;
-
-    if (s = gamemapinfo.mapname) or (s <> '-') then
-    begin
-      for i := 1 to Length(s) do
-        HUlib_addCharToTextLine(@w_title, s[i]);
-
-      HUlib_addCharToTextLine(@w_title, ':');
-      HUlib_addCharToTextLine(@w_title, ' ');
-    end;
-    s := gamemapinfo.levelname;
-  end
+    s := THudMapTitle.FromMapInfo(gamemapinfo.mapname, gamemapinfo.mlabel, gamemapinfo.levelname)
   else
   begin
     case gamemode of
@@ -926,38 +700,35 @@ begin
   end;
 {$ELSEIF DEFINED(HERETIC)}
   if (gamemapinfo <> nil) and (gamemapinfo.levelname <> '') then
-  begin
-    if gamemapinfo.mlabel <> '' then
-      s := gamemapinfo.mlabel
-    else
-      s := gamemapinfo.mapname;
-    if (s = gamemapinfo.mapname) or (s <> '-') then
-    begin
-      for i := 1 to Length(s) do
-        HUlib_addCharToTextLine(@w_title, s[i]);
-      HUlib_addCharToTextLine(@w_title, ':');
-      HUlib_addCharToTextLine(@w_title, ' ');
-    end;
-    s := gamemapinfo.levelname;
-  end
+    s := THudMapTitle.FromMapInfo(gamemapinfo.mapname, gamemapinfo.mlabel, gamemapinfo.levelname)
   else
     s := HU_TITLE;
 {$ELSE}
   s := HU_TITLE;
 {$ENDIF}
 
-  for i := 1 to Length(s) do
-    HUlib_addCharToTextLine(@w_title, s[i]);
-
-  // create the chat widget
-  HUlib_initIText(@w_chat,
-    HU_INPUTX, HU_INPUTY,
-    @hu_font,
-    Ord(HU_FONTSTART), @chat_on);
-
-  // create the inputbuffer widgets
-  for i := 0 to MAXPLAYERS - 1 do
-    HUlib_initIText(@w_inputbuffer[i], 0, 0, nil, 0, @always_off);
+  // where the message window, the map title, the time of the level and the chat line go
+  params.MessageX := HU_MSGX;
+  params.MessageY := HU_MSGY;
+  params.MessageHeight := HU_MSGHEIGHT;
+  params.LineHeight := hu_font[0].height + 1;
+  params.StartChar := Ord(HU_FONTSTART);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  params.TitleX := HU_TITLEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF};
+{$ELSE}
+  params.TitleX := HU_TITLEX;
+{$ENDIF}
+  params.TitleY := HU_TITLEY;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  params.LevelTimeX := HU_LEVELTIMEX{$IFDEF OPENGL} * V_GetScreenWidth(SCN_FG) div 200{$ENDIF};
+{$ELSE}
+  params.LevelTimeX := HU_LEVELTIMEX;
+{$ENDIF}
+  params.LevelTimeY := HU_LEVELTIMEY;
+  params.InputX := HU_INPUTX;
+  params.InputY := HU_INPUTY;
+  params.Title := s;
+  GHeadsUp.Start(params);
 {$IFDEF STRIFE}
 
   // haleyjd 09/18/10: [STRIFE] nickname weirdness.
@@ -968,14 +739,10 @@ begin
       nickname := player_names[consoleplayer];
     end;
 {$ENDIF}
-
-  headsupactive := true;
 end;
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
 
 {$IFDEF OPENGL}
-var
-  hu_h: integer = 0;
 
 //==============================================================================
 //
@@ -984,388 +751,34 @@ var
 //==============================================================================
 function HU_Height: integer;
 begin
-  result := hu_h;
+  HU_CheckConfigured;
+  result := GScreen.Height;
 end;
 {$ENDIF}
 {$ENDIF}
-
-var
-  m_fps: string = '';
-  fps_ticker: integer = 0;
-
-//==============================================================================
-//
-// HU_DrawFPS
-//
-//==============================================================================
-procedure HU_DrawFPS;
-var
-  i: integer;
-  x, y: integer;
-  c: integer;
-begin
-{$IFDEF OPENGL}
-  x := V_GetScreenWidth(SCN_FG) - 9;
-  y := 1;
-  for i := length(m_fps) downto 1 do
-  begin
-    if m_fps[i] <> ' ' then
-    begin
-      c := Ord(toupper(m_fps[i])) - Ord(HU_FONTSTART);
-      V_DrawPatch(x, y, SCN_FG, hu_font[c], false);
-      x := x - 8;
-    end
-    else
-      x := x - 4;
-  end;
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-  hu_h := hu_h + 9;
-{$ENDIF}
-{$ELSE}
-  if amstate = am_only then
-  begin
-    x := 311;
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    y := 0;
-{$ELSE}
-    y := 1;
-{$ENDIF}
-  end
-  else
-  begin
-    x := (viewwindowx + viewwidth) * 320 div SCREENWIDTH - 9;
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-    y := viewwindowy * 200 div SCREENHEIGHT;
-{$ELSE}
-    y := viewwindowy * 200 div SCREENHEIGHT + 1;
-{$ENDIF}
-  end;
-  for i := length(m_fps) downto 1 do
-  begin
-    if m_fps[i] <> ' ' then
-    begin
-      c := Ord(toupper(m_fps[i])) - Ord(HU_FONTSTART);
-      V_DrawPatch(x, y, SCN_FG, hu_font[c], true);
-      x := x - 8;
-    end
-    else
-      x := x - 4;
-  end;
-{$ENDIF}
-end;
-
-//==============================================================================
-//
-// HU_DrawCrossHair
-//
-//==============================================================================
-procedure HU_DrawCrossHair;
-var
-  cidx: integer;
-  p: Ppatch_t;
-  dx: integer;
-begin
-  if not drawcrosshair then
-    exit;
-
-  if (amstate = am_only) or (amstate = am_overlay) then
-    exit;
-
-  if plr = nil then
-    exit;
-
-  if plr.playerstate = PST_DEAD then
-    exit;
-
-{$IFDEF HEXEN}
-  if plr.morphTics <> 0 then
-    exit;
-
-{$ENDIF}
-  if plr.plinetarget = nil then
-    cidx := 0
 {$IFDEF STRIFE}
-  else if plr.plinetarget.flags and MF_ALLY <> 0 then
-    cidx := 0
-{$ENDIF}
-  else if plr.plinetarget.flags2_ex and MF2_EX_FRIEND <> 0 then
-    cidx := 0
-  else
-    cidx := (((leveltime - plr.pcrosstic) div 8) mod 4) + 1;
-
-  if plr.lookdir2 < 128 then
-{$IFDEF HEXEN}
-    dx := plr.lookdir2 * viewwidth div 40
-{$ELSE}
-    dx := plr.lookdir2 * viewwidth div 40 
-{$ENDIF}
-  else
-    dx := - (255 - plr.lookdir2) * viewwidth div 40;
-
-  p := crosshairs[cidx];
-  if screenblocks > 10 then
-    V_DrawPatch(160 + dx, 100, SCN_FG, p, true)
-  else
-    V_DrawPatch(160 + dx, 84, SCN_FG, p, true);
-end;
 
 //==============================================================================
-{$IF DEFINED(DOOM)}
-// HU_DrawDemoProgress
 //
-// 19/9/2009 JVAL: For drawing demo progress
+// HU_DrawYellowText
 //
 //==============================================================================
-procedure HU_DrawDemoProgress;
-var
-  dp: Ppatch_t;
-  i: integer;
-  x, y: integer;
+procedure HU_DrawYellowText(x, y: integer; const txt: string; const scn: integer);
 begin
-  dp := W_CacheLumpName('DEMOTIME', PU_STATIC);
-  x := viewwindowx{$IFDEF OPENGL} * 320 div SCREENWIDTH{$ENDIF};
-  y := (viewwindowy + viewheight){$IFDEF OPENGL} * 200 div SCREENHEIGHT{$ENDIF};
-{$IFDEF OPENGL}
-  i := round(G_DemoProgress * viewwidth / SCREENWIDTH * 320 / FRACUNIT);
-{$ELSE}
-  i := G_DemoProgress * viewwidth div FRACUNIT;
+  HU_CheckConfigured;
+  GScreen.DrawYellowText(x, y, txt, scn);
+end;
 {$ENDIF}
-  while i > 0 do
-  begin
-    V_DrawPatchTransparent(x, y, SCN_FG, dp, {$IFDEF OPENGL}true{$ELSE}false{$ENDIF});
-    i := i - dp.width;
-    x := x + dp.width;
-  end;
-  Z_ChangeTag(dp, PU_CACHE);
-end;
-
-var
-  lump_trn: Integer = -2;
 
 //==============================================================================
-//
-// HU_WriteText
-// Write a string using the hu_font, use white for numeric characters
-//
-//==============================================================================
-function HU_WriteText(x, y: integer; const str: string; const highlightnums: boolean = false): menupos_t;
-var
-  w: integer;
-  ch: integer;
-  c: integer;
-  currchar: char;
-  cx: integer;
-  cy: integer;
-  len: integer;
-  oldtranslation, newtranslation: PByteArray;
-  dowhite: boolean;
-begin
-  len := Length(str);
-  if len = 0 then
-  begin
-    result.x := x;
-    result.y := y;
-    exit;
-  end;
-
-  ch := 1;
-  cx := x;
-  cy := y;
-
-  if lump_trn < 0 then
-    lump_trn := W_GetNumForName('TRN_MENU');
-
-  oldtranslation := v_translation;
-  newtranslation := W_CacheLumpNum(lump_trn, PU_STATIC);
-
-  dowhite := False;
-
-  while true do
-  begin
-    if ch > len then
-      break;
-
-    currchar := str[ch];
-    c := Ord(currchar);
-    inc(ch);
-
-    if highlightnums then
-      dowhite := dowhite or (currchar in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
-
-    if c = 0 then
-      break;
-
-    if c = 10 then
-    begin
-      cx := x;
-      continue;
-    end;
-
-    if c = 13 then
-    begin
-      cy := cy + 12;
-      continue;
-    end;
-
-    c := Ord(toupper(Chr(c))) - Ord(HU_FONTSTART);
-    if (c < 0) or (c >= HU_FONTSIZE) then
-    begin
-      cx := cx + 4;
-      continue;
-    end;
-
-    w := hu_font[c].width;
-    if (cx + w) > 320 then
-      break;
-
-    if dowhite then
-      v_translation := newtranslation
-    else
-      v_translation := oldtranslation;
-
-    V_DrawPatch(cx, cy, SCN_FG, hu_font[c], true);
-
-    cx := cx + w;
-  end;
-
-  Z_ChangeTag(newtranslation, PU_CACHE);
-  v_translation := oldtranslation;
-
-  result.x := cx;
-  result.y := cy;
-end;
-
-procedure HU_DrawAMStats;
-const
-  XOFFS = 320 - 2;
-  YOFFS = ST_Y - 1;
-var
-  s1, s2, s3: string;
-  x, y: integer;
-begin
-  if not amdrawstats then
-    exit;
-
-  if plr = nil then
-    exit;
-
-  sprintf(s1, 'Kills: %d/%d', [plr.killcount, totalkills]);
-  sprintf(s2, 'Items: %d/%d', [plr.itemcount, totalitems]);
-  sprintf(s3, 'Secrets: %d/%d', [plr.secretcount, totalsecret]);
-
-  x := XOFFS - Max3I(M_StringWidth(s1), M_StringWidth(s2), M_StringWidth(s3));
-  y := YOFFS - M_StringHeight(s3);
-  HU_WriteText(x, y, s3, True);
-
-  y := y - M_StringHeight(s2);
-  HU_WriteText(x, y, s2, True);
-
-  y := y - M_StringHeight(s1);
-  HU_WriteText(x, y, s1, True);
-end;
-
-//==============================================================================
-{$ELSEIF DEFINED(STRIFE)}
-// HU_DrawDemoProgress
-//
-// 19/9/2009 JVAL: For drawing demo progress
-//
-//==============================================================================
-procedure HU_DrawDemoProgress;
-var
-  dp: Ppatch_t;
-  i: integer;
-  x, y: integer;
-begin
-  dp := W_CacheLumpName('DEMOTIME', PU_STATIC);
-  x := viewwindowx{$IFDEF OPENGL} * 320 div SCREENWIDTH{$ENDIF};
-  y := (viewwindowy + viewheight){$IFDEF OPENGL} * 200 div SCREENHEIGHT{$ENDIF};
-{$IFDEF OPENGL}
-  i := round(G_DemoProgress * viewwidth / SCREENWIDTH * 320 / FRACUNIT);
-{$ELSE}
-  i := G_DemoProgress * viewwidth div FRACUNIT;
-{$ENDIF}
-  while i > 0 do
-  begin
-    V_DrawPatchTransparent(x, y, SCN_FG, dp, {$IFDEF OPENGL}true{$ELSE}false{$ENDIF});
-    i := i - dp.width;
-    x := x + dp.width;
-  end;
-  Z_ChangeTag(dp, PU_CACHE);
-end;
-
-//==============================================================================
-{$ENDIF}
 //
 // HU_Drawer
 //
 //==============================================================================
 procedure HU_Drawer;
-var
-  i, t: integer;
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-{$IFDEF OPENGL}
-  i2, idx, lines: integer;
-{$ENDIF}
-{$ENDIF}
-  lt: string;
 begin
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-{$IFDEF OPENGL}
-  hu_h := 0;
-{$ENDIF}
-{$ENDIF}
-  if drawfps then
-    HU_DrawFPS;
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-  if demoplayback and showdemoplaybackprogress then
-    HU_DrawDemoProgress;
-
-{$ENDIF}
-  HU_DrawCrossHair;
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-
-{$ENDIF}
-  HUlib_drawSText(@w_message);
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-  {$IFDEF OPENGL}
-  if w_message._on^ then
-    for i := 0 to w_message.height - 1 do
-    begin
-      idx := w_message.curline - i;
-      if idx < 0 then
-        idx := idx + w_message.height; // handle queue of lines
-      lines := 0;
-      for i2 := 0 to w_message.lines[idx].len - 1 do
-        if w_message.lines[idx].line[i2] = #10 then
-          inc(lines);
-      if lines * 10 > hu_h then
-        hu_h := lines * 10;
-    end;
-  {$ENDIF}
-{$ENDIF}
-  HUlib_drawIText(@w_chat);
-  if amstate = am_only then
-  begin
-    repeat
-    until not HUlib_delCharFromTextLine(@w_leveltime);
-    t := leveltime div TICRATE;
-    lt := IntToStrZFill(2, t mod 60);
-    t := t div 60;
-    lt := IntToStrZFill(2, t mod 60) + ':' + lt;
-    t := t div 60;
-    lt := 'Time: ' + IntToStrZFill(2, t) + ':' + lt;
-
-    for i := 1 to Length(lt) do
-      HUlib_addCharToTextLine(@w_leveltime, lt[i]);
-    HUlib_drawTextLine(@w_leveltime, false);
-    HUlib_drawTextLine(@w_title, false);
-{$IFDEF DOOM}
-
-    // JVAL: 20220501 - Draw automap stats (https://www.doomworld.com/forum/topic/92113-delphidoom-207734-udmf-umapinfo-mbf21-apr-28-2022/?do=findComment&comment=2488715)
-    HU_DrawAMStats;
-{$ENDIF}
-  end;
+  HU_CheckConfigured;
+  GScreen.Draw;
 end;
 
 //==============================================================================
@@ -1375,9 +788,8 @@ end;
 //==============================================================================
 procedure HU_Erase;
 begin
-  HUlib_eraseSText(@w_message);
-  HUlib_eraseIText(@w_chat);
-  HUlib_eraseTextLine(@w_title);
+  HU_CheckConfigured;
+  GScreen.Erase;
 end;
 
 //==============================================================================
@@ -1386,134 +798,9 @@ end;
 //
 //==============================================================================
 procedure HU_Ticker;
-var
-  i: integer;
-  rc: boolean;
-  c: char;
 begin
-  dec(fps_ticker);
-  if fps_ticker <= 0 then
-  begin
-    m_fps := itoa(HU_FPS) + ' fps';
-    fps_ticker := TICRATE div 2;
-  end;
-
-  // tick down message counter if message is up
-  if message_counter <> 0 then
-  begin
-    dec(message_counter);
-    if message_counter = 0 then
-    begin
-      HUlib_removeLineFromSText(@w_message);
-      message_on := w_message.lines[w_message.curline].len > 0;
-      if message_on then
-        message_counter := HU_MSGTIMEOUT;
-      message_nottobefuckedwith := false;
-    end;
-  end;
-
-  if (showMessages <> 0) or message_dontfuckwithme then
-  begin
-    // display message if necessary
-{$IFDEF DOOM}
-    if plr <> nil then
-      if ((plr._message <> '') and not message_nottobefuckedwith) or
-         ((plr._message <> '') and message_dontfuckwithme) then
-      begin
-        HUlib_addMessageToSText2(@w_message, '', plr._message);
-        plr._message := '';
-        message_on := true;
-        message_counter := HU_MSGTIMEOUT;
-        message_nottobefuckedwith := message_dontfuckwithme;
-        message_dontfuckwithme := false;
-      end;
-{$ELSE}
-    if ((plr._message <> '') and not message_nottobefuckedwith) or
-       ((plr._message <> '') and message_dontfuckwithme) then
-    begin
-      HUlib_addMessageToSText2(@w_message, '', plr._message);
-      plr._message := '';
-      message_on := true;
-      message_counter := HU_MSGTIMEOUT;
-      message_nottobefuckedwith := message_dontfuckwithme;
-      message_dontfuckwithme := false;
-    end;
-{$ENDIF}
-  end; // else message_on = false;
-
-  // check for incoming chat characters
-  if netgame then
-  begin
-    for i := 0 to MAXPLAYERS - 1 do
-    begin
-      if not playeringame[i] then
-        continue;
-      c := Chr(players[i].cmd.chatchar);
-      if (i <> consoleplayer) and (c <> #0) then
-      begin
-{$IFDEF STRIFE}
-        if c <= Chr(HU_CHANGENAME) then // [STRIFE]: allow HU_CHANGENAME here
-{$ELSE}
-        if c <= Chr(HU_BROADCAST) then
-{$ENDIF}
-          chat_dest[i] := c
-        else
-        begin
-          if (c >= 'a') and (c <= 'z') then
-            c := shiftxform[Ord(c)];
-          rc := HUlib_keyInIText(@w_inputbuffer[i], Ord(c));
-          if rc and (Ord(c) = KEY_ENTER) then
-          begin
-            if (w_inputbuffer[i].line.len <> 0) and
-               ((Ord(chat_dest[i]) = consoleplayer + 1) or (Ord(chat_dest[i]) = HU_BROADCAST)) then
-            begin
-              HUlib_addMessageToSText(@w_message,
-                player_names[i],
-                w_inputbuffer[i].line.line);
-
-              message_nottobefuckedwith := true;
-              message_on := true;
-              message_counter := HU_MSGTIMEOUT;
-{$IF DEFINED(DOOM)}
-              if gamemode = commercial then
-                S_StartSound(nil, Ord(sfx_radio))
-              else
-                S_StartSound(nil, Ord(sfx_tink));
-{$ELSEIF DEFINED(STRIFE)}
-              S_StartSound(nil, Ord(sfx_radio))
-{$ENDIF}
-            end;
-            HUlib_resetIText(@w_inputbuffer[i]);
-          end;
-        end;
-        players[i].cmd.chatchar := 0;
-      end;
-    end;
-  end;
-end;
-
-const
-  QUEUESIZE = 128;
-
-var
-  chatchars: array[0..QUEUESIZE - 1] of Char;
-  head: integer = 0;
-  tail: integer = 0;
-
-//==============================================================================
-//
-// HU_queueChatChar
-//
-//==============================================================================
-procedure HU_queueChatChar(c: char);
-begin
-  if ((head + 1) and (QUEUESIZE - 1)) = tail then
-    plr._message := HUSTR_MSGU
-  else
-  begin
-    chatchars[head] := c;
-    head := (head + 1) and (QUEUESIZE - 1);
-  end;
+  HU_CheckConfigured;
+  GHeadsUp.Ticker;
 end;
 
 //==============================================================================
@@ -1523,20 +810,9 @@ end;
 //==============================================================================
 function HU_dequeueChatChar: char;
 begin
-  if head <> tail then
-  begin
-    result := chatchars[tail];
-    tail := (tail + 1) and (QUEUESIZE - 1);
-  end
-  else
-    result := #0;
+  HU_CheckConfigured;
+  result := GHeadsUp.DequeueChatChar;
 end;
-
-var
-  lastmessage: string;
-  shiftdown: boolean = false;
-  altdown: boolean = false;
-  num_nobrainers: integer = 0;
 
 //==============================================================================
 //
@@ -1544,138 +820,9 @@ var
 //
 //==============================================================================
 function HU_Responder(ev: Pevent_t): boolean;
-var
-  macromessage: string;
-  c: char;
-  i: integer;
-  numplayers: integer;
 begin
-  result := false;
-
-  if ev.data1 = KEY_RSHIFT then
-  begin
-    shiftdown := ev._type = ev_keydown;
-    exit;
-  end
-  else if (ev.data1 = KEY_RALT) or (ev.data1 = KEY_LALT) then
-  begin
-    altdown := ev._type = ev_keydown;
-    exit;
-  end;
-
-  if ev._type <> ev_keydown then
-    exit;
-
-  numplayers := 0;
-  for i := 0 to MAXPLAYERS - 1 do
-    if playeringame[i] then
-      inc(numplayers);
-
-  if not chat_on then
-  begin
-    if ev.data1 = HU_MSGREFRESH then
-    begin
-      message_on := true;
-      message_counter := HU_MSGTIMEOUT;
-      result := true;
-    end
-    else if netgame and (ev.data1 = Ord(HU_INPUTTOGGLE)) then
-    begin
-      result := true;
-      chat_on := true;
-      HUlib_resetIText(@w_chat);
-      HU_queueChatChar(Chr(HU_BROADCAST));
-    end
-    else if netgame and (numplayers > 2) then
-    begin
-      for i := 0 to MAXPLAYERS - 1 do
-      begin
-{$IFDEF STRIFE}
-        if key_multi_msgplayer[i] <> '' then
-{$ELSE}
-        if destination_keys[i] <> '' then
-{$ENDIF}
-        begin
-{$IFDEF STRIFE}
-          if ev.data1 = Ord(key_multi_msgplayer[i][1]) then
-{$ELSE}
-          if ev.data1 = Ord(destination_keys[i][1]) then
-{$ENDIF}
-          begin
-            if playeringame[i] and (i <> consoleplayer) then
-            begin
-              result := true;
-              chat_on := true;
-              HUlib_resetIText(@w_chat);
-              HU_queueChatChar(Chr(i + 1));
-              break;
-            end
-            else if i = consoleplayer then
-            begin
-              inc(num_nobrainers);
-              if num_nobrainers < 3 then
-                plr._message := HUSTR_TALKTOSELF1
-              else if num_nobrainers < 6 then
-                plr._message := HUSTR_TALKTOSELF2
-              else if num_nobrainers < 9 then
-                plr._message := HUSTR_TALKTOSELF3
-              else if num_nobrainers < 32 then
-                plr._message := HUSTR_TALKTOSELF4
-              else
-                plr._message := HUSTR_TALKTOSELF5;
-            end
-          end;
-        end;
-      end;
-    end;
-  end
-  else
-  begin
-    c := Chr(ev.data1);
-    // send a macro
-    if altdown then
-    begin
-      c := Chr(Ord(c) - Ord('0'));
-      if c > Chr(9) then
-        exit;
-      macromessage := chat_macros[Ord(c)];
-
-      // kill last message with a '\n'
-      HU_queueChatChar(Chr(KEY_ENTER)); // DEBUG!!!
-
-      // send the macro message
-      for i := 1 to Length(macromessage) do
-        HU_queueChatChar(macromessage[i]);
-      HU_queueChatChar(Chr(KEY_ENTER));
-
-      // leave chat mode and notify that it was sent
-      chat_on := false;
-      lastmessage := chat_macros[Ord(c)];
-      plr._message := lastmessage;
-      result := true;
-    end
-    else
-    begin
-      if language = french then
-        c := ForeignTranslation(c);
-      if shiftdown or ((c >= 'a') and (c <= 'z')) then
-        c := shiftxform[Ord(c)];
-      result := HUlib_keyInIText(@w_chat, Ord(c));
-      if result then
-        HU_queueChatChar(c);
-      if Ord(c) = KEY_ENTER then
-      begin
-        chat_on := false;
-        if w_chat.line.len <> 0 then
-        begin
-          lastmessage := w_chat.line.line;
-          plr._message := lastmessage;
-        end
-      end
-      else if Ord(c) = KEY_ESCAPE then
-        chat_on := false;
-    end;
-  end;
+  HU_CheckConfigured;
+  result := GHeadsUp.Responder(ev.data1, ev._type = ev_keydown);
 end;
 
 initialization
@@ -1707,7 +854,6 @@ initialization
 {$ENDIF}
 
 {$IF DEFINED(HERETIC)}
-  always_off := false;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

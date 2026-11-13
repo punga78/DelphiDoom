@@ -112,7 +112,7 @@ begin
     end;
   end;
 
-  if FSettings.ShowMessages or FFlags.MessageForced then
+  if FSettings.AreMessagesShown or FFlags.MessageForced then
   begin
     // display the message of the player if necessary
     LMessage := FMessages.ReadMessage;
