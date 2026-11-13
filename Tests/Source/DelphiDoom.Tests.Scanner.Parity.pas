@@ -326,6 +326,7 @@ var
   LAnsi: AnsiString;
   LText: string;
   LExpected: TArray<string>;
+  LGolden: string;
   LIndex: Integer;
 begin
   LBytes := TFile.ReadAllBytes(DataPath(ASample + '.txt'));
@@ -342,8 +343,13 @@ begin
   if (ASample = 'eol') or (ASample = 'basic') then
     ModeI(LText);
 
-  LExpected := TFile.ReadAllText(DataPath(ASample + '.golden.txt'), TEncoding.ASCII)
-    .Split([#13#10], TStringSplitOptions.None);
+  // the golden files are text without conversion by git (-text): a checkout may have them with
+  // CR LF or with LF only, so the line break is the one the file has
+  LGolden := TFile.ReadAllText(DataPath(ASample + '.golden.txt'), TEncoding.ASCII);
+  if Pos(#13#10, LGolden) > 0 then
+    LExpected := LGolden.Split([#13#10], TStringSplitOptions.None)
+  else
+    LExpected := LGolden.Split([#10], TStringSplitOptions.None);
   if (Length(LExpected) > 0) and (LExpected[High(LExpected)] = '') then
     SetLength(LExpected, Length(LExpected) - 1);
   Assert.AreEqual(Length(LExpected), FOut.Count, 'the number of lines of the dump of ' + ASample);
