@@ -91,6 +91,8 @@ uses
   DelphiDoom.Tests.Gui.WindowScripts in 'Source\DelphiDoom.Tests.Gui.WindowScripts.pas',
   DelphiDoom.Tests.Gui.Windows in 'Source\DelphiDoom.Tests.Gui.Windows.pas',
   DelphiDoom.Tests.Gui.WindowParity in 'Source\DelphiDoom.Tests.Gui.WindowParity.pas',
+  DelphiDoom.Tests.Gui.Registers in 'Source\DelphiDoom.Tests.Gui.Registers.pas',
+  DelphiDoom.Tests.Gui.WindowExtras in 'Source\DelphiDoom.Tests.Gui.WindowExtras.pas',
   DelphiDoom.Tests.Gui.Scenario in 'Source\DelphiDoom.Tests.Gui.Scenario.pas',
   DelphiDoom.Tests.Gui.Parity in 'Source\DelphiDoom.Tests.Gui.Parity.pas',
   DelphiDoom.Tests.Gui.Reading in 'Source\DelphiDoom.Tests.Gui.Reading.pas',

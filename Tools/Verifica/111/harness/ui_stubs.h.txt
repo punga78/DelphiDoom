@@ -1,0 +1,63 @@
+// stubs of the ui harness (written for the test; no code of Doom 3)
+#ifndef __UI_STUBS_H__
+#define __UI_STUBS_H__
+class idMaterial : public idDecl {
+public:
+	bool TestMaterialFlag(int) const { return false; }
+	void SetSort(float) const {}
+	void SetImageClassifications(int) const {}
+	int GetImageWidth() const { return 16; }
+	int GetImageHeight() const { return 16; }
+	int CinematicLength() const { return 0; }
+	void UpdateCinematic(int) const {}
+	void ResetCinematicTime(int) const {}
+	void SetShaderParm(int, float) const {}
+};
+enum { MF_DEFAULTED = 1 };
+enum { SS_GUI = 1 };
+struct sysEvent_t { int evType; int evValue; int evValue2; int evPtrLength; void *evPtr; };
+enum { SE_NONE, SE_KEY, SE_CHAR, SE_MOUSE, SE_JOYSTICK_AXIS, SE_CONSOLE };
+class idDemoFile { public: void ReadBool(bool&){} void ReadShort(short&){} void ReadInt(int&){} void ReadUnsignedShort(unsigned short&){} void ReadFloat(float&){} const char *ReadHashString(){return "";} void WriteBool(bool){} void WriteShort(short){} void WriteInt(int){} void WriteUnsignedShort(unsigned short){} void WriteFloat(float){} void WriteHashString(const char*){} };
+class idListGUI;
+class idSoundWorld { public: void PlayShaderDirectly(const char *name, int channel = -1) { printf("host sound %s\n", name); } };
+class idSession { public: int GetSaveGameVersion() { return 0; } idSoundWorld *sw; idSession() { sw = new idSoundWorld; } };
+extern idSession *session;
+class idCmdSystem { public: void BufferCommandText(int, const char *t) { printf("host exec %s", t); } };
+extern idCmdSystem *cmdSystem;
+enum { CMD_EXEC_APPEND = 1 };
+class idCVarSystemFull { public: void SetCVarBool(const char *n, bool v) { printf("host cvar %s %d\n", n, v); } };
+class idRenderSystemStub {};
+class idCVarSystem { public: idCVar *Find(const char *) { return NULL; } void SetCVarBool(const char *n, bool v) { printf("host cvar %s %d\n", n, v); } const char *GetCVarString(const char *) { return ""; } int GetCVarInteger(const char *) { return 0; } bool GetCVarBool(const char *) { return false; } };
+extern idCVarSystem *cvarSystem;
+extern idRenderSystemStub *renderSystem;
+
+//@FONTS@
+#include "../ui/UserInterface.h"
+
+typedef int qhandle_t;
+template<class T> class idHashTable { std::map<std::string,T> m; public: void Set(const char *k, T v) { m[k] = v; } bool Get(const char *k, T *v = NULL) const { typename std::map<std::string,T>::const_iterator it = m.find(k); if (it == m.end()) return false; if (v) *v = it->second; return true; } void Clear() { m.clear(); } };
+struct renderView_t { int dummy; };
+class idRenderWorld { public: };
+struct renderEntity_t { int dummy; };
+struct renderLight_t { int dummy; };
+class idMD5Anim { public: };
+typedef struct { int health; int heartRate; int stamina; int combat; } logStats_t;
+const int MAX_LOGGED_STATS = 3600;
+const int CVAR_GUI = 4;
+const int USERCMD_MSEC = 16;
+const int EDITOR_GUI = 4;
+enum { K_TAB = 9, K_ENTER = 13, K_ESCAPE = 27, K_SHIFT = 160, K_MOUSE1 = 187, K_MOUSE2, K_MOUSE3, K_KP_ENTER = 140, K_BACKSPACE = 127, K_DEL, K_LEFTARROW, K_RIGHTARROW, K_UPARROW, K_DOWNARROW, K_HOME, K_END, K_MWHEELDOWN, K_MWHEELUP, K_PGUP, K_PGDN, K_INS, K_ALT, K_CTRL, K_JOY1, K_JOY2, K_JOY3, K_JOY4, K_AUX1, K_MOUSE4, K_MOUSE5 };
+class idKeyInput { public: static bool IsDown(int) { return false; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };
+static idVec4 colorBlack(0.0f, 0.0f, 0.0f, 1.0f);
+const int CVAR_ARCHIVE = 8;
+enum { K_KP_RIGHTARROW = 200, K_KP_LEFTARROW, K_KP_UPARROW, K_KP_DOWNARROW, K_KP_HOME, K_KP_END, K_KP_PGUP, K_KP_PGDN, K_KP_INS, K_KP_DEL, K_KP_5, K_KP_PLUS, K_KP_MINUS, K_KP_STAR, K_KP_SLASH, K_KP_NUMLOCK, K_KP_EQUALS };
+inline int Sys_GetConsoleKey(bool) { return 96; }
+static idVec4 colorWhite(1.0f, 1.0f, 1.0f, 1.0f);
+class idDeclManagerStub : public idDeclManager {
+public:
+	idMaterial mat;
+	virtual const idMaterial *FindMaterial( const char *name, bool makeDefault = true ) { return &mat; }
+	virtual const idDecl *FindType( declType_t type, const char *name, bool makeDefault = true ) { return NULL; }
+	virtual const idDecl *DeclByIndex( declType_t type, int index, bool forceParse = true ) { return NULL; }
+};
+#endif

@@ -1,0 +1,35 @@
+// stubs of the device context for the ui harness (written for the test; no code of Doom 3)
+#include "precompiled.h"
+#include "../ui/DeviceContext.h"
+idVec4 idDeviceContext::colorPurple(1, 0, 1, 1);
+idVec4 idDeviceContext::colorOrange(1, 0.5f, 0, 1);
+idVec4 idDeviceContext::colorYellow(1, 1, 0, 1);
+idVec4 idDeviceContext::colorGreen(0, 1, 0, 1);
+idVec4 idDeviceContext::colorBlue(0, 0, 1, 1);
+idVec4 idDeviceContext::colorRed(1, 0, 0, 1);
+idVec4 idDeviceContext::colorWhite(1, 1, 1, 1);
+idVec4 idDeviceContext::colorBlack(0, 0, 0, 1);
+idVec4 idDeviceContext::colorNone(0, 0, 0, 0);
+idDeviceContext::idDeviceContext() {}
+static std::vector<std::string> fontNames;
+int idDeviceContext::FindFont(const char *name) {
+	for (size_t i = 0; i < fontNames.size(); i++) if (fontNames[i] == name) return (int)i + 1;
+	fontNames.push_back(name); return (int)fontNames.size();
+}
+void idDeviceContext::SetFont(int) {}
+void idDeviceContext::SetSize(float, float) {}
+void idDeviceContext::SetCursor(int) {}
+void idDeviceContext::PushClipRect(idRectangle) {}
+void idDeviceContext::PopClipRect() {}
+void idDeviceContext::GetTransformInfo(idVec3 &, idMat3 &) {}
+void idDeviceContext::SetTransformInfo(const idVec3 &, const idMat3 &) {}
+int idDeviceContext::CharWidth(const char, float) { return 0; }
+int idDeviceContext::MaxCharHeight(float) { return 0; }
+int idDeviceContext::MaxCharWidth(float) { return 0; }
+int idDeviceContext::TextWidth(const char *, float, int) { return 0; }
+int idDeviceContext::DrawText(const char *, float, int, idVec4, idRectangle, bool, int, bool, idList<int> *, int) { return 0; }
+void idDeviceContext::DrawCursor(float *, float *, float) {}
+void idDeviceContext::DrawFilledRect(float, float, float, float, const idVec4 &) {}
+void idDeviceContext::DrawRect(float, float, float, float, float, const idVec4 &) {}
+void idDeviceContext::DrawMaterial(float, float, float, float, const idMaterial *, const idVec4 &, float, float) {}
+float idDeclTable::TableLookup(float) const { return 0; }

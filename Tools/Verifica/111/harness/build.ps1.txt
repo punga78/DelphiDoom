@@ -1,0 +1,13 @@
+param([string[]]$files)
+$d = $PSScriptRoot
+New-Item -ItemType Directory -Force "$d\obj" | Out-Null
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+foreach ($f in $files) {
+  $dir = Split-Path $f -Parent; $name = [IO.Path]::GetFileNameWithoutExtension($f)
+  Push-Location "$d\neo\$dir"
+  $o = "$d\obj\" + ($dir -replace '\\','_') + "_$name.o"
+  $out = & $B -c -w- -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
+  Write-Host "== $f exit $LASTEXITCODE"
+  if ($LASTEXITCODE -ne 0) { $out | Select-String 'error' | Select-Object -First 15 | ForEach-Object { $_.Line } }
+  Pop-Location
+}
