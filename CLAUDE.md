@@ -20,10 +20,12 @@ Tools\build.bat all                 # tutti i progetti (giochi + strumenti)
 Tools\build.bat giochi | strumenti  # gruppi
 Tools\build.bat Heretic32 Debug     # un progetto
 Tools\build.bat all Release clean   # cancella prima la cartella dcu
+Tools\build.bat all Release Win64   # 64 bit (dcc64); Win32 (predefinita) | Win64 | both
+Tools\build.bat tests Release both  # librerie e test a 32 e a 64 bit, li esegue
 ```
 
 - Il progetto si indica per nome (`Doom32`, `ddc_hexen`, `DDWad`, `DelphiDoom.Tests.Wad`) o per percorso senza estensione; `Tools\build.bat` si chiama da qualsiasi cartella (calcola la radice dal proprio percorso) e ha la tabella nome -> percorso nelle liste `GIOCHI`, `STRUMENTI`, `LIBRERIE`, `TESTS`. Per l'IDE: `DelphiDoom.groupproj`.
-- Output: `bin\Doom|Heretic|Hexen|Strife` (giochi), `bin\Tools` (DD_IDE, ddc, DLL), `bin` (Launcher); `.dcu` in `dcu\`; log in `logs\<progetto>.log`. Tutte queste cartelle sono ignorate da git.
+- Output: `bin\Doom|Heretic|Hexen|Strife` (giochi), `bin\Tools` (DD_IDE, ddc, DLL), `bin` (Launcher); `.dcu` in `dcu\`; log in `logs\<progetto>.log`. Tutte queste cartelle sono ignorate da git. **Win64 (issue #44)**: ogni `.dproj` dichiara anche Win64 (`TargetedPlatforms` 3, gruppo `'$(Platform)'=='Win64'` con `DCC_Platform` x64 e uscite separate): eseguibili e DLL in `bin\Win64\...` (DLL in `bin\Win64\Libs`, test in `bin\Win64\Tests`: stessa bitness), `.dcu` in `dcu\Win64\...`, log in `logs\Win64\`. Il riepilogo di `build.bat` è per piattaforma; a 64 bit i progetti che non compilano ancora (asm, `{$L}`: #41, #42, #43) sono elencati a parte con il primo errore e non alzano il codice di uscita (quello di Win32 sì).
 - Delphi è installato **in una VM** che legge il progetto da una cartella condivisa. Conseguenze: i file possono risultare bloccati (`Device or resource busy`) o letti con dimensione vecchia (errori di "fine file" su sorgenti integri); `Tools\build.bat` elenca i file prima di compilare per aggiornare la cache. Se un file è bloccato non ritentare in ciclo: chiedere di sospendere la VM.
 - Per leggere i risultati di una build usare `logs\*.log` (righe `error`), non gli output a video.
 - Prove a runtime: i WAD stanno in `bin\<Gioco>` (`DOOM1.WAD`, `FREEDOOM2.WAD`, `HERETIC1.WAD`, `HEXEN.WAD`, `STRIFE0.WAD`) insieme ai `*32.swd`. Log in `bin\<Gioco>\DATA\LOGS\` (`*_stderr.txt`, `*_stdout.txt`). Con `-devparm` si vedono le tracce di caricamento; in caso di crash `crash.txt` (unit `Base\i_crashlog.pas`) e il file `.map` accanto all'exe permettono di risalire all'indirizzo.
