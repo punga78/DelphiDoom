@@ -1,0 +1,389 @@
+bits.write size=57 bit=454 overflowed=0 hex=45a3461fb5a5f1a6e0ebbc67f5e3609898b3f9d3bf33668f302fb91ae529fdfcf37c8ee6d7a663fd499224499244a25f6ef279a5f8716e2429
+bits.read byte=171 char=-5 short=-1234 long=305419896 f1=40600000 f2=80000000 str=[hello.. world] big=[big..s] angle1=64 angle2=224 a16=-32768 b3=5 b4s=13 b13=4660 b31=2147483647 b32=-1 s12a=-24 s12b=-1 s12c=-3 s16=-25536 s8=-56 u8=44 data=1,2,255 empty=[] readcount=57 bit=454
+bits.end byte=-1 char=-1 short=-1 long=-1 float=bf800000 str=[] line=[]
+bits.line [ab] [cd.e]
+bits.longstring size=1 bit=2
+bits.longbig len=0 size=1101 bit=2
+bits.long print MSG_WriteString: MAX_STRING_CHARS
+ readstring len=1023 readcount=1024
+bits.err0 MSG_WriteBits: bad bits 0
+bits.err33 MSG_WriteBits: bad bits 33
+bits.err-32 MSG_WriteBits: bad bits -32
+bits.overflows 4
+bits.small8  size=5 bit=36 overflowed=1 hex=fe39f3af07
+bits.small16  size=13 bit=102 overflowed=1 hex=fe39f3afd7ec0cc307e603b42a
+bits.small24  size=21 bit=161 overflowed=1 hex=fe39f3afd7ec0cc307e603b4ea74a856a314662000
+bits.clear size=0 bit=0 ovf=0
+oob.err12 can't read 12 bits
+
+oob.write size=18 bit=72 overflowed=0 hex=ff4523efbeadde07fefffdffffff0000c03f
+oob.read b=255 s=9029 l=-559038737 byte=7 short=-2 long=-3 float=3fc00000 readcount=18 bit=144
+oob.errread12 can't read 12 bits
+
+oob.signed a=-1 b=9029
+oob.bitstream size=2 bit=12 overflowed=0 hex=1b09
+delta.write size=17 bit=129 overflowed=0 hex=d2c6b9d5fb590f2e7f4dae78a7e027a900
+delta.read a=5 b=9 c=300 d=3f800000 e=40200000 f=3 g=4100 h=4 i=3f800000 j=c0e80000
+usercmd size=24
+usercmd.write size=13 bit=102 overflowed=0 hex=df254949b2e50cbf821d4b2b00
+usercmd.read 0 t=1050 a=100,65535,0 b=3 w=3 m=-1,-128,0
+usercmd.read 1 t=5000 a=100,200,0 b=1 w=9 m=127,-128,-90
+usercmd.read 2 t=1000 a=100,200,0 b=1 w=3 m=127,-128,0
+usercmdkey.write size=14 bit=108 overflowed=0 hex=df5b625ae28868cef06b102bb305
+usercmdkey.read 0 t=1050 a=100,131071,0 b=65539 w=3 m=-1,-128,0
+usercmdkey.read 1 t=5000 a=100,200,0 b=1 w=9 m=127,-128,-90
+usercmdkey.read 2 t=1000 a=100,200,0 b=1 w=3 m=127,-128,0
+entity sizeof=208 fields=51
+entity.field 0 pos.trTime 16 32
+entity.field 1 pos.trBase[0] 24 0
+entity.field 2 pos.trBase[1] 28 0
+entity.field 3 pos.trDelta[0] 36 0
+entity.field 4 pos.trDelta[1] 40 0
+entity.field 5 pos.trBase[2] 32 0
+entity.field 6 apos.trBase[1] 64 0
+entity.field 7 pos.trDelta[2] 44 0
+entity.field 8 apos.trBase[0] 60 0
+entity.field 9 event 180 10
+entity.field 10 angles2[1] 132 0
+entity.field 11 eType 4 8
+entity.field 12 torsoAnim 200 8
+entity.field 13 eventParm 184 8
+entity.field 14 legsAnim 196 8
+entity.field 15 groundEntityNum 148 10
+entity.field 16 pos.trType 12 8
+entity.field 17 eFlags 8 19
+entity.field 18 otherEntityNum 140 10
+entity.field 19 weapon 192 8
+entity.field 20 clientNum 168 8
+entity.field 21 angles[1] 120 0
+entity.field 22 pos.trDuration 20 32
+entity.field 23 apos.trType 48 8
+entity.field 24 origin[0] 92 0
+entity.field 25 origin[1] 96 0
+entity.field 26 origin[2] 100 0
+entity.field 27 solid 176 24
+entity.field 28 powerups 188 16
+entity.field 29 modelindex 160 8
+entity.field 30 otherEntityNum2 144 10
+entity.field 31 loopSound 156 8
+entity.field 32 generic1 204 8
+entity.field 33 origin2[2] 112 0
+entity.field 34 origin2[0] 104 0
+entity.field 35 origin2[1] 108 0
+entity.field 36 modelindex2 164 8
+entity.field 37 angles[0] 116 0
+entity.field 38 time 84 32
+entity.field 39 apos.trTime 52 32
+entity.field 40 apos.trDuration 56 32
+entity.field 41 apos.trBase[2] 68 0
+entity.field 42 apos.trDelta[0] 72 0
+entity.field 43 apos.trDelta[1] 76 0
+entity.field 44 apos.trDelta[2] 80 0
+entity.field 45 time2 88 32
+entity.field 46 angles[2] 124 0
+entity.field 47 angles2[0] 128 0
+entity.field 48 angles2[2] 136 0
+entity.field 49 constantLight 152 32
+entity.field 50 frame 172 16
+entity.case 0 num=119 force=1 size=2 bit=12 fnv=d082fd6d n=119 dec=b6109f5f eq=1 readcount=2 bit=12
+entity.case 1 num=217 force=0 size=6 bit=40 fnv=a6e960f3 n=217 dec=88677b96 eq=1 readcount=6 bit=40
+entity.case 2 num=890 force=1 size=8 bit=58 fnv=7065ee49 n=890 dec=63978dab eq=1 readcount=8 bit=58
+entity.case 3 num=947 force=1 size=17 bit=135 fnv=131a56e6 n=947 dec=ee9fcc30 eq=1 readcount=17 bit=135
+entity.case 4 num=337 force=1 size=12 bit=91 fnv=67e4f3c9 n=337 dec=700bfde5 eq=1 readcount=12 bit=91
+entity.case 5 num=881 force=1 size=20 bit=153 fnv=b1e51fe1 n=881 dec=d7caa81a eq=1 readcount=20 bit=153
+entity.case 6 num=101 force=0 size=16 bit=126 fnv=be4b65f3 n=101 dec=c1824801 eq=1 readcount=16 bit=126
+entity.case 7 num=250 force=1 size=27 bit=210 fnv=c120c8dc n=250 dec=4818e7d4 eq=1 readcount=27 bit=210
+entity.case 8 num=302 force=0 size=18 bit=141 fnv=e3268204 n=302 dec=a4728e4e eq=0 readcount=18 bit=141
+entity.case 9 num=610 force=0 size=29 bit=226 fnv=a4583312 n=610 dec=8a1a18db eq=1 readcount=29 bit=226
+entity.case 10 num=413 force=1 size=3 bit=23 fnv=17daf7aa n=413 dec=dbb00a68 eq=0 readcount=3 bit=23
+entity.case 11 num=463 force=1 size=9 bit=65 fnv=23f1e9d5 n=463 dec=13e12e8c eq=1 readcount=9 bit=65
+entity.case 12 num=933 force=1 size=13 bit=98 fnv=36f2cf82 n=933 dec=79e28d14 eq=1 readcount=13 bit=98
+entity.case 13 num=174 force=0 size=11 bit=85 fnv=47eb10c0 n=174 dec=bfb5ffee eq=1 readcount=11 bit=85
+entity.case 14 num=606 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 15 num=542 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 16 num=1022 force=0 size=16 bit=123 fnv=c1f0843c n=1022 dec=6271d194 eq=1 readcount=16 bit=123
+entity.case 17 num=675 force=1 size=25 bit=197 fnv=b8ac5e14 n=675 dec=5f3fe591 eq=1 readcount=25 bit=197
+entity.case 18 num=259 force=0 size=16 bit=125 fnv=0daaca80 n=259 dec=91eb18e9 eq=1 readcount=16 bit=125
+entity.case 19 num=261 force=0 size=19 bit=149 fnv=73e86143 n=261 dec=6bae2467 eq=1 readcount=19 bit=149
+entity.case 20 num=888 force=0 size=13 bit=102 fnv=2115cbb3 n=888 dec=727d800d eq=1 readcount=13 bit=102
+entity.case 21 num=140 force=1 size=7 bit=51 fnv=7bab9cdc n=140 dec=7cb35654 eq=1 readcount=7 bit=51
+entity.case 22 num=702 force=0 size=10 bit=75 fnv=708bf492 n=702 dec=ed04caca eq=1 readcount=10 bit=75
+entity.case 23 num=495 force=1 size=13 bit=99 fnv=6d78edc5 n=495 dec=e291b880 eq=0 readcount=13 bit=99
+entity.case 24 num=528 force=0 size=11 bit=81 fnv=42aa112d n=528 dec=55599e3b eq=1 readcount=11 bit=81
+entity.case 25 num=278 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 26 num=269 force=1 size=7 bit=49 fnv=71c46095 n=269 dec=bda04421 eq=1 readcount=7 bit=49
+entity.case 27 num=489 force=1 size=17 bit=135 fnv=73289a7f n=489 dec=5e37959a eq=1 readcount=17 bit=135
+entity.case 28 num=23 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 29 num=543 force=0 size=11 bit=86 fnv=071c8635 n=543 dec=02f7a933 eq=1 readcount=11 bit=86
+entity.case 30 num=333 force=1 size=2 bit=14 fnv=3f901aef n=333 dec=e537269b eq=1 readcount=2 bit=14
+entity.case 31 num=133 force=0 size=18 bit=136 fnv=b0f993fb n=133 dec=f6044aa0 eq=1 readcount=18 bit=136
+entity.case 32 num=20 force=1 size=2 bit=12 fnv=f8ce13e9 n=20 dec=0214e097 eq=1 readcount=2 bit=12
+entity.case 33 num=506 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 34 num=930 force=1 size=14 bit=109 fnv=931575a7 n=930 dec=18085fb8 eq=0 readcount=14 bit=109
+entity.case 35 num=720 force=1 size=16 bit=127 fnv=3c7fdd5c n=720 dec=8699d8c1 eq=1 readcount=16 bit=127
+entity.case 36 num=395 force=0 size=12 bit=90 fnv=4fd7d068 n=395 dec=17a9ad10 eq=0 readcount=12 bit=90
+entity.case 37 num=316 force=0 size=18 bit=139 fnv=0f586f49 n=316 dec=31d4647a eq=1 readcount=18 bit=139
+entity.case 38 num=907 force=1 size=16 bit=120 fnv=b18eed0d n=907 dec=55451fd8 eq=1 readcount=16 bit=120
+entity.case 39 num=76 force=1 size=2 bit=13 fnv=48ea0b28 n=76 dec=b35aee98 eq=1 readcount=2 bit=13
+entity.case 40 num=356 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 41 num=767 force=1 size=13 bit=100 fnv=ce31f063 n=767 dec=4d0f4729 eq=1 readcount=13 bit=100
+entity.case 42 num=999 force=1 size=13 bit=97 fnv=5f4160af n=999 dec=e7581a8d eq=1 readcount=13 bit=97
+entity.case 43 num=661 force=0 size=5 bit=37 fnv=413e6c28 n=661 dec=dc88844b eq=1 readcount=5 bit=37
+entity.case 44 num=1006 force=0 size=11 bit=81 fnv=beac5b5d n=1006 dec=68dc832e eq=1 readcount=11 bit=81
+entity.case 45 num=100 force=0 size=0 bit=0 fnv=811c9dc5
+entity.case 46 num=582 force=1 size=7 bit=53 fnv=7b83667c n=582 dec=85b9e869 eq=1 readcount=7 bit=53
+entity.case 47 num=946 force=0 size=8 bit=63 fnv=3f3aa813 n=946 dec=44b45011 eq=1 readcount=8 bit=63
+entity.case 48 num=348 force=0 size=20 bit=153 fnv=371e6338 n=348 dec=512b6772 eq=1 readcount=20 bit=153
+entity.case 49 num=750 force=0 size=15 bit=119 fnv=f83e228f n=750 dec=01910b2a eq=1 readcount=15 bit=119
+entity.case 50 num=978 force=0 size=19 bit=150 fnv=5c44f69c n=978 dec=2fd82bc0 eq=1 readcount=19 bit=150
+entity.case 51 num=95 force=1 size=2 bit=14 fnv=c245b476 n=95 dec=bbe5b89f eq=1 readcount=2 bit=14
+entity.case 52 num=435 force=1 size=12 bit=93 fnv=536e579e n=435 dec=c673bf94 eq=1 readcount=12 bit=93
+entity.case 53 num=193 force=1 size=17 bit=134 fnv=25990bac n=193 dec=d302ff16 eq=1 readcount=17 bit=134
+entity.case 54 num=861 force=1 size=13 bit=103 fnv=850ac318 n=861 dec=a716a49d eq=1 readcount=13 bit=103
+entity.case 55 num=458 force=1 size=17 bit=133 fnv=ea4f571a n=458 dec=f4aeed3e eq=1 readcount=17 bit=133
+entity.case 56 num=756 force=0 size=28 bit=221 fnv=2545b865 n=756 dec=16f3ddf4 eq=1 readcount=28 bit=221
+entity.case 57 num=23 force=0 size=19 bit=144 fnv=fc5f0761 n=23 dec=ee8f9f45 eq=1 readcount=19 bit=144
+entity.case 58 num=170 force=0 size=17 bit=135 fnv=3afc3583 n=170 dec=3111accc eq=1 readcount=17 bit=135
+entity.case 59 num=510 force=0 size=17 bit=135 fnv=07f07297 n=510 dec=866c1232 eq=1 readcount=17 bit=135
+entity.case 60 num=602 force=0 size=111 bit=883 fnv=e8fae0e6 n=602 dec=ac3c90cb eq=0 readcount=111 bit=883
+entity.case 61 num=25 force=1 size=113 bit=903 fnv=819166f2 n=25 dec=7e54bb1d eq=0 readcount=113 bit=903
+entity.case 62 num=823 force=1 size=110 bit=874 fnv=be6ae6b8 n=823 dec=99f81ea3 eq=0 readcount=110 bit=874
+entity.case 63 num=999 force=1 size=102 bit=809 fnv=18dc3c71 n=999 dec=86d42618 eq=0 readcount=102 bit=809
+entity.case 64 num=692 force=1 size=116 bit=921 fnv=b33c74bd n=692 dec=1e1478d7 eq=0 readcount=116 bit=921
+entity.case 65 num=629 force=1 size=105 bit=838 fnv=3e3566a2 n=629 dec=1fee42ad eq=0 readcount=105 bit=838
+entity.case 66 num=203 force=1 size=101 bit=806 fnv=f9829a88 n=203 dec=020f5ebb eq=0 readcount=101 bit=806
+entity.case 67 num=364 force=1 size=109 bit=865 fnv=fb885979 n=364 dec=33e93ac4 eq=0 readcount=109 bit=865
+entity.case 68 num=477 force=1 size=113 bit=902 fnv=b6b12e73 n=477 dec=24ed070d eq=0 readcount=113 bit=902
+entity.case 69 num=498 force=0 size=125 bit=994 fnv=db8b9b12 n=498 dec=0708776e eq=0 readcount=125 bit=994
+entity.case 70 num=86 force=0 size=92 bit=734 fnv=c8ace5e4 n=86 dec=9b2e16d5 eq=1 readcount=92 bit=734
+entity.case 71 num=57 force=0 size=96 bit=763 fnv=9200072b n=57 dec=47ebdd9f eq=0 readcount=96 bit=763
+entity.case 72 num=836 force=1 size=104 bit=829 fnv=f60247de n=836 dec=010190d5 eq=0 readcount=104 bit=829
+entity.case 73 num=320 force=1 size=108 bit=856 fnv=450f54f9 n=320 dec=8ab7464d eq=0 readcount=108 bit=856
+entity.case 74 num=453 force=1 size=112 bit=894 fnv=95da14b2 n=453 dec=8d1ca8f3 eq=0 readcount=112 bit=894
+entity.case 75 num=333 force=1 size=105 bit=839 fnv=9e66a14d n=333 dec=0518c57a eq=0 readcount=105 bit=839
+entity.case 76 num=279 force=1 size=119 bit=944 fnv=5d82bb41 n=279 dec=7dc7b21a eq=0 readcount=119 bit=944
+entity.case 77 num=830 force=1 size=116 bit=922 fnv=7c2a7c33 n=830 dec=12707300 eq=1 readcount=116 bit=922
+entity.case 78 num=645 force=1 size=97 bit=769 fnv=3994d0f5 n=645 dec=fcf0cdde eq=0 readcount=97 bit=769
+entity.case 79 num=722 force=1 size=100 bit=796 fnv=d82d47e8 n=722 dec=bf09244a eq=1 readcount=100 bit=796
+entity.remove size=2 bit=12 overflowed=0 hex=e10f
+entity.removed n=77 number=1023 fnv=4474235f
+entity.floats size=33 bit=263 overflowed=0 hex=6d87dd02c8a8057911c58ec1787566573b0080ebfdccc637e0f58b022000ae5465
+entity.floats.dec fnv=bbaff553
+entity.err MSG_WriteDeltaEntity: Bad entity number: 1024
+entity.errread Bad delta entity number: -1
+player sizeof=468 fields=48
+player.field 0 commandTime 0 32
+player.field 1 origin[0] 20 0
+player.field 2 origin[1] 24 0
+player.field 3 bobCycle 8 8
+player.field 4 velocity[0] 32 0
+player.field 5 velocity[1] 36 0
+player.field 6 viewangles[1] 156 0
+player.field 7 viewangles[0] 152 0
+player.field 8 weaponTime 44 -16
+player.field 9 origin[2] 28 0
+player.field 10 velocity[2] 40 0
+player.field 11 legsTimer 72 8
+player.field 12 pm_time 16 -16
+player.field 13 eventSequence 108 16
+player.field 14 torsoAnim 84 8
+player.field 15 movementDir 88 4
+player.field 16 events[0] 112 8
+player.field 17 legsAnim 76 8
+player.field 18 events[1] 116 8
+player.field 19 pm_flags 12 16
+player.field 20 groundEntityNum 68 10
+player.field 21 weaponstate 148 4
+player.field 22 eFlags 104 16
+player.field 23 externalEvent 128 10
+player.field 24 gravity 48 16
+player.field 25 speed 52 16
+player.field 26 delta_angles[1] 60 16
+player.field 27 externalEventParm 132 8
+player.field 28 viewheight 164 -8
+player.field 29 damageEvent 168 8
+player.field 30 damageYaw 172 8
+player.field 31 damagePitch 176 8
+player.field 32 damageCount 180 8
+player.field 33 generic1 440 8
+player.field 34 pm_type 4 8
+player.field 35 delta_angles[0] 56 16
+player.field 36 delta_angles[2] 64 16
+player.field 37 torsoTimer 80 12
+player.field 38 eventParms[0] 120 8
+player.field 39 eventParms[1] 124 8
+player.field 40 clientNum 140 8
+player.field 41 weapon 144 5
+player.field 42 viewangles[2] 160 0
+player.field 43 grapplePoint[0] 92 0
+player.field 44 grapplePoint[1] 96 0
+player.field 45 grapplePoint[2] 100 0
+player.field 46 jumppad_ent 448 10
+player.field 47 loopSound 444 16
+player.case 0 size=1 bit=3 fnv=070c6045 dec=f20dc215 readcount=1 bit=3
+player.case 1 size=55 bit=436 fnv=dddf2444 dec=762c6f00 readcount=55 bit=436
+player.case 2 size=46 bit=361 fnv=d038309e dec=754989b7 readcount=46 bit=361
+player.case 3 size=27 bit=213 fnv=1a9b3874 dec=066be234 readcount=27 bit=213
+player.case 4 size=8 bit=61 fnv=a17cbc16 dec=03672f1f readcount=8 bit=61
+player.case 5 size=48 bit=382 fnv=d572ecff dec=b39c7c75 readcount=48 bit=382
+player.case 6 size=36 bit=283 fnv=9a6a851f dec=c4200c21 readcount=36 bit=283
+player.case 7 size=46 bit=360 fnv=bc9c556f dec=e8c5a49d readcount=46 bit=360
+player.case 8 size=21 bit=160 fnv=30dc1b63 dec=18edc46a readcount=21 bit=160
+player.case 9 size=64 bit=510 fnv=5b021b4e dec=c0319e33 readcount=64 bit=510
+player.case 10 size=48 bit=378 fnv=0d88e137 dec=00aadcff readcount=48 bit=378
+player.case 11 size=62 bit=491 fnv=2c442532 dec=dc936baa readcount=62 bit=491
+player.case 12 size=6 bit=47 fnv=79a339a9 dec=2198248f readcount=6 bit=47
+player.case 13 size=56 bit=445 fnv=a3ef40d5 dec=c0fa9e33 readcount=56 bit=445
+player.case 14 size=44 bit=351 fnv=13562365 dec=dfb0b3b0 readcount=44 bit=351
+player.case 15 size=37 bit=293 fnv=4b57cbc5 dec=401083d4 readcount=37 bit=293
+player.case 16 size=1 bit=3 fnv=070c6045 dec=cef3d909 readcount=1 bit=3
+player.case 17 size=51 bit=400 fnv=4c910fa7 dec=5cc48c25 readcount=51 bit=400
+player.case 18 size=56 bit=446 fnv=0b4c2b79 dec=1dc2db0f readcount=56 bit=446
+player.case 19 size=53 bit=423 fnv=c5daa9a9 dec=fb5d2ede readcount=53 bit=423
+player.case 20 size=6 bit=42 fnv=d945fd0d dec=2611b56f readcount=6 bit=42
+player.case 21 size=35 bit=278 fnv=b15e0504 dec=62a97aa5 readcount=35 bit=278
+player.case 22 size=44 bit=345 fnv=5f3a8a8b dec=e50b0371 readcount=44 bit=345
+player.case 23 size=51 bit=404 fnv=0d65ffd2 dec=ed5ca4a2 readcount=51 bit=404
+player.case 24 size=7 bit=52 fnv=b42f2ff2 dec=b36cc385 readcount=7 bit=52
+player.case 25 size=51 bit=401 fnv=339e2110 dec=f26080b9 readcount=51 bit=401
+player.case 26 size=51 bit=406 fnv=70410477 dec=76217d60 readcount=51 bit=406
+player.case 27 size=60 bit=479 fnv=f54c5b28 dec=43a06530 readcount=60 bit=479
+player.case 28 size=14 bit=104 fnv=86aa35f3 dec=fbf9f2e3 readcount=14 bit=104
+player.case 29 size=18 bit=143 fnv=be4d96ff dec=334ecc28 readcount=18 bit=143
+player.case 30 size=48 bit=377 fnv=8611b3bc dec=a7c21ea9 readcount=48 bit=377
+player.case 31 size=69 bit=549 fnv=04859bfc dec=31699bee readcount=69 bit=549
+player.case 32 size=12 bit=89 fnv=cfc512d3 dec=84059154 readcount=12 bit=89
+player.case 33 size=44 bit=346 fnv=0687acb5 dec=4924011f readcount=44 bit=346
+player.case 34 size=53 bit=420 fnv=131e928c dec=9ab70807 readcount=53 bit=420
+player.case 35 size=65 bit=519 fnv=c599506b dec=5c1edaef readcount=65 bit=519
+player.case 36 size=12 bit=95 fnv=e22ae841 dec=158c9b26 readcount=12 bit=95
+player.case 37 size=58 bit=462 fnv=e24999eb dec=f366636a readcount=58 bit=462
+player.case 38 size=37 bit=288 fnv=284ad5d8 dec=5388a42e readcount=37 bit=288
+player.case 39 size=46 bit=361 fnv=2a3b12ad dec=7ceef9c4 readcount=46 bit=361
+player.case 40 size=8 bit=62 fnv=ef105737 dec=8276de1a readcount=8 bit=62
+player.case 41 size=42 bit=334 fnv=efe3fb25 dec=15a9eca1 readcount=42 bit=334
+player.case 42 size=54 bit=431 fnv=43b44d55 dec=7a2ed4e3 readcount=54 bit=431
+player.case 43 size=50 bit=394 fnv=c43bc53b dec=323e22ee readcount=50 bit=394
+player.case 44 size=7 bit=48 fnv=2453662f dec=35f55deb readcount=7 bit=48
+player.case 45 size=63 bit=499 fnv=ffdace67 dec=bd3c1ae1 readcount=63 bit=499
+player.case 46 size=59 bit=466 fnv=35931029 dec=79a7edca readcount=59 bit=466
+player.case 47 size=55 bit=436 fnv=a5b74b87 dec=4e441976 readcount=55 bit=436
+player.case 48 size=1 bit=3 fnv=070c6045 dec=f4fff1af readcount=1 bit=3
+player.case 49 size=56 bit=446 fnv=81e6dd9b dec=c7cbb2e5 readcount=56 bit=446
+player.case 50 size=43 bit=343 fnv=d3479c5a dec=63bd6181 readcount=43 bit=343
+player.case 51 size=57 bit=454 fnv=177411c4 dec=253769e0 readcount=57 bit=454
+player.case 52 size=1 bit=3 fnv=070c6045 dec=5fc51203 readcount=1 bit=3
+player.case 53 size=43 bit=340 fnv=38be2098 dec=7c98bdd6 readcount=43 bit=340
+player.case 54 size=35 bit=276 fnv=dbfa2fcf dec=3eb923aa readcount=35 bit=276
+player.case 55 size=38 bit=297 fnv=0fd9b970 dec=47cc1da0 readcount=38 bit=297
+player.case 56 size=3 bit=22 fnv=472b8444 dec=3aae83e9 readcount=3 bit=22
+player.case 57 size=36 bit=281 fnv=0ec89f7c dec=865d7ecd readcount=36 bit=281
+player.case 58 size=33 bit=263 fnv=b1e22d96 dec=dd431525 readcount=33 bit=263
+player.case 59 size=36 bit=281 fnv=0c1ebe50 dec=c964666f readcount=36 bit=281
+player.case 60 size=84 bit=670 fnv=f1d86e14 dec=13820f24 readcount=84 bit=670
+player.case 61 size=123 bit=980 fnv=2ae3e877 dec=01f4eb20 readcount=123 bit=980
+player.case 62 size=101 bit=802 fnv=2390013b dec=939f0165 readcount=101 bit=802
+player.case 63 size=130 bit=1036 fnv=15326614 dec=db1d8f51 readcount=130 bit=1036
+player.case 64 size=78 bit=617 fnv=a715c034 dec=dbd18377 readcount=78 bit=617
+player.case 65 size=121 bit=964 fnv=e1094f15 dec=8bf82654 readcount=121 bit=964
+player.case 66 size=115 bit=916 fnv=f7c8a6f0 dec=da8da0b5 readcount=115 bit=916
+player.case 67 size=115 bit=913 fnv=676a6e60 dec=8124bd2a readcount=115 bit=913
+player.case 68 size=84 bit=664 fnv=5996c2d8 dec=32035506 readcount=84 bit=664
+player.case 69 size=117 bit=928 fnv=6eda942f dec=51d1f4bb readcount=117 bit=928
+player.case 70 size=135 bit=1072 fnv=42e9774e dec=102fd693 readcount=135 bit=1072
+player.case 71 size=122 bit=973 fnv=eef529ce dec=15b9e3d5 readcount=122 bit=973
+player.case 72 size=69 bit=546 fnv=014f4209 dec=4944837f readcount=69 bit=546
+player.case 73 size=107 bit=852 fnv=837dc274 dec=045a27d7 readcount=107 bit=852
+player.case 74 size=127 bit=1012 fnv=582ca3da dec=9f05866b readcount=127 bit=1012
+player.case 75 size=115 bit=912 fnv=b29a8c71 dec=d08cca7a readcount=115 bit=912
+player.case 76 size=80 bit=639 fnv=9185e5e1 dec=6ae83eca readcount=80 bit=639
+player.case 77 size=112 bit=892 fnv=611dd383 dec=e9f4b5ff readcount=112 bit=892
+player.case 78 size=124 bit=984 fnv=7ede9946 dec=476b26ed readcount=124 bit=984
+player.case 79 size=109 bit=867 fnv=7c8abf20 dec=2794c3c3 readcount=109 bit=867
+player.fromnull size=16 bit=127 overflowed=0 hex=ff6e4235d2879575fe482fc96a6e015b
+player.fromnull.dec fnv=dfa5436e
+player.same size=1 bit=3 overflowed=0 hex=02
+huffman.bits 2 5 7 7 8 8 7 6 5 7 7 7 7 6 8 9 7 9 9 9 10 10 10 10 9 10 10 10 10 8 9 8 6 10 9 10 10 10 10 10 9 10 10 10 10 10 9 8 7 8 8 9 8 8 9 9 9 9 9 10 10 9 9 10 8 7 7 7 8 8 9 9 9 10 10 10 9 10 10 10 9 10 10 10 10 10 10 10 10 10 9 9 9 9 9 8 9 8 9 9 9 7 8 9 6 8 9 9 8 9 8 8 8 8 8 8 7 7 8 8 8 8 8 8 8 7 7 7 6 7 7 7 8 8 8 8 8 8 8 8 9 9 9 9 9 10 9 10 10 10 10 10 10 10 10 10 10 10 10 10 9 10 10 10 10 10 10 10 9 10 10 10 10 10 10 10 9 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 8 9 8 6 7 10 10 8 9 10 10 10 10 10 10 10 9 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 9 9 10 10 10 10 10 10 7 10 10 10 10 8 10 10 10 10 10 10 10 10 10 11 10 10 10 10 10 10 7 6
+huffman.run size=231 bit=1840 overflowed=0 hex=224321353dc929c1ef6e457aabacf7e426527cc394668893fee97daac181cc23117de68700ea796de7e358ae35dd78d7c03db66edeea4b415c2f4c86c2a3ecc5d2e81be2633e049c5d2d0f1413f00a6bac3cce4aeb539ca9db8e718ebbe632387a2c66fce907ec744caaaec4c1e4abd15c51cb17eb0200da21ead1035c2c3cd7055b20c688611e146332f269e31801df4c2245c3a7fb607ac7aa71ca7aa3bcb95c1a0aac9bdc0174d074711d0d50048bf1710f3e3e01760da46a64ccc03be56d400aa7cf747cd68be1bdc7e07134b54c336b163d6e1838a3eb38b86e5998293f8ab9ad1fc34a00
+huffman.runread 3676050 readcount=231 bit=1840
+huffman.text compressed size=40 fnv=8947478e head=002f124cb169ec87260844115c8fe1b00e8ba4a48520704a
+huffman.text decompressed size=47 fnv=0fd489ab same=1
+huffman.zeros compressed size=46 fnv=dd80753f head=7777777777012c00ffffffffffffffffffffffffffffffff
+huffman.zeros decompressed size=305 fnv=7b98d535 same=1
+huffman.ramp compressed size=770 fnv=cf8eb557 head=02000000010a30400634c0041c200ee4802ad001c6c00a38
+huffman.ramp decompressed size=512 fnv=a0f813c5 same=1
+huffman.random compressed size=3301 fnv=38856772 head=0bb8158a794a1a34072ce6e415f88eea002c4cc1cda40b1d
+huffman.random decompressed size=3000 fnv=396bddf1 same=1
+huffman.skewed compressed size=1896 fnv=187f8b23 head=77777777777777777777777713884040010b004006b0018c
+huffman.skewed decompressed size=5012 fnv=ff0fcbef same=1
+huffman.one compressed size=4 fnv=0caf41ca head=00010000
+huffman.one decompressed size=1 fnv=050c5d1f same=1
+huffman.empty size=4
+huffman.emptyd size=4
+huffman.truncated size=64 fnv=c41d0a7d
+huffman.huge size=64 fnv=794201c4
+netchan.setup sock=0 qport=4242 in=0 out=1 unsent=0
+small packet 0 sock=0 len=106 fnv=4a969dce head=0100000092101f262d343b424950575e
+small packet 1 sock=0 len=6 fnv=bd33f77d head=020000009210
+small packet 2 sock=0 len=1305 fnv=2eb95f13 head=0300000092105d646b727980878e959c
+small process 0 -> 1 dropped=0 in=1 fragseq=0 fraglen=0 size=106 readcount=6 bit=48 fnv=4a969dce
+small process 1 -> 1 dropped=0 in=2 fragseq=0 fraglen=0 size=6 readcount=6 bit=48 fnv=bd33f77d
+small process 2 -> 1 dropped=0 in=3 fragseq=0 fraglen=0 size=1305 readcount=6 bit=48 fnv=2eb95f13
+small.dup process 1 -> 0 dropped=0 in=3 fragseq=0 fraglen=0 size=6 readcount=6 bit=48 fnv=bd33f77d
+netchan.state out=4 unsentStart=0
+drop process 2 -> 1 dropped=2 in=6 fragseq=0 fraglen=0 size=16 readcount=6 bit=48 fnv=764dd980
+big packet 0 sock=0 len=1310 fnv=20894e7f head=07000080921000001405d9e0e7eef5fc
+big packet 1 sock=0 len=1310 fnv=ebfe3bf8 head=070000809210140514056a71787f868d
+big packet 2 sock=0 len=410 fnv=55b7f179 head=070000809210280a9001fb020910171e
+big process 0 -> 0 dropped=0 in=6 fragseq=7 fraglen=1300 size=1310 readcount=10 bit=80 fnv=20894e7f
+big process 1 -> 0 dropped=0 in=6 fragseq=7 fraglen=2600 size=1310 readcount=10 bit=80 fnv=ebfe3bf8
+big process 2 -> 1 dropped=0 in=7 fragseq=7 fraglen=0 size=3004 readcount=4 bit=32 fnv=232e8472
+netchan.state out=8 unsent=0 unsentStart=3000 unsentLength=3000
+exact packet 0 sock=0 len=1310 fnv=90806ac8 head=08000080921000001405f8ff060d141b
+exact packet 1 sock=0 len=1310 fnv=27fbf6ef head=080000809210140514058990979ea5ac
+exact packet 2 sock=0 len=10 fnv=257de98d head=080000809210280a0000
+exact process 0 -> 0 dropped=0 in=7 fragseq=8 fraglen=1300 size=1310 readcount=10 bit=80 fnv=90806ac8
+exact process 1 -> 0 dropped=0 in=7 fragseq=8 fraglen=2600 size=1310 readcount=10 bit=80 fnv=27fbf6ef
+exact process 2 -> 1 dropped=0 in=8 fragseq=8 fraglen=0 size=2604 readcount=4 bit=32 fnv=a7cdb235
+one packet 0 sock=0 len=1310 fnv=88cfd5a9 head=09000080921000001405171e252c333a
+one packet 1 sock=0 len=10 fnv=ffbd4549 head=09000080921014050000
+one process 0 -> 0 dropped=0 in=8 fragseq=9 fraglen=1300 size=1310 readcount=10 bit=80 fnv=88cfd5a9
+one process 1 -> 1 dropped=0 in=9 fragseq=9 fraglen=0 size=1304 readcount=4 bit=32 fnv=584269a8
+netchan.max packets=13
+max process 0 -> 0 dropped=0 in=9 fragseq=10 fraglen=1300 size=1310 readcount=10 bit=80 fnv=064f718a
+max process 1 -> 0 dropped=0 in=9 fragseq=10 fraglen=2600 size=1310 readcount=10 bit=80 fnv=c41c6e61
+max process 2 -> 0 dropped=0 in=9 fragseq=10 fraglen=3900 size=1310 readcount=10 bit=80 fnv=88e432a8
+max process 3 -> 0 dropped=0 in=9 fragseq=10 fraglen=5200 size=1310 readcount=10 bit=80 fnv=fdc9de8f
+max process 4 -> 0 dropped=0 in=9 fragseq=10 fraglen=6500 size=1310 readcount=10 bit=80 fnv=4229c106
+max process 5 -> 0 dropped=0 in=9 fragseq=10 fraglen=7800 size=1310 readcount=10 bit=80 fnv=18786e15
+max process 6 -> 0 dropped=0 in=9 fragseq=10 fraglen=9100 size=1310 readcount=10 bit=80 fnv=46113134
+max process 7 -> 0 dropped=0 in=9 fragseq=10 fraglen=10400 size=1310 readcount=10 bit=80 fnv=34e45f13
+max process 8 -> 0 dropped=0 in=9 fragseq=10 fraglen=11700 size=1310 readcount=10 bit=80 fnv=83a29d72
+max process 9 -> 0 dropped=0 in=9 fragseq=10 fraglen=13000 size=1310 readcount=10 bit=80 fnv=ced6beb9
+max process 10 -> 0 dropped=0 in=9 fragseq=10 fraglen=14300 size=1310 readcount=10 bit=80 fnv=d1c5d520
+max process 11 -> 0 dropped=0 in=9 fragseq=10 fraglen=15600 size=1310 readcount=10 bit=80 fnv=be87c437
+max process 12 -> 1 dropped=0 in=10 fragseq=10 fraglen=0 size=16388 readcount=4 bit=32 fnv=831741bf
+order process 1 -> 0 dropped=0 in=10 fragseq=11 fraglen=0 size=1310 readcount=10 bit=80 fnv=32eda03c
+order process 0 -> 0 dropped=0 in=10 fragseq=11 fraglen=1300 size=1310 readcount=10 bit=80 fnv=6affb7b3
+order process 2 -> 0 dropped=0 in=10 fragseq=11 fraglen=1300 size=410 readcount=10 bit=80 fnv=0f2dfef5
+order process 1 -> 0 dropped=0 in=10 fragseq=11 fraglen=2600 size=1310 readcount=10 bit=80 fnv=32eda03c
+order process 2 -> 1 dropped=0 in=11 fragseq=11 fraglen=0 size=3004 readcount=4 bit=32 fnv=14280b4e
+order process 2 -> 0 dropped=0 in=11 fragseq=11 fraglen=0 size=410 readcount=10 bit=80 fnv=0f2dfef5
+lost process 0 -> 0 dropped=0 in=11 fragseq=12 fraglen=1300 size=1310 readcount=10 bit=80 fnv=ae974eec
+lost process 2 -> 0 dropped=0 in=11 fragseq=12 fraglen=1300 size=410 readcount=10 bit=80 fnv=f21b87c6
+lost process 3 -> 1 dropped=1 in=13 fragseq=12 fraglen=1300 size=506 readcount=6 bit=48 fnv=26a6897e
+bogus process 0 -> 0 dropped=0 in=13 fragseq=14 fraglen=0 size=1310 readcount=10 bit=80 fnv=d2c855f3
+bogus2 process 1 -> 0 dropped=0 in=13 fragseq=14 fraglen=0 size=1310 readcount=10 bit=80 fnv=f790ee72
+bogus3 process 0 -> 0 dropped=0 in=13 fragseq=14 fraglen=0 size=1310 readcount=10 bit=80 fnv=125c5a73
+server packet 0 sock=1 len=54 fnv=5af99a35 head=01000000d1d8dfe6edf4fb020910171e
+server packet 1 sock=1 len=1308 fnv=cc151ae8 head=0200008000001405f0f7fe050c131a21
+server packet 2 sock=1 len=708 fnv=2195b0ea head=020000801405bc0281888f969da4abb2
+client process 0 -> 1 dropped=0 in=1 fragseq=0 fraglen=0 size=54 readcount=4 bit=32 fnv=5af99a35
+client process 1 -> 0 dropped=0 in=1 fragseq=2 fraglen=1300 size=1308 readcount=8 bit=64 fnv=cc151ae8
+client process 2 -> 1 dropped=0 in=2 fragseq=2 fraglen=0 size=2004 readcount=4 bit=32 fnv=ca143007
+netchan.err Netchan_Transmit: length = 16385
+short process 0 -> 0 dropped=2147483646 in=0 fragseq=2147483647 fraglen=0 size=3 readcount=10 bit=80 fnv=4ab0f7b7
+wrap packet 0 sock=0 len=11 fnv=f16db1e3 head=feffff7f92100f161d242b
+wrap packet 1 sock=0 len=11 fnv=f768ca0f head=ffffff7f92102e353c434a
+wrap process 0 -> 0 dropped=2147483646 in=2147483646 fragseq=2147483647 fraglen=0 size=11 readcount=6 bit=48 fnv=f16db1e3
+wrap process 1 -> 1 dropped=0 in=2147483647 fragseq=2147483647 fraglen=0 size=11 readcount=6 bit=48 fnv=f768ca0f
