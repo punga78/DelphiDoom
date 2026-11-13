@@ -453,7 +453,7 @@ procedure RunTracks(const ATarget: IRacingScenarioTarget; ALines: TStrings);
 const
   COUNTS: array[0..2] of Integer = (24, 40, 12);
 var
-  LVariant, LProbe: Integer;
+  LVariant, LProbe, LProbeX, LProbeY: Integer;
   LPoints: TArray<TRacingPathPoint>;
   LDescription: TStringList;
   LSetup: TRacingScenarioSetup;
@@ -484,8 +484,13 @@ begin
       LLcg.Start(LVariant + 90);
       LHash.Start;
       for LProbe := 0 to 199 do
-        LHash.AddInteger(ATarget.NextPath((4000 + LLcg.Next(4000) - 2000) * FIXED_ONE,
-          (4000 + LLcg.Next(4000) - 2000) * FIXED_ONE));
+      begin
+        // The draws are in the order of the 32 bit compiler (the arguments from the right): the order of
+        // evaluation is not defined and the 64 bit compiler uses another one
+        LProbeY := (4000 + LLcg.Next(4000) - 2000) * FIXED_ONE;
+        LProbeX := (4000 + LLcg.Next(4000) - 2000) * FIXED_ONE;
+        LHash.AddInteger(ATarget.NextPath(LProbeX, LProbeY));
+      end;
       // A probe exactly on a point goes to the next one
       for LProbe := 0 to High(LPoints) do
         LHash.AddInteger(ATarget.NextPath(LPoints[LProbe].X, LPoints[LProbe].Y));
@@ -640,8 +645,11 @@ begin
   LHash.Start;
   for LProbe := 0 to 599 do
   begin
-    LX := (LLcg.Next(12000) - 2000) * FIXED_ONE + LLcg.Next(FIXED_ONE);
-    LY := (LLcg.Next(12000) - 2000) * FIXED_ONE + LLcg.Next(FIXED_ONE);
+    // the draws one after the other, from the left (the order of evaluation is not defined)
+    LX := (LLcg.Next(12000) - 2000) * FIXED_ONE;
+    LX := LX + LLcg.Next(FIXED_ONE);
+    LY := (LLcg.Next(12000) - 2000) * FIXED_ONE;
+    LY := LY + LLcg.Next(FIXED_ONE);
     LHash.AddInteger(ATarget.GroundType(LX, LY));
     LHash.AddInteger(ATarget.Slip(LX, LY));
   end;
@@ -676,6 +684,8 @@ var
   LHash, LBytesHash: TRacingFingerprint;
   LLcg: TLcg;
   LStep, LLap: Integer;
+  LSkill, LTime, LCarType, LTrack, LPosition: Integer;
+  LName: string;
   LBytes: TBytes;
 begin
   FillChar(LSetup, SizeOf(LSetup), 0);
@@ -698,9 +708,15 @@ begin
         LScore.LapTimes[LLap] := 1000 + LLcg.Next(8000);
         Inc(LScore.TotalTime, LScore.LapTimes[LLap]);
       end;
-    ATarget.ScoreUpdate(LScore, NAMES[LLcg.Next(6)], TRacingSkill(LLcg.Next(5)));
-    LHash.AddInteger(Ord(ATarget.ScoreCheck(1 + LLcg.Next(4), 1 + LLcg.Next(9), TRacingCarType(LLcg.Next(2)),
-      900 + LLcg.Next(8000))));
+    // the draws in the order of the 32 bit compiler (golden of the old code)
+    LSkill := LLcg.Next(5);
+    LName := NAMES[LLcg.Next(6)];
+    ATarget.ScoreUpdate(LScore, LName, TRacingSkill(LSkill));
+    LCarType := LLcg.Next(2);
+    LTime := 900 + LLcg.Next(8000);
+    LTrack := 1 + LLcg.Next(9);
+    LPosition := 1 + LLcg.Next(4);
+    LHash.AddInteger(Ord(ATarget.ScoreCheck(LPosition, LTrack, TRacingCarType(LCarType), LTime)));
   end;
   LBytes := ATarget.ScoreBytes;
   LBytesHash.Start;

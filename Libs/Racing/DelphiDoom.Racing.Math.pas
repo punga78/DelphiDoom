@@ -81,11 +81,24 @@ end;
 
 class function TRacingMath.Distance(ADeltaX, ADeltaY: TFixed): TFixed;
 var
-  LX, LY: Double;
+  LSquares: Int64;
+  LRoot: Int64;
 begin
-  LX := ADeltaX / FIXED_ONE;
-  LY := ADeltaY / FIXED_ONE;
-  Result := Round(Sqrt(LX * LX + LY * LY) * FIXED_ONE);
+  // The old code computed Round(Sqrt(x * x + y * y) * 65536) on the values divided by 65536, with the
+  // 64 bits of mantissa of the 32 bit FPU. That is the square root of the exact sum of the squares of
+  // the fixed point values, rounded to the nearest integer (the sum has no tie): done with integers it
+  // is the same number at 32 and 64 bit, where Double (53 bits) would round some large distances the
+  // other way
+  LSquares := Int64(ADeltaX) * ADeltaX + Int64(ADeltaY) * ADeltaY;
+  LRoot := Trunc(Sqrt(LSquares));
+  while LRoot * LRoot > LSquares do
+    Dec(LRoot);
+  while (LRoot + 1) * (LRoot + 1) <= LSquares do
+    Inc(LRoot);
+  // the root is between LRoot and LRoot + 1: above the middle when the square is above LRoot^2 + LRoot
+  if LSquares > LRoot * LRoot + LRoot then
+    Inc(LRoot);
+  Result := LRoot;
 end;
 
 end.
