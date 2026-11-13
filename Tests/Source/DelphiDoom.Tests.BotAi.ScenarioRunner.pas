@@ -38,8 +38,9 @@ type
     function Num(const AIndex: Integer): Int64;
     procedure ShowMessage(const AHandle: Integer);
     procedure Execute(const ALine: AnsiString);
-    class function Unescape(const AText: AnsiString): AnsiString; static;
   public
+    /// <summary>The escapes \t \n \r \\ \xNN of the scenario files</summary>
+    class function Unescape(const AText: AnsiString): AnsiString; static;
     constructor Create(const AFiles: IInterface);
     destructor Destroy; override;
     /// <summary>Runs every line of the scenario; the output is in <c>Output</c></summary>

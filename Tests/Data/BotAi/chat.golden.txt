@@ -382,23 +382,23 @@ chatmsg=hello hello hello goodbye
 > loadchat|1|chats.c|nobot
 P3|couldn't find chat nobot in chats.c\x0A
 P4|couldn't load chat nobot from chats.c\x0A
-loadchat=20
+loadchat=8
 > loadchat|1|nofile.c|bot1
 P3|counldn't load nofile.c\x0A
 P4|couldn't load chat bot1 from nofile.c\x0A
-loadchat=20
+loadchat=8
 > loadchat|1|bad_chat.c|a
 P3|file bad_chat.c, line 1: expected type found foo\x0A\x0A
 P4|couldn't load chat a from bad_chat.c\x0A
-loadchat=20
+loadchat=8
 > loadchat|1|bad_chat2.c|a
 P3|file bad_chat2.c, line 1: unknown definition hello\x0A\x0A
 P4|couldn't load chat a from bad_chat2.c\x0A
-loadchat=20
+loadchat=8
 > loadchat|1|long_chat.c|long
 P3|file long_chat.c, line 5: chat message too long\x0A\x0A
 P4|couldn't load chat long from long_chat.c\x0A
-loadchat=20
+loadchat=8
 > loadchat|1|chats.c|bot1
 P1|loaded bot1 from chats.c\x0A
 loadchat=0
