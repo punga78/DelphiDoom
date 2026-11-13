@@ -51,7 +51,7 @@ uses
   DelphiDoom.Decl.Types, DelphiDoom.Decl.Base, DelphiDoom.Decl.Table, DelphiDoom.Decl.Skin,
   DelphiDoom.Decl.EntityDef, DelphiDoom.Decl.Pda, DelphiDoom.Decl.Email, DelphiDoom.Decl.Video,
   DelphiDoom.Decl.Audio, DelphiDoom.Decl.Material, DelphiDoom.Decl.Material.Intf,
-  DelphiDoom.Decl.Material.ImageNamer, DelphiDoom.Decl.Q3Shader.Registration;
+  DelphiDoom.Decl.Material.ImageNamer;
 
 { TDeclStandardTypes }
 
@@ -108,7 +108,6 @@ begin
   Add('email', DECL_EMAIL, function: IDecl begin Result := TDeclEmail.Create; end);
   Add('video', DECL_VIDEO, function: IDecl begin Result := TDeclVideo.Create; end);
   Add('audio', DECL_AUDIO, function: IDecl begin Result := TDeclAudio.Create; end);
-  TQ3ShaderRegistration.RegisterType(ARegistry, ASkip);
 end;
 
 class procedure TDeclStandardTypes.RegisterFolders(const ARegistry: IDeclRegistry);

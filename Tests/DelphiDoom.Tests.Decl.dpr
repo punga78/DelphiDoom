@@ -76,7 +76,9 @@ uses
   DelphiDoom.Tests.Decl.MaterialSupport in 'Source\DelphiDoom.Tests.Decl.MaterialSupport.pas',
   DelphiDoom.Tests.Decl.MaterialExpressions in 'Source\DelphiDoom.Tests.Decl.MaterialExpressions.pas',
   DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
-  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas';
+  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas',
+  DelphiDoom.Tests.Decl.Q3Shader in 'Source\DelphiDoom.Tests.Decl.Q3Shader.pas',
+  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas';
 
 var
   Runner: ITestRunner;

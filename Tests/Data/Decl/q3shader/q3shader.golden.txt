@@ -1,0 +1,755 @@
+find textures/test/plain
+shader textures/test/plain
+head sort 40400000 default=0 explicit=1 surf=1001 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=2
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=2 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/plain.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=2 alpha=0 state=13 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=2 lightmap=1 video=0 anims=0 speed 00000000 images $lightmap
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/blends
+shader textures/test/blends
+head sort 41100000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=2 poff=0 nomip=1 nopic=1 fogpass=0 passes=6
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=40020062 acff=2 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/blend_a.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=1 alpha=0 state=20000122 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/blend_b.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=1 alpha=0 state=10000065 acff=3 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images $whiteimage
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 3 detail=0 rgb=2 alpha=0 state=13 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/blend_c.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 4 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/blend_d.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 5 detail=0 rgb=2 alpha=0 state=41 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/blend_e.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/blendnames
+log unknown blend mode 'GL_ALPHA_SATURATE' in shader 'textures/test/blendnames', substituting GL_ONE
+log unknown blend mode 'GL_BOGUS' in shader 'textures/test/blendnames', substituting GL_ONE
+log unknown blend mode 'GL_BOGUS2' in shader 'textures/test/blendnames', substituting GL_ONE
+log invalid alphaFunc name 'BOGUS' in shader 'textures/test/blendnames'
+log unknown depthfunc 'other' in shader 'textures/test/blendnames'
+shader textures/test/blendnames
+head sort 41100000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=1 poff=0 nomip=0 nopic=0 fogpass=0 passes=4
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=2 alpha=0 state=54 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/n1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=2 alpha=0 state=87 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/n2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=1 alpha=0 state=32 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/n3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 3 detail=0 rgb=1 alpha=0 state=22 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/n4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/colors
+shader textures/test/colors
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=2 poff=0 nomip=0 nopic=0 fogpass=1 passes=8
+misc portal 43960000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=8 alpha=7 state=100 acff=0 const=0,0,0,0
+ rgbwave w1 3f000000 3e800000 00000000 40000000 alphawave w3 00000000 3f800000 3f000000 3f800000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=11 alpha=9 state=22 acff=0 const=127,63,255,191
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=6 alpha=4 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 3 detail=0 rgb=5 alpha=8 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 4 detail=0 rgb=3 alpha=3 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c5.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 5 detail=0 rgb=4 alpha=6 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c6.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 6 detail=0 rgb=9 alpha=4 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c7.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 7 detail=0 rgb=7 alpha=5 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/c8.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/colorerrors
+log missing parameters for rgbGen in shader 'textures/test/colorerrors'
+log missing parameters for alphaGen in shader 'textures/test/colorerrors'
+log unknown rgbGen parameter 'bogus' in shader 'textures/test/colorerrors'
+log unknown alphaGen parameter 'bogus' in shader 'textures/test/colorerrors'
+log missing range parameter for alphaGen portal in shader 'textures/test/colorerrors', defaulting to 256
+log missing waveform parm in shader 'textures/test/colorerrors'
+log invalid genfunc name 'bogus' in shader 'textures/test/colorerrors'
+shader textures/test/colorerrors
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=3
+misc portal 43800000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/e1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=8 alpha=7 state=100 acff=0 const=0,0,0,0
+ rgbwave w5 3f800000 40000000 40400000 00000000 alphawave w1 3f800000 40000000 40400000 40800000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/e2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=2 alpha=1 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/e3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/texgen
+log missing texgen parm in shader 'textures/test/texgen'
+log unknown texgen parm in shader 'textures/test/texgen'
+shader textures/test/texgen
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=5
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=4 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/t1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=2 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/t2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/t3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 3 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=6 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/t4.tga
+ tcvec 3f000000 00000000 00000000 00000000 3f000000 00000000
+ texmods 0
+stage 4 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/t5.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/tcmods
+log unknown tcMod 'bogus' in shader 'textures/test/tcmods'
+shader textures/test/tcmods
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=3
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/m1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 4
+  mod 0 type=3 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3f000000 be800000 00000000
+  mod 1 type=4 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 40000000 40400000 00000000 00000000 00000000
+  mod 2 type=6 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 41f00000
+  mod 3 type=2 w0 00000000 3e800000 00000000 3f000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+stage 1 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/m2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 3
+  mod 0 type=5 w4 00000000 3f800000 00000000 40000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  mod 1 type=1 w0 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 3f800000 3f000000 3f000000 00000000 00000000 00000000 00000000 00000000
+  mod 2 type=7 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+stage 2 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/m3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 2
+  mod 0 type=0 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  mod 1 type=3 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3f800000 3f800000 00000000
+find textures/test/tcmodshort
+log missing scale scroll parms in shader 'textures/test/tcmodshort'
+log missing tcMod turb in shader 'textures/test/tcmodshort'
+log missing stretch parms in shader 'textures/test/tcmodshort'
+log unknown tcMod '' in shader 'textures/test/tcmodshort'
+shader textures/test/tcmodshort
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/m5.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 4
+  mod 0 type=0 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000
+  mod 1 type=0 w0 3f800000 40000000 40400000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  mod 2 type=0 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  mod 3 type=0 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+find textures/test/toomanymods
+log ERROR: too many tcMod stages in shader 'textures/test/toomanymods'
+drop
+find textures/test/anim
+shader textures/test/anim
+head sort 41100000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=3
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=22 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=3 speed 40800000 images textures/test/f1.tga textures/test/f2.tga textures/test/f3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=8 speed 3f800000 images textures/test/g1.tga textures/test/g2.tga textures/test/g3.tga textures/test/g4.tga textures/test/g5.tga textures/test/g6.tga textures/test/g7.tga textures/test/g8.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=1 anims=0 speed 00000000 images $scratch
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms
+shader textures/test/deforms
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=1 move 00000000 00000000 00000000 w1 00000000 40400000 00000000 3dcccccd spread 3c23d70a bulge 00000000 00000000 00000000
+deform 1 type=2 move 00000000 00000000 00000000 w0 00000000 3f000000 00000000 3e800000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=3 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 40800000 41000000 40000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms2
+shader textures/test/deforms2
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=4 move 00000000 00000000 3f800000 w4 00000000 40000000 00000000 3f000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 1 type=7 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=5 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms3
+log illegal div value of 0 in deformVertexes command for shader 'textures/test/deforms3'
+shader textures/test/deforms3
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=1 move 00000000 00000000 00000000 w1 00000000 40400000 00000000 3dcccccd spread 42c80000 bulge 00000000 00000000 00000000
+deform 1 type=8 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=8 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms3b
+log unknown deformVertexes subtype 'bogus' found in shader 'textures/test/deforms3b'
+shader textures/test/deforms3b
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=8 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 1 type=0 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=13 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d3b.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms3c
+log missing deform parm in shader 'textures/test/deforms3c'
+log missing deformVertexes bulge parm in shader 'textures/test/deforms3c'
+shader textures/test/deforms3c
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 2
+deform 0 type=0 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 3f800000 00000000 00000000
+deform 1 type=6 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d3c.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deforms4
+log missing deformVertexes parm in shader 'textures/test/deforms4'
+log missing deformVertexes parm in shader 'textures/test/deforms4'
+log missing deformVertexes parm in shader 'textures/test/deforms4'
+shader textures/test/deforms4
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=0 move 3f800000 40000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 1 type=0 move 00000000 00000000 00000000 w0 00000000 3f800000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=0 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/deformsmax
+log MAX_SHADER_DEFORMS in 'textures/test/deformsmax'
+shader textures/test/deformsmax
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 3
+deform 0 type=6 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 1 type=6 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+deform 2 type=6 move 00000000 00000000 00000000 w0 00000000 00000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d6.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/waveerrors
+log invalid genfunc name 'bogus' in shader 'textures/test/waveerrors'
+log missing waveform parm in shader 'textures/test/waveerrors'
+log missing waveform parm in shader 'textures/test/waveerrors'
+shader textures/test/waveerrors
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 2
+deform 0 type=1 move 00000000 00000000 00000000 w1 3f800000 40000000 00000000 00000000 spread 3dcccccd bulge 00000000 00000000 00000000
+deform 1 type=4 move 3f800000 40000000 40400000 w1 3f800000 40000000 00000000 00000000 spread 00000000 bulge 00000000 00000000 00000000
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/d5.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sky
+shader textures/test/sky
+head sort 40000000 default=0 explicit=1 surf=4 cont=0 merge=0 sky=1 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 44000000 textures/test/env/sky_rt.tga textures/test/env/sky_bk.tga textures/test/env/sky_lf.tga textures/test/env/sky_ft.tga textures/test/env/sky_up.tga textures/test/env/sky_dn.tga - - - - - -
+sun 00000000 00000000 43960000 b304c063 3f3504f3 3f3504f3
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/clouds.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 1
+  mod 0 type=3 w0 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3dcccccd 3dcccccd 00000000
+find textures/test/sky2
+shader textures/test/sky2
+head sort 40e00000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=1 cull=0 poff=0 nomip=0 nopic=1 fogpass=0 passes=0
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 44000000 - - - - - - textures/test/env/inner_rt.tga textures/test/env/inner_bk.tga textures/test/env/inner_lf.tga textures/test/env/inner_ft.tga textures/test/env/inner_up.tga textures/test/env/inner_dn.tga
+deforms 0
+find textures/test/skybad
+log 'skyParms' missing parameter in shader 'textures/test/skybad'
+shader textures/test/skybad
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 textures/test/env/only_rt.tga textures/test/env/only_bk.tga textures/test/env/only_lf.tga textures/test/env/only_ft.tga textures/test/env/only_up.tga textures/test/env/only_dn.tga - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/s.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sun2
+shader textures/test/sun2
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+sun 43480000 00000000 00000000 3f800000 00000000 00000000
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/s2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/fog
+shader textures/test/fog
+head sort 40e00000 default=0 explicit=1 surf=4000 cont=20000040 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=2 passes=0
+misc portal 00000000 clamp 00000000
+fog 3f000000 3e800000 3e000000 43800000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/fog2
+shader textures/test/fog2
+head sort 40e00000 default=0 explicit=1 surf=0 cont=40 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=2 passes=0
+misc portal 00000000 clamp 00000000
+fog 3f800000 3f800000 3f800000 42800000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/fogbad
+log missing parenthesis in shader 'textures/test/fogbad'
+shader textures/test/fogbad
+head sort 40e00000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=0
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/fogmissing
+log missing parm for 'fogParms' keyword in shader 'textures/test/fogmissing'
+shader textures/test/fogmissing
+head sort 40e00000 default=0 explicit=1 surf=0 cont=40 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=2 passes=0
+misc portal 00000000 clamp 00000000
+fog 3f800000 3f800000 3f800000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/sorts
+shader textures/test/sorts
+head sort 41200000 default=0 explicit=1 surf=0 cont=0 merge=1 sky=0 cull=0 poff=1 nomip=0 nopic=0 fogpass=0 passes=1
+misc portal 00000000 clamp 40200000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=22 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sorts2
+shader textures/test/sorts2
+head sort 40f00000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sorts3
+shader textures/test/sorts3
+head sort 3f800000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sorts4
+shader textures/test/sorts4
+head sort 40800000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=1 nomip=0 nopic=0 fogpass=0 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sorts5
+log missing sort parameter in shader 'textures/test/sorts5'
+log missing cull parms in shader 'textures/test/sorts5'
+log invalid cull parm 'bogus' in shader 'textures/test/sorts5'
+shader textures/test/sorts5
+head sort 41000000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=1 poff=0 nomip=0 nopic=0 fogpass=0 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=65 acff=3 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so5.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/sortnames
+shader textures/test/sortnames
+head sort 40000000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/so6.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/blendsort
+shader textures/test/blendsort
+head sort 41100000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=2
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=65 acff=3 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/bs1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=1 alpha=0 state=122 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/bs2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/blendsort2
+shader textures/test/blendsort2
+head sort 40a00000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=2
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=165 acff=3 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/bs3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=1 alpha=0 state=65 acff=3 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/bs4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/surfaceparms
+shader textures/test/surfaceparms
+head sort 40400000 default=0 explicit=1 surf=7adfa cont=99338038 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/sp.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/nostage
+shader textures/test/nostage
+head sort 40e00000 default=1 explicit=0 surf=80 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=0
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/unknowngeneral
+log unknown general shader parameter 'bogusword' in 'textures/test/unknowngeneral'
+shader textures/test/unknowngeneral
+head sort 40e00000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=0
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/unknownstage
+log unknown parameter 'bogusstage' in shader 'textures/test/unknownstage'
+shader textures/test/unknownstage
+head sort 40400000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=0 alpha=0 state=0 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/u2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/missingmap
+log missing parameter for 'map' keyword in shader 'textures/test/missingmap'
+log Shader textures/test/missingmap has a stage with no image
+shader textures/test/missingmap
+head sort 40400000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/missingother
+log missing parm for blendFunc in shader 'textures/test/missingother'
+log missing parameter for 'alphaFunc' keyword in shader 'textures/test/missingother'
+log Shader textures/test/missingother has a stage with no image
+shader textures/test/missingother
+head sort 40400000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/noimage
+log Shader textures/test/noimage has a stage with no image
+shader textures/test/noimage
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=2
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+find textures/test/crlf
+shader textures/test/crlf
+head sort 41100000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=0 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=22 acff=1 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/quoted name.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/detaildup
+shader textures/test/detaildup
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=4
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=1 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/dd1.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 1 detail=0 rgb=2 alpha=0 state=13 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/dd2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 2 detail=1 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/dd3.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+stage 3 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/dd4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/twice
+shader textures/test/twice
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/first.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/unterminated
+log no concluding '}' in shader textures/test/unterminated
+shader textures/test/unterminated
+head sort 40400000 default=1 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=1 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/u4.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/notdefined
+shader textures/test/notdefined
+head sort 40400000 default=0 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=9 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/notdefined.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/notdefined2
+shader textures/test/notdefined2
+head sort 40400000 default=0 explicit=0 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=9 alpha=0 state=100 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=3 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/notdefined2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0
+find textures/test/detaildup2
+shader textures/test/detaildup2
+head sort 40400000 default=0 explicit=1 surf=0 cont=0 merge=0 sky=0 cull=0 poff=0 nomip=0 nopic=0 fogpass=1 passes=1
+misc portal 00000000 clamp 00000000
+fog 00000000 00000000 00000000 00000000
+sky 00000000 - - - - - - - - - - - -
+deforms 0
+stage 0 detail=0 rgb=2 alpha=0 state=13 acff=0 const=0,0,0,0
+ rgbwave w0 00000000 00000000 00000000 00000000 alphawave w0 00000000 00000000 00000000 00000000
+ bundle tcgen=0 lightmap=0 video=0 anims=0 speed 00000000 images textures/test/dd2.tga
+ tcvec 00000000 00000000 00000000 00000000 00000000 00000000
+ texmods 0

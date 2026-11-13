@@ -23,8 +23,8 @@ type
   /// <summary>
   ///   FinishShader without what is the renderer's: the <c>VertexLightingCollapse</c> (cvar <c>r_vertexLight</c>),
   ///   <c>CollapseMultitexture</c> (needs the multitexture extension of the video card), the stage iterator
-  ///   function, <c>GeneratePermanentShader</c> (the tables of the renderer, the sorted list, the lightmap
-  ///   index of the surface)
+  ///   function, <c>GeneratePermanentShader</c> without the fog pass (the tables of the renderer, the sorted
+  ///   list), the lightmap index of the surface
   /// </summary>
   TQ3ShaderFinisher = class sealed
   public
@@ -134,6 +134,12 @@ begin
   // fogonly shaders don't have any normal passes
   if LStage = 0 then
     LData.Sort := SS_FOG;
+
+  // GeneratePermanentShader: the fog pass follows from the final sort
+  if LData.Sort <= SS_OPAQUE then
+    LData.FogPass := fpEqual
+  else if (LData.ContentFlags and CONTENTS_FOG) <> 0 then
+    LData.FogPass := fpLE;
 end;
 
 end.

@@ -37,6 +37,7 @@ uses
   DelphiDoom.IdLib.Text.Strings, DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Decl.Q3Shader.ValueParser;
 
 const
+  SMissingDeform = 'missing deform parm in shader ''%s''';
   SMissingDeformParm = 'missing deformVertexes parm in shader ''%s''';
   SMissingBulgeParm = 'missing deformVertexes bulge parm in shader ''%s''';
 
@@ -68,7 +69,7 @@ begin
   LToken := ATokenizer.ParseExt(False);
   if LToken = '' then
   begin
-    AContext.Warn(SMissingDeformParm, [AContext.Data.Name]);
+    AContext.Warn(SMissingDeform, [AContext.Data.Name]);
     Exit;
   end;
   if AContext.Data.NumDeforms = Q3_MAX_SHADER_DEFORMS then

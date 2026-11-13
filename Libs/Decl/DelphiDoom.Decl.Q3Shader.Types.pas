@@ -135,6 +135,9 @@ type
   /// <summary>cullType_t</summary>
   TQ3CullType = (ctFrontSided, ctBackSided, ctTwoSided);
 
+  /// <summary>fogPass_t</summary>
+  TQ3FogPass = (fpNone, fpEqual, fpLE);
+
   /// <summary>waveForm_t</summary>
   TQ3WaveForm = record
     Func: TQ3GenFunc;
@@ -234,6 +237,8 @@ type
     PolygonOffset: Boolean;
     NoMipMaps: Boolean;
     NoPicMip: Boolean;
+    /// <summary>Set by <c>FinishShader</c> (in the original by GeneratePermanentShader) from the sort and the contents</summary>
+    FogPass: TQ3FogPass;
     NumDeforms: Integer;
     Deforms: array[0..Q3_MAX_SHADER_DEFORMS - 1] of TQ3DeformStage;
     NumUnfoggedPasses: Integer;

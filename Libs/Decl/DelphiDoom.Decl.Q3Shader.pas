@@ -25,6 +25,7 @@ type
   strict private
     FData: TQ3ShaderData;
     FOptions: TQ3ShaderOptions;
+    FFromImage: Boolean;
   public
     constructor Create(const AOptions: TQ3ShaderOptions);
     function GetData: TQ3ShaderData;
@@ -89,28 +90,12 @@ begin
 end;
 
 function TDeclQ3Shader.SetDefaultText: Boolean;
-var
-  LImageName: AnsiString;
-  LIndex: Integer;
-  LHasExtension: Boolean;
 begin
-  // COM_DefaultExtension(fileName, ".tga"): added if there is no '.' after the last '/'
-  LImageName := GetName;
-  LHasExtension := False;
-  for LIndex := Length(LImageName) downto 1 do
-  begin
-    if LImageName[LIndex] = '.' then
-    begin
-      LHasExtension := True;
-      Break;
-    end;
-    if LImageName[LIndex] = '/' then
-      Break;
-  end;
-  if not LHasExtension then
-    LImageName := LImageName + '.tga';
-  SetText(AnsiString(Format('%s'#10'{'#10'{'#10'map "%s"'#10'rgbGen lightingDiffuse'#10'}'#10'}'#10,
-    [string(GetName), string(LImageName)])));
+  // COM_DefaultExtension(fileName, ".tga"): the name of a declaration has no extension (the manager drops it,
+  // like COM_StripExtension), so the image is always "name.tga"
+  SetText(AnsiString(Format('"%s"'#10'{'#10'{'#10'map "%s.tga"'#10'rgbGen lightingDiffuse'#10'}'#10'}'#10,
+    [string(GetName), string(GetName)])));
+  FFromImage := True;
   Result := True;
 end;
 
@@ -159,6 +144,10 @@ begin
       LContext.Data.DefaultShader := True;
     if not LDropped then
       TQ3ShaderFinisher.FinishShader(LContext);
+    // the shader made from an image is not "found in a .shader file"
+    if FFromImage then
+      LContext.Data.ExplicitlyDefined := False;
+    FFromImage := False;
     FData := LContext.Data^;
   finally
     LContext.Free;
