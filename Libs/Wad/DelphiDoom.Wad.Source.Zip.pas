@@ -11,23 +11,40 @@ unit DelphiDoom.Wad.Source.Zip;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Zip, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf;
+  System.SysUtils, System.Classes, System.Zip, DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf,
+  DelphiDoom.Wad.Zip.Intf;
 
 type
   /// <summary>
   ///   A ZIP (PK3): every file in it is a lump named by its path, upper case
-  ///   with '/' as separator; folders are not lumps
+  ///   with '/' as separator; folders are not lumps. It is also an IZipArchive (every entry as stored,
+  ///   with CRC and size), which is what the file system of id Tech 4 reads for a PK4.
   /// </summary>
-  TZipFileSource = class(TInterfacedObject, IWadSource)
+  TZipFileSource = class(TInterfacedObject, IWadSource, IZipArchive)
   private
     FName: string;
     FZip: TZipFile;
+    FStream: TStream;
+    FOwnsStream: Boolean;
     FEntries: TArray<TWadEntry>;
     FZipIndex: TArray<Integer>;
+    procedure BuildEntries;
   public
     /// <summary>Raises EWadException when AFileName is not a ZIP</summary>
-    constructor Create(const AFileName: string);
+    constructor Create(const AFileName: string); overload;
+    /// <summary>
+    ///   Reads the ZIP from a stream (a file of a disk that is not the real one, bytes in memory); the
+    ///   stream must stay alive as long as the source, and is freed with it when AOwnsStream is True.
+    ///   Raises EWadException when it is not a ZIP (the stream is freed too if it is owned)
+    /// </summary>
+    constructor Create(AStream: TStream; AOwnsStream: Boolean; const AName: string); overload;
     destructor Destroy; override;
+    function ArchiveName: string;
+    function ArchiveEntryCount: Integer;
+    function ArchiveEntryName(AIndex: Integer): string;
+    function ArchiveEntryCrc(AIndex: Integer): Cardinal;
+    function ArchiveEntrySize(AIndex: Integer): Int64;
+    function ReadArchiveEntry(AIndex: Integer): TBytes;
     function GetName: string;
     function GetKind: TWadSourceKind;
     function GetCount: Integer;
@@ -48,9 +65,6 @@ const
 { TZipFileSource }
 
 constructor TZipFileSource.Create(const AFileName: string);
-var
-  LIndex, LCount: Integer;
-  LName: string;
 begin
   inherited Create;
   FName := AFileName;
@@ -61,6 +75,31 @@ begin
     FreeAndNil(FZip);
     raise EWadException.CreateFmt(SNotAZip, [AFileName]);
   end;
+  BuildEntries;
+end;
+
+constructor TZipFileSource.Create(AStream: TStream; AOwnsStream: Boolean; const AName: string);
+begin
+  inherited Create;
+  FName := AName;
+  FStream := AStream;
+  FOwnsStream := AOwnsStream;
+  FZip := TZipFile.Create;
+  try
+    FZip.Open(AStream, TZipMode.zmRead);
+  except
+    // the destructor, run by the failed constructor, frees the owned stream
+    FreeAndNil(FZip);
+    raise EWadException.CreateFmt(SNotAZip, [AName]);
+  end;
+  BuildEntries;
+end;
+
+procedure TZipFileSource.BuildEntries;
+var
+  LIndex, LCount: Integer;
+  LName: string;
+begin
   SetLength(FEntries, FZip.FileCount);
   SetLength(FZipIndex, FZip.FileCount);
   LCount := 0;
@@ -82,7 +121,44 @@ end;
 destructor TZipFileSource.Destroy;
 begin
   FZip.Free;
+  if FOwnsStream then
+    FStream.Free;
   inherited Destroy;
+end;
+
+function TZipFileSource.ArchiveName: string;
+begin
+  Result := FName;
+end;
+
+function TZipFileSource.ArchiveEntryCount: Integer;
+begin
+  Result := FZip.FileCount;
+end;
+
+function TZipFileSource.ArchiveEntryName(AIndex: Integer): string;
+begin
+  if (AIndex < 0) or (AIndex >= FZip.FileCount) then
+    raise EWadException.CreateFmt(SBadZipIndex, [AIndex, FName, FZip.FileCount]);
+  Result := FZip.FileNames[AIndex];
+end;
+
+function TZipFileSource.ArchiveEntryCrc(AIndex: Integer): Cardinal;
+begin
+  ArchiveEntryName(AIndex);
+  Result := FZip.FileInfos[AIndex].CRC32;
+end;
+
+function TZipFileSource.ArchiveEntrySize(AIndex: Integer): Int64;
+begin
+  ArchiveEntryName(AIndex);
+  Result := FZip.FileInfos[AIndex].UncompressedSize;
+end;
+
+function TZipFileSource.ReadArchiveEntry(AIndex: Integer): TBytes;
+begin
+  ArchiveEntryName(AIndex);
+  FZip.Read(AIndex, Result);
 end;
 
 function TZipFileSource.GetName: string;

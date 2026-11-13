@@ -25,6 +25,7 @@ uses
   DelphiDoom.Wad.Source.Wad in '..\Libs\Wad\DelphiDoom.Wad.Source.Wad.pas',
   DelphiDoom.Wad.Source.Wad2 in '..\Libs\Wad\DelphiDoom.Wad.Source.Wad2.pas',
   DelphiDoom.Wad.Source.Pak in '..\Libs\Wad\DelphiDoom.Wad.Source.Pak.pas',
+  DelphiDoom.Wad.Zip.Intf in '..\Libs\Wad\DelphiDoom.Wad.Zip.Intf.pas',
   DelphiDoom.Wad.Source.Zip in '..\Libs\Wad\DelphiDoom.Wad.Source.Zip.pas',
   DelphiDoom.Wad.Source.Folder in '..\Libs\Wad\DelphiDoom.Wad.Source.Folder.pas',
   DelphiDoom.Wad.Source.SingleFile in '..\Libs\Wad\DelphiDoom.Wad.Source.SingleFile.pas',
@@ -39,6 +40,18 @@ uses
   DelphiDoom.Wad.Pak.Index in '..\Libs\Wad\DelphiDoom.Wad.Pak.Index.pas',
   DelphiDoom.Wad.Pak.PathResolver in '..\Libs\Wad\DelphiDoom.Wad.Pak.PathResolver.pas',
   DelphiDoom.Wad.Factory in '..\Libs\Wad\DelphiDoom.Wad.Factory.pas',
+  DelphiDoom.IdLib.Hashing.Types in '..\Libs\IdLib\Hashing\DelphiDoom.IdLib.Hashing.Types.pas',
+  DelphiDoom.IdLib.Hashing.Md4 in '..\Libs\IdLib\Hashing\DelphiDoom.IdLib.Hashing.Md4.pas',
+  DelphiDoom.IdLib.Text.Strings in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Strings.pas',
+  DelphiDoom.Wad.Fs.Types in '..\Libs\Wad\DelphiDoom.Wad.Fs.Types.pas',
+  DelphiDoom.Wad.Fs.Intf in '..\Libs\Wad\DelphiDoom.Wad.Fs.Intf.pas',
+  DelphiDoom.Wad.Fs.Paths in '..\Libs\Wad\DelphiDoom.Wad.Fs.Paths.pas',
+  DelphiDoom.Wad.Fs.Disk in '..\Libs\Wad\DelphiDoom.Wad.Fs.Disk.pas',
+  DelphiDoom.Wad.Fs.Pack in '..\Libs\Wad\DelphiDoom.Wad.Fs.Pack.pas',
+  DelphiDoom.Wad.Fs.PackLoader in '..\Libs\Wad\DelphiDoom.Wad.Fs.PackLoader.pas',
+  DelphiDoom.Wad.Fs.GameFile in '..\Libs\Wad\DelphiDoom.Wad.Fs.GameFile.pas',
+  DelphiDoom.Wad.Fs.FileSystem in '..\Libs\Wad\DelphiDoom.Wad.Fs.FileSystem.pas',
+  DelphiDoom.Wad.Fs.Factory in '..\Libs\Wad\DelphiDoom.Wad.Fs.Factory.pas',
   DelphiDoom.Wad.Dll.Intf in '..\Libs\Wad\DelphiDoom.Wad.Dll.Intf.pas',
   DelphiDoom.Wad.Dll.Text in '..\Libs\Wad\DelphiDoom.Wad.Dll.Text.pas',
   DelphiDoom.Wad.Dll.ErrorSink in '..\Libs\Wad\DelphiDoom.Wad.Dll.ErrorSink.pas',
@@ -67,7 +80,9 @@ uses
   DelphiDoom.Tests.Wad.PakGameDirectories in 'Source\DelphiDoom.Tests.Wad.PakGameDirectories.pas',
   DelphiDoom.Tests.Wad.PakIndex in 'Source\DelphiDoom.Tests.Wad.PakIndex.pas',
   DelphiDoom.Tests.Wad.PakPathResolver in 'Source\DelphiDoom.Tests.Wad.PakPathResolver.pas',
-  DelphiDoom.Tests.Wad.Pk3 in 'Source\DelphiDoom.Tests.Wad.Pk3.pas';
+  DelphiDoom.Tests.Wad.Pk3 in 'Source\DelphiDoom.Tests.Wad.Pk3.pas',
+  DelphiDoom.Tests.Wad.MemoryDisk in 'Source\DelphiDoom.Tests.Wad.MemoryDisk.pas',
+  DelphiDoom.Tests.Wad.GameFileSystem in 'Source\DelphiDoom.Tests.Wad.GameFileSystem.pas';
 
 var
   Runner: ITestRunner;
