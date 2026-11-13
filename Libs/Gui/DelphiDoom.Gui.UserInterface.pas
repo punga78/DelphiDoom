@@ -155,6 +155,7 @@ var
 begin
   if AName = '' then
     Exit(False);
+  FContext.SourceFile := AName;
   if ARebuild or (not Assigned(FDesktop)) then
   begin
     FContext.Desktop := nil;
@@ -163,7 +164,6 @@ begin
     FDesktop := TGuiWindow.Create(FContext, FFactory.GetCreator());
     FContext.Desktop := FDesktop;
   end;
-  FContext.SourceFile := AName;
   FContext.StateDict.SetValue('text', 'Test Text!');
   LParser := TIdParser.Create(LEXFL_NOFATALERRORS or LEXFL_NOSTRINGCONCAT or LEXFL_ALLOWMULTICHARLITERALS or
     LEXFL_ALLOWBACKSLASHSTRINGCONCAT, FLog, FFileSystem);

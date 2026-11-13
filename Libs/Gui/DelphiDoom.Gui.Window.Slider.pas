@@ -60,7 +60,7 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types;
+  System.SysUtils, DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types;
 
 constructor TGuiSliderWindow.Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator);
 begin
@@ -126,6 +126,10 @@ begin
   inherited PostParse;
   FValue.Value := 0.0;
   SetFlag(WIN_HOLDCAPTURE or WIN_CANFOCUS);
+  // InitCvar: the cvar itself is not ported (there is no cvar system here), the empty name is reported as in the original
+  if FCvarStr.AsText = '' then
+    Warning(Format('idSliderWindow::InitCvar: gui ''%s'' window ''%s'' has an empty cvar string',
+      [string(Context.SourceFile), string(Name)]));
 end;
 
 end.
