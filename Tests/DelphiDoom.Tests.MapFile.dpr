@@ -33,6 +33,7 @@ uses
   DelphiDoom.Tests.MapFile.Dump in 'Source\DelphiDoom.Tests.MapFile.Dump.pas',
   DelphiDoom.Tests.MapFile.Golden in 'Source\DelphiDoom.Tests.MapFile.Golden.pas',
   DelphiDoom.Tests.MapFile.Model in 'Source\DelphiDoom.Tests.MapFile.Model.pas',
+  DelphiDoom.Tests.MapFile.Q3Writer in 'Source\DelphiDoom.Tests.MapFile.Q3Writer.pas',
   DelphiDoom.Tests.MapFile.Reader in 'Source\DelphiDoom.Tests.MapFile.Reader.pas',
   DelphiDoom.Tests.MapFile.ProcAreaLocator in 'Source\DelphiDoom.Tests.MapFile.ProcAreaLocator.pas',
   DelphiDoom.Tests.MapFile.ProcReader in 'Source\DelphiDoom.Tests.MapFile.ProcReader.pas',
