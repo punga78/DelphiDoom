@@ -11,4 +11,5 @@ for v in 0 1 2; do
   echo "bsp $v" >> "$GOLDEN"
   "$OUT/bspgen.exe" read "$OUT/variant$v.bsp" >> "$GOLDEN"
 done
+"$OUT/bspgen.exe" extras "$OUT/variant0.bsp" > "$HERE/../../../Tests/Data/MapFile/bsp_render.golden.txt"
 echo "written $GOLDEN"

@@ -1,0 +1,23 @@
+# Issue #107, third slice: writes proc_area.golden.txt with the REAL PointInArea and BoundsInAreas of Doom 3.
+# Same tree as aas_build.ps1.txt ($d = C:\harness\aas: idlib\ and obj\ already compiled). area_original.inc is made of
+# line ranges of Reference\doom3\neo\renderer\RenderWorld.cpp (read only), found by their first lines.
+param([string]$Repo = 'C:\Progetti\DelphiDoom', [string]$Reference = 'C:\Progetti\DelphiDoom\Reference')
+$d = 'C:\harness\aas'
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$src = "$Repo\Tests\Data\MapFile"
+$lines = Get-Content "$Reference\doom3\neo\renderer\RenderWorld.cpp"
+function Find($pattern) { for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match $pattern) { return $i } } throw "not found: $pattern" }
+$pointStart = Find '^int idRenderWorldLocal::PointInArea'
+$boundsStart = Find '^void idRenderWorldLocal::BoundsInAreas_r'
+$allStart = Find '^int idRenderWorldLocal::BoundsInAreas\('
+$allEnd = $allStart; while ($lines[$allEnd] -ne '}') { $allEnd++ }
+$inc = $lines[$pointStart..($boundsStart - 1)] + $lines[$boundsStart..($allEnd)]
+Set-Content "$d\idlib\area_original.inc" $inc -Encoding ascii
+Copy-Item "$src\harness\proc_driver.cpp.txt" "$d\idlib\proc_driver.cpp"
+Set-Location "$d\idlib"
+$o = "$d\obj3"
+New-Item -ItemType Directory -Force $o | Out-Null
+& $B -c -w- -std=c++14 -I. "-o$o\proc_driver.o" proc_driver.cpp 2>&1 | Select-String 'error' | Select-Object -First 10
+$all = Get-ChildItem "$d\obj\*.o" | Where-Object { $_.Name -ne 'driver.o' } | ForEach-Object { $_.FullName }
+& $B -o "$d\proc.exe" "$o\proc_driver.o" @all
+& "$d\proc.exe" "$src\proc_nodes.txt" | Set-Content "$src\proc_area.golden.txt" -Encoding ascii

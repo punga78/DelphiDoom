@@ -1,0 +1,3 @@
+# Verifica #107: `.aas` e `.proc`
+
+`Make-AasSample.ps1` scrive `Tests\Data\MapFile\aas_rooms.aas`. La parita' col C++ vero sta in `Tests\Data\MapFile\harness\`: `aas_build.ps1.txt` (lettura), `aas_build2.ps1.txt` (scrittura e campionamento, `aas_write.golden.txt` e `aas_query.golden.txt`), `proc_build.ps1.txt` (`PointInArea`, `BoundsInAreas`, `proc_area.golden.txt`); servono `bcc32c` e una copia di `Reference\doom3\neo\idlib` in `C:\harness\aas\idlib` (con `AASFile*.cpp/h` copiati da `tools\compilers\aas` e `#include "../../../idlib/precompiled.h"` cambiato in `precompiled.h`; `AASFile_local.h` con `private:` -> `public:`). Dettagli: `Libs\MapFile\README.md`.

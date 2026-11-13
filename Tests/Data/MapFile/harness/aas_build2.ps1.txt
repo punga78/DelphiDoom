@@ -1,0 +1,27 @@
+# Issue #107, second slice: writes aas_write.golden.txt and aas_query.golden.txt with the REAL idAASFileLocal::Write,
+# AreaReachableGoal, PointAreaNum, PointReachableAreaNum, BoundsReachableAreaNum, PushPointIntoAreaNum and Trace.
+# Same tree as aas_build.ps1.txt ($d = C:\harness\aas, idlib\ built with it, obj\ already compiled). The driver is the
+# head of aas_driver.cpp.txt (up to main, with the log silenced) followed by aas_driver2.cpp.txt.
+param([string]$Repo = 'C:\Progetti\DelphiDoom')
+$d = 'C:\harness\aas'
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$data = "$d\data2"
+New-Item -ItemType Directory -Force $data | Out-Null
+$src = "$Repo\Tests\Data\MapFile"
+foreach ($f in 'aas_rooms.aas', 'aas_walk.aas', 'aas_minimal.aas', 'aas_sample_cases.txt') { Copy-Item "$src\$f" $data }
+Move-Item -Force "$data\aas_sample_cases.txt" "$data\sample_cases.txt"
+# AreaReachableGoal is private in AASFile_local.h: the copy of the header in idlib\ has 'private:' turned into 'public:' (same layout)
+$head = Get-Content "$src\harness\aas_driver.cpp.txt" -Raw
+$head = $head.Substring(0, $head.IndexOf('int main('))
+$head = $head.Replace('printf("P: %s\n", esc(b)); }', 'if (!quiet) printf("P: %s\n", esc(b)); }').Replace('static idCommon theCommon;', 'static bool quiet = false; static idCommon theCommon;')
+# idCommon::Printf is defined after theCommon: quiet must be declared before it
+$tail = Get-Content "$src\harness\aas_driver2.cpp.txt" -Raw
+Set-Content "$d\idlib\driver2.cpp" ($head + $tail) -Encoding ascii
+Set-Location "$d\idlib"
+$o = "$d\obj2"
+New-Item -ItemType Directory -Force $o | Out-Null
+& $B -c -w- -std=c++14 -I. "-o$o\driver2.o" driver2.cpp 2>&1 | Select-String 'error' | Select-Object -First 10
+$all = Get-ChildItem "$d\obj\*.o" | Where-Object { $_.Name -ne 'driver.o' } | ForEach-Object { $_.FullName }
+& $B -o "$d\aas2.exe" "$o\driver2.o" @all
+& "$d\aas2.exe" $data write | Set-Content "$src\aas_write.golden.txt" -Encoding ascii
+& "$d\aas2.exe" $data query | Set-Content "$src\aas_query.golden.txt" -Encoding ascii

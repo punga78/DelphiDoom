@@ -16,3 +16,4 @@ err_patchrow
 err_brushkey
 err_brushclose
 err_texmat
+q3_written

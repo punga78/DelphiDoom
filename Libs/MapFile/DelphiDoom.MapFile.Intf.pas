@@ -33,7 +33,10 @@ type
     function ParseText(const AText, AName: AnsiString): TMapFile;
   end;
 
-  /// <summary>Turns the model into the text of a .map file (always the current version)</summary>
+  /// <summary>
+  ///   Turns the model into the text of a .map file: the current version of Doom 3 from
+  ///   <c>TMapFileFactory.CreateWriter</c>, the format of Quake III Arena from <c>CreateQ3Writer</c>
+  /// </summary>
   IMapFileWriter = interface
     ['{4D7B2C1E-6A31-4E0B-9C52-7F3A18D0B602}']
     /// <summary>Writes the file with the extension given; false if the file cannot be written</summary>

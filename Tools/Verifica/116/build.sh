@@ -37,6 +37,20 @@ line() { grep -n "$1" "$2" | head -1 | cut -d: -f1; }
   MOVE=$(line '^R_MovePatchSurfacesToHunk' "$BSP")
   sed -n "$((MERGED - 7)),$((MOVE - 3))p" "$BSP"
 } > "$OUT/bsp_world.inc"
+# second slice: the loaders of lightmaps, light grid and nodes (R_LoadLightmaps, R_LoadLightGrid,
+# R_SetParent, R_LoadNodesAndLeafs), also cut out of tr_bsp.c: a block ends at its first "}" in column 0
+block() { awk -v s="$1" 'NR>=s { print } NR>=s && /^}/ { exit }' "$BSP"; }
+{
+  H=$(line '^static void HSVtoRGB' "$BSP")
+  block "$H"
+  L=$(line '^#define.LIGHTMAP_SIZE' "$BSP")
+  sed -n "${L}p" "$BSP"
+  block "$(line '^static.void R_LoadLightmaps' "$BSP")"
+  block "$(line 'R_SetParent (mnode_t' "$BSP")"
+  block "$(line 'R_LoadNodesAndLeafs (lump_t' "$BSP")"
+  block "$(line '^void R_LoadLightGrid' "$BSP")"
+} > "$OUT/bsp_load.inc"
+sed -n '664,688p' "$CODE/renderer/tr_local.h" > "$OUT/bsp_nodes.inc"
 cp "$HERE/stubs.h" "$HERE/bspgen.c" "$OUT/"
 "$KIT/gcc.exe" -O1 -w -ffp-contract=off -o "$OUT/bspgen.exe" "$OUT/bspgen.c" -lm
 echo "built in $OUT"
