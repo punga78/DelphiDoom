@@ -5,7 +5,7 @@ menuDef {
 	cinematic "a" "b" "c"
 	onOpen { "quoted" word; semi ; /* c */ last // tail
 	}
-	itemDef { name "t" text "x" cvar "ui_x" cvarStrList { a b , c d } }
+	itemDef { name "t" type 12 text "x" cvar "ui_x" cvarStrList { a b , c d } }
 }
 menuDef {
 	name "after_strings"

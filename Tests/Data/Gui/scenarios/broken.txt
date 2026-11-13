@@ -6,7 +6,6 @@ menu ui/nolist2.menu
 menu ui/eof.menu
 menu ui/eof2.menu
 menu ui/numbers.menu
-menu ui/numbers_exp.menu
 menu ui/numbers_dash.menu
 menu ui/strings.menu
 menu ui/include_loop.menu

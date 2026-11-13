@@ -5,7 +5,7 @@ menuDef {
 	borderSize -15.5
 	backcolor 1 - 2 3 4
 	forecolor 0.1 0.2 0.3 0.4
-	itemDef { name "n1" rect 1 2 3 4 style -3 textscale 1.5 textalignx -0.25 textaligny 12. }
+	itemDef { name "n1" rect 1 2 3 4 style -3 textscale 1.5 textalignx -0.25 textaligny 12.5 }
 }
 menuDef {
 	name "numbers_after"

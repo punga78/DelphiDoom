@@ -74,7 +74,6 @@ static sfxHandle_t DC_registerSound(const char *name, qboolean compressed) {
 }
 void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font);
 static void DC_registerFont(const char *p, int pointSize, fontInfo_t *font) {
-	printf("reg font \"%s\" %d\n", p, pointSize);
 	RE_RegisterFont(p, pointSize, font);
 }
 static void DC_getTeamColor(vec4_t *color) {
@@ -155,7 +154,7 @@ static int RI_ReadFile(const char *name, void **buf) {
 	return len;
 }
 static void R_SyncRenderThread(void) {}
-static qhandle_t RE_RegisterShaderNoMip(const char *name) { return Register(shaders, &shaderCount, name); }
+static qhandle_t RE_RegisterShaderNoMip(const char *name) { return DC_registerShaderNoMip(name); }
 #define Com_Memcpy memcpy
 #include "tr_font_original.inc"
 
