@@ -14,7 +14,7 @@ unit DelphiDoom.War.Audio.Types;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, DelphiDoom.AudioMix.Types;
 
 const
   /// <summary>PLAYBACK_FREQ of war.h: every sound is resampled to this rate</summary>
@@ -58,12 +58,7 @@ type
   ///   Samples as the VOC and WAV readers of the original give them (mv_audio_buffer, mw_audio_buffer): the bytes
   ///   of the samples, interleaved by channel, 8 bits unsigned or 16 bits signed little endian
   /// </summary>
-  TWarPcmBuffer = record
-    Channels: Cardinal;
-    SampleRate: Cardinal;
-    BitsPerSample: Cardinal;
-    Data: TBytes;
-  end;
+  TWarPcmBuffer = TPcmBuffer;
 
 resourcestring
   SWarAudioNotSound = 'The record %d is not a sound (VOC or WAVE)';

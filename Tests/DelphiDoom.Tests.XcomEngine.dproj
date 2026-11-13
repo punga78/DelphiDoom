@@ -12,7 +12,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\GameHost;..\Libs\Clock;..\Libs\XcomMod;..\Libs\XcomAudio;..\Libs\Sound;..\Libs\Ogg;..\Libs\Sndfile;..\Libs\Mp3;..\Libs\Mp3\Shim;..\Libs\Mp3\Decoder;..\Libs\Mikmod;..\Libs\Midi;..\Libs\M2m;..\Libs\Logging;..\Libs\Opl;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Libs\Yaml;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Video;..\Libs\CommandLine;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\AudioMix;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\GameHost;..\Libs\Clock;..\Libs\XcomMod;..\Libs\XcomAudio;..\Libs\Sound;..\Libs\Ogg;..\Libs\Sndfile;..\Libs\Mp3;..\Libs\Mp3\Shim;..\Libs\Mp3\Decoder;..\Libs\Mikmod;..\Libs\Midi;..\Libs\M2m;..\Libs\Logging;..\Libs\Opl;..\Libs\XcomEngine;..\Libs\XcomUi;..\Libs\XcomMenu;..\Libs\XcomSurface;..\Libs\XcomFormats;..\Libs\Yaml;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Video;..\Libs\CommandLine;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>

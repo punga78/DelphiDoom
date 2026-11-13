@@ -14,30 +14,35 @@ unit DelphiDoom.War.Audio.Mixer;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.SyncObjs, System.Generics.Collections, DelphiDoom.War.Audio.Types,
-  DelphiDoom.War.Audio.Intf, DelphiDoom.War.Audio.WaveVoice;
+  System.SysUtils, System.SyncObjs, DelphiDoom.War.Audio.Types, DelphiDoom.War.Audio.Intf, DelphiDoom.War.Audio.WaveVoice,
+  DelphiDoom.AudioMix.Intf, DelphiDoom.AudioMix.VoiceList;
 
 type
   /// <summary>
   ///   The voices that play now. Called by two threads (the game starts and stops voices, the audio output mixes):
-  ///   every method takes a lock. The voices of the original are entities of the world, removed by the main
-  ///   thread when the audio thread says so; here a finished voice is removed by Mix itself
+  ///   every method takes the lock of the list of voices (TPcmVoiceList of Libs\AudioMix, which holds the voices, the
+  ///   handles and the order). The voices of the original are entities of the world, removed by the main
+  ///   thread when the audio thread says so; here a finished voice is removed by Mix itself. What is of the game
+  ///   (the viewport, the volume, the attenuation of a voice that has a place) stays here
   /// </summary>
   TWarSoundMixer = class(TInterfacedObject, IWarSoundMixer)
   strict private
     type
-      TVoice = class
-        Handle: Integer;
+      /// <summary>One sound that plays: the voice of the samples and where it is on the map</summary>
+      TVoice = class(TInterfacedObject, IPcmVoice)
+      strict private
+        FOwner: TWarSoundMixer;
+      public
         Wave: TWarWaveVoice;
         Positional: Boolean;
         X, Y: Single;
+        constructor Create(AOwner: TWarSoundMixer);
         destructor Destroy; override;
+        function Mix(ADestination: Pointer; ACount: Integer): Boolean;
       end;
   strict private
     FLibrary: IWarAudioLibrary;
-    FLock: TCriticalSection;
-    FVoices: TObjectList<TVoice>;
-    FNextHandle: Integer;
+    FVoices: TPcmVoiceList;
     FViewportX, FViewportY, FViewportWidth, FViewportHeight: Single;
     FVolume: Single;
     FEnabled: Boolean;
@@ -65,10 +70,22 @@ uses
 
 { TWarSoundMixer.TVoice }
 
+constructor TWarSoundMixer.TVoice.Create(AOwner: TWarSoundMixer);
+begin
+  inherited Create;
+  FOwner := AOwner;
+end;
+
 destructor TWarSoundMixer.TVoice.Destroy;
 begin
   Wave.Free;
   inherited;
+end;
+
+function TWarSoundMixer.TVoice.Mix(ADestination: Pointer; ACount: Integer): Boolean;
+begin
+  // called by the list with the lock taken, so the state of the mixer cannot change under it
+  Result := Wave.Mix(PSmallInt(ADestination), ACount, FOwner.VolumeOf(Self));
 end;
 
 { TWarSoundMixer }
@@ -79,9 +96,7 @@ begin
   if not Assigned(ALibrary) then
     raise EWarException.Create('The audio library of the mixer is nil');
   FLibrary := ALibrary;
-  FLock := TCriticalSection.Create;
-  FVoices := TObjectList<TVoice>.Create(True);
-  FNextHandle := 1;
+  FVoices := TPcmVoiceList.Create;
   // wa_initAudio: musicVolume and soundVolume are 1 and both enabled
   FVolume := 1;
   FEnabled := True;
@@ -90,7 +105,6 @@ end;
 destructor TWarSoundMixer.Destroy;
 begin
   FVoices.Free;
-  FLock.Free;
   inherited;
 end;
 
@@ -101,20 +115,12 @@ var
 begin
   // decoded outside the lock: it can take a while the first time
   LSound := FLibrary.GetSound(ASoundIndex);
-  LVoice := TVoice.Create;
+  LVoice := TVoice.Create(Self);
   LVoice.Wave := TWarWaveVoice.Create(LSound.Data, ALoop);
   LVoice.Positional := APositional;
   LVoice.X := AX;
   LVoice.Y := AY;
-  FLock.Enter;
-  try
-    LVoice.Handle := FNextHandle;
-    Inc(FNextHandle);
-    FVoices.Add(LVoice);
-    Result := LVoice.Handle;
-  finally
-    FLock.Leave;
-  end;
+  Result := FVoices.Add(LVoice);
 end;
 
 function TWarSoundMixer.Play(ASoundIndex: Integer; ALoop: Boolean): Integer;
@@ -128,45 +134,31 @@ begin
 end;
 
 procedure TWarSoundMixer.Stop(AHandle: Integer);
-var
-  LIndex: Integer;
 begin
-  FLock.Enter;
-  try
-    for LIndex := FVoices.Count - 1 downto 0 do
-      if FVoices[LIndex].Handle = AHandle then
-        FVoices.Delete(LIndex);
-  finally
-    FLock.Leave;
-  end;
+  FVoices.Remove(AHandle);
 end;
 
 procedure TWarSoundMixer.StopAll;
 begin
-  FLock.Enter;
-  try
-    FVoices.Clear;
-  finally
-    FLock.Leave;
-  end;
+  FVoices.Clear;
 end;
 
 procedure TWarSoundMixer.SetViewport(AX, AY, AWidth, AHeight: Single);
 begin
-  FLock.Enter;
+  FVoices.Lock.Enter;
   try
     FViewportX := AX;
     FViewportY := AY;
     FViewportWidth := AWidth;
     FViewportHeight := AHeight;
   finally
-    FLock.Leave;
+    FVoices.Lock.Leave;
   end;
 end;
 
 procedure TWarSoundMixer.SetVolume(AVolume: Single; AEnabled: Boolean);
 begin
-  FLock.Enter;
+  FVoices.Lock.Enter;
   try
     // CLAMP(volume, 0, 1) of wg_setMusicVolume
     if AVolume < 0 then
@@ -176,17 +168,17 @@ begin
     FVolume := AVolume;
     FEnabled := AEnabled;
   finally
-    FLock.Leave;
+    FVoices.Lock.Leave;
   end;
 end;
 
 procedure TWarSoundMixer.SetSilenced(ASilenced: Boolean);
 begin
-  FLock.Enter;
+  FVoices.Lock.Enter;
   try
     FSilenced := ASilenced;
   finally
-    FLock.Leave;
+    FVoices.Lock.Leave;
   end;
 end;
 
@@ -207,37 +199,21 @@ begin
 end;
 
 procedure TWarSoundMixer.Mix(ABuffer: PSmallInt; ASampleCount: Integer);
-var
-  LIndex: Integer;
-  LVoice: TVoice;
 begin
-  FLock.Enter;
+  FVoices.Lock.Enter;
   try
     if FSilenced or (ASampleCount <= 0) then
       Exit;
     // in the order they were started: the sum saturates, so the order is part of the result
-    LIndex := 0;
-    while LIndex < FVoices.Count do
-    begin
-      LVoice := FVoices[LIndex];
-      if LVoice.Wave.Mix(ABuffer, ASampleCount, VolumeOf(LVoice)) then
-        FVoices.Delete(LIndex)
-      else
-        Inc(LIndex);
-    end;
+    FVoices.MixAll(ABuffer, ASampleCount);
   finally
-    FLock.Leave;
+    FVoices.Lock.Leave;
   end;
 end;
 
 function TWarSoundMixer.ActiveVoices: Integer;
 begin
-  FLock.Enter;
-  try
-    Result := FVoices.Count;
-  finally
-    FLock.Leave;
-  end;
+  Result := FVoices.Count;
 end;
 
 end.
