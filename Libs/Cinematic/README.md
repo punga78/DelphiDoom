@@ -31,6 +31,9 @@ Image := Player.ImageForTime(MillisecondiDelChiamante);
 
 - Progetto di test in `Tests\`: `DelphiDoom.Tests.Cinematic` (90 test, Win32 e Win64). Si compila con `Tools\build.bat` (vedi "Build e prove" nel [CLAUDE.md di radice](../../CLAUDE.md)).
 
+## Filmati FLIC (issue #199)
+
+Il decoder dei FLI/FLC (`DelphiDoom.Cinematic.Flic.*`) da' i fotogrammi dei filmati di Warcraft: Orcs & Humans (`CAVE1.WAR`, `TITLE.WAR`, ... sono FLC puri). `TFlicFactory.CreateDecoder(bytes)` + `TFlicFactory.CreatePlayer(decoder, ciclo)`, poi `ImageForTime(ms)` con il tempo del chiamante. Parita' sul `FlcPlayer` di OpenXcom (`Tools\Verifica\199`): identici i CRC su 4 file di prova e sui 13 filmati veri. Dettagli, difetti ereditati e cosa resta nel [CLAUDE.md](CLAUDE.md).
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).

@@ -21,7 +21,7 @@ type
   TFlicPixelConverter = class
   public
     /// <summary>The color of a palette entry as a pixel (alpha $FF; the red one is the low byte)</summary>
-    class function ColorToPixel(ARed, AGreen, ABlue: Byte): Cardinal; static; inline;
+    class function ColorToPixel(ARed, AGreen, ABlue: Byte): Cardinal; static;
     /// <summary>One pixel for every byte of AIndices</summary>
     class function ToPixels(const AIndices: TBytes; const APalette: TFlicPalette): TImagingPixels; static;
   end;
