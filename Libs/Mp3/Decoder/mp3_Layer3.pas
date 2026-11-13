@@ -452,7 +452,11 @@ begin
       if FIS_1D[j] > 0 then
         xr1d[j] := g_gain * t_43[abv]
       else
-        xr1d[j] := -g_gain * t_43[-abv];
+      begin
+        // -abv on a Cardinal wraps in 32 bit and goes negative in 64 bit: negate the Integer instead
+        abv := Cardinal(-FIS_1D[j]);
+        xr1d[j] := -g_gain * t_43[abv];
+      end;
     end;
   end;
 

@@ -58,15 +58,24 @@ begin
   Result := TOggCrc.Update(AStart, PByte(PAnsiChar(AText)), Length(AText));
 end;
 
+function ExpectedLayout(const AValue32, AValue64: Integer): Integer;
+begin
+  // The C structures hold pointers: their size and the offsets after them depend on the pointer size
+  if SizeOf(Pointer) = 8 then
+    Result := AValue64
+  else
+    Result := AValue32;
+end;
+
 procedure TTestOggStructures.TestDimensioniDelleStrutture;
 begin
   // Those of the C structures that the objects of the other libraries use
-  Assert.AreEqual(20, SizeOf(TOggPackBuffer));
-  Assert.AreEqual(16, SizeOf(TOggPage));
-  Assert.AreEqual(8, SizeOf(TOggIoVec));
-  Assert.AreEqual(32, SizeOf(TOggPacket));
-  Assert.AreEqual(360, SizeOf(TOggStreamState));
-  Assert.AreEqual(28, SizeOf(TOggSyncState));
+  Assert.AreEqual(ExpectedLayout(20, 32), SizeOf(TOggPackBuffer));
+  Assert.AreEqual(ExpectedLayout(16, 32), SizeOf(TOggPage));
+  Assert.AreEqual(ExpectedLayout(8, 16), SizeOf(TOggIoVec));
+  Assert.AreEqual(ExpectedLayout(32, 40), SizeOf(TOggPacket));
+  Assert.AreEqual(ExpectedLayout(360, 376), SizeOf(TOggStreamState));
+  Assert.AreEqual(ExpectedLayout(28, 32), SizeOf(TOggSyncState));
 end;
 
 procedure TTestOggStructures.TestPosizioneDeiCampiDelloStato;
@@ -74,14 +83,13 @@ var
   LState: TOggStreamState;
   LPacket: TOggPacket;
 begin
-  Assert.AreEqual(40, Integer(NativeInt(@LState.Header) - NativeInt(@LState)));
-  Assert.AreEqual(324, Integer(NativeInt(@LState.HeaderFill) - NativeInt(@LState)));
-  Assert.AreEqual(336, Integer(NativeInt(@LState.SerialNumber) - NativeInt(@LState)));
-  Assert.AreEqual(344, Integer(NativeInt(@LState.PacketNumber) - NativeInt(@LState)));
-  Assert.AreEqual(352, Integer(NativeInt(@LState.GranulePosition) - NativeInt(@LState)));
-  Assert.AreEqual(16, Integer(NativeInt(@LPacket.GranulePosition) - NativeInt(@LPacket)));
+  Assert.AreEqual(ExpectedLayout(40, 56), Integer(NativeInt(@LState.Header) - NativeInt(@LState)));
+  Assert.AreEqual(ExpectedLayout(324, 340), Integer(NativeInt(@LState.HeaderFill) - NativeInt(@LState)));
+  Assert.AreEqual(ExpectedLayout(336, 352), Integer(NativeInt(@LState.SerialNumber) - NativeInt(@LState)));
+  Assert.AreEqual(ExpectedLayout(344, 360), Integer(NativeInt(@LState.PacketNumber) - NativeInt(@LState)));
+  Assert.AreEqual(ExpectedLayout(352, 368), Integer(NativeInt(@LState.GranulePosition) - NativeInt(@LState)));
+  Assert.AreEqual(ExpectedLayout(16, 24), Integer(NativeInt(@LPacket.GranulePosition) - NativeInt(@LPacket)));
 end;
-
 procedure TTestOggStructures.TestCrcDelVuoto;
 begin
   Assert.AreEqual(Int64(0), Int64(Crc('')));
