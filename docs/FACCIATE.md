@@ -139,6 +139,14 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
 
+### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `Libs\Hud`, #185 fetta 1a)
+
+**Facciata (#185)**: `HU_Init`, `HU_Start`, `HU_Responder`, `HU_Ticker`, `HU_Drawer`, `HU_Erase`, `HU_dequeueChatChar`, `HU_DoFPSStuff`, `HU_FPS` (e `HU_Height`, `HU_TITLE`, `HU_DrawYellowText` dove il gioco li ha) hanno le firme di prima e sono righe che chiamano `IHeadsUp` (modello: `Libs\Hud`, classe `THeadsUp`) o `IHudScreen` (disegno: `DelphiDoom.Engine.Hud.Drawer`); li dà `ComposeHud` con `HU_Configure`, senza la configurazione danno `I_Error`. Restano nell'unit, perche' legati a globali che altri possiedono o che le patch Dehacked cambiano: i font (`hu_font*`, `yfont`, `m_font3`) e il loro caricamento, le tabelle dei nomi delle mappe (`mapnames*`), `player_names`, `chat_macros`, `destination_keys`/`key_multi_msgplayer`, `shiftxform` (la riempie `HU_Init` dalla libreria), `chat_on` e `message_dontfuckwithme` (li scrive `m_menu`), `drawfps`, `drawcrosshair`, `amdrawstats`, la geometria dei widget (`HU_TITLEY`, `HU_LEVELTIMEY`) e la scelta del titolo con le tabelle. Tolti perche' senza chiamanti fuori dall'unit: `message_on`, `message_nottobefuckedwith`, `always_off`, `HU_Stop`.
+
+### `Base\hu_lib.pas` - 1 funzione pubblica (Strife)
+
+**Quasi svuotata (#185)**: i widget a record (`hu_textline_t`, `hu_stext_t`, `hu_itext_t`) e le routine `HUlib_*` erano usati solo da `hu_stuff`; sono diventati `THudTextLine`, `THudScrollingText`, `THudInputText` di `Libs\Hud` e il disegno e' in `DelphiDoom.Engine.Hud.Drawer`. Resta `HUlib_drawYellowText` (Strife, chiamata da `st_stuff`), che chiama `HU_DrawYellowText`.
+
 ### `Base\sc_utils.pas` - cancellata
 
 **Tolta (#144)**: il preprocessore dei testi e `IScriptTextPreprocessor` (`TScriptTextPreprocessor`, `ComposeScanner`), dato ai costruttori di chi legge script; `SC_Preprocess` non esiste piu.

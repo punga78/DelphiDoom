@@ -104,16 +104,17 @@ function THudFpsCounter.FramesPerSecond: Integer;
 var
   LDifference: Integer;
 begin
-  // before the first frame the heads are -1: the old arrays were read at -1, here it is the end
-  LDifference := FShort[(FShortHead + SHORT_HISTORY) mod SHORT_HISTORY] -
-    FShort[(FShortHead + 1) mod SHORT_HISTORY] + 1;
+  // before the first frame the heads are -1: the old code read the array at -1, that is whatever
+  // came before it in memory; here the counter says the tic rate until there is a frame
+  if FShortHead < 0 then
+    Exit(FTicRate);
+  LDifference := FShort[FShortHead] - FShort[(FShortHead + 1) mod SHORT_HISTORY] + 1;
   if LDifference > 0 then
   begin
     Result := FTicRate * SHORT_HISTORY * HUD_FRACUNIT div LDifference;
     if Result > SHORT_HISTORY then
     begin
-      LDifference := FLong[(FLongHead + FLongSize) mod FLongSize] -
-        FLong[(FLongHead + 1) mod FLongSize] + 1;
+      LDifference := FLong[FLongHead] - FLong[(FLongHead + 1) mod FLongSize] + 1;
       if LDifference > 0 then
         Result := FTicRate * FLongSize * HUD_FRACUNIT div LDifference;
     end;

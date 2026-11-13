@@ -36,7 +36,7 @@ type
     [Test]
     procedure DovrebbeRifiutareUnNumeroDiGiocatoriNonValido;
     [Test]
-    procedure DovrebbeRicordareLoShiftEL_Alt;
+    procedure DovrebbeRicordareLoShiftEdAlt;
     [Test]
     procedure DovrebbeIgnorareITastiCheNonSiAbbassano;
     [Test]
@@ -211,7 +211,7 @@ begin
     EHudException);
 end;
 
-procedure TTestHudChat.DovrebbeRicordareLoShiftEL_Alt;
+procedure TTestHudChat.DovrebbeRicordareLoShiftEdAlt;
 begin
   Assert.IsFalse(FChat.Responder(KEY_RSHIFT, True));
   Assert.IsFalse(FChat.Responder(KEY_ALT, True));

@@ -29,6 +29,8 @@ type
     [Test]
     procedure DovrebbeDareIlTicRateSeNonCeAbbastanzaStoria;
     [Test]
+    procedure DovrebbeDareIlTicRatePrimaDelPrimoFotogramma;
+    [Test]
     procedure DovrebbeCalcolareIFotogrammiAlSecondo;
     [Test]
     procedure DovrebbeUsareLaStoriaLungaSeSuperaIlLimiteDiTrentamilaCento;
@@ -79,6 +81,17 @@ begin
   for LIndex := 0 to 127 do
     FCounter.AddFrame(1000 - LIndex);
   Assert.AreEqual(35, FCounter.FramesPerSecond);
+end;
+
+procedure TTestHudFpsCounter.DovrebbeDareIlTicRatePrimaDelPrimoFotogramma;
+begin
+  // regression: the old code read before the start of its array and showed a number made of
+  // whatever came before it in memory
+  Assert.AreEqual(35, FCounter.FramesPerSecond);
+  FCounter.Tick;
+  Assert.AreEqual('35 fps', FCounter.Text);
+  FCounter.AddFrame(0);
+  Assert.AreEqual(35 * 512 * HUD_FRACUNIT, FCounter.FramesPerSecond);
 end;
 
 procedure TTestHudFpsCounter.DovrebbeCalcolareIFotogrammiAlSecondo;
