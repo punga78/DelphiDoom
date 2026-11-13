@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the war library - parity of the graphic records with   }
 {  the C of the remake on the real DATA.WAR                                    }

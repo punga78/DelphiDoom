@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: war library - palette indices to RGBA pixels                    }
 {                                                                              }
@@ -26,7 +26,7 @@ type
     /// </summary>
     class function Build(const APalette: TBytes): TWarColorLookup; static;
     /// <summary>Writes the pixel of the color AColor at ABuffer[AOffset..AOffset + 3] (R, G, B, A)</summary>
-    class procedure PutPixel(const ALookup: TWarColorLookup; AColor: Byte; var ABuffer: TBytes; AOffset: Integer); static; inline;
+    class procedure PutPixel(const ALookup: TWarColorLookup; AColor: Byte; var ABuffer: TBytes; AOffset: Integer); static;
   end;
 
 implementation

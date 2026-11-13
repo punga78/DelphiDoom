@@ -35,12 +35,34 @@ La lunghezza che un record occupa nel file e' la distanza dall'offset del succes
 
 Una `TWarFactory` crea tutto (`OpenFile`, `OpenStream`, `CreateCatalog`).
 
+## Parte grafica (issue #192, prima fetta)
+
+I record grafici di `DATA.WAR` diventano pixel RGBA sopra `IWarArchive` e `IWarCatalog` (`IWarGraphics`, creato da `TWarFactory.CreateGraphics`). Ogni chiamata decodifica il record richiesto (l'originale decodificava tutto all'avvio); il tipo che il catalogo da' al record deve essere quello chiesto, altrimenti `EWarException`. I pixel sono `R G B A` (il colore 0 e' trasparente, tutti e quattro i byte a zero).
+
+| C (`war_resources.c`, `war_font.c`) | Delphi |
+|---|---|
+| `wres_loadPaletteResource` (x4, correzioni delle palette 255 e 217, record corto completato con zeri) | `TWarPaletteDecoder.Decode`, `IWarGraphics.GetPalette` |
+| `wres_getPalette` (palette 1 + palette 2, il magenta 252,0,252) | `TWarPaletteComposer.Compose`, `IWarGraphics.ComposePalette` |
+| `buildRgbaLut` | `TWarColorLookupBuilder.Build` e `PutPixel` |
+| `wres_loadImageResource` | `TWarImageDecoder`, `GetImage` (`TWarImage`) |
+| `wres_loadSpriteResource` | `TWarSpriteDecoder`, `GetSprite` (`TWarSprite`, `TWarSpriteFrame`) |
+| `wres_loadCursor` | `TWarCursorDecoder`, `GetCursor` (`TWarCursor`) |
+| `wres_loadTiles` | `GetTiles` (`TWarTiles`: i byte e le due palette del catalogo) |
+| `wres_loadTileset` (mega tegole 2 x 2, specchi X e Y, 512 x 256) | `TWarTilesetDecoder`, `GetTileset` (`TWarTileset`) |
+| `WarFontData fontsData[2]`, `getFontData`, `getCharIndex` | `DelphiDoom.War.Font.Data` (generato), `TWarFontMetrics` (`IWarFontMetrics`, `CreateFontMetrics`) |
+
+Record su disco `packed`, senza puntatori, con `SizeOf` coperto da un test: `TWarImageHeader` (4), `TWarSpriteHeader` (4), `TWarSpriteFrameEntry` (8), `TWarCursorHeader` (8), `TWarTilesetEntry` (8).
+
+**Difetti del C conservati**: la palette e' il byte del file per 4 troncato a 8 bit (63 -> 252, 64 -> 0); le correzioni a mano delle palette 255 e 217; la seconda palette vale per ogni record che la cita; nello sprite tutti i fotogrammi stanno in un solo blocco di pixel, quindi un fotogramma che esce dalla riga scrive nella riga dopo e uno che esce dall'area nel fotogramma dopo (come il C, nello stesso ordine); lo scarto di una mini tegola e' `(valore & 0xFFFC) << 1` troncato a 16 bit; `getCharIndex` legge `char` con segno (da 128 in su e' il glifo 0, anche lo spazio e il byte 0); la tabella dei glifi del secondo font ha un glifo (`|`) che si sovrappone a quello del `q`.
+**Differenze volute** (ognuna con un test): un record di immagine, cursore o sprite che non contiene tutti i suoi pixel, o uno sprite che scrive oltre il blocco, una mini tegola che punta oltre il record delle tegole o piu' di 512 tegole sono `EWarException` (il C leggeva o scriveva fuori dalla memoria); una palette citata che non e' una palette del catalogo e' `EWarException` (il C leggeva i byte di un altro tipo di record); i caratteri da 1 a 31 e il 127 non hanno un glifo (`TryGetGlyph` da' falso; il C leggeva la tabella fuori dai limiti).
+**Non portato**: i **PNG dei due font** (`war1_font_1.png`, `war1_font_2.png`) sono immagini disegnate per il remake, non stanno in `DATA.WAR`: li carica il rendering (#197); `wfont_measure*`/`wfont_render*` (layout e disegno del testo, #197); `WarSprite`/`wspr_*` (texture SDL, #197); **la traduzione dei colori per fazione**: il remake non ha una tabella di traduzione per il giocatore (le unita' si disegnano con i colori del loro sprite; l'unico colore per giocatore e' `wu_getUnitColorOnMinimap`, della minimappa, #197) e `wmap_getMapTileAverage` (colore medio di una tegola per la minimappa, #193/#197); icone e immagini di interfaccia sono gia' record `wrtImage`/`wrtSprite` del catalogo (la distinzione e' del rendering, #197).
+
 ## Non portato (fetta #191)
 
-- Tutto il resto di `war_resources.c` (palette, immagini, sprite, livelli, tileset, testi, musica, suoni, cursori): sono le fette #192, #193 e #198.
+- Il resto di `war_resources.c` (livelli, testi, musica, suoni): sono le fette #193 e #198.
 - `wfile_loadWarMapFile` (le mappe `.w1m` dell'editor del remake): fuori ambito (#202).
 - Gli archivi Macintosh (id big endian, `0x1A000000`): l'originale non li legge.
 
 ## Verifica
 
-`Tools\build.bat DelphiDoom.Tests.War` e poi `bin\Tests\DelphiDoom.Tests.War.exe`. 82 test (archivio costruito in memoria con un finto del file, decompressore, catalogo, sorgente su stream, parita'), copertura 99% (`Tools\Copertura.ps1 -Test War`). **Parita' con il C**: `Tools\Verifica\191` compila con gcc (w64devkit) il `wfile_loadWarFile` ORIGINALE (estratto alla lettera da `war_file.c`) e lo fa girare sul `DATA.WAR` vero: i golden `Tests\Data\War\datawar.retail.golden.txt` (come `wg_loadDataFile`: 68 voci saltate), `datawar.retail.noskip.golden.txt` e `catalog.golden.txt` sono la sua uscita; le 583 voci (offset, compresso, lunghezze e CRC-32 dei byte espansi) danno **zero differenze**. I test sui dati veri (`DELPHIDOOM_WAR_DATA` o `Reference\_dati\warcraft`) sono **ignorati**, non verdi, se `DATA.WAR` manca.
+`Tools\build.bat DelphiDoom.Tests.War` e poi `bin\Tests\DelphiDoom.Tests.War.exe`. 174 test (archivio costruito in memoria con un finto del file, decompressore, catalogo, sorgente su stream, parita', e per #192 palette, decoder, `TWarGraphics`, font), copertura 99% (`Tools\Copertura.ps1 -Test War`, 515 righe su 518). **Parita' grafica con il C (#192)**: `Tools\Verifica\192` compila con gcc i `wres_*` ORIGINALI di `war_resources.c` (estratti alla lettera) e `fontsData[]` di `war_font.c`; il golden `Tests\Data\War\graphics.golden.txt` ha 184 righe (14 palette, 57 immagini, 91 sprite, 16 cursori, 3 tiles, 3 tileset, impronta CRC-32 di cio' che decodificano) e `fonts.golden.txt` i 190 glifi: **zero differenze** (vedi `Tools\Verifica\192\LEGGIMI.md`). **Parita' con il C**: `Tools\Verifica\191` compila con gcc (w64devkit) il `wfile_loadWarFile` ORIGINALE (estratto alla lettera da `war_file.c`) e lo fa girare sul `DATA.WAR` vero: i golden `Tests\Data\War\datawar.retail.golden.txt` (come `wg_loadDataFile`: 68 voci saltate), `datawar.retail.noskip.golden.txt` e `catalog.golden.txt` sono la sua uscita; le 583 voci (offset, compresso, lunghezze e CRC-32 dei byte espansi) danno **zero differenze**. I test sui dati veri (`DELPHIDOOM_WAR_DATA` o `Reference\_dati\warcraft`) sono **ignorati**, non verdi, se `DATA.WAR` manca.

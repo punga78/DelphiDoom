@@ -80,4 +80,4 @@ foreach ($f in 0, 1) {
 [void]$sb.AppendLine('')
 [void]$sb.AppendLine('end.')
 $text = ($sb.ToString() -replace "`r`n", "`n") -replace "`n", "`r`n"
-[IO.File]::WriteAllText($Out, $text, (New-Object System.Text.UTF8Encoding($true)))
+[IO.File]::WriteAllText($Out, $text, (New-Object System.Text.UTF8Encoding($false)))

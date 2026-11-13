@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the war library - a minimal PNG writer for looking at  }
 {  the decoded images (the RGBA pixels as they are, no filter)                 }
