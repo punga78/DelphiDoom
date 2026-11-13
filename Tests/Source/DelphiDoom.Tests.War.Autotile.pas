@@ -542,7 +542,7 @@ begin
     Assert.IsTrue(LForest.TryGetTreeAt(3, 4, LTree));
     Assert.AreEqual(7, LTree.Amount);
     Assert.IsFalse(LForest.TryGetTreeAt(4, 3, LTree));
-    Assert.AreEqual(1, Length(LForest.Trees));
+    Assert.AreEqual<Integer>(1, Length(LForest.Trees));
   finally
     LForest.Free;
   end;

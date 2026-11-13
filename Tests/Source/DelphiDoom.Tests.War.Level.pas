@@ -361,7 +361,7 @@ begin
   LRaw := BaseRecord(Tail(
     TBytes.Create(20, 40, WAR_UNIT_FOOTMAN, 0, 60, 80, WAR_UNIT_GOLDMINE, 4, $C4, $09), nil, nil));
   LInfo := TWarLevelInfoReader.Read(LRaw, 0, 0, False);
-  Assert.AreEqual(2, Length(LInfo.StartEntities));
+  Assert.AreEqual<Integer>(2, Length(LInfo.StartEntities));
   Assert.AreEqual(10, Integer(LInfo.StartEntities[0].X));
   Assert.AreEqual(20, Integer(LInfo.StartEntities[0].Y));
   Assert.IsTrue(LInfo.StartEntities[0].ResourceKind = wrkNone);
@@ -379,13 +379,13 @@ var
 begin
   LRaw := BaseRecord(Tail(nil, TBytes.Create(2, 4, 12, 4, 0, 6, 6, 6, 20, 1), TBytes.Create(8, 8, 8, 16, 2)));
   LInfo := TWarLevelInfoReader.Read(LRaw, 0, 0, False);
-  Assert.AreEqual(2, Length(LInfo.StartRoads));
+  Assert.AreEqual<Integer>(2, Length(LInfo.StartRoads));
   Assert.IsTrue(LInfo.StartRoads[0].ConstructType = wctRoad);
   Assert.AreEqual(1, Integer(LInfo.StartRoads[0].X1));
   Assert.AreEqual(6, Integer(LInfo.StartRoads[0].X2));
   Assert.AreEqual(10, Integer(LInfo.StartRoads[1].Y2));
   Assert.AreEqual(1, Integer(LInfo.StartRoads[1].Player));
-  Assert.AreEqual(1, Length(LInfo.StartWalls));
+  Assert.AreEqual<Integer>(1, Length(LInfo.StartWalls));
   Assert.IsTrue(LInfo.StartWalls[0].ConstructType = wctWall);
   Assert.AreEqual(8, Integer(LInfo.StartWalls[0].Y2));
   Assert.AreEqual(2, Integer(LInfo.StartWalls[0].Player));
@@ -434,22 +434,22 @@ begin
     PlayerList(TBytes.Create(60, 60, WAR_UNIT_TOWNHALL_ORCS, 0), nil)));
   LInfo := TWarLevelInfoReader.Read(LRaw, 5, 2, True);
   Assert.IsTrue(LInfo.CustomMap);
-  Assert.AreEqual(1, Length(LInfo.StartGoldmines));
+  Assert.AreEqual<Integer>(1, Length(LInfo.StartGoldmines));
   Assert.AreEqual(6, Integer(LInfo.StartGoldmines[0].X));
   Assert.AreEqual(8, Integer(LInfo.StartGoldmines[0].Y));
   Assert.AreEqual(4, Integer(LInfo.StartGoldmines[0].Player));
-  Assert.AreEqual(2, Length(LInfo.StartConfigurations));
+  Assert.AreEqual<Integer>(2, Length(LInfo.StartConfigurations));
   // the original allocates a new array for each player and keeps counting: the unit of the first player is lost
   // (a zero unit stays in its place) and the two of the second follow
-  Assert.AreEqual(3, Length(LInfo.StartConfigurations[0].StartEntities));
+  Assert.AreEqual<Integer>(3, Length(LInfo.StartConfigurations[0].StartEntities));
   Assert.AreEqual(0, Integer(LInfo.StartConfigurations[0].StartEntities[0].X));
   Assert.AreEqual(0, Integer(LInfo.StartConfigurations[0].StartEntities[0].UnitType));
   Assert.AreEqual(1, Integer(LInfo.StartConfigurations[0].StartEntities[1].Player));
   Assert.AreEqual(20, Integer(LInfo.StartConfigurations[0].StartEntities[1].X));
   Assert.AreEqual(Integer(WAR_UNIT_FARM_ORCS), Integer(LInfo.StartConfigurations[0].StartEntities[2].UnitType));
-  Assert.AreEqual(2, Length(LInfo.StartConfigurations[1].StartEntities));
-  Assert.AreEqual(0, Length(LInfo.StartEntities));
-  Assert.AreEqual(0, Length(LInfo.StartWalls));
+  Assert.AreEqual<Integer>(2, Length(LInfo.StartConfigurations[1].StartEntities));
+  Assert.AreEqual<Integer>(0, Length(LInfo.StartEntities));
+  Assert.AreEqual<Integer>(0, Length(LInfo.StartWalls));
 end;
 
 procedure TTestWarLevel.DovrebbeTenereLeStradeDellUltimaChiamataInUnaMappaPersonalizzata;
@@ -465,7 +465,7 @@ begin
     PlayerList(nil, nil),
     PlayerList(nil, TBytes.Create(14, 14, 16, 14, 1))));
   LInfo := TWarLevelInfoReader.Read(LRaw, 0, 0, True);
-  Assert.AreEqual(1, Length(LInfo.StartRoads));
+  Assert.AreEqual<Integer>(1, Length(LInfo.StartRoads));
   Assert.AreEqual(7, Integer(LInfo.StartRoads[0].X1));
   Assert.AreEqual(1, Integer(LInfo.StartRoads[0].Player));
 end;
@@ -492,7 +492,7 @@ var
   LCells: TArray<Word>;
 begin
   LCells := TWarLevelMapReader.Read(MapRecord);
-  Assert.AreEqual(4096, Length(LCells));
+  Assert.AreEqual<Integer>(4096, Length(LCells));
   Assert.AreEqual(1, Integer(LCells[0]));
   Assert.AreEqual(4, Integer(LCells[1]));
   Assert.AreEqual(Integer(Word(4095 * 3 + 1)), Integer(LCells[4095]));
@@ -515,8 +515,8 @@ begin
   Assert.AreEqual(0, LLevel.Info.Index);
   Assert.AreEqual(1, Integer(LLevel.Info.VisualIndex));
   Assert.AreEqual(2, Integer(LLevel.Info.PassableIndex));
-  Assert.AreEqual(4096, Length(LLevel.Visual));
-  Assert.AreEqual(4096, Length(LLevel.Passable));
+  Assert.AreEqual<Integer>(4096, Length(LLevel.Visual));
+  Assert.AreEqual<Integer>(4096, Length(LLevel.Passable));
 end;
 
 procedure TTestWarLevel.DovrebbeDareLeTegoleEIPassaggiDiUnaCella;

@@ -109,7 +109,7 @@ begin
     LGrid.Build([GridUnit(7, True, 9.5, 5)]);
     // tile (9.5, 5) is in the cell (2, 1): number 1 * 16 + 2
     Assert.AreEqual(7, LGrid.Head(18));
-    Assert.AreEqual(1, Length(LGrid.UnitsInCell(18)));
+    Assert.AreEqual<Integer>(1, Length(LGrid.UnitsInCell(18)));
   finally
     LGrid.Free;
   end;
@@ -124,7 +124,7 @@ begin
   try
     LGrid.Build([GridUnit(3, True, 1, 1), GridUnit(10, True, 2, 2), GridUnit(5, True, 3, 3)]);
     LUnits := LGrid.UnitsInCell(0);
-    Assert.AreEqual(3, Length(LUnits));
+    Assert.AreEqual<Integer>(3, Length(LUnits));
     Assert.AreEqual(5, LUnits[0]);
     Assert.AreEqual(10, LUnits[1]);
     Assert.AreEqual(3, LUnits[2]);
@@ -142,7 +142,7 @@ begin
   LGrid := TWarMapGrid.Create;
   try
     LGrid.Build([GridUnit(1, False, 1, 1)]);
-    Assert.AreEqual(0, Length(LGrid.UnitsInCell(0)));
+    Assert.AreEqual<Integer>(0, Length(LGrid.UnitsInCell(0)));
   finally
     LGrid.Free;
   end;
@@ -196,7 +196,7 @@ begin
   try
     LGrid.Build([GridUnit(1, True, 1, 1)]);
     LGrid.Build([GridUnit(2, True, 40, 40)]);
-    Assert.AreEqual(0, Length(LGrid.UnitsInCell(0)));
+    Assert.AreEqual<Integer>(0, Length(LGrid.UnitsInCell(0)));
     Assert.AreEqual(-1, LGrid.Next(1));
     Assert.AreEqual(2, LGrid.Head(10 * 16 + 10));
   finally
@@ -275,7 +275,7 @@ begin
   try
     // the same slot twice in a cell makes the chain point to itself; the original would follow it forever
     LGrid.Build([GridUnit(4, True, 1, 1), GridUnit(4, True, 1, 1)]);
-    Assert.AreEqual(1024, Length(LGrid.UnitsInCell(0)));
+    Assert.AreEqual<Integer>(1024, Length(LGrid.UnitsInCell(0)));
   finally
     LGrid.Free;
   end;

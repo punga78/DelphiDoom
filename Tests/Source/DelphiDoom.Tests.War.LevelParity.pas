@@ -239,8 +239,8 @@ begin
   for LPosition := 0 to LLoader.LevelCount - 1 do
   begin
     LLevel := LLoader.Load(LLoader.GetLevelIndex(LPosition));
-    Assert.AreEqual(4096, Length(LLevel.Visual), 'visuale del livello ' + IntToStr(LLoader.GetLevelIndex(LPosition)));
-    Assert.AreEqual(4096, Length(LLevel.Passable));
+    Assert.AreEqual<Integer>(4096, Length(LLevel.Visual), 'visuale del livello ' + IntToStr(LLoader.GetLevelIndex(LPosition)));
+    Assert.AreEqual<Integer>(4096, Length(LLevel.Passable));
   end;
 end;
 
