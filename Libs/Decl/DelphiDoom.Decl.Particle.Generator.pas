@@ -30,9 +30,12 @@ uses
 type
   /// <summary>
   ///   The calculation of idParticleStage as a class without state. The log (if any) receives the message of
-  ///   <c>idParticleParm::Integrate</c> for a table. Everything stays in <c>Single</c>, step by step, as the C++ rounds
-  ///   to <c>float</c> at each operation; the origin of an <c>orbit</c> path starts at zero where the original reads an
-  ///   uninitialised <c>origin[2]</c>.
+  ///   <c>idParticleParm::Integrate</c> for a table. The values are <c>Single</c> and each step is stored, but the C++
+  ///   of the reference was built for the x87 (intermediate results in extended precision), so the results of
+  ///   a chain of operations can differ from it by a few units in the last place (the test of parity declares its
+  ///   tolerance). The <c>orbit</c> path reads <c>origin[2]</c> before writing it, as the original does with an
+  ///   uninitialised variable: <c>ParticleOrigin</c> takes the origin as a <c>var</c> parameter and uses what it
+  ///   holds (the bounds pass the previous sample, as the original's stack slot did).
   /// </summary>
   TParticleGenerator = class(TInterfacedObject, IParticleGenerator)
   strict private
@@ -46,7 +49,7 @@ type
   public
     constructor Create(const ALog: IIdLibLog = nil);
     function NumQuadsPerParticle(const AStage: TParticleStage): Integer;
-    procedure ParticleOrigin(const AStage: TParticleStage; var AGen: TParticleGen; out AOrigin: TIdVec3);
+    procedure ParticleOrigin(const AStage: TParticleStage; var AGen: TParticleGen; var AOrigin: TIdVec3);
     function ParticleVerts(const AStage: TParticleStage; var AGen: TParticleGen; const AOrigin: TIdVec3;
       var AVerts: TArray<TParticleVertex>): Integer;
     procedure ParticleTexCoords(const AStage: TParticleStage; var AGen: TParticleGen;
@@ -66,6 +69,8 @@ uses
 
 const
   MS_TO_SEC: Single = 0.001;
+  /// <summary>How many times idDeclParticle::GetStageBounds runs through the life of a particle</summary>
+  SAMPLE_PASSES = 1000;
 
 { TParticleGenerator }
 
@@ -275,12 +280,11 @@ begin
 end;
 
 procedure TParticleGenerator.ParticleOrigin(const AStage: TParticleStage; var AGen: TParticleGen;
-  out AOrigin: TIdVec3);
+  var AOrigin: TIdVec3);
 var
   LGravity: TIdVec3;
   LAgeSquared: Single;
 begin
-  AOrigin.Zero;
   if AStage.CustomPathType = TParticleCustomPath.Standard then
     StandardOrigin(AStage, AGen, AOrigin)
   else
@@ -319,6 +323,7 @@ begin
   LCurrentFrac := AGen.Frac;
   LStepOrigin := AOrigin;
   LStepLeft.Zero;
+  LOldOrigin.Zero;
   LNumTrails := TIdMath.Ftoi(AStage.OrientationParms[0]);
   LTrailTime := AStage.OrientationParms[1];
   if LTrailTime = 0 then
@@ -557,7 +562,8 @@ function TParticleGenerator.CreateParticle(const AStage: TParticleStage; var AGe
 var
   LOrigin: TIdVec3;
   LNumVerts, LIndex, LChannel, LQuadVerts: Integer;
-  LWidth, LFrac, LInverseFrac, LScaled: Single;
+  LWidth, LFrac, LInverseFrac: Single;
+  LScaled: Double;
 begin
   LQuadVerts := 4 * NumQuadsPerParticle(AStage);
   if Length(AVerts) < LQuadVerts then
@@ -575,6 +581,7 @@ begin
     (AVerts[0].Color[3] = 0) then
     Exit(0);
 
+  LOrigin.Zero;
   ParticleOrigin(AStage, AGen, LOrigin);
 
   ParticleTexCoords(AStage, AGen, AVerts);
@@ -597,12 +604,12 @@ begin
     // verts[].color[i] *= frac: a byte multiplied by a float and truncated back
     for LChannel := 0 to 3 do
     begin
-      LScaled := AVerts[LNumVerts + LIndex].Color[LChannel] * LFrac;
+      LScaled := AVerts[LNumVerts + LIndex].Color[LChannel] * Double(LFrac);
       AVerts[LNumVerts + LIndex].Color[LChannel] := Trunc(LScaled);
     end;
     for LChannel := 0 to 3 do
     begin
-      LScaled := AVerts[LIndex].Color[LChannel] * LInverseFrac;
+      LScaled := AVerts[LIndex].Color[LChannel] * Double(LInverseFrac);
       AVerts[LIndex].Color[LChannel] := Trunc(LScaled);
     end;
   end;
@@ -615,7 +622,7 @@ var
   LGen: TParticleGen;
   LRandom: TIdRandom;
   LOrigin: TIdVec3;
-  LMaxMsec, LInCycleTime: Integer;
+  LMaxMsec, LInCycleTime, LPass: Integer;
   LLifeMsec, LSizeValue, LAspectValue, LMaxSize, LFraction: Single;
 begin
   AStage.Bounds.Clear;
@@ -624,26 +631,33 @@ begin
   LRandom := TIdRandom.Create(0);
   LGen := TParticleGen.Create(LRandom);
 
-  // The original repeats this 1000 times, each time from the same random generator (steppingRandom is never
-  // advanced), so every pass gives the same points: one pass gives the same bounds.
-  LGen.Random := LRandom;
-  LGen.OriginalRandom := LRandom;
-
   LLifeMsec := AStage.ParticleLife * 1000;
   LMaxMsec := Trunc(LLifeMsec);
-  LInCycleTime := 0;
-  while LInCycleTime < LMaxMsec do
+  // the origin of the original is a variable of the loop that is never set before the orbit path reads it: it keeps the
+  // value of the previous sample, from one pass to the next too
+  LOrigin.Zero;
+
+  // just step through a lot of possible particles as a representative sampling. Every pass starts from the same
+  // random generator (steppingRandom is never advanced): the passes give the same points, except for an orbit path
+  // that depends on the previous sample, so all of them are made.
+  for LPass := 1 to SAMPLE_PASSES do
   begin
-    // make sure we get the very last tic, which may make up an extreme edge
-    if LInCycleTime + 16 > LMaxMsec then
-      LInCycleTime := LMaxMsec - 1;
+    LGen.Random := LRandom;
+    LGen.OriginalRandom := LRandom;
+    LInCycleTime := 0;
+    while LInCycleTime < LMaxMsec do
+    begin
+      // make sure we get the very last tic, which may make up an extreme edge
+      if LInCycleTime + 16 > LMaxMsec then
+        LInCycleTime := LMaxMsec - 1;
 
-    LGen.Frac := LInCycleTime / LLifeMsec;
-    LGen.Age := LInCycleTime * MS_TO_SEC;
+      LGen.Frac := LInCycleTime / LLifeMsec;
+      LGen.Age := LInCycleTime * MS_TO_SEC;
 
-    ParticleOrigin(AStage, LGen, LOrigin);
-    AStage.Bounds.AddPoint(TIdGeometryAdapter.ToGeo(LOrigin));
-    Inc(LInCycleTime, 16);
+      ParticleOrigin(AStage, LGen, LOrigin);
+      AStage.Bounds.AddPoint(TIdGeometryAdapter.ToGeo(LOrigin));
+      Inc(LInCycleTime, 16);
+    end;
   end;
 
   // find the max size

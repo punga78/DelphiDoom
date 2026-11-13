@@ -48,7 +48,7 @@ type
     ///   Where the particle is: <c>AGen.Frac</c> and <c>AGen.Age</c> are its time, <c>AGen.Random</c> is
     ///   consumed (<c>idParticleStage::ParticleOrigin</c>)
     /// </summary>
-    procedure ParticleOrigin(const AStage: TParticleStage; var AGen: TParticleGen; out AOrigin: TIdVec3);
+    procedure ParticleOrigin(const AStage: TParticleStage; var AGen: TParticleGen; var AOrigin: TIdVec3);
     /// <summary>The four vertices of the quad(s) at <c>AOrigin</c>; returns the number of vertices made</summary>
     function ParticleVerts(const AStage: TParticleStage; var AGen: TParticleGen; const AOrigin: TIdVec3;
       var AVerts: TArray<TParticleVertex>): Integer;

@@ -26,7 +26,7 @@ uses
 
 type
   /// <summary>
-  ///   Writes the text the particle editor of Doom 3 writes. The numbers have three decimals (the depth hack six), with
+  ///   Writes the text the particle editor of Doom 3 writes. The numbers have three decimals (the depth hack as <c>%f</c> of the file class of Doom 3: up to ten, without trailing zeros), with
   ///   a point, whatever the locale. Like the original it does not write the ring fraction of a
   ///   <c>sphere</c> distribution (the description of the type says three parameters), and it writes the path
   ///   types <c>orbit</c> and <c>drip</c> by name although the parser reads only <c>spherical</c> for the first and
@@ -35,6 +35,8 @@ type
   TParticleWriter = class sealed
   strict private
     class function Fixed(const AValue: Single; const ADecimals: Integer = 3): string; static;
+    /// <summary>The "%f" of idFile::WriteFloatString: ten decimals with the trailing zeros and the point stripped</summary>
+    class function Plain(const AValue: Single): string; static;
     class function TableName(const AParm: TParticleParm): string; static;
     class function WriteParm(const AParm: TParticleParm; const AName: string): string; static;
     class function WriteStage(const AStage: TParticleStage): string; static;
@@ -54,6 +56,15 @@ var
 class function TParticleWriter.Fixed(const AValue: Single; const ADecimals: Integer): string;
 begin
   Result := Format('%.*f', [ADecimals, Double(AValue)], GInvariant);
+end;
+
+class function TParticleWriter.Plain(const AValue: Single): string;
+begin
+  Result := Format('%.10f', [Double(AValue)], GInvariant);
+  while (Result <> '') and (Result[Length(Result)] = '0') do
+    Delete(Result, Length(Result), 1);
+  while (Result <> '') and (Result[Length(Result)] = '.') do
+    Delete(Result, Length(Result), 1);
 end;
 
 class function TParticleWriter.TableName(const AParm: TParticleParm): string;
@@ -173,7 +184,7 @@ begin
     #9'To use the particle editor, launch the game and type ''editParticles'' on the console.'#10'*/'#10;
   LText := LText + 'particle ' + string(AName) + ' {'#10;
   if ADepthHack <> 0 then
-    LText := LText + #9'depthHack'#9 + Fixed(ADepthHack, 6) + #10;
+    LText := LText + #9'depthHack'#9 + Plain(ADepthHack) + #10;
   for LIndex := 0 to High(AStages) do
     LText := LText + WriteStage(AStages[LIndex]);
   LText := LText + '}';

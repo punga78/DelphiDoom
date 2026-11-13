@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the declaration manager (DUnitX)                  }
 {                                                                              }
@@ -72,7 +72,9 @@ uses
   DelphiDoom.Tests.Decl.MaterialSupport in 'Source\DelphiDoom.Tests.Decl.MaterialSupport.pas',
   DelphiDoom.Tests.Decl.MaterialExpressions in 'Source\DelphiDoom.Tests.Decl.MaterialExpressions.pas',
   DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
-  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas';
+  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas',
+  DelphiDoom.Tests.Decl.EffectsSupport in 'Source\DelphiDoom.Tests.Decl.EffectsSupport.pas',
+  DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas';
 
 var
   Runner: ITestRunner;
