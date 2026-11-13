@@ -1,3 +1,5 @@
 # Libs\Sndfile — note per Claude
 
 Il paragrafo che riguarda questa libreria sta nel CLAUDE.md di `Libs\Sound`: [Libs/Sound/CLAUDE.md](../Sound/CLAUDE.md).
+
+**Direzione della dipendenza (issue #222).** `Libs\Sound` usa `Libs\Sndfile` (`DelphiDoom.Sndfile.Intf`, `Factory.Intf`, `Provider`); `Libs\Sndfile` non cita piu' nessuna unit di `Sound` (prima `TSndfileProvider` usava `DelphiDoom.Sound.Factory`). `TSndfileProvider.UseFactory(ISndfileFactory)` da' la fabbrica del motore predefinito; `TSoundEngineFactory` (`DelphiDoom.Sound.EngineFactory`, in `Libs\Sound`) la registra nella `initialization`, quindi un eseguibile che usa il provider deve elencare quella unit nel `.dpr` (i dieci giochi e `Tests\DelphiDoom.Tests.Sndfile`; senza, `Client` solleva `ESndfileException` `SNDFILE_ERR_INVALID_ARGUMENT`). `Release` non cancella la fabbrica. Controllo: `Tools\Verifica\222\Controlla-Cicli.ps1` (esce con 1 se `Sndfile` cita `Sound`). Test: 127 in `DelphiDoom.Tests.Sndfile` (due nuovi sul provider).

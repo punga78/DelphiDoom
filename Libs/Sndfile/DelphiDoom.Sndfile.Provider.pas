@@ -11,20 +11,23 @@ unit DelphiDoom.Sndfile.Provider;
 interface
 
 uses
-  DelphiDoom.Sndfile.Intf, DelphiDoom.Sndfile.Client;
+  DelphiDoom.Sndfile.Intf, DelphiDoom.Sndfile.Factory.Intf,
+  DelphiDoom.Sndfile.Client;
 
 type
   /// <summary>
   ///   Gives the rest of the engine one shared TSndfileClient
   /// </summary>
   /// <remarks>
-  ///   By default the client works on the Pascal engine (TSoundFactory) linked in the executable, so
-  ///   no DLL is needed. To use DDSndfile.dll (or a fake in the tests) call Use
+  ///   By default the client works on the engine built by the ISndfileFactory given with UseFactory
+  ///   (Libs\Sound registers the Pascal engine, so no DLL is needed). The provider does not know
+  ///   Libs\Sound: the dependency goes only from Sound to Sndfile. To use DDSndfile.dll (or a fake in the tests) call Use
   ///   with the ISndfile obtained from TSndfileLoader before the first use
   /// </remarks>
   TSndfileProvider = class
   private
     class var FSndfile: ISndfile;
+    class var FFactory: ISndfileFactory;
     class var FClient: TSndfileClient;
   public
     /// <summary>
@@ -39,6 +42,11 @@ type
     class procedure Use(const ASndfile: ISndfile); static;
 
     /// <summary>
+    ///   Gives the factory of the default engine, used when Use was not called
+    /// </summary>
+    class procedure UseFactory(const AFactory: ISndfileFactory); static;
+
+    /// <summary>
     ///   Frees the shared client; called at shutdown
     /// </summary>
     class procedure Release; static;
@@ -47,7 +55,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Sound.Factory;
+  System.SysUtils;
 
 { TSndfileProvider }
 
@@ -56,8 +64,14 @@ begin
   if not Assigned(FClient) then
   begin
     if not Assigned(FSndfile) then
-      // the decoders in Pascal; TSndfileProvider.Use gives another engine (the C one, a fake)
-      FSndfile := TSoundFactory.CreateEngine;
+    begin
+      // the factory is registered by Libs\Sound (the decoders in Pascal);
+      // TSndfileProvider.Use gives another engine (the C one, a fake)
+      if not Assigned(FFactory) then
+        raise ESndfileException.CreateCodeDetail(SNDFILE_ERR_INVALID_ARGUMENT,
+          'no engine factory registered (ISndfileFactory)');
+      FSndfile := FFactory.CreateEngine;
+    end;
     FClient := TSndfileClient.Create(FSndfile);
   end;
   Result := FClient;
@@ -67,6 +81,11 @@ class procedure TSndfileProvider.Use(const ASndfile: ISndfile);
 begin
   FreeAndNil(FClient);
   FSndfile := ASndfile;
+end;
+
+class procedure TSndfileProvider.UseFactory(const AFactory: ISndfileFactory);
+begin
+  FFactory := AFactory;
 end;
 
 class procedure TSndfileProvider.Release;
