@@ -42,7 +42,8 @@ uses
   DelphiDoom.Tests.Decl.Manager in 'Source\DelphiDoom.Tests.Decl.Manager.pas',
   DelphiDoom.Tests.Decl.Types in 'Source\DelphiDoom.Tests.Decl.Types.pas',
   DelphiDoom.Tests.Decl.EntityDef in 'Source\DelphiDoom.Tests.Decl.EntityDef.pas',
-  DelphiDoom.Tests.Decl.Pda in 'Source\DelphiDoom.Tests.Decl.Pda.pas';
+  DelphiDoom.Tests.Decl.Pda in 'Source\DelphiDoom.Tests.Decl.Pda.pas',
+  DelphiDoom.Tests.Decl.Golden in 'Source\DelphiDoom.Tests.Decl.Golden.pas';
 
 var
   Runner: ITestRunner;

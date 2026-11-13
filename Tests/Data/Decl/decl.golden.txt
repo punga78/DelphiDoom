@@ -1,0 +1,892 @@
+## basics-skins
+> dumpraw skin
+n=2
+D skin one state=0 implicit=0 valid=0 file=skins/a.skin line=1 index=0 textlen=90 ever=0
+  text=// two skins, written for this test\nskin one { model "m/a" "mat/x" "mat/y" "*" "mat/any" }
+D skin two state=0 implicit=0 valid=0 file=skins/a.skin line=2 index=1 textlen=30 ever=0
+  text=\nskin two\n{\n\t"mat/p" "mat/q"\n}
+> find skin one
+r=found
+> dumpraw skin
+n=2
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=90 ever=1
+  text=// two skins, written for this test\nskin one { model "m/a" "mat/x" "mat/y" "*" "mat/any" }
+D skin two state=0 implicit=0 valid=0 file=skins/a.skin line=2 index=1 textlen=30 ever=0
+  text=\nskin two\n{\n\t"mat/p" "mat/q"\n}
+> dump skin
+n=2
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=90 ever=1
+  text=// two skins, written for this test\nskin one { model "m/a" "mat/x" "mat/y" "*" "mat/any" }
+  models=1 [m/a] outofrange=[]
+  remap mat/x -> mat/y
+  remap mat/y -> mat/any
+  remap mat/any -> mat/any
+D skin two state=2 implicit=0 valid=1 file=skins/a.skin line=2 index=1 textlen=30 ever=0
+  text=\nskin two\n{\n\t"mat/p" "mat/q"\n}
+  models=0 outofrange=[]
+  remap mat/x -> mat/x
+  remap mat/y -> mat/y
+  remap mat/any -> mat/any
+  remap mat/p -> mat/q
+  remap mat/q -> mat/q
+## implicit-and-canonical-names
+> numtypes
+r=15
+> typenum entitydef
+r=4
+> typenum pda
+r=9
+> typenum nothing
+r=32
+> typename articulatedFigure
+r=articulatedFigure
+> find entityDef Monster\Zombie.TGA
+r=found
+> find entityDef monster/zombie
+r=found
+> find entityDef
+r=found
+> findnd entityDef missing
+r=null
+> findnd entityDef Monster/Zombie
+r=found
+> numdecls entityDef
+r=2
+> dump entityDef
+n=2
+D entityDef monster/zombie state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+  keys=2
+  DEFAULTED = 1
+  classname = monster/zombie
+D entityDef _emptyname state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+  keys=2
+  DEFAULTED = 1
+  classname = _emptyname
+> find table nothing
+r=found
+> dump table
+n=1
+D table nothing state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+  lookup 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000
+> find skin textures/nothing
+r=found
+> dump skin
+n=1
+D skin textures/nothing state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+  models=0 outofrange=[]
+  remap _default -> _default
+## duplicates
+W: file skins/a.skin, line 2: skin 'one' previously defined at skins/a.skin:1
+W: file skins/b.skin, line 1: skin 'ONE' previously defined at skins/a.skin:1
+> dumpraw skin
+n=3
+D skin one state=0 implicit=0 valid=0 file=skins/a.skin line=1 index=0 textlen=26 ever=0
+  text=skin one { model "first" }
+D skin two state=0 implicit=0 valid=0 file=skins/a.skin line=2 index=1 textlen=13 ever=0
+  text=\nskin Two { }
+D skin three state=0 implicit=0 valid=0 file=skins/b.skin line=1 index=2 textlen=15 ever=0
+  text=\nskin three { }
+> dump skin
+n=3
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=26 ever=0
+  text=skin one { model "first" }
+  models=1 [first] outofrange=[]
+D skin two state=2 implicit=0 valid=1 file=skins/a.skin line=2 index=1 textlen=13 ever=0
+  text=\nskin Two { }
+  models=0 outofrange=[]
+D skin three state=2 implicit=0 valid=1 file=skins/b.skin line=1 index=2 textlen=15 ever=0
+  text=\nskin three { }
+  models=0 outofrange=[]
+## malformed
+W: file skins/a.skin, line 1: Missing decl name
+W: file skins/a.skin, line 3: Expecting '{' but found 'oops'
+W: file skins/a.skin, line 6: Type without definition at end of file
+> dumpraw skin
+n=2
+D skin ok state=0 implicit=0 valid=0 file=skins/a.skin line=1 index=0 textlen=22 ever=0
+  text=\nskin ok { model "y" }
+D skin after state=0 implicit=0 valid=0 file=skins/a.skin line=3 index=1 textlen=15 ever=0
+  text=\nskin after { }
+## malformed-end
+W: file skins/a.skin, line 3: Type without definition at end of file
+> dumpraw skin
+n=1
+D skin ok state=0 implicit=0 valid=0 file=skins/a.skin line=1 index=0 textlen=11 ever=0
+  text=skin ok { }
+## default-type-folder
+> folder defs .def entityDef
+W: file defs/a.def, line 3: Missing decl name
+> dumpraw entityDef
+n=2
+D entityDef plain state=0 implicit=0 valid=0 file=defs/a.def line=1 index=0 textlen=17 ever=0
+  text=plain { "k" "v" }
+D entityDef explicit state=0 implicit=0 valid=0 file=defs/a.def line=1 index=1 textlen=31 ever=0
+  text=\nentityDef explicit { "k" "e" }
+> dumpraw skin
+n=1
+D skin skinned state=0 implicit=0 valid=0 file=defs/b.def line=1 index=0 textlen=16 ever=0
+  text=skin skinned { }
+> folder defs .def none
+W: file defs/a.def, line 3: Missing decl name
+> dumpraw entityDef
+n=2
+D entityDef plain state=0 implicit=0 valid=0 file=defs/a.def line=1 index=0 textlen=17 ever=0
+  text=plain { "k" "v" }
+D entityDef explicit state=0 implicit=0 valid=0 file=defs/a.def line=1 index=1 textlen=31 ever=0
+  text=\nentityDef explicit { "k" "e" }
+## modelexport
+> regtype export 13
+> folder defs .def entityDef
+> numdecls entityDef
+r=2
+> dumpraw entityDef
+n=2
+D entityDef one state=0 implicit=0 valid=0 file=defs/a.def line=1 index=0 textlen=25 ever=0
+  text=entityDef one { "a" "1" }
+D entityDef two state=0 implicit=0 valid=0 file=defs/b.def line=1 index=1 textlen=18 ever=0
+  text=\nentityDef two { }
+## table-lookups
+> folder defs .def table
+> dump table
+n=11
+D table interp state=2 implicit=0 valid=1 file=defs/t.def line=1 index=0 textlen=31 ever=0
+  text=table interp { { 0, 1, 0, 1 } }
+  lookup 0.8000 1.0000 0.0000 0.4000 1.0000 0.0000 1.0000 0.0400 0.0000 0.0000 0.8000
+D table snapped state=2 implicit=0 valid=1 file=defs/t.def line=1 index=1 textlen=38 ever=0
+  text=\ntable snapped { snap { 0, 1, 2, 3 } }
+  lookup 2.0000 3.0000 0.0000 0.0000 1.0000 2.0000 3.0000 3.0000 0.0000 2.0000 2.0000
+D table clamped state=2 implicit=0 valid=1 file=defs/t.def line=2 index=2 textlen=42 ever=0
+  text=\ntable clamped { clamp { 0, 10, 20, 30 } }
+  lookup 0.0000 0.0000 0.0000 3.0000 7.5000 15.0000 22.5000 29.7000 30.0000 30.0000 30.0000
+D table clampsnap state=2 implicit=0 valid=1 file=defs/t.def line=3 index=3 textlen=43 ever=0
+  text=\ntable clampsnap { clamp snap { 5, 6, 7 } }
+  lookup 5.0000 5.0000 5.0000 5.0000 5.0000 6.0000 6.0000 6.0000 7.0000 7.0000 7.0000
+D table one state=2 implicit=0 valid=1 file=defs/t.def line=4 index=4 textlen=20 ever=0
+  text=\ntable one { { 7 } }
+  lookup 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000
+D table two state=2 implicit=0 valid=1 file=defs/t.def line=5 index=5 textlen=23 ever=0
+  text=\ntable two { { 7, 8 } }
+  lookup 7.6000 7.5000 7.0000 7.2000 7.5000 8.0000 7.5000 7.0200 7.0000 8.0000 7.6000
+W: file defs/t.def, line 7: expected float value, found 'two'
+D table bad1 state=1 implicit=0 valid=1 file=defs/t.def line=6 index=6 textlen=26 ever=0
+  text=\ntable bad1 { { 1, two } }
+  lookup 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000
+W: file defs/t.def, line 8: expected comma or brace
+D table bad2 state=1 implicit=0 valid=1 file=defs/t.def line=7 index=7 textlen=23 ever=0
+  text=\ntable bad2 { { 1 2 } }
+  lookup 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000
+W: file defs/t.def, line 9: unknown token 'wobble'
+D table bad3 state=1 implicit=0 valid=1 file=defs/t.def line=8 index=8 textlen=28 ever=0
+  text=\ntable bad3 { wobble { 1 } }
+  lookup 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000
+D table neg state=2 implicit=0 valid=1 file=defs/t.def line=9 index=9 textlen=38 ever=0
+  text=\ntable neg { { -1, -0.5, 0.25, 1e1 } }
+  lookup 8.0500 10.0000 -1.0000 -0.8000 -0.5000 0.2500 10.0000 -0.5600 -1.0000 0.2500 8.0500
+D table sine state=2 implicit=0 valid=1 file=defs/t.def line=10 index=10 textlen=54 ever=0
+  text=\ntable Sine { snap { 0, .5, 1, .5, 0, -.5, -1, -.5 } }
+  lookup -0.5000 -1.0000 0.0000 0.0000 1.0000 0.0000 -1.0000 -0.5000 0.0000 0.0000 -0.5000
+## skin-remap
+> find material mat/one
+r=found
+> find material mat/two
+r=found
+> find material mat/other
+r=found
+> dump skin
+n=4
+D skin s1 state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=100 ever=0
+  text=skin s1 { model "models/a.md5mesh" model "b" "mat/one" "mat/uno" "mat/two" "mat/due" "*" "mat/any" }
+  models=2 [models/a.md5mesh] [b] outofrange=[]
+  remap mat/one -> mat/uno
+  remap mat/two -> mat/due
+  remap mat/other -> mat/any
+  remap mat/uno -> mat/any
+  remap mat/due -> mat/any
+  remap mat/any -> mat/any
+D skin s2 state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=26 ever=0
+  text=\nskin s2 { "*" "mat/all" }
+  models=0 outofrange=[]
+  remap mat/one -> mat/all
+  remap mat/two -> mat/all
+  remap mat/other -> mat/all
+  remap mat/uno -> mat/all
+  remap mat/due -> mat/all
+  remap mat/any -> mat/all
+  remap mat/all -> mat/all
+D skin s3 state=2 implicit=0 valid=1 file=skins/a.skin line=2 index=2 textlen=28 ever=0
+  text=\nskin s3 { "mat/x" "mat/y" }
+  models=0 outofrange=[]
+  remap mat/one -> mat/one
+  remap mat/two -> mat/two
+  remap mat/other -> mat/other
+  remap mat/uno -> mat/uno
+  remap mat/due -> mat/due
+  remap mat/any -> mat/any
+  remap mat/all -> mat/all
+  remap mat/x -> mat/y
+  remap mat/y -> mat/y
+D skin s4 state=2 implicit=0 valid=1 file=skins/a.skin line=3 index=3 textlen=22 ever=0
+  text=\nskin s4 { "mat/one" }
+  models=0 outofrange=[]
+  remap mat/one -> }
+  remap mat/two -> mat/two
+  remap mat/other -> mat/other
+  remap mat/uno -> mat/uno
+  remap mat/due -> mat/due
+  remap mat/any -> mat/any
+  remap mat/all -> mat/all
+  remap mat/x -> mat/x
+  remap mat/y -> mat/y
+  remap } -> }
+> dump material
+n=10
+D material mat/one state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+D material mat/two state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+D material mat/other state=1 implicit=1 valid=1 file=<implicit file> line=0 index=2 textlen=0 ever=1
+D material mat/uno state=1 implicit=1 valid=1 file=<implicit file> line=0 index=3 textlen=0 ever=1
+D material mat/due state=1 implicit=1 valid=1 file=<implicit file> line=0 index=4 textlen=0 ever=1
+D material mat/any state=1 implicit=1 valid=1 file=<implicit file> line=0 index=5 textlen=0 ever=1
+D material mat/all state=1 implicit=1 valid=1 file=<implicit file> line=0 index=6 textlen=0 ever=1
+D material mat/x state=1 implicit=1 valid=1 file=<implicit file> line=0 index=7 textlen=0 ever=1
+D material mat/y state=1 implicit=1 valid=1 file=<implicit file> line=0 index=8 textlen=0 ever=1
+D material } state=1 implicit=1 valid=1 file=<implicit file> line=0 index=9 textlen=0 ever=1
+## skin-implicit-from-material
+> find skin textures/wall
+r=found
+> find skin textures/floor
+r=found
+> find material textures/floor
+r=found
+> find skin textures/floor
+r=found
+> dump skin
+n=2
+D skin textures/wall state=2 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+  models=0 outofrange=[]
+  remap textures/wall -> textures/wall
+  remap _default -> textures/wall
+  remap textures/floor -> textures/floor
+D skin textures/floor state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+  models=0 outofrange=[]
+  remap textures/wall -> _default
+  remap _default -> _default
+  remap textures/floor -> _default
+## skin-eof
+> find skin s5
+r=found
+> settext skin s5 skin s5 { "mat/x"
+> invalidate skin s5
+> find skin s5
+W: file <implicit file>, line 0: Unexpected end of file
+r=found
+> dump skin
+n=1
+D skin s5 state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=17 ever=1
+  text=skin s5 { "mat/x"
+  models=0 outofrange=[]
+  remap _default -> _default
+## entitydef-basic
+> folder def .def entityDef
+> dump entityDef
+n=4
+W: file def/a.def, line 1: 'health' already defined
+D entityDef monster_imp state=2 implicit=0 valid=1 file=def/a.def line=1 index=0 textlen=69 ever=0
+  text=entityDef monster_imp { "health" "100" "Model" "imp" "health" "120" }
+  keys=3
+  health = 120
+  Model = imp
+  classname = monster_imp
+W: file def/a.def, line 2: Expected quoted string, but found 'key'
+D entityDef notquoted state=1 implicit=0 valid=1 file=def/a.def line=1 index=1 textlen=36 ever=0
+  text=\nentityDef notquoted { key "value" }
+  keys=2
+  DEFAULTED = 1
+  classname = notquoted
+D entityDef missingvalue state=2 implicit=0 valid=1 file=def/a.def line=2 index=2 textlen=33 ever=0
+  text=\nentityDef missingvalue { "key" }
+  keys=2
+  key = }
+  classname = missingvalue
+D entityDef empty state=2 implicit=0 valid=1 file=def/a.def line=3 index=3 textlen=20 ever=0
+  text=\nentityDef empty { }
+  keys=1
+  classname = empty
+## entitydef-inherit
+> folder def .def entityDef
+> find entityDef c
+r=found
+> find entityDef both
+r=found
+> find entityDef lonely
+W: file def/a.def, line 7: Unknown entityDef 'nobody' inherited by 'lonely'
+r=found
+> find entityDef loopa
+r=found
+> find entityDef selfie
+r=found
+> find entityDef over
+r=found
+> dump entityDef
+n=11
+D entityDef c state=2 implicit=0 valid=1 file=def/a.def line=1 index=0 textlen=37 ever=1
+  text=entityDef c { "inherit" "b" "z" "c" }
+  keys=4
+  z = c
+  classname = c
+  y = b
+  x = a
+D entityDef b state=2 implicit=0 valid=1 file=def/a.def line=1 index=1 textlen=46 ever=1
+  text=\nentityDef b { "inherit" "a" "y" "b" "z" "b" }
+  keys=4
+  y = b
+  z = b
+  classname = b
+  x = a
+D entityDef a state=2 implicit=0 valid=1 file=def/a.def line=2 index=2 textlen=40 ever=1
+  text=\nentityDef a { "x" "a" "y" "a" "z" "a" }
+  keys=4
+  x = a
+  y = a
+  z = a
+  classname = a
+D entityDef one state=2 implicit=0 valid=1 file=def/a.def line=3 index=3 textlen=38 ever=1
+  text=\nentityDef one { "k" "1" "only1" "x" }
+  keys=3
+  k = 1
+  only1 = x
+  classname = one
+D entityDef two state=2 implicit=0 valid=1 file=def/a.def line=4 index=4 textlen=38 ever=1
+  text=\nentityDef two { "k" "2" "only2" "y" }
+  keys=3
+  k = 2
+  only2 = y
+  classname = two
+D entityDef both state=2 implicit=0 valid=1 file=def/a.def line=5 index=5 textlen=52 ever=1
+  text=\nentityDef both { "inherit" "one" "inherit2" "two" }
+  keys=4
+  classname = both
+  k = 1
+  only1 = x
+  only2 = y
+D entityDef lonely state=2 implicit=0 valid=1 file=def/a.def line=6 index=6 textlen=48 ever=1
+  text=\nentityDef lonely { "inherit" "nobody" "a" "1" }
+  keys=2
+  a = 1
+  classname = lonely
+D entityDef loopa state=2 implicit=0 valid=1 file=def/a.def line=7 index=7 textlen=47 ever=1
+  text=\nentityDef loopa { "inherit" "loopb" "ka" "a" }
+  keys=4
+  ka = a
+  classname = loopa
+  kb = b
+  inherit = loopb
+D entityDef loopb state=2 implicit=0 valid=1 file=def/a.def line=8 index=8 textlen=47 ever=1
+  text=\nentityDef loopb { "inherit" "loopa" "kb" "b" }
+  keys=4
+  kb = b
+  classname = loopb
+  inherit = loopb
+  ka = a
+D entityDef selfie state=2 implicit=0 valid=1 file=def/a.def line=9 index=9 textlen=48 ever=1
+  text=\nentityDef selfie { "inherit" "selfie" "k" "v" }
+  keys=2
+  k = v
+  classname = selfie
+D entityDef over state=2 implicit=0 valid=1 file=def/a.def line=10 index=10 textlen=46 ever=1
+  text=\nentityDef over { "inherit" "one" "k" "mine" }
+  keys=3
+  k = mine
+  classname = over
+  only1 = x
+> numdecls entityDef
+r=11
+## mapdef
+> folder def .def entityDef
+> find mapDef maps/level2
+W: file def/a.def, line 2: Unknown entityDef 'maps/level1' inherited by 'maps/level2'
+r=found
+> dump mapDef
+n=2
+D mapDef maps/level1 state=2 implicit=0 valid=1 file=def/a.def line=1 index=0 textlen=58 ever=0
+  text=mapDef maps/level1 { "name" "First" "next" "maps/level2" }
+  keys=3
+  name = First
+  next = maps/level2
+  classname = maps/level1
+D mapDef maps/level2 state=2 implicit=0 valid=1 file=def/a.def line=1 index=1 textlen=63 ever=1
+  text=\nmapDef maps/level2 { "inherit" "maps/level1" "name" "Second" }
+  keys=2
+  name = Second
+  classname = maps/level2
+> numdecls entityDef
+r=0
+## pda-all
+> folder def .pda pda
+> find pda mine
+r=found
+> dump pda
+n=2
+D pda mine state=2 implicit=0 valid=1 file=def/p.pda line=1 index=0 textlen=182 ever=1
+  text=pda mine {\n  name "My PDA" fullname "Full Name" icon "gfx/icon" id "42" post "Marine" title "Title" security "red"\n  pda_email mail1 pda_email "mail2" pda_audio log1 pda_video vid1\n}
+  name=[My PDA] full=[Full Name] icon=[gfx/icon] id=[42] post=[Marine] title=[Title] security=[red]
+  emails=2 videos=1 audios=1
+  email 0 mail1
+  email 1 mail2
+  video 0 vid1
+  audio 0 log1
+D pda bad state=2 implicit=0 valid=1 file=def/p.pda line=4 index=1 textlen=33 ever=0
+  text=\npda bad { name "Bad" pda_email }
+  name=[Bad] full=[] icon=[] id=[] post=[] title=[] security=[]
+  emails=1 videos=0 audios=0
+  email 0 }
+> dump email
+n=4
+D email mail1 state=2 implicit=0 valid=1 file=def/p.pda line=5 index=0 textlen=97 ever=1
+  text=\nemail mail1 { subject "Hello" to "you" from "me" date "today" image "img" text { "a" "b" "c" } }
+  from=[me] to=[you] subject=[Hello] date=[today] image=[img] body=[abc]
+W: file def/p.pda, line 7: Email decl 'textless' had a parse error
+D email textless state=2 implicit=0 valid=1 file=def/p.pda line=6 index=1 textlen=40 ever=0
+  text=\nemail textless { subject "s" text "x" }
+  from=[] to=[] subject=[s] date=[] image=[] body=[]
+D email mail2 state=1 implicit=1 valid=1 file=<implicit file> line=0 index=2 textlen=0 ever=1
+  from=[5] to=[5] subject=[5] date=[] image=[] body=[]
+D email } state=1 implicit=1 valid=1 file=<implicit file> line=0 index=3 textlen=0 ever=1
+  from=[5] to=[5] subject=[5] date=[] image=[] body=[]
+> dump video
+n=1
+D video vid1 state=2 implicit=0 valid=1 file=def/p.pda line=7 index=0 textlen=86 ever=1
+  text=\nvideo vid1 { name "Vid" preview "pv" video "mat/video" info "inf" audio "snd/video" }
+  name=[Vid] preview=[pv] roq=[mat/video] info=[inf] wave=[snd/video]
+> dump audio
+n=1
+D audio log1 state=2 implicit=0 valid=1 file=def/p.pda line=8 index=0 textlen=65 ever=1
+  text=\naudio log1 { name "Log" audio "snd/log" info "li" preview "lp" }
+  name=[Log] wave=[snd/log] info=[li] preview=[lp]
+> dump material
+n=1
+D material mat/video state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+> dump sound
+n=2
+D sound snd/log state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+D sound snd/video state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+> find pda absent
+r=found
+> find email absent
+r=found
+> find video absent
+r=found
+> find audio absent
+r=found
+> dump pda
+n=3
+D pda mine state=2 implicit=0 valid=1 file=def/p.pda line=1 index=0 textlen=182 ever=1
+  text=pda mine {\n  name "My PDA" fullname "Full Name" icon "gfx/icon" id "42" post "Marine" title "Title" security "red"\n  pda_email mail1 pda_email "mail2" pda_audio log1 pda_video vid1\n}
+  name=[My PDA] full=[Full Name] icon=[gfx/icon] id=[42] post=[Marine] title=[Title] security=[red]
+  emails=2 videos=1 audios=1
+  email 0 mail1
+  email 1 mail2
+  video 0 vid1
+  audio 0 log1
+D pda bad state=2 implicit=0 valid=1 file=def/p.pda line=4 index=1 textlen=33 ever=0
+  text=\npda bad { name "Bad" pda_email }
+  name=[Bad] full=[] icon=[] id=[] post=[] title=[] security=[]
+  emails=1 videos=0 audios=0
+  email 0 }
+D pda absent state=1 implicit=1 valid=1 file=<implicit file> line=0 index=2 textlen=0 ever=1
+  name=[default pda] full=[] icon=[] id=[] post=[] title=[] security=[]
+  emails=0 videos=0 audios=0
+> dump email
+n=5
+D email mail1 state=2 implicit=0 valid=1 file=def/p.pda line=5 index=0 textlen=97 ever=1
+  text=\nemail mail1 { subject "Hello" to "you" from "me" date "today" image "img" text { "a" "b" "c" } }
+  from=[me] to=[you] subject=[Hello] date=[today] image=[img] body=[abc]
+D email textless state=2 implicit=0 valid=1 file=def/p.pda line=6 index=1 textlen=40 ever=0
+  text=\nemail textless { subject "s" text "x" }
+  from=[] to=[] subject=[s] date=[] image=[] body=[]
+D email mail2 state=1 implicit=1 valid=1 file=<implicit file> line=0 index=2 textlen=0 ever=1
+  from=[5] to=[5] subject=[5] date=[] image=[] body=[]
+D email } state=1 implicit=1 valid=1 file=<implicit file> line=0 index=3 textlen=0 ever=1
+  from=[5] to=[5] subject=[5] date=[] image=[] body=[]
+D email absent state=1 implicit=1 valid=1 file=<implicit file> line=0 index=4 textlen=0 ever=1
+  from=[5] to=[5] subject=[5] date=[] image=[] body=[]
+> dump video
+n=2
+D video vid1 state=2 implicit=0 valid=1 file=def/p.pda line=7 index=0 textlen=86 ever=1
+  text=\nvideo vid1 { name "Vid" preview "pv" video "mat/video" info "inf" audio "snd/video" }
+  name=[Vid] preview=[pv] roq=[mat/video] info=[inf] wave=[snd/video]
+D video absent state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+  name=[5] preview=[] roq=[}] info=[] wave=[]
+> dump audio
+n=2
+D audio log1 state=2 implicit=0 valid=1 file=def/p.pda line=8 index=0 textlen=65 ever=1
+  text=\naudio log1 { name "Log" audio "snd/log" info "li" preview "lp" }
+  name=[Log] wave=[snd/log] info=[li] preview=[lp]
+D audio absent state=1 implicit=1 valid=1 file=<implicit file> line=0 index=1 textlen=0 ever=1
+  name=[5] wave=[}] info=[] preview=[]
+## pda-ops
+> folder def .pda pda
+> find pda mine
+r=found
+> pda mine addemail nothing
+P: Email nothing not found\n
+emails=1 videos=1 audios=1 security=[]
+> pda mine addemail extra
+emails=2 videos=1 audios=1 security=[]
+> pda mine addemail extra
+emails=2 videos=1 audios=1 security=[]
+> pda mine addemail EXTRA
+emails=3 videos=1 audios=1 security=[]
+> pda mine addemail extra twice
+emails=4 videos=1 audios=1 security=[]
+> pda mine addvideo extra
+emails=4 videos=2 audios=1 security=[]
+> pda mine addvideo nothing
+P: Video nothing not found\n
+emails=4 videos=2 audios=1 security=[]
+> pda mine addaudio extra
+emails=4 videos=2 audios=2 security=[]
+> pda mine addaudio nothing
+P: Audio log nothing not found\n
+emails=4 videos=2 audios=2 security=[]
+> pda mine security blue
+emails=4 videos=2 audios=2 security=[blue]
+> pda mine remove
+emails=1 videos=1 audios=2 security=[blue]
+> dump pda
+n=1
+D pda mine state=2 implicit=0 valid=1 file=def/p.pda line=1 index=0 textlen=67 ever=1
+  text=pda mine { name "P" pda_email mail1 pda_video vid1 pda_audio log1 }
+  name=[P] full=[] icon=[] id=[] post=[] title=[] security=[blue]
+  emails=1 videos=1 audios=2
+  email 0 mail1
+  video 0 vid1
+  audio 0 log1
+  audio 1 extra
+## reload-changes
+> find skin one
+r=found
+> write skins/a.skin skin one { model "b" model "c" }\nskin three { }
+> reload
+> dump skin
+n=3
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=32 ever=1
+  text=skin one { model "b" model "c" }
+  models=2 [b] [c] outofrange=[]
+  remap _default -> _default
+D skin two state=1 implicit=0 valid=1 file=skins/a.skin line=2 index=1 textlen=13 ever=0
+  text=\nskin two { }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin three state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=2 textlen=15 ever=0
+  text=\nskin three { }
+  models=0 outofrange=[]
+  remap _default -> _default
+> write skins/a.skin skin three { }
+> reload
+> dump skin
+n=3
+D skin one state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=32 ever=1
+  text=skin one { model "b" model "c" }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin two state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=13 ever=0
+  text=\nskin two { }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin three state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=2 textlen=14 ever=0
+  text=skin three { }
+  models=0 outofrange=[]
+  remap _default -> _default
+> reload all
+> dump skin
+n=3
+D skin one state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=32 ever=1
+  text=skin one { model "b" model "c" }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin two state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=13 ever=0
+  text=\nskin two { }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin three state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=2 textlen=14 ever=0
+  text=skin three { }
+  models=0 outofrange=[]
+  remap _default -> _default
+> reloadfile skins/A.skin all
+> dump skin
+n=3
+D skin one state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=32 ever=1
+  text=skin one { model "b" model "c" }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin two state=1 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=13 ever=0
+  text=\nskin two { }
+  models=0 outofrange=[]
+  remap _default -> _default
+D skin three state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=2 textlen=14 ever=0
+  text=skin three { }
+  models=0 outofrange=[]
+  remap _default -> _default
+> remove skins/a.skin
+> reload all
+ERR couldn't load skins/a.skin
+## level-purge
+> find skin one
+r=found
+> levelbegin
+> dump skin
+n=2
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=22 ever=1
+  text=skin one { model "a" }
+  models=1 [a] outofrange=[]
+D skin two state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=23 ever=0
+  text=\nskin two { model "b" }
+  models=1 [b] outofrange=[]
+> find skin two
+r=found
+> find entityDef inlevel
+r=found
+> levelend
+> levelbegin
+> dump skin
+n=2
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=22 ever=1
+  text=skin one { model "a" }
+  models=1 [a] outofrange=[]
+  remap _default -> _default
+D skin two state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=23 ever=1
+  text=\nskin two { model "b" }
+  models=1 [b] outofrange=[]
+  remap _default -> _default
+> dump entityDef
+n=1
+D entityDef inlevel state=1 implicit=1 valid=1 file=<implicit file> line=0 index=0 textlen=0 ever=1
+  keys=2
+  DEFAULTED = 1
+  classname = inlevel
+> levelend
+> precache
+P: touch material _default\n
+P: touch skin one\n
+precache=touch material _default\ntouch skin one\n
+## checksum
+> checksum
+checksum=-1645959217
+> folder def .pda pda
+> checksum
+checksum=-1645959217
+> find entityDef implicit
+r=found
+> checksum
+checksum=-1645959217
+> write skins/a.skin skin one { model "b" }
+> reload
+> checksum
+checksum=1286863178
+## new-rename-replace
+> new skin New\Skin.Ext skins\fresh.skin
+name=new/skin file=skins/fresh.skin state=2 index=3
+> dump skin
+n=4
+D skin one state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=22 ever=0
+  text=skin one { model "a" }
+  models=1 [a] outofrange=[]
+  remap _default -> _default
+D skin two state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=1 textlen=23 ever=0
+  text=\nskin two { model "b" }
+  models=1 [b] outofrange=[]
+  remap _default -> _default
+D skin three state=2 implicit=0 valid=1 file=skins/a.skin line=2 index=2 textlen=25 ever=0
+  text=\nskin three { model "c" }
+  models=1 [c] outofrange=[]
+  remap _default -> _default
+D skin new/skin state=2 implicit=0 valid=1 file=skins/fresh.skin line=0 index=3 textlen=33 ever=0
+  text=skin new/skin {\n\t"*"\t"_default"\n}
+  models=0 outofrange=[]
+  remap _default -> _default
+> new skin NEW/skin skins/other.skin
+name=new/skin file=skins/fresh.skin state=2 index=3
+> rename skin two Renamed
+r=1
+> find skin renamed
+r=found
+> findnd skin two
+r=null
+> findnd skin one
+r=found
+> findnd skin three
+r=found
+> rename skin nothing x
+r=0
+> settext skin one skin one { model "longer text" }
+> replace skin one
+P: Writing 'one' to 'skins/a.skin'...\n
+r=1
+> showfile skins/a.skin
+file=skin one { model "longer text" }\nskin two { model "b" }\nskin three { model "c" }\n
+> changed skin one
+r=0
+> settext skin renamed \nskin renamed { model "x" }
+> replace skin renamed
+P: Writing 'renamed' to 'skins/a.skin'...\n
+r=1
+> showfile skins/a.skin
+file=skin one { model "longer text" }\nskin renamed { model "x" }\nskin three { model "c" }\n
+> write skins/a.skin changed elsewhere
+> changed skin one
+r=1
+> replace skin one
+P: Writing 'one' to 'skins/a.skin'...\n
+W: The file skins/a.skin has been modified outside of the engine.
+r=0
+> find skin implicit
+r=found
+> replace skin implicit
+P: Writing 'implicit' to '<implicit file>'...\n
+W: Can't save implicit declaration implicit.
+r=0
+## list-print
+> find skin two
+r=found
+> list skin
+P: --------------------\n
+P: *
+P:  
+P:    1: 
+P: two\n
+P: --------------------\n
+P: 1 of 2 skin\n
+> list skin ever
+P: --------------------\n
+P: *
+P:  
+P:    1: 
+P: two\n
+P: --------------------\n
+P: 1 of 2 skin\n
+> list skin all
+P: --------------------\n
+P:  
+P:  
+P:    0: 
+P: one\n
+P: *
+P:  
+P:    1: 
+P: two\n
+P: --------------------\n
+P: 2 of 2 skin\n
+> print skin one
+P: skin one:\n
+P: source: skins/a.skin:1\n
+P: ----------\n
+P: skin one { model "a" }\n
+P: ----------\n
+P: Unparsed.\n
+P: Never referenced.\n
+> print skin two
+P: skin two:\n
+P: source: skins/a.skin:1\n
+P: ----------\n
+P: \nskin two { model "b" }\n
+P: ----------\n
+P: Parsed.\n
+P: Currently referenced this level.\n
+> print skin none
+P: skin 'none' not found.\n
+> precache
+P: touch skin two\n
+precache=touch skin two\n
+## lexer-edge
+> dumpraw skin
+n=7
+D skin quoted name state=0 implicit=0 valid=0 file=skins/a.skin line=1 index=0 textlen=61 ever=0
+  text=// comment\n/* block\ncomment */ skin "quoted name" { "a" "b" }
+D skin braces state=0 implicit=0 valid=0 file=skins/a.skin line=3 index=1 textlen=32 ever=0
+  text=\nskin braces { "x" "}" "{" "y" }
+D skin nested state=0 implicit=0 valid=0 file=skins/a.skin line=4 index=2 textlen=30 ever=0
+  text=\nskin nested { model "m" { } }
+D skin spaced state=0 implicit=0 valid=0 file=skins/a.skin line=5 index=3 textlen=34 ever=0
+  text=\nskin   spaced   {   "p"   "q"   }
+D skin upper state=0 implicit=0 valid=0 file=skins/a.skin line=6 index=4 textlen=15 ever=0
+  text=\nSKIN upper { }
+D skin path/name state=0 implicit=0 valid=0 file=skins/a.skin line=7 index=5 textlen=23 ever=0
+  text=\nskin path/name.ext { }
+D skin c:/x state=0 implicit=0 valid=0 file=skins/a.skin line=8 index=6 textlen=14 ever=0
+  text=\nskin c:\\x { }
+> dump skin
+n=7
+D skin quoted name state=2 implicit=0 valid=1 file=skins/a.skin line=1 index=0 textlen=61 ever=0
+  text=// comment\n/* block\ncomment */ skin "quoted name" { "a" "b" }
+  models=0 outofrange=[]
+  remap a -> b
+  remap b -> b
+D skin braces state=2 implicit=0 valid=1 file=skins/a.skin line=3 index=1 textlen=32 ever=0
+  text=\nskin braces { "x" "}" "{" "y" }
+  models=0 outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> }
+  remap } -> }
+  remap { -> y
+  remap y -> y
+D skin nested state=2 implicit=0 valid=1 file=skins/a.skin line=4 index=2 textlen=30 ever=0
+  text=\nskin nested { model "m" { } }
+  models=1 [m] outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> x
+  remap } -> }
+  remap { -> }
+  remap y -> y
+D skin spaced state=2 implicit=0 valid=1 file=skins/a.skin line=5 index=3 textlen=34 ever=0
+  text=\nskin   spaced   {   "p"   "q"   }
+  models=0 outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> x
+  remap } -> }
+  remap { -> {
+  remap y -> y
+  remap p -> q
+  remap q -> q
+D skin upper state=2 implicit=0 valid=1 file=skins/a.skin line=6 index=4 textlen=15 ever=0
+  text=\nSKIN upper { }
+  models=0 outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> x
+  remap } -> }
+  remap { -> {
+  remap y -> y
+  remap p -> p
+  remap q -> q
+D skin path/name state=2 implicit=0 valid=1 file=skins/a.skin line=7 index=5 textlen=23 ever=0
+  text=\nskin path/name.ext { }
+  models=0 outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> x
+  remap } -> }
+  remap { -> {
+  remap y -> y
+  remap p -> p
+  remap q -> q
+D skin c:/x state=2 implicit=0 valid=1 file=skins/a.skin line=8 index=6 textlen=14 ever=0
+  text=\nskin c:\\x { }
+  models=0 outofrange=[]
+  remap a -> a
+  remap b -> b
+  remap x -> x
+  remap } -> }
+  remap { -> {
+  remap y -> y
+  remap p -> p
+  remap q -> q
+## runaway-and-errors
+> find nothing x
+ERR idDeclManager::FindTypeWithoutParsing: bad type: 32
+> numdecls nothing
+ERR idDeclManager::GetNumDecls: bad type: 32
+> typename nothing
+ERR idDeclManager::GetDeclNameFromType: bad type: 32
