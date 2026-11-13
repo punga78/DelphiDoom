@@ -1,0 +1,151 @@
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include "precompiled.h"
+#include "math/Plane.h"
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include "containers/VectorSet.h"
+#include "../renderer/Model_ma.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+static std::string label;
+void idCommon::Printf(const char *fmt, ...) {}
+void idCommon::Warning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("%s warn | %s\n", label.c_str(), b); }
+void idCommon::DWarning(const char *fmt, ...) {}
+void idCommon::Error(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+static std::string readAll(const char *n) { std::ifstream f(n, std::ios::binary); std::stringstream ss; ss << f.rdbuf(); return ss.str(); }
+idFile *idFileSystem::OpenFileRead(const char *n) { return 0; }
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return 0; }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *n) { return 0; }
+void idFileSystem::CloseFile(idFile *f) {}
+int idFileSystem::ReadFile(const char *n, void **b, long *t) { std::string s = readAll(n); if (s.empty()) { if (b) *b = 0; return -1; } char *m = (char *)malloc(s.size() + 1); memcpy(m, s.data(), s.size()); m[s.size()] = 0; if (b) *b = m; if (t) *t = 4321; return (int)s.size(); }
+void idFileSystem::FreeFile(void *b) { free(b); }
+// the original turns "C:/dir/models/tex/x.tga" into a path relative to the base: here the part after "models/"
+const char *idFileSystem::OSPathToRelativePath(const char *p) { const char *m = strstr(p, "models/"); return m ? m : p; }
+
+// ---- the renderer parts that the conversion uses
+struct idMaterial { std::string name; bool IsDiscrete() const { return false; } const char *GetRenderBump() const { return ""; } };
+class idDeclManager { public:
+	std::map<std::string, idMaterial *> m;
+	const idMaterial *FindMaterial(const char *n) { std::string k = n; for (size_t i = 0; i < k.size(); i++) k[i] = (char)tolower((unsigned char)k[i]); idMaterial *&r = m[k]; if (!r) { r = new idMaterial; r->name = n; } return r; }
+} theDecl, *declManager = &theDecl;
+struct { const idMaterial *defaultMaterial; } tr;
+
+typedef struct srfTriangles_s {
+	int numVerts; int numIndexes; idDrawVert *verts; int *indexes; bool generateNormals;
+} srfTriangles_t;
+typedef int glIndex_t;
+srfTriangles_t *R_AllocStaticTriSurf() { return (srfTriangles_t *)calloc(1, sizeof(srfTriangles_t)); }
+void R_AllocStaticTriSurfVerts(srfTriangles_t *t, int n) { t->verts = (idDrawVert *)calloc(n + 1, sizeof(idDrawVert)); }
+void R_AllocStaticTriSurfIndexes(srfTriangles_t *t, int n) { t->indexes = (int *)calloc(n + 1, sizeof(int)); }
+void R_FreeStaticTriSurf(srfTriangles_t *t) { free(t->verts); free(t->indexes); free(t); }
+void *R_StaticAlloc(int n) { return malloc(n); }
+void *R_ClearedStaticAlloc(int n) { return calloc(1, n); }
+void R_StaticFree(void *p) { free(p); }
+#include "merge.inc"
+
+typedef struct modelSurface_s { int id; const idMaterial *shader; srfTriangles_t *geometry; } modelSurface_t;
+struct cvar { float f; cvar(float v) : f(v) {} float GetFloat() const { return f; } bool GetBool() const { return f != 0; } };
+
+class idRenderModelStatic {
+public:
+	idStr name; ID_TIME_T timeStamp; bool fastLoad;
+	idList<modelSurface_t> surfaces;
+	cvar r_mergeModelSurfaces, r_slopVertex, r_slopTexCoord, r_slopNormal;
+	idRenderModelStatic() : timeStamp(0), fastLoad(false), r_mergeModelSurfaces(1), r_slopVertex(0.01f), r_slopTexCoord(0.001f), r_slopNormal(0.02f) {}
+	int NumSurfaces() const { return surfaces.Num(); }
+	int AddSurface(modelSurface_t s) { return surfaces.Append(s); }
+	bool ConvertMAToModelSurfaces(const struct maModel_s *ma);
+};
+
+#include "convert.inc"
+
+static unsigned int bits(float f) { unsigned int u; memcpy(&u, &f, 4); return u; }
+#define F(x) printf(" #%08x", bits(x))
+#define I(x) printf(" %d", (int)(x))
+
+maModel_t *MA_Parse(const char *buffer, const char *filename, bool verbose);
+
+static void dumpMa(maModel_t *ma) {
+	printf("%s materials |", label.c_str()); for (int i = 0; i < ma->materials.Num(); i++) printf(" %s", ma->materials[i]->name); printf("\n");
+	printf("%s objects | %d\n", label.c_str(), ma->objects.Num());
+	for (int o = 0; o < ma->objects.Num(); o++) {
+		maObject_t *ob = ma->objects[o]; maMesh_t *m = &ob->mesh;
+		printf("%s obj %d | %s %d %s\n", label.c_str(), o, ob->name, ob->materialRef, ob->materialName);
+		printf("%s obj %d verts |", label.c_str(), o); for (int i = 0; i < m->numVertexes; i++) { F(m->vertexes[i].x); F(m->vertexes[i].y); F(m->vertexes[i].z); } printf("\n");
+		printf("%s obj %d tverts |", label.c_str(), o); for (int i = 0; i < m->numTVertexes; i++) { F(m->tvertexes[i].x); F(m->tvertexes[i].y); } printf("\n");
+		printf("%s obj %d faces | %d\n", label.c_str(), o, m->numFaces);
+		for (int f = 0; f < m->numFaces; f++) {
+			printf("%s obj %d face %d |", label.c_str(), o, f);
+			for (int k = 0; k < 3; k++) I(m->faces[f].vertexNum[k]);
+			for (int k = 0; k < 3; k++) I(m->numTVertexes ? m->faces[f].tVertexNum[k] : 0);
+			for (int k = 0; k < 3; k++) I(m->faces[f].vertexColors[k]);
+			if (m->normalsParsed) for (int k = 0; k < 3; k++) { F(m->faces[f].vertexNormals[k].x); F(m->faces[f].vertexNormals[k].y); F(m->faces[f].vertexNormals[k].z); }
+			printf("\n");
+		}
+		printf("%s obj %d colors |", label.c_str(), o); for (int i = 0; i < m->numColors * 4; i++) I(m->colors[i]); printf("\n");
+		printf("%s obj %d normals | %d\n", label.c_str(), o, m->normalsParsed ? 1 : 0);
+	}
+}
+
+static void dumpModel(idRenderModelStatic &model, const char *tag) {
+	printf("%s %s surfaces | %d\n", label.c_str(), tag, model.NumSurfaces());
+	for (int s = 0; s < model.NumSurfaces(); s++) {
+		modelSurface_t &surf = model.surfaces[s]; srfTriangles_t *t = surf.geometry;
+		printf("%s %s s%d | %s %d %d %d\n", label.c_str(), tag, s, surf.shader->name.c_str(), surf.id, t ? t->numVerts : -1, t ? t->numIndexes : -1);
+		if (!t) continue;
+		printf("%s %s s%d generate | %d\n", label.c_str(), tag, s, t->generateNormals ? 1 : 0);
+		printf("%s %s s%d indexes |", label.c_str(), tag, s); for (int i = 0; i < t->numIndexes; i++) I(t->indexes[i]); printf("\n");
+		printf("%s %s s%d verts |", label.c_str(), tag, s);
+		for (int i = 0; i < t->numVerts; i++) {
+			F(t->verts[i].xyz.x); F(t->verts[i].xyz.y); F(t->verts[i].xyz.z); F(t->verts[i].st.x); F(t->verts[i].st.y);
+			F(t->verts[i].normal.x); F(t->verts[i].normal.y); F(t->verts[i].normal.z);
+			printf(" %u", *(unsigned *)t->verts[i].color);
+		}
+		printf("\n");
+	}
+}
+
+int main(int argc, char **argv) {
+	idMath::Init();
+	idLib::common = common = new idCommon; fileSystem = new idFileSystem;
+	tr.defaultMaterial = declManager->FindMaterial("_default");
+	for (int a = 1; a < argc; a++) {
+		std::string path = argv[a];
+		size_t sl = path.find_last_of("/\\"); label = sl == std::string::npos ? path : path.substr(sl + 1);
+		void *buf = 0; long ts = 0;
+		if (fileSystem->ReadFile(path.c_str(), &buf, &ts) <= 0) { printf("%s missing\n", label.c_str()); continue; }
+		maModel_t *ma = 0;
+		try { ma = MA_Parse((const char *)buf, label.c_str(), false); }
+		catch (idException &e) { printf("%s error | %s\n", label.c_str(), e.error); continue; }
+		dumpMa(ma);
+		for (int mode = 0; mode < 3; mode++) {
+			idRenderModelStatic model; model.name = label.c_str();
+			if (mode == 1) model.r_mergeModelSurfaces.f = 0;
+			if (mode == 2) model.fastLoad = true;
+			const char *tag = mode == 0 ? "merge" : mode == 1 ? "nomerge" : "fast";
+			try { bool ok = model.ConvertMAToModelSurfaces(ma); printf("%s %s ok | %d\n", label.c_str(), tag, ok ? 1 : 0); dumpModel(model, tag); }
+			catch (idException &e) { printf("%s %s error | %s\n", label.c_str(), tag, e.error); }
+		}
+	}
+	return 0;
+}

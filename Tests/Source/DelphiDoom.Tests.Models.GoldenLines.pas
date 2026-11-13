@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the 3D models library - golden files of lines          }
 {                                                                              }
@@ -30,6 +30,8 @@ type
     function Floats(const AKey: string): TArray<Single>;
     /// <summary>The integers of a line (the values that are not floats)</summary>
     function Ints(const AKey: string): TArray<Integer>;
+    /// <summary>The integers of a line as 64-bit values (colours are unsigned 32-bit)</summary>
+    function Int64s(const AKey: string): TArray<Int64>;
     /// <summary>All the values of a line as they are written</summary>
     function Tokens(const AKey: string): TArray<string>;
   end;
@@ -100,6 +102,24 @@ begin
     begin
       LBits := StrToUInt('$' + Copy(LToken, 2, 8));
       Result[LCount] := PSingle(@LBits)^;
+      Inc(LCount);
+    end;
+  SetLength(Result, LCount);
+end;
+
+function TGoldenLines.Int64s(const AKey: string): TArray<Int64>;
+var
+  LToken: string;
+  LCount: Integer;
+  LTokens: TArray<string>;
+begin
+  LTokens := Tokens(AKey);
+  SetLength(Result, Length(LTokens));
+  LCount := 0;
+  for LToken in LTokens do
+    if Copy(LToken, 1, 1) <> '#' then
+    begin
+      Result[LCount] := StrToInt64(LToken);
       Inc(LCount);
     end;
   SetLength(Result, LCount);
