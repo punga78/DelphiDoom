@@ -19,6 +19,8 @@ uses
   DelphiDoom.Tests.MapFile.AasReader in 'Source\DelphiDoom.Tests.MapFile.AasReader.pas',
   DelphiDoom.Tests.MapFile.AasDump in 'Source\DelphiDoom.Tests.MapFile.AasDump.pas',
   DelphiDoom.Tests.MapFile.AasGolden in 'Source\DelphiDoom.Tests.MapFile.AasGolden.pas',
+  DelphiDoom.Tests.MapFile.AasSampler in 'Source\DelphiDoom.Tests.MapFile.AasSampler.pas',
+  DelphiDoom.Tests.MapFile.AasWriter in 'Source\DelphiDoom.Tests.MapFile.AasWriter.pas',
   DelphiDoom.Tests.MapFile.BspFakeGrid in 'Source\DelphiDoom.Tests.MapFile.BspFakeGrid.pas',
   DelphiDoom.Tests.MapFile.BspGolden in 'Source\DelphiDoom.Tests.MapFile.BspGolden.pas',
   DelphiDoom.Tests.MapFile.BspPatches in 'Source\DelphiDoom.Tests.MapFile.BspPatches.pas',

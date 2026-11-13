@@ -1,0 +1,4 @@
+# the files that the real C++ writes back and samples (aas_minimal.aas has no tree: it is only written)
+aas_rooms.aas
+aas_walk.aas
+aas_minimal.aas

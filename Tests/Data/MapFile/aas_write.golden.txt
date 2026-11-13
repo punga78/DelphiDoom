@@ -1,0 +1,1039 @@
+CASE aas_rooms.aas
+WRITE1 3080
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t\t(-24 -24 0)-(24 24 96)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 1
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 1
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 18
+T|\tmaxBarrierHeight = 32.5
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 110
+T|\ttt_waterJump = 120
+T|\ttt_startWalkOffLedge = 130
+T|}
+T|planes 9 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 1 0 0 0 )
+T|\t2 ( 1 0 0 64 )
+T|\t3 ( 1 0 0 128 )
+T|\t4 ( 1 0 0 192 )
+T|\t5 ( 0 1 0 0 )
+T|\t6 ( 0 1 0 64 )
+T|\t7 ( 0 0 1 0 )
+T|\t8 ( 0 0 1 64 )
+T|}
+T|vertices 17 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|\t2 ( 0 0 64 )
+T|\t3 ( 0 64 0 )
+T|\t4 ( 0 64 64 )
+T|\t5 ( 64 0 0 )
+T|\t6 ( 64 0 64 )
+T|\t7 ( 64 64 0 )
+T|\t8 ( 64 64 64 )
+T|\t9 ( 128 0 0 )
+T|\t10 ( 128 0 64 )
+T|\t11 ( 128 64 0 )
+T|\t12 ( 128 64 64 )
+T|\t13 ( 192 0 0 )
+T|\t14 ( 192 0 64 )
+T|\t15 ( 192 64 0 )
+T|\t16 ( 192 64 64 )
+T|}
+T|edges 29 {
+T|\t0 ( 0 0 )
+T|\t1 ( 1 3 )
+T|\t2 ( 3 4 )
+T|\t3 ( 4 2 )
+T|\t4 ( 2 1 )
+T|\t5 ( 5 7 )
+T|\t6 ( 7 8 )
+T|\t7 ( 8 6 )
+T|\t8 ( 6 5 )
+T|\t9 ( 1 5 )
+T|\t10 ( 6 2 )
+T|\t11 ( 3 7 )
+T|\t12 ( 8 4 )
+T|\t13 ( 9 11 )
+T|\t14 ( 11 12 )
+T|\t15 ( 12 10 )
+T|\t16 ( 10 9 )
+T|\t17 ( 5 9 )
+T|\t18 ( 10 6 )
+T|\t19 ( 7 11 )
+T|\t20 ( 12 8 )
+T|\t21 ( 13 15 )
+T|\t22 ( 15 16 )
+T|\t23 ( 16 14 )
+T|\t24 ( 14 13 )
+T|\t25 ( 9 13 )
+T|\t26 ( 14 10 )
+T|\t27 ( 11 15 )
+T|\t28 ( 16 12 )
+T|}
+T|edgeIndex 65 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|\t2 ( 2 )
+T|\t3 ( 3 )
+T|\t4 ( 4 )
+T|\t5 ( 5 )
+T|\t6 ( 6 )
+T|\t7 ( 7 )
+T|\t8 ( 8 )
+T|\t9 ( 9 )
+T|\t10 ( -8 )
+T|\t11 ( 10 )
+T|\t12 ( 4 )
+T|\t13 ( 11 )
+T|\t14 ( 6 )
+T|\t15 ( 12 )
+T|\t16 ( -2 )
+T|\t17 ( 9 )
+T|\t18 ( 5 )
+T|\t19 ( -11 )
+T|\t20 ( -1 )
+T|\t21 ( -10 )
+T|\t22 ( -7 )
+T|\t23 ( 12 )
+T|\t24 ( 3 )
+T|\t25 ( 13 )
+T|\t26 ( 14 )
+T|\t27 ( 15 )
+T|\t28 ( 16 )
+T|\t29 ( 17 )
+T|\t30 ( -16 )
+T|\t31 ( 18 )
+T|\t32 ( 8 )
+T|\t33 ( 19 )
+T|\t34 ( 14 )
+T|\t35 ( 20 )
+T|\t36 ( -6 )
+T|\t37 ( 17 )
+T|\t38 ( 13 )
+T|\t39 ( -19 )
+T|\t40 ( -5 )
+T|\t41 ( -18 )
+T|\t42 ( -15 )
+T|\t43 ( 20 )
+T|\t44 ( 7 )
+T|\t45 ( 21 )
+T|\t46 ( 22 )
+T|\t47 ( 23 )
+T|\t48 ( 24 )
+T|\t49 ( 25 )
+T|\t50 ( -24 )
+T|\t51 ( 26 )
+T|\t52 ( 16 )
+T|\t53 ( 27 )
+T|\t54 ( 22 )
+T|\t55 ( 28 )
+T|\t56 ( -14 )
+T|\t57 ( 25 )
+T|\t58 ( 21 )
+T|\t59 ( -27 )
+T|\t60 ( -13 )
+T|\t61 ( -26 )
+T|\t62 ( -23 )
+T|\t63 ( 28 )
+T|\t64 ( 15 )
+T|}
+T|faces 17 {
+T|\t0 ( 0 0 0 0 0 0 )
+T|\t1 ( 1 1 0 1 1 4 )
+T|\t2 ( 2 0 1 2 5 4 )
+T|\t3 ( 5 1 0 1 9 4 )
+T|\t4 ( 6 1 0 1 13 4 )
+T|\t5 ( 7 4 0 1 17 4 )
+T|\t6 ( 8 1 0 1 21 4 )
+T|\t7 ( 3 0 2 3 25 4 )
+T|\t8 ( 5 1 0 2 29 4 )
+T|\t9 ( 6 1 0 2 33 4 )
+T|\t10 ( 7 4 0 2 37 4 )
+T|\t11 ( 8 1 0 2 41 4 )
+T|\t12 ( 4 1 3 4 45 4 )
+T|\t13 ( 5 1 0 3 49 4 )
+T|\t14 ( 6 1 0 3 53 4 )
+T|\t15 ( 7 4 0 3 57 4 )
+T|\t16 ( 8 1 0 3 61 4 )
+T|}
+T|faceIndex 19 {
+T|\t0 ( 0 )
+T|\t1 ( -1 )
+T|\t2 ( 2 )
+T|\t3 ( -3 )
+T|\t4 ( 4 )
+T|\t5 ( -5 )
+T|\t6 ( 6 )
+T|\t7 ( -2 )
+T|\t8 ( 7 )
+T|\t9 ( -8 )
+T|\t10 ( 9 )
+T|\t11 ( -10 )
+T|\t12 ( 11 )
+T|\t13 ( -7 )
+T|\t14 ( 12 )
+T|\t15 ( -13 )
+T|\t16 ( 14 )
+T|\t17 ( -15 )
+T|\t18 ( 16 )
+T|}
+T|areas 4 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|\t1 ( 1 0 1 6 1 1 ) 1 {
+T|\t\t2 2 (60 32 0) (68 32 0) 0 25
+T|\t}
+T|\t2 ( 1 0 7 6 1 2 ) 3 {
+T|\t\t4096 3 (96 32 0) (150.5 32 0) 7 100
+T|\t\t{
+T|\t\t\t"type" "jump"
+T|\t\t\t"Model" "a b"
+T|\t\t}
+T|
+T|\t\t2 3 (124 32 0) (132 32 0) 0 25
+T|\t\t2 1 (68 32 0) (60 32 0) 0 25
+T|\t}
+T|\t3 ( 1 2 13 6 1 3 ) 1 {
+T|\t\t2 2 (132 32 0) (124 32 0) 0 25
+T|\t}
+T|}
+T|nodes 3 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 3 2 -1 )
+T|\t2 ( 2 -3 -2 )
+T|}
+T|portals 2 {
+T|\t0 ( 0 0 0 0 0 )
+T|\t1 ( 2 1 1 0 0 )
+T|}
+T|portalIndex 2 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|}
+T|clusters 2 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 3 3 1 1 )
+T|}
+WRITE2 3080
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t\t(-24 -24 0)-(24 24 96)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 1
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 1
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 18
+T|\tmaxBarrierHeight = 32.5
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 110
+T|\ttt_waterJump = 120
+T|\ttt_startWalkOffLedge = 130
+T|}
+T|planes 9 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 1 0 0 0 )
+T|\t2 ( 1 0 0 64 )
+T|\t3 ( 1 0 0 128 )
+T|\t4 ( 1 0 0 192 )
+T|\t5 ( 0 1 0 0 )
+T|\t6 ( 0 1 0 64 )
+T|\t7 ( 0 0 1 0 )
+T|\t8 ( 0 0 1 64 )
+T|}
+T|vertices 17 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|\t2 ( 0 0 64 )
+T|\t3 ( 0 64 0 )
+T|\t4 ( 0 64 64 )
+T|\t5 ( 64 0 0 )
+T|\t6 ( 64 0 64 )
+T|\t7 ( 64 64 0 )
+T|\t8 ( 64 64 64 )
+T|\t9 ( 128 0 0 )
+T|\t10 ( 128 0 64 )
+T|\t11 ( 128 64 0 )
+T|\t12 ( 128 64 64 )
+T|\t13 ( 192 0 0 )
+T|\t14 ( 192 0 64 )
+T|\t15 ( 192 64 0 )
+T|\t16 ( 192 64 64 )
+T|}
+T|edges 29 {
+T|\t0 ( 0 0 )
+T|\t1 ( 1 3 )
+T|\t2 ( 3 4 )
+T|\t3 ( 4 2 )
+T|\t4 ( 2 1 )
+T|\t5 ( 5 7 )
+T|\t6 ( 7 8 )
+T|\t7 ( 8 6 )
+T|\t8 ( 6 5 )
+T|\t9 ( 1 5 )
+T|\t10 ( 6 2 )
+T|\t11 ( 3 7 )
+T|\t12 ( 8 4 )
+T|\t13 ( 9 11 )
+T|\t14 ( 11 12 )
+T|\t15 ( 12 10 )
+T|\t16 ( 10 9 )
+T|\t17 ( 5 9 )
+T|\t18 ( 10 6 )
+T|\t19 ( 7 11 )
+T|\t20 ( 12 8 )
+T|\t21 ( 13 15 )
+T|\t22 ( 15 16 )
+T|\t23 ( 16 14 )
+T|\t24 ( 14 13 )
+T|\t25 ( 9 13 )
+T|\t26 ( 14 10 )
+T|\t27 ( 11 15 )
+T|\t28 ( 16 12 )
+T|}
+T|edgeIndex 65 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|\t2 ( 2 )
+T|\t3 ( 3 )
+T|\t4 ( 4 )
+T|\t5 ( 5 )
+T|\t6 ( 6 )
+T|\t7 ( 7 )
+T|\t8 ( 8 )
+T|\t9 ( 9 )
+T|\t10 ( -8 )
+T|\t11 ( 10 )
+T|\t12 ( 4 )
+T|\t13 ( 11 )
+T|\t14 ( 6 )
+T|\t15 ( 12 )
+T|\t16 ( -2 )
+T|\t17 ( 9 )
+T|\t18 ( 5 )
+T|\t19 ( -11 )
+T|\t20 ( -1 )
+T|\t21 ( -10 )
+T|\t22 ( -7 )
+T|\t23 ( 12 )
+T|\t24 ( 3 )
+T|\t25 ( 13 )
+T|\t26 ( 14 )
+T|\t27 ( 15 )
+T|\t28 ( 16 )
+T|\t29 ( 17 )
+T|\t30 ( -16 )
+T|\t31 ( 18 )
+T|\t32 ( 8 )
+T|\t33 ( 19 )
+T|\t34 ( 14 )
+T|\t35 ( 20 )
+T|\t36 ( -6 )
+T|\t37 ( 17 )
+T|\t38 ( 13 )
+T|\t39 ( -19 )
+T|\t40 ( -5 )
+T|\t41 ( -18 )
+T|\t42 ( -15 )
+T|\t43 ( 20 )
+T|\t44 ( 7 )
+T|\t45 ( 21 )
+T|\t46 ( 22 )
+T|\t47 ( 23 )
+T|\t48 ( 24 )
+T|\t49 ( 25 )
+T|\t50 ( -24 )
+T|\t51 ( 26 )
+T|\t52 ( 16 )
+T|\t53 ( 27 )
+T|\t54 ( 22 )
+T|\t55 ( 28 )
+T|\t56 ( -14 )
+T|\t57 ( 25 )
+T|\t58 ( 21 )
+T|\t59 ( -27 )
+T|\t60 ( -13 )
+T|\t61 ( -26 )
+T|\t62 ( -23 )
+T|\t63 ( 28 )
+T|\t64 ( 15 )
+T|}
+T|faces 17 {
+T|\t0 ( 0 0 0 0 0 0 )
+T|\t1 ( 1 1 0 1 1 4 )
+T|\t2 ( 2 0 1 2 5 4 )
+T|\t3 ( 5 1 0 1 9 4 )
+T|\t4 ( 6 1 0 1 13 4 )
+T|\t5 ( 7 4 0 1 17 4 )
+T|\t6 ( 8 1 0 1 21 4 )
+T|\t7 ( 3 0 2 3 25 4 )
+T|\t8 ( 5 1 0 2 29 4 )
+T|\t9 ( 6 1 0 2 33 4 )
+T|\t10 ( 7 4 0 2 37 4 )
+T|\t11 ( 8 1 0 2 41 4 )
+T|\t12 ( 4 1 3 4 45 4 )
+T|\t13 ( 5 1 0 3 49 4 )
+T|\t14 ( 6 1 0 3 53 4 )
+T|\t15 ( 7 4 0 3 57 4 )
+T|\t16 ( 8 1 0 3 61 4 )
+T|}
+T|faceIndex 19 {
+T|\t0 ( 0 )
+T|\t1 ( -1 )
+T|\t2 ( 2 )
+T|\t3 ( -3 )
+T|\t4 ( 4 )
+T|\t5 ( -5 )
+T|\t6 ( 6 )
+T|\t7 ( -2 )
+T|\t8 ( 7 )
+T|\t9 ( -8 )
+T|\t10 ( 9 )
+T|\t11 ( -10 )
+T|\t12 ( 11 )
+T|\t13 ( -7 )
+T|\t14 ( 12 )
+T|\t15 ( -13 )
+T|\t16 ( 14 )
+T|\t17 ( -15 )
+T|\t18 ( 16 )
+T|}
+T|areas 4 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|\t1 ( 1 0 1 6 1 1 ) 1 {
+T|\t\t2 2 (60 32 0) (68 32 0) 0 25
+T|\t}
+T|\t2 ( 1 0 7 6 1 2 ) 3 {
+T|\t\t2 1 (68 32 0) (60 32 0) 0 25
+T|\t\t2 3 (124 32 0) (132 32 0) 0 25
+T|\t\t4096 3 (96 32 0) (150.5 32 0) 7 100
+T|\t\t{
+T|\t\t\t"type" "jump"
+T|\t\t\t"Model" "a b"
+T|\t\t}
+T|
+T|\t}
+T|\t3 ( 1 2 13 6 1 3 ) 1 {
+T|\t\t2 2 (132 32 0) (124 32 0) 0 25
+T|\t}
+T|}
+T|nodes 3 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 3 2 -1 )
+T|\t2 ( 2 -3 -2 )
+T|}
+T|portals 2 {
+T|\t0 ( 0 0 0 0 0 )
+T|\t1 ( 2 1 1 0 0 )
+T|}
+T|portalIndex 2 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|}
+T|clusters 2 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 3 3 1 1 )
+T|}
+CASE aas_walk.aas
+WRITE1 3028
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t\t(-24 -24 0)-(24 24 96)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 1
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 1
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 18
+T|\tmaxBarrierHeight = 32.5
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 110
+T|\ttt_waterJump = 120
+T|\ttt_startWalkOffLedge = 130
+T|}
+T|planes 9 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 1 0 0 0 )
+T|\t2 ( 1 0 0 64 )
+T|\t3 ( 1 0 0 128 )
+T|\t4 ( 1 0 0 192 )
+T|\t5 ( 0 1 0 0 )
+T|\t6 ( 0 1 0 64 )
+T|\t7 ( 0 0 1 0 )
+T|\t8 ( 0 0 1 64 )
+T|}
+T|vertices 17 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|\t2 ( 0 0 64 )
+T|\t3 ( 0 64 0 )
+T|\t4 ( 0 64 64 )
+T|\t5 ( 64 0 0 )
+T|\t6 ( 64 0 64 )
+T|\t7 ( 64 64 0 )
+T|\t8 ( 64 64 64 )
+T|\t9 ( 128 0 0 )
+T|\t10 ( 128 0 64 )
+T|\t11 ( 128 64 0 )
+T|\t12 ( 128 64 64 )
+T|\t13 ( 192 0 0 )
+T|\t14 ( 192 0 64 )
+T|\t15 ( 192 64 0 )
+T|\t16 ( 192 64 64 )
+T|}
+T|edges 29 {
+T|\t0 ( 0 0 )
+T|\t1 ( 1 3 )
+T|\t2 ( 3 4 )
+T|\t3 ( 4 2 )
+T|\t4 ( 2 1 )
+T|\t5 ( 5 7 )
+T|\t6 ( 7 8 )
+T|\t7 ( 8 6 )
+T|\t8 ( 6 5 )
+T|\t9 ( 1 5 )
+T|\t10 ( 6 2 )
+T|\t11 ( 3 7 )
+T|\t12 ( 8 4 )
+T|\t13 ( 9 11 )
+T|\t14 ( 11 12 )
+T|\t15 ( 12 10 )
+T|\t16 ( 10 9 )
+T|\t17 ( 5 9 )
+T|\t18 ( 10 6 )
+T|\t19 ( 7 11 )
+T|\t20 ( 12 8 )
+T|\t21 ( 13 15 )
+T|\t22 ( 15 16 )
+T|\t23 ( 16 14 )
+T|\t24 ( 14 13 )
+T|\t25 ( 9 13 )
+T|\t26 ( 14 10 )
+T|\t27 ( 11 15 )
+T|\t28 ( 16 12 )
+T|}
+T|edgeIndex 65 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|\t2 ( 2 )
+T|\t3 ( 3 )
+T|\t4 ( 4 )
+T|\t5 ( 5 )
+T|\t6 ( 6 )
+T|\t7 ( 7 )
+T|\t8 ( 8 )
+T|\t9 ( 9 )
+T|\t10 ( -8 )
+T|\t11 ( 10 )
+T|\t12 ( 4 )
+T|\t13 ( 11 )
+T|\t14 ( 6 )
+T|\t15 ( 12 )
+T|\t16 ( -2 )
+T|\t17 ( 9 )
+T|\t18 ( 5 )
+T|\t19 ( -11 )
+T|\t20 ( -1 )
+T|\t21 ( -10 )
+T|\t22 ( -7 )
+T|\t23 ( 12 )
+T|\t24 ( 3 )
+T|\t25 ( 13 )
+T|\t26 ( 14 )
+T|\t27 ( 15 )
+T|\t28 ( 16 )
+T|\t29 ( 17 )
+T|\t30 ( -16 )
+T|\t31 ( 18 )
+T|\t32 ( 8 )
+T|\t33 ( 19 )
+T|\t34 ( 14 )
+T|\t35 ( 20 )
+T|\t36 ( -6 )
+T|\t37 ( 17 )
+T|\t38 ( 13 )
+T|\t39 ( -19 )
+T|\t40 ( -5 )
+T|\t41 ( -18 )
+T|\t42 ( -15 )
+T|\t43 ( 20 )
+T|\t44 ( 7 )
+T|\t45 ( 21 )
+T|\t46 ( 22 )
+T|\t47 ( 23 )
+T|\t48 ( 24 )
+T|\t49 ( 25 )
+T|\t50 ( -24 )
+T|\t51 ( 26 )
+T|\t52 ( 16 )
+T|\t53 ( 27 )
+T|\t54 ( 22 )
+T|\t55 ( 28 )
+T|\t56 ( -14 )
+T|\t57 ( 25 )
+T|\t58 ( 21 )
+T|\t59 ( -27 )
+T|\t60 ( -13 )
+T|\t61 ( -26 )
+T|\t62 ( -23 )
+T|\t63 ( 28 )
+T|\t64 ( 15 )
+T|}
+T|faces 17 {
+T|\t0 ( 0 0 0 0 0 0 )
+T|\t1 ( 1 1 0 1 1 4 )
+T|\t2 ( 2 0 1 2 5 4 )
+T|\t3 ( 5 1 0 1 9 4 )
+T|\t4 ( 6 1 0 1 13 4 )
+T|\t5 ( 7 4 0 1 17 4 )
+T|\t6 ( 8 1 0 1 21 4 )
+T|\t7 ( 3 0 2 3 25 4 )
+T|\t8 ( 5 1 0 2 29 4 )
+T|\t9 ( 6 1 0 2 33 4 )
+T|\t10 ( 7 4 0 2 37 4 )
+T|\t11 ( 8 1 0 2 41 4 )
+T|\t12 ( 4 1 3 4 45 4 )
+T|\t13 ( 5 1 0 3 49 4 )
+T|\t14 ( 6 1 0 3 53 4 )
+T|\t15 ( 7 4 0 3 57 4 )
+T|\t16 ( 8 1 0 3 61 4 )
+T|}
+T|faceIndex 19 {
+T|\t0 ( 0 )
+T|\t1 ( -1 )
+T|\t2 ( 2 )
+T|\t3 ( -3 )
+T|\t4 ( 4 )
+T|\t5 ( -5 )
+T|\t6 ( 6 )
+T|\t7 ( -2 )
+T|\t8 ( 7 )
+T|\t9 ( -8 )
+T|\t10 ( 9 )
+T|\t11 ( -10 )
+T|\t12 ( 11 )
+T|\t13 ( -7 )
+T|\t14 ( 12 )
+T|\t15 ( -13 )
+T|\t16 ( 14 )
+T|\t17 ( -15 )
+T|\t18 ( 16 )
+T|}
+T|areas 4 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|\t1 ( 65 0 1 6 1 1 ) 1 {
+T|\t\t2 2 (60 32 0) (68 32 0) 0 25
+T|\t}
+T|\t2 ( 65 0 7 6 1 2 ) 2 {
+T|\t\t2 3 (124 32 0) (132 32 0) 0 25
+T|\t\t2 1 (68 32 0) (60 32 0) 0 25
+T|\t}
+T|\t3 ( 81 2 13 6 1 3 ) 1 {
+T|\t\t2 2 (132 32 0) (124 32 0) 0 25
+T|\t}
+T|}
+T|nodes 5 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 4 0 2 )
+T|\t2 ( 3 -3 3 )
+T|\t3 ( 2 -2 4 )
+T|\t4 ( 1 -1 0 )
+T|}
+T|portals 2 {
+T|\t0 ( 0 0 0 0 0 )
+T|\t1 ( 2 1 1 0 0 )
+T|}
+T|portalIndex 2 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|}
+T|clusters 2 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 3 3 1 1 )
+T|}
+WRITE2 3028
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t\t(-24 -24 0)-(24 24 96)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 1
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 1
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 18
+T|\tmaxBarrierHeight = 32.5
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 110
+T|\ttt_waterJump = 120
+T|\ttt_startWalkOffLedge = 130
+T|}
+T|planes 9 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 1 0 0 0 )
+T|\t2 ( 1 0 0 64 )
+T|\t3 ( 1 0 0 128 )
+T|\t4 ( 1 0 0 192 )
+T|\t5 ( 0 1 0 0 )
+T|\t6 ( 0 1 0 64 )
+T|\t7 ( 0 0 1 0 )
+T|\t8 ( 0 0 1 64 )
+T|}
+T|vertices 17 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|\t2 ( 0 0 64 )
+T|\t3 ( 0 64 0 )
+T|\t4 ( 0 64 64 )
+T|\t5 ( 64 0 0 )
+T|\t6 ( 64 0 64 )
+T|\t7 ( 64 64 0 )
+T|\t8 ( 64 64 64 )
+T|\t9 ( 128 0 0 )
+T|\t10 ( 128 0 64 )
+T|\t11 ( 128 64 0 )
+T|\t12 ( 128 64 64 )
+T|\t13 ( 192 0 0 )
+T|\t14 ( 192 0 64 )
+T|\t15 ( 192 64 0 )
+T|\t16 ( 192 64 64 )
+T|}
+T|edges 29 {
+T|\t0 ( 0 0 )
+T|\t1 ( 1 3 )
+T|\t2 ( 3 4 )
+T|\t3 ( 4 2 )
+T|\t4 ( 2 1 )
+T|\t5 ( 5 7 )
+T|\t6 ( 7 8 )
+T|\t7 ( 8 6 )
+T|\t8 ( 6 5 )
+T|\t9 ( 1 5 )
+T|\t10 ( 6 2 )
+T|\t11 ( 3 7 )
+T|\t12 ( 8 4 )
+T|\t13 ( 9 11 )
+T|\t14 ( 11 12 )
+T|\t15 ( 12 10 )
+T|\t16 ( 10 9 )
+T|\t17 ( 5 9 )
+T|\t18 ( 10 6 )
+T|\t19 ( 7 11 )
+T|\t20 ( 12 8 )
+T|\t21 ( 13 15 )
+T|\t22 ( 15 16 )
+T|\t23 ( 16 14 )
+T|\t24 ( 14 13 )
+T|\t25 ( 9 13 )
+T|\t26 ( 14 10 )
+T|\t27 ( 11 15 )
+T|\t28 ( 16 12 )
+T|}
+T|edgeIndex 65 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|\t2 ( 2 )
+T|\t3 ( 3 )
+T|\t4 ( 4 )
+T|\t5 ( 5 )
+T|\t6 ( 6 )
+T|\t7 ( 7 )
+T|\t8 ( 8 )
+T|\t9 ( 9 )
+T|\t10 ( -8 )
+T|\t11 ( 10 )
+T|\t12 ( 4 )
+T|\t13 ( 11 )
+T|\t14 ( 6 )
+T|\t15 ( 12 )
+T|\t16 ( -2 )
+T|\t17 ( 9 )
+T|\t18 ( 5 )
+T|\t19 ( -11 )
+T|\t20 ( -1 )
+T|\t21 ( -10 )
+T|\t22 ( -7 )
+T|\t23 ( 12 )
+T|\t24 ( 3 )
+T|\t25 ( 13 )
+T|\t26 ( 14 )
+T|\t27 ( 15 )
+T|\t28 ( 16 )
+T|\t29 ( 17 )
+T|\t30 ( -16 )
+T|\t31 ( 18 )
+T|\t32 ( 8 )
+T|\t33 ( 19 )
+T|\t34 ( 14 )
+T|\t35 ( 20 )
+T|\t36 ( -6 )
+T|\t37 ( 17 )
+T|\t38 ( 13 )
+T|\t39 ( -19 )
+T|\t40 ( -5 )
+T|\t41 ( -18 )
+T|\t42 ( -15 )
+T|\t43 ( 20 )
+T|\t44 ( 7 )
+T|\t45 ( 21 )
+T|\t46 ( 22 )
+T|\t47 ( 23 )
+T|\t48 ( 24 )
+T|\t49 ( 25 )
+T|\t50 ( -24 )
+T|\t51 ( 26 )
+T|\t52 ( 16 )
+T|\t53 ( 27 )
+T|\t54 ( 22 )
+T|\t55 ( 28 )
+T|\t56 ( -14 )
+T|\t57 ( 25 )
+T|\t58 ( 21 )
+T|\t59 ( -27 )
+T|\t60 ( -13 )
+T|\t61 ( -26 )
+T|\t62 ( -23 )
+T|\t63 ( 28 )
+T|\t64 ( 15 )
+T|}
+T|faces 17 {
+T|\t0 ( 0 0 0 0 0 0 )
+T|\t1 ( 1 1 0 1 1 4 )
+T|\t2 ( 2 0 1 2 5 4 )
+T|\t3 ( 5 1 0 1 9 4 )
+T|\t4 ( 6 1 0 1 13 4 )
+T|\t5 ( 7 4 0 1 17 4 )
+T|\t6 ( 8 1 0 1 21 4 )
+T|\t7 ( 3 0 2 3 25 4 )
+T|\t8 ( 5 1 0 2 29 4 )
+T|\t9 ( 6 1 0 2 33 4 )
+T|\t10 ( 7 4 0 2 37 4 )
+T|\t11 ( 8 1 0 2 41 4 )
+T|\t12 ( 4 1 3 4 45 4 )
+T|\t13 ( 5 1 0 3 49 4 )
+T|\t14 ( 6 1 0 3 53 4 )
+T|\t15 ( 7 4 0 3 57 4 )
+T|\t16 ( 8 1 0 3 61 4 )
+T|}
+T|faceIndex 19 {
+T|\t0 ( 0 )
+T|\t1 ( -1 )
+T|\t2 ( 2 )
+T|\t3 ( -3 )
+T|\t4 ( 4 )
+T|\t5 ( -5 )
+T|\t6 ( 6 )
+T|\t7 ( -2 )
+T|\t8 ( 7 )
+T|\t9 ( -8 )
+T|\t10 ( 9 )
+T|\t11 ( -10 )
+T|\t12 ( 11 )
+T|\t13 ( -7 )
+T|\t14 ( 12 )
+T|\t15 ( -13 )
+T|\t16 ( 14 )
+T|\t17 ( -15 )
+T|\t18 ( 16 )
+T|}
+T|areas 4 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|\t1 ( 65 0 1 6 1 1 ) 1 {
+T|\t\t2 2 (60 32 0) (68 32 0) 0 25
+T|\t}
+T|\t2 ( 65 0 7 6 1 2 ) 2 {
+T|\t\t2 1 (68 32 0) (60 32 0) 0 25
+T|\t\t2 3 (124 32 0) (132 32 0) 0 25
+T|\t}
+T|\t3 ( 81 2 13 6 1 3 ) 1 {
+T|\t\t2 2 (132 32 0) (124 32 0) 0 25
+T|\t}
+T|}
+T|nodes 5 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 4 0 2 )
+T|\t2 ( 3 -3 3 )
+T|\t3 ( 2 -2 4 )
+T|\t4 ( 1 -1 0 )
+T|}
+T|portals 2 {
+T|\t0 ( 0 0 0 0 0 )
+T|\t1 ( 2 1 1 0 0 )
+T|}
+T|portalIndex 2 {
+T|\t0 ( 0 )
+T|\t1 ( 1 )
+T|}
+T|clusters 2 {
+T|\t0 ( 0 0 0 0 )
+T|\t1 ( 3 3 1 1 )
+T|}
+CASE aas_minimal.aas
+WRITE1 655
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 0
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 0
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 14
+T|\tmaxBarrierHeight = 32
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 100
+T|\ttt_waterJump = 100
+T|\ttt_startWalkOffLedge = 100
+T|}
+T|planes 0 {
+T|}
+T|vertices 0 {
+T|}
+T|edges 0 {
+T|}
+T|edgeIndex 0 {
+T|}
+T|faces 0 {
+T|}
+T|faceIndex 0 {
+T|}
+T|areas 1 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|}
+T|nodes 2 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|}
+T|portals 0 {
+T|}
+T|portalIndex 0 {
+T|}
+T|clusters 0 {
+T|}
+WRITE2 655
+T|DewmAAS "1.07"
+T|
+T|3000000000
+T|
+T|settings
+T|{
+T|\tbboxes
+T|\t{
+T|\t\t(-16 -16 0)-(16 16 72)
+T|\t}
+T|\tusePatches = 0
+T|\twriteBrushMap = 0
+T|\tplayerFlood = 0
+T|\tallowSwimReachabilities = 0
+T|\tallowFlyReachabilities = 0
+T|\tfileExtension = "aas48"
+T|\tgravity = (0 0 -1066)
+T|\tmaxStepHeight = 14
+T|\tmaxBarrierHeight = 32
+T|\tmaxWaterJumpHeight = 20
+T|\tmaxFallHeight = 64
+T|\tminFloorCos = 0.6999999881
+T|\ttt_barrierJump = 100
+T|\ttt_startCrouching = 100
+T|\ttt_waterJump = 100
+T|\ttt_startWalkOffLedge = 100
+T|}
+T|planes 0 {
+T|}
+T|vertices 0 {
+T|}
+T|edges 0 {
+T|}
+T|edgeIndex 0 {
+T|}
+T|faces 0 {
+T|}
+T|faceIndex 0 {
+T|}
+T|areas 1 {
+T|\t0 ( 0 1 0 0 0 0 ) 0 {
+T|\t}
+T|}
+T|nodes 2 {
+T|\t0 ( 0 0 0 )
+T|\t1 ( 0 0 0 )
+T|}
+T|portals 0 {
+T|}
+T|portalIndex 0 {
+T|}
+T|clusters 0 {
+T|}

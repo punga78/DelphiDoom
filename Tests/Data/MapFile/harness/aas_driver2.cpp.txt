@@ -1,0 +1,93 @@
+
+static void emitText(const char *tag, const Blob &b) {
+	printf("%s %d\n", tag, b.n);
+	const char *s = b.p; int n = b.n, st = 0;
+	for (int i = 0; i <= n; i++) {
+		if (i == n || s[i] == '\n') {
+			if (i > st || i < n) printf("T|%s\n", esc(s + st, i - st));
+			st = i + 1;
+		}
+	}
+}
+
+static void pv(const char *tag, const idVec3 &v) { printf("%s #%08x #%08x #%08x\n", tag, F(v.x), F(v.y), F(v.z)); }
+
+static idVec3 pts[8] = {
+	idVec3(32, 32, 32), idVec3(96, 32, 32), idVec3(160, 32, 32), idVec3(-30, 32, 10),
+	idVec3(250, 32, 10), idVec3(96, 32, -100), idVec3(64.05f, 32, 32), idVec3(190, 10, 20)
+};
+
+static void queries(idAASFileLocal &aas) {
+	int na = aas.GetNumAreas(), i, k, a, b, v;
+	idBounds sb(idVec3(-64, -64, -64), idVec3(64, 64, 64));
+	for (i = 0; i < na; i++) { char t[32]; sprintf(t, "G %d", i); pv(t, aas.AreaReachableGoal(i)); }
+	for (k = 0; k < 8; k++) {
+		printf("PA %d %d\n", k, aas.PointAreaNum(pts[k]));
+		printf("PR %d %d %d %d\n", k, aas.PointReachableAreaNum(pts[k], sb, AREA_REACHABLE_WALK, 0),
+			aas.PointReachableAreaNum(pts[k], sb, AREA_FLOOR, TFL_WATER), aas.PointReachableAreaNum(pts[k], sb, 0xFF, 0));
+		idBounds bb(pts[k] - idVec3(16, 16, 16), pts[k] + idVec3(16, 16, 16));
+		printf("BR %d %d %d\n", k, aas.BoundsReachableAreaNum(bb, AREA_FLOOR, 0), aas.BoundsReachableAreaNum(bb, AREA_FLOOR, TFL_WATER));
+	}
+	for (i = 0; i < na; i++) for (k = 0; k < 8; k++) {
+		idVec3 p = pts[k]; char t[32];
+		aas.PushPointIntoAreaNum(i, p);
+		sprintf(t, "PU %d %d", i, k); pv(t, p);
+	}
+	for (a = 0; a < 8; a++) for (b = 0; b < 8; b++) {
+		if (a == b) continue;
+		for (v = 0; v < 4; v++) {
+			aasTrace_t tr; int areaList[8]; idVec3 pointList[8]; int j;
+			static const int fl[4] = { 0, 0, AREA_LIQUID, 0 }, tf[4] = { 0, 0, 0, TFL_WATER }, go[4] = { 0, 1, 0, 1 }, mx[4] = { 0, 8, 8, 2 };
+			tr.flags = fl[v]; tr.travelFlags = tf[v]; tr.getOutOfSolid = go[v]; tr.maxAreas = mx[v];
+			if (mx[v]) { tr.areas = areaList; tr.points = pointList; }
+			bool hit = aas.Trace(tr, pts[a], pts[b]);
+			printf("TR %d %d %d %d #%08x #%08x #%08x #%08x %d %d %d %d\n", a, b, v, hit ? 1 : 0, F(tr.fraction), F(tr.endpos.x), F(tr.endpos.y), F(tr.endpos.z),
+				tr.planeNum, tr.lastAreaNum, tr.blockingAreaNum, tr.numAreas);
+			for (j = 0; j < tr.numAreas && j < mx[v]; j++) printf("TA %d %d #%08x #%08x #%08x\n", areaList[j], j, F(pointList[j].x), F(pointList[j].y), F(pointList[j].z));
+		}
+	}
+}
+
+int main(int argc, char **argv) {
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; fileSystem = &theFs; common = &theCommon;
+	idMath::Init(); idDict::Init();
+	if (argc < 3) { printf("usage: aas2 <folder> <write|query>\n"); return 1; }
+	bool wr = !strcmp(argv[2], "write");
+	quiet = true;
+	char path[1024];
+	sprintf(path, "%s\\sample_cases.txt", argv[1]);
+	Blob cases = readAll(path);
+	char *p = cases.p;
+	while (p && *p) {
+		char *e = strchr(p, '\n'); if (e) *e = 0;
+		char line[512]; strcpy(line, p);
+		if (e) p = e + 1; else p = 0;
+		int l = (int)strlen(line); while (l > 0 && (line[l - 1] == '\r' || line[l - 1] == ' ')) line[--l] = 0;
+		if (!l || line[0] == '#') continue;
+		char name[256];
+		if (sscanf(line, "%255s", name) < 1) continue;
+		sprintf(path, "%s\\%s", argv[1], name);
+		Blob data = readAll(path);
+		numFiles = 0;
+		if (data.p) { Entry *en = putFile(name); en->data.Append(data.p, data.n); }
+		printf("CASE %s\n", name);
+		try {
+			idAASFileLocal aas;
+			if (!aas.Load(name, 0)) { printf("LOAD 0\n"); continue; }
+			if (wr) {
+				char w1[300], w2[300];
+				sprintf(w1, "w1_%s", name); sprintf(w2, "w2_%s", name);
+				aas.Write(w1, 3000000000u);
+				emitText("WRITE1", findFile(w1)->data);
+				idAASFileLocal aas2;
+				if (!aas2.Load(w1, 0)) { printf("RELOAD 0\n"); continue; }
+				aas2.Write(w2, 3000000000u);
+				emitText("WRITE2", findFile(w2)->data);
+			} else if (strstr(name, "minimal") == 0) queries(aas);
+		} catch (idException &ex) {
+			printf("ERR |%s|\n", esc(ex.error));
+		}
+		fflush(stdout);
+	}
+	return 0;
+}
