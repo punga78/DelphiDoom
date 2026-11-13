@@ -1,0 +1,133 @@
+[basic]
+dictchanged 1 1
+w.hex 6d4ee4e3e718ea7519527ce887242000230080bb41a0d26fcd224ac41c803948656c6c6f20256420772e726c640061626300726177e90000010203faffc0a80102126cde474eed2f90d0034000000020010af8609a8f7856016f726967696e0031203220330000676f6e650000636c6173736e616d65006c69676874006f726967696e0031203220330053616d650056616c7565000000
+w.size 151
+w.bits 1208
+remainingspace 361 writebit 0
+r.bits 5
+r.sbits -3
+r.char -100
+r.byte 200
+r.short -12345
+r.ushort 54321
+r.long -123456789
+r.float 40490fd0
+r.float510 3f400000
+r.float823 c2f70000
+r.angle8 42b40000
+r.angle16 c235ffe0
+r.dir30 3e88f76a 3f087772 3f4cf328
+r.dir24 bf18b516 00000000 bf4cf308
+r.bit 1
+r.str 14 48656c6c6f202e6420772e726c64
+r.str 3 616263
+r.str 4 726177e9
+r.str 0 
+r.data 5 010203faff
+r.netadr 192.168.1.2:27666
+r.dchar 5
+r.dchar -9
+r.dbyte 200
+r.dshort -300
+r.dlong 1
+r.dlong 1000000
+r.dfloat 40000000
+r.dfloat510 3fc00000
+r.dfloat510 40200000
+r.dbc 31
+r.dbc 18
+r.dsc 7988
+r.dlc 305485432
+r.dict1 1 434c4153534e414d453d4c494748543b73616d653d76616c75653b6f726967696e3d31203220333b
+r.dict2 1 636c6173736e616d653d6c696768743b6f726967696e3d31203220333b53616d653d56616c75653b
+r.remaining bits 0 bytes 0 count 151 bit 0
+r.pastend -1
+r.readdata 0
+dir.bits 00000fc0 back 00000000 bf7f910f 00000000
+[state]
+saved 2 3
+after 4 3 bits 27
+restored 2 3 bits 11 remaining 117
+w.hex ff07
+w.size 2
+w.bits 13
+w3.hex ff07
+w3.size 2
+w3.bits 11
+size 16 max 16
+a 31
+readstate 1 5
+b 63
+b2 63
+rbit 1
+numread 16
+big -1
+signed31 -1
+signed12 2047
+[overflow]
+overflowed 1 size 0 bits 0
+w.hex 2c
+w.size 1
+w.bits 8
+overflowed after begin 0
+err badbits0
+err badbits33
+err badbits-32
+err overflow
+err readbits0
+ro 165 10 5 -1
+ro.remaining 8
+ro.past -1
+err readonly
+[delta]
+w0.changed 1
+w0.delta.hex 64000000616c7068610001020305f9ff0000c03f19008c000061003100620032000000200f00
+w0.delta.size 38
+w0.delta.bits 303
+w0.newbase.hex 64000000616c7068610001020305f9ff0000c03f0c00e8030000042d014700000061003100620032000000200f00
+w0.newbase.size 46
+w0.newbase.bits 367
+w1.changed 1
+w1.delta.hex 02626574610001010204e2ff0700000132f4010080628262003300000000
+w1.delta.size 30
+w1.delta.bits 234
+w1.newbase.hex 64000000626574610001020405f8ff000020400c00d0070000042e014800000061003100620033000000200f00
+w1.newbase.size 45
+w1.newbase.bits 359
+r1.long 100
+r1.str 62657461
+r1.data 010204
+r1.byte 5
+r1.short -8
+r1.float 40200000
+r1.dshort 12
+r1.dlong 2000
+r1.bc 4
+r1.sc 302
+r1.lc 72
+r1.dict 613d313b623d333b
+r1.angle 42340000
+r1.dir 00000000 00000000 3f7f910f
+r1.changed 1
+r1.newbase.hex 64000000626574610001020405f8ff000020400c00d0070000042e014800000061003100620033000000200f00
+r1.newbase.size 45
+r1.newbase.bits 359
+r0.long 100
+r0.str 616c706861
+r0.data 010203
+r0.byte 5
+r0.short -7
+r0.float 3fc00000
+r0.dshort 12
+r0.dlong 1000
+r0.bc 4
+r0.sc 300
+r0.lc 70
+r0.dict 613d313b623d323b
+r0.angle 42340000
+r0.dir 00000000 00000000 3f7f910f
+r0.changed 1
+w2.changed 0
+w2.delta.hex 0000000000
+w2.delta.size 5
+w2.delta.bits 34

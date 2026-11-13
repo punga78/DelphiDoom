@@ -15,3 +15,5 @@ Tests/Data/XcomSave/realsave_ufo/** -text
 Tests/Data/XcomDebriefing/** -text
 Tests/Data/XcomBattle/stage/** -text
 Tests/Data/MathCore/** -text
+Tests/Data/Compression/** -text
+Tests/Data/Net/bitmsg-golden.txt -text
