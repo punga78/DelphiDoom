@@ -133,11 +133,11 @@ begin
   FSearch.Insert(0, LEntry);
   LPakDirectory := ExcludeTrailingPathDelimiter(TGameFsPaths.BuildOSPath(APath, ADirectory, ''));
   LPakFiles := FDisk.ListFiles(LPakDirectory, GAMEFS_PAK_EXTENSION);
-  // later names override earlier ones: pak1.pk4 over pak0.pk4
+  // later names override earlier ones: pak1.pk4 over pak0.pk4 (the order ignores the case, as idStrList::Sort)
   TArray.Sort<string>(LPakFiles, TComparer<string>.Construct(
     function(const ALeft, ARight: string): Integer
     begin
-      Result := CompareStr(ALeft, ARight);
+      Result := TGameFsPaths.CompareIgnoringCase(ALeft, ARight);
     end));
   for LName in LPakFiles do
   begin

@@ -39,6 +39,12 @@ type
     /// <summary>Icmp: the two texts are the same apart from the case of the letters A to Z</summary>
     class function SameIgnoringCase(const ALeft, ARight: string): Boolean; static;
     /// <summary>
+    ///   Icmp as an order: the letters A to Z compare as a to z (so '_' comes before 'a' and 'A'); names equal
+    ///   for it are put in the order of CompareStr, so that the result is always the same. It is the order in
+    ///   which the paks of a folder are loaded (idStrList::Sort)
+    /// </summary>
+    class function CompareIgnoringCase(const ALeft, ARight: string): Integer; static;
+    /// <summary>
     ///   HashFileName: the bucket (0 to 1023) of a name, without case, with '\' as '/', ignoring from the
     ///   first '.' on. Two names the file system finds equal can still land in different buckets when
     ///   one of them has ':' where the other has a separator, and then they are not found as equal
@@ -108,6 +114,13 @@ begin
     if LowerAscii(ALeft[LIndex]) <> LowerAscii(ARight[LIndex]) then
       Exit(False);
   Result := True;
+end;
+
+class function TGameFsPaths.CompareIgnoringCase(const ALeft, ARight: string): Integer;
+begin
+  Result := CompareStr(ToLowerAscii(ALeft), ToLowerAscii(ARight));
+  if Result = 0 then
+    Result := CompareStr(ALeft, ARight);
 end;
 
 class function TGameFsPaths.HashFileName(const AName: string): Integer;
@@ -223,6 +236,7 @@ begin
       Result := TIdStrings.IcmpPath(ALeft.Key, ARight.Key);
       if Result = 0 then
         Result := CompareStr(ALeft.Value, ARight.Value);
+      // (equal for IcmpPath: ordinal order)
     end));
   for LIndex := 0 to High(AList) do
     AList[LIndex] := LKeys[LIndex].Value;

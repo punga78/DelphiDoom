@@ -43,6 +43,8 @@ type
     procedure DovrebbeOrdinareConLeCartellePrima;
     [Test]
     procedure DovrebbeTogliereLeBarreFinali;
+    [Test]
+    procedure DovrebbeOrdinareIPakIgnorandoLeMaiuscole;
   end;
 
   [TestFixture]
@@ -67,6 +69,43 @@ type
     procedure DovrebbeDareNilSeIlFileManca;
     [Test]
     procedure DovrebbeTenereLeVociDelleCartelle;
+  end;
+
+  [TestFixture]
+  [Category('wad')]
+  TTestGameDisk = class(TObject)
+  strict private
+    FFolder: string;
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+
+    [Test]
+    procedure DovrebbeElencareFileECartelle;
+    [Test]
+    procedure DovrebbeElencareVuotoSeLaCartellaManca;
+    [Test]
+    procedure DovrebbeAprireSoloIFile;
+    [Test]
+    procedure DovrebbeDareIlTimestampDelFile;
+    [Test]
+    procedure DovrebbeLeggereDalDiscoVero;
+  end;
+
+  [TestFixture]
+  [Category('wad')]
+  TTestZipArchive = class(TObject)
+  public
+    [Test]
+    procedure DovrebbeElencareTutteLeVociConIlNomeOriginale;
+    [Test]
+    procedure DovrebbeRifiutareUnIndiceFuoriIntervallo;
+    [Test]
+    procedure DovrebbeLiberareLoStreamPossedutoSeNonEUno;
+    [Test]
+    procedure DovrebbeLeggereUnoZipDaUnoStreamNonPosseduto;
   end;
 
   [TestFixture]
@@ -162,8 +201,9 @@ type
 implementation
 
 uses
-  System.Zip, System.Generics.Collections, DelphiDoom.IdLib.Hashing.Md4, DelphiDoom.IdLib.Hashing.Types,
-  DelphiDoom.Wad.Fs.Paths, DelphiDoom.Wad.Fs.Pack, DelphiDoom.Wad.Fs.PackLoader, DelphiDoom.Wad.Fs.Factory;
+  System.Zip, System.IOUtils, System.Generics.Collections, DelphiDoom.IdLib.Hashing.Md4,
+  DelphiDoom.Wad.Types, DelphiDoom.Wad.Intf, DelphiDoom.Wad.Zip.Intf, DelphiDoom.Wad.Source.Zip,
+  DelphiDoom.Wad.Fs.Disk, DelphiDoom.Tests.Wad.Helpers, DelphiDoom.Wad.Fs.Paths, DelphiDoom.Wad.Fs.Pack, DelphiDoom.Wad.Fs.PackLoader, DelphiDoom.Wad.Fs.Factory;
 
 const
   BASE_DIR = 'C:\d3';
@@ -266,6 +306,17 @@ begin
   LList := TArray<string>.Create('b.txt', 'a/z.txt', 'A.txt', 'a/b.txt');
   TGameFsPaths.SortPaths(LList);
   Assert.AreEqual('a/b.txt,a/z.txt,A.txt,b.txt', string.Join(',', LList));
+end;
+
+procedure TTestGameFsPaths.DovrebbeOrdinareIPakIgnorandoLeMaiuscole;
+begin
+  Assert.IsTrue(TGameFsPaths.CompareIgnoringCase('pak000.pk4', 'PAK001.PK4') < 0);
+  Assert.IsTrue(TGameFsPaths.CompareIgnoringCase('PAK001.PK4', 'pak000.pk4') > 0);
+  // '_' is between 'Z' and 'a', but the letters count as lower case: '_' is before 'a'
+  Assert.IsTrue(TGameFsPaths.CompareIgnoringCase('A_', 'Aa') < 0);
+  Assert.AreEqual(0, TGameFsPaths.CompareIgnoringCase('x', 'x'));
+  // equal for Icmp: the order is fixed anyway
+  Assert.IsTrue(TGameFsPaths.CompareIgnoringCase('A.pk4', 'a.pk4') < 0);
 end;
 
 procedure TTestGameFsPaths.DovrebbeTogliereLeBarreFinali;
@@ -896,7 +947,147 @@ begin
   Assert.AreEqual('loose.txt,readme.txt', Join(LSystem.ListFiles('', 'txt', True)));
 end;
 
+{ TTestGameDisk }
+
+procedure TTestGameDisk.Setup;
+begin
+  FFolder := TWadTestHelpers.NewTempFolder;
+  TDirectory.CreateDirectory(TPath.Combine(FFolder, 'base\sub'));
+  TFile.WriteAllBytes(TPath.Combine(FFolder, 'base\loose.txt'), TMemoryZip.Bytes('loose on disk'));
+  TFile.WriteAllBytes(TPath.Combine(FFolder, 'base\pak000.pk4'),
+    TMemoryZip.Make(['a/b.txt', 'readme.txt'], ['in the pak', 'readme']));
+  TFile.WriteAllBytes(TPath.Combine(FFolder, 'base\PAK001.PK4'), TMemoryZip.Make(['readme.txt'], ['second']));
+end;
+
+procedure TTestGameDisk.TearDown;
+begin
+  if TDirectory.Exists(FFolder) then
+    TDirectory.Delete(FFolder, True);
+end;
+
+procedure TTestGameDisk.DovrebbeElencareFileECartelle;
+var
+  LDisk: IGameDisk;
+  LFiles: TArray<string>;
+begin
+  LDisk := TGameDisk.Create;
+  LFiles := LDisk.ListFiles(TPath.Combine(FFolder, 'base'), '.pk4');
+  TGameFsPaths.SortPaths(LFiles);
+  Assert.AreEqual('pak000.pk4,PAK001.PK4', string.Join(',', LFiles));
+  Assert.AreEqual('sub', string.Join(',', LDisk.ListFiles(TPath.Combine(FFolder, 'base'), '/')));
+  Assert.AreEqual(3, Length(LDisk.ListFiles(TPath.Combine(FFolder, 'base') + PathDelim, '')));
+end;
+
+procedure TTestGameDisk.DovrebbeElencareVuotoSeLaCartellaManca;
+begin
+  Assert.AreEqual(0, Length(TGameDisk.Create.ListFiles(TPath.Combine(FFolder, 'nope'), '')));
+end;
+
+procedure TTestGameDisk.DovrebbeAprireSoloIFile;
+var
+  LDisk: IGameDisk;
+  LStream: TStream;
+begin
+  LDisk := TGameDisk.Create;
+  LStream := LDisk.OpenRead(TPath.Combine(FFolder, 'base\loose.txt'));
+  try
+    Assert.AreEqual(Int64(13), LStream.Size);
+  finally
+    LStream.Free;
+  end;
+  Assert.IsNull(LDisk.OpenRead(TPath.Combine(FFolder, 'base\sub')));
+  Assert.IsNull(LDisk.OpenRead(TPath.Combine(FFolder, 'base\missing.txt')));
+end;
+
+procedure TTestGameDisk.DovrebbeDareIlTimestampDelFile;
+var
+  LDisk: IGameDisk;
+begin
+  LDisk := TGameDisk.Create;
+  Assert.IsTrue(LDisk.FileTimestamp(TPath.Combine(FFolder, 'base\loose.txt')) > 1000000000);
+  Assert.AreEqual(Int64(0), LDisk.FileTimestamp(TPath.Combine(FFolder, 'base\missing.txt')));
+end;
+
+procedure TTestGameDisk.DovrebbeLeggereDalDiscoVero;
+var
+  LSettings: TGameFsSettings;
+  LSystem: IGameFileSystem;
+  LData: TBytes;
+begin
+  LSettings := Default(TGameFsSettings);
+  LSettings.BasePath := FFolder;
+  LSystem := TGameFileSystemFactory.CreateOnDisk(LSettings);
+  LSystem.Startup;
+  Assert.AreEqual(3, Length(LSystem.SearchPaths));
+  Assert.IsTrue(LSystem.ReadFile('loose.txt', LData));
+  Assert.AreEqual('loose on disk', TEncoding.UTF8.GetString(LData));
+  // the second pak overrides the first, whatever the case of its name
+  Assert.IsTrue(LSystem.ReadFile('README.TXT', LData));
+  Assert.AreEqual('second', TEncoding.UTF8.GetString(LData));
+  Assert.IsTrue(LSystem.ReadFile('a\b.txt', LData));
+  Assert.AreEqual('in the pak', TEncoding.UTF8.GetString(LData));
+  Assert.AreEqual('b.txt', string.Join(',', LSystem.ListFiles('a', 'txt')));
+end;
+
+{ TTestZipArchive }
+
+procedure TTestZipArchive.DovrebbeElencareTutteLeVociConIlNomeOriginale;
+var
+  LArchive: IZipArchive;
+begin
+  LArchive := TZipFileSource.Create(TBytesStream.Create(TMemoryZip.Make(['Dir/', 'Dir/File.TXT'], ['', 'hello'])),
+    True, 'memory.pk4');
+  Assert.AreEqual('memory.pk4', LArchive.ArchiveName);
+  Assert.AreEqual(2, LArchive.ArchiveEntryCount);
+  Assert.AreEqual('Dir/', LArchive.ArchiveEntryName(0));
+  Assert.AreEqual('Dir/File.TXT', LArchive.ArchiveEntryName(1));
+  Assert.AreEqual(Int64(0), LArchive.ArchiveEntrySize(0));
+  Assert.AreEqual(Int64(5), LArchive.ArchiveEntrySize(1));
+  // the CRC-32 of 'hello'
+  Assert.AreEqual(Cardinal($3610A686), LArchive.ArchiveEntryCrc(1));
+  Assert.AreEqual('hello', TEncoding.UTF8.GetString(LArchive.ReadArchiveEntry(1)));
+end;
+
+procedure TTestZipArchive.DovrebbeRifiutareUnIndiceFuoriIntervallo;
+var
+  LArchive: IZipArchive;
+begin
+  LArchive := TZipFileSource.Create(TBytesStream.Create(TMemoryZip.Make(['a'], ['a'])), True, 'memory.pk4');
+  Assert.WillRaise(procedure begin LArchive.ArchiveEntryName(1); end, EWadException);
+  Assert.WillRaise(procedure begin LArchive.ArchiveEntryName(-1); end, EWadException);
+  Assert.WillRaise(procedure begin LArchive.ArchiveEntryCrc(5); end, EWadException);
+  Assert.WillRaise(procedure begin LArchive.ReadArchiveEntry(5); end, EWadException);
+end;
+
+procedure TTestZipArchive.DovrebbeLiberareLoStreamPossedutoSeNonEUno;
+begin
+  // if the stream were not freed, the memory leak report of the runner would show it
+  Assert.WillRaise(procedure begin
+    TZipFileSource.Create(TBytesStream.Create(TMemoryZip.Bytes('not a zip at all, really')), True, 'bad.pk4');
+  end, EWadException);
+end;
+
+procedure TTestZipArchive.DovrebbeLeggereUnoZipDaUnoStreamNonPosseduto;
+var
+  LStream: TBytesStream;
+  LSource: IWadSource;
+begin
+  LStream := TBytesStream.Create(TMemoryZip.Make(['Dir/', 'dir/file.txt'], ['', 'abc']));
+  try
+    LSource := TZipFileSource.Create(LStream, False, 'memory.pk4');
+    // as lumps: the folder is not one, the name is upper case
+    Assert.AreEqual(1, LSource.Count);
+    Assert.AreEqual('DIR/FILE.TXT', LSource.Entries[0].Name);
+    Assert.AreEqual('abc', TEncoding.UTF8.GetString(LSource.ReadEntry(0)));
+    LSource := nil;
+  finally
+    LStream.Free;
+  end;
+end;
+
 initialization
+  TDUnitX.RegisterTestFixture(TTestGameDisk);
+  TDUnitX.RegisterTestFixture(TTestZipArchive);
   TDUnitX.RegisterTestFixture(TTestGameFsPaths);
   TDUnitX.RegisterTestFixture(TTestGamePack);
   TDUnitX.RegisterTestFixture(TTestGameFileSystem);
