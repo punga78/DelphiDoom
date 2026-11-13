@@ -23,8 +23,13 @@ uses
   DelphiDoom.IdLib.Containers.BinSearch in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.BinSearch.pas',
   DelphiDoom.IdLib.Containers.BTree in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.BTree.pas',
   DelphiDoom.IdLib.Containers.StrPool in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.StrPool.pas',
-  DelphiDoom.Tests.IdLib.Golden in 'Source\DelphiDoom.Tests.IdLib.Golden.pas',
+  DelphiDoom.IdLib.Containers.List in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.List.pas',
+  DelphiDoom.IdLib.Containers.StaticList in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.StaticList.pas',
+  DelphiDoom.IdLib.Containers.HashTable in '..\Libs\IdLib\Containers\DelphiDoom.IdLib.Containers.HashTable.pas',
+  DelphiDoom.Tests.IdLib.Golden in'Source\DelphiDoom.Tests.IdLib.Golden.pas',
   DelphiDoom.Tests.IdLib.Containers.Cases in 'Source\DelphiDoom.Tests.IdLib.Containers.Cases.pas',
+  DelphiDoom.Tests.IdLib.Containers.ListCases in 'Source\DelphiDoom.Tests.IdLib.Containers.ListCases.pas',
+  DelphiDoom.Tests.IdLib.Containers.ListFixture in 'Source\DelphiDoom.Tests.IdLib.Containers.ListFixture.pas',
   DelphiDoom.Tests.IdLib.Containers.Fixture in 'Source\DelphiDoom.Tests.IdLib.Containers.Fixture.pas';
 
 var
@@ -60,4 +65,4 @@ begin
     on E: Exception do
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
-end.
+end.

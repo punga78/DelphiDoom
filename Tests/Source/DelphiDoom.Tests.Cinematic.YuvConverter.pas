@@ -28,6 +28,10 @@ type
     procedure DovrebbeUsareLAlphaDato;
     [Test]
     procedure DovrebbeDareLeStessePixelDelCPerTutteLeTerne;
+    [Test]
+    procedure DovrebbeSaturareICanaliDelRgb565;
+    [Test]
+    procedure DovrebbeDareLeStesseParoleRgb565DelCPerTutteLeTerne;
   end;
 
 implementation
@@ -113,6 +117,50 @@ begin
       end;
     LExpected := LGolden[0];
     Assert.AreEqual('yuv crc ' + LowerCase(IntToHex(LCrc.Value, 8)), LExpected);
+  finally
+    LCrc.Free;
+    LConverter.Free;
+    LGolden.Free;
+  end;
+end;
+
+procedure TTestRoqYuvConverter.DovrebbeSaturareICanaliDelRgb565;
+var
+  LConverter: TRoqYuvConverter;
+begin
+  LConverter := TRoqYuvConverter.Create($FF);
+  try
+    // black with the lowest chroma: red and blue are negative and become 0, green stays small
+    Assert.AreEqual(0, Integer(LConverter.ToRgb565(0, 0, 0) shr 11));
+    Assert.AreEqual(0, Integer(LConverter.ToRgb565(0, 0, 0) and $1F));
+    // the brightest luma with the highest chroma: red and blue go over 31 and are clamped
+    Assert.AreEqual(31, Integer(LConverter.ToRgb565(255, 255, 255) shr 11));
+    Assert.AreEqual(31, Integer(LConverter.ToRgb565(255, 255, 255) and $1F));
+  finally
+    LConverter.Free;
+  end;
+end;
+
+procedure TTestRoqYuvConverter.DovrebbeDareLeStesseParoleRgb565DelCPerTutteLeTerne;
+var
+  LConverter: TRoqYuvConverter;
+  LCrc: TCrc32;
+  LRow: array[0..255] of Word;
+  LLuma, LU, LV: Integer;
+  LGolden: TStringList;
+begin
+  LGolden := TRoqTestData.ReadLines('modes.golden.txt');
+  LConverter := TRoqYuvConverter.Create($FF);
+  LCrc := TCrc32.Create;
+  try
+    for LLuma := 0 to 255 do
+      for LU := 0 to 255 do
+      begin
+        for LV := 0 to 255 do
+          LRow[LV] := LConverter.ToRgb565(LLuma, LU, LV);
+        LCrc.Update(LRow, SizeOf(LRow));
+      end;
+    Assert.AreEqual(LGolden[0], 'yuv565 crc ' + LowerCase(IntToHex(LCrc.Value, 8)));
   finally
     LCrc.Free;
     LConverter.Free;

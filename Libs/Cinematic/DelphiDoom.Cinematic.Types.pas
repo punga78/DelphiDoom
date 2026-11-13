@@ -85,6 +85,25 @@ type
   /// </summary>
   TRoqChunkKind = (rckOther, rckInfo, rckCodebook, rckFrame, rckSound);
 
+  /// <summary>
+  ///   The pixel of a codebook of Quake III (samplesPerPixel of the original: 4, 2 or 1 bytes):
+  ///   RGBA bytes R,G,B,255 ($AABBGGRR as a little endian word), RGB 5-6-5 (yuv_to_rgb) or a gray
+  ///   level taken from a table (cinTable.gray)
+  /// </summary>
+  TRoqPixelFormat = (rpfRgba32, rpfRgb565, rpfGray8);
+
+  /// <summary>
+  ///   How decodeCodeBook of Quake III builds the vectors: the pixel format, <c>half</c> (a quarter of
+  ///   the screen: vectors of one pixel per side halved) and <c>smootheddouble</c> (double height,
+  ///   the missing rows interpolated 3:1). <c>Half</c> wins over <c>SmoothedDouble</c> as in the
+  ///   original
+  /// </summary>
+  TRoqCodebookMode = record
+    PixelFormat: TRoqPixelFormat;
+    Half: Boolean;
+    SmoothedDouble: Boolean;
+  end;
+
 implementation
 
 end.

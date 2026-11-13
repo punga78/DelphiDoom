@@ -1,0 +1,7 @@
+# Tests\Data\Console\Q3
+
+Dati del profilo Quake III della console (issue #113, seconda fetta): buffer e lista dei comandi (`cmd.c`) e cvar (`cvar.c`).
+
+- `commands.scn`, `cvars.scn`: scenari **scritti per i test** (nessun testo di Quake III). Un'operazione per riga, campi separati da un tab, `\n \t \r \\ \xNN` sono escape. Operazioni: `init`, `addcmd` (comando di prova `probe` o senza funzione), `rmcmd`, `cmd`, `now`, `append`, `insert`, `run`, `pending`, `tok`, `file`, `get`, `set`, `setl`, `set2`, `setv`, `reset`, `cheat`, `clearmod`, `val`, `vbuf`, `dump`, `write`, `info`, `infobig`, `vmreg`, `vmupd`.
+- `commands.golden.txt`, `cvars.golden.txt`: l'uscita del **vero** `cmd.c` e `cvar.c` di Quake III compilati con gcc (`Tools\Verifica\113q3`). Righe: `>` l'operazione, `P:` e `D:` quello che `Com_Printf` e `Com_DPrintf` stampano, `A:` e `T:` argc e argomenti, `R:` `F:` `C:` `O:` `Cmd_Args`, `Cmd_ArgsFrom(1)`, `Cmd_Cmd`, `Cmd_Argv(99)`, `B:` e `W:` testo del buffer e `cmd_wait`, `G:` una cvar (nome, stringa, reset, latch o `~`, flag, modified, conteggio, bit del float, intero), `V:` `Cvar_Variable*`, `M:` `N:` flag modificati e indici, `F:` il testo di `Cvar_WriteVariables`, `I:` una info string, `Y:` una `vmCvar_t`.
+- Il test e' `TTestQ3Golden` (`Tests\Source\DelphiDoom.Tests.Console.Q3.Golden.pas`): suona lo scenario sulle classi Delphi (`TQ3ScenarioPlayer`) e confronta riga per riga. I file sono marcati `-text` in `.gitattributes`.

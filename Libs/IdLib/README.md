@@ -53,13 +53,14 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 | idLib | Soluzione |
 |---|---|
 | `idHashIndex` | **nuova** `TIdHashIndex` (ordine delle catene, crescita a passi, `GetSpread`, `InsertIndex`/`RemoveIndex` identici) |
-| `idHashTable<T>` | RTL `TDictionary<string, T>`: il C++ e una tabella a catene con ordine di inserimento dei nodi, ma non ha chiamanti che lo richiedano (e `GetSpread` non compila: vedi sopra) |
+| `idHashTable<T>` | **nuova** `TIdHashTable<T>` (issue #98: catene ordinate per chiave esatta, bucket `idStr::Hash and mask`, ordine di `GetIndex` per bucket, `Set` e' `Put`; `Get` da' una copia del valore; niente `GetSpread` (non compila), niente `DeleteContents`) |
 | `idLinkList<T>` | **nuova** `TIdLinkList<T: class>` |
 | `idHierarchy<T>` | **nuova** `TIdHierarchy<T: class>` |
 | `idBTree<T,K,N>` | **nuova** `TIdBTree<TObj, TKey>` (N e un parametro del costruttore, il confronto un `IComparer<TKey>`) |
 | `idBinSearch_*` | **nuova** `TIdBinSearch<T>` (`IComparer<T>` al posto degli operatori) |
 | `idStrPool`, `idPoolStr` | **nuova** `TIdStrPool`, `TIdPoolStr` |
-| `idList<T>`, `idStaticList<T,N>` | RTL `TList<T>`/`TArray<T>`. Differenze note: `idList::Append` cresce a multipli della granularita, `RemoveIndex` conserva l'ordine (come `TList.Delete`), `RemoveIndexFast` scambia con l'ultimo, `Sort` e `qsort` (non stabile come `TArray.Sort`) |
+| `idList<T>` | **nuova** `TIdList<T>` (issue #98: l'allocazione a granularita' si vede da fuori, `NumAllocated`, `Resize`, `Condense`, `SetNum`, `AssureSize`, `Insert` con indice limitato, `RemoveIndex`/`Remove` che dicono falso, `AddUnique`, `Swap`, `SortSubSection`; un ridimensionamento copia solo gli elementi usati; `TList<T>` della RTL non ha niente di tutto questo). Non portati: `Ptr`, `Find`/`IndexOf` per puntatore, `FindNull`, `DeleteContents` (liste di puntatori), `AssureSizeAlloc` |
+| `idStaticList<T,N>` | **nuova** `TIdStaticList<T>` (la capacita' e un parametro del costruttore; lista piena = -1; `Swap` scambia anche i residui oltre `Num`) |
 | `idStrList` | RTL `TList<string>` / `TStringList` |
 | `idQueue<T>`, `idStack<T>` | non portate: sono liste intrusive con puntatori `next` dentro l'oggetto; con le classi Delphi si usa `TQueue<T>`/`TStack<T>` |
 | `idVectorSet<T,D>`, `idPlaneSet` | **non portate** in questo giro: servono i tipi `idPlane`/`idVec*` della fetta Math (vettore a D dimensioni con tolleranza); da fare con la geometria |
@@ -148,3 +149,7 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 `idParser`, `idDict`, `idLangDict`, `idMapFile`, `idBitMsg`, la parte di matrici (`idMat*`, `idMatX`, `idLCP`), la geometria
 (`idPlane`, `idBounds`, `idWinding`, `idSurface`, `idTraceModel`), i quaternioni e gli angoli, le curve. Il piano di lavoro e
 l'ordine consigliato (dipendenze) sono nel `WIRING.md`.
+
+## Contenitori `TIdList`, `TIdStaticList`, `TIdHashTable` (issue #98)
+
+Port di `List.h`, `StaticList.h`, `HashTable.h` con parita' sul C++ vero: `Tools\Verifica\98\containers\Build-Containers.ps1` rifa `Tests\Data\IdLib\lists.golden.txt`. Vedi la tabella sopra e [CLAUDE.md](CLAUDE.md).

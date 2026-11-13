@@ -24,6 +24,8 @@ const
   Q3_MAX_STRING_CHARS = 1024;
   /// <summary>BIG_INFO_STRING: the size of the buffer of MSG_ReadBigString</summary>
   Q3_BIG_INFO_STRING = 8192;
+  /// <summary>MAX_INFO_STRING: the longest info string of a user or server (key and value limits are the same)</summary>
+  Q3_MAX_INFO_STRING = 1024;
   /// <summary>MAX_MSGLEN: the longest message, which may be fragmented into several packets</summary>
   Q3_MAX_MSGLEN = 16384;
   /// <summary>MAX_PACKETLEN: the longest datagram</summary>
@@ -43,6 +45,27 @@ const
   /// <summary>FLOAT_INT_BIAS: added to a small integer float to make it positive</summary>
   Q3_FLOAT_INT_BIAS = 1 shl (Q3_FLOAT_INT_BITS - 1);
 
+  /// <summary>PACKET_BACKUP: the snapshots a client keeps to delta from</summary>
+  Q3_PACKET_BACKUP = 32;
+  /// <summary>MAX_PARSE_ENTITIES: the ring of entity states of the client (it holds PACKET_BACKUP frames)</summary>
+  Q3_MAX_PARSE_ENTITIES = 2048;
+  /// <summary>MAX_MAP_AREA_BYTES: the bit vector of area visibility of a snapshot</summary>
+  Q3_MAX_MAP_AREA_BYTES = 32;
+  /// <summary>MAX_CONFIGSTRINGS</summary>
+  Q3_MAX_CONFIGSTRINGS = 1024;
+  /// <summary>MAX_GAMESTATE_CHARS: the text of all the configstrings of a gamestate (one terminator each)</summary>
+  Q3_MAX_GAMESTATE_CHARS = 16000;
+  /// <summary>svc_ops_e: the commands of a server message</summary>
+  Q3_SVC_BAD = 0;
+  Q3_SVC_NOP = 1;
+  Q3_SVC_GAMESTATE = 2;
+  Q3_SVC_CONFIGSTRING = 3;
+  Q3_SVC_BASELINE = 4;
+  Q3_SVC_SERVERCOMMAND = 5;
+  Q3_SVC_DOWNLOAD = 6;
+  Q3_SVC_SNAPSHOT = 7;
+  Q3_SVC_EOF = 8;
+
   Q3_MAX_STATS = 16;
   Q3_MAX_PERSISTANT = 16;
   Q3_MAX_POWERUPS = 16;
@@ -56,6 +79,27 @@ const
   SQ3MessageBadEntityNumber = 'Bad entity number: %d';
   SQ3MessageBadFieldCount = 'The delta of a %s has %d changed fields, the largest valid number is %d';
   SQ3MessageFromRequired = 'The delta of a %s needs the state it changes from';
+  SQ3InfoStringOversize = '%s: oversize infostring';
+  SQ3InfoStringBackslash = 'Can''t use keys or values with a \';
+  SQ3InfoStringSemicolon = 'Can''t use keys or values with a semicolon';
+  SQ3InfoStringQuote = 'Can''t use keys or values with a "';
+  SQ3InfoStringExceeded = 'Info string length exceeded';
+  SQ3InfoStringBigExceeded = 'BIG Info string length exceeded';
+  SQ3InfoStringSprintfOverflow = 'Com_sprintf: overflow of %d in %d';
+  SQ3ServerReadPastEnd = 'CL_ParseServerMessage: read past end of server message';
+  SQ3ServerIllegibleMessage = 'CL_ParseServerMessage: Illegible server message';
+  SQ3ServerPacketEntitiesEnd = 'CL_ParsePacketEntities: end of message';
+  SQ3ServerConfigStringRange = 'configstring > MAX_CONFIGSTRINGS';
+  SQ3ServerGamestateChars = 'MAX_GAMESTATE_CHARS exceeded';
+  SQ3ServerBaselineRange = 'Baseline number out of range: %d';
+  SQ3ServerBadGamestateCommand = 'CL_ParseGamestate: bad command byte';
+  SQ3ServerDownloadFailed = 'The server refuses the download: %s';
+  SQ3ServerAreaMaskLength = 'The area mask of a snapshot has %d bytes, the largest valid number is 32';
+  SQ3ServerDeltaInvalidFrame = 'Delta from invalid frame (not supposed to happen!).';
+  SQ3ServerDeltaFrameTooOld = 'Delta frame too old.';
+  SQ3ServerDeltaEntitiesTooOld = 'Delta parseEntitiesNum too old.';
+  SQ3DemoMessageTooLong = 'CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN';
+  SQ3DemoTruncated = 'Demo file was truncated.';
   SQ3HuffmanUnknownSymbol = 'The symbol %d is not in the Huffman tree';
   SQ3NetchanTooLong = 'Netchan_Transmit: length = %d';
   SQ3NetchanBufferTooSmall = 'The message buffer holds %d bytes but the reassembled message needs %d';
@@ -75,6 +119,18 @@ type
   ///   writes outside the buffer in these cases
   /// </summary>
   EQ3MessageOverflowException = class(EQ3MessageException);
+
+  /// <summary>
+  ///   A server message that cannot be parsed (a bad command, a read past the end, a configstring or baseline
+  ///   out of range, a refused download): <c>Com_Error(ERR_DROP)</c> of cl_parse.c
+  /// </summary>
+  EQ3ServerMessageException = class(EQ3NetException);
+
+  /// <summary>A demo file with a message longer than MAX_MSGLEN (<c>Com_Error</c> of cl_main.c)</summary>
+  EQ3DemoException = class(EQ3NetException);
+
+  /// <summary>An info string that is too long to be handled (<c>Com_Error</c> of q_shared.c)</summary>
+  EQ3InfoStringException = class(EQ3NetException);
 
   /// <summary>The network channel refuses a message (too long): <c>Com_Error</c> of net_chan.c</summary>
   EQ3NetchanException = class(EQ3NetException);
@@ -219,6 +275,26 @@ type
     EntityEventSequence: Integer;
   end;
   PQ3PlayerState = ^TQ3PlayerState;
+
+  /// <summary>
+  ///   clSnapshot_t plus the entities it presents: what the server sends every frame. <c>Entities</c> is
+  ///   filled only in the snapshots given to a sink (the parser keeps the states in its own ring, like
+  ///   <c>cl.parseEntities</c>)
+  /// </summary>
+  TQ3Snapshot = record
+    Valid: Boolean;
+    SnapFlags: Integer;
+    ServerTime: Integer;
+    MessageNum: Integer;
+    DeltaNum: Integer;
+    AreaMask: array[0..Q3_MAX_MAP_AREA_BYTES - 1] of Byte;
+    PlayerState: TQ3PlayerState;
+    NumEntities: Integer;
+    ParseEntitiesNum: Integer;
+    ServerCommandNum: Integer;
+    Entities: TArray<TQ3EntityState>;
+  end;
+  PQ3Snapshot = ^TQ3Snapshot;
 
   /// <summary>
   ///   netField_t: a field of a state that the delta sends. Offset is in bytes from the start of the record,

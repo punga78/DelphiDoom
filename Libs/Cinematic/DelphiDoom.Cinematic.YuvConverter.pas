@@ -34,6 +34,12 @@ type
     constructor Create(AAlpha: Byte);
     /// <summary>yuv_to_rgb24 (Cr is the parameter u and Cb is v, as the file stores them)</summary>
     function ToPixel(AY, AU, AV: Integer): Cardinal;
+    /// <summary>
+    ///   yuv_to_rgb: the same colors as a 16 bit RGB 5-6-5 word (red in the high bits). It uses
+    ///   other shifts than <c>ToPixel</c> (9, 8 and 9), as the original does, so it is not the
+    ///   truncation of the 32 bit pixel
+    /// </summary>
+    function ToRgb565(AY, AU, AV: Integer): Word;
   end;
 
 implementation
@@ -102,6 +108,29 @@ begin
   if LBlue > 255 then
     LBlue := 255;
   Result := Cardinal(LRed) or (Cardinal(LGreen) shl 8) or (Cardinal(LBlue) shl 16) or FAlpha;
+end;
+
+function TRoqYuvConverter.ToRgb565(AY, AU, AV: Integer): Word;
+var
+  LRed, LGreen, LBlue, LLuma: Integer;
+begin
+  LLuma := FYy[AY];
+  LRed := TIdMath.Sar(LLuma + FVr[AV], 9);
+  LGreen := TIdMath.Sar(LLuma + FUg[AU] + FVg[AV], 8);
+  LBlue := TIdMath.Sar(LLuma + FUb[AU], 9);
+  if LRed < 0 then
+    LRed := 0;
+  if LGreen < 0 then
+    LGreen := 0;
+  if LBlue < 0 then
+    LBlue := 0;
+  if LRed > 31 then
+    LRed := 31;
+  if LGreen > 63 then
+    LGreen := 63;
+  if LBlue > 31 then
+    LBlue := 31;
+  Result := Word((LRed shl 11) + (LGreen shl 5) + LBlue);
 end;
 
 end.
