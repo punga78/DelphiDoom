@@ -37,7 +37,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Decl.Factory, DelphiDoom.Decl.StandardTypes, DelphiDoom.Decl.Types;
+  DelphiDoom.Decl.Factory, DelphiDoom.Decl.StandardTypes, DelphiDoom.Decl.Types, DelphiDoom.Decl.Base;
 
 { TDeclKit }
 
@@ -65,8 +65,12 @@ begin
   begin
     // the materials of the golden of the C++ harness are stubs that keep the text and skip it
     FManager := TDeclFactory.CreateManager(FSource, FLog);
-    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL]);
+    // (the fx and the particles of that harness are stubs as well)
+    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL, DECL_FX, DECL_PARTICLE]);
     TDeclStandardTypes.RegisterPlaceholderMaterial(FManager.GetRegistry);
+    FManager.GetRegistry.RegisterDeclType('fx', DECL_FX, function: IDecl begin Result := TDecl.Create; end);
+    FManager.GetRegistry.RegisterDeclType('particle', DECL_PARTICLE,
+      function: IDecl begin Result := TDecl.Create; end);
     if ALoadFolders then
       TDeclStandardTypes.RegisterFolders(FManager.GetRegistry);
   end

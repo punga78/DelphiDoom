@@ -1,0 +1,282 @@
+#include "precompiled.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static bool quiet = false;
+static int integrateMessages = 0;
+
+static std::string lower(std::string s) { for (size_t i = 0; i < s.size(); i++) s[i] = (char)tolower((unsigned char)s[i]); return s; }
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) {
+	char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap);
+	// the message of idParticleParm::Integrate comes once per sample here and once per pass in the port
+	if (strstr(b, "idParticleParm::Integrate")) { integrateMessages++; return; }
+	printf("P: %s\n", esc(b).c_str());
+}
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+#include "../fsfloat.inc"
+int idFile::WriteFloatString( const char *fmt, ... ) {
+	char buf[8192]; int len; va_list argPtr;
+	va_start( argPtr, fmt ); len = FS_WriteFloatString( buf, fmt, argPtr ); va_end( argPtr );
+	return Write( buf, len );
+}
+
+static idDeclManager theDeclManager; idDeclManager *declManager = &theDeclManager;
+static idRenderModelManager theModels; idRenderModelManager *renderModelManager = &theModels;
+void *idRenderModelManager::FindModel( const char *name ) { printf("FM %s\n", name); return 0; }
+
+static std::map<std::string, idDecl *> decls;
+const idDecl *idDeclManager::FindType( declType_t type, const char *name, bool makeDefault ) {
+	printf("F %d %s %d\n", (int)type, name, makeDefault ? 1 : 0);
+	char key[16]; sprintf(key, "%d:", (int)type);
+	std::string k = std::string(key) + lower(name);
+	std::map<std::string, idDecl *>::iterator it = decls.find(k);
+	if (it != decls.end()) return it->second;
+	if (!makeDefault) return 0;
+	idDecl *d;
+	switch (type) {
+		case DECL_MATERIAL: d = new idMaterial; break;
+		case DECL_SOUND: d = new idSoundShader; break;
+		default: d = new idDecl; break;
+	}
+	d->name = name;
+	decls[k] = d;
+	return d;
+}
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+static std::string fbs(const float *p, int n) { std::string r; for (int i = 0; i < n; i++) { if (i) r += ","; r += fb(p[i]); } return r; }
+static std::string tableName(const idParticleParm &p) {
+	if (p.table) return std::string("table:") + p.table->GetName();
+	return fb(p.from) + "," + fb(p.to);
+}
+
+static const char *kNames[] = { "table", "material", "skin", "sound", "entityDef", "modelDef", "fx", "particle" };
+
+static void dumpBounds(const char *tag, const idBounds &b) {
+	printf(" %s=%s,%s\n", tag, fbs(b[0].ToFloatPtr(), 3).c_str(), fbs(b[1].ToFloatPtr(), 3).c_str());
+}
+
+static void dumpParticle(idDeclParticle *d) {
+	printf("particle %s depth=%s stages=%d\n", d->GetName(), fb(d->depthHack).c_str(), d->stages.Num());
+	bool skipBounds = std::string(d->GetName()).compare(0, 5, "orbit") == 0; // the bounds of an orbit path read an uninitialised variable
+	if (!skipBounds) dumpBounds("bounds", d->bounds);
+	for (int i = 0; i < d->stages.Num(); i++) {
+		idParticleStage *s = d->stages[i];
+		printf("stage %d mat=%s cnt=%d cyc=%s cms=%d bunch=%s life=%s toff=%s dead=%s\n", i,
+			s->material ? s->material->GetName() : "(null)", s->totalParticles, fb(s->cycles).c_str(), s->cycleMsec,
+			fb(s->spawnBunching).c_str(), fb(s->particleLife).c_str(), fb(s->timeOffset).c_str(), fb(s->deadTime).c_str());
+		printf(" dist=%d p=%s dir=%d p=%s speed=%s grav=%s wg=%d rd=%d ec=%d\n", (int)s->distributionType,
+			fbs(s->distributionParms, 4).c_str(), (int)s->directionType, fbs(s->directionParms, 4).c_str(),
+			tableName(s->speed).c_str(), fb(s->gravity).c_str(), (int)s->worldGravity, (int)s->randomDistribution, (int)s->entityColor);
+		printf(" path=%d p=%s off=%s anim=%d rate=%s angle=%s rot=%s ori=%d p=%s\n", (int)s->customPathType,
+			fbs(s->customPathParms, 8).c_str(), fbs(s->offset.ToFloatPtr(), 3).c_str(), s->animationFrames,
+			fb(s->animationRate).c_str(), fb(s->initialAngle).c_str(), tableName(s->rotationSpeed).c_str(),
+			(int)s->orientation, fbs(s->orientationParms, 4).c_str());
+		printf(" size=%s aspect=%s color=%s fcolor=%s fin=%s fout=%s fidx=%s hid=%d bexp=%s\n", tableName(s->size).c_str(),
+			tableName(s->aspect).c_str(), fbs(s->color.ToFloatPtr(), 4).c_str(), fbs(s->fadeColor.ToFloatPtr(), 4).c_str(),
+			fb(s->fadeInFraction).c_str(), fb(s->fadeOutFraction).c_str(), fb(s->fadeIndexFraction).c_str(), (int)s->hidden,
+			fb(s->boundsExpansion).c_str());
+		if (!skipBounds) dumpBounds("sbounds", s->bounds);
+	}
+}
+
+static void dumpFx(idDeclFX *d) {
+	printf("fx %s joint=[%s] events=%d\n", d->GetName(), esc(d->joint.c_str()).c_str(), d->events.Num());
+	for (int i = 0; i < d->events.Num(); i++) {
+		const idFXSingleAction &a = d->events[i];
+		printf("event %d type=%d sib=%d data=[%s] name=[%s] fire=[%s]\n", i, a.type, a.sibling, esc(a.data.c_str()).c_str(),
+			esc(a.name.c_str()).c_str(), esc(a.fire.c_str()).c_str());
+		float f[14] = { a.delay, a.duration, a.restart, a.size, a.fadeInTime, a.fadeOutTime, a.shakeTime, a.shakeAmplitude,
+			a.shakeDistance, a.shakeImpulse, a.lightRadius, a.rotate, a.random1, a.random2 };
+		printf(" f=%s\n", fbs(f, 14).c_str());
+		printf(" v=%s,%s,%s\n", fbs(a.lightColor.ToFloatPtr(), 3).c_str(), fbs(a.offset.ToFloatPtr(), 3).c_str(), fbs(a.axis.ToFloatPtr(), 9).c_str());
+		printf(" b=%d%d%d%d%d%d%d%d\n", (int)a.soundStarted, (int)a.shakeFalloff, (int)a.shakeIgnoreMaster, (int)a.bindParticles,
+			(int)a.explicitAxis, (int)a.noshadows, (int)a.particleTrackVelocity, (int)a.trackOrigin);
+	}
+}
+
+static void dumpTable(idDeclTable *d, const char *name) {
+	printf("table %s", name);
+	for (int i = 0; i <= 8; i++) printf(" %s", fb(d->TableLookup(i / 8.0f)).c_str());
+	printf("\n");
+}
+
+struct Obj { std::string type; idDecl *decl; };
+static std::map<std::string, Obj> objs;
+
+static std::map<std::string, std::string> kv(const std::vector<std::string> &t) {
+	std::map<std::string, std::string> m;
+	for (size_t i = 0; i < t.size(); i++) { size_t e = t[i].find('='); if (e != std::string::npos) m[t[i].substr(0, e)] = t[i].substr(e + 1); }
+	return m;
+}
+static void nums(const std::string &s, float *out, int n) {
+	for (int i = 0; i < n; i++) out[i] = 0;
+	std::stringstream ss(s); std::string p; int i = 0;
+	while (std::getline(ss, p, ',') && i < n) out[i++] = (float)atof(p.c_str());
+}
+static idMat3 angMat(const std::string &s) { float a[3]; nums(s, a, 3); idAngles an(a[0], a[1], a[2]); return an.ToMat3(); }
+
+static void printVerts(const idDrawVert *v, int n) {
+	for (int i = 0; i < n; i++)
+		printf(" v%d xyz=%s st=%s,%s col=%d,%d,%d,%d\n", i, fbs(v[i].xyz.ToFloatPtr(), 3).c_str(), fb(v[i].st[0]).c_str(), fb(v[i].st[1]).c_str(),
+			v[i].color[0], v[i].color[1], v[i].color[2], v[i].color[3]);
+}
+
+static void opGen(const std::vector<std::string> &t) {
+	Obj &o = objs[t[1]];
+	idDeclParticle *d = static_cast<idDeclParticle *>(o.decl);
+	std::map<std::string, std::string> m = kv(t);
+	int si = m.count("stage") ? atoi(m["stage"].c_str()) : 0;
+	idParticleStage *s = d->stages[si];
+	renderEntity_t re; memset(&re, 0, sizeof(re)); re.axis = mat3_identity;
+	renderView_t rv; memset(&rv, 0, sizeof(rv)); rv.viewaxis = mat3_identity;
+	if (m.count("eaxis")) re.axis = angMat(m["eaxis"]);
+	if (m.count("vaxis")) rv.viewaxis = angMat(m["vaxis"]);
+	if (m.count("eparm")) nums(m["eparm"], re.shaderParms, 4);
+	particleGen_t g; memset(&g, 0, sizeof(g));
+	g.renderEnt = &re; g.renderView = &rv;
+	g.index = m.count("index") ? atoi(m["index"].c_str()) : 0;
+	g.frac = m.count("frac") ? (float)atof(m["frac"].c_str()) : 0.0f;
+	g.age = m.count("age") ? (float)atof(m["age"].c_str()) : 0.0f;
+	g.random = g.originalRandom = idRandom(m.count("seed") ? atoi(m["seed"].c_str()) : 0);
+	g.origin.Zero(); if (m.count("gorigin")) nums(m["gorigin"], g.origin.ToFloatPtr(), 3);
+	g.axis = m.count("gaxis") ? angMat(m["gaxis"]) : mat3_identity;
+	g.animationFrameFrac = 0.0f;
+	printf("gen %s stage=%d quads=%d\n", t[1].c_str(), si, s->NumQuadsPerParticle());
+	bool originOnly = t[0] == "origin";
+	particleGen_t g2 = g;
+	idVec3 origin; origin.Zero();
+	s->ParticleOrigin(&g2, origin);
+	printf(" origin=%s seed=%d\n", fbs(origin.ToFloatPtr(), 3).c_str(), g2.random.GetSeed());
+	if (originOnly) return;
+	idDrawVert verts[64];
+	int n = s->CreateParticle(&g, verts);
+	printf(" n=%d seed=%d aff=%s\n", n, g.random.GetSeed(), fb(g.animationFrameFrac).c_str());
+	printVerts(verts, n);
+}
+
+static void opCustom(const std::vector<std::string> &t) {
+	idParticleStage st;
+	const char *names[] = { "standard", "helix", "flies", "orbit", "drip", "bogus", "HELIX" };
+	for (int i = 0; i < 7; i++) {
+		st.SetCustomPathType(names[i]);
+		printf("custom %s -> %d name=%s desc=%s parms=%d\n", names[i], (int)st.customPathType, st.GetCustomPathName(), st.GetCustomPathDesc(), st.NumCustomPathParms());
+	}
+}
+
+static void handleOp(const std::vector<std::string> &t) {
+	{ std::string all; for (size_t i = 0; i < t.size(); i++) { if (i) all += " "; all += t[i]; } printf("> %s\n", all.c_str()); }
+	if (t[0] == "gen" || t[0] == "origin") { opGen(t); return; }
+	if (t[0] == "custom") { opCustom(t); return; }
+	if (t[0] == "save") {
+		idDeclParticle *d = static_cast<idDeclParticle *>(objs[t[1]].decl);
+		d->text = ""; d->Save(NULL);
+		printf("saved replaced=%d text=%s\n", (int)d->replaced, esc(d->text.c_str()).c_str());
+		return;
+	}
+	if (t[0] == "print" || t[0] == "list") {
+		idDecl *d = objs[t[1]].decl;
+		if (t[0] == "print") d->Print(); else d->List();
+		return;
+	}
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, NULL, _IONBF, 0);
+	common = &theCommon; idLib::common = &theCommon;
+	idMath::Init();
+	std::ifstream in(argv[1]);
+	std::string line;
+	std::string curDecl, curType, curName, curText;
+	bool inDecl = false;
+	std::vector<std::string> pendingOps;
+	bool inCase = false;
+	std::vector<std::vector<std::string> > ops;
+	std::string caseName;
+	// flush: parse the pending declaration
+	struct Flusher {
+		static void flush(bool &inDecl, const std::string &type, const std::string &name, const std::string &text) {
+			if (!inDecl) return;
+			printf("> decl %s %s\n", type.c_str(), name.c_str());
+			idDecl *d = 0;
+			if (type == "table") d = new idDeclTable;
+			else if (type == "particle") d = new idDeclParticle;
+			else if (type == "fx") d = new idDeclFX;
+			d->name = name;
+			integrateMessages = 0;
+			bool ret = d->Parse(text.c_str(), (int)text.size());
+			printf("ret=%d integrate=%d\n", ret ? 1 : 0, integrateMessages > 0 ? 1 : 0);
+			integrateMessages = 0;
+			Obj o; o.type = type; o.decl = d; objs[name] = o;
+			char key[16]; sprintf(key, "%d:", type == "table" ? 0 : type == "fx" ? 6 : 7);
+			decls[std::string(key) + lower(name)] = d;
+			if (type == "table") dumpTable(static_cast<idDeclTable *>(d), name.c_str());
+			else if (type == "particle") dumpParticle(static_cast<idDeclParticle *>(d));
+			else dumpFx(static_cast<idDeclFX *>(d));
+			inDecl = false;
+		}
+	};
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) {
+			Flusher::flush(inDecl, curType, curName, curText);
+			// a new case starts clean
+			objs.clear(); decls.clear();
+			printf("## %s\n", line.substr(6).c_str());
+			continue;
+		}
+		if (line == "@end") { Flusher::flush(inDecl, curType, curName, curText); continue; }
+		if (line.compare(0, 6, "@decl ") == 0) {
+			Flusher::flush(inDecl, curType, curName, curText);
+			std::stringstream ss(line.substr(6)); ss >> curType >> curName;
+			curText = curType + " " + curName + "\n";
+			inDecl = true;
+			continue;
+		}
+		if (line.compare(0, 4, "@op ") == 0) {
+			Flusher::flush(inDecl, curType, curName, curText);
+			std::stringstream ss(line.substr(4)); std::vector<std::string> t; std::string w;
+			while (ss >> w) t.push_back(w);
+			try { handleOp(t); } catch (idException &e) { printf("ERR %s\n", e.error); }
+			continue;
+		}
+		if (inDecl) curText += line + "\n";
+	}
+	Flusher::flush(inDecl, curType, curName, curText);
+	return 0;
+}

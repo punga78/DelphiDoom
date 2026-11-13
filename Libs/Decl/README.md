@@ -45,3 +45,16 @@ Opzioni (`TMaterialOptions`: `image_ignoreHighQuality`, `ARBFragmentProgramAvail
 
 - Sopra `Libs\IdLib` (`TIdLexer`, `TIdHashIndex`, `TIdMd5`, `TIdStrings`, `TIdMath`) e `Libs\Scanner` (`TIdDict`).
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+## Particelle ed effetti (`particle` e `fx`, issue #101)
+
+`TDeclParticle` (`.prt`) e `TDeclFx` (`.fx`) leggono le particelle e gli effetti di Doom 3. Dai dati si passa per `Supports(Decl, IDeclParticle, P)` e `Supports(Decl, IDeclFx, F)`; le cartelle `particles` e `fx` le registra il gioco con `RegisterDeclFolder`. Il calcolo delle particelle (dove sta una particella a un tempo dato, il suo quad, le coordinate di texture, il colore, i bounds di uno stage) e' una classe a parte, `TParticleGenerator` (`IParticleGenerator`), senza stato: un renderer la chiama per ogni particella con uno `TParticleStage` e un `TParticleGen`.
+
+```pascal
+Generator := TParticleGenerator.Create(Log);
+Gen := TParticleGen.Create(TIdRandom.Create(Seed));
+Gen.Frac := 0.4; Gen.Age := Gen.Frac * Stage.ParticleLife;
+Count := Generator.CreateParticle(Stage, Gen, Verts);   // 0, 4 o 8 vertici (o piu' con le code)
+```
+
+Parita' col vero `DeclParticle.cpp` e `DeclFX.cpp` (`effects.golden.txt`, tolleranza relativa 2E-6 sui float per l'x87 del riferimento). Non portato: `articulatedFigure` (`DeclAF.cpp`, segnaposto), i modelli che gli effetti nominano, `Save` con un nome di file. Dettagli e difetti del C++ in `CLAUDE.md`.

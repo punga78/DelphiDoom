@@ -1,0 +1,16 @@
+$d = $PSScriptRoot
+Set-Location "$d\idlib"
+New-Item -ItemType Directory -Force "$d\obj" | Out-Null
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$files = 'driver','Str','Token','Lexer','Heap','math\Math','math\Vector','math\Matrix','math\Angles','math\Quat','math\Rotation','math\Plane','math\Pluecker','math\Polynomial','math\Complex','math\Simd_Generic','geometry\JointTransform','bv\Bounds','bv\Sphere','..\framework\DeclParticle','..\framework\DeclFX','..\framework\DeclTable'
+if ($args.Count -gt 0) { $files = $args }
+foreach ($f in $files) {
+  $o = "$d\obj\" + ($f -replace '\\','_' -replace '\.\.','') + '.o'
+  $out = & $B -c -w- -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I. "-o$o" "$f.cpp" 2>&1
+  Write-Host "== $f exit $LASTEXITCODE"
+  if ($LASTEXITCODE -ne 0) { $out | Select-String 'error' | Select-Object -First 8 | ForEach-Object { $_.Line } }
+}
+$all = Get-ChildItem "$d\obj\*.o" | ForEach-Object { $_.FullName }
+$out = & $B -o "$d\prt.exe" @all 2>&1
+Write-Host "== link exit $LASTEXITCODE"
+$out | Select-Object -First 25 | ForEach-Object { Write-Host $_ }

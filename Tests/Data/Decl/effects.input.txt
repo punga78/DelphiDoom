@@ -1,0 +1,378 @@
+@case table-and-defaults
+@decl table ramp
+{
+	snap
+	{ 0, 0.25, 1, 0.5 }
+}
+@decl table wave
+{
+	clamp
+	{ 0, 1, 0, -1 }
+}
+@decl particle plain
+{
+	{
+		count 20
+		time 1.0
+	}
+}
+@op gen plain stage=0 seed=1 index=0 frac=0.25 age=0.375
+@op gen plain stage=0 seed=7 index=5 frac=0.9 age=1.35
+@decl particle empty
+{
+}
+@decl particle nostage
+{
+	depthHack 0.5
+}
+@op save nostage
+
+@case full-stage
+@decl particle full
+{
+	depthHack 1.25
+	{
+		material textures/test/spark
+		count 40
+		time 1.2
+		cycles 3
+		timeOffset 0.1
+		deadTime 0.3
+		randomDistribution 1
+		bunching 0.8
+		distribution rect 4 6 8
+		direction cone 45
+		orientation view
+		speed 100 to 200
+		rotation 30 to 90
+		angle 0
+		size 6 to 2
+		aspect 1.5
+		color 1 0.5 0.25 0.8
+		fadeColor 0 0 0 0
+		fadeIn 0.2
+		fadeOut 0.3
+		fadeIndex 0.5
+		offset 1 2 3
+		gravity 0.4
+		boundsExpansion 3
+		entityColor 0
+	}
+}
+@op gen full stage=0 seed=3 index=2 frac=0.5 age=0.6
+@op gen full stage=0 seed=3 index=3 frac=0.05 age=0.06
+@op gen full stage=0 seed=11 index=39 frac=0.97 age=1.16 vaxis=10,20,30 eaxis=0,45,0
+@op save full
+
+@case distributions
+@decl particle cyl
+{
+	{
+		count 10
+		time 2
+		distribution cylinder 8 8 16 0.5
+		direction cone 10
+		speed 50
+		gravity 0
+	}
+}
+@decl particle sph
+{
+	{
+		count 10
+		time 2
+		distribution sphere 10 12 14 0.4
+		direction outward 0.3
+		speed 40 to 60
+	}
+	{
+		count 5
+		time 1
+		randomDistribution 0
+		distribution sphere 4 4 4 0.9
+		direction outward 0
+		speed 20
+	}
+}
+@decl particle cylflat
+{
+	{
+		count 10
+		time 2
+		randomDistribution 0
+		distribution cylinder 8 8 16 0.7
+		direction cone 360
+		speed 10
+		gravity world 2
+	}
+}
+@op gen cyl stage=0 seed=5 index=1 frac=0.3 age=0.6
+@op gen sph stage=0 seed=9 index=4 frac=0.6 age=1.2
+@op gen sph stage=1 seed=2 index=0 frac=0.1 age=0.1
+@op gen cylflat stage=0 seed=4 index=7 frac=0.5 age=1 eaxis=15,30,45 gaxis=0,90,0 gorigin=10,20,30
+
+@case custom-paths
+@decl particle paths
+{
+	{
+		count 10
+		time 3
+		customPath helix 8 8 20 2 5
+		gravity 0
+	}
+	{
+		count 10
+		time 3
+		customPath flies 3 4 12
+		offset 0 0 5
+	}
+	{
+		count 10
+		time 3
+		customPath standard
+		direction outward 0.5
+		distribution sphere 4 4 4
+	}
+	{
+		count 10
+		time 3
+		customPath standard
+		gravity world 3
+	}
+}
+@op gen paths stage=0 seed=21 index=0 frac=0.3 age=0.9
+@op gen paths stage=1 seed=22 index=1 frac=0.5 age=1.5
+@op gen paths stage=2 seed=23 index=2 frac=0.7 age=2.1
+@op gen paths stage=3 seed=24 index=3 frac=0.9 age=2.7 eaxis=0,30,0
+@op custom paths
+@decl particle orbit
+{
+	{
+		count 10
+		time 3
+		customPath spherical 16 2
+		offset 1 2 3
+	}
+}
+@op origin orbit stage=0 seed=51 index=0 frac=0.3 age=0.9
+@op origin orbit stage=0 seed=52 index=0 frac=0.6 age=1.8 gaxis=0,20,0 gorigin=5,5,5
+
+@case orientation-and-animation
+@decl particle oriented
+{
+	{
+		count 10
+		time 2
+		orientation aimed 2 0.6
+		speed 80
+		size 3
+		aspect 1
+		animationFrames 4
+		animationRate 2
+	}
+	{
+		count 10
+		time 2
+		orientation x
+		angle 30
+		rotation 10 to 20
+		size 5
+		aspect 2
+	}
+	{
+		count 10
+		time 2
+		orientation y
+		size 5
+		aspect 0.5
+		animationFrames 8
+	}
+	{
+		count 10
+		time 2
+		orientation z
+		size 4
+		entityColor 1
+		color 1 1 1 1
+		fadeColor 1 1 1 0
+	}
+	{
+		count 10
+		time 2
+		orientation aimed
+		speed 60 to 90
+	}
+}
+@op gen oriented stage=0 seed=31 index=2 frac=0.5 age=1 vaxis=5,15,25 eaxis=0,10,0
+@op gen oriented stage=1 seed=32 index=3 frac=0.4 age=0.8
+@op gen oriented stage=1 seed=32 index=4 frac=0.4 age=0.8
+@op gen oriented stage=2 seed=33 index=0 frac=0.61 age=1.22
+@op gen oriented stage=3 seed=34 index=1 frac=0.5 age=1 eparm=0.5,0.25,0.75,1
+@op gen oriented stage=4 seed=35 index=0 frac=0.7 age=1.4 vaxis=0,40,0
+@op gen oriented stage=0 seed=31 index=2 frac=0.01 age=0.02
+
+@case tables-in-parms
+@decl table ramp
+{
+	{ 0, 1, 2, 3 }
+}
+@decl particle tabled
+{
+	{
+		count 10
+		time 2
+		speed ramp
+		size ramp
+		aspect missing
+		rotation ramp
+	}
+}
+@op gen tabled stage=0 seed=41 index=1 frac=0.5 age=1
+@op save tabled
+
+@case parse-errors
+@decl particle badtoken
+{
+	{
+		count 10
+	}
+	bogus
+}
+@decl particle badstage
+{
+	{
+		count 10
+		distribution blob 1 2 3
+		time 2
+		orientation view
+	}
+}
+@decl particle unknown
+{
+	{
+		count 10
+		wobble 3
+		time 5
+	}
+}
+@decl particle toomany
+{
+	{
+		distribution rect 1 2 3 4 5 6
+		time 2
+	}
+}
+@decl particle badpath
+{
+	{
+		customPath orbit 5 1
+		time 2
+	}
+}
+@decl particle speedshort
+{
+	{
+		time 2
+		speed
+	}
+}
+@decl particle gravworld
+{
+	{
+		gravity world
+	}
+}
+
+@case fx-basic
+@decl fx effect
+{
+	bindto "origin"
+	{
+		name "light1"
+		light "lights/flash", 1, 0.5, 0.25, 200
+		delay 0.1
+		duration 2
+		fadeIn 0.2
+		fadeOut 0.3
+		noshadows
+	}
+	{
+		sound "weapons/boom"
+		delay 0.5
+		restart 1
+	}
+	{
+		particle "smoke.prt"
+		offset 1, 2, 3
+		trackorigin 1
+		particleTrackVelocity
+		size 20
+	}
+	{
+		decal "textures/decals/burn"
+		size 32
+		rotate 45
+		random 0.1, 0.4
+	}
+	{
+		useModel "light1"
+		axis 0, 0, 1
+	}
+	{
+		name "model2"
+		model "models/rock.lwo"
+		angle 10, 20, 30
+		duration 4
+	}
+	{
+		attachlight "lights/glow"
+		attachentity "models/part.lwo"
+		launch "projectile_small"
+	}
+	{
+		shockwave "wave_def"
+		shake 2, 10, 500, 1, 3
+		ignoreMaster
+		fire "model2"
+	}
+	{
+		uselight "light1"
+		axis 1, 2, 3
+	}
+	{
+		axis 0, 1, 0
+	}
+}
+@op print effect
+@op list effect
+
+@case fx-errors
+@decl fx badtoken
+{
+	{
+		unknownthing
+		delay 1
+	}
+	stray
+	{
+		sound "a"
+	}
+}
+@decl fx badnumber
+{
+	{
+		delay abc
+		duration 2
+	}
+}
+@decl fx badshake
+{
+	{
+		shake 1 2
+	}
+}
+@decl fx empty
+{
+}
+@op print empty
+@op list empty

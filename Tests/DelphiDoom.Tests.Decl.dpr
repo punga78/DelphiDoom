@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the declaration manager (DUnitX)                  }
 {                                                                              }
@@ -47,6 +47,18 @@ uses
   DelphiDoom.Decl.Material.ImageNames in '..\Libs\Decl\DelphiDoom.Decl.Material.ImageNames.pas',
   delphidoom.decl.material.imagenamer in '..\libs\decl\delphidoom.decl.material.imagenamer.pas',
   DelphiDoom.Decl.Material in '..\Libs\Decl\DelphiDoom.Decl.Material.pas',
+  DelphiDoom.Decl.Particle.Types in '..\Libs\Decl\DelphiDoom.Decl.Particle.Types.pas',
+  DelphiDoom.Decl.Particle.Intf in '..\Libs\Decl\DelphiDoom.Decl.Particle.Intf.pas',
+  DelphiDoom.Decl.Particle.Generator in '..\Libs\Decl\DelphiDoom.Decl.Particle.Generator.pas',
+  DelphiDoom.Decl.Particle.StageParser in '..\Libs\Decl\DelphiDoom.Decl.Particle.StageParser.pas',
+  DelphiDoom.Decl.Particle.Writer in '..\Libs\Decl\DelphiDoom.Decl.Particle.Writer.pas',
+  DelphiDoom.Decl.Particle in '..\Libs\Decl\DelphiDoom.Decl.Particle.pas',
+  DelphiDoom.Decl.Particle.Registration in '..\Libs\Decl\DelphiDoom.Decl.Particle.Registration.pas',
+  DelphiDoom.Decl.Fx.Types in '..\Libs\Decl\DelphiDoom.Decl.Fx.Types.pas',
+  DelphiDoom.Decl.Fx.Intf in '..\Libs\Decl\DelphiDoom.Decl.Fx.Intf.pas',
+  DelphiDoom.Decl.Fx.ActionParser in '..\Libs\Decl\DelphiDoom.Decl.Fx.ActionParser.pas',
+  DelphiDoom.Decl.Fx in '..\Libs\Decl\DelphiDoom.Decl.Fx.pas',
+  DelphiDoom.Decl.Fx.Registration in '..\Libs\Decl\DelphiDoom.Decl.Fx.Registration.pas',
   DelphiDoom.Decl.StandardTypes in '..\Libs\Decl\DelphiDoom.Decl.StandardTypes.pas',
   DelphiDoom.Decl.Factory in '..\Libs\Decl\DelphiDoom.Decl.Factory.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
@@ -60,7 +72,10 @@ uses
   DelphiDoom.Tests.Decl.MaterialSupport in 'Source\DelphiDoom.Tests.Decl.MaterialSupport.pas',
   DelphiDoom.Tests.Decl.MaterialExpressions in 'Source\DelphiDoom.Tests.Decl.MaterialExpressions.pas',
   DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
-  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas';
+  DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas',
+  DelphiDoom.Tests.Decl.EffectsSupport in 'Source\DelphiDoom.Tests.Decl.EffectsSupport.pas',
+  DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas',
+  DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas';
 
 var
   Runner: ITestRunner;

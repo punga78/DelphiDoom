@@ -22,8 +22,8 @@ uses
 type
   /// <summary>
   ///   What <c>idDeclManagerLocal::Init</c> registers, as a class that works on any registry. The types that are
-  ///   ported (table, skin, material, entityDef, mapDef, pda, email, video, audio) get their class; the others
-  ///   (sound, fx, particle, articulatedFigure) get the base <c>TDecl</c>, which keeps the text and
+  ///   ported (table, skin, material, entityDef, mapDef, pda, email, video, audio, fx, particle) get their class; the others
+  ///   (sound, articulatedFigure) get the base <c>TDecl</c>, which keeps the text and
   ///   skips it, so a skin or a video can find its sounds. A library that ports one of them registers
   ///   its own type <b>before</b> calling <c>RegisterTypes</c> (a type number already in use is ignored with a warning,
   ///   which is silenced here by passing it in <c>ASkip</c>).
@@ -51,7 +51,7 @@ uses
   DelphiDoom.Decl.Types, DelphiDoom.Decl.Base, DelphiDoom.Decl.Table, DelphiDoom.Decl.Skin,
   DelphiDoom.Decl.EntityDef, DelphiDoom.Decl.Pda, DelphiDoom.Decl.Email, DelphiDoom.Decl.Video,
   DelphiDoom.Decl.Audio, DelphiDoom.Decl.Material, DelphiDoom.Decl.Material.Intf,
-  DelphiDoom.Decl.Material.ImageNamer;
+  DelphiDoom.Decl.Material.ImageNamer, DelphiDoom.Decl.Fx.Registration, DelphiDoom.Decl.Particle.Registration;
 
 { TDeclStandardTypes }
 
@@ -101,8 +101,10 @@ begin
 
   Add('entityDef', DECL_ENTITYDEF, function: IDecl begin Result := TDeclEntityDef.Create; end);
   Add('mapDef', DECL_MAPDEF, function: IDecl begin Result := TDeclEntityDef.Create; end);
-  Add('fx', DECL_FX, function: IDecl begin Result := TDecl.Create; end);
-  Add('particle', DECL_PARTICLE, function: IDecl begin Result := TDecl.Create; end);
+  if not Skipped(DECL_FX) then
+    TDeclFxRegistration.Register(ARegistry);
+  if not Skipped(DECL_PARTICLE) then
+    TDeclParticleRegistration.Register(ARegistry);
   Add('articulatedFigure', DECL_AF, function: IDecl begin Result := TDecl.Create; end);
   Add('pda', DECL_PDA, function: IDecl begin Result := TDeclPda.Create; end);
   Add('email', DECL_EMAIL, function: IDecl begin Result := TDeclEmail.Create; end);
