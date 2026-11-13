@@ -1,0 +1,9 @@
+header type af12 frames 6 size 184x112 speed 71
+frame 0 pix ac6c9aa9 pal 42f5f4e1 delay 71
+frame 1 pix 53a5ad22 pal 42f5f4e1 delay 71
+frame 2 pix 187ab475 pal 42f5f4e1 delay 71
+frame 3 pix bc4163ca pal 42f5f4e1 delay 71
+frame 4 pix f671333f pal 42f5f4e1 delay 71
+frame 5 pix eb033a76 pal 42f5f4e1 delay 71
+frame 6 pix ac6c9aa9 pal 42f5f4e1 delay 71
+end frames 7

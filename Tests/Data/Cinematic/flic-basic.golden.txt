@@ -1,0 +1,13 @@
+header type af12 frames 11 size 64x48 speed 70
+frame 0 pix 20cafdf6 pal 9dabe73e delay 70
+frame 1 pix 344ee8e7 pal 9dabe73e delay 70
+frame 2 pix 4eb68bb1 pal cbb56dd1 delay 70
+frame 3 pix f41dc5d1 pal cbb56dd1 delay 70
+frame 4 pix e2db794e pal cbb56dd1 delay 70
+frame 5 pix 1007bfe0 pal cbb56dd1 delay 70
+frame 6 pix 4cca0b61 pal cbb56dd1 delay 70
+frame 7 pix 4cca0b61 pal cbb56dd1 delay 70
+frame 8 pix bbdadaec pal cbb56dd1 delay 70
+frame 9 pix 8ced0d32 pal cbb56dd1 delay 70
+frame 10 pix 8856a6e8 pal cbb56dd1 delay 70
+end frames 11
