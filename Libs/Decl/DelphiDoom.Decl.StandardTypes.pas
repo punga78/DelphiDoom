@@ -22,8 +22,8 @@ uses
 type
   /// <summary>
   ///   What <c>idDeclManagerLocal::Init</c> registers, as a class that works on any registry. The types that are
-  ///   ported (table, skin, material, entityDef, mapDef, pda, email, video, audio, fx, particle) get their class; the others
-  ///   (sound, articulatedFigure) get the base <c>TDecl</c>, which keeps the text and
+  ///   ported (table, skin, material, entityDef, mapDef, pda, email, video, audio, fx, particle, articulatedFigure) get
+  ///   their class; the other (sound) gets the base <c>TDecl</c>, which keeps the text and
   ///   skips it, so a skin or a video can find its sounds. A library that ports one of them registers
   ///   its own type <b>before</b> calling <c>RegisterTypes</c> (a type number already in use is ignored with a warning,
   ///   which is silenced here by passing it in <c>ASkip</c>).
@@ -51,7 +51,8 @@ uses
   DelphiDoom.Decl.Types, DelphiDoom.Decl.Base, DelphiDoom.Decl.Table, DelphiDoom.Decl.Skin,
   DelphiDoom.Decl.EntityDef, DelphiDoom.Decl.Pda, DelphiDoom.Decl.Email, DelphiDoom.Decl.Video,
   DelphiDoom.Decl.Audio, DelphiDoom.Decl.Material, DelphiDoom.Decl.Material.Intf,
-  DelphiDoom.Decl.Material.ImageNamer, DelphiDoom.Decl.Fx.Registration, DelphiDoom.Decl.Particle.Registration;
+  DelphiDoom.Decl.Material.ImageNamer, DelphiDoom.Decl.Fx.Registration, DelphiDoom.Decl.Particle.Registration,
+  DelphiDoom.Decl.ArticulatedFigure.Registration;
 
 { TDeclStandardTypes }
 
@@ -105,7 +106,8 @@ begin
     TDeclFxRegistration.Register(ARegistry);
   if not Skipped(DECL_PARTICLE) then
     TDeclParticleRegistration.Register(ARegistry);
-  Add('articulatedFigure', DECL_AF, function: IDecl begin Result := TDecl.Create; end);
+  if not Skipped(DECL_AF) then
+    TDeclArticulatedFigureRegistration.Register(ARegistry);
   Add('pda', DECL_PDA, function: IDecl begin Result := TDeclPda.Create; end);
   Add('email', DECL_EMAIL, function: IDecl begin Result := TDeclEmail.Create; end);
   Add('video', DECL_VIDEO, function: IDecl begin Result := TDeclVideo.Create; end);

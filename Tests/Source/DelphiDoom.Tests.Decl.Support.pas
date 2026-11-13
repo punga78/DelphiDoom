@@ -65,11 +65,13 @@ begin
   begin
     // the materials of the golden of the C++ harness are stubs that keep the text and skip it
     FManager := TDeclFactory.CreateManager(FSource, FLog);
-    // (the fx and the particles of that harness are stubs as well)
-    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL, DECL_FX, DECL_PARTICLE]);
+    // (the fx, the particles and the articulated figures of that harness are stubs as well)
+    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL, DECL_FX, DECL_PARTICLE, DECL_AF]);
     TDeclStandardTypes.RegisterPlaceholderMaterial(FManager.GetRegistry);
     FManager.GetRegistry.RegisterDeclType('fx', DECL_FX, function: IDecl begin Result := TDecl.Create; end);
     FManager.GetRegistry.RegisterDeclType('particle', DECL_PARTICLE,
+      function: IDecl begin Result := TDecl.Create; end);
+    FManager.GetRegistry.RegisterDeclType('articulatedFigure', DECL_AF,
       function: IDecl begin Result := TDecl.Create; end);
     if ALoadFolders then
       TDeclStandardTypes.RegisterFolders(FManager.GetRegistry);

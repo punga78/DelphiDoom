@@ -59,6 +59,17 @@ uses
   DelphiDoom.Decl.Fx.ActionParser in '..\Libs\Decl\DelphiDoom.Decl.Fx.ActionParser.pas',
   DelphiDoom.Decl.Fx in '..\Libs\Decl\DelphiDoom.Decl.Fx.pas',
   DelphiDoom.Decl.Fx.Registration in '..\Libs\Decl\DelphiDoom.Decl.Fx.Registration.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Types in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Types.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Intf in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Intf.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Contents in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Contents.pas',
+  DelphiDoom.Decl.ArticulatedFigure.VectorParser in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.VectorParser.pas',
+  DelphiDoom.Decl.ArticulatedFigure.BodyParser in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.BodyParser.pas',
+  DelphiDoom.Decl.ArticulatedFigure.ConstraintParser in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.ConstraintParser.pas',
+  DelphiDoom.Decl.ArticulatedFigure.SettingsParser in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.SettingsParser.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Writer in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Writer.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Finisher in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Finisher.pas',
+  DelphiDoom.Decl.ArticulatedFigure in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.pas',
+  DelphiDoom.Decl.ArticulatedFigure.Registration in '..\Libs\Decl\DelphiDoom.Decl.ArticulatedFigure.Registration.pas',
   DelphiDoom.Decl.FileScanner.Intf in '..\Libs\Decl\DelphiDoom.Decl.FileScanner.Intf.pas',
   DelphiDoom.Decl.Q3Shader.Types in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Types.pas',
   DelphiDoom.Decl.Q3Shader.Intf in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Intf.pas',
@@ -94,7 +105,10 @@ uses
   DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas',
   DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas',
   DelphiDoom.Tests.Decl.Q3Shader in 'Source\DelphiDoom.Tests.Decl.Q3Shader.pas',
-  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas';
+  DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas',
+  DelphiDoom.Tests.Decl.ArticulatedFigureSupport in 'Source\DelphiDoom.Tests.Decl.ArticulatedFigureSupport.pas',
+  DelphiDoom.Tests.Decl.ArticulatedFigure in 'Source\DelphiDoom.Tests.Decl.ArticulatedFigure.pas',
+  DelphiDoom.Tests.Decl.ArticulatedFigureGolden in 'Source\DelphiDoom.Tests.Decl.ArticulatedFigureGolden.pas';
 
 var
   Runner: ITestRunner;
