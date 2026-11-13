@@ -75,7 +75,9 @@ misura. Il cambio della tabella delle impostazioni non tocca il percorso caldo; 
   (e -Demo demo3, e -Modo 8)
 
 Proposta per il futuro (#41, solo se una misura lo permette): Fetta-1c-m_fixed-pascal.patch toglie l'asm di m_fixed
-(corpi di TFixedMath anche a 32 bit). Misurata una volta: vedi par. 9 del piano (piu' lenta: NON applicata).
+(corpi di TFixedMath anche a 32 bit). Misurata una volta (demo1, 32 bit, 8 coppie: mediane +3,40%, minimi +3,92%, misura RIFIUTATA per dispersione del vecchio 46%):
+NON applicata; per decidere: git apply Tools\Verifica\185\Fetta-1c-m_fixed-pascal.patch, compilare Doom32 in una cartella
+propria, Misura-Coppie con demo1 e demo3 a 8 e a 32 bit, poi git checkout -- Base\m_fixed.pas.
 
 7. Avvii
 --------

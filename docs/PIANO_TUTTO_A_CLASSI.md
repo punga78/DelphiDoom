@@ -197,3 +197,40 @@ Un merge non passa se un golden cambia senza che sia dichiarato e motivato (un d
 | 3 renderer software | da fare (`Libs\Renderer` ha le prime fette fredde) |
 | 4 renderer OpenGL | in corso (#177: fatte 0-5 in parte, 8, 9) |
 | 5 chiusura | da fare |
+
+## 9. Fetta 1c: la famiglia `m_*` (#185, 2026-11-13)
+
+(Nella tabella del par. 4 e' la riga "1b": i nomi delle fette sono stati assegnati dopo il piano; qui si usa quello del lavoro.)
+
+### Censimento (a `63a151cc`)
+
+Conteggi di occorrenze nel codice di `Base`, `Common`, giochi, `Radix`, `Speed`, `Launcher`, `DD_IDE`, `DD_Tools`, `Libs\ScriptHost`, `Libs\OpenGl`, `Libs\Ddc`.
+
+| Unit | Righe | Stato a `63a151cc` | Chiamanti e globali | Decisione |
+|---|---:|---|---|---|
+| `m_defs` | 2546 | dati: `defaults[]` di `default_t` (nome, puntatore al globale, `oldlocation`, chi puo' cambiarla, tre valori di partenza, tipo), 233/224/220/235 voci per Doom/Heretic/Hexen/Strife (19 gruppi, 125 interi, 118 booleani, 17 testi nel sorgente, con i rami OpenGL); lettori: `TEngineDefaults`, `TEngineConsoleVariable(Source)`, `TEngineScriptConsole`, che leggevano e **scrivevano** l'array (la forzatura spostava `location` sul valore di partenza) | puntatori a globali di circa 40 unit | **a classi**: righe e tabella in `Libs\Configuration`, accesso al globale dato dal composition root; l'array resta la dichiarazione delle voci, letto una volta |
+| `m_argv` | 244 | facciata sopra `Libs\CommandLine` (#150); `M_InitArgv` (raccolta di `ParamStr`, file `Doom32.cmd`, CD-ROM) ancora nel motore | `M_CheckParm` 347, `myargv` 153, `myargc` 190, `M_SaveFileName` 69 | **a classi** `M_InitArgv` (`TCommandLineStartup` + `IProgramEnvironment`); la facciata e `myargv`/`myargc` restano per i chiamanti procedurali |
+| `m_cheat` | 152 | `cht_CheckCheat`/`cht_GetParam` gia' sopra `TCheatSequence`; `get_cheatseq_string` (219 occorrenze, 86 con `0`) codice proprio | 7 file | **a classi** la lettura (`TCheatSequenceReader.FromChars/FromString`); `cht_*` restano (legate a `cheatseq_t` dei giochi) |
+| `m_rnd` | 212 | facciata sopra `IGameRandom` di `Libs\MathCore` (#75, #150) | `P_Random` 931, `N_Random` 119, `M_Random` 18 | **storica** (vedi sotto): e' gia' una classe; parita' su 10 milioni di chiamate |
+| `m_fixed` | 798 | `asm` a 32 bit, `TFixedMath` a 64 | `FixedMul` 843, `FixedDiv` 153, altre 300 | **storica** (vedi sotto) |
+| `m_misc` | 50 | solo variabili (formato degli screenshot, testi dei booleani) | `screenshotformat` 59, `yesnoStrings` 22 | resta: sono le variabili lette dalla tabella delle impostazioni e dal menu |
+| `m_base` | 52 | solo costanti (`_GAME`, `APPNAME`, `DEFARGVFILENAME`, `WINCLASSNAME`, rami `RADIX`/`SPEED`) | `_GAME` 364 in 203 file | resta: costanti di compilazione, nessuna logica |
+| `m_smartpointerlist` | 174 | gia' una classe (`TSmartPointerList`) in una unit sua | `p_mobjlist` (hash dei mobj), `Libs\OpenGl\Legacy\mdl_dllmodel` (fuori dai limiti di questa fetta) | resta: spostarla in una libreria cambierebbe solo il nome (e toccherebbe `Libs\OpenGl`); la sua `Clear` sottrae a `memoryusage` di `d_delphi` gli elementi e non la capacita' (difetto del solo contatore del comando `mem`, conservato) |
+
+**Ordine seguito**: `m_defs` (il disegno che regge la fetta: tabella a classi con l'accesso al globale iniettato, la parita' piu' ampia), `m_cheat` e `m_argv` (confini chiari, la libreria c'era gia'), poi le decisioni su `m_rnd`/`m_fixed` con una misura, e per ultime le unit che restano (`m_misc`, `m_base`, `m_smartpointerlist`) con il motivo.
+
+### Disegno della tabella
+
+`Libs\Configuration` (nessun `uses` verso il motore): `IConfigurationValueAccess` (il piccolo oggetto che porta al globale: lo da' il composition root), `IConfigurationItem`/`TConfigurationItem` (una riga: nome, tipo, chi puo' cambiarla, valori di partenza, valore visto da file e console, valore vero, `ResetToDefault`, `Force*`: la prima forzatura chiude la riga e sposta il valore di prima nei valori di partenza, come faceva lo spostamento di `location`), `IConfigurationTable`/`TConfigurationTable` (l'ordine del file; la prima riga con un nome), `IConfigurationTableStore`/`TConfigurationTableStore` (i passi di `M_LoadDefaults`/`M_SaveDefaults`/`M_SetDefault`/`M_ForceDefault*` che non dipendono dal motore; `IConfigurationResetSink` per i messaggi e la console del reset). Motore: `TEngineConfigurationGlobal` (accesso su un puntatore), `TEngineConfigurationTable.Build` (le righe dai dati di `m_defs`, chiamata da `ComposeEngine`), `TEngineDefaults` (file, riga di comando, messaggi, `G_SetKeyboardMode` e skill dopo il caricamento), `TEngineConsoleVariable(Source)` e `TEngineScriptConsole` sulle righe. Nessuno scrive piu' l'array: tolto il campo `oldlocation` (276 righe).
+
+### `m_rnd` e `m_fixed`: le misure
+
+- **`m_fixed`**: provata una sola volta la versione Pascal anche a 32 bit (corpi di `TFixedMath` al posto dell'`asm`, `Tools\Verifica\185\Fetta-1c-m_fixed-pascal.patch`), Doom32 `-timedemo demo1` a 32 bit, 8 coppie: vecchio minimo 255 mediana 264,5 dispersione **46,27%**; nuovo minimo 265 mediana 273,5 dispersione 26,04%; mediane +3,40%, minimi +3,92%. Lo strumento ha **rifiutato** la misura (dispersione del vecchio oltre il 3%: l'altro agente compilava e misurava in parallelo). Senza una misura valida `m_fixed` **resta storica** (la tendenza, +3-4%, e il fatto che `Int64 * Int64` a 32 bit e' una chiamata a `_llmul` e la divisione a `_lldiv` dicono che e' al limite del 5%). Da rifare a macchina scarica (comando in `Tools\Verifica\185\Fetta-1c.txt`).
+- **`m_rnd`**: e' gia' a classi (`TGameRandom` dietro `IGameRandom`, una chiamata a interfaccia per numero dalla #75, entro il golden da allora); renderla un metodo statico di una classe `sealed` sarebbe un'ottimizzazione, non una conversione, e senza misura valida non si tocca. Parita' nuova: `DelphiDoom.Tests.MathCore.RandomParity`, 10 milioni di chiamate (5 semi, `P/M/N/Sys/C_Random`, `P_RandomFromSeed`, salva e ripristina, seme dei mostri, azzeramento) contro la copia di `m_rnd` prima della #75: valori e cinque indici uguali dopo ogni chiamata.
+
+### Esito (codice, 2026-11-13; la verifica pesante la fa un agente separato)
+
+- Righe: `m_defs` 2546 -> 2274, `m_argv` 244 -> 200, `m_cheat` 152 -> 155, `TEngineDefaults` 382 -> 278, `TEngineScriptConsole` 193 -> 120; nuove 787 in `Libs\Configuration` (4 unit nuove + aggiunte a `Intf`, `Types`, `Factory`), 162 in `Libs\CommandLine`, 33 in `Libs\Console`, 265 di adattatori in `Base`.
+- Test: Configuration 34 -> 58 (copertura 99%, le unit nuove 100%), CommandLine 102 -> 108 (100%), Console 175 -> 178 (96%), MathCore 122 -> 123 (98%); parita' vecchio/nuovo nello stesso eseguibile per tabella (300 tabelle casuali x 120 operazioni con confronto di ogni variabile, del file scritto e dei messaggi a ogni passo, piu' 300 file completi), `M_InitArgv` (2000 scenari, riga di comando e sequenza delle domande all'ambiente), `get_cheatseq_string` (40000 sequenze), `m_rnd` (10 milioni di chiamate). Una modifica finta (la forzatura che non chiude la riga) e' vista dalla parita' al passo 82 del primo scenario.
+- Build: dieci eseguibili con 387/337/309/259/204/154/418/345/386/387 avvisi (uguali a prima), `ddc_*` 386/308/203/417 (uguali al riferimento compilato nello stesso modo), Launcher 9, DD_IDE 24, DD_Tools 0 (uguali); zero avvisi nel codice nuovo.
+- **Non eseguito per il cambio di processo** (lo fa l'agente di verifica, comandi in `Tools\Verifica\185\Fetta-1c.txt`): golden (88 confronti), confronti `-ExtraIni`, confronto dei file `.ini` scritti (`Confronta-Ini.ps1`, scritto senza poterlo eseguire), riga di comando e file di risposta a runtime, `-timedemo`, avvii, misura a coppie.
