@@ -883,6 +883,7 @@ var
   LSeed: Cardinal;
   LUsed: array[0..GREED_MAP_TILES - 1] of Boolean;
   LPoints: TList<TLevelWaypoint>;
+  LHitPoints: Integer;
 
   procedure SetTile(APlane: TGreedPlane; ASpot, AValue: Integer);
   begin
@@ -991,6 +992,7 @@ var
   procedure AddSwapSwitch;
   var
     LTileX, LTileY, LSpot, LIndex, LElevatorX, LElevatorY, LElevator: Integer;
+    LAtCeiling: Boolean;
   begin
     LSpot := FreeTile(LTileX, LTileY);
     SetTile(gpMapSprites, LSpot, GREED_SM_SWAPSWITCH);
@@ -999,7 +1001,9 @@ var
       AddPoint(LTileX, LTileY);
     for LIndex := 1 to 1 + Pick(LSeed, 2) do
     begin
-      AddElevator(getSwap, FreeTile(LElevatorX, LElevatorY), Pick(LSeed, 2) = 0);
+      // the 32 bit compiler evaluates the parameters of a call from the last one: the draw of the third comes first
+      LAtCeiling := Pick(LSeed, 2) = 0;
+      AddElevator(getSwap, FreeTile(LElevatorX, LElevatorY), LAtCeiling);
       LElevator := High(Result.Elevators);
       // one that is half way and cannot be swapped
       if Pick(LSeed, 5) = 0 then
@@ -1289,7 +1293,9 @@ begin
     for LIndex := 1 to 6 do
     begin
       FreeTile(LTileX, LTileY);
-      AddSprite(GREED_S_MONSTER1 + 2 * Pick(LSeed, 4), LTileX, LTileY, Pick(LSeed, 2) * 80, 0);
+      // the 32 bit compiler evaluates the parameter of the stack (the hit points) before the one in a register
+      LHitPoints := Pick(LSeed, 2) * 80;
+      AddSprite(GREED_S_MONSTER1 + 2 * Pick(LSeed, 4), LTileX, LTileY, LHitPoints, 0);
     end;
     if AIndex mod 8 = 3 then
       // too many of them: the area does not make another

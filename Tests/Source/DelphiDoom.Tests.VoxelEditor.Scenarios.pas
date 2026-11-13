@@ -100,6 +100,8 @@ var
   LGenerator: TGenerator;
   LDistance: Double;
   LDensity: Cardinal;
+  LColor: Cardinal;
+  LShade: Cardinal;
 begin
   LSize := ModelSize(AIndex);
   SetLength(Result, LSize * LSize * LSize);
@@ -137,8 +139,14 @@ begin
         // 256 cells a side: some thousands of voxels and a few at the faces of the cube
         LCount := 40000;
         for LIndex := 1 to LCount do
-          Result[(Integer(LGenerator.Below(LSize)) * LSize + Integer(LGenerator.Below(LSize))) * LSize
-            + Integer(LGenerator.Below(LSize))] := LGenerator.Color;
+        begin
+          // the draws are in separate statements, in the order of the 32 bit compiler (the 64 bit one picks another)
+          LX := Integer(LGenerator.Below(LSize));
+          LY := Integer(LGenerator.Below(LSize));
+          LZ := Integer(LGenerator.Below(LSize));
+          LColor := LGenerator.Color;
+          Result[(LX * LSize + LY) * LSize + LZ] := LColor;
+        end;
         for LIndex := 0 to LSize - 1 do
         begin
           Result[(LIndex * LSize + 0) * LSize + 0] := LGenerator.Color;
@@ -161,7 +169,10 @@ begin
           if AIndex = 8 then
             Result[LIndex] := LGenerator.Color
           else
-            Result[LIndex] := (LGenerator.Below(7) + 1) * $030507 + LGenerator.Below(3);
+          begin
+            LShade := LGenerator.Below(7) + 1;
+            Result[LIndex] := LShade * $030507 + LGenerator.Below(3);
+          end;
         end;
     end;
   end;

@@ -45,6 +45,11 @@ type
     /// </summary>
     procedure Compare(const AActual: TStrings; const AMaxUlps: Integer; const ALooseNames: array of string;
       const AAbsTolerance: Single = 0); overload;
+    /// <summary>
+    ///   Two tokens that hold the 16 hex digits of a Double (a 'D' prefix or a 'name=' prefix): at 64 bit they are the
+    ///   same if they are a few ULPs apart (x87 and SSE round the intermediates differently); at 32 bit never
+    /// </summary>
+    class function SameDoubleWithinUlps(const AExpected, AActual: string): Boolean; static;
     /// <summary>The bit pattern of a float as a '#' token</summary>
     class function FloatToken(const AValue: Single): string; static;
     /// <summary>The full path of a file of Tests\Data\IdLib</summary>
@@ -201,10 +206,53 @@ begin
           BitsToSingle(Cardinal(StrToInt64('$' + Copy(LActual[LToken], 2, 8))))) <= AAbsTolerance) then
           Continue;
       end;
+      if SameDoubleWithinUlps(LExpected[LToken], LActual[LToken]) then
+        Continue;
       Assert.Fail(Format('riga %d: attesa "%s", ottenuta "%s"', [LIndex + 1, FLines[LIndex], AActual[LIndex]]));
     end;
   end;
   Assert.AreEqual(FLines.Count, AActual.Count, 'il calcolo ha righe in piu'' del golden');
+end;
+
+// The golden files were made by the C++ and by the 32 bit Delphi code, where the intermediates of an expression
+// of Double are kept in the 64 bits of mantissa of the x87 FPU. At 64 bit (SSE) every operation rounds to 53 bits:
+// a result written as 16 hex digits of a Double (a token 'D' + 16 digits, or 'name=' + 16 digits) can be a couple
+// of ULPs away. This is the legitimate rounding of the other FPU, and only there: at 32 bit the match is exact
+class function TIdLibGolden.SameDoubleWithinUlps(const AExpected, AActual: string): Boolean;
+const
+  MAX_DOUBLE_ULPS = 16;
+var
+  LPrefixLength: Integer;
+  LLeft, LRight: UInt64;
+  LDistance: UInt64;
+begin
+  Result := False;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+  Exit;
+{$ELSE}
+  if Length(AExpected) <> Length(AActual) then
+    Exit;
+  if (Length(AExpected) = 17) and (AExpected[1] = 'D') and (AActual[1] = 'D') then
+    LPrefixLength := 1
+  else if (Length(AExpected) > 17) and (AExpected[Length(AExpected) - 16] = '=') then
+    LPrefixLength := Length(AExpected) - 16
+  else
+    Exit;
+  if Copy(AExpected, 1, LPrefixLength) <> Copy(AActual, 1, LPrefixLength) then
+    Exit;
+  if not TryStrToUInt64('$' + Copy(AExpected, LPrefixLength + 1, 16), LLeft) then
+    Exit;
+  if not TryStrToUInt64('$' + Copy(AActual, LPrefixLength + 1, 16), LRight) then
+    Exit;
+  // the same sign (the top bit) and a few steps of the mantissa
+  if (LLeft shr 63) <> (LRight shr 63) then
+    Exit;
+  if LLeft > LRight then
+    LDistance := LLeft - LRight
+  else
+    LDistance := LRight - LLeft;
+  Result := LDistance <= MAX_DOUBLE_ULPS;
+{$IFEND}
 end;
 
 { TIdLibSampler }

@@ -260,6 +260,7 @@ var
   LParts: TArray<string>;
   LChunk: TBytes;
   LIndex: Integer;
+  LModeResult: Integer;
   LCount: Integer;
   LLength: Cardinal;
   LPriority: Integer;
@@ -313,10 +314,12 @@ begin
         'M':
           begin
             NeedManager;
+            // the call writes to the same log: it runs first (as the 32 bit compiler did in the chain), then the line
             if StrToInt(LParts[1]) = 2 then
-              LLog.Append('m ').Append(Ord(LManager.TrySetMode(ksmAdLib))).Append(#10)
+              LModeResult := Ord(LManager.TrySetMode(ksmAdLib))
             else
-              LLog.Append('m ').Append(Ord(LManager.TrySetMode(ksmOff))).Append(#10);
+              LModeResult := Ord(LManager.TrySetMode(ksmOff));
+            LLog.Append('m ').Append(LModeResult).Append(#10);
           end;
         'P':
           begin

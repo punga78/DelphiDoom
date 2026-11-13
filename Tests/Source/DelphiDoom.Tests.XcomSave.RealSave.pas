@@ -158,13 +158,17 @@ begin
   if not TryStrToFloat(Trim(Copy(ALeft, Pos(':', ALeft) + 1, MaxInt)), LLeft, LFormat) or
     not TryStrToFloat(Trim(Copy(ARight, Pos(':', ARight) + 1, MaxInt)), LRight, LFormat) then
     Exit(False);
-  Result := Abs(LLeft - LRight) <= 1E-15 * Abs(LLeft);
+  // at 32 bit the match is within 1E-15; at 64 bit (SSE, no extended intermediates) the speeds, a difference of terms that
+  // cancel, are a few thousand ULPs of the x87 values (see TXcomSim.SameValue)
+  Result := Abs(LLeft - LRight) <= 1E-11 * Abs(LLeft);
 end;
 
 class function TTestXcomRealSave.SameSave(const AExpected, AActual: TYamlText): Boolean;
 const
-  // the speeds that a target recomputes when the game is loaded: the last bit depends on the x87
-  TOLERATED: array[0..2] of string = ('speedLon:', 'speedLat:', 'speedRadian:');
+  // the speeds that a target recomputes when the game is loaded: the last bit depends on the x87; the positions
+  // (lon, lat) are the same sums, and at 64 bit (SSE) they differ from the x87 golden in the last bit
+  TOLERATED: array[0..6] of string = ('speedLon:', 'speedLat:', 'speedRadian:', 'lon:', 'lat:', 'globeLon:',
+    'globeLat:');
 var
   LExpected, LActual: TStringList;
   LIndex, LKey: Integer;
@@ -184,6 +188,8 @@ begin
       if LExpected[LIndex] = LActual[LIndex] then
         Continue;
       LLine := Trim(LExpected[LIndex]);
+      if LLine.StartsWith('- ') then
+        LLine := Copy(LLine, 3, MaxInt);
       Result := False;
       for LKey := 0 to High(TOLERATED) do
         if LLine.StartsWith(TOLERATED[LKey]) and SameValue(LExpected[LIndex], LActual[LIndex]) then

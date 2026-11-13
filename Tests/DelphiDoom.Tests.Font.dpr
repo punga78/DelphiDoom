@@ -23,6 +23,7 @@ uses
   DelphiDoom.Font.TextComposer in '..\Libs\Font\DelphiDoom.Font.TextComposer.pas',
   DelphiDoom.Font.GridComposer in '..\Libs\Font\DelphiDoom.Font.GridComposer.pas',
   DelphiDoom.Font.PerlinNoise in '..\Libs\Font\DelphiDoom.Font.PerlinNoise.pas',
+  DelphiDoom.MathCore.SoftExtended in '..\Libs\MathCore\DelphiDoom.MathCore.SoftExtended.pas',
   DelphiDoom.Font.Colorizer in '..\Libs\Font\DelphiDoom.Font.Colorizer.pas',
   DelphiDoom.Font.Exporter in '..\Libs\Font\DelphiDoom.Font.Exporter.pas',
   DelphiDoom.Font.LumpNames in '..\Libs\Font\DelphiDoom.Font.LumpNames.pas',

@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Imaging.WallScale;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Intf,
+  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.WallScale, DelphiDoom.Imaging.Factory, DelphiDoom.Tests.Imaging.Samples,
   DelphiDoom.Tests.Imaging.Golden;
 
@@ -30,6 +30,7 @@ type
   private
     function Context(ADistance, AProjection, AMaxScale: Integer; APrecise: Boolean): TImagingScaleContext;
     function ScaleWith(ASine: Integer): IImagingWallScale;
+    procedure CheckDoubles(const ADoubles: TBytes);
   public
     [Test]
     procedure TestScalesMatchTheOldCode;
@@ -120,8 +121,64 @@ begin
     Move(LDouble, LDoubles[LIndex * 8], 8);
   end;
   TImagingGolden.Check('scale.golden.txt', 'scale_ints', TImagingSamples.Hex(TImagingSamples.Hash(LInts)));
-  TImagingGolden.Check('scale.golden.txt', 'scale_doubles', TImagingSamples.Hex(TImagingSamples.Hash(LDoubles)));
+  CheckDoubles(LDoubles);
 end;
+
+// The doubles come from Sin of an Extended and a quotient kept in the 64 bits of mantissa of the x87 FPU. At 32 bit
+// the hash of their bytes is the golden file (made by the old code). At 64 bit (SSE, 53 bits) the same chain of
+// operations gives numbers a few ULPs away, and a sine that the C library rounds in another way is the same: the
+// values are compared one by one with the ones that the 32 bit run wrote (scale.doubles.golden.txt, hex of the bits)
+// and may be at most 1E-12 apart in relative terms, which is far under the effect of a wrong formula
+procedure TTestImagingWallScale.CheckDoubles(const ADoubles: TBytes);
+{$IF SizeOf(Extended) = SizeOf(Double)}
+var
+  LExpected: TStringList;
+  LIndex: Integer;
+  LValue: Double;
+  LBits: UInt64;
+  LExpectedValue: Double;
+begin
+  LExpected := TImagingGolden.Load('scale.doubles.golden.txt');
+  try
+    Assert.AreEqual<Integer>(Length(ADoubles) div 8, LExpected.Count, 'number of values');
+    for LIndex := 0 to LExpected.Count - 1 do
+    begin
+      Move(ADoubles[LIndex * 8], LValue, 8);
+      LBits := StrToUInt64('$' + LExpected[LIndex]);
+      Move(LBits, LExpectedValue, 8);
+      if LValue <> LExpectedValue then
+        Assert.IsTrue(Abs(LValue - LExpectedValue) <= 1E-12 * Abs(LExpectedValue),
+          Format('value %d: %.17g and %.17g', [LIndex, LExpectedValue, LValue]));
+    end;
+  finally
+    LExpected.Free;
+  end;
+end;
+{$ELSE}
+var
+  LPath: string;
+  LList: TStringList;
+  LIndex: Integer;
+  LBits: UInt64;
+begin
+  LPath := GetEnvironmentVariable('DELPHIDOOM_IMAGING_SCALE_DOUBLES_OUT');
+  if LPath <> '' then
+  begin
+    LList := TStringList.Create;
+    try
+      for LIndex := 0 to Length(ADoubles) div 8 - 1 do
+      begin
+        Move(ADoubles[LIndex * 8], LBits, 8);
+        LList.Add(IntToHex(LBits, 16));
+      end;
+      LList.SaveToFile(LPath);
+    finally
+      LList.Free;
+    end;
+  end;
+  TImagingGolden.Check('scale.golden.txt', 'scale_doubles', TImagingSamples.Hex(TImagingSamples.Hash(ADoubles)));
+end;
+{$IFEND}
 
 procedure TTestImagingWallScale.TestFixedScaleIsTheQuotientOfProjectionAndDistance;
 begin

@@ -44,6 +44,7 @@ type
     class function ReadText(const APath: string): TYamlText; static;
     class function Normalize(const AText: string): string; static;
     class function FirstDifference(const AExpected, AActual: string): string; static;
+    class function SamePosition(const ALeft, ARight: string): Boolean; static;
     function Describe(const AReport: TXcomDebriefingReport; const AGame: TXcomSavedGame; ASeed: UInt64;
       AWithStatStrings: Boolean): string;
     procedure CalcAllStatStrings(const AGame: TXcomSavedGame);
@@ -61,6 +62,9 @@ type
   end;
 
 implementation
+
+const
+  NO_DIFFERENCE = 'no difference';
 
 class function TTestXcomRealDebriefing.DataFolder: string;
 var
@@ -140,10 +144,30 @@ begin
       LRight := LActual[LIndex]
     else
       LRight := '(end)';
-    if LLeft <> LRight then
+    if (LLeft <> LRight) and not SamePosition(LLeft, LRight) then
       Exit(Format('line %d expected [%s] actual [%s]', [LIndex, LLeft, LRight]));
   end;
-  Result := 'no difference';
+  Result := NO_DIFFERENCE;
+end;
+
+class function TTestXcomRealDebriefing.SamePosition(const ALeft, ARight: string): Boolean;
+var
+  LLeft, LRight: Double;
+  LFormat: TFormatSettings;
+  LKey: string;
+begin
+  // the coordinates of a craft or a base come from a chain of trigonometric terms: the C++ golden is x87 with
+  // extended intermediates and the 64 bit build is SSE, so they differ in the last bit or two
+  Result := False;
+  LKey := Trim(ALeft);
+  if LKey.StartsWith('- ') then
+    LKey := Copy(LKey, 3, MaxInt);
+  if not (LKey.StartsWith('lat:') or LKey.StartsWith('lon:')) then
+    Exit;
+  LFormat := TFormatSettings.Invariant;
+  if TryStrToFloat(Trim(Copy(ALeft, Pos(':', ALeft) + 1, MaxInt)), LLeft, LFormat) and
+    TryStrToFloat(Trim(Copy(ARight, Pos(':', ARight) + 1, MaxInt)), LRight, LFormat) then
+    Result := Abs(LLeft - LRight) <= 1E-11 * Abs(LLeft);
 end;
 
 procedure TTestXcomRealDebriefing.SetupFixture;
@@ -279,6 +303,7 @@ var
   LEngineRef: IXcomBattleTileEngine;
   LPathfinder: IXcomBattlePathfinder;
   LConverter: TFunc<TXcomBattleUnit, TXcomBattleUnit>;
+  LDifference: string;
 begin
   Result := '';
   LFile := TYamlFactory.CreateParser.LoadAll(ReadText(AInputBase + '.pre.sav'));
@@ -368,15 +393,17 @@ begin
           LTail.Free;
           LHead.Free;
         end;
-        if Normalize(LExpected) <> Normalize(LActual) then
-          Exit('report: ' + FirstDifference(Normalize(LExpected), Normalize(LActual)));
+        LDifference := FirstDifference(Normalize(LExpected), Normalize(LActual));
+        if LDifference <> NO_DIFFERENCE then
+          Exit('report: ' + LDifference);
         LPost := YamlTextToString(LGame.Save(LInfo, LSettings, LRandom));
         LExpected := TEncoding.UTF8.GetString(ReadBytes(AInputBase + '.post.sav'));
         if (GetEnvironmentVariable('DEBRIEF_DUMP') <> '') and (Normalize(LExpected) <> Normalize(LPost)) then
           TFile.WriteAllText(IncludeTrailingPathDelimiter(GetEnvironmentVariable('DEBRIEF_DUMP')) +
             ExtractFileName(AInputBase) + '.actual.sav', Normalize(LPost), TEncoding.UTF8);
-        if Normalize(LExpected) <> Normalize(LPost) then
-          Exit('saved game: ' + FirstDifference(Normalize(LExpected), Normalize(LPost)));
+        LDifference := FirstDifference(Normalize(LExpected), Normalize(LPost));
+        if LDifference <> NO_DIFFERENCE then
+          Exit('saved game: ' + LDifference);
       finally
         LReport.Free;
       end;

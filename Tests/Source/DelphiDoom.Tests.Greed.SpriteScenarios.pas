@@ -683,11 +683,20 @@ end;
 function BuildBullet(var AScenario: TSpriteScenario; var ASeed: Cardinal; ANearX, ANearY, ASpread: Integer): TGreedSprite;
 const
   SPAWN_IDS: array[0..4] of Integer = (0, 1, 255, 200, 201);
+var
+  LZAdjust, LAngle, LAngle2, LSpawnId, LKind: Integer;
 begin
   Result := Default(TGreedSprite);
   PlaceSprite(AScenario, ASeed, Result, ANearX, ANearY, ASpread);
-  TSpriteScenarioRunner.FillSpawned(Result, BULLET_KINDS[Pick(ASeed, 34)], Result.X, Result.Y, Result.Z,
-    (10 + Pick(ASeed, 60)) * FRACUNIT, Pick(ASeed, 1024), Pick(ASeed, 81) - 40, True, SPAWN_IDS[Pick(ASeed, 5)]);
+  // the draws in the order of the 32 bit compiler, which evaluates the parameters of the stack from the left and then
+  // those of the registers from the right (the 64 bit one goes from the left): the kind, in a register, is last
+  LZAdjust := (10 + Pick(ASeed, 60)) * FRACUNIT;
+  LAngle := Pick(ASeed, 1024);
+  LAngle2 := Pick(ASeed, 81) - 40;
+  LSpawnId := SPAWN_IDS[Pick(ASeed, 5)];
+  LKind := BULLET_KINDS[Pick(ASeed, 34)];
+  TSpriteScenarioRunner.FillSpawned(Result, LKind, Result.X, Result.Y, Result.Z, LZAdjust, LAngle, LAngle2, True,
+    LSpawnId);
   if Pick(ASeed, 3) = 0 then
     Result.StartSpot := -1;
   if Pick(ASeed, 4) = 0 then

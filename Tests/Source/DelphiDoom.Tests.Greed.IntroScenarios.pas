@@ -276,7 +276,7 @@ const
     GREED_SC_Y, GREED_SC_SPACE);
 var
   LRandom: TIntroRandom;
-  LTic, LIndex: Integer;
+  LTic, LIndex, LHold: Integer;
 begin
   LRandom.Seed := INTRO_SEED + Cardinal(AIndex) * 6151;
   LRandom.Next(1);
@@ -333,7 +333,10 @@ begin
       begin
         // the title left with escape or enter at some point
         Result.Kind := ikIntro;
-        AddKey(Result, 30 + LRandom.Next(1500), GREED_SC_ESCAPE, 2 + LRandom.Next(30));
+        // the draws in the order of the 32 bit compiler: the parameter of the stack first, then the ones of the
+        // registers from the right (the 64 bit compiler goes from the left)
+        LHold := 2 + LRandom.Next(30);
+        AddKey(Result, 30 + LRandom.Next(1500), GREED_SC_ESCAPE, LHold);
         Result.Base.MaxTics := 2400;
       end;
     10..23:
@@ -348,7 +351,10 @@ begin
           if LRandom.Chance(25) then
             AddKey(Result, LTic, GREED_SC_SPACE, 2 + LRandom.Next(4))
           else
-            AddKey(Result, LTic, MENU_KEYS[LRandom.Next(Length(MENU_KEYS))], 2 + LRandom.Next(4));
+          begin
+            LHold := 2 + LRandom.Next(4);
+            AddKey(Result, LTic, MENU_KEYS[LRandom.Next(Length(MENU_KEYS))], LHold);
+          end;
           LTic := LTic + 13 + LRandom.Next(140);
         end;
       end;
