@@ -17,7 +17,7 @@ unit DelphiDoom.MapFile.Proc.Intf;
 interface
 
 uses
-  DelphiDoom.MapFile.Proc.ProcFile;
+  DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Bounds, DelphiDoom.MapFile.Proc.ProcFile;
 
 type
   /// <summary>Turns the text of a .proc file into the model. The caller owns the file that is returned</summary>
@@ -30,6 +30,22 @@ type
     function Parse(const AFileName: AnsiString): TProcFile;
     /// <summary>Reads a text that is already in memory; the name is only used in the messages</summary>
     function ParseText(const AText, AName: AnsiString): TProcFile;
+  end;
+
+  /// <summary>
+  ///   What the collision and the renderer ask of the node tree of a .proc file: the area of a
+  ///   point and the areas a box touches. The nodes of the file are only data: whoever needs
+  ///   them depends on this interface, not on the file
+  /// </summary>
+  IProcAreaLocator = interface
+    ['{4D7B2C1E-6A31-4E0B-9C52-7F3A18D0B613}']
+    /// <summary>The area of a point: 0 .. NumAreas-1, or -1 in solid or without nodes (PointInArea)</summary>
+    function PointInArea(const APoint: TGeoVec3): Integer;
+    /// <summary>
+    ///   Fills <c>AAreas</c> with up to <c>AMaxAreas</c> different areas the box touches and
+    ///   returns how many (BoundsInAreas); the array grows to <c>AMaxAreas</c> if it is shorter
+    /// </summary>
+    function BoundsInAreas(const ABounds: TGeoBounds; var AAreas: TArray<Integer>; const AMaxAreas: Integer): Integer;
   end;
 
   /// <summary>Turns the model into the text of a .proc file, in the format of dmap</summary>

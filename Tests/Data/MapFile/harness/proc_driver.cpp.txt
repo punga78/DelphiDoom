@@ -1,0 +1,88 @@
+// Issue #107, third slice: the real idRenderWorldLocal::PointInArea, BoundsInAreas_r and BoundsInAreas
+// (cut out of renderer/RenderWorld.cpp by proc_build.ps1.txt into area_original.inc), on the node tree of
+// proc_nodes.txt. The class around them is the minimum they need.
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idDeclManager *declManager = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void idCommon::Printf(const char *, ...) {}
+void idCommon::Warning(const char *, ...) {}
+void idCommon::DWarning(const char *, ...) {}
+void idCommon::Error(const char *fmt, ...) { printf("ERR\n"); exit(1); }
+void idCommon::FatalError(const char *fmt, ...) { printf("ERR\n"); exit(1); }
+idFile *idFileSystem::OpenFileRead(const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileRead(const char *) { return 0; }
+idFile *idFileSystem::OpenFileWrite(const char *, const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *) { return 0; }
+void idFileSystem::CloseFile(idFile *) {}
+int idFileSystem::ReadFile(const char *, void **, long *) { return -1; }
+void idFileSystem::FreeFile(void *) {}
+
+typedef struct areaNode_s {
+	idPlane		plane;
+	int			children[2];
+	int			commonChildrenArea;
+} areaNode_t;
+
+class idRenderWorldLocal {
+public:
+	areaNode_t *areaNodes;
+	int numPortalAreas;
+	idRenderWorldLocal() : areaNodes(0), numPortalAreas(0) {}
+	int PointInArea( const idVec3 &point ) const;
+	void BoundsInAreas_r( int nodeNum, const idBounds &bounds, int *areas, int *numAreas, int maxAreas ) const;
+	int BoundsInAreas( const idBounds &bounds, int *areas, int maxAreas ) const;
+};
+
+#include "area_original.inc"
+
+static unsigned int seed = 12345;
+static unsigned int next() { seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5; return seed; }
+
+int main(int argc, char **argv) {
+	idLib::common = 0; idMath::Init();
+	if (argc < 2) { printf("usage: proc <nodes file>\n"); return 1; }
+	FILE *f = fopen(argv[1], "r");
+	if (!f) return 1;
+	idRenderWorldLocal world;
+	char line[256];
+	int count = 0;
+	static areaNode_t nodes[64];
+	while (fgets(line, sizeof(line), f)) {
+		float a, b, c, d; int pos, neg, n;
+		if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;
+		if (sscanf(line, "areas %d", &n) == 1) { world.numPortalAreas = n; continue; }
+		if (sscanf(line, "%f %f %f %f %d %d", &a, &b, &c, &d, &pos, &neg) == 6) {
+			nodes[count].plane = idPlane(a, b, c, d);
+			nodes[count].children[0] = pos; nodes[count].children[1] = neg;
+			count++;
+		}
+	}
+	fclose(f);
+	world.areaNodes = count ? nodes : 0;
+	static const float v[7] = { -70, -30, 0.05f, 10, 45, 100, 130 };
+	int n = 0;
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 7; j++) for (int k = 0; k < 7; k++)
+		printf("P %d %d\n", n++, world.PointInArea(idVec3(v[i], v[j], v[k])));
+	for (int i = 0; i < 300; i++) {
+		float cx = (float)((int)(next() % 241) - 120), cy = (float)((int)(next() % 241) - 120), cz = (float)((int)(next() % 241) - 120);
+		float hx = (float)(1 + next() % 60), hy = (float)(1 + next() % 60), hz = (float)(1 + next() % 60);
+		int maxAreas = 1 + (i % 5) * 2;
+		int areas[16];
+		idBounds b(idVec3(cx - hx, cy - hy, cz - hz), idVec3(cx + hx, cy + hy, cz + hz));
+		int num = world.BoundsInAreas(b, areas, maxAreas);
+		printf("B %d %d %d", i, maxAreas, num);
+		for (int j = 0; j < num; j++) printf(" %d", areas[j]);
+		printf("\n");
+	}
+	return 0;
+}

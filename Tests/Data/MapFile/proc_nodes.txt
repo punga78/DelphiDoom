@@ -1,0 +1,8 @@
+# the node tree for proc_area.golden.txt: "areas N", then one node per line: a b c d positiveChild negativeChild
+# (0 = solid, negative = area -1 - child, positive = node). Node 0 is the root.
+areas 4
+1 0 0 0 1 2
+0 1 0 10 -1 3
+0 0 1 -20 4 -3
+0.6 0.8 0 -30 -2 0
+0.57735 0.57735 0.57735 -50 -4 -1
