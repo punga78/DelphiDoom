@@ -2,7 +2,7 @@
 rem ---------------------------------------------------------------------------
 rem  Compila i progetti DelphiDoom con Delphi 11 (XE11) senza IDE.
 rem
-rem  Uso:   Tools\build.bat [progetto|all|giochi|strumenti] [Release|Debug] [clean]
+rem  Uso:   Tools\build.bat [progetto|all|giochi|strumenti] [Release|Debug] [Win32|Win64|both] [clean]
 rem         (si puo' chiamare da qualsiasi cartella: la radice del repository si
 rem          ricava dal percorso di questo file; i log vanno in <radice>\logs)
 rem
@@ -18,6 +18,12 @@ rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3
 rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\Tests); li esegue
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
 rem    build.bat all Release clean  cancella tutta la cartella dcu prima di compilare
+rem    build.bat all Release Win64  tutti i progetti a 64 bit (dcc64); i progetti che non
+rem                                 compilano ancora a 64 bit (#41, #42, #43) sono elencati a parte
+rem    build.bat tests Release Win64  librerie e test a 64 bit, li esegue (DLL e exe della stessa bitness)
+rem    build.bat all Release both   Win32 e poi Win64, riepilogo per piattaforma
+rem  La piattaforma e il clean si possono dare in qualsiasi ordine dopo la configurazione;
+rem  predefinita Win32 (comportamento di sempre).
 rem
 rem  Cartelle (tutte dentro il progetto):
 rem    bin\Doom, bin\Heretic, bin\Hexen, bin\Strife   eseguibili dei giochi
@@ -25,6 +31,9 @@ rem    bin\Tools                                      DD_IDE, ddc, ddc_*.dll
 rem    bin                                            Launcher
 rem    dcu\...\<Release|Debug>                        file .dcu
 rem    logs\<progetto>.log                            log completo di ogni build
+rem  Win64: bin\Win64\... (stesse sottocartelle, DLL in bin\Win64\Libs), dcu\Win64\...,
+rem         logs\Win64\<progetto>.log. Win32 resta dov'e' sempre.
+rem  Codice di uscita: errori di Win32 -> 1; i progetti che non compilano a 64 bit non lo alzano.
 rem
 rem  Variabile opzionale:
 rem    BDS_DIR  cartella di installazione di Delphi, es.
@@ -36,7 +45,14 @@ set "WHAT=%~1"
 if "%WHAT%"=="" set "WHAT=Doom32"
 set "CONFIG=%~2"
 if "%CONFIG%"=="" set "CONFIG=Release"
-set "CLEAN=%~3"
+set "CLEAN="
+set "PLATS=Win32"
+for %%A in (%3 %4) do (
+  if /i "%%~A"=="clean" set "CLEAN=clean"
+  if /i "%%~A"=="Win32" set "PLATS=Win32"
+  if /i "%%~A"=="Win64" set "PLATS=Win64"
+  if /i "%%~A"=="both"  set "PLATS=Win32 Win64"
+)
 
 set "GIOCHI=Doom\Doom32 Radix\Radix32 Speed\SpeedHaste32 Doom\GLDoom32 Heretic\Heretic32 Heretic\GLHeretic32 Hexen\Hexen32 Hexen\GLHexen32 Strife\Strife32 Strife\GLStrife32"
 set "STRUMENTI=Launcher\Launcher DD_IDE\DD_IDE DD_Tools\DD_Tools Libs\Ddc\ddc Doom\ddc_doom Heretic\ddc_heretic Hexen\ddc_hexen Strife\ddc_strife Keen\Keen32 Greed\Greed32 Speed\Speed32 OpenXcom\Xcom32 Libs\Parity\ParityTool"
@@ -83,7 +99,7 @@ if not exist "%BDS_DIR%\bin\rsvars.bat" (
 
 call "%BDS_DIR%\bin\rsvars.bat"
 echo Delphi: %BDS_DIR%
-echo Configurazione: %CONFIG%, Win32
+echo Configurazione: %CONFIG%, %PLATS%
 echo Progetti: %LISTA%
 echo.
 
@@ -93,44 +109,79 @@ rem possono restituire dimensioni vecchie e far vedere i sorgenti troncati)
 echo Aggiornamento elenco file...
 dir /s /a-d *.pas *.inc *.dpr *.dproj *.dfm *.res >nul 2>&1
 if /i "%CLEAN%"=="clean" (
-  echo Pulizia cartella dcu...
-  if exist dcu rd /s /q dcu
+  if "%PLATS%"=="Win64" (
+    echo Pulizia cartella dcu\Win64...
+    if exist dcu\Win64 rd /s /q dcu\Win64
+  ) else (
+    echo Pulizia cartella dcu...
+    if exist dcu rd /s /q dcu
+  )
 )
 
-set "OK="
-set "KO="
 set "RCTOT=0"
 
-for %%P in (%LISTA%) do (
-  if not exist "%%P.dproj" (
-    echo [%%P] ERRORE: %%P.dproj non esiste.
-    set "KO=!KO! %%P"
-    set "RCTOT=1"
+for %%Q in (%PLATS%) do (
+  set "PLAT=%%Q"
+  set "OK="
+  set "KO="
+  if /i "%%Q"=="Win64" (
+    set "PBIN=bin\Win64"
+    set "PLOG=logs\Win64"
   ) else (
-    echo ===== %%~nxP =====
-    msbuild "%%P.dproj" /t:Build /p:Config=%CONFIG% /p:Platform=Win32 /nologo /v:n /nr:false > "logs\%%~nxP.log" 2>&1
-    if errorlevel 1 (
-      findstr /R /B /C:"[A-Za-z].*: error [A-Z][0-9]" "logs\%%~nxP.log" | sort /unique
-      echo [%%~nxP] FALLITA - log: logs\%%~nxP.log
+    set "PBIN=bin"
+    set "PLOG=logs"
+  )
+  if not exist "!PLOG!" mkdir "!PLOG!"
+  if exist "!PLOG!\_riepilogo_errori.txt" del "!PLOG!\_riepilogo_errori.txt"
+  echo ################ %%Q ################
+  echo.
+
+  for %%P in (%LISTA%) do (
+    if not exist "%%P.dproj" (
+      echo [%%P] ERRORE: %%P.dproj non esiste.
       set "KO=!KO! %%P"
       set "RCTOT=1"
     ) else (
-      findstr /B /C:"    Avvisi" /C:"    Warning(s)" "logs\%%~nxP.log"
-      echo [%%~nxP] OK
-      set "OK=!OK! %%P"
+      echo ===== %%~nxP ^(%%Q^) =====
+      msbuild "%%P.dproj" /t:Build /p:Config=%CONFIG% /p:Platform=%%Q /nologo /v:n /nr:false > "!PLOG!\%%~nxP.log" 2>&1
+      if errorlevel 1 (
+        findstr /R /B /C:"[A-Za-z].*: error [A-Z][0-9]" "!PLOG!\%%~nxP.log" | sort /unique
+        echo [%%~nxP] FALLITA ^(%%Q^) - log: !PLOG!\%%~nxP.log
+        set "KO=!KO! %%P"
+        if /i "%%Q"=="Win32" set "RCTOT=1"
+        set "PRIMO="
+        for /f "delims=" %%E in ('findstr /R /C:"error [A-Z][0-9]" "!PLOG!\%%~nxP.log"') do if not defined PRIMO (
+          set "PRIMO=1"
+          >> "!PLOG!\_riepilogo_errori.txt" echo   %%~nxP: %%E
+        )
+        if not defined PRIMO >> "!PLOG!\_riepilogo_errori.txt" echo   %%~nxP: nessun errore di compilazione nel log, vedi !PLOG!\%%~nxP.log
+      ) else (
+        findstr /B /C:"    Avvisi" /C:"    Warning(s)" "!PLOG!\%%~nxP.log"
+        echo [%%~nxP] OK
+        set "OK=!OK! %%P"
+      )
+      echo.
     )
-    echo.
   )
+
+  if /i "%WHAT%"=="tests" (
+    for %%T in (!PBIN!\Tests\DelphiDoom.Tests*.exe) do (
+      echo ===== esecuzione %%~nxT ^(%%Q^) =====
+      "%%T" --exitbehavior:Continue | findstr /B /C:"Tests " /C:"  DelphiDoom" /C:"  Message"
+    )
+  )
+  set "OK_%%Q=!OK!"
+  set "KO_%%Q=!KO!"
 )
 
-if /i "%WHAT%"=="tests" (
-  for %%T in (bin\Tests\DelphiDoom.Tests*.exe) do (
-    echo ===== esecuzione %%~nxT =====
-    "%%T" --exitbehavior:Continue | findstr /B /C:"Tests " /C:"  DelphiDoom" /C:"  Message"
+echo ---------------------------------------------------------------
+for %%Q in (%PLATS%) do (
+  echo [%%Q]
+  if defined OK_%%Q (echo   Riuscite :!OK_%%Q!) else echo   Riuscite : nessuna
+  if defined KO_%%Q (
+    if /i "%%Q"=="Win64" (echo   Non ancora a 64 bit ^(primo errore di ciascuno; sbloccano #41, #42, #43^):) else echo   Fallite  :!KO_%%Q!
+    if /i "%%Q"=="Win64" if exist logs\Win64\_riepilogo_errori.txt type logs\Win64\_riepilogo_errori.txt
   )
 )
-echo ---------------------------------------------------------------
-if defined OK echo Riuscite :%OK%
-if defined KO echo Fallite  :%KO%
 echo ---------------------------------------------------------------
 exit /b %RCTOT%
