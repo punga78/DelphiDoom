@@ -40,6 +40,22 @@ uses
   DelphiDoom.Console.CheatTable in '..\Libs\Console\DelphiDoom.Console.CheatTable.pas',
   DelphiDoom.Console.UtilityCommands in '..\Libs\Console\DelphiDoom.Console.UtilityCommands.pas',
   DelphiDoom.Console.Factory in '..\Libs\Console\DelphiDoom.Console.Factory.pas',
+  DelphiDoom.Console.CmdSystem.Types in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Types.pas',
+  DelphiDoom.Console.CmdSystem.Intf in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Intf.pas',
+  DelphiDoom.Console.CmdSystem.CommandList in '..\Libs\Console\DelphiDoom.Console.CmdSystem.CommandList.pas',
+  DelphiDoom.Console.CmdSystem.Buffer in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Buffer.pas',
+  DelphiDoom.Console.CmdSystem.System in '..\Libs\Console\DelphiDoom.Console.CmdSystem.System.pas',
+  DelphiDoom.Console.CmdSystem.Completions in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Completions.pas',
+  DelphiDoom.Console.CmdSystem.FolderCompletion in '..\Libs\Console\DelphiDoom.Console.CmdSystem.FolderCompletion.pas',
+  DelphiDoom.Console.CmdSystem.StandardCommands in '..\Libs\Console\DelphiDoom.Console.CmdSystem.StandardCommands.pas',
+  DelphiDoom.Console.CVar.Types in '..\Libs\Console\DelphiDoom.Console.CVar.Types.pas',
+  DelphiDoom.Console.CVar.Context in '..\Libs\Console\DelphiDoom.Console.CVar.Context.pas',
+  DelphiDoom.Console.CVar.Variable in '..\Libs\Console\DelphiDoom.Console.CVar.Variable.pas',
+  DelphiDoom.Console.CVar.Intf in '..\Libs\Console\DelphiDoom.Console.CVar.Intf.pas',
+  DelphiDoom.Console.CVar.System in '..\Libs\Console\DelphiDoom.Console.CVar.System.pas',
+  DelphiDoom.Console.CVar.Lister in '..\Libs\Console\DelphiDoom.Console.CVar.Lister.pas',
+  DelphiDoom.Console.CVar.Commands in '..\Libs\Console\DelphiDoom.Console.CVar.Commands.pas',
+  DelphiDoom.Console.IdTech4.Factory in '..\Libs\Console\DelphiDoom.Console.IdTech4.Factory.pas',
   DelphiDoom.Tests.Console.Fakes in 'Source\DelphiDoom.Tests.Console.Fakes.pas',
   DelphiDoom.Tests.Console.Golden in 'Source\DelphiDoom.Tests.Console.Golden.pas',
   DelphiDoom.Tests.Console.Text in 'Source\DelphiDoom.Tests.Console.Text.pas',
@@ -60,7 +76,9 @@ uses
   DelphiDoom.Tests.Console.CheatSequenceReader in 'Source\DelphiDoom.Tests.Console.CheatSequenceReader.pas',
   DelphiDoom.Tests.Console.CheatSequence in 'Source\DelphiDoom.Tests.Console.CheatSequence.pas',
   DelphiDoom.Tests.Console.CheatTable in 'Source\DelphiDoom.Tests.Console.CheatTable.pas',
-  DelphiDoom.Tests.Console.UtilityCommands in 'Source\DelphiDoom.Tests.Console.UtilityCommands.pas';
+  DelphiDoom.Tests.Console.UtilityCommands in 'Source\DelphiDoom.Tests.Console.UtilityCommands.pas',
+  DelphiDoom.Tests.Console.IdTech4.Fakes in 'Source\DelphiDoom.Tests.Console.IdTech4.Fakes.pas',
+  DelphiDoom.Tests.Console.CmdSystem in 'Source\DelphiDoom.Tests.Console.CmdSystem.pas';
 
 var
   Runner: ITestRunner;
