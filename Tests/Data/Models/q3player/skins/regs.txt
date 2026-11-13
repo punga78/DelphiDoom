@@ -1,0 +1,17 @@
+# the names registered in order, one per line; <empty> is the empty name
+models/players/test/lower_default.skin
+models/players/test/upper_default.skin
+models/players/test/head_default.skin
+MODELS/PLAYERS/TEST/LOWER_DEFAULT.SKIN
+models/players/test/weird.skin
+models/players/test/hilo.skin
+models/players/test/only_comments.skin
+models/players/test/only_comments.skin
+models/players/test/missing.skin
+models/players/test/missing.skin
+models/players/test/Weird.SKIN
+models/test/flag.tga
+x
+.skin
+<empty>
+models/players/test/a_name_of_more_than_sixty_three_characters_for_the_limit_x.skin

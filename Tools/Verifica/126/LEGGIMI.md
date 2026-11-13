@@ -1,5 +1,7 @@
 # Verifica #126: modelli dei giocatori di Quake III (`animation.cfg`, animazioni a due livelli, tag)
 
+**Seconda fetta (skin e file del giocatore)**: `build-skin.sh <cartella>` compila `q3skin.c` con le funzioni vere `CommaParse`, `RE_RegisterSkin`, `R_InitSkins`, `R_GetSkinByHandle` di `tr_image.c` e `CG_FileExists`, `CG_FindClientModelFile`, `CG_FindClientHeadFile` di `cg_players.c`; si lancia con `q3skin.exe Tests/Data/Models/q3player/skins > Tests/Data/Models/q3player/q3skin.golden.txt` (la cartella ha `fs.txt` con i file e le lunghezze che `trap_FS_FOpenFile` conosce, `regs.txt` con i nomi da registrare e i `.skin` scritti per i test). Il test e' `DelphiDoom.Tests.Models.Q3SkinParity`.
+
 Produce `Tests\Data\Models\q3player\q3player.golden.txt` con il codice **vero** di Quake III, non riscritto. `build.sh` compila con il gcc di `Reference\_dati\_strumenti\w64devkit` (SSE, `-ffp-contract=off`: ogni operazione `float` arrotondata da sola) i seguenti intervalli di righe, ritagliati dai sorgenti in sola lettura:
 
 - `code\cgame\cg_players.c`: `CG_ParseAnimationFile`, `CG_SetLerpFrameAnimation`, `CG_RunLerpFrame`, `CG_ClearLerpFrame`, `CG_PlayerAnimation`, `CG_SwingAngles`, `CG_AddPainTwitch`, `CG_PlayerAngles`;

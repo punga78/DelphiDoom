@@ -1,0 +1,6 @@
+// upper body
+U_Torso,"models/players/test/upper body.tga"
+/* block
+comment */ u_hands , models/players/test/hands.tga
+TAG_head,
+tag_weapon,

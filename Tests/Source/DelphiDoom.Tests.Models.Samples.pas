@@ -13,7 +13,7 @@ unit DelphiDoom.Tests.Models.Samples;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Models.Types;
+  System.SysUtils, DelphiDoom.Models.Types, DelphiDoom.Tests.Models.ExactSingle;
 
 type
   /// <summary>The same inputs for the old code and the new one: xorshift32 with a fixed seed</summary>
@@ -74,7 +74,9 @@ end;
 
 function TModelsRandom.NextSingle(const AMin, AMax: Double): Single;
 begin
-  Result := AMin + (AMax - AMin) * (NextCardinal / 4294967296.0);
+  // not a plain Double expression: the 32 bit FPU and the 64 bit one round it to another Single now
+  // and then (one case of the series of the merges is one ULP off), see TModelsExactSingle
+  Result := TModelsExactSingle.Interpolate(AMin, AMax, NextCardinal / 4294967296.0);
 end;
 
 function TModelsRandom.NextInteger(const ARange: Integer): Integer;
