@@ -48,7 +48,7 @@ var
   LNodes: TArray<TNetNodeAddress>;
 begin
   LNodes := TNetNodeListParser.Parse(['-NET', '2', '.192.168.0.2', 'PC3', ':6000', '.10.0.0.9'], 2, 5029);
-  Assert.AreEqual(3, Length(LNodes));
+  Assert.AreEqual<Integer>(3, Length(LNodes));
   Assert.AreEqual('192.168.0.2', LNodes[0].Host);
   Assert.IsTrue(LNodes[0].IsLiteral);
   Assert.AreEqual(Word(5029), LNodes[0].Port, 'porta di default');
@@ -64,15 +64,15 @@ var
   LNodes: TArray<TNetNodeAddress>;
 begin
   LNodes := TNetNodeListParser.Parse(['-NET', '1', 'PC2', '-DUP', '2', 'PC9'], 2, 5029);
-  Assert.AreEqual(1, Length(LNodes));
+  Assert.AreEqual<Integer>(1, Length(LNodes));
   Assert.AreEqual('PC2', LNodes[0].Host);
 end;
 
 procedure TTestNetNodeListParser.TestNoHostsIsAnEmptyList;
 begin
-  Assert.AreEqual(0, Length(TNetNodeListParser.Parse(['-NET', '1'], 2, 5029)));
-  Assert.AreEqual(0, Length(TNetNodeListParser.Parse(['-NET', '1', '-DRONE'], 2, 5029)));
-  Assert.AreEqual(0, Length(TNetNodeListParser.Parse(nil, 0, 5029)));
+  Assert.AreEqual<Integer>(0, Length(TNetNodeListParser.Parse(['-NET', '1'], 2, 5029)));
+  Assert.AreEqual<Integer>(0, Length(TNetNodeListParser.Parse(['-NET', '1', '-DRONE'], 2, 5029)));
+  Assert.AreEqual<Integer>(0, Length(TNetNodeListParser.Parse(nil, 0, 5029)));
 end;
 
 procedure TTestNetNodeListParser.TestPortWithoutDigitsIsZero;

@@ -110,7 +110,7 @@ procedure TTestConsoleCommandRegistry.TestAliasesWithMoreThanTwoNames;
 begin
   AddCounting('multi1 , multi2,multi3', 'M');
   Assert.IsTrue(Run('multi1') and Run('multi2') and Run('multi3'), 'dovrebbe registrare tutti i nomi');
-  Assert.AreEqual(3, Length(FRegistry.Names), 'dovrebbe avere tre nomi');
+  Assert.AreEqual<Integer>(3, Length(FRegistry.Names), 'dovrebbe avere tre nomi');
 end;
 
 procedure TTestConsoleCommandRegistry.TestEmptyNamesAreIgnored;
@@ -138,7 +138,7 @@ begin
   AddCounting('DIR', 'B');
   Run('dir');
   Assert.AreEqual('B', FCalls, 'dovrebbe tenere l''ultimo gestore');
-  Assert.AreEqual(1, Length(FRegistry.Names), 'dovrebbe avere un solo nome');
+  Assert.AreEqual<Integer>(1, Length(FRegistry.Names), 'dovrebbe avere un solo nome');
 end;
 
 procedure TTestConsoleCommandRegistry.TestNamesAreUpperCaseAndSorted;

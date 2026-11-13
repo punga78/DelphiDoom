@@ -108,7 +108,7 @@ var
   LEntries: TArray<TMusInfoEntry>;
 begin
   LEntries := ParseText('MAP01'#13#10'1 D_ONE'#13#10'2 D_TWO'#13#10'E1M2 3 D_THREE'#13#10);
-  Assert.AreEqual(3, Length(LEntries));
+  Assert.AreEqual<Integer>(3, Length(LEntries));
   Assert.AreEqual('MAP01', LEntries[0].MapName);
   Assert.AreEqual(1, LEntries[0].MusicId);
   Assert.AreEqual('D_ONE', LEntries[0].MusicName);
@@ -124,7 +124,7 @@ var
   LEntries: TArray<TMusInfoEntry>;
 begin
   LEntries := ParseText('map05 2 d_Five');
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
   Assert.AreEqual('MAP05', LEntries[0].MapName);
   Assert.AreEqual('D_FIVE', LEntries[0].MusicName);
 end;
@@ -139,14 +139,14 @@ end;
 
 procedure TTestMusInfoParser.TestDovrebbeDareNessunaVoceSeIlTestoEVuoto;
 begin
-  Assert.AreEqual(0, Length(ParseText('')));
-  Assert.AreEqual(0, Length(ParseText('   '#13#10#13#10)));
+  Assert.AreEqual<Integer>(0, Length(ParseText('')));
+  Assert.AreEqual<Integer>(0, Length(ParseText('   '#13#10#13#10)));
   Assert.AreEqual('', FLog.Warnings);
 end;
 
 procedure TTestMusInfoParser.TestDovrebbeFermarsiSeIlPrimoTokenNonEUnaMappa;
 begin
-  Assert.AreEqual(0, Length(ParseText('1 D_ONE'#13#10'MAP01 1 D_TWO')));
+  Assert.AreEqual<Integer>(0, Length(ParseText('1 D_ONE'#13#10'MAP01 1 D_TWO')));
   Assert.AreEqual('P_InitMusInfo(): Map name expected but token "1" found'#13#10, FLog.Warnings);
 end;
 
@@ -160,12 +160,12 @@ begin
   LEntries := ParseText('MAP01 1 D_A ' + AToken + ' 2 D_B');
   if AIsMap then
   begin
-    Assert.AreEqual(2, Length(LEntries));
+    Assert.AreEqual<Integer>(2, Length(LEntries));
     Assert.AreEqual(UpperCase(AToken), LEntries[1].MapName);
   end
   else
   begin
-    Assert.AreEqual(1, Length(LEntries));
+    Assert.AreEqual<Integer>(1, Length(LEntries));
     Assert.IsTrue(Pos('Invalid music id "' + AToken + '"', FLog.Warnings) > 0, FLog.Warnings);
   end;
 end;
@@ -178,12 +178,12 @@ begin
   LEntries := ParseText('MAP01 ' + AId + ' D_ONE');
   if AAccepted then
   begin
-    Assert.AreEqual(1, Length(LEntries));
+    Assert.AreEqual<Integer>(1, Length(LEntries));
     Assert.AreEqual('', FLog.Warnings);
   end
   else
   begin
-    Assert.AreEqual(0, Length(LEntries));
+    Assert.AreEqual<Integer>(0, Length(LEntries));
     Assert.AreEqual('P_InitMusInfo(): Invalid music id "' + AId +
       '" found, expected number in range [0, 64]'#13#10, FLog.Warnings);
   end;
@@ -195,7 +195,7 @@ var
   LEntries: TArray<TMusInfoEntry>;
 begin
   LEntries := ParseText('MAP01 ' + AId + ' D_ONE');
-  Assert.AreEqual(1, Length(LEntries), FLog.Warnings);
+  Assert.AreEqual<Integer>(1, Length(LEntries), FLog.Warnings);
   Assert.AreEqual(AExpected, LEntries[0].MusicId);
 end;
 
@@ -204,7 +204,7 @@ var
   LEntries: TArray<TMusInfoEntry>;
 begin
   LEntries := ParseText('MAP01 99 D_BAD 2 D_OK');
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
   Assert.AreEqual(2, LEntries[0].MusicId);
 end;
 
@@ -217,7 +217,7 @@ end;
 
 procedure TTestMusInfoParser.TestDovrebbeFermarsiAlNomeVuoto;
 begin
-  Assert.AreEqual(0, Length(ParseText('MAP01 1 "" MAP01 2 D_TWO')), 'dopo un nome vuoto il testo è finito');
+  Assert.AreEqual<Integer>(0, Length(ParseText('MAP01 1 "" MAP01 2 D_TWO')), 'dopo un nome vuoto il testo è finito');
   Assert.AreEqual('', FLog.Warnings);
 end;
 
@@ -227,7 +227,7 @@ var
 begin
   // the old code stopped the whole game here (I_Error in stringtochar8)
   LEntries := ParseText('MAP01 1 D_NINECHAR 2 D_OK');
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
   Assert.AreEqual('D_OK', LEntries[0].MusicName);
   Assert.AreEqual('P_InitMusInfo(): Music name "D_NINECHAR" is too long, maximum size is 8 characters'#13#10,
     FLog.Warnings);
@@ -235,7 +235,7 @@ end;
 
 procedure TTestMusInfoParser.TestDovrebbeAccettareUnNomeDiOttoCaratteri;
 begin
-  Assert.AreEqual(1, Length(ParseText('MAP01 1 D_EIGHTC')));
+  Assert.AreEqual<Integer>(1, Length(ParseText('MAP01 1 D_EIGHTC')));
   Assert.AreEqual('', FLog.Warnings);
 end;
 
@@ -247,7 +247,7 @@ begin
   LEntries := ParseText('MAP01 7');
   Assert.IsTrue(Pos('TScriptEngine.MustGetString(): Missing string at Line 1', FLog.Warnings) > 0,
     FLog.Warnings);
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
   Assert.AreEqual('7', LEntries[0].MusicName);
 end;
 
@@ -256,20 +256,20 @@ var
   LEntries: TArray<TMusInfoEntry>;
 begin
   LEntries := ParseText('// uno'#13#10'MAP01 1 D_ONE // due'#13#10'// MAP02 2 D_NO'#13#10);
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
 end;
 
 procedure TTestMusInfoParser.TestDovrebbeLeggereIFineRigaCrLfLfECr;
 begin
-  Assert.AreEqual(2, Length(ParseText('MAP01'#13#10'1 D_ONE'#13#10'MAP02 2 D_TWO')));
-  Assert.AreEqual(2, Length(ParseText('MAP01'#10'1 D_ONE'#10'MAP02 2 D_TWO')));
-  Assert.AreEqual(2, Length(ParseText('MAP01'#13'1 D_ONE'#13'MAP02 2 D_TWO')));
+  Assert.AreEqual<Integer>(2, Length(ParseText('MAP01'#13#10'1 D_ONE'#13#10'MAP02 2 D_TWO')));
+  Assert.AreEqual<Integer>(2, Length(ParseText('MAP01'#10'1 D_ONE'#10'MAP02 2 D_TWO')));
+  Assert.AreEqual<Integer>(2, Length(ParseText('MAP01'#13'1 D_ONE'#13'MAP02 2 D_TWO')));
 end;
 
 procedure TTestMusInfoParser.TestDovrebbeLasciareUnaVoceDuplicataPerIlCatalogo;
 begin
   // joining equal (map, id) pairs is the work of the catalog
-  Assert.AreEqual(2, Length(ParseText('MAP01 1 D_A MAP01 1 D_B')));
+  Assert.AreEqual<Integer>(2, Length(ParseText('MAP01 1 D_A MAP01 1 D_B')));
 end;
 
 procedure TTestMusInfoParser.TestDovrebbeFunzionareSenzaLog;
@@ -277,15 +277,15 @@ var
   LParser: IMusInfoParser;
 begin
   LParser := TMusInfoFactory.CreateParser(nil);
-  Assert.AreEqual(0, Length(LParser.Parse('1 D_ONE')));
-  Assert.AreEqual(1, Length(LParser.Parse('MAP01 1 D_ONE')));
+  Assert.AreEqual<Integer>(0, Length(LParser.Parse('1 D_ONE')));
+  Assert.AreEqual<Integer>(1, Length(LParser.Parse('MAP01 1 D_ONE')));
 end;
 
 procedure TTestMusInfoParser.TestDovrebbeNonTenereStatoTraDueLetture;
 begin
-  Assert.AreEqual(1, Length(ParseText('MAP01 1 D_ONE')));
+  Assert.AreEqual<Integer>(1, Length(ParseText('MAP01 1 D_ONE')));
   // the map of the first text is not remembered
-  Assert.AreEqual(0, Length(ParseText('2 D_TWO')));
+  Assert.AreEqual<Integer>(0, Length(ParseText('2 D_TWO')));
 end;
 
 initialization

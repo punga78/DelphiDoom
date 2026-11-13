@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the xcom geoscape library - from the landing       }
 {  confirmation to the battle (the launcher that the Battlescape gives)         }
@@ -131,7 +131,7 @@ var
 begin
   LState := Confirm(TXcomUfo.STATUS_CRASHED);
   Click(LState, 0);
-  Assert.AreEqual(1, Length(FLauncher.Requests));
+  Assert.AreEqual<Integer>(1, Length(FLauncher.Requests));
   Assert.AreEqual('STR_UFO_CRASH_RECOVERY', FLauncher.Requests[0].MissionType);
   Assert.IsTrue(FLauncher.Requests[0].Ufo = FUfo);
   Assert.IsTrue(FLauncher.Requests[0].Craft = FCraft);
@@ -163,7 +163,7 @@ var
 begin
   LState := Confirm(TXcomUfo.STATUS_LANDED);
   Click(LState, 1);
-  Assert.AreEqual(0, Length(FLauncher.Requests));
+  Assert.AreEqual<Integer>(0, Length(FLauncher.Requests));
   Assert.IsFalse(FWorld.Game.IsState(LState));
 end;
 

@@ -191,7 +191,7 @@ begin
   FModule := TTrackerModLoader.Load(LBytes);
 
   // Two orders; a restart past the end goes back to the start
-  Assert.AreEqual(2, Length(FModule.Orders));
+  Assert.AreEqual<Integer>(2, Length(FModule.Orders));
   Assert.AreEqual(0, Integer(FModule.Orders[0]));
   Assert.AreEqual(1, Integer(FModule.Orders[1]));
   Assert.AreEqual(0, FModule.RestartPosition);

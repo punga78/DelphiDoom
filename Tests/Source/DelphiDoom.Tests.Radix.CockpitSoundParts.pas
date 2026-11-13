@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TRadixCockpitPart and TRadixSoundPart                  }
 {                                                                              }
@@ -140,7 +140,7 @@ begin
   finally
     LBuilder.Free;
   end;
-  Assert.AreEqual(3, Length(LWad.LumpData[LWad.IndexOf('DS_00001')]));
+  Assert.AreEqual<Integer>(3, Length(LWad.LumpData[LWad.IndexOf('DS_00001')]));
   Assert.AreEqual('DS_00001=SndShot', LAliases[0]);
   Assert.AreEqual('// Radix Sounds'#13#10#13#10'radix/SndShot DS_00001'#13#10,
     TEncoding.ANSI.GetString(LWad.LumpData[LWad.IndexOf('SNDINFO')]));
@@ -163,7 +163,7 @@ begin
   // in the order of the names, not of the file
   Assert.AreEqual('DS_00000', LWad.LumpNames[0]);
   Assert.AreEqual('DS_00044', LWad.LumpNames[1]);
-  Assert.AreEqual(2, Length(LAliases));
+  Assert.AreEqual<Integer>(2, Length(LAliases));
 end;
 
 procedure TTestRadixCockpitSoundParts.DovrebbeNonScrivereSndinfoSenzaSuoni;
@@ -182,7 +182,7 @@ end;
 
 procedure TTestRadixCockpitSoundParts.DovrebbeAvereIQuarantacinqueNomiDeiSuoni;
 begin
-  Assert.AreEqual(45, Length(TRadixSoundPart.SoundNames));
+  Assert.AreEqual<Integer>(45, Length(TRadixSoundPart.SoundNames));
 end;
 
 end.

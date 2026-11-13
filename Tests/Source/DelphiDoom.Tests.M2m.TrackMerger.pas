@@ -81,7 +81,7 @@ begin
   Assert.AreEqual(0, FMerged.Mode);
   Assert.AreEqual(25, FMerged.SmpteFps);
   Assert.AreEqual(40, FMerged.Timing);
-  Assert.AreEqual(1, Length(FMerged.Tracks));
+  Assert.AreEqual<Integer>(1, Length(FMerged.Tracks));
 end;
 
 procedure TTestMidiTrackMerger.TestMetteGliEventiInOrdineDiTempo;
@@ -94,7 +94,7 @@ begin
     B.Track(B.Join([B.NoteOn(5, 1, 70, 1), B.NoteOn(7, 1, 72, 1), B.EndOfTrack(0)]))]));
 
   LEvents := FMerged.Tracks[0].Events;
-  Assert.AreEqual(5, Length(LEvents));
+  Assert.AreEqual<Integer>(5, Length(LEvents));
   Assert.AreEqual(60, LEvents[0].Param1);
   Assert.AreEqual(0, Integer(LEvents[0].Delta));
   Assert.AreEqual(70, LEvents[1].Param1);
@@ -213,8 +213,8 @@ begin
     B.Track(B.EndOfTrack(0))]));
 
   Assert.AreEqual(1, FSource.Mode);
-  Assert.AreEqual(2, Length(FSource.Tracks));
-  Assert.AreEqual(2, Length(FSource.Tracks[0].Events));
+  Assert.AreEqual<Integer>(2, Length(FSource.Tracks));
+  Assert.AreEqual<Integer>(2, Length(FSource.Tracks[0].Events));
 end;
 
 initialization

@@ -90,7 +90,7 @@ end;
 procedure TTestGameDataWadComposer.DovrebbeAggiungereUnMarcatoreVuoto;
 begin
   FComposer.AddMarker('S_START');
-  Assert.AreEqual(0, Length(FComposer.LumpData[0]));
+  Assert.AreEqual<Integer>(0, Length(FComposer.LumpData[0]));
 end;
 
 procedure TTestGameDataWadComposer.DovrebbeScrivereIlTestoConUnByteAlCarattere;
@@ -99,7 +99,7 @@ var
 begin
   FComposer.AddText('SNDINFO', 'ab'#13#10);
   LData := FComposer.LumpData[0];
-  Assert.AreEqual(4, Length(LData));
+  Assert.AreEqual<Integer>(4, Length(LData));
   Assert.AreEqual<Byte>(Ord('a'), LData[0]);
   Assert.AreEqual<Byte>(13, LData[2]);
   Assert.AreEqual<Byte>(10, LData[3]);

@@ -114,7 +114,7 @@ var
   LImage: TFontImage;
 begin
   LImage := TFontImage.Create(3, 2);
-  Assert.AreEqual(6, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(6, Length(LImage.Pixels));
   Assert.IsTrue(LImage.IsValid);
   Assert.AreEqual(Cardinal(0), LImage.Pixels[5]);
 end;

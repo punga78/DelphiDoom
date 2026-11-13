@@ -123,7 +123,7 @@ begin
     FHistory.Remember('t' + IntToStr(LIndex));
   Assert.AreEqual(15, FHistory.Count);
   LLines := FHistory.AsText.Split([#13#10]);
-  Assert.AreEqual(10, Length(LLines));
+  Assert.AreEqual<Integer>(10, Length(LLines));
   Assert.AreEqual('t15', LLines[0]);
   Assert.AreEqual('t6', LLines[9]);
 end;

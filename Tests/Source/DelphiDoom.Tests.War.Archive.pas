@@ -257,10 +257,10 @@ begin
     LBuilder.Free;
   end;
   LData := LArchive.ReadRecord(1);
-  Assert.AreEqual(6, Length(LData));
+  Assert.AreEqual<Integer>(6, Length(LData));
   Assert.AreEqual(Integer(Ord('H')), Integer(LData[0]));
   Assert.AreEqual(Integer(Ord('s')), Integer(LData[5]));
-  Assert.AreEqual(4, Length(LArchive.ReadRecord(0)));
+  Assert.AreEqual<Integer>(4, Length(LArchive.ReadRecord(0)));
 end;
 
 procedure TTestWarArchive.DovrebbeLeggereUnRecordCompresso;
@@ -282,7 +282,7 @@ begin
     LBuilder.Free;
   end;
   LData := LArchive.ReadRecord(0);
-  Assert.AreEqual(7, Length(LData));
+  Assert.AreEqual<Integer>(7, Length(LData));
   Assert.AreEqual(Integer(Ord('Z')), Integer(LData[6]));
   Assert.IsTrue(LArchive.GetRecordInfo(0).Compressed);
 end;
@@ -539,7 +539,7 @@ begin
     LBuilder.Free;
   end;
   Assert.IsTrue(LArchive.IsAvailable(0));
-  Assert.AreEqual(0, Length(LArchive.ReadRecord(0)));
+  Assert.AreEqual<Integer>(0, Length(LArchive.ReadRecord(0)));
 end;
 
 procedure TTestWarArchive.DovrebbeConsiderareCompressiTuttiIBitAltiDellaLunghezza;

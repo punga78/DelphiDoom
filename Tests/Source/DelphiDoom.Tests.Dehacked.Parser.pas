@@ -481,7 +481,7 @@ var
 begin
   LSection := Parse(dgDoom, '[PARS]'#10'par 2 3 99'#10'par 5 70'#10'par 4 1 5'#10'par 33 1'#10'par 1'#10'Thing 1').Section(0);
   Assert.AreEqual(2, LSection.Count);
-  Assert.AreEqual(3, Length(LSection[0].Numbers));
+  Assert.AreEqual<Integer>(3, Length(LSection[0].Numbers));
   Assert.AreEqual(99, LSection[0].Numbers[2]);
   Assert.AreEqual(5, LSection[1].Numbers[0]);
   Assert.AreEqual('', Warnings);

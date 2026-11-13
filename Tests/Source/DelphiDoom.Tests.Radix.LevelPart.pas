@@ -111,7 +111,7 @@ procedure TTestRadixLevelPart.DovrebbeMarcareLeFlatCheISettoriUsano;
 begin
   FDat.Add('WorldData[1][1]', FBuilder.ToBytes);
   Run;
-  Assert.AreEqual(10, Length(FMarks));
+  Assert.AreEqual<Integer>(10, Length(FMarks));
   Assert.IsTrue(FMarks[3]);
   Assert.IsTrue(FMarks[4]);
   Assert.IsFalse(FMarks[1]);

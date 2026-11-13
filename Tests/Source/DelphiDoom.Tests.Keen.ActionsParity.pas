@@ -104,7 +104,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(LGoldenPath);
-    Assert.AreEqual(Length(LScenarios), LLines.Count, 'scenarios and lines of the golden file');
+    Assert.AreEqual<Integer>(Length(LScenarios), LLines.Count, 'scenarios and lines of the golden file');
     LFailures := '';
     LCount := 0;
     LNames := TStringList.Create;

@@ -126,7 +126,7 @@ var
   LTable: TArray<TKeenPictureEntry>;
 begin
   LTable := FGraphics.PictureTable;
-  Assert.AreEqual(2, Length(LTable));
+  Assert.AreEqual<Integer>(2, Length(LTable));
   Assert.AreEqual(1, Integer(LTable[0].Width));
   Assert.AreEqual(2, Integer(LTable[0].Height));
   Assert.AreEqual(2, Integer(LTable[1].Width));
@@ -136,7 +136,7 @@ end;
 procedure TTestKeenGraphics.DovrebbeLeggereLaTabellaDelleImmaginiMascherateDellaSuaLunghezza;
 begin
   // the C expands this table with the length of the picture table: here the length of its own chunk
-  Assert.AreEqual(1, Length(FGraphics.MaskedPictureTable));
+  Assert.AreEqual<Integer>(1, Length(FGraphics.MaskedPictureTable));
 end;
 
 procedure TTestKeenGraphics.DovrebbeLeggereLaTabellaDegliSprite;
@@ -144,7 +144,7 @@ var
   LTable: TArray<TKeenSpriteEntry>;
 begin
   LTable := FGraphics.SpriteTable;
-  Assert.AreEqual(1, Length(LTable));
+  Assert.AreEqual<Integer>(1, Length(LTable));
   Assert.AreEqual(1, Integer(LTable[0].Width));
   Assert.AreEqual(2, Integer(LTable[0].Height));
   Assert.AreEqual(3, Integer(LTable[0].OriginX));
@@ -177,7 +177,7 @@ var
   LTile: TBytes;
 begin
   LTile := FGraphics.Tile8(5);
-  Assert.AreEqual(KEEN_TILE8_BYTES, Length(LTile));
+  Assert.AreEqual<Integer>(KEEN_TILE8_BYTES, Length(LTile));
   Assert.IsTrue(SameBytes(Copy(FGame.Tile8All, 5 * 32, 32), LTile));
   Assert.IsTrue(SameBytes(Copy(FGame.Tile8All, 71 * 32, 32), FGraphics.Tile8(71)), 'l''ultimo');
 end;
@@ -196,8 +196,8 @@ end;
 
 procedure TTestKeenGraphics.DovrebbeDareUnTileDa16SenzaDatiVuoto;
 begin
-  Assert.AreEqual(0, Length(FGraphics.Tile16(1)));
-  Assert.AreEqual(0, Length(FGraphics.Tile16Masked(1205)));
+  Assert.AreEqual<Integer>(0, Length(FGraphics.Tile16(1)));
+  Assert.AreEqual<Integer>(0, Length(FGraphics.Tile16Masked(1205)));
 end;
 
 procedure TTestKeenGraphics.DovrebbeRifiutareUnIndiceCheNonCe;

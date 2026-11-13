@@ -251,7 +251,7 @@ begin
   LConfig.MusicMode := 1;
   LConfig.Control := kctJoystick1;
   LBytes := TKeenConfigStore.Encode(LConfig);
-  Assert.AreEqual(656, Length(LBytes));
+  Assert.AreEqual<Integer>(656, Length(LBytes));
   // the second score starts at 64: the name, a 0, then at 58 the score and at 62 the levels (little endian)
   Assert.AreEqual(Ord('A'), Integer(LBytes[64]));
   Assert.AreEqual(Ord('B'), Integer(LBytes[65]));
@@ -346,7 +346,7 @@ begin
   if LPath = '' then
     TTestSkip.Ignore('il KDREAMS.CFG dello shareware di Keen Dreams non e'' su questa macchina');
   LBytes := TFile.ReadAllBytes(LPath);
-  Assert.AreEqual(656, Length(LBytes), 'the file of the original has the size of the record');
+  Assert.AreEqual<Integer>(656, Length(LBytes), 'the file of the original has the size of the record');
   LConfig := TKeenConfigStore.Decode(LBytes);
   for LIndex := 0 to KEEN_MAX_SCORES - 2 do
     Assert.IsTrue(LConfig.Scores[LIndex].Score >= LConfig.Scores[LIndex + 1].Score, 'the scores go down');
@@ -370,7 +370,7 @@ begin
     Assert.IsFalse(LFiles.TryRead('A.BIN', LBytes));
     Assert.IsTrue(LFiles.TryWrite('A.BIN', TBytes.Create(1, 2, 3)));
     Assert.IsTrue(LFiles.TryRead('A.BIN', LBytes));
-    Assert.AreEqual(3, Length(LBytes));
+    Assert.AreEqual<Integer>(3, Length(LBytes));
     Assert.AreEqual(3, Integer(LBytes[2]));
     LFiles.Delete('A.BIN');
     Assert.IsFalse(LFiles.TryRead('A.BIN', LBytes));
@@ -507,7 +507,7 @@ begin
   LSlot.Present := True;
   LSlot.Name := 'Tuberia';
   LBytes := TKeenSaveSlots.EncodeHeader(LSlot);
-  Assert.AreEqual(39, Length(LBytes));
+  Assert.AreEqual<Integer>(39, Length(LBytes));
   Assert.AreEqual(Ord('K'), Integer(LBytes[0]));
   Assert.AreEqual(Ord('R'), Integer(LBytes[2]));
   Assert.AreEqual(0, Integer(LBytes[3]));
@@ -573,14 +573,14 @@ begin
   LSlots.Slots[3] := LSlot;
   Assert.IsTrue(LSlots.Save(3, TFakeHooks.Create));
   Assert.IsTrue(LFilesIntf.TryRead('SAVEGM3.KDR', LBytes));
-  Assert.AreEqual(39 + 4, Length(LBytes));
+  Assert.AreEqual<Integer>(39 + 4, Length(LBytes));
   Assert.AreEqual(Ord('m'), Integer(LBytes[6]));
   Assert.AreEqual(9, Integer(LBytes[39]));
   Assert.AreEqual(6, Integer(LBytes[42]));
   // without a game the file is the header alone
   Assert.IsTrue(LSlots.Save(1, nil));
   Assert.IsTrue(LFilesIntf.TryRead('SAVEGM1.KDR', LBytes));
-  Assert.AreEqual(39, Length(LBytes));
+  Assert.AreEqual<Integer>(39, Length(LBytes));
 end;
 
 procedure TTestKeenSaveSlots.SalvareDovrebbeTogliereIlFileSeIlGiocoRifiuta;
@@ -635,7 +635,7 @@ begin
   LHooksIntf := LHooks;
   Assert.IsTrue(LSlots.Load(5, LHooksIntf, LError));
   Assert.AreEqual(AnsiString(''), LError);
-  Assert.AreEqual(3, Length(LHooks.Loaded));
+  Assert.AreEqual<Integer>(3, Length(LHooks.Loaded));
   Assert.AreEqual(22, Integer(LHooks.Loaded[1]));
   Assert.AreEqual(AnsiString('on disk'), LSlots.Slots[5].Name, 'the name of the file');
   // a game that does not take the data

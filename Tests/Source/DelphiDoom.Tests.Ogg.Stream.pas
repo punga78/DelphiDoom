@@ -178,7 +178,7 @@ begin
   FlushPages;
   AddPacket(40, 4, True);
   FlushPages;
-  Assert.AreEqual(3, Length(FPages));
+  Assert.AreEqual<Integer>(3, Length(FPages));
 
   LPage := PageOf(0, LHeader);
   Assert.AreEqual(0, TOggStream.PageIn(@FDecoder, @LPage));
@@ -238,7 +238,7 @@ begin
   FlushPages;
   AddPacket(10, 9, True);
   FlushPages;
-  Assert.AreEqual(3, Length(FPages));
+  Assert.AreEqual<Integer>(3, Length(FPages));
 
   LPage := PageOf(0, LFirst);
   Assert.AreEqual(0, TOggStream.PageIn(@FDecoder, @LPage));

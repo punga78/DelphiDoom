@@ -52,10 +52,10 @@ uses
 
 procedure TTestDefinitionsTables.TestLeTabelleDegliInterruttoriHannoLeVociDelGioco;
 begin
-  Assert.AreEqual(40, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)));
-  Assert.AreEqual(2, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Heretic)));
-  Assert.AreEqual(10, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Hexen)));
-  Assert.AreEqual(69, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Strife)));
+  Assert.AreEqual<Integer>(40, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Doom)));
+  Assert.AreEqual<Integer>(2, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Heretic)));
+  Assert.AreEqual<Integer>(10, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Hexen)));
+  Assert.AreEqual<Integer>(69, Length(TDefinitionsFactory.CreateSwitchTable(TDefGame.Strife)));
 end;
 
 procedure TTestDefinitionsTables.TestNessunaTabellaHaIlTerminatore;

@@ -80,7 +80,7 @@ begin
   try
     Assert.IsTrue(LTable.Load(FLibraryIntf, 'doom'));
     LRows := LTable.Rows('', 0);
-    Assert.AreEqual(3, Length(LRows));
+    Assert.AreEqual<Integer>(3, Length(LRows));
     Assert.AreEqual('B', LRows[1].Caption);
     Assert.AreEqual('2', LRows[1].Values[0]);
     Assert.AreEqual('', LRows[2].Values[0]);
@@ -152,10 +152,10 @@ begin
   LTable := TIdeNameValueTable.Create(nvConstants);
   try
     LTable.Load(FLibraryIntf, 'doom');
-    Assert.AreEqual(2, Length(LTable.Rows('  health ', 0)));
+    Assert.AreEqual<Integer>(2, Length(LTable.Rows('  health ', 0)));
     // the filter looks at the name, not at the value
-    Assert.AreEqual(0, Length(LTable.Rows('100', 0)));
-    Assert.AreEqual(3, Length(LTable.Rows('   ', 0)));
+    Assert.AreEqual<Integer>(0, Length(LTable.Rows('100', 0)));
+    Assert.AreEqual<Integer>(3, Length(LTable.Rows('   ', 0)));
   finally
     LTable.Free;
   end;
@@ -212,7 +212,7 @@ begin
     LTable.Load(FLibraryIntf, 'doom');
     LRows := LTable.Rows('', 0);
     // the empty one is dropped; "a_" in any case is removed
-    Assert.AreEqual(3, Length(LRows));
+    Assert.AreEqual<Integer>(3, Length(LRows));
     Assert.AreEqual('chase', LRows[0].Caption);
     Assert.AreEqual('Look', LRows[1].Caption);
     Assert.AreEqual('Plain', LRows[2].Caption);

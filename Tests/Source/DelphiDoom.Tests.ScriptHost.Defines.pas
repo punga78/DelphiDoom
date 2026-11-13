@@ -95,7 +95,7 @@ var
 begin
   LDefines := TScriptDefines.ForGame('Doom', sgDoom, False, False, True);
   Assert.AreEqual('OPENGL', LDefines[High(LDefines)]);
-  Assert.AreEqual(8, Length(LDefines));
+  Assert.AreEqual<Integer>(8, Length(LDefines));
 end;
 
 procedure TTestScriptHostDefines.DovrebbeDareUnaCombinazioneDelGiocoPerOgniAltroGioco;
@@ -108,7 +108,7 @@ begin
   for LGame := Low(TScriptGame) to High(TScriptGame) do
   begin
     LDefines := TScriptDefines.ForGame('X', LGame, False, False, False);
-    Assert.AreEqual(7, Length(LDefines));
+    Assert.AreEqual<Integer>(7, Length(LDefines));
     LCount := 0;
     for LDefine in LDefines do
       if LDefine.EndsWith('_OR_DOOM') or LDefine.EndsWith('_OR_HERETIC') or LDefine.EndsWith('_OR_HEXEN') or

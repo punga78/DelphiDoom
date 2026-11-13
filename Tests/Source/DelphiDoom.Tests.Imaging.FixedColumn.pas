@@ -87,7 +87,7 @@ var
 begin
   LSource := TBytes.Create(1, 2, 3, 4);
   LResult := FBuilder.Repeat128(LSource, 0, 4);
-  Assert.AreEqual(128, Length(LResult), 'dovrebbe dare 128 pixel');
+  Assert.AreEqual<Integer>(128, Length(LResult), 'dovrebbe dare 128 pixel');
   for LIndex := 0 to 127 do
     Assert.AreEqual(Integer(LSource[LIndex mod 4]), Integer(LResult[LIndex]), 'dovrebbe ripetere la colonna al pixel ' + IntToStr(LIndex));
 end;
@@ -135,7 +135,7 @@ var
   LResult: TBytes;
 begin
   LResult := FBuilder.FromPosts(TImagingSamples.Column([Post(3, 2, 1)]), 0, 8);
-  Assert.AreEqual(8, Length(LResult), 'dovrebbe dare l''altezza chiesta');
+  Assert.AreEqual<Integer>(8, Length(LResult), 'dovrebbe dare l''altezza chiesta');
   Assert.AreEqual(Integer(0), Integer(LResult[0]), 'dovrebbe dare zero sopra il post');
   Assert.AreNotEqual(Integer(0), Integer(LResult[3]), 'dovrebbe avere il pixel del post');
   Assert.AreEqual(Integer(0), Integer(LResult[7]), 'dovrebbe dare zero sotto il post');

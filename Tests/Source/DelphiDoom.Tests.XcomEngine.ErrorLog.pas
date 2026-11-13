@@ -350,11 +350,11 @@ var
 begin
   LWorld := TTestWorld.Create;
   try
-    Assert.AreEqual(0, Length(LWorld.Game.StateNames));
+    Assert.AreEqual<Integer>(0, Length(LWorld.Game.StateNames));
     LWorld.Game.PushState(TThinkingState.Create(LWorld.Game));
     LWorld.Game.PushState(TFailingState.Create(LWorld.Game));
     LNames := LWorld.Game.StateNames;
-    Assert.AreEqual(2, Length(LNames));
+    Assert.AreEqual<Integer>(2, Length(LNames));
     Assert.AreEqual('TFailingState', LNames[0]);
     Assert.AreEqual('TThinkingState', LNames[1]);
   finally

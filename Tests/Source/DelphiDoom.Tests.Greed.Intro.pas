@@ -374,7 +374,7 @@ begin
   Assert.IsTrue(FRunner.EndGame.Active);
   RunToEnd(8000);
   Assert.IsFalse(FRunner.EndGame.Active);
-  Assert.AreEqual(0, Length(FRunner.Host.Songs), 'il terzo finale non cambia canzone');
+  Assert.AreEqual<Integer>(0, Length(FRunner.Host.Songs), 'il terzo finale non cambia canzone');
 end;
 
 end.

@@ -57,7 +57,7 @@ end;
 
 procedure TTestWarDecompressor.DovrebbeDareUnBufferVuotoPerLunghezzaZero;
 begin
-  Assert.AreEqual(0, Length(Expand(nil, 0)));
+  Assert.AreEqual<Integer>(0, Length(Expand(nil, 0)));
 end;
 
 procedure TTestWarDecompressor.DovrebbeCopiareIByteLetterali;
@@ -74,7 +74,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(3, Length(LResult));
+  Assert.AreEqual<Integer>(3, Length(LResult));
   Assert.AreEqual(Integer(Ord('W')), Integer(LResult[0]));
   Assert.AreEqual(Integer(Ord('A')), Integer(LResult[1]));
   Assert.AreEqual(Integer(Ord('R')), Integer(LResult[2]));
@@ -95,7 +95,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(6, Length(LResult));
+  Assert.AreEqual<Integer>(6, Length(LResult));
   for LIndex := 0 to 5 do
     Assert.AreEqual(Integer(Ord('A')), Integer(LResult[LIndex]));
 end;
@@ -112,7 +112,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(3, Length(LResult));
+  Assert.AreEqual<Integer>(3, Length(LResult));
   Assert.AreEqual(0, Integer(LResult[0]) + Integer(LResult[1]) + Integer(LResult[2]));
 end;
 
@@ -132,7 +132,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(4103, Length(LResult));
+  Assert.AreEqual<Integer>(4103, Length(LResult));
   Assert.AreEqual(Integer(4098 mod 251), Integer(LResult[4100]));
   Assert.AreEqual(Integer(4099 mod 251), Integer(LResult[4101]));
   // la terza lettura e' la posizione 4, che la prima scrittura (4100 mod 4096) ha gia' sostituito
@@ -152,7 +152,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(19, Length(LResult));
+  Assert.AreEqual<Integer>(19, Length(LResult));
   Assert.AreEqual(Integer(7), Integer(LResult[18]));
 end;
 
@@ -170,7 +170,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(2, Length(LResult));
+  Assert.AreEqual<Integer>(2, Length(LResult));
 end;
 
 procedure TTestWarDecompressor.DovrebbeFermarsiAllaLunghezzaDentroUnaCopia;
@@ -186,7 +186,7 @@ begin
   finally
     LWriter.Free;
   end;
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual(Integer(9), Integer(LResult[3]));
 end;
 
@@ -206,7 +206,7 @@ begin
     LWriter.Free;
   end;
   // 20 letterali: 3 maschere e 20 byte
-  Assert.AreEqual(23, Length(LPayload));
+  Assert.AreEqual<Integer>(23, Length(LPayload));
   LResult := Expand(LPayload, 20);
   for LIndex := 0 to 19 do
     Assert.AreEqual(LIndex + 1, Integer(LResult[LIndex]));

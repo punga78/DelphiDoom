@@ -156,7 +156,7 @@ procedure TTestGreedPngExporter.DovrebbeScrivereLaMappaNelFile;
 begin
   FExporter.SaveMap(0, 'C:\out\map0.png');
   Assert.AreEqual('C:\out\map0.png', FFiles.LastName);
-  Assert.AreEqual(3, Length(FFiles.LastBytes));
+  Assert.AreEqual<Integer>(3, Length(FFiles.LastBytes));
 end;
 
 procedure TTestGreedPngExporter.DovrebbeDareAlCodificatoreLImmagineDellaMappaESenzaTrasparenza;

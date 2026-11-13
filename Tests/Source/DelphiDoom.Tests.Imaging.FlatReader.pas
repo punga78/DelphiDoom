@@ -98,7 +98,7 @@ var
 begin
   LImage := FReader.Read(TImagingSamples.RandomBytes(1, 16384), CountingPalette, 0);
   Assert.AreEqual(128, LImage.Side, 'dovrebbe vedere un flat 128x128');
-  Assert.AreEqual(16384, Length(LImage.Pixels), 'dovrebbe dare 128x128 pixel');
+  Assert.AreEqual<Integer>(16384, Length(LImage.Pixels), 'dovrebbe dare 128x128 pixel');
 end;
 
 procedure TTestImagingFlatReader.TestReadOfAFlatWithAnotherLengthIsThe64x64;
@@ -107,7 +107,7 @@ var
 begin
   LImage := FReader.Read(TImagingSamples.RandomBytes(1, 8192), CountingPalette, 0);
   Assert.AreEqual(64, LImage.Side, 'dovrebbe vedere un flat 64x64 in un lump 64x128');
-  Assert.AreEqual(4096, Length(LImage.Pixels), 'dovrebbe dare 4096 pixel');
+  Assert.AreEqual<Integer>(4096, Length(LImage.Pixels), 'dovrebbe dare 4096 pixel');
 end;
 
 procedure TTestImagingFlatReader.TestReadTakesTheSizeOfFlatInfoWhenItHasOne;

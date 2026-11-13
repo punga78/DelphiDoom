@@ -138,7 +138,7 @@ begin
   LQueried := TCommandLineFactory.CreateQueriedCommandLine;
   LNames := MakeNames(LQueried, True);
   Assert.IsTrue(LNames.IsCdRomMode);
-  Assert.AreEqual(0, Length(LQueried.QueriedNames));
+  Assert.AreEqual<Integer>(0, Length(LQueried.QueriedNames));
 end;
 
 procedure TTestCommandLineSaveFileNames.DovrebbeFareLaCartellaUnaSolaVolta;
@@ -196,7 +196,7 @@ begin
   LQueried.Attach(MakeCommandLine([]));
   LNames := MakeNames(LQueried, False);
   LNames.IsCdRomMode;
-  Assert.AreEqual(1, Length(LQueried.QueriedNames));
+  Assert.AreEqual<Integer>(1, Length(LQueried.QueriedNames));
   Assert.AreEqual('-cdrom', LQueried.QueriedNames[0]);
 end;
 

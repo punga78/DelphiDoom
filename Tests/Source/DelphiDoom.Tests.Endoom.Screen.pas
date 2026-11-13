@@ -99,7 +99,7 @@ var
   LIndex: Integer;
 begin
   LBytes := FScreen.ToBytes;
-  Assert.AreEqual(ENDOOM_LUMP_SIZE, Length(LBytes));
+  Assert.AreEqual<Integer>(ENDOOM_LUMP_SIZE, Length(LBytes));
   for LIndex := 0 to High(LBytes) do
     Assert.AreEqual(0, Integer(LBytes[LIndex]));
 end;
@@ -218,7 +218,7 @@ begin
   LBlock := FScreen.CopyBlock(TEndoomRect.Between(10, 10, 11, 11));
   Assert.AreEqual(2, LBlock.Width);
   Assert.AreEqual(2, LBlock.Height);
-  Assert.AreEqual(4, Length(LBlock.Cells));
+  Assert.AreEqual<Integer>(4, Length(LBlock.Cells));
   FScreen.PasteBlock(LBlock, 50, 20);
   Assert.AreEqual(65, Integer(FScreen.GetCharacter(50, 20)));
   Assert.AreEqual(3, FScreen.GetBackground(51, 20));
@@ -249,7 +249,7 @@ var
 begin
   LBlock := FScreen.CopyBlock(TEndoomRect.Between(90, 30, 95, 35));
   Assert.AreEqual(0, LBlock.Width);
-  Assert.AreEqual(0, Length(LBlock.Cells));
+  Assert.AreEqual<Integer>(0, Length(LBlock.Cells));
   FScreen.PasteBlock(LBlock, 0, 0);
   Assert.AreEqual(0, Integer(FScreen.GetCharacter(0, 0)));
 end;
@@ -295,7 +295,7 @@ begin
   SetLength(LBytes, ENDOOM_LUMP_SIZE + 100);
   LBytes[ENDOOM_LUMP_SIZE] := 99;
   FScreen.LoadFromBytes(LBytes);
-  Assert.AreEqual(ENDOOM_LUMP_SIZE, Length(FScreen.ToBytes));
+  Assert.AreEqual<Integer>(ENDOOM_LUMP_SIZE, Length(FScreen.ToBytes));
 end;
 
 procedure TTestEndoomScreen.DovrebbeRifiutareUnFileTroppoCorto;
@@ -350,7 +350,7 @@ var
   LScreen: IEndoomScreen;
 begin
   LGolden := TEditorHelper.GoldenLines('MODEL');
-  Assert.AreEqual(6, Length(LGolden));
+  Assert.AreEqual<Integer>(6, Length(LGolden));
   for LSeed := 1 to 6 do
   begin
     LScreen := TEndoomEditorFactory.CreateScreen;
@@ -365,7 +365,7 @@ var
   LKind: Integer;
 begin
   LGolden := TEditorHelper.GoldenLines('LOAD');
-  Assert.AreEqual(3, Length(LGolden));
+  Assert.AreEqual<Integer>(3, Length(LGolden));
   for LKind := 0 to 2 do
   begin
     FScreen.LoadFromBytes(TEndoomFixtures.Screen(LKind));

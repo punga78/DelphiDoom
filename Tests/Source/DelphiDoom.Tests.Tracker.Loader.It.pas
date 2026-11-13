@@ -256,7 +256,7 @@ begin
   Assert.AreEqual(150, FModule.InitialTempo);
   Assert.AreEqual(128, FModule.GlobalVolume);
   Assert.IsTrue(FModule.LinearSlides);
-  Assert.AreEqual(2, Length(FModule.Orders));
+  Assert.AreEqual<Integer>(2, Length(FModule.Orders));
   Assert.AreEqual(255, Integer(FModule.Orders[1]));
   Assert.AreEqual(1, FModule.Patterns.Count);
   Assert.AreEqual(3, FModule.Patterns[0].Rows);
@@ -384,7 +384,7 @@ begin
   Assert.IsTrue(LVolume.Enabled);
   Assert.IsTrue(LVolume.Loop);
   Assert.IsFalse(LVolume.Sustain);
-  Assert.AreEqual(2, Length(LVolume.Points));
+  Assert.AreEqual<Integer>(2, Length(LVolume.Points));
   Assert.AreEqual(64, Integer(LVolume.Points[0].Value));
   Assert.AreEqual(0, Integer(LVolume.Points[0].Tick));
   Assert.AreEqual(32, Integer(LVolume.Points[1].Value));

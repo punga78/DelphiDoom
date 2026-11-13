@@ -70,7 +70,7 @@ end;
 procedure TTestEndoomScreenImage.DovrebbeDisegnareSeicentoquarantaPerDuecento;
 begin
   FImage.Render(TEndoomEditorFactory.CreateScreen, FFont, True, FPixels);
-  Assert.AreEqual(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FPixels));
+  Assert.AreEqual<Integer>(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FPixels));
   Assert.AreEqual(640, ENDOOM_WIDTH);
   Assert.AreEqual(200, ENDOOM_HEIGHT);
 end;
@@ -147,7 +147,7 @@ var
   LBlink: Integer;
 begin
   LGolden := TEditorHelper.GoldenLines('RENDERM');
-  Assert.AreEqual(12, Length(LGolden));
+  Assert.AreEqual<Integer>(12, Length(LGolden));
   for LSeed := 1 to 6 do
   begin
     LScreen := TEndoomEditorFactory.CreateScreen;
@@ -169,7 +169,7 @@ var
   LBlink: Integer;
 begin
   LGolden := TEditorHelper.GoldenLines('RENDERF');
-  Assert.AreEqual(6, Length(LGolden));
+  Assert.AreEqual<Integer>(6, Length(LGolden));
   LScreen := TEndoomEditorFactory.CreateScreen;
   for LKind := 0 to 2 do
   begin
@@ -188,7 +188,7 @@ var
   LIndex: Integer;
   LCount: Integer;
 begin
-  Assert.AreEqual(ENDOOM_FONT_SIZE, Length(FFont));
+  Assert.AreEqual<Integer>(ENDOOM_FONT_SIZE, Length(FFont));
   LCount := 0;
   for LIndex := 0 to High(FFont) do
     if FFont[LIndex] <> 0 then

@@ -69,7 +69,7 @@ end;
 
 procedure TTestRacingGridAssigner.DovrebbeDareUnaAutoPerOgniPosizione;
 begin
-  Assert.AreEqual(7, Length(FAssigner.Assign(7, TRacingCarType.Formula, [])));
+  Assert.AreEqual<Integer>(7, Length(FAssigner.Assign(7, TRacingCarType.Formula, [])));
 end;
 
 procedure TTestRacingGridAssigner.DovrebbeNonRipetereUnaAutoFinoAdEsaurirle;
@@ -154,7 +154,7 @@ end;
 
 procedure TTestRacingGridAssigner.DovrebbeDareUnElencoVuotoSenzaPosizioni;
 begin
-  Assert.AreEqual(0, Length(FAssigner.Assign(0, TRacingCarType.Formula, [])));
+  Assert.AreEqual<Integer>(0, Length(FAssigner.Assign(0, TRacingCarType.Formula, [])));
 end;
 
 procedure TTestRacingGridAssigner.DovrebbeRifiutareUnGeneratoreNil;

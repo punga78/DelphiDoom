@@ -267,7 +267,7 @@ begin
   Build([Rule('INTRO', 4), Rule('PAST', 5)]);
   Assert.AreEqual(1, FMusic.LoadedCount);
   FMusic.PlayMusic('INTRO', 0);
-  Assert.AreEqual(2, Length(FPlayer.Loaded));
+  Assert.AreEqual<Integer>(2, Length(FPlayer.Loaded));
   Assert.AreEqual(9, Integer(FPlayer.Loaded[0]));
 end;
 
@@ -495,11 +495,11 @@ begin
   LSongs := TXcomCatSongs.FromResources(LRef);
   Assert.AreEqual(2, LSongs.Count);
   // the name stays: the sequencer reads its length (AdlibMusic is given CatFile::load(i, true))
-  Assert.AreEqual(7, Length(LSongs.Song(0)));
+  Assert.AreEqual<Integer>(7, Length(LSongs.Song(0)));
   Assert.AreEqual(3, Integer(LSongs.Song(0)[0]));
   Assert.AreEqual(Integer(Ord('A')), Integer(LSongs.Song(0)[1]));
   Assert.AreEqual(10, Integer(LSongs.Song(0)[4]));
-  Assert.AreEqual(5, Length(LSongs.Song(1)));
+  Assert.AreEqual<Integer>(5, Length(LSongs.Song(1)));
   Assert.AreEqual(0, LSongs.IntroCount);
 end;
 
@@ -541,7 +541,7 @@ begin
   LSongs := TXcomCatSongs.FromResources(LRef);
   Assert.AreEqual(0, LSongs.Count);
   Assert.AreEqual(1, LSongs.IntroCount);
-  Assert.AreEqual(4, Length(LSongs.IntroSong(0)));
+  Assert.AreEqual<Integer>(4, Length(LSongs.IntroSong(0)));
 end;
 
 { TTestXcomGameMusic }

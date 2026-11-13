@@ -93,8 +93,8 @@ end;
 
 procedure TTestSwitchLumpReader.TestUnLumpVuotoNonHaVoci;
 begin
-  Assert.AreEqual(0, Length(Read(nil, False)));
-  Assert.AreEqual(0, Length(Read(nil, True)));
+  Assert.AreEqual<Integer>(0, Length(Read(nil, False)));
+  Assert.AreEqual<Integer>(0, Length(Read(nil, True)));
 end;
 
 procedure TTestSwitchLumpReader.TestUnaVoceDiDoomHaVentiByte;
@@ -102,7 +102,7 @@ var
   LPairs: TArray<TDefSwitchPair>;
 begin
   LPairs := Read(Entry('SW1BRCOM', 'SW2BRCOM', 1, False), False);
-  Assert.AreEqual(1, Length(LPairs));
+  Assert.AreEqual<Integer>(1, Length(LPairs));
   Assert.AreEqual('SW1BRCOM', LPairs[0].Name1);
   Assert.AreEqual('SW2BRCOM', LPairs[0].Name2);
   Assert.AreEqual(1, Integer(LPairs[0].Episode));
@@ -113,7 +113,7 @@ var
   LPairs: TArray<TDefSwitchPair>;
 begin
   LPairs := Read(Join([Entry('A', 'B', 1, False), Entry('C', 'D', 2, False), Entry('E', 'F', 3, False)]), False);
-  Assert.AreEqual(3, Length(LPairs));
+  Assert.AreEqual<Integer>(3, Length(LPairs));
   Assert.AreEqual('C', LPairs[1].Name1);
   Assert.AreEqual('F', LPairs[2].Name2);
   Assert.AreEqual(3, Integer(LPairs[2].Episode));
@@ -124,7 +124,7 @@ var
   LPairs: TArray<TDefSwitchPair>;
 begin
   LPairs := Read(Join([Entry('A', 'B', 1, True, 305419896), Entry('C', 'D', 2, True, -1)]), True);
-  Assert.AreEqual(2, Length(LPairs));
+  Assert.AreEqual<Integer>(2, Length(LPairs));
   Assert.AreEqual(305419896, LPairs[0].Sound);
   Assert.AreEqual(-1, LPairs[1].Sound);
   Assert.AreEqual('C', LPairs[1].Name1);
@@ -159,15 +159,15 @@ var
   LPairs: TArray<TDefSwitchPair>;
 begin
   LPairs := Read(Join([Entry('A', 'B', 1, False), Entry('', '', -1, False), Entry('C', 'D', 1, False)]), False);
-  Assert.AreEqual(3, Length(LPairs));
+  Assert.AreEqual<Integer>(3, Length(LPairs));
   Assert.AreEqual('', LPairs[1].Name1);
   Assert.AreEqual(-1, Integer(LPairs[1].Episode));
 end;
 
 procedure TTestSwitchLumpReader.TestLaCodaPiuCortaDiUnaVoceEScartata;
 begin
-  Assert.AreEqual(1, Length(Read(Join([Entry('A', 'B', 1, False), BytesOf('abc')]), False)));
-  Assert.AreEqual(0, Length(Read(Entry('A', 'B', 1, False), True)), 'venti byte non bastano a Strife');
+  Assert.AreEqual<Integer>(1, Length(Read(Join([Entry('A', 'B', 1, False), BytesOf('abc')]), False)));
+  Assert.AreEqual<Integer>(0, Length(Read(Entry('A', 'B', 1, False), True)), 'venti byte non bastano a Strife');
 end;
 
 procedure TTestSwitchLumpReader.TestIlNomeDelSuonoDelLumpEVuoto;

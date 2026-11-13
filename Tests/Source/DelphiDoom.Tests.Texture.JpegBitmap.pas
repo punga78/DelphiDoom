@@ -98,7 +98,7 @@ var
 begin
   // 3 pixels * 3 bytes = 9 bytes per row, padded to 12
   LBitmap := TJpegBitmapBuilder.Build(MakeImage(3, 2, 3));
-  Assert.AreEqual(FILE_HEADER_SIZE + INFO_HEADER_SIZE + 12 * 2, Length(LBitmap));
+  Assert.AreEqual<Integer>(FILE_HEADER_SIZE + INFO_HEADER_SIZE + 12 * 2, Length(LBitmap));
   Assert.AreEqual(Cardinal(Length(LBitmap)), CardinalAt(LBitmap, 2));
 end;
 

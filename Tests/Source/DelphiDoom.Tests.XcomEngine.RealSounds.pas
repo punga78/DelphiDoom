@@ -149,10 +149,10 @@ begin
       Inc(LEntries);
       LData := Samples(Convert(LCatalog.Load(LIndex), AFormat));
       if LParts[1] = 'none' then
-        Assert.AreEqual(0, Length(LData), Format('%s entry %d: the real game has no sound', [AGolden, LIndex]))
+        Assert.AreEqual<Integer>(0, Length(LData), Format('%s entry %d: the real game has no sound', [AGolden, LIndex]))
       else
       begin
-        Assert.AreEqual(StrToInt(LParts[1]), Length(LData), Format('%s entry %d: samples', [AGolden, LIndex]));
+        Assert.AreEqual<Integer>(StrToInt(LParts[1]), Length(LData), Format('%s entry %d: samples', [AGolden, LIndex]));
         Assert.AreEqual(LParts[2], Fingerprint(LData), Format('%s entry %d: fingerprint', [AGolden, LIndex]));
         Inc(Result);
       end;
@@ -265,9 +265,9 @@ begin
     AssertSame(TXcomSoundConverter.RawToWave(LIntro.Load(LIndex)), LResources.SoundWave('INTRO.CAT', LIndex));
   Assert.AreEqual(67, LCount, 'sounds of GEO.CAT and BATTLE.CAT');
   // past the end of the file, and the sets that UFO does not have
-  Assert.AreEqual(0, Length(LResources.SoundWave('GEO.CAT', LGeo.Count)));
-  Assert.AreEqual(0, Length(LResources.SoundWave('BATTLE2.CAT', 0)));
-  Assert.AreEqual(0, Length(LResources.SoundWave('SAMPLE3.CAT', 0)));
+  Assert.AreEqual<Integer>(0, Length(LResources.SoundWave('GEO.CAT', LGeo.Count)));
+  Assert.AreEqual<Integer>(0, Length(LResources.SoundWave('BATTLE2.CAT', 0)));
+  Assert.AreEqual<Integer>(0, Length(LResources.SoundWave('SAMPLE3.CAT', 0)));
 end;
 
 procedure TTestXcomRealSounds.IlFormatoPreferitoCheMancaRicadeSuQuelloCheCe;
@@ -306,14 +306,14 @@ begin
   // 8000 Hz: 16 samples become 23 and the header says 11025
   PCardinal(@LWave[$18])^ := 8000;
   LWave := TXcomSoundConverter.WaveToWave(LWave);
-  Assert.AreEqual(44 + 23, Length(LWave));
+  Assert.AreEqual<Integer>(44 + 23, Length(LWave));
   Assert.AreEqual(Cardinal($2B11), PCardinal(@LWave[$18])^);
   Assert.AreEqual(Cardinal(23), PCardinal(@LWave[$28])^);
   Assert.AreEqual(Byte(44), LWave[44]);
   Assert.AreEqual(Byte(44), LWave[45]);
   Assert.AreEqual(Byte(45), LWave[46]);
   // too short to have a header
-  Assert.AreEqual(0, Length(TXcomSoundConverter.WaveToWave(nil)));
+  Assert.AreEqual<Integer>(0, Length(TXcomSoundConverter.WaveToWave(nil)));
 end;
 
 initialization

@@ -83,7 +83,7 @@ end;
 procedure TTestCommandLineQueried.DovrebbeDareTestoVuotoEValoriNilPrimaDiAttach;
 begin
   Assert.AreEqual('', FQueried.Text);
-  Assert.AreEqual(0, Length(FQueried.ValuesAfter('-file')));
+  Assert.AreEqual<Integer>(0, Length(FQueried.ValuesAfter('-file')));
 end;
 
 procedure TTestCommandLineQueried.DovrebbeSollevareEccezionePerUnaPosizionePrimaDiAttach;
@@ -112,7 +112,7 @@ begin
   Assert.IsTrue(FQueried.Has('-nomusic'));
   Assert.IsFalse(FQueried.Has('-warp'));
   LValues := FQueried.ValuesAfter('-file');
-  Assert.AreEqual(2, Length(LValues));
+  Assert.AreEqual<Integer>(2, Length(LValues));
   Assert.AreEqual('A.WAD', LValues[0]);
   Assert.AreEqual('B.WAD', LValues[1]);
   Assert.AreEqual('-FILE A.WAD B.WAD -NOMUSIC', FQueried.Text);
@@ -126,7 +126,7 @@ begin
   FQueried.IndexOf('-nomusic');
   FQueried.Attach(MakeInner);
   LNames := FQueried.QueriedNames;
-  Assert.AreEqual(1, Length(LNames));
+  Assert.AreEqual<Integer>(1, Length(LNames));
   Assert.AreEqual('-nomusic', LNames[0]);
 end;
 
@@ -135,7 +135,7 @@ begin
   FQueried.IndexOf('-nomusic');
   FQueried.IndexOf('-NOMUSIC');
   FQueried.IndexOf('-NoMusic');
-  Assert.AreEqual(1, Length(FQueried.QueriedNames));
+  Assert.AreEqual<Integer>(1, Length(FQueried.QueriedNames));
 end;
 
 procedure TTestCommandLineQueried.DovrebbeTenereLaPrimaScritturaDelNome;
@@ -154,7 +154,7 @@ begin
   FQueried.IndexOf('-warp');
   FQueried.IndexOf('-file');
   LNames := FQueried.QueriedNames;
-  Assert.AreEqual(3, Length(LNames));
+  Assert.AreEqual<Integer>(3, Length(LNames));
   Assert.AreEqual('-warp', LNames[0]);
   Assert.AreEqual('-skill', LNames[1]);
   Assert.AreEqual('-file', LNames[2]);
@@ -165,7 +165,7 @@ begin
   FQueried.Has('-a');
   FQueried.ValuesAfter('-b');
   FQueried.ValuesAfter('-a');
-  Assert.AreEqual(2, Length(FQueried.QueriedNames));
+  Assert.AreEqual<Integer>(2, Length(FQueried.QueriedNames));
 end;
 
 procedure TTestCommandLineQueried.DovrebbeRicordareUnParametroAssente;
@@ -177,7 +177,7 @@ end;
 
 procedure TTestCommandLineQueried.DovrebbeDareUnElencoVuotoSeNessunoCercaNulla;
 begin
-  Assert.AreEqual(0, Length(FQueried.QueriedNames));
+  Assert.AreEqual<Integer>(0, Length(FQueried.QueriedNames));
 end;
 
 procedure TTestCommandLineQueried.DovrebbeSostituireLaRigaDiComandoAgganciata;

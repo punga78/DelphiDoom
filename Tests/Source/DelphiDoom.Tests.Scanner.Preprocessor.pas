@@ -279,7 +279,7 @@ begin
       .Split([#13#10], TStringSplitOptions.None);
     if (Length(LExpected) > 0) and (LExpected[High(LExpected)] = '') then
       SetLength(LExpected, Length(LExpected) - 1);
-    Assert.AreEqual(Length(LExpected), LOut.Count, 'the number of lines of ' + ASample);
+    Assert.AreEqual<Integer>(Length(LExpected), LOut.Count, 'the number of lines of ' + ASample);
     for LIndex := 0 to High(LExpected) do
       Assert.AreEqual(LExpected[LIndex], LOut[LIndex], 'line ' + IntToStr(LIndex + 1) + ' of ' + ASample);
   finally

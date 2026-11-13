@@ -130,7 +130,7 @@ begin
       Continue;
     LFound := True;
     LGolden := GoldenOf(AName);
-    Assert.AreEqual(GOLDEN_FIELDS, Length(LGolden), 'golden of ' + AName);
+    Assert.AreEqual<Integer>(GOLDEN_FIELDS, Length(LGolden), 'golden of ' + AName);
     Assert.AreEqual(LGolden[1], IntToStr(LCase.Track), 'track');
 
     LCountStatus := TXmiConverter.CountTracks(Pointer(LCase.Data), Length(LCase.Data), LCount);
@@ -152,7 +152,7 @@ var
   LCase: TXmiReferenceCase;
 begin
   for LCase in TXmiReferenceCases.All do
-    Assert.AreEqual(GOLDEN_FIELDS, Length(GoldenOf(LCase.Name)), LCase.Name);
+    Assert.AreEqual<Integer>(GOLDEN_FIELDS, Length(GoldenOf(LCase.Name)), LCase.Name);
 end;
 
 procedure TTestXmiReference.DovrebbeDareLoStessoFileDelVecchioConvertitore(const AName: string);
@@ -168,7 +168,7 @@ var
   LMidi: TBytes;
 begin
   LGolden := GoldenOf(AName);
-  Assert.AreEqual(GOLDEN_FIELDS, Length(LGolden), 'golden of ' + AName);
+  Assert.AreEqual<Integer>(GOLDEN_FIELDS, Length(LGolden), 'golden of ' + AName);
   Assert.AreNotEqual(AExpected, LGolden[5], 'the old converter gave other bytes');
   for LCase in TXmiReferenceCases.All do
     if LCase.Name = AName then

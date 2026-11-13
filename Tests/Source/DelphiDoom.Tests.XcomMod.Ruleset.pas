@@ -234,7 +234,7 @@ begin
   Assert.AreEqual(7, LItem.HandSprite, 'sprite fra i condivisi: nessun offset');
   Assert.AreEqual(3, FRuleset.Items.Find('STR_B').ListOrder, 'ordine esplicito');
   Assert.AreEqual('STR_A', LItem.Name);
-  Assert.AreEqual(1, Length(LItem.Requirements));
+  Assert.AreEqual<Integer>(1, Length(LItem.Requirements));
   // un oggetto ricaricato resta lo stesso e non cambia l'ordine
   Load('items: [{type: STR_A, costBuy: 9}]');
   Assert.AreEqual(2, FRuleset.Items.Count);
@@ -268,18 +268,18 @@ begin
   Load('items: [{delete: STR_A}, {delete: STR_MISSING}, {name: senzaChiave}]');
   Assert.AreEqual(1, FRuleset.Items.Count);
   Assert.IsNull(FRuleset.Items.Find('STR_A'));
-  Assert.AreEqual(1, Length(FRuleset.Items.Index));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.Items.Index));
   Assert.AreEqual('STR_B', FRuleset.Items.Index[0]);
   FRuleset.Items.Delete('STR_B');
   Assert.AreEqual(0, FRuleset.Items.Count);
   Assert.AreEqual('STR_C', FRuleset.Items.GetOrCreate('STR_C').ItemType);
-  Assert.AreEqual(0, Length(FRuleset.Items.Index), 'GetOrCreate non mette nell''indice');
+  Assert.AreEqual<Integer>(0, Length(FRuleset.Items.Index), 'GetOrCreate non mette nell''indice');
   FRuleset.Items.Add('STR_D', TXcomRuleItem.Create('STR_D'));
   FRuleset.Items.Add('STR_D', TXcomRuleItem.Create('STR_D2'));
   Assert.AreEqual('STR_D2', FRuleset.Items.Find('STR_D').ItemType);
-  Assert.AreEqual(1, Length(FRuleset.Items.Index));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.Items.Index));
   FRuleset.Items.SetIndex(nil);
-  Assert.AreEqual(0, Length(FRuleset.Items.Index));
+  Assert.AreEqual<Integer>(0, Length(FRuleset.Items.Index));
 end;
 
 procedure TTestXcomRuleset.DovrebbeSommareGliOffsetDelModCorrente;
@@ -307,16 +307,16 @@ begin
     'spriteFaceColor: [1, 2]}, {type: A2, corpseBattle: [C1, C2], loftempsSet: [1, 2]}]');
   LArmor := FRuleset.Armors.Find('A1');
   Assert.AreEqual('CORPSE', LArmor.CorpseGeoscape);
-  Assert.AreEqual(1, Length(LArmor.CorpseBattlescape));
+  Assert.AreEqual<Integer>(1, Length(LArmor.CorpseBattlescape));
   Assert.AreEqual(Single(0.5), LArmor.DamageModifier[0]);
   Assert.AreEqual(Single(2), LArmor.DamageModifier[1]);
   Assert.AreEqual(Single(1), LArmor.DamageModifier[2]);
-  Assert.AreEqual(1, Length(LArmor.LoftempsSet));
+  Assert.AreEqual<Integer>(1, Length(LArmor.LoftempsSet));
   Assert.AreEqual(5, LArmor.Stats.TimeUnits);
-  Assert.AreEqual(2, Length(LArmor.FaceColor));
+  Assert.AreEqual<Integer>(2, Length(LArmor.FaceColor));
   Assert.IsTrue(LArmor.HasInventory);
   Assert.AreEqual('C1', FRuleset.Armors.Find('A2').CorpseGeoscape);
-  Assert.AreEqual(2, Length(FRuleset.Armors.Find('A2').LoftempsSet));
+  Assert.AreEqual<Integer>(2, Length(FRuleset.Armors.Find('A2').LoftempsSet));
 end;
 
 procedure TTestXcomRuleset.DovrebbeSollevareErroreSeLaCorazzaNonHaCadaveri;
@@ -332,11 +332,11 @@ begin
   Load('units: [{type: U2, standHeight: 20, floatHeight: 5, stats: {tu: 9}, builtInWeaponSets: [[A, B]], ' +
     'builtInWeapons: [C], deathSound: [1, 2], race: R}]');
   LUnit := FRuleset.Units.Find('U2');
-  Assert.AreEqual(2, Length(LUnit.BuiltInWeapons));
-  Assert.AreEqual(2, Length(LUnit.DeathSounds));
+  Assert.AreEqual<Integer>(2, Length(LUnit.BuiltInWeapons));
+  Assert.AreEqual<Integer>(2, Length(LUnit.DeathSounds));
   Assert.AreEqual(9, LUnit.Stats.TimeUnits);
   Assert.AreEqual(30, LUnit.EnergyRecovery);
-  Assert.AreEqual(0, Length(FRuleset.Units.Index), 'le unita non hanno indice');
+  Assert.AreEqual<Integer>(0, Length(FRuleset.Units.Index), 'le unita non hanno indice');
 end;
 
 procedure TTestXcomRuleset.DovrebbeCaricareISoldatiEIPoolDeiNomi;
@@ -352,10 +352,10 @@ begin
   Assert.IsNotNull(LSoldier);
   Assert.AreEqual('STR_SOLDIER', LSoldier.SoldierType, 'XCOM diventa STR_SOLDIER');
   Assert.AreEqual(2, LSoldier.Names.Count, 'solo i .nam della cartella');
-  Assert.AreEqual(2, Length(LSoldier.Names[0].FemaleFirst), 'senza nomi femminili prende quelli maschili');
+  Assert.AreEqual<Integer>(2, Length(LSoldier.Names[0].FemaleFirst), 'senza nomi femminili prende quelli maschili');
   Assert.AreEqual(6, LSoldier.Names[0].TotalWeight);
   Assert.AreEqual(40, LSoldier.Names[0].FemaleFrequency);
-  Assert.AreEqual(1, Length(LSoldier.Names[1].FemaleFirst));
+  Assert.AreEqual<Integer>(1, Length(LSoldier.Names[1].FemaleFirst));
   Assert.AreEqual(50, LSoldier.MinStats.TimeUnits);
   Load('soldiers: [{type: XCOM, soldierNames: [delete, SoldierName/B.nam]}]');
   Assert.AreEqual(1, LSoldier.Names.Count);
@@ -404,11 +404,11 @@ begin
   Assert.AreEqual(3, LList[0].SizeY);
   Assert.AreEqual(1, LList[0].SizeZ);
   Assert.AreEqual(5, LList[0].ScriptLabel, 'il valore assoluto');
-  Assert.AreEqual(1, Length(LList[0].Rects));
+  Assert.AreEqual<Integer>(1, Length(LList[0].Rects));
   Assert.AreEqual(3, LList[0].Frequencies[0]);
   Assert.AreEqual(2, LList[0].MaxUses[0] + 0);
   Assert.AreEqual(TXcomMapScript.MD_VERTICAL, LList[1].Direction);
-  Assert.AreEqual(2, Length(LList[1].Blocks));
+  Assert.AreEqual<Integer>(2, Length(LList[1].Blocks));
   Assert.AreEqual(1, LList[2].Groups[0], 'addCraft: gruppo 1 di default');
   Assert.AreEqual(5, LList[3].SizeX);
   Assert.AreEqual(5, LList[3].SizeY);
@@ -504,23 +504,23 @@ begin
     'statGrowthMultipliers: {tu: 3}, alienItemLevels: [[1, 2], [3]], startingBase: {items: {A: 1}}, ' +
     'startingTime: {year: 2000}, fontName: F, difficultyDemigod: true, defeatScore: 8');
   Assert.AreEqual(1, FRuleset.McdPatches.Count);
-  Assert.AreEqual(1, Length(FRuleset.McdPatches.Value(0).Numbers('bigWall')));
-  Assert.AreEqual(1, Length(FRuleset.McdPatches.Value(0).NoFloors));
-  Assert.AreEqual(0, Length(FRuleset.McdPatches.Value(0).Numbers('desconocido')));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.McdPatches.Value(0).Numbers('bigWall')));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.McdPatches.Value(0).NoFloors));
+  Assert.AreEqual<Integer>(0, Length(FRuleset.McdPatches.Value(0).Numbers('desconocido')));
   Assert.AreEqual(1, FRuleset.ExtraSprites.Count, 'S1 cancellato, resta TEXTURE.DAT');
   Assert.AreEqual(1, FRuleset.ExtraSounds.Count);
   Assert.AreEqual(3, FRuleset.ExtraStrings.Value(0).Strings.Count);
-  Assert.AreEqual(3, Length(FRuleset.StatStrings[0].Conditions), 'tu, health, psiTraining: nell''ordine del C++');
+  Assert.AreEqual<Integer>(3, Length(FRuleset.StatStrings[0].Conditions), 'tu, health, psiTraining: nell''ordine del C++');
   Assert.IsTrue(FRuleset.StatStrings[0].Conditions[0].IsMet(15, False));
   Assert.IsFalse(FRuleset.StatStrings[0].Conditions[0].IsMet(25, False));
   Assert.IsTrue(FRuleset.StatStrings[0].Conditions[2].IsMet(1, False), 'psiTraining sempre vero');
   Assert.IsFalse(FRuleset.StatStrings[0].Conditions[1].IsMet(1, False), 'health: minimo 5');
   Assert.AreEqual(2, FRuleset.Interfaces.Find('I1').Elements.Count);
   Assert.AreEqual(MaxInt, FRuleset.Interfaces.Find('I1').Elements.Value(1).W);
-  Assert.AreEqual(1, Length(FRuleset.Videos.Find('V1').Slides));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.Videos.Find('V1').Slides));
   Assert.AreEqual(320, FRuleset.Videos.Find('V1').Slides[0].W);
   Assert.AreEqual(30, FRuleset.Videos.Find('V1').SlideshowHeader.TransitionSeconds);
-  Assert.AreEqual(1, Length(FRuleset.Converter.List('markers')));
+  Assert.AreEqual<Integer>(1, Length(FRuleset.Converter.List('markers')));
   Assert.AreEqual(5, FRuleset.Constants.DoorOpen);
   Assert.AreEqual(6, FRuleset.Constants.WindowPopup[2]);
   Assert.AreEqual(1, FRuleset.Constants.FireDamageRange[0]);
@@ -532,7 +532,7 @@ begin
   Assert.AreEqual(6, FRuleset.Settings.StatAdjustment[1].GrowthMultiplier);
   Assert.AreEqual(Double(0.25), FRuleset.Settings.StatAdjustment[0].AimAndArmorMultiplier);
   Assert.AreEqual(3, FRuleset.Settings.StatAdjustment[4].StatGrowth.TimeUnits);
-  Assert.AreEqual(2, Length(FRuleset.Settings.AlienItemLevels));
+  Assert.AreEqual<Integer>(2, Length(FRuleset.Settings.AlienItemLevels));
   Assert.AreEqual(1, FRuleset.StartingBase.Count);
   Assert.IsTrue(Assigned(FRuleset.StartingTime));
   Assert.IsTrue(FRuleset.Settings.DifficultyDemigod);
@@ -691,10 +691,10 @@ begin
   try
     LRuleset := LLoader.LoadAll(TArray<TXcomModSource>.Create(TXcomModSource.Make('base', 1, nil, 'res.yml')));
     try
-      Assert.AreEqual(7, Length(LRuleset.SoundDefinitions.Find('S1').SoundList),
+      Assert.AreEqual<Integer>(7, Length(LRuleset.SoundDefinitions.Find('S1').SoundList),
         '1, 2, 3 e due elementi che non sono una coppia (0), poi 9 e -1 per "x"');
       Assert.AreEqual('A.CAT', LRuleset.SoundDefinitions.Find('S1').CatFile);
-      Assert.AreEqual(10, Length(LRuleset.Transparencies), '1000 / 100');
+      Assert.AreEqual<Integer>(10, Length(LRuleset.Transparencies), '1000 / 100');
       Assert.AreEqual(1, Integer(LRuleset.Transparencies[0].R));
       Assert.AreEqual(4, Integer(LRuleset.Transparencies[0].Unused));
       Assert.AreEqual(2, Integer(LRuleset.Transparencies[1].Unused), 'il quarto numero manca: 2');

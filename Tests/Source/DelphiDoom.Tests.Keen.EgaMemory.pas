@@ -96,7 +96,7 @@ begin
   for LPlane := 0 to 3 do
   begin
     LMemory.WriteByte(LPlane, 5, Byte(LPlane + 1));
-    Assert.AreEqual(KEEN_EGA_PLANE_BYTES, Length(LMemory.PlaneBytes(LPlane)));
+    Assert.AreEqual<Integer>(KEEN_EGA_PLANE_BYTES, Length(LMemory.PlaneBytes(LPlane)));
   end;
   for LPlane := 0 to 3 do
     Assert.AreEqual(LPlane + 1, Integer(LMemory.ReadByte(LPlane, 5)));
@@ -155,7 +155,7 @@ begin
   LImage := TKeenDisplayCapture.Capture(TKeenEgaMemory.Create, 0, 0, 64);
   Assert.AreEqual(320, LImage.Width);
   Assert.AreEqual(200, LImage.Height);
-  Assert.AreEqual(64000, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(64000, Length(LImage.Pixels));
 end;
 
 procedure TTestKeenDisplayCapture.DovrebbeLeggereDallIndirizzoDiPartenza;
@@ -270,7 +270,7 @@ var
   LMap: IKeenWorkingMap;
 begin
   LMap := TKeenWorkingMap.Create(10, 8);
-  Assert.AreEqual(80, Length(LMap.Planes[1]));
+  Assert.AreEqual<Integer>(80, Length(LMap.Planes[1]));
   Assert.AreEqual(0, Integer(LMap.Planes[1][79]));
 end;
 

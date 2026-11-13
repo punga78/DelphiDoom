@@ -378,7 +378,7 @@ begin
   Parse('ACTOR States1 2003'#10'{'#10'  States'#10'  {'#10'  Spawn:'#10'    TROO AB 10 A_Look'#10 +
     '    Loop'#10'  Death:'#10'    TROO C 5 BRIGHT'#10'    TROO D 5 A_Scream'#10'    Stop'#10'  }'#10'}'#10);
   LActor := FEngine.Actors[1];
-  Assert.AreEqual(4, Length(LActor.States));
+  Assert.AreEqual<Integer>(4, Length(LActor.States));
   Assert.AreEqual(0, LActor.SpawnState);
   Assert.AreEqual(2, LActor.DeathState);
   Assert.AreEqual(Cardinal(ACTORDEF_ST_SPAWN or ACTORDEF_ST_DEATH), LActor.StatesDefined);
@@ -546,8 +546,8 @@ begin
   // the old parser kept the number of states of the actor before: it wrote states that did not exist
   Parse('ACTOR First 3001'#10'{'#10'  States'#10'  {'#10'  Spawn:'#10'    TROO A 1'#10'    TROO B 1'#10'  }'#10'}'#10'ACTOR Second : Imp 3002'#10);
   Assert.AreEqual(3, FEngine.Actors.Count);
-  Assert.AreEqual(2, Length(FEngine.Actors[1].States));
-  Assert.AreEqual(0, Length(FEngine.Actors[2].States));
+  Assert.AreEqual<Integer>(2, Length(FEngine.Actors[1].States));
+  Assert.AreEqual<Integer>(0, Length(FEngine.Actors[2].States));
   Assert.AreEqual(3002, FEngine.Actors[2].DoomedNum);
 end;
 
@@ -560,7 +560,7 @@ begin
   for LIndex := 1 to 43 do
     LText := LText + '    TROO ABCDEFGHIJKLMNOPQRSTUVWXYZ 1'#10;
   Parse(LText + '    Loop'#10'  }'#10'}'#10);
-  Assert.AreEqual(ACTORDEF_MAX_STATES, Length(FEngine.Actors[1].States));
+  Assert.AreEqual<Integer>(ACTORDEF_MAX_STATES, Length(FEngine.Actors[1].States));
   Assert.IsTrue(Warnings.Contains('Object has more than 1024 states'));
 end;
 

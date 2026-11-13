@@ -76,7 +76,7 @@ begin
   LPalette := TImagingSamples.Palette(5);
   LFlat := TImagingFactory.CreateFlatReader.Read(TImagingSamples.RandomBytes(1, 4096), LPalette, 0);
   LGrown := TImagingFactory.CreateSpanGrower.Grow64to256(LFlat.Pixels);
-  Assert.AreEqual(256 * 256, Length(LGrown), 'dovrebbe ingrandire il flat letto');
+  Assert.AreEqual<Integer>(256 * 256, Length(LGrown), 'dovrebbe ingrandire il flat letto');
 end;
 
 end.

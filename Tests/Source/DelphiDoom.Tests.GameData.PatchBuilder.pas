@@ -204,7 +204,7 @@ var
 begin
   // 1 column of 3 pixels: header (8), one offset (4), post: top 0, length 3, pad, 3 pixels, pad, end 255 0
   LPatch := Builder(2).FromColumns(TBytes.Create(10, 20, 30), 1, 3, True);
-  Assert.AreEqual(8 + 4 + 2 + 1 + 3 + 1 + 2, Length(LPatch));
+  Assert.AreEqual<Integer>(8 + 4 + 2 + 1 + 3 + 1 + 2, Length(LPatch));
   Assert.AreEqual(12, Integer(PInteger(@LPatch[8])^), 'offset of the first column');
   Assert.AreEqual<Byte>(0, LPatch[12], 'top delta');
   Assert.AreEqual<Byte>(3, LPatch[13], 'length');
@@ -275,7 +275,7 @@ var
   LPatch: TBytes;
 begin
   LPatch := Builder(2).FromColumns(nil, 0, 0, True);
-  Assert.AreEqual(8, Length(LPatch));
+  Assert.AreEqual<Integer>(8, Length(LPatch));
 end;
 
 procedure TTestGameDataPatchBuilder.DovrebbeRifiutareUnaImmagineTroppoCorta;

@@ -864,7 +864,7 @@ begin
     Assert.IsNull(LBattle.TileAt(Pos3(4, 0, 0)));
     Assert.IsNull(LBattle.TileAt(Pos3(0, -1, 0)));
     Assert.IsNull(LBattle.TileAt(Pos3(0, 0, 2)));
-    Assert.AreEqual(121, Length(LBattle.TileSearch));
+    Assert.AreEqual<Integer>(121, Length(LBattle.TileSearch));
     Assert.AreEqual(-5, LBattle.TileSearch[0].X);
     Assert.AreEqual(5, LBattle.TileSearch[120].Y);
   finally
@@ -991,7 +991,7 @@ begin
     LBattle.TileAt(Pos3(12, 3, 0)).SetMapData(LModule, 0, 0, XCOM_PART_OBJECT);
     LBattle.TileAt(Pos3(13, 3, 0)).SetMapData(LModule, 0, 0, XCOM_PART_OBJECT);
     LBattle.CalculateModuleMap;
-    Assert.AreEqual(2, Length(LBattle.ModuleMap));
+    Assert.AreEqual<Integer>(2, Length(LBattle.ModuleMap));
     Assert.AreEqual(-1, LBattle.ModuleMap[0][0].Key);
     // the first module of a cell takes it from -1 to 1, the next ones add one
     Assert.AreEqual(2, LBattle.ModuleMap[1][0].Key);
@@ -1149,13 +1149,13 @@ begin
     LBattle.ResetUnitTiles;
     LPathfinding.Calculate(LUnit, Pos3(4, 1, 0));
     LPath := LPathfinding.Path;
-    Assert.AreEqual(4, Length(LPath));
+    Assert.AreEqual<Integer>(4, Length(LPath));
     for LIndex := 0 to 3 do
       Assert.AreEqual(2, LPath[LIndex]);
     Assert.AreEqual(16, LPathfinding.TotalTuCost);
     Assert.AreEqual(2, LPathfinding.GetStartDirection);
     Assert.AreEqual(2, LPathfinding.DequeuePath);
-    Assert.AreEqual(2, Length(LPathfinding.Path) - 1);
+    Assert.AreEqual<Integer>(2, Length(LPathfinding.Path) - 1);
     LPathfinding.AbortPath;
     Assert.AreEqual(-1, LPathfinding.DequeuePath);
     Assert.AreEqual(-1, LPathfinding.GetStartDirection);
@@ -1197,7 +1197,7 @@ begin
     // it must go down to the row 4 to pass the wall
     Assert.IsTrue(LPathfinding.TotalTuCost > 0);
     LPathfinding.Calculate(LUnit, Pos3(2, 2, 0));
-    Assert.AreEqual(0, Length(LPathfinding.Path));
+    Assert.AreEqual<Integer>(0, Length(LPathfinding.Path));
   finally
     LBattle.Free;
   end;
@@ -1223,9 +1223,9 @@ begin
     LUnit.SetPosition(Pos3(0, 0, 0));
     LBattle.ResetUnitTiles;
     LPathfinding.Calculate(LUnit, Pos3(4, 0, 0));
-    Assert.AreEqual(0, Length(LPathfinding.Path));
+    Assert.AreEqual<Integer>(0, Length(LPathfinding.Path));
     LPathfinding.Calculate(LUnit, Pos3(-1, 0, 0));
-    Assert.AreEqual(0, Length(LPathfinding.Path));
+    Assert.AreEqual<Integer>(0, Length(LPathfinding.Path));
     Assert.IsFalse(LPathfinding.IsOnStairs(Pos3(0, 0, 0), Pos3(2, 2, 0)));
     Assert.IsFalse(LPathfinding.ValidateUpDown(LUnit, Pos3(0, 0, 0), DIR_UP));
     Assert.IsTrue(LPathfinding.IsBlocked(nil, 0, nil));
@@ -1256,10 +1256,10 @@ begin
     LBattle.ResetUnitTiles;
     // 4 time units a step (6 diagonally): the 8 neighbours cost at most 6, so 9 tiles with the start
     LReach := LPathfinding.FindReachable(LUnit, 6);
-    Assert.AreEqual(9, Length(LReach));
+    Assert.AreEqual<Integer>(9, Length(LReach));
     Assert.AreEqual(LBattle.TileIndex(Pos3(2, 2, 0)), LReach[0]);
     LReach := LPathfinding.FindReachable(LUnit, 0);
-    Assert.AreEqual(1, Length(LReach));
+    Assert.AreEqual<Integer>(1, Length(LReach));
   finally
     LBattle.Free;
   end;

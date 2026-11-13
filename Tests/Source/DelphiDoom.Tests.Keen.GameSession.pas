@@ -506,7 +506,7 @@ begin
   FSession.Sound.TrySetMode(ksmPC);
   Assert.IsTrue(FSession.Game.SaveConfig);
   Assert.IsTrue(FSession.FilesIntf.TryRead('KDREAMS.CFG', LBytes));
-  Assert.AreEqual(656, Length(LBytes));
+  Assert.AreEqual<Integer>(656, Length(LBytes));
   // another game reads it
   LFirst := FSession;
   FSession := nil;

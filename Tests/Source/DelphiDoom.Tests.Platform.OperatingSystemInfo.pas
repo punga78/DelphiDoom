@@ -131,7 +131,7 @@ var
   LDescription: TOperatingSystemDescription;
 begin
   LDescription := Describe(osfWindowsNT, 5, 1, 2600);
-  Assert.AreEqual(1, Length(LDescription.Lines));
+  Assert.AreEqual<Integer>(1, Length(LDescription.Lines));
   Assert.AreEqual(' OS: Windows XP 5.1 (Build 2600)', LDescription.Lines[0]);
 end;
 
@@ -152,7 +152,7 @@ var
   LDescription: TOperatingSystemDescription;
 begin
   LDescription := Describe(osfWindowsNT, 5, 1, 2600, 'Service Pack 3');
-  Assert.AreEqual(2, Length(LDescription.Lines));
+  Assert.AreEqual<Integer>(2, Length(LDescription.Lines));
   Assert.AreEqual('     Service Pack 3', LDescription.Lines[1]);
 end;
 

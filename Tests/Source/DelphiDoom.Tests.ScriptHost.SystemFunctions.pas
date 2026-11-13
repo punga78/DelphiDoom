@@ -208,7 +208,7 @@ begin
   LTable := TFakeFunctionTable.Create;
   LTableRef := LTable;
   FGroup.Describe(LTableRef);
-  Assert.AreEqual(Length(LGolden), LTable.Declarations.Count);
+  Assert.AreEqual<Integer>(Length(LGolden), LTable.Declarations.Count);
   for LIndex := 0 to LTable.Declarations.Count - 1 do
   begin
     // the list adds the closing semicolon: the golden has the text as the old code wrote it

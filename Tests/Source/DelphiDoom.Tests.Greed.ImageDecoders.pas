@@ -138,7 +138,7 @@ var
   LImage: TGreedImage;
 begin
   LImage := FDecoder.Decode(TGreedLumps.Picture(3, 2, 0, 0, 10));
-  Assert.AreEqual(6, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(6, Length(LImage.Pixels));
   Assert.AreEqual(10, Integer(LImage.Pixels[0]));
   Assert.AreEqual(12, Integer(LImage.Pixels[2]));
   Assert.AreEqual(13, Integer(LImage.Pixels[3]));
@@ -156,7 +156,7 @@ var
 begin
   LLump := TGreedLumps.Picture(2, 2, 0, 0);
   SetLength(LLump, Length(LLump) + 5);
-  Assert.AreEqual(4, Length(FDecoder.Decode(LLump).Pixels));
+  Assert.AreEqual<Integer>(4, Length(FDecoder.Decode(LLump).Pixels));
 end;
 
 procedure TTestGreedPictureDecoder.DovrebbeRifiutareUnLumpSenzaIntestazione;
@@ -197,7 +197,7 @@ begin
   LImage := TGreedFlatDecoder.Create.Decode(TGreedLumps.Flat);
   Assert.AreEqual(64, LImage.Width);
   Assert.AreEqual(64, LImage.Height);
-  Assert.AreEqual(4096, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(4096, Length(LImage.Pixels));
 end;
 
 procedure TTestGreedFlatDecoder.DovrebbeTenereIPixelRigaPerRiga;
@@ -232,7 +232,7 @@ begin
   LImage := FDecoder.Decode(TGreedLumps.Wall(2));
   Assert.AreEqual(64, LImage.Width);
   Assert.AreEqual(8, LImage.Height);
-  Assert.AreEqual(64 * 8, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(64 * 8, Length(LImage.Pixels));
 end;
 
 procedure TTestGreedWallDecoder.DovrebbeTrasporreLeColonneInRighe;
@@ -292,7 +292,7 @@ begin
   LImage := FDecoder.Decode(TGreedLumps.Sprite);
   Assert.AreEqual(3, LImage.Width);
   Assert.AreEqual(5, LImage.Height);
-  Assert.AreEqual(15, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(15, Length(LImage.Pixels));
 end;
 
 procedure TTestGreedSpriteDecoder.DovrebbeTenereLOffsetSinistroELaBase;
@@ -343,7 +343,7 @@ begin
   LImage := FDecoder.Decode(TGreedLumps.Bytes([0, 0, 2, 0, 0, 0, 0, 0]));
   Assert.AreEqual(2, LImage.Width);
   Assert.AreEqual(0, LImage.Height);
-  Assert.AreEqual(0, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LImage.Pixels));
 end;
 
 procedure TTestGreedSpriteDecoder.DovrebbeRifiutareUnLumpCorto;

@@ -382,9 +382,9 @@ begin
   LPages := Encode(FPascal, LPackets, 5, 0);
 
   // The header packet has a page for itself; the others share the next one
-  Assert.AreEqual(2, Length(LPages));
-  Assert.AreEqual(27 + 1 + 30, Length(LPages[0]));
-  Assert.AreEqual(27 + 2 + 90, Length(LPages[1]));
+  Assert.AreEqual<Integer>(2, Length(LPages));
+  Assert.AreEqual<Integer>(27 + 1 + 30, Length(LPages[0]));
+  Assert.AreEqual<Integer>(27 + 2 + 90, Length(LPages[1]));
 end;
 
 procedure TTestOggFraming.TestUnPacchettoGrandeOccupaPiuPagine;
@@ -503,7 +503,7 @@ begin
   SetLength(LPackets, 1);
   LPackets[0] := MakePacket(500, 5, True);
   LPages := Encode(FPascal, LPackets, 2, 1);
-  Assert.AreEqual(1, Length(LPages));
+  Assert.AreEqual<Integer>(1, Length(LPages));
   LHalf := Length(LPages[0]) div 2;
 
   FPascal.SyncInit(@LSync);

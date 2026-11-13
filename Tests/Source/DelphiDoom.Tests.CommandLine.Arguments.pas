@@ -119,7 +119,7 @@ var
   LValues: TArray<string>;
 begin
   LValues := Make(['a.exe', '-file', 'one.wad', 'two.wad', '-warp', '1']).ValuesAfter('-file');
-  Assert.AreEqual(2, Length(LValues));
+  Assert.AreEqual<Integer>(2, Length(LValues));
   Assert.AreEqual('ONE.WAD', LValues[0]);
   Assert.AreEqual('TWO.WAD', LValues[1]);
 end;
@@ -129,19 +129,19 @@ var
   LValues: TArray<string>;
 begin
   LValues := Make(['a.exe', '-warp', '2', '5']).ValuesAfter('-warp');
-  Assert.AreEqual(2, Length(LValues));
+  Assert.AreEqual<Integer>(2, Length(LValues));
   Assert.AreEqual('5', LValues[1]);
 end;
 
 procedure TTestCommandLineArguments.TestValuesAfterOfAMissingParameter;
 begin
-  Assert.AreEqual(0, Length(Make(['a.exe', '-warp', '1']).ValuesAfter('-file')));
+  Assert.AreEqual<Integer>(0, Length(Make(['a.exe', '-warp', '1']).ValuesAfter('-file')));
 end;
 
 procedure TTestCommandLineArguments.TestValuesAfterWithNothingAfter;
 begin
-  Assert.AreEqual(0, Length(Make(['a.exe', '-file']).ValuesAfter('-file')));
-  Assert.AreEqual(0, Length(Make(['a.exe', '-file', '-warp']).ValuesAfter('-file')));
+  Assert.AreEqual<Integer>(0, Length(Make(['a.exe', '-file']).ValuesAfter('-file')));
+  Assert.AreEqual<Integer>(0, Length(Make(['a.exe', '-file', '-warp']).ValuesAfter('-file')));
 end;
 
 procedure TTestCommandLineArguments.TestText;

@@ -154,12 +154,12 @@ var
 begin
   LTable := TRadixLevelTable<TRadixDoomVertex>.Create;
   try
-    Assert.AreEqual(0, Length(LTable.ToBytes));
+    Assert.AreEqual<Integer>(0, Length(LTable.ToBytes));
     LVertex.X := $0102;
     LVertex.Y := $0304;
     LTable.Add(LVertex);
     LBytes := LTable.ToBytes;
-    Assert.AreEqual(4, Length(LBytes));
+    Assert.AreEqual<Integer>(4, Length(LBytes));
     Assert.AreEqual(Integer(2), Integer(LBytes[0]));
     Assert.AreEqual(Integer(3), Integer(LBytes[3]));
   finally

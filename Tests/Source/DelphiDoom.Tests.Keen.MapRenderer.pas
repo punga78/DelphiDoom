@@ -188,7 +188,7 @@ begin
   LImage := FRenderer.Render(MakeMap(3, 2, [1, 2, 3, 4, 6, 7], [0, 0, 0, 0, 0, 0]), FGraphics);
   Assert.AreEqual(48, LImage.Width);
   Assert.AreEqual(32, LImage.Height);
-  Assert.AreEqual(48 * 32, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(48 * 32, Length(LImage.Pixels));
 end;
 
 procedure TTestKeenMapRenderer.DovrebbeDisegnareITileDelloSfondo;

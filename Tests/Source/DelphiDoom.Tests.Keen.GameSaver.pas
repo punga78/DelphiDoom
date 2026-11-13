@@ -298,7 +298,7 @@ begin
     Assert.IsTrue(LLength < MAP_WIDTH * MAP_HEIGHT * 2, 'the plane is compressed');
     Inc(LPosition, 2 + LLength);
   end;
-  Assert.AreEqual(LPosition + 4 * 76, Length(LBytes));
+  Assert.AreEqual<Integer>(LPosition + 4 * 76, Length(LBytes));
   // the first actor is the player: its class, then "active"
   Assert.AreEqual(Ord(kcKeen), Integer(LBytes[LPosition]));
   Assert.AreEqual(Ord(kaYes), Integer(LBytes[LPosition + 2]));

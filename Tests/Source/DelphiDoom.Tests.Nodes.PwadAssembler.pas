@@ -81,7 +81,7 @@ end;
 
 procedure TTestNodesPwadAssembler.TestSenzaLumpDovrebbeDareSoloLIntestazione;
 begin
-  Assert.AreEqual(12, Length(FAssembler.Build));
+  Assert.AreEqual<Integer>(12, Length(FAssembler.Build));
 end;
 
 procedure TTestNodesPwadAssembler.TestLIntestazioneDovrebbeDireIdNumeroEPosizioneDellaDirectory;
@@ -96,7 +96,7 @@ begin
   Assert.AreEqual('PWAD', TEncoding.ASCII.GetString(LBytes, 0, 4));
   Assert.AreEqual(2, LHeader.LumpCount);
   Assert.AreEqual(12 + 4, LHeader.DirectoryOffset);
-  Assert.AreEqual(12 + 4 + 2 * 16, Length(LBytes));
+  Assert.AreEqual<Integer>(12 + 4 + 2 * 16, Length(LBytes));
 end;
 
 procedure TTestNodesPwadAssembler.TestIDatiDovrebberoSeguireLIntestazioneSenzaPadding;

@@ -90,7 +90,7 @@ begin
   try
     Assert.AreEqual(ZLIB_OK, LInflater.Start(ZLIB_WINDOW_BITS));
     Assert.AreEqual(ZLIB_STREAM_END, Inflate(LInflater, TZlibTestStreams.ZlibOfAbc, LDest));
-    Assert.AreEqual(3, Length(LDest));
+    Assert.AreEqual<Integer>(3, Length(LDest));
     Assert.AreEqual(Ord('a'), Integer(LDest[0]));
   finally
     LInflater.Free;

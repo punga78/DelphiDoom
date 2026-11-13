@@ -60,7 +60,7 @@ begin
   LOriginal := TBytes.Create(1, 2, 3, 4);
   LFixes := TGreedLumpFixes.Create([Fix(4, Cardinal(StrToInt64('$' + TGreedLumps.CrcHex(LOriginal))), TBytes.Create(9, 8, 7, 6))]);
   LResult := LFixes.Apply(LOriginal);
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual(9, Integer(LResult[0]));
   Assert.AreEqual(6, Integer(LResult[3]));
 end;
@@ -80,7 +80,7 @@ var
   LFixes: IGreedLumpFixes;
 begin
   LFixes := TGreedLumpFixes.Create([Fix(4, $12345678, TBytes.Create(9))]);
-  Assert.AreEqual(4, Length(LFixes.Apply(TBytes.Create(1, 2, 3, 4))));
+  Assert.AreEqual<Integer>(4, Length(LFixes.Apply(TBytes.Create(1, 2, 3, 4))));
   Assert.AreEqual(1, Integer(LFixes.Apply(TBytes.Create(1, 2, 3, 4))[0]));
 end;
 
@@ -89,7 +89,7 @@ var
   LFixes: IGreedLumpFixes;
 begin
   LFixes := TGreedLumpFixes.Create([Fix(0, 0, TBytes.Create(9))]);
-  Assert.AreEqual(0, Length(LFixes.Apply(nil)));
+  Assert.AreEqual<Integer>(0, Length(LFixes.Apply(nil)));
 end;
 
 procedure TTestGreedLumpFixes.DovrebbeProvareLeVoceInOrdine;
@@ -122,7 +122,7 @@ var
   LFixes: IGreedLumpFixes;
 begin
   LFixes := TGreedLumpFixes.Create([]);
-  Assert.AreEqual(2, Length(LFixes.Apply(TBytes.Create(1, 2))));
+  Assert.AreEqual<Integer>(2, Length(LFixes.Apply(TBytes.Create(1, 2))));
 end;
 
 procedure TTestGreedLumpFixes.DovrebbeAvereLaVoceDelPstDellOriginale;

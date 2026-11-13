@@ -125,8 +125,8 @@ begin
   LTiles := Graphics.Read(KEEN_STARTTILE8);
   LMasked := Graphics.Read(KEEN_STARTTILE8M);
   // the size is the one of graphkdr.h whatever the data have
-  Assert.AreEqual(KEEN_TILE8_BYTES * KEEN_NUMTILE8, Length(LTiles));
-  Assert.AreEqual(KEEN_TILE8M_BYTES * KEEN_NUMTILE8M, Length(LMasked));
+  Assert.AreEqual<Integer>(KEEN_TILE8_BYTES * KEEN_NUMTILE8, Length(LTiles));
+  Assert.AreEqual<Integer>(KEEN_TILE8M_BYTES * KEEN_NUMTILE8M, Length(LMasked));
   Assert.IsTrue(SameBytes(Copy(FGame.Tile8All, 0, TEST_TILE8_PRESENT * KEEN_TILE8_BYTES),
     Copy(LTiles, 0, TEST_TILE8_PRESENT * KEEN_TILE8_BYTES)));
   Assert.IsTrue(SameBytes(Copy(FGame.Tile8MaskedAll, 0, TEST_TILE8M_PRESENT * KEEN_TILE8M_BYTES),
@@ -158,8 +158,8 @@ begin
     TKeenFactory.CreateOffsetTable(FGame.Files.ReadAll('AUDIOHHD.KDR'), 'AUDIOHHD.KDR'),
     TKeenFactory.CreateHuffman(FGame.Files.ReadAll('AUDIODCT.KDR')),
     TBytesStream.Create(Copy(FGame.Files.ReadAll('KDREAMS.AUD'), 0, 5)));
-  Assert.AreEqual(0, Length(LChunks.Read(5)));
-  Assert.AreEqual(0, Length(LChunks.ReadCompressed(5)));
+  Assert.AreEqual<Integer>(0, Length(LChunks.Read(5)));
+  Assert.AreEqual<Integer>(0, Length(LChunks.ReadCompressed(5)));
 end;
 
 procedure TTestKeenChunkSource.DovrebbeDareUnaRispostaVuotaPerUnChunkSenzaDati;
@@ -168,9 +168,9 @@ var
 begin
   LGraphics := Graphics;
   Assert.IsFalse(LGraphics.HasChunk(KEEN_STARTTILE16 + 1));
-  Assert.AreEqual(0, Length(LGraphics.Read(KEEN_STARTTILE16 + 1)));
-  Assert.AreEqual(0, Length(LGraphics.ReadCompressed(KEEN_STARTTILE16 + 1)));
-  Assert.AreEqual(0, Length(LGraphics.Read(KEEN_NUMCHUNKS - 1)), 'l''ultimo chunk e'' vuoto e la sua fine e'' l''ultima voce');
+  Assert.AreEqual<Integer>(0, Length(LGraphics.Read(KEEN_STARTTILE16 + 1)));
+  Assert.AreEqual<Integer>(0, Length(LGraphics.ReadCompressed(KEEN_STARTTILE16 + 1)));
+  Assert.AreEqual<Integer>(0, Length(LGraphics.Read(KEEN_NUMCHUNKS - 1)), 'l''ultimo chunk e'' vuoto e la sua fine e'' l''ultima voce');
 end;
 
 procedure TTestKeenChunkSource.DovrebbeDareIByteCompressiCosiComeSono;
@@ -180,7 +180,7 @@ begin
   LCompressed := Graphics.ReadCompressed(KEEN_STRUCTPIC);
   Assert.IsTrue(Length(LCompressed) > 4);
   // the first 4 bytes are the expanded length
-  Assert.AreEqual(Length(FGame.PictureTable), Integer(LCompressed[0]));
+  Assert.AreEqual<Integer>(Length(FGame.PictureTable), Integer(LCompressed[0]));
 end;
 
 procedure TTestKeenChunkSource.DovrebbeLeggereIChunkDelFileAudio;
@@ -198,8 +198,8 @@ var
 begin
   LAudio := Audio;
   Assert.IsFalse(LAudio.HasChunk(1));
-  Assert.AreEqual(0, Length(LAudio.Read(1)));
-  Assert.AreEqual(0, Length(LAudio.Read(83)));
+  Assert.AreEqual<Integer>(0, Length(LAudio.Read(1)));
+  Assert.AreEqual<Integer>(0, Length(LAudio.Read(83)));
 end;
 
 procedure TTestKeenChunkSource.DovrebbeRifiutareUnChunkCheNonCe;

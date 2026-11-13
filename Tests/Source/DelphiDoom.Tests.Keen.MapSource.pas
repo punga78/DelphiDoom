@@ -92,7 +92,7 @@ var
   LNumbers: TArray<Integer>;
 begin
   LNumbers := FMaps.MapNumbers;
-  Assert.AreEqual(2, Length(LNumbers));
+  Assert.AreEqual<Integer>(2, Length(LNumbers));
   Assert.AreEqual(FGame.MapSlot[0], LNumbers[0]);
   Assert.AreEqual(FGame.MapSlot[1], LNumbers[1]);
 end;
@@ -132,7 +132,7 @@ begin
     LMap := FMaps.LoadMap(FGame.MapSlot[LNumber]);
     for LPlane := 0 to 2 do
     begin
-      Assert.AreEqual(FGame.MapWidth[LNumber] * FGame.MapHeight[LNumber], Length(LMap.Planes[LPlane]));
+      Assert.AreEqual<Integer>(FGame.MapWidth[LNumber] * FGame.MapHeight[LNumber], Length(LMap.Planes[LPlane]));
       for LIndex := 0 to High(LMap.Planes[LPlane]) do
         if LMap.Planes[LPlane][LIndex] <> FGame.MapPlanes[LNumber, LPlane][LIndex] then
           Assert.Fail(Format('mappa %d, piano %d, parola %d', [LNumber, LPlane, LIndex]));
@@ -158,7 +158,7 @@ end;
 
 procedure TTestKeenMapSource.DovrebbeDareLeInformazioniDeiTile;
 begin
-  Assert.AreEqual(KEEN_TINF_SIZE, Length(FMaps.TileInfo.Bytes));
+  Assert.AreEqual<Integer>(KEEN_TINF_SIZE, Length(FMaps.TileInfo.Bytes));
   Assert.IsTrue(CompareMem(@FGame.TileInfo[0], @FMaps.TileInfo.Bytes[0], KEEN_TINF_SIZE));
 end;
 

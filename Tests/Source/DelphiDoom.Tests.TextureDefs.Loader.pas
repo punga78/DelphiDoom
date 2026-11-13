@@ -97,7 +97,7 @@ var
 begin
   Fill(['pnames P0', 'tex1 A 8 8 0 0,0,0', 'tex1 B 8 8 0 0,0,0', 'tex2 C 8 8 0 0,0,0', 'tex3 D 8 8 0 0,0,0']);
   LSet := Load(False);
-  Assert.AreEqual(4, Length(LSet.Textures), 'dovrebbe dare quattro texture');
+  Assert.AreEqual<Integer>(4, Length(LSet.Textures), 'dovrebbe dare quattro texture');
   Assert.AreEqual('A', LSet.Textures[0].Name);
   Assert.AreEqual('B', LSet.Textures[1].Name);
   Assert.AreEqual('C', LSet.Textures[2].Name);
@@ -121,7 +121,7 @@ var
 begin
   Fill(['pnames P0', 'tex1 A 8 8 0 0,0,0']);
   LSet := Load(False);
-  Assert.AreEqual(1, Length(LSet.Textures), 'dovrebbe bastare TEXTURE1');
+  Assert.AreEqual<Integer>(1, Length(LSet.Textures), 'dovrebbe bastare TEXTURE1');
 end;
 
 procedure TTestTextureDefsLoader.TestSkipsAnEmptySecondLump;
@@ -130,7 +130,7 @@ var
 begin
   Fill(['pnames P0', 'tex1 A 8 8 0 0,0,0', 'empty2', 'tex3 D 8 8 0 0,0,0']);
   LSet := Load(False);
-  Assert.AreEqual(2, Length(LSet.Textures), 'dovrebbe saltare il lump vuoto');
+  Assert.AreEqual<Integer>(2, Length(LSet.Textures), 'dovrebbe saltare il lump vuoto');
   Assert.AreEqual('D', LSet.Textures[1].Name);
 end;
 
@@ -140,7 +140,7 @@ var
 begin
   Fill(['pnames P0', 'tex1 A 8 8 0 0,0,0', 'pk3 PK3A 8 8 1 0 0']);
   LSet := Load(True);
-  Assert.AreEqual(2, Length(LSet.Textures), 'dovrebbe aggiungere le texture del PK3');
+  Assert.AreEqual<Integer>(2, Length(LSet.Textures), 'dovrebbe aggiungere le texture del PK3');
   Assert.AreEqual('PK3A', LSet.Textures[1].Name, 'dovrebbe metterle in coda');
   Assert.AreEqual(Ord(TTextureDefsOrigin.Pk3), Ord(LSet.Textures[1].Origin));
 end;
@@ -148,7 +148,7 @@ end;
 procedure TTestTextureDefsLoader.TestDoesNotReadTexture0Otherwise;
 begin
   Fill(['pnames P0', 'tex1 A 8 8 0 0,0,0', 'pk3 PK3A 8 8 1 0 0']);
-  Assert.AreEqual(1, Length(Load(False).Textures), 'non dovrebbe leggere TEXTURE0');
+  Assert.AreEqual<Integer>(1, Length(Load(False).Textures), 'non dovrebbe leggere TEXTURE0');
   Assert.IsFalse(FSource.Reads.Contains('TEXTURE0'), 'non dovrebbe nemmeno chiederlo');
 end;
 
@@ -158,7 +158,7 @@ var
 begin
   Fill(['pnames WALL1 DOOR', 'tex1 A 8 8 0 1,0,0']);
   LSet := Load(False);
-  Assert.AreEqual(2, Length(LSet.PatchNames), 'dovrebbe dare i nomi di PNAMES');
+  Assert.AreEqual<Integer>(2, Length(LSet.PatchNames), 'dovrebbe dare i nomi di PNAMES');
   Assert.AreEqual('DOOR', LSet.PatchNames[1]);
   Assert.AreEqual('DOOR', LSet.Textures[0].Patches[0].PatchName);
 end;
@@ -169,7 +169,7 @@ var
 begin
   Fill(['format strife', 'pnames P0 P1', 'tex1 A 8 8 0 1,2,3', 'tex2 B 8 8 0 0,0,0']);
   LSet := Load(False, TTextureDefsFormat.Strife);
-  Assert.AreEqual(2, Length(LSet.Textures), 'dovrebbe leggere il layout di Strife');
+  Assert.AreEqual<Integer>(2, Length(LSet.Textures), 'dovrebbe leggere il layout di Strife');
   Assert.AreEqual(3, Integer(LSet.Textures[0].Patches[0].OriginY));
 end;
 

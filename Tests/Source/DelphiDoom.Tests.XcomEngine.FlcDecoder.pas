@@ -404,14 +404,14 @@ begin
   FBuilder.CopyFrame([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
   Open;
   Assert.IsTrue(FDecoder.NextAudioChunk(LSamples));
-  Assert.AreEqual(1000, Length(LSamples));
+  Assert.AreEqual<Integer>(1000, Length(LSamples));
   Assert.AreEqual(231, Integer(LSamples[999]));
   Assert.IsTrue(FDecoder.HasAudio);
   Assert.AreEqual(22050, FDecoder.SampleRate);
   // 1000 / (22050 / 1000) = 1000 / 22 = 45
   Assert.AreEqual(45, FDecoder.VideoDelay);
   Assert.IsTrue(FDecoder.NextAudioChunk(LSamples));
-  Assert.AreEqual(3, Length(LSamples));
+  Assert.AreEqual<Integer>(3, Length(LSamples));
   Assert.IsFalse(FDecoder.NextAudioChunk(LSamples), 'non ce ne sono altri');
   Assert.IsFalse(FDecoder.Finished, 'la fine del file non ferma il video');
   Assert.IsTrue(FDecoder.FindFrame);

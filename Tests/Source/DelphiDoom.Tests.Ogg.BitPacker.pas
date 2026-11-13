@@ -128,7 +128,7 @@ begin
   TOggBitPacker.Write(@FBuffer, 17, 5);
 
   LContent := ContentOf(@FBuffer);
-  Assert.AreEqual(1, Length(LContent));
+  Assert.AreEqual<Integer>(1, Length(LContent));
   Assert.AreEqual($8D, Integer(LContent[0]));
 end;
 
@@ -170,7 +170,7 @@ begin
     TOggBitPacker.Write(@FBuffer, LIndex and $FF, 8);
   FData := ContentOf(@FBuffer);
 
-  Assert.AreEqual(1000, Length(FData));
+  Assert.AreEqual<Integer>(1000, Length(FData));
   Assert.IsTrue(FBuffer.Storage > 1000);
   for LIndex := 0 to 999 do
     Assert.AreEqual(LIndex and $FF, Integer(FData[LIndex]));
@@ -253,7 +253,7 @@ begin
 
   LContent := ContentOf(@FBuffer);
   Assert.AreEqual(11, Integer(TOggBitPacker.Bits(@FBuffer)));
-  Assert.AreEqual(2, Length(LContent));
+  Assert.AreEqual<Integer>(2, Length(LContent));
   Assert.AreEqual($FF, Integer(LContent[0]));
   Assert.AreEqual($07, Integer(LContent[1]));
 end;
@@ -281,7 +281,7 @@ begin
   TOggBitPacker.WriteCopy(@FBuffer, @SOURCE[0], 32);
 
   LContent := ContentOf(@FBuffer);
-  Assert.AreEqual(4, Length(LContent));
+  Assert.AreEqual<Integer>(4, Length(LContent));
   Assert.AreEqual($11, Integer(LContent[0]));
   Assert.AreEqual($44, Integer(LContent[3]));
 end;
@@ -411,7 +411,7 @@ begin
   TOggBitPacker.Write(@FBuffer, 1, 1);
 
   LContent := ContentOf(@FBuffer);
-  Assert.AreEqual(5, Length(LContent));
+  Assert.AreEqual<Integer>(5, Length(LContent));
   Assert.AreEqual($EF, Integer(LContent[0]));
   Assert.AreEqual($BE, Integer(LContent[1]));
   Assert.AreEqual($AD, Integer(LContent[2]));

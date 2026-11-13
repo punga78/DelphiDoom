@@ -275,7 +275,7 @@ var
 begin
   FillPattern(LPlayer);
   FSut.SaveGame(0, LPlayer);
-  Assert.AreEqual(20996, Length(FFiles.Files['SAVEGAME.0']));
+  Assert.AreEqual<Integer>(20996, Length(FFiles.Files['SAVEGAME.0']));
   Assert.AreEqual(Fnv(@LPlayer, SizeOf(LPlayer)), Fnv(@FFiles.Files['SAVEGAME.0'][0], 20996));
 end;
 
@@ -332,7 +332,7 @@ begin
   LDirectory := FSut.ReadDirectory;
   for LIndex := 0 to GREED_MAX_SAVE_GAMES - 1 do
     Assert.AreEqual('', string(LDirectory[LIndex]));
-  Assert.AreEqual(230, Length(FFiles.Files['SAVEGAME.DIR']));
+  Assert.AreEqual<Integer>(230, Length(FFiles.Files['SAVEGAME.DIR']));
 end;
 
 procedure TTestGreedSaveGames.DovrebbeRileggereLaDirectoryScritta;

@@ -76,7 +76,7 @@ procedure TTestRadixBitmap.DovrebbeIgnorareLeScrittureFuoriDallImmagine;
 begin
   FBitmap[3, 0] := 5;
   FBitmap[0, 2] := 5;
-  Assert.AreEqual(6, Length(FBitmap.Image));
+  Assert.AreEqual<Integer>(6, Length(FBitmap.Image));
   Assert.AreEqual(0, Integer(FBitmap[2, 1]));
 end;
 

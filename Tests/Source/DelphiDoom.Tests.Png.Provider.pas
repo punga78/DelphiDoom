@@ -71,7 +71,7 @@ begin
     TPngProvider.Client.Encode(MakePixels(6, 4), 6, 4, DDPNG_FORMAT_BGRA));
   Assert.AreEqual(6, LImage.Info.Width);
   Assert.AreEqual(4, LImage.Info.Height);
-  Assert.AreEqual(6 * 4 * 4, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(6 * 4 * 4, Length(LImage.Pixels));
 end;
 
 procedure TTestPngProvider.TestClientIsShared;

@@ -215,7 +215,7 @@ end;
 procedure TTestFontEditorPresenter.DovrebbeElencareIFontDellaMacchina;
 begin
   StartFresh;
-  Assert.AreEqual(3, Length(FView.FontNames));
+  Assert.AreEqual<Integer>(3, Length(FView.FontNames));
   Assert.AreEqual('Verdana', FView.FontNames[2]);
 end;
 
@@ -620,7 +620,7 @@ begin
   FDialogs.FontFileName := 'C:\fonts\doom.ttf';
   FPresenter.InstallFont;
   Assert.AreEqual(1, FInstaller.Installed.Count);
-  Assert.AreEqual(4, Length(FView.FontNames), 'la lista ha il nome nuovo');
+  Assert.AreEqual<Integer>(4, Length(FView.FontNames), 'la lista ha il nome nuovo');
   FPresenter.SelectFontName('Doom Display');
   Assert.AreEqual('Doom Display', FPresenter.Font.FontName);
 end;
@@ -735,7 +735,7 @@ begin
   Assert.AreEqual('Verdana', FPresenter.Font.FontName);
   Assert.AreEqual(14, FPresenter.Font.FontSize);
   Assert.AreEqual(PROJECT_FILE, FPresenter.FileName);
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
 end;
 
 procedure TTestFontEditorPresenter.DovrebbeRicordareIFileRecenti;
@@ -749,7 +749,7 @@ begin
   LNext := NewPresenter;
   try
     LNext.Start('');
-    Assert.AreEqual(1, Length(FView.RecentCaptions));
+    Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
     FPresenter.NewDocument;
     LNext.OpenRecent(0);
     Assert.AreEqual('Arial', LNext.Font.FontName);

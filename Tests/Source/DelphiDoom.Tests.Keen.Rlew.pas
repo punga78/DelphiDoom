@@ -76,7 +76,7 @@ var
   LResult: TArray<Word>;
 begin
   LResult := Words(FRlew.Expand(TBytes.Create($01, $00, $02, $01, $FF, $FF), 0, 6, $ABCD));
-  Assert.AreEqual(3, Length(LResult));
+  Assert.AreEqual<Integer>(3, Length(LResult));
   Assert.AreEqual($0001, Integer(LResult[0]));
   Assert.AreEqual($0102, Integer(LResult[1]));
   Assert.AreEqual($FFFF, Integer(LResult[2]));
@@ -88,7 +88,7 @@ var
 begin
   // tag, count 3, value $1234, then the word 7
   LResult := Words(FRlew.Expand(TBytes.Create($CD, $AB, $03, $00, $34, $12, $07, $00), 0, 8, $ABCD));
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual($1234, Integer(LResult[0]));
   Assert.AreEqual($1234, Integer(LResult[2]));
   Assert.AreEqual(7, Integer(LResult[3]));
@@ -99,7 +99,7 @@ var
   LResult: TArray<Word>;
 begin
   LResult := Words(FRlew.Expand(TBytes.Create($CD, $AB, $00, $00, $34, $12, $07, $00), 0, 2, $ABCD));
-  Assert.AreEqual(1, Length(LResult));
+  Assert.AreEqual<Integer>(1, Length(LResult));
   Assert.AreEqual(7, Integer(LResult[0]));
 end;
 
@@ -136,7 +136,7 @@ begin
       end;
     end;
     LResult := Words(FRlew.Expand(TTestRlewEncoder.Encode(LPlain, $ABCD), 0, LLength * 2, $ABCD));
-    Assert.AreEqual(LLength, Length(LResult));
+    Assert.AreEqual<Integer>(LLength, Length(LResult));
     for LIndex := 0 to LLength - 1 do
       if LResult[LIndex] <> LPlain[LIndex] then
         Assert.Fail(Format('caso %d, parola %d: %d invece di %d', [LCase, LIndex, LResult[LIndex], LPlain[LIndex]]));
@@ -149,7 +149,7 @@ var
 begin
   // the first word is skipped (the expanded length that the maps have in front); an odd length loses the last byte
   LResult := FRlew.Expand(TBytes.Create($99, $99, $01, $00, $02, $00), 2, 3, $ABCD);
-  Assert.AreEqual(2, Length(LResult));
+  Assert.AreEqual<Integer>(2, Length(LResult));
   Assert.AreEqual(1, Integer(LResult[0]));
 end;
 

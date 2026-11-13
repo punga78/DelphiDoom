@@ -88,7 +88,7 @@ end;
 
 procedure TTestSwitchSelector.TestUnaTabellaVuotaNonDaCoppie;
 begin
-  Assert.AreEqual(0, Length(Select(nil, 3)));
+  Assert.AreEqual<Integer>(0, Length(Select(nil, 3)));
 end;
 
 procedure TTestSwitchSelector.TestLeCoppieHannoIlNumeroDelleTexture;
@@ -96,7 +96,7 @@ var
   LResolved: TArray<TDefResolvedSwitch>;
 begin
   LResolved := Select([Pair('SW1B', 'SW2B', 1), Pair('sw1a', 'SW2A', 1)], 3);
-  Assert.AreEqual(2, Length(LResolved));
+  Assert.AreEqual<Integer>(2, Length(LResolved));
   Assert.AreEqual(2, LResolved[0].Texture1);
   Assert.AreEqual(3, LResolved[0].Texture2);
   Assert.AreEqual(0, LResolved[1].Texture1);
@@ -108,39 +108,39 @@ var
   LTable: TArray<TDefSwitchPair>;
 begin
   LTable := [Pair('SW1A', 'SW2A', 1), Pair('SW1B', 'SW2B', 2), Pair('SW1C', 'SW2C', 3)];
-  Assert.AreEqual(1, Length(Select(LTable, 1)));
-  Assert.AreEqual(2, Length(Select(LTable, 2)));
-  Assert.AreEqual(3, Length(Select(LTable, 3)));
-  Assert.AreEqual(0, Length(Select(LTable, 0)));
+  Assert.AreEqual<Integer>(1, Length(Select(LTable, 1)));
+  Assert.AreEqual<Integer>(2, Length(Select(LTable, 2)));
+  Assert.AreEqual<Integer>(3, Length(Select(LTable, 3)));
+  Assert.AreEqual<Integer>(0, Length(Select(LTable, 0)));
 end;
 
 procedure TTestSwitchSelector.TestIlTerminatoreConEpisodioMenoUnoFermaLaTabella;
 begin
-  Assert.AreEqual(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('', '', -1), Pair('SW1B', 'SW2B', 1)], 3)));
-  Assert.AreEqual(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('SW1B', 'SW2B', -1), Pair('SW1C', 'SW2C', 1)], 3)));
+  Assert.AreEqual<Integer>(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('', '', -1), Pair('SW1B', 'SW2B', 1)], 3)));
+  Assert.AreEqual<Integer>(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('SW1B', 'SW2B', -1), Pair('SW1C', 'SW2C', 1)], 3)));
 end;
 
 procedure TTestSwitchSelector.TestUnaCoppiaConUnNomeVuotoFermaLaTabella;
 begin
-  Assert.AreEqual(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('', 'SW2B', 1), Pair('SW1C', 'SW2C', 1)], 3)));
-  Assert.AreEqual(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('SW1B', '', 1), Pair('SW1C', 'SW2C', 1)], 3)));
+  Assert.AreEqual<Integer>(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('', 'SW2B', 1), Pair('SW1C', 'SW2C', 1)], 3)));
+  Assert.AreEqual<Integer>(1, Length(Select([Pair('SW1A', 'SW2A', 1), Pair('SW1B', '', 1), Pair('SW1C', 'SW2C', 1)], 3)));
 end;
 
 procedure TTestSwitchSelector.TestUnaTextureAssenteEUnAvvisoELaCoppiaSiSalta;
 begin
-  Assert.AreEqual(1, Length(Select([Pair('NOSUCH', 'SW2A', 1), Pair('SW1B', 'SW2B', 1)], 3)));
+  Assert.AreEqual<Integer>(1, Length(Select([Pair('NOSUCH', 'SW2A', 1), Pair('SW1B', 'SW2B', 1)], 3)));
   Assert.AreEqual('P_InitSwitchList(): Unknown texture "NOSUCH"'#13#10, FLog.Joined);
 end;
 
 procedure TTestSwitchSelector.TestSeManganoTutteEDueLeTextureGliAvvisiSonoDue;
 begin
-  Assert.AreEqual(0, Length(Select([Pair('NO1', 'NO2', 1)], 3)));
+  Assert.AreEqual<Integer>(0, Length(Select([Pair('NO1', 'NO2', 1)], 3)));
   Assert.AreEqual(2, FLog.Count);
 end;
 
 procedure TTestSwitchSelector.TestUnaCoppiaDiUnEpisodioSuperioreNonDaAvvisi;
 begin
-  Assert.AreEqual(0, Length(Select([Pair('NO1', 'NO2', 3)], 1)));
+  Assert.AreEqual<Integer>(0, Length(Select([Pair('NO1', 'NO2', 3)], 1)));
   Assert.AreEqual(0, FLog.Count);
 end;
 
@@ -157,7 +157,7 @@ end;
 
 procedure TTestSwitchSelector.TestSenzaLogLeCoppieSiSaltanoInSilenzio;
 begin
-  Assert.AreEqual(0, Length(TDefinitionsFactory.CreateSwitchSelector(FCatalog, nil).Select(
+  Assert.AreEqual<Integer>(0, Length(TDefinitionsFactory.CreateSwitchSelector(FCatalog, nil).Select(
     [Pair('NO1', 'SW2A', 1)], 3)));
 end;
 

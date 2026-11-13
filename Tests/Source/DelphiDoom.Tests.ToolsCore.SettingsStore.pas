@@ -135,7 +135,7 @@ begin
   FSettings.WriteInteger('S', 'N', 1);
   FSettings.WriteInteger('S', 'N', 2);
   Assert.AreEqual(2, FSettings.ReadInteger('S', 'N', 0));
-  Assert.AreEqual(2, Length(SavedLines), 'una sezione e un valore');
+  Assert.AreEqual<Integer>(2, Length(SavedLines), 'una sezione e un valore');
 end;
 
 procedure TTestToolsSettingsStore.DovrebbeNonDistinguereLeMaiuscole;
@@ -296,7 +296,7 @@ begin
   LTexts[3] := 'ZOOM=3'#13#10'ZOOM=4'#13#10'SHOWGRID=2';
   LResults := TToolsGolden.Lines('ToolsCore\old.golden.txt', 'LOADRES');
   LValues := TToolsGolden.Lines('ToolsCore\old.golden.txt', 'LOAD');
-  Assert.AreEqual(4, Length(LResults));
+  Assert.AreEqual<Integer>(4, Length(LResults));
   for LIndex := 0 to 3 do
   begin
     LPair := LoadedLine(TITLES[LIndex], LTexts[LIndex]).Split([#1]);

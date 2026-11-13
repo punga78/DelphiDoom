@@ -196,7 +196,7 @@ begin
   LWriter.AddGroup('Mouse');
   LWriter.AddValue('use_mouse', '1');
   LLines := LWriter.Lines;
-  Assert.AreEqual(7, Length(LLines));
+  Assert.AreEqual<Integer>(7, Length(LLines));
   Assert.AreEqual('[X ver 2.07]', LLines[0]);
   Assert.AreEqual('', LLines[1]);
   Assert.AreEqual('[Display]', LLines[2]);

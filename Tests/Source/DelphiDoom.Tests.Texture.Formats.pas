@@ -130,7 +130,7 @@ var
   LExtensions: TArray<string>;
 begin
   LExtensions := FFormats.Extensions;
-  Assert.AreEqual(4, Length(LExtensions), 'dovrebbe dare 4 estensioni');
+  Assert.AreEqual<Integer>(4, Length(LExtensions), 'dovrebbe dare 4 estensioni');
   Assert.AreEqual('.PNG', LExtensions[0], 'dovrebbe cominciare da .PNG');
   Assert.AreEqual('.JPEG', LExtensions[3], 'dovrebbe finire con .JPEG');
 end;

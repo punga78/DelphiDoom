@@ -277,7 +277,7 @@ begin
   LFirst := FList.AddFlat;
   LSecond := FList.AddFlat;
   Assert.AreEqual(NativeUInt(FList.Flats), NativeUInt(LFirst));
-  Assert.AreEqual(NativeUInt(FList.Flats) + SizeOf(GLFlat), NativeUInt(LSecond));
+  Assert.AreEqual<NativeUInt>(NativeUInt(FList.Flats) + SizeOf(GLFlat), NativeUInt(LSecond));
   Assert.AreEqual(2, FList.FlatCount);
 end;
 

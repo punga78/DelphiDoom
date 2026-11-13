@@ -118,18 +118,18 @@ end;
 
 procedure TTestTableExportProfiles.TestDovrebbeAvereLeMunizioniDiOgniGioco;
 begin
-  Assert.AreEqual(2, Length(TExportProfiles.ForGame(TExportGame.Doom).AmmoLines));
-  Assert.AreEqual(1, Length(TExportProfiles.ForGame(TExportGame.Heretic).AmmoLines));
-  Assert.AreEqual(0, Length(TExportProfiles.ForGame(TExportGame.Hexen).AmmoLines));
-  Assert.AreEqual(2, Length(TExportProfiles.ForGame(TExportGame.Strife).AmmoLines));
+  Assert.AreEqual<Integer>(2, Length(TExportProfiles.ForGame(TExportGame.Doom).AmmoLines));
+  Assert.AreEqual<Integer>(1, Length(TExportProfiles.ForGame(TExportGame.Heretic).AmmoLines));
+  Assert.AreEqual<Integer>(0, Length(TExportProfiles.ForGame(TExportGame.Hexen).AmmoLines));
+  Assert.AreEqual<Integer>(2, Length(TExportProfiles.ForGame(TExportGame.Strife).AmmoLines));
 end;
 
 procedure TTestTableExportProfiles.TestDovrebbeAvereLeRigheMiscDiOgniGioco;
 begin
-  Assert.AreEqual(16, Length(TExportProfiles.ForGame(TExportGame.Doom).MiscLines));
-  Assert.AreEqual(11, Length(TExportProfiles.ForGame(TExportGame.Heretic).MiscLines));
-  Assert.AreEqual(5, Length(TExportProfiles.ForGame(TExportGame.Hexen).MiscLines));
-  Assert.AreEqual(9, Length(TExportProfiles.ForGame(TExportGame.Strife).MiscLines));
+  Assert.AreEqual<Integer>(16, Length(TExportProfiles.ForGame(TExportGame.Doom).MiscLines));
+  Assert.AreEqual<Integer>(11, Length(TExportProfiles.ForGame(TExportGame.Heretic).MiscLines));
+  Assert.AreEqual<Integer>(5, Length(TExportProfiles.ForGame(TExportGame.Hexen).MiscLines));
+  Assert.AreEqual<Integer>(9, Length(TExportProfiles.ForGame(TExportGame.Strife).MiscLines));
   Assert.AreEqual(4, TExportProfiles.ForGame(TExportGame.Hexen).MiscLines[4].Index);
 end;
 
@@ -189,8 +189,8 @@ var
 begin
   for LGame := Low(TExportGame) to High(TExportGame) do
   begin
-    Assert.AreEqual(11, Length(TExportProfiles.ForGame(LGame).StateLines));
-    Assert.AreEqual(9, Length(TExportProfiles.ForGame(LGame).PascalStateLines));
+    Assert.AreEqual<Integer>(11, Length(TExportProfiles.ForGame(LGame).StateLines));
+    Assert.AreEqual<Integer>(9, Length(TExportProfiles.ForGame(LGame).PascalStateLines));
   end;
 end;
 

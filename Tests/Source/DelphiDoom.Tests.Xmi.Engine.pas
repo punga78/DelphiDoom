@@ -236,7 +236,7 @@ begin
   LSize := Length(LLarge);
   Assert.AreEqual(XMI_OK, FXmi.ConvertToMidi(Pointer(LSample), Length(LSample),
     0, Pointer(LLarge), LSize));
-  Assert.AreEqual(Length(LExact), Integer(LSize));
+  Assert.AreEqual<Integer>(Length(LExact), Integer(LSize));
   Assert.AreEqualMemory(Pointer(LExact), Pointer(LLarge), Length(LExact));
 end;
 

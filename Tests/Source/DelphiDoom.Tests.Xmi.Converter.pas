@@ -291,7 +291,7 @@ begin
   LGarbage := TXmiSamples.BuildGarbage(64);
   Assert.AreEqual(Ord(TXmiConversionStatus.UnknownFormat),
     Ord(TXmiConverter.ConvertToMidi(Pointer(LGarbage), Length(LGarbage), 0, LMidi)));
-  Assert.AreEqual(0, Length(LMidi));
+  Assert.AreEqual<Integer>(0, Length(LMidi));
 end;
 
 procedure TTestXmiConverter.TestRichXmiGivesTheExpectedFile;

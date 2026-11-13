@@ -642,13 +642,13 @@ begin
   FAllocator.Allocate(25, ZONE_TAG_LEVEL, nil);
   LLines := FAllocator.Describe(ZONE_TAG_LEVEL, ZONE_TAG_LEVSPEC);
   // the zone, the range, two blocks
-  Assert.AreEqual(4, Length(LLines));
+  Assert.AreEqual<Integer>(4, Length(LLines));
   Assert.IsTrue(LLines[0].Contains('blocks: 3'));
   Assert.IsTrue(LLines[1].Contains('050'));
   Assert.IsTrue(LLines[2].Contains('size:0000050'));
   Assert.IsTrue(LLines[2].Contains('tag:050'));
   Assert.IsTrue(LLines[3].Contains('size:0000025'));
-  Assert.AreEqual(2, Length(FAllocator.Describe(ZONE_TAG_LEVEL, 0)));
+  Assert.AreEqual<Integer>(2, Length(FAllocator.Describe(ZONE_TAG_LEVEL, 0)));
 end;
 
 procedure TTestZoneAllocator.LIntestazioneDovrebbeAvereLaDimensioneAttesa;

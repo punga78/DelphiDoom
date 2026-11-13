@@ -68,8 +68,8 @@ end;
 
 procedure TTestConsoleMaskMatcher.TestStarOnlyAcceptsEverything;
 begin
-  Assert.AreEqual(6, Length(TConsoleMaskMatcher.Filter(Names, '*')), 'dovrebbe accettare tutti i nomi');
-  Assert.AreEqual(6, Length(TConsoleMaskMatcher.Filter(Names, '')), 'dovrebbe accettare tutti i nomi');
+  Assert.AreEqual<Integer>(6, Length(TConsoleMaskMatcher.Filter(Names, '*')), 'dovrebbe accettare tutti i nomi');
+  Assert.AreEqual<Integer>(6, Length(TConsoleMaskMatcher.Filter(Names, '')), 'dovrebbe accettare tutti i nomi');
 end;
 
 procedure TTestConsoleMaskMatcher.TestMaskIsNotCaseSensitive;
@@ -92,7 +92,7 @@ end;
 
 procedure TTestConsoleMaskMatcher.TestNoNamesFit;
 begin
-  Assert.AreEqual(0, Length(TConsoleMaskMatcher.Filter(Names, 'zz*')), 'dovrebbe dare una lista vuota');
+  Assert.AreEqual<Integer>(0, Length(TConsoleMaskMatcher.Filter(Names, 'zz*')), 'dovrebbe dare una lista vuota');
 end;
 
 procedure TTestConsoleMaskMatcher.TestTheOrderOfTheNamesIsKept;

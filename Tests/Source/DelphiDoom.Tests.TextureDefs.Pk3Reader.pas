@@ -64,7 +64,7 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pk3 PK3A 64 32 1 0 0', 'pk3 PK3B 256 128 1 0 0'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(2, Length(LTextures), 'dovrebbe leggere due texture');
+  Assert.AreEqual<Integer>(2, Length(LTextures), 'dovrebbe leggere due texture');
   Assert.AreEqual('PK3A', LTextures[0].Name);
   Assert.AreEqual(64, Integer(LTextures[0].Width));
   Assert.AreEqual(32, Integer(LTextures[0].Height));
@@ -77,7 +77,7 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['format strife', 'pk3 PK3A 64 32 1 1 2', 'pk3 PK3B 16 8 1 3 4'], TTextureDefsFormat.Strife);
-  Assert.AreEqual(2, Length(LTextures), 'dovrebbe leggere due texture');
+  Assert.AreEqual<Integer>(2, Length(LTextures), 'dovrebbe leggere due texture');
   Assert.AreEqual('PK3B', LTextures[1].Name, 'dovrebbe passare alla voce successiva di 24 byte');
   Assert.AreEqual(8, Integer(LTextures[1].Height));
   Assert.AreEqual(3, Integer(LTextures[1].Patches[0].OriginX));
@@ -88,7 +88,7 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pk3 pk3a 8 8 1 0 0'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(1, Length(LTextures[0].Patches));
+  Assert.AreEqual<Integer>(1, Length(LTextures[0].Patches));
   Assert.AreEqual('PK3A', LTextures[0].Patches[0].PatchName, 'dovrebbe usare il nome della texture');
 end;
 
@@ -105,8 +105,8 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pk3 PK3A 8 8 0 0 0', 'pk3 PK3B 8 8 9 0 0'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(1, Length(LTextures[0].Patches), 'dovrebbe dare sempre un patch');
-  Assert.AreEqual(1, Length(LTextures[1].Patches), 'dovrebbe dare sempre un patch');
+  Assert.AreEqual<Integer>(1, Length(LTextures[0].Patches), 'dovrebbe dare sempre un patch');
+  Assert.AreEqual<Integer>(1, Length(LTextures[1].Patches), 'dovrebbe dare sempre un patch');
 end;
 
 procedure TTestTextureDefsPk3Reader.TestReadsTheOriginOfThePatch;

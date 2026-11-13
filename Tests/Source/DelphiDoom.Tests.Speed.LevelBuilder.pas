@@ -196,7 +196,7 @@ begin
     Assert.AreEqual(EXPECTED[LIndex], FWad.LumpNames[LIndex]);
   // the markers are empty
   for LIndex in [0, 5, 6, 7, 9, 10] do
-    Assert.AreEqual(0, Length(FWad.LumpData[LIndex]), FWad.LumpNames[LIndex]);
+    Assert.AreEqual<Integer>(0, Length(FWad.LumpData[LIndex]), FWad.LumpNames[LIndex]);
 end;
 
 procedure TTestSpeedLevelBuilder.DovrebbeRaddoppiareLeCoordinateDelleCose;
@@ -247,7 +247,7 @@ begin
   Assert.IsTrue(Build(SmallMap, SmallSectors, SmallPath(2)));
   LThings := LumpNamed('THINGS');
   // 2 things of the map, 2 of the path, the start of the race
-  Assert.AreEqual(5 * SizeOf(TWadThing), Length(LThings));
+  Assert.AreEqual<Integer>(5 * SizeOf(TWadThing), Length(LThings));
   Move(LThings[4 * SizeOf(TWadThing)], LThing, SizeOf(LThing));
   Assert.AreEqual<SmallInt>(500, LThing.ThingType);
   Assert.AreEqual<SmallInt>(0, LThing.X);
@@ -277,7 +277,7 @@ begin
   LPath := SmallPath(3);
   Assert.IsTrue(Build(SmallMap, SmallSectors, LPath));
   LPoints := LumpNamed('PATH');
-  Assert.AreEqual(3 * 16, Length(LPoints));
+  Assert.AreEqual<Integer>(3 * 16, Length(LPoints));
   Assert.AreEqual<TBytes>(Copy(LPath, $100, 48), LPoints);
 end;
 
@@ -288,7 +288,7 @@ var
 begin
   Assert.IsTrue(Build(SmallMap, SmallSectors, SmallPath(0)));
   LSectors := LumpNamed('SECTORS');
-  Assert.AreEqual(2 * SizeOf(TWadSector), Length(LSectors));
+  Assert.AreEqual<Integer>(2 * SizeOf(TWadSector), Length(LSectors));
   Move(LSectors[0], LSector, SizeOf(LSector));
   Assert.AreEqual('FMAP04', NameOf(LSector.FloorTexture));
   Assert.AreEqual('F_SKY1', NameOf(LSector.CeilingTexture));
@@ -327,7 +327,7 @@ begin
   Assert.IsTrue(Build(SmallMap, SmallSectors, SmallPath(0)));
   LLines := LumpNamed('LINEDEFS');
   // 4 of the main sector (the same of the extra one) + 4 outside + 2 walls
-  Assert.AreEqual(10 * SizeOf(TWadLinedef), Length(LLines));
+  Assert.AreEqual<Integer>(10 * SizeOf(TWadLinedef), Length(LLines));
 end;
 
 procedure TTestSpeedLevelBuilder.DovrebbeNonRipetereUnaLineaGiaFatta;
@@ -341,7 +341,7 @@ begin
     'Sectors'#13#10'  2 0x1'#13#10'    0 1 "7" -1'#13#10'    1 0 "7" -1'#13#10'End'#13#10);
   Assert.IsTrue(Build(SmallMap, LSectors, SmallPath(0)));
   LLines := LumpNamed('LINEDEFS');
-  Assert.AreEqual(9 * SizeOf(TWadLinedef), Length(LLines));
+  Assert.AreEqual<Integer>(9 * SizeOf(TWadLinedef), Length(LLines));
 end;
 
 procedure TTestSpeedLevelBuilder.DovrebbeRifiutareUnFileDelCircuitoCorto;
@@ -355,7 +355,7 @@ procedure TTestSpeedLevelBuilder.DovrebbeAvvisareSeIlPercorsoNonHaLaFirma;
 begin
   Assert.IsTrue(Build(SmallMap, SmallSectors, TBytes.Create(1, 2, 3)));
   Assert.AreEqual(1, FLog.Warnings.Count);
-  Assert.AreEqual(0, Length(LumpNamed('PATH')));
+  Assert.AreEqual<Integer>(0, Length(LumpNamed('PATH')));
 end;
 
 procedure TTestSpeedLevelBuilder.DovrebbeAvvisareSeIlPercorsoHaMenoPuntiDiQuantiNeDice;
@@ -366,7 +366,7 @@ begin
   PWord(@LPath[196])^ := 50;
   Assert.IsTrue(Build(SmallMap, SmallSectors, LPath));
   Assert.AreEqual(1, FLog.Warnings.Count);
-  Assert.AreEqual(2 * 16, Length(LumpNamed('PATH')));
+  Assert.AreEqual<Integer>(2 * 16, Length(LumpNamed('PATH')));
 end;
 
 procedure TTestSpeedLevelBuilder.DovrebbeRifiutareUnMuroConUnVerticeCheNonCe;

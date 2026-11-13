@@ -73,7 +73,7 @@ var
   LWav: TBytes;
 begin
   LWav := TWavBuilder.Build(TArray<SmallInt>.Create(1, 2, 3, 4), 2, 22050);
-  Assert.AreEqual(WAV_HEADER_SIZE + 8, Length(LWav));
+  Assert.AreEqual<Integer>(WAV_HEADER_SIZE + 8, Length(LWav));
   Assert.AreEqual(Cardinal(Length(LWav) - 8), CardinalAt(LWav, 4));
   Assert.AreEqual(Cardinal(8), CardinalAt(LWav, 40));
 end;
@@ -107,7 +107,7 @@ var
   LWav: TBytes;
 begin
   LWav := TWavBuilder.Build(nil, 1, 8000);
-  Assert.AreEqual(WAV_HEADER_SIZE, Length(LWav));
+  Assert.AreEqual<Integer>(WAV_HEADER_SIZE, Length(LWav));
   Assert.AreEqual(Cardinal(0), CardinalAt(LWav, 40));
 end;
 

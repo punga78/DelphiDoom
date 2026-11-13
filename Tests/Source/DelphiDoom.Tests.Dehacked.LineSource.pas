@@ -139,7 +139,7 @@ var
   LLines: TArray<string>;
 begin
   LLines := TDehackedText.SplitLines('a'#10'b'#0'c'#10'd');
-  Assert.AreEqual(2, Length(LLines));
+  Assert.AreEqual<Integer>(2, Length(LLines));
   Assert.AreEqual('b', LLines[1]);
 end;
 
@@ -148,7 +148,7 @@ var
   LLines: TArray<string>;
 begin
   LLines := TDehackedText.SplitLines('a'#13#10'b'#10'c'#13'd'#10#13'e');
-  Assert.AreEqual(6, Length(LLines)); // a b c d (vuota) e
+  Assert.AreEqual<Integer>(6, Length(LLines)); // a b c d (vuota) e
   Assert.AreEqual('', LLines[4]);
   Assert.AreEqual('e', LLines[5]);
 end;

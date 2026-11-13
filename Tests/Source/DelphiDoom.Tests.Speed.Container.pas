@@ -99,7 +99,7 @@ begin
   LContainer := Sample;
   Assert.AreEqual(4, LContainer.Count);
   Assert.IsTrue(LContainer.TryRead('GRAFS.PAL', LData));
-  Assert.AreEqual(4, Length(LData));
+  Assert.AreEqual<Integer>(4, Length(LData));
   Assert.AreEqual<Byte>(7, LData[3]);
   Assert.IsTrue(LContainer.TryRead('MENUS.S3M', LData));
   Assert.AreEqual<Byte>(3, LData[2]);
@@ -132,7 +132,7 @@ var
 begin
   Assert.AreEqual(-1, Sample.IndexOf('NOPE.BIN'));
   Assert.IsFalse(Sample.TryRead('NOPE.BIN', LData));
-  Assert.AreEqual(0, Length(LData));
+  Assert.AreEqual<Integer>(0, Length(LData));
 end;
 
 procedure TTestSpeedContainer.DovrebbeNonDistinguereMaiuscoleNellOrdineMaSiNellaRicerca;
@@ -174,7 +174,7 @@ begin
     LTotal := LTotal + Length(LContainer.Read(LIndex));
   Assert.IsTrue(LTotal > 300000);
   Assert.IsTrue(LContainer.IndexOf('GRAFS.DAT') >= 0);
-  Assert.AreEqual(70 * 4096, Length(LContainer.Read(LContainer.IndexOf('GRAFS.DAT'))));
+  Assert.AreEqual<Integer>(70 * 4096, Length(LContainer.Read(LContainer.IndexOf('GRAFS.DAT'))));
 end;
 
 procedure TTestSpeedContainer.DovrebbeLeggereUnFileVuoto;
@@ -189,7 +189,7 @@ begin
   finally
     LBuilder.Free;
   end;
-  Assert.AreEqual(0, Length(LContainer.Read(0)));
+  Assert.AreEqual<Integer>(0, Length(LContainer.Read(0)));
 end;
 
 procedure TTestSpeedContainer.DovrebbeRifiutareUnFileTroppoCorto;
@@ -284,12 +284,12 @@ begin
   finally
     LBuilder.Free;
   end;
-  Assert.AreEqual(2, Length(LContainer.Read(0)));
+  Assert.AreEqual<Integer>(2, Length(LContainer.Read(0)));
   LData := LContainer.ReadAtLeast(0, 5);
-  Assert.AreEqual(5, Length(LData));
+  Assert.AreEqual<Integer>(5, Length(LData));
   Assert.AreEqual<Byte>(5, LData[4]);
   // asking for less than the entry has gives the entry
-  Assert.AreEqual(2, Length(LContainer.ReadAtLeast(0, 1)));
+  Assert.AreEqual<Integer>(2, Length(LContainer.ReadAtLeast(0, 1)));
 end;
 
 procedure TTestSpeedContainer.DovrebbeLasciarePerdereLaLetturaOltreLaFineDelContenitore;
@@ -305,7 +305,7 @@ begin
     LBuilder.Free;
   end;
   // there are not 100000 bytes after the start: the entry is given as it is
-  Assert.AreEqual(2, Length(LContainer.ReadAtLeast(0, 100000)));
+  Assert.AreEqual<Integer>(2, Length(LContainer.ReadAtLeast(0, 100000)));
 end;
 
 procedure TTestSpeedContainer.DovrebbeTogliereGliSpaziDalNome;
@@ -353,7 +353,7 @@ var
   LBytes: TBytes;
 begin
   LBytes := TJclBuilder.SyntheticGame;
-  Assert.AreEqual(Length(LBytes), Open(LBytes).Size);
+  Assert.AreEqual<Integer>(Length(LBytes), Open(LBytes).Size);
 end;
 
 end.

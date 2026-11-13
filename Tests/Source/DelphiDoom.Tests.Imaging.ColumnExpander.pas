@@ -64,7 +64,7 @@ var
 begin
   LBuffer := TImagingSamples.RandomPixels(1, 129, $00FFFFFF);
   FExpander.Expand(LBuffer, 1);
-  Assert.AreEqual(129, Length(LBuffer), 'dovrebbe lasciare la lunghezza del buffer');
+  Assert.AreEqual<Integer>(129, Length(LBuffer), 'dovrebbe lasciare la lunghezza del buffer');
 end;
 
 procedure TTestImagingColumnExpander.TestExpandOfEqualPixelsLosesOneStep;

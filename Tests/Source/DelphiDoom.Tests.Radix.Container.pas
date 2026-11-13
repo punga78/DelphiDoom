@@ -101,7 +101,7 @@ var
   LContainer: IRadixContainer;
 begin
   LContainer := Open;
-  Assert.AreEqual(0, Length(LContainer.Read(LContainer.IndexOf('Empty'))));
+  Assert.AreEqual<Integer>(0, Length(LContainer.Read(LContainer.IndexOf('Empty'))));
 end;
 
 procedure TTestRadixContainer.DovrebbeDareFalsoPerUnLumpCheNonCe;

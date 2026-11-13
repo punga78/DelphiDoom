@@ -130,7 +130,7 @@ begin
   end;
 
   // 9 bits: the pairs (2,0) and (2,1), set in both directions: bits 6, 2, 7, 5
-  Assert.AreEqual(2, Length(LMatrix));
+  Assert.AreEqual<Integer>(2, Length(LMatrix));
   Assert.AreEqual(Integer($E4), Integer(LMatrix[0]));
   Assert.AreEqual(0, Integer(LMatrix[1]));
 end;
@@ -171,7 +171,7 @@ begin
   end;
 
   // 4 bits: the pair (1,0) in both directions: bits 2 and 1
-  Assert.AreEqual(1, Length(LMatrix));
+  Assert.AreEqual<Integer>(1, Length(LMatrix));
   Assert.AreEqual(6, Integer(LMatrix[0]));
 end;
 

@@ -42,7 +42,7 @@ var
 begin
   LBytes := TVoxelSamples.Join(TBytes.Create(9, 9, 9), TVoxelSamples.Palette(False, 255));
   LPalette := TVoxelKvxPalette.Read(LBytes);
-  Assert.AreEqual(256, Length(LPalette));
+  Assert.AreEqual<Integer>(256, Length(LPalette));
   Assert.AreEqual(Cardinal($FFFFFF), LPalette[0]);
 end;
 

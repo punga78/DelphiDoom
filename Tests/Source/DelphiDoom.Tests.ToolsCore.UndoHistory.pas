@@ -246,7 +246,7 @@ begin
     for LScript := 0 to High(SCRIPTS) do
       for LLine in Replay(SCRIPTS[LScript], LIMITS[LScript], LScript) do
         LExpected.Add(LLine);
-    Assert.AreEqual(Length(LGolden), LExpected.Count);
+    Assert.AreEqual<Integer>(Length(LGolden), LExpected.Count);
     for LScript := 0 to High(LGolden) do
       Assert.AreEqual(LGolden[LScript], LExpected[LScript]);
   finally

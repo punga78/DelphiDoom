@@ -61,7 +61,7 @@ procedure AreLines(const AExpected: array of string; const AActual: TArray<strin
 var
   LIndex: Integer;
 begin
-  Assert.AreEqual(Length(AExpected), Length(AActual), 'number of lines');
+  Assert.AreEqual<Integer>(Length(AExpected), Length(AActual), 'number of lines');
   for LIndex := 0 to High(AExpected) do
     Assert.AreEqual(AExpected[LIndex], AActual[LIndex]);
 end;

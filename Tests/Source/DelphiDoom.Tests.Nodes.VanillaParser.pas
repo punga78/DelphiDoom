@@ -50,7 +50,7 @@ begin
   PSmallInt(@LBytes[10])^ := -5;
   PSmallInt(@LBytes[12])^ := 9;
   LSegs := TNodesVanillaParser.ParseSegs(LBytes);
-  Assert.AreEqual(2, Length(LSegs));
+  Assert.AreEqual<Integer>(2, Length(LSegs));
   Assert.AreEqual(SmallInt(1), LSegs[0].Vertex1);
   Assert.AreEqual(SmallInt(2), LSegs[0].Vertex2);
   Assert.AreEqual(SmallInt(-16384), LSegs[0].Angle);
@@ -71,7 +71,7 @@ begin
   PWord(@LBytes[4])^ := 5;
   PWord(@LBytes[6])^ := 6;
   LSubsectors := TNodesVanillaParser.ParseSubsectors(LBytes);
-  Assert.AreEqual(2, Length(LSubsectors));
+  Assert.AreEqual<Integer>(2, Length(LSubsectors));
   Assert.AreEqual(Word(4), LSubsectors[0].SegCount);
   Assert.AreEqual(Word(60000), LSubsectors[0].FirstSeg);
   Assert.AreEqual(Word(6), LSubsectors[1].FirstSeg);
@@ -89,7 +89,7 @@ begin
   PWord(@LBytes[24])^ := $8001;
   PWord(@LBytes[26])^ := 7;
   LNodes := TNodesVanillaParser.ParseNodes(LBytes);
-  Assert.AreEqual(1, Length(LNodes));
+  Assert.AreEqual<Integer>(1, Length(LNodes));
   Assert.AreEqual(SmallInt(1), LNodes[0].X);
   Assert.AreEqual(SmallInt(4), LNodes[0].DeltaY);
   Assert.AreEqual(SmallInt(5), LNodes[0].BoundingBox[0, 0]);
@@ -100,17 +100,17 @@ end;
 
 procedure TTestNodesVanillaParser.TestUnRecordParzialeInFondoDovrebbeEssereIgnorato;
 begin
-  Assert.AreEqual(1, Length(TNodesVanillaParser.ParseSegs(TBytes.Create(0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  Assert.AreEqual<Integer>(1, Length(TNodesVanillaParser.ParseSegs(TBytes.Create(0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 1, 2, 3))));
-  Assert.AreEqual(1, Length(TNodesVanillaParser.ParseSubsectors(TBytes.Create(1, 2, 3, 4, 5))));
-  Assert.AreEqual(0, Length(TNodesVanillaParser.ParseNodes(TBytes.Create(1, 2, 3))));
+  Assert.AreEqual<Integer>(1, Length(TNodesVanillaParser.ParseSubsectors(TBytes.Create(1, 2, 3, 4, 5))));
+  Assert.AreEqual<Integer>(0, Length(TNodesVanillaParser.ParseNodes(TBytes.Create(1, 2, 3))));
 end;
 
 procedure TTestNodesVanillaParser.TestUnLumpVuotoDovrebbeDareUnArrayVuoto;
 begin
-  Assert.AreEqual(0, Length(TNodesVanillaParser.ParseSegs(nil)));
-  Assert.AreEqual(0, Length(TNodesVanillaParser.ParseSubsectors(nil)));
-  Assert.AreEqual(0, Length(TNodesVanillaParser.ParseNodes(nil)));
+  Assert.AreEqual<Integer>(0, Length(TNodesVanillaParser.ParseSegs(nil)));
+  Assert.AreEqual<Integer>(0, Length(TNodesVanillaParser.ParseSubsectors(nil)));
+  Assert.AreEqual<Integer>(0, Length(TNodesVanillaParser.ParseNodes(nil)));
 end;
 
 procedure TTestNodesVanillaParser.TestIlWadDiProvaDovrebbeDareIConteggiDelVecchioCodice;
@@ -123,9 +123,9 @@ begin
   LSource := TFakeLumpSource.Create;
   LRef := LSource;
   LSource.AddWad(TNodesTestData.ReadFile('glbsp_map01.wad'));
-  Assert.AreEqual(2233, Length(TNodesVanillaParser.ParseSegs(LSource.ReadLump(5))));
-  Assert.AreEqual(698, Length(TNodesVanillaParser.ParseSubsectors(LSource.ReadLump(6))));
-  Assert.AreEqual(697, Length(TNodesVanillaParser.ParseNodes(LSource.ReadLump(7))));
+  Assert.AreEqual<Integer>(2233, Length(TNodesVanillaParser.ParseSegs(LSource.ReadLump(5))));
+  Assert.AreEqual<Integer>(698, Length(TNodesVanillaParser.ParseSubsectors(LSource.ReadLump(6))));
+  Assert.AreEqual<Integer>(697, Length(TNodesVanillaParser.ParseNodes(LSource.ReadLump(7))));
   LSegs := TNodesVanillaParser.ParseSegs(LSource.ReadLump(5));
   Assert.AreEqual(TNodesTestData.Fingerprint(LSource.ReadLump(5)),
     TNodesTestData.FingerprintOf(LSegs[0], Length(LSegs) * SizeOf(TNodesVanillaSeg)));

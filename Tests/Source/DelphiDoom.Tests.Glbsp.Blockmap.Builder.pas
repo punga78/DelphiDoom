@@ -208,7 +208,7 @@ begin
   Assert.AreEqual(2, WordAt(LBytes, 2));
   Assert.AreEqual(2, WordAt(LBytes, 3));
   // 4 header words, 4 pointers, 2 for the null block, 4 lists of 4 words
-  Assert.AreEqual(2 * (4 + 4 + 2 + 4 * 4), Length(LBytes));
+  Assert.AreEqual<Integer>(2 * (4 + 4 + 2 + 4 * 4), Length(LBytes));
   Assert.AreEqual('0 3', BlockLines(LBytes, 0));
   Assert.AreEqual('2 3', BlockLines(LBytes, 1));
   Assert.AreEqual('0 1', BlockLines(LBytes, 2));
@@ -231,7 +231,7 @@ begin
   Assert.AreEqual(4, FBuilder.BlockW);
   Assert.AreEqual(1, FBuilder.BlockH);
   // 4 header words, 4 pointers, 2 null block words, one list of 3 words
-  Assert.AreEqual(2 * (4 + 4 + 2 + 3), Length(LBytes));
+  Assert.AreEqual<Integer>(2 * (4 + 4 + 2 + 3), Length(LBytes));
   Assert.AreEqual(WordAt(LBytes, 4), WordAt(LBytes, 5));
   Assert.AreEqual(WordAt(LBytes, 4), WordAt(LBytes, 7));
   Assert.AreEqual('0', BlockLines(LBytes, 3));

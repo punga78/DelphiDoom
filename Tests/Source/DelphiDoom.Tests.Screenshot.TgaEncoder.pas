@@ -74,7 +74,7 @@ var
 begin
   LPixels := TImagingSamples.RandomBytes(1, 3 * 2 * 4);
   LFile := FEncoder.Encode(Pointer(LPixels), 3, 2, False);
-  Assert.AreEqual(SCREENSHOT_TGA_HEADER_SIZE + 3 * 2 * 4, Length(LFile));
+  Assert.AreEqual<Integer>(SCREENSHOT_TGA_HEADER_SIZE + 3 * 2 * 4, Length(LFile));
   Assert.AreEqual(0, Integer(LFile[0]));
   Assert.AreEqual(0, Integer(LFile[1]));
   Assert.AreEqual(2, Integer(LFile[2]), 'senza compressione');

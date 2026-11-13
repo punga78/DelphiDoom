@@ -132,7 +132,7 @@ var
 
 begin
   LTokens := Tokens(ALine, 2);
-  Assert.AreEqual(FIELD_COUNT, Length(LTokens));
+  Assert.AreEqual<Integer>(FIELD_COUNT, Length(LTokens));
   FillChar(ARecord, SizeOf(ARecord), 0);
   Put(ARecord.Generic6, 0);
   Put(ARecord.Byte0, 1);
@@ -214,7 +214,7 @@ end;
 procedure TTestSerializerGolden.CompareFields(const AId: string; const AActual: TGoldenRecord;
   const AExpected: TArray<string>);
 begin
-  Assert.AreEqual(FIELD_COUNT, Length(AExpected));
+  Assert.AreEqual<Integer>(FIELD_COUNT, Length(AExpected));
   Assert.AreEqual(AExpected[0], FieldHex(AActual.Generic6, 0, 6), AId + ' generic');
   Assert.AreEqual(AExpected[1], FieldHex(AActual.Byte0, 0, 1), AId + ' byte0');
   Assert.AreEqual(AExpected[2], FieldHex(AActual.Byte1, 0, 1), AId + ' byte1');

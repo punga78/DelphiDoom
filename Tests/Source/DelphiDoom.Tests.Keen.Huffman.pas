@@ -152,7 +152,7 @@ end;
 
 procedure TTestKeenHuffman.DovrebbeDareUnaRispostaVuotaPerLunghezzaZero;
 begin
-  Assert.AreEqual(0, Length(TKeenFactory.CreateHuffman(SmallDictionary).Expand(nil, 0, 0)));
+  Assert.AreEqual<Integer>(0, Length(TKeenFactory.CreateHuffman(SmallDictionary).Expand(nil, 0, 0)));
 end;
 
 procedure TTestKeenHuffman.DovrebbeAccettareUnaFineSullUltimoBitDelByte;
@@ -170,7 +170,7 @@ var
 begin
   // $1A = A B C A and then the two padding bits (0, 0): two more A; the 4 bytes that the data cannot give are zero
   LResult := TKeenFactory.CreateHuffman(SmallDictionary).ExpandAvailable(TBytes.Create($1A), 0, 10);
-  Assert.AreEqual(10, Length(LResult));
+  Assert.AreEqual<Integer>(10, Length(LResult));
   Assert.AreEqual('ABCAAA', TEncoding.ASCII.GetString(Copy(LResult, 0, 6)));
   Assert.AreEqual(0, Integer(LResult[6]));
   Assert.AreEqual(0, Integer(LResult[9]));
@@ -181,7 +181,7 @@ var
   LResult: TBytes;
 begin
   LResult := TKeenFactory.CreateHuffman(SmallDictionary).ExpandAvailable(TBytes.Create($1A), 1, 3);
-  Assert.AreEqual(3, Length(LResult));
+  Assert.AreEqual<Integer>(3, Length(LResult));
   Assert.AreEqual(0, Integer(LResult[0]) + Integer(LResult[1]) + Integer(LResult[2]));
 end;
 

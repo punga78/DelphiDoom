@@ -222,7 +222,7 @@ begin
   LSound := TKeenPcSoundReader.Parse(Chunk(70000, 513, [1, 2, 3]));
   Assert.AreEqual(Cardinal(70000), LSound.Length);
   Assert.AreEqual(513, Integer(LSound.Priority));
-  Assert.AreEqual(3, Length(LSound.Data));
+  Assert.AreEqual<Integer>(3, Length(LSound.Data));
   Assert.AreEqual(3, Integer(LSound.Data[2]));
 end;
 

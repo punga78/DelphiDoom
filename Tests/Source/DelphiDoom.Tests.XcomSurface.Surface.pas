@@ -157,7 +157,7 @@ begin
     Assert.AreEqual(3, LSurface.Height);
     Assert.AreEqual(7, LSurface.X);
     Assert.AreEqual(8, LSurface.Y);
-    Assert.AreEqual(15, Length(LSurface.Pixels));
+    Assert.AreEqual<Integer>(15, Length(LSurface.Pixels));
     Assert.AreEqual(Integer(0), Integer(LSurface.GetPixel(4, 2)));
     Assert.IsTrue(LSurface.Visible);
     Assert.AreEqual(256, LSurface.Palette.Count);
@@ -681,7 +681,7 @@ var
   LCodes: TArray<Cardinal>;
 begin
   LCodes := TXcomFont.CodePoints('A' + Char($D83D) + Char($DE00) + 'B' + Char($D83D));
-  Assert.AreEqual(4, Length(LCodes));
+  Assert.AreEqual<Integer>(4, Length(LCodes));
   Assert.AreEqual(Cardinal($1F600), LCodes[1]);
   Assert.AreEqual(Cardinal($D83D), LCodes[3], 'un surrogato isolato resta com''e''');
 end;

@@ -213,9 +213,9 @@ begin
     begin
       TXcomNodeIteration.Elements(Load('a: 1'));
     end, EYamlInvalidNode);
-  Assert.AreEqual(0, Length(TXcomNodeIteration.Elements(Load('{}'))));
-  Assert.AreEqual(0, Length(TXcomNodeIteration.Elements(Load('text'))));
-  Assert.AreEqual(2, Length(TXcomNodeIteration.Elements(Load('[1, 2]'))));
+  Assert.AreEqual<Integer>(0, Length(TXcomNodeIteration.Elements(Load('{}'))));
+  Assert.AreEqual<Integer>(0, Length(TXcomNodeIteration.Elements(Load('text'))));
+  Assert.AreEqual<Integer>(2, Length(TXcomNodeIteration.Elements(Load('[1, 2]'))));
 end;
 
 procedure TTestXcomSaveSoldiers.DovrebbeLasciareVuotaLaMorteSenzaCausa;

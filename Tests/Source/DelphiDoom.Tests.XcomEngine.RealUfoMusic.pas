@@ -207,7 +207,7 @@ begin
   finally
     LLines.Free;
   end;
-  Assert.AreEqual(LRules, Length(FResources.MusicRules), 'rules of the music');
+  Assert.AreEqual<Integer>(LRules, Length(FResources.MusicRules), 'rules of the music');
   Assert.IsTrue(LRepeated <= 1, 'songs loaded twice: ' + IntToStr(LRepeated));
   Assert.IsTrue(Supports(FMusic, IXcomMusicCatalog, LCatalog));
   LLoaded := '';

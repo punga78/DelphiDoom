@@ -223,7 +223,7 @@ begin
   AddWad(['TEXT', 'EMPTY'], ['hello'#13#10'world', '']);
   Assert.AreEqual('hello'#13#10'world', FReader.TextLump(0));
   Assert.AreEqual('', FReader.TextLump(1));
-  Assert.AreEqual(12, Length(FReader.ReadLump(0)));
+  Assert.AreEqual<Integer>(12, Length(FReader.ReadLump(0)));
 end;
 
 procedure TTestWadDirectory.TestReadLumpInto;

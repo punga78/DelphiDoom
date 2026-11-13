@@ -307,7 +307,7 @@ begin
   // a buffer of another size is replaced
   SetLength(LBuffer, 10);
   FRenderer.RenderIndexed(TEndoomFixtures.Screen(1), TEndoomFixtures.Font, LColors, True, LBuffer);
-  Assert.AreEqual(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(LBuffer));
+  Assert.AreEqual<Integer>(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(LBuffer));
 end;
 
 procedure TTestEndoomRenderer.DovrebbeRifiutareUnaTabellaDiColoriSbagliata;
@@ -334,7 +334,7 @@ begin
   LIndexed[0] := 7;
   LIndexed[ENDOOM_WIDTH + 5] := 200;
   LPicture := Rgb(LIndexed, ENDOOM_WIDTH);
-  Assert.AreEqual(Integer(ENDOOM_WIDTH * ENDOOM_HEIGHT), Length(LPicture));
+  Assert.AreEqual<Integer>(Integer(ENDOOM_WIDTH * ENDOOM_HEIGHT), Length(LPicture));
   Assert.AreEqual(LPalette[7] or $FF000000, LPicture[0]);
   Assert.AreEqual(LPalette[200] or $FF000000, LPicture[ENDOOM_WIDTH + 5]);
   Assert.AreEqual(LPalette[0] or $FF000000, LPicture[1]);
@@ -347,7 +347,7 @@ var
 begin
   SetLength(LIndexed, ENDOOM_WIDTH * ENDOOM_HEIGHT);
   LPicture := Rgb(LIndexed, 1024);
-  Assert.AreEqual(1024 * ENDOOM_HEIGHT, Length(LPicture));
+  Assert.AreEqual<Integer>(1024 * ENDOOM_HEIGHT, Length(LPicture));
   Assert.AreEqual(Cardinal(0), LPicture[ENDOOM_WIDTH]);
   Assert.AreEqual(Cardinal(0), LPicture[1023]);
   Assert.AreNotEqual(Cardinal(0), LPicture[ENDOOM_WIDTH - 1]);

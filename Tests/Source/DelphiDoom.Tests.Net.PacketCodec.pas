@@ -377,7 +377,7 @@ begin
   Assert.AreEqual(LPacket.NumTics, LDecoded.NumTics);
   Assert.AreEqual(LPacket.Flags, LDecoded.Flags);
   Assert.IsTrue(LDecoded.IsRetransmit);
-  Assert.AreEqual(133, Length(LDecoded.Commands));
+  Assert.AreEqual<Integer>(133, Length(LDecoded.Commands));
   Assert.IsTrue(CompareMem(@LPacket.Commands[0], @LDecoded.Commands[0], 133));
 end;
 

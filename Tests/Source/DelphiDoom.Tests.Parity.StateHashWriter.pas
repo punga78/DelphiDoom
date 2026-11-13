@@ -128,7 +128,7 @@ begin
   LSink := CreateWriter(False, 0, 0);
   WriteTic(LSink, 7, 10);
   LParts := FLog.Lines[0].Split([' ']);
-  Assert.AreEqual(6, Length(LParts));
+  Assert.AreEqual<Integer>(6, Length(LParts));
   Assert.AreEqual('T', LParts[0]);
   Assert.AreEqual('7', LParts[1]);
   Assert.AreEqual(16, Length(LParts[2]));

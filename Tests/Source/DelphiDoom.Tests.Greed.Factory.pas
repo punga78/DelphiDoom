@@ -73,7 +73,7 @@ begin
   LArchive := TGreedFactory.OpenArchiveFile(TPath.Combine(FFolder, 'GREED.BLO'));
   Assert.AreEqual(TGreedTestArchive.LUMP_COUNT, LArchive.LumpCount);
   Assert.AreEqual(TGreedTestArchive.LUMP_PALETTE, LArchive.IndexOf('palette'));
-  Assert.AreEqual(GREED_PALETTE_BYTES, Length(LArchive.ReadLump(0)));
+  Assert.AreEqual<Integer>(GREED_PALETTE_BYTES, Length(LArchive.ReadLump(0)));
 end;
 
 procedure TTestGreedFactory.DovrebbeRifiutareUnFileCheNonEUnArchivio;
@@ -89,7 +89,7 @@ end;
 procedure TTestGreedFactory.DovrebbeDareLeCorrezioniDellOriginale;
 begin
   Assert.IsNotNull(TGreedFactory.CreateLumpFixes);
-  Assert.AreEqual(3, Length(TGreedFactory.CreateLumpFixes.Apply(TBytes.Create(1, 2, 3))));
+  Assert.AreEqual<Integer>(3, Length(TGreedFactory.CreateLumpFixes.Apply(TBytes.Create(1, 2, 3))));
 end;
 
 procedure TTestGreedFactory.DovrebbeCreareLeParti;

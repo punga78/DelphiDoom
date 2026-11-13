@@ -169,7 +169,7 @@ begin
   LStore := TIdeExampleStore.Create(FFileSystemIntf, 'classes', '.ddscript', False);
   try
     LStore.Save('example');
-    Assert.AreEqual(0, Length(FFileSystem.FileNames));
+    Assert.AreEqual<Integer>(0, Length(FFileSystem.FileNames));
   finally
     LStore.Free;
   end;

@@ -214,7 +214,7 @@ begin
       '{region: R2, missions: {M2: 1}}]}'));
     Assert.IsFalse(LStrategy.RemoveMission('R1', 'M1'));
     Assert.IsFalse(LStrategy.ValidMissionRegion('R1'));
-    Assert.AreEqual(1, Length(LStrategy.RegionChances.Names));
+    Assert.AreEqual<Integer>(1, Length(LStrategy.RegionChances.Names));
     Assert.IsTrue(LStrategy.RemoveMission('R2', 'M2'));
     // a region that is not there changes nothing; true because none are left
     Assert.IsTrue(LStrategy.RemoveMission('R9', 'M2'));
@@ -319,7 +319,7 @@ begin
   try
     LStatistics.Load(Parse('{id: 4, markerName: STR_UFO_, markerId: 2, time: {year: 1999, month: 3}, ' +
       'type: STR_UFO_CRASH_RECOVERY, success: true, score: 50, injuryList: {3: 1, 1: 2}, lootValue: 90, valiantCrux: true}'));
-    Assert.AreEqual(2, Length(LStatistics.InjuryList));
+    Assert.AreEqual<Integer>(2, Length(LStatistics.InjuryList));
     Assert.AreEqual(1, LStatistics.InjuryList[0].Wounds);
     LLoaded.Load(LStatistics.Save);
     Assert.AreEqual(Dump(LStatistics.Save), Dump(LLoaded.Save));

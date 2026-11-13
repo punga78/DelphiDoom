@@ -70,7 +70,7 @@ begin
   try
     LSource.SetLump('PNAMES', LCase.BuildPatchNames);
     LSource.SetLump('TEXTURE1', LCase.BuildTextureLumpNumber(1));
-    Assert.AreEqual(1, Length(TTextureDefsFactory.CreateLoader(LSourceIntf,
+    Assert.AreEqual<Integer>(1, Length(TTextureDefsFactory.CreateLoader(LSourceIntf,
       TTextureDefsFormat.Standard).Load(False).Textures), 'dovrebbe leggere dalla sorgente');
   finally
     LCase.Free;

@@ -68,7 +68,7 @@ var
   LPlane: TGreedPlane;
 begin
   for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
-    Assert.AreEqual(GREED_MAP_TILES, Length(FMap.Planes[LPlane]));
+    Assert.AreEqual<Integer>(GREED_MAP_TILES, Length(FMap.Planes[LPlane]));
 end;
 
 procedure TTestGreedMap.DovrebbeLeggereIPianiUnoDopoLAltro;
@@ -103,7 +103,7 @@ end;
 
 procedure TTestGreedMap.DovrebbeTenereIByteDopoIPiani;
 begin
-  Assert.AreEqual(3, Length(FMap.Trailer));
+  Assert.AreEqual<Integer>(3, Length(FMap.Trailer));
   Assert.AreEqual(65, Integer(FMap.Trailer[0]));
   Assert.AreEqual(67, Integer(FMap.Trailer[2]));
 end;
@@ -113,7 +113,7 @@ var
   LMap: IGreedMap;
 begin
   LMap := TGreedMap.Create(TGreedLumps.MapBytes(nil));
-  Assert.AreEqual(0, Length(LMap.Trailer));
+  Assert.AreEqual<Integer>(0, Length(LMap.Trailer));
 end;
 
 procedure TTestGreedMap.DovrebbeDareCopieDeiPiani;
@@ -143,7 +143,7 @@ var
 begin
   LMap := TGreedFactory.CreateMapReader.Read(TGreedTestArchive.Map0);
   Assert.AreEqual(5, Integer(LMap.Planes[gpNorthWall][5]));
-  Assert.AreEqual(3, Length(LMap.Trailer));
+  Assert.AreEqual<Integer>(3, Length(LMap.Trailer));
   Assert.WillRaise(procedure begin TGreedFactory.CreateMapReader.Read(TBytes.Create(1)); end, EGreedDataException);
 end;
 

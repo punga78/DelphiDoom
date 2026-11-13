@@ -273,7 +273,7 @@ begin
   Assert.AreEqual($1A, Integer(LSound.Instrument.CarrierWave));
   Assert.AreEqual($1B, Integer(LSound.Instrument.Connection));
   Assert.AreEqual(5, Integer(LSound.Block));
-  Assert.AreEqual(3, Length(LSound.Data));
+  Assert.AreEqual<Integer>(3, Length(LSound.Data));
   Assert.AreEqual(7, Integer(LSound.Data[2]));
 end;
 
@@ -287,7 +287,7 @@ begin
   Assert.AreEqual($A3, Integer(LSound.Instrument.ModulatorScale));
   Assert.AreEqual(0, Integer(LSound.Instrument.CarrierScale));
   Assert.AreEqual(0, Integer(LSound.Block));
-  Assert.AreEqual(0, Length(LSound.Data));
+  Assert.AreEqual<Integer>(0, Length(LSound.Data));
 end;
 
 procedure TTestKeenAdLib.DovrebbeRifiutareUnChunkSenzaLaTestataComune;

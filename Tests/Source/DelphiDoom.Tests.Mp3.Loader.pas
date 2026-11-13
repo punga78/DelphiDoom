@@ -111,7 +111,7 @@ begin
     LClient := TMp3Client.Create(LLoader.Mp3);
     try
       LPcm := LClient.DecodeAll(TMp3Samples.SilentStream(3));
-      Assert.AreEqual(3 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+      Assert.AreEqual<Integer>(3 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
       Assert.AreEqual(SAMPLE_FREQUENCY, Integer(LClient.Frequency));
     finally
       LClient.Free;

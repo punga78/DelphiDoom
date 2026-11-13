@@ -97,7 +97,7 @@ var
 begin
   LSample := MakeSample(ASize);
   LRestored := FClient.Uncompress(FClient.Compress(LSample), ASize);
-  Assert.AreEqual(ASize, Length(LRestored));
+  Assert.AreEqual<Integer>(ASize, Length(LRestored));
   Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), ASize);
 end;
 
@@ -107,7 +107,7 @@ var
 begin
   LSample := MakeSample(ASize);
   LRestored := FClient.Uncompress(FClient.Compress(LSample));
-  Assert.AreEqual(ASize, Length(LRestored));
+  Assert.AreEqual<Integer>(ASize, Length(LRestored));
   Assert.AreEqualMemory(Pointer(LSample), Pointer(LRestored), ASize);
 end;
 

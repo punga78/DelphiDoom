@@ -75,7 +75,7 @@ end;
 
 procedure TTestGreedFolderFiles.DovrebbeLeggereTuttiIByteDelFile;
 begin
-  Assert.AreEqual(3, Length(TGreedFactory.CreateFolderFiles([FFirst]).ReadAll('A.LAY')));
+  Assert.AreEqual<Integer>(3, Length(TGreedFactory.CreateFolderFiles([FFirst]).ReadAll('A.LAY')));
 end;
 
 procedure TTestGreedFolderFiles.DovrebbePrendereIlFileDallaPrimaCartellaCheLoHa;
@@ -86,7 +86,7 @@ end;
 
 procedure TTestGreedFolderFiles.DovrebbeCercareNelleCartelleSuccessive;
 begin
-  Assert.AreEqual(2, Length(TGreedFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('B.LAY')));
+  Assert.AreEqual<Integer>(2, Length(TGreedFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('B.LAY')));
 end;
 
 procedure TTestGreedFolderFiles.DovrebbeNonTrovareUnFileCheNonCe;

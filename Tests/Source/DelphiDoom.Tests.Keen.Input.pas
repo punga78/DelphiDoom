@@ -735,7 +735,7 @@ begin
   Assert.AreEqual(Ord(kdmOff), Ord(FInput.DemoMode));
   LBytes := FInput.DemoBytes;
   // the keyboard puts +/-127 in the packed byte: the bits go over and are cut to a byte, like in the C
-  Assert.AreEqual(4, Length(LBytes));
+  Assert.AreEqual<Integer>(4, Length(LBytes));
   Assert.AreEqual(2, Integer(LBytes[0]));
   Assert.AreEqual(Integer(Byte(((0 + 1) shl 2) or (-127 + 1))), Integer(LBytes[1]));
   Assert.AreEqual(1, Integer(LBytes[2]));

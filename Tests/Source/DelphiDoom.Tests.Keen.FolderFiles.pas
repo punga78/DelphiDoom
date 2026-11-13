@@ -80,14 +80,14 @@ procedure TTestKeenFolderFiles.DovrebbePrendereIlFileDallaPrimaCartellaCheLoHa;
 begin
   WriteFile(FFirst, 'MAPHEAD.KDR', TBytes.Create(1));
   WriteFile(FSecond, 'MAPHEAD.KDR', TBytes.Create(1, 2));
-  Assert.AreEqual(1, Length(TKeenFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('MAPHEAD.KDR')));
-  Assert.AreEqual(2, Length(TKeenFactory.CreateFolderFiles([FSecond, FFirst]).ReadAll('MAPHEAD.KDR')));
+  Assert.AreEqual<Integer>(1, Length(TKeenFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('MAPHEAD.KDR')));
+  Assert.AreEqual<Integer>(2, Length(TKeenFactory.CreateFolderFiles([FSecond, FFirst]).ReadAll('MAPHEAD.KDR')));
 end;
 
 procedure TTestKeenFolderFiles.DovrebbeCercareNelleCartelleSuccessive;
 begin
   WriteFile(FSecond, 'EGAHEAD.KDR', TBytes.Create(5, 6));
-  Assert.AreEqual(2, Length(TKeenFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('EGAHEAD.KDR')));
+  Assert.AreEqual<Integer>(2, Length(TKeenFactory.CreateFolderFiles([FFirst, FSecond]).ReadAll('EGAHEAD.KDR')));
 end;
 
 procedure TTestKeenFolderFiles.DovrebbeLeggereTuttiIByte;
@@ -96,7 +96,7 @@ var
 begin
   WriteFile(FFirst, 'A.KDR', TBytes.Create(9, 8, 7, 6));
   LBytes := TKeenFactory.CreateFolderFiles([FFirst]).ReadAll('A.KDR');
-  Assert.AreEqual(4, Length(LBytes));
+  Assert.AreEqual<Integer>(4, Length(LBytes));
   Assert.AreEqual(6, Integer(LBytes[3]));
 end;
 

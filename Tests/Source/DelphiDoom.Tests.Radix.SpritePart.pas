@@ -160,7 +160,7 @@ begin
     LBuilder.Free;
   end;
   Assert.AreEqual(0, FWad.Count);
-  Assert.AreEqual(0, Length(FAliases));
+  Assert.AreEqual<Integer>(0, Length(FAliases));
 end;
 
 procedure TTestRadixSpritePart.DovrebbeRacchiudereGliSpriteTraSStartESEnd;
@@ -183,7 +183,7 @@ begin
     end);
   Assert.AreEqual(3, FWad.Count);
   Assert.AreEqual('GEAR1A0', FWad.LumpNames[1]);
-  Assert.AreEqual(2913, Length(FWad.LumpData[1]));
+  Assert.AreEqual<Integer>(2913, Length(FWad.LumpData[1]));
 end;
 
 procedure TTestRadixSpritePart.DovrebbeFareLaPatchDellaBitmapDellaVoce;
@@ -260,7 +260,7 @@ begin
     end);
   LPatch := FWad.LumpData[FWad.IndexOf('XR00A0')];
   // TNT1A0: 16 x 16, 88 bytes
-  Assert.AreEqual(88, Length(LPatch));
+  Assert.AreEqual<Integer>(88, Length(LPatch));
   Assert.AreEqual(16, ReadWord(LPatch, 0));
 end;
 
@@ -271,7 +271,7 @@ begin
     begin
       AList.AddOne('Missing', 1);
     end);
-  Assert.AreEqual(1, Length(FAliases));
+  Assert.AreEqual<Integer>(1, Length(FAliases));
   Assert.AreEqual('XR61A0=EG1', FAliases[0]);
 end;
 
@@ -368,7 +368,7 @@ begin
     procedure(const AList: TRadixSpriteList)
     begin
     end);
-  Assert.AreEqual(1, Length(FAliases));
+  Assert.AreEqual<Integer>(1, Length(FAliases));
   Assert.AreEqual('XR61A0=EG1', FAliases[0]);
 end;
 

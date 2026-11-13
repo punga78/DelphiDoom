@@ -103,7 +103,7 @@ begin
   FFiles.Put(SHADERS + '.OpenGL.shader', 'x');
   FFiles.Put('data\common\Language\en-US.yml', 'x');
   LFiles := FCatalog.Files;
-  Assert.AreEqual(1, Length(LFiles));
+  Assert.AreEqual<Integer>(1, Length(LFiles));
   Assert.AreEqual('raw.opengl.shader', LFiles[0]);
 end;
 
@@ -125,7 +125,7 @@ end;
 
 procedure TTestXcomFolderShaderCatalog.DovrebbeDareListaVuotaSeLaCartellaNonCE;
 begin
-  Assert.AreEqual(0, Length(FCatalog.Files));
+  Assert.AreEqual<Integer>(0, Length(FCatalog.Files));
 end;
 
 procedure TTestXcomFolderShaderCatalog.DovrebbeLeggereDalPercorsoDellOpzioneInOgniCaso;
@@ -145,7 +145,7 @@ var
   LBytes: TBytes;
 begin
   Assert.IsFalse(FCatalog.TryRead('Shaders/missing.opengl.shader', LBytes));
-  Assert.AreEqual(0, Length(LBytes));
+  Assert.AreEqual<Integer>(0, Length(LBytes));
   Assert.IsFalse(FCatalog.TryRead('', LBytes));
   Assert.IsFalse(FCatalog.TryRead('Shaders/', LBytes));
 end;

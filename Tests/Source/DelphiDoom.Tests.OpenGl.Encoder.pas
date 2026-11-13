@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the OpenGL call recorder - the text of a call          }
 {                                                                              }
@@ -469,7 +469,7 @@ var
   LNames: TArray<string>;
 begin
   LNames := FEncoder.RuleNames;
-  Assert.AreEqual(20, Length(LNames));
+  Assert.AreEqual<Integer>(20, Length(LNames));
   Assert.IsTrue(string.Join(',', LNames).Contains('glTexImage2D'));
   Assert.IsTrue(string.Join(',', LNames).Contains('glDrawArrays'));
 end;

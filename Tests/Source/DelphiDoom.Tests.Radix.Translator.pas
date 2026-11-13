@@ -217,7 +217,7 @@ begin
     LBuilder.Free;
   end;
   LNames := LTranslator.TextureNames;
-  Assert.AreEqual(2, Length(LNames));
+  Assert.AreEqual<Integer>(2, Length(LNames));
   Assert.AreEqual('Wall0', LNames[0]);
   Assert.AreEqual('Wall1', LNames[1]);
 end;

@@ -185,7 +185,7 @@ begin
   LSettings.DrawWidth := 32;
   LImage := FText.Compose(LSettings, 'WWWWWWWWWWWWWWWWWWWW', True, FONT_MAX_PATCH_WIDTH);
   Assert.AreEqual(FONT_MAX_PATCH_WIDTH, LImage.Width, '20 caratteri di 32 pixel sono 640');
-  Assert.AreEqual(FONT_MAX_PATCH_WIDTH * 16, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(FONT_MAX_PATCH_WIDTH * 16, Length(LImage.Pixels));
   LImage := FText.Compose(LSettings, 'WWWWWWWWWW', True, 100);
   Assert.AreEqual(100, LImage.Width);
 end;
@@ -296,7 +296,7 @@ begin
   LSettings.DrawWidth := 0;
   LImage := FGrid.Compose(LSettings);
   Assert.AreEqual(0, LImage.Width);
-  Assert.AreEqual(0, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LImage.Pixels));
 end;
 
 procedure TTestFontTextComposer.DovrebbeRifiutareUnaGrigliaConUnRasterizzatoreNil;

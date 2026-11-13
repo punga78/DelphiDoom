@@ -100,7 +100,7 @@ var
 begin
   LBytes := FBuilder.Build(TVoxelCube.Create(2));
   // header, two offsets and two ends of column
-  Assert.AreEqual(8 + 8 + 4, Length(LBytes));
+  Assert.AreEqual<Integer>(8 + 8 + 4, Length(LBytes));
 end;
 
 procedure TTestVoxelPatchBuilder.DovrebbeDareEccezioneSeManca;

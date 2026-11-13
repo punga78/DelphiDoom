@@ -330,7 +330,7 @@ begin
   Assert.AreEqual(16, FInteger);
   Assert.AreEqual('hello', FString);
   Assert.IsTrue(FBoolean);
-  Assert.AreEqual(3, Length(LStore.Names));
+  Assert.AreEqual<Integer>(3, Length(LStore.Names));
 end;
 
 procedure TTestConfigurationTable.DovrebbeRimettereIlValoreDiPartenzaSoloSeSiPuoCambiare;

@@ -73,7 +73,7 @@ var
 begin
   FMemory.Add('A.KDR', TBytes.Create(9, 8, 7));
   LBytes := FFiles.ReadAll('A.KDR');
-  Assert.AreEqual(3, Length(LBytes));
+  Assert.AreEqual<Integer>(3, Length(LBytes));
   Assert.AreEqual(8, Integer(LBytes[1]));
 end;
 
@@ -92,14 +92,14 @@ begin
   finally
     LStream.Free;
   end;
-  Assert.AreEqual(3, Length(FFiles.ReadAll('A.KDR')), 'il file resta com''era');
+  Assert.AreEqual<Integer>(3, Length(FFiles.ReadAll('A.KDR')), 'il file resta com''era');
 end;
 
 procedure TTestKeenMemoryFiles.DovrebbeSostituireUnFileConLoStessoNome;
 begin
   FMemory.Add('A.KDR', TBytes.Create(1));
   FMemory.Add('a.kdr', TBytes.Create(1, 2));
-  Assert.AreEqual(2, Length(FFiles.ReadAll('A.KDR')));
+  Assert.AreEqual<Integer>(2, Length(FFiles.ReadAll('A.KDR')));
 end;
 
 procedure TTestKeenMemoryFiles.DovrebbeSollevareUnErroreSeIlFileNonCe;

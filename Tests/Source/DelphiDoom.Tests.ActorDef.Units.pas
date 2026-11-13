@@ -261,7 +261,7 @@ begin
   LAliases := TActorDefFactory.CreateSoundAliases(FLog);
   TActorDefFactory.ParseSoundInfo(TActorDefProfiles.ForGame(TActorDefGame.Doom),
     'imp/sight dsimp'#13#10'imp/death dsimpd'#13#10'"quoted/name" dsq'#13#10, LAliases, nil);
-  Assert.AreEqual(3, Length(LAliases.Lines));
+  Assert.AreEqual<Integer>(3, Length(LAliases.Lines));
   Assert.AreEqual('IMP/SIGHT=DSIMP', LAliases.Lines[0]);
   Assert.AreEqual('IMP/DEATH=DSIMPD', LAliases.Lines[1]);
   Assert.AreEqual('QUOTED/NAME=DSQ', LAliases.Lines[2]);
@@ -285,7 +285,7 @@ begin
   LAliases := TActorDefFactory.CreateSoundAliases(FLog);
   TActorDefFactory.ParseSoundInfo(TActorDefProfiles.ForGame(TActorDefGame.Doom),
     '// a comment'#13#10'alone'#13#10'a b ; trailing'#13#10'c d // trailing'#13#10#13#10, LAliases, nil);
-  Assert.AreEqual(2, Length(LAliases.Lines));
+  Assert.AreEqual<Integer>(2, Length(LAliases.Lines));
   Assert.AreEqual('A=B', LAliases.Lines[0]);
   Assert.AreEqual('C=D', LAliases.Lines[1]);
 end;
@@ -307,7 +307,7 @@ begin
   Assert.AreEqual('7=', LListener.Songs[1], 'a map without a name gets an empty name, as in the old code');
   Assert.AreEqual(1, LListener.Names.Count);
   Assert.AreEqual('TAG1=LUMP1', LListener.Names[0]);
-  Assert.AreEqual(1, Length(LAliases.Lines), '$MAP lines are not aliases in Hexen');
+  Assert.AreEqual<Integer>(1, Length(LAliases.Lines), '$MAP lines are not aliases in Hexen');
 end;
 
 procedure TTestActorDefUnits.TestOtherGamesReadMapAsAnAlias;
@@ -317,7 +317,7 @@ begin
   LAliases := TActorDefFactory.CreateSoundAliases(FLog);
   TActorDefFactory.ParseSoundInfo(TActorDefProfiles.ForGame(TActorDefGame.Doom),
     '$map 1 song01'#13#10, LAliases, nil);
-  Assert.AreEqual(1, Length(LAliases.Lines));
+  Assert.AreEqual<Integer>(1, Length(LAliases.Lines));
   Assert.AreEqual('$MAP=1 SONG01', LAliases.Lines[0]);
 end;
 

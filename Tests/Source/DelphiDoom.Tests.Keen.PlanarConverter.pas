@@ -109,7 +109,7 @@ begin
   // the mask first ($C0: the first two pixels), then the 4 planes: green $40
   LImage := TKeenPlanarConverter.ToChunkyMasked(TBytes.Create($C0, 0, $40, 0, 0), 0, 1, 1, LMask);
   Assert.AreEqual('02000000', Pixels(LImage));
-  Assert.AreEqual(8, Length(LMask));
+  Assert.AreEqual<Integer>(8, Length(LMask));
   Assert.AreEqual(15, Integer(LMask[0]));
   Assert.AreEqual(15, Integer(LMask[1]));
   Assert.AreEqual(0, Integer(LMask[2]));

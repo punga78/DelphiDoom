@@ -68,7 +68,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := TKeenEgaPalette.GamePalette;
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
   Assert.AreEqual($AA, Integer(LPalette[6 * 3]), 'rosso del marrone');
   Assert.AreEqual($55, Integer(LPalette[6 * 3 + 1]), 'verde del marrone');
   Assert.AreEqual($00, Integer(LPalette[6 * 3 + 2]), 'blu del marrone');

@@ -545,7 +545,7 @@ begin
   FCanvas.Time := 100;
   FDrawer.AddPixel(10, 1, 2, 3, 5, 6);
   LBytes := SavedBytes;
-  Assert.AreEqual(4 + 292, Length(LBytes));
+  Assert.AreEqual<Integer>(4 + 292, Length(LBytes));
   Assert.AreEqual(1, PInteger(@LBytes[0])^);
   Assert.AreEqual(OVR_DRAWPIXEL, PInteger(@LBytes[4])^);
   Assert.AreEqual(110, PInteger(@LBytes[4 + 4])^);

@@ -111,9 +111,9 @@ begin
   Assert.IsFalse(FPlayback.IsPlaying);
   // 4 rows of 6 ticks of 167 frames: the fifth buffer reaches the end of the song,
   // then the four buffers are played out
-  Assert.AreEqual(5, Length(Device.Written));
+  Assert.AreEqual<Integer>(5, Length(Device.Written));
   Assert.AreEqual(5, Device.IsDoneCalls);
-  Assert.AreEqual(BUFFER_SAMPLES, Length(Device.Written[0]));
+  Assert.AreEqual<Integer>(BUFFER_SAMPLES, Length(Device.Written[0]));
 end;
 
 procedure TTestTrackerPlayback.DovrebbeAspettareIlDispositivoPrimaDiScrivere;
@@ -123,7 +123,7 @@ begin
   FPlayback.Play(False);
 
   // Every answer "not done" is followed by a wait
-  Assert.AreEqual(5, Length(Device.Written));
+  Assert.AreEqual<Integer>(5, Length(Device.Written));
   Assert.AreEqual(Device.IsDoneCalls - 5, Device.WaitCalls);
   Assert.AreEqual(10, Device.WaitCalls);
 end;
@@ -135,7 +135,7 @@ begin
   FPlayback.Play(True);
 
   Assert.AreEqual(1, Device.OpenCalls);
-  Assert.AreEqual(0, Length(Device.Written));
+  Assert.AreEqual<Integer>(0, Length(Device.Written));
   Assert.AreEqual(0, Device.CloseCalls);
   Assert.IsFalse(FPlayback.IsPlaying);
 end;

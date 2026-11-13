@@ -70,7 +70,7 @@ var
   LIndex: Integer;
 begin
   LActual := FTrack.ToBytes;
-  Assert.AreEqual(Length(AExpected), Length(LActual), 'length');
+  Assert.AreEqual<Integer>(Length(AExpected), Length(LActual), 'length');
   for LIndex := 0 to High(AExpected) do
     Assert.AreEqual(Integer(AExpected[LIndex]), Integer(LActual[LIndex]), Format('byte %d', [LIndex]));
 end;

@@ -98,7 +98,7 @@ procedure TTestRadixSmallFontPart.DovrebbeFareVuotaUnaLetteraCheLaStrisciaNonHa;
 begin
   Run(2222);
   // the dollar is not in the strip: a glyph of holes, which has no post
-  Assert.AreEqual(8 + 5 * 4 + 5 * 2, Length(FWad.LumpData[FWad.IndexOf('FNTA036')]));
+  Assert.AreEqual<Integer>(8 + 5 * 4 + 5 * 2, Length(FWad.LumpData[FWad.IndexOf('FNTA036')]));
 end;
 
 procedure TTestRadixSmallFontPart.DovrebbeFareLeLettereDi5x6;

@@ -245,7 +245,7 @@ begin
         Inc(LCount);
       end;
     end;
-    Assert.AreEqual(Length(LGolden), LCount);
+    Assert.AreEqual<Integer>(Length(LGolden), LCount);
   finally
     LOperations.Free;
   end;

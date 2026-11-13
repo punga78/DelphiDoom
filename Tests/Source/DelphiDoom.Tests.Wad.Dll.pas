@@ -185,7 +185,7 @@ begin
   Assert.AreEqual(10, LSource.Entries[1].Size);
   Assert.AreEqual(15, LSource.Entries[1].Offset);
   Assert.AreEqual('0123456789', TEncoding.ANSI.GetString(LSource.ReadEntry(1)));
-  Assert.AreEqual(0, Length(LSource.ReadEntry(2)));
+  Assert.AreEqual<Integer>(0, Length(LSource.ReadEntry(2)));
   Assert.WillRaise(procedure begin LSource.Entries[3]; end, EWadException);
 end;
 

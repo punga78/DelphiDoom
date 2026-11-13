@@ -282,7 +282,7 @@ begin
   Assert.AreEqual(Cardinal($123456), FPresenter.Model.Get(1, 2, 3));
   Assert.AreEqual(VOXEL_FILE, FPresenter.FileName);
   Assert.IsTrue(FView.Title.Contains('mine.ddvox'));
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
 end;
 
 procedure TTestVoxelEditorPresenter.DovrebbeDisegnareConIlMouseEPoterAnnullare;
@@ -599,7 +599,7 @@ begin
   FFileSystem.TryWriteAllBytes(VOXEL_FILE, TVoxelEditorDdvoxFormat.Write(FPresenter.Model));
   FPresenter.OpenVoxel(VOXEL_FILE);
   FPresenter.NewVoxel;
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
   FPresenter.OpenRecent(0);
   Assert.AreEqual(VOXEL_FILE, FPresenter.FileName);
   FPresenter.OpenRecent(5);

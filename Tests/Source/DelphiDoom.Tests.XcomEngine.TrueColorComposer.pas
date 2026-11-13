@@ -209,7 +209,7 @@ begin
   FScreen.Flip;
   Assert.AreEqual(1, FDevice.TrueColorPresented);
   LBase := FScreen.GetSurface.Pixels;
-  Assert.AreEqual(320 * 200, Length(FDevice.TrueColorPixels));
+  Assert.AreEqual<Integer>(320 * 200, Length(FDevice.TrueColorPixels));
   for LIndex := 0 to 320 * 200 - 1 do
     if FDevice.TrueColorPixels[LIndex] <> ColorOf(LBase[LIndex]) then
       Assert.Fail(Format('pixel %d', [LIndex]));

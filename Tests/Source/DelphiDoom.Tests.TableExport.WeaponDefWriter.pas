@@ -137,7 +137,7 @@ begin
   FWeapons.Items.Add(LWeapon);
   LWeapon.PlayerClass := 1;
   FWeapons.Items.Add(LWeapon);
-  Assert.AreEqual(2, Length(Writer(TExportGame.Hexen).WriteAll.Split(['WEAPON WP_PISTOL'])) - 1);
+  Assert.AreEqual<Integer>(2, Length(Writer(TExportGame.Hexen).WriteAll.Split(['WEAPON WP_PISTOL'])) - 1);
 end;
 
 procedure TTestTableExportWeaponDefWriter.TestDovrebbeRifiutareUnaSorgenteMancante;

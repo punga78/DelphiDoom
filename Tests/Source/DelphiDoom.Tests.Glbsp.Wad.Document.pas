@@ -465,7 +465,7 @@ begin
 
   // 12 header bytes, 9 lumps of 3 bytes aligned to 4
   Assert.AreEqual(12 + 9 * 4, FWad.DirStart);
-  Assert.AreEqual(FWad.DirStart + 9 * WAD_ENTRY_SIZE, Length(LOutput));
+  Assert.AreEqual<Integer>(FWad.DirStart + 9 * WAD_ENTRY_SIZE, Length(LOutput));
 end;
 
 procedure TTestGlbspWadDocument.TestSegnalazioneLimitiZdbsp;

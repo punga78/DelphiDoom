@@ -129,14 +129,14 @@ var
   LLines: TArray<string>;
 begin
   LLines := TIdeCompilerMessages.SplitLines('one'#13#10'two'#10'three'#13);
-  Assert.AreEqual(3, Length(LLines));
+  Assert.AreEqual<Integer>(3, Length(LLines));
   Assert.AreEqual('two', LLines[1]);
   Assert.AreEqual('three', LLines[2]);
 end;
 
 procedure TTestIdeCompilerMessages.DovrebbeDareUnaListaVuotaPerIlTestoVuoto;
 begin
-  Assert.AreEqual(0, Length(TIdeCompilerMessages.SplitLines('')));
+  Assert.AreEqual<Integer>(0, Length(TIdeCompilerMessages.SplitLines('')));
 end;
 
 end.
