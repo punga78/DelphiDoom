@@ -19,3 +19,4 @@ Tests/Data/Compression/** -text
 Tests/Data/Net/bitmsg-golden.txt -text
 Tests/Data/MapFile/** -text
 Tests/Data/Cinematic/** -text
+Tests/Data/IdImages/** -text

@@ -60,7 +60,28 @@ uses
   DelphiDoom.Tests.Sound.Digest in 'Source\DelphiDoom.Tests.Sound.Digest.pas',
   DelphiDoom.Tests.Font.Golden in 'Source\DelphiDoom.Tests.Font.Golden.pas',
   DelphiDoom.Tests.Font.Scenarios in 'Source\DelphiDoom.Tests.Font.Scenarios.pas',
-  DelphiDoom.Tests.Imaging.PatchWriter in 'Source\DelphiDoom.Tests.Imaging.PatchWriter.pas';
+  DelphiDoom.Tests.Imaging.PatchWriter in 'Source\DelphiDoom.Tests.Imaging.PatchWriter.pas',
+  DelphiDoom.IdLib.Core.Exceptions in '..\Libs\IdLib\Core\DelphiDoom.IdLib.Core.Exceptions.pas',
+  DelphiDoom.IdLib.Core.Intf in '..\Libs\IdLib\Core\DelphiDoom.IdLib.Core.Intf.pas',
+  DelphiDoom.IdLib.Text.Strings in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Strings.pas',
+  DelphiDoom.IdLib.Text.Str in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Str.pas',
+  DelphiDoom.IdLib.Text.Types in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Types.pas',
+  DelphiDoom.IdLib.Text.Token in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Token.pas',
+  DelphiDoom.IdLib.Text.Lexer in '..\Libs\IdLib\Text\DelphiDoom.IdLib.Text.Lexer.pas',
+  DelphiDoom.IdLib.Math.Math in '..\Libs\IdLib\Math\DelphiDoom.IdLib.Math.Math.pas',
+  DelphiDoom.IdLib.Math.Vec2 in '..\Libs\IdLib\Math\DelphiDoom.IdLib.Math.Vec2.pas',
+  DelphiDoom.IdLib.Math.Vec3 in '..\Libs\IdLib\Math\DelphiDoom.IdLib.Math.Vec3.pas',
+  DelphiDoom.MathCore.TableCrc32 in '..\Libs\MathCore\DelphiDoom.MathCore.TableCrc32.pas',
+  DelphiDoom.MathCore.Crc32 in '..\Libs\MathCore\DelphiDoom.MathCore.Crc32.pas',
+  DelphiDoom.Imaging.Rgba.Image in '..\Libs\Imaging\DelphiDoom.Imaging.Rgba.Image.pas',
+  DelphiDoom.Imaging.Rgba.Sampler in '..\Libs\Imaging\DelphiDoom.Imaging.Rgba.Sampler.pas',
+  DelphiDoom.Imaging.ImageProgram.Intf in '..\Libs\Imaging\DelphiDoom.Imaging.ImageProgram.Intf.pas',
+  DelphiDoom.Imaging.ImageProgram.Operations in '..\Libs\Imaging\DelphiDoom.Imaging.ImageProgram.Operations.pas',
+  DelphiDoom.Imaging.ImageProgram.Interpreter in '..\Libs\Imaging\DelphiDoom.Imaging.ImageProgram.Interpreter.pas',
+  DelphiDoom.Tests.IdImages.Golden in 'Source\DelphiDoom.Tests.IdImages.Golden.pas',
+  DelphiDoom.Tests.Imaging.RgbaSampler in 'Source\DelphiDoom.Tests.Imaging.RgbaSampler.pas',
+  DelphiDoom.Tests.Imaging.ProgramOperations in 'Source\DelphiDoom.Tests.Imaging.ProgramOperations.pas',
+  DelphiDoom.Tests.Imaging.ImageProgram in 'Source\DelphiDoom.Tests.Imaging.ImageProgram.pas';
 
 var
   Runner: ITestRunner;

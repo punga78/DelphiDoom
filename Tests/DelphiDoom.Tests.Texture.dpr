@@ -60,7 +60,22 @@ uses
   DelphiDoom.Tests.Texture.Formats in 'Source\DelphiDoom.Tests.Texture.Formats.pas',
   DelphiDoom.Tests.Texture.Factory in 'Source\DelphiDoom.Tests.Texture.Factory.pas',
   DelphiDoom.Tests.Texture.Parity in 'Source\DelphiDoom.Tests.Texture.Parity.pas',
-  DelphiDoom.Tests.Texture.Pk3 in 'Source\DelphiDoom.Tests.Texture.Pk3.pas';
+  DelphiDoom.Tests.Texture.Pk3 in 'Source\DelphiDoom.Tests.Texture.Pk3.pas',
+  DelphiDoom.Imaging.Rgba.Image in '..\Libs\Imaging\DelphiDoom.Imaging.Rgba.Image.pas',
+  DelphiDoom.Imaging.Rgba.Sampler in '..\Libs\Imaging\DelphiDoom.Imaging.Rgba.Sampler.pas',
+  DelphiDoom.MathCore.TableCrc32 in '..\Libs\MathCore\DelphiDoom.MathCore.TableCrc32.pas',
+  DelphiDoom.MathCore.Crc32 in '..\Libs\MathCore\DelphiDoom.MathCore.Crc32.pas',
+  DelphiDoom.Texture.Dds.Types in '..\Libs\Texture\DelphiDoom.Texture.Dds.Types.pas',
+  DelphiDoom.Texture.Dds.BlockDecoder in '..\Libs\Texture\DelphiDoom.Texture.Dds.BlockDecoder.pas',
+  DelphiDoom.Texture.Dds.Reader in '..\Libs\Texture\DelphiDoom.Texture.Dds.Reader.pas',
+  DelphiDoom.Texture.Dds.Writer in '..\Libs\Texture\DelphiDoom.Texture.Dds.Writer.pas',
+  DelphiDoom.Texture.Decoder.Dds in '..\Libs\Texture\DelphiDoom.Texture.Decoder.Dds.pas',
+  DelphiDoom.Texture.Tga.IdReader in '..\Libs\Texture\DelphiDoom.Texture.Tga.IdReader.pas',
+  DelphiDoom.Tests.IdImages.Golden in 'Source\DelphiDoom.Tests.IdImages.Golden.pas',
+  DelphiDoom.Tests.Texture.DdsBlockDecoder in 'Source\DelphiDoom.Tests.Texture.DdsBlockDecoder.pas',
+  DelphiDoom.Tests.Texture.DdsReader in 'Source\DelphiDoom.Tests.Texture.DdsReader.pas',
+  DelphiDoom.Tests.Texture.DdsWriter in 'Source\DelphiDoom.Tests.Texture.DdsWriter.pas',
+  DelphiDoom.Tests.Texture.TgaIdReader in 'Source\DelphiDoom.Tests.Texture.TgaIdReader.pas';
 
 
 var
