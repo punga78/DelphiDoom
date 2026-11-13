@@ -14,14 +14,54 @@
 #include "bsp_original.inc"
 
 /* ---- the world, as far as the extracted functions use it ---- */
-static struct {
+#include "bsp_nodes.inc"
+static byte *fileBase;
+typedef struct {
+	char name[64];
 	int numsurfaces;
 	msurface_t *surfaces;
 	int numShaders;
 	dshader_t *shaders;
-} s_worldData;
+	cplane_t *planes;
+	mnode_t *nodes;
+	int numnodes;
+	int numDecisionNodes;
+	msurface_t **marksurfaces;
+	int numClusters;
+	bmodel_t *bmodels;
+	vec3_t lightGridOrigin;
+	vec3_t lightGridSize;
+	vec3_t lightGridInverseSize;
+	int lightGridBounds[3];
+	byte *lightGridData;
+} world_t;
+static world_t s_worldData;
 
 #include "bsp_world.inc"
+
+/* the lightmap textures: R_CreateImage only keeps the FNV-1a hash of the 128 x 128 x 4 bytes it is given */
+static unsigned g_imgHash[256];
+static image_t g_images[256];
+static int g_imgCalls;
+static char *va(const char *fmt, ...) {
+	static char buf[64];
+	va_list args;
+	va_start(args, fmt);
+	vsprintf(buf, fmt, args);
+	va_end(args);
+	return buf;
+}
+static image_t *R_CreateImage(const char *name, const byte *pic, int width, int height, int mipmap, int allowPicmip, int wrap) {
+	unsigned h = 2166136261u;
+	int i;
+	(void)name; (void)mipmap; (void)allowPicmip; (void)wrap;
+	for (i = 0; i < width * height * 4; i++) h = (h ^ pic[i]) * 16777619u;
+	g_imgHash[g_imgCalls] = h;
+	g_images[g_imgCalls].index = g_imgCalls;
+	return &g_images[g_imgCalls++];
+}
+
+#include "bsp_load.inc"
 
 static unsigned bits(float f) { unsigned u; memcpy(&u, &f, 4); return u; }
 
@@ -358,9 +398,176 @@ static int read_bsp(const char *path) {
 	return 0;
 }
 
+/* ------------------------------------------------------------------ second slice ---- */
+
+static unsigned fnv_bytes(const unsigned char *p, int n) {
+	unsigned h = 2166136261u;
+	int i;
+	for (i = 0; i < n; i++) h = fnv_byte(h, p[i]);
+	return h;
+}
+
+static void fill_random(unsigned char *p, int n, unsigned seed) {
+	int i;
+	g_seed = seed;
+	for (i = 0; i < n; i++) p[i] = (unsigned char)(next_random() >> 9);
+}
+
+/* R_LoadLightmaps with four shifts: r_mapOverBrightBits - overbrightBits = 1, 2, 0 and 3 */
+static void lightmap_case(const char *tag, unsigned char *base, int ofs, int len) {
+	static const int mob[4] = { 2, 2, 1, 3 }, obb[4] = { 1, 0, 1, 0 };
+	lump_t l;
+	int k, i;
+	l.fileofs = ofs; l.filelen = len;
+	fileBase = base;
+	for (k = 0; k < 4; k++) {
+		r_mapOverBrightBits_storage.integer = mob[k]; tr.overbrightBits = obb[k];
+		tr.numLightmaps = 0; g_imgCalls = 0;
+		R_LoadLightmaps(&l);
+		printf("lm %s len %d shift %d count %d\n", tag, len, mob[k] - obb[k], tr.numLightmaps);
+		for (i = 0; i < g_imgCalls; i++) printf("lmimg %d %08x\n", i, g_imgHash[i]);
+	}
+}
+
+static void print_vec_bits(const char *tag, const float v[3]) {
+	printf(" %s %08x %08x %08x", tag, bits(v[0]), bits(v[1]), bits(v[2]));
+}
+
+/* R_LoadLightGrid: the box of the model 0 and the size of a cell come from the arguments */
+static void grid_case(int index, const float mn[3], const float mx[3], const float sz[3], int mob, int obb, int delta) {
+	bmodel_t bm;
+	lump_t l;
+	unsigned char *data;
+	int n;
+	memset(&bm, 0, sizeof(bm));
+	VectorCopy(mn, bm.bounds[0]); VectorCopy(mx, bm.bounds[1]);
+	s_worldData.bmodels = &bm;
+	VectorCopy(sz, s_worldData.lightGridSize);
+	r_mapOverBrightBits_storage.integer = mob; tr.overbrightBits = obb;
+	l.fileofs = 0; l.filelen = 1;
+	fileBase = (byte *)"";
+	R_LoadLightGrid(&l); /* a lump of a byte never fits: this only gives the cells */
+	n = s_worldData.lightGridBounds[0] * s_worldData.lightGridBounds[1] * s_worldData.lightGridBounds[2];
+	data = calloc(1, (n > 0 ? n : 0) * 8 + 64);
+	fill_random(data, (n > 0 ? n : 0) * 8 + 8, 777u + (unsigned)index);
+	l.fileofs = 0; l.filelen = n * 8 + delta;
+	fileBase = data;
+	R_LoadLightGrid(&l);
+	printf("grid %d bounds %d %d %d n %d", index, s_worldData.lightGridBounds[0], s_worldData.lightGridBounds[1],
+		s_worldData.lightGridBounds[2], n);
+	print_vec_bits("origin", s_worldData.lightGridOrigin);
+	print_vec_bits("size", s_worldData.lightGridSize);
+	print_vec_bits("inv", s_worldData.lightGridInverseSize);
+	if (s_worldData.lightGridData) printf(" data %08x\n", fnv_bytes(s_worldData.lightGridData, n * 8));
+	else printf(" data null\n");
+	free(data);
+}
+
+static void print_tree(const char *tag) {
+	int i, total = s_worldData.numnodes;
+	printf("tree %s nodes %d decision %d clusters %d\n", tag, total, s_worldData.numDecisionNodes, s_worldData.numClusters);
+	for (i = 0; i < total; i++) {
+		mnode_t *n = &s_worldData.nodes[i];
+		int parent = n->parent ? (int)(n->parent - s_worldData.nodes) : -1;
+		int plane = n->plane ? (int)(n->plane - s_worldData.planes) : -1;
+		int c0 = n->children[0] ? (int)(n->children[0] - s_worldData.nodes) : -1;
+		int c1 = n->children[1] ? (int)(n->children[1] - s_worldData.nodes) : -1;
+		int mark = n->firstmarksurface ? (int)(n->firstmarksurface - s_worldData.marksurfaces) : -1;
+		printf("n %d %d %d %d %d %d | %d %d %d | %d %d %d | %d %d %d %d\n", i, n->contents, parent, plane, c0, c1,
+			(int)n->mins[0], (int)n->mins[1], (int)n->mins[2], (int)n->maxs[0], (int)n->maxs[1], (int)n->maxs[2],
+			n->cluster, n->area, mark, n->nummarksurfaces);
+	}
+}
+
+static void tree_case(const char *tag, unsigned char *base, int nodeOfs, int nodeLen, int leafOfs, int leafLen) {
+	lump_t nl, ll;
+	nl.fileofs = nodeOfs; nl.filelen = nodeLen;
+	ll.fileofs = leafOfs; ll.filelen = leafLen;
+	fileBase = base;
+	memset(&s_worldData.nodes, 0, sizeof(s_worldData.nodes));
+	s_worldData.numClusters = 0;
+	s_worldData.planes = calloc(16, sizeof(cplane_t));
+	s_worldData.marksurfaces = calloc(128, sizeof(msurface_t *));
+	R_LoadNodesAndLeafs(&nl, &ll);
+	print_tree(tag);
+}
+
+/* 40 nodes in the layout of a heap and the 41 leafs that fill the free places: a tree of depth 6 */
+static void make_tree(unsigned char *out, int *nodeLen, int *leafLen) {
+	dnode_t *nodes = (dnode_t *)out;
+	dleaf_t *leafs = (dleaf_t *)(out + 40 * sizeof(dnode_t));
+	int i, j, k, leaf = 0;
+	g_seed = 0x5EED1234u;
+	for (i = 0; i < 40; i++) {
+		nodes[i].planeNum = i % 8;
+		for (j = 0; j < 2; j++) {
+			int c = 2 * i + 1 + j;
+			nodes[i].children[j] = c < 40 ? c : -1 - leaf++;
+		}
+		for (k = 0; k < 3; k++) nodes[i].mins[k] = (int)(next_random() % 2001) - 1000;
+		for (k = 0; k < 3; k++) nodes[i].maxs[k] = nodes[i].mins[k] + (int)(next_random() % 500);
+	}
+	for (i = 0; i < 41; i++) {
+		leafs[i].cluster = (int)(next_random() % 14) - 1;
+		leafs[i].area = (int)(next_random() % 5);
+		for (k = 0; k < 3; k++) leafs[i].mins[k] = (int)(next_random() % 2001) - 1000;
+		for (k = 0; k < 3; k++) leafs[i].maxs[k] = leafs[i].mins[k] + (int)(next_random() % 500);
+		leafs[i].firstLeafSurface = (int)(next_random() % 50);
+		leafs[i].numLeafSurfaces = (int)(next_random() % 7);
+		leafs[i].firstLeafBrush = (int)(next_random() % 10);
+		leafs[i].numLeafBrushes = (int)(next_random() % 3);
+	}
+	*nodeLen = 40 * (int)sizeof(dnode_t);
+	*leafLen = 41 * (int)sizeof(dleaf_t);
+}
+
+static int extras(const char *path) {
+	FILE *f = fopen(path, "rb");
+	unsigned char *buf, *scratch;
+	long size;
+	dheader_t header;
+	int nodeLen, leafLen;
+	static const float m0[3] = { -64, -64, -64 }, x0[3] = { 64, 64, 64 }, s0[3] = { 64, 64, 128 };
+	static const float m1[3] = { -100, -37.5f, -8 }, x1[3] = { 230.25f, 90, 300 };
+	static const float m2[3] = { -1000, -900.5f, -1200 }, x2[3] = { 1800, 1500.75f, 2200 }, s2[3] = { 50, 40, 30 };
+	static const float m3[3] = { 10, 10, 10 }, x3[3] = { 500, 500, 500 }, s3[3] = { 100, 100, 100 };
+	if (!f) return 1;
+	fseek(f, 0, SEEK_END); size = ftell(f); fseek(f, 0, SEEK_SET);
+	buf = malloc(size);
+	fread(buf, 1, size, f);
+	fclose(f);
+	header = *(dheader_t *)buf;
+	scratch = calloc(1, 4 * 128 * 128 * 3);
+
+	/* lightmaps: the lump of the file, then a lump of one lightmap (the hack of the original reads the
+	   second from beyond the lump: zero bytes here), 2.5 lightmaps, nothing */
+	lightmap_case("file", buf, header.lumps[LUMP_LIGHTMAPS].fileofs, header.lumps[LUMP_LIGHTMAPS].filelen);
+	fill_random(scratch, 49152, 4242u);
+	lightmap_case("one", scratch, 0, 49152);
+	fill_random(scratch, 49152 * 2 + 1000, 99u);
+	lightmap_case("twoandahalf", scratch, 0, 49152 * 2 + 1000);
+	lightmap_case("none", scratch, 0, 0);
+	r_vertexLight_storage.integer = 1;
+	lightmap_case("vertexlight", scratch, 0, 49152 * 2);
+	r_vertexLight_storage.integer = 0;
+
+	grid_case(0, m0, x0, s0, 2, 1, 0);
+	grid_case(1, m1, x1, s0, 2, 1, 0);
+	grid_case(2, m2, x2, s2, 3, 0, 0);
+	grid_case(3, m3, x3, s3, 2, 2, 0);
+	grid_case(4, m1, x1, s0, 2, 1, 8);
+
+	memset(scratch, 0, 4 * 128 * 128 * 3);
+	make_tree(scratch, &nodeLen, &leafLen);
+	tree_case("heap", scratch, 0, nodeLen, nodeLen, leafLen);
+	tree_case("file", buf, header.lumps[LUMP_NODES].fileofs, header.lumps[LUMP_NODES].filelen,
+		header.lumps[LUMP_LEAFS].fileofs, header.lumps[LUMP_LEAFS].filelen);
+	return 0;
+}
 int main(int argc, char **argv) {
 	if (argc >= 4 && !strcmp(argv[1], "write")) return write_bsp(atoi(argv[2]), argv[3]);
 	if (argc >= 3 && !strcmp(argv[1], "read")) return read_bsp(argv[2]);
+	if (argc >= 3 && !strcmp(argv[1], "extras")) return extras(argv[2]);
 	fprintf(stderr, "usage: bspgen write <variant> <file> | read <file>\n");
 	return 2;
 }

@@ -14,7 +14,8 @@ unit DelphiDoom.MapFile.Bsp.Intf;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.MathCore.Patch.Intf, DelphiDoom.MapFile.Bsp.Types;
+  System.SysUtils, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Bounds, DelphiDoom.MathCore.Patch.Intf,
+  DelphiDoom.MapFile.Bsp.Types, DelphiDoom.MapFile.Bsp.RenderTypes;
 
 type
   /// <summary>
@@ -145,6 +146,66 @@ type
     /// <summary>The stitches done by the last LoadGrids</summary>
     function GetStitchCount: Integer;
     property StitchCount: Integer read GetStitchCount;
+  end;
+
+  /// <summary>R_LoadLightmaps of tr_bsp.c, without OpenGL: the images as bytes</summary>
+  IBspLightmapLoader = interface
+    ['{6F2A93B4-1D7E-4C58-B0A6-8E35D4C1F7A2}']
+    /// <summary>
+    ///   The number of lightmaps the renderer makes for a lump of this length: the length over
+    ///   128 x 128 x 3, and 2 if that is 1 (the "maps with only one lightmap turn up
+    ///   fullbright" hack of the original)
+    /// </summary>
+    function LightmapCount(const ALumpLength: Integer): Integer;
+    /// <summary>
+    ///   The lightmaps as RGBA images of 128 x 128 (65536 bytes each): every texel is shifted
+    ///   by <c>AShift</c> bits (r_mapOverBrightBits - overbrightBits, see TBspColorShift) and has
+    ///   alpha 255. The original reads the second lightmap of the one-lightmap hack from
+    ///   beyond the lump; here it comes from zero bytes. A partial lightmap at the end of the
+    ///   lump is ignored. An empty lump gives no image
+    /// </summary>
+    function Load(const ALightmaps: TBytes; const AShift: Integer): TArray<TBytes>;
+  end;
+
+  /// <summary>R_LoadLightGrid of tr_bsp.c</summary>
+  IBspLightGridLoader = interface
+    ['{0C84E5A7-93B2-4F1D-A6D8-5B3E7092C4F1}']
+    /// <summary>
+    ///   Works out the cells of the grid from the bounds of model 0 and the size of a cell
+    ///   (the "gridsize" of the worldspawn, 64 64 128 if there is none) and takes the lump if
+    ///   it has 8 bytes for each cell, with the colours shifted; otherwise <c>Data</c> is empty
+    ///   and the log gets "WARNING: light grid mismatch". A size that is not positive is an
+    ///   EBspFileException (the original divides by it)
+    /// </summary>
+    function Load(const AWorldBounds: TGeoBounds; const AGridSize: TGeoVec3; const ALump: TBytes;
+      const AShift: Integer): TBspLightGrid;
+  end;
+
+  /// <summary>R_LoadNodesAndLeafs and R_SetParent of tr_bsp.c</summary>
+  IBspTreeLoader = interface
+    ['{A7D3F091-5E26-4B84-9C1A-30E8B6D2F457}']
+    /// <summary>
+    ///   Builds the array of nodes and leafs and chains the parents. A child that is not a node
+    ///   (a positive number past the nodes) or not a leaf (past the leafs), a plane past
+    ///   <c>APlaneCount</c> and a node with two parents are EBspFileException
+    /// </summary>
+    function Load(const ANodes: TArray<TBspNode>; const ALeafs: TArray<TBspLeaf>;
+      const APlaneCount: Integer): TBspRenderTree;
+  end;
+
+  /// <summary>Turns the model back into the bytes of a .bsp file</summary>
+  IBspWriter = interface
+    ['{3B90D6C2-E4A1-4875-8F27-D1C5A09E6B38}']
+    /// <summary>
+    ///   The file the way the compilers write it: the header with the identifier and version
+    ///   46, the 17 lumps in order each padded to 4 bytes. The entities lump is the text with
+    ///   its NUL; the visibility lump is the two integers and the rows (empty if the file has
+    ///   no clusters). The lump lengths are those of the arrays, not those of the header of
+    ///   the file that was read
+    /// </summary>
+    function ToBytes(const AFile: IBspFile): TBytes;
+    /// <summary>Writes the bytes into the file system; False if it cannot</summary>
+    function Write(const AFile: IBspFile; const AFileName: AnsiString): Boolean;
   end;
 
 implementation

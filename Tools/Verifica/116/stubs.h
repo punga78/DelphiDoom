@@ -58,6 +58,21 @@ static cvar_t r_singleShader_storage = { 0, 0.0f };
 static cvar_t *r_singleShader = &r_singleShader_storage;
 static cvar_t r_mapOverBrightBits_storage = { 2, 2.0f };
 static cvar_t *r_mapOverBrightBits = &r_mapOverBrightBits_storage;
+/* issue #116, second slice: the lightmap loader, the light grid and the nodes (tr_bsp.c) */
+static cvar_t r_vertexLight_storage = { 0, 0.0f };
+static cvar_t *r_vertexLight = &r_vertexLight_storage;
+static cvar_t r_lightmap_storage = { 0, 0.0f };
+static cvar_t *r_lightmap = &r_lightmap_storage;
+static struct { int hardwareType; } glConfig = { 0 };
+#define GLHW_PERMEDIA2 1
+#define GL_CLAMP 0x2900
+#define h_low 0
+#define ERR_DROP 1
+#define PRINT_WARNING 1
+#define CONTENTS_NODE -1
+typedef struct cplane_s { vec3_t normal; float dist; byte type; byte signbits; byte pad[2]; } cplane_t;
+typedef struct { int index; } image_t;
+static void R_SyncRenderThread(void) {}
 
 static void *stub_malloc(int n) { return calloc(1, n + 64); }
 static void stub_free(void *p) { (void)p; }
@@ -69,16 +84,27 @@ static void stub_printf(int level, const char *fmt, ...) {
 	vprintf(fmt, args);
 	va_end(args);
 }
+static void stub_error(int level, const char *fmt, ...) {
+	va_list args;
+	(void)level;
+	printf("ERROR ");
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
+	printf("\n");
+	exit(1);
+}
 static struct {
 	void *(*Malloc)(int);
-	void *(*Hunk_Alloc)(int);
+	void *(*Hunk_Alloc)(int, ...);
 	void (*Free)(void *);
 	void (*Printf)(int, const char *, ...);
-} ri = { stub_malloc, stub_malloc, stub_free, stub_printf };
+	void (*Error)(int, const char *, ...);
+} ri = { stub_malloc, (void *(*)(int, ...))stub_malloc, stub_free, stub_printf, stub_error };
 
 typedef struct { int isSky; } shader_t;
 static shader_t g_shader;
-static struct { int overbrightBits; shader_t *defaultShader; } tr = { 1, &g_shader };
+static struct { int overbrightBits; shader_t *defaultShader; int numLightmaps; image_t *lightmaps[256]; } tr = { 1, &g_shader };
 
 typedef struct {
 	int viewCount;
