@@ -52,7 +52,28 @@ type
     /// <summary>PLANESIDE_FRONT, _BACK or _ON</summary>
     function Side(const AVector: TGeoVec3; AEpsilon: Single = 0.1): Integer;
     /// <summary>Exact comparison</summary>
-    function Compare(const APlane: TGeoPlane): Boolean;
+    function Compare(const APlane: TGeoPlane): Boolean; overload;
+    /// <summary>Every coefficient within the epsilon (idPlane::Compare with epsilon)</summary>
+    function Compare(const APlane: TGeoPlane; AEpsilon: Single): Boolean; overload;
+    /// <summary>The normal within the first epsilon and the distance within the second</summary>
+    function Compare(const APlane: TGeoPlane; ANormalEpsilon, ADistEpsilon: Single): Boolean; overload;
+    /// <summary>The plane through the point with the normal dir1 x dir2; false when they are parallel</summary>
+    function FromVecs(const ADir1, ADir2, APoint: TGeoVec3; AFixDegenerate: Boolean = True): Boolean;
+    /// <summary>The plane moved by the translation (idPlane::Translate)</summary>
+    function Translate(const ATranslation: TGeoVec3): TGeoPlane;
+    procedure TranslateSelf(const ATranslation: TGeoVec3);
+    /// <summary>The plane rotated about the origin by the axis (idPlane::Rotate)</summary>
+    function Rotate(const AOrigin: TGeoVec3; const AAxis: TGeoMat3): TGeoPlane;
+    procedure RotateSelf(const AOrigin: TGeoVec3; const AAxis: TGeoMat3);
+    /// <summary>True when the segment crosses the plane (idPlane::LineIntersection)</summary>
+    function LineIntersection(const AStart, AEnd: TGeoVec3): Boolean;
+    /// <summary>
+    ///   The ray hits the plane at start + dir * scale; false when it is parallel
+    ///   (idPlane::RayIntersection). AScale is 0 when false
+    /// </summary>
+    function RayIntersection(const AStart, ADir: TGeoVec3; out AScale: Single): Boolean;
+    /// <summary>The line where two planes meet (idPlane::PlaneIntersection), false when parallel</summary>
+    function PlaneIntersection(const APlane: TGeoPlane; out AStart, ADir: TGeoVec3): Boolean;
     /// <summary>The normal is multiplied by the matrix, the distance is kept (idPlane::operator*=)</summary>
     procedure RotateNormal(const AMatrix: TGeoMat3);
   end;
@@ -228,6 +249,124 @@ end;
 function TGeoPlane.Compare(const APlane: TGeoPlane): Boolean;
 begin
   Result := (A = APlane.A) and (B = APlane.B) and (C = APlane.C) and (D = APlane.D);
+end;
+
+function TGeoPlane.Compare(const APlane: TGeoPlane; AEpsilon: Single): Boolean;
+begin
+  Result := not ((TGeoMath.Fabs(A - APlane.A) > AEpsilon) or (TGeoMath.Fabs(B - APlane.B) > AEpsilon) or
+    (TGeoMath.Fabs(C - APlane.C) > AEpsilon) or (TGeoMath.Fabs(D - APlane.D) > AEpsilon));
+end;
+
+function TGeoPlane.Compare(const APlane: TGeoPlane; ANormalEpsilon, ADistEpsilon: Single): Boolean;
+begin
+  if TGeoMath.Fabs(D - APlane.D) > ADistEpsilon then
+    Exit(False);
+  Result := Normal.Compare(APlane.Normal, ANormalEpsilon);
+end;
+
+function TGeoPlane.FromVecs(const ADir1, ADir2, APoint: TGeoVec3; AFixDegenerate: Boolean): Boolean;
+begin
+  SetNormal(ADir1.Cross(ADir2));
+  if NormalizeSelf(AFixDegenerate) = 0 then
+    Exit(False);
+  D := -(Normal.Dot(APoint));
+  Result := True;
+end;
+
+function TGeoPlane.Translate(const ATranslation: TGeoVec3): TGeoPlane;
+begin
+  Result := Make(A, B, C, D - ATranslation.Dot(Normal));
+end;
+
+procedure TGeoPlane.TranslateSelf(const ATranslation: TGeoVec3);
+begin
+  D := D - ATranslation.Dot(Normal);
+end;
+
+function TGeoPlane.Rotate(const AOrigin: TGeoVec3; const AAxis: TGeoMat3): TGeoPlane;
+var
+  LNormal: TGeoVec3;
+  LOldDot: Single;
+  LNewDot: Single;
+begin
+  LNormal := Normal * AAxis;
+  LOldDot := AOrigin.Dot(Normal);
+  LNewDot := AOrigin.Dot(LNormal);
+  Result := Make(LNormal, 0);
+  Result.D := D + LOldDot - LNewDot;
+end;
+
+procedure TGeoPlane.RotateSelf(const AOrigin: TGeoVec3; const AAxis: TGeoMat3);
+begin
+  D := D + AOrigin.Dot(Normal);
+  SetNormal(Normal * AAxis);
+  D := D - AOrigin.Dot(Normal);
+end;
+
+function TGeoPlane.LineIntersection(const AStart, AEnd: TGeoVec3): Boolean;
+var
+  LD1: Single;
+  LD2: Single;
+  LFraction: Single;
+begin
+  LD1 := Normal.Dot(AStart) + D;
+  LD2 := Normal.Dot(AEnd) + D;
+  if LD1 = LD2 then
+    Exit(False);
+  if (LD1 > 0) and (LD2 > 0) then
+    Exit(False);
+  if (LD1 < 0) and (LD2 < 0) then
+    Exit(False);
+  LFraction := LD1 / (LD1 - LD2);
+  Result := (LFraction >= 0) and (LFraction <= 1);
+end;
+
+function TGeoPlane.RayIntersection(const AStart, ADir: TGeoVec3; out AScale: Single): Boolean;
+var
+  LD1: Single;
+  LD2: Single;
+begin
+  AScale := 0;
+  LD1 := Normal.Dot(AStart) + D;
+  LD2 := Normal.Dot(ADir);
+  if LD2 = 0 then
+    Exit(False);
+  AScale := -(LD1 / LD2);
+  Result := True;
+end;
+
+function TGeoPlane.PlaneIntersection(const APlane: TGeoPlane; out AStart, ADir: TGeoVec3): Boolean;
+var
+  LN00: Double;
+  LN01: Double;
+  LN11: Double;
+  LDet: Double;
+  LInvDet: Double;
+  LF0: Double;
+  LF1: Double;
+  LDetFloat: Single;
+  LScale0: Single;
+  LScale1: Single;
+begin
+  AStart.Zero;
+  ADir.Zero;
+  LN00 := Normal.LengthSqr;
+  LN01 := Normal.Dot(APlane.Normal);
+  LN11 := APlane.Normal.LengthSqr;
+  LDet := LN00 * LN11 - LN01 * LN01;
+  // idMath::Fabs takes a float: the double determinant is rounded first
+  LDetFloat := LDet;
+  if TGeoMath.Fabs(LDetFloat) < Single(1e-6) then
+    Exit(False);
+  LInvDet := 1.0 / LDet;
+  LF0 := (LN01 * APlane.D - LN11 * D) * LInvDet;
+  LF1 := (LN01 * D - LN00 * APlane.D) * LInvDet;
+  ADir := Normal.Cross(APlane.Normal);
+  // the product double * idVec3 of the original converts the double to float
+  LScale0 := LF0;
+  LScale1 := LF1;
+  AStart := LScale0 * Normal + LScale1 * APlane.Normal;
+  Result := True;
 end;
 
 procedure TGeoPlane.RotateNormal(const AMatrix: TGeoMat3);
