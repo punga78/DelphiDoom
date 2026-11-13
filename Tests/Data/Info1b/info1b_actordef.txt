@@ -1,0 +1,70 @@
+// Prova della fetta 1b (issue #185): ACTORDEF che passa dal parser dei parametri e dei nomi di stato
+// (sc_params, sc_states, info_common). Nessun dato di gioco: lo sprite PLAY esiste in tutti e quattro i giochi.
+// Serve a confrontare il vecchio e il nuovo eseguibile con lo stesso -file (Tools\Verifica\185\Fetta-1b.txt).
+
+ACTOR Info1bBase 29001
+{
+  Health 50
+  Radius 16
+  Height 40
+  Speed 5
+  Mass 100
+  PainChance 128
+  +SOLID
+  +SHOOTABLE
+  States
+  {
+  Spawn:
+    PLAY A 8 A_Look
+    PLAY B 8
+    Loop
+  See:
+    PLAY AB 4 A_Chase
+    PLAY C 4 A_Jump(128, "Pain", 2)
+    PLAY D 4
+    PLAY E 4 A_JumpIfHealthLower(25, "Death")
+    Loop
+  Pain:
+    PLAY G 4 A_Pain
+    PLAY G 4 A_Jump(256, "See + 1", "See - 1", "Spawn")
+    Goto See
+  Death:
+    PLAY H 6
+    PLAY I 6 A_Scream
+    PLAY J 6 A_Fall
+    Stop
+  Extra:
+    PLAY K 2 A_SetUserVar("v", RANDOM(1, 9))
+    PLAY L 2 A_Jump(RANDOM(100, 200), 1)
+    PLAY M 2 A_Jump(EVAL(64 + 64), "Extra")
+    PLAY N 2 A_SpawnItemEx("Info1bBase", 8.5, 0, 16, 0, 0, 0, 0, 0, 255)
+    PLAY O 2 A_Jump(50, 0x2, #3, -1)
+    Wait
+  }
+}
+
+ACTOR Info1bChild : Info1bBase 29002
+{
+  Health 75
+  PainChance 100
+  Scale 0.75
+  States
+  {
+  Spawn:
+    PLAY A 4 A_Look
+    Goto Super::Spawn
+  Missile:
+    PLAY P 6 A_Jump(256, "Self::Death", "Info1bBase::See")
+    Stop
+  }
+}
+
+ACTOR Info1bAlias : Info1bChild 29003
+{
+  States
+  {
+  Spawn:
+    PLAY Q 4 A_Jump(RANDOM(1), 1, 2)
+    Goto Spawn+1
+  }
+}

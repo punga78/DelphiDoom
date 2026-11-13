@@ -90,6 +90,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **IdTech** — Descrizione del motore su cui gira il port (generazione id Tech e versione). [CLAUDE.md](Libs/IdTech/CLAUDE.md), [README.md](Libs/IdTech/README.md)
 - **Ide** — Logica dell'editor degli script DD_IDE senza VCL. [CLAUDE.md](Libs/Ide/CLAUDE.md), [README.md](Libs/Ide/README.md)
 - **Imaging** — Patch, flat e immagini a classi su buffer, ricampionatore, miniatura dei salvataggi. [CLAUDE.md](Libs/Imaging/CLAUDE.md), [README.md](Libs/Imaging/README.md)
+- **Info** — Logica delle tabelle `info` (ricerca per numero e nome, alias, ereditarieta', catene di stati, gruppi MBF21, mostri a caso, nomi degli stati degli script); le tabelle restano dati (issue #185, fetta 1b). [CLAUDE.md](Libs/Info/CLAUDE.md), [README.md](Libs/Info/README.md)
 - **Input** — Tastiera, mouse e joystick: dispositivi, poller e mappa dei tasti. [CLAUDE.md](Libs/Input/CLAUDE.md), [README.md](Libs/Input/README.md)
 - **Iwad** — Ricerca e riconoscimento degli IWAD. [CLAUDE.md](Libs/Iwad/CLAUDE.md), [README.md](Libs/Iwad/README.md)
 - **Jpeg** — Decoder JPEG a classi (port della decompressione di libjpeg 6b). [CLAUDE.md](Libs/Jpeg/CLAUDE.md), [README.md](Libs/Jpeg/README.md)

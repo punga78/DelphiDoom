@@ -45,7 +45,7 @@ powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -Ex
    -Exe "Doom=<nuovo>\Doom32.exe" -RefExe "Doom=<riferimento>\Doom32.exe"
 ```
 
-Le chiavi `chiave=valore` (separate da `;`) sostituiscono quelle di partenza o si aggiungono; `-RefExe` e' obbligatorio. Un solo modo per invocazione quando si usa `powershell -File` (la virgola di `-Modes 8,32` non separa). Esempi reali (le quattro modifiche finte di sotto):
+Le chiavi `chiave=valore` (separate da `;`) sostituiscono quelle di partenza o si aggiungono; `-RefExe` e' obbligatorio. Con `-ExtraArgs '-file x.wad'` (o `-deh x.deh`) si danno argomenti in piu' a entrambi gli eseguibili, per caricare ACTORDEF e DEHACKED di prova (fetta 1b, `Tools\Verifica\185\Fetta-1b.txt`; anche li' `-RefExe` e' obbligatorio). Un solo modo per invocazione quando si usa `powershell -File` (la virgola di `-Modes 8,32` non separa). Esempi reali (le quattro modifiche finte di sotto):
 
 **1. Un tic di ritardo su una porta** (`Libs\Thinkers\DelphiDoom.Thinkers.Door.Runner.pas`: `TopCountdown := TopWait + 1`), demo `d1_demo1`, modo 8:
 

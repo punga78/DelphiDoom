@@ -1,0 +1,65 @@
+Fetta 1b (issue #185): sc_*, info_*, deh_base -> classi. Verifica a runtime da lanciare DOPO la consegna.
+Riferimento ("vecchio"): master 63a151cc. Nuovo: il ramo della fetta (commit con questo file).
+Chi ha scritto il codice NON ha eseguito nulla di quanto segue (cambio di processo): ha compilato i dieci
+eseguibili, i quattro ddc_*, ddc, Launcher, DD_IDE e DD_Tools, e ha fatto girare le suite DUnitX.
+
+Variabili usate sotto (PowerShell, dalla radice del repository del ramo nuovo):
+  $new = '<radice del ramo>\bin'                     # eseguibili nuovi: Tools\build.bat giochi
+  $ref = '<cartella tua>\ref'                        # eseguibili di master 63a151cc, uno per cartella: $ref\Doom\Doom32.exe ...
+  $exe    = "Doom=$new\Doom\Doom32.exe;Heretic=$new\Heretic\Heretic32.exe;Hexen=$new\Hexen\Hexen32.exe;Strife=$new\Strife\Strife32.exe"
+  $refexe = "Doom=$ref\Doom\Doom32.exe;Heretic=$ref\Heretic\Heretic32.exe;Hexen=$ref\Hexen\Hexen32.exe;Strife=$ref\Strife\Strife32.exe"
+  $wk = 'C:\ddparity_1b'                             # cartella di lavoro (una per agente)
+
+0. Costruire il riferimento (una volta): git worktree o checkout di 63a151cc, poi per i quattro giochi
+   Tools\build.bat Doom32 | Heretic32 | Hexen32 | Strife32 e copiare gli .exe in $ref\<Gioco>\.
+
+1. Golden della fase 0 (88 confronti, una modalita' per invocazione): attesi 88 su 88 UGUALE.
+   powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8  -WorkRoot $wk -Exe $exe -RefExe $refexe
+   powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 32 -WorkRoot $wk -Exe $exe -RefExe $refexe
+
+2. Vecchio contro nuovo con ACTORDEF e DEHACKED di prova (nuovo parametro -ExtraArgs di Confronta-Golden.ps1:
+   argomenti in piu' dati a ENTRAMBI gli eseguibili; obbliga -RefExe; stato e fotogramma di ogni tic confrontati).
+   a) PWAD con l'ACTORDEF di Tests\Data\Info1b\info1b_actordef.txt e la patch info1b_patch.deh:
+      powershell -NoProfile -File Tools\Verifica\185\Fetta-1b-Pwad.ps1 -Out $wk\info1b.wad -Dehacked Tests\Data\Info1b\info1b_patch.deh
+      powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -WorkRoot $wk -Exe $exe -RefExe $refexe -Name 'd1_demo1' -ExtraArgs "-file $wk\info1b.wad"
+      (stesso comando con -Name delle altre voci di ogni gioco: l'elenco e' in Tools\Verifica\185\Corpus.psd1; Hexen shareware
+       rifiuta i file esterni, la voce lo gestisce da sola con -devparm: un avviso uguale nei due e' normale)
+   b) le patch DEHACKED del repository (una per invocazione, per ogni gioco; senza frame_basic in Heretic: il vecchio crashava):
+      powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -WorkRoot $wk -Exe $exe -RefExe $refexe -Name 'd1_demo1' -ExtraArgs "-deh $PWD\Tests\Data\Dehacked\frame_new.deh"
+      per bex_sections.deh, thing_flags.deh, thing_misc.deh, thing_fixed.deh, text_pointer_codeptr.deh, header_comments.deh (Doom)
+      e per Tests\Data\Dehacked\Heretic|Hexen|Strife\*.deh con il -Game del cartello.
+   c) con la configurazione che cambia la lettura di DECORATE (ini):
+      ... -ExtraIni 'decorate_as_actordef=0' -ExtraArgs "-file $wk\info1b.wad" ...
+   d) senza autoload e con piu' file: -ExtraArgs "-file $wk\info1b.wad -deh $PWD\Tests\Data\Info1b\info1b_patch.deh"
+   Atteso: UGUALE su stato e fotogramma, e nessun crash.txt nelle cartelle di lavoro. Il confronto dello stato include
+   le posizioni e gli stati dei mobj: un cambiamento di P_GetStateFromName, di un parametro o di un nome di tipo si vedrebbe li'.
+
+3. Dump delle tabelle, vecchio contro nuovo (i soli dump che esercitano DEH_Save*, Info_SavePascal e i CSV; richiedono i comandi
+   di console: se non e' possibile pilotarli senza mouse/tastiera, dichiararlo). Con -devparm e una patch caricata,
+   i comandi SaveInfoPascal, SaveInfoPascalBI, ExportInfoPascalConst, DEH_SaveCurrentSettings (savedehacked), SaveActordef,
+   SaveWeapondef, SaveStateOwners, i tre CSV scrivono nella cartella DATA\SAVES del gioco; confrontare i file byte per byte.
+   (Il Saver e' provato in DUnitX; non lo e' il comando di console.)
+
+4. Prestazioni (-timedemo: la fetta tocca il caricamento e l'inizializzazione, non il fotogramma; entro il 5%):
+   powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio $ref\Doom\Doom32.exe -Nuovo $new\Doom\Doom32.exe -Demo demo1 -Iwad DOOM1.WAD -Coppie 8
+   (idem -Demo demo3 e, a 32 bit, i parametri di Misura-Coppie.ps1; se rifiuta la misura per dispersione, ripetere a macchina scarica)
+   In piu': tempo di avvio fino al primo fotogramma con -file $wk\info1b.wad (la lettura di ACTORDEF e' cio' che cambia di piu').
+
+5. Gia' noti al momento della consegna: Doom32 -timedemo demo1/2/3 = 5026/3836/2134 gametic; avvio di Heretic32, Hexen32,
+   Strife32 e dei quattro GL senza crash.txt (25 s con Tools\Esegui-gioco.ps1).
+
+Rami che il corpus delle demo NON esercita (coperti solo dalla parita' vecchio/nuovo in DUnitX, da 2. se il PWAD li tocca):
+  - Info_AddMobjNameAlias e l'alias DEH_ACTOR_n (solo ACTORDEF con "replaces"/alias): parita' in DUnitX, non a runtime.
+  - Info_InfightingGroupToInt/ProjectileGroupToInt/SplashGroupToInt con un numero nuovo (aggiunge una costante agli script).
+  - Info_SelectRandomMonster e Info_InitRandom (opzione dei mostri a caso): nessuna demo li usa.
+  - P_GetStateFromName con "SUPER::", "SELF::", "COSA::ETICHETTA" e le somme di stati: solo l'ACTORDEF di prova (A_Jump, goto).
+  - P_GetStateFromNameWithOffsetCheck con un numero con segno come offset: A_Jump con offset 2, #3, 0x2, -1 nel PWAD di prova.
+  - TCustomParamList con RANDOM, FRANDOM, EVAL, testi tra virgolette (le demo non eseguono azioni con parametri dichiarati in ACTORDEF).
+  - Info_CheckStates con un ciclo di stati senza durata (avviso): serve una patch che lo crei.
+  - Info_GetMobjNumForDoomNum con numeri negativi (il vecchio scriveva fuori dalla tabella): provato solo in DUnitX.
+  - DEH_AmmoType/DEH_WeaponType/DEH_PlayerClass con nomi senza prefisso (difetto del prefisso in coda conservato): solo DUnitX.
+  - DEH_ParseFile con nome senza estensione e con la cartella dei salvataggi: solo DUnitX per le regole dei nomi.
+  - TEngineInfoNameList (liste dei gruppi di deh_main) e TEngineInfoStateTokens (statenames): letti al momento; mai esercitati da DUnitX.
+  - Hexen: Info_SelectRandomMonster senza numeri scartati ({$IFDEF HEXEN} in TEngineInfoRandomRules) e le soglie 1000000.
+  - Heretic: le soglie dei mostri a caso per versione del gioco (G_PlayingEngineVersion).
+  - Radix32 e SpeedHaste32: compilano ma non sono stati avviati (nessun dato).

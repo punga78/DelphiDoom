@@ -34,7 +34,8 @@ param(
   [object]$Exe = @{},
   [object]$RefExe = @{},
   [string]$GoldenDir = '',
-  [string]$ExtraIni = ''
+  [string]$ExtraIni = '',
+  [string]$ExtraArgs = ''
 )
 . (Join-Path $PSScriptRoot 'Parity-Common.ps1')
 $Exe = ConvertTo-ParityMap $Exe
@@ -66,7 +67,7 @@ foreach ($gameName in $games.Keys) {
   $extraLines = @($ExtraIni -split ';' | Where-Object { $_ -ne '' })
   $dir = Initialize-ParityRunDir -Game $gameName -WorkRoot $WorkRoot -DataRoot $DataRoot -Executables $executables -ExtraIni $extraLines
 
-  if ($extraLines.Count -gt 0) {
+  if ($extraLines.Count -gt 0 -or $ExtraArgs -ne '') {
     # vecchio contro nuovo con la stessa configurazione: niente golden
     if (-not $RefExe[$gameName]) { throw "-ExtraIni richiede -RefExe per $gameName (il vecchio eseguibile da confrontare)" }
     foreach ($entry in $mine) {
@@ -76,8 +77,8 @@ foreach ($gameName in $games.Keys) {
         $refFrame = Join-Path $dir ("{0}.x{1}.ref.f.txt" -f $entry.Short, $mode)
         $newState = Join-Path $dir ("{0}.x{1}.new.state.txt" -f $entry.Short, $mode)
         $newFrame = Join-Path $dir ("{0}.x{1}.new.f.txt" -f $entry.Short, $mode)
-        $runRef = Invoke-ParityEntry -Entry $entry -Mode $mode -RunDir $dir -ExeName $refName -StateFile $refState -FrameFile $refFrame
-        $runNew = Invoke-ParityEntry -Entry $entry -Mode $mode -RunDir $dir -ExeName $exeName -StateFile $newState -FrameFile $newFrame
+        $runRef = Invoke-ParityEntry -Entry $entry -Mode $mode -RunDir $dir -ExeName $refName -StateFile $refState -FrameFile $refFrame -Extra $ExtraArgs
+        $runNew = Invoke-ParityEntry -Entry $entry -Mode $mode -RunDir $dir -ExeName $exeName -StateFile $newState -FrameFile $newFrame -Extra $ExtraArgs
         $failed = $null
         foreach ($pair in @(@($runRef, $refState, 'vecchio'), @($runNew, $newState, 'nuovo'))) {
           if ($pair[0].Alive -or $pair[0].Crash -or -not (Test-Path $pair[1])) { $failed = "$($pair[2]): $($pair[0].Text)" }
