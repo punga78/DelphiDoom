@@ -1,0 +1,243 @@
+#include "precompiled.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+idGame theGame; idGame *game = &theGame;
+int com_editors = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+
+static idCommon theCommon;
+static idFileSystem theFs;
+struct MemFile { std::string text; long ts; };
+static std::map<std::string, MemFile> files;
+static long clockTicks = 1000;
+static bool quiet = false;
+
+static std::string lower(std::string s) { for (size_t i = 0; i < s.size(); i++) s[i] = (char)tolower((unsigned char)s[i]); return s; }
+static std::string norm(const char *n) { std::string s = n; for (size_t i = 0; i < s.size(); i++) if (s[i] == '\\') s[i] = '/'; return lower(s); }
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); if (quiet) return; printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) return 0;
+	idFile *f = new idFile; f->rd = it->second.text; f->name = n; f->ts = it->second.ts; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { idFile *f = new idFile; f->name = n; return f; }
+void idFileSystem::CloseFile(idFile *f) {
+	if (f->rd.empty() && !f->name.empty()) { MemFile m; m.text = f->out; m.ts = ++clockTicks; files[norm(f->name.c_str())] = m; }
+	delete f;
+}
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *ts) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) { if (b) *b = 0; return -1; }
+	if (ts) *ts = it->second.ts;
+	if (b) {
+		char *buf = (char *)malloc(it->second.text.size() + 1);
+		memcpy(buf, it->second.text.data(), it->second.text.size()); buf[it->second.text.size()] = 0;
+		*b = buf;
+	}
+	return (int)it->second.text.size();
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+idFileList *idFileSystem::ListFiles(const char *dir, const char *ext, bool sort) {
+	idFileList *l = new idFileList;
+	std::string prefix = norm(dir) + "/", e = lower(ext);
+	std::vector<std::string> names;
+	for (std::map<std::string, MemFile>::iterator it = files.begin(); it != files.end(); ++it) {
+		const std::string &n = it->first;
+		if (n.compare(0, prefix.size(), prefix) == 0 && n.size() >= prefix.size() + e.size() && n.compare(n.size() - e.size(), e.size(), e) == 0) names.push_back(n.substr(prefix.size()));
+	}
+	// the map is ordered by the lower case path, which is the order idStr::Icmp sorts in
+	l->list = names;
+	return l;
+}
+
+static std::vector<std::string> splitWords(const std::string &s) {
+	std::vector<std::string> r; std::istringstream is(s); std::string w; while (is >> w) r.push_back(w); return r;
+}
+static std::string unescapeOp(const std::string &s) {
+	std::string r;
+	for (size_t i = 0; i < s.size(); i++) {
+		if (s[i] == '\\' && i + 1 < s.size() && s[i + 1] == 'n') { r += '\n'; i++; }
+		else if (s[i] == '\\' && i + 1 < s.size() && s[i + 1] == 't') { r += '\t'; i++; }
+		else r += s[i];
+	}
+	return r;
+}
+
+void DeclManager_Init(); void DeclManager_Shutdown();
+static declType_t typeOf(const std::string &n) { return declManager->GetDeclTypeFromName(n.c_str()); }
+
+static void dumpDecl(const idDecl *d, bool deep) {
+	declType_t type = d->GetType();
+	int len = d->GetTextLength();
+	printf("D %s %s state=%d implicit=%d valid=%d file=%s line=%d index=%d textlen=%d ever=%d\n", declManager->GetDeclNameFromType(type), esc(d->GetName()).c_str(), (int)d->GetState(), (int)d->IsImplicit(), (int)d->IsValid(), esc(d->GetFileName()).c_str(), d->GetLineNum(), d->Index(), len, (int)d->EverReferenced());
+	if (len > 0) { char *b = (char *)malloc(len + 1); d->GetText(b); printf("  text=%s\n", esc(b, len).c_str()); free(b); }
+	if (!deep) return;
+	switch (type) {
+	case DECL_TABLE: {
+		const idDeclTable *t = static_cast<const idDeclTable *>(d);
+		static const float xs[] = { -1.3f, -0.25f, 0.0f, 0.1f, 0.25f, 0.5f, 0.75f, 0.99f, 1.0f, 1.5f, 2.7f };
+		printf("  lookup");
+		for (int i = 0; i < 11; i++) printf(" %.4f", t->TableLookup(xs[i]));
+		printf("\n");
+		break; }
+	case DECL_SKIN: {
+		const idDeclSkin *s = static_cast<const idDeclSkin *>(d);
+		printf("  models=%d", s->GetNumModelAssociations());
+		for (int i = 0; i < s->GetNumModelAssociations(); i++) printf(" [%s]", esc(s->GetAssociatedModel(i)).c_str());
+		printf(" outofrange=[%s]\n", esc(s->GetAssociatedModel(s->GetNumModelAssociations())).c_str());
+		int n = declManager->GetNumDecls(DECL_MATERIAL);
+		for (int i = 0; i < n; i++) {
+			const idMaterial *m = static_cast<const idMaterial *>(declManager->DeclByIndex(DECL_MATERIAL, i, false));
+			const idMaterial *r = s->RemapShaderBySkin(m);
+			printf("  remap %s -> %s\n", esc(m->GetName()).c_str(), r ? esc(r->GetName()).c_str() : "null");
+		}
+		break; }
+	case DECL_ENTITYDEF: case DECL_MAPDEF: {
+		const idDeclEntityDef *e = static_cast<const idDeclEntityDef *>(d);
+		printf("  keys=%d\n", e->dict.GetNumKeyVals());
+		for (int i = 0; i < e->dict.GetNumKeyVals(); i++) printf("  %s = %s\n", esc(e->dict.GetKeyVal(i)->GetKey().c_str()).c_str(), esc(e->dict.GetKeyVal(i)->GetValue().c_str()).c_str());
+		break; }
+	case DECL_PDA: {
+		const idDeclPDA *p = static_cast<const idDeclPDA *>(d);
+		printf("  name=[%s] full=[%s] icon=[%s] id=[%s] post=[%s] title=[%s] security=[%s]\n", esc(p->GetPdaName()).c_str(), esc(p->GetFullName()).c_str(), esc(p->GetIcon()).c_str(), esc(p->GetID()).c_str(), esc(p->GetPost()).c_str(), esc(p->GetTitle()).c_str(), esc(p->GetSecurity()).c_str());
+		printf("  emails=%d videos=%d audios=%d\n", p->GetNumEmails(), p->GetNumVideos(), p->GetNumAudios());
+		for (int i = 0; i < p->GetNumEmails(); i++) { const idDeclEmail *x = p->GetEmailByIndex(i); printf("  email %d %s\n", i, x ? esc(x->GetName()).c_str() : "null"); }
+		for (int i = 0; i < p->GetNumVideos(); i++) { const idDeclVideo *x = p->GetVideoByIndex(i); printf("  video %d %s\n", i, x ? esc(x->GetName()).c_str() : "null"); }
+		for (int i = 0; i < p->GetNumAudios(); i++) { const idDeclAudio *x = p->GetAudioByIndex(i); printf("  audio %d %s\n", i, x ? esc(x->GetName()).c_str() : "null"); }
+		break; }
+	case DECL_EMAIL: {
+		const idDeclEmail *e = static_cast<const idDeclEmail *>(d);
+		printf("  from=[%s] to=[%s] subject=[%s] date=[%s] image=[%s] body=[%s]\n", esc(e->GetFrom()).c_str(), esc(e->GetTo()).c_str(), esc(e->GetSubject()).c_str(), esc(e->GetDate()).c_str(), esc(e->GetImage()).c_str(), esc(e->GetBody()).c_str());
+		break; }
+	case DECL_VIDEO: {
+		const idDeclVideo *v = static_cast<const idDeclVideo *>(d);
+		printf("  name=[%s] preview=[%s] roq=[%s] info=[%s] wave=[%s]\n", esc(v->GetVideoName()).c_str(), esc(v->GetPreview()).c_str(), esc(v->GetRoq()).c_str(), esc(v->GetInfo()).c_str(), esc(v->GetWave()).c_str());
+		break; }
+	case DECL_AUDIO: {
+		const idDeclAudio *a = static_cast<const idDeclAudio *>(d);
+		printf("  name=[%s] wave=[%s] info=[%s] preview=[%s]\n", esc(a->GetAudioName()).c_str(), esc(a->GetWave()).c_str(), esc(a->GetInfo()).c_str(), esc(a->GetPreview()).c_str());
+		break; }
+	default: break;
+	}
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, 0, _IONBF, 0);
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon; fileSystem = &theFs;
+	std::ifstream in(argv[1], std::ios::binary);
+	std::vector<std::string> lines; std::string ln;
+	while (std::getline(in, ln)) { if (!ln.empty() && ln[ln.size() - 1] == '\r') ln.erase(ln.size() - 1); lines.push_back(ln); }
+	size_t i = 0;
+	while (i < lines.size()) {
+		if (lines[i].compare(0, 6, "@case ") != 0) { i++; continue; }
+		std::string name = lines[i].substr(6); i++;
+		std::vector<std::string> ops; files.clear();
+		std::string curfile; MemFile *cur = 0;
+		while (i < lines.size() && lines[i] != "@end") {
+			const std::string &l = lines[i];
+			if (l.compare(0, 4, "@op ") == 0) { ops.push_back(l.substr(4)); cur = 0; }
+			else if (l.compare(0, 6, "@file ") == 0) { MemFile m; m.ts = ++clockTicks; curfile = norm(l.substr(6).c_str()); files[curfile] = m; cur = &files[curfile]; }
+			else if (cur) { cur->text += l; cur->text += "\n"; }
+			i++;
+		}
+		i++;
+		printf("## %s\n", name.c_str());
+		quiet = true;
+		DeclManager_Init();
+		quiet = false;
+		for (size_t k = 0; k < ops.size(); k++) {
+			const std::string &op = ops[k];
+			std::string cmd = op, arg;
+			size_t sp = op.find(' ');
+			if (sp != std::string::npos) { cmd = op.substr(0, sp); arg = op.substr(sp + 1); }
+			std::vector<std::string> w = splitWords(arg);
+			printf("> %s\n", op.c_str());
+			try {
+				if (cmd == "folder") declManager->RegisterDeclFolder(w[0].c_str(), w[1].c_str(), w[2] == "none" ? DECL_MAX_TYPES : typeOf(w[2]));
+				else if (cmd == "find") { const idDecl *d = declManager->FindType(typeOf(w[0]), w.size() > 1 ? w[1].c_str() : "", true); printf("r=%s\n", d ? "found" : "null"); }
+				else if (cmd == "findnd") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); printf("r=%s\n", d ? "found" : "null"); }
+				else if (cmd == "dump" || cmd == "dumpraw") {
+					declType_t t = typeOf(w[0]);
+					int n = declManager->GetNumDecls(t);
+					printf("n=%d\n", n);
+					for (int q = 0; q < n; q++) {
+						const idDecl *d = declManager->DeclByIndex(t, q, cmd == "dump");
+						dumpDecl(d, cmd == "dump");
+					}
+				}
+				else if (cmd == "write") { std::string path = w[0]; std::string text = unescapeOp(arg.substr(arg.find(' ') + 1)); MemFile m; m.text = text; m.ts = ++clockTicks; files[norm(path.c_str())] = m; }
+				else if (cmd == "remove") files.erase(norm(w[0].c_str()));
+				else if (cmd == "reload") declManager->Reload(w.size() > 0 && w[0] == "all");
+				else if (cmd == "reloadfile") declManager->ReloadFile(w[0].c_str(), w.size() > 1);
+				else if (cmd == "levelbegin") declManager->BeginLevelLoad();
+				else if (cmd == "levelend") declManager->EndLevelLoad();
+				else if (cmd == "checksum") printf("checksum=%d\n", declManager->GetChecksum());
+				else if (cmd == "regtype") declManager->RegisterDeclType(w[0].c_str(), (declType_t)atoi(w[1].c_str()), idDeclAllocator<idMaterial>);
+				else if (cmd == "typename") printf("r=%s\n", declManager->GetDeclNameFromType(typeOf(w[0])));
+				else if (cmd == "typenum") printf("r=%d\n", (int)typeOf(w[0]));
+				else if (cmd == "numtypes") printf("r=%d\n", declManager->GetNumDeclTypes());
+				else if (cmd == "numdecls") printf("r=%d\n", declManager->GetNumDecls(typeOf(w[0])));
+				else if (cmd == "invalidate") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); const_cast<idDecl *>(d)->Invalidate(); }
+				else if (cmd == "ensure") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); const_cast<idDecl *>(d)->EnsureNotPurged(); }
+				else if (cmd == "settext") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); size_t p = arg.find(' '); p = arg.find(' ', p + 1); const_cast<idDecl *>(d)->SetText(unescapeOp(arg.substr(p + 1)).c_str()); }
+				else if (cmd == "replace") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); printf("r=%d\n", (int)const_cast<idDecl *>(d)->ReplaceSourceFileText()); }
+				else if (cmd == "changed") { const idDecl *d = declManager->FindType(typeOf(w[0]), w[1].c_str(), false); printf("r=%d\n", (int)d->SourceFileChanged()); }
+				else if (cmd == "showfile") { std::map<std::string, MemFile>::iterator it = files.find(norm(w[0].c_str())); printf("file=%s\n", it == files.end() ? "missing" : esc(it->second.text.c_str()).c_str()); }
+				else if (cmd == "new") { idDecl *d = declManager->CreateNewDecl(typeOf(w[0]), w[1].c_str(), w[2].c_str()); printf("name=%s file=%s state=%d index=%d\n", esc(d->GetName()).c_str(), esc(d->GetFileName()).c_str(), (int)d->GetState(), d->Index()); }
+				else if (cmd == "rename") printf("r=%d\n", (int)declManager->RenameDecl(typeOf(w[0]), w[1].c_str(), w[2].c_str()));
+				else if (cmd == "list") { idCmdArgs a; a.AppendArg("list"); if (w.size() > 1) a.AppendArg(w[1].c_str()); declManager->ListType(a, typeOf(w[0])); }
+				else if (cmd == "print") { idCmdArgs a; a.AppendArg("print"); a.AppendArg(w[1].c_str()); declManager->PrintType(a, typeOf(w[0])); }
+				else if (cmd == "precache") { idFile f; declManager->WritePrecacheCommands(&f); printf("precache=%s\n", esc(f.out.c_str()).c_str()); }
+				else if (cmd == "pda") {
+					const idDeclPDA *p = static_cast<const idDeclPDA *>(declManager->FindType(DECL_PDA, w[0].c_str(), false));
+					if (w[1] == "addemail") p->AddEmail(w[2].c_str(), w.size() < 4);
+					else if (w[1] == "addvideo") p->AddVideo(w[2].c_str(), w.size() < 4);
+					else if (w[1] == "addaudio") p->AddAudio(w[2].c_str(), w.size() < 4);
+					else if (w[1] == "remove") p->RemoveAddedEmailsAndVideos();
+					else if (w[1] == "security") p->SetSecurity(w[2].c_str());
+					printf("emails=%d videos=%d audios=%d security=[%s]\n", p->GetNumEmails(), p->GetNumVideos(), p->GetNumAudios(), esc(p->GetSecurity()).c_str());
+				}
+				else printf("unknown op\n");
+			} catch (idException &e) { printf("ERR %s\n", esc(e.error).c_str()); }
+		}
+		quiet = true;
+		DeclManager_Shutdown();
+		quiet = false;
+	}
+	return 0;
+}

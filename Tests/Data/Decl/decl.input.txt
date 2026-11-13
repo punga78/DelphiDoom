@@ -1,0 +1,325 @@
+@case basics-skins
+@file skins/a.skin
+// two skins, written for this test
+skin one { model "m/a" "mat/x" "mat/y" "*" "mat/any" }
+skin two
+{
+	"mat/p" "mat/q"
+}
+@op dumpraw skin
+@op find skin one
+@op dumpraw skin
+@op dump skin
+@end
+@case implicit-and-canonical-names
+@op numtypes
+@op typenum entitydef
+@op typenum pda
+@op typenum nothing
+@op typename articulatedFigure
+@op find entityDef Monster\Zombie.TGA
+@op find entityDef monster/zombie
+@op find entityDef
+@op findnd entityDef missing
+@op findnd entityDef Monster/Zombie
+@op numdecls entityDef
+@op dump entityDef
+@op find table nothing
+@op dump table
+@op find skin textures/nothing
+@op dump skin
+@end
+@case duplicates
+@file skins/a.skin
+skin one { model "first" }
+skin one { model "second" }
+skin Two { }
+@file skins/b.skin
+skin ONE { model "other file" }
+skin three { }
+@op dumpraw skin
+@op dump skin
+@end
+@case malformed
+@file skins/a.skin
+skin { model "x" }
+skin ok { model "y" }
+skin broken oops
+skin after { }
+skin
+@op dumpraw skin
+@end
+@case malformed-end
+@file skins/a.skin
+skin ok { }
+skin name
+@op dumpraw skin
+@end
+@case default-type-folder
+@file defs/a.def
+plain { "k" "v" }
+entityDef explicit { "k" "e" }
+{ "nameless" "x" }
+@file defs/b.def
+skin skinned { }
+@op folder defs .def entityDef
+@op dumpraw entityDef
+@op dumpraw skin
+@op folder defs .def none
+@op dumpraw entityDef
+@end
+@case modelexport
+@op regtype export 13
+@file defs/a.def
+entityDef one { "a" "1" }
+@file defs/b.def
+export skipped { "x" "y" }
+entityDef two { }
+@op folder defs .def entityDef
+@op numdecls entityDef
+@op dumpraw entityDef
+@end
+@case table-lookups
+@file defs/t.def
+table interp { { 0, 1, 0, 1 } }
+table snapped { snap { 0, 1, 2, 3 } }
+table clamped { clamp { 0, 10, 20, 30 } }
+table clampsnap { clamp snap { 5, 6, 7 } }
+table one { { 7 } }
+table two { { 7, 8 } }
+table bad1 { { 1, two } }
+table bad2 { { 1 2 } }
+table bad3 { wobble { 1 } }
+table neg { { -1, -0.5, 0.25, 1e1 } }
+table Sine { snap { 0, .5, 1, .5, 0, -.5, -1, -.5 } }
+@op folder defs .def table
+@op dump table
+@end
+@case skin-remap
+@file skins/a.skin
+skin s1 { model "models/a.md5mesh" model "b" "mat/one" "mat/uno" "mat/two" "mat/due" "*" "mat/any" }
+skin s2 { "*" "mat/all" }
+skin s3 { "mat/x" "mat/y" }
+skin s4 { "mat/one" }
+@op find material mat/one
+@op find material mat/two
+@op find material mat/other
+@op dump skin
+@op dump material
+@end
+@case skin-implicit-from-material
+@file materials/a.mtr
+material textures/wall { diffusemap x }
+@op find skin textures/wall
+@op find skin textures/floor
+@op find material textures/floor
+@op find skin textures/floor
+@op dump skin
+@end
+@case skin-eof
+@op find skin s5
+@op settext skin s5 skin s5 { "mat/x"
+@op invalidate skin s5
+@op find skin s5
+@op dump skin
+@end
+@case entitydef-basic
+@file def/a.def
+entityDef monster_imp { "health" "100" "Model" "imp" "health" "120" }
+entityDef notquoted { key "value" }
+entityDef missingvalue { "key" }
+entityDef empty { }
+@op folder def .def entityDef
+@op dump entityDef
+@end
+@case entitydef-inherit
+@file def/a.def
+entityDef c { "inherit" "b" "z" "c" }
+entityDef b { "inherit" "a" "y" "b" "z" "b" }
+entityDef a { "x" "a" "y" "a" "z" "a" }
+entityDef one { "k" "1" "only1" "x" }
+entityDef two { "k" "2" "only2" "y" }
+entityDef both { "inherit" "one" "inherit2" "two" }
+entityDef lonely { "inherit" "nobody" "a" "1" }
+entityDef loopa { "inherit" "loopb" "ka" "a" }
+entityDef loopb { "inherit" "loopa" "kb" "b" }
+entityDef selfie { "inherit" "selfie" "k" "v" }
+entityDef over { "inherit" "one" "k" "mine" }
+@op folder def .def entityDef
+@op find entityDef c
+@op find entityDef both
+@op find entityDef lonely
+@op find entityDef loopa
+@op find entityDef selfie
+@op find entityDef over
+@op dump entityDef
+@op numdecls entityDef
+@end
+@case mapdef
+@file def/a.def
+mapDef maps/level1 { "name" "First" "next" "maps/level2" }
+mapDef maps/level2 { "inherit" "maps/level1" "name" "Second" }
+@op folder def .def entityDef
+@op find mapDef maps/level2
+@op dump mapDef
+@op numdecls entityDef
+@end
+@case pda-all
+@file def/p.pda
+pda mine {
+  name "My PDA" fullname "Full Name" icon "gfx/icon" id "42" post "Marine" title "Title" security "red"
+  pda_email mail1 pda_email "mail2" pda_audio log1 pda_video vid1
+}
+pda bad { name "Bad" pda_email }
+email mail1 { subject "Hello" to "you" from "me" date "today" image "img" text { "a" "b" "c" } }
+email textless { subject "s" text "x" }
+video vid1 { name "Vid" preview "pv" video "mat/video" info "inf" audio "snd/video" }
+audio log1 { name "Log" audio "snd/log" info "li" preview "lp" }
+@op folder def .pda pda
+@op find pda mine
+@op dump pda
+@op dump email
+@op dump video
+@op dump audio
+@op dump material
+@op dump sound
+@op find pda absent
+@op find email absent
+@op find video absent
+@op find audio absent
+@op dump pda
+@op dump email
+@op dump video
+@op dump audio
+@end
+@case pda-ops
+@file def/p.pda
+pda mine { name "P" pda_email mail1 pda_video vid1 pda_audio log1 }
+email mail1 { subject "S" }
+email extra { subject "E" }
+video vid1 { name "V" }
+video extra { name "X" }
+audio log1 { name "L" }
+audio extra { name "A" }
+@op folder def .pda pda
+@op find pda mine
+@op pda mine addemail nothing
+@op pda mine addemail extra
+@op pda mine addemail extra
+@op pda mine addemail EXTRA
+@op pda mine addemail extra twice
+@op pda mine addvideo extra
+@op pda mine addvideo nothing
+@op pda mine addaudio extra
+@op pda mine addaudio nothing
+@op pda mine security blue
+@op pda mine remove
+@op dump pda
+@end
+@case reload-changes
+@file skins/a.skin
+skin one { model "a" }
+skin two { }
+@op find skin one
+@op write skins/a.skin skin one { model "b" model "c" }\nskin three { }
+@op reload
+@op dump skin
+@op write skins/a.skin skin three { }
+@op reload
+@op dump skin
+@op reload all
+@op dump skin
+@op reloadfile skins/A.skin all
+@op dump skin
+@op remove skins/a.skin
+@op reload all
+@end
+@case level-purge
+@file skins/a.skin
+skin one { model "a" }
+skin two { model "b" }
+@op find skin one
+@op levelbegin
+@op dump skin
+@op find skin two
+@op find entityDef inlevel
+@op levelend
+@op levelbegin
+@op dump skin
+@op dump entityDef
+@op levelend
+@op precache
+@end
+@case checksum
+@file skins/a.skin
+skin one { model "a" }
+@file def/p.pda
+pda mine { name "P" }
+@op checksum
+@op folder def .pda pda
+@op checksum
+@op find entityDef implicit
+@op checksum
+@op write skins/a.skin skin one { model "b" }
+@op reload
+@op checksum
+@end
+@case new-rename-replace
+@file skins/a.skin
+skin one { model "a" }
+skin two { model "b" }
+skin three { model "c" }
+@op new skin New\Skin.Ext skins\fresh.skin
+@op dump skin
+@op new skin NEW/skin skins/other.skin
+@op rename skin two Renamed
+@op find skin renamed
+@op findnd skin two
+@op findnd skin one
+@op findnd skin three
+@op rename skin nothing x
+@op settext skin one skin one { model "longer text" }
+@op replace skin one
+@op showfile skins/a.skin
+@op changed skin one
+@op settext skin renamed \nskin renamed { model "x" }
+@op replace skin renamed
+@op showfile skins/a.skin
+@op write skins/a.skin changed elsewhere
+@op changed skin one
+@op replace skin one
+@op find skin implicit
+@op replace skin implicit
+@end
+@case list-print
+@file skins/a.skin
+skin one { model "a" }
+skin two { model "b" }
+@op find skin two
+@op list skin
+@op list skin ever
+@op list skin all
+@op print skin one
+@op print skin two
+@op print skin none
+@op precache
+@end
+@case lexer-edge
+@file skins/a.skin
+// comment
+/* block
+comment */ skin "quoted name" { "a" "b" }
+skin braces { "x" "}" "{" "y" }
+skin nested { model "m" { } }
+skin   spaced   {   "p"   "q"   }
+SKIN upper { }
+skin path/name.ext { }
+skin c:\x { }
+@op dumpraw skin
+@op dump skin
+@end
+@case runaway-and-errors
+@op find nothing x
+@op numdecls nothing
+@op typename nothing
+@end
