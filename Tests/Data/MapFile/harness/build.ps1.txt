@@ -1,0 +1,17 @@
+$d = 'C:\harness\mapfile'   # the folder that has idlib\ (copy of neo\idlib) next to this script
+Set-Location "$d\idlib"
+New-Item -ItemType Directory -Force "$d\obj" | Out-Null
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$files = 'driver','Str','Token','Lexer','Dict','Heap','MapFile','math\Math','math\Vector','math\Matrix','math\Angles','math\Quat','math\Rotation','math\Plane','math\Pluecker','math\Polynomial','math\Complex','math\Simd_Generic','hashing\CRC32','containers\HashIndex','geometry\JointTransform','geometry\Surface','geometry\Surface_Patch','geometry\DrawVert','bv\Bounds'
+if ($args.Count -gt 0) { $files = $args }
+$objs = @()
+foreach ($f in $files) {
+  $o = "$d\obj\" + ($f -replace '\\','_') + '.o'
+  $out = & $B -c -w- -std=c++14 -I. "-o$o" "$f.cpp" 2>&1
+  Write-Host "== $f exit $LASTEXITCODE"
+  if ($LASTEXITCODE -ne 0) { $out | Select-String 'error' | Select-Object -First 6 | ForEach-Object { $_.Line } }
+}
+$all = Get-ChildItem "$d\obj\*.o" | Where-Object { $_.Name -ne 't.o' } | ForEach-Object { $_.FullName }
+$out = & $B -o "$d\map.exe" @all 2>&1
+Write-Host "== link exit $LASTEXITCODE"
+$out | Select-Object -First 25 | ForEach-Object { Write-Host $_ }

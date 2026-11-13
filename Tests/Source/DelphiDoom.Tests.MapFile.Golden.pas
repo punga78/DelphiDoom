@@ -44,7 +44,7 @@ uses
 
 const
   // largest difference accepted for the texture vectors, in units in the last place
-  TEXTURE_VECTOR_ULP = 8;
+  TEXTURE_VECTOR_ULP = 2;
 
 function TTestMapFileGolden.DataFolder: string;
 begin
@@ -189,6 +189,8 @@ begin
   LExpected := LoadLines('mapfile.golden.txt');
   LActual := TStringList.Create;
   try
+    // a data folder that is not there must not make the test pass without comparing anything
+    Assert.IsTrue(LExpected.Count > 100, 'mapfile.golden.txt not found in ' + DataFolder);
     for LIndex := 0 to LCases.Count - 1 do
     begin
       LName := Trim(LCases[LIndex]);

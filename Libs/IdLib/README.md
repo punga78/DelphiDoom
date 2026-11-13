@@ -76,7 +76,7 @@ vale `sinf/cosf`, `rintf`. Per rifare i golden: ricostruire l'harness come sopra
 | `idParser` (macro, `#define`, `#if`) | **non portata**: 3250 righe di preprocessore; il repository ha gia `Libs\Scanner` (scanner dei testi di Doom con `#define`/`#ifdef`/`#include`), con un dialetto diverso. Da portare quando serve il dialetto di Doom 3 (le macro `__LINE__`, `__DATE__`) |
 | `idDict`, `idKeyValue` | **non portato**: `TDictionary<string,string>` con `TIStringComparer` copre l'uso; il pool globale di chiavi e valori (`globalKeys`) e un'ottimizzazione di memoria |
 | `idLangDict` | **non portato** (usa `idDict` e `idLexer`; una classe di 300 righe sopra `TDictionary`, da fare) |
-| `idMapFile` | **non portato** (legge le mappe `.map`: serve `idDict`, geometria e `idLexer`) |
+| `idMapFile` | **portato in `Libs\MapFile`** (issue #106) |
 | `idTimer`, `idTimerReport` | non portati: `TStopwatch` della RTL |
 
 ### Hash

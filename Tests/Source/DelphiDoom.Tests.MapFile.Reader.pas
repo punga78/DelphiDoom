@@ -95,7 +95,24 @@ type
     procedure DovrebbeSollevareSeUnaRigaDellaPatchEIncompleta;
     [Test]
     procedure DovrebbeSollevareConLaClasseDedicata;
-  end;
+    [Test]
+    procedure DovrebbeSollevareSeIlBrushFinisceNelMezzo;
+    [Test]
+    procedure DovrebbeSollevareSeLaChiaveDelBrushNonHaIlValore;
+    [Test]
+    procedure DovrebbeSollevareSeMancaIlMaterialeDelBrush;
+    [Test]
+    procedure DovrebbeSollevareSeIlBrushDiQuake3EIncompleto;
+    [Test]
+    procedure DovrebbeSollevareSeLaPatchEIncompleta;
+    [Test]
+    procedure DovrebbeSollevareConUnaDimensioneNegativaDellaPatch;
+    [Test]
+    procedure DovrebbeLimitareLeSuddivisioniDellaPatch;
+    [Test]
+    procedure DovrebbeSollevareSeLEntitaFinisceDopoLaParentesiDellaPrimitiva;
+    [Test]
+    procedure DovrebbeSollevareSeIlLexerNonSollevaDaSolo;  end;
 
 implementation
 
@@ -103,7 +120,8 @@ uses
   System.Classes, DelphiDoom.Geometry.Vec3, DelphiDoom.IdLib.Core.Intf, DelphiDoom.MapFile.Types,
   DelphiDoom.MapFile.Primitive, DelphiDoom.MapFile.Brush, DelphiDoom.MapFile.BrushSide, DelphiDoom.MapFile.Patch,
   DelphiDoom.MapFile.Entity, DelphiDoom.MapFile.Factory, DelphiDoom.Tests.IdLib.Fakes,
-  DelphiDoom.Tests.MapFile.Dump;
+  DelphiDoom.Tests.MapFile.Dump, DelphiDoom.IdLib.Text.Lexer, DelphiDoom.IdLib.Text.Types,
+  DelphiDoom.MapFile.ParseFailure;
 
 const
   CUBE_MAP =
@@ -632,4 +650,91 @@ begin
     end, EMapFileException);
 end;
 
+procedure TTestMapFileReader.DovrebbeSollevareSeIlBrushFinisceNelMezzo;
+begin
+  ExpectError('{'#10'{'#10'brushDef3'#10'{'#10, 'unexpected EOF');
+  ExpectError('{'#10'{'#10'brushDef3'#10'{'#10'"key" "value"'#10, 'unexpected EOF');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeLaChiaveDelBrushNonHaIlValore;
+begin
+  ExpectError('{'#10'{'#10'brushDef3'#10'{'#10'"key" ( 0 0 1 0 )'#10'}'#10'}'#10'}'#10,
+    'expected epair value string not found');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeMancaIlMaterialeDelBrush;
+begin
+  ExpectError('{'#10'{'#10'brushDef3'#10'{'#10'( 0 0 1 0 ) ( ( 1 0 0 ) ( 0 1 0 ) )'#10'"m" 0 0 0'#10'}'#10'}'#10'}'#10,
+    'unable to read brush side material');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeIlBrushDiQuake3EIncompleto;
+begin
+  ExpectError('{'#10'{'#10'( 0 0 ) ( 0 1 0 ) ( 1 0 0 ) tex 0 0 0 1 1'#10'}'#10'}'#10, 'expected float value');
+  ExpectError('{'#10'{'#10'( 0 0 0 ) ( 0 1 0 ) ( 1 0 0 )'#10'tex 0 0 0 1 1'#10'}'#10'}'#10,
+    'unable to read brush side material');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeLaPatchEIncompleta;
+begin
+  ExpectError('{'#10'{'#10'patchDef2'#10'{'#10, 'unexpected EOF');
+  ExpectError('{'#10'{'#10'patchDef3'#10'{'#10'"m"'#10'( 1 1 )'#10'}'#10'}'#10'}'#10, 'expected float value');
+  ExpectError('{'#10'{'#10'patchDef2'#10'{'#10'"m"'#10'( 1 1 0 0 0 )'#10'('#10'( ( 0 0 0 0 0 ) ( 0 0 0 0 0 ) )'#10')'#10'}'#10'}'#10'}'#10,
+    'expected '')'' but found ''(''');
+  ExpectError('{'#10'{'#10'patchDef2'#10'{'#10'"m"'#10'( 1 1 0 0 0 )'#10'('#10'( ( 0 0 0 0 0 ) )'#10'}'#10'}'#10'}'#10,
+    'expected '')'' but found');
+  ExpectError('{'#10'{'#10'patchDef2'#10'{'#10'"m"'#10'( 1 1 0 0 0 )'#10'( ('#10, 'couldn''t find expected');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareConUnaDimensioneNegativaDellaPatch;
+begin
+  ExpectError('{'#10'{'#10'patchDef2'#10'{'#10'"m"'#10'( -3 2 0 0 0 )'#10'}'#10'}'#10'}'#10, 'bad size');
+end;
+
+procedure TTestMapFileReader.DovrebbeLimitareLeSuddivisioniDellaPatch;
+var
+  LMap: TMapFile;
+  LPatch: TMapPatch;
+begin
+  LMap := Parse('{'#10'{'#10'patchDef3'#10'{'#10'"m"'#10'( 1 1 99999999999 -99999999999 0 0 0 )'#10 +
+    '('#10'( ( 0 0 0 0 0 ) )'#10')'#10'}'#10'}'#10'}'#10);
+  try
+    LPatch := TMapPatch(LMap.GetEntity(0).GetPrimitive(0));
+    Assert.AreEqual(1073741824, LPatch.HorzSubdivisions);
+    Assert.AreEqual(-1073741824, LPatch.VertSubdivisions);
+  finally
+    LMap.Free;
+  end;
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeLEntitaFinisceDopoLaParentesiDellaPrimitiva;
+begin
+  ExpectError('{'#10'{'#10, 'unexpected EOF');
+end;
+
+procedure TTestMapFileReader.DovrebbeSollevareSeIlLexerNonSollevaDaSolo;
+var
+  LLexer: TIdLexer;
+  LRaised: Boolean;
+begin
+  // a lexer that only counts the errors (LEXFL_NOFATALERRORS) returns from Error: the reader still stops
+  LLexer := TIdLexer.Create(LEXFL_NOFATALERRORS or LEXFL_NOERRORS);
+  try
+    LLexer.LoadMemory('a'#10'b', 'x');
+    LRaised := False;
+    try
+      TMapParseFailure.Fail(LLexer, 'bad %s', ['thing']);
+    except
+      on E: EMapFileException do
+      begin
+        LRaised := True;
+        Assert.AreEqual('bad thing', E.Message);
+        Assert.AreEqual(1, E.Line);
+      end;
+    end;
+    Assert.IsTrue(LRaised);
+  finally
+    LLexer.Free;
+  end;
+end;
 end.

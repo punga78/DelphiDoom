@@ -57,7 +57,7 @@ end;
    metodo: golden dal vero idLib con `bcc32c`.
 3. `idWinding`, `idTraceModel` (dopo piano e bounds; per il lavoro su `cm`).
 4. `idMatX`, `idVecX`, `idLCP` (le matrici grandi, dopo `idMat3`).
-5. `idParser` (preprocessore) e `idMapFile`.
+5. `idParser` (preprocessore) e `idMapFile` (questo e' in `Libs\MapFile`).
 6. `idBitMsg`.
 
 ## 5. Collegamenti ad altri moduli del repository
