@@ -105,7 +105,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := TWarPaletteDecoder.Decode(1, Ramp(768));
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
   Assert.AreEqual(0, Integer(LPalette[0]));
   Assert.AreEqual(4, Integer(LPalette[1]));
   Assert.AreEqual(252, Integer(LPalette[63]));
@@ -129,7 +129,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := TWarPaletteDecoder.Decode(1, Ramp(10));
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
   Assert.AreEqual(36, Integer(LPalette[9]));
   Assert.AreEqual(0, Integer(LPalette[10]));
   Assert.AreEqual(0, Integer(LPalette[767]));
@@ -140,7 +140,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := TWarPaletteDecoder.Decode(1, Ramp(800));
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
 end;
 
 procedure TTestWarPaletteDecoder.DovrebbeCorreggereLaPaletta255;
@@ -204,7 +204,7 @@ var
   LResult: TBytes;
 begin
   LResult := TWarPaletteComposer.Compose(nil, nil);
-  Assert.AreEqual(768, Length(LResult));
+  Assert.AreEqual<Integer>(768, Length(LResult));
   Assert.AreEqual(0, Integer(LResult[100]));
 end;
 

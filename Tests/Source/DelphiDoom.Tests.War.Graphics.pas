@@ -164,7 +164,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := Make.GetPalette(REC_PALETTE);
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
   Assert.AreEqual(12, Integer(LPalette[3]));
 end;
 
@@ -201,7 +201,7 @@ var
   LPalette: TBytes;
 begin
   LPalette := Make.ComposePalette(0, 0);
-  Assert.AreEqual(768, Length(LPalette));
+  Assert.AreEqual<Integer>(768, Length(LPalette));
   Assert.AreEqual(0, Integer(LPalette[3]));
 end;
 
@@ -297,7 +297,7 @@ var
   LSprite: TWarSprite;
 begin
   LSprite := Make.GetSprite(REC_SPRITE);
-  Assert.AreEqual(1, Length(LSprite.Frames));
+  Assert.AreEqual<Integer>(1, Length(LSprite.Frames));
   Assert.AreEqual(2, Integer(LSprite.FrameWidth));
   // il pixel (1, 1) dell'area ha il colore 7 = (7 * 3 mod 64) * 4
   Assert.AreEqual(((7 * 3) mod 64) * 4, Integer(LSprite.Frames[0].Pixels[3 * 4]));
@@ -318,7 +318,7 @@ var
   LTiles: TWarTiles;
 begin
   LTiles := Make.GetTiles(REC_TILES);
-  Assert.AreEqual(768, Length(LTiles.Data));
+  Assert.AreEqual<Integer>(768, Length(LTiles.Data));
   Assert.AreEqual(REC_PALETTE, Integer(LTiles.Palette1));
   Assert.AreEqual(0, Integer(LTiles.Palette2));
 end;
@@ -329,7 +329,7 @@ var
 begin
   LTileset := Make.GetTileset(REC_TILESET);
   Assert.AreEqual(Cardinal(1), LTileset.TilesCount);
-  Assert.AreEqual(512 * 256 * 4, Length(LTileset.Pixels));
+  Assert.AreEqual<Integer>(512 * 256 * 4, Length(LTileset.Pixels));
   // tutte le tegole leggono il byte 0 delle tegole, il colore 0: trasparente
   Assert.AreEqual(0, Integer(LTileset.Pixels[3]));
 end;

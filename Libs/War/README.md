@@ -112,3 +112,32 @@ Il remake **non ha un canale dedicato** alle risposte delle unita' (come invece 
 **Non portato**: la riproduzione della musica (`wa_playMidi`, `wa_initAudio`, TinySoundFont con `GMGeneric.SF2`): serve un sintetizzatore di MIDI e un SoundFont; **la licenza di `GMGeneric.SF2` non e' dichiarata** nel repository del remake (ne' il README ne' LICENSE ne parlano) e non si include; alternative da valutare: `Libs\Opl`, un SoundFont con licenza chiara, il MIDI di sistema con `Libs\Midi`; il volume della musica e la dissolvenza; la dissolvenza al cambio scena (il C azzera l'audio fino a `transitionEndRealTime`: e' `SetSilenced`; la dissolvenza grafica e' del rendering, #197); la scelta a caso dei suoni, `wa_playDudeSelectionSound` e simili (dipendono dalle entita', #194); il collegamento a un programma (`Warcraft32`, #200: `TWarPcmSource` va aperto con `IGameHostPcmOutput.Open(WAR_PLAYBACK_RATE, ...)`).
 
 **Verifica**: `Tools\Verifica\198` (`Compila-AudioRef.ps1`, `war_audio_ref.c`, `war_synth_cases.inc`) compila con gcc il codice ORIGINALE (`wres_loadXmi/Wave/Voc`, `wa_playWave`, il volume posizionale, con `voc.h`, `wav.h`, `xmi2mid.h`). Golden in `Tests\Data\War`: `audio.synth.golden.txt` (57 casi sintetici di VOC e WAV, **senza `DATA.WAR`**: il test ricostruisce gli input dalla specifica scritta nella riga), `audio.mixer.golden.txt` (9 scenari, 22 chiamate: ritorno, `sampleIndex`, bit di `playbackTime`, CRC-32 dell'uscita), `audio.position.golden.txt` (60 volumi, bit per bit), `audio.records.golden.txt` (111 suoni e 45 brani del `DATA.WAR` vero). Zero differenze sui suoni, sul ricampionatore, sul mixer e sul volume; sui brani l'equivalenza descritta sopra.
+
+## Mappa di gioco (fetta #193, seconda)
+
+Il livello diventa la mappa di una partita: `TWarMapBuilder.Build(livello, pixel del tileset)` da' un `TWarGameMap`. Dal C: `war_map.c` (`wmap_enterMap`, `updateFoW`, `determineFoWTypes`, le funzioni di stato delle tegole, `wmap_getMapTileAverage`, `wmap_updateMinimapTile`), `renderMinimap` di `war_entities.c`, `we_createUnit`, `war_trees.c` e le funzioni della griglia di `war_pathfinder.c`.
+
+| C | Delphi |
+|---|---|
+| `wmap_enterMap` (i dati) | `TWarMapBuilder.Build`, `TWarGameMap` |
+| `wpath_initPathFinder`, `wpath_setStaticEntity`, `wpath_isEmpty`, `wpath_isTileAccesible`... | `TWarPathGrid` |
+| `setInitialTileState`, `wmap_setMapTileState`, `wmap_is*TileIn*`, `determineFoWTypes` | `TWarFogOfWar` |
+| `updateFoW` | `TWarFogUpdater` |
+| `createForestEntities`, `we_determineTreeTiles`, `we_plantTree`, `we_chopTree`, `we_takeTreeDown`, `we_findAccesibleTree`, `we_validTree` | `TWarMapForests`, `TWarMapForest` |
+| `wmap_getMapTileAverage`, `wmap_updateMinimapTile`, il ciclo di `renderMinimap`, `wu_getUnitColorOnMinimap` | `TWarMinimap` (immagine RGBA 64 x 64 a byte) |
+| `wmap_getMapTileIndex`, `wmap_setMapTileIndex` | `TWarMapTilePainter` (`IWarTilePainter`) |
+| `we_createUnit`, `wu_is*UnitType`, `wu_getUnitSightRange`, `unitsData`/`unitStats`/`buildingStats` | `TWarUnitCatalog` (`IWarUnitCatalog`), `DelphiDoom.War.Map.UnitData` (generata) |
+
+Difetti del C conservati, differenze volute e non portato: `CLAUDE.md`, sezione "Mappa di gioco". Parita' con il C compilato con gcc: `Tools\Verifica\193\LEGGIMI.md` (65 livelli, 60 scenari di alberi, zero differenze).
+
+## Testo, disegno e sprite (fetta #192, seconda)
+
+| C | Delphi |
+|---|---|
+| `getCharIndex`, `wfont_getAlignmentOffset`, `wfont_getLineAlignmentOffset`, `wfont_splitTextIntoLines`, `wfont_measureSingleSpriteText`, `wfont_measureMultiSpriteText` | `TWarTextLayout` |
+| `wfont_renderSingleSpriteText`, `wfont_renderMultiSpriteText`, `wfont_renderSingleSpriteTextSpan` | `TWarTextRenderer` |
+| `wr_save`, `wr_restore`, `wr_translate`, `wr_scale`, `wr_globalAlpha`, `wr_subImage` | `TWarRenderTransform` (aggiunge un `TWarBlit` a una lista) |
+| `SDL_RenderTexture(Rotated)` sulla texture (nearest, colore, alfa, blend) | `TWarImageBlitter` (pixel RGBA a byte) |
+| `wspr_createSprite`, `wspr_createSpriteFromFrames`, `wspr_createSpriteFromResource`, `wspr_getSpriteFrame`, `wspr_renderSprite`, `wspr_renderSubSprite` | `TWarSpriteSheet` |
+
+Il PNG dei font non e' nel `DATA.WAR`: il chiamante da' a `TWarImageBlitter` l'immagine (`TWarImage`). Il remake non ha un colore per fazione: nessuno e' inventato. Parita': `Tools\Verifica\192\LEGGIMI.md` (240 testi a bit, 164 record grafici, zero differenze).
