@@ -76,7 +76,7 @@ procedure TXcomOptionsDefaultsState.YesClick(AAction: TXcomAction);
 begin
   Host.Options.ResetDefaults;
   if (Host.OptionsStore <> nil) then
-    Host.OptionsStore.Save(Host.Options);
+    Host.OptionsStore.Save(Host.Options, 'defaults');
   Host.PopState;
   FOnOk(AAction);
 end;

@@ -69,6 +69,8 @@ type
     ModFolders: TArray<string>;
     /// <summary>Where the warnings of the start go (a font that is not used); nil for nowhere</summary>
     Log: IXcomLog;
+    /// <summary>Where the trace of the options file goes (-optionslog: every read and write, who asked, which keys change); nil: off</summary>
+    OptionsLog: IXcomLog;
   end;
 
   /// <summary>
@@ -129,7 +131,7 @@ type
 implementation
 
 uses
-  System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomMenu.CutsceneState,
+  Winapi.Windows, System.IOUtils, System.Generics.Collections, DelphiDoom.XcomSave.Soldier, DelphiDoom.XcomMenu.CutsceneState,
   DelphiDoom.XcomBasescape.StatisticsState,
   DelphiDoom.XcomDebriefing.CommendationState, DelphiDoom.XcomUfopaedia.Intf, DelphiDoom.XcomUfopaedia.Factory, DelphiDoom.Yaml.Types, DelphiDoom.Yaml.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Screen, DelphiDoom.XcomEngine.TrueColorComposer,
@@ -137,7 +139,7 @@ uses
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
-  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore,
+  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsAuditLog,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
@@ -485,7 +487,12 @@ begin
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),
       TXcomLanguage.Create('', LOptions.Wordwrap, LFiles, LParser), AClock, AEvents);
-    Result.SetOptionsStore(TXcomFileOptionsStore.Create(LFiles, LParser, ASettings.UserFolder));
+    Result.SetOptionsStore(TXcomFileOptionsStore.Create(LFiles, LParser, ASettings.UserFolder,
+      TXcomOptionsAuditLog.Create(ASettings.OptionsLog, ASettings.Log,
+      function: string
+      begin
+        Result := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now);
+      end, GetCurrentProcessId)));
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);

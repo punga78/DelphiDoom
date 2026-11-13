@@ -27,8 +27,8 @@ type
   public
     Saves: Integer;
     Loads: Integer;
-    procedure Load(AOptions: TXcomOptions);
-    procedure Save(AOptions: TXcomOptions);
+    procedure Load(AOptions: TXcomOptions; const AReason: string = '');
+    procedure Save(AOptions: TXcomOptions; const AReason: string = '');
   end;
 
   TFakeNavigator = class(TInterfacedObject, IXcomOptionsNavigator)
@@ -186,12 +186,12 @@ type
 
 implementation
 
-procedure TFakeStore.Load(AOptions: TXcomOptions);
+procedure TFakeStore.Load(AOptions: TXcomOptions; const AReason: string);
 begin
   Inc(Loads);
 end;
 
-procedure TFakeStore.Save(AOptions: TXcomOptions);
+procedure TFakeStore.Save(AOptions: TXcomOptions; const AReason: string);
 begin
   Inc(Saves);
 end;

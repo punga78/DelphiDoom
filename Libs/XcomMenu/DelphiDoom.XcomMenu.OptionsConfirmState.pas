@@ -128,7 +128,7 @@ begin
   TXcomScreen.UpdateScale(Host.Options, Host.Options.GeoscapeScale, Host.Options.BaseXGeoscape,
     Host.Options.BaseYGeoscape, FOrigin <> ooBattlescape);
   if (Host.OptionsStore <> nil) then
-    Host.OptionsStore.Save(Host.Options);
+    Host.OptionsStore.Save(Host.Options, 'confirm-revert');
   Host.Screen.ResetDisplay;
   Host.PopState;
   FNavigator.Restart(FOrigin, Host);

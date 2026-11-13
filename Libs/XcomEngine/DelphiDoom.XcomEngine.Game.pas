@@ -152,7 +152,7 @@ type
     ///   resized is among them). A game without a store does nothing. The program that runs its own loop of RunFrame
     ///   calls it when the loop ends
     /// </summary>
-    procedure SaveOptions;
+    procedure SaveOptions(const AReason: string = 'exit');
     /// <summary>The milliseconds to wait after a turn: 1 while running, 100 when slowed or paused (pauseMode)</summary>
     function FrameDelay: Integer;
     /// <summary>What pauseMode made of the game when the window lost the focus or was minimized</summary>
@@ -734,10 +734,10 @@ begin
   SaveOptions;
 end;
 
-procedure TXcomGame.SaveOptions;
+procedure TXcomGame.SaveOptions(const AReason: string);
 begin
   if Assigned(FOptionsStore) then
-    FOptionsStore.Save(FOptions);
+    FOptionsStore.Save(FOptions, AReason);
 end;
 
 function TXcomGame.FrameDelay: Integer;

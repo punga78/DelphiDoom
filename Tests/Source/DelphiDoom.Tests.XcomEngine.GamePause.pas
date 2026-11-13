@@ -30,8 +30,8 @@ type
     Saves: Integer;
     SavedWidth: Integer;
     SavedHeight: Integer;
-    procedure Load(AOptions: TXcomOptions);
-    procedure Save(AOptions: TXcomOptions);
+    procedure Load(AOptions: TXcomOptions; const AReason: string = '');
+    procedure Save(AOptions: TXcomOptions; const AReason: string = '');
   end;
 
   [TestFixture]
@@ -83,11 +83,11 @@ end;
 
 { TFakeOptionsStore }
 
-procedure TFakeOptionsStore.Load(AOptions: TXcomOptions);
+procedure TFakeOptionsStore.Load(AOptions: TXcomOptions; const AReason: string);
 begin
 end;
 
-procedure TFakeOptionsStore.Save(AOptions: TXcomOptions);
+procedure TFakeOptionsStore.Save(AOptions: TXcomOptions; const AReason: string);
 begin
   Inc(Saves);
   SavedWidth := AOptions.DisplayWidth;

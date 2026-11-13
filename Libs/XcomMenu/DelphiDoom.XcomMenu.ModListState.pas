@@ -466,7 +466,7 @@ procedure TXcomModListState.OkClick(AAction: TXcomAction);
 begin
   // Options::save(); the game does not load its data again for the new mods (StartState): it goes back
   if Host.OptionsStore <> nil then
-    Host.OptionsStore.Save(Host.Options);
+    Host.OptionsStore.Save(Host.Options, 'mods-ok');
   Host.PopState;
 end;
 
@@ -475,7 +475,7 @@ begin
   FReload := False;
   // Options::load(): the saved mods come back
   if Host.OptionsStore <> nil then
-    Host.OptionsStore.Load(Host.Options);
+    Host.OptionsStore.Load(Host.Options, 'mods-cancel');
   Host.PopState;
 end;
 

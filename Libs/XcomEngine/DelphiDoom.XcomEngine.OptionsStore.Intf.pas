@@ -17,9 +17,9 @@ type
   IXcomOptionsStore = interface
     ['{C8E2A476-5D19-4F03-86B7-1A9E3D40F5B2}']
     /// <summary>Options::load: the options the file has replace the ones of the instance (a missing file changes nothing)</summary>
-    procedure Load(AOptions: TXcomOptions);
+    procedure Load(AOptions: TXcomOptions; const AReason: string = '');
     /// <summary>Options::save</summary>
-    procedure Save(AOptions: TXcomOptions);
+    procedure Save(AOptions: TXcomOptions; const AReason: string = '');
   end;
 
 implementation

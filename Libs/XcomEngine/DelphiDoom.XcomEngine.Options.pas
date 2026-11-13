@@ -146,6 +146,11 @@ type
     ///   code of the characters as in the file of OpenXcom
     /// </summary>
     function Save: string;
+    /// <summary>
+    ///   What Save writes by key, each value as the text of the file (strings quoted when needed): every registered
+    ///   option and the unknown scalar keys. The caller owns the dictionary
+    /// </summary>
+    function Entries: TDictionary<string, string>;
     /// <summary>The value of a registered bool, int or key option by its id (0 if it is not registered)</summary>
     function GetValue(const AId: string): Integer;
     procedure SetValue(const AId: string; AValue: Integer);
@@ -558,31 +563,37 @@ begin
   Result := '"' + StringReplace(StringReplace(AValue, '\', '\\', [rfReplaceAll]), '"', '\"', [rfReplaceAll]) + '"';
 end;
 
+function TXcomOptions.Entries: TDictionary<string, string>;
+var
+  LInfo: TXcomOptionInfo;
+  LPair: TPair<string, string>;
+begin
+  Result := TDictionary<string, string>.Create;
+  for LInfo in TXcomOptionTable.All do
+    case LInfo.Kind of
+      okBool:
+        if GetBool(LInfo.Id) then
+          Result.AddOrSetValue(LInfo.Id, 'true')
+        else
+          Result.AddOrSetValue(LInfo.Id, 'false');
+      okInt, okKey:
+        Result.AddOrSetValue(LInfo.Id, IntToStr(GetValue(LInfo.Id)));
+      okString:
+        Result.AddOrSetValue(LInfo.Id, YamlScalar(GetText(LInfo.Id)));
+    end;
+  for LPair in FUnknown do
+    Result.AddOrSetValue(LPair.Key, YamlScalar(LPair.Value));
+end;
+
 function TXcomOptions.Save: string;
 var
   LLines: TDictionary<string, string>;
-  LInfo: TXcomOptionInfo;
   LKeys: TArray<string>;
   LKey: string;
-  LPair: TPair<string, string>;
   LBuilder: TStringBuilder;
 begin
-  LLines := TDictionary<string, string>.Create;
+  LLines := Entries;
   try
-    for LInfo in TXcomOptionTable.All do
-      case LInfo.Kind of
-        okBool:
-          if GetBool(LInfo.Id) then
-            LLines.AddOrSetValue(LInfo.Id, 'true')
-          else
-            LLines.AddOrSetValue(LInfo.Id, 'false');
-        okInt, okKey:
-          LLines.AddOrSetValue(LInfo.Id, IntToStr(GetValue(LInfo.Id)));
-        okString:
-          LLines.AddOrSetValue(LInfo.Id, YamlScalar(GetText(LInfo.Id)));
-      end;
-    for LPair in FUnknown do
-      LLines.AddOrSetValue(LPair.Key, YamlScalar(LPair.Value));
     LKeys := LLines.Keys.ToArray;
     // the order of the keys of the real file (the map of yaml-cpp is sorted by the code of the characters)
     TArray.Sort<string>(LKeys, TStringComparer.Ordinal);

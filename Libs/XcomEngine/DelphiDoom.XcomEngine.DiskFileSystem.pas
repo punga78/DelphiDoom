@@ -11,20 +11,44 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, System.Generics.Defaults,
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf;
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.AtomicFiles.Intf;
 
 type
   /// <summary>IXcomFileSystem on the disk (the file functions of CrossPlatform)</summary>
-  TXcomDiskFileSystem = class(TInterfacedObject, IXcomFileSystem)
+  TXcomDiskFileSystem = class(TInterfacedObject, IXcomFileSystem, IXcomAtomicFiles)
   public
     function FileExists(const APath: string): Boolean;
     function FolderExists(const APath: string): Boolean;
     function ReadAll(const APath: string): TBytes;
     procedure WriteAll(const APath: string; const ABytes: TBytes);
     function FolderContents(const AFolder, AExtension: string): TArray<string>;
+    /// <summary>MoveFileEx with MOVEFILE_REPLACE_EXISTING: on the same volume the file is replaced in one step</summary>
+    procedure ReplaceFile(const ASource, ADestination: string);
+    procedure CopyFile(const ASource, ADestination: string);
+    procedure DeleteFile(const APath: string);
   end;
 
 implementation
+
+uses
+  Winapi.Windows;
+
+procedure TXcomDiskFileSystem.ReplaceFile(const ASource, ADestination: string);
+begin
+  if not MoveFileEx(PChar(ASource), PChar(ADestination), MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
+    raise EXcomEngineException.Create('Cannot replace ' + ADestination + ': ' + SysErrorMessage(GetLastError));
+end;
+
+procedure TXcomDiskFileSystem.CopyFile(const ASource, ADestination: string);
+begin
+  TFile.Copy(ASource, ADestination, True);
+end;
+
+procedure TXcomDiskFileSystem.DeleteFile(const APath: string);
+begin
+  if TFile.Exists(APath) then
+    TFile.Delete(APath);
+end;
 
 function TXcomDiskFileSystem.FileExists(const APath: string): Boolean;
 begin

@@ -117,6 +117,10 @@ type
     MemoryStatistics: Boolean;
     /// <summary>-fontgrid: no game; the fonts of the options are written in this folder as pictures and a Font.dat</summary>
     FontGridFolder: string;
+    /// <summary>-optionslog: every read and write of options.cfg is added to options.log of the user folder</summary>
+    OptionsLog: Boolean;
+    /// <summary>-saveoptions: a -script or -shot run writes the options when it ends, as the game does when it closes</summary>
+    SaveOptions: Boolean;
   end;
 
 /// <summary>
@@ -159,6 +163,8 @@ begin
   Say('         [-fonts <fonts.cfg: fonts of Windows in place of the pictures>] [-modfolder <folder over the data>]...');
   Say('         [-fontgrid <folder>]   (no game: the fonts of fonts.cfg as pictures and a Font.dat in <folder>\Language)');
   Say('         [-truecolor]   (the final frame composed in true color; default: the 8 bit path)');
+  Say('         [-optionslog]   (every read and write of options.cfg, who asked and which keys change: <user>\options.log)');
+  Say('         [-saveoptions]   (with -script or -shot: the options are written when the script ends)');
   TXcomExportTool.ShowUsage(
     procedure(AText: string)
     begin
@@ -281,6 +287,10 @@ begin
     end
     else if LName = '-soundlog' then
       AArguments.SoundLog := NextValue
+    else if LName = '-optionslog' then
+      AArguments.OptionsLog := True
+    else if LName = '-saveoptions' then
+      AArguments.SaveOptions := True
     else if LName = '-truecolor' then
       AArguments.Settings.TrueColor := True
     else if LName = '-fonts' then
@@ -478,6 +488,8 @@ begin
       LRunner.Wait(AArguments.Milliseconds);
     if AArguments.ShotFile <> '' then
       LRunner.Shot(AArguments.ShotFile);
+    if AArguments.SaveOptions then
+      LGame.SaveOptions;
     if Assigned(LSounds) then
     begin
       if LMeter <> nil then
@@ -558,6 +570,14 @@ begin
       begin
         Say(ALine);
       end);
+    if LArguments.OptionsLog then
+      LArguments.Settings.OptionsLog := TXcomDelegateLog.Create(
+        procedure(const ALine: string)
+        begin
+          ForceDirectories(LArguments.Settings.UserFolder);
+          TFile.AppendAllText(TPath.Combine(LArguments.Settings.UserFolder, 'options.log'), ALine + sLineBreak,
+            TEncoding.UTF8);
+        end);
     if LArguments.FontGridFolder <> '' then
     begin
       Say(Format('fontgrid: %d pictures and Font.dat written in %s\Language', [
