@@ -1,0 +1,1032 @@
+## tables-and-surface-words
+> dump
+n=4
+M m/surf1 state=2 stages=0 ambient=0 regs=21
+  gen surf=7153 content=61688 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=1 lcast=0 leffect=0 texgen=0 stype=1 bump=-1
+  const=0
+M m/surf2 state=2 stages=0 ambient=0 regs=21
+  gen surf=1028 content=3145732 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[a described surface] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/ed/surf2 img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=4 bump=-1
+  const=0
+M m/surf3 state=2 stages=0 ambient=0 regs=21
+  gen surf=15 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[- size 256 256 - aa 2 textures/out/foo.tga models/hi.lwo] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=15 bump=-1
+  const=0
+M m/nodraw state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+## stage-basics
+> dump
+n=4
+M m/stage1 state=2 stages=6 ambient=1 regs=25
+  gen surf=0 content=1 mflags=0 cover=3 sort=40000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=1 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=40200000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/a img=[textures/a]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00001F03 color=22,22,22,23 atest=0,0 vcol=1 iat=0 poff=3F800000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/a] f=1 r=1 d=2 c=0 p=1
+  stage 1 cond=24 light=0 bits=00000120 color=1,2,3,4 atest=0,0 vcol=2 iat=1 poff=C0400000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/b] f=0 r=3 d=4 c=0 p=0
+  stage 2 cond=21 light=0 bits=00000F03 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_white] f=2 r=4 d=4 c=0 p=1
+  stage 3 cond=21 light=0 bits=00000121 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_black] f=2 r=0 d=4 c=0 p=1
+  stage 4 cond=21 light=0 bits=00000144 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/c] f=2 r=0 d=2 c=0 p=1
+  stage 5 cond=21 light=0 bits=00000179 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/stage2 state=2 stages=3 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/e img=[textures/e]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000181 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/e] f=2 r=3 d=2 c=0 p=1
+  stage 1 cond=21 light=0 bits=00000137 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[heightmap( textures/h, 4)] f=2 r=3 d=2 c=0 p=1
+  stage 2 cond=21 light=0 bits=00000150 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[addnormals( textures/n1, smoothnormals( textures/n2))] f=2 r=1 d=2 c=0 p=1
+  const=0
+W: material 'm/stage3' had stage with no image
+M m/stage3 state=2 stages=2 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/f img=[textures/f]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/f] f=2 r=1 d=2 c=0 p=1
+  stage 1 cond=21 light=0 bits=00020186 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_default]
+  const=0
+M m/stage4 state=2 stages=2 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_white img=[textures/g_local]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/g_local] f=2 r=3 d=3 c=0 p=1
+  stage 1 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_white] f=2 r=0 d=1 c=0 p=1
+  const=0
+## expressions
+> dump
+n=4
+M m/exprs state=2 stages=2 ambient=1 regs=47
+  gen surf=0 content=3 mflags=0 cover=2 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/e img=[textures/e]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020165 color=32,35,41,43 atest=1,25 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/e] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=46 light=0 bits=00020120 color=21,22,0,12 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/e2] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/consts state=2 stages=1 ambient=1 regs=31
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/k img=[textures/k]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=25,27,29,30 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/k] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/consts2 state=2 stages=1 ambient=1 regs=35
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/k img=[textures/k]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=33 light=0 bits=00000120 color=34,26,26,30 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/k] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/divzero state=2 stages=1 ambient=1 regs=26
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/k img=[textures/k]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=22,23,24,25 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/k] f=2 r=0 d=2 c=0 p=1
+  const=0
+> print m/exprs
+P: register 21: 1.000000\n
+P: register 22: 0.500000\n
+P: register 23: 2.000000\n
+P: register 24: 0.000000\n
+P: register 25: 0.000000\n
+P: register 26: 0.000000\n
+P: register 27: 4.000000\n
+P: register 28: 3.000000\n
+P: register 29: 0.000000\n
+P: register 30: 0.000000\n
+P: register 31: 0.000000\n
+P: register 32: 0.000000\n
+P: register 33: 0.000000\n
+P: register 34: 0.000000\n
+P: register 35: 0.000000\n
+P: register 36: 0.000000\n
+P: register 37: 0.000000\n
+P: register 38: 0.000000\n
+P: register 39: 0.000000\n
+P: register 40: 0.000000\n
+P: register 41: 0.000000\n
+P: register 42: -2.000000\n
+P: register 43: 0.000000\n
+P: register 44: 0.000000\n
+P: register 45: 0.000000\n
+P: register 46: 0.000000\n
+P: \n
+P: 24 = 1 OP_TYPE_MULTIPLY 23\n
+P: 25 = 22 OP_TYPE_ADD 24\n
+P: 26 = 2 OP_TYPE_SUBTRACT 21\n
+P: 29 = 27 OP_TYPE_MOD 28\n
+P: 30 = 26 OP_TYPE_DIVIDE 29\n
+P: 31 = 0 OP_TYPE_MULTIPLY 23\n
+P: 32 = sintable[ 31 ]\n
+P: 33 = ramp[ 3 ]\n
+P: 34 = pulse[ 0 ]\n
+P: 35 = 33 OP_TYPE_ADD 34\n
+P: 36 = 16 OP_TYPE_GE 21\n
+P: 37 = 5 OP_TYPE_LT 23\n
+P: 39 = 6 OP_TYPE_NE 38\n
+P: 40 = 37 OP_TYPE_OR 39\n
+P: 41 = 36 OP_TYPE_AND 40\n
+P: 43 = 28 OP_TYPE_SUBTRACT 42\n
+P: 44 = 20 OP_TYPE_LE 28\n
+P: 45 = 7 OP_TYPE_EQ 23\n
+P: 46 = 44 OP_TYPE_AND 45\n
+> print m/consts2
+P: register 21: 1.000000\n
+P: register 22: 7.000000\n
+P: register 23: 2.000000\n
+P: register 24: 0.000000\n
+P: register 25: 0.500000\n
+P: register 26: 0.000000\n
+P: register 27: 10.000000\n
+P: register 28: 4.000000\n
+P: register 29: 0.000000\n
+P: register 30: 0.000000\n
+P: register 31: 0.000000\n
+P: register 32: 0.000000\n
+P: register 33: 0.000000\n
+P: register 34: 0.000000\n
+P: \n
+P: 24 = 22 OP_TYPE_DIVIDE 23\n
+P: 26 = 24 OP_TYPE_SUBTRACT 25\n
+P: 29 = 27 OP_TYPE_MOD 28\n
+P: 30 = 29 OP_TYPE_ADD 21\n
+P: 31 = 8 OP_TYPE_GT 9\n
+P: 32 = 10 OP_TYPE_SUBTRACT 11\n
+P: 33 = 31 OP_TYPE_OR 32\n
+P: 34 = onevalue[ 25 ]\n
+> eval m/exprs time=1.5 p0=0.25 p1=9 p2=0.6 p4=1 p5=2 p6=2 p11=7 g3=2 g7=3
+eval 3FC00000 3E800000 41100000 3F19999A 00000000 3F800000 40000000 40000000 00000000 00000000 00000000 00000000 40E00000 00000000 00000000 00000000 40000000 00000000 00000000 00000000 40400000 3F800000 3F000000 40000000 3F000000 3F800000 41000000 40800000 40400000 3F800000 41000000 40400000 00000000 3ECCCCCE 3F800000 3FB33334 3F800000 3F800000 00000000 3F800000 3F800000 3F800000 C0000000 40A00000 3F800000 3F800000 3F800000
+> eval m/exprs time=0 p0=0 p1=0 p2=0 g3=0 p4=3 p5=0
+eval 00000000 00000000 00000000 00000000 00000000 40400000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 3F000000 40000000 00000000 3F000000 BF800000 40800000 40400000 3F800000 BF800000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 C0000000 40A00000 3F800000 00000000 00000000
+> eval m/exprs time=7.3 p0=1.5 p1=-9 p2=3.5 g3=1 p4=1 p5=0 p6=2 g7=4
+eval 40E9999A 3FC00000 C1100000 40600000 00000000 3F800000 00000000 40000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 00000000 00000000 00000000 40800000 3F800000 3F000000 40000000 40400000 40600000 C1200000 40800000 40400000 3F800000 C1200000 4169999A BECCCD00 3F800000 00000000 3F800000 3F800000 3F800000 00000000 00000000 3F800000 3F800000 C0000000 40A00000 00000000 3F800000 00000000
+> eval m/consts2 p7=3 p8=2 p9=1 p10=1
+eval 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 40400000 40000000 3F800000 3F800000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 40E00000 40000000 40600000 3F000000 40400000 41200000 40800000 40000000 40400000 3F800000 00000000 3F800000 3F800000
+> eval m/consts2 p7=1 p8=2 p9=1 p10=2
+eval 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 40000000 3F800000 40000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 40E00000 40000000 40600000 3F000000 40400000 41200000 40800000 40000000 40400000 00000000 BF800000 3F800000 3F800000
+> eval m/divzero p0=3 p1=0 p2=7 p3=0
+eval 00000000 40400000 00000000 40E00000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 7F800000 00000000 3F800000 3F800000
+> eval m/divzero p0=-3 p1=2 p2=7.9 p3=-2.5
+eval 00000000 C0400000 40000000 40FCCCCD C0200000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 BFC00000 3F800000 00000000 3F800000
+> eval m/divzero p0=1e30 p1=1e-30 p2=1e12 p3=3
+eval 00000000 7149F2CA 0DA24260 5368D4A5 40400000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 7F800000 C0000000 3F800000 3F800000
+## texture-matrices
+> dump
+n=3
+M m/tex1 state=2 stages=1 ambient=1 regs=91
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/t img=[textures/t]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=1:70,72,87,78,80,90 img=[textures/t] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/tex2 state=2 stages=3 ambient=1 regs=39
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/t img=[textures/t]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=1:24,26,32,23,24,36 img=[textures/t] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=1:1,25,25,25,2,25 img=[textures/t] f=2 r=0 d=2 c=0 p=1
+  stage 2 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=1:21,1,37,2,21,38 img=[textures/t] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/tex3 state=2 stages=1 ambient=1 regs=29
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/t img=[textures/t]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=1:22,24,26,24,23,28 img=[textures/t] f=2 r=0 d=2 c=0 p=1
+  const=0
+> print m/tex1
+P: register 21: 1.000000\n
+P: register 22: 0.100000\n
+P: register 23: 0.000000\n
+P: register 24: 0.250000\n
+P: register 25: 0.000000\n
+P: register 26: 2.000000\n
+P: register 27: 0.200000\n
+P: register 28: 0.000000\n
+P: register 29: 0.000000\n
+P: register 30: 0.000000\n
+P: register 31: 0.000000\n
+P: register 32: -0.500000\n
+P: register 33: 0.000000\n
+P: register 34: 0.500000\n
+P: register 35: 0.000000\n
+P: register 36: 0.000000\n
+P: register 37: 0.000000\n
+P: register 38: 0.000000\n
+P: register 39: 0.000000\n
+P: register 40: 0.000000\n
+P: register 41: 0.000000\n
+P: register 42: 0.000000\n
+P: register 43: 0.000000\n
+P: register 44: 0.000000\n
+P: register 45: 0.000000\n
+P: register 46: 0.000000\n
+P: register 47: 0.000000\n
+P: register 48: 0.000000\n
+P: register 49: 0.000000\n
+P: register 50: 1.500000\n
+P: register 51: 0.750000\n
+P: register 52: 0.000000\n
+P: register 53: 0.000000\n
+P: register 54: 0.000000\n
+P: register 55: 0.000000\n
+P: register 56: 0.000000\n
+P: register 57: 0.000000\n
+P: register 58: 0.000000\n
+P: register 59: 0.000000\n
+P: register 60: 0.000000\n
+P: register 61: 0.000000\n
+P: register 62: 0.000000\n
+P: register 63: 0.000000\n
+P: register 64: 0.000000\n
+P: register 65: 0.000000\n
+P: register 66: 0.000000\n
+P: register 67: -0.050000\n
+P: register 68: -0.100000\n
+P: register 69: 0.000000\n
+P: register 70: 0.000000\n
+P: register 71: 0.000000\n
+P: register 72: 0.000000\n
+P: register 73: 0.000000\n
+P: register 74: 0.000000\n
+P: register 75: 0.000000\n
+P: register 76: 0.000000\n
+P: register 77: 0.000000\n
+P: register 78: 0.000000\n
+P: register 79: 0.000000\n
+P: register 80: 0.000000\n
+P: register 81: 0.000000\n
+P: register 82: 0.000000\n
+P: register 83: 0.000000\n
+P: register 84: 0.000000\n
+P: register 85: 0.000000\n
+P: register 86: 0.000000\n
+P: register 87: 0.000000\n
+P: register 88: 0.000000\n
+P: register 89: 0.000000\n
+P: register 90: 0.000000\n
+P: \n
+P: 23 = 0 OP_TYPE_MULTIPLY 22\n
+P: 28 = 0 OP_TYPE_MULTIPLY 27\n
+P: 29 = sintable[ 28 ]\n
+P: 30 = costable[ 28 ]\n
+P: 31 = 25 OP_TYPE_SUBTRACT 29\n
+P: 33 = 32 OP_TYPE_MULTIPLY 30\n
+P: 35 = 34 OP_TYPE_MULTIPLY 29\n
+P: 36 = 33 OP_TYPE_ADD 35\n
+P: 37 = 36 OP_TYPE_ADD 34\n
+P: 38 = 32 OP_TYPE_MULTIPLY 29\n
+P: 39 = 32 OP_TYPE_MULTIPLY 30\n
+P: 40 = 38 OP_TYPE_ADD 39\n
+P: 41 = 40 OP_TYPE_ADD 34\n
+P: 42 = 26 OP_TYPE_MULTIPLY 30\n
+P: 43 = 26 OP_TYPE_MULTIPLY 31\n
+P: 44 = 26 OP_TYPE_MULTIPLY 37\n
+P: 45 = 44 OP_TYPE_ADD 23\n
+P: 46 = 26 OP_TYPE_MULTIPLY 29\n
+P: 47 = 26 OP_TYPE_MULTIPLY 30\n
+P: 48 = 26 OP_TYPE_MULTIPLY 41\n
+P: 49 = 48 OP_TYPE_ADD 24\n
+P: 52 = 34 OP_TYPE_SUBTRACT 51\n
+P: 53 = 34 OP_TYPE_MULTIPLY 1\n
+P: 54 = 34 OP_TYPE_SUBTRACT 53\n
+P: 55 = 42 OP_TYPE_MULTIPLY 50\n
+P: 56 = 43 OP_TYPE_MULTIPLY 1\n
+P: 57 = 42 OP_TYPE_MULTIPLY 52\n
+P: 58 = 43 OP_TYPE_MULTIPLY 54\n
+P: 59 = 57 OP_TYPE_ADD 58\n
+P: 60 = 59 OP_TYPE_ADD 45\n
+P: 61 = 46 OP_TYPE_MULTIPLY 50\n
+P: 62 = 47 OP_TYPE_MULTIPLY 1\n
+P: 63 = 46 OP_TYPE_MULTIPLY 52\n
+P: 64 = 47 OP_TYPE_MULTIPLY 54\n
+P: 65 = 63 OP_TYPE_ADD 64\n
+P: 66 = 65 OP_TYPE_ADD 49\n
+P: 69 = 56 OP_TYPE_MULTIPLY 27\n
+P: 70 = 55 OP_TYPE_ADD 69\n
+P: 71 = 55 OP_TYPE_MULTIPLY 22\n
+P: 72 = 71 OP_TYPE_ADD 56\n
+P: 73 = 55 OP_TYPE_MULTIPLY 67\n
+P: 74 = 56 OP_TYPE_MULTIPLY 68\n
+P: 75 = 73 OP_TYPE_ADD 74\n
+P: 76 = 75 OP_TYPE_ADD 60\n
+P: 77 = 62 OP_TYPE_MULTIPLY 27\n
+P: 78 = 61 OP_TYPE_ADD 77\n
+P: 79 = 61 OP_TYPE_MULTIPLY 22\n
+P: 80 = 79 OP_TYPE_ADD 62\n
+P: 81 = 61 OP_TYPE_MULTIPLY 67\n
+P: 82 = 62 OP_TYPE_MULTIPLY 68\n
+P: 83 = 81 OP_TYPE_ADD 82\n
+P: 84 = 83 OP_TYPE_ADD 66\n
+P: 85 = 72 OP_TYPE_MULTIPLY 26\n
+P: 86 = 70 OP_TYPE_ADD 85\n
+P: 87 = 86 OP_TYPE_ADD 76\n
+P: 88 = 80 OP_TYPE_MULTIPLY 26\n
+P: 89 = 78 OP_TYPE_ADD 88\n
+P: 90 = 89 OP_TYPE_ADD 84\n
+> eval m/tex1 time=0.5 p0=2
+eval 3F000000 40000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 3DCCCCCD 3D4CCCCD 3E800000 00000000 40000000 3E4CCCCD 3DCCCCCD 3ECCCCCD 3F19999A BECCCCCD BF000000 BE99999A 3F000000 3E4CCCCD BDCCCCCE 3ECCCCCC BE4CCCCD BE99999A BF000000 00000000 3F99999A BF4CCCCD 3F4CCCCC 3F599999 3F4CCCCD 3F99999A 00000000 3E800000 3FC00000 3F400000 BE800000 3F800000 BF000000 3FE66667 BFCCCCCD BE99999A 3ECCCCCD 3DCCCCCC 3F733332 3F99999A 4019999A BE4CCCCD BF19999A BF4CCCCD BF0CCCCD BD4CCCCD BDCCCCCD BEA3D70B 3FBD70A4 3E3851EC BFB5C290 BDB851EC 3E23D70B 3D8F5C2A 3F828F5C 3EF5C290 3FD70A3E 3DF5C290 402147AE BD75C290 BE75C290 BE99999A BF59999A C035C290 BFAE147C BEAE1480 40A147AE 40D70A3E 40BBD70B
+> eval m/tex2 time=2 p0=0.3 p1=0.7
+eval 40000000 3E99999A 3F333333 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 3E800000 3F800000 00000000 00000000 BF800000 BF000000 80000000 3F000000 3F000000 3F000000 3F800000 BF000000 80000000 BF000000 00000000 BE19999A BEB33333
+## lighting-stages
+> dump
+n=9
+M m/lit1 state=2 stages=4 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/d img=[textures/glow]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=1
+  stage 0 cond=21 light=0 bits=00020120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/glow] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/n_local] f=2 r=0 d=3 c=0 p=1
+  stage 2 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d] f=2 r=0 d=1 c=0 p=1
+  stage 3 cond=21 light=3 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/s] f=2 r=0 d=0 c=0 p=1
+  const=0
+M m/lit2 state=2 stages=2 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/d2 img=[_flat]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_flat] f=2 r=0 d=3 c=0 p=1
+  stage 1 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d2] f=2 r=0 d=1 c=0 p=1
+  const=0
+M m/lit3 state=2 stages=2 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_white img=[addnormals( textures/a_local, heightmap( textures/a_h, 3))]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[addnormals( textures/a_local, heightmap( textures/a_h, 3))] f=2 r=0 d=3 c=0 p=1
+  stage 1 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_white] f=2 r=0 d=1 c=0 p=1
+  const=0
+M m/lit4 state=2 stages=2 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/env img=[textures/env]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=2 stype=0 bump=1
+  stage 0 cond=21 light=0 bits=00020120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=2 dyn=0 wh=0,0 matrix=0 img=[textures/env] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/b_local] f=2 r=0 d=3 c=0 p=1
+  const=0
+M m/lit5 state=2 stages=2 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_flat img=[_flat]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_flat] f=2 r=0 d=3 c=0 p=1
+  stage 1 cond=21 light=3 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/s5] f=2 r=0 d=0 c=0 p=1
+  const=0
+M m/lit6 state=2 stages=7 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/d6 img=[textures/n6]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=1 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/n6] f=2 r=1 d=3 c=0 p=1
+  stage 1 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/n6b] f=2 r=1 d=3 c=0 p=1
+  stage 2 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d6] f=2 r=1 d=1 c=0 p=1
+  stage 3 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d6b] f=2 r=1 d=1 c=0 p=1
+  stage 4 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d6c] f=2 r=1 d=1 c=0 p=1
+  stage 5 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d6d] f=2 r=1 d=1 c=0 p=1
+  stage 6 cond=21 light=3 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/s6] f=2 r=1 d=0 c=0 p=1
+  const=0
+M m/lit7 state=2 stages=2 ambient=0 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=1 ealpha=3F800000 supp=0 psky=0 eimg=textures/d7 img=[_flat]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=1 lit=1 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=0
+  stage 0 cond=21 light=1 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_flat] f=2 r=0 d=3 c=0 p=1
+  stage 1 cond=21 light=2 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/d7] f=2 r=0 d=1 c=0 p=1
+  const=0
+M m/ambient2 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=2 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/z img=[textures/z]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/z] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/ambient3 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=1 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/z img=[textures/z]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/z] f=2 r=0 d=2 c=0 p=1
+  const=0
+## deforms
+> dump
+n=10
+M m/def1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=2 deform=1 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/s img=[textures/s]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/s] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/def2 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=2 deform=2 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def3 state=2 stages=0 ambient=0 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=2 deform=3 dreg=21,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def4 state=2 stages=0 ambient=0 regs=23
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=4 dreg=22,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def5 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=5 dreg=1,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def6 state=2 stages=0 ambient=0 regs=23
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=9 dreg=21,0,22,0 dname=[sintable]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def7 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=6 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def8 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=7 dreg=0,0,0,0 dname=[fx/smoke]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/def9 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=8 dreg=0,0,0,0 dname=[fx/smoke2]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+W: file materials/def.mtr, line 43: Bad deform type 'bogus'
+M m/bad1 state=1 stages=1 ambient=1 regs=22
+## misc-keywords
+> dump
+n=19
+M m/misc1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=1 noselfshadow=1 noportalfog=1
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=2 poff=00000000 fog=0 blend=0 amb=0 unsm=1 subv=0 overl=1 back=0 ealpha=3F000000 supp=1 psky=1 eimg=textures/m img=[textures/m]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/m] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/light1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=1 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_fog img=[_fog]
+  falloff=lights/falloff_exp
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=1 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_fog] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/light2 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=1 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=lights/blend img=[lights/blend]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=1 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[lights/blend] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/light3 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=1 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=1 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=lights/amb img=[lights/amb]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=1 leffect=1 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[lights/amb] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/gui1 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=1 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=1 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/gui2 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=2 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=1 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/gui3 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=3 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=1 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/gui4 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[guis/test.gui] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=1 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/decal1 state=2 stages=1 ambient=1 regs=22
+  gen surf=1024 content=0 mflags=0 cover=3 sort=40000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=1 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=3F800000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/dec img=[textures/dec]
+  falloff=-
+  decal stay=5000 fade=2000 start=3F800000,3F800000,3F800000,3F000000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000103 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/dec] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/decal2 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=1 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=3F800000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/dec2 img=[textures/dec2]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000165 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/dec2] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/decal3 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=1 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=40000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=500 fade=250 start=3DCCCCCD,3E4CCCCD,3E99999A,3ECCCCCD end=3F800000,3F800000,3F800000,3F800000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/mirror1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=C0400000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=1 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_scratch img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=1 casts=1 fog=1 lit=0 litback=0 discrete=1 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_scratch] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/forceopaque state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/fo img=[textures/fo]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020165 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/fo] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/alpha1 state=2 stages=1 ambient=1 regs=23
+  gen surf=0 content=3 mflags=0 cover=2 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/al img=[textures/al]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020120 color=21,21,21,21 atest=1,22 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/al] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/alpha2 state=2 stages=2 ambient=1 regs=23
+  gen surf=0 content=3 mflags=0 cover=2 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F800000 supp=0 psky=0 eimg=textures/al img=[textures/al]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020103 color=21,21,21,21 atest=1,22 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/al] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=21 light=0 bits=00020103 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/al2] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/opaque1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/op img=[textures/op]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000121 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/op] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/noimpact1 state=2 stages=1 ambient=1 regs=22
+  gen surf=256 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/op img=[textures/op]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000121 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/op] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/postprocess state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=42C80000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_currentRender img=[_currentRender]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000020 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[_currentRender]
+  const=0
+M m/portalsky state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=3F800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/_currentRender img=[textures/_currentRender]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/_currentRender] f=2 r=0 d=2 c=0 p=1
+  const=0
+## sorts
+> dump
+n=13
+M m/s1 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=C0400000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=1 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=1 casts=0 fog=0 lit=0 litback=1 discrete=1 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s2 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s3 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s4 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40400000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s5 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s6 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40A00000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s7 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40C00000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s8 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40E00000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s9 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=42C80000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s10 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=3F800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+M m/s11 state=2 stages=0 ambient=0 regs=21
+  gen surf=0 content=1 mflags=0 cover=3 sort=40600000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=0 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  const=0
+W: unknown general material parameter '2' in 'm/s12'
+M m/s12 state=1 stages=1 ambient=1 regs=22
+W: unknown general material parameter 'abc' in 'm/s13'
+M m/s13 state=1 stages=1 ambient=1 regs=22
+## dynamic-stages
+> dump
+n=4
+M m/dyn1 state=2 stages=3 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=1 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=1 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=5 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=5 wh=256,128 matrix=0 img=-
+  stage 1 cond=21 light=0 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=5 dyn=3 wh=64,32 matrix=0 img=-
+  stage 2 cond=21 light=0 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=5 dyn=4 wh=16,8 matrix=0 img=-
+  const=0
+W: material 'm/dyn2' has multiple stages with a texgen
+M m/dyn2 state=2 stages=3 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/w img=[textures/w]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=5 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=5 dyn=0 wh=0,0 matrix=0 img=[textures/w] f=2 r=0 d=2 c=0 p=1
+  stage 1 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=6 dyn=0 wh=0,0 matrix=0 img=[textures/w2] f=2 r=0 d=2 c=0 p=1
+  stage 2 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=7 dyn=0 wh=0,0 matrix=0 img=[textures/w3] f=2 r=0 d=2 c=0 p=1
+  const=0
+M m/dyn3 state=2 stages=3 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 cin=[video/loop.roq] loop=1 snd=0 img=-
+  stage 1 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 cin=[video/once.roq] loop=0 snd=0 img=-
+  stage 2 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 cin=[sound/amp.wav] loop=1 snd=1 img=-
+  const=0
+W: material 'm/dyn4' has multiple stages with a texgen
+M m/dyn4 state=2 stages=3 ambient=1 regs=24
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-] texgenregs=0,22,23
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=env/sky img=[env/sky]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=3 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=3 dyn=0 wh=0,0 matrix=0 img=[env/sky] f=2 r=0 d=2 c=1 p=1
+  stage 1 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=1 dyn=0 wh=0,0 matrix=0 img=[env/cam] f=2 r=0 d=2 c=2 p=1
+  stage 2 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=4 dyn=0 wh=0,0 matrix=0 img=[env/wobble] f=2 r=0 d=2 c=1 p=1
+  const=0
+## programs
+> dump
+n=4
+M m/prog1 state=2 stages=1 ambient=1 regs=25
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=- new vp=glprogs/foo.vfp fp=glprogs/foo.vfp nvp=4 nfi=4 mega=0 vparm0=0,21,4,21 vparm1=22,22,22,22 vparm2=21,23,24,21 vparm3=1,2,3,4 fimg0=[env/x] f=0 r=1 d=2 c=1 p=0 fimg1=[textures/y_local] f=1 r=3 d=4 c=0 p=1 fimg2=[env/z] f=2 r=0 d=4 c=2 p=1 fimg3=[textures/w] f=2 r=0 d=4 c=0 p=1
+  const=0
+M m/prog2 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=- new vp=glprogs/v.vp fp=glprogs/f.fp nvp=0 nfi=0 mega=0
+  const=0
+M m/prog3 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=3 mflags=0 cover=1 sort=00000000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=0 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=1 back=0 ealpha=3F800000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=1 fog=1 lit=0 litback=0 discrete=0 nofrag=0 lcast=1 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00020100 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=- new vp=megaTexture.vfp fp=megaTexture.vfp nvp=0 nfi=0 mega=1
+  const=0
+M m/prog4 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=42C80000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=_default img=[_scratch]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000020 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=- new vp=- fp=glprogs/f.fp nvp=0 nfi=1 mega=0 fimg0=[_currentRender]
+  const=0
+## implicit-and-default
+> find textures/implicit/wall
+M textures/implicit/wall state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/implicit/wall img=[textures/implicit/wall]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000165 color=1,2,3,4 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/implicit/wall] f=2 r=1 d=2 c=0 p=1
+  const=0
+> find m/real
+M m/real state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/real img=[textures/real]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/real] f=2 r=0 d=2 c=0 p=1
+  const=0
+> dump
+n=2
+M m/real state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/real img=[textures/real]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/real] f=2 r=0 d=2 c=0 p=1
+  const=0
+M textures/implicit/wall state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/implicit/wall img=[textures/implicit/wall]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000165 color=1,2,3,4 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/implicit/wall] f=2 r=1 d=2 c=0 p=1
+  const=0
+## errors
+> dump
+n=16
+W: unknown token 'bogus' in material 'm/err1'
+M m/err1 state=1 stages=1 ambient=1 regs=22
+W: unknown general material parameter 'bogusgeneral' in 'm/err2'
+M m/err2 state=1 stages=1 ambient=1 regs=22
+W: unknown blend mode 'GL_BOGUS' in material 'm/err3'
+M m/err3 state=1 stages=1 ambient=1 regs=22
+W: no sinTable for rotate defined
+M m/err4 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 33: Bad term 'noSuchTable'
+M m/err5 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 39: Bad deform type 'bogus2'
+M m/err6 state=1 stages=1 ambient=1 regs=22
+W: bad texGen 'bogus' in material m/err7
+M m/err7 state=1 stages=1 ambient=1 regs=22
+W: bad vertexParm number\n
+M m/err8 state=1 stages=1 ambient=1 regs=22
+W: bad fragmentMap number\n
+M m/err9 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 67: missing sort parameter
+M m/err10 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 74: Bad negative number 'x'
+M m/err11 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 83: expected ')' but found '}'
+M m/err12 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 88: expected ',' but found 'GL_ONE'
+W: unknown blend mode 'map' in material 'm/err13'
+M m/err13 state=1 stages=1 ambient=1 regs=22
+W: unknown token '' in material 'm/err14'
+M m/err14 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 106: couldn't read expected token
+M m/err15 state=1 stages=1 ambient=1 regs=22
+W: file materials/err.mtr, line 111: couldn't read expected token
+M m/eof state=1 stages=1 ambient=1 regs=22
+## skin-remap
+> remap sk1 m/nodraw
+remap m/nodraw -> m/nodraw
+> remap sk1 m/drawn
+remap m/drawn -> m/other
+> remap sk1 m/other
+remap m/other -> m/wild
+> remap sk1 m/guix
+remap m/guix -> m/wild
+## sound-term
+> dump
+n=1
+M m/snd state=2 stages=1 ambient=1 regs=26
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/x img=[textures/x]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=25,21,21,24 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/x] f=2 r=0 d=2 c=0 p=1
+  const=0
+> eval m/snd snd=0.5
+eval 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 3F000000 40000000 3F800000 3F000000
+> eval m/snd
+eval 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 3F800000 00000000 40000000 00000000 00000000
+## reload-text
+> dump
+n=1
+M m/q1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/q img=[textures/q]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000120 color=21,21,21,21 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/q] f=2 r=0 d=2 c=0 p=1
+  const=0
+> settext m/q1 m/q1 { { blend filter map textures/q2 alpha parm0 } }
+> dump
+n=1
+M m/q1 state=2 stages=1 ambient=1 regs=22
+  gen surf=0 content=1 mflags=0 cover=3 sort=40800000 cull=0 deform=0 dreg=0,0,0,0 dname=[-]
+  flags polyoff=0 noshadows=1 forceshadows=0 noselfshadow=0 noportalfog=0
+  misc desc=[<none>] rb=[] egui=0 gui=[-] spec=0 poff=00000000 fog=0 blend=0 amb=0 unsm=0 subv=0 overl=0 back=0 ealpha=3F000000 supp=0 psky=0 eimg=textures/q2 img=[textures/q2]
+  falloff=-
+  decal stay=10000 fade=4000 start=3F800000,3F800000,3F800000,3F800000 end=00000000,00000000,00000000,00000000
+  q drawn=1 gui=0 subview=0 casts=0 fog=0 lit=0 litback=1 discrete=0 nofrag=0 lcast=0 leffect=0 texgen=0 stype=0 bump=-1
+  stage 0 cond=21 light=0 bits=00000103 color=21,21,21,1 atest=0,0 vcol=0 iat=0 poff=00000000 texgen=0 dyn=0 wh=0,0 matrix=0 img=[textures/q2] f=2 r=0 d=2 c=0 p=1
+  const=0

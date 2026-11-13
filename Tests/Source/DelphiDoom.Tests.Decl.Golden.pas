@@ -419,7 +419,7 @@ begin
       try
         for LFileCount := 0 to LFileOrder.Count - 1 do
           FKit.Source.Add(AnsiString(LFileOrder[LFileCount]), AnsiString(LFiles[LFileOrder[LFileCount]]));
-        FKit.Start(True, True);
+        FKit.Start(True, True, True);
         FKit.Lines.Insert(0, '## ' + LName);
         for LFileCount := 0 to LOperations.Count - 1 do
           Execute(LOperations[LFileCount]);

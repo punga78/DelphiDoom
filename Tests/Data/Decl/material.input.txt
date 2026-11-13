@@ -1,0 +1,847 @@
+@case tables-and-surface-words
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+table pulse { snap { 0, 1 } }
+table ramp { clamp { 0, 0.25, 1 } }
+@file materials/surf.mtr
+m/surf1
+{
+	metal ladder slick nosteps noimpact nodamage collision nonsolid
+	playerclip monsterclip moveableclip ikclip blood trigger
+	aassolid aasobstacle flashlight_trigger nullNormal noFragment
+}
+m/surf2
+{
+	solid water areaportal qer_nocarve discrete wood
+	description "a described surface"
+	qer_editorimage textures/ed/surf2.tga
+}
+m/surf3
+{
+	stone flesh
+	cardboard liquid glass plastic ricochet surftype10 surftype15
+	renderbump -size 256 256 -aa 2 textures/out/foo.tga models/hi.lwo
+}
+m/nodraw
+{
+	solid
+}
+@op dump
+@end
+@case stage-basics
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+@file materials/stage.mtr
+m/stage1
+{
+	polygonOffset 2.5
+	sort decal
+	{
+		blend GL_DST_COLOR, GL_ZERO
+		map textures/a.tga
+		nearest
+		clamp
+		maskRed maskGreen maskBlue maskAlpha maskDepth
+		vertexColor
+		privatePolygonOffset
+		rgb 0.5
+		alpha time * 0.5
+		name "first stage"
+	}
+	{
+		blend add
+		map textures\b
+		linear zeroclamp nopicmip uncompressed
+		inverseVertexColor
+		ignoreAlphaTest
+		privatePolygonOffset -3
+		if ( parm3 > 0.5 )
+		colored
+	}
+	{
+		blend filter
+		map _white
+		alphazeroclamp forceHighQuality maskColor
+	}
+	{
+		blend none
+		map _black
+		noclamp highquality
+	}
+	{
+		blend GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR
+		map textures/c
+	}
+	{
+		blend GL_SRC_ALPHA_SATURATE, GL_DST_ALPHA
+		map textures/d
+	}
+}
+m/stage2
+{
+	zeroclamp
+	{
+		blend GL_ZERO, GL_ONE_MINUS_DST_ALPHA
+		map textures/e
+	}
+	{
+		blend GL_DST_ALPHA, GL_SRC_COLOR
+		map heightmap( textures/h, 4 )
+	}
+	{
+		blend GL_ONE, GL_SRC_ALPHA
+		map addnormals( textures/n1, smoothnormals( textures/n2 ) )
+		clamp
+	}
+}
+m/stage3
+{
+	clamp
+	{
+		map textures/f
+	}
+	{
+		blend GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA
+	}
+}
+m/stage4
+{
+	alphazeroclamp
+	{
+		blend bumpmap
+		map textures/g_local
+	}
+}
+@op dump
+@end
+@case expressions
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+table pulse { snap { 0, 1 } }
+table ramp { clamp { 0, 0.25, 1 } }
+table onevalue { { 3 } }
+@file materials/expr.mtr
+m/exprs
+{
+	{
+		blend blend
+		map textures/e
+		alphaTest 0.5 + parm0 * 2
+		rgb ( parm1 - 1 ) / 4 % 3
+		red sinTable[ time * 2 ]
+		green ramp[ parm2 ] + pulse[ time ]
+		blue global3 >= 1 && parm4 < 2 || parm5 != 0
+		alpha 3 - -2
+	}
+	{
+		blend add
+		map textures/e2
+		color 1, 0.5, time, parm11
+		if global7 <= 3 && parm6 == 2
+	}
+}
+m/consts
+{
+	{
+		blend add
+		map textures/k
+		red 1 + 2 + 3
+		green 2 * 3.5
+		blue 0 + 4
+		alpha 1 * 0.25
+	}
+}
+m/consts2
+{
+	{
+		blend add
+		map textures/k
+		rgb 7 / 2 - 0.5
+		alpha 10 % 4 + fragmentPrograms
+		if parm7 > parm8 || parm9 - parm10
+		red onevalue[ 0.5 ]
+	}
+}
+m/divzero
+{
+	{
+		blend add
+		map textures/k
+		red parm0 / parm1
+		green parm2 % parm3
+		blue parm0 > parm1
+		alpha parm0 == parm0
+	}
+}
+@op dump
+@op print m/exprs
+@op print m/consts2
+@op eval m/exprs time=1.5 p0=0.25 p1=9 p2=0.6 p4=1 p5=2 p6=2 p11=7 g3=2 g7=3
+@op eval m/exprs time=0 p0=0 p1=0 p2=0 g3=0 p4=3 p5=0
+@op eval m/exprs time=7.3 p0=1.5 p1=-9 p2=3.5 g3=1 p4=1 p5=0 p6=2 g7=4
+@op eval m/consts2 p7=3 p8=2 p9=1 p10=1
+@op eval m/consts2 p7=1 p8=2 p9=1 p10=2
+@op eval m/divzero p0=3 p1=0 p2=7 p3=0
+@op eval m/divzero p0=-3 p1=2 p2=7.9 p3=-2.5
+@op eval m/divzero p0=1e30 p1=1e-30 p2=1e12 p3=3
+@end
+@case texture-matrices
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+@file materials/tex.mtr
+m/tex1
+{
+	{
+		blend add
+		map textures/t
+		scroll time * 0.1, 0.25
+		scale 2, 2
+		rotate time * 0.2
+		centerScale 1.5, parm0
+		shear 0.1, 0.2
+		translate 1, 2
+	}
+}
+m/tex2
+{
+	{
+		blend add
+		map textures/t
+		rotate 0.25
+	}
+	{
+		blend add
+		map textures/t
+		scale parm0, parm1
+	}
+	{
+		blend add
+		map textures/t
+		shear parm0, parm1
+	}
+}
+m/tex3
+{
+	{
+		blend add
+		map textures/t
+		centerScale 2, 3
+		translate 0, 0
+	}
+}
+@op dump
+@op print m/tex1
+@op eval m/tex1 time=0.5 p0=2
+@op eval m/tex2 time=2 p0=0.3 p1=0.7
+@end
+@case lighting-stages
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+@file materials/lit.mtr
+m/lit1
+{
+	specularmap textures/s
+	diffusemap textures/d
+	bumpmap textures/n_local
+	{
+		blend add
+		map textures/glow
+	}
+}
+m/lit2
+{
+	diffusemap textures/d2
+}
+m/lit3
+{
+	bumpmap addnormals( textures/a_local, heightmap( textures/a_h, 3 ) )
+}
+m/lit4
+{
+	bumpmap textures/b_local
+	{
+		blend add
+		map textures/env
+		texGen reflect
+	}
+}
+m/lit5
+{
+	specularmap textures/s5
+}
+m/lit6
+{
+	clamp
+	diffusemap textures/d6
+	{
+		blend diffusemap
+		map textures/d6b
+	}
+	{
+		blend bumpmap
+		map textures/n6
+	}
+	{
+		blend specularmap
+		map textures/s6
+	}
+	{
+		blend diffusemap
+		map textures/d6c
+	}
+	{
+		blend bumpmap
+		map textures/n6b
+	}
+	{
+		blend diffusemap
+		map textures/d6d
+	}
+}
+m/lit7
+{
+	twoSided
+	diffusemap textures/d7
+}
+m/ambient2
+{
+	twoSided
+	{
+		blend add
+		map textures/z
+	}
+}
+m/ambient3
+{
+	backSided
+	{
+		blend add
+		map textures/z
+	}
+}
+@op dump
+@end
+@case deforms
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+table cosTable { { 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5 } }
+@file materials/def.mtr
+m/def1
+{
+	deform sprite
+	{
+		blend add
+		map textures/s
+	}
+}
+m/def2
+{
+	deform tube
+}
+m/def3
+{
+	deform flare 3
+}
+m/def4
+{
+	deform expand time * 2
+}
+m/def5
+{
+	deform move parm0
+}
+m/def6
+{
+	deform turbulent sinTable 1 time 0.5
+}
+m/def7
+{
+	deform eyeBall
+}
+m/def8
+{
+	deform particle fx/smoke
+}
+m/def9
+{
+	deform particle2 fx/smoke2
+}
+m/bad1
+{
+	deform bogus
+}
+@op dump
+@end
+@case misc-keywords
+@file materials/tables.mtr
+table sinTable { { 0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5 } }
+@file materials/misc.mtr
+m/misc1
+{
+	translucent
+	noSelfShadow noPortalFog forceShadows noOverlays forceOverlays
+	suppressInSubview portalSky unsmoothedTangents noFog
+	spectrum 2
+	{
+		blend add
+		map textures/m
+	}
+}
+m/light1
+{
+	fogLight
+	lightFalloffImage lights/falloff_exp.tga
+	{
+		blend add
+		map _fog
+	}
+}
+m/light2
+{
+	blendLight
+	{
+		blend add
+		map lights/blend
+	}
+}
+m/light3
+{
+	ambientLight
+	forceShadows
+	{
+		blend add
+		map lights/amb
+	}
+}
+m/gui1
+{
+	guisurf entity
+}
+m/gui2
+{
+	guisurf entity2
+}
+m/gui3
+{
+	guisurf entity3
+}
+m/gui4
+{
+	guisurf guis/test.gui
+}
+m/decal1
+{
+	DECAL_MACRO
+	decalInfo 5 2 ( 1 1 1 0.5 ) ( 0 0 0 0 )
+	{
+		blend filter
+		map textures/dec
+	}
+}
+m/decal2
+{
+	polygonOffset
+	{
+		blend blend
+		map textures/dec2
+	}
+}
+m/decal3
+{
+	polygonOffset 2
+	decalInfo 0.5 0.25 ( 0.1 0.2 0.3 0.4 ) ( 1 1 1 1 )
+}
+m/mirror1
+{
+	mirror
+	{
+		blend add
+		map _scratch
+	}
+}
+m/forceopaque
+{
+	forceOpaque
+	{
+		blend blend
+		map textures/fo
+	}
+}
+m/alpha1
+{
+	{
+		blend add
+		map textures/al
+		alphaTest 0.5
+	}
+}
+m/alpha2
+{
+	{
+		blend filter
+		map textures/al
+		alphaTest 0.5
+	}
+	{
+		blend filter
+		map textures/al2
+	}
+}
+m/opaque1
+{
+	{
+		blend none
+		map textures/op
+	}
+}
+m/noimpact1
+{
+	noimpact
+	{
+		blend none
+		map textures/op
+	}
+}
+m/postprocess
+{
+	{
+		blend add
+		map _currentRender
+	}
+}
+m/portalsky
+{
+	sort portalSky
+	{
+		blend add
+		map textures\_currentRender.tga
+	}
+}
+@op dump
+@end
+@case sorts
+@file materials/sorts.mtr
+m/s1 { sort subview }
+m/s2 { sort opaque }
+m/s3 { sort decal }
+m/s4 { sort far }
+m/s5 { sort medium }
+m/s6 { sort close }
+m/s7 { sort almostNearest }
+m/s8 { sort nearest }
+m/s9 { sort postProcess }
+m/s10 { sort portalSky }
+m/s11 { sort 3.5 }
+m/s12 { sort -2 }
+m/s13 { sort 12abc }
+@op dump
+@end
+@case dynamic-stages
+@file materials/dyn.mtr
+m/dyn1
+{
+	{
+		remoteRenderMap 256 128
+	}
+	{
+		mirrorRenderMap 64 32
+	}
+	{
+		xrayRenderMap 16 8
+	}
+}
+m/dyn2
+{
+	{
+		blend add
+		map textures/w
+		screen
+	}
+	{
+		blend add
+		map textures/w2
+		screen2
+	}
+	{
+		blend add
+		map textures/w3
+		glassWarp
+	}
+}
+m/dyn3
+{
+	{
+		blend add
+		videomap loop video/loop.roq
+	}
+	{
+		blend add
+		videomap video/once.roq
+	}
+	{
+		blend add
+		soundmap sound/amp.wav
+	}
+}
+m/dyn4
+{
+	{
+		blend add
+		cubeMap env/sky
+		texGen skybox
+	}
+	{
+		blend add
+		cameraCubeMap env/cam
+		texGen normal
+	}
+	{
+		blend add
+		cubeMap env/wobble
+		texGen wobbleSky time parm0 + 1 3
+	}
+}
+@op dump
+@end
+@case programs
+@file materials/prog.mtr
+m/prog1
+{
+	{
+		blend add
+		program glprogs/foo.vfp
+		vertexParm 0 time, 1, parm3
+		vertexParm 1 5
+		vertexParm 2 1, 2
+		vertexParm 3 parm0, parm1, parm2, parm3
+		fragmentMap 0 cubeMap nopicmip linear clamp env/x
+		fragmentMap 1 nearest zeroclamp forceHighQuality textures/y_local
+		fragmentMap 2 cameraCubeMap alphazeroclamp noclamp uncompressed env/z
+		fragmentMap 3 highquality textures/w
+	}
+}
+m/prog2
+{
+	{
+		blend add
+		vertexProgram glprogs/v.vp
+		fragmentProgram glprogs/f.fp
+	}
+}
+m/prog3
+{
+	{
+		megaTexture mega/terrain.mega
+	}
+}
+m/prog4
+{
+	{
+		blend add
+		fragmentProgram glprogs/f.fp
+		fragmentMap 0 _currentRender
+	}
+}
+@op dump
+@end
+@case implicit-and-default
+@file materials/x.mtr
+m/real
+{
+	{
+		blend add
+		map textures/real
+	}
+}
+@op find textures/implicit/wall
+@op find m/real
+@op dump
+@end
+@case errors
+@file materials/tables.mtr
+table cosTable { { 1, 0.5 } }
+@file materials/err.mtr
+m/err1
+{
+	{
+		blend add
+		map textures/a
+		bogus
+	}
+}
+m/err2
+{
+	bogusgeneral
+}
+m/err3
+{
+	{
+		blend GL_BOGUS, GL_ONE
+		map textures/a
+	}
+}
+m/err4
+{
+	{
+		blend add
+		map textures/a
+		rotate 0.5
+	}
+}
+m/err5
+{
+	{
+		blend add
+		map textures/a
+		red noSuchTable[ 1 ]
+	}
+}
+m/err6
+{
+	deform sprite
+	deform bogus2
+}
+m/err7
+{
+	{
+		blend add
+		map textures/a
+		texGen bogus
+	}
+}
+m/err8
+{
+	{
+		blend add
+		program glprogs/foo.vfp
+		vertexParm 9 1
+	}
+}
+m/err9
+{
+	{
+		blend add
+		program glprogs/foo.vfp
+		fragmentMap 12 textures/x
+	}
+}
+m/err10
+{
+	sort
+}
+m/err11
+{
+	{
+		blend add
+		map textures/a
+		red -x
+	}
+}
+m/err12
+{
+	{
+		blend add
+		map textures/a
+		red ( 1 + 2
+	}
+}
+m/err13
+{
+	{
+		blend GL_ONE GL_ONE
+		map textures/a
+	}
+}
+m/err14
+{
+	{
+		blend add
+		map textures/a
+		megaTexture
+	}
+}
+m/err15
+{
+	{
+		blend add
+		videomap
+	}
+}
+m/eof
+{
+	{
+		blend add
+@op dump
+@end
+@case skin-remap
+@file materials/r.mtr
+m/nodraw
+{
+	solid
+}
+m/drawn
+{
+	{
+		blend add
+		map textures/d
+	}
+}
+m/other
+{
+	{
+		blend add
+		map textures/o
+	}
+}
+m/wild
+{
+	{
+		blend add
+		map textures/w
+	}
+}
+@file skins/s.skin
+skin sk1
+{
+	"m/nodraw" "m/wild"
+	"m/drawn" "m/other"
+	"*" "m/wild"
+}
+@op remap sk1 m/nodraw
+@op remap sk1 m/drawn
+@op remap sk1 m/other
+@op remap sk1 m/guix
+@end
+@case sound-term
+@file materials/snd.mtr
+m/snd
+{
+	{
+		blend add
+		map textures/x
+		alpha sound * 2
+		red sound
+	}
+}
+@op dump
+@op eval m/snd snd=0.5
+@op eval m/snd
+@end
+@case reload-text
+@file materials/q.mtr
+m/q1
+{
+	{
+		blend add
+		map textures/q
+	}
+}
+@op dump
+@op settext m/q1 m/q1 { { blend filter map textures/q2 alpha parm0 } }
+@op dump
+@end

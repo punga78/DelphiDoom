@@ -26,7 +26,8 @@ type
     constructor Create(const AStandard: Boolean = True);
     destructor Destroy; override;
     /// <summary>Builds the manager after the files are added (a folder is read when it is registered)</summary>
-    procedure Start(const AStandard: Boolean = True; const ALoadFolders: Boolean = True);
+    procedure Start(const AStandard: Boolean = True; const ALoadFolders: Boolean = True;
+      const APlaceholderMaterials: Boolean = False);
     property Source: TDeclMemorySource read FSource;
     property Manager: IDeclManager read FManager;
     function Lines: TStrings;
@@ -36,7 +37,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Decl.Factory;
+  DelphiDoom.Decl.Factory, DelphiDoom.Decl.StandardTypes, DelphiDoom.Decl.Types;
 
 { TDeclKit }
 
@@ -57,9 +58,19 @@ begin
   inherited Destroy;
 end;
 
-procedure TDeclKit.Start(const AStandard: Boolean; const ALoadFolders: Boolean);
+procedure TDeclKit.Start(const AStandard: Boolean; const ALoadFolders: Boolean;
+  const APlaceholderMaterials: Boolean);
 begin
-  if AStandard then
+  if AStandard and APlaceholderMaterials then
+  begin
+    // the materials of the golden of the C++ harness are stubs that keep the text and skip it
+    FManager := TDeclFactory.CreateManager(FSource, FLog);
+    TDeclStandardTypes.RegisterTypes(FManager.GetRegistry, [DECL_MATERIAL]);
+    TDeclStandardTypes.RegisterPlaceholderMaterial(FManager.GetRegistry);
+    if ALoadFolders then
+      TDeclStandardTypes.RegisterFolders(FManager.GetRegistry);
+  end
+  else if AStandard then
     FManager := TDeclFactory.CreateStandardManager(FSource, FLog, ALoadFolders)
   else
     FManager := TDeclFactory.CreateManager(FSource, FLog);
