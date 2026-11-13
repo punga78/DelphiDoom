@@ -1,0 +1,579 @@
+﻿C 0 3 00 0 0 0
+C 1 3 01 0 0 0
+C 2 3 02 0 0 0
+C 3 3 03 0 0 0
+C 4 3 04 0 0 0
+C 5 3 05 0 0 0
+C 6 3 06 0 0 0
+C 7 3 07 0 0 0
+C 8 3 08 0 0 0
+C 9 3 09 0 0 0
+C 10 3 10 0 0 0
+C 11 3 11 0 0 0
+C 12 3 12 0 0 0
+C 13 3 13 0 0 0
+C 14 3 14 0 0 0
+C 15 3 15 0 0 0
+C 16 3 16 0 0 0
+C 17 3 17 0 0 0
+C 18 3 18 0 0 0
+C 19 3 19 0 0 0
+C 20 3 20 0 0 0
+C 21 3 21 0 0 0
+C 22 3 22 0 0 0
+C 23 3 23 0 0 0
+C 24 3 24 0 0 0
+C 25 3 25 0 0 0
+C 26 3 26 0 0 0
+C 27 3 27 0 0 0
+C 28 3 28 0 0 0
+C 29 3 29 0 0 0
+C 30 3 30 0 0 0
+C 31 3 31 0 0 0
+C 32 3 32 0 0 0
+C 33 3 33 0 0 0
+C 34 3 34 0 0 0
+C 35 3 35 0 0 0
+C 36 3 36 0 0 0
+C 37 3 37 0 0 0
+C 38 3 38 0 0 0
+C 39 3 39 0 0 0
+C 40 3 40 0 0 0
+C 41 3 41 0 0 0
+C 42 3 42 0 0 0
+C 43 3 43 0 0 0
+C 44 3 44 0 0 0
+C 45 8 FileLevelVisual 0 0 0
+C 46 9 FileLevelPassable 0 0 0
+C 47 8 FileLevelVisual 0 0 0
+C 48 9 FileLevelPassable 0 0 0
+C 49 8 FileLevelVisual 0 0 0
+C 50 9 FileLevelPassable 0 0 0
+C 51 8 FileLevelVisual 0 0 0
+C 52 9 FileLevelPassable 0 0 0
+C 53 8 FileLevelVisual 0 0 0
+C 54 9 FileLevelPassable 0 0 0
+C 55 8 FileLevelVisual 0 0 0
+C 56 9 FileLevelPassable 0 0 0
+C 57 8 FileLevelVisual 0 0 0
+C 58 9 FileLevelPassable 0 0 0
+C 59 8 FileLevelVisual 0 0 0
+C 60 9 FileLevelPassable 0 0 0
+C 61 8 FileLevelVisual 0 0 0
+C 62 9 FileLevelPassable 0 0 0
+C 63 8 FileLevelVisual 0 0 0
+C 64 9 FileLevelPassable 0 0 0
+C 65 8 FileLevelVisual 0 0 0
+C 66 9 FileLevelPassable 0 0 0
+C 67 8 FileLevelVisual 0 0 0
+C 68 9 FileLevelPassable 0 0 0
+C 69 8 FileLevelVisual 0 0 0
+C 70 9 FileLevelPassable 0 0 0
+C 71 8 FileLevelVisual 0 0 0
+C 72 9 FileLevelPassable 0 0 0
+C 73 8 FileLevelVisual 0 0 0
+C 74 9 FileLevelPassable 0 0 0
+C 75 8 FileLevelVisual 0 0 0
+C 76 9 FileLevelPassable 0 0 0
+C 77 8 FileLevelVisual 0 0 0
+C 78 9 FileLevelPassable 0 0 0
+C 79 8 FileLevelVisual 0 0 0
+C 80 9 FileLevelPassable 0 0 0
+C 81 8 FileLevelVisual 0 0 0
+C 82 9 FileLevelPassable 0 0 0
+C 83 8 FileLevelVisual 0 0 0
+C 84 9 FileLevelPassable 0 0 0
+C 85 8 FileLevelVisual 0 0 0
+C 86 9 FileLevelPassable 0 0 0
+C 87 8 FileLevelVisual 0 0 0
+C 88 9 FileLevelPassable 0 0 0
+C 89 8 FileLevelVisual 0 0 0
+C 90 9 FileLevelPassable 0 0 0
+C 91 8 FileLevelVisual 0 0 0
+C 92 9 FileLevelPassable 0 0 0
+C 93 8 FileLevelVisual 0 0 0
+C 94 9 FileLevelPassable 0 0 0
+C 95 8 FileLevelVisual 0 0 0
+C 96 9 FileLevelPassable 0 0 0
+C 97 8 FileLevelVisual 0 0 0
+C 98 9 FileLevelPassable 0 0 0
+C 99 8 FileLevelVisual 0 0 0
+C 100 9 FileLevelPassable 0 0 0
+C 101 8 FileLevelVisual 0 0 0
+C 102 9 FileLevelPassable 0 0 0
+C 103 8 FileLevelVisual 0 0 0
+C 104 9 FileLevelPassable 0 0 0
+C 105 8 FileLevelVisual 0 0 0
+C 106 9 FileLevelPassable 0 0 0
+C 107 8 FileLevelVisual 0 0 0
+C 108 9 FileLevelPassable 0 0 0
+C 109 8 FileLevelVisual 0 0 0
+C 110 9 FileLevelPassable 0 0 0
+C 111 8 FileLevelVisual 0 0 0
+C 112 9 FileLevelPassable 0 0 0
+C 113 8 FileLevelVisual 0 0 0
+C 114 9 FileLevelPassable 0 0 0
+C 115 8 FileLevelVisual 0 0 0
+C 116 9 FileLevelPassable 0 0 0
+C 117 7 humans_01 0 0 0
+C 118 7 orcs_01 1 0 0
+C 119 7 humans_02 0 0 0
+C 120 7 orcs_02 1 0 0
+C 121 7 humans_03 1 0 0
+C 122 7 orcs_03 0 0 0
+C 123 7 humans_04 2 0 0
+C 124 7 orcs_04 2 0 0
+C 125 7 humans_05 0 0 0
+C 126 7 orcs_05 1 0 0
+C 127 7 humans_06 0 0 0
+C 128 7 orcs_06 0 0 0
+C 129 7 humans_07 0 0 0
+C 130 7 orcs_07 1 0 0
+C 131 7 humans_08 2 0 0
+C 132 7 orcs_08 2 0 0
+C 133 7 humans_09 1 0 0
+C 134 7 orcs_09 1 0 0
+C 135 7 humans_10 1 0 0
+C 136 7 orcs_10 0 0 0
+C 137 7 humans_11 1 0 0
+C 138 7 orcs_11 0 0 0
+C 139 7 humans_12 1 0 0
+C 140 7 orcs_12 0 0 0
+C 141 0 battle_test_map_1 1 0 0
+C 142 0 battle_test_map_2 1 0 0
+C 143 0 battle_test_map_3 1 0 0
+C 144 0 battle_test_map_4 1 0 0
+C 147 7 forest_1 0 1 0
+C 148 7 forest_2 0 1 0
+C 149 7 forest_3 0 1 0
+C 150 7 forest_4 0 1 0
+C 151 7 forest_5 0 1 0
+C 152 7 forest_6 0 1 0
+C 153 7 forest_7 0 1 0
+C 154 7 swamp_6 1 1 0
+C 155 7 swamp_7 1 1 0
+C 156 7 swamp_1 1 1 0
+C 157 7 swamp_2 1 1 0
+C 158 7 swamp_3 1 1 0
+C 159 7 swamp_4 1 1 0
+C 160 7 swamp_5 1 1 0
+C 161 7 dungeon_1 2 1 0
+C 162 7 dungeon_2 2 1 0
+C 163 7 dungeon_3 2 1 0
+C 164 7 dungeon_4 2 1 0
+C 165 7 dungeon_5 2 1 0
+C 166 7 dungeon_6 2 1 0
+C 167 7 dungeon_7 2 1 0
+C 168 7 forest_1_big_enemy 0 1 0
+C 169 7 forest_2_big_enemy 0 1 0
+C 170 7 forest_3_big_enemy 0 1 0
+C 171 7 forest_4_big_enemy 0 1 0
+C 172 7 forest_5_big_enemy 0 1 0
+C 173 7 forest_6_big_enemy 0 1 0
+C 174 7 forest_7_big_enemy 0 1 0
+C 175 7 swamp_6_big_enemy 1 1 0
+C 176 7 swamp_7_big_enemy 1 1 0
+C 177 7 swamp_1_big_enemy 1 1 0
+C 178 7 swamp_2_big_enemy 1 1 0
+C 179 7 swamp_3_big_enemy 1 1 0
+C 180 7 swamp_4_big_enemy 1 1 0
+C 181 7 swamp_5_big_enemy 1 1 0
+C 182 7 dungeon_1_big_enemy 2 1 0
+C 183 7 dungeon_2_big_enemy 2 1 0
+C 184 7 dungeon_3_big_enemy 2 1 0
+C 185 7 dungeon_4_big_enemy 2 1 0
+C 186 7 dungeon_5_big_enemy 2 1 0
+C 187 7 dungeon_6_big_enemy 2 1 0
+C 188 7 dungeon_7_big_enemy 2 1 0
+C 191 2 forest 0 0 0
+C 194 2 swamp 0 0 0
+C 197 2 dungeon 0 0 0
+C 217 2 background 0 0 0
+C 255 2 humans 0 0 0
+C 260 2 ui 0 0 0
+C 262 2 pointer 0 0 0
+C 413 2 summary 0 0 0
+C 416 2 for 415 0 0 0
+C 418 2 for 417 0 0 0
+C 423 2 briefing 0 0 0
+C 424 2 briefing 0 0 0
+C 457 2 for 456 0 0 0
+C 459 2 for 458 0 0 0
+C 190 14 forest 191 217 0
+C 193 14 swamp 194 217 0
+C 196 14 dungeon 197 217 0
+C 189 13 forest 190 0 0
+C 192 13 swamp 193 0 0
+C 195 13 dungeon 196 0 0
+C 263 4 arrow 262 0 0
+C 264 4 invalid_command 262 0 0
+C 265 4 yellow_crosshair 262 0 0
+C 266 4 red_crosshair 262 0 0
+C 267 4 yellow_crosshair_2 262 0 0
+C 268 4 magnifying_glass 262 0 0
+C 269 4 small_green_crosshair 262 0 0
+C 270 4 watch 262 0 0
+C 271 4 up_arrow 262 0 0
+C 272 4 upper_right_arrow 262 0 0
+C 273 4 right_arrow 262 0 0
+C 274 4 lower_right_arrow 262 0 0
+C 275 4 down_arrow 262 0 0
+C 276 4 lower_left_arrow 262 0 0
+C 277 4 left_arrow 262 0 0
+C 278 4 upper_left_arrow 262 0 0
+C 279 10 footman_humans 191 217 0
+C 280 10 grunt_orcs 191 217 0
+C 281 10 peasant_humans 191 217 0
+C 282 10 peon_orcs 191 217 0
+C 283 10 catapult_humans 191 217 0
+C 284 10 catapult_orcs 191 217 0
+C 285 10 knight_humans 191 217 0
+C 286 10 raider_orcs 191 217 0
+C 287 10 archer_humans 191 217 0
+C 288 10 axethrower_orcs 191 217 0
+C 289 10 wizard_humans 191 217 0
+C 290 10 wizard_orcs 191 217 0
+C 291 10 priest_humans 191 217 0
+C 292 10 necrolyte_orcs 191 217 0
+C 293 10 medivh 191 217 0
+C 294 10 lothar 191 217 0
+C 295 10 wounded 191 217 0
+C 296 10 garona 191 217 0
+C 297 10 ogre 191 217 0
+C 298 10 spider 191 217 0
+C 299 10 slime 191 217 0
+C 300 10 fire_elemental 191 217 0
+C 301 10 scorpion 191 217 0
+C 302 10 brigand 191 217 0
+C 303 10 the_dead 191 217 0
+C 304 10 skeleton_02 191 217 0
+C 305 10 demon 191 217 0
+C 306 10 water_elemental 191 217 0
+C 307 10 farm_humans 191 217 0
+C 308 10 farm_orcs 191 217 0
+C 309 10 barracks_humans 191 217 0
+C 310 10 barracks_orcs 191 217 0
+C 311 10 church_humans 191 217 0
+C 312 10 temple_orcs 191 217 0
+C 313 10 tower_humns 191 217 0
+C 314 10 skull_orcs 191 217 0
+C 315 10 town_hall_humans 191 217 0
+C 316 10 town_hall_orcs 191 217 0
+C 317 10 lumbermill_humans 191 217 0
+C 318 10 lumbermill_orcs 191 217 0
+C 319 10 stable_humans 191 217 0
+C 320 10 stable_orcs 191 217 0
+C 321 10 blacksmith_humans 191 217 0
+C 322 10 blacksmith_orcs 191 217 0
+C 323 10 stormwind_humans 191 217 0
+C 324 10 black_spire_orcs 191 217 0
+C 325 10 goldmine 191 217 0
+C 326 10 corpse 191 217 0
+C 327 10 peasant_with_lumber_humans 191 217 0
+C 328 10 peon_with_lumber_orcs 191 217 0
+C 329 10 peasant_with_gold_humans 191 217 0
+C 330 10 peon_with_gold_orcs 191 217 0
+C 331 10 farm_construction_humans 191 217 0
+C 332 10 farm_construction_orcs 191 217 0
+C 333 10 barracks_construction_humans 191 217 0
+C 334 10 barracks_construction_orcs 191 217 0
+C 335 10 church_construction_humans 191 217 0
+C 336 10 temple_construction_orcs 191 217 0
+C 337 10 tower_construction_humans 191 217 0
+C 338 10 tower_construction_orcs 191 217 0
+C 339 10 town_hall_construction_humans 191 217 0
+C 340 10 town_hall_construction_orcs 191 217 0
+C 341 10 lumber_mill_construction_humans 191 217 0
+C 342 10 lumber_mill_construction_orcs 191 217 0
+C 343 10 stable_construction_humans 191 217 0
+C 344 10 stable_construction_orcs 191 217 0
+C 345 10 blacksmith_construction_humans 191 217 0
+C 346 10 blacksmith_construction_orcs 191 217 0
+C 350 10 poison_cloud 191 217 0
+C 352 10 small_fire 191 217 0
+C 353 10 large_fire 191 217 0
+C 354 10 explosion 191 217 0
+C 355 10 healing 191 217 0
+C 356 10 building_collapse 191 217 0
+C 359 10 ui_pictures_orcs 191 217 0
+C 360 10 ui_pictures_humans 255 0 0
+C 361 10 ui_pictures_icons 191 217 0
+C 425 10 burning_fire 424 0 0
+C 426 10 talking_orc_01 424 0 0
+C 427 10 talking_orc_02 424 0 0
+C 428 10 eating_human 423 0 0
+C 429 10 human_wizard 423 0 0
+C 430 10 anim_01 423 0 0
+C 431 10 anim_02 423 0 0
+C 460 10 anim_03 459 0 0
+C 347 10 missiles_fireball 191 217 0
+C 348 10 missiles_catapult_projectile 191 217 0
+C 349 10 missiles_arrow 191 217 0
+C 351 10 missiles_rain_of_fire 191 217 0
+C 357 10 missiles_water_elemental_projectile 191 217 0
+C 358 10 missiles_fireball_2 191 217 0
+C 216 1 background 'Blizzard' 217 0 0
+C 218 1 topbar_humans 255 0 0
+C 219 1 topbar_orcs 191 217 0
+C 220 1 sidebar_right_humans 255 0 0
+C 221 1 sidebar_right_orcs 217 0 0
+C 222 1 lower_bar_humans 255 0 0
+C 223 1 lower_bar_orcs 217 0 0
+C 224 1 sidebar_left_minimap_empty_humans 255 0 0
+C 225 1 sidebar_left_minimap_empty_orcs 217 0 0
+C 226 1 sidebar_left_humans 255 0 0
+C 227 1 sidebar_left_orcs 217 0 0
+C 228 1 sidebar_left_minimap_black_humans 255 0 0
+C 229 1 sidebar_left_minimap_black_orcs 217 0 0
+C 233 1 large_box_humans 255 0 0
+C 234 1 large_box_orcs 217 0 0
+C 235 1 small_box_humans 255 0 0
+C 236 1 smal_box_orcs 217 0 0
+C 237 1 large_button 260 0 0
+C 238 1 large_button_pressed 260 0 0
+C 239 1 medium_button 260 0 0
+C 240 1 medium_button_pressed 260 0 0
+C 241 1 small_button 260 0 0
+C 242 1 small_button_pressed 260 0 0
+C 243 1 menu_background_lower 260 0 0
+C 244 1 arrow_left_button 255 0 0
+C 245 1 arrow_left_button_grey 255 0 0
+C 246 1 arrow_right_button 255 0 0
+C 247 1 arrow_right_button_grey 255 0 0
+C 248 1 window_border 255 0 0
+C 249 1 saving_loading_humans 255 0 0
+C 250 1 saving_loading_orcs 217 0 0
+C 254 1 hot_keys 255 0 0
+C 256 1 ok1_button 255 0 0
+C 257 1 ok2_button 255 0 0
+C 258 1 warcraft_text 260 0 0
+C 261 1 menu_background 260 0 0
+C 362 1 menu_button 217 0 0
+C 363 1 menu_button_pressed 217 0 0
+C 364 1 empty_button 255 0 0
+C 365 1 empty_button_pressed 217 0 0
+C 406 1 gold_1 191 217 0
+C 407 1 lumber_1 217 0 0
+C 408 1 gold_2 191 217 0
+C 409 1 lumber_2 217 0 0
+C 410 1 percent_complete 191 217 0
+C 411 1 points_summary_humans 413 0 0
+C 412 1 points_summary_orcs 413 0 0
+C 415 1 victory_background 416 0 0
+C 417 1 defeat_background 418 0 0
+C 419 1 victory_text 423 0 0
+C 420 1 defeat_text 423 0 0
+C 421 1 briefing_humans 423 0 0
+C 422 1 briefing_orcs 424 0 0
+C 456 1 win_humans 457 0 0
+C 458 1 win_orcs 459 0 0
+C 470 1 win_anim_humans 457 0 0
+C 471 1 win_anim_orcs 260 0 0
+C 432 6 01_intro_orcs 0 0 0
+C 433 6 02_intro_orcs 0 0 0
+C 434 6 03_intro_orcs 0 0 0
+C 435 6 04_intro_orcs 0 0 0
+C 436 6 05_intro_orcs 0 0 0
+C 437 6 06_intro_orcs 0 0 0
+C 438 6 07_intro_orcs 0 0 0
+C 439 6 08_intro_orcs 0 0 0
+C 440 6 09_intro_orcs 0 0 0
+C 441 6 10_intro_orcs 0 0 0
+C 442 6 11_intro_orcs 0 0 0
+C 443 6 12_intro_orcs 0 0 0
+C 444 6 01_intro_humans 0 0 0
+C 445 6 02_intro_humans 0 0 0
+C 446 6 03_intro_humans 0 0 0
+C 447 6 04_intro_humans 0 0 0
+C 448 6 05_intro_humans 0 0 0
+C 449 6 06_intro_humans 0 0 0
+C 450 6 07_intro_humans 0 0 0
+C 451 6 08_intro_humans 0 0 0
+C 452 6 09_intro_humans 0 0 0
+C 453 6 10_intro_humans 0 0 0
+C 454 6 11_intro_humans 0 0 0
+C 455 6 12_intro_humans 0 0 0
+C 461 6 ending_1_humans 0 0 0
+C 462 6 ending_1_orcs 0 0 0
+C 463 6 ending_2_humans 0 0 0
+C 464 6 ending_2_orcs 0 0 0
+C 465 6 credits 0 0 0
+C 466 6 victory_dialog_1 0 0 0
+C 467 6 victory_dialog_2 0 0 0
+C 468 6 defeat_dialog_1 0 0 0
+C 469 6 defeat_dialog_2 0 0 0
+C 472 11 logo 0 0 0
+C 473 11 intro_door 0 0 0
+C 474 12 misc_building 0 0 0
+C 475 12 misc_explosion 0 0 0
+C 476 12 missiles_catapult_rock_fired 0 0 0
+C 477 12 misc_tree_chopping_1 0 0 0
+C 478 12 misc_tree_chopping_2 0 0 0
+C 479 12 misc_tree_chopping_3 0 0 0
+C 480 12 misc_tree_chopping_4 0 0 0
+C 481 12 misc_building_collapse_1 0 0 0
+C 482 12 misc_building_collapse_2 0 0 0
+C 483 12 misc_building_collapse_3 0 0 0
+C 484 12 ui_chime 0 0 0
+C 485 11 ui_click 0 0 0
+C 486 12 ui_cancel 0 0 0
+C 487 12 missiles_sword_attack_1 0 0 0
+C 488 12 missiles_sword_attack_2 0 0 0
+C 489 12 missiles_sword_attack_3 0 0 0
+C 490 12 missiles_fist_attack 0 0 0
+C 491 12 missiles_catapult_fire_explosion 0 0 0
+C 492 12 missiles_fireball 0 0 0
+C 493 12 missiles_arrow_spear 0 0 0
+C 494 12 missiles_arrow_spear_hit 0 0 0
+C 495 12 orc_help_1 0 0 0
+C 496 12 orc_help_2 0 0 0
+C 497 11 human_help_2 0 0 0
+C 498 11 human_help_1 0 0 0
+C 499 12 orc_dead 0 0 0
+C 500 12 human_dead 0 0 0
+C 501 12 orc_work_complete 0 0 0
+C 502 11 human_work_complete 0 0 0
+C 503 12 orc_help_3 0 0 0
+C 504 11 orc_help_4 0 0 0
+C 505 11 human_help_3 0 0 0
+C 506 11 human_help_4 0 0 0
+C 507 12 orc_ready 0 0 0
+C 508 11 human_ready 0 0 0
+C 509 12 orc_acknowledgement_1 0 0 0
+C 510 12 orc_acknowledgement_2 0 0 0
+C 511 12 orc_acknowledgement_3 0 0 0
+C 512 12 orc_acknowledgement_4 0 0 0
+C 513 11 human_acknowledgement_1 0 0 0
+C 514 11 human_acknowledgement_2 0 0 0
+C 515 12 orc_selected_1 0 0 0
+C 516 12 orc_selected_2 0 0 0
+C 517 12 orc_selected_3 0 0 0
+C 518 12 orc_selected_4 0 0 0
+C 519 12 orc_selected_5 0 0 0
+C 520 11 human_selected_1 0 0 0
+C 521 11 human_selected_2 0 0 0
+C 522 11 human_selected_3 0 0 0
+C 523 11 human_selected_4 0 0 0
+C 524 11 human_selected_5 0 0 0
+C 525 12 orc_annoyed_1 0 0 0
+C 526 12 orc_annoyed_2 0 0 0
+C 527 11 orc_annoyed_3 0 0 0
+C 528 11 human_annoyed_1 0 0 0
+C 529 11 human_annoyed_2 0 0 0
+C 530 11 human_annoyed_3 0 0 0
+C 531 11 dead_spider_scorpion 0 0 0
+C 532 11 normal_spell 0 0 0
+C 533 11 misc_build_road 0 0 0
+C 534 11 orc_temple 0 0 0
+C 535 11 human_church 0 0 0
+C 536 11 orc_kennel 0 0 0
+C 537 11 human_stable 0 0 0
+C 538 11 blacksmith 0 0 0
+C 539 11 misc_fire_crackling 0 0 0
+C 540 11 cannon 0 0 0
+C 541 11 cannon2 0 0 0
+C 542 11 campaigns_human_ending_1 0 0 0
+C 543 11 campaigns_human_ending_2 0 0 0
+C 544 11 campaigns_orc_ending_1 0 0 0
+C 545 11 campaigns_orc_ending_2 0 0 0
+C 546 11 intro_1 0 0 0
+C 547 11 intro_2 0 0 0
+C 548 11 intro_3 0 0 0
+C 549 11 intro_4 0 0 0
+C 550 11 intro_5 0 0 0
+C 551 11 campaigns_human_01_intro 0 0 0
+C 552 11 campaigns_human_02_intro 0 0 0
+C 553 11 campaigns_human_03_intro 0 0 0
+C 554 11 campaigns_human_04_intro 0 0 0
+C 555 11 campaigns_human_05_intro 0 0 0
+C 556 11 campaigns_human_06_intro 0 0 0
+C 557 11 campaigns_human_07_intro 0 0 0
+C 558 11 campaigns_human_08_intro 0 0 0
+C 559 11 campaigns_human_09_intro 0 0 0
+C 560 11 campaigns_human_10_intro 0 0 0
+C 561 11 campaigns_human_11_intro 0 0 0
+C 562 11 campaigns_human_12_intro 0 0 0
+C 563 11 campaigns_orc_01_intro 0 0 0
+C 564 11 campaigns_orc_02_intro 0 0 0
+C 565 11 campaigns_orc_03_intro 0 0 0
+C 566 11 campaigns_orc_04_intro 0 0 0
+C 567 11 campaigns_orc_05_intro 0 0 0
+C 568 11 campaigns_orc_06_intro 0 0 0
+C 569 11 campaigns_orc_07_intro 0 0 0
+C 570 11 campaigns_orc_08_intro 0 0 0
+C 571 11 campaigns_orc_09_intro 0 0 0
+C 572 11 campaigns_orc_10_intro 0 0 0
+C 573 11 campaigns_orc_11_intro 0 0 0
+C 574 11 campaigns_orc_12_intro 0 0 0
+C 575 11 human_defeat 0 0 0
+C 576 11 orc_defeat 0 0 0
+C 577 11 orc_victory_1 0 0 0
+C 578 11 orc_victory_2 0 0 0
+C 579 11 orc_victory_3 0 0 0
+C 580 11 human_victory_1 0 0 0
+C 581 11 human_victory_2 0 0 0
+C 582 11 human_victory_3 0 0 0
+C 198 0  0 0 0
+C 199 0  0 0 0
+C 200 0  0 0 0
+C 201 0  0 0 0
+C 202 0  0 0 0
+C 203 0  0 0 0
+C 204 0  0 0 0
+C 205 0  0 0 0
+C 206 0  0 0 0
+C 207 0  0 0 0
+C 208 0  0 0 0
+C 209 0  0 0 0
+C 210 0  0 0 0
+C 211 0  0 0 0
+C 212 0  0 0 0
+C 213 0  0 0 0
+C 214 0  0 0 0
+C 215 0  0 0 0
+C 230 0  0 0 0
+C 251 0  0 0 0
+C 252 0  0 0 0
+C 253 0  0 0 0
+C 259 0  0 0 0
+C 366 0  0 0 0
+C 367 0  0 0 0
+C 368 0  0 0 0
+C 369 0  0 0 0
+C 370 0  0 0 0
+C 371 0  0 0 0
+C 372 0  0 0 0
+C 373 0  0 0 0
+C 374 0  0 0 0
+C 375 0  0 0 0
+C 376 0  0 0 0
+C 377 0  0 0 0
+C 378 0  0 0 0
+C 379 0  0 0 0
+C 380 0  0 0 0
+C 381 0  0 0 0
+C 382 0  0 0 0
+C 383 0  0 0 0
+C 384 0  0 0 0
+C 385 0  0 0 0
+C 386 0  0 0 0
+C 387 0  0 0 0
+C 388 0  0 0 0
+C 389 0  0 0 0
+C 390 0  0 0 0
+C 391 0  0 0 0
+C 392 0  0 0 0
+C 393 0  0 0 0
+C 394 0  0 0 0
+C 395 0  0 0 0
+C 396 0  0 0 0
+C 397 0  0 0 0
+C 398 0  0 0 0
+C 399 0  0 0 0
+C 400 0  0 0 0
+C 401 0  0 0 0
+C 402 0  0 0 0
+C 403 0  0 0 0
+C 404 0  0 0 0
+C 405 0  0 0 0
+C 414 0  0 0 0
