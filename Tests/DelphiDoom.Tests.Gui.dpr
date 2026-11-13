@@ -46,7 +46,13 @@ uses
   DelphiDoom.Gui.Factory in '..\Libs\Gui\DelphiDoom.Gui.Factory.pas',
   DelphiDoom.Tests.Gui.Fakes in 'Source\DelphiDoom.Tests.Gui.Fakes.pas',
   DelphiDoom.Tests.Gui.Scenario in 'Source\DelphiDoom.Tests.Gui.Scenario.pas',
-  DelphiDoom.Tests.Gui.Parity in 'Source\DelphiDoom.Tests.Gui.Parity.pas';
+  DelphiDoom.Tests.Gui.Parity in 'Source\DelphiDoom.Tests.Gui.Parity.pas',
+  DelphiDoom.Tests.Gui.Reading in 'Source\DelphiDoom.Tests.Gui.Reading.pas',
+  DelphiDoom.Tests.Gui.Scripts in 'Source\DelphiDoom.Tests.Gui.Scripts.pas',
+  DelphiDoom.Tests.Gui.Fonts in 'Source\DelphiDoom.Tests.Gui.Fonts.pas',
+  DelphiDoom.Tests.Gui.Model in 'Source\DelphiDoom.Tests.Gui.Model.pas',
+  DelphiDoom.Tests.Gui.Parsers in 'Source\DelphiDoom.Tests.Gui.Parsers.pas',
+  DelphiDoom.Tests.Gui.OpenArena in 'Source\DelphiDoom.Tests.Gui.OpenArena.pas';
 
 var
   Runner: ITestRunner;

@@ -11,11 +11,19 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DelphiDoom.Gui.Types,
-  DelphiDoom.Gui.Intf, DelphiDoom.IdLib.Core.Intf;
+  DelphiDoom.Gui.Intf, DelphiDoom.Gui.MenuSet, DelphiDoom.Gui.FontRegistry, DelphiDoom.Gui.MenuFileReader,
+  DelphiDoom.Gui.ScriptRunner, DelphiDoom.IdLib.Core.Intf;
 
 type
+  /// <summary>A file system with files that a test puts in memory</summary>
+  IGuiFakeFiles = interface(IIdLibFileSystem)
+    ['{9B6E2D14-70A3-4C58-B1F2-0D4E8A3C5A77}']
+    procedure Add(const AName, AContent: AnsiString); overload;
+    procedure Add(const AName: AnsiString; const ABytes: TBytes); overload;
+  end;
+
   /// <summary>Files from memory first, then from a folder (the root of the menu files); nothing is written</summary>
-  TGuiFakeFileSystem = class(TInterfacedObject, IIdLibFileSystem)
+  TGuiFakeFileSystem = class(TInterfacedObject, IGuiFakeFiles, IIdLibFileSystem)
   strict private
     FRoot: string;
     FFiles: TDictionary<AnsiString, TBytes>;
@@ -83,6 +91,36 @@ type
     function Next(const ARange: Integer): Integer;
   end;
 
+  /// <summary>Everything a test of menus needs, over files in memory: the transcript holds the log and the host calls</summary>
+  TGuiWorld = class
+  strict private
+    FFiles: IGuiFakeFiles;
+    FTranscript: TStringList;
+    FLog: IGuiLog;
+    FAssets: IGuiAssetRegistry;
+    FHost: IGuiScriptHost;
+    FMedia: IGuiMediaHost;
+    FFonts: TGuiFontRegistry;
+    FMenus: TGuiMenuSet;
+    FReader: TGuiMenuFileReader;
+    FRunner: TGuiScriptRunner;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    /// <summary>A file in memory</summary>
+    procedure AddFile(const AName, AContent: AnsiString);
+    /// <summary>Puts the text in the file "test.menu" and reads it as UI_ParseMenu does</summary>
+    procedure ParseMenuText(const AText: AnsiString);
+    property Transcript: TStringList read FTranscript;
+    property Files: IGuiFakeFiles read FFiles;
+    property Fonts: TGuiFontRegistry read FFonts;
+    property Menus: TGuiMenuSet read FMenus;
+    property Reader: TGuiMenuFileReader read FReader;
+    property Runner: TGuiScriptRunner read FRunner;
+    property Log: IGuiLog read FLog;
+    property Assets: IGuiAssetRegistry read FAssets;
+  end;
+
 /// <summary>A token source over a text in memory (the file "test.menu"), the messages of the parser to the log if given</summary>
 function OpenGuiSource(const AText: AnsiString; const ALog: IGuiLog = nil): IGuiTokenSource;
 
@@ -96,13 +134,49 @@ uses
 
 function OpenGuiSource(const AText: AnsiString; const ALog: IGuiLog): IGuiTokenSource;
 var
-  LFiles: TGuiFakeFileSystem;
-  LSystem: IIdLibFileSystem;
+  LFiles: IGuiFakeFiles;
 begin
   LFiles := TGuiFakeFileSystem.Create;
-  LSystem := LFiles;
   LFiles.Add('test.menu', AText);
-  Result := TGuiFactory.CreateSourceLoader(LSystem, ALog).Load('test.menu');
+  Result := TGuiFactory.CreateSourceLoader(LFiles, ALog).Load('test.menu');
+end;
+
+{ TGuiWorld }
+
+constructor TGuiWorld.Create;
+begin
+  inherited Create;
+  FTranscript := TStringList.Create;
+  FFiles := TGuiFakeFileSystem.Create;
+  FLog := TGuiFakeLog.Create(FTranscript);
+  FAssets := TGuiFakeAssets.Create(FTranscript);
+  FHost := TGuiFakeHost.Create(FTranscript);
+  FMedia := FHost as IGuiMediaHost;
+  FFonts := TGuiFactory.CreateFontRegistry(FFiles, FAssets, FLog);
+  FMenus := TGuiFactory.CreateMenuSet(FAssets, FFonts);
+  FReader := TGuiFactory.CreateMenuFileReader(TGuiFactory.CreateSourceLoader(FFiles, FLog), FMenus, FLog);
+  FRunner := TGuiFactory.CreateScriptRunner(FMenus, FHost, FMedia);
+end;
+
+destructor TGuiWorld.Destroy;
+begin
+  FRunner.Free;
+  FReader.Free;
+  FMenus.Free;
+  FFonts.Free;
+  FTranscript.Free;
+  inherited Destroy;
+end;
+
+procedure TGuiWorld.AddFile(const AName, AContent: AnsiString);
+begin
+  FFiles.Add(AName, AContent);
+end;
+
+procedure TGuiWorld.ParseMenuText(const AText: AnsiString);
+begin
+  FFiles.Add('test.menu', AText);
+  FReader.ParseMenu('test.menu');
 end;
 
 function GuiDataFolder: string;

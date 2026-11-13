@@ -22,7 +22,10 @@ type
   /// <summary>
   ///   Reads "{ keyword arguments ... }" into a TGuiItem. Keywords are found without regard to case, like the
   ///   keyword hash of the original. Keywords of the type data (listbox, edit field, multi, model) fail when the
-  ///   item has no data of that kind: the original dereferences a null or foreign pointer there.
+  ///   item has no type data at all (the original dereferences a null pointer there or, for some, checks it);
+  ///   when the item has data of another kind they read their arguments and succeed without storing them (the
+  ///   original writes over the fields of the other kind, which real menus do: OpenArena's score.menu and
+  ///   videomodes.menu).
   /// </summary>
   TGuiItemParser = class
   strict private
@@ -97,6 +100,8 @@ type
     function ParseShowCvar(const AItem: TGuiItem): Boolean;
     function ParseHideCvar(const AItem: TGuiItem): Boolean;
     function ParseEnableAction(const AItem: TGuiItem; const AFlags: Integer): Boolean;
+    function ReadStringList(var AData: TGuiMultiData): Boolean;
+    function ReadFloatList(var AData: TGuiMultiData): Boolean;
     /// <summary>The item has the type data of AKind after Item_ValidateTypeData</summary>
     function HasData(const AItem: TGuiItem; const AKind: TGuiItemDataKind): Boolean;
   public
@@ -292,16 +297,19 @@ var
 begin
   AItem.ValidateTypeData;
   // the original writes into typeData whatever it is (null for a button: a crash)
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
   LName := '';
   if not FReader.ReadString(LName) then
     Exit(False);
   AItem.Asset := FAssets.RegisterModel(LName);
-  if Assigned(FRandom) then
-    AItem.Model.Angle := FRandom.Next(360)
-  else
-    AItem.Model.Angle := 0;
+  if HasData(AItem, gdkModel) then
+  begin
+    if Assigned(FRandom) then
+      AItem.Model.Angle := FRandom.Next(360)
+    else
+      AItem.Model.Angle := 0;
+  end;
   Result := True;
 end;
 
@@ -317,44 +325,69 @@ begin
 end;
 
 function TGuiItemParser.ParseModelOrigin(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiModelData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadFloat(AItem.Model.Origin[0]) and FReader.ReadFloat(AItem.Model.Origin[1]) and
-    FReader.ReadFloat(AItem.Model.Origin[2]);
+  LData := AItem.Model;
+  Result := FReader.ReadFloat(LData.Origin[0]) and FReader.ReadFloat(LData.Origin[1]) and
+    FReader.ReadFloat(LData.Origin[2]);
+  if HasData(AItem, gdkModel) then
+    AItem.Model := LData;
 end;
 
 function TGuiItemParser.ParseModelFovX(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiModelData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadFloat(AItem.Model.FovX);
+  LData := AItem.Model;
+  Result := FReader.ReadFloat(LData.FovX);
+  if HasData(AItem, gdkModel) then
+    AItem.Model := LData;
 end;
 
 function TGuiItemParser.ParseModelFovY(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiModelData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadFloat(AItem.Model.FovY);
+  LData := AItem.Model;
+  Result := FReader.ReadFloat(LData.FovY);
+  if HasData(AItem, gdkModel) then
+    AItem.Model := LData;
 end;
 
 function TGuiItemParser.ParseModelRotation(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiModelData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadInt(AItem.Model.RotationSpeed);
+  LData := AItem.Model;
+  Result := FReader.ReadInt(LData.RotationSpeed);
+  if HasData(AItem, gdkModel) then
+    AItem.Model := LData;
 end;
 
 function TGuiItemParser.ParseModelAngle(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiModelData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkModel) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadInt(AItem.Model.Angle);
+  LData := AItem.Model;
+  Result := FReader.ReadInt(LData.Angle);
+  if HasData(AItem, gdkModel) then
+    AItem.Model := LData;
 end;
 
 function TGuiItemParser.ParseRect(const AItem: TGuiItem): Boolean;
@@ -408,19 +441,29 @@ begin
 end;
 
 function TGuiItemParser.ParseElementWidth(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiListBoxData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkListBox) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadFloat(AItem.ListBox.ElementWidth);
+  LData := AItem.ListBox;
+  Result := FReader.ReadFloat(LData.ElementWidth);
+  if HasData(AItem, gdkListBox) then
+    AItem.ListBox := LData;
 end;
 
 function TGuiItemParser.ParseElementHeight(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiListBoxData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkListBox) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadFloat(AItem.ListBox.ElementHeight);
+  LData := AItem.ListBox;
+  Result := FReader.ReadFloat(LData.ElementHeight);
+  if HasData(AItem, gdkListBox) then
+    AItem.ListBox := LData;
 end;
 
 function TGuiItemParser.ParseFeeder(const AItem: TGuiItem): Boolean;
@@ -429,15 +472,21 @@ begin
 end;
 
 function TGuiItemParser.ParseElementType(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiListBoxData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkListBox) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadInt(AItem.ListBox.ElementStyle);
+  LData := AItem.ListBox;
+  Result := FReader.ReadInt(LData.ElementStyle);
+  if HasData(AItem, gdkListBox) then
+    AItem.ListBox := LData;
 end;
 
 function TGuiItemParser.ParseColumns(const AItem: TGuiItem): Boolean;
 var
+  LData: TGuiListBoxData;
   LNumber: Integer;
   LIndex: Integer;
   LPos: Integer;
@@ -445,14 +494,16 @@ var
   LMaxChars: Integer;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkListBox) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
   LNumber := 0;
   if not FReader.ReadInt(LNumber) then
     Exit(False);
   if LNumber > GUI_MAX_LB_COLUMNS then
     LNumber := GUI_MAX_LB_COLUMNS;
-  AItem.ListBox.NumColumns := LNumber;
+  LData := AItem.ListBox;
+  LData.NumColumns := LNumber;
+  Result := True;
   for LIndex := 0 to LNumber - 1 do
   begin
     LPos := 0;
@@ -460,14 +511,18 @@ begin
     LMaxChars := 0;
     if FReader.ReadInt(LPos) and FReader.ReadInt(LWidth) and FReader.ReadInt(LMaxChars) then
     begin
-      AItem.ListBox.ColumnInfo[LIndex].Pos := LPos;
-      AItem.ListBox.ColumnInfo[LIndex].Width := LWidth;
-      AItem.ListBox.ColumnInfo[LIndex].MaxChars := LMaxChars;
+      LData.ColumnInfo[LIndex].Pos := LPos;
+      LData.ColumnInfo[LIndex].Width := LWidth;
+      LData.ColumnInfo[LIndex].MaxChars := LMaxChars;
     end
     else
-      Exit(False);
+    begin
+      Result := False;
+      Break;
+    end;
   end;
-  Result := True;
+  if HasData(AItem, gdkListBox) then
+    AItem.ListBox := LData;
 end;
 
 function TGuiItemParser.ParseBorder(const AItem: TGuiItem): Boolean;
@@ -567,11 +622,16 @@ begin
 end;
 
 function TGuiItemParser.ParseDoubleClick(const AItem: TGuiItem): Boolean;
+var
+  LScript: AnsiString;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkListBox) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadScript(AItem.ListBox.DoubleClick);
+  LScript := '';
+  Result := FReader.ReadScript(LScript);
+  if Result and HasData(AItem, gdkListBox) then
+    AItem.ListBox.DoubleClick := LScript;
 end;
 
 function TGuiItemParser.ParseOnFocus(const AItem: TGuiItem): Boolean;
@@ -638,12 +698,13 @@ var
   LValue: Integer;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkEditField) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
   LValue := 0;
   if not FReader.ReadInt(LValue) then
     Exit(False);
-  AItem.EditField.MaxChars := LValue;
+  if HasData(AItem, gdkEditField) then
+    AItem.EditField.MaxChars := LValue;
   Result := True;
 end;
 
@@ -652,35 +713,51 @@ var
   LValue: Integer;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkEditField) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
   LValue := 0;
   if not FReader.ReadInt(LValue) then
     Exit(False);
-  AItem.EditField.MaxPaintChars := LValue;
+  if HasData(AItem, gdkEditField) then
+    AItem.EditField.MaxPaintChars := LValue;
   Result := True;
 end;
 
 function TGuiItemParser.ParseCvarFloat(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiEditFieldData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkEditField) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  Result := FReader.ReadString(AItem.Cvar) and FReader.ReadFloat(AItem.EditField.DefVal) and
-    FReader.ReadFloat(AItem.EditField.MinVal) and FReader.ReadFloat(AItem.EditField.MaxVal);
+  LData := AItem.EditField;
+  Result := FReader.ReadString(AItem.Cvar) and FReader.ReadFloat(LData.DefVal) and FReader.ReadFloat(LData.MinVal) and
+    FReader.ReadFloat(LData.MaxVal);
+  if HasData(AItem, gdkEditField) then
+    AItem.EditField := LData;
 end;
 
 function TGuiItemParser.ParseCvarStrList(const AItem: TGuiItem): Boolean;
+var
+  LData: TGuiMultiData;
+begin
+  AItem.ValidateTypeData;
+  if AItem.DataKind = gdkNone then
+    Exit(False);
+  LData := AItem.Multi;
+  Result := ReadStringList(LData);
+  if HasData(AItem, gdkMulti) then
+    AItem.Multi := LData;
+end;
+
+function TGuiItemParser.ReadStringList(var AData: TGuiMultiData): Boolean;
 var
   LToken: TGuiToken;
   LPass: Integer;
   LText: AnsiString;
 begin
-  AItem.ValidateTypeData;
-  if not HasData(AItem, gdkMulti) then
-    Exit(False);
-  AItem.Multi.Count := 0;
-  AItem.Multi.StrDef := True;
+  AData.Count := 0;
+  AData.StrDef := True;
   if not FReader.ReadToken(LToken) then
     Exit(False);
   if (LToken.Text = '') or (LToken.Text[1] <> '{') then
@@ -700,15 +777,15 @@ begin
     LText := FReader.Strings.Alloc(LToken.Text);
     if LPass = 0 then
     begin
-      AItem.Multi.CvarList[AItem.Multi.Count] := LText;
+      AData.CvarList[AData.Count] := LText;
       LPass := 1;
     end
     else
     begin
-      AItem.Multi.CvarStr[AItem.Multi.Count] := LText;
+      AData.CvarStr[AData.Count] := LText;
       LPass := 0;
-      Inc(AItem.Multi.Count);
-      if AItem.Multi.Count >= GUI_MAX_MULTI_CVARS then
+      Inc(AData.Count);
+      if AData.Count >= GUI_MAX_MULTI_CVARS then
         Exit(False);
     end;
   end;
@@ -716,13 +793,23 @@ end;
 
 function TGuiItemParser.ParseCvarFloatList(const AItem: TGuiItem): Boolean;
 var
-  LToken: TGuiToken;
+  LData: TGuiMultiData;
 begin
   AItem.ValidateTypeData;
-  if not HasData(AItem, gdkMulti) then
+  if AItem.DataKind = gdkNone then
     Exit(False);
-  AItem.Multi.Count := 0;
-  AItem.Multi.StrDef := False;
+  LData := AItem.Multi;
+  Result := ReadFloatList(LData);
+  if HasData(AItem, gdkMulti) then
+    AItem.Multi := LData;
+end;
+
+function TGuiItemParser.ReadFloatList(var AData: TGuiMultiData): Boolean;
+var
+  LToken: TGuiToken;
+begin
+  AData.Count := 0;
+  AData.StrDef := False;
   if not FReader.ReadToken(LToken) then
     Exit(False);
   if (LToken.Text = '') or (LToken.Text[1] <> '{') then
@@ -738,11 +825,11 @@ begin
       Exit(True);
     if (LToken.Text <> '') and (LToken.Text[1] in [',', ';']) then
       Continue;
-    AItem.Multi.CvarList[AItem.Multi.Count] := FReader.Strings.Alloc(LToken.Text);
-    if not FReader.ReadFloat(AItem.Multi.CvarValue[AItem.Multi.Count]) then
+    AData.CvarList[AData.Count] := FReader.Strings.Alloc(LToken.Text);
+    if not FReader.ReadFloat(AData.CvarValue[AData.Count]) then
       Exit(False);
-    Inc(AItem.Multi.Count);
-    if AItem.Multi.Count >= GUI_MAX_MULTI_CVARS then
+    Inc(AData.Count);
+    if AData.Count >= GUI_MAX_MULTI_CVARS then
       Exit(False);
   end;
 end;

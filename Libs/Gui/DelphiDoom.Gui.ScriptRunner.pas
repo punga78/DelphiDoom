@@ -300,12 +300,13 @@ begin
   LName := '';
   if not (ACursor.ParseString(LItemName) and ACursor.ParseString(LName)) then
     Exit;
+  LColor := Default(TGuiColor);
+  // the arguments are read before the parent is looked at, so that an item without a menu skips the same words
+  if not ACursor.ParseColor(LColor) then
+    Exit;
   if not Assigned(AItem.Parent) then
     Exit;
   LCount := AItem.Parent.ItemsMatchingGroup(LItemName);
-  LColor := Default(TGuiColor);
-  if not ACursor.ParseColor(LColor) then
-    Exit;
   for LIndex := 0 to LCount - 1 do
   begin
     LTarget := AItem.Parent.GetMatchingItemByNumber(LIndex, LItemName);
