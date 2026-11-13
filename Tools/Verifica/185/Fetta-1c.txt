@@ -1,0 +1,102 @@
+Issue #185, fase 1, fetta 1c (la famiglia m_*): verifica da fare dopo la consegna
+==============================================================================
+
+Riferimento: master 63a151cc (gli eseguibili di partenza). Nuovo: il ramo della fetta 1c.
+Compilare il riferimento in una cartella propria, per esempio:
+
+  git worktree add C:\ddref_1c 63a151cc
+  C:\ddref_1c\Tools\build.bat giochi Release
+  (gli eseguibili sono in C:\ddref_1c\bin\<Gioco>\; i GL non servono ai golden)
+
+Nel seguito <NEW> e' la radice del ramo nuovo compilato (Tools\build.bat giochi) e <REF> C:\ddref_1c.
+Una sola modalita' per invocazione (-Modes 8, poi -Modes 32: con powershell -File la virgola non separa).
+
+1. Golden della fase 0 (88 confronti: 44 voci a 8 e a 32 bit), atteso 88 su 88 UGUALE
+-----------------------------------------------------------------------------------
+
+  powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -WorkRoot C:\ddparity_1c `
+    -Exe    "Doom=<NEW>\bin\Doom\Doom32.exe;Heretic=<NEW>\bin\Heretic\Heretic32.exe;Hexen=<NEW>\bin\Hexen\Hexen32.exe;Strife=<NEW>\bin\Strife\Strife32.exe" `
+    -RefExe "Doom=<REF>\bin\Doom\Doom32.exe;Heretic=<REF>\bin\Heretic\Heretic32.exe;Hexen=<REF>\bin\Hexen\Hexen32.exe;Strife=<REF>\bin\Strife\Strife32.exe"
+  (lo stesso con -Modes 32)
+
+2. Vecchio contro nuovo con un'altra configurazione (-ExtraIni): valori fuori intervallo e chiavi sconosciute
+-----------------------------------------------------------------------------------------------------------
+La tabella delle impostazioni (m_defs) ora e' letta e scritta dalle classi di Libs\Configuration: lo stato e i
+fotogrammi devono restare uguali tra vecchio e nuovo anche con valori strani. Tre configurazioni, ognuna a 8 e a 32:
+
+  A) -ExtraIni 'screenblocks=99;detaillevel=-7;usegamma=0x7FFFFFFF;showmessages=maybe;unknown_option_1c=42;defaultskill=17'
+  B) -ExtraIni 'drawfps=1;SCREENBLOCKS=8;snd_channels=#300;mouse_sensitivity=$1F;key_right=''z'''
+  C) -ExtraIni 'screenblocks=3;drawcrosshair=1;showdemoplaybackprogress=1;chatmacro0=a = b'
+
+  powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -WorkRoot C:\ddparity_1c -ExtraIni '<A, B o C>' `
+    -Exe    "Doom=<NEW>\bin\Doom\Doom32.exe;Heretic=<NEW>\bin\Heretic\Heretic32.exe;Hexen=<NEW>\bin\Hexen\Hexen32.exe;Strife=<NEW>\bin\Strife\Strife32.exe" `
+    -RefExe "Doom=<REF>\bin\Doom\Doom32.exe;Heretic=<REF>\bin\Heretic\Heretic32.exe;Hexen=<REF>\bin\Hexen\Hexen32.exe;Strife=<REF>\bin\Strife\Strife32.exe"
+  (per accorciare: -Name 'd1_*' per Doom e la prima voce di ogni gioco basta per A e B; C su tutte le voci)
+
+3. Il file .ini scritto, byte per byte (lettura e scrittura della tabella, valori di partenza di ogni voce)
+---------------------------------------------------------------------------------------------------------
+Script nuovo, scritto senza poterlo eseguire: Tools\Verifica\185\Confronta-Ini.ps1 (legge il corpo di prova
+Tests\Data\Configuration\Fetta1c\<Gioco>.body.ini, lo mette sotto l'intestazione del .ini vero, fa girare vecchio e
+nuovo con -timedemo e confronta i file riscritti all'uscita). Atteso: UGUALE per i quattro giochi, nei due modi.
+
+  powershell -NoProfile -File Tools\Verifica\185\Confronta-Ini.ps1 -WorkRoot C:\ddparity_1c `
+    -Exe    "Doom=<NEW>\bin\Doom\Doom32.exe;Heretic=<NEW>\bin\Heretic\Heretic32.exe;Hexen=<NEW>\bin\Hexen\Hexen32.exe;Strife=<NEW>\bin\Strife\Strife32.exe" `
+    -RefExe "Doom=<REF>\bin\Doom\Doom32.exe;Heretic=<REF>\bin\Heretic\Heretic32.exe;Hexen=<REF>\bin\Hexen\Hexen32.exe;Strife=<REF>\bin\Strife\Strife32.exe"
+  (e lo stesso con -DefaultValues: -config indica un file che non esiste, il motore scrive all'uscita i valori di partenza di
+  tutte le voci, in ordine. L'opzione -defaultvalues del motore non serve a questa prova: con lei TEngineDefaults.Load
+  esce prima di ricordare il nome del file e all'uscita non scrive niente, nel vecchio come nel nuovo.)
+  Il corpo di prova fissa soft_fullscreen=0 e 640x480: con lo schermo intero esclusivo, se DirectDraw rifiuta il modo
+  (SetCooperativeLevel), i_video mette SCREENWIDTH := 640 e il valore scritto dipende dalla macchina e non dal codice.
+
+Lo stesso per gli eseguibili OpenGL (GLDoom32...: tabella con le voci gl_*): passare i GL in -Exe/-RefExe con i nomi
+dei giochi (lo script usa solo -timedemo, che negli eseguibili GL funziona; le impronte dei fotogrammi non servono).
+
+4. Riga di comando e file di risposta (m_argv: M_InitArgv ora e' TCommandLineStartup)
+-------------------------------------------------------------------------------------
+Con Tools\Esegui-gioco.ps1, vecchio e nuovo, confrontare la prima riga di bin\Doom\DATA\LOGS\*_stdout.txt (la riga di
+comando stampata da M_InitArgv) e il resto del log:
+
+  powershell -NoProfile -File Tools\Esegui-gioco.ps1 -Exe <X>\Doom32.exe -Seconds 20 `
+    -Arguments '-iwad DOOM1.WAD -warp 1 2 -skill 3 -file nonesiste.wad -devparm -nomusic -nosound'
+  powershell -NoProfile -File Tools\Esegui-gioco.ps1 -Exe <X>\Doom32.exe -Seconds 20 `
+    -Arguments '-iwad DOOM1.WAD @risposta.txt -devparm -nomusic -nosound'
+    (risposta.txt: copiare Tests\Data\Configuration\Fetta1c\risposta.txt nella cartella dell'eseguibile)
+  e una volta senza Doom32.cmd nella cartella: il file deve essere scritto con lo stesso testo dai due eseguibili.
+
+5. Cheat (m_cheat: get_cheatseq_string ora e' TCheatSequenceReader)
+------------------------------------------------------------------
+Le sequenze sono lette all'avvio di st_stuff/sb_bar: basta l'avvio senza crash dei quattro giochi (e dei quattro GL).
+Con il corpus i cheat non si provano (il pilota non preme tasti); la parita' della lettura e' nei test DUnitX
+(DelphiDoom.Tests.Console, 40000 sequenze casuali contro la copia del vecchio codice).
+
+6. Prestazioni
+--------------
+m_rnd e m_fixed NON sono stati spostati (vedi docs\PIANO_TUTTO_A_CLASSI.md, par. 9): per la fetta non serve una
+misura. Il cambio della tabella delle impostazioni non tocca il percorso caldo; per conferma, una misura a coppie:
+
+  powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio <REF>\bin\Doom\Doom32.exe -Nuovo <NEW>\bin\Doom\Doom32.exe `
+    -Demo demo1 -Modo 32 -Coppie 8 -WorkRoot C:\ddparity_1c
+  (e -Demo demo3, e -Modo 8)
+
+Proposta per il futuro (#41, solo se una misura lo permette): Fetta-1c-m_fixed-pascal.patch toglie l'asm di m_fixed
+(corpi di TFixedMath anche a 32 bit). Misurata una volta (demo1, 32 bit, 8 coppie: mediane +3,40%, minimi +3,92%, misura RIFIUTATA per dispersione del vecchio 46%):
+NON applicata; per decidere: git apply Tools\Verifica\185\Fetta-1c-m_fixed-pascal.patch, compilare Doom32 in una cartella
+propria, Misura-Coppie con demo1 e demo3 a 8 e a 32 bit, poi git checkout -- Base\m_fixed.pas.
+
+7. Avvii
+--------
+Doom32 -timedemo demo1/2/3 = 5026/3836/2134 gametic; Heretic32, Hexen32, Strife32 e i quattro GL avviati 25 s senza
+crash.txt; Radix32 e SpeedHaste32 come prima.
+
+Rami che il corpus non esercita (coperti solo dai test DUnitX o da nessuno)
+-------------------------------------------------------------------------
+- #CVARFORCE e le funzioni SetConsoleInt/Str/Bool degli script (forzatura di una voce): test di parita' su tabelle casuali.
+- I comandi di console "setdefault"/"defaults", "get"/"set" su una voce forzata: test di parita' (Reset, letture e
+  scritture della console) e lettura del codice di TEngineDefaults.
+- GetConsoleInt/Str/Bool degli script (lettura della variabile vera di una voce forzata): test di parita'.
+- -config con un file inesistente o con un'intestazione di una versione non accettata: lettura del codice (stesso flusso).
+- Programma avviato da un CD-ROM (-cdrom, file di default nella cartella di lavoro del CD): solo test DUnitX.
+- Scrittura di Doom32.cmd quando manca (punto 4 lo prova a mano).
+- Cheat digitati (cht_CheckCheat non e' cambiato; get_cheatseq_string si') e una sequenza senza $FF (prima leggeva oltre
+  la fine, ora I_Error): solo test DUnitX.
+- Rete (DFS_NETWORK nel reset delle voci): test di parita' con netgame vero e falso.

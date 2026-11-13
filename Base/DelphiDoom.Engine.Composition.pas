@@ -175,6 +175,8 @@ uses
   DelphiDoom.Engine.Console.Screen,
   DelphiDoom.Engine.Configuration.Intf,
   DelphiDoom.Engine.Configuration.Defaults,
+  DelphiDoom.Engine.Configuration.Table,
+  DelphiDoom.Engine.CommandLine.Environment,
   DelphiDoom.Engine.Screenshot.Intf,
   DelphiDoom.Engine.Screenshot.Service,
   DelphiDoom.Engine.Platform.Intf,
@@ -427,6 +429,7 @@ uses
   i_mainwindow,
   p_acs,
   DelphiDoom.Configuration.Factory,
+  DelphiDoom.Configuration.Intf,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.Factory,
   DelphiDoom.Video.Types,
@@ -945,7 +948,7 @@ end;
 // are given back: the defaults register their commands and run "get"
 function ComposeConsole(const ALog: ILog; const AGame: IGameContext;
   const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames;
-  const ALumps: IEngineLumps;
+  const ALumps: IEngineLumps; const ASettings: IConfigurationTable;
   out ARegistry: ICommandRegistry; out AInterpreter: IConsoleInterpreter): IEngineConsole;
 var
   LOutput: IConsoleOutput;
@@ -960,7 +963,7 @@ begin
     TEngineConsoleFileLister.Create, TEngineConsoleBrowser.Create, AInterpreter));
   LRunner := TConsoleFactory.CreateScriptRunner(AInterpreter, TEngineConsoleFileSystem.Create,
     LOutput, ALog);
-  LVariables := TEngineConsoleVariableSource.Create;
+  LVariables := TEngineConsoleVariableSource.Create(ASettings);
   Result := TEngineConsoleScreen.Create(ARegistry, AInterpreter,
     TConsoleFactory.CreateStandardCommands(ARegistry, LOutput, LRunner),
     TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create(ACommandLine, ASaveFileNames, ALumps),
@@ -982,12 +985,15 @@ end;
 
 // The defaults of the configuration file, with their two console commands
 function ComposeDefaults(const ARegistry: ICommandRegistry;
-  const AInterpreter: IConsoleInterpreter; const ACommandLine: ICommandLine): IEngineDefaults;
+  const AInterpreter: IConsoleInterpreter; const ACommandLine: ICommandLine;
+  const ASettings: IConfigurationTable): IEngineDefaults;
 var
   LDefaults: TEngineDefaults;
+  LFormat: IConfigurationFormat;
 begin
-  LDefaults := TEngineDefaults.Create(TConfigurationFactory.CreateFormat, ARegistry, AInterpreter,
-    ACommandLine);
+  LFormat := TConfigurationFactory.CreateFormat;
+  LDefaults := TEngineDefaults.Create(LFormat, ASettings,
+    TConfigurationFactory.CreateTableStore(ASettings, LFormat), ARegistry, AInterpreter, ACommandLine);
   Result := LDefaults;
   LDefaults.RegisterCommands;
   D_ConfigureDefaults(Result);
@@ -1567,6 +1573,7 @@ var
   LParityClock: TParitySwitchClock;
   LNetGame: IEngineNetGame;
   LInput: IInputPoller;
+  LSettings: IConfigurationTable;
 begin
   // how a class of the engine stops the game: I_Error and I_Quit of i_system
   LShutdown := TEngineShutdown.Create;
@@ -1597,7 +1604,8 @@ begin
     begin
       LStore.EnsureDirectory(APath);
     end, CD_WORKDIR);
-  M_ConfigureArgv(TCommandLineFactory.CreateBuilder, LCommandLine, LSaveFileNames);
+  M_ConfigureArgv(TCommandLineFactory.CreateStartup(TCommandLineFactory.CreateBuilder, LSaveFileNames,
+    TEngineProgramEnvironment.Create, APPNAME, DEFARGVFILENAME), LCommandLine, LSaveFileNames);
   LParity.AttachCommandLine(LCommandLine);
   LRandom := TMathCoreFactory.CreateGameRandom(TParitySwitchEntropy.Create(
     TSystemEntropySource.Create(True), LParitySwitch, PARITY_ENTROPY_SEED));
@@ -1615,9 +1623,11 @@ begin
   LWadServices := TEngineWadServices.Create;
   ComposePak(LWadServices, LPakFiles, LPakContainers);
   // the console before anyone registers a command; the defaults after it (#CVARFORCE uses them)
-  LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LLumps, LRegistry,
-    LInterpreter);
-  LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine);
+  // the rows of the options (m_defs), shared by the console and the defaults
+  LSettings := TEngineConfigurationTable.Build;
+  LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LLumps, LSettings,
+    LRegistry, LInterpreter);
+  LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine, LSettings);
   LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
   ComposeScriptHost(LLog, LContext, LConsole, LDefaults, LRandom, LPakFiles, LTempFiles);

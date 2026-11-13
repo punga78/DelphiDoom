@@ -71,8 +71,37 @@ type
   end;
 
   /// <summary>Collects the arguments and makes the ICommandLine</summary>
-  ICommandLineBuilder = interface
-    ['{4E90A1D7-8B26-4C3F-A5D8-72C1E0F9B346}']
+  /// <summary>
+  ///   What the start of the program reads to build its command line (M_InitArgv of m_argv):
+  ///   the arguments of the process, the files and the drive. The engine gives one over
+  ///   ParamStr, the files of d_delphi and I_IsCDRomDrive; the tests give a fake
+  /// </summary>
+  IProgramEnvironment = interface
+    ['{5B8E2D41-7C03-4F96-A1E8-0D3B92C46F57}']
+    /// <summary>ParamCount: the argument 0 is the program</summary>
+    function ArgumentCount: Integer;
+    function Argument(AIndex: Integer): string;
+    function FileExists(const AFileName: string): Boolean;
+    function ExpandFileName(const AFileName: string): string;
+    /// <summary>The name of the file without its folder</summary>
+    function FileNameOf(const APath: string): string;
+    /// <summary>True when the program runs from a CD-ROM</summary>
+    function IsProgramOnCdRom: Boolean;
+    /// <summary>True when the drive with that letter is a CD-ROM</summary>
+    function IsCdRomDrive(ADrive: Char): Boolean;
+    /// <summary>The text of a file of default arguments, False when there is none</summary>
+    function TryReadDefaultFile(const AFileName: string; out AText: string): Boolean;
+    /// <summary>Writes a new file of default arguments</summary>
+    procedure WriteDefaultFile(const AFileName, AText: string);
+  end;
+
+  /// <summary>Builds the command line of the start of the program (M_InitArgv)</summary>
+  ICommandLineStartup = interface
+    ['{E04A7C92-31B6-4D5F-8A27-96C1F3D0B84E}']
+    function Collect: ICommandLine;
+  end;
+
+  ICommandLineBuilder = interface    ['{4E90A1D7-8B26-4C3F-A5D8-72C1E0F9B346}']
     /// <summary>
     ///   Appends an argument (kept upper case; an empty one is skipped). Past the limit of the
     ///   engine the arguments are not kept; the result says whether this one was

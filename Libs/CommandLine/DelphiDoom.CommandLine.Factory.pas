@@ -18,6 +18,10 @@ type
   TCommandLineFactory = class
   public
     class function CreateBuilder: ICommandLineBuilder; static;
+    /// <summary>The command line of the start: the process, the default file of the program</summary>
+    class function CreateStartup(const ABuilder: ICommandLineBuilder; const ASaveFileNames: ISaveFileNames;
+      const AEnvironment: IProgramEnvironment;
+      const AApplicationName, ADefaultFileName: string): ICommandLineStartup; static;
     /// <summary>The expander of the response files (@name); the messages go to ALog</summary>
     class function CreateResponseFileExpander(const ASource: IResponseFileSource;
       const ALog: ILog): IResponseFileExpander; static;
@@ -36,7 +40,7 @@ implementation
 uses
   DelphiDoom.CommandLine.Builder, DelphiDoom.CommandLine.Arguments,
   DelphiDoom.CommandLine.Queried, DelphiDoom.CommandLine.SaveFileNames,
-  DelphiDoom.CommandLine.ResponseFile;
+  DelphiDoom.CommandLine.ResponseFile, DelphiDoom.CommandLine.Startup;
 
 { TCommandLineFactory }
 
@@ -44,6 +48,14 @@ class function TCommandLineFactory.CreateResponseFileExpander(const ASource: IRe
   const ALog: ILog): IResponseFileExpander;
 begin
   Result := TResponseFileExpander.Create(ASource, ALog);
+end;
+
+class function TCommandLineFactory.CreateStartup(const ABuilder: ICommandLineBuilder;
+  const ASaveFileNames: ISaveFileNames; const AEnvironment: IProgramEnvironment;
+  const AApplicationName, ADefaultFileName: string): ICommandLineStartup;
+begin
+  Result := TCommandLineStartup.Create(ABuilder, ASaveFileNames, AEnvironment, AApplicationName,
+    ADefaultFileName);
 end;
 
 class function TCommandLineFactory.CreateBuilder: ICommandLineBuilder;

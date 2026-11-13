@@ -137,7 +137,7 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 ### `Base\m_misc.pas` - nessuna funzione pubblica
 
-**Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
+**Tolta come facciata (#145)**: i default del file di configurazione sono `TEngineDefaults` (`IEngineDefaults`; la tabella `defaults` resta in `m_defs`, dalla #185 fetta 1c solo come dichiarazione delle voci: le righe sono `IConfigurationItem` di `Libs\Configuration`, costruite da `TEngineConfigurationTable`), gli screenshot `TEngineScreenshotService` (`IEngineScreenshot`) e i file interi `TEngineFiles` (`IEngineFiles`), dati da `ComposeEngine` ai loro chiamanti; l'unit resta con le opzioni degli screenshot e i testi dei booleani.
 
 ### `Base\hu_stuff.pas` - 12 funzioni pubbliche (facciata sopra `Libs\Hud`, #185 fetta 1a)
 
@@ -977,7 +977,7 @@ Per toglierla: tabelle del renderer: resta.
 
 ### `Base\m_cheat.pas` - 3 funzioni pubbliche, 185 chiamate
 
-Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la `TCheatTable` della libreria e una tabella per gioco.
+Per toglierla: i giochi chiamano `cht_CheckCheat` per ogni cheat: servirebbe la `TCheatTable` della libreria e una tabella per gioco. **#185 fetta 1c**: `get_cheatseq_string` chiama `TCheatSequenceReader.FromChars`/`FromString` di `Libs\Console` (una sequenza senza `$FF` ora e' `I_Error`: prima si leggeva oltre la fine); `cht_CheckCheat`/`cht_GetParam` erano gia' sopra `TCheatSequence`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1087,7 +1087,7 @@ Per toglierla: migrare le circa 270 chiamate `C_AddCmd` a un registratore per ar
 
 ### `Base\m_argv.pas` - 5 funzioni pubbliche, 459 chiamate
 
-Per toglierla: `M_CheckParm` ha ~380 chiamanti e `myargv`/`myargc` sono letti direttamente: servirebbe passare `ICommandLine` ai moduli. Dalla #150 `M_CheckParm` chiede all'`ICommandLine` (`M_ConfigureArgv`), le classi del motore ricevono `ICommandLine`/`IQueriedCommandLine`/`ISaveFileNames` e `M_CmdShowCmdline`/`M_CmdShowCommandLineParams` non esistono piu (sono comandi di `TEngineConsoleScreen`).
+Per toglierla: `M_CheckParm` ha ~380 chiamanti e `myargv`/`myargc` sono letti direttamente: servirebbe passare `ICommandLine` ai moduli. Dalla #150 `M_CheckParm` chiede all'`ICommandLine` (`M_ConfigureArgv`), le classi del motore ricevono `ICommandLine`/`IQueriedCommandLine`/`ISaveFileNames` e `M_CmdShowCmdline`/`M_CmdShowCommandLineParams` non esistono piu (sono comandi di `TEngineConsoleScreen`). **#185 fetta 1c**: `M_InitArgv` chiede la riga di comando a `ICommandLineStartup` (`TCommandLineStartup` di `Libs\CommandLine`: argomenti del processo, `Doom32.cmd`, CD-ROM, sopra `IProgramEnvironment` = `TEngineProgramEnvironment`), data da `ComposeEngine` con `M_ConfigureArgv`; nell'unit restano la copia `myargv`/`myargc`, la stampa e `ChDir`.
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|
@@ -1201,7 +1201,7 @@ Per toglierla: circa mille chiamanti `W_*`: facciata voluta, non si migrano una 
 
 ### `Base\m_rnd.pas` - 16 funzioni pubbliche, 1112 chiamate
 
-Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiamanti): chiamata indiretta gia presente; resta come facciata. Dalla #150 le classi (`TEngineAcsHost`, `TLevelLoader`, regole di livello, luci, porte, piattaforme) ricevono `IGameRandom` e non chiamano piu le funzioni `*_Random`.
+Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiamanti): chiamata indiretta gia presente; resta come facciata. Dalla #150 le classi (`TEngineAcsHost`, `TLevelLoader`, regole di livello, luci, porte, piattaforme) ricevono `IGameRandom` e non chiamano piu le funzioni `*_Random`. **#185 fetta 1c**: resta cosi' (la classe c'e' gia'; senza una misura valida non si tocca), parita' su 10 milioni di chiamate in `DelphiDoom.Tests.MathCore.RandomParity`; vedi `docs\PIANO_TUTTO_A_CLASSI.md` par. 9. Lo stesso per `m_fixed` (`asm` a 32 bit: la versione Pascal misurata una volta, misura rifiutata per dispersione).
 
 | Funzione | Chiamate | Moduli chiamanti |
 |---|---:|---|

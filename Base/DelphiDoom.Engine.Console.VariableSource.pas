@@ -14,18 +14,20 @@ interface
 
 uses
   System.Generics.Collections,
+  DelphiDoom.Configuration.Intf,
   DelphiDoom.Console.Intf;
 
 type
   /// <summary>
-  ///   Every row of defaults that is not a group, in the order of the table; a name is found as
-  ///   the old loop found it: the first row with that name
+  ///   Every row of the table of the options that is not a group, in the order of the table; a
+  ///   name is found as the old loop found it: the first row with that name
   /// </summary>
   TEngineConsoleVariableSource = class(TInterfacedObject, IConsoleVariableSource)
-  private
+  strict private
     FVariables: TList<IConsoleVariable>;
   public
-    constructor Create;
+    /// <remarks>Raises EArgumentNilException if ATable is nil</remarks>
+    constructor Create(const ATable: IConfigurationTable);
     destructor Destroy; override;
     function Count: Integer;
     function Item(AIndex: Integer): IConsoleVariable;
@@ -35,20 +37,26 @@ type
 implementation
 
 uses
-  m_defs,
+  System.SysUtils,
+  DelphiDoom.Configuration.Types,
   DelphiDoom.Engine.Console.Variable;
+
+const
+  STableIsNil = 'TEngineConsoleVariableSource: the table is nil';
 
 { TEngineConsoleVariableSource }
 
-constructor TEngineConsoleVariableSource.Create;
+constructor TEngineConsoleVariableSource.Create(const ATable: IConfigurationTable);
 var
   LIndex: Integer;
 begin
   inherited Create;
+  if not Assigned(ATable) then
+    raise EArgumentNilException.Create(STableIsNil);
   FVariables := TList<IConsoleVariable>.Create;
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex]._type <> m_defs.tGroup then
-      FVariables.Add(TEngineConsoleVariable.Create(@defaults[LIndex]));
+  for LIndex := 0 to ATable.Count - 1 do
+    if ATable.Item(LIndex).Kind <> cikGroup then
+      FVariables.Add(TEngineConsoleVariable.Create(ATable.Item(LIndex)));
 end;
 
 destructor TEngineConsoleVariableSource.Destroy;

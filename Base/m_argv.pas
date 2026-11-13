@@ -74,12 +74,12 @@ procedure M_InitArgv;
 //==============================================================================
 //
 // M_ConfigureArgv
-// Gives the unit what it builds the command line with, the command line that answers
+// Gives the unit what builds the command line (the process and the default file), the command line that answers
 // (and remembers) the questions and the names of the saved files. The composition root
 // calls it before M_InitArgv; M_InitArgv attaches to ACommandLine what it builds
 //
 //==============================================================================
-procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder;
+procedure M_ConfigureArgv(const AStartup: ICommandLineStartup;
   const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames);
 
 //==============================================================================
@@ -107,13 +107,11 @@ implementation
 
 uses
   d_delphi,
-  m_base,
-  i_system,
-  DelphiDoom.CommandLine.DefaultFile;
+  i_system;
 
 var
   // given by the composition root (M_ConfigureArgv)
-  argv_builder: ICommandLineBuilder = nil;
+  argv_startup: ICommandLineStartup = nil;
   // answers the questions and remembers what was asked; M_InitArgv attaches the command line to it
   argv_queried: IQueriedCommandLine = nil;
   argv_savenames: ISaveFileNames = nil;
@@ -150,10 +148,10 @@ end;
 // M_ConfigureArgv
 //
 //==============================================================================
-procedure M_ConfigureArgv(const ABuilder: ICommandLineBuilder;
+procedure M_ConfigureArgv(const AStartup: ICommandLineStartup;
   const ACommandLine: IQueriedCommandLine; const ASaveFileNames: ISaveFileNames);
 begin
-  argv_builder := ABuilder;
+  argv_startup := AStartup;
   argv_queried := ACommandLine;
   argv_savenames := ASaveFileNames;
 end;
@@ -166,60 +164,13 @@ end;
 procedure M_InitArgv;
 var
   i: integer;
-  defargv: string;
   cmdln: string;
-  programname: string;
-  argument: string;
-
-  procedure LoadFromDefaultCMD(trywrite: boolean);
-  var
-    str: TDStringList;
-  begin
-    str := TDStringList.Create;
-    try
-      if fexists(defargv) then
-      begin
-        str.LoadFromFile(defargv);
-        argv_builder.AddDefaultFile(str.Text);
-      end
-      else if trywrite then
-      begin
-        str.Text := TDefaultArgumentsFile.Template(APPNAME, fname(programname));
-        if (str.Count > 0) and (str[str.Count - 1] = '') then
-          str.Delete(str.Count - 1);
-        str.SaveToFile(defargv);
-      end;
-    finally
-      str.Free;
-    end;
-  end;
-
 begin
-  if (argv_builder = nil) or (argv_queried = nil) then
+  if (argv_startup = nil) or (argv_queried = nil) then
     I_Error('M_InitArgv(): the command line was not configured (M_ConfigureArgv)');
 
-  for i := 0 to ParamCount do
-  begin
-    argument := strupper(ParamStr(i));
-    if argument <> '' then
-      if argument[1] <> '-' then
-        if fexists(argument) then
-          argument := fexpand(argument);
-    if i = 0 then
-      programname := argument;
-    argv_builder.Add(argument);
-  end;
-
-  defargv := DEFARGVFILENAME;
-  LoadFromDefaultCMD(not I_IsCDRomDrive);
-
-  if I_IsCDRomDrive then
-  begin
-    defargv := M_SaveFileName(DEFARGVFILENAME);
-    LoadFromDefaultCMD(not I_IsCDRomDrive(defargv[1]));
-  end;
-
-  commandline := argv_builder.Build;
+  // the process, then the default file of the program (TCommandLineStartup)
+  commandline := argv_startup.Collect;
   argv_queried.Attach(commandline);
 
   // myargv/myargc: the copy that the older code reads

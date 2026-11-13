@@ -23,25 +23,35 @@ uses
 type
   /// <summary>
   ///   M_LoadDefaults, M_SaveDefaults, M_SetDefault and M_ForceDefault* of the old m_misc.pas:
-  ///   the table of the options (with the pointers to their variables) stays in m_defs, the
-  ///   format of the file comes from Libs\Configuration and the commands "get" and "setdefault"
-  ///   go to the console
+  ///   the rows of the options are an IConfigurationTable (built from the data of m_defs by the
+  ///   composition root), what is done on them is the IConfigurationTableStore of
+  ///   Libs\Configuration; here stay the file on disk, the command line, the messages, the
+  ///   commands "get" and "setdefault" of the console and what the games do after the load
   /// </summary>
-  TEngineDefaults = class(TInterfacedObject, IEngineDefaults)
+  TEngineDefaults = class(TInterfacedObject, IEngineDefaults, IConfigurationResetSink)
   strict private
     FFormat: IConfigurationFormat;
+    FTable: IConfigurationTable;
+    FStore: IConfigurationTableStore;
     FRegistry: ICommandRegistry;
     FInterpreter: IConsoleInterpreter;
     FCommandLine: ICommandLine;
     FFileName: string;
     FConfigNotFound: Boolean;
     procedure ResetMatching(const AMask: string);
+    { IConfigurationResetSink: the messages and the console of a reset }
+    procedure ValueReset(const AName, ALowerName: string);
+    function HasCommand(const ALowerName: string): Boolean;
+    procedure CommandReset(const AName, ALowerName: string; const AItem: IConfigurationItem);
   public
+    /// <param name="ATable">The rows of the options</param>
+    /// <param name="AStore">Load, save and force on ATable</param>
     /// <param name="ARegistry">Where the commands of the defaults go and where Reset looks for a command</param>
     /// <param name="AInterpreter">Runs "get" and the command of an option after Reset</param>
     /// <param name="ACommandLine">Where -defaultvalues and -config are looked for</param>
     /// <remarks>Raises EArgumentNilException if one of them is nil</remarks>
-    constructor Create(const AFormat: IConfigurationFormat; const ARegistry: ICommandRegistry;
+    constructor Create(const AFormat: IConfigurationFormat; const ATable: IConfigurationTable;
+      const AStore: IConfigurationTableStore; const ARegistry: ICommandRegistry;
       const AInterpreter: IConsoleInterpreter; const ACommandLine: ICommandLine);
     /// <summary>
     ///   The commands "defaults, setdefaults" and "default, setdefault": both reset every option,
@@ -55,6 +65,7 @@ type
     function ForceInteger(const AName: string; const AValue: Integer): Boolean;
     function ForceString(const AName: string; const AValue: string): Boolean;
     function ConfigNotFound: Boolean;
+    function Table: IConfigurationTable;
   end;
 
 implementation
@@ -75,10 +86,13 @@ uses
 {$IFDEF OPENGL}
   gl_defs,
 {$ENDIF}
+  DelphiDoom.Configuration.Types,
   DelphiDoom.Console.MaskMatcher;
 
 const
   SFormatIsNil = 'TEngineDefaults: the format of the configuration is nil';
+  STableIsNil = 'TEngineDefaults: the table of the options is nil';
+  SStoreIsNil = 'TEngineDefaults: the store of the table is nil';
   SRegistryIsNil = 'TEngineDefaults: the registry of the commands is nil';
   SInterpreterIsNil = 'TEngineDefaults: the interpreter is nil';
   SCommandLineIsNil = 'TEngineDefaults: the command line is nil';
@@ -86,6 +100,7 @@ const
 { TEngineDefaults }
 
 constructor TEngineDefaults.Create(const AFormat: IConfigurationFormat;
+  const ATable: IConfigurationTable; const AStore: IConfigurationTableStore;
   const ARegistry: ICommandRegistry; const AInterpreter: IConsoleInterpreter;
   const ACommandLine: ICommandLine);
 begin
@@ -95,11 +110,17 @@ begin
   FCommandLine := ACommandLine;
   if not Assigned(AFormat) then
     raise EArgumentNilException.Create(SFormatIsNil);
+  if not Assigned(ATable) then
+    raise EArgumentNilException.Create(STableIsNil);
+  if not Assigned(AStore) then
+    raise EArgumentNilException.Create(SStoreIsNil);
   if not Assigned(ARegistry) then
     raise EArgumentNilException.Create(SRegistryIsNil);
   if not Assigned(AInterpreter) then
     raise EArgumentNilException.Create(SInterpreterIsNil);
   FFormat := AFormat;
+  FTable := ATable;
+  FStore := AStore;
   FRegistry := ARegistry;
   FInterpreter := AInterpreter;
   FConfigNotFound := True;
@@ -124,28 +145,20 @@ begin
   Result := FConfigNotFound;
 end;
 
+function TEngineDefaults.Table: IConfigurationTable;
+begin
+  Result := FTable;
+end;
+
 procedure TEngineDefaults.Save;
 var
   LIndex: Integer;
-  LDefault: Pdefault_t;
   LText: TDStringList;
   LWriter: IConfigurationWriter;
   LLines: TArray<string>;
 begin
   LWriter := FFormat.CreateWriter(FFormat.FormatHeader(AppTitle, D_EngineVersion));
-  LDefault := @defaults[0];
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-  begin
-    if LDefault._type = tInteger then
-      LWriter.AddValue(LDefault.name, FFormat.FormatInteger(PInteger(LDefault.location)^))
-    else if LDefault._type = tString then
-      LWriter.AddValue(LDefault.name, PString(LDefault.location)^)
-    else if LDefault._type = tBoolean then
-      LWriter.AddValue(LDefault.name, FFormat.FormatBoolean(PBoolean(LDefault.location)^))
-    else if LDefault._type = tGroup then
-      LWriter.AddGroup(LDefault.name);
-    Inc(LDefault);
-  end;
+  FStore.Write(LWriter);
 
   LText := TDStringList.Create;
   try
@@ -160,36 +173,16 @@ end;
 
 procedure TEngineDefaults.ResetMatching(const AMask: string);
 var
-  LNames: TArray<string>;
   LMatching: TArray<string>;
-  LCount: Integer;
   LIndex: Integer;
-  LDefault: Pdefault_t;
 begin
-  SetLength(LNames, NUMDEFAULTS);
-  LCount := 0;
-  LDefault := @defaults[0];
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-  begin
-    if LDefault._type <> tGroup then
-    begin
-      LNames[LCount] := LDefault.name;
-      Inc(LCount);
-    end;
-    Inc(LDefault);
-  end;
-  SetLength(LNames, LCount);
-
-  LMatching := TConsoleMaskMatcher.Filter(LNames, AMask);
+  LMatching := TConsoleMaskMatcher.Filter(FStore.Names, AMask);
   for LIndex := 0 to High(LMatching) do
     Reset(LMatching[LIndex]);
 end;
 
 procedure TEngineDefaults.Reset(const AName: string);
 var
-  LIndex: Integer;
-  LName: string;
-  LParameter: string;
   LSetFlags: Byte;
 begin
   // set the option to its base value
@@ -211,58 +204,44 @@ begin
     Exit;
   end;
 
-  LName := strlower(AName);
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex].name = LName then
-    begin
-      if defaults[LIndex].setable and LSetFlags <> 0 then
-      begin
-        if defaults[LIndex]._type = tInteger then
-          PInteger(defaults[LIndex].location)^ := defaults[LIndex].defaultivalue
-        else if defaults[LIndex]._type = tBoolean then
-          PBoolean(defaults[LIndex].location)^ := defaults[LIndex].defaultbvalue
-        else if defaults[LIndex]._type = tString then
-          PString(defaults[LIndex].location)^ := defaults[LIndex].defaultsvalue
-        else
-          Exit; // Ouch!
-        printf('Setting default value for %s'#13#10, [AName]);
-        FInterpreter.Execute('get', LName); // Display the default value
-      end
-      else if FRegistry.Contains(LName) then
-      begin
-        if defaults[LIndex]._type = tInteger then
-          LParameter := itoa(defaults[LIndex].defaultivalue)
-        else if defaults[LIndex]._type = tBoolean then
-          LParameter := yesnostrings[defaults[LIndex].defaultbvalue]
-        else if defaults[LIndex]._type = tString then
-          LParameter := defaults[LIndex].defaultsvalue
-        else
-          Exit; // Ouch!
-        printf('Setting default value for %s'#13#10, [AName]);
-        FInterpreter.Execute(LName, LParameter);
-      end;
-    end;
+  FStore.Reset(AName, LSetFlags, Self);
+end;
+
+procedure TEngineDefaults.ValueReset(const AName, ALowerName: string);
+begin
+  printf('Setting default value for %s'#13#10, [AName]);
+  FInterpreter.Execute('get', ALowerName); // Display the default value
+end;
+
+function TEngineDefaults.HasCommand(const ALowerName: string): Boolean;
+begin
+  Result := FRegistry.Contains(ALowerName);
+end;
+
+procedure TEngineDefaults.CommandReset(const AName, ALowerName: string;
+  const AItem: IConfigurationItem);
+var
+  LParameter: string;
+begin
+  case AItem.Kind of
+    cikInteger: LParameter := itoa(AItem.Defaults.IntegerValue);
+    cikBoolean: LParameter := yesnostrings[AItem.Defaults.BooleanValue];
+  else
+    LParameter := AItem.Defaults.StringValue;
+  end;
+  printf('Setting default value for %s'#13#10, [AName]);
+  FInterpreter.Execute(ALowerName, LParameter);
 end;
 
 procedure TEngineDefaults.Load;
 var
   LIndex: Integer;
-  LOption: Integer;
-  LFound: Integer;
-  LDefault: Pdefault_t;
   LText: TDStringList;
-  LName: string;
   LDocument: IConfigurationDocument;
   LLines: TArray<string>;
 begin
   // set everything to base values
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex]._type = tInteger then
-      PInteger(defaults[LIndex].location)^ := defaults[LIndex].defaultivalue
-    else if defaults[LIndex]._type = tBoolean then
-      PBoolean(defaults[LIndex].location)^ := defaults[LIndex].defaultbvalue
-    else if defaults[LIndex]._type = tString then
-      PString(defaults[LIndex].location)^ := defaults[LIndex].defaultsvalue;
+  FStore.ResetAll;
 
   if FCommandLine.IndexOf('-defaultvalues') > 0 then
     Exit;
@@ -292,29 +271,7 @@ begin
       if FFormat.AcceptsHeader(LDocument.Header, D_EngineVersion) then
       begin
         FConfigNotFound := False;
-
-        for LIndex := 0 to LDocument.Count - 1 do
-        begin
-          LFound := -1;
-          LName := LDocument.NameAt(LIndex);
-          for LOption := 0 to NUMDEFAULTS - 1 do
-            if defaults[LOption].name = LName then
-            begin
-              LFound := LOption;
-              Break;
-            end;
-
-          if LFound > -1 then
-          begin
-            LDefault := @defaults[LFound];
-            if LDefault._type = tInteger then
-              PInteger(LDefault.location)^ := FFormat.ParseInteger(LDocument.ValueOf(LName))
-            else if LDefault._type = tBoolean then
-              PBoolean(LDefault.location)^ := FFormat.ParseBoolean(LDocument.ValueOf(LName))
-            else if LDefault._type = tString then
-              PString(LDefault.location)^ := LDocument.ValueOf(LName);
-          end;
-        end;
+        FStore.Apply(LDocument);
       end;
     end;
   finally
@@ -335,78 +292,18 @@ begin
 end;
 
 function TEngineDefaults.ForceBoolean(const AName: string; const AValue: Boolean): Boolean;
-var
-  LIndex: Integer;
-  LName: string;
 begin
-  Result := False;
-  LName := strlower(AName);
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex]._type = tBoolean then
-      if defaults[LIndex].name = LName then
-      begin
-        if defaults[LIndex].oldlocation = nil then
-        begin
-          defaults[LIndex].oldlocation := defaults[LIndex].location;
-          defaults[LIndex].defaultbvalue := PBoolean(defaults[LIndex].location)^;
-          PBoolean(defaults[LIndex].location)^ := AValue;
-          PBoolean(defaults[LIndex].location) := @defaults[LIndex].defaultbvalue;
-          defaults[LIndex].setable := DFS_NEVER;
-        end
-        else
-          PBoolean(defaults[LIndex].oldlocation)^ := AValue;
-        Result := True;
-      end;
+  Result := FStore.ForceBoolean(AName, AValue);
 end;
 
 function TEngineDefaults.ForceInteger(const AName: string; const AValue: Integer): Boolean;
-var
-  LIndex: Integer;
-  LName: string;
 begin
-  Result := False;
-  LName := strlower(AName);
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex]._type = tInteger then
-      if defaults[LIndex].name = LName then
-      begin
-        if defaults[LIndex].oldlocation = nil then
-        begin
-          defaults[LIndex].oldlocation := defaults[LIndex].location;
-          defaults[LIndex].defaultivalue := PInteger(defaults[LIndex].location)^;
-          PInteger(defaults[LIndex].location)^ := AValue;
-          PInteger(defaults[LIndex].location) := @defaults[LIndex].defaultivalue;
-          defaults[LIndex].setable := DFS_NEVER;
-        end
-        else
-          PInteger(defaults[LIndex].oldlocation)^ := AValue;
-        Result := True;
-      end;
+  Result := FStore.ForceInteger(AName, AValue);
 end;
 
 function TEngineDefaults.ForceString(const AName: string; const AValue: string): Boolean;
-var
-  LIndex: Integer;
-  LName: string;
 begin
-  Result := False;
-  LName := strlower(AName);
-  for LIndex := 0 to NUMDEFAULTS - 1 do
-    if defaults[LIndex]._type = tString then
-      if defaults[LIndex].name = LName then
-      begin
-        if defaults[LIndex].oldlocation = nil then
-        begin
-          defaults[LIndex].oldlocation := defaults[LIndex].location;
-          defaults[LIndex].defaultsvalue := PString(defaults[LIndex].location)^;
-          PString(defaults[LIndex].location)^ := AValue;
-          PString(defaults[LIndex].location) := @defaults[LIndex].defaultsvalue;
-          defaults[LIndex].setable := DFS_NEVER;
-        end
-        else
-          PString(defaults[LIndex].oldlocation)^ := AValue;
-        Result := True;
-      end;
+  Result := FStore.ForceString(AName, AValue);
 end;
 
 end.

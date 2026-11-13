@@ -1,0 +1,2 @@
+-warp 1 2 -skill 3
+-nomonsters
