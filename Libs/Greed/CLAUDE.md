@@ -53,7 +53,7 @@ Stato di ogni unit dell'originale (righe dell'originale tra parentesi): **si'** 
 | `Greed\d_video` (438) | si' | `PictureDecoder`, `Canvas` (`VI_Draw*`), `PaletteFader` |
 | `Greed\menu` (1482) | si' (non collegato) | `Menu*` (macchina a stati, `IGreedMenuHost`): parita' sui pixel 72 scenari, 21447 schermi |
 | `Greed\intro` (902) | si' (non collegato) | `TGreedIntro`, `TGreedBriefing`, `TGreedEndGame` (`MissionBriefing`, `EndGame1..3` di `utils.pas`): solo test sintetici, parita' sui pixel in corso (`IntroParity`) |
-| `Greed\playfli` (416) | si' (non collegato) | `FliDecoder` (proprio di Greed, non quello di Xcom), `FliPlayer`: parita' sui pixel su 48 filmati sintetici e 39 filmati reali del CD-ROM (28588 schermi) |
+| `Greed\playfli` (416) | si' (non collegato) | `FliDecoder` (proprio di Greed; **issue #229: confrontato riga per riga con il decoder comune `Libs\Flic` e lasciato separato** perche' i byte differiscono: `ApproxZero` su ogni pixel 0, `BLACK` che riempie lo schermo, `COLOR_256` e `DELTA_FLC` ignorati, schermo fisso 320x200; tabella in `Libs\Flic\CLAUDE.md`, differenze pinzate da `DelphiDoom.Tests.Greed.FliVsFlic`), `FliPlayer`: parita' sui pixel su 48 filmati sintetici e 39 filmati reali del CD-ROM (28588 schermi) |
 | `Greed\net` (965) | fuori | rete IPX/seriale del DOS: non si porta (gli agganci `Net*` sono nell'host del movimento) |
 | `Greed\d_ints`, `d_ints_h`, `timer` (640) | fuori | `Libs\GameHost` (finestra, tasti) e `Libs\Clock`; resta la mappa dei tasti del gioco (`ckeys`, `bt_*`) |
 | `Base\i_main`, `i_video`, `i_windows`, `DirectX` (17628) | fuori | `Libs\GameHost` (`Greed\DelphiDoom.Greed.HostWindow`) |

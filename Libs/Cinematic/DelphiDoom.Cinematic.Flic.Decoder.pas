@@ -4,7 +4,7 @@
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  The chunks (COLOR_256, COLOR_64, DELTA_FLC, DELTA_FLI, BYTE_RUN, LITERAL,   }
-{  BLACK) are decoded by TXcomFlcDecoder (Libs\XcomFormats), a port of         }
+{  BLACK) are decoded by TFlicFrameDecoder (Libs\Flic), a port of              }
 {  FlcPlayer of OpenXcom (GPL v3 or later); this unit is the contract on top   }
 {  of it: validation of the file, ring frame, delays, 32 bit pixels. The       }
 {  remake of Warcraft (acoto87/war1, zlib) has no FLIC code.                   }
@@ -19,8 +19,8 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Imaging.Types,
-  DelphiDoom.Xcom.Types,
-  DelphiDoom.Xcom.FlcDecoder,
+  DelphiDoom.Flic.Types,
+  DelphiDoom.Flic.FrameDecoder,
   DelphiDoom.Cinematic.Flic.Types,
   DelphiDoom.Cinematic.Flic.Intf;
 
@@ -41,7 +41,7 @@ type
   strict private
     FBytes: TBytes;
     FIncludeRingFrame: Boolean;
-    FCore: TXcomFlcDecoder;
+    FCore: TFlicFrameDecoder;
     FWidth: Integer;
     FHeight: Integer;
     FHeaderFrames: Integer;
@@ -123,9 +123,9 @@ procedure TFlicDecoder.OpenCore;
 begin
   FreeAndNil(FCore);
   try
-    FCore := TXcomFlcDecoder.Create(FBytes);
+    FCore := TFlicFrameDecoder.Create(FBytes);
   except
-    on E: EXcomFlcException do
+    on E: EFlicFormatException do
       raise EFlicInvalidDataException.CreateFmt(SBadFile, [E.Message]);
   end;
   FCore.OnPalette := PaletteChanged;
@@ -137,7 +137,7 @@ var
   LSize: Cardinal;
   LType: Word;
 begin
-  // the same walk as TXcomFlcDecoder.FindFrame, to count the frames and refuse the sizes that
+  // the same walk as TFlicFrameDecoder.FindFrame, to count the frames and refuse the sizes that
   // would make it stay where it is
   FFramesFound := 0;
   LPosition := FLIC_HEADER_SIZE;
@@ -181,7 +181,7 @@ end;
 procedure TFlicDecoder.RefreshPalette;
 var
   LIndex: Integer;
-  LColor: TXcomColor;
+  LColor: TFlicColor;
 begin
   for LIndex := 0 to FLIC_PALETTE_SIZE - 1 do
   begin
@@ -203,7 +203,7 @@ begin
     LDelay := FCore.FrameDelay(False);
     FCore.DecodeFrame(FPicture, FWidth, 0, False);
   except
-    on E: EXcomFlcException do
+    on E: EFlicFormatException do
       raise EFlicInvalidDataException.CreateFmt(SBadChunks, [E.Message]);
   end;
   if LDelay = 0 then

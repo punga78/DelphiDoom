@@ -83,6 +83,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Endoom** — Schermo di testo di fine gioco (ENDOOM/ENDTEXT/ENDSTRF) e modello modificabile dell'editor. [CLAUDE.md](Libs/Endoom/CLAUDE.md), [README.md](Libs/Endoom/README.md)
 - **EndoomEditor** — Logica della finestra di ENDEDIT senza VCL (presenter e viste). [CLAUDE.md](Libs/EndoomEditor/CLAUDE.md), [README.md](Libs/EndoomEditor/README.md)
 - **EngineSystem** — Parte fredda delle unit `i_*` (fetta 1d della #185): sequenza di uscita e gestore degli errori fatali, rapporto di crash, opzioni di rete della riga di comando, scelta del player MIDI, player MIDI legacy, musica a moduli, buffer dello stdout, nomi dei log, profilo della macchina. [CLAUDE.md](Libs/EngineSystem/CLAUDE.md), [README.md](Libs/EngineSystem/README.md)
+- **Flic** — Decoder dei fotogrammi FLI/FLC (strato Formati, nessuna dipendenza da Xcom ne' da Greed; spostato da XcomFormats, issue #229 fetta 1): usato da XcomFormats (adattatore) e Cinematic; confronto con il decoder di Greed. [CLAUDE.md](Libs/Flic/CLAUDE.md), [README.md](Libs/Flic/README.md)
 - **Font** — Logica del creatore di font DD_FONT. [CLAUDE.md](Libs/Font/CLAUDE.md), [README.md](Libs/Font/README.md)
 - **FontEditor** — Presenter e viste del creatore di font (modulo Font di DD_Tools). [CLAUDE.md](Libs/FontEditor/CLAUDE.md), [README.md](Libs/FontEditor/README.md) (paragrafo in `Libs\Font`)
 - **GameData** — Parte comune dei fork Mars3D, Rad-X e Speed: costruttore di patch e compositore di WAD. [CLAUDE.md](Libs/GameData/CLAUDE.md), [README.md](Libs/GameData/README.md)
