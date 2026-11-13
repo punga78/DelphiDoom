@@ -253,3 +253,69 @@ patch, la fusione dei poligoni e gli spigoli interni, che non sono portati; la r
 Un chiamante: vedi `WIRING.md`. Da fare se un domani serve: rotazione, patch, fusione dei poligoni e spigoli interni,
 rimozione dei poligoni interni ai brush, adattatore da `idMapFile`/mappa di Doom a `ICollisionGeometrySource`,
 un `ICollisionDebugDraw` per `DrawModel`.
+
+## Collisione di Quake III (id Tech 3, issue #118, prima fetta)
+
+Seconda collisione del repository, **diversa** dalla prima: il modello di Doom 3 (sopra) e' un modello di poligoni e brush con
+traslazione di Plucker, quello di Quake III (`code\qcommon\cm_*.c`) e' un albero BSP di piani con brush a lati e patch, e
+traccia un box o una capsula con le distanze dei piani. Per questo e' un'altra interfaccia (`IQ3CollisionModel`) e non una
+seconda implementazione di `ICollisionModelManager`: forzare l'identita' avrebbe obbligato a tradurre un formato nell'altro.
+Unit `DelphiDoom.Collision.Q3.*` (GPL v2 o successiva, intestazione di Quake III; **percorso freddo**, nessun chiamante nel motore).
+
+| C | Pascal |
+|---|---|
+| `clipMap_t cm`, `box_model`, `c_traces`... | `TQ3ClipMap` (dati, campi pubblici per la velocita'), `TQ3CollisionModel` (interfaccia `IQ3CollisionModel`) |
+| `CMod_Load*`, `CM_BoundBrush`, `CM_LoadMap` | `TQ3ClipMapLoader` (sopra `IBspFile` di `Libs\MapFile`: riuso dei record e del lettore) |
+| `CM_InitBoxHull`, `CM_TempBoxModel` | `TQ3BoxHull` |
+| `CM_FloodArea_r`, `CM_AdjustAreaPortalState`, `CM_AreasConnected`, `CM_WriteAreaBits` | `TQ3AreaFlood` |
+| `CM_PointLeafnum`, `CM_PointContents`, `CM_TransformedPointContents` | `TQ3PointLocator` |
+| `leafList_t`, `CM_StoreLeafs/Brushes`, `CM_BoxLeafnums(_r)`, `CM_BoxBrushes` | `TQ3LeafLister` |
+| `CM_TestBoxInBrush`, `CM_TestInLeaf`, `CM_PositionTest` | `TQ3PositionTester` |
+| `CM_TraceThroughBrush/Leaf/Tree/Patch`, `CM_Trace`, `CM_BoxTrace`, `CM_TransformedBoxTrace`, `RotatePoint`... | `TQ3Tracer`, `TQ3Math` (`DotProduct`, `BoxOnPlaneSide`, `AngleVectors`, `PlaneTypeForNormal`) |
+| `CM_ClipHandleToModel`, `CM_InlineModel`, `CM_ModelBounds`, `CM_LeafCluster/Area`, `CM_ClusterPVS` | `TQ3ClipMap`, `TQ3CollisionModel` |
+
+`TQ3CollisionFactory` e' l'unico punto che conosce le classi. Il file system e' quello di `TBspReader` (`IIdLibFileSystem`), i cvar
+`cm_noAreas` e `cm_noCurves` sono le proprieta' `NoAreas` e `NoCurves`, gli errori `ERR_DROP` sono `EQ3CollisionException` con il
+testo del C. I globali (`cm`, `box_model`, il contatore `checkcount`, `tw`) sono campi o parametri: due modelli non si disturbano.
+
+**Non portato (resta)**: `cm_patch.c` e `cm_polylib.c` (`CM_GeneratePatchCollide`, `CM_TraceThroughPatchCollide`,
+`CM_PositionTestInPatchCollide`, la suddivisione delle patch in facce e i bordi di smusso, 2500 righe): la patch e' letta (griglia di
+punti, contenuti e flags dallo shader) e il punto di innesto e' pronto: `IQ3PatchCollideBuilder` (dato al caricamento) e
+`IQ3PatchCollide` (traccia e test di posizione); **senza un costruttore la patch non collide** (e il C della verifica ha lo stesso
+comportamento: la patch e' sostituita da una che non collide). Non portati nemmeno, perche' il C non li puo' raggiungere:
+`CM_TraceCapsuleThroughCapsule`, `CM_TraceBoundingBoxThroughCapsule`, `CM_TestCapsuleInCapsule`, `CM_TestBoundingBoxInCapsule` e le
+funzioni su sfera e cilindro: `CM_TempBoxModel(.., capsule)` ritorna 254 ma `CM_ClipHandleToModel(254)` solleva `ERR_DROP`
+(difetto del riferimento, **conservato**: `BoxTrace` con quella maniglia solleva `EQ3CollisionException`); in una mappa con 255
+modelli interni o piu' il 254 e' un modello normale, come nel C, ma non viene trattato come capsula. Non portati: `CM_LoadMap`
+con la cache per nome, `CM_Checksum` e `Com_BlockChecksum` (MD4), `CM_LerpTag`, `CM_MarkFragments`, `CM_DrawDebugSurface`, il
+disegno di debug, le statistiche `cm_showTrace`.
+
+**Differenze volute** (ognuna ha un test): (1) un BSP con indici fuori dai lump non viene letto oltre gli array come fa il C: il
+`TBspValidator` di `Libs\MapFile` e' iniettato e il primo problema solleva `EQ3CollisionException`; (2) `CM_BoundBrush` legge i sei
+lati assiali dopo il primo anche per un brush con meno lati (prende i limiti dai brush successivi, **difetto conservato**): se quei
+lati sono oltre la fine della tabella il C dereferenzia NULL, qui e' un errore; (3) le liste dei brush e delle superfici dei modelli
+interni sono accodate alle liste delle foglie (il C usa la differenza tra due puntatori di blocchi diversi, indefinita); (4)
+`BoxLeafnums` e `BoxBrushes` su una mappa senza nodi danno 0 (il C leggerebbe un puntatore nullo); (5) `WriteAreaBits` con un'area
+fuori dalle aree solleva l'errore (il C legge fuori dalla tabella) e allunga il buffer se e' troppo corto; (6) una patch con troppi
+vertici o vertici fuori dal lump da' errore (il C `MAX_PATCH_VERTS` c'e' gia', il secondo controllo no).
+
+**Difetti del C conservati**: `CM_PointContents` usa `>` e non `>=` (un punto su un piano e' dentro), `CM_TraceThroughTree` usa
+`offset = 2048` per i piani non assiali di un box ("this is silly"), `CM_LoadMap` con la visibilita' vuota crea
+`(clusters + 31) & ~31` byte di 255 (cioe' bit, non byte), il test di posizione di un brush guarda solo i lati dal sesto in poi (gli
+assiali sono nei limiti), `CM_TransformedBoxTrace` ricalcola `endpos` anche quando la frazione e' 1.
+
+**Aritmetica**: ogni operazione float e' arrotondata da sola (`TQ3Math.Dot` somma pezzo per pezzo) come il C compilato con SSE
+(`-ffp-contract=off`); dove il C mescola (`SURFACE_CLIP_EPSILON` e' un `double`, `1.0/(t1-t2)` e' una divisione `double`,
+`fabs()` restituisce un `double`) qui sono `Double` negli stessi punti. `M_PI` e' il `float` di `q_shared.h` (quello che ha MSVC).
+
+**Verifica**: `Tools\Verifica\118` (gcc di w64devkit) compila le **righe vere** di `cm_load.c`, `cm_test.c`, `cm_trace.c` e
+`q_math.c` (copiate in una cartella di lavoro, `qcommon.h` e un guscio di `q_shared.h` come unici stub; `cm_patch.c` sostituito da
+una patch che non collide) e scrive due BSP sintetici (45 e 30 brush assiali e smussati, albero k-d, un modello interno fuori
+dall'albero, due patch, visibilita' nel primo) in `Tests\Data\Collision\q3world0.bsp` e `q3world1.bsp` e **2502 interrogazioni con la
+risposta del C** in `q3cm.golden.txt`: caricamento (conteggi e impronte di piani, brush, foglie, nodi, modelli, visibilita', aree,
+entita'), `CM_PointLeafnum`, `CM_PointContents` su tre modelli, `CM_TransformedPointContents`, `CM_BoxLeafnums` e `CM_BoxBrushes`
+(anche con la lista che trabocca), 495 `CM_BoxTrace` e `CM_TransformedBoxTrace` (punto, box, capsula, posizione ferma, mascherate,
+con origine e angoli, contro il mondo, un modello interno e un box temporaneo), portali delle aree. **Risultato: 0 differenze a 64
+bit (i float uguali come bit); a 32 bit (x87) tolleranza di 4 ULP, 16 per i trace ruotati.** I BSP sono dati prodotti dal
+generatore (nessuna mappa di gioco); ogni float e' scritto come bit. Test: `Tests\DelphiDoom.Tests.Collision` (133 con i 95 di Doom
+3), copertura delle unit nuove 97-100%.
