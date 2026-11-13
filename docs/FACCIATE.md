@@ -1204,7 +1204,20 @@ Per toglierla: `P_Random` e il percorso caldo di ogni thinker (migliaia di chiam
 | `N_Random` | 118 | DelphiDoom.Engine.Scanner.ActorFunctions (10), Doom\p_extra (15), Doom\p_genlin, Doom\p_inter (2), Doom\p_map (2), Doom\p_mobj (9), Doom\p_spec, Heretic\p_extra (2), +16 altri |
 | `P_Random` | 924 | DelphiDoom.Engine.Scanner.ActorFunctions, Doom\g_game, Doom\p_enemy (44), Doom\p_extra (6), Doom\p_inter (3), Doom\p_map (9), Doom\p_mobj (31), Doom\p_pspr (17), +37 altri |
 
+### `Base\i_net.pas`, `i_mikplay.pas`, `i_midi_legacy.pas`, `i_crashlog.pas` - facciate sopra `Libs\EngineSystem` (#185 fetta 1d)
+
+**Facciate (#185)**: `I_InitNetwork` legge le opzioni con `INetCommandLineReader` (`I_ConfigureNetOptions`) e le scrive nelle variabili `net_*`, in `netgame` e in `R_SetViewAngleOffset` (la lettura della riga di comando e' `TNetCommandLineReader`). `I_InitMik` e le altre `I_*Mik` (`I_ConfigureMik`) chiamano `IModuleMusicPlayer` (chiamante: `TModuleMusicBackend`). Le `I_*Midi_Legacy`, `AddMidiFileToPlayList_Legacy` e `ClearMidiFilePlayList_Legacy` (`I_ConfigureLegacyMidi`) chiamano `ILegacyMidiPlayer` (chiamante: `i_midi`). `I_InstallCrashLogger` e' `TWindowsCrashLogger.Install` (chiamanti: i dieci `.dpr` dei giochi). Per toglierle: `Engine.Music.ModuleBackend` e `Engine.Music.MidiFileBackend` possono ricevere i player dal costruttore invece di passare dalle facciate; `i_net` si toglie quando `TEngineNetGame` riceve `INetCommandLineReader` e scrive lui le variabili `net_*`.
+
+### `Base\i_io.pas` - ridotta (#185 fetta 1d)
+
+**Ridotta (#185)**: `stdoutbuffer` e' un `TStdoutBuffer` (stesse proprieta' `Text`, `Count` e `[i]` di prima, quindi `i_startup` e la console di gioco non cambiano) e `I_IOprintf` e' una riga; `I_InitializeIO` prende i nomi dei tre file da `TLogFileNames`. Restano le finestre di messaggio, i `TFile` dei log e `I_IOSetWindowHandle`.
+
+### `Base\i_midi.pas` - ridotta (#185 fetta 1d)
+
+**Ridotta (#185)**: la scelta del player (`-uselegacymidiplayer`, `-nouselegacymidiplayer`, `-internalmidiplayer`) e della periferica (`-mididevice`) e' `TMidiPlayerSelection` (`I_ConfigureMidiOptions`); resta lo smistamento tra il player legacy e quello interno (`I_ConfigureMidi`) e le costanti `MThd`, `MTrk` e `midivolumecontrol`.
 ### `Base\i_system.pas` - 46 funzioni pubbliche, 1121 chiamate
+
+**Ridotta (#185 fetta 1d)**: `I_Destroy` esegue la `IShutdownSequence` (`I_ConfigureShutdown`; i passi sono in `Base\DelphiDoom.Engine.System.ShutdownPlan`), `I_Error` chiama l'`IFatalErrorHandler` (`I_ConfigureFatalError`; i passi sono in `...FatalErrorSteps`; `in_i_error` resta qui perche' la legge `r_data`) e `I_DetectCPU` usa `TMachineProfileBuilder`. Le altre routine erano gia' una riga su una libreria o una chiamata a Windows e restano.
 
 Per toglierla: e il punto di ingresso di log, clock e piattaforma (`I_Error`, `I_Warning`, `I_GetTime`, ~700 chiamanti): migrare a mano i chiamanti ai servizi iniettati, o tenerla come facciata definitiva. Dalla #155 le classi del motore ricevono `ILog`, `IClock` e `IEngineShutdown` (le chiamate di classe sono scese); `I_CreateProcess`, `I_WaitForProcess` e `I_Sleep` non hanno piu chiamanti.
 

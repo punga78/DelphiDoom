@@ -44,7 +44,8 @@ uses
   DelphiDoom.Tests.EngineSystem.ModuleMusicPlayer in 'Source\DelphiDoom.Tests.EngineSystem.ModuleMusicPlayer.pas',
   DelphiDoom.Tests.EngineSystem.Io in 'Source\DelphiDoom.Tests.EngineSystem.Io.pas',
   DelphiDoom.Tests.EngineSystem.Lifecycle in 'Source\DelphiDoom.Tests.EngineSystem.Lifecycle.pas',
-  DelphiDoom.Tests.EngineSystem.Crash in 'Source\DelphiDoom.Tests.EngineSystem.Crash.pas';
+  DelphiDoom.Tests.EngineSystem.Crash in 'Source\DelphiDoom.Tests.EngineSystem.Crash.pas',
+  DelphiDoom.Tests.EngineSystem.Windows in 'Source\DelphiDoom.Tests.EngineSystem.Windows.pas';
 
 var
   Runner: ITestRunner;

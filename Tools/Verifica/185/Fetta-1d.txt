@@ -1,0 +1,80 @@
+Issue #185, fase 1, fetta 1d: la parte fredda di i_* di Base\ (i_system, i_io, i_tmp, i_threads, i_crashlog, i_mikplay,
+i_midi, i_midi_legacy, i_net) a classi in Libs\EngineSystem. Riferimento: master cb5a45e3 (eseguibili di riferimento
+compilati da li').
+
+== Cosa e' cambiato nel motore (per decidere cosa guardare) ==
+  - I_Destroy esegue TShutdownSequence (stessi testi, stesso ordine, i passi sono in
+    Base\DelphiDoom.Engine.System.ShutdownPlan.pas); I_Error passa da TFatalErrorHandler (stesso ordine).
+  - I_InitializeIO calcola i nomi dei log con TLogFileNames; I_IOprintf mette il testo in TStdoutBuffer.
+  - I_DetectCPU usa TMachineProfileBuilder.
+  - i_net, i_mikplay, i_midi, i_midi_legacy, i_crashlog sono facciate; ComposeFatalError e ComposeSystem sono in
+    DelphiDoom.Engine.Composition.
+  - Il filtro delle eccezioni non calcola piu' il percorso di crash.txt quando arriva il crash: lo calcola in
+    I_InstallCrashLogger.
+
+== 1. Verifica standard del ramo (build, suite, demo, avvii, golden) ==
+  powershell -NoProfile -File Tools\Verifica\185\Verifica-Ramo.ps1 -Root <worktree> -Suites EngineSystem,Hud,Parity,Common,Renderer,Iwad,Palette,OpenGl,Radix,Speed
+  Attesi: 116 test della suite EngineSystem passati, dieci eseguibili con
+  386 / 336 / 308 / 258 / 203 / 153 / 417 / 344 / 385 / 386 avvisi (Doom32, GLDoom32, Heretic32, GLHeretic32,
+  Hexen32, GLHexen32, Strife32, GLStrife32, Radix32, SpeedHaste32), cioe' un avviso in meno per eseguibile rispetto
+  alla base 387 / 337 / 309 / 259 / 204 / 154 / 418 / 345 / 386 / 387 (la base di Verifica-Ramo.ps1 e' in quest'ordine).
+  Le demo di Doom32 devono dare 5026, 3836, 2134 gametic. 88 confronti con i golden tutti UGUALI.
+
+== 2. Prove che il corpus non esercita, da fare a mano ==
+  Le demo e i golden chiudono il gioco con I_Quit: esercitano quindi gia' I_Destroy (sequenza di uscita) e la scrittura
+  dei tre file di log. Quello che segue NON e' nel corpus.
+
+  a) Uscita: leggere bin\<Gioco>\DATA\LOGS\<Gioco>32_stdout.txt e _stderr.txt di una demo e confrontarli con quelli
+     dell'eseguibile di riferimento: le righe dell'uscita devono essere uguali, nello stesso ordine:
+       I_Destroy: Game finished. / D_QuitNetGame / I_ShutDownSound / I_ShutDownMusic / I_ShutDownInput /
+       M_SaveDefaults / I_ShutDownGraphics / D_ShutDown / I_ShutDownNetwork / I_RestoreDesktop /
+       I_ShutDownTempFiles / I_ShutDownIO / Halt(0)
+     powershell -NoProfile -File Tools\Esegui-gioco.ps1 -Exe <nuovo>\Doom32.exe -Arguments '-iwad DOOM1.WAD -devparm -nomusic -nosound -timedemo demo1' -StopWhenExited
+     (stesso comando con l'eseguibile di riferimento; confrontare i due stdout.txt con fc.exe: possono differire solo
+     per i tempi e i percorsi)
+  b) -dontsavedefaults: con questa opzione la riga "M_SaveDefaults: Saving defaults." NON deve comparire e il file
+     .ini non deve essere riscritto (data del file invariata).
+       ... -Arguments '-iwad DOOM1.WAD -devparm -nomusic -nosound -timedemo demo1 -dontsavedefaults'
+  c) I_Error: un errore fatale deve scrivere il messaggio in DATA\LOGS\*_stderr.txt, la riga "I_Error: ..." nello
+     stdout, aprire la finestra di errore (provare con un WAD che non esiste, ma SENZA clic: usare -Seconds e
+     chiudere per PID) e uscire con codice 1:
+       ... -Arguments '-iwad NONESISTE.WAD' -StopWhenExited   (la finestra blocca: chiudere per PID dopo 10 s)
+     Confrontare con l'eseguibile di riferimento: stesso testo nel _stderr.txt.
+  d) Nomi dei log con -debugfile: deve nascere DATA\LOGS\Doom32_debug0.txt (numero del giocatore) invece di
+     Doom32_debug.txt; stesso comportamento per i GL (prefisso GL).
+       ... -Arguments '-iwad DOOM1.WAD -devparm -nomusic -nosound -timedemo demo1 -debugfile'
+  e) Opzioni di rete (parsing, senza un secondo computer): l'avvio deve scrivere le stesse righe del riferimento
+       ... -Arguments '-iwad DOOM1.WAD -devparm -nomusic -nosound -dup 2 -extratic -port 5100 -net 1 .127.0.0.1'
+     righe attese: "Using Port 5100", "console player number: 0", "Node number 1 address 127.0.0.1",
+     "Total number of players : 2" (poi il gioco aspetta l'altro nodo: chiudere per PID dopo 10 s).
+     Drone: '-left', '-right', '-back' girano la vista di 90, 270, 180 gradi (guardare un fotogramma con -framedump).
+  f) Musica a moduli e MIDI (non c'e' un file nei golden, che girano con -nomusic): provare con la musica accesa,
+     senza -nomusic, con un WAD che ha un MOD/S3M/XM/IT in un PK3 e con i MIDI normali; il log deve avere gli stessi
+     avvisi del riferimento ("I_InitMik" ecc.) e il gioco deve restare vivo 25 s senza crash.txt:
+       ... -Arguments '-iwad DOOM1.WAD -warp 1 1 -devparm -uselegacymidiplayer'     (player legacy: MCI)
+       ... -Arguments '-iwad DOOM1.WAD -warp 1 1 -devparm -internalmidiplayer'      (player interno)
+       ... -Arguments '-iwad DOOM1.WAD -warp 1 1 -devparm -mididevice 0'
+     Il player legacy suona dal vivo: richiede ascolto (non automatico).
+  g) Rapporto di crash: non si puo' provocare un crash del motore senza modificarlo. Il rapporto e' provato dai test
+     (formato identico a quello del vecchio filtro su un'eccezione costruita). Prova a mano facoltativa: un
+     eseguibile di prova che divide per zero o scrive a indirizzo 0 dopo I_InstallCrashLogger deve produrre
+     crash.txt accanto all'eseguibile con la stessa struttura del vecchio.
+  h) Misura delle prestazioni: la fetta non tocca percorsi caldi (nessuna routine della tabella dei colonne, dei
+     thinker o del renderer cambia; i_threads, usato dal renderer, non e' cambiato). Non serve la misura a coppie; se si
+     vuole, la conferma e' una sola coppia:
+     powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio <riferimento>\Doom32.exe -Nuovo <nuovo>\Doom32.exe -Demo demo1 -Iwad DOOM1.WAD -Coppie 5
+
+== 3. Rami che il corpus e i test non esercitano ==
+  - I_Error: gestore e passi provati dai test con passi finti; l'ordine reale (file di errore, finestra, uscita 1) solo da c).
+  - Errore prima di ComposeEngine / durante ComposeEngine: prima di ComposeFatalError (dopo il log) I_Error ricade su
+    printf e Halt(1) senza finestra; prima di ComposeSystem (fine di ComposeEngine) I_Destroy non ha la sequenza e fa solo Halt.
+    Il vecchio codice faceva comunque I_Destroy completo: differenza dichiarata, non provata.
+  - Giocatori in rete (-net con un secondo computer): solo il parsing (e).
+  - Drone (-left, -right, -back): R_SetViewAngleOffset chiamata con gli angoli giusti; solo lettura del codice.
+  - Player MIDI legacy (MCI e finestra nascosta): la sequenza dei comandi e' uguale al vecchio nei test (400 scenari
+    casuali con un sequencer finto); la finestra vera (TWindowsMidiNotifyWindow, 0% di copertura nei test) e MCI
+    vero solo da f), a orecchio.
+  - Musica a moduli con una periferica vera (DirectSound): solo f).
+  - CD-ROM (CD_WORKDIR per i log): solo i test dei nomi.
+  - Win64: il rapporto di crash e' solo Win32 (Install non fa niente a 64 bit, come prima non compilava).
+  - OpenGL: stessi file, eseguibili GL compilati; avvio dei GL dal Verifica-Ramo.
