@@ -1,0 +1,18 @@
+# map file cases (name, optional ' !' = ignore the .reg file)
+v2_basic
+v1_old
+directives
+region
+region !
+empty
+keys
+nonascii
+missing
+err_eof
+err_open
+err_plane
+err_patchsize
+err_patchrow
+err_brushkey
+err_brushclose
+err_texmat

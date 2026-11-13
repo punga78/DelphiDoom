@@ -101,6 +101,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Keen** — Port a classi di Commander Keen in Keen Dreams (formati di dati, mappe, grafica, input, motore dei livelli, azioni del giocatore e dei nemici, audio AdLib, ID_US e salvataggi, schermate di avvio, ciclo di gioco: `Keen32` e' il gioco in finestra). [CLAUDE.md](Libs/Keen/CLAUDE.md), [README.md](Libs/Keen/README.md)
 - **Logging** — Log del motore: `ILog`, canali e sink. [CLAUDE.md](Libs/Logging/CLAUDE.md), [README.md](Libs/Logging/README.md)
 - **M2m** — Convertitore MIDI in MUS. [CLAUDE.md](Libs/M2m/CLAUDE.md), [README.md](Libs/M2m/README.md) (paragrafo in `Libs\Zlib`)
+- **MapFile** — Lettura e scrittura dei file `.map` di id Tech 4 (modello di mappa, entita', brush, patch; versioni 1 e 2, brushDef3, patchDef2/3, brush di Quake III; port di `idMapFile` sopra `TIdLexer` e `TIdDict`; parita' col vero C++, issue #106). [CLAUDE.md](Libs/MapFile/CLAUDE.md), [README.md](Libs/MapFile/README.md)
 - **MapInfo** — Lettura di UMAPINFO e catalogo delle mappe. [CLAUDE.md](Libs/MapInfo/CLAUDE.md), [README.md](Libs/MapInfo/README.md)
 - **MathCore** — Parti pure di generatore casuale, hash, CRC, SHA-1, tabelle trigonometriche, aritmetica fixed, vettori e bbox; in virgola mobile di id Tech 4 (issue #95, prima fetta: angoli, quaternioni, matrice 3x3, rotazione, complessi, polinomi). [CLAUDE.md](Libs/MathCore/CLAUDE.md), [README.md](Libs/MathCore/README.md)
 - **Midi** — Sequencer MIDI senza dispositivo, volume ed event feeder. [CLAUDE.md](Libs/Midi/CLAUDE.md), [README.md](Libs/Midi/README.md)

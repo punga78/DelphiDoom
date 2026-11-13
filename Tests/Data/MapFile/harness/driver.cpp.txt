@@ -1,0 +1,175 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+static idCommon theCommon;
+static idFileSystem theFs;
+
+struct Entry { char name[512]; Blob data; };
+static Entry files[16];
+static int numFiles = 0;
+static Entry *findFile(const char *n) { for (int i = 0; i < numFiles; i++) if (!strcmp(files[i].name, n)) return &files[i]; return 0; }
+static Entry *putFile(const char *n) { Entry *e = findFile(n); if (!e) { e = &files[numFiles++]; strcpy(e->name, n); } free(e->data.p); e->data.p = 0; e->data.n = 0; return e; }
+
+static char escbufs[4][131072];
+static int escidx = 0;
+static const char *esc(const char *s, int n) {
+	char *r = escbufs[escidx++ & 3]; int o = 0;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		if (c == '\\') { r[o++] = '\\'; r[o++] = '\\'; }
+		else if (c == '\n') { r[o++] = '\\'; r[o++] = 'n'; }
+		else if (c == '\r') { r[o++] = '\\'; r[o++] = 'r'; }
+		else if (c == '\t') { r[o++] = '\\'; r[o++] = 't'; }
+		else if (c < 32 || c > 126) { o += sprintf(r + o, "\\x%02X", c); }
+		else r[o++] = (char)c;
+	}
+	r[o] = 0;
+	return r;
+}
+static const char *esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b)); }
+void idCommon::Warning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::DWarning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::Error(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	Entry *e = findFile(n);
+	if (!e) return 0;
+	idFile *f = new idFile; f->rd.Append(e->data.p ? e->data.p : "", e->data.n); strcpy(f->name, n); f->ts = 1234; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { idFile *f = new idFile; strcpy(f->name, n); return f; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *n) { idFile *f = new idFile; strcpy(f->name, n); return f; }
+void idFileSystem::CloseFile(idFile *f) {
+	if (f->rd.n == 0) { Entry *e = putFile(f->name); e->data.Append(f->out.p ? f->out.p : "", f->out.n); }
+	delete f;
+}
+int idFileSystem::ReadFile(const char *n, void **b, long *t) {
+	Entry *e = findFile(n);
+	if (!e) { if (b) *b = 0; return -1; }
+	if (t) *t = 1234;
+	if (b) { char *buf = (char *)malloc(e->data.n + 1); memcpy(buf, e->data.p, e->data.n); buf[e->data.n] = 0; *b = buf; }
+	return e->data.n;
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+
+struct Spy : public idMapFile {
+	float Ver() { return version; }
+	bool HasPrim() { return hasPrimitiveData; }
+};
+
+static unsigned int bits(float f) { unsigned int u; memcpy(&u, &f, 4); return u; }
+#define F(x) bits(x)
+
+static void dumpDict(const char *tag, const idDict &d) {
+	for (int i = 0; i < d.GetNumKeyVals(); i++) {
+		printf("%s |%s|", tag, esc(d.GetKeyVal(i)->GetKey().c_str()));
+		printf("=|%s|\n", esc(d.GetKeyVal(i)->GetValue().c_str()));
+	}
+}
+
+static void dumpMap(idMapFile &mf) {
+	Spy *spy = (Spy *)&mf;
+	printf("NAME |%s|\n", esc(mf.GetName()));
+	printf("VERSION #%08x\n", F(spy->Ver()));
+	printf("FILETIME %ld\n", (long)mf.GetFileTime());
+	printf("HASPRIM %d\n", spy->HasPrim() ? 1 : 0);
+	printf("GEOCRC %08x\n", mf.GetGeometryCRC());
+	printf("ENTITIES %d\n", mf.GetNumEntities());
+	for (int e = 0; e < mf.GetNumEntities(); e++) {
+		idMapEntity *ent = mf.GetEntity(e);
+		printf("ENT %d keys=%d prims=%d crc=%08x\n", e, ent->epairs.GetNumKeyVals(), ent->GetNumPrimitives(), ent->GetGeometryCRC());
+		dumpDict(" KV", ent->epairs);
+		for (int p = 0; p < ent->GetNumPrimitives(); p++) {
+			idMapPrimitive *prim = ent->GetPrimitive(p);
+			if (prim->GetType() == idMapPrimitive::TYPE_BRUSH) {
+				idMapBrush *b = static_cast<idMapBrush *>(prim);
+				printf(" PRIM %d brush sides=%d crc=%08x\n", p, b->GetNumSides(), b->GetGeometryCRC());
+				dumpDict("  EP", b->epairs);
+				for (int s = 0; s < b->GetNumSides(); s++) {
+					idMapBrushSide *side = b->GetSide(s);
+					idVec3 m1, m2; side->GetTextureMatrix(m1, m2);
+					idVec4 tv[2]; side->GetTextureVectors(tv);
+					printf("  SIDE #%08x #%08x #%08x #%08x |%s|\n", F(side->GetPlane()[0]), F(side->GetPlane()[1]), F(side->GetPlane()[2]), F(side->GetPlane()[3]), esc(side->GetMaterial()));
+					printf("  TM #%08x #%08x #%08x #%08x #%08x #%08x\n", F(m1[0]), F(m1[1]), F(m1[2]), F(m2[0]), F(m2[1]), F(m2[2]));
+					printf("  TV #%08x #%08x #%08x #%08x #%08x #%08x #%08x #%08x\n", F(tv[0][0]), F(tv[0][1]), F(tv[0][2]), F(tv[0][3]), F(tv[1][0]), F(tv[1][1]), F(tv[1][2]), F(tv[1][3]));
+				}
+			} else {
+				idMapPatch *pa = static_cast<idMapPatch *>(prim);
+				printf(" PRIM %d patch w=%d h=%d hs=%d vs=%d expl=%d crc=%08x |%s|\n", p, pa->GetWidth(), pa->GetHeight(), pa->GetHorzSubdivisions(), pa->GetVertSubdivisions(), pa->GetExplicitlySubdivided() ? 1 : 0, pa->GetGeometryCRC(), esc(pa->GetMaterial()));
+				dumpDict("  EP", pa->epairs);
+				for (int k = 0; k < pa->GetWidth() * pa->GetHeight(); k++) {
+					const idDrawVert &v = (*pa)[k];
+					printf("  V %d #%08x #%08x #%08x #%08x #%08x\n", k, F(v.xyz[0]), F(v.xyz[1]), F(v.xyz[2]), F(v.st[0]), F(v.st[1]));
+				}
+			}
+		}
+	}
+}
+
+static bool loadInto(const char *path, const char *key) {
+	FILE *f = fopen(path, "rb");
+	if (!f) return false;
+	Entry *e = putFile(key);
+	char buf[8192]; size_t n;
+	while ((n = fread(buf, 1, sizeof(buf), f)) > 0) e->data.Append(buf, (int)n);
+	fclose(f);
+	return true;
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, 0, _IONBF, 0);
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon;
+	idMath::Init(); idDict::Init();
+	char path[1024], line[1024];
+	sprintf(path, "%s/cases.txt", argv[1]);
+	FILE *in = fopen(path, "rb");
+	while (fgets(line, sizeof(line), in)) {
+		size_t l = strlen(line);
+		while (l && (line[l - 1] == '\n' || line[l - 1] == '\r')) line[--l] = 0;
+		if (!l || line[0] == '#') continue;
+		bool ignoreRegion = false;
+		if (l > 2 && !strcmp(line + l - 2, " !")) { ignoreRegion = true; line[l - 2] = 0; }
+		char key[600];
+		numFiles = 0;
+		sprintf(path, "%s/%s.map", argv[1], line); sprintf(key, "%s.map", line); loadInto(path, key);
+		sprintf(path, "%s/%s.reg", argv[1], line); sprintf(key, "%s.reg", line); loadInto(path, key);
+		printf("CASE %s%s\n", line, ignoreRegion ? " !" : "");
+		try {
+			idMapFile mf;
+			bool ok = mf.Parse(line, ignoreRegion, false);
+			printf("PARSE %d\n", ok ? 1 : 0);
+			if (ok) {
+				dumpMap(mf);
+				bool w = mf.Write(line, "out", false);
+				printf("WRITE %d\n", w ? 1 : 0);
+				sprintf(key, "%s.out", line);
+				Entry *o = findFile(key);
+				if (o && o->data.p) {
+					char *s = o->data.p; char *end = s + o->data.n;
+					while (s < end) {
+						char *q = (char *)memchr(s, '\n', end - s);
+						if (!q) q = end;
+						printf("| %s\n", esc(s, (int)(q - s)));
+						s = q + 1;
+					}
+				}
+				printf("ENDWRITE\n");
+			}
+		} catch (idException &e) {
+			printf("ERR %s\n", esc(e.error));
+		}
+	}
+	return 0;
+}

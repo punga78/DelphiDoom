@@ -1,0 +1,557 @@
+CASE v2_basic
+PARSE 1
+NAME |v2_basic|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC b5b7e0c8
+ENTITIES 3
+ENT 0 keys=3 prims=3 crc=34e7e0f4
+ KV |classname|=|worldspawn|
+ KV |name|=|world|
+ KV |message|=|Test map for the map file library|
+ PRIM 0 brush sides=6 crc=7fcccd59
+  SIDE #3f800000 #00000000 #00000000 #c2800000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #00000000 #00000000 #bd000000 #00000000
+  SIDE #bf800000 #00000000 #00000000 #00000000 |textures/test/wall|
+  TM #3d000000 #00000000 #3f000000 #00000000 #3d000000 #3e800000
+  TV #313bbd2e #bd000000 #00000000 #3f000000 #00000000 #80000000 #bd000000 #3e800000
+  SIDE #00000000 #3f800000 #00000000 #c2800000 |textures/test/side|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #bd000000 #b0bbbd2e #00000000 #00000000 #80000000 #00000000 #bd000000 #00000000
+  SIDE #00000000 #bf800000 #00000000 #00000000 |textures/test/side|
+  TM #3d800000 #00000000 #00000000 #00000000 #3d800000 #00000000
+  TV #3d800000 #b13bbd2e #00000000 #00000000 #00000000 #80000000 #bd800000 #00000000
+  SIDE #00000000 #00000000 #3f800000 #c2000000 |textures/test/ceil|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+  SIDE #00000000 #00000000 #bf800000 #3dcccccd |textures/test/floor|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #00000000 #bd000000 #00000000 #30bbbd2e #00000000
+ PRIM 1 brush sides=3 crc=34e5e0cd
+  EP |editor_color|=|0.5 0.5 1|
+  SIDE #3f13cd3a #3f13cd3a #3f13cd3a #c2c80040 |textures/test/slant|
+  TM #3d000000 #00000000 #3f000000 #00000000 #3d000000 #00000000
+  TV #bcb504f3 #3cb504f3 #00000000 #3f000000 #3c5105eb #3c5105eb #bcd105eb #00000000
+  SIDE #bf19999a #3f4ccccd #00000000 #4ceb79a3 |textures/test/slant|
+  TM #3ca3d70a #3c23d70a #00000000 #bc23d70a #3ca3d70a #3e000000
+  TV #bc83126e #bc449ba7 #bc23d70a #00000000 #3c03126e #3bc49ba7 #bca3d70a #3e000000
+  SIDE #00000000 #00000000 #3f800000 #3a000000 |textures/test/slant|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+ PRIM 2 patch w=3 h=3 hs=4 vs=5 expl=1 crc=7fcecd60 |textures/test/curve|
+  V 0 #00000000 #00000000 #00000000 #00000000 #00000000
+  V 1 #42000000 #00000000 #41800000 #3f800000 #00000000
+  V 2 #42800000 #00000000 #00000000 #40000000 #00000000
+  V 3 #00000000 #42000000 #00000000 #00000000 #3f800000
+  V 4 #42000000 #42000000 #42020000 #3f800000 #3f800000
+  V 5 #42800000 #42000000 #00000000 #40000000 #3f800000
+  V 6 #00000000 #42800000 #00000000 #00000000 #40000000
+  V 7 #42000000 #42800000 #41800000 #3f800000 #40000000
+  V 8 #42800000 #42800000 #3dcccccd #40000000 #40000000
+ENT 1 keys=4 prims=2 crc=8150003c
+ KV |classname|=|func_static|
+ KV |name|=|mover_1|
+ KV |model|=|mover_1|
+ KV |origin|=|64 32 16|
+ PRIM 0 brush sides=6 crc=80000000
+  SIDE #3f800000 #00000000 #00000000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #3f800000 #00000000 #00000000 #bd000000 #bf000000
+  SIDE #bf800000 #00000000 #00000000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #313bbd2e #bd000000 #00000000 #bf7ffffd #00000000 #80000000 #bd000000 #bf000000
+  SIDE #00000000 #3f800000 #00000000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #bd000000 #b0bbbd2e #00000000 #c0000000 #80000000 #00000000 #bd000000 #bf000000
+  SIDE #00000000 #bf800000 #00000000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #3d000000 #b0bbbd2e #00000000 #40000000 #00000000 #80000000 #bd000000 #bf000000
+  SIDE #00000000 #00000000 #3f800000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #3f800000 #3d000000 #00000000 #30bbbd2e #40000000
+  SIDE #00000000 #00000000 #bf800000 #c1000000 |textures/test/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #3f800000 #bd000000 #00000000 #30bbbd2e #c0000000
+ PRIM 1 patch w=3 h=2 hs=0 vs=0 expl=0 crc=0150003c |textures/test/curve2|
+  V 0 #40c00000 #41000000 #40800000 #00000000 #00000000
+  V 1 #41800000 #41000000 #40800000 #3f800000 #00000000
+  V 2 #41d00000 #41000000 #40800000 #40000000 #00000000
+  V 3 #40c00000 #41900000 #41000000 #00000000 #3f800000
+  V 4 #41800000 #41900000 #41400000 #3f800000 #3f800000
+  V 5 #41d00000 #41900000 #41000000 #40000000 #3f800000
+ENT 2 keys=4 prims=0 crc=00000000
+ KV |classname|=|light|
+ KV |name|=|light_1|
+ KV |origin|=|10.5 -20.25 30|
+ KV |light_radius|=|300 300 300|
+P: writing v2_basic.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "name" "world"
+| "message" "Test map for the map file library"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 1 0 0 -64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( -1 0 0 0 ) ( ( 0.03125 0 0.5 ) ( 0 0.03125 0.25 ) ) "textures/test/wall" 0 0 0
+|   ( 0 1 0 -64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/side" 0 0 0
+|   ( 0 -1 0 0 ) ( ( 0.0625 0 0 ) ( 0 0.0625 0 ) ) "textures/test/side" 0 0 0
+|   ( 0 0 1 -32 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/ceil" 0 0 0
+|   ( 0 0 -1 0.1000000015 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/floor" 0 0 0
+|  }
+| }
+| // primitive 1
+| {
+|  brushDef3
+|  {
+|   "editor_color" "0.5 0.5 1"
+|   ( 0.5773502588 0.5773502588 0.5773502588 -100.0004882812 ) ( ( 0.03125 0 0.5 ) ( 0 0.03125 0 ) ) "textures/test/slant" 0 0 0
+|   ( -0.6000000238 0.8000000119 0 123456792 ) ( ( 0.0199999996 0.0099999998 0 ) ( -0.0099999998 0.0199999996 0.125 ) ) "textures/test/slant" 0 0 0
+|   ( 0 0 1 0.0004882812 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/slant" 0 0 0
+|  }
+| }
+| // primitive 2
+| {
+|  patchDef3
+|  {
+|   "textures/test/curve"
+|   ( 3 3 4 5 0 0 0 )
+|   (
+|    (  ( 0 0 0 0 0 ) ( 0 32 0 0 1 ) ( 0 64 0 0 2 ) )
+|    (  ( 32 0 16 1 0 ) ( 32 32 32.5 1 1 ) ( 32 64 16 1 2 ) )
+|    (  ( 64 0 0 2 0 ) ( 64 32 0 2 1 ) ( 64 64 0.1000000015 2 2 ) )
+|   )
+|  }
+| }
+| }
+| // entity 1
+| {
+| "classname" "func_static"
+| "name" "mover_1"
+| "model" "mover_1"
+| "origin" "64 32 16"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 1 0 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( -1 0 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( 0 1 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( 0 -1 0 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( 0 0 1 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|   ( 0 0 -1 -8 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/wall" 0 0 0
+|  }
+| }
+| // primitive 1
+| {
+|  patchDef2
+|  {
+|   "textures/test/curve2"
+|   ( 3 2 0 0 0 )
+|   (
+|    (  ( 70 40 20 0 0 ) ( 70 50 24 0 1 ) )
+|    (  ( 80 40 20 1 0 ) ( 80 50 28 1 1 ) )
+|    (  ( 90 40 20 2 0 ) ( 90 50 24 2 1 ) )
+|   )
+|  }
+| }
+| }
+| // entity 2
+| {
+| "classname" "light"
+| "name" "light_1"
+| "origin" "10.5 -20.25 30"
+| "light_radius" "300 300 300"
+| }
+ENDWRITE
+CASE v1_old
+PARSE 1
+NAME |v1_old|
+VERSION #3f800000
+FILETIME 1234
+HASPRIM 1
+GEOCRC fe8003e4
+ENTITIES 3
+ENT 0 keys=2 prims=2 crc=41000015
+ KV |classname|=|worldspawn|
+ KV |wad|=|base|
+ PRIM 0 brush sides=4 crc=00000194
+  SIDE #00000000 #00000000 #3f800000 #80000000 |textures/base/floor|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+  SIDE #00000000 #00000000 #bf800000 #42800000 |textures/base/ceil|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #00000000 #bd000000 #00000000 #30bbbd2e #00000000
+  SIDE #3f800000 #00000000 #00000000 #80000000 |textures/base/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #00000000 #00000000 #bd000000 #00000000
+  SIDE #bf800000 #00000000 #00000000 #42800000 |textures/base/wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #313bbd2e #bd000000 #00000000 #00000000 #00000000 #80000000 #bd000000 #00000000
+ PRIM 1 patch w=3 h=3 hs=0 vs=0 expl=0 crc=41000181 |textures/base/curve|
+  V 0 #00000000 #00000000 #00000000 #00000000 #00000000
+  V 1 #41800000 #00000000 #41000000 #3f800000 #00000000
+  V 2 #42000000 #00000000 #00000000 #40000000 #00000000
+  V 3 #00000000 #41800000 #00000000 #00000000 #3f800000
+  V 4 #41800000 #41800000 #41000000 #3f800000 #3f800000
+  V 5 #42000000 #41800000 #00000000 #40000000 #3f800000
+  V 6 #00000000 #42000000 #00000000 #00000000 #40000000
+  V 7 #41800000 #42000000 #41000000 #3f800000 #40000000
+  V 8 #42000000 #42000000 #00000000 #40000000 #40000000
+ENT 1 keys=2 prims=1 crc=42800000
+ KV |classname|=|func_door|
+ KV |origin|=|100 200 300|
+ PRIM 0 brush sides=2 crc=42800000
+  SIDE #00000000 #00000000 #3f800000 #80000000 |textures/base/door|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #40c80000 #3d000000 #00000000 #30bbbd2e #40480002
+  SIDE #00000000 #00000000 #bf800000 #42800000 |textures/base/door|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #40c80000 #bd000000 #00000000 #30bbbd2e #c047fffe
+ENT 2 keys=1 prims=1 crc=fd0003f1
+ KV |classname|=|func_group|
+ PRIM 0 brush sides=3 crc=fd0003f1
+  SIDE #00000000 #00000000 #3f800000 #80000000 |textures/tex/q3floor|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+  SIDE #00000000 #00000000 #bf800000 #42800000 |textures/tex/q3ceil|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #00000000 #bd000000 #00000000 #30bbbd2e #00000000
+  SIDE #3f800000 #00000000 #00000000 #80000000 |textures/tex/q3wall|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #00000000 #00000000 #bd000000 #00000000
+P: writing v1_old.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "wad" "base"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 0 0 1 -0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/floor" 0 0 0
+|   ( 0 0 -1 64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/ceil" 0 0 0
+|   ( 1 0 0 -0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/wall" 0 0 0
+|   ( -1 0 0 64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/wall" 0 0 0
+|  }
+| }
+| // primitive 1
+| {
+|  patchDef2
+|  {
+|   "textures/base/curve"
+|   ( 3 3 0 0 0 )
+|   (
+|    (  ( 0 0 0 0 0 ) ( 0 16 0 0 1 ) ( 0 32 0 0 2 ) )
+|    (  ( 16 0 8 1 0 ) ( 16 16 8 1 1 ) ( 16 32 8 1 2 ) )
+|    (  ( 32 0 0 2 0 ) ( 32 16 0 2 1 ) ( 32 32 0 2 2 ) )
+|   )
+|  }
+| }
+| }
+| // entity 1
+| {
+| "classname" "func_door"
+| "origin" "100 200 300"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 0 0 1 -0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/door" 0 0 0
+|   ( 0 0 -1 64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/base/door" 0 0 0
+|  }
+| }
+| }
+| // entity 2
+| {
+| "classname" "func_group"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 0 0 1 -0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/tex/q3floor" 0 0 0
+|   ( 0 0 -1 64 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/tex/q3ceil" 0 0 0
+|   ( 1 0 0 -0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/tex/q3wall" 0 0 0
+|  }
+| }
+| }
+ENDWRITE
+CASE directives
+PARSE 1
+NAME |directives|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC bf800040
+ENTITIES 4
+ENT 0 keys=6 prims=3 crc=bf800000
+ KV |classname|=|worldspawn|
+ KV |removeEntities|=|light|
+ KV |removeEntities2|=|info_player_start|
+ KV |overrideMaterial|=|textures/common/override|
+ KV |forceEntityNames|=|1|
+ KV |moveFuncGroups|=|1|
+ PRIM 0 brush sides=2 crc=41800000
+  SIDE #00000000 #00000000 #3f800000 #c1800000 |textures/common/override|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+  SIDE #00000000 #00000000 #bf800000 #00000000 |textures/common/override|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #80000000 #3d000000 #00000000 #00000000 #bd000000 #00000000 #30bbbd2e #00000000
+ PRIM 1 brush sides=1 crc=fe0002b2
+  SIDE #3f800000 #00000000 #00000000 #c1800000 |textures/common/override|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #00000000 #00000000 #bd000000 #00000000
+ PRIM 2 patch w=2 h=2 hs=0 vs=0 expl=0 crc=000002b2 |textures/common/override|
+  V 0 #00000000 #00000000 #00000000 #00000000 #00000000
+  V 1 #41000000 #00000000 #00000000 #3f800000 #00000000
+  V 2 #00000000 #41000000 #00000000 #00000000 #3f800000
+  V 3 #41000000 #41000000 #00000000 #3f800000 #3f800000
+ENT 1 keys=2 prims=0 crc=00000000
+ KV |classname|=|func_group|
+ KV |name|=|func_group1|
+ENT 2 keys=3 prims=0 crc=00000000
+ KV |classname|=|func_static|
+ KV |model|=|x|
+ KV |name|=|func_static2|
+ENT 3 keys=2 prims=0 crc=00000000
+ KV |classname|=|func_static|
+ KV |name|=|already_named|
+P: writing directives.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "removeEntities" "light"
+| "removeEntities2" "info_player_start"
+| "overrideMaterial" "textures/common/override"
+| "forceEntityNames" "1"
+| "moveFuncGroups" "1"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 0 0 1 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/common/override" 0 0 0
+|   ( 0 0 -1 0 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/common/override" 0 0 0
+|  }
+| }
+| // primitive 1
+| {
+|  brushDef3
+|  {
+|   ( 1 0 0 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/common/override" 0 0 0
+|  }
+| }
+| // primitive 2
+| {
+|  patchDef2
+|  {
+|   "textures/common/override"
+|   ( 2 2 0 0 0 )
+|   (
+|    (  ( 0 0 0 0 0 ) ( 0 8 0 0 1 ) )
+|    (  ( 8 0 0 1 0 ) ( 8 8 0 1 1 ) )
+|   )
+|  }
+| }
+| }
+| // entity 1
+| {
+| "classname" "func_group"
+| "name" "func_group1"
+| }
+| // entity 2
+| {
+| "classname" "func_static"
+| "model" "x"
+| "name" "func_static2"
+| }
+| // entity 3
+| {
+| "classname" "func_static"
+| "name" "already_named"
+| }
+ENDWRITE
+CASE region
+PARSE 1
+NAME |region|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC 00000000
+ENTITIES 1
+ENT 0 keys=2 prims=0 crc=00000000
+ KV |classname|=|worldspawn|
+ KV |source|=|reg|
+P: writing region.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "source" "reg"
+| }
+ENDWRITE
+CASE region !
+PARSE 1
+NAME |region|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC 00000000
+ENTITIES 2
+ENT 0 keys=2 prims=0 crc=00000000
+ KV |classname|=|worldspawn|
+ KV |source|=|map|
+ENT 1 keys=1 prims=0 crc=00000000
+ KV |classname|=|info_a|
+P: writing region.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "source" "map"
+| }
+| // entity 1
+| {
+| "classname" "info_a"
+| }
+ENDWRITE
+CASE empty
+PARSE 1
+NAME |empty|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC 00000000
+ENTITIES 0
+P: writing empty.out...\n
+WRITE 1
+| Version 2
+ENDWRITE
+CASE keys
+PARSE 1
+NAME |keys|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC fe0001fc
+ENTITIES 2
+ENT 0 keys=7 prims=1 crc=fe0002be
+ KV |classname|=|worldspawn|
+ KV |trailing key|=|value with spaces|
+ KV |origin|=|1.5 abc 3|
+ KV |Name|=|second|
+ KV |dangling|=||
+ KV |after|=|x|
+ KV |empty|=||
+ PRIM 0 brush sides=1 crc=fe0002be
+  EP |editor_note|=|hello|
+  SIDE #00000000 #00000000 #3f800000 #c1800000 |textures/test/m1|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+ENT 1 keys=2 prims=1 crc=00000342
+ KV |classname|=|func_static|
+ KV |origin|=|10 20|
+ PRIM 0 patch w=2 h=2 hs=1 vs=1 expl=1 crc=00000342 |textures/test/p|
+  EP |patch_key|=|patch_value|
+  V 0 #c1200000 #c1a00000 #00000000 #00000000 #00000000
+  V 1 #c0000000 #c1a00000 #00000000 #3f800000 #00000000
+  V 2 #c1200000 #c1400000 #00000000 #00000000 #3f800000
+  V 3 #c0000000 #c1400000 #00000000 #3f800000 #3f800000
+P: writing keys.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| "trailing key" "value with spaces"
+| "origin" "1.5 abc 3"
+| "Name" "second"
+| "dangling" ""
+| "after" "x"
+| "empty" ""
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   "editor_note" "hello"
+|   ( 0 0 1 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/m1" 0 0 0
+|  }
+| }
+| }
+| // entity 1
+| {
+| "classname" "func_static"
+| "origin" "10 20"
+| // primitive 0
+| {
+|  patchDef3
+|  {
+|   "textures/test/p"
+|   ( 2 2 1 1 0 0 0 )
+|   (
+|    (  ( 0 0 0 0 0 ) ( 0 8 0 0 1 ) )
+|    (  ( 8 0 0 1 0 ) ( 8 8 0 1 1 ) )
+|   )
+|  }
+| }
+| }
+ENDWRITE
+CASE nonascii
+PARSE 1
+NAME |nonascii|
+VERSION #40000000
+FILETIME 1234
+HASPRIM 1
+GEOCRC 01fffc4e
+ENTITIES 1
+ENT 0 keys=1 prims=1 crc=01fffc4e
+ KV |classname|=|worldspawn|
+ PRIM 0 brush sides=1 crc=01fffc4e
+  SIDE #00000000 #00000000 #3f800000 #c1800000 |textures/test/caf\xE9\xFF\x80|
+  TM #3d000000 #00000000 #00000000 #00000000 #3d000000 #00000000
+  TV #00000000 #3d000000 #00000000 #00000000 #3d000000 #00000000 #30bbbd2e #00000000
+P: writing nonascii.out...\n
+WRITE 1
+| Version 2
+| // entity 0
+| {
+| "classname" "worldspawn"
+| // primitive 0
+| {
+|  brushDef3
+|  {
+|   ( 0 0 1 -16 ) ( ( 0.03125 0 0 ) ( 0 0.03125 0 ) ) "textures/test/caf\xE9\xFF\x80" 0 0 0
+|  }
+| }
+| }
+ENDWRITE
+CASE missing
+PARSE 0
+CASE err_eof
+ERR file err_eof.map, line 4: idMapEntity::Parse: EOF without closing brace
+CASE err_open
+ERR file err_open.map, line 2: idMapEntity::Parse: { not found, found classname
+CASE err_plane
+ERR file err_plane.map, line 7: expected float value, found ')'
+CASE err_patchsize
+ERR idSurface_Patch::SetSize: invalid patchWidth
+CASE err_patchrow
+ERR file err_patchrow.map, line 11: expected float value, found ')'
+CASE err_brushkey
+ERR file err_brushkey.map, line 7: idMapBrush::Parse: unexpected 17, expected ( or epair key string
+CASE err_brushclose
+ERR file err_brushclose.map, line 9: expected '}' but found '('
+CASE err_texmat
+ERR file err_texmat.map, line 7: expected float value, found ')'
