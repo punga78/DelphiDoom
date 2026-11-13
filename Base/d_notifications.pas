@@ -31,7 +31,20 @@
 
 unit d_notifications;
 
+
 interface
+
+uses
+  DelphiDoom.Video.Intf;
+
+//==============================================================================
+//
+// D_ConfigureNotifications
+// The deferred notifications (composition root): D_NotifyVideoModeChange and
+// D_RunNotifications need them
+//
+//==============================================================================
+procedure D_ConfigureNotifications(const ANotifications: IDeferredNotifications);
 
 //==============================================================================
 //
@@ -60,20 +73,31 @@ procedure D_RunNotifications;
 implementation
 
 uses
-{$IFDEF OPENGL}
-  gl_main
-{$ELSE}
-  v_displaymode
-{$ENDIF}
-  ;
+  i_system;
 
 var
-  n_changevideomode: boolean = false;
-  n_screenwidth: integer;
-  n_screenheight: integer;
-  {$IFDEF OPENGL}
-  n_notifyglwindow: boolean = false;
-  {$ENDIF}
+  deferrednotifications: IDeferredNotifications = nil;
+
+//==============================================================================
+//
+// D_ConfigureNotifications
+//
+//==============================================================================
+procedure D_ConfigureNotifications(const ANotifications: IDeferredNotifications);
+begin
+  deferrednotifications := ANotifications;
+end;
+
+//==============================================================================
+//
+// D_CheckNotifications
+//
+//==============================================================================
+procedure D_CheckNotifications;
+begin
+  if deferrednotifications = nil then
+    I_Error('The notifications are not configured (ComposeEngine was not called)');
+end;
 
 //==============================================================================
 //
@@ -82,9 +106,8 @@ var
 //==============================================================================
 procedure D_NotifyVideoModeChange(const newwidth, newheight: integer);
 begin
-  n_changevideomode := true;
-  n_screenwidth := newwidth;
-  n_screenheight := newheight;
+  D_CheckNotifications;
+  deferrednotifications.NotifyVideoModeChange(newwidth, newheight);
 end;
 
 {$IFDEF OPENGL}
@@ -96,7 +119,8 @@ end;
 //==============================================================================
 procedure D_NotifyGLDisplayMode;
 begin
-  n_notifyglwindow := true;
+  D_CheckNotifications;
+  deferrednotifications.NotifyGLDisplayMode;
 end;
 {$ENDIF}
 
@@ -107,23 +131,8 @@ end;
 //==============================================================================
 procedure D_RunNotifications;
 begin
-  if n_changevideomode then
-  begin
-    {$IFDEF OPENGL}
-    GL_SetDisplayMode
-    {$ELSE}
-    V_SetDisplayMode
-    {$ENDIF}
-      (n_screenwidth, n_screenheight);
-    n_changevideomode := false;
-  end;
-  {$IFDEF OPENGL}
-  if n_notifyglwindow then
-  begin
-    GL_NotifyDisplayMode;
-    n_notifyglwindow := false;
-  end;
-  {$ENDIF}
+  D_CheckNotifications;
+  deferrednotifications.Run;
 end;
 
 end.

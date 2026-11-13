@@ -1,0 +1,54 @@
+Issue #185, fase 1, fetta 1e (avanzi meccanici di Base\): comandi esatti della verifica che NON sta in Verifica-Ramo.ps1.
+Eseguibile di riferimento ("vecchio"): master cb5a45e3. Compilarlo in un worktree a parte (o riusare i Doom32.exe, Heretic32.exe,
+Hexen32.exe, Strife32.exe gia' fatti da quel commit) e indicarlo con -RefExe. "Nuovo" = i .exe di bin\ del ramo di questa fetta.
+Nei comandi: <NUOVO> = <worktree>\bin\Doom\Doom32.exe ecc., <VECCHIO> = il corrispondente di cb5a45e3.
+Tutti da PowerShell, da <worktree>. A macchina carica le misure a coppie si rifiutano da sole.
+
+0. PERCHE' SERVE: i golden e Verifica-Ramo girano con usemultithread=0 (Parity-Common.ps1 riga 91). L'unica unit di questa fetta
+   sul percorso caldo, mt_utils, e' tutta su fili: ZeroMemory/memset/memseti/memcpy in parallelo, MT_Execute*, MT_Iterate e i
+   task di r_main (R_Calc8bitTables, R_MaskedStuffMT) hanno quindi 0 copertura da parte dei golden.
+
+1. FILI ACCESI, vecchio contro nuovo, stato e fotogrammi (il confronto tra due eseguibili, non con i golden):
+     powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Game Doom -Modes 8 -ExtraIni 'usemultithread=1' -Exe @{Doom='<NUOVO>'} -RefExe @{Doom='<VECCHIO>'}
+     powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Game Doom -Modes 32 -ExtraIni 'usemultithread=1' -Exe ... -RefExe ...
+     idem per Heretic, Hexen, Strife (una modalita' per invocazione)
+   Variante con blit asincrono: -ExtraIni 'usemultithread=1;r_bltasync=1'.
+   Se vecchio contro vecchio (stesso eseguibile due volte) da' differenze con i fili accesi, il rumore e' del gioco e non di
+   questa fetta: dirlo e passare al punto 2.
+   Atteso: tutte le voci UGUALE. Una differenza di fotogramma con i fili e' un possibile difetto di MemoryRunner o JobRunner.
+
+2. PRESTAZIONI, fili accesi (la config di Misura-Coppie e' quella dei golden, senza fili: per i fili serve la config del gioco).
+   a) a coppie, config dei golden (conferma che nulla cambia a fili spenti):
+     powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio <VECCHIO> -Nuovo <NUOVO> -Demo demo1 -Modo 32 -Coppie 8
+     powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio <VECCHIO> -Nuovo <NUOVO> -Demo demo3 -Modo 8 -Coppie 12
+   b) a mano con i fili accesi: -timedemo di demo1 e demo3 di Doom32 a 8 e a 32 bit con usemultithread=1, 8 coppie alternate
+      (vecchio, nuovo, nuovo, vecchio...), riportare minimo e mediana dei "realtics" (soglia +5%). Se Misura-Coppie ha un
+      parametro per l'ini extra, usarlo; altrimenti copiare p8.ini/p32.ini, aggiungere usemultithread=1 e lanciare
+      Doom32.exe -timedemo demo1 -config <ini> due volte per ramo.
+   Rischio della fetta: ogni MT_Execute* costruisce ora un array aperto di TWorkerJob sullo stack (da 2 a 17 voci) e fa una
+   chiamata in piu' per MT_memXXX (TWorkerMemoryRunner -> IWorkerMemoryOps per pezzo). Sono per fotogramma/per blocco, non per
+   pixel, ma e' li' che va cercato un +5%.
+
+3. COMANDI DI CONSOLE di c_utils (dir, cd, cat), vecchio contro nuovo, uscita su stdout:
+     mkdir C:\ddparity_1e\run ; copy Tests\Data\Console\utility.con, utility.txt in quella cartella
+     (con i WAD e il .swd di bin\Doom nella stessa cartella come fa Initialize-ParityRunDir)
+     <VECCHIO> -iwad DOOM1.WAD -nosound -nomusic -con utility.con -nodraw -noblit -warp 1 1 -devparm  (25 s, poi chiuderlo)
+     <NUOVO>   idem, in un'altra cartella identica
+     Confrontare DATA\LOGS\Doom32_stdout.txt (o *_stdout.txt) dalla riga "---dir" a "---end": devono essere uguali byte per byte.
+   Differenza attesa nota: nessuna. (Il vecchio 'cat' con un file illeggibile dava un'eccezione; ora ReadTextLines e' lo stesso
+   TDStringList.LoadFromFile, quindi uguale anche li'.)
+
+4. RAMI CHE IL CORPUS NON ESERCITA (una riga ciascuno; coperti da test di unita' dove indicato):
+   - D_NotifyVideoModeChange / D_RunNotifications con un cambio di modo: lo scrive solo il menu del modo video (m_menu) e
+     d_main lo esegue al tic dopo. Le demo non aprono il menu. Coperto da TTestVideoDeferredNotifications (7 test); NON provato a
+     runtime: cambiare risoluzione dal menu in Doom32 e GLDoom32 (serve un clic o tasti veri: non automatizzare con clic del mouse).
+   - D_NotifyGLDisplayMode (solo GL, da gl_main quando la finestra cambia): GLDoom32 ecc. non provati oltre l'avvio.
+   - c_utils gotowebpage/homepage/help/forum/getlatestversion: aprono un browser e, in schermo intero esclusivo, tornano in
+     finestra (TEngineConsoleBrowser): NON provati a runtime; la logica e' coperta dal test con un browser finto.
+   - MT_Execute con piu' di 4 lavori e MT_Execute16/12: usati da r_flat32 con molti fili (>= 6 CPU) e dal canvas degli script
+     (Overlay.Canvas, solo con script che disegnano): con pochi fili restano i rami piccoli.
+   - Chiamata ricorsiva di MT_Execute/MT_Iterate (errore): solo test di unita'. Il vecchio la dava a I_Error con il flag acceso
+     per sempre; ora il flag si spegne se un lavoro lancia.
+   - MT_ScheduleTask senza slot liberi (9 task insieme): solo test di unita'; nel gioco i task sono 2 (r_main).
+   - MT_ExecutePendingTask/MT_WaitTask con id fuori intervallo: ora ignorati (prima memoria fuori limite); solo test.
+   - Eseguibili Radix32 e SpeedHaste32: compilano, non si avviano qui senza i loro dati (come nelle fette precedenti).

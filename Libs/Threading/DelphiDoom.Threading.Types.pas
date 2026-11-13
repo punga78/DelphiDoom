@@ -20,6 +20,31 @@ type
   /// </summary>
   TWorkerProc = function(AParameter: Pointer): Integer; stdcall;
 
+  /// <summary>A job for a worker: the procedure and its parameter</summary>
+  TWorkerJob = record
+    Proc: TWorkerProc;
+    Parameter: Pointer;
+    /// <summary>Makes a job; a nil AProc is a job that is skipped</summary>
+    class function Make(AProc: TWorkerProc; AParameter: Pointer): TWorkerJob; static; inline;
+  end;
+
+  /// <summary>
+  ///   What each thread of an iteration receives (the layout is the one the engine always
+  ///   used: the jobs cast the pointer to it)
+  /// </summary>
+  TWorkerIterator = record
+    /// <summary>The index of the thread, from 0</summary>
+    Index: Integer;
+    /// <summary>How many threads share the iteration</summary>
+    Count: Integer;
+    /// <summary>The pointer the caller gave to Iterate</summary>
+    Data: Pointer;
+  end;
+  PWorkerIterator = ^TWorkerIterator;
+
+  /// <summary>A background task: a procedure with no parameters</summary>
+  TWorkerTaskProc = procedure;
+
   /// <summary>Base class of the errors of the threading library</summary>
   EThreadingException = class(Exception);
 
@@ -43,6 +68,14 @@ implementation
 
 const
   SJobFailed = 'A worker job raised %s: %s';
+
+{ TWorkerJob }
+
+class function TWorkerJob.Make(AProc: TWorkerProc; AParameter: Pointer): TWorkerJob;
+begin
+  Result.Proc := AProc;
+  Result.Parameter := AParameter;
+end;
 
 { EWorkerJobException }
 

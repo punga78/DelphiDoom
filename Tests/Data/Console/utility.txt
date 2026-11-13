@@ -1,0 +1,4 @@
+first line of the utility text
+second line, with %s and %d signs
+
+fourth line after an empty one

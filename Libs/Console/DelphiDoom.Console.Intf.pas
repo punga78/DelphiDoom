@@ -91,6 +91,29 @@ type
     function ReadLines(const AFileName: string): TArray<string>;
   end;
 
+  /// <summary>The files that the utility commands (dir, cd, cat) list and show</summary>
+  IConsoleFileLister = interface
+    ['{2C6A19E7-D5B3-4F80-A1C4-7B93E5F06D18}']
+    /// <summary>The names that match AMask (wildcards allowed), in the order of the disk</summary>
+    function FindFiles(const AMask: string): TArray<string>;
+    /// <summary>The lines of a text file (the way the engine reads a text file)</summary>
+    function ReadTextLines(const AFileName: string): TArray<string>;
+    /// <summary>The current directory</summary>
+    function CurrentDirectory: string;
+  end;
+
+  /// <summary>Opens a web page; the engine leaves the exclusive full screen first</summary>
+  IConsoleBrowser = interface
+    ['{8E40B7D2-3A1C-49F6-B5E9-0D2C71A84F63}']
+    procedure OpenWebPage(const AAddress: string);
+  end;
+
+  /// <summary>A group of commands that register themselves in the registry they were made with</summary>
+  IConsoleCommandGroup = interface
+    ['{F15D82A9-6B03-4E7C-9A24-C8E3B0517D96}']
+    procedure Register;
+  end;
+
   /// <summary>What the start of the console needs from the engine</summary>
   IConsoleStartupSource = interface
     ['{B2E64F19-7C03-48DA-91B5-D80A3F5E6C27}']

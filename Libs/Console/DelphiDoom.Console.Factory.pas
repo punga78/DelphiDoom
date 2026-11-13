@@ -37,6 +37,10 @@ type
     class function CreateAutoExec(const AStartup: IConsoleStartupSource;
       const ARunner: IConsoleScriptRunner; const AOutput: IConsoleOutput;
       const AApplicationTitle: string): TConsoleAutoExec; static;
+    /// <summary>The group of dir, cd, cat and the web page commands (Register adds them)</summary>
+    class function CreateUtilityCommands(const ARegistry: ICommandRegistry;
+      const AOutput: IConsoleOutput; const AFiles: IConsoleFileLister;
+      const ABrowser: IConsoleBrowser; const AInterpreter: IConsoleInterpreter): IConsoleCommandGroup; static;
     class function CreateCommandQueue(const AInterpreter: IConsoleInterpreter): TConsoleCommandQueue; static;
     class function CreateHistory: TConsoleHistory; static;
     class function CreateCompleter(const ARegistry: ICommandRegistry;
@@ -53,7 +57,7 @@ implementation
 
 uses
   DelphiDoom.Console.CommandRegistry, DelphiDoom.Console.Interpreter,
-  DelphiDoom.Console.ScriptRunner;
+  DelphiDoom.Console.ScriptRunner, DelphiDoom.Console.UtilityCommands;
 
 { TConsoleFactory }
 
@@ -85,6 +89,13 @@ class function TConsoleFactory.CreateStandardCommands(const ARegistry: ICommandR
   const AOutput: IConsoleOutput; const ARunner: IConsoleScriptRunner): TConsoleStandardCommands;
 begin
   Result := TConsoleStandardCommands.Create(ARegistry, AOutput, ARunner);
+end;
+
+class function TConsoleFactory.CreateUtilityCommands(const ARegistry: ICommandRegistry;
+  const AOutput: IConsoleOutput; const AFiles: IConsoleFileLister;
+  const ABrowser: IConsoleBrowser; const AInterpreter: IConsoleInterpreter): IConsoleCommandGroup;
+begin
+  Result := TConsoleUtilityCommands.Create(ARegistry, AOutput, AFiles, ABrowser, AInterpreter);
 end;
 
 class function TConsoleFactory.CreateAutoExec(const AStartup: IConsoleStartupSource;

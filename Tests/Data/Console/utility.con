@@ -1,0 +1,17 @@
+// Issue #185, fetta 1e: the utility commands of c_utils (dir, cd, cat) with the old and the new executable.
+// The folder of the run has utility.txt and utility.con (copied from Tests\Data\Console); the output goes to
+// DATA\LOGS\*_stdout.txt. The web page commands are not here: they open a browser.
+printf ---dir
+dir utility.txt
+dir utility.txt utility.con
+ls nomatch
+printf ---cd
+cd
+pwd
+printf ---cat
+cat utility.txt
+type utility.txt utility.txt
+cat
+type
+cat nomatch
+printf ---end
