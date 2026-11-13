@@ -792,6 +792,7 @@ uses
   DelphiDoom.Definitions.TerrainTables in '..\Libs\Definitions\DelphiDoom.Definitions.TerrainTables.pas',
   DelphiDoom.Definitions.Factory in '..\Libs\Definitions\DelphiDoom.Definitions.Factory.pas',
   DelphiDoom.Engine.Definitions.AnimCatalog in '..\Base\DelphiDoom.Engine.Definitions.AnimCatalog.pas',
+  DelphiDoom.Palette.ColorRegionLumps in '..\Libs\Palette\DelphiDoom.Palette.ColorRegionLumps.pas',
   DelphiDoom.Palette.Types in '..\Libs\Palette\DelphiDoom.Palette.Types.pas',
   DelphiDoom.Palette.Intf in '..\Libs\Palette\DelphiDoom.Palette.Intf.pas',
   DelphiDoom.Palette.GammaData in '..\Libs\Palette\DelphiDoom.Palette.GammaData.pas',
