@@ -12,11 +12,12 @@ interface
 uses
   System.Classes,
   DelphiDoom.ActorDef.ParamList.Intf,
+  DelphiDoom.Info.Intf,
   DelphiDoom.Scanner.ContextEvaluator.Intf;
 
 type
   /// <summary>A random source that repeats from a seed and counts its draws</summary>
-  TFakeParamRandom = class(TInterfacedObject, IActorDefParamRandom)
+  TFakeParamRandom = class(TInterfacedObject, IActorDefParamRandom, IInfoRandom)
   strict private
     FState: Cardinal;
     FDraws: Integer;

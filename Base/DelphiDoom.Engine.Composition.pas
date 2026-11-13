@@ -349,6 +349,9 @@ uses
   DelphiDoom.Engine.TableExport.Settings,
   DelphiDoom.Engine.TableExport.Names,
   info_export,
+  DelphiDoom.TableExport.Saver.Intf,
+  DelphiDoom.TableExport.Saver,
+  DelphiDoom.Engine.TableExport.Output,
   DelphiDoom.Info.Intf,
   DelphiDoom.Engine.ActorDef.ParamRandom,
   DelphiDoom.Engine.Info.Intf,
@@ -1379,6 +1382,7 @@ var
   LWeapons: IExportWeaponSource;
   LNames: TEngineExportNames;
   LNamesRef: IInterface;
+  LSaver: ITableExportSaver;
 begin
   if not TExportProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.TableExport), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of the table exports', [_GAME]);
@@ -1387,6 +1391,7 @@ begin
   LWeapons := TEngineExportWeapons.Create;
   LNames := TEngineExportNames.Create;
   LNamesRef := LNames;
+  LSaver := TTableExportSaver.Create(TEngineExportOutput.Create);
   DEH_ConfigureExport(
     TTableExportFactory.CreateDehWriter(LGame, LThings, LStates, LWeapons,
       TEngineExportSettings.Create(ACommandLine),
@@ -1394,10 +1399,10 @@ begin
     TTableExportFactory.CreateCsvWriter(LStates, LNames),
     TTableExportFactory.CreateActorDefWriter(LThings, LStates, LNames, LNames, LNames),
     TTableExportFactory.CreateWeaponDefWriter(LGame, LWeapons, LStates, LNames, LNames),
-    TTableExportFactory.CreateStateOwnersWriter(LStates, LNames));
+    TTableExportFactory.CreateStateOwnersWriter(LStates, LNames), LSaver);
   Info_ConfigureExport(
     TTableExportFactory.CreatePascalWriter(LGame, LThings, TEngineExportThings.Create(True), LStates,
-      LNames, LNames, LNames));
+      LNames, LNames, LNames), LSaver);
 end;
 
 procedure ComposeIwad;

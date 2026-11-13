@@ -35,6 +35,7 @@ uses
   d_think,
   DelphiDoom.Actions.Intf,
   DelphiDoom.TableExport.Intf,
+  DelphiDoom.TableExport.Saver.Intf,
   DelphiDoom.Engine.Dehacked.Intf;
 
 //==============================================================================
@@ -57,7 +58,7 @@ procedure DEH_ConfigureApplier(const AApplier: IEngineDehackedApplier);
 //==============================================================================
 procedure DEH_ConfigureExport(const ADeh: IExportDehWriter; const ACsv: IExportCsvWriter;
   const AActorDef: IExportActorDefWriter; const AWeaponDef: IExportWeaponDefWriter;
-  const AOwners: IExportStateOwnersWriter);
+  const AOwners: IExportStateOwnersWriter; const ASaver: ITableExportSaver);
 
 //==============================================================================
 //
@@ -370,7 +371,10 @@ uses
   w_folders,
   w_pak,
   w_wad,
-  DelphiDoom.Actions.Names;
+  DelphiDoom.Actions.Names,
+  DelphiDoom.Dehacked.FileNames,
+  DelphiDoom.Dehacked.Text,
+  DelphiDoom.Dehacked.TokenName;
 
 var
   // given by ComposeEngine (DEH_ConfigureActions)
@@ -418,6 +422,7 @@ var
   GActorDefWriter: IExportActorDefWriter;
   GWeaponDefWriter: IExportWeaponDefWriter;
   GOwnersWriter: IExportStateOwnersWriter;
+  GSaver: ITableExportSaver;
 
 //==============================================================================
 //
@@ -426,8 +431,9 @@ var
 //==============================================================================
 procedure DEH_ConfigureExport(const ADeh: IExportDehWriter; const ACsv: IExportCsvWriter;
   const AActorDef: IExportActorDefWriter; const AWeaponDef: IExportWeaponDefWriter;
-  const AOwners: IExportStateOwnersWriter);
+  const AOwners: IExportStateOwnersWriter; const ASaver: ITableExportSaver);
 begin
+  GSaver := ASaver;
   GDehWriter := ADeh;
   GCsvWriter := ACsv;
   GActorDefWriter := AActorDef;
@@ -461,6 +467,86 @@ begin
   SetLength(result, AList.Count);
   for i := 0 to AList.Count - 1 do
     result[i] := AList.Strings[i];
+end;
+
+//==============================================================================
+//
+// DEH_Saver
+//
+//==============================================================================
+function DEH_Saver: ITableExportSaver;
+begin
+  if not Assigned(GSaver) then
+    I_Error('DEH_Saver(): the export is not configured (ComposeEngine was not called)');
+  result := GSaver;
+end;
+
+//==============================================================================
+//
+// DEH_SettingsLines
+//
+//==============================================================================
+function DEH_SettingsLines: TArray<string>;
+var
+  s: TDStringList;
+begin
+  s := DEH_CurrentSettings;
+  try
+    result := ListToLines(s);
+  finally
+    s.Free;
+  end;
+end;
+
+//==============================================================================
+//
+// DEH_MobjInfoLines
+//
+//==============================================================================
+function DEH_MobjInfoLines: TArray<string>;
+var
+  s: TDStringList;
+begin
+  s := DEH_MobjInfoCSV;
+  try
+    result := ListToLines(s);
+  finally
+    s.Free;
+  end;
+end;
+
+//==============================================================================
+//
+// DEH_StatesLines
+//
+//==============================================================================
+function DEH_StatesLines: TArray<string>;
+var
+  s: TDStringList;
+begin
+  s := DEH_StatesCSV;
+  try
+    result := ListToLines(s);
+  finally
+    s.Free;
+  end;
+end;
+
+//==============================================================================
+//
+// DEH_SpritesLines
+//
+//==============================================================================
+function DEH_SpritesLines: TArray<string>;
+var
+  s: TDStringList;
+begin
+  s := DEH_SpritesCSV;
+  try
+    result := ListToLines(s);
+  finally
+    s.Free;
+  end;
 end;
 
 //==============================================================================
@@ -591,6 +677,7 @@ var
   i: integer;
   done: boolean;
   strm: TPakStream;
+  candidates: TArray<string>;
 begin
   if filename = '' then
   begin
@@ -601,17 +688,13 @@ begin
   fnames := TDStringList.Create;
   s := TDStringList.Create;
   try
-    if CharPos('.', filename) = 0 then
-    begin
-      fnames.Add('%s.%s', [filename, 'deh']);
-      fnames.Add('%s.%s', [filename, 'bex']);
-    end
-    else
-      fnames.Add(filename);
-
-    for i := fnames.Count - 1 downto 0 do
-      if M_SaveFileName(fnames[i]) <> fnames[i] then
-        fnames.Add(M_SaveFileName(fnames[i]));
+    candidates := TDehackedFileNames.Candidates(filename,
+      function(AName: string): string
+      begin
+        Result := M_SaveFileName(AName);
+      end);
+    for i := 0 to Length(candidates) - 1 do
+      fnames.Add(candidates[i]);
 
     fname := '';
     done := false;
@@ -650,47 +733,8 @@ end;
 //
 //==============================================================================
 function DEH_CStringToString(const s: string): string;
-var
-  i, len: integer;
 begin
-  result := '';
-  if s = '' then
-  begin
-    exit;
-  end;
-
-  result := s[1];
-
-  len := Length(s);
-  for i := 2 to len do
-  begin
-    if s[i] = 'N' then
-    begin
-      if (Length(result) > 0) and (result[Length(result)] = '\') then
-      begin
-        result[Length(result)] := #13;
-        result := result + #10
-      end
-      else
-        result := result + 'N'
-    end
-    else if s[i] = 'R' then
-    begin
-      if (Length(result) > 0) and (result[Length(result)] = '\') then
-        SetLength(result, Length(result) - 1)
-      else
-        result := result + 'R';
-    end
-    else if s[i] = #10 then
-    begin
-      if (Length(result) > 0) and (result[Length(result)] <> #13) then
-        result := result + #13#10
-      else
-        result := result + #10;
-    end
-    else
-      result := result + s[i];
-  end;
+  result := TDehackedText.CStringToString(s);
 end;
 
 //==============================================================================
@@ -699,15 +743,8 @@ end;
 //
 //==============================================================================
 function DEH_StringValue(const s: string): string;
-var
-  i: integer;
 begin
-  result := '';
-  for i := 1 to Length(s) do
-  begin
-    if toupper(s[i]) in ['A'..'Z', '1'..'9', '0'] then
-      result := result + toupper(s[i]);
-  end;
+  result := TDehackedText.StringValue(s);
 end;
 
 //==============================================================================
@@ -735,30 +772,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveCurrentSettings(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current DEHACKED settings'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.bex'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := DEH_CurrentSettings;
-  try
-    s.SaveToFile(fname1);
-    printf('DEHACKED settings saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveLines(fname, '.bex', 'Please specify the filename to save current DEHACKED settings'#13#10,
+    'DEHACKED settings saved to %s'#13#10, DEH_SettingsLines);
 end;
 
 //==============================================================================
@@ -799,31 +815,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveActordef(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current ACTORDEF settings'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.txt'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := TDSTringList.Create;
-  try
-    s.Text := DEH_CurrentActordef;
-    s.SaveToFile(fname1);
-    printf('ACTORDEF settings saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveText(fname, '.txt', 'Please specify the filename to save current ACTORDEF settings'#13#10,
+    'ACTORDEF settings saved to %s'#13#10, DEH_CurrentActordef);
 end;
 
 //==============================================================================
@@ -864,31 +858,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveWeapondef(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current WEAPONDEF settings'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.txt'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := TDSTringList.Create;
-  try
-    s.Text := DEH_CurrentWeapondef;
-    s.SaveToFile(fname1);
-    printf('WEAPONDEF settings saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveText(fname, '.txt', 'Please specify the filename to save current WEAPONDEF settings'#13#10,
+    'WEAPONDEF settings saved to %s'#13#10, DEH_CurrentWeapondef);
 end;
 
 //==============================================================================
@@ -929,31 +901,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveStateOwners(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current state owners'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.txt'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := TDSTringList.Create;
-  try
-    s.Text := DEH_CurrentStateOwners;
-    s.SaveToFile(fname1);
-    printf('State owners saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveText(fname, '.txt', 'Please specify the filename to save current state owners'#13#10,
+    'State owners saved to %s'#13#10, DEH_CurrentStateOwners);
 end;
 
 //==============================================================================
@@ -993,30 +943,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveMobjInfoCSV(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current MobjInfo'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.csv'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := DEH_MobjInfoCSV;
-  try
-    s.SaveToFile(fname1);
-    printf('MobjInfo saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveLines(fname, '.csv', 'Please specify the filename to save current MobjInfo'#13#10,
+    'MobjInfo saved to %s'#13#10, DEH_MobjInfoLines);
 end;
 
 //==============================================================================
@@ -1043,30 +972,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveStatesCSV(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current States'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.csv'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := DEH_StatesCSV;
-  try
-    s.SaveToFile(fname1);
-    printf('States saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveLines(fname, '.csv', 'Please specify the filename to save current States'#13#10,
+    'States saved to %s'#13#10, DEH_StatesLines);
 end;
 
 //==============================================================================
@@ -1087,30 +995,9 @@ end;
 //
 //==============================================================================
 procedure DEH_SaveSpritesCSV(const fname: string);
-var
-  s: TDSTringList;
-  fname1: string;
 begin
-  if fname = '' then
-  begin
-    printf('Please specify the filename to save current Sprites'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', fname) = 0 then
-    fname1 := fname + '.csv'
-  else
-    fname1 := fname;
-
-  fname1 := M_SaveFileName(fname1);
-
-  s := DEH_SpritesCSV;
-  try
-    s.SaveToFile(fname1);
-    printf('Sprites saved to %s'#13#10, [fname1]);
-  finally
-    s.Free;
-  end;
+  DEH_Saver.SaveLines(fname, '.csv', 'Please specify the filename to save current Sprites'#13#10,
+    'Sprites saved to %s'#13#10, DEH_SpritesLines);
 end;
 
 //==============================================================================
@@ -1219,10 +1106,10 @@ begin
     exit;
   end;
 
-  stmp := strupper(str);
   {$IFNDEF HEXEN}
-  if not Pos1('AM_', stmp) then
-    stmp := stmp + 'AM_';
+  stmp := TDehackedTokenName.Canonical(str, 'AM_');
+  {$ELSE}
+  stmp := strupper(str);
   {$ENDIF}
 
   result := ammotype_tokens.IndexOf(stmp);
@@ -1249,9 +1136,7 @@ begin
     exit;
   end;
 
-  stmp := strupper(str);
-  if not Pos1('WP_', stmp) then
-    stmp := stmp + 'WP_';
+  stmp := TDehackedTokenName.Canonical(str, 'WP_');
 
   result := weapontype_tokens.IndexOf(stmp);
 end;
@@ -1309,9 +1194,7 @@ begin
     exit;
   end;
 
-  stmp := strupper(str);
-  if not Pos1('PCLASS_', stmp) then
-    stmp := stmp + 'PCLASS_';
+  stmp := TDehackedTokenName.Canonical(str, 'PCLASS_');
 
   result := playerclass_tokens.IndexOf(stmp);
 end;
