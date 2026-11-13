@@ -17,7 +17,8 @@ unit DelphiDoom.Aas.Reader;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Types, DelphiDoom.Aas.Intf;
+  System.SysUtils, DelphiDoom.MathCore.Types, DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Types,
+  DelphiDoom.Aas.Intf;
 
 type
   /// <summary>
@@ -36,8 +37,8 @@ type
     FLibVars: IBotLibVars;
     FSwapBytes: Boolean;
     class function AToI(const AText: AnsiString): Integer; static;
-    class function CopyLump<T: record>(const AData: TBytes; const AHeader: TAasFileHeader; const AIndex: Integer;
-      const AImport: IBotImport; var ALastOffset: Integer; const AName: string): TArray<T>; static;
+    function LumpData(const AData: TBytes; const AHeader: TAasFileHeader; const AIndex, ARecordSize: Integer;
+      var ALastOffset: Integer; const AName: string): TBytes;
   public
     /// <summary>
     ///   AImport receives the messages, AFiles gives the files and ALibVars the variable
@@ -64,6 +65,12 @@ resourcestring
   SOutOfDate = 'aas file %s is out of date';
   SNotSequential = 'AAS file not sequentially read'#10;
   SLumpOutside = 'aas lump %d of %s is outside the file (offset %d, length %d, file %d bytes)';
+
+type
+  /// <summary>Turns the bytes of a lump into an array of its records</summary>
+  TRecordArray<T> = class
+    class function FromBytes(const ABytes: TBytes): TArray<T>; static;
+  end;
 
 const
   CHECKSUM_VARIABLE = 'sv_mapChecksum';
@@ -107,8 +114,15 @@ begin
   Result := Integer(LValue);
 end;
 
-class function TAasReader.CopyLump<T>(const AData: TBytes; const AHeader: TAasFileHeader; const AIndex: Integer;
-  const AImport: IBotImport; var ALastOffset: Integer; const AName: string): TArray<T>;
+class function TRecordArray<T>.FromBytes(const ABytes: TBytes): TArray<T>;
+begin
+  SetLength(Result, Length(ABytes) div SizeOf(T));
+  if System.Length(Result) > 0 then
+    Move(ABytes[0], Result[0], System.Length(Result) * SizeOf(T));
+end;
+
+function TAasReader.LumpData(const AData: TBytes; const AHeader: TAasFileHeader; const AIndex, ARecordSize: Integer;
+  var ALastOffset: Integer; const AName: string): TBytes;
 var
   LOffset, LLength: Integer;
 begin
@@ -122,10 +136,11 @@ begin
     raise EAasFileException.Create(BLERR_CANNOTREADAASLUMP,
       Format(SLumpOutside, [AIndex, AName, LOffset, LLength, System.Length(AData)]));
   if LOffset <> ALastOffset then
-    TAasPrinter.Print(AImport, PRT_WARNING, SNotSequential);
-  SetLength(Result, LLength div SizeOf(T));
+    TAasPrinter.Print(FImport, PRT_WARNING, SNotSequential);
+  // the number of records is length / size, the rest of the bytes is not used
+  SetLength(Result, (LLength div ARecordSize) * ARecordSize);
   if System.Length(Result) > 0 then
-    Move(AData[LOffset], Result[0], System.Length(Result) * SizeOf(T));
+    Move(AData[LOffset], Result[0], System.Length(Result));
   Inc(ALastOffset, LLength);
 end;
 
@@ -153,20 +168,20 @@ begin
 
   LContent.Header := LHeader;
   LLastOffset := SizeOf(TAasFileHeader);
-  LContent.BBoxes := CopyLump<TAasBBox>(AData, LHeader, AASLUMP_BBOXES, FImport, LLastOffset, LName);
-  LContent.Vertexes := CopyLump<TVec3>(AData, LHeader, AASLUMP_VERTEXES, FImport, LLastOffset, LName);
-  LContent.Planes := CopyLump<TAasPlane>(AData, LHeader, AASLUMP_PLANES, FImport, LLastOffset, LName);
-  LContent.Edges := CopyLump<TAasEdge>(AData, LHeader, AASLUMP_EDGES, FImport, LLastOffset, LName);
-  LContent.EdgeIndex := CopyLump<Integer>(AData, LHeader, AASLUMP_EDGEINDEX, FImport, LLastOffset, LName);
-  LContent.Faces := CopyLump<TAasFace>(AData, LHeader, AASLUMP_FACES, FImport, LLastOffset, LName);
-  LContent.FaceIndex := CopyLump<Integer>(AData, LHeader, AASLUMP_FACEINDEX, FImport, LLastOffset, LName);
-  LContent.Areas := CopyLump<TAasArea>(AData, LHeader, AASLUMP_AREAS, FImport, LLastOffset, LName);
-  LContent.AreaSettings := CopyLump<TAasAreaSettings>(AData, LHeader, AASLUMP_AREASETTINGS, FImport, LLastOffset, LName);
-  LContent.Reachability := CopyLump<TAasReachability>(AData, LHeader, AASLUMP_REACHABILITY, FImport, LLastOffset, LName);
-  LContent.Nodes := CopyLump<TAasNode>(AData, LHeader, AASLUMP_NODES, FImport, LLastOffset, LName);
-  LContent.Portals := CopyLump<TAasPortal>(AData, LHeader, AASLUMP_PORTALS, FImport, LLastOffset, LName);
-  LContent.PortalIndex := CopyLump<Integer>(AData, LHeader, AASLUMP_PORTALINDEX, FImport, LLastOffset, LName);
-  LContent.Clusters := CopyLump<TAasCluster>(AData, LHeader, AASLUMP_CLUSTERS, FImport, LLastOffset, LName);
+  LContent.BBoxes := TRecordArray<TAasBBox>.FromBytes(LumpData(AData, LHeader, AASLUMP_BBOXES, SizeOf(TAasBBox), LLastOffset, LName));
+  LContent.Vertexes := TRecordArray<TVec3>.FromBytes(LumpData(AData, LHeader, AASLUMP_VERTEXES, SizeOf(TVec3), LLastOffset, LName));
+  LContent.Planes := TRecordArray<TAasPlane>.FromBytes(LumpData(AData, LHeader, AASLUMP_PLANES, SizeOf(TAasPlane), LLastOffset, LName));
+  LContent.Edges := TRecordArray<TAasEdge>.FromBytes(LumpData(AData, LHeader, AASLUMP_EDGES, SizeOf(TAasEdge), LLastOffset, LName));
+  LContent.EdgeIndex := TRecordArray<Integer>.FromBytes(LumpData(AData, LHeader, AASLUMP_EDGEINDEX, SizeOf(Integer), LLastOffset, LName));
+  LContent.Faces := TRecordArray<TAasFace>.FromBytes(LumpData(AData, LHeader, AASLUMP_FACES, SizeOf(TAasFace), LLastOffset, LName));
+  LContent.FaceIndex := TRecordArray<Integer>.FromBytes(LumpData(AData, LHeader, AASLUMP_FACEINDEX, SizeOf(Integer), LLastOffset, LName));
+  LContent.Areas := TRecordArray<TAasArea>.FromBytes(LumpData(AData, LHeader, AASLUMP_AREAS, SizeOf(TAasArea), LLastOffset, LName));
+  LContent.AreaSettings := TRecordArray<TAasAreaSettings>.FromBytes(LumpData(AData, LHeader, AASLUMP_AREASETTINGS, SizeOf(TAasAreaSettings), LLastOffset, LName));
+  LContent.Reachability := TRecordArray<TAasReachability>.FromBytes(LumpData(AData, LHeader, AASLUMP_REACHABILITY, SizeOf(TAasReachability), LLastOffset, LName));
+  LContent.Nodes := TRecordArray<TAasNode>.FromBytes(LumpData(AData, LHeader, AASLUMP_NODES, SizeOf(TAasNode), LLastOffset, LName));
+  LContent.Portals := TRecordArray<TAasPortal>.FromBytes(LumpData(AData, LHeader, AASLUMP_PORTALS, SizeOf(TAasPortal), LLastOffset, LName));
+  LContent.PortalIndex := TRecordArray<Integer>.FromBytes(LumpData(AData, LHeader, AASLUMP_PORTALINDEX, SizeOf(Integer), LLastOffset, LName));
+  LContent.Clusters := TRecordArray<TAasCluster>.FromBytes(LumpData(AData, LHeader, AASLUMP_CLUSTERS, SizeOf(TAasCluster), LLastOffset, LName));
   if FSwapBytes then
     TAasByteSwapper.Swap(LContent);
   Result := TAasFile.Create(LContent);
