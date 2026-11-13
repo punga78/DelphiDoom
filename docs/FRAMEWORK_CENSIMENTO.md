@@ -9,7 +9,7 @@ Analisi fatta il 2026-11-13, **senza spostare nulla**. Serve a decidere come org
 - **Non distinti**: i `uses` dentro `{$IFDEF}` (`Base` usa `Radix` e `Speed` solo a certe condizioni: è composizione condizionale, non dipendenza di base).
 - Due assi: l'**accoppiamento** è calcolato dai `uses`; il **dominio** (id Tech, formato, piattaforma, gioco) è assegnato a mano dalle descrizioni dell'indice di `CLAUDE.md` e dalle `README.md` di ogni libreria. Dalle dipendenze sole non si vede cosa è "di id": `Wad`, `Nodes`, `Udmf`, `Info`, `Thinkers` non dipendono da nulla di storico e sono comunque di dominio id Tech 1.
 
-Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, `Common\` 3 file (22905 righe, di cui `DirectX.pas` 16004 e `d_delphi.pas` 6805), `Doom`, `Heretic`, `Hexen` e `Strife` 45, 38, 43 e 45 unit (81781, 77800, 128674 e 108655 righe).
+Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, `Common\` 3 file (22905 righe al momento del censimento, di cui `DirectX.pas` 16004, cancellato con la #189, e `d_delphi.pas` 6805), `Doom`, `Heretic`, `Hexen` e `Strife` 45, 38, 43 e 45 unit (81781, 77800, 128674 e 108655 righe).
 
 ## 2. Fatti emersi
 
@@ -26,7 +26,7 @@ Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, 
    - `XcomStrategy` ↔ `XcomGeoscape` ↔ `XcomBasescape` (interfacce e simulazione del Geoscape stanno nel Geoscape, quelle della strategia nella Strategy). **Rotto (#223)**: `IXcomGeoscapeSimulation` scende in `XcomStrategy.Simulation.Intf`, `TXcomFunding` e `IXcomBasescapeNavigator` in `XcomGeoscape` (`Funding`, `BaseNavigator.Intf`): ordine `XcomStrategy` < `XcomGeoscape` < `XcomBasescape`, controllo `Tools\Verifica\223\Controlla-Cicli.ps1`.
 5. **`Base\` è il motore id Tech 1 più la sua colla.** `r_*` 70 unit (64568 righe) e `p_*` 34 (27857) sono il nucleo di gioco e di rendering; `DelphiDoom.Engine.*` sono 212 unit (30454 righe) di adattatori che collegano le librerie ai globali storici (composition root); poi `v_*`, `udmf_*`, `i_*`, `m_*`, `am_*`, `w_*`, `s_*`, `po_*`, `info_*`, `hu_*`, `deh_*`, `sc_*`. Tutto id per costruzione.
 6. **I quattro giochi id sono una grande duplicazione**: circa 400000 righe in `Doom`, `Heretic`, `Hexen` e `Strife` con 22 nomi di unit identici in tutti e quattro. Non è un tema del framework in sé (è la #185, "tutto a classi"), ma è il motivo per cui "lato id" pesa tanto.
-7. **`Common\`** ha `d_delphi.pas` (shim storico della RTL di Delphi 7, 6805 righe) e `DirectX.pas` (16004): usati da `PascalScript` e `Mp3`, e quindi dal nucleo.
+7. **`Common\`** ha `d_delphi.pas` (shim storico della RTL di Delphi 7, 6805 righe) e `DirectX.pas` (16004, cancellato con la #189: non lo usava piu' nessuno se non `i_video` e il dispositivo audio).
 
 ## 3. Classificazione di `Libs\` (dominio assegnato a mano)
 

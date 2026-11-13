@@ -40,4 +40,4 @@ Unit del fork riportate: 7 su 98, di cui 4 solo in parte (`radix_version` e `rad
 
 Altro che resta: i `.RADIX32` (texture), `GLRadix32`; il nome `Doom32_*` dei log e di `Doom32.ini` (usano `_GAME` solo in parte). **Mars3D e' fuori**: non ci sono dati sul PC.
 
-Come provare: `RADIX.DAT` e `Radix32.swd` in `bin\Radix` (non nel repository); `Tools\Esegui-gioco.ps1 -Exe bin\Radix\Radix32.exe -Arguments "-devparm -nomusic -nosound"`; per vedere lo schermo `-autoscreenshot` (una PNG per tic in `bin\Radix\DATA\SCREENSHOTS`, la finestra DirectDraw non si cattura con `PrintWindow`); log in `bin\Radix\DATA\LOGS\Doom32_*.txt`.
+Come provare: `RADIX.DAT` e `Radix32.swd` in `bin\Radix` (non nel repository); `Tools\Esegui-gioco.ps1 -Exe bin\Radix\Radix32.exe -Arguments "-devparm -nomusic -nosound"`; per vedere lo schermo `-autoscreenshot` (una PNG per tic in `bin\Radix\DATA\SCREENSHOTS`, dalla #189 la finestra e' GDI e si cattura anche con `PrintWindow`); log in `bin\Radix\DATA\LOGS\Doom32_*.txt`.

@@ -1,7 +1,7 @@
 <#
   Esegue un gioco (o uno strumento) di DelphiDoom con un lock globale: una sola esecuzione per volta
   in tutto il computer, anche tra agenti e worktree diversi. Evita il sovraccarico della CPU e i
-  conflitti su DirectDraw (SetCooperativeLevel failed) quando girano piu' giochi insieme.
+  conflitti sul video quando girano piu' giochi insieme (storico: DirectDraw, tolto con la #189).
 
   Uso:
     powershell -NoProfile -File C:\Progetti\DelphiDoom\Tools\Esegui-gioco.ps1 `
