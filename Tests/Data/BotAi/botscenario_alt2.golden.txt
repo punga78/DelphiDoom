@@ -1,0 +1,2712 @@
+> char|bots/c1_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c1_c.c\x0A
+char=1
+> char|bots/c1_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+char=1
+> char|bots/c1_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+L|bots/c1_c.c
+L|{\x0A
+L|    0 One\x0A
+L|    1 1\x0A
+L|    2 nan\x0A
+L|}\x0A
+char=2
+> char|bots/c1_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+char=1
+> char|bots/c1_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c1_c.c\x0A
+L|bots/c1_c.c
+L|{\x0A
+L|    0 One\x0A
+L|    1 1\x0A
+L|    2 nan\x0A
+L|}\x0A
+char=3
+> char|bots/c2_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 4.000000 from bots/c2_c.c\x0A
+char=4
+> char|bots/c2_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+char=4
+> char|bots/c2_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+L|bots/c2_c.c
+L|{\x0A
+L|    0 Four\x0A
+L|    1 4\x0A
+L|    2 nan\x0A
+L|    3 s\x0A
+L|}\x0A
+char=5
+> char|bots/c2_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+char=4
+> char|bots/c2_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c2_c.c\x0A
+L|bots/c2_c.c
+L|{\x0A
+L|    0 Four\x0A
+L|    1 4\x0A
+L|    2 nan\x0A
+L|    3 s\x0A
+L|}\x0A
+char=6
+> char|bots/c3_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+char=7
+> char|bots/c3_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+char=7
+> char|bots/c3_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+L|bots/c3_c.c
+L|{\x0A
+L|    0 Three\x0A
+L|    1 3\x0A
+L|}\x0A
+char=8
+> char|bots/c3_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+char=7
+> char|bots/c3_c.c|3
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+char=7
+> char|bots/c4_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c4_c.c\x0A
+char=9
+> char|bots/c4_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c4_c.c\x0A
+char=10
+> char|bots/c4_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.500000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=11
+> char|bots/c4_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 5 from bots/c4_c.c\x0A
+char=12
+> char|bots/c4_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=13
+> char|bots/empty_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/missing_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 4 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 5 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> chardump|1
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|2
+char file=bots/c1_c.c skill=40200000(2.500000)
+c0 string One
+c1 int 1
+c2 float FFC00000(nan)
+> chardump|3
+char file=bots/c1_c.c skill=40400000(3.000000)
+c0 string One
+c1 int 1
+c2 float FFC00000(nan)
+> chardump|4
+char file=bots/c2_c.c skill=40800000(4.000000)
+c0 string Four
+c1 int 4
+c2 float 3FC00000(1.500000)
+c3 string s
+> chardump|5
+char file=bots/c2_c.c skill=40200000(2.500000)
+c0 string Four
+c1 int 4
+c2 float FFC00000(nan)
+c3 string s
+> chardump|6
+char file=bots/c2_c.c skill=40400000(3.000000)
+c0 string Four
+c1 int 4
+c2 float FFC00000(nan)
+c3 string s
+> chardump|7
+char file=bots/c3_c.c skill=40400000(3.000000)
+c0 string Three
+c1 int 3
+> chardump|8
+char file=bots/c3_c.c skill=40200000(2.500000)
+c0 string Three
+c1 int 3
+> chardump|9
+char file=bots/c4_c.c skill=3F800000(1.000000)
+c0 string Q
+c1 int 1
+c2 float 3E800000(0.250000)
+c3 int 10
+> cfloat|1|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|1|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|1|1
+cfloat=3F800000(1.000000)
+> cint|1|1
+cint=1
+> cfloat|1|2
+cfloat=3F000000(0.500000)
+> cint|1|2
+cint=0
+> cfloat|1|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|1|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|1|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|1|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|2|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|2|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|2|1
+cfloat=3F800000(1.000000)
+> cint|2|1
+cint=1
+> cfloat|2|2
+cfloat=FFC00000(nan)
+> cint|2|2
+cint=-2147483648
+> cfloat|2|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|2|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|2|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|2|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|3|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|3|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|3|1
+cfloat=3F800000(1.000000)
+> cint|3|1
+cint=1
+> cfloat|3|2
+cfloat=FFC00000(nan)
+> cint|3|2
+cint=-2147483648
+> cfloat|3|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|3|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|3|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|3|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|4|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|4|1
+cfloat=40800000(4.000000)
+> cint|4|1
+cint=4
+> cfloat|4|2
+cfloat=3FC00000(1.500000)
+> cint|4|2
+cint=1
+> cfloat|4|3
+P3|characteristic 3 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|3
+P3|characteristic 3 is not a integer\x0A
+cint=0
+> cfloat|4|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|4|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|4|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> charshutdown
+> libset|bot_reloadcharacters|1
+> char|bots/c1_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c1_c.c\x0A
+char=1
+> char|bots/c1_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 1.000000 from bots/c1_c.c\x0A
+char=2
+> char|bots/c1_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 1.000000 from bots/c1_c.c\x0A
+L|bots/c1_c.c
+L|{\x0A
+L|    0 One\x0A
+L|    1 1\x0A
+L|    2 nan\x0A
+L|}\x0A
+char=5
+> char|bots/c1_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 1.000000 from bots/c1_c.c\x0A
+char=6
+> char|bots/c1_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c1_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 1.000000 from bots/c1_c.c\x0A
+L|bots/c1_c.c
+L|{\x0A
+L|    0 One\x0A
+L|    1 1\x0A
+L|    2 nan\x0A
+L|}\x0A
+char=9
+> char|bots/c2_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 4.000000 from bots/c2_c.c\x0A
+char=10
+> char|bots/c2_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c2_c.c\x0A
+char=11
+> char|bots/c2_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 4.000000 from bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c2_c.c\x0A
+L|bots/c2_c.c
+L|{\x0A
+L|    0 Four\x0A
+L|    1 4\x0A
+L|    2 nan\x0A
+L|    3 s\x0A
+L|}\x0A
+char=14
+> char|bots/c2_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 4.000000 from bots/c2_c.c\x0A
+char=15
+> char|bots/c2_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 4.000000 from bots/c2_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c2_c.c\x0A
+L|bots/c2_c.c
+L|{\x0A
+L|    0 Four\x0A
+L|    1 4\x0A
+L|    2 nan\x0A
+L|    3 s\x0A
+L|}\x0A
+char=18
+> char|bots/c3_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+char=19
+> char|bots/c3_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+char=20
+> char|bots/c3_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+L|bots/c3_c.c
+L|{\x0A
+L|    0 Three\x0A
+L|    1 3\x0A
+L|}\x0A
+char=23
+> char|bots/c3_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/c3_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P1|loaded skill 3.000000 from bots/c3_c.c\x0A
+char=24
+> char|bots/c3_c.c|3
+P1|loaded cached skill 3.000000 from bots/c3_c.c\x0A
+char=19
+> char|bots/c4_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c4_c.c\x0A
+char=25
+> char|bots/c4_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c4_c.c\x0A
+char=26
+> char|bots/c4_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.500000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=29
+> char|bots/c4_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 5 from bots/c4_c.c\x0A
+char=30
+> char|bots/c4_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=33
+> char|bots/empty_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/empty_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/empty_c.c\x0A
+char=0
+> char|bots/missing_c.c|1
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|4
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 4 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|2.5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|5
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 5 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 5 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> char|bots/missing_c.c|3
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/missing_c.c\x0A
+char=0
+> chardump|1
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|2
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|3
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|4
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|5
+char file=bots/c1_c.c skill=40200000(2.500000)
+c0 string One
+c1 int 1
+c2 float FFC00000(nan)
+> chardump|6
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|7
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|8
+char file=bots/c1_c.c skill=3F800000(1.000000)
+c0 string One
+c1 int 1
+c2 float 3F000000(0.500000)
+> chardump|9
+char file=bots/c1_c.c skill=40400000(3.000000)
+c0 string One
+c1 int 1
+c2 float FFC00000(nan)
+> cfloat|1|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|1|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|1|1
+cfloat=3F800000(1.000000)
+> cint|1|1
+cint=1
+> cfloat|1|2
+cfloat=3F000000(0.500000)
+> cint|1|2
+cint=0
+> cfloat|1|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|1|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|1|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|1|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|2|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|2|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|2|1
+cfloat=3F800000(1.000000)
+> cint|2|1
+cint=1
+> cfloat|2|2
+cfloat=3F000000(0.500000)
+> cint|2|2
+cint=0
+> cfloat|2|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|2|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|2|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|2|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|3|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|3|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|3|1
+cfloat=3F800000(1.000000)
+> cint|3|1
+cint=1
+> cfloat|3|2
+cfloat=3F000000(0.500000)
+> cint|3|2
+cint=0
+> cfloat|3|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|3|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|3|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|3|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> cfloat|4|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|4|1
+cfloat=3F800000(1.000000)
+> cint|4|1
+cint=1
+> cfloat|4|2
+cfloat=3F000000(0.500000)
+> cint|4|2
+cint=0
+> cfloat|4|3
+P3|characteristic 3 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|3
+P3|characteristic 3 is not initialized\x0A
+cint=0
+> cfloat|4|4
+P3|characteristic 4 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|4
+P3|characteristic 4 is not initialized\x0A
+cint=0
+> cfloat|4|5
+P3|characteristic 5 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|5
+P3|characteristic 5 is not initialized\x0A
+cint=0
+> cfloat|4|6
+P3|characteristic 6 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|6
+P3|characteristic 6 is not initialized\x0A
+cint=0
+> libset|bot_reloadcharacters|0
+> charshutdown
+> char|bots/c4_c.c|1.00
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/c4_c.c\x0A
+char=1
+> char|bots/c4_c.c|1.04
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.256667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=3
+> char|bots/c4_c.c|1.08
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.263333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=4
+> char|bots/c4_c.c|1.12
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.270000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=5
+> char|bots/c4_c.c|1.16
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.276667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=6
+> char|bots/c4_c.c|1.20
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.283333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=7
+> char|bots/c4_c.c|1.24
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.290000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=8
+> char|bots/c4_c.c|1.28
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.296667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=9
+> char|bots/c4_c.c|1.32
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.303333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=10
+> char|bots/c4_c.c|1.36
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.310000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=11
+> char|bots/c4_c.c|1.40
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.316667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=12
+> char|bots/c4_c.c|1.44
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.323333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=13
+> char|bots/c4_c.c|1.48
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.330000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=14
+> char|bots/c4_c.c|1.52
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.336667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=15
+> char|bots/c4_c.c|1.56
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.343333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=16
+> char|bots/c4_c.c|1.60
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.350000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=17
+> char|bots/c4_c.c|1.64
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.356667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=18
+> char|bots/c4_c.c|1.68
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.363333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=19
+> char|bots/c4_c.c|1.72
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.370000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=20
+> char|bots/c4_c.c|1.76
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.376667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=21
+> char|bots/c4_c.c|1.80
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.383333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=22
+> char|bots/c4_c.c|1.84
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.390000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=23
+> char|bots/c4_c.c|1.88
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.396667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=24
+> char|bots/c4_c.c|1.92
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.403333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=25
+> char|bots/c4_c.c|1.96
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.410000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=26
+> char|bots/c4_c.c|2.00
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.416667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=27
+> char|bots/c4_c.c|2.04
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.423333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=28
+> char|bots/c4_c.c|2.08
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.430000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=29
+> char|bots/c4_c.c|2.12
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.436667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=30
+> char|bots/c4_c.c|2.16
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.443333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=31
+> char|bots/c4_c.c|2.20
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.450000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=32
+> char|bots/c4_c.c|2.24
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.456667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=33
+> char|bots/c4_c.c|2.28
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.463333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=34
+> char|bots/c4_c.c|2.32
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.470000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=35
+> char|bots/c4_c.c|2.36
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.476667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=36
+> char|bots/c4_c.c|2.40
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.483333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=37
+> char|bots/c4_c.c|2.44
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.490000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=38
+> char|bots/c4_c.c|2.48
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.496667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=39
+> char|bots/c4_c.c|2.52
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.503333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=40
+> char|bots/c4_c.c|2.56
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.510000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=41
+> char|bots/c4_c.c|2.60
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.516667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=42
+> char|bots/c4_c.c|2.64
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.523333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=43
+> char|bots/c4_c.c|2.68
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.530000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=44
+> char|bots/c4_c.c|2.72
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.536667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=45
+> char|bots/c4_c.c|2.76
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.543333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=46
+> char|bots/c4_c.c|2.80
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.550000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=47
+> char|bots/c4_c.c|2.84
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.556667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=48
+> char|bots/c4_c.c|2.88
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.563333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=49
+> char|bots/c4_c.c|2.92
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.570000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=50
+> char|bots/c4_c.c|2.96
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.576667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=51
+> char|bots/c4_c.c|3.00
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=52
+> char|bots/c4_c.c|3.04
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.590000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=53
+> char|bots/c4_c.c|3.08
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.596667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=54
+> char|bots/c4_c.c|3.12
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.603333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=55
+> char|bots/c4_c.c|3.16
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.610000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=56
+> char|bots/c4_c.c|3.20
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.616667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=57
+> char|bots/c4_c.c|3.24
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.623333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=58
+> char|bots/c4_c.c|3.28
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.630000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=59
+> char|bots/c4_c.c|3.32
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.636667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=60
+> char|bots/c4_c.c|3.36
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.643333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=61
+> char|bots/c4_c.c|3.40
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.650000\x0A
+L|    3 10\x0A
+L|}\x0A
+char=62
+> char|bots/c4_c.c|3.44
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.656667\x0A
+L|    3 10\x0A
+L|}\x0A
+char=63
+> char|bots/c4_c.c|3.48
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/c4_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P3|counldn't load bots/default_c.c\x0A
+P2|couldn't load any skill from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/c4_c.c\x0A
+L|bots/c4_c.c
+L|{\x0A
+L|    0 Q\x0A
+L|    1 1\x0A
+L|    2 0.663333\x0A
+L|    3 10\x0A
+L|}\x0A
+char=64
+> char|bots/c4_c.c|3.52
+char=0
+> char|bots/c4_c.c|3.56
+char=0
+> char|bots/c4_c.c|3.60
+char=0
+> char|bots/c4_c.c|3.64
+char=0
+> char|bots/c4_c.c|3.68
+char=0
+> char|bots/c4_c.c|3.72
+char=0
+> char|bots/c4_c.c|3.76
+char=0
+> char|bots/c4_c.c|3.80
+char=0
+> char|bots/c4_c.c|3.84
+char=0
+> char|bots/c4_c.c|3.88
+char=0
+> char|bots/c4_c.c|3.92
+char=0
+> char|bots/c4_c.c|3.96
+char=0
+> char|bots/c1_c.c|1
+char=0
+> char|bots/c4_c.c|5
+char=0
+> charshutdown

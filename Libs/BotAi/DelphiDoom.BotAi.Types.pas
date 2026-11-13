@@ -21,7 +21,11 @@ const
 
   /// <summary>BLERR_NOERROR and the error codes of the library the chat returns</summary>
   BLERR_NOERROR = 0;
-  BLERR_CANNOTLOADICHAT = 20;
+  BLERR_CANNOTLOADICHAT = 8;
+  BLERR_CANNOTLOADITEMWEIGHTS = 9;
+  BLERR_CANNOTLOADITEMCONFIG = 10;
+  BLERR_CANNOTLOADWEAPONWEIGHTS = 11;
+  BLERR_CANNOTLOADWEAPONCONFIG = 12;
 
   /// <summary>MAX_CLIENTS: the number of chat states and of cached chats</summary>
   BOT_MAX_CLIENTS = 64;

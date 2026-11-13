@@ -1,0 +1,4058 @@
+> libset|a|5
+> libget|a
+libget text=5 value=40A00000(5.000000) changed=1
+> libget|A
+libget text=5 value=40A00000(5.000000) changed=1
+> libget|missing
+libget text= value=00000000(0.000000) changed=0
+> libval|newvar|7.25
+libval=40E80000(7.250000)
+> libval|newvar|9
+libval=40E80000(7.250000)
+> libstr|newstr|hello
+libstr=hello
+> libstr|newstr|bye
+libstr=hello
+> libget|newvar
+libget text=7.25 value=40E80000(7.250000) changed=1
+> libnotmod|a
+> libget|a
+libget text=5 value=40A00000(5.000000) changed=0
+> libset|a|6
+> libget|a
+libget text=6 value=40C00000(6.000000) changed=1
+> libnotmod|nothing
+> libconv|12.5
+libconv=41480000(12.500000)
+> libconv|-1
+libconv=00000000(0.000000)
+> libconv|1e3
+libconv=00000000(0.000000)
+> libconv|abc
+libconv=00000000(0.000000)
+> libconv|1.5.2
+libconv=00000000(0.000000)
+> libconv|0.1
+libconv=3DCCCCCD(0.100000)
+> libconv|
+libconv=00000000(0.000000)
+> libconv|.5
+libconv=3F000000(0.500000)
+> libconv|007
+libconv=40E00000(7.000000)
+> libconv|1.x
+libconv=41033333(8.200000)
+> libconv|3.14159
+libconv=40490FCE(3.141590)
+> libconv|123456789
+libconv=4CEB79A3(123456792.000000)
+> libconv|0.333
+libconv=3EAA7EFA(0.333000)
+> struct|struct/ok1.c
+struct=1 hash=B1A6E655
+{\x0D\x0A
+\x09c\x0965\x0D\x0A
+\x09uc\x09-56\x0D\x0A
+\x09i\x09-5\x0D\x0A
+\x09ui\x0940000\x0D\x0A
+\x09f\x091.5\x0D\x0A
+\x09bf\x092.5\x0D\x0A
+\x09bi\x09-10\x0D\x0A
+\x09s\x09"hello"\x0D\x0A
+\x09a\x09{1,2.5,-3}\x0D\x0A
+\x09ia\x09{7,8,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x09-276415\x0D\x0A
+\x09\x09y\x09-1673461761\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x0965\x0D\x0A
+}\x0D\x0A
+> struct|struct/ok2.c
+struct=1 hash=4117CACE
+{\x0D\x0A
+\x09c\x09122\x0D\x0A
+\x09uc\x0997\x0D\x0A
+\x09i\x0932767\x0D\x0A
+\x09ui\x0965535\x0D\x0A
+\x09f\x09-0.125\x0D\x0A
+\x09bf\x09-1\x0D\x0A
+\x09bi\x0910\x0D\x0A
+\x09s\x09"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"\x0D\x0A
+\x09a\x09{4,0,0}\x0D\x0A
+\x09ia\x09{1,2,3}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x092147443066\x0D\x0A
+\x09\x09y\x09-65536\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x09-5\x0D\x0A
+}\x0D\x0A
+> struct|struct/ok3.c
+struct=1 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/ok4.c
+struct=1 hash=CF891B00
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{1,2,3}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/ok5.c
+struct=1 hash=41771776
+{\x0D\x0A
+\x09c\x09-128\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x0916\x0D\x0A
+\x09ui\x0910\x0D\x0A
+\x09f\x097\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{5,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x091048704\x0D\x0A
+\x09\x09y\x09655360\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_unknown.c
+P3|file struct/e_unknown.c, line 1: unknown structure field nothing\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_floatint.c
+P3|file struct/e_floatint.c, line 1: unexpected float\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_unsigned.c
+P3|file struct/e_unsigned.c, line 1: expected unsigned value, found -\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_range.c
+P3|file struct/e_range.c, line 1: value 200 out of range [-128, 127]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_range2.c
+P3|file struct/e_range2.c, line 1: value 40000 out of range [-32768, 32767]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_urange.c
+P3|file struct/e_urange.c, line 1: value 65536 out of range [0, 65535]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_floatrange.c
+P3|file struct/e_floatrange.c, line 1: float out of range [-1.000000, 2.500000]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_intfloatrange.c
+P3|file struct/e_intfloatrange.c, line 1: value 3 out of range [-1.000000, 2.500000]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_bint.c
+P3|file struct/e_bint.c, line 1: value 11 out of range [-10, 10]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_bchar.c
+P3|file struct/e_bchar.c, line 1: value 6 out of range [-5, 5]\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_punct.c
+P3|file struct/e_punct.c, line 1: unexpected punctuation +\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_notnumber.c
+P3|file struct/e_notnumber.c, line 1: expected number, found "x"\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_comma.c
+P3|file struct/e_comma.c, line 1: expected a comma, found 2\x0A
+struct=0 hash=941B6CC0
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{1,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_eof.c
+P3|file struct/e_eof.c, line 1: couldn't read expected token\x0A
+struct=0 hash=51013C64
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x091\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x0965536\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_open.c
+P3|file struct/e_open.c, line 1: expected {, found i\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_string.c
+P3|file struct/e_string.c, line 1: expected a string, found 12\x0A
+struct=0 hash=17217A27
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_substruct.c
+P3|file struct/e_substruct.c, line 1: unknown structure field z\x0A
+P3|file struct/e_substruct.c, line 1: unknown structure field 2\x0A
+struct=0 hash=F5D8B934
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_substruct2.c
+P3|file struct/e_substruct2.c, line 1: expected {, found x\x0A
+struct=1 hash=DD41B7EA
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x093\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x090\x0D\x0A
+\x09bf\x090\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{0,0,0}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x09196608\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/e_negfloat.c
+struct=1 hash=955BA917
+{\x0D\x0A
+\x09c\x090\x0D\x0A
+\x09uc\x090\x0D\x0A
+\x09i\x090\x0D\x0A
+\x09ui\x090\x0D\x0A
+\x09f\x09-2.5\x0D\x0A
+\x09bf\x09-0.5\x0D\x0A
+\x09bi\x090\x0D\x0A
+\x09s\x09""\x0D\x0A
+\x09a\x09{-1.5,-2,-3.25}\x0D\x0A
+\x09ia\x09{0,0,0}\x0D\x0A
+\x09sub\x09\x09{\x0D\x0A
+\x09\x09x\x090\x0D\x0A
+\x09\x09y\x090\x0D\x0A
+\x09}\x0D\x0A
+\x0D\x0A
+\x09cb\x090\x0D\x0A
+}\x0D\x0A
+> struct|struct/missing.c
+struct nosource
+> wread|0|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wread|1|bots/test_w.c
+wread ok=1 same=0
+> wdump|0
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=42C80000(100.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41200000(10.000000) max=42B40000(90.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F800000(1.000000) min=3F000000(0.500000) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40000000(2.000000) min=3F800000(1.000000) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wfind|0|WP_C
+wfind=2
+> wfind|0|WP_Z
+wfind=-1
+> wfind|0|wp_c
+wfind=-1
+> wfuzzy|0|0|0|0|0|0
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|0|0|0
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|1|0|0
+wfuzzy=42C80000(100.000000)
+> wfuzzy|0|1|0|1|0|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|1|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|1|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|1|0|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|4|3|0
+wfuzzy=43480000(200.000000)
+> wfuzzy|0|1|0|4|3|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|4|3|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|4|3|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|4|3|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|5|3|0
+wfuzzy=42480000(50.000000)
+> wfuzzy|0|1|0|5|3|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|5|3|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|5|3|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|5|3|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|5|2|0
+wfuzzy=42480000(50.000000)
+> wfuzzy|0|1|0|5|2|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|5|2|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|5|2|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|5|2|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|5|3|1000
+wfuzzy=42480000(50.000000)
+> wfuzzy|0|1|0|5|3|1000
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|5|3|1000
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|5|3|1000
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|5|3|1000
+wfuzzy=40E00000(7.000000)
+> wfuzzy|0|0|0|5|50|0
+wfuzzy=42480000(50.000000)
+> wfuzzy|0|1|0|5|50|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|5|50|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|5|50|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|5|50|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|9|0|0
+wfuzzy=42480000(50.000000)
+> wfuzzy|0|1|0|9|0|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|9|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|9|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|9|0|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|-3|0|0
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|-3|0|0
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|-3|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|-3|0|0
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|-3|0|0
+wfuzzy=41000000(8.000000)
+> wfuzzy|0|0|0|0|0|2
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|2
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|2
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|2
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|2
+wfuzzy=40000000(2.000000)
+> wfuzzy|0|0|0|0|0|3
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|3
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|3
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|3
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|3
+wfuzzy=40000000(2.000000)
+> wfuzzy|0|0|0|0|0|5
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|5
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|5
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|5
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|5
+wfuzzy=41100000(9.000000)
+> wfuzzy|0|0|0|0|0|6
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|6
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|6
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|6
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|6
+wfuzzy=40E00000(7.000000)
+> wfuzzy|0|0|0|0|0|40
+wfuzzy=00000000(0.000000)
+> wfuzzy|0|1|0|0|0|40
+wfuzzy=43960000(300.000000)
+> wfuzzy|0|2|0|0|0|40
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|3|0|0|0|40
+wfuzzy=3F800000(1.000000)
+> wfuzzy|0|4|0|0|0|40
+wfuzzy=40E00000(7.000000)
+> wundecided|0|0|1|0|0|0|0
+wundecided=00000000(0.000000)
+> wundecided|0|1|1|0|0|0|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|1|0|0|0|0
+wundecided=3F007B01(0.501877)
+> wundecided|0|3|1|0|0|0|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|1|0|0|0|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|1|0|5|3|0
+wundecided=41CBB6F8(25.464340)
+> wundecided|0|1|1|0|5|3|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|1|0|5|3|0
+wundecided=3F007B01(0.501877)
+> wundecided|0|3|1|0|5|3|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|1|0|5|3|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|1|0|5|50|0
+wundecided=41CBB6F8(25.464340)
+> wundecided|0|1|1|0|5|50|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|1|0|5|50|0
+wundecided=3F007B01(0.501877)
+> wundecided|0|3|1|0|5|50|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|1|0|5|50|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|1|0|0|0|3
+wundecided=00000000(0.000000)
+> wundecided|0|1|1|0|0|0|3
+wundecided=43960000(300.000000)
+> wundecided|0|2|1|0|0|0|3
+wundecided=3F007B01(0.501877)
+> wundecided|0|3|1|0|0|0|3
+wundecided=3F800000(1.000000)
+> wundecided|0|4|1|0|0|0|3
+wundecided=40504721(3.254341)
+> wundecided|0|0|1|0|0|0|5
+wundecided=00000000(0.000000)
+> wundecided|0|1|1|0|0|0|5
+wundecided=43960000(300.000000)
+> wundecided|0|2|1|0|0|0|5
+wundecided=3F007B01(0.501877)
+> wundecided|0|3|1|0|0|0|5
+wundecided=3F800000(1.000000)
+> wundecided|0|4|1|0|0|0|5
+wundecided=41100000(9.000000)
+> wundecided|0|0|7|0|0|0|0
+wundecided=00000000(0.000000)
+> wundecided|0|1|7|0|0|0|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|7|0|0|0|0
+wundecided=3F00B701(0.502792)
+> wundecided|0|3|7|0|0|0|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|7|0|0|0|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|7|0|5|3|0
+wundecided=423C96A9(47.147129)
+> wundecided|0|1|7|0|5|3|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|7|0|5|3|0
+wundecided=3F00B701(0.502792)
+> wundecided|0|3|7|0|5|3|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|7|0|5|3|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|7|0|5|50|0
+wundecided=423C96A9(47.147129)
+> wundecided|0|1|7|0|5|50|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|7|0|5|50|0
+wundecided=3F00B701(0.502792)
+> wundecided|0|3|7|0|5|50|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|7|0|5|50|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|7|0|0|0|3
+wundecided=00000000(0.000000)
+> wundecided|0|1|7|0|0|0|3
+wundecided=43960000(300.000000)
+> wundecided|0|2|7|0|0|0|3
+wundecided=3F00B701(0.502792)
+> wundecided|0|3|7|0|0|0|3
+wundecided=3F800000(1.000000)
+> wundecided|0|4|7|0|0|0|3
+wundecided=40481D10(3.126774)
+> wundecided|0|0|7|0|0|0|5
+wundecided=00000000(0.000000)
+> wundecided|0|1|7|0|0|0|5
+wundecided=43960000(300.000000)
+> wundecided|0|2|7|0|0|0|5
+wundecided=3F00B701(0.502792)
+> wundecided|0|3|7|0|0|0|5
+wundecided=3F800000(1.000000)
+> wundecided|0|4|7|0|0|0|5
+wundecided=41100000(9.000000)
+> wundecided|0|0|12345|0|0|0|0
+wundecided=00000000(0.000000)
+> wundecided|0|1|12345|0|0|0|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|12345|0|0|0|0
+wundecided=3F58E0B2(0.847179)
+> wundecided|0|3|12345|0|0|0|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|12345|0|0|0|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|12345|0|5|3|0
+wundecided=4291F4BC(72.977997)
+> wundecided|0|1|12345|0|5|3|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|12345|0|5|3|0
+wundecided=3F58E0B2(0.847179)
+> wundecided|0|3|12345|0|5|3|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|12345|0|5|3|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|12345|0|5|50|0
+wundecided=4291F4BC(72.977997)
+> wundecided|0|1|12345|0|5|50|0
+wundecided=43960000(300.000000)
+> wundecided|0|2|12345|0|5|50|0
+wundecided=3F58E0B2(0.847179)
+> wundecided|0|3|12345|0|5|50|0
+wundecided=3F800000(1.000000)
+> wundecided|0|4|12345|0|5|50|0
+wundecided=41000000(8.000000)
+> wundecided|0|0|12345|0|0|0|3
+wundecided=00000000(0.000000)
+> wundecided|0|1|12345|0|0|0|3
+wundecided=43960000(300.000000)
+> wundecided|0|2|12345|0|0|0|3
+wundecided=3F58E0B2(0.847179)
+> wundecided|0|3|12345|0|0|0|3
+wundecided=3F800000(1.000000)
+> wundecided|0|4|12345|0|0|0|3
+wundecided=4055B92B(3.339427)
+> wundecided|0|0|12345|0|0|0|5
+wundecided=00000000(0.000000)
+> wundecided|0|1|12345|0|0|0|5
+wundecided=43960000(300.000000)
+> wundecided|0|2|12345|0|0|0|5
+wundecided=3F58E0B2(0.847179)
+> wundecided|0|3|12345|0|0|0|5
+wundecided=3F800000(1.000000)
+> wundecided|0|4|12345|0|0|0|5
+wundecided=41100000(9.000000)
+> wscale|0|WP_A|0.5
+> wdump|0
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=42C80000(100.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41200000(10.000000) max=42B40000(90.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F800000(1.000000) min=3F000000(0.500000) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40000000(2.000000) min=3F800000(1.000000) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wscale|0|WP_C|2
+> wscale|0|WP_C|-1
+> wscale|0|WP_C|0.25
+> wscale|0|WP_Z|0.5
+> wdump|0
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=42C80000(100.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41200000(10.000000) max=42B40000(90.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F200000(0.625000) min=3F000000(0.500000) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40000000(2.000000) min=3F800000(1.000000) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wrange|0|0.5
+> wdump|0
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=43160000(150.000000) max=437A0000(250.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41F00000(30.000000) max=428C0000(70.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F200000(0.625000) min=3F600000(0.875000) max=3FD00000(1.625000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40000000(2.000000) min=40000000(2.000000) max=40800000(4.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wrange|0|1000
+> wrange|0|-4
+> wdump|0
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=43480000(200.000000) max=43480000(200.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=42480000(50.000000) max=42480000(50.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F200000(0.625000) min=3FA00000(1.250000) max=3FA00000(1.250000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40000000(2.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> libset|bot_reloadcharacters|1
+> wread|2|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wevolve|2|1
+> wdump|2
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43616F24(225.434143) min=42C80000(100.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=42956603(74.699242) min=41200000(10.000000) max=42B40000(90.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F784570(0.969810) min=3F000000(0.500000) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40655DCB(3.583850) min=3F800000(1.000000) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wevolve|2|99
+> wdump|2
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=4385A078(267.253662) min=42C80000(100.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=42C1783B(96.734825) min=41200000(10.000000) max=42C1783B(96.734825)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F0E231C(0.555223) min=3F000000(0.500000) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=40098813(2.148930) min=3F800000(1.000000) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wread|3|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wread|4|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wbreed|2|3|4
+> wdump|4
+weights n=5 file=bots/test_w.c
+w0 name=WP_A
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+    idx=2 val=999999 type=1 w=43480000(200.000000) min=43480000(200.000000) max=43960000(300.000000)
+  idx=1 val=999999 type=1 w=4292BC1E(73.367416) min=4292BC1E(73.367416) max=42B40000(90.000000)
+w1 name=WP_B
+  idx=0 val=999999 type=0 w=43960000(300.000000) min=43960000(300.000000) max=43960000(300.000000)
+w2 name=WP_C
+  idx=0 val=999999 type=1 w=3F47118E(0.777612) min=3F47118E(0.777612) max=40000000(2.000000)
+w3 name=WP_D
+  idx=0 val=10 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+  idx=0 val=20 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+  idx=0 val=30 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+  idx=0 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+w4 name=WP_E
+  idx=3 val=2 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+  idx=3 val=4 type=1 w=4004C40A(2.074465) min=4004C40A(2.074465) max=40A00000(5.000000)
+  idx=3 val=6 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+  idx=3 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+> wread|5|bots/warn_w.c
+P2|file bots/warn_w.c, line 1: negative value set to zero\x0A\x0A
+P2|file bots/warn_w.c, line 2: negative value set to zero\x0A\x0A
+P2|file bots/warn_w.c, line 3: switch without default\x0A\x0A
+P1|loaded bots/warn_w.c\x0A
+wread ok=1 same=-1
+> wbreed|2|5|4
+P3|cannot interbreed weight configs, unequal numweights\x0A
+> wdump|5
+weights n=3 file=bots/warn_w.c
+w0 name=NEG
+  idx=0 val=999999 type=0 w=40A00000(5.000000) min=40A00000(5.000000) max=40A00000(5.000000)
+w1 name=NEGB
+  idx=0 val=999999 type=1 w=3F800000(1.000000) min=40000000(2.000000) max=40400000(3.000000)
+w2 name=NODEF
+  idx=1 val=3 type=0 w=40800000(4.000000) min=40800000(4.000000) max=40800000(4.000000)
+  idx=1 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+> wread|6|bots/wpn_w.c
+P1|loaded bots/wpn_w.c\x0A
+wread ok=1 same=-1
+> wbreed|6|6|6
+> wfree|2
+> libset|bot_reloadcharacters|0
+> wshutdown
+> wread|0|bots/nest_w.c
+P1|loaded bots/nest_w.c\x0A
+wread ok=1 same=-1
+> wdump|0
+weights n=1 file=bots/nest_w.c
+w0 name=N1
+  idx=1 val=5 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=41200000(10.000000) min=41200000(10.000000) max=41200000(10.000000)
+    idx=2 val=999999 type=1 w=41A00000(20.000000) min=41200000(10.000000) max=41F00000(30.000000)
+  idx=1 val=9 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=3 type=0 w=41F00000(30.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+    idx=2 val=999999 type=1 w=42200000(40.000000) min=41F00000(30.000000) max=42480000(50.000000)
+  idx=1 val=999999 type=0 w=42480000(50.000000) min=42480000(50.000000) max=42480000(50.000000)
+> wfuzzy|0|0|0|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|0|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|0|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|0|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|0|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|0|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|0|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|0|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|0|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|4|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|4|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|4|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|4|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|4|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|4|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|4|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|4|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|4|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|5|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|5|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|5|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|5|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|5|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|5|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|5|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|5|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|5|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|7|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|7|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|7|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|7|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|7|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|7|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|7|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|7|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|7|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|8|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|8|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|8|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|8|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|8|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|8|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|8|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|8|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|8|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|9|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|9|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|9|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|9|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|9|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|9|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|9|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|9|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|9|5
+wundecided=41F00000(30.000000)
+> wfuzzy|0|0|12|0
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|12|0
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|12|0
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|12|3
+wfuzzy=41200000(10.000000)
+> wundecided|0|0|3|12|3
+wundecided=41200000(10.000000)
+> wundecided|0|0|4|12|3
+wundecided=41200000(10.000000)
+> wfuzzy|0|0|12|5
+wfuzzy=41F00000(30.000000)
+> wundecided|0|0|3|12|5
+wundecided=41F00000(30.000000)
+> wundecided|0|0|4|12|5
+wundecided=41F00000(30.000000)
+> wshutdown
+> libset|bot_reloadcharacters|1
+> wread|0|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wread|1|bots/breed_b_w.c
+P1|loaded bots/breed_b_w.c\x0A
+wread ok=1 same=-1
+> wread|2|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|1|2
+> wdump|2
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=43FA0000(500.000000) min=43FA0000(500.000000) max=43FA0000(500.000000)
+    idx=2 val=999999 type=1 w=41F00000(30.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+  idx=1 val=999999 type=1 w=42700000(60.000000) min=42700000(60.000000) max=42B40000(90.000000)
+> wread|3|bots/breed_c_w.c
+P1|loaded bots/breed_c_w.c\x0A
+wread ok=1 same=-1
+> wread|4|bots/breed_c_w.c
+P1|loaded bots/breed_c_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|3|2
+P3|cannot interbreed weight configs, unequal child\x0A
+> wbreed|3|0|4
+P3|cannot interbreed weight configs, unequal balance\x0A
+> wread|5|bots/breed_d_w.c
+P1|loaded bots/breed_d_w.c\x0A
+wread ok=1 same=-1
+> wread|8|bots/breed_a_w.c
+P1|loaded bots/breed_a_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|5|8
+P3|cannot interbreed weight configs, unequal balance\x0A
+> wdump|8
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=42C80000(100.000000) min=00000000(0.000000) max=43480000(200.000000)
+    idx=2 val=999999 type=1 w=41200000(10.000000) min=40A00000(5.000000) max=41700000(15.000000)
+  idx=1 val=999999 type=1 w=42480000(50.000000) min=41200000(10.000000) max=42B40000(90.000000)
+> wread|6|bots/breed_e_w.c
+P1|loaded bots/breed_e_w.c\x0A
+wread ok=1 same=-1
+> wbreed|3|6|4
+P3|cannot interbreed weight configs, unequal next\x0A
+> wbreed|0|6|2
+P3|cannot interbreed weight configs, unequal child\x0A
+> wread|7|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wbreed|0|7|2
+P3|cannot interbreed weight configs, unequal numweights\x0A
+> wbreed|1|0|2
+> wdump|2
+weights n=1 file=bots/breed_a_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=42C80000(100.000000) min=43FA0000(500.000000) max=43FA0000(500.000000)
+    idx=2 val=999999 type=1 w=41200000(10.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+  idx=1 val=999999 type=1 w=42700000(60.000000) min=42700000(60.000000) max=42B40000(90.000000)
+> wevolve|1|1
+> wevolve|1|2
+> wevolve|1|3
+> wevolve|1|4
+> wevolve|1|5
+> wevolve|1|6
+> wevolve|1|7
+> wevolve|1|8
+> wevolve|1|9
+> wevolve|1|10
+> wevolve|1|11
+> wevolve|1|12
+> wevolve|1|13
+> wevolve|1|14
+> wevolve|1|15
+> wevolve|1|16
+> wevolve|1|17
+> wevolve|1|18
+> wevolve|1|19
+> wevolve|1|20
+> wevolve|1|21
+> wevolve|1|22
+> wevolve|1|23
+> wevolve|1|24
+> wdump|1
+weights n=1 file=bots/breed_b_w.c
+w0 name=X
+  idx=1 val=1 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+    idx=2 val=1 type=1 w=4352F97D(210.974564) min=4352F97D(210.974564) max=445A1CF9(872.452698)
+    idx=2 val=999999 type=1 w=42070BC5(33.761494) min=41368830(11.408249) max=4234691B(45.102642)
+  idx=1 val=999999 type=1 w=4290B487(72.352592) min=425C81D6(55.126793) max=42D00F38(104.029724)
+> wevolve|3|25
+> wevolve|3|26
+> wevolve|3|27
+> wevolve|3|28
+> wevolve|3|29
+> wevolve|3|30
+> wevolve|3|31
+> wevolve|3|32
+> wevolve|3|33
+> wevolve|3|34
+> wevolve|3|35
+> wevolve|3|36
+> wevolve|3|37
+> wevolve|3|38
+> wevolve|3|39
+> wevolve|3|40
+> wdump|3
+weights n=1 file=bots/breed_c_w.c
+w0 name=X
+  idx=1 val=1 type=1 w=C1A17600(-20.182617) min=C1A17600(-20.182617) max=40000000(2.000000)
+  idx=1 val=999999 type=1 w=409CAADD(4.895857) min=C06A94C7(-3.665331) max=41100000(9.000000)
+> libset|bot_reloadcharacters|0
+> wshutdown
+> libset|bot_reloadcharacters|1
+> wread|0|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wread|1|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wread ok=1 same=-1
+> wfree|0
+> wfind|1|WP_B
+wfind=1
+> wfree|1
+> libset|bot_reloadcharacters|0
+> wshutdown
+> wread|7|bots/warn_w.c
+P2|file bots/warn_w.c, line 1: negative value set to zero\x0A\x0A
+P2|file bots/warn_w.c, line 2: negative value set to zero\x0A\x0A
+P2|file bots/warn_w.c, line 3: switch without default\x0A\x0A
+P1|loaded bots/warn_w.c\x0A
+wread ok=1 same=-1
+> wdump|7
+weights n=3 file=bots/warn_w.c
+w0 name=NEG
+  idx=0 val=999999 type=0 w=40A00000(5.000000) min=40A00000(5.000000) max=40A00000(5.000000)
+w1 name=NEGB
+  idx=0 val=999999 type=1 w=3F800000(1.000000) min=40000000(2.000000) max=40400000(3.000000)
+w2 name=NODEF
+  idx=1 val=3 type=0 w=40800000(4.000000) min=40800000(4.000000) max=40800000(4.000000)
+  idx=1 val=999999 type=0 w=00000000(0.000000) min=00000000(0.000000) max=00000000(0.000000)
+> wread|7|bots/bad_w1.c
+P3|file bots/bad_w1.c, line 1: invalid name foo\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w2.c
+P3|file bots/bad_w2.c, line 1: expected a string, found foo\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w3.c
+P3|file bots/bad_w3.c, line 1: switch already has a default\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w4.c
+P3|file bots/bad_w4.c, line 1: invalid name foo\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w5.c
+P3|file bots/bad_w5.c, line 1: couldn't find expected ;\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w6.c
+P3|file bots/bad_w6.c, line 1: expected  integer, found 1.5\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w7.c
+P3|file bots/bad_w7.c, line 1: invalid return value foo\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w8.c
+P3|file bots/bad_w8.c, line 1: couldn't find expected }\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w9.c
+P3|file bots/bad_w9.c, line 1: invalid name foo\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w10.c
+P3|file bots/bad_w10.c, line 1: invalid name foo\x0A\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/bad_w11.c
+P3|file bots/bad_w11.c, line 1: expected a number, found x\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wread|7|bots/many_w.c
+P2|file bots/many_w.c, line 129: too many fuzzy weights\x0A\x0A
+P1|loaded bots/many_w.c\x0A
+wread ok=1 same=-1
+> wdump|7
+weights n=128 file=bots/many_w.c
+w0 name=w1
+  idx=0 val=999999 type=0 w=3F800000(1.000000) min=3F800000(1.000000) max=3F800000(1.000000)
+w1 name=w2
+  idx=0 val=999999 type=0 w=40000000(2.000000) min=40000000(2.000000) max=40000000(2.000000)
+w2 name=w3
+  idx=0 val=999999 type=0 w=40400000(3.000000) min=40400000(3.000000) max=40400000(3.000000)
+w3 name=w4
+  idx=0 val=999999 type=0 w=40800000(4.000000) min=40800000(4.000000) max=40800000(4.000000)
+w4 name=w5
+  idx=0 val=999999 type=0 w=40A00000(5.000000) min=40A00000(5.000000) max=40A00000(5.000000)
+w5 name=w6
+  idx=0 val=999999 type=0 w=40C00000(6.000000) min=40C00000(6.000000) max=40C00000(6.000000)
+w6 name=w7
+  idx=0 val=999999 type=0 w=40E00000(7.000000) min=40E00000(7.000000) max=40E00000(7.000000)
+w7 name=w8
+  idx=0 val=999999 type=0 w=41000000(8.000000) min=41000000(8.000000) max=41000000(8.000000)
+w8 name=w9
+  idx=0 val=999999 type=0 w=41100000(9.000000) min=41100000(9.000000) max=41100000(9.000000)
+w9 name=w10
+  idx=0 val=999999 type=0 w=41200000(10.000000) min=41200000(10.000000) max=41200000(10.000000)
+w10 name=w11
+  idx=0 val=999999 type=0 w=41300000(11.000000) min=41300000(11.000000) max=41300000(11.000000)
+w11 name=w12
+  idx=0 val=999999 type=0 w=41400000(12.000000) min=41400000(12.000000) max=41400000(12.000000)
+w12 name=w13
+  idx=0 val=999999 type=0 w=41500000(13.000000) min=41500000(13.000000) max=41500000(13.000000)
+w13 name=w14
+  idx=0 val=999999 type=0 w=41600000(14.000000) min=41600000(14.000000) max=41600000(14.000000)
+w14 name=w15
+  idx=0 val=999999 type=0 w=41700000(15.000000) min=41700000(15.000000) max=41700000(15.000000)
+w15 name=w16
+  idx=0 val=999999 type=0 w=41800000(16.000000) min=41800000(16.000000) max=41800000(16.000000)
+w16 name=w17
+  idx=0 val=999999 type=0 w=41880000(17.000000) min=41880000(17.000000) max=41880000(17.000000)
+w17 name=w18
+  idx=0 val=999999 type=0 w=41900000(18.000000) min=41900000(18.000000) max=41900000(18.000000)
+w18 name=w19
+  idx=0 val=999999 type=0 w=41980000(19.000000) min=41980000(19.000000) max=41980000(19.000000)
+w19 name=w20
+  idx=0 val=999999 type=0 w=41A00000(20.000000) min=41A00000(20.000000) max=41A00000(20.000000)
+w20 name=w21
+  idx=0 val=999999 type=0 w=41A80000(21.000000) min=41A80000(21.000000) max=41A80000(21.000000)
+w21 name=w22
+  idx=0 val=999999 type=0 w=41B00000(22.000000) min=41B00000(22.000000) max=41B00000(22.000000)
+w22 name=w23
+  idx=0 val=999999 type=0 w=41B80000(23.000000) min=41B80000(23.000000) max=41B80000(23.000000)
+w23 name=w24
+  idx=0 val=999999 type=0 w=41C00000(24.000000) min=41C00000(24.000000) max=41C00000(24.000000)
+w24 name=w25
+  idx=0 val=999999 type=0 w=41C80000(25.000000) min=41C80000(25.000000) max=41C80000(25.000000)
+w25 name=w26
+  idx=0 val=999999 type=0 w=41D00000(26.000000) min=41D00000(26.000000) max=41D00000(26.000000)
+w26 name=w27
+  idx=0 val=999999 type=0 w=41D80000(27.000000) min=41D80000(27.000000) max=41D80000(27.000000)
+w27 name=w28
+  idx=0 val=999999 type=0 w=41E00000(28.000000) min=41E00000(28.000000) max=41E00000(28.000000)
+w28 name=w29
+  idx=0 val=999999 type=0 w=41E80000(29.000000) min=41E80000(29.000000) max=41E80000(29.000000)
+w29 name=w30
+  idx=0 val=999999 type=0 w=41F00000(30.000000) min=41F00000(30.000000) max=41F00000(30.000000)
+w30 name=w31
+  idx=0 val=999999 type=0 w=41F80000(31.000000) min=41F80000(31.000000) max=41F80000(31.000000)
+w31 name=w32
+  idx=0 val=999999 type=0 w=42000000(32.000000) min=42000000(32.000000) max=42000000(32.000000)
+w32 name=w33
+  idx=0 val=999999 type=0 w=42040000(33.000000) min=42040000(33.000000) max=42040000(33.000000)
+w33 name=w34
+  idx=0 val=999999 type=0 w=42080000(34.000000) min=42080000(34.000000) max=42080000(34.000000)
+w34 name=w35
+  idx=0 val=999999 type=0 w=420C0000(35.000000) min=420C0000(35.000000) max=420C0000(35.000000)
+w35 name=w36
+  idx=0 val=999999 type=0 w=42100000(36.000000) min=42100000(36.000000) max=42100000(36.000000)
+w36 name=w37
+  idx=0 val=999999 type=0 w=42140000(37.000000) min=42140000(37.000000) max=42140000(37.000000)
+w37 name=w38
+  idx=0 val=999999 type=0 w=42180000(38.000000) min=42180000(38.000000) max=42180000(38.000000)
+w38 name=w39
+  idx=0 val=999999 type=0 w=421C0000(39.000000) min=421C0000(39.000000) max=421C0000(39.000000)
+w39 name=w40
+  idx=0 val=999999 type=0 w=42200000(40.000000) min=42200000(40.000000) max=42200000(40.000000)
+w40 name=w41
+  idx=0 val=999999 type=0 w=42240000(41.000000) min=42240000(41.000000) max=42240000(41.000000)
+w41 name=w42
+  idx=0 val=999999 type=0 w=42280000(42.000000) min=42280000(42.000000) max=42280000(42.000000)
+w42 name=w43
+  idx=0 val=999999 type=0 w=422C0000(43.000000) min=422C0000(43.000000) max=422C0000(43.000000)
+w43 name=w44
+  idx=0 val=999999 type=0 w=42300000(44.000000) min=42300000(44.000000) max=42300000(44.000000)
+w44 name=w45
+  idx=0 val=999999 type=0 w=42340000(45.000000) min=42340000(45.000000) max=42340000(45.000000)
+w45 name=w46
+  idx=0 val=999999 type=0 w=42380000(46.000000) min=42380000(46.000000) max=42380000(46.000000)
+w46 name=w47
+  idx=0 val=999999 type=0 w=423C0000(47.000000) min=423C0000(47.000000) max=423C0000(47.000000)
+w47 name=w48
+  idx=0 val=999999 type=0 w=42400000(48.000000) min=42400000(48.000000) max=42400000(48.000000)
+w48 name=w49
+  idx=0 val=999999 type=0 w=42440000(49.000000) min=42440000(49.000000) max=42440000(49.000000)
+w49 name=w50
+  idx=0 val=999999 type=0 w=42480000(50.000000) min=42480000(50.000000) max=42480000(50.000000)
+w50 name=w51
+  idx=0 val=999999 type=0 w=424C0000(51.000000) min=424C0000(51.000000) max=424C0000(51.000000)
+w51 name=w52
+  idx=0 val=999999 type=0 w=42500000(52.000000) min=42500000(52.000000) max=42500000(52.000000)
+w52 name=w53
+  idx=0 val=999999 type=0 w=42540000(53.000000) min=42540000(53.000000) max=42540000(53.000000)
+w53 name=w54
+  idx=0 val=999999 type=0 w=42580000(54.000000) min=42580000(54.000000) max=42580000(54.000000)
+w54 name=w55
+  idx=0 val=999999 type=0 w=425C0000(55.000000) min=425C0000(55.000000) max=425C0000(55.000000)
+w55 name=w56
+  idx=0 val=999999 type=0 w=42600000(56.000000) min=42600000(56.000000) max=42600000(56.000000)
+w56 name=w57
+  idx=0 val=999999 type=0 w=42640000(57.000000) min=42640000(57.000000) max=42640000(57.000000)
+w57 name=w58
+  idx=0 val=999999 type=0 w=42680000(58.000000) min=42680000(58.000000) max=42680000(58.000000)
+w58 name=w59
+  idx=0 val=999999 type=0 w=426C0000(59.000000) min=426C0000(59.000000) max=426C0000(59.000000)
+w59 name=w60
+  idx=0 val=999999 type=0 w=42700000(60.000000) min=42700000(60.000000) max=42700000(60.000000)
+w60 name=w61
+  idx=0 val=999999 type=0 w=42740000(61.000000) min=42740000(61.000000) max=42740000(61.000000)
+w61 name=w62
+  idx=0 val=999999 type=0 w=42780000(62.000000) min=42780000(62.000000) max=42780000(62.000000)
+w62 name=w63
+  idx=0 val=999999 type=0 w=427C0000(63.000000) min=427C0000(63.000000) max=427C0000(63.000000)
+w63 name=w64
+  idx=0 val=999999 type=0 w=42800000(64.000000) min=42800000(64.000000) max=42800000(64.000000)
+w64 name=w65
+  idx=0 val=999999 type=0 w=42820000(65.000000) min=42820000(65.000000) max=42820000(65.000000)
+w65 name=w66
+  idx=0 val=999999 type=0 w=42840000(66.000000) min=42840000(66.000000) max=42840000(66.000000)
+w66 name=w67
+  idx=0 val=999999 type=0 w=42860000(67.000000) min=42860000(67.000000) max=42860000(67.000000)
+w67 name=w68
+  idx=0 val=999999 type=0 w=42880000(68.000000) min=42880000(68.000000) max=42880000(68.000000)
+w68 name=w69
+  idx=0 val=999999 type=0 w=428A0000(69.000000) min=428A0000(69.000000) max=428A0000(69.000000)
+w69 name=w70
+  idx=0 val=999999 type=0 w=428C0000(70.000000) min=428C0000(70.000000) max=428C0000(70.000000)
+w70 name=w71
+  idx=0 val=999999 type=0 w=428E0000(71.000000) min=428E0000(71.000000) max=428E0000(71.000000)
+w71 name=w72
+  idx=0 val=999999 type=0 w=42900000(72.000000) min=42900000(72.000000) max=42900000(72.000000)
+w72 name=w73
+  idx=0 val=999999 type=0 w=42920000(73.000000) min=42920000(73.000000) max=42920000(73.000000)
+w73 name=w74
+  idx=0 val=999999 type=0 w=42940000(74.000000) min=42940000(74.000000) max=42940000(74.000000)
+w74 name=w75
+  idx=0 val=999999 type=0 w=42960000(75.000000) min=42960000(75.000000) max=42960000(75.000000)
+w75 name=w76
+  idx=0 val=999999 type=0 w=42980000(76.000000) min=42980000(76.000000) max=42980000(76.000000)
+w76 name=w77
+  idx=0 val=999999 type=0 w=429A0000(77.000000) min=429A0000(77.000000) max=429A0000(77.000000)
+w77 name=w78
+  idx=0 val=999999 type=0 w=429C0000(78.000000) min=429C0000(78.000000) max=429C0000(78.000000)
+w78 name=w79
+  idx=0 val=999999 type=0 w=429E0000(79.000000) min=429E0000(79.000000) max=429E0000(79.000000)
+w79 name=w80
+  idx=0 val=999999 type=0 w=42A00000(80.000000) min=42A00000(80.000000) max=42A00000(80.000000)
+w80 name=w81
+  idx=0 val=999999 type=0 w=42A20000(81.000000) min=42A20000(81.000000) max=42A20000(81.000000)
+w81 name=w82
+  idx=0 val=999999 type=0 w=42A40000(82.000000) min=42A40000(82.000000) max=42A40000(82.000000)
+w82 name=w83
+  idx=0 val=999999 type=0 w=42A60000(83.000000) min=42A60000(83.000000) max=42A60000(83.000000)
+w83 name=w84
+  idx=0 val=999999 type=0 w=42A80000(84.000000) min=42A80000(84.000000) max=42A80000(84.000000)
+w84 name=w85
+  idx=0 val=999999 type=0 w=42AA0000(85.000000) min=42AA0000(85.000000) max=42AA0000(85.000000)
+w85 name=w86
+  idx=0 val=999999 type=0 w=42AC0000(86.000000) min=42AC0000(86.000000) max=42AC0000(86.000000)
+w86 name=w87
+  idx=0 val=999999 type=0 w=42AE0000(87.000000) min=42AE0000(87.000000) max=42AE0000(87.000000)
+w87 name=w88
+  idx=0 val=999999 type=0 w=42B00000(88.000000) min=42B00000(88.000000) max=42B00000(88.000000)
+w88 name=w89
+  idx=0 val=999999 type=0 w=42B20000(89.000000) min=42B20000(89.000000) max=42B20000(89.000000)
+w89 name=w90
+  idx=0 val=999999 type=0 w=42B40000(90.000000) min=42B40000(90.000000) max=42B40000(90.000000)
+w90 name=w91
+  idx=0 val=999999 type=0 w=42B60000(91.000000) min=42B60000(91.000000) max=42B60000(91.000000)
+w91 name=w92
+  idx=0 val=999999 type=0 w=42B80000(92.000000) min=42B80000(92.000000) max=42B80000(92.000000)
+w92 name=w93
+  idx=0 val=999999 type=0 w=42BA0000(93.000000) min=42BA0000(93.000000) max=42BA0000(93.000000)
+w93 name=w94
+  idx=0 val=999999 type=0 w=42BC0000(94.000000) min=42BC0000(94.000000) max=42BC0000(94.000000)
+w94 name=w95
+  idx=0 val=999999 type=0 w=42BE0000(95.000000) min=42BE0000(95.000000) max=42BE0000(95.000000)
+w95 name=w96
+  idx=0 val=999999 type=0 w=42C00000(96.000000) min=42C00000(96.000000) max=42C00000(96.000000)
+w96 name=w97
+  idx=0 val=999999 type=0 w=42C20000(97.000000) min=42C20000(97.000000) max=42C20000(97.000000)
+w97 name=w98
+  idx=0 val=999999 type=0 w=42C40000(98.000000) min=42C40000(98.000000) max=42C40000(98.000000)
+w98 name=w99
+  idx=0 val=999999 type=0 w=42C60000(99.000000) min=42C60000(99.000000) max=42C60000(99.000000)
+w99 name=w100
+  idx=0 val=999999 type=0 w=42C80000(100.000000) min=42C80000(100.000000) max=42C80000(100.000000)
+w100 name=w101
+  idx=0 val=999999 type=0 w=42CA0000(101.000000) min=42CA0000(101.000000) max=42CA0000(101.000000)
+w101 name=w102
+  idx=0 val=999999 type=0 w=42CC0000(102.000000) min=42CC0000(102.000000) max=42CC0000(102.000000)
+w102 name=w103
+  idx=0 val=999999 type=0 w=42CE0000(103.000000) min=42CE0000(103.000000) max=42CE0000(103.000000)
+w103 name=w104
+  idx=0 val=999999 type=0 w=42D00000(104.000000) min=42D00000(104.000000) max=42D00000(104.000000)
+w104 name=w105
+  idx=0 val=999999 type=0 w=42D20000(105.000000) min=42D20000(105.000000) max=42D20000(105.000000)
+w105 name=w106
+  idx=0 val=999999 type=0 w=42D40000(106.000000) min=42D40000(106.000000) max=42D40000(106.000000)
+w106 name=w107
+  idx=0 val=999999 type=0 w=42D60000(107.000000) min=42D60000(107.000000) max=42D60000(107.000000)
+w107 name=w108
+  idx=0 val=999999 type=0 w=42D80000(108.000000) min=42D80000(108.000000) max=42D80000(108.000000)
+w108 name=w109
+  idx=0 val=999999 type=0 w=42DA0000(109.000000) min=42DA0000(109.000000) max=42DA0000(109.000000)
+w109 name=w110
+  idx=0 val=999999 type=0 w=42DC0000(110.000000) min=42DC0000(110.000000) max=42DC0000(110.000000)
+w110 name=w111
+  idx=0 val=999999 type=0 w=42DE0000(111.000000) min=42DE0000(111.000000) max=42DE0000(111.000000)
+w111 name=w112
+  idx=0 val=999999 type=0 w=42E00000(112.000000) min=42E00000(112.000000) max=42E00000(112.000000)
+w112 name=w113
+  idx=0 val=999999 type=0 w=42E20000(113.000000) min=42E20000(113.000000) max=42E20000(113.000000)
+w113 name=w114
+  idx=0 val=999999 type=0 w=42E40000(114.000000) min=42E40000(114.000000) max=42E40000(114.000000)
+w114 name=w115
+  idx=0 val=999999 type=0 w=42E60000(115.000000) min=42E60000(115.000000) max=42E60000(115.000000)
+w115 name=w116
+  idx=0 val=999999 type=0 w=42E80000(116.000000) min=42E80000(116.000000) max=42E80000(116.000000)
+w116 name=w117
+  idx=0 val=999999 type=0 w=42EA0000(117.000000) min=42EA0000(117.000000) max=42EA0000(117.000000)
+w117 name=w118
+  idx=0 val=999999 type=0 w=42EC0000(118.000000) min=42EC0000(118.000000) max=42EC0000(118.000000)
+w118 name=w119
+  idx=0 val=999999 type=0 w=42EE0000(119.000000) min=42EE0000(119.000000) max=42EE0000(119.000000)
+w119 name=w120
+  idx=0 val=999999 type=0 w=42F00000(120.000000) min=42F00000(120.000000) max=42F00000(120.000000)
+w120 name=w121
+  idx=0 val=999999 type=0 w=42F20000(121.000000) min=42F20000(121.000000) max=42F20000(121.000000)
+w121 name=w122
+  idx=0 val=999999 type=0 w=42F40000(122.000000) min=42F40000(122.000000) max=42F40000(122.000000)
+w122 name=w123
+  idx=0 val=999999 type=0 w=42F60000(123.000000) min=42F60000(123.000000) max=42F60000(123.000000)
+w123 name=w124
+  idx=0 val=999999 type=0 w=42F80000(124.000000) min=42F80000(124.000000) max=42F80000(124.000000)
+w124 name=w125
+  idx=0 val=999999 type=0 w=42FA0000(125.000000) min=42FA0000(125.000000) max=42FA0000(125.000000)
+w125 name=w126
+  idx=0 val=999999 type=0 w=42FC0000(126.000000) min=42FC0000(126.000000) max=42FC0000(126.000000)
+w126 name=w127
+  idx=0 val=999999 type=0 w=42FE0000(127.000000) min=42FE0000(127.000000) max=42FE0000(127.000000)
+w127 name=w128
+  idx=0 val=999999 type=0 w=43000000(128.000000) min=43000000(128.000000) max=43000000(128.000000)
+> wread|7|bots/missing_w.c
+P3|counldn't load bots/missing_w.c\x0A
+wread ok=0 same=-1
+> wdump|7
+noweights
+> wshutdown
+> char|bots/testa_c.c|1
+P1|loaded skill 1 from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/testa_c.c\x0A
+char=2
+> chardump|2
+char file=bots/testa_c.c skill=3F800000(1.000000)
+c0 string Testa
+c1 int 1
+c2 float 3DCCCCCD(0.100000)
+c3 int 7
+c4 string chat_default
+c5 float 3F4CCCCD(0.800000)
+c6 int 12
+c8 float 40600000(3.500000)
+c9 string wave
+c11 float 3FC00000(1.500000)
+c12 int 40
+> char|bots/testa_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+char=2
+> char|bots/testa_c.c|4
+P1|loaded skill 4 from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/testa_c.c\x0A
+char=4
+> chardump|3
+char file=bots/default_c.c skill=40800000(4.000000)
+c0 string Default
+c1 int 4
+c2 float 3F400000(0.750000)
+c3 int 7
+c4 string chat_default
+c5 float 3DCCCCCD(0.100000)
+c6 int 12
+c10 int 3
+> char|bots/testa_c.c|5
+P1|loaded skill 5 from bots/default_c.c\x0A
+P1|loaded skill 5 from bots/testa_c.c\x0A
+char=6
+> chardump|4
+char file=bots/testa_c.c skill=40800000(4.000000)
+c0 string Testa
+c1 int 4
+c2 float 3F19999A(0.600000)
+c3 int 7
+c4 string chat_default
+c5 float 3E99999A(0.300000)
+c6 int 12
+c8 float 40900000(4.500000)
+c9 string wave
+c10 int 3
+c11 int 2
+c12 int 80
+> char|bots/testa_c.c|2.5
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.350000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.550000\x0A
+L|    6 12\x0A
+L|    8 4.000000\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=7
+> char|bots/testa_c.c|2.5
+P1|loaded cached skill 2.500000 from bots/testa_c.c\x0A
+char=7
+> char|bots/testa_c.c|4.5
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.775000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.175000\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=8
+> char|bots/testa_c.c|0.2
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+char=2
+> char|bots/testa_c.c|9
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=6
+> char|bots/testa_c.c|3.9
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.316667\x0A
+L|    6 12\x0A
+L|    8 4.466667\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=9
+> char|bots/testa_c.c|3.999
+P1|loaded cached skill 3.999000 from bots/testa_c.c\x0A
+char=4
+> chardump|5
+char file=bots/default_c.c skill=40A00000(5.000000)
+c0 string Default
+c1 int 5
+c2 float 3F800000(1.000000)
+c3 int 7
+c4 string chat_default
+c5 float 00000000(0.000000)
+c6 int 12
+c7 int 100
+> chardump|6
+char file=bots/testa_c.c skill=40A00000(5.000000)
+c0 string Testa
+c1 int 5
+c2 float 3F733333(0.950000)
+c3 int 7
+c4 string chat_default
+c5 float 3D4CCCCD(0.050000)
+c6 int 12
+c7 int 100
+c8 int 6
+c9 string dance
+c11 float 40500000(3.250000)
+c12 int 120
+c80 int 1
+> char|bots/solo_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/solo_c.c\x0A
+P1|loaded cached default skill 1 from bots/solo_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/solo_c.c\x0A
+P1|loaded cached default skill 4 from bots/solo_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=10
+> char|bots/solo_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/solo_c.c\x0A
+P1|loaded cached default skill 1 from bots/solo_c.c\x0A
+char=1
+> char|bots/skip_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/skip_c.c\x0A
+P1|loaded cached default skill 1 from bots/skip_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/skip_c.c\x0A
+P1|loaded cached default skill 4 from bots/skip_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=11
+> char|bots/missing_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P1|loaded cached default skill 1 from bots/missing_c.c\x0A
+char=1
+> char|bots/missing_c.c|2.5
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 1 in bots/missing_c.c\x0A
+P1|loaded cached default skill 1 from bots/missing_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|counldn't load bots/missing_c.c\x0A
+P2|couldn't find skill 4 in bots/missing_c.c\x0A
+P1|loaded cached default skill 4 from bots/missing_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.500000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.500000\x0A
+L|    6 12\x0A
+L|}\x0A
+char=12
+> cfloat|1|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|1|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|1|1
+cfloat=3F800000(1.000000)
+> cint|1|1
+cint=1
+> cfloat|1|2
+cfloat=3E800000(0.250000)
+> cint|1|2
+cint=0
+> cfloat|1|3
+cfloat=40E00000(7.000000)
+> cint|1|3
+cint=7
+> cfloat|1|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|1|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|1|5
+cfloat=3F666666(0.900000)
+> cint|1|5
+cint=0
+> cfloat|1|8
+P3|characteristic 8 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|8
+P3|characteristic 8 is not initialized\x0A
+cint=0
+> cfloat|1|9
+P3|characteristic 9 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|9
+P3|characteristic 9 is not initialized\x0A
+cint=0
+> cfloat|1|11
+P3|characteristic 11 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|11
+P3|characteristic 11 is not initialized\x0A
+cint=0
+> cfloat|1|12
+P3|characteristic 12 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|12
+P3|characteristic 12 is not initialized\x0A
+cint=0
+> cfloat|1|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|1|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|1|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|1|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|1|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|1|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|1|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|1|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cfloat|2|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|2|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|2|1
+cfloat=3F800000(1.000000)
+> cint|2|1
+cint=1
+> cfloat|2|2
+cfloat=3DCCCCCD(0.100000)
+> cint|2|2
+cint=0
+> cfloat|2|3
+cfloat=40E00000(7.000000)
+> cint|2|3
+cint=7
+> cfloat|2|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|2|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|2|5
+cfloat=3F4CCCCD(0.800000)
+> cint|2|5
+cint=0
+> cfloat|2|8
+cfloat=40600000(3.500000)
+> cint|2|8
+cint=3
+> cfloat|2|9
+P3|characteristic 9 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|2|9
+P3|characteristic 9 is not a integer\x0A
+cint=0
+> cfloat|2|11
+cfloat=3FC00000(1.500000)
+> cint|2|11
+cint=1
+> cfloat|2|12
+cfloat=42200000(40.000000)
+> cint|2|12
+cint=40
+> cfloat|2|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|2|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|2|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|2|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|2|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|2|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|2|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|2|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cfloat|3|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|3|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|3|1
+cfloat=40800000(4.000000)
+> cint|3|1
+cint=4
+> cfloat|3|2
+cfloat=3F400000(0.750000)
+> cint|3|2
+cint=0
+> cfloat|3|3
+cfloat=40E00000(7.000000)
+> cint|3|3
+cint=7
+> cfloat|3|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|3|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|3|5
+cfloat=3DCCCCCD(0.100000)
+> cint|3|5
+cint=0
+> cfloat|3|8
+P3|characteristic 8 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|8
+P3|characteristic 8 is not initialized\x0A
+cint=0
+> cfloat|3|9
+P3|characteristic 9 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|9
+P3|characteristic 9 is not initialized\x0A
+cint=0
+> cfloat|3|11
+P3|characteristic 11 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|11
+P3|characteristic 11 is not initialized\x0A
+cint=0
+> cfloat|3|12
+P3|characteristic 12 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|12
+P3|characteristic 12 is not initialized\x0A
+cint=0
+> cfloat|3|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|3|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|3|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|3|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|3|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|3|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|3|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|3|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cfloat|4|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|4|1
+cfloat=40800000(4.000000)
+> cint|4|1
+cint=4
+> cfloat|4|2
+cfloat=3F19999A(0.600000)
+> cint|4|2
+cint=0
+> cfloat|4|3
+cfloat=40E00000(7.000000)
+> cint|4|3
+cint=7
+> cfloat|4|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|4|5
+cfloat=3E99999A(0.300000)
+> cint|4|5
+cint=0
+> cfloat|4|8
+cfloat=40900000(4.500000)
+> cint|4|8
+cint=4
+> cfloat|4|9
+P3|characteristic 9 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|4|9
+P3|characteristic 9 is not a integer\x0A
+cint=0
+> cfloat|4|11
+cfloat=40000000(2.000000)
+> cint|4|11
+cint=2
+> cfloat|4|12
+cfloat=42A00000(80.000000)
+> cint|4|12
+cint=80
+> cfloat|4|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|4|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|4|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|4|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|4|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|4|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|4|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|4|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cfloat|5|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|5|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|5|1
+cfloat=40A00000(5.000000)
+> cint|5|1
+cint=5
+> cfloat|5|2
+cfloat=3F800000(1.000000)
+> cint|5|2
+cint=1
+> cfloat|5|3
+cfloat=40E00000(7.000000)
+> cint|5|3
+cint=7
+> cfloat|5|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|5|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|5|5
+cfloat=00000000(0.000000)
+> cint|5|5
+cint=0
+> cfloat|5|8
+P3|characteristic 8 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|5|8
+P3|characteristic 8 is not initialized\x0A
+cint=0
+> cfloat|5|9
+P3|characteristic 9 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|5|9
+P3|characteristic 9 is not initialized\x0A
+cint=0
+> cfloat|5|11
+P3|characteristic 11 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|5|11
+P3|characteristic 11 is not initialized\x0A
+cint=0
+> cfloat|5|12
+P3|characteristic 12 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|5|12
+P3|characteristic 12 is not initialized\x0A
+cint=0
+> cfloat|5|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|5|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|5|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|5|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|5|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|5|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|5|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|5|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cfloat|6|0
+P3|characteristic 0 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|6|0
+P3|characteristic 0 is not a integer\x0A
+cint=0
+> cfloat|6|1
+cfloat=40A00000(5.000000)
+> cint|6|1
+cint=5
+> cfloat|6|2
+cfloat=3F733333(0.950000)
+> cint|6|2
+cint=0
+> cfloat|6|3
+cfloat=40E00000(7.000000)
+> cint|6|3
+cint=7
+> cfloat|6|4
+P3|characteristic 4 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|6|4
+P3|characteristic 4 is not a integer\x0A
+cint=0
+> cfloat|6|5
+cfloat=3D4CCCCD(0.050000)
+> cint|6|5
+cint=0
+> cfloat|6|8
+cfloat=40C00000(6.000000)
+> cint|6|8
+cint=6
+> cfloat|6|9
+P3|characteristic 9 is not a float\x0A
+cfloat=00000000(0.000000)
+> cint|6|9
+P3|characteristic 9 is not a integer\x0A
+cint=0
+> cfloat|6|11
+cfloat=40500000(3.250000)
+> cint|6|11
+cint=3
+> cfloat|6|12
+cfloat=42F00000(120.000000)
+> cint|6|12
+cint=120
+> cfloat|6|80
+P3|characteristic 80 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|6|80
+P3|characteristic 80 does not exist\x0A
+cint=0
+> cfloat|6|79
+P3|characteristic 79 is not initialized\x0A
+cfloat=00000000(0.000000)
+> cint|6|79
+P3|characteristic 79 is not initialized\x0A
+cint=0
+> cfloat|6|-1
+P3|characteristic -1 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|6|-1
+P3|characteristic -1 does not exist\x0A
+cint=0
+> cfloat|6|100
+P3|characteristic 100 does not exist\x0A
+cfloat=00000000(0.000000)
+> cint|6|100
+P3|characteristic 100 does not exist\x0A
+cint=0
+> cstr|2|0|40
+cstr=Testa
+> cstr|2|0|4
+cstr=Tes
+> cstr|2|0|1
+cstr=
+> cstr|2|4|40
+cstr=chat_default
+> cstr|2|4|4
+cstr=cha
+> cstr|2|4|1
+cstr=
+> cstr|2|9|40
+cstr=wave
+> cstr|2|9|4
+cstr=wav
+> cstr|2|9|1
+cstr=
+> cstr|2|2|40
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cstr|2|2|4
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cstr|2|2|1
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cstr|5|0|40
+cstr=Default
+> cstr|5|0|4
+cstr=Def
+> cstr|5|0|1
+cstr=
+> cstr|5|4|40
+cstr=chat_default
+> cstr|5|4|4
+cstr=cha
+> cstr|5|4|1
+cstr=
+> cstr|5|9|40
+P3|characteristic 9 is not initialized\x0A
+cstr=
+> cstr|5|9|4
+P3|characteristic 9 is not initialized\x0A
+cstr=
+> cstr|5|9|1
+P3|characteristic 9 is not initialized\x0A
+cstr=
+> cstr|5|2|40
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cstr|5|2|4
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cstr|5|2|1
+P3|characteristic 2 is not a string\x0A
+cstr=
+> cfloat|0|1
+P4|character handle 0 out of range\x0A
+cfloat=00000000(0.000000)
+> cint|0|1
+P4|character handle 0 out of range\x0A
+cint=0
+> cstr|0|0|10
+P4|character handle 0 out of range\x0A
+cstr=
+> cbfloat|0|1|0|1
+P4|character handle 0 out of range\x0A
+cbfloat=00000000(0.000000)
+> cbint|0|1|0|1
+P4|character handle 0 out of range\x0A
+cbint=0
+> cfloat|-1|1
+P4|character handle -1 out of range\x0A
+cfloat=00000000(0.000000)
+> cint|-1|1
+P4|character handle -1 out of range\x0A
+cint=0
+> cstr|-1|0|10
+P4|character handle -1 out of range\x0A
+cstr=
+> cbfloat|-1|1|0|1
+P4|character handle -1 out of range\x0A
+cbfloat=00000000(0.000000)
+> cbint|-1|1|0|1
+P4|character handle -1 out of range\x0A
+cbint=0
+> cfloat|64|1
+P4|invalid character 64\x0A
+cfloat=00000000(0.000000)
+> cint|64|1
+P4|invalid character 64\x0A
+cint=0
+> cstr|64|0|10
+P4|invalid character 64\x0A
+cstr=
+> cbfloat|64|1|0|1
+P4|invalid character 64\x0A
+cbfloat=00000000(0.000000)
+> cbint|64|1|0|1
+P4|invalid character 64\x0A
+cbint=0
+> cfloat|65|1
+P4|character handle 65 out of range\x0A
+cfloat=00000000(0.000000)
+> cint|65|1
+P4|character handle 65 out of range\x0A
+cint=0
+> cstr|65|0|10
+P4|character handle 65 out of range\x0A
+cstr=
+> cbfloat|65|1|0|1
+P4|character handle 65 out of range\x0A
+cbfloat=00000000(0.000000)
+> cbint|65|1|0|1
+P4|character handle 65 out of range\x0A
+cbint=0
+> cfloat|20|1
+P4|invalid character 20\x0A
+cfloat=00000000(0.000000)
+> cint|20|1
+P4|invalid character 20\x0A
+cint=0
+> cstr|20|0|10
+P4|invalid character 20\x0A
+cstr=
+> cbfloat|20|1|0|1
+P4|invalid character 20\x0A
+cbfloat=00000000(0.000000)
+> cbint|20|1|0|1
+P4|invalid character 20\x0A
+cbint=0
+> cbfloat|2|2|0|0.5
+cbfloat=3DCCCCCD(0.100000)
+> cbfloat|2|2|0.3|0.4
+cbfloat=3E99999A(0.300000)
+> cbfloat|2|2|5|1
+P3|cannot bound characteristic 2 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|2|2|2|3
+cbint=2
+> cbint|2|2|0|100
+cbint=0
+> cbint|2|2|9|1
+P3|cannot bound characteristic 2 between 9 and 1\x0A
+cbint=0
+> cbfloat|2|5|0|0.5
+cbfloat=3F000000(0.500000)
+> cbfloat|2|5|0.3|0.4
+cbfloat=3ECCCCCD(0.400000)
+> cbfloat|2|5|5|1
+P3|cannot bound characteristic 5 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|2|5|2|3
+cbint=2
+> cbint|2|5|0|100
+cbint=0
+> cbint|2|5|9|1
+P3|cannot bound characteristic 5 between 9 and 1\x0A
+cbint=0
+> cbfloat|2|8|0|0.5
+cbfloat=3F000000(0.500000)
+> cbfloat|2|8|0.3|0.4
+cbfloat=3ECCCCCD(0.400000)
+> cbfloat|2|8|5|1
+P3|cannot bound characteristic 8 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|2|8|2|3
+cbint=3
+> cbint|2|8|0|100
+cbint=3
+> cbint|2|8|9|1
+P3|cannot bound characteristic 8 between 9 and 1\x0A
+cbint=0
+> cbfloat|2|3|0|0.5
+cbfloat=3F000000(0.500000)
+> cbfloat|2|3|0.3|0.4
+cbfloat=3ECCCCCD(0.400000)
+> cbfloat|2|3|5|1
+P3|cannot bound characteristic 3 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|2|3|2|3
+cbint=3
+> cbint|2|3|0|100
+cbint=7
+> cbint|2|3|9|1
+P3|cannot bound characteristic 3 between 9 and 1\x0A
+cbint=0
+> cbfloat|5|2|0|0.5
+cbfloat=3F000000(0.500000)
+> cbfloat|5|2|0.3|0.4
+cbfloat=3ECCCCCD(0.400000)
+> cbfloat|5|2|5|1
+P3|cannot bound characteristic 2 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|5|2|2|3
+cbint=2
+> cbint|5|2|0|100
+cbint=1
+> cbint|5|2|9|1
+P3|cannot bound characteristic 2 between 9 and 1\x0A
+cbint=0
+> cbfloat|5|5|0|0.5
+cbfloat=00000000(0.000000)
+> cbfloat|5|5|0.3|0.4
+cbfloat=3E99999A(0.300000)
+> cbfloat|5|5|5|1
+P3|cannot bound characteristic 5 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|5|5|2|3
+cbint=2
+> cbint|5|5|0|100
+cbint=0
+> cbint|5|5|9|1
+P3|cannot bound characteristic 5 between 9 and 1\x0A
+cbint=0
+> cbfloat|5|8|0|0.5
+P3|characteristic 8 is not initialized\x0A
+cbfloat=00000000(0.000000)
+> cbfloat|5|8|0.3|0.4
+P3|characteristic 8 is not initialized\x0A
+cbfloat=3E99999A(0.300000)
+> cbfloat|5|8|5|1
+P3|cannot bound characteristic 8 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|5|8|2|3
+P3|characteristic 8 is not initialized\x0A
+cbint=2
+> cbint|5|8|0|100
+P3|characteristic 8 is not initialized\x0A
+cbint=0
+> cbint|5|8|9|1
+P3|cannot bound characteristic 8 between 9 and 1\x0A
+cbint=0
+> cbfloat|5|3|0|0.5
+cbfloat=3F000000(0.500000)
+> cbfloat|5|3|0.3|0.4
+cbfloat=3ECCCCCD(0.400000)
+> cbfloat|5|3|5|1
+P3|cannot bound characteristic 3 between 5.000000 and 1.000000\x0A
+cbfloat=00000000(0.000000)
+> cbint|5|3|2|3
+cbint=3
+> cbint|5|3|0|100
+cbint=7
+> cbint|5|3|9|1
+P3|cannot bound characteristic 3 between 9 and 1\x0A
+cbint=0
+> charfree|2
+> chardump|2
+char file=bots/testa_c.c skill=3F800000(1.000000)
+c0 string Testa
+c1 int 1
+c2 float 3DCCCCCD(0.100000)
+c3 int 7
+c4 string chat_default
+c5 float 3F4CCCCD(0.800000)
+c6 int 12
+c8 float 40600000(3.500000)
+c9 string wave
+c11 float 3FC00000(1.500000)
+c12 int 40
+> libset|bot_reloadcharacters|1
+> char|bots/testa_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/testa_c.c\x0A
+char=13
+> char|bots/testa_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/testa_c.c\x0A
+char=14
+> charfree|2
+> chardump|2
+nochar
+> charfree|2
+P4|invalid character 2\x0A
+> charfree|99
+P4|character handle 99 out of range\x0A
+> charfree|0
+P4|character handle 0 out of range\x0A
+> libset|bot_reloadcharacters|0
+> charshutdown
+> chardump|2
+nochar
+> char|bots/bad_unknown_c.c|1
+P1|loaded skill 1 from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/bad_unknown_c.c\x0A
+char=2
+> char|bots/bad_unknown_c.c|4
+P1|loaded skill 4 from bots/default_c.c\x0A
+P3|file bots/bad_unknown_c.c, line 2: unknown definition foo\x0A\x0A
+P2|couldn't find skill 4 in bots/bad_unknown_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_unknown_c.c\x0A
+char=3
+> char|bots/bad_unknown_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/bad_unknown_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_unknown_c.c, line 2: unknown definition foo\x0A\x0A
+P2|couldn't find skill 4 in bots/bad_unknown_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_unknown_c.c\x0A
+L|bots/bad_unknown_c.c
+L|{\x0A
+L|    0 x\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=4
+> char|bots/bad_dup_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_dup_c.c, line 1: characteristic 3 already initialized\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_dup_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_dup_c.c\x0A
+char=1
+> char|bots/bad_dup_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_dup_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_dup_c.c\x0A
+char=3
+> char|bots/bad_dup_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_dup_c.c, line 1: characteristic 3 already initialized\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_dup_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_dup_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_dup_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_dup_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=5
+> char|bots/bad_type_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_type_c.c, line 1: expected integer, float or string, found {\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_type_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_type_c.c\x0A
+char=1
+> char|bots/bad_type_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_type_c.c, line 1: couldn't read expected token\x0A
+P2|couldn't find skill 4 in bots/bad_type_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_type_c.c\x0A
+char=3
+> char|bots/bad_type_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_type_c.c, line 1: expected integer, float or string, found {\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_type_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_type_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_type_c.c, line 1: couldn't read expected token\x0A
+P2|couldn't find skill 4 in bots/bad_type_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_type_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=6
+> char|bots/bad_idx_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_idx_c.c, line 1: expected integer index, found 1.5\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_idx_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_idx_c.c\x0A
+char=1
+> char|bots/bad_idx_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_idx_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_idx_c.c\x0A
+char=3
+> char|bots/bad_idx_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_idx_c.c, line 1: expected integer index, found 1.5\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_idx_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_idx_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_idx_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_idx_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=7
+> char|bots/bad_range_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_range_c.c, line 1: characteristic index out of range [0, 80]\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_range_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_range_c.c\x0A
+char=1
+> char|bots/bad_range_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_range_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_range_c.c\x0A
+char=3
+> char|bots/bad_range_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_range_c.c, line 1: characteristic index out of range [0, 80]\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_range_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_range_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_range_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_range_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=8
+> char|bots/bad_eof_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_eof_c.c, line 1: couldn't read expected token\x0A
+P1|loaded skill 1 from bots/bad_eof_c.c\x0A
+char=9
+> char|bots/bad_eof_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_eof_c.c, line 1: couldn't read expected token\x0A
+P2|couldn't find skill 4 in bots/bad_eof_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_eof_c.c\x0A
+char=3
+> char|bots/bad_eof_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/bad_eof_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_eof_c.c, line 1: couldn't read expected token\x0A
+P2|couldn't find skill 4 in bots/bad_eof_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_eof_c.c\x0A
+L|bots/bad_eof_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 2\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=10
+> char|bots/bad_skillnum_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_skillnum_c.c, line 1: expected a number, found x\x0A
+P2|couldn't find skill 1 in bots/bad_skillnum_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_skillnum_c.c\x0A
+char=1
+> char|bots/bad_skillnum_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_skillnum_c.c, line 1: expected a number, found x\x0A
+P2|couldn't find skill 4 in bots/bad_skillnum_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_skillnum_c.c\x0A
+char=3
+> char|bots/bad_skillnum_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_skillnum_c.c, line 1: expected a number, found x\x0A
+P2|couldn't find skill 1 in bots/bad_skillnum_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_skillnum_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P3|file bots/bad_skillnum_c.c, line 1: expected a number, found x\x0A
+P2|couldn't find skill 4 in bots/bad_skillnum_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_skillnum_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=11
+> char|bots/bad_neg_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_neg_c.c, line 1: expected integer, float or string, found -\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_neg_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_neg_c.c\x0A
+char=1
+> char|bots/bad_neg_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_neg_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_neg_c.c\x0A
+char=3
+> char|bots/bad_neg_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P3|file bots/bad_neg_c.c, line 1: expected integer, float or string, found -\x0A\x0A
+P2|couldn't find skill 1 in bots/bad_neg_c.c\x0A
+P1|loaded cached default skill 1 from bots/bad_neg_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/bad_neg_c.c\x0A
+P1|loaded cached default skill 4 from bots/bad_neg_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=12
+> char|bots/empty_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P1|loaded cached default skill 1 from bots/empty_c.c\x0A
+char=1
+> char|bots/empty_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/empty_c.c\x0A
+P1|loaded cached default skill 4 from bots/empty_c.c\x0A
+char=3
+> char|bots/empty_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 1 in bots/empty_c.c\x0A
+P1|loaded cached default skill 1 from bots/empty_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P2|couldn't find skill 4 in bots/empty_c.c\x0A
+P1|loaded cached default skill 4 from bots/empty_c.c\x0A
+L|bots/default_c.c
+L|{\x0A
+L|    0 Default\x0A
+L|    1 1\x0A
+L|    2 0.583333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.366667\x0A
+L|    6 12\x0A
+L|}\x0A
+char=13
+> chardump|2
+char file=bots/bad_unknown_c.c skill=3F800000(1.000000)
+c0 string x
+c1 int 1
+c2 float 3E800000(0.250000)
+c3 int 7
+c4 string chat_default
+c5 float 3F666666(0.900000)
+c6 int 12
+> charshutdown
+> char|bots/testa_c.c|2.125
+P1|loaded skill 1 from bots/default_c.c\x0A
+P1|loaded skill 1 from bots/testa_c.c\x0A
+P1|loaded skill 4 from bots/default_c.c\x0A
+P1|loaded skill 4 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.287500\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.612500\x0A
+L|    6 12\x0A
+L|    8 3.875000\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=5
+> char|bots/testa_c.c|3.25
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.475000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.425000\x0A
+L|    6 12\x0A
+L|    8 4.250000\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=6
+> char|bots/testa_c.c|4.375
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded skill 5 from bots/default_c.c\x0A
+P1|loaded skill 5 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.731250\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.206250\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=9
+> char|bots/testa_c.c|1.5
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.183333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.716667\x0A
+L|    6 12\x0A
+L|    8 3.666667\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=10
+> char|bots/testa_c.c|2.625
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.370833\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.529167\x0A
+L|    6 12\x0A
+L|    8 4.041667\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=11
+> char|bots/testa_c.c|3.75
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.558333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.341667\x0A
+L|    6 12\x0A
+L|    8 4.416667\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=12
+> char|bots/testa_c.c|4.875
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.906250\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.081250\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=13
+> char|bots/testa_c.c|2
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.266667\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.633333\x0A
+L|    6 12\x0A
+L|    8 3.833333\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=14
+> char|bots/testa_c.c|3.125
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.454167\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.445833\x0A
+L|    6 12\x0A
+L|    8 4.208333\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=15
+> char|bots/testa_c.c|4.25
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.687500\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.237500\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=16
+> char|bots/testa_c.c|5.375
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|2.5
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.350000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.550000\x0A
+L|    6 12\x0A
+L|    8 4.000000\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=17
+> char|bots/testa_c.c|3.625
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.537500\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.362500\x0A
+L|    6 12\x0A
+L|    8 4.375000\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=18
+> char|bots/testa_c.c|4.75
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.862500\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.112500\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=19
+> char|bots/testa_c.c|5.875
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|3
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.433333\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.466667\x0A
+L|    6 12\x0A
+L|    8 4.166667\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=20
+> char|bots/testa_c.c|4.125
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.643750\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.268750\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=21
+> char|bots/testa_c.c|5.25
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|6.375
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|3.5
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 1\x0A
+L|    2 0.516667\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.383333\x0A
+L|    6 12\x0A
+L|    8 4.333333\x0A
+L|    9 wave\x0A
+L|   12 40\x0A
+L|}\x0A
+char=22
+> char|bots/testa_c.c|4.625
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.818750\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.143750\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=23
+> char|bots/testa_c.c|5.75
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|6.875
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|4
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+char=4
+> char|bots/testa_c.c|5.125
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|6.25
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|7.375
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|4.5
+P1|loaded cached skill 4.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 4.000000 from bots/testa_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+L|bots/testa_c.c
+L|{\x0A
+L|    0 Testa\x0A
+L|    1 4\x0A
+L|    2 0.775000\x0A
+L|    3 7\x0A
+L|    4 chat_default\x0A
+L|    5 0.175000\x0A
+L|    6 12\x0A
+L|    9 wave\x0A
+L|   10 3\x0A
+L|   11 2\x0A
+L|   12 80\x0A
+L|}\x0A
+char=24
+> char|bots/testa_c.c|5.625
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|6.75
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|7.875
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|5
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|6.125
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|7.25
+P1|loaded cached skill 5.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 5.000000 from bots/testa_c.c\x0A
+char=8
+> char|bots/testa_c.c|1
+P1|loaded cached skill 1.000000 from bots/default_c.c\x0A
+P1|loaded cached skill 1.000000 from bots/testa_c.c\x0A
+char=2
+> charshutdown
+> wpsetup
+P1|loaded weapons.c\x0A
+wpsetup=0
+> libget|weaponconfig
+libget text=weapons.c value=00000000(0.000000) changed=1
+> libget|max_weaponinfo
+libget text=32 value=42000000(32.000000) changed=1
+> wpdump
+weaponconfig numweapons=32 numprojectiles=3 sizes=552,208
+projectile 0 hash=528CE67F
+{\x0D\x0A
+\x09name\x09"p_blade"\x0D\x0A
+\x09model\x09"models/blade.md3"\x0D\x0A
+\x09flags\x091\x0D\x0A
+\x09gravity\x090\x0D\x0A
+\x09damage\x0950\x0D\x0A
+\x09radius\x090\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x091\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x090\x0D\x0A
+\x09detonation\x090\x0D\x0A
+\x09bounce\x090\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+projectile 1 hash=7B389A68
+{\x0D\x0A
+\x09name\x09"p_shell"\x0D\x0A
+\x09model\x09"models/shell.md3"\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09gravity\x090.5\x0D\x0A
+\x09damage\x0912\x0D\x0A
+\x09radius\x093.5\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x093\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x09100.25\x0D\x0A
+\x09detonation\x090\x0D\x0A
+\x09bounce\x090.5\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+projectile 2 hash=5558A2EE
+{\x0D\x0A
+\x09name\x09"p_rocket"\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09gravity\x090.1\x0D\x0A
+\x09damage\x09100\x0D\x0A
+\x09radius\x09120\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x096\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x09800\x0D\x0A
+\x09detonation\x092.5\x0D\x0A
+\x09bounce\x090\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+slot 1 weapon valid=1 hash=A9B983BA
+{\x0D\x0A
+\x09number\x091\x0D\x0A
+\x09name\x09"Blade"\x0D\x0A
+\x09level\x091\x0D\x0A
+\x09model\x09"models/weapons/blade.md3"\x0D\x0A
+\x09weaponindex\x091\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_blade"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090.4\x0D\x0A
+\x09reload\x090.4\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+slot 2 weapon valid=1 hash=2F5C839B
+{\x0D\x0A
+\x09number\x092\x0D\x0A
+\x09name\x09"Cannon"\x0D\x0A
+\x09level\x092\x0D\x0A
+\x09model\x09"models/weapons/cannon.md3"\x0D\x0A
+\x09weaponindex\x092\x0D\x0A
+\x09flags\x091\x0D\x0A
+\x09projectile\x09"p_shell"\x0D\x0A
+\x09numprojectiles\x0910\x0D\x0A
+\x09hspread\x096\x0D\x0A
+\x09vspread\x094.5\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,-2,8.5}\x0D\x0A
+\x09offset\x09{0,4,-6}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x093\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x091\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+slot 5 weapon valid=1 hash=E1CF3BE7
+{\x0D\x0A
+\x09number\x095\x0D\x0A
+\x09name\x09"Launcher"\x0D\x0A
+\x09level\x093\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x095\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_rocket"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x09900\x0D\x0A
+\x09acceleration\x0920\x0D\x0A
+\x09recoil\x09{1,2,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x0950\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x097\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x090.8\x0D\x0A
+\x09spinup\x090.1\x0D\x0A
+\x09spindown\x090.2\x0D\x0A
+}\x0D\x0A
+> wpalloc
+wpalloc=1
+> wpalloc
+wpalloc=2
+> wpweights|1|bots/wpn_w.c
+P1|loaded bots/wpn_w.c\x0A
+wpweights=0
+> wpweights|2|bots/missing_w.c
+P3|counldn't load bots/missing_w.c\x0A
+P4|couldn't load weapon config bots/missing_w.c\x0A
+wpweights=11
+> wpweights|7|bots/wpn_w.c
+P4|invalid move state 7\x0A
+wpweights=11
+> wpbest|1|0|0|0|0|0|0|0|0
+wpbest=1
+> wpbest|2|0|0|0|0|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|0|1|0|0|0|0
+wpbest=5
+> wpbest|2|0|0|0|1|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|5|0|0|0|0|0
+wpbest=2
+> wpbest|2|0|0|5|0|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|5|1|0|0|0|0
+wpbest=5
+> wpbest|2|0|0|5|1|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|20|1|0|0|0|0
+wpbest=2
+> wpbest|2|0|0|20|1|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|25|1|0|0|0|0
+wpbest=2
+> wpbest|2|0|0|25|1|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|25|0|0|0|0|0
+wpbest=2
+> wpbest|2|0|0|25|0|0|0|0|0
+wpbest=0
+> wpbest|1|0|0|0|0|0|0|0|0
+wpbest=1
+> wpbest|2|0|0|0|0|0|0|0|0
+wpbest=0
+> wpinfo|1|-1
+P3|weapon number out of range\x0A
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|0
+P3|weapon number out of range\x0A
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|1
+wpinfo weapon valid=1 hash=A9B983BA
+{\x0D\x0A
+\x09number\x091\x0D\x0A
+\x09name\x09"Blade"\x0D\x0A
+\x09level\x091\x0D\x0A
+\x09model\x09"models/weapons/blade.md3"\x0D\x0A
+\x09weaponindex\x091\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_blade"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090.4\x0D\x0A
+\x09reload\x090.4\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|2
+wpinfo weapon valid=1 hash=2F5C839B
+{\x0D\x0A
+\x09number\x092\x0D\x0A
+\x09name\x09"Cannon"\x0D\x0A
+\x09level\x092\x0D\x0A
+\x09model\x09"models/weapons/cannon.md3"\x0D\x0A
+\x09weaponindex\x092\x0D\x0A
+\x09flags\x091\x0D\x0A
+\x09projectile\x09"p_shell"\x0D\x0A
+\x09numprojectiles\x0910\x0D\x0A
+\x09hspread\x096\x0D\x0A
+\x09vspread\x094.5\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,-2,8.5}\x0D\x0A
+\x09offset\x09{0,4,-6}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x093\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x091\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|3
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|5
+wpinfo weapon valid=1 hash=E1CF3BE7
+{\x0D\x0A
+\x09number\x095\x0D\x0A
+\x09name\x09"Launcher"\x0D\x0A
+\x09level\x093\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x095\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_rocket"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x09900\x0D\x0A
+\x09acceleration\x0920\x0D\x0A
+\x09recoil\x09{1,2,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x0950\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x097\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x090.8\x0D\x0A
+\x09spinup\x090.1\x0D\x0A
+\x09spindown\x090.2\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|31
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|1|33
+P3|weapon number out of range\x0A
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpinfo|9|1
+P4|invalid move state 9\x0A
+wpinfo weapon valid=0 hash=AA756FE5
+{\x0D\x0A
+\x09number\x090\x0D\x0A
+\x09name\x09""\x0D\x0A
+\x09level\x090\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x090\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09""\x0D\x0A
+\x09numprojectiles\x090\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090\x0D\x0A
+\x09reload\x090\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+> wpreset|1
+> wpreset|9
+P4|invalid move state 9\x0A
+> wpbest|1|0|0|30|0
+wpbest=2
+> wpweights|1|bots/test_w.c
+P2|file bots/test_w.c, line 27: switch without default\x0A\x0A
+P1|loaded bots/test_w.c\x0A
+wpweights=0
+> wpbest|1|0|0|30|0
+wpbest=0
+> wpfree|1
+> wpfree|1
+P4|invalid move state 1\x0A
+> wpfree|0
+P4|move state handle 0 out of range\x0A
+> wpfree|65
+P4|move state handle 65 out of range\x0A
+> wpalloc
+wpalloc=1
+> wpbest|1|0|0|0|0
+wpbest=0
+> wpshutdown
+> wpalloc
+wpalloc=1
+> wpshutdown
+> libset|weaponconfig|weapons_empty.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P1|loaded weapons_empty.c\x0A
+wpsetup=0
+> wpdump
+weaponconfig numweapons=32 numprojectiles=0 sizes=552,208
+> wpshutdown
+> libset|weaponconfig|weapons_bad1.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|unknown definition foo in weapons_bad1.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad2.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|weapon info number 32 out of range in weapons_bad2.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad3.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|weapon 1 has no name in weapons_bad3.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad4.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|weapon x has no projectile in weapons_bad4.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad5.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|weapon x uses undefined projectile in weapons_bad5.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad6.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|file weapons_bad6.c, line 1: unknown structure field colour\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad7.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|file weapons_bad7.c, line 1: unexpected float\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad8.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|more than 1 projectiles defined in weapons_bad8.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad9.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|weapon info number -1 out of range in weapons_bad9.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_bad10.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|file weapons_bad10.c, line 1: expected a comma, found 2\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|weaponconfig|weapons_missing.c
+> libset|max_projectileinfo|1
+> libset|max_weaponinfo|32
+> wpsetup
+P3|counldn't load weapons_missing.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|max_weaponinfo|-5
+> libset|max_projectileinfo|-5
+> libget|max_weaponinfo
+libget text=-5 value=00000000(0.000000) changed=1
+> libset|weaponconfig|weapons_projonly.c
+> libset|max_weaponinfo|0
+> wpsetup
+P3|more than 0 projectiles defined in weapons_projonly.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|max_weaponinfo|-5
+> libset|weaponconfig|weapons.c
+> wpsetup
+P3|more than 0 projectiles defined in weapons.c\x0A
+P4|couldn't load the weapon config\x0A
+wpsetup=12
+> libget|max_weaponinfo
+libget text=-5 value=00000000(0.000000) changed=1
+> libget|max_projectileinfo
+libget text=-5 value=00000000(0.000000) changed=1
+> wpdump
+noweaponconfig
+> wpshutdown
+> libset|max_weaponinfo|8
+> libset|max_projectileinfo|8
+> wpsetup
+P1|loaded weapons.c\x0A
+wpsetup=0
+> wpdump
+weaponconfig numweapons=8 numprojectiles=3 sizes=552,208
+projectile 0 hash=528CE67F
+{\x0D\x0A
+\x09name\x09"p_blade"\x0D\x0A
+\x09model\x09"models/blade.md3"\x0D\x0A
+\x09flags\x091\x0D\x0A
+\x09gravity\x090\x0D\x0A
+\x09damage\x0950\x0D\x0A
+\x09radius\x090\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x091\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x090\x0D\x0A
+\x09detonation\x090\x0D\x0A
+\x09bounce\x090\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+projectile 1 hash=7B389A68
+{\x0D\x0A
+\x09name\x09"p_shell"\x0D\x0A
+\x09model\x09"models/shell.md3"\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09gravity\x090.5\x0D\x0A
+\x09damage\x0912\x0D\x0A
+\x09radius\x093.5\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x093\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x09100.25\x0D\x0A
+\x09detonation\x090\x0D\x0A
+\x09bounce\x090.5\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+projectile 2 hash=5558A2EE
+{\x0D\x0A
+\x09name\x09"p_rocket"\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09gravity\x090.1\x0D\x0A
+\x09damage\x09100\x0D\x0A
+\x09radius\x09120\x0D\x0A
+\x09visdamage\x090\x0D\x0A
+\x09damagetype\x096\x0D\x0A
+\x09healthinc\x090\x0D\x0A
+\x09push\x09800\x0D\x0A
+\x09detonation\x092.5\x0D\x0A
+\x09bounce\x090\x0D\x0A
+\x09bouncefric\x090\x0D\x0A
+\x09bouncestop\x090\x0D\x0A
+}\x0D\x0A
+slot 1 weapon valid=1 hash=A9B983BA
+{\x0D\x0A
+\x09number\x091\x0D\x0A
+\x09name\x09"Blade"\x0D\x0A
+\x09level\x091\x0D\x0A
+\x09model\x09"models/weapons/blade.md3"\x0D\x0A
+\x09weaponindex\x091\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_blade"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,0,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x090\x0D\x0A
+\x09ammoindex\x090\x0D\x0A
+\x09activate\x090.4\x0D\x0A
+\x09reload\x090.4\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+slot 2 weapon valid=1 hash=2F5C839B
+{\x0D\x0A
+\x09number\x092\x0D\x0A
+\x09name\x09"Cannon"\x0D\x0A
+\x09level\x092\x0D\x0A
+\x09model\x09"models/weapons/cannon.md3"\x0D\x0A
+\x09weaponindex\x092\x0D\x0A
+\x09flags\x091\x0D\x0A
+\x09projectile\x09"p_shell"\x0D\x0A
+\x09numprojectiles\x0910\x0D\x0A
+\x09hspread\x096\x0D\x0A
+\x09vspread\x094.5\x0D\x0A
+\x09speed\x090\x0D\x0A
+\x09acceleration\x090\x0D\x0A
+\x09recoil\x09{0,-2,8.5}\x0D\x0A
+\x09offset\x09{0,4,-6}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x090\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x093\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x091\x0D\x0A
+\x09spinup\x090\x0D\x0A
+\x09spindown\x090\x0D\x0A
+}\x0D\x0A
+slot 5 weapon valid=1 hash=E1CF3BE7
+{\x0D\x0A
+\x09number\x095\x0D\x0A
+\x09name\x09"Launcher"\x0D\x0A
+\x09level\x093\x0D\x0A
+\x09model\x09""\x0D\x0A
+\x09weaponindex\x095\x0D\x0A
+\x09flags\x090\x0D\x0A
+\x09projectile\x09"p_rocket"\x0D\x0A
+\x09numprojectiles\x091\x0D\x0A
+\x09hspread\x090\x0D\x0A
+\x09vspread\x090\x0D\x0A
+\x09speed\x09900\x0D\x0A
+\x09acceleration\x0920\x0D\x0A
+\x09recoil\x09{1,2,0}\x0D\x0A
+\x09offset\x09{0,0,0}\x0D\x0A
+\x09angleoffset\x09{0,0,0}\x0D\x0A
+\x09extrazvelocity\x0950\x0D\x0A
+\x09ammoamount\x091\x0D\x0A
+\x09ammoindex\x097\x0D\x0A
+\x09activate\x090.5\x0D\x0A
+\x09reload\x090.8\x0D\x0A
+\x09spinup\x090.1\x0D\x0A
+\x09spindown\x090.2\x0D\x0A
+}\x0D\x0A
+> wpshutdown

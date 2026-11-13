@@ -1,0 +1,1 @@
+projectileinfo { name "only" damage 5 }

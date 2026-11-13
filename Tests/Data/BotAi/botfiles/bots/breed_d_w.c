@@ -1,0 +1,1 @@
+weight "X" { switch(1) { case 1: { switch(2) { case 1: return 7; default: return 8; } } default: return 9; } }
