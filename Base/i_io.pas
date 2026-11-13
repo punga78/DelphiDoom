@@ -31,13 +31,15 @@ unit i_io;
 interface
 
 uses
-  d_delphi;
+  d_delphi,
+  DelphiDoom.EngineSystem.StdoutBuffer;
 
 var
   debugfile: TFile;
   stderr: TFile;
   stdout: TFile;
-  stdoutbuffer: TDStringList;
+  // what the engine printed, as lines (TStdoutBuffer of Libs\EngineSystem)
+  stdoutbuffer: TStdoutBuffer;
 
 //==============================================================================
 //
@@ -91,7 +93,9 @@ uses
 {$IFNDEF FPC}
   i_startup,
 {$ENDIF}
-  m_argv;
+  m_argv,
+  DelphiDoom.EngineSystem.Types,
+  DelphiDoom.EngineSystem.LogFileNames;
 
 var
   msghandle: integer = 0;
@@ -116,47 +120,17 @@ begin
   MessageBox(msghandle, PChar(s), AppTitle, MB_OK or MB_ICONERROR or MB_APPLMODAL);
 end;
 
-var
-  io_lastNL: boolean = true;
-
 //==============================================================================
 //
 // I_IOprintf
 //
 //==============================================================================
 procedure I_IOprintf(const s: string);
-var
-  i: integer;
-  l: TDStringList;
-  len: integer;
 begin
-  len := Length(s);
-  if len = 0 then
+  if Length(s) = 0 then
     exit;
 
-  l := TDStringList.Create;
-  l.Text := s;
-
-  if (len = 1) and (s[1] = #13) then
-  begin
-    stdoutbuffer.Add('');
-    io_lastNL := true;
-  end
-  else
-  begin
-    if io_lastNL or (stdoutbuffer.Count = 0) then
-      stdoutbuffer.AddStrings(l)
-    else
-    begin
-      stdoutbuffer.Strings[stdoutbuffer.Count - 1] :=
-        stdoutbuffer.Strings[stdoutbuffer.Count - 1] + l.Strings[0];
-      for i := 1 to l.Count - 1 do
-        stdoutbuffer.Add(l.Strings[i]);
-    end;
-    io_lastNL := s[len] = #13;
-  end;
-
-  l.Free;
+  stdoutbuffer.Append(s);
 
   if IsConsole then
     write(s);
@@ -183,41 +157,29 @@ const
 //==============================================================================
 procedure I_InitializeIO;
 var
-  dfilename: string;
-  efilename: string;
-  sfilename: string;
+  names: TLogFileSet;
+  cdfolder: string;
 begin
-  if M_CheckParm('-debugfile') <> 0 then
+  cdfolder := '';
+  if M_CheckParmCDROM then
+    cdfolder := CD_WORKDIR;
+  names := TLogFileNames.Build(basename,
 {$IFDEF OPENGL}
-    sprintf(dfilename, 'DATA\LOGS\GL%s32_debug%d.txt', [basename, consoleplayer])
-  else
-    sprintf(dfilename, 'DATA\LOGS\GL%s32_debug.txt', [basename]);
-  sprintf(efilename, 'DATA\LOGS\GL%s32_stderr.txt', [basename]);
-  sprintf(sfilename, 'DATA\LOGS\GL%s32_stdout.txt', [basename]);
+    true,
 {$ELSE}
-    sprintf(dfilename, 'DATA\LOGS\%s32_debug%d.txt', [basename, consoleplayer])
-  else
-    sprintf(dfilename, 'DATA\LOGS\%s32_debug.txt', [basename]);
-  sprintf(efilename, 'DATA\LOGS\%s32_stderr.txt', [basename]);
-  sprintf(sfilename, 'DATA\LOGS\%s32_stdout.txt', [basename]);
+    false,
 {$ENDIF}
+    M_CheckParm('-debugfile') <> 0, consoleplayer, cdfolder);
 
   MkDir(M_SaveFileName('DATA'));
   MkDir(M_SaveFileName('DATA\LOGS'));
 
-  if M_CheckParmCDROM then
-  begin
-    dfilename := CD_WORKDIR + dfilename;
-    efilename := CD_WORKDIR + efilename;
-    sfilename := CD_WORKDIR + sfilename;
-  end;
-
-  printf(' error output to: %s'#13#10, [efilename]);
-  stderr := TFile.Create(efilename, fCreate);
-  printf(' debug output to: %s'#13#10, [dfilename]);
-  debugfile := TFile.Create(dfilename, fCreate);
-  printf(' standard output to: %s'#13#10, [sfilename]);
-  stdout := TFile.Create(sfilename, fCreate);
+  printf(' error output to: %s'#13#10, [names.ErrorFile]);
+  stderr := TFile.Create(names.ErrorFile, fCreate);
+  printf(' debug output to: %s'#13#10, [names.DebugFile]);
+  debugfile := TFile.Create(names.DebugFile, fCreate);
+  printf(' standard output to: %s'#13#10, [names.StdoutFile]);
+  stdout := TFile.Create(names.StdoutFile, fCreate);
 end;
 
 //==============================================================================
@@ -250,7 +212,7 @@ end;
 
 initialization
 
-  stdoutbuffer := TDStringList.Create;
+  stdoutbuffer := TStdoutBuffer.Create;
 
 finalization
 
