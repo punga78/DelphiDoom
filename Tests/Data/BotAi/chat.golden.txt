@@ -1,0 +1,808 @@
+> unify|  hello   world
+unify=hello world
+> unify|hello!!world
+unify=hello world
+> unify|a,b;c d\x09e
+unify=a,b c d e
+> unify|!!!
+unify=
+> unify|
+unify=
+> unify|one
+unify=one
+> contains|hello world|world|0
+contains=6
+> contains|Hello World|world|0
+contains=6
+> contains|Hello World|world|1
+contains=-1
+> contains|short|longer string|0
+contains=-1
+> contains|abc||0
+contains=0
+> contains|abc|abc|1
+contains=0
+> containsword|well hello there|hello|0
+containsword=5
+> containsword|hellothere|hello|0
+containsword=-1
+> containsword|hello, world|WORLD|0
+containsword=-1
+> containsword|say hello.|hello|0
+containsword=4
+> containsword|say hello!|hello|1
+containsword=4
+> containsword|helloo hello|hello|0
+containsword=7
+> containsword|ab|abc|0
+containsword=-1
+> replacewords|hello there, hello|hello|hi
+replacewords=hi there, hello
+> replacewords|im here|im|i am
+replacewords=i am here
+> replacewords|i am here|am|i am
+replacewords=i am here
+> replacewords|a b a b a|a|aa
+replacewords=aa b aa b aa
+> replacewords|nothing|x|y
+replacewords=nothing
+> tildes|a~b~~c~
+tildes=ab~c
+> tildes|~~~
+tildes=~
+> tildes|clean
+tildes=clean
+> libvar|bot_developer|1
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> alloc
+alloc=1
+> name|1|Zeta|5
+> gender|1|2
+> numconsole|1
+numconsole=0
+> replsyn|hi and hey there|2
+replsyn=hello and hello there
+> replsyn|hi and hey there|4
+replsyn=hi and hey there
+> replsyn|kill, frag or destroy|2
+replsyn=kill, frag or kill
+> replsyn|im sure i'm fine|4
+replsyn=i am sure i am fine
+> replsyn|my vest|8
+replsyn=my armor
+> replsyn|my vest|2
+replsyn=my vest
+> replsyn|hello|0
+replsyn=hello
+> replrsyn|im sure and i'm fine|4
+replrsyn=i am sure and i am fine
+> replrsyn|  hi hey  goodbye|2
+replrsyn=  hello hello  goodbye
+> replrsyn|nothing to do|2
+replrsyn=nothing to do
+> replrsyn|i am fine|4
+replrsyn=i am fine
+> seed|1
+> weighted|hello hi hey|2
+weighted=hello hello hello
+> weighted|hello hi hey|2
+weighted=hi hi hi
+> weighted|goodbye bye cya|2
+weighted=cya cya cya
+> weighted|kill frag destroy|4294967295
+weighted=kill kill kill
+> weighted|nothing|2
+weighted=nothing
+> seed|77
+> weighted|hello hi hey goodbye bye cya|2
+weighted=hello hello hello bye bye bye
+> weighted|hello hi hey goodbye bye cya|2
+weighted=hi hi hi cya cya cya
+> weighted|hello hi hey goodbye bye cya|2
+weighted=hello hello hello bye bye bye
+> weighted|hello hi hey goodbye bye cya|2
+weighted=hello hello hello cya cya cya
+> find|hello world|2
+find=1
+match type=1 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=5 length=6 text= world
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|hi bob|2
+find=1
+match type=1 subtype=1
+var0 offset=-1 length=0 text=
+var1 offset=2 length=4 text= bob
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|hey bob|2
+find=1
+match type=1 subtype=1
+var0 offset=-1 length=0 text=
+var1 offset=3 length=4 text= bob
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|hello|2
+find=1
+match type=1 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=5 length=0 text=
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|hello world\x5Cn\x5Cn|2
+find=1
+match type=1 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=5 length=6 text= world
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|john killed mary|2
+find=1
+match type=2 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=0 length=4 text=john
+var2 offset=12 length=4 text=mary
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|john killed mary with a rocket|2
+find=1
+match type=2 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=0 length=4 text=john
+var2 offset=12 length=18 text=mary with a rocket
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|john fragged mary with a rocket|2
+find=1
+match type=2 subtype=1
+var0 offset=-1 length=0 text=
+var1 offset=0 length=4 text=john
+var2 offset=13 length=4 text=mary
+var3 offset=23 length=8 text=a rocket
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|give me the armor|2
+find=1
+match type=3 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=8 length=9 text=the armor
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|i am bob|2
+find=1
+match type=4 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=5 length=3 text=bob
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|im bob|2
+find=1
+match type=4 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=3 length=3 text=bob
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|say it now|2
+find=1
+match type=5 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=4 length=2 text=it
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|say it now please|2
+find=0
+> find|say  now|2
+find=1
+match type=5 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=4 length=0 text=
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|how are you|4
+find=1
+match type=6 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=-1 length=0 text=
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|how are you|2
+find=0
+> find|armor|8
+find=1
+match type=7 subtype=1
+var0 offset=-1 length=0 text=
+var1 offset=-1 length=0 text=
+var2 offset=-1 length=0 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|nothing matches|4294967295
+find=0
+> find||2
+find=0
+> find|a killed b|0
+find=0
+> matchvar|john killed mary|2|1|256
+matchvar=john
+> matchvar|john killed mary|2|2|256
+matchvar=mary
+> matchvar|john killed mary|2|1|3
+matchvar=jo
+> matchvar|john killed mary|2|1|1
+matchvar=
+> matchvar|john killed mary|2|5|256
+matchvar=
+> matchvar|john killed mary|2|8|256
+P4|BotMatchVariable: variable out of range\x0A
+matchvar=
+> matchvar|john killed mary|2|-1|256
+P4|BotMatchVariable: variable out of range\x0A
+matchvar=
+> find|0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 mid ABC end|2
+find=1
+match type=8 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=0 length=130 text=0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+var2 offset=-121 length=259 text=
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> find|0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 mid ABC end|2
+find=1
+match type=8 subtype=0
+var0 offset=-1 length=0 text=
+var1 offset=0 length=100 text=0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+var2 offset=105 length=3 text=ABC
+var3 offset=-1 length=0 text=
+var4 offset=-1 length=0 text=
+var5 offset=-1 length=0 text=
+var6 offset=-1 length=0 text=
+var7 offset=-1 length=0 text=
+> seed|5
+> construct|1|plain text|2|0|0
+chatlen=10
+chatmsg=plain text
+> construct|1|hi \x5Cx01v0\x5Cx01 and \x5Cx01v1\x5Cx01 !|2|0|0|Bob|Alice
+chatlen=19
+chatmsg=hey Bob and Alice !
+> construct|1|hi \x5Cx01v0\x5Cx01 and \x5Cx01v1\x5Cx01 !|2|0|0|Bob
+chatlen=14
+chatmsg=hey Bob and  !
+> construct|1|\x5Cx01v9\x5Cx01|2|0|0|Bob
+P3|BotConstructChat: message \x01v9\x01 variable 9 out of range\x0A
+chatlen=0
+chatmsg=
+> construct|1|\x5Cx01v8\x5Cx01|2|0|0|Bob
+chatlen=0
+chatmsg=
+> construct|1|x \x5Cx01rgreeting\x5Cx01 y|2|0|0
+chatlen=15
+chatmsg=x hello there y
+> construct|1|x \x5Cx01rgreeting\x5Cx01 y|2|0|0
+chatlen=6
+chatmsg=x hi y
+> construct|1|x \x5Cx01rexcuse\x5Cx01 y|2|0|0|Bob
+chatlen=21
+chatmsg=x not my fault, Bob y
+> construct|1|\x5Cx01runknown\x5Cx01|2|0|0
+P3|BotConstructChat: unknown random string unknown\x0A
+chatlen=0
+chatmsg=
+> construct|1|\x5Cx01rloop\x5Cx01|2|0|0
+P2|too many expansions in chat message\x0A
+P2|again again again again again again again again again again \x01rloop\x01\x0A
+chatlen=67
+chatmsg=again again again again again again again again again again \x01rloop\x01
+> construct|1|\x5Cx01rwide\x5Cx01\x5Cx01rwide\x5Cx01\x5Cx01rwide\x5Cx01|2|0|0
+P3|BotConstructChat: message "\x01rwide\x01\x01rwide\x01\x01rwide\x01" too long\x0A
+chatlen=200
+chatmsg=01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+> construct|1|bad \x5Cx01x escape|2|0|0
+P4|BotConstructChat: message "bad \x01x escape" invalid escape char\x0A
+chatlen=12
+chatmsg=bad x escape
+> construct|1|reply \x5Cx01v0\x5Cx01|2|4|1|im sure
+chatlen=14
+chatmsg=reply i'm sure
+> construct|1|reply \x5Cx01v0\x5Cx01|2|4|0|im sure
+chatlen=13
+chatmsg=reply im sure
+> construct|1|hello hi hey|2|0|0
+chatlen=17
+chatmsg=hello hello hello
+> seed|9
+> construct|1|hello hi hey goodbye|2|0|0
+chatlen=25
+chatmsg=hello hello hello goodbye
+> loadchat|1|chats.c|nobot
+P3|couldn't find chat nobot in chats.c\x0A
+P4|couldn't load chat nobot from chats.c\x0A
+loadchat=20
+> loadchat|1|nofile.c|bot1
+P3|counldn't load nofile.c\x0A
+P4|couldn't load chat bot1 from nofile.c\x0A
+loadchat=20
+> loadchat|1|bad_chat.c|a
+P3|file bad_chat.c, line 1: expected type found foo\x0A\x0A
+P4|couldn't load chat a from bad_chat.c\x0A
+loadchat=20
+> loadchat|1|bad_chat2.c|a
+P3|file bad_chat2.c, line 1: unknown definition hello\x0A\x0A
+P4|couldn't load chat a from bad_chat2.c\x0A
+loadchat=20
+> loadchat|1|long_chat.c|long
+P3|file long_chat.c, line 5: chat message too long\x0A\x0A
+P4|couldn't load chat long from long_chat.c\x0A
+loadchat=20
+> loadchat|1|chats.c|bot1
+P1|loaded bot1 from chats.c\x0A
+loadchat=0
+> numinitial|1|game_enter
+numinitial=3
+> numinitial|1|death_insult
+numinitial=2
+> numinitial|1|empty
+numinitial=0
+> numinitial|1|nope
+numinitial=0
+> alloc
+alloc=2
+> loadchat|2|chats.c|bot2
+P1|loaded bot2 from chats.c\x0A
+L|nonexistent = {"nonexistent"} //MISSING RANDOM\x0D\x0A
+loadchat=0
+> numinitial|2|game_enter
+numinitial=1
+> numinitial|2|MISSING
+numinitial=2
+> alloc
+alloc=3
+> loadchat|3|chats.c|bot1
+loadchat=0
+> numinitial|3|game_enter
+numinitial=3
+> alloc
+alloc=4
+> loadchat|4|chats.c|BOT1
+P1|loaded BOT1 from chats.c\x0A
+loadchat=0
+> numinitial|4|game_enter
+numinitial=3
+> seed|3
+> time|0
+> initial|1|game_enter|2|Bob|Alice
+chatlen=9
+chatmsg=howdy all
+> initial|1|game_enter|2|Bob|Alice
+chatlen=20
+chatmsg=hey, I am Bob, ready
+> initial|1|game_enter|2|Bob|Alice
+chatlen=11
+chatmsg=hi everyone
+> initial|1|game_enter|2|Bob|Alice
+chatlen=9
+chatmsg=hello all
+> time|30
+> initial|1|game_enter|2|Bob|Alice
+chatlen=14
+chatmsg=hello everyone
+> initial|1|death_insult|2|Ann|Ben
+chatlen=30
+chatmsg=too bad Ann, it was lag, sorry
+> initial|1|death_insult|2|Ann|Ben
+chatlen=8
+chatmsg=you suck
+> initial|1|death_insult|2|Ann|Ben
+chatlen=30
+chatmsg=too bad Ann, it was lag, sorry
+> initial|1|empty|2
+chatlen=0
+chatmsg=
+> initial|1|nope|2
+chatlen=0
+chatmsg=
+> initial|1|game_enter|2|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>
+chatlen=19
+chatmsg=hello, I am , ready
+> initial|1|death_insult|2|a|b|c|d|e|f|g|h
+chatlen=26
+chatmsg=too bad a, not my fault, a
+> seed|11
+> initial|2|missing|2|x
+chatlen=9
+chatmsg=and hello
+> initial|2|missing|2|x
+P3|BotConstructChat: unknown random string nonexistent\x0A
+chatlen=10
+chatmsg=this uses 
+> initial|2|game_enter|2|x
+chatlen=2
+chatmsg=yo
+> initial|3|game_enter|2|Bob
+chatlen=6
+chatmsg=hi all
+> alloc
+alloc=5
+> initial|5|game_enter|2|x
+chatlen=0
+chatmsg=
+> reply|5|hello|2|2
+reply=1
+chatlen=7
+chatmsg=hi team
+> seed|21
+> time|100
+> reply|1|hello there|2|2|Bob
+reply=1
+chatlen=5
+chatmsg=howdy
+> reply|1|hi|2|2
+reply=1
+chatlen=5
+chatmsg=hello
+> reply|1|hello there|2|2|Bob
+reply=1
+chatlen=11
+chatmsg=hey there, 
+> reply|1|kill zeta now|2|2
+reply=1
+chatlen=17
+chatmsg=it was lag, sorry
+> reply|1|kill Zeta now|2|2|Joe
+reply=1
+chatlen=17
+chatmsg=not my fault, Joe
+> reply|1|how are you|2|2
+reply=1
+chatlen=12
+chatmsg=fine, thanks
+> reply|1|how are you today|2|2
+reply=0
+chatlen=0
+chatmsg=
+> reply|1|i am Bob|2|2
+reply=1
+chatlen=20
+chatmsg=nice to meet you Bob
+> reply|1|my dress is nice|2|2
+reply=0
+chatlen=0
+chatmsg=
+> reply|1|my beard is nice|2|2
+reply=1
+chatlen=13
+chatmsg=i like beards
+> reply|1|beep|2|2
+reply=0
+chatlen=0
+chatmsg=
+> gender|1|1
+> reply|1|my dress is nice|2|2
+reply=1
+chatlen=14
+chatmsg=i like dresses
+> reply|1|my beard is nice|2|2
+reply=0
+chatlen=0
+chatmsg=
+> gender|1|0
+> reply|1|beep|2|2
+reply=1
+chatlen=9
+chatmsg=beep boop
+> reply|1|goodbye|2|2
+reply=0
+chatlen=0
+chatmsg=
+> reply|1|goodbye, no way|2|2
+reply=0
+chatlen=0
+chatmsg=
+> reply|1|alpha|2|2
+reply=0
+chatlen=0
+chatmsg=
+> name|1|Beta|7
+> reply|1|alpha|2|2
+reply=1
+chatlen=8
+chatmsg=hey team
+> reply|1|nothing at all|2|2
+reply=1
+chatlen=10
+chatmsg=hello team
+> reply|1|bye|2|4|x
+reply=1
+chatlen=10
+chatmsg=hello team
+> reply|1|bye|2|4
+reply=1
+chatlen=10
+chatmsg=hello team
+> libvar|bot_testrchat|1
+> reply|1|hello|2|2|Bob
+P1|hey team\x0A
+reply=1
+chatlen=8
+chatmsg=hey team
+> libvar|bot_testrchat|0
+> resetchat
+> reply|1|hello there|2|2|Bob
+reply=1
+chatlen=7
+chatmsg=hi team
+> reply|1|hello there|2|2|Bob
+reply=1
+chatlen=10
+chatmsg=hello team
+> reply|1|hello there|2|2|Bob
+reply=1
+chatlen=8
+chatmsg=hey team
+> gender|1|3
+> name|1|A very long name that does not fit in the thirty two characters|9
+> quiet|1
+> initial|1|game_enter|2|x
+> enter|1|3|0
+E|9|say howdy all
+> initial|1|game_enter|2|x
+> enter|1|3|1
+E|9|say_team hi, I am x, ready
+> initial|1|game_enter|2|x
+> enter|1|3|2
+E|9|tell 3 hello everyone
+> enter|1|3|0
+> libvar|bot_testichat|1
+> initial|1|game_enter|2|x
+> enter|1|3|0
+P1|hey there all\x0A
+> numinitial|1|game_enter
+P1|game_enter has 3 chat lines\x0A
+P1|-------------------\x0A
+numinitial=3
+> libvar|bot_testichat|0
+> quiet|0
+> time|5
+> queue|1|7|first message
+> time|6
+> queue|1|8|second message
+> numconsole|1
+numconsole=2
+> nextmsg|1
+nextmsg=1 type=7 time=5.00 text=first message
+> removemsg|1|1
+> nextmsg|1
+nextmsg=2 type=8 time=6.00 text=second message
+> removemsg|1|99
+> removemsg|1|2
+> nextmsg|1
+nextmsg=0
+> numconsole|1
+numconsole=0
+> queue|1|1|x
+> free|1
+> free|1
+P4|invalid chat state 1\x0A
+> free|99
+P4|chat state handle 99 out of range\x0A
+> numconsole|1
+P4|invalid chat state 1\x0A
+numconsole=0
+> shutdown
+> alloc
+alloc=1
+> alloc
+alloc=2
+> free|2
+> alloc
+alloc=2
+> free|0
+P4|chat state handle 0 out of range\x0A
+> free|65
+P4|chat state handle 65 out of range\x0A
+> shutdown
+> libvar|bot_reloadcharacters|1
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> alloc
+alloc=1
+> loadchat|1|chats.c|bot1
+P1|loaded bot1 from chats.c\x0A
+loadchat=0
+> numinitial|1|game_enter
+numinitial=3
+> free|1
+> shutdown
+> libvar|bot_reloadcharacters|0
+> libvar|rchatfile|rchat_warn.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P2|file rchat_warn.c, line 2: all keys have a & or ! prefix\x0A
+P2|file rchat_warn.c, line 6: variables from the match template(s) could be invalid when outputting one of the chat messages\x0A
+P2|file rchat_warn.c, line 10: the key b with prefix ! is inside the key abc\x0A
+P2|file rchat_warn.c, line 18: the key ex with prefix ! is inside the match template string text \x0A
+P1|loaded rchat_warn.c\x0A
+setup=0
+> shutdown
+> libvar|rchatfile|rchat.c
+> libvar|nochat|1
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+setup=0
+> alloc
+alloc=1
+> reply|1|hello|2|2
+reply=0
+chatlen=0
+chatmsg=
+> shutdown
+> libvar|nochat|0
+> libvar|synfile|bad_syn1.c
+> setup
+P3|file bad_syn1.c, line 2: unexpected {\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|synfile|bad_syn2.c
+> setup
+P3|file bad_syn2.c, line 2: too many }\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|synfile|bad_syn4.c
+> setup
+P3|file bad_syn4.c, line 1: empty string\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|synfile|bad_syn5.c
+> setup
+P1|loaded bad_syn5.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|synfile|nofile.c
+> setup
+P3|counldn't load nofile.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|synfile|syn.c
+> libvar|rndfile|bad_rnd.c
+> setup
+P1|loaded syn.c\x0A
+P3|file bad_rnd.c, line 1: unknown random 5\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+L|excuse = {"excuse"} //MISSING RANDOM\x0D\x0A
+L|greeting = {"greeting"} //MISSING RANDOM\x0D\x0A
+setup=0
+> libvar|rndfile|bad_rnd2.c
+> setup
+P1|loaded syn.c\x0A
+P3|file bad_rnd2.c, line 1: unknown message component 3.5\x0A\x0A
+P1|loaded match.c\x0A
+P1|loaded rchat.c\x0A
+L|excuse = {"excuse"} //MISSING RANDOM\x0D\x0A
+L|greeting = {"greeting"} //MISSING RANDOM\x0D\x0A
+setup=0
+> libvar|rndfile|rnd.c
+> libvar|matchfile|bad_match.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P3|file bad_match.c, line 1: not allowed to have adjacent variables\x0A\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|matchfile|bad_match2.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P3|file bad_match2.c, line 1: can't have more than 8 match variables\x0A\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|matchfile|bad_match3.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P3|file bad_match3.c, line 1: expected ;, found }\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|matchfile|bad_match4.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P3|file bad_match4.c, line 1: expected integer, found x\x0A\x0A
+P1|loaded rchat.c\x0A
+setup=0
+> libvar|matchfile|match.c
+> libvar|rchatfile|bad_rchat.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P3|file bad_rchat.c, line 1: expected [, found "x"\x0A
+setup=0
+> libvar|rchatfile|bad_rchat2.c
+> setup
+P1|loaded syn.c\x0A
+P1|loaded rnd.c\x0A
+P1|loaded match.c\x0A
+P3|file bad_rchat2.c, line 1: expected =, found 1\x0A
+setup=0
+> shutdown

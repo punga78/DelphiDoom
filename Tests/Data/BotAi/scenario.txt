@@ -1,0 +1,302 @@
+; Scenario of the bot chat parity test (issue #124). One command per line: command|argument|...
+; Run by Tools\Verifica\124 on the real C code (chatgen.exe) and by TTestBotChatParity on the Delphi classes.
+; Escapes: \t \n \r \\ \xNN. The argument <nil> is a null string. Lines starting with ; are comments.
+;
+; ---- text helpers of be_ai_chat.c
+unify|  hello   world
+unify|hello!!world
+unify|a,b;c d	e
+unify|!!!
+unify|
+unify|one
+contains|hello world|world|0
+contains|Hello World|world|0
+contains|Hello World|world|1
+contains|short|longer string|0
+contains|abc||0
+contains|abc|abc|1
+containsword|well hello there|hello|0
+containsword|hellothere|hello|0
+containsword|hello, world|WORLD|0
+containsword|say hello.|hello|0
+containsword|say hello!|hello|1
+containsword|helloo hello|hello|0
+containsword|ab|abc|0
+replacewords|hello there, hello|hello|hi
+replacewords|im here|im|i am
+replacewords|i am here|am|i am
+replacewords|a b a b a|a|aa
+replacewords|nothing|x|y
+tildes|a~b~~c~
+tildes|~~~
+tildes|clean
+;
+; ---- library variables and setup with the test files
+libvar|bot_developer|1
+setup
+alloc
+name|1|Zeta|5
+gender|1|2
+numconsole|1
+;
+; ---- synonyms (the first of a list is the replacement; contexts are bit masks)
+replsyn|hi and hey there|2
+replsyn|hi and hey there|4
+replsyn|kill, frag or destroy|2
+replsyn|im sure i'm fine|4
+replsyn|my vest|8
+replsyn|my vest|2
+replsyn|hello|0
+replrsyn|im sure and i'm fine|4
+replrsyn|  hi hey  goodbye|2
+replrsyn|nothing to do|2
+replrsyn|i am fine|4
+seed|1
+weighted|hello hi hey|2
+weighted|hello hi hey|2
+weighted|goodbye bye cya|2
+weighted|kill frag destroy|4294967295
+weighted|nothing|2
+seed|77
+weighted|hello hi hey goodbye bye cya|2
+weighted|hello hi hey goodbye bye cya|2
+weighted|hello hi hey goodbye bye cya|2
+weighted|hello hi hey goodbye bye cya|2
+;
+; ---- match templates
+find|hello world|2
+find|hi bob|2
+find|hey bob|2
+find|hello|2
+find|hello world\n\n|2
+find|john killed mary|2
+find|john killed mary with a rocket|2
+find|john fragged mary with a rocket|2
+find|give me the armor|2
+find|i am bob|2
+find|im bob|2
+find|say it now|2
+find|say it now please|2
+find|say  now|2
+find|how are you|4
+find|how are you|2
+find|armor|8
+find|nothing matches|4294967295
+find||2
+find|a killed b|0
+matchvar|john killed mary|2|1|256
+matchvar|john killed mary|2|2|256
+matchvar|john killed mary|2|1|3
+matchvar|john killed mary|2|1|1
+matchvar|john killed mary|2|5|256
+matchvar|john killed mary|2|8|256
+matchvar|john killed mary|2|-1|256
+; a variable at an offset of 128 or more does not fit the char of bot_matchvariable_t
+find|0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 mid ABC end|2
+find|0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 mid ABC end|2
+;
+; ---- construct messages (\x01 is the escape character of the compiled messages)
+seed|5
+construct|1|plain text|2|0|0
+construct|1|hi \x01v0\x01 and \x01v1\x01 !|2|0|0|Bob|Alice
+construct|1|hi \x01v0\x01 and \x01v1\x01 !|2|0|0|Bob
+construct|1|\x01v9\x01|2|0|0|Bob
+construct|1|\x01v8\x01|2|0|0|Bob
+construct|1|x \x01rgreeting\x01 y|2|0|0
+construct|1|x \x01rgreeting\x01 y|2|0|0
+construct|1|x \x01rexcuse\x01 y|2|0|0|Bob
+construct|1|\x01runknown\x01|2|0|0
+construct|1|\x01rloop\x01|2|0|0
+construct|1|\x01rwide\x01\x01rwide\x01\x01rwide\x01|2|0|0
+construct|1|bad \x01x escape|2|0|0
+construct|1|reply \x01v0\x01|2|4|1|im sure
+construct|1|reply \x01v0\x01|2|4|0|im sure
+construct|1|hello hi hey|2|0|0
+seed|9
+construct|1|hello hi hey goodbye|2|0|0
+;
+; ---- chat files
+; each state loads one chat: the C frees the chat of a state when the state loads another one, and
+; if the chat is cached that leaves a dangling pointer in the cache (not reproduced, see LEGGIMI)
+loadchat|1|chats.c|nobot
+loadchat|1|nofile.c|bot1
+loadchat|1|bad_chat.c|a
+loadchat|1|bad_chat2.c|a
+loadchat|1|long_chat.c|long
+loadchat|1|chats.c|bot1
+numinitial|1|game_enter
+numinitial|1|death_insult
+numinitial|1|empty
+numinitial|1|nope
+alloc
+loadchat|2|chats.c|bot2
+numinitial|2|game_enter
+numinitial|2|MISSING
+; the second state with the same chat gets the cached one
+alloc
+loadchat|3|chats.c|bot1
+numinitial|3|game_enter
+; the name of the chat is compared without case but the cache is not
+alloc
+loadchat|4|chats.c|BOT1
+numinitial|4|game_enter
+seed|3
+time|0
+initial|1|game_enter|2|Bob|Alice
+initial|1|game_enter|2|Bob|Alice
+initial|1|game_enter|2|Bob|Alice
+initial|1|game_enter|2|Bob|Alice
+time|30
+initial|1|game_enter|2|Bob|Alice
+initial|1|death_insult|2|Ann|Ben
+initial|1|death_insult|2|Ann|Ben
+initial|1|death_insult|2|Ann|Ben
+initial|1|empty|2
+initial|1|nope|2
+initial|1|game_enter|2|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>|<nil>
+initial|1|death_insult|2|a|b|c|d|e|f|g|h
+seed|11
+initial|2|missing|2|x
+initial|2|missing|2|x
+initial|2|game_enter|2|x
+initial|3|game_enter|2|Bob
+; no chat loaded in the state: nothing happens
+alloc
+initial|5|game_enter|2|x
+reply|5|hello|2|2
+;
+; ---- reply chats
+seed|21
+time|100
+reply|1|hello there|2|2|Bob
+reply|1|hi|2|2
+reply|1|hello there|2|2|Bob
+reply|1|kill zeta now|2|2
+reply|1|kill Zeta now|2|2|Joe
+reply|1|how are you|2|2
+reply|1|how are you today|2|2
+reply|1|i am Bob|2|2
+reply|1|my dress is nice|2|2
+reply|1|my beard is nice|2|2
+reply|1|beep|2|2
+gender|1|1
+reply|1|my dress is nice|2|2
+reply|1|my beard is nice|2|2
+gender|1|0
+reply|1|beep|2|2
+reply|1|goodbye|2|2
+reply|1|goodbye, no way|2|2
+reply|1|alpha|2|2
+name|1|Beta|7
+reply|1|alpha|2|2
+reply|1|nothing at all|2|2
+reply|1|bye|2|4|x
+reply|1|bye|2|4
+libvar|bot_testrchat|1
+reply|1|hello|2|2|Bob
+libvar|bot_testrchat|0
+resetchat
+reply|1|hello there|2|2|Bob
+reply|1|hello there|2|2|Bob
+reply|1|hello there|2|2|Bob
+;
+; ---- sending the message
+gender|1|3
+name|1|A very long name that does not fit in the thirty two characters|9
+quiet|1
+initial|1|game_enter|2|x
+enter|1|3|0
+initial|1|game_enter|2|x
+enter|1|3|1
+initial|1|game_enter|2|x
+enter|1|3|2
+enter|1|3|0
+libvar|bot_testichat|1
+initial|1|game_enter|2|x
+enter|1|3|0
+numinitial|1|game_enter
+libvar|bot_testichat|0
+quiet|0
+;
+; ---- console messages
+time|5
+queue|1|7|first message
+time|6
+queue|1|8|second message
+numconsole|1
+nextmsg|1
+removemsg|1|1
+nextmsg|1
+removemsg|1|99
+removemsg|1|2
+nextmsg|1
+numconsole|1
+queue|1|1|x
+free|1
+free|1
+free|99
+numconsole|1
+shutdown
+;
+; ---- chat state handles
+alloc
+alloc
+free|2
+alloc
+free|0
+free|65
+shutdown
+;
+; ---- the chat is cached unless bot_reloadcharacters is set
+libvar|bot_reloadcharacters|1
+setup
+alloc
+loadchat|1|chats.c|bot1
+numinitial|1|game_enter
+free|1
+shutdown
+libvar|bot_reloadcharacters|0
+;
+; ---- reply chat key sets that make the checker warn
+libvar|rchatfile|rchat_warn.c
+setup
+shutdown
+libvar|rchatfile|rchat.c
+libvar|nochat|1
+setup
+alloc
+reply|1|hello|2|2
+shutdown
+libvar|nochat|0
+;
+; ---- files with errors (each setup reads one bad file)
+libvar|synfile|bad_syn1.c
+setup
+libvar|synfile|bad_syn2.c
+setup
+libvar|synfile|bad_syn4.c
+setup
+libvar|synfile|bad_syn5.c
+setup
+libvar|synfile|nofile.c
+setup
+libvar|synfile|syn.c
+libvar|rndfile|bad_rnd.c
+setup
+libvar|rndfile|bad_rnd2.c
+setup
+libvar|rndfile|rnd.c
+libvar|matchfile|bad_match.c
+setup
+libvar|matchfile|bad_match2.c
+setup
+libvar|matchfile|bad_match3.c
+setup
+libvar|matchfile|bad_match4.c
+setup
+libvar|matchfile|match.c
+libvar|rchatfile|bad_rchat.c
+setup
+libvar|rchatfile|bad_rchat2.c
+setup
+shutdown
