@@ -1,0 +1,171 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idDeclManager *declManager = 0;
+idFileSystem *fileSystem = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+static idCommon theCommon;
+static idFileSystem theFs;
+
+struct Entry { char name[512]; Blob data; };
+static Entry files[16];
+static int numFiles = 0;
+static Entry *findFile(const char *n) { for (int i = 0; i < numFiles; i++) if (!strcmp(files[i].name, n)) return &files[i]; return 0; }
+static Entry *putFile(const char *n) { Entry *e = findFile(n); if (!e) { e = &files[numFiles++]; strcpy(e->name, n); } free(e->data.p); e->data.p = 0; e->data.n = 0; return e; }
+
+static char escbufs[4][131072];
+static int escidx = 0;
+static const char *esc(const char *s, int n) {
+	char *r = escbufs[escidx++ & 3]; int o = 0;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		if (c == '\\') { r[o++] = '\\'; r[o++] = '\\'; }
+		else if (c == '\n') { r[o++] = '\\'; r[o++] = 'n'; }
+		else if (c == '\r') { r[o++] = '\\'; r[o++] = 'r'; }
+		else if (c == '\t') { r[o++] = '\\'; r[o++] = 't'; }
+		else if (c < 32 || c > 126) { o += sprintf(r + o, "\\x%02X", c); }
+		else r[o++] = (char)c;
+	}
+	r[o] = 0;
+	return r;
+}
+static const char *esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b)); }
+void idCommon::Warning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::DWarning(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b)); }
+void idCommon::Error(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[4096]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	Entry *e = findFile(n);
+	if (!e) return 0;
+	idFile *f = new idFile; f->rd.Append(e->data.p ? e->data.p : "", e->data.n); strcpy(f->name, n); f->ts = 1234; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { idFile *f = new idFile; strcpy(f->name, n); return f; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *n) { idFile *f = new idFile; strcpy(f->name, n); return f; }
+void idFileSystem::CloseFile(idFile *f) {
+	if (f->rd.n == 0) { Entry *e = putFile(f->name); e->data.Append(f->out.p ? f->out.p : "", f->out.n); }
+	delete f;
+}
+int idFileSystem::ReadFile(const char *n, void **b, long *t) {
+	Entry *e = findFile(n);
+	if (!e) { if (b) *b = 0; return -1; }
+	if (t) *t = 1234;
+	if (b) { char *buf = (char *)malloc(e->data.n + 1); memcpy(buf, e->data.p, e->data.n); buf[e->data.n] = 0; *b = buf; }
+	return e->data.n;
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+
+static unsigned int bits(float f) { unsigned int u; memcpy(&u, &f, 4); return u; }
+#define F(x) bits(x)
+
+static void dumpReach(idAASFileLocal &aas, int i) {
+	const aasArea_t &area = aas.GetArea(i);
+	int k = 0;
+	for (const idReachability *r = area.reach; r; r = r->next, k++) {
+		printf("R %d %d %d %d %d #%08x #%08x #%08x #%08x #%08x #%08x %d %d\n", i, k, r->travelType, (int)r->toAreaNum, (int)r->fromAreaNum,
+			F(r->start.x), F(r->start.y), F(r->start.z), F(r->end.x), F(r->end.y), F(r->end.z), r->edgeNum, (int)r->travelTime);
+		if (r->travelType == TFL_SPECIAL) {
+			const idReachability_Special *s = static_cast<const idReachability_Special *>(r);
+			for (int j = 0; j < s->dict.GetNumKeyVals(); j++)
+				printf("RS %d %d |%s|=|%s|\n", i, k, esc(s->dict.GetKeyVal(j)->GetKey().c_str()), esc(s->dict.GetKeyVal(j)->GetValue().c_str()));
+		}
+	}
+	k = 0;
+	for (const idReachability *r = area.rev_reach; r; r = r->rev_next, k++)
+		printf("RR %d %d from %d edge %d time %d\n", i, k, (int)r->fromAreaNum, r->edgeNum, (int)r->travelTime);
+}
+
+static void dump(idAASFileLocal &aas) {
+	int i;
+	printf("CRC %u\n", aas.GetCRC());
+	printf("PLANES %d\n", aas.GetNumPlanes());
+	for (i = 0; i < aas.GetNumPlanes(); i++) { const idPlane &p = aas.GetPlane(i); printf("PL %d #%08x #%08x #%08x #%08x\n", i, F(p.ToFloatPtr()[0]), F(p.ToFloatPtr()[1]), F(p.ToFloatPtr()[2]), F(p.ToFloatPtr()[3])); }
+	printf("VERTICES %d\n", aas.GetNumVertices());
+	for (i = 0; i < aas.GetNumVertices(); i++) { const aasVertex_t &v = aas.GetVertex(i); printf("V %d #%08x #%08x #%08x\n", i, F(v.x), F(v.y), F(v.z)); }
+	printf("EDGES %d\n", aas.GetNumEdges());
+	for (i = 0; i < aas.GetNumEdges(); i++) printf("E %d %d %d\n", i, aas.GetEdge(i).vertexNum[0], aas.GetEdge(i).vertexNum[1]);
+	printf("EDGEINDEX %d\n", aas.GetNumEdgeIndexes());
+	for (i = 0; i < aas.GetNumEdgeIndexes(); i++) printf("EI %d %d\n", i, aas.GetEdgeIndex(i));
+	printf("FACES %d\n", aas.GetNumFaces());
+	for (i = 0; i < aas.GetNumFaces(); i++) { const aasFace_t &f = aas.GetFace(i); printf("F %d %d %d %d %d %d %d\n", i, (int)f.planeNum, (int)f.flags, (int)f.areas[0], (int)f.areas[1], f.firstEdge, f.numEdges); }
+	printf("FACEINDEX %d\n", aas.GetNumFaceIndexes());
+	for (i = 0; i < aas.GetNumFaceIndexes(); i++) printf("FI %d %d\n", i, aas.GetFaceIndex(i));
+	printf("AREAS %d\n", aas.GetNumAreas());
+	for (i = 0; i < aas.GetNumAreas(); i++) {
+		const aasArea_t &a = aas.GetArea(i);
+		printf("A %d %d %d %d %d %d %d %d\n", i, (int)a.flags, (int)a.contents, a.firstFace, a.numFaces, (int)a.cluster, (int)a.clusterAreaNum, a.travelFlags);
+		printf("AB %d #%08x #%08x #%08x #%08x #%08x #%08x\n", i, F(a.bounds[0].x), F(a.bounds[0].y), F(a.bounds[0].z), F(a.bounds[1].x), F(a.bounds[1].y), F(a.bounds[1].z));
+		printf("AC %d #%08x #%08x #%08x\n", i, F(a.center.x), F(a.center.y), F(a.center.z));
+		dumpReach(aas, i);
+	}
+	printf("NODES %d\n", aas.GetNumNodes());
+	for (i = 0; i < aas.GetNumNodes(); i++) { const aasNode_t &n = aas.GetNode(i); printf("N %d %d %d %d\n", i, (int)n.planeNum, n.children[0], n.children[1]); }
+	printf("PORTALS %d\n", aas.GetNumPortals());
+	for (i = 0; i < aas.GetNumPortals(); i++) { const aasPortal_t &p = aas.GetPortal(i); printf("P %d %d %d %d %d %d %d\n", i, (int)p.areaNum, (int)p.clusters[0], (int)p.clusters[1], (int)p.clusterAreaNum[0], (int)p.clusterAreaNum[1], (int)p.maxAreaTravelTime); }
+	printf("PORTALINDEX %d\n", aas.GetNumPortalIndexes());
+	for (i = 0; i < aas.GetNumPortalIndexes(); i++) printf("PI %d %d\n", i, aas.GetPortalIndex(i));
+	printf("CLUSTERS %d\n", aas.GetNumClusters());
+	for (i = 0; i < aas.GetNumClusters(); i++) { const aasCluster_t &c = aas.GetCluster(i); printf("C %d %d %d %d %d\n", i, c.numAreas, c.numReachableAreas, c.firstPortal, c.numPortals); }
+	const idAASSettings &s = aas.GetSettings();
+	printf("SBOXES %d\n", s.numBoundingBoxes);
+	for (i = 0; i < s.numBoundingBoxes; i++) printf("SB %d #%08x #%08x #%08x #%08x #%08x #%08x\n", i, F(s.boundingBoxes[i][0].x), F(s.boundingBoxes[i][0].y), F(s.boundingBoxes[i][0].z), F(s.boundingBoxes[i][1].x), F(s.boundingBoxes[i][1].y), F(s.boundingBoxes[i][1].z));
+	printf("SFLAGS %d %d %d %d %d %d\n", s.usePatches, s.writeBrushMap, s.playerFlood, s.noOptimize, s.allowSwimReachabilities, s.allowFlyReachabilities);
+	printf("SEXT |%s|\n", esc(s.fileExtension.c_str()));
+	printf("SGRAV #%08x #%08x #%08x\n", F(s.gravity.x), F(s.gravity.y), F(s.gravity.z));
+	printf("SGDIR #%08x #%08x #%08x #%08x\n", F(s.gravityDir.x), F(s.gravityDir.y), F(s.gravityDir.z), F(s.gravityValue));
+	printf("SIGDIR #%08x #%08x #%08x\n", F(s.invGravityDir.x), F(s.invGravityDir.y), F(s.invGravityDir.z));
+	printf("SHEIGHTS #%08x #%08x #%08x #%08x #%08x\n", F(s.maxStepHeight), F(s.maxBarrierHeight), F(s.maxWaterJumpHeight), F(s.maxFallHeight), F(s.minFloorCos));
+	printf("STT %d %d %d %d\n", s.tt_barrierJump, s.tt_startCrouching, s.tt_waterJump, s.tt_startWalkOffLedge);
+	aas.PrintInfo();
+}
+static Blob readAll(const char *path) {
+	Blob b; FILE *f = fopen(path, "rb");
+	if (!f) return b;
+	char buf[4096]; size_t n;
+	while ((n = fread(buf, 1, sizeof(buf), f)) > 0) b.Append(buf, (int)n);
+	fclose(f); return b;
+}
+
+int main(int argc, char **argv) {
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; fileSystem = &theFs; common = &theCommon;
+	idMath::Init(); idDict::Init();
+	if (argc < 2) { printf("usage: aas <folder>\n"); return 1; }
+	char path[1024];
+	sprintf(path, "%s\\cases.txt", argv[1]);
+	Blob cases = readAll(path);
+	char *p = cases.p;
+	while (p && *p) {
+		char *e = strchr(p, '\n'); if (e) *e = 0;
+		char line[512]; strcpy(line, p);
+		if (e) p = e + 1; else p = 0;
+		int l = (int)strlen(line); while (l > 0 && (line[l - 1] == '\r' || line[l - 1] == ' ')) line[--l] = 0;
+		if (!l || line[0] == '#') continue;
+		char name[256]; unsigned int crc = 0;
+		if (sscanf(line, "%255s %u", name, &crc) < 1) continue;
+		sprintf(path, "%s\\%s", argv[1], name);
+		Blob data = readAll(path);
+		numFiles = 0;
+		if (data.p) { Entry *en = putFile(name); en->data.Append(data.p, data.n); }
+		printf("CASE %s %u\n", name, crc);
+		try {
+			idAASFileLocal aas;
+			bool ok = aas.Load(name, crc);
+			printf("LOAD %d\n", ok ? 1 : 0);
+			if (ok) dump(aas);
+		} catch (idException &ex) {
+			printf("ERR |%s|\n", esc(ex.error));
+		}
+	}
+	return 0;
+}

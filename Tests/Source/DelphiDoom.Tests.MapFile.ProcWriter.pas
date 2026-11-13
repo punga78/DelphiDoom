@@ -191,9 +191,9 @@ begin
   try
     LLines := LinesOf(LFile);
     // 0 id, 1 empty, 2 model, 3 empty, 4 surface header, 5..7 the vertices, 8 and 9 the braces
-    Assert.AreEqual(3, Length(LLines[5].Split([') ('])));
-    Assert.AreEqual(3, Length(LLines[6].Split([') ('])));
-    Assert.AreEqual(1, Length(LLines[7].Split([') ('])));
+    Assert.AreEqual(3, Integer(Length(LLines[5].Split([') (']))));
+    Assert.AreEqual(3, Integer(Length(LLines[6].Split([') (']))));
+    Assert.AreEqual(1, Integer(Length(LLines[7].Split([') (']))));
     Assert.AreEqual('}', LLines[8]);
   finally
     LFile.Free;

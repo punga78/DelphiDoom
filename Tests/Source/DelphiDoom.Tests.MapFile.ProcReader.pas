@@ -211,7 +211,7 @@ begin
     Assert.AreEqual(1, LFile.ShadowModels.Count);
     LShadow := LFile.ShadowModels[0];
     Assert.AreEqual('_prelight_light1', string(LShadow.Name));
-    Assert.AreEqual(3, Length(LShadow.Vertices));
+    Assert.AreEqual(3, Integer(Length(LShadow.Vertices)));
     Assert.AreEqual(3, LShadow.NumShadowIndexesNoCaps);
     Assert.AreEqual(3, LShadow.NumShadowIndexesNoFrontCaps);
     Assert.AreEqual(7, LShadow.ShadowCapPlaneBits);
