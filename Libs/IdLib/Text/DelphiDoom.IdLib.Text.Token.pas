@@ -62,6 +62,8 @@ type
     procedure NumberValue;
     /// <summary>Sets the integer and float values (the lexer clears them when it starts a number)</summary>
     procedure ClearValues;
+    /// <summary>Sets the integer and float values directly (idParser fills them for the tokens it makes)</summary>
+    procedure SetValues(const AIntValue: Cardinal; const AFloatValue: Double);
   end;
 
 implementation
@@ -126,6 +128,12 @@ procedure TIdToken.ClearValues;
 begin
   FIntValue := 0;
   FFloatValue := 0;
+end;
+
+procedure TIdToken.SetValues(const AIntValue: Cardinal; const AFloatValue: Double);
+begin
+  FIntValue := AIntValue;
+  FFloatValue := AFloatValue;
 end;
 
 function TIdToken.GetDoubleValue: Double;
