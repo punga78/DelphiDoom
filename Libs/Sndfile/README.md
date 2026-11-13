@@ -18,3 +18,5 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+- Direzione della dipendenza (issue #222): `Libs\Sound` usa `Libs\Sndfile`, mai il contrario. L'engine predefinito del provider lo da' un `ISndfileFactory` (`DelphiDoom.Sndfile.Factory.Intf`) registrato da `DelphiDoom.Sound.EngineFactory`; senza fabbrica `TSndfileProvider.Client` solleva `ESndfileException` (se non si e' chiamato `Use`). Controllo: `Tools\Verifica\222\Controlla-Cicli.ps1`.

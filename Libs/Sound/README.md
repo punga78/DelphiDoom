@@ -17,3 +17,5 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+- Direzione della dipendenza (issue #222): `Sound` usa `Libs\Sndfile` (contratto `ISndfile` e `ISndfileFactory`); `Sndfile` non usa `Sound`. `DelphiDoom.Sound.EngineFactory` registra il motore in Pascal come predefinito del provider.

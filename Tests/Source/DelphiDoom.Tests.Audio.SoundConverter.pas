@@ -31,6 +31,10 @@ type
     [Test]
     procedure TestProviderReleaseThenClientCreatesANewOne;
     [Test]
+    procedure TestProviderUsesTheRegisteredFactory;
+    [Test]
+    procedure TestProviderWithoutFactoryRaises;
+    [Test]
     procedure TestWavIsConvertedToAnEquivalentWav;
     [Test]
     procedure TestConvertedWavKeepsTheSampleRate;
@@ -45,9 +49,24 @@ type
 implementation
 
 uses
-  DelphiDoom.Sndfile.Intf, DelphiDoom.Sound.Factory,
+  DelphiDoom.Sndfile.Intf, DelphiDoom.Sndfile.Factory.Intf,
+  DelphiDoom.Sound.Factory, DelphiDoom.Sound.EngineFactory,
   DelphiDoom.Sndfile.Provider, DelphiDoom.Audio.SoundConverter,
   DelphiDoom.Audio.WavBuilder, DelphiDoom.Tests.Sndfile.Wav;
+
+type
+  // fake: counts the engines it is asked for
+  TCountingFactory = class(TInterfacedObject, ISndfileFactory)
+  public
+    Count: Integer;
+    function CreateEngine: ISndfile;
+  end;
+
+function TCountingFactory.CreateEngine: ISndfile;
+begin
+  Inc(Count);
+  Result := TSoundFactory.CreateEngine;
+end;
 
 { TTestSoundConverter }
 
@@ -85,6 +104,37 @@ begin
   TSndfileProvider.Client;
   TSndfileProvider.Release;
   Assert.IsTrue(TSndfileProvider.Client.Version <> '');
+end;
+
+procedure TTestSoundConverter.TestProviderUsesTheRegisteredFactory;
+var
+  LFactory: TCountingFactory;
+  LHolder: ISndfileFactory;
+begin
+  LFactory := TCountingFactory.Create;
+  LHolder := LFactory;
+  try
+    TSndfileProvider.UseFactory(LHolder);
+    Assert.IsTrue(TSndfileProvider.Client.Version <> '');
+    Assert.AreEqual(1, LFactory.Count);
+  finally
+    TSndfileProvider.UseFactory(TSoundEngineFactory.Create);
+  end;
+end;
+
+procedure TTestSoundConverter.TestProviderWithoutFactoryRaises;
+begin
+  TSndfileProvider.UseFactory(nil);
+  try
+    Assert.WillRaise(
+      procedure
+      begin
+        TSndfileProvider.Client;
+      end,
+      ESndfileException);
+  finally
+    TSndfileProvider.UseFactory(TSoundEngineFactory.Create);
+  end;
 end;
 
 procedure TTestSoundConverter.TestWavIsConvertedToAnEquivalentWav;
