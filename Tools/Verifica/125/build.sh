@@ -39,10 +39,15 @@ rng() { # rng <file> <first function line pattern> <next function line pattern>
 } > "$OUT/tr_font_original2.inc"
 mv "$OUT/tr_font_original2.inc" "$OUT/tr_font_original.inc"
 cp "$HERE/stubs.c" "$HERE/uiparse.c" "$OUT/"
-"$KIT/gcc.exe" -O1 -w -ffp-contract=off -mlong-double-64 -std=gnu89 -DBOTLIB -DMISSIONPACK \
-  -I"$OUT" -I"$CODE/ui" -I"$CODE/game" -I"$CODE/botlib" \
+FLAGS="-O1 -w -ffp-contract=off -mlong-double-64 -std=gnu89 -DBOTLIB -DMISSIONPACK -I$OUT -I$CODE/ui -I$CODE/game -I$CODE/botlib"
+# the input scenarios read the static state of ui_shared.c (itemCapture, captureFunc ...): the object is made
+# apart and those symbols are made global; the code is not touched
+"$KIT/gcc.exe" -c $FLAGS -o "$OUT/ui_shared.o" "$CODE/ui/ui_shared.c"
+"$KIT/objcopy.exe" --globalize-symbol=_itemCapture --globalize-symbol=_captureFunc --globalize-symbol=_captureData \
+  --globalize-symbol=_g_editingField --globalize-symbol=_g_editItem --globalize-symbol=_debugMode "$OUT/ui_shared.o"
+"$KIT/gcc.exe" $FLAGS \
   -o "$OUT/uiparse.exe" \
-  "$OUT/uiparse.c" "$OUT/stubs.c" "$CODE/ui/ui_shared.c" \
+  "$OUT/uiparse.c" "$OUT/stubs.c" "$OUT/ui_shared.o" \
   "$CODE/botlib/l_script.c" "$CODE/botlib/l_precomp.c" "$CODE/botlib/l_memory.c" \
   "$CODE/game/q_shared.c" -lm
 echo "built in $OUT"

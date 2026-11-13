@@ -1,0 +1,31 @@
+internal
+scan
+reg textures/a -1
+reg textures/a 3
+reg textures/a.tga -1
+reg Textures/B -1
+reg textures/c 2
+reg nofile/x -1
+reg nofile/x 4
+remapdump
+remap textures/a textures/b
+remapdump
+remap textures/a textures/b 1.5
+remap TEXTURES/A.jpg textures/c abc
+remapdump
+remap textures/b textures/b
+remapdump
+remap textures/c textures/c 7
+remapdump
+remap nofile/y textures/b
+remap nofile/y textures/b 0.25
+remapdump
+remap textures/a nofile/z
+remap textures/a nofile/z
+remap textures/a nofile/z -
+remapdump
+remap textures/d textures/a 2
+remap textures/e.tga textures/d
+remapdump
+remap textures/a textures/a
+remapdump

@@ -115,3 +115,16 @@ LCommands.Register;
 - `TDeclGameFileSource` (`IDeclSource` sopra `IGameFileSystem` di `Libs\Wad`: cartelle, PK4 e PK3, il primo della lista vince), `TDeclConsoleCommands` e `TDeclTypeCommands`, `IDeclStatistics` (i numeri di `listDecls`, implementata da `TDeclManager`).
 - Materiali: `IMaterialPersistence` (`Save` = `ReplaceSourceFileText`; `ReloadImages` consegna le immagini nominate a un `IMaterialImageReloader` del renderer, non ne carica).
 - Prova: `Tests\DelphiDoom.Tests.Decl` (408 test a 32 e a 64 bit, copertura 97%). I comandi non hanno un harness del C++ (`ListType` e `PrintType` si': nel golden del gestore). Dettagli, limiti e cosa resta: [CLAUDE.md](CLAUDE.md), sezione "File system, comandi di console e Save dei materiali".
+
+## Funzioni del tempo di shader (issue #119, seconda fetta)
+
+`DelphiDoom.Decl.Q3Shader.Calc.*`: le funzioni di `tr_shade_calc.c` come calcoli sui buffer, con il tempo come argomento: onde (`EvalWaveForm`, tabelle seno, quadrato, triangolo, dente di sega), colori (`RB_CalcWaveColor`, `RB_CalcWaveAlpha`, colori dell'entita'), coordinate di texture (`tcMod` stretch, turb, scale, scroll, transform, rotate; `tcGen` identity, texture, lightmap, vector, environment), deformazioni di vertici (wave, normals, bulge, move), rumore (`tr_noise.c`) e `R_RemapShader`. Si usano da `TQ3ShaderCalc` (che possiede tabelle e rumore):
+
+```pascal
+LCalc := TQ3ShaderCalc.Create;
+LTess.NumVertexes := 4; LTess.ShaderTime := 1.25;           // posizioni e normali: quattro Single per vertice
+LCalc.Deforms.Apply(LShader.GetData.Deforms[0], LTess);       // RB_DeformTessGeometry, un passo
+LCalc.TexCoords.Compute(LStage.Bundle, LTess, LTexCoords);   // tcGen e tcMod
+```
+
+Parita' esatta (bit a bit, a 32 e a 64 bit) con le vere funzioni di Quake III compilate con gcc; nebbia, illuminazione dei vertici e gli autosprite non sono portati. Dettagli, difetti e differenze: [CLAUDE.md](CLAUDE.md).

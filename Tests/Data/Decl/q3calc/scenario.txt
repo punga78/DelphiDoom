@@ -1,0 +1,510 @@
+# Scenario of the parity of the shader time functions (issue #119): see Tests/Data/Decl/README.md
+identity 1
+time 1234
+view 10.5 -20.25 30
+entity 200 100 50 25 0.375 -0.125
+verts 6 7
+shadertime 0
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 0.25
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 1.25
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 3.7
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime -0.4
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 123.456
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 100000.5
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 4000000000
+evalwave 0 0.5 0.75 0.125 1.5
+evalwave 1 0.5 0.75 0.125 1.5
+evalwave 2 0.5 0.75 0.125 1.5
+evalwave 3 0.5 0.75 0.125 1.5
+evalwave 4 0.5 0.75 0.125 1.5
+evalwave 5 0.5 0.75 0.125 1.5
+evalwave 6 0.5 0.75 0.125 1.5
+shadertime 2.375
+wavecolor 1 0.5 0.5 0 1
+wavecolor 1 0.25 2 0.3 0.7
+wavecolor 1 -3 1 0 1
+wavealpha 1 0.5 0.5 0 1
+wavealpha 1 0.9 0.4 0.2 2.5
+wavecolor 2 0.5 0.5 0 1
+wavecolor 2 0.25 2 0.3 0.7
+wavecolor 2 -3 1 0 1
+wavealpha 2 0.5 0.5 0 1
+wavealpha 2 0.9 0.4 0.2 2.5
+wavecolor 3 0.5 0.5 0 1
+wavecolor 3 0.25 2 0.3 0.7
+wavecolor 3 -3 1 0 1
+wavealpha 3 0.5 0.5 0 1
+wavealpha 3 0.9 0.4 0.2 2.5
+wavecolor 4 0.5 0.5 0 1
+wavecolor 4 0.25 2 0.3 0.7
+wavecolor 4 -3 1 0 1
+wavealpha 4 0.5 0.5 0 1
+wavealpha 4 0.9 0.4 0.2 2.5
+wavecolor 5 0.5 0.5 0 1
+wavecolor 5 0.25 2 0.3 0.7
+wavecolor 5 -3 1 0 1
+wavealpha 5 0.5 0.5 0 1
+wavealpha 5 0.9 0.4 0.2 2.5
+wavecolor 6 0.5 0.5 0 1
+wavecolor 6 0.25 2 0.3 0.7
+wavecolor 6 -3 1 0 1
+wavealpha 6 0.5 0.5 0 1
+wavealpha 6 0.9 0.4 0.2 2.5
+identity 0.5
+wavecolor 1 0.5 0.5 0 1
+wavecolor 6 0.5 0.5 0 1
+identity 1
+wavecolor 0 0.5 0.5 0 1
+wavealpha 0 0.5 0.5 0 1
+entcolor
+entonecolor
+entalpha
+entonealpha
+entity none
+entcolor
+entonecolor
+entalpha
+entonealpha
+entity 255 0 128 1 0.5 0.25
+time 1234
+shadertime 0.5
+verts 6 11
+deform 1 1 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 1 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 1 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 2 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 2 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 2 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 3 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 3 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 3 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 4 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 4 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 4 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 5 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 5 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 5 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 13
+deform 2 0 0 0.5 0 1.5 0 0 0 0 0 0 0
+verts 6 14
+deform 2 0 0 2 0 0.3 0 0 0 0 0 0 0
+verts 6 15
+deform 3 0 0 0 0 0 0 0.4 3 0.5 0 0 0
+verts 6 16
+deform 3 0 0 0 0 0 0 2 1.5 -2 0 0 0
+shadertime 7.125
+verts 6 11
+deform 1 1 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 1 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 1 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 2 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 2 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 2 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 3 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 3 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 3 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 4 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 4 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 4 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 11
+deform 1 5 0 3 0 0 0.02 0 0 0 0 0 0
+verts 6 11
+deform 1 5 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+verts 6 12
+deform 4 5 0.5 8 0.1 1 0 0 0 0 1 2 3
+verts 6 13
+deform 2 0 0 0.5 0 1.5 0 0 0 0 0 0 0
+verts 6 14
+deform 2 0 0 2 0 0.3 0 0 0 0 0 0 0
+verts 6 15
+deform 3 0 0 0 0 0 0 0.4 3 0.5 0 0 0
+verts 6 16
+deform 3 0 0 0 0 0 0 2 1.5 -2 0 0 0
+time 0
+verts 6 17
+deform 3 0 0 0 0 0 0 1 1 1 0 0 0
+verts 6 18
+deform 0 0 0 0 0 0 0 0 0 0 0 0 0
+verts 6 19
+deform 1 0 0 1 0 0 0 0 0 0 0 0 0
+verts 6 19
+deform 1 6 0 1 0 1 0 0 0 0 0 0 0
+verts 6 19
+deform 4 6 0 1 0 1 0 0 0 0 1 1 1
+# texture coordinates
+verts 6 21
+tcgen identity
+clearmods
+compute
+tcgen texture
+clearmods
+compute
+tcgen lightmap
+clearmods
+compute
+tcgen env
+clearmods
+compute
+tcgen vector
+tcvec 1 0 0 0 1 0.5
+compute
+tcgen texture
+shadertime 0
+clearmods
+texmod scroll 0.5 -0.25
+compute
+clearmods
+texmod scale 2 0.5
+compute
+clearmods
+texmod rotate 45
+compute
+clearmods
+texmod rotate -90
+compute
+clearmods
+texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+compute
+clearmods
+texmod entity
+compute
+clearmods
+texmod stretch 1 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 1 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 2 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 2 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 3 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 3 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 4 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 4 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 5 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 5 0 0.1 0 0.5
+compute
+clearmods
+texmod scroll 0.1 0.1
+texmod rotate 30
+texmod scale 0.5 2
+texmod turb 1 0 0.1 0.25 0.5
+compute
+shadertime 0.75
+clearmods
+texmod scroll 0.5 -0.25
+compute
+clearmods
+texmod scale 2 0.5
+compute
+clearmods
+texmod rotate 45
+compute
+clearmods
+texmod rotate -90
+compute
+clearmods
+texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+compute
+clearmods
+texmod entity
+compute
+clearmods
+texmod stretch 1 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 1 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 2 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 2 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 3 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 3 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 4 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 4 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 5 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 5 0 0.1 0 0.5
+compute
+clearmods
+texmod scroll 0.1 0.1
+texmod rotate 30
+texmod scale 0.5 2
+texmod turb 1 0 0.1 0.25 0.5
+compute
+shadertime 2.5
+clearmods
+texmod scroll 0.5 -0.25
+compute
+clearmods
+texmod scale 2 0.5
+compute
+clearmods
+texmod rotate 45
+compute
+clearmods
+texmod rotate -90
+compute
+clearmods
+texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+compute
+clearmods
+texmod entity
+compute
+clearmods
+texmod stretch 1 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 1 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 2 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 2 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 3 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 3 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 4 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 4 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 5 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 5 0 0.1 0 0.5
+compute
+clearmods
+texmod scroll 0.1 0.1
+texmod rotate 30
+texmod scale 0.5 2
+texmod turb 1 0 0.1 0.25 0.5
+compute
+shadertime -1.3
+clearmods
+texmod scroll 0.5 -0.25
+compute
+clearmods
+texmod scale 2 0.5
+compute
+clearmods
+texmod rotate 45
+compute
+clearmods
+texmod rotate -90
+compute
+clearmods
+texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+compute
+clearmods
+texmod entity
+compute
+clearmods
+texmod stretch 1 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 1 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 2 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 2 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 3 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 3 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 4 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 4 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 5 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 5 0 0.1 0 0.5
+compute
+clearmods
+texmod scroll 0.1 0.1
+texmod rotate 30
+texmod scale 0.5 2
+texmod turb 1 0 0.1 0.25 0.5
+compute
+shadertime 1000.125
+clearmods
+texmod scroll 0.5 -0.25
+compute
+clearmods
+texmod scale 2 0.5
+compute
+clearmods
+texmod rotate 45
+compute
+clearmods
+texmod rotate -90
+compute
+clearmods
+texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+compute
+clearmods
+texmod entity
+compute
+clearmods
+texmod stretch 1 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 1 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 2 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 2 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 3 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 3 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 4 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 4 0 0.1 0 0.5
+compute
+clearmods
+texmod stretch 5 1 0.5 0 0.5
+compute
+clearmods
+texmod turb 5 0 0.1 0 0.5
+compute
+clearmods
+texmod scroll 0.1 0.1
+texmod rotate 30
+texmod scale 0.5 2
+texmod turb 1 0 0.1 0.25 0.5
+compute
+clearmods
+texmod stretch 6 1 0.5 0 0.5
+compute
+clearmods
+texmod stretch 1 0 0 0 0
+compute
+tcgen env
+clearmods
+texmod rotate 10
+compute

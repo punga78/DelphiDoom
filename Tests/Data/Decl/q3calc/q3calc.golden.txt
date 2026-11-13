@@ -1,0 +1,1762 @@
+> identity 1
+> time 1234
+> view 10.5 -20.25 30
+> entity 200 100 50 25 0.375 -0.125
+> verts 6 7
+> shadertime 0
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3f83ef32 clamped 3f800000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3f600000 clamped 3f600000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f180000 clamped 3f180000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f940000 clamped 3f800000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 0.25
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3efed21e clamped 3efed21e
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval be800000 clamped 00000000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f600000 clamped 3f600000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f600000 clamped 3f600000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 1.25
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 3.7
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval be2d4eb0 clamped 00000000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval be800000 clamped 00000000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval bcc80000 clamped 00000000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f80c800 clamped 3f800000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f3e7000 clamped 3f3e7000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime -0.4
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3ec1c676 clamped 3ec1c676
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval be800000 clamped 00000000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3ed90000 clamped 3ed90000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f64e000 clamped 3f64e000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f5b2000 clamped 3f5b2000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 123.456
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3f99806d clamped 3f800000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3f898000 clamped 3f800000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f3b4000 clamped 3f3b4000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f826000 clamped 3f800000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 100000.5
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval bce10da0 clamped 00000000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval be800000 clamped 00000000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3e000000 clamped 3e000000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f940000 clamped 3f800000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3f180000 clamped 3f180000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 4000000000
+> evalwave 0 0.5 0.75 0.125 1.5
+ error
+> evalwave 1 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 2 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 3 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 4 0.5 0.75 0.125 1.5
+ eval 3f000000 clamped 3f000000
+> evalwave 5 0.5 0.75 0.125 1.5
+ eval 3fa00000 clamped 3f800000
+> evalwave 6 0.5 0.75 0.125 1.5
+ error
+> shadertime 2.375
+> wavecolor 1 0.5 0.5 0 1
+ result
+ c0 217 217 217 255
+ c1 217 217 217 255
+ c2 217 217 217 255
+ c3 217 217 217 255
+ c4 217 217 217 255
+ c5 217 217 217 255
+> wavecolor 1 0.25 2 0.3 0.7
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavecolor 1 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 1 0.5 0.5 0 1
+ result
+ c0 7 7 7 217
+ c1 7 7 7 217
+ c2 7 7 7 217
+ c3 7 7 7 217
+ c4 7 7 7 217
+ c5 7 7 7 217
+> wavealpha 1 0.9 0.4 0.2 2.5
+ result
+ c0 7 7 7 255
+ c1 7 7 7 255
+ c2 7 7 7 255
+ c3 7 7 7 255
+ c4 7 7 7 255
+ c5 7 7 7 255
+> wavecolor 2 0.5 0.5 0 1
+ result
+ c0 255 255 255 255
+ c1 255 255 255 255
+ c2 255 255 255 255
+ c3 255 255 255 255
+ c4 255 255 255 255
+ c5 255 255 255 255
+> wavecolor 2 0.25 2 0.3 0.7
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavecolor 2 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 2 0.5 0.5 0 1
+ result
+ c0 7 7 7 255
+ c1 7 7 7 255
+ c2 7 7 7 255
+ c3 7 7 7 255
+ c4 7 7 7 255
+ c5 7 7 7 255
+> wavealpha 2 0.9 0.4 0.2 2.5
+ result
+ c0 7 7 7 255
+ c1 7 7 7 255
+ c2 7 7 7 255
+ c3 7 7 7 255
+ c4 7 7 7 255
+ c5 7 7 7 255
+> wavecolor 3 0.5 0.5 0 1
+ result
+ c0 191 191 191 255
+ c1 191 191 191 255
+ c2 191 191 191 255
+ c3 191 191 191 255
+ c4 191 191 191 255
+ c5 191 191 191 255
+> wavecolor 3 0.25 2 0.3 0.7
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavecolor 3 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 3 0.5 0.5 0 1
+ result
+ c0 7 7 7 191
+ c1 7 7 7 191
+ c2 7 7 7 191
+ c3 7 7 7 191
+ c4 7 7 7 191
+ c5 7 7 7 191
+> wavealpha 3 0.9 0.4 0.2 2.5
+ result
+ c0 7 7 7 255
+ c1 7 7 7 255
+ c2 7 7 7 255
+ c3 7 7 7 255
+ c4 7 7 7 255
+ c5 7 7 7 255
+> wavecolor 4 0.5 0.5 0 1
+ result
+ c0 175 175 175 255
+ c1 175 175 175 255
+ c2 175 175 175 255
+ c3 175 175 175 255
+ c4 175 175 175 255
+ c5 175 175 175 255
+> wavecolor 4 0.25 2 0.3 0.7
+ result
+ c0 255 255 255 255
+ c1 255 255 255 255
+ c2 255 255 255 255
+ c3 255 255 255 255
+ c4 255 255 255 255
+ c5 255 255 255 255
+> wavecolor 4 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 4 0.5 0.5 0 1
+ result
+ c0 7 7 7 175
+ c1 7 7 7 175
+ c2 7 7 7 175
+ c3 7 7 7 175
+ c4 7 7 7 175
+ c5 7 7 7 175
+> wavealpha 4 0.9 0.4 0.2 2.5
+ result
+ c0 7 7 7 243
+ c1 7 7 7 243
+ c2 7 7 7 243
+ c3 7 7 7 243
+ c4 7 7 7 243
+ c5 7 7 7 243
+> wavecolor 5 0.5 0.5 0 1
+ result
+ c0 207 207 207 255
+ c1 207 207 207 255
+ c2 207 207 207 255
+ c3 207 207 207 255
+ c4 207 207 207 255
+ c5 207 207 207 255
+> wavecolor 5 0.25 2 0.3 0.7
+ result
+ c0 83 83 83 255
+ c1 83 83 83 255
+ c2 83 83 83 255
+ c3 83 83 83 255
+ c4 83 83 83 255
+ c5 83 83 83 255
+> wavecolor 5 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 5 0.5 0.5 0 1
+ result
+ c0 7 7 7 207
+ c1 7 7 7 207
+ c2 7 7 7 207
+ c3 7 7 7 207
+ c4 7 7 7 207
+ c5 7 7 7 207
+> wavealpha 5 0.9 0.4 0.2 2.5
+ result
+ c0 7 7 7 255
+ c1 7 7 7 255
+ c2 7 7 7 255
+ c3 7 7 7 255
+ c4 7 7 7 255
+ c5 7 7 7 255
+> wavecolor 6 0.5 0.5 0 1
+ result
+ c0 125 125 125 255
+ c1 125 125 125 255
+ c2 125 125 125 255
+ c3 125 125 125 255
+ c4 125 125 125 255
+ c5 125 125 125 255
+> wavecolor 6 0.25 2 0.3 0.7
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavecolor 6 -3 1 0 1
+ result
+ c0 0 0 0 255
+ c1 0 0 0 255
+ c2 0 0 0 255
+ c3 0 0 0 255
+ c4 0 0 0 255
+ c5 0 0 0 255
+> wavealpha 6 0.5 0.5 0 1
+ error
+> wavealpha 6 0.9 0.4 0.2 2.5
+ error
+> identity 0.5
+> wavecolor 1 0.5 0.5 0 1
+ result
+ c0 108 108 108 255
+ c1 108 108 108 255
+ c2 108 108 108 255
+ c3 108 108 108 255
+ c4 108 108 108 255
+ c5 108 108 108 255
+> wavecolor 6 0.5 0.5 0 1
+ result
+ c0 125 125 125 255
+ c1 125 125 125 255
+ c2 125 125 125 255
+ c3 125 125 125 255
+ c4 125 125 125 255
+ c5 125 125 125 255
+> identity 1
+> wavecolor 0 0.5 0.5 0 1
+ error
+> wavealpha 0 0.5 0.5 0 1
+ error
+> entcolor
+ result
+ c0 200 100 50 25
+ c1 200 100 50 25
+ c2 200 100 50 25
+ c3 200 100 50 25
+ c4 200 100 50 25
+ c5 200 100 50 25
+> entonecolor
+ result
+ c0 55 155 205
+ c1 55 155 205
+ c2 55 155 205
+ c3 55 155 205
+ c4 55 155 205
+ c5 55 155 205
+> entalpha
+ result
+ c0 7 7 7 25
+ c1 7 7 7 25
+ c2 7 7 7 25
+ c3 7 7 7 25
+ c4 7 7 7 25
+ c5 7 7 7 25
+> entonealpha
+ result
+ c0 7 7 7 230
+ c1 7 7 7 230
+ c2 7 7 7 230
+ c3 7 7 7 230
+ c4 7 7 7 230
+ c5 7 7 7 230
+> entity none
+> entcolor
+ result
+ c0 7 7 7 7
+ c1 7 7 7 7
+ c2 7 7 7 7
+ c3 7 7 7 7
+ c4 7 7 7 7
+ c5 7 7 7 7
+> entonecolor
+ result
+ c0 7 7 7
+ c1 7 7 7
+ c2 7 7 7
+ c3 7 7 7
+ c4 7 7 7
+ c5 7 7 7
+> entalpha
+ result
+ c0 7 7 7 7
+ c1 7 7 7 7
+ c2 7 7 7 7
+ c3 7 7 7 7
+ c4 7 7 7 7
+ c5 7 7 7 7
+> entonealpha
+ result
+ c0 7 7 7 7
+ c1 7 7 7 7
+ c2 7 7 7 7
+ c3 7 7 7 7
+ c4 7 7 7 7
+ c5 7 7 7 7
+> entity 255 0 128 1 0.5 0.25
+> time 1234
+> shadertime 0.5
+> verts 6 11
+> deform 1 1 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 1 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 418b1857 c17fc53a c19259f5 bf3d5000 be934000 3ee4b000
+ v1 c227dd9d c271c426 c1ab82ef bf5bd400 be70b000 3f7c5400
+ v2 42139eb5 c2337d5c 4235c221 bece2800 bf756400 3f191800
+ v3 c253070f 42034ada c23ce00a bddfc000 3f455400 3f2c2400
+ v4 c1442da6 c2671e31 c2635cd2 bf68b800 bdfda000 bc3e0000
+ v5 c080a2b2 c1a2fc3b c21cbc97 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 1 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c23bab47 422c3d72 c1fdc3a8 3f7acc00 bf1b1c00 be78d000
+ v1 42373cb9 4069d728 c1b003a8 bf37dc00 3ee3b800 3ef44800
+ v2 426c94b9 c27c2a8e 41a83458 3f4b5000 be653000 be670000
+ v3 c28703a3 4207a172 4231522c 3d380000 be50b000 3f392800
+ v4 c2591f47 c2373e8e c288f4ea bea68800 bef52000 3efdc000
+ v5 3f2f2e50 424fbd72 411098af bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 2 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 418a6880 c1802700 c191efc0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 42137f10 c233c8b0 4235f120 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c1650280 c2683c70 c26377a0 bf68b800 bdfda000 bc3e0000
+ v5 c080b000 c1a2fc20 c21cbb80 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 2 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 418a6880 c1802700 c191efc0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 42137f10 c233c8b0 4235f120 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c12ad480 c2664130 c2634820 bf68b800 bdfda000 bc3e0000
+ v5 c080b000 c1a2fc20 c21cbb80 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 2 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c248d400 4211ec00 c2265c00 3f7acc00 bf1b1c00 be78d000
+ v1 422a1400 c03b4000 c1fef800 bf37dc00 3ee3b800 3ef44800
+ v2 425f6c00 c28b3e00 41328000 3f4b5000 be653000 be670000
+ v3 c28d9800 41daa000 4209d800 3d380000 be50b000 3f392800
+ v4 c2664800 c2519000 c29cb200 bea68800 bef52000 3efdc000
+ v5 c026c000 42356c00 bf550000 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 3 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 3 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 418cff18 c17e4aa0 c1937ff4 bf3d5000 be934000 3ee4b000
+ v1 c22774cb c271a775 c1ac7392 bf5bd400 be70b000 3f7c5400
+ v2 42141004 c2326f9b 423519d6 bece2800 bf756400 3f191800
+ v3 c252dd06 4202224c c23de2bd bddfc000 3f455400 3f2c2400
+ v4 c1456b86 c2672904 c2635dd6 bf68b800 bdfda000 bc3e0000
+ v5 c07e8200 c1a2ff0a c21cd998 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 3 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c2359400 42386c00 c1d93800 3f7acc00 bf1b1c00 be78d000
+ v1 423d5400 40d66000 c18b7800 bf37dc00 3ee3b800 3ef44800
+ v2 4272ac00 c26ffc00 41ccc000 3f4b5000 be653000 be670000
+ v3 c283f800 4213d000 42439800 3d380000 be50b000 3f392800
+ v4 c2530800 c22b1000 c27fa400 bea68800 bef52000 3efdc000
+ v5 400d4000 425bec00 4159b000 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 4 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 4 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 4193ede6 c178e628 c197afed bf3d5000 be934000 3ee4b000
+ v1 c226e9af c2718161 c1adb2ed bf5bd400 be70b000 3f7c5400
+ v2 4215c54b c22e5e9d 42329062 bece2800 bf756400 3f191800
+ v3 c2529a2a 42004a8f c23f7e43 bddfc000 3f455400 3f2c2400
+ v4 c1646282 c26836fd c263771d bf68b800 bdfda000 bc3e0000
+ v5 c03bd880 c1a342ca c21f9546 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 4 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c215a400 42784c00 c04cc000 3f7acc00 bf1b1c00 be78d000
+ v1 425d4400 41b55800 40d0a000 bf37dc00 3ee3b800 3ef44800
+ v2 42894e00 c2301c00 42463000 3f4b5000 be653000 be670000
+ v3 c2680000 4253b000 4291b400 3d380000 be50b000 3f392800
+ v4 c2331800 c1d66000 c21fd400 bea68800 bef52000 3efdc000
+ v5 41231000 428de600 42163c00 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 5 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 418a6880 c1802700 c191efc0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 42137f10 c233c8b0 4235f120 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c1650280 c2683c70 c26377a0 bf68b800 bdfda000 bc3e0000
+ v5 c080b000 c1a2fc20 c21cbb80 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 5 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 418cb81a c17e81d8 c1935513 bf3d5000 be934000 3ee4b000
+ v1 c22d6b91 c273495f c19ec294 bf5bd400 be70b000 3f7c5400
+ v2 42147175 c23187a3 4234891e bece2800 bf756400 3f191800
+ v3 c2534d56 42053ab1 c23b2f7d bddfc000 3f455400 3f2c2400
+ v4 c1488b7e c2674443 c2636063 bf68b800 bdfda000 bc3e0000
+ v5 c06b2780 c1a312b6 c21da4ba bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 5 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c21c0400 426b8c00 c0ff6000 3f7acc00 bf1b1c00 be78d000
+ v1 4256e400 419bd800 3fde8000 bf37dc00 3ee3b800 3ef44800
+ v2 42861e00 c23cdc00 42331000 3f4b5000 be653000 be670000
+ v3 c26e6000 4246f000 42882400 3d380000 be50b000 3f392800
+ v4 c2397800 c1efe000 c232f400 bea68800 bef52000 3efdc000
+ v5 41099000 42878600 42031c00 bee13000 3ef3f800 3f663c00
+> verts 6 13
+> deform 2 0 0 0.5 0 1.5 0 0 0 0 0 0 0
+ result
+ v0 41b89000 c11e3000 c194d000 3edb4d3f bf2fff7e bf159d23
+ v1 414dd000 c22ee800 40802000 bf200c82 bf341d60 beacf20b
+ v2 c21d7800 42734c00 41bcf800 bdde90c2 3ee51828 3f632c74
+ v3 4257b800 42560800 420a6800 3cb5242a 3f3ee03b 3f2a618a
+ v4 421dcc00 c188c000 c25b7800 3ead4194 bf22b6cb bf310c4a
+ v5 413a9000 41527000 c2304800 be1f8e10 3f43d8cf bf1f8352
+> verts 6 14
+> deform 2 0 0 2 0 0.3 0 0 0 0 0 0 0
+ result
+ v0 c21ca000 42630000 c190e000 3f4b67ed 3e2e4115 3f14859b
+ v1 c1c25800 41e3c800 418b0800 bee327a5 bf5ea8b9 be54fe1f
+ v2 c1618000 42411800 41595000 bf055577 bf59fc52 3c8d07db
+ v3 422c9c00 c27d4000 4143e000 3f1512c6 3c1d9852 3f4ffc19
+ v4 3f780000 404d4000 c2578800 3f49f400 3f1c4c40 bd3dd709
+ v5 41936800 c2083400 41918000 bf0561a6 bf2c68e4 bf057d03
+> verts 6 15
+> deform 3 0 0 0 0 0 0 0.4 3 0.5 0 0 0
+ result
+ v0 41d78541 c06508d8 c192d10b 3e0c6000 3ee0e800 be9fc000
+ v1 c2788225 c1d1c59a 4203bad6 be97e000 3ef7f000 3f739c00
+ v2 413ef138 420ebce7 400b93f2 3ec4e800 bc9f8000 bf325000
+ v3 4205f470 c248e629 c1033a06 3f01e800 3f5f5800 3f603800
+ v4 c2181a92 41bf4761 c253887e bf12e800 3ee9b800 3c8b8000
+ v5 41c98800 423af800 c23e3400 3ec83000 be266000 3e3f3000
+> verts 6 16
+> deform 3 0 0 0 0 0 0 2 1.5 -2 0 0 0
+ result
+ v0 c20ef2e0 42788592 c181b68d be133000 3df7e000 3f7f9000
+ v1 41eb6fe7 42343c7c 423021fb be1fe000 bf560000 3ee2d800
+ v2 42144c54 41b0ef44 c0e66657 bed65800 3f371c00 3ef5b000
+ v3 41a7d410 c2236d7b c2056592 3f296000 bdd14000 3f6d3c00
+ v4 42500fa4 422faad5 c24d42a0 3c230000 3dd00000 3f063400
+ v5 4200b723 beb99d1e 416eb47b 3f2afc00 3e951800 3f1da800
+> shadertime 7.125
+> verts 6 11
+> deform 1 1 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 1 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 4196db90 c1769f0f c19974b8 bf3d5000 be934000 3ee4b000
+ v1 c22c929c c2730dfc c1a0b4a5 bf5bd400 be70b000 3f7c5400
+ v2 4218b969 c2275696 422e2d63 bece2800 bf756400 3f191800
+ v3 c252f9f0 4202ee4a c23d30c9 bddfc000 3f455400 3f2c2400
+ v4 c16414c5 c2683457 c26376de bf68b800 bdfda000 bc3e0000
+ v5 c006f3a5 c1a3788d c221c072 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 1 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c2093a3d 42888fc3 40c38a40 3f7acc00 bf1b1c00 be78d000
+ v1 4269adc3 41e6ff0b 417d4520 bf37dc00 3ee3b800 3ef44800
+ v2 428f82e1 c217487a 426b6d48 3f4b5000 be653000 be670000
+ v3 c25b963d 426c8386 42a452a4 3d380000 be50b000 3f392800
+ v4 c226ae3d c1a4b8f5 c1f52d70 bea68800 bef52000 3efdc000
+ v5 4154b70b 429a4fc3 423b7948 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 2 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 418a6880 c1802700 c191efc0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 42137f10 c233c8b0 4235f120 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c1650280 c2683c70 c26377a0 bf68b800 bdfda000 bc3e0000
+ v5 c080b000 c1a2fc20 c21cbb80 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 2 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 41a21280 c16de600 c1a03ac0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 4219f050 c2247270 422c5fa0 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c1650280 c2683c70 c26377a0 bf68b800 bdfda000 bc3e0000
+ v5 bf93c000 c1a3b6a0 c2244180 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 2 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c208d400 4288f600 40cd2000 3f7acc00 bf1b1c00 be78d000
+ v1 426a1400 41e89800 41810800 bf37dc00 3ee3b800 3ef44800
+ v2 428fb600 c2167c00 426ca000 3f4b5000 be653000 be670000
+ v3 c25b3000 426d5000 42a4ec00 3d380000 be50b000 3f392800
+ v4 c2264800 c1a32000 c1f2c800 bea68800 bef52000 3efdc000
+ v5 41565000 429ab600 423cac00 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 3 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 3 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 41969c28 c176d060 c1994e6c bf3d5000 be934000 3ee4b000
+ v1 c22b2fac c272acd4 c1a3e378 bf5bd400 be70b000 3f7c5400
+ v2 421816cc c228d9b3 422f1ee6 bece2800 bf756400 3f191800
+ v3 c252d369 4201de77 c23e1dea bddfc000 3f455400 3f2c2400
+ v4 c16059d1 c26813d1 c26373d2 bf68b800 bdfda000 bc3e0000
+ v5 c011e9c0 c1a36d69 c2214d65 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 3 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c20c1400 4285b600 407e4000 3f7acc00 bf1b1c00 be78d000
+ v1 4266d400 41db9800 415b1000 bf37dc00 3ee3b800 3ef44800
+ v2 428e1600 c21cfc00 4262e000 3f4b5000 be653000 be670000
+ v3 c25e7000 4266d000 42a00c00 3d380000 be50b000 3f392800
+ v4 c2298800 c1b02000 c2032400 bea68800 bef52000 3efdc000
+ v5 41495000 42977600 4232ec00 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 4 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 419c2800 c1728000 c19ca800 bf3d5000 be934000 3ee4b000
+ v1 c2234c00 c2708400 c1b60000 bf5bd400 be70b000 3f7c5400
+ v2 42185400 c2284800 422ec400 bece2800 bf756400 3f191800
+ v3 c2521400 41f93000 c242b800 bddfc000 3f455400 3f2c2400
+ v4 c1396000 c266c000 c2635400 bf68b800 bdfda000 bc3e0000
+ v5 bfef8000 c1a38800 c2226000 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 4 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 41903b56 c17bc668 c1957435 bf3d5000 be934000 3ee4b000
+ v1 c2290d89 c2721757 c1a8c93a bf5bd400 be70b000 3f7c5400
+ v2 4214c399 c230c417 42340f1e bece2800 bf756400 3f191800
+ v3 c252dfde 42023656 c23dd142 bddfc000 3f455400 3f2c2400
+ v4 c1505b6c c2678860 c26366c3 bf68b800 bdfda000 bc3e0000
+ v5 c0586d90 c1a325be c21e6947 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 4 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c221a400 42604c00 c1433000 3f7acc00 bf1b1c00 be78d000
+ v1 42514400 41855800 c01ec000 bf37dc00 3ee3b800 3ef44800
+ v2 42834e00 c2481c00 42223000 3f4b5000 be653000 be670000
+ v3 c2740000 423bb000 427f6800 3d380000 be50b000 3f392800
+ v4 c23f1800 c2033000 c243d400 bea68800 bef52000 3efdc000
+ v5 40e62000 4281e600 41e47800 bee13000 3ef3f800 3f663c00
+> verts 6 11
+> deform 1 5 0 3 0 0 0.02 0 0 0 0 0 0
+ result
+ v0 418a6880 c1802700 c191efc0 bf3d5000 be934000 3ee4b000
+ v1 c22d99f0 c2735610 c19e5820 bf5bd400 be70b000 3f7c5400
+ v2 42137f10 c233c8b0 4235f120 bece2800 bf756400 3f191800
+ v3 c25363a0 4205d7f0 c23aa650 bddfc000 3f455400 3f2c2400
+ v4 c1650280 c2683c70 c26377a0 bf68b800 bdfda000 bc3e0000
+ v5 c080b000 c1a2fc20 c21cbb80 bf378000 3cba8000 3ef0c000
+> verts 6 11
+> deform 1 5 1 2 0.25 0.5 0.02 0 0 0 0 0 0
+ result
+ v0 41906aaa c17ba198 c19590cb bf3d5000 be934000 3ee4b000
+ v1 c22b47b7 c272b369 c1a3ac46 bf5bd400 be70b000 3f7c5400
+ v2 42157327 c22f2229 42330a62 bece2800 bf756400 3f191800
+ v3 c25307a2 42034eea c23cdc7e bddfc000 3f455400 3f2c2400
+ v4 c15c9294 c267f2e0 c26370bd bf68b800 bdfda000 bc3e0000
+ v5 c04e9270 c1a32fc2 c21ed0b9 bf378000 3cba8000 3ef0c000
+> verts 6 12
+> deform 4 5 0.5 8 0.1 1 0 0 0 0 1 2 3
+ result
+ v0 c2100400 4281c600 3f828000 3f7acc00 bf1b1c00 be78d000
+ v1 4262e400 41cbd800 412bd000 bf37dc00 3ee3b800 3ef44800
+ v2 428c1e00 c224dc00 42571000 3f4b5000 be653000 be670000
+ v3 c2626000 425ef000 429a2400 3d380000 be50b000 3f392800
+ v4 c22d7800 c1bfe000 c20ef400 bea68800 bef52000 3efdc000
+ v5 41399000 42938600 42271c00 bee13000 3ef3f800 3f663c00
+> verts 6 13
+> deform 2 0 0 0.5 0 1.5 0 0 0 0 0 0 0
+ result
+ v0 41b89000 c11e3000 c194d000 3ed120ff bf1c9471 bf2ccbe5
+ v1 414dd000 c22ee800 40802000 bf3103b6 bf364b9b bdf4ebf8
+ v2 c21d7800 42734c00 41bcf800 bbc51f8c 3e98f5ca 3f7443cd
+ v3 4257b800 42560800 420a6800 3e11c319 3f2c240f 3f39e694
+ v4 421dcc00 c188c000 c25b7800 3d670c32 bf2edce0 bf39fe0f
+ v5 413a9000 41527000 c2304800 bd828e2c 3f43993c bf2433ae
+> verts 6 14
+> deform 2 0 0 2 0 0.3 0 0 0 0 0 0 0
+ result
+ v0 c21ca000 42630000 c190e000 3e69b1e2 3f77e07a bdcf7c75
+ v1 c1c25800 41e3c800 418b0800 bc0202b3 bf18dc7f bf4d1b9f
+ v2 c1618000 42411800 41595000 bf57ad71 bf048a03 be0c64c5
+ v3 422c9c00 c27d4000 4143e000 bf3e5ae7 bf07b080 becedf08
+ v4 3f780000 404d4000 c2578800 3f52716e 3f1127a7 bd10115c
+ v5 41936800 c2083400 41918000 3f63f0f0 bec23a88 3e7defee
+> verts 6 15
+> deform 3 0 0 0 0 0 0 0.4 3 0.5 0 0 0
+ result
+ v0 41d78541 c06508d8 c192d10b 3e0c6000 3ee0e800 be9fc000
+ v1 c2788225 c1d1c59a 4203bad6 be97e000 3ef7f000 3f739c00
+ v2 413ef138 420ebce7 400b93f2 3ec4e800 bc9f8000 bf325000
+ v3 4205f470 c248e629 c1033a06 3f01e800 3f5f5800 3f603800
+ v4 c2181a92 41bf4761 c253887e bf12e800 3ee9b800 3c8b8000
+ v5 41c98800 423af800 c23e3400 3ec83000 be266000 3e3f3000
+> verts 6 16
+> deform 3 0 0 0 0 0 0 2 1.5 -2 0 0 0
+ result
+ v0 c20ef2e0 42788592 c181b68d be133000 3df7e000 3f7f9000
+ v1 41eb6fe7 42343c7c 423021fb be1fe000 bf560000 3ee2d800
+ v2 42144c54 41b0ef44 c0e66657 bed65800 3f371c00 3ef5b000
+ v3 41a7d410 c2236d7b c2056592 3f296000 bdd14000 3f6d3c00
+ v4 42500fa4 422faad5 c24d42a0 3c230000 3dd00000 3f063400
+ v5 4200b723 beb99d1e 416eb47b 3f2afc00 3e951800 3f1da800
+> time 0
+> verts 6 17
+> deform 3 0 0 0 0 0 0 1 1 1 0 0 0
+ result
+ v0 41f4bd99 3f5a7f9e c1878ffb bed96800 be4a0000 3e9e0000
+ v1 c0f7eb3e c12c98ab 4266491d bc800000 be1fe000 bd860000
+ v2 42793796 41237317 c1863f1b 3f473800 bf0cc800 beb00000
+ v3 41270559 c1f1b651 c25d35bc 3f50d800 3f6c5800 3f7a4400
+ v4 41595c52 c27fb49e c24c256f 3f180000 be81b000 bf77f800
+ v5 421e6602 c23be0e2 c24fabcc 3f71e000 3f3eb000 bf748000
+> verts 6 18
+> deform 0 0 0 0 0 0 0 0 0 0 0 0 0
+ result
+ v0 c2003c00 c272d800 c1812800 bf349800 bf03fc00 bec31800
+ v1 c233ac00 42751800 c2647400 3dffe000 3f061000 bf12f000
+ v2 c223fc00 bff78000 c1d48000 bccd0000 3e3d4000 3f552400
+ v3 3d500000 c194c000 424b3800 3f785000 bd524000 bf78b800
+ v4 c1c7b000 c22e6800 c247cc00 bf528c00 bf1bb400 beec4800
+ v5 4235f000 42048800 4133c000 bf473800 bf4d2c00 bf06a400
+> verts 6 19
+> deform 1 0 0 1 0 0 0 0 0 0 0 0 0
+ error
+> verts 6 19
+> deform 1 6 0 1 0 1 0 0 0 0 0 0 0
+ error
+> verts 6 19
+> deform 4 6 0 1 0 1 0 0 0 0 1 1 1
+ error
+> verts 6 21
+> tcgen identity
+> clearmods
+> compute
+ result
+ t0 00000000 00000000
+ t1 00000000 00000000
+ t2 00000000 00000000
+ t3 00000000 00000000
+ t4 00000000 00000000
+ t5 00000000 00000000
+> tcgen texture
+> clearmods
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> tcgen lightmap
+> clearmods
+> compute
+ result
+ t0 3ffb7400 bd690000
+ t1 3fa64800 3ed70000
+ t2 3fe35800 bfec9c00
+ t3 3e572000 be5be000
+ t4 becb1000 3fd62000
+ t5 bf4ec000 bf807000
+> tcgen env
+> clearmods
+> compute
+ result
+ t0 3eaa9f08 3f01759a
+ t1 3f3acff8 3f4ea17a
+ t2 3f1a9984 3f46bb3e
+ t3 3f8f5845 3f012d32
+ t4 3ef4ba46 3e8664bb
+ t5 3f63a08c 3f0edb44
+> tcgen vector
+> tcvec 1 0 0 0 1 0.5
+> compute
+ result
+ t0 42151000 40770000
+ t1 c1e31800 41561800
+ t2 420b5000 c287d900
+ t3 c2011800 40da0000
+ t4 c1468000 c0c69000
+ t5 c278e000 c1178000
+> tcgen texture
+> shadertime 0
+> clearmods
+> texmod scroll 0.5 -0.25
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> clearmods
+> texmod scale 2 0.5
+> compute
+ result
+ t0 40683400 3ed28800
+ t1 bfb52800 3e042000
+ t2 c07d0800 bef9a800
+ t3 403d5800 3d1e4000
+ t4 4073e800 be056000
+ t5 3fe1d000 3f3e3000
+> clearmods
+> texmod rotate 45
+> compute
+ result
+ t0 3fe833f3 3f5287fa
+ t1 bf3527e8 3e84200a
+ t2 bffd07e7 bf79a7e2
+ t3 3fbd57f6 3d9e4044
+ t4 3ff3e7f2 be855fe2
+ t5 3f61cff8 3fbe2ff6
+> clearmods
+> texmod rotate -90
+> compute
+ result
+ t0 3fe833f3 3f5287fa
+ t1 bf3527e8 3e84200a
+ t2 bffd07e7 bf79a7e2
+ t3 3fbd57f6 3d9e4044
+ t4 3ff3e7f2 be855fe2
+ t5 3f61cff8 3fbe2ff6
+> clearmods
+> texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+> compute
+ result
+ t0 3f4d2b9a 3ff18c9a
+ t1 bea2fccd 3ed20266
+ t2 bf250466 bfe0e666
+ t3 3f51ff9a 3f2f8b33
+ t4 3f8f16cd 3e923e66
+ t5 3e2da666 40298dcd
+> clearmods
+> texmod entity
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> clearmods
+> texmod stretch 1 1 0.5 0 0.5
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> clearmods
+> texmod turb 1 0 0.1 0 0.5
+> compute
+ result
+ t0 3fe9ed6c 3f54426f
+ t1 bf3bfd98 3e8ab5e3
+ t2 bffe9981 bf7f93b7
+ t3 3fb9b32b 3dafd6a3
+ t4 3fef713c be8009ee
+ t5 3f50b944 3fbfad86
+> clearmods
+> texmod stretch 2 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 2 0 0.1 0 0.5
+> compute
+ result
+ t0 3fe9ed6c 3f54426f
+ t1 bf3bfd98 3e8ab5e3
+ t2 bffe9981 bf7f93b7
+ t3 3fb9b32b 3dafd6a3
+ t4 3fef713c be8009ee
+ t5 3f50b944 3fbfad86
+> clearmods
+> texmod stretch 3 1 0.5 0 0.5
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> clearmods
+> texmod turb 3 0 0.1 0 0.5
+> compute
+ result
+ t0 3fe9ed6c 3f54426f
+ t1 bf3bfd98 3e8ab5e3
+ t2 bffe9981 bf7f93b7
+ t3 3fb9b32b 3dafd6a3
+ t4 3fef713c be8009ee
+ t5 3f50b944 3fbfad86
+> clearmods
+> texmod stretch 4 1 0.5 0 0.5
+> compute
+ result
+ t0 3fe83400 3f528800
+ t1 bf352800 3e842000
+ t2 bffd0800 bf79a800
+ t3 3fbd5800 3d9e4000
+ t4 3ff3e800 be856000
+ t5 3f61d000 3fbe3000
+> clearmods
+> texmod turb 4 0 0.1 0 0.5
+> compute
+ result
+ t0 3fe9ed6c 3f54426f
+ t1 bf3bfd98 3e8ab5e3
+ t2 bffe9981 bf7f93b7
+ t3 3fb9b32b 3dafd6a3
+ t4 3fef713c be8009ee
+ t5 3f50b944 3fbfad86
+> clearmods
+> texmod stretch 5 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 5 0 0.1 0 0.5
+> compute
+ result
+ t0 3fe9ed6c 3f54426f
+ t1 bf3bfd98 3e8ab5e3
+ t2 bffe9981 bf7f93b7
+ t3 3fb9b32b 3dafd6a3
+ t4 3fef713c be8009ee
+ t5 3f50b944 3fbfad86
+> clearmods
+> texmod scroll 0.1 0.1
+> texmod rotate 30
+> texmod scale 0.5 2
+> texmod turb 1 0 0.1 0.25 0.5
+> compute
+ result
+ t0 3f80c83a 3fdf4cf5
+ t1 be83f6c3 3f1d81e6
+ t2 bf63a8b1 bfed3c41
+ t3 3f55cdfb 3e82212a
+ t4 3f85e696 bed7d610
+ t5 3f03c85f 40448aec
+> shadertime 0.75
+> clearmods
+> texmod scroll 0.5 -0.25
+> compute
+ result
+ t0 400c1a00 3fd14400
+ t1 beaa5000 3f890800
+ t2 bfcd0800 be26a000
+ t3 3fed5800 3f63c800
+ t4 4011f400 3f0d5000
+ t5 3fa0e800 40131800
+> clearmods
+> texmod scale 2 0.5
+> compute
+ result
+ t0 40683400 3ed28800
+ t1 bfb52800 3e042000
+ t2 c07d0800 bef9a800
+ t3 403d5800 3d1e4000
+ t4 4073e800 be056000
+ t5 3fe1d000 3f3e3000
+> clearmods
+> texmod rotate 45
+> compute
+ result
+ t0 3fe2ae16 3d354238
+ t1 bf23579a 3f76cadc
+ t2 c017e6b9 3f231d8e
+ t3 3f8a79c3 bec84d05
+ t4 3fa00d70 bf68369a
+ t5 3fae3608 3f8e0b50
+> clearmods
+> texmod rotate -90
+> compute
+ result
+ t0 3f339dc1 3feb29a0
+ t1 3e876b02 bf354ecb
+ t2 3f6c013f c0166a50
+ t3 3fa1ab84 3f9f490b
+ t4 3fde6083 3fc147e4
+ t5 be882c7e 3f9d2e72
+> clearmods
+> texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+> compute
+ result
+ t0 3f4d2b9a 3ff18c9a
+ t1 bea2fccd 3ed20266
+ t2 bf250466 bfe0e666
+ t3 3f51ff9a 3f2f8b33
+ t4 3f8f16cd 3e923e66
+ t5 3e2da666 40298dcd
+> clearmods
+> texmod entity
+> compute
+ result
+ t0 400c1a00 3f814400
+ t1 beaa5000 3ee42000
+ t2 bfcd0800 bf49a800
+ t3 3fed5800 3e879000
+ t4 4011f400 bd958000
+ t5 3fa0e800 3fd63000
+> clearmods
+> texmod stretch 1 1 0.5 0 0.5
+> compute
+ result
+ t0 3fbc57bc 3f3d02b1
+ t1 bec9150a 3ea46d2e
+ t2 bfaa5cd4 bf172ddb
+ t3 3f9ca8c7 3e40003b
+ t4 3fc4fe80 bd7ebca0
+ t5 3f484e9b 3f9d4874
+> clearmods
+> texmod turb 1 0 0.1 0 0.5
+> compute
+ result
+ t0 3fefedc8 3f63534c
+ t1 bf1ec101 3ea3472a
+ t2 bff2dc84 bf63b9c1
+ t3 3fc8a83b 3e10ddba
+ t4 3fff9919 be4a7770
+ t5 3f7b631a 3fc61995
+> clearmods
+> texmod stretch 2 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 2 0 0.1 0 0.5
+> compute
+ result
+ t0 3fefedc8 3f63534c
+ t1 bf1ec101 3ea3472a
+ t2 bff2dc84 bf63b9c1
+ t3 3fc8a83b 3e10ddba
+ t4 3fff9919 be4a7770
+ t5 3f7b631a 3fc61995
+> clearmods
+> texmod stretch 3 1 0.5 0 0.5
+> compute
+ result
+ t0 3fc69000 3f420666
+ t1 beeea667 3e9ce666
+ t2 bfbda000 bf2e2000
+ t3 3fa44667 3e25b333
+ t4 3fcfeccd bdde0002
+ t5 3f4e4000 3fa4f334
+> clearmods
+> texmod turb 3 0 0.1 0 0.5
+> compute
+ result
+ t0 3fefedc8 3f63534c
+ t1 bf1ec101 3ea3472a
+ t2 bff2dc84 bf63b9c1
+ t3 3fc8a83b 3e10ddba
+ t4 3fff9919 be4a7770
+ t5 3f7b631a 3fc61995
+> clearmods
+> texmod stretch 4 1 0.5 0 0.5
+> compute
+ result
+ t0 3fcda50e 3f458000
+ t1 bf045794 3e97af28
+ t2 bfcaf944 bf3e06bd
+ t3 3fa98d7a 3e137943
+ t4 3fd78000 be0fca1b
+ t5 3f525e51 3faa435e
+> clearmods
+> texmod turb 4 0 0.1 0 0.5
+> compute
+ result
+ t0 3fefedc8 3f63534c
+ t1 bf1ec101 3ea3472a
+ t2 bff2dc84 bf63b9c1
+ t3 3fc8a83b 3e10ddba
+ t4 3fff9919 be4a7770
+ t5 3f7b631a 3fc61995
+> clearmods
+> texmod stretch 5 1 0.5 0 0.5
+> compute
+ result
+ t0 3fc0279f 3f3ee186
+ t1 bed71863 3ea19e7a
+ t2 bfb18c31 bf1fbcf4
+ t3 3f9f8000 3e3630c3
+ t4 3fc9124a bda2aaac
+ t5 3f4a8618 3fa02493
+> clearmods
+> texmod turb 5 0 0.1 0 0.5
+> compute
+ result
+ t0 3fefedc8 3f63534c
+ t1 bf1ec101 3ea3472a
+ t2 bff2dc84 bf63b9c1
+ t3 3fc8a83b 3e10ddba
+ t4 3fff9919 be4a7770
+ t5 3f7b631a 3fc61995
+> clearmods
+> texmod scroll 0.1 0.1
+> texmod rotate 30
+> texmod scale 0.5 2
+> texmod turb 1 0 0.1 0.25 0.5
+> compute
+ result
+ t0 3f631b4a 3f1c561c
+ t1 beb4fcab 3fbbbe74
+ t2 bf97afe5 3e309842
+ t3 3f1fed11 bf03e771
+ t4 3f43991e bfbb3490
+ t5 3f2823d6 40226583
+> shadertime 2.5
+> clearmods
+> texmod scroll 0.5 -0.25
+> compute
+ result
+ t0 40041a00 3f994400
+ t1 beea5000 3f221000
+ t2 bfdd0800 bf19a800
+ t3 3fdd5800 3ee79000
+ t4 4009f400 3dea8000
+ t5 3f90e800 3fee3000
+> clearmods
+> texmod scale 2 0.5
+> compute
+ result
+ t0 40683400 3ed28800
+ t1 bfb52800 3e042000
+ t2 c07d0800 bef9a800
+ t3 403d5800 3d1e4000
+ t4 4073e800 be056000
+ t5 3fe1d000 3f3e3000
+> clearmods
+> texmod rotate 45
+> compute
+ result
+ t0 3e9adf79 bf567bc0
+ t1 3f3b56fe 3fdabf12
+ t2 3d8e0374 405654fc
+ t3 be8581e3 be7caf20
+ t4 bf3bf55e bf038906
+ t5 3fa25470 be6709e0
+> clearmods
+> texmod rotate -90
+> compute
+ result
+ t0 be480b9a bf28d496
+ t1 3f96bb6d 3fc38092
+ t2 3f98ef0a 4052eb02
+ t3 befa3efb 3dd157e0
+ t4 bf839fa2 3d185bc0
+ t5 3f6e593e beedd8bc
+> clearmods
+> texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+> compute
+ result
+ t0 3f4d2b9a 3ff18c9a
+ t1 bea2fccd 3ed20266
+ t2 bf250466 bfe0e666
+ t3 3f51ff9a 3f2f8b33
+ t4 3f8f16cd 3e923e66
+ t5 3e2da666 40298dcd
+> clearmods
+> texmod entity
+> compute
+ result
+ t0 40041a00 3fb94400
+ t1 beea5000 3f621000
+ t2 bfdd0800 beb35000
+ t3 3fdd5800 3f33c800
+ t4 4009f400 3ebaa000
+ t5 3f90e800 40071800
+> clearmods
+> texmod stretch 1 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ad 3f370556
+ t1 be9c3560 3ead6aa8
+ t2 bf935ab0 bef78ab7
+ t3 3f939002 3e5f6aa3
+ t4 3fb7f003 bbe55700
+ t5 3f413556 3f942002
+> clearmods
+> texmod turb 1 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff4e240 3f6c11f6
+ t1 bf1c8f6e 3eb6e3b9
+ t2 bff05865 bf60d0bf
+ t3 3fc99302 3e352210
+ t4 3fffda9e be24ec97
+ t5 3f74b063 3fcae5ec
+> clearmods
+> texmod stretch 2 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 2 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff4e240 3f6c11f6
+ t1 bf1c8f6e 3eb6e3b9
+ t2 bff05865 bf60d0bf
+ t3 3fc99302 3e352210
+ t4 3fffda9e be24ec97
+ t5 3f74b063 3fcae5ec
+> clearmods
+> texmod stretch 3 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 3 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff4e240 3f6c11f6
+ t1 bf1c8f6e 3eb6e3b9
+ t2 bff05865 bf60d0bf
+ t3 3fc99302 3e352210
+ t4 3fffda9e be24ec97
+ t5 3f74b063 3fcae5ec
+> clearmods
+> texmod stretch 4 1 0.5 0 0.5
+> compute
+ result
+ t0 3fd5838f 3f495c72
+ t1 bf12ce3a 3e91e38e
+ t2 bfd9ce39 bf4fb1c8
+ t3 3faf6aab 3dfe71c7
+ t4 3fdfeaab be3438e4
+ t5 3f56f1c8 3fb02aab
+> clearmods
+> texmod turb 4 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff4e240 3f6c11f6
+ t1 bf1c8f6e 3eb6e3b9
+ t2 bff05865 bf60d0bf
+ t3 3fc99302 3e352210
+ t4 3fffda9e be24ec97
+ t5 3f74b063 3fcae5ec
+> clearmods
+> texmod stretch 5 1 0.5 0 0.5
+> compute
+ result
+ t0 3fba545d 3f3c05d2
+ t1 bec1ae8c 3ea5e8ba
+ t2 bfa69175 bf12a8bb
+ t3 3f9b28ba 3e452e8b
+ t4 3fc2d746 bd597460
+ t5 3f4722e9 3f9bc5d2
+> clearmods
+> texmod turb 5 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff4e240 3f6c11f6
+ t1 bf1c8f6e 3eb6e3b9
+ t2 bff05865 bf60d0bf
+ t3 3fc99302 3e352210
+ t4 3fffda9e be24ec97
+ t5 3f74b063 3fcae5ec
+> clearmods
+> texmod scroll 0.1 0.1
+> texmod rotate 30
+> texmod scale 0.5 2
+> texmod turb 1 0 0.1 0.25 0.5
+> compute
+ result
+ t0 3f375f21 bfdcb093
+ t1 3e203ace 40359b18
+ t2 bf1e3c27 4095b35d
+ t3 3eb68ac8 bfbc137f
+ t4 3e82eec4 c01e0bc3
+ t5 3f7ee501 3ed435b0
+> shadertime -1.3
+> clearmods
+> texmod scroll 0.5 -0.25
+> compute
+ result
+ t0 400a8066 3f92dd9a
+ t1 beb71ccc 3f154333
+ t2 bfd03b33 bf2674cd
+ t3 3fea24cd 3ecdf666
+ t4 40105a66 3d841998
+ t5 3f9db4cd 3fe7c99a
+> clearmods
+> texmod scale 2 0.5
+> compute
+ result
+ t0 40683400 3ed28800
+ t1 bfb52800 3e042000
+ t2 c07d0800 bef9a800
+ t3 403d5800 3d1e4000
+ t4 4073e800 be056000
+ t5 3fe1d000 3f3e3000
+> clearmods
+> texmod rotate 45
+> compute
+ result
+ t0 3f69717d 3fe4d8d0
+ t1 3d99ff48 bf27b8ab
+ t2 3eecec40 c0185c63
+ t3 3faf940a 3f8e824a
+ t4 3ff0e9f7 3fa66706
+ t5 be0f9168 3fab9630
+> clearmods
+> texmod rotate -90
+> compute
+ result
+ t0 3e515310 bf51cc76
+ t1 3f51fd1a 3fd82069
+ t2 3e8fa596 4057daa4
+ t3 bea09a7c be411ec8
+ t4 bf4e350f bed7096c
+ t5 3f9b354a be8f7990
+> clearmods
+> texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+> compute
+ result
+ t0 3f4d2b9a 3ff18c9a
+ t1 bea2fccd 3ed20266
+ t2 bf250466 bfe0e666
+ t3 3f51ff9a 3f2f8b33
+ t4 3f8f16cd 3e923e66
+ t5 3e2da666 40298dcd
+> clearmods
+> texmod entity
+> compute
+ result
+ t0 400a8066 3fbfaa66
+ t1 beb71ccc 3f6edccd
+ t2 bfd03b33 be99b666
+ t3 3fea24cd 3f4094cd
+ t4 40105a66 3ed4399a
+ t5 3f9db4cd 400a4b33
+> clearmods
+> texmod stretch 1 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb7e80a 3f3ad572
+ t1 beb8c63f 3ea7b192
+ t2 bfa20044 bf0d37f4
+ t3 3f995a77 3e4b6af6
+ t4 3fc03fca bd2c9470
+ t5 3f45ba2e 3f99f472
+> clearmods
+> texmod turb 1 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff1661a 3f661539
+ t1 bf1d2d5e 3ea8e868
+ t2 bff1cad1 bf61f6ba
+ t3 3fc97094 3e1baf2a
+ t4 400020ef be3f0828
+ t5 3f7b46f3 3fc78bb3
+> clearmods
+> texmod stretch 2 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 2 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff1661a 3f661539
+ t1 bf1d2d5e 3ea8e868
+ t2 bff1cad1 bf61f6ba
+ t3 3fc97094 3e1baf2a
+ t4 400020ef be3f0828
+ t5 3f7b46f3 3fc78bb3
+> clearmods
+> texmod stretch 3 1 0.5 0 0.5
+> compute
+ result
+ t0 3fc180f6 3f3f8af8
+ t1 bedc0ddd 3ea0a025
+ t2 bfb41719 bf22c454
+ t3 3fa08159 3e32b803
+ t4 3fca83a8 bdaf286c
+ t5 3f4b4eea 3fa127a7
+> clearmods
+> texmod turb 3 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff1661a 3f661539
+ t1 bf1d2d5e 3ea8e868
+ t2 bff1cad1 bf61f6ba
+ t3 3fc97094 3e1baf2a
+ t4 400020ef be3f0828
+ t5 3f7b46f3 3fc78bb3
+> clearmods
+> texmod stretch 4 1 0.5 0 0.5
+> compute
+ result
+ t0 3fcf1dac 3f4638cb
+ t1 bf070bce 3e9699cb
+ t2 bfcdbf1e bf415457
+ t3 3faaa620 3e0fb006
+ t4 3fd912d2 be1699c9
+ t5 3f533953 3fab5dea
+> clearmods
+> texmod turb 4 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff1661a 3f661539
+ t1 bf1d2d5e 3ea8e868
+ t2 bff1cad1 bf61f6ba
+ t3 3fc97094 3e1baf2a
+ t4 400020ef be3f0828
+ t5 3f7b46f3 3fc78bb3
+> clearmods
+> texmod stretch 5 1 0.5 0 0.5
+> compute
+ result
+ t0 3fbef94c 3f3e4d30
+ t1 bed2c110 3ea27d20
+ t2 bfaf5260 bf1d162d
+ t3 3f9e9eb6 3e393aca
+ t4 3fc7ceee bd97bb4e
+ t5 3f49d64b 3f9f41c4
+> clearmods
+> texmod turb 5 0 0.1 0 0.5
+> compute
+ result
+ t0 3ff1661a 3f661539
+ t1 bf1d2d5e 3ea8e868
+ t2 bff1cad1 bf61f6ba
+ t3 3fc97094 3e1baf2a
+ t4 400020ef be3f0828
+ t5 3f7b46f3 3fc78bb3
+> clearmods
+> texmod scroll 0.1 0.1
+> texmod rotate 30
+> texmod scale 0.5 2
+> texmod turb 1 0 0.1 0.25 0.5
+> compute
+ result
+ t0 3f2898df 40b0d262
+ t1 bde7ab98 3fbe55c3
+ t2 be70874a bffedc81
+ t3 3f4c43de 407c63d7
+ t4 3f89bd39 407cc222
+ t5 3e2bc1fd 40ac7e8b
+> shadertime 1000.125
+> clearmods
+> texmod scroll 0.5 -0.25
+> compute
+ result
+ t0 3ff03400 3fe54400
+ t1 bf252800 3f9d0800
+ t2 bff50800 bbd40000
+ t3 3fc55800 3f85e400
+ t4 3ffbe800 3f355000
+ t5 3f71d000 401d1800
+> clearmods
+> texmod scale 2 0.5
+> compute
+ result
+ t0 40683400 3ed28800
+ t1 bfb52800 3e042000
+ t2 c07d0800 bef9a800
+ t3 403d5800 3d1e4000
+ t4 4073e800 be056000
+ t5 3fe1d000 3f3e3000
+> clearmods
+> texmod rotate 45
+> compute
+ result
+ t0 3feb368f 3f333249
+ t1 bf3968b8 3ebd9690
+ t2 c00675e4 bf3d8ec2
+ t3 3fb7c79d bc31a5e8
+ t4 3fea1c11 bec5c25c
+ t5 3f7892cb 3fb91926
+> clearmods
+> texmod rotate -90
+> compute
+ result
+ t0 3fdcdb1d 3f894e23
+ t1 bf230424 3cdcdd1c
+ t2 bfd1f54b bfb70b9a
+ t3 3fc57593 3e8db3cd
+ t4 4001b2e6 3cec4114
+ t5 3f2e9dd5 3fc5453e
+> clearmods
+> texmod transform 0.5 0.25 -0.25 1.5 0.1 0.2
+> compute
+ result
+ t0 3f4d2b9a 3ff18c9a
+ t1 bea2fccd 3ed20266
+ t2 bf250466 bfe0e666
+ t3 3f51ff9a 3f2f8b33
+ t4 3f8f16cd 3e923e66
+ t5 3e2da666 40298dcd
+> clearmods
+> texmod entity
+> compute
+ result
+ t0 3ff03400 3f5a8800
+ t1 bf252800 3e942000
+ t2 bff50800 bf71a800
+ t3 3fc55800 3dde4000
+ t4 3ffbe800 be6ac000
+ t5 3f71d000 3fc23000
+> clearmods
+> texmod stretch 1 1 0.5 0 0.5
+> compute
+ result
+ t0 3fcd2abe 3f4543fc
+ t1 bf0376c6 3e98093c
+ t2 bfca12bc bf3cf420
+ t3 3fa93254 3e14b408
+ t4 3fd6fd2e be0d93d5
+ t5 3f521730 3fa9e79c
+> clearmods
+> texmod turb 1 0 0.1 0 0.5
+> compute
+ result
+ t0 3feea774 3f5de93d
+ t1 bf3254f2 3e9da82a
+ t2 bff9c40f bf75e574
+ t3 3fbe8576 3dfca744
+ t4 3ff4387f be59e1cd
+ t5 3f592e16 3fc46f07
+> clearmods
+> texmod stretch 2 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb022ab 3f370556
+ t1 be9c3556 3ead6aaa
+ t2 bf935aab bef78aab
+ t3 3f939000 3e5f6aaa
+ t4 3fb7f000 bbe55580
+ t5 3f413556 3f942000
+> clearmods
+> texmod turb 2 0 0.1 0 0.5
+> compute
+ result
+ t0 3feea774 3f5de93d
+ t1 bf3254f2 3e9da82a
+ t2 bff9c40f bf75e574
+ t3 3fbe8576 3dfca744
+ t4 3ff4387f be59e1cd
+ t5 3f592e16 3fc46f07
+> clearmods
+> texmod stretch 3 1 0.5 0 0.5
+> compute
+ result
+ t0 3fd5838f 3f495c72
+ t1 bf12ce3a 3e91e38e
+ t2 bfd9ce39 bf4fb1c8
+ t3 3faf6aab 3dfe71c7
+ t4 3fdfeaab be3438e4
+ t5 3f56f1c8 3fb02aab
+> clearmods
+> texmod turb 3 0 0.1 0 0.5
+> compute
+ result
+ t0 3feea774 3f5de93d
+ t1 bf3254f2 3e9da82a
+ t2 bff9c40f bf75e574
+ t3 3fbe8576 3dfca744
+ t4 3ff4387f be59e1cd
+ t5 3f592e16 3fc46f07
+> clearmods
+> texmod stretch 4 1 0.5 0 0.5
+> compute
+ result
+ t0 3fe31b27 3f5007c2
+ t1 bf2bc9b3 3e87e0f8
+ t2 bff36c9c bf6e364e
+ t3 3fb98ba3 3db87c1d
+ t4 3fee745d be7326cc
+ t5 3f5ed936 3fba5d18
+> clearmods
+> texmod turb 4 0 0.1 0 0.5
+> compute
+ result
+ t0 3feea774 3f5de93d
+ t1 bf3254f2 3e9da82a
+ t2 bff9c40f bf75e574
+ t3 3fbe8576 3dfca744
+ t4 3ff4387f be59e1cd
+ t5 3f592e16 3fc46f07
+> clearmods
+> texmod stretch 5 1 0.5 0 0.5
+> compute
+ result
+ t0 3fb28572 3f383106
+ t1 bea4fa8d 3eaba8da
+ t2 bf97d9df bf0120ae
+ t3 3f955726 3e5946d0
+ t4 3fba7d47 bc91b3b8
+ t5 3f429882 3f95ea37
+> clearmods
+> texmod turb 5 0 0.1 0 0.5
+> compute
+ result
+ t0 3feea774 3f5de93d
+ t1 bf3254f2 3e9da82a
+ t2 bff9c40f bf75e574
+ t3 3fbe8576 3dfca744
+ t4 3ff4387f be59e1cd
+ t5 3f592e16 3fc46f07
+> clearmods
+> texmod scroll 0.1 0.1
+> texmod rotate 30
+> texmod scale 0.5 2
+> texmod turb 1 0 0.1 0.25 0.5
+> compute
+ result
+ t0 3de239f5 bfbee846
+ t1 3f153c4b 4055429c
+ t2 3ed4dd4f 40da3a29
+ t3 bdc1d089 bde75bd7
+ t4 beb474de bee7a3f4
+ t5 3f26c59d bf2bb748
+> clearmods
+> texmod stretch 6 1 0.5 0 0.5
+> compute
+ error
+> clearmods
+> texmod stretch 1 0 0 0 0
+> compute
+ result
+ t0 ffc00000 ffc00000
+ t1 ff800000 ffc00000
+ t2 ff800000 ff800000
+ t3 ffc00000 ffc00000
+ t4 ffc00000 ff800000
+ t5 ffc00000 ffc00000
+> tcgen env
+> clearmods
+> texmod rotate 10
+> compute
+ result
+ t0 3eecb89f 3eacccf5
+ t1 3e78ab2c 3f48d0ce
+ t2 3e7ee4c4 3f27b1d9
+ t3 3f1d5b36 3f8df43c
+ t4 3f3a9133 3edd8f80
+ t5 3f049476 3f649862

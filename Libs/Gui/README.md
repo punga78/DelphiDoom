@@ -29,7 +29,7 @@ Una `TGuiFactory` assembla le classi; nessuna variabile globale (gli array stati
 
 ## Cosa non e' portato
 
-Il disegno (`Item_Paint`, `Menu_Paint`, `Window_Paint`, `Fade`, bordi, gradienti), l'input (`Menu_HandleKey`, `Item_*_HandleKey`, mouse, cattura), i feeder e gli owner draw (`feederCount`, `ownerDrawItem`...: sono del chiamante), la pila dei menu aperti (`Menus_Activate`, `Menus_ActivateByName`, `Menus_CloseByName`, `menuStack`: `open`, `close` e `conditionalopen` vanno a `IGuiScriptHost`), `Item_EnableShowViaCvar`, i comandi di scorciatoia (`Controls_*`), `Display_*`, il pool di memoria da 1 MB (`UI_Alloc`), la generazione dei font con FreeType (`BUILD_FREETYPE`, spento nel gioco distribuito), `q3_ui\*` (menu di Quake III base: sono codice C, non dati). La GUI di Doom 3 (`.gui`, #111) non e' fatta: la libreria e' pensata per ospitarla (`IGuiDeviceContext` e' l'interfaccia di disegno comune, le sue classi andranno in `DelphiDoom.Gui.Window.*` accanto a `DelphiDoom.Gui.Menu`).
+Il disegno (`Item_Paint`, `Menu_Paint`, `Window_Paint`, `Fade`, bordi, gradienti), il tasto del bind (`Item_Bind_HandleKey`) e i comandi di scorciatoia (`Controls_*`), `Display_CacheAll`, il pool di memoria da 1 MB (`UI_Alloc`), la generazione dei font con FreeType (`BUILD_FREETYPE`, spento nel gioco distribuito), `q3_ui\*` (menu di Quake III base: sono codice C, non dati). La GUI di Doom 3 (`.gui`, #111) non e' fatta: la libreria e' pensata per ospitarla (`IGuiDeviceContext` e' l'interfaccia di disegno comune, le sue classi andranno in `DelphiDoom.Gui.Window.*` accanto a `DelphiDoom.Gui.Menu`).
 
 ## Lexer
 
@@ -70,6 +70,20 @@ Differenze del **lexer** (idLexer rispetto a botlib), non riprodotte:
 
 `Tools\Verifica\125` compila con il gcc di w64devkit il **vero** `ui_shared.c`, il precompilatore di botlib e `q_shared.c`, piu' due ritagli per intervalli di righe di `ui_main.c` e `tr_font.c`; il pilota esegue scenari (`Tests\Data\Gui\scenarios`) su menu **scritti per i test** (mai file di Team Arena) e scrive il dump del modello (float come bit): i golden stanno in `Tests\Data\Gui\golden`, i test Delphi rifanno gli scenari con le classi e confrontano riga per riga (unica tolleranza: la riga di un errore, +-1). Test: `Tests\DelphiDoom.Tests.Gui` (171 test, copertura 97%, Win32 e Win64); in piu' i 26 `.menu` e i 3 `.dat` di OpenArena (`Reference\openarena`, o `DELPHIDOOM_OPENARENA`) si leggono senza errori, e il test e' saltato se mancano.
 
+
+## Pila dei menu aperti, focus, mouse e tasti (seconda fetta)
+
+`TGuiDisplay` (`DelphiDoom.Gui.Display.*`) porta `Menus_Activate`, `Menus_OpenByName`, `Menus_CloseAll`, `Menu_GetFocused`, `Display_MouseMove`, `Display_HandleKey`, `Menu_HandleKey`, `Item_HandleKey` (liste, yes/no, multi, slider, owner draw) e `Item_TextField_HandleKey` di `ui_shared.c`, senza disegno. Il gioco si da' con `IGuiInputHost` (cursore, orologio, feeder, cvar di testo, owner draw), con `IGuiScriptHost` e `IGuiMediaHost`.
+
+```pascal
+LDisplay := TGuiFactory.CreateDisplay(LMenus, LRunner, LInput, LScript, LMedia);
+LDisplay.Stack.OpenByName('main');                 // Menus_OpenByName
+LDisplay.Pointer.MouseMove(nil, X, Y);             // Display_MouseMove: focus e mouseEnter degli item
+LDisplay.MenuKeys.DisplayHandleKey(K_MOUSE1, True, X, Y);   // Display_HandleKey
+LDisplay.ItemKeys.RunCapture;                      // la captureFunc che Menu_PaintAll chiama a ogni fotogramma
+```
+
+Parita' esatta (nessuna tolleranza, Win32 e Win64) con il vero `ui_shared.c` su due scenari di 3224 e 5119 righe (`Tests\Data\Gui\scenarios\input*.txt`; `Tools\Verifica\125`). Cosa non e' portato (disegno, bind dei tasti), difetti conservati e differenze volute: [CLAUDE.md](CLAUDE.md).
 
 # La GUI di Doom 3 (`.gui`, issue #111)
 

@@ -1,0 +1,337 @@
+# The open menus, the focus, the pointer and the keys (ui_shared.c), run on ui/input.menu
+menu ui/assets.menu
+menu ui/input.menu
+cvar mode easy
+cvar yn 0
+cvar level 1
+cvar vol 5
+cvar ed hello
+cvar nm 12
+feeder 1 10
+feeder 2 8
+feeder 3 6
+textrect main label 22 214 40 14
+cinematic main movie 3
+cinematic pop ok 4
+visible
+fullscreen
+focused
+istate
+# opening a menu
+open main
+visible
+fullscreen
+focused
+open main
+open other
+focused
+closemenu other
+# the pointer over the buttons
+cursor 30 30
+move 30 30
+cursor 30 60
+move 30 60
+cursor 700 700
+move 700 700
+cursor 30 30
+move 30 30
+# a click on a button
+key 178 1
+key 178 0
+key 179 1
+# tab and the arrows move the focus
+key 9 1
+key 9 1
+key 132 1
+key 133 1
+key 135 1
+key 13 1
+key 13 0
+# the decoration, the hidden item and the cvar tests
+cvar mode insane
+next main
+next main
+next main
+prev main
+cvar mode hard
+next main
+next main
+cvar mode easy
+focus main gated
+focus main deco
+focus main hidden
+focus main quit
+focus main quit
+# a text item takes the focus only over its text
+cursor 25 205
+focus main label
+cursor 30 60
+focus main label
+cursor 30 205
+move 30 205
+key 178 1
+cursor 100 205
+key 178 1
+key 13 1
+# multi, yes/no
+cursor 330 60
+move 330 60
+key 178 1
+key 178 1
+key 178 1
+key 178 1
+cvar mode easy
+cursor 330 90
+move 330 90
+key 178 1
+key 13 1
+key 179 1
+key 178 1
+cursor 330 30
+move 330 30
+key 178 1
+key 178 1
+key 13 1
+# a click outside the item does nothing for a cvar item
+cursor 330 25
+key 178 1
+# the slider
+cursor 368 120
+move 368 120
+key 178 1
+cursor 400 120
+capture
+cursor 330 120
+capture
+key 178 0
+key 178 1
+cursor 500 120
+key 178 1
+cursor 340 125
+key 13 1
+cursor 330 119
+key 179 1
+# the list box
+time 1000
+cursor 210 30
+move 210 30
+key 133 1
+key 133 1
+key 132 1
+key 178 1
+time 1200
+key 178 1
+time 5000
+key 178 1
+key 144 1
+key 143 1
+key 141 1
+key 141 1
+key 142 1
+key 144 1
+cursor 210 70
+move 210 70
+key 178 1
+cursor 290 25
+move 290 25
+key 178 1
+time 1500
+capture
+time 1700
+capture
+time 2100
+capture
+time 2600
+capture
+key 178 0
+key 178 1
+cursor 290 95
+move 290 95
+key 178 1
+time 3000
+capture
+key 178 1
+cursor 292 60
+move 292 60
+key 178 1
+cursor 292 80
+capture
+cursor 292 84
+capture
+cursor 292 20
+capture
+key 178 1
+cursor 292 45
+move 292 45
+key 178 1
+cursor 292 85
+move 292 85
+key 178 1
+cursor 292 20
+move 292 20
+key 178 1
+scrollfeeder main 1 1
+scrollfeeder main 1 0
+scrollfeeder main 5 1
+feedersel main 1 0 0
+feedersel main 1 4 0
+feedersel - 1 6 0
+feedersel nosuch 1 6 1 nosuch
+feedersel - 1 7 1 main
+feedersel main 7 1 0
+# the horizontal list box
+cursor 230 130
+move 230 130
+key 135 1
+key 135 1
+key 134 1
+key 178 1
+cursor 205 155
+move 205 155
+key 178 1
+cursor 295 155
+move 295 155
+key 178 1
+key 144 1
+key 143 1
+key 141 1
+key 142 1
+# the list box that cannot select
+cursor 210 190
+move 210 190
+key 133 1
+key 133 1
+key 132 1
+key 141 1
+key 142 1
+key 144 1
+key 143 1
+# the edit field
+cursor 330 150
+move 330 150
+key 178 1
+key 1121 1
+key 1122 1
+key 1032 1
+key 143 1
+key 1090 1
+key 1091 1
+key 135 1
+key 135 1
+key 140 1
+key 144 1
+key 139 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 134 1
+key 134 1
+key 143 1
+key 139 1
+key 1065 1
+key 1013 1
+key 1031 1
+key 9 1
+key 13 1
+cursor 330 180
+move 330 180
+key 13 1
+key 1056 1
+key 1050 1
+key 1051 1
+key 1058 1
+key 1059 1
+key 1060 1
+key 1061 1
+key 27 1
+cursor 330 150
+move 330 150
+key 13 1
+key 133 1
+key 13 1
+key 132 1
+key 178 1
+cursor 330 180
+move 330 180
+key 13 1
+key 178 1
+cursor 30 30
+key 178 1
+# the owner draw item
+cursor 340 210
+move 340 210
+key 13 1
+key 65 1
+key 178 1
+# developer keys, escape
+key 155 1
+key 155 1
+key 156 1
+key 27 0
+cursor 30 100
+move 30 100
+key 27 1
+visible
+focused
+# the cinematics
+activate pop
+activate main
+# a popup and a click that goes to the menu under the pointer
+open pop
+focused
+visible
+cursor 310 315
+move 310 315
+key 178 1
+cursor 30 30
+move 30 30
+key 178 1
+cursor 380 320
+key 178 1
+istate
+# out of bounds
+open main
+open other
+cursor 30 60
+menukey other 178 1
+menukey other 178 0
+cursor 460 40
+menukey other 178 1
+menukey - 178 1
+cursor 650 460
+menukey other 178 1
+cursor 5 470
+menukey other 178 1
+open other
+menukey lonely 178 1
+menukey main 178 1
+menukey main 178 0
+cursortype 437 17
+cursortype 100 100
+cursortype 439 21
+captureitem 5 5
+captureitem 450 40
+captureitem 700 700
+hit main 30 30
+hit main 700 700
+hit pop 320 320
+mouseenter main play 30 30
+mouseleave main play
+mouseenter main label 30 205
+mouseenter main list 210 40
+mouseleave main list
+drag pop 10 20
+istate
+drag main 3 4
+istate
+closeall
+visible
+focused
+show main
+show nothing
+closemenu nothing
+istate

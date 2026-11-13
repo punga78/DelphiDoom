@@ -1,0 +1,3224 @@
+> menu ui/assets.menu
+log Parsing menu file:ui/assets.menu
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 2 "gfx/f16_32"
+reg shader 3 "gfx/f16_33"
+reg shader 4 "gfx/f16_34"
+reg shader 5 "gfx/f16_35"
+reg shader 6 "gfx/f16_36"
+reg shader 7 "gfx/f16_37"
+reg shader 8 "gfx/f16_38"
+reg shader 9 "gfx/f16_39"
+reg shader 10 "gfx/f16_40"
+reg shader 11 "gfx/f16_41"
+reg shader 12 "gfx/f16_42"
+reg shader 13 "gfx/f16_43"
+reg shader 14 "gfx/f16_44"
+reg shader 15 "gfx/f16_45"
+reg shader 16 "gfx/f16_46"
+reg shader 17 "gfx/f16_47"
+reg shader 18 "gfx/f16_48"
+reg shader 19 "gfx/f16_49"
+reg shader 20 "gfx/f16_50"
+reg shader 21 "gfx/f16_51"
+reg shader 22 "gfx/f16_52"
+reg shader 23 "gfx/f16_53"
+reg shader 24 "gfx/f16_54"
+reg shader 25 "gfx/f16_55"
+reg shader 26 "gfx/f16_56"
+reg shader 27 "gfx/f16_57"
+reg shader 28 "gfx/f16_58"
+reg shader 29 "gfx/f16_59"
+reg shader 30 "gfx/f16_60"
+reg shader 31 "gfx/f16_61"
+reg shader 32 "gfx/f16_62"
+reg shader 33 "gfx/f16_63"
+reg shader 34 "gfx/f16_64"
+reg shader 35 "gfx/f16_65"
+reg shader 36 "gfx/f16_66"
+reg shader 37 "gfx/f16_67"
+reg shader 38 "gfx/f16_68"
+reg shader 39 "gfx/f16_69"
+reg shader 40 "gfx/f16_70"
+reg shader 41 "gfx/f16_71"
+reg shader 42 "gfx/f16_72"
+reg shader 43 "gfx/f16_73"
+reg shader 44 "gfx/f16_74"
+reg shader 45 "gfx/f16_75"
+reg shader 46 "gfx/f16_76"
+reg shader 47 "gfx/f16_77"
+reg shader 48 "gfx/f16_78"
+reg shader 49 "gfx/f16_79"
+reg shader 50 "gfx/f16_80"
+reg shader 51 "gfx/f16_81"
+reg shader 52 "gfx/f16_82"
+reg shader 53 "gfx/f16_83"
+reg shader 54 "gfx/f16_84"
+reg shader 55 "gfx/f16_85"
+reg shader 56 "gfx/f16_86"
+reg shader 57 "gfx/f16_87"
+reg shader 58 "gfx/f16_88"
+reg shader 59 "gfx/f16_89"
+reg shader 60 "gfx/f16_90"
+reg shader 61 "gfx/f16_91"
+reg shader 62 "gfx/f16_92"
+reg shader 63 "gfx/f16_93"
+reg shader 64 "gfx/f16_94"
+reg shader 65 "gfx/f16_95"
+reg shader 66 "gfx/f16_96"
+reg shader 67 "gfx/f16_97"
+reg shader 68 "gfx/f16_98"
+reg shader 69 "gfx/f16_99"
+reg shader 70 "gfx/f16_100"
+reg shader 71 "gfx/f16_101"
+reg shader 72 "gfx/f16_102"
+reg shader 73 "gfx/f16_103"
+reg shader 74 "gfx/f16_104"
+reg shader 75 "gfx/f16_105"
+reg shader 76 "gfx/f16_106"
+reg shader 77 "gfx/f16_107"
+reg shader 78 "gfx/f16_108"
+reg shader 79 "gfx/f16_109"
+reg shader 80 "gfx/f16_110"
+reg shader 81 "gfx/f16_111"
+reg shader 82 "gfx/f16_112"
+reg shader 83 "gfx/f16_113"
+reg shader 84 "gfx/f16_114"
+reg shader 85 "gfx/f16_115"
+reg shader 86 "gfx/f16_116"
+reg shader 87 "gfx/f16_117"
+reg shader 88 "gfx/f16_118"
+reg shader 89 "gfx/f16_119"
+reg shader 90 "gfx/f16_120"
+reg shader 91 "gfx/f16_121"
+reg shader 92 "gfx/f16_122"
+reg shader 93 "gfx/f16_123"
+reg shader 94 "gfx/f16_124"
+reg shader 95 "gfx/f16_125"
+reg shader 96 "gfx/f16_126"
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+reg shader 1 ""
+log RE_RegisterFont: FreeType code not available
+reg shader 97 "ui/assets/gradient.tga"
+reg sound 1 "sound/misc/enter.wav" 0
+reg sound 2 "sound/misc/exit.wav" 0
+reg sound 3 "sound/misc/focus.wav" 0
+reg sound 4 "sound/misc/buzz.wav" 0
+reg shader 98 "ui/assets/cursor.tga"
+> menu ui/input.menu
+log Parsing menu file:ui/input.menu
+reg sound 5 "sound/misc/play.wav" 0
+> cvar mode easy
+> cvar yn 0
+> cvar level 1
+> cvar vol 5
+> cvar ed hello
+> cvar nm 12
+> feeder 1 10
+> feeder 2 8
+> feeder 3 6
+> textrect main label 22 214 40 14
+> cinematic main movie 3
+> cinematic pop ok 4
+> visible
+result 0
+> fullscreen
+result 0
+> focused
+result -
+> istate
+istate stack 0 capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=0 cursorItem=-1 rect=00000000,00000000
+  item late flags=0 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open main
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+host stopcinematic 3
+host stopcinematic -7
+istate stack 0 capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=6 cursorItem=-1 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> visible
+result 1
+> fullscreen
+result 1
+> focused
+result main
+> open main
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 1 main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=6 cursorItem=-1 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open other
+host setcvar "otheropen" "1"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=-1 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focused
+result other
+> closemenu other
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=-1 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 30
+> move 30 30
+host setcvar "playenter" "1"
+host setcvar "playleave" "1"
+host setcvar "playfocus" "1"
+host sound 5 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=1 rect=00000000,00000000
+  item play flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 60
+> move 30 60
+host setcvar "playexit" "1"
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 700 700
+> move 700 700
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=6 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 30
+> move 30 30
+host setcvar "playenter" "1"
+host setcvar "playleave" "1"
+host setcvar "playfocus" "1"
+host sound 5 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=1 rect=00000000,00000000
+  item play flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "play" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=1 rect=00000000,00000000
+  item play flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=1 rect=00000000,00000000
+  item play flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 179 1
+host setcvar "play" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=1 rect=00000000,00000000
+  item play flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 9 1
+host setcvar "playleave" "1"
+host sound 3 6
+host setcvar "playexit" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 9 1
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=7 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 132 1
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=7 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 135 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=7 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host setcvar "gated" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=7 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=7 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cvar mode insane
+> next main
+host setcvar "playleave" "1"
+host sound 3 6
+result list
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=5 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=0 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> next main
+host setcvar "playleave" "1"
+host sound 3 6
+result hlist
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=5 cursorPos=0 special=00000000
+  item hlist flags=1031 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> next main
+host setcvar "playleave" "1"
+host sound 3 6
+result flat
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=5 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item flat flags=7 cursorPos=0 special=40400000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> prev main
+host setcvar "playleave" "1"
+host sound 3 6
+result hlist
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=5 cursorPos=0 special=00000000
+  item hlist flags=1031 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cvar mode hard
+> next main
+host setcvar "playleave" "1"
+host sound 3 6
+result flat
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item flat flags=7 cursorPos=0 special=40400000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> next main
+host setcvar "playleave" "1"
+host sound 3 6
+result yn
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cvar mode easy
+> focus main gated
+host setcvar "playleave" "1"
+host sound 3 6
+result 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=6 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focus main deco
+result 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=6 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focus main hidden
+result 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=5 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item gated flags=6 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focus main quit
+host setcvar "playleave" "1"
+host sound 3 6
+result 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=6 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focus main quit
+result 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=6 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 25 205
+> focus main label
+host setcvar "playleave" "1"
+host sound 3 6
+result 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item label flags=6 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 60
+> focus main label
+result 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=5 cursorPos=0 special=00000000
+  item label flags=6 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 205
+> move 30 205
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item label flags=135 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "label" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item label flags=135 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 100 205
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item label flags=135 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host setcvar "label" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=17 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item label flags=135 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 60
+> move 330 60
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=11 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multi flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "mode" "hard"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=11 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multi flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "mode" "insane"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=11 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multi flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "mode" "easy"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=11 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multi flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "mode" "hard"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=11 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multi flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cvar mode easy
+> cursor 330 90
+> move 330 90
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=12 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multif flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "level" "2.500000"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=12 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multif flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host setcvar "level" "4"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=12 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multif flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 179 1
+host setcvar "level" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=12 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multif flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "level" "2.500000"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=12 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item multif flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 30
+> move 330 30
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "yn" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "yn" "0"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host setcvar "yn" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 25
+> key 178 1
+host setcvar "yn" "0"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=10 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item yn flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 368 120
+> move 368 120
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "vol" "5.000000"
+istate stack 2 main main capture slide editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 400 120
+> capture
+host setcvar "vol" "8.333333"
+istate stack 2 main main capture slide editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 120
+> capture
+host setcvar "vol" "1.041667"
+istate stack 2 main main capture slide editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "vol" "1.041667"
+istate stack 2 main main capture slide editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 500 120
+> key 178 1
+log dc slider handle key exit
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 340 125
+> key 13 1
+host setcvar "vol" "2.083333"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 119
+> key 179 1
+host setcvar "vol" "1.041667"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=13 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item slide flags=7 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 1000
+> cursor 210 30
+> move 210 30
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=0 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+host feeder 1 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+host feeder 1 2
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=2 special=3f800000 start=0 cursor=2
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 132 1
+host feeder 1 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 1200
+> key 178 1
+host setcvar "double" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 5000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 144 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=6 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 143 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=1 special=3f800000 start=0 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 141 1
+host feeder 1 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=6 special=3f800000 start=2 cursor=6
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 141 1
+host feeder 1 9
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=9 special=3f800000 start=5 cursor=9
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 142 1
+host feeder 1 4
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=4 special=3f800000 start=4 cursor=4
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 144 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=4 special=3f800000 start=6 cursor=4
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 210 70
+> move 210 70
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=4 special=3f800000 start=6 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host setcvar "double" "1"
+host feeder 1 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=7 cursorPos=0 special=3f800000 start=6 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 290 25
+> move 290 25
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=6 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 1500
+> capture
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 1700
+> capture
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 2100
+> capture
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 2600
+> capture
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=5 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=4 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 290 95
+> move 290 95
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=4 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=3 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> time 3000
+> capture
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=3 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=2 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 60
+> move 292 60
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=2 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 80
+> capture
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 84
+> capture
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 20
+> capture
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=2055 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 45
+> move 292 45
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8199 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8199 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 85
+> move 292 85
+istate stack 2 main main capture list editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8199 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8199 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 292 20
+> move 292 20
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=0 special=3f800000 start=1 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> scrollfeeder main 1 1
+host feeder 1 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=1 special=3f800000 start=1 cursor=1
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> scrollfeeder main 1 0
+host feeder 1 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=0 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> scrollfeeder main 5 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=0 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel main 1 0 0
+host feeder 1 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=0 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel main 1 4 0
+host feeder 1 4
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=4 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel - 1 6 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=4 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel nosuch 1 6 1 nosuch
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=4 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel - 1 7 1 main
+host feeder 1 7
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> feedersel main 7 1 0
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=7 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8198 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 230 130
+> move 230 130
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1031 cursorPos=0 special=40000000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 135 1
+host feeder 2 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1031 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 135 1
+host feeder 2 2
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1031 cursorPos=2 special=40000000 start=0 cursor=2
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 134 1
+host feeder 2 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1031 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1031 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 205 155
+> move 205 155
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture hlist editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 295 155
+> move 295 155
+istate stack 2 main main capture hlist editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 144 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=4 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 143 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=0 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 141 1
+host feeder 2 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=6 special=40000000 start=2 cursor=6
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 142 1
+host feeder 2 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=8 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=3079 cursorPos=1 special=40000000 start=1 cursor=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 210 190
+> move 210 190
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=1 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=2 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 132 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=1 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 141 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=3 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 142 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=1 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 144 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=4 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 143 1
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=9 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item flat flags=7 cursorPos=0 special=40400000 start=0 cursor=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 150
+> move 330 150
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+host setcvar "ed" "aello"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1122 1
+host setcvar "ed" "abllo"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=2 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1032 1
+host setcvar "ed" "allo"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 143 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1090 1
+host setcvar "ed" "Bllo"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1091 1
+host setcvar "ed" "BClo"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=2 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 135 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=3 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 135 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=4 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 140 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=4 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 144 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=4 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 139 1
+host overstrike 0
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=4 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+host setcvar "ed" "BCloa"
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=5 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+host setcvar "ed" "BCloaa"
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=6 special=00000000 paintOffset=1
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+host setcvar "ed" "BCloaaa"
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=7 special=00000000 paintOffset=2
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+host setcvar "ed" "BCloaaaa"
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=8 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=8 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=8 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1121 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=8 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 134 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=7 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 134 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=6 special=00000000 paintOffset=3
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 143 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 0 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 139 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1065 1
+host setcvar "ed" ")Cloaaaa"
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1013 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1031 1
+istate stack 2 main main capture - editing 1 edit edit overstrike 1 debug 0
+ menu main flags=4 cursorItem=14 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=7 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 9 1
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=5 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=6 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=5 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=6 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 180
+> move 330 180
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1056 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1050 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1051 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1058 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1059 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1060 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 1061 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 27 1
+host setcvar "escaped" "1"
+host setcvar "closed" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 150
+> move 330 150
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 133 1
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=16 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=5 cursorPos=0 special=00000000 paintOffset=0
+  item owner flags=6 cursorPos=0 special=41100000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=16 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=5 cursorPos=0 special=00000000 paintOffset=0
+  item owner flags=6 cursorPos=0 special=41100000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 132 1
+host ownerdraw 7 0 132
+host setcvar "playleave" "1"
+host sound 3 6
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 330 180
+> move 330 180
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 30
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 340 210
+> move 340 210
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 13 1
+host overstrike 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 65 1
+istate stack 2 main main capture - editing 1 edit num overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 155 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 1
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 155 1
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 156 1
+host exec 2 "screenshot
+"
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 27 0
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 100
+> move 30 100
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 27 1
+host setcvar "escaped" "1"
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> visible
+result 0
+> focused
+result -
+> activate pop
+host setcvar "popopen" "1"
+host stopcinematic -7
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> activate main
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+istate stack 2 main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open pop
+host setcvar "popopen" "1"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> focused
+result pop
+> visible
+result 2
+> cursor 310 315
+> move 310 315
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 30
+> move 30 30
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> key 178 1
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 380 320
+> key 178 1
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> istate
+istate stack 3 main main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228230 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open main
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 4 main main main pop capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open other
+host setcvar "otheropen" "1"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=15 rect=00000000,00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item num flags=7 cursorPos=0 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 30 60
+> menukey other 178 1
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+host setcvar "playleave" "1"
+host sound 3 6
+host setcvar "quit" "1"
+host stopcinematic -7
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> menukey other 178 0
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 460 40
+> menukey other 178 1
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> menukey - 178 1
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 650 460
+> menukey other 178 1
+host stopcinematic -7
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursor 5 470
+> menukey other 178 1
+host stopcinematic -7
+istate stack 5 main main main pop main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> open other
+host setcvar "otheropen" "1"
+host stopcinematic -7
+host stopcinematic -7
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> menukey lonely 178 1
+host stopcinematic -7
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> menukey main 178 1
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> menukey main 178 0
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> cursortype 437 17
+result 2
+> cursortype 100 100
+result 2
+> cursortype 439 21
+result 4
+> captureitem 5 5
+result main
+> captureitem 450 40
+result main
+> captureitem 700 700
+result -
+> hit main 30 30
+result play
+> hit main 700 700
+result -
+> hit pop 320 320
+result -
+> mouseenter main play 30 30
+host setcvar "playenter" "1"
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> mouseleave main play
+host setcvar "playexit" "1"
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> mouseenter main label 30 205
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=8196 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> mouseenter main list 210 40
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> mouseleave main list
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=43960000,43960000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> drag pop 10 20
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> istate
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=00000000,00000000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> drag main 3 4
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> istate
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=4 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228228 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131078 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> closeall
+host setcvar "closed" "1"
+host setcvar "popclose" "1"
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=0 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> visible
+result 0
+> focused
+result -
+> show main
+host setcvar "opened" "1"
+host background "sound/music/main.wav" "sound/music/main.wav"
+host stopcinematic -7
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> show nothing
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> closemenu nothing
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000
+> istate
+istate stack 6 main main main pop main main capture - editing 0 edit - overstrike 1 debug 0
+ menu main flags=6 cursorItem=2 rect=40400000,40800000
+  item play flags=5 cursorPos=0 special=00000000
+  item quit flags=7 cursorPos=0 special=00000000
+  item deco flags=20 cursorPos=0 special=00000000
+  item hidden flags=0 cursorPos=0 special=00000000
+  item list flags=5 cursorPos=7 special=3f800000 start=0 cursor=0
+  item hlist flags=1028 cursorPos=1 special=40000000 start=1 cursor=1
+  item edit flags=4 cursorPos=1 special=00000000 paintOffset=0
+  item label flags=133 cursorPos=0 special=00000000
+  item movie flags=20 cursorPos=0 special=00000000
+ menu pop flags=2228224 cursorItem=-1 rect=439b0000,43a00000
+ menu other flags=131072 cursorItem=-1 rect=43dc0000,41a00000
+ menu lonely flags=0 cursorItem=-1 rect=44160000,43dc0000

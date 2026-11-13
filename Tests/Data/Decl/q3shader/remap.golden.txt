@@ -1,0 +1,96 @@
+reg textures/a -1 -> 2
+reg textures/a 3 -> 3
+reg textures/a.tga -1 -> 2
+reg Textures/B -1 -> 4
+reg textures/c 2 -> 5
+reg nofile/x -1 -> 0
+reg nofile/x 4 -> 0
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=-1 00000000
+shader 3 textures/a lm=-3 default=0 remap=-1 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 00000000
+shader 5 textures/c lm=-3 default=0 remap=-1 00000000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+remap textures/a textures/b -
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=4 00000000
+shader 3 textures/a lm=-3 default=0 remap=4 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 00000000
+shader 5 textures/c lm=-3 default=0 remap=-1 00000000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+remap textures/a textures/b 1.5
+remap TEXTURES/A.jpg textures/c abc
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=5 00000000
+shader 3 textures/a lm=-3 default=0 remap=5 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3fc00000
+shader 5 textures/c lm=-3 default=0 remap=-1 00000000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+remap textures/b textures/b -
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=5 00000000
+shader 3 textures/a lm=-3 default=0 remap=5 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3fc00000
+shader 5 textures/c lm=-3 default=0 remap=-1 00000000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+remap textures/c textures/c 7
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=5 00000000
+shader 3 textures/a lm=-3 default=0 remap=5 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3fc00000
+shader 5 textures/c lm=-3 default=0 remap=-1 40e00000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+remap nofile/y textures/b -
+log R_RemapShader: shader nofile/y not found
+remap nofile/y textures/b 0.25
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=5 00000000
+shader 3 textures/a lm=-3 default=0 remap=5 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3e800000
+shader 5 textures/c lm=-3 default=0 remap=-1 40e00000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+shader 7 nofile/y lm=-3 default=1 remap=4 00000000
+remap textures/a nofile/z -
+log R_RemapShader: new shader nofile/z not found
+remap textures/a nofile/z -
+remap textures/a nofile/z -
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=8 00000000
+shader 3 textures/a lm=-3 default=0 remap=8 00000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3e800000
+shader 5 textures/c lm=-3 default=0 remap=-1 40e00000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+shader 7 nofile/y lm=-3 default=1 remap=4 00000000
+shader 8 nofile/z lm=-3 default=1 remap=-1 00000000
+remap textures/d textures/a 2
+remap textures/e.tga textures/d -
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=8 00000000
+shader 3 textures/a lm=-3 default=0 remap=8 40000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3e800000
+shader 5 textures/c lm=-3 default=0 remap=-1 40e00000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+shader 7 nofile/y lm=-3 default=1 remap=4 00000000
+shader 8 nofile/z lm=-3 default=1 remap=-1 00000000
+shader 9 textures/d lm=-3 default=0 remap=3 00000000
+shader 10 textures/e lm=-3 default=0 remap=9 00000000
+remap textures/a textures/a -
+shader 0 <default> lm=-1 default=0 remap=-1 00000000
+shader 1 <stencil shadow> lm=-1 default=0 remap=-1 00000000
+shader 2 textures/a lm=-1 default=0 remap=3 00000000
+shader 3 textures/a lm=-3 default=0 remap=-1 40000000
+shader 4 Textures/B lm=-1 default=0 remap=-1 3e800000
+shader 5 textures/c lm=-3 default=0 remap=-1 40e00000
+shader 6 nofile/x lm=-1 default=1 remap=-1 00000000
+shader 7 nofile/y lm=-3 default=1 remap=4 00000000
+shader 8 nofile/z lm=-3 default=1 remap=-1 00000000
+shader 9 textures/d lm=-3 default=0 remap=3 00000000
+shader 10 textures/e lm=-3 default=0 remap=9 00000000

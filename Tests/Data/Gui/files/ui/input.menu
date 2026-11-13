@@ -1,0 +1,231 @@
+// the menus of the input scenarios: buttons, a list box, a yes/no, two multis, a slider, two fields, an owner draw item
+menuDef {
+	name "main"
+	fullscreen 1
+	rect 0 0 640 480
+	visible 0
+	focuscolor 1 1 0 1
+	soundLoop "sound/music/main.wav"
+	onOpen { setcvar opened 1 ; show late }
+	onClose { setcvar closed 1 }
+	onESC { setcvar escaped 1 ; close main }
+	itemDef {
+		name "late"
+		rect 400 400 20 20
+		visible 0
+	}
+	itemDef {
+		name "play"
+		type 1
+		rect 20 20 100 20
+		visible 1
+		onFocus { setcvar playfocus 1 }
+		leaveFocus { setcvar playleave 1 }
+		mouseEnter { setcvar playenter 1 }
+		mouseExit { setcvar playexit 1 }
+		action { setcvar play 1 }
+		focusSound "sound/misc/play.wav"
+	}
+	itemDef {
+		name "quit"
+		type 1
+		rect 20 50 100 20
+		visible 1
+		action { setcvar quit 1 }
+	}
+	itemDef {
+		name "deco"
+		type 1
+		rect 20 80 100 20
+		visible 1
+		decoration
+	}
+	itemDef {
+		name "hidden"
+		type 1
+		rect 20 110 100 20
+		visible 0
+	}
+	itemDef {
+		name "gated"
+		type 1
+		rect 20 140 100 20
+		visible 1
+		cvarTest "mode"
+		enableCvar { "easy" ; "hard" }
+		action { setcvar gated 1 }
+	}
+	itemDef {
+		name "shown"
+		type 1
+		rect 20 170 100 20
+		visible 1
+		cvarTest "mode"
+		showCvar { "hard" }
+		action { setcvar shown 1 }
+	}
+	itemDef {
+		name "list"
+		type 6
+		rect 200 20 100 80
+		visible 1
+		feeder 1
+		elementwidth 20
+		elementheight 16
+		elementtype 0
+		doubleclick { setcvar double 1 }
+	}
+	itemDef {
+		name "hlist"
+		type 6
+		rect 200 120 100 40
+		visible 1
+		feeder 2
+		elementwidth 20
+		elementheight 16
+		elementtype 1
+		horizontalscroll
+	}
+	itemDef {
+		name "flat"
+		type 6
+		rect 200 180 100 40
+		visible 1
+		feeder 3
+		elementwidth 20
+		elementheight 16
+		notselectable
+	}
+	itemDef {
+		name "yn"
+		type 11
+		rect 320 20 100 20
+		visible 1
+		cvar "yn"
+	}
+	itemDef {
+		name "multi"
+		type 12
+		rect 320 50 100 20
+		visible 1
+		cvar "mode"
+		cvarStrList { "Easy", "easy", "Hard", "hard", "Insane", "insane" }
+	}
+	itemDef {
+		name "multif"
+		type 12
+		rect 320 80 100 20
+		visible 1
+		cvar "level"
+		cvarFloatList { "Low" 1 "Mid" 2.5 "High" 4 }
+	}
+	itemDef {
+		name "slide"
+		type 10
+		rect 320 110 200 20
+		visible 1
+		cvar "vol"
+		cvarFloat "vol" 5 0 10
+	}
+	itemDef {
+		name "edit"
+		type 4
+		rect 320 140 100 20
+		visible 1
+		cvar "ed"
+		maxChars 8
+		maxPaintChars 5
+	}
+	itemDef {
+		name "num"
+		type 9
+		rect 320 170 100 20
+		visible 1
+		cvar "nm"
+		maxChars 4
+		maxPaintChars 4
+	}
+	itemDef {
+		name "owner"
+		type 8
+		rect 320 200 100 20
+		visible 1
+		ownerdraw 7
+		special 9
+		action { setcvar owner 1 }
+	}
+	itemDef {
+		name "label"
+		type 0
+		text "Hi"
+		rect 20 200 100 20
+		visible 1
+		action { setcvar label 1 }
+	}
+	itemDef {
+		name "movie"
+		type 0
+		rect 500 300 50 50
+		visible 1
+		decoration
+		style 5
+		cinematic "intro.roq"
+	}
+	itemDef {
+		name "slide2"
+		type 10
+		text "Volume"
+		rect 320 230 220 20
+		visible 1
+		cvar "vol"
+		cvarFloat "vol" 5 0 10
+	}
+}
+menuDef {
+	name "pop"
+	rect 300 300 120 100
+	visible 0
+	popup
+	outOfBoundsClick
+	onOpen { setcvar popopen 1 }
+	onClose { setcvar popclose 1 }
+	itemDef {
+		name "ok"
+		type 1
+		rect 310 310 40 20
+		visible 1
+		action { setcvar popok 1 }
+	}
+	itemDef {
+		name "cancel"
+		type 1
+		rect 360 310 40 20
+		visible 1
+		action { close pop }
+	}
+}
+menuDef {
+	name "other"
+	outOfBoundsClick
+	rect 440 20 190 100
+	visible 0
+	onOpen { setcvar otheropen 1 }
+	itemDef {
+		name "go"
+		type 1
+		rect 450 30 60 20
+		visible 1
+		action { setcvar go 1 }
+	}
+}
+menuDef {
+	name "lonely"
+	rect 600 440 30 30
+	visible 0
+	itemDef {
+		name "x"
+		type 1
+		rect 600 440 30 30
+		visible 1
+	}
+}

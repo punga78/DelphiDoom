@@ -1,0 +1,460 @@
+# The scroll bars, the drag of a thumb, the edit fields and the wrap of the focus (ui_shared.c), on ui/input.menu
+menu ui/assets.menu
+menu ui/input.menu
+cvar mode easy
+cvar yn 1
+cvar level 2.5
+cvar vol 5
+cvar ed abcdefghijkl
+cvar nm 12
+feeder 1 10
+feeder 2 8
+feeder 3 6
+textrect main label 22 214 40 14
+open main
+# the focus goes round
+prev main
+prev main
+next main
+next main
+cursor 500 500
+focus main play
+cursor 30 30
+focus main play
+cursor 500 500
+focus main label
+next lonely
+open lonely
+focus lonely x
+next lonely
+prev lonely
+# the thumb of the vertical list box, with the time going on
+time 100
+cursor 292 40
+move 292 40
+key 178 1
+cursor 292 60
+capture
+cursor 292 75
+capture
+cursor 292 75
+capture
+time 700
+capture
+time 900
+capture
+cursor 292 90
+capture
+cursor 292 30
+capture
+key 178 0
+# the arrows hold: the auto scroll speeds up
+cursor 290 90
+move 290 90
+key 178 1
+time 1500
+capture
+time 1600
+capture
+time 1700
+capture
+time 1900
+capture
+time 2100
+capture
+time 2300
+capture
+time 2500
+capture
+time 3000
+capture
+time 4000
+capture
+time 4100
+capture
+time 4300
+capture
+time 4500
+capture
+key 178 0
+cursor 290 25
+move 290 25
+key 178 1
+time 5000
+capture
+time 5700
+capture
+time 6400
+capture
+time 7100
+capture
+key 178 0
+# the pages
+cursor 290 30
+move 290 30
+key 178 1
+key 178 0
+cursor 290 70
+move 290 70
+key 178 1
+key 178 1
+key 178 1
+key 178 1
+cursor 290 40
+move 290 40
+key 178 1
+key 178 1
+key 178 1
+key 178 1
+cursor 290 80
+move 290 80
+key 178 1
+cursor 290 50
+move 290 50
+key 178 1
+key 178 0
+# the keys of the list box
+cursor 210 40
+move 210 40
+key 143 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 142 1
+key 142 1
+key 142 1
+key 141 1
+key 141 1
+key 141 1
+key 141 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 144 1
+key 163 1
+key 165 1
+key 1 1
+# the horizontal list box: arrows, thumb, pages
+cursor 205 150
+move 205 150
+key 178 1
+time 8000
+capture
+time 8600
+capture
+key 178 0
+cursor 295 150
+move 295 150
+key 178 1
+key 178 1
+key 178 1
+key 178 0
+cursor 230 150
+move 230 150
+key 178 1
+key 178 0
+cursor 280 150
+move 280 150
+key 178 1
+key 178 1
+key 178 0
+cursor 240 150
+move 240 150
+key 178 1
+cursor 260 150
+capture
+cursor 275 150
+capture
+cursor 275 150
+capture
+cursor 215 150
+capture
+cursor 300 150
+capture
+time 9500
+capture
+key 178 0
+cursor 230 130
+move 230 130
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 135 1
+key 165 1
+key 163 1
+key 143 1
+key 144 1
+# the list box that cannot select
+cursor 210 190
+move 210 190
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 133 1
+key 165 1
+key 165 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 132 1
+key 163 1
+key 143 1
+key 144 1
+key 141 1
+key 141 1
+key 141 1
+key 142 1
+# the thumb and the arrows of the small lists
+cursor 290 195
+move 290 195
+key 178 1
+key 178 0
+cursor 290 215
+move 290 215
+key 178 1
+key 178 0
+cursor 290 205
+move 290 205
+key 178 1
+key 178 0
+cursor 290 182
+move 290 182
+key 178 1
+key 178 0
+# the edit field with a long cvar
+cursor 330 150
+move 330 150
+key 13 1
+key 143 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 135 1
+key 140 1
+key 140 1
+key 144 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 134 1
+key 1032 1
+key 1032 1
+key 143 1
+key 1032 1
+key 139 1
+key 1121 1
+key 1122 1
+key 1123 1
+key 1124 1
+key 1125 1
+key 1126 1
+key 1127 1
+key 1128 1
+key 1129 1
+key 1130 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 144 1
+key 143 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 1056 1
+key 134 1
+key 134 1
+key 134 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 139 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 1032 1
+key 143 1
+key 139 1
+key 1121 1
+key 143 1
+key 140 1
+key 140 1
+key 140 1
+key 144 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 1121 1
+key 13 1
+# the numeric field
+cursor 330 180
+move 330 180
+key 13 1
+key 1121 1
+key 1056 1
+key 1057 1
+key 1058 1
+key 1059 1
+key 1060 1
+key 1061 1
+key 139 1
+key 1056 1
+key 1057 1
+key 1058 1
+key 1059 1
+key 1060 1
+key 1061 1
+key 1062 1
+key 1063 1
+key 1064 1
+key 132 1
+key 9 1
+key 133 1
+key 133 1
+key 13 1
+cursor 330 150
+move 330 150
+key 13 1
+key 132 1
+key 9 1
+key 27 1
+key 178 1
+# the text items and the owner draw
+cursor 100 215
+focus main label
+cursor 30 210
+open pop
+menukey main 178 1
+cursor 400 400
+menukey other 178 1
+open main
+open other
+cursor 30 205
+menukey other 178 1
+open other
+cursor 100 215
+menukey other 178 1
+cursor 500 400
+menukey main 178 1
+cursor 30 205
+mouseenter main label 30 205
+mouseenter main label 100 215
+mouseleave main label
+cursor 60 205
+mouseenter main label 60 205
+mouseenter main label 30 100
+mouseleave main label
+# a slider that has a text
+cvar vol 5
+textrect main slide2 322 244 60 14
+cursor 410 240
+move 410 240
+key 178 1
+cursor 440 240
+capture
+cursor 500 240
+capture
+cursor 330 240
+capture
+key 178 0
+cursor 395 240
+key 178 1
+key 13 1
+cursor 500 240
+key 178 1
+# the multi and the yes/no with the cursor off the item
+cursor 330 60
+move 330 60
+cursor 600 60
+key 178 1
+key 13 1
+cursor 600 90
+key 178 1
+cursor 600 30
+key 178 1
+cursor 330 120
+key 178 1
+key 13 1
+key 179 1
+key 180 1
+cursor 321 120
+key 178 1
+cursor 470 120
+key 178 1
+cursor 600 120
+key 178 1
+cvar vol 0
+cursor 368 120
+key 178 1
+cvar vol 20
+key 178 1
+cvar vol -5
+key 178 1
+cvar vol abc
+key 178 1
+istate
