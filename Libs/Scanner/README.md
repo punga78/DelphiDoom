@@ -22,3 +22,8 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+## Dict: angoli, matrici ed elenchi (issue #97, seconda fetta)
+
+- `TIdDict.SetAngles/GetAngles/SetMatrix/GetMatrix` (sopra `TIdAngles` e `TIdMat3` di `Libs\MathCore`) e `TIdDictLister` (`idDict::ListKeys_f` e `ListValues_f` su un elenco di dizionari, uscita a un `IIdLibLog`). Dettagli, differenze e cosa resta (profilo Quake III del parser): [CLAUDE.md](CLAUDE.md).
+- Chi compila `IdDict` ha bisogno di `Libs\MathCore` nel percorso delle unit (o delle due unit `DelphiDoom.MathCore.Float.Angles` e `.Mat3` nel `.dpr`).

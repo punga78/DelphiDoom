@@ -65,6 +65,8 @@ type
     class function Path(const AFileName: string): string; static;
     class function ReadBytes(const AFileName: string): TBytes; static;
     class function ReadLines(const AFileName: string): TStringList; static;
+    /// <summary>A file of Tests\Data\Jpeg (the JPEG files of the tests of Libs\Jpeg)</summary>
+    class function ReadJpeg(const AFileName: string): TBytes; static;
   end;
 
 function PixelsCrc(const APixels: TArray<Cardinal>): Cardinal;
@@ -224,6 +226,12 @@ end;
 class function TRoqTestData.ReadBytes(const AFileName: string): TBytes;
 begin
   Result := TFile.ReadAllBytes(Path(AFileName));
+end;
+
+class function TRoqTestData.ReadJpeg(const AFileName: string): TBytes;
+begin
+  Result := TFile.ReadAllBytes(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) +
+    '..\..\Tests\Data\Jpeg\' + AFileName));
 end;
 
 class function TRoqTestData.ReadLines(const AFileName: string): TStringList;

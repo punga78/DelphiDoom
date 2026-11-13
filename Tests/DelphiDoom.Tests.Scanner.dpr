@@ -49,6 +49,7 @@ uses
   DelphiDoom.Scanner.IdParser in '..\Libs\Scanner\DelphiDoom.Scanner.IdParser.pas',
   DelphiDoom.Scanner.IdDict in '..\Libs\Scanner\DelphiDoom.Scanner.IdDict.pas',
   DelphiDoom.Scanner.IdLangDict in '..\Libs\Scanner\DelphiDoom.Scanner.IdLangDict.pas',
+  DelphiDoom.Scanner.IdDictLister in '..\Libs\Scanner\DelphiDoom.Scanner.IdDictLister.pas',
   DelphiDoom.Tests.Scanner.Parity in 'Source\DelphiDoom.Tests.Scanner.Parity.pas',
   DelphiDoom.Tests.Scanner.Text in 'Source\DelphiDoom.Tests.Scanner.Text.pas',
   DelphiDoom.Tests.Scanner.Preprocessor in 'Source\DelphiDoom.Tests.Scanner.Preprocessor.pas',
@@ -60,7 +61,8 @@ uses
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
   DelphiDoom.Tests.Scanner.IdParser in 'Source\DelphiDoom.Tests.Scanner.IdParser.pas',
   DelphiDoom.Tests.Scanner.IdParser.Golden in 'Source\DelphiDoom.Tests.Scanner.IdParser.Golden.pas',
-  DelphiDoom.Tests.Scanner.IdDict in 'Source\DelphiDoom.Tests.Scanner.IdDict.pas';
+  DelphiDoom.Tests.Scanner.IdDict in 'Source\DelphiDoom.Tests.Scanner.IdDict.pas',
+  DelphiDoom.Tests.Scanner.IdDictLister in 'Source\DelphiDoom.Tests.Scanner.IdDictLister.pas';
 
 var
   Runner: ITestRunner;

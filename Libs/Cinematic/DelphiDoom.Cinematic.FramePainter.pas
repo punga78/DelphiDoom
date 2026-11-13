@@ -65,6 +65,12 @@ type
     procedure Paint(const AData: TBytes; ASize: Integer; AFrameNumber: Integer);
     /// <summary>The first frame is copied into the second half, so the next one has a past</summary>
     procedure CopyFirstToSecond;
+    /// <summary>
+    ///   Puts a whole frame (Width * Height pixels) in the first buffer and copies it to the second,
+    ///   as <c>JPEGBlit</c> of Doom 3 does; a different number of pixels is an
+    ///   <c>ERoqInvalidDataException</c> (the original writes outside the buffer or leaves it as it was)
+    /// </summary>
+    procedure LoadFirstFrame(const APixels: TImagingPixels);
     /// <summary>The pixels of a half of the buffer, as a new array</summary>
     function FrameCopy(AFrameNumber: Integer): TImagingPixels;
     /// <summary>Pixels of a frame (Width * Height): the distance between the two halves</summary>
@@ -82,7 +88,8 @@ resourcestring
   SSizeNotMultiple = 'The size of the video (%dx%d) is not a multiple of 16';
   SDataEnd = 'The frame data end before the last block';
   SNoCodebook = 'The frame uses a vector but there is no codebook';
-  SMotionOutside = 'A motion vector reads outside the buffers of the video';
+  SFrameSize = 'The frame has %d pixels but the video needs %d';
+  SMotionOutside ='A motion vector reads outside the buffers of the video';
 
 { TRoqFramePainter }
 
@@ -244,6 +251,14 @@ end;
 procedure TRoqFramePainter.CopyFirstToSecond;
 begin
   Move(FImage[0], FImage[FDelta], FDelta * SizeOf(Cardinal));
+end;
+
+procedure TRoqFramePainter.LoadFirstFrame(const APixels: TImagingPixels);
+begin
+  if Length(APixels) <> FDelta then
+    raise ERoqInvalidDataException.CreateFmt(SFrameSize, [Length(APixels), FDelta]);
+  Move(APixels[0], FImage[0], FDelta * SizeOf(Cardinal));
+  CopyFirstToSecond;
 end;
 
 function TRoqFramePainter.FrameCopy(AFrameNumber: Integer): TImagingPixels;

@@ -1,0 +1,487 @@
+> init
+> dump
+G: sv_cheats|1|1|~|72|1|1|3F800000|1
+M: 0 N: 1
+> get\ta\tone\t0
+G: a|one|one|~|0|1|1|00000000|0
+> get\ta\ttwo\t0
+G: a|one|one|~|0|1|1|00000000|0
+D: Warning: cvar "a" given initial values: "one" and "two"\n
+> get\ta\ttwo\t1
+G: a|one|one|~|1|1|1|00000000|0
+D: Warning: cvar "a" given initial values: "one" and "two"\n
+> get\tName\tval\t1
+G: Name|val|val|~|1|1|1|00000000|0
+> get\tNAME\tother\t0
+G: Name|val|val|~|1|1|1|00000000|0
+D: Warning: cvar "NAME" given initial values: "val" and "other"\n
+> get\tbad\\name\tx\t0
+G: BADNAME|x|x|~|0|1|1|00000000|0
+P: invalid cvar name string: bad\\name\n
+> get\tsemi;colon\tx\t0
+G: BADNAME|x|x|~|0|1|1|00000000|0
+P: invalid cvar name string: semi;colon\n
+> get\tquo"te\tx\t0
+G: BADNAME|x|x|~|0|1|1|00000000|0
+P: invalid cvar name string: quo"te\n
+> get\tempty\t\t0
+G: empty|||~|0|1|1|00000000|0
+> get\tempty\tfilled\t0
+G: empty||filled|~|0|1|1|00000000|0
+> get\tnum\t12.75abc\t0
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+> get\tneg\t-7\t0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+> get\thex\t0x10\t0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+> set\ta\tchanged
+G: a|changed|one|~|1|1|2|00000000|0
+D: Cvar_Set2: a changed\n
+> set\ta\tchanged
+G: a|changed|one|~|1|1|2|00000000|0
+D: Cvar_Set2: a changed\n
+> set\tnonexist\tvalue
+G: nonexist|value|value|~|0|1|1|00000000|0
+D: Cvar_Set2: nonexist value\n
+> set\tNonexist\tvalue2
+G: nonexist|value2|value|~|0|1|2|00000000|0
+D: Cvar_Set2: Nonexist value2\n
+> set2\tuser\tval\t0
+G: user|val|val|~|128|1|1|00000000|0
+D: Cvar_Set2: user val\n
+> set2\tuser2\tval\t0
+G: user2|val|val|~|128|1|1|00000000|0
+D: Cvar_Set2: user2 val\n
+> get\tuser\tcodeval\t0
+G: user|val|codeval|~|0|1|1|00000000|0
+> get\tuser2\t\t0
+G: user2|val|val|~|128|1|1|00000000|0
+> set2\tuser\tmore\t0
+G: user|more|codeval|~|0|1|2|00000000|0
+D: Cvar_Set2: user more\n
+> set2\tnewforce\tf\t1
+G: newforce|f|f|~|0|1|1|00000000|0
+D: Cvar_Set2: newforce f\n
+> set\tbad;name\tzz
+G: <none>
+P: invalid cvar name string: bad;name\n
+D: Cvar_Set2: bad;name zz\n
+> set\tsemi;colon\tv
+G: <none>
+P: invalid cvar name string: semi;colon\n
+D: Cvar_Set2: semi;colon v\n
+> get\trom\tr\t64
+G: rom|r|r|~|64|1|1|00000000|0
+> set2\trom\tx\t0
+G: rom|r|r|~|64|1|1|00000000|0
+P: rom is read only.\n
+D: Cvar_Set2: rom x\n
+> set\trom\ty
+G: rom|y|r|~|64|1|2|00000000|0
+D: Cvar_Set2: rom y\n
+> set2\trom\ty\t0
+G: rom|y|r|~|64|1|2|00000000|0
+D: Cvar_Set2: rom y\n
+> get\tinit\ti\t16
+G: init|i|i|~|16|1|1|00000000|0
+> set2\tinit\tx\t0
+G: init|i|i|~|16|1|1|00000000|0
+P: init is write protected.\n
+D: Cvar_Set2: init x\n
+> set\tinit\tx
+G: init|x|i|~|16|1|2|00000000|0
+D: Cvar_Set2: init x\n
+> get\tlat\tl1\t32
+G: lat|l1|l1|~|32|1|1|00000000|0
+> set2\tlat\tl2\t0
+G: lat|l1|l1|l2|32|1|2|00000000|0
+P: lat will be changed upon restarting.\n
+D: Cvar_Set2: lat l2\n
+> set2\tlat\tl2\t0
+G: lat|l1|l1|l2|32|1|2|00000000|0
+D: Cvar_Set2: lat l2\n
+> set2\tlat\tl1\t0
+G: lat|l1|l1|l2|32|1|2|00000000|0
+D: Cvar_Set2: lat l1\n
+> set2\tlat\tl3\t0
+G: lat|l1|l1|l3|32|1|3|00000000|0
+P: lat will be changed upon restarting.\n
+D: Cvar_Set2: lat l3\n
+> cmd\tlat
+P: "lat" is:"l1^7" default:"l1^7"\nlatched: "l3"\n
+> get\tlat\tl1\t0
+G: lat|l3|l1|~|32|1|4|00000000|0
+D: Cvar_Set2: lat l3\n
+> get\tlat\tl1\t0
+G: lat|l3|l1|~|32|1|4|00000000|0
+> setl\tlat\tl4
+G: lat|l3|l1|l4|32|1|5|00000000|0
+P: lat will be changed upon restarting.\n
+D: Cvar_Set2: lat l4\n
+> set\tlat\tl5
+G: lat|l5|l1|~|32|1|6|00000000|0
+D: Cvar_Set2: lat l5\n
+> get\tlat\tother\t0
+G: lat|l5|l1|~|32|1|6|00000000|0
+D: Warning: cvar "lat" given initial values: "l1" and "other"\n
+> get\tch\tc\t512
+G: ch|c|c|~|512|1|1|00000000|0
+> set2\tch\tx\t0
+G: ch|x|c|~|512|1|2|00000000|0
+D: Cvar_Set2: ch x\n
+> set\tsv_cheats\t0
+G: sv_cheats|0|1|~|72|1|2|00000000|0
+D: Cvar_Set2: sv_cheats 0\n
+> set2\tch\ty\t0
+G: ch|x|c|~|512|1|2|00000000|0
+P: ch is cheat protected.\n
+D: Cvar_Set2: ch y\n
+> set\tch\tforced
+G: ch|forced|c|~|512|1|3|00000000|0
+D: Cvar_Set2: ch forced\n
+> cheat
+D: Cvar_Set2: ch c\n
+> set\tsv_cheats\t1
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+D: Cvar_Set2: sv_cheats 1\n
+> set2\tch\tz\t0
+G: ch|z|c|~|512|1|5|00000000|0
+D: Cvar_Set2: ch z\n
+> cheat
+D: Cvar_Set2: ch c\n
+> set2\tch\tagain\t0
+G: ch|again|c|~|512|1|7|00000000|0
+D: Cvar_Set2: ch again\n
+> setv\tnumeric\t5
+G: numeric|5|5|~|0|1|1|40A00000|5
+D: Cvar_Set2: numeric 5\n
+> setv\tnumeric\t2.5
+G: numeric|2.500000|5|~|0|1|2|40200000|2
+D: Cvar_Set2: numeric 2.500000\n
+> setv\tnumeric\t-3
+G: numeric|-3|5|~|0|1|3|C0400000|-3
+D: Cvar_Set2: numeric -3\n
+> setv\tnumeric\t0.1
+G: numeric|0.100000|5|~|0|1|4|3DCCCCCD|0
+D: Cvar_Set2: numeric 0.100000\n
+> setv\tnumeric\t-0.25
+G: numeric|-0.250000|5|~|0|1|5|BE800000|0
+D: Cvar_Set2: numeric -0.250000\n
+> setv\tnumeric\t1000
+G: numeric|1000|5|~|0|1|6|447A0000|1000
+D: Cvar_Set2: numeric 1000\n
+> setv\tnumeric\t0
+G: numeric|0|5|~|0|1|7|00000000|0
+D: Cvar_Set2: numeric 0\n
+> reset\ta
+G: a|one|one|~|1|1|3|00000000|0
+D: Cvar_Set2: a (null)\n
+> reset\tmissing
+G: <none>
+D: Cvar_Set2: missing (null)\n
+> reset\trom
+G: rom|y|r|~|64|1|2|00000000|0
+P: rom is read only.\n
+D: Cvar_Set2: rom (null)\n
+> reset\tnumeric
+G: numeric|5|5|~|0|1|8|40A00000|5
+D: Cvar_Set2: numeric (null)\n
+> val\ta
+V: 00000000|0|one
+> val\tnumeric
+V: 40A00000|5|5
+> val\tmissing
+V: 00000000|0|
+> vbuf\ta\t3
+V: on
+> vbuf\ta\t100
+V: one
+> vbuf\tmissing\t5
+V: 
+> vbuf\ta\t1
+V: 
+> cmd\tnumeric
+P: "numeric" is:"5^7" default:"5^7"\n
+> cmd\tNUMERIC 77
+D: Cvar_Set2: numeric 77\n
+> cmd\tnumeric
+P: "numeric" is:"77^7" default:"5^7"\n
+> cmd\tnumeric "two words"
+D: Cvar_Set2: numeric two words\n
+> cmd\ttoggle numeric
+D: Cvar_Set2: numeric 1\n
+> cmd\ttoggle numeric
+D: Cvar_Set2: numeric 0\n
+> cmd\ttoggle a
+D: Cvar_Set2: a 1\n
+> cmd\ttoggle missing
+D: Cvar_Set2: missing 1\n
+> cmd\ttoggle
+P: usage: toggle <variable>\n
+> cmd\ttoggle a b
+P: usage: toggle <variable>\n
+> cmd\ttoggle rom
+P: rom is read only.\n
+D: Cvar_Set2: rom 1\n
+> cmd\tset
+P: usage: set <variable> <value>\n
+> cmd\tset onlyname
+P: usage: set <variable> <value>\n
+> cmd\tset sx 5
+D: Cvar_Set2: sx 5\n
+> cmd\tset sx
+P: usage: set <variable> <value>\n
+> cmd\tset sy hello world "with quote" more
+D: Cvar_Set2: sy hello world with quote more\n
+> cmd\tset sy
+P: usage: set <variable> <value>\n
+> cmd\tset sz a  b   c
+D: Cvar_Set2: sz a b c\n
+> cmd\tseta ax 5
+D: Cvar_Set2: ax 5\n
+> cmd\tseta ax 6
+D: Cvar_Set2: ax 6\n
+> cmd\tseta ax
+P: usage: seta <variable> <value>\n
+> cmd\tsets sx2 1
+D: Cvar_Set2: sx2 1\n
+> cmd\tsetu ux 2
+D: Cvar_Set2: ux 2\n
+> cmd\tsetu
+P: usage: setu <variable> <value>\n
+> cmd\tsets only
+P: usage: sets <variable> <value>\n
+> cmd\treset ax
+D: Cvar_Set2: ax (null)\n
+> cmd\treset
+P: usage: reset <variable>\n
+> cmd\treset ax extra
+P: usage: reset <variable>\n
+> cmd\tsx
+P: "sx" is:"5^7" default:"5^7"\n
+> cmd\tSX 99
+D: Cvar_Set2: sx 99\n
+> cmd\tax
+P: "ax" is:"5^7" default:"5^7"\n
+> cmd\tcvarlist
+P:  U      ux "2"\nS       sx2 "1"\n    A   ax "5"\n        sz "a b c"\n        sy "hello world with quote more"\n        sx "99"\n        missing "1"\n        numeric "0"\n      C ch "again"\n     L  lat "l5"\n   I    init "x"\n  R     rom "y"\n        newforce "f"\n        user2 "val"\n        user "more"\n        nonexist "value2"\n        hex "0x10"\n        neg "-7"\n        num "12.75abc"\n        empty ""\n        BADNAME "v"\n    A   Name "val"\n    A   a "1"\n  R     sv_cheats "1"\n\n24 total cvars\n24 cvar indexes\n
+> cmd\tcvarlist s*
+P: S       sx2 "1"\n        sz "a b c"\n        sy "hello world with quote more"\n        sx "99"\n  R     sv_cheats "1"\n\n24 total cvars\n24 cvar indexes\n
+> cmd\tcvarlist [a-b]*
+P:     A   ax "5"\n        BADNAME "v"\n    A   a "1"\n\n24 total cvars\n24 cvar indexes\n
+> cmd\tcvarlist ?x
+P:  U      ux "2"\nS       sx2 "1"\n    A   ax "5"\n        sx "99"\n\n24 total cvars\n24 cvar indexes\n
+> cmd\tcvarlist zzz
+P: \n24 total cvars\n24 cvar indexes\n
+> get\tarch\tav\t1
+G: arch|av|av|~|1|1|1|00000000|0
+> get\tarch2\tav2\t1
+G: arch2|av2|av2|~|1|1|1|00000000|0
+> get\tcl_cdkey\tsecret\t1
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+> get\tarch3\t"quoted"\t1
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+> set\tarch2\tchanged
+G: arch2|changed|av2|~|1|1|2|00000000|0
+D: Cvar_Set2: arch2 changed\n
+> setl\tarch2\tlater
+G: arch2|later|av2|~|1|1|3|00000000|0
+D: Cvar_Set2: arch2 later\n
+> cmd\trom
+P: "rom" is:"y^7" default:"r^7"\n
+> cmd\tset lat latch
+P: lat will be changed upon restarting.\n
+D: Cvar_Set2: lat latch\n
+> cmd\tlat
+P: "lat" is:"l5^7" default:"l1^7"\nlatched: "latch"\n
+> write
+F: seta arch3 ""quoted""\nseta arch2 "later"\nseta arch "av"\nseta ax "5"\nseta Name "val"\nseta a "1"\n
+> dump
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+G: arch2|later|av2|~|1|1|3|00000000|0
+G: arch|av|av|~|1|1|1|00000000|0
+G: ux|2|2|~|130|1|1|40000000|2
+G: sx2|1|1|~|132|1|1|3F800000|1
+G: ax|5|5|~|129|1|3|40A00000|5
+G: sz|a b c|a b c|~|128|1|1|00000000|0
+G: sy|hello world with quote more|hello world with quote more|~|128|1|1|00000000|0
+G: sx|99|5|~|128|1|2|42C60000|99
+G: missing|1|1|~|128|1|1|3F800000|1
+G: numeric|0|5|~|0|1|12|00000000|0
+G: ch|again|c|~|512|1|7|00000000|0
+G: lat|l5|l1|latch|32|1|7|00000000|0
+G: init|x|i|~|16|1|2|00000000|0
+G: rom|y|r|~|64|1|2|00000000|0
+G: newforce|f|f|~|0|1|1|00000000|0
+G: user2|val|val|~|128|1|1|00000000|0
+G: user|more|codeval|~|0|1|2|00000000|0
+G: nonexist|value2|value|~|0|1|2|00000000|0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+G: empty||filled|~|0|1|1|00000000|0
+G: BADNAME|v|x|~|0|1|3|00000000|0
+G: Name|val|val|~|1|1|1|00000000|0
+G: a|1|one|~|1|1|4|3F800000|1
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+M: 761 N: 28
+> clearmod
+> set\ta\tzzz
+G: a|zzz|one|~|1|1|5|00000000|0
+D: Cvar_Set2: a zzz\n
+> dump
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+G: arch2|later|av2|~|1|1|3|00000000|0
+G: arch|av|av|~|1|1|1|00000000|0
+G: ux|2|2|~|130|1|1|40000000|2
+G: sx2|1|1|~|132|1|1|3F800000|1
+G: ax|5|5|~|129|1|3|40A00000|5
+G: sz|a b c|a b c|~|128|1|1|00000000|0
+G: sy|hello world with quote more|hello world with quote more|~|128|1|1|00000000|0
+G: sx|99|5|~|128|1|2|42C60000|99
+G: missing|1|1|~|128|1|1|3F800000|1
+G: numeric|0|5|~|0|1|12|00000000|0
+G: ch|again|c|~|512|1|7|00000000|0
+G: lat|l5|l1|latch|32|1|7|00000000|0
+G: init|x|i|~|16|1|2|00000000|0
+G: rom|y|r|~|64|1|2|00000000|0
+G: newforce|f|f|~|0|1|1|00000000|0
+G: user2|val|val|~|128|1|1|00000000|0
+G: user|more|codeval|~|0|1|2|00000000|0
+G: nonexist|value2|value|~|0|1|2|00000000|0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+G: empty||filled|~|0|1|1|00000000|0
+G: BADNAME|v|x|~|0|1|3|00000000|0
+G: Name|val|val|~|1|1|1|00000000|0
+G: a|zzz|one|~|1|1|5|00000000|0
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+M: 1 N: 28
+> clearmod
+> set\tax\t12
+G: ax|12|5|~|129|1|4|41400000|12
+D: Cvar_Set2: ax 12\n
+> dump
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+G: arch2|later|av2|~|1|1|3|00000000|0
+G: arch|av|av|~|1|1|1|00000000|0
+G: ux|2|2|~|130|1|1|40000000|2
+G: sx2|1|1|~|132|1|1|3F800000|1
+G: ax|12|5|~|129|1|4|41400000|12
+G: sz|a b c|a b c|~|128|1|1|00000000|0
+G: sy|hello world with quote more|hello world with quote more|~|128|1|1|00000000|0
+G: sx|99|5|~|128|1|2|42C60000|99
+G: missing|1|1|~|128|1|1|3F800000|1
+G: numeric|0|5|~|0|1|12|00000000|0
+G: ch|again|c|~|512|1|7|00000000|0
+G: lat|l5|l1|latch|32|1|7|00000000|0
+G: init|x|i|~|16|1|2|00000000|0
+G: rom|y|r|~|64|1|2|00000000|0
+G: newforce|f|f|~|0|1|1|00000000|0
+G: user2|val|val|~|128|1|1|00000000|0
+G: user|more|codeval|~|0|1|2|00000000|0
+G: nonexist|value2|value|~|0|1|2|00000000|0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+G: empty||filled|~|0|1|1|00000000|0
+G: BADNAME|v|x|~|0|1|3|00000000|0
+G: Name|val|val|~|1|1|1|00000000|0
+G: a|zzz|one|~|1|1|5|00000000|0
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+M: 129 N: 28
+> vmreg\t0\ta\tvmdefault\t0
+Y: 1|5|00000000|0|zzz
+D: Warning: cvar "a" given initial values: "one" and "vmdefault"\n
+> vmreg\t1\tvmnew\t12.5\t0
+Y: 28|1|41480000|12|12.5
+> vmupd\t0
+Y: 1|5|00000000|0|zzz
+> set\ta\tchanged again
+G: a|changed again|one|~|1|1|6|00000000|0
+D: Cvar_Set2: a changed again\n
+> vmupd\t0
+Y: 1|6|00000000|0|changed again
+> vmupd\t0
+Y: 1|6|00000000|0|changed again
+> set\tvmnew\t99
+G: vmnew|99|12.5|~|0|1|2|42C60000|99
+D: Cvar_Set2: vmnew 99\n
+> vmupd\t1
+Y: 28|2|42C60000|99|99
+> setv\tvmnew\t3
+G: vmnew|3|12.5|~|0|1|3|40400000|3
+D: Cvar_Set2: vmnew 3\n
+> vmupd\t1
+Y: 28|3|40400000|3|3
+> info\t2
+I: \\ux\\2
+> info\t4
+I: \\sx2\\1
+> info\t1
+I: \\a\\changed again\\Name\\val\\ax\\12\\arch\\av\\arch2\\later\\cl_cdkey\\secret
+P: Can't use keys or values with a "\n
+> infobig\t8
+I: \\sv_cheats\\1
+> infobig\t4
+I: \\sx2\\1
+> cmd\tcvar_restart
+D: Cvar_Set2: vmnew 12.5\nCvar_Set2: arch3 "quoted"\nCvar_Set2: cl_cdkey secret\nCvar_Set2: arch2 av2\nCvar_Set2: arch av\nCvar_Set2: numeric 5\nCvar_Set2: ch c\nCvar_Set2: lat l1\nCvar_Set2: newforce f\nCvar_Set2: user codeval\nCvar_Set2: nonexist value\nCvar_Set2: hex 0x10\nCvar_Set2: neg -7\nCvar_Set2: num 12.75abc\nCvar_Set2: empty filled\nCvar_Set2: BADNAME x\nCvar_Set2: Name val\nCvar_Set2: a one\n
+> dump
+G: vmnew|12.5|12.5|~|0|1|4|41480000|12
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+G: arch2|av2|av2|~|1|1|4|00000000|0
+G: arch|av|av|~|1|1|1|00000000|0
+G: numeric|5|5|~|0|1|13|40A00000|5
+G: ch|c|c|~|512|1|8|00000000|0
+G: lat|l1|l1|~|32|1|8|00000000|0
+G: init|x|i|~|16|1|2|00000000|0
+G: rom|y|r|~|64|1|2|00000000|0
+G: newforce|f|f|~|0|1|1|00000000|0
+G: user|codeval|codeval|~|0|1|3|00000000|0
+G: nonexist|value|value|~|0|1|3|00000000|0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+G: empty|filled|filled|~|0|1|2|00000000|0
+G: BADNAME|x|x|~|0|1|4|00000000|0
+G: Name|val|val|~|1|1|1|00000000|0
+G: a|one|one|~|1|1|7|00000000|0
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+M: 673 N: 29
+> write
+F: seta arch3 ""quoted""\nseta arch2 "av2"\nseta arch "av"\nseta Name "val"\nseta a "one"\n
+> info\t2
+I: 
+> infobig\t8
+I: \\sv_cheats\\1
+> cmd\tcvar_restart
+D: Cvar_Set2: vmnew 12.5\nCvar_Set2: arch3 "quoted"\nCvar_Set2: cl_cdkey secret\nCvar_Set2: arch2 av2\nCvar_Set2: arch av\nCvar_Set2: numeric 5\nCvar_Set2: ch c\nCvar_Set2: lat l1\nCvar_Set2: newforce f\nCvar_Set2: user codeval\nCvar_Set2: nonexist value\nCvar_Set2: hex 0x10\nCvar_Set2: neg -7\nCvar_Set2: num 12.75abc\nCvar_Set2: empty filled\nCvar_Set2: BADNAME x\nCvar_Set2: Name val\nCvar_Set2: a one\n
+> dump
+G: vmnew|12.5|12.5|~|0|1|4|41480000|12
+G: arch3|"quoted"|"quoted"|~|1|1|1|00000000|0
+G: cl_cdkey|secret|secret|~|1|1|1|00000000|0
+G: arch2|av2|av2|~|1|1|4|00000000|0
+G: arch|av|av|~|1|1|1|00000000|0
+G: numeric|5|5|~|0|1|13|40A00000|5
+G: ch|c|c|~|512|1|8|00000000|0
+G: lat|l1|l1|~|32|1|8|00000000|0
+G: init|x|i|~|16|1|2|00000000|0
+G: rom|y|r|~|64|1|2|00000000|0
+G: newforce|f|f|~|0|1|1|00000000|0
+G: user|codeval|codeval|~|0|1|3|00000000|0
+G: nonexist|value|value|~|0|1|3|00000000|0
+G: hex|0x10|0x10|~|0|1|1|00000000|0
+G: neg|-7|-7|~|0|1|1|C0E00000|-7
+G: num|12.75abc|12.75abc|~|0|1|1|414C0000|12
+G: empty|filled|filled|~|0|1|2|00000000|0
+G: BADNAME|x|x|~|0|1|4|00000000|0
+G: Name|val|val|~|1|1|1|00000000|0
+G: a|one|one|~|1|1|7|00000000|0
+G: sv_cheats|1|1|~|72|1|3|3F800000|1
+M: 673 N: 29

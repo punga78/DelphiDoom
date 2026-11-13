@@ -1,0 +1,150 @@
+# scenario of the cvars of Quake III, written for the tests
+# fields are separated by a tab; in a field \n \t \r \\ and \xNN are escapes
+init
+dump
+get	a	one	0
+get	a	two	0
+get	a	two	1
+get	Name	val	1
+get	NAME	other	0
+get	bad\\name	x	0
+get	semi;colon	x	0
+get	quo"te	x	0
+get	empty		0
+get	empty	filled	0
+get	num	12.75abc	0
+get	neg	-7	0
+get	hex	0x10	0
+set	a	changed
+set	a	changed
+set	nonexist	value
+set	Nonexist	value2
+set2	user	val	0
+set2	user2	val	0
+get	user	codeval	0
+get	user2		0
+set2	user	more	0
+set2	newforce	f	1
+set	bad;name	zz
+set	semi;colon	v
+get	rom	r	64
+set2	rom	x	0
+set	rom	y
+set2	rom	y	0
+get	init	i	16
+set2	init	x	0
+set	init	x
+get	lat	l1	32
+set2	lat	l2	0
+set2	lat	l2	0
+set2	lat	l1	0
+set2	lat	l3	0
+cmd	lat
+get	lat	l1	0
+get	lat	l1	0
+setl	lat	l4
+set	lat	l5
+get	lat	other	0
+get	ch	c	512
+set2	ch	x	0
+set	sv_cheats	0
+set2	ch	y	0
+set	ch	forced
+cheat
+set	sv_cheats	1
+set2	ch	z	0
+cheat
+set2	ch	again	0
+setv	numeric	5
+setv	numeric	2.5
+setv	numeric	-3
+setv	numeric	0.1
+setv	numeric	-0.25
+setv	numeric	1000
+setv	numeric	0
+reset	a
+reset	missing
+reset	rom
+reset	numeric
+val	a
+val	numeric
+val	missing
+vbuf	a	3
+vbuf	a	100
+vbuf	missing	5
+vbuf	a	1
+cmd	numeric
+cmd	NUMERIC 77
+cmd	numeric
+cmd	numeric "two words"
+cmd	toggle numeric
+cmd	toggle numeric
+cmd	toggle a
+cmd	toggle missing
+cmd	toggle
+cmd	toggle a b
+cmd	toggle rom
+cmd	set
+cmd	set onlyname
+cmd	set sx 5
+cmd	set sx
+cmd	set sy hello world "with quote" more
+cmd	set sy
+cmd	set sz a  b   c
+cmd	seta ax 5
+cmd	seta ax 6
+cmd	seta ax
+cmd	sets sx2 1
+cmd	setu ux 2
+cmd	setu
+cmd	sets only
+cmd	reset ax
+cmd	reset
+cmd	reset ax extra
+cmd	sx
+cmd	SX 99
+cmd	ax
+cmd	cvarlist
+cmd	cvarlist s*
+cmd	cvarlist [a-b]*
+cmd	cvarlist ?x
+cmd	cvarlist zzz
+get	arch	av	1
+get	arch2	av2	1
+get	cl_cdkey	secret	1
+get	arch3	"quoted"	1
+set	arch2	changed
+setl	arch2	later
+cmd	rom
+cmd	set lat latch
+cmd	lat
+write
+dump
+clearmod
+set	a	zzz
+dump
+clearmod
+set	ax	12
+dump
+vmreg	0	a	vmdefault	0
+vmreg	1	vmnew	12.5	0
+vmupd	0
+set	a	changed again
+vmupd	0
+vmupd	0
+set	vmnew	99
+vmupd	1
+setv	vmnew	3
+vmupd	1
+info	2
+info	4
+info	1
+infobig	8
+infobig	4
+cmd	cvar_restart
+dump
+write
+info	2
+infobig	8
+cmd	cvar_restart
+dump

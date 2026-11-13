@@ -22,6 +22,7 @@ uses
   DelphiDoom.Imaging.Types,
   DelphiDoom.Cinematic.Types,
   DelphiDoom.Cinematic.Intf,
+  DelphiDoom.Cinematic.Jpeg.Intf,
   DelphiDoom.Cinematic.YuvConverter,
   DelphiDoom.Cinematic.SoundDecoder,
   DelphiDoom.Cinematic.Codebook,
@@ -37,6 +38,8 @@ type
   strict private
     FSource: IRoqSource;
     FSink: IRoqAudioSink;
+    FJpeg: IRoqJpegDecoder;
+    FAlpha: Byte;
     FConverter: TRoqYuvConverter;
     FSound: TRoqSoundDecoder;
     FCodebook: TRoqCodebook;
@@ -58,11 +61,16 @@ type
     procedure HandleInfo(const AData: TBytes);
     procedure HandleFrame(const AData: TBytes; AFlags: Word);
     procedure HandleSound(const AData: TBytes; AHeader: TRoqChunkHeader);
+    function HandleJpeg(const AData: TBytes): Boolean;
   public
     /// <param name="ASource">The file; its position must be the start of it</param>
     /// <param name="ASink">Receives the audio; nil to ignore it (the silent cinematics)</param>
     /// <param name="AAlpha">Alpha byte of the pixels: $FF as Quake III, 0 as Doom 3</param>
-    constructor Create(const ASource: IRoqSource; const ASink: IRoqAudioSink; AAlpha: Byte);
+    /// <param name="AJpeg">
+    ///   Decodes the chunks <c>ROQ_QUAD_JPEG</c> of Doom 3; nil skips them (as Quake III does)
+    /// </param>
+    constructor Create(const ASource: IRoqSource; const ASink: IRoqAudioSink; AAlpha: Byte;
+      const AJpeg: IRoqJpegDecoder = nil);
     destructor Destroy; override;
     function ReadChunk(out AKind: TRoqChunkKind): Boolean;
     function NextFrame: Boolean;
@@ -77,16 +85,19 @@ resourcestring
   SChunkEnd = 'The chunk $%.4x has %d bytes, but the file has only %d';
   SChunkTooBig = 'The chunk $%.4x has %d bytes (the largest is %d)';
   SInfoShort = 'The information chunk has %d bytes instead of 8';
-  SFrameWithoutInfo = 'A frame comes before the information chunk';
+  SJpegSize = 'The JPEG frame is %dx%d but the video is %dx%d';
+  SFrameWithoutInfo ='A frame comes before the information chunk';
 
 { TRoqDecoder }
 
 constructor TRoqDecoder.Create(const ASource: IRoqSource; const ASink: IRoqAudioSink;
-  AAlpha: Byte);
+  AAlpha: Byte; const AJpeg: IRoqJpegDecoder);
 begin
   inherited Create;
   FSource := ASource;
   FSink := ASink;
+  FJpeg := AJpeg;
+  FAlpha := AAlpha;
   FConverter := TRoqYuvConverter.Create(AAlpha);
   FSound := TRoqSoundDecoder.Create;
   FCodebook := TRoqCodebook.Create(FConverter);
@@ -230,6 +241,39 @@ begin
       ROQ_SOUND_RATE);
 end;
 
+function TRoqDecoder.HandleJpeg(const AData: TBytes): Boolean;
+var
+  LRgb: TBytes;
+  LWidth, LHeight, LRow, LColumn, LSource: Integer;
+  LPixels: TImagingPixels;
+begin
+  // JPEGBlit of Doom 3 only paints the first frame (numQuads = 0); any other JPEG chunk, or one that
+  // comes before the information chunk, is ignored
+  Result := False;
+  if (not Assigned(FJpeg)) or (not Assigned(FPainter)) or (FQuadCount <> 0) then
+    Exit;
+  LRgb := FJpeg.Decode(AData, LWidth, LHeight);
+  if (LWidth <> FPainter.Width) or (LHeight <> FPainter.Height) then
+    raise ERoqInvalidDataException.CreateFmt(SJpegSize,
+      [LWidth, LHeight, FPainter.Width, FPainter.Height]);
+  SetLength(LPixels, LWidth * LHeight);
+  // the original stores the rows from the bottom (the first scanline goes to the last row of the
+  // image) with the bytes R, G, B and an unset fourth byte, which is the alpha here
+  for LRow := 0 to LHeight - 1 do
+    for LColumn := 0 to LWidth - 1 do
+    begin
+      LSource := (LRow * LWidth + LColumn) * 3;
+      LPixels[(LHeight - 1 - LRow) * LWidth + LColumn] := Cardinal(LRgb[LSource]) or
+        (Cardinal(LRgb[LSource + 1]) shl 8) or (Cardinal(LRgb[LSource + 2]) shl 16) or
+        (Cardinal(FAlpha) shl 24);
+    end;
+  FPainter.LoadFirstFrame(LPixels);
+  Inc(FQuadCount);
+  Inc(FFrameIndex);
+  FFrame := FPainter.FrameCopy(0);
+  Result := True;
+end;
+
 function TRoqDecoder.ReadChunk(out AKind: TRoqChunkKind): Boolean;
 var
   LHeader: TRoqChunkHeader;
@@ -273,6 +317,9 @@ begin
         HandleFrame(LData, LHeader.Flags);
         AKind := rckFrame;
       end;
+    ROQ_QUAD_JPEG:
+      if HandleJpeg(LData) then
+        AKind := rckFrame;
     ROQ_SOUND_MONO, ROQ_SOUND_STEREO:
       begin
         HandleSound(LData, LHeader);

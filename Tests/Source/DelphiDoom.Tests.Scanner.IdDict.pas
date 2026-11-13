@@ -15,7 +15,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.IdLib.Core.Intf, DelphiDoom.Scanner.IdDict,
-  DelphiDoom.Scanner.IdLangDict, DelphiDoom.Tests.Scanner.IdFakes;
+  DelphiDoom.Scanner.IdLangDict, DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Mat3,
+  DelphiDoom.Tests.Scanner.IdFakes;
 
 type
   [TestFixture]
@@ -42,6 +43,12 @@ type
     procedure DovrebbeLeggereNumeriBooleaniEVettori;
     [Test]
     procedure DovrebbeScrivereNumeriBooleaniEVettori;
+    [Test]
+    procedure DovrebbeLeggereGliAngoliEUnaMatrice;
+    [Test]
+    procedure DovrebbeScrivereGliAngoliEUnaMatrice;
+    [Test]
+    procedure DovrebbeTenereL_IdentitaPerLeCifreMancantiDellaMatrice;
     [Test]
     procedure DovrebbeCancellareMantenendoLOrdine;
     [Test]
@@ -266,6 +273,72 @@ begin
   Assert.AreEqual('1 2.5 3', string(FDict.GetString('v3')));
   Assert.AreEqual('1 2', string(FDict.GetString('v2')));
   Assert.AreEqual('1 2 3 4', string(FDict.GetString('v4')));
+end;
+
+procedure TTestIdDict.DovrebbeLeggereGliAngoliEUnaMatrice;
+var
+  LAngles: TIdAngles;
+  LMatrix: TIdMat3;
+  LFound: Boolean;
+begin
+  FDict.SetValue('a', '10 -20 30.5');
+  FDict.SetValue('a2', '7');
+  FDict.SetValue('m', '1 2 3 4 5 6 7 8 9');
+  LAngles := FDict.GetAngles('a');
+  Assert.AreEqual(Single(10), LAngles.Pitch);
+  Assert.AreEqual(Single(-20), LAngles.Yaw);
+  Assert.AreEqual(Single(30.5), LAngles.Roll);
+  // a text with one number leaves the others at zero (out.Zero() before sscanf)
+  LAngles := FDict.GetAngles('a2');
+  Assert.AreEqual(Single(7), LAngles.Pitch);
+  Assert.AreEqual(Single(0), LAngles.Yaw);
+  LFound := FDict.GetAngles('missing', '', LAngles);
+  Assert.IsFalse(LFound);
+  Assert.AreEqual(Single(0), LAngles.Roll);
+  LAngles := FDict.GetAngles('missing', '1 2 3');
+  Assert.AreEqual(Single(3), LAngles.Roll);
+  Assert.IsTrue(FDict.GetAngles('a', '', LAngles));
+  LMatrix := FDict.GetMatrix('m');
+  Assert.AreEqual(Single(1), LMatrix.Rows[0].X);
+  Assert.AreEqual(Single(6), LMatrix.Rows[1].Z);
+  Assert.AreEqual(Single(9), LMatrix.Rows[2].Z);
+  LMatrix := FDict.GetMatrix('missing');
+  Assert.IsTrue(LMatrix.IsIdentity);
+  Assert.IsFalse(FDict.GetMatrix('missing', '', LMatrix));
+  LMatrix := FDict.GetMatrix('missing', '0 1 0 1 0 0 0 0 1');
+  Assert.AreEqual(Single(1), LMatrix.Rows[0].Y);
+  Assert.IsTrue(FDict.GetMatrix('m', '', LMatrix));
+end;
+
+procedure TTestIdDict.DovrebbeScrivereGliAngoliEUnaMatrice;
+var
+  LAngles: TIdAngles;
+  LMatrix: TIdMat3;
+begin
+  LAngles := TIdAngles.Create(1, 2.5, -3);
+  FDict.SetAngles('a', LAngles);
+  Assert.AreEqual('1 2.5 -3', string(FDict.GetString('a')));
+  FDict.SetMatrix('m', TIdMat3.Identity);
+  Assert.AreEqual('1 0 0 0 1 0 0 0 1', string(FDict.GetString('m')));
+  // what is written is read back
+  LMatrix := TIdMat3.Create(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  FDict.SetMatrix('m', LMatrix);
+  Assert.IsTrue(FDict.GetMatrix('m') = LMatrix);
+  Assert.IsTrue(FDict.GetAngles('a') = LAngles);
+end;
+
+procedure TTestIdDict.DovrebbeTenereL_IdentitaPerLeCifreMancantiDellaMatrice;
+var
+  LMatrix: TIdMat3;
+begin
+  // the original sets the identity and lets sscanf overwrite as many numbers as the text has
+  FDict.SetValue('m', '5 6');
+  LMatrix := FDict.GetMatrix('m');
+  Assert.AreEqual(Single(5), LMatrix.Rows[0].X);
+  Assert.AreEqual(Single(6), LMatrix.Rows[0].Y);
+  Assert.AreEqual(Single(0), LMatrix.Rows[0].Z);
+  Assert.AreEqual(Single(1), LMatrix.Rows[1].Y);
+  Assert.AreEqual(Single(1), LMatrix.Rows[2].Z);
 end;
 
 procedure TTestIdDict.DovrebbeCancellareMantenendoLOrdine;

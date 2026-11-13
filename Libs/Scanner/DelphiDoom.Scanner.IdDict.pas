@@ -20,7 +20,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Math.Vec2, DelphiDoom.IdLib.Math.Vec3,
-  DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Math.Random, DelphiDoom.Scanner.IdParser.Intf, DelphiDoom.Scanner.IdCNumbers;
+  DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Math.Random, DelphiDoom.MathCore.Float.Angles,
+  DelphiDoom.MathCore.Float.Mat3, DelphiDoom.Scanner.IdParser.Intf, DelphiDoom.Scanner.IdCNumbers;
 
 type
   /// <summary>idKeyValue: a key and its value (8-bit text)</summary>
@@ -37,7 +38,7 @@ type
   ///   the memory statistics and the console commands) are not ported: each dictionary owns its strings;
   ///   the lookup is a linear scan (the hash index of the original gives the same answers);
   ///   <c>GetKeyVal</c> returns the record by value; the file functions work on bytes
-  ///   (<c>WriteToBytes</c>, <c>ReadFromBytes</c>) instead of an idFile; angles and matrices (idAngles, idMat3)
+  ///   (<c>WriteToBytes</c>, <c>ReadFromBytes</c>) instead of an idFile; angles and matrices (idAngles, idMat3, from
   ///   are not ported. The numbers are read as the C library does (<c>atoi</c>, <c>atof</c>,
   ///   <c>sscanf("%f")</c>): the text up to the first character that is not part of the number.</para>
   /// </summary>
@@ -71,6 +72,10 @@ type
     procedure SetVector(const AKey: AnsiString; const AValue: TIdVec3);
     procedure SetVec2(const AKey: AnsiString; const AValue: TIdVec2);
     procedure SetVec4(const AKey: AnsiString; const AValue: TIdVec4);
+    /// <summary>idDict::SetAngles: the angles as text (<c>TIdAngles.ToString</c>)</summary>
+    procedure SetAngles(const AKey: AnsiString; const AValue: TIdAngles);
+    /// <summary>idDict::SetMatrix: the nine numbers as text (<c>TIdMat3.ToString</c>)</summary>
+    procedure SetMatrix(const AKey: AnsiString; const AValue: TIdMat3);
     /// <summary>The value, or the default when the key is missing</summary>
     function GetString(const AKey: AnsiString; const ADefault: AnsiString = ''): AnsiString; overload;
     function GetString(const AKey, ADefault: AnsiString; out AValue: AnsiString): Boolean; overload;
@@ -87,6 +92,12 @@ type
     function GetVec2(const AKey, ADefault: AnsiString; out AValue: TIdVec2): Boolean; overload;
     function GetVec4(const AKey: AnsiString; const ADefault: AnsiString = ''): TIdVec4; overload;
     function GetVec4(const AKey, ADefault: AnsiString; out AValue: TIdVec4): Boolean; overload;
+    /// <summary>idDict::GetAngles: an empty default means "0 0 0"; numbers missing from the text stay 0</summary>
+    function GetAngles(const AKey: AnsiString; const ADefault: AnsiString = ''): TIdAngles; overload;
+    function GetAngles(const AKey, ADefault: AnsiString; out AValue: TIdAngles): Boolean; overload;
+    /// <summary>idDict::GetMatrix: an empty default means the identity; numbers missing from the text stay as the identity has them</summary>
+    function GetMatrix(const AKey: AnsiString; const ADefault: AnsiString = ''): TIdMat3; overload;
+    function GetMatrix(const AKey, ADefault: AnsiString; out AValue: TIdMat3): Boolean; overload;
     function GetNumKeyVals: Integer;
     /// <summary>The pair at the index; a key and value of #0 text when out of range (the original returns NULL)</summary>
     function TryGetKeyVal(const AIndex: Integer; out AKeyValue: TIdKeyValue): Boolean;
@@ -348,6 +359,67 @@ end;
 function TIdDict.GetVector(const AKey: AnsiString; const ADefault: AnsiString): TIdVec3;
 begin
   GetVector(AKey, ADefault, Result);
+end;
+
+procedure TIdDict.SetAngles(const AKey: AnsiString; const AValue: TIdAngles);
+begin
+  SetValue(AKey, AValue.ToString);
+end;
+
+procedure TIdDict.SetMatrix(const AKey: AnsiString; const AValue: TIdMat3);
+begin
+  SetValue(AKey, AValue.ToString);
+end;
+
+function TIdDict.GetAngles(const AKey, ADefault: AnsiString; out AValue: TIdAngles): Boolean;
+var
+  LText, LDefault: AnsiString;
+  LValues: array[0..2] of Single;
+begin
+  LDefault := ADefault;
+  if LDefault = '' then
+    LDefault := '0 0 0';
+  Result := GetString(AKey, LDefault, LText);
+  LValues[0] := 0;
+  LValues[1] := 0;
+  LValues[2] := 0;
+  TIdCNumbers.ScanFloats(LText, LValues);
+  AValue.SetValues(LValues[0], LValues[1], LValues[2]);
+end;
+
+function TIdDict.GetAngles(const AKey: AnsiString; const ADefault: AnsiString): TIdAngles;
+begin
+  GetAngles(AKey, ADefault, Result);
+end;
+
+function TIdDict.GetMatrix(const AKey, ADefault: AnsiString; out AValue: TIdMat3): Boolean;
+var
+  LText, LDefault: AnsiString;
+  LValues: array[0..8] of Single;
+begin
+  LDefault := ADefault;
+  if LDefault = '' then
+    LDefault := '1 0 0 0 1 0 0 0 1';
+  Result := GetString(AKey, LDefault, LText);
+  // The matrix starts as the identity, so numbers the text lacks keep the identity's value
+  AValue := TIdMat3.Identity;
+  LValues[0] := 1;
+  LValues[1] := 0;
+  LValues[2] := 0;
+  LValues[3] := 0;
+  LValues[4] := 1;
+  LValues[5] := 0;
+  LValues[6] := 0;
+  LValues[7] := 0;
+  LValues[8] := 1;
+  TIdCNumbers.ScanFloats(LText, LValues);
+  AValue := TIdMat3.Create(LValues[0], LValues[1], LValues[2], LValues[3], LValues[4], LValues[5],
+    LValues[6], LValues[7], LValues[8]);
+end;
+
+function TIdDict.GetMatrix(const AKey: AnsiString; const ADefault: AnsiString): TIdMat3;
+begin
+  GetMatrix(AKey, ADefault, Result);
 end;
 
 function TIdDict.GetVec2(const AKey, ADefault: AnsiString; out AValue: TIdVec2): Boolean;

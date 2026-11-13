@@ -56,6 +56,16 @@ uses
   DelphiDoom.Console.CVar.Lister in '..\Libs\Console\DelphiDoom.Console.CVar.Lister.pas',
   DelphiDoom.Console.CVar.Commands in '..\Libs\Console\DelphiDoom.Console.CVar.Commands.pas',
   DelphiDoom.Console.IdTech4.Factory in '..\Libs\Console\DelphiDoom.Console.IdTech4.Factory.pas',
+  DelphiDoom.Console.Q3.Types in '..\Libs\Console\DelphiDoom.Console.Q3.Types.pas',
+  DelphiDoom.Console.Q3.CVar in '..\Libs\Console\DelphiDoom.Console.Q3.CVar.pas',
+  DelphiDoom.Console.Q3.Intf in '..\Libs\Console\DelphiDoom.Console.Q3.Intf.pas',
+  DelphiDoom.Console.Q3.CommandArguments in '..\Libs\Console\DelphiDoom.Console.Q3.CommandArguments.pas',
+  DelphiDoom.Console.Q3.CommandBuffer in '..\Libs\Console\DelphiDoom.Console.Q3.CommandBuffer.pas',
+  DelphiDoom.Console.Q3.CommandSystem in '..\Libs\Console\DelphiDoom.Console.Q3.CommandSystem.pas',
+  DelphiDoom.Console.Q3.StandardCommands in '..\Libs\Console\DelphiDoom.Console.Q3.StandardCommands.pas',
+  DelphiDoom.Console.Q3.CVarSystem in '..\Libs\Console\DelphiDoom.Console.Q3.CVarSystem.pas',
+  DelphiDoom.Console.Q3.CVarCommands in '..\Libs\Console\DelphiDoom.Console.Q3.CVarCommands.pas',
+  DelphiDoom.Console.Q3.Factory in '..\Libs\Console\DelphiDoom.Console.Q3.Factory.pas',
   DelphiDoom.Tests.Console.Fakes in 'Source\DelphiDoom.Tests.Console.Fakes.pas',
   DelphiDoom.Tests.Console.Golden in 'Source\DelphiDoom.Tests.Console.Golden.pas',
   DelphiDoom.Tests.Console.Text in 'Source\DelphiDoom.Tests.Console.Text.pas',
@@ -82,7 +92,17 @@ uses
   DelphiDoom.Tests.Console.IdTech4.Scenario in 'Source\DelphiDoom.Tests.Console.IdTech4.Scenario.pas',
   DelphiDoom.Tests.Console.IdTech4.Golden in 'Source\DelphiDoom.Tests.Console.IdTech4.Golden.pas',
   DelphiDoom.Tests.Console.CVar in 'Source\DelphiDoom.Tests.Console.CVar.pas',
-  DelphiDoom.Tests.Console.CmdSystem.Standard in 'Source\DelphiDoom.Tests.Console.CmdSystem.Standard.pas';
+  DelphiDoom.Tests.Console.CmdSystem.Standard in 'Source\DelphiDoom.Tests.Console.CmdSystem.Standard.pas',
+  DelphiDoom.Tests.Console.Q3.Fakes in 'Source\DelphiDoom.Tests.Console.Q3.Fakes.pas',
+  DelphiDoom.Tests.Console.Q3.Scenario in 'Source\DelphiDoom.Tests.Console.Q3.Scenario.pas',
+  DelphiDoom.Tests.Console.Q3.Golden in 'Source\DelphiDoom.Tests.Console.Q3.Golden.pas',
+  DelphiDoom.Tests.Console.Q3.CommandArguments in 'Source\DelphiDoom.Tests.Console.Q3.CommandArguments.pas',
+  DelphiDoom.Tests.Console.Q3.CommandBuffer in 'Source\DelphiDoom.Tests.Console.Q3.CommandBuffer.pas',
+  DelphiDoom.Tests.Console.Q3.CommandSystem in 'Source\DelphiDoom.Tests.Console.Q3.CommandSystem.pas',
+  DelphiDoom.Tests.Console.Q3.StandardCommands in 'Source\DelphiDoom.Tests.Console.Q3.StandardCommands.pas',
+  DelphiDoom.Tests.Console.Q3.CVarSystem in 'Source\DelphiDoom.Tests.Console.Q3.CVarSystem.pas',
+  DelphiDoom.Tests.Console.Q3.CVarCommands in 'Source\DelphiDoom.Tests.Console.Q3.CVarCommands.pas',
+  DelphiDoom.Tests.Console.Q3.Factory in 'Source\DelphiDoom.Tests.Console.Q3.Factory.pas';
 
 var
   Runner: ITestRunner;

@@ -7,6 +7,8 @@ Strumenti che producono le risposte di riferimento di `Libs\Cinematic` con il **
 - `roqextract.c`: il pilota. `roqextract file.roq` fa girare `RoQInterrupt` dell'originale e stampa `fps`, `size`, `frame N crc` (CRC-32 dei `W*H*4` byte del fotogramma), `audio N channels C rate R samples S consumed X full Y` (`consumed` e' quello che il mixer legge, `full` tutto il blocco decodificato) e i totali. `roqextract --tables` stampa `yuv crc` (le 16.777.216 terne di `yuv_to_rgb24`) e le righe `rll ...` (i quattro `RllDecode*`, buffer di 4096 byte da un LCG con seme 12345, quattro flag).
 - `roqgen.c`: `roqgen basic|wide|stereo out.roq` fa i file di prova sintetici (semi fissi; nessun materiale commerciale).
 
+- `modeextract.c`: il pilota dei modi del codebook (seconda fetta della #114). `modeextract > modes.golden.txt` stampa `yuv565 crc` (CRC-32 di `yuv_to_rgb` su tutte le terne) e, per 32 bit, 16 bit e grigi, ognuno normale, `smootheddouble` e `half` (piu' `half + smootheddouble` a 32 bit), una riga per ognuno dei tre chunk di `decodeCodeBook` (flag `0000`, `1004`, `0003`, byte di un LCG con seme 987654321, tabella dei grigi `(i*37+11)&255` che l'originale non riempie) con il CRC-32 di `vq2`, `vq4` e `vq8` interi.
+
 Per rifare i dati di `Tests\Data\Cinematic`:
 
 ```
