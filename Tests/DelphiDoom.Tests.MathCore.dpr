@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the math core library (DUnitX)                    }
 {                                                                              }
@@ -69,6 +69,7 @@ uses
   DelphiDoom.MathCore.Float.Mat3 in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Mat3.pas',
   DelphiDoom.MathCore.Float.Rotation in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Rotation.pas',
   DelphiDoom.MathCore.Float.Complex in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Complex.pas',
+  DelphiDoom.MathCore.Float.Polynomial in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Polynomial.pas',
   DelphiDoom.MathCore.Float.Conversions in '..\Libs\MathCore\DelphiDoom.MathCore.Float.Conversions.pas',
   DelphiDoom.Tests.IdLib.Golden in 'Source\DelphiDoom.Tests.IdLib.Golden.pas',
   DelphiDoom.Tests.MathCore.Float.Parity in 'Source\DelphiDoom.Tests.MathCore.Float.Parity.pas';

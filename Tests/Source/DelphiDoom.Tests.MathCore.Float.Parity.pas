@@ -28,7 +28,8 @@ type
   private
     FLines: TStringList;
     FOldMask: TArithmeticExceptionMask;
-    procedure Run(const APrefixes: array of string; const AMaxUlps: Integer);
+    procedure Run(const APrefixes: array of string; const AMaxUlps: Integer;
+      const AAbsTolerance: Single = 0);
   public
     [Setup]
     procedure Setup;
@@ -46,17 +47,22 @@ type
     procedure TIdRotationDovrebbeDareLeStesseRispostePerIlCpp;
     [Test]
     procedure TIdComplexDovrebbeDareLeStesseRispostePerIlCpp;
+    [Test]
+    procedure TIdPolynomialDovrebbeDareLeStesseRispostePerIlCpp;
+    [Test]
+    procedure LeRadiciDiUnPolinomioDovrebberoDareLeStesseRispostePerIlCpp;
   end;
 
 implementation
 
 uses
-  System.SysUtils,
+  System.SysUtils, System.StrUtils,
   DelphiDoom.IdLib.Math.Vec3,
   DelphiDoom.MathCore.Float.Angles, DelphiDoom.MathCore.Float.Complex,
   DelphiDoom.MathCore.Float.Conversions, DelphiDoom.MathCore.Float.CQuat,
   DelphiDoom.MathCore.Float.Mat3, DelphiDoom.MathCore.Float.Quat,
-  DelphiDoom.MathCore.Float.Rotation, DelphiDoom.Tests.IdLib.Golden;
+  DelphiDoom.MathCore.Float.Polynomial, DelphiDoom.MathCore.Float.Rotation,
+  DelphiDoom.Tests.IdLib.Golden;
 
 type
   TFloats = array of Single;
@@ -429,7 +435,8 @@ begin
   Result := ((ABits and $7F800000) = $7F800000) and ((ABits and $007FFFFF) <> 0);
 end;
 
-procedure CompareLines(const AExpected, AActual: TStrings; const AMaxUlps: Integer);
+procedure CompareLines(const AExpected, AActual: TStrings; const AMaxUlps: Integer;
+  const AAbsTolerance: Single);
 var
   LLine, LToken: Integer;
   LExpectedTokens, LActualTokens: TArray<string>;
@@ -454,7 +461,7 @@ begin
         // a whole expression in the x87 registers, so sums with cancellation differ in the last bits
         if (UlpDistance(LExpectedBits, LActualBits) > AMaxUlps) and
           (Abs(Bits(LActualTokens[LToken]) - Bits(LExpectedTokens[LToken])) >
-            4E-6 * Max(1.0, Abs(Bits(LExpectedTokens[LToken])))) then
+            Max(AAbsTolerance, 4E-6 * Max(1.0, Abs(Bits(LExpectedTokens[LToken]))))) then
           Assert.Fail(Format('riga %d, token %d: atteso %s, ottenuto %s (%d ULP)' + sLineBreak +
             'atteso   %s' + sLineBreak + 'ottenuto %s',
             [LLine, LToken, LExpectedTokens[LToken], LActualTokens[LToken],
@@ -464,6 +471,98 @@ begin
         Assert.AreEqual(LExpectedTokens[LToken], LActualTokens[LToken], 'riga ' + IntToStr(LLine));
     end;
   end;
+end;
+
+function PolyAt(const AFloats: TFloats; const AIndex, ADegree: Integer): TIdPolynomial;
+var
+  LIndex: Integer;
+begin
+  // the coefficients come highest first, as the constructors of idPolynomial take them
+  Result := TIdPolynomial.Create(ADegree);
+  for LIndex := 0 to ADegree do
+    Result[ADegree - LIndex] := AFloats[AIndex + LIndex];
+end;
+
+procedure PutPoly(var ALine: string; const AValue: TIdPolynomial);
+var
+  LIndex: Integer;
+begin
+  ALine := ALine + ' ' + IntToStr(AValue.Degree);
+  for LIndex := 0 to AValue.Degree do
+    Put(ALine, AValue[LIndex]);
+end;
+
+function ComputePoly(const AName: string; const F: TFloats; var ALine: string): Boolean;
+var
+  LOperation: string;
+  LDegree, LSecond, LUnderscore, LCount, LIndex: Integer;
+  LPoly, LOther: TIdPolynomial;
+  LValue: TIdComplex;
+  LRoots: array[0..7] of Single;
+  LComplexRoots: TArray<TIdComplex>;
+begin
+  Result := StartsText('P_', AName);
+  if not Result then
+    Exit;
+  LOperation := Copy(AName, 1, 5);
+  LUnderscore := Pos('_', AName, 3);
+  if LUnderscore > 0 then
+  begin
+    // P_add<d1>_<d2> and P_sub<d1>_<d2>
+    LDegree := StrToInt(Copy(AName, 6, LUnderscore - 6));
+    LSecond := StrToInt(Copy(AName, LUnderscore + 1, 10));
+    LPoly := PolyAt(F, 0, LDegree);
+    LOther := PolyAt(F, LDegree + 1, LSecond);
+    if LOperation = 'P_add' then
+      PutPoly(ALine, LPoly + LOther)
+    else
+      PutPoly(ALine, LPoly - LOther);
+    Exit;
+  end;
+  LIndex := Length(AName);
+  while (LIndex > 2) and CharInSet(AName[LIndex], ['0'..'9']) do
+    Dec(LIndex);
+  LDegree := StrToInt(Copy(AName, LIndex + 1, 10));
+  LOperation := Copy(AName, 1, LIndex);
+  LPoly := PolyAt(F, 0, LDegree);
+  if LOperation = 'P_val' then
+    Put(ALine, LPoly.GetValue(F[LDegree + 1]))
+  else if LOperation = 'P_cval' then
+  begin
+    LValue := LPoly.GetValue(TIdComplex.Create(F[LDegree + 1], F[LDegree + 2]));
+    Put(ALine, LValue.R);
+    Put(ALine, LValue.I);
+  end
+  else if LOperation = 'P_deriv' then
+    PutPoly(ALine, LPoly.GetDerivative)
+  else if LOperation = 'P_anti' then
+    PutPoly(ALine, LPoly.GetAntiDerivative)
+  else if LOperation = 'P_neg' then
+    PutPoly(ALine, -LPoly)
+  else if LOperation = 'P_div' then
+    PutPoly(ALine, LPoly / F[LDegree + 1])
+  else if LOperation = 'P_mul' then
+    PutPoly(ALine, LPoly * F[LDegree + 1])
+  else if LOperation = 'P_roots' then
+  begin
+    FillChar(LRoots, SizeOf(LRoots), 0);
+    LCount := LPoly.GetRoots(LRoots);
+    ALine := ALine + ' ' + IntToStr(LCount);
+    for LIndex := 0 to LDegree - 1 do
+      Put(ALine, LRoots[LIndex]);
+  end
+  else if LOperation = 'P_croots' then
+  begin
+    LCount := LPoly.GetRoots(LComplexRoots);
+    ALine := ALine + ' ' + IntToStr(LCount);
+    for LIndex := 0 to LDegree - 1 do
+    begin
+      Put(ALine, LComplexRoots[LIndex].R);
+      Put(ALine, LComplexRoots[LIndex].I);
+    end;
+  end
+  else
+    Result := False;
 end;
 
 { TTestFloatParity }
@@ -482,7 +581,8 @@ begin
   FLines.Free;
 end;
 
-procedure TTestFloatParity.Run(const APrefixes: array of string; const AMaxUlps: Integer);
+procedure TTestFloatParity.Run(const APrefixes: array of string; const AMaxUlps: Integer;
+  const AAbsTolerance: Single);
 var
   LIndex, LPrefix: Integer;
   LName, LLine: string;
@@ -505,13 +605,13 @@ begin
       LLine := HeadOf(FLines[LIndex]);
       LKnown := ComputeAngles(LName, LFloats, LLine) or ComputeMat(LName, LFloats, LLine) or
         ComputeQuat(LName, LFloats, LLine) or ComputeRotation(LName, LFloats, LLine) or
-        ComputeComplex(LName, LFloats, LLine);
+        ComputeComplex(LName, LFloats, LLine) or ComputePoly(LName, LFloats, LLine);
       Assert.IsTrue(LKnown, 'operazione sconosciuta ' + LName);
       LActual.Add(LLine);
       LExpected.Add(FLines[LIndex]);
     end;
     Assert.IsTrue(LExpected.Count > 0, 'nessuna riga nel golden');
-    CompareLines(LExpected, LActual, AMaxUlps);
+    CompareLines(LExpected, LActual, AMaxUlps, AAbsTolerance);
   finally
     LExpected.Free;
     LActual.Free;
@@ -546,6 +646,18 @@ end;
 procedure TTestFloatParity.TIdComplexDovrebbeDareLeStesseRispostePerIlCpp;
 begin
   Run(['X_'], 2);
+end;
+
+procedure TTestFloatParity.TIdPolynomialDovrebbeDareLeStesseRispostePerIlCpp;
+begin
+  Run(['P_val', 'P_cval', 'P_deriv', 'P_anti', 'P_neg', 'P_div', 'P_mul', 'P_add', 'P_sub'], 2);
+end;
+
+procedure TTestFloatParity.LeRadiciDiUnPolinomioDovrebberoDareLeStesseRispostePerIlCpp;
+begin
+  // a double root is ill-conditioned (the error is about the square root of the precision of a float):
+  // there the two compilers differ by up to 2e-3 in absolute value
+  Run(['P_roots', 'P_croots'], 2, 2E-3);
 end;
 
 initialization
