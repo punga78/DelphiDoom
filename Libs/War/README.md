@@ -66,3 +66,22 @@ Record su disco `packed`, senza puntatori, con `SizeOf` coperto da un test: `TWa
 ## Verifica
 
 `Tools\build.bat DelphiDoom.Tests.War` e poi `bin\Tests\DelphiDoom.Tests.War.exe`. 174 test (archivio costruito in memoria con un finto del file, decompressore, catalogo, sorgente su stream, parita', e per #192 palette, decoder, `TWarGraphics`, font), copertura 99% (`Tools\Copertura.ps1 -Test War`, 515 righe su 518). **Parita' grafica con il C (#192)**: `Tools\Verifica\192` compila con gcc i `wres_*` ORIGINALI di `war_resources.c` (estratti alla lettera) e `fontsData[]` di `war_font.c`; il golden `Tests\Data\War\graphics.golden.txt` ha 184 righe (14 palette, 57 immagini, 91 sprite, 16 cursori, 3 tiles, 3 tileset, impronta CRC-32 di cio' che decodificano) e `fonts.golden.txt` i 190 glifi: **zero differenze** (vedi `Tools\Verifica\192\LEGGIMI.md`). **Parita' con il C**: `Tools\Verifica\191` compila con gcc (w64devkit) il `wfile_loadWarFile` ORIGINALE (estratto alla lettera da `war_file.c`) e lo fa girare sul `DATA.WAR` vero: i golden `Tests\Data\War\datawar.retail.golden.txt` (come `wg_loadDataFile`: 68 voci saltate), `datawar.retail.noskip.golden.txt` e `catalog.golden.txt` sono la sua uscita; le 583 voci (offset, compresso, lunghezze e CRC-32 dei byte espansi) danno **zero differenze**. I test sui dati veri (`DELPHIDOOM_WAR_DATA` o `Reference\_dati\warcraft`) sono **ignorati**, non verdi, se `DATA.WAR` manca.
+
+## Livelli, campagne, raccordi e griglia (fetta #193)
+
+Dal remake in C: `wres_loadLevelInfo`/`Visual`/`Passable` e le `wres_loadStart*` di `war_resources.c`, `war_campaigns.c`, `war_roads.c`, `war_walls.c`, `war_ruins.c`, `war_trees.c` (parte dei dati: tipi dai vicini, ricerche), le tabelle di `war_units.c` e `war_map_grid.c`.
+
+| C | Delphi |
+|---|---|
+| `wres_loadLevelInfo` + `wres_loadStart*` | `TWarLevelInfoReader.Read` (`TWarLevelInfo`, `TWarLevelUnit`, `TWarLevelConstruct`) |
+| `wres_loadLevelVisual` / `wres_loadLevelPassable` | `TWarLevelMapReader.Read` |
+| i tre record di un livello | `IWarLevel` (`TWarLevel`), `IWarLevelLoader` (`TWarLevelLoader`, `TWarLevelFactory.CreateLevelLoader`) |
+| `campaignsData[]`, `wcamp_getCampaignData`, `wcamp_tryGetMapType`, `wmap_getCampaignMapTypeByLevelInfoIndex` | `IWarCampaigns` (`TWarCampaigns`, dati generati in `DelphiDoom.War.Campaign.Data`) |
+| `wcamp_checkMap01Objectives`, `wcamp_checkMap02Objectives`, `wcamp_checkCustomMapObjectives` | `IWarObjectives` (`TWarObjectives`) su `IWarCensus` |
+| `we_add/has/get/remove/determine*` di strade e muri | `TWarLine` (`CreateRoad`, `CreateWall`) |
+| `we_*Ruin*` | `TWarRuins` |
+| `we_hasTreeAtPosition`, `we_getTreeAtTile`, `we_determineTreeTiles`, `we_validTree` | `TWarForest` |
+| `roadTileTypeMap`, `wallTileTypeMap`, `ruinTileTypeMap`, `treeTileTypeMap`, `fogTileTypeMap`, `roadsData`, `wallsData`, `ruinsData`, `treesData` | `DelphiDoom.War.Autotile.Data` (generato) |
+| `wgrid_clear`, `wgrid_build`, `wgrid_tileFromMapTile`, `wgrid_getTileIndex` | `TWarMapGrid` |
+
+Difetti del C conservati, differenze volute e non portato: `CLAUDE.md`, sezione "Livelli, campagne, raccordi e griglia". Parita' con il C compilato con gcc: `Tools\Verifica\193\LEGGIMI.md`. 255 test in `Tests\DelphiDoom.Tests.War`.

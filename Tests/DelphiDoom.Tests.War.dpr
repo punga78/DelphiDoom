@@ -53,7 +53,30 @@ uses
   DelphiDoom.Tests.War.Pixels in 'Source\DelphiDoom.Tests.War.Pixels.pas',
   DelphiDoom.Tests.War.Graphics in 'Source\DelphiDoom.Tests.War.Graphics.pas',
   DelphiDoom.Tests.War.Font in 'Source\DelphiDoom.Tests.War.Font.pas',
-  DelphiDoom.Tests.War.GraphicsParity in 'Source\DelphiDoom.Tests.War.GraphicsParity.pas';
+  DelphiDoom.Tests.War.GraphicsParity in 'Source\DelphiDoom.Tests.War.GraphicsParity.pas',
+  DelphiDoom.War.Level.Types in '..\Libs\War\DelphiDoom.War.Level.Types.pas',
+  DelphiDoom.War.Level.Intf in '..\Libs\War\DelphiDoom.War.Level.Intf.pas',
+  DelphiDoom.War.Level.InfoReader in '..\Libs\War\DelphiDoom.War.Level.InfoReader.pas',
+  DelphiDoom.War.Level.MapReader in '..\Libs\War\DelphiDoom.War.Level.MapReader.pas',
+  DelphiDoom.War.Level in '..\Libs\War\DelphiDoom.War.Level.pas',
+  DelphiDoom.War.Level.Loader in '..\Libs\War\DelphiDoom.War.Level.Loader.pas',
+  DelphiDoom.War.Campaign.Types in '..\Libs\War\DelphiDoom.War.Campaign.Types.pas',
+  DelphiDoom.War.Campaign.Intf in '..\Libs\War\DelphiDoom.War.Campaign.Intf.pas',
+  DelphiDoom.War.Campaign.Data in '..\Libs\War\DelphiDoom.War.Campaign.Data.pas',
+  DelphiDoom.War.Campaign.Catalog in '..\Libs\War\DelphiDoom.War.Campaign.Catalog.pas',
+  DelphiDoom.War.Campaign.Objectives in '..\Libs\War\DelphiDoom.War.Campaign.Objectives.pas',
+  DelphiDoom.War.Level.Factory in '..\Libs\War\DelphiDoom.War.Level.Factory.pas',
+  DelphiDoom.War.Autotile.Types in '..\Libs\War\DelphiDoom.War.Autotile.Types.pas',
+  DelphiDoom.War.Autotile.Data in '..\Libs\War\DelphiDoom.War.Autotile.Data.pas',
+  DelphiDoom.War.Autotile.Line in '..\Libs\War\DelphiDoom.War.Autotile.Line.pas',
+  DelphiDoom.War.Autotile.Ruins in '..\Libs\War\DelphiDoom.War.Autotile.Ruins.pas',
+  DelphiDoom.War.Autotile.Forest in '..\Libs\War\DelphiDoom.War.Autotile.Forest.pas',
+  DelphiDoom.War.Map.Grid in '..\Libs\War\DelphiDoom.War.Map.Grid.pas',
+  DelphiDoom.Tests.War.Level in 'Source\DelphiDoom.Tests.War.Level.pas',
+  DelphiDoom.Tests.War.LevelParity in 'Source\DelphiDoom.Tests.War.LevelParity.pas',
+  DelphiDoom.Tests.War.Campaign in 'Source\DelphiDoom.Tests.War.Campaign.pas',
+  DelphiDoom.Tests.War.Autotile in 'Source\DelphiDoom.Tests.War.Autotile.pas',
+  DelphiDoom.Tests.War.MapGrid in 'Source\DelphiDoom.Tests.War.MapGrid.pas';
 
 var
   Runner: ITestRunner;
