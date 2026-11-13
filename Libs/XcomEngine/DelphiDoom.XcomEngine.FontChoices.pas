@@ -88,7 +88,8 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomEngine.FontSettingsReader, DelphiDoom.XcomEngine.FontSettingsWriter;
+  DelphiDoom.XcomEngine.FontSettingsReader, DelphiDoom.XcomEngine.FontSettingsWriter,
+  DelphiDoom.XcomEngine.AtomicFileWriter;
 
 const
   SHeading = 'DELPHIDOOM';
@@ -457,7 +458,7 @@ begin
     Exit;
   FStoredText := LText;
   if FPath <> '' then
-    FFiles.WriteAll(FPath, TEncoding.UTF8.GetBytes(LText));
+    TXcomAtomicFileWriter.Write(FFiles, FPath, TEncoding.UTF8.GetBytes(LText));
 end;
 
 end.

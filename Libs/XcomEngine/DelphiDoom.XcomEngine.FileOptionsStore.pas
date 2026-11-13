@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, System.IOUtils, System.Generics.Collections, System.Generics.Defaults, DelphiDoom.Yaml.Types,
   DelphiDoom.Yaml.Intf, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.YamlFields,
-  DelphiDoom.XcomEngine.AtomicFiles.Intf, DelphiDoom.XcomEngine.OptionsAudit.Intf,
+  DelphiDoom.XcomEngine.AtomicFiles.Intf, DelphiDoom.XcomEngine.AtomicFileWriter, DelphiDoom.XcomEngine.OptionsAudit.Intf,
   DelphiDoom.XcomEngine.OptionsStore.Intf;
 
 type
@@ -387,31 +387,21 @@ end;
 procedure TXcomFileOptionsStore.WriteSafely(const AText: string);
 var
   LAtomic: IXcomAtomicFiles;
-  LTemporary: string;
-  LOld: TBytes;
 begin
-  if not Supports(FFiles, IXcomAtomicFiles, LAtomic) then
-  begin
-    FFiles.WriteAll(FPath, TEncoding.UTF8.GetBytes(AText));
-    Exit;
-  end;
   // the new text is complete in a file of its own before the real file is touched: a write that fails or is cut
   // leaves options.cfg as it was
-  LTemporary := FPath + '.tmp';
-  try
-    FFiles.WriteAll(LTemporary, TEncoding.UTF8.GetBytes(AText));
-  except
-    LAtomic.DeleteFile(LTemporary);
-    raise;
-  end;
-  if FFiles.FileExists(FPath) then
-  begin
-    LOld := FFiles.ReadAll(FPath);
-    // the last version that has options is the one to come back to
-    if (Length(LOld) > 0) and (Pos(SOptionsSection, TEncoding.UTF8.GetString(LOld)) > 0) then
-      LAtomic.CopyFile(FPath, BackupPath);
-  end;
-  LAtomic.ReplaceFile(LTemporary, FPath);
+  TXcomAtomicFileWriter.Write(FFiles, FPath, TEncoding.UTF8.GetBytes(AText),
+    procedure
+    var
+      LOld: TBytes;
+    begin
+      if not Supports(FFiles, IXcomAtomicFiles, LAtomic) or not FFiles.FileExists(FPath) then
+        Exit;
+      LOld := FFiles.ReadAll(FPath);
+      // the last version that has options is the one to come back to
+      if (Length(LOld) > 0) and (Pos(SOptionsSection, TEncoding.UTF8.GetString(LOld)) > 0) then
+        LAtomic.CopyFile(FPath, BackupPath);
+    end);
 end;
 
 procedure TXcomFileOptionsStore.Save(AOptions: TXcomOptions; const AReason: string);
@@ -442,7 +432,11 @@ begin
         LSummary := LSummary + ' | mods written';
       end;
     end;
-    WriteSafely(LText);
+    // nothing to write: the file is not touched, and the copy keeps the version before the last real change
+    if LText = LExisting then
+      LSummary := 'file already as it should be (' + LSummary + ')'
+    else
+      WriteSafely(LText);
     Trace(AReason + ' save', LSummary);
     // what was written is what the next write compares with
     FBaseline.Clear;

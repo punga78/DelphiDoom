@@ -16,7 +16,8 @@ uses
   DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Options,
   DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsStore.Intf,
   DelphiDoom.XcomEngine.AtomicFiles.Intf, DelphiDoom.XcomEngine.OptionsAudit.Intf,
-  DelphiDoom.XcomEngine.OptionsAuditLog;
+  DelphiDoom.XcomEngine.OptionsAuditLog, DelphiDoom.XcomEngine.FontChoices,
+  DelphiDoom.XcomEngine.ExtraChoiceOptions.Intf;
 
 type
   /// <summary>
@@ -118,6 +119,8 @@ type
     procedure UnFileSvuotatoDaFuoriVieneRiscrittoPerIntero;
     [Test]
     procedure SalvaDueVolteDiSeguitoNonCambiaIlFile;
+    [Test]
+    procedure UnaScritturaInterrottaDiFontsCfgLasciaIlFileIntatto;
   end;
 
 implementation
@@ -760,6 +763,36 @@ begin
   finally
     LOptions.Free;
   end;
+end;
+
+procedure TTestXcomOptionsPersistence.UnaScritturaInterrottaDiFontsCfgLasciaIlFileIntatto;
+var
+  LChoices: TXcomFontChoices;
+  LChoicesRef: IXcomExtraChoiceOptions;
+  LAfterFirst: string;
+  LRaised: Boolean;
+begin
+  LChoices := TXcomFontChoices.Create(FFilesRef, TYamlFactory.CreateParser, 'user\fonts.cfg', '', nil, nil);
+  LChoicesRef := LChoices;
+  // the first font takes the next family of the list, and the choice is kept
+  LChoicesRef.Step(0, 1);
+  LChoices.Commit;
+  LAfterFirst := FFiles.Text('user\fonts.cfg');
+  Assert.IsTrue(LAfterFirst <> '');
+  Assert.IsFalse(FFiles.FileExists('user\fonts.cfg.tmp'));
+  // the disk fails in the middle of the next write
+  LChoicesRef.Step(0, 1);
+  FFiles.FailSuffix := '.tmp';
+  LRaised := False;
+  try
+    LChoices.Commit;
+  except
+    on EXcomEngineException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised);
+  Assert.AreEqual(LAfterFirst, FFiles.Text('user\fonts.cfg'));
+  Assert.IsFalse(FFiles.FileExists('user\fonts.cfg.tmp'));
 end;
 
 initialization

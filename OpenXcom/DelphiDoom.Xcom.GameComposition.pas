@@ -12,7 +12,7 @@ interface
 uses
   DelphiDoom.Clock.Intf,
   System.SysUtils, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.QueueEventSource,
-  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.TrueColor.Intf,
+  DelphiDoom.XcomEngine.Options, DelphiDoom.XcomEngine.OptionsStore.Intf, DelphiDoom.XcomEngine.TrueColor.Intf,
   DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomGeoscape.MissionLauncher.Intf, DelphiDoom.GameHost.Win.Window,
   DelphiDoom.Xcom.LoggingBattleAudio, DelphiDoom.Yaml.Intf, DelphiDoom.XcomSurface.FontOverlay.Intf,
   DelphiDoom.XcomSurface.FontDetail.Intf, DelphiDoom.XcomSurface.Glyph.Types,
@@ -109,6 +109,12 @@ type
     class function CreateFontOverlay(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
       const AParser: IYamlParser; const AComposer: IXcomFrameComposer = nil): IXcomFontOverlay; static;
     /// <summary>
+    ///   options.cfg of the user folder (issue 186): written in one step and merged by key, with the trace of every read
+    ///   and write when -optionslog asks for it and the warnings (a file that cannot be read) on the log of the program
+    /// </summary>
+    class function CreateOptionsStore(const ASettings: TXcomGameSettings; const AFiles: IXcomFileSystem;
+      const AParser: IYamlParser): IXcomOptionsStore; static;
+    /// <summary>
     ///   The choice of the fonts: the entries of fonts.cfg of the user folder (or of -fonts, which then cannot be
     ///   changed in the options), as the rows of the advanced options and as the source of the fonts
     /// </summary>
@@ -139,7 +145,7 @@ uses
   DelphiDoom.XcomEngine.Language, DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.DiskFileSystem,
   DelphiDoom.XcomEngine.ModGameLoader, DelphiDoom.XcomEngine.GameLoader.Intf, DelphiDoom.XcomEngine.GameLoadTask, DelphiDoom.XcomEngine.ThreadLoadTask,
   DelphiDoom.XcomEngine.ImmediateLoadTask, DelphiDoom.XcomEngine.HeldLoadTask, DelphiDoom.XcomUi.Cursor,
-  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsAuditLog,
+  DelphiDoom.XcomUi.FpsCounter, DelphiDoom.XcomMenu.StartState, DelphiDoom.XcomEngine.FileOptionsStore, DelphiDoom.XcomEngine.OptionsAuditLog, DelphiDoom.XcomEngine.OptionsAudit.Intf,
   DelphiDoom.XcomEngine.FolderLanguageProvider, DelphiDoom.Xcom.Win.DisplayModes,
   DelphiDoom.Xcom.Win.FolderOpener, DelphiDoom.XcomEngine.DiskSaveCatalog, DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomAudio.Factory,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomEngine.DiskModCatalog,
@@ -177,6 +183,19 @@ begin
   LChoices := CreateFontChoices(ASettings, AFiles, AParser);
   LRasterizers := TXcomGdiGlyphRasterizerFactory.Create;
   Result := MakeFontOverlay(LChoices.Settings, ASettings.Log, LRasterizers, AComposer);
+end;
+
+class function TXcomGameComposition.CreateOptionsStore(const ASettings: TXcomGameSettings;
+  const AFiles: IXcomFileSystem; const AParser: IYamlParser): IXcomOptionsStore;
+var
+  LAudit: IXcomOptionsAudit;
+begin
+  LAudit := TXcomOptionsAuditLog.Create(ASettings.OptionsLog, ASettings.Log,
+    function: string
+    begin
+      Result := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now);
+    end, GetCurrentProcessId);
+  Result := TXcomFileOptionsStore.Create(AFiles, AParser, ASettings.UserFolder, LAudit);
 end;
 
 class function TXcomGameComposition.CreateFontChoices(const ASettings: TXcomGameSettings;
@@ -404,8 +423,7 @@ var
   LNavigatorFactory: TXcomNavigatorFactory;
   LBrief: TXcomSaveBriefInfo;
   LModLoader: TXcomModGameLoader;
-  LOptionsFile: string;
-  LOptionsDoc: IYamlNode;
+  LOptionsStore: IXcomOptionsStore;
   LModSettings: TArray<TXcomModSetting>;
   LMasterIndex: Integer;
   LModIndex: Integer;
@@ -427,13 +445,11 @@ begin
   LParser := TYamlFactory.CreateParser;
   LOptions := TXcomOptions.Create;
   try
-    LOptionsFile := TPath.Combine(ASettings.UserFolder, 'options.cfg');
-    if (ASettings.UserFolder <> '') and LFiles.FileExists(LOptionsFile) then
-    begin
-      LOptionsDoc := LParser.Load(LFiles.ReadAll(LOptionsFile));
-      // with the "mods" section of the file: a save that lists a mod asks for confirmation only when it is not active
-      LOptions.Load(LOptionsDoc);
-    end;
+    // the one store of the game reads the file now, and remembers what it read: the writes that follow are merged
+    // into the file by key. It reads the "mods" section too (a save that lists a mod asks for confirmation only when
+    // it is not active)
+    LOptionsStore := CreateOptionsStore(ASettings, LFiles, LParser);
+    LOptionsStore.Load(LOptions, 'start');
     // Options::refreshMods: the master the program runs is always in the list and active. Without it (no options.cfg
     // yet) a save was written with no mods, and the list of the saves takes such a file for one of xcom1
     LMasterIndex := -1;
@@ -487,12 +503,7 @@ begin
       TXcomCursor.Create(9, 13),
       TXcomFpsCounter.Create(AClock, 15, 5, 0, 0, LOptions.FpsCounter, KEY_FPS),
       TXcomLanguage.Create('', LOptions.Wordwrap, LFiles, LParser), AClock, AEvents);
-    Result.SetOptionsStore(TXcomFileOptionsStore.Create(LFiles, LParser, ASettings.UserFolder,
-      TXcomOptionsAuditLog.Create(ASettings.OptionsLog, ASettings.Log,
-      function: string
-      begin
-        Result := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now);
-      end, GetCurrentProcessId)));
+    Result.SetOptionsStore(LOptionsStore);
     Result.SetLanguageProvider(TXcomFolderLanguageProvider.Create(ASettings.DataFolder,
       TPath.Combine(TPath.Combine(ASettings.DataFolder, 'standard'), ASettings.ModId), LFiles, LParser));
     Result.SetFolderOpener(TXcomWinFolderOpener.Create);
