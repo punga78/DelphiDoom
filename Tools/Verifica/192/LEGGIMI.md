@@ -34,3 +34,21 @@ riga `E`; `Tests\DelphiDoom.Tests.War` da' le stesse 184 righe. Nessuna palette 
 PNG per l'ispezione visiva (fuori dal repository): con `DELPHIDOOM_WAR_PNG_OUT=<cartella>` il test
 `DovrebbeScrivereAlcuniPNGPerLIspezioneVisiva` scrive `image.png`, `sprite_frame0.png`, `cursor.png`, `tileset.png` (senza la variabile e' ignorato).
 Per compilare i test in un worktree serve `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
+
+## Seconda fetta: testo, disegno e sprite
+
+```
+powershell -NoProfile -File Registra-GoldenRender.ps1 -Out <cartella nuova fuori dal repository>   # compila war_render_ref.c e riscrive render.*.golden.txt
+war_render_ref.exe - text | <DATA.WAR> sprites
+```
+
+`Compila-RenderRef.ps1` estrae alla lettera `war_font.c` (la tabella e le funzioni dal `getFontData` in poi), `wr_init` ... `wr_subImage` di `war_render.c` e `war_sprites.c` intero; SDL e' sostituita da stub che **registrano** ogni `SDL_RenderTexture(Rotated)` (parte dell'immagine, rettangolo di arrivo, specchio, colore e alfa della texture). I float si confrontano a bit. Nel generatore di testi l'evidenziazione resta dentro il testo perche' il C legge oltre la fine (memoria non definita). Risultato (2026-11-13): 240 scenari di testo e 164 record grafici, zero differenze a Win32 e a Win64.
+
+## Seconda fetta: testo, disegno e sprite
+
+```
+powershell -NoProfile -File Registra-GoldenRender.ps1 -Out <cartella nuova fuori dal repository>   # compila war_render_ref.c e riscrive render.*.golden.txt
+war_render_ref.exe - text | <DATA.WAR> sprites
+```
+
+`Compila-RenderRef.ps1` estrae alla lettera `war_font.c` (la tabella e le funzioni dal `getFontData` in poi), `wr_init` ... `wr_subImage` di `war_render.c` e `war_sprites.c` intero; SDL e' sostituita da stub che **registrano** ogni `SDL_RenderTexture(Rotated)` (parte dell'immagine, rettangolo di arrivo, specchio, colore e alfa della texture). I float si confrontano a bit. Nel generatore di testi l'evidenziazione resta dentro il testo perche' il C legge oltre la fine (memoria non definita). Risultato (2026-11-13): 240 scenari di testo e 164 record grafici, zero differenze a Win32 e a Win64.

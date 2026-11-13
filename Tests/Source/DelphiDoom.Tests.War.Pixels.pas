@@ -182,7 +182,7 @@ begin
   LImage := TWarImageDecoder.Decode(1, TBytes.Create(3, 0, 2, 0, 1, 2, 3, 4, 5, 6), TWarTestColors.Lookup);
   Assert.AreEqual(3, Integer(LImage.Width));
   Assert.AreEqual(2, Integer(LImage.Height));
-  Assert.AreEqual(24, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(24, Length(LImage.Pixels));
   Assert.AreEqual(1, TWarTestColors.Red(LImage.Pixels, 0));
   Assert.AreEqual(6, TWarTestColors.Red(LImage.Pixels, 5));
   Assert.AreEqual(255, Integer(LImage.Pixels[3]));
@@ -202,7 +202,7 @@ var
   LImage: TWarImage;
 begin
   LImage := TWarImageDecoder.Decode(1, TBytes.Create(0, 0, 5, 0), TWarTestColors.Lookup);
-  Assert.AreEqual(0, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LImage.Pixels));
 end;
 
 procedure TTestWarImageDecoder.DovrebbeIgnorareICodiciOltreLeDimensioni;
@@ -210,7 +210,7 @@ var
   LImage: TWarImage;
 begin
   LImage := TWarImageDecoder.Decode(1, TBytes.Create(1, 0, 1, 0, 7, 8, 9), TWarTestColors.Lookup);
-  Assert.AreEqual(4, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(4, Length(LImage.Pixels));
   Assert.AreEqual(7, TWarTestColors.Red(LImage.Pixels, 0));
 end;
 
@@ -243,7 +243,7 @@ begin
   Assert.AreEqual(5, Integer(LCursor.HotY));
   Assert.AreEqual(2, Integer(LCursor.Width));
   Assert.AreEqual(1, Integer(LCursor.Height));
-  Assert.AreEqual(8, Length(LCursor.Pixels));
+  Assert.AreEqual<Integer>(8, Length(LCursor.Pixels));
   Assert.AreEqual(9, TWarTestColors.Red(LCursor.Pixels, 0));
   Assert.AreEqual(8, TWarTestColors.Red(LCursor.Pixels, 1));
 end;
@@ -302,11 +302,11 @@ begin
   LSprite := TWarSpriteDecoder.Decode(7, LRaw, TWarTestColors.Lookup);
   Assert.AreEqual(4, Integer(LSprite.FrameWidth));
   Assert.AreEqual(3, Integer(LSprite.FrameHeight));
-  Assert.AreEqual(2, Length(LSprite.Frames));
+  Assert.AreEqual<Integer>(2, Length(LSprite.Frames));
   Assert.AreEqual(5, Integer(LSprite.Frames[1].Dx));
   Assert.AreEqual(6, Integer(LSprite.Frames[1].Dy));
   Assert.AreEqual(Cardinal(300), LSprite.Frames[1].Offset);
-  Assert.AreEqual(48, Length(LSprite.Frames[0].Pixels));
+  Assert.AreEqual<Integer>(48, Length(LSprite.Frames[0].Pixels));
 end;
 
 procedure TTestWarSpriteDecoder.DovrebbeDisegnareIlFotogrammaNellaSuaPosizione;
@@ -439,7 +439,7 @@ var
   LSprite: TWarSprite;
 begin
   LSprite := TWarSpriteDecoder.Decode(1, Header(0, 8, 8), TWarTestColors.Lookup);
-  Assert.AreEqual(0, Length(LSprite.Frames));
+  Assert.AreEqual<Integer>(0, Length(LSprite.Frames));
   Assert.AreEqual(8, Integer(LSprite.FrameWidth));
 end;
 
@@ -568,7 +568,7 @@ end;
 
 procedure TTestWarTilesetDecoder.DovrebbeDareUnaImmagineDi512Per256;
 begin
-  Assert.AreEqual(512 * 256 * 4, Length(Decode(nil, nil).Pixels));
+  Assert.AreEqual<Integer>(512 * 256 * 4, Length(Decode(nil, nil).Pixels));
 end;
 
 procedure TTestWarTilesetDecoder.DovrebbeRifiutareUnaMiniTegolaFuoriDalRecordDelleTegole;

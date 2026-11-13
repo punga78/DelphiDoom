@@ -135,3 +135,31 @@ Conservato dal C (e provato dai golden): blocchi da 64 campioni e tempo `Single`
 **Filmati** (`DelphiDoom.War.Cinematic.*` in `Libs\War`, la scena in `Libs\Cinematic`, #199). `TWarCinematicCatalog` ha le 39 animazioni di `cinematics.txt` (nome, ciclo: `CAVE2`, `HINTRO2`, `LOSE2`, `OFINALE`, `OINTRO2`, `WIN2` dicono "Loop") e la voce che le accompagna; `TWarCinematicDirector.TryOpen(nome, razza del giocatore)` da' la scena (`IFlicScene`, vedi `Libs\Cinematic`) con la voce (`TWarCinematicAudio`: parte con la scena, **si ferma se la scena e' saltata**, finisce da sola se la scena finisce) o `nil` se il gioco non ha quell'animazione o il file non c'e' (**HMAP01-12, OMAP01-12, LOSE1 e WIN1 mancano dal disco fornito: si saltano**, provato sui file veri: 13 su 39 ci sono). **L'abbinamento animazione-voce e' una scelta del port, non un fatto dell'originale** (il remake non suona nessun filmato): e' dato solo dove il nome non lascia dubbi (`CAVE3` "la porta si apre" -> `WAR_INTRO_DOOR`, `TITLE` -> `WAR_INTRO_5` "Welcome to the World of Warcraft", `HFINALE`/`OFINALE` -> i finali della razza, `WIN`/`LOSE` -> vittoria e sconfitta della razza del giocatore); le altre quattro narrazioni dell'introduzione (`WAR_INTRO_1..4`) e i filmati delle mappe restano senza voce finche' qualcuno non ascolta il gioco DOS. Il director dipende da `IFlicSceneMaker`, non dai file: un finto nei test, `TFlicSceneFactory.CreateMaker(CreateFolderSource(cartella, '.WAR'))` nel gioco; un `.dpr` che usa il director elenca anche le unit di `Libs\Cinematic`, `Libs\Flic` e `Libs\Imaging` (vedi `Tests\DelphiDoom.Tests.War.dpr`).
 
 **Non fatto**: ascolto (nessuna delle tre parti e' stata sentita) e visione; il sintetizzatore e il SoundFont; la sequenza delle introduzioni (`CAVE1 -> CAVE2` in ciclo, ...) e il collegamento al gestore di scena di `Warcraft32` (#200); le modalita' di presentazione a 8 bit con palette; la misura delle prestazioni del mixer contro il remake (vedi `docs\PARITA_WAR.md`).
+## Mappa di gioco (fetta #193, seconda)
+
+Il livello diventa la mappa di una partita: `TWarMapBuilder.Build(livello, pixel del tileset)` da' un `TWarGameMap`. Dal C: `war_map.c` (`wmap_enterMap`, `updateFoW`, `determineFoWTypes`, le funzioni di stato delle tegole, `wmap_getMapTileAverage`, `wmap_updateMinimapTile`), `renderMinimap` di `war_entities.c`, `we_createUnit`, `war_trees.c` e le funzioni della griglia di `war_pathfinder.c`.
+
+| C | Delphi |
+|---|---|
+| `wmap_enterMap` (i dati) | `TWarMapBuilder.Build`, `TWarGameMap` |
+| `wpath_initPathFinder`, `wpath_setStaticEntity`, `wpath_isEmpty`, `wpath_isTileAccesible`... | `TWarPathGrid` |
+| `setInitialTileState`, `wmap_setMapTileState`, `wmap_is*TileIn*`, `determineFoWTypes` | `TWarFogOfWar` |
+| `updateFoW` | `TWarFogUpdater` |
+| `createForestEntities`, `we_determineTreeTiles`, `we_plantTree`, `we_chopTree`, `we_takeTreeDown`, `we_findAccesibleTree`, `we_validTree` | `TWarMapForests`, `TWarMapForest` |
+| `wmap_getMapTileAverage`, `wmap_updateMinimapTile`, il ciclo di `renderMinimap`, `wu_getUnitColorOnMinimap` | `TWarMinimap` (immagine RGBA 64 x 64 a byte) |
+| `wmap_getMapTileIndex`, `wmap_setMapTileIndex` | `TWarMapTilePainter` (`IWarTilePainter`) |
+| `we_createUnit`, `wu_is*UnitType`, `wu_getUnitSightRange`, `unitsData`/`unitStats`/`buildingStats` | `TWarUnitCatalog` (`IWarUnitCatalog`), `DelphiDoom.War.Map.UnitData` (generata) |
+
+Difetti del C conservati, differenze volute e non portato: `CLAUDE.md`, sezione "Mappa di gioco". Parita' con il C compilato con gcc: `Tools\Verifica\193\LEGGIMI.md` (65 livelli, 60 scenari di alberi, zero differenze).
+
+## Testo, disegno e sprite (fetta #192, seconda)
+
+| C | Delphi |
+|---|---|
+| `getCharIndex`, `wfont_getAlignmentOffset`, `wfont_getLineAlignmentOffset`, `wfont_splitTextIntoLines`, `wfont_measureSingleSpriteText`, `wfont_measureMultiSpriteText` | `TWarTextLayout` |
+| `wfont_renderSingleSpriteText`, `wfont_renderMultiSpriteText`, `wfont_renderSingleSpriteTextSpan` | `TWarTextRenderer` |
+| `wr_save`, `wr_restore`, `wr_translate`, `wr_scale`, `wr_globalAlpha`, `wr_subImage` | `TWarRenderTransform` (aggiunge un `TWarBlit` a una lista) |
+| `SDL_RenderTexture(Rotated)` sulla texture (nearest, colore, alfa, blend) | `TWarImageBlitter` (pixel RGBA a byte) |
+| `wspr_createSprite`, `wspr_createSpriteFromFrames`, `wspr_createSpriteFromResource`, `wspr_getSpriteFrame`, `wspr_renderSprite`, `wspr_renderSubSprite` | `TWarSpriteSheet` |
+
+Il PNG dei font non e' nel `DATA.WAR`: il chiamante da' a `TWarImageBlitter` l'immagine (`TWarImage`). Il remake non ha un colore per fazione: nessuno e' inventato. Parita': `Tools\Verifica\192\LEGGIMI.md` (240 testi a bit, 164 record grafici, zero differenze).
