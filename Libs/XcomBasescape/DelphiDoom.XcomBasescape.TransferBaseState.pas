@@ -41,7 +41,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Region, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomBasescape.TransferItemsState;
+  DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomBasescape.TransferItemsState;
 
 { TXcomTransferBaseState }
 

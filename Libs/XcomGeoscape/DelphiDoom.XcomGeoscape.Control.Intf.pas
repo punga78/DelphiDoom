@@ -14,7 +14,7 @@ uses
   System.Generics.Collections, DelphiDoom.XcomEngine.State, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft,
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Waypoint,
   DelphiDoom.XcomSave.MissionSite, DelphiDoom.XcomGeoscape.Globe,
-  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomGeoscape.MissionLauncher.Intf;
 
 type
   /// <summary>

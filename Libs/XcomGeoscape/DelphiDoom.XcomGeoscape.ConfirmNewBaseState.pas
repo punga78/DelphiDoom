@@ -44,7 +44,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Region, DelphiDoom.XcomStrategy.Geography,
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomGeoscape.BaseNameState;
 
 { TXcomConfirmNewBaseState }

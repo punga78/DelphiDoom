@@ -119,7 +119,7 @@ uses
   System.Math, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomGeoscape.Strategy,
   DelphiDoom.XcomSave.Country, DelphiDoom.XcomSave.Region,
   DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Gfx,
-  DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomEngine.Resources.Intf;
+  DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomEngine.Resources.Intf;
 
 { TXcomGraphButtonInfo }
 

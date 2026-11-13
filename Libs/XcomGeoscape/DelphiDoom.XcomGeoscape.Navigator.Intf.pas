@@ -10,7 +10,7 @@ unit DelphiDoom.XcomGeoscape.Navigator.Intf;
 interface
 
 uses
-  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.BaseNavigator.Intf;
 
 type
   /// <summary>

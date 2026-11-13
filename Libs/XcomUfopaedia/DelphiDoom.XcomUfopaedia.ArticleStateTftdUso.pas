@@ -26,7 +26,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomGeoscape.Funding;
 
 { TXcomArticleStateTftdUso }
 

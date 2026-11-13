@@ -38,7 +38,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomGeoscape.Funding;
 
 { TXcomTransferConfirmState }
 

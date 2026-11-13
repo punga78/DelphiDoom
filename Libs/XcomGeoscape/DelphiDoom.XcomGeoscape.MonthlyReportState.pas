@@ -71,7 +71,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.CommendationManager,
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomGeoscape.BaseNavigator.Intf,
   DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomEngine.Session.Intf,
   DelphiDoom.XcomMenu.OptionsTypes, DelphiDoom.XcomMenu.SaveGameState;
 

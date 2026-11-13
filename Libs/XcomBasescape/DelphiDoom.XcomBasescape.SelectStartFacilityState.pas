@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomSave.Base,
-  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.BaseNavigator.Intf,
   DelphiDoom.XcomBasescape.BuildFacilitiesState;
 
 type

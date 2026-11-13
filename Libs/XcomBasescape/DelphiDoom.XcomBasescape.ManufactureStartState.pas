@@ -54,7 +54,7 @@ implementation
 
 uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomMenu.ErrorMessageState,
+  DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomMenu.ErrorMessageState,
   DelphiDoom.XcomBasescape.ManufactureInfoState;
 
 { TXcomManufactureStartState }

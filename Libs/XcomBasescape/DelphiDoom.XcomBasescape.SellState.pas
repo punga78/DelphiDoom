@@ -78,7 +78,7 @@ implementation
 uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Transfer,
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.CraftWeapon, DelphiDoom.XcomSave.Soldier,
-  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomBasescape.Funding,
+  DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomGeoscape.Funding,
   DelphiDoom.XcomBasescape.SpaceText, DelphiDoom.XcomBasescape.Names, DelphiDoom.XcomMod.RuleItem,
   DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomMod.Armor;
 

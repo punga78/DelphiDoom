@@ -72,7 +72,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomEngine.Types, DelphiDoom.XcomGeoscape.Funding;
 
 const
   KEY_GEO_LEFT_OPTION = 'keyGeoLeft';

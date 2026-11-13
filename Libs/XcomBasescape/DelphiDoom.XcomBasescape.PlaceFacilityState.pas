@@ -57,7 +57,7 @@ implementation
 
 uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.BaseFacility,
-  DelphiDoom.XcomSave.RuleAdapters, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Funding,
+  DelphiDoom.XcomSave.RuleAdapters, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.Funding,
   DelphiDoom.XcomMenu.ErrorMessageState;
 
 { TXcomPlaceFacilityState }

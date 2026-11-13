@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Navigator.Intf,
-  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility,
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomMenu.OptionsNavigator.Intf;
 
 type

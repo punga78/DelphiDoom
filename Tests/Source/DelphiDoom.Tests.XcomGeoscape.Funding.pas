@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.XcomGeoscape.Funding;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomBasescape.Funding;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomGeoscape.Funding;
 
 type
   [TestFixture]

@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomSave.Settings.Intf,
-  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomStrategy.Settings.Intf,
+  DelphiDoom.XcomStrategy.Simulation.Intf, DelphiDoom.XcomStrategy.Events.Intf, DelphiDoom.XcomStrategy.Settings.Intf,
   DelphiDoom.XcomStrategy.LandMap.Intf, DelphiDoom.XcomStrategy.PolygonLandMap, DelphiDoom.XcomStrategy.UfoSpawner,
   DelphiDoom.XcomStrategy.MissionSites, DelphiDoom.XcomStrategy.MissionThinker,
   DelphiDoom.XcomStrategy.UfoWaypointHandler, DelphiDoom.XcomStrategy.BaseRadar, DelphiDoom.XcomStrategy.UfoTracker,

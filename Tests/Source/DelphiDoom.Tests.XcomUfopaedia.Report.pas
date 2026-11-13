@@ -15,7 +15,7 @@ interface
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomEngine.Game, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.XcomSave.Base,
-  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.BaseNavigator.Intf,
   DelphiDoom.Tests.XcomEngine.World, DelphiDoom.Tests.XcomUfopaedia.Fakes;
 
 type

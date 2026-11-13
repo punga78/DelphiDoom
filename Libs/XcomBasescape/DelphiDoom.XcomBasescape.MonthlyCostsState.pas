@@ -53,7 +53,7 @@ implementation
 uses
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.RuleCraft,
   DelphiDoom.XcomMod.RuleSoldier, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.BaseCapacity,
-  DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomStrategy.BaseCrafts, DelphiDoom.XcomGeoscape.Funding;
 
 { TXcomMonthlyCostsState }
 

@@ -66,7 +66,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomGeoscape.TargetNames, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomSave.Target;
+  DelphiDoom.XcomGeoscape.TargetNames, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomSave.Target;
 
 { TXcomGeoscapeCraftState }
 

@@ -1,11 +1,11 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom basescape library - where the buttons of the basescape go   }
+{  DelphiDoom: xcom geoscape library - where the buttons of the basescape go   }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.XcomBasescape.Navigator.Intf;
+unit DelphiDoom.XcomGeoscape.BaseNavigator.Intf;
 
 interface
 

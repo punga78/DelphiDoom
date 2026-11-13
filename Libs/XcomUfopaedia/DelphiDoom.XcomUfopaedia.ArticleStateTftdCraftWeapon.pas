@@ -26,7 +26,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomUfopaedia.ArticleFormat;
+  DelphiDoom.XcomMod.RuleCraftWeapon, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomUfopaedia.ArticleFormat;
 
 { TXcomArticleStateTftdCraftWeapon }
 
