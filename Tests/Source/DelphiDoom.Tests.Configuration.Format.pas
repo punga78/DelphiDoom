@@ -238,6 +238,8 @@ begin
   LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..'));
   LChecked := 0;
   for LGame in ['Doom', 'Heretic', 'Hexen', 'Strife'] do
+    // the folder of a game that was never run on this machine (or of another platform) is not there
+    if TDirectory.Exists(TPath.Combine(LRoot, LGame)) then
     for LPath in TDirectory.GetFiles(TPath.Combine(LRoot, LGame), '*.ini') do
     begin
       LRead := TStringList.Create;
