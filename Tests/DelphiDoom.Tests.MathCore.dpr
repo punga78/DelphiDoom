@@ -50,6 +50,7 @@ uses
   DelphiDoom.Tests.MathCore.VectorMath in 'Source\DelphiDoom.Tests.MathCore.VectorMath.pas',
   DelphiDoom.Tests.MathCore.BoundingBox in 'Source\DelphiDoom.Tests.MathCore.BoundingBox.pas',
   DelphiDoom.Tests.MathCore.GameRandom in 'Source\DelphiDoom.Tests.MathCore.GameRandom.pas',
+  DelphiDoom.Tests.MathCore.RandomParity in 'Source\DelphiDoom.Tests.MathCore.RandomParity.pas',
   DelphiDoom.Tests.MathCore.StringHashTable in 'Source\DelphiDoom.Tests.MathCore.StringHashTable.pas',
   DelphiDoom.Tests.MathCore.IntegerStack in 'Source\DelphiDoom.Tests.MathCore.IntegerStack.pas',
   DelphiDoom.Tests.MathCore.IntegerQueue in 'Source\DelphiDoom.Tests.MathCore.IntegerQueue.pas',

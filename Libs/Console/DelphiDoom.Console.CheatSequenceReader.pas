@@ -19,6 +19,16 @@ type
     ///   always taken. Without the end mark the array is wrong
     /// </summary>
     class function FromBytes(const ABytes: array of Byte): AnsiString; static;
+    /// <summary>
+    ///   The same for the arrays of characters of the games (the get_cheatseq_string of m_cheat
+    ///   with an array of AnsiChar)
+    /// </summary>
+    class function FromChars(const AChars: array of AnsiChar): AnsiString; static;
+    /// <summary>
+    ///   The same for a string with the end mark (the get_cheatseq_string of m_cheat with an
+    ///   AnsiString). The old code read past the end of a string without the end mark
+    /// </summary>
+    class function FromString(const AText: AnsiString): AnsiString; static;
   end;
 
 implementation
@@ -45,6 +55,28 @@ begin
     if LIndex > High(ABytes) then
       raise EConsoleException.Create('The sequence of the cheat has no end mark');
   until ABytes[LIndex] = END_MARK;
+end;
+
+class function TCheatSequenceReader.FromChars(const AChars: array of AnsiChar): AnsiString;
+var
+  LBytes: TArray<Byte>;
+  LIndex: Integer;
+begin
+  SetLength(LBytes, Length(AChars));
+  for LIndex := 0 to High(AChars) do
+    LBytes[LIndex] := Ord(AChars[LIndex]);
+  Result := FromBytes(LBytes);
+end;
+
+class function TCheatSequenceReader.FromString(const AText: AnsiString): AnsiString;
+var
+  LBytes: TArray<Byte>;
+  LIndex: Integer;
+begin
+  SetLength(LBytes, Length(AText));
+  for LIndex := 1 to Length(AText) do
+    LBytes[LIndex - 1] := Ord(AText[LIndex]);
+  Result := FromBytes(LBytes);
 end;
 
 end.

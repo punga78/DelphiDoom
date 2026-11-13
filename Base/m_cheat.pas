@@ -87,7 +87,8 @@ function get_cheatseq_string(const x: integer): AnsiString; overload; // JVAL
 implementation
 
 uses
-  i_system;
+  i_system,
+  DelphiDoom.Console.CheatSequenceReader;
 
 //==============================================================================
 //
@@ -95,15 +96,16 @@ uses
 //
 //==============================================================================
 function get_cheatseq_string(const A: array of AnsiChar): AnsiString; // JVAL
-var
-  i: integer;
 begin
-  result := '';
-  i := 0;
-  repeat
-    result := result + A[i];
-    inc(i);
-  until A[i] = AnsiChar($FF);
+  try
+    result := TCheatSequenceReader.FromChars(A);
+  except
+    on E: EConsoleException do
+    begin
+      result := '';
+      I_Error('get_cheatseq_string(): %s', [E.Message]);
+    end;
+  end;
 end;
 
 //==============================================================================
@@ -112,15 +114,16 @@ end;
 //
 //==============================================================================
 function get_cheatseq_string(const A: AnsiString): AnsiString;  // JVAL
-var
-  i: integer;
 begin
-  result := '';
-  i := 1;
-  repeat
-    result := result + A[i];
-    inc(i);
-  until A[i] = AnsiChar($FF);
+  try
+    result := TCheatSequenceReader.FromString(A);
+  except
+    on E: EConsoleException do
+    begin
+      result := '';
+      I_Error('get_cheatseq_string(): %s', [E.Message]);
+    end;
+  end;
 end;
 
 //==============================================================================

@@ -21,9 +21,16 @@ uses
   DelphiDoom.Configuration.Document in '..\Libs\Configuration\DelphiDoom.Configuration.Document.pas',
   DelphiDoom.Configuration.Writer in '..\Libs\Configuration\DelphiDoom.Configuration.Writer.pas',
   DelphiDoom.Configuration.Format in '..\Libs\Configuration\DelphiDoom.Configuration.Format.pas',
+  DelphiDoom.Configuration.Item in '..\Libs\Configuration\DelphiDoom.Configuration.Item.pas',
+  DelphiDoom.Configuration.Table in '..\Libs\Configuration\DelphiDoom.Configuration.Table.pas',
+  DelphiDoom.Configuration.TableStore in '..\Libs\Configuration\DelphiDoom.Configuration.TableStore.pas',
   DelphiDoom.Configuration.Factory in '..\Libs\Configuration\DelphiDoom.Configuration.Factory.pas',
   DelphiDoom.Tests.Configuration.Values in 'Source\DelphiDoom.Tests.Configuration.Values.pas',
-  DelphiDoom.Tests.Configuration.Format in 'Source\DelphiDoom.Tests.Configuration.Format.pas';
+  DelphiDoom.Tests.Configuration.Format in 'Source\DelphiDoom.Tests.Configuration.Format.pas',
+  DelphiDoom.Tests.Configuration.Fakes in 'Source\DelphiDoom.Tests.Configuration.Fakes.pas',
+  DelphiDoom.Tests.Configuration.Legacy in 'Source\DelphiDoom.Tests.Configuration.Legacy.pas',
+  DelphiDoom.Tests.Configuration.Table in 'Source\DelphiDoom.Tests.Configuration.Table.pas',
+  DelphiDoom.Tests.Configuration.Parity in 'Source\DelphiDoom.Tests.Configuration.Parity.pas';
 
 var
   Runner: ITestRunner;

@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: engine - a console variable made of a row of the table defaults  }
+{  DelphiDoom: engine - a console variable made of a row of the options       }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -13,20 +13,21 @@ unit DelphiDoom.Engine.Console.Variable;
 interface
 
 uses
+  DelphiDoom.Configuration.Intf,
   DelphiDoom.Console.Types,
-  DelphiDoom.Console.Intf,
-  m_defs;
+  DelphiDoom.Console.Intf;
 
 type
   /// <summary>
-  ///   One row of the table defaults seen by the console: the name, the type, who can change it
-  ///   and the global it points to
+  ///   One row of the table of the options seen by the console: the name, the type, who can
+  ///   change it and its value (after a force: the value of before, as the old row did)
   /// </summary>
   TEngineConsoleVariable = class(TInterfacedObject, IConsoleVariable)
-  private
-    FDefault: Pdefault_t;
+  strict private
+    FItem: IConfigurationItem;
   public
-    constructor Create(const ADefault: Pdefault_t);
+    /// <remarks>Raises EArgumentNilException if AItem is nil</remarks>
+    constructor Create(const AItem: IConfigurationItem);
     function Name: string;
     function Kind: TConsoleVariableKind;
     function Access: TConsoleAccess;
@@ -41,26 +42,32 @@ type
 implementation
 
 uses
-  d_delphi;
+  System.SysUtils,
+  DelphiDoom.Configuration.Types;
+
+const
+  SItemIsNil = 'TEngineConsoleVariable: the row is nil';
 
 { TEngineConsoleVariable }
 
-constructor TEngineConsoleVariable.Create(const ADefault: Pdefault_t);
+constructor TEngineConsoleVariable.Create(const AItem: IConfigurationItem);
 begin
   inherited Create;
-  FDefault := ADefault;
+  if not Assigned(AItem) then
+    raise EArgumentNilException.Create(SItemIsNil);
+  FItem := AItem;
 end;
 
 function TEngineConsoleVariable.Name: string;
 begin
-  Result := FDefault.name;
+  Result := FItem.Name;
 end;
 
 function TEngineConsoleVariable.Kind: TConsoleVariableKind;
 begin
-  case FDefault._type of
-    m_defs.tInteger: Result := cvkInteger;
-    m_defs.tBoolean: Result := cvkBoolean;
+  case FItem.Kind of
+    cikInteger: Result := cvkInteger;
+    cikBoolean: Result := cvkBoolean;
   else
     Result := cvkString;
   end;
@@ -69,40 +76,40 @@ end;
 function TEngineConsoleVariable.Access: TConsoleAccess;
 begin
   Result := [];
-  if FDefault.setable and DFS_SINGLEPLAYER <> 0 then
+  if FItem.Setable and CONFIGURATION_SET_SINGLEPLAYER <> 0 then
     Include(Result, camSinglePlayer);
-  if FDefault.setable and DFS_NETWORK <> 0 then
+  if FItem.Setable and CONFIGURATION_SET_NETWORK <> 0 then
     Include(Result, camNetwork);
 end;
 
 function TEngineConsoleVariable.GetInteger: Integer;
 begin
-  Result := PInteger(FDefault.location)^;
+  Result := FItem.GetInteger;
 end;
 
 procedure TEngineConsoleVariable.SetInteger(AValue: Integer);
 begin
-  PInteger(FDefault.location)^ := AValue;
+  FItem.SetInteger(AValue);
 end;
 
 function TEngineConsoleVariable.GetBoolean: Boolean;
 begin
-  Result := PBoolean(FDefault.location)^;
+  Result := FItem.GetBoolean;
 end;
 
 procedure TEngineConsoleVariable.SetBoolean(AValue: Boolean);
 begin
-  PBoolean(FDefault.location)^ := AValue;
+  FItem.SetBoolean(AValue);
 end;
 
 function TEngineConsoleVariable.GetString: string;
 begin
-  Result := PString(FDefault.location)^;
+  Result := FItem.GetString;
 end;
 
 procedure TEngineConsoleVariable.SetString(const AValue: string);
 begin
-  PString(FDefault.location)^ := AValue;
+  FItem.SetString(AValue);
 end;
 
 end.

@@ -12,6 +12,9 @@ unit DelphiDoom.Engine.Configuration.Intf;
 
 interface
 
+uses
+  DelphiDoom.Configuration.Intf;
+
 type
   /// <summary>
   ///   The table of the defaults of the engine (m_defs: the options with a pointer to their
@@ -44,6 +47,8 @@ type
     function ForceString(const AName: string; const AValue: string): Boolean;
     /// <summary>True until Load reads a configuration file with a version it accepts</summary>
     function ConfigNotFound: Boolean;
+    /// <summary>The rows of the options (the table defaults of m_defs as classes)</summary>
+    function Table: IConfigurationTable;
   end;
 
 implementation

@@ -23,6 +23,7 @@ uses
   DelphiDoom.CommandLine.Queried in '..\Libs\CommandLine\DelphiDoom.CommandLine.Queried.pas',
   DelphiDoom.CommandLine.SaveFileNames in '..\Libs\CommandLine\DelphiDoom.CommandLine.SaveFileNames.pas',
   DelphiDoom.CommandLine.Factory in '..\Libs\CommandLine\DelphiDoom.CommandLine.Factory.pas',
+  DelphiDoom.CommandLine.Startup in '..\Libs\CommandLine\DelphiDoom.CommandLine.Startup.pas',
   DelphiDoom.CommandLine.ResponseFile in '..\Libs\CommandLine\DelphiDoom.CommandLine.ResponseFile.pas',
   DelphiDoom.CommandLine.FileList in '..\Libs\CommandLine\DelphiDoom.CommandLine.FileList.pas',
   DelphiDoom.CommandLine.Verbatim in '..\Libs\CommandLine\DelphiDoom.CommandLine.Verbatim.pas',
@@ -38,7 +39,8 @@ uses
   DelphiDoom.Tests.CommandLine.Queried in 'Source\DelphiDoom.Tests.CommandLine.Queried.pas',
   DelphiDoom.Tests.CommandLine.SaveFileNames in 'Source\DelphiDoom.Tests.CommandLine.SaveFileNames.pas',
   DelphiDoom.Tests.CommandLine.Verbatim in 'Source\DelphiDoom.Tests.CommandLine.Verbatim.pas',
-  DelphiDoom.Tests.CommandLine.Cursor in 'Source\DelphiDoom.Tests.CommandLine.Cursor.pas';
+  DelphiDoom.Tests.CommandLine.Cursor in 'Source\DelphiDoom.Tests.CommandLine.Cursor.pas',
+  DelphiDoom.Tests.CommandLine.Startup in 'Source\DelphiDoom.Tests.CommandLine.Startup.pas';
 
 var
   Runner: ITestRunner;

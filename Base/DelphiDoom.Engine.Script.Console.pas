@@ -20,7 +20,7 @@ type
   /// <summary>
   ///   The commands and the variables of the configuration that scripts can use
   ///   (ConsoleCommand, GetConsoleInt, SetConsoleStr...). The variables are read from the table
-  ///   "defaults" and written through IEngineDefaults. It was in psi_system.pas
+  ///   rows of IEngineDefaults.Table and written through IEngineDefaults. It was in psi_system.pas
   /// </summary>
   TEngineScriptConsole = class(TInterfacedObject, IScriptSystemConsole)
   strict private
@@ -43,7 +43,8 @@ implementation
 uses
   System.SysUtils,
   d_delphi,
-  m_defs;
+  DelphiDoom.Configuration.Types,
+  DelphiDoom.Configuration.Intf;
 
 { TEngineScriptConsole }
 
@@ -66,131 +67,54 @@ end;
 
 function TEngineScriptConsole.GetString(const AName: string): string;
 var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
+  LItem: IConfigurationItem;
 begin
-  cname := strlower(AName);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := PString(location)^;
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := itoa(PInteger(location)^);
-            Exit;
-          end;
-        tBoolean:
-          begin
-            if PBoolean(location)^ then
-              Result := 'true'
-            else
-              Result := 'false';
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
+  // the variable itself, also when it is forced (the old code read oldlocation)
+  LItem := FDefaults.Table.FindValue(strlower(AName));
+  if not Assigned(LItem) then
+    Exit('');
+  case LItem.Kind of
+    cikString: Result := LItem.ActualString;
+    cikInteger: Result := itoa(LItem.ActualInteger);
+  else
+    if LItem.ActualBoolean then
+      Result := 'true'
+    else
+      Result := 'false';
   end;
-  Result := '';
 end;
 
 function TEngineScriptConsole.GetInteger(const AName: string): Integer;
 var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
+  LItem: IConfigurationItem;
 begin
-  cname := strlower(AName);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := atoi(PString(location)^, 0);
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := PInteger(location)^;
-            Exit;
-          end;
-        tBoolean:
-          begin
-            if PBoolean(location)^ then
-              Result := 1
-            else
-              Result := 0;
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
+  LItem := FDefaults.Table.FindValue(strlower(AName));
+  if not Assigned(LItem) then
+    Exit(0);
+  case LItem.Kind of
+    cikString: Result := atoi(LItem.ActualString, 0);
+    cikInteger: Result := LItem.ActualInteger;
+  else
+    if LItem.ActualBoolean then
+      Result := 1
+    else
+      Result := 0;
   end;
-  Result := 0;
 end;
 
 function TEngineScriptConsole.GetBoolean(const AName: string): Boolean;
 var
-  i: integer;
-  pd: Pdefault_t;
-  cname: string;
-  location: Pointer;
+  LItem: IConfigurationItem;
 begin
-  cname := strlower(AName);
-
-  pd := @defaults[0];
-  for i := 0 to NUMDEFAULTS - 1 do
-  begin
-    if pd.name = cname then
-    begin
-      if pd.oldlocation <> nil then
-        location := pd.oldlocation
-      else
-        location := pd.location;
-      case pd._type of
-        tString:
-          begin
-            Result := PString(location)^ <> '';
-            Exit;
-          end;
-        tInteger:
-          begin
-            Result := PInteger(location)^ <> 0;
-            Exit;
-          end;
-        tBoolean:
-          begin
-            Result := PBoolean(location)^;
-            Exit;
-          end;
-      end;
-    end;
-    inc(pd);
+  LItem := FDefaults.Table.FindValue(strlower(AName));
+  if not Assigned(LItem) then
+    Exit(False);
+  case LItem.Kind of
+    cikString: Result := LItem.ActualString <> '';
+    cikInteger: Result := LItem.ActualInteger <> 0;
+  else
+    Result := LItem.ActualBoolean;
   end;
-  Result := False;
 end;
 
 function TEngineScriptConsole.SetString(const AName, AValue: string): Boolean;
