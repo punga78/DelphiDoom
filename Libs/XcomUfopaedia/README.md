@@ -1,7 +1,7 @@
 # Libs\XcomUfopaedia
 
 L'**Ufopaedia** di OpenXcom (`src\Ufopaedia\*`) a classi senza SDL, una classe per unit, sopra `Libs\XcomEngine`,
-`XcomUi`, `XcomSurface`, `XcomMod`, `XcomSave`, `XcomBasescape` (`TXcomFunding`) e `XcomGeoscape` (`TXcomStrategy`,
+`XcomUi`, `XcomSurface`, `XcomMod`, `XcomSave`, `XcomGeoscape` (`TXcomFunding` dalla #223; `TXcomStrategy`,
 solo nella factory). Issue #176.
 
 **Licenza**: codice derivato da OpenXcom (GPL v3 o successiva, vedi le intestazioni e `Libs\XcomFormats\README.md`);

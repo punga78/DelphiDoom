@@ -1,12 +1,12 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom basescape library - Unicode::formatFunding of OpenXcom      }
+{  DelphiDoom: xcom geoscape library - Unicode::formatFunding of OpenXcom      }
 {  (an amount of money with a dollar sign and the thousands apart)              }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.XcomBasescape.Funding;
+unit DelphiDoom.XcomGeoscape.Funding;
 
 interface
 

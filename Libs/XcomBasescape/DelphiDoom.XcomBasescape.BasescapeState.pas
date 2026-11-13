@@ -15,7 +15,7 @@ uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseFacility, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomUi.Text,
   DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomUi.TextEdit, DelphiDoom.XcomGeoscape.Globe,
   DelphiDoom.XcomBasescape.BaseView, DelphiDoom.XcomBasescape.MiniBaseView,
-  DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf;
 
 type
   /// <summary>
@@ -73,7 +73,7 @@ implementation
 uses
   DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomMod.RuleRegion,
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Region, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomEngine.LocalizedText, DelphiDoom.XcomGeoscape.Funding;
 
 constructor TXcomBasescapeState.Create(AHost: TXcomStateHost; ABase: TXcomBase; AGlobe: TXcomGlobe;
   const ANavigator: IXcomBasescapeNavigator);

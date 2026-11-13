@@ -48,7 +48,7 @@ uses
   DelphiDoom.XcomMod.Random, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.RulesetRules, DelphiDoom.XcomSave.DefaultSettings, DelphiDoom.XcomSave.Settings.Intf, DelphiDoom.XcomSave.SavedGameHolder,
   DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.GeoscapeState, DelphiDoom.XcomGeoscape.Navigator.Intf,
-  DelphiDoom.XcomGeoscape.Simulation.Intf;
+  DelphiDoom.XcomStrategy.Simulation.Intf;
 
 { TXcomSavedGameLoader }
 

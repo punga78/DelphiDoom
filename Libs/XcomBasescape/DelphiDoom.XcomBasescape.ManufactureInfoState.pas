@@ -91,7 +91,7 @@ implementation
 
 uses
   DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomStrategy.ProductionStepper, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomMenu.ErrorMessageState;
+  DelphiDoom.XcomStrategy.ProductionStepper, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomMenu.ErrorMessageState;
 
 const
   INFINITY_SIGN = #$221E;

@@ -51,7 +51,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.TargetNames,
-  DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomGeoscape.Funding;
 
 { TXcomUfoDetectedState }
 

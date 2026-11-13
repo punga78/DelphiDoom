@@ -11,7 +11,7 @@ unit DelphiDoom.XcomGeoscape.PopupSimulation;
 interface
 
 uses
-  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Control.Intf;
+  DelphiDoom.XcomStrategy.Simulation.Intf, DelphiDoom.XcomGeoscape.Control.Intf;
 
 type
   /// <summary>

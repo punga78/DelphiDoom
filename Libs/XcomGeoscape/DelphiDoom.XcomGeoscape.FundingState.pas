@@ -36,7 +36,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Country, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomGeoscape.Funding;
 
 { TXcomFundingState }
 

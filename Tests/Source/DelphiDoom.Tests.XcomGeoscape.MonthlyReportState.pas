@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Session.Intf,
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomStrategy.MonthlyReport, DelphiDoom.XcomGeoscape.Control.Intf,
-  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.Tests.XcomEngine.World, DelphiDoom.Tests.XcomGeoscape.Popups;
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf, DelphiDoom.Tests.XcomEngine.World, DelphiDoom.Tests.XcomGeoscape.Popups;
 
 type
   /// <summary>The saver of the host: it counts what the screens ask</summary>

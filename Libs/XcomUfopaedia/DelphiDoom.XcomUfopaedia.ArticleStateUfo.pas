@@ -34,7 +34,7 @@ implementation
 
 uses
   DelphiDoom.Xcom.Types, DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.Types,
-  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomBasescape.Funding,
+  DelphiDoom.XcomEngine.RuleInterface, DelphiDoom.XcomMod.RuleUfo, DelphiDoom.XcomGeoscape.Funding,
   DelphiDoom.XcomUfopaedia.Types;
 
 { TXcomArticleStateUfo }

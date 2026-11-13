@@ -31,7 +31,7 @@ implementation
 
 uses
   DelphiDoom.XcomSurface.Surface, DelphiDoom.XcomSurface.SurfaceSet, DelphiDoom.XcomMod.RuleBaseFacility,
-  DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomUfopaedia.Types, DelphiDoom.XcomUfopaedia.ArticleFormat;
+  DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomUfopaedia.Types, DelphiDoom.XcomUfopaedia.ArticleFormat;
 
 const
   TILE_SIZE = 32;

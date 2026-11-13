@@ -14,7 +14,7 @@ uses
   System.SysUtils, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomMod.Random, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.BaseCapacity, DelphiDoom.XcomSave.Soldier,
   DelphiDoom.XcomSave.AlienBase, DelphiDoom.XcomSave.GameTime, DelphiDoom.XcomSave.Settings.Intf,
-  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomStrategy.Events.Intf,
+  DelphiDoom.XcomStrategy.Simulation.Intf, DelphiDoom.XcomStrategy.Events.Intf,
   DelphiDoom.XcomStrategy.Settings.Intf, DelphiDoom.XcomStrategy.UfoTracker, DelphiDoom.XcomStrategy.CraftTracker,
   DelphiDoom.XcomStrategy.BaseWork, DelphiDoom.XcomStrategy.AlienPlanner,
   DelphiDoom.XcomStrategy.MissionScriptRunner;

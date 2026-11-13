@@ -15,8 +15,8 @@ uses
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Timer, DelphiDoom.XcomEngine.Widget,
   DelphiDoom.XcomEngine.InteractiveSurface, DelphiDoom.XcomEngine.Rules.Intf, DelphiDoom.XcomSave.SavedGame,
   DelphiDoom.XcomUi.Text, DelphiDoom.XcomUi.TextButton, DelphiDoom.XcomGeoscape.Globe,
-  DelphiDoom.XcomGeoscape.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf,
-  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomBasescape.Navigator.Intf,
+  DelphiDoom.XcomStrategy.Simulation.Intf, DelphiDoom.XcomGeoscape.Navigator.Intf,
+  DelphiDoom.Xcom.Types, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Screens, DelphiDoom.XcomSave.Target, DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.BaseNavigator.Intf,
   DelphiDoom.XcomSave.Craft, DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomGeoscape.DogfightState;
 
 type

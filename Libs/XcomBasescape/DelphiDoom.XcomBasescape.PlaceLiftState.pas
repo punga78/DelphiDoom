@@ -13,7 +13,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.XcomEngine.Types, DelphiDoom.XcomEngine.Action, DelphiDoom.XcomEngine.State,
   DelphiDoom.XcomUi.Types, DelphiDoom.XcomUi.Text, DelphiDoom.XcomSave.Base, DelphiDoom.XcomGeoscape.Globe,
-  DelphiDoom.XcomBasescape.BaseView, DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.XcomMod.RuleBaseFacility,
+  DelphiDoom.XcomBasescape.BaseView, DelphiDoom.XcomGeoscape.BaseNavigator.Intf, DelphiDoom.XcomMod.RuleBaseFacility,
   DelphiDoom.XcomMod.Ruleset;
 
 type

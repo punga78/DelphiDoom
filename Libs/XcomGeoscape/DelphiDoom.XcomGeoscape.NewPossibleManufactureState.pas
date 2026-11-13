@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf;
 
 { TXcomNewPossibleManufactureState }
 

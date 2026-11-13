@@ -29,7 +29,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomUfopaedia.Types,
+  DelphiDoom.XcomMod.RuleBaseFacility, DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomUfopaedia.Types,
   DelphiDoom.XcomUfopaedia.ArticleFormat;
 
 { TXcomArticleStateTftdFacility }

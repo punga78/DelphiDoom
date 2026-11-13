@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Session.Intf, DelphiDoom.XcomMod.Random,
-  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomGeoscape.Simulation.Intf,
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomMod.Ruleset, DelphiDoom.XcomStrategy.Simulation.Intf,
   DelphiDoom.XcomGeoscape.Navigator.Intf;
 
 type

@@ -54,7 +54,7 @@ implementation
 
 uses
   DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomSave.Production, DelphiDoom.XcomGeoscape.Strategy,
-  DelphiDoom.XcomBasescape.Funding, DelphiDoom.XcomBasescape.NewManufactureListState,
+  DelphiDoom.XcomGeoscape.Funding, DelphiDoom.XcomBasescape.NewManufactureListState,
   DelphiDoom.XcomBasescape.ManufactureInfoState;
 
 const

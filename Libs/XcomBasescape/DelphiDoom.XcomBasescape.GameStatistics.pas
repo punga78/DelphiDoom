@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomBasescape.Funding;
+  DelphiDoom.XcomGeoscape.Funding;
 
 const
   DIFFICULTIES: array[0..4] of string = ('STR_1_BEGINNER', 'STR_2_EXPERIENCED', 'STR_3_VETERAN', 'STR_4_GENIUS',

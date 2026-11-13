@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomBasescape.Navigator.Intf;
+  DelphiDoom.XcomSave.SavedGame, DelphiDoom.XcomGeoscape.Strategy, DelphiDoom.XcomGeoscape.BaseNavigator.Intf;
 
 { TXcomNewPossibleResearchState }
 

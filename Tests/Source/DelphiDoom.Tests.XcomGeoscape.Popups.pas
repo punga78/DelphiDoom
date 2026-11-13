@@ -15,8 +15,8 @@ uses
   System.SysUtils, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.XcomEngine.Types,
   DelphiDoom.XcomEngine.State, DelphiDoom.XcomEngine.Widget, DelphiDoom.XcomSave.Base, DelphiDoom.XcomSave.Craft,
   DelphiDoom.XcomSave.Ufo, DelphiDoom.XcomMod.RuleCraft, DelphiDoom.XcomUi.TextButton,
-  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomGeoscape.Simulation.Intf,
-  DelphiDoom.XcomBasescape.Navigator.Intf, DelphiDoom.Tests.XcomEngine.World;
+  DelphiDoom.XcomGeoscape.Globe, DelphiDoom.XcomGeoscape.Control.Intf, DelphiDoom.XcomStrategy.Simulation.Intf,
+  DelphiDoom.XcomGeoscape.BaseNavigator.Intf, DelphiDoom.Tests.XcomEngine.World;
 
 type
   /// <summary>Gives the tests the surfaces of a state (protected)</summary>

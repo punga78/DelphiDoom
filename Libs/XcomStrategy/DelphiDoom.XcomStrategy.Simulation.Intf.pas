@@ -1,12 +1,12 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom geoscape library - what the clock of the geoscape drives    }
+{  DelphiDoom: xcom strategy library - what the clock of the geoscape drives    }
 {  (the time5Seconds ... time1Month of GeoscapeState)                           }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.XcomGeoscape.Simulation.Intf;
+unit DelphiDoom.XcomStrategy.Simulation.Intf;
 
 interface
 
