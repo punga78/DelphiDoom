@@ -92,6 +92,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **GlMath** — Geometria del renderer OpenGL a classi (clipper degli angoli, angolo del frustum). [CLAUDE.md](Libs/GlMath/CLAUDE.md), [README.md](Libs/GlMath/README.md)
 - **Glbsp** — Port in Pascal di glBSP 2.24. [CLAUDE.md](Libs/Glbsp/CLAUDE.md), [README.md](Libs/Glbsp/README.md) (paragrafo in `Libs\Png`)
 - **Greed** — Port a classi di xGreed ("In Pursuit of Greed"): archivio BLO, mappe, palette, immagini. [CLAUDE.md](Libs/Greed/CLAUDE.md), [README.md](Libs/Greed/README.md)
+- **Gui** — Menu di Team Arena (`.menu`) e font `.dat` di Quake III a classi: lettura di `ui_shared.c`/`ui_main.c`, script degli eventi come testo, nessun disegno (#125). [CLAUDE.md](Libs/Gui/CLAUDE.md), [README.md](Libs/Gui/README.md)
 - **Hud** — HUD del motore (messaggi, chat, widget di testo, contatore FPS, layout dei glifi) a classi: `hu_stuff` e `hu_lib` sono facciate (issue #185, fetta 1a del piano "tutto a classi"). [CLAUDE.md](Libs/Hud/CLAUDE.md), [README.md](Libs/Hud/README.md)
 - **IdLib** — Port a classi di idLib, la libreria di base di Doom 3. [CLAUDE.md](Libs/IdLib/CLAUDE.md), [README.md](Libs/IdLib/README.md)
 - **IdTech** — Descrizione del motore su cui gira il port (generazione id Tech e versione). [CLAUDE.md](Libs/IdTech/CLAUDE.md), [README.md](Libs/IdTech/README.md)

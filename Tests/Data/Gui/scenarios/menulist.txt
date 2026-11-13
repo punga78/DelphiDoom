@@ -1,0 +1,6 @@
+# the list of menu files (UI_LoadMenus, "loadmenu")
+menus ui/menus.txt
+dump
+reset
+menu ui/missing.menu
+dump

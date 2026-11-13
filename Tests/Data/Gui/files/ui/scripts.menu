@@ -1,0 +1,35 @@
+menuDef {
+	name "scripts"
+	rect 100 50 400 300
+	border 1
+	borderSize 4
+	visible 1
+	focuscolor 1 1 0 1
+	itemDef {
+		name "a"
+		group "g1"
+		rect 10 10 50 20
+		visible 1
+		onFocus { setcolor backcolor 1 0 0 1 }
+		leaveFocus { setcolor bordercolor 0 0 1 1 }
+	}
+	itemDef {
+		name "b"
+		group "g1"
+		rect 20 30 50 20
+		forecolor 0.5 0.5 0.5 1
+	}
+	itemDef {
+		name "c"
+		group "g2"
+		rect 30 50 50 20
+		border 1
+		borderSize 3
+		cinematic "c.roq"
+	}
+	itemDef {
+		name "d"
+		rect 40 70 50 20
+		decoration
+	}
+}

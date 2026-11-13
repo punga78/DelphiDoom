@@ -1,0 +1,13 @@
+# errors, numbers, strings, the preprocessor and the limit of items: every file stops at its first failing menu
+menu ui/assets.menu
+menu ui/broken.menu
+menu ui/nolist.menu
+menu ui/nolist2.menu
+menu ui/eof.menu
+menu ui/eof2.menu
+menu ui/numbers.menu
+menu ui/numbers_dash.menu
+menu ui/strings.menu
+menu ui/include_loop.menu
+menu ui/many.menu
+dump

@@ -1,0 +1,32 @@
+# Item_RunScript and its handlers (open, conditionalopen and close are the host's, see the README)
+menu ui/assets.menu
+menu ui/scripts.menu
+state
+run scripts - show a ; hide b ; fadein g1
+run scripts - hide g1 ; hide c ; hide nothing
+run scripts - fadeout g1 ; fadein c
+run scripts - hide g1 ; show g1 ; fadeout b ; show b
+run scripts b setcolor backcolor 0.5 0.25 0.125 0.0625
+run scripts b setcolor forecolor 0.1 0.2 0.3
+run scripts b setcolor bordercolor 1 1 1 1 ; setcolor nope 9 8 7 6
+run scripts - setitemcolor g1 forecolor 1 0 0 1 ; setitemcolor g2 backcolor 0 1 0 1 ; setitemcolor g2 bordercolor 0 0 1 1
+run scripts - setitemcolor g1 forecolor 1 0 0
+run scripts - setitemcolor g1 other 1 0 0 1
+run scripts a setbackground gfx/newback ; setbackground gfx/newback
+run scripts a setteamcolor ; setasset foo
+run scripts - transition g1 0 0 10 10 20.7 30.9 40 50.5 1000 4
+run scripts - transition c 1 2 3 4 5 6 7 8 250 0
+run scripts - transition d 1 2 3 4 5 6 7 8 250 -2
+run scripts - orbit b 1 2 3 4 500 ; orbit nothing 1 2 3 4 5
+run scripts - setfocus a
+run scripts - setfocus d ; setfocus b
+run scripts - setfocus a ; setfocus a ; setfocus nothing
+run scripts - uiScript Foo "bar baz" ; show a
+run scripts - strange ; ;; hide b ;
+run scripts - unknown tail without semicolon
+run scripts - setplayermodel sarge ; setplayerhead visor ; setcvar ui_a 5 ; exec "map q3dm1" ; play snd/a.wav ; playlooped snd/loop.wav
+run scripts - setcvar onlyone
+run scripts - "quoted command" with "quoted arg" ; SHOW A ; HiDe a
+run scripts - // comment only
+run scripts - setcolor nope 1 2 3 4 hide a
+run scripts - Setfocus A ; fadeIn G1 ; fadeOut G2

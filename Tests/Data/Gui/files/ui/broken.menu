@@ -1,0 +1,11 @@
+menuDef {
+	name "broken_cut"
+	itemDef {
+		name "x"
+		rect 1 2 abc 4
+	}
+}
+menuDef {
+	name "never_reached"
+	rect 1 2 3 4
+}

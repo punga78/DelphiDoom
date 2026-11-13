@@ -1,0 +1,8 @@
+# RE_RegisterFont: the .dat branch
+font 16
+font 16
+font 12
+font 24
+font 0
+font -5
+font 99
