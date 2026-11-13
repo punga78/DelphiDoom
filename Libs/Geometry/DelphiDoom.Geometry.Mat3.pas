@@ -31,6 +31,10 @@ type
     /// <summary>True when the matrix differs from the identity (exact test, idMat3::IsRotated)</summary>
     function IsRotated: Boolean;
     function Transpose: TGeoMat3;
+    /// <summary>Exact comparison of the three rows (idMat3::Compare)</summary>
+    function Compare(const AMatrix: TGeoMat3): Boolean; overload;
+    /// <summary>Comparison of the rows within the epsilon (idMat3::Compare with epsilon)</summary>
+    function Compare(const AMatrix: TGeoMat3; AEpsilon: Single): Boolean; overload;
 
     class operator Multiply(const A, B: TGeoMat3): TGeoMat3;
     /// <summary>vec * mat of idlib</summary>
@@ -80,6 +84,18 @@ begin
   Result := Make(Rows[0].X, Rows[1].X, Rows[2].X,
     Rows[0].Y, Rows[1].Y, Rows[2].Y,
     Rows[0].Z, Rows[1].Z, Rows[2].Z);
+end;
+
+function TGeoMat3.Compare(const AMatrix: TGeoMat3): Boolean;
+begin
+  Result := Rows[0].Compare(AMatrix.Rows[0]) and Rows[1].Compare(AMatrix.Rows[1]) and
+    Rows[2].Compare(AMatrix.Rows[2]);
+end;
+
+function TGeoMat3.Compare(const AMatrix: TGeoMat3; AEpsilon: Single): Boolean;
+begin
+  Result := Rows[0].Compare(AMatrix.Rows[0], AEpsilon) and Rows[1].Compare(AMatrix.Rows[1], AEpsilon) and
+    Rows[2].Compare(AMatrix.Rows[2], AEpsilon);
 end;
 
 class operator TGeoMat3.Multiply(const A, B: TGeoMat3): TGeoMat3;

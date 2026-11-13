@@ -57,3 +57,7 @@ Le tabelle sono copiate dal vecchio codice con un `awk` sulle righe di `Base\tab
 L'harness è un programma console da 800 righe che usa gli stessi `Fingerprint` e `Samples` e le unit vecchie con tre finti
 (`i_system`, `w_wad`, `z_zone`) al posto del motore; non è nel repository. Il test non lo richiede: confronta con i file già fatti.
 Se si cambia un ingresso (`Samples`) vanno rifatti tutti i file.
+
+## `geometry.golden.txt` (issue #96)
+
+Risposte di `idPlane`, `idBounds`, `idSphere` e `idBox` veri (compilati con `bcc32c`, x87): 9109 righe `nome ingressi | uscite`, float come `#` più i bit in esadecimale, interi e flag in chiaro; gli ingressi stanno sulla riga. Test: `DelphiDoom.Tests.MathCore.Geometry.Parity`. Dettagli e tolleranze in `Libs\MathCore\CLAUDE.md`.

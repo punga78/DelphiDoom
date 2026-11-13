@@ -26,6 +26,7 @@ uses
   DelphiDoom.Geometry.Vec3 in '..\Libs\Geometry\DelphiDoom.Geometry.Vec3.pas',
   DelphiDoom.Geometry.Mat3 in '..\Libs\Geometry\DelphiDoom.Geometry.Mat3.pas',
   DelphiDoom.Geometry.Plane in '..\Libs\Geometry\DelphiDoom.Geometry.Plane.pas',
+  DelphiDoom.Geometry.Sphere in '..\Libs\Geometry\DelphiDoom.Geometry.Sphere.pas',
   DelphiDoom.Geometry.Bounds in '..\Libs\Geometry\DelphiDoom.Geometry.Bounds.pas',
   DelphiDoom.Geometry.Pluecker in '..\Libs\Geometry\DelphiDoom.Geometry.Pluecker.pas',
   DelphiDoom.Geometry.Winding in '..\Libs\Geometry\DelphiDoom.Geometry.Winding.pas',
