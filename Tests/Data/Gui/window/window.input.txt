@@ -1,0 +1,255 @@
+# Scenarios of the .gui of Doom 3 (issue #111), written for the test: no file of Doom 3.
+# @case name | @file path (the lines up to the next directive) | @op operation | @end
+# operations: load FILE, frame T, state KEY VALUE, statechanged T, named NAME, activate 0|1 T, trigger T, dump
+@case basic
+@file basic.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  backcolor 0.1, 0.2, 0.3, 1
+  text "Hello"
+  windowDef plain {
+    rect 10, 20, 100, 50
+    forecolor 1, 0, 0, 1
+    text "plain"
+    notime 1
+    bordersize 2
+  }
+  windowDef action {
+    rect 5, 5, 20, 20
+    onAction { set "cmd" "go" }
+  }
+  windowDef shown {
+    rect 0, 0, 10, 10
+    visible time > 40
+  }
+  windowDef label {
+    rect 1, 2, 3, 4
+    matcolor 1, 1, 1, 0.5
+    textscale 0.5
+    textalign 1
+    textalignx 3
+    font "fonts/a"
+    shadow 2
+    comment "a note"
+  }
+}
+@op load basic.gui
+@op dump
+@op frame 100
+@op dump
+@end
+@case expressions
+@file expr.gui
+windowDef Desktop {
+  rect 0, 0, time / 10, 20 + 5 * 2
+  backcolor 1, 0, 0, time > 50 ? 1 : 0.5
+  visible time >= 100 && time < 200
+  windowDef calc {
+    rect 17 % 5, 10 - 4 - 3, (2 + 3) * 4, 5 / 0
+    forecolor "gui::r", "gui::g", 0, 1
+    text "gui::label"
+    hovercolor time % 7, 1, 1, 1
+  }
+  windowDef later {
+    rect later2 * 2, 0, 0, 0
+  }
+  float later2 4
+}
+@op load expr.gui
+@op state r 0.5
+@op state g 0.25
+@op state label hello
+@op dump
+@op frame 100
+@op dump
+@op frame 150
+@op dump
+@op state r 0.75
+@op frame 250
+@op dump
+@end
+@case scripts
+@file scripts.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  text "start"
+  onActivate {
+    set "text" "activated" ;
+    set "cmd" "quit" ;
+    set "cmd" "play" "snd x" "y" ;
+    runScript "go" ;
+    if ( "gui::flag" == 1 ) { set "cmd" "yes" } else { set "cmd" "no" }
+  }
+  onDeactivate { set "cmd" "off" }
+  onTime 100 { set "cmd" "late" }
+  onTime 0 { set "cmd" "early" }
+  onNamedEvent ping { set "cmd" "pong" }
+  onTrigger { set "cmd" "trig" }
+  windowDef kid {
+    rect 1, 1, 2, 2
+    onAction { }
+    onNamedEvent ping { set "cmd" "kid" }
+  }
+}
+@op load scripts.gui
+@op state flag 1
+@op frame 16
+@op activate 1 20
+@op dump
+@op frame 130
+@op dump
+@op named ping
+@op dump
+@op trigger 140
+@op dump
+@op state flag 0
+@op frame 200
+@op activate 1 210
+@op dump
+@op activate 0 220
+@op dump
+@end
+@case elseif
+@file elseif.gui
+windowDef Desktop {
+  rect 0, 0, 1, 1
+  onActivate {
+    if ( "gui::n" == 1 ) { set "cmd" "one" } else if ( "gui::n" == 2 ) { set "cmd" "two" } else { set "cmd" "other" }
+  }
+}
+@op load elseif.gui
+@op state n 2
+@op frame 100
+@op activate 1 100
+@op dump
+@op state n 5
+@op frame 200
+@op activate 1 200
+@op dump
+@end
+@case transitions
+@file trans.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  backcolor 0, 0, 0, 1
+  windowDef box {
+    rect 20, 30, 40, 50
+    backcolor 0.25, 0.5, 0.75, 1
+  }
+  onActivate {
+    transition "rect" "0 0 10 10" "100 100 10 10" "200" ;
+    transition "backcolor" "1 1 1 1" "0 0 0 1" "400" "0.25" "0.25" ;
+  }
+  onTime 300 { resetTime "0" }
+}
+@op load trans.gui
+@op activate 1 1000
+@op dump
+@op frame 1100
+@op dump
+@op frame 1200
+@op dump
+@op frame 1500
+@op dump
+@op frame 1700
+@op dump
+@end
+@case windows
+@file windows.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  choiceDef c { rect 0, 0, 100, 20 choices "One;Two Words;Three" values "1;2;3" choicetype 0 currentchoice 1 }
+  choiceDef n { choices "a;b" values "-1;5" }
+  sliderDef s { rect 0, 30, 100, 20 low 10 high 20 step 2 vertical 1 }
+  bindDef b { rect 0, 90, 100, 20 bind "attack" }
+  fieldDef d { rect 0, 120, 100, 20 cursorvar "cv" showcursor 1 }
+}
+@op load windows.gui
+@op dump
+@end
+@case defined
+@file defined.gui
+windowDef Desktop {
+  definefloat Speed 2.5
+  float other 1 + 1
+  count 12
+  ratio 1.5
+  title hello
+  windowDef child { definevec4 tint 1, 0.5, 0.25, 1 }
+  windowDef x { onAction { } }
+}
+@op load defined.gui
+@op dump
+@op frame 100
+@op dump
+@end
+@case animation
+@file anim.gui
+windowDef Desktop {
+  animationDef anim { rect 1, 1, 1, 1 }
+}
+@op load anim.gui
+@op dump
+@end
+@case flags
+@file flags.gui
+windowDef Desktop {
+  rect 10, 20, 100, 80
+  bordersize 4
+  modal 1
+  nocursor 1
+  menugui 1
+  noclip 0
+  showtime 1
+  invertrect 1
+  nowrap 1
+  wantenter 1
+  naturalmatscale 1
+  matscalex 2
+  forceaspectwidth 800
+  shear 1, 2
+  textalignx 1
+  textaligny 2
+  rotate 45
+  name "Renamed"
+}
+@op load flags.gui
+@op dump
+@end
+@case errors
+@file errors.gui
+windowDef Desktop {
+  onActivate { frobnicate "x" ; evalRegs "x" ; set "cmd" "ok" }
+  text "after"
+}
+@op load errors.gui
+@op activate 1 5
+@op dump
+@end
+@case unterminated
+@file open.gui
+windowDef Desktop {
+  text "a"
+@op load open.gui
+@op dump
+@end
+@case missing
+@op load nothing.gui
+@op dump
+@end
+@case statechanged
+@file sc.gui
+windowDef Desktop {
+  rect 0, 0, "gui::w", 10
+  text "gui::t"
+  windowDef a { onAction { } }
+}
+@op load sc.gui
+@op state w 33
+@op state t changed
+@op statechanged 50
+@op dump
+@op state noninteractive 1
+@op statechanged 60
+@op dump
+@end

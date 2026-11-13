@@ -69,3 +69,53 @@ Differenze del **lexer** (idLexer rispetto a botlib), non riprodotte:
 ## Verifica
 
 `Tools\Verifica\125` compila con il gcc di w64devkit il **vero** `ui_shared.c`, il precompilatore di botlib e `q_shared.c`, piu' due ritagli per intervalli di righe di `ui_main.c` e `tr_font.c`; il pilota esegue scenari (`Tests\Data\Gui\scenarios`) su menu **scritti per i test** (mai file di Team Arena) e scrive il dump del modello (float come bit): i golden stanno in `Tests\Data\Gui\golden`, i test Delphi rifanno gli scenari con le classi e confrontano riga per riga (unica tolleranza: la riga di un errore, +-1). Test: `Tests\DelphiDoom.Tests.Gui` (171 test, copertura 97%, Win32 e Win64); in piu' i 26 `.menu` e i 3 `.dat` di OpenArena (`Reference\openarena`, o `DELPHIDOOM_OPENARENA`) si leggono senza errori, e il test e' saltato se mancano.
+
+
+# La GUI di Doom 3 (`.gui`, issue #111)
+
+Prima fetta della GUI di id Tech 4 a classi, **accanto** ai menu di Quake III (che non sono toccati): lettura dei `.gui` in un albero di finestre con variabili, registri e script, e il passo del tempo (valutazione delle espressioni, transizioni, eventi del tempo e con nome) **senza disegno e senza input**. Port di `neo\ui` di Doom 3 (id Software, **GPL v3 con i termini aggiuntivi di Doom 3**, "Based on the Doom 3 GPL Source Code (id Software)" nell'intestazione di ogni unit; il repository e' GPL v2 o successiva, come in `Libs\IdLib`). **Percorso freddo, nessun chiamante nel motore.**
+
+## Cosa e' portato
+
+| C++ (Doom 3) | Pascal |
+|---|---|
+| `idUserInterfaceLocal`: `InitFromFile`, `HandleNamedEvent`, `StateChanged`, `Activate`, `Trigger`, lo stato (`SetStateString`...) | `TGuiUserInterface` (`DelphiDoom.Gui.UserInterface`); lo stato condiviso dalle finestre e' `TGuiContext` |
+| `idWindow`: `Parse`, `ParseInternalVar`, `ParseRegEntry`, `GetWinVarByName`, `FixupParms`, `CalcClientRect`, `CalcRects`, `RunTimeEvents`, `Time`, `Transition`, `EvalRegs`, `ResetTime`, `Activate`, `Trigger`, `RunNamedEvent`, `IsSimple` | `TGuiWindow` (`DelphiDoom.Gui.Window`) |
+| `idSimpleWindow` (una finestra senza script, figli ne operazioni) | la stessa finestra, in `DrawWindows` con `IsSimple`; non e' un figlio (come l'originale) e il padre aggiorna le sue variabili legate allo stato |
+| `idChoiceWindow`, `idEditWindow`, `idListWindow`, `idSliderWindow`, `idBindWindow`, `idRenderWindow`, `idMarkerWindow`, `idFieldWindow` (parse, chiavi, variabili, `PostParse`) | `TGuiChoiceWindow` ... `TGuiFieldWindow` (`DelphiDoom.Gui.Window.*`), fabbrica `TGuiWindowFactory` |
+| `idWinVar`, `idWinBool`, `idWinInt`, `idWinFloat`, `idWinStr`, `idWinBackground`, `idWinVec2`, `idWinVec3`, `idWinVec4`, `idWinRectangle` | `TGuiWinVar` e le sottoclassi (`DelphiDoom.Gui.WinVar.*`) |
+| `idRegister`, `idRegisterList` | `TGuiRegister`, `TGuiRegisterList` (`DelphiDoom.Gui.Regs.*`) |
+| `ExpressionConstant`, `ExpressionTemporary`, `EmitOp`, `ParseExpression`, `ParseTerm`, `EvaluateRegisters`, `wexpOp_t` | `TGuiExpressionStore`, `TGuiExpressionParser`, `TGuiExpressionEvaluator`, `TGuiOp` |
+| `idGuiScript`, `idGuiScriptList`, `Script_*` (`set`, `setFocus`, `endGame`, `resetTime`, `showCursor`, `resetCinematics`, `transition`, `localSound`, `runScript`, `evalRegs`), `ParseScript` | `TGuiScript`, `TGuiScriptList`, `TGuiScriptParser` |
+| `idTimeLineEvent`, `rvNamedEvent`, `idTransitionData` | `TGuiTimeLineEvent`, `TGuiNamedEvent`, `TGuiTransition` |
+| `idInterpolateAccelDecelLinear<idVec4>`, `idExtrapolate<idVec4>` (modi none, linear, accel, decel) | `TGuiInterpolator` |
+| `idRectangle` | `TGuiRectangle` (record) |
+
+Il gioco passa da interfacce piccole e opzionali: `IGuiGameHost` (`localSound`, `endGame`, `resetCinematics`), `IGuiLanguage` (le stringhe `#str_`), `IGuiTables` (le tabelle `idDeclTable` che un'espressione indicizza), `IGuiFontLookup` (`font`). Una finestra si vede dagli script e dalle altre finestre come `IGuiWindowNode` (non conta i riferimenti: la possiede il padre). Nessuna variabile globale: gli statici di `idWindow::EvalRegs` (array dei registri e ultima finestra valutata) sono in `TGuiContext`. Errori: avvisi a `IIdLibLog` come `idParser` (`file, line n: testo`); `EGuiWindowException` per i `FatalError`, `EGuiWindowParseException` (file e riga) in modalita' severa (`StrictParsing`).
+
+## Cosa non e' portato
+
+Disegno (`Redraw`, `Draw`, `DrawBackground`, `DeviceContext`), input (`HandleEvent`, mouse, tastiera, cattura e routing del focus), file di salvataggio e di demo, l'editor delle GUI (`rvGEWindowWrapper`), i materiali (lo sfondo e' il nome), le cinematiche, i cvar (`cvar` e `InitCvar` di choice, edit e slider; resta l'avviso dello slider senza `cvar`), le barre di scorrimento, il file `source` di `editDef`, l'elenco delle liste (arriva dal gioco), i giochi (`gameSSDDef`, `gameBearShootDef`, `gameBustOutDef`: non sono parole chiave, il parse li tratta come chiavi sconosciute), il gestore delle GUI (`idUserInterfaceManagerLocal`: elenco, ricarica, unicita'), `FixupTransitions` (serve solo al caricamento di un salvataggio).
+
+## Difetti del C++ conservati (provati dal golden o da un test)
+
+- `idWinVar::Init` con un nome che non comincia per `gui:` **assegna il nome come valore** (`Set(name)`): citare una variabile non legata in un'espressione (`float f 3` e poi `f * 2`) la azzera.
+- Una variabile `gui::nome` si lega con `Right(len - 5)` dopo aver confrontato solo `gui:` (quattro caratteri); un nome di cinque caratteri o meno non lega.
+- `EvaluateRegisters` azzera i **temporanei** a ogni valutazione e la `COND` (`a ? b : c`) sta **prima** delle operazioni del ramo `c`: un ramo `c` che non e' una costante o una variabile vale 0.
+- Le espressioni additive e moltiplicative sono associative **a destra** (`10 - 4 - 3` fa 9).
+- La prima costante lascia un segnaposto (-9999999) nel registro 0 (il tempo); un temporaneo creato per primo prende il registro 0 e il tempo non e' piu' leggibile.
+- `animationDef` nasconde e svuota la finestra che lo **contiene**, non la nuova.
+- Un `windowDef` col nome di un figlio esistente rilegge quel figlio (e il nome del padre rilegge il padre).
+- `transition` accetta solo `rect`, vec4 e float; `$nome` come inizio o fine copia il testo della variabile (a due decimali, senza zeri finali) e solo per `rect` aggiusta le coordinate tra gli spazi dei padri.
+- `ClientToScreen` e `ScreenToClient` sommano i rettangoli in **interi**.
+- `idRectangle::operator==` confronta `a.h` come booleano (qui `IsEqual` confronta i quattro campi).
+- `Script_SetFocus`, `showCursor` e `resetTime` senza parametri leggono `(*src)[0]` fuori dalla lista (con `assert` attivo il motore si ferma); qui non fanno niente.
+- Lettura di una componente di un vec4 in un'espressione (`op->b >= 0 && registers[op->b] < 4`): l'originale legge `((idVec4&)var)[n]` che reinterpreta la **variabile puntatore** e non il vettore (memoria dello stack); qui si legge la componente voluta. Con `b = 0` (nessun indice) il registro 0 e' il tempo, e nei primi 3 ms la componente e' il tempo.
+- Il puntatore `oop` di `ParseExpressionPriority` (il ramo `else` di `?:`) punta in una lista di operazioni che puo' riallocarsi: qui l'operazione si indica per indice.
+- `idEditWindow` costruisce un `idSliderWindow` e `idChoiceWindow::UpdateChoice` valida la scelta solo se c'e' una variabile `gui` o un cvar.
+
+## Verifica
+
+`Tools\Verifica\111` (`LEGGIMI.md`, `Build-Harness.ps1`): compila con `bcc32c` (clang 32 bit di Delphi 11) il **vero** `ui\Window.cpp`, `Winvar.h`, `RegExp.cpp`, `GuiScript.cpp`, `SimpleWindow.cpp`, `ChoiceWindow.cpp`, `SliderWindow.cpp`, `BindWindow.cpp`, `FieldWindow.cpp`, `idlib` e le funzioni di `idUserInterfaceLocal` ritagliate da `UserInterface.cpp`, con stub scritti per il test (contesto del dispositivo, materiali, gestore delle dichiarazioni). Scenari **scritti per il test** (`Tests\Data\Gui\window\window.input.txt`, 13 casi, nessun `.gui` di Doom 3) e risposta del C++ (`window.golden.txt`: alberi di finestre, flag, rettangoli e colori come bit, variabili, comandi, avvisi). `TTestGuiWindowParity` rifa gli scenari con le classi e confronta riga per riga, **senza tolleranza**, a 32 e a 64 bit. Non compresi dal C++ (la finestra non regge senza il motore): `editDef` (si ferma nel costruttore dello scroller), `listDef`, `markerDef`, `renderDef`, i giochi; hanno test Delphi. Le tabelle (`FindType` degli stub e' sempre vuoto) hanno test Delphi con una tabella finta.
+
+Test: `Tests\DelphiDoom.Tests.Gui` (316 test in tutto, 145 nuovi, Win32 e Win64), copertura delle unit nuove: tutte sopra il 90% (`Tools\Copertura.ps1 -Test Gui -Cartella Libs\Gui`: 96% su tutta la cartella).

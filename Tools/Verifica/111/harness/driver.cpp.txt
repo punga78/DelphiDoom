@@ -1,0 +1,214 @@
+// driver of the harness of the gui of Doom 3 (written for the test; no code of Doom 3)
+#include "precompiled.h"
+#define protected public
+#define private public
+#include "../ui/DeviceContext.h"
+#include "../ui/Window.h"
+#include "../ui/UserInterfaceLocal.h"
+#include "../ui/EditWindow.h"
+#include "../ui/ChoiceWindow.h"
+#include "../ui/SliderWindow.h"
+#include "../ui/BindWindow.h"
+#include "../ui/FieldWindow.h"
+#undef protected
+#undef private
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+int com_editors = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void LittleRevBytes(void *, int, int) {}
+idGame theGame; idGame *game = &theGame;
+
+static idCommon theCommon;
+static idFileSystem theFs;
+static idDeclManagerStub theDecls;
+idDeclManager *declManager = &theDecls;
+static idSession theSession; idSession *session = &theSession;
+static idCmdSystem theCmd; idCmdSystem *cmdSystem = &theCmd;
+static idCVarSystem theCvars; idCVarSystem *cvarSystem = &theCvars;
+idRenderSystemStub *renderSystem = 0;
+idCVar r_skipGuiShaders("r_skipGuiShaders", "0", 0, "");
+static idLangDict theLang;
+idLangDict *idCommon::GetLanguageDict() { return &theLang; }
+
+struct MemFile { std::string text; long ts; };
+static std::map<std::string, MemFile> files;
+static long clockTicks = 1000;
+
+static std::string lower(std::string s) { for (size_t i = 0; i < s.size(); i++) s[i] = (char)tolower((unsigned char)s[i]); return s; }
+static std::string norm(const char *n) { std::string s = n; for (size_t i = 0; i < s.size(); i++) if (s[i] == '\\') s[i] = '/'; return lower(s); }
+
+static std::string esc(const char *s, int n) {
+	std::string r;
+	for (int i = 0; i < n; i++) {
+		unsigned char c = (unsigned char)s[i];
+		char b[8];
+		if (c == '\\') r += "\\\\";
+		else if (c == '\n') r += "\\n";
+		else if (c == '\r') r += "\\r";
+		else if (c == '\t') r += "\\t";
+		else if (c < 32 || c > 126) { sprintf(b, "\\x%02X", c); r += b; }
+		else r += (char)c;
+	}
+	return r;
+}
+static std::string esc(const char *s) { return esc(s, (int)strlen(s)); }
+
+void idCommon::Printf(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("P: %s\n", esc(b).c_str()); }
+void idCommon::Warning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::DWarning(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("W: %s\n", esc(b).c_str()); }
+void idCommon::Error(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+void idCommon::FatalError(const char *fmt, ...) { char b[8192]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); throw idException(b); }
+
+idFile *idFileSystem::OpenFileRead(const char *n) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) return 0;
+	idFile *f = new idFile; f->rd = it->second.text; f->name = n; f->ts = it->second.ts; return f;
+}
+idFile *idFileSystem::OpenExplicitFileRead(const char *n) { return OpenFileRead(n); }
+idFile *idFileSystem::OpenFileWrite(const char *n, const char *) { idFile *f = new idFile; f->name = n; return f; }
+void idFileSystem::CloseFile(idFile *f) { delete f; }
+int idFileSystem::ReadFile(const char *n, void **b, ID_TIME_T *ts) {
+	std::map<std::string, MemFile>::iterator it = files.find(norm(n));
+	if (it == files.end()) { if (b) *b = 0; return -1; }
+	if (ts) *ts = it->second.ts;
+	if (b) {
+		char *buf = (char *)malloc(it->second.text.size() + 1);
+		memcpy(buf, it->second.text.data(), it->second.text.size()); buf[it->second.text.size()] = 0;
+		*b = buf;
+	}
+	return (int)it->second.text.size();
+}
+void idFileSystem::FreeFile(void *b) { free(b); }
+idFileList *idFileSystem::ListFiles(const char *, const char *, bool) { return new idFileList; }
+
+// the manager of the original has a vtable of its own; the guis only need these three members
+struct UiManagerStub { idDeviceContext dc; idList<idUserInterfaceLocal*> guis; idRectangle screenRect; };
+static UiManagerStub uiManagerLocal;
+
+// the methods of idUserInterfaceLocal from ctor to Trigger, cut from the real UserInterface.cpp
+#include "ui_extract.inc"
+
+void idUserInterfaceLocal::ReadFromDemoFile( idDemoFile *f ) {}
+void idUserInterfaceLocal::WriteToDemoFile( idDemoFile *f ) {}
+bool idUserInterfaceLocal::WriteToSaveGame( idFile *savefile ) const { return true; }
+bool idUserInterfaceLocal::ReadFromSaveGame( idFile *savefile ) { return true; }
+void idUserInterfaceLocal::SetKeyBindingNames( void ) {}
+void idUserInterfaceLocal::SetCursor( float x, float y ) { cursorX = x; cursorY = y; }
+
+static std::string fb(float f) { unsigned int u; memcpy(&u, &f, 4); char b[16]; sprintf(b, "%08X", u); return b; }
+static std::string v4(const idVec4 &v) { return fb(v.x) + " " + fb(v.y) + " " + fb(v.z) + " " + fb(v.w); }
+static std::string rc(const idRectangle &r) { return fb(r.x) + " " + fb(r.y) + " " + fb(r.w) + " " + fb(r.h); }
+
+static void dumpWindow(idWindow *w, bool simple, int level) {
+	std::string pad(level * 2, ' ');
+	if (simple) {
+		printf("%sS %s flags=%08X\n", pad.c_str(), w->name.c_str(), w->flags);
+		printf("%s rect=%s back=%s fore=%s mat=%s border=%s\n", pad.c_str(), rc(w->rect).c_str(), v4(w->backColor).c_str(), v4(w->foreColor).c_str(), v4(w->matColor).c_str(), v4(w->borderColor).c_str());
+		printf("%s tscale=%s rot=%s vis=%d text=\"%s\" bg=\"%s\"\n", pad.c_str(), fb(w->textScale).c_str(), fb(w->rotate).c_str(), (int)(bool)w->visible, esc(w->text.c_str()).c_str(), esc(w->backGroundName.c_str()).c_str());
+		return;
+	}
+	int mask = 0;
+	for (int i = 0; i < idWindow::SCRIPT_COUNT; i++) if (w->scripts[i]) mask |= 1 << i;
+	printf("%sW %s flags=%08X simple=0 child=%d draw=%d scr=%03X tl=%d named=%d tr=%d upd=%d cmd=\"%s\"\n", pad.c_str(), w->name.c_str(), w->flags, w->children.Num(), w->drawWindows.Num(), mask,
+		w->timeLineEvents.Num(), w->namedEvents.Num(), w->transitions.Num(), w->updateVars.Num(), esc(w->cmd.c_str()).c_str());
+	printf("%s rect=%s back=%s fore=%s mat=%s border=%s hover=%s\n", pad.c_str(), rc(w->rect).c_str(), v4(w->backColor).c_str(), v4(w->foreColor).c_str(), v4(w->matColor).c_str(), v4(w->borderColor).c_str(), v4(w->hoverColor).c_str());
+	printf("%s tscale=%s rot=%s vis=%d noev=%d notime=%d text=\"%s\" bg=\"%s\"\n", pad.c_str(), fb(w->textScale).c_str(), fb(w->rotate).c_str(), (int)(bool)w->visible, (int)(bool)w->noEvents, (int)(bool)w->noTime, esc(w->text.c_str()).c_str(), esc(w->backGroundName.c_str()).c_str());
+	for (int i = 0; i < w->definedVars.Num(); i++) printf("%s var %s = %s\n", pad.c_str(), w->definedVars[i]->GetName(), w->definedVars[i]->c_str());
+	if (idChoiceWindow *c = dynamic_cast<idChoiceWindow *>(w)) printf("%s X choice n=%d v=%d cur=%d\n", pad.c_str(), c->choices.Num(), c->values.Num(), c->currentChoice);
+	if (idSliderWindow *s = dynamic_cast<idSliderWindow *>(w)) printf("%s X slider low=%s high=%s step=%s\n", pad.c_str(), fb(s->low).c_str(), fb(s->high).c_str(), fb(s->stepSize).c_str());
+	for (int i = 0; i < w->drawWindows.Num(); i++) {
+		if (w->drawWindows[i].win) dumpWindow(w->drawWindows[i].win, false, level + 1);
+		else {
+			// a simple window: the data of idSimpleWindow
+			idSimpleWindow *s = w->drawWindows[i].simp;
+			std::string p2((level + 1) * 2, ' ');
+			printf("%sS %s flags=%08X\n", p2.c_str(), s->name.c_str(), s->flags);
+			printf("%s rect=%s back=%s fore=%s mat=%s border=%s\n", p2.c_str(), rc(s->rect).c_str(), v4(s->backColor).c_str(), v4(s->foreColor).c_str(), v4(s->matColor).c_str(), v4(s->borderColor).c_str());
+			printf("%s tscale=%s rot=%s vis=%d text=\"%s\" bg=\"%s\"\n", p2.c_str(), fb(s->textScale).c_str(), fb(s->rotate).c_str(), (int)(bool)s->visible, esc(s->text.c_str()).c_str(), esc(s->backGroundName.c_str()).c_str());
+		}
+	}
+}
+
+static std::vector<std::string> splitWords(const std::string &s) {
+	std::vector<std::string> r; std::istringstream is(s); std::string w; while (is >> w) r.push_back(w); return r;
+}
+static std::string unesc(const std::string &s) {
+	std::string r;
+	for (size_t i = 0; i < s.size(); i++) {
+		if (s[i] == '\\' && i + 1 < s.size()) { i++; r += (s[i] == 'n') ? '\n' : (s[i] == 't') ? '\t' : s[i]; }
+		else r += s[i];
+	}
+	return r;
+}
+
+int main(int argc, char **argv) {
+	setvbuf(stdout, 0, _IONBF, 0);
+	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon; fileSystem = &theFs;
+	if (argc < 2) return 2;
+	std::ifstream in(argv[1], std::ios::binary);
+	std::string line, curFile;
+	std::vector<std::string> ops;
+	std::string caseName;
+	idUserInterfaceLocal *gui = 0;
+	bool inCase = false;
+	std::map<std::string, MemFile> caseFiles;
+	std::string fileText; bool inFile = false; std::string fileName;
+	while (std::getline(in, line)) {
+		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
+		if (line.compare(0, 6, "@case ") == 0) {
+			caseName = line.substr(6); printf("## %s\n", caseName.c_str()); files.clear(); gui = 0; inCase = true; inFile = false; continue;
+		}
+		if (line == "@end") { if (inFile) { MemFile m; m.text = fileText; m.ts = ++clockTicks; files[norm(fileName.c_str())] = m; inFile = false; } inCase = false; continue; }
+		if (line.compare(0, 6, "@file ") == 0) {
+			if (inFile) { MemFile m; m.text = fileText; m.ts = ++clockTicks; files[norm(fileName.c_str())] = m; }
+			fileName = line.substr(6); fileText = ""; inFile = true; continue;
+		}
+		if (line.compare(0, 4, "@op ") == 0) {
+			if (inFile) { MemFile m; m.text = fileText; m.ts = ++clockTicks; files[norm(fileName.c_str())] = m; inFile = false; }
+			std::string rest = line.substr(4);
+			printf("> %s\n", rest.c_str());
+			std::vector<std::string> w = splitWords(rest);
+			try {
+				if (w[0] == "load") {
+					gui = new idUserInterfaceLocal;
+					gui->InitFromFile(w[1].c_str());
+				} else if (w[0] == "frame") {
+					gui->SetTime(atoi(w[1].c_str()));
+					gui->GetDesktop()->RunTimeEvents(atoi(w[1].c_str()));
+				} else if (w[0] == "state") {
+					std::string key = w[1]; std::string val = unesc(rest.size() > 6 + key.size() + 1 ? rest.substr(6 + key.size() + 1) : std::string());
+					gui->SetStateString(key.c_str(), val.c_str());
+				} else if (w[0] == "statechanged") {
+					gui->StateChanged(atoi(w[1].c_str()), false);
+				} else if (w[0] == "named") {
+					gui->HandleNamedEvent(w[1].c_str());
+				} else if (w[0] == "activate") {
+					const char *r = gui->Activate(atoi(w[1].c_str()) != 0, atoi(w[2].c_str()));
+					printf("act \"%s\"\n", esc(r).c_str());
+				} else if (w[0] == "trigger") {
+					gui->Trigger(atoi(w[1].c_str()));
+				} else if (w[0] == "dump") {
+					printf("I interactive=%d pending=\"%s\"\n", (int)gui->IsInteractive(), esc(gui->GetPendingCmd().c_str()).c_str());
+					dumpWindow(gui->GetDesktop(), false, 0);
+				}
+			} catch (idException &e) {
+				printf("ERR %s\n", esc(e.error).c_str());
+			}
+			continue;
+		}
+		if (inFile) { fileText += line; fileText += "\n"; }
+	}
+	return 0;
+}
