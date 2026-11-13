@@ -1456,7 +1456,8 @@ begin
   if not Evaluate(LInt, LValue, False) then
     Exit(False);
   LToken := NewValueToken;
-  LToken.Text := FormatTwoDecimals(LValue);
+  // idMath::Fabs takes and returns a float: the value goes through a Single (not so in $evalfloat, which uses fabs)
+  LToken.Text := FormatTwoDecimals(Abs(Single(LValue)));
   LToken.TokenType := TT_NUMBER;
   LToken.SubType := TT_FLOAT or TT_LONG or TT_DECIMAL;
   UnreadSourceToken(LToken);
