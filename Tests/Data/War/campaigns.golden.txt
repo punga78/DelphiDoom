@@ -1,0 +1,83 @@
+N unit goldmine=50 farmH=32 farmO=33 barrH=34 barrO=35 count=54
+K 117 "Build:\n\t6 farms\n\t1 barracks" 551 "As a test of your abilities, the King has appointed\nyou as Regent over a small parcel of land. Since\nwe must keep our armies in the field well supplied,\nyou are to build the town into a farming center of\nno less than 6 farms. Construction of a barracks\nfor defense is also advised, as our scouts have\nreported Orc patrols in the area." 24 1
+K 118 "Build:\n  6 farms\n  1 barracks" 563 "Blackhand has assigned you to an outpost in the\nSwamps of Sorrow.  Your task is simple enough\nthat even the War Chief feels that you are capable\nof it. Construct at least 6 farms, so that we may\nkeep our troops well fed and ready to do battle.\nOnly a fool would leave his treasures unguarded,\nso you must also build a barracks for the defense\nof these farms." 28 1
+K 119 "Defend town and\ndestroy orcs" 552 "The Orcs around Grand Hamlet are becoming\nincreasingly brazen in their attacks, and our\nspies inform us that they are amassing a large\narmy to march against the town.\nThe King is sending you, along with a small\ndetachment of troops, to rally the people and\ndefend the town against all opposition." 20 1
+K 120 "Crush all opposition" 564 "Like the stinging of a wasp, the attacks from the\nhumans grow more and more bothersome.\nYou have been assigned to a small outpost on the\nBorderlands of the Swamps of Sorrow.\nYou are to defend our lands from the incursions\nof these ravenous dogs by crushing any opposition\nthat you encounter." 22 1
+K 121 "Destroy outpost" 553 "With Blackhand's raiding parties routed, now is the time for\nus to secure a lasting peace in the area around Grand Hamlet.\nYou must seek out the Orcish outpost of Kyross that lies deep\nwithin the Swamps of Sorrow, and destroy it." 22 0
+K 122 "Demolish Grand Hamlet" 565 "The Humans are growing strong in Grand Hamlet. An outpost will\nbe placed under your dictatorship to use as you see fit. You must\nthen prepare and lead a force to destroy Grand Hamlet and all that\ndwell there. Blackhand will brook no survivors - these Humans must\nbe taught a hard lesson in the ways of humility." 22 0
+K 123 "Find lothar,\nheal him and bring\nthem out" 554 "It has been some twenty months since Sir Lothar, one of the crown's\ngreatest heroes, led an expedition into the Dead Mines to search for\nthe Lost Tome of Divinity. They were never heard from again.\nHowever, the great knight has recently appeared to the Abbot of\nNorthshire in a vision - battered and pleading for assistance.\nKing Llane has ordered you to lead a detachment of warriors and healers\ninto the mines in an attempt to find Sir Lothar, heal him, and bring him\nand any other survivors back alive." 22 0
+K 124 "Kill griselda and\nher minions" 566 "You are wakened from your nights sleep by a runner from the War Chief.\nBlackhand's daughter Griselda has run off with the outlaw Turok's band of Ogres.\nOur wolfriders have tracked them to the dungeons hidden beneath the Dead Mines.\nFind Turok's band of rebellious pigs and kill them all --- including Griselda.\nShe must not disobey the commands of her father... ever again." 22 0
+K 125 "Destroy orcs" 555 "The Forest of Elwynn is a strategic key to securing the Borderlands.\nAn outpost near the southeast edge of the forest will serve as your stronghold.\nThe King has assigned one of his knights to aid you, so that your task of ridding\nthe area of Blackhand's dark minions may be more readily completed." 22 0
+K 126 "Save the outpost\nSlay all humans" 567 "On your return from the dungeon, you receive word from advance scouts that the\nrecently established outpost near the Red Ridge Mountains is under siege.\nA group of raiders have been dispatched to assist you in taking back the\noutpost and crushing the Human opposition. Your secondary objective is to seek\nout and completely destroy their encampment, putting an end to this threat for good." 22 0
+K 127 "Save the abbey and\ndestroy the traitors" 556 "The monks of Northshire Abbey are under siege by a band of warriors that have been\nconvinced by enemy agents to fight against the crown. You will be given a complement\nof knights to lead to the Abbey, which is already under attack. Ride hard and fast,\nas you must prevent its destruction.  When you have secured the Abbey and beaten back\nthese treacherous curs, you must then move to destroy the enemy at their source." 22 0
+K 128 "Raze sunnyglade\nSave tower" 568 "The Humans of Sunnyglade have become fat and lazy with their prosperity.\nThe town is like a ripe plum waiting to be plucked. You will march upon their\nweak Human armies and smash them to pieces. Somewhere in the town is a tower that\nyou must keep intact so that we may study how their magiks are created. Fail me,\nand I will have your head on a pike at the gates of Black Rock Spire." 22 0
+K 129 "Rescue peasants\nDemolish orcs" 557 "A raiding party has completely overrun the village of Sunnyglade.\nOur scouts report that the survivors have been taken to a hidden Orcish\ncompound to serve as slaves. You must take a detachment of warriors and\nrescue the group of peasants that are imprisoned somewhere in the Orc camp.\nOur intelligence confirms that all of the prisoners are together, and that\nyou must destroy the enclosure to open a path for their escape.\nThe rebuilding of Sunnyglade is also of the utmost importance,\nas you will need their assistance in destroying the Orcish slavers." 22 0
+K 130 "Kill Blackhand's troops" 569 "The time has come for you to seize control of the Orcish hordes for yourself.\nBlackhand has become foolish in the deployment of his personal troops, and has\nleft an opening that you can now exploit. A key outpost in the Black Morass is\nthe core of Blackhand's supply lines - not only to his foremost battle groups,\nbut to his castle at Black Rock Spire, as well. The complete destruction of this\noutpost will disrupt his power base long enough for you to secure his overthrow." 22 0
+K 131 "Slay Medivh and\nall minions" 558 "A new crisis has arisen that threatens to end the lives of all who would\nserve the King. The evil warlock Medivh has begun draining the soul of\nthe land itself to increase his dark powers. You must take a party into\nhis tower and destroy him before he summons enough energies to devastate\nall who would oppose him. Beware his mastery of the black arts, for\nlegend speaks of his ability to command the daemons of Hell." 22 0
+K 132 "Save garona\nDestroy the abbey" 570 "The destruction of Blackhand's outpost has left him in a weak position.\nThe Shadow Council, sensing your rise in power, orders the assassination\nof Blackhand and elevates you to the position of War Chief.\nA wolfrider brings you news that our best spy, the half-orc Garona,\nhas been discovered by the Humans of Northshire Abbey and imprisoned there.\nShe has valuable information concerning new and powerful magiks that would\naid you in the destruction of your counterpart - King Llane.\nTrusting no one to complete this vital mission in time, you must find her,\nand then completely destroy the Abbey to protect her secrets." 22 0
+K 133 "Destroy all traces\nof the orcs" 559 "The time has come to take the battle into Blackhand's own domain.\nKing Llane has ordered a full assault upon the Orcs, demanding\nthat this plague that spreads across the kingdom be eradicated.\nTo the east of the Borderlands lies the Black Morass where the\nOrcish hordes make their encampments. You are to lead an army into\nthis foul region and destroy every trace of their dark presence." 22 0
+K 134 "Crush the two human\noutposts" 571 "With your new found magiks, the time is ripe to burn the Human\noccupation from our lands. There are two Human outposts to the\nsouth that pose the greatest threat to our security.\nReports from scouts near these towns show that the key to your\nsuccess in this confrontation is to hold back the Human forces\nat their bridges while you strengthen your attack force.\nThe glories of combat will be yours as you personally lead the\narmies that will reclaim your homelands." 22 0
+K 135 "Destroy temple raze town\nKill orcs" 560 "Runners have arrived and informed you of grave news. King Llane\nlies dead this day, assassinated by the treacherous Garona, at\nStormwind Keep.  His last command was that you should assume the\nmantle of War Leader, and end this battle that has drained the land\nof its resources, and now its king. Scouts report that deep within\nthe Black Morass lies one of Blackhand's darkest seats of power ---\nthe Temple of the Damned. No peasants dare approach the vile temple,\nand only the bravest of your soldiers have agreed to accompany you on\nthis mission. You must strike boldly and without err, for there will\nbe no reinforcements." 22 0
+K 136 "Destroy the human camp" 572 "You have tasted victory, and the craving for more is upon you.\nIt is clear that one decisive blow to the Humans will make the total\nand complete domination of this race a simple matter.\nYour spies have gathered intelligence that points to an encampment\nnear the center of the Human lands where their knights and soldiers\nare sent to train. Although they will not be expecting an attack,\nthey should prove a good fight. The destruction of this site would\ngreatly weaken their forces, and etch your position as War Chief\nin stone. None shall survive!" 22 0
+K 137 "Destroy rockard\nDestroy stonard" 561 "Here beats the diseased and malevolent heart of Blackhand's plagued lands.\nThe sister towns of Rockard and Stonard are all that stand between the\nforces of the kingdom and Blackhand's stronghold - Black Rock Spire.\nAfter conferring with your warchiefs, the path to victory lays clear.\nYou must destroy Rockard and Stonard, thereby cutting off all lines of\nsupport and supplies, so that the final offensive can be made upon Black Rock Spire." 22 0
+K 138 "Raze moonbrook\nRaze goldshire" 573 "The final march to King Llane's home, Stormwind Keep, is at hand.\nOnly two pathetic settlements stand in the way of the awesome\njuggernaut your cruel leadership has created. The Humans have proved\nto be amusing opposition, but the hour of doom has come for them.\nThe complete and utter demolition of the twin cities Goldshire and\nMoonbrook will sever the lifeline between the King and his people,\nmaking him a figurehead waiting to be lopped off." 22 0
+K 139 "Destroy Black Rock Spire\nand all orcs!" 562 "Black Rock Spire stands before us! The skies above the reeking swamp\nfill with the gathering thunderheads that spell doom for the loser in\nthis final confrontation. Tension hangs like a heavy cloak on your\nshoulders as your troops prepare for the battle ahead. Above the din\nand chaos that swirls about the battlefield stands the Castle of Blackhand,\nits gaze sweeping down upon the battlefield where the destiny of the land\nwill be decided. Destroy the stronghold and those who would seek to defend it,\nand Azeroth will be freed from Blackhand's poisoned grip forever!" 22 0
+K 140 "Destroy Stormwind Keep\nand all humans!" 574 "Stormwind Keep is ours to take! The Orcish hordes gather like buzzards to\ncarrion, as the moment of destiny is close at hand. A low growl fills the\nair as your wolfriders whip their savage mounts into a frenzy. The earth\nshakes as catapults are loaded and moved into position. The fires of the\nburning rubble about you dance in your eyes as you gaze upon the pristine,\nwhite towers of Castle Stormwind. White that will soon be washed with the\nred of King Llane's blood.  With his fall, all of Azeroth will be yours!" 22 0
+K 141 "Destroy enemy" 0 "" 0 1
+M 0 0 0 0
+M 0 1 0 0
+M 0 2 0 0
+M 0 3 0 0
+M 0 4 0 0
+M 0 5 0 0
+M 0 6 0 0
+M 0 7 0 0
+M 0 8 0 0
+M 0 9 0 0
+M 0 10 0 0
+M 0 11 0 0
+M 0 12 0 0
+M 0 13 0 0
+M 1 0 0 0
+M 1 1 1 117
+M 1 2 1 119
+M 1 3 1 121
+M 1 4 1 123
+M 1 5 1 125
+M 1 6 1 127
+M 1 7 1 129
+M 1 8 1 131
+M 1 9 1 133
+M 1 10 1 135
+M 1 11 1 137
+M 1 12 1 139
+M 1 13 0 0
+M 2 0 0 0
+M 2 1 1 118
+M 2 2 1 120
+M 2 3 1 122
+M 2 4 1 124
+M 2 5 1 126
+M 2 6 1 128
+M 2 7 1 130
+M 2 8 1 132
+M 2 9 1 134
+M 2 10 1 136
+M 2 11 1 138
+M 2 12 1 140
+M 2 13 0 0
+M 3 0 0 0
+M 3 1 0 0
+M 3 2 0 0
+M 3 3 0 0
+M 3 4 0 0
+M 3 5 0 0
+M 3 6 0 0
+M 3 7 0 0
+M 3 8 0 0
+M 3 9 0 0
+M 3 10 0 0
+M 3 11 0 0
+M 3 12 0 0
+M 3 13 0 0
+M null 0
