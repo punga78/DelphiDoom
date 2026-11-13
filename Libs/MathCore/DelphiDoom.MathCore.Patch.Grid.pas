@@ -58,6 +58,8 @@ type
     function GetLodRadius: Single;
     procedure SetLodOrigin(const AValue: TIdVec3);
     procedure SetLodRadius(const AValue: Single);
+    procedure SetWidthLodError(const AIndex: Integer; const AValue: Single);
+    procedure SetHeightLodError(const AIndex: Integer; const AValue: Single);
   end;
 
 implementation
@@ -177,6 +179,16 @@ end;
 procedure TPatchGrid.SetLodRadius(const AValue: Single);
 begin
   FLodRadius := AValue;
+end;
+
+procedure TPatchGrid.SetWidthLodError(const AIndex: Integer; const AValue: Single);
+begin
+  FWidthLodError[AIndex] := AValue;
+end;
+
+procedure TPatchGrid.SetHeightLodError(const AIndex: Integer; const AValue: Single);
+begin
+  FHeightLodError[AIndex] := AValue;
 end;
 
 end.
