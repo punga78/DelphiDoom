@@ -74,7 +74,8 @@ uses
   DelphiDoom.Tests.Decl.Material in 'Source\DelphiDoom.Tests.Decl.Material.pas',
   DelphiDoom.Tests.Decl.MaterialGolden in 'Source\DelphiDoom.Tests.Decl.MaterialGolden.pas',
   DelphiDoom.Tests.Decl.EffectsSupport in 'Source\DelphiDoom.Tests.Decl.EffectsSupport.pas',
-  DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas';
+  DelphiDoom.Tests.Decl.EffectsGolden in 'Source\DelphiDoom.Tests.Decl.EffectsGolden.pas',
+  DelphiDoom.Tests.Decl.Effects in 'Source\DelphiDoom.Tests.Decl.Effects.pas';
 
 var
   Runner: ITestRunner;
