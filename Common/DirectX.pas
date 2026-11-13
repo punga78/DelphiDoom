@@ -737,7 +737,7 @@ type
           ddpfPixelFormat: TDDPixelFormat;// pixel format description of the surface
           ddsCaps: TDDSCaps;             // direct draw surface capabilities
 {$IFDEF CPUX64}
-          dwPadding: DWORD;              // the C structure is padded to 8 bytes at 64 bit (size 112)
+          dwPadding: DWORD;              // the C structure is padded to 8 bytes at 64 bit (size 120)
 {$ENDIF}
           );
         1: (
