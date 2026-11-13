@@ -108,6 +108,25 @@ begin
   FreeLibrary(inst);
 end;
 
+{$IFNDEF CPUX86}
+// No inline asm at 64 bit: the nominal clock (MHz) comes from the registry.
+function GetCPUSpeed(const DelayTime: integer = 500): Double;
+var
+  Key: HKEY;
+  Value: DWORD;
+  ValueSize: DWORD;
+begin
+  Result := 0.0;
+  if RegOpenKeyEx(HKEY_LOCAL_MACHINE, 'HARDWARE\DESCRIPTION\System\CentralProcessor\0',
+    0, KEY_READ, Key) = ERROR_SUCCESS then
+  begin
+    ValueSize := SizeOf(Value);
+    if RegQueryValueEx(Key, '~MHz', nil, nil, @Value, @ValueSize) = ERROR_SUCCESS then
+      Result := Value;
+    RegCloseKey(Key);
+  end;
+end;
+{$ELSE}
 function GetCPUSpeed(const DelayTime: integer = 500): Double;
 var
   TimerHi, TimerLo: DWORD;
@@ -135,6 +154,7 @@ begin
   SetPriorityClass(GetCurrentProcess, PriorityClass);
   Result := TimerLo / (1000 * DelayTime);
 end;
+{$ENDIF}
 
 function I_WinsockEnabled: Boolean;
 var
