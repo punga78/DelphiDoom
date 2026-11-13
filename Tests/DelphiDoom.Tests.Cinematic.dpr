@@ -94,7 +94,17 @@ uses
   DelphiDoom.Tests.Cinematic.ModeCodebook in 'Source\DelphiDoom.Tests.Cinematic.ModeCodebook.pas',
   DelphiDoom.Tests.Cinematic.ModeParity in 'Source\DelphiDoom.Tests.Cinematic.ModeParity.pas',
   DelphiDoom.Tests.Cinematic.JpegDecoder in 'Source\DelphiDoom.Tests.Cinematic.JpegDecoder.pas',
-  DelphiDoom.Tests.Cinematic.DecoderJpeg in 'Source\DelphiDoom.Tests.Cinematic.DecoderJpeg.pas';
+  DelphiDoom.Tests.Cinematic.DecoderJpeg in 'Source\DelphiDoom.Tests.Cinematic.DecoderJpeg.pas',
+  DelphiDoom.Cinematic.Flic.Scene.Types in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Scene.Types.pas',
+  DelphiDoom.Cinematic.Flic.Scene.Intf in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Scene.Intf.pas',
+  DelphiDoom.Cinematic.Flic.Scene in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Scene.pas',
+  DelphiDoom.Cinematic.Flic.FolderSource in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.FolderSource.pas',
+  DelphiDoom.Cinematic.Flic.SceneMaker in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.SceneMaker.pas',
+  DelphiDoom.Cinematic.Flic.SceneFactory in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.SceneFactory.pas',
+  DelphiDoom.Cinematic.Flic.Presenter in '..\Libs\Cinematic\DelphiDoom.Cinematic.Flic.Presenter.pas',
+  DelphiDoom.Tests.Cinematic.FlicScene in 'Source\DelphiDoom.Tests.Cinematic.FlicScene.pas',
+  DelphiDoom.Tests.Cinematic.FlicSceneFactory in 'Source\DelphiDoom.Tests.Cinematic.FlicSceneFactory.pas',
+  DelphiDoom.Tests.Cinematic.FlicPresenter in 'Source\DelphiDoom.Tests.Cinematic.FlicPresenter.pas';
 
 var
   Runner: ITestRunner;

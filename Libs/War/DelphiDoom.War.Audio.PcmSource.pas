@@ -14,7 +14,7 @@ unit DelphiDoom.War.Audio.PcmSource;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.War.Audio.Intf;
+  System.SysUtils, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.War.Audio.Intf, DelphiDoom.War.Music.Intf;
 
 type
   /// <summary>
@@ -26,9 +26,12 @@ type
   TWarPcmSource = class(TInterfacedObject, IGameHostPcmSource)
   strict private
     FMixer: IWarSoundMixer;
+    FMusic: IWarMusicPlayer;
     FMono: array[0..8191] of SmallInt;
   public
-    constructor Create(const AMixer: IWarSoundMixer);
+    constructor Create(const AMixer: IWarSoundMixer); overload;
+    /// <param name="AMusic">The song that plays under the effects (mixed first, as the music is the first audio of a map); nil for none</param>
+    constructor Create(const AMixer: IWarSoundMixer; const AMusic: IWarMusicPlayer); overload;
     procedure Render(ABuffer: PByte; AByteCount: Integer);
   end;
 
@@ -41,10 +44,16 @@ uses
 
 constructor TWarPcmSource.Create(const AMixer: IWarSoundMixer);
 begin
+  Create(AMixer, nil);
+end;
+
+constructor TWarPcmSource.Create(const AMixer: IWarSoundMixer; const AMusic: IWarMusicPlayer);
+begin
   inherited Create;
   if not Assigned(AMixer) then
     raise EWarException.Create('The mixer of the PCM source is nil');
   FMixer := AMixer;
+  FMusic := AMusic;
 end;
 
 procedure TWarPcmSource.Render(ABuffer: PByte; AByteCount: Integer);
@@ -60,6 +69,8 @@ begin
     if LBlock > Length(FMono) then
       LBlock := Length(FMono);
     FillChar(FMono, LBlock * SizeOf(SmallInt), 0);
+    if Assigned(FMusic) then
+      FMusic.Mix(@FMono[0], LBlock);
     FMixer.Mix(@FMono[0], LBlock);
     for LIndex := 0 to LBlock - 1 do
     begin
