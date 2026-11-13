@@ -90,7 +90,6 @@ uses
   d_think in '..\Base\d_think.pas',
   d_ticcmd in '..\Base\d_ticcmd.pas',
   deh_main in '..\Hexen\deh_main.pas',
-  DirectX in '..\Common\DirectX.pas',
   doomdata in '..\Base\doomdata.pas',
   doomstat in '..\Hexen\doomstat.pas',
   doomtype in '..\Base\doomtype.pas',

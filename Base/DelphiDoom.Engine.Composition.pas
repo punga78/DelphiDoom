@@ -425,6 +425,9 @@ uses
 {$ELSE}
   i_main,
   i_video,
+  DelphiDoom.Engine.Video.FramePresenter.Intf,
+  DelphiDoom.Engine.Video.GdiPresenter,
+  DelphiDoom.Engine.Video.DisplaySettings,
 {$ENDIF}
   m_menu,
   d_event,
@@ -535,6 +538,14 @@ begin
   GL_ConfigureDisplayModes(LCatalog);
 {$ELSE}
   I_ConfigureDisplayModes(LCatalog);
+  // the strategy of the video output: the frame in the window with GDI, the resolution with the display settings
+  I_ConfigureVideoOutput(
+    TEngineGdiFramePresenter.Create(
+      function: THandle
+      begin
+        Result := hMainWnd;
+      end),
+    TEngineDisplaySettingsResolution.Create);
 {$ENDIF}
   M_ConfigureDisplayModes(LCatalog);
   D_ConfigureNotifications(TVideoFactory.CreateDeferredNotifications(TEngineDisplayModeApplier.Create));

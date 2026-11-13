@@ -170,7 +170,6 @@ uses
   d_think in '..\Base\d_think.pas',
   d_ticcmd in '..\Base\d_ticcmd.pas',
   deh_main in '..\Strife\deh_main.pas',
-  DirectX in '..\Common\DirectX.pas',
   doomdata in '..\Base\doomdata.pas',
   doomdef in '..\Strife\doomdef.pas',
   doomstat in '..\Strife\doomstat.pas',

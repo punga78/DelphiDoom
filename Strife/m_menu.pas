@@ -1125,9 +1125,6 @@ type
 {$ENDIF}
     od_uncapped,
 {$IFNDEF OPENGL}
-    od_bltasync,
-{$ENDIF}
-{$IFNDEF OPENGL}
     od_usefake3d,
 {$ENDIF}
     od_fixstallhack,
@@ -5957,16 +5954,6 @@ begin
   pmi.routine := @M_OptionsDisplayUncappedFrameRate;
   pmi.pBoolVal := nil;
   pmi.alphaKey := 'u';
-
-  {$IFNDEF OPENGL}
-  inc(pmi);
-  pmi.status := 1;
-  pmi.name := '!Asynchronous DirectX blit';
-  pmi.cmd := 'r_bltasync';
-  pmi.routine := @M_BoolCmd;
-  pmi.pBoolVal := @r_bltasync;
-  pmi.alphaKey := 'a';
-  {$ENDIF}
 
 {$IFNDEF OPENGL}
   inc(pmi);
