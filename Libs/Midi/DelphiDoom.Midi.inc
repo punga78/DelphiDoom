@@ -10,13 +10,16 @@
 // Tests\Data\Midi are of the old code). Without it the time starts from zero at every
 // restart and the code is right.
 //
-// To correct the code remove the line below (planned for Monday 2026-11-09, when the defect has
-// been shown to the user). The tests that depend on the defect are inside IFDEF
-// MIDI_LEGACY_LOOP, those for the corrected behaviour inside IFNDEF.
+// DECISION 2026-11-13: the defect was heard by the user (second round of a Hexen song late or
+// silent with the define, normal without it) and the define is REMOVED: the code is the
+// corrected one. The IFDEF branches stay in the sources only as the record of the old behaviour;
+// to see the old bytes again (golden files of the old code) put the line below back. The tests
+// that depend on the defect are inside IFDEF MIDI_LEGACY_LOOP, those for the corrected behaviour
+// inside IFNDEF.
 //
 // The other defect of the old code, the event written 192 bytes after its place after a change
 // of tempo (a pointer to a record of 16 bytes moved by 12 steps), is not under this define: what
 // the old code left in the bytes between depended on what the buffer held before, and a block
 // of the library does not have it. The old bytes are in the lines /legacy-tempo of the golden
 // file, for information.
-{$DEFINE MIDI_LEGACY_LOOP}
+// {$DEFINE MIDI_LEGACY_LOOP}

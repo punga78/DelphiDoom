@@ -42,7 +42,7 @@ Con `snd_uselegacymidiplayer = 0` verificare in particolare: il brano parte, ric
 
 Il vecchio `TMidi` non azzerava il tempo del brano quando questo ricominciava (fine del giro, o `Rewind`): il primo evento dopo il giro aveva come ritardo «il suo tempo meno il tempo della fine», che avvolge a `$FFFFFFxx` tick. All'ascolto: il brano è giusto la prima volta e al secondo giro parte con un ritardo enorme (silenzio) o con eventi fuori tempo; si vede nel golden come primo evento di un blocco dopo la fine con delta `$FFFFFFxx` (righe `looped`/`tempo` dei brani brevi, es. `short_loop`).
 
-Il difetto è sotto **`MIDI_LEGACY_LOOP`**, definito in `Libs\Midi\DelphiDoom.Midi.inc` (riga `{$DEFINE MIDI_LEGACY_LOOP}`, attiva per ora: parità byte per byte con il vecchio codice e con i golden). **Togliendo la riga il codice è corretto**: il tempo riparte da zero a ogni ricomincio. Da togliere dopo che l'utente ha capito il difetto (previsto lunedì 2026-11-09).
+Il difetto era sotto **`MIDI_LEGACY_LOOP`**, in `Libs\Midi\DelphiDoom.Midi.inc`. **Stato (2026-11-13): la riga `{$DEFINE MIDI_LEGACY_LOOP}` è tolta**, il codice è corretto (il tempo riparte da zero a ogni ricomincio). L'utente ha ascoltato le due versioni su Hexen (brani MIDI; le musiche di Doom sono MUS e non passano dal sequencer): con il define il secondo giro era in ritardo o muto, senza no. Con il define parità byte per byte con il vecchio codice e con i golden; per rivederla rimettere la riga.
 
 Come provare le due configurazioni:
 - **Con il define (default)**: i passi 1-3 sopra. Test dipendenti dal difetto: `DovrebbeConservareIlDeltaCheAvvolgeDopoIlGiro` e i tre di parità con il golden.
