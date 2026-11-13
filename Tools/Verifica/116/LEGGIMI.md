@@ -1,0 +1,13 @@
+# Verifica #116: BSP di Quake III (IBSP 46) e cucitura delle patch
+
+Produce `Tests\Data\MapFile\bsp.golden.txt` con il codice **vero** di Quake III, non riscritto: `build.sh` ritaglia per intervalli di righe da `Reference\quake3\code` le struct del BSP di `qcommon\qfiles.h`, `srfGridMesh_t` di `renderer\tr_local.h`, le funzioni vettoriali di `game\q_shared.h` e `q_math.c`, `renderer\tr_curve.c` (suddivisione e inserimento di colonne e righe, #117) e, da `renderer\tr_bsp.c`, `R_ColorShiftLightingBytes`, `ParseMesh`, `R_MergedWidthPoints`, `R_MergedHeightPoints`, `R_FixSharedVertexLodError(_r)`, `R_StitchPatches`, `R_TryStitchingPatch`, `R_StitchAllPatches`. `stubs.h` sostituisce il renderer (memoria azzerata, cvar `r_subdivisions` 4 e `r_mapOverBrightBits` 2 con `overbrightBits` 1, sistema degli shader, `PATCH_STITCHING` definito come in `tr_local.h`); `bspgen.c` e' il pilota.
+
+```
+sh Tools/Verifica/116/build.sh <cartella di uscita>
+sh Tools/Verifica/116/make-golden.sh <cartella di uscita>
+```
+
+- Compilatore: gcc a 64 bit di `Reference\_dati\_strumenti\w64devkit` (SSE, `-ffp-contract=off`: ogni operazione float arrotondata da sola, come nel 117).
+- `bspgen write <variante> <file>` scrive un BSP piccolo (nessun dato di gioco): una stanza con un quad, una triangle soup, un flare, una nebbia e patch (variante 0: tre patch affiancate in un gruppo di LOD, una con shader `SURF_NODRAW`, una in un altro gruppo; varianti 1 e 2: campo 3 x 3 di patch con rigonfiamenti casuali da xorshift32 con seme fisso, piu' due patch in un altro gruppo). I BSP **non** sono nel repository: li costruisce anche `Tests\Source\DelphiDoom.Tests.MapFile.BspSample.pas` con le stesse formule, e il test confronta CRC-32 di ogni lump e righe del golden.
+- `bspgen read <file>` stampa: intestazione, offset, lunghezza e CRC-32 dei 17 lump, i conteggi (`lunghezza / sizeof` con le struct vere), le dimensioni delle struct, poi le griglie delle patch dopo `ParseMesh` (`pre`) e dopo `R_StitchAllPatches` e `R_FixSharedVertexLodError` (`grid`): larghezza, altezza, FNV-1a dei vertici, errori di colonne e righe, origine e raggio LOD, tutto come bit esadecimali. La riga `ri stitched N LoD cracks` e' il conteggio delle cuciture (4, 20 e 27 per le tre varianti).
+- Cosa **non** viene dal C: la lettura dell'intestazione e i controlli sui lump (`funny lump size`, ...) sono scritti nel pilota sulla falsariga di `CM_LoadMap`; il C vero dà i `sizeof` delle struct e la cucitura. Il percorso "indice oltre la tabella" del terzo e quarto blocco di `R_StitchPatches` (vedi `Libs\MapFile\README.md`) non e' raggiunto da nessuna delle tre varianti: e' provato solo da test scritti a mano.

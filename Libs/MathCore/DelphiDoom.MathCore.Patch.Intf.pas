@@ -36,6 +36,10 @@ type
     function GetLodRadius: Single;
     procedure SetLodOrigin(const AValue: TIdVec3);
     procedure SetLodRadius(const AValue: Single);
+    /// <summary>Changes the error of a column (R_FixSharedVertexLodError of tr_bsp.c does)</summary>
+    procedure SetWidthLodError(const AIndex: Integer; const AValue: Single);
+    /// <summary>Changes the error of a row</summary>
+    procedure SetHeightLodError(const AIndex: Integer; const AValue: Single);
     /// <summary>The number of columns</summary>
     property Width: Integer read GetWidth;
     /// <summary>The number of rows</summary>
