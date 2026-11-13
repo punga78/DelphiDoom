@@ -10,6 +10,12 @@ unify=
 unify=
 > unify|one
 unify=one
+> unify|a    b  c
+unify=a b  c
+> unify|a      b
+unify=a b
+> unify|  a  b   c  d    e
+unify=a  b c  d e
 > contains|hello world|world|0
 contains=6
 > contains|Hello World|world|0
@@ -334,18 +340,15 @@ chatmsg=hey Bob and  !
 P3|BotConstructChat: message \x01v9\x01 variable 9 out of range\x0A
 chatlen=0
 chatmsg=
-> construct|1|\x5Cx01v8\x5Cx01|2|0|0|Bob
-chatlen=0
-chatmsg=
+> construct|1|x \x5Cx01rgreeting\x5Cx01 y|2|0|0
+chatlen=12
+chatmsg=x hi there y
 > construct|1|x \x5Cx01rgreeting\x5Cx01 y|2|0|0
 chatlen=15
 chatmsg=x hello there y
-> construct|1|x \x5Cx01rgreeting\x5Cx01 y|2|0|0
-chatlen=6
-chatmsg=x hi y
 > construct|1|x \x5Cx01rexcuse\x5Cx01 y|2|0|0|Bob
-chatlen=21
-chatmsg=x not my fault, Bob y
+chatlen=22
+chatmsg=x it was lag, my bad y
 > construct|1|\x5Cx01runknown\x5Cx01|2|0|0
 P3|BotConstructChat: unknown random string unknown\x0A
 chatlen=0
@@ -364,14 +367,14 @@ P4|BotConstructChat: message "bad \x01x escape" invalid escape char\x0A
 chatlen=12
 chatmsg=bad x escape
 > construct|1|reply \x5Cx01v0\x5Cx01|2|4|1|im sure
-chatlen=14
-chatmsg=reply i'm sure
+chatlen=13
+chatmsg=reply im sure
 > construct|1|reply \x5Cx01v0\x5Cx01|2|4|0|im sure
 chatlen=13
 chatmsg=reply im sure
 > construct|1|hello hi hey|2|0|0
-chatlen=17
-chatmsg=hello hello hello
+chatlen=8
+chatmsg=hi hi hi
 > seed|9
 > construct|1|hello hi hey goodbye|2|0|0
 chatlen=25

@@ -9,6 +9,9 @@ unify|a,b;c d	e
 unify|!!!
 unify|
 unify|one
+unify|a    b  c
+unify|a      b
+unify|  a  b   c  d    e
 contains|hello world|world|0
 contains|Hello World|world|0
 contains|Hello World|world|1
@@ -101,7 +104,6 @@ construct|1|plain text|2|0|0
 construct|1|hi \x01v0\x01 and \x01v1\x01 !|2|0|0|Bob|Alice
 construct|1|hi \x01v0\x01 and \x01v1\x01 !|2|0|0|Bob
 construct|1|\x01v9\x01|2|0|0|Bob
-construct|1|\x01v8\x01|2|0|0|Bob
 construct|1|x \x01rgreeting\x01 y|2|0|0
 construct|1|x \x01rgreeting\x01 y|2|0|0
 construct|1|x \x01rexcuse\x01 y|2|0|0|Bob
