@@ -170,7 +170,7 @@ begin
   Assert.IsTrue(LDecoder.NextFrame);
   Assert.AreEqual(0, LDecoder.FrameIndex);
   LFirst := LDecoder.Frame;
-  Assert.AreEqual(256, Length(LFirst));
+  Assert.AreEqual(256, Integer(Length(LFirst)));
   Assert.IsTrue(LDecoder.NextFrame);
   Assert.AreEqual(1, LDecoder.FrameIndex);
   LSecond := LDecoder.Frame;
@@ -427,10 +427,10 @@ begin
     LBuilder.Free;
   end;
   Assert.IsFalse(LDecoder.NextFrame);
-  Assert.AreEqual(1, Length(LSink.Chunks));
+  Assert.AreEqual(1, Integer(Length(LSink.Chunks)));
   Assert.AreEqual(2, LSink.Channels[0]);
   Assert.AreEqual(ROQ_SOUND_RATE, LSink.Rates[0]);
-  Assert.AreEqual(4, Length(LSink.Chunks[0]));
+  Assert.AreEqual(4, Integer(Length(LSink.Chunks[0])));
   Assert.AreEqual(101, Integer(LSink.Chunks[0][0]));
   Assert.AreEqual(101, Integer(LSink.Chunks[0][1]));
   Assert.AreEqual(105, Integer(LSink.Chunks[0][2]));
@@ -455,7 +455,7 @@ begin
   end;
   Assert.IsFalse(LDecoder.NextFrame);
   Assert.AreEqual(2, LSink.Channels[0]);
-  Assert.AreEqual(2, Length(LSink.Chunks[0]));
+  Assert.AreEqual(2, Integer(Length(LSink.Chunks[0])));
   Assert.AreEqual($0A01, Integer(LSink.Chunks[0][0]));
   Assert.AreEqual($0504, Integer(LSink.Chunks[0][1]));
 end;
@@ -528,7 +528,7 @@ begin
   Assert.IsTrue(LDecoder.NextFrame);
   Assert.IsTrue(LDecoder.NextFrame);
   Assert.AreEqual(16, LDecoder.Width);
-  Assert.AreEqual(256, Length(LDecoder.Frame));
+  Assert.AreEqual(256, Integer(Length(LDecoder.Frame)));
 end;
 
 procedure TTestRoqDecoder.DovrebbeUsareLAlphaDato;

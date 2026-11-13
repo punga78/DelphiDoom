@@ -69,9 +69,9 @@ end;
 procedure TTestRoqCodebook.DovrebbePartireVuotoENonCaricato;
 begin
   Assert.IsFalse(FCodebook.Loaded);
-  Assert.AreEqual(256 * 4, Length(FCodebook.Vq2));
-  Assert.AreEqual(256 * 16, Length(FCodebook.Vq4));
-  Assert.AreEqual(256 * 64, Length(FCodebook.Vq8));
+  Assert.AreEqual(256 * 4, Integer(Length(FCodebook.Vq2)));
+  Assert.AreEqual(256 * 16, Integer(Length(FCodebook.Vq4)));
+  Assert.AreEqual(256 * 64, Integer(Length(FCodebook.Vq8)));
   Assert.AreEqual(Cardinal(0), FCodebook.Vq8[100]);
 end;
 

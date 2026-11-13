@@ -73,7 +73,7 @@ begin
   try
     // 0 -> 0, 1 -> 1, 3 -> 9, 129 -> -1, 130 -> -4
     LSamples := LDecoder.DecodeMonoToMono(TBytes.Create(0, 1, 3, 129, 130), 5, 100);
-    Assert.AreEqual(5, Length(LSamples));
+    Assert.AreEqual(5, Integer(Length(LSamples)));
     Assert.AreEqual(100, Integer(LSamples[0]));
     Assert.AreEqual(101, Integer(LSamples[1]));
     Assert.AreEqual(110, Integer(LSamples[2]));
@@ -92,7 +92,7 @@ begin
   LDecoder := TRoqSoundDecoder.Create;
   try
     LSamples := LDecoder.DecodeMonoToStereo(TBytes.Create(2, 2), 2, 0);
-    Assert.AreEqual(4, Length(LSamples));
+    Assert.AreEqual(4, Integer(Length(LSamples)));
     Assert.AreEqual(4, Integer(LSamples[0]));
     Assert.AreEqual(4, Integer(LSamples[1]));
     Assert.AreEqual(8, Integer(LSamples[2]));
@@ -111,7 +111,7 @@ begin
   try
     // the high byte of the flags starts the left channel, the low one the right channel
     LSamples := LDecoder.DecodeStereoToStereo(TBytes.Create(1, 2, 1, 2), 4, $0A05);
-    Assert.AreEqual(4, Length(LSamples));
+    Assert.AreEqual(4, Integer(Length(LSamples)));
     Assert.AreEqual($0A00 + 1, Integer(LSamples[0]));
     Assert.AreEqual($0500 + 4, Integer(LSamples[1]));
     Assert.AreEqual($0A00 + 2, Integer(LSamples[2]));
@@ -129,7 +129,7 @@ begin
   LDecoder := TRoqSoundDecoder.Create;
   try
     LSamples := LDecoder.DecodeStereoToMono(TBytes.Create(4, 2), 1, $0000);
-    Assert.AreEqual(1, Length(LSamples));
+    Assert.AreEqual(1, Integer(Length(LSamples)));
     Assert.AreEqual((16 + 4) div 2, Integer(LSamples[0]));
   finally
     LDecoder.Free;
@@ -182,7 +182,7 @@ begin
   LDecoder := TRoqSoundDecoder.Create;
   try
     LSamples := LDecoder.DecodeStereoToStereo(TBytes.Create(1, 1, 1), 3, 0);
-    Assert.AreEqual(3, Length(LSamples));
+    Assert.AreEqual(3, Integer(Length(LSamples)));
     Assert.AreEqual(0, Integer(LSamples[2]));
   finally
     LDecoder.Free;

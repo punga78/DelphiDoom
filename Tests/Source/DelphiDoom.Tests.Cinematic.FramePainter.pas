@@ -108,7 +108,7 @@ begin
     LBuilder.Free;
   end;
   LFrame := FPainter.FrameCopy(0);
-  Assert.AreEqual(256, Length(LFrame));
+  Assert.AreEqual(256, Integer(Length(LFrame)));
   for LRow := 0 to 15 do
     for LColumn := 0 to 15 do
       // block order: (0,0) vector 1, (8,0) vector 0, (0,8) vector 1, (8,8) vector 0

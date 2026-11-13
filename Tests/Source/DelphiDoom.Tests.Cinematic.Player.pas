@@ -212,7 +212,7 @@ begin
   LImage := LPlayer.ImageForTime(0);
   Assert.AreEqual(-1, LImage.FrameIndex);
   Assert.AreEqual(Ord(rpsEnded), Ord(LImage.Status));
-  Assert.AreEqual(0, Length(LImage.Pixels));
+  Assert.AreEqual(0, Integer(Length(LImage.Pixels)));
 end;
 
 procedure TTestRoqPlayer.DovrebbeDareLeDimensioniDelVideo;

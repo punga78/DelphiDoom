@@ -159,14 +159,15 @@ const
   RELATIVE = 'Reference\openarena\openarena-0.8.8\baseoa\pak6-misc.pk3';
 var
   LBase: string;
-  LCandidates: array[0..2] of string;
+  LCandidates: array[0..3] of string;
   LIndex: Integer;
 begin
   LBase := ExtractFilePath(ParamStr(0));
   // beside the test executable or in the main checkout above a worktree (.claude\worktrees\name)
   LCandidates[0] := LBase + '..\..\' + RELATIVE;
   LCandidates[1] := LBase + '..\..\..\..\..\' + RELATIVE;
-  LCandidates[2] := GetEnvironmentVariable('DELPHIDOOM_OPENARENA_PAK');
+  LCandidates[2] := LBase + '..\..\..\..\..\..\' + RELATIVE;
+  LCandidates[3] := GetEnvironmentVariable('DELPHIDOOM_OPENARENA_PAK');
   Result := '';
   for LIndex := 0 to High(LCandidates) do
     if (LCandidates[LIndex] <> '') and TFile.Exists(TPath.GetFullPath(LCandidates[LIndex])) then

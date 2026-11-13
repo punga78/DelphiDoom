@@ -61,7 +61,7 @@ begin
   LHolder.AudioReceived([1, 2], 2, 22050);
   LHolder.AudioReceived([3], 1, 11025);
   Assert.AreEqual(2, LCollector.ChunkCount);
-  Assert.AreEqual(2, Length(LCollector.Chunks[0]));
+  Assert.AreEqual(2, Integer(Length(LCollector.Chunks[0])));
   Assert.AreEqual(3, Integer(LCollector.Chunks[1][0]));
 end;
 
@@ -77,7 +77,7 @@ begin
   LHolder.AudioReceived([], 2, 22050);
   LHolder.AudioReceived([3, -4], 2, 22050);
   LAll := LCollector.AllSamples;
-  Assert.AreEqual(4, Length(LAll));
+  Assert.AreEqual(4, Integer(Length(LAll)));
   Assert.AreEqual(1, Integer(LAll[0]));
   Assert.AreEqual(3, Integer(LAll[2]));
   Assert.AreEqual(-4, Integer(LAll[3]));
@@ -103,7 +103,7 @@ begin
   LCollector := TRoqAudioCollector.Create;
   LHolder := LCollector;
   Assert.AreEqual(0, LCollector.ChunkCount);
-  Assert.AreEqual(0, Length(LCollector.AllSamples));
+  Assert.AreEqual(0, Integer(Length(LCollector.AllSamples)));
   Assert.AreEqual(0, LCollector.Channels);
 end;
 
@@ -127,7 +127,7 @@ begin
   end;
   Assert.IsFalse(LDecoder.NextFrame);
   Assert.AreEqual(2, LCollector.ChunkCount);
-  Assert.AreEqual(6, Length(LCollector.AllSamples));
+  Assert.AreEqual(6, Integer(Length(LCollector.AllSamples)));
 end;
 
 { TTestCinematicFactory }
