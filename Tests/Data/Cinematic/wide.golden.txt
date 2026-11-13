@@ -1,0 +1,7 @@
+fps 24
+size 64 16
+frame 0 crc c69fff8e
+frame 1 crc 93ad7b54
+frame 2 crc 0cc15540
+frame 3 crc e164cded
+frames 4 audio 0

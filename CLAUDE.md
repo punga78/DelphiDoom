@@ -67,6 +67,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Audio** — Effetti sonori (canali, voci, dispositivo) e musica (backend e player) del motore. [CLAUDE.md](Libs/Audio/CLAUDE.md), [README.md](Libs/Audio/README.md)
 - **Automap** — Modello dell'automap (finestra sulla mappa, navigazione, segni, trasformazioni, ritaglio). [CLAUDE.md](Libs/Automap/CLAUDE.md), [README.md](Libs/Automap/README.md)
 - **Blockmap** — Costruzione e lettura della blockmap e rimozione delle slime trails. [CLAUDE.md](Libs/Blockmap/CLAUDE.md), [README.md](Libs/Blockmap/README.md)
+- **Cinematic** — Decoder dei video RoQ (id Tech 3 e 4) a classi: fotogrammi a 32 bit e audio DPCM, tempo dato dall'esterno; parita' sul codice di Quake III (issue #114, senza chiamanti nel motore). [CLAUDE.md](Libs/Cinematic/CLAUDE.md), [README.md](Libs/Cinematic/README.md)
 - **Clock** — Tempo del motore: sorgente di contatore monotono e orologio. [CLAUDE.md](Libs/Clock/CLAUDE.md), [README.md](Libs/Clock/README.md)
 - **Collision** — Port del modello di collisione di Doom 3 / id Tech 4 (senza chiamanti nel motore). [CLAUDE.md](Libs/Collision/CLAUDE.md), [README.md](Libs/Collision/README.md)
 - **CommandLine** — Argomenti del programma, file di argomenti di default, file di risposta, liste di autoload, riga di comando dell'avvio (`M_InitArgv`). [CLAUDE.md](Libs/CommandLine/CLAUDE.md), [README.md](Libs/CommandLine/README.md)

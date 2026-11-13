@@ -1,0 +1,11 @@
+fps 24
+audio 0 channels 1 rate 22050 samples 100 consumed 2fbaa910 full 45a16ff1
+size 32 32
+frame 0 crc 2cc339c1
+frame 1 crc 0e4af098
+audio 1 channels 1 rate 22050 samples 64 consumed b4a9fa51 full 5501b366
+frame 2 crc e700ff4a
+frame 3 crc 858d2c3b
+frame 4 crc 422b82dd
+frame 5 crc 17505f99
+frames 6 audio 2

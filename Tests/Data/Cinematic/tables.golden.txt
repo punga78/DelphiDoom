@@ -1,0 +1,17 @@
+yuv crc 5b8c8c9d
+rll monomono flags 0000 n 1000 crc 478d8802
+rll monostereo flags 0000 n 1000 crc 6a67426a
+rll stereostereo flags 0000 n 500 crc 7b11a882
+rll stereomono flags 0000 n 1000 crc d6373f2c
+rll monomono flags 1234 n 1000 crc 3aaa0320
+rll monostereo flags 1234 n 1000 crc 4c98c1ed
+rll stereostereo flags 1234 n 500 crc e1ee72e6
+rll stereomono flags 1234 n 1000 crc 3b198a0a
+rll monomono flags ffff n 1000 crc 4e02792e
+rll monostereo flags ffff n 1000 crc f5242500
+rll stereostereo flags ffff n 500 crc f301b440
+rll stereomono flags ffff n 1000 crc 5f6a344b
+rll monomono flags 8000 n 1000 crc 651eb3a7
+rll monostereo flags 8000 n 1000 crc 8db53930
+rll stereostereo flags 8000 n 500 crc fa38cf2c
+rll stereomono flags 8000 n 1000 crc 3b9f680a
