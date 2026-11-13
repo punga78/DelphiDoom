@@ -298,7 +298,7 @@ var
   LFingerprint: TFingerprint;
   LFirst, LSecond: TBytes;
   LDump: TMd2Dump;
-  LCase, LTriangles, LVertexes: Integer;
+  LCase, LTriangles, LVertexes, LFrames, LTexturePoints: Integer;
 begin
   LRandom := TModelsRandom.Create(9002);
   LFingerprint := TFingerprint.Create;
@@ -307,8 +307,12 @@ begin
     begin
       LTriangles := 1 + LRandom.NextInteger(20);
       LVertexes := 3 + LRandom.NextInteger(30);
-      LFirst := TModelsSamples.BuildMd2(LRandom, LTriangles, LVertexes, 1 + LRandom.NextInteger(6),
-        4 + LRandom.NextInteger(20), 64, 64, ['stand1', 'stand2', 'run1', 'run2', 'run3']);
+      // the draws one after the other, from the left: the order of evaluation of the arguments is not
+      // defined and the 64 bit compiler uses another one
+      LFrames := 1 + LRandom.NextInteger(6);
+      LTexturePoints := 4 + LRandom.NextInteger(20);
+      LFirst := TModelsSamples.BuildMd2(LRandom, LTriangles, LVertexes, LFrames, LTexturePoints, 64, 64,
+        ['stand1', 'stand2', 'run1', 'run2', 'run3']);
       // one frame in the second file, the same triangles count except in every fifth case (no merge)
       if LCase mod 5 = 4 then
         LSecond := TModelsSamples.BuildMd2(LRandom, LTriangles + 1, LVertexes, 1, 8, 64, 64,
