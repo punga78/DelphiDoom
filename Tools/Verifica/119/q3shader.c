@@ -206,6 +206,21 @@ static void dump(const shader_t *s, int sunSet) {
 	}
 }
 
+static void find(const char *name) {
+	shader_t *sh;
+	tr.sunLight[0] = -12345.0f;
+	/* the original keeps the texMods of the previous shader (it clears the stages, not these): the
+	   harness clears them, a reading of one shader must not depend on the ones before it */
+	memset(texMods, 0, sizeof(texMods));
+	printf("find %s\n", name);
+	if (setjmp(g_drop) == 0) {
+		sh = R_FindShader(name, LIGHTMAP_NONE, qtrue);
+		dump(sh, tr.sunLight[0] != -12345.0f);
+	} else {
+		printf("drop\n");
+	}
+}
+
 int main(int argc, char **argv) {
 	char line[1024];
 	FILE *f;
@@ -233,19 +248,19 @@ int main(int argc, char **argv) {
 		while (n > 0 && (line[n - 1] == '\n' || line[n - 1] == '\r')) line[--n] = 0;
 		if (!strncmp(line, "detail ", 7)) cv_detail.integer = atoi(line + 7);
 		else if (!strcmp(line, "scan")) ScanAndLoadShaderFiles();
-		else if (!strncmp(line, "find ", 5)) {
-			shader_t *sh;
-			tr.sunLight[0] = -12345.0f;
-			/* the original keeps the texMods of the previous shader (it clears the stages, not these): the
-			   harness clears them, a reading of one shader must not depend on the ones before it */
-			memset(texMods, 0, sizeof(texMods));
-			printf("find %s\n", line + 5);
-			if (setjmp(g_drop) == 0) {
-				sh = R_FindShader(line + 5, LIGHTMAP_NONE, qtrue);
-				dump(sh, tr.sunLight[0] != -12345.0f);
-			} else {
-				printf("drop\n");
+		else if (!strncmp(line, "find ", 5)) find(line + 5);
+		else if (!strcmp(line, "findall")) {
+			/* every name of the scanned text, in the order of the text (a local check on real files) */
+			char *p = s_shaderText, *token;
+			char **names = calloc(65536, sizeof(char *));
+			int count = 0, i;
+			while (p) {
+				token = COM_ParseExt(&p, qtrue);
+				if (!token[0]) break;
+				names[count++] = strdup(token);
+				SkipBracedSection(&p);
 			}
+			for (i = 0; i < count; i++) find(names[i]);
 		}
 	}
 	return 0;

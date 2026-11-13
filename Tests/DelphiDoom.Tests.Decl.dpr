@@ -59,6 +59,7 @@ uses
   DelphiDoom.Decl.Q3Shader.DeformParser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.DeformParser.pas',
   DelphiDoom.Decl.Q3Shader.Parser in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Parser.pas',
   DelphiDoom.Decl.Q3Shader.Finisher in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Finisher.pas',
+  DelphiDoom.Decl.Q3Shader.Compressor in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Compressor.pas',
   DelphiDoom.Decl.Q3Shader.FileScanner in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.FileScanner.pas',
   DelphiDoom.Decl.Q3Shader in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.pas',
   DelphiDoom.Decl.Q3Shader.DeclType in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.DeclType.pas',

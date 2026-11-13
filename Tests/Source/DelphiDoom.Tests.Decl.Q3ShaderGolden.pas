@@ -25,6 +25,7 @@ type
   strict private
     FFolder: string;
     FKit: TQ3ShaderKit;
+    FOwnsKit: Boolean;
     FOptions: TQ3ShaderOptions;
     FOutput: TStringList;
     procedure Rebuild;
@@ -37,6 +38,23 @@ type
     destructor Destroy; override;
     /// <summary>Runs the scenario and returns the output lines</summary>
     function Run(const AScenario: TStrings): TStringList;
+    /// <summary>The dump of every shader of a manager (the files of a game, a local check), in the order of the declarations</summary>
+    function DumpAll(const AKit: TQ3ShaderKit): TStringList;
+  end;
+
+  /// <summary>
+  ///   The shaders of OpenArena (GPL v2) read from its pk3 files, if they are there: a local check, nothing of
+  ///   it is in the repository. The folder is <c>DELPHIDOOM_OPENARENA</c> (that of baseoa and missionpack) or
+  ///   <c>Reference\openarena\openarena-0.8.8</c> of the repository.
+  /// </summary>
+  [TestFixture]
+  [Category('Decl')]
+  TTestQ3ShaderOpenArena = class
+  strict private
+    function Folder: string;
+  public
+    [Test]
+    procedure DovrebbeLeggereTuttiGliShaderDiOpenArenaSenzaErrori;
   end;
 
   [TestFixture]
@@ -53,7 +71,8 @@ type
 implementation
 
 uses
-  System.IOUtils, System.Math, System.StrUtils, DelphiDoom.Decl.Intf, DelphiDoom.Decl.Types;
+  System.IOUtils, System.Math, System.StrUtils, System.Zip, System.Generics.Collections, DelphiDoom.Decl.Intf,
+  DelphiDoom.Decl.Types;
 
 { TQ3ShaderGoldenRunner }
 
@@ -68,7 +87,8 @@ end;
 destructor TQ3ShaderGoldenRunner.Destroy;
 begin
   FOutput.Free;
-  FKit.Free;
+  if FOwnsKit then
+    FKit.Free;
   inherited Destroy;
 end;
 
@@ -86,8 +106,10 @@ var
   LBytes: TBytes;
   LText: AnsiString;
 begin
-  FKit.Free;
+  if FOwnsKit then
+    FKit.Free;
   FKit := TQ3ShaderKit.Create;
+  FOwnsKit := True;
   for LFile in TDirectory.GetFiles(FFolder + 'scripts', '*.shader') do
   begin
     LBytes := TFile.ReadAllBytes(LFile);
@@ -226,6 +248,19 @@ begin
     Dump(LShader);
 end;
 
+function TQ3ShaderGoldenRunner.DumpAll(const AKit: TQ3ShaderKit): TStringList;
+var
+  LIndex: Integer;
+begin
+  if FOwnsKit then
+    FKit.Free;
+  FOwnsKit := False;
+  FKit := AKit;
+  for LIndex := 0 to FKit.Manager.GetNumDecls(DECL_Q3SHADER) - 1 do
+    Find(string(FKit.Manager.DeclByIndex(DECL_Q3SHADER, LIndex, False).GetName));
+  Result := FOutput;
+end;
+
 function TQ3ShaderGoldenRunner.Run(const AScenario: TStrings): TStringList;
 var
   LLine: string;
@@ -277,6 +312,81 @@ begin
       Exit(False);
   end;
   Result := True;
+end;
+
+{ TTestQ3ShaderOpenArena }
+
+function TTestQ3ShaderOpenArena.Folder: string;
+begin
+  Result := GetEnvironmentVariable('DELPHIDOOM_OPENARENA');
+  if Result = '' then
+    Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Reference\openarena\openarena-0.8.8');
+end;
+
+procedure TTestQ3ShaderOpenArena.DovrebbeLeggereTuttiGliShaderDiOpenArenaSenzaErrori;
+var
+  LKit: TQ3ShaderKit;
+  LRunner: TQ3ShaderGoldenRunner;
+  LZip: TZipFile;
+  LPacks: TArray<string>;
+  LPack, LEntry, LSub, LDumpFile: string;
+  LBytes: TBytes;
+  LText: AnsiString;
+  LIndex: Integer;
+  LDump: TStringList;
+  LLine: string;
+  LDropped: Integer;
+begin
+  if not DirectoryExists(Folder) then
+  begin
+    Assert.Pass('OpenArena is not here: skipped');
+    Exit;
+  end;
+  LKit := TQ3ShaderKit.Create;
+  LRunner := TQ3ShaderGoldenRunner.Create('');
+  try
+    for LSub in ['baseoa', 'missionpack'] do
+    begin
+      if not DirectoryExists(Folder + '\' + LSub) then
+        Continue;
+      LPacks := TDirectory.GetFiles(Folder + '\' + LSub, '*.pk3');
+      TArray.Sort<string>(LPacks);
+      for LPack in LPacks do
+      begin
+        LZip := TZipFile.Create;
+        try
+          LZip.Open(LPack, zmRead);
+          for LIndex := 0 to LZip.FileCount - 1 do
+          begin
+            LEntry := LZip.FileNames[LIndex];
+            if StartsText('scripts/', LEntry) and EndsText('.shader', LEntry) then
+            begin
+              LZip.Read(LIndex, LBytes);
+              SetString(LText, PAnsiChar(@LBytes[0]), Length(LBytes));
+              // a later pack replaces a file of the same name, as the game does
+              LKit.Source.Add(AnsiString(LEntry), LText);
+            end;
+          end;
+        finally
+          LZip.Free;
+        end;
+      end;
+    end;
+    LKit.Start(TQ3ShaderOptions.Standard);
+    Assert.IsTrue(LKit.Manager.GetNumDecls(DECL_Q3SHADER) > 0);
+    LDump := LRunner.DumpAll(LKit);
+    LDropped := 0;
+    for LLine in LDump do
+      if LLine = 'drop' then
+        Inc(LDropped);
+    Assert.AreEqual(0, LDropped);
+    LDumpFile := GetEnvironmentVariable('DELPHIDOOM_Q3DUMP');
+    if LDumpFile <> '' then
+      LDump.SaveToFile(LDumpFile);
+  finally
+    LRunner.Free;
+    LKit.Free;
+  end;
 end;
 
 procedure TTestQ3ShaderGolden.DovrebbeDareLeStesseRisposteDelVeroTrShaderC;

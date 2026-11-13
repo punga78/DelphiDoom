@@ -272,7 +272,10 @@ begin
     end;
     LNewDecl.RedefinedInReload := True;
     LNewDecl.ClearText;
-    LNewDecl.SetTextLocal(Copy(ABuffer, LBlock.Offset + 1, LBlock.Length));
+    if LBlock.Text <> '' then
+      LNewDecl.SetTextLocal(LBlock.Text)
+    else
+      LNewDecl.SetTextLocal(Copy(ABuffer, LBlock.Offset + 1, LBlock.Length));
     LNewDecl.SourceFile := Self;
     LNewDecl.SourceTextOffset := LBlock.Offset;
     LNewDecl.SourceTextLength := LBlock.Length;

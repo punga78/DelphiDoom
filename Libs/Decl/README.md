@@ -39,9 +39,23 @@ Opzioni (`TMaterialOptions`: `image_ignoreHighQuality`, `ARBFragmentProgramAvail
 
 ## Prova
 
-- Progetto di test `Tests\DelphiDoom.Tests.Decl`: `Tools\build.bat DelphiDoom.Tests.Decl Release`. 201 test, copertura 97%. Parita' con il vero C++ in `Tests\Data\Decl` ([README dei dati](../../Tests/Data/Decl/README.md)).
+- Progetto di test `Tests\DelphiDoom.Tests.Decl`: `Tools\build.bat DelphiDoom.Tests.Decl Release`. 301 test (201 del gestore e dei materiali, 100 degli shader di Quake III), copertura 97% (ogni unit sopra il 90%). Parita' con il vero C++ in `Tests\Data\Decl` ([README dei dati](../../Tests/Data/Decl/README.md)).
 
 ## Legami
 
 - Sopra `Libs\IdLib` (`TIdLexer`, `TIdHashIndex`, `TIdMd5`, `TIdStrings`, `TIdMath`) e `Libs\Scanner` (`TIdDict`).
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+## Shader di Quake III (issue #119, prima fetta)
+
+Il tipo `shader` (`TDeclQ3Shader`, `DelphiDoom.Decl.Q3Shader.*`) legge i file `scripts/*.shader` di Quake III come `tr_shader.c`: `ParseShader`, `ParseStage`, `ParseTexMod`, `ParseDeform`, `ParseSkyParms`, `ParseSort`, `ParseSurfaceParm`, `ParseVector`, `ParseWaveForm` e la parte di dati di `FinishShader`. I **dati**, non il disegno: le immagini si nominano e non si caricano; onde, `tcMod` e deformazioni sono dati, non si calcolano ancora (restano di #119).
+
+```pascal
+TQ3ShaderRegistration.RegisterType(Manager.GetRegistry, []);   // il tipo (numero DECL_Q3SHADER = 30)
+TQ3ShaderRegistration.RegisterFolder(Manager.GetRegistry);     // legge scripts/*.shader
+if Supports(Manager.FindType(DECL_Q3SHADER, 'textures/foo/bar'), IDeclQ3Shader, LShader) then
+  for LIndex := 0 to LShader.GetStageCount - 1 do
+    LImage := LShader.GetStage(LIndex).Bundle.ImageNames[0];
+```
+
+Non e' registrato da `TDeclStandardTypes` (aggiungerebbe il numero 30 ai tipi di Doom 3): un gioco di Quake III lo registra da se'. La sintassi di un `.shader` non e' quella di Doom 3 (nessuna parola di tipo, parole separate da blank, `//` e `/* */`, righe che contano): il file lo trova `TQ3ShaderFileScanner` (`IDeclFileScanner`, una strategia per tipo che il manager usa al posto del lexer di idLib) e lo shader lo legge `TQ3ShaderTokenizer` (`COM_ParseExt`). Dettagli, difetti del C e differenze: [CLAUDE.md](CLAUDE.md).

@@ -72,10 +72,36 @@ type
 
   [TestFixture]
   [Category('Decl')]
+  TTestQ3ShaderCompressor = class
+  public
+    [Test]
+    procedure DovrebbeRiunireIBlankELeRigheInUnoSolo;
+    [Test]
+    procedure DovrebbeTogliereICommenti;
+    [Test]
+    procedure DovrebbeUnireLeParoleSeUnCommentoLeSepara;
+    [Test]
+    procedure DovrebbeTagliareUnaParolaAUnCommentoAttaccato;
+    [Test]
+    procedure DovrebbeCopiareLeVirgoletteSenzaToccarle;
+    [Test]
+    procedure DovrebbeTrattareUnCRSoloComeAndareACapo;
+    [Test]
+    procedure DovrebbeFermarsiAlPrimoNul;
+    [Test]
+    procedure DovrebbeDareLaPosizioneNelTestoDiOgniCarattere;
+    [Test]
+    procedure DovrebbeDareVuotoPerUnTestoDiSoliCommenti;
+  end;
+
+  [TestFixture]
+  [Category('Decl')]
   TTestQ3ShaderFileScanner = class
   public
     [Test]
     procedure DovrebbeTrovareNomeOffsetELineaDiOgniShader;
+    [Test]
+    procedure DovrebbeLeggereUnFileConIRitorniACapoDelMacintosh;
     [Test]
     procedure DovrebbeNonTrovareNullaInUnFileVuoto;
     [Test]
@@ -120,6 +146,36 @@ type
     procedure DovrebbeLeggereITcMod;
     [Test]
     procedure DovrebbeContareUnTcModTroncatoComeTipoNessuno;
+    [TestCase('turb senza parametri', 'tcMod turb,missing tcMod turb parms')]
+    [TestCase('turb con uno', 'tcMod turb 1,missing tcMod turb in shader')]
+    [TestCase('turb con due', 'tcMod turb 1 2,missing tcMod turb in shader')]
+    [TestCase('turb con tre', 'tcMod turb 1 2 3,missing tcMod turb in shader')]
+    [TestCase('scale senza parametri', 'tcMod scale,missing scale parms')]
+    [TestCase('scroll senza parametri', 'tcMod scroll,missing scale scroll parms')]
+    [TestCase('stretch senza parametri', 'tcMod stretch,missing stretch parms')]
+    [TestCase('stretch con la funzione', 'tcMod stretch sin,missing stretch parms')]
+    [TestCase('stretch con la base', 'tcMod stretch sin 1,missing stretch parms')]
+    [TestCase('stretch con l ampiezza', 'tcMod stretch sin 1 2,missing stretch parms')]
+    [TestCase('stretch con la fase', 'tcMod stretch sin 1 2 3,missing stretch parms')]
+    [TestCase('transform senza parametri', 'tcMod transform,missing transform parms')]
+    [TestCase('transform con uno', 'tcMod transform 1,missing transform parms')]
+    [TestCase('transform con due', 'tcMod transform 1 2,missing transform parms')]
+    [TestCase('transform con tre', 'tcMod transform 1 2 3,missing transform parms')]
+    [TestCase('transform con quattro', 'tcMod transform 1 2 3 4,missing transform parms')]
+    [TestCase('transform con cinque', 'tcMod transform 1 2 3 4 5,missing transform parms')]
+    [TestCase('rotate senza parametri', 'tcMod rotate,missing tcMod rotate parms')]
+    [TestCase('tipo sconosciuto', 'tcMod wobble 1,unknown tcMod ''wobble''')]
+    procedure DovrebbeAvvisareUnTcModIncompleto(const ALine, AMessage: string);
+    [TestCase('onda senza funzione', 'rgbGen wave')]
+    [TestCase('onda senza base', 'rgbGen wave sin')]
+    [TestCase('onda senza ampiezza', 'rgbGen wave sin 1')]
+    [TestCase('onda senza fase', 'rgbGen wave sin 1 2')]
+    [TestCase('onda senza frequenza', 'rgbGen wave sin 1 2 3')]
+    procedure DovrebbeAvvisareUnaOndaIncompleta(const ALine: string);
+    [TestCase('senza parentesi aperta', 'rgbGen const 1 2 3,missing parenthesis')]
+    [TestCase('senza elemento', 'rgbGen const ( 1 2,missing vector element')]
+    [TestCase('senza parentesi chiusa', 'rgbGen const ( 1 2 3,missing parenthesis')]
+    procedure DovrebbeAvvisareUnVettoreSbagliato(const ALine, AMessage: string);
     [Test]
     procedure DovrebbeLeggereIVettoriDelTcGen;
     [Test]
@@ -209,7 +265,7 @@ implementation
 uses
   System.Math, System.StrUtils, System.Generics.Collections, DelphiDoom.Decl.Factory, DelphiDoom.Decl.StandardTypes,
   DelphiDoom.Decl.FileScanner.Intf, DelphiDoom.Decl.Q3Shader.Context, DelphiDoom.Decl.Q3Shader.Tokenizer,
-  DelphiDoom.Decl.Q3Shader.FileScanner, DelphiDoom.Decl.Q3Shader.Registration;
+  DelphiDoom.Decl.Q3Shader.FileScanner, DelphiDoom.Decl.Q3Shader.Compressor, DelphiDoom.Decl.Q3Shader.Registration;
 
 const
   // the single ' of the library is a quote
@@ -353,7 +409,7 @@ begin
     AnsiString(StringOfChar('y', 1023)) + ' fine');
   try
     Assert.AreEqual('', string(LTokenizer.ParseExt(True)));
-    Assert.AreEqual(1023, Length(LTokenizer.ParseExt(True)));
+    Assert.AreEqual<Integer>(1023, Length(LTokenizer.ParseExt(True)));
     Assert.AreEqual('fine', string(LTokenizer.ParseExt(True)));
   finally
     LTokenizer.Free;
@@ -445,6 +501,89 @@ begin
   end;
 end;
 
+{ TTestQ3ShaderCompressor }
+
+procedure TTestQ3ShaderCompressor.DovrebbeRiunireIBlankELeRigheInUnoSolo;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('a b', string(TQ3ShaderCompressor.Compress('a  '#9' b', LMap)));
+  Assert.AreEqual('a'#10'b', string(TQ3ShaderCompressor.Compress('a'#13#10' '#9#10'  b', LMap)));
+  // a blank or a new line at the end is not kept
+  Assert.AreEqual('a', string(TQ3ShaderCompressor.Compress('a '#10' ', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeTogliereICommenti;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('a'#10'b', string(TQ3ShaderCompressor.Compress('a // c d'#10'b', LMap)));
+  Assert.AreEqual('a b', string(TQ3ShaderCompressor.Compress('a /* c'#10'd */ b', LMap)));
+  Assert.AreEqual('a', string(TQ3ShaderCompressor.Compress('a /* mai chiuso', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeUnireLeParoleSeUnCommentoLeSepara;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('ab', string(TQ3ShaderCompressor.Compress('a/* x */b', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeTagliareUnaParolaAUnCommentoAttaccato;
+var
+  LMap: TArray<Integer>;
+begin
+  // COM_ParseExt reads "a//b" as one word; COM_Compress cuts it, and the scan sees the cut text
+  Assert.AreEqual('a', string(TQ3ShaderCompressor.Compress('a//b', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeCopiareLeVirgoletteSenzaToccarle;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('"a  //b'#10'c" d', string(TQ3ShaderCompressor.Compress('"a  //b'#10'c"   d', LMap)));
+  // an open quote is copied to the end
+  Assert.AreEqual('x "a  b', string(TQ3ShaderCompressor.Compress('x  "a  b', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeTrattareUnCRSoloComeAndareACapo;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('a'#10'b', string(TQ3ShaderCompressor.Compress('a'#13'b', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeFermarsiAlPrimoNul;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('a', string(TQ3ShaderCompressor.Compress('a'#0'b', LMap)));
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeDareLaPosizioneNelTestoDiOgniCarattere;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('ab', string(TQ3ShaderCompressor.Compress('a/*x*/b', LMap)));
+  Assert.AreEqual<Integer>(2, Length(LMap));
+  Assert.AreEqual(1, LMap[0]);
+  Assert.AreEqual(7, LMap[1]);
+  // the blank that is kept belongs to the word after it
+  TQ3ShaderCompressor.Compress('a   b', LMap);
+  Assert.AreEqual(1, LMap[0]);
+  Assert.AreEqual(5, LMap[1]);
+  Assert.AreEqual(5, LMap[2]);
+end;
+
+procedure TTestQ3ShaderCompressor.DovrebbeDareVuotoPerUnTestoDiSoliCommenti;
+var
+  LMap: TArray<Integer>;
+begin
+  Assert.AreEqual('', string(TQ3ShaderCompressor.Compress('// niente'#10'/* nulla */', LMap)));
+  Assert.AreEqual<Integer>(0, Length(LMap));
+  Assert.AreEqual('', string(TQ3ShaderCompressor.Compress('', LMap)));
+end;
+
 { TTestQ3ShaderFileScanner }
 
 procedure TTestQ3ShaderFileScanner.DovrebbeTrovareNomeOffsetELineaDiOgniShader;
@@ -455,7 +594,7 @@ var
 begin
   LText := 'uno'#10'{'#10'  { map a }'#10'}'#10'due { }'#10;
   LBlocks := TQ3ShaderFileScanner.Scan(LText, 30, LNumLines);
-  Assert.AreEqual(2, Length(LBlocks));
+  Assert.AreEqual<Integer>(2, Length(LBlocks));
   Assert.AreEqual('uno', string(LBlocks[0].Name));
   Assert.AreEqual(30, LBlocks[0].TypeId);
   Assert.AreEqual(0, LBlocks[0].Offset);
@@ -466,15 +605,31 @@ begin
   Assert.AreEqual(4, LBlocks[1].Line);
   Assert.AreEqual(#10'due { }', string(Copy(LText, LBlocks[1].Offset + 1, LBlocks[1].Length)));
   Assert.AreEqual(6, LNumLines);
+  // the declaration holds the compressed text; the offset and the length are those of the file
+  Assert.AreEqual('uno'#10'{'#10'{ map a }'#10'}', string(LBlocks[0].Text));
+  Assert.AreEqual(#10'due { }', string(LBlocks[1].Text));
+end;
+
+procedure TTestQ3ShaderFileScanner.DovrebbeLeggereUnFileConIRitorniACapoDelMacintosh;
+var
+  LBlocks: TArray<TDeclScannedBlock>;
+  LNumLines: Integer;
+begin
+  // a lone CR is a new line for COM_Compress: "qer_editorimage" ends its line there
+  LBlocks := TQ3ShaderFileScanner.Scan('uno'#13'{ }'#13'due'#13'{ }', 30, LNumLines);
+  Assert.AreEqual<Integer>(2, Length(LBlocks));
+  Assert.AreEqual('uno'#10'{ }', string(LBlocks[0].Text));
+  Assert.AreEqual('uno'#13'{ }', string(Copy('uno'#13'{ }'#13'due'#13'{ }', LBlocks[0].Offset + 1, LBlocks[0].Length)));
+  Assert.AreEqual(#10'due'#10'{ }', string(LBlocks[1].Text));
 end;
 
 procedure TTestQ3ShaderFileScanner.DovrebbeNonTrovareNullaInUnFileVuoto;
 var
   LNumLines: Integer;
 begin
-  Assert.AreEqual(0, Length(TQ3ShaderFileScanner.Scan('', 30, LNumLines)));
+  Assert.AreEqual<Integer>(0, Length(TQ3ShaderFileScanner.Scan('', 30, LNumLines)));
   Assert.AreEqual(1, LNumLines);
-  Assert.AreEqual(0, Length(TQ3ShaderFileScanner.Scan('// solo un commento'#10, 30, LNumLines)));
+  Assert.AreEqual<Integer>(0, Length(TQ3ShaderFileScanner.Scan('// solo un commento'#10, 30, LNumLines)));
 end;
 
 procedure TTestQ3ShaderFileScanner.DovrebbeIncludereICommentiSopraLaDefinizione;
@@ -483,7 +638,7 @@ var
   LNumLines: Integer;
 begin
   LBlocks := TQ3ShaderFileScanner.Scan('// sopra'#10'nome'#10'{ }', 30, LNumLines);
-  Assert.AreEqual(1, Length(LBlocks));
+  Assert.AreEqual<Integer>(1, Length(LBlocks));
   Assert.AreEqual(0, LBlocks[0].Offset);
   Assert.AreEqual('nome', string(LBlocks[0].Name));
 end;
@@ -494,8 +649,8 @@ var
   LNumLines: Integer;
 begin
   LBlocks := TQ3ShaderFileScanner.Scan('nome'#10'{'#10'{ map a }', 30, LNumLines);
-  Assert.AreEqual(1, Length(LBlocks));
-  Assert.AreEqual(Length('nome'#10'{'#10'{ map a }'), LBlocks[0].Length);
+  Assert.AreEqual<Integer>(1, Length(LBlocks));
+  Assert.AreEqual<Integer>(Length('nome'#10'{'#10'{ map a }'), LBlocks[0].Length);
 end;
 
 procedure TTestQ3ShaderFileScanner.DovrebbeFermarsiConUnaParolaVuotaTraVirgolette;
@@ -503,7 +658,7 @@ var
   LNumLines: Integer;
 begin
   // an empty word is the end of the file, also when it is a pair of quotes
-  Assert.AreEqual(1, Length(TQ3ShaderFileScanner.Scan('uno { } "" due { }', 30, LNumLines)));
+  Assert.AreEqual<Integer>(1, Length(TQ3ShaderFileScanner.Scan('uno { } "" due { }', 30, LNumLines)));
 end;
 
 { TTestQ3ShaderKeywords }
@@ -661,6 +816,24 @@ begin
   Assert.AreEqual(Ord(tmNone), Ord(LBundle.TexMods[0].ModType));
   Assert.AreEqual(3, LBundle.TexMods[0].Scale[0], 0.0001);
   Assert.IsTrue(ContainsText(Log, 'missing scale parms'));
+end;
+
+procedure TTestQ3ShaderKeywords.DovrebbeAvvisareUnTcModIncompleto(const ALine, AMessage: string);
+begin
+  Shader(AnsiString('{ map a'#10 + ALine + #10'}'));
+  Assert.IsTrue(ContainsText(Log, AMessage), Log);
+end;
+
+procedure TTestQ3ShaderKeywords.DovrebbeAvvisareUnaOndaIncompleta(const ALine: string);
+begin
+  Shader(AnsiString('{ map a'#10 + ALine + #10'}'));
+  Assert.IsTrue(ContainsText(Log, 'missing waveform parm'), Log);
+end;
+
+procedure TTestQ3ShaderKeywords.DovrebbeAvvisareUnVettoreSbagliato(const ALine, AMessage: string);
+begin
+  Shader(AnsiString('{ map a'#10 + ALine + #10'}'));
+  Assert.IsTrue(ContainsText(Log, AMessage), Log);
 end;
 
 procedure TTestQ3ShaderKeywords.DovrebbeLeggereIVettoriDelTcGen;
@@ -862,10 +1035,26 @@ procedure TTestQ3ShaderKeywords.DovrebbeDareUnaEccezioneFuoriDalNumeroDeglistage
 var
   LShader: IDeclQ3Shader;
   LStage: TQ3ShaderStage;
+  LRaised: Integer;
 begin
   LShader := Shader('{ map a }');
-  Assert.WillRaise(procedure begin LStage := LShader.GetStage(1); end, ERangeError);
-  Assert.WillRaise(procedure begin LStage := LShader.GetStage(-1); end, ERangeError);
+  LRaised := 0;
+  try
+    LStage := LShader.GetStage(1);
+  except
+    on ERangeError do
+      Inc(LRaised);
+  end;
+  try
+    LStage := LShader.GetStage(-1);
+  except
+    on ERangeError do
+      Inc(LRaised);
+  end;
+  Assert.AreEqual(2, LRaised);
+  // a stage that exists is read
+  LStage := LShader.GetStage(0);
+  Assert.IsTrue(LStage.Active);
 end;
 
 procedure TTestQ3ShaderKeywords.DovrebbeLeggereUnTestoDiDefaultSenzaNome;

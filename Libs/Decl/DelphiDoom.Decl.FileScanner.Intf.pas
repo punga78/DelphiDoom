@@ -31,6 +31,11 @@ type
     Length: Integer;
     /// <summary>The line (1 based) where the text starts</summary>
     Line: Integer;
+    /// <summary>
+    ///   The text of the declaration if it is not the part of the file at <c>Offset</c> (a type that reads
+    ///   the file after a transformation); empty for the part of the file itself
+    /// </summary>
+    Text: AnsiString;
   end;
 
   /// <summary>
