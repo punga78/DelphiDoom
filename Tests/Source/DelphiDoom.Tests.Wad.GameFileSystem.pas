@@ -71,6 +71,23 @@ type
     procedure DovrebbeTenereLeVociDelleCartelle;
   end;
 
+  /// <summary>
+  ///   Values produced by the C++ of Doom 3: HashFileName, FilenameCompare, GetFileList (the loop on the entries
+  ///   of a pak) and GetFileListTree copied verbatim from framework\FileSystem.cpp into a small program (idStr
+  ///   replaced by std::string), compiled with bcc32c and run on the same names
+  /// </summary>
+  [TestFixture]
+  [Category('wad')]
+  TTestGameFsParity = class(TObject)
+  public
+    [Test]
+    procedure DovrebbeDareGliStessiHashDelCodiceOriginale;
+    [Test]
+    procedure DovrebbeDareGliStessiConfrontiDelCodiceOriginale;
+    [Test]
+    procedure DovrebbeDareGliStessiElenchiDelCodiceOriginale;
+  end;
+
   [TestFixture]
   [Category('wad')]
   TTestGameDisk = class(TObject)
@@ -286,14 +303,14 @@ var
   LList: TArray<string>;
 begin
   LList := TGameFsPaths.SplitExtensions('tga|dds');
-  Assert.AreEqual(2, Length(LList));
+  Assert.AreEqual<Integer>(2, Length(LList));
   Assert.AreEqual('tga', LList[0]);
   Assert.AreEqual('dds', LList[1]);
   LList := TGameFsPaths.SplitExtensions('');
-  Assert.AreEqual(1, Length(LList));
+  Assert.AreEqual<Integer>(1, Length(LList));
   Assert.AreEqual('', LList[0]);
   LList := TGameFsPaths.SplitExtensions('a|');
-  Assert.AreEqual(2, Length(LList));
+  Assert.AreEqual<Integer>(2, Length(LList));
   Assert.AreEqual('', LList[1]);
   LList := TGameFsPaths.SplitExtensions('/');
   Assert.AreEqual('/', LList[0]);
@@ -409,7 +426,7 @@ begin
   // the empty entry does not count
   LExpected := TIdMd4.BlockChecksum(LCrcs[0], 8);
   Assert.AreEqual(LExpected, LPack.Checksum);
-  Assert.AreEqual(Int64(Length(LBytes)), LPack.Length);
+  Assert.AreEqual<Int64>(Length(LBytes), LPack.Length);
 end;
 
 procedure TTestGamePack.DovrebbeRiconoscereUnAddon;
@@ -527,7 +544,7 @@ begin
   FSettings.Game := 'mod';
   LPaths := MakeSystem.SearchPaths;
   // the folder, then its paks from the last, then what was added before
-  Assert.AreEqual(5, Length(LPaths));
+  Assert.AreEqual<Integer>(5, Length(LPaths));
   Assert.IsTrue(LPaths[0].IsDirectory);
   Assert.AreEqual('mod', LPaths[0].GameDir);
   Assert.AreEqual('C:\d3\mod\pak000.pk4', LPaths[1].PackFileName);
@@ -558,14 +575,14 @@ begin
   Assert.AreEqual('C:\d3\base\pak001.pk4', LPaths[7].PackFileName);
   Assert.AreEqual('C:\d3\base\pak000.pk4', LPaths[8].PackFileName);
   Assert.AreEqual('C:\cd|base', LPaths[9].Path + '|' + LPaths[9].GameDir);
-  Assert.AreEqual(10, Length(LPaths));
+  Assert.AreEqual<Integer>(10, Length(LPaths));
 end;
 
 procedure TTestGameFileSystem.DovrebbeIgnorareGameUgualeAllaBase;
 begin
   FSettings.Game := 'BASE';
   FSettings.GameBase := 'Base';
-  Assert.AreEqual(3, Length(MakeSystem.SearchPaths));
+  Assert.AreEqual<Integer>(3, Length(MakeSystem.SearchPaths));
 end;
 
 procedure TTestGameFileSystem.DovrebbeIgnorareGameUgualeAGameBase;
@@ -575,7 +592,7 @@ begin
   FSettings.GameBase := 'mod';
   FSettings.Game := 'MOD';
   LPaths := MakeSystem.SearchPaths;
-  Assert.AreEqual(5, Length(LPaths));
+  Assert.AreEqual<Integer>(5, Length(LPaths));
   Assert.AreEqual('mod', LPaths[0].GameDir);
 end;
 
@@ -710,7 +727,7 @@ begin
   Assert.WillRaise(procedure begin LSystem.ReadFile('', LData); end, EGameFsException);
   Assert.WillRaise(procedure begin LSystem.FileLength(''); end, EGameFsException);
   Assert.IsFalse(LSystem.ReadFile('nothing', LData));
-  Assert.AreEqual(0, Length(LData));
+  Assert.AreEqual<Integer>(0, Length(LData));
 end;
 
 procedure TTestGameFileSystem.DovrebbeCercareSoloNeiPakOSoloNelleCartelle;
@@ -788,7 +805,7 @@ begin
   Assert.IsNull(LSystem.OpenFileRead('addon/only.txt'));
   Assert.IsFalse(LSystem.FileIsInPak('addon/only.txt'));
   // the others are as before
-  Assert.AreEqual(2, Length(LSystem.PackChecksums));
+  Assert.AreEqual<Integer>(2, Length(LSystem.PackChecksums));
 end;
 
 procedure TTestGameFileSystem.DovrebbeCercareNegliAddonSeRichiesto;
@@ -813,11 +830,11 @@ begin
   FSettings.SearchAddons := True;
   LSystem := MakeSystem;
   LPaths := LSystem.SearchPaths;
-  Assert.AreEqual(4, Length(LPaths));
+  Assert.AreEqual<Integer>(4, Length(LPaths));
   // the last pak is the first after the folder
   Assert.AreEqual('C:\d3\base\pak002.pk4', LPaths[1].PackFileName);
   Assert.IsTrue(LPaths[1].IsAddon);
-  Assert.AreEqual(0, Length(LSystem.AddonPackFileNames));
+  Assert.AreEqual<Integer>(0, Length(LSystem.AddonPackFileNames));
   Assert.AreEqual('addon text', TEncoding.UTF8.GetString(LSystem.OpenFileRead('addon/only.txt').ReadAll));
 end;
 
@@ -831,7 +848,7 @@ begin
   LSystem := MakeSystem;
   LPaths := LSystem.SearchPaths;
   LChecksums := LSystem.PackChecksums;
-  Assert.AreEqual(3, Length(LChecksums));
+  Assert.AreEqual<Integer>(3, Length(LChecksums));
   Assert.AreEqual(LPaths[1].Checksum, LChecksums[0]);
   Assert.AreEqual(LPaths[3].Checksum, LChecksums[1]);
   Assert.AreEqual(LPaths[4].Checksum, LChecksums[2]);
@@ -931,10 +948,10 @@ begin
   Assert.WillRaise(procedure begin LSystem.OpenFileRead('loose.txt'); end, EGameFsException);
   LSystem.Restart;
   Assert.IsTrue(LSystem.IsInitialized);
-  Assert.AreEqual(2, Length(LSystem.PackChecksums));
+  Assert.AreEqual<Integer>(2, Length(LSystem.PackChecksums));
   // Startup twice does not repeat the folders
   LSystem.Startup;
-  Assert.AreEqual(3, Length(LSystem.SearchPaths));
+  Assert.AreEqual<Integer>(3, Length(LSystem.SearchPaths));
 end;
 
 procedure TTestGameFileSystem.DovrebbeLeggereUnaCartellaVuotaComeTutteLeVoci;
@@ -945,6 +962,82 @@ begin
   // the root: files of the folder, and in the paks the ones with no folder (see the notes of the unit on the
   // empty path, which the original reads outside the string)
   Assert.AreEqual('loose.txt,readme.txt', Join(LSystem.ListFiles('', 'txt', True)));
+end;
+
+{ TTestGameFsParity }
+
+procedure TTestGameFsParity.DovrebbeDareGliStessiHashDelCodiceOriginale;
+const
+  NAMES: array[0..10] of string = ('a', 'ab.c', 'a/b', 'A\B', 'a:b', 'textures/wall.tga', 'TEXTURES\Wall.TGA',
+    'def/a.def', 'readme.txt', 'zed/up.tga', '');
+  EXPECTED: array[0..10] of Integer = (279, 775, 369, 369, 665, 108, 108, 779, 802, 47, 0);
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(NAMES) do
+    Assert.AreEqual(EXPECTED[LIndex], TGameFsPaths.HashFileName(NAMES[LIndex]), NAMES[LIndex]);
+end;
+
+procedure TTestGameFsParity.DovrebbeDareGliStessiConfrontiDelCodiceOriginale;
+begin
+  // the C++ FilenameCompare returns true for "different": the results here are "equal"
+  Assert.IsTrue(TGameFsPaths.NamesEqual('Textures\Wall.TGA', 'textures/wall.tga'));
+  Assert.IsTrue(TGameFsPaths.NamesEqual('a:b', 'a/b'));
+  Assert.IsFalse(TGameFsPaths.NamesEqual('a/b', 'a/bc'));
+  Assert.IsFalse(TGameFsPaths.NamesEqual('a/b', 'a/c'));
+  Assert.IsTrue(TGameFsPaths.NamesEqual('', ''));
+  Assert.IsFalse(TGameFsPaths.NamesEqual('abc', 'ABD'));
+end;
+
+procedure TTestGameFsParity.DovrebbeDareGliStessiElenchiDelCodiceOriginale;
+type
+  TQuery = record
+    Path, Extension: string;
+    Full: Boolean;
+    Expected: string;
+  end;
+const
+  QUERIES: array[0..15] of TQuery = (
+    (Path: 'textures'; Extension: 'tga'; Full: False; Expected: 'wall.tga'),
+    (Path: 'textures'; Extension: 'tga'; Full: True; Expected: 'textures/wall.tga'),
+    (Path: 'textures'; Extension: '/'; Full: False; Expected: 'sub'),
+    (Path: 'textures'; Extension: '/'; Full: True; Expected: 'textures/sub'),
+    (Path: 'textures/sub'; Extension: 'tga|def'; Full: False; Expected: 'a.tga'),
+    (Path: 'def'; Extension: 'def'; Full: False; Expected: 'a.def,b.def'),
+    (Path: 'def'; Extension: ''; Full: False; Expected: 'a.def,b.def'),
+    (Path: 'a'; Extension: '/'; Full: True; Expected: 'a/b'),
+    (Path: 'a/b'; Extension: ''; Full: True; Expected: ''),
+    (Path: 'TEXTURES'; Extension: 'tga'; Full: False; Expected: 'wall.tga'),
+    (Path: 'textures/'; Extension: 'tga'; Full: False; Expected: ''),
+    (Path: 'nothing'; Extension: 'tga'; Full: False; Expected: ''),
+    (Path: 'sound'; Extension: 'wav|WAV'; Full: True; Expected: 'sound/x.wav'),
+    (Path: 'zed'; Extension: 'tga'; Full: False; Expected: 'up.tga'),
+    (Path: 'tex'; Extension: ''; Full: False; Expected: ''),
+    (Path: 'a'; Extension: ''; Full: False; Expected: 'b'));
+var
+  LDisk: TMemoryGameDisk;
+  LSystem: IGameFileSystem;
+  LSettings: TGameFsSettings;
+  LQuery: TQuery;
+begin
+  LDisk := TMemoryGameDisk.Create;
+  LSystem := nil;
+  LSettings := Default(TGameFsSettings);
+  LSettings.BasePath := 'C:\p';
+  LDisk.AddFile('C:\p\base\pak0.pk4', TMemoryZip.Make(
+    ['textures/wall.tga', 'textures/sub/a.tga', 'textures/sub/deep/b.tga', 'textures/', 'textures/sub/', 'textures/sub/deep/',
+     'def/a.def', 'def/b.def', 'def.txt', 'deftxt/x.def', 'readme.txt', 'sound/', 'sound/x.wav', 'maps/test.map',
+     'a/b/c/d.e', 'a/b/', 'a/', 'a', 'Zed/Up.TGA'],
+    ['1', '2', '3', '', '', '', '4', '5', '6', '7', '8', '', '9', '10', '11', '', '', '12', '13']));
+  LSystem := TGameFileSystemFactory.CreateWithDisk(LDisk, LSettings);
+  LSystem.Startup;
+  for LQuery in QUERIES do
+    Assert.AreEqual(LQuery.Expected, string.Join(',', LSystem.ListFiles(LQuery.Path, LQuery.Extension, False, LQuery.Full)),
+      LQuery.Path + '|' + LQuery.Extension);
+  // GetFileListTree: the subfolders first, deepest first
+  Assert.AreEqual('textures/sub/deep/b.tga,textures/sub/a.tga,textures/wall.tga', string.Join(',', LSystem.ListFilesTree('textures', 'tga')));
+  Assert.AreEqual('a/b', string.Join(',', LSystem.ListFilesTree('a', '')));
+  Assert.AreEqual('sound/x.wav', string.Join(',', LSystem.ListFilesTree('sound', 'wav')));
 end;
 
 { TTestGameDisk }
@@ -975,12 +1068,12 @@ begin
   TGameFsPaths.SortPaths(LFiles);
   Assert.AreEqual('pak000.pk4,PAK001.PK4', string.Join(',', LFiles));
   Assert.AreEqual('sub', string.Join(',', LDisk.ListFiles(TPath.Combine(FFolder, 'base'), '/')));
-  Assert.AreEqual(3, Length(LDisk.ListFiles(TPath.Combine(FFolder, 'base') + PathDelim, '')));
+  Assert.AreEqual<Integer>(3, Length(LDisk.ListFiles(TPath.Combine(FFolder, 'base') + PathDelim, '')));
 end;
 
 procedure TTestGameDisk.DovrebbeElencareVuotoSeLaCartellaManca;
 begin
-  Assert.AreEqual(0, Length(TGameDisk.Create.ListFiles(TPath.Combine(FFolder, 'nope'), '')));
+  Assert.AreEqual<Integer>(0, Length(TGameDisk.Create.ListFiles(TPath.Combine(FFolder, 'nope'), '')));
 end;
 
 procedure TTestGameDisk.DovrebbeAprireSoloIFile;
@@ -1018,7 +1111,7 @@ begin
   LSettings.BasePath := FFolder;
   LSystem := TGameFileSystemFactory.CreateOnDisk(LSettings);
   LSystem.Startup;
-  Assert.AreEqual(3, Length(LSystem.SearchPaths));
+  Assert.AreEqual<Integer>(3, Length(LSystem.SearchPaths));
   Assert.IsTrue(LSystem.ReadFile('loose.txt', LData));
   Assert.AreEqual('loose on disk', TEncoding.UTF8.GetString(LData));
   // the second pak overrides the first, whatever the case of its name
@@ -1086,6 +1179,7 @@ begin
 end;
 
 initialization
+  TDUnitX.RegisterTestFixture(TTestGameFsParity);
   TDUnitX.RegisterTestFixture(TTestGameDisk);
   TDUnitX.RegisterTestFixture(TTestZipArchive);
   TDUnitX.RegisterTestFixture(TTestGameFsPaths);
