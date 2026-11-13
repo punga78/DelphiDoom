@@ -13,6 +13,9 @@
 {******************************************************************************}
 unit DelphiDoom.Models.Static.Types;
 
+// the two constructors of the exception have the same parameters: C++Builder cannot tell them apart
+{$WARN DUPLICATE_CTOR_DTOR OFF}
+
 interface
 
 uses

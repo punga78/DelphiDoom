@@ -14,7 +14,8 @@ uses
   System.SysUtils,
   DelphiDoom.Models.Static.Types,
   DelphiDoom.Models.Static.Intf,
-  DelphiDoom.Models.Static.Ase.Types;
+  DelphiDoom.Models.Static.Ase.Types,
+  DelphiDoom.Models.Static.Md3.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the static models</summary>
@@ -27,7 +28,11 @@ type
     class function CreateAseLoader(const AOptions: TStaticLoadOptions;
       const AResolver: TStaticPathResolver = nil): IStaticModelLoader; overload; static;
     class function CreateAseLoader: IStaticModelLoader; overload; static;
-    /// <summary>The loader for a file name by its extension (.lwo, .ase); nil for the others</summary>
+    /// <summary>The reader of Quake 3 models (.md3): frames, tags and the instances between frames</summary>
+    class function CreateMd3Reader: IMd3Reader; static;
+    /// <summary>The loader of .md3 files as static models (the first frame)</summary>
+    class function CreateMd3Loader: IStaticModelLoader; static;
+    /// <summary>The loader for a file name by its extension (.lwo, .ase, .md3); nil for the others</summary>
     class function CreateLoaderFor(const AFileName: string; const AOptions: TStaticLoadOptions): IStaticModelLoader; static;
   end;
 
@@ -35,7 +40,8 @@ implementation
 
 uses
   DelphiDoom.Models.Static.Lwo.Loader,
-  DelphiDoom.Models.Static.Ase.Loader;
+  DelphiDoom.Models.Static.Ase.Loader,
+  DelphiDoom.Models.Static.Md3.Loader;
 
 { TStaticModelFactory }
 
@@ -60,6 +66,16 @@ begin
   Result := CreateAseLoader(TStaticLoadOptions.Default);
 end;
 
+class function TStaticModelFactory.CreateMd3Reader: IMd3Reader;
+begin
+  Result := TMd3ModelLoader.Create;
+end;
+
+class function TStaticModelFactory.CreateMd3Loader: IStaticModelLoader;
+begin
+  Result := TMd3ModelLoader.Create;
+end;
+
 class function TStaticModelFactory.CreateLoaderFor(const AFileName: string;
   const AOptions: TStaticLoadOptions): IStaticModelLoader;
 var
@@ -70,6 +86,8 @@ begin
     Result := CreateLwoLoader(AOptions)
   else if SameText(LExtension, '.ase') then
     Result := CreateAseLoader(AOptions)
+  else if SameText(LExtension, '.md3') then
+    Result := CreateMd3Loader
   else
     Result := nil;
 end;

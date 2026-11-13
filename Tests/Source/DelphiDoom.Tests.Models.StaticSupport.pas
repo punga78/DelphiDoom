@@ -315,7 +315,7 @@ begin
   Assert.AreEqual(10, LIntf.TotalVerts);
   Assert.AreEqual(9, LIntf.TotalIndexes);
   Assert.AreEqual<Single>(3, LIntf.Bounds.Maxs.X);
-  Assert.AreEqual(1, Length(LIntf.Warnings));
+  Assert.AreEqual<Integer>(1, Length(LIntf.Warnings));
   Assert.IsTrue(LIntf.Surfaces[0].HasGeometry);
 end;
 
@@ -351,7 +351,7 @@ begin
   Assert.AreEqual(0, LRemap[0]);
   Assert.AreEqual(1, LRemap[1]);
   Assert.AreEqual(2, LRemap[2]);
-  Assert.AreEqual(0, Length(TStaticVectorSubset.RemapPositions([], 0.01)));
+  Assert.AreEqual<Integer>(0, Length(TStaticVectorSubset.RemapPositions([], 0.01)));
 end;
 
 procedure TTestStaticSupport.DovrebbeUnireTexCoordInDueDimensioni;
@@ -425,6 +425,9 @@ begin
   Assert.IsNotNull(TStaticModelFactory.CreateLoaderFor('models/a.LWO', TStaticLoadOptions.Default));
   Assert.IsNotNull(TStaticModelFactory.CreateLoaderFor('models/a.ase', TStaticLoadOptions.Default));
   Assert.IsNull(TStaticModelFactory.CreateLoaderFor('models/a.md5mesh', TStaticLoadOptions.Default));
+  Assert.IsNotNull(TStaticModelFactory.CreateLwoLoader);
+  Assert.IsNotNull(TStaticModelFactory.CreateAseLoader);
+  Assert.IsNotNull(TStaticModelFactory.CreateMd3Loader);
 end;
 
 initialization

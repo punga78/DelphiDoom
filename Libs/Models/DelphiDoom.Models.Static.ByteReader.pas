@@ -45,6 +45,12 @@ type
     ///   two bytes. Size gets the bytes read.
     /// </summary>
     function ReadS0(out ASize: Integer): AnsiString;
+    /// <summary>The little endian readers of the MD3 format (the engine reads them with LittleLong, LittleShort, LittleFloat)</summary>
+    function ReadLeInt16: SmallInt;
+    function ReadLeInt32: Integer;
+    function ReadLeSingle: Single;
+    /// <summary>A string in a field of ACount bytes (char name[64]): up to the first zero byte or the end of the field</summary>
+    function ReadFixedString(const ACount: Integer): AnsiString;
     /// <summary>The bytes of a block</summary>
     function ReadBytes(const ACount: Integer): TBytes;
     procedure Skip(const ACount: Integer);
@@ -154,6 +160,41 @@ begin
   Need(ASize);
   SetString(Result, PAnsiChar(@FData[LStart]), LLength);
   Inc(FPosition, ASize);
+end;
+
+function TStaticByteReader.ReadLeInt16: SmallInt;
+begin
+  Need(2);
+  Result := SmallInt(Word(FData[FPosition]) or (Word(FData[FPosition + 1]) shl 8));
+  Inc(FPosition, 2);
+end;
+
+function TStaticByteReader.ReadLeInt32: Integer;
+begin
+  Need(4);
+  Result := Integer(Cardinal(FData[FPosition]) or (Cardinal(FData[FPosition + 1]) shl 8) or
+    (Cardinal(FData[FPosition + 2]) shl 16) or (Cardinal(FData[FPosition + 3]) shl 24));
+  Inc(FPosition, 4);
+end;
+
+function TStaticByteReader.ReadLeSingle: Single;
+var
+  LBits: Integer;
+begin
+  LBits := ReadLeInt32;
+  Result := PSingle(@LBits)^;
+end;
+
+function TStaticByteReader.ReadFixedString(const ACount: Integer): AnsiString;
+var
+  LLength: Integer;
+begin
+  Need(ACount);
+  LLength := 0;
+  while (LLength < ACount) and (FData[FPosition + LLength] <> 0) do
+    Inc(LLength);
+  SetString(Result, PAnsiChar(@FData[FPosition]), LLength);
+  Inc(FPosition, ACount);
 end;
 
 function TStaticByteReader.ReadBytes(const ACount: Integer): TBytes;

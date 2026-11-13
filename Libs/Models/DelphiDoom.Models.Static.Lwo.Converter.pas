@@ -74,7 +74,7 @@ var
   LPositions: TArray<TIdVec3>;
   LTexCoords: TArray<TIdVec2>;
   LLayer: ^TLwoLayer;
-  LIndex, LMap, LRecord, LPolygon, LVert, LRef, LTotalTv, LTv, LPosition, LChannel, LJ: Integer;
+  LIndex, LMap, LRecord, LPolygon, LVert, LRef, LTotalTv, LTv, LPosition, LJ: Integer;
   LNormalEpsilon, LChannelValue: Single;
   LColor: TStaticColor;
   LNormal: TIdVec3;

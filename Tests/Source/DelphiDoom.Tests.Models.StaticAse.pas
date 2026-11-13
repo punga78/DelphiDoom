@@ -304,8 +304,8 @@ begin
   finally
     LParser.Free;
   end;
-  Assert.AreEqual(1, Length(LModel.Objects));
-  Assert.AreEqual(2, Length(LModel.Objects[0].Frames));
+  Assert.AreEqual<Integer>(1, Length(LModel.Objects));
+  Assert.AreEqual<Integer>(2, Length(LModel.Objects[0].Frames));
   Assert.AreEqual(160, LModel.Objects[0].Frames[0].TimeValue);
   Assert.AreEqual<Single>(6, LModel.Objects[0].Frames[0].Vertexes[0].Y);
   Assert.AreEqual(320, LModel.Objects[0].Frames[1].TimeValue);

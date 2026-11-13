@@ -422,7 +422,7 @@ var
   LModel: IStaticModel;
 begin
   LModel := Load(Mesh([0, 0, 0,  1, 0, 0,  0, 1, 0], [TArray<Integer>.Create(0, 1, 2)]));
-  Assert.AreEqual(1, Length(LModel.Warnings));
+  Assert.AreEqual<Integer>(1, Length(LModel.Warnings));
   Assert.IsTrue(LModel.Warnings[0].Contains('uv'));
   Assert.AreEqual<Single>(0, LModel.Surfaces[0].Triangles.Verts[0].St.X);
   Assert.AreEqual<Single>(0, LModel.Surfaces[0].Triangles.Verts[0].St.Y);
@@ -451,7 +451,7 @@ begin
     LBuilder.Free;
   end;
   Assert.AreEqual(3, LModel.Surfaces[0].Triangles.NumIndexes);
-  Assert.AreEqual(2, Length(LModel.Warnings), 'the quad and the missing uv');
+  Assert.AreEqual<Integer>(2, Length(LModel.Warnings), 'the quad and the missing uv');
   Assert.IsTrue(LModel.Warnings[0].Contains('uv') or LModel.Warnings[1].Contains('4 vertexes'));
 end;
 
