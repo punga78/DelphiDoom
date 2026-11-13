@@ -161,7 +161,7 @@ begin
   CheckLines(LGolden, LPosition, ModelLines('synthetic.small', TI3dFileBuilder.SmallModel));
   CheckLines(LGolden, LPosition, ModelLines('synthetic.car', TI3dFileBuilder.CarModel));
   CheckLines(LGolden, LPosition, ModelLines('synthetic.plain', TI3dFileBuilder.PlainModel));
-  Assert.AreEqual(Length(LGolden), LPosition, 'number of lines');
+  Assert.AreEqual<Integer>(Length(LGolden), LPosition, 'number of lines');
 end;
 
 procedure TTestModelsI3dParser.DovrebbeUsareLaScalaDiDefaultSeIlFileHaZero;
@@ -212,10 +212,10 @@ begin
   LModel := FParser.Parse(TI3dFileBuilder.CarModel);
   Assert.AreEqual(64, LModel.Textures[0].Width);
   Assert.AreEqual(64, LModel.Textures[0].Height);
-  Assert.AreEqual(64 * 64, Length(LModel.Textures[0].Pixels));
+  Assert.AreEqual<Integer>(64 * 64, Length(LModel.Textures[0].Pixels));
   Assert.AreEqual(256, LModel.Textures[1].Width);
   Assert.AreEqual(64, LModel.Textures[1].Height);
-  Assert.AreEqual(256 * 64, Length(LModel.Textures[1].Pixels));
+  Assert.AreEqual<Integer>(256 * 64, Length(LModel.Textures[1].Pixels));
 end;
 
 procedure TTestModelsI3dParser.DovrebbeDareTexturaVuotaAUnMaterialSenzaPixel;
@@ -234,7 +234,7 @@ var
 begin
   LModel := FParser.Parse(TI3dFileBuilder.SmallModel);
   LPixels := LModel.TextureToRgba(0);
-  Assert.AreEqual(64 * 64, Length(LPixels));
+  Assert.AreEqual<Integer>(64 * 64, Length(LPixels));
   // the pixel 0 is the palette index 0 + the seed term; the alpha is always 255
   Assert.AreEqual(Cardinal($FF), LPixels[0] shr 24);
   Assert.AreEqual(Cardinal($FF), LPixels[4095] shr 24);

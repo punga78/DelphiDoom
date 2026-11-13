@@ -151,7 +151,7 @@ var
     Assert.AreEqual(LCompressedLength, LPosition, Format('case %d: the hex lines', [LKind]));
     LExpected := Fill(LKind, LSize);
     LActual := LLzh.Decompress(LCompressed, 0, LCompressedLength, LSize);
-    Assert.AreEqual(LSize, Length(LActual));
+    Assert.AreEqual<Integer>(LSize, Length(LActual));
     for LByte := 0 to LSize - 1 do
       if LActual[LByte] <> LExpected[LByte] then
         Assert.Fail(Format('case %d: the byte %d is %d, the buffer has %d', [LKind, LByte, LActual[LByte],
@@ -209,7 +209,7 @@ var
 begin
   LLzh := TKeenLzh.Create;
   try
-    Assert.AreEqual(0, Length(LLzh.Decompress(TBytes.Create(1, 2, 3), 0, 3, 0)));
+    Assert.AreEqual<Integer>(0, Length(LLzh.Decompress(TBytes.Create(1, 2, 3), 0, 3, 0)));
   finally
     LLzh.Free;
   end;
@@ -225,9 +225,9 @@ begin
   LLzh := TKeenLzh.Create;
   try
     LBytes := LLzh.Decompress(TBytes.Create($FF), 0, 1, 50);
-    Assert.AreEqual(50, Length(LBytes));
+    Assert.AreEqual<Integer>(50, Length(LBytes));
     LBytes := LLzh.Decompress(nil, 0, 0, 10);
-    Assert.AreEqual(10, Length(LBytes));
+    Assert.AreEqual<Integer>(10, Length(LBytes));
   finally
     LLzh.Free;
   end;
@@ -416,7 +416,7 @@ begin
   LLibrary := TKeenShapeLibrary.Create(MakeLibrary(['FIRST.LBM', 'SIXTEENLETTERS.X'], [TBytes.Create(1), TBytes.Create(2)]));
   try
     LNames := LLibrary.FileNames;
-    Assert.AreEqual(2, Length(LNames));
+    Assert.AreEqual<Integer>(2, Length(LNames));
     Assert.AreEqual(AnsiString('FIRST.LBM'), LNames[0]);
     Assert.AreEqual(AnsiString('SIXTEENLETTERS.X'), LNames[1], 'a name of 16 letters has no 0 after it');
     Assert.IsTrue(LLibrary.HasFile('first.lbm'), 'the names are compared without case');
@@ -668,7 +668,7 @@ begin
   end;
   // the expanded file is an IFF: its length is the one that FORM says, plus the 8 bytes of FORM itself
   Assert.AreEqual(Ord('F'), Integer(LIff[0]));
-  Assert.AreEqual(Length(LIff), 8 + ((Integer(LIff[4]) shl 24) or (Integer(LIff[5]) shl 16) or (Integer(LIff[6]) shl 8) or
+  Assert.AreEqual<Integer>(Length(LIff), 8 + ((Integer(LIff[4]) shl 24) or (Integer(LIff[5]) shl 16) or (Integer(LIff[6]) shl 8) or
     Integer(LIff[7])));
   LShape := TKeenGameFactory.LoadTitle(TFile.ReadAllBytes(LPath));
   Assert.AreEqual(320, Integer(LShape.Width));

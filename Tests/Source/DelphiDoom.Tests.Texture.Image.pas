@@ -138,7 +138,7 @@ begin
   FImage.SetHeight(2);
   FImage.Pixels[0] := 9;
   FImage.SetBytesPerPixel(4);
-  Assert.AreEqual(16, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
+  Assert.AreEqual<Integer>(16, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
   Assert.AreEqual(Byte(0), FImage.Pixels[0], 'dovrebbe dare un buffer azzerato');
 end;
 
@@ -161,7 +161,7 @@ begin
   FImage.Pixels[2] := 3;
   FImage.Pixels[3] := 4;
   FImage.SetWidth(4);
-  Assert.AreEqual(8, Length(FImage.Pixels), 'dovrebbe avere 4x2 pixel');
+  Assert.AreEqual<Integer>(8, Length(FImage.Pixels), 'dovrebbe avere 4x2 pixel');
   Assert.AreEqual(Byte(2), FImage.Pixels[1], 'dovrebbe tenere la prima riga');
   Assert.AreEqual(Byte(0), FImage.Pixels[2], 'dovrebbe azzerare i pixel nuovi');
   Assert.AreEqual(Byte(3), FImage.Pixels[4], 'dovrebbe spostare la seconda riga');
@@ -174,7 +174,7 @@ begin
   FImage.SetHeight(2);
   FImage.Pixels[3] := 7;
   FImage.SetHeight(3);
-  Assert.AreEqual(6, Length(FImage.Pixels), 'dovrebbe avere 2x3 pixel');
+  Assert.AreEqual<Integer>(6, Length(FImage.Pixels), 'dovrebbe avere 2x3 pixel');
   Assert.AreEqual(Byte(7), FImage.Pixels[3], 'dovrebbe tenere i pixel di prima');
   Assert.AreEqual(Byte(0), FImage.Pixels[5], 'dovrebbe azzerare la riga nuova');
 end;
@@ -237,7 +237,7 @@ begin
   FImage.SetHeight(2);
   FImage.PutPixels(1, 1, 5, TBytes.Create(1, 2, 3, 4, 5), 0, TEXTURE_FORMAT_8BIT);
   FImage.PutPixels(0, -1, 2, TBytes.Create(9, 9), 0, TEXTURE_FORMAT_8BIT);
-  Assert.AreEqual(4, Length(FImage.Pixels), 'dovrebbe tenere la stessa dimensione');
+  Assert.AreEqual<Integer>(4, Length(FImage.Pixels), 'dovrebbe tenere la stessa dimensione');
   Assert.AreEqual(Byte(1), FImage.Pixels[3], 'dovrebbe scrivere il pixel dentro');
   Assert.AreEqual(Byte(0), FImage.Pixels[0], 'dovrebbe scartare i pixel sopra l''immagine');
 end;
@@ -357,7 +357,7 @@ begin
   FImage.Pixels[0] := 10;
   FImage.Pixels[1] := 20;
   FImage.ScaleTo(4, 2);
-  Assert.AreEqual(8, Length(FImage.Pixels), 'dovrebbe avere 4x2 pixel');
+  Assert.AreEqual<Integer>(8, Length(FImage.Pixels), 'dovrebbe avere 4x2 pixel');
   Assert.AreEqual(Byte(10), FImage.Pixels[1], 'dovrebbe ripetere il primo pixel');
   Assert.AreEqual(Byte(20), FImage.Pixels[2], 'dovrebbe passare al secondo');
   Assert.AreEqual(Byte(20), FImage.Pixels[7], 'dovrebbe ripetere la riga');
@@ -471,7 +471,7 @@ begin
   FillPalettedImage;
   FImage.Clear;
   Assert.AreEqual(0, FImage.Width, 'dovrebbe azzerare la larghezza');
-  Assert.AreEqual(0, Length(FImage.Pixels), 'dovrebbe liberare i pixel');
+  Assert.AreEqual<Integer>(0, Length(FImage.Pixels), 'dovrebbe liberare i pixel');
   Assert.IsFalse(FImage.HasPalette, 'dovrebbe liberare la palette');
   Assert.AreEqual(1, FImage.BytesPerPixel, 'dovrebbe tenere il formato, come prima');
 end;

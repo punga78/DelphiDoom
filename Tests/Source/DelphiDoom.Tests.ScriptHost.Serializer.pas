@@ -187,7 +187,7 @@ var
 begin
   LInterpreter := TTestInterpreter.Create(SCRIPT_ALL_TYPES, True);
   try
-    Assert.AreEqual(Length(Saved(LInterpreter)), SerializerOf(LInterpreter).SaveSize);
+    Assert.AreEqual<Integer>(Length(Saved(LInterpreter)), SerializerOf(LInterpreter).SaveSize);
   finally
     LInterpreter.Free;
   end;

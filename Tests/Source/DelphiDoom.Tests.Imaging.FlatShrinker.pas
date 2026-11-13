@@ -79,7 +79,7 @@ var
 begin
   LFlat := TImagingSamples.RandomBytes(4, 8192);
   Assert.IsTrue(FShrinker.Shrink(LFlat, LResult), 'dovrebbe riconoscere il flat 64x128');
-  Assert.AreEqual(4096, Length(LResult), 'dovrebbe dare 4096 pixel');
+  Assert.AreEqual<Integer>(4096, Length(LResult), 'dovrebbe dare 4096 pixel');
   Assert.AreEqual(Integer(LFlat[4095]), Integer(LResult[4095]), 'dovrebbe tenere i primi 4096 pixel');
 end;
 
@@ -101,7 +101,7 @@ begin
   // il vecchio codice scriveva con passo 128 e usciva dal buffer di 4096 byte
   LFlat := TImagingSamples.RandomBytes(6, 65536);
   Assert.IsTrue(FShrinker.Shrink(LFlat, LResult), 'dovrebbe riconoscere il flat 256x256');
-  Assert.AreEqual(4096, Length(LResult), 'dovrebbe dare 4096 pixel');
+  Assert.AreEqual<Integer>(4096, Length(LResult), 'dovrebbe dare 4096 pixel');
   Assert.AreEqual(Integer(LFlat[4 * 256 + 4]), Integer(LResult[64 + 1]), 'dovrebbe mettere la riga 1 subito dopo la riga 0');
   Assert.AreEqual(Integer(LFlat[63 * 4 * 256 + 63 * 4]), Integer(LResult[4095]), 'dovrebbe riempire fino all''ultimo pixel');
 end;
@@ -111,7 +111,7 @@ var
   LResult: TBytes;
 begin
   Assert.IsFalse(FShrinker.Shrink(TImagingSamples.RandomBytes(7, 5000), LResult), 'dovrebbe rifiutare una lunghezza che non e'' di un flat');
-  Assert.AreEqual(0, Length(LResult), 'non dovrebbe dare pixel');
+  Assert.AreEqual<Integer>(0, Length(LResult), 'non dovrebbe dare pixel');
 end;
 
 procedure TTestImagingFlatShrinker.TestShrinkOfAnEmptyLumpFails;

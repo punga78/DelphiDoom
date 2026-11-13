@@ -696,7 +696,7 @@ begin
   LOptions := TXcomOptions.Create;
   try
     LStore.Load(LOptions);
-    Assert.AreEqual(1, Length(LOptions.Mods));
+    Assert.AreEqual<Integer>(1, Length(LOptions.Mods));
     LOptions.Mods[0].Active := False;
     LStore.Save(LOptions);
     Assert.IsTrue(Pos('  - active: false'#10'    id: xcom2'#10, FFiles.Text(USER_FILE)) > 0, FFiles.Text(USER_FILE));

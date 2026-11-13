@@ -117,10 +117,10 @@ var
   LResult: TSpeedPalette;
 begin
   LResult := FBuilder.Build(SixBitPalette);
-  Assert.AreEqual(14 * 768, Length(LResult.PlayPal));
-  Assert.AreEqual(34 * 256, Length(LResult.ColorMap));
-  Assert.AreEqual(256, Length(LResult.Colors));
-  Assert.AreEqual(768, Length(LResult.Source));
+  Assert.AreEqual<Integer>(14 * 768, Length(LResult.PlayPal));
+  Assert.AreEqual<Integer>(34 * 256, Length(LResult.ColorMap));
+  Assert.AreEqual<Integer>(256, Length(LResult.Colors));
+  Assert.AreEqual<Integer>(768, Length(LResult.Source));
 end;
 
 procedure TTestSpeedPaletteBuilder.DovrebbeCominciareLePalettePerLaPalettaDiBase;

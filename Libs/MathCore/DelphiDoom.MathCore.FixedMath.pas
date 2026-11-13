@@ -376,8 +376,30 @@ begin
 end;
 
 class function TFixedMath.Mul64(const A, B: Int64): Int64;
+var
+  LProduct: Int64;
+  LQuotient: Int64;
+  LRemainder: Int64;
 begin
-  Result := Round(A / FIXED_ONE * B);
+  if (Abs(A) < $80000000) and (Abs(B) < $80000000) then
+  begin
+    // The old code computed Round(a / 65536 * b) with the 64 bits of mantissa of the 32 bit FPU,
+    // which hold the product (at most 62 bits) exactly: the result is the exact product divided
+    // by 65536 and rounded to the nearest even. With Double (53 bits) it would be another number
+    LProduct := A * B;
+    LQuotient := LProduct div FIXED_ONE;
+    LRemainder := Abs(LProduct - LQuotient * FIXED_ONE);
+    if (LRemainder > FIXED_ONE div 2) or ((LRemainder = FIXED_ONE div 2) and Odd(LQuotient)) then
+    begin
+      if LProduct < 0 then
+        Dec(LQuotient)
+      else
+        Inc(LQuotient);
+    end;
+    Result := LQuotient;
+  end
+  else
+    Result := Round(A / FIXED_ONE * B);
 end;
 
 class function TFixedMath.FloatDivide(const A, B: Double): Double;

@@ -183,7 +183,7 @@ var
   LEntries: TArray<TMapInfoEntry>;
 begin
   LEntries := ParseDoom('map MAP01 { bossaction = ZombieMan, 11, 0 bossaction = clear bossaction = Cyberdemon, 52, 0 }');
-  Assert.AreEqual(1, Length(LEntries[0].BossActions));
+  Assert.AreEqual<Integer>(1, Length(LEntries[0].BossActions));
   Assert.AreEqual(2, LEntries[0].BossActions[0].ActorType);
   Assert.IsFalse(LEntries[0].BossActionsCleared);
 end;

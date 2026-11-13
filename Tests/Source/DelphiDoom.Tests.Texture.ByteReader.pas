@@ -100,10 +100,10 @@ var
   LBytes: TBytes;
 begin
   LBytes := FReader.ReadBytes(7);
-  Assert.AreEqual(7, Length(LBytes), 'dovrebbe dare tanti byte quanti richiesti');
+  Assert.AreEqual<Integer>(7, Length(LBytes), 'dovrebbe dare tanti byte quanti richiesti');
   Assert.AreEqual(Byte(5), LBytes[4], 'dovrebbe avere i byte del file');
   Assert.AreEqual(Byte(0), LBytes[6], 'dovrebbe avere zeri dopo');
-  Assert.AreEqual(0, Length(FReader.ReadBytes(-3)), 'dovrebbe dare un blocco vuoto per un numero negativo');
+  Assert.AreEqual<Integer>(0, Length(FReader.ReadBytes(-3)), 'dovrebbe dare un blocco vuoto per un numero negativo');
 end;
 
 procedure TTestTextureByteReader.DovrebbeRiportareLaPosizioneAnchePassandoLaFine;

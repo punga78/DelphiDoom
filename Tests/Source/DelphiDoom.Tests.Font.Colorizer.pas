@@ -202,7 +202,7 @@ begin
   LImage.Pixels[2] := $808080;
   LImage.Pixels[3] := $010101;
   LGray := TFontColorizer.Grayscale(LImage);
-  Assert.AreEqual(4, Length(LGray));
+  Assert.AreEqual<Integer>(4, Length(LGray));
   Assert.AreEqual(0, Integer(LGray[0]));
   Assert.AreEqual(255, Integer(LGray[1]));
   Assert.AreEqual(Integer(TFontColorizer.GrayLevel($80, $80, $80)), Integer(LGray[2]));

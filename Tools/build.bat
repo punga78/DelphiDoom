@@ -165,6 +165,10 @@ for %%Q in (%PLATS%) do (
   )
 
   if /i "%WHAT%"=="tests" (
+    rem I test cercano i dati con ..\..\Tests\Data a partire dalla cartella dell'exe: a 64 bit l'exe sta
+    rem in bin\Win64\Tests e quel percorso diventa bin\Tests\Data, quindi si copia Tests\Data li' (solo i
+    rem file mancanti o piu' vecchi; nessuna giunzione ne' link simbolico). bin e' ignorata da git.
+    if /i "%%Q"=="Win64" robocopy "Tests\Data" "bin\Tests\Data" /E /NJH /NJS /NP /NFL /NDL >nul
     for %%T in (!PBIN!\Tests\DelphiDoom.Tests*.exe) do (
       echo ===== esecuzione %%~nxT ^(%%Q^) =====
       "%%T" --exitbehavior:Continue | findstr /B /C:"Tests " /C:"  DelphiDoom" /C:"  Message"

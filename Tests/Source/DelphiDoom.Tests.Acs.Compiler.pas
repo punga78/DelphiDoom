@@ -341,7 +341,7 @@ var
   LObject: TBytes;
 begin
   LObject := CompileFile('empty');
-  Assert.AreEqual(32, Length(LObject));
+  Assert.AreEqual<Integer>(32, Length(LObject));
   Assert.AreEqual(Cardinal(12), LongAt(LObject, 4)); // the table is after the code
   Assert.AreEqual(Cardinal(1), LongAt(LObject, 8)); // terminate
   Assert.AreEqual(Cardinal(1), LongAt(LObject, 12)); // one script

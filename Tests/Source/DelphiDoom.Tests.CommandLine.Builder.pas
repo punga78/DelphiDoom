@@ -136,7 +136,7 @@ begin
   FBuilder.AddDefaultFile('-file second.wad');
   // the values of -file stop at the marker, which starts with '-'
   LValues := FBuilder.Build.ValuesAfter('-file');
-  Assert.AreEqual(1, Length(LValues));
+  Assert.AreEqual<Integer>(1, Length(LValues));
   Assert.AreEqual('FIRST.WAD', LValues[0]);
 end;
 

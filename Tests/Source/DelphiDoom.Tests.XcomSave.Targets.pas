@@ -215,7 +215,7 @@ begin
     LNode.Load(Load('position: [7, 8]' + #10 + 'links: [1, 2]'));
     // a position that is not three numbers keeps the old one
     Assert.AreEqual(2, LNode.Position.Y);
-    Assert.AreEqual(2, Length(LNode.Links));
+    Assert.AreEqual<Integer>(2, Length(LNode.Links));
   finally
     LNode.Free;
   end;

@@ -135,7 +135,7 @@ var
 begin
   // $FFFE is line 65534 and $8000 is 32768; only $FFFF is the end of a list
   LData := FReader.Read(MakeLump([0, 0, 1, 1, 5, 0, -2, -32768, 7, -1]));
-  Assert.AreEqual(10, Length(LData.Lump));
+  Assert.AreEqual<Integer>(10, Length(LData.Lump));
   Assert.AreEqual(5, LData.Lump[4]);
   Assert.AreEqual(65534, LData.Lump[6]);
   Assert.AreEqual(32768, LData.Lump[7]);

@@ -310,7 +310,7 @@ begin
   // More than the first buffer (the size of the source twice plus 4096)
   FFake.NeededSize := 10000;
   LMidi := FClient.ConvertToMidi(TXmiSamples.BuildXmi);
-  Assert.AreEqual(10000, Length(LMidi));
+  Assert.AreEqual<Integer>(10000, Length(LMidi));
   Assert.AreEqual($AB, Integer(LMidi[9999]));
   Assert.AreEqual(2, FFake.ConvertCalls);
 end;

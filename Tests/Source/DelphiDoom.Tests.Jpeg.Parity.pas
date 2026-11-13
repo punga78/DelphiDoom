@@ -114,7 +114,7 @@ begin
         LFailures.Add(LCase.Name + ': ' + LActual + ' instead of ' + LExpected);
       Inc(LChecked);
     end;
-    Assert.AreEqual(LGolden.Count, Length(LCases), 'Cases and golden entries');
+    Assert.AreEqual<Integer>(LGolden.Count, Length(LCases), 'Cases and golden entries');
     Assert.AreEqual(0, LFailures.Count, Format('%d of %d streams differ:'#13#10'%s',
       [LFailures.Count, Length(LCases), Copy(LFailures.Text, 1, 3000)]));
     Assert.IsTrue(LChecked > 500, 'Too few streams');

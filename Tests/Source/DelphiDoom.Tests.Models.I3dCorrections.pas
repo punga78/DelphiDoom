@@ -86,7 +86,7 @@ var
 begin
   LList := FReader.Parse('face 3 vertex 1 visible 0 x 10 y -20 z 30 tx 40 ty -50 color 7' + sLineBreak +
     'face 4 vertex 0 visible 1 x 1 y 2 z 3 tx 4 ty 5 color 6');
-  Assert.AreEqual(2, Length(LList));
+  Assert.AreEqual<Integer>(2, Length(LList));
   Assert.AreEqual(3, LList[0].Face);
   Assert.AreEqual(1, LList[0].Vertex);
   Assert.IsFalse(LList[0].Visible);
@@ -105,7 +105,7 @@ var
   LList: TArray<TI3dCorrection>;
 begin
   LList := FReader.Parse('these words are skipped 12 face 1 vertex 0 visible 1 x 0 y 0 z 0 tx 0 ty 0 color 0');
-  Assert.AreEqual(1, Length(LList));
+  Assert.AreEqual<Integer>(1, Length(LList));
   Assert.AreEqual(1, LList[0].Face);
 end;
 
@@ -115,7 +115,7 @@ var
 begin
   LList := FReader.Parse('// face 9 vertex 9' + sLineBreak +
     'FACE 2 Vertex 1 VISIBLE 1 X 5 y 6 Z 7 tx 8 TY 9 COLOR 10 // end of line' + sLineBreak);
-  Assert.AreEqual(1, Length(LList));
+  Assert.AreEqual<Integer>(1, Length(LList));
   Assert.AreEqual(2, LList[0].Face);
   Assert.AreEqual(10, Integer(LList[0].Color));
 end;
@@ -153,8 +153,8 @@ end;
 
 procedure TTestModelsI3dCorrections.DovrebbeDareUnaListaVuotaPerUnTestoSenzaCorrezioni;
 begin
-  Assert.AreEqual(0, Length(FReader.Parse('')));
-  Assert.AreEqual(0, Length(FReader.Parse('nothing here')));
+  Assert.AreEqual<Integer>(0, Length(FReader.Parse('')));
+  Assert.AreEqual<Integer>(0, Length(FReader.Parse('nothing here')));
 end;
 
 procedure TTestModelsI3dCorrections.DovrebbeCorreggereUnVerticeDiUnaFaccia;

@@ -117,8 +117,8 @@ begin
   for i := 0 to 255 do
   begin
     pp^ := pl^ or $FF000000;
-    pp := PLongWord(integer(pp) + 4);
-    pl := PLongWord(integer(pl) + 3);
+    pp := PLongWord(NativeInt(pp) + 4);
+    pl := PLongWord(NativeInt(pl) + 3);
   end;
   PLongWordArray(@pal[0])[old_transparent_pal_index] := 0;
 end;
@@ -157,7 +157,7 @@ begin
   begin
     delta := 0;
     tallpatch := false;
-    column := Pcolumn_t(integer(patch) + p.columnofs[x]);
+    column := Pcolumn_t(NativeInt(patch) + p.columnofs[x]);
     while column.topdelta <> 255 do
     begin
       delta := delta + column.topdelta;
@@ -166,7 +166,7 @@ begin
       je := column.length;
       if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
       begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         delta := 0;
         continue;
       end;
@@ -174,7 +174,7 @@ begin
         js := -y;
       if je + y > gltexture.realtexheight then
         je := je + gltexture.realtexheight - (je + y);
-      source := POldByteArray(integer(column) + 3);
+      source := POldByteArray(NativeInt(column) + 3);
       if paletted then
       begin
         pos := (js + y) * gltexture.buffer_width + x + originx;
@@ -204,14 +204,14 @@ begin
       if not tallpatch then
       begin
         prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         if column.topdelta > prevdelta then
           delta := 0
         else
           tallpatch := true;
       end
       else
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
     end;
   end;
 end;
@@ -250,7 +250,7 @@ begin
   begin
     delta := 0;
     tallpatch := false;
-    column := Pcolumn_t(integer(patch) + p.columnofs[x]);
+    column := Pcolumn_t(NativeInt(patch) + p.columnofs[x]);
     while column.topdelta <> 255 do
     begin
       delta := delta + column.topdelta;
@@ -259,7 +259,7 @@ begin
       je := column.length;
       if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
       begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         delta := 0;
         continue;
       end;
@@ -267,7 +267,7 @@ begin
         js := -y;
       if je + y > gltexture.realtexheight then
         je := je + gltexture.realtexheight - (je + y);
-      source := POldByteArray(integer(column) + 3);
+      source := POldByteArray(NativeInt(column) + 3);
       if paletted then
       begin
         pos := (js + y) * gltexture.buffer_width + x + originx;
@@ -297,14 +297,14 @@ begin
       if not tallpatch then
       begin
         prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         if column.topdelta > prevdelta then
           delta := 0
         else
           tallpatch := true;
       end
       else
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
     end;
   end;
 end;
@@ -440,7 +440,7 @@ begin
   begin
     delta := 0;
     tallpatch := false;
-    column := Pcolumn_t(integer(patch) + p.columnofs[x]);
+    column := Pcolumn_t(NativeInt(patch) + p.columnofs[x]);
     while column.topdelta <> 255 do
     begin
       delta := delta + column.topdelta;
@@ -449,7 +449,7 @@ begin
       je := column.length;
       if (js + y >= gltexture.realtexheight) or (je + y <= 0) then
       begin
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         delta := 0;
         continue;
       end;
@@ -468,14 +468,14 @@ begin
       if not tallpatch then
       begin
         prevdelta := column.topdelta;
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
         if column.topdelta > prevdelta then
           delta := 0
         else
           tallpatch := true;
       end
       else
-        column := Pcolumn_t(integer(column) + column.length + 4);
+        column := Pcolumn_t(NativeInt(column) + column.length + 4);
     end;
   end;
 end;

@@ -168,7 +168,7 @@ begin
   try
     LOutline.AddRoot('root').AddChild('child').AddChild('leaf');
     LLines := LOutline.ToLines;
-    Assert.AreEqual(3, Length(LLines));
+    Assert.AreEqual<Integer>(3, Length(LLines));
     Assert.AreEqual('root', LLines[0]);
     Assert.AreEqual('  child', LLines[1]);
     Assert.AreEqual('    leaf', LLines[2]);

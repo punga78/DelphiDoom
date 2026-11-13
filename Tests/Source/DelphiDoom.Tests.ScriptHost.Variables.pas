@@ -136,7 +136,7 @@ function TTestScriptHostVariables.Saved(const AVariables: IScriptVariables): TBy
 begin
   SetLength(Result, AVariables.StructureSize);
   if Length(Result) > 0 then
-    Assert.AreEqual(Length(Result), AVariables.SaveToBuffer(@Result[0]));
+    Assert.AreEqual<Integer>(Length(Result), AVariables.SaveToBuffer(@Result[0]));
 end;
 
 procedure TTestScriptHostVariables.DovrebbeDareZeroEStringaVuotaPerUnaVariabileCheNonEsiste;
@@ -279,7 +279,7 @@ begin
     1, 0, 0, 0,
     1, 0, 0, 0, $46, 0,
     0, 0, $C0, $3F]);
-  Assert.AreEqual(Length(LExpected), FVariables.StructureSize);
+  Assert.AreEqual<Integer>(Length(LExpected), FVariables.StructureSize);
   Assert.AreEqual(Length(LExpected), Length(Saved(FVariables)));
   LActual := Saved(FVariables);
   Assert.IsTrue(CompareMem(@LExpected[0], @LActual[0], Length(LExpected)));
@@ -344,7 +344,7 @@ begin
   FVariables.FloatVal['neg'] := -1e10;
   LBytes := Saved(FVariables);
   LOther := NewVariables;
-  Assert.AreEqual(Length(LBytes), LOther.LoadFromBuffer(@LBytes[0]));
+  Assert.AreEqual<Integer>(Length(LBytes), LOther.LoadFromBuffer(@LBytes[0]));
   Assert.AreEqual('Hello', LOther.StrVal['title']);
   Assert.IsTrue(LOther.HasString('EMPTY'));
   Assert.AreEqual('', LOther.StrVal['empty']);
@@ -373,7 +373,7 @@ begin
   LOther.LoadFromBuffer(@LBytes[0]);
   Assert.AreEqual(LText, LOther.StrVal[#$00C0#$00C8#$00CC]);
   Assert.AreEqual(99, LOther.IntVal[LLongName]);
-  Assert.AreEqual(Length(LBytes), LOther.StructureSize);
+  Assert.AreEqual<Integer>(Length(LBytes), LOther.StructureSize);
 end;
 
 procedure TTestScriptHostVariables.DovrebbeSostituireLeVariabiliCheCeranoNelCaricamento;
@@ -460,7 +460,7 @@ begin
   LFile := FFiles.Files['world.dat'];
   LData := Saved(FVariables);
   Assert.AreEqual(Length(LData) + 4, Length(LFile));
-  Assert.AreEqual(Length(LData), Integer(PInteger(@LFile[0])^));
+  Assert.AreEqual<Integer>(Length(LData), Integer(PInteger(@LFile[0])^));
   Assert.IsTrue(CompareMem(@LData[0], @LFile[4], Length(LData)));
 end;
 

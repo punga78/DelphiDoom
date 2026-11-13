@@ -198,7 +198,7 @@ var
 begin
   LPatch := FExporter.ExportText(TFontSettings.Initial, GrayPalette, '',
     TFontExportOptions.Create(False, False, False, 0, 0));
-  Assert.AreEqual(8, Length(LPatch), 'solo l intestazione');
+  Assert.AreEqual<Integer>(8, Length(LPatch), 'solo l intestazione');
 end;
 
 procedure TTestFontExporter.DovrebbeTagliareLaPatchAllaLarghezzaDelloSchermoDiDoom;

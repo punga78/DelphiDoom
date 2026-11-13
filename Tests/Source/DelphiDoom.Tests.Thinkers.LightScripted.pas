@@ -271,6 +271,8 @@ begin
     LNewSector := FWorld.AddWithNeighbors(ALevel, [70, NO_NEIGHBOR, 150]);
     LOldRandom := CreateTestRandom(LSeed * 47);
     LNewRandom := CreateTestRandom(LSeed * 47);
+    // the old code leaves some fields as they are: a stack record is not zeroed in 64 bit
+    FillChar(LOld, SizeOf(LOld), 0);
     LOldResult := OldSpawnScripted(LOld, LOldSector, Ord(AKind), AArg1, AArg2, AArg3, AArg4, LOldRandom, LThink);
     LOutcome := TLightScripted.Spawn(AKind, LNewSector, Arguments(AArg1, AArg2, AArg3, AArg4), LNewRandom,
       LState);

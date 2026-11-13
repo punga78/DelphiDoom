@@ -216,7 +216,7 @@ procedure TTestTrackerS3mLoader.TestOrdini;
 begin
   FModule := TTrackerS3mLoader.Load(BuildS3m);
 
-  Assert.AreEqual(2, Length(FModule.Orders));
+  Assert.AreEqual<Integer>(2, Length(FModule.Orders));
   Assert.AreEqual(0, Integer(FModule.Orders[0]));
   Assert.AreEqual(255, Integer(FModule.Orders[1]));
 end;
@@ -403,7 +403,7 @@ begin
 
   FModule := TTrackerS3mLoader.Load(LBytes);
 
-  Assert.AreEqual(2, Length(FModule.Samples[0].Data));
+  Assert.AreEqual<Integer>(2, Length(FModule.Samples[0].Data));
   Assert.AreEqual(0, Integer(FModule.Samples[0].Data[0]));
   Assert.AreEqual($40FF - 32768, Integer(FModule.Samples[0].Data[1]));
 end;
@@ -434,7 +434,7 @@ begin
 
   FModule := TTrackerS3mLoader.Load(LBytes);
 
-  Assert.AreEqual(4, Length(FModule.Samples[0].Data));
+  Assert.AreEqual<Integer>(4, Length(FModule.Samples[0].Data));
 end;
 
 procedure TTestTrackerS3mLoader.DovrebbeFermareLaRipetizioneAllaFineDelCampione;

@@ -604,8 +604,8 @@ begin
     // the first column looks to the left, the last to the right
     Assert.IsTrue(LTables.PixelAngle[0] > 0);
     Assert.IsTrue(LTables.PixelAngle[639] < 0);
-    Assert.AreEqual(641, Length(LTables.XSlope));
-    Assert.AreEqual(400 + 240, Length(LTables.YSlope));
+    Assert.AreEqual<Integer>(641, Length(LTables.XSlope));
+    Assert.AreEqual<Integer>(400 + 240, Length(LTables.YSlope));
   finally
     LTables.Free;
   end;

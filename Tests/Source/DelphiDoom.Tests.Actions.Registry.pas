@@ -96,7 +96,7 @@ procedure TTestActionsRegistry.DovrebbeEssereVuotoAllInizio;
 begin
   Assert.AreEqual(0, FRegistry.Count);
   Assert.AreEqual(-1, FRegistry.IndexOfName('A_Look'));
-  Assert.AreEqual(0, Length(FRegistry.Names));
+  Assert.AreEqual<Integer>(0, Length(FRegistry.Names));
 end;
 
 procedure TTestActionsRegistry.DovrebbeDareGliIndiciInOrdineDiRegistrazione;
@@ -210,7 +210,7 @@ var
 begin
   FRegistry.Register('A_Weapon', @GHandlerA, [3, -1, 65536], 'A_Weapon(a, b, c: integer);');
   LEntry := FRegistry.Entry(0);
-  Assert.AreEqual(3, Length(LEntry.DefaultArguments));
+  Assert.AreEqual<Integer>(3, Length(LEntry.DefaultArguments));
   Assert.AreEqual(3, LEntry.DefaultArguments[0]);
   Assert.AreEqual(-1, LEntry.DefaultArguments[1]);
   Assert.AreEqual(65536, LEntry.DefaultArguments[2]);
@@ -282,7 +282,7 @@ begin
   FRegistry.Register('A_Look', @GHandlerA, [], '');
   FRegistry.Register('A_Chase', @GHandlerB, [], '');
   LNames := FRegistry.Names;
-  Assert.AreEqual(3, Length(LNames));
+  Assert.AreEqual<Integer>(3, Length(LNames));
   Assert.AreEqual('NULL', LNames[0]);
   Assert.AreEqual('LOOK', LNames[1]);
   Assert.AreEqual('CHASE', LNames[2]);
@@ -297,7 +297,7 @@ begin
   FRegistry.Register('A_Look', @GHandlerA, [], '');
   FRegistry.Register('A_Fall', @GHandlerC, [], '');
   LNames := FRegistry.SortedNames;
-  Assert.AreEqual(3, Length(LNames));
+  Assert.AreEqual<Integer>(3, Length(LNames));
   Assert.AreEqual('CHASE', LNames[0]);
   Assert.AreEqual('FALL', LNames[1]);
   Assert.AreEqual('LOOK', LNames[2]);

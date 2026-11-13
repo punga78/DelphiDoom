@@ -99,7 +99,7 @@ procedure TTestParityFrameHashWriter.DovrebbeScrivereUnaRigaConTicETreImpronte;
 begin
   FWriter.WriteFrame(12, FLayout, @FPixels[0], 1, 0);
   Assert.AreEqual(1, FLog.Lines.Count);
-  Assert.AreEqual(5, Length(Parts(0)));
+  Assert.AreEqual<Integer>(5, Length(Parts(0)));
   Assert.AreEqual('F', Parts(0)[0]);
   Assert.AreEqual('12', Parts(0)[1]);
   Assert.AreEqual(16, Length(Parts(0)[2]));

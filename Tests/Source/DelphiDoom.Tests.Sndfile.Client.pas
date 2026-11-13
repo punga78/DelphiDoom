@@ -186,7 +186,7 @@ begin
 
   Assert.AreEqual(1, LInfo.Channels);
   Assert.AreEqual(11025, LInfo.SampleRate);
-  Assert.AreEqual(5, Length(LSamples));
+  Assert.AreEqual<Integer>(5, Length(LSamples));
   Assert.AreEqual(0, Integer(LSamples[0]));
   Assert.AreEqual(100, Integer(LSamples[1]));
   Assert.AreEqual(-100, Integer(LSamples[2]));
@@ -205,7 +205,7 @@ begin
     False, LInfo);
 
   Assert.AreEqual(2, LInfo.Channels);
-  Assert.AreEqual(6, Length(LSamples));
+  Assert.AreEqual<Integer>(6, Length(LSamples));
   for LIndex := 0 to 2 do
   begin
     Assert.AreEqual((LIndex + 1) * 10, Integer(LSamples[LIndex * 2]));
@@ -222,7 +222,7 @@ begin
   LSamples := FClient.Decode16(TSndfileTestWav.MakeSawtooth(AFrames, 11025),
     False, LInfo);
 
-  Assert.AreEqual(AFrames, Length(LSamples));
+  Assert.AreEqual<Integer>(AFrames, Length(LSamples));
   for LIndex := 0 to AFrames - 1 do
     if LSamples[LIndex] <> TSndfileTestWav.SawtoothAt(LIndex) then
       Assert.Fail(Format('Sample %d: expected %d, got %d',
@@ -238,7 +238,7 @@ begin
   LSamples := FClient.Decode16(
     TSndfileTestWav.MakePcm16(1, 11025, [1000, -2000, 500, 0]), True, LInfo);
 
-  Assert.AreEqual(4, Length(LSamples));
+  Assert.AreEqual<Integer>(4, Length(LSamples));
   Assert.IsTrue(Abs(LSamples[0] - 16384) <= 1);
   Assert.IsTrue(Abs(LSamples[1] + 32768) <= 1);
   Assert.IsTrue(Abs(LSamples[2] - 8192) <= 1);
@@ -254,7 +254,7 @@ begin
   LSamples := FClient.Decode16(
     TSndfileTestWav.MakePcm16(1, 11025, [0, 0, 0, 0, 0]), True, LInfo);
 
-  Assert.AreEqual(5, Length(LSamples));
+  Assert.AreEqual<Integer>(5, Length(LSamples));
   for LIndex := 0 to High(LSamples) do
     Assert.AreEqual(0, Integer(LSamples[LIndex]));
 end;
@@ -288,7 +288,7 @@ end;
 procedure TTestSndfileClient.DovrebbeTenereSoloIFrameLettiSeIlSuonoEPiuCorto;
 begin
   // 100 frames promised, 60 given: the samples are those of the 60
-  Assert.AreEqual(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, False)));
+  Assert.AreEqual<Integer>(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, False)));
 end;
 
 procedure TTestSndfileClient.DovrebbeFermarsiAiFrameDichiaratiNormalizzando;
@@ -297,14 +297,14 @@ var
 begin
   // More frames than promised: the normalized samples stop at the promised ones
   LSamples := DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_FLOAT), 150, False);
-  Assert.AreEqual(2 * 100, Length(LSamples));
+  Assert.AreEqual<Integer>(2 * 100, Length(LSamples));
   // The peak of 0.5 becomes the full scale, cut to 32767
   Assert.AreEqual(32767, Integer(LSamples[High(LSamples)]));
 end;
 
 procedure TTestSndfileClient.DovrebbeTenereSoloIFrameLettiNormalizzando;
 begin
-  Assert.AreEqual(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, True)));
+  Assert.AreEqual<Integer>(2 * 60, Length(DecodeFake(FakeInfo(100, 2, SNDFILE_FORMAT_WAV or SNDFILE_FORMAT_PCM_16), 60, True)));
 end;
 
 initialization  TDUnitX.RegisterTestFixture(TTestSndfileClient);

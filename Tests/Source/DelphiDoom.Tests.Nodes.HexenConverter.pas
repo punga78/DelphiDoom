@@ -56,7 +56,7 @@ begin
   SetLength(LBytes, SizeOf(LVanilla));
   Move(LVanilla, LBytes[0], SizeOf(LVanilla));
   LBytes := TNodesHexenConverter.ConvertThings(LBytes);
-  Assert.AreEqual(2 * 20, Length(LBytes));
+  Assert.AreEqual<Integer>(2 * 20, Length(LBytes));
   Move(LBytes[0], LThings, SizeOf(LThings));
   Assert.AreEqual(SmallInt(0), LThings[0].Tid);
   Assert.AreEqual(SmallInt(-100), LThings[0].X);
@@ -101,7 +101,7 @@ begin
   SetLength(LBytes, SizeOf(LVanilla));
   Move(LVanilla, LBytes[0], SizeOf(LVanilla));
   LBytes := TNodesHexenConverter.ConvertLinedefs(LBytes);
-  Assert.AreEqual(16, Length(LBytes));
+  Assert.AreEqual<Integer>(16, Length(LBytes));
   Move(LBytes[0], LLine, SizeOf(LLine));
   Assert.AreEqual(SmallInt(10), LLine.Vertex1);
   Assert.AreEqual(SmallInt(11), LLine.Vertex2);
@@ -151,15 +151,15 @@ end;
 
 procedure TTestNodesHexenConverter.TestUnRecordParzialeDovrebbeEssereScartato;
 begin
-  Assert.AreEqual(20, Length(TNodesHexenConverter.ConvertThings(TBytes.Create(1, 2, 3, 4, 5, 6, 7, 8,
+  Assert.AreEqual<Integer>(20, Length(TNodesHexenConverter.ConvertThings(TBytes.Create(1, 2, 3, 4, 5, 6, 7, 8,
     9, 10, 11, 12))));
-  Assert.AreEqual(0, Length(TNodesHexenConverter.ConvertLinedefs(TBytes.Create(1, 2, 3))));
+  Assert.AreEqual<Integer>(0, Length(TNodesHexenConverter.ConvertLinedefs(TBytes.Create(1, 2, 3))));
 end;
 
 procedure TTestNodesHexenConverter.TestUnLumpVuotoDovrebbeDareUnLumpVuoto;
 begin
-  Assert.AreEqual(0, Length(TNodesHexenConverter.ConvertThings(nil)));
-  Assert.AreEqual(0, Length(TNodesHexenConverter.ConvertLinedefs(nil)));
+  Assert.AreEqual<Integer>(0, Length(TNodesHexenConverter.ConvertThings(nil)));
+  Assert.AreEqual<Integer>(0, Length(TNodesHexenConverter.ConvertLinedefs(nil)));
 end;
 
 initialization

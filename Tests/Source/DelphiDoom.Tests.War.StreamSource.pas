@@ -182,7 +182,7 @@ var
 begin
   LArchive := TWarFactory.OpenFile(FPath, nil);
   Assert.AreEqual(1, LArchive.EntryCount);
-  Assert.AreEqual(8, Length(LArchive.ReadRecord(0)));
+  Assert.AreEqual<Integer>(8, Length(LArchive.ReadRecord(0)));
 end;
 
 procedure TTestWarStreamSource.DovrebbeAprireUnArchivioDaUnFlussoEUsareIlCatalogo;

@@ -103,7 +103,7 @@ var
   LCopy: TBytes;
 begin
   LCopy := FInfo.Bytes;
-  Assert.AreEqual(KEEN_TINF_SIZE, Length(LCopy), 'i byte in coda non ci sono');
+  Assert.AreEqual<Integer>(KEEN_TINF_SIZE, Length(LCopy), 'i byte in coda non ci sono');
   LCopy[0] := LCopy[0] + 1;
   Assert.AreEqual(Integer(FBytes[0]), Integer(FInfo.Speed(0)));
 end;

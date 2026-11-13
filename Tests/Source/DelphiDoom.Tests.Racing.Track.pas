@@ -295,7 +295,7 @@ begin
   LCars[2].X := FWorld.Track.GetPath(0).X;
   LCars[2].Y := FWorld.Track.GetPath(0).Y;
   LItems := FWorld.Track.CalculatePositions(LCars);
-  Assert.AreEqual(3, Length(LItems));
+  Assert.AreEqual<Integer>(3, Length(LItems));
   Assert.AreEqual(1, LItems[0].Index);
   Assert.AreEqual(0, LItems[1].Index);
   Assert.AreEqual(2, LItems[2].Index);

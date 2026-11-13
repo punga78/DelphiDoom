@@ -77,7 +77,7 @@ begin
   Assert.AreEqual(300, Integer(LSprite.SourceOffset[1]));
   Assert.AreEqual(700, Integer(LSprite.SourceOffset[2]));
   Assert.AreEqual(1100, Integer(LSprite.SourceOffset[3]));
-  Assert.AreEqual(1500, Length(LSprite.Data));
+  Assert.AreEqual<Integer>(1500, Length(LSprite.Data));
   Assert.AreEqual(4, Integer(LSprite.Width[1]));
   Assert.AreEqual(80, Integer(LSprite.PlaneSize[3]));
 end;
@@ -92,7 +92,7 @@ begin
   Assert.AreEqual(Integer(LSprite.SourceOffset[2]), Integer(LSprite.SourceOffset[3]));
   Assert.AreEqual(2, Integer(LSprite.Width[1]));
   Assert.AreEqual(3, Integer(LSprite.Width[2]));
-  Assert.AreEqual(2 * 10 * 5 + 3 * 10 * 5, Length(LSprite.Data));
+  Assert.AreEqual<Integer>(2 * 10 * 5 + 3 * 10 * 5, Length(LSprite.Data));
 end;
 
 procedure TTestKeenSpriteCache.DovrebbeUsareLaCopiaPiattaPerTuttiConUnSoloSpostamento;
@@ -106,7 +106,7 @@ begin
     Assert.AreEqual(Integer(LSprite.SourceOffset[0]), Integer(LSprite.SourceOffset[LShift]));
     Assert.AreEqual(Integer(LSprite.Width[0]), Integer(LSprite.Width[LShift]));
   end;
-  Assert.AreEqual(2 * 8 * 5, Length(LSprite.Data));
+  Assert.AreEqual<Integer>(2 * 8 * 5, Length(LSprite.Data));
 end;
 
 procedure TTestKeenSpriteCache.DovrebbeDareLeStesseCopieAlleChiamateSuccessive;

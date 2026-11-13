@@ -49,7 +49,7 @@ var
   LCells: TArray<string>;
 begin
   LCells := TIdeCsv.ParseLine('a;b;c');
-  Assert.AreEqual(3, Length(LCells));
+  Assert.AreEqual<Integer>(3, Length(LCells));
   Assert.AreEqual('b', LCells[1]);
 end;
 
@@ -66,10 +66,10 @@ end;
 
 procedure TTestIdeCsv.DovrebbeTenereUnaCellaVuotaInMezzoMaNonInFondo;
 begin
-  Assert.AreEqual(3, Length(TIdeCsv.ParseLine('a;;c')));
+  Assert.AreEqual<Integer>(3, Length(TIdeCsv.ParseLine('a;;c')));
   // the old reader dropped the last cell when it was empty
-  Assert.AreEqual(2, Length(TIdeCsv.ParseLine('a;b;')));
-  Assert.AreEqual(2, Length(TIdeCsv.ParseLine('a;b;""')));
+  Assert.AreEqual<Integer>(2, Length(TIdeCsv.ParseLine('a;b;')));
+  Assert.AreEqual<Integer>(2, Length(TIdeCsv.ParseLine('a;b;""')));
 end;
 
 procedure TTestIdeCsv.DovrebbeDareLaColonnaPerNomeSenzaMaiuscole;
@@ -77,7 +77,7 @@ var
   LColumn: TArray<string>;
 begin
   LColumn := TIdeCsv.Column(TArray<string>.Create('"Name";"Id"', '"A";"1"', '"B";"2"'), 'id');
-  Assert.AreEqual(2, Length(LColumn));
+  Assert.AreEqual<Integer>(2, Length(LColumn));
   Assert.AreEqual('1', LColumn[0]);
   Assert.AreEqual('2', LColumn[1]);
 end;
@@ -87,18 +87,18 @@ var
   LColumn: TArray<string>;
 begin
   LColumn := TIdeCsv.Column(TArray<string>.Create('Name;Id', 'A'), 'Id');
-  Assert.AreEqual(1, Length(LColumn));
+  Assert.AreEqual<Integer>(1, Length(LColumn));
   Assert.AreEqual('', LColumn[0]);
 end;
 
 procedure TTestIdeCsv.DovrebbeDareListaVuotaPerUnaColonnaCheNonCe;
 begin
-  Assert.AreEqual(0, Length(TIdeCsv.Column(TArray<string>.Create('Name;Id', 'A;1'), 'Other')));
+  Assert.AreEqual<Integer>(0, Length(TIdeCsv.Column(TArray<string>.Create('Name;Id', 'A;1'), 'Other')));
 end;
 
 procedure TTestIdeCsv.DovrebbeDareListaVuotaSenzaRighe;
 begin
-  Assert.AreEqual(0, Length(TIdeCsv.Column(nil, 'Id')));
+  Assert.AreEqual<Integer>(0, Length(TIdeCsv.Column(nil, 'Id')));
 end;
 
 procedure TTestIdeCsv.DovrebbeScrivereIMultipliDiFracUnit;

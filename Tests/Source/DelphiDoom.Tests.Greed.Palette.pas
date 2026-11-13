@@ -50,7 +50,7 @@ end;
 
 procedure TTestGreedPalette.DovrebbeDare768Byte;
 begin
-  Assert.AreEqual(GREED_PALETTE_BYTES, Length(TGreedPalette.FromLump(TGreedLumps.Palette)));
+  Assert.AreEqual<Integer>(GREED_PALETTE_BYTES, Length(TGreedPalette.FromLump(TGreedLumps.Palette)));
 end;
 
 procedure TTestGreedPalette.DovrebbeTroncareAUnByteUnValoreOltreSessantatre;
@@ -71,7 +71,7 @@ var
 begin
   LLump := TGreedLumps.Palette;
   SetLength(LLump, 800);
-  Assert.AreEqual(GREED_PALETTE_BYTES, Length(TGreedPalette.FromLump(LLump)));
+  Assert.AreEqual<Integer>(GREED_PALETTE_BYTES, Length(TGreedPalette.FromLump(LLump)));
 end;
 
 procedure TTestGreedPalette.DovrebbeRifiutareUnLumpTroppoCorto;

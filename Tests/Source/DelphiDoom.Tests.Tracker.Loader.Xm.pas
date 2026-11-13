@@ -258,7 +258,7 @@ procedure TTestTrackerXmLoader.TestOrdini;
 begin
   FModule := TTrackerXmLoader.Load(BuildXm);
 
-  Assert.AreEqual(2, Length(FModule.Orders));
+  Assert.AreEqual<Integer>(2, Length(FModule.Orders));
   Assert.AreEqual(1, FModule.RestartPosition);
 end;
 
@@ -326,7 +326,7 @@ begin
   Assert.IsTrue(LEnvelope.Enabled);
   Assert.IsTrue(LEnvelope.Sustain);
   Assert.IsFalse(LEnvelope.Loop);
-  Assert.AreEqual(2, Length(LEnvelope.Points));
+  Assert.AreEqual<Integer>(2, Length(LEnvelope.Points));
   Assert.AreEqual(0, Integer(LEnvelope.Points[0].Tick));
   Assert.AreEqual(64, Integer(LEnvelope.Points[0].Value));
   Assert.AreEqual(10, Integer(LEnvelope.Points[1].Tick));
@@ -454,7 +454,7 @@ begin
 
   Assert.AreEqual(49, Integer(FModule.Patterns[0].Cells[0, 0].Note));
   Assert.AreEqual(1, FModule.Instruments.Count);
-  Assert.AreEqual(4, Length(FModule.Samples[0].Data));
+  Assert.AreEqual<Integer>(4, Length(FModule.Samples[0].Data));
 end;
 
 procedure TTestTrackerXmLoader.DovrebbeTogliereUnaNotaOltreLUltima;
@@ -494,7 +494,7 @@ begin
   LBytes[SAMPLE_HEADER_OFFSET + 17] := $AD;
   FModule := TTrackerXmLoader.Load(LBytes);
   Assert.AreEqual(1, FModule.Samples.Count);
-  Assert.AreEqual(0, Length(FModule.Samples[0].Data));
+  Assert.AreEqual<Integer>(0, Length(FModule.Samples[0].Data));
 end;
 
 procedure TTestTrackerXmLoader.DovrebbeDecodificareUnCampioneA16Bit;
@@ -514,7 +514,7 @@ begin
   FModule := TTrackerXmLoader.Load(LBytes);
 
   LSample := FModule.Samples[0];
-  Assert.AreEqual(2, Length(LSample.Data));
+  Assert.AreEqual<Integer>(2, Length(LSample.Data));
   Assert.AreEqual(10, Integer(LSample.Data[0]));
   Assert.AreEqual(20, Integer(LSample.Data[1]));
   Assert.AreEqual(1, LSample.LoopStart);

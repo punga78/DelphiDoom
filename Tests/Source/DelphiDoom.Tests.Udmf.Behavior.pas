@@ -303,16 +303,16 @@ begin
     'vertex { x = 1; } vertex { x = 2; } vertex { x = 3; } vertex { x = 4; } vertex { x = 5; }'#10 +
     'sector { } sector { }'#10;
   LMap := Convert(LGame, LText);
-  Assert.AreEqual(3 * LProfile.Things.BaseSize, Length(Lump(LMap, 'THINGS')));
-  Assert.AreEqual(3 * LProfile.Things.ExtraSize, Length(LMap.ExtraThings));
-  Assert.AreEqual(2 * LProfile.Lines.BaseSize, Length(Lump(LMap, 'LINEDEFS')));
-  Assert.AreEqual(2 * LProfile.Lines.ExtraSize, Length(LMap.ExtraLines));
-  Assert.AreEqual(4 * LProfile.Sides.BaseSize, Length(Lump(LMap, 'SIDEDEFS')));
-  Assert.AreEqual(4 * LProfile.Sides.ExtraSize, Length(LMap.ExtraSides));
-  Assert.AreEqual(5 * LProfile.Vertexes.BaseSize, Length(Lump(LMap, 'VERTEXES')));
-  Assert.AreEqual(5 * LProfile.Vertexes.ExtraSize, Length(LMap.ExtraVertexes));
-  Assert.AreEqual(2 * LProfile.Sectors.BaseSize, Length(Lump(LMap, 'SECTORS')));
-  Assert.AreEqual(2 * LProfile.Sectors.ExtraSize, Length(LMap.ExtraSectors));
+  Assert.AreEqual<Integer>(3 * LProfile.Things.BaseSize, Length(Lump(LMap, 'THINGS')));
+  Assert.AreEqual<Integer>(3 * LProfile.Things.ExtraSize, Length(LMap.ExtraThings));
+  Assert.AreEqual<Integer>(2 * LProfile.Lines.BaseSize, Length(Lump(LMap, 'LINEDEFS')));
+  Assert.AreEqual<Integer>(2 * LProfile.Lines.ExtraSize, Length(LMap.ExtraLines));
+  Assert.AreEqual<Integer>(4 * LProfile.Sides.BaseSize, Length(Lump(LMap, 'SIDEDEFS')));
+  Assert.AreEqual<Integer>(4 * LProfile.Sides.ExtraSize, Length(LMap.ExtraSides));
+  Assert.AreEqual<Integer>(5 * LProfile.Vertexes.BaseSize, Length(Lump(LMap, 'VERTEXES')));
+  Assert.AreEqual<Integer>(5 * LProfile.Vertexes.ExtraSize, Length(LMap.ExtraVertexes));
+  Assert.AreEqual<Integer>(2 * LProfile.Sectors.BaseSize, Length(Lump(LMap, 'SECTORS')));
+  Assert.AreEqual<Integer>(2 * LProfile.Sectors.ExtraSize, Length(LMap.ExtraSectors));
   Assert.AreEqual(3, LMap.ThingCount);
   Assert.AreEqual(2, LMap.LineCount);
   Assert.AreEqual(4, LMap.SideCount);
@@ -333,9 +333,9 @@ begin
     LNames := LNames + LLump.Name + ' ';
   Assert.AreEqual('MAP07 THINGS LINEDEFS SIDEDEFS VERTEXES SEGS SSECTORS NODES SECTORS REJECT ' +
     'BLOCKMAP BEHAVIOR SCRIPTS THINGS2 SECTORS2 VERTEX2 LINEDEF2 SIDEDEF2 NSPACE ', LNames);
-  Assert.AreEqual(3, Length(LLumps[11].Data));
-  Assert.AreEqual(2, Length(LLumps[12].Data));
-  Assert.AreEqual(0, Length(LLumps[5].Data));
+  Assert.AreEqual<Integer>(3, Length(LLumps[11].Data));
+  Assert.AreEqual<Integer>(2, Length(LLumps[12].Data));
+  Assert.AreEqual<Integer>(0, Length(LLumps[5].Data));
 end;
 
 procedure TTestUdmfBehavior.TestTheNameOfTheMapIsInCapitalLetters;
@@ -348,7 +348,7 @@ var
   LData: TBytes;
 begin
   LData := Lump(Convert(TUdmfGame.Doom, 'namespace = "doom";'), 'NSPACE');
-  Assert.AreEqual(4, Length(LData));
+  Assert.AreEqual<Integer>(4, Length(LData));
   Assert.AreEqual(Integer(Ord('D')), Integer(LData[0]));
   Assert.AreEqual(Integer(Ord('O')), Integer(LData[1]));
   Assert.AreEqual(Integer(Ord('O')), Integer(LData[2]));
@@ -406,7 +406,7 @@ var
 begin
   LMap := Convert(TUdmfGame.Doom, '');
   Assert.AreEqual(0, LMap.ThingCount + LMap.LineCount + LMap.SideCount + LMap.VertexCount + LMap.SectorCount);
-  Assert.AreEqual(0, Length(Lump(LMap, 'THINGS')));
+  Assert.AreEqual<Integer>(0, Length(Lump(LMap, 'THINGS')));
 end;
 
 procedure TTestUdmfBehavior.TestUnknownKeyIsLeftOutAndItsValueIsReadAsAKey;

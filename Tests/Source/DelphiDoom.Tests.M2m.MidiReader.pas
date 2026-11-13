@@ -109,8 +109,8 @@ begin
   Assert.AreEqual(0, FMidi.Mode);
   Assert.AreEqual(0, FMidi.SmpteFps);
   Assert.AreEqual(96, FMidi.Timing);
-  Assert.AreEqual(1, Length(FMidi.Tracks));
-  Assert.AreEqual(2, Length(FMidi.Tracks[0].Events));
+  Assert.AreEqual<Integer>(1, Length(FMidi.Tracks));
+  Assert.AreEqual<Integer>(2, Length(FMidi.Tracks[0].Events));
   Assert.IsTrue(FMidi.Tracks[0].Events[0].EventType = metNoteOn);
   Assert.AreEqual(2, FMidi.Tracks[0].Events[0].Channel);
   Assert.AreEqual(60, FMidi.Tracks[0].Events[0].Param1);
@@ -133,9 +133,9 @@ begin
     B.EndOfTrack(0)]))]));
 
   Assert.AreEqual(1, FMidi.Mode);
-  Assert.AreEqual(2, Length(FMidi.Tracks));
-  Assert.AreEqual(1, Length(FMidi.Tracks[0].Events));
-  Assert.AreEqual(2, Length(FMidi.Tracks[1].Events));
+  Assert.AreEqual<Integer>(2, Length(FMidi.Tracks));
+  Assert.AreEqual<Integer>(1, Length(FMidi.Tracks[0].Events));
+  Assert.AreEqual<Integer>(2, Length(FMidi.Tracks[1].Events));
 end;
 
 procedure TTestMidiReader.TestLeggeIParametriDegliEventi;
@@ -178,7 +178,7 @@ begin
     B.Running(4, [64, 80]), B.EndOfTrack(0)]))]));
 
   LEvents := FMidi.Tracks[0].Events;
-  Assert.AreEqual(4, Length(LEvents));
+  Assert.AreEqual<Integer>(4, Length(LEvents));
   Assert.IsTrue(LEvents[2].EventType = metNoteOn);
   Assert.AreEqual(7, LEvents[2].Channel);
   Assert.AreEqual(64, LEvents[2].Param1);
@@ -204,11 +204,11 @@ begin
   LEvents := FMidi.Tracks[0].Events;
   Assert.IsTrue(LEvents[0].EventType = metMeta);
   Assert.AreEqual($51, LEvents[0].Param1);
-  Assert.AreEqual(3, Length(LEvents[0].Data));
+  Assert.AreEqual<Integer>(3, Length(LEvents[0].Data));
   Assert.AreEqual(Integer($07), Integer(LEvents[0].Data[0]));
   Assert.IsTrue(LEvents[1].EventType = metSysEx);
-  Assert.AreEqual(3, Length(LEvents[1].Data));
-  Assert.AreEqual(0, Length(LEvents[2].Data));
+  Assert.AreEqual<Integer>(3, Length(LEvents[1].Data));
+  Assert.AreEqual<Integer>(0, Length(LEvents[2].Data));
 end;
 
 procedure TTestMidiReader.TestSenzaIntestazione;

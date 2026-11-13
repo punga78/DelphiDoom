@@ -379,7 +379,7 @@ begin
   FPanel.Run;
   Assert.AreEqual('save', FHooksLog.CommaText);
   Assert.IsTrue(FFilesIntf.TryRead('SAVEGM0.KDR', LBytes));
-  Assert.AreEqual(39 + 3, Length(LBytes));
+  Assert.AreEqual<Integer>(39 + 3, Length(LBytes));
   Assert.IsTrue(TKeenSaveSlots.TryDecodeHeader(LBytes, LSlot));
   Assert.AreEqual(AnsiString('abc'), LSlot.Name);
   Assert.IsTrue(FSlots.Slots[0].Present);

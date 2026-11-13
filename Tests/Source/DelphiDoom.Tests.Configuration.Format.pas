@@ -196,7 +196,7 @@ begin
   LWriter.AddGroup('Mouse');
   LWriter.AddValue('use_mouse', '1');
   LLines := LWriter.Lines;
-  Assert.AreEqual(7, Length(LLines));
+  Assert.AreEqual<Integer>(7, Length(LLines));
   Assert.AreEqual('[X ver 2.07]', LLines[0]);
   Assert.AreEqual('', LLines[1]);
   Assert.AreEqual('[Display]', LLines[2]);
@@ -238,6 +238,8 @@ begin
   LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..'));
   LChecked := 0;
   for LGame in ['Doom', 'Heretic', 'Hexen', 'Strife'] do
+    // the folder of a game that was never run on this machine (or of another platform) is not there
+    if TDirectory.Exists(TPath.Combine(LRoot, LGame)) then
     for LPath in TDirectory.GetFiles(TPath.Combine(LRoot, LGame), '*.ini') do
     begin
       LRead := TStringList.Create;

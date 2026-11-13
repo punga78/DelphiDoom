@@ -93,7 +93,7 @@ var
 begin
   LSource := TSndfileTestWav.MakeSawtooth(1000, 11025);
   LWav := TSoundConverter.ToWav(Pointer(LSource), Length(LSource), False);
-  Assert.AreEqual(WAV_HEADER_SIZE + 1000 * 2, Length(LWav));
+  Assert.AreEqual<Integer>(WAV_HEADER_SIZE + 1000 * 2, Length(LWav));
   // The samples are the ones of the source, in the same order
   Assert.AreEqual(Integer(TSndfileTestWav.SawtoothAt(10)),
     Integer(SmallInt(LWav[WAV_HEADER_SIZE + 20] or

@@ -207,7 +207,7 @@ var
 begin
   LSamples := Decode(TWaveMaker.Make(11025, 1, 8, TBytes.Create(128, 255)));
   // two samples at the half rate: four frames, each sample twice, each frame in both channels
-  Assert.AreEqual(8, Length(LSamples));
+  Assert.AreEqual<Integer>(8, Length(LSamples));
   Assert.AreEqual(0, Integer(LSamples[0]));
   Assert.AreEqual(0, Integer(LSamples[3]));
   Assert.AreEqual(127 * 256, Integer(LSamples[4]));
@@ -219,7 +219,7 @@ var
   LSamples: TArray<SmallInt>;
 begin
   LSamples := Decode(TWaveMaker.Make(22050, 2, 16, TBytes.Create($01, $00, $FF, $FF, $00, $80, $FF, $7F)));
-  Assert.AreEqual(4, Length(LSamples));
+  Assert.AreEqual<Integer>(4, Length(LSamples));
   Assert.AreEqual(1, Integer(LSamples[0]));
   Assert.AreEqual(-1, Integer(LSamples[1]));
   Assert.AreEqual(-32768, Integer(LSamples[2]));
@@ -231,7 +231,7 @@ var
   LSamples: TArray<SmallInt>;
 begin
   LSamples := Decode(TWaveMaker.Make(22050, 1, 16, TBytes.Create($10, $00, $F0, $FF)));
-  Assert.AreEqual(4, Length(LSamples));
+  Assert.AreEqual<Integer>(4, Length(LSamples));
   Assert.AreEqual(16, Integer(LSamples[0]));
   Assert.AreEqual(16, Integer(LSamples[1]));
   Assert.AreEqual(-16, Integer(LSamples[2]));
@@ -243,7 +243,7 @@ var
   LSamples: TArray<SmallInt>;
 begin
   Assert.IsFalse(FDecoder.TryDecode(TBytes.Create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 22050, LSamples));
-  Assert.AreEqual(0, Length(LSamples));
+  Assert.AreEqual<Integer>(0, Length(LSamples));
   // a RIFF file that is not WAVE
   Assert.IsFalse(FDecoder.TryDecode(TEncoding.ASCII.GetBytes('RIFF0000AVI LIST0000'), 22050, LSamples));
 end;
@@ -270,7 +270,7 @@ var
 begin
   // one frame of three channels: 128 (0), 255 (127 * 256), 0 (-128 * 256)
   LSamples := Decode(TWaveMaker.Make(22050, 3, 8, TBytes.Create(128, 255, 0)));
-  Assert.AreEqual(2, Length(LSamples));
+  Assert.AreEqual<Integer>(2, Length(LSamples));
   Assert.AreEqual(0, Integer(LSamples[0]));
   Assert.AreEqual(127 * 256, Integer(LSamples[1]));
 end;
@@ -285,7 +285,7 @@ begin
   LWave[40] := $E8;
   LWave[41] := $03;
   LSamples := Decode(LWave);
-  Assert.AreEqual(8, Length(LSamples));
+  Assert.AreEqual<Integer>(8, Length(LSamples));
 end;
 
 procedure TTestXcomSndfileDecoder.UnChunkSconosciutoPrimaDeiDatiSiSalta;
@@ -299,7 +299,7 @@ begin
   LExtra := TEncoding.ASCII.GetBytes('LIST') + TBytes.Create(3, 0, 0, 0, 1, 2, 3, 0);
   LWave := Copy(LWave, 0, 36) + LExtra + Copy(LWave, 36, Length(LWave) - 36);
   LSamples := Decode(LWave);
-  Assert.AreEqual(4, Length(LSamples));
+  Assert.AreEqual<Integer>(4, Length(LSamples));
   Assert.AreEqual(127 * 256, Integer(LSamples[0]));
 end;
 
@@ -345,7 +345,7 @@ var
 begin
   LSamples := [1, 2, 3, 4];
   LResult := TXcomResampler.Convert(LSamples, 22050, 22050);
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual(3, Integer(LResult[2]));
 end;
 
@@ -354,7 +354,7 @@ var
   LResult: TArray<SmallInt>;
 begin
   LResult := TXcomResampler.Convert([10, 11, 20, 21], 11025, 22050);
-  Assert.AreEqual(8, Length(LResult));
+  Assert.AreEqual<Integer>(8, Length(LResult));
   Assert.AreEqual(10, Integer(LResult[0]));
   Assert.AreEqual(10, Integer(LResult[2]));
   Assert.AreEqual(20, Integer(LResult[4]));
@@ -366,7 +366,7 @@ var
   LResult: TArray<SmallInt>;
 begin
   LResult := TXcomResampler.Convert([1, 1, 2, 2, 3, 3, 4, 4], 44100, 22050);
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual(1, Integer(LResult[0]));
   Assert.AreEqual(3, Integer(LResult[2]));
 end;
@@ -377,7 +377,7 @@ var
 begin
   // 10000 Hz to 20000 is a power of two; 10000 to 15000 is not: the sample in between is the mean
   LResult := TXcomResampler.Convert([0, 0, 300, 300, 600, 600], 10000, 15000);
-  Assert.AreEqual(8, Length(LResult));
+  Assert.AreEqual<Integer>(8, Length(LResult));
   Assert.AreEqual(0, Integer(LResult[0]));
   // frame 1 is at 2/3 of the way from sample 0 to sample 1: 200
   Assert.AreEqual(200, Integer(LResult[2]));
@@ -391,9 +391,9 @@ var
 begin
   SetLength(LSamples, 44100 * 2);
   LResult := TXcomResampler.Convert(LSamples, 44100, 16000);
-  Assert.AreEqual(16000, Length(LResult) div 2);
+  Assert.AreEqual<Integer>(16000, Length(LResult) div 2);
   LResult := TXcomResampler.Convert(LSamples, 44100, 48000);
-  Assert.AreEqual(48000, Length(LResult) div 2);
+  Assert.AreEqual<Integer>(48000, Length(LResult) div 2);
 end;
 
 procedure TTestXcomResampler.IlRiconoscimentoDelleDuplicazioniDiSdl;
@@ -408,7 +408,7 @@ end;
 
 procedure TTestXcomResampler.UnBufferVuotoRestaVuoto;
 begin
-  Assert.AreEqual(0, Length(TXcomResampler.Convert(nil, 11025, 22050)));
+  Assert.AreEqual<Integer>(0, Length(TXcomResampler.Convert(nil, 11025, 22050)));
 end;
 
 { TTestXcomMixer }
@@ -675,7 +675,7 @@ begin
   Assert.AreEqual('Adlib', LTrack.Format);
   Assert.IsFalse(LTrack.IsPlaying);
   LTrack.Start(-1);
-  Assert.AreEqual(5, Length(LPlayer.Loaded));
+  Assert.AreEqual<Integer>(5, Length(LPlayer.Loaded));
   Assert.AreEqual(0.76, Double(LPlayer.PlayVolume), 1e-6);
   Assert.IsTrue(LTrack.IsPlaying);
   LTrack.Stop;

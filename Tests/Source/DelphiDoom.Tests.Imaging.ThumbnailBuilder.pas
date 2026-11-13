@@ -178,7 +178,7 @@ var
 begin
   LBuilder := TImagingThumbnailBuilder.Create(TLowByteColorIndex.Create);
   LPixels := TImagingSamples.RandomBytes(1, 160 * 100 * 4);
-  Assert.AreEqual(80 * 50, Length(LBuilder.Build(Settings(160, 100, 0, 0, 160, 100, False),
+  Assert.AreEqual<Integer>(80 * 50, Length(LBuilder.Build(Settings(160, 100, 0, 0, 160, 100, False),
     Pointer(LPixels), TImagingSamples.Palette(1))));
 end;
 
@@ -252,9 +252,9 @@ begin
   LBuilder := TImagingThumbnailBuilder.Create(TLowByteColorIndex.Create);
   LPixels := TImagingSamples.RandomBytes(3, 20 * 10 * 4);
   // a window that is outside the screen on every side must not read outside the buffer
-  Assert.AreEqual(80 * 50, Length(LBuilder.Build(Settings(20, 10, -50, -50, 400, 300, False),
+  Assert.AreEqual<Integer>(80 * 50, Length(LBuilder.Build(Settings(20, 10, -50, -50, 400, 300, False),
     Pointer(LPixels), TImagingSamples.Palette(1))));
-  Assert.AreEqual(80 * 50, Length(LBuilder.Build(Settings(20, 10, 15, 8, 400, 300, True),
+  Assert.AreEqual<Integer>(80 * 50, Length(LBuilder.Build(Settings(20, 10, 15, 8, 400, 300, True),
     Pointer(LPixels), TImagingSamples.Palette(1))));
 end;
 

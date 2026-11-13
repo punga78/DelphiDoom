@@ -264,10 +264,10 @@ end;
 procedure TTestEndoomEditorPresenter.DovrebbeCreareUnaSchermataVuotaAllAvvio;
 begin
   FPresenter.Start('');
-  Assert.AreEqual(ENDOOM_LUMP_SIZE, Length(FPresenter.Screen.ToBytes));
+  Assert.AreEqual<Integer>(ENDOOM_LUMP_SIZE, Length(FPresenter.Screen.ToBytes));
   Assert.IsTrue(FPresenter.Screen.IsSameAs(TEndoomEditorFactory.CreateScreen));
   Assert.AreEqual(ENDOOM_EDITOR_TITLE, FView.Title);
-  Assert.AreEqual(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FView.Pixels));
+  Assert.AreEqual<Integer>(ENDOOM_WIDTH * ENDOOM_HEIGHT, Length(FView.Pixels));
   Assert.IsTrue(FView.PictureCount >= 1);
   Assert.IsFalse(FView.State.CanUndo);
   Assert.IsFalse(FView.State.CanRedo);
@@ -284,7 +284,7 @@ begin
   Assert.AreEqual(65, Integer(FPresenter.Screen.GetCharacter(0, 0)));
   Assert.AreEqual('C:\dati\fine.bin', FPresenter.FileName);
   Assert.AreEqual(ENDOOM_EDITOR_TITLE + ' - C:\dati\fine.bin', FView.Title);
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
   Assert.AreEqual('&1. C:\dati\fine.bin', FView.RecentCaptions[0]);
   Assert.AreEqual(0, FDialogs.Messages.Count);
 end;
@@ -326,7 +326,7 @@ begin
   Assert.AreEqual(7, FPresenter.Zoom);
   Assert.IsTrue(FPresenter.ShowGrid);
   Assert.AreEqual(Ord(eakSpecialCharacters), Ord(FPresenter.TextArtMethod));
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
   Assert.AreEqual(7, FView.Overlay.Zoom);
   Assert.IsTrue(FView.Overlay.ShowGrid);
 end;
@@ -889,7 +889,7 @@ begin
   FDialogs.OpenResult := True;
   FDialogs.OpenName := 'C:\b.bin';
   FPresenter.OpenFile;
-  Assert.AreEqual(2, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(2, Length(FView.RecentCaptions));
   Assert.AreEqual('&1. C:\b.bin', FView.RecentCaptions[0]);
   FPresenter.OpenRecent(1);
   Assert.AreEqual(1, Integer(FPresenter.Screen.GetCharacter(0, 0)));
@@ -915,7 +915,7 @@ begin
   Assert.IsTrue(FFileSystem.FileExists('C:\a.bin_bak'));
   Assert.AreEqual(1, FFileSystem.CopyCount);
   Assert.AreEqual(Integer($30), Integer(FPresenter.Screen.GetCell(5, 5).Attributes));
-  Assert.AreEqual(1, Length(FView.RecentCaptions));
+  Assert.AreEqual<Integer>(1, Length(FView.RecentCaptions));
 end;
 
 procedure TTestEndoomEditorPresenter.DovrebbeSalvareConNome;
@@ -934,7 +934,7 @@ begin
   Assert.IsFalse(FPresenter.Modified);
   Assert.AreEqual('C:\nuovo\fine.bin', FPresenter.FileName);
   Assert.IsTrue(FFileSystem.TryReadAllBytes('C:\nuovo\fine.bin', LBytes));
-  Assert.AreEqual(ENDOOM_LUMP_SIZE, Length(LBytes));
+  Assert.AreEqual<Integer>(ENDOOM_LUMP_SIZE, Length(LBytes));
   // no backup of a file that did not exist
   Assert.AreEqual(0, FFileSystem.CopyCount);
   // saved again with the name it has now
@@ -979,7 +979,7 @@ begin
   Assert.AreEqual('C:\fine.png', FExporter.FileName);
   Assert.AreEqual(640, FExporter.Width);
   Assert.AreEqual(400, FExporter.Height);
-  Assert.AreEqual(640 * 400, Length(FExporter.Pixels));
+  Assert.AreEqual<Integer>(640 * 400, Length(FExporter.Pixels));
   // every row of the screen twice
   for LRow := 0 to 399 do
     for LColumn := 0 to 639 do

@@ -1162,7 +1162,7 @@ var
   LGlyph: TXcomSurface;
 begin
   LColors := TXcomTerminalFont.Colors;
-  Assert.AreEqual(2, Length(LColors));
+  Assert.AreEqual<Integer>(2, Length(LColors));
   Assert.AreEqual(185, Integer(LColors[1].Red));
   Assert.AreEqual(0, Integer(LColors[0].Alpha));
   LFont := TXcomTerminalFont.Create;

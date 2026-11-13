@@ -72,7 +72,7 @@ var
 begin
   LRows := FWriter.MobjInfo(['# Things', '', 'Thing 1', 'Name = Player', 'Id # = 1', '', 'Thing 2', 'Name = Imp',
     'Id # = 3001', '# States']);
-  Assert.AreEqual(3, Length(LRows));
+  Assert.AreEqual<Integer>(3, Length(LRows));
   Assert.AreEqual('"id";"Name";"Id #"', LRows[0]);
   Assert.AreEqual('"0";"Player";"1"', LRows[1]);
   Assert.AreEqual('"1";"Imp";"3001"', LRows[2]);
@@ -92,7 +92,7 @@ var
 begin
   LRows := FWriter.MobjInfo(['# Things', '# a comment', 'Thing 1', '// another', 'Name = Player', '   ',
     '# States']);
-  Assert.AreEqual(2, Length(LRows));
+  Assert.AreEqual<Integer>(2, Length(LRows));
   Assert.AreEqual('"id";"Name"', LRows[0]);
 end;
 
@@ -102,7 +102,7 @@ var
 begin
   LRows := FWriter.States(['# States', '# S_FIRST', 'Frame 1', 'Sprite Number = 5', 'Duration = 4', '',
     'Frame 2', 'Sprite Number = 6', 'Duration = 8', '# Weapons']);
-  Assert.AreEqual(4, Length(LRows));
+  Assert.AreEqual<Integer>(4, Length(LRows));
   Assert.AreEqual('"Name";"id";"Sprite Number";"Duration"', LRows[0]);
   Assert.AreEqual('"S_NULL";"0";"0";"0";"0";"-1";"0";"NULL";"0";"0";"0";"0"', LRows[1]);
   Assert.AreEqual('"S_FIRST";"1";"5";"4"', LRows[2]);
@@ -132,7 +132,7 @@ var
 begin
   FStates.Sprites.AddRange(['NULL', 'TROO']);
   LRows := FWriter.Sprites;
-  Assert.AreEqual(3, Length(LRows));
+  Assert.AreEqual<Integer>(3, Length(LRows));
   Assert.AreEqual('"id";"Sprite"', LRows[0]);
   Assert.AreEqual('1;"NULL"', LRows[1]);
   Assert.AreEqual('2;"TROO"', LRows[2]);

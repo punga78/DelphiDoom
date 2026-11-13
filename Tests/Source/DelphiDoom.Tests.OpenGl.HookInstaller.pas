@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the OpenGL call recorder - table and installer         }
 {                                                                              }
@@ -116,7 +116,7 @@ end;
 procedure TTestOpenGlHookInstaller.DovrebbeElencareLeFunzioniMancanti;
 begin
   FInstaller.Install;
-  Assert.AreEqual(1, Length(FInstaller.Missing));
+  Assert.AreEqual<Integer>(1, Length(FInstaller.Missing));
   Assert.AreEqual('glC', FInstaller.Missing[0]);
 end;
 
@@ -181,7 +181,7 @@ begin
   LInstaller := TGlHookInstaller.Create(LEmpty);
   try
     Assert.AreEqual(0, LInstaller.Install);
-    Assert.AreEqual(0, Length(LInstaller.Missing));
+    Assert.AreEqual<Integer>(0, Length(LInstaller.Missing));
   finally
     LInstaller.Free;
   end;

@@ -178,15 +178,15 @@ procedure TTestGreedBloArchive.DovrebbeLeggereIByteDiUnLump;
 begin
   Assert.AreEqual(TGreedLumps.CrcHex(TGreedLumps.Palette),
     TGreedLumps.CrcHex(FArchive.ReadLump(TGreedTestArchive.LUMP_PALETTE)));
-  Assert.AreEqual(3, Length(FArchive.ReadLump(TGreedTestArchive.LUMP_FONT)));
+  Assert.AreEqual<Integer>(3, Length(FArchive.ReadLump(TGreedTestArchive.LUMP_FONT)));
   Assert.AreEqual(1, Integer(FArchive.ReadLump(TGreedTestArchive.LUMP_FONT)[0]));
   Assert.AreEqual(9, Integer(FArchive.ReadLump(TGreedTestArchive.LUMP_UNNAMED)[1]));
 end;
 
 procedure TTestGreedBloArchive.DovrebbeLeggereUnLumpVuoto;
 begin
-  Assert.AreEqual(0, Length(FArchive.ReadLump(TGreedTestArchive.LUMP_MAP)));
-  Assert.AreEqual(0, Length(FArchive.ReadLumpRaw(TGreedTestArchive.LUMP_MAP)));
+  Assert.AreEqual<Integer>(0, Length(FArchive.ReadLump(TGreedTestArchive.LUMP_MAP)));
+  Assert.AreEqual<Integer>(0, Length(FArchive.ReadLumpRaw(TGreedTestArchive.LUMP_MAP)));
   Assert.AreEqual(0, FArchive.GetLumpSize(TGreedTestArchive.LUMP_MAP));
 end;
 
@@ -217,7 +217,7 @@ begin
   end;
   // the game never reads it: the bytes are the ones of the file whatever it says
   Assert.AreEqual(5, Integer(LArchive.GetLumpInfo(0).Compress));
-  Assert.AreEqual(3, Length(LArchive.ReadLump(0)));
+  Assert.AreEqual<Integer>(3, Length(LArchive.ReadLump(0)));
 end;
 
 procedure TTestGreedBloArchive.DovrebbeApplicareLeCorrezioniSoloAReadLump;
@@ -233,9 +233,9 @@ begin
     LBlo.Free;
   end;
   // CA_CacheLump corrects, CA_ReadLump does not
-  Assert.AreEqual(1, Length(LArchive.ReadLump(0)));
+  Assert.AreEqual<Integer>(1, Length(LArchive.ReadLump(0)));
   Assert.AreEqual(77, Integer(LArchive.ReadLump(0)[0]));
-  Assert.AreEqual(2, Length(LArchive.ReadLumpRaw(0)));
+  Assert.AreEqual<Integer>(2, Length(LArchive.ReadLumpRaw(0)));
   Assert.AreEqual(2, LArchive.GetLumpSize(0));
 end;
 

@@ -80,7 +80,7 @@ var
   LNumLumps, LTable: Integer;
 begin
   LBytes := FBuilder.ToBytes;
-  Assert.AreEqual(12, Length(LBytes));
+  Assert.AreEqual<Integer>(12, Length(LBytes));
   Assert.AreEqual('PWAD', TEncoding.ANSI.GetString(LBytes, 0, 4));
   Move(LBytes[4], LNumLumps, 4);
   Move(LBytes[8], LTable, 4);
@@ -98,7 +98,7 @@ begin
   FBuilder.AddLump('ab', H.Bytes('xyz'));
   LBytes := FBuilder.ToBytes;
   // header 12, data 3 + 1 pad, directory 16
-  Assert.AreEqual(12 + 4 + 16, Length(LBytes));
+  Assert.AreEqual<Integer>(12 + 4 + 16, Length(LBytes));
   LExpected := TBytes.Create(
     Ord('I'), Ord('W'), Ord('A'), Ord('D'), 1, 0, 0, 0, 16, 0, 0, 0,
     Ord('x'), Ord('y'), Ord('z'), 0,

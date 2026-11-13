@@ -147,7 +147,7 @@ begin
   SkipIfMissing;
   // "tinf_s=... RLEWtag=ABCD off0=5475 off1=8454 hs0=36 hs1=37"
   Assert.AreEqual($ABCD, Integer(FData.Maps.RlewTag));
-  Assert.AreEqual(18, Length(FData.Maps.MapNumbers));
+  Assert.AreEqual<Integer>(18, Length(FData.Maps.MapNumbers));
   Assert.IsTrue(FData.Maps.HasMap(0));
   Assert.IsTrue(FData.Maps.HasMap(1));
   Assert.IsFalse(FData.Maps.HasMap(17), 'la mappa 17 non c''e'' nello shareware');
@@ -209,7 +209,7 @@ var
 begin
   SkipIfMissing;
   LTable := FData.Graphics.PictureTable;
-  Assert.AreEqual(KEEN_NUMPICS, Length(LTable));
+  Assert.AreEqual<Integer>(KEEN_NUMPICS, Length(LTable));
   SetLength(LBytes, Length(LTable) * 4);
   for LIndex := 0 to High(LTable) do
   begin
@@ -251,7 +251,7 @@ begin
   // gives a CRC of 2304 bytes that cannot be the same. The first 1280 (1200) bytes are the same: their CRC is in
   // KDGOLD_EXTRA.TXT, taken from the -raw dump of kdgold.exe
   LAll := FData.Graphics.Chunks.Read(KEEN_STARTTILE8);
-  Assert.AreEqual(2304, Length(LAll));
+  Assert.AreEqual<Integer>(2304, Length(LAll));
   Assert.AreEqual(GoldenCrc('tile8_first1280', LSize), Crc(Copy(LAll, 0, 1280)));
   Assert.AreEqual(1280, LSize);
   GoldenCrc('tile8_all', LSize);
@@ -260,7 +260,7 @@ begin
   for LIndex := 0 to KEEN_NUMTILE8 - 1 do
     Assert.IsTrue(CompareMem(@LAll[LIndex * 32], @FData.Graphics.Tile8(LIndex)[0], 32));
   LAll := FData.Graphics.Chunks.Read(KEEN_STARTTILE8M);
-  Assert.AreEqual(1440, Length(LAll));
+  Assert.AreEqual<Integer>(1440, Length(LAll));
   Assert.AreEqual(GoldenCrc('tile8m_first1200', LSize), Crc(Copy(LAll, 0, 1200)));
   Assert.AreEqual(1200, LSize);
   GoldenCrc('tile8m_all', LSize);
@@ -295,7 +295,7 @@ begin
       if (LChunk >= KEEN_STARTSPRITES) and (LChunk < KEEN_STARTTILE8) then
       begin
         Inc(LSprites);
-        Assert.AreEqual(Integer(FData.Graphics.SpriteTable[LChunk - KEEN_STARTSPRITES].Width) *
+        Assert.AreEqual<Integer>(Integer(FData.Graphics.SpriteTable[LChunk - KEEN_STARTSPRITES].Width) *
           FData.Graphics.SpriteTable[LChunk - KEEN_STARTSPRITES].Height * 5, Length(LBytes),
           'sprite ' + IntToStr(LChunk - KEEN_STARTSPRITES));
       end;
@@ -303,7 +303,7 @@ begin
         Assert.IsTrue(Length(LBytes) in [KEEN_TILE16_BYTES, KEEN_TILE16M_BYTES], 'tile ' + IntToStr(LChunk));
     end
     else
-      Assert.AreEqual(0, Length(LBytes));
+      Assert.AreEqual<Integer>(0, Length(LBytes));
   end;
   // 3016 chunks: 3 tables, the font, 65 + 2 pictures, 297 sprites, 2 groups of tiles, and the 16x16 tiles that are there
   Assert.IsTrue(LCount > 700, 'i chunk che ci sono: ' + IntToStr(LCount));
@@ -339,14 +339,14 @@ var
 begin
   SkipIfMissing;
   LTable := FData.Graphics.SpriteTable;
-  Assert.AreEqual(KEEN_NUMSPRITES, Length(LTable));
+  Assert.AreEqual<Integer>(KEEN_NUMSPRITES, Length(LTable));
   for LIndex := 0 to High(LTable) do
   begin
     Assert.IsTrue(LTable[LIndex].Width > 0, 'larghezza ' + IntToStr(LIndex));
     Assert.IsTrue(LTable[LIndex].Height > 0, 'altezza ' + IntToStr(LIndex));
     Assert.IsTrue(LTable[LIndex].Shifts in [1, 2, 4], 'shift ' + IntToStr(LIndex));
   end;
-  Assert.AreEqual(2, Length(FData.Graphics.MaskedPictureTable));
+  Assert.AreEqual<Integer>(2, Length(FData.Graphics.MaskedPictureTable));
 end;
 
 initialization

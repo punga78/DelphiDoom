@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the net library - UDP on the loopback                  }
 {                                                                              }
@@ -109,12 +109,12 @@ begin
   FFirstIntf.Send(1, Bytes([1, 2, 3, 4, 5]));
   Assert.IsTrue(Poll(FSecondIntf, LNode, LData), 'il secondo riceve');
   Assert.AreEqual(1, LNode);
-  Assert.AreEqual(5, Length(LData));
+  Assert.AreEqual<Integer>(5, Length(LData));
   Assert.AreEqual(Byte(3), LData[2]);
   FSecondIntf.Send(1, Bytes([9, 8]));
   Assert.IsTrue(Poll(FFirstIntf, LNode, LData), 'il primo riceve');
   Assert.AreEqual(1, LNode);
-  Assert.AreEqual(2, Length(LData));
+  Assert.AreEqual<Integer>(2, Length(LData));
   Assert.AreEqual(Byte(8), LData[1]);
 end;
 
@@ -153,7 +153,7 @@ begin
   Poll(FSecondIntf, LNode, LData);
   FFirstIntf.Send(1, Bytes([5, 6, 7]));
   Assert.IsTrue(Poll(FSecondIntf, LNode, LData));
-  Assert.AreEqual(3, Length(LData), 'il pacchetto dopo arriva');
+  Assert.AreEqual<Integer>(3, Length(LData), 'il pacchetto dopo arriva');
 end;
 
 procedure TTestNetWinsockTransport.TestLocalPortChosenByWindows;

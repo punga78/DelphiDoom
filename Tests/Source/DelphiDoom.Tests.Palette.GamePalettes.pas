@@ -230,7 +230,7 @@ begin
   for LPalette := Low(TGamePalette) to High(TGamePalette) do
   begin
     LFirst := TGamePalettes.Colors(LPalette);
-    Assert.AreEqual(768, Length(LFirst));
+    Assert.AreEqual<Integer>(768, Length(LFirst));
     LFirst[0] := LFirst[0] xor $FF;
     LSecond := TGamePalettes.Colors(LPalette);
     Assert.AreNotEqual(Integer(LFirst[0]), Integer(LSecond[0]), 'una copia: cambiarla non cambia la palette');
@@ -244,7 +244,7 @@ var
 begin
   LRgb := TGamePalettes.Colors(gpDoom);
   LColors := TGamePalettes.ToColors(LRgb);
-  Assert.AreEqual(256, Length(LColors));
+  Assert.AreEqual<Integer>(256, Length(LColors));
   Assert.AreEqual(Cardinal((Cardinal(LRgb[3]) shl 16) or (Cardinal(LRgb[4]) shl 8) or LRgb[5]), LColors[1]);
   Assert.AreEqual(Cardinal((Cardinal(LRgb[765]) shl 16) or (Cardinal(LRgb[766]) shl 8) or LRgb[767]), LColors[255]);
 end;

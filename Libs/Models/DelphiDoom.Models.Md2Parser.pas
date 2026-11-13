@@ -194,9 +194,11 @@ begin
       LVertexBytes[0] := ABytes[LByteIndex];
       LVertexBytes[1] := ABytes[LByteIndex + 1];
       LVertexBytes[2] := ABytes[LByteIndex + 2];
-      LPositions[LPoint].X := (LVertexBytes[0] * LFrameHead.Scale[0] + LFrameHead.Translate[0]) * APlacement.ScaleX + APlacement.OffsetX;
-      LPositions[LPoint].Y := (LVertexBytes[1] * LFrameHead.Scale[1] + LFrameHead.Translate[1]) * APlacement.ScaleY + APlacement.OffsetY;
-      LPositions[LPoint].Z := (LVertexBytes[2] * LFrameHead.Scale[2] + LFrameHead.Translate[2]) * APlacement.ScaleZ + APlacement.OffsetZ;
+      // Double: the 32 bit FPU keeps the intermediate values of this Single expression with more bits, and the 64 bit
+      // compiler rounds each one to Single (another last bit): with Double the same Single comes out on both
+      LPositions[LPoint].X := (Double(LVertexBytes[0]) * LFrameHead.Scale[0] + LFrameHead.Translate[0]) * APlacement.ScaleX + APlacement.OffsetX;
+      LPositions[LPoint].Y := (Double(LVertexBytes[1]) * LFrameHead.Scale[1] + LFrameHead.Translate[1]) * APlacement.ScaleY + APlacement.OffsetY;
+      LPositions[LPoint].Z := (Double(LVertexBytes[2]) * LFrameHead.Scale[2] + LFrameHead.Translate[2]) * APlacement.ScaleZ + APlacement.OffsetZ;
     end;
 
     // the vertexes of the triangles: the corner order is 2, 1, 0 and the axes are those of

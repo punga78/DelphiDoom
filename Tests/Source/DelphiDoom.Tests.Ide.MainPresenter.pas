@@ -303,7 +303,7 @@ begin
   FPresenter.Start('');
   FFiles.ProjectToSave := '';
   FPresenter.SaveAs;
-  Assert.AreEqual(0, Length(FFileSystem.FileNames));
+  Assert.AreEqual<Integer>(0, Length(FFileSystem.FileNames));
 end;
 
 procedure TTestIdeMainPresenter.DovrebbeSalvareConNomeEAggiornareIlTitolo;

@@ -189,6 +189,8 @@ var
   LFormatLength: Integer;
   LIndex: Integer;
   LCount: Integer;
+  LTag: Integer;
+  LExtra: Integer;
 begin
   LBuffer.Clear;
   LDataLength := ARandom.Below(300);
@@ -275,11 +277,20 @@ begin
         LCount := 1 + ARandom.Below(6);
         for LIndex := 1 to LCount do
           case ARandom.Below(5) of
-            0: AddFormat(LBuffer, ARandom, 10 + ARandom.Below(30), ARandom.Below(3));
+            0:
+              begin
+                // the order of the draws is spelled out (the one of the 32 bit compiler, that evaluates the arguments from
+                // the right): the order of evaluation is not defined and the 64 bit compiler uses another one
+                LTag := ARandom.Below(3);
+                LFormatLength := 10 + ARandom.Below(30);
+                AddFormat(LBuffer, ARandom, LFormatLength, LTag);
+              end;
             1:
               begin
                 LDataLength := ARandom.Below(100);
-                AddData(LBuffer, ARandom, LDataLength, LDataLength + ARandom.Below(3) * ARandom.Below(60));
+                LExtra := ARandom.Below(3);
+                LExtra := LExtra * ARandom.Below(60);
+                AddData(LBuffer, ARandom, LDataLength, LDataLength + LExtra);
               end;
             2: AddOther(LBuffer, ARandom, LIST_ID, ARandom.Below(30));
           else

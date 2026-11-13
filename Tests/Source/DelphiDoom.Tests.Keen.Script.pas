@@ -78,7 +78,7 @@ var
 begin
   LEvents := TKeenScript.Parse('wait 10'#13#10'press enter'#13#10'shot a.png'#13#10'down right'#13#10'wait 5'#13#10 +
     'up right'#13#10'quit');
-  Assert.AreEqual(6, Length(LEvents));
+  Assert.AreEqual<Integer>(6, Length(LEvents));
   Assert.AreEqual(10, LEvents[0].Tic);
   Assert.AreEqual(Ord(ksePort), Ord(LEvents[0].Kind));
   Assert.AreEqual($1C, Integer(LEvents[0].Port));
@@ -98,7 +98,7 @@ var
   LEvents: TArray<TKeenScriptEvent>;
 begin
   LEvents := TKeenScript.Parse('type a 1');
-  Assert.AreEqual(6, Length(LEvents));
+  Assert.AreEqual<Integer>(6, Length(LEvents));
   Assert.AreEqual($1E, Integer(LEvents[0].Port));
   Assert.AreEqual($39, Integer(LEvents[2].Port), 'the space');
   Assert.AreEqual($02, Integer(LEvents[4].Port));
@@ -107,8 +107,8 @@ end;
 
 procedure TTestKeenScript.DovrebbeSaltareCommentiERigheVuote;
 begin
-  Assert.AreEqual(0, Length(TKeenScript.Parse('')));
-  Assert.AreEqual(1, Length(TKeenScript.Parse('# a comment'#10#10'   '#10'  QUIT  ')));
+  Assert.AreEqual<Integer>(0, Length(TKeenScript.Parse('')));
+  Assert.AreEqual<Integer>(1, Length(TKeenScript.Parse('# a comment'#10#10'   '#10'  QUIT  ')));
 end;
 
 procedure TTestKeenScript.DovrebbeConoscereINomiDeiTasti;
@@ -284,7 +284,7 @@ end;
 
 procedure TTestKeenRlewCompress.DovrebbeDareNullaPerNulla;
 begin
-  Assert.AreEqual(0, Length(TKeenRlew.Compress(nil, $ABCD)));
+  Assert.AreEqual<Integer>(0, Length(TKeenRlew.Compress(nil, $ABCD)));
 end;
 
 procedure TTestKeenRlewCompress.LEspansioneDovrebbeRidareLeParole;

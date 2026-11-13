@@ -77,7 +77,7 @@ procedure TTestBlockmapBuilder.AssertLump(const AExpected: array of Integer;
 var
   LIndex: Integer;
 begin
-  Assert.AreEqual(Length(AExpected), Length(AActual.Lump), 'size of the lump');
+  Assert.AreEqual<Integer>(Length(AExpected), Length(AActual.Lump), 'size of the lump');
   for LIndex := 0 to High(AExpected) do
     Assert.AreEqual(AExpected[LIndex], AActual.Lump[LIndex], Format('value %d', [LIndex]));
 end;
@@ -147,7 +147,7 @@ begin
       LLines[High(LLines)] := LBlock;
     end;
   end;
-  Assert.AreEqual(2, Length(LLines), 'the diagonal touches two blocks');
+  Assert.AreEqual<Integer>(2, Length(LLines), 'the diagonal touches two blocks');
   Assert.AreEqual(0, LLines[0]);
   Assert.AreEqual(3, LLines[1]);
 

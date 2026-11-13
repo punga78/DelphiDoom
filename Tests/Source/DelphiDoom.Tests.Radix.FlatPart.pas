@@ -95,7 +95,7 @@ var
 begin
   Run([32, 32]);
   LFlat := FWad.LumpData[FWad.IndexOf('RDXF0001')];
-  Assert.AreEqual(4096, Length(LFlat));
+  Assert.AreEqual<Integer>(4096, Length(LFlat));
   for LRow := 0 to 63 do
     for LColumn := 0 to 63 do
       Assert.AreEqual(Integer(FSource[0][(LColumn mod 32) * 32 + (LRow mod 32)]),
@@ -118,7 +118,7 @@ var
 begin
   Run([32, 64]);
   LFlat := FWad.LumpData[FWad.IndexOf('RDXF0001')];
-  Assert.AreEqual(4096, Length(LFlat));
+  Assert.AreEqual<Integer>(4096, Length(LFlat));
   Assert.AreEqual(Integer(FSource[0][3 * 64 + 20]), Integer(LFlat[20 * 64 + 3]));
   Assert.AreEqual(Integer(FSource[0][3 * 64 + 20]), Integer(LFlat[20 * 64 + 3 + 32]));
 end;
@@ -129,7 +129,7 @@ var
 begin
   Run([128, 64]);
   LFlat := FWad.LumpData[FWad.IndexOf('RDXF0001')];
-  Assert.AreEqual(128 * 128, Length(LFlat));
+  Assert.AreEqual<Integer>(128 * 128, Length(LFlat));
   Assert.AreEqual(Integer(FSource[0][100 * 64 + 7]), Integer(LFlat[7 * 128 + 100]));
   Assert.AreEqual(Integer(FSource[0][100 * 64 + 7]), Integer(LFlat[(7 + 64) * 128 + 100]));
 end;
@@ -155,7 +155,7 @@ var
 begin
   Run([32, 32]);
   LSky := FWad.LumpData[FWad.IndexOf('F_SKY1')];
-  Assert.AreEqual(4096, Length(LSky));
+  Assert.AreEqual<Integer>(4096, Length(LSky));
   for LIndex := 1 to High(LSky) do
     Assert.AreEqual(Integer(LSky[0]), Integer(LSky[LIndex]));
   // a gray palette: the nearest to (77, 179, 255) is the gray that is closest in distance
@@ -169,7 +169,7 @@ var
 begin
   Run([32, 32], 4100);
   LTile := FWad.LumpData[FWad.IndexOf('RDXF0000')];
-  Assert.AreEqual(4096, Length(LTile));
+  Assert.AreEqual<Integer>(4096, Length(LTile));
   // the 4 bytes of the header are skipped and a zero becomes 63
   for LIndex := 0 to 4095 do
     Assert.IsTrue(LTile[LIndex] <> 0);

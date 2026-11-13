@@ -379,7 +379,7 @@ var
   LSource: IXcomFontSettingsSource;
 begin
   LSource := Choices(Usual) as IXcomFontSettingsSource;
-  Assert.AreEqual(0, Length(LSource.Settings));
+  Assert.AreEqual<Integer>(0, Length(LSource.Settings));
   Assert.IsFalse(FFiles.FileExists(USER_FILE));
 end;
 
@@ -425,7 +425,7 @@ begin
   (LOptions as IXcomExtraChoiceOptions).Step(0, 1);
   (LOptions as IXcomExtraChoiceOptions).Step(15, 1);
   LEntries := LSource.Settings;
-  Assert.AreEqual(2, Length(LEntries));
+  Assert.AreEqual<Integer>(2, Length(LEntries));
   Assert.AreEqual('FONT_BIG', LEntries[0].FontId);
   Assert.AreEqual(13, LEntries[0].Face.Size);
   Assert.IsTrue(LEntries[0].Face.Bold);
@@ -474,10 +474,10 @@ begin
   (LOptions as IXcomExtraChoiceOptions).Step(5, 1);
   (LOptions as IXcomExtraChoiceOptions).Step(5, 1);
   Assert.AreEqual('Small font: Consolas', LOptions.Title(5));
-  Assert.AreEqual(1, Length(LSource.Settings));
+  Assert.AreEqual<Integer>(1, Length(LSource.Settings));
   (LOptions as IXcomExtraChoiceOptions).Step(5, 1);
   Assert.AreEqual('Small font: Original', LOptions.Title(5));
-  Assert.AreEqual(0, Length(LSource.Settings));
+  Assert.AreEqual<Integer>(0, Length(LSource.Settings));
   Assert.AreEqual(Ord(ekInfo), Ord((LOptions as IXcomExtraChoiceOptions).Kind(6)));
 end;
 
@@ -536,7 +536,7 @@ begin
   (LOptions as IXcomFontSettingsSource).Commit;
   Assert.IsTrue(FFiles.FileExists(USER_FILE));
   LEntries := Parsed(Written);
-  Assert.AreEqual(1, Length(LEntries));
+  Assert.AreEqual<Integer>(1, Length(LEntries));
   Assert.AreEqual('FONT_BIG', LEntries[0].FontId);
   Assert.AreEqual('Tahoma', LEntries[0].Face.Name);
   Assert.AreEqual(14, LEntries[0].Face.Size);
@@ -654,7 +654,7 @@ begin
   FFiles.Put('cli.cfg', 'fonts:'#10'  - id: FONT_BIG'#10'    name: Verdana'#10'    size: 12'#10);
   LSource := Choices(Usual, 'fonts:'#10'  - id: FONT_SMALL'#10'    name: Tahoma'#10'    size: 8'#10, 'cli.cfg')
     as IXcomFontSettingsSource;
-  Assert.AreEqual(1, Length(LSource.Settings));
+  Assert.AreEqual<Integer>(1, Length(LSource.Settings));
   Assert.AreEqual('Verdana', LSource.Settings[0].Face.Name);
 end;
 
@@ -685,7 +685,7 @@ var
 begin
   LText := TXcomFontSettingsWriter.Write(nil);
   Assert.AreEqual('fonts: []'#10, LText);
-  Assert.AreEqual(0, Length(TXcomFontSettingsReader.Read(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes(LText)))));
+  Assert.AreEqual<Integer>(0, Length(TXcomFontSettingsReader.Read(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes(LText)))));
 end;
 
 procedure TTestXcomFontSettingsWriter.DovrebbeScrivereCioCheIlLettoreRilegge;
@@ -706,7 +706,7 @@ begin
   LSettings.Face.FaceIndex := 3;
   LText := TXcomFontSettingsWriter.Write([LSettings, TXcomFontOverlaySettings.Make('FONT_SMALL', 'Tahoma', 8)]);
   LBack := TXcomFontSettingsReader.Read(TYamlFactory.CreateParser.Load(TEncoding.UTF8.GetBytes(LText)));
-  Assert.AreEqual(2, Length(LBack));
+  Assert.AreEqual<Integer>(2, Length(LBack));
   Assert.AreEqual('FONT_GEO_BIG', LBack[0].FontId);
   Assert.AreEqual('Segoe UI', LBack[0].Face.Name);
   Assert.AreEqual(9, LBack[0].Face.Size);
@@ -732,7 +732,7 @@ begin
   LSettings.Face.FileName := 'C:\Fonts\a b\my.ttf';
   LBack := TXcomFontSettingsReader.Read(TYamlFactory.CreateParser.Load(
     TEncoding.UTF8.GetBytes(TXcomFontSettingsWriter.Write([LSettings]))));
-  Assert.AreEqual(1, Length(LBack));
+  Assert.AreEqual<Integer>(1, Length(LBack));
   Assert.AreEqual('Bob''s: Font #1', LBack[0].Face.Name);
   Assert.AreEqual('C:\Fonts\a b\my.ttf', LBack[0].Face.FileName);
 end;
@@ -929,7 +929,7 @@ begin
   FFactory.Reason := 'no such font';
   FSource.Entries := [TXcomFontOverlaySettings.Make('FONT_BIG', 'Papyrus', 13)];
   LNotices := Reloader.Reload(FResourcesRef);
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.AreEqual('The font "Papyrus" is not installed, so the big font stays the original one.', LNotices[0]);
 end;
 
@@ -942,7 +942,7 @@ begin
   FSource.Entries := [TXcomFontOverlaySettings.Make('FONT_BIG', 'Tahoma', 13)];
   LNotices := Reloader.Reload(LResources);
   Assert.AreEqual(1, FSource.Commits);
-  Assert.AreEqual(0, Length(LNotices));
+  Assert.AreEqual<Integer>(0, Length(LNotices));
 end;
 
 procedure TTestXcomFontReloader.DovrebbeRifiutareArgomentiNil;
@@ -992,7 +992,7 @@ end;
 
 procedure TTestXcomRasterFontNotices.UnFontCheEntraNonDovrebbeAvereAvvisiPerIlPlayer;
 begin
-  Assert.AreEqual(0, Length(Run(TXcomFontOverlaySettings.Make('FONT_SMALL', 'Tahoma', 8), 'FONT_SMALL')));
+  Assert.AreEqual<Integer>(0, Length(Run(TXcomFontOverlaySettings.Make('FONT_SMALL', 'Tahoma', 8), 'FONT_SMALL')));
 end;
 
 procedure TTestXcomRasterFontNotices.UnFontNonInstallatoDovrebbeDirloAlPlayer;
@@ -1002,7 +1002,7 @@ begin
   FFactory.Rasterizer := nil;
   FFactory.Reason := 'no such font';
   LNotices := Run(TXcomFontOverlaySettings.Make('FONT_SMALL', 'Papyrus', 8), 'FONT_SMALL');
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.AreEqual('The font "Papyrus" is not installed, so the small font stays the original one.', LNotices[0]);
 end;
 
@@ -1012,14 +1012,14 @@ var
 begin
   FRasterizer.DefaultHeight := 11;
   LNotices := Run(TXcomFontOverlaySettings.Make('FONT_BIG', 'Tahoma', 13), 'FONT_BIG');
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.IsTrue(LNotices[0].Contains('"Tahoma" at size 13 does not fit the big font'));
   Assert.IsTrue(LNotices[0].Contains('shrink to fit'));
   // too wide says the same
   FRasterizer.DefaultHeight := 5;
   FRasterizer.DefaultWidth := 9;
   LNotices := Run(TXcomFontOverlaySettings.Make('FONT_BIG', 'Tahoma', 13), 'FONT_BIG');
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.IsTrue(LNotices[0].Contains('does not fit'));
 end;
 
@@ -1034,7 +1034,7 @@ begin
   LSettings := TXcomFontOverlaySettings.Make('FONT_GEO_BIG', 'Tahoma', 8);
   LSettings.Shrink := True;
   LNotices := Run(LSettings, 'FONT_GEO_BIG');
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.AreEqual('The geoscape big font was made smaller to fit: size 6 instead of 8.', LNotices[0]);
 end;
 
@@ -1046,7 +1046,7 @@ begin
   FRasterizer.Remove(Ord('B'));
   FRasterizer.Remove(Ord('?'));
   LNotices := Run(TXcomFontOverlaySettings.Make('FONT_SMALL', 'Wingdings', 8), 'FONT_SMALL');
-  Assert.AreEqual(1, Length(LNotices));
+  Assert.AreEqual<Integer>(1, Length(LNotices));
   Assert.IsTrue(LNotices[0].Contains('has none of the characters'));
 end;
 

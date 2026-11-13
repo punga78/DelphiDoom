@@ -68,9 +68,9 @@ var
 begin
   LData := TKeenFactory.OpenGameData(FGame.Files);
   Assert.AreEqual(KEEN_NUMCHUNKS, LData.Graphics.Chunks.ChunkCount);
-  Assert.AreEqual(2, Length(LData.Maps.MapNumbers));
+  Assert.AreEqual<Integer>(2, Length(LData.Maps.MapNumbers));
   Assert.AreEqual(KEEN_NUMSNDCHUNKS, LData.Audio.ChunkCount);
-  Assert.AreEqual(300, Length(LData.Audio.Read(5)));
+  Assert.AreEqual<Integer>(300, Length(LData.Audio.Read(5)));
 end;
 
 procedure TTestKeenGameLoader.DovrebbeAprireIlGiocoConINomiAlternativi;
@@ -93,7 +93,7 @@ begin
       LAlternative := 'AUDIOT.KDR';
     LFiles.Add(LAlternative, FGame.Files.ReadAll(LName));
   end;
-  Assert.AreEqual(2, Length(TKeenFactory.OpenGameData(LFilesIntf).Maps.MapNumbers));
+  Assert.AreEqual<Integer>(2, Length(TKeenFactory.OpenGameData(LFilesIntf).Maps.MapNumbers));
 end;
 
 procedure TTestKeenGameLoader.DovrebbeDireQualeFileManca;

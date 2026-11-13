@@ -140,7 +140,7 @@ var
 begin
   FBuilder.Generate(FProject, 'out.pk3');
   LDate := FClock.Now;
-  Assert.AreEqual(4, Length(FArchive.Dates));
+  Assert.AreEqual<Integer>(4, Length(FArchive.Dates));
   Assert.AreEqual(LDate, FArchive.Dates[0]);
   Assert.AreEqual(LDate, FArchive.Dates[3]);
 end;

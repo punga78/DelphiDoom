@@ -218,9 +218,9 @@ end;
 procedure TTestPaletteBehavior.TestProfilesDescribeTheNumberOfPalettes;
 begin
   Assert.AreEqual(14, TPaletteProfiles.Doom.PaletteCount);
-  Assert.AreEqual(13, Length(TPaletteProfiles.Doom.Shifts));
+  Assert.AreEqual<Integer>(13, Length(TPaletteProfiles.Doom.Shifts));
   Assert.AreEqual(28, TPaletteProfiles.Hexen.PaletteCount);
-  Assert.AreEqual(27, Length(TPaletteProfiles.Hexen.Shifts));
+  Assert.AreEqual<Integer>(27, Length(TPaletteProfiles.Hexen.Shifts));
   Assert.IsTrue(TPaletteProfiles.Doom.InvertedGrayRow);
   Assert.IsFalse(TPaletteProfiles.Hexen.InvertedGrayRow);
 end;
@@ -233,7 +233,7 @@ begin
   LBase := TPaletteFixtures.PaletteWithRamp(1);
   LSet := TPaletteFactory.CreatePaletteBuilder(TFakeColorMatcher.Create(0), TPaletteProfiles.Doom)
     .Build(LBase, False, False);
-  Assert.AreEqual(14 * 768, Length(LSet.Playpal));
+  Assert.AreEqual<Integer>(14 * 768, Length(LSet.Playpal));
   Assert.IsTrue(CompareMem(@LBase[0], @LSet.Playpal[0], 768));
 end;
 
@@ -292,8 +292,8 @@ begin
   LIntf := LMatcher;
   LSet := TPaletteFactory.CreatePaletteBuilder(LIntf, TPaletteProfiles.Doom)
     .Build(TPaletteFixtures.Palette8(1), False, False);
-  Assert.AreEqual(0, Length(LSet.Colormap));
-  Assert.AreEqual(0, Length(LSet.Fogmap));
+  Assert.AreEqual<Integer>(0, Length(LSet.Colormap));
+  Assert.AreEqual<Integer>(0, Length(LSet.Fogmap));
   Assert.AreEqual(0, LMatcher.Calls.Count);
 end;
 
@@ -309,7 +309,7 @@ begin
     .Build(TPaletteFixtures.Palette8(1), True, False);
   // 32 lights and the gray row: 33 rows of 256 questions, the 34th row is not asked
   Assert.AreEqual(33 * 256, LMatcher.Calls.Count);
-  Assert.AreEqual(34 * 256, Length(LSet.Colormap));
+  Assert.AreEqual<Integer>(34 * 256, Length(LSet.Colormap));
   Assert.AreEqual(77, Integer(LSet.Colormap[0]));
   Assert.AreEqual(77, Integer(LSet.Colormap[32 * 256 + 255]));
   Assert.AreEqual(0, LMatcher.Calls[0].Low);
@@ -388,7 +388,7 @@ begin
   LIntf := LMatcher;
   LTarget := TPaletteFixtures.Palette8(3);
   LTable := TPaletteFactory.CreateTranslationBuilder(LIntf).Build(TPaletteFixtures.Palette8(4), LTarget);
-  Assert.AreEqual(256, Length(LTable));
+  Assert.AreEqual<Integer>(256, Length(LTable));
   Assert.AreEqual(256, LMatcher.Calls.Count);
   Assert.AreEqual(Integer(LTarget[3 * 100 + 1]), Integer(LMatcher.Calls[100].Green));
   Assert.AreEqual(9, Integer(LTable[200]));
@@ -410,7 +410,7 @@ var
   LIndex: Integer;
 begin
   LTable := TPaletteFactory.CreateTranslationBuilder(TFakeColorMatcher.Create(0)).Identity;
-  Assert.AreEqual(256, Length(LTable));
+  Assert.AreEqual<Integer>(256, Length(LTable));
   for LIndex := 0 to 255 do
     Assert.AreEqual(LIndex, Integer(LTable[LIndex]));
 end;
@@ -420,7 +420,7 @@ var
   LTables: TBytes;
 begin
   LTables := TPaletteFactory.CreateDoomPlayerTranslations.Build;
-  Assert.AreEqual(768, Length(LTables));
+  Assert.AreEqual<Integer>(768, Length(LTables));
   Assert.AreEqual($60 + 3, Integer(LTables[$73]));
   Assert.AreEqual($40 + 3, Integer(LTables[256 + $73]));
   Assert.AreEqual($20 + 3, Integer(LTables[512 + $73]));
@@ -444,7 +444,7 @@ var
   LTables: TBytes;
 begin
   LTables := TPaletteFactory.CreateStrifePlayerTranslations.Build;
-  Assert.AreEqual(7 * 256, Length(LTables));
+  Assert.AreEqual<Integer>(7 * 256, Length(LTables));
   // $80: (0 - 80) wraps to 176 in the second table, the first is 0 + 64
   Assert.AreEqual(64, Integer(LTables[$80]));
   Assert.AreEqual(176, Integer(LTables[256 + $80]));
@@ -468,7 +468,7 @@ begin
   Assert.AreEqual(5, TPaletteFactory.CreateGammaTables.LevelCount);
   Assert.AreEqual(1, Integer(TPaletteFactory.CreateGammaTables.Table(0)[0]));
   Assert.AreEqual(255, Integer(TPaletteFactory.CreateGammaTables.Table(4)[255]));
-  Assert.AreEqual(256, Length(TPaletteFactory.CreateGammaTables.Table(2)));
+  Assert.AreEqual<Integer>(256, Length(TPaletteFactory.CreateGammaTables.Table(2)));
 end;
 
 procedure TTestPaletteBehavior.TestGammaRejectsAMissingLevel;
@@ -518,7 +518,7 @@ begin
   LInput := TPaletteFixtures.RandomBytes(9, 3 * 256, $FF);
   LOutput := TPaletteFactory.CreateColormapPreparer.ExpandRows(LInput, 32, LCount);
   Assert.AreEqual(32, LCount);
-  Assert.AreEqual(32 * 256, Length(LOutput));
+  Assert.AreEqual<Integer>(32 * 256, Length(LOutput));
   Assert.IsTrue(CompareMem(@LInput[0], @LOutput[0], 3 * 256));
   Assert.IsTrue(CompareMem(@LInput[2 * 256], @LOutput[31 * 256], 256));
 end;
@@ -603,7 +603,7 @@ var
   LValue: Integer;
 begin
   LTable := TPaletteFactory.CreateLightTableCalculator.ZLight(TLightTableConfig.Default);
-  Assert.AreEqual(16 * 128, Length(LTable));
+  Assert.AreEqual<Integer>(16 * 128, Length(LTable));
   for LValue in LTable do
   begin
     Assert.IsTrue(LValue >= 0);
@@ -626,7 +626,7 @@ var
   LValue: Integer;
 begin
   LTable := TPaletteFactory.CreateLightTableCalculator.HiResZLight(TLightTableConfig.Default);
-  Assert.AreEqual(16 * 8192, Length(LTable));
+  Assert.AreEqual<Integer>(16 * 8192, Length(LTable));
   for LValue in LTable do
   begin
     Assert.IsTrue(LValue >= 0);
@@ -680,7 +680,7 @@ var
   LCandidates: TArray<string>;
 begin
   LCandidates := TPaletteFactory.CreateTranslationNames.LumpCandidates('Foo');
-  Assert.AreEqual(3, Length(LCandidates));
+  Assert.AreEqual<Integer>(3, Length(LCandidates));
   Assert.AreEqual('Foo', LCandidates[0]);
   Assert.AreEqual('CRFoo', LCandidates[1]);
   Assert.AreEqual('CR_Foo', LCandidates[2]);
@@ -692,9 +692,9 @@ var
 begin
   LNames := TPaletteFactory.CreateTranslationNames;
   Assert.AreEqual('CRFOO', LNames.LumpCandidates('CR_FOO')[1]);
-  Assert.AreEqual(2, Length(LNames.LumpCandidates('CR_FOO')));
+  Assert.AreEqual<Integer>(2, Length(LNames.LumpCandidates('CR_FOO')));
   Assert.AreEqual('CR_FOO', LNames.LumpCandidates('CRFOO')[1]);
-  Assert.AreEqual(2, Length(LNames.LumpCandidates('crfoo')));
+  Assert.AreEqual<Integer>(2, Length(LNames.LumpCandidates('crfoo')));
 end;
 
 procedure TTestPaletteBehavior.TestPrecalcRejectsAMissingChannel;
@@ -727,7 +727,7 @@ var
   LTable: TBytes;
 begin
   LTable := TPaletteFactory.CreatePrecalcTables.AddClamp;
-  Assert.AreEqual(512, Length(LTable));
+  Assert.AreEqual<Integer>(512, Length(LTable));
   Assert.AreEqual(255, Integer(LTable[255]));
   Assert.AreEqual(255, Integer(LTable[300]));
   Assert.AreEqual(100, Integer(LTable[100]));
@@ -769,7 +769,7 @@ begin
   LIntf := LConverter;
   LColors := TPaletteFactory.CreatePaletteUnpacker(LIntf).Unpack(FlatPalette(1));
   Assert.AreEqual(1, LConverter.CallCount);
-  Assert.AreEqual(256, Length(LColors));
+  Assert.AreEqual<Integer>(256, Length(LColors));
   Assert.AreEqual(3, Integer(LColors[255]));
   for LIndex := 0 to 255 do
     Assert.AreEqual(LIndex, Integer(LConverter.Gamma[LIndex]));

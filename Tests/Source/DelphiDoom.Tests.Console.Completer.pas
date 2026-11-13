@@ -108,12 +108,12 @@ end;
 
 procedure TTestConsoleCompleter.TestEmptyPrefixGivesAllTheNames;
 begin
-  Assert.AreEqual(6, Length(FCompleter.Candidates('')), 'dovrebbe dare tutti i nomi');
+  Assert.AreEqual<Integer>(6, Length(FCompleter.Candidates('')), 'dovrebbe dare tutti i nomi');
 end;
 
 procedure TTestConsoleCompleter.TestNothingFitsGivesAnEmptyList;
 begin
-  Assert.AreEqual(0, Length(FCompleter.Candidates('zz')), 'dovrebbe dare una lista vuota');
+  Assert.AreEqual<Integer>(0, Length(FCompleter.Candidates('zz')), 'dovrebbe dare una lista vuota');
 end;
 
 procedure TTestConsoleCompleter.TestSameNameOfCommandAndVariableIsGivenOnce;

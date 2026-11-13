@@ -119,7 +119,7 @@ begin
   // the case 3: a palette with some entries of alpha 0
   Assert.IsTrue(Decode(3), 'dovrebbe riuscire');
   Assert.AreEqual(4, FImage.BytesPerPixel, 'dovrebbe passare a 32 bit');
-  Assert.AreEqual(6 * 4 * 4, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
+  Assert.AreEqual<Integer>(6 * 4 * 4, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
 end;
 
 procedure TTestTexturePngSpriteDecoder.DovrebbeMettereZeroIPixelConAlfaZeroDiUnImmagineRgba;

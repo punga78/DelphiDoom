@@ -63,7 +63,7 @@ begin
     else
     begin
       LData := AArchive.ReadRecord(LIndex);
-      Assert.AreEqual(Integer(LInfo.Length), Length(LData));
+      Assert.AreEqual<Integer>(Integer(LInfo.Length), Length(LData));
       if Length(LData) > 0 then
         LCrc := TCrc32.ToHex(TCrc32.Calculate(LData[0], Length(LData)))
       else

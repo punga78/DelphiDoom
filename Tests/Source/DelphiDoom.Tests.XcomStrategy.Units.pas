@@ -194,7 +194,7 @@ begin
     LActivity := LRegion.ActivityAlien[High(LRegion.ActivityAlien)];
     TXcomGeography.AddAlienActivity(LGame, LBase.Longitude, LBase.Latitude, 7);
     Assert.AreEqual(LActivity + 7, LRegion.ActivityAlien[High(LRegion.ActivityAlien)], 'punti');
-    Assert.AreEqual(LBefore, Length(LRegion.ActivityAlien), 'stesso mese');
+    Assert.AreEqual<Integer>(LBefore, Length(LRegion.ActivityAlien), 'stesso mese');
   finally
     LGame.Free;
   end;

@@ -218,7 +218,7 @@ begin
     LMus := LClient.ConvertMidiToMus(B.Join([B.Header(0, 1, 70), B.Track(B.Join([B.NoteOn(0, 0, 60, 100),
       B.NoteOff(10, 0, 60, 0), B.EndOfTrack(0)]))]));
 
-    Assert.AreEqual(16 + 7, Length(LMus));
+    Assert.AreEqual<Integer>(16 + 7, Length(LMus));
   finally
     LClient.Free;
   end;
@@ -250,7 +250,7 @@ begin
 
     LMus := LClient.ConvertMidiToMus(LMidi);
 
-    Assert.AreEqual(100000, Length(LMus));
+    Assert.AreEqual<Integer>(100000, Length(LMus));
     Assert.AreEqual(2, LFake.Calls);
   finally
     LClient.Free;
@@ -320,7 +320,7 @@ begin
 
   LMus := TM2mProvider.Client.ConvertMidiToMus(B.Bytes([1, 2, 3]));
 
-  Assert.AreEqual(20, Length(LMus));
+  Assert.AreEqual<Integer>(20, Length(LMus));
 end;
 
 initialization

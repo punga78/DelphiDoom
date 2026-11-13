@@ -489,7 +489,7 @@ begin
       // the picture of the game, not scaled, and the bands that keep its proportions in the display
       Assert.AreEqual('unscaled:gl:320x200>800x400:0,0,80,80', Journal);
       // the scaled picture is made all the same (the screenshot key saves it)
-      Assert.AreEqual(800 * 400, Length(LScreen.DisplayPixels));
+      Assert.AreEqual<Integer>(800 * 400, Length(LScreen.DisplayPixels));
     finally
       LScreen.Free;
     end;

@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the options of the xcom menus (the options class,  }
 {  the stores, the languages and the options screens)                           }
@@ -398,7 +398,7 @@ var
 begin
   FProvider.List(LCodes, LNames);
   // the fake file system does not keep the case of the names, the disk one does
-  Assert.AreEqual(4, Length(LCodes));
+  Assert.AreEqual<Integer>(4, Length(LCodes));
   Assert.AreEqual('de', LCodes[0]);
   Assert.AreEqual('Deutsch', LNames[0]);
   Assert.AreEqual('it', LCodes[2]);

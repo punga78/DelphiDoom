@@ -227,9 +227,9 @@ begin
     LRules.Load(Node('fundingBase: 5'));
     LCountry := TXcomCountry.Create(LRules, True, TXcomRandom.Create(1));
     try
-      Assert.AreEqual(1, Length(LCountry.Funding));
+      Assert.AreEqual<Integer>(1, Length(LCountry.Funding));
       Assert.IsTrue(LCountry.Funding[0] mod 1000 = 0);
-      Assert.AreEqual(1, Length(LCountry.ActivityXcom));
+      Assert.AreEqual<Integer>(1, Length(LCountry.ActivityXcom));
       Assert.AreEqual(2, LCountry.Satisfaction);
       Assert.AreSame(LRules, LCountry.Rules);
     finally
@@ -237,7 +237,7 @@ begin
     end;
     LCountry := TXcomCountry.Create(LRules, False, TXcomRandom.Create(1));
     try
-      Assert.AreEqual(0, Length(LCountry.Funding));
+      Assert.AreEqual<Integer>(0, Length(LCountry.Funding));
     finally
       LCountry.Free;
     end;
@@ -338,9 +338,9 @@ begin
       LCountry.SetFunding(7000);
       for LMonth := 1 to 20 do
         LCountry.NewMonth(0, 0, 0, TXcomRandom.Create(LMonth));
-      Assert.AreEqual(12, Length(LCountry.Funding));
-      Assert.AreEqual(12, Length(LCountry.ActivityXcom));
-      Assert.AreEqual(12, Length(LCountry.ActivityAlien));
+      Assert.AreEqual<Integer>(12, Length(LCountry.Funding));
+      Assert.AreEqual<Integer>(12, Length(LCountry.ActivityXcom));
+      Assert.AreEqual<Integer>(12, Length(LCountry.ActivityAlien));
     finally
       LCountry.Free;
     end;

@@ -210,7 +210,7 @@ begin
   FBuilder.Add('BackViewOn', LLump);
   Run;
   // 8 bytes of header, 3 offsets of 4 and 3 columns of the 2 bytes of the end (255, 0)
-  Assert.AreEqual(8 + 12 + 6, Length(FWad.LumpData[FWad.IndexOf('RADIX001')]));
+  Assert.AreEqual<Integer>(8 + 12 + 6, Length(FWad.LumpData[FWad.IndexOf('RADIX001')]));
 end;
 
 procedure TTestRadixGraphicsPart.DovrebbeSaltareLeCifreDelleArmiDiUnaLunghezzaDiversa;
@@ -232,9 +232,9 @@ begin
   LPosition := FBuilder.Add('MainTitle', LImage);
   LTranslator := TRadixFactory.CreateTranslator;
   LTranslator.Translate(TRadixFactory.OpenContainerBytes(FBuilder.ToBytes));
-  Assert.AreEqual(1, Length(LTranslator.PakEntries));
+  Assert.AreEqual<Integer>(1, Length(LTranslator.PakEntries));
   Assert.AreEqual(LPosition, LTranslator.PakEntries[0].Position);
-  Assert.AreEqual(Length(LImage), LTranslator.PakEntries[0].Size);
+  Assert.AreEqual<Integer>(Length(LImage), LTranslator.PakEntries[0].Size);
   Assert.AreEqual('TITLEPIC.RADIX32', LTranslator.PakEntries[0].Name);
 end;
 

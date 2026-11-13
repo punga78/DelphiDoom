@@ -175,7 +175,7 @@ begin
   Assert.AreEqual(1, FDevice.TrueColorPresented);
   Assert.AreEqual(LPresented + 1, FDevice.Presented, 'il fotogramma a 8 bit');
   Assert.IsTrue(FScreen.DetailLayers = nil);
-  Assert.AreEqual(640 * 400, Length(FScreen.DisplayPixels));
+  Assert.AreEqual<Integer>(640 * 400, Length(FScreen.DisplayPixels));
 end;
 
 procedure TTestXcomTrueColorOption.SenzaSorgenteLoSchermoDovrebbeTenereIlCompositoreDelCostruttore;
@@ -226,7 +226,7 @@ begin
   FScreen.GetSurface.DrawRect(0, 0, 320, 200, 5);
   FScreen.Flip;
   Assert.IsTrue(FScreen.Snapshot(LPixels, LWidth, LHeight));
-  Assert.AreEqual(640 * 400, Length(LPixels));
+  Assert.AreEqual<Integer>(640 * 400, Length(LPixels));
   Assert.AreEqual(Cardinal($FF0A141E), LPixels[1000]);
 end;
 

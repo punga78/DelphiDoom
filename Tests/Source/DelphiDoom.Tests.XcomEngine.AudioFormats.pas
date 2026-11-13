@@ -425,7 +425,7 @@ var
   LSamples: TArray<SmallInt>;
 begin
   Assert.IsFalse(FDecoder.TryDecode(TBytes.Create(1, 2, 3, 4, 5, 6, 7, 8), 22050, LSamples));
-  Assert.AreEqual(0, Length(LSamples));
+  Assert.AreEqual<Integer>(0, Length(LSamples));
   Assert.IsFalse(FDecoder.TryDecode(nil, 22050, LSamples));
   Assert.IsFalse(FDecoder.TryDecode(TMp3Samples.SilentStream(2), 0, LSamples));
 end;
@@ -722,7 +722,7 @@ var
   LEntry: TBytes;
 begin
   LEntry := TBytes.Create(120, 0, 1, 0, 9, 0, 0, 0, $00, $FE, 3, $00, $FF);
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(LEntry)));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(LEntry)));
 end;
 
 procedure TTestXcomGmConverter.UnFlussoTroncatoDaNil;
@@ -730,15 +730,15 @@ var
   LEntry: TBytes;
 begin
   LEntry := TAudioFiles.GmEntry;
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, Length(LEntry) - 3))));
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 5))));
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 2))));
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 1))));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, Length(LEntry) - 3))));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 5))));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 2))));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(Copy(LEntry, 0, 1))));
 end;
 
 procedure TTestXcomGmConverter.UnFlussoVuotoDaNil;
 begin
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(nil)));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(nil)));
 end;
 
 procedure TTestXcomGmConverter.UnTempoZeroDaNil;
@@ -747,12 +747,12 @@ var
 begin
   LEntry := TAudioFiles.GmEntry;
   LEntry[0] := 0;
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(LEntry)));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(LEntry)));
 end;
 
 procedure TTestXcomGmConverter.UnFlussoConDatiInPiuDaNil;
 begin
-  Assert.AreEqual(0, Length(TXcomGmConverter.Convert(TAudioFiles.GmEntry + TBytes.Create(1, 2))));
+  Assert.AreEqual<Integer>(0, Length(TXcomGmConverter.Convert(TAudioFiles.GmEntry + TBytes.Create(1, 2))));
 end;
 
 procedure TTestXcomGmConverter.IlRiverberoVaATrenta;

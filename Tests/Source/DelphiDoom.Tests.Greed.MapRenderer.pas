@@ -105,7 +105,7 @@ procedure TTestGreedMapRenderer.DovrebbeDisegnareOttoPixelPerTile;
 begin
   Assert.AreEqual(512, FImage.Width);
   Assert.AreEqual(512, FImage.Height);
-  Assert.AreEqual(512 * 512, Length(FImage.Pixels));
+  Assert.AreEqual<Integer>(512 * 512, Length(FImage.Pixels));
   Assert.AreEqual(8, GREED_MAP_TILE_PIXELS);
 end;
 
@@ -175,7 +175,7 @@ begin
       ANorth[0] := 1;
       AWest[0] := 1;
     end));
-  Assert.AreEqual(512 * 512, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(512 * 512, Length(LImage.Pixels));
   Assert.AreEqual(0, Integer(LImage.Pixels[0]));
 end;
 

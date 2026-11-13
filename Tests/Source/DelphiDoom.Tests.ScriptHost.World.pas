@@ -1107,14 +1107,14 @@ begin
   LLines := TScriptLines.Create(FWorldRef, sgDoom);
   try
     LFound := LLines.FindLinesFromTag(5);
-    Assert.AreEqual(3, Length(LFound));
+    Assert.AreEqual<Integer>(3, Length(LFound));
     Assert.AreEqual(0, LFound[0]);
     Assert.AreEqual(2, LFound[1]);
     Assert.AreEqual(3, LFound[2]);
     LFound := LLines.FindLinesFromTag(6);
-    Assert.AreEqual(1, Length(LFound));
+    Assert.AreEqual<Integer>(1, Length(LFound));
     Assert.AreEqual(1, LFound[0]);
-    Assert.AreEqual(0, Length(LLines.FindLinesFromTag(77)));
+    Assert.AreEqual<Integer>(0, Length(LLines.FindLinesFromTag(77)));
   finally
     LLines.Free;
   end;

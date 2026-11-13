@@ -175,7 +175,7 @@ var
   LFirst: Integer;
 begin
   Assert.IsFalse(FBuilder.Build(TBytes.Create(1, 2, 3), Tiles(1), LBitmap, LFirst));
-  Assert.AreEqual(0, Length(LBitmap));
+  Assert.AreEqual<Integer>(0, Length(LBitmap));
 end;
 
 procedure TTestSpeedMapBitmapBuilder.DovrebbeDareUnaImmagineDiSediciMegabyte;
@@ -184,7 +184,7 @@ var
   LFirst: Integer;
 begin
   Assert.IsTrue(FBuilder.Build(Map(0, 0), Tiles(1), LBitmap, LFirst));
-  Assert.AreEqual(4096 * 4096, Length(LBitmap));
+  Assert.AreEqual<Integer>(4096 * 4096, Length(LBitmap));
 end;
 
 end.

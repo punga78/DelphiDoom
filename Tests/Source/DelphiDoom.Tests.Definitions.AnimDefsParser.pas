@@ -104,8 +104,8 @@ end;
 
 procedure TTestAnimDefsParser.TestUnTestoVuotoNonHaAnimazioni;
 begin
-  Assert.AreEqual(0, Length(Parse('')));
-  Assert.AreEqual(0, Length(Parse('// solo un commento'#13#10)));
+  Assert.AreEqual<Integer>(0, Length(Parse('')));
+  Assert.AreEqual<Integer>(0, Length(Parse('// solo un commento'#13#10)));
 end;
 
 procedure TTestAnimDefsParser.TestUnaAnimazioneDiFlatHaITicsDelleSueRighe;
@@ -113,10 +113,10 @@ var
   LAnimations: TArray<TDefAnimation>;
 begin
   LAnimations := Parse('flat FWATER1 pic 1 tics 8 pic 2 tics 16 pic 3 tics 4');
-  Assert.AreEqual(1, Length(LAnimations));
+  Assert.AreEqual<Integer>(1, Length(LAnimations));
   Assert.IsTrue(LAnimations[0].Kind = TDefAnimKind.Flat);
   Assert.AreEqual('FWATER1', LAnimations[0].Name);
-  Assert.AreEqual(3, Length(LAnimations[0].Frames));
+  Assert.AreEqual<Integer>(3, Length(LAnimations[0].Frames));
   Assert.AreEqual(8, LAnimations[0].Frames[0].Tics);
   Assert.AreEqual(16, LAnimations[0].Frames[1].Tics);
   Assert.AreEqual(4, LAnimations[0].Frames[2].PackedTics);
@@ -169,12 +169,12 @@ end;
 
 procedure TTestAnimDefsParser.TestLeParoleChiaveNonDistinguonoLeMaiuscole;
 begin
-  Assert.AreEqual(2, Length(Parse('FLAT fwater1 PIC 1 TICS 8 Pic 2 Tics 8')[0].Frames));
+  Assert.AreEqual<Integer>(2, Length(Parse('FLAT fwater1 PIC 1 TICS 8 Pic 2 Tics 8')[0].Frames));
 end;
 
 procedure TTestAnimDefsParser.TestICommentiELeRigheVuoteSonoIgnorati;
 begin
-  Assert.AreEqual(2, Length(Parse('// acqua'#13#10#13#10'flat FWATER1 // sopra'#13#10'  pic 1 tics 8 ; x'#13#10 +
+  Assert.AreEqual<Integer>(2, Length(Parse('// acqua'#13#10#13#10'flat FWATER1 // sopra'#13#10'  pic 1 tics 8 ; x'#13#10 +
     '  pic 2 tics 8'#13#10'  // pic 3 tics 8'#13#10)[0].Frames));
 end;
 
@@ -183,23 +183,23 @@ var
   LAnimations: TArray<TDefAnimation>;
 begin
   LAnimations := Parse('flat NOSUCH pic 1 tics 8 pic 2 tics 8 texture BLODGR1 pic 1 tics 8 pic 2 tics 8');
-  Assert.AreEqual(1, Length(LAnimations));
+  Assert.AreEqual<Integer>(1, Length(LAnimations));
   Assert.AreEqual('BLODGR1', LAnimations[0].Name);
 end;
 
 procedure TTestAnimDefsParser.TestUnaAnimazioneIgnorataNonContaPerIlMinimoDiDueFrame;
 begin
-  Assert.AreEqual(0, Length(Parse('flat NOSUCH pic 1 tics 8')));
+  Assert.AreEqual<Integer>(0, Length(Parse('flat NOSUCH pic 1 tics 8')));
 end;
 
 procedure TTestAnimDefsParser.TestIlNomeDiUnFlatSiChiedeAllElencoDeiFlat;
 begin
-  Assert.AreEqual(0, Length(Parse('flat BLODGR1 pic 1 tics 8 pic 2 tics 8')), 'BLODGR1 e una texture');
+  Assert.AreEqual<Integer>(0, Length(Parse('flat BLODGR1 pic 1 tics 8 pic 2 tics 8')), 'BLODGR1 e una texture');
 end;
 
 procedure TTestAnimDefsParser.TestIlNomeDiUnaTextureSiChiedeAllElencoDelleTexture;
 begin
-  Assert.AreEqual(0, Length(Parse('texture FWATER1 pic 1 tics 8 pic 2 tics 8')), 'FWATER1 e un flat');
+  Assert.AreEqual<Integer>(0, Length(Parse('texture FWATER1 pic 1 tics 8 pic 2 tics 8')), 'FWATER1 e un flat');
 end;
 
 procedure TTestAnimDefsParser.TestGliOffsetAnimatiSonoLaBaseELeRigheDiPic;
@@ -207,7 +207,7 @@ var
   LOffsets: TArray<Integer>;
 begin
   LOffsets := Parse('flat FWATER1 pic 1 tics 8 pic 3 tics 8 pic 2 tics 8')[0].AnimatedOffsets;
-  Assert.AreEqual(4, Length(LOffsets));
+  Assert.AreEqual<Integer>(4, Length(LOffsets));
   Assert.AreEqual(0, LOffsets[0]);
   Assert.AreEqual(0, LOffsets[1]);
   Assert.AreEqual(2, LOffsets[2]);
@@ -219,8 +219,8 @@ var
   LAnimation: TDefAnimation;
 begin
   LAnimation := Parse('flat FWATER1 pic 1 tics 8 pic 7 foo pic 2 tics 8 pic 3 tics 8')[0];
-  Assert.AreEqual(3, Length(LAnimation.Frames));
-  Assert.AreEqual(5, Length(LAnimation.AnimatedOffsets));
+  Assert.AreEqual<Integer>(3, Length(LAnimation.Frames));
+  Assert.AreEqual<Integer>(5, Length(LAnimation.AnimatedOffsets));
   Assert.AreEqual(6, LAnimation.AnimatedOffsets[2]);
   Assert.IsTrue(Pos('Unknown animation type: foo', FLog.Joined) > 0);
 end;
@@ -247,7 +247,7 @@ begin
     begin
       Parse(LText);
     end, EDefinitionsException, 'too many AnimDefs \(128\)');
-  Assert.AreEqual(DEFINITIONS_MAX_ANIMATIONS, Length(Parse(Copy(LText, 1,
+  Assert.AreEqual<Integer>(DEFINITIONS_MAX_ANIMATIONS, Length(Parse(Copy(LText, 1,
     DEFINITIONS_MAX_ANIMATIONS * Length('flat FWATER1 pic 1 tics 8 pic 2 tics 8'#10)))));
 end;
 
@@ -271,7 +271,7 @@ var
   LAnimations: TArray<TDefAnimation>;
 begin
   LAnimations := Parse('foo FWATER1 pic 1 tics 8 pic 2 tics 8');
-  Assert.AreEqual(1, Length(LAnimations));
+  Assert.AreEqual<Integer>(1, Length(LAnimations));
   Assert.IsTrue(Pos('Unknown animation type: foo', FLog.Joined) > 0);
 end;
 
@@ -281,11 +281,11 @@ var
 begin
   // texture ignorata: lo slot resta quello di una texture
   LAnimations := Parse('texture NOSUCH pic 1 tics 8 foo BLODGR1 pic 1 tics 8 pic 2 tics 8');
-  Assert.AreEqual(1, Length(LAnimations));
+  Assert.AreEqual<Integer>(1, Length(LAnimations));
   Assert.IsTrue(LAnimations[0].Kind = TDefAnimKind.Texture);
   // animazione tenuta: lo slot nuovo e un flat
   LAnimations := Parse('texture BLODGR1 pic 1 tics 8 pic 2 tics 8 foo FWATER1 pic 1 tics 8 pic 2 tics 8');
-  Assert.AreEqual(2, Length(LAnimations));
+  Assert.AreEqual<Integer>(2, Length(LAnimations));
   Assert.IsTrue(LAnimations[1].Kind = TDefAnimKind.Flat);
 end;
 
@@ -296,7 +296,7 @@ begin
   LAnimation := Parse('flat FWATER1 pic 4 tics 8 pic tics 8 pic 2 tics 8')[0];
   Assert.IsTrue(Pos('Bad numeric constant "tics"', FLog.Joined) > 0);
   // la riga senza numero non e un frame (il "8" non e tics ne rand), le altre si leggono
-  Assert.AreEqual(2, Length(LAnimation.Frames));
+  Assert.AreEqual<Integer>(2, Length(LAnimation.Frames));
   Assert.AreEqual(2, LAnimation.Frames[1].PicNumber);
 end;
 
@@ -305,7 +305,7 @@ var
   LAnimations: TArray<TDefAnimation>;
 begin
   LAnimations := TDefinitionsFactory.CreateAnimDefsParser(FCatalogIntf, nil).Parse('foo FWATER1 pic 1 tics 8 pic 2 tics 8');
-  Assert.AreEqual(1, Length(LAnimations));
+  Assert.AreEqual<Integer>(1, Length(LAnimations));
 end;
 
 procedure TTestAnimDefsParser.TestDueLettureNonSiInfluenzano;
@@ -313,14 +313,14 @@ var
   LParser: IDefAnimDefsParser;
 begin
   LParser := TDefinitionsFactory.CreateAnimDefsParser(FCatalogIntf, FLogIntf);
-  Assert.AreEqual(1, Length(LParser.Parse('flat FWATER1 pic 1 tics 8 pic 2 tics 8')));
-  Assert.AreEqual(1, Length(LParser.Parse('flat FWATER2 pic 1 tics 8 pic 2 tics 8')));
+  Assert.AreEqual<Integer>(1, Length(LParser.Parse('flat FWATER1 pic 1 tics 8 pic 2 tics 8')));
+  Assert.AreEqual<Integer>(1, Length(LParser.Parse('flat FWATER2 pic 1 tics 8 pic 2 tics 8')));
 end;
 
 procedure TTestAnimDefsParser.TestIFineRigaCrLfEdLfSonoLoStesso;
 begin
-  Assert.AreEqual(2, Length(Parse('flat FWATER1'#13#10'pic 1 tics 8'#13#10'pic 2 tics 8'#13#10)[0].Frames));
-  Assert.AreEqual(2, Length(Parse('flat FWATER1'#10'pic 1 tics 8'#10'pic 2 tics 8'#10)[0].Frames));
+  Assert.AreEqual<Integer>(2, Length(Parse('flat FWATER1'#13#10'pic 1 tics 8'#13#10'pic 2 tics 8'#13#10)[0].Frames));
+  Assert.AreEqual<Integer>(2, Length(Parse('flat FWATER1'#10'pic 1 tics 8'#10'pic 2 tics 8'#10)[0].Frames));
 end;
 
 end.

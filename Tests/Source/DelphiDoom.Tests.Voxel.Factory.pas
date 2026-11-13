@@ -35,7 +35,7 @@ var
   LCount: Integer;
 begin
   LFormats := TVoxelFactory.CreateFormats(TVoxelFakeLog.Create);
-  Assert.AreEqual(4, Length(LFormats));
+  Assert.AreEqual<Integer>(4, Length(LFormats));
   for LExtension in TArray<string>.Create('.DDVOX', '.DDMESH', '.KVX', '', '.VOX') do
   begin
     LCount := 0;

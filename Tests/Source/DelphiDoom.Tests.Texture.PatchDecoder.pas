@@ -142,7 +142,7 @@ begin
   Assert.IsTrue(FDecoder.Decode(Patch(1, 4, TArray<TBytes>.Create(TBytes.Create(2, 4, 0, 1, 2, 3, 4, 0, $FF))), FImage),
     'dovrebbe riuscire');
   Assert.AreEqual(Expected(2), PTextureColorArray(FImage.PixelsPointer)^[3], 'dovrebbe colorare i pixel dentro');
-  Assert.AreEqual(16, Length(FImage.Pixels), 'dovrebbe tenere la dimensione');
+  Assert.AreEqual<Integer>(16, Length(FImage.Pixels), 'dovrebbe tenere la dimensione');
 end;
 
 procedure TTestTexturePatchDecoder.DovrebbeRifiutareUnaColonnaFuoriDalLump;

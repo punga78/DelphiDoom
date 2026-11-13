@@ -134,7 +134,7 @@ begin
     LOutline := LCatalog.BuildOutline('');
     try
       // the comparison does not look at the case, so the second line is the same as the first
-      Assert.AreEqual(2, Length(LOutline.ToLines));
+      Assert.AreEqual<Integer>(2, Length(LOutline.ToLines));
     finally
       LOutline.Free;
     end;
@@ -239,14 +239,14 @@ begin
   try
     LCatalog.Load(FLibraryIntf, 'doom');
     LRows := LCatalog.RowsFor('Spawn Frame: S_POSS1');
-    Assert.AreEqual(4, Length(LRows));
+    Assert.AreEqual<Integer>(4, Length(LRows));
     Assert.AreEqual('Name', LRows[0].Caption);
     Assert.AreEqual('S_POSS1', LRows[0].Values[0]);
     Assert.AreEqual('Sprite Number', LRows[1].Caption);
     Assert.AreEqual('POSS', LRows[1].Values[0]);
     Assert.AreEqual('C', LRows[2].Values[0]);
     // a number that is a place of the table works too
-    Assert.AreEqual(4, Length(LCatalog.RowsFor('Spawn Frame: 2')));
+    Assert.AreEqual<Integer>(4, Length(LCatalog.RowsFor('Spawn Frame: 2')));
   finally
     LCatalog.Free;
   end;
@@ -261,10 +261,10 @@ begin
   LCatalog := TIdeMobjinfoCatalog.Create;
   try
     LCatalog.Load(FLibraryIntf, 'doom');
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('MT_IMP')));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('Name: MT_IMP')));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('Spawn Frame: nothing')));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('MT_IMP')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('Name: MT_IMP')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('Spawn Frame: nothing')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('')));
   finally
     LCatalog.Free;
   end;
@@ -304,10 +304,10 @@ begin
   LCatalog := TIdeStateCatalog.Create;
   try
     LCatalog.Load(FLibraryIntf, 'doom');
-    Assert.AreEqual(4, Length(LCatalog.RowsFor('S_POSS1')));
-    Assert.AreEqual(4, Length(LCatalog.RowsFor('Next Frame: S_POSS1')));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('Duration: 3')));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('S_UNKNOWN')));
+    Assert.AreEqual<Integer>(4, Length(LCatalog.RowsFor('S_POSS1')));
+    Assert.AreEqual<Integer>(4, Length(LCatalog.RowsFor('Next Frame: S_POSS1')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('Duration: 3')));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('S_UNKNOWN')));
   finally
     LCatalog.Free;
   end;
@@ -360,12 +360,12 @@ begin
   try
     LCatalog.Load(FLibraryIntf, 'doom');
     LRows := LCatalog.RowsFor('TROO', 0);
-    Assert.AreEqual(2, Length(LRows));
+    Assert.AreEqual<Integer>(2, Length(LRows));
     Assert.AreEqual('MT_BOSS', LRows[0].Caption);
     Assert.AreEqual('MT_IMP', LRows[1].Caption);
     LRows := LCatalog.RowsFor('TROOB', 1);
-    Assert.AreEqual(2, Length(LRows));
-    Assert.AreEqual(0, Length(LCatalog.RowsFor('NONE', 0)));
+    Assert.AreEqual<Integer>(2, Length(LRows));
+    Assert.AreEqual<Integer>(0, Length(LCatalog.RowsFor('NONE', 0)));
   finally
     LCatalog.Free;
   end;
@@ -381,7 +381,7 @@ begin
   try
     LCatalog.Load(FLibraryIntf, 'doom');
     LRows := LCatalog.RowsFor('MT_IMP', 2);
-    Assert.AreEqual(1, Length(LRows));
+    Assert.AreEqual<Integer>(1, Length(LRows));
     Assert.AreEqual('MT_IMP', LRows[0].Caption);
   finally
     LCatalog.Free;
@@ -407,7 +407,7 @@ begin
     LOutline := LCatalog.BuildOutline('');
     try
       // AAAA, its three frames, and the actor under the two frames the walk touched
-      Assert.AreEqual(6, Length(LOutline.ToLines));
+      Assert.AreEqual<Integer>(6, Length(LOutline.ToLines));
     finally
       LOutline.Free;
     end;

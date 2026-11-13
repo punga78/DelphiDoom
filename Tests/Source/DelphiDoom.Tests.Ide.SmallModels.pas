@@ -256,7 +256,7 @@ begin
     Assert.AreEqual(2, LProject.Count);
     LOutline := TIdeProjectOutline.Build(LProject);
     try
-      Assert.AreEqual(3, Length(LOutline.ToLines));
+      Assert.AreEqual<Integer>(3, Length(LOutline.ToLines));
     finally
       LOutline.Free;
     end;
@@ -299,7 +299,7 @@ var
 begin
   LOutline := TIdeProjectOutline.Build(nil);
   try
-    Assert.AreEqual(3, Length(LOutline.ToLines));
+    Assert.AreEqual<Integer>(3, Length(LOutline.ToLines));
   finally
     LOutline.Free;
   end;
@@ -312,7 +312,7 @@ var
   LEntries: TArray<TIdeEventEntry>;
 begin
   LEntries := TIdeEventSnippets.Parse(TArray<string>.Create('ONTICK|event OnTick;|begin|end;', 'NODECL'));
-  Assert.AreEqual(2, Length(LEntries));
+  Assert.AreEqual<Integer>(2, Length(LEntries));
   Assert.AreEqual('ONTICK', LEntries[0].Name);
   Assert.AreEqual('event OnTick;|begin|end;', LEntries[0].Declaration);
   Assert.AreEqual('NODECL', LEntries[1].Name);

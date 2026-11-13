@@ -210,8 +210,8 @@ begin
 
   LImage := FClient.DecodeIndexed(LPng);
   Assert.AreEqual(2, LImage.Info.PaletteCount);
-  Assert.AreEqual(4, Length(LImage.Pixels));
-  Assert.AreEqual(DDPNG_PALETTE_BYTES, Length(LImage.Palette));
+  Assert.AreEqual<Integer>(4, Length(LImage.Pixels));
+  Assert.AreEqual<Integer>(DDPNG_PALETTE_BYTES, Length(LImage.Palette));
   Assert.AreEqual(Integer(0), Integer(LImage.Pixels[0]));
   Assert.AreEqual(Integer(1), Integer(LImage.Pixels[1]));
   Assert.AreEqual(Integer(1), Integer(LImage.Pixels[2]));

@@ -90,7 +90,7 @@ end;
 
 procedure TTestRadixPaletteBuilder.DovrebbeFare22PaletteInPlayPal;
 begin
-  Assert.AreEqual(22 * 768, Length(FBuilder.BuildPlayPal(DistinctPalette(5))));
+  Assert.AreEqual<Integer>(22 * 768, Length(FBuilder.BuildPlayPal(DistinctPalette(5))));
 end;
 
 procedure TTestRadixPaletteBuilder.DovrebbeCopiareLaPalettaBaseNellaPrima;
@@ -121,7 +121,7 @@ end;
 
 procedure TTestRadixPaletteBuilder.DovrebbeFare34TabelleInColorMap;
 begin
-  Assert.AreEqual(34 * 256, Length(FBuilder.BuildColorMap(DistinctPalette(5))));
+  Assert.AreEqual<Integer>(34 * 256, Length(FBuilder.BuildColorMap(DistinctPalette(5))));
 end;
 
 procedure TTestRadixPaletteBuilder.DovrebbeTenereIColoriNellaTabellaDiLuceZero;

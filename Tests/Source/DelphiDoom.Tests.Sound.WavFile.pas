@@ -55,6 +55,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.Tests.Support.ExtendedQuotient;
+
 {$Q-}
 {$R-}
 
@@ -260,7 +263,8 @@ begin
       3: LDouble := 1.5;
       4: LDouble := -2.5;
     else
-      LDouble := (Integer(LState shr 8) mod 4000001 - 2000000) / 1000000.0;
+      // the quotient of the 32 bit FPU, the one of the golden files
+      LDouble := TExtendedQuotient.Divide(Integer(LState shr 8) mod 4000001 - 2000000, 1000000.0);
     end;
     if ADouble then
       Move(LDouble, LRaw, 8)

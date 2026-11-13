@@ -193,7 +193,7 @@ begin
   LRle := TBytes.Create(200, 5, 0, 1);
   Assert.IsTrue(FDecoder.Decode(TTextureSamples.Bmp(4, 2, 8, 1, TTextureSamples.RandomBytes(3, 1024), LRle), FImage),
     'dovrebbe riuscire');
-  Assert.AreEqual(8, Length(FImage.Pixels), 'dovrebbe tenere la dimensione');
+  Assert.AreEqual<Integer>(8, Length(FImage.Pixels), 'dovrebbe tenere la dimensione');
   Assert.AreEqual(Byte(5), FImage.Pixels[7], 'dovrebbe scrivere fino alla fine dell''immagine');
 end;
 

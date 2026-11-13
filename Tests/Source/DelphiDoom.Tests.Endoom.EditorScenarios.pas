@@ -188,6 +188,7 @@ var
   LList: TArray<TEditorDrawCase>;
   LCount: Integer;
   LState: Cardinal;
+  LDownX, LDownY, LUpX, LUpY: Integer;
 
   procedure Add(ADownX, ADownY, AUpX, AUpY: Integer);
   begin
@@ -229,8 +230,15 @@ begin
       for LSecond := 0 to High(POINTS) do
         Add(POINTS[LFirst, 0], POINTS[LFirst, 1], POINTS[LSecond, 0], POINTS[LSecond, 1]);
     for LRound := 1 to 300 do
-      Add(Integer(NextRandom(LState) mod ENDOOM_COLUMNS), Integer(NextRandom(LState) mod ENDOOM_ROWS),
-        Integer(NextRandom(LState) mod ENDOOM_COLUMNS), Integer(NextRandom(LState) mod ENDOOM_ROWS));
+    begin
+      // the draws in the order of the 32 bit compiler (the arguments from the right): the order of
+      // evaluation is not defined and the 64 bit compiler uses another one
+      LUpY := Integer(NextRandom(LState) mod ENDOOM_ROWS);
+      LUpX := Integer(NextRandom(LState) mod ENDOOM_COLUMNS);
+      LDownY := Integer(NextRandom(LState) mod ENDOOM_ROWS);
+      LDownX := Integer(NextRandom(LState) mod ENDOOM_COLUMNS);
+      Add(LDownX, LDownY, LUpX, LUpY);
+    end;
   end;
   SetLength(LList, LCount);
   Result := LList;

@@ -116,7 +116,7 @@ var
   LIndex: Integer;
 begin
   Assert.IsTrue(FDecoder.DecodeIs2(Picture(2, 4, 0, TBytes.Create(3, 1, 5, 0, 0, 1, 6, 0)), LBitmap));
-  Assert.AreEqual(8, Length(LBitmap.Pixels));
+  Assert.AreEqual<Integer>(8, Length(LBitmap.Pixels));
   Assert.AreEqual<Byte>(5, LBitmap.Pixels[3]);
   Assert.AreEqual<Byte>(6, LBitmap.Pixels[4]);
   for LIndex in [0, 1, 2, 5, 6, 7] do
@@ -141,7 +141,7 @@ begin
   LBytes[0] := Ord('X');
   Assert.IsFalse(FDecoder.DecodeIs2(LBytes, LBitmap));
   Assert.AreEqual(0, LBitmap.Width);
-  Assert.AreEqual(0, Length(LBitmap.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LBitmap.Pixels));
 end;
 
 procedure TTestSpeedIs2Decoder.DovrebbeRifiutareUnFileCortoDellIntestazione;
@@ -184,7 +184,7 @@ var
   LBitmap: TSpeedBitmap;
 begin
   Assert.IsTrue(FDecoder.DecodeIs2(Picture(0, 5, 0, nil), LBitmap));
-  Assert.AreEqual(0, Length(LBitmap.Pixels));
+  Assert.AreEqual<Integer>(0, Length(LBitmap.Pixels));
 end;
 
 procedure TTestSpeedIs2Decoder.DovrebbeDecodificareLeImmaginiSinteticheSenzaErrori;
@@ -192,9 +192,9 @@ var
   LBitmap: TSpeedBitmap;
 begin
   Assert.IsTrue(FDecoder.DecodeIs2(TJclBuilder.Is2(5, 20, 30, False), LBitmap));
-  Assert.AreEqual(600, Length(LBitmap.Pixels));
+  Assert.AreEqual<Integer>(600, Length(LBitmap.Pixels));
   Assert.IsTrue(FDecoder.DecodeIs2(TJclBuilder.Is2(6, 20, 30, True), LBitmap));
-  Assert.AreEqual(600, Length(LBitmap.Pixels));
+  Assert.AreEqual<Integer>(600, Length(LBitmap.Pixels));
 end;
 
 end.

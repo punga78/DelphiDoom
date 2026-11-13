@@ -61,7 +61,7 @@ begin
   finally
     LCase.Free;
   end;
-  Assert.AreEqual(3, Length(LNames), 'dovrebbe leggere tre nomi');
+  Assert.AreEqual<Integer>(3, Length(LNames), 'dovrebbe leggere tre nomi');
   Assert.AreEqual('WALL1', LNames[0]);
   Assert.AreEqual('WALL2', LNames[1]);
   Assert.AreEqual('DOOR', LNames[2]);
@@ -106,7 +106,7 @@ begin
   finally
     LCase.Free;
   end;
-  Assert.AreEqual(0, Length(LNames), 'dovrebbe dare una lista vuota');
+  Assert.AreEqual<Integer>(0, Length(LNames), 'dovrebbe dare una lista vuota');
 end;
 
 procedure TTestTextureDefsPatchNamesReader.TestALumpWithoutCountIsAnError;

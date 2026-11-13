@@ -115,7 +115,7 @@ begin
   AddTexture('PAL', 4, 2, 1, 2);
   Assert.IsTrue(FDecoder.Decode(Text('texture=PAL'), FImage), 'dovrebbe riuscire');
   Assert.AreEqual(4, FImage.BytesPerPixel, 'dovrebbe dare 32 bit');
-  Assert.AreEqual(8 * 4, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
+  Assert.AreEqual<Integer>(8 * 4, Length(FImage.Pixels), 'dovrebbe avere 4 byte per pixel');
   Assert.AreEqual(LPalette[LIndices[0]], PCardinal(FImage.PixelsPointer)^, 'dovrebbe dare il colore della palette');
 end;
 

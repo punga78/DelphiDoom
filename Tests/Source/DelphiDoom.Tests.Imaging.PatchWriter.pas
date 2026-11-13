@@ -171,7 +171,7 @@ begin
   LPatch := FWriter.Build(LPixels, 1, 2, False);
   Move(LPatch[8], LOffset, SizeOf(LOffset));
   Assert.AreEqual(12, LOffset, 'dopo l''intestazione e la tabella di una colonna');
-  Assert.AreEqual(12 + 3 + 1 + 1 + 2, Length(LPatch));
+  Assert.AreEqual<Integer>(12 + 3 + 1 + 1 + 2, Length(LPatch));
   Assert.AreEqual(0, Integer(LPatch[12]), 'topdelta');
   Assert.AreEqual(1, Integer(LPatch[13]), 'lunghezza');
   Assert.AreEqual(0, Integer(LPatch[14]), 'riempimento');
@@ -189,7 +189,7 @@ begin
   SetLength(LPixels, 4);
   LPatch := FWriter.Build(LPixels, 1, 4, False);
   // header 8 + table 4, then only the end of the column
-  Assert.AreEqual(8 + 4 + 2, Length(LPatch));
+  Assert.AreEqual<Integer>(8 + 4 + 2, Length(LPatch));
   Assert.AreEqual($FF, Integer(LPatch[12]));
 end;
 
@@ -202,7 +202,7 @@ begin
   LPatch := FWriter.Build(LPixels, 1, 4, True);
   Assert.AreEqual(0, Integer(LPatch[12]), 'topdelta');
   Assert.AreEqual(4, Integer(LPatch[13]), 'lunghezza: tutta la colonna');
-  Assert.AreEqual(8 + 4 + 3 + 4 + 1 + 2, Length(LPatch));
+  Assert.AreEqual<Integer>(8 + 4 + 3 + 4 + 1 + 2, Length(LPatch));
 end;
 
 procedure TTestImagingPatchWriter.DovrebbeFarTornareLaStessaImmagineAlLettoreDelleLibreria;
@@ -255,7 +255,7 @@ var
   LPatch: TBytes;
 begin
   LPatch := FWriter.Build(nil, 0, 0, False);
-  Assert.AreEqual(8, Length(LPatch));
+  Assert.AreEqual<Integer>(8, Length(LPatch));
 end;
 
 procedure TTestImagingPatchWriter.DovrebbeAccettareLAltezzaMassimaDi255;

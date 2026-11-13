@@ -90,11 +90,11 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pnames A B', 'tex1 STARTAN 128 96 0 0,1,2 1,-3,4'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(1, Length(LTextures), 'dovrebbe leggere una texture');
+  Assert.AreEqual<Integer>(1, Length(LTextures), 'dovrebbe leggere una texture');
   Assert.AreEqual('STARTAN', LTextures[0].Name);
   Assert.AreEqual(128, Integer(LTextures[0].Width));
   Assert.AreEqual(96, Integer(LTextures[0].Height));
-  Assert.AreEqual(2, Length(LTextures[0].Patches));
+  Assert.AreEqual<Integer>(2, Length(LTextures[0].Patches));
   Assert.AreEqual(1, Integer(LTextures[0].Patches[0].OriginX));
   Assert.AreEqual(2, Integer(LTextures[0].Patches[0].OriginY));
   Assert.AreEqual(-3, Integer(LTextures[0].Patches[1].OriginX));
@@ -107,7 +107,7 @@ var
 begin
   LTextures := ReadLines(['format strife', 'pnames A B', 'tex1 STARTAN 128 96 0 0,1,2 1,-3,4',
     'tex1 SECOND 64 64 0 1,0,0'], TTextureDefsFormat.Strife);
-  Assert.AreEqual(2, Length(LTextures), 'dovrebbe leggere due texture');
+  Assert.AreEqual<Integer>(2, Length(LTextures), 'dovrebbe leggere due texture');
   Assert.AreEqual('STARTAN', LTextures[0].Name);
   Assert.AreEqual(96, Integer(LTextures[0].Height));
   Assert.AreEqual(-3, Integer(LTextures[0].Patches[1].OriginX));
@@ -148,7 +148,7 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pnames A', 'tex1 EMPTYTEX 8 8 0', 'tex1 NEXT 8 8 0 0,0,0'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(0, Length(LTextures[0].Patches), 'dovrebbe ammettere zero patch');
+  Assert.AreEqual<Integer>(0, Length(LTextures[0].Patches), 'dovrebbe ammettere zero patch');
   Assert.AreEqual('NEXT', LTextures[1].Name);
 end;
 
@@ -166,7 +166,7 @@ var
   LTextures: TArray<TTextureDefsTexture>;
 begin
   LTextures := ReadLines(['pnames A'], TTextureDefsFormat.Standard);
-  Assert.AreEqual(0, Length(LTextures), 'dovrebbe dare zero texture');
+  Assert.AreEqual<Integer>(0, Length(LTextures), 'dovrebbe dare zero texture');
 end;
 
 procedure TTestTextureDefsTextureLumpReader.TestADirectoryOffsetPastTheEndIsAnError;

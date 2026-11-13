@@ -317,7 +317,7 @@ begin
     LAssembler.Free;
   end;
   Assert.AreEqual(0, LGwa.Version);
-  Assert.AreEqual(2, Length(LGwa.GlVertexes));
+  Assert.AreEqual<Integer>(2, Length(LGwa.GlVertexes));
   Assert.AreEqual(3 * 65536, LGwa.GlVertexes[0].X);
   Assert.AreEqual(-4 * 65536, LGwa.GlVertexes[0].Y);
   Assert.AreEqual(Integer(-32768) * 65536, LGwa.GlVertexes[1].X);
@@ -402,7 +402,7 @@ begin
     LAssembler.Free;
   end;
   Assert.AreEqual(0, LGwa.Version);
-  Assert.AreEqual(0, Length(LGwa.GlVertexes));
+  Assert.AreEqual<Integer>(0, Length(LGwa.GlVertexes));
 end;
 
 procedure TTestNodesGwaReader.TestIlNomeDeiLumpNonDovrebbeDistinguereLeMaiuscole;
@@ -422,7 +422,7 @@ begin
     LAssembler.Free;
   end;
   Assert.AreEqual(2, LGwa.Version);
-  Assert.AreEqual(1, Length(LGwa.GlVertexes));
+  Assert.AreEqual<Integer>(1, Length(LGwa.GlVertexes));
 end;
 
 procedure TTestNodesGwaReader.TestUnLumpCheFinisceATrattoNonDovrebbeDareIlRecordParziale;
@@ -441,7 +441,7 @@ begin
   finally
     LAssembler.Free;
   end;
-  Assert.AreEqual(1, Length(LGwa.GlVertexes));
+  Assert.AreEqual<Integer>(1, Length(LGwa.GlVertexes));
 end;
 
 initialization

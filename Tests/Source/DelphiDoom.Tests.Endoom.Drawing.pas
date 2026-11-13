@@ -168,7 +168,7 @@ begin
   for LIndex := 0 to High(LGolden) do
     if LGolden[LIndex].StartsWith(LWanted) then
       Inc(LGroup);
-  Assert.AreEqual((Length(LCases) + GROUPSIZE - 1) div GROUPSIZE, LGroup, 'groups of the golden file');
+  Assert.AreEqual<Integer>((Length(LCases) + GROUPSIZE - 1) div GROUPSIZE, LGroup, 'groups of the golden file');
 end;
 
 procedure TTestEndoomDrawing.DovrebbeSeguireLaLineaDelVecchioEditor;
@@ -176,7 +176,7 @@ var
   LCells: TArray<TPoint>;
 begin
   LCells := TEndoomDrawing.TraceCells(0, 0, 4, 2);
-  Assert.AreEqual(5, Length(LCells));
+  Assert.AreEqual<Integer>(5, Length(LCells));
   Assert.AreEqual(0, LCells[0].X);
   Assert.AreEqual(0, LCells[0].Y);
   Assert.AreEqual(4, LCells[4].X);
@@ -188,15 +188,15 @@ var
   LCells: TArray<TPoint>;
 begin
   LCells := TEndoomDrawing.TraceCells(7, 9, 7, 9);
-  Assert.AreEqual(1, Length(LCells));
+  Assert.AreEqual<Integer>(1, Length(LCells));
   Assert.AreEqual(7, LCells[0].X);
   Assert.AreEqual(9, LCells[0].Y);
 end;
 
 procedure TTestEndoomDrawing.DovrebbeTracciareUnaLineaOrizzontaleEUnaVerticale;
 begin
-  Assert.AreEqual(10, Length(TEndoomDrawing.TraceCells(2, 5, 11, 5)));
-  Assert.AreEqual(8, Length(TEndoomDrawing.TraceCells(3, 1, 3, 8)));
+  Assert.AreEqual<Integer>(10, Length(TEndoomDrawing.TraceCells(2, 5, 11, 5)));
+  Assert.AreEqual<Integer>(8, Length(TEndoomDrawing.TraceCells(3, 1, 3, 8)));
 end;
 
 procedure TTestEndoomDrawing.DovrebbeTracciareInEntrambiIVersi;
@@ -204,7 +204,7 @@ var
   LCells: TArray<TPoint>;
 begin
   LCells := TEndoomDrawing.TraceCells(10, 10, 4, 7);
-  Assert.AreEqual(7, Length(LCells));
+  Assert.AreEqual<Integer>(7, Length(LCells));
   Assert.AreEqual(10, LCells[0].X);
   Assert.AreEqual(4, LCells[High(LCells)].X);
   Assert.AreEqual(7, LCells[High(LCells)].Y);

@@ -78,8 +78,8 @@ end;
 
 procedure TTestImagingResampler.DovrebbeDareLaDimensioneChiesta;
 begin
-  Assert.AreEqual(160 * 50, Length(FResampler.Resample(Solid(640, 400, 0), 640, 400, 160, 50)));
-  Assert.AreEqual(7 * 3, Length(FResampler.Resample(Solid(5, 9, 0), 5, 9, 7, 3)));
+  Assert.AreEqual<Integer>(160 * 50, Length(FResampler.Resample(Solid(640, 400, 0), 640, 400, 160, 50)));
+  Assert.AreEqual<Integer>(7 * 3, Length(FResampler.Resample(Solid(5, 9, 0), 5, 9, 7, 3)));
 end;
 
 procedure TTestImagingResampler.DovrebbeLasciareUnaPitturaDelloStessoColoreDelloStessoColore;
@@ -117,7 +117,7 @@ var
   LPixel: Cardinal;
 begin
   LResult := FResampler.Resample([$336699], 1, 1, 160, 50);
-  Assert.AreEqual(160 * 50, Length(LResult));
+  Assert.AreEqual<Integer>(160 * 50, Length(LResult));
   for LPixel in LResult do
     Assert.AreEqual(Int64($336699), Int64(LPixel and $FFFFFF));
 end;

@@ -87,7 +87,7 @@ begin
   Run(Dat);
   LExpected := ['P_START', 'RDXW0000', 'RDXW0001', 'RDXW0002', 'RSKY1', 'RSKY1B', 'RSKY2',
     'RSKY2B', 'RSKY3', 'RSKY3B', 'P_END', 'TEXTURE0', 'PNAMES0'];
-  Assert.AreEqual(Length(LExpected), FWad.Count);
+  Assert.AreEqual<Integer>(Length(LExpected), FWad.Count);
   for LIndex := 0 to High(LExpected) do
     Assert.AreEqual(LExpected[LIndex], FWad.LumpNames[LIndex]);
 end;
@@ -110,7 +110,7 @@ begin
   LPnames := FWad.LumpData[FWad.IndexOf('PNAMES0')];
   // stub, 2 bitmaps and 3 skies of 2 patches: 9 names
   Assert.AreEqual(9, ReadInt(LPnames, 0));
-  Assert.AreEqual(4 + 9 * 8, Length(LPnames));
+  Assert.AreEqual<Integer>(4 + 9 * 8, Length(LPnames));
   Assert.AreEqual('RDXW0000', TEncoding.ASCII.GetString(LPnames, 4, 8));
   Assert.AreEqual('RSKY3B' + #0#0, TEncoding.ASCII.GetString(LPnames, 4 + 8 * 8, 8));
 end;
@@ -125,7 +125,7 @@ begin
   Assert.AreEqual(6, ReadInt(LTextures, 0));
   Assert.AreEqual(4 + 6 * 4, ReadInt(LTextures, 4));
   Assert.AreEqual(4 + 6 * 4 + 32, ReadInt(LTextures, 8));
-  Assert.AreEqual(4 + 24 + 3 * 32 + 3 * 32 + 3 * 10, Length(LTextures));
+  Assert.AreEqual<Integer>(4 + 24 + 3 * 32 + 3 * 32 + 3 * 10, Length(LTextures));
 end;
 
 procedure TTestRadixTexturePart.DovrebbeScrivereGliOffsetDelleTextureDeiCieliConLaSecondaPatch;
@@ -145,7 +145,7 @@ end;
 procedure TTestRadixTexturePart.DovrebbeDareUnAliasPerOgniMuroEPerIlCieloTrovato;
 begin
   Run(Dat);
-  Assert.AreEqual(4, Length(FAliases));
+  Assert.AreEqual<Integer>(4, Length(FAliases));
   Assert.AreEqual('RDXW0001=Wall0', FAliases[0]);
   Assert.AreEqual('RDXW0002=Wall1', FAliases[1]);
   Assert.AreEqual('RSKY1=MainEpisodeImage[1]', FAliases[2]);

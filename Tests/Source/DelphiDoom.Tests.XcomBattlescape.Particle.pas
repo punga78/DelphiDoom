@@ -153,7 +153,7 @@ var
 begin
   LTints := MakeTints;
   SetLength(LTints, 2);
-  Assert.AreEqual(2048, Length(TXcomTransparencyTable.Build(MakePalette, LTints)));
+  Assert.AreEqual<Integer>(2048, Length(TXcomTransparencyTable.Build(MakePalette, LTints)));
 end;
 
 procedure TTestXcomTransparencyTable.DovrebbeLasciareTrasparenteIlColoreZero;

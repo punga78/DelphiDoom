@@ -806,7 +806,7 @@ begin
     LMap.AddRoot('c:\two');
     LMap.AddRoot('c:\three');
     LFolders := LMap.Folders('SOUND');
-    Assert.AreEqual(2, Length(LFolders));
+    Assert.AreEqual<Integer>(2, Length(LFolders));
     Assert.AreEqual('c:\one\SOUND', LFolders[0]);
   finally
     LMap.Free;
@@ -823,7 +823,7 @@ begin
   try
     LFiles.Put('c:\one\Language\a.yml', 'abc');
     LMap.AddRoot('c:\one');
-    Assert.AreEqual(3, Length(LMap.ReadAll('Language/a.yml')));
+    Assert.AreEqual<Integer>(3, Length(LMap.ReadAll('Language/a.yml')));
   finally
     LMap.Free;
   end;
@@ -842,7 +842,7 @@ begin
     LFiles.WriteAll(LPath, [1, 2, 3]);
     Assert.IsTrue(LFiles.FileExists(LPath));
     Assert.IsTrue(LFiles.FolderExists(ExtractFilePath(LPath)));
-    Assert.AreEqual(3, Length(LFiles.ReadAll(LPath)));
+    Assert.AreEqual<Integer>(3, Length(LFiles.ReadAll(LPath)));
   finally
     TDirectory.Delete(TPath.Combine(TPath.GetTempPath, 'xcom_engine_test'), True);
   end;
@@ -861,10 +861,10 @@ begin
     LFiles.WriteAll(TPath.Combine(LFolder, 'a.YML'), [1]);
     LFiles.WriteAll(TPath.Combine(LFolder, 'c.txt'), [1]);
     LNames := LFiles.FolderContents(LFolder, 'yml');
-    Assert.AreEqual(2, Length(LNames));
+    Assert.AreEqual<Integer>(2, Length(LNames));
     Assert.AreEqual('a', LNames[0]);
     Assert.AreEqual('b', LNames[1]);
-    Assert.AreEqual(0, Length(LFiles.FolderContents(TPath.Combine(LFolder, 'none'), 'yml')));
+    Assert.AreEqual<Integer>(0, Length(LFiles.FolderContents(TPath.Combine(LFolder, 'none'), 'yml')));
   finally
     TDirectory.Delete(LFolder, True);
   end;
@@ -966,7 +966,7 @@ begin
   LColors[1].Red := 9;
   LRef.Present([0, 1, 1, 0, 1, 1, 0, 0], 4, 2, LColors);
   Assert.AreEqual(1, LDevice.Presented);
-  Assert.AreEqual(8, Length(LDevice.Pixels));
+  Assert.AreEqual<Integer>(8, Length(LDevice.Pixels));
   Assert.AreEqual(9, Integer(LDevice.Palette[1].Red));
   Assert.AreEqual('t', LDevice.Title);
   Assert.AreEqual(4, LDevice.Width);

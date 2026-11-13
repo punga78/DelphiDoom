@@ -130,8 +130,8 @@ begin
   Assert.AreEqual(3, LImage.Height, 'dovrebbe leggere l''altezza');
   Assert.AreEqual(-4, LImage.LeftOffset, 'dovrebbe leggere lo scostamento sinistro');
   Assert.AreEqual(5, LImage.TopOffset, 'dovrebbe leggere lo scostamento alto');
-  Assert.AreEqual(6, Length(LImage.Pixels), 'dovrebbe dare un pixel per ogni cella');
-  Assert.AreEqual(6, Length(LImage.Opaque), 'dovrebbe dare un segno per ogni cella');
+  Assert.AreEqual<Integer>(6, Length(LImage.Pixels), 'dovrebbe dare un pixel per ogni cella');
+  Assert.AreEqual<Integer>(6, Length(LImage.Opaque), 'dovrebbe dare un segno per ogni cella');
 end;
 
 procedure TTestImagingPatchReader.TestReadPaintsEveryColumnFromItsOffset;
@@ -175,7 +175,7 @@ var
   LImage: TImagingPatchImage;
 begin
   LImage := FReader.Read(TImagingSamples.Patch(0, 0, 0, 0, [], []));
-  Assert.AreEqual(0, Length(LImage.Pixels), 'non dovrebbe dare pixel');
+  Assert.AreEqual<Integer>(0, Length(LImage.Pixels), 'non dovrebbe dare pixel');
   Assert.AreEqual(0, FFake.Offsets.Count, 'non dovrebbe dipingere');
 end;
 

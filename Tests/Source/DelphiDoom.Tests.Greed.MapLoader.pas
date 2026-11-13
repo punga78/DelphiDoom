@@ -88,7 +88,7 @@ begin
   // "map" is the lump 1: the map 0 is the lump 2
   LMap := TGreedFactory.CreateMapLoader(FArchive, nil).Load(0);
   Assert.AreEqual(5, Integer(LMap.Planes[gpNorthWall][5]));
-  Assert.AreEqual(3, Length(LMap.Trailer));
+  Assert.AreEqual<Integer>(3, Length(LMap.Trailer));
 end;
 
 procedure TTestGreedMapLoader.DovrebbeLeggereLaMappaDalFileSeIlLumpEVuoto;

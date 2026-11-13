@@ -107,7 +107,7 @@ var
 begin
   LPcm := FClient.DecodeAll(TMp3Samples.SilentStream(AFrameCount));
 
-  Assert.AreEqual(AFrameCount * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(AFrameCount * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
   Assert.IsTrue(TMp3Samples.IsSilent(LPcm), 'silent frames must decode to zeros');
   Assert.AreEqual(SAMPLE_FREQUENCY, Integer(FClient.Frequency));
   Assert.AreEqual(1, Integer(FClient.Channels));
@@ -137,7 +137,7 @@ begin
     LPcm := TMp3Samples.Join(LPcm, LPart);
   end;
 
-  Assert.AreEqual(6 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(6 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
 end;
 
 procedure TTestMp3Client.TestDecodeReturnsFalseWhenTheInputIsExhausted;
@@ -200,7 +200,7 @@ begin
   Assert.AreEqual(0, Integer(FClient.Frequency));
 
   LSecond := FClient.DecodeAll(LStream);
-  Assert.AreEqual(4 * SAMPLE_MONO_PCM_BYTES, Length(LFirst));
+  Assert.AreEqual<Integer>(4 * SAMPLE_MONO_PCM_BYTES, Length(LFirst));
   Assert.AreEqual(Length(LFirst), Length(LSecond));
 end;
 

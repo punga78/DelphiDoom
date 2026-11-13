@@ -247,9 +247,9 @@ var
 begin
   LNode := Node('a: [x, y, z]' + #10 + 'b: scalar' + #10 + 'c: [x, [1]]');
   LValues := TXcomNodeReader.ReadStrings(LNode, 'a', nil);
-  Assert.AreEqual(3, Length(LValues));
+  Assert.AreEqual<Integer>(3, Length(LValues));
   Assert.AreEqual('y', LValues[1]);
-  Assert.AreEqual(0, Length(TXcomNodeReader.ReadStrings(LNode, 'b', nil)));
+  Assert.AreEqual<Integer>(0, Length(TXcomNodeReader.ReadStrings(LNode, 'b', nil)));
   Assert.WillRaise(
     procedure
     begin
@@ -290,8 +290,8 @@ begin
     begin
       TXcomNodeReader.ReadDoubleRows(LNode, 'rows', nil);
     end, EYamlBadConversion);
-  Assert.AreEqual(2, Length(TXcomNodeReader.ReadDoubleRows(LNode, 'ok', nil)));
-  Assert.AreEqual(0, Length(TXcomNodeReader.ReadDoubleRows(LNode, 'missing', nil)));
+  Assert.AreEqual<Integer>(2, Length(TXcomNodeReader.ReadDoubleRows(LNode, 'ok', nil)));
+  Assert.AreEqual<Integer>(0, Length(TXcomNodeReader.ReadDoubleRows(LNode, 'missing', nil)));
 end;
 
 procedure TTestXcomModRules.DovrebbeConvertireGradiERadianti;
@@ -421,7 +421,7 @@ begin
         LRule.Load(Node('slots: [[1, 2, 3]]'), 0);
       end, EYamlBadConversion);
     LRule.Load(Node('slots: [[1, 2], [3, 4]]'), 0);
-    Assert.AreEqual(2, Length(LRule.Slots));
+    Assert.AreEqual<Integer>(2, Length(LRule.Slots));
     Assert.AreEqual(4, LRule.Slots[1].Y);
     Assert.IsTrue(LRule.IsSlotInPosition(3 * 16, 4 * 16));
   finally
@@ -443,7 +443,7 @@ begin
     LOptions.SetWeight('b', 3);
     LOptions.SetWeight('a', 1);
     LOptions.SetWeight('b', 2);
-    Assert.AreEqual(2, Length(LOptions.Names));
+    Assert.AreEqual<Integer>(2, Length(LOptions.Names));
     Assert.AreEqual('a', LOptions.Names[0]);
     LName := LOptions.Choose(LRandom);
     Assert.IsTrue((LName = 'a') or (LName = 'b'));
@@ -463,9 +463,9 @@ begin
     LOptions.SetWeight('a', 0);
     LOptions.SetWeight('b', 0);
     Assert.IsTrue(LOptions.IsEmpty);
-    Assert.AreEqual(0, Length(LOptions.Names));
+    Assert.AreEqual<Integer>(0, Length(LOptions.Names));
     LOptions.Load(Node('{x: 1, y: 2}'));
-    Assert.AreEqual(2, Length(LOptions.Names));
+    Assert.AreEqual<Integer>(2, Length(LOptions.Names));
     LOptions.Load(Node('[]'));
     LOptions.Load(Node('scalar'));
     Assert.WillRaise(
@@ -490,7 +490,7 @@ begin
       'missionZones: [[[10, 20, 30, 40, 2, CITY]], [[170, -170, -5, 5]]]'));
     Assert.AreEqual(500, LRule.BaseCost);
     Assert.AreEqual(Cardinal(12), LRule.Weight);
-    Assert.AreEqual(2, Length(LRule.MissionZones));
+    Assert.AreEqual<Integer>(2, Length(LRule.MissionZones));
     Assert.AreEqual('CITY', LRule.MissionZones[0].Areas[0].Name);
     Assert.AreEqual(2, LRule.MissionZones[0].Areas[0].Texture);
     LRule.GetRandomPoint(1, TXcomRandom.Create(5), LLongitude, LLatitude);
@@ -712,11 +712,11 @@ begin
     Assert.IsFalse(LRule.IsInGroup(0));
     Assert.IsTrue(LRule.IsFloorRevealed(3));
     LRule.Load(Node('groups: 5'));
-    Assert.AreEqual(1, Length(LRule.Groups));
+    Assert.AreEqual<Integer>(1, Length(LRule.Groups));
     Assert.IsTrue(LRule.IsInGroup(5));
     LRule.Load(Node('groups: abc'));
     Assert.IsTrue(LRule.IsInGroup(0), 'un testo vale 0');
-    Assert.AreEqual(1, Length(LRule.RevealedFloors));
+    Assert.AreEqual<Integer>(1, Length(LRule.RevealedFloors));
   finally
     LRule.Free;
   end;
@@ -759,8 +759,8 @@ begin
     Assert.AreEqual(3, LRule.Sprite);
     Assert.AreEqual(1, LRule.Criteria.Count);
     Assert.AreEqual(20, LRule.Criteria.Value(0)[1]);
-    Assert.AreEqual(2, Length(LRule.KillCriteria));
-    Assert.AreEqual(2, Length(LRule.KillCriteria[0]));
+    Assert.AreEqual<Integer>(2, Length(LRule.KillCriteria));
+    Assert.AreEqual<Integer>(2, Length(LRule.KillCriteria[0]));
     Assert.AreEqual('STR_B', LRule.KillCriteria[0][0].Names[1]);
     Assert.AreEqual(5, LRule.KillCriteria[1][0].Count);
   finally

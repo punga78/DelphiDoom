@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the net library - the synchronisation of the commands  }
 {                                                                              }
@@ -288,7 +288,7 @@ begin
   Assert.AreEqual(1, FNet.Sent.Count);
   Assert.AreEqual(0, FNet.Sent[0].FromMachine);
   Assert.AreEqual(1, FNet.Sent[0].ToMachine);
-  Assert.AreEqual(12 + 14, Length(FNet.Sent[0].Data));
+  Assert.AreEqual<Integer>(12 + 14, Length(FNet.Sent[0].Data));
   LPacket := DecodeSent(0);
   Assert.AreEqual(Byte(0), LPacket.StartTic);
   Assert.AreEqual(Byte(1), LPacket.NumTics);
@@ -585,7 +585,7 @@ var
   LIndex: Integer;
 begin
   LCommand := FA.Sync.NetCommand(2, 7);
-  Assert.AreEqual(COMMAND_SIZE, Length(LCommand));
+  Assert.AreEqual<Integer>(COMMAND_SIZE, Length(LCommand));
   for LIndex := 0 to High(LCommand) do
     Assert.AreEqual(Byte(0), LCommand[LIndex]);
   Assert.WillRaise(

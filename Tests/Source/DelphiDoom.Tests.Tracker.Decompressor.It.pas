@@ -75,7 +75,7 @@ begin
   // Differences +5, +3 and -2 with the initial width of 9 bits
   LData := TTrackerItDecompressor.Unpack(Pack([5, 3, 254], [9, 9, 9]), 3, False, False);
 
-  Assert.AreEqual(3, Length(LData));
+  Assert.AreEqual<Integer>(3, Length(LData));
   Assert.AreEqual(5 * 256, Integer(LData[0]));
   Assert.AreEqual(8 * 256, Integer(LData[1]));
   Assert.AreEqual(6 * 256, Integer(LData[2]));

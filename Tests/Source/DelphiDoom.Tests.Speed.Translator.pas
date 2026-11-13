@@ -232,7 +232,7 @@ var
   LPak: TArray<TSpeedPakEntry>;
 begin
   LPak := Translate(TJclBuilder.SyntheticGame);
-  Assert.AreEqual(2, Length(LPak));
+  Assert.AreEqual<Integer>(2, Length(LPak));
   Assert.AreEqual('MODELS\CAR0N0A.I3D', LPak[0].Name);
   Assert.AreEqual(77, LPak[0].Size);
   Assert.AreEqual('MODELS\XPR061.I3D', LPak[1].Name);
@@ -242,9 +242,9 @@ procedure TTestSpeedTranslator.DovrebbeScrivereLaPalettaELeMappeDeiColori;
 begin
   Translate(TJclBuilder.SyntheticGame);
   Assert.AreEqual(0, IndexOfLump('PLAYPAL'));
-  Assert.AreEqual(14 * 768, Length(FWad.LumpData[0]));
+  Assert.AreEqual<Integer>(14 * 768, Length(FWad.LumpData[0]));
   Assert.AreEqual(1, IndexOfLump('COLORMAP'));
-  Assert.AreEqual(34 * 256, Length(FWad.LumpData[1]));
+  Assert.AreEqual<Integer>(34 * 256, Length(FWad.LumpData[1]));
 end;
 
 procedure TTestSpeedTranslator.DovrebbeScrivereLeTextureDeiMuriEIlPnames;
@@ -264,9 +264,9 @@ begin
   Assert.AreEqual('WALL3', string(AnsiString(PAnsiChar(@LNames[28]))));
   Assert.AreEqual('WALL10', string(AnsiString(PAnsiChar(@LNames[36]))));
   Assert.AreEqual('SKY1', string(AnsiString(PAnsiChar(@LNames[44]))));
-  Assert.AreEqual(4 + 12 * 8, Length(LNames));
-  Assert.AreEqual(4 + 12 * 4 + 12 * 32, Length(LTextures));
-  Assert.AreEqual(4, Length(FWad.LumpData[IndexOfLump('TEXTURE2')]));
+  Assert.AreEqual<Integer>(4 + 12 * 8, Length(LNames));
+  Assert.AreEqual<Integer>(4 + 12 * 4 + 12 * 32, Length(LTextures));
+  Assert.AreEqual<Integer>(4, Length(FWad.LumpData[IndexOfLump('TEXTURE2')]));
 end;
 
 procedure TTestSpeedTranslator.DovrebbeScrivereUnaTexturaConLeMisureDellaImmagine;
@@ -316,11 +316,11 @@ var
 begin
   Translate(TJclBuilder.SyntheticGame);
   LPlain := FWad.LumpData[IndexOfLump('FLAT0062')];
-  Assert.AreEqual(4096, Length(LPlain));
+  Assert.AreEqual<Integer>(4096, Length(LPlain));
   for LIndex := 1 to 24 do
   begin
     LFlat := FWad.LumpData[IndexOfLump('FTRN' + TSpeedNames.ZeroFill(4, LIndex))];
-    Assert.AreEqual(4096, Length(LFlat));
+    Assert.AreEqual<Integer>(4096, Length(LFlat));
     for LPixel := 0 to 4095 do
       if LPlain[LPixel] in [64..79] then
       begin
@@ -347,10 +347,10 @@ end;
 procedure TTestSpeedTranslator.DovrebbeFareUnFlatDiSediciMegabytePerOgniCircuito;
 begin
   Translate(TJclBuilder.SyntheticGame);
-  Assert.AreEqual(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP00')]));
-  Assert.AreEqual(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP01')]));
+  Assert.AreEqual<Integer>(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP00')]));
+  Assert.AreEqual<Integer>(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP01')]));
   // MAP02 has the tiles but not the other files: its floor is made, its level is not
-  Assert.AreEqual(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP02')]));
+  Assert.AreEqual<Integer>(4096 * 4096, Length(FWad.LumpData[IndexOfLump('FMAP02')]));
 end;
 
 procedure TTestSpeedTranslator.DovrebbeFareIlLivelloEIlSuoMapdata;
@@ -438,11 +438,11 @@ var
 begin
   LContainer := TSpeedFactory.OpenContainerBytes(TJclBuilder.SyntheticGame);
   LPak := FTranslator.Translate(LContainer, FWad);
-  Assert.AreEqual(2, Length(LPak));
+  Assert.AreEqual<Integer>(2, Length(LPak));
   // the position and the size are those of the container: the engine reads the bytes from there
   Assert.AreEqual(LContainer.Entries[LContainer.IndexOf('XPR061.I3D')].Position, LPak[1].Position);
   Assert.IsTrue(LContainer.TryRead('XPR061.I3D', LData));
-  Assert.AreEqual(Length(LData), LPak[1].Size);
+  Assert.AreEqual<Integer>(Length(LData), LPak[1].Size);
 end;
 
 procedure TTestSpeedTranslator.DovrebbeScrivereLaListaDeiFileInSpeedinf;
@@ -516,7 +516,7 @@ begin
   finally
     LBuilder.Free;
   end;
-  Assert.AreEqual(0, Length(LPak));
+  Assert.AreEqual<Integer>(0, Length(LPak));
   Assert.AreEqual(-1, FWad.IndexOf('PLAYPAL'));
   // what is always there: the stub texture, the empty second table and the markers
   IndexOfLump('AA0000');

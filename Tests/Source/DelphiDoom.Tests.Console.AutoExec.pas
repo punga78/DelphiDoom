@@ -92,7 +92,7 @@ procedure TTestConsoleAutoExec.TestDefaultFileIsCreatedWhenItDoesNotExist;
 begin
   FStartup.DefaultExists := False;
   FAutoExec.Run;
-  Assert.AreEqual(2, Length(FStartup.CreatedLines), 'dovrebbe creare il file con due righe');
+  Assert.AreEqual<Integer>(2, Length(FStartup.CreatedLines), 'dovrebbe creare il file con due righe');
   Assert.AreEqual('// Add autoexec console commands in this file.', FStartup.CreatedLines[0]);
   Assert.AreEqual('// These console commands will be executed everytime you start DelphiDoom 2.07',
     FStartup.CreatedLines[1], 'dovrebbe nominare l''applicazione');
@@ -101,7 +101,7 @@ end;
 procedure TTestConsoleAutoExec.TestDefaultFileIsNotCreatedWhenItExists;
 begin
   FAutoExec.Run;
-  Assert.AreEqual(0, Length(FStartup.CreatedLines), 'non dovrebbe creare niente');
+  Assert.AreEqual<Integer>(0, Length(FStartup.CreatedLines), 'non dovrebbe creare niente');
 end;
 
 procedure TTestConsoleAutoExec.TestSaysThatItStarts;

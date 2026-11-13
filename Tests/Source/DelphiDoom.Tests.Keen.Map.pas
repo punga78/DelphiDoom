@@ -112,7 +112,7 @@ var
 begin
   LMap := MakeMap(4, 3, 'X');
   Assert.AreEqual(4, Integer(LMap.Header.Width));
-  Assert.AreEqual(3, Length(LMap.Planes[0]) div 4);
+  Assert.AreEqual<Integer>(3, Length(LMap.Planes[0]) div 4);
 end;
 
 procedure TTestKeenMap.DovrebbeRifiutareUnTileFuoriDallaMappa;

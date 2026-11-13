@@ -70,7 +70,7 @@ var
 begin
   LTape := TKeenDemoTape.CreateForRecording(8);
   try
-    Assert.AreEqual(0, Length(LTape.RecordedBytes));
+    Assert.AreEqual<Integer>(0, Length(LTape.RecordedBytes));
     LTape.RecordReading($15);
     Assert.AreEqual(TBytes(TBytes.Create(1, $15)), TBytes(LTape.RecordedBytes));
   finally

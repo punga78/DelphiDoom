@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the font data and of the steps of the big fonts, the   }
 {  DOS fonts and TRN_MENU (TRadixFontData, TRadixPerlinNoise, TRadixFontTinter,}
@@ -94,9 +94,9 @@ end;
 
 procedure TTestRadixFontParts.DovrebbeDareLeTreImmaginiDeiFontDellaDimensioneGiusta;
 begin
-  Assert.AreEqual(65536, Length(TRadixFontData.DosFont));
-  Assert.AreEqual(16384, Length(TRadixFontData.SmallDosFont));
-  Assert.AreEqual(35712, Length(TRadixFontData.BigFont));
+  Assert.AreEqual<Integer>(65536, Length(TRadixFontData.DosFont));
+  Assert.AreEqual<Integer>(16384, Length(TRadixFontData.SmallDosFont));
+  Assert.AreEqual<Integer>(35712, Length(TRadixFontData.BigFont));
 end;
 
 procedure TTestRadixFontParts.DovrebbeTrovareIlPrimoPixelDelFontDos;
@@ -216,7 +216,7 @@ var
 begin
   LWad := Run(TRadixMenuTranslationPart.Create);
   LTable := LWad.LumpData[LWad.IndexOf('TRN_MENU')];
-  Assert.AreEqual(256, Length(LTable));
+  Assert.AreEqual<Integer>(256, Length(LTable));
   Assert.AreEqual(207, Integer(LTable[207]));
   Assert.AreEqual(128, Integer(LTable[208]));
   Assert.AreEqual(143, Integer(LTable[223]));

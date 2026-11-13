@@ -90,7 +90,7 @@ procedure TTestRacingScoreTable.DovrebbeAvereLeStesseDimensioniDelFileDelVecchio
 begin
   Assert.AreEqual(32, SizeOf(TRacingScoreItem));
   Assert.AreEqual(230400, SizeOf(TRacingRecordTable));
-  Assert.AreEqual(230400, Length(FTable.SaveToBytes));
+  Assert.AreEqual<Integer>(230400, Length(FTable.SaveToBytes));
 end;
 
 procedure TTestRacingScoreTable.DovrebbeAvereICampiDelRecordAgliStessiPosti;

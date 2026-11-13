@@ -138,7 +138,7 @@ begin
   LExporter := TKeenMapExporter.Create(FData, TKeenFactory.CreateMapRenderer, TFakeEncoder.Create, LFilesIntf);
   LExporter.SaveMapPicture(0, 'C:\out\map0.png');
   Assert.AreEqual('C:\out\map0.png', LFiles.LastName);
-  Assert.AreEqual(3, Length(LFiles.LastBytes));
+  Assert.AreEqual<Integer>(3, Length(LFiles.LastBytes));
 end;
 
 procedure TTestKeenMapExporter.DovrebbeDareAlCodificatoreLImmagineDellaMappa;

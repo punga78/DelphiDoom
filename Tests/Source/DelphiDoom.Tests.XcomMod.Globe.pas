@@ -244,7 +244,7 @@ begin
     Assert.AreEqual(5, LTexture.Id);
     Assert.AreEqual(2, LTexture.Deployments.Count);
     Assert.AreEqual('A', LTexture.Deployments.Key(0));
-    Assert.AreEqual(2, Length(LTexture.Terrain));
+    Assert.AreEqual<Integer>(2, Length(LTexture.Terrain));
     Assert.AreEqual('T1', LTexture.Terrain[0].Name);
     Assert.AreEqual(1, LTexture.Terrain[0].Weight);
     Assert.AreEqual(Double(3.14159265358979323846 / 2), LTexture.Terrain[0].LonMax, 1E-15);
@@ -255,7 +255,7 @@ begin
     LTexture.Load(Parse('{id: 8}'));
     Assert.AreEqual(8, LTexture.Id);
     Assert.AreEqual(2, LTexture.Deployments.Count);
-    Assert.AreEqual(2, Length(LTexture.Terrain));
+    Assert.AreEqual<Integer>(2, Length(LTexture.Terrain));
   finally
     LTexture.Free;
   end;
@@ -457,7 +457,7 @@ begin
   try
     LGlobe.Load(Parse('{textures: [{id: 3, deployments: {A: 1}}, {id: 4}]}'));
     LGlobe.Load(Parse('{textures: [{id: 3, deployments: {B: 2}}, {delete: 4}, {delete: 99}, {other: 1}]}'));
-    Assert.AreEqual(1, Length(LGlobe.TextureIds));
+    Assert.AreEqual<Integer>(1, Length(LGlobe.TextureIds));
     Assert.IsTrue(LGlobe.GetTexture(3).Deployments.ContainsKey('B'));
     Assert.IsFalse(LGlobe.GetTexture(3).Deployments.ContainsKey('A'));
   finally
@@ -518,7 +518,7 @@ begin
     Assert.AreEqual('X,Y', string.Join(',', LNames));
     Assert.AreEqual('Z,W', string.Join(',', LGlobe.GetTerrains('D')));
     Assert.AreEqual('W', string.Join(',', LGlobe.GetTerrains('E')));
-    Assert.AreEqual(0, Length(LGlobe.GetTerrains('none')));
+    Assert.AreEqual<Integer>(0, Length(LGlobe.GetTerrains('none')));
   finally
     LGlobe.Free;
   end;

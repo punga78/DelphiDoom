@@ -88,7 +88,7 @@ begin
   LLog.WriteLine('c');
   LLog.Flush;
   LBytes := ReadAll;
-  Assert.AreEqual(5, Length(LBytes));
+  Assert.AreEqual<Integer>(5, Length(LBytes));
   Assert.AreEqual(Byte(Ord('a')), LBytes[0]);
   Assert.AreEqual(Byte(10), LBytes[2]);
   Assert.AreEqual(Byte(10), LBytes[4]);
@@ -100,9 +100,9 @@ var
 begin
   LLog := TParityFileLog.Create(FFileName);
   LLog.WriteLine('uno');
-  Assert.AreEqual(0, Length(ReadAll), 'ancora nel buffer');
+  Assert.AreEqual<Integer>(0, Length(ReadAll), 'ancora nel buffer');
   LLog.Flush;
-  Assert.AreEqual(4, Length(ReadAll));
+  Assert.AreEqual<Integer>(4, Length(ReadAll));
 end;
 
 procedure TTestParityFileLog.LaChiusuraDovrebbeMettereTutteLeRigheNelFile;
@@ -112,7 +112,7 @@ begin
   LLog := TParityFileLog.Create(FFileName);
   LLog.WriteLine('uno');
   LLog := nil;
-  Assert.AreEqual(4, Length(ReadAll));
+  Assert.AreEqual<Integer>(4, Length(ReadAll));
 end;
 
 procedure TTestParityFileLog.UnFileEsistenteDovrebbeEssereSovrascritto;
@@ -123,7 +123,7 @@ begin
   LLog := TParityFileLog.Create(FFileName);
   LLog.WriteLine('x');
   LLog := nil;
-  Assert.AreEqual(2, Length(ReadAll));
+  Assert.AreEqual<Integer>(2, Length(ReadAll));
 end;
 
 procedure TTestParityFileLog.UnaRigaPiuGrandeDelBufferDovrebbeEssereScrittaIntera;
@@ -133,7 +133,7 @@ begin
   LLog := TParityFileLog.Create(FFileName);
   LLog.WriteLine(StringOfChar('z', 200000));
   LLog := nil;
-  Assert.AreEqual(200001, Length(ReadAll));
+  Assert.AreEqual<Integer>(200001, Length(ReadAll));
 end;
 
 procedure TTestParityFileLog.MoltRigheDovrebberoRestareNellOrdine;
@@ -147,7 +147,7 @@ begin
     LLog.WriteLine('line ' + IntToStr(LIndex));
   LLog := nil;
   LLines := TFile.ReadAllText(FFileName).Split([#10], TStringSplitOptions.ExcludeEmpty);
-  Assert.AreEqual(10000, Length(LLines));
+  Assert.AreEqual<Integer>(10000, Length(LLines));
   Assert.AreEqual('line 0', LLines[0]);
   Assert.AreEqual('line 9999', LLines[9999]);
 end;

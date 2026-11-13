@@ -597,7 +597,7 @@ begin
     0: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[0] * dp[0]) +
                 (vp[15] * dp[1]) +
@@ -626,7 +626,7 @@ begin
     1: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[1] * dp[0]) +
                 (vp[0] * dp[1]) +
@@ -655,7 +655,7 @@ begin
     2: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[2] * dp[0]) +
                 (vp[1] * dp[1]) +
@@ -684,7 +684,7 @@ begin
     3: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[3] * dp[0]) +
                 (vp[2] * dp[1]) +
@@ -713,7 +713,7 @@ begin
     4: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[4] * dp[0]) +
                 (vp[3] * dp[1]) +
@@ -742,7 +742,7 @@ begin
     5: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[5] * dp[0]) +
                 (vp[4] * dp[1]) +
@@ -771,7 +771,7 @@ begin
     6: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[6] * dp[0]) +
                 (vp[5] * dp[1]) +
@@ -800,7 +800,7 @@ begin
     7: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[7] * dp[0]) +
                 (vp[6] * dp[1]) +
@@ -829,7 +829,7 @@ begin
     8: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[8] * dp[0]) +
                 (vp[7] * dp[1]) +
@@ -858,7 +858,7 @@ begin
     9: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[9] * dp[0]) +
                 (vp[8] * dp[1]) +
@@ -887,7 +887,7 @@ begin
     10: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[10] * dp[0]) +
                 (vp[9] * dp[1]) +
@@ -916,7 +916,7 @@ begin
     11: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[11] * dp[0]) +
                 (vp[10] * dp[1]) +
@@ -945,7 +945,7 @@ begin
     12: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[12] * dp[0]) +
                 (vp[11] * dp[1]) +
@@ -974,7 +974,7 @@ begin
     13: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[13] * dp[0]) +
                 (vp[12] * dp[1]) +
@@ -1003,7 +1003,7 @@ begin
     14: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[14] * dp[0]) +
                 (vp[13] * dp[1]) +
@@ -1032,7 +1032,7 @@ begin
     15: begin
       // fat chance of having this loop unroll
       dp := @d;
-      while (Cardinal(dp) < Cardinal(@d) + (32 * 16 * 4)) do
+      while (NativeUInt(dp) < NativeUInt(@d) + (32 * 16 * 4)) do
       begin
         pcm_sample := (((vp[15] * dp[0]) +
                 (vp[14] * dp[1]) +

@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TGreedGameLoop, TGreedTopDownRenderer and TGreedFrame   }
 {                                                                              }
@@ -243,7 +243,7 @@ procedure TTestGreedTopDownRenderer.DovrebbeCreareUnQuadroEControllareLeMisure;
 var
   LRaised: Boolean;
 begin
-  Assert.AreEqual(64000, Length(TGreedFrame.Make(320, 200).Pixels));
+  Assert.AreEqual<Integer>(64000, Length(TGreedFrame.Make(320, 200).Pixels));
   LRaised := False;
   try
     TGreedFrame.Make(0, 5);

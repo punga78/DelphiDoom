@@ -225,7 +225,7 @@ begin
   LPcm := DecodeInChunks(LDecoder, TMp3Samples.SilentStream(AFrameCount),
     MaxInt, 4096);
 
-  Assert.AreEqual(AFrameCount * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(AFrameCount * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
   Assert.IsTrue(TMp3Samples.IsSilent(LPcm), 'silent frames must decode to zeros');
   Assert.AreEqual(SAMPLE_FREQUENCY, Integer(LDecoder.GetFrequency));
   Assert.AreEqual(1, Integer(LDecoder.GetChannels));
@@ -241,7 +241,7 @@ begin
   LPcm := DecodeInChunks(LDecoder, TMp3Samples.SilentStream(3, False),
     MaxInt, 4096);
 
-  Assert.AreEqual(3 * SAMPLE_STEREO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(3 * SAMPLE_STEREO_PCM_BYTES, Length(LPcm));
   Assert.AreEqual(2, Integer(LDecoder.GetChannels));
 end;
 
@@ -254,7 +254,7 @@ begin
   LPcm := DecodeInChunks(LDecoder, TMp3Samples.SilentStream(3, False),
     MaxInt, 4096);
 
-  Assert.AreEqual(3 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(3 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
   Assert.AreEqual(1, Integer(LDecoder.GetChannels));
 end;
 
@@ -266,7 +266,7 @@ begin
   LExpected := DecodeInChunks(NewDecoder, LStream, MaxInt, 4096);
   LActual := DecodeInChunks(NewDecoder, LStream, AFeedChunk, 4096);
 
-  Assert.AreEqual(4 * SAMPLE_MONO_PCM_BYTES, Length(LExpected));
+  Assert.AreEqual<Integer>(4 * SAMPLE_MONO_PCM_BYTES, Length(LExpected));
   Assert.AreEqual(Length(LExpected), Length(LActual));
   Assert.AreEqualMemory(Pointer(LExpected), Pointer(LActual), Length(LExpected));
 end;
@@ -278,7 +278,7 @@ begin
   LStream := TMp3Samples.SilentStream(3);
   LActual := DecodeInChunks(NewDecoder, LStream, MaxInt, APcmChunk);
 
-  Assert.AreEqual(3 * SAMPLE_MONO_PCM_BYTES, Length(LActual));
+  Assert.AreEqual<Integer>(3 * SAMPLE_MONO_PCM_BYTES, Length(LActual));
 end;
 
 procedure TTestMp3Engine.TestFeedWithNilDataFails;
@@ -395,7 +395,7 @@ begin
   LDecoder := NewDecoder;
   LPcm := DecodeInChunks(LDecoder, LStream, AFeedChunk, 4096);
 
-  Assert.AreEqual(2 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(2 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
 end;
 
 procedure TTestMp3Engine.TestJunkBeforeTheFirstFrameIsSkipped;
@@ -409,7 +409,7 @@ begin
   LDecoder := NewDecoder;
   LPcm := DecodeInChunks(LDecoder, LStream, MaxInt, 4096);
 
-  Assert.AreEqual(2 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
+  Assert.AreEqual<Integer>(2 * SAMPLE_MONO_PCM_BYTES, Length(LPcm));
 end;
 
 procedure TTestMp3Engine.TestIncompleteFrameWaitsForTheRest;
@@ -453,7 +453,7 @@ begin
   Assert.AreEqual(0, Integer(LDecoder.GetPendingSize));
 
   LSecond := DecodeInChunks(LDecoder, LStream, MaxInt, 4096);
-  Assert.AreEqual(3 * SAMPLE_MONO_PCM_BYTES, Length(LFirst));
+  Assert.AreEqual<Integer>(3 * SAMPLE_MONO_PCM_BYTES, Length(LFirst));
   Assert.AreEqual(Length(LFirst), Length(LSecond));
 end;
 

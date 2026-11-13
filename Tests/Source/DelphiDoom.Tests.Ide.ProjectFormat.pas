@@ -50,7 +50,7 @@ var
   LLines: TArray<TIdeProjectDirective>;
 begin
   LLines := TIdeProjectFormat.Parse('version|1.0'#13#10'game|hexen'#13#10'script|a.ddscript'#13#10'actor|b.txt'#13#10);
-  Assert.AreEqual(3, Length(LLines));
+  Assert.AreEqual<Integer>(3, Length(LLines));
   Assert.IsTrue(LLines[0].IsGame);
   Assert.AreEqual('hexen', LLines[0].Value);
   Assert.IsFalse(LLines[1].IsGame);
@@ -62,24 +62,24 @@ end;
 
 procedure TTestIdeProjectFormat.DovrebbeDareNienteSeMancaLaVersione;
 begin
-  Assert.AreEqual(0, Length(TIdeProjectFormat.Parse('game|doom'#13#10'script|a.ddscript'#13#10)));
+  Assert.AreEqual<Integer>(0, Length(TIdeProjectFormat.Parse('game|doom'#13#10'script|a.ddscript'#13#10)));
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeDareNienteSeLaVersioneEDiversa;
 begin
-  Assert.AreEqual(0, Length(TIdeProjectFormat.Parse('version|0.9'#13#10'script|a.ddscript'#13#10)));
-  Assert.AreEqual(0, Length(TIdeProjectFormat.Parse('version|1.00'#13#10'script|a.ddscript'#13#10)));
+  Assert.AreEqual<Integer>(0, Length(TIdeProjectFormat.Parse('version|0.9'#13#10'script|a.ddscript'#13#10)));
+  Assert.AreEqual<Integer>(0, Length(TIdeProjectFormat.Parse('version|1.00'#13#10'script|a.ddscript'#13#10)));
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeAccettareLaParolaVersionConQualsiasiMaiuscola;
 begin
-  Assert.AreEqual(1, Length(TIdeProjectFormat.Parse('VERSION|1.0'#13#10'script|a.ddscript'#13#10)));
-  Assert.AreEqual(1, Length(TIdeProjectFormat.Parse(' Version | 1.0 '#13#10'script|a.ddscript'#13#10)));
+  Assert.AreEqual<Integer>(1, Length(TIdeProjectFormat.Parse('VERSION|1.0'#13#10'script|a.ddscript'#13#10)));
+  Assert.AreEqual<Integer>(1, Length(TIdeProjectFormat.Parse(' Version | 1.0 '#13#10'script|a.ddscript'#13#10)));
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeDareNienteSeIlTestoEVuoto;
 begin
-  Assert.AreEqual(0, Length(TIdeProjectFormat.Parse('')));
+  Assert.AreEqual<Integer>(0, Length(TIdeProjectFormat.Parse('')));
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeMettereIGiochiInMinuscolo;
@@ -96,15 +96,15 @@ var
 begin
   // a defect of the old reader, kept: a blank line is an item with no name
   LLines := TIdeProjectFormat.Parse('version|1.0'#13#10#13#10'script|a.ddscript'#13#10);
-  Assert.AreEqual(2, Length(LLines));
+  Assert.AreEqual<Integer>(2, Length(LLines));
   Assert.AreEqual(Ord(ikNone), Ord(LLines[0].Kind));
   Assert.AreEqual('', LLines[0].Value);
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeAccettareFineRigaCrLfELf;
 begin
-  Assert.AreEqual(2, Length(TIdeProjectFormat.Parse('version|1.0'#10'game|doom'#10'script|a'#10)));
-  Assert.AreEqual(2, Length(TIdeProjectFormat.Parse('version|1.0'#13#10'game|doom'#13#10'script|a')));
+  Assert.AreEqual<Integer>(2, Length(TIdeProjectFormat.Parse('version|1.0'#10'game|doom'#10'script|a'#10)));
+  Assert.AreEqual<Integer>(2, Length(TIdeProjectFormat.Parse('version|1.0'#13#10'game|doom'#13#10'script|a')));
 end;
 
 procedure TTestIdeProjectFormat.DovrebbeScrivereLeRigheConCrLfInFondo;
@@ -130,7 +130,7 @@ begin
   LEntries[0].Kind := ikActor;
   LEntries[0].RelativePath := 'x.txt';
   LLines := TIdeProjectFormat.Parse(TIdeProjectFormat.Serialize('strife', LEntries));
-  Assert.AreEqual(2, Length(LLines));
+  Assert.AreEqual<Integer>(2, Length(LLines));
   Assert.AreEqual('strife', LLines[0].Value);
   Assert.AreEqual('x.txt', LLines[1].Value);
 end;

@@ -88,7 +88,7 @@ procedure TTestRadixLumpGroupPart.DovrebbeNonDareUnAliasAUnModuloMusicale;
 begin
   FBuilder.Add('IntroMusic', [1]);
   Run(TRadixLumpGroupPart.Music);
-  Assert.AreEqual(0, Length(FAliases));
+  Assert.AreEqual<Integer>(0, Length(FAliases));
 end;
 
 procedure TTestRadixLumpGroupPart.DovrebbeCopiareITestiDelleMissioniConUnAlias;
@@ -121,7 +121,7 @@ procedure TTestRadixLumpGroupPart.DovrebbeSaltareUnTestoCheNonCe;
 begin
   Run(TRadixLumpGroupPart.EndText);
   Assert.AreEqual(0, FWad.Count);
-  Assert.AreEqual(0, Length(FAliases));
+  Assert.AreEqual<Integer>(0, Length(FAliases));
 end;
 
 end.

@@ -46,7 +46,8 @@ function TSpeedSimGeometry.PointToAngle(AX1, AY1, AX2, AY2: TFixed): TAngle;
 var
   LAngle: Double;
 begin
-  LAngle := ArcTan2(AY2 - AY1, AX2 - AX1);
+  // Double arguments: with integers the 64 bit compiler picks the Single overload (error of 4e-8 rad)
+  LAngle := ArcTan2(Double(AY2 - AY1), Double(AX2 - AX1));
   if LAngle < 0 then
     LAngle := LAngle + 2 * Pi;
   Result := TAngle(Int64(Round(LAngle / (2 * Pi) * 4294967296.0)));

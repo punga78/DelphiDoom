@@ -90,9 +90,9 @@ end;
 
 procedure TTestImagingSpanGrower.TestGrowGivesTheSizeOfTheNewFlat;
 begin
-  Assert.AreEqual(128 * 128, Length(FGrower.Grow64to128(Source(1))), 'dovrebbe dare 128x128 pixel');
-  Assert.AreEqual(256 * 256, Length(FGrower.Grow64to256(Source(1))), 'dovrebbe dare 256x256 pixel');
-  Assert.AreEqual(512 * 512, Length(FGrower.Grow64to512(Source(1))), 'dovrebbe dare 512x512 pixel');
+  Assert.AreEqual<Integer>(128 * 128, Length(FGrower.Grow64to128(Source(1))), 'dovrebbe dare 128x128 pixel');
+  Assert.AreEqual<Integer>(256 * 256, Length(FGrower.Grow64to256(Source(1))), 'dovrebbe dare 256x256 pixel');
+  Assert.AreEqual<Integer>(512 * 512, Length(FGrower.Grow64to512(Source(1))), 'dovrebbe dare 512x512 pixel');
 end;
 
 procedure TTestImagingSpanGrower.TestGrow128KeepsTheOriginalPixelsAtEvenPositions;

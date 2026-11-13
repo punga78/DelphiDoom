@@ -256,7 +256,7 @@ begin
   begin
     LOption := LOptions[LIndex];
     FWorld.ChooseCombo(LOption);
-    Assert.AreEqual(Length(LOriginal), FWorld.FirstBase.Soldiers.Count, LOption);
+    Assert.AreEqual<Integer>(Length(LOriginal), FWorld.FirstBase.Soldiers.Count, LOption);
   end;
   FWorld.ChooseCombo(LOptions[0]);
   for LIndex := 0 to High(LOriginal) do

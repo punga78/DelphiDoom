@@ -350,7 +350,7 @@ begin
     FWorld.Game.PushState(LState);
     FWorld.Wait(400);
     ClickButton(LState.YesButton);
-    Assert.AreEqual(1, Length(LLauncher.Requests));
+    Assert.AreEqual<Integer>(1, Length(LLauncher.Requests));
     Assert.AreEqual('STR_LAST', LLauncher.Requests[0].MissionType);
     Assert.IsFalse(FWorld.Game.IsState(LState));
     Assert.IsFalse(FWorld.Game.IsState(LBelow), 'anche la scelta della destinazione e'' chiusa');

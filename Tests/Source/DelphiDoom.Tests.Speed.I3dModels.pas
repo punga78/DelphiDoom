@@ -102,7 +102,7 @@ begin
     LActual := TI3dDump.Lines(LName, Length(LBytes), LModel);
     LModel.ApplyCorrections(TI3dDump.SampleCorrections(LModel.FaceCount));
     LActual := LActual + TI3dDump.Lines('corrected ' + LName, Length(LBytes), LModel);
-    Assert.AreEqual(LINES_PER_MODEL, Length(LActual));
+    Assert.AreEqual<Integer>(LINES_PER_MODEL, Length(LActual));
     for LIndex := 0 to High(LActual) do
       Assert.AreEqual(LGolden[LPosition + LIndex], LActual[LIndex], LName + ' line ' + IntToStr(LIndex));
     Inc(LPosition, LINES_PER_MODEL);

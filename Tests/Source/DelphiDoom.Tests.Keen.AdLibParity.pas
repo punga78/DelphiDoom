@@ -97,7 +97,7 @@ begin
   LGolden := TTestFiles.Lines(TTestFiles.DataFile('Keen', 'adlib.golden.txt'));
   try
     LScripts := TKeenAdLibScenarios.Generate(SCENARIO_COUNT);
-    Assert.AreEqual(Length(LScripts), LGolden.Count, 'scripts and lines of the golden file');
+    Assert.AreEqual<Integer>(Length(LScripts), LGolden.Count, 'scripts and lines of the golden file');
     LDifferent := 0;
     LFirst := '';
     for LIndex := 0 to High(LScripts) do

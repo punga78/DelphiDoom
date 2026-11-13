@@ -103,7 +103,7 @@ end;
 
 procedure TTestSpeedCircuitReader.DovrebbeDareSempreOttoCircuiti;
 begin
-  Assert.AreEqual(SPEED_MAX_CIRCUITS, Length(FReader.Parse(ONE_CIRCUIT)));
+  Assert.AreEqual<Integer>(SPEED_MAX_CIRCUITS, Length(FReader.Parse(ONE_CIRCUIT)));
   Assert.AreEqual('', FReader.Parse(ONE_CIRCUIT)[7].Name);
 end;
 
@@ -112,7 +112,7 @@ var
   LCircuits: TArray<TSpeedCircuit>;
 begin
   LCircuits := FReader.Parse('');
-  Assert.AreEqual(SPEED_MAX_CIRCUITS, Length(LCircuits));
+  Assert.AreEqual<Integer>(SPEED_MAX_CIRCUITS, Length(LCircuits));
   Assert.AreEqual(0, LCircuits[0].Length);
 end;
 
@@ -123,7 +123,7 @@ var
 begin
   LText := TJclBuilder.CircuitsText(12);
   LCircuits := FReader.Parse(TEncoding.ASCII.GetString(LText));
-  Assert.AreEqual(8, Length(LCircuits));
+  Assert.AreEqual<Integer>(8, Length(LCircuits));
   Assert.AreEqual('Circuit 7 of Speed', LCircuits[7].Name);
 end;
 

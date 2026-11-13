@@ -239,7 +239,7 @@ begin
     on E: EXcomModException do
       Assert.AreEqual('invalid MCD file: TERRAIN/TEST.MCD, check log file for more details.', E.Message);
   end;
-  Assert.AreEqual(3, Length(FLoader.Problems));
+  Assert.AreEqual<Integer>(3, Length(FLoader.Problems));
   Assert.AreEqual('MCD TEST object 1 has invalid DieMCD: 5', FLoader.Problems[0]);
   Assert.AreEqual('MCD TEST object 1 has invalid AltMCD: 9', FLoader.Problems[1]);
   Assert.AreEqual('MCD TEST object 1 has 0 armor', FLoader.Problems[2]);

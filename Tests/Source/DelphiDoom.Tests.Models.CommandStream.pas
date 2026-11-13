@@ -356,7 +356,7 @@ begin
   FStream.AddCommand(MODEL_CMD_BEGIN, 4);
   FStream.AddCommand(MODEL_CMD_END);
   LBytes := FStream.SaveToBytes;
-  Assert.AreEqual(8 + 2 * MODEL_COMMAND_SIZE, Length(LBytes));
+  Assert.AreEqual<Integer>(8 + 2 * MODEL_COMMAND_SIZE, Length(LBytes));
   Move(LBytes[0], LValue, 4);
   Assert.AreEqual(DMX_MAGIC, LValue);
   Move(LBytes[4], LValue, 4);

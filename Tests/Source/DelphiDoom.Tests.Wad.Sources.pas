@@ -109,7 +109,7 @@ begin
   Assert.AreEqual(15, LSource.Entries[1].Offset);
   Assert.AreEqual(0, LSource.Entries[2].Size);
   Assert.AreEqual('0123456789', TEncoding.ANSI.GetString(LSource.ReadEntry(1)));
-  Assert.AreEqual(0, Length(LSource.ReadEntry(2)));
+  Assert.AreEqual<Integer>(0, Length(LSource.ReadEntry(2)));
   Assert.AreEqual(Ord(TWadSourceKind.Wad), Ord(LSource.Kind));
 end;
 
@@ -217,7 +217,7 @@ begin
   LBytes[Length(LBytes) - 32 + 1] := $FF;
   LBytes[Length(LBytes) - 32 + 2] := $0F;
   LSource := TWadFactory.OpenBytes('x', LBytes);
-  Assert.AreEqual(0, Length(LSource.ReadEntry(0)));
+  Assert.AreEqual<Integer>(0, Length(LSource.ReadEntry(0)));
   LBuffer := 7;
   LSource.ReadEntryInto(0, @LBuffer);
   Assert.AreEqual(7, Integer(LBuffer), 'nothing written');

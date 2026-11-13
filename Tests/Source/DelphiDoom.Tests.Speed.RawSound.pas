@@ -45,7 +45,7 @@ var
   LWav: TBytes;
 begin
   LWav := TSpeedRawSound.ToWav(TBytes.Create(1, 2, 3), 13000, SPEED_FRACUNIT);
-  Assert.AreEqual(47, Length(LWav));
+  Assert.AreEqual<Integer>(47, Length(LWav));
   Assert.AreEqual('RIFF', TEncoding.ASCII.GetString(LWav, 0, 4));
   Assert.AreEqual('WAVE', TEncoding.ASCII.GetString(LWav, 8, 4));
   Assert.AreEqual('fmt ', TEncoding.ASCII.GetString(LWav, 12, 4));
@@ -96,7 +96,7 @@ end;
 
 procedure TTestSpeedRawSound.DovrebbeFareUnWavDiSoloLIntestazioneSeIlSuonoEVuoto;
 begin
-  Assert.AreEqual(44, Length(TSpeedRawSound.ToWav(nil, 8000, SPEED_FRACUNIT)));
+  Assert.AreEqual<Integer>(44, Length(TSpeedRawSound.ToWav(nil, 8000, SPEED_FRACUNIT)));
 end;
 
 procedure TTestSpeedRawSound.DovrebbeAvereUnIntestazioneDiQuarantaquattroByte;

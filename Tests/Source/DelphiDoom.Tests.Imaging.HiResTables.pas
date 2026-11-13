@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TImagingHiResTableBuilder                              }
 {                                                                              }
@@ -62,7 +62,7 @@ end;
 
 procedure TTestImagingHiResTables.TestBuildGivesEightLevelsOf256x256;
 begin
-  Assert.AreEqual(8 * 256 * 256, Length(FBuilder.Build(TImagingSamples.Palette(3))), 'dovrebbe dare 8 livelli di 256x256 colori');
+  Assert.AreEqual<Integer>(8 * 256 * 256, Length(FBuilder.Build(TImagingSamples.Palette(3))), 'dovrebbe dare 8 livelli di 256x256 colori');
 end;
 
 procedure TTestImagingHiResTables.TestLevelZeroIsTheFirstColor;

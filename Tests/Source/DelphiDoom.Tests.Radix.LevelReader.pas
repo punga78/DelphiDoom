@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TRadixLevelReader and of the records of a level        }
 {                                                                              }
@@ -131,13 +131,13 @@ begin
   FLevel := FReader.TryRead('E1M1', FBuilder.ToBytes);
   Assert.IsNotNull(FLevel);
   Assert.AreEqual('E1M1', FLevel.Name);
-  Assert.AreEqual(2, Length(FLevel.Sectors));
+  Assert.AreEqual<Integer>(2, Length(FLevel.Sectors));
   Assert.AreEqual(Integer(128), Integer(FLevel.Sectors[0].CeilingHeight));
   Assert.AreEqual(Integer(5), Integer(FLevel.Sectors[1].FloorTexture));
-  Assert.AreEqual(1, Length(FLevel.Walls));
+  Assert.AreEqual<Integer>(1, Length(FLevel.Walls));
   Assert.AreEqual(300, FLevel.Walls[0].V2X);
   Assert.AreEqual(Integer(1), Integer(FLevel.Walls[0].BackSector));
-  Assert.AreEqual(1, Length(FLevel.Things));
+  Assert.AreEqual<Integer>(1, Length(FLevel.Things));
   Assert.AreEqual(600, FLevel.Things[0].Y);
   Assert.AreEqual(7, FLevel.Things[0].RadixType);
   Assert.AreEqual(Integer(9), Integer(FLevel.Things[0].ThingKey));
@@ -172,7 +172,7 @@ begin
   FBuilder.AddAction([11, 22, 33]);
   FBuilder.AddAction([44]);
   FLevel := FReader.TryRead('E1M1', FBuilder.ToBytes);
-  Assert.AreEqual(2, Length(FLevel.Actions));
+  Assert.AreEqual<Integer>(2, Length(FLevel.Actions));
   Assert.AreEqual(Integer(22), Integer(FLevel.Actions[0].Params[1]));
   Assert.AreEqual(Integer(33), Integer(FLevel.Actions[0].Params[2]));
   Assert.AreEqual(Integer(0), Integer(FLevel.Actions[0].Params[3]));
@@ -185,7 +185,7 @@ begin
   FBuilder.AddTrigger(2);
   FBuilder.AddTrigger(0);
   FLevel := FReader.TryRead('E1M1', FBuilder.ToBytes);
-  Assert.AreEqual(2, Length(FLevel.Triggers));
+  Assert.AreEqual<Integer>(2, Length(FLevel.Triggers));
   Assert.AreEqual(2, FLevel.Triggers[0].NumActions);
   Assert.AreEqual(Integer(1), Integer(FLevel.Triggers[0].Actions[0].ActionId));
   Assert.AreEqual(Integer(2), Integer(FLevel.Triggers[0].Actions[1].ActionId));

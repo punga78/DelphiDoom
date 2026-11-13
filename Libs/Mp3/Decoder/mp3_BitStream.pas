@@ -298,7 +298,7 @@ begin
 
 {$IFDEF DAMN_INTEL_BYTE_ORDER}
   WordP := @FBuffer[(ByteSize - 1) shr 2];
-  while Cardinal(WordP) >= Cardinal(@FBuffer) do
+  while NativeUInt(WordP) >= NativeUInt(@FBuffer) do
   begin
     WordP^ := SwapInt32(WordP^);
     dec(WordP);

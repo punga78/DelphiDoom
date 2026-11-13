@@ -104,14 +104,14 @@ procedure TTestPlatformFileStore.DovrebbeCreareUnFileVuotoSeScriveZeroByte;
 begin
   FStore.Write(FDirectory + 'a.bin', @FData[0], 0);
   Assert.IsTrue(FStore.Exists(FDirectory + 'a.bin'));
-  Assert.AreEqual(0, Length(FStore.Read(FDirectory + 'a.bin')));
+  Assert.AreEqual<Integer>(0, Length(FStore.Read(FDirectory + 'a.bin')));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeSovrascrivereUnFileEsistente;
 begin
   FStore.Write(FDirectory + 'a.bin', @FData[0], 300);
   FStore.Write(FDirectory + 'a.bin', @FData[0], 10);
-  Assert.AreEqual(10, Length(FStore.Read(FDirectory + 'a.bin')));
+  Assert.AreEqual<Integer>(10, Length(FStore.Read(FDirectory + 'a.bin')));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeDareFalsoSeLaCartellaNonEsiste;
@@ -126,21 +126,21 @@ begin
   FStore.Write(FDirectory + 'a.bin', @FData[0], 100);
   Assert.AreEqual(50, FStore.Append(FDirectory + 'a.bin', @FData[100], 50));
   LRead := FStore.Read(FDirectory + 'a.bin');
-  Assert.AreEqual(150, Length(LRead));
+  Assert.AreEqual<Integer>(150, Length(LRead));
   Assert.IsTrue(CompareMem(@FData[0], @LRead[0], 150));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeCrearePrimaDiAccodareSeManca;
 begin
   Assert.AreEqual(40, FStore.Append(FDirectory + 'nuovo.bin', @FData[0], 40));
-  Assert.AreEqual(40, Length(FStore.Read(FDirectory + 'nuovo.bin')));
+  Assert.AreEqual<Integer>(40, Length(FStore.Read(FDirectory + 'nuovo.bin')));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeDareZeroSeAccodaZeroByte;
 begin
   FStore.Write(FDirectory + 'a.bin', @FData[0], 100);
   Assert.AreEqual(0, FStore.Append(FDirectory + 'a.bin', @FData[0], 0));
-  Assert.AreEqual(100, Length(FStore.Read(FDirectory + 'a.bin')));
+  Assert.AreEqual<Integer>(100, Length(FStore.Read(FDirectory + 'a.bin')));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeDareZeroSeAccodaInUnaCartellaCheNonEsiste;
@@ -151,7 +151,7 @@ end;
 procedure TTestPlatformFileStore.DovrebbeLeggereUnFileVuoto;
 begin
   FStore.Write(FDirectory + 'v.bin', nil, 0);
-  Assert.AreEqual(0, Length(FStore.Read(FDirectory + 'v.bin')));
+  Assert.AreEqual<Integer>(0, Length(FStore.Read(FDirectory + 'v.bin')));
 end;
 
 procedure TTestPlatformFileStore.DovrebbeSollevareSeIlFileNonSiLegge;

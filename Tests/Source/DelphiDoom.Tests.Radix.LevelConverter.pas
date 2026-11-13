@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of TRadixLevelConverter                                   }
 {                                                                              }
@@ -164,8 +164,8 @@ begin
   for LIndex := 0 to High(Names) do
     Assert.AreEqual(Names[LIndex], FWad.LumpNames[LIndex]);
   // the nodes are not made: the engine does it
-  Assert.AreEqual(0, Length(FWad.LumpData[5]));
-  Assert.AreEqual(0, Length(FWad.LumpData[7]));
+  Assert.AreEqual<Integer>(0, Length(FWad.LumpData[5]));
+  Assert.AreEqual<Integer>(0, Length(FWad.LumpData[7]));
 end;
 
 procedure TTestRadixLevelConverter.DovrebbeScrivereSoloLaMappaSenzaLeInformazioniExtra;
@@ -191,7 +191,7 @@ begin
   FBuilder.AddWall(33000, 100, 33100, 100, 0, -1, RWF_SINGLESIDED);
   FBuilder.AddWall(33100, 100, 33100, 200, 0, -1, RWF_SINGLESIDED);
   Convert('E1M2');
-  Assert.AreEqual(3, Length(Lump('VERTEXES')) div SizeOf(TRadixDoomVertex));
+  Assert.AreEqual<Integer>(3, Length(Lump('VERTEXES')) div SizeOf(TRadixDoomVertex));
   Assert.AreEqual(Integer(1), Integer(LineDef(1).V1));
 end;
 
@@ -263,7 +263,7 @@ begin
   FBuilder.SetPlayerStart(0, 33000, 100, 8, 128);
   FBuilder.AddThing(33200, 300, 5, 7, 2, 64);
   Convert('E1M2');
-  Assert.AreEqual(9, Length(Lump('THINGS')) div SizeOf(TRadixDoomThing));
+  Assert.AreEqual<Integer>(9, Length(Lump('THINGS')) div SizeOf(TRadixDoomThing));
   Assert.AreEqual(Integer(1), Integer(Thing(0).ThingType));
   Assert.AreEqual(Integer(4), Integer(Thing(3).ThingType));
   Assert.AreEqual(Integer(11), Integer(Thing(4).ThingType));
@@ -283,7 +283,7 @@ begin
   FBuilder.AddThing(33200, 300, 5, -1, 0, 0);
   FBuilder.AddThing(33200, 300, -1, 4, 0, 0);
   Convert('E1M2');
-  Assert.AreEqual(8, Length(Lump('THINGS')) div SizeOf(TRadixDoomThing));
+  Assert.AreEqual<Integer>(8, Length(Lump('THINGS')) div SizeOf(TRadixDoomThing));
 end;
 
 procedure TTestRadixLevelConverter.DovrebbeRendereInattiviIDroniDelPrimoEpisodio;
@@ -309,7 +309,7 @@ begin
   // the sector 1 has no wall
   FBuilder.AddSector(0, 128, 0, 1, 10, 0);
   Convert('E1M2');
-  Assert.AreEqual(4, Length(Lump('LINEDEFS')) div SizeOf(TRadixDoomLineDef));
+  Assert.AreEqual<Integer>(4, Length(Lump('LINEDEFS')) div SizeOf(TRadixDoomLineDef));
   Assert.AreEqual(Integer(ML_BLOCKING), Integer(LineDef(0).Flags));
   Assert.AreEqual(Integer(ML_DONTDRAW or ML_AUTOMAPIGNOGE or ML_BLOCKING), Integer(LineDef(1).Flags));
   // the middle texture of the stub is the second wall texture
@@ -343,12 +343,12 @@ begin
   FBuilder.TriggerGridValue := 7;
   Convert('E1M2');
   LGrid := Lump('RGRID');
-  Assert.AreEqual(SizeOf(TRadixLevelGrid), Length(LGrid));
+  Assert.AreEqual<Integer>(SizeOf(TRadixLevelGrid), Length(LGrid));
   Assert.AreEqual(320, Integer(PInteger(@LGrid[0])^));
   Assert.AreEqual(128, Integer(PInteger(@LGrid[4])^));
   Assert.AreEqual(7, Integer(PSmallInt(@LGrid[8])^));
   LPoints := Lump('RMAPGRID');
-  Assert.AreEqual(SizeOf(TRadixLevelMapPoints), Length(LPoints));
+  Assert.AreEqual<Integer>(SizeOf(TRadixLevelMapPoints), Length(LPoints));
   Move(LPoints[4 * 321], LPoint, 4);
   // the cell (1, 1) is at (64, 64) in Radix
   Assert.AreEqual(Integer(64 - 32767), Integer(LPoint.X));
@@ -361,10 +361,10 @@ begin
   FBuilder.AddAction([11, 22]);
   FBuilder.AddTrigger(1);
   Convert('E1M2');
-  Assert.AreEqual(SizeOf(TRadixLevelAction), Length(Lump('RACTION')));
-  Assert.AreEqual(SizeOf(TRadixLevelTrigger), Length(Lump('RTRIGGER')));
+  Assert.AreEqual<Integer>(SizeOf(TRadixLevelAction), Length(Lump('RACTION')));
+  Assert.AreEqual<Integer>(SizeOf(TRadixLevelTrigger), Length(Lump('RTRIGGER')));
   Assert.AreEqual(11, Integer(PSmallInt(@Lump('RACTION')[RADIX_ACTION_HEADER_SIZE])^));
-  Assert.AreEqual(8 * SizeOf(TRadixDoomThingExtra), Length(Lump('RTHINGS')));
+  Assert.AreEqual<Integer>(8 * SizeOf(TRadixDoomThingExtra), Length(Lump('RTHINGS')));
 end;
 
 procedure TTestRadixLevelConverter.DovrebbeScrivereLoScriptConGliIdDeiSettoriEDeiMuri;

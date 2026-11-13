@@ -263,7 +263,7 @@ begin
   begin
     // UFO ships four empty files (ROUTES\TEMP.RMP .. TEMP3.RMP, 0 bytes): editor leftovers no terrain uses
     if TFile.GetSize(LPath) = 0 then
-      Assert.AreEqual(0, Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))), LPath)
+      Assert.AreEqual<Integer>(0, Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))), LPath)
     else
       Assert.IsTrue(Length(FData.LoadRoute('ROUTES\' + TPath.GetFileName(LPath))) > 0, LPath);
     Inc(LCount);

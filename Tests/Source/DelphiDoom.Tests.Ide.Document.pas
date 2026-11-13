@@ -235,7 +235,7 @@ begin
   try
     LDocument.Data := 'text';
     Assert.IsTrue(LDocument.SaveToFile('fresh.ddscript'));
-    Assert.AreEqual(1, Length(FFileSystem.FileNames));
+    Assert.AreEqual<Integer>(1, Length(FFileSystem.FileNames));
   finally
     LDocument.Free;
   end;
