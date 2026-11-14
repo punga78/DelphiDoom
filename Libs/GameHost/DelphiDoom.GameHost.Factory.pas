@@ -31,13 +31,20 @@ type
     class function CreateGdiDevice(AWindow: TGameHostWinWindow): IGameHostVideoDevice; static;
     /// <summary>The sound output of Windows (waveOut), closed: Open starts to ask a source for samples</summary>
     class function CreatePcmOutput: IGameHostPcmOutput; static;
+    /// <summary>Where the client area of the window is on the screen; the window must outlive it</summary>
+    class function CreateCursorArea(AWindow: TGameHostWinWindow): IGameHostCursorArea; static;
   end;
 
 implementation
 
 uses
   DelphiDoom.GameHost.Win.Keyboard, DelphiDoom.GameHost.Win.MessageTranslator,
-  DelphiDoom.GameHost.Win.GdiVideoDevice, DelphiDoom.GameHost.Win.PcmOutput;
+  DelphiDoom.GameHost.Win.GdiVideoDevice, DelphiDoom.GameHost.Win.PcmOutput, DelphiDoom.GameHost.Win.CursorArea;
+
+class function TGameHostFactory.CreateCursorArea(AWindow: TGameHostWinWindow): IGameHostCursorArea;
+begin
+  Result := TGameHostWinCursorArea.Create(AWindow);
+end;
 
 class function TGameHostFactory.CreatePcmOutput: IGameHostPcmOutput;
 begin
