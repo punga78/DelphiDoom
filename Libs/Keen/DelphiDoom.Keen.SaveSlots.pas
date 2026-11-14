@@ -13,12 +13,13 @@ unit DelphiDoom.Keen.SaveSlots;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.Keen.Types, DelphiDoom.Keen.UserTypes, DelphiDoom.Keen.UserIntf;
+  System.SysUtils, System.Classes, DelphiDoom.Keen.Types, DelphiDoom.Keen.UserTypes, DelphiDoom.Keen.UserIntf,
+  DelphiDoom.Keen.SaveFormat;
 
 type
   /// <summary>
   ///   The files SAVEGM0.KDR ... SAVEGM6.KDR. A file starts with the header of the user manager (the signature
-  ///   "KDR", a flag and the name the player gave, 39 bytes) and goes on with what the game writes
+  ///   "KDR", a flag with the version of the format in its high byte, the name the player gave and a byte of padding: 40 bytes) and goes on with what the game writes
   /// </summary>
   TKeenSaveSlots = class(TInterfacedObject, IKeenSaveSlots)
   strict private
@@ -29,7 +30,7 @@ type
     constructor Create(const AFiles: IKeenUserFiles);
     /// <summary>USL_GiveSaveName: SAVEGM, the number and the extension</summary>
     class function FileName(AIndex: Integer): string; static;
-    /// <summary>The 39 bytes of the header of a slot</summary>
+    /// <summary>The 40 bytes of the header of a slot</summary>
     class function EncodeHeader(const ASlot: TKeenSaveSlot): TBytes; static;
     /// <summary>The header of a file; false if it is too short or the signature is not "KDR"</summary>
     class function TryDecodeHeader(const ABytes: TBytes; out ASlot: TKeenSaveSlot): Boolean; static;
@@ -46,6 +47,7 @@ const
   SEmptyName = 'Empty';
   SErrorNoFile = 'No such file or directory';
   SErrorIncomplete = 'File is Incomplete';
+  SErrorDosFile = 'DOS game: use -importsave';
 
 { TKeenSaveSlots }
 
@@ -81,7 +83,7 @@ begin
   LHeader.Signature[0] := 'K';
   LHeader.Signature[1] := 'D';
   LHeader.Signature[2] := 'R';
-  LHeader.Present := Ord(ASlot.Present);
+  LHeader.Present := Word(Ord(ASlot.Present) or (KEEN_SAVE_FORMAT_VERSION shl 8));
   LName := Copy(ASlot.Name, 1, KEEN_MAX_GAME_NAME);
   if Length(LName) > 0 then
     Move(LName[1], LHeader.Name[0], Length(LName));
@@ -171,6 +173,7 @@ var
   LBytes: TBytes;
   LSlot: TKeenSaveSlot;
   LStream: TBytesStream;
+  LVersion: TKeenSaveVersion;
 begin
   CheckIndex(AIndex);
   AError := '';
@@ -187,12 +190,24 @@ begin
     Exit(False);
   end;
   FSlots[AIndex].Name := LSlot.Name;
+  // the format of the file: a game of the DOS program has addresses in the actors and is imported before it is loaded
+  LVersion := TKeenSaveFormat.Detect(LBytes);
+  if LVersion = ksvDos then
+  begin
+    AError := SErrorDosFile;
+    Exit(False);
+  end;
+  if LVersion = ksvUnknown then
+  begin
+    AError := SErrorIncomplete;
+    Exit(False);
+  end;
   Result := True;
   if Assigned(AHooks) then
   begin
     LStream := TBytesStream.Create(LBytes);
     try
-      LStream.Position := SizeOf(TKeenSaveHeader);
+      LStream.Position := TKeenSaveFormat.HeaderSize(LVersion);
       Result := AHooks.LoadGame(LStream);
     finally
       LStream.Free;

@@ -40,6 +40,22 @@ type
     procedure Sleep(AMilliseconds: Integer);
   end;
 
+  /// <summary>The calls of the system that change how fine its timer is (timeBeginPeriod and timeEndPeriod)</summary>
+  ITimerResolutionSystem = interface
+    ['{B3A5C8E1-4D27-4F90-8A16-7E02D95C4B38}']
+    /// <summary>Asks for a timer of this many milliseconds; false if the system refuses</summary>
+    function BeginPeriod(AMilliseconds: Integer): Boolean;
+    /// <summary>Gives back a period that BeginPeriod granted</summary>
+    procedure EndPeriod(AMilliseconds: Integer);
+  end;
+
+  /// <summary>What a request for a finer timer gives back: the timer stays fine until the last reference goes</summary>
+  ITimerResolutionLease = interface
+    ['{5E91D7B2-0C34-48A6-B2F5-1A8C60E39D74}']
+    function IsGranted: Boolean;
+    function Milliseconds: Integer;
+  end;
+
   /// <summary>The time of the program: seconds from the first time somebody asked</summary>
   IClock = interface
     ['{A04E7C93-5B1D-4F28-9C66-D8E31B7A0F52}']

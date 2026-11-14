@@ -24,7 +24,8 @@ type
   ///   Expands the LZH data of the SoftLib libraries (KDREAMS.CMP). A code under 256 is a byte; a higher one is a
   ///   copy of 3 to 30 bytes from the last 4096 written, at a distance whose upper 6 bits come from a table
   ///   and the lower 6 from the stream. The codes are Huffman codes of a tree that changes with each code. The
-  ///   state is in the object: a call starts from zero, two calls share nothing. The 16 bit numbers of the C
+  ///   state is in the object: a call starts the tree of the codes again, but the window of 4096 bytes keeps what an
+  ///   earlier call left in it, as the static buffer of the C does. The 16 bit numbers of the C
   ///   (the bit buffer, the frequencies) are kept at 16 bits
   /// </summary>
   TKeenLzh = class
@@ -47,6 +48,16 @@ type
       FLeft: Cardinal;
       FGetBuf: Word;
       FGetLen: Integer;
+      // the compressor: the tree of the strings of the window, the match found, the bits not written yet
+      FLeftSon: array[0..N] of Integer;
+      FRightSon: array[0..N + 256] of Integer;
+      FDad: array[0..N] of Integer;
+      FMatchPosition: Integer;
+      FMatchLength: Integer;
+      FPutBuf: Word;
+      FPutLen: Integer;
+      FOutput: TBytes;
+      FOutputLength: Integer;
     procedure StartHuff;
     procedure Reconst;
     procedure Update(ACode: Integer);
@@ -57,6 +68,14 @@ type
     function DecodePosition: Integer;
     class function PositionCode(AByte: Integer): Integer; static;
     class function PositionLength(AByte: Integer): Integer; static;
+    procedure DeleteNode(AIndex: Integer);
+    procedure InsertNode(AIndex: Integer);
+    procedure InitTree;
+    procedure PutCode(ALength: Integer; ACode: Word);
+    procedure EncodeChar(ACode: Integer);
+    procedure EncodePosition(APosition: Integer);
+    procedure EncodeEnd;
+    procedure Emit(AValue: Byte);
   public
     /// <summary>
     ///   lzhDecompress: AOriginalLength bytes from the ACompressedLength bytes at AOffset of ASource. As in the C,
@@ -64,9 +83,28 @@ type
     ///   the buffer are an EKeenDataException
     /// </summary>
     function Decompress(const ASource: TBytes; AOffset, ACompressedLength, AOriginalLength: Integer): TBytes;
+    /// <summary>
+    ///   lzhCompress (the compressor of lzhuf.c, that the game does not use: SoftLib made the library with it). The
+    ///   dictionary of 4096 bytes is a static of the C and keeps what a call left in it, and so it does here: a
+    ///   short buffer after a long one can see bytes of the long one past its end, and the stream depends on them.
+    ///   Compress the same buffers in the same order on a new object to get the same streams as the C
+    ///   (the golden of the harness does)
+    /// </summary>
+    function Compress(const ASource: TBytes): TBytes;
   end;
 
 implementation
+
+const
+  // p_len and p_code of the C: how many bits and which bits the upper 6 bits of a distance have when they are written
+  P_LEN: array[0..63] of Byte = (
+    3, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7,
+    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8);
+  P_CODE: array[0..63] of Byte = (
+    $00, $20, $30, $40, $50, $58, $60, $68, $70, $78, $80, $88, $90, $94, $98, $9C,
+    $A0, $A4, $A8, $AC, $B0, $B4, $B8, $BC, $C0, $C2, $C4, $C6, $C8, $CA, $CC, $CE,
+    $D0, $D2, $D4, $D6, $D8, $DA, $DC, $DE, $E0, $E2, $E4, $E6, $E8, $EA, $EC, $EE,
+    $F0, $F1, $F2, $F3, $F4, $F5, $F6, $F7, $F8, $F9, $FA, $FB, $FC, $FD, $FE, $FF);
 
 { TKeenLzh }
 
@@ -295,6 +333,271 @@ begin
   Result := LCode or (LByte and $3F);
 end;
 
+procedure TKeenLzh.Emit(AValue: Byte);
+begin
+  if FOutputLength >= Length(FOutput) then
+    SetLength(FOutput, (FOutputLength + 256) * 2);
+  FOutput[FOutputLength] := AValue;
+  Inc(FOutputLength);
+end;
+
+procedure TKeenLzh.DeleteNode(AIndex: Integer);
+var
+  LNode: Integer;
+begin
+  // DeleteNode: a node that is not in the tree is left alone
+  if FDad[AIndex] = N then
+    Exit;
+  if FRightSon[AIndex] = N then
+    LNode := FLeftSon[AIndex]
+  else if FLeftSon[AIndex] = N then
+    LNode := FRightSon[AIndex]
+  else
+  begin
+    LNode := FLeftSon[AIndex];
+    if FRightSon[LNode] <> N then
+    begin
+      repeat
+        LNode := FRightSon[LNode];
+      until FRightSon[LNode] = N;
+      FRightSon[FDad[LNode]] := FLeftSon[LNode];
+      FDad[FLeftSon[LNode]] := FDad[LNode];
+      FLeftSon[LNode] := FLeftSon[AIndex];
+      FDad[FLeftSon[AIndex]] := LNode;
+    end;
+    FRightSon[LNode] := FRightSon[AIndex];
+    FDad[FRightSon[AIndex]] := LNode;
+  end;
+  FDad[LNode] := FDad[AIndex];
+  if FRightSon[FDad[AIndex]] = AIndex then
+    FRightSon[FDad[AIndex]] := LNode
+  else
+    FLeftSon[FDad[AIndex]] := LNode;
+  FDad[AIndex] := N;
+end;
+
+procedure TKeenLzh.InsertNode(AIndex: Integer);
+var
+  LIndex: Integer;
+  LNode: Integer;
+  LCompare: Integer;
+  LDistance: Integer;
+begin
+  LCompare := 1;
+  LNode := N + 1 + FTextBuffer[AIndex];
+  FRightSon[AIndex] := N;
+  FLeftSon[AIndex] := N;
+  FMatchLength := 0;
+  while True do
+  begin
+    if LCompare >= 0 then
+    begin
+      if FRightSon[LNode] <> N then
+        LNode := FRightSon[LNode]
+      else
+      begin
+        FRightSon[LNode] := AIndex;
+        FDad[AIndex] := LNode;
+        Exit;
+      end;
+    end
+    else
+    begin
+      if FLeftSon[LNode] <> N then
+        LNode := FLeftSon[LNode]
+      else
+      begin
+        FLeftSon[LNode] := AIndex;
+        FDad[AIndex] := LNode;
+        Exit;
+      end;
+    end;
+    LIndex := 1;
+    while LIndex < F do
+    begin
+      LCompare := Integer(FTextBuffer[AIndex + LIndex]) - Integer(FTextBuffer[LNode + LIndex]);
+      if LCompare <> 0 then
+        Break;
+      Inc(LIndex);
+    end;
+    if LIndex > THRESHOLD then
+    begin
+      if LIndex > FMatchLength then
+      begin
+        FMatchPosition := ((AIndex - LNode) and (N - 1)) - 1;
+        FMatchLength := LIndex;
+        if FMatchLength >= F then
+          Break;
+      end;
+      if LIndex = FMatchLength then
+      begin
+        LDistance := ((AIndex - LNode) and (N - 1)) - 1;
+        if LDistance < FMatchPosition then
+          FMatchPosition := LDistance;
+      end;
+    end;
+  end;
+  FDad[AIndex] := FDad[LNode];
+  FLeftSon[AIndex] := FLeftSon[LNode];
+  FRightSon[AIndex] := FRightSon[LNode];
+  FDad[FLeftSon[LNode]] := AIndex;
+  FDad[FRightSon[LNode]] := AIndex;
+  if FRightSon[FDad[LNode]] = LNode then
+    FRightSon[FDad[LNode]] := AIndex
+  else
+    FLeftSon[FDad[LNode]] := AIndex;
+  FDad[LNode] := N;
+end;
+
+procedure TKeenLzh.InitTree;
+var
+  LIndex: Integer;
+begin
+  for LIndex := N + 1 to N + 256 do
+    FRightSon[LIndex] := N;
+  for LIndex := 0 to N - 1 do
+    FDad[LIndex] := N;
+end;
+
+procedure TKeenLzh.PutCode(ALength: Integer; ACode: Word);
+begin
+  FPutBuf := Word(FPutBuf or (ACode shr FPutLen));
+  Inc(FPutLen, ALength);
+  if FPutLen >= 8 then
+  begin
+    Emit(Byte(FPutBuf shr 8));
+    Dec(FPutLen, 8);
+    if FPutLen >= 8 then
+    begin
+      Emit(Byte(FPutBuf));
+      Dec(FPutLen, 8);
+      FPutBuf := Word(ACode shl (ALength - FPutLen));
+    end
+    else
+      FPutBuf := Word(FPutBuf shl 8);
+  end;
+end;
+
+procedure TKeenLzh.EncodeChar(ACode: Integer);
+var
+  LBits: Word;
+  LCount: Integer;
+  LNode: Integer;
+begin
+  LBits := 0;
+  LCount := 0;
+  LNode := FParent[ACode + T];
+  // from the leaf to the root: the bit of each step is 1 when the address of the node is odd
+  repeat
+    LBits := Word(LBits shr 1);
+    if (LNode and 1) <> 0 then
+      LBits := Word(LBits + $8000);
+    Inc(LCount);
+    LNode := FParent[LNode];
+  until LNode = R;
+  PutCode(LCount, LBits);
+  Update(ACode);
+end;
+
+procedure TKeenLzh.EncodePosition(APosition: Integer);
+var
+  LUpper: Integer;
+begin
+  // the upper 6 bits with their code, the lower 6 as they are
+  LUpper := APosition shr 6;
+  PutCode(P_LEN[LUpper], Word(P_CODE[LUpper] shl 8));
+  PutCode(6, Word((APosition and $3F) shl 10));
+end;
+
+procedure TKeenLzh.EncodeEnd;
+begin
+  if FPutLen <> 0 then
+    Emit(Byte(FPutBuf shr 8));
+end;
+
+function TKeenLzh.Compress(const ASource: TBytes): TBytes;
+var
+  LIndex: Integer;
+  LLength: Integer;
+  LRing: Integer;
+  LSlot: Integer;
+  LLastMatchLength: Integer;
+  LRead: Integer;
+  LByte: Byte;
+
+  function NextByte: Byte;
+  begin
+    Result := ASource[LRead];
+    Inc(LRead);
+  end;
+
+begin
+  FOutputLength := 0;
+  FOutput := nil;
+  if Length(ASource) = 0 then
+    Exit(nil);
+  FPutBuf := 0;
+  FPutLen := 0;
+  LRead := 0;
+  StartHuff;
+  InitTree;
+  LSlot := 0;
+  LRing := N - F;
+  for LIndex := LSlot to LRing - 1 do
+    FTextBuffer[LIndex] := Ord(' ');
+  LLength := 0;
+  while (LLength < F) and (LRead < Length(ASource)) do
+  begin
+    FTextBuffer[LRing + LLength] := NextByte;
+    Inc(LLength);
+  end;
+  for LIndex := 1 to F do
+    InsertNode(LRing - LIndex);
+  InsertNode(LRing);
+  repeat
+    if FMatchLength > LLength then
+      FMatchLength := LLength;
+    if FMatchLength <= THRESHOLD then
+    begin
+      FMatchLength := 1;
+      EncodeChar(FTextBuffer[LRing]);
+    end
+    else
+    begin
+      EncodeChar(255 - THRESHOLD + FMatchLength);
+      EncodePosition(FMatchPosition);
+    end;
+    LLastMatchLength := FMatchLength;
+    LIndex := 0;
+    while (LIndex < LLastMatchLength) and (LRead < Length(ASource)) do
+    begin
+      LByte := NextByte;
+      DeleteNode(LSlot);
+      FTextBuffer[LSlot] := LByte;
+      if LSlot < F - 1 then
+        FTextBuffer[LSlot + N] := LByte;
+      LSlot := (LSlot + 1) and (N - 1);
+      LRing := (LRing + 1) and (N - 1);
+      InsertNode(LRing);
+      Inc(LIndex);
+    end;
+    while LIndex < LLastMatchLength do
+    begin
+      Inc(LIndex);
+      DeleteNode(LSlot);
+      LSlot := (LSlot + 1) and (N - 1);
+      LRing := (LRing + 1) and (N - 1);
+      Dec(LLength);
+      if LLength <> 0 then
+        InsertNode(LRing);
+    end;
+  until LLength <= 0;
+  EncodeEnd;
+  SetLength(FOutput, FOutputLength);
+  Result := FOutput;
+  FOutput := nil;
+end;
+
 function TKeenLzh.Decompress(const ASource: TBytes; AOffset, ACompressedLength, AOriginalLength: Integer): TBytes;
 var
   LIndex: Integer;
@@ -318,8 +621,8 @@ begin
   FGetBuf := 0;
   FGetLen := 0;
   StartHuff;
-  // the buffer of the C is static: zeros at the first call, then spaces in the part that a copy can reach first
-  FillChar(FTextBuffer, SizeOf(FTextBuffer), 0);
+  // the buffer of the C is static: what an earlier call left in it stays (zeros in a new object); the spaces are
+  // written in the part that a copy can reach first
   for LIndex := 0 to N - F - 1 do
     FTextBuffer[LIndex] := Ord(' ');
   LRing := N - F;

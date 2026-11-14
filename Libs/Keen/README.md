@@ -149,3 +149,21 @@ Niente: Keen32 e' un programma a parte (per ora scrive PNG: `-map`, `-view`). Pe
 ## Cosa resta da verificare con l'originale
 
 Per le azioni (K8b) l'harness DOS c'e' (vedi Parita'). Un harness DOS piu' completo, che giri il C compilato con Open Watcom (`Reference\_dati\keen_build\src`) in DOSBox e scarichi con `VW_ScreenToMem` la memoria video dopo N refresh darebbe un golden dei piani EGA per `ID_VW`/`ID_RF` e, con i tasti iniettati, lo stato degli attori dopo N tic; non e' stato fatto in questa sessione (il confronto e' quello descritto sopra). Non provati: modo `comp` e joystick/mouse su una macchina vera.
+
+## Completamento della #165 (2026-11-14)
+
+Aggiunte alla mappa nome C -> Delphi:
+
+| C | Delphi |
+|---|---|
+| `US_CheckParm`, `ParmStrings` di `id_in.c`, `id_rf.c`, `id_sd.c`, `id_us.c`, `id_vw.c` | `TKeenParameters.Check`, `.Parse` (record `TKeenOriginalParameters`) |
+| `main` di `kd_main.c`: `/VER`, `/?` | `TKeenParameters.TryInformation` |
+| `IN_Startup` (`checkmouse`, `checkjoys`) | `TKeenGameSet.LoadConfig` chiama `IKeenInput.Startup(not NoMouse, not NoJoysticks)` |
+| `INL_GetMouseDelta`, `INL_GetMouseButtons` | `TKeenMouseAdapter` (con `IInputGate`), `TKeenScriptedDevices` con `-script` |
+| `IN_GetJoyAbs`, `INL_GetJoyButtons` | `TKeenJoystickAdapter` (con `IInputGate`), `TKeenScriptedDevices` con `-script` |
+| `lzhCompress` | `TKeenLzh.Compress` |
+| il formato di `SAVEGMn.KDR` (versione nell'alto byte di `present`) | `TKeenSaveFormat.Detect` e `TKeenSaveVersion` |
+| `SaveGame`/`LoadGame` di un file del programma DOS | `TKeenLzExe`, `TKeenDosStateLocator`, `TKeenDosSaveConverter`, `Keen32 -importsave` |
+| il ciclo che aspetta il tic (`RF_Refresh`, `Sleep(1)`) | `TKeenLoopProfile` (misura), `ITimerResolutionLease` di `Libs\Clock` (correzione) |
+
+`Keen32` ha in piu' `-report` (tic, refresh, immagini al secondo e tempo di ogni parte del ciclo, `steady`: i refresh dopo i primi 3 secondi), `-coarsetimer`, `-importsave <file> -exe <KDREAMS.EXE> [-slot n]`, i parametri dell'originale (`nomouse`, `nojoys`, `noal`, `comp`, `TEDLEVEL n`, con o senza `-`) e `/VER`, `/?`. Il linguaggio degli script (`-script`) ha `mouse dx dy`, `mousebuttons n`, `joy x y`, `joybuttons n`. Cosa e' stato provato, con i numeri, e le differenze dal C: `CLAUDE.md`, sezione "Completamento della #165". Programmi di verifica in `Tools\Verifica\165`: `Misura-Velocita.ps1`, `Confronta-32-64.ps1`, `Prova-Dispositivi.ps1`, `Verifica-Giocate.ps1`, `Verifica-Audio.ps1`, `parm\Run-ParmParity.ps1`, `Dos\Esegui-Dosbox-Con-Immagini.ps1`. Suite `DelphiDoom.Tests.Keen`: 952 test (2 ignorati), copertura delle unit nuove tra 96% e 100% (`Libs\GameHost` WindowMouse e ForegroundGate 100%, `Libs\Clock` TimerResolution 100%, `Keen\` LoopProfile 98% e HostClock 100%; non misurate: le classi del composition root).

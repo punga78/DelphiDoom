@@ -19,7 +19,8 @@ const
   KEEN_SCRIPT_PRESS_TOTAL = 8;
 
 type
-  TKeenScriptEventKind = (ksePort, kseShot, kseQuit);
+  TKeenScriptEventKind = (ksePort, kseShot, kseQuit, kseMouseMove, kseMouseButtons, kseJoystickPosition,
+    kseJoystickButtons);
 
   /// <summary>What happens at a tic of the script: a byte of the keyboard port, a picture of the screen, the end</summary>
   TKeenScriptEvent = record
@@ -29,13 +30,22 @@ type
     Port: Byte;
     /// <summary>kseShot: the name of the picture</summary>
     Name: string;
+    /// <summary>
+    ///   kseMouseMove: how far the mouse moved; kseJoystickPosition: where the stick is; kseMouseButtons and
+    ///   kseJoystickButtons: X is the buttons that are down
+    /// </summary>
+    X: Integer;
+    Y: Integer;
   end;
 
   /// <summary>
   ///   A script of a run of the game, one command per line: "wait n" lets n tics go by, "press key" pushes a key
   ///   and lets it go, "down key" and "up key" do one of the two, "type text" presses the keys of a text (letters,
-  ///   digits and spaces), "shot name" takes a picture of the screen, "quit" ends the program. A line that starts
-  ///   with # is a comment. The keys have the names of the PC keyboard: enter, esc, space, up, down, left,
+  ///   digits and spaces), "shot name" takes a picture of the screen, "quit" ends the program. The mouse: "mouse dx
+  ///   dy" moves it (the next look of the game gives the movement), "mousebuttons n" sets the buttons that are down
+  ///   (bit 0 left, bit 1 right, bit 2 middle). The first joystick: "joy x y" puts the stick at a place of the game
+  ///   port (1000 is the centre, 1..2000 the range), "joybuttons n" sets its buttons (bit 0 and bit 1). A line that
+  ///   starts with # is a comment. The keys have the names of the PC keyboard: enter, esc, space, up, down, left,
   ///   right, ctrl, alt, lshift, rshift, tab, backspace, f1..f10, pgup, pgdn, home, end, ins, del, the letters
   ///   and the digits
   /// </summary>
@@ -134,8 +144,10 @@ var
   LScan: Byte;
   LEvents: TArray<TKeenScriptEvent>;
   LIndex: Integer;
+  LFirst: Integer;
+  LSecond: Integer;
 
-  procedure Add(AKind: TKeenScriptEventKind; APort: Byte; const AName: string);
+  procedure Add(AKind: TKeenScriptEventKind; APort: Byte; const AName: string; AX: Integer = 0; AY: Integer = 0);
   begin
     if LCount >= Length(LEvents) then
       SetLength(LEvents, (LCount + 16) * 2);
@@ -143,6 +155,8 @@ var
     LEvents[LCount].Kind := AKind;
     LEvents[LCount].Port := APort;
     LEvents[LCount].Name := AName;
+    LEvents[LCount].X := AX;
+    LEvents[LCount].Y := AY;
     Inc(LCount);
   end;
 
@@ -152,6 +166,23 @@ var
     Inc(LTic, KEEN_SCRIPT_PRESS_TICS);
     Add(ksePort, AScan or $80, '');
     Inc(LTic, KEEN_SCRIPT_PRESS_TOTAL - KEEN_SCRIPT_PRESS_TICS);
+  end;
+
+  // two whole numbers, "dx dy" or "x y"
+  procedure NeedTwoNumbers(out AFirst, ASecond: Integer);
+  var
+    LSplit: Integer;
+  begin
+    LSplit := Pos(' ', LArgument);
+    if (LSplit = 0) or not TryStrToInt(Trim(Copy(LArgument, 1, LSplit - 1)), AFirst) or
+      not TryStrToInt(Trim(Copy(LArgument, LSplit + 1, MaxInt)), ASecond) then
+      raise EKeenException.CreateFmt(SScriptBadLine, [LLineNumber + 1, LLine]);
+  end;
+
+  function NeedNumber: Integer;
+  begin
+    if not TryStrToInt(LArgument, Result) then
+      raise EKeenException.CreateFmt(SScriptBadLine, [LLineNumber + 1, LLine]);
   end;
 
   function NeedKey: Byte;
@@ -210,6 +241,30 @@ begin
             raise EKeenException.CreateFmt(SScriptBadKey, [LLineNumber + 1, LArgument[LIndex]]);
           Press(LScan);
         end;
+      end
+      else if LCommand = 'mouse' then
+      begin
+        NeedTwoNumbers(LFirst, LSecond);
+        Add(kseMouseMove, 0, '', LFirst, LSecond);
+        Inc(LTic);
+      end
+      else if LCommand = 'mousebuttons' then
+      begin
+        Add(kseMouseButtons, 0, '', NeedNumber);
+        Inc(LTic);
+      end
+      else if LCommand = 'joy' then
+      begin
+        NeedTwoNumbers(LFirst, LSecond);
+        if (LFirst < 0) or (LFirst > 65535) or (LSecond < 0) or (LSecond > 65535) then
+          raise EKeenException.CreateFmt(SScriptBadLine, [LLineNumber + 1, LLine]);
+        Add(kseJoystickPosition, 0, '', LFirst, LSecond);
+        Inc(LTic);
+      end
+      else if LCommand = 'joybuttons' then
+      begin
+        Add(kseJoystickButtons, 0, '', NeedNumber);
+        Inc(LTic);
       end
       else if LCommand = 'shot' then
         Add(kseShot, 0, LArgument)

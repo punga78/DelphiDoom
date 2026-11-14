@@ -1,0 +1,14 @@
+# Keen32 -warp 6 -script (Prova-Dispositivi.ps1 -Control -1 -Level 6): a small level to its end. Keen walks left, then right, and walks off the
+# edge of the map: playstate is levelcomplete, the level is marked as done and the game goes back to the world map.
+wait 200
+shot t0.png
+down left
+wait 120
+shot t1.png
+up left
+down right
+wait 200
+shot t2.png
+wait 200
+shot t3.png
+quit

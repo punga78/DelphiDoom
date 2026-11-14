@@ -27,6 +27,7 @@ uses
   DelphiDoom.Keen.HostClock in 'DelphiDoom.Keen.HostClock.pas',
   DelphiDoom.Keen.HostEvents in 'DelphiDoom.Keen.HostEvents.pas',
   DelphiDoom.Keen.GameRunner in 'DelphiDoom.Keen.GameRunner.pas',
+  DelphiDoom.Keen.Parameters in '..\Libs\Keen\DelphiDoom.Keen.Parameters.pas',
   DelphiDoom.Keen.Composition in 'DelphiDoom.Keen.Composition.pas';
 
 procedure ShowUsage;
@@ -48,7 +49,10 @@ begin
   Writeln('  -quitafter <s>   close the window after some seconds');
   Writeln('  -script <file>   no window: the keys and the pictures of a script, a tic of the game for each wait');
   Writeln('  -shots <folder>  where the pictures of the script go');
-  Writeln('  -report          write the state of the game and of the mixer at the end');
+  Writeln('  -report          write the speed (tics, refreshes, pictures a second), the state of the game and of the mixer at the end');
+  Writeln('  nomouse, nojoys, noal, comp, TEDLEVEL <n>  the parameters of the original, with or without a dash (nosb, nodr, noss, sst, ss1..ss3 and HIDDENCARD are accepted and change nothing)');
+  Writeln('  -importsave <file> -exe <KDREAMS.EXE> [-slot <0..6>] [-save <folder>]  make a saved game of the DOS program one of this port');
+  Writeln('  -coarsetimer     leave the timer of Windows at its tick of 15.6 ms (to compare the speed of the game)');
 end;
 
 var
@@ -70,6 +74,12 @@ var
   LExport: Boolean;
   LOptions: TKeenRunOptions;
   LProgramFolder: string;
+  LOriginal: TArray<string>;
+  LInformation: string;
+  LImportSave: string;
+  LImportExe: string;
+  LImportSlot: Integer;
+  LParameters: TKeenOriginalParameters;
 
 begin
 {$IFDEF DEBUG}
@@ -77,7 +87,14 @@ begin
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
   try
+    // main of kd_main.c: /VER and /? as the first argument write a text and end
+    if (ParamCount >= 1) and TKeenParameters.TryInformation(ParamStr(1), LInformation) then
+    begin
+      Write(LInformation);
+      Exit;
+    end;
     LMapNumber := 0;
+    LImportSlot := 0;
     LPng := '';
     LList := False;
     LView := False;
@@ -144,6 +161,21 @@ begin
         LOptions.ShotFolder := LCursor.Value
       else if LArgument = '-report' then
         LOptions.Report := True
+      else if LArgument = '-coarsetimer' then
+        LOptions.CoarseTimer := True
+      else if (LArgument = '-importsave') and (LCursor.Remaining >= 1) then
+        LImportSave := LCursor.Value
+      else if (LArgument = '-exe') and (LCursor.Remaining >= 1) then
+        LImportExe := LCursor.Value
+      else if (LArgument = '-slot') and (LCursor.Remaining >= 1) then
+        LImportSlot := StrToInt(LCursor.Value)
+      else if TKeenParameters.IsOriginal(LArgument) then
+      begin
+        // the parameters of the original (nomouse, nojoys, comp, noal, TEDLEVEL <n>...), with or without the dash
+        LOriginal := LOriginal + [LArgument];
+        if TKeenParameters.TakesValue(LArgument) and (LCursor.Remaining >= 1) then
+          LOriginal := LOriginal + [LCursor.Value];
+      end
       else
       begin
         ShowUsage;
@@ -151,6 +183,22 @@ begin
         Exit;
       end;
     end;
+    if LImportSave <> '' then
+    begin
+      // a saved game of the DOS program becomes one of this port
+      if LImportExe = '' then
+        raise EKeenException.Create('Keen: -importsave needs -exe with the KDREAMS.EXE that wrote the game');
+      if LOptions.SaveFolder = '' then
+        LOptions.SaveFolder := GetCurrentDir;
+      Writeln(TKeenComposition.ImportDosSave(LImportSave, LImportExe, LOptions.SaveFolder, LImportSlot));
+      Exit;
+    end;
+    LParameters := TKeenParameters.Parse(LOriginal);
+    LOptions.NoMouse := LParameters.NoMouse;
+    LOptions.NoJoysticks := LParameters.NoJoysticks;
+    LOptions.NoAdLib := LParameters.NoAdLibDetection;
+    if LParameters.Compatibility then
+      LOptions.Compatibility := True;
     if (not LExport) and (LSound < 0) then
     begin
       // the game: the data next to the program when no folder is given, as the original has them

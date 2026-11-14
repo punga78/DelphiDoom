@@ -445,6 +445,8 @@ type
   IKeenRefresh = interface
     ['{3C8F9A60-1E75-4D2B-B409-A6D5E3170C82}']
     function GetTics: Integer;
+    /// <summary>How many times Refresh ran: a counter for the speed of the game (at most 70 / MINTICS a second)</summary>
+    function GetRefreshCount: Integer;
     function GetOriginXGlobal: Integer;
     function GetOriginYGlobal: Integer;
     function GetOriginXTile: Integer;
@@ -479,6 +481,7 @@ type
     function GetOtherPage: Integer;
     function GetScreenPage: Integer;
     property Tics: Integer read GetTics;
+    property RefreshCount: Integer read GetRefreshCount;
     property OriginXGlobal: Integer read GetOriginXGlobal;
     property OriginYGlobal: Integer read GetOriginYGlobal;
     property OriginXTile: Integer read GetOriginXTile;

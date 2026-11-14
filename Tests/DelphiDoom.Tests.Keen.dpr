@@ -50,6 +50,14 @@ uses
   DelphiDoom.Keen.WorkingMap in '..\Libs\Keen\DelphiDoom.Keen.WorkingMap.pas',
   DelphiDoom.Keen.Refresh in '..\Libs\Keen\DelphiDoom.Keen.Refresh.pas',
   DelphiDoom.Keen.ManualClock in '..\Libs\Keen\DelphiDoom.Keen.ManualClock.pas',
+  DelphiDoom.Clock.Intf in '..\Libs\Clock\DelphiDoom.Clock.Intf.pas',
+  DelphiDoom.Clock.ManualClock in '..\Libs\Clock\DelphiDoom.Clock.ManualClock.pas',
+  DelphiDoom.Keen.HostClock in '..\Keen\DelphiDoom.Keen.HostClock.pas',
+  DelphiDoom.Keen.SaveFormat in '..\Libs\Keen\DelphiDoom.Keen.SaveFormat.pas',
+  DelphiDoom.Keen.LzExe in '..\Libs\Keen\DelphiDoom.Keen.LzExe.pas',
+  DelphiDoom.Keen.DosStateLocator in '..\Libs\Keen\DelphiDoom.Keen.DosStateLocator.pas',
+  DelphiDoom.Keen.DosSaveConverter in '..\Libs\Keen\DelphiDoom.Keen.DosSaveConverter.pas',
+  DelphiDoom.Keen.LoopProfile in '..\Keen\DelphiDoom.Keen.LoopProfile.pas',
   DelphiDoom.Keen.InputTypes in '..\Libs\Keen\DelphiDoom.Keen.InputTypes.pas',
   DelphiDoom.Keen.ScanTables in '..\Libs\Keen\DelphiDoom.Keen.ScanTables.pas',
   DelphiDoom.Keen.DemoTape in '..\Libs\Keen\DelphiDoom.Keen.DemoTape.pas',
@@ -175,7 +183,15 @@ uses
   DelphiDoom.Tests.Keen.PngEncoder in 'Source\DelphiDoom.Tests.Keen.PngEncoder.pas',
   DelphiDoom.Tests.Keen.MapExporter in 'Source\DelphiDoom.Tests.Keen.MapExporter.pas',
   DelphiDoom.Tests.Keen.GameLoader in 'Source\DelphiDoom.Tests.Keen.GameLoader.pas',
-  DelphiDoom.Tests.Keen.Golden in 'Source\DelphiDoom.Tests.Keen.Golden.pas';
+  DelphiDoom.Tests.Keen.Golden in 'Source\DelphiDoom.Tests.Keen.Golden.pas',
+  DelphiDoom.Tests.Keen.HostClock in 'Source\DelphiDoom.Tests.Keen.HostClock.pas',
+  DelphiDoom.Tests.Keen.LoopProfile in 'Source\DelphiDoom.Tests.Keen.LoopProfile.pas',
+  DelphiDoom.Keen.ScriptedDevices in '..\Libs\Keen\DelphiDoom.Keen.ScriptedDevices.pas',
+  DelphiDoom.Keen.Parameters in '..\Libs\Keen\DelphiDoom.Keen.Parameters.pas',
+  DelphiDoom.Tests.Keen.InputDevices in 'Source\DelphiDoom.Tests.Keen.InputDevices.pas',
+  DelphiDoom.Tests.Keen.Parameters in 'Source\DelphiDoom.Tests.Keen.Parameters.pas',
+  DelphiDoom.Tests.Keen.DosSave in 'Source\DelphiDoom.Tests.Keen.DosSave.pas',
+  DelphiDoom.Tests.Keen.SaveFormat in 'Source\DelphiDoom.Tests.Keen.SaveFormat.pas';
 
 var
   Runner: ITestRunner;

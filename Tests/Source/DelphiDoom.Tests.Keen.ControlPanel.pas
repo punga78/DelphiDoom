@@ -83,7 +83,7 @@ implementation
 
 uses
   DelphiDoom.Keen.ControlPanel, DelphiDoom.Keen.UserState, DelphiDoom.Keen.SaveSlots, DelphiDoom.Keen.Factory,
-  DelphiDoom.Tests.Keen.RealData, DelphiDoom.Tests.Shared.Skip;
+  DelphiDoom.Tests.Keen.RealData, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.Keen.SaveFormat;
 
 type
   TLogSound = class(TInterfacedObject, IKeenSoundManager)
@@ -379,7 +379,7 @@ begin
   FPanel.Run;
   Assert.AreEqual('save', FHooksLog.CommaText);
   Assert.IsTrue(FFilesIntf.TryRead('SAVEGM0.KDR', LBytes));
-  Assert.AreEqual<Integer>(39 + 3, Length(LBytes));
+  Assert.AreEqual<Integer>(40 + 3, Length(LBytes));
   Assert.IsTrue(TKeenSaveSlots.TryDecodeHeader(LBytes, LSlot));
   Assert.AreEqual(AnsiString('abc'), LSlot.Name);
   Assert.IsTrue(FSlots.Slots[0].Present);
@@ -394,12 +394,12 @@ begin
   LSlot.Name := 'saved before';
   // the files and the slots are made by Make: the file is put after it, then the check finds it
   Make('wait 20'#10'press f6'#10'wait 30'#10'press enter', False);
-  FFiles.Put('SAVEGM0.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + TBytes.Create(5, 5));
+  FFiles.Put('SAVEGM0.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + MakeSaveBody(5));
   FSlots.Check;
   FPanel.Run;
   Assert.IsTrue(FState.LoadedGame);
   Assert.IsFalse(FState.AbortGame);
-  Assert.AreEqual('"load 39 of 41"', FHooksLog.CommaText);
+  Assert.AreEqual('"load 40 of 258"', FHooksLog.CommaText);
   Assert.IsTrue(FWorld.Input.Paused, 'a loaded game starts paused');
 end;
 

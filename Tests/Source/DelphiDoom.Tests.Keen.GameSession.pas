@@ -433,7 +433,7 @@ begin
   Assert.IsTrue(FSession.FilesIntf.TryRead('SAVEGM0.KDR', LBytes), 'the file of the saved game');
   Assert.IsTrue(TKeenSaveSlots.TryDecodeHeader(LBytes, LSlot));
   Assert.AreEqual(AnsiString('first'), LSlot.Name);
-  Assert.IsTrue(Length(LBytes) > 39 + 60 + 2 * 76);
+  Assert.IsTrue(Length(LBytes) > 40 + 60 + 2 * 76);
   // loaded: the score and the place of Keen are the saved ones (the loaded game starts paused: return goes on)
   Assert.AreEqual(LSavedScore, FSession.State^.Score);
   Assert.AreEqual(LSavedX, Integer(FSession.Game.Objects.Player^.X));

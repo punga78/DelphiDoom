@@ -37,6 +37,14 @@ type
     StartLevel: Integer;
     /// <summary>Writes what the game and the mixer did when the program ends</summary>
     Report: Boolean;
+    /// <summary>Leaves the timer of Windows at its default tick (15.6 ms), to compare the speed with and without the fine timer</summary>
+    CoarseTimer: Boolean;
+    /// <summary>The parameter "nomouse" of the original: the mouse is not looked for</summary>
+    NoMouse: Boolean;
+    /// <summary>The parameter "nojoys" of the original: the joysticks are not looked for</summary>
+    NoJoysticks: Boolean;
+    /// <summary>The parameter "noal" of the original: the AdLib card is not detected, the game has none</summary>
+    NoAdLib: Boolean;
     class function Defaults: TKeenRunOptions; static;
   end;
 
@@ -58,7 +66,7 @@ uses
   System.Classes, System.IOUtils, DelphiDoom.Keen.Intf, DelphiDoom.Keen.UserIntf, DelphiDoom.Keen.Factory,
   DelphiDoom.Keen.GameFactory, DelphiDoom.Keen.HelpFiles, DelphiDoom.Keen.UserFiles, DelphiDoom.Keen.ScreenPicture,
   DelphiDoom.Keen.Script, DelphiDoom.Keen.ScriptedHost, DelphiDoom.Keen.SoundJournal, DelphiDoom.Keen.PngEncoder, DelphiDoom.Keen.Composition,
-  DelphiDoom.Keen.HostClock, DelphiDoom.Keen.HostEvents, DelphiDoom.Keen.UserTypes, DelphiDoom.Clock.Intf,
+  DelphiDoom.Keen.HostClock, DelphiDoom.Keen.HostEvents, DelphiDoom.Keen.LoopProfile, DelphiDoom.Keen.ScriptedDevices, DelphiDoom.GameHost.MouseState, DelphiDoom.GameHost.EventFanOut, DelphiDoom.GameHost.Events.Intf, DelphiDoom.Keen.UserTypes, DelphiDoom.Clock.Intf,
   DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Factory,
   DelphiDoom.GameHost.Win.Window, DelphiDoom.Platform.Intf, DelphiDoom.Platform.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.Png.IndexedEncoder;
@@ -69,6 +77,8 @@ const
   SNoLibrary = 'Keen: Couldn''t find KDREAMS.CMP';
   /// <summary>The frames of sound of a tic of the game (44100 / 70)</summary>
   AUDIO_FRAMES_PER_TIC = 630;
+  /// <summary>The speed of play is counted after the loading and the fades of the start</summary>
+  STEADY_AFTER_SECONDS = 3.0;
 
 type
   /// <summary>The parts of a run that the two ways of running share</summary>
@@ -81,6 +91,7 @@ type
     Game: TKeenGameSet;
     Journal: TKeenSoundJournal;
     JournalKeeper: IKeenSoundManager;
+    Joysticks: IKeenJoysticks;
     procedure OpenData;
     function Parts(const AClock: IKeenClock; const AInput: IKeenInput; ARandomize: Boolean): TKeenGameParts;
     procedure Play;
@@ -135,6 +146,9 @@ begin
   Result.Help := TKeenHelpFiles.Create(Files);
   Result.Title := TKeenGameFactory.LoadTitle(Files.ReadAll(LIBRARY_FILE_NAME));
   Result.Compatibility := Options.Compatibility;
+  Result.Joysticks := Joysticks;
+  Result.NoMouse := Options.NoMouse;
+  Result.NoJoysticks := Options.NoJoysticks;
   Result.Randomize := ARandomize;
   // the hundredths of a second of the time of the day, as the clock of the DOS gives them to US_InitRndT
   Result.RandomTime := Integer(Trunc(Frac(Now) * 8640000) mod 256);
@@ -169,9 +183,11 @@ begin
     if LState^.LevelDone[LIndex] then
       Inc(LDone);
   Result := Format('game: map %d (loaded %d), score %d, lives %d, flower powers %d, bombs %d, keys %d, levels done %d, ' +
-    'actors %d; sound: mode %d, services %d, frames %d, audible frames %d, peak %d, buffers played %d; sounds asked: %s',
+    'actors %d; keen at %d,%d, origin %d,%d (1/16 pixel), mapon %d; sound: mode %d, services %d, frames %d, audible frames %d, peak %d, buffers played %d; sounds asked: %s',
     [LState^.MapOn, Game.Play.MapOn, LState^.Score, LState^.Lives, LState^.FlowerPowers, LState^.BoobusBombs,
-     LState^.Keys, LDone, Game.Objects.Count, Ord(Game.Sound.Mode), LStatistics.Services, LStatistics.Frames,
+     LState^.Keys, LDone, Game.Objects.Count, Game.Objects.Player^.X, Game.Objects.Player^.Y,
+     Game.Refresh.OriginXGlobal, Game.Refresh.OriginYGlobal, Game.Play.MapOn, Ord(Game.Sound.Mode),
+     LStatistics.Services, LStatistics.Frames,
      LStatistics.AudibleFrames, LStatistics.Peak, Audio.Host.CompletedBuffers, Journal.Summary]);
 end;
 
@@ -190,24 +206,40 @@ var
   LHeight: Integer;
   LYield: TProc;
   LPalette: TGameHostPalette;
-  LPictures: Integer;
+  LProfile: TKeenLoopProfile;
+  LTimer: ITimerResolutionLease;
+  LButtons: IGameHostMouseState;
+  LDevices: TKeenWindowDevices;
 begin
   Result := 0;
-  LPictures := 0;
+  // the waits of the loops are Sleep(1): without this they last a tick of Windows, 15.6 ms
+  if not ARun.Options.CoarseTimer then
+    LTimer := TKeenComposition.AcquireTimerResolution;
   FillChar(LPalette, SizeOf(LPalette), 0);
   LClock := TKeenComposition.CreateClock;
+  LProfile := TKeenLoopProfile.Create(LClock);
   LHostClock := TKeenHostClock.Create(LClock);
   LGameClock := LHostClock;
   LEvents := TKeenHostEvents.Create;
   LEventsIntf := LEvents;
-  LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LEvents, False);
+  LButtons := TGameHostMouseState.Create;
+  // the system cursor is hidden when the mouse is the game's: it is kept at the middle of the window
+  LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+    TGameHostEventFanOut.Create([LEvents as IGameHostEventSink, LButtons as IGameHostEventSink]),
+    not ARun.Options.NoMouse);
+  // Alt (throw) and F10 are keys of the game: they must not open the menu of the window
+  LWindow.Translator.SuppressKeyMenu := True;
+  LDevices := Default(TKeenWindowDevices);
   try
     LDevice := TGameHostFactory.CreateGdiDevice(LWindow);
     LDevice.SetTitle(WINDOW_TITLE);
     LWidth := KEEN_DISPLAY_WIDTH * ARun.Options.Scale;
     LHeight := KEEN_DISPLAY_HEIGHT * ARun.Options.Scale;
     LDevice.SetMode(LWidth, LHeight, False);
-    LInput := TKeenFactory.CreateInput(LGameClock, nil, nil, nil);
+    LDevices := TKeenComposition.CreateWindowDevices(LWindow, LButtons, not ARun.Options.NoMouse,
+      not ARun.Options.NoJoysticks);
+    ARun.Joysticks := LDevices.Joysticks;
+    LInput := TKeenFactory.CreateInput(LGameClock, LDevices.Mouse, LDevices.Joysticks, nil);
     LEvents.Keys :=
       procedure(AByte: Byte)
       begin
@@ -223,30 +255,43 @@ begin
         LColors: TKeenScreenColors;
         LIndex: Integer;
       begin
-        if (not LWindow.Pump) or LEvents.Quit then
-          raise EKeenQuitException.Create(SKeenQuit);
+        LProfile.Enter(klsMessages);
+        try
+          if (not LWindow.Pump) or LEvents.Quit then
+            raise EKeenQuitException.Create(SKeenQuit);
+        finally
+          LProfile.Leave;
+        end;
         if (ARun.Options.QuitAfterSeconds > 0) and (LClock.Seconds >= ARun.Options.QuitAfterSeconds) then
           raise EKeenQuitException.Create(SKeenQuit);
+        if (not LProfile.IsMarked) and (LProfile.Elapsed >= STEADY_AFTER_SECONDS) and Assigned(ARun.Game) then
+          LProfile.Mark(ARun.Game.Refresh.RefreshCount);
+        LProfile.Enter(klsAudio);
         ARun.Audio.Host.Pump;
+        LProfile.Leave;
         LTic := LClock.Steps(KEEN_TICKBASE);
         if (LTic <> LLastTic) and Assigned(ARun.Game) then
         begin
           LLastTic := LTic;
-          Inc(LPictures);
-        LColors := TKeenScreenPicture.Colors(ARun.Game.Fader.Registers);
-        for LIndex := 0 to 15 do
-        begin
-          LPalette[LIndex].Red := Byte(LColors[LIndex] shr 16);
-          LPalette[LIndex].Green := Byte(LColors[LIndex] shr 8);
-          LPalette[LIndex].Blue := Byte(LColors[LIndex]);
+          LProfile.Enter(klsPicture);
+          LColors := TKeenScreenPicture.Colors(ARun.Game.Fader.Registers);
+          for LIndex := 0 to 15 do
+          begin
+            LPalette[LIndex].Red := Byte(LColors[LIndex] shr 16);
+            LPalette[LIndex].Green := Byte(LColors[LIndex] shr 8);
+            LPalette[LIndex].Blue := Byte(LColors[LIndex]);
+          end;
+          LDevice.Present(TKeenScreenPicture.Capture(ARun.Game.Video).Pixels, KEEN_DISPLAY_WIDTH,
+            KEEN_DISPLAY_HEIGHT, LPalette);
+          LProfile.Leave;
         end;
-        LDevice.Present(TKeenScreenPicture.Capture(ARun.Game.Video).Pixels, KEEN_DISPLAY_WIDTH, KEEN_DISPLAY_HEIGHT,
-          LPalette);
-        end;
+        LProfile.Enter(klsSleep);
         LClock.Sleep(1);
+        LProfile.Leave;
       end;
     LHostClock.OnIdle := LYield;
-    ARun.Audio := TKeenComposition.CreateAudio(ARun.Data, LClock, ARun.Options.UseSoundDevice, LYield);
+    ARun.Audio := TKeenComposition.CreateAudio(ARun.Data, LClock, ARun.Options.UseSoundDevice, LYield,
+      ARun.Options.NoAdLib);
     ARun.Game := TKeenGameFactory.CreateGame(ARun.Parts(LGameClock, LInput, True));
     ARun.Game.Buffered.SetUpdateHook(LYield);
     ARun.Audio.Host.Open;
@@ -261,9 +306,9 @@ begin
       // US_Shutdown: the configuration is written when the program ends
       ARun.Game.SaveConfig;
       if ARun.Options.Report then
-        Writeln(Format('window: %d pictures in %.1f seconds; ', [LPictures, LClock.Seconds],
-          TFormatSettings.Invariant) + ARun.ReportLine);
+        Writeln(LProfile.Summary(KEEN_TICKBASE, ARun.Game.Refresh.RefreshCount) + '; ' + ARun.ReportLine);
     finally
+      LProfile.Free;
       ARun.Audio.Host.Close;
       ARun.Game.Buffered.SetUpdateHook(nil);
       LHostClock.OnIdle := nil;
@@ -271,6 +316,8 @@ begin
       FreeAndNil(ARun.Game);
     end;
   finally
+    // the devices let go of the window and of the cursor before the window goes
+    LDevices.Shutdown;
     // the display draws in the window: it goes before the window
     LDevice := nil;
     LWindow.Free;
@@ -286,12 +333,19 @@ var
   LEncoder: IKeenImageEncoder;
   LStore: IFileStore;
   LShots: Integer;
+  LDevices: TKeenScriptedDevices;
+  LDevicesKeeper: IInterface;
 begin
   Result := 0;
   LShots := 0;
   LHost := TKeenScriptedHost.Create(TKeenScript.Parse(TFile.ReadAllText(ARun.Options.ScriptFile)));
   LGameClock := LHost;
-  LInput := TKeenFactory.CreateInput(LGameClock, nil, nil, nil);
+  // the mouse and the joystick are the ones that the script moves
+  LDevices := TKeenScriptedDevices.Create(not ARun.Options.NoMouse, not ARun.Options.NoJoysticks);
+  LDevicesKeeper := LDevices;
+  LHost.Devices := LDevices;
+  ARun.Joysticks := LDevices;
+  LInput := TKeenFactory.CreateInput(LGameClock, LDevices, LDevices, nil);
   LEncoder := TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
   LStore := TPlatformFactory.CreateFileStore;
   SetLength(LScratch, AUDIO_FRAMES_PER_TIC * 4);
@@ -300,7 +354,7 @@ begin
     procedure
     begin
       LHost.Step;
-    end);
+    end, ARun.Options.NoAdLib);
   ARun.Game := TKeenGameFactory.CreateGame(ARun.Parts(LGameClock, LInput, False));
   LHost.Keys :=
     procedure(AByte: Byte)

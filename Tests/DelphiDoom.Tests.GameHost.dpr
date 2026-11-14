@@ -46,7 +46,13 @@ uses
   DelphiDoom.GameHost.MouseState in '..\Libs\GameHost\DelphiDoom.GameHost.MouseState.pas',
   DelphiDoom.GameHost.EventFanOut in '..\Libs\GameHost\DelphiDoom.GameHost.EventFanOut.pas',
   DelphiDoom.GameHost.Win.CursorArea in '..\Libs\GameHost\DelphiDoom.GameHost.Win.CursorArea.pas',
-  DelphiDoom.Tests.GameHost.MouseState in 'Source\DelphiDoom.Tests.GameHost.MouseState.pas';
+  DelphiDoom.Tests.GameHost.MouseState in 'Source\DelphiDoom.Tests.GameHost.MouseState.pas',
+  DelphiDoom.Input.Types in '..\Libs\Input\DelphiDoom.Input.Types.pas',
+  DelphiDoom.Input.Intf in '..\Libs\Input\DelphiDoom.Input.Intf.pas',
+  DelphiDoom.GameHost.WindowMouse in '..\Libs\GameHost\DelphiDoom.GameHost.WindowMouse.pas',
+  DelphiDoom.Tests.GameHost.WindowMouse in 'Source\DelphiDoom.Tests.GameHost.WindowMouse.pas',
+  DelphiDoom.GameHost.ForegroundGate in '..\Libs\GameHost\DelphiDoom.GameHost.ForegroundGate.pas',
+  DelphiDoom.Tests.GameHost.ForegroundGate in 'Source\DelphiDoom.Tests.GameHost.ForegroundGate.pas';
 
 var
   Runner: ITestRunner;

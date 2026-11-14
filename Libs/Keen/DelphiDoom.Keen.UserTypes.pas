@@ -33,6 +33,12 @@ const
   KEEN_SAVE_RLEW_TAG = $ABCD;
   /// <summary>A pointer of the C that is nil in a record of a saved game</summary>
   KEEN_SAVE_NIL = 0;
+  /// <summary>
+  ///   The version of the format of the saved games of this port, in the high byte of "present" of the header (the DOS
+  ///   program does not read that value). 0 and 1 are the DOS program and the first format of Keen32, 2 is the header of
+  ///   40 bytes
+  /// </summary>
+  KEEN_SAVE_FORMAT_VERSION = 2;
 
 type
   /// <summary>Point and Rect of id_heads.h</summary>
@@ -103,11 +109,16 @@ type
     Keyboard: TKeenKeyboardRecord;
   end;
 
-  /// <summary>SaveGame of id_us.c: the header of SAVEGMn.KDR (39 bytes)</summary>
+  /// <summary>
+  ///   SaveGame of id_us.c: the header of SAVEGMn.KDR. 40 bytes: the compiler of the original adds a byte at the end of
+  ///   the 39 of the fields so that the structure has an even size (the file of the real program has the state of
+  ///   the game at 40)
+  /// </summary>
   TKeenSaveHeader = packed record
     Signature: array[0..3] of AnsiChar;
     Present: Word;
     Name: array[0..KEEN_MAX_GAME_NAME] of AnsiChar;
+    Padding: Byte;
   end;
 
   /// <summary>gametype of kd_def.h as SaveGame writes it (60 bytes)</summary>

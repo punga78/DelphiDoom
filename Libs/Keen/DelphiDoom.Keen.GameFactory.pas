@@ -42,6 +42,10 @@ type
     Randomize: Boolean;
     /// <summary>The time that Randomize uses (the hundredths of a second of the clock of the DOS)</summary>
     RandomTime: Integer;
+    /// <summary>The parameter "nomouse" of the original: IN_Startup does not look for the mouse</summary>
+    NoMouse: Boolean;
+    /// <summary>The parameter "nojoys" of the original: IN_Startup does not look for the joysticks</summary>
+    NoJoysticks: Boolean;
   end;
 
   /// <summary>
@@ -62,6 +66,8 @@ type
     FLateActionsKeeper: IKeenActions;
     FLateEventsKeeper: IKeenGameEvents;
     FActions: IKeenActions;
+    FNoMouse: Boolean;
+    FNoJoysticks: Boolean;
   public
     Memory: IKeenEgaMemory;
     Video: IKeenVideo;
@@ -82,8 +88,10 @@ type
     constructor Create(const AParts: TKeenGameParts);
     destructor Destroy; override;
     /// <summary>
+    ///   IN_Startup (the mouse and the joysticks that the machine has, unless the parameters say not to look), then
     ///   USL_ReadConfig and USL_CheckSavedGames: the scores, the sound mode, the control and the keys of the
-    ///   configuration file (the defaults if there is none), and which saved games are there
+    ///   configuration file (the defaults if there is none), and which saved games are there. A saved control
+    ///   that is the mouse or a joystick that is not there becomes the keyboard (IN_Default)
     /// </summary>
     procedure LoadConfig;
     /// <summary>USL_WriteConfig; false if the file cannot be written</summary>
@@ -142,6 +150,8 @@ begin
     raise EArgumentNilException.Create('AParts.Files');
   LGraphics := AParts.Data.Graphics;
   LTileInfo := AParts.Data.Maps.TileInfo;
+  FNoMouse := AParts.NoMouse;
+  FNoJoysticks := AParts.NoJoysticks;
   Input := AParts.Input;
   Sound := AParts.Sound;
   // the video: the memory of the card, the drawing routines, the refresh manager, the windows
@@ -229,6 +239,8 @@ var
   LMode: TKeenSoundMode;
   LGotSound: Boolean;
 begin
+  // InitGame of kd_main.c starts the input manager before US_Startup reads the configuration
+  Input.Startup(not FNoMouse, not FNoJoysticks);
   LConfig := FConfig.Read(Input.KeyboardDefs[0]);
   for LIndex := 0 to KEEN_MAX_SCORES - 1 do
     Scores.Scores[LIndex] := LConfig.Scores[LIndex];

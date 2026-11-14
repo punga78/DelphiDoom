@@ -31,6 +31,8 @@ type
     class function Fill(AKind, ASize: Integer): TBytes; static;
   public
     [Test]
+    procedure DovrebbeComprimereOgniBufferComeIlCompressoreOriginale;
+    [Test]
     procedure DovrebbeEspandereOgniFlussoDelCompressoreOriginale;
     [Test]
     procedure DovrebbeDareNullaPerUnaLunghezzaZero;
@@ -123,6 +125,75 @@ begin
     else
       Result[LIndex] := Byte(LIndex * 3);
     end;
+  end;
+end;
+
+procedure TTestKeenLzh.DovrebbeComprimereOgniBufferComeIlCompressoreOriginale;
+var
+  LLines: TStringList;
+  LLine: string;
+  LParts: TArray<string>;
+  LKind: Integer;
+  LSize: Integer;
+  LExpected: TBytes;
+  LIndex: Integer;
+  LCases: Integer;
+  LLzh: TKeenLzh;
+  LActual: TBytes;
+  LByte: Integer;
+
+  procedure CheckCase;
+  var
+    LAt: Integer;
+  begin
+    if LKind < 0 then
+      Exit;
+    LActual := LLzh.Compress(Fill(LKind, LSize));
+    // the harness expands each stream after it is made, with the same static buffer: the next case starts from there
+    Assert.AreEqual<Integer>(Length(LExpected), Length(LActual), Format('case %d: the length of the stream', [LKind]));
+    for LAt := 0 to High(LExpected) do
+      if LActual[LAt] <> LExpected[LAt] then
+        Assert.Fail(Format('case %d: the byte %d of the stream is %d, the original has %d', [LKind, LAt, LActual[LAt], LExpected[LAt]]));
+    LLzh.Decompress(LActual, 0, Length(LActual), LSize);
+    Inc(LCases);
+    LKind := -1;
+  end;
+
+begin
+  // the cases in the order of the harness, on one object: the dictionary is a static of the C and keeps its bytes
+  LIndex := 0;
+  LSize := 0;
+  LLines := TTestFiles.Lines(TTestFiles.DataFile('Keen', 'lzh.golden.txt'));
+  LLzh := TKeenLzh.Create;
+  try
+    LKind := -1;
+    LCases := 0;
+    for LLine in LLines do
+    begin
+      if LLine = '' then
+        Continue;
+      LParts := LLine.Split([' ']);
+      case LLine[1] of
+        'C':
+          begin
+            CheckCase;
+            LKind := StrToInt(LParts[1]);
+            LSize := StrToInt(LParts[2]);
+            SetLength(LExpected, StrToInt(LParts[3]));
+            LIndex := 0;
+          end;
+        'H':
+          for LByte := 0 to (Length(LParts[1]) div 2) - 1 do
+          begin
+            LExpected[LIndex] := Byte(StrToInt('$' + Copy(LParts[1], LByte * 2 + 1, 2)));
+            Inc(LIndex);
+          end;
+      end;
+    end;
+    CheckCase;
+    Assert.AreEqual(7, LCases);
+  finally
+    LLzh.Free;
   end;
 end;
 
