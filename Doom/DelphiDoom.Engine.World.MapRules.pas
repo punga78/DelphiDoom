@@ -157,6 +157,12 @@ type
     ///   what happens when tmthing touches the thing; false when tmthing is blocked
     /// </summary>
     class function CheckThingContact(thing: Pmobj_t): boolean; static;
+    /// <summary>PIT_CheckThing: a thing that the moving thing pushes when it touches it</summary>
+    class function CanBePushed(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>PIT_CheckThing: the part of the momentum a thing that is not a pushable weight gets (a quarter; Hexen shifts, the others divide)</summary>
+    class function QuarterMomentum(const momentum: fixed_t): fixed_t; static; inline;
+    /// <summary>PIT_CheckThing: the moving thing can pick up a special thing it touches</summary>
+    class function PicksUpOnContact: boolean; static; inline;
     /// <summary>The puff of a shot that hit a wall</summary>
     class procedure SpawnWallPuff(x, y, z: fixed_t); static;
     /// <summary>A shot hit a special line</summary>
@@ -604,9 +610,7 @@ end;
 
 class function TMapGameRules.CheckThingContact(thing: Pmobj_t): boolean;
 var
-  solid: boolean;
   damage: integer;
-  pushfactor: fixed_t;
   doslam: boolean;
 begin
   if G_PlayingEngineVersion > VERSION120 then
@@ -773,20 +777,7 @@ begin
       P_DamageMobj(thing, tmthing, tmthing.target, damage);
 
       // JVAL: Pushable things
-      if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-      begin // Push thing
-        pushfactor := thing.pushfactor;
-        if pushfactor <= 0 then
-        begin
-          thing.momx := thing.momx + tmthing.momx div 4;
-          thing.momy := thing.momy + tmthing.momy div 4;
-        end
-        else
-        begin
-          thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-          thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-        end;
-      end;
+      P_PushByContact(thing);
 
       numspechit := 0;
 
@@ -809,34 +800,25 @@ begin
   end;
 
   // JVAL: Pushable things
-  if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-  begin // Push thing
-    pushfactor := thing.pushfactor;
-    if pushfactor <= 0 then
-    begin
-      thing.momx := thing.momx + tmthing.momx div 4;
-      thing.momy := thing.momy + tmthing.momy div 4;
-    end
-    else
-    begin
-      thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-      thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-    end;
-  end;
+  P_PushByContact(thing);
 
   // check for special pickup
-  if thing.flags and MF_SPECIAL <> 0 then
-  begin
-    solid := thing.flags and MF_SOLID <> 0;
-    if tmflags and MF_PICKUP <> 0 then
-    begin
-      // can remove thing
-      P_TouchSpecialThing(thing, tmthing);
-    end;
-    result := not solid;
-  end
-  else
-    result := thing.flags and MF_SOLID = 0;
+  result := P_ContactPickup(thing);
+end;
+
+class function TMapGameRules.CanBePushed(thing: Pmobj_t): boolean;
+begin
+  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
+end;
+
+class function TMapGameRules.QuarterMomentum(const momentum: fixed_t): fixed_t;
+begin
+  result := momentum div 4;
+end;
+
+class function TMapGameRules.PicksUpOnContact: boolean;
+begin
+  result := tmflags and MF_PICKUP <> 0;
 end;
 
 class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
