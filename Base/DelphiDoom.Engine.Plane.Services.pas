@@ -15,7 +15,8 @@ uses
   r_defs,
   DelphiDoom.Thinkers.Plane.Types,
   DelphiDoom.Thinkers.Plane.Intf,
-  DelphiDoom.Thinkers.Ceiling.Types;
+  DelphiDoom.Thinkers.Ceiling.Types,
+  DelphiDoom.Thinkers.Floor.Types;
 
 //==============================================================================
 //
@@ -64,6 +65,23 @@ procedure P_ConfigureCeilings(const AProfile: TCeilingProfile);
 //==============================================================================
 function CeilingProfile: TCeilingProfile;
 
+//==============================================================================
+//
+// P_ConfigureFloors
+//
+// Gives the classic floors (p_floor) the rules of the game (the composition
+// root calls it); until it is called a new floor gives an I_Error
+//
+//==============================================================================
+procedure P_ConfigureFloors(const AProfile: TFloorProfile);
+
+//==============================================================================
+//
+// FloorProfile
+//
+//==============================================================================
+function FloorProfile: TFloorProfile;
+
 implementation
 
 uses
@@ -74,6 +92,8 @@ var
   plane_host: IPlaneSectorHost;
   ceiling_profile: TCeilingProfile;
   ceiling_configured: boolean = false;
+  floor_profile: TFloorProfile;
+  floor_configured: boolean = false;
 
 //==============================================================================
 //
@@ -147,6 +167,29 @@ begin
   if not ceiling_configured then
     I_Error('P_ConfigureCeilings(): the rules of the ceilings were not given');
   result := ceiling_profile;
+end;
+
+//==============================================================================
+//
+// P_ConfigureFloors
+//
+//==============================================================================
+procedure P_ConfigureFloors(const AProfile: TFloorProfile);
+begin
+  floor_profile := AProfile;
+  floor_configured := true;
+end;
+
+//==============================================================================
+//
+// FloorProfile
+//
+//==============================================================================
+function FloorProfile: TFloorProfile;
+begin
+  if not floor_configured then
+    I_Error('P_ConfigureFloors(): the rules of the floors were not given');
+  result := floor_profile;
 end;
 
 end.

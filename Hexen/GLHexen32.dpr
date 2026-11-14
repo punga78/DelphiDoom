@@ -610,6 +610,7 @@ uses
   DelphiDoom.Thinkers.Plane.Rules in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Rules.pas',
   DelphiDoom.Thinkers.Plane.Mover in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Mover.pas',
   DelphiDoom.Thinkers.Plane.Waggle in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
+  DelphiDoom.Thinkers.Floor.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Floor.Types.pas',
   DelphiDoom.Thinkers.Ceiling.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Ceiling.Types.pas',
   DelphiDoom.Engine.Plane.Services in '..\Base\DelphiDoom.Engine.Plane.Services.pas',
   DelphiDoom.Engine.Plane.Host in '..\Base\DelphiDoom.Engine.Plane.Host.pas',

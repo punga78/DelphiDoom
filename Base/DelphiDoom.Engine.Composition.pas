@@ -130,6 +130,7 @@ uses
   DelphiDoom.Engine.Plane.Host,
 {$IFNDEF HEXEN}
   DelphiDoom.Thinkers.Ceiling.Games,
+  DelphiDoom.Thinkers.Floor.Games,
 {$ENDIF}
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
@@ -1274,11 +1275,12 @@ var
 begin
   P_ConfigurePlanes(TEnginePlaneHost.Create);
 {$IFNDEF HEXEN}
-  // the classic ceilings (p_ceilng, one unit for Doom, Heretic and Strife): the rules of the game,
-  // which is the one of the classic platforms
+  // the classic ceilings (p_ceilng, one unit for Doom, Heretic and Strife) and floors (p_floor, one
+  // unit for Doom and Strife): the rules of the game, which is the one of the classic platforms
   if not TPlatGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Platforms), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of ceilings', [_GAME]);
   P_ConfigureCeilings(TCeilingGames.ProfileOf(LGame));
+  P_ConfigureFloors(TFloorGames.ProfileOf(LGame));
 {$ENDIF}
 end;
 
