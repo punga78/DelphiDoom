@@ -22,6 +22,11 @@ uses
   DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Display.FloatMask;
 
 type
+  TGuiUserInterface = class;
+
+  /// <summary>Called when a gui has read a file (the manager then keeps it: guis.Append in InitFromFile)</summary>
+  TGuiReadNotify = reference to procedure(const AGui: TGuiUserInterface);
+
   /// <summary>
   ///   idUserInterfaceLocal: reads a .gui (<c>InitFromFile</c>), owns the desktop window and the
   ///   dictionary of the <c>gui::</c> variables, and passes the time and the events to the windows
@@ -40,6 +45,10 @@ type
     FInteractive: Boolean;
     FStrict: Boolean;
     FLoading: Boolean;
+    FRefs: Integer;
+    FUniqued: Boolean;
+    FTimeStamp: Int64;
+    FOnRead: TGuiReadNotify;
     function GetTime: Integer;
     function GetActive: Boolean;
     function GetSourceFile: AnsiString;
@@ -79,6 +88,14 @@ type
     function GetStateInt(const AName: AnsiString; const ADefault: AnsiString = '0'): Integer;
     function GetStateFloat(const AName: AnsiString; const ADefault: AnsiString = '0'): Single;
     procedure DeleteStateVar(const AName: AnsiString);
+    /// <summary>The count of the users of the gui (the manager shares a gui that is not interactive)</summary>
+    procedure AddRef;
+    procedure ClearRefs;
+    /// <summary>The time of the file when the gui was read (idUserInterfaceLocal::GetTimeStamp): Reload compares it</summary>
+    property TimeStamp: Int64 read FTimeStamp;
+    property OnRead: TGuiReadNotify read FOnRead write FOnRead;
+    property Refs: Integer read FRefs;
+    property Uniqued: Boolean read FUniqued write FUniqued;
     property Desktop: TGuiWindow read FDesktop;
     property Context: TGuiContext read FContext;
     property Interactive: Boolean read FInteractive;
@@ -109,6 +126,7 @@ begin
   FContext.Tables := ATables;
   FContext.Fonts := AFonts;
   FContext.FileSystem := AFileSystem;
+  FRefs := 1;
   FFactory.Attach(FContext);
   // so the register evaluation of the parse does not get a bogus time
   FContext.Time := 0;
@@ -121,6 +139,16 @@ begin
   FContext.Free;
   FFactory.Free;
   inherited Destroy;
+end;
+
+procedure TGuiUserInterface.AddRef;
+begin
+  Inc(FRefs);
+end;
+
+procedure TGuiUserInterface.ClearRefs;
+begin
+  FRefs := 0;
 end;
 
 procedure TGuiUserInterface.SetStrict(const AValue: Boolean);
@@ -159,6 +187,7 @@ var
   LParser: TIdParser;
   LToken: TIdToken;
   LParsed: Boolean;
+  LStamp: TIdLibFileData;
 begin
   LMask := TGuiFloatMask.Enter;
   if AName = '' then
@@ -174,6 +203,8 @@ begin
     FContext.Desktop := FDesktop;
   end;
   FContext.StateDict.SetValue('text', 'Test Text!');
+  if FFileSystem.TryReadFile(AName, False, LStamp) then
+    FTimeStamp := LStamp.Timestamp;
   LParser := TIdParser.Create(LEXFL_NOFATALERRORS or LEXFL_NOSTRINGCONCAT or LEXFL_ALLOWMULTICHARLITERALS or
     LEXFL_ALLOWBACKSLASHSTRINGCONCAT, FLog, FFileSystem);
   try
@@ -210,6 +241,8 @@ begin
     LParser.Free;
   end;
   FInteractive := FDesktop.Interactive;
+  if Assigned(FOnRead) then
+    FOnRead(Self);
   FLoading := False;
   Result := True;
 end;
