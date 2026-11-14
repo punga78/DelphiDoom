@@ -1,0 +1,4 @@
+# the .aas files of the routing tests (made by Tools\Verifica\109\Make-RoutingAas.ps1) and the CRC that each holds
+aas_ring.aas 2882400109
+aas_grid.aas 2882400110
+aas_grid2.aas 2882400111

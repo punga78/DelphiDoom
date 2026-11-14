@@ -13,3 +13,8 @@ sh Tools/Verifica/122/build.sh <cartella di uscita>
 - Righe: `P<livello>|testo` e' `botimport.Print` (byte sotto 32, sopra 126 e barra rovesciata come `\xNN`); i float sono i 8 digit esadecimali dei bit; `crcs` sono i CRC-32 dei 14 lump (come nel file); `pt`, `ta`, `ta2`, `tb`, `face`, `box`, `area`, `bbox`, `reachabilityareas` sono le funzioni di `be_aas_sample.c` e `be_aas_reach.c`.
 - Per le aree portale (`cluster < 0`) `AAS_PointReachabilityAreaIndex` non e' chiamata (`reach P`): il C legge `portals[-1]`, fuori dall'array (difetto, vedi `Libs\Aas\README.md`).
 - Cosa **non** viene dal C: i mondi e il pilota; il C vero da' la lettura del file, la decifratura dell'intestazione, i controlli, i messaggi, il campionamento.
+
+
+## Il routing (be_aas_route.c, be_aas_routealt.c): `route\`
+
+`route\build.sh` (come `build.sh`: gcc di w64devkit, `DELPHIDOOM_ROOT` con la barra dritta, `sh` di w64devkit) compila i **veri** `be_aas_file.c`, `be_aas_sample.c`, `be_aas_route.c` e `be_aas_routealt.c` con `route\routegen.c`; `route\Make-Golden.ps1` lo costruisce, estrae i `.aas` di OpenArena dai pak (`Reference\openarena`, non nel repository) e scrive `Tests\Data\Aas\route_<mappa>.golden.txt` e `route_<mappa>_small.golden.txt`. Le **uniche due modifiche** al codice vero stanno in `route\build.sh` (con il motivo): `reachnum = 0` in `AAS_AreaTravelTimeToGoalArea`/`AAS_AreaReachabilityToGoalArea` (lo stack da' risposte diverse) e `startareatraveltimes[4096]` al posto di `[128]` (un'area di 266 raggiungibilita' inverse legge oltre). `AAS_NearestHideArea` non e' nel pilota (overflow di heap nel C). Il gemello Delphi e' `Tests\Source\DelphiDoom.Tests.Aas.Route.Scenario.pas`. Dettaglio: `Libs\Aas\README.md`.
