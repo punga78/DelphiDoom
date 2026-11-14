@@ -16,7 +16,7 @@ function IFPS3DataToText(const Input: tbtstring; var Output: string): Boolean;
 implementation
 
 uses
-  ps_import;
+  DelphiDoom.ScriptHost.Exec;
 
 type
   TMyPSExec = class(TDoomExec)

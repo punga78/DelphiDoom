@@ -1097,7 +1097,7 @@ begin
 {$ELSE}
         False);
 {$ENDIF}
-    end));
+    end, ALog));
   // the events and the serializer of the script state warn through the log
   PS_ConfigureStateServices(ALog);
   PS_ConfigureSectorSpecials(

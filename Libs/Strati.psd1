@@ -80,6 +80,7 @@
     # IdTech1
     'Libs\Zone' = 'IdTech1'
     'Libs\Acs' = 'IdTech1'
+    'Libs\ScriptEngine' = 'IdTech1'
     'Libs\Actions' = 'IdTech1'
     'Libs\ActorDef' = 'IdTech1'
     'Libs\Automap' = 'IdTech1'
@@ -178,24 +179,11 @@
   # Massimo = numero di unit di arrivo distinte coperte: piu' unit e' una violazione nuova,
   # meno unit e' una eccezione da ridurre. Ciclo = insieme di aree che si usano a vicenda.
   Eccezioni = @(
-    # --- #221: ScriptHost e Ddc sono motore (Base, giochi id), non libreria ---
-    @{ Da = 'Libs\ScriptHost'; A = 'Base'; Massimo = 30; Issue = 221
-       Motivo = 'ps_import, ps_main, psi_* e Manager leggono i globali del motore (28 unit di Base): da spostare sul lato id Tech 1' }
-    @{ Da = 'Libs\ScriptHost'; A = 'GiochiId'; Massimo = 9; Issue = 221
-       Motivo = 'ps_import e ps_main usano info, d_main, g_game, d_player delle cartelle dei giochi' }
-    @{ Da = 'Libs\Ddc'; A = 'Base'; Massimo = 4; Issue = 221
-       Motivo = 'dd_compiler usa deh_base, info_common, sc_consts, sc_states del motore' }
-    @{ Da = 'Libs\Ddc'; A = 'GiochiId'; Massimo = 3; Issue = 221
-       Motivo = 'dd_compiler usa deh_main, info e info_h dei giochi' }
-    @{ Ciclo = @('Libs\PascalScript', 'Libs\ScriptHost', 'Libs\Ddc'); Issue = 221
-       Motivo = 'ps_dll e ps_import stanno in ScriptHost e sono usate dal nucleo; ddc_base in Ddc' }
     # --- #224: Common fuori dal nucleo ---
     @{ Da = 'Libs\PascalScript'; A = 'Common'; Massimo = 1; Issue = 224
-       Motivo = 'ps_compiler, ps_runtime, ps_utils, uPSC_dll, uPSR_dll usano d_delphi' }
+       Motivo = 'ps_compiler, ps_runtime e ps_utils usano d_delphi' }
     @{ Da = 'Libs\ScriptHost'; A = 'Common'; Massimo = 1; Issue = 224
-       Motivo = 'unit del collegamento al motore che usano d_delphi' }
-    @{ Da = 'Libs\Ddc'; A = 'Common'; Massimo = 1; Issue = 224
-       Motivo = 'dd_compiler usa d_delphi' }
+       Motivo = 'le unit del compilatore e del dll di Pascal Script usano d_delphi' }
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
     @{ Da = 'Libs\Pmove'; A = 'Libs\Net'; Massimo = 1; Issue = 225
        Motivo = 'Pmove usa TQ3PlayerState e TQ3UserCmd di DelphiDoom.Net.Q3.Types: Net e'' mista (trasporto e protocollo di Doom e Quake III) e i tipi di Quake III vanno in un''area id Tech 3' }

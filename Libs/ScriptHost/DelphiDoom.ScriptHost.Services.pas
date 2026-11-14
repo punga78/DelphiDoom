@@ -12,6 +12,7 @@ interface
 
 uses
   System.SysUtils,
+  DelphiDoom.Logging.Intf,
   DelphiDoom.ScriptHost.Classes.Intf,
   DelphiDoom.ScriptHost.Constants.Intf,
   DelphiDoom.ScriptHost.Intf,
@@ -30,15 +31,17 @@ type
     FGameName: string;
     FGame: TScriptGame;
     FDefines: TFunc<TArray<string>>;
+    FLog: ILog;
   public
     /// <summary>
     ///   ADefines is asked at every compilation (it may be nil: no defines): the engine learns
-    ///   its parameters (-devparm) after it was composed
+    ///   its parameters (-devparm) after it was composed. ALog may be nil: the warnings are lost
     /// </summary>
     /// <exception cref="EArgumentNilException">If a service is nil</exception>
     constructor Create(const ARegistry: IScriptFunctionRegistry; const AClasses: IScriptClassCatalog;
       const AConstants: IScriptConstantProvider; const ASources: IScriptSourceProvider;
-      const AGameName: string; const AGame: TScriptGame; const ADefines: TFunc<TArray<string>>);
+      const AGameName: string; const AGame: TScriptGame; const ADefines: TFunc<TArray<string>>;
+      const ALog: ILog = nil);
     function Registry: IScriptFunctionRegistry;
     function Classes: IScriptClassCatalog;
     function Constants: IScriptConstantProvider;
@@ -46,6 +49,7 @@ type
     function GameName: string;
     function Game: TScriptGame;
     function Defines: TArray<string>;
+    function Log: ILog;
   end;
 
 implementation
@@ -55,7 +59,7 @@ implementation
 constructor TScriptHostServices.Create(const ARegistry: IScriptFunctionRegistry;
   const AClasses: IScriptClassCatalog; const AConstants: IScriptConstantProvider;
   const ASources: IScriptSourceProvider; const AGameName: string; const AGame: TScriptGame;
-  const ADefines: TFunc<TArray<string>>);
+  const ADefines: TFunc<TArray<string>>; const ALog: ILog);
 begin
   inherited Create;
   if not Assigned(ARegistry) then
@@ -73,6 +77,7 @@ begin
   FGameName := AGameName;
   FGame := AGame;
   FDefines := ADefines;
+  FLog := ALog;
 end;
 
 function TScriptHostServices.Registry: IScriptFunctionRegistry;
@@ -111,6 +116,11 @@ begin
     Result := FDefines()
   else
     Result := nil;
+end;
+
+function TScriptHostServices.Log: ILog;
+begin
+  Result := FLog;
 end;
 
 end.

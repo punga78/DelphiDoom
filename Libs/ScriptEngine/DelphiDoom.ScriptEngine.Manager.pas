@@ -11,7 +11,7 @@
 {                                                                              }
 {******************************************************************************}
 {$I Doom32.inc}
-unit DelphiDoom.ScriptHost.Manager;
+unit DelphiDoom.ScriptEngine.Manager;
 
 interface
 
@@ -21,6 +21,9 @@ uses
   p_mobj_h,
   ps_compiler,
   ps_import,
+  DelphiDoom.ScriptHost.ClassImporter,
+  DelphiDoom.ScriptHost.Compiler,
+  DelphiDoom.ScriptHost.Exec,
   DelphiDoom.Engine.Script.ActorContext.Intf,
   DelphiDoom.Logging.Intf,
   DelphiDoom.ScriptHost.Events.Intf,

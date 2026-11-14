@@ -11,6 +11,7 @@ unit DelphiDoom.ScriptHost.Services.Intf;
 interface
 
 uses
+  DelphiDoom.Logging.Intf,
   DelphiDoom.ScriptHost.Classes.Intf,
   DelphiDoom.ScriptHost.Constants.Intf,
   DelphiDoom.ScriptHost.Intf,
@@ -40,6 +41,8 @@ type
     function Game: TScriptGame;
     /// <summary>The names that a script can test with {$IFDEF}, for the game (see TScriptDefines)</summary>
     function Defines: TArray<string>;
+    /// <summary>Where the compiler and the interpreter write their warnings; nil if nobody listens</summary>
+    function Log: ILog;
   end;
 
 implementation

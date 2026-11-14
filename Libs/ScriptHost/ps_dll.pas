@@ -67,7 +67,10 @@ procedure PS_ShutDownDLLLoader;
 implementation
 
 uses
-  i_system;
+  DelphiDoom.ScriptHost.Types;
+
+resourcestring
+  SScriptDllLoaderMissing = 'PS_ConfigureDllLoader() was not called: the loader of the DLLs is missing';
 
 var
   // given by the composition root
@@ -91,7 +94,7 @@ end;
 function PS_DllLoader: IScriptDllLoader;
 begin
   if ps_dllloader_ref = nil then
-    I_Error('PS_ConfigureDllLoader() was not called: the loader of the DLLs is missing');
+    raise EScriptHostException.Create(SScriptDllLoaderMissing);
   result := ps_dllloader_ref;
 end;
 
