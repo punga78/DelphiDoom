@@ -22,7 +22,8 @@ uses
   DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.World,
   DelphiDoom.Greed.Game.Constants, DelphiDoom.Greed.Game.Tables, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Game.State, DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.PlayerControl.Intf,
-  DelphiDoom.Greed.PlayerWeapons, DelphiDoom.Greed.PlayerControl, DelphiDoom.Tests.Greed.PlayerScenarios;
+  DelphiDoom.Greed.PlayerWeapons, DelphiDoom.Greed.PlayerControl, DelphiDoom.Greed.Level.Intf,
+  DelphiDoom.Greed.SwitchRules, DelphiDoom.Greed.LevelRules, DelphiDoom.Tests.Greed.PlayerScenarios;
 
 type
   /// <summary>
@@ -55,7 +56,7 @@ type
 
   /// <summary>Everything that the control of the player calls outside: the calls go to a log</summary>
   TFakePlayerGame = class(TInterfacedObject, IGreedSpawner, IGreedGameSound, IGreedEventRunner,
-    IGreedPlayerControlHost, IGreedWeaponView, IGreedMovementHost)
+    IGreedPlayerControlHost, IGreedWeaponView, IGreedMovementHost, IGreedSwitchHost)
   strict private
     FLoaded: Integer;
   public
@@ -68,6 +69,9 @@ type
     LastLights: TGreedFixed;
     SwitchWalls: Integer;
     Events: Integer;
+    /// TryDoor of the switches is the one of the movement of the player
+    Movement: TGreedPlayerMovement;
+    function TryDoor(ACenterX, ACenterY: TGreedFixed): Boolean;
     function SpawnSprite(AValue: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer;
       AActive: Boolean; ASpawnId: Integer): Integer;
     procedure DemandLoadMonster(ALump, ACount: Integer);
@@ -82,6 +86,19 @@ type
     function GetNetMode: Boolean;
     procedure NetOpenDoor(AX, AY: TGreedFixed);
     property Loaded: Integer read FLoaded;
+  end;
+
+  /// <summary>
+  ///   CheckHere of the library with CheckForSwitch and SwitchWall written in the log of the fake game, as the
+  ///   harness of the original does with the two routines of raven.pas that are not of its part
+  /// </summary>
+  TLoggedSwitchRules = class(TGreedSwitchRules)
+  strict private
+    FGame: TFakePlayerGame;
+  public
+    constructor Create(AState: TGreedGameState; AGame: TFakePlayerGame);
+    function CheckForSwitch(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean; override;
+    procedure SwitchWall(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean); override;
   end;
 
   [TestFixture]
@@ -100,6 +117,7 @@ type
     FWeaponsObject: TGreedPlayerWeapons;
     FWeapons: IGreedPlayerWeapons;
     FControl: TGreedPlayerControl;
+    FSwitches: TGreedSwitchRules;
     FLastWeaponX, FLastWeaponY: Integer;
     procedure FreeGame;
     procedure NewGame;
@@ -282,7 +300,30 @@ begin
   Result := FMouseDeltaY;
 end;
 
+{ TLoggedSwitchRules }
+
+constructor TLoggedSwitchRules.Create(AState: TGreedGameState; AGame: TFakePlayerGame);
+begin
+  inherited Create(AState, AGame, AGame, AGame);
+  FGame := AGame;
+end;
+
+function TLoggedSwitchRules.CheckForSwitch(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
+begin
+  Result := FGame.CheckForSwitch(AX, AY, AAngle, ADoubleSwitch);
+end;
+
+procedure TLoggedSwitchRules.SwitchWall(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean);
+begin
+  FGame.SwitchWall(AX, AY, AAngle, ADoubleSwitch);
+end;
+
 { TFakePlayerGame }
+
+function TFakePlayerGame.TryDoor(ACenterX, ACenterY: TGreedFixed): Boolean;
+begin
+  Result := Assigned(Movement) and Movement.TryDoor(ACenterX, ACenterY);
+end;
 
 function TFakePlayerGame.SpawnSprite(AValue: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer;
   AActive: Boolean; ASpawnId: Integer): Integer;
@@ -381,6 +422,7 @@ end;
 
 procedure TTestGreedPlayerControl.FreeGame;
 begin
+  FreeAndNil(FSwitches);
   FreeAndNil(FControl);
   FWeapons := nil;
   FWeaponsObject := nil;
@@ -412,7 +454,9 @@ begin
   FWeaponsObject := TGreedPlayerWeapons.Create(FState, FGame, FGame, FGame);
   FWeapons := FWeaponsObject;
   FWeaponsObject.InitProbe;
-  FControl := TGreedPlayerControl.Create(FState, FMovement, FKeysRef, FGame, FGame, FWeapons);
+  FControl := TGreedPlayerControl.Create(FState, FMovement, FKeysRef, FGame, FWeapons);
+  FGame.Movement := FMovement;
+  FSwitches := TLoggedSwitchRules.Create(FState, FGame);
   FControl.ScreenSize := 2;
   FControl.VrAngle := 3;
   FLastWeaponX := 0;
@@ -483,32 +527,27 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      TGreedPlayerControl.Create(nil, FMovement, FKeysRef, FGame, FGame, FWeapons).Free;
+      TGreedPlayerControl.Create(nil, FMovement, FKeysRef, FGame, FWeapons).Free;
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TGreedPlayerControl.Create(FState, nil, FKeysRef, FGame, FGame, FWeapons).Free;
+      TGreedPlayerControl.Create(FState, nil, FKeysRef, FGame, FWeapons).Free;
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TGreedPlayerControl.Create(FState, FMovement, nil, FGame, FGame, FWeapons).Free;
+      TGreedPlayerControl.Create(FState, FMovement, nil, FGame, FWeapons).Free;
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TGreedPlayerControl.Create(FState, FMovement, FKeysRef, nil, FGame, FWeapons).Free;
+      TGreedPlayerControl.Create(FState, FMovement, FKeysRef, nil, FWeapons).Free;
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
     begin
-      TGreedPlayerControl.Create(FState, FMovement, FKeysRef, FGame, nil, FWeapons).Free;
-    end, EArgumentNilException);
-  Assert.WillRaise(
-    procedure
-    begin
-      TGreedPlayerControl.Create(FState, FMovement, FKeysRef, FGame, FGame, nil).Free;
+      TGreedPlayerControl.Create(FState, FMovement, FKeysRef, FGame, nil).Free;
     end, EArgumentNilException);
   Assert.WillRaise(
     procedure
@@ -803,19 +842,19 @@ procedure TTestGreedPlayerControl.DovrebbeCaricareLeArmiDiVentiInVenti;
 begin
   // the weapon 1 has a charge rate of 4 tics, the weapon 2 of 3, the weapon 4 of 12
   FState.TimeCount := 9;
-  FWeapons.ChargeWeapons;
+  TGreedLevelRules.ChargeWeaponsOf(FState);
   // the first charge sets the time to now: one step only
   Assert.AreEqual(20, FState.Weapons[1].Charge);
   Assert.AreEqual(13, FState.Weapons[1].ChargeTime);
   Assert.AreEqual(20, FState.Weapons[2].Charge);
   Assert.AreEqual(20, FState.Weapons[4].Charge);
   FState.TimeCount := 17;
-  FWeapons.ChargeWeapons;
+  TGreedLevelRules.ChargeWeaponsOf(FState);
   Assert.AreEqual(60, FState.Weapons[1].Charge);
   Assert.AreEqual(60, FState.Weapons[2].Charge);
   Assert.AreEqual(20, FState.Weapons[4].Charge);
   FState.TimeCount := 1000;
-  FWeapons.ChargeWeapons;
+  TGreedLevelRules.ChargeWeaponsOf(FState);
   Assert.AreEqual(100, FState.Weapons[1].Charge);
   Assert.AreEqual(100, FState.Weapons[4].Charge);
   // a weapon that the player does not have is not charged
@@ -931,7 +970,7 @@ begin
   FElevators.Item(LLow)^.Position := 10;
   FWorld.SetValue(gpMapSprites, FState.Player.MapSpot, GREED_SM_SWAPSWITCH);
   FState.TimeCount := 50;
-  FControl.CheckHere(False, FState.Player.X, FState.Player.Y, 0);
+  FSwitches.CheckHere(False, FState.Player.X, FState.Player.Y, 0);
   Assert.IsTrue(FElevators.Item(LHigh)^.Down);
   Assert.AreEqual(50, FElevators.Item(LHigh)^.Timer);
   Assert.IsFalse(FElevators.Item(LMiddle)^.Down or FElevators.Item(LMiddle)^.Up, 'an elevator on its way is left');
@@ -946,14 +985,14 @@ begin
   // switches[x][y]
   FState.Switches[10 * GREED_MAP_SIZE + 10] := 33;
   // SwitchAnswer(10, 10, 2) is false: the player does not face the switch
-  FControl.CheckHere(True, FState.Player.X, FState.Player.Y, 2);
+  FSwitches.CheckHere(True, FState.Player.X, FState.Player.Y, 2);
   Assert.AreEqual(0, FGame.Events);
   Assert.AreEqual(0, FGame.SwitchWalls);
-  FControl.CheckHere(True, FState.Player.X, FState.Player.Y, 0);
+  FSwitches.CheckHere(True, FState.Player.X, FState.Player.Y, 0);
   Assert.AreEqual(1, FGame.Events);
   Assert.AreEqual(1, FGame.SwitchWalls);
   // when the game itself calls, the switch is not looked for
-  FControl.CheckHere(False, FState.Player.X, FState.Player.Y, 2);
+  FSwitches.CheckHere(False, FState.Player.X, FState.Player.Y, 2);
   Assert.AreEqual(2, FGame.Events);
   // the use command raises the flag that PlayLoop serves with CheckHere
   FKeys.Press(PK_SPACE);
@@ -1091,10 +1130,10 @@ begin
   if FState.CheckTrigger then
   begin
     FState.CheckTrigger := False;
-    FControl.CheckHere(True, FState.Player.X, FState.Player.Y, FState.Player.Angle);
+    FSwitches.CheckHere(True, FState.Player.X, FState.Player.Y, FState.Player.Angle);
   end;
   FState.FallDamage := 0;
-  FWeapons.ChargeWeapons;
+  TGreedLevelRules.ChargeWeaponsOf(FState);
   if FMovement.DoorSound then
   begin
     FMovement.DoorSound := False;

@@ -1,0 +1,12 @@
+# every type: globals with initial values, locals, vector components, strings and their conversions
+startup script/types.script
+dump program
+dump disasm
+spawn 5 idEntity some_entity
+dump globals
+callnow main
+dump globals
+dump return
+dump threads
+frame 1
+dump threads

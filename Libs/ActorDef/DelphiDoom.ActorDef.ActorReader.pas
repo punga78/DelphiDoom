@@ -67,6 +67,35 @@ implementation
 uses
   DelphiDoom.Scanner.Strings, DelphiDoom.ActorDef.Text, DelphiDoom.ActorDef.ActorStateOwner;
 
+type
+  // The words of the scanner for the reader of the properties of one game
+  TActorDefScannerCursor = class(TInterfacedObject, IActorDefTokenCursor)
+  strict private
+    FScanner: TScriptScanner;
+  public
+    constructor Create(AScanner: TScriptScanner);
+    function Current: string;
+    function Next: Boolean;
+  end;
+
+{ TActorDefScannerCursor }
+
+constructor TActorDefScannerCursor.Create(AScanner: TScriptScanner);
+begin
+  inherited Create;
+  FScanner := AScanner;
+end;
+
+function TActorDefScannerCursor.Current: string;
+begin
+  Result := FScanner.AsString;
+end;
+
+function TActorDefScannerCursor.Next: Boolean;
+begin
+  Result := FScanner.GetString;
+end;
+
 { TActorDefActorReader }
 
 constructor TActorDefActorReader.Create(AScanner: TScriptScanner; const ALog: ILog;
@@ -428,6 +457,9 @@ begin
     end;
   end;
 
+  if Assigned(FProfile.ExtraProperties) then
+    FProfile.ExtraProperties.BeginActor(FActor.Name, FActor.InheritsFrom);
+
   LFoundStates := False;
   repeat
     LToken := TScannerStrings.UpperAscii(FScanner.AsString);
@@ -610,6 +642,9 @@ begin
         FScanner.UnGet;
         Break;
       end
+      else if Assigned(FProfile.ExtraProperties) and
+        FProfile.ExtraProperties.TryRead(LToken, TActorDefScannerCursor.Create(FScanner)) then
+        FScanner.GetString
       else
       begin
         if FActor.Name <> '' then

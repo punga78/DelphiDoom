@@ -348,4 +348,170 @@ L'attacco, la raccolta e la costruzione (le tre sezioni qui sopra) sono nate in 
 
 **Numeri**: `DelphiDoom.Tests.War` **1025 test, 1 ignorato, 1024 passati, 0 falliti** a Win32 e a Win64; 13 golden dei quattro gruppi `194 *` identici al C (`Confronta-Golden.ps1 -Solo 194`); copertura di `Libs\War` 98% (6603 righe su 6683; `ActionRunner` 94%). **Costo** (400 unita' ferme che giocano l'azione di inattivita', 1500 tic, `DELPHIDOOM_WAR_BENCH=file`): stati 0,086 us per unita' e tic a Win32 (0,077 a Win64), passi delle azioni **0,011** (0,008), stati + `UpdateAfterStates` 0,16 (la griglia delle unita' vicine, dell'attacco, e' la parte maggiore). Nessuna chiamata virtuale o a interfaccia per unita' e per tic: `TWarActionRunner`, `TWarTargetGeometry`, `TWarUnitSprites` e gli stati sono funzioni di classe statiche; l'interfaccia `IWarCombatServices` si chiama due volte per tic.
 
-**Resta della #194**: vedi `Libs\War\CLAUDE.md` ("Resta della #194"): comandi (`war_commands.c` oltre alla costruzione), incantesimi e mana, IA, animazioni (`war_animations.c`), mura nel disegno e attacco ai muri, collegamenti a `Warcraft32` (#200) e percorsi (#195).
+## Comandi, incantesimi, animazioni, muri e tic intero (issue #194, completamento)
+
+Con questa parte il modello ha tutto `war_commands.c`, lo stato `cast` e gli incantesimi, `updateMagic`/`updateSpells`,
+`war_animations.c`, l'attacco ai muri e il tic intero di `wmap_updateMap`. Resta fuori solo cio' che e' di altre issue
+(vedi in fondo).
+
+### Mappa nome C -> classe
+
+| C | Delphi (`DelphiDoom.War.Model.*`) |
+|---|---|
+| `map->selectedEntities`, `map->selectionGroups`, `wmap_add/removeEntity*Selection`, `wmap_clearSelection` | `TWarSelection` (`Selection`; `Context.Selection`) |
+| `isEntitySelectable`, `updateSelectionFromList`, `updateSelectionGroups` | `TWarSelectionCommands` (`Commands.Selection`: `IsSelectable`, `Select`, `StoreGroup`, `RecallGroup`) |
+| il ciclo sulla selezione di ogni `wcmd_execute*Command`, `wu_isFriendlyUnit`, `wst_canSubmitTransition`, `wst_resetState`, `wa_playAcknowledgementSound` | `TWarCommandFamily` + `TWarCommander` (`Commands.Family`) |
+| `wcmd_executeMoveCommand`, `wcmd_executeFollowCommand`, `wcmd_executeStopCommand` | `TWarMovementCommands` (`Commands.Movement`: `Move`, `Follow`, `Stop`) |
+| `wcmd_executeAttackCommand` | `TWarAttackCommands.Attack` (`Commands.Attack`) |
+| `wcmd_executeHarvestCommand`, `wcmd_executeDeliverCommand` | `TWarGatherCommands` (`Commands.Gather`: `Harvest`, `Deliver`) |
+| `wcmd_executeSummonCommand`, `wcmd_executeRainOfFire/PoisonCloud/Healing/Invisiblity/UnholyArmor/RaiseDead/SightCommand` | `TWarSpellCommands` (`Commands.Spells`) |
+| `wcmd_tryPlaceBuilding`, `wcmd_executeRepairCommand`, casi TRAIN/UPGRADE/BUILD_WALL, `wcmd_cancel` (gia' portati) + caso `BUILD_ROAD`, ordine dell'IA | `TWarConstructionCommands` (`Commands.Construction`: aggiunti `PlaceRoad`, `OrderTrain(..., causa)`) |
+| `wcmd_executeCommand` (il `switch`), `wcmd_train*`/`wcmd_upgrade*`/`wcmd_build*` (cosa mette ogni bottone nel comando), `updateCommandFromRightClick`, `wcmd_cancel` sulla selezione | `TWarCommands` (`Commands.Dispatcher`): **registro** tipo di comando -> gestore (`RegisterHandler`), `Execute`, `RightClick`, `Cancel`, `TrainOf`/`UpgradeOf`/`BuildingOf` |
+| `wpath_getTileEntityId`, `wmap_isTileVisible/Fog/Unknown`, `wmap_isUnitUnknown`, `wmap_isUnitPartiallyVisible` (cio' che un ordine chiede alla mappa) | `IWarCommandMap` (`Commands.Intf`), `TWarGridCommandMap` (`Commands.GridMap`, sopra `TWarPathGrid` e `TWarFogOfWar`) |
+| `wst_createCastState`, `wst_updateCastState(s)` | `TWarCastState` (`State.Cast`) |
+| `wst_canInterruptCast` (mai registrata nel C) | `TWarStateMachine.CanSubmitTransition` con `Context.InterruptibleCasts` |
+| `updateMagic`, `updatePoisonCloud`, `updateSight`, `updateSpells`, i fuochi della pioggia, `SDL_randf` | `TWarSpells` (`Spells`: `UpdateMagic`, `UpdateSpells`, `RainOfFire`, `SpawnSight`, `SpawnPoisonCloud`, `RandomUnit`) |
+| `WarSightComponent`, `WarPoisonCloudComponent`, `WarAnimationsComponent` | campi di `TWarEntity` (`HasSight`, `HasPoisonCloud`, `SpellTile`, `SpellTime`, `SpellDamageTime`, `Animations`) |
+| `war_animations.c` (`wanim_create*`, `wanim_addAnimation`, `wanim_removeAnimation`, `wanim_containsAnimation`, `wanim_updateAnimation(s)`) | `TWarAnimations` (`Animations`) |
+| `we_meleeWallAttack`, `we_rangeWallAttack` | `TWarAttacks.WallMelee`, `WallRange` (`IWarCombatServices.MeleeWallAttack`, `RangeWallAttack`) |
+| ramo dei muri di `wst_updateAttackState`, `wproj_doProjectileTargetDamage`, `wproj_do*SplashDamage` | `TWarAttackState`, `TWarProjectiles` (`WallSplash`) |
+| `wst_isInsideBuilding` | `TWarStateMachine.IsInsideBuilding` (una sola: l'attacco e la selezione usano questa) |
+| `we_createRoad`, `we_addRoadPiece`, `we_determineRoadTypes` | `TWarTerrainEntities.CreateRoad`, `Context.Roads` (`TWarLine` di #193) |
+| `wmap_updateMap` (stati, griglia, azioni, animazioni, proiettili, mana, incantesimi) | `TWarModelWorld.Update` + `FinishTic`, o `Tick` |
+| `createStartingEntities` + le entita' di `wmap_enterMap` | `TWarMapBinding` (`MapBinding`, `TWarModelFactory.CreateMapBinding`) |
+
+**Riuso**: gli ordini di costruzione restano in `TWarConstructionCommands` (esteso con sole aggiunte); il seguimento e'
+`TWarStateMachine.CreateFollow`; gli stati di raccolta si creano con `TWarGatherStateFactory`; le distanze con
+`TWarUnitGeometry`/`TWarTargetGeometry`; il municipio con `TWarUnitSearch`; le caselle libere con `IWarOccupancyProbe`
+(`TWarPathGrid.FindEmptyTile`); le strade con `TWarLine`; i muri con `TWarWalls`; i passi dell'azione di attacco (che
+lo stato `cast` legge) con `TWarActionRunner`/`ActionSteps.Data`; gli alberi con `TWarMapForests`; i suoni degli ordini
+con `IWarConstructionHost` (`Acknowledge`, `PlaySound`); le statistiche degli incantesimi erano gia' in `StatData`
+(nessuna tabella nuova: le tabelle dei comandi sono tre array in `Commands.Dispatcher` **confrontati con il golden del
+C** `model.commands.tables`).
+
+### Comandi
+
+`TWarCommands` e' cio' che un giocatore (o il computer) puo' ordinare alla **sua** selezione. Non ha mouse, bottoni ne'
+pannelli: il comando che nel C aspetta un clic qui si esegue quando il punto e' noto (`TWarCommand.Target`, pixel della
+mappa; `Queue` = SHIFT). Il registro (`RegisterHandler`) permette di aggiungere o sostituire un tipo di comando senza
+toccare un `case`. `Execute` cerca chi sta sotto il punto con `IWarCommandMap` (come `wcmd_executeCommand`),
+`RightClick` sceglie l'ordine da cio' che c'e' sotto (miniera o albero: raccogli; municipio proprio: consegna; nemico:
+attacca; amico: segui; muro o niente: muovi).
+
+**L'originale non ha formazioni**: `wcmd_executeMoveCommand` da' a tutte le unita' lo **stesso** punto (le separa
+l'evitamento, #195). Non c'e' nemmeno un comando di pattuglia: lo stato `patrol` esiste e riceve punti con SHIFT, ma
+nessun `WAR_COMMAND_*` lo crea.
+
+**L'IA (#196) non e' portata; il suo punto d'ingresso si'**: `TWarModelFactory.CreateComputerCommands(mondo, selezione,
+giocatore)` da' lo stesso `TWarCommands` con una selezione propria, il giocatore del computer e
+`WAR_CAUSE_AI_ORDER`/`WAR_INTERRUPT_AI_ORDER` (`TWarCommander.Computer`). L'unico ordine che `war_ai.c` da' oggi
+(addestrare) e' provato cosi' nei golden (`fOpAi`) e nei test.
+
+### Incantesimi e mana
+
+Lo stato `cast` legge il passo di colpo dell'azione di attacco, come lo stato `attack`. Costi, durate e portate vengono
+da `StatData` (guarigione 6 mana per punto ferita, portata 6; vista lontana 70 e visione oscura 50, 10 s; invisibilita'
+200, 50 s; armatura sacrilega 100, 13 s, dimezza i punti ferita; pioggia di fuoco 25 per colpo, 5 fuochi; nube velenosa
+100, 10 s, 10 di danno al secondo entro 2 caselle; resurrezione 50 per scheletro entro 4 caselle; ragno e scorpione 51,
+elementale 250, demone 255). Le evocazioni sono un **comando** (non passano dallo stato `cast`). Il mana sale di un
+punto al secondo fino al massimo; un'unita' evocata ne perde uno al secondo e a zero muore.
+
+### Animazioni
+
+`TWarAnimations` tiene cio' che e' stato del gioco: quale animazione (il nome del C: `littleDamage`, `hugeDamage`,
+`collapse`, `explosion_x_y`, `spell_x_y`, `poison_cloud_x_y`), ciclo, stato, fotogrammi, ritardo, tempo trascorso e il
+punto dato alla `wanim_create*`. L'immagine, lo scostamento e la scala (che dipendono dalla misura dei fotogrammi nel
+`DATA.WAR`) sono di chi disegna (#197). Le animazioni dei danni degli edifici si creano in `TWarCombat.TakeDamage`, il
+crollo in `TWarCollapseState.Enter`, le esplosioni in `TWarProjectiles`, i lampi in `State.Cast`/`Commands.Spells`.
+
+### Unita' iniziali del livello
+
+`TWarMapBinding` crea nel modello, con `TWarEntityManager`, le entita' che `TWarMapBuilder` ha messo nella mappa
+(foreste, strada, muro, rovine e poi le unita'), nello stesso ordine: prendono **gli stessi id** (`EWarException` se uno
+differisce). Da li' le unita' sono quelle del modello e la lista `TWarGameMap.Units` (che nebbia e minimappa leggono) e'
+cio' che `SyncUnits` copia da loro: la mappa non ha piu' unita' proprie. I golden della mappa (#193) non cambiano
+(`TWarMapBuilder` non e' toccato).
+
+### Difetti del C conservati (ognuno con un test)
+
+1. **Chi lancia un incantesimo non accetta nessun ordine**: `wst_canInterruptCast` e' scritta ma mai messa nella
+   tabella degli stati (maschera 0). `Context.InterruptibleCasts := True` la applica (`DovrebbeRifiutareOgniOrdineAChi...`,
+   `DovrebbeAccettareUnOrdineAChiLanciaConLInterruttore`, `DovrebbeNonInterrompereLaPioggiaDiSuaIniziativa`).
+2. La pioggia di fuoco parte da sopra **la vista del giocatore** (`map->camera.viewport.y`: `Context.ViewportTop`): dove
+   guarda la camera cambia quanto ci mette a cadere.
+3. La portata di un incantesimo si misura al punto dell'ordine, non a dove e' ora il bersaglio.
+4. Resurrezione: un avviso "manca il mana" per **ogni** cadavere che non si puo' pagare.
+5. L'evocazione spende tutto il mana che puo' e finisce sempre con "manca il mana"; non chiede di chi e' l'evocatore
+   (un nemico selezionato evoca) ne' la razza (un conjurer lancia la nube velenosa se gli si ordina).
+6. Un'animazione finita si toglie al tic dopo, e quella che la segue nella lista della stessa entita' salta quel tic;
+   le entita' di esplosioni e lampi non si tolgono mai; un edificio a cui si ordina di crollare mentre crolla prende
+   un'altra animazione di crollo ogni volta.
+7. Un'entita' tolta dal gioco resta nella selezione e nei gruppi (solo morte, crollo e ingresso in un edificio la
+   tolgono).
+8. `stop` arriva anche agli edifici (ferma un addestramento); l'attacco di un punto e' dato anche ai lavoratori; un
+   lavoratore con un carico non pieno (pieno = esattamente 100) parte per la nuova raccolta; chi porta un carico pieno
+   e non ha un municipio della sua razza non fa nulla ma l'ordine e' confermato.
+9. Con SHIFT un punto aggiunto a chi pattuglia va sia al movimento sia alla pattuglia.
+10. La nube velenosa ferisce anche gli amici; un muro senza pezzo sulla casella dell'attacco si colpisce all'infinito.
+11. Durante il cantiere l'immagine dell'edificio e' quella di costruzione (`SpriteResource`: prima il modello teneva
+    quella dell'edificio; trovato con i golden nuovi).
+
+### Differenze volute (il C si ferma su un `assert` o va in crash; ognuna con un test)
+
+- **Evocare**: `wcmd_executeSummonCommand` non da' il componente delle animazioni all'entita' del lampo e
+  `wanim_addAnimation` si ferma: qui l'evocazione crea il lampo come gli altri incantesimi (nel C dei golden un
+  involucro dichiarato aggiunge il componente).
+- **Segui** dato a un edificio (lo stato di movimento chiede le statistiche di unita'): non gli e' dato.
+- **Attacco di un punto** dato a un edificio (idem): non gli e' dato.
+- Un **lavoratore** mandato ad attaccare un **muro o un albero** "seguiva" un'entita' senza posizione: non riceve l'ordine.
+- Un selezionato che non esiste piu', un comando di addestramento/miglioramento senza un solo edificio selezionato o
+  con l'edificio sbagliato, muro/strada senza il municipio selezionato, consegna senza municipio, raccolta di cio' che
+  non e' miniera ne' foresta, un tipo di comando che non esiste: `EWarException`.
+- Piscina delle entita' piena: l'evocazione si ferma, la resurrezione lascia il cadavere, vista e nube non nascono (il
+  C usa un puntatore nullo).
+- Le animazioni di un'entita' sono una lista che cresce (il C ha `shl/list`): nessun limite.
+
+### Non portato (e di chi e')
+
+- **#195**: percorsi e evitamento (`wpath_computeFlowField`, RVO: resta `IWarMovementSteering`), la nebbia che legge le
+  entita' di vista (`updateFoW` con `WAR_ENTITY_TYPE_SIGHT`: l'entita' c'e', con casella e tempo) e che rivela bersaglio
+  e attaccante.
+- **#196**: `war_ai.c` (`wai_updateAIPlayers`, `aiCommand` dello stato di addestramento).
+- **#197**: lo stato del comando che aspetta un clic (`map->commandState`, `consumeCommand`,
+  `suppressSelectionOnRelease`), i bottoni e i pannelli, il rettangolo di selezione e il clic, i suoni della selezione
+  (`wa_playDudeSelectionSound`), immagine, scostamento e scala delle animazioni, il disegno di muri, strade e rovine.
+- **#200**: il ciclo del gioco (`war_game.c`), i trucchi come testo (`war_cheats.c`: il modello ha gia' `GodMode` e
+  `HurryUp`), il collegamento a `Warcraft32`.
+- Fuori ambito (#202): gli strumenti dell'editor di `wmap_updateMap` (`updateTreesEdit`, `updateRoadsEdit`, ...,
+  `updateAddUnit`), `war_state_machine_debug.c`.
+
+### Parita'
+
+`Tools\Verifica\194\war_full_ref.inc` (vedi `LEGGIMI.md`): 36 scenari di 900 tic con il **tic intero** e gli ordini
+dati dai veri `wcmd_executeCommand`, `updateCommandFromRightClick`, `updateSelectionFromList`,
+`updateSelectionGroups`. Gruppi `194 comandi` (`model.commands.tables`, `model.commands`, `model.commands.dump`),
+`194 incantesimi` (`model.spells`, `model.spells.dump`), `194 completo` (`model.full`, `model.full.dump`): 32400
+impronte, **zero differenze** a Win32 e a Win64. Nel gruppo `completo` ogni tipo di stato e' attivo almeno una volta
+tranne `patrol` (nessun comando lo crea) e `wait` (`DovrebbeFarConvivere...`).
+
+**Numeri (2026-11-14)**: `Confronta-Golden.ps1 -Solo 194` = 20 golden su 20 identici rifatti dal C (13 di prima, 7
+nuovi); `DelphiDoom.Tests.War` 1191 test, 1190 passati, 1 ignorato, 0 falliti a Win32 e a Win64 (a 64 bit il `.dpr`
+compilato con `dcc64` a parte, perche' il `.dproj` dichiara solo Win32: comando in `docs\PARITA_WAR.md`); 166 test
+nuovi; copertura di `Libs\War` 98% (7923 righe su 8004), unit nuove 97-100%. **Costo** del tic intero (400 chierici
+fermi, 3000 tic, minimo di 9 esecuzioni su una macchina con altro carico, us per unita' e tic; `war_model_ref benchfull`
+e `DELPHIDOOM_WAR_BENCH_FULL`):
+
+| | stati | griglia | azioni | animazioni | proiettili | mana | incantesimi | totale |
+|---|---|---|---|---|---|---|---|---|
+| C gcc `-O1` | 0,194 | 0,054 | 0,013 | 0,009 | 0,000 | 0,026 | 0,004 | 0,327 |
+| C gcc `-O2` | 0,167 | 0,024 | 0,012 | 0,003 | 0,000 | 0,009 | 0,002 | 0,243 |
+| Delphi Win32 | 0,140 | 0,072 | 0,015 | 0,008 | 0,000 | 0,020 | 0,005 | 0,364 |
+| Delphi Win64 | 0,108 | 0,097 | 0,010 | 0,009 | 0,000 | 0,017 | 0,005 | 0,280 |
+
+(ogni colonna e' il minimo di quella parte, il totale il minimo del totale: non e' la somma). Le parti nuove
+(animazioni, mana, incantesimi) stanno al livello del C a `-O1` e sono 2-3 volte piu' lente del C a `-O2`, su costi di
+centesimi di microsecondo; gli stati sono piu' veloci del C; la griglia delle unita' vicine (seconda fetta) e' piu'
+lenta del C e porta il totale a Win32 l'11% sopra il C a `-O1`: **il 5% non e' dimostrato** (il rumore tra un'esecuzione
+e l'altra e' del 20-30%). Nessuna chiamata virtuale nei cicli; a interfaccia, per unita' e per tic, solo
+`Occupancy.SetStaticEntity` di chi sta lanciando un incantesimo (come lo stato di attacco).
+

@@ -25,9 +25,9 @@ type
     class constructor Create;
   public
     /// <summary>sintable[angle]; the angle is taken modulo 1024</summary>
-    class function Sine(AAngle: Integer): TGreedFixed; static;
+    class function Sine(AAngle: Integer): TGreedFixed; static; inline;
     /// <summary>costable[angle]; the angle is taken modulo 1024</summary>
-    class function Cosine(AAngle: Integer): TGreedFixed; static;
+    class function Cosine(AAngle: Integer): TGreedFixed; static; inline;
   end;
 
 implementation

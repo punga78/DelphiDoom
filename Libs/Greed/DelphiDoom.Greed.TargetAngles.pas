@@ -31,7 +31,7 @@ type
     class constructor Create;
   public
     /// <summary>autoangle2[ADistance][AHeight]; both must be in 0..GREED_TARGET_ANGLE_SIZE - 1</summary>
-    class function Angle(ADistance, AHeight: Integer): Integer; static;
+    class function Angle(ADistance, AHeight: Integer): Integer; static; inline;
   end;
 
 implementation

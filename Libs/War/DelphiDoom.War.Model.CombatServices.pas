@@ -13,9 +13,9 @@ unit DelphiDoom.War.Model.CombatServices;
 interface
 
 uses
-  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine,
-  DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.NearUnits,
-  DelphiDoom.War.Model.Projectiles, DelphiDoom.War.Model.Attacks;
+  System.Generics.Collections, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context,
+  DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Combat.Intf,
+  DelphiDoom.War.Model.NearUnits, DelphiDoom.War.Model.Projectiles, DelphiDoom.War.Model.Attacks;
 
 type
   /// <summary>
@@ -38,6 +38,13 @@ type
       ATarget: TWarVec2): Integer;
     procedure BuildNearUnits;
     procedure UpdateProjectiles;
+    procedure CollectNearUnits(const ATile: TWarVec2; ADistance: Integer; AResult: TList<Integer>);
+    procedure TakeDamage(ASlot, AMinDamage, ARndDamage: Integer);
+    procedure IncreaseHp(ASlot, AHp: Integer);
+    procedure DecreaseHp(ASlot, AHp: Integer);
+    function DecreaseMana(ASlot, AMana: Integer): Boolean;
+    procedure MeleeWallAttack(AAttackerSlot, APieceIndex: Integer);
+    procedure RangeWallAttack(AAttackerSlot, AWallSlot, APieceIndex: Integer);
   end;
 
 implementation
@@ -52,6 +59,7 @@ begin
   FNear := TWarNearUnits.Create(AContext, AMachine);
   FAttacks := TWarAttacks.Create(AContext, AMachine, FCombat);
   FProjectiles := TWarProjectiles.Create(AContext, AMachine, FCombat, FNear, FAttacks.Melee);
+  FProjectiles.WallMelee := FAttacks.WallMelee;
   FAttacks.Projectiles := FProjectiles;
 end;
 
@@ -88,6 +96,41 @@ end;
 procedure TWarCombatServices.UpdateProjectiles;
 begin
   FProjectiles.UpdateAll;
+end;
+
+procedure TWarCombatServices.CollectNearUnits(const ATile: TWarVec2; ADistance: Integer; AResult: TList<Integer>);
+begin
+  FNear.Collect(ATile, ADistance, AResult);
+end;
+
+procedure TWarCombatServices.TakeDamage(ASlot, AMinDamage, ARndDamage: Integer);
+begin
+  FCombat.TakeDamage(ASlot, AMinDamage, ARndDamage);
+end;
+
+procedure TWarCombatServices.IncreaseHp(ASlot, AHp: Integer);
+begin
+  FCombat.IncreaseHp(ASlot, AHp);
+end;
+
+procedure TWarCombatServices.DecreaseHp(ASlot, AHp: Integer);
+begin
+  FCombat.DecreaseHp(ASlot, AHp);
+end;
+
+function TWarCombatServices.DecreaseMana(ASlot, AMana: Integer): Boolean;
+begin
+  Result := FCombat.DecreaseMana(ASlot, AMana);
+end;
+
+procedure TWarCombatServices.MeleeWallAttack(AAttackerSlot, APieceIndex: Integer);
+begin
+  FAttacks.WallMelee(AAttackerSlot, APieceIndex);
+end;
+
+procedure TWarCombatServices.RangeWallAttack(AAttackerSlot, AWallSlot, APieceIndex: Integer);
+begin
+  FAttacks.WallRange(AAttackerSlot, AWallSlot, APieceIndex);
 end;
 
 end.

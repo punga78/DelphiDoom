@@ -1,0 +1,1997 @@
+CMD startup script/expr.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/expr.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/expr.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 437, ? bytes
+PRINT    Functions: 105, ? bytes
+PRINT    Variables: 5064 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/expr.script
+FILE 1 script/doom_defs.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="show" etype=8 size=4 aux=void def=172 parms=[string:name] funcs=[]
+TYPE 96 name="arithmetic" etype=8 size=4 aux=void def=179 parms=[] funcs=[]
+TYPE 97 name="precedence" etype=8 size=4 aux=void def=188 parms=[] funcs=[]
+TYPE 98 name="comparisons" etype=8 size=4 aux=void def=201 parms=[] funcs=[]
+TYPE 99 name="logic" etype=8 size=4 aux=void def=218 parms=[] funcs=[]
+TYPE 100 name="vectors" etype=8 size=4 aux=void def=234 parms=[] funcs=[]
+TYPE 101 name="compound" etype=8 size=4 aux=void def=245 parms=[] funcs=[]
+TYPE 102 name="folding" etype=8 size=4 aux=void def=250 parms=[] funcs=[]
+TYPE 103 name="stringops" etype=8 size=4 aux=void def=296 parms=[] funcs=[]
+TYPE 104 name="main" etype=8 size=4 aux=void def=299 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="r0" type=float/4 scope=@namespace init=0 users=1 value=global:520=#00000000
+DEF 102 name="r1" type=float/4 scope=@namespace init=0 users=1 value=global:524=#00000000
+DEF 103 name="r2" type=float/4 scope=@namespace init=0 users=1 value=global:528=#00000000
+DEF 104 name="r3" type=float/4 scope=@namespace init=0 users=1 value=global:532=#00000000
+DEF 105 name="r4" type=float/4 scope=@namespace init=0 users=1 value=global:536=#00000000
+DEF 106 name="r5" type=float/4 scope=@namespace init=0 users=1 value=global:540=#00000000
+DEF 107 name="r6" type=float/4 scope=@namespace init=0 users=1 value=global:544=#00000000
+DEF 108 name="r7" type=float/4 scope=@namespace init=0 users=1 value=global:548=#00000000
+DEF 109 name="r8" type=float/4 scope=@namespace init=0 users=1 value=global:552=#00000000
+DEF 110 name="r9" type=float/4 scope=@namespace init=0 users=1 value=global:556=#00000000
+DEF 111 name="q0" type=float/4 scope=@namespace init=0 users=1 value=global:560=#00000000
+DEF 112 name="q1" type=float/4 scope=@namespace init=0 users=1 value=global:564=#00000000
+DEF 113 name="q2" type=float/4 scope=@namespace init=0 users=1 value=global:568=#00000000
+DEF 114 name="q3" type=float/4 scope=@namespace init=0 users=1 value=global:572=#00000000
+DEF 115 name="q4" type=float/4 scope=@namespace init=0 users=1 value=global:576=#00000000
+DEF 116 name="q5" type=float/4 scope=@namespace init=0 users=1 value=global:580=#00000000
+DEF 117 name="q6" type=float/4 scope=@namespace init=0 users=1 value=global:584=#00000000
+DEF 118 name="q7" type=float/4 scope=@namespace init=0 users=1 value=global:588=#00000000
+DEF 119 name="q8" type=float/4 scope=@namespace init=0 users=1 value=global:592=#00000000
+DEF 120 name="q9" type=float/4 scope=@namespace init=0 users=1 value=global:596=#00000000
+DEF 121 name="w0" type=vector/5 scope=@namespace init=0 users=1 value=global:600=#00000000,#00000000,#00000000
+DEF 122 name="w0_x" type=float/4 scope=@namespace init=0 users=1 value=global:600=#00000000
+DEF 123 name="w0_y" type=float/4 scope=@namespace init=0 users=1 value=global:604=#00000000
+DEF 124 name="w0_z" type=float/4 scope=@namespace init=0 users=1 value=global:608=#00000000
+DEF 125 name="w1" type=vector/5 scope=@namespace init=0 users=1 value=global:612=#00000000,#00000000,#00000000
+DEF 126 name="w1_x" type=float/4 scope=@namespace init=0 users=1 value=global:612=#00000000
+DEF 127 name="w1_y" type=float/4 scope=@namespace init=0 users=1 value=global:616=#00000000
+DEF 128 name="w1_z" type=float/4 scope=@namespace init=0 users=1 value=global:620=#00000000
+DEF 129 name="w2" type=vector/5 scope=@namespace init=0 users=1 value=global:624=#00000000,#00000000,#00000000
+DEF 130 name="w2_x" type=float/4 scope=@namespace init=0 users=1 value=global:624=#00000000
+DEF 131 name="w2_y" type=float/4 scope=@namespace init=0 users=1 value=global:628=#00000000
+DEF 132 name="w2_z" type=float/4 scope=@namespace init=0 users=1 value=global:632=#00000000
+DEF 133 name="w3" type=vector/5 scope=@namespace init=0 users=1 value=global:636=#00000000,#00000000,#00000000
+DEF 134 name="w3_x" type=float/4 scope=@namespace init=0 users=1 value=global:636=#00000000
+DEF 135 name="w3_y" type=float/4 scope=@namespace init=0 users=1 value=global:640=#00000000
+DEF 136 name="w3_z" type=float/4 scope=@namespace init=0 users=1 value=global:644=#00000000
+DEF 137 name="w4" type=vector/5 scope=@namespace init=0 users=1 value=global:648=#00000000,#00000000,#00000000
+DEF 138 name="w4_x" type=float/4 scope=@namespace init=0 users=1 value=global:648=#00000000
+DEF 139 name="w4_y" type=float/4 scope=@namespace init=0 users=1 value=global:652=#00000000
+DEF 140 name="w4_z" type=float/4 scope=@namespace init=0 users=1 value=global:656=#00000000
+DEF 141 name="w5" type=vector/5 scope=@namespace init=0 users=1 value=global:660=#00000000,#00000000,#00000000
+DEF 142 name="w5_x" type=float/4 scope=@namespace init=0 users=1 value=global:660=#00000000
+DEF 143 name="w5_y" type=float/4 scope=@namespace init=0 users=1 value=global:664=#00000000
+DEF 144 name="w5_z" type=float/4 scope=@namespace init=0 users=1 value=global:668=#00000000
+DEF 145 name="t0" type=string/3 scope=@namespace init=1 users=1 value=global:672=""
+DEF 146 name="t1" type=string/3 scope=@namespace init=1 users=1 value=global:800=""
+DEF 147 name="t2" type=string/3 scope=@namespace init=1 users=1 value=global:928=""
+DEF 148 name="ga" type=float/4 scope=@namespace init=1 users=1 value=global:1056=#40E00000
+DEF 149 name="gb" type=float/4 scope=@namespace init=1 users=1 value=global:1060=#40400000
+DEF 150 name="gc" type=float/4 scope=@namespace init=1 users=1 value=global:1064=#C0200000
+DEF 151 name="gzero" type=float/4 scope=@namespace init=0 users=1 value=global:1068=#00000000
+DEF 152 name="gva" type=vector/5 scope=@namespace init=1 users=1 value=global:1072=#3F800000,#40000000,#40400000
+DEF 153 name="gva_x" type=float/4 scope=@namespace init=0 users=1 value=global:1072=#3F800000
+DEF 154 name="gva_y" type=float/4 scope=@namespace init=0 users=1 value=global:1076=#40000000
+DEF 155 name="gva_z" type=float/4 scope=@namespace init=0 users=1 value=global:1080=#40400000
+DEF 156 name="gvb" type=vector/5 scope=@namespace init=1 users=1 value=global:1084=#40800000,#C0A00000,#40C00000
+DEF 157 name="gvb_x" type=float/4 scope=@namespace init=0 users=1 value=global:1084=#40800000
+DEF 158 name="gvb_y" type=float/4 scope=@namespace init=0 users=1 value=global:1088=#C0A00000
+DEF 159 name="gvb_z" type=float/4 scope=@namespace init=0 users=1 value=global:1092=#40C00000
+DEF 160 name="gvzero" type=vector/5 scope=@namespace init=0 users=1 value=global:1096=#00000000,#00000000,#00000000
+DEF 161 name="gvzero_x" type=float/4 scope=@namespace init=0 users=1 value=global:1096=#00000000
+DEF 162 name="gvzero_y" type=float/4 scope=@namespace init=0 users=1 value=global:1100=#00000000
+DEF 163 name="gvzero_z" type=float/4 scope=@namespace init=0 users=1 value=global:1104=#00000000
+DEF 164 name="gsa" type=string/3 scope=@namespace init=1 users=1 value=global:1108="abc"
+DEF 165 name="gsb" type=string/3 scope=@namespace init=1 users=1 value=global:1236="abd"
+DEF 166 name="gsempty" type=string/3 scope=@namespace init=1 users=1 value=global:1364=""
+DEF 167 name="gt" type=boolean/14 scope=@namespace init=0 users=1 value=global:1492=0
+DEF 168 name="gn" type=boolean/14 scope=@namespace init=0 users=1 value=global:1496=0
+DEF 169 name="ge1" type=entity/6 scope=@namespace init=1 users=1 value=global:1500=0
+DEF 170 name="ge2" type=entity/6 scope=@namespace init=1 users=1 value=global:1504=0
+DEF 171 name="genull" type=entity/6 scope=@namespace init=0 users=1 value=global:1508=0
+DEF 172 name="show" type=show/8 scope=@namespace init=2 users=1 value=func:95
+DEF 173 name="name" type=string/3 scope=172 init=3 users=1 value=stack:0
+DEF 174 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1516=": "
+DEF 175 name="<RESULT>" type=string/3 scope=172 init=3 users=2 value=stack:128
+DEF 176 name="<RESULT>" type=string/3 scope=172 init=3 users=2 value=stack:256
+DEF 177 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=17 value=global:1644=" "
+DEF 178 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=8 value=args:128
+DEF 179 name="arithmetic" type=arithmetic/8 scope=@namespace init=2 users=1 value=func:96
+DEF 180 name="<RESULT>" type=float/4 scope=179 init=3 users=2 value=stack:0
+DEF 181 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1780=#41000000
+DEF 182 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1784="arithmetic"
+DEF 183 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=9 value=global:1928=#00000000
+DEF 184 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1936=#5368D4A5
+DEF 185 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=5 value=global:1940=#40400000
+DEF 186 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=6 value=global:1952=#40E00000
+DEF 187 name="<RESULT>" type=float/4 scope=179 init=3 users=2 value=stack:4
+DEF 188 name="precedence" type=precedence/8 scope=@namespace init=2 users=1 value=func:97
+DEF 189 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1980=#41100000
+DEF 190 name="<RESULT>" type=float/4 scope=188 init=3 users=1 value=stack:0
+DEF 191 name="<RESULT>" type=float/4 scope=188 init=3 users=2 value=stack:4
+DEF 192 name="<RESULT>" type=float/4 scope=188 init=3 users=1 value=stack:8
+DEF 193 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=18 value=global:1984=#3F800000
+DEF 194 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=6 value=global:1988=#40000000
+DEF 195 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1992="precedence"
+DEF 196 name="<RESULT>" type=float/4 scope=188 init=3 users=1 value=stack:12
+DEF 197 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2132=#428C0000
+DEF 198 name="<RESULT>" type=float/4 scope=188 init=3 users=2 value=stack:16
+DEF 199 name="<RESULT>" type=float/4 scope=188 init=3 users=2 value=stack:20
+DEF 200 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2136="precedence2"
+DEF 201 name="comparisons" type=comparisons/8 scope=@namespace init=2 users=1 value=func:98
+DEF 202 name="<RESULT>" type=float/4 scope=201 init=3 users=2 value=stack:0
+DEF 203 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2268=#3F800000,#40000000,#40400000
+DEF 204 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2268=#3F800000
+DEF 205 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2272=#40000000
+DEF 206 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2276=#40400000
+DEF 207 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2280="comparisons"
+DEF 208 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2408="abc"
+DEF 209 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:2536=0
+DEF 210 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2540=""
+DEF 211 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:2668="a"
+DEF 212 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2796="A"
+DEF 213 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2924=#00000000,#00000000,#00000000
+DEF 214 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2924=#00000000
+DEF 215 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2928=#00000000
+DEF 216 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2932=#00000000
+DEF 217 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2936="comparisons2"
+DEF 218 name="logic" type=logic/8 scope=@namespace init=2 users=1 value=func:99
+DEF 219 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:0
+DEF 220 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:4
+DEF 221 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:8
+DEF 222 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:12
+DEF 223 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:16
+DEF 224 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:20
+DEF 225 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:24
+DEF 226 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:28
+DEF 227 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:32
+DEF 228 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:36
+DEF 229 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3068="logic"
+DEF 230 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:40
+DEF 231 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3196="not"
+DEF 232 name="<RESULT>" type=float/4 scope=218 init=3 users=1 value=stack:44
+DEF 233 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3324="not2"
+DEF 234 name="vectors" type=vectors/8 scope=@namespace init=2 users=1 value=func:100
+DEF 235 name="<RESULT>" type=vector/5 scope=234 init=3 users=2 value=stack:0
+DEF 236 name="<RESULT>" type=float/4 scope=234 init=3 users=2 value=stack:12
+DEF 237 name="<RESULT>" type=vector/5 scope=234 init=3 users=2 value=stack:16
+DEF 238 name="<RESULT>" type=vector/5 scope=234 init=3 users=2 value=stack:28
+DEF 239 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3456="vectors: "
+DEF 240 name="<RESULT>" type=string/3 scope=234 init=3 users=2 value=stack:40
+DEF 241 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=13 value=global:3584=" | "
+DEF 242 name="<RESULT>" type=string/3 scope=234 init=3 users=2 value=stack:168
+DEF 243 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:3712=#40800000
+DEF 244 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3716="vectors2: "
+DEF 245 name="compound" type=compound/8 scope=@namespace init=2 users=1 value=func:101
+DEF 246 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3848="compound"
+DEF 247 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:3976=#40A00000
+DEF 248 name="<RESULT>" type=float/4 scope=245 init=3 users=2 value=stack:0
+DEF 249 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3980="compound2"
+DEF 250 name="folding" type=folding/8 scope=@namespace init=2 users=1 value=func:102
+DEF 251 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4112=#BF800000
+DEF 252 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4116=#40C00000
+DEF 253 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4120=#40600000
+DEF 254 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4124=#C0C00000
+DEF 255 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4128=#C0A00000
+DEF 256 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4136="folding"
+DEF 257 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4264="folding2"
+DEF 258 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4392=#41200000
+DEF 259 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4396=#41A00000
+DEF 260 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4400=#41F00000
+DEF 261 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:4404=#41300000,#41B00000,#42040000
+DEF 262 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4404=#41300000
+DEF 263 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4408=#41B00000
+DEF 264 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4412=#42040000
+DEF 265 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4416=#41200000
+DEF 266 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4420=#41A00000
+DEF 267 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4424=#41F00000
+DEF 268 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:4428=#C1100000,#C1900000,#C1D80000
+DEF 269 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4428=#C1100000
+DEF 270 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4432=#C1900000
+DEF 271 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4436=#C1D80000
+DEF 272 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=2 value=global:4440=#40000000,#40800000,#40C00000
+DEF 273 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4440=#40000000
+DEF 274 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4444=#40800000
+DEF 275 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4448=#40C00000
+DEF 276 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:4452=#BF800000,#C0000000,#C0400000
+DEF 277 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4452=#BF800000
+DEF 278 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4456=#C0000000
+DEF 279 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4460=#C0400000
+DEF 280 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4464=#40800000
+DEF 281 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4468=#40A00000
+DEF 282 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4472=#40C00000
+DEF 283 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4476=#42000000
+DEF 284 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4480=#00000000
+DEF 285 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4484=#3F800000
+DEF 286 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4488=#00000000
+DEF 287 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4520=#3E99999A
+DEF 288 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4524=#3EAAAAAB
+DEF 289 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4532=#4B800000
+DEF 290 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4544="folding3"
+DEF 291 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4672="folding vectors: "
+DEF 292 name="<RESULT>" type=string/3 scope=250 init=3 users=2 value=stack:0
+DEF 293 name="<RESULT>" type=string/3 scope=250 init=3 users=2 value=stack:128
+DEF 294 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4800="b"
+DEF 295 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:4928="n"
+DEF 296 name="stringops" type=stringops/8 scope=@namespace init=2 users=1 value=func:103
+DEF 297 name="<RESULT>" type=string/3 scope=296 init=3 users=2 value=stack:0
+DEF 298 name="<RESULT>" type=string/3 scope=296 init=3 users=2 value=stack:128
+DEF 299 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:104
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="show" event=- def=172 first=1 num=23 parmTotal=128 locals=384 filenum=0 parmSize=[128]
+FUNC 96 name="arithmetic" event=- def=179 first=24 num=41 parmTotal=0 locals=8 filenum=0 parmSize=[]
+FUNC 97 name="precedence" event=- def=188 first=65 num=66 parmTotal=0 locals=24 filenum=0 parmSize=[]
+FUNC 98 name="comparisons" event=- def=201 first=131 num=45 parmTotal=0 locals=4 filenum=0 parmSize=[]
+FUNC 99 name="logic" event=- def=218 first=176 num=59 parmTotal=0 locals=48 filenum=0 parmSize=[]
+FUNC 100 name="vectors" event=- def=234 first=235 num=52 parmTotal=0 locals=296 filenum=0 parmSize=[]
+FUNC 101 name="compound" event=- def=245 first=287 num=37 parmTotal=0 locals=4 filenum=0 parmSize=[]
+FUNC 102 name="folding" event=- def=250 first=324 num=66 parmTotal=0 locals=256 filenum=0 parmSize=[]
+FUNC 103 name="stringops" event=- def=296 first=390 num=38 parmTotal=0 locals=256 filenum=0 parmSize=[]
+FUNC 104 name="main" event=- def=299 first=428 num=9 parmTotal=0 locals=0 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_S a=173 b=174 c=175 line=14 file=0
+STMT 2 ADD_SF a=175 b=101 c=176 line=14 file=0
+STMT 3 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 4 ADD_SF a=175 b=102 c=176 line=14 file=0
+STMT 5 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 6 ADD_SF a=175 b=103 c=176 line=14 file=0
+STMT 7 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 8 ADD_SF a=175 b=104 c=176 line=14 file=0
+STMT 9 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 10 ADD_SF a=175 b=105 c=176 line=14 file=0
+STMT 11 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 12 ADD_SF a=175 b=106 c=176 line=14 file=0
+STMT 13 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 14 ADD_SF a=175 b=107 c=176 line=14 file=0
+STMT 15 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 16 ADD_SF a=175 b=108 c=176 line=14 file=0
+STMT 17 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 18 ADD_SF a=175 b=109 c=176 line=14 file=0
+STMT 19 ADD_S a=176 b=177 c=175 line=14 file=0
+STMT 20 ADD_SF a=175 b=110 c=176 line=14 file=0
+STMT 21 PUSH_S a=176 b=- c=- line=14 file=0
+STMT 22 SYSCALL a=15 b=178 c=- line=14 file=0
+STMT 23 RETURN a=- b=- c=- line=15 file=0
+STMT 24 ADD_F a=148 b=149 c=180 line=18 file=0
+STMT 25 STORE_F a=180 b=101 c=- line=18 file=0
+STMT 26 SUB_F a=148 b=149 c=180 line=19 file=0
+STMT 27 STORE_F a=180 b=102 c=- line=19 file=0
+STMT 28 MUL_F a=148 b=149 c=180 line=20 file=0
+STMT 29 STORE_F a=180 b=103 c=- line=20 file=0
+STMT 30 DIV a=148 b=149 c=180 line=21 file=0
+STMT 31 STORE_F a=180 b=104 c=- line=21 file=0
+STMT 32 MOD_F a=148 b=149 c=180 line=22 file=0
+STMT 33 STORE_F a=180 b=105 c=- line=22 file=0
+STMT 34 NEG_F a=148 b=- c=180 line=23 file=0
+STMT 35 STORE_F a=180 b=106 c=- line=23 file=0
+STMT 36 MOD_F a=150 b=149 c=180 line=24 file=0
+STMT 37 STORE_F a=180 b=107 c=- line=24 file=0
+STMT 38 BITAND a=148 b=149 c=180 line=25 file=0
+STMT 39 STORE_F a=180 b=108 c=- line=25 file=0
+STMT 40 BITOR a=148 b=181 c=180 line=26 file=0
+STMT 41 STORE_F a=180 b=109 c=- line=26 file=0
+STMT 42 COMP_F a=148 b=- c=180 line=27 file=0
+STMT 43 STORE_F a=180 b=110 c=- line=27 file=0
+STMT 44 PUSH_S a=182 b=- c=- line=28 file=0
+STMT 45 CALL a=172 b=- c=- line=28 file=0
+STMT 46 DIV a=148 b=151 c=180 line=29 file=0
+STMT 47 STORE_F a=180 b=111 c=- line=29 file=0
+STMT 48 MOD_F a=148 b=151 c=180 line=30 file=0
+STMT 49 STORE_F a=180 b=112 c=- line=30 file=0
+STMT 50 INT_F a=150 b=- c=180 line=31 file=0
+STMT 51 STORE_F a=180 b=113 c=- line=31 file=0
+STMT 52 STORE_F a=183 b=114 c=- line=32 file=0
+STMT 53 STORE_F a=184 b=115 c=- line=33 file=0
+STMT 54 BITAND a=150 b=185 c=180 line=34 file=0
+STMT 55 STORE_F a=180 b=116 c=- line=34 file=0
+STMT 56 STORE_F a=186 b=117 c=- line=35 file=0
+STMT 57 COMP_F a=150 b=- c=180 line=36 file=0
+STMT 58 STORE_F a=180 b=118 c=- line=36 file=0
+STMT 59 NEG_F a=148 b=- c=180 line=37 file=0
+STMT 60 NEG_F a=180 b=- c=187 line=37 file=0
+STMT 61 STORE_F a=187 b=119 c=- line=37 file=0
+STMT 62 NEG_F a=153 b=- c=187 line=38 file=0
+STMT 63 STORE_F a=187 b=120 c=- line=38 file=0
+STMT 64 RETURN a=- b=- c=- line=39 file=0
+STMT 65 STORE_F a=186 b=101 c=- line=42 file=0
+STMT 66 STORE_F a=189 b=102 c=- line=43 file=0
+STMT 67 MUL_F a=149 b=150 c=190 line=44 file=0
+STMT 68 ADD_F a=148 b=190 c=191 line=44 file=0
+STMT 69 DIV a=148 b=149 c=190 line=44 file=0
+STMT 70 SUB_F a=191 b=190 c=192 line=44 file=0
+STMT 71 STORE_F a=192 b=103 c=- line=44 file=0
+STMT 72 SUB_F a=148 b=149 c=192 line=45 file=0
+STMT 73 SUB_F a=192 b=150 c=191 line=45 file=0
+STMT 74 STORE_F a=191 b=104 c=- line=45 file=0
+STMT 75 DIV a=148 b=149 c=192 line=46 file=0
+STMT 76 DIV a=192 b=150 c=191 line=46 file=0
+STMT 77 STORE_F a=191 b=105 c=- line=46 file=0
+STMT 78 ADD_F a=148 b=149 c=192 line=47 file=0
+STMT 79 MUL_F a=148 b=149 c=191 line=47 file=0
+STMT 80 LT a=192 b=191 c=190 line=47 file=0
+STMT 81 STORE_F a=190 b=106 c=- line=47 file=0
+STMT 82 LT a=148 b=149 c=192 line=48 file=0
+STMT 83 EQ_F a=192 b=149 c=191 line=48 file=0
+STMT 84 LT a=191 b=148 c=192 line=48 file=0
+STMT 85 STORE_F a=192 b=107 c=- line=48 file=0
+STMT 86 GT a=148 b=149 c=192 line=49 file=0
+STMT 87 STORE_F a=192 b=108 c=- line=49 file=0
+STMT 88 GT a=149 b=150 c=192 line=49 file=0
+STMT 89 AND a=192 b=192 c=191 line=49 file=0
+STMT 90 OR a=191 b=151 c=192 line=49 file=0
+STMT 91 BITAND a=148 b=149 c=191 line=50 file=0
+STMT 92 ADD_F a=191 b=193 c=190 line=50 file=0
+STMT 93 STORE_F a=190 b=109 c=- line=50 file=0
+STMT 94 BITOR a=148 b=149 c=191 line=51 file=0
+STMT 95 MUL_F a=191 b=194 c=190 line=51 file=0
+STMT 96 STORE_F a=190 b=110 c=- line=51 file=0
+STMT 97 PUSH_S a=195 b=- c=- line=52 file=0
+STMT 98 CALL a=172 b=- c=- line=52 file=0
+STMT 99 MUL_F a=148 b=149 c=191 line=53 file=0
+STMT 100 NEG_F a=191 b=- c=190 line=53 file=0
+STMT 101 STORE_F a=190 b=101 c=- line=53 file=0
+STMT 102 ADD_F a=148 b=193 c=191 line=54 file=0
+STMT 103 NOT_F a=191 b=- c=190 line=54 file=0
+STMT 104 STORE_F a=190 b=102 c=- line=54 file=0
+STMT 105 ADD_F a=148 b=193 c=191 line=55 file=0
+STMT 106 NOT_F a=191 b=- c=190 line=55 file=0
+STMT 107 STORE_F a=190 b=103 c=- line=55 file=0
+STMT 108 EQ_F a=148 b=186 c=191 line=56 file=0
+STMT 109 STORE_F a=191 b=104 c=- line=56 file=0
+STMT 110 EQ_F a=149 b=185 c=191 line=56 file=0
+STMT 111 AND a=191 b=191 c=190 line=56 file=0
+STMT 112 NE_F a=148 b=186 c=191 line=57 file=0
+STMT 113 STORE_F a=191 b=105 c=- line=57 file=0
+STMT 114 NE_F a=149 b=185 c=191 line=57 file=0
+STMT 115 OR a=191 b=191 c=196 line=57 file=0
+STMT 116 STORE_F a=193 b=106 c=- line=58 file=0
+STMT 117 STORE_F a=197 b=107 c=- line=59 file=0
+STMT 118 STORE_F a=148 b=108 c=- line=60 file=0
+STMT 119 NEG_F a=149 b=- c=191 line=61 file=0
+STMT 120 MUL_F a=148 b=191 c=198 line=61 file=0
+STMT 121 STORE_F a=198 b=109 c=- line=61 file=0
+STMT 122 DIV a=148 b=149 c=198 line=62 file=0
+STMT 123 INT_F a=198 b=- c=191 line=62 file=0
+STMT 124 MUL_F a=191 b=149 c=198 line=62 file=0
+STMT 125 MOD_F a=148 b=149 c=191 line=62 file=0
+STMT 126 ADD_F a=198 b=191 c=199 line=62 file=0
+STMT 127 STORE_F a=199 b=110 c=- line=62 file=0
+STMT 128 PUSH_S a=200 b=- c=- line=63 file=0
+STMT 129 CALL a=172 b=- c=- line=63 file=0
+STMT 130 RETURN a=- b=- c=- line=64 file=0
+STMT 131 EQ_F a=148 b=149 c=202 line=67 file=0
+STMT 132 STORE_F a=202 b=101 c=- line=67 file=0
+STMT 133 NE_F a=148 b=149 c=202 line=68 file=0
+STMT 134 STORE_F a=202 b=102 c=- line=68 file=0
+STMT 135 LT a=148 b=149 c=202 line=69 file=0
+STMT 136 STORE_F a=202 b=103 c=- line=69 file=0
+STMT 137 GT a=148 b=149 c=202 line=70 file=0
+STMT 138 STORE_F a=202 b=104 c=- line=70 file=0
+STMT 139 LE a=148 b=148 c=202 line=71 file=0
+STMT 140 STORE_F a=202 b=105 c=- line=71 file=0
+STMT 141 GE a=148 b=149 c=202 line=72 file=0
+STMT 142 STORE_F a=202 b=106 c=- line=72 file=0
+STMT 143 EQ_V a=152 b=156 c=202 line=73 file=0
+STMT 144 STORE_F a=202 b=107 c=- line=73 file=0
+STMT 145 NE_V a=152 b=156 c=202 line=74 file=0
+STMT 146 STORE_F a=202 b=108 c=- line=74 file=0
+STMT 147 EQ_V a=152 b=203 c=202 line=75 file=0
+STMT 148 STORE_F a=202 b=109 c=- line=75 file=0
+STMT 149 EQ_S a=164 b=165 c=202 line=76 file=0
+STMT 150 STORE_F a=202 b=110 c=- line=76 file=0
+STMT 151 PUSH_S a=207 b=- c=- line=77 file=0
+STMT 152 CALL a=172 b=- c=- line=77 file=0
+STMT 153 NE_S a=164 b=165 c=202 line=78 file=0
+STMT 154 STORE_F a=202 b=101 c=- line=78 file=0
+STMT 155 EQ_S a=164 b=208 c=202 line=79 file=0
+STMT 156 STORE_F a=202 b=102 c=- line=79 file=0
+STMT 157 EQ_E a=169 b=170 c=202 line=80 file=0
+STMT 158 STORE_F a=202 b=103 c=- line=80 file=0
+STMT 159 NE_E a=169 b=170 c=202 line=81 file=0
+STMT 160 STORE_F a=202 b=104 c=- line=81 file=0
+STMT 161 EQ_E a=169 b=169 c=202 line=82 file=0
+STMT 162 STORE_F a=202 b=105 c=- line=82 file=0
+STMT 163 EQ_E a=171 b=209 c=202 line=83 file=0
+STMT 164 STORE_F a=202 b=106 c=- line=83 file=0
+STMT 165 EQ_S a=166 b=210 c=202 line=84 file=0
+STMT 166 STORE_F a=202 b=107 c=- line=84 file=0
+STMT 167 EQ_S a=211 b=212 c=202 line=85 file=0
+STMT 168 STORE_F a=202 b=108 c=- line=85 file=0
+STMT 169 NE_E a=169 b=171 c=202 line=86 file=0
+STMT 170 STORE_F a=202 b=109 c=- line=86 file=0
+STMT 171 EQ_V a=160 b=213 c=202 line=87 file=0
+STMT 172 STORE_F a=202 b=110 c=- line=87 file=0
+STMT 173 PUSH_S a=217 b=- c=- line=88 file=0
+STMT 174 CALL a=172 b=- c=- line=88 file=0
+STMT 175 RETURN a=- b=- c=- line=89 file=0
+STMT 176 STORE_FTOBOOL a=193 b=167 c=- line=92 file=0
+STMT 177 STORE_FTOBOOL a=183 b=168 c=- line=93 file=0
+STMT 178 STORE_F a=148 b=101 c=- line=94 file=0
+STMT 179 AND a=148 b=149 c=219 line=94 file=0
+STMT 180 STORE_F a=148 b=102 c=- line=95 file=0
+STMT 181 AND a=148 b=151 c=220 line=95 file=0
+STMT 182 STORE_F a=151 b=103 c=- line=96 file=0
+STMT 183 OR a=151 b=151 c=221 line=96 file=0
+STMT 184 STORE_F a=151 b=104 c=- line=97 file=0
+STMT 185 OR a=151 b=149 c=222 line=97 file=0
+STMT 186 STORE_BOOLTOF a=167 b=105 c=- line=98 file=0
+STMT 187 AND_BOOLF a=167 b=148 c=223 line=98 file=0
+STMT 188 STORE_F a=148 b=106 c=- line=99 file=0
+STMT 189 AND_FBOOL a=148 b=167 c=224 line=99 file=0
+STMT 190 STORE_BOOLTOF a=167 b=107 c=- line=100 file=0
+STMT 191 AND_BOOLBOOL a=167 b=168 c=225 line=100 file=0
+STMT 192 STORE_BOOLTOF a=168 b=108 c=- line=101 file=0
+STMT 193 OR_BOOLF a=168 b=148 c=226 line=101 file=0
+STMT 194 STORE_F a=151 b=109 c=- line=102 file=0
+STMT 195 OR_FBOOL a=151 b=167 c=227 line=102 file=0
+STMT 196 STORE_BOOLTOF a=168 b=110 c=- line=103 file=0
+STMT 197 OR_BOOLBOOL a=168 b=168 c=228 line=103 file=0
+STMT 198 PUSH_S a=229 b=- c=- line=104 file=0
+STMT 199 CALL a=172 b=- c=- line=104 file=0
+STMT 200 NOT_F a=148 b=- c=230 line=105 file=0
+STMT 201 STORE_F a=230 b=101 c=- line=105 file=0
+STMT 202 NOT_F a=151 b=- c=230 line=106 file=0
+STMT 203 STORE_F a=230 b=102 c=- line=106 file=0
+STMT 204 NOT_BOOL a=167 b=- c=230 line=107 file=0
+STMT 205 STORE_F a=230 b=103 c=- line=107 file=0
+STMT 206 NOT_BOOL a=168 b=- c=230 line=108 file=0
+STMT 207 STORE_F a=230 b=104 c=- line=108 file=0
+STMT 208 NOT_V a=152 b=- c=230 line=109 file=0
+STMT 209 STORE_F a=230 b=105 c=- line=109 file=0
+STMT 210 NOT_V a=160 b=- c=230 line=110 file=0
+STMT 211 STORE_F a=230 b=106 c=- line=110 file=0
+STMT 212 NOT_S a=164 b=- c=230 line=111 file=0
+STMT 213 STORE_F a=230 b=107 c=- line=111 file=0
+STMT 214 NOT_S a=166 b=- c=230 line=112 file=0
+STMT 215 STORE_F a=230 b=108 c=- line=112 file=0
+STMT 216 NOT_ENT a=169 b=- c=230 line=113 file=0
+STMT 217 STORE_F a=230 b=109 c=- line=113 file=0
+STMT 218 NOT_ENT a=171 b=- c=230 line=114 file=0
+STMT 219 STORE_F a=230 b=110 c=- line=114 file=0
+STMT 220 PUSH_S a=231 b=- c=- line=115 file=0
+STMT 221 CALL a=172 b=- c=- line=115 file=0
+STMT 222 NOT_F a=148 b=- c=230 line=116 file=0
+STMT 223 NOT_F a=230 b=- c=232 line=116 file=0
+STMT 224 STORE_F a=232 b=101 c=- line=116 file=0
+STMT 225 NEG_F a=148 b=- c=232 line=117 file=0
+STMT 226 NOT_F a=232 b=- c=230 line=117 file=0
+STMT 227 STORE_F a=230 b=102 c=- line=117 file=0
+STMT 228 STORE_BOOLTOF a=167 b=103 c=- line=118 file=0
+STMT 229 AND_BOOLBOOL a=167 b=167 c=232 line=118 file=0
+STMT 230 STORE_BOOLTOF a=167 b=104 c=- line=119 file=0
+STMT 231 OR_BOOLBOOL a=167 b=168 c=230 line=119 file=0
+STMT 232 PUSH_S a=233 b=- c=- line=120 file=0
+STMT 233 CALL a=172 b=- c=- line=120 file=0
+STMT 234 RETURN a=- b=- c=- line=121 file=0
+STMT 235 ADD_V a=152 b=156 c=235 line=124 file=0
+STMT 236 STORE_V a=235 b=121 c=- line=124 file=0
+STMT 237 SUB_V a=152 b=156 c=235 line=125 file=0
+STMT 238 STORE_V a=235 b=125 c=- line=125 file=0
+STMT 239 MUL_VF a=152 b=194 c=235 line=126 file=0
+STMT 240 STORE_V a=235 b=129 c=- line=126 file=0
+STMT 241 MUL_FV a=194 b=152 c=235 line=127 file=0
+STMT 242 STORE_V a=235 b=133 c=- line=127 file=0
+STMT 243 NEG_V a=152 b=- c=235 line=128 file=0
+STMT 244 STORE_V a=235 b=137 c=- line=128 file=0
+STMT 245 MUL_V a=152 b=156 c=236 line=129 file=0
+STMT 246 STORE_F a=236 b=101 c=- line=129 file=0
+STMT 247 MUL_VF a=152 b=149 c=235 line=130 file=0
+STMT 248 SUB_F a=148 b=149 c=236 line=130 file=0
+STMT 249 MUL_VF a=156 b=236 c=237 line=130 file=0
+STMT 250 ADD_V a=235 b=237 c=238 line=130 file=0
+STMT 251 STORE_V a=238 b=141 c=- line=130 file=0
+STMT 252 ADD_SV a=239 b=121 c=240 line=131 file=0
+STMT 253 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 254 ADD_SV a=242 b=125 c=240 line=131 file=0
+STMT 255 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 256 ADD_SV a=242 b=129 c=240 line=131 file=0
+STMT 257 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 258 ADD_SV a=242 b=133 c=240 line=131 file=0
+STMT 259 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 260 ADD_SV a=242 b=137 c=240 line=131 file=0
+STMT 261 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 262 ADD_SV a=242 b=141 c=240 line=131 file=0
+STMT 263 ADD_S a=240 b=241 c=242 line=131 file=0
+STMT 264 ADD_SF a=242 b=101 c=240 line=131 file=0
+STMT 265 PUSH_S a=240 b=- c=- line=131 file=0
+STMT 266 SYSCALL a=15 b=178 c=- line=131 file=0
+STMT 267 STORE_V a=152 b=121 c=- line=132 file=0
+STMT 268 UADD_V a=156 b=121 c=- line=133 file=0
+STMT 269 STORE_V a=152 b=125 c=- line=134 file=0
+STMT 270 USUB_V a=156 b=125 c=- line=135 file=0
+STMT 271 STORE_V a=152 b=129 c=- line=136 file=0
+STMT 272 UMUL_V a=185 b=129 c=- line=137 file=0
+STMT 273 STORE_V a=152 b=133 c=- line=138 file=0
+STMT 274 UDIV_V a=243 b=133 c=- line=139 file=0
+STMT 275 STORE_V a=152 b=137 c=- line=140 file=0
+STMT 276 UDIV_V a=151 b=137 c=- line=141 file=0
+STMT 277 ADD_SV a=244 b=121 c=242 line=142 file=0
+STMT 278 ADD_S a=242 b=241 c=240 line=142 file=0
+STMT 279 ADD_SV a=240 b=125 c=242 line=142 file=0
+STMT 280 ADD_S a=242 b=241 c=240 line=142 file=0
+STMT 281 ADD_SV a=240 b=129 c=242 line=142 file=0
+STMT 282 ADD_S a=242 b=241 c=240 line=142 file=0
+STMT 283 ADD_SV a=240 b=133 c=242 line=142 file=0
+STMT 284 PUSH_S a=242 b=- c=- line=142 file=0
+STMT 285 SYSCALL a=15 b=178 c=- line=142 file=0
+STMT 286 RETURN a=- b=- c=- line=143 file=0
+STMT 287 STORE_F a=148 b=101 c=- line=146 file=0
+STMT 288 UADD_F a=149 b=101 c=- line=147 file=0
+STMT 289 STORE_F a=148 b=102 c=- line=148 file=0
+STMT 290 USUB_F a=149 b=102 c=- line=149 file=0
+STMT 291 STORE_F a=148 b=103 c=- line=150 file=0
+STMT 292 UMUL_F a=149 b=103 c=- line=151 file=0
+STMT 293 STORE_F a=148 b=104 c=- line=152 file=0
+STMT 294 UDIV_F a=149 b=104 c=- line=153 file=0
+STMT 295 STORE_F a=148 b=105 c=- line=154 file=0
+STMT 296 UMOD_F a=149 b=105 c=- line=155 file=0
+STMT 297 STORE_F a=148 b=106 c=- line=156 file=0
+STMT 298 UAND_F a=149 b=106 c=- line=157 file=0
+STMT 299 STORE_F a=148 b=107 c=- line=158 file=0
+STMT 300 UOR_F a=181 b=107 c=- line=159 file=0
+STMT 301 STORE_F a=148 b=108 c=- line=160 file=0
+STMT 302 UDIV_F a=151 b=108 c=- line=161 file=0
+STMT 303 STORE_F a=148 b=109 c=- line=162 file=0
+STMT 304 UMOD_F a=151 b=109 c=- line=163 file=0
+STMT 305 STORE_F a=148 b=110 c=- line=164 file=0
+STMT 306 UINC_F a=110 b=- c=- line=165 file=0
+STMT 307 PUSH_S a=246 b=- c=- line=166 file=0
+STMT 308 CALL a=172 b=- c=- line=166 file=0
+STMT 309 STORE_F a=148 b=101 c=- line=167 file=0
+STMT 310 UDEC_F a=101 b=- c=- line=168 file=0
+STMT 311 STORE_F a=247 b=102 c=- line=169 file=0
+STMT 312 UADD_F a=102 b=102 c=- line=170 file=0
+STMT 313 STORE_F a=194 b=103 c=- line=171 file=0
+STMT 314 ADD_F a=103 b=193 c=248 line=172 file=0
+STMT 315 UMUL_F a=248 b=103 c=- line=172 file=0
+STMT 316 STORE_F a=243 b=102 c=- line=173 file=0
+STMT 317 STORE_F a=243 b=103 c=- line=173 file=0
+STMT 318 STORE_F a=243 b=104 c=- line=173 file=0
+STMT 319 STORE_F a=185 b=106 c=- line=174 file=0
+STMT 320 STORE_F a=243 b=105 c=- line=174 file=0
+STMT 321 PUSH_S a=249 b=- c=- line=175 file=0
+STMT 322 CALL a=172 b=- c=- line=175 file=0
+STMT 323 RETURN a=- b=- c=- line=176 file=0
+STMT 324 STORE_F a=247 b=101 c=- line=180 file=0
+STMT 325 STORE_F a=251 b=102 c=- line=181 file=0
+STMT 326 STORE_F a=252 b=103 c=- line=182 file=0
+STMT 327 STORE_F a=253 b=104 c=- line=183 file=0
+STMT 328 STORE_F a=193 b=105 c=- line=184 file=0
+STMT 329 STORE_F a=194 b=106 c=- line=185 file=0
+STMT 330 STORE_F a=186 b=107 c=- line=186 file=0
+STMT 331 STORE_F a=254 b=108 c=- line=187 file=0
+STMT 332 STORE_F a=255 b=109 c=- line=188 file=0
+STMT 333 STORE_F a=186 b=110 c=- line=189 file=0
+STMT 334 PUSH_S a=256 b=- c=- line=190 file=0
+STMT 335 CALL a=172 b=- c=- line=190 file=0
+STMT 336 STORE_F a=183 b=101 c=- line=191 file=0
+STMT 337 STORE_F a=193 b=102 c=- line=192 file=0
+STMT 338 STORE_F a=183 b=103 c=- line=193 file=0
+STMT 339 STORE_F a=193 b=104 c=- line=194 file=0
+STMT 340 STORE_F a=193 b=105 c=- line=195 file=0
+STMT 341 STORE_F a=183 b=106 c=- line=196 file=0
+STMT 342 STORE_F a=194 b=107 c=- line=197 file=0
+STMT 343 STORE_F a=183 b=108 c=- line=198 file=0
+STMT 344 STORE_F a=183 b=109 c=- line=199 file=0
+STMT 345 STORE_F a=193 b=110 c=- line=200 file=0
+STMT 346 PUSH_S a=257 b=- c=- line=201 file=0
+STMT 347 CALL a=172 b=- c=- line=201 file=0
+STMT 348 STORE_V a=261 b=121 c=- line=202 file=0
+STMT 349 STORE_V a=268 b=125 c=- line=203 file=0
+STMT 350 STORE_V a=272 b=129 c=- line=204 file=0
+STMT 351 STORE_V a=272 b=133 c=- line=205 file=0
+STMT 352 STORE_V a=276 b=137 c=- line=206 file=0
+STMT 353 STORE_F a=283 b=101 c=- line=207 file=0
+STMT 354 STORE_F a=193 b=102 c=- line=208 file=0
+STMT 355 STORE_F a=183 b=103 c=- line=209 file=0
+STMT 356 STORE_F a=193 b=104 c=- line=210 file=0
+STMT 357 STORE_F a=183 b=105 c=- line=211 file=0
+STMT 358 STORE_F a=181 b=106 c=- line=212 file=0
+STMT 359 STORE_F a=287 b=107 c=- line=213 file=0
+STMT 360 STORE_F a=288 b=108 c=- line=214 file=0
+STMT 361 STORE_F a=289 b=109 c=- line=215 file=0
+STMT 362 STORE_F a=193 b=110 c=- line=216 file=0
+STMT 363 PUSH_S a=290 b=- c=- line=217 file=0
+STMT 364 CALL a=172 b=- c=- line=217 file=0
+STMT 365 ADD_SV a=291 b=121 c=292 line=218 file=0
+STMT 366 ADD_S a=292 b=241 c=293 line=218 file=0
+STMT 367 ADD_SV a=293 b=125 c=292 line=218 file=0
+STMT 368 ADD_S a=292 b=241 c=293 line=218 file=0
+STMT 369 ADD_SV a=293 b=129 c=292 line=218 file=0
+STMT 370 ADD_S a=292 b=241 c=293 line=218 file=0
+STMT 371 ADD_SV a=293 b=133 c=292 line=218 file=0
+STMT 372 ADD_S a=292 b=241 c=293 line=218 file=0
+STMT 373 ADD_SV a=293 b=137 c=292 line=218 file=0
+STMT 374 PUSH_S a=292 b=- c=- line=218 file=0
+STMT 375 SYSCALL a=15 b=178 c=- line=218 file=0
+STMT 376 ADD_S a=211 b=294 c=293 line=219 file=0
+STMT 377 STORE_S a=293 b=145 c=- line=219 file=0
+STMT 378 ADD_SF a=295 b=193 c=293 line=220 file=0
+STMT 379 ADD_SF a=293 b=194 c=292 line=220 file=0
+STMT 380 STORE_S a=292 b=146 c=- line=220 file=0
+STMT 381 ADD_FS a=185 b=295 c=293 line=221 file=0
+STMT 382 STORE_S a=293 b=147 c=- line=221 file=0
+STMT 383 ADD_S a=145 b=177 c=293 line=222 file=0
+STMT 384 ADD_S a=293 b=146 c=292 line=222 file=0
+STMT 385 ADD_S a=292 b=177 c=293 line=222 file=0
+STMT 386 ADD_S a=293 b=147 c=292 line=222 file=0
+STMT 387 PUSH_S a=292 b=- c=- line=222 file=0
+STMT 388 SYSCALL a=15 b=178 c=- line=222 file=0
+STMT 389 RETURN a=- b=- c=- line=223 file=0
+STMT 390 ADD_S a=164 b=165 c=297 line=226 file=0
+STMT 391 STORE_S a=297 b=145 c=- line=226 file=0
+STMT 392 ADD_SF a=164 b=148 c=297 line=227 file=0
+STMT 393 STORE_S a=297 b=146 c=- line=227 file=0
+STMT 394 ADD_FS a=148 b=164 c=297 line=228 file=0
+STMT 395 STORE_S a=297 b=147 c=- line=228 file=0
+STMT 396 ADD_S a=145 b=177 c=297 line=229 file=0
+STMT 397 ADD_S a=297 b=146 c=298 line=229 file=0
+STMT 398 ADD_S a=298 b=177 c=297 line=229 file=0
+STMT 399 ADD_S a=297 b=147 c=298 line=229 file=0
+STMT 400 PUSH_S a=298 b=- c=- line=229 file=0
+STMT 401 SYSCALL a=15 b=178 c=- line=229 file=0
+STMT 402 ADD_VS a=152 b=164 c=298 line=230 file=0
+STMT 403 STORE_S a=298 b=145 c=- line=230 file=0
+STMT 404 ADD_SV a=164 b=152 c=298 line=231 file=0
+STMT 405 STORE_S a=298 b=146 c=- line=231 file=0
+STMT 406 ADD_SF a=164 b=150 c=298 line=232 file=0
+STMT 407 ADD_SV a=298 b=152 c=297 line=232 file=0
+STMT 408 ADD_S a=297 b=166 c=298 line=232 file=0
+STMT 409 ADD_SF a=298 b=193 c=297 line=232 file=0
+STMT 410 STORE_S a=297 b=147 c=- line=232 file=0
+STMT 411 ADD_S a=145 b=177 c=298 line=233 file=0
+STMT 412 ADD_S a=298 b=146 c=297 line=233 file=0
+STMT 413 ADD_S a=297 b=177 c=298 line=233 file=0
+STMT 414 ADD_S a=298 b=147 c=297 line=233 file=0
+STMT 415 PUSH_S a=297 b=- c=- line=233 file=0
+STMT 416 SYSCALL a=15 b=178 c=- line=233 file=0
+STMT 417 STORE_FTOS a=148 b=145 c=- line=234 file=0
+STMT 418 STORE_VTOS a=152 b=146 c=- line=235 file=0
+STMT 419 STORE_FTOBOOL a=193 b=167 c=- line=236 file=0
+STMT 420 STORE_BTOS a=167 b=147 c=- line=237 file=0
+STMT 421 ADD_S a=145 b=177 c=298 line=238 file=0
+STMT 422 ADD_S a=298 b=146 c=297 line=238 file=0
+STMT 423 ADD_S a=297 b=177 c=298 line=238 file=0
+STMT 424 ADD_S a=298 b=147 c=297 line=238 file=0
+STMT 425 PUSH_S a=297 b=- c=- line=238 file=0
+STMT 426 SYSCALL a=15 b=178 c=- line=238 file=0
+STMT 427 RETURN a=- b=- c=- line=239 file=0
+STMT 428 CALL a=179 b=- c=- line=242 file=0
+STMT 429 CALL a=188 b=- c=- line=243 file=0
+STMT 430 CALL a=201 b=- c=- line=244 file=0
+STMT 431 CALL a=218 b=- c=- line=245 file=0
+STMT 432 CALL a=234 b=- c=- line=246 file=0
+STMT 433 CALL a=245 b=- c=- line=247 file=0
+STMT 434 CALL a=250 b=- c=- line=248 file=0
+STMT 435 CALL a=296 b=- c=- line=249 file=0
+STMT 436 RETURN a=- b=- c=- line=250 file=0
+TOP functions=105 statements=437 types=105 defs=300 files=2
+GLOBALS 5064
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CHECKSUM C9EA1030
+CMD dump disasm
+DISASM 
+DISASM function show() 384 stack used, 128 parms, 256 locals {
+DISASM   script/expr.script(14):\t     1:           ADD_S\t\ta: string stack[0]\tb: const string \": \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t     2:          ADD_SF\t\ta: string stack[128]\tb: float global[101]\tc: string stack[256]
+DISASM   script/expr.script(14):\t     3:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t     4:          ADD_SF\t\ta: string stack[128]\tb: float global[102]\tc: string stack[256]
+DISASM   script/expr.script(14):\t     5:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t     6:          ADD_SF\t\ta: string stack[128]\tb: float global[103]\tc: string stack[256]
+DISASM   script/expr.script(14):\t     7:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t     8:          ADD_SF\t\ta: string stack[128]\tb: float global[104]\tc: string stack[256]
+DISASM   script/expr.script(14):\t     9:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    10:          ADD_SF\t\ta: string stack[128]\tb: float global[105]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    11:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    12:          ADD_SF\t\ta: string stack[128]\tb: float global[106]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    13:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    14:          ADD_SF\t\ta: string stack[128]\tb: float global[107]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    15:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    16:          ADD_SF\t\ta: string stack[128]\tb: float global[108]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    17:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    18:          ADD_SF\t\ta: string stack[128]\tb: float global[109]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    19:           ADD_S\t\ta: string stack[256]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(14):\t    20:          ADD_SF\t\ta: string stack[128]\tb: float global[110]\tc: string stack[256]
+DISASM   script/expr.script(14):\t    21:          PUSH_S\t\ta: string stack[256]
+DISASM   script/expr.script(14):\t    22:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(15):\t    23:          RETURN\t
+DISASM }
+DISASM 
+DISASM function arithmetic() 8 stack used, 0 parms, 8 locals {
+DISASM   script/expr.script(18):\t    24:           ADD_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(18):\t    25:         STORE_F\t\ta: float stack[0]\tb: float global[101]
+DISASM   script/expr.script(19):\t    26:           SUB_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(19):\t    27:         STORE_F\t\ta: float stack[0]\tb: float global[102]
+DISASM   script/expr.script(20):\t    28:           MUL_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(20):\t    29:         STORE_F\t\ta: float stack[0]\tb: float global[103]
+DISASM   script/expr.script(21):\t    30:             DIV\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(21):\t    31:         STORE_F\t\ta: float stack[0]\tb: float global[104]
+DISASM   script/expr.script(22):\t    32:           MOD_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(22):\t    33:         STORE_F\t\ta: float stack[0]\tb: float global[105]
+DISASM   script/expr.script(23):\t    34:           NEG_F\t\ta: float global[148]\tc: float stack[0]
+DISASM   script/expr.script(23):\t    35:         STORE_F\t\ta: float stack[0]\tb: float global[106]
+DISASM   script/expr.script(24):\t    36:           MOD_F\t\ta: float global[150]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(24):\t    37:         STORE_F\t\ta: float stack[0]\tb: float global[107]
+DISASM   script/expr.script(25):\t    38:          BITAND\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(25):\t    39:         STORE_F\t\ta: float stack[0]\tb: float global[108]
+DISASM   script/expr.script(26):\t    40:           BITOR\t\ta: float global[148]\tb: const float 8.000000\tc: float stack[0]
+DISASM   script/expr.script(26):\t    41:         STORE_F\t\ta: float stack[0]\tb: float global[109]
+DISASM   script/expr.script(27):\t    42:          COMP_F\t\ta: float global[148]\tc: float stack[0]
+DISASM   script/expr.script(27):\t    43:         STORE_F\t\ta: float stack[0]\tb: float global[110]
+DISASM   script/expr.script(28):\t    44:          PUSH_S\t\ta: const string \"arithmetic\"
+DISASM   script/expr.script(28):\t    45:            CALL\t\ta: const function show
+DISASM   script/expr.script(29):\t    46:             DIV\t\ta: float global[148]\tb: float global[151]\tc: float stack[0]
+DISASM   script/expr.script(29):\t    47:         STORE_F\t\ta: float stack[0]\tb: float global[111]
+DISASM   script/expr.script(30):\t    48:           MOD_F\t\ta: float global[148]\tb: float global[151]\tc: float stack[0]
+DISASM   script/expr.script(30):\t    49:         STORE_F\t\ta: float stack[0]\tb: float global[112]
+DISASM   script/expr.script(31):\t    50:           INT_F\t\ta: float global[150]\tc: float stack[0]
+DISASM   script/expr.script(31):\t    51:         STORE_F\t\ta: float stack[0]\tb: float global[113]
+DISASM   script/expr.script(32):\t    52:         STORE_F\t\ta: const float 0.000000\tb: float global[114]
+DISASM   script/expr.script(33):\t    53:         STORE_F\t\ta: const float 999999995904.000000\tb: float global[115]
+DISASM   script/expr.script(34):\t    54:          BITAND\t\ta: float global[150]\tb: const float 3.000000\tc: float stack[0]
+DISASM   script/expr.script(34):\t    55:         STORE_F\t\ta: float stack[0]\tb: float global[116]
+DISASM   script/expr.script(35):\t    56:         STORE_F\t\ta: const float 7.000000\tb: float global[117]
+DISASM   script/expr.script(36):\t    57:          COMP_F\t\ta: float global[150]\tc: float stack[0]
+DISASM   script/expr.script(36):\t    58:         STORE_F\t\ta: float stack[0]\tb: float global[118]
+DISASM   script/expr.script(37):\t    59:           NEG_F\t\ta: float global[148]\tc: float stack[0]
+DISASM   script/expr.script(37):\t    60:           NEG_F\t\ta: float stack[0]\tc: float stack[4]
+DISASM   script/expr.script(37):\t    61:         STORE_F\t\ta: float stack[4]\tb: float global[119]
+DISASM   script/expr.script(38):\t    62:           NEG_F\t\ta: float global[153]\tc: float stack[4]
+DISASM   script/expr.script(38):\t    63:         STORE_F\t\ta: float stack[4]\tb: float global[120]
+DISASM   script/expr.script(39):\t    64:          RETURN\t
+DISASM }
+DISASM 
+DISASM function precedence() 24 stack used, 0 parms, 24 locals {
+DISASM   script/expr.script(42):\t    65:         STORE_F\t\ta: const float 7.000000\tb: float global[101]
+DISASM   script/expr.script(43):\t    66:         STORE_F\t\ta: const float 9.000000\tb: float global[102]
+DISASM   script/expr.script(44):\t    67:           MUL_F\t\ta: float global[149]\tb: float global[150]\tc: float stack[0]
+DISASM   script/expr.script(44):\t    68:           ADD_F\t\ta: float global[148]\tb: float stack[0]\tc: float stack[4]
+DISASM   script/expr.script(44):\t    69:             DIV\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(44):\t    70:           SUB_F\t\ta: float stack[4]\tb: float stack[0]\tc: float stack[8]
+DISASM   script/expr.script(44):\t    71:         STORE_F\t\ta: float stack[8]\tb: float global[103]
+DISASM   script/expr.script(45):\t    72:           SUB_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[8]
+DISASM   script/expr.script(45):\t    73:           SUB_F\t\ta: float stack[8]\tb: float global[150]\tc: float stack[4]
+DISASM   script/expr.script(45):\t    74:         STORE_F\t\ta: float stack[4]\tb: float global[104]
+DISASM   script/expr.script(46):\t    75:             DIV\t\ta: float global[148]\tb: float global[149]\tc: float stack[8]
+DISASM   script/expr.script(46):\t    76:             DIV\t\ta: float stack[8]\tb: float global[150]\tc: float stack[4]
+DISASM   script/expr.script(46):\t    77:         STORE_F\t\ta: float stack[4]\tb: float global[105]
+DISASM   script/expr.script(47):\t    78:           ADD_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[8]
+DISASM   script/expr.script(47):\t    79:           MUL_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(47):\t    80:              LT\t\ta: float stack[8]\tb: float stack[4]\tc: float stack[0]
+DISASM   script/expr.script(47):\t    81:         STORE_F\t\ta: float stack[0]\tb: float global[106]
+DISASM   script/expr.script(48):\t    82:              LT\t\ta: float global[148]\tb: float global[149]\tc: float stack[8]
+DISASM   script/expr.script(48):\t    83:            EQ_F\t\ta: float stack[8]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(48):\t    84:              LT\t\ta: float stack[4]\tb: float global[148]\tc: float stack[8]
+DISASM   script/expr.script(48):\t    85:         STORE_F\t\ta: float stack[8]\tb: float global[107]
+DISASM   script/expr.script(49):\t    86:              GT\t\ta: float global[148]\tb: float global[149]\tc: float stack[8]
+DISASM   script/expr.script(49):\t    87:         STORE_F\t\ta: float stack[8]\tb: float global[108]
+DISASM   script/expr.script(49):\t    88:              GT\t\ta: float global[149]\tb: float global[150]\tc: float stack[8]
+DISASM   script/expr.script(49):\t    89:             AND\t\ta: float stack[8]\tb: float stack[8]\tc: float stack[4]
+DISASM   script/expr.script(49):\t    90:              OR\t\ta: float stack[4]\tb: float global[151]\tc: float stack[8]
+DISASM   script/expr.script(50):\t    91:          BITAND\t\ta: float global[148]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(50):\t    92:           ADD_F\t\ta: float stack[4]\tb: const float 1.000000\tc: float stack[0]
+DISASM   script/expr.script(50):\t    93:         STORE_F\t\ta: float stack[0]\tb: float global[109]
+DISASM   script/expr.script(51):\t    94:           BITOR\t\ta: float global[148]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(51):\t    95:           MUL_F\t\ta: float stack[4]\tb: const float 2.000000\tc: float stack[0]
+DISASM   script/expr.script(51):\t    96:         STORE_F\t\ta: float stack[0]\tb: float global[110]
+DISASM   script/expr.script(52):\t    97:          PUSH_S\t\ta: const string \"precedence\"
+DISASM   script/expr.script(52):\t    98:            CALL\t\ta: const function show
+DISASM   script/expr.script(53):\t    99:           MUL_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(53):\t   100:           NEG_F\t\ta: float stack[4]\tc: float stack[0]
+DISASM   script/expr.script(53):\t   101:         STORE_F\t\ta: float stack[0]\tb: float global[101]
+DISASM   script/expr.script(54):\t   102:           ADD_F\t\ta: float global[148]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/expr.script(54):\t   103:           NOT_F\t\ta: float stack[4]\tc: float stack[0]
+DISASM   script/expr.script(54):\t   104:         STORE_F\t\ta: float stack[0]\tb: float global[102]
+DISASM   script/expr.script(55):\t   105:           ADD_F\t\ta: float global[148]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/expr.script(55):\t   106:           NOT_F\t\ta: float stack[4]\tc: float stack[0]
+DISASM   script/expr.script(55):\t   107:         STORE_F\t\ta: float stack[0]\tb: float global[103]
+DISASM   script/expr.script(56):\t   108:            EQ_F\t\ta: float global[148]\tb: const float 7.000000\tc: float stack[4]
+DISASM   script/expr.script(56):\t   109:         STORE_F\t\ta: float stack[4]\tb: float global[104]
+DISASM   script/expr.script(56):\t   110:            EQ_F\t\ta: float global[149]\tb: const float 3.000000\tc: float stack[4]
+DISASM   script/expr.script(56):\t   111:             AND\t\ta: float stack[4]\tb: float stack[4]\tc: float stack[0]
+DISASM   script/expr.script(57):\t   112:            NE_F\t\ta: float global[148]\tb: const float 7.000000\tc: float stack[4]
+DISASM   script/expr.script(57):\t   113:         STORE_F\t\ta: float stack[4]\tb: float global[105]
+DISASM   script/expr.script(57):\t   114:            NE_F\t\ta: float global[149]\tb: const float 3.000000\tc: float stack[4]
+DISASM   script/expr.script(57):\t   115:              OR\t\ta: float stack[4]\tb: float stack[4]\tc: float stack[12]
+DISASM   script/expr.script(58):\t   116:         STORE_F\t\ta: const float 1.000000\tb: float global[106]
+DISASM   script/expr.script(59):\t   117:         STORE_F\t\ta: const float 70.000000\tb: float global[107]
+DISASM   script/expr.script(60):\t   118:         STORE_F\t\ta: float global[148]\tb: float global[108]
+DISASM   script/expr.script(61):\t   119:           NEG_F\t\ta: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(61):\t   120:           MUL_F\t\ta: float global[148]\tb: float stack[4]\tc: float stack[16]
+DISASM   script/expr.script(61):\t   121:         STORE_F\t\ta: float stack[16]\tb: float global[109]
+DISASM   script/expr.script(62):\t   122:             DIV\t\ta: float global[148]\tb: float global[149]\tc: float stack[16]
+DISASM   script/expr.script(62):\t   123:           INT_F\t\ta: float stack[16]\tc: float stack[4]
+DISASM   script/expr.script(62):\t   124:           MUL_F\t\ta: float stack[4]\tb: float global[149]\tc: float stack[16]
+DISASM   script/expr.script(62):\t   125:           MOD_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[4]
+DISASM   script/expr.script(62):\t   126:           ADD_F\t\ta: float stack[16]\tb: float stack[4]\tc: float stack[20]
+DISASM   script/expr.script(62):\t   127:         STORE_F\t\ta: float stack[20]\tb: float global[110]
+DISASM   script/expr.script(63):\t   128:          PUSH_S\t\ta: const string \"precedence2\"
+DISASM   script/expr.script(63):\t   129:            CALL\t\ta: const function show
+DISASM   script/expr.script(64):\t   130:          RETURN\t
+DISASM }
+DISASM 
+DISASM function comparisons() 4 stack used, 0 parms, 4 locals {
+DISASM   script/expr.script(67):\t   131:            EQ_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(67):\t   132:         STORE_F\t\ta: float stack[0]\tb: float global[101]
+DISASM   script/expr.script(68):\t   133:            NE_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(68):\t   134:         STORE_F\t\ta: float stack[0]\tb: float global[102]
+DISASM   script/expr.script(69):\t   135:              LT\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(69):\t   136:         STORE_F\t\ta: float stack[0]\tb: float global[103]
+DISASM   script/expr.script(70):\t   137:              GT\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(70):\t   138:         STORE_F\t\ta: float stack[0]\tb: float global[104]
+DISASM   script/expr.script(71):\t   139:              LE\t\ta: float global[148]\tb: float global[148]\tc: float stack[0]
+DISASM   script/expr.script(71):\t   140:         STORE_F\t\ta: float stack[0]\tb: float global[105]
+DISASM   script/expr.script(72):\t   141:              GE\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(72):\t   142:         STORE_F\t\ta: float stack[0]\tb: float global[106]
+DISASM   script/expr.script(73):\t   143:            EQ_V\t\ta: vector global[152]\tb: vector global[156]\tc: float stack[0]
+DISASM   script/expr.script(73):\t   144:         STORE_F\t\ta: float stack[0]\tb: float global[107]
+DISASM   script/expr.script(74):\t   145:            NE_V\t\ta: vector global[152]\tb: vector global[156]\tc: float stack[0]
+DISASM   script/expr.script(74):\t   146:         STORE_F\t\ta: float stack[0]\tb: float global[108]
+DISASM   script/expr.script(75):\t   147:            EQ_V\t\ta: vector global[152]\tb: const vector '1 2 3'\tc: float stack[0]
+DISASM   script/expr.script(75):\t   148:         STORE_F\t\ta: float stack[0]\tb: float global[109]
+DISASM   script/expr.script(76):\t   149:            EQ_S\t\ta: string global[164]\tb: string global[165]\tc: float stack[0]
+DISASM   script/expr.script(76):\t   150:         STORE_F\t\ta: float stack[0]\tb: float global[110]
+DISASM   script/expr.script(77):\t   151:          PUSH_S\t\ta: const string \"comparisons\"
+DISASM   script/expr.script(77):\t   152:            CALL\t\ta: const function show
+DISASM   script/expr.script(78):\t   153:            NE_S\t\ta: string global[164]\tb: string global[165]\tc: float stack[0]
+DISASM   script/expr.script(78):\t   154:         STORE_F\t\ta: float stack[0]\tb: float global[101]
+DISASM   script/expr.script(79):\t   155:            EQ_S\t\ta: string global[164]\tb: const string \"abc\"\tc: float stack[0]
+DISASM   script/expr.script(79):\t   156:         STORE_F\t\ta: float stack[0]\tb: float global[102]
+DISASM   script/expr.script(80):\t   157:            EQ_E\t\ta: entity global[169]\tb: entity global[170]\tc: float stack[0]
+DISASM   script/expr.script(80):\t   158:         STORE_F\t\ta: float stack[0]\tb: float global[103]
+DISASM   script/expr.script(81):\t   159:            NE_E\t\ta: entity global[169]\tb: entity global[170]\tc: float stack[0]
+DISASM   script/expr.script(81):\t   160:         STORE_F\t\ta: float stack[0]\tb: float global[104]
+DISASM   script/expr.script(82):\t   161:            EQ_E\t\ta: entity global[169]\tb: entity global[169]\tc: float stack[0]
+DISASM   script/expr.script(82):\t   162:         STORE_F\t\ta: float stack[0]\tb: float global[105]
+DISASM   script/expr.script(83):\t   163:            EQ_E\t\ta: entity global[171]\tb: entity global[209]\tc: float stack[0]
+DISASM   script/expr.script(83):\t   164:         STORE_F\t\ta: float stack[0]\tb: float global[106]
+DISASM   script/expr.script(84):\t   165:            EQ_S\t\ta: string global[166]\tb: const string \"\"\tc: float stack[0]
+DISASM   script/expr.script(84):\t   166:         STORE_F\t\ta: float stack[0]\tb: float global[107]
+DISASM   script/expr.script(85):\t   167:            EQ_S\t\ta: const string \"a\"\tb: const string \"A\"\tc: float stack[0]
+DISASM   script/expr.script(85):\t   168:         STORE_F\t\ta: float stack[0]\tb: float global[108]
+DISASM   script/expr.script(86):\t   169:            NE_E\t\ta: entity global[169]\tb: entity global[171]\tc: float stack[0]
+DISASM   script/expr.script(86):\t   170:         STORE_F\t\ta: float stack[0]\tb: float global[109]
+DISASM   script/expr.script(87):\t   171:            EQ_V\t\ta: vector global[160]\tb: const vector '0 0 0'\tc: float stack[0]
+DISASM   script/expr.script(87):\t   172:         STORE_F\t\ta: float stack[0]\tb: float global[110]
+DISASM   script/expr.script(88):\t   173:          PUSH_S\t\ta: const string \"comparisons2\"
+DISASM   script/expr.script(88):\t   174:            CALL\t\ta: const function show
+DISASM   script/expr.script(89):\t   175:          RETURN\t
+DISASM }
+DISASM 
+DISASM function logic() 48 stack used, 0 parms, 48 locals {
+DISASM   script/expr.script(92):\t   176:   STORE_FTOBOOL\t\ta: const float 1.000000\tb: boolean global[167]
+DISASM   script/expr.script(93):\t   177:   STORE_FTOBOOL\t\ta: const float 0.000000\tb: boolean global[168]
+DISASM   script/expr.script(94):\t   178:         STORE_F\t\ta: float global[148]\tb: float global[101]
+DISASM   script/expr.script(94):\t   179:             AND\t\ta: float global[148]\tb: float global[149]\tc: float stack[0]
+DISASM   script/expr.script(95):\t   180:         STORE_F\t\ta: float global[148]\tb: float global[102]
+DISASM   script/expr.script(95):\t   181:             AND\t\ta: float global[148]\tb: float global[151]\tc: float stack[4]
+DISASM   script/expr.script(96):\t   182:         STORE_F\t\ta: float global[151]\tb: float global[103]
+DISASM   script/expr.script(96):\t   183:              OR\t\ta: float global[151]\tb: float global[151]\tc: float stack[8]
+DISASM   script/expr.script(97):\t   184:         STORE_F\t\ta: float global[151]\tb: float global[104]
+DISASM   script/expr.script(97):\t   185:              OR\t\ta: float global[151]\tb: float global[149]\tc: float stack[12]
+DISASM   script/expr.script(98):\t   186:   STORE_BOOLTOF\t\ta: boolean global[167]\tb: float global[105]
+DISASM   script/expr.script(98):\t   187:       AND_BOOLF\t\ta: boolean global[167]\tb: float global[148]\tc: float stack[16]
+DISASM   script/expr.script(99):\t   188:         STORE_F\t\ta: float global[148]\tb: float global[106]
+DISASM   script/expr.script(99):\t   189:       AND_FBOOL\t\ta: float global[148]\tb: boolean global[167]\tc: float stack[20]
+DISASM   script/expr.script(100):\t   190:   STORE_BOOLTOF\t\ta: boolean global[167]\tb: float global[107]
+DISASM   script/expr.script(100):\t   191:    AND_BOOLBOOL\t\ta: boolean global[167]\tb: boolean global[168]\tc: float stack[24]
+DISASM   script/expr.script(101):\t   192:   STORE_BOOLTOF\t\ta: boolean global[168]\tb: float global[108]
+DISASM   script/expr.script(101):\t   193:        OR_BOOLF\t\ta: boolean global[168]\tb: float global[148]\tc: float stack[28]
+DISASM   script/expr.script(102):\t   194:         STORE_F\t\ta: float global[151]\tb: float global[109]
+DISASM   script/expr.script(102):\t   195:        OR_FBOOL\t\ta: float global[151]\tb: boolean global[167]\tc: float stack[32]
+DISASM   script/expr.script(103):\t   196:   STORE_BOOLTOF\t\ta: boolean global[168]\tb: float global[110]
+DISASM   script/expr.script(103):\t   197:     OR_BOOLBOOL\t\ta: boolean global[168]\tb: boolean global[168]\tc: float stack[36]
+DISASM   script/expr.script(104):\t   198:          PUSH_S\t\ta: const string \"logic\"
+DISASM   script/expr.script(104):\t   199:            CALL\t\ta: const function show
+DISASM   script/expr.script(105):\t   200:           NOT_F\t\ta: float global[148]\tc: float stack[40]
+DISASM   script/expr.script(105):\t   201:         STORE_F\t\ta: float stack[40]\tb: float global[101]
+DISASM   script/expr.script(106):\t   202:           NOT_F\t\ta: float global[151]\tc: float stack[40]
+DISASM   script/expr.script(106):\t   203:         STORE_F\t\ta: float stack[40]\tb: float global[102]
+DISASM   script/expr.script(107):\t   204:        NOT_BOOL\t\ta: boolean global[167]\tc: float stack[40]
+DISASM   script/expr.script(107):\t   205:         STORE_F\t\ta: float stack[40]\tb: float global[103]
+DISASM   script/expr.script(108):\t   206:        NOT_BOOL\t\ta: boolean global[168]\tc: float stack[40]
+DISASM   script/expr.script(108):\t   207:         STORE_F\t\ta: float stack[40]\tb: float global[104]
+DISASM   script/expr.script(109):\t   208:           NOT_V\t\ta: vector global[152]\tc: float stack[40]
+DISASM   script/expr.script(109):\t   209:         STORE_F\t\ta: float stack[40]\tb: float global[105]
+DISASM   script/expr.script(110):\t   210:           NOT_V\t\ta: vector global[160]\tc: float stack[40]
+DISASM   script/expr.script(110):\t   211:         STORE_F\t\ta: float stack[40]\tb: float global[106]
+DISASM   script/expr.script(111):\t   212:           NOT_S\t\ta: string global[164]\tc: float stack[40]
+DISASM   script/expr.script(111):\t   213:         STORE_F\t\ta: float stack[40]\tb: float global[107]
+DISASM   script/expr.script(112):\t   214:           NOT_S\t\ta: string global[166]\tc: float stack[40]
+DISASM   script/expr.script(112):\t   215:         STORE_F\t\ta: float stack[40]\tb: float global[108]
+DISASM   script/expr.script(113):\t   216:         NOT_ENT\t\ta: entity global[169]\tc: float stack[40]
+DISASM   script/expr.script(113):\t   217:         STORE_F\t\ta: float stack[40]\tb: float global[109]
+DISASM   script/expr.script(114):\t   218:         NOT_ENT\t\ta: entity global[171]\tc: float stack[40]
+DISASM   script/expr.script(114):\t   219:         STORE_F\t\ta: float stack[40]\tb: float global[110]
+DISASM   script/expr.script(115):\t   220:          PUSH_S\t\ta: const string \"not\"
+DISASM   script/expr.script(115):\t   221:            CALL\t\ta: const function show
+DISASM   script/expr.script(116):\t   222:           NOT_F\t\ta: float global[148]\tc: float stack[40]
+DISASM   script/expr.script(116):\t   223:           NOT_F\t\ta: float stack[40]\tc: float stack[44]
+DISASM   script/expr.script(116):\t   224:         STORE_F\t\ta: float stack[44]\tb: float global[101]
+DISASM   script/expr.script(117):\t   225:           NEG_F\t\ta: float global[148]\tc: float stack[44]
+DISASM   script/expr.script(117):\t   226:           NOT_F\t\ta: float stack[44]\tc: float stack[40]
+DISASM   script/expr.script(117):\t   227:         STORE_F\t\ta: float stack[40]\tb: float global[102]
+DISASM   script/expr.script(118):\t   228:   STORE_BOOLTOF\t\ta: boolean global[167]\tb: float global[103]
+DISASM   script/expr.script(118):\t   229:    AND_BOOLBOOL\t\ta: boolean global[167]\tb: boolean global[167]\tc: float stack[44]
+DISASM   script/expr.script(119):\t   230:   STORE_BOOLTOF\t\ta: boolean global[167]\tb: float global[104]
+DISASM   script/expr.script(119):\t   231:     OR_BOOLBOOL\t\ta: boolean global[167]\tb: boolean global[168]\tc: float stack[40]
+DISASM   script/expr.script(120):\t   232:          PUSH_S\t\ta: const string \"not2\"
+DISASM   script/expr.script(120):\t   233:            CALL\t\ta: const function show
+DISASM   script/expr.script(121):\t   234:          RETURN\t
+DISASM }
+DISASM 
+DISASM function vectors() 296 stack used, 0 parms, 296 locals {
+DISASM   script/expr.script(124):\t   235:           ADD_V\t\ta: vector global[152]\tb: vector global[156]\tc: vector stack[0]
+DISASM   script/expr.script(124):\t   236:         STORE_V\t\ta: vector stack[0]\tb: vector global[121]
+DISASM   script/expr.script(125):\t   237:           SUB_V\t\ta: vector global[152]\tb: vector global[156]\tc: vector stack[0]
+DISASM   script/expr.script(125):\t   238:         STORE_V\t\ta: vector stack[0]\tb: vector global[125]
+DISASM   script/expr.script(126):\t   239:          MUL_VF\t\ta: vector global[152]\tb: const float 2.000000\tc: vector stack[0]
+DISASM   script/expr.script(126):\t   240:         STORE_V\t\ta: vector stack[0]\tb: vector global[129]
+DISASM   script/expr.script(127):\t   241:          MUL_FV\t\ta: const float 2.000000\tb: vector global[152]\tc: vector stack[0]
+DISASM   script/expr.script(127):\t   242:         STORE_V\t\ta: vector stack[0]\tb: vector global[133]
+DISASM   script/expr.script(128):\t   243:           NEG_V\t\ta: vector global[152]\tc: vector stack[0]
+DISASM   script/expr.script(128):\t   244:         STORE_V\t\ta: vector stack[0]\tb: vector global[137]
+DISASM   script/expr.script(129):\t   245:           MUL_V\t\ta: vector global[152]\tb: vector global[156]\tc: float stack[12]
+DISASM   script/expr.script(129):\t   246:         STORE_F\t\ta: float stack[12]\tb: float global[101]
+DISASM   script/expr.script(130):\t   247:          MUL_VF\t\ta: vector global[152]\tb: float global[149]\tc: vector stack[0]
+DISASM   script/expr.script(130):\t   248:           SUB_F\t\ta: float global[148]\tb: float global[149]\tc: float stack[12]
+DISASM   script/expr.script(130):\t   249:          MUL_VF\t\ta: vector global[156]\tb: float stack[12]\tc: vector stack[16]
+DISASM   script/expr.script(130):\t   250:           ADD_V\t\ta: vector stack[0]\tb: vector stack[16]\tc: vector stack[28]
+DISASM   script/expr.script(130):\t   251:         STORE_V\t\ta: vector stack[28]\tb: vector global[141]
+DISASM   script/expr.script(131):\t   252:          ADD_SV\t\ta: const string \"vectors: \"\tb: vector global[121]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   253:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   254:          ADD_SV\t\ta: string stack[168]\tb: vector global[125]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   255:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   256:          ADD_SV\t\ta: string stack[168]\tb: vector global[129]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   257:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   258:          ADD_SV\t\ta: string stack[168]\tb: vector global[133]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   259:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   260:          ADD_SV\t\ta: string stack[168]\tb: vector global[137]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   261:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   262:          ADD_SV\t\ta: string stack[168]\tb: vector global[141]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   263:           ADD_S\t\ta: string stack[40]\tb: const string \" | \"\tc: string stack[168]
+DISASM   script/expr.script(131):\t   264:          ADD_SF\t\ta: string stack[168]\tb: float global[101]\tc: string stack[40]
+DISASM   script/expr.script(131):\t   265:          PUSH_S\t\ta: string stack[40]
+DISASM   script/expr.script(131):\t   266:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(132):\t   267:         STORE_V\t\ta: vector global[152]\tb: vector global[121]
+DISASM   script/expr.script(133):\t   268:          UADD_V\t\ta: vector global[156]\tb: vector global[121]
+DISASM   script/expr.script(134):\t   269:         STORE_V\t\ta: vector global[152]\tb: vector global[125]
+DISASM   script/expr.script(135):\t   270:          USUB_V\t\ta: vector global[156]\tb: vector global[125]
+DISASM   script/expr.script(136):\t   271:         STORE_V\t\ta: vector global[152]\tb: vector global[129]
+DISASM   script/expr.script(137):\t   272:          UMUL_V\t\ta: const float 3.000000\tb: vector global[129]
+DISASM   script/expr.script(138):\t   273:         STORE_V\t\ta: vector global[152]\tb: vector global[133]
+DISASM   script/expr.script(139):\t   274:          UDIV_V\t\ta: const float 4.000000\tb: vector global[133]
+DISASM   script/expr.script(140):\t   275:         STORE_V\t\ta: vector global[152]\tb: vector global[137]
+DISASM   script/expr.script(141):\t   276:          UDIV_V\t\ta: float global[151]\tb: vector global[137]
+DISASM   script/expr.script(142):\t   277:          ADD_SV\t\ta: const string \"vectors2: \"\tb: vector global[121]\tc: string stack[168]
+DISASM   script/expr.script(142):\t   278:           ADD_S\t\ta: string stack[168]\tb: const string \" | \"\tc: string stack[40]
+DISASM   script/expr.script(142):\t   279:          ADD_SV\t\ta: string stack[40]\tb: vector global[125]\tc: string stack[168]
+DISASM   script/expr.script(142):\t   280:           ADD_S\t\ta: string stack[168]\tb: const string \" | \"\tc: string stack[40]
+DISASM   script/expr.script(142):\t   281:          ADD_SV\t\ta: string stack[40]\tb: vector global[129]\tc: string stack[168]
+DISASM   script/expr.script(142):\t   282:           ADD_S\t\ta: string stack[168]\tb: const string \" | \"\tc: string stack[40]
+DISASM   script/expr.script(142):\t   283:          ADD_SV\t\ta: string stack[40]\tb: vector global[133]\tc: string stack[168]
+DISASM   script/expr.script(142):\t   284:          PUSH_S\t\ta: string stack[168]
+DISASM   script/expr.script(142):\t   285:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(143):\t   286:          RETURN\t
+DISASM }
+DISASM 
+DISASM function compound() 4 stack used, 0 parms, 4 locals {
+DISASM   script/expr.script(146):\t   287:         STORE_F\t\ta: float global[148]\tb: float global[101]
+DISASM   script/expr.script(147):\t   288:          UADD_F\t\ta: float global[149]\tb: float global[101]
+DISASM   script/expr.script(148):\t   289:         STORE_F\t\ta: float global[148]\tb: float global[102]
+DISASM   script/expr.script(149):\t   290:          USUB_F\t\ta: float global[149]\tb: float global[102]
+DISASM   script/expr.script(150):\t   291:         STORE_F\t\ta: float global[148]\tb: float global[103]
+DISASM   script/expr.script(151):\t   292:          UMUL_F\t\ta: float global[149]\tb: float global[103]
+DISASM   script/expr.script(152):\t   293:         STORE_F\t\ta: float global[148]\tb: float global[104]
+DISASM   script/expr.script(153):\t   294:          UDIV_F\t\ta: float global[149]\tb: float global[104]
+DISASM   script/expr.script(154):\t   295:         STORE_F\t\ta: float global[148]\tb: float global[105]
+DISASM   script/expr.script(155):\t   296:          UMOD_F\t\ta: float global[149]\tb: float global[105]
+DISASM   script/expr.script(156):\t   297:         STORE_F\t\ta: float global[148]\tb: float global[106]
+DISASM   script/expr.script(157):\t   298:          UAND_F\t\ta: float global[149]\tb: float global[106]
+DISASM   script/expr.script(158):\t   299:         STORE_F\t\ta: float global[148]\tb: float global[107]
+DISASM   script/expr.script(159):\t   300:           UOR_F\t\ta: const float 8.000000\tb: float global[107]
+DISASM   script/expr.script(160):\t   301:         STORE_F\t\ta: float global[148]\tb: float global[108]
+DISASM   script/expr.script(161):\t   302:          UDIV_F\t\ta: float global[151]\tb: float global[108]
+DISASM   script/expr.script(162):\t   303:         STORE_F\t\ta: float global[148]\tb: float global[109]
+DISASM   script/expr.script(163):\t   304:          UMOD_F\t\ta: float global[151]\tb: float global[109]
+DISASM   script/expr.script(164):\t   305:         STORE_F\t\ta: float global[148]\tb: float global[110]
+DISASM   script/expr.script(165):\t   306:          UINC_F\t\ta: float global[110]
+DISASM   script/expr.script(166):\t   307:          PUSH_S\t\ta: const string \"compound\"
+DISASM   script/expr.script(166):\t   308:            CALL\t\ta: const function show
+DISASM   script/expr.script(167):\t   309:         STORE_F\t\ta: float global[148]\tb: float global[101]
+DISASM   script/expr.script(168):\t   310:          UDEC_F\t\ta: float global[101]
+DISASM   script/expr.script(169):\t   311:         STORE_F\t\ta: const float 5.000000\tb: float global[102]
+DISASM   script/expr.script(170):\t   312:          UADD_F\t\ta: float global[102]\tb: float global[102]
+DISASM   script/expr.script(171):\t   313:         STORE_F\t\ta: const float 2.000000\tb: float global[103]
+DISASM   script/expr.script(172):\t   314:           ADD_F\t\ta: float global[103]\tb: const float 1.000000\tc: float stack[0]
+DISASM   script/expr.script(172):\t   315:          UMUL_F\t\ta: float stack[0]\tb: float global[103]
+DISASM   script/expr.script(173):\t   316:         STORE_F\t\ta: const float 4.000000\tb: float global[102]
+DISASM   script/expr.script(173):\t   317:         STORE_F\t\ta: const float 4.000000\tb: float global[103]
+DISASM   script/expr.script(173):\t   318:         STORE_F\t\ta: const float 4.000000\tb: float global[104]
+DISASM   script/expr.script(174):\t   319:         STORE_F\t\ta: const float 3.000000\tb: float global[106]
+DISASM   script/expr.script(174):\t   320:         STORE_F\t\ta: const float 4.000000\tb: float global[105]
+DISASM   script/expr.script(175):\t   321:          PUSH_S\t\ta: const string \"compound2\"
+DISASM   script/expr.script(175):\t   322:            CALL\t\ta: const function show
+DISASM   script/expr.script(176):\t   323:          RETURN\t
+DISASM }
+DISASM 
+DISASM function folding() 256 stack used, 0 parms, 256 locals {
+DISASM   script/expr.script(180):\t   324:         STORE_F\t\ta: const float 5.000000\tb: float global[101]
+DISASM   script/expr.script(181):\t   325:         STORE_F\t\ta: const float -1.000000\tb: float global[102]
+DISASM   script/expr.script(182):\t   326:         STORE_F\t\ta: const float 6.000000\tb: float global[103]
+DISASM   script/expr.script(183):\t   327:         STORE_F\t\ta: const float 3.500000\tb: float global[104]
+DISASM   script/expr.script(184):\t   328:         STORE_F\t\ta: const float 1.000000\tb: float global[105]
+DISASM   script/expr.script(185):\t   329:         STORE_F\t\ta: const float 2.000000\tb: float global[106]
+DISASM   script/expr.script(186):\t   330:         STORE_F\t\ta: const float 7.000000\tb: float global[107]
+DISASM   script/expr.script(187):\t   331:         STORE_F\t\ta: const float -6.000000\tb: float global[108]
+DISASM   script/expr.script(188):\t   332:         STORE_F\t\ta: const float -5.000000\tb: float global[109]
+DISASM   script/expr.script(189):\t   333:         STORE_F\t\ta: const float 7.000000\tb: float global[110]
+DISASM   script/expr.script(190):\t   334:          PUSH_S\t\ta: const string \"folding\"
+DISASM   script/expr.script(190):\t   335:            CALL\t\ta: const function show
+DISASM   script/expr.script(191):\t   336:         STORE_F\t\ta: const float 0.000000\tb: float global[101]
+DISASM   script/expr.script(192):\t   337:         STORE_F\t\ta: const float 1.000000\tb: float global[102]
+DISASM   script/expr.script(193):\t   338:         STORE_F\t\ta: const float 0.000000\tb: float global[103]
+DISASM   script/expr.script(194):\t   339:         STORE_F\t\ta: const float 1.000000\tb: float global[104]
+DISASM   script/expr.script(195):\t   340:         STORE_F\t\ta: const float 1.000000\tb: float global[105]
+DISASM   script/expr.script(196):\t   341:         STORE_F\t\ta: const float 0.000000\tb: float global[106]
+DISASM   script/expr.script(197):\t   342:         STORE_F\t\ta: const float 2.000000\tb: float global[107]
+DISASM   script/expr.script(198):\t   343:         STORE_F\t\ta: const float 0.000000\tb: float global[108]
+DISASM   script/expr.script(199):\t   344:         STORE_F\t\ta: const float 0.000000\tb: float global[109]
+DISASM   script/expr.script(200):\t   345:         STORE_F\t\ta: const float 1.000000\tb: float global[110]
+DISASM   script/expr.script(201):\t   346:          PUSH_S\t\ta: const string \"folding2\"
+DISASM   script/expr.script(201):\t   347:            CALL\t\ta: const function show
+DISASM   script/expr.script(202):\t   348:         STORE_V\t\ta: const vector '11 22 33'\tb: vector global[121]
+DISASM   script/expr.script(203):\t   349:         STORE_V\t\ta: const vector '-9 -18 -27'\tb: vector global[125]
+DISASM   script/expr.script(204):\t   350:         STORE_V\t\ta: const vector '2 4 6'\tb: vector global[129]
+DISASM   script/expr.script(205):\t   351:         STORE_V\t\ta: const vector '2 4 6'\tb: vector global[133]
+DISASM   script/expr.script(206):\t   352:         STORE_V\t\ta: const vector '-1 -2 -3'\tb: vector global[137]
+DISASM   script/expr.script(207):\t   353:         STORE_F\t\ta: const float 32.000000\tb: float global[101]
+DISASM   script/expr.script(208):\t   354:         STORE_F\t\ta: const float 1.000000\tb: float global[102]
+DISASM   script/expr.script(209):\t   355:         STORE_F\t\ta: const float 0.000000\tb: float global[103]
+DISASM   script/expr.script(210):\t   356:         STORE_F\t\ta: const float 1.000000\tb: float global[104]
+DISASM   script/expr.script(211):\t   357:         STORE_F\t\ta: const float 0.000000\tb: float global[105]
+DISASM   script/expr.script(212):\t   358:         STORE_F\t\ta: const float 8.000000\tb: float global[106]
+DISASM   script/expr.script(213):\t   359:         STORE_F\t\ta: const float 0.300000\tb: float global[107]
+DISASM   script/expr.script(214):\t   360:         STORE_F\t\ta: const float 0.333333\tb: float global[108]
+DISASM   script/expr.script(215):\t   361:         STORE_F\t\ta: const float 16777216.000000\tb: float global[109]
+DISASM   script/expr.script(216):\t   362:         STORE_F\t\ta: const float 1.000000\tb: float global[110]
+DISASM   script/expr.script(217):\t   363:          PUSH_S\t\ta: const string \"folding3\"
+DISASM   script/expr.script(217):\t   364:            CALL\t\ta: const function show
+DISASM   script/expr.script(218):\t   365:          ADD_SV\t\ta: const string \"folding vectors: \"\tb: vector global[121]\tc: string stack[0]
+DISASM   script/expr.script(218):\t   366:           ADD_S\t\ta: string stack[0]\tb: const string \" | \"\tc: string stack[128]
+DISASM   script/expr.script(218):\t   367:          ADD_SV\t\ta: string stack[128]\tb: vector global[125]\tc: string stack[0]
+DISASM   script/expr.script(218):\t   368:           ADD_S\t\ta: string stack[0]\tb: const string \" | \"\tc: string stack[128]
+DISASM   script/expr.script(218):\t   369:          ADD_SV\t\ta: string stack[128]\tb: vector global[129]\tc: string stack[0]
+DISASM   script/expr.script(218):\t   370:           ADD_S\t\ta: string stack[0]\tb: const string \" | \"\tc: string stack[128]
+DISASM   script/expr.script(218):\t   371:          ADD_SV\t\ta: string stack[128]\tb: vector global[133]\tc: string stack[0]
+DISASM   script/expr.script(218):\t   372:           ADD_S\t\ta: string stack[0]\tb: const string \" | \"\tc: string stack[128]
+DISASM   script/expr.script(218):\t   373:          ADD_SV\t\ta: string stack[128]\tb: vector global[137]\tc: string stack[0]
+DISASM   script/expr.script(218):\t   374:          PUSH_S\t\ta: string stack[0]
+DISASM   script/expr.script(218):\t   375:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(219):\t   376:           ADD_S\t\ta: const string \"a\"\tb: const string \"b\"\tc: string stack[128]
+DISASM   script/expr.script(219):\t   377:         STORE_S\t\ta: string stack[128]\tb: string global[145]
+DISASM   script/expr.script(220):\t   378:          ADD_SF\t\ta: const string \"n\"\tb: const float 1.000000\tc: string stack[128]
+DISASM   script/expr.script(220):\t   379:          ADD_SF\t\ta: string stack[128]\tb: const float 2.000000\tc: string stack[0]
+DISASM   script/expr.script(220):\t   380:         STORE_S\t\ta: string stack[0]\tb: string global[146]
+DISASM   script/expr.script(221):\t   381:          ADD_FS\t\ta: const float 3.000000\tb: const string \"n\"\tc: string stack[128]
+DISASM   script/expr.script(221):\t   382:         STORE_S\t\ta: string stack[128]\tb: string global[147]
+DISASM   script/expr.script(222):\t   383:           ADD_S\t\ta: string global[145]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(222):\t   384:           ADD_S\t\ta: string stack[128]\tb: string global[146]\tc: string stack[0]
+DISASM   script/expr.script(222):\t   385:           ADD_S\t\ta: string stack[0]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(222):\t   386:           ADD_S\t\ta: string stack[128]\tb: string global[147]\tc: string stack[0]
+DISASM   script/expr.script(222):\t   387:          PUSH_S\t\ta: string stack[0]
+DISASM   script/expr.script(222):\t   388:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(223):\t   389:          RETURN\t
+DISASM }
+DISASM 
+DISASM function stringops() 256 stack used, 0 parms, 256 locals {
+DISASM   script/expr.script(226):\t   390:           ADD_S\t\ta: string global[164]\tb: string global[165]\tc: string stack[0]
+DISASM   script/expr.script(226):\t   391:         STORE_S\t\ta: string stack[0]\tb: string global[145]
+DISASM   script/expr.script(227):\t   392:          ADD_SF\t\ta: string global[164]\tb: float global[148]\tc: string stack[0]
+DISASM   script/expr.script(227):\t   393:         STORE_S\t\ta: string stack[0]\tb: string global[146]
+DISASM   script/expr.script(228):\t   394:          ADD_FS\t\ta: float global[148]\tb: string global[164]\tc: string stack[0]
+DISASM   script/expr.script(228):\t   395:         STORE_S\t\ta: string stack[0]\tb: string global[147]
+DISASM   script/expr.script(229):\t   396:           ADD_S\t\ta: string global[145]\tb: const string \" \"\tc: string stack[0]
+DISASM   script/expr.script(229):\t   397:           ADD_S\t\ta: string stack[0]\tb: string global[146]\tc: string stack[128]
+DISASM   script/expr.script(229):\t   398:           ADD_S\t\ta: string stack[128]\tb: const string \" \"\tc: string stack[0]
+DISASM   script/expr.script(229):\t   399:           ADD_S\t\ta: string stack[0]\tb: string global[147]\tc: string stack[128]
+DISASM   script/expr.script(229):\t   400:          PUSH_S\t\ta: string stack[128]
+DISASM   script/expr.script(229):\t   401:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(230):\t   402:          ADD_VS\t\ta: vector global[152]\tb: string global[164]\tc: string stack[128]
+DISASM   script/expr.script(230):\t   403:         STORE_S\t\ta: string stack[128]\tb: string global[145]
+DISASM   script/expr.script(231):\t   404:          ADD_SV\t\ta: string global[164]\tb: vector global[152]\tc: string stack[128]
+DISASM   script/expr.script(231):\t   405:         STORE_S\t\ta: string stack[128]\tb: string global[146]
+DISASM   script/expr.script(232):\t   406:          ADD_SF\t\ta: string global[164]\tb: float global[150]\tc: string stack[128]
+DISASM   script/expr.script(232):\t   407:          ADD_SV\t\ta: string stack[128]\tb: vector global[152]\tc: string stack[0]
+DISASM   script/expr.script(232):\t   408:           ADD_S\t\ta: string stack[0]\tb: string global[166]\tc: string stack[128]
+DISASM   script/expr.script(232):\t   409:          ADD_SF\t\ta: string stack[128]\tb: const float 1.000000\tc: string stack[0]
+DISASM   script/expr.script(232):\t   410:         STORE_S\t\ta: string stack[0]\tb: string global[147]
+DISASM   script/expr.script(233):\t   411:           ADD_S\t\ta: string global[145]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(233):\t   412:           ADD_S\t\ta: string stack[128]\tb: string global[146]\tc: string stack[0]
+DISASM   script/expr.script(233):\t   413:           ADD_S\t\ta: string stack[0]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(233):\t   414:           ADD_S\t\ta: string stack[128]\tb: string global[147]\tc: string stack[0]
+DISASM   script/expr.script(233):\t   415:          PUSH_S\t\ta: string stack[0]
+DISASM   script/expr.script(233):\t   416:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(234):\t   417:      STORE_FTOS\t\ta: float global[148]\tb: string global[145]
+DISASM   script/expr.script(235):\t   418:      STORE_VTOS\t\ta: vector global[152]\tb: string global[146]
+DISASM   script/expr.script(236):\t   419:   STORE_FTOBOOL\t\ta: const float 1.000000\tb: boolean global[167]
+DISASM   script/expr.script(237):\t   420:      STORE_BTOS\t\ta: boolean global[167]\tb: string global[147]
+DISASM   script/expr.script(238):\t   421:           ADD_S\t\ta: string global[145]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(238):\t   422:           ADD_S\t\ta: string stack[128]\tb: string global[146]\tc: string stack[0]
+DISASM   script/expr.script(238):\t   423:           ADD_S\t\ta: string stack[0]\tb: const string \" \"\tc: string stack[128]
+DISASM   script/expr.script(238):\t   424:           ADD_S\t\ta: string stack[128]\tb: string global[147]\tc: string stack[0]
+DISASM   script/expr.script(238):\t   425:          PUSH_S\t\ta: string stack[0]
+DISASM   script/expr.script(238):\t   426:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/expr.script(239):\t   427:          RETURN\t
+DISASM }
+DISASM 
+DISASM function main() 0 stack used, 0 parms, 0 locals {
+DISASM   script/expr.script(242):\t   428:            CALL\t\ta: const function arithmetic
+DISASM   script/expr.script(243):\t   429:            CALL\t\ta: const function precedence
+DISASM   script/expr.script(244):\t   430:            CALL\t\ta: const function comparisons
+DISASM   script/expr.script(245):\t   431:            CALL\t\ta: const function logic
+DISASM   script/expr.script(246):\t   432:            CALL\t\ta: const function vectors
+DISASM   script/expr.script(247):\t   433:            CALL\t\ta: const function compound
+DISASM   script/expr.script(248):\t   434:            CALL\t\ta: const function folding
+DISASM   script/expr.script(249):\t   435:            CALL\t\ta: const function stringops
+DISASM   script/expr.script(250):\t   436:          RETURN\t
+DISASM }
+CMD spawn 1 idEntity ent_one
+CMD spawn 2 idEntity ent_two
+CMD callnow arithmetic
+PRINT arithmetic: 10 4 21 2.333333 1 -7 -2 3 15 -8
+WARN script/expr.script(29): Thread 'arithmetic': Divide by zero
+WARN script/expr.script(30): Thread 'arithmetic': Divide by zero
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 000000000000000000002041000080400000A841555515400000803F0000E0C0
+G 000220 000000C00000404000007041000000C1CAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow precedence
+PRINT precedence: 7 9 -2.833333 6.500000 -0.933333 1 1 1 4 14
+PRINT precedence2: -21 0 0 1 0 1 70 7 -21 7
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 00000000000000000000A8C100000000000000000000803F000000000000803F
+G 000220 00008C420000E0400000A8C10000E040CAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow comparisons
+PRINT comparisons: 0 1 0 1 1 1 0 1 1 0
+PRINT comparisons2: 1 1 1 0 1 1 1 0 0 1
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 00000000000000000000803F0000803F0000803F000000000000803F0000803F
+G 000220 0000803F00000000000000000000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow logic
+PRINT logic: 7 7 0 0 1 7 1 0 0 0
+PRINT not: 0 1 0 1 0 1 0 1 1 1
+PRINT not2: 1 0 1 1 0 1 0 1 1 1
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 00000000000000000000803F000000000000803F0000803F000000000000803F
+G 000220 000000000000803F0000803F0000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow vectors
+PRINT vectors: 5 -3 9 | -3 7 -3 | 2 4 6 | 2 4 6 | -1 -2 -3 | 19 -14 33 | 12
+WARN script/expr.script(141): Thread 'vectors': Divide by zero
+PRINT vectors2: 5 -3 9 | -3 7 -3 | 3 6 9 | 0.25 0.5 0.75
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 000000000000000000004041000000000000803F0000803F000000000000803F
+G 000220 000000000000803F0000803F0000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000A040000040C0
+G 000260 00001041000040C00000E040000040C0000040400000C040000010410000803E
+G 000280 0000003F0000403FCAF24971CAF24971CAF2497100009841000060C100000442
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow compound
+WARN script/expr.script(161): Thread 'compound': Divide by zero
+WARN script/expr.script(163): Thread 'compound': Divide by zero
+PRINT compound: 10 4 21 2.333333 1 3 15 1000000015047466219900000000000.000000 0 8
+PRINT compound2: 6 4 4 4 4 3 15 1000000015047466219900000000000.000000 0 8
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 00000000000000000000C0400000804000008040000080400000804000004040
+G 000220 00007041CAF249710000000000000041CAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF0000A040000040C0
+G 000260 00001041000040C00000E040000040C0000040400000C040000010410000803E
+G 000280 0000003F0000403FCAF24971CAF24971CAF2497100009841000060C100000442
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow folding
+PRINT folding: 5 -1 6 3.500000 1 2 7 -6 -5 7
+PRINT folding2: 0 1 0 1 1 0 2 0 0 1
+PRINT folding3: 32 1 0 1 0 8 0.300000 0.333333 16777216 1
+PRINT folding vectors: 11 22 33 | -9 -18 -27 | 2 4 6 | 2 4 6 | -1 -2 -3
+PRINT ab n12 3n
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 0000000000000000000000420000803F000000000000803F0000000000000041
+G 000220 9A99993EABAAAA3E0000804B0000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF000030410000B041
+G 000260 00000442000010C1000090C10000D8C100000040000080400000C04000000040
+G 000280 000080400000C040000080BF000000C0000040C000009841000060C100000442
+G 0002A0 6162000000000000000000000000000000000000000000000000000000000000
+G 000320 6E31320000000000000000000000000000000000000000000000000000000000
+G 0003A0 336E000000000000000000000000000000000000000000000000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow stringops
+PRINT abcabd abc7 7abc
+PRINT 1 2 3abc abc1 2 3 abc-2.5000001 2 31
+PRINT 7 1 2 3 true
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 0000000000000000000000420000803F000000000000803F0000000000000041
+G 000220 9A99993EABAAAA3E0000804B0000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF000030410000B041
+G 000260 00000442000010C1000090C10000D8C100000040000080400000C04000000040
+G 000280 000080400000C040000080BF000000C0000040C000009841000060C100000442
+G 0002A0 3700000000000000000000000000000000000000000000000000000000000000
+G 000320 3120322033000000000000000000000000000000000000000000000000000000
+G 0003A0 7472756500000000000000000000000000000000000000000000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000
+CMD callnow main
+PRINT arithmetic: 10 4 21 2.333333 1 -7 -2 3 15 -8
+WARN script/expr.script(29): Thread 'main': Divide by zero
+WARN script/expr.script(30): Thread 'main': Divide by zero
+PRINT precedence: 7 9 -2.833333 6.500000 -0.933333 1 1 1 4 14
+PRINT precedence2: -21 0 0 1 0 1 70 7 -21 7
+PRINT comparisons: 0 1 0 1 1 1 0 1 1 0
+PRINT comparisons2: 1 1 1 0 1 1 1 0 0 1
+PRINT logic: 7 7 0 0 1 7 1 0 0 0
+PRINT not: 0 1 0 1 0 1 0 1 1 1
+PRINT not2: 1 0 1 1 0 1 0 1 1 1
+PRINT vectors: 5 -3 9 | -3 7 -3 | 2 4 6 | 2 4 6 | -1 -2 -3 | 19 -14 33 | 12
+WARN script/expr.script(141): Thread 'main': Divide by zero
+PRINT vectors2: 5 -3 9 | -3 7 -3 | 3 6 9 | 0.25 0.5 0.75
+WARN script/expr.script(161): Thread 'main': Divide by zero
+WARN script/expr.script(163): Thread 'main': Divide by zero
+PRINT compound: 10 4 21 2.333333 1 3 15 1000000015047466219900000000000.000000 0 8
+PRINT compound2: 6 4 4 4 4 3 15 1000000015047466219900000000000.000000 0 8
+PRINT folding: 5 -1 6 3.500000 1 2 7 -6 -5 7
+PRINT folding2: 0 1 0 1 1 0 2 0 0 1
+PRINT folding3: 32 1 0 1 0 8 0.300000 0.333333 16777216 1
+PRINT folding vectors: 11 22 33 | -9 -18 -27 | 2 4 6 | 2 4 6 | -1 -2 -3
+PRINT ab n12 3n
+PRINT abcabd abc7 7abc
+PRINT 1 2 3abc abc1 2 3 abc-2.5000001 2 31
+PRINT 7 1 2 3 true
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5064
+G 000200 0000000000000000000000420000803F000000000000803F0000000000000041
+G 000220 9A99993EABAAAA3E0000804B0000803FCAF249710000E040000000C000000000
+G 000240 A5D46853000000400000E0400000803F0000E040000080BF000030410000B041
+G 000260 00000442000010C1000090C10000D8C100000040000080400000C04000000040
+G 000280 000080400000C040000080BF000000C0000040C000009841000060C100000442
+G 0002A0 3700000000000000000000000000000000000000000000000000000000000000
+G 000320 3120322033000000000000000000000000000000000000000000000000000000
+G 0003A0 7472756500000000000000000000000000000000000000000000000000000000
+G 000420 0000E04000004040000020C0000000000000803F000000400000404000008040
+G 000440 0000A0C00000C040000000000000000000000000616263000000000000000000
+G 0004C0 0000000000000000000000000000000000000000616264000000000000000000
+G 0005C0 0000000000000000000000000000000000000000010000000000000000000000
+G 0005E0 0000000000000000000000003A20000000000000000000000000000000000000
+G 000660 0000000000000000000000002000000000000000000000000000000000000000
+G 0006E0 00000000000000000000000000000000000000000000004161726974686D6574
+G 000700 6963000000000000000000000000000000000000000000000000000000000000
+G 000760 000000000000000000000000000000000000000000000000295C3F4000000040
+G 000780 295C3FC0000000C00000000000247449A5D4685300004040CDCCBC409A993940
+G 0007A0 0000E040000000000000803F000000400000C0400000803F0000004000001041
+G 0007C0 0000803F00000040707265636564656E63650000000000000000000000000000
+G 000840 000000000000000000008040000060410000A04000008C42707265636564656E
+G 000860 6365320000000000000000000000000000000000000000000000000000000000
+G 0008C0 000000000000000000000000000000000000000000000000000000000000803F
+G 0008E0 0000004000004040636F6D70617269736F6E7300000000000000000000000000
+G 000960 0000000000000000616263000000000000000000000000000000000000000000
+G 000A60 0000000000000000000000006100000000000000000000000000000000000000
+G 000AE0 0000000000000000000000004100000000000000000000000000000000000000
+G 000B60 000000000000000000000000000000000000000000000000636F6D7061726973
+G 000B80 6F6E733200000000000000000000000000000000000000000000000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006C6F6769
+G 000C00 6300000000000000000000000000000000000000000000000000000000000000
+G 000C60 000000000000000000000000000000000000000000000000000000006E6F7400
+G 000CE0 000000000000000000000000000000000000000000000000000000006E6F7432
+G 000D80 766563746F72733A200000000000000000000000000000000000000000000000
+G 000E00 207C200000000000000000000000000000000000000000000000000000000000
+G 000E80 00008040766563746F7273323A20000000000000000000000000000000000000
+G 000F00 0000000000000000636F6D706F756E6400000000000000000000000000000000
+G 000F80 00000000000000000000A040636F6D706F756E64320000000000000000000000
+G 001000 00000000000000000000000000000000000080BF0000C040000060400000C0C0
+G 001020 0000A0C0CDCCFC40666F6C64696E670000000000000000000000000000000000
+G 0010A0 0000000000000000666F6C64696E673200000000000000000000000000000000
+G 001120 0000000000000000000020410000A0410000F041000030410000B04100000442
+G 001140 000020410000A0410000F041000010C1000090C10000D8C10000004000008040
+G 001160 0000C040000080BF000000C0000040C0000080400000A0400000C04000000042
+G 001180 000000000000803F000000000000C03F00001040000028410000204100002040
+G 0011A0 CDCCCC3DCDCC4C3E9A99993EABAAAA3E0000804B0000804B0000A0410000D041
+G 0011C0 666F6C64696E6733000000000000000000000000000000000000000000000000
+G 001240 666F6C64696E6720766563746F72733A20000000000000000000000000000000
+G 0012C0 6200000000000000000000000000000000000000000000000000000000000000
+G 001340 6E00000000000000000000000000000000000000000000000000000000000000

@@ -56,6 +56,29 @@ type
     Game: Integer;
     /// <summary>With the program: the tics at which a picture is saved, as ShotPath with the tic before the extension</summary>
     ShotTics: TArray<Integer>;
+    /// <summary>
+    ///   With the program: the game is recorded in this file (-record) or the game of this file is played
+    ///   (-playback); see TGreedDemoWriter for the format. Empty for none
+    /// </summary>
+    RecordPath: string;
+    PlaybackPath: string;
+    /// <summary>The mouse of the system is not read (the menus and the game are used with the keys only)</summary>
+    NoMouse: Boolean;
+    /// <summary>
+    ///   SC.joystick = 1: the first joystick gives the four directions and the commands of its first two buttons
+    ///   (an extension: xGreed does not read a joystick)
+    /// </summary>
+    Joystick: Boolean;
+    /// <summary>
+    ///   With -play: a net game over UDP. NetPlayers is how many play (0: no net game), NetPlayer who this computer
+    ///   is (0 .. NetPlayers - 1), NetPort its UDP port (0: the default of Libs\Net), NetPeers the other computers
+    ///   ("name[:port]" or ".1.2.3.4[:port]"), NetName the name of the player
+    /// </summary>
+    NetPlayers: Integer;
+    NetPlayer: Integer;
+    NetPort: Integer;
+    NetPeers: TArray<string>;
+    NetName: string;
     /// <summary>The options of a game that was not asked anything</summary>
     class function Standard: TGreedPlayOptions; static;
   end;
@@ -119,8 +142,15 @@ uses
   DelphiDoom.Greed.Application.Intf, DelphiDoom.Greed.ApplicationScript, DelphiDoom.Greed.Application,
   DelphiDoom.Greed.Screens, DelphiDoom.Greed.ScreenView, DelphiDoom.Greed.MenuHost, DelphiDoom.Greed.IntroHost,
   DelphiDoom.Greed.EpisodeHost, DelphiDoom.Greed.HostKeyboard, DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro,
-  DelphiDoom.GameHost.Events.Intf,
-  DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
+  DelphiDoom.Greed.Demo.Types, DelphiDoom.Greed.Demo.Intf, DelphiDoom.Greed.Demo.Reader, DelphiDoom.Greed.Demo.Writer,
+  DelphiDoom.Greed.Demo.Recorder, DelphiDoom.Greed.Demo.Player,
+  DelphiDoom.Greed.Mouse.Intf, DelphiDoom.Greed.Mouse, DelphiDoom.Greed.MouseControls, DelphiDoom.Greed.MouseSettings,
+  DelphiDoom.Greed.ScriptMouse, DelphiDoom.Greed.ScriptMouseLine, DelphiDoom.Greed.JoystickControls,
+  DelphiDoom.Greed.HostMouse, DelphiDoom.Input.Intf, DelphiDoom.Input.Factory,
+  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.MouseState, DelphiDoom.GameHost.EventFanOut,
+  DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory,
+  DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Net.NodeListParser, DelphiDoom.Net.WinsockTransport,
+  DelphiDoom.Greed.Net.Types, DelphiDoom.Greed.Net.Intf, DelphiDoom.Greed.Net.Factory;
 
 const
   WINDOW_TITLE = 'Greed32';
@@ -206,6 +236,8 @@ type
     function CreateRenderer(ASprites: TGreedLinkedPool<TGreedSprite>; const AClock: IGreedRenderClock;
       const ARandom: IGreedRandom): IGreedGameRenderer;
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
     function TileLights: PGreedTileLights;
     procedure SetLights(ABlackZ: TGreedFixed);
@@ -414,6 +446,13 @@ begin
   FRenderer.Render(AWorld, APlayer, AFrame);
 end;
 
+procedure TGreedTopDownGameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX,
+  AY, AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  // the map seen from above has no rear view: the picture of the camera stays black
+  FillChar(AFrame.Pixels[0], Length(AFrame.Pixels), 0);
+end;
+
 function TGreedTopDownGameRenderer.TileLights: PGreedTileLights;
 begin
   Result := nil;
@@ -551,6 +590,119 @@ begin
     Inc(LStart, LLength + Roll(2, 40));
   end;
 end;
+// the mouse of a script: the device that its lines move, read by the mouse of the game; nil without such lines
+function CreateScriptMouse(AScript: TStrings; out AScriptMouse: IGreedScriptMouse): IGreedMouse;
+var
+  LDevice: TGreedScriptMouse;
+  LDeviceIntf: IMouseDevice;
+begin
+  Result := nil;
+  AScriptMouse := nil;
+  if not TGreedScriptMouseLine.AnyIn(AScript) then
+    Exit;
+  LDevice := TGreedScriptMouse.Create;
+  LDeviceIntf := LDevice;
+  AScriptMouse := LDevice;
+  Result := TGreedMouse.Create(LDeviceIntf, LDevice, nil);
+end;
+
+// the mouse of the system in the window of the game; ADevice is to be shut down before the window goes
+function CreateWindowMouse(AWindow: TGameHostWinWindow; const AButtons: IGameHostMouseState;
+  out ADevice: IMouseDevice): IGreedMouse;
+var
+  LHost: TGreedHostMouse;
+begin
+  LHost := TGreedHostMouse.Create(TInputFactory.CreateWindowsMouse, TGameHostFactory.CreateCursorArea(AWindow),
+    AButtons);
+  ADevice := LHost;
+  ADevice.Initialize;
+  Result := TGreedMouse.Create(ADevice, LHost, LHost);
+end;
+
+// SC.joystick: the first joystick of the system added to the keys (an extension, see TGreedJoystickControls)
+function CreateJoystickControls(const AKeys: IGreedCommandSource; AWindow: TGameHostWinWindow): IGreedCommandSource;
+begin
+  Result := TGreedJoystickControls.Create(AKeys, TInputFactory.CreateWindowsJoystick(
+    function: THandle
+    begin
+      Result := AWindow.Handle;
+    end), TGreedJoystickOptions.Standard);
+end;
+
+// "-net": the UDP transport of Libs\Net to the other computers and the session of the game on it. The driver of
+// the DOS game is not there to say who plays: the command line does (-net <player> <players>)
+function AttachNet(AGame: TGreedGame; const AOptions: TGreedPlayOptions): IGreedNetStart;
+var
+  LPort, LColon: Integer;
+  LPeer: string;
+  LArguments: TArray<string>;
+  LPeers: TArray<TNetNodeAddress>;
+  LTransport: INetTransport;
+begin
+  LPort := AOptions.NetPort;
+  if LPort = 0 then
+    LPort := NET_DEFAULT_PORT;
+  // the list of the hosts of Libs\Net has the port as an argument of its own (":port"): "host:port" is split
+  LArguments := nil;
+  for LPeer in AOptions.NetPeers do
+  begin
+    LColon := LastDelimiter(':', LPeer);
+    if LColon > 1 then
+      LArguments := LArguments + [Copy(LPeer, 1, LColon - 1), Copy(LPeer, LColon, MaxInt)]
+    else
+      LArguments := LArguments + [LPeer];
+  end;
+  LPeers := TNetNodeListParser.Parse(LArguments, 0, NET_DEFAULT_PORT);
+  if Length(LPeers) <> AOptions.NetPlayers - 1 then
+    raise EGreedNetException.CreateFmt('Greed32: a net game of %d players needs %d -netpeer, there are %d',
+      [AOptions.NetPlayers, AOptions.NetPlayers - 1, Length(LPeers)]);
+  LTransport := TWinsockNetTransport.Create(Word(LPort), LPeers);
+  Result := TGreedNetFactory.Attach(AGame, LTransport,
+    TGreedNetConfig.Make(AOptions.NetPlayer, AOptions.NetPlayers, AnsiString(AOptions.NetName)));
+end;
+
+// NetWaitStart: the clock of the game follows the real one (70 tics a second) while the players look for each
+// other. False if the window was closed before the start
+function WaitNetStart(AGame: TGreedGame; const AStart: IGreedNetStart; const AClock: IClock;
+  const AInput: IGreedInput): Boolean;
+var
+  LBase: Integer;
+begin
+  AStart.BeginWaitStart;
+  LBase := AClock.Steps(GREED_LOOP_TIC_RATE) - AGame.State.TimeCount;
+  repeat
+    if not AInput.Pump then
+      Exit(False);
+    AGame.State.TimeCount := AClock.Steps(GREED_LOOP_TIC_RATE) - LBase;
+    Result := AStart.WaitStartStep;
+    if not Result then
+      AClock.Wait(1);
+  until Result;
+end;
+
+// What a computer knows of the others at the end of a net game, for -dump
+procedure DumpNet(AGame: TGreedGame; ALines: TStrings);
+var
+  LPlayer: Integer;
+  LNet: IGreedNetLink;
+  LData: TGreedPlayerEvent;
+begin
+  LNet := AGame.State.Net;
+  ALines.Add(Format('net.player=%d', [LNet.ConsolePlayer]));
+  ALines.Add(Format('net.players=%d', [LNet.NumPlayers]));
+  for LPlayer := 0 to LNet.NumPlayers - 1 do
+  begin
+    LData := LNet.PlayerData[LPlayer];
+    ALines.Add(Format('net.%d.name=%s', [LPlayer, string(LNet.NetName[LPlayer])]));
+    ALines.Add(Format('net.%d.fragcount=%d', [LPlayer, LNet.FragCount[LPlayer]]));
+    ALines.Add(Format('net.%d.frags=%d', [LPlayer, AGame.State.Player.Frags[LPlayer]]));
+    ALines.Add(Format('net.%d.x=%d', [LPlayer, LData.X]));
+    ALines.Add(Format('net.%d.y=%d', [LPlayer, LData.Y]));
+    ALines.Add(Format('net.%d.angst=%d', [LPlayer, LData.Angst]));
+    ALines.Add(Format('net.%d.chartype=%d', [LPlayer, LData.CharType]));
+  end;
+end;
+
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
   const AOptions: TGreedPlayOptions): Integer;
 var
@@ -578,6 +730,12 @@ var
   LPresenter: IGreedFramePresenter;
   LInput: IGreedInput;
   LSource: IGreedCommandSource;
+  LButtons: IGameHostMouseState;
+  LMouse: IGreedMouse;
+  LScriptMouse: IGreedScriptMouse;
+  LHostMouse: IMouseDevice;
+  LRealMouse: Boolean;
+  LMouseDefaults: IGreedSettings;
   LScript: TStringList;
   LTime: TGreedPlayTime;
   LTimeIntf: IInterface;
@@ -606,6 +764,8 @@ var
   LDump: TStringList;
   LMusicVolume, LSfxVolume: Integer;
   LDemo: Boolean;
+  LNet: Boolean;
+  LNetStart: IGreedNetStart;
 begin
   LPalette := TGreedPalette.FromLump(AArchive.ReadLump(AArchive.RequireIndexOf(GREED_LUMP_PALETTE)));
   for LIndex := 0 to 255 do
@@ -630,8 +790,16 @@ begin
   LAudio := nil;
   LScript := TStringList.Create;
   try
+    if AOptions.ScriptPath <> '' then
+      LScript.LoadFromFile(AOptions.ScriptPath);
+    if AOptions.AutoPlay then
+      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    // the mouse: the one of a script that has lines for it; otherwise, in a window that no script drives, the
+    // one of the system (a run with a script must give the same game whatever the mouse of the machine does)
+    LMouse := CreateScriptMouse(LScript, LScriptMouse);
+    LRealMouse := (not AOptions.Headless) and (not AOptions.NoMouse) and (LScript.Count = 0);
     // the window of Libs\GameHost with its display on GDI and the keys of the original, or nothing at all. The
-    // system cursor stays visible: the game draws none
+    // system cursor is hidden when the game reads it: the game keeps it in the middle of the window
     if AOptions.Headless then
     begin
       LPresenter := TGreedNoWindow.Create;
@@ -641,7 +809,11 @@ begin
     else
     begin
       LKeys := TGameHostKeyState.Create;
-      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      LButtons := TGameHostMouseState.Create;
+      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+        TGameHostEventFanOut.Create([LKeys as IGameHostEventSink, LButtons as IGameHostEventSink]), LRealMouse);
+      // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
+      LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
         function: Boolean
         begin
@@ -650,18 +822,22 @@ begin
       LPresenter := LHostWindow;
       LInput := LHostWindow;
       LSource := TGreedHostControls.Create(LKeys);
+      if LRealMouse then
+        LMouse := CreateWindowMouse(LWindow, LButtons, LHostMouse);
+      if AOptions.Joystick then
+        LSource := CreateJoystickControls(LSource, LWindow);
     end;
-    if AOptions.ScriptPath <> '' then
-      LScript.LoadFromFile(AOptions.ScriptPath);
-    if AOptions.AutoPlay then
-      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    if Assigned(LMouse) then
+      LSource := TGreedMouseControls.Create(LSource, LMouse);
     if LScript.Count > 0 then
-      LSource := TGreedScriptControls.Create(LScript, LSource);
+      LSource := TGreedScriptControls.Create(LScript, LSource, LScriptMouse);
 
     LTime := TGreedPlayTime.Create;
     LTimeIntf := LTime;
     LTime.Headless := AOptions.Headless;
-    if AOptions.Headless then
+    // a net game runs in real time also without a window: the other computers do
+    LNet := AOptions.NetPlayers > 0;
+    if AOptions.Headless and not LNet then
       LClock := TManualClock.Create
     else
       LClock := TClockFactory.CreateClock(nil);
@@ -730,6 +906,10 @@ begin
       LHudView.Attach(LGame);
     LTime.Game := LGame;
     LGame.LowResolution := AOptions.LowResolution;
+    // -play has no file of settings: the mouse has the ones of InitDefaults
+    LGame.Mouse := LMouse;
+    LMouseDefaults := TGreedSettings.Create;
+    TGreedMouseSettings.Apply(LMouseDefaults, LGame.Parts.Control, LMouse);
     // the full game has three episodes that start at the maps 0, 8 and 16
     LDemo := ADemo;
     if AOptions.MapNumber >= FIRST_MAP_OF_GAME3 then
@@ -739,11 +919,24 @@ begin
     else
       LGame.SetEdition(LDemo, 1);
     LLoop := TGreedGameLoop.Create(LGame, LPresenter, LInput, LClock, LColors, LFrameWidth, LFrameHeight);
-    LLoop.FreeRunning := AOptions.Headless;
+    LLoop.FreeRunning := AOptions.Headless and not LNet;
     LTime.Loop := LLoop;
     try
+      // "-net": the game becomes a net game before its map is loaded (the start place is the one of the player)
+      LNetStart := nil;
+      if LNet then
+        LNetStart := AttachNet(LGame, AOptions);
       LGame.NewGame(AOptions.MapNumber, AOptions.Character, AOptions.Difficulty);
+      if Assigned(LNetStart) then
+        if not WaitNetStart(LGame, LNetStart, LClock, LInput) then
+        begin
+          Writeln('Net game: cancelled while waiting for the other players');
+          Exit(0);
+        end;
+      LNetStart := nil;
       Result := LLoop.Run(AOptions.MaxTics);
+      // NetQuitGame, if the game did not say it already
+      LGame.LeaveNet;
       if AOptions.ShotPath <> '' then
       begin
         LImage.Width := LLoop.FrameBuffer.Width;
@@ -760,6 +953,8 @@ begin
         LDump := TStringList.Create;
         try
           TGreedGameDump.Write(LGame, LLoop.Tics, LLoop.Frames, LRandom.Offset, LDump);
+          if LNet then
+            DumpNet(LGame, LDump);
           LDump.Add(Format('effects.started=%d', [LStatistics.EffectsStarted]));
           LDump.Add(Format('songs.started=%d', [LStatistics.SongsStarted]));
           LDump.Add(Format('messages=%d', [LLogged.Count]));
@@ -801,6 +996,11 @@ begin
     // the display draws in the window: its last references go before the window
     LInput := nil;
     LPresenter := nil;
+    LSource := nil;
+    LMouse := nil;
+    if Assigned(LHostMouse) then
+      LHostMouse.Shutdown;
+    LHostMouse := nil;
     LWindow.Free;
   end;
 end;
@@ -837,6 +1037,11 @@ var
   LShown: TGreedLastFramePresenter;
   LShownIntf: IGreedFramePresenter;
   LSource: IGreedCommandSource;
+  LButtons: IGameHostMouseState;
+  LMouse: IGreedMouse;
+  LScriptMouse: IGreedScriptMouse;
+  LHostMouse: IMouseDevice;
+  LRealMouse: Boolean;
   LScript: TStringList;
   LScriptKeys: TGreedApplicationScript;
   LScriptIntf: IInterface;
@@ -878,11 +1083,52 @@ var
   LShotPalette: TBytes;
   LDump: TStringList;
   LMusicVolume, LSfxVolume: Integer;
+  LOptions: TGreedPlayOptions;
+  LGameClock: IGreedSystemClock;
+  LTapeReader: TGreedDemoReader;
+  LTapeStream: TFileStream;
+  LTapeWriter: TGreedDemoWriter;
+  LTapeHeader: TGreedDemoHeader;
+  LPlayer: TGreedDemoPlayer;
+  LRecorder: TGreedDemoRecorder;
+  LTapeIntf: IInterface;
+  LPacer: IGreedFramePacer;
 begin
-  if AOptions.TopDown then
+  LOptions := AOptions;
+  LTapeReader := nil;
+  LTapeStream := nil;
+  LTapeWriter := nil;
+  LPlayer := nil;
+  LRecorder := nil;
+  LPacer := nil;
+  if LOptions.TopDown then
     raise EGreedException.Create('Greed32: the view from above is only for -play');
+  if (LOptions.PlaybackPath <> '') and (LOptions.RecordPath <> '') then
+    raise EGreedException.Create('Greed32: -record and -playback cannot be asked together');
+  if LOptions.PlaybackPath <> '' then
+  begin
+    // a recorded game says how it starts: the options of the command line that would change it are not read
+    LTapeReader := TGreedDemoReader.Create(TFile.ReadAllBytes(LOptions.PlaybackPath));
+    LTapeHeader := LTapeReader.Header;
+    LOptions.MapNumber := LTapeHeader.Map;
+    LOptions.Character := LTapeHeader.Character;
+    LOptions.Difficulty := LTapeHeader.Difficulty;
+    LOptions.Seed := LTapeHeader.RandomOffset;
+    LOptions.LowResolution := LTapeHeader.LowResolution;
+    LOptions.Game := LTapeHeader.Episode;
+    LOptions.ScriptPath := '';
+    LOptions.AutoPlay := False;
+    // the mouse and the joystick of the machine are not read: the tape has its own
+    LOptions.NoMouse := True;
+    LOptions.Joystick := False;
+  end;
+  if (LOptions.PlaybackPath <> '') or (LOptions.RecordPath <> '') then
+  begin
+    LOptions.SkipIntro := True;
+    LOptions.NoBriefing := True;
+  end;
   LPalette := TGreedPalette.FromLump(AArchive.ReadLump(AArchive.RequireIndexOf(GREED_LUMP_PALETTE)));
-  if AOptions.LowResolution then
+  if LOptions.LowResolution then
   begin
     LFrameWidth := 320;
     LFrameHeight := 200;
@@ -911,7 +1157,15 @@ begin
   LAudio := nil;
   LScript := TStringList.Create;
   try
-    if AOptions.Headless then
+    if LOptions.ScriptPath <> '' then
+      LScript.LoadFromFile(LOptions.ScriptPath);
+    if LOptions.AutoPlay then
+      AddAutoPlay(LScript, LOptions.MaxTics, LOptions.Seed);
+    // the mouse: the one of a script that has lines for it; otherwise, in a window that no script drives, the
+    // one of the system (a run with a script must give the same program whatever the mouse of the machine does)
+    LMouse := CreateScriptMouse(LScript, LScriptMouse);
+    LRealMouse := (not LOptions.Headless) and (not LOptions.NoMouse) and (LScript.Count = 0);
+    if LOptions.Headless then
     begin
       LShown := TGreedLastFramePresenter.Create(TGreedNoWindow.Create);
       LShownIntf := LShown;
@@ -922,7 +1176,12 @@ begin
     else
     begin
       LKeys := TGameHostKeyState.Create;
-      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      LButtons := TGameHostMouseState.Create;
+      // the system cursor is hidden when the game reads it: the menus draw their own pointer
+      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+        TGameHostEventFanOut.Create([LKeys as IGameHostEventSink, LButtons as IGameHostEventSink]), LRealMouse);
+      // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
+      LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
         function: Boolean
         begin
@@ -935,15 +1194,17 @@ begin
       LSource := TGreedHostControls.Create(LKeys);
       SetLength(LKeyboards, 1);
       LKeyboards[0] := TGreedHostKeyboard.Create(LKeys);
+      if LRealMouse then
+        LMouse := CreateWindowMouse(LWindow, LButtons, LHostMouse);
+      if LOptions.Joystick then
+        LSource := CreateJoystickControls(LSource, LWindow);
     end;
-    if AOptions.ScriptPath <> '' then
-      LScript.LoadFromFile(AOptions.ScriptPath);
-    if AOptions.AutoPlay then
-      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    if Assigned(LMouse) then
+      LSource := TGreedMouseControls.Create(LSource, LMouse);
     LListener := nil;
     if LScript.Count > 0 then
     begin
-      LScriptKeys := TGreedApplicationScript.Create(LScript, LSource);
+      LScriptKeys := TGreedApplicationScript.Create(LScript, LSource, LScriptMouse);
       LScriptIntf := LScriptKeys;
       LSource := LScriptKeys;
       SetLength(LKeyboards, Length(LKeyboards) + 1);
@@ -951,13 +1212,13 @@ begin
       LListener := LScriptKeys;
     end;
     LEncoder := TGreedPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
-    if Length(AOptions.ShotTics) > 0 then
-      LListener := TGreedShotTaker.Create(LShown, LListener, LEncoder, AOptions.ShotPath, AOptions.ShotTics);
+    if Length(LOptions.ShotTics) > 0 then
+      LListener := TGreedShotTaker.Create(LShown, LListener, LEncoder, LOptions.ShotPath, LOptions.ShotTics);
 
     LTime := TGreedPlayTime.Create;
     LTimeIntf := LTime;
-    LTime.Headless := AOptions.Headless;
-    if AOptions.Headless then
+    LTime.Headless := LOptions.Headless;
+    if LOptions.Headless then
       LClock := TManualClock.Create
     else
       LClock := TClockFactory.CreateClock(nil);
@@ -966,11 +1227,11 @@ begin
     // the settings: xGreed.ini in the folder of the data of the program, then the volumes asked on the command line
     LSettings := TGreedSettings.Create;
     LStore := TGreedSettingsStore.Create(TGreedSaveFolder.Create(ADataFolder), GREED_SETTINGS_FILE);
-    LStore.Load(LSettings, AOptions.Game);
-    if AOptions.MusicVolume >= 0 then
-      LSettings.SetInteger('musicvol', AOptions.MusicVolume);
-    if AOptions.SfxVolume >= 0 then
-      LSettings.SetInteger('sfxvol', AOptions.SfxVolume);
+    LStore.Load(LSettings, LOptions.Game);
+    if LOptions.MusicVolume >= 0 then
+      LSettings.SetInteger('musicvol', LOptions.MusicVolume);
+    if LOptions.SfxVolume >= 0 then
+      LSettings.SetInteger('sfxvol', LOptions.SfxVolume);
 
     // the sound: the mixer of the game on the PCM output of the host; without a device the game is silent
     LDevice := TGreedPcmMixer.Create(GREED_PCM_DEFAULT_RATE, TGreedTrackerSongDecoder.Create,
@@ -978,7 +1239,7 @@ begin
     LMixer := LDevice as IGreedPcmRenderer;
     LDevice.Initialize;
     LDeviceOpen := False;
-    if not AOptions.Headless then
+    if not LOptions.Headless then
     begin
       LAudio := TGreedHostAudio.Create(TGameHostFactory.CreatePcmOutput, LMixer);
       LAudioSource := LAudio;
@@ -993,9 +1254,9 @@ begin
 
     LRandom := TGreedRandomTable.Create;
     LRandomIntf := LRandom;
-    LRandom.Offset := AOptions.Seed;
+    LRandom.Offset := LOptions.Seed;
     LHud := TGreedHudView.Create(AArchive);
-    LHud.Echo := AOptions.EchoMessages;
+    LHud.Echo := LOptions.EchoMessages;
     LHudIntf := LHud;
     LMessages := LHud;
     LScreenView := TGreedScreenView.Create(LHudIntf);
@@ -1003,33 +1264,6 @@ begin
     LRendererFactory := TGreedGameRendererFactory.Create(AArchive);
     LSaves := TGreedSaveGames.Create(TGreedSaveFolder.Create(ADataFolder), LSettings.GetGameVariant);
 
-    LGame := TGreedGame.Create(AArchive, TGreedFactory.CreateMapLoader(AArchive, LFiles), LRendererFactory,
-      TGreedCommandState.Create(LSource), LEffects, LMusic, LRandomIntf, LSaves, LTime, LScreenViewIntf, LMessages);
-    LHud.Attach(LGame);
-    LHud.SetSize(LSettings.GetInteger('screensize'));
-    LTime.Game := LGame;
-    LGame.LowResolution := AOptions.LowResolution;
-    LGame.SetEdition(LDemo, LSettings.Episode);
-    LGame.Violence := LSettings.GetBoolean('violence');
-    LGame.AmbientLight := LSettings.GetInteger('ambientlight');
-    LGame.CameraDelay := LSettings.GetInteger('camdelay');
-
-    LMenuHost := TGreedMenuHost.Create(LGame, LSettings, LStore, LHud);
-    LIntroHost := TGreedIntroHost.Create(LGame);
-    LEpisodeHost := TGreedEpisodeHost.Create(LGame);
-    LEpisodeIntf := LEpisodeHost;
-    LScreens := TGreedScreens.Create(AArchive, LSettings, LVolumes, LSaves, LMovies, LMenuHost, LIntroHost,
-      LEpisodeHost, LEpisodeHost, LDemo, LSettings.GetGameVariant);
-
-    LApplicationOptions := TGreedApplicationOptions.Standard;
-    LApplicationOptions.FreeRunning := AOptions.Headless;
-    LApplicationOptions.MaxTics := AOptions.MaxTics;
-    if AOptions.Headless and (LApplicationOptions.MaxTics = 0) then
-      LApplicationOptions.MaxTics := HEADLESS_DEFAULT_TICS;
-    LApplicationOptions.SkipIntro := AOptions.SkipIntro;
-    LApplicationOptions.NoBriefing := AOptions.NoBriefing;
-    LApplicationOptions.Character := AOptions.Character;
-    LApplicationOptions.Difficulty := AOptions.Difficulty;
     // the first map of the episode that is played (the demo has one episode)
     LFirstMap := 0;
     if not LDemo then
@@ -1037,20 +1271,125 @@ begin
         2: LFirstMap := FIRST_MAP_OF_GAME2;
         3: LFirstMap := FIRST_MAP_OF_GAME3;
       end;
-    if AOptions.MapNumber >= 0 then
-      LFirstMap := AOptions.MapNumber;
+    if LOptions.MapNumber >= 0 then
+      LFirstMap := LOptions.MapNumber;
+
+    // a recorded game: the tape stands between the game and its commands, its clock and the pace of its loop
+    LGameClock := LTime;
+    if Assigned(LTapeReader) then
+    begin
+      if LTapeHeader.DemoEdition <> LDemo then
+        raise EGreedException.Create('Greed32: the recorded game was made with other data (demo or full game)');
+      LPlayer := TGreedDemoPlayer.Create(LTapeReader, not LOptions.Headless);
+      LTapeIntf := LPlayer as IInterface;
+      LSource := LPlayer;
+      LGameClock := LPlayer;
+      LPacer := LPlayer;
+    end
+    else if LOptions.RecordPath <> '' then
+    begin
+      LTapeHeader := Default(TGreedDemoHeader);
+      LTapeHeader.Map := LFirstMap;
+      LTapeHeader.Character := LOptions.Character;
+      LTapeHeader.Difficulty := LOptions.Difficulty;
+      LTapeHeader.Episode := LSettings.Episode;
+      LTapeHeader.DemoEdition := LDemo;
+      LTapeHeader.LowResolution := LOptions.LowResolution;
+      LTapeHeader.RandomOffset := LOptions.Seed;
+      LTapeHeader.CameraDelay := LSettings.GetInteger('camdelay');
+      LTapeHeader.ViewSize := LSettings.GetInteger('screensize');
+      LTapeHeader.Violence := LSettings.GetBoolean('violence');
+      LTapeHeader.MouseEnabled := Assigned(LMouse) and LSettings.GetBoolean(GREED_SETTING_MOUSE);
+      LTapeHeader.MouseSensitivity := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY);
+      LTapeHeader.MouseSensitivityX := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY_X);
+      LTapeHeader.MouseSensitivityY := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY_Y);
+      LTapeHeader.InvertMouseTurn := LSettings.GetBoolean(GREED_SETTING_INVERT_MOUSE_TURN);
+      LTapeHeader.InvertMouseLook := LSettings.GetBoolean(GREED_SETTING_INVERT_MOUSE_LOOK);
+      LTapeStream := TFileStream.Create(LOptions.RecordPath, fmCreate);
+      LTapeWriter := TGreedDemoWriter.Create(LTapeStream, LTapeHeader);
+      LRecorder := TGreedDemoRecorder.Create(LTapeWriter, LSource, LTime);
+      LTapeIntf := LRecorder as IInterface;
+      LSource := LRecorder;
+      LGameClock := LRecorder;
+      LPacer := LRecorder;
+    end;
+
+    LGame := TGreedGame.Create(AArchive, TGreedFactory.CreateMapLoader(AArchive, LFiles), LRendererFactory,
+      TGreedCommandState.Create(LSource), LEffects, LMusic, LRandomIntf, LSaves, LGameClock, LScreenViewIntf,
+      LMessages);
+    LHud.Attach(LGame);
+    LHud.SetSize(LSettings.GetInteger('screensize'));
+    LTime.Game := LGame;
+    LGame.LowResolution := LOptions.LowResolution;
+    LGame.SetEdition(LDemo, LSettings.Episode);
+    LGame.Violence := LSettings.GetBoolean('violence');
+    LGame.AmbientLight := LSettings.GetInteger('ambientlight');
+    LGame.CameraDelay := LSettings.GetInteger('camdelay');
+    if Assigned(LTapeReader) then
+    begin
+      // the settings that change what the game does are the ones of the tape
+      LHud.SetSize(LTapeHeader.ViewSize);
+      LGame.Violence := LTapeHeader.Violence;
+      LGame.CameraDelay := LTapeHeader.CameraDelay;
+    end;
+    // SC.mouse, the sensitivities and the inversions of ControlMovement, menuusemouse of the menus
+    LGame.Mouse := LMouse;
+    TGreedMouseSettings.Apply(LSettings, LGame.Parts.Control, LMouse);
+    if Assigned(LTapeReader) then
+    begin
+      // the mouse of a tape is the one of its readings, used as the settings of the recording said
+      LGame.Parts.Control.MouseEnabled := LTapeHeader.MouseEnabled;
+      LGame.Parts.Control.MouseSensitivity := LTapeHeader.MouseSensitivity;
+      LGame.Parts.Control.MouseSensitivityX := LTapeHeader.MouseSensitivityX;
+      LGame.Parts.Control.MouseSensitivityY := LTapeHeader.MouseSensitivityY;
+      LGame.Parts.Control.InvertMouseTurn := LTapeHeader.InvertMouseTurn;
+      LGame.Parts.Control.InvertMouseLook := LTapeHeader.InvertMouseLook;
+    end;
+
+    LMenuHost := TGreedMenuHost.Create(LGame, LSettings, LStore, LHud);
+    LIntroHost := TGreedIntroHost.Create(LGame);
+    LEpisodeHost := TGreedEpisodeHost.Create(LGame);
+    LEpisodeIntf := LEpisodeHost;
+    LScreens := TGreedScreens.Create(AArchive, LSettings, LVolumes, LSaves, LMovies, LMenuHost, LIntroHost,
+      LEpisodeHost, LEpisodeHost, LDemo, LSettings.GetGameVariant, LMouse);
+
+    LApplicationOptions := TGreedApplicationOptions.Standard;
+    LApplicationOptions.FreeRunning := LOptions.Headless;
+    LApplicationOptions.MaxTics := LOptions.MaxTics;
+    if LOptions.Headless and (LApplicationOptions.MaxTics = 0) then
+      LApplicationOptions.MaxTics := HEADLESS_DEFAULT_TICS;
+    LApplicationOptions.SkipIntro := LOptions.SkipIntro;
+    LApplicationOptions.NoBriefing := LOptions.NoBriefing;
+    LApplicationOptions.Character := LOptions.Character;
+    LApplicationOptions.Difficulty := LOptions.Difficulty;
     LApplicationOptions.StartMap := LFirstMap;
+    LApplicationOptions.Pacer := LPacer;
+    LApplicationOptions.PlayingBack := Assigned(LPlayer);
     LApplication := TGreedApplication.Create(LGame, LScreens, LSettings, LStore, LPresenter, LInput, LClock,
       LKeyboards, LListener, LMovies, LFrameWidth, LFrameHeight, LApplicationOptions);
     LTime.Application := LApplication;
     LScreenView.Screens := LApplication;
     try
       Result := LApplication.Run;
-      if AOptions.ShotPath <> '' then
+      if Assigned(LRecorder) then
+      begin
+        LRecorder.Close;
+        Writeln(Format('Recorded %d records in %s', [LTapeWriter.Records, LOptions.RecordPath]));
+      end;
+      if Assigned(LPlayer) then
+      begin
+        if LPlayer.Desynchronized then
+          Writeln(Format('Playback of %s went out of step after %d turns: the game is not the one that was recorded',
+            [LOptions.PlaybackPath, LPlayer.Frames]))
+        else
+          Writeln(Format('Played back %d turns and %d readings of %s', [LPlayer.Frames, LPlayer.Readings,
+            LOptions.PlaybackPath]));
+      end;
+      if LOptions.ShotPath <> '' then
         if LShown.Snapshot(LImage, LShotPalette) then
-          TFile.WriteAllBytes(AOptions.ShotPath, LEncoder.Encode(LImage, LShotPalette, False));
+          TFile.WriteAllBytes(LOptions.ShotPath, LEncoder.Encode(LImage, LShotPalette, False));
       LStatistics := LMixer.Statistics;
-      if AOptions.DumpPath <> '' then
+      if LOptions.DumpPath <> '' then
       begin
         LDump := TStringList.Create;
         try
@@ -1061,13 +1400,13 @@ begin
           LDump.Add(Format('messages=%d', [LHud.Messages.Count]));
           for LIndex := 0 to LHud.Messages.Count - 1 do
             LDump.Add(Format('message.%d=%s', [LIndex, LHud.Messages[LIndex]]));
-          LDump.SaveToFile(AOptions.DumpPath);
+          LDump.SaveToFile(LOptions.DumpPath);
         finally
           LDump.Free;
         end;
       end;
     finally
-      if AOptions.AudioStatistics then
+      if LOptions.AudioStatistics then
       begin
         LStatistics := LMixer.Statistics;
         LIndex := 0;
@@ -1099,10 +1438,27 @@ begin
     end;
   finally
     LScript.Free;
+    // the tape: who reads or writes it goes before it
+    LApplicationOptions := Default(TGreedApplicationOptions);
+    LPacer := nil;
+    LGameClock := nil;
+    LSource := nil;
+    LTapeIntf := nil;
+    LTapeWriter.Free;
+    LTapeStream.Free;
+    LTapeReader.Free;
     // the display draws in the window: its last references go before the window
     LInput := nil;
     LPresenter := nil;
     LShownIntf := nil;
+    LSource := nil;
+    LScriptIntf := nil;
+    LListener := nil;
+    LKeyboards := nil;
+    LMouse := nil;
+    if Assigned(LHostMouse) then
+      LHostMouse.Shutdown;
+    LHostMouse := nil;
     LWindow.Free;
   end;
 end;

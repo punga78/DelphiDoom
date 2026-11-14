@@ -24,9 +24,6 @@ uses
   DelphiDoom.Greed.Inventory, DelphiDoom.Greed.Hud.Intf;
 
 const
-  /// <summary>The side of the picture of the rear view camera (rearbuf)</summary>
-  GREED_REAR_VIEW_SIZE = 64;
-
   SGreedBadMapMode = 'PlayLoop(): mapmode = %d';
 
 type

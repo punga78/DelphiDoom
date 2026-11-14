@@ -1,0 +1,120 @@
+// save.script with one more statement in touch(): same globals, another checksum
+// in a function that is still running at the save (the local stack would hold a real pointer in the original).
+
+float	ticks;
+string	journal;
+vector	spot = '1 2 3';
+
+object save_obj {
+	float	hits;
+	string	tag;
+	vector	place;
+
+	void	init();
+	void	work();
+};
+
+void save_obj::init() {
+	hits = 5;
+	tag = "saved";
+	place = '7 8 9';
+}
+
+void save_obj::work() {
+	float i;
+
+	for ( i = 0; i < 4; i++ ) {
+		sys.println( getName() + " work " + i + " hits " + hits + " tag " + tag + " place " + place );
+		sys.wait( 0.05 );
+	}
+}
+
+void counterThread() {
+	float	i;
+	string	s = "count";
+	vector	v = '1 2 3';
+
+	for ( i = 0; i < 6; i++ ) {
+		ticks = ticks + 1;
+		journal = journal + i;
+		sys.println( s + " " + i + " " + v );
+		v = v * 2;
+		spot = spot + v;
+		sys.wait( 0.04 );
+	}
+}
+
+void frameThread() {
+	float n;
+
+	while ( n < 8 ) {
+		n++;
+		sys.waitFrame();
+	}
+	sys.println( "frameThread done " + n );
+}
+
+void moverThread() {
+	$ent_mover.moveTo( '5 5 5', 0.12 );
+	sys.waitFor( $ent_mover );
+	sys.println( "mover arrived " + $ent_mover.getOrigin() );
+}
+
+void joinThread() {
+	float t;
+
+	t = thread counterThread();
+	sys.setSpawnArg( "key", "value" );
+	sys.setSpawnArg( "other", "thing" );
+	sys.waitForThread( t );
+	sys.println( "joined; spawn arg " + sys.SpawnString( "key", "lost" ) + " journal " + journal );
+}
+
+void pausedThread() {
+	sys.threadname( "paused_one" );
+	sys.pause();
+	sys.println( "paused thread resumed" );
+}
+
+void turnThread() {
+	$ent_turner.slowTurn( 5 );
+	sys.println( "turn done" );
+}
+
+void nested2( float a, string s ) {
+	sys.wait( 0.1 );
+	sys.println( "nested2 " + a + " " + s );
+}
+
+void nested1( float a ) {
+	nested2( a * 2, "deep" );
+	sys.println( "nested1 " + a );
+}
+
+void nestedThread() {
+	nested1( 21 );
+}
+
+void objectThread() {
+	save_obj o;
+
+	o = $ent_obj;
+	o.work();
+	sys.println( "objectThread done" );
+}
+
+void main() {
+	thread joinThread();
+	thread frameThread();
+	thread moverThread();
+	thread pausedThread();
+	thread nestedThread();
+	thread turnThread();
+	thread objectThread();
+}
+
+void touch() {
+	ticks = 42 + ticks;
+	journal = "touched";
+	spot = spot * 2;
+}

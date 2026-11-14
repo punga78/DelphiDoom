@@ -250,7 +250,8 @@ const
 implementation
 
 uses
-  DelphiDoom.Greed.World, DelphiDoom.Greed.Render.Types, DelphiDoom.Tests.Greed.Builders;
+  DelphiDoom.Greed.World, DelphiDoom.Greed.Render.Types, DelphiDoom.Greed.Game.Constants,
+  DelphiDoom.Tests.Greed.Builders;
 
 type
   THudWeaponLumps = record

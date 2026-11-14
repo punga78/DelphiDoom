@@ -69,6 +69,34 @@ type
   /// <summary>The games that the definitions are for</summary>
   TActorDefGame = (Doom, Heretic, Hexen, Strife);
 
+  /// <summary>The words of the text of a definition, one after the other</summary>
+  IActorDefTokenCursor = interface
+    ['{3E8F1C64-5D27-4B90-A1C8-6F4E92D07B35}']
+    /// <summary>The word under the cursor, as it is written (without the quotes of a quoted text)</summary>
+    function Current: string;
+    /// <summary>Moves to the next word; false when the text is over</summary>
+    function Next: Boolean;
+  end;
+
+  /// <summary>
+  ///   The properties and the flags of an ACTOR that only one game has (Radix: the INVENTORY
+  ///   block of what a pickup gives, TouchDamage, the flags of its own physics). The reader of
+  ///   the actors asks here before it warns about a word it does not know; the game keeps what
+  ///   it reads where it wants (the tables of the engine do not have those fields). A profile
+  ///   without it (nil) reads as before
+  /// </summary>
+  IActorDefExtraProperties = interface
+    ['{7B0C6E52-9A1D-4F38-B6E4-2D5A81C3F907}']
+    /// <summary>An actor begins: its name and the name of the actor it inherits from ('' for none)</summary>
+    procedure BeginActor(const AName, AInheritsFrom: string);
+    /// <summary>
+    ///   AToken (upper case) is the word under the cursor. True when it is of the game: its
+    ///   values have been read and the last word that belongs to it is under the cursor (the
+    ///   reader moves on from there). False: the cursor has not been moved
+    /// </summary>
+    function TryRead(const AToken: string; const ATokens: IActorDefTokenCursor): Boolean;
+  end;
+
   /// <summary>Where a script of a definition lives</summary>
   TActorDefScriptType = (Normal, Global);
 
@@ -94,6 +122,8 @@ type
     WeaponStatesWriteFlagsEx: Boolean;
     /// <summary>SNDINFO has $MAP lines that give the song of a map, and the sounds have tags (Hexen)</summary>
     SoundInfoHexenExtensions: Boolean;
+    /// <summary>The properties of the actors that only this game has; nil for none</summary>
+    ExtraProperties: IActorDefExtraProperties;
   end;
 
   /// <summary>One state of an actor or of a weapon</summary>

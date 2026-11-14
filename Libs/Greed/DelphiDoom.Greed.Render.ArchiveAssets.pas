@@ -36,9 +36,18 @@ type
       FColorMaps: TBytes;
       FTransparency: TBytes;
       FBackdrop: TBytes;
+      FClearFirst: Integer;
+      FClearLast: Integer;
     function ReadPadded(ALump: Integer): TBytes;
   public
     constructor Create(const AArchive: IGreedArchive);
+    /// <summary>
+    ///   RF_PreloadGraphics of r_public.pas: the game loads every lump after "startsprites" and before
+    ///   "endsprites" with DemandLoadMonster, which turns the colour 255 of the pictures into 0 (not drawn). Here
+    ///   each of those lumps is changed when it is first read. Nothing if the archive has no such lumps; the
+    ///   lumps already read are changed at once
+    /// </summary>
+    procedure PreloadGraphics;
     function GetWallCount: Integer;
     function GetFlatCount: Integer;
     function WallLump(AIndex: Integer): TBytes;
@@ -59,7 +68,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.Types;
+  DelphiDoom.Greed.Types, DelphiDoom.Greed.MonsterPictureFix;
 
 { TGreedArchiveRenderAssets }
 
@@ -83,6 +92,24 @@ begin
   SetLength(FSprites, LStart);
   SetLength(FSpriteLoaded, LStart);
   SetLength(FBackdrop, BACKDROP_BYTES + GUARD_BYTES);
+  FClearFirst := 0;
+  FClearLast := -1;
+end;
+
+procedure TGreedArchiveRenderAssets.PreloadGraphics;
+var
+  LStart, LEnd, LLump: Integer;
+begin
+  LStart := FArchive.IndexOf(GREED_LUMP_START_SPRITES);
+  LEnd := FArchive.IndexOf(GREED_LUMP_END_SPRITES);
+  if (LStart < 0) or (LEnd < 0) then
+    Exit;
+  // for i := 1 to numsprites - 1 do DemandLoadMonster(spritelump + i, 1)
+  FClearFirst := LStart + 1;
+  FClearLast := LEnd - 1;
+  for LLump := FClearFirst to FClearLast do
+    if (LLump < Length(FSprites)) and FSpriteLoaded[LLump] and (Length(FSprites[LLump]) > 0) then
+      TGreedMonsterPictureFix.Apply(FSprites[LLump]);
 end;
 
 function TGreedArchiveRenderAssets.ReadPadded(ALump: Integer): TBytes;
@@ -138,7 +165,11 @@ begin
   if not FSpriteLoaded[ALump] then
   begin
     if FArchive.GetLumpSize(ALump) > 0 then
+    begin
       FSprites[ALump] := ReadPadded(ALump);
+      if (ALump >= FClearFirst) and (ALump <= FClearLast) then
+        TGreedMonsterPictureFix.Apply(FSprites[ALump]);
+    end;
     FSpriteLoaded[ALump] := True;
   end;
   Result := FSprites[ALump];

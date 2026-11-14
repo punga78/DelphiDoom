@@ -115,8 +115,40 @@ end;
 
 procedure TGreedSpanDrawer.MapRow;
 var
-  LSpot: Integer;
+  LSpot, LSkipped: Integer;
+  LRoom: NativeInt;
 begin
+  // A row can end past the right side of the view (its end is the column of a vertex of a wider picture): the
+  // original goes on in the rows below, which are the bytes that follow in its buffer, and so does this. What
+  // would go past the end of the picture is not written, but the texture moves on as if it were
+  LSkipped := 0;
+  if FMrCount > 0 then
+  begin
+    LRoom := (FState.Buffer + FState.BufferSize) - FMrDest;
+    if LRoom < 0 then
+      LRoom := 0;
+    if FMrCount > LRoom then
+    begin
+      LSkipped := FMrCount - Integer(LRoom);
+      FMrCount := Integer(LRoom);
+    end;
+  end;
+  if LSkipped > 0 then
+  begin
+    while FMrCount > 0 do
+    begin
+      LSpot := (FMrYFrac shr (GREED_FRACBITS - 6)) and (63 * 64) + ((FMrXFrac div GREED_FRACUNIT) and 63);
+      FMrDest^ := FMrColormap[FMrPicture[LSpot]];
+      Inc(FMrDest);
+      FMrXFrac := FMrXFrac + FMrXStep;
+      FMrYFrac := FMrYFrac + FMrYStep;
+      Dec(FMrCount);
+    end;
+    Inc(FMrDest, LSkipped);
+    FMrXFrac := FMrXFrac + FMrXStep * LSkipped;
+    FMrYFrac := FMrYFrac + FMrYStep * LSkipped;
+    Exit;
+  end;
   while FMrCount > 0 do
   begin
     LSpot := (FMrYFrac shr (GREED_FRACBITS - 6)) and (63 * 64) + ((FMrXFrac div GREED_FRACUNIT) and 63);
@@ -331,13 +363,15 @@ procedure TGreedSpanDrawer.DrawSkyRow(ASpan: PGreedSpan; ACenter, AWidthHalf: In
 var
   S: TGreedRenderState;
   LPX, LPY, LH1, LX, LX1, LA, LAFrac1, LCount: Integer;
-  LDest: PByte;
+  LDest, LEnd: PByte;
 begin
   S := FState;
   LPY := ASpan^.Y - S.ScrollMin;
   LPX := FSpanX;
   LCount := ASpan^.X2 - FSpanX;
   LDest := S.Buffer + LPY * S.WindowWidth + LPX;
+  // a row past the right side of the view goes on in the rows below; nothing is written past the picture
+  LEnd := S.Buffer + S.BufferSize;
   if S.WindowHeight = 400 then
     LPY := ASpan^.Y + 128
   else if S.WindowHeight = 200 then
@@ -356,7 +390,7 @@ begin
       LX := S.BackTangents^[(LA div GREED_FRACUNIT) and (GREED_TAN_ANGLES * 2 - 1)] * 320 div S.WindowWidth;
       AX2 := (ACenter - LX + 320 - 257);
       AX2 := AX2 and 255;
-      if (not AOverlay) or (LDest^ = 255) then
+      if (LDest < LEnd) and ((not AOverlay) or (LDest^ = 255)) then
         LDest^ := S.Backdrop[LH1 * 256 + AX2];
       LA := LA - S.AFrac;
       Inc(LPX);
@@ -373,7 +407,7 @@ begin
     begin
       LX1 := ACenter + S.BackTangents^[(LA div GREED_FRACUNIT) and (GREED_TAN_ANGLES * 2 - 1)] * 320 div S.WindowWidth;
       LX1 := LX1 and 255;
-      if (not AOverlay) or (LDest^ = 255) then
+      if (LDest < LEnd) and ((not AOverlay) or (LDest^ = 255)) then
         LDest^ := S.Backdrop[LH1 * 256 + LX1];
       LA := LA + S.AFrac;
       Dec(LCount);
@@ -494,14 +528,14 @@ begin
             Continue;
 
           LY1 := LSpan^.Y - S.ScrollMin;
-          if (LY1 >= S.WindowHeight) or (LY1 < 0) then
+          if (LY1 >= GREED_RENDER_MAX_HEIGHT) or (LY1 < 0) then
             Continue;
 
           FMrDest := S.Buffer + LY1 * S.WindowWidth + FSpanX;
           FMrPicture := LSpan^.Picture;
           LX2 := LSpan^.X2;
 
-          if (LX2 > S.WindowWidth) or (LX2 < 0) then
+          if (LX2 > GREED_RENDER_MAX_WIDTH) or (LX2 < 0) then
             Continue;
 
           FMrCount := LX2 - FSpanX;
@@ -514,9 +548,9 @@ begin
       gskSky:
         begin
           LPY := LSpan^.Y - S.ScrollMin;
-          if (LPY >= S.WindowHeight) or (LPY < 0) then
+          if (LPY >= GREED_RENDER_MAX_HEIGHT) or (LPY < 0) then
             Continue;
-          if (LSpan^.X2 > S.WindowWidth) or (LSpan^.X2 < 0) then
+          if (LSpan^.X2 > GREED_RENDER_MAX_WIDTH) or (LSpan^.X2 < 0) then
             Continue;
           DrawSkyRow(LSpan, LCenter, LW, LX2, False);
         end;
@@ -537,9 +571,9 @@ begin
           LX2 := LSpan^.X2;
           LY1 := LSpan^.Y - S.ScrollMin;
 
-          if (LY1 >= S.WindowHeight) or (LY1 < 0) then
+          if (LY1 >= GREED_RENDER_MAX_HEIGHT) or (LY1 < 0) then
             Continue;
-          if (LX2 > S.WindowWidth) or (LX2 < 0) then
+          if (LX2 > GREED_RENDER_MAX_WIDTH) or (LX2 < 0) then
             Continue;
 
           FMrDest := S.Buffer + LY1 * S.WindowWidth + FSpanX;

@@ -25,10 +25,16 @@ type
     FLog: ILog;
     FCrc32: Cardinal;
     FEdition: TRadixEdition;
+    FActorDefinitions: TBytes;
     function FileCrc32(const AFileName: string): Cardinal;
   public
     /// <param name="ALog">Where the problems of the file go; EArgumentNilException when nil</param>
-    constructor Create(const ALog: ILog);
+    /// <param name="AActorDefinitions">
+    ///   The ACTORDEF text of the actors of Radix (RADIXDEF of the old fork, which had it inside
+    ///   the program): it goes after the translated lumps as the lump ACTORDEF, so that the
+    ///   engine reads it as the one of any WAD. Empty: no lump is added
+    /// </param>
+    constructor Create(const ALog: ILog; const AActorDefinitions: TBytes = nil);
     function TryConvert(const AFileName: string; out AWad: TBytes): Boolean;
     function GetEdition: TRadixEdition;
     function GetCrc32: Cardinal;
@@ -40,14 +46,18 @@ uses
   System.Classes,
   DelphiDoom.MathCore.Crc32, DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.Intf, DelphiDoom.Radix.Factory;
 
+const
+  ACTOR_DEFINITIONS_LUMP = 'ACTORDEF';
+
 { TEngineRadixDataConverter }
 
-constructor TEngineRadixDataConverter.Create(const ALog: ILog);
+constructor TEngineRadixDataConverter.Create(const ALog: ILog; const AActorDefinitions: TBytes);
 begin
   inherited Create;
   if not Assigned(ALog) then
     raise EArgumentNilException.Create('ALog');
   FLog := ALog;
+  FActorDefinitions := AActorDefinitions;
   FEdition := reUnknown;
 end;
 
@@ -86,11 +96,13 @@ begin
       Exit(False);
   end;
   LWad := TRadixFactory.CreateTranslator(TRadixLumpNames.Doom).Translate(LContainer);
-  AWad := LWad.ToBytes;
   FCrc32 := FileCrc32(AFileName);
   FEdition := TRadixEditions.FromCrc32(FCrc32);
   FLog.Info(Format('RADIX.DAT: %d lumps translated, CRC32 %s (%s)'#13#10,
     [LWad.Count, IntToHex(FCrc32, 8), TRadixEditions.Title(FEdition)]));
+  if Length(FActorDefinitions) > 0 then
+    LWad.AddLump(ACTOR_DEFINITIONS_LUMP, FActorDefinitions);
+  AWad := LWad.ToBytes;
   Result := True;
 end;
 

@@ -18,6 +18,7 @@ unit radix_map_extra;
 interface
 
 uses
+  r_defs,
   DelphiDoom.Radix.Intf,
   DelphiDoom.Radix.MapInfo.Types;
 
@@ -54,22 +55,120 @@ function RX_RadixLump(const lumpnum: integer; const lumpname: string): integer;
 //==============================================================================
 procedure RX_LoadRadixMapInfo(const lumpnum: integer);
 
+var
+  // True for the level with two halves (E3M2): a point of RADIX.DAT past the split goes to
+  // the second half of the Doom map (level_position_hack of Rad-X)
+  radix_levelpositionhack: boolean = false;
+
+//==============================================================================
+//
+// RX_RadixX2Doom, RX_RadixY2Doom
+// A point of RADIX.DAT (the parameters of the actions) in the Doom map, map units
+//
+//==============================================================================
+function RX_RadixX2Doom(const x, y: integer): integer;
+
+function RX_RadixY2Doom(const x, y: integer): integer;
+
+//==============================================================================
+//
+// RX_SectorIndex
+// The number of a sector of the level
+//
+//==============================================================================
+function RX_SectorIndex(const sec: Psector_t): integer;
+
+//==============================================================================
+//
+// RX_SetSectorLight
+// Gives a sector the light level of Radix l (0..63, more with fog). A sector
+// that the level does not have is left alone (the old code did not check)
+//
+//==============================================================================
+procedure RX_SetSectorLight(const secid: integer; const l: integer);
+
+//==============================================================================
+//
+// RX_LineLengthf
+// The length of a line in map units
+//
+//==============================================================================
+function RX_LineLengthf(const li: Pline_t): double;
+
 implementation
 
 uses
   SysUtils,
   d_delphi,
   i_system,
+  m_fixed,
   p_setup,
   p_slopes,
-  r_defs,
   w_wad,
   DelphiDoom.Radix.Types,
+  DelphiDoom.Radix.Level.Types,
   DelphiDoom.Radix.MapInfo.Reader,
-  DelphiDoom.Radix.SlopePlanes;
+  DelphiDoom.Radix.SlopePlanes,
+  DelphiDoom.Radix.Action.Rules;
 
 var
   radix_mapinforeader: IRadixMapInfoReader = nil;
+
+//==============================================================================
+//
+// RX_RadixX2Doom
+//
+//==============================================================================
+function RX_RadixX2Doom(const x, y: integer): integer;
+begin
+  result := TRadixActionRules.RadixToDoomX(x, radix_levelpositionhack);
+end;
+
+//==============================================================================
+//
+// RX_RadixY2Doom
+//
+//==============================================================================
+function RX_RadixY2Doom(const x, y: integer): integer;
+begin
+  result := TRadixActionRules.RadixToDoomY(x, y, radix_levelpositionhack);
+end;
+
+//==============================================================================
+//
+// RX_SectorIndex
+//
+//==============================================================================
+function RX_SectorIndex(const sec: Psector_t): integer;
+begin
+  result := pDiff(sec, @sectors[0], SizeOf(sector_t));
+end;
+
+//==============================================================================
+//
+// RX_SetSectorLight
+//
+//==============================================================================
+procedure RX_SetSectorLight(const secid: integer; const l: integer);
+begin
+  if (secid < 0) or (secid >= numsectors) or (secid >= Length(radixsectorinfo)) then
+    exit;
+  sectors[secid].lightlevel := TRadixActionRules.LightLevel(l, radixsectorinfo[secid].Flags);
+end;
+
+//==============================================================================
+//
+// RX_LineLengthf
+//
+//==============================================================================
+function RX_LineLengthf(const li: Pline_t): double;
+var
+  fx, fy: double;
+begin
+  fx := (li.v2.x - li.v1.x) / FRACUNIT;
+  fy := (li.v2.y - li.v1.y) / FRACUNIT;
+  result := sqrt(fx * fx + fy * fy);
+end;
 
 //==============================================================================
 //
@@ -155,6 +254,7 @@ begin
   SetLength(radixwallinfo, numlines);
   for i := 0 to numlines - 1 do
     radixwallinfo[i].WallId := i;
+  radix_levelpositionhack := false;
 
   if lumpnum < 0 then
     exit;
@@ -187,6 +287,8 @@ begin
       continue;
     end;
     radixsectorinfo[id] := info.Sectors[i];
+    if info.Sectors[i].YAdd = RADIX_MAP_Y_ADD2 then
+      radix_levelpositionhack := true;
     sec := @sectors[id];
 
     if rssFloorAngle in info.Sectors[i].Statements then

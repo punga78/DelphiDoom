@@ -413,6 +413,7 @@ uses
   r_lights,
 {$IFDEF RADIX}
   radix_version,
+  radix_codepointers,
 {$ENDIF}
   sounddata,
   s_sound,
@@ -1006,6 +1007,9 @@ begin
       else if R_FullStOn and (gametic <> 0) then
         ST_Drawer(stdo_small, redrawsbar);
     end;
+    // the display of a game without the status bar of Doom goes over view, automap and border
+    if gametic <> 0 then
+      ST_OverlayDrawer;
   end;
 
   menuactivestate := menuactive;
@@ -2683,6 +2687,10 @@ begin
   printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
   SC_DefaultStatedefLump;
   DEH_Init;
+{$IFDEF RADIX}
+  // the codepointers of Radix, before GAMEDEF and the ACTORDEF lumps name them
+  RX_RegisterActions;
+{$ENDIF}
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin

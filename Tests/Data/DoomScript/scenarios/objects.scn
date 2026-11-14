@@ -1,0 +1,60 @@
+# objects: fields, inheritance, virtual methods, constructors and destructors, threads on methods
+startup script/objects.script
+dump program
+dump disasm
+spawn 1 idEntity ent_base
+spawn 2 idEntity ent_derived
+spawn 3 idMover ent_leaf
+spawn 4 idEntity ent_plain
+spawn 5 idEntity ent_none
+setobject 1 base_obj
+setobject 2 derived_obj
+setobject 3 leaf_obj
+setobject 4 plain_obj
+setobject 5 no_such_type
+setobject 5 useObjects
+dump threads
+dump events
+dump entities
+frame 1
+dump entities
+dump threads
+scriptvar 1 count float
+scriptvar 1 pos vector
+scriptvar 1 label string
+scriptvar 1 flag boolean
+scriptvar 1 other entity
+scriptvar 1 count vector
+scriptvar 1 nothing float
+scriptvar 2 extra float
+scriptvar 2 friend object
+scriptvar 2 friend entity
+scriptvar 2 label string
+scriptvar 3 leaf string
+scriptvar 3 count float
+scriptvar 5 count float
+callnow useObjects
+dump globals
+dump entities
+scriptvar 1 count float
+scriptvar 2 friend object
+thread threads
+frame 8
+dump threads
+objthread 1 bump
+objthread 3 value
+frame 2
+dump threads
+# changing the type of an object frees the old data; the same type only clears it
+setobject 4 base_obj
+setobject 1 base_obj
+frame 1
+dump entities
+# destructors: derived calls the base one after its own, also after an early return
+remove 2
+remove 3
+remove 4
+remove 5
+dump entities
+dump threads
+frame 1

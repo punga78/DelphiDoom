@@ -79,7 +79,7 @@ type
 
   /// <summary>
   ///   pevent_t: what a player tells the others in a net game (52 bytes). It is here because the saved games and the net
-  ///   game share the player; the net game itself is not ported
+  ///   game share the player (the net game is in DelphiDoom.Greed.Net.*)
   /// </summary>
   TGreedPlayerEvent = packed record
     Id: Integer;

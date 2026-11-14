@@ -1,0 +1,9 @@
+# control flow, functions, parameters and returns, recursion, prototypes
+startup script/flow.script
+dump program
+dump disasm
+spawn 1 idEntity ent_one
+callnow main
+dump globals
+dump return
+dump threads

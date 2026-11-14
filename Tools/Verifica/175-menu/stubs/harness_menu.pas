@@ -11,6 +11,11 @@ var
   HTics: Integer;
   HNextKey: Integer;
   HDown: array[0..127] of Boolean;
+  // the mouse of the scenario: the next event, the cursor of the system and the size of the window
+  HNextMouse: Integer;
+  HCursorX, HCursorY: Integer;
+  HWindowWidth: Integer = 640;
+  HWindowHeight: Integer = 400;
   // the intro: a new or loaded game sets gameloaded, as newplayer and LoadGame of the original do
   HIntroMode: Boolean = False;
   // called before each tic: the dpr hashes the screen and the palette

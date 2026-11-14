@@ -1,0 +1,47 @@
+# events of the entities from scripts and from the host
+startup script/events.script
+dump program
+spawn 1 idEntity ent_one
+spawn 2 idEntity ent_two
+spawn 3 idMover ent_mover
+spawn 4 idEntity ent_obj
+setobject 4 evt_obj
+frame 1
+callnow basics
+dump globals
+dump entities
+callnow nullAndMissing
+dump globals
+setcvar developer 1
+callnow nullAndMissing
+setcvar developer 0
+callnow requiredEntity
+dump threads
+frame 1
+callnow requiredEntity2
+frame 1
+callnow methods
+dump globals
+thread removal
+frame 3
+dump entities
+dump globals
+# events sent by the host
+event 1 setValue 2.5
+event 1 getValue
+dump return
+event 1 moveTo "1 2 3" 1
+event 3 moveTo "1 2 3" 0.05
+event 1 getName
+dump return
+postevent 1 40 setKey late value
+postevent 1 20 setKey early value
+postevent 1 20 setValue 7
+postevent 1 0 mix 1 2 "3 4 5" six 3
+postevent 1 10 activate null
+postevent 1 10 isMoving
+postevent 3 10 remove
+dump events
+frame 5
+dump entities
+dump events

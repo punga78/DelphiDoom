@@ -30,7 +30,8 @@ type
   ///   (the ones of its own side too: wu_canAttack does not look at who is the enemy) and a rain of fire everything
   ///   within 1 tile. The explosions make an animation entity that the original never removes. Defects of the original
   ///   kept: the list of the projectiles is walked while a projectile that arrives takes itself out, so the one after it is
-  ///   skipped for that tic; the splash of the catapult hurts the walls by their pieces (walls are not in the model)
+  ///   skipped for that tic. A projectile whose target is the wall hurts the piece of the tile where it lands; the splash
+  ///   of a catapult and the rain of fire hurt every piece of wall within their radius
   /// </summary>
   TWarProjectiles = class
   strict private
@@ -40,6 +41,8 @@ type
     FNear: TWarNearUnits;
     FMelee: TWarMeleeHandler;
     FNearUnits: TList<Integer>;
+    FWallMelee: TWarMeleeHandler;
+    procedure WallSplash(const ATile: TWarVec2; ARadius, ASourceSlot: Integer);
     function UpdatePosition(AEntity: PWarEntity): Boolean;
     procedure UpdateSprite(AEntity: PWarEntity);
     procedure UpdateRainOfFireSprite(AEntity: PWarEntity);
@@ -52,6 +55,11 @@ type
     constructor Create(const AContext: TWarModelContext; const AMachine: TWarStateMachine; const ACombat: TWarCombat;
       const ANear: TWarNearUnits; const AMelee: TWarMeleeHandler);
     destructor Destroy; override;
+    /// <summary>
+    ///   The blow on a piece of wall (we_meleeWallAttack: attacker slot, index of the piece); without one the walls are
+    ///   not hurt by the units (the rain of fire hurts them anyway)
+    /// </summary>
+    property WallMelee: TWarMeleeHandler read FWallMelee write FWallMelee;
     /// <summary>wu_getProjectileType: what a unit that shoots throws (an arrow for a type that does not shoot)</summary>
     class function TypeOfUnit(AUnitType: Integer): Integer; static;
     /// <summary>wproj_createProjectile: the slot of the entity, 0 if the pool is full (the original would crash)</summary>
@@ -64,7 +72,7 @@ implementation
 
 uses
   System.Math, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Math, DelphiDoom.War.Model.Intf,
-  DelphiDoom.War.Model.Combat.Intf;
+  DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.Animations, DelphiDoom.War.Model.Construction.Types;
 
 type
   TProjectileData = record
@@ -315,12 +323,49 @@ procedure TWarProjectiles.TargetDamage(AEntity: PWarEntity);
 var
   LSource: Integer;
   LTarget: Integer;
+  LTile: TWarVec2;
+  LPiece: Integer;
 begin
   LSource := FContext.Pool.FindSlot(AEntity^.Projectile.SourceEntityId);
   LTarget := FContext.Pool.FindSlot(AEntity^.Projectile.TargetEntityId);
   // the attacker and the victim could have been removed by other units
-  if (LSource <> 0) and (LTarget <> 0) then
+  if (LSource = 0) or (LTarget = 0) then
+    Exit;
+  if FContext.Pool.Slots[LTarget]^.EntityType = WAR_ENTITY_WALL then
+  begin
+    LTile := TWarModelMath.MapToTile(AEntity^.Projectile.Target);
+    LPiece := FContext.Walls.IndexAt(Trunc(LTile.X), Trunc(LTile.Y));
+    if (LPiece >= 0) and Assigned(FWallMelee) then
+      FWallMelee(LSource, LPiece);
+  end
+  else
     FMelee(LSource, LTarget);
+end;
+
+// the pieces of wall within the radius: hit by the source, or by the rain of fire when there is no source
+procedure TWarProjectiles.WallSplash(const ATile: TWarVec2; ARadius, ASourceSlot: Integer);
+var
+  LIndex: Integer;
+  LPiece: PWarWallPiece;
+  LDistance: Single;
+begin
+  if FContext.Pool.OfType[WAR_ENTITY_WALL].Count = 0 then
+    Exit;
+  for LIndex := 0 to FContext.Walls.Count - 1 do
+  begin
+    LPiece := FContext.Walls[LIndex];
+    LDistance := TWarModelMath.DistanceInTiles(ATile, TWarModelMath.Vec(LPiece^.TileX, LPiece^.TileY));
+    if LDistance <= ARadius then
+    begin
+      if ASourceSlot <> 0 then
+      begin
+        if Assigned(FWallMelee) then
+          FWallMelee(ASourceSlot, LIndex);
+      end
+      else
+        FContext.Walls.TakeDamage(LIndex, 0, WAR_MODEL_RAIN_OF_FIRE_DAMAGE);
+    end;
+  end;
 end;
 
 // wproj_doProjectileSplashDamage
@@ -342,6 +387,7 @@ begin
     if FContext.Queries.CanAttack(LSource, LSlot) then
       FMelee(LSource, LSlot);
   end;
+  WallSplash(LTile, ARadius, LSource);
 end;
 
 // wproj_doRainOfFireProjectileSplashDamage
@@ -359,12 +405,22 @@ begin
     if IsAlive(LSlot) then
       FCombat.TakeDamage(LSlot, 0, WAR_MODEL_RAIN_OF_FIRE_DAMAGE);
   end;
+  WallSplash(LTile, ARadius, 0);
 end;
 
 procedure TWarProjectiles.MakeExplosion(const APosition: TWarVec2; ARainOfFire: Boolean);
+var
+  LSlot: Integer;
 begin
-  // the animation entity: the original never removes it
-  FContext.Pool.CreateEntity(WAR_ENTITY_ANIMATION, True);
+  // the animation entity: the original never removes it (the animation ends and leaves the entity empty)
+  LSlot := FContext.Pool.CreateEntity(WAR_ENTITY_ANIMATION, True);
+  if LSlot <> 0 then
+  begin
+    if ARainOfFire then
+      TWarAnimations.CreateRainOfFireExplosion(FContext.Pool.Slots[LSlot], APosition)
+    else
+      TWarAnimations.CreateExplosion(FContext.Pool.Slots[LSlot], APosition);
+  end;
   if Assigned(FContext.CombatEvents) then
     FContext.CombatEvents.Explosion(APosition, ARainOfFire);
 end;

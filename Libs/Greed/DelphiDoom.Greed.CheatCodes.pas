@@ -33,7 +33,7 @@ type
   ///   goals of the level), gulliver (bigger sprites), gimme (inventory), taco (the view of the enemy), game1,
   ///   game2, game3 and goNN (another episode, another map), score10000, score20000, score50000, blammoN (a
   ///   weapon in the slot 2) and five that only say something.
-  ///   The net game is not ported: the test of the parameter "ravenger", that allows the codes in a net game, is
+  ///   In a net game (State.NetMode) no code works; the parameter "ravenger", that allows them in the original, is
   ///   not here.
   ///   Kept behaviour of the original: game2 and game3 empty the letters in the demo too, and then do nothing;
   ///   letters with "bl" in them (and more than two) select the slot 2 if it has a weapon, even without a whole
@@ -308,6 +308,12 @@ procedure TGreedCheatCodes.SpecialCode;
 var
   LIndex: Integer;
 begin
+  // no secret codes in a net game (the original allows them with the parameter "ravenger")
+  if FState.NetMode then
+  begin
+    FState.SecretBuf := '';
+    Exit;
+  end;
   if CheckSecret('belfast') then
     KillEverything
   else if CheckSecret('allahmode') or CheckSecret('god') then

@@ -1,0 +1,70 @@
+# train commands: T command unit building
+T 7 0 34
+T 8 1 35
+T 9 2 40
+T 10 3 41
+T 11 4 34
+T 12 5 35
+T 13 6 34
+T 14 7 35
+T 15 8 34
+T 16 9 35
+T 17 10 38
+T 18 11 39
+T 19 12 36
+T 20 13 37
+# upgrade commands: U command upgrade
+U 53 2
+U 54 3
+U 55 18
+U 56 18
+U 57 0
+U 58 1
+U 59 4
+U 60 5
+U 61 6
+U 62 7
+U 63 8
+U 64 9
+U 65 10
+U 66 11
+U 67 12
+U 68 13
+U 69 14
+U 70 15
+U 71 16
+U 72 17
+# build commands: B command building
+B 35 32
+B 36 33
+B 37 34
+B 38 35
+B 39 36
+B 40 37
+B 41 38
+B 42 39
+B 43 40
+B 44 41
+B 45 42
+B 46 43
+B 47 44
+B 48 45
+B 49 46
+B 50 47
+# spell commands: S command spell
+S 21 0
+S 22 1
+S 23 2
+S 24 3
+S 25 4
+S 26 5
+S 27 6
+S 28 7
+S 29 8
+S 30 9
+S 31 10
+S 32 11
+# constants: K roadGold roadWood maxSelected groups poisonDamage normalSpell cancel
+K 50 0 32 9 10 532 73
+# basic commands: C none move stop harvest deliver repair attack buildBasic buildAdvanced buildRoad buildWall
+C 0 1 2 3 4 5 6 33 34 51 52

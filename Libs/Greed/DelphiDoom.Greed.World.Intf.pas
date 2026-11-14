@@ -68,6 +68,35 @@ type
     Time: Integer;
   end;
 
+  PGreedDoor = ^TGreedDoor;
+  /// <summary>The bytes of a plane, one for each tile (y * 64 + x)</summary>
+  TGreedTiles = array[0..GREED_MAP_TILES - 1] of Byte;
+  PGreedTiles = ^TGreedTiles;
+  /// <summary>doorlist</summary>
+  TGreedDoorList = array[0..GREED_MAX_DOORS - 1] of TGreedDoor;
+  PGreedDoorList = ^TGreedDoorList;
+
+  /// <summary>
+  ///   The memory of a world, for the code that reads or writes it for every tile of every sprite at every tic
+  ///   (the logic of the sprites): the planes, the flags of the tiles and the list of the doors as the original
+  ///   keeps them in its global arrays, without a call for each byte. IGreedWorld.View gives it once; the pointers
+  ///   stay valid, and show what the world holds at any moment, as long as the world lives (Load does not move
+  ///   the planes). Value and Flags read a tile outside the map as 0, as IGreedWorld.GetValue and GetMapFlags do;
+  ///   who writes through Planes, MapFlags or Doors checks the tile and the number of the door itself
+  /// </summary>
+  TGreedWorldView = record
+    Planes: array[TGreedPlane] of PGreedTiles;
+    MapFlags: PGreedTiles;
+    Doors: PGreedDoorList;
+    /// <summary>How many doors of Doors are in use (it changes when a door is added)</summary>
+    DoorCount: PInteger;
+    /// <summary>The byte of a plane at a tile; 0 outside 0..4095</summary>
+    function Value(APlane: TGreedPlane; ASpot: Integer): Byte; inline;
+    /// <summary>mapflags of a tile; 0 outside the map</summary>
+    function Flags(ASpot: Integer): Byte; inline;
+  end;
+  PGreedWorldView = ^TGreedWorldView;
+
   /// <summary>
   ///   The level that is being played, as the original keeps it in the globals of the map: the 18 planes (one byte for
   ///   each tile of 64 x 64), the flags of the tiles (mapflags: the shape of the floor and of the ceiling, the doors)
@@ -103,10 +132,34 @@ type
     function GetSpawnAreaCount: Integer;
     function GetSpawnArea(AIndex: Integer): TGreedSpawnArea;
     procedure SetSpawnArea(AIndex: Integer; const AArea: TGreedSpawnArea);
+    /// <summary>
+    ///   The memory of the planes, of the flags and of the doors, for the loops over tiles and sprites: asked once
+    ///   (when a class is made, or at the start of a tic), never for each tile. Valid as long as the world lives
+    /// </summary>
+    function View: PGreedWorldView;
     property DoorCount: Integer read GetDoorCount;
     property SpawnAreaCount: Integer read GetSpawnAreaCount;
   end;
 
 implementation
+
+{ TGreedWorldView }
+
+function TGreedWorldView.Value(APlane: TGreedPlane; ASpot: Integer): Byte;
+begin
+  // one unsigned comparison for both ends of the map
+  if Cardinal(ASpot) < GREED_MAP_TILES then
+    Result := Planes[APlane]^[ASpot]
+  else
+    Result := 0;
+end;
+
+function TGreedWorldView.Flags(ASpot: Integer): Byte;
+begin
+  if Cardinal(ASpot) < GREED_MAP_TILES then
+    Result := MapFlags^[ASpot]
+  else
+    Result := 0;
+end;
 
 end.

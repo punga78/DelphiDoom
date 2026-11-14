@@ -38,6 +38,8 @@ begin
   Writeln('  -nobriefing  no screens before a map');
   Writeln('  -game1, -game2, -game3  the game (episode) of the full data');
   Writeln('  -shotat  with -shot: the tics at which a picture is saved, as a list 100,300 (file_100.png ...)');
+  Writeln('  -record file  a new game (as -skipintro) is recorded in the file: the menu ends it');
+  Writeln('  -playback file  plays the game recorded in the file (its map, character, difficulty and seed)');
   Writeln('  -data   a folder with GREED.BLO (and the LEVEL*.LAY maps of the demos); default the current one');
   Writeln('  -list   write the lumps of the archive with their kind and stop');
   Writeln('  -map    the map to draw as a PNG (the first is 0)');
@@ -59,6 +61,16 @@ begin
   Writeln('          (the commands: north east south west fire strafe use run jump useitem lookup lookdown');
   Writeln('          centerview slideleft slideright inventoryleft inventoryright weapon1..weapon5 mapmode');
   Writeln('          heatmode goalitem menu ...; space is use and restart, shift run, alt strafe)');
+  Writeln('          the mouse in a script (with or without -play): "tic mouse DX DY" moves it DX pixels right and DY');
+  Writeln('          down, "tic mousebutton fire|use|north down|up" is its left, right or middle button and, in a');
+  Writeln('          menu, "tic click X Y" is a click at the pixel X, Y of the 320 x 200 screen');
+  Writeln('  the mouse: in the window, without a script, the mouse turns and looks (xGreed.ini: mouse, mousesensitivity,');
+  Writeln('          mousesensitivityx, mousesensitivityy, invertmouseturn, invertmouselook), its buttons fire (left),');
+  Writeln('          use (right) and walk (middle), and the menus have a pointer (menumouse); with a script the mouse');
+  Writeln('          of the system is not read: the script has its own');
+  Writeln('  -nomouse   the mouse of the system is not read');
+  Writeln('  -joystick  the first joystick walks and turns, its first two buttons fire and strafe (xGreed has no');
+  Writeln('          joystick: this is an addition, off unless asked)');
   Writeln('  -headless  with -play: no window, no sound device and no clock: as fast as the machine goes, and');
   Writeln('          the same options always give the same game');
   Writeln('  -lowres    with -play: the view is 320 x 200 instead of 640 x 400');
@@ -68,6 +80,12 @@ begin
   Writeln('  -messages  with -play: writes the messages of the game on the console');
   Writeln('  -shot   with -play: saves the last picture as a PNG');
   Writeln('  -dump   with -play: writes the state of the game at the end in a text file');
+  Writeln('  -net    with -play: a net game over UDP; "-net <player> <players>" says who this computer is (the first');
+  Writeln('          player is 0: it decides the start, the bonus item and the monsters) and how many play (2..8);');
+  Writeln('          every computer gives the same map and its own player number, and waits for the others');
+  Writeln('  -netport  with -net: the UDP port of this computer (default 5029)');
+  Writeln('  -netpeer  with -net: another computer of the game, "name[:port]" or ".1.2.3.4[:port]"; once for each');
+  Writeln('  -netname  with -net: the name of the player (12 characters)');
 end;
 
 const
@@ -131,6 +149,20 @@ begin
         LPlay.ShotPath := LCursor.Value
       else if (LArgument = '-dump') and (LCursor.Remaining >= 1) then
         LPlay.DumpPath := LCursor.Value
+      else if (LArgument = '-net') and (LCursor.Remaining >= 2) then
+      begin
+        LPlay.NetPlayer := StrToInt(LCursor.Value);
+        LPlay.NetPlayers := StrToInt(LCursor.Value);
+      end
+      else if (LArgument = '-netport') and (LCursor.Remaining >= 1) then
+        LPlay.NetPort := StrToInt(LCursor.Value)
+      else if (LArgument = '-netpeer') and (LCursor.Remaining >= 1) then
+      begin
+        SetLength(LPlay.NetPeers, Length(LPlay.NetPeers) + 1);
+        LPlay.NetPeers[High(LPlay.NetPeers)] := LCursor.Value;
+      end
+      else if (LArgument = '-netname') and (LCursor.Remaining >= 1) then
+        LPlay.NetName := LCursor.Value
       else if LArgument = '-autoplay' then
         LPlay.AutoPlay := True
       else if LArgument = '-headless' then
@@ -159,6 +191,20 @@ begin
         LPlay.Game := 2
       else if LArgument = '-game3' then
         LPlay.Game := 3
+      else if (LArgument = '-record') and (LCursor.Remaining >= 1) then
+      begin
+        LPlay.RecordPath := LCursor.Value;
+        LPlay.SkipIntro := True;
+      end
+      else if (LArgument = '-playback') and (LCursor.Remaining >= 1) then
+      begin
+        LPlay.PlaybackPath := LCursor.Value;
+        LPlay.SkipIntro := True;
+      end
+      else if LArgument = '-nomouse' then
+        LPlay.NoMouse := True
+      else if LArgument = '-joystick' then
+        LPlay.Joystick := True
       else if (LArgument = '-shotat') and (LCursor.Remaining >= 1) then
       begin
         for LText in LCursor.Value.Split([',']) do

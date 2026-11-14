@@ -40,6 +40,9 @@ sono in `CLAUDE.md`; qui c'e' cio' che e' specifico di War e i comandi per ripet
 | **Attacco** (#194, seconda fetta) | `194\war_model_ref.c` (stesso unity build con `war_projectiles.c`; `actions`, `combat 16`, `dump combat`) | `model.steps` (379: i passi di 378 azioni, la tabella unica di tutte le aree), `model.combat` (16 scenari x 600 tic: attacco, proiettili, danno a zona, inseguire, pattugliare), `model.combat.dump` | `CombatParity` |
 | **Raccolta** (#194, seconda fetta) | `194\war_model_ref.c` (stessa unity build; scenario gather: 10 scenari x 1800 tic con due fazioni, miniere, foreste, municipi e sei lavoratori) | `gather.tables` (3: le immagini dei trasportatori), `gather` (10 x 1800 impronte + 10 riassunti = 18010), `gather.dump` (34) | `GatherParity` |
 | **Costruzione, riparazione, crollo, addestramento e miglioramenti** (#194, seconda fetta) | `194\war_model_ref.c` con `war_commands.c` intero e `war_construction_ref.inc` (gli ordini sono i veri `wcmd_*`) | `model.construction.tables` (21: risorse di costruzione, costi, trucco), `model.construction` (24 scenari x 400 tic = 9600 righe), `model.construction.dump` | `ConstructionParity` |
+| **Comandi** (#194, completamento) | `194\war_model_ref.c` + `war_full_ref.inc`: il **tic intero** di `wmap_updateMap` (`tickFull`: stati, griglia, azioni, `wanim_updateAnimations`, proiettili, `updateMagic`, `updateSpells`); gli ordini dai veri `wcmd_executeCommand` (clic sintetico), `updateCommandFromRightClick`, `updateSelectionFromList`, `updateSelectionGroups`, `wcmd_cancel` | `model.commands.tables` (70: cio' che ogni `wcmd_train*`/`upgrade*`/`build*` mette nel comando), `model.commands` (12 scenari x 900 tic = 10800), `model.commands.dump` | `FullParity`, `ModelCommands` (tabelle) |
+| **Incantesimi, mana, animazioni** (#194, completamento) | lo stesso (`spells 12`): stato `cast`, tutti gli incantesimi, evocazioni, nube, vista, pioggia di fuoco, resurrezione | `model.spells` (10800), `model.spells.dump` | `FullParity` |
+| **Tic intero con tutto insieme** (#194, completamento) | lo stesso (`full 12`): raccolta, combattimento, costruzione, muri, strade, incantesimi, comandi e l'ordine dell'IA nello stesso scenario | `model.full` (10800), `model.full.dump` | `FullParity` |
 | Filmati FLIC (#199) | `199\flc*.cpp` (`FlcPlayer` di OpenXcom: il remake **non** ha codice FLIC) | `Tests\Data\Cinematic\flic-*` | `Tests\...Cinematic.FlicParity` |
 
 ## Come si ripete
@@ -60,19 +63,25 @@ powershell -NoProfile -File Tools\Verifica\201\Registra-Golden.ps1 -Solo musica
 Senza il `DATA.WAR` salta i golden che lo vogliono (lo dice), senza gcc non parte il gruppo. Ultima esecuzione
 (2026-11-14): **18 golden su 18 identici** (6 gruppi, non toccati da #194) e **7 su 7 dei gruppi `194 modello` e `194 costruzione`** (rifatti dal C e confrontati con `Confronta-Golden.ps1 -Solo 194`), `DelphiDoom.Tests.War` 898 passati, 0 falliti, 1 ignorato (il PNG
 di ispezione, `DELPHIDOOM_WAR_PNG_OUT`), a Win32 e a Win64.
+**Completamento della #194 (2026-11-14)**: `Confronta-Golden.ps1 -Solo 194` = **20 golden su 20 identici** rifatti dal C (i 13
+di prima piu' i 7 dei gruppi `194 comandi`, `194 incantesimi`, `194 completo`); `DelphiDoom.Tests.War` 1191 test, 1190
+passati, 1 ignorato, 0 falliti a Win32 e a Win64 (a 64 bit con `dcc64` a parte, vedi sotto).
 
 Per compilare i test: `Tools\build.bat DelphiDoom.Tests.War Release` (e `DelphiDoom.Tests.Cinematic`); in un worktree sotto
 `.claude\worktrees\` serve la variabile `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
 I test risalgono dalla cartella dell'exe fino a `Tests\Data` (dalla #230 `build.bat` non copia più nulla).
-A 64 bit `DelphiDoom.Tests.Cinematic` compila e passa; `DelphiDoom.Tests.War` non compila per intero (gli `AreEqual` e i
-`WillRaise` di `Tests\Source\DelphiDoom.Tests.War.Palette.pas`, preesistenti): un programma con tutte le fixture tranne le
-quattro grafiche (`Palette`, `Pixels`, `Graphics`, `Font` e i loro derivati) compila con `dcc64` e passa.
+A 64 bit `DelphiDoom.Tests.Cinematic` compila e passa. `DelphiDoom.Tests.War` compila e passa per intero a 64 bit; il suo
+`.dproj` dichiara oggi solo Win32 (lo estende la #40), quindi per provarlo a 64 bit si compila il `.dpr` con `dcc64` a
+parte (da `Tests\`): `dcc64 -B -Q -$O+ -NSSystem;Winapi;System.Win;Xml;Data;Vcl -U..\Libs\AudioMix;<DUnitX\Source>;..\Libs\War;..\Libs\MathCore;.\Source
+-I..\Libs\War;.\Include;<DUnitX\Source> -E..\bin\Win64\Release\Tests -N0..\dcu\Win64\Release\DelphiDoom.Tests.War.manual -DRELEASE DelphiDoom.Tests.War.dpr`.
 
 ## Copertura
 
 `Tools\Copertura.ps1 -Test War -Cartella Libs\War` e `-Test Cinematic -Cartella Libs\Cinematic` (richiede CodeCoverage.exe,
 `DELPHI_CODECOVERAGE`; compila in Debug). Obiettivo 90% sulle librerie nuove. Risultato (2026-11-13): `Libs\War` 99%
 (2107 righe su 2118), `Libs\Cinematic` 99% (1119 su 1130); le unit nuove di #198 e #199: 97-100% ciascuna.
+Dopo il completamento della #194 (2026-11-14): `Libs\War` 98% (7923 righe su 8004), le unit dei comandi, degli
+incantesimi e delle animazioni 97-100%.
 
 ## Cosa non e' coperto
 
@@ -83,4 +92,4 @@ quattro grafiche (`Palette`, `Pixels`, `Graphics`, `Font` e i loro derivati) com
   non per il tempo.
 - **Il gioco originale DOS** come secondo riferimento dove il remake si discosta (IA, regole): serve il modello di gioco
   (#194-#196); per l'audio e i filmati il remake e' l'unico riferimento tranne per i FLIC (OpenXcom).
-- **Gli stati per tic** esistono dalla prima fetta del modello (#194: gruppo `194 modello`, vedi `Libs\War\README.md`, sezione `Modello di gioco`), dalla seconda (quattro gruppi: `194 attacco`, `194 raccolta`, `194 costruzione`, uniti il 2026-11-14 in un solo modello con **un solo** esecutore dei passi delle azioni, `TWarActionRunner`, e una sola tabella dei passi, `model.steps`); coprono solo cio' che il modello porta (idle, move in linea retta, death, wait, economia, danni, attacco, proiettili, inseguire, pattugliare, raccolta, costruzione, riparazione, crollo, addestramento, miglioramenti, mura): incantesimi, IA, animazioni e gli altri comandi non hanno ancora un golden. Gli scenari di raccolta mettono lo stand-in del seguimento e del crollo e fanno girare solo le azioni di raccolta (come il C dello scenario, `gatherTick`): misurano gli stati di raccolta; il giro intero di `wmap_updateMap` e' in `tickModel` (attacco e costruzione). I fotogrammi dei punti 3-5 dell'issue #201 aspettano il renderer: per aggiungere un gruppo basta una voce in `Tools\Verifica\201\Golden-Common.ps1` (programma C, argomenti, golden).
+- **Gli stati per tic** esistono dalla prima fetta del modello (#194: gruppo `194 modello`, vedi `Libs\War\README.md`, sezione `Modello di gioco`), dalla seconda (quattro gruppi: `194 attacco`, `194 raccolta`, `194 costruzione`, uniti il 2026-11-14 in un solo modello con **un solo** esecutore dei passi delle azioni, `TWarActionRunner`, e una sola tabella dei passi, `model.steps`); coprono solo cio' che il modello porta (idle, move in linea retta, death, wait, economia, danni, attacco, proiettili, inseguire, pattugliare, raccolta, costruzione, riparazione, crollo, addestramento, miglioramenti, mura); dal completamento (gruppi `194 comandi`, `194 incantesimi`, `194 completo`) anche comandi, incantesimi, mana, animazioni e muri hanno un golden per tic con il tic intero; l'IA (#196) no. Gli scenari di raccolta mettono lo stand-in del seguimento e del crollo e fanno girare solo le azioni di raccolta (come il C dello scenario, `gatherTick`): misurano gli stati di raccolta; il giro intero di `wmap_updateMap` e' in `tickModel` (attacco e costruzione). I fotogrammi dei punti 3-5 dell'issue #201 aspettano il renderer: per aggiungere un gruppo basta una voce in `Tools\Verifica\201\Golden-Common.ps1` (programma C, argomenti, golden).

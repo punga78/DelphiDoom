@@ -1,0 +1,51 @@
+// the preprocessor of the parser: defines, macros with parameters, conditions, includes, built in defines
+
+#define TWICE( x )	( ( x ) * 2 )
+#define GREETING	"hello"
+#define SUM( a, b ) \
+	( a + b )
+#define DEBUG_ON
+
+#ifdef DEBUG_ON
+float	debugOn = 1;
+#else
+float	debugOn = "broken";
+#endif
+
+#ifndef DEBUG_ON
+float	never = "broken";
+#else
+float	debugOff = 0;
+#endif
+
+// an #elif after an #if that was taken is taken too (see the compile errors): only #else here
+#if 1 + 1 == 2
+float	two = 2;
+#else
+float	two = "broken";
+#endif
+
+#if 0
+this text is skipped
+#elif defined( DEBUG_ON ) && !defined( NOT_DEFINED )
+float	three = 3;
+#endif
+
+#undef DEBUG_ON
+#ifdef DEBUG_ON
+float	undefFailed = "broken";
+#endif
+
+#include "script/ok_include.script"
+
+float	answer = ANSWER;
+entity	nobody = NULL;
+
+void main() {
+	sys.println( GREETING + " " + TWICE( 21 ) + " " + SUM( 1, 2 ) + " " + answer + " " + included_value );
+	included_function();
+	if ( nobody == NULL ) {
+		sys.println( "nobody is NULL " + true + false );
+	}
+	sys.println( "values " + debugOn + debugOff + two + three + TWICE( TWICE( two ) + SUM( two, three ) ) );
+}

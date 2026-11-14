@@ -1,0 +1,183 @@
+// errors and warnings at run time, and the limits of the interpreter
+
+float	depth;
+float	gzero;
+float	result;
+vector	vresult;
+float	spawned;
+
+void runaway() {
+	float i;
+
+	sys.println( "runaway starts" );
+	while ( 1 ) {
+		i++;
+	}
+}
+
+void recurse( float n ) {
+	depth = n;
+	recurse( n + 1 );
+}
+
+void deepRecursion() {
+	recurse( 1 );
+}
+
+// 62 nested calls work, with the caller that is 63 frames
+float nest( float n ) {
+	if ( n <= 1 ) {
+		return 1;
+	}
+	return 1 + nest( n - 1 );
+}
+
+void deepOk() {
+	result = nest( 62 );
+	sys.println( "nest 62 = " + result );
+}
+
+void deepTooMuch() {
+	result = nest( 64 );
+	sys.println( "never" );
+}
+
+// every frame takes 16 strings on the local stack
+void bigLocals( float n ) {
+	string a, b, c, d, e, f, g, h, i, j, k, l, m, o, p, q;
+
+	depth = n;
+	bigLocals( n + 1 );
+}
+
+void stackOverflow() {
+	bigLocals( 1 );
+}
+
+void pushOverflow( string a, string b, string c, string d, string e, string f, string g, string h ) {
+	// 8 + 33 strings: the frame fits, the strings pushed for the next call do not
+	string s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21;
+	string s22, s23, s24, s25, s26, s27, s28, s29, s30, s31, s32, s33;
+
+	pushOverflow( a, b, c, d, e, f, g, h );
+}
+
+void stackOverflow2() {
+	pushOverflow( "a", "b", "c", "d", "e", "f", "g", "h" );
+}
+
+void pushFloats( vector a, vector b, vector c, vector d, vector e, vector f, vector g, vector h, vector i, vector j, vector k, vector l ) {
+	// 144 bytes of parameters and 46 strings: the frame fits, the floats pushed for the next call do not
+	string s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21;
+	string s22, s23, s24, s25, s26, s27, s28, s29, s30, s31, s32, s33, s34, s35, s36, s37, s38, s39, s40;
+	string s41, s42, s43, s44, s45, s46;
+
+	pushFloats( a, b, c, d, e, f, g, h, i, j, k, l );
+}
+
+void stackOverflow3() {
+	pushFloats( '1 1 1', '2 2 2', '3 3 3', '4 4 4', '5 5 5', '6 6 6', '7 7 7', '8 8 8', '9 9 9', '1 2 3', '4 5 6', '7 8 9' );
+}
+
+void divisions() {
+	float	a = 7;
+	vector	v = '1 2 3';
+
+	result = a / gzero;
+	sys.println( "a / 0 = " + result );
+	result = a % gzero;
+	sys.println( "a % 0 = " + result );
+	result = a;
+	result /= gzero;
+	sys.println( "a /= 0 : " + result );
+	result = a;
+	result %= gzero;
+	sys.println( "a %= 0 : " + result );
+	vresult = v;
+	vresult /= gzero;
+	sys.println( "v /= 0 : " + vresult );
+}
+
+void scriptError() {
+	sys.println( "before error" );
+	sys.error( "a script error" );
+	sys.println( "never" );
+}
+
+void scriptErrorNested2() {
+	sys.error( "nested " + depth );
+}
+
+void scriptErrorNested1() {
+	depth = 3;
+	scriptErrorNested2();
+}
+
+void scriptErrorNested() {
+	scriptErrorNested1();
+}
+
+void warnings() {
+	sys.warning( "first warning" );
+	sys.warning( "second " + 2 );
+	sys.println( "after warnings" );
+}
+
+void sleepForever() {
+	sys.pause();
+}
+
+void tooManyThreads() {
+	float i;
+
+	for ( i = 0; i < 5000; i++ ) {
+		spawned = i;
+		thread sleepForever();
+	}
+	sys.println( "threads created " + ( spawned + 1 ) );
+}
+
+void waiter() {
+	sys.wait( 1000 );
+}
+
+void tooManyEvents() {
+	float i;
+
+	for ( i = 0; i < 5000; i++ ) {
+		spawned = i;
+		thread waiter();
+	}
+	sys.println( "never" );
+}
+
+void badEntityArg() {
+	entity e;
+
+	sys.println( "before" );
+	sys.waitFor( e );
+	sys.println( "never" );
+}
+
+void staleEntity() {
+	entity e;
+
+	e = $ent_one;
+	e.remove();
+	sys.waitFrame();
+	sys.println( "stale: value " + e.getValue() );
+	// the object of the event is gone: nothing is called, the thread goes on
+	e.bind( e );
+	sys.println( "still running" );
+}
+
+void longString() {
+	string s = "0123456789";
+	float i;
+
+	for ( i = 0; i < 20; i++ ) {
+		s = s + s;
+	}
+	sys.println( s );
+	sys.println( "length " + sys.strLength( s ) );
+}

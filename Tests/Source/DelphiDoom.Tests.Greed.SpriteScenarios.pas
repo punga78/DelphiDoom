@@ -120,6 +120,8 @@ type
     property Trace: TSpriteTrace read FTrace;
     /// <summary>The time spent in Think (MoveSprites alone) by all the runs, in microseconds</summary>
     property ThinkMicroseconds: Double read GetThinkMicroseconds;
+    /// <summary>Sets the time spent in Think back to zero (a new repetition of a measure)</summary>
+    procedure ResetThinkTime;
     /// <summary>What the stand-in of SpawnSprite makes: a sprite that depends only on the arguments</summary>
     class procedure FillSpawned(out ASprite: TGreedSprite; AValue, AX, AY, AZ, AZAdjust, AAngle, AAngle2: Integer;
       AActive: Boolean; ASpawnId: Integer); static;
@@ -365,6 +367,11 @@ end;
 function TSpriteScenarioRunner.GetThinkMicroseconds: Double;
 begin
   Result := FThinkTime.ElapsedTicks * 1000000.0 / TStopwatch.Frequency;
+end;
+
+procedure TSpriteScenarioRunner.ResetThinkTime;
+begin
+  FThinkTime.Reset;
 end;
 
 destructor TSpriteScenarioRunner.Destroy;
