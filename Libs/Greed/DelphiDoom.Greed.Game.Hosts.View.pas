@@ -24,7 +24,7 @@ type
   ///   object does not own the parts: it finds them in the TGreedGameParts of its game
   /// </summary>
   TGreedGameViewHost = class(TInterfacedObject, IGreedItemHost, IGreedLevelHost, IGreedCheatHost,
-    IGreedMapSessionHost, IGreedEventHost)
+    IGreedMapSessionHost, IGreedEventHost, IGreedLevelNetHost)
   strict private
     FParts: TGreedGameParts;
     function GetSystemClock: Cardinal;
@@ -48,6 +48,8 @@ type
     procedure FadeOutLevel;
     procedure ResetDisplay;
     procedure NewMap(AMap, AActivate: Integer);
+    // IGreedLevelNetHost
+    procedure RespawnPlayer;
     // IGreedCheatHost
     procedure SetGameEpisode(AEpisode: Integer);
     procedure RestoreTimerHook;
@@ -124,6 +126,11 @@ begin
   FParts.View.RefreshGoalItem;
 end;
 
+procedure TGreedGameViewHost.RespawnPlayer;
+begin
+  FParts.Session.RespawnPlayer;
+end;
+
 procedure TGreedGameViewHost.SetTotalEffectTime(ATics: Integer);
 begin
   FParts.View.SetTotalEffectTime(ATics);
@@ -171,7 +178,7 @@ procedure TGreedGameViewHost.SelectSong(AMap: Integer);
 var
   LSong: TGreedSong;
 begin
-  LSong := TGreedSongSelector.Select(AMap, FParts.State.Demo, False);
+  LSong := TGreedSongSelector.Select(AMap, FParts.State.Demo, FParts.State.NetMode);
   FParts.Music.Play(LSong.FileName, LSong.Pattern);
 end;
 

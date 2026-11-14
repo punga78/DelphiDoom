@@ -717,7 +717,7 @@ var
 begin
   LEvent := FBuffer.ReadMessage;
   LLength := 0;
-  while (LLength < GREED_NET_MESSAGE_SIZE) and (LEvent.Text[LLength] <> #0) do
+  while (LLength < GREED_NET_TEXT_SIZE) and (LEvent.Text[LLength] <> #0) do
     Inc(LLength);
   SetString(LText, PAnsiChar(@LEvent.Text[0]), LLength);
   FMessages.WriteMessage(Format(SMessage, [NameOf(LEvent.PlayerId), string(LText)]));
@@ -1012,12 +1012,12 @@ begin
   LEvent.Id := GREED_NET_EVENT_MESSAGE;
   LEvent.PlayerId := FPlayerNum;
   LIndex := 0;
-  while (LIndex < GREED_NET_MESSAGE_SIZE) and (LIndex < Length(AText)) and (AText[LIndex + 1] <> #0) do
+  while (LIndex < GREED_NET_TEXT_SIZE) and (LIndex < Length(AText)) and (AText[LIndex + 1] <> #0) do
   begin
     LEvent.Text[LIndex] := AText[LIndex + 1];
     Inc(LIndex);
   end;
-  if LIndex < GREED_NET_MESSAGE_SIZE then
+  if LIndex < GREED_NET_TEXT_SIZE then
     LEvent.Text[LIndex] := #0;
   FBuffer.WriteMessage(LEvent);
   Send(SizeOf(TGreedNetMessageEvent));

@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Actor.Types,
   DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Game.Constants,
-  DelphiDoom.Greed.Game.Tables;
+  DelphiDoom.Greed.Game.Tables, DelphiDoom.Greed.Net.Intf;
 
 const
   /// <summary>MAXZONES and MAXPROCESS of event.pas</summary>
@@ -54,7 +54,8 @@ type
   ///   through the interfaces of DelphiDoom.Greed.Game.Intf. The fields are public and have the names of the
   ///   original, as in TGreedRenderState: the logic is a port line by line and reads them in the loops of the
   ///   sprites. A pointer to a sprite of the original is here the index in the pool (GREED_POOL_NIL = nil). The net
-  ///   game is not ported: NetMode stays false
+  ///   game: NetMode is false and Net is nil unless TGreedGame.AttachNet was called; the logic calls Net only
+  ///   where the original asks "if netmode"
   /// </summary>
   TGreedGameState = class
   public
@@ -140,6 +141,14 @@ type
     EnemyViewMode: Integer;
     MoveRate, StrafRate, FallRate, WarpX, WarpY: TGreedFixed;
     NetMode: Boolean;
+    /// <summary>
+    ///   The Net* routines of net.pas (greedcom of the original is a global too): the session of the net game that
+    ///   TGreedGame was given, nil in a game of one player. Not owned
+    /// </summary>
+    Net: IGreedNetLink;
+    /// <summary>netsendtime and nethurtsoundtime: when the player is told to the others and may be heard again</summary>
+    NetSendTime: Integer;
+    NetHurtSoundTime: Integer;
     WallAnimationTime: Integer;
     SpecialEffectTime: Integer;
     SwitchTime: Integer;

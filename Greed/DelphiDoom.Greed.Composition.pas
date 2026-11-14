@@ -56,6 +56,16 @@ type
     Game: Integer;
     /// <summary>With the program: the tics at which a picture is saved, as ShotPath with the tic before the extension</summary>
     ShotTics: TArray<Integer>;
+    /// <summary>
+    ///   With -play: a net game over UDP. NetPlayers is how many play (0: no net game), NetPlayer who this computer
+    ///   is (0 .. NetPlayers - 1), NetPort its UDP port (0: the default of Libs\Net), NetPeers the other computers
+    ///   ("name[:port]" or ".1.2.3.4[:port]"), NetName the name of the player
+    /// </summary>
+    NetPlayers: Integer;
+    NetPlayer: Integer;
+    NetPort: Integer;
+    NetPeers: TArray<string>;
+    NetName: string;
     /// <summary>The options of a game that was not asked anything</summary>
     class function Standard: TGreedPlayOptions; static;
   end;
@@ -120,7 +130,9 @@ uses
   DelphiDoom.Greed.Screens, DelphiDoom.Greed.ScreenView, DelphiDoom.Greed.MenuHost, DelphiDoom.Greed.IntroHost,
   DelphiDoom.Greed.EpisodeHost, DelphiDoom.Greed.HostKeyboard, DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro,
   DelphiDoom.GameHost.Events.Intf,
-  DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
+  DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory,
+  DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Net.NodeListParser, DelphiDoom.Net.WinsockTransport,
+  DelphiDoom.Greed.Net.Types, DelphiDoom.Greed.Net.Intf, DelphiDoom.Greed.Net.Factory;
 
 const
   WINDOW_TITLE = 'Greed32';
@@ -551,6 +563,80 @@ begin
     Inc(LStart, LLength + Roll(2, 40));
   end;
 end;
+// "-net": the UDP transport of Libs\Net to the other computers and the session of the game on it. The driver of
+// the DOS game is not there to say who plays: the command line does (-net <player> <players>)
+function AttachNet(AGame: TGreedGame; const AOptions: TGreedPlayOptions): IGreedNetStart;
+var
+  LPort, LColon: Integer;
+  LPeer: string;
+  LArguments: TArray<string>;
+  LPeers: TArray<TNetNodeAddress>;
+  LTransport: INetTransport;
+begin
+  LPort := AOptions.NetPort;
+  if LPort = 0 then
+    LPort := NET_DEFAULT_PORT;
+  // the list of the hosts of Libs\Net has the port as an argument of its own (":port"): "host:port" is split
+  LArguments := nil;
+  for LPeer in AOptions.NetPeers do
+  begin
+    LColon := LastDelimiter(':', LPeer);
+    if LColon > 1 then
+      LArguments := LArguments + [Copy(LPeer, 1, LColon - 1), Copy(LPeer, LColon, MaxInt)]
+    else
+      LArguments := LArguments + [LPeer];
+  end;
+  LPeers := TNetNodeListParser.Parse(LArguments, 0, NET_DEFAULT_PORT);
+  if Length(LPeers) <> AOptions.NetPlayers - 1 then
+    raise EGreedNetException.CreateFmt('Greed32: a net game of %d players needs %d -netpeer, there are %d',
+      [AOptions.NetPlayers, AOptions.NetPlayers - 1, Length(LPeers)]);
+  LTransport := TWinsockNetTransport.Create(Word(LPort), LPeers);
+  Result := TGreedNetFactory.Attach(AGame, LTransport,
+    TGreedNetConfig.Make(AOptions.NetPlayer, AOptions.NetPlayers, AnsiString(AOptions.NetName)));
+end;
+
+// NetWaitStart: the clock of the game follows the real one (70 tics a second) while the players look for each
+// other. False if the window was closed before the start
+function WaitNetStart(AGame: TGreedGame; const AStart: IGreedNetStart; const AClock: IClock;
+  const AInput: IGreedInput): Boolean;
+var
+  LBase: Integer;
+begin
+  AStart.BeginWaitStart;
+  LBase := AClock.Steps(GREED_LOOP_TIC_RATE) - AGame.State.TimeCount;
+  repeat
+    if not AInput.Pump then
+      Exit(False);
+    AGame.State.TimeCount := AClock.Steps(GREED_LOOP_TIC_RATE) - LBase;
+    Result := AStart.WaitStartStep;
+    if not Result then
+      AClock.Wait(1);
+  until Result;
+end;
+
+// What a computer knows of the others at the end of a net game, for -dump
+procedure DumpNet(AGame: TGreedGame; ALines: TStrings);
+var
+  LPlayer: Integer;
+  LNet: IGreedNetLink;
+  LData: TGreedPlayerEvent;
+begin
+  LNet := AGame.State.Net;
+  ALines.Add(Format('net.player=%d', [LNet.ConsolePlayer]));
+  ALines.Add(Format('net.players=%d', [LNet.NumPlayers]));
+  for LPlayer := 0 to LNet.NumPlayers - 1 do
+  begin
+    LData := LNet.PlayerData[LPlayer];
+    ALines.Add(Format('net.%d.name=%s', [LPlayer, string(LNet.NetName[LPlayer])]));
+    ALines.Add(Format('net.%d.fragcount=%d', [LPlayer, LNet.FragCount[LPlayer]]));
+    ALines.Add(Format('net.%d.frags=%d', [LPlayer, AGame.State.Player.Frags[LPlayer]]));
+    ALines.Add(Format('net.%d.x=%d', [LPlayer, LData.X]));
+    ALines.Add(Format('net.%d.y=%d', [LPlayer, LData.Y]));
+    ALines.Add(Format('net.%d.angst=%d', [LPlayer, LData.Angst]));
+    ALines.Add(Format('net.%d.chartype=%d', [LPlayer, LData.CharType]));
+  end;
+end;
+
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
   const AOptions: TGreedPlayOptions): Integer;
 var
@@ -606,6 +692,8 @@ var
   LDump: TStringList;
   LMusicVolume, LSfxVolume: Integer;
   LDemo: Boolean;
+  LNet: Boolean;
+  LNetStart: IGreedNetStart;
 begin
   LPalette := TGreedPalette.FromLump(AArchive.ReadLump(AArchive.RequireIndexOf(GREED_LUMP_PALETTE)));
   for LIndex := 0 to 255 do
@@ -661,7 +749,9 @@ begin
     LTime := TGreedPlayTime.Create;
     LTimeIntf := LTime;
     LTime.Headless := AOptions.Headless;
-    if AOptions.Headless then
+    // a net game runs in real time also without a window: the other computers do
+    LNet := AOptions.NetPlayers > 0;
+    if AOptions.Headless and not LNet then
       LClock := TManualClock.Create
     else
       LClock := TClockFactory.CreateClock(nil);
@@ -739,11 +829,24 @@ begin
     else
       LGame.SetEdition(LDemo, 1);
     LLoop := TGreedGameLoop.Create(LGame, LPresenter, LInput, LClock, LColors, LFrameWidth, LFrameHeight);
-    LLoop.FreeRunning := AOptions.Headless;
+    LLoop.FreeRunning := AOptions.Headless and not LNet;
     LTime.Loop := LLoop;
     try
+      // "-net": the game becomes a net game before its map is loaded (the start place is the one of the player)
+      LNetStart := nil;
+      if LNet then
+        LNetStart := AttachNet(LGame, AOptions);
       LGame.NewGame(AOptions.MapNumber, AOptions.Character, AOptions.Difficulty);
+      if Assigned(LNetStart) then
+        if not WaitNetStart(LGame, LNetStart, LClock, LInput) then
+        begin
+          Writeln('Net game: cancelled while waiting for the other players');
+          Exit(0);
+        end;
+      LNetStart := nil;
       Result := LLoop.Run(AOptions.MaxTics);
+      // NetQuitGame, if the game did not say it already
+      LGame.LeaveNet;
       if AOptions.ShotPath <> '' then
       begin
         LImage.Width := LLoop.FrameBuffer.Width;
@@ -760,6 +863,8 @@ begin
         LDump := TStringList.Create;
         try
           TGreedGameDump.Write(LGame, LLoop.Tics, LLoop.Frames, LRandom.Offset, LDump);
+          if LNet then
+            DumpNet(LGame, LDump);
           LDump.Add(Format('effects.started=%d', [LStatistics.EffectsStarted]));
           LDump.Add(Format('songs.started=%d', [LStatistics.SongsStarted]));
           LDump.Add(Format('messages=%d', [LLogged.Count]));

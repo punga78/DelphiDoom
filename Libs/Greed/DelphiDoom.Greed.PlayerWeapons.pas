@@ -26,7 +26,8 @@ type
   ///   ends) and the part of UpdateView that lowers a weapon and raises the next one. The globals are the fields of
   ///   TGreedGameState; the ones that are not there are properties of this class: WeaponBobView, WeaponX, WeaponY
   ///   (weapbob1, wx, wy of UpdateView) and the size of the picture that is shown (wpic).
-  ///   Not ported: the net game (NetSoundEffect, NetSendSpawn).
+  ///   In a net game (State.NetMode) the sounds of the shots and the ring of the green gun are told to the others
+  ///   (State.Net: NetSoundEffect, NetSendSpawn); the other shots are told by the spawner.
   ///   Kept defects of the original: GetTargetAngle never finds a target. After a probe hits a sprite it walks the
   ///   whole list of the sprites and then reads the hit points of the placeholder that ends the list, which are
   ///   always 0: the five probes (960 steps each, at the angle of the shot, 16 to each side and 8 to each side) only
@@ -55,7 +56,8 @@ type
     procedure ProbeLine(AAngle: Integer);
     function LookAngle: Integer;
     procedure Shoot(AValue: Integer; AX, AY, AHeight: TGreedFixed; AAngle, AAngle2: Integer);
-    procedure ShootOne(AValue, AHeightUnits, ASound: Integer);
+    procedure ShootOne(AValue, AHeightUnits, ASound: Integer; ANetSound: Integer = -1);
+    procedure NetSound(ASound: Integer);
     procedure ShootTwo(AValue: Integer);
     procedure SelectPicture;
   public
@@ -98,6 +100,8 @@ const
   /// accuracy of GetTargetAngle
   TARGET_ACCURACY = 16;
   WEAPON_DELAY = 8;
+  /// ShootOne: the other players hear the same sound
+  SAME_SOUND = -1;
   WEAPON_SPREAD = 4;
   WEAPON_GREEN = 18;
 
@@ -267,7 +271,7 @@ begin
 end;
 
 // One shot from where the player is, at the angle of the player, and its sound (0 = none)
-procedure TGreedPlayerWeapons.ShootOne(AValue, AHeightUnits, ASound: Integer);
+procedure TGreedPlayerWeapons.ShootOne(AValue, AHeightUnits, ASound: Integer; ANetSound: Integer);
 var
   LHeight: TGreedFixed;
   LAngle2: Integer;
@@ -276,6 +280,17 @@ begin
   LAngle2 := GetTargetAngle(0, LHeight);
   Shoot(AValue, FState.Player.X, FState.Player.Y, LHeight, FState.Player.Angle, LAngle2);
   FSound.SoundEffect(ASound, 0, FState.Player.X, FState.Player.Y);
+  if ANetSound = SAME_SOUND then
+    NetSound(ASound)
+  else
+    NetSound(ANetSound);
+end;
+
+// NetSoundEffect: the other players of a net game hear the shot too
+procedure TGreedPlayerWeapons.NetSound(ASound: Integer);
+begin
+  if FState.NetMode then
+    FState.Net.SoundEffect(ASound, 0, FState.Player.X, FState.Player.Y);
 end;
 
 // Two shots, one from 4 units to each side of the player
@@ -297,6 +312,7 @@ begin
   LAngle2 := GetTargetAngle(0, LHeight);
   Shoot(AValue, FState.Player.X + LMoveX, FState.Player.Y + LMoveY, LHeight, FState.Player.Angle, LAngle2);
   FSound.SoundEffect(GREED_SN_BULLET12, 0, FState.Player.X, FState.Player.Y);
+  NetSound(GREED_SN_BULLET12);
 end;
 
 procedure TGreedPlayerWeapons.FireWeapon;
@@ -352,7 +368,8 @@ begin
       ShootOne(GREED_S_BULLET7, 52, GREED_SN_BULLET13);
     // lizard #2
     9:
-      ShootOne(GREED_S_BULLET9, 52, GREED_SN_BULLET9);
+      // as the original: the others hear the sound of the autopistol
+      ShootOne(GREED_S_BULLET9, 52, GREED_SN_BULLET9, GREED_SN_BULLET1);
     // specimen #2
     10:
       ShootOne(GREED_S_BULLET10, 52, GREED_SN_BULLET10);
@@ -367,7 +384,7 @@ begin
       ShootTwo(GREED_S_BULLET16);
     // blue gun
     17:
-      ShootOne(GREED_S_BULLET17, 64, GREED_SN_BULLET17);
+      ShootOne(GREED_S_BULLET17, 64, GREED_SN_BULLET17, GREED_SN_BULLET1);
     // green gun
     WEAPON_GREEN:
       begin
@@ -379,6 +396,10 @@ begin
           Shoot(GREED_S_BULLET18, FState.Player.X, FState.Player.Y, LHeight, LAngle, LAngle2);
           LAngle := LAngle + GREED_ANGLES div 12;
         end;
+        // the ring is told once: who receives it makes the twelve shots (the angle that travels is not used)
+        if FState.NetMode then
+          FState.Net.SendSpawn(GREED_S_BULLET18, FState.Player.X, FState.Player.Y, FState.Player.Z, LHeight, LAngle,
+            LAngle2, True, FState.PlayerNum);
       end;
   end;
   FState.Player.Angle := LOldAngle;
@@ -403,9 +424,15 @@ begin
       if FState.WeapMode = 1 then
       begin
         if LWeapon = WEAPON_SPREAD then
+        begin
           FSound.SoundEffect(GREED_SN_BULLET4, 0, FState.Player.X, FState.Player.Y);
+          NetSound(GREED_SN_BULLET4);
+        end;
         if LWeapon = WEAPON_GREEN then
+        begin
           FSound.SoundEffect(GREED_SN_BULLET18, 0, FState.Player.X, FState.Player.Y);
+          NetSound(GREED_SN_BULLET18);
+        end;
       end;
       FState.WeapMode := TGreedGameTables.WeaponState[LWeapon][FState.WeapMode];
       if FState.WeapMode = 0 then

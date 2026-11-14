@@ -34,10 +34,11 @@ type
   ///   (the next map, or the same one again), WarpAnim (the lights go down, the player moves, the lights come
   ///   back) and NewGoalItem (the next goal shown by the status bar).
   ///   The globals of the original are the fields of TGreedGameState; drawing, lumps and the loading of a map are
-  ///   asked of IGreedLevelHost, the other parts of the tic of IGreedTicParts. The net game is not ported: the
-  ///   NetGetData, NetSendPlayerData, NetSendSpawn and NetBonusItem calls, the "if netmode" branches of
-  ///   CheckSpawnAreas, NewGoalItem and startover (respawnplayer) and netwarpjammer are not here; neither are
-  ///   I_PeekAndDisplatch and I_Sleep at the start of TimeUpdate (the loop of the program does that).
+  ///   asked of IGreedLevelHost, the other parts of the tic of IGreedTicParts. The net game (State.NetMode,
+  ///   State.Net): TimeUpdate reads the packets and tells where the player is, player 0 fills the spawn areas
+  ///   and places the bonus item, the goals are the other players, startover is respawnplayer (asked of the host
+  ///   as IGreedLevelNetHost) and the warp jammer of another player stops the areas. Not here: I_PeekAndDisplatch
+  ///   and I_Sleep at the start of TimeUpdate (the loop of the program does that).
   ///   Kept defects: an area that is not ready yet has its time moved 7000 tics (and the low byte of the clock)
   ///   ahead at every call (the "else" of the original belongs to the test of the time), so an area makes only its
   ///   first thing until a warp jammer resets the times; CheckBonusItem loops until two random numbers give a free
@@ -61,10 +62,13 @@ type
     function ClockRandom: Cardinal;
     function AmmoAreaKind(ANumber: Integer): Integer;
     function HealthAreaKind(ANumber: Integer): Integer;
+    function NetAmmoAreaKind(ANumber: Integer): Integer;
+    function NetHealthAreaKind(ANumber: Integer): Integer;
     function AreaKind(var AArea: TGreedSpawnArea; out AKind: Integer): Boolean;
     function IsGenerator(AKind: Integer): Boolean;
     procedure FillSpawnArea(AIndex: Integer);
     procedure SkipGoalsWithoutItem;
+    procedure NetGetData;
   public
     /// <summary>
     ///   AState has the world, the pools and the globals; ASpawner is SpawnSprite, ASound SoundEffect, AMessages
@@ -105,6 +109,7 @@ const
   LUMP_LIGHTS = 'LIGHTS';
   SNexusCreated = 'Translation Nexus Created!';
   SUsedWarpJammer = 'Used Warp Jammer';
+  SNoRespawn = 'Net game: the host of the level can not respawn the player';
 
 { TGreedLevelRules }
 
@@ -231,6 +236,76 @@ begin
     Result := AmmoAreaKind(ANumber);
 end;
 
+function TGreedLevelRules.NetAmmoAreaKind(ANumber: Integer): Integer;
+begin
+  if ANumber < 30 then
+    Result := GREED_S_ENERGY
+  else if ANumber < 60 then
+    Result := GREED_S_BALLISTIC
+  else if ANumber < 90 then
+    Result := GREED_S_PLASMA
+  else if FState.Demo then
+  begin
+    if ANumber < 96 then
+      Result := GREED_S_IGRENADE
+    else if ANumber < 98 then
+      Result := GREED_S_IREVERSO
+    else if ANumber < 102 then
+      Result := GREED_S_IPROXMINE
+    else if ANumber < 106 then
+      Result := GREED_S_ITIMEMINE
+    else if ANumber < 108 then
+      Result := GREED_S_IDECOY
+    else
+      Result := GREED_S_IINSTAWALL;
+  end
+  else if ANumber < 98 then
+    Result := GREED_S_IGRENADE
+  else if ANumber < 102 then
+    Result := GREED_S_IREVERSO
+  else if ANumber < 112 then
+    Result := GREED_S_IPROXMINE
+  else if ANumber < 116 then
+    Result := GREED_S_ITIMEMINE
+  else if ANumber < 120 then
+    Result := GREED_S_IDECOY
+  else if ANumber < 134 then
+    Result := GREED_S_IINSTAWALL
+  else if ANumber < 138 then
+    Result := GREED_S_IINVIS
+  else if ANumber < 142 then
+    Result := GREED_S_ISTEALER
+  else
+    Result := GREED_S_IHOLO;
+end;
+
+function TGreedLevelRules.NetHealthAreaKind(ANumber: Integer): Integer;
+begin
+  if ANumber < 90 then
+    Result := HealthAreaKind(ANumber)
+  else if ANumber < 96 then
+    Result := GREED_S_IGRENADE
+  else if ANumber < 98 then
+    Result := GREED_S_IREVERSO
+  else if ANumber < 102 then
+    Result := GREED_S_IPROXMINE
+  else if ANumber < 106 then
+    Result := GREED_S_ITIMEMINE
+  else if ANumber < 108 then
+    Result := GREED_S_IDECOY
+  else if FState.Demo then
+    Result := GREED_S_IINSTAWALL
+  // as the original: the invisibility comes after the wall with the same limit and is never given
+  else if ANumber < 110 then
+    Result := GREED_S_IINSTAWALL
+  else if ANumber < 112 then
+    Result := GREED_S_IJAMMER
+  else if ANumber < 114 then
+    Result := GREED_S_ISTEALER
+  else
+    Result := GREED_S_IHOLO;
+end;
+
 function TGreedLevelRules.AreaKind(var AArea: TGreedSpawnArea; out AKind: Integer): Boolean;
 var
   LNumber, LWait: Integer;
@@ -241,6 +316,23 @@ begin
   case AArea.Kind of
     0, 1:
       begin
+        if FState.NetMode then
+        begin
+          // a net game has its own lists (decoys, invisibility and holograms; no clones) and its own wait
+          if FState.Demo then
+            LNumber := Integer(ClockRandom mod 110)
+          else if AArea.Kind = 0 then
+            LNumber := Integer(ClockRandom mod 146)
+          else
+            LNumber := Integer(ClockRandom mod 116);
+          if AArea.Kind = 0 then
+            AKind := NetAmmoAreaKind(LNumber)
+          else
+            AKind := NetHealthAreaKind(LNumber);
+          LLow := Integer(FClock.Clock and 255);
+          AArea.Time := FState.TimeCount + LLow + (9 - FState.Net.NumPlayers) * 437;
+          Exit;
+        end;
         if FState.Demo then
           LNumber := Integer(ClockRandom mod 110)
         else
@@ -405,8 +497,14 @@ begin
       end;
     end;
 
-    FSpawner.SpawnSprite(LKind, LArea.MapX, LArea.MapY, 0, 0, 0, 0, True, 0);
-    FSpawner.SpawnSprite(GREED_S_WARP, LArea.MapX, LArea.MapY, 0, 0, 0, 0, True, 0);
+    // in a net game player 0 fills the areas for everybody (the items tell themselves, the monsters are told here)
+    if (not FState.NetMode) or (FState.PlayerNum = 0) then
+    begin
+      FSpawner.SpawnSprite(LKind, LArea.MapX, LArea.MapY, 0, 0, 0, 0, True, 0);
+      FSpawner.SpawnSprite(GREED_S_WARP, LArea.MapX, LArea.MapY, 0, 0, 0, 0, True, 0);
+      if FState.NetMode and (LArea.Kind >= 10) then
+        FState.Net.SendSpawn(LKind, LArea.MapX, LArea.MapY, 0, 0, 0, 0, True, 0);
+    end;
   end;
 end;
 
@@ -416,6 +514,9 @@ var
   LArea: TGreedSpawnArea;
 begin
   if FState.SpecialEffect = GREED_SE_WARPJAMMER then
+    Exit;
+  // netwarpjammer: the warp jammer of another player
+  if FState.NetMode and FState.Net.WarpJammer and (FState.Net.WarpJamTime > FState.TimeCount) then
     Exit;
 
   for LIndex := 0 to FState.World.SpawnAreaCount - 1 do
@@ -444,6 +545,10 @@ var
 begin
   if FState.TimeCount > FState.BonusItem.Time then
   begin
+    // player 0 spawns the bonuses
+    if FState.NetMode and (FState.PlayerNum <> 0) then
+      Exit;
+
     if FState.BonusItem.Score > 0 then
     begin
       LSprite := FState.Sprites.First;
@@ -487,8 +592,16 @@ begin
         PGreedSprite(FState.Sprites.Item(LSprite))^.BasePic + FState.BonusItem.Num;
     end;
     FHost.RefreshGoalItem;
+    if FState.NetMode then
+      FState.Net.BonusItem;
     FState.GoalItem := 0;
   end;
+end;
+
+procedure TGreedLevelRules.NetGetData;
+begin
+  if FState.NetMode then
+    FState.Net.GetData;
 end;
 
 procedure TGreedLevelRules.TimeUpdate;
@@ -497,26 +610,53 @@ var
 begin
   ChargeWeapons;
   FParts.UpdateInput;
+  if FState.NetMode then
+  begin
+    FState.Net.GetData;
+    // where the player is, every few tics (more players, less often), while it is alive
+    if FState.TimeCount > FState.NetSendTime then
+    begin
+      if FState.Player.Angst <> 0 then
+        FState.Net.SendPlayerData;
+      FState.NetSendTime := FState.TimeCount + 3 + FState.Net.NumPlayers;
+    end;
+    FState.Net.GetData;
+  end;
   LTime := FState.TimeCount;
   FParts.UpdateSound;
   while LTime >= FState.SpriteMoveTime do
   begin
+    NetGetData;
     if FState.NumProcesses <> 0 then
+    begin
       FParts.RunProcesses;
+      NetGetData;
+    end;
     FParts.ClearTileLights;
     FParts.MoveSprites;
+    if FState.NetMode then
+    begin
+      FState.Net.GetData;
+      // the sprites of a net game think every 10 tics, not every 8
+      FState.SpriteMoveTime := FState.SpriteMoveTime + 2;
+    end;
     FState.SpriteMoveTime := FState.SpriteMoveTime + 8;
   end;
   FParts.UpdateInput;
+  NetGetData;
   if FState.World.SpawnAreaCount <> 0 then
     CheckSpawnAreas;
+  NetGetData;
   FParts.CheckElevators;
+  NetGetData;
   CheckBonusItem;
+  NetGetData;
   if FState.DoorSound then
   begin
     FState.DoorSound := False;
     FSound.SoundEffect(GREED_SN_DOOR, 15, FState.DoorX, FState.DoorY);
   end;
+  NetGetData;
   FParts.UpdateInput;
 end;
 
@@ -535,6 +675,21 @@ procedure TGreedLevelRules.NewGoalItem;
 begin
   FState.ToggleGoalItem := False;
   Inc(FState.GoalItem);
+  if FState.NetMode then
+  begin
+    // in a net game the goals are the bonus item and the other players (their frags)
+    if (FState.GoalItem = 0) and (FState.BonusItem.Score = 0) then
+      Inc(FState.GoalItem);
+    if FState.GoalItem > FState.Net.NumPlayers then
+    begin
+      FState.GoalItem := 0;
+      if FState.BonusItem.Score = 0 then
+        Inc(FState.GoalItem);
+      if FState.GoalItem > FState.Net.NumPlayers then
+        FState.GoalItem := -1;
+    end;
+    Exit;
+  end;
   SkipGoalsWithoutItem;
   if FState.GoalItem >= 10 then
   begin
@@ -548,7 +703,9 @@ end;
 procedure TGreedLevelRules.StartOver(ARestartValue: Integer);
 var
   LIndex: Integer;
+  LNetHost: IGreedLevelNetHost;
 begin
+  NetGetData;
   FHost.ResetDisplay;
   if ARestartValue <> 1 then
   begin
@@ -560,12 +717,27 @@ begin
     FState.Player.CurrentWeapon := 0;
     FHost.LoadWeapon(FState.Player.Weapons[0]);
 
-    for LIndex := Low(FState.Player.Inventory) to High(FState.Player.Inventory) do
-      FState.Player.Inventory[LIndex] := 0;
-    FState.Player.Inventory[7] := 2;
-    FState.Player.Inventory[5] := 2;
-    FState.Player.Inventory[4] := 2;
-    FState.Player.Inventory[2] := 4;
+    if not FState.NetMode then
+    begin
+      for LIndex := Low(FState.Player.Inventory) to High(FState.Player.Inventory) do
+        FState.Player.Inventory[LIndex] := 0;
+      FState.Player.Inventory[7] := 2;
+      FState.Player.Inventory[5] := 2;
+      FState.Player.Inventory[4] := 2;
+      FState.Player.Inventory[2] := 4;
+    end
+    else
+    begin
+      // who dies in a net game keeps what it has, and gets at least what a new player has
+      if FState.Player.Inventory[7] < 2 then
+        FState.Player.Inventory[7] := 2;
+      if FState.Player.Inventory[5] < 2 then
+        FState.Player.Inventory[5] := 2;
+      if FState.Player.Inventory[4] < 2 then
+        FState.Player.Inventory[4] := 2;
+      if FState.Player.Inventory[2] < 4 then
+        FState.Player.Inventory[2] := 4;
+    end;
     FState.Player.BodyCount := 0;
     FState.Player.Ammo[0] := 100;
     FState.Player.Ammo[1] := 100;
@@ -575,11 +747,21 @@ begin
   end;
   FState.Player.HoloPic := 0;
 
-  FHost.NewMap(FState.Player.Map, ARestartValue);
+  if not FState.NetMode then
+    FHost.NewMap(FState.Player.Map, ARestartValue)
+  else
+  begin
+    // the map of a net game is never loaded again: the player comes back at one of the start places
+    if not Supports(FHost, IGreedLevelNetHost, LNetHost) then
+      raise EGreedException.Create(SNoRespawn);
+    LNetHost.RespawnPlayer;
+  end;
+  NetGetData;
 
   FState.ExitExists := False;
   FState.SpecialEffectTime := 0;
   FState.ExitLevel := False;
+  NetGetData;
   FState.TurnRate := 0;
   FState.MoveRate := 0;
   FState.FallRate := 0;

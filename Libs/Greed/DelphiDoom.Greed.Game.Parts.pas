@@ -74,8 +74,6 @@ type
     AmbientLight: Integer;
     /// <summary>lowresolution of raven.pas</summary>
     LowResolution: Boolean;
-    /// <summary>nethurtsoundtime of utils.pas</summary>
-    NetHurtSoundTime: Integer;
     /// <summary>gameepisode of m_defs.pas</summary>
     GameEpisode: Integer;
   end;

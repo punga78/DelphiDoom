@@ -46,7 +46,7 @@ const
   /// <summary>The bytes of a name of a player (char netname[13]): 12 characters and the zero</summary>
   GREED_NET_NAME_SIZE = 13;
   /// <summary>NETMSGSIZE: the bytes of the text of a message (char message[30])</summary>
-  GREED_NET_MESSAGE_SIZE = 30;
+  GREED_NET_TEXT_SIZE = 30;
   /// <summary>NetQuitGame says NetDeath(255): a death that nobody caused</summary>
   GREED_NET_NO_KILLER = 255;
 
@@ -66,7 +66,7 @@ type
   EGreedNetException = class(EGreedException);
 
   TGreedNetName = packed array[0..GREED_NET_NAME_SIZE - 1] of AnsiChar;
-  TGreedNetText = packed array[0..GREED_NET_MESSAGE_SIZE - 1] of AnsiChar;
+  TGreedNetText = packed array[0..GREED_NET_TEXT_SIZE - 1] of AnsiChar;
 
   /// <summary>
   ///   The packets of the net game, as the C structures of net.pas: little endian 32 bit numbers, on the wire as

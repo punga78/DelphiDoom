@@ -32,9 +32,9 @@ type
   ///   monsters are written in mapsprites (RecreateMapSprites).
   ///   The global msprite of the original is State.MSprite (the index in the pool) while a sprite thinks; the
   ///   pointers to sprites are indices of the pool, and the list is walked as the original does when a sprite is
-  ///   removed or new ones are appended while it is walked. The net game is not ported: the branches of netmode
-  ///   and the calls NetDeath and NetGetClosestPlayer are not here (State.NetMode stays false), the checks on the
-  ///   tiles of the net players (SM_NETPLAYER) are.
+  ///   removed or new ones are appended while it is walked. The net game: with State.NetMode the target
+  ///   of the monsters is the nearest player (State.Net.GetClosestPlayer) and the death of the player is told
+  ///   (State.Net.Death); the checks on the tiles of the net players (SM_NETPLAYER) are always made.
   ///   The light of the tiles that hot sprites change (reallight) is RealLight: the logic has its own array, the
   ///   game can point it to the one of the renderer. A tile outside the map reads as 0 and is not written
   /// </summary>
@@ -459,7 +459,12 @@ procedure TGreedSpriteLogic.HitPlayer(var AKilled: Boolean);
 begin
   // don't keep hitting
   if FState.Player.Angst <> 0 then
+  begin
     FHealth.Hurt(FSprite^.Damage);
+    // NetDeath: the others are told who killed the player
+    if (FState.Player.Angst = 0) and FState.NetMode then
+      FState.Net.Death(FSprite^.SpawnId);
+  end;
   FHost.ThrustPlayer(FSprite^.Angle, FSprite^.Damage shl (GREED_FRACBITS - 3));
   FState.PlayerHit := False;
   AKilled := True;
@@ -558,7 +563,10 @@ end;
 // The target of the monsters: the player, or the corner of the map when the player is invisible
 procedure TGreedSpriteLogic.AcquireTarget;
 begin
-  if FState.SpecialEffect = GREED_SE_INVISIBILITY then
+  // NetGetClosestPlayer(sx, sy): in a net game the target is the nearest player that is alive and visible
+  if FState.NetMode then
+    FState.Net.GetClosestPlayer(FSprite^.X div GREED_FRACTILEUNIT, FSprite^.Y div GREED_FRACTILEUNIT)
+  else if FState.SpecialEffect = GREED_SE_INVISIBILITY then
   begin
     FState.TargX := 0;
     FState.TargY := 0;
@@ -1346,10 +1354,15 @@ var
   LKilled: Boolean;
   LFloor: TGreedFixed;
 begin
-  FState.TargX := FState.Player.X;
-  FState.TargY := FState.Player.Y;
-  LPlayerX := FState.TargX div GREED_FRACTILEUNIT;
-  LPlayerY := FState.TargY div GREED_FRACTILEUNIT;
+  LPlayerX := 0;
+  LPlayerY := 0;
+  if not FState.NetMode then
+  begin
+    FState.TargX := FState.Player.X;
+    FState.TargY := FState.Player.Y;
+    LPlayerX := FState.TargX div GREED_FRACTILEUNIT;
+    LPlayerY := FState.TargY div GREED_FRACTILEUNIT;
+  end;
   // the original does not give a value to this variable before the first sprite reads it
   LKilled := False;
   LIndex := FState.Sprites.First;
@@ -1430,6 +1443,13 @@ begin
       begin
         LSourceX := FSprite^.X div GREED_FRACTILEUNIT;
         LSourceY := FSprite^.Y div GREED_FRACTILEUNIT;
+        if FState.NetMode then
+        begin
+          // a sprite wakes up when any player comes near
+          FState.Net.GetClosestPlayer(LSourceX, LSourceY);
+          LPlayerX := FState.TargX div GREED_FRACTILEUNIT;
+          LPlayerY := FState.TargY div GREED_FRACTILEUNIT;
+        end;
         if (Abs(LPlayerX - LSourceX) < WAKE_TILES) and (Abs(LPlayerY - LSourceY) < WAKE_TILES) then
         begin
           FSprite^.Active := True;

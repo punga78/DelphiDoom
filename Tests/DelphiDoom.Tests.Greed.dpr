@@ -203,7 +203,9 @@ uses
   DelphiDoom.Tests.Greed.NetRunner in 'Source\DelphiDoom.Tests.Greed.NetRunner.pas',
   DelphiDoom.Tests.Greed.NetFakes in 'Source\DelphiDoom.Tests.Greed.NetFakes.pas',
   DelphiDoom.Tests.Greed.NetLibraryRunner in 'Source\DelphiDoom.Tests.Greed.NetLibraryRunner.pas',
-  DelphiDoom.Tests.Greed.NetParity in 'Source\DelphiDoom.Tests.Greed.NetParity.pas';
+  DelphiDoom.Tests.Greed.NetParity in 'Source\DelphiDoom.Tests.Greed.NetParity.pas',
+  DelphiDoom.Tests.Greed.NetGame in 'Source\DelphiDoom.Tests.Greed.NetGame.pas',
+  DelphiDoom.Tests.Greed.Net in 'Source\DelphiDoom.Tests.Greed.Net.pas';
 
 var
   Runner: ITestRunner;

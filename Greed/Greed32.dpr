@@ -68,6 +68,12 @@ begin
   Writeln('  -messages  with -play: writes the messages of the game on the console');
   Writeln('  -shot   with -play: saves the last picture as a PNG');
   Writeln('  -dump   with -play: writes the state of the game at the end in a text file');
+  Writeln('  -net    with -play: a net game over UDP; "-net <player> <players>" says who this computer is (the first');
+  Writeln('          player is 0: it decides the start, the bonus item and the monsters) and how many play (2..8);');
+  Writeln('          every computer gives the same map and its own player number, and waits for the others');
+  Writeln('  -netport  with -net: the UDP port of this computer (default 5029)');
+  Writeln('  -netpeer  with -net: another computer of the game, "name[:port]" or ".1.2.3.4[:port]"; once for each');
+  Writeln('  -netname  with -net: the name of the player (12 characters)');
 end;
 
 const
@@ -131,6 +137,20 @@ begin
         LPlay.ShotPath := LCursor.Value
       else if (LArgument = '-dump') and (LCursor.Remaining >= 1) then
         LPlay.DumpPath := LCursor.Value
+      else if (LArgument = '-net') and (LCursor.Remaining >= 2) then
+      begin
+        LPlay.NetPlayer := StrToInt(LCursor.Value);
+        LPlay.NetPlayers := StrToInt(LCursor.Value);
+      end
+      else if (LArgument = '-netport') and (LCursor.Remaining >= 1) then
+        LPlay.NetPort := StrToInt(LCursor.Value)
+      else if (LArgument = '-netpeer') and (LCursor.Remaining >= 1) then
+      begin
+        SetLength(LPlay.NetPeers, Length(LPlay.NetPeers) + 1);
+        LPlay.NetPeers[High(LPlay.NetPeers)] := LCursor.Value;
+      end
+      else if (LArgument = '-netname') and (LCursor.Remaining >= 1) then
+        LPlay.NetName := LCursor.Value
       else if LArgument = '-autoplay' then
         LPlay.AutoPlay := True
       else if LArgument = '-headless' then

@@ -30,8 +30,8 @@ type
   ///   and switches, starts its elevators and does what its zones say. Process carries on the zones that change a
   ///   plane of the map a step at a time (call it only while State.NumProcesses is not 0, as the original does).
   ///   The globals of event.pas are in TGreedGameState; triggers[x][y] of the original is State.Triggers[x * 64 +
-  ///   y] and the same for the switches. The sky is the property Backdrop. The net game is not ported: the NetEvent
-  ///   of RunEvent is not here and a film is played also where the original asked "not netmode".
+  ///   y] and the same for the switches. The sky is the property Backdrop. The net game: no film is played
+  ///   (State.NetMode); the NetEvent of RunEvent is a comment in the original too and is not here.
   ///   Not ported: the script from a file (-file: the original stops in CA_LumpName, which never ends).
   ///   Kept defects of the original: SPAWNELEVATOR uses the end event of the last ELEVATOR line (0 if there was
   ///   none: in the original the value is not set); a number that is missing or wrong does not stop the script
@@ -321,7 +321,7 @@ begin
         SetTrigger(LX, LY, LZone^.EndEval);
     RetireZone(LZone^);
   end
-  else if (LZone^.Kind = GREED_ZONE_FLI) and (AEvent > 0) then
+  else if (LZone^.Kind = GREED_ZONE_FLI) and (AEvent > 0) and not FState.NetMode then
   begin
     FHost.PlayFli(LZone^.EndEval);
     FState.FliPlayed := 1;
