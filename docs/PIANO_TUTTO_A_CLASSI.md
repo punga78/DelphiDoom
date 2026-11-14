@@ -250,3 +250,96 @@ Conteggi di occorrenze nel codice di `Base`, `Common`, giochi, `Radix`, `Speed`,
 - Test: Configuration 34 -> 58 (copertura 99%, le unit nuove 100%), CommandLine 102 -> 108 (100%), Console 175 -> 178 (96%), MathCore 122 -> 123 (98%); parita' vecchio/nuovo nello stesso eseguibile per tabella (300 tabelle casuali x 120 operazioni con confronto di ogni variabile, del file scritto e dei messaggi a ogni passo, piu' 300 file completi), `M_InitArgv` (2000 scenari, riga di comando e sequenza delle domande all'ambiente), `get_cheatseq_string` (40000 sequenze), `m_rnd` (10 milioni di chiamate). Una modifica finta (la forzatura che non chiude la riga) e' vista dalla parita' al passo 82 del primo scenario.
 - Build: dieci eseguibili con 387/337/309/259/204/154/418/345/386/387 avvisi (uguali a prima), `ddc_*` 386/308/203/417 (uguali al riferimento compilato nello stesso modo), Launcher 9, DD_IDE 24, DD_Tools 0 (uguali); zero avvisi nel codice nuovo.
 - **Non eseguito per il cambio di processo** (lo fa l'agente di verifica, comandi in `Tools\Verifica\185\Fetta-1c.txt`): golden (88 confronti), confronti `-ExtraIni`, confronto dei file `.ini` scritti (`Confronta-Ini.ps1`, scritto senza poterlo eseguire), riga di comando e file di risposta a runtime, `-timedemo`, avvii, misura a coppie.
+
+## 10. Fase 2: progetto (#185, 2026-11-14)
+
+Scritto prima di toccare il codice. Lo stato reale di ogni passo e' nel paragrafo 11.
+
+**Regola del riuso (utente, 2026-11-14)**: si riusa cio' che esiste e lo si estende con sole aggiunte; niente classi parallele. Per la fase 2 la base e': `Libs\Thinkers` (luci, porte, piattaforme, `TPlaneMover`, profili per gioco), `Libs\Actions`, `Libs\Specials`, `Libs\GameState` (`IGameContext`), `Libs\Info`, `Libs\Blockmap`, `Libs\MathCore` (`IGameRandom`, fixed), `Libs\Serializer`, `ILevelLoader`/`ILevelGameRules`/`TDoomLevelRules` e gli adattatori `Base\DelphiDoom.Engine.*` (`Plane.*`, `Plat.*`, `Door.*`, `Light.*`, `Teleport.*`, `GameContext`). Ogni cosa nuova va motivata nel paragrafo 11 ("non esisteva un equivalente perche'...").
+
+### 10.1 Fotografia della quadruplicazione (`c57fbf77`)
+
+Righe diverse tra le copie (`diff` riga per riga, intestazioni comprese):
+
+| Unit | Doom | Heretic | Hexen | Strife | Doom/Strife | Doom/Heretic | Heretic/Hexen |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `p_scroll` | 416 | - | - | 416 | 2 | - | - |
+| `p_plats` | 272 | 256 | - | 279 | 11 | 76 | - |
+| `p_lights` | 387 | 382 | - | 404 | 21 | 37 | - |
+| `p_ceilng` | 428 | 335 | - | 452 | 36 | 127 | - |
+| `p_genlin` | 1452 | - | - | 1431 | 63 | - | - |
+| `p_telept` | 460 | 246 | - | 463 | 61 | 398 | - |
+| `p_floor` | 930 | 411 | - | 880 | 192 | 637 | - |
+| `p_doors` | 394 | 286 | - | 1335 | 1075 | 188 | - |
+| `p_map` | 3581 | 3166 | 3904 | 3428 | 1033 | 813 | 1194 |
+| `p_mobj` | 2626 | 2845 | 3449 | 2753 | 943 | 1187 | 2660 |
+| `p_user` | 1093 | 1468 | 2305 | 1513 | 696 | 955 | 1503 |
+| `p_inter` | 1265 | 1847 | 2682 | 1568 | 1361 | 1394 | 2691 |
+| `p_pspr` | 1195 | 2126 | 2691 | 1260 | 927 | 1873 | 2903 |
+| `p_enemy` | 3391 | 3562 | 6635 | 4545 | 4154 | 3279 | 5929 |
+| `p_spec` | 4333 | 2041 | 1771 | 4496 | 1839 | 3036 | 1734 |
+| `p_switch` | 1312 | 550 | 224 | 1956 | 1104 | 952 | 380 |
+| `g_game` | 3801 | 3609 | 2416 | 3480 | 1725 | 1076 | 2261 |
+
+Tre gruppi: (1) **quasi uguali** (`p_scroll`, `p_plats`, `p_lights`, `p_ceilng`, `p_genlin`, `p_telept` e `p_floor` di Doom e Strife): una implementazione e un profilo di dati; (2) **stesso scheletro con differenze locali** (`p_map`, `p_mobj`, `p_user`): una implementazione con regole per gioco; (3) **contenuto diverso** (`p_enemy`, `p_pspr`, `p_inter`: le azioni dei mostri e delle armi sono di ogni gioco): si unifica solo il nucleo comune (`P_LookForPlayers`, `P_Move`, `P_NewChaseDir`, `A_Chase`...), il resto resta nel gioco come gruppo di azioni (`Libs\Actions`). `Base\` ha gia' in copia unica `p_tick`, `p_maputl`, `p_sight`, `p_slopes`, `p_3dfloors`, `p_common`, `p_setup` (con `{$IFDEF}` di gioco).
+
+### 10.2 Contesti
+
+- **Il mondo** (`TEngineWorld`, `Base\DelphiDoom.Engine.World.pas`, `sealed`, nessun metodo virtuale): lo stato deterministico del livello. Non esiste oggi un equivalente (lo stato e' nei globali di `p_tick`, `p_setup`, `d_player`, `g_game`); e' composto da parti che **esistono gia'** dove possibile:
+  - `Thinkers`: la lista dei thinker (capo della lista doppia, aggiungi, rimuovi pigro, giro del tic). La logica pura della lista entra in **`Libs\Thinkers`** (`DelphiDoom.Thinkers.List`: e' la libreria dei thinker; nessuna libreria nuova), sopra un nodo con il layout di `thinker_t`, provata con nodi finti.
+  - `Time`: `leveltime`, congelamento (`isgamefreezed`, `isgamesuspended`), `TimerGame` di Hexen.
+  - `Map`: vertici, seg, settori, sottosettori, nodi, linee, lati, blockmap, `blocklinks`, reject (oggi i globali di `p_setup`, riempiti da `TLevelLoader`: il mondo li riceve dal caricatore che c'e').
+  - `Players`: `players[]`, `playeringame[]`.
+  - `Random`: l'`IGameRandom` di `ComposeMathCore` (gia' una classe: il mondo lo riceve dal costruttore).
+- **La sessione**: non una classe nuova accanto a `IGameContext`, ma **`IGameContext` esteso** (`Libs\GameState`, sole aggiunte: skill, episodio, mappa, `deathmatch`, giocatore della console, totali) e `TEngineGameContext` che lo implementa. `TGameSession` del piano e' questo.
+- Il mondo nasce in `DelphiDoom.Engine.Composition` (`ComposeWorld`) e arriva alle facciate con `P_ConfigureWorld`; senza configurazione `I_Error`. Le classi nuove lo ricevono dal costruttore.
+
+### 10.3 Proprieta' dello stato: come un globale diventa del contesto
+
+Delphi non ha alias verso un campo (`var leveltime: integer absolute World.FLevelTime` da' `E2088 Variable name expected`: provato con dcc32). Quindi ogni globale passa per tre stadi, **senza mai avere due copie dello stato**:
+
+1. **Riferimento.** Il contesto espone un puntatore tipizzato alla memoria storica (`World.Time.LevelTime` legge un `PInteger`); le classi nuove usano solo il contesto, il codice storico continua a leggere il globale. Nei test il puntatore va a memoria del test.
+2. **Inversione.** Quando tutti gli scrittori fuori dai salvataggi passano dal contesto, la memoria entra nel contesto e il nome storico diventa una funzione `inline` senza parametri (`function leveltime: integer; inline;`): i lettori si ricompilano senza toccarli. Per i globali di cui si prende l'indirizzo (`@thinkercap`, circa 170 occorrenze in 36 unit) i lettori vanno migrati prima: una funzione non ha l'indirizzo della variabile e il confronto `think <> @thinkercap` compilerebbe con un altro significato. E' il punto piu' pericoloso: ricerca completa, mai una funzione omonima.
+3. **Cancellazione.** Il nome storico sparisce con l'ultimo lettore (fase 5).
+
+**Vincolo di questo giro**: `p_saveg`/`sv_save` non si toccano (li ha un altro lavoro, #40) e scrivono direttamente `leveltime`, `thinkercap`, `players[]`, settori e linee. Tutto cio' che i salvataggi scrivono **resta allo stadio 1** fino alla fetta 2h.
+
+### 10.4 Regole per gioco: tre forme, nessun `{$IFDEF}` nel codice comune
+
+| Forma | Quando | Esiste gia' |
+|---|---|---|
+| **Profilo** (record di costanti e interruttori, scelto una volta) | la differenza e' un dato: velocita', suono, quale tipo schiaccia | `TPlatProfile`/`TPlatGames`, `TDoorProfile`/`TDoorProfiles`, `TPlaneMoveRules`/`TPlaneRules`, `TLightGames`: i profili nuovi si aggiungono a `Libs\Thinkers` con lo stesso schema |
+| **Strategia fredda** (interfaccia per gioco, data dal composition root) | codice diverso chiamato poche volte per tic o per livello | `ILevelGameRules`, `ILevelGeometryRules`, `ILevelThingRules` e le classi `T<Gioco>LevelRules`: le regole nuove sono **metodi o interfacce aggiunti a queste classi**, non una seconda gerarchia |
+| **Strategia calda** (classe `sealed` di soli metodi `class ... static`, **stesso nome di unit in ogni cartella di gioco**, risolta dal percorso del progetto) | codice diverso dentro un ciclo per thinker o per cella della blockmap (`PIT_CheckThing`, `P_XYMovement`) | e' cio' che sono oggi le quattro `p_map.pas`: la unit del gioco si riduce alle sole routine *proprie* |
+
+La strategia calda e' una scelta fatta a compilazione dal progetto: nessuna chiamata virtuale ne' a interfaccia, il compilatore puo' fare `inline`. I tipi che cambiano per gioco (`mobjtype_t`, i campi di `mobj_t`, `ceiling_e`...) si nominano **solo** nella unit del gioco. Dove la scelta e' a runtime (versione della demo, `compatibilitymode`) si usa una tabella di puntatori a procedura riempita una volta.
+
+### 10.5 Thinker e salvataggi
+
+I thinker restano record nella zone memory con il puntatore a funzione che `p_saveg` conosce (`T_MoveCeiling`, `T_Scroll`...): la funzione storica resta come guscio che chiama il codice comune. Nessun campo cambia posto o dimensione. Se un passo ha bisogno di cambiare un record salvato, **si ferma e si riporta**.
+
+### 10.6 Ordine dei sottosistemi
+
+| Passo | Contenuto | Forma delle regole | Prova |
+|---|---|---|---|
+| 2a | involucro: `TEngineWorld`, lista dei thinker e giro del tic (`p_tick`), tempo; `IGameContext` esteso | nessuna | golden 8 bit dei quattro giochi; misura a coppie (il giro dei thinker e' caldo); test della lista con nodi finti |
+| 2e-1 | thinker quasi uguali: `p_scroll`, `p_ceilng`, `p_floor`, `p_genlin` (poi il resto di `p_plats`, `p_lights`, `p_doors`, `p_telept`), estendendo `Libs\Thinkers` e `Engine.Plane.*` | profilo | golden; parita' vecchio/nuovo nei test (`Tests\DelphiDoom.Tests.Thinkers`, schema di `OldPlanes`/`OldPlats`/`OldDoors`) |
+| 2c-1 | `p_map`: confronto delle quattro copie routine per routine, poi una implementazione | strategia calda | golden; misura a coppie |
+| 2c-2 | `p_mobj` | strategia calda | golden; misura |
+| 2f | `p_user`, nucleo comune di `p_inter`, `p_enemy`, `p_pspr` | strategia calda + gruppi di azioni per gioco (`Libs\Actions`) | golden; misura |
+| 2g | `p_spec`, `p_switch` | profilo + registro (`Libs\Specials`) | golden |
+| 2b | `p_maputl`, `p_sight`, `p_slopes` come servizi del mondo (sono gia' in copia unica) | - | golden; misura |
+| 2h | `g_game`, sessione, salvataggi (`Libs\Serializer`) | strategia fredda | **bloccato in questo giro** (salvataggi) |
+| 2i, 2j | tabelle `info*` (`Libs\Info`), menu e barre di stato | dati | fuori da questo giro |
+
+### 10.7 Protocollo di ogni passo
+
+1. **Ricerca dell'esistente** (`Libs\*`, `Base\DelphiDoom.Engine.*`, `docs\FRAMEWORK_CENSIMENTO.md`, `docs\ANALISI_DUPLICATI.md`) e **tabella di confronto** delle copie, routine per routine: *uguale* (testo identico tolti commenti e spazi), *parametrica* (poche righe diverse: profilo o regola), *propria* (resta nel gioco).
+2. Codice: la logica pura in una libreria che c'e' gia' (test DUnitX con finti, copertura almeno 90%); cio' che e' legato ai record del motore in `Base\DelphiDoom.Engine.<Area>.*` o nella unit storica unificata (la prova e' il golden); le unit storiche restano facciate con la stessa API finche' hanno chiamanti.
+3. **Verifica**: dieci giochi piu' Radix32 e SpeedHaste32 compilano con avvisi non aumentati (base: 383/382/383/333/305/255/200/150/414/341); Doom32 e Strife32 a Win64; `Confronta-Golden.ps1 -Modes 8` sui quattro giochi (44 voci) UGUALE, e `-Modes 32` per Doom e Strife se il passo disegna; `Misura-Coppie.ps1` vecchio contro nuovo entro il 5%.
+4. Un commit per passo. Un passo che non rispetta parita' o prestazioni si annulla (`git revert`) e si scrive qui perche'.
+5. I rami che il corpus non esercita (rete, difficolta' 4-5, 3D floor, poliobj, dialoghi) si elencano nel passo: per quelli la prova e' la tabella di confronto (codice spostato senza modifiche) o il test di unita', non il golden.
+
+## 11. Fase 2: stato dei passi
+
+(aggiornato a ogni passo)
