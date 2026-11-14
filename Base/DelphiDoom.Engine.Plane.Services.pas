@@ -14,7 +14,8 @@ interface
 uses
   r_defs,
   DelphiDoom.Thinkers.Plane.Types,
-  DelphiDoom.Thinkers.Plane.Intf;
+  DelphiDoom.Thinkers.Plane.Intf,
+  DelphiDoom.Thinkers.Ceiling.Types;
 
 //==============================================================================
 //
@@ -46,6 +47,23 @@ function PlaneMove(const ASector: Psector_t; ASpeed, ADestination: integer;
   ACrush: boolean; AFloorOrCeiling, ADirection: integer;
   const ARules: TPlaneMoveRules): TPlaneMoveResult;
 
+//==============================================================================
+//
+// P_ConfigureCeilings
+//
+// Gives the classic ceilings (p_ceilng) the rules of the game (the composition
+// root calls it); until it is called a new ceiling gives an I_Error
+//
+//==============================================================================
+procedure P_ConfigureCeilings(const AProfile: TCeilingProfile);
+
+//==============================================================================
+//
+// CeilingProfile
+//
+//==============================================================================
+function CeilingProfile: TCeilingProfile;
+
 implementation
 
 uses
@@ -54,6 +72,8 @@ uses
 
 var
   plane_host: IPlaneSectorHost;
+  ceiling_profile: TCeilingProfile;
+  ceiling_configured: boolean = false;
 
 //==============================================================================
 //
@@ -104,6 +124,29 @@ begin
       result := TPlaneMoveResult.Ok;
     end;
   end;
+end;
+
+//==============================================================================
+//
+// P_ConfigureCeilings
+//
+//==============================================================================
+procedure P_ConfigureCeilings(const AProfile: TCeilingProfile);
+begin
+  ceiling_profile := AProfile;
+  ceiling_configured := true;
+end;
+
+//==============================================================================
+//
+// CeilingProfile
+//
+//==============================================================================
+function CeilingProfile: TCeilingProfile;
+begin
+  if not ceiling_configured then
+    I_Error('P_ConfigureCeilings(): the rules of the ceilings were not given');
+  result := ceiling_profile;
 end;
 
 end.

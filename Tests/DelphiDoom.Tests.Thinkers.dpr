@@ -74,6 +74,9 @@ uses
   DelphiDoom.Thinkers.Plane.Waggle in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
   DelphiDoom.Thinkers.Scroll.Step in '..\Libs\Thinkers\DelphiDoom.Thinkers.Scroll.Step.pas',
   DelphiDoom.Thinkers.Scroll.Spawner in '..\Libs\Thinkers\DelphiDoom.Thinkers.Scroll.Spawner.pas',
+  DelphiDoom.Thinkers.Ceiling.Types in '..\Libs\Thinkers\DelphiDoom.Thinkers.Ceiling.Types.pas',
+  DelphiDoom.Thinkers.Ceiling.Games in '..\Libs\Thinkers\DelphiDoom.Thinkers.Ceiling.Games.pas',
+  DelphiDoom.Thinkers.Ceiling.Machine in '..\Libs\Thinkers\DelphiDoom.Thinkers.Ceiling.Machine.pas',
   DelphiDoom.Tests.Thinkers.Fakes in 'Source\DelphiDoom.Tests.Thinkers.Fakes.pas',
   DelphiDoom.Tests.Thinkers.OldLights in 'Source\DelphiDoom.Tests.Thinkers.OldLights.pas',
   DelphiDoom.Tests.Thinkers.OldPlanes in 'Source\DelphiDoom.Tests.Thinkers.OldPlanes.pas',
@@ -106,7 +109,10 @@ uses
   DelphiDoom.Tests.Thinkers.PlaneWaggle in 'Source\DelphiDoom.Tests.Thinkers.PlaneWaggle.pas',
   DelphiDoom.Tests.Thinkers.OldScroll in 'Source\DelphiDoom.Tests.Thinkers.OldScroll.pas',
   DelphiDoom.Tests.Thinkers.ScrollStep in 'Source\DelphiDoom.Tests.Thinkers.ScrollStep.pas',
-  DelphiDoom.Tests.Thinkers.ScrollSpawner in 'Source\DelphiDoom.Tests.Thinkers.ScrollSpawner.pas';
+  DelphiDoom.Tests.Thinkers.ScrollSpawner in 'Source\DelphiDoom.Tests.Thinkers.ScrollSpawner.pas',
+  DelphiDoom.Tests.Thinkers.OldCeilings in 'Source\DelphiDoom.Tests.Thinkers.OldCeilings.pas',
+  DelphiDoom.Tests.Thinkers.OldCeilingsHeretic in 'Source\DelphiDoom.Tests.Thinkers.OldCeilingsHeretic.pas',
+  DelphiDoom.Tests.Thinkers.CeilingMachine in 'Source\DelphiDoom.Tests.Thinkers.CeilingMachine.pas';
 
 var
   Runner: ITestRunner;

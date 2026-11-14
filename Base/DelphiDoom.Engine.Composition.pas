@@ -128,6 +128,9 @@ uses
   DelphiDoom.Engine.Door.Host,
   DelphiDoom.Engine.Plane.Services,
   DelphiDoom.Engine.Plane.Host,
+{$IFNDEF HEXEN}
+  DelphiDoom.Thinkers.Ceiling.Games,
+{$ENDIF}
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -1264,8 +1267,19 @@ end;
 // The moving planes (floors, ceilings, and soon doors and platforms): what the game does when a
 // plane of a sector moves
 procedure ComposePlanes;
+{$IFNDEF HEXEN}
+var
+  LGame: TPlatGame;
+{$ENDIF}
 begin
   P_ConfigurePlanes(TEnginePlaneHost.Create);
+{$IFNDEF HEXEN}
+  // the classic ceilings (p_ceilng, one unit for Doom, Heretic and Strife): the rules of the game,
+  // which is the one of the classic platforms
+  if not TPlatGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Platforms), LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of ceilings', [_GAME]);
+  P_ConfigureCeilings(TCeilingGames.ProfileOf(LGame));
+{$ENDIF}
 end;
 
 procedure ComposeThreading;
