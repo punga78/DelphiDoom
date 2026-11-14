@@ -409,7 +409,7 @@ end;
 
 function TTestDeclMaterialGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Decl\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Decl\');
 end;
 
 procedure TTestDeclMaterialGolden.DovrebbeDareLeStesseRisposteDelVeroIdMaterial;

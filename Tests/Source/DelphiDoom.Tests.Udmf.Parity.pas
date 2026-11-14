@@ -122,7 +122,7 @@ end;
 function TTestUdmfParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Udmf\' + AFileName));
+    '..\..\..\..\Tests\Data\Udmf\' + AFileName));
 end;
 
 function TTestUdmfParity.ReadText(const AName: string): string;

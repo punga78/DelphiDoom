@@ -89,7 +89,7 @@ end;
 class function TDefinitionsCorpus.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Definitions\' + AFileName));
+    '..\..\..\..\Tests\Data\Definitions\' + AFileName));
 end;
 
 class function TDefinitionsCorpus.LoadLines(const APath: string): TStringList;

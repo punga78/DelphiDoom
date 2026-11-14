@@ -42,12 +42,12 @@ uses
 
 class function TKeenRealData.GoldenPath: string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Keen\KDGOLD.TXT');
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Keen\KDGOLD.TXT');
 end;
 
 class function TKeenRealData.GoldenExtraPath: string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Keen\KDGOLD_EXTRA.TXT');
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Keen\KDGOLD_EXTRA.TXT');
 end;
 
 class function TKeenRealData.OpenFiles: IKeenDataFiles;

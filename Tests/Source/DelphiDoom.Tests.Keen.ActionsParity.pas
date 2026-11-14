@@ -94,7 +94,7 @@ var
   LCount: Integer;
   LNames: TStringList;
 begin
-  LGoldenPath := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Keen\actions.golden.txt');
+  LGoldenPath := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Keen\actions.golden.txt');
   if not TFile.Exists(LGoldenPath) then
   begin
     Assert.Pass('The golden file of the actions is not here');

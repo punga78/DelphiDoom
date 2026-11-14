@@ -270,7 +270,7 @@ end;
 
 class function TQ3TestData.Path(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Audio\Q3\' +
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Audio\Q3\' +
     AFileName);
 end;
 
@@ -286,7 +286,8 @@ begin
   if (LFolder <> '') and TDirectory.Exists(LFolder) then
     Exit(LFolder);
   LFolder := ExtractFilePath(ParamStr(0));
-  for LLevel := 1 to 8 do
+  // the executable is in bin\Platform\Configuration\Tests: a few more levels up than it was
+  for LLevel := 1 to 12 do
   begin
     LCandidate := TPath.GetFullPath(LFolder + RELATIVE);
     if TDirectory.Exists(LCandidate) then

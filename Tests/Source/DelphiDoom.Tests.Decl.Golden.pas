@@ -439,7 +439,7 @@ end;
 
 function TTestDeclGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Decl\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Decl\');
 end;
 
 procedure TTestDeclGolden.DovrebbeDareLeStesseRisposteDelVeroDeclManager;

@@ -297,7 +297,7 @@ end;
 function TTestGlbspEngine.SamplePath: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\glbsp_map01.wad'));
+    '..\..\..\..\Tests\Data\glbsp_map01.wad'));
 end;
 
 procedure TTestGlbspEngine.TestBuildsAGwaFile;

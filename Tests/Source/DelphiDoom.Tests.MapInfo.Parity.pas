@@ -45,7 +45,7 @@ uses
 function TTestMapInfoParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\MapInfo\' + AFileName));
+    '..\..\..\..\Tests\Data\MapInfo\' + AFileName));
 end;
 
 class procedure TTestMapInfoParity.SplitCases(ALines: TStringList;

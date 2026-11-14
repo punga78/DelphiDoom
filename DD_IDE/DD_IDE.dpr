@@ -27,6 +27,11 @@ program DD_IDE;
 {$DESCRIPTION 'DelphiDoom Script IDE'}
 
 uses
+  DelphiDoom.Platform.Types in '..\Libs\Platform\DelphiDoom.Platform.Types.pas',
+  DelphiDoom.Platform.DataFolder.Intf in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',
+  DelphiDoom.Platform.DataFolder in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.pas',
+  DelphiDoom.Platform.DataFolder.Disk in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
+  DelphiDoom.Platform.DataFolder.Factory in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
   Forms,
   main in '..\DD_IDE\main.pas' {Form1},
   DelphiDoom.Ide.Types in '..\Libs\Ide\DelphiDoom.Ide.Types.pas',

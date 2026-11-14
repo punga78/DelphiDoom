@@ -92,7 +92,7 @@ foreach ($s in $Suites) {
   $project = "Tests\DelphiDoom.Tests.$s"
   if (-not $NoBuild) { Build $project }
   $e = ErrorCount "DelphiDoom.Tests.$s"
-  $exe = Join-Path $Root "bin\Tests\DelphiDoom.Tests.$s.exe"
+  $exe = Join-Path $Root "bin\Win32\Release\Tests\DelphiDoom.Tests.$s.exe"
   if (-not (Test-Path $exe)) { Check $false "suite ${s}: eseguibile non trovato"; continue }
   $output = (& $exe 2>&1 | Out-String)
   $n = Numbers $output
@@ -107,7 +107,7 @@ function RunDir([string]$game, [hashtable]$executables) {
   Initialize-ParityRunDir -Game $game -WorkRoot (Join-Path $WorkRoot 'run') -DataRoot $DataRoot -Executables $executables
 }
 if (-not $NoDemo) {
-  $doomDir = RunDir 'Doom' @{ 'Doom32.exe' = (Join-Path $Root 'bin\Doom\Doom32.exe'); 'GLDoom32.exe' = (Join-Path $Root 'bin\Doom\GLDoom32.exe') }
+  $doomDir = RunDir 'Doom' @{ 'Doom32.exe' = (Join-Path $Root 'bin\Win32\Release\Doom\Doom32.exe'); 'GLDoom32.exe' = (Join-Path $Root 'bin\Win32\Release\Doom\GLDoom32.exe') }
   $expected = @{ 'demo1' = 5026; 'demo2' = 3836; 'demo3' = 2134 }
   foreach ($d in 'demo1', 'demo2', 'demo3') {
     $text = (& powershell -NoProfile -File $runner -Exe (Join-Path $doomDir 'Doom32.exe') -Arguments "-iwad DOOM1.WAD -timedemo $d -nosound -nomusic" -WorkDir $doomDir -Seconds 900 -StopWhenExited | Out-String)
@@ -125,10 +125,10 @@ if (-not $NoDemo) {
   foreach ($l in $launches) {
     $dir = if ($l[0] -eq 'Doom') { $doomDir } else {
       $folder = (Get-ParityGames)[$l[0]].Folder
-      RunDir $l[0] @{ ($l[1]) = (Join-Path $Root ("bin\$folder\" + $l[1])) } }
+      RunDir $l[0] @{ ($l[1]) = (Join-Path $Root ("bin\Win32\Release\$folder\" + $l[1])) } }
     if ($l[0] -ne 'Doom') {
       # i GL stanno accanto al gioco software: la cartella di lavoro li prende dalla stessa tabella
-      $exeSource = Join-Path $Root ("bin\{0}\{1}" -f (Get-ParityGames)[$l[0]].Folder, $l[1])
+      $exeSource = Join-Path $Root ("bin\Win32\Release\{0}\{1}" -f (Get-ParityGames)[$l[0]].Folder, $l[1])
       Copy-Item $exeSource (Join-Path $dir $l[1]) -Force
     }
     $text = (& powershell -NoProfile -File $runner -Exe (Join-Path $dir $l[1]) -Arguments ($l[2] + ' -nosound -nomusic') -WorkDir $dir -Seconds 20 | Out-String)
@@ -138,7 +138,7 @@ if (-not $NoDemo) {
 
 # --- 6. golden -----------------------------------------------------------------------------------------------
 if (-not $NoGolden) {
-  $exeMap = "Doom=$Root\bin\Doom\Doom32.exe;Heretic=$Root\bin\Heretic\Heretic32.exe;Hexen=$Root\bin\Hexen\Hexen32.exe;Strife=$Root\bin\Strife\Strife32.exe"
+  $exeMap = "Doom=$Root\bin\Win32\Release\Doom\Doom32.exe;Heretic=$Root\bin\Win32\Release\Heretic\Heretic32.exe;Hexen=$Root\bin\Win32\Release\Hexen\Hexen32.exe;Strife=$Root\bin\Win32\Release\Strife\Strife32.exe"
   foreach ($mode in '8', '32') {
     $out = & powershell -NoProfile -File (Join-Path $Root 'Tools\Verifica\185\Confronta-Golden.ps1') -Modes $mode `
       -Exe $exeMap -DataRoot $DataRoot -WorkRoot (Join-Path $WorkRoot 'golden') 2>&1 | Out-String

@@ -164,9 +164,9 @@ var
 begin
   LBase := ExtractFilePath(ParamStr(0));
   // beside the test executable or in the main checkout above a worktree (.claude\worktrees\name)
-  LCandidates[0] := LBase + '..\..\' + RELATIVE;
-  LCandidates[1] := LBase + '..\..\..\..\..\' + RELATIVE;
-  LCandidates[2] := LBase + '..\..\..\..\..\..\' + RELATIVE;
+  LCandidates[0] := LBase + '..\..\..\..\' + RELATIVE;
+  LCandidates[1] := LBase + '..\..\..\..\..\..\..\' + RELATIVE;
+  LCandidates[2] := LBase + '..\..\..\..\..\..\..\..\' + RELATIVE;
   LCandidates[3] := GetEnvironmentVariable('DELPHIDOOM_OPENARENA_PAK');
   Result := '';
   for LIndex := 0 to High(LCandidates) do

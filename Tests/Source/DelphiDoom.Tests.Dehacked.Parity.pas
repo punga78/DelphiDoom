@@ -123,7 +123,7 @@ end;
 function TTestDehackedParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Dehacked\' + AFileName));
+    '..\..\..\..\Tests\Data\Dehacked\' + AFileName));
 end;
 
 function TTestDehackedParity.Lines(const AText: string): TArray<string>;

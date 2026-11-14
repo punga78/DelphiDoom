@@ -307,7 +307,7 @@ var
   LText: string;
 begin
   LLines := TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Net\q3info-golden.txt')));
+    '..\..\..\..\Tests\Data\Net\q3info-golden.txt')));
   Assert.IsTrue(Length(LLines) > 1000, 'golden troppo corto');
   LCount := 0;
   for LLine in LLines do

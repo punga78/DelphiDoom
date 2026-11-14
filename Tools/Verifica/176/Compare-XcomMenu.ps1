@@ -49,7 +49,7 @@ $arguments = @('-data', "$Data\openxcom", '-game', "$Data\$Game", '-mod', $ModId
 if ($Seed -ne '') { $arguments += '-seed', $Seed }
 $arguments += '-script', $Delphi
 Push-Location "$Out\delphi"
-& "$Root\bin\OpenXcom\Xcom32.exe" @arguments | Out-Null
+& "$Root\bin\Win32\Release\OpenXcom\Xcom32.exe" @arguments | Out-Null
 Pop-Location
 if ($Real.Count -eq 0) { return }
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')

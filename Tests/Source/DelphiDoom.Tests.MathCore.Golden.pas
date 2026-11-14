@@ -42,7 +42,7 @@ begin
   FLines := TStringList.Create;
   FLines.NameValueSeparator := '=';
   FLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\MathCore\' + AFileName)));
+    '..\..\..\..\Tests\Data\MathCore\' + AFileName)));
 end;
 
 destructor TGoldenFile.Destroy;

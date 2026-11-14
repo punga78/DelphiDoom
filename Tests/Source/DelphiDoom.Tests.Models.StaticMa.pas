@@ -106,7 +106,7 @@ var
   LBytes: TBytes;
 begin
   LBytes := TFile.ReadAllBytes(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Models\ma\' + AName)));
+    '..\..\..\..\Tests\Data\Models\ma\' + AName)));
   SetString(Result, PAnsiChar(@LBytes[0]), Length(LBytes));
 end;
 

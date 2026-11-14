@@ -1,6 +1,6 @@
 # DD_IDE: analisi e ristrutturazione a classi (issue #45)
 
-DD_IDE e l'editor degli script di DelphiDoom: un'applicazione VCL separata (`DD_IDE.dpr`, uscita `bin\Tools\DD_IDE.exe`).
+DD_IDE e l'editor degli script di DelphiDoom: un'applicazione VCL separata (`DD_IDE.dpr`, uscita `bin\Win32\Release\Tools\DD_IDE.exe`).
 Non fa parte dei giochi e non e usata dai `ddc_*`. Compila e disassembla gli script con le DLL `ddc_<gioco>.dll`
 (le stesse che usa `ddc.exe`, tramite `Libs\Ddc\ddc_base.pas`). SynEdit (`DD_IDE\SynEdit`, 39 file) e di terze parti e non e stato toccato.
 
@@ -97,9 +97,9 @@ Restano solo il trasporto verso le DLL (compila, disassembla, liste, funzioni de
 
 ## 4. Come si prova
 
-- `Tools\build.bat Tests\DelphiDoom.Tests.Ide` e poi `bin\Tests\DelphiDoom.Tests.Ide.exe`.
+- `Tools\build.bat Tests\DelphiDoom.Tests.Ide` e poi `bin\Win32\Release\Tests\DelphiDoom.Tests.Ide.exe`.
 - I golden (`Tests\Data\Ide\Projects`, `Compiler`, `Library`) sono stati prodotti dal **vecchio** codice linkando `ide_project` e i frame vecchi in un
-  programma di prova (non nel repository: chiamava `TIDEProject`, `ddc_base` e i frame `TFrame_*` con le DLL vere di `bin\Tools`), prima di cambiare i sorgenti.
+  programma di prova (non nel repository: chiamava `TIDEProject`, `ddc_base` e i frame `TFrame_*` con le DLL vere di `bin\Win32\Release\Tools`), prima di cambiare i sorgenti.
   Le righe `.msgs.txt` e i `.ddout` sono quelli delle DLL vere; per i pannelli ci sono le righe delle DLL (`Library\<gioco>.*.txt`) e
   le impronte FNV-1a di liste e alberi dei vecchi frame.
 - Per compilare i test dal worktree il percorso relativo di DUnitX non si risolve: serve una giunzione

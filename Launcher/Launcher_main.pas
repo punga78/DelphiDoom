@@ -194,7 +194,7 @@ implementation
 
 uses
   WinSock, Launcher_utils, Launcher_wads, Launcher_about, Launcher_options,
-  Launcher_gameproperties;
+  Launcher_gameproperties, DelphiDoom.Platform.DataFolder.Factory;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
@@ -324,7 +324,8 @@ begin
   resolutions := nil;
   numresolutions := 0;
 
-  basedir := ExtractFilePath(ParamStr(0));
+  // the Launcher is built in bin\Platform\Configuration; its ini file and the games' data stay in bin
+  basedir := TDataFolderFactory.CreateLocator.Locate(ExtractFilePath(ParamStr(0)), '');
   if basedir = '' then
     basedir := '.\'
   else if basedir[length(basedir)] <> '\' then

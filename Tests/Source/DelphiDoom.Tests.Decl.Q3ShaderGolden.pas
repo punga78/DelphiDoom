@@ -284,7 +284,7 @@ end;
 
 function TTestQ3ShaderGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Decl\q3shader\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Decl\q3shader\');
 end;
 
 // the angle of the sun goes through float operations that the FPU of Win32 may round differently: four units of
@@ -320,7 +320,7 @@ function TTestQ3ShaderOpenArena.Folder: string;
 begin
   Result := GetEnvironmentVariable('DELPHIDOOM_OPENARENA');
   if Result = '' then
-    Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Reference\openarena\openarena-0.8.8');
+    Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Reference\openarena\openarena-0.8.8');
 end;
 
 procedure TTestQ3ShaderOpenArena.DovrebbeLeggereTuttiGliShaderDiOpenArenaSenzaErrori;

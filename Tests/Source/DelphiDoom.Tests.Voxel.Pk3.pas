@@ -78,7 +78,7 @@ const
 
 procedure TTestVoxelPk3.Setup;
 begin
-  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Pk3\src'));
+  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Pk3\src'));
   FLog := TVoxelFakeLog.Create;
   FLogInterface := FLog;
   FSource := TVoxelFakeSource.Create;

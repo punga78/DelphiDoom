@@ -31,7 +31,7 @@ implementation
 class function TScreenshotGolden.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Screenshot\'));
+    '..\..\..\..\Tests\Data\Screenshot\'));
 end;
 
 class function TScreenshotGolden.Value(const AFile, AName: string): string;

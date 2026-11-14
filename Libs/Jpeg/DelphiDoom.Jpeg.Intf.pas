@@ -33,7 +33,12 @@ const
   DDJPEG_MAX_DIMENSION = 65500;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDJpeg64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDJPEG_LIBRARY_NAME = 'DDJpeg64.dll';
+{$ELSE}
   DDJPEG_LIBRARY_NAME = 'DDJpeg.dll';
+{$ENDIF}
   DDJPEG_CREATE_EXPORT = 'DDJpegCreate';
 
 type

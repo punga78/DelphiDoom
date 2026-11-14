@@ -151,7 +151,7 @@ end;
 class function TIdLibGolden.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\IdLib\' + AFileName));
+    '..\..\..\..\Tests\Data\IdLib\' + AFileName));
 end;
 
 class function TIdLibGolden.FloatToken(const AValue: Single): string;

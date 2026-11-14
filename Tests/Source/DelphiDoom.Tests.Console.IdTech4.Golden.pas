@@ -39,7 +39,7 @@ implementation
 
 procedure TTestIdTech4Golden.Setup;
 begin
-  FFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Console\IdTech4'));
+  FFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Console\IdTech4'));
 end;
 
 procedure TTestIdTech4Golden.CompareScenario(const AName: string);

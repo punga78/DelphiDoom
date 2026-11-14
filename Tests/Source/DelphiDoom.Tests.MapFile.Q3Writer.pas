@@ -102,7 +102,7 @@ end;
 
 function TTestMapQ3Writer.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestMapQ3Writer.BuildBrush(const AOrigin: array of Single; const AMaterial: AnsiString): TMapBrush;

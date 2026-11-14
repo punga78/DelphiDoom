@@ -33,7 +33,7 @@ Tools\build.bat giochi | strumenti | librerie | tests
 Tools\build.bat Heretic32 Debug     # un progetto
 ```
 
-- Uscite in `bin\`, `.dcu` in `dcu\`, log in `logs\<progetto>.log`.
+- Uscite in `bin\<Piattaforma>\<Configurazione>\<area>` (es. `bin\Win32\Release\Doom\Doom32.exe`), `.dcu` in `dcu\<Piattaforma>\<Configurazione>\`, log in `logs\<progetto>.log`; i dati dei giochi (WAD, `.ini`, `DATA`) restano in `bin\<Gioco>` e il gioco li trova da solo (o con `-data <cartella>`).
 
 ## Caratteristiche
 

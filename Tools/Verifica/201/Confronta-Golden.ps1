@@ -7,7 +7,7 @@
   Una differenza e' un golden fuori data o un'estrazione del C cambiata: non si riscrive il golden per far tornare il conto,
   si guarda perche' (Registra-Golden.ps1 e' solo per quando il C e' cambiato di proposito).
 
-  Con -Test <eseguibile> esegue anche il progetto di test (bin\Tests\DelphiDoom.Tests.War.exe, o la versione Win64) e
+  Con -Test <eseguibile> esegue anche il progetto di test (bin\Win32\Release\Tests\DelphiDoom.Tests.War.exe, o la versione Win64) e
   riporta i numeri di DUnitX: e' il confronto lato Delphi.
 
   Si salta da solo cio' che non si puo' fare: senza il DATA.WAR vero i golden che lo vogliono (lo dice come SALTATO), senza

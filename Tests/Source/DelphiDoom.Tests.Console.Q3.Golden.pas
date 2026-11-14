@@ -39,7 +39,7 @@ implementation
 
 procedure TTestQ3Golden.Setup;
 begin
-  FFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Console\Q3'));
+  FFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Console\Q3'));
 end;
 
 procedure TTestQ3Golden.CompareScenario(const AName: string);

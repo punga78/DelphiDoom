@@ -172,7 +172,7 @@ var
 begin
   // the text of RADIXINF that the old translator wrote for the 2.0 shareware (it is in the repository)
   LPath := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Radix\radixinf.v20.golden.txt'));
+    '..\..\..\..\Tests\Data\Radix\radixinf.v20.golden.txt'));
   if not TFile.Exists(LPath) then
   begin
     TTestSkip.Ignore('radixinf.v20.golden.txt non c''e'' accanto ai test: ' + LPath);

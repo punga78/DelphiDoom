@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDJpeg;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 uses
   DelphiDoom.Jpeg.Intf in 'DelphiDoom.Jpeg.Intf.pas',
   DelphiDoom.Jpeg.Types in 'DelphiDoom.Jpeg.Types.pas',

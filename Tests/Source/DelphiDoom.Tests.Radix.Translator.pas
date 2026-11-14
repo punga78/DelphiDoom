@@ -63,7 +63,7 @@ var
   LCandidates: TArray<string>;
   LCandidate: string;
 begin
-  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..'));
+  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..'));
   if AVersion = 'v20' then
     LSub := 'radix\v20\game\RADIX.DAT'
   else
@@ -85,7 +85,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Radix\' + AFileName)));
+      '..\..\..\..\Tests\Data\Radix\' + AFileName)));
     Result := LLines.ToStringArray;
   finally
     LLines.Free;
@@ -187,7 +187,7 @@ begin
   LLines := TStringList.Create;
   try
     LGolden.Text := TEncoding.ANSI.GetString(TFile.ReadAllBytes(TPath.GetFullPath(
-      TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Radix\radixinf.v20.golden.txt'))));
+      TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Radix\radixinf.v20.golden.txt'))));
     LLines.Text := LText;
     Assert.IsTrue(LLines.Count > 400);
     // the old text has the aliases of the parts that are not ported too: the ones of the library

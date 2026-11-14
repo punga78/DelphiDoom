@@ -76,7 +76,7 @@ end;
 
 function TTestYamlParity.DataFile(const AName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Yaml\' + AName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Yaml\' + AName);
 end;
 
 function TTestYamlParity.ReadFileText(const AName: string): TYamlText;

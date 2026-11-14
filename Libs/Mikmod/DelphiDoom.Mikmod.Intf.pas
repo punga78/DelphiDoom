@@ -34,7 +34,12 @@ const
   MIKMOD_MAX_MODULE_SIZE = 64 * 1024 * 1024;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDMikmod64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDMIKMOD_LIBRARY_NAME = 'DDMikmod64.dll';
+{$ELSE}
   DDMIKMOD_LIBRARY_NAME = 'DDMikmod.dll';
+{$ENDIF}
   DDMIKMOD_CREATE_EXPORT = 'DDMikmodCreate';
 
 type

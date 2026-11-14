@@ -133,7 +133,7 @@ end;
 
 function TTestBspRenderGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestBspRenderGolden.NextRandom: Cardinal;

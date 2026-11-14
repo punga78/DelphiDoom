@@ -87,7 +87,7 @@ end;
 
 function TTestProcAreaLocator.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestProcAreaLocator.NextRandom: Cardinal;

@@ -61,7 +61,7 @@ procedure TTestObituaryGenders.Setup;
 begin
   FGolden := TStringList.Create;
   FGolden.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Obituary\obituary.golden.txt')), TEncoding.UTF8);
+    '..\..\..\..\Tests\Data\Obituary\obituary.golden.txt')), TEncoding.UTF8);
 end;
 
 procedure TTestObituaryGenders.TearDown;

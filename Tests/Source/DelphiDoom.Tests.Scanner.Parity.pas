@@ -92,7 +92,7 @@ end;
 function TTestScannerParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Scanner\' + AFileName));
+    '..\..\..\..\Tests\Data\Scanner\' + AFileName));
 end;
 
 function TTestScannerParity.NewScanner(const AText: string): TScriptScanner;

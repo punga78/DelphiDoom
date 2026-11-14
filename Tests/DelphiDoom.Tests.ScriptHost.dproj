@@ -16,8 +16,8 @@
         <DCC_IncludePath>..\Libs\Script\Shim;..\Libs\Script;..\Libs\PascalScript;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>..\Libs\PascalScript;$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ResourcePath>..\Libs\PascalScript;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Tests\ScriptHost\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\ScriptHost</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
@@ -33,8 +33,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!='' And '$(Platform)'=='Win64'">
         <DCC_Platform>x64</DCC_Platform>
-        <DCC_ExeOutput>..\bin\Win64\Tests</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Win64\Tests\ScriptHost\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

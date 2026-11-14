@@ -55,7 +55,12 @@ const
   DDPNG_PALETTE_BYTES = 256 * 4;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDPng64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDPNG_LIBRARY_NAME = 'DDPng64.dll';
+{$ELSE}
   DDPNG_LIBRARY_NAME = 'DDPng.dll';
+{$ENDIF}
   DDPNG_CREATE_EXPORT = 'DDPngCreate';
 
 type

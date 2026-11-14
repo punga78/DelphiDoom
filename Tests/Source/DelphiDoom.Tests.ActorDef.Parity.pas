@@ -167,7 +167,7 @@ end;
 function TTestActorDefParity.DataDir(const AGame: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\ActorDef\' + AGame));
+    '..\..\..\..\Tests\Data\ActorDef\' + AGame));
 end;
 
 function TTestActorDefParity.Transcript(const AGame, ACase: string; out AMismatch: string): string;

@@ -44,7 +44,7 @@ uses
 
 function TTestAasGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Aas\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Aas\');
 end;
 
 procedure TTestAasGolden.LeClassiDovrebbeDareLeStesseRisposteDelC;

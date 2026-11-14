@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDPng;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 // The DLL has no zlib of its own: it uses the IZlib that DDPngCreate receives
 // (from DDZlib.dll or from an engine linked in the caller), so only the
 // contract of zlib (DelphiDoom.Zlib.Intf) is part of it.

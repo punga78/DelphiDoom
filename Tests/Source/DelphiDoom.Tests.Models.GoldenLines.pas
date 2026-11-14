@@ -56,7 +56,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Models\' + ARelativeFile)));
+      '..\..\..\..\Tests\Data\Models\' + ARelativeFile)));
     for LLine in LLines do
     begin
       LPos := Pos(' |', LLine);

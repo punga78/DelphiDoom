@@ -27,7 +27,12 @@ const
   XMI_ERROR_INTERNAL = -7;   // unexpected failure inside the library
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDXmi64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDXMI_LIBRARY_NAME = 'DDXmi64.dll';
+{$ELSE}
   DDXMI_LIBRARY_NAME = 'DDXmi.dll';
+{$ENDIF}
   DDXMI_CREATE_EXPORT = 'DDXmiCreate';
 
 type

@@ -470,7 +470,7 @@ begin
   LSorted := TList<Integer>.Create;
   try
     LLines := TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Net\q3demo-golden.txt')));
+      '..\..\..\..\Tests\Data\Net\q3demo-golden.txt')));
     for LLine in LLines do
       if LLine.StartsWith('demo.message ') then
       begin

@@ -89,7 +89,7 @@ end;
 function TTestScannerExpression.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Scanner\Expression\' + AFileName));
+    '..\..\..\..\Tests\Data\Scanner\Expression\' + AFileName));
 end;
 
 function TTestScannerExpression.Quote(const AText: string): string;

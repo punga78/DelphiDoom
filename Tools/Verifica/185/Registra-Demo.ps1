@@ -32,7 +32,7 @@ foreach ($gameName in $games.Keys) {
   $mine = @($entries | Where-Object { $_.Game -eq $gameName })
   if ($mine.Count -eq 0) { continue }
   $source = $Exe[$gameName]
-  if (-not $source) { $source = Join-Path $root ("bin\{0}\{1}" -f $games[$gameName].Folder, $games[$gameName].Exe) }
+  if (-not $source) { $source = Join-Path (Get-ParityBin $games[$gameName].Folder) $games[$gameName].Exe }
   $exeName = 'parity_' + $games[$gameName].Exe
   $dir = Initialize-ParityRunDir -Game $gameName -WorkRoot $WorkRoot -DataRoot $DataRoot -Executables @{ $exeName = $source }
   $target = Join-Path $root "Tests\Data\Parity\$gameName"

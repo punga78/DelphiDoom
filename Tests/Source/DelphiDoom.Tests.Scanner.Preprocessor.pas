@@ -198,7 +198,7 @@ end;
 function TTestScannerPreprocessor.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Scanner\Preprocess\' + AFileName));
+    '..\..\..\..\Tests\Data\Scanner\Preprocess\' + AFileName));
 end;
 
 function TTestScannerPreprocessor.Quote(const AText: string): string;

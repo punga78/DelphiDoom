@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDMikmod;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 uses
   DelphiDoom.Mikmod.Intf in 'DelphiDoom.Mikmod.Intf.pas',
   DelphiDoom.Tracker.Types in 'DelphiDoom.Tracker.Types.pas',

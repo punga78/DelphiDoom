@@ -6,7 +6,7 @@
 
   Use (the old executable is built from the commit before the issue, the new one from this worktree):
     powershell -NoProfile -File Tools\Verifica\150\Confronta-150.ps1 `
-      -OldExe <old>\bin\Doom\Doom32.exe -NewExe <new>\bin\Doom\Doom32.exe [-Iwad FREEDOOM2.WAD]
+      -OldExe <old>\bin\Win32\Release\Doom\Doom32.exe -NewExe <new>\bin\Win32\Release\Doom\Doom32.exe [-Iwad FREEDOOM2.WAD]
 
   The game is started with Tools\Esegui-gioco.ps1 (global lock) and stopped after -Seconds.
 #>

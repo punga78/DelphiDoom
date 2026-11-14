@@ -59,7 +59,7 @@ begin
     Result := TPath.GetDirectoryName(Result);
   if (Result <> '') and TDirectory.Exists(Result) then
     Exit;
-  LRelative := '..\..\Reference\openarena\openarena-0.8.8\baseoa';
+  LRelative := '..\..\..\..\Reference\openarena\openarena-0.8.8\baseoa';
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), LRelative));
   if not TDirectory.Exists(Result) then
     raise ETestIgnored.Create('OpenArena non c''e'' (DELPHIDOOM_OPENARENA o Reference\openarena): prova ignorata');

@@ -64,7 +64,7 @@ function TTestGuiOpenArena.BaseFolder: string;
 begin
   Result := GetEnvironmentVariable('DELPHIDOOM_OPENARENA');
   if Result = '' then
-    Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Reference\openarena\openarena-0.8.8\');
+    Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Reference\openarena\openarena-0.8.8\');
   Result := IncludeTrailingPathDelimiter(Result);
 end;
 

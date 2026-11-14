@@ -100,7 +100,7 @@ end;
 
 function BotDataFolder: string;
 begin
-  Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\BotAi'));
+  Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\BotAi'));
 end;
 
 { TFakeBotImport }

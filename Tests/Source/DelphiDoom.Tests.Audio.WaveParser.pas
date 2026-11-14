@@ -100,7 +100,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Audio\audio.golden.txt')));
+      '..\..\..\..\Tests\Data\Audio\audio.golden.txt')));
     for LIndex := 0 to LLines.Count - 1 do
     begin
       LSeparator := Pos('=', LLines[LIndex]);

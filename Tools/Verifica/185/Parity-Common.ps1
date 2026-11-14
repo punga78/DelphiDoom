@@ -23,6 +23,18 @@ $script:ParityGames = [ordered]@{
 
 function Get-ParityRoot { $script:ParityRoot }
 
+# Piattaforma e configurazione degli eseguibili (issue #230: bin\<Piattaforma>\<Configurazione>\<area>); predefinite Win32 e
+# Release, si cambiano con le variabili d'ambiente DD_PLATFORM (Win32|Win64) e DD_CONFIG (Release|Debug).
+$script:ParityPlatform = if ($env:DD_PLATFORM) { $env:DD_PLATFORM } else { 'Win32' }
+$script:ParityConfig = if ($env:DD_CONFIG) { $env:DD_CONFIG } else { 'Release' }
+# La cartella degli eseguibili di una area (Doom, Heretic, Tools, Tests...) per la piattaforma e la configurazione scelte.
+function Get-ParityBin {
+  param([string]$Area = '')
+  $bin = Join-Path $script:ParityRoot ('bin\' + $script:ParityPlatform + '\' + $script:ParityConfig)
+  if ($Area -ne '') { $bin = Join-Path $bin $Area }
+  $bin
+}
+
 # Una tabella gioco -> percorso: una hashtable, oppure (con powershell -File) una stringa 'Doom=C:\a.exe;Hexen=C:\b.exe'.
 function ConvertTo-ParityMap {
   param($Value)
@@ -64,9 +76,9 @@ function Get-ParityCorpus {
 }
 
 function Get-ParityTool {
-  $tool = Join-Path $script:ParityRoot 'bin\Tools\ParityTool.exe'
+  $tool = Join-Path (Get-ParityBin 'Tools') 'ParityTool.exe'
   if (-not (Test-Path $tool)) {
-    & (Join-Path $script:ParityRoot 'Tools\build.bat') ParityTool Release | Out-Null
+    & (Join-Path $script:ParityRoot 'Tools\build.bat') ParityTool $script:ParityConfig $script:ParityPlatform | Out-Null
   }
   if (-not (Test-Path $tool)) { throw "ParityTool.exe non trovato: Tools\build.bat ParityTool" }
   $tool

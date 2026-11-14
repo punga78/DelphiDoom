@@ -90,7 +90,7 @@ var
   LBytes: TBytes;
 begin
   Result := '';
-  LPath := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\' + AName);
+  LPath := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\' + AName);
   if not FileExists(LPath) then
     Exit;
   LBytes := TFile.ReadAllBytes(LPath);

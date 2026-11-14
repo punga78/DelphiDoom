@@ -149,7 +149,7 @@ end;
 function Q3DataPath(const AName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Models\q3player\' + AName));
+    '..\..\..\..\Tests\Data\Models\q3player\' + AName));
 end;
 
 function Q3DataFile(const AName: string): TBytes;

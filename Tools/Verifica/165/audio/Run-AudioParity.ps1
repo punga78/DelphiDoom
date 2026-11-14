@@ -1,6 +1,6 @@
 <#
   Makes the golden file of the AdLib sound effects of Keen Dreams from the original C (issue #165, K10):
-    1. the test exe (bin\Tests\DelphiDoom.Tests.Keen.exe) writes the scripts (SCEN.TXT) with the generator of
+    1. the test exe (bin\Win32\Release\Tests\DelphiDoom.Tests.Keen.exe) writes the scripts (SCEN.TXT) with the generator of
        DelphiDoom.Tests.Keen.AdLibScenarios;
     2. id_sd.c of Reference\_dati\keen_build\src is copied to the work folder as ID_SD_P.C with alOut renamed
        alOut_hw (sdharn.c has the alOut that writes the log) and Build-AudioHarness.cmd compiles it with Open Watcom;
@@ -14,7 +14,7 @@ $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path
 $src = 'C:\Progetti\DelphiDoom\Reference\_dati\keen_build\src'
 if (-not (Test-Path $Work)) { New-Item -ItemType Directory $Work | Out-Null }
 $env:DELPHIDOOM_KEEN_ADLIB_SCENARIOS = Join-Path $Work 'SCEN.TXT'
-& (Join-Path $root 'bin\Tests\DelphiDoom.Tests.Keen.exe') '--run:DelphiDoom.Tests.Keen.AdLibParity.TTestKeenAdLibParity.GeneraGliScenariPerIlC' | Out-Null
+& (Join-Path $root 'bin\Win32\Release\Tests\DelphiDoom.Tests.Keen.exe') '--run:DelphiDoom.Tests.Keen.AdLibParity.TTestKeenAdLibParity.GeneraGliScenariPerIlC' | Out-Null
 Remove-Item Env:DELPHIDOOM_KEEN_ADLIB_SCENARIOS
 Copy-Item (Join-Path $PSScriptRoot 'sdharn.c') $Work -Force
 $text = [IO.File]::ReadAllText((Join-Path $src 'id_sd.c'), [Text.Encoding]::GetEncoding(437))

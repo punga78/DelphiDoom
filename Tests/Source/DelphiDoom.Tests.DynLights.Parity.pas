@@ -44,7 +44,7 @@ uses
 function TTestDynLightsParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\DynLights\' + AFileName));
+    '..\..\..\..\Tests\Data\DynLights\' + AFileName));
 end;
 
 class procedure TTestDynLightsParity.SplitCases(ALines: TStringList;

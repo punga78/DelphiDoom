@@ -95,7 +95,12 @@ const
   SNDFILE_SEEK_END = 2;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDSndfile64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDSNDFILE_LIBRARY_NAME = 'DDSndfile64.dll';
+{$ELSE}
   DDSNDFILE_LIBRARY_NAME = 'DDSndfile.dll';
+{$ENDIF}
   DDSNDFILE_CREATE_EXPORT = 'DDSndfileCreate';
 
 type

@@ -150,7 +150,7 @@ end;
 function TTestNetPacketCodec.GoldenPath: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Net\wire_golden.txt'));
+    '..\..\..\..\Tests\Data\Net\wire_golden.txt'));
 end;
 
 function TTestNetPacketCodec.Value(const AGame, AName: string): string;

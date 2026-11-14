@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  Winapi.Windows;
+  Winapi.Windows, DelphiDoom.Platform.DataFolder.Factory;
 
 { TWindowsIdeFileSystem }
 
@@ -161,7 +161,8 @@ end;
 
 function TWindowsIdeFileSystem.ProgramFolder: string;
 begin
-  Result := ExtractFilePath(ParamStr(0));
+  // built in bin\Platform\Configuration\Tools, the examples and the resources stay in bin\Tools
+  Result := TDataFolderFactory.CreateLocator.Locate(ExtractFilePath(ParamStr(0)), '');
 end;
 
 end.

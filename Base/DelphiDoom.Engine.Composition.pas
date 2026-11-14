@@ -437,6 +437,7 @@ uses
   DelphiDoom.Configuration.Intf,
   DelphiDoom.CommandLine.Intf,
   DelphiDoom.CommandLine.Factory,
+  DelphiDoom.Platform.DataFolder.Factory,
   DelphiDoom.Video.Types,
   DelphiDoom.Engine.Startup.ResponseFileSource,
   DelphiDoom.Engine.Startup.Numbers,
@@ -1615,6 +1616,8 @@ begin
     begin
       LStore.EnsureDirectory(APath);
     end, CD_WORKDIR);
+  // the program works in the folder of the data of its game (bin\Game), wherever its executable was built
+  M_ConfigureDataFolder(TDataFolderFactory.CreateLocator);
   M_ConfigureArgv(TCommandLineFactory.CreateStartup(TCommandLineFactory.CreateBuilder, LSaveFileNames,
     TEngineProgramEnvironment.Create, APPNAME, DEFARGVFILENAME), LCommandLine, LSaveFileNames);
   LParity.AttachCommandLine(LCommandLine);

@@ -44,7 +44,7 @@ uses
 function TTestScannerText.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Scanner\' + AFileName));
+    '..\..\..\..\Tests\Data\Scanner\' + AFileName));
 end;
 
 function TTestScannerText.Quote(const AText: string): string;

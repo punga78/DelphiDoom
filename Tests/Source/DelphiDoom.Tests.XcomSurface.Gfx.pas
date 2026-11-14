@@ -108,7 +108,7 @@ end;
 
 function TTestXcomGfx.DataFile(const AName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\XcomSurface\' + AName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\XcomSurface\' + AName);
 end;
 
 function TTestXcomGfx.Blank(AWidth, AHeight, AColors: Integer): TXcomSurface;

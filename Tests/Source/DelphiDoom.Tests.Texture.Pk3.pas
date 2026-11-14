@@ -80,7 +80,7 @@ const
 
 procedure TTestTexturePk3.Setup;
 begin
-  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Pk3\src'));
+  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Pk3\src'));
   FLog := TFakeLog.Create;
   FLogInterface := FLog;
   FImage := TTextureImage.Create;

@@ -139,7 +139,7 @@ var
 begin
   LRoot := RootPath;
   if LRoot = '' then
-    LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..'));
+    LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..'));
   Result := TPath.Combine(TPath.Combine(TPath.Combine(LRoot, 'bin'), AGameFolder), AWadFile);
 end;
 

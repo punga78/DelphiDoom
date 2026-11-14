@@ -63,7 +63,7 @@ end;
 function TTestJpegParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Jpeg\' + AFileName));
+    '..\..\..\..\Tests\Data\Jpeg\' + AFileName));
 end;
 
 function TTestJpegParity.LoadGolden: TDictionary<string, string>;

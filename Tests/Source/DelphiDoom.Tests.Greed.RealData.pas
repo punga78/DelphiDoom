@@ -89,7 +89,7 @@ end;
 
 class function TGreedRealData.GoldenPath(const AName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Greed\' + AName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Greed\' + AName);
 end;
 
 class function TGreedRealData.OpenArchive(const AFolder: string): IGreedArchive;

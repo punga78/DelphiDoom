@@ -185,7 +185,7 @@ var
   LModels: TObjectList<TCollisionModel>;
   LStream: TFileStream;
 begin
-  LPath := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Collision\triangle.cm');
+  LPath := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Collision\triangle.cm');
   if not TFile.Exists(LPath) then
   begin
     Assert.Pass('triangle.cm not found: ' + LPath);

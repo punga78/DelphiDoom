@@ -56,7 +56,7 @@ var
   LRoot: string;
   LCandidate: string;
 begin
-  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..'));
+  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..'));
   // the worktrees of the repository are under .claude\worktrees\<name>
   for LCandidate in TArray<string>.Create(TPath.Combine(LRoot, DATA_FILE),
     TPath.GetFullPath(TPath.Combine(LRoot, '..\..\..\' + DATA_FILE))) do

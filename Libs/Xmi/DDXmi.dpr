@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDXmi;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 uses
   DelphiDoom.Xmi.Intf in 'DelphiDoom.Xmi.Intf.pas',
   DelphiDoom.Xmi.Midi.Types in 'DelphiDoom.Xmi.Midi.Types.pas',

@@ -42,7 +42,7 @@ begin
   LResult := TList<string>.Create;
   LLines := TStringList.Create;
   try
-    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Endoom\' + AFile));
+    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Endoom\' + AFile));
     LPrefix := AKind + ' ';
     for LLine in LLines do
       if LLine.StartsWith(LPrefix) then

@@ -43,7 +43,7 @@ uses
 
 function TTestAasGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestAasGolden.LoadBytesAsText(const AName: string): AnsiString;

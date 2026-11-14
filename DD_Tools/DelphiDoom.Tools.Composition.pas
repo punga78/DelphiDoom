@@ -56,6 +56,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Platform.DataFolder.Factory,
   DelphiDoom.Tools.Factory, DelphiDoom.Tools.Types, DelphiDoom.VoxelEditor.Types,
   DelphiDoom.Endoom.Intf, DelphiDoom.Endoom.EditorFactory,
   DelphiDoom.Endoom.TextArt.Types, DelphiDoom.Endoom.TextArt.Intf, DelphiDoom.Endoom.TextArt.Factory,
@@ -73,7 +74,8 @@ begin
   inherited Create;
   FTitle := ATitle;
   FFileSystem := TWindowsToolFileSystem.Create;
-  FSettings := TToolsFactory.CreateSettings(FFileSystem, ChangeFileExt(ParamStr(0), '.ini'));
+  FSettings := TToolsFactory.CreateSettings(FFileSystem, TDataFolderFactory.CreateLocator.Locate(ExtractFilePath(ParamStr(0)), '') +
+    ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini'));
   FClipboard := TVclEndoomEditorClipboard.Create;
   FExporter := TVclEndoomImageExporter.Create;
   FDialogs := TVclEndoomEditorDialogs.Create(ATitle, VersionText);

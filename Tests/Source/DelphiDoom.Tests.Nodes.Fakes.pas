@@ -146,7 +146,7 @@ end;
 class function TNodesTestData.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\'));
+    '..\..\..\..\Tests\Data\'));
 end;
 
 class function TNodesTestData.ReadFile(const AName: string): TBytes;
