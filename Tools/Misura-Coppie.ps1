@@ -17,6 +17,7 @@
 
   Uso:
     powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio <exe> -Nuovo <exe> [-Demo demo1] [-Coppie 5]
+      (gli exe stanno in bin\<Piattaforma>\<Configurazione>\<Gioco>, es. bin\Win32\Release\Doom\Doom32.exe)
       [-Iwad DOOM1.WAD] [-Modo 8|32] [-MaxDispersione 3] [-Soglia 5] [-WorkRoot <cartella>] [-DataRoot <bin con i WAD>]
 #>
 param(

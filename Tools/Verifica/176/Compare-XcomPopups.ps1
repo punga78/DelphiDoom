@@ -56,7 +56,7 @@ $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92
 $realSteps = @("wait:$StartWait", 'click:220,256', 'wait:3', 'click:80,92') + $Real
 if (-not $NoDelphi) {
   Push-Location "$Out\delphi"
-  & "$Root\bin\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
+  & "$Root\bin\Win32\Release\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
   Pop-Location
 }
 if ($NoReal) { return }

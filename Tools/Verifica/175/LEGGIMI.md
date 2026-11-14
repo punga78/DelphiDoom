@@ -20,7 +20,7 @@ Righe `H`, `R`, `L`, `K`, `W`, `F`, `S`, `P` (vedi `Tests\Data\README.md`) e, pe
 Compilazione (fuori dal repository): `dcc32 -B -W- -H- -NSVcl;System;Xml;Data;Winapi;System.Win -U<src>;<src>\Base;<src>\Greed;<src>\zlib
 -I<src>;<src>\Greed -R<src> GreedGolden.dpr` con `<src>` = copia corretta di `Reference\xGreed`.
 
-Il test `DelphiDoom.Tests.Greed.Golden` (`Tools\build.bat DelphiDoom.Tests.Greed Debug`, poi `bin\Tests\DelphiDoom.Tests.Greed.exe`)
+Il test `DelphiDoom.Tests.Greed.Golden` (`Tools\build.bat DelphiDoom.Tests.Greed Debug`, poi `bin\Win32\Release\Tests\DelphiDoom.Tests.Greed.exe`)
 confronta la libreria con i tre golden; il gioco completo si cerca in `Reference\_dati\greed\full\GREED.BLO` e si salta se manca.
 
 ## 2. L'originale DOS in DOSBox

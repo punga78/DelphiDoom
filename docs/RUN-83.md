@@ -9,7 +9,7 @@ Tools\build.bat Tests\DelphiDoom.Tests.Midi
 ```
 Il `.dproj` ha il percorso di DUnitX come gli altri (`..\..\Skema\...`): da un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX.
 Leggere `logs\DelphiDoom.Tests.Midi.log` (righe `error`). Atteso: 0 errori.
-Eseguire `bin\Tests\DelphiDoom.Tests.Midi.exe`: **senza** `Tests\Data\Midi\stream.golden.txt` i tre test di parità passano con `Assert.Pass`; gli altri (circa 50: lettore m2m con le opzioni, loader, sequencer, volume, feeder) devono essere verdi. Se un test del sequencer fallisce, è l'aritmetica a mano dei valori attesi (tempo 500000 = `$0107A120` con il flag, 85 eventi per blocco da 1024 byte, blocco da 11 tick a 96 ppq e 500000 us) o un errore del codice: leggere il caso.
+Eseguire `bin\Win32\Release\Tests\DelphiDoom.Tests.Midi.exe`: **senza** `Tests\Data\Midi\stream.golden.txt` i tre test di parità passano con `Assert.Pass`; gli altri (circa 50: lettore m2m con le opzioni, loader, sequencer, volume, feeder) devono essere verdi. Se un test del sequencer fallisce, è l'aritmetica a mano dei valori attesi (tempo 500000 = `$0107A120` con il flag, 85 eventi per blocco da 1024 byte, blocco da 11 tick a 96 ppq e 500000 us) o un errore del codice: leggere il caso.
 
 Anche `Tools\build.bat Tests\DelphiDoom.Tests.M2m` (il lettore ha il parametro nuovo `AOptions`, il comportamento senza opzioni non deve cambiare: 0 differenze, stessi test verdi).
 
@@ -17,7 +17,7 @@ Anche `Tools\build.bat Tests\DelphiDoom.Tests.M2m` (il lettore ha il parametro n
 
 ```
 Tools\Verifica\83\Build.bat
-bin\Tools\Verifica\DumpOldMidi.exe Tests\Data\Midi\stream.golden.txt <cartella bin con Doom, Heretic, Hexen, Strife> bin\Tools\Verifica\midi83
+bin\Win32\Release\Tools\Verifica\DumpOldMidi.exe Tests\Data\Midi\stream.golden.txt <cartella bin con Doom, Heretic, Hexen, Strife> bin\Win32\Release\Tools\Verifica\midi83
 ```
 Il secondo argomento (la `bin\` del repository principale, dove stanno i WAD) e il terzo (dove scrivere i `.bin` dei blocchi, uno per canzone e protocollo) sono facoltativi. Log di compilazione: `logs\DumpOldMidi.log`.
 Il programma contiene il testo del vecchio `TMidi` (`OldMidiNew.pas`, fatto da `old_i_midi_new.txt` = `Base\i_midi_new.pas` del commit precedente con fuori solo il dispositivo) e la logica MUS del vecchio `TMusMusicBackend`. **Rimandare a me** `Tests\Data\Midi\stream.golden.txt` e il log.

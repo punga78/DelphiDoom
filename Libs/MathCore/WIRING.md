@@ -112,7 +112,7 @@ Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`:
 - **Determinismo a 64 bit**: le funzioni a virgola mobile (`FixedDivEx`, `FixedSqrt`, `FixedMul64`, `FloatDiv`, `FloatMul`, e i vettori) sono identiche bit per bit
   **a 32 bit** (provato); a 64 bit `Extended` vale `Double` e l'arrotondamento può differire all'ultimo bit in rari casi. Per il resto la libreria è in interi.
 - **`TVectorMath`**: `Single` con espressioni in `Extended` a 32 bit; a 64 bit (SSE, `Single` puro) i bit possono cambiare. I golden sono a 32 bit.
-- I test `TestFixture` leggono `..\..\Tests\Data\MathCore` rispetto a `bin\Tests`.
+- I test `TestFixture` leggono `..\..\Tests\Data\MathCore` rispetto a `bin\Win32\Release\Tests`.
 
 ## 6. Stato dopo la issue #133 (fase 2, ondata 1)
 

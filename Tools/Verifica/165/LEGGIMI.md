@@ -28,7 +28,7 @@ compilati con Open Watcom a 16 bit (`int` e `unsigned` a 16 bit come nel gioco),
 Tools\build.bat DelphiDoom.Tests.Keen Debug
 powershell -NoProfile -File Tools\Verifica\165\Run-ActionsParity.ps1        # tutto: scenari, harness, DOSBox, golden
 Tools\build.bat DelphiDoom.Tests.Keen Debug
-bin\Tests\DelphiDoom.Tests.Keen.exe --include:keen-parity
+bin\Win32\Release\Tests\DelphiDoom.Tests.Keen.exe --include:keen-parity
 ```
 
 Per vedere una differenza riga per riga: con `DELPHIDOOM_KEEN_PORT_OUT=<PORT.TXT>` il test `ScriviIlRisultatoDelPorting`

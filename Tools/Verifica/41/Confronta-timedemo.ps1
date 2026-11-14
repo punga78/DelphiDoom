@@ -8,7 +8,7 @@
   Uso (dalla radice del repository, con i due eseguibili gia' compilati: quello vecchio copiato
   prima della build, quello nuovo appena compilato):
     powershell -NoProfile -File Tools\Verifica\41\Confronta-timedemo.ps1 `
-      -OldExe bin\Doom\Doom32.old.exe -NewExe bin\Doom\Doom32.exe `
+      -OldExe bin\Win32\Release\Doom\Doom32.old.exe -NewExe bin\Win32\Release\Doom\Doom32.exe `
       -Arguments '-iwad DOOM1.WAD -timedemo demo1 -nomusic -nosound' [-Runs 5] [-MaxSlowdownPercent 5]
 
   Gli eseguibili girano nella cartella del NUOVO (servono WAD e *.swd); l'esecuzione passa da

@@ -16,7 +16,7 @@
                   "A.B"; Sndfile anche Libs\Sound): le librerie da cui dipende contano nel loro progetto.
   -Tutti          esegue tutti i progetti di test elencati in Tools\build.bat (variabile TESTS) uno dopo l'altro
                   e scrive un riepilogo in logs\copertura\riepilogo.txt.
-  -SenzaCompilare usa l'eseguibile gia' in bin\Tests, che deve essere compilato in Debug (senza questa
+  -SenzaCompilare usa l'eseguibile gia' in bin\Win32\Debug\Tests, che deve essere compilato in Debug (senza questa
                   opzione lo script lo ricompila con Tools\build.bat in Debug: la mappa di Release non ha i numeri di riga).
   -SoloComando    stampa il comando di CodeCoverage senza eseguirlo.
   -CodeCoverage   percorso di CodeCoverage.exe. Se omesso: variabile d'ambiente DELPHI_CODECOVERAGE,
@@ -88,7 +88,7 @@ function Get-SourceFiles([string]$TestName, [string]$Project, [string]$Explicit)
   if ($listed.Count -gt 0) { return $listed }
   # The .dpr names no unit of its library (it finds them through the search path, as XcomDebriefing does): the
   # units are the ones of the owned folders that the linker put in the map
-  $map = Join-Path $root "bin\Tests\$Project.map"
+  $map = Join-Path $root "bin\Win32\Debug\Tests\$Project.map"
   if (-not (Test-Path -LiteralPath $map)) { return @() }
   $linked = @{}
   foreach ($m in [regex]::Matches((Get-Content -LiteralPath $map -Raw), 'Line numbers for [^(\r\n]+\(([^)\r\n]+\.pas)\)')) {
@@ -158,8 +158,8 @@ function Write-FolderTotals([string]$Out, [string[]]$Files) {
 
 function Invoke-Coverage([string]$TestName, [string]$Explicit) {
   $project = if ($TestName -eq '' -or $TestName -eq 'Zlib') { 'DelphiDoom.Tests' } else { 'DelphiDoom.Tests.' + $TestName }
-  $exe = Join-Path $root "bin\Tests\$project.exe"
-  $map = Join-Path $root "bin\Tests\$project.map"
+  $exe = Join-Path $root "bin\Win32\Debug\Tests\$project.exe"
+  $map = Join-Path $root "bin\Win32\Debug\Tests\$project.map"
   $label = if ($TestName -eq '') { 'Zlib' } else { $TestName }
   $out = Join-Path $root "logs\copertura\$label"
 

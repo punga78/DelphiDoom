@@ -8,6 +8,9 @@
       -Exe <percorso\Doom32.exe> -Arguments '-iwad DOOM1.WAD -warp 1 1 -devparm -nomusic' `
       [-WorkDir <cartella>] [-Seconds 25] [-StopWhenExited] [-WaitLockSeconds 3600]
 
+  Gli eseguibili stanno in bin\<Piattaforma>\<Configurazione>\<Gioco> (es. bin\Win32\Release\Doom\Doom32.exe): il gioco
+  trova da solo i dati in bin\<Gioco> (o in -data <cartella> negli -Arguments); crash.txt resta accanto all'eseguibile.
+
   Cosa fa: aspetta il lock, cancella crash.txt nella cartella di lavoro, avvia il processo a priorita'
   bassa, lo lascia girare -Seconds secondi (o fino alla sua fine con -StopWhenExited), lo chiude per
   PID (mai per nome), rilascia il lock e stampa una riga: vivo/uscito, codice di uscita, presenza di

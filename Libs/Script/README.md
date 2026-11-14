@@ -20,7 +20,7 @@ Questo documento contiene la **Fase 1** (analisi delle dipendenze) e descrive la
 
 **Decisione (#10)**: il motore resta su PascalScript in-process (`Libs\ScriptHost\ps_*` e `Libs\PascalScript\ps_*`). Gli script del gioco usano classi Delphi vere (`Actors`, `Lines`, `MapStrings`…) registrate con `TPSRuntimeClassImporter` dal `TClass` e dai puntatori ai metodi, che non attraversano il confine di una DLL: `Libs\ScriptHost\ps_*` e `Libs\PascalScript\ps_*` è il motore degli script, non codice storico da togliere. `DDScript` è la facciata per script semplici (funzioni, costanti, tipi, unit, globali, parole chiave, preprocessore).
 
-Build: `DDScript` (progetto in `Libs\Script`, `bin\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Tests`). Da aggiungere a `Tools\build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
+Build: `DDScript` (progetto in `Libs\Script`, `bin\Win32\Release\Libs\DDScript.dll`). Test: `Tests\DelphiDoom.Tests.Script` (`bin\Win32\Release\Tests`). Da aggiungere a `Tools\build.bat` (`LIBRERIE` e `TESTS`) a cura di chi integra.
 
 ---
 
@@ -157,4 +157,4 @@ Nulla è stato compilato. Punti da guardare per primi:
 4. `GetVar` di `TPSExec` restituisce l'indice nella tabella delle variabili esportate, non il numero della variabile: le due cose coincidono solo se **tutte** le globali sono esportate, nell'ordine di dichiarazione. `ScriptExportGlobals` (in `Native.Compiler`) lo garantisce; il test `TestGlobalIntegers` legge due variabili diverse per verificarlo.
 5. L'errore a runtime di una divisione per zero dipende dalla mappatura delle eccezioni hardware di Delphi: nel test `TestRuntimeErrorIsReported` il risultato atteso è `SCRIPT_ERROR_RUNTIME`.
 6. Dopo un errore a runtime lo stato dell'interprete non viene rimesso a punto: dopo `SCRIPT_ERROR_RUNTIME` conviene ricaricare il bytecode prima di nuove chiamate.
-7. I test dei file `*.dll` si saltano se `bin\Libs\DDScript.dll` non esiste (come per le altre librerie).
+7. I test dei file `*.dll` si saltano se `bin\Win32\Release\Libs\DDScript.dll` non esiste (come per le altre librerie).

@@ -15,7 +15,7 @@
 param(
   [int]$Giri = 10,
   [string]$Demo = 'demo1',
-  [string]$Exe = 'bin\Doom\Doom32.exe',
+  [string]$Exe = 'bin\Win32\Release\Doom\Doom32.exe',
   [string]$Iwad = 'DOOM1.WAD',
   [string]$Argomenti = '',
   [int]$SecondiMassimi = 600

@@ -26,7 +26,7 @@ Il programma (`OpenXcom\Xcom32`, composition root `OpenXcom\DelphiDoom.Xcom.Game
 
 ## Test e verifica
 
-- `Tools\build.bat Tests\DelphiDoom.Tests.XcomBattleStates` (eseguibile in `bin\Tests`): i test usano la battaglia
+- `Tools\build.bat Tests\DelphiDoom.Tests.XcomBattleStates` (eseguibile in `bin\Win32\Release\Tests`): i test usano la battaglia
   `Tests\Data\XcomBattle\bg\g01_2` con le regole e la grafica vere di TFTD (`Reference\_dati\xcom_tftd`); senza i dati
   passano senza controllare.
 - `Tools\Verifica\176\Compare-XcomBattle.ps1`: lo stesso salvataggio in `Xcom32` e nel vero OpenXcom, confronto dei

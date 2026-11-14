@@ -76,4 +76,4 @@ Verso il gioco e verso il file system solo interfacce **gia' esistenti in `Libs\
 
 ## Test
 
-`Tests\DelphiDoom.Tests.Aas` (103 test, 100 senza OpenArena), copertura 97% (850 righe su 872, ogni unit >= 92%) con `Tools\Copertura.ps1 -Test Aas`. Win32 e Win64 (a 64 bit i dati si cercano in `bin\Tests\Data`: `robocopy Tests\Data\Aas bin\Tests\Data\Aas`). In un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX (vedi `Libs\War\CLAUDE.md`).
+`Tests\DelphiDoom.Tests.Aas` (103 test, 100 senza OpenArena), copertura 97% (850 righe su 872, ogni unit >= 92%) con `Tools\Copertura.ps1 -Test Aas`. Win32 e Win64 (a 64 bit i dati si cercano in `bin\Win32\Release\Tests\Data`: `robocopy Tests\Data\Aas bin\Win32\Release\Tests\Data\Aas`). In un worktree serve `DCC_UnitSearchPath` con la cartella di DUnitX (vedi `Libs\War\CLAUDE.md`).

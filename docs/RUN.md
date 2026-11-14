@@ -17,7 +17,7 @@ Copertura: `powershell -NoProfile -File Tools\Copertura.ps1 -Test CommandLine` (
 
 ## 3. Parita' comandi e opzioni (confronto vecchio/nuovo)
 Costruire l'eseguibile del commit precedente (master) in un'altra cartella, poi per Doom, Heretic, Hexen, Strife:
-    powershell -NoProfile -File Tools\Verifica\150\Confronta-150.ps1 -OldExe <vecchio>\bin\Doom\Doom32.exe -NewExe bin\Doom\Doom32.exe
+    powershell -NoProfile -File Tools\Verifica\150\Confronta-150.ps1 -OldExe <vecchio>\bin\Win32\Release\Doom\Doom32.exe -NewExe bin\Win32\Release\Doom\Doom32.exe
 Atteso `IDENTICO` (cmdline, commandlineparams con e senza maschera = stesso elenco e ordine, cmdlist = stessi comandi con gli stessi nomi, typeof).
 Per Heretic/Hexen/Strife passare `-Iwad HERETIC1.WAD` ecc.
 

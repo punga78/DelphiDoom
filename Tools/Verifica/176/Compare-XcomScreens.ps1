@@ -66,7 +66,7 @@ foreach ($s in $Screens) {
   $first = $false
 }
 Push-Location "$Out\delphi"
-& "$Root\bin\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
+& "$Root\bin\Win32\Release\OpenXcom\Xcom32.exe" -data "$Data\openxcom" -game "$Data\$Game" -mod $ModId -user "$Out\user" -script $script | Out-Null
 Pop-Location
 $m = New-Object Threading.Mutex($false, 'Global\DelphiDoomEsecuzioneGioco')
 $got = $m.WaitOne(300000)

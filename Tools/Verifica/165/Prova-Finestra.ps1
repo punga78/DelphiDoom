@@ -3,7 +3,7 @@
   and WM_KEYUP posted to the window of the process, the pictures are taken with PrintWindow. One run at a time on
   the machine (the lock of Tools\Esegui-gioco.ps1).
 
-    powershell -NoProfile -File Tools\Verifica\165\Prova-Finestra.ps1 -Exe bin\Keen\Keen32.exe `
+    powershell -NoProfile -File Tools\Verifica\165\Prova-Finestra.ps1 -Exe bin\Win32\Release\Keen\Keen32.exe `
       -Arguments '-data <folder> -save <folder> -nodevice -report' -Out <folder> `
       -Steps 'wait:1500','shot:title','key:32','wait:800','shot:panel','close'
 

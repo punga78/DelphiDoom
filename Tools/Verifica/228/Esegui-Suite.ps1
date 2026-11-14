@@ -16,6 +16,6 @@ foreach ($progetto in $Progetti) {
     Write-Host "$progetto : COMPILAZIONE FALLITA (vedi $log)"
     continue
   }
-  $esito = & (Join-Path $radice "bin\Tests\$progetto.exe") 2>&1 | Select-String -Pattern 'Tests (Found|Ignored|Passed|Failed|Errored)'
+  $esito = & (Join-Path $radice "bin\Win32\Release\Tests\$progetto.exe") 2>&1 | Select-String -Pattern 'Tests (Found|Ignored|Passed|Failed|Errored)'
   Write-Host "$progetto : $($esito -join ' | ')"
 }

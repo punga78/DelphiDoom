@@ -38,7 +38,7 @@ Set-Content -Path "$Out\user\options.cfg" -Value $cfg -Encoding ASCII
 $script = 'wait:5000;move:220,256;click:220,256;wait:2000;move:80,92;click:80,92;wait:1000;' + $Delphi
 if (Test-Path "$Out\sounds.txt") { Remove-Item "$Out\sounds.txt" }
 Push-Location "$Out\delphi"
-$p = Start-Process "$Root\bin\OpenXcom\Xcom32.exe" -ArgumentList "-data `"$Data\openxcom`" -game `"$Data\TFTD`" -user `"$Out\user`" -soundlog `"$Out\sounds.txt`" -script $script" -RedirectStandardError "$Out\delphi\stderr.txt" -RedirectStandardOutput "$Out\delphi\stdout.txt" -PassThru -Wait
+$p = Start-Process "$Root\bin\Win32\Release\OpenXcom\Xcom32.exe" -ArgumentList "-data `"$Data\openxcom`" -game `"$Data\TFTD`" -user `"$Out\user`" -soundlog `"$Out\sounds.txt`" -script $script" -RedirectStandardError "$Out\delphi\stderr.txt" -RedirectStandardOutput "$Out\delphi\stdout.txt" -PassThru -Wait
 Pop-Location
 Get-Content "$Out\delphi\stderr.txt", "$Out\delphi\stdout.txt"
 if (Test-Path "$Out\sounds.txt") { Get-Content "$Out\sounds.txt" }

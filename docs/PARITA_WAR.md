@@ -42,7 +42,7 @@ sono in `CLAUDE.md`; qui c'e' cio' che e' specifico di War e i comandi per ripet
 
 ```
 :: tutti i golden di War rifatti dal C e confrontati con quelli del repository (e i numeri dei test di Delphi)
-powershell -NoProfile -File Tools\Verifica\201\Confronta-Golden.ps1 -Test bin\Tests\DelphiDoom.Tests.War.exe
+powershell -NoProfile -File Tools\Verifica\201\Confronta-Golden.ps1 -Test bin\Win32\Release\Tests\DelphiDoom.Tests.War.exe
 
 :: un solo gruppo (191, 192, 193, 198, musica, suoni)
 powershell -NoProfile -File Tools\Verifica\201\Confronta-Golden.ps1 -Solo musica
@@ -59,7 +59,7 @@ di ispezione, `DELPHIDOOM_WAR_PNG_OUT`).
 
 Per compilare i test: `Tools\build.bat DelphiDoom.Tests.War Release` (e `DelphiDoom.Tests.Cinematic`); in un worktree sotto
 `.claude\worktrees\` serve la variabile `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
-`build.bat` copia `Tests\Data` in `bin\Tests\Data`; per un eseguibile a mano: `robocopy Tests\Data bin\Tests\Data /E`.
+I test risalgono dalla cartella dell'exe fino a `Tests\Data` (dalla #230 `build.bat` non copia più nulla).
 A 64 bit `DelphiDoom.Tests.Cinematic` compila e passa; `DelphiDoom.Tests.War` non compila per intero (gli `AreEqual` e i
 `WillRaise` di `Tests\Source\DelphiDoom.Tests.War.Palette.pas`, preesistenti): un programma con tutte le fixture tranne le
 quattro grafiche (`Palette`, `Pixels`, `Graphics`, `Font` e i loro derivati) compila con `dcc64` e passa.

@@ -1,6 +1,6 @@
 <#
   Makes the golden file of the actions of Keen Dreams from the original C (issue #165, K8b):
-    1. the test exe (bin\Tests\DelphiDoom.Tests.Keen.exe, built with Tools\build.bat DelphiDoom.Tests.Keen) writes the
+    1. the test exe (bin\Win32\Release\Tests\DelphiDoom.Tests.Keen.exe, built with Tools\build.bat DelphiDoom.Tests.Keen) writes the
        scenarios (SCEN.TXT) with the generator of DelphiDoom.Tests.Keen.ActionScenarios;
     2. Build-Harness.cmd compiles harness.c with Open Watcom (16 bit) and links it with the original kd_keen, kd_act1
        and kd_act2 objects of Reference\_dati\keen_build\src\obj;
@@ -16,7 +16,7 @@ $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $work = 'C:\Progetti\DelphiDoom\Reference\_dati\keen_build\actions'
 $env:DELPHIDOOM_KEEN_SCENARIOS = Join-Path $work 'SCEN.TXT'
 if (-not (Test-Path $work)) { New-Item -ItemType Directory $work | Out-Null }
-& (Join-Path $root 'bin\Tests\DelphiDoom.Tests.Keen.exe') '--run:DelphiDoom.Tests.Keen.ActionsParity.TTestKeenActionsParity.GeneraGliScenariPerIlC' | Out-Null
+& (Join-Path $root 'bin\Win32\Release\Tests\DelphiDoom.Tests.Keen.exe') '--run:DelphiDoom.Tests.Keen.ActionsParity.TTestKeenActionsParity.GeneraGliScenariPerIlC' | Out-Null
 Remove-Item Env:DELPHIDOOM_KEEN_SCENARIOS
 $ErrorActionPreference = 'Continue'
 cmd /c (Join-Path $PSScriptRoot 'Build-Harness.cmd') 2>&1 | Out-Null

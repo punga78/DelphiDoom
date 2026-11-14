@@ -18,8 +18,8 @@ Leggere `logs\DelphiDoom.Tests.AsmParity.log`, `logs\DelphiDoom.Tests.MathCore.l
 ## 2. Test di parità
 
 ```
-bin\Tests\DelphiDoom.Tests.AsmParity.exe --exitbehavior:Continue
-bin\Tests\DelphiDoom.Tests.MathCore.exe --exitbehavior:Continue
+bin\Win32\Release\Tests\DelphiDoom.Tests.AsmParity.exe --exitbehavior:Continue
+bin\Win32\Release\Tests\DelphiDoom.Tests.MathCore.exe --exitbehavior:Continue
 ```
 
 Attesi: `DelphiDoom.Tests.AsmParity` 36 test, tutti verdi (sono circa 30 s: ogni funzione di `m_fixed` gira su
@@ -52,12 +52,12 @@ cambiamenti sul percorso di esecuzione sono `toupper`/`tolower` (Pascal), `memse
 `StrLCopy` (mai chiamata). Prima di compilare il nuovo eseguibile copiare il vecchio:
 
 ```
-Tools\build.bat Doom32 Release            # sul commit PRECEDENTE (master): produce bin\Doom\Doom32.exe vecchio
-copy bin\Doom\Doom32.exe bin\Doom\Doom32.old.exe
+Tools\build.bat Doom32 Release            # sul commit PRECEDENTE (master): produce bin\Win32\Release\Doom\Doom32.exe vecchio
+copy bin\Win32\Release\Doom\Doom32.exe bin\Win32\Release\Doom\Doom32.old.exe
 git checkout <branch della #41>
 Tools\build.bat Doom32 Release            # nuovo
 powershell -NoProfile -File Tools\Verifica\41\Confronta-timedemo.ps1 `
-  -OldExe bin\Doom\Doom32.old.exe -NewExe bin\Doom\Doom32.exe `
+  -OldExe bin\Win32\Release\Doom\Doom32.old.exe -NewExe bin\Win32\Release\Doom\Doom32.exe `
   -Arguments '-iwad DOOM1.WAD -timedemo demo1 -nomusic -nosound' -Runs 5
 ```
 
@@ -79,7 +79,7 @@ funzione si può togliere; non è stato fatto senza la misura.
 ## 4. Avvio dei giochi
 
 ```
-powershell -NoProfile -File Tools\Esegui-gioco.ps1 -Exe bin\Doom\Doom32.exe `
+powershell -NoProfile -File Tools\Esegui-gioco.ps1 -Exe bin\Win32\Release\Doom\Doom32.exe `
   -Arguments '-iwad FREEDOOM2.WAD -warp 1 -devparm -nomusic' -Seconds 25
 ```
 
