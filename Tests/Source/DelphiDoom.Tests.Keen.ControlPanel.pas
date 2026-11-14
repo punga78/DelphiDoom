@@ -83,7 +83,7 @@ implementation
 
 uses
   DelphiDoom.Keen.ControlPanel, DelphiDoom.Keen.UserState, DelphiDoom.Keen.SaveSlots, DelphiDoom.Keen.Factory,
-  DelphiDoom.Tests.Keen.RealData, DelphiDoom.Tests.Shared.Skip;
+  DelphiDoom.Tests.Keen.RealData, DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.Keen.SaveFormat;
 
 type
   TLogSound = class(TInterfacedObject, IKeenSoundManager)
@@ -394,12 +394,12 @@ begin
   LSlot.Name := 'saved before';
   // the files and the slots are made by Make: the file is put after it, then the check finds it
   Make('wait 20'#10'press f6'#10'wait 30'#10'press enter', False);
-  FFiles.Put('SAVEGM0.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + TBytes.Create(5, 5));
+  FFiles.Put('SAVEGM0.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + MakeSaveBody(5));
   FSlots.Check;
   FPanel.Run;
   Assert.IsTrue(FState.LoadedGame);
   Assert.IsFalse(FState.AbortGame);
-  Assert.AreEqual('"load 40 of 42"', FHooksLog.CommaText);
+  Assert.AreEqual('"load 40 of 258"', FHooksLog.CommaText);
   Assert.IsTrue(FWorld.Input.Paused, 'a loaded game starts paused');
 end;
 

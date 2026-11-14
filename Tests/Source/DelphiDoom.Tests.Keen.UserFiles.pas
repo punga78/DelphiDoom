@@ -104,7 +104,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.Keen.ConfigStore, DelphiDoom.Keen.HighScores, DelphiDoom.Keen.SaveSlots,
+  System.IOUtils, DelphiDoom.Keen.ConfigStore, DelphiDoom.Keen.HighScores, DelphiDoom.Keen.SaveSlots, DelphiDoom.Tests.Keen.SaveFormat,
   DelphiDoom.Keen.UserFiles, DelphiDoom.Platform.Factory, DelphiDoom.Tests.Shared.Files,
   DelphiDoom.Tests.Shared.Skip;
 
@@ -630,12 +630,12 @@ begin
   LSlots := TKeenSaveSlots.Create(LFilesIntf);
   LSlot.Present := True;
   LSlot.Name := 'on disk';
-  LFiles.Put('SAVEGM5.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + TBytes.Create(11, 22, 33));
+  LFiles.Put('SAVEGM5.KDR', TKeenSaveSlots.EncodeHeader(LSlot) + MakeSaveBody(22));
   LHooks := TFakeHooks.Create;
   LHooksIntf := LHooks;
   Assert.IsTrue(LSlots.Load(5, LHooksIntf, LError));
   Assert.AreEqual(AnsiString(''), LError);
-  Assert.AreEqual<Integer>(3, Length(LHooks.Loaded));
+  Assert.AreEqual<Integer>(60 + 6 + 2 * 76, Length(LHooks.Loaded));
   Assert.AreEqual(22, Integer(LHooks.Loaded[1]));
   Assert.AreEqual(AnsiString('on disk'), LSlots.Slots[5].Name, 'the name of the file');
   // a game that does not take the data

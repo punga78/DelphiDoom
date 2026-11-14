@@ -212,6 +212,9 @@ begin
   end;
   SetLength(LStream, LObjectsStart + LCount * SizeOf(TKeenSaveObject));
   Move(ADosFile[0], LStream[0], LObjectsStart);
+  // the version of the format of this port in the word that the C calls present (the DOS program does not read it)
+  LStream[4] := 1;
+  LStream[5] := KEEN_SAVE_FORMAT_VERSION;
   Move(LRecords[0], LStream[LObjectsStart], LCount * SizeOf(TKeenSaveObject));
   Result := LStream;
 end;

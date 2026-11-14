@@ -53,6 +53,7 @@ uses
   DelphiDoom.Clock.Intf in '..\Libs\Clock\DelphiDoom.Clock.Intf.pas',
   DelphiDoom.Clock.ManualClock in '..\Libs\Clock\DelphiDoom.Clock.ManualClock.pas',
   DelphiDoom.Keen.HostClock in '..\Keen\DelphiDoom.Keen.HostClock.pas',
+  DelphiDoom.Keen.SaveFormat in '..\Libs\Keen\DelphiDoom.Keen.SaveFormat.pas',
   DelphiDoom.Keen.LzExe in '..\Libs\Keen\DelphiDoom.Keen.LzExe.pas',
   DelphiDoom.Keen.DosStateLocator in '..\Libs\Keen\DelphiDoom.Keen.DosStateLocator.pas',
   DelphiDoom.Keen.DosSaveConverter in '..\Libs\Keen\DelphiDoom.Keen.DosSaveConverter.pas',
@@ -189,7 +190,8 @@ uses
   DelphiDoom.Keen.Parameters in '..\Libs\Keen\DelphiDoom.Keen.Parameters.pas',
   DelphiDoom.Tests.Keen.InputDevices in 'Source\DelphiDoom.Tests.Keen.InputDevices.pas',
   DelphiDoom.Tests.Keen.Parameters in 'Source\DelphiDoom.Tests.Keen.Parameters.pas',
-  DelphiDoom.Tests.Keen.DosSave in 'Source\DelphiDoom.Tests.Keen.DosSave.pas';
+  DelphiDoom.Tests.Keen.DosSave in 'Source\DelphiDoom.Tests.Keen.DosSave.pas',
+  DelphiDoom.Tests.Keen.SaveFormat in 'Source\DelphiDoom.Tests.Keen.SaveFormat.pas';
 
 var
   Runner: ITestRunner;

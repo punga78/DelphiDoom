@@ -117,6 +117,10 @@ type
     procedure LaPartitaVeraDelProgrammaDOSDovrebbeTornareComEra;
     [Test]
     procedure LaPartitaVeraConvertitaDovrebbeScriversiComeIlProgrammaLaScrisse;
+    [Test]
+    procedure LaPartitaVeraDiUnLivelloDovrebbeTradurreLoZeesDiKeenAddormentato;
+    [Test]
+    procedure UnaPartitaVeraDelProgrammaDOSDovrebbeEssereRiconosciutaEConvertitaDovrebbeEssereCorrente;
   end;
 
 implementation
@@ -124,11 +128,15 @@ implementation
 uses
   System.IOUtils, DelphiDoom.Keen.StateTableCopy, DelphiDoom.Keen.StateTable, DelphiDoom.Keen.StateTypes, DelphiDoom.Keen.GameTypes,
   DelphiDoom.Keen.GameSaver, DelphiDoom.Keen.Factory, DelphiDoom.Keen.UserIntf, DelphiDoom.Tests.Shared.Files,
-  DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.Keen.GameSession;
+  DelphiDoom.Tests.Shared.Skip, DelphiDoom.Tests.Keen.GameSession, DelphiDoom.Keen.SaveFormat;
 
 const
   EXECUTABLE_FILE = 'Reference\_dati\keen\KDREAMS.EXE';
   DOS_SAVE_FILE = 'Reference\_dati\keen_build\riferimento\dossave\SAVEGM0.KDR';
+  /// <summary>
+  ///   A game saved by the DOS program inside the first level, with Keen asleep and the zees over his head: 42 actors
+  /// </summary>
+  DOS_LEVEL_SAVE_FILE = 'Reference\_dati\keen_build\riferimento\dossave\SAVEGM_LEVEL1.KDR';
   /// <summary>Length and FNV-1a of the memory image of KDREAMS.EXE 1.13 as the unlzexe tool of the reference gives it</summary>
   IMAGE_LENGTH = 206368;
 
@@ -893,6 +901,94 @@ begin
   LObjects := Length(LConverted) - 2 * SizeOf(TKeenSaveObject);
   Assert.AreEqual<Integer>(LObjects - 40, Length(LBytes) - 2 * SizeOf(TKeenSaveObject));
   Assert.IsTrue(CompareMem(@LBytes[0], @LConverted[40], LObjects - 40), 'the state of the game and the planes');
+end;
+
+procedure TTestKeenDosSaveConverter.LaPartitaVeraDiUnLivelloDovrebbeTradurreLoZeesDiKeenAddormentato;
+var
+  LExe: string;
+  LSave: string;
+  LDos: TBytes;
+  LConverted: TBytes;
+  LInfo: TKeenDosSaveInfo;
+  LMap: TKeenDosStateMap;
+  LSession: TKeenTestSession;
+  LSaver: TKeenGameSaver;
+  LStream: TBytesStream;
+  LWritten: TBytesStream;
+  LStates: IKeenStateTable;
+  LBytes: TBytes;
+  LObjects: Integer;
+  LPlayer: PKeenObject;
+begin
+  LExe := TTestFiles.FindFileUp(EXECUTABLE_FILE);
+  LSave := TTestFiles.FindFileUp(DOS_LEVEL_SAVE_FILE);
+  if (LExe = '') or (LSave = '') then
+    TTestSkip.Ignore('KDREAMS.EXE e la partita salvata dentro un livello dal programma DOS non sono su questa macchina');
+  LDos := TFile.ReadAllBytes(LSave);
+  LMap := TKeenDosStateLocator.Locate(TKeenLzExe.LoadImage(TFile.ReadAllBytes(LExe)), FStates);
+  LConverted := TKeenDosSaveConverter.Convert(LDos, LMap, LInfo);
+  Assert.AreEqual(1, LInfo.MapOn);
+  Assert.AreEqual(42, LInfo.Actors);
+  // Keen asleep keeps the zees in temp1: one pointer turned into a number
+  Assert.AreEqual(1, LInfo.PointersConverted);
+  LSession := TKeenTestSession.Create('wait 1');
+  try
+    LStates := TKeenFactory.CreateGameStateTable;
+    LSaver := TKeenGameSaver.Create(LSession.Game.Play, LSession.Game.Objects, LStates, LSession.Game.Level);
+    try
+      LStream := TBytesStream.Create(LConverted);
+      try
+        LStream.Position := 40;
+        Assert.IsTrue(LSaver.Load(LStream), 'the game is loaded');
+      finally
+        LStream.Free;
+      end;
+      Assert.AreEqual(1, Integer(LSession.Game.Play.GameState^.MapOn));
+      Assert.AreEqual(42, LSession.Game.Objects.Count);
+      LPlayer := LSession.Game.Objects.Player;
+      Assert.AreEqual(KEEN_STATE_S_KEENSLEEP1, Integer(LPlayer^.State));
+      // temp1 is the place in the list of the zees: the last actor, in the state of the zees
+      Assert.AreEqual(41, Integer(LPlayer^.Temp1));
+      Assert.AreEqual(KEEN_STATE_S_KEENZEE1, Integer(LSession.Game.Objects[41]^.State));
+      // every actor has a state that exists, and the same kind that the DOS program wrote
+      Assert.AreEqual<Integer>(LDos[Length(LDos) - 42 * SizeOf(TKeenSaveObject)], Ord(LPlayer^.ObClass));
+      LWritten := TBytesStream.Create;
+      try
+        Assert.IsTrue(LSaver.Save(LWritten));
+        LBytes := Copy(LWritten.Bytes, 0, LWritten.Size);
+      finally
+        LWritten.Free;
+      end;
+    finally
+      LSaver.Free;
+    end;
+  finally
+    LSession.Free;
+  end;
+  // the state of the game and the three planes of the level, as it was when the DOS program saved it
+  LObjects := Length(LConverted) - 42 * SizeOf(TKeenSaveObject);
+  Assert.AreEqual<Integer>(LObjects - 40, Length(LBytes) - 42 * SizeOf(TKeenSaveObject));
+  Assert.IsTrue(CompareMem(@LBytes[0], @LConverted[40], LObjects - 40), 'the state of the game and the planes');
+end;
+
+procedure TTestKeenDosSaveConverter.UnaPartitaVeraDelProgrammaDOSDovrebbeEssereRiconosciutaEConvertitaDovrebbeEssereCorrente;
+var
+  LExe: string;
+  LSave: string;
+  LDos: TBytes;
+  LConverted: TBytes;
+  LInfo: TKeenDosSaveInfo;
+  LMap: TKeenDosStateMap;
+begin
+  LExe := TTestFiles.FindFileUp(EXECUTABLE_FILE);
+  LSave := TTestFiles.FindFileUp(DOS_LEVEL_SAVE_FILE);
+  if (LExe = '') or (LSave = '') then
+    TTestSkip.Ignore('KDREAMS.EXE e la partita salvata dentro un livello dal programma DOS non sono su questa macchina');
+  LDos := TFile.ReadAllBytes(LSave);
+  Assert.AreEqual(Ord(ksvDos), Ord(TKeenSaveFormat.Detect(LDos)), 'the file of the DOS program');
+  LMap := TKeenDosStateLocator.Locate(TKeenLzExe.LoadImage(TFile.ReadAllBytes(LExe)), FStates);
+  LConverted := TKeenDosSaveConverter.Convert(LDos, LMap, LInfo);
+  Assert.AreEqual(Ord(ksvCurrent), Ord(TKeenSaveFormat.Detect(LConverted)), 'the converted file');
 end;
 
 initialization

@@ -15,6 +15,9 @@ param(
   [int]$Seconds = 60,
   [string[]]$ShotAt = @(),
   [string]$Out = $Work,
+  # keys that are held: seconds:action:key, comma separated (action down, up or key = down and up after 150 ms), for
+  # example '30:down:left,30.6:up:left,31.5:key:ctrl'. They are WM_KEYDOWN and WM_KEYUP posted to the DOSBox window
+  [string]$KeyPlan = '',
   [string]$Program = 'KDREAMS.EXE',
   [string]$Dosbox = 'C:\Progetti\DelphiDoom\Reference\_dati\_strumenti\dosbox\dosbox-staging-v0.83.0\dosbox.exe'
 )
@@ -31,6 +34,15 @@ public static class DosWindow {
   [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
   [DllImport("user32.dll")] static extern bool PrintWindow(IntPtr h, IntPtr dc, uint flags);
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
+  [DllImport("user32.dll")] static extern bool PostMessage(IntPtr h, uint m, UIntPtr w, UIntPtr l);
+  [DllImport("user32.dll")] static extern uint MapVirtualKey(uint code, uint type);
+  [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+  public static void Key(IntPtr h, byte vk, bool down) {
+    SetForegroundWindow(h);
+    uint sc = MapVirtualKey(vk, 0);
+    UIntPtr l = (UIntPtr)(down ? (1u | (sc << 16)) : (1u | (sc << 16) | 0xC0000000u));
+    PostMessage(h, down ? 0x100u : 0x101u, (UIntPtr)vk, l);
+  }
   [StructLayout(LayoutKind.Sequential)] struct RECT { public int L, T, R, B; }
   public static IntPtr Find(uint pid) {
     IntPtr found = IntPtr.Zero;
@@ -44,6 +56,12 @@ public static class DosWindow {
   }
 }
 '@
+$virtualKeys = @{ left = 0x25; right = 0x27; up = 0x26; down = 0x28; ctrl = 0x11; alt = 0x12; space = 0x20; enter = 0x0D; esc = 0x1B; f6 = 0x75; a = 0x41; b = 0x42; c = 0x43; d = 0x44; e = 0x45 }
+$plan = @()
+foreach ($item in ($KeyPlan -split ',' | Where-Object { $_ -ne '' })) {
+  $part = $item.Split(':')
+  $plan += [pscustomobject]@{ At = [double]::Parse($part[0], [cultureinfo]::InvariantCulture); Action = $part[1]; Vk = [byte]$virtualKeys[$part[2]]; Done = $false }
+}
 $conf = Join-Path $Work '_run.conf'
 $typeLine = if ($AutoType) { "autotype -w $AutoTypeWait -p $AutoTypePace $AutoType" } else { '' }
 @"
@@ -82,6 +100,16 @@ try {
     Start-Sleep -Milliseconds 400
     $window = [DosWindow]::Find([uint32]$process.Id)
     if ($window -eq [IntPtr]::Zero) { continue }
+    foreach ($step in $plan) {
+      if (-not $step.Done -and $watch.Elapsed.TotalSeconds -ge $step.At) {
+        $step.Done = $true
+        switch ($step.Action) {
+          'down' { [DosWindow]::Key($window, $step.Vk, $true) }
+          'up' { [DosWindow]::Key($window, $step.Vk, $false) }
+          'key' { [DosWindow]::Key($window, $step.Vk, $true); Start-Sleep -Milliseconds 150; [DosWindow]::Key($window, $step.Vk, $false) }
+        }
+      }
+    }
     foreach ($second in $ShotAt) {
       if ($watch.Elapsed.TotalSeconds -ge $second -and -not $done[$second]) {
         $done[$second] = $true

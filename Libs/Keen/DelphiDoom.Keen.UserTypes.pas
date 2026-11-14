@@ -33,6 +33,12 @@ const
   KEEN_SAVE_RLEW_TAG = $ABCD;
   /// <summary>A pointer of the C that is nil in a record of a saved game</summary>
   KEEN_SAVE_NIL = 0;
+  /// <summary>
+  ///   The version of the format of the saved games of this port, in the high byte of "present" of the header (the DOS
+  ///   program does not read that value). 0 and 1 are the DOS program and the first format of Keen32, 2 is the header of
+  ///   40 bytes
+  /// </summary>
+  KEEN_SAVE_FORMAT_VERSION = 2;
 
 type
   /// <summary>Point and Rect of id_heads.h</summary>

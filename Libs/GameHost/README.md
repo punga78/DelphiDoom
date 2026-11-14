@@ -45,3 +45,8 @@ Seconda parte della #179 (dettagli in CLAUDE.md): l'orologio dei giochi e' `IClo
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
 - Analisi da cui nasce: [docs/ANALISI_DUPLICATI.md](../../docs/ANALISI_DUPLICATI.md).
+
+### Unit aggiunte per Keen32 (issue #165)
+
+- `DelphiDoom.GameHost.WindowMouse`: `TGameHostWindowMouse`, il cursore di sistema dentro la finestra del gioco (`IMouseDevice`, `IScreenSize`, `IInputGate`); era `TGreedHostMouse`.
+- `DelphiDoom.GameHost.ForegroundGate`: `TGameHostForegroundGate`, un `IInputGate` aperto solo con la finestra in primo piano.
