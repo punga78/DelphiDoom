@@ -6,11 +6,12 @@ Il **collegamento di Pascal Script al motore** (issue #172, spostato qui da `SCR
 
 | Unit | Ruolo |
 |---|---|
-| `ps_import` | `TDoomCompiler` e `TDoomExec`: compilatore e interprete con le classi del gioco registrate |
-| `ps_main` | avvio, ciclo di compilazione/esecuzione degli script del gioco |
-| `ps_proclist` | elenco delle funzioni host e delle dichiarazioni |
-| `ps_dll` | DLL contenute in un PAK, copiate su file prima di `LoadLibrary` |
-| `psi_game`, `psi_overlay`, `psi_map`, `psi_globals`, `psi_system` | le facciate `PS_*` che gli script chiamavano (giocatori, mobj, mappa, sistema); `psi_overlay` e' ora la sola facciata dell'overlay (vedi sotto) |
+| `DelphiDoom.ScriptHost.Compiler`, `.Exec`, `.ClassImporter` | `TDoomCompiler`, `TDoomExec` e `TPSDoomRuntimeClassImporter` (issue #221: erano in `ps_import`): compilatore, interprete e importatore delle classi, che ricevono i servizi (`IScriptHostServices`) e non nominano il motore |
+| `DelphiDoom.ScriptHost.Compiled` | l'intestazione dei compilati (`'DDPS'`, versione 103), senza dipendenze: la usano anche `ddc_base` e DD_IDE |
+| `ps_dll` | DLL contenute in un PAK, copiate su file prima di `LoadLibrary` (facciata di `IScriptDllLoader`, senza motore) |
+| `uPSC_dll`, `uPSR_dll`, `uPSDisassembly` | importazione delle DLL e disassemblatore, **spostati da `Libs\PascalScript`** (#221) perche' usano `ps_dll` e `TDoomExec`: il nucleo non dipende piu' da questa libreria |
+
+**Il collegamento al motore di id Tech 1 (`ps_main`, `ps_import` come facciata, `psi_*`, il manager degli script, `dd_compiler`) sta in `Libs\ScriptEngine`** (issue #221): `Libs\ScriptHost` e' generica (nessun `uses` verso `Base` ne' verso le cartelle dei giochi) ed e' nello strato L3.
 
 ## Registro delle funzioni (issue #173, fetta 2a)
 

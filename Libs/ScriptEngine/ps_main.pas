@@ -227,7 +227,7 @@ uses
   i_system,
   p_common,
   ps_import,
-  DelphiDoom.ScriptHost.Manager,
+  DelphiDoom.ScriptEngine.Manager,
   ps_dll,
   DelphiDoom.ScriptHost.Events.Intf,
   DelphiDoom.ScriptHost.Events.Table,

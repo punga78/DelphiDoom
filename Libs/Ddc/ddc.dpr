@@ -10,6 +10,7 @@ uses
   DelphiDoom.MathCore.MemoryFill in '..\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
 {$ENDIF}
   d_delphi in '..\..\Common\d_delphi.pas',
+  DelphiDoom.ScriptHost.Compiled in '..\ScriptHost\DelphiDoom.ScriptHost.Compiled.pas',
   ddc_base in 'ddc_base.pas';
 
 {$R ddc_icon.res}

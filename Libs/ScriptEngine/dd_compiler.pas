@@ -251,6 +251,7 @@ uses
   sc_states,
   DelphiDoom.ScriptHost.Events.Table,
   ps_import,
+  DelphiDoom.ScriptHost.Compiler,
   ps_main,
   DelphiDoom.ScriptHost.Intf,
   ps_compiler,
@@ -303,7 +304,7 @@ var
   apcode: TbtString;
 begin
   try
-    c := TDoomCompiler.CreateDoomCompiler;
+    c := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
     try
       c.OnExportCheck := ScriptOnExportCheck;
       Result := c.CompileDoomScript(TbtString(_inp), apcode);
@@ -746,7 +747,7 @@ var
   c: TDoomCompiler;
 begin
   try
-    c := TDoomCompiler.CreateDoomCompiler;
+    c := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
     c.OnUses := PS_ScriptOnUsesEx;
     try
       if c.CompileDoomScript(STUB_SCRIPT_ALL, pcode) then
@@ -776,7 +777,7 @@ var
   c: TDoomCompiler;
 begin
   try
-    c := TDoomCompiler.CreateDoomCompiler;
+    c := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
     c.OnUses := PS_ScriptOnUsesEx;
     try
       if c.CompileDoomScript(STUB_SCRIPT_ALL, pcode) then
@@ -806,7 +807,7 @@ var
   c: TDoomCompiler;
 begin
   try
-    c := TDoomCompiler.CreateDoomCompiler;
+    c := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
     c.OnUses := PS_ScriptOnUsesEx;
     try
       if c.CompileDoomScript(STUB_SCRIPT_ALL, pcode) then
@@ -836,7 +837,7 @@ var
   c: TDoomCompiler;
 begin
   try
-    c := TDoomCompiler.CreateDoomCompiler;
+    c := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
     c.OnUses := PS_ScriptOnUsesExClasses;
     try
       if c.CompileDoomScript(STUB_SCRIPT_ALL, pcode) then

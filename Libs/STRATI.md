@@ -15,7 +15,7 @@ Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regol
 | `L1` | Formati e codec | Cinematic Compression Flic Imaging Jpeg M2m Midi Mikmod Mp3 Ogg Opl Palette Png Sndfile Sound Texture Wad Xmi |
 | `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
 | `L3` | Piattaforma e scripting | GameHost OpenGl\Binding PascalScript Script ScriptHost Ddc |
-| `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (48 aree) |
+| `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (49 aree, con `ScriptEngine`) |
 | `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile Pmove Qvm |
 | `Giochi` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*`, e le cartelle `Keen`, `Greed`, `OpenXcom` |
 | `Strumenti` (modulo) | Strumenti | Ide ToolsCore EndoomEditor Font FontEditor VoxelEditor Launcher e le cartelle `DD_IDE`, `DD_Tools`, `Launcher` |
@@ -25,7 +25,7 @@ Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` 
 - `IdLib` e `Geometry` stanno in **L0**: non hanno nessuna dipendenza e li usano `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net` e `Models` (nel censimento erano porte senza chiamanti).
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
 - `Libs\OpenGl` e' diviso in sottocartelle gia' nel manifesto: `Binding` (L3, usato da `GameHost`) e `Legacy`/`Recorder` (modulo `IdTech1`); #220 resta la divisione in due librerie vere.
-- `ScriptHost` e `Ddc` sono in L3 **come obiettivo** (scripting generico): oggi usano il motore e sono eccezioni (#221).
+- `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `Libs\ScriptEngine` (modulo `IdTech1`).
 
 ## Come si usa
 
@@ -46,7 +46,7 @@ Uscita **0**: nessuna violazione nuova e nessuna eccezione da aggiornare. **1**:
 
 ### Eccezioni
 
-Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 14 (13 coppie e 1 ciclo): #221 (ScriptHost e Ddc usano `Base` e i giochi, ciclo `PascalScript` - `ScriptHost` - `Ddc`), #224 (`Common`), #225 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
+Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 9 (tutte coppie, nessun ciclo): #224 (`Common` da `PascalScript` e `ScriptHost`), #225 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
 
 ## Metodo e limiti
 

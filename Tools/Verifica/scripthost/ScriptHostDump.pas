@@ -23,7 +23,8 @@ interface
 uses
   Classes,
   ps_compiler,
-  ps_import;
+  ps_import,
+  DelphiDoom.ScriptHost.Compiler;
 
 /// Writes the registration dump of the game of the build to AFileName
 procedure VSH_WriteRegistrationDump(const AFileName: string);
@@ -246,7 +247,7 @@ begin
   GSeenTypes := 0;
   GSeenConstants := 0;
   GSeenVariables := 0;
-  LCompiler := TDoomCompiler.CreateDoomCompiler;
+  LCompiler := TDoomCompiler.CreateDoomCompiler(PS_HostServices);
   try
     LCompiler.OnUses := DumpOnUses;
     if not LCompiler.CompileDoomScript(TbtString('uses ' + AnsiString(AUnit) + ';' + #13#10 + 'begin' + #13#10 + 'end.'#13#10), LPCode) then

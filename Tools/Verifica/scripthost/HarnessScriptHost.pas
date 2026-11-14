@@ -65,6 +65,8 @@ uses
   ps_utils,
   d_think,
   ps_import,
+  DelphiDoom.ScriptHost.Compiler,
+  DelphiDoom.ScriptHost.Exec,
   ps_main,
   psi_game,
   psi_globals,

@@ -31,10 +31,12 @@ unit ddc_base;
 interface
 
 uses
-  Classes;
+  Classes,
+  DelphiDoom.ScriptHost.Compiled;
 
 const
-  DDCVERSION = 103;
+  /// <summary>The version of the compiled scripts that the DLLs of the compilers write</summary>
+  DDCVERSION = SCRIPT_COMPILED_VERSION;
 
 //==============================================================================
 //

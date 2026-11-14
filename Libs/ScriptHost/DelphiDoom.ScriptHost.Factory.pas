@@ -52,7 +52,7 @@ type
     class function CreateServices(const ARegistry: IScriptFunctionRegistry;
       const AClasses: IScriptClassCatalog; const AConstants: IScriptConstantProvider;
       const ASources: IScriptSourceProvider; const AGameName: string; const AGame: TScriptGame;
-      const ADefines: TFunc<TArray<string>>): IScriptHostServices; static;
+      const ADefines: TFunc<TArray<string>>; const ALog: ILog = nil): IScriptHostServices; static;
     /// <summary>The defines of the preprocessor of the scripts for a game (see TScriptDefines)</summary>
     class function CreateDefines(const AGameName: string; const AGame: TScriptGame; const ADebug,
       ADevParm, AOpenGL: Boolean): TArray<string>; static;
@@ -159,10 +159,10 @@ end;
 class function TScriptHostFactory.CreateServices(const ARegistry: IScriptFunctionRegistry;
   const AClasses: IScriptClassCatalog; const AConstants: IScriptConstantProvider;
   const ASources: IScriptSourceProvider; const AGameName: string; const AGame: TScriptGame;
-  const ADefines: TFunc<TArray<string>>): IScriptHostServices;
+  const ADefines: TFunc<TArray<string>>; const ALog: ILog): IScriptHostServices;
 begin
   Result := TScriptHostServices.Create(ARegistry, AClasses, AConstants, ASources, AGameName, AGame,
-    ADefines);
+    ADefines, ALog);
 end;
 
 class function TScriptHostFactory.CreateDefines(const AGameName: string; const AGame: TScriptGame;

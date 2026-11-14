@@ -137,6 +137,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Renderer** — Analisi del renderer e prime fette fredde (tabella colonne delle texture, precalcolo del livello). [CLAUDE.md](Libs/Renderer/CLAUDE.md), [README.md](Libs/Renderer/README.md)
 - **Scanner** — Scanner dei testi degli script, preprocessore, valutatore di espressioni, AUTOLOAD. [CLAUDE.md](Libs/Scanner/CLAUDE.md), [README.md](Libs/Scanner/README.md)
 - **Screenshot** — Scrittura degli screenshot (TGA, PNG, JPEG). [CLAUDE.md](Libs/Screenshot/CLAUDE.md), [README.md](Libs/Screenshot/README.md)
+- **ScriptEngine** — Collegamento di Pascal Script al motore di id Tech 1 (`ps_main`, `ps_import`, `psi_*`, manager degli script, `dd_compiler`; issue #221): modulo `IdTech1`, la parte generica sta in `Libs\ScriptHost`. [CLAUDE.md](Libs/ScriptEngine/CLAUDE.md), [README.md](Libs/ScriptEngine/README.md)
 - **Script** — Fetta verticale di Pascal Script (compilare, eseguire, funzioni host, globali). [CLAUDE.md](Libs/Script/CLAUDE.md), [README.md](Libs/Script/README.md) (paragrafo in `Libs\Png`)
 - **ScriptHost** — Collegamento di Pascal Script al motore: registro delle funzioni, variabili, eventi, serializzatore, speciali, attori, mondo, catalogo delle classi, overlay (fetta 2 della #172 conclusa). [CLAUDE.md](Libs/ScriptHost/CLAUDE.md), [README.md](Libs/ScriptHost/README.md)
 - **Serializer** — Serializzatore dei record dei salvataggi. [CLAUDE.md](Libs/Serializer/CLAUDE.md), [README.md](Libs/Serializer/README.md)
