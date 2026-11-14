@@ -36,6 +36,7 @@ sono in `CLAUDE.md`; qui c'e' cio' che e' specifico di War e i comandi per ripet
 | Suoni, ricampionatore, mixer, volume posizionale (#198) | `198\war_audio_ref.c` | `audio.synth/mixer/position/records` | `AudioDecoders`, `AudioMixer`, `AudioMixParity` |
 | **Tempo e eventi della musica** (#198) | `198\war_music_ref.c` (`wa_playMidi` + `tml.h`) | `music.golden.txt` (12 canzoni, 842 righe) | `MusicParity` |
 | **Scelta dei suoni** (#198, #194) | `198\war_sound_ref.c` (`wa_play*Sound`) | `sounds.tables.golden.txt` (497), `sounds.ranges.golden.txt` (9) | `SoundPicker` |
+| **Modello di gioco** (#194, prima fetta) | `194\war_model_ref.c` (il modello del remake come unity build: entita', unita', macchina a stati, economia, danni) | `model.tables` (253), `model.friendly` (20 scenari x 300 tic), `model.hostile` (16 scenari fino al primo ordine di attacco), `model.dump` | `ModelParity` |
 | Filmati FLIC (#199) | `199\flc*.cpp` (`FlcPlayer` di OpenXcom: il remake **non** ha codice FLIC) | `Tests\Data\Cinematic\flic-*` | `Tests\...Cinematic.FlicParity` |
 
 ## Come si ripete
@@ -54,8 +55,8 @@ powershell -NoProfile -File Tools\Verifica\201\Registra-Golden.ps1 -Solo musica
 `Confronta-Golden.ps1` compila ogni gruppo in una cartella temporanea nuova, esegue i programmi, confronta riga per riga
 (senza BOM e fine riga) e dice la prima riga che differisce; esce con 1 se qualcosa differisce o se il test fallisce.
 Senza il `DATA.WAR` salta i golden che lo vogliono (lo dice), senza gcc non parte il gruppo. Ultima esecuzione
-(2026-11-13): **18 golden su 18 identici** (6 gruppi), `DelphiDoom.Tests.War` 443 passati, 0 falliti, 1 ignorato (il PNG
-di ispezione, `DELPHIDOOM_WAR_PNG_OUT`).
+(2026-11-14): **18 golden su 18 identici** (6 gruppi, non toccati da #194) e **4 su 4 del gruppo `194 modello`** (rifatto dal C e confrontato con `Confronta-Golden.ps1 -Solo 194`), `DelphiDoom.Tests.War` 783 passati, 0 falliti, 1 ignorato (il PNG
+di ispezione, `DELPHIDOOM_WAR_PNG_OUT`), a Win32 e a Win64.
 
 Per compilare i test: `Tools\build.bat DelphiDoom.Tests.War Release` (e `DelphiDoom.Tests.Cinematic`); in un worktree sotto
 `.claude\worktrees\` serve la variabile `DCC_UnitSearchPath` con la cartella `DUnitX\Source` (vedi `Libs\War\CLAUDE.md`).
@@ -79,5 +80,4 @@ quattro grafiche (`Palette`, `Pixels`, `Graphics`, `Font` e i loro derivati) com
   non per il tempo.
 - **Il gioco originale DOS** come secondo riferimento dove il remake si discosta (IA, regole): serve il modello di gioco
   (#194-#196); per l'audio e i filmati il remake e' l'unico riferimento tranne per i FLIC (OpenXcom).
-- Gli stati per tic e i fotogrammi dei punti 2-5 dell'issue #201 aspettano il modello di gioco e il renderer: l'harness e'
-  fatto per aggiungere un gruppo alla tabella di `Tools\Verifica\201\Golden-Common.ps1` (programma C, argomenti, golden).
+- **Gli stati per tic** esistono dalla prima fetta del modello (#194: gruppo `194 modello`, vedi `Libs\War\README.md`, sezione `Modello di gioco`); coprono solo cio' che il modello porta (idle, move in linea retta, death, wait, economia, danni): attacco, raccolta, costruzione, addestramento, incantesimi, comandi e azioni non hanno ancora un golden. I fotogrammi dei punti 3-5 dell'issue #201 aspettano il renderer: per aggiungere un gruppo basta una voce in `Tools\Verifica\201\Golden-Common.ps1` (programma C, argomenti, golden).

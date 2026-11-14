@@ -1,0 +1,46 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: war library - the occupation grid of the map for the model      }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.War.Model.GridOccupancy;
+
+interface
+
+uses
+  DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Model.Intf;
+
+type
+  /// <summary>IWarOccupancy over the TWarPathGrid of a game map (the grid is not owned)</summary>
+  TWarGridOccupancy = class(TInterfacedObject, IWarOccupancy)
+  strict private
+    FGrid: TWarPathGrid;
+  public
+    constructor Create(const AGrid: TWarPathGrid);
+    procedure SetStaticEntity(AStartX, AStartY, AWidth, AHeight: Integer; AId: Word);
+    procedure SetFreeTiles(AStartX, AStartY, AWidth, AHeight: Integer);
+  end;
+
+implementation
+
+{ TWarGridOccupancy }
+
+constructor TWarGridOccupancy.Create(const AGrid: TWarPathGrid);
+begin
+  inherited Create;
+  FGrid := AGrid;
+end;
+
+procedure TWarGridOccupancy.SetStaticEntity(AStartX, AStartY, AWidth, AHeight: Integer; AId: Word);
+begin
+  FGrid.SetStaticEntity(AStartX, AStartY, AWidth, AHeight, AId);
+end;
+
+procedure TWarGridOccupancy.SetFreeTiles(AStartX, AStartY, AWidth, AHeight: Integer);
+begin
+  FGrid.SetFreeTiles(AStartX, AStartY, AWidth, AHeight);
+end;
+
+end.

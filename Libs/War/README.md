@@ -163,3 +163,70 @@ Difetti del C conservati, differenze volute e non portato: `CLAUDE.md`, sezione 
 | `wspr_createSprite`, `wspr_createSpriteFromFrames`, `wspr_createSpriteFromResource`, `wspr_getSpriteFrame`, `wspr_renderSprite`, `wspr_renderSubSprite` | `TWarSpriteSheet` |
 
 Il PNG dei font non e' nel `DATA.WAR`: il chiamante da' a `TWarImageBlitter` l'immagine (`TWarImage`). Il remake non ha un colore per fazione: nessuno e' inventato. Parita': `Tools\Verifica\192\LEGGIMI.md` (240 testi a bit, 164 record grafici, zero differenze).
+
+## Modello di gioco (issue #194, prima fetta)
+
+`DelphiDoom.War.Model.*`, una classe per unit (tipi in `Model.Types`, `Model.State.Types`, `Model.Stats.Types`; contratti in `Model.Intf`;
+`Model.Factory` e' l'unico posto che conosce le classi concrete). E' il modello delle entita' e delle unita' del remake (`war_entities.c`,
+`war_state_machine*.c`, parte di `war_units.c`, `war_actions.c` e `war_math.c`) **senza** finestra, grafica, audio, percorsi ne' interfaccia.
+
+**Mappa nome C -> classe**
+
+| C | Delphi |
+|---|---|
+| `WarEntityManager` (pool, id, liste per tipo, `we_createEntity`, `we_findEntity`) | `TWarEntityPool` |
+| `we_createUnit`, `we_createDude`, `we_createBuilding`, `we_setInitialIdleState`, `we_removeEntity(ById)` | `TWarEntityManager` (`IWarEntityManager`) |
+| `WarStateStorage`, `wst_allocState`, `wst_releaseStateRef`, `wst_deref`, `wst_refOf` | `TWarStateStorage` (+ `TWarStateRefs`) |
+| `wst_*` (pila di stati, transizioni differite, `wst_processPendingTransitions`, `stateDescriptors`) | `TWarStateMachine` (registro: `RegisterHooks`) |
+| `wst_*IdleState`, `wst_*MoveState`, `wst_*DeathState`, `wst_*WaitState` | `TWarIdleState`, `TWarMoveState`, `TWarDeathState`, `TWarWaitState` |
+| `unitStats`, `buildingStats`, `upgradeStats`, `spellStats`, `spellMappings`, `wu_get*Stats` | `TWarDatabase` (`IWarDatabase`) con `Model.StatData` **generata** da `Tools\Verifica\194\Make-WarModelTables.ps1` |
+| `wu_is*UnitType`, `wu_getUnitTypeRace`, `wu_getUnitTypeForRace` | `TWarUnitClassifier` (funzioni statiche su insiemi) |
+| `gUnitActionDefs` (presenza e durata in fotogrammi), `wact_setAction`, `wact_addUnitActions` | `TWarActionTable` + `Model.ActionData` **generata** |
+| `wu_getUnit*Position/Tile/Center`, `wu_setUnitCenterPosition`, `wu_tileInRange` | `TWarUnitGeometry` |
+| `we_getNearEnemy`, `we_getAttacker`, `wu_areEnemies`, `wu_canAttack`, `wu_getNumber*` | `TWarUnitQueries` (`IWarUnitQueries`) |
+| `we_increase/decreaseUnitHp/Mana`, `we_getTotalDamage`, `we_takeDamage` | `TWarCombat` |
+| `we_*PlayerResources`, `we_enoughFarmFood`, `we_checkFarmFood`, `we_increaseUpgradeLevel` | `TWarEconomy` |
+| `vec2_*`, `wmap_mapToTileCoordinatesV`, `wmap_getMapScaledTime`, `wu_getDirectionFromDiff` | `TWarModelMath` |
+| `wrvo_computeNewVelocity` (senza vicini) | `TWarStraightSteering` |
+| `WarContext` e le parti di `WarMap` che servono (giocatori, tempo) | `TWarModelContext` (nessun globale); `TWarModelWorld` e' il modello intero (`AdvanceClock`, `Update`) |
+
+**Il registro degli stati** e' una tabella di descrittori (come `Libs\Specials`): per ogni tipo di stato una procedura di ingresso, una di uscita
+e una di aggiornamento **dell'intero tipo** (il ciclo sugli stati e' dentro la procedura): la tabella si attraversa una volta per tipo e per
+tic, mai per unita'. Le procedure sono `class procedure ... static` (procedure semplici, non metodi virtuali ne' interfacce). Il ciclo di
+`TWarMoveState` fa le sette passate del C. Gli stati non portati hanno il loro record e la maschera di interruzione del C, ma nessuna procedura:
+si creano e restano dove sono. Lo storage degli stati (512 per tipo, generazioni, lista dei liberi LIFO) e l'ordine degli slot delle entita'
+sono quelli del C: l'ordine degli aggiornamenti, e quindi dei numeri casuali, dipende da questo.
+
+**Cosa e' portato**: enumerazioni; database statistico (28 unita', 19 edifici, 19 miglioramenti, 12 incantesimi, durata delle azioni per tipo); modello
+delle entita' (trasformazione, componente unita', macchina a stati; gli altri componenti del C sono grafica e interfaccia); pool con id; creazione
+e rimozione; macchina a stati completa (push, pop, replace, reset, richieste differite con causa e annullamento degli acquisti, maschere di
+interruzione, `TearDown`); stati idle (guardarsi intorno, guerrieri che attaccano il nemico entro 5 caselle), move (in linea retta, avanzamento,
+rallentamento all'arrivo, progresso e rinuncia dopo 3 s, attacco subito con `checkForAttacks`), death (corpo della razza, rimozione), wait;
+economia (oro, legna, cibo, miglioramenti); danni e vita (`we_takeDamage`); generatore casuale iniettato (`IWarRandom`, `TWarSeededRandom`).
+
+**Non portato (resta della #194)**: vedi "Resta" in `Libs\War\CLAUDE.md` (attacco, raccolta, costruzione, riparazione, addestramento, miglioramenti come
+stato, incantesimi, crollo, pattuglia, inseguimento, consegna, `war_commands.c`, `war_actions.c` oltre la tabella, `war_projectiles.c`, i muri come entita').
+**Percorsi e collisioni** sono la #195: senza un `IWarMovementSteering` una unita' va dritta al prossimo punto (il C su un campo libero fa lo stesso: campo di flusso nullo e
+nessun vicino). La proprieta' `Steering` del contesto c'e' ma nessuno la usa ancora.
+
+**Difetti del C conservati** (servono per avere gli stessi dati): (1) `wst_exitWaitState` libera le caselle solo se la pila e' vuota, ma quando un'uscita avviene la pila non lo e' mai: un'attesa non libera mai le caselle; (2) un corpo colpito di nuovo (con 0 punti ferita) rifa lo stato di morte e il conto riparte; (3) `we_decreasePlayerResources` controlla l'oro prima della legna e da' il messaggio del primo che manca; (4) i miglioramenti a coppie (frecce/lance, spade/asce, cavalli/lupi) condividono un livello (`upgrades[upgrade / 2]`); (5) `wst_enterIdleState` occupa le caselle e il suo `exit` le libera, ma un `Wait` che finisce non le riprende ne' le libera: un'unita' che ha aspettato puo' restare senza caselle occupate; (6) `wst_updateMoveStates` non guarda piu' le unita' che non sono `WAR_ENTITY_UNIT` (solo le unita' si muovono).
+**Il C compilato con gcc ha un'enum senza segno**: `unit->direction += randomi(-1, 2)` da NORD con -1 da' un numero enorme, `< 0` e' falso e la direzione diventa NORD, non NORD-OVEST come con
+MSVC (dove l'enum ha il segno). `TWarModelContext.UnsignedDirections` sceglie: **False (predefinito)** e' il comportamento voluto (NORD-OVEST), **True** riproduce il golden (fatto con gcc); i test di parita'
+lo accendono, un test per ciascun comportamento.
+
+**Differenze volute** (ognuna con un test): gli id sono a 16 bit come nel C ma **saltano 0 e gli id in uso** (il C, dopo 65535 entita', darebbe 0 -- che significa "slot libero" -- e id gia' presi); un tipo di unita' senza misura
+o senza statistiche e' `EWarException` **prima** di creare l'entita' (il C la crea e poi si ferma su un `assert`); `we_increaseUpgradeLevel` oltre il massimo e' `EWarException` (il C: `assert`);
+il livello di velocita' oltre 2 vale 2 (il C leggerebbe fuori da `speeds[3]`); una unita' senza statistiche di velocita' (WOUNDED) ha velocita' 0; la ricerca di un'entita' per id usa una tabella
+(il C scorre le 1024 entita': lo stesso risultato, 5-9 volte piu' veloce); i componenti stanno nello slot dell'entita' invece che in array densi (non cambia l'ordine di nulla); i campi di
+debug dell'RVO (candidati e collisioni) non ci sono; un `PUSH` su una pila vuota non legge `stack[-1]`; i messaggi della barra di stato, l'audio e le animazioni dei danni sono eventi
+(`IWarModelEvents`) invece di chiamate.
+
+**Parita'**: `Tools\Verifica\194` (`Compila-ModelRef.ps1`, `war_model_ref.c`, `Make-WarModelTables.ps1`): il modello ORIGINALE del remake compilato **come e'** (unity build: i `.c` di `war_entities`, `war_units`,
+`war_actions`, `war_math`, `war_pathfinder`, `war_rvo`, `war_map` e di tutti gli stati sono inclusi interi, niente estratti) con gcc. Stub dichiarati nell'intestazione del programma: SDL (`SDL_rand` e' un LCG con seme,
+lo stesso di `TWarSeededRandom`), la grafica (lo sprite di una unita' non e' stato), l'audio, l'interfaccia, e -- da rinominare con `#define` prima di includere il loro file -- le tre funzioni del campo di flusso e `wrvo_gatherNeighbours`
+(nessun ostacolo, nessun vicino): e' quello che il Delphi fa. Il codice non raggiunto resta nel programma e ha un corpo che lo ferma (non una risposta sbagliata in silenzio). Golden: `model.tables.golden.txt` (statistiche, classificazione,
+durata delle azioni, tempo scalato), `model.friendly.golden.txt` (20 scenari di 300 tic: unita' del giocatore 0 che si muovono, si guardano intorno, aspettano, muoiono, vengono curate, tolte, create; spese, cibo, miglioramenti),
+`model.hostile.golden.txt` (16 scenari con due schieramenti, fino al primo ordine di attacco, che il modello non porta oltre), `model.dump.golden.txt` (il testo dello stato di un tic). L'impronta di ogni tic e' l'FNV-1a del testo di
+tutto lo stato (entita', componenti, pile di stati e richieste in attesa, storage, griglia di occupazione, estrazioni casuali) con i float **a bit**: **zero differenze** a Win32 e a Win64. Test: `DelphiDoom.Tests.War.ModelParity` (9) e, per classe,
+`ModelMath`, `ModelSteering`, `ModelTables`, `ModelStorage`, `ModelMachine`, `ModelIdle`, `ModelMove`, `ModelCombat`, `ModelEconomy`, `ModelEntities` (171 test nuovi in tutto, 9 di parita'); copertura delle 22 unit con codice 96% (1590 righe su 1649; la peggiore, `StateStorage`, 89%: i rami che
+difendono da contatori corrotti). Prestazioni: 400 unita' che marciano, 1500 tic: Delphi 0,19 us per unita' e tic a Win32 (0,34 a Win64) contro 1,7 us del C a `-O1` (`war_model_ref bench`).
