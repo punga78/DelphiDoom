@@ -1154,7 +1154,7 @@ var
   inst: THandle;
 begin
   inst := LoadLibrary('shell32');
-  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteW');
   shellexecutefunc(0, 'open', PChar(cmd), nil, nil, SW_SHOWNORMAL);
   FreeLibrary(inst);
 end;

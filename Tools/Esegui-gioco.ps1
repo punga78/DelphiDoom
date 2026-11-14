@@ -48,7 +48,11 @@ try {
   Remove-Item -LiteralPath $crash -ErrorAction SilentlyContinue
 
   $process = Start-Process -FilePath $Exe -ArgumentList $Arguments -WorkingDirectory $WorkDir -PassThru
-  try { $process.PriorityClass = 'BelowNormal' } catch { }
+  # BelowNormal starves the game when the CPU is full (test suites at normal priority): DDGIOCO_PRIORITA
+  # (Normal, AboveNormal...) chooses another class
+  $priority = 'BelowNormal'
+  if ($env:DDGIOCO_PRIORITA) { $priority = $env:DDGIOCO_PRIORITA }
+  try { $process.PriorityClass = $priority } catch { }
 
   $run = [Diagnostics.Stopwatch]::StartNew()
   if ($StopWhenExited) {

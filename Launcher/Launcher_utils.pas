@@ -83,7 +83,7 @@ var
   inst: THandle;
 begin
   inst := LoadLibrary('shell32');
-  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteW');
   shellexecutefunc(0, 'open', PChar(cmd), nil, nil, SW_SHOWNORMAL);
   FreeLibrary(inst);
 end;
@@ -101,7 +101,7 @@ var
   inst: THandle;
 begin
   inst := LoadLibrary('shell32');
-  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteW');
   shellexecutefunc(0, 'open',
         PChar(Format(rsFmtMail, [rsMailTo, rsJimmyValavanis, rsProvider, rsSubject, 'DelphiDoom Launcher'])),
           nil, nil, SW_SHOWNORMAL);
