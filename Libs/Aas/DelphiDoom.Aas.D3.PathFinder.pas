@@ -3,8 +3,9 @@
 {  DelphiDoom: Doom 3 AAS navigation - walking and flying paths                }
 {                                                                              }
 {  Port of idAASLocal::EdgeSplitPoint, FloorEdgeSplitPoint, WalkPathValid,     }
-{  SubSampleWalkPath, WalkPathToGoal, FlyPathValid, SubSampleFlyPath and       }
-{  FlyPathToGoal (AAS_pathing.cpp), Doom 3 GPL Source Code.                    }
+{  SubSampleWalkPath, WalkPathToGoal, FlyPathValid and FlyPathToGoal           }
+{  (AAS_pathing.cpp), Doom 3 GPL Source Code. SubSampleFlyPath is not ported:  }
+{  the original calls it only under SUBSAMPLE_FLY_PATH, which is 0.            }
 {  Based on the Doom 3 GPL Source Code (id Software). Copyright (C) 1999-2011  }
 {  id Software LLC, a ZeniMax Media company. This unit is derived from the     }
 {  Doom 3 GPL source code and is therefore available under the GNU General     }
@@ -38,8 +39,6 @@ type
       AFrontPlane: TGeoPlane; const AClosest: Boolean): Boolean;
     function SubSampleWalkPath(const AAreaNum: Integer; const AOrigin, AStart, AEnd: TGeoVec3;
       const ATravelFlags: Integer; var AEndAreaNum: Integer): TGeoVec3;
-    function SubSampleFlyPath(const AAreaNum: Integer; const AOrigin, AStart, AEnd: TGeoVec3;
-      const ATravelFlags: Integer; var AEndAreaNum: Integer): TGeoVec3;
   public
     constructor Create(const ATopology: TAasTopology; const ARouter: TAasRouter; const ASampler: IAasSampler;
       const ALog: IIdLibLog);
@@ -72,7 +71,6 @@ const
   CMaxWalkPathDistance: Single = 500.0;
   CWalkPathSampleDistance: Single = 8.0;
   CMaxFlyPathDistance: Single = 500.0;
-  CFlyPathSampleDistance: Single = 8.0;
   // -0.1f, 0.5f and 0.2f
   CMinusTenth: Single = -0.100000001490116119384765625;
   CHalf: Single = 0.5;
@@ -461,36 +459,6 @@ begin
   AEndAreaNum := LTrace.LastAreaNum;
 
   Result := LTrace.Fraction >= 1.0;
-end;
-
-function TAasPathFinder.SubSampleFlyPath(const AAreaNum: Integer; const AOrigin, AStart, AEnd: TGeoVec3;
-  const ATravelFlags: Integer; var AEndAreaNum: Integer): TGeoVec3;
-var
-  LIndex, LNumSamples, LCurAreaNum: Integer;
-  LDir, LPoint, LNextPoint, LEndPos, LDelta: TGeoVec3;
-  LLength, LFraction, LMaxDistance: Single;
-begin
-  LDir := AEnd - AStart;
-  LLength := LDir.Length;
-  LLength := LLength / CFlyPathSampleDistance;
-  LNumSamples := Trunc(LLength) + 1;
-
-  LMaxDistance := CMaxFlyPathDistance * CMaxFlyPathDistance;
-  LPoint := AStart;
-  for LIndex := 1 to LNumSamples - 1 do
-  begin
-    LFraction := Single(LIndex) / Single(LNumSamples);
-    LNextPoint := LDir * LFraction;
-    LNextPoint := AStart + LNextPoint;
-    LDelta := LPoint - LNextPoint;
-    if LDelta.LengthSqr > LMaxDistance then
-      Exit(LPoint);
-    if not FlyPathValid(AAreaNum, AOrigin, 0, LNextPoint, ATravelFlags, LEndPos, LCurAreaNum) then
-      Exit(LPoint);
-    LPoint := LNextPoint;
-    AEndAreaNum := LCurAreaNum;
-  end;
-  Result := LPoint;
 end;
 
 function TAasPathFinder.FlyPathToGoal(out APath: TAasPath; const AAreaNum: Integer; const AOrigin: TGeoVec3;
