@@ -358,7 +358,7 @@ var
   LEvents: TArray<TKeenScriptEvent>;
 begin
   LEvents := TKeenScript.Parse('mouse 4 -2');
-  Assert.AreEqual(1, Length(LEvents));
+  Assert.AreEqual<Integer>(1, Length(LEvents));
   Assert.AreEqual(Ord(kseMouseMove), Ord(LEvents[0].Kind));
   Assert.AreEqual(4, LEvents[0].X);
   Assert.AreEqual(-2, LEvents[0].Y);

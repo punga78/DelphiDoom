@@ -218,7 +218,7 @@ var
 begin
   LImage := TKeenLzExe.LoadImage(PackedProgram(TBytes.Create(10, 20, 30, 40)));
   // the four literals, then the match of length 3 at distance 3 (20, 30, 40)
-  Assert.AreEqual(7, Length(LImage));
+  Assert.AreEqual<Integer>(7, Length(LImage));
   Assert.AreEqual(10, Integer(LImage[0]));
   Assert.AreEqual(40, Integer(LImage[3]));
   Assert.AreEqual(20, Integer(LImage[4]));
@@ -238,7 +238,7 @@ begin
   LFile[32] := 7;
   LFile[36] := 9;
   LImage := TKeenLzExe.LoadImage(LFile);
-  Assert.AreEqual(5, Length(LImage));
+  Assert.AreEqual<Integer>(5, Length(LImage));
   Assert.AreEqual(7, Integer(LImage[0]));
   Assert.AreEqual(9, Integer(LImage[4]));
 end;
@@ -295,7 +295,7 @@ begin
     TTestSkip.Ignore('il KDREAMS.EXE dello shareware 1.13 non e'' su questa macchina');
   LImage := TKeenLzExe.LoadImage(TFile.ReadAllBytes(LPath));
   // the same bytes as the image that the unlzexe tool of the reference makes (Reference\_dati\keen_build\tools)
-  Assert.AreEqual(IMAGE_LENGTH, Length(LImage));
+  Assert.AreEqual<Integer>(IMAGE_LENGTH, Length(LImage));
   Assert.IsTrue(TKeenLzExe.IsPacked(TFile.ReadAllBytes(LPath)));
 end;
 
@@ -368,7 +368,7 @@ var
   LMap: TKeenDosStateMap;
 begin
   LMap := TKeenDosStateLocator.Locate(BuildImage($400, False), FStates);
-  Assert.AreEqual(213, Length(LMap.Offsets));
+  Assert.AreEqual<Integer>(213, Length(LMap.Offsets));
   Assert.AreEqual(0, LMap.Missing);
   Assert.AreEqual(0, LMap.Ambiguous);
 end;
@@ -891,7 +891,7 @@ begin
   // what the port writes (after the header) is what the program of the original wrote: the state of the game and
   // the three planes of the map in RLEW, byte for byte. The actors differ where they have addresses
   LObjects := Length(LConverted) - 2 * SizeOf(TKeenSaveObject);
-  Assert.AreEqual(LObjects - 40, Length(LBytes) - 2 * SizeOf(TKeenSaveObject));
+  Assert.AreEqual<Integer>(LObjects - 40, Length(LBytes) - 2 * SizeOf(TKeenSaveObject));
   Assert.IsTrue(CompareMem(@LBytes[0], @LConverted[40], LObjects - 40), 'the state of the game and the planes');
 end;
 
