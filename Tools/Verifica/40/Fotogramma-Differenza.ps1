@@ -5,7 +5,7 @@
 
   Uso:
     powershell -NoProfile -File Tools\Verifica\40\Fotogramma-Differenza.ps1 -Game Doom -Name d1_demo1 -Tic 685 -Mode 8 `
-      -Exe <nuovo.exe> -RefExe <riferimento.exe> [-WorkRoot C:\ddpari40] [-DataRoot <bin con i WAD>]
+      -Exe <nuovo.exe> -RefExe <riferimento.exe> [-WorkRoot C:\ddparity] [-DataRoot <bin con i WAD>]
 #>
 param(
   [Parameter(Mandatory = $true)][string]$Game,
@@ -18,7 +18,7 @@ param(
   # e la sua lunghezza sposta i blocchi di memoria (i golden sono fatti con parity_<Gioco>32.exe)
   [string]$NewName = 'fd_new.exe',
   [string]$RefName = 'fd_ref.exe',
-  [string]$WorkRoot = 'C:\ddpari40',
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = ''
 )
 . (Join-Path $PSScriptRoot '..\185\Parity-Common.ps1')

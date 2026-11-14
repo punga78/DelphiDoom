@@ -13,14 +13,14 @@
 
   Uso:
     powershell -NoProfile -File Tools\Verifica\40\Confronta-Bitness.ps1 [-Game Doom] [-Name 'd1_*'] [-Modes 8] `
-      -Exe "Doom=<Win64>\Doom32.exe;Heretic=..." -RefExe "Doom=<Win32>\Doom32.exe;Heretic=..." [-WorkRoot C:\ddpari40]
+      -Exe "Doom=<Win64>\Doom32.exe;Heretic=..." -RefExe "Doom=<Win32>\Doom32.exe;Heretic=..." [-WorkRoot C:\ddparity]
   (con "powershell -File" un solo modo per invocazione)
 #>
 param(
   [string[]]$Game = @(),
   [string]$Name = '*',
   [int[]]$Modes = @(8, 32),
-  [string]$WorkRoot = 'C:\ddpari40',
+  [string]$WorkRoot = 'C:\ddparity',
   [string]$DataRoot = '',
   [Parameter(Mandatory = $true)][object]$Exe,
   [Parameter(Mandatory = $true)][object]$RefExe,
