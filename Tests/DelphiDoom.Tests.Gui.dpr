@@ -128,7 +128,8 @@ uses
   DelphiDoom.Tests.Gui.OpenArena in 'Source\DelphiDoom.Tests.Gui.OpenArena.pas',
   DelphiDoom.Tests.Gui.DrawFakes in 'Source\DelphiDoom.Tests.Gui.DrawFakes.pas',
   DelphiDoom.Tests.Gui.Harness in 'Source\DelphiDoom.Tests.Gui.Harness.pas',
-  DelphiDoom.Tests.Gui.DrawParity in 'Source\DelphiDoom.Tests.Gui.DrawParity.pas';
+  DelphiDoom.Tests.Gui.DrawParity in 'Source\DelphiDoom.Tests.Gui.DrawParity.pas',
+  DelphiDoom.Tests.Gui.DrawContext in 'Source\DelphiDoom.Tests.Gui.DrawContext.pas';
 
 var
   Runner: ITestRunner;

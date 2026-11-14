@@ -138,3 +138,75 @@ windowDef Desktop {
 @op event 3 -50 -50 60
 @op event 3 1000 1000 70
 @end
+@case events_edit_modal_capture
+@file edit.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  windowDef frame {
+    rect 10, 10, 200, 100
+    bordersize 10
+    bordercolor 1, 1, 1, 1
+    backcolor 0.2, 0.2, 0.2, 1
+    onAction { set "cmd" "frame click" }
+  }
+  windowDef dialog {
+    rect 300, 10, 100, 100
+    modal 1
+    onAction { set "cmd" "dialog click" }
+  }
+  windowDef other {
+    rect 500, 10, 100, 100
+    onAction { set "cmd" "other click" }
+  }
+}
+@op load edit.gui
+@op redraw 10
+@op cvar gui_edit 1
+@op event 3 12 12 20
+@op event 1 187 1 30
+@op event 1 187 0 40
+@op event 3 50 50 50
+@op event 1 187 1 60
+@op event 1 187 0 70
+@op event 3 280 0 80
+@op event 1 187 1 90
+@op event 1 187 0 100
+@op event 1 188 1 110
+@op event 1 188 0 120
+@op event 1 189 1 130
+@op event 1 189 0 140
+@op event 1 189 1 150
+@op dump
+@op event 3 150 0 160
+@op event 1 188 1 170
+@op event 1 188 0 180
+@op event 1 189 1 190
+@op cvar gui_edit 0
+@op event 1 188 1 200
+@op event 1 188 0 210
+@op event 3 100 -20 220
+@op event 1 187 1 230
+@op event 1 187 0 240
+@end
+@case events_hidden_desktop
+@file hidden.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  visible 0
+  onAction { set "cmd" "never" }
+}
+@op load hidden.gui
+@op event 1 187 1 10
+@op event 3 5 5 20
+@end
+@case events_noevents_desktop
+@file deaf.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  noevents 1
+  onAction { set "cmd" "never" }
+}
+@op load deaf.gui
+@op event 1 187 1 10
+@op event 2 65 0 20
+@end

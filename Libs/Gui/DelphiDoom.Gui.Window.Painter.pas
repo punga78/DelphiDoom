@@ -50,63 +50,56 @@ const
 
 class function TGuiWindowPainter.FormatFixed(const AValue: Double; const ADecimals: Integer): string;
 var
-  LText: string;
-  LPoint, LKeep, LIndex: Integer;
-  LRest: string;
-  LRoundUp: Boolean;
-  LDigits: TArray<Char>;
-  LCarry: Integer;
+  LBits: UInt64;
+  LExponent, LShift, LIndex: Integer;
+  LMantissa, LScaled, LQuotient, LRemainder, LHalf, LPower: UInt64;
+  LNegative: Boolean;
+  LDigits: string;
 begin
-  // thirty decimals hold the exact value of every float that matters here
-  LText := Format('%.30f', [AValue], TFormatSettings.Invariant);
-  LPoint := Pos('.', LText);
-  LKeep := LPoint + ADecimals;
-  LRest := Copy(LText, LKeep + 1, MaxInt);
-  LDigits := Copy(LText, 1, LKeep).ToCharArray;
-  if LRest[1] > '5' then
-    LRoundUp := True
-  else if LRest[1] < '5' then
-    LRoundUp := False
-  else if Copy(LRest, 2, MaxInt) <> StringOfChar('0', Length(LRest) - 1) then
-    LRoundUp := True
+  // the exact value of the double (a binary fraction), scaled by 10^decimals, rounded half to even as printf does
+  Move(AValue, LBits, SizeOf(LBits));
+  LNegative := (LBits shr 63) <> 0;
+  LExponent := Integer((LBits shr 52) and $7FF);
+  LMantissa := LBits and $000FFFFFFFFFFFFF;
+  LPower := 1;
+  for LIndex := 1 to ADecimals do
+    LPower := LPower * 10;
+  if (LExponent = $7FF) or (LExponent > 1075) then
+    Exit(Format('%.*f', [ADecimals, AValue], TFormatSettings.Invariant));
+  if LExponent = 0 then
+    LExponent := 1
+  else
+    LMantissa := LMantissa or (UInt64(1) shl 52);
+  LShift := 1075 - LExponent;
+  if LShift <= 0 then
+    LScaled := (LMantissa shl (-LShift)) * LPower
+  else
+    LScaled := LMantissa * LPower;
+  if LShift <= 0 then
+    LQuotient := LScaled
+  else if LShift >= 64 then
+    LQuotient := 0
   else
   begin
-    // a tie: to the even digit
-    LIndex := High(LDigits);
-    if LDigits[LIndex] = '.' then
-      Dec(LIndex);
-    LRoundUp := (Ord(LDigits[LIndex]) - Ord('0')) mod 2 = 1;
+    LQuotient := LScaled shr LShift;
+    LRemainder := LScaled and ((UInt64(1) shl LShift) - 1);
+    LHalf := UInt64(1) shl (LShift - 1);
+    if (LRemainder > LHalf) or ((LRemainder = LHalf) and ((LQuotient and 1) = 1)) then
+      Inc(LQuotient);
   end;
-  if LRoundUp then
+  LDigits := UIntToStr(LQuotient);
+  if ADecimals > 0 then
   begin
-    LCarry := 1;
-    for LIndex := High(LDigits) downto 0 do
-    begin
-      if (LDigits[LIndex] < '0') or (LDigits[LIndex] > '9') then
-        Continue;
-      LCarry := Ord(LDigits[LIndex]) - Ord('0') + LCarry;
-      if LCarry = 10 then
-      begin
-        LDigits[LIndex] := '0';
-        LCarry := 1;
-      end
-      else
-      begin
-        LDigits[LIndex] := Char(Ord('0') + LCarry);
-        LCarry := 0;
-        Break;
-      end;
-    end;
-    Result := string.Create(LDigits);
-    if LCarry = 1 then
-      Result := '1' + Result;
-  end
-  else
-    Result := string.Create(LDigits);
-  if Result.EndsWith('.') then
-    Result := Copy(Result, 1, Length(Result) - 1);
+    while Length(LDigits) <= ADecimals do
+      LDigits := '0' + LDigits;
+    LDigits := Copy(LDigits, 1, Length(LDigits) - ADecimals) + '.' + Copy(LDigits, Length(LDigits) - ADecimals + 1, ADecimals);
+  end;
+  if LNegative and (LQuotient <> 0) then
+    LDigits := '-' + LDigits
+  else if LNegative then
+    LDigits := '-' + LDigits;
+  Result := LDigits;
 end;
-
 function SkipShaders(const AContext: TGuiContext): Integer;
 begin
   if Assigned(AContext.Cvars) then
@@ -351,7 +344,7 @@ var
   LOldMat: TIdMat3;
   LChildX, LChildY: Single;
   LDraw: TGuiDrawWindow;
-  LElapsed: Single;
+  LElapsed: Double;
 begin
   LContext := AWindow.Context;
   LDc := LContext.DrawContext;
@@ -365,8 +358,8 @@ begin
     Exit;
   if (AWindow.Flags and WIN_SHOWTIME) <> 0 then
   begin
-    LElapsed := LTime - AWindow.TimeLine;
-    LElapsed := LElapsed / 1000;
+    // the quotient is passed to printf as a double: the reference computes it with the x87 in extended precision
+    LElapsed := (LTime - AWindow.TimeLine) / 1000.0;
     LDc.DrawText(AnsiString(' ' + FormatFixed(LElapsed, 1) + ' seconds'#10) + LContext.StateDict.GetString('name'),
       0.35, 0, LDc.ColorWhite, TGuiRectangle.Create(100, 0, 80, 80), False);
   end;

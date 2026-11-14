@@ -19,7 +19,7 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Factory,
-  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Display.FloatMask;
 
 type
   /// <summary>
@@ -154,10 +154,12 @@ end;
 
 function TGuiUserInterface.InitFromFile(const AName: AnsiString; const ARebuild: Boolean): Boolean;
 var
+  LMask: IInterface;
   LParser: TIdParser;
   LToken: TIdToken;
   LParsed: Boolean;
 begin
+  LMask := TGuiFloatMask.Enter;
   if AName = '' then
     Exit(False);
   FContext.SourceFile := AName;
@@ -212,14 +214,20 @@ begin
 end;
 
 procedure TGuiUserInterface.RunFrame(const ATime: Integer);
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
   if Assigned(FDesktop) then
     FDesktop.RunTimeEvents(ATime);
 end;
 
 procedure TGuiUserInterface.Redraw(const ATime: Integer);
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   if Assigned(FContext.Cvars) and (FContext.Cvars.GetInteger('r_skipGuiShaders') > 5) then
     Exit;
   if (not FLoading) and Assigned(FDesktop) and Assigned(FContext.DrawContext) then
@@ -233,7 +241,10 @@ end;
 
 function TGuiUserInterface.HandleEvent(const AEvent: TGuiSysEvent; const ATime: Integer;
   var AUpdateVisuals: Boolean): AnsiString;
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
   if AEvent.EventType = GUI_SE_MOUSE then
   begin
@@ -251,13 +262,19 @@ begin
 end;
 
 procedure TGuiUserInterface.HandleNamedEvent(const AEventName: AnsiString);
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   if Assigned(FDesktop) then
     FDesktop.RunNamedEvent(AEventName);
 end;
 
 procedure TGuiUserInterface.StateChanged(const ATime: Integer; const ARedraw: Boolean);
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
   if Assigned(FDesktop) then
     FDesktop.StateChanged(ARedraw);
@@ -268,7 +285,10 @@ begin
 end;
 
 function TGuiUserInterface.Activate(const AActivate: Boolean; const ATime: Integer): AnsiString;
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
   FContext.Active := AActivate;
   Result := '';
@@ -277,7 +297,10 @@ begin
 end;
 
 procedure TGuiUserInterface.Trigger(const ATime: Integer);
+var
+  LMask: IInterface;
 begin
+  LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
   if Assigned(FDesktop) then
     FDesktop.Trigger;
