@@ -59,6 +59,7 @@ var
   radix_cfg_vanillal1plasmaspreader: integer = 0;
   radix_cfg_fastweaponrefire: integer = 0;
   radix_cfg_bigbarrelexplosion: integer = 0;
+  radix_cfg_showbriefingscreen: integer = 1;
 
 implementation
 
@@ -74,6 +75,7 @@ uses
   v_video,
   w_wad,
   z_zone,
+  radix_briefing,
   radix_codepointers,
   radix_controls,
   radix_score,
@@ -573,6 +575,8 @@ begin
   result := nil;
   pilotStringEnter := false;
   RX_SavePilotName;
+  // a new pilot has flown no level yet
+  RX_ClearLevelScores;
   if Assigned(rxnewgameroutine) then
     rxnewgameroutine(0);
 end;
@@ -788,6 +792,7 @@ begin
   g_vanillalevel1plasmaspreader := radix_cfg_vanillal1plasmaspreader <> 0;
   g_fastweaponrefire := radix_cfg_fastweaponrefire <> 0;
   g_bigbarrelexplosion := radix_cfg_bigbarrelexplosion <> 0;
+  showbriefingscreen := radix_cfg_showbriefingscreen <> 0;
 end;
 
 //==============================================================================
@@ -811,6 +816,7 @@ begin
   radix_cfg_vanillal1plasmaspreader := Ord(g_vanillalevel1plasmaspreader);
   radix_cfg_fastweaponrefire := Ord(g_fastweaponrefire);
   radix_cfg_bigbarrelexplosion := Ord(g_bigbarrelexplosion);
+  radix_cfg_showbriefingscreen := Ord(showbriefingscreen);
 end;
 
 //==============================================================================
@@ -925,7 +931,8 @@ begin
   RX_MenuSetItem(@GameplayMenu[2], '!Fast weapon refire', @RX_MenuToggleGameplay, @g_fastweaponrefire, 'f');
   RX_MenuSetItem(@GameplayMenu[3], '!Big barrel death explosion', @RX_MenuToggleGameplay,
     @g_bigbarrelexplosion, 'b');
-  RX_MenuSetDef(@GameplayDef, 4, menus.options, Pmenuitem_tArray(@GameplayMenu), @RX_MenuDrawGameplay,
+  RX_MenuSetItem(@GameplayMenu[4], '!Show briefing screen', @RX_MenuToggleGameplay, @showbriefingscreen, 's');
+  RX_MenuSetDef(@GameplayDef, 5, menus.options, Pmenuitem_tArray(@GameplayMenu), @RX_MenuDrawGameplay,
     DEF_MENU_ITEMS_START_X, 68, SMALLLINEHEIGHT, true);
 end;
 
@@ -962,5 +969,6 @@ initialization
   TEngineConfigurationTable.RegisterExtraKey('g_vanillalevel1plasmaspreader', @radix_cfg_vanillal1plasmaspreader, 0);
   TEngineConfigurationTable.RegisterExtraKey('g_fastweaponrefire', @radix_cfg_fastweaponrefire, 0);
   TEngineConfigurationTable.RegisterExtraKey('g_bigbarrelexplosion', @radix_cfg_bigbarrelexplosion, 0);
+  TEngineConfigurationTable.RegisterExtraKey('showbriefingscreen', @radix_cfg_showbriefingscreen, 1);
 
 end.

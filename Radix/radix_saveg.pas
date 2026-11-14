@@ -95,6 +95,7 @@ uses
   i_system,
   radix_playerstate,
   radix_pilot,
+  radix_briefing,
   radix_logic,
   radix_map_extra,
   radix_walls,
@@ -203,6 +204,11 @@ begin
     lp := @radixlevelplayers[i];
     result.LevelPlayers[i].HasBody := Ord(lp.mo <> nil);
     result.LevelPlayers[i].SecondaryObjective := Ord(lp.secondaryobjective);
+    // the seconds of the hits against the walls (the debriefing counts seconds) in the spare word
+    if radixwallhits[i] div TICRATE > High(Word) then
+      result.LevelPlayers[i].Reserved := High(Word)
+    else if radixwallhits[i] > 0 then
+      result.LevelPlayers[i].Reserved := radixwallhits[i] div TICRATE;
     for j := 0 to RADIX_SAVE_MESSAGES - 1 do
       result.LevelPlayers[i].MessageTime[j] := lp.messagetime[j];
     result.LevelPlayers[i].TranspoStartX := lp.planetranspo_start_x;
@@ -313,6 +319,7 @@ begin
     else
       lp.mo := nil;
     lp.secondaryobjective := state.LevelPlayers[i].SecondaryObjective <> 0;
+    radixwallhits[i] := state.LevelPlayers[i].Reserved * TICRATE;
     for j := 0 to RADIX_SAVE_MESSAGES - 1 do
       lp.messagetime[j] := state.LevelPlayers[i].MessageTime[j];
     lp.planetranspo_start_x := state.LevelPlayers[i].TranspoStartX;
@@ -384,6 +391,8 @@ var
   data: TBytes;
   f: TFileStream;
 begin
+  // the engine has loaded the level again and its briefing has started: a saved game is in the level
+  RB_Exit;
   // the level that the engine has loaded again has them, its saved game has freed them
   RX_SpawnPilotThinker;
   RX_SpawnLevelLogicThinker;

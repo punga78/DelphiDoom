@@ -65,13 +65,20 @@ uses
   m_argv,
   m_fixed,
   p_tick,
+  radix_logic,
   radix_playerstate;
 
 const
   STATELOG_OPTION = '-radixstate';
+  // "-radixendlevel tic next": the level ends at that tic as its own exit would (next as the
+  // parameter of RX_ExitLevel: 0 the next level, -1 the end of the episode). For the tests of
+  // what follows a level, which a script cannot always reach
+  ENDLEVEL_OPTION = '-radixendlevel';
   MAXSOURCES = 4;
 
 var
+  endlevel_tic: integer = 0;
+  endlevel_next: integer = 0;
   statelog_checked: boolean = false;
   statelog_open: boolean = false;
   statelog_file: TextFile;
@@ -103,6 +110,12 @@ var
   p: integer;
 begin
   statelog_checked := true;
+  p := M_CheckParm(ENDLEVEL_OPTION);
+  if (p > 0) and (p < myargc - 2) then
+  begin
+    endlevel_tic := StrToIntDef(myargv[p + 1], 0);
+    endlevel_next := StrToIntDef(myargv[p + 2], 0);
+  end;
   p := M_CheckParm(STATELOG_OPTION);
   if (p <= 0) or (p >= myargc - 1) then
     exit;
@@ -127,6 +140,8 @@ var
 begin
   if not statelog_checked then
     RX_StateLogOpen;
+  if (endlevel_tic > 0) and (leveltime = endlevel_tic) then
+    RX_ExitLevel(endlevel_next);
   if not statelog_open then
     exit;
 

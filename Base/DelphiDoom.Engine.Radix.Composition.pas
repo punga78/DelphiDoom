@@ -47,7 +47,8 @@ uses
   DelphiDoom.Engine.Radix.LumpAliases,
   DelphiDoom.Radix.ActorProperties, DelphiDoom.Dehacked.Intf, DelphiDoom.Engine.Parity.PilotCommand,
   w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
-  radix_intermission, radix_controls, radix_saveg, radix_menu, m_menu, g_game;
+  radix_intermission, radix_controls, radix_saveg, radix_menu, radix_finale, radix_wipe, m_menu, f_finale, f_wipe, g_game,
+  DelphiDoom.Radix.Editions;
 
 var
   // The one table of the Radix part of the actors: ComposeActorDef asks for it first (the parser of
@@ -70,17 +71,18 @@ end;
 
 const
   ACTOR_DEFINITIONS_RESOURCE = 'RADIXDEF';
+  END_SCREEN_RESOURCE = 'RADIXEND%d';
 
-// The ACTORDEF text of the actors of Radix, linked into the program (Radix\Radix32_Data.rc);
-// nothing for a program without the resource (a test, a tool)
-function LoadActorDefinitions: TBytes;
+// A resource linked into the program (Radix\Radix32_Data.rc); nothing for a program without the
+// resource (a test, a tool)
+function LoadDataResource(const AName: string): TBytes;
 var
   LStream: TResourceStream;
 begin
   Result := nil;
-  if FindResource(HInstance, ACTOR_DEFINITIONS_RESOURCE, RT_RCDATA) = 0 then
+  if FindResource(HInstance, PChar(AName), RT_RCDATA) = 0 then
     Exit;
-  LStream := TResourceStream.Create(HInstance, ACTOR_DEFINITIONS_RESOURCE, RT_RCDATA);
+  LStream := TResourceStream.Create(HInstance, AName, RT_RCDATA);
   try
     SetLength(Result, LStream.Size);
     if Length(Result) > 0 then
@@ -96,7 +98,14 @@ var
   LConverter: IEngineWadConverter;
   LAliases: IEngineLumpAliases;
 begin
-  LConverter := TEngineRadixDataConverter.Create(ALog, LoadActorDefinitions);
+  LConverter := TEngineRadixDataConverter.Create(ALog, LoadDataResource(ACTOR_DEFINITIONS_RESOURCE),
+    function(AEdition: TRadixEdition): TBytes
+    begin
+      // a file that the table does not know leaves as the 1.0 shareware, as in Rad-X
+      if AEdition = reUnknown then
+        AEdition := reV10Shareware;
+      Result := LoadDataResource(Format(END_SCREEN_RESOURCE, [Ord(AEdition)]));
+    end);
   W_ConfigureConverter(LConverter);
   RX_ConfigureVersion(LConverter as IEngineRadixEdition);
 
@@ -114,6 +123,10 @@ begin
   ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
+  // the end of an episode: the text of RADIX.DAT over the flight among the stars
+  F_ConfigureReplacement(RX_Finale_Start, RX_Finale_Ticker, RX_Finale_Drawer);
+  // the screens fade into one another (the engine of Doom melts them)
+  wipe_ConfigureCustom(RX_WipeFade);
   // the look of the menus of Rad-X, the name of the pilot, the top ten, the gameplay options
   M_ConfigureExtension(RX_MenuExtension);
   // the fields of Rad-X of the Thing blocks of DEHACKED (GAMEDEF has them) go to the same table

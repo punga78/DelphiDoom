@@ -136,6 +136,11 @@ uses
   DelphiDoom.Tests.Radix.Debriefing in 'Source\DelphiDoom.Tests.Radix.Debriefing.pas',
   DelphiDoom.Radix.Score.Table in '..\Libs\Radix\DelphiDoom.Radix.Score.Table.pas',
   DelphiDoom.Tests.Radix.ScoreTable in 'Source\DelphiDoom.Tests.Radix.ScoreTable.pas',
+  DelphiDoom.Radix.Briefing.Types in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Types.pas',
+  DelphiDoom.Radix.Briefing.Script in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Script.pas',
+  DelphiDoom.Radix.Briefing.Player in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Player.pas',
+  DelphiDoom.Tests.Radix.BriefingScript in 'Source\DelphiDoom.Tests.Radix.BriefingScript.pas',
+  DelphiDoom.Tests.Radix.BriefingPlayer in 'Source\DelphiDoom.Tests.Radix.BriefingPlayer.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var

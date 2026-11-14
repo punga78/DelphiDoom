@@ -2,3 +2,13 @@
 // order of WADSRC/RADIXDEF.txt) as ACTORDEF text. ComposeRadix reads the resource and the converter of RADIX.DAT
 // adds it to the translated WAD as the lump ACTORDEF. Compiled by MSBuild (RcCompile item in Radix32.dproj).
 RADIXDEF RCDATA "Data/RADIXDEF.txt"
+
+// The text screens shown when the game is left (the arrays of radix_end_screen.pas of Rad-X, one for every release
+// of RADIX.DAT: 80x25 characters with their colors, 4000 bytes). The number is Ord(TRadixEdition); the converter adds
+// the one of the release of the file as the lump ENDOOM.
+RADIXEND0 RCDATA "Data/ENDSCR_v10_sha.bin"
+RADIXEND1 RCDATA "Data/ENDSCR_v10_reg.bin"
+RADIXEND2 RCDATA "Data/ENDSCR_v11_sha.bin"
+RADIXEND3 RCDATA "Data/ENDSCR_v11_reg.bin"
+RADIXEND4 RCDATA "Data/ENDSCR_v20_sha.bin"
+RADIXEND5 RCDATA "Data/ENDSCR_v20_reg.bin"

@@ -46,6 +46,17 @@ type
     procedure DovrebbeTenereUnaSalitaCostanteASpintaCostante;
     [Test]
     procedure DovrebbeAumentareIlFattoreDiMovimentoConIGetti;
+    [Test]
+    [TestCase('in volo libero', '655360,0,614400,0,False')]
+    [TestCase('ferma contro un muro', '655360,0,0,0,True')]
+    [TestCase('meno di meta strada', '655360,0,300000,0,True')]
+    [TestCase('meta strada giusta', '655360,0,327680,0,False')]
+    [TestCase('in diagonale fermata', '393216,-393216,65536,-65536,True')]
+    [TestCase('troppo lenta per contare', '196608,0,0,0,False')]
+    [TestCase('ferma e basta', '0,0,0,0,False')]
+    [TestCase('un salto piu lungo della velocita', '655360,0,9000000,0,False')]
+    procedure UnaNavettaFermataDaUnMuroDovrebbeEssereContata(AMomentumX, AMomentumY, ADeltaX, ADeltaY: Integer;
+      AExpected: Boolean);
   end;
 
 implementation
@@ -59,6 +70,12 @@ procedure TTestRadixFlightModel.DovrebbeFrenareIlMomentoAOgniTic(AMomentum: Inte
   AExpected: Integer);
 begin
   Assert.AreEqual(AExpected, TRadixFlightModel.Drag(AMomentum, AJets));
+end;
+
+procedure TTestRadixFlightModel.UnaNavettaFermataDaUnMuroDovrebbeEssereContata(AMomentumX, AMomentumY, ADeltaX,
+  ADeltaY: Integer; AExpected: Boolean);
+begin
+  Assert.AreEqual(AExpected, TRadixFlightModel.IsStopped(AMomentumX, AMomentumY, ADeltaX, ADeltaY));
 end;
 
 procedure TTestRadixFlightModel.DovrebbeFermarsiSenzaSpinta;

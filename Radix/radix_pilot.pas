@@ -47,6 +47,11 @@ interface
 //==============================================================================
 procedure RX_SpawnPilotThinker;
 
+var
+  // For how many tics each craft was stopped by a wall in this level (wallhits of the player_t of
+  // Rad-X): the debriefing takes them from the "proficient flying" mark
+  radixwallhits: array[0..3] of integer;
+
 implementation
 
 uses
@@ -73,13 +78,56 @@ uses
   radix_controls,
   radix_statelog,
   DelphiDoom.Radix.Control.Rules,
-  DelphiDoom.Radix.Flight.Model;
+  DelphiDoom.Radix.Flight.Model,
+  DelphiDoom.Radix.Messages;
 
 type
   radixpilot_t = record
     thinker: thinker_t;
   end;
   Pradixpilot_t = ^radixpilot_t;
+
+  // where a craft was and how fast it went at the end of the tic before
+  pilotlastmove_t = record
+    mo: Pmobj_t;
+    x, y: fixed_t;
+    momx, momy: fixed_t;
+  end;
+
+const
+  STARTUPMESSAGETICS = 2;
+
+var
+  pilotlastmoves: array[0..MAXPLAYERS - 1] of pilotlastmove_t;
+
+//==============================================================================
+//
+// RX_PilotCountsWallHit
+// Rad-X counted a hit in P_XYMovement when the move of a craft failed; the
+// movement of the engine is not touched here: a craft that has made less than
+// half of the way of its speed was stopped by something
+//
+//==============================================================================
+procedure RX_PilotCountsWallHit(const pnum: integer; const p: Pplayer_t);
+var
+  last: ^pilotlastmove_t;
+begin
+  last := @pilotlastmoves[pnum];
+  if last.mo = p.mo then
+  begin
+    if TRadixFlightModel.IsStopped(last.momx, last.momy, p.mo.x - last.x, p.mo.y - last.y) then
+      inc(radixwallhits[pnum]);
+  end
+  // a craft at the start of a level: the message of P_SpawnPlayer of Rad-X (a saved game that is
+  // loaded has a new body too, later in the level)
+  else if leveltime <= STARTUPMESSAGETICS then
+    p._message := ShortString(TRadixMessages.StartUp(gameepisode, gamemap));
+  last.mo := p.mo;
+  last.x := p.mo.x;
+  last.y := p.mo.y;
+  last.momx := p.mo.momx;
+  last.momy := p.mo.momy;
+end;
 
 //==============================================================================
 //
@@ -237,6 +285,7 @@ begin
       end;
       if p.playerstate = PST_LIVE then
       begin
+        RX_PilotCountsWallHit(i, p);
         RX_PilotFly(p, RX_PlayerState(p));
         RX_PilotControls(p, RX_PlayerState(p));
         RX_PilotFindsSecret(p);
@@ -266,6 +315,10 @@ begin
       exit;
     think := think.next;
   end;
+
+  // a level that starts (a saved game puts its count back after this)
+  ZeroMemory(@radixwallhits, SizeOf(radixwallhits));
+  ZeroMemory(@pilotlastmoves, SizeOf(pilotlastmoves));
 
   pilot := Z_Malloc(SizeOf(radixpilot_t), PU_LEVSPEC, nil);
   P_AddThinker(@pilot.thinker);

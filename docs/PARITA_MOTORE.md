@@ -48,6 +48,8 @@ Un passo per riga, parole separate da spazi, maiuscole indifferenti, `#` apre un
 | `key codice` | un tasto del motore (il suo codice: 27 esc, 13 invio, 127 backspace, 172..175 sinistra, su, destra, giu', le lettere minuscole in ASCII) va giu' e su come due eventi della coda del gioco (`D_PostEvent`): un tic. Serve per i menu, che la tastiera chiusa non raggiunge; il copione gira solo dentro un livello (il giocatore deve esistere) |
 | `shot numero` | il fotogramma che segue e' scritto come `<copione>.<numero>.bmp` (1..999): un tic. I menu fermano i tic del gioco, quindi `-framedump` non li puo' chiedere |
 
+**Radix**: con uno strumento acceso il briefing della missione non parte (un copione vola il livello come una demo); `-briefing` lo fa partire (i passi `hold ... fire`/`use` lo fanno avanzare). `-radixendlevel tic next` fa finire il livello a quel tic come dalla sua uscita (`next`: 0 il livello dopo, -1 la fine dell'episodio, un numero quel livello).
+
 **Menu**: `key 27`, `hold 4`, `shot 1` apre il menu principale e lo fotografa; mettere un `hold` di qualche tic dopo ogni `key` (l'evento e' letto al giro dopo). Esempio: i menu di Radix in `Libs\Radix\CLAUDE.md`.
 
 **Salva in una esecuzione, carica in un'altra**: per avere le stesse righe nelle due esecuzioni dopo il caricamento, nel copione che salva mettere `save 0` e poi `hold 3`, in quello che carica `hold 10`, `load 0`, `hold 2` e poi gli stessi passi (il gioco salvato ha gia' fatto due dei tre tic fermi; il caricato fa il terzo). Esempio: `Tests\Data\Parity\Radix\e1m1_save.script` e `e1m1_load.script`.
