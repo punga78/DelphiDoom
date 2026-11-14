@@ -145,6 +145,18 @@ uses
   DelphiDoom.Tracker.ByteReader in '..\Libs\Mikmod\DelphiDoom.Tracker.ByteReader.pas',
   DelphiDoom.Tracker.Loader.ProTracker in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.ProTracker.pas',
   DelphiDoom.Tests.Radix.Audio in 'Source\DelphiDoom.Tests.Radix.Audio.pas',
+  DelphiDoom.Radix.Physics.Bounce in '..\Libs\Radix\DelphiDoom.Radix.Physics.Bounce.pas',
+  DelphiDoom.Radix.Physics.Damage in '..\Libs\Radix\DelphiDoom.Radix.Physics.Damage.pas',
+  DelphiDoom.Radix.Physics.Impact in '..\Libs\Radix\DelphiDoom.Radix.Physics.Impact.pas',
+  DelphiDoom.Radix.Physics.Movement in '..\Libs\Radix\DelphiDoom.Radix.Physics.Movement.pas',
+  DelphiDoom.Radix.Physics.Contact in '..\Libs\Radix\DelphiDoom.Radix.Physics.Contact.pas',
+  DelphiDoom.Radix.Physics.ForceField in '..\Libs\Radix\DelphiDoom.Radix.Physics.ForceField.pas',
+  DelphiDoom.Tests.Radix.PhysicsBounce in 'Source\DelphiDoom.Tests.Radix.PhysicsBounce.pas',
+  DelphiDoom.Tests.Radix.PhysicsDamage in 'Source\DelphiDoom.Tests.Radix.PhysicsDamage.pas',
+  DelphiDoom.Tests.Radix.PhysicsImpact in 'Source\DelphiDoom.Tests.Radix.PhysicsImpact.pas',
+  DelphiDoom.Tests.Radix.PhysicsMovement in 'Source\DelphiDoom.Tests.Radix.PhysicsMovement.pas',
+  DelphiDoom.Tests.Radix.PhysicsContact in 'Source\DelphiDoom.Tests.Radix.PhysicsContact.pas',
+  DelphiDoom.Tests.Radix.PhysicsForceField in 'Source\DelphiDoom.Tests.Radix.PhysicsForceField.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var

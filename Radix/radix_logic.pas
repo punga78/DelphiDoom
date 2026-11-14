@@ -180,6 +180,7 @@ uses
   radix_forcefield,
   radix_grid,
   radix_map_extra,
+  radix_physics,
   radix_walls,
   DelphiDoom.Radix.Types,
   DelphiDoom.Radix.SoundPart,
@@ -462,6 +463,7 @@ begin
 
   RX_RunForceFields; // JVAL: 20200429 - Forcefields
   RX_TrackShots;
+  RX_IdleExplodeTick; // JVAL: 20200503 - P_VelocityHandler
   RX_RunTriggers; // JVAL: 20200305 - Run radix triggers
   RX_RunActions;  // JVAL: 20200305 - Run radix actions
 end;

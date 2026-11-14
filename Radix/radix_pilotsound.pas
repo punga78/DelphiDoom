@@ -76,6 +76,14 @@ procedure RX_PilotSiren(const pnum: integer; const p: Pplayer_t; const rp: Pradi
 //==============================================================================
 function RX_PilotMessageOrigin(const pnum: integer; const p: Pplayer_t): pointer;
 
+//==============================================================================
+//
+// RX_PilotSoundIndex
+// The number of a sound of RADIX.DAT; -1 when the table does not have it
+//
+//==============================================================================
+function RX_PilotSoundIndex(const name: string): integer;
+
 implementation
 
 uses
@@ -112,7 +120,6 @@ var
 //==============================================================================
 //
 // RX_PilotSoundIndex
-// The number of a sound of RADIX.DAT; -1 when the table does not have it
 //
 //==============================================================================
 function RX_PilotSoundIndex(const name: string): integer;

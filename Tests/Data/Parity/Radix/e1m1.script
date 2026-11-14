@@ -55,7 +55,35 @@ hunt 400
 # the access panel (wall 696): shot, it switches the force field off and opens the secret corridor
 goto -2150 -1500 z 420 fight timeout 1500
 face -1855 -1568
-hold 150 fire
+# The panel is the wall below the opening of a two sided line (floors 352 and 480): a shot above
+# 480 goes through. The craft that fires drifts up or down (the recoil pushes it back and its nose
+# is where the last fight left it), so it goes back to the height before each short burst
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
 heal 95 1000
 
 # the secret corridor under the canyon: rapid energy, full shield, full armor
@@ -90,9 +118,17 @@ goto 5100 -570 z 450 fight timeout 900
 hunt 600
 heal 95 1500
 
-# H and I: the hall, high over its steps, to the two computers (walls 754 and 605)
+# H and I: the hall, high over its steps, to the two computers (walls 754 and 605). An enemy that
+# the craft rams takes its touch damage and can explode on it: the enemies are fought from the
+# door and the shield is left to come back before each step
+hunt 900 range 1600
+heal 95 1500
+goto 5700 -520 z 700 fight timeout 1500
+hunt 900 range 1600
+heal 95 1500
 goto 6000 -300 z 700 fight timeout 1500
 hunt 600
+heal 95 1500
 goto 7500 -500 z 700 fight timeout 1500
 hunt 600
 heal 95 1500

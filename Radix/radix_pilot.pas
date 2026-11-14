@@ -77,6 +77,7 @@ uses
   radix_weapons,
   radix_controls,
   radix_pilotsound,
+  radix_physics,
   radix_statelog,
   DelphiDoom.Radix.Control.Rules,
   DelphiDoom.Radix.Flight.Model,
@@ -287,8 +288,10 @@ begin
       if p.playerstate = PST_LIVE then
       begin
         RX_PilotCountsWallHit(i, p);
+        RX_PilotImpacts(i, p);
         RX_PilotFly(p, RX_PlayerState(p));
         RX_PilotControls(p, RX_PlayerState(p));
+        RX_PilotTouchDamage(p);
         RX_PilotFindsSecret(p);
         RX_PilotInventoryTick(p);
         RX_PilotWeaponsTick(p);
@@ -323,6 +326,7 @@ begin
   ZeroMemory(@radixwallhits, SizeOf(radixwallhits));
   ZeroMemory(@pilotlastmoves, SizeOf(pilotlastmoves));
   RX_PilotSoundsReset;
+  RX_PhysicsReset;
 
   pilot := Z_Malloc(SizeOf(radixpilot_t), PU_LEVSPEC, nil);
   P_AddThinker(@pilot.thinker);

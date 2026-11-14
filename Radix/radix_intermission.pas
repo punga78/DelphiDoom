@@ -79,6 +79,7 @@ uses
   w_wad,
   radix_briefing,
   radix_logic,
+  radix_physics,
   radix_pilot,
   radix_score,
   DelphiDoom.Radix.Debriefing,
@@ -118,6 +119,8 @@ begin
   in_input.ParTics := in_struct.partime;
   in_input.WallHitTics := radixwallhits[consoleplayer];
   in_score := TRadixDebriefing.Score(in_input);
+  printf('RX_Intermission_Start(): %d tics of hits (%d from floors, ceilings and landings), par %d tics'#13#10,
+    [in_input.WallHitTics, radiximpacttics[consoleplayer], in_input.ParTics]);
 
   // RX_StorePlayerScore of Rad-X: the place is asked before the level enters the table
   in_skillplace := RX_ScoreTable.PositionOf(TRadixScoreTable.ProjectedRating(in_score));
