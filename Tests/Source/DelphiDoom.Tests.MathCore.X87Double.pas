@@ -54,6 +54,8 @@ type
     [Test]
     procedure DovrebbeTroncareIQuozientiDelleLuci;
     [Test]
+    procedure DovrebbeArrotondareLaSommaDiDueProdotti;
+    [Test]
     procedure DovrebbeDareZeroConUnDivisoreNullo;
     [Test]
     procedure DovrebbeDareIDoubleDelleEspressioniFredde;
@@ -690,6 +692,50 @@ begin
       LFingerprint.AddInteger(LExact);
     end;
     FGolden.Check('x87.lights', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeArrotondareLaSommaDiDueProdotti;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LA, LB: Integer;
+  LSine, LCosine: Single;
+  LFast, LExact: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Integer;
+  {$IFEND}
+begin
+  // the view point turned by the angle of a flat: Round(dx * cosine - dy * sine), sine and cosine Singles
+  LRandom.State := $ABCDEF0102030405;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 299999 do
+    begin
+      LA := LRandom.NextInteger(MaxInt div 2);
+      LB := LRandom.NextInteger(MaxInt div 2);
+      LSine := Single(LRandom.NextDouble(-12, -1));
+      LCosine := Single(LRandom.NextDouble(-12, -1));
+      if LIndex mod 4 = 0 then
+      begin
+        // quarters and halves: the sum falls often on a half
+        LSine := 0.5;
+        LCosine := -0.25;
+        LA := LA or 1;
+      end;
+      LFast := TX87Double.RoundCrossProducts(LA, LCosine, LB, -LSine);
+      LExact := TX87Double.RoundCrossProductsExact(LA, LCosine, LB, -LSine);
+      Assert.AreEqual(LExact, LFast, Format('case %d: %d %d', [LIndex, LA, LB]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      LNative := Integer(Round(LA * LCosine - LB * LSine));
+      Assert.AreEqual(LNative, LExact, Format('case %d against the FPU: %d %d', [LIndex, LA, LB]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+    end;
+    FGolden.Check('x87.cross', LFingerprint.ToHex);
   finally
     LFingerprint.Free;
   end;

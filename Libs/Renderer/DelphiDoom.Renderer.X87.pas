@@ -26,7 +26,7 @@ type
   ///   draw the same pixels; the 32 bit renderer keeps its own code
   /// </summary>
   /// <remarks>
-  ///   Static functions, no state besides the table of the sines of the columns. The sine is
+  ///   Static functions, no state besides a table of sines already computed (one per thread). The sine is
   ///   TSoftExtended.Sin: equal to the one of the processor except, rarely, for the last of the 64 bits
   /// </remarks>
   TRendererX87 = class
@@ -35,6 +35,13 @@ type
   public
     /// <summary>Sin(AAngle * ANGLE_T_TO_RAD) with 64 bits of mantissa (ANGLE_T_TO_RAD of tables.pas)</summary>
     class function AngleSine(AAngle: Cardinal): TSoftExtended; static;
+    /// <summary>
+    ///   Sin(AAngle * ANGLE_T_TO_RAD) stored in a Single: ds_sine and ds_viewsine of a flat with a texture
+    ///   angle (the angle may be negative: "-ds_angle" of an unsigned angle is a negative number of 64 bits)
+    /// </summary>
+    class function AngleSineSingle(AAngle: Int64): Single; static;
+    /// <summary>Cos(AAngle * ANGLE_T_TO_RAD) stored in a Single: ds_cosine and ds_viewcosine</summary>
+    class function AngleCosineSingle(AAngle: Int64): Single; static;
     /// <summary>dviewsin of R_SetupFrame: Sin(AViewAngle / $FFFFFFFF * 2 * pi)</summary>
     class function ViewSine(AViewAngle: Cardinal): Double; static;
     /// <summary>dviewcos of R_SetupFrame: Cos(AViewAngle / $FFFFFFFF * 2 * pi)</summary>
@@ -77,6 +84,15 @@ const
   PI_EXPONENT = -62;
   FRACTION_UNIT = 65536;
   MIN_SCALE = 256;
+  SINE_CACHE_BITS = 11;
+  SINE_CACHE_SIZE = 1 shl SINE_CACHE_BITS;
+
+// The sines already computed, one table per thread (no lock, nothing shared): a slot holds the last angle
+// that fell on it
+threadvar
+  SineCacheAngles: array[0..SINE_CACHE_SIZE - 1] of Cardinal;
+  SineCacheValues: array[0..SINE_CACHE_SIZE - 1] of TSoftExtended;
+  SineCacheUsed: array[0..SINE_CACHE_SIZE - 1] of Boolean;
 
 { TRendererX87 }
 
@@ -86,8 +102,27 @@ begin
 end;
 
 class function TRendererX87.AngleSine(AAngle: Cardinal): TSoftExtended;
+var
+  LSlot: Integer;
 begin
+  // the angle of a column of the screen comes back at every frame: its sine is kept
+  LSlot := Integer((AAngle * Cardinal(2654435761)) shr (32 - SINE_CACHE_BITS));
+  if SineCacheUsed[LSlot] and (SineCacheAngles[LSlot] = AAngle) then
+    Exit(SineCacheValues[LSlot]);
   Result := TSoftExtended.Sin(TSoftExtended.FromInt64(AAngle) * AngleToRadians);
+  SineCacheAngles[LSlot] := AAngle;
+  SineCacheValues[LSlot] := Result;
+  SineCacheUsed[LSlot] := True;
+end;
+
+class function TRendererX87.AngleSineSingle(AAngle: Int64): Single;
+begin
+  Result := TSoftExtended.Sin(TSoftExtended.FromInt64(AAngle) * AngleToRadians).ToSingle;
+end;
+
+class function TRendererX87.AngleCosineSingle(AAngle: Int64): Single;
+begin
+  Result := TSoftExtended.Cos(TSoftExtended.FromInt64(AAngle) * AngleToRadians).ToSingle;
 end;
 
 class function TRendererX87.ViewSine(AViewAngle: Cardinal): Double;

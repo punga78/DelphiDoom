@@ -345,9 +345,13 @@ class operator TSoftExtended.Divide(const ALeft, ARight: TSoftExtended): TSoftEx
 var
   LRemainder: UInt64;
   LHigh, LLow: UInt64;
-  LIndex: Integer;
   LBit: UInt64;
   LCarry: Boolean;
+  LDivisor, LDivisorHigh, LDivisorLow: UInt64;
+  LInteger: UInt64;
+  LDigitHigh, LDigitLow: UInt64;
+  LEstimate: UInt64;
+  LQuotient: UInt64;
 begin
   if ARight.FMantissa = 0 then
     raise EZeroDivide.Create('Division by zero');
@@ -361,32 +365,56 @@ begin
     Result.FNegative := ALeft.FNegative <> ARight.FNegative;
     Exit;
   end;
-  // 66 bits of quotient of two mantissas in [2^63, 2^64): the first one is the integer part (0 or 1)
+  // 66 bits of quotient of two mantissas in [2^63, 2^64): the integer part (0 or 1), 64 bits by a division of
+  // 128 bits by 64, and one more bit for the rounding
+  LDivisor := ARight.FMantissa;
   LRemainder := ALeft.FMantissa;
-  LHigh := 0;
-  LLow := 0;
-  for LIndex := 0 to 66 do
+  LInteger := 0;
+  if LRemainder >= LDivisor then
   begin
-    if LIndex > 0 then
-    begin
-      LCarry := (LRemainder and $8000000000000000) <> 0;
-      LRemainder := LRemainder shl 1;
-    end
-    else
-      LCarry := False;
-    if LCarry or (LRemainder >= ARight.FMantissa) then
-    begin
-      LRemainder := LRemainder - ARight.FMantissa;
-      LBit := 1;
-    end
-    else
-      LBit := 0;
-    LHigh := (LHigh shl 1) or (LLow shr 63);
-    LLow := (LLow shl 1) or LBit;
+    LRemainder := LRemainder - LDivisor;
+    LInteger := 1;
   end;
-  // (LHigh:LLow) holds the quotient times 2^66
+  // LQuotient := (LRemainder * 2^64) div LDivisor, by digits of 32 bits (Knuth, algorithm D: the divisor has
+  // its high bit set and LRemainder < LDivisor)
+  LDivisorHigh := LDivisor shr 32;
+  LDivisorLow := LDivisor and $FFFFFFFF;
+  LDigitHigh := LRemainder div LDivisorHigh;
+  LEstimate := LRemainder - LDigitHigh * LDivisorHigh;
+  while (LDigitHigh >= $100000000) or (LDigitHigh * LDivisorLow > (LEstimate shl 32)) do
+  begin
+    Dec(LDigitHigh);
+    LEstimate := LEstimate + LDivisorHigh;
+    if LEstimate >= $100000000 then
+      Break;
+  end;
+  LRemainder := (LRemainder shl 32) - LDigitHigh * LDivisor;
+  LDigitLow := LRemainder div LDivisorHigh;
+  LEstimate := LRemainder - LDigitLow * LDivisorHigh;
+  while (LDigitLow >= $100000000) or (LDigitLow * LDivisorLow > (LEstimate shl 32)) do
+  begin
+    Dec(LDigitLow);
+    LEstimate := LEstimate + LDivisorHigh;
+    if LEstimate >= $100000000 then
+      Break;
+  end;
+  LRemainder := (LRemainder shl 32) - LDigitLow * LDivisor;
+  LQuotient := (LDigitHigh shl 32) + LDigitLow;
+  // one more bit
+  LCarry := (LRemainder and $8000000000000000) <> 0;
+  LRemainder := LRemainder shl 1;
+  if LCarry or (LRemainder >= LDivisor) then
+  begin
+    LRemainder := LRemainder - LDivisor;
+    LBit := 1;
+  end
+  else
+    LBit := 0;
+  // (LHigh:LLow) holds the quotient times 2^65
+  LHigh := (LInteger shl 1) or (LQuotient shr 63);
+  LLow := (LQuotient shl 1) or LBit;
   Result := Normalized(ALeft.FNegative <> ARight.FNegative, LHigh, LLow,
-    ALeft.FExponent - ARight.FExponent - 66, LRemainder <> 0);
+    ALeft.FExponent - ARight.FExponent - 65, LRemainder <> 0);
 end;
 
 class function TSoftExtended.Compare(const ALeft, ARight: TSoftExtended): Integer;
@@ -580,17 +608,22 @@ class procedure TSoftExtended.WideDivideSmall(var AHigh, ALow: UInt64; ADivisor:
 var
   LRemainder: UInt64;
   LDigit: UInt64;
+  LQuotient: UInt64;
   LQuotientHigh, LQuotientLow: UInt64;
 begin
+  // one division per digit: the remainder comes from the quotient
   LDigit := AHigh shr 32;
-  LQuotientHigh := (LDigit div ADivisor) shl 32;
-  LRemainder := LDigit mod ADivisor;
+  LQuotient := LDigit div ADivisor;
+  LRemainder := LDigit - LQuotient * ADivisor;
+  LQuotientHigh := LQuotient shl 32;
   LDigit := (LRemainder shl 32) or (AHigh and $FFFFFFFF);
-  LQuotientHigh := LQuotientHigh or (LDigit div ADivisor);
-  LRemainder := LDigit mod ADivisor;
+  LQuotient := LDigit div ADivisor;
+  LRemainder := LDigit - LQuotient * ADivisor;
+  LQuotientHigh := LQuotientHigh or LQuotient;
   LDigit := (LRemainder shl 32) or (ALow shr 32);
-  LQuotientLow := (LDigit div ADivisor) shl 32;
-  LRemainder := LDigit mod ADivisor;
+  LQuotient := LDigit div ADivisor;
+  LRemainder := LDigit - LQuotient * ADivisor;
+  LQuotientLow := LQuotient shl 32;
   LDigit := (LRemainder shl 32) or (ALow and $FFFFFFFF);
   LQuotientLow := LQuotientLow or (LDigit div ADivisor);
   AHigh := LQuotientHigh;
@@ -605,7 +638,9 @@ const
   // 1 in the fixed point of the series: 127 bits of fraction
   ONE_HIGH = UInt64($8000000000000000);
   TERMS = 17;
+  WIDE_TERMS = 5;
 var
+  LNarrow: UInt64;
   LShift: Integer;
   LHigh, LLow: UInt64;
   LDoubleHigh, LDoubleLow: UInt64;
@@ -743,9 +778,23 @@ begin
     Exit;
   end;
   // sin(r) / r = 1 - z/(2*3) * (1 - z/(4*5) * (...)), cos(r) = 1 - z/(1*2) * (1 - z/(3*4) * (...))
-  LSeriesHigh := ONE_HIGH;
+  // The inner terms are multiplied by z / divisor at every step outwards, so their error shrinks: they are
+  // computed with 63 bits of fraction (one multiplication and one division of the machine each), and only the
+  // last WIDE_TERMS steps with 127 bits. What is left of the error of the inner part is under 2^-85
+  LNarrow := ONE_HIGH;
+  for LIndex := TERMS downto WIDE_TERMS + 1 do
+  begin
+    Multiply128(LSquareHigh, LNarrow, LTermHigh, LTermLow);
+    LTermHigh := (LTermHigh shl 1) or (LTermLow shr 63);
+    if LUseCosine then
+      LDivisor := Cardinal((2 * LIndex - 1) * (2 * LIndex))
+    else
+      LDivisor := Cardinal((2 * LIndex) * (2 * LIndex + 1));
+    LNarrow := ONE_HIGH - LTermHigh div LDivisor;
+  end;
+  LSeriesHigh := LNarrow;
   LSeriesLow := 0;
-  for LIndex := TERMS downto 1 do
+  for LIndex := WIDE_TERMS downto 1 do
   begin
     WideMultiplyHigh(LSquareHigh, LSquareLow, LSeriesHigh, LSeriesLow, LTermHigh, LTermLow);
     LTermHigh := (LTermHigh shl 1) or (LTermLow shr 63);

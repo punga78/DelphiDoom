@@ -41,6 +41,8 @@ type
     procedure DovrebbeLimitareLaScalaDiUnMuro;
     [Test]
     procedure DovrebbeDareDistanzaELarghezzaDiUnaLuce;
+    [Test]
+    procedure DovrebbeDareSenoECosenoDiUnAngoloInSingle;
   end;
 
 implementation
@@ -362,6 +364,61 @@ begin
       LFingerprint.AddSingle(LWidth);
     end;
     Assert.AreEqual('FBFF728970162698/400000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareSenoECosenoDiUnAngoloInSingle;
+const
+  COUNT = 100000;
+type
+  angle_t = LongWord;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LAngle, LView: angle_t;
+  LSine, LCosine, LViewSine: Single;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Single;
+  LDifferent: Integer;
+  {$IFEND}
+begin
+  LRandom.State := 1757;
+  LFingerprint := TFingerprint.Create;
+  try
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    LDifferent := 0;
+    {$IFEND}
+    for LIndex := 0 to COUNT - 1 do
+    begin
+      LAngle := LRandom.Next;
+      LView := LRandom.Next;
+      // ds_sine, ds_cosine and ds_viewsine of R_DrawPlanes: the first angle is negative
+      LSine := TRendererX87.AngleSineSingle(-Int64(LAngle));
+      LCosine := TRendererX87.AngleCosineSingle(LAngle);
+      LViewSine := TRendererX87.AngleSineSingle(angle_t(LView - LAngle));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      LNative := Sin(-LAngle * ANGLE_T_TO_RAD);
+      if PCardinal(@LNative)^ <> PCardinal(@LSine)^ then
+        Inc(LDifferent);
+      LNative := Cos(LAngle * ANGLE_T_TO_RAD);
+      if PCardinal(@LNative)^ <> PCardinal(@LCosine)^ then
+        Inc(LDifferent);
+      LNative := Sin((LView - LAngle) * ANGLE_T_TO_RAD);
+      if PCardinal(@LNative)^ <> PCardinal(@LViewSine)^ then
+        Inc(LDifferent);
+      {$IFEND}
+      LFingerprint.AddSingle(LSine);
+      LFingerprint.AddSingle(LCosine);
+      LFingerprint.AddSingle(LViewSine);
+    end;
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    // a Single hides the last bit of the sine of the processor nearly always
+    Assert.IsTrue(LDifferent <= 2, Format('%d Singles differ from the FPU', [LDifferent]));
+    {$IFEND}
+    Assert.AreEqual('F874E029A07248CA/300000', LFingerprint.ToHex);
   finally
     LFingerprint.Free;
   end;

@@ -44,6 +44,8 @@ type
     class function TruncMulDivideExact(const AValue: Double; AMultiplier, ADivisor: Integer): Integer; static;
     class function RoundScaledInverseExact(AScale, ANumerator, ADenominator: Integer): Integer; static;
     class function TruncReciprocalProductExact(AScale, AFirst, ASecond: Integer): Integer; static;
+    class function RoundCrossProductsExact(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
+      const ASecondFactor: Double): Integer; static;
 
     /// <summary>A + B stored in a Double: rounded to 64 bits and then to 53, as "fadd, fstp qword" do</summary>
     class function Add(const A, B: Double): Double; static; inline;
@@ -88,6 +90,9 @@ type
     ///   bits of what the FPU gives
     /// </summary>
     class function TruncFixedReciprocal(AValue: Integer): Integer; static; inline;
+    /// <summary>Round(AFirst * AFirstFactor + ASecond * ASecondFactor)</summary>
+    class function RoundCrossProducts(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
+      const ASecondFactor: Double): Integer; static; inline;
     /// <summary>A * B stored in a Double (always the exact way: not for the hot paths)</summary>
     class function Multiply(const A, B: Double): Double; static;
     /// <summary>AMinuend - A * B stored in a Double (always the exact way)</summary>
@@ -404,6 +409,35 @@ begin
   else
     Result := Integer(Int64($100000000) div AValue);
 end;
+
+class function TX87Double.RoundCrossProductsExact(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
+  const ASecondFactor: Double): Integer;
+begin
+  Result := Integer((TSoftExtended.FromInt64(AFirst) * TSoftExtended.FromDouble(AFirstFactor) +
+    TSoftExtended.FromInt64(ASecond) * TSoftExtended.FromDouble(ASecondFactor)).Round);
+end;
+
+class function TX87Double.RoundCrossProducts(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
+  const ASecondFactor: Double): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Round(AFirst * AFirstFactor + ASecond * ASecondFactor));
+end;
+{$ELSE}
+var
+  LFirst: Double;
+  LSecond: Double;
+  LValue: Double;
+begin
+  LFirst := AFirst * AFirstFactor;
+  LSecond := ASecond * ASecondFactor;
+  LValue := LFirst + LSecond;
+  if CanRound(LValue, Abs(LFirst) + Abs(LSecond)) then
+    Result := Round(LValue)
+  else
+    Result := RoundCrossProductsExact(AFirst, AFirstFactor, ASecond, ASecondFactor);
+end;
+{$IFEND}
 
 class function TX87Double.Multiply(const A, B: Double): Double;
 begin
