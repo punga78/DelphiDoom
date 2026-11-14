@@ -13,9 +13,21 @@ unit DelphiDoom.War.Model.Combat.Intf;
 interface
 
 uses
-  DelphiDoom.War.Model.Types;
+  System.Generics.Collections, DelphiDoom.War.Model.Types;
 
 type
+  /// <summary>
+  ///   What the spells tell the game around the model (the sounds: the model makes the entities of the effects itself).
+  ///   Optional: the events object given to the factory is asked whether it supports it. Never per tic and unit
+  /// </summary>
+  IWarSpellEvents = interface
+    ['{3F81C6A2-7E5D-4B09-A1C4-9D2B60E7F518}']
+    /// <summary>WAR_NORMAL_SPELL at a position: a spell has been cast there</summary>
+    procedure SpellCast(const APosition: TWarVec2);
+    /// <summary>WAR_DEAD_SPIDER_SCORPION: a summoned spider or scorpion ran out of mana and dies</summary>
+    procedure SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
+  end;
+
   /// <summary>
   ///   What the attacks and the projectiles tell the game around the model: sounds and explosions. Optional (the model
   ///   works without one). The calls are rare (a blow, an impact), never per tic and unit
@@ -49,6 +61,19 @@ type
     procedure BuildNearUnits;
     /// <summary>updateProjectiles of wmap_updateMap: the flight of every projectile</summary>
     procedure UpdateProjectiles;
+    /// <summary>we_getNearUnits: the slots of the units within the distance (tiles) of the tile, from the grid of this tic</summary>
+    procedure CollectNearUnits(const ATile: TWarVec2; ADistance: Integer; AResult: TList<Integer>);
+    /// <summary>we_takeDamage</summary>
+    procedure TakeDamage(ASlot, AMinDamage, ARndDamage: Integer);
+    /// <summary>we_increaseUnitHp and we_decreaseUnitHp</summary>
+    procedure IncreaseHp(ASlot, AHp: Integer);
+    procedure DecreaseHp(ASlot, AHp: Integer);
+    /// <summary>we_decreaseUnitMana: False (and the message) if the unit has less</summary>
+    function DecreaseMana(ASlot, AMana: Integer): Boolean;
+    /// <summary>we_meleeWallAttack: a blow on the piece of wall of that index (4 times in 5, always for a catapult)</summary>
+    procedure MeleeWallAttack(AAttackerSlot, APieceIndex: Integer);
+    /// <summary>we_rangeWallAttack: a projectile from the attacker to the centre of the tile of the piece</summary>
+    procedure RangeWallAttack(AAttackerSlot, AWallSlot, APieceIndex: Integer);
   end;
 
 implementation

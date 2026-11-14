@@ -30,6 +30,8 @@ type
     class function CreateWall(AContext: TWarModelContext; AMachine: TWarStateMachine): Integer; static;
     /// <summary>we_createRuins; the slot of the pool, 0 if it is full</summary>
     class function CreateRuins(AContext: TWarModelContext): Integer; static;
+    /// <summary>we_createRoad: the entity of the road (the pieces are in the roads of the context); the slot of the pool, 0 if it is full</summary>
+    class function CreateRoad(AContext: TWarModelContext): Integer; static;
   end;
 
 implementation
@@ -58,6 +60,11 @@ end;
 class function TWarTerrainEntities.CreateRuins(AContext: TWarModelContext): Integer;
 begin
   Result := AContext.Pool.CreateEntity(WAR_ENTITY_RUIN, True);
+end;
+
+class function TWarTerrainEntities.CreateRoad(AContext: TWarModelContext): Integer;
+begin
+  Result := AContext.Pool.CreateEntity(WAR_ENTITY_ROAD, True);
 end;
 
 end.

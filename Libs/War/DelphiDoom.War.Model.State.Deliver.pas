@@ -110,6 +110,7 @@ begin
   AState^.InsideBuilding := True;
   TWarUnitSprites.Disable(LEntity);
   // out of the selection, so that the player does not give it orders while it is inside
+  LContext.Selection.Remove(LEntity^.Id);
   LContext.Events.EntityLeftSelection(LEntity^.Id);
   AState^.Base.Delay := TWarModelMath.ScaledTime(LContext.Clock^, 1.0);
 end;

@@ -48,6 +48,14 @@ type
     ///   The game calls it after Update. This is the only place that runs the actions
     /// </summary>
     procedure UpdateAfterStates;
+    /// <summary>
+    ///   The whole rest of the tic of wmap_updateMap, in its order: the grid of the units, the steps of the actions, the
+    ///   animations, the projectiles, the mana and the spells. It is UpdateAfterStates with the animations, the mana and
+    ///   the spells (UpdateAfterStates stays for who wants the tic without them)
+    /// </summary>
+    procedure FinishTic;
+    /// <summary>A whole tic: AdvanceClock, Update and FinishTic. The orders of the tic are given before it</summary>
+    procedure Tick(ADeltaTime: Single);
     property Context: TWarModelContext read FContext;
     property Machine: TWarStateMachine read FMachine;
     property Queries: IWarUnitQueries read FQueries;
@@ -59,7 +67,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Model.ActionRunner;
+  DelphiDoom.War.Model.ActionRunner, DelphiDoom.War.Model.Animations, DelphiDoom.War.Model.Spells;
 
 { TWarModelWorld }
 
@@ -110,6 +118,25 @@ begin
   TWarActionRunner.UpdateAll(FContext);
   if Assigned(FContext.Combat) then
     FContext.Combat.UpdateProjectiles;
+end;
+
+procedure TWarModelWorld.FinishTic;
+begin
+  if Assigned(FContext.Combat) then
+    FContext.Combat.BuildNearUnits;
+  TWarActionRunner.UpdateAll(FContext);
+  TWarAnimations.UpdateAll(FContext);
+  if Assigned(FContext.Combat) then
+    FContext.Combat.UpdateProjectiles;
+  TWarSpells.UpdateMagic(FMachine);
+  TWarSpells.UpdateSpells(FMachine);
+end;
+
+procedure TWarModelWorld.Tick(ADeltaTime: Single);
+begin
+  AdvanceClock(ADeltaTime);
+  Update;
+  FinishTic;
 end;
 
 end.

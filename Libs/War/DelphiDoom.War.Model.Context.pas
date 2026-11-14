@@ -18,7 +18,8 @@ uses
   DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf,
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Construction.Intf,
-  DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins;
+  DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins, DelphiDoom.War.Autotile.Line,
+  DelphiDoom.War.Model.Selection;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -47,6 +48,13 @@ type
     FProbe: IWarOccupancyProbe;
     FWalls: TWarWalls;
     FRuins: TWarRuins;
+    FRoads: TWarLine;
+    FSelection: TWarSelection;
+    FSpellEvents: IWarSpellEvents;
+    FViewportTop: Single;
+    FInterruptibleCasts: Boolean;
+    FSpellStats: array[0..WAR_SPELL_COUNT - 1] of TWarSpellStats;
+    FSpellStatsRead: array[0..WAR_SPELL_COUNT - 1] of Boolean;
     FHurryUp: Boolean;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
@@ -97,6 +105,23 @@ type
     property Walls: TWarWalls read FWalls;
     /// <summary>The ruins that the buildings that collapsed leave (map->editing.ruin); owned by the context</summary>
     property Ruins: TWarRuins read FRuins;
+    /// <summary>The road of the map (map->editing.road: the pieces that the town hall builds); owned by the context</summary>
+    property Roads: TWarLine read FRoads;
+    /// <summary>The selected entities and the selection groups (map->selectedEntities, map->selectionGroups); owned by the context</summary>
+    property Selection: TWarSelection read FSelection;
+    /// <summary>The sounds of the spells; nil if nobody listens</summary>
+    property SpellEvents: IWarSpellEvents read FSpellEvents write FSpellEvents;
+    /// <summary>
+    ///   map->camera.viewport.y: the top of what the player sees, in pixels of the map. Defect of the original kept: the
+    ///   fire of a rain of fire starts from above the top of the view, so where the camera is changes how long it falls
+    /// </summary>
+    property ViewportTop: Single read FViewportTop write FViewportTop;
+    /// <summary>
+    ///   Defect of the original kept by default (False): a unit that is casting a spell accepts no order, because the
+    ///   function that says when a cast can be interrupted (wst_canInterruptCast) is never registered. True applies that
+    ///   function: any order interrupts a cast, and a rain of fire is not interrupted by what the unit decides by itself
+    /// </summary>
+    property InterruptibleCasts: Boolean read FInterruptibleCasts write FInterruptibleCasts;
     /// <summary>map->hurryUp, the cheat that makes buildings, units and upgrades 100 times faster</summary>
     property HurryUp: Boolean read FHurryUp write FHurryUp;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
@@ -107,6 +132,11 @@ type
     ///   A level above 2 (the original reads past the array) is the level 2. Read from the database once, at creation
     /// </summary>
     function UnitSpeed(AUnitType, ALevel: Integer): Single;
+    /// <summary>
+    ///   wu_getSpellStats, read from the database the first time a spell is asked for (a unit that casts asks at every
+    ///   tic: no call to an interface there after the first). EWarException for a type that is not a spell (the original stops on an assert)
+    /// </summary>
+    function SpellStats(ASpellType: Integer): TWarSpellStats;
     /// <summary>
     ///   The directions of the original are an enum: the game written for MSVC (signed) turns from North to North West, the same C built with gcc (unsigned) turns
     ///   from North to North, because a negative step wraps around. False (the default) is the first; the golden of parity was made with gcc and sets True
@@ -141,6 +171,8 @@ begin
   FProbe := TWarNullOccupancyProbe.Create;
   FWalls := TWarWalls.Create;
   FRuins := TWarRuins.Create;
+  FRoads := TWarLine.CreateRoad;
+  FSelection := TWarSelection.Create;
   FPlayersCount := WAR_MAX_PLAYERS_COUNT;
   for LIndex := 0 to High(FPlayers) do
     FPlayers[LIndex].Index := Byte(LIndex);
@@ -152,8 +184,22 @@ begin
   FClock.GameSpeed := 2;
 end;
 
+function TWarModelContext.SpellStats(ASpellType: Integer): TWarSpellStats;
+begin
+  if (ASpellType < 0) or (ASpellType >= WAR_SPELL_COUNT) then
+    raise EWarException.CreateFmt(SWarModelNoSpellStats, [ASpellType]);
+  if not FSpellStatsRead[ASpellType] then
+  begin
+    FSpellStats[ASpellType] := FDatabase.GetSpellStats(ASpellType);
+    FSpellStatsRead[ASpellType] := True;
+  end;
+  Result := FSpellStats[ASpellType];
+end;
+
 destructor TWarModelContext.Destroy;
 begin
+  FSelection.Free;
+  FRoads.Free;
   FRuins.Free;
   FWalls.Free;
   FStorage.Free;

@@ -210,6 +210,8 @@ type
     TargetPosition: TWarVec2;
   end;
 
+  PWarStateCast = ^TWarStateCast;
+
   TWarStateWait = record
     Base: TWarStateBase;
     WaitEndGameTime: Double;

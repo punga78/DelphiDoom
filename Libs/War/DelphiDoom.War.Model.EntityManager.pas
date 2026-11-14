@@ -112,6 +112,7 @@ begin
   LEntity^.ScaleX := 1.0;
   TWarUnitSprites.AddDefault(LEntity);
   LEntity^.SpriteFrames := FContext.ConstructionHost.UnitFrames(AUnitType);
+  LEntity^.HasAnimations := True;
   LEntity^.HasStateMachine := True;
   LEntity^.StateMachine.Pending.StateRef := TWarStateRefs.Invalid;
   LEntity^.StateMachine.Pending.CancellationTargetRef := TWarStateRefs.Invalid;

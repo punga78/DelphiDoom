@@ -153,6 +153,11 @@ type
     function IsGoingToBuild(ASlot: Integer): Boolean; inline;
     function IsGoingToAttack(ASlot: Integer): Boolean; inline;
     function IsAttacking(ASlot: Integer): Boolean; inline;
+    /// <summary>
+    ///   wst_isInsideBuilding: the unit mines, or delivers or repairs from inside the building (it is not drawn and can
+    ///   not be selected nor hit)
+    /// </summary>
+    function IsInsideBuilding(ASlot: Integer): Boolean;
   end;
 
 implementation
@@ -378,6 +383,16 @@ begin
   LActiveRef := LMachine^.Stack[LMachine^.Depth - 1];
   if not Assigned(FContext.Storage.Deref(LActiveRef)) then
     Exit(False);
+  // wst_canInterruptCast (a rain of fire goes on until an order, not until the unit decides by itself; any other spell
+  // can always be interrupted) is written in the original but never put in the table of the states: a unit that casts
+  // takes no order at all (mask 0) until its spell is done. Context.InterruptibleCasts turns the rule on
+  if (LActiveRef.StateType = WAR_STATE_CAST) and FContext.InterruptibleCasts then
+  begin
+    if PWarStateCast(FContext.Storage.Deref(LActiveRef))^.SpellType = WAR_SPELL_RAIN_OF_FIRE then
+      Exit((AInterrupt and (WAR_INTERRUPT_PLAYER_ORDER or WAR_INTERRUPT_AI_ORDER or WAR_INTERRUPT_STATUS or
+        WAR_INTERRUPT_SCRIPT or WAR_INTERRUPT_LIFECYCLE)) <> 0);
+    Exit(True);
+  end;
   Result := (FDescriptors[LActiveRef.StateType].DefaultInterruptMask and Cardinal(AInterrupt)) <> 0;
 end;
 
@@ -611,6 +626,17 @@ end;
 function TWarStateMachine.IsAttacking(ASlot: Integer): Boolean;
 begin
   Result := Contains(ASlot, WAR_STATE_ATTACK);
+end;
+
+function TWarStateMachine.IsInsideBuilding(ASlot: Integer): Boolean;
+begin
+  if Contains(ASlot, WAR_STATE_MINING) then
+    Exit(True);
+  if Contains(ASlot, WAR_STATE_DELIVER) then
+    Exit(PWarStateDeliver(FindState(ASlot, WAR_STATE_DELIVER))^.InsideBuilding);
+  if Contains(ASlot, WAR_STATE_REPAIRING) then
+    Exit(PWarStateRepairing(FindState(ASlot, WAR_STATE_REPAIRING))^.InsideBuilding);
+  Result := False;
 end;
 
 function TWarStateMachine.AllocState(ASlot: Integer; AType: Integer): PWarStateBase;

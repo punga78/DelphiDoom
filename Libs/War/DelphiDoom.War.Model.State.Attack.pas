@@ -24,8 +24,9 @@ type
   ///   A unit that attacks a target (a unit, or a point where there is none). Out of range it pushes a move (to a point)
   ///   or a follow (to a unit); in range it turns to the target, plays its attack action and, when the action has reached its
   ///   blow, hits (a projectile for a shooter) and asks for the sound, at most one every quarter of a second. A target
-  ///   that is gone, or dying, ends the state; one that is inside a building makes the unit wait a second. The attack
-  ///   of a wall is not in the model yet. Defect of the original kept: it reads the action that is current, not the attack
+  ///   that is gone, or dying, ends the state; one that is inside a building makes the unit wait a second. When the
+  ///   target is the wall the unit goes within range of the tile of the attack and hits the piece of wall of that tile,
+  ///   until the piece has no hit points; with no piece on the tile it swings forever (as the original). Defect of the original kept: it reads the action that is current, not the attack
   ///   one, so a unit that has no attack action (it keeps the one it had) never hits; with no current action it does not
   ///   hit either (the original reads before the array)
   /// </summary>
@@ -45,30 +46,6 @@ uses
 const
   MIN_ATTACK_SOUND_INTERVAL: Single = 0.25;
 
-type
-  PWarStateDeliverRecord = ^TWarStateDeliver;
-  PWarStateRepairingRecord = ^TWarStateRepairing;
-
-// wst_isInsideBuilding
-function IsInsideBuilding(AMachine: TWarStateMachine; ASlot: Integer): Boolean;
-var
-  LState: PWarStateBase;
-begin
-  if AMachine.Contains(ASlot, WAR_STATE_MINING) then
-    Exit(True);
-  if AMachine.Contains(ASlot, WAR_STATE_DELIVER) then
-  begin
-    LState := AMachine.FindState(ASlot, WAR_STATE_DELIVER);
-    Exit(PWarStateDeliverRecord(LState)^.InsideBuilding);
-  end;
-  if AMachine.Contains(ASlot, WAR_STATE_REPAIRING) then
-  begin
-    LState := AMachine.FindState(ASlot, WAR_STATE_REPAIRING);
-    Exit(PWarStateRepairingRecord(LState)^.InsideBuilding);
-  end;
-  Result := False;
-end;
-
 function TargetIsFinished(AMachine: TWarStateMachine; ASlot: Integer): Boolean;
 begin
   Result := AMachine.IsDead(ASlot) or AMachine.IsGoingToDie(ASlot) or AMachine.IsCollapsing(ASlot) or
@@ -87,6 +64,8 @@ var
   LTargetPosition: TWarVec2;
   LTargetTile: TWarVec2;
   LTargetIsUnit: Boolean;
+  LTargetIsWall: Boolean;
+  LPiece: Integer;
   LMove: PWarStateMove;
   LFollow: PWarStateFollow;
   LWait: PWarStateWait;
@@ -131,8 +110,15 @@ begin
       Exit;
     end;
   end;
+  LTargetIsWall := LTarget^.EntityType = WAR_ENTITY_WALL;
+  if LTargetIsWall and not TWarUnitGeometry.TileInRange(LEntity, LTargetTile, LUnit^.Range) then
+  begin
+    LFollow := AMachine.CreateFollow(ASlot, 0, LTargetPosition, LUnit^.Range * WAR_MODEL_MEGA_TILE);
+    AMachine.PushState(ASlot, PWarStateBase(LFollow), WAR_CAUSE_COMPLETION);
+    Exit;
+  end;
   // a worker that gathers inside a mine or a town hall: stop for a moment until it comes out
-  if IsInsideBuilding(AMachine, LTargetSlot) then
+  if AMachine.IsInsideBuilding(LTargetSlot) then
   begin
     LWait := AMachine.CreateWait(ASlot, 1.0);
     AMachine.PushState(ASlot, PWarStateBase(LWait), WAR_CAUSE_COMPLETION);
@@ -168,6 +154,30 @@ begin
         if Assigned(LContext.CombatEvents) then
           LContext.CombatEvents.AttackSound(LSoundPosition, LAction^.LastSoundStep);
         LUnit^.LastAttackSoundGameTime := LContext.Clock^.GameTime;
+      end;
+    end;
+  end
+  else if LTargetIsWall then
+  begin
+    LPiece := LContext.Walls.IndexAt(Trunc(LTargetTile.X), Trunc(LTargetTile.Y));
+    if LPiece >= 0 then
+    begin
+      // checked before the damage, in case of many attackers: one of them could have destroyed the piece
+      if LContext.Walls[LPiece]^.Hp = 0 then
+        AMachine.PopState(ASlot, WAR_CAUSE_COMPLETION, WAR_RESULT_SUCCESS)
+      else
+      begin
+        if TWarUnitClassifier.IsRange(LUnit^.UnitType) then
+          LContext.Combat.RangeWallAttack(ASlot, LTargetSlot, LPiece)
+        else
+          LContext.Combat.MeleeWallAttack(ASlot, LPiece);
+        if LContext.Clock^.GameTime - LUnit^.LastAttackSoundGameTime >= MIN_ATTACK_SOUND_INTERVAL then
+        begin
+          LSoundPosition := TWarModelMath.TileToMap(LTargetTile, True);
+          if Assigned(LContext.CombatEvents) then
+            LContext.CombatEvents.AttackSound(LSoundPosition, LAction^.LastSoundStep);
+          LUnit^.LastAttackSoundGameTime := LContext.Clock^.GameTime;
+        end;
       end;
     end;
   end;
