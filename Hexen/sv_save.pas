@@ -2150,12 +2150,16 @@ begin
     StreamOutLong(node.volume);
     StreamOutLong(S_GetSequenceOffset(node.sequence, node.sequencePtr));
     StreamOutLong(node.currentSoundID);
-    for i := 0 to po_NumPolyobjs - 1 do
+    // not a for: with no polyobj the loop did not run and i was left with what the register had, so the
+    // sound was saved as the one of a polyobj with a number at random (and the saved game did not load)
+    i := 0;
+    while i < po_NumPolyobjs do
     begin
       if node.mobj = Pmobj_t(@polyobjs[i].startSpot) then
       begin
         break;
       end;
+      inc(i);
     end;
     if i = po_NumPolyobjs then
     begin // Sound is attached to a sector, not a polyobj
@@ -2190,8 +2194,10 @@ var
   polySnd: integer;
   secNum: integer;
   sndMobj: Pmobj_t;
+  started: integer;
 begin
   AssertSegment(ASEG_SOUNDS);
+  started := 0;
 
   // Reload and restart all sound sequences
   numSequences := GET_LONG;
@@ -2206,17 +2212,30 @@ begin
     soundID := GET_LONG;
     polySnd := GET_LONG;
     secNum := GET_LONG;
+    inc(i);
+    // a game saved before the fix of ArchiveSounds may have a polyobj number at random: that sound is lost,
+    // the game is not
     if polySnd = 0 then
     begin
+      if (secNum < 0) or (secNum >= numsectors) then
+      begin
+        I_Warning('UnarchiveSounds(): sound sequence of sector %d skipped'#13#10, [secNum]);
+        continue;
+      end;
       sndMobj := Pmobj_t(@sectors[secNum].soundorg);
     end
     else
     begin
+      if (secNum < 0) or (secNum >= po_NumPolyobjs) then
+      begin
+        I_Warning('UnarchiveSounds(): sound sequence of polyobj %d skipped'#13#10, [secNum]);
+        continue;
+      end;
       sndMobj := Pmobj_t(@polyobjs[secNum].startSpot);
     end;
     S_StartSequence(sndMobj, sequence);
-    S_ChangeNodeData(i, seqOffset, delayTics, volume, soundID);
-    inc(i);
+    S_ChangeNodeData(started, seqOffset, delayTics, volume, soundID);
+    inc(started);
   end;
 end;
 

@@ -98,3 +98,71 @@ cambiano e' cambiato il formato).
 `-NoLock` lancia i giochi senza il lock globale di `Tools\Esegui-gioco.ps1` (una esecuzione per volta comunque): serve
 su una macchina carica, dove il lock fa aspettare minuti a ogni esecuzione; con le opzioni di parita' l'orologio e'
 virtuale e il carico non cambia il risultato.
+
+Altri due script: `Prova-Esistenti.ps1` (una copia di salvataggi gia' fatti caricata da ogni programma) e
+`Confronta-Stato.ps1` (i golden di stato della parita', `Tests\Data\Parity`, senza il lock; a 640x480 come i golden,
+perche' il renderer segna le linee viste e l'impronta delle linee dipende da cio' che si vede).
+
+## 4. Risultati (2026-11-14)
+
+Eseguibili: `Tools\build.bat giochi Release both` del ramo; riferimento = gli eseguibili Win32 del commit che aggiunge
+solo `-autosave` (`bc21e033`). Comando: `Prova-Salvataggi.ps1 -Game <gioco> -Picks 2 -NoLock -RefExe ...`, 6 caricamenti
+per stato, 300 tic dopo il caricamento.
+
+| Gioco | Stati | Livelli | Caricamenti | Tutti uguali | Mondo uguale al tic dopo il salvataggio | Thinker di settore (max) | Mobj (max) |
+|---|---|---|---|---|---|---|---|
+| Doom | 8 | E1M1, E1M3 (DOOM1), MAP02, MAP07 (Freedoom 2) | 48 | 8 su 8 | 8 | 13 | 277 |
+| Heretic | 6 | E1M1, E1M3, E1M6 | 36 | 6 su 6 | 6 | 19 | 428 |
+| Hexen | 8 | MAP01..MAP04 (tre classi) | 48 | 7 su 8 (l'ottavo: vedi sotto) | 6 | 21 | 468 |
+| Strife | 6 | MAP32, MAP33, MAP34 | 36 | 6 su 6 | 6 | 6 | 391 |
+
+- **Lo stato prima del salvataggio** e' uguale nei tre programmi in tutti i 28 stati.
+- **Hexen, MAP03 al tic 34 (una sequenza sonora attiva): due difetti del codice di partenza, corretti.** Alla prima
+  campagna il programma usciva dopo il primo tic in 4 caricamenti su 6, anche il riferimento col proprio
+  salvataggio. (1) `ArchiveSounds` cercava il poliobj del suono con un `for` che, senza poliobj nella mappa, non
+  gira e lascia l'indice a caso: il suono di un settore si salvava come "suono del poliobj numero a caso" (nel file
+  del riferimento: tipo 1, numero 19404436) e il caricamento leggeva `polyobjs[]` fuori dai limiti; (2)
+  `S_GetSequenceOffset` faceva `integer(puntatore)`: a 64 bit lo scostamento salvato era spazzatura (3221225476
+  invece di 4). Ora un `while`, `NativeInt`, e `UnarchiveSounds` salta con un avviso una sequenza con un numero
+  fuori dai limiti (un salvataggio fatto prima della correzione si carica senza quel suono). Rifatta la campagna di
+  Hexen: in quello stato i 4 incroci tra 32 e 64 bit e il riferimento che legge il 64 bit sono uguali per 300 tic;
+  resta diverso (indice del casuale di presentazione, dal tic 1) solo il 64 bit che legge il file del riferimento,
+  che ha il suono sbagliato, e i byte del 32 bit nuovo differiscono da quelli del riferimento in quei due campi:
+  sono le due differenze volute. Gli altri 7 stati come prima. I due "mondo diverso" di Hexen
+  (MAP01 al tic 399: settori; MAP02 al tic 34: numero di thinker e di mobj) sono il limite di quel controllo: chi ha
+  salvato ha giocato il tic seguente col pilota (un colpo sparato, una porta usata), chi carica sta fermo; i 6
+  caricamenti di quegli stati sono uguali tra loro.
+- **Byte per byte**: i file di 32 e 64 bit hanno sempre la stessa dimensione e **non sono mai uguali**: differiscono
+  da 8 a 482 byte per stato, tutti in posti da 4 byte che sono indirizzi di memoria del programma che ha salvato e
+  che il caricamento ignora o usa solo come "nil o no": i tre puntatori di `thinker_t` di ogni thinker di settore
+  (12 byte per thinker) e `player_t.mo`. Per farli uguali bisognerebbe azzerarli, cioe' cambiare anche cio' che
+  scrive il programma a 32 bit; non fatto, perche' la funzione del thinker conta come "nil o no" (un soffitto fermo)
+  e il formato deve restare quello di prima.
+- **Il programma a 32 bit scrive i byte di prima**: riferimento contro 32 bit nuovo, stessa dimensione e differenze
+  (da 5 a 388 byte) solo negli stessi posti da 4 byte che cambiano anche tra 32 e 64 bit, in tutti i 28 stati (sono
+  indirizzi: cambiano da un eseguibile all'altro).
+- **Col pilota anche dopo il caricamento** (prima versione dello script, Doom E1M1, tic 225, 599 e 1272): 27
+  caricamenti (9 per stato, riferimento compreso) uguali per 300 tic.
+- **Salvataggi che esistevano gia'** (`Prova-Esistenti.ps1`, copie di `bin\Hexen\HEXNDATA` dell'11 novembre e di
+  `bin\Strife\strfsav0.ssg` del 9 novembre, versione 207): Hexen slot 9 (MAP02, 15 thinker di settore, 388 mobj) e
+  Strife slot 0 (MAP32) si caricano con 32 bit, 64 bit e riferimento con le stesse righe per 300 tic. Di Doom e
+  Heretic non c'erano salvataggi; di nessun gioco c'erano salvataggi di una versione vecchia del formato.
+- **Senza opzioni di prova** (la memoria non e' azzerata come con le opzioni di parita'): il programma a 64 bit che
+  carica un salvataggio del 32 bit resta in gioco 20 secondi senza `crash.txt` in Hexen (MAP02), Strife (MAP34) e
+  Heretic (E1M6), e il 32 bit con un salvataggio del 64 bit in Heretic. E' servito: le tabelle di Hexen dichiaravano
+  `state`, `target`, `tracer`, `master` e `player` come interi da 4 byte su campi puntatore, quindi a 64 bit la meta'
+  alta restava quella della memoria appena allocata (ora `st_nativeint`).
+- **Layout** (`Prova-Layout.ps1`): 32 e 64 bit scrivono le stesse righe e sono uguali ai golden: Doom 42 record,
+  Heretic 30, Hexen 24, Strife 34.
+- **Golden di stato della parita'** (`Confronta-Stato.ps1`, Win32, modo 8): 44 voci su 44 uguali (Doom 21, Heretic 9,
+  Hexen 8, Strife 6).
+
+## 5. Che cosa non e' provato
+
+- I formati vecchi dei salvataggi (nessun file con cui provarli): il codice passa dagli stessi layout, i record
+  vecchi sono nei golden dei layout.
+- Poliobj in movimento (nessuna mappa di MAP01-04 di Hexen ne ha), dialoghi di Strife, porte scorrevoli di Strife in
+  movimento al momento del salvataggio (il difetto corretto non e' stato esercitato a runtime), script PascalScript
+  di mappa, overlay e variabili globali non vuoti, piu' giocatori.
+- Gli eseguibili OpenGL (usano lo stesso codice dei salvataggi; compilano, non avviati).
+- Il caricamento a mano dal menu (le prove usano `-loadgame`).
