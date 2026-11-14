@@ -1,14 +1,14 @@
 # Libs\Thinkers
 
-Luci, porte, piattaforme, teletrasporti, passo di pavimenti e soffitti a classi.
+Luci, porte, piattaforme, teletrasporti, scorrimenti, soffitti e pavimenti (passo, tic e valori dei nuovi) a classi.
 
 Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
 
 ## Contenuto
 
-- Unit nella cartella: 35 (nome a punti `DelphiDoom.Thinkers.*`).
+- Unit nella cartella: 43 (nome a punti `DelphiDoom.Thinkers.*`).
 - Interfacce dichiarate: `IDoorOptions`, `IDoorPlaneMover`, `IDoorRunner`, `IDoorSectorQueries`, `IDoorSounds`, `IDoorSpawner`, `ILightFlickerRules`, `ILightPhaseSpawner`.
-- Punto di creazione delle classi: `DelphiDoom.Thinkers.Door.Factory`, `DelphiDoom.Thinkers.Light.Factory`, `DelphiDoom.Thinkers.Platform.Factory`.
+- Punto di creazione delle classi: `DelphiDoom.Thinkers.Door.Factory`, `DelphiDoom.Thinkers.Light.Factory`, `DelphiDoom.Thinkers.Platform.Factory`; profili per gioco senza factory: `TCeilingGames`, `TFloorGames`.
 
 ## Prova
 
