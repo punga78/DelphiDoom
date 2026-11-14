@@ -360,6 +360,7 @@ uses
   DelphiDoom.Audio.Levels in '..\Libs\Audio\DelphiDoom.Audio.Levels.pas',
   DelphiDoom.Audio.SfxAttenuation in '..\Libs\Audio\DelphiDoom.Audio.SfxAttenuation.pas',
   DelphiDoom.Audio.ChannelPicker in '..\Libs\Audio\DelphiDoom.Audio.ChannelPicker.pas',
+  DelphiDoom.Audio.ExternalMusicNames in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicNames.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.Factory in '..\Libs\Audio\DelphiDoom.Audio.Factory.pas',
   DelphiDoom.Audio.SoundParameters in '..\Libs\Audio\DelphiDoom.Audio.SoundParameters.pas',

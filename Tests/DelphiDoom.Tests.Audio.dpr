@@ -25,6 +25,7 @@ uses
   DelphiDoom.Audio.Levels in '..\Libs\Audio\DelphiDoom.Audio.Levels.pas',
   DelphiDoom.Audio.SfxAttenuation in '..\Libs\Audio\DelphiDoom.Audio.SfxAttenuation.pas',
   DelphiDoom.Audio.ChannelPicker in '..\Libs\Audio\DelphiDoom.Audio.ChannelPicker.pas',
+  DelphiDoom.Audio.ExternalMusicNames in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicNames.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.MusicPlayer in '..\Libs\Audio\DelphiDoom.Audio.MusicPlayer.pas',
   DelphiDoom.Audio.ExternalMusicCache in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicCache.pas',
@@ -145,6 +146,8 @@ uses
   DelphiDoom.Tests.Audio.Mixer in 'Source\DelphiDoom.Tests.Audio.Mixer.pas',
   DelphiDoom.Tests.Audio.WaveOutDevice in 'Source\DelphiDoom.Tests.Audio.WaveOutDevice.pas',
   DelphiDoom.Tests.Audio.OldSound in 'Source\DelphiDoom.Tests.Audio.OldSound.pas',
+  DelphiDoom.Tests.Audio.OldMusicNames in 'Source\DelphiDoom.Tests.Audio.OldMusicNames.pas',
+  DelphiDoom.Tests.Audio.ExternalMusicNames in 'Source\DelphiDoom.Tests.Audio.ExternalMusicNames.pas',
   DelphiDoom.Tests.Audio.SfxAttenuation in 'Source\DelphiDoom.Tests.Audio.SfxAttenuation.pas',
   DelphiDoom.Tests.Audio.ChannelPicker in 'Source\DelphiDoom.Tests.Audio.ChannelPicker.pas';
 

@@ -434,6 +434,7 @@ uses
   DelphiDoom.Audio.Types,
   DelphiDoom.Audio.SfxAttenuation,
   DelphiDoom.Audio.ChannelPicker,
+  DelphiDoom.Audio.ExternalMusicNames,
   m_argv,
   m_fixed,
   m_rnd,
@@ -1661,34 +1662,6 @@ end;
 
 //==============================================================================
 //
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-// S_GetListFromAlias
-//
-//==============================================================================
-function S_GetListFromAlias(const s: string): TDStringList;
-var
-  stmp: string;
-  i: integer;
-begin
-  result := TDStringList.Create;
-  if s <> '' then
-  begin
-    stmp := '';
-    for i := 1 to Length(s) do
-      if s[i] in [' ', ','] then
-        stmp := stmp + #13#10
-      else
-        stmp := stmp + toupper(s[i]);
-    result.Text := stmp;
-    for i := result.count - 1 downto 0 do
-      if result.strings[i] = '' then
-        result.Delete(i);
-  end;
-end;
-
-//==============================================================================
-//
-{$ENDIF}
 // S_DoChangeMusic
 //
 //==============================================================================
@@ -1698,11 +1671,7 @@ var
   namebuf: char8_t;
   mp3filename: string;
   mp3header: Pmp3header_t;
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  externalmusicfilenames: TDStringList;
-{$ELSE}
-  aliases, externalmusicfilenames: TDStringList;
-{$ENDIF}
+  externalmusicfilenames: TArray<string>;
   mp3error: boolean;
 begin
   // shutdown old music
@@ -1772,33 +1741,16 @@ begin
     begin
 
     // JVAL: Create a list with external mp3 filenames to check
-      externalmusicfilenames := TDStringList.Create;
-      if music.mapname <> '' then
-      begin
-        externalmusicfilenames.Add(music.mapname + '.mp3');
+    // (TExternalMusicNames of Libs\Audio: map name, song name and aliases)
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-        externalmusicfilenames.Add('MUS_' + music.mapname + '.mp3');
+      externalmusicfilenames := TExternalMusicNames.Candidates(music.mapname, music.name,
+        '', 'MUS_', false);
 {$ELSE}
-        externalmusicfilenames.Add('d_' + music.mapname + '.mp3');
-{$ENDIF}
-      end;
-      externalmusicfilenames.Add(music.name + '.mp3');
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-      externalmusicfilenames.Add('MUS_' + music.name + '.mp3');
-{$ELSE}
-      externalmusicfilenames.Add('d_' + music.name + '.mp3');
-
-    // JVAL: Add aliases in check list
-      aliases := S_GetListFromAlias(music.alias);
-      for i := 0 to aliases.Count - 1 do
-      begin
-        externalmusicfilenames.Add(aliases.strings[i] + '.mp3');
-        externalmusicfilenames.Add('d_' + aliases.strings[i] + '.mp3');
-      end;
-      aliases.Free;
+      externalmusicfilenames := TExternalMusicNames.Candidates(music.mapname, music.name,
+        music.alias, 'd_', true);
 {$ENDIF}
 
-      for i := 0 to externalmusicfilenames.Count - 1 do
+      for i := 0 to Length(externalmusicfilenames) - 1 do
       begin
         mp3filename := externalmusicfilenames[i];
         if preferemp3namesingamedirectory then
@@ -1812,8 +1764,6 @@ begin
         else
           break;
       end;
-
-      externalmusicfilenames.Free;
 
     end;
   end;
