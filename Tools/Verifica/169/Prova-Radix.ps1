@@ -157,7 +157,8 @@ function Invoke-RadixRun([string]$Arguments, [string[]]$Steps) {
   Remove-Item -LiteralPath $crash -ErrorAction SilentlyContinue
   $p = Start-Process -FilePath $exePath -ArgumentList $Arguments -WorkingDirectory (Split-Path -Parent $exePath) -PassThru
   $null = $p.Handle
-  try { $p.PriorityClass = 'BelowNormal' } catch { }
+  # normal priority: with the machine busy (other agents compile) a game at low priority did not finish its
+  # startup in two minutes
   foreach ($step in $Steps) {
     if ($p.HasExited) { "the program ended before the step $step"; break }
     $parts = $step.Split(':')
@@ -179,10 +180,15 @@ function Invoke-RadixRun([string]$Arguments, [string[]]$Steps) {
       'where' {
         # where every thread is, by the names of the .map beside the program (for a game that hangs)
         $p.Refresh()
+        # the program can be loaded at another address than the one of the .map (ASLR): the code starts one page
+        # after the base of the module
+        try { $script:mapCodeBase = [uint32]($p.MainModule.BaseAddress.ToInt64() + 0x1000) } catch { "module base not read: $_" }
+        "code base: $('{0:X8}' -f $script:mapCodeBase)"
         foreach ($thread in $p.Threads) {
           $addresses = [RadixWindow]::Where($p.Handle, [uint32]$thread.Id, [uint32]$script:mapCodeBase, [uint32]($script:mapCodeBase + $script:mapCodeSize))
           if ($addresses.Count -gt 0) {
-            $names = @($addresses | Select-Object -First 14 | ForEach-Object { Resolve-MapAddress $_ })
+            # the names once each, in the order of the stack (the same frame comes back many times)
+            $names = @($addresses | ForEach-Object { Resolve-MapAddress $_ } | Select-Object -Unique | Select-Object -First 60)
             "thread $($thread.Id): " + ($names -join ' < ')
           }
         }

@@ -17,8 +17,9 @@ uses
 ///   The part of the composition root that only the Radix game has: ComposeEngine calls it (under
 ///   the define RADIX) where the WAD services are given to w_wad.pas. It builds the converter of
 ///   RADIX.DAT, which also tells the release of the file, and the table of the names of RADIX.DAT,
-///   and the reader of the lump RMAP of the levels, and gives them to the historical units
-///   (W_ConfigureConverter, W_ConfigureAliases, RX_ConfigureVersion, RX_ConfigureMapInfo)
+///   and the readers of the lump RMAP and of the binary lumps of Radix of the levels, and gives
+///   them to the historical units (W_ConfigureConverter, W_ConfigureAliases, RX_ConfigureVersion,
+///   RX_ConfigureMapInfo, RX_ConfigureLevelLogic)
 /// </summary>
 procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps);
 
@@ -38,7 +39,7 @@ uses
   DelphiDoom.Engine.Radix.Edition.Intf, DelphiDoom.Engine.Radix.DataConverter,
   DelphiDoom.Engine.Radix.LumpAliases,
   DelphiDoom.Radix.ActorProperties,
-  w_wad, st_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups;
+  w_wad, st_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic;
 
 function ComposeRadixActorProperties(const ALog: ILog): IActorDefExtraProperties;
 var
@@ -88,6 +89,7 @@ begin
   W_ConfigureAliases(LAliases);
 
   RX_ConfigureMapInfo(TRadixFactory.CreateMapInfoReader);
+  RX_ConfigureLevelLogic(TRadixFactory.CreateLevelLumpReader);
 
   // the cockpit of the craft in the place of the status bar of Doom
   ST_ConfigureReplacement(RX_HudDrawer);

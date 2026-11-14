@@ -112,6 +112,17 @@ uses
   DelphiDoom.Tests.Radix.PilotRules in 'Source\DelphiDoom.Tests.Radix.PilotRules.pas',
   DelphiDoom.Radix.Weapon.Rules in '..\Libs\Radix\DelphiDoom.Radix.Weapon.Rules.pas',
   DelphiDoom.Tests.Radix.WeaponRules in 'Source\DelphiDoom.Tests.Radix.WeaponRules.pas',
+  DelphiDoom.Radix.LevelLogic.Types in '..\Libs\Radix\DelphiDoom.Radix.LevelLogic.Types.pas',
+  DelphiDoom.Radix.LevelLumps.Reader in '..\Libs\Radix\DelphiDoom.Radix.LevelLumps.Reader.pas',
+  DelphiDoom.Radix.TriggerGrid in '..\Libs\Radix\DelphiDoom.Radix.TriggerGrid.pas',
+  DelphiDoom.Radix.TriggerLogic in '..\Libs\Radix\DelphiDoom.Radix.TriggerLogic.pas',
+  DelphiDoom.Radix.Action.Rules in '..\Libs\Radix\DelphiDoom.Radix.Action.Rules.pas',
+  DelphiDoom.Radix.Messages in '..\Libs\Radix\DelphiDoom.Radix.Messages.pas',
+  DelphiDoom.Radix.Thing.Spawn in '..\Libs\Radix\DelphiDoom.Radix.Thing.Spawn.pas',
+  DelphiDoom.Tests.Radix.LevelLumps in 'Source\DelphiDoom.Tests.Radix.LevelLumps.pas',
+  DelphiDoom.Tests.Radix.TriggerGrid in 'Source\DelphiDoom.Tests.Radix.TriggerGrid.pas',
+  DelphiDoom.Tests.Radix.TriggerLogic in 'Source\DelphiDoom.Tests.Radix.TriggerLogic.pas',
+  DelphiDoom.Tests.Radix.ActionRules in 'Source\DelphiDoom.Tests.Radix.ActionRules.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var
