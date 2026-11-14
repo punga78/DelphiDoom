@@ -98,4 +98,6 @@ Il `GREED.BLO` del gioco completo (19.726.074 byte, forniti dall'utente: `Refere
 
 ## Da collegare / da fare
 
-Vedi lo stato sopra: resta il rendering di `RearView`, la rete, le demo registrate, joystick e mouse, Win64; la demo 1.016 ha mappe a 35 piani che il gioco non legge.
+Stato dopo la chiusura della #175 (2026-11-14, dettagli e numeri in `CLAUDE.md`, sezione "Chiusura della #175"): specchietto (`RearView`), mouse, joystick (estensione: xGreed non lo legge), partite registrate (formato nuovo `GRDM`: nell'originale la registrazione e' un resto senza effetto), rete (portata dal commento di `net.pas`, che in xGreed e' vuoto), salva/carica confrontati con l'originale e Win64 sono fatti.
+
+Resta: la licenza (sopra); l'HUD dei frag e i menu di rete; lo specchietto sul giocatore nemico in rete; `DrawHolo`; la mappa dei tasti configurabile (`ckeys`, `bt_*`); la misura delle prestazioni di `MoveSprites` su una macchina scarica; la demo 1.016 ha mappe a 35 piani che il gioco non legge. Non verificato: l'ascolto dell'audio, un joystick vero, la rete tra macchine diverse, `Greed32` a 64 bit in finestra.
