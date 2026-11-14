@@ -56,6 +56,11 @@ type
     function NextCommand(const AView: TParityPilotView): TParityPilotCommand;
     /// <summary>True once the tics asked for are done</summary>
     function IsFinished(ATic: Integer): Boolean;
+    /// <summary>
+    ///   How far (map units) the pilot wants to know about the enemies: the view tells the nearest one within
+    ///   that range. 0 for a pilot that does not look at them (nobody searches the level for it)
+    /// </summary>
+    function EnemyRange: Integer;
   end;
 
 implementation

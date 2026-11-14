@@ -18,9 +18,11 @@ type
   ///   Reads the text of a script of commands (-autoscript): one step for every line, words separated by
   ///   blanks, not case sensitive, the rest of a line after # is a comment. The steps:
   ///   hold tics [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n];
-  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use];
+  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use] [fight] [range n];
   ///   face x y [timeout tics] [fire];
-  ///   climb height [timeout tics].
+  ///   climb height [timeout tics];
+  ///   hunt tics [range n];
+  ///   heal health tics [range n].
   ///   forward, back and speed are 1..50, side is -40..40 (positive = right), turn is in steps of 256/65536 of
   ///   a turn for every tic (-5..5, positive = left), look is -7..7 (positive = up), x, y and the heights are
   ///   map units
@@ -30,6 +32,7 @@ type
     DEFAULT_RADIUS = 48;
     DEFAULT_SPEED = 50;
     DEFAULT_TIMEOUT = 700;
+    DEFAULT_ENEMY_RANGE = 1200;
     MAX_FORWARD = 50;
     MAX_SIDE = 40;
     MAX_TURN_STEPS = 5;
@@ -125,6 +128,23 @@ begin
     Result.HasZ := True;
     LIndex := 2;
   end
+  else if AWords[0] = 'hunt' then
+  begin
+    Result.Kind := skHunt;
+    Result.Tics := ReadNumber(AWords, 1, ALine, 1, MAX_TICS);
+    Result.Fight := True;
+    Result.EnemyRange := DEFAULT_ENEMY_RANGE;
+    LIndex := 2;
+  end
+  else if AWords[0] = 'heal' then
+  begin
+    Result.Kind := skHeal;
+    Result.Health := ReadNumber(AWords, 1, ALine, 1, MAX_TICS);
+    Result.Tics := ReadNumber(AWords, 2, ALine, 1, MAX_TICS);
+    Result.Fight := True;
+    Result.EnemyRange := DEFAULT_ENEMY_RANGE;
+    LIndex := 3;
+  end
   else
     raise EParityException.CreateFmt(SUnknownStep, [ALine, AWords[0]]);
 
@@ -134,12 +154,23 @@ begin
   begin
     LWord := AWords[LIndex];
     Inc(LIndex);
-    if (LWord = 'timeout') and not LIsHold then
+    if (LWord = 'timeout') and not (Result.Kind in [skHold, skHunt, skHeal]) then
     begin
       Result.Tics := ReadNumber(AWords, LIndex, ALine, 1, MAX_TICS);
       Inc(LIndex);
     end
-    else if (LWord = 'fire') and (Result.Kind <> skClimb) then
+    else if (LWord = 'fight') and LIsGoto then
+    begin
+      Result.Fight := True;
+      if Result.EnemyRange = 0 then
+        Result.EnemyRange := DEFAULT_ENEMY_RANGE;
+    end
+    else if (LWord = 'range') and (Result.Kind in [skGoto, skHunt, skHeal]) then
+    begin
+      Result.EnemyRange := ReadNumber(AWords, LIndex, ALine, 1, COORDINATE_LIMIT);
+      Inc(LIndex);
+    end
+    else if (LWord = 'fire') and (Result.Kind in [skHold, skGoto, skFace]) then
       Result.Command.Fire := True
     else if (LWord = 'use') and (LIsHold or LIsGoto) then
       Result.Command.Use := True

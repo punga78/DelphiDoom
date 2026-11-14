@@ -17,9 +17,11 @@ uses
 type
   /// <summary>
   ///   A player that does what a script says (-autoscript), one step after the other: keys held for some tics,
-  ///   or a point of the map to turn to and to reach, or a height to fly to. The steps that look at the player
-  ///   (goto, face, climb) end when the player is there; if that does not happen within their timeout the
-  ///   script gives up and the pilot has finished, as it does when the player dies or the steps are over. It
+  ///   or a point of the map to turn to and to reach, or a height to fly to, or the enemies in sight to fight
+  ///   (hunt, heal, and goto with fight: turn to the nearest one, fire when it is in front, fly level with it,
+  ///   move sideways). The steps that look at the player (goto, face, climb) end when the player is there; if
+  ///   that does not happen within their timeout the script gives up and the pilot has finished, as it does
+  ///   when the player dies or the steps are over; hunt and heal just end when their tics are over. It
   ///   has no random numbers: the same script and the same positions always give the same commands. The turns
   ///   are multiples of 256, which a demo keeps exactly
   /// </summary>
@@ -31,10 +33,23 @@ type
     ALIGNED_ANGLE = 4096;
     /// <summary>How near a height is "there" (map units)</summary>
     HEIGHT_TOLERANCE = 8;
+    /// <summary>A fight fires only when the enemy is less than this far from the nose (5.6 degrees)</summary>
+    FIRE_ANGLE = 1024;
+    /// <summary>A fight moves sideways, one way and then the other, to be a harder target</summary>
+    FIGHT_STRAFE = 30;
+    FIGHT_STRAFE_TICS = 16;
+    /// <summary>A fight goes nearer to an enemy that is farther than FIGHT_FAR and backs off one nearer than FIGHT_NEAR</summary>
+    FIGHT_FAR = 900;
+    FIGHT_NEAR = 300;
+    FIGHT_SPEED = 25;
+    /// <summary>A hunt is over after so many tics in a row without an enemy near</summary>
+    HUNT_QUIET_TICS = 20;
   strict private
     FSteps: TArray<TParityScriptStep>;
     FCurrent: Integer;
     FStepTics: Integer;
+    FQuietTics: Integer;
+    FEnemyRange: Integer;
     FFinished: Boolean;
     FWasAlive: Boolean;
     FReport: IParityLog;
@@ -44,6 +59,8 @@ type
     function HoldCommand(const AStep: TParityScriptStep): TParityPilotCommand;
     function GotoCommand(const AStep: TParityScriptStep; const AView: TParityPilotView;
       out AReached: Boolean): TParityPilotCommand;
+    function FightCommand(const AStep: TParityScriptStep; const AView: TParityPilotView;
+      out ACommand: TParityPilotCommand): Boolean;
     procedure Note(const AStep: TParityScriptStep; const AView: TParityPilotView; const AWhat: string);
     procedure Finish(const AView: TParityPilotView; const AWhy: string);
     procedure Report(const ALine: string);
@@ -56,6 +73,8 @@ type
     function NextCommand(const AView: TParityPilotView): TParityPilotCommand;
     /// <summary>True from the tic after the last step, after a step that gave up or after the death of the player</summary>
     function IsFinished(ATic: Integer): Boolean;
+    /// <summary>The largest range of the steps that fight; 0 for a script without them</summary>
+    function EnemyRange: Integer;
   end;
 
 implementation
@@ -67,15 +86,59 @@ uses
 
 const
   FRACUNIT = 65536;
-  STEP_NAMES: array[TParityScriptStepKind] of string = ('hold', 'goto', 'face', 'climb');
+  STEP_NAMES: array[TParityScriptStepKind] of string = ('hold', 'goto', 'face', 'climb', 'hunt',
+    'heal');
 
 { TParityScriptPilot }
 
 constructor TParityScriptPilot.Create(const ASteps: TArray<TParityScriptStep>; const AReport: IParityLog);
+var
+  LStep: TParityScriptStep;
 begin
   inherited Create;
   FSteps := Copy(ASteps);
   FReport := AReport;
+  for LStep in FSteps do
+    if LStep.Fight and (LStep.EnemyRange > FEnemyRange) then
+      FEnemyRange := LStep.EnemyRange;
+end;
+
+function TParityScriptPilot.EnemyRange: Integer;
+begin
+  Result := FEnemyRange;
+end;
+
+function TParityScriptPilot.FightCommand(const AStep: TParityScriptStep; const AView: TParityPilotView;
+  out ACommand: TParityPilotCommand): Boolean;
+var
+  LDeltaX: Int64;
+  LDeltaY: Int64;
+  LOffAngle: Integer;
+begin
+  ACommand := Default(TParityPilotCommand);
+  if not (AStep.Fight and AView.HasEnemy) then
+    Exit(False);
+  LDeltaX := (Int64(AView.EnemyX) - AView.X) div FRACUNIT;
+  LDeltaY := (Int64(AView.EnemyY) - AView.Y) div FRACUNIT;
+  if LDeltaX * LDeltaX + LDeltaY * LDeltaY > Int64(AStep.EnemyRange) * AStep.EnemyRange then
+    Exit(False);
+  ACommand.Turn := TurnTo(AView, AView.EnemyX div FRACUNIT, AView.EnemyY div FRACUNIT, LOffAngle);
+  ACommand.Fire := Abs(LOffAngle) <= FIRE_ANGLE;
+  // near enough for the aim of the game to help, not so near that the enemy is touched
+  if Abs(LOffAngle) <= ALIGNED_ANGLE then
+  begin
+    if LDeltaX * LDeltaX + LDeltaY * LDeltaY > FIGHT_FAR * FIGHT_FAR then
+      ACommand.Forward := FIGHT_SPEED
+    else if LDeltaX * LDeltaX + LDeltaY * LDeltaY < FIGHT_NEAR * FIGHT_NEAR then
+      ACommand.Forward := -FIGHT_SPEED;
+  end;
+  if ((FStepTics div FIGHT_STRAFE_TICS) and 1) = 0 then
+    ACommand.Side := FIGHT_STRAFE
+  else
+    ACommand.Side := -FIGHT_STRAFE;
+  // level with the enemy: a shot that flies straight hits it
+  HeightKeys(AView, AView.EnemyZ div FRACUNIT, ACommand);
+  Result := True;
 end;
 
 procedure TParityScriptPilot.Report(const ALine: string);
@@ -137,6 +200,9 @@ begin
   LDeltaY := Int64(AStep.Y) - AView.Y div FRACUNIT;
   AReached := LDeltaX * LDeltaX + LDeltaY * LDeltaY <= Int64(AStep.Radius) * AStep.Radius;
   if AReached then
+    Exit;
+  // an enemy near comes before the way
+  if FightCommand(AStep, AView, Result) then
     Exit;
   Result.Turn := TurnTo(AView, AStep.X, AStep.Y, LOffAngle);
   // off the line the craft only turns: what it had of speed fades and it does not circle around the point
@@ -203,6 +269,22 @@ begin
           Result.Fire := LStep.Command.Fire;
           LDone := Result.Turn = 0;
         end;
+      skHunt:
+        begin
+          if FightCommand(LStep, AView, Result) then
+            FQuietTics := 0
+          else
+            Inc(FQuietTics);
+          LDone := (FStepTics >= LStep.Tics) or (FQuietTics >= HUNT_QUIET_TICS);
+          if LDone then
+            Result := Default(TParityPilotCommand);
+        end;
+      skHeal:
+        begin
+          LDone := (FStepTics >= LStep.Tics) or (AView.Health >= LStep.Health);
+          if not LDone then
+            FightCommand(LStep, AView, Result);
+        end;
     else
       LDone := HeightKeys(AView, LStep.Z, Result);
     end;
@@ -212,9 +294,10 @@ begin
       Note(LStep, AView, 'done');
       Inc(FCurrent);
       FStepTics := 0;
+      FQuietTics := 0;
       Continue;
     end;
-    if (LStep.Kind <> skHold) and (FStepTics >= LStep.Tics) then
+    if not (LStep.Kind in [skHold, skHunt, skHeal]) and (FStepTics >= LStep.Tics) then
     begin
       Note(LStep, AView, 'GAVE UP');
       Finish(AView, 'script stopped');

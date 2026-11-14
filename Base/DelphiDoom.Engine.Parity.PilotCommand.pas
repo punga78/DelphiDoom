@@ -13,11 +13,16 @@ interface
 
 uses
   DelphiDoom.Parity.Intf,
-  d_ticcmd;
+  DelphiDoom.Parity.Types,
+  d_ticcmd,
+  p_mobj_h;
 
 type
   /// <summary>Puts the command of the automatic pilot in the ticcmd that the engine has just built</summary>
   TEngineParityPilotCommand = class
+  strict private
+    /// <summary>The nearest living monster within ARange map units that the player can see</summary>
+    class procedure FindEnemy(APlayer: Pmobj_t; ARange: Integer; var AView: TParityPilotView); static;
   public
     /// <summary>
     ///   Replaces what the keyboard and the mouse made (nothing, as the input is closed) with the command of
@@ -29,11 +34,15 @@ type
 implementation
 
 uses
-  DelphiDoom.Parity.Types,
   d_event,
   d_player,
+  d_think,
   doomdef,
-  g_game;
+  g_game,
+  m_fixed,
+  p_mobj,
+  p_sight,
+  p_tick;
 
 const
   MAX_WEAPONS_BY_MASK = 8;
@@ -46,6 +55,43 @@ const
   CROUCH_PRESSED = 1;
 
 { TEngineParityPilotCommand }
+
+class procedure TEngineParityPilotCommand.FindEnemy(APlayer: Pmobj_t; ARange: Integer; var AView: TParityPilotView);
+var
+  LThinker: Pthinker_t;
+  LMobj: Pmobj_t;
+  LDeltaX: Int64;
+  LDeltaY: Int64;
+  LDistance: Int64;
+  LBest: Int64;
+begin
+  LBest := Int64(ARange) * ARange;
+  LThinker := thinkercap.next;
+  while LThinker <> @thinkercap do
+  begin
+    if @LThinker._function.acp1 = @P_MobjThinker then
+    begin
+      LMobj := Pmobj_t(LThinker);
+      if (LMobj.flags and MF_COUNTKILL <> 0) and (LMobj.flags and MF_SHOOTABLE <> 0) and (LMobj.health > 0) then
+      begin
+        LDeltaX := (Int64(LMobj.x) - APlayer.x) div FRACUNIT;
+        LDeltaY := (Int64(LMobj.y) - APlayer.y) div FRACUNIT;
+        LDistance := LDeltaX * LDeltaX + LDeltaY * LDeltaY;
+        // the sight is traced last, and only for a monster nearer than the best so far: an enemy behind a
+        // wall (it can have heard the player) would keep the pilot firing at the wall
+        if (LDistance <= LBest) and P_CheckSight(APlayer, LMobj) then
+        begin
+          LBest := LDistance;
+          AView.HasEnemy := True;
+          AView.EnemyX := LMobj.x;
+          AView.EnemyY := LMobj.y;
+          AView.EnemyZ := LMobj.z;
+        end;
+      end;
+    end;
+    LThinker := LThinker.next;
+  end;
+end;
 
 class function TEngineParityPilotCommand.Apply(const APilot: IParityPilot; ACommand: Pticcmd_t;
   ATic: Integer): Boolean;
@@ -64,6 +110,7 @@ begin
   if (consoleplayer >= 0) and (consoleplayer < MAXPLAYERS) then
   begin
     LView.Alive := (players[consoleplayer].playerstate = PST_LIVE) and (players[consoleplayer].mo <> nil);
+    LView.Health := players[consoleplayer].health;
     if players[consoleplayer].mo <> nil then
     begin
       LView.X := players[consoleplayer].mo.x;
@@ -71,6 +118,9 @@ begin
       LView.Z := players[consoleplayer].mo.z;
       LView.Angle := players[consoleplayer].mo.angle;
     end;
+    // only a script that fights asks for the enemies: the automatic pilot never searches the level
+    if LView.Alive and (gamestate = GS_LEVEL) and (APilot.EnemyRange > 0) then
+      FindEnemy(players[consoleplayer].mo, APilot.EnemyRange, LView);
   end;
   LCommand := APilot.NextCommand(LView);
 

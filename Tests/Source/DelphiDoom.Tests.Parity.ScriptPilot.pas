@@ -30,6 +30,8 @@ type
     procedure Load(const AScript: string);
     /// <summary>The player of the test: at a point of the map (map units), looking at an angle in degrees</summary>
     procedure Place(AX, AY, AZ: Integer; ADegrees: Integer);
+    /// <summary>The nearest enemy that the view of the test tells (map units)</summary>
+    procedure PlaceEnemy(AX, AY, AZ: Integer);
     function Next: TParityPilotCommand;
   public
     [Setup]
@@ -77,6 +79,32 @@ type
     [Test]
     procedure UnSaliVersoIlBassoDovrebbePremereAbbassati;
     [Test]
+    procedure SenzaPassiCheCombattonoNonDovrebbeChiedereINemici;
+    [Test]
+    procedure ConUnPassoCheCombatteDovrebbeChiedereIlRaggioPiuGrande;
+    [Test]
+    procedure UnaCacciaDovrebbeGirareVersoIlNemicoESparareQuandoEAllineata;
+    [Test]
+    procedure UnaCacciaDovrebbeMettersiAllaQuotaDelNemico;
+    [Test]
+    procedure UnaCacciaDovrebbeSpostarsiDiLatoUnPoDiQuaEUnPoDiLa;
+    [Test]
+    procedure UnaCacciaDovrebbeAvvicinarsiAUnNemicoLontanoEAllontanarsiDaUnoVicino;
+    [Test]
+    procedure UnaCacciaSenzaNemiciDovrebbeFinireDopoVentiTic;
+    [Test]
+    procedure UnaCacciaDovrebbeFinireAlSuoTempoSenzaFermareLoScript;
+    [Test]
+    procedure UnNemicoFuoriRaggioNonDovrebbeEssereCombattuto;
+    [Test]
+    procedure UnVaiCheCombatteDovrebbeFermarsiPerIlNemicoEPoiRiprendere;
+    [Test]
+    procedure UnaSostaDovrebbeAspettareLaSaluteRichiesta;
+    [Test]
+    procedure UnaSostaDovrebbeCombattereChiSiAvvicina;
+    [Test]
+    procedure UnaSostaDovrebbeFinireAlSuoTempoSenzaFermareLoScript;
+    [Test]
     procedure IlRapportoDovrebbeDireRigaTicEPosizioneDiOgniPasso;
     [Test]
     procedure SenzaRapportoDovrebbeFunzionareLoStesso;
@@ -117,6 +145,14 @@ begin
   FView.Y := AY * FRACUNIT;
   FView.Z := AZ * FRACUNIT;
   FView.Angle := Cardinal((Int64(ADegrees) * $40000000) div 90);
+end;
+
+procedure TTestParityScriptPilot.PlaceEnemy(AX, AY, AZ: Integer);
+begin
+  FView.HasEnemy := True;
+  FView.EnemyX := AX * FRACUNIT;
+  FView.EnemyY := AY * FRACUNIT;
+  FView.EnemyZ := AZ * FRACUNIT;
 end;
 
 function TTestParityScriptPilot.Next: TParityPilotCommand;
@@ -369,6 +405,165 @@ begin
   LCommand := Next;
   Assert.IsTrue(LCommand.Crouch);
   Assert.IsFalse(LCommand.Jump);
+end;
+
+procedure TTestParityScriptPilot.SenzaPassiCheCombattonoNonDovrebbeChiedereINemici;
+begin
+  Load('hold 5 fire'#10'goto 1 2'#10'face 3 4'#10'climb 5');
+  Assert.AreEqual(0, FPilot.EnemyRange);
+end;
+
+procedure TTestParityScriptPilot.ConUnPassoCheCombatteDovrebbeChiedereIlRaggioPiuGrande;
+begin
+  Load('hunt 5 range 300'#10'goto 1 2 fight range 900'#10'hunt 5 range 100');
+  Assert.AreEqual(900, FPilot.EnemyRange);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaDovrebbeGirareVersoIlNemicoESparareQuandoEAllineata;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('hunt 100');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(0, 500, 0);
+  LCommand := Next;
+  Assert.AreEqual(1280, LCommand.Turn);
+  Assert.IsFalse(LCommand.Fire);
+  Assert.AreEqual(0, LCommand.Forward);
+  Place(0, 0, 0, 88);
+  LCommand := Next;
+  Assert.IsTrue(LCommand.Fire);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaDovrebbeMettersiAllaQuotaDelNemico;
+begin
+  Load('hunt 100');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(500, 0, 200);
+  Assert.IsTrue(Next.Jump);
+  PlaceEnemy(500, 0, -200);
+  Assert.IsTrue(Next.Crouch);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaDovrebbeSpostarsiDiLatoUnPoDiQuaEUnPoDiLa;
+var
+  LIndex: Integer;
+  LRight: Integer;
+  LLeft: Integer;
+begin
+  Load('hunt 100');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(500, 0, 0);
+  LRight := 0;
+  LLeft := 0;
+  for LIndex := 1 to 64 do
+    if Next.Side > 0 then
+      Inc(LRight)
+    else
+      Inc(LLeft);
+  Assert.AreEqual(32, LRight);
+  Assert.AreEqual(32, LLeft);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaDovrebbeAvvicinarsiAUnNemicoLontanoEAllontanarsiDaUnoVicino;
+begin
+  Load('hunt 100');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(1000, 0, 0);
+  Assert.AreEqual(25, Next.Forward);
+  PlaceEnemy(600, 0, 0);
+  Assert.AreEqual(0, Next.Forward);
+  PlaceEnemy(250, 0, 0);
+  Assert.AreEqual(-25, Next.Forward);
+  // not while the nose is still turning to it
+  PlaceEnemy(0, 1000, 0);
+  Assert.AreEqual(0, Next.Forward);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaSenzaNemiciDovrebbeFinireDopoVentiTic;
+var
+  LIndex: Integer;
+begin
+  Load('hunt 500'#10'hold 1 forward 9');
+  for LIndex := 1 to 19 do
+    Assert.AreEqual(0, Next.Forward);
+  Assert.AreEqual(9, Next.Forward);
+end;
+
+procedure TTestParityScriptPilot.UnaCacciaDovrebbeFinireAlSuoTempoSenzaFermareLoScript;
+var
+  LIndex: Integer;
+begin
+  Load('hunt 30'#10'hold 1 forward 9');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(500, 0, 0);
+  for LIndex := 1 to 30 do
+    Assert.IsTrue(Next.Fire);
+  Assert.AreEqual(9, Next.Forward);
+  Assert.IsFalse(FLog.Lines.Text.Contains('GAVE UP'));
+end;
+
+procedure TTestParityScriptPilot.UnNemicoFuoriRaggioNonDovrebbeEssereCombattuto;
+begin
+  Load('hunt 100 range 400');
+  Place(0, 0, 0, 0);
+  PlaceEnemy(500, 0, 0);
+  Assert.IsFalse(Next.Fire);
+  PlaceEnemy(390, 0, 0);
+  Assert.IsTrue(Next.Fire);
+end;
+
+procedure TTestParityScriptPilot.UnVaiCheCombatteDovrebbeFermarsiPerIlNemicoEPoiRiprendere;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('goto 2000 0 fight');
+  Place(0, 0, 0, 0);
+  Assert.AreEqual(50, Next.Forward);
+  PlaceEnemy(0, -600, 0);
+  LCommand := Next;
+  Assert.AreEqual(0, LCommand.Forward);
+  Assert.AreEqual(-1280, LCommand.Turn);
+  FView.HasEnemy := False;
+  Assert.AreEqual(50, Next.Forward);
+end;
+
+procedure TTestParityScriptPilot.UnaSostaDovrebbeAspettareLaSaluteRichiesta;
+var
+  LIndex: Integer;
+  LCommand: TParityPilotCommand;
+begin
+  Load('heal 80 1000'#10'hold 1 forward 9');
+  FView.Health := 40;
+  for LIndex := 1 to 50 do
+  begin
+    LCommand := Next;
+    Assert.AreEqual(0, LCommand.Forward);
+    Assert.IsFalse(LCommand.Fire);
+  end;
+  FView.Health := 80;
+  Assert.AreEqual(9, Next.Forward);
+end;
+
+procedure TTestParityScriptPilot.UnaSostaDovrebbeCombattereChiSiAvvicina;
+begin
+  Load('heal 80 1000');
+  FView.Health := 40;
+  Place(0, 0, 0, 0);
+  PlaceEnemy(600, 0, 0);
+  Assert.IsTrue(Next.Fire);
+end;
+
+procedure TTestParityScriptPilot.UnaSostaDovrebbeFinireAlSuoTempoSenzaFermareLoScript;
+var
+  LIndex: Integer;
+begin
+  Load('heal 80 30'#10'hold 1 forward 9');
+  FView.Health := 40;
+  for LIndex := 1 to 30 do
+    Assert.AreEqual(0, Next.Forward);
+  Assert.AreEqual(9, Next.Forward);
+  Assert.IsFalse(FLog.Lines.Text.Contains('GAVE UP'));
 end;
 
 procedure TTestParityScriptPilot.IlRapportoDovrebbeDireRigaTicEPosizioneDiOgniPasso;

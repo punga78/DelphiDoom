@@ -39,9 +39,13 @@ Un passo per riga, parole separate da spazi, maiuscole indifferenti, `#` apre un
 | Passo | Cosa fa |
 |---|---|
 | `hold tic [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n]` | tiene premuti quei tasti per `tic` tic. `forward`/`back` 0..50, `side` -40..40 (positivo = destra), `turn` -5..5 passi da 256/65536 di giro a tic (1,4 gradi; positivo = sinistra), `look` -7..7 (positivo = su; serve `zaxisshift=1`), `center` riporta lo sguardo all'orizzonte, `weapon` 1..8 (chiesta al primo tic), `use` premuto un tic ogni 6, `jump`/`crouch` a ogni tic (in Radix sono "vola su"/"vola giu'") |
-| `goto x y [z quota] [radius n] [speed n] [timeout tic] [fire] [use]` | gira verso il punto (al massimo 5 passi a tic) e spinge avanti quando il punto e' entro 22,5 gradi dal muso; finisce entro `radius` (48) dal punto; con `z` preme `jump`/`crouch` per tenere la quota (tolleranza 8) |
+| `goto x y [z quota] [radius n] [speed n] [timeout tic] [fire] [use] [fight] [range n]` | gira verso il punto (al massimo 5 passi a tic) e spinge avanti quando il punto e' entro 22,5 gradi dal muso; finisce entro `radius` (48) dal punto; con `z` preme `jump`/`crouch` per tenere la quota (tolleranza 8); con `fight` si ferma a combattere i nemici in vista entro `range` (1200) e poi riprende |
 | `face x y [timeout tic] [fire]` | gira verso il punto senza muoversi; finisce quando e' allineato |
 | `climb quota [timeout tic]` | `jump` o `crouch` fino alla quota (tolleranza 8) |
+| `hunt tic [range n]` | combatte il nemico in vista piu' vicino; finisce dopo 20 tic senza nemici o dopo `tic` tic (non e' una rinuncia) |
+| `heal salute tic [range n]` | aspetta (combattendo chi si avvicina) che la salute torni almeno a `salute`, al massimo per `tic` tic (in Radix lo scudo si rigenera da solo) |
+
+**Combattere** (`fight`, `hunt`, `heal`): il motore dice al pilota il mostro vivo piu' vicino entro il raggio che il giocatore vede (`MF_COUNTKILL`, `P_CheckSight`: la ricerca si fa solo se il copione ha un passo che combatte, mai per `-autodemo`); il pilota gira verso di lui, spara quando e' entro 5,6 gradi dal muso, si mette alla sua quota (`jump`/`crouch`), si sposta di lato 16 tic di qua e 16 di la', si avvicina se e' oltre 900 unita' (la mira automatica del gioco arriva a 1024) e arretra sotto 300.
 
 `goto`, `face` e `climb` guardano la posizione del giocatore: se non arrivano entro `timeout` tic (700 se non detto) **il copione rinuncia e il gioco si chiude** (meglio fermarsi che proseguire da un posto sbagliato); lo stesso se il giocatore muore. Accanto al copione il pilota scrive `<file>.log`: una riga per ogni passo finito (`line 12 goto: done at tic 345 after 80 tics, player at -13538 -683 576`), `GAVE UP`, `THE PLAYER DIED`, `script complete at tic N`. Non ci sono numeri casuali: lo stesso copione sullo stesso eseguibile da' la stessa partita.
 
@@ -55,6 +59,8 @@ goto -12900 -684 fire
 ```
 Radix32.exe -warp 1 1 -skill 2 -record prova -autoscript C:\ddpar169\e1m1.script -statehash C:\ddpar169\s.txt -framedump 500 C:\ddpar169\f.bmp
 ```
+
+Un copione intero: `Tests\Data\Parity\Radix\e1m1.script` porta la navetta dall'hangar alla fine di E1M1 di Radix 2.0 shareware (circa 10000 tic), passa il debriefing e entra in E1M2. Per trovare la strada di un livello di Radix: `Tools\Verifica\169\RadixMapDump` (cose con quota e numero, linee, settori, `RMAP`, azioni, trigger, celle della griglia con il loro posto nella mappa) e `px`/`py` di `-statehash`.
 
 ## 3. Confrontare e localizzare una differenza
 

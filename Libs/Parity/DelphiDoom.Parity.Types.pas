@@ -76,6 +76,16 @@ type
     Z: Integer;
     /// <summary>Where the player looks: a binary angle (2^32 = a full turn, 0 = east, counterclockwise)</summary>
     Angle: Cardinal;
+    /// <summary>The health of the player (in Radix: the shield)</summary>
+    Health: Integer;
+    /// <summary>
+    ///   True when a living enemy that the player can see is within the range that the pilot asked for;
+    ///   EnemyX, EnemyY and EnemyZ are the place of the nearest one (fixed point 16.16)
+    /// </summary>
+    HasEnemy: Boolean;
+    EnemyX: Integer;
+    EnemyY: Integer;
+    EnemyZ: Integer;
   end;
 
   /// <summary>What a step of a script of commands does</summary>
@@ -87,15 +97,30 @@ type
     /// <summary>Turns to a point of the map without moving</summary>
     skFace,
     /// <summary>Flies up or down to a height</summary>
-    skClimb);
+    skClimb,
+    /// <summary>Turns to the nearest enemy and fires at it, until none is left near or the tics are over</summary>
+    skHunt,
+    /// <summary>Waits (fighting the enemies that come near) until the health is back, or the tics are over</summary>
+    skHeal);
 
   /// <summary>One step of a script of commands (-autoscript); the coordinates are map units</summary>
   TParityScriptStep = record
     Kind: TParityScriptStepKind;
     /// <summary>1-based line of the script, for the messages</summary>
     Line: Integer;
-    /// <summary>skHold: how long the step lasts; the others: after how many tics the script gives up</summary>
+    /// <summary>
+    ///   skHold: how long the step lasts; skHunt, skHeal: how long it lasts at most; the others: after how
+    ///   many tics the script gives up
+    /// </summary>
     Tics: Integer;
+    /// <summary>
+    ///   skGoto: on the way the pilot stops to fight the enemies that are near; skHunt, skHeal: always True
+    /// </summary>
+    Fight: Boolean;
+    /// <summary>skGoto with Fight, skHunt, skHeal: how near an enemy is fought (map units)</summary>
+    EnemyRange: Integer;
+    /// <summary>skHeal: the health to wait for</summary>
+    Health: Integer;
     /// <summary>
     ///   skHold: the keys pressed; skGoto: Forward is the speed, Fire and Use are pressed on the way;
     ///   skFace: Fire is pressed while turning

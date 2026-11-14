@@ -41,6 +41,12 @@ type
     [Test]
     procedure DovrebbeLeggereUnSali;
     [Test]
+    procedure DovrebbeLeggereUnaCaccia;
+    [Test]
+    procedure DovrebbeLeggereUnaSosta;
+    [Test]
+    procedure UnVaiDovrebbePoterCombattereLungoLaStrada;
+    [Test]
     procedure LeParoleNonDovrebberoDipendereDalleMaiuscole;
     [Test]
     procedure DovrebbeAccettareFineRigaDiWindowsETabulazioni;
@@ -185,6 +191,46 @@ begin
   Assert.AreEqual(TParityScriptParser.DEFAULT_TIMEOUT, LStep.Tics);
 end;
 
+procedure TTestParityScriptParser.DovrebbeLeggereUnaCaccia;
+var
+  LStep: TParityScriptStep;
+begin
+  LStep := TParityScriptParser.Parse('hunt 300')[0];
+  Assert.AreEqual(Ord(skHunt), Ord(LStep.Kind));
+  Assert.AreEqual(300, LStep.Tics);
+  Assert.IsTrue(LStep.Fight);
+  Assert.AreEqual(TParityScriptParser.DEFAULT_ENEMY_RANGE, LStep.EnemyRange);
+  Assert.AreEqual(640, TParityScriptParser.Parse('hunt 300 range 640')[0].EnemyRange);
+end;
+
+procedure TTestParityScriptParser.DovrebbeLeggereUnaSosta;
+var
+  LStep: TParityScriptStep;
+begin
+  LStep := TParityScriptParser.Parse('heal 90 1500 range 700')[0];
+  Assert.AreEqual(Ord(skHeal), Ord(LStep.Kind));
+  Assert.AreEqual(90, LStep.Health);
+  Assert.AreEqual(1500, LStep.Tics);
+  Assert.IsTrue(LStep.Fight);
+  Assert.AreEqual(700, LStep.EnemyRange);
+  AssertRaises('heal 90', 'missing');
+end;
+
+procedure TTestParityScriptParser.UnVaiDovrebbePoterCombattereLungoLaStrada;
+var
+  LStep: TParityScriptStep;
+begin
+  LStep := TParityScriptParser.Parse('goto 1 2')[0];
+  Assert.IsFalse(LStep.Fight);
+  Assert.AreEqual(0, LStep.EnemyRange);
+  LStep := TParityScriptParser.Parse('goto 1 2 fight')[0];
+  Assert.IsTrue(LStep.Fight);
+  Assert.AreEqual(TParityScriptParser.DEFAULT_ENEMY_RANGE, LStep.EnemyRange);
+  LStep := TParityScriptParser.Parse('goto 1 2 range 500 fight')[0];
+  Assert.IsTrue(LStep.Fight);
+  Assert.AreEqual(500, LStep.EnemyRange);
+end;
+
 procedure TTestParityScriptParser.LeParoleNonDovrebberoDipendereDalleMaiuscole;
 var
   LStep: TParityScriptStep;
@@ -231,6 +277,9 @@ begin
   AssertRaises('climb 5 fire', 'fire');
   AssertRaises('face 1 2 use', 'use');
   AssertRaises('hold 5 timeout 3', 'timeout');
+  AssertRaises('hunt 5 timeout 3', 'timeout');
+  AssertRaises('hunt 5 fire', 'fire');
+  AssertRaises('hold 5 fight', 'fight');
 end;
 
 procedure TTestParityScriptParser.UnNumeroMancanteDovrebbeDareEccezione;
