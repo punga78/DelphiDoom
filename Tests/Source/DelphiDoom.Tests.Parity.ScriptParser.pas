@@ -55,6 +55,8 @@ type
     [Test]
     procedure UnPassoSconosciutoDovrebbeDareEccezioneConLaRiga;
     [Test]
+    procedure DovrebbeLeggereITastiDiUnGiocoSoloSeNominati;
+    [Test]
     procedure UnaParolaSconosciutaDovrebbeDareEccezione;
     [Test]
     procedure UnaParolaDiUnAltroPassoDovrebbeDareEccezione;
@@ -263,6 +265,22 @@ procedure TTestParityScriptParser.UnPassoSconosciutoDovrebbeDareEccezioneConLaRi
 begin
   AssertRaises('hold 1'#10'dance 5', 'line 2');
   AssertRaises('hold 1'#10'dance 5', 'dance');
+end;
+
+procedure TTestParityScriptParser.DovrebbeLeggereITastiDiUnGiocoSoloSeNominati;
+var
+  LSteps: TArray<TParityScriptStep>;
+begin
+  LSteps := TParityScriptParser.Parse('hold 5 forward 50'#10'hold 5 forward 50 afterburner'#10'hold 1 bomb'#10 +
+    'goto 1 2 afterburner');
+  Assert.IsFalse(LSteps[0].Command.Afterburner);
+  Assert.IsFalse(LSteps[0].Command.Bomb);
+  Assert.IsTrue(LSteps[1].Command.Afterburner);
+  Assert.IsFalse(LSteps[1].Command.Bomb);
+  Assert.IsTrue(LSteps[2].Command.Bomb);
+  Assert.IsTrue(LSteps[3].Command.Afterburner);
+  AssertRaises('goto 1 2 bomb', 'bomb');
+  AssertRaises('face 1 2 afterburner', 'afterburner');
 end;
 
 procedure TTestParityScriptParser.UnaParolaSconosciutaDovrebbeDareEccezione;

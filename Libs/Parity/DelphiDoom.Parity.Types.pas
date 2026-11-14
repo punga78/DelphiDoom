@@ -63,6 +63,10 @@ type
     Jump: Boolean;
     /// <summary>The crouch key (a craft that flies goes down)</summary>
     Crouch: Boolean;
+    /// <summary>The first key that only one game has (Radix: the afterburner); nothing for the other games</summary>
+    Afterburner: Boolean;
+    /// <summary>The second key that only one game has (Radix: the plasma bomb, once for every press)</summary>
+    Bomb: Boolean;
   end;
 
   /// <summary>What the pilot may know about the world: the player and nothing else</summary>

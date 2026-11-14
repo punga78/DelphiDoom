@@ -55,9 +55,11 @@ uses
   d_ticcmd,
   d_englsh,
   g_game,
+  m_argv,
   m_fixed,
   tables,
   p_genlin,
+  p_map,
   p_mobj_h,
   p_tick,
   r_defs,
@@ -66,6 +68,9 @@ uses
   radix_playerstate,
   radix_pickups,
   radix_weapons,
+  radix_controls,
+  radix_statelog,
+  DelphiDoom.Radix.Control.Rules,
   DelphiDoom.Radix.Flight.Model;
 
 type
@@ -95,6 +100,10 @@ begin
   p.pendingweapon := weapontype_t(Ord(rwp_neutroncannons));
   for i := 0 to Ord(NUMAMMO) - 1 do
     p.ammo[i] := 0;
+  // for the tests at runtime: at the skills of a script no plasma bomb of E1M1 can be reached
+  i := M_CheckParm('-radixbombs');
+  if (i > 0) and (i < myargc - 1) then
+    RX_PlayerState(p).plasmabombs := atoi(myargv[i + 1]);
 end;
 
 //==============================================================================
@@ -142,6 +151,39 @@ begin
     pmo.momz := TRadixFlightModel.FLY_KEY_SPEED
   else if p.cmd.jump_crouch and CMD_CROUCH_MASK <> 0 then
     pmo.momz := -TRadixFlightModel.FLY_KEY_SPEED;
+end;
+
+//==============================================================================
+//
+// RX_PilotControls
+// The afterburner and the plasma bomb (the bits of the ticcmd of radix_controls).
+// Rad-X made the ticcmd of the afterburner larger (70 instead of 50) and its
+// P_MovePlayer had no top speed; P_MovePlayer of Doom stops a flying player at
+// 18 units a tic, so a larger thrust would change nothing: the craft slides
+// 2/5 farther along its momentum instead (the same ratio, 70 / 50).
+// The energy is asked again here: a ticcmd of a script (-autoscript) has not
+// passed through RX_TiccmdKeys
+//
+//==============================================================================
+procedure RX_PilotControls(const p: Pplayer_t; const rp: Pradixplayer_t);
+var
+  pmo: Pmobj_t;
+begin
+  pmo := p.mo;
+
+  rp.afterburner := TRadixControlRules.AfterburnerOn(p.cmd.jump_crouch and RXCMD_AFTERBURNER <> 0,
+    rp.energy, p.cmd.forwardmove, p.cmd.sidemove);
+  if rp.afterburner then
+  begin
+    TRadixControlRules.DrainAfterburner(leveltime, rp.energy_reserve, rp.energy);
+    // a wall in the way: no slide, the move of the engine has already found it
+    P_TryMove(pmo,
+      pmo.x + TRadixControlRules.AfterburnerSlide(pmo.momx),
+      pmo.y + TRadixControlRules.AfterburnerSlide(pmo.momy));
+  end;
+
+  if TRadixControlRules.PlasmaBombAsked(p.cmd.jump_crouch and RXCMD_PLASMABOMB <> 0, rp.plasmabombdown) then
+    RX_FirePlasmaBomb(p);
 end;
 
 //==============================================================================
@@ -194,11 +236,13 @@ begin
       if p.playerstate = PST_LIVE then
       begin
         RX_PilotFly(p, RX_PlayerState(p));
+        RX_PilotControls(p, RX_PlayerState(p));
         RX_PilotFindsSecret(p);
         RX_PilotInventoryTick(p);
         RX_PilotWeaponsTick(p);
       end;
     end;
+  RX_StateLogTick;
 end;
 
 //==============================================================================

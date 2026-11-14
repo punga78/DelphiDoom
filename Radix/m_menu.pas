@@ -269,6 +269,7 @@ uses
   d_player,
   d_notifications,
   g_game,
+  radix_controls,
   m_argv,
   m_misc,
   mn_font,
@@ -1293,6 +1294,7 @@ type
     kb_use,
     kb_strafe,
     kb_speed,
+    kb_afterburner,
 
     kb_lookup,
     kb_lookdown,
@@ -1308,6 +1310,7 @@ type
     kb_weapon5,
     kb_weapon6,
     kb_weapon7,
+    kb_plasmabomb,
 
     kb_am_gobigkey,
     kb_am_followkey,
@@ -1344,12 +1347,13 @@ const
     (text: 'Turn right'; pkey: @key_right),
     (text: 'Strafe left'; pkey: @key_strafeleft),
     (text: 'Strafe right'; pkey: @key_straferight),
-    (text: 'Jump'; pkey: @key_jump),
-    (text: 'Crouch'; pkey: @key_crouch),  // JVAL: 20211101 - Crouch
+    (text: 'Fly up'; pkey: @key_jump),
+    (text: 'Fly down'; pkey: @key_crouch),
     (text: 'Fire'; pkey: @key_fire),
     (text: 'Use'; pkey: @key_use),
     (text: 'Strafe'; pkey: @key_strafe),
     (text: 'Run'; pkey: @key_speed),
+    (text: 'Afterburner'; pkey: @key_afterburner),
 
     (text: 'Look up'; pkey: @key_lookup),
     (text: 'Look down'; pkey: @key_lookdown),
@@ -1365,6 +1369,7 @@ const
     (text: 'Plasma gun'; pkey: @key_weapon5),
     (text: 'BFG 9000'; pkey: @key_weapon6),
     (text: 'Chainsaw'; pkey: @key_weapon7),
+    (text: 'Plasma Bomb'; pkey: @key_plasmabomb),
 
     (text: 'Automap max zoom'; pkey: @AM_GOBIGKEY),
     (text: 'Automap follow on/off'; pkey: @AM_FOLLOWKEY),
@@ -2180,6 +2185,7 @@ begin
     key_use := 32;
     key_strafe := 184;
     key_speed := 182;
+    key_afterburner := 47;
     key_lookup := 197;
     key_lookdown := 202;
     key_lookcenter := 199;
@@ -2194,6 +2200,7 @@ begin
     key_weapon5 := Ord('6');
     key_weapon6 := Ord('7');
     key_weapon7 := Ord('8');
+    key_plasmabomb := Ord('b');
     AM_GOBIGKEY := Ord('o');
     AM_FOLLOWKEY := Ord('f');
     AM_GRIDKEY := Ord('g');
@@ -2216,6 +2223,7 @@ begin
     key_use := 32;
     key_strafe := 184;
     key_speed := 182;
+    key_afterburner := 47;
     key_lookup := 197;
     key_lookdown := 202;
     key_lookcenter := 199;
@@ -2230,6 +2238,7 @@ begin
     key_weapon5 := Ord('6');
     key_weapon6 := Ord('7');
     key_weapon7 := Ord('8');
+    key_plasmabomb := Ord('b');
     AM_GOBIGKEY := Ord('o');
     AM_FOLLOWKEY := Ord('f');
     AM_GRIDKEY := Ord('g');
@@ -2252,6 +2261,7 @@ begin
     key_use := 32;
     key_strafe := 184;
     key_speed := 182;
+    key_afterburner := 47;
     key_lookup := 197;
     key_lookdown := 202;
     key_lookcenter := 199;
@@ -2266,6 +2276,7 @@ begin
     key_weapon5 := Ord('6');
     key_weapon6 := Ord('7');
     key_weapon7 := Ord('8');
+    key_plasmabomb := Ord('b');
     AM_GOBIGKEY := Ord('o');
     AM_FOLLOWKEY := Ord('l');
     AM_GRIDKEY := Ord('g');

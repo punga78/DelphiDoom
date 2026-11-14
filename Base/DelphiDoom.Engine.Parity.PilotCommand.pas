@@ -158,6 +158,11 @@ begin
     ACommand.jump_crouch := (JUMP_PRESSED shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK
   else if LCommand.Crouch then
     ACommand.jump_crouch := (CROUCH_PRESSED shl CMD_CROUCH_SHIFT) and CMD_CROUCH_MASK;
+  // the two keys of a game (the free bits of jump_crouch): only a script that names them sets them
+  if LCommand.Afterburner then
+    ACommand.jump_crouch := ACommand.jump_crouch or CMD_GAMEKEY1_MASK;
+  if LCommand.Bomb then
+    ACommand.jump_crouch := ACommand.jump_crouch or CMD_GAMEKEY2_MASK;
   Result := True;
 end;
 

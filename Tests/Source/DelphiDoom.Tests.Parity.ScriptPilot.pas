@@ -77,6 +77,8 @@ type
     [Test]
     procedure UnSaliDovrebbePremereSaltoFinoAllaQuota;
     [Test]
+    procedure LaBombaDovrebbeEsserePremutaUnaVoltaEIlPostbruciatoreTenuto;
+    [Test]
     procedure UnSaliVersoIlBassoDovrebbePremereAbbassati;
     [Test]
     procedure SenzaPassiCheCombattonoNonDovrebbeChiedereINemici;
@@ -381,6 +383,28 @@ begin
   Assert.IsTrue(LCommand.Fire);
   Place(0, 0, 0, 90);
   Assert.AreEqual(7, Next.Forward);
+end;
+
+procedure TTestParityScriptPilot.LaBombaDovrebbeEsserePremutaUnaVoltaEIlPostbruciatoreTenuto;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('hold 3 forward 50 afterburner bomb'#10'goto 1000 0 afterburner'#10'hold 1 forward 10');
+  Place(0, 0, 0, 0);
+  LCommand := Next;
+  Assert.IsTrue(LCommand.Bomb);
+  Assert.IsTrue(LCommand.Afterburner);
+  LCommand := Next;
+  Assert.IsFalse(LCommand.Bomb);
+  Assert.IsTrue(LCommand.Afterburner);
+  Next;
+  LCommand := Next;
+  Assert.AreEqual(50, LCommand.Forward);
+  Assert.IsTrue(LCommand.Afterburner);
+  Assert.IsFalse(LCommand.Bomb);
+  Place(1000, 0, 0, 0);
+  LCommand := Next;
+  Assert.IsFalse(LCommand.Afterburner);
 end;
 
 procedure TTestParityScriptPilot.UnSaliDovrebbePremereSaltoFinoAllaQuota;

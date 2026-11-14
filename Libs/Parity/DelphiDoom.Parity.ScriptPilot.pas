@@ -185,7 +185,11 @@ begin
   // a key that stays down is one press for the game: use is pressed again and again, the weapon is asked once
   Result.Use := AStep.Command.Use and ((FStepTics mod USE_PERIOD) = 0);
   if FStepTics > 0 then
+  begin
     Result.Weapon := 0;
+    // one bomb for a step: the game fires one for every press
+    Result.Bomb := False;
+  end;
 end;
 
 function TParityScriptPilot.GotoCommand(const AStep: TParityScriptStep; const AView: TParityPilotView;
@@ -208,6 +212,7 @@ begin
   // off the line the craft only turns: what it had of speed fades and it does not circle around the point
   if Abs(LOffAngle) <= ALIGNED_ANGLE then
     Result.Forward := AStep.Command.Forward;
+  Result.Afterburner := AStep.Command.Afterburner;
   Result.Fire := AStep.Command.Fire;
   Result.Use := AStep.Command.Use and ((FStepTics mod USE_PERIOD) = 0);
   if AStep.HasZ then

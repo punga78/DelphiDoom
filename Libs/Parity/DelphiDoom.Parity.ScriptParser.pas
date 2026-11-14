@@ -17,8 +17,9 @@ type
   /// <summary>
   ///   Reads the text of a script of commands (-autoscript): one step for every line, words separated by
   ///   blanks, not case sensitive, the rest of a line after # is a comment. The steps:
-  ///   hold tics [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n];
-  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use] [fight] [range n];
+  ///   hold tics [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n]
+  ///   [afterburner] [bomb];
+  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use] [fight] [range n] [afterburner];
   ///   face x y [timeout tics] [fire];
   ///   climb height [timeout tics];
   ///   hunt tics [range n];
@@ -226,6 +227,10 @@ begin
       Result.Command.Jump := True
     else if (LWord = 'crouch') and LIsHold then
       Result.Command.Crouch := True
+    else if (LWord = 'afterburner') and (LIsHold or LIsGoto) then
+      Result.Command.Afterburner := True
+    else if (LWord = 'bomb') and LIsHold then
+      Result.Command.Bomb := True
     else
       raise EParityException.CreateFmt(SUnknownWord, [ALine, LWord]);
   end;

@@ -40,7 +40,7 @@ uses
   DelphiDoom.Engine.Radix.LumpAliases,
   DelphiDoom.Radix.ActorProperties,
   w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
-  radix_intermission;
+  radix_intermission, radix_controls, g_game;
 
 function ComposeRadixActorProperties(const ALog: ILog): IActorDefExtraProperties;
 var
@@ -96,6 +96,8 @@ begin
   ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
+  // the keys of the afterburner and of the plasma bomb
+  G_ConfigureTiccmdExtension(RX_TiccmdKeys);
 end;
 
 end.

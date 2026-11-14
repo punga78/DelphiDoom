@@ -38,6 +38,12 @@ const
   CMD_JUMP_SHIFT = 0;
   CMD_CROUCH_MASK = 12;
   CMD_CROUCH_SHIFT = 2;
+  // The four high bits of jump_crouch are free (the code of the players masks the
+  // byte with CMD_JUMP_MASK and CMD_CROUCH_MASK) and the whole byte goes into the
+  // demos and the net packets: two keys that only one game has travel there, with
+  // no change of ticcmd_t (Radix: afterburner and plasma bomb)
+  CMD_GAMEKEY1_MASK = 16;
+  CMD_GAMEKEY2_MASK = 32;
 
 // The data sampled per tick (single player)
 // and transmitted to other peers (multiplayer).

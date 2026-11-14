@@ -106,6 +106,8 @@ uses
   DelphiDoom.Radix.Flight.Model in '..\Libs\Radix\DelphiDoom.Radix.Flight.Model.pas',
   DelphiDoom.Radix.Debriefing in '..\Libs\Radix\DelphiDoom.Radix.Debriefing.pas',
   DelphiDoom.Tests.Radix.FlightModel in 'Source\DelphiDoom.Tests.Radix.FlightModel.pas',
+  DelphiDoom.Radix.Control.Rules in '..\Libs\Radix\DelphiDoom.Radix.Control.Rules.pas',
+  DelphiDoom.Tests.Radix.ControlRules in 'Source\DelphiDoom.Tests.Radix.ControlRules.pas',
   DelphiDoom.ActorDef.Types in '..\Libs\ActorDef\DelphiDoom.ActorDef.Types.pas',
   DelphiDoom.Radix.ActorProperties in '..\Libs\Radix\DelphiDoom.Radix.ActorProperties.pas',
   DelphiDoom.Tests.Radix.ActorProperties in 'Source\DelphiDoom.Tests.Radix.ActorProperties.pas',
