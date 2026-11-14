@@ -12,7 +12,7 @@ interface
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Imaging.Types, DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.MeltWipe, DelphiDoom.Tests.Imaging.Samples,
-  DelphiDoom.Tests.Imaging.Golden;
+  DelphiDoom.Tests.Imaging.Golden, DelphiDoom.Tests.Imaging.OldWipe;
 
 type
   /// <summary>The numbers of the generator of the Samples unit, as a source of random bytes</summary>
@@ -63,6 +63,14 @@ type
     procedure TestStartWithBadSettingsRaises;
     [Test]
     procedure TestStartWithSmallBuffersRaises;
+    [Test]
+    procedure DovrebbeDareLoStessoDelVecchioCodiceSuiBufferDelChiamante;
+    [Test]
+    procedure DovrebbeRifiutareUnBufferNilInStartOnBuffers;
+    [Test]
+    procedure DovrebbeRifiutareImpostazioniSbagliateInStartOnBuffers;
+    [Test]
+    procedure DovrebbeRicominciareSuAltriBufferDopoUnMeltFinito;
   end;
 
 implementation
@@ -294,6 +302,169 @@ begin
     begin
       LWipe.Start(Settings(4, 4, 4, 0), Screen(4, 4, 0), Screen(4, 4, 0), Screen(4, 3, 0));
     end, EImagingException, 'dovrebbe rifiutare una destinazione troppo piccola');
+end;
+
+procedure TTestImagingMeltWipe.DovrebbeDareLoStessoDelVecchioCodiceSuiBufferDelChiamante;
+const
+  SCENARIOS = 150;
+var
+  LScenario: Integer;
+  LRandom: TSampleRandom;
+  LWidth, LHeight, LPitch, LTicks, LStep: Integer;
+  LOpenGl: Boolean;
+  LStart, LEnd, LOldScreen, LNewScreen: TImagingPixels;
+  LOld: TOldWipe;
+  LNew: IImagingMeltWipe;
+  LOldDone, LNewDone: Boolean;
+  LWhere: string;
+begin
+  for LScenario := 1 to SCENARIOS do
+  begin
+    LRandom := TSampleRandom.Create(Cardinal(LScenario) * 7919);
+    LWidth := 1 + Integer(LRandom.NextCardinal shr 8) mod 400;
+    LHeight := 1 + Integer(LRandom.NextCardinal shr 8) mod 260;
+    LOpenGl := (LRandom.NextByte and 1) = 1;
+    LPitch := LWidth;
+    if LOpenGl then
+    begin
+      // the power of two of wipe_glsize
+      LPitch := 1;
+      while LPitch < LWidth do
+        LPitch := LPitch * 2;
+    end;
+    LStart := TImagingSamples.RandomPixels(LScenario * 3 + 1, LWidth * LHeight, $00FFFFFF);
+    LEnd := TImagingSamples.RandomPixels(LScenario * 3 + 2, LWidth * LHeight, $00FFFFFF);
+    LOldScreen := TImagingSamples.RandomPixels(LScenario * 3 + 3, LPitch * LHeight, $FFFFFFFF);
+    LNewScreen := Copy(LOldScreen);
+
+    LOld := TOldWipe.Create(TSampleRandomSource.Create(LScenario));
+    try
+      LOld.SCREENWIDTH := LWidth;
+      LOld.SCREENHEIGHT := LHeight;
+      LOld.WIPESCREENWIDTH := LPitch;
+      LOld.OpenGl := LOpenGl;
+      LOld.wipe_scr_start := @LStart[0];
+      LOld.wipe_scr_end := @LEnd[0];
+      LOld.screen := @LOldScreen[0];
+      LOld.wipe_initMelt;
+
+      LNew := TImagingMeltWipe.Create(TSampleRandomSource.Create(LScenario));
+      if LOpenGl then
+        LNew.StartOnBuffers(Settings(LWidth, LHeight, LPitch, $FF000000), @LStart[0], @LEnd[0],
+          @LNewScreen[0])
+      else
+        LNew.StartOnBuffers(Settings(LWidth, LHeight, LPitch, 0), @LStart[0], @LEnd[0],
+          @LNewScreen[0]);
+      LWhere := Format('scenario %d (%dx%d passo %d)', [LScenario, LWidth, LHeight, LPitch]);
+      Assert.AreEqual(TImagingSamples.Hash(LOldScreen), TImagingSamples.Hash(LNewScreen),
+        'dovrebbe copiare la schermata di partenza come il vecchio: ' + LWhere);
+
+      LStep := 0;
+      repeat
+        Inc(LStep);
+        LTicks := LRandom.NextByte mod 4;
+        LOldDone := LOld.wipe_doMelt(LTicks) <> 0;
+        LNewDone := LNew.Advance(LTicks);
+        Assert.AreEqual(LOldDone, LNewDone,
+          Format('dovrebbe finire quando finisce il vecchio: %s passo %d', [LWhere, LStep]));
+        Assert.AreEqual(TImagingSamples.Hash(LOldScreen), TImagingSamples.Hash(LNewScreen),
+          Format('dovrebbe scrivere gli stessi pixel del vecchio: %s passo %d', [LWhere, LStep]));
+        // a call with zero tics says "over" in the old code too: go on until a real end
+      until (LOldDone and (LTicks > 0)) or (LStep > 5000);
+      Assert.IsTrue(LStep <= 5000, 'dovrebbe finire: ' + LWhere);
+    finally
+      LOld.Free;
+    end;
+  end;
+end;
+
+procedure TTestImagingMeltWipe.DovrebbeRifiutareUnBufferNilInStartOnBuffers;
+var
+  LWipe: IImagingMeltWipe;
+  LScreen: TImagingPixels;
+begin
+  LWipe := TImagingMeltWipe.Create(TConstantRandom.Create(0));
+  LScreen := Screen(4, 4, 0);
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(4, 4, 4, 0), nil, @LScreen[0], @LScreen[0]);
+    end, EImagingException, 'dovrebbe rifiutare la schermata di partenza nil');
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(4, 4, 4, 0), @LScreen[0], nil, @LScreen[0]);
+    end, EImagingException, 'dovrebbe rifiutare la schermata di arrivo nil');
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(4, 4, 4, 0), @LScreen[0], @LScreen[0], nil);
+    end, EImagingException, 'dovrebbe rifiutare la destinazione nil');
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.Advance(1);
+    end, EImagingException, 'non dovrebbe risultare avviato dopo un rifiuto');
+end;
+
+procedure TTestImagingMeltWipe.DovrebbeRifiutareImpostazioniSbagliateInStartOnBuffers;
+var
+  LWipe: IImagingMeltWipe;
+  LScreen: TImagingPixels;
+begin
+  LWipe := TImagingMeltWipe.Create(TConstantRandom.Create(0));
+  LScreen := Screen(8, 8, 0);
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(0, 4, 4, 0), @LScreen[0], @LScreen[0], @LScreen[0]);
+    end, EImagingException, 'dovrebbe rifiutare la larghezza zero');
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(4, -1, 4, 0), @LScreen[0], @LScreen[0], @LScreen[0]);
+    end, EImagingException, 'dovrebbe rifiutare l''altezza negativa');
+  Assert.WillRaise(
+    procedure
+    begin
+      LWipe.StartOnBuffers(Settings(8, 4, 4, 0), @LScreen[0], @LScreen[0], @LScreen[0]);
+    end, EImagingException, 'dovrebbe rifiutare un passo piu'' piccolo della larghezza');
+end;
+
+procedure TTestImagingMeltWipe.DovrebbeRicominciareSuAltriBufferDopoUnMeltFinito;
+var
+  LWipe: IImagingMeltWipe;
+  LStart, LEnd, LFirst, LSecond: TImagingPixels;
+  LGuard: Integer;
+  LIndex: Integer;
+begin
+  LWipe := TImagingMeltWipe.Create(TConstantRandom.Create(0));
+  LStart := Screen(6, 5, $111111);
+  LEnd := Screen(6, 5, $222222);
+  LFirst := Screen(6, 5, 0);
+  LSecond := Screen(6, 5, 0);
+
+  LWipe.StartOnBuffers(Settings(6, 5, 6, 0), @LStart[0], @LEnd[0], @LFirst[0]);
+  LGuard := 0;
+  while not LWipe.Advance(1) do
+    Inc(LGuard);
+  Assert.IsTrue(LGuard > 0, 'il primo melt dovrebbe durare qualche tic');
+
+  // the engine starts a melt at each change of scene with the same object
+  LWipe.StartOnBuffers(Settings(6, 5, 6, 0), @LEnd[0], @LStart[0], @LSecond[0]);
+  for LIndex := 0 to High(LSecond) do
+    Assert.AreEqual(Cardinal($222222), LSecond[LIndex],
+      'il secondo melt dovrebbe partire dalla sua schermata, pixel ' + IntToStr(LIndex));
+  LGuard := 0;
+  while not LWipe.Advance(1) do
+    Inc(LGuard);
+  Assert.IsTrue(LGuard > 0, 'il secondo melt dovrebbe ripartire dalle posizioni iniziali');
+  // as in the old code a column is not drawn in the tic in which it reaches the bottom: the
+  // last rows keep the old screen (the engine draws the whole frame right after), so only the
+  // first row is sure
+  for LIndex := 0 to 5 do
+    Assert.AreEqual(Cardinal($111111), LSecond[LIndex],
+      'il secondo melt dovrebbe finire sulla sua schermata di arrivo, pixel ' + IntToStr(LIndex));
 end;
 
 end.

@@ -122,6 +122,13 @@ type
     /// </summary>
     procedure Start(const ASettings: TImagingWipeSettings; const AStartScreen,
       AEndScreen: TImagingPixels; const ADestination: TImagingPixels);
+    /// <summary>
+    ///   Start on memory that the caller owns (the screen of the engine): the two screens are
+    ///   Width * Height pixels, the destination DestinationPitch * Height. The caller keeps
+    ///   the three buffers alive until Advance gives true. Nothing is copied at each frame
+    /// </summary>
+    procedure StartOnBuffers(const ASettings: TImagingWipeSettings; AStartScreen,
+      AEndScreen, ADestination: PCardinal);
     /// <summary>Moves the columns for ATicks tics; true when the melt is over</summary>
     function Advance(ATicks: Integer): Boolean;
   end;

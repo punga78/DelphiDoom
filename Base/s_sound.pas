@@ -432,6 +432,9 @@ uses
   i_system,
   info_h,
   DelphiDoom.Audio.Types,
+  DelphiDoom.Audio.SfxAttenuation,
+  DelphiDoom.Audio.ChannelPicker,
+  DelphiDoom.Audio.ExternalMusicNames,
   m_argv,
   m_fixed,
   m_rnd,
@@ -756,6 +759,16 @@ type
   channel_tArray = packed array[0..$FFFF] of channel_t;
   Pchannel_tArray = ^channel_tArray;
 
+// TSfxChannelPicker of Libs\Audio reads the channels as TSfxChannelSlot
+{$IF SizeOf(channel_t) <> SizeOf(TSfxChannelSlot)}
+  {$MESSAGE ERROR 'channel_t and TSfxChannelSlot must have the same layout'}
+{$IFEND}
+
+var
+  // The constants and the tables of S_AdjustSoundParams, for TSfxAttenuation
+  // (filled by S_Init)
+  sound_attenuation: TSfxAttenuationRules;
+
 // the set of channels available
 var
   channels: Pchannel_tArray;
@@ -911,6 +924,14 @@ begin
 
   S_SetVoiceVolume(voiceVolume);
 {$ENDIF}
+
+  sound_attenuation.ClippingDistance := S_CLIPPING_DIST;
+  sound_attenuation.CloseDistance := S_CLOSE_DIST;
+  sound_attenuation.Attenuator := S_ATTENUATOR;
+  sound_attenuation.NormalSeparation := NORM_SEP;
+  sound_attenuation.StereoSwing := S_STEREO_SWING;
+  sound_attenuation.PointToAngle := @R_PointToAngle2;
+  sound_attenuation.FineSine := PSfxSineTable(finesine);
 
   // Allocating the internal channels for mixing
   // (the maximum numer of sounds rendered
@@ -1170,22 +1191,12 @@ begin
   if (sfx_id >= Ord(sfx_sawup)) and
      (sfx_id <= Ord(sfx_sawhit)) then
   begin
-    pitch := pitch + 8 - (M_Random and 15);
-
-    if pitch < 0 then
-      pitch := 0
-    else if pitch > 255 then
-      pitch := 255
+    pitch := TSfxAttenuation.PerturbPitch(pitch, M_Random, 15);
   end
   else if (sfx_id <> Ord(sfx_itemup)) and
           (sfx_id <> Ord(sfx_tink)) then
   begin
-    pitch := pitch + 16 - (M_Random and 31);
-
-    if pitch < 0 then
-      pitch := 0
-    else if pitch > 255 then
-      pitch := 255;
+    pitch := TSfxAttenuation.PerturbPitch(pitch, M_Random, 31);
   end;
 
   // kill old sound
@@ -1194,12 +1205,7 @@ begin
 
   if sfx_id <> Ord(sfx_itemup) then
   begin
-    pitch := pitch + 16 - (M_Random and 31);
-
-    if pitch < 0 then
-      pitch := 0
-    else if pitch > 255 then
-      pitch := 255;
+    pitch := TSfxAttenuation.PerturbPitch(pitch, M_Random, 31);
   end;
 
   // kill old sound  [STRIFE] - nope!
@@ -1656,34 +1662,6 @@ end;
 
 //==============================================================================
 //
-{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-// S_GetListFromAlias
-//
-//==============================================================================
-function S_GetListFromAlias(const s: string): TDStringList;
-var
-  stmp: string;
-  i: integer;
-begin
-  result := TDStringList.Create;
-  if s <> '' then
-  begin
-    stmp := '';
-    for i := 1 to Length(s) do
-      if s[i] in [' ', ','] then
-        stmp := stmp + #13#10
-      else
-        stmp := stmp + toupper(s[i]);
-    result.Text := stmp;
-    for i := result.count - 1 downto 0 do
-      if result.strings[i] = '' then
-        result.Delete(i);
-  end;
-end;
-
-//==============================================================================
-//
-{$ENDIF}
 // S_DoChangeMusic
 //
 //==============================================================================
@@ -1693,11 +1671,7 @@ var
   namebuf: char8_t;
   mp3filename: string;
   mp3header: Pmp3header_t;
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-  externalmusicfilenames: TDStringList;
-{$ELSE}
-  aliases, externalmusicfilenames: TDStringList;
-{$ENDIF}
+  externalmusicfilenames: TArray<string>;
   mp3error: boolean;
 begin
   // shutdown old music
@@ -1767,33 +1741,16 @@ begin
     begin
 
     // JVAL: Create a list with external mp3 filenames to check
-      externalmusicfilenames := TDStringList.Create;
-      if music.mapname <> '' then
-      begin
-        externalmusicfilenames.Add(music.mapname + '.mp3');
+    // (TExternalMusicNames of Libs\Audio: map name, song name and aliases)
 {$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-        externalmusicfilenames.Add('MUS_' + music.mapname + '.mp3');
+      externalmusicfilenames := TExternalMusicNames.Candidates(music.mapname, music.name,
+        '', 'MUS_', false);
 {$ELSE}
-        externalmusicfilenames.Add('d_' + music.mapname + '.mp3');
-{$ENDIF}
-      end;
-      externalmusicfilenames.Add(music.name + '.mp3');
-{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
-      externalmusicfilenames.Add('MUS_' + music.name + '.mp3');
-{$ELSE}
-      externalmusicfilenames.Add('d_' + music.name + '.mp3');
-
-    // JVAL: Add aliases in check list
-      aliases := S_GetListFromAlias(music.alias);
-      for i := 0 to aliases.Count - 1 do
-      begin
-        externalmusicfilenames.Add(aliases.strings[i] + '.mp3');
-        externalmusicfilenames.Add('d_' + aliases.strings[i] + '.mp3');
-      end;
-      aliases.Free;
+      externalmusicfilenames := TExternalMusicNames.Candidates(music.mapname, music.name,
+        music.alias, 'd_', true);
 {$ENDIF}
 
-      for i := 0 to externalmusicfilenames.Count - 1 do
+      for i := 0 to Length(externalmusicfilenames) - 1 do
       begin
         mp3filename := externalmusicfilenames[i];
         if preferemp3namesingamedirectory then
@@ -1807,8 +1764,6 @@ begin
         else
           break;
       end;
-
-      externalmusicfilenames.Free;
 
     end;
   end;
@@ -1940,12 +1895,7 @@ end;
 function S_AdjustSoundParams(listener: Pmobj_t; source: Pmobj_t;
   vol: Pinteger; sep: Pinteger; pitch: Pinteger): boolean;
 var
-  approx_dist: fixed_t;
-  adx: fixed_t;
-  ady: fixed_t;
-  ad: fixed_t;
-  angle: angle_t;
-  langle: angle_t;
+  fullvolumelevel: boolean;
 begin
   // haleyjd 08/12/04: we cannot adjust a sound for a NULL listener
   if listener = nil then
@@ -1954,91 +1904,31 @@ begin
     exit;
   end;
 
-  // calculate the distance to sound origin
-  //  and clip it if necessary
-  adx := abs(listener.x - source.x);
-  ady := abs(listener.y - source.y);
-
-  if adx < ady then
-    ad := adx
-  else
-    ad := ady;
-  // From _GG1_ p.428. Appox. eucledian distance fast.
-  approx_dist := adx + ady - ad div 2;
-
-  // killough 11/98: handle zero-distance as special case
-  if approx_dist = 0 then
-  begin
-    sep^ := NORM_SEP;
-    vol^ := snd_SfxVolume;
-    result := vol^ > 0;
-    exit;
-  end;
-
+  // The level of the last boss: nothing is too far to be heard
 {$IF DEFINED(DOOM)}
-  if ((gamemap <> 8) or not G_NeedsCompatibilityMode) and
-     (approx_dist > S_CLIPPING_DIST) then
+  fullvolumelevel := (gamemap = 8) and G_NeedsCompatibilityMode;
 {$ELSEIF DEFINED(HERETIC)}
-  if (gamemap <> 8) and
-     (approx_dist > S_CLIPPING_DIST) then
+  fullvolumelevel := gamemap = 8;
 {$ELSE}
-  if approx_dist > S_CLIPPING_DIST then
+  fullvolumelevel := false;
 {$ENDIF}
-  begin
-    result := false;
-    exit;
-  end;
 
-  // angle of source to listener
-  angle := R_PointToAngle2(listener.x, listener.y, source.x, source.y);
+  // The rule (distance, clipping, stereo separation, volume) is
+  // TSfxAttenuation of Libs\Audio
+  result := TSfxAttenuation.Adjust(sound_attenuation, listener.x, listener.y,
+    listener.angle + listener.viewangle, source.x, source.y, snd_SfxVolume,
+    fullvolumelevel, vol^, sep^);
+end;
 
-  langle := listener.angle + listener.viewangle;
-  if angle > langle then
-    angle := angle - langle
-  else
-    angle := angle + ($ffffffff - langle);
-
-  {$IFDEF FPC}
-  angle := angle div ANGLETOFINEUNIT;
-  {$ELSE}
-  angle := angle shr ANGLETOFINESHIFT;
-  {$ENDIF}
-
-  // stereo separation
-  sep^ := NORM_SEP - (FixedMul(S_STEREO_SWING, finesine[angle]) div FRACUNIT);
-
-  // volume calculation
-  if approx_dist < S_CLOSE_DIST then
-  begin
-    vol^ := snd_SfxVolume;
-{$IF DEFINED(DOOM)}
-  end
-  else if (gamemap = 8) and G_NeedsCompatibilityMode then
-  begin
-    if approx_dist > S_CLIPPING_DIST then
-      approx_dist := S_CLIPPING_DIST;
-
-    vol^ := 15 + ((snd_SfxVolume - 15) *
-      ((S_CLIPPING_DIST - approx_dist) div FRACUNIT)) div S_ATTENUATOR;
-{$ELSEIF DEFINED(HERETIC)}
-  end
-  else if gamemap = 8 then
-  begin
-    if approx_dist > S_CLIPPING_DIST then
-      approx_dist := S_CLIPPING_DIST;
-
-    vol^ := 15 + ((snd_SfxVolume - 15) *
-      ((S_CLIPPING_DIST - approx_dist) div FRACUNIT)) div S_ATTENUATOR;
-{$ENDIF}
-  end
-  else
-  begin
-    // distance effect
-    vol^ := (snd_SfxVolume * ((S_CLIPPING_DIST - approx_dist) div FRACUNIT)) div
-              S_ATTENUATOR;
-  end;
-
-  result := vol^ > 0;
+//==============================================================================
+//
+// S_ChannelPriority
+// The priority of the sound of a channel, for TSfxChannelPicker
+//
+//==============================================================================
+function S_ChannelPriority(ASound: pointer): integer;
+begin
+  result := Psfxinfo_t(ASound).priority;
 end;
 
 //==============================================================================
@@ -2049,83 +1939,31 @@ end;
 //==============================================================================
 function S_GetChannel(origin: pointer; sfxinfo: Psfxinfo_t): integer;
 var
-  // channel number to use
-  cnum: integer;
+  choice: TSfxChannelChoice;
   c: Pchannel_t;
-  listener: pointer;
 begin
-  // Find an open channel
-  cnum := 0;
-  while cnum < numChannels do
+  // The choice is TSfxChannelPicker of Libs\Audio: a free channel, the one
+  // of the same origin, or one that matters less
+  choice := TSfxChannelPicker.Pick(PSfxChannelSlot(channels), numChannels, origin,
+    players[consoleplayer].mo, sfxinfo.priority, @S_ChannelPriority);
+
+  if choice.Channel < 0 then
   begin
-    if channels[cnum].sfxinfo = nil then
-      break
-    else if (origin <> nil) and (channels[cnum].origin = origin) then
-    begin
-      S_StopChannel(cnum);
-      break;
-    end;
-    inc(cnum);
+    // FUCK!  No lower priority.  Sorry, Charlie.
+    result := -1;
+    exit;
   end;
 
-  // None available
-  if cnum = numChannels then
-  begin
-    // Look for lower priority
-    cnum := 0;
-    while cnum < numChannels do
-    begin
-      if channels[cnum].sfxinfo.priority > sfxinfo.priority then
-        break;
-      inc(cnum);
-    end;
+  if choice.MustStop then
+    S_StopChannel(choice.Channel);
 
-    if cnum = numChannels then
-    begin
-      cnum := 0;
-      while cnum < numChannels do
-      begin
-        if channels[cnum].sfxinfo.priority = sfxinfo.priority then
-          break;
-        inc(cnum);
-      end;
-    end;
-
-    if cnum = numChannels then
-    begin
-      listener := players[consoleplayer].mo;
-      if (origin = listener) or (origin = nil) then
-      begin
-        cnum := 0;
-        while cnum < numChannels do
-        begin
-          if (channels[cnum].origin <> nil) and (channels[cnum].origin <> listener) then
-            break;
-          inc(cnum);
-        end;
-      end;
-    end;
-
-    if cnum = numChannels then
-    begin
-      // FUCK!  No lower priority.  Sorry, Charlie.
-      result := -1;
-      exit;
-    end
-    else
-    begin
-      // Otherwise, kick out lower priority.
-      S_StopChannel(cnum);
-    end;
-  end;
-
-  c := @channels[cnum];
+  c := @channels[choice.Channel];
 
   // channel is decided to be cnum.
   c.sfxinfo := sfxinfo;
   c.origin := origin;
 
-  result := cnum;
+  result := choice.Channel;
 end;
 
 //==============================================================================

@@ -139,6 +139,10 @@ uses
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
   DelphiDoom.Engine.Imaging.ColorIndex,
+  DelphiDoom.Engine.Imaging.Random,
+{$IFNDEF STRIFE}
+  f_wipe,
+{$ENDIF}
   DelphiDoom.Screenshot.Factory,
   DelphiDoom.Engine.Screenshot.Folders,
   DelphiDoom.Png.Provider,
@@ -1100,8 +1104,12 @@ begin
     TScriptHostFactory.CreateWindowsDllLibrary, ALog));
 end;
 
-procedure ComposeImaging;
+procedure ComposeImaging(const ARandom: IGameRandom);
 begin
+{$IFNDEF STRIFE}
+  // Strife fades (f_fade) instead of melting
+  wipe_Configure(TImagingFactory.CreateMeltWipe(TEngineImagingRandom.Create(ARandom)));
+{$ENDIF}
 {$IFNDEF OPENGL}
   R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
@@ -1688,7 +1696,7 @@ begin
   ComposeMusic(LTempFiles, LCommandLine, LZone, LLog, LShutdown);
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
-  ComposeImaging;
+  ComposeImaging(LRandom);
   ComposeRenderer(LLog);
   ComposeScreenshot(LSaveFileNames);
   ComposeTexture(LLog, LPakFiles, LShutdown);

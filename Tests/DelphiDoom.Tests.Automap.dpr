@@ -28,6 +28,7 @@ uses
   DelphiDoom.Automap.Transform in '..\Libs\Automap\DelphiDoom.Automap.Transform.pas',
   DelphiDoom.Automap.LineClipper in '..\Libs\Automap\DelphiDoom.Automap.LineClipper.pas',
   DelphiDoom.Automap.Rotation in '..\Libs\Automap\DelphiDoom.Automap.Rotation.pas',
+  DelphiDoom.Automap.LineRasterizer in '..\Libs\Automap\DelphiDoom.Automap.LineRasterizer.pas',
   DelphiDoom.Automap.View in '..\Libs\Automap\DelphiDoom.Automap.View.pas',
   DelphiDoom.Automap.Marks in '..\Libs\Automap\DelphiDoom.Automap.Marks.pas',
   DelphiDoom.Automap.Factory in '..\Libs\Automap\DelphiDoom.Automap.Factory.pas',
@@ -42,7 +43,9 @@ uses
   DelphiDoom.Tests.Automap.Rotation in 'Source\DelphiDoom.Tests.Automap.Rotation.pas',
   DelphiDoom.Tests.Automap.Marks in 'Source\DelphiDoom.Tests.Automap.Marks.pas',
   DelphiDoom.Tests.Automap.View in 'Source\DelphiDoom.Tests.Automap.View.pas',
-  DelphiDoom.Tests.Automap.Factory in 'Source\DelphiDoom.Tests.Automap.Factory.pas';
+  DelphiDoom.Tests.Automap.Factory in 'Source\DelphiDoom.Tests.Automap.Factory.pas',
+  DelphiDoom.Tests.Automap.OldLine in 'Source\DelphiDoom.Tests.Automap.OldLine.pas',
+  DelphiDoom.Tests.Automap.LineRasterizer in 'Source\DelphiDoom.Tests.Automap.LineRasterizer.pas';
 
 var
   Runner: ITestRunner;

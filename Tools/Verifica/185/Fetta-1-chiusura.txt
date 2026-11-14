@@ -1,0 +1,44 @@
+Issue #185, fase 1, chiusura (f_wipe, s_sound, am_map): comandi esatti della verifica che resta da fare o da rifare.
+Eseguibile di riferimento ("vecchio"): quello dei golden (C:\ddref185\<Gioco>32.exe). "Nuovo" = i .exe del ramo di questa
+fetta (commit 0046420a o successivi). Tutti da PowerShell, da <worktree>. Con piu' agenti in coda sul lock dei giochi ogni
+voce aspetta minuti: impostare prima $env:DD_GAME_PRIORITY='Normal' e $env:DD_PARITY_TIMEOUT='1800'.
+
+0. COSA TOCCA IL RUNTIME
+   - f_wipe: ogni cambio di scena delle demo (il melt gira con l'orologio virtuale: e' nei fotogrammi dei golden, modi 8 e 32;
+     i numeri di I_Random hanno seme fisso con gli strumenti accesi).
+   - s_sound: ogni suono che parte (S_AdjustSoundParams, S_GetChannel, pitch con M_Random: l'indice "rnd" dell'impronta dello
+     stato cambia al primo tic in cui il volume o il canale differiscono) e ogni tic (S_UpdateSounds).
+   - am_map: solo con l'automap aperta (mai nel corpus).
+
+1. GOLDEN, corpus intero (44 voci, un modo per invocazione):
+     powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8  -WorkRoot C:\ddparC1f
+     powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 32 -WorkRoot C:\ddparC1f
+   Atteso: 44 UGUALE per modo. Per localizzare: -RefExe "Doom=C:\ddref185\Doom32.exe;Heretic=...;Hexen=...;Strife=...".
+   Le voci che esercitano la regola del livello 8 (volume pieno, niente clipping): a_d1_e1m8 (Doom, solo in modo
+   compatibilita') e a_h_e1m8 (Heretic).
+
+2. CANALI PIENI (la scelta per priorita' e il ripiego sui suoni di chi ascolta scattano solo con tutti i canali occupati):
+     powershell -NoProfile -File Tools\Verifica\185\Confronta-Golden.ps1 -Modes 8 -ExtraIni 'snd_channels=8' -RefExe "Doom=C:\ddref185\Doom32.exe;..."
+   (8 e' il minimo, MIN_NUMCHANNELS di s_sound.pas: un valore piu' basso viene alzato a 8.)
+   Atteso: vecchio e nuovo UGUALI (stato: l'indice del casuale; i fotogrammi non dipendono dai canali).
+
+3. MUSICA MP3 ESTERNA (TExternalMusicNames): mettere in bin\Doom\ un file d_e1m1.mp3 (qualsiasi mp3) e uno E1M2.mp3, avviare
+     Doom32.exe -iwad DOOM1.WAD -warp 1 1 -devparm   e poi -warp 1 2
+   con usemp3=1: la musica deve essere l'mp3 in entrambi i casi (vecchio e nuovo uguali). Senza scheda audio non si prova.
+
+4. AUTOMAP (TAutomapLineRasterizer): a mano. Doom32 -warp 1 1, TAB: mappa piena a 8 bit (detaillevel 2) e a 32 bit
+   (detaillevel 3), poi overlay (secondo TAB con allowautomapoverlay=1), griglia (G), rotazione, zoom fino ai bordi.
+   Confrontare a occhio con l'eseguibile di riferimento o con -framedump tic file.bmp dopo aver aperto la mappa (l'input e'
+   chiuso con -framehash/-statehash: -framedump da solo NON chiude la tastiera? verificare; se la chiude, il confronto resta
+   a occhio). Atteso: stesse linee; in overlay nessun pixel fuori dalla finestra della vista.
+
+5. WIPE DEGLI ESEGUIBILI OPENGL (ramo {$IFDEF OPENGL} di f_wipe: passo a potenza di due e alfa): avviare GLDoom32, GLHeretic32,
+   GLHexen32 -warp 1 1 e guardare il melt all'ingresso nel livello e all'uscita. Il test di parita' copre i pixel
+   (scenari con passo OpenGL); a runtime va visto che non ci sia I_Error "wipe_Configure() has not been called".
+
+6. PRESTAZIONI (a macchina scarica):
+     powershell -NoProfile -File Tools\Misura-Coppie.ps1 -Vecchio C:\ddref185\Doom32.exe -Nuovo <NUOVO> -Demo demo1 -Iwad DOOM1.WAD -Coppie 8
+     idem -Demo demo3
+   Dove potrebbe esserci un costo: S_UpdateSounds (TSfxAttenuation.Adjust: una chiamata statica con dieci argomenti per canale
+   che suona, a ogni tic; prima era una chiamata a S_AdjustSoundParams con cinque), il wipe (IImagingMeltWipe.Advance una
+   volta per fotogramma del wipe, poi cicli su puntatori come prima). Atteso: nel rumore.
