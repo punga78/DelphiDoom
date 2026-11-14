@@ -73,9 +73,13 @@ uses
 //
 //==============================================================================
 procedure R_DebugCheckVisPlane(const pl: Pvisplane_t);
+{$IFNDEF OPENGL}
 var
   i: integer;
+{$ENDIF}
 begin
+  // The OpenGL visplane has no top/bottom columns: there is nothing to check.
+{$IFNDEF OPENGL}
   for i := pl.minx - 1 to pl.maxx + 1 do
   begin
     if pl.top[i] > viewheight then
@@ -91,6 +95,7 @@ begin
         exit;
       end;
   end;
+{$ENDIF}
 end;
 
 //==============================================================================

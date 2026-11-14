@@ -76,6 +76,9 @@ uses
   SysUtils,
   dglOpenGL,
   doomdef,
+{$IFDEF DEBUG}
+  g_game,
+{$ENDIF}
   i_system,
   w_folders,
   w_pak,
