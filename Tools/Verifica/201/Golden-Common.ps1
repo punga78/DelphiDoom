@@ -84,7 +84,15 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('real', 'full', '12'); Golden = 'path.full.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('real', 'dump', 'full', '11', '450'); Golden = 'path.full.dump.golden.txt'; NeedsData = $false },
       # le mappe dei passaggi dei 36 livelli di DATA.WAR (war_file.c originale): A star e campi di flusso
-      @{ Exe = 'war_model_ref.exe'; Args = @('levelpaths', '{DATA}'); Golden = 'path.levels.golden.txt'; NeedsData = $true }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('levelpaths', '{DATA}'); Golden = 'path.levels.golden.txt'; NeedsData = $true }) },
+  # issue #196 (war_ai_ref.inc): war_ai.c INTERO del remake (l'IA: un copione per il giocatore 1, richieste di unita', attese e pause)
+  # sul mondo di 'completo': le tabelle (produttori, copione per razza), 8 scenari di 3000 tic con il giocatore 1 guidato dall'IA
+  # (razza, economia, fattorie, centri urbani, ordini del giocatore ai suoi edifici, annullamenti, danni, tempo reale, trucco del tempo)
+  @{ Name = '196 ia'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('ai-tables'); Golden = 'ai.tables.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('ai', '8'); Golden = 'ai.scenarios.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'ai', '5', '1200'); Golden = 'ai.dump.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'ai', '6', '2999'); Golden = 'ai.dump2.golden.txt'; NeedsData = $false }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

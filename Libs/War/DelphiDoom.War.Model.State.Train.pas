@@ -24,8 +24,8 @@ type
   ///   A building that trains a unit. The cost is charged when the state is entered (if the player can not pay any more
   ///   the state cancels itself); the time runs at the speed of the clock (100 times faster with the hurry up
   ///   cheat); at the end the unit appears on the nearest empty tile and the building says so with the voice of its race. A
-  ///   cancelled training gives the money back, once. The AI request that the original keeps in the state is not here
-  ///   (the AI is not ported)
+  ///   cancelled training gives the money back, once. The computer request that ordered it (aiCommand) is a handle, told
+  ///   to Context.AiProgress when the cost is charged
   /// </summary>
   TWarTrainState = class
   strict private
@@ -34,7 +34,13 @@ type
   public
     /// <summary>wst_createTrainState: nothing is charged yet</summary>
     class function CreateState(AMachine: TWarStateMachine; ASlot: Integer; AUnitToBuild: Integer; ABuildTime: Single;
-      AGoldCost, AWoodCost: Integer): PWarStateTrain; static;
+      AGoldCost, AWoodCost: Integer): PWarStateTrain; overload; static;
+    /// <summary>
+    ///   The same with the computer request that orders it (wst_createTrainState with an aiCommand): when the cost is charged
+    ///   the request counts the unit (the handle is TWarAiCommand.MakeHandle)
+    /// </summary>
+    class function CreateState(AMachine: TWarStateMachine; ASlot: Integer; AUnitToBuild: Integer; ABuildTime: Single;
+      AGoldCost, AWoodCost: Integer; AAiCommand: Cardinal): PWarStateTrain; overload; static;
     /// <summary>wst_enterTrainState</summary>
     class procedure Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase); static;
     /// <summary>wst_exitTrainState</summary>
@@ -55,9 +61,16 @@ uses
 class function TWarTrainState.CreateState(AMachine: TWarStateMachine; ASlot: Integer; AUnitToBuild: Integer;
   ABuildTime: Single; AGoldCost, AWoodCost: Integer): PWarStateTrain;
 begin
+  Result := CreateState(AMachine, ASlot, AUnitToBuild, ABuildTime, AGoldCost, AWoodCost, 0);
+end;
+
+class function TWarTrainState.CreateState(AMachine: TWarStateMachine; ASlot: Integer; AUnitToBuild: Integer;
+  ABuildTime: Single; AGoldCost, AWoodCost: Integer; AAiCommand: Cardinal): PWarStateTrain;
+begin
   Result := PWarStateTrain(AMachine.AllocState(ASlot, WAR_STATE_TRAIN));
   if not Assigned(Result) then
     Exit;
+  Result^.AiCommand := AAiCommand;
   Result^.UnitToBuild := AUnitToBuild;
   Result^.BuildTime := 0;
   Result^.TotalBuildTime := ABuildTime;
@@ -77,8 +90,16 @@ begin
   LContext := AMachine.Context;
   Result := TWarPurse.Decrease(LContext, LContext.Players[LContext.Pool.Slots[ASlot]^.UnitData.Player],
     AState^.GoldCost, AState^.WoodCost);
-  if Result then
-    AState^.TransactionApplied := True;
+  if not Result then
+    Exit;
+  AState^.TransactionApplied := True;
+  // wst_applyTrainTransaction: the request of the computer that ordered it counts the unit, once
+  if AState^.AiCommand <> 0 then
+  begin
+    if Assigned(LContext.AiProgress) then
+      LContext.AiProgress.UnitRequestProgress(AState^.AiCommand);
+    AState^.AiCommand := 0;
+  end;
 end;
 
 class procedure TWarTrainState.Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase);

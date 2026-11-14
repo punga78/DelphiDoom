@@ -3,7 +3,7 @@
   (war_entities.c, war_units.c), la macchina a stati (war_state_machine*.c), le azioni (war_actions.c), il generatore dei
   vettori (war_math.c), la griglia di occupazione (war_pathfinder.c), la scelta della velocita' (war_rvo.c) e il tempo
   della mappa (war_map.c). Il remake e' una "unity build" (un solo file che include tutti i .c): qui si include lo stesso
-  insieme senza i .c della grafica, dell'audio, dell'interfaccia e dell'IA. I sorgenti non sono modificati e non sono
+  insieme senza i .c della grafica, dell'audio e dell'interfaccia (war_ai.c si include intero dalla #196). I sorgenti non sono modificati e non sono
   copiati: le intestazioni (le prime righe di tests\test_main.c, fino a war_game.h) si estraggono in war_head.inc; gli
   stub e gli scenari sono in war_model_ref.c (vedi l'intestazione di quel file).
 
@@ -36,6 +36,8 @@ Copy-Item (Join-Path $PSScriptRoot 'war_full_ref.inc') (Join-Path $Out 'war_full
 # percorsi, evitamento tra unita' e nebbia di guerra (issue #195)
 Copy-Item (Join-Path $PSScriptRoot 'war_path_ref.inc') (Join-Path $Out 'war_path_ref.inc')
 Copy-Item (Join-Path $PSScriptRoot 'war_levels_ref.inc') (Join-Path $Out 'war_levels_ref.inc')
+# l'IA del remake (issue #196): war_ai.c intero e i suoi scenari
+Copy-Item (Join-Path $PSScriptRoot 'war_ai_ref.inc') (Join-Path $Out 'war_ai_ref.inc')
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'

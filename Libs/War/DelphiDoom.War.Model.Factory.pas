@@ -15,7 +15,8 @@ interface
 uses
   DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World,
   DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher,
-  DelphiDoom.War.Map.Game, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Model.MapBinding;
+  DelphiDoom.War.Map.Game, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Model.MapBinding,
+  DelphiDoom.War.Ai.Players;
 
 type
   /// <summary>
@@ -58,6 +59,14 @@ type
     class function CreateComputerCommands(const AWorld: TWarModelWorld; const ASelection: TWarSelection;
       APlayer: Integer; const AMap: IWarCommandMap = nil): TWarCommands; static;
     /// <summary>
+    ///   Puts the computer to play the given players (issue #196; wai_initAIPlayers: the original plays the player 1): each
+    ///   one gets the script of its race (so call it after the races are set and the units of the level exist) and the
+    ///   world runs them first in every Update. The result belongs to the world (it lives as long as it does); it is for
+    ///   looking at the players and for registering more kinds of command. One call per world
+    /// </summary>
+    class function AttachComputerPlayers(const AWorld: TWarModelWorld;
+      const APlayers: array of Integer): TWarComputerPlayers; static;
+    /// <summary>
     ///   The model of a game map made by TWarMapBuilder: a world over the grid of the map, with its forests and its fog,
     ///   whose entities are the ones of the map (the same ids) created by TWarEntityManager; the commands of the player
     ///   see the grid and the fog of the map. The events object is also asked for IWarGatherEvents. The map is not
@@ -78,9 +87,24 @@ uses
   DelphiDoom.War.Model.State.GatherRegistry, DelphiDoom.War.Model.State.Construction,
   DelphiDoom.War.Model.Commands.Family, DelphiDoom.War.Model.Commands.GridMap, DelphiDoom.War.Model.GridOccupancy,
   DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Gather.Intf, DelphiDoom.War.Model.FlowSteering,
-  DelphiDoom.War.Model.FogRevealer, System.SysUtils;
+  DelphiDoom.War.Model.FogRevealer, DelphiDoom.War.Ai.Registry, DelphiDoom.War.Types, System.SysUtils;
 
 { TWarModelFactory }
+
+class function TWarModelFactory.AttachComputerPlayers(const AWorld: TWarModelWorld;
+  const APlayers: array of Integer): TWarComputerPlayers;
+var
+  LIndex: Integer;
+begin
+  if Assigned(AWorld.ComputerPlayers) then
+    raise EWarException.Create('The world has computer players already');
+  Result := TWarComputerPlayers.Create(AWorld, TWarAiCommandRegistry.CreateDefault);
+  // the world holds the players as an interface: from here they live as long as it does
+  AWorld.ComputerPlayers := Result;
+  AWorld.Context.AiProgress := Result;
+  for LIndex := 0 to High(APlayers) do
+    Result.AddPlayer(APlayers[LIndex]);
+end;
 
 class procedure TWarModelFactory.AttachFog(const AWorld: TWarModelWorld; const AFog: TWarFogOfWar);
 begin

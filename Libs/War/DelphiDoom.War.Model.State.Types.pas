@@ -142,9 +142,11 @@ type
     Base: TWarStateBase;
   end;
 
-  /// <summary>Train, upgrade and build share the fields of a purchase that can be cancelled (the AI command is not kept)</summary>
+  /// <summary>Train, upgrade and build share the fields of a purchase that can be cancelled</summary>
   TWarStateTrain = record
     Base: TWarStateBase;
+    /// <summary>The handle of the computer request that ordered this training (aiCommand of the original), 0 for none</summary>
+    AiCommand: Cardinal;
     UnitToBuild: Integer;
     BuildTime: Single;
     TotalBuildTime: Single;

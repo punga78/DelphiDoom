@@ -110,6 +110,8 @@ WarSpriteComponent* we_addSpriteComponentFromResource(WarContext* context, WarEn
 #include "war_state_machine_repairing.c"
 #include "war_state_machine_cast.c"
 #include "war_state_machine.c"
+/* l'IA del remake (#196): war_ai.c INTERO, originale */
+#include "war_ai.c"
 #include "war_map_grid.c"
 /* la tessera della mappa visiva: il remake la scrive nelle risorse del livello (qui non ci sono); si registra la scrittura */
 #define wmap_setMapTileIndex wmap_setMapTileIndex_orig
@@ -1702,6 +1704,8 @@ static void bench(s32 units, s32 tics)
 #include "war_construction_ref.inc"
 /* gli scenari dei comandi, degli incantesimi e del tic intero (completamento della #194) */
 #include "war_full_ref.inc"
+/* gli scenari della IA (issue #196) */
+#include "war_ai_ref.inc"
 /* percorsi, evitamento e nebbia di guerra (issue #195) */
 #include "war_path_ref.inc"
 /* percorsi sui livelli veri di DATA.WAR (war_file.c originale) */
@@ -1878,6 +1882,16 @@ int main(int argc, char** argv)
         u32 n = argc > 2 ? (u32)atoi(argv[2]) : 12;
         for (u32 seed = 1; seed <= n; seed++)
             runFull(fullModeOf(argv[1]), seed, -1, true, false);
+        return 0;
+    }
+    if (strcmp(argv[1], "ai-tables") == 0)
+    {
+        printAiTables();
+        return 0;
+    }
+    if (strcmp(argv[1], "benchai") == 0)
+    {
+        benchAi(argc > 2 ? atoi(argv[2]) : 20000);
         return 0;
     }
     if (strcmp(argv[1], "benchfull") == 0)
