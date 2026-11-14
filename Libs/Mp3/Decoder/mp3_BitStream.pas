@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I Mp3Codegen.inc}
 
 (*
  *  File:     $RCSfile: BitStream.pas,v $
@@ -54,7 +54,8 @@ unit mp3_BitStream;
 interface
 
 uses
-  d_delphi,
+  System.SysUtils,
+  mp3_Source,
   mp3_BitReserve;
 
 type
@@ -68,7 +69,7 @@ type
   // Class to extract bitstrings from files:
   TBitStream = class
   private
-    FStream: TDStream;
+    FStream: TMp3Source;
 
     FBuffer: array[0..BUFFERINTSIZE - 1] of Cardinal;
     FFrameSize: Cardinal;     // number of valid bytes in buffer
@@ -87,7 +88,7 @@ type
     property CurrentFrame: Integer read FCurrentFrameNumber;
     property LastFrame: Integer read FLastFrameNumber;
 
-    constructor Create(AStream: TDStream);
+    constructor Create(AStream: TMp3Source);
     destructor Destroy; override;
 
     function Restart: Boolean;
@@ -138,7 +139,7 @@ end;
 // TBitStream.Create
 //
 //==============================================================================
-constructor TBitStream.Create(AStream: TDStream);
+constructor TBitStream.Create(AStream: TMp3Source);
 begin
   FStream := AStream;
 

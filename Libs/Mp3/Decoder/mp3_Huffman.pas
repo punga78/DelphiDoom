@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I Mp3Codegen.inc}
 
 (*
  *  File:     $RCSfile: Huffman.pas,v $
@@ -100,8 +100,7 @@ function HuffmanDecoder(h: PHuffCodeTab; var x, y, v, w: Integer; br: TBitReserv
 implementation
 
 uses
-  AnsiStrings,
-  d_delphi;
+  AnsiStrings;
 
 const
   dmask: HuffBits = HuffBits(1 shl ((sizeof(HuffBits) * 8) - 1));

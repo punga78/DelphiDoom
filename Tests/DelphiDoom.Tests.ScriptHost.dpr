@@ -15,7 +15,6 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  d_delphi in '..\Libs\Script\Shim\d_delphi.pas',
   ps_defs in '..\Libs\PascalScript\ps_defs.pas',
   ps_keywords in '..\Libs\PascalScript\ps_keywords.pas',
   ps_utils in '..\Libs\PascalScript\ps_utils.pas',

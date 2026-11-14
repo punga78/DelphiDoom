@@ -14,7 +14,6 @@ library DDScript;
 {$ENDIF}
 
 uses
-  d_delphi in 'Shim\d_delphi.pas',
   ps_defs in '..\..\Libs\PascalScript\ps_defs.pas',
   ps_keywords in '..\..\Libs\PascalScript\ps_keywords.pas',
   ps_utils in '..\..\Libs\PascalScript\ps_utils.pas',

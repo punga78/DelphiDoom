@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I ..\PascalScript\PascalScriptCodegen.inc}
 
 unit ddc_base;
 

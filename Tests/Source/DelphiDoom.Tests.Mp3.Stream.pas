@@ -50,7 +50,7 @@ type
 implementation
 
 uses
-  d_delphi;
+  mp3_Source;
 
 { TTestMp3FeedStream }
 

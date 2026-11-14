@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I Mp3Codegen.inc}
 
 (*
  *  File:     $RCSfile: Layer3.pas,v $
@@ -122,8 +122,8 @@ type
 implementation
 
 uses
-  d_delphi,
-  i_system,
+  System.SysUtils,
+  Winapi.Windows,
   mp3_Huffman,
   Math,
   mp3_InvMDT,
@@ -261,13 +261,13 @@ begin
     try
       FBR := TBitReserve.Create;
     except
-      I_Sleep(100);
+      Sleep(100);
       inc(cnt);
       done := false;
     end;
   until done or (cnt > 32);
   if not done then
-    I_Error('TLayerIII_Decoder.CreateBitReserve(): Can not create FBR');
+    raise Exception.Create('TLayerIII_Decoder.CreateBitReserve(): Can not create FBR');
 end;
 
 //==============================================================================

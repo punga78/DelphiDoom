@@ -10,7 +10,7 @@
 {                                                                              }
 {******************************************************************************}
 
-{$I Doom32.inc}
+{$I PascalScriptCodegen.inc}
 
 unit DelphiDoom.ScriptHost.Compiler;
 {$I PascalScript.inc}
@@ -18,7 +18,7 @@ unit DelphiDoom.ScriptHost.Compiler;
 interface
 
 uses
-  d_delphi,
+  System.Classes,
   ps_defs,
   ps_compiler,
   uPSPreProcessor,
@@ -29,7 +29,7 @@ type
   TDoomCompiler = class(TPSPascalCompiler)
   private
     FPP: TPSPreProcessor;
-    funitnames: TDStringList;
+    funitnames: TStringList;
     FServices: IScriptHostServices;
   public
     /// <exception cref="EScriptHostException">If another compiler is active: there can be only one</exception>
@@ -37,7 +37,7 @@ type
     property Services: IScriptHostServices read FServices;
     function CompileDoomScript(const source: TbtString; var pcode: TbtString): Boolean; virtual;
     destructor Destroy; override;
-    property unitnames: TDStringList read funitnames;
+    property unitnames: TStringList read funitnames;
   end;
 
 //==============================================================================
@@ -53,7 +53,6 @@ implementation
 
 uses
   System.SysUtils,
-  Classes,
   uPSC_dateutils,
   uPSC_dll,
   ps_keywords,
@@ -205,7 +204,7 @@ begin
   FPP.Id := Self;
   FPP.OnNeedFile := FPPNeedFile;
 
-  funitnames := TDStringList.Create;
+  funitnames := TStringList.Create;
 end;
 
 //==============================================================================

@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I Mp3Codegen.inc}
 
 (*
  *  File:     $RCSfile: OBuffer.pas,v $
@@ -86,7 +86,7 @@ procedure TOBuffer_Wave_Failure;
 implementation
 
 uses
-  i_system;
+  System.SysUtils;
 
 //==============================================================================
 //
@@ -95,7 +95,7 @@ uses
 //==============================================================================
 procedure TOBuffer_Wave_Failure;
 begin
-  I_Error('TOBuffer_Wave(): Output device failure');
+  raise Exception.Create('TOBuffer_Wave(): Output device failure');
 end;
 
 end.

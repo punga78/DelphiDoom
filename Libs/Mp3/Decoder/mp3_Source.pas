@@ -1,18 +1,16 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: mp3 - minimal stand-in for Common\d_delphi.pas                  }
+{  DelphiDoom: mp3 - byte source read by the bit stream of the decoder         }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit d_delphi;
+unit mp3_Source;
+{$I Mp3Codegen.inc}
 
-// The units of Libs\Mp3\Decoder use d_delphi for a handful of declarations. The real
-// unit is huge and drags the whole engine, so the mp3 DLL and its tests
-// compile against this one instead (it must come first in the unit search
-// path, or be listed with its path in the project). Declarations here have
-// the same names and signatures as in Common\d_delphi.pas.
+// Replaces the use of TDStream of Common\d_delphi.pas (issue #224): the decoder
+// needs only Read, Seek, Size, Position and IOResult of its input.
 
 interface
 
@@ -22,13 +20,10 @@ const
   sFromEnd = 2;
 
 type
-  TByteArray = packed array[0..$7FFF] of Byte;
-  PByteArray = ^TByteArray;
-
   /// <summary>
   ///   Source of bytes read by the bit stream of the decoder
   /// </summary>
-  TDStream = class
+  TMp3Source = class
   protected
     FIOResult: Integer;
   public
@@ -41,34 +36,20 @@ type
     function IOResult: Integer;
   end;
 
-/// <summary>
-///   Frees an object and clears the variable that holds it
-/// </summary>
-procedure FreeAndNil(var Obj);
-
 implementation
 
-{ TDStream }
+{ TMp3Source }
 
-constructor TDStream.Create;
+constructor TMp3Source.Create;
 begin
   inherited Create;
   FIOResult := 0;
 end;
 
-function TDStream.IOResult: Integer;
+function TMp3Source.IOResult: Integer;
 begin
   Result := FIOResult;
   FIOResult := 0;
-end;
-
-procedure FreeAndNil(var Obj);
-var
-  LTemp: TObject;
-begin
-  LTemp := TObject(Obj);
-  Pointer(Obj) := nil;
-  LTemp.Free;
 end;
 
 end.

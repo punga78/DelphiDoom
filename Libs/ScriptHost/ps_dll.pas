@@ -27,7 +27,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I PascalScriptCodegen.inc}
 
 unit ps_dll;
 

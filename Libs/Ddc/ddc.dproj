@@ -59,8 +59,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>ShareMM;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_IncludePath>..\..\Common;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>..\PascalScript;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_IncludePath>..\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ExeOutput>..\..\bin\$(Platform)\$(Config)\Tools</DCC_ExeOutput>
         <DCC_DcuOutput>..\..\dcu\$(Platform)\$(Config)\ddc</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

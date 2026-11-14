@@ -46,8 +46,6 @@ procedure RegisterDll_Compiletime(cs: TPSPascalCompiler);
 
 implementation
 
-uses
-  d_delphi;
 
 //==============================================================================
 //
