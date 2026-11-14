@@ -2,6 +2,8 @@
 
 Aggiornato dalla #163: tolte le routine senza alcun riferimento (13 righe delle tabelle e le voci corrispondenti delle sezioni in fondo); il resto e invariato.
 
+Aggiornato dalla #185 (passo 2c-1): `p_map` e in copia unica in `Base\p_map.pas`; cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.MapRules.pas` (`TMapGameRules` e le routine proprie) e le liste dei settori toccati in `Base\p_secnodes.pas`. Dove le tabelle dicono `Doom\p_map`, `Heretic\p_map`, `Hexen\p_map` o `Strife\p_map` si legga una di queste unit: i conteggi non sono stati rigenerati.
+
 Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono citate nei `Libs\<Nome>\CLAUDE.md` (indice in `CLAUDE.md`) come facciata sopra una libreria di `Libs\`), con le funzioni pubbliche e i loro chiamanti. Serve a decidere quali migrare a mano. Rigenerato dal sorgente (master 0f6ff81c) dopo le ondate 1 (#132-#137), 2 (#145) e 3-4 (#142-#144, #146, #148-#156, #41, #48, #83) della fase 2: le unit tolte restano nell'elenco con la nota di chi ne ha preso il posto; dalle ondate 3 e 4 sono entrate le facciate dei thinker (luci, porte, pavimenti, soffitti, piattaforme, teletrasporti), dei thread (`i_threads`, `mt_utils`) e del midi stream (`i_midi_new`). Il conteggio e stato rifatto con uno script che, applicato al commit 094a89bd, riproduce le tabelle del file precedente (572 righe su 573 uguali: `I_Warning` dava una chiamata in meno).
 
 **Come leggerlo**
@@ -1425,7 +1427,7 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Hexen\m_menu.pas`: M_StringWidth2, M_WriteText2
 - `Hexen\p_enemy.pas`: A_AccelBalls, A_CastSorcererSpell, A_DecelBalls, A_FiredSpawnRock, A_KSpiritSeeker, A_KSpiritWeave, A_SlowBalls, A_SorcOffense1, A_SorcOffense2, A_SorcUpdateBallAngle, A_StopBalls, A_WraithFX4, DragonSeek, FaceMovementDirection, KoraxFire1, KoraxFire2, KoraxFire3, KoraxFire4, KoraxFire5, KoraxFire6, KSpiritInit, P_CheckMeleeRange2, P_CheckMissileRange, P_NewChaseDir, P_UpdateMorphedMonster
 - `Hexen\p_inter.pas`: P_ActiveMinotaur, P_AutoUseHealth, P_GiveKey, P_HideSpecialThing, P_MinotaurSlam, P_MorphMonster, P_PoisonPlayer, P_SetDormantArtifact, P_SpawnDroppedMobj, P_TryPickupArtifact, P_TryPickupWeapon, P_TryPickupWeaponPiece
-- `Hexen\p_map.pas`: PIT_ChangeSector, PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine, P_ThingHeightClip
+- `Base\p_map.pas` (copia unica dalla #185, passo 2c-1; prima `Hexen\p_map.pas`): PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine; `Hexen\DelphiDoom.Engine.World.MapRules.pas`: PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse (PIT_ChangeSector e P_ThingHeightClip ora hanno chiamanti fuori dalla unit)
 - `Hexen\p_mobj.pas`: P_FloorBounceMissile, P_PlayerLandedOnThing, P_SpawnMissileAngleZSpeed, P_ZMovement
 - `Hexen\p_pspr.pas`: A_CHolyWeave, A_MLightningAttack2, P_AdjustPlayerAngle, P_CheckMana, P_CHolyFindTarget, P_CHolySeekerMissile, P_CHolyTailFollow, P_CHolyTailRemove, P_FireWeapon, P_MStaffSpawn, P_MStaffSpawn2
 - `Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem
