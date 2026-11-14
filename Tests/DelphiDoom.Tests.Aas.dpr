@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the AAS library of Quake III (DUnitX)             }
 {                                                                              }
@@ -52,6 +52,11 @@ uses
   DelphiDoom.Aas.Move.Movement in '..\Libs\Aas\DelphiDoom.Aas.Move.Movement.pas',
   DelphiDoom.Aas.Move.CollisionWorld in '..\Libs\Aas\DelphiDoom.Aas.Move.CollisionWorld.pas',
   DelphiDoom.Aas.Links in '..\Libs\Aas\DelphiDoom.Aas.Links.pas',
+  DelphiDoom.Aas.Entity.Types in '..\Libs\Aas\DelphiDoom.Aas.Entity.Types.pas',
+  DelphiDoom.Aas.Main.Intf in '..\Libs\Aas\DelphiDoom.Aas.Main.Intf.pas',
+  DelphiDoom.Aas.Entity.Table in '..\Libs\Aas\DelphiDoom.Aas.Entity.Table.pas',
+  DelphiDoom.Aas.Main.StringIndexes in '..\Libs\Aas\DelphiDoom.Aas.Main.StringIndexes.pas',
+  DelphiDoom.Aas.Main.System in '..\Libs\Aas\DelphiDoom.Aas.Main.System.pas',
   DelphiDoom.Aas.Bsp.Intf in '..\Libs\Aas\DelphiDoom.Aas.Bsp.Intf.pas',
   DelphiDoom.Aas.Bsp.CNumbers in '..\Libs\Aas\DelphiDoom.Aas.Bsp.CNumbers.pas',
   DelphiDoom.Aas.Bsp.Entities in '..\Libs\Aas\DelphiDoom.Aas.Bsp.Entities.pas',
@@ -92,6 +97,7 @@ uses
   DelphiDoom.Tests.Aas.Cluster.Golden in 'Source\DelphiDoom.Tests.Aas.Cluster.Golden.pas',
   DelphiDoom.Tests.Aas.Route.Units in 'Source\DelphiDoom.Tests.Aas.Route.Units.pas',
   DelphiDoom.Tests.Aas.Bsp.Units in 'Source\DelphiDoom.Tests.Aas.Bsp.Units.pas',
+  DelphiDoom.Tests.Aas.Main.Units in 'Source\DelphiDoom.Tests.Aas.Main.Units.pas',
   DelphiDoom.Tests.Aas.Move.Scenario in 'Source\DelphiDoom.Tests.Aas.Move.Scenario.pas',
   DelphiDoom.Tests.Aas.Route.Scenario in 'Source\DelphiDoom.Tests.Aas.Route.Scenario.pas',
   DelphiDoom.Tests.Aas.Route.Golden in 'Source\DelphiDoom.Tests.Aas.Route.Golden.pas',

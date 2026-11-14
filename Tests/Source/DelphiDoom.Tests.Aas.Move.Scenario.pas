@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - the scenario of the movement golden  }
 {                                                                              }
@@ -64,7 +64,7 @@ type
 implementation
 
 uses
-  DelphiDoom.BotAi.Types, DelphiDoom.Aas.HeaderCipher, DelphiDoom.Aas.Factory, DelphiDoom.Aas.VectorMath,
+  System.Math, DelphiDoom.BotAi.Types, DelphiDoom.Aas.HeaderCipher, DelphiDoom.Aas.Factory, DelphiDoom.Aas.VectorMath,
   DelphiDoom.Aas.Move.Movement, DelphiDoom.Aas.Move.Settings, DelphiDoom.Tests.Aas.Support;
 
 type
@@ -438,7 +438,11 @@ var
   LTracer: IAasTracer;
   LWorld: IAasBspWorld;
   LLibVars: IBotLibVars;
+  LMask: TArithmeticExceptionMask;
 begin
+  // the C code divides in IEEE arithmetic: the exceptions are masked, as in the engine
+  LMask := SetExceptionMask(exAllArithmeticExceptions);
+  try
   FOutput.Add('FILE ' + AName);
   Move(ABytes[0], LHeader, SizeOf(LHeader));
   if LHeader.Version = AAS_VERSION then
@@ -461,6 +465,9 @@ begin
   WorldFunctions(LSampler);
   Predictions;
   FMovement := nil;
+  finally
+    SetExceptionMask(LMask);
+  end;
 end;
 
 end.

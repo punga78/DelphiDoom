@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: AAS library - the prediction of the movement of a client        }
 {                                                                              }
@@ -83,7 +83,7 @@ type
 implementation
 
 uses
-  DelphiDoom.BotAi.Types, DelphiDoom.Collision.Q3.Types, DelphiDoom.Collision.Q3.Math, DelphiDoom.Aas.VectorMath,
+  System.Math, DelphiDoom.BotAi.Types, DelphiDoom.Collision.Q3.Types, DelphiDoom.Collision.Q3.Math, DelphiDoom.Aas.VectorMath,
   DelphiDoom.Aas.BoxMath, DelphiDoom.Aas.Route.Types;
 
 resourcestring
@@ -486,7 +486,7 @@ begin
       LSide := 0;
     LStep := LDir[LSide] * LFrac;
     LMid[LSide] := AStart[LSide] + LStep;
-    if (LMid[LSide] > LAbsMins[LSide]) and (LMid[LSide] < LAbsMaxs[LSide]) then
+    if (not IsNan(LMid[LSide])) and (LMid[LSide] > LAbsMins[LSide]) and (LMid[LSide] < LAbsMaxs[LSide]) then
     begin
       // check if between bounding planes of next axis
       Inc(LSide);
@@ -494,7 +494,7 @@ begin
         LSide := 0;
       LStep := LDir[LSide] * LFrac;
       LMid[LSide] := AStart[LSide] + LStep;
-      if (LMid[LSide] > LAbsMins[LSide]) and (LMid[LSide] < LAbsMaxs[LSide]) then
+      if (not IsNan(LMid[LSide])) and (LMid[LSide] > LAbsMins[LSide]) and (LMid[LSide] < LAbsMaxs[LSide]) then
       begin
         LMid[LIndex] := LPlaneDist;
         Break;

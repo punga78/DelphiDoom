@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - parity of the routing with the real  }
 {  C code of Quake III                                                         }
@@ -254,7 +254,12 @@ begin
     LName := TPath.GetFileName(LFile);
     LName := Copy(LName, 6, Length(LName) - 6 - Length('.golden.txt') + 1);
     FDataFolder := LFolder + PathDelim;
-    Compare(LName + '.aas', OpenArenaMap(LName), TPath.GetFileName(LFile), 0, True);
+    try
+      Compare(LName + '.aas', OpenArenaMap(LName), TPath.GetFileName(LFile), 0, True);
+    except
+      on E: EZeroDivide do
+        raise Exception.Create('Map ' + LName + ': ' + E.Message);
+    end;
     Inc(LCount);
   end;
   Assert.IsTrue(LCount > 0);
