@@ -1,0 +1,107 @@
+scenario pak0/qagame
+P ------- Game Initialization -------\x0A
+P gamename: baseoa\x0A
+P gamedate: Oct 20 2008\x0A
+P Not logging to disk.\x0A
+P 0 teams with 0 entities\x0A
+P 2 items registered\x0A
+P -----------------------------------\x0A
+R 0
+M f671566d1ac113ce 133 394aab20ad6cd2a8
+end
+scenario pak0/cgame
+R 0
+M f15dbd417de5e87b 616 5f8a9c02ea31e8b6
+end
+scenario pak0/ui
+R 4
+P ^1file not found: scripts/arenas.txt\x0A
+P 0 arenas parsed\x0A
+P ^1file not found: scripts/bots.txt\x0A
+P 0 bots parsed\x0A
+R 0
+M 508a0c19ac1da169 98 e9484151ba26e09a
+end
+scenario pak6-patch085/qagame
+P ------- Game Initialization -------\x0A
+P gamename: baseoa\x0A
+P gamedate: Jan  3 2010\x0A
+P Not logging to disk.\x0A
+P !readconfig: g_admin is not set, not loading configuration from a file\x0A
+P 0 teams with 0 entities\x0A
+P 2 items registered\x0A
+P -----------------------------------\x0A
+R 0
+M 5be1d29405f0419f 210 5d9373fa2cb184ee
+end
+scenario pak6-patch085/cgame
+R 0
+M 923696c3614c0263 720 62c9a56017349214
+end
+scenario pak6-patch085/ui
+R 4
+P ^1file not found: scripts/arenas.txt\x0A
+P 0 arenas parsed\x0A
+P ^1file not found: scripts/bots.txt\x0A
+P 0 bots parsed\x0A
+R 0
+M 0a1ef084c56d1453 98 4dbb074af88c8f5e
+end
+scenario pak6-patch088/qagame
+P ------- Game Initialization -------\x0A
+P gamename: baseoa\x0A
+P gamedate: Jan 28 2012\x0A
+P Not logging to disk.\x0A
+P !readconfig: g_admin is not set, not loading configuration from a file\x0A
+P 0 teams with 0 entities\x0A
+P 2 items registered\x0A
+P -----------------------------------\x0A
+R 0
+M 535681cae31de91e 224 cf7f931fc5532967
+end
+scenario pak6-patch088/cgame
+R 0
+M 929796f8a06d40af 735 224e08dbedf05e52
+end
+scenario pak6-patch088/ui
+R 4
+P ^1file not found: scripts/arenas.txt\x0A
+P 0 arenas parsed\x0A
+P ^1file not found: scripts/bots.txt\x0A
+P 0 bots parsed\x0A
+R 0
+M e09393b61ea8e772 98 ef23542fb426531b
+end
+scenario mp-pak0/qagame
+P ------- Game Initialization -------\x0A
+P gamename: baseoa\x0A
+P gamedate: Oct 20 2008\x0A
+P Not logging to disk.\x0A
+P 0 teams with 0 entities\x0A
+P 2 items registered\x0A
+P -----------------------------------\x0A
+R 0
+M ab07e07050a01db3 162 9c5b2158c0e6686c
+end
+scenario mp-pak0/cgame
+P ^1voice chat file not found: scripts/female1.voice\x0A
+P ^1voice chat file not found: scripts/female2.voice\x0A
+P ^1voice chat file not found: scripts/female3.voice\x0A
+P ^1voice chat file not found: scripts/male1.voice\x0A
+P ^1voice chat file not found: scripts/male2.voice\x0A
+P ^1voice chat file not found: scripts/male3.voice\x0A
+P ^1voice chat file not found: scripts/male4.voice\x0A
+P ^1voice chat file not found: scripts/male5.voice\x0A
+P voice chat memory size = 0\x0A
+P UI menu load time = 0 milli seconds\x0A
+R 0
+M f661d3a3bc1d1951 784 c1e949548e31243c
+end
+scenario mp-pak0/ui
+R 6
+P ^1menu file not found: teaminfo.txt, using default\x0A
+P ^1menu file not found: gameinfo.txt, using default\x0A
+X ^3menu file not found: ui/menus.txt, using default\x0A
+E ^3menu file not found: ui/menus.txt, using default\x0A
+M 5fc1a4042f39a741 15602 34e66e58a0eadbe4
+end
