@@ -1,0 +1,22 @@
+# Keen32 -warp 1 -script: Keen walks, jumps and throws in the first level (the same run at 32 and 64 bit)
+wait 150
+shot w1.png
+down right
+wait 140
+up right
+press ctrl
+wait 60
+shot w2.png
+down right
+wait 100
+press alt
+wait 60
+up right
+shot w3.png
+down left
+wait 120
+up left
+press ctrl
+wait 80
+shot w4.png
+quit
