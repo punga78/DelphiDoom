@@ -24,6 +24,7 @@ type
     FDoorCount: Integer;
     FSpawnAreas: array[0..GREED_MAX_SPAWN_AREAS - 1] of TGreedSpawnArea;
     FSpawnAreaCount: Integer;
+    FView: TGreedWorldView;
     procedure ActivateSlopes;
   public
     constructor Create;
@@ -42,6 +43,7 @@ type
     function GetSpawnAreaCount: Integer;
     function GetSpawnArea(AIndex: Integer): TGreedSpawnArea;
     procedure SetSpawnArea(AIndex: Integer; const AArea: TGreedSpawnArea);
+    function View: PGreedWorldView;
   end;
 
 implementation
@@ -63,6 +65,17 @@ begin
   for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
     SetLength(FPlanes[LPlane], GREED_MAP_TILES);
   SetLength(FMapFlags, GREED_MAP_TILES);
+  // the arrays are never made again: the view stays valid for the life of the world
+  for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
+    FView.Planes[LPlane] := PGreedTiles(@FPlanes[LPlane][0]);
+  FView.MapFlags := PGreedTiles(@FMapFlags[0]);
+  FView.Doors := @FDoors;
+  FView.DoorCount := @FDoorCount;
+end;
+
+function TGreedWorld.View: PGreedWorldView;
+begin
+  Result := @FView;
 end;
 
 procedure TGreedWorld.ActivateSlopes;
@@ -76,7 +89,8 @@ end;
 procedure TGreedWorld.Load(const AMap: IGreedMap);
 var
   LPlane: TGreedPlane;
-  LSpot: Integer;
+  LSpot, LCount: Integer;
+  LSource: TBytes;
 begin
   if not Assigned(AMap) then
     raise EArgumentNilException.Create('AMap');
@@ -84,7 +98,16 @@ begin
   FDoorCount := 0;
   FSpawnAreaCount := 0;
   for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
-    FPlanes[LPlane] := Copy(AMap.Planes[LPlane], 0, GREED_MAP_TILES);
+  begin
+    // copied into the same memory (the view points to it); a plane that is too short ends with zeros
+    LSource := AMap.Planes[LPlane];
+    LCount := Length(LSource);
+    if LCount > GREED_MAP_TILES then
+      LCount := GREED_MAP_TILES;
+    FillChar(FPlanes[LPlane][0], GREED_MAP_TILES, 0);
+    if LCount > 0 then
+      Move(LSource[0], FPlanes[LPlane][0], LCount);
+  end;
   FillChar(FMapFlags[0], Length(FMapFlags), 0);
   for LSpot := 0 to GREED_MAP_TILES - 1 do
   begin
