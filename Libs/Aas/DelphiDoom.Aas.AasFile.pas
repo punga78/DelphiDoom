@@ -17,11 +17,12 @@ unit DelphiDoom.Aas.AasFile;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.MathCore.Types, DelphiDoom.Aas.Types, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Editor.Intf;
+  System.SysUtils, DelphiDoom.MathCore.Types, DelphiDoom.Aas.Types, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Editor.Intf,
+  DelphiDoom.Aas.Reach.Intf;
 
 type
   /// <summary>The lumps of an AAS file; made by TAasReader, or by a test that builds a world</summary>
-  TAasFile = class(TInterfacedObject, IAasFile, IAasFileEditor)
+  TAasFile = class(TInterfacedObject, IAasFile, IAasFileEditor, IAasReachabilityEditor)
   strict private
     FData: TAasFileData;
     class function Raw(const ASource: Pointer; const ASize: Integer): TBytes; static;
@@ -47,6 +48,7 @@ type
     function LumpBytes(const AIndex: Integer): TBytes;
     procedure ReplaceClusterData(const AClusters: TArray<TAasCluster>; const APortals: TArray<TAasPortal>;
       const APortalIndex: TArray<Integer>);
+    procedure ReplaceReachability(const AReachability: TArray<TAasReachability>);
     procedure ReplaceGeometry(const AVertexes: TArray<TVec3>; const AEdges: TArray<TAasEdge>;
       const AEdgeIndex: TArray<Integer>; const AFaces: TArray<TAasFace>; const AFaceIndex: TArray<Integer>;
       const AAreas: TArray<TAasArea>);
@@ -182,6 +184,11 @@ begin
   FData.Clusters := AClusters;
   FData.Portals := APortals;
   FData.PortalIndex := APortalIndex;
+end;
+
+procedure TAasFile.ReplaceReachability(const AReachability: TArray<TAasReachability>);
+begin
+  FData.Reachability := AReachability;
 end;
 
 procedure TAasFile.ReplaceGeometry(const AVertexes: TArray<TVec3>; const AEdges: TArray<TAasEdge>;

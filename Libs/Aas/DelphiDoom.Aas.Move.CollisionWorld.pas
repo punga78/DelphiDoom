@@ -67,6 +67,7 @@ begin
   Result.EndPos := TVec3(LTrace.EndPos);
   Result.Contents := LTrace.Contents;
   Result.EntityNum := LTrace.EntityNum;
+  Result.SurfaceFlags := LTrace.SurfaceFlags;
 end;
 
 end.
