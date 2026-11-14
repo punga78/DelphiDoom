@@ -8,7 +8,7 @@ program SpritesParity;
 // modplay, net) e in quelli di ..\175-render\stubs (d_disk, d_misc, d_ints ...).
 // Uso: SpritesParity <golden.txt | nessuno> [primo scenario] [ultimo scenario]
 uses
-  SysUtils, Classes, Windows, Generics.Collections,
+  SysUtils, Classes, Windows, MMSystem, Math, Generics.Collections,
   g_delphi, protos_h, r_public_h, r_refdef, r_render, r_conten, r_public, raven, d_ints, d_misc, net, sprites,
   harness_convert,
   DelphiDoom.Greed.Types, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.World.Intf,
@@ -350,11 +350,11 @@ var
   Hashes: TList<Cardinal>;
   Scenarios: TArray<TSpriteScenario>;
   Scenario: TSpriteScenario;
-  OriginalTimes, LibTimes, Ratios: TArray<Double>;
+  OriginalTimes, LibTimes, Ratios, OriginalBest, LibBest: TArray<Double>;
   Index, Repetition, Side, Tics, Count: Integer;
   Frequency, Start, Stop: Int64;
   OriginalMin, OriginalMedian, OriginalDispersion, LibMin, LibMedian, LibDispersion, RatioMin, RatioMedian,
-    RatioDispersion, Scrub: Double;
+    RatioDispersion, Scrub, Elapsed, OriginalBestSum, LibBestSum: Double;
 begin
   Original := TOriginalRunner.Create;
   Lib := TLibrarySpriteRunner.Create;
@@ -382,30 +382,51 @@ begin
   SetLength(OriginalTimes, ARepetitions);
   SetLength(LibTimes, ARepetitions);
   SetLength(Ratios, ARepetitions);
+  SetLength(OriginalBest, Count);
+  SetLength(LibBest, Count);
+  for Index := 0 to Count - 1 do
+  begin
+    OriginalBest[Index] := MaxDouble;
+    LibBest[Index] := MaxDouble;
+  end;
+  // the other programs of the machine (compilers, other tests) should not take the processor away
+  SetPriorityClass(GetCurrentProcess, HIGH_PRIORITY_CLASS);
   for Repetition := 0 to ARepetitions - 1 do
   begin
+    OriginalTimes[Repetition] := 0;
+    LibTimes[Repetition] := 0;
     for Side := 0 to 1 do
-      if (Side = 0) <> Odd(Repetition) then
+      for Index := 0 to Count - 1 do
       begin
-        Original.ResetThinkTime;
-        for Index := 0 to Count - 1 do
+        Hashes.Clear;
+        if (Side = 0) <> Odd(Repetition) then
         begin
-          Hashes.Clear;
+          Original.ResetThinkTime;
           Original.Run(Scenarios[Index], Hashes);
-        end;
-        OriginalTimes[Repetition] := Original.ThinkMicroseconds / Tics;
-      end
-      else
-      begin
-        Lib.ResetThinkTime;
-        for Index := 0 to Count - 1 do
+          Elapsed := Original.ThinkMicroseconds;
+          OriginalTimes[Repetition] := OriginalTimes[Repetition] + Elapsed / Tics;
+          if Elapsed < OriginalBest[Index] then
+            OriginalBest[Index] := Elapsed;
+        end
+        else
         begin
-          Hashes.Clear;
+          Lib.ResetThinkTime;
           Lib.Run(Scenarios[Index], Hashes);
+          Elapsed := Lib.ThinkMicroseconds;
+          LibTimes[Repetition] := LibTimes[Repetition] + Elapsed / Tics;
+          if Elapsed < LibBest[Index] then
+            LibBest[Index] := Elapsed;
         end;
-        LibTimes[Repetition] := Lib.ThinkMicroseconds / Tics;
       end;
     Ratios[Repetition] := LibTimes[Repetition] / OriginalTimes[Repetition];
+  end;
+  // the best time of each scenario over all the repetitions: what the noise of the machine touches least
+  OriginalBestSum := 0;
+  LibBestSum := 0;
+  for Index := 0 to Count - 1 do
+  begin
+    OriginalBestSum := OriginalBestSum + OriginalBest[Index] / Tics;
+    LibBestSum := LibBestSum + LibBest[Index] / Tics;
   end;
   // the Think of the original also clears 16 KB of stack (ScrubStack): how much of its time that is
   QueryPerformanceFrequency(Frequency);
@@ -419,6 +440,23 @@ begin
   PrintSeries('originale:', OriginalTimes, '%.2f', OriginalMin, OriginalMedian, OriginalDispersion);
   PrintSeries('libreria: ', LibTimes, '%.2f', LibMin, LibMedian, LibDispersion);
   PrintSeries('rapporto per coppia (libreria/originale):', Ratios, '%.3f', RatioMin, RatioMedian, RatioDispersion);
+  Writeln(Format('somma dei tempi migliori di ogni scenario: originale %.2f, libreria %.2f, rapporto %.3f',
+    [OriginalBestSum, LibBestSum, LibBestSum / OriginalBestSum]));
+  // where the difference is: the six kinds of scenario (0 mixed, 1 bullets, 2 monsters, 3 doors, 4 mines and clones)
+  for Side := 0 to 5 do
+  begin
+    OriginalBestSum := 0;
+    LibBestSum := 0;
+    for Index := 0 to Count - 1 do
+      if Scenarios[Index].Index mod 6 = Side then
+      begin
+        OriginalBestSum := OriginalBestSum + OriginalBest[Index] / Tics;
+        LibBestSum := LibBestSum + LibBest[Index] / Tics;
+      end;
+    if OriginalBestSum > 0 then
+      Writeln(Format('  scenari del tipo %d: originale %.2f, libreria %.2f, rapporto %.3f',
+        [Side, OriginalBestSum, LibBestSum, LibBestSum / OriginalBestSum]));
+  end;
   Writeln(Format('rapporto delle mediane %.3f, dei minimi %.3f; ScrubStack (solo nell''originale) %.2f us per tic: ' +
     'senza, mediane %.3f, minimi %.3f', [LibMedian / OriginalMedian, LibMin / OriginalMin, Scrub,
     LibMedian / (OriginalMedian - Scrub), LibMin / (OriginalMin - Scrub)]));
@@ -435,6 +473,148 @@ begin
   end;
   Writeln(Format('verdetto: oltre il %.0f%%', [AThreshold]));
   Result := 1;
+end;
+
+type
+  // Profilo a campioni: ogni millisecondo ferma il thread principale e ne prende l'indirizzo dell'istruzione
+  TSampler = class(TThread)
+  public
+    Target: THandle;
+    Samples: TArray<Cardinal>;
+    Count: Integer;
+    procedure Execute; override;
+  end;
+
+procedure TSampler.Execute;
+var
+  Context: TContext;
+begin
+  while not Terminated do
+  begin
+    Sleep(1);
+    if (Count < Length(Samples)) and (SuspendThread(Target) <> Cardinal(-1)) then
+    begin
+      Context.ContextFlags := CONTEXT_CONTROL;
+      if GetThreadContext(Target, Context) then
+      begin
+        Samples[Count] := Context.Eip;
+        Inc(Count);
+      end;
+      ResumeThread(Target);
+    end;
+  end;
+end;
+
+// Dove va il tempo di un lato ('o' originale, 'l' libreria): APasses giri di tutti gli scenari con il campionatore, poi
+// i campioni sono attribuiti alle routine con il file .map dell'eseguibile (dcc32 -GD) e si stampano le prime ATop.
+// I campioni caduti nel driver degli scenari e nella traccia ci sono per entrambi i lati: si leggono le righe di
+// sprites.pas / r_public.pas da una parte e di DelphiDoom.Greed.* dall'altra
+procedure Profile(ASide: Char; APasses, ATop: Integer);
+var
+  Runner: TSpriteScenarioRunner;
+  Hashes: TList<Cardinal>;
+  Scenarios: TArray<TSpriteScenario>;
+  Sampler: TSampler;
+  Map: TStringList;
+  Addresses: TArray<Cardinal>;
+  Names: TArray<string>;
+  Hits: TArray<Integer>;
+  Order: TArray<Integer>;
+  Index, Pass, SymbolCount, Lower, Upper, Middle, Position, Swap, Total: Integer;
+  Line, Address: string;
+  Main: THandle;
+  InPublics: Boolean;
+begin
+  if ASide = 'o' then
+    Runner := TOriginalRunner.Create
+  else
+    Runner := TLibrarySpriteRunner.Create;
+  Hashes := TList<Cardinal>.Create;
+  SetLength(Scenarios, SPRITE_SCENARIO_COUNT);
+  for Index := 0 to SPRITE_SCENARIO_COUNT - 1 do
+    Scenarios[Index] := BuildSpriteScenario(Index);
+  DuplicateHandle(GetCurrentProcess, GetCurrentThread, GetCurrentProcess, @Main, 0, False, DUPLICATE_SAME_ACCESS);
+  Sampler := TSampler.Create(True);
+  Sampler.Target := Main;
+  SetLength(Sampler.Samples, 4000000);
+  timeBeginPeriod(1);
+  Sampler.Priority := tpTimeCritical;
+  Sampler.Start;
+  for Pass := 1 to APasses do
+    for Index := 0 to SPRITE_SCENARIO_COUNT - 1 do
+    begin
+      Hashes.Clear;
+      Runner.Run(Scenarios[Index], Hashes);
+    end;
+  Sampler.Terminate;
+  Sampler.WaitFor;
+  timeEndPeriod(1);
+  // the publics by value of the map file: " 0001:000A1234       Unit.Symbol", the code segment starts at $401000
+  Map := TStringList.Create;
+  Map.LoadFromFile(ChangeFileExt(ParamStr(0), '.map'));
+  SetLength(Addresses, Map.Count);
+  SetLength(Names, Map.Count);
+  SymbolCount := 0;
+  InPublics := False;
+  for Index := 0 to Map.Count - 1 do
+  begin
+    Line := Map[Index];
+    if Pos('Publics by Value', Line) > 0 then
+      InPublics := True
+    else if InPublics and (Pos('Line numbers for', Line) > 0) then
+      Break
+    else if InPublics and (Copy(Line, 1, 6) = ' 0001:') then
+    begin
+      Address := Copy(Line, 7, 8);
+      Addresses[SymbolCount] := Cardinal(StrToInt('$' + Address)) + $401000;
+      Names[SymbolCount] := Trim(Copy(Line, 15, MaxInt));
+      Inc(SymbolCount);
+    end;
+  end;
+  SetLength(Hits, SymbolCount);
+  Total := 0;
+  for Index := 0 to Sampler.Count - 1 do
+  begin
+    // the last symbol that does not start after the sample
+    Lower := 0;
+    Upper := SymbolCount - 1;
+    Position := -1;
+    while Lower <= Upper do
+    begin
+      Middle := (Lower + Upper) div 2;
+      if Addresses[Middle] <= Sampler.Samples[Index] then
+      begin
+        Position := Middle;
+        Lower := Middle + 1;
+      end
+      else
+        Upper := Middle - 1;
+    end;
+    if Position >= 0 then
+    begin
+      Inc(Hits[Position]);
+      Inc(Total);
+    end;
+  end;
+  SetLength(Order, SymbolCount);
+  for Index := 0 to SymbolCount - 1 do
+    Order[Index] := Index;
+  Writeln(Format('profilo del lato %s: %d giri, %d campioni', [ASide, APasses, Sampler.Count]));
+  for Index := 0 to ATop - 1 do
+  begin
+    if Index >= SymbolCount then
+      Break;
+    for Pass := Index + 1 to SymbolCount - 1 do
+      if Hits[Order[Pass]] > Hits[Order[Index]] then
+      begin
+        Swap := Order[Index];
+        Order[Index] := Order[Pass];
+        Order[Pass] := Swap;
+      end;
+    if Hits[Order[Index]] = 0 then
+      Break;
+    Writeln(Format('%7d %5.1f%%  %s', [Hits[Order[Index]], Hits[Order[Index]] * 100 / Total, Names[Order[Index]]]));
+  end;
 end;
 
 var
@@ -468,6 +648,13 @@ begin
         Last := SPRITE_SCENARIO_COUNT - 1;
       ExitCode := Measure(StrToIntDef(ParamStr(2), 21), First, Last, StrToFloatDef(ParamStr(5), 3),
         StrToFloatDef(ParamStr(6), 5));
+      Exit;
+    end;
+    // SpritesParity profilo <o|l> [giri] [righe]
+    if GoldenPath = 'profilo' then
+    begin
+      FormatSettings := TFormatSettings.Invariant;
+      Profile((ParamStr(2) + 'l')[1], StrToIntDef(ParamStr(3), 20), StrToIntDef(ParamStr(4), 45));
       Exit;
     end;
     Golden := TStringList.Create;
