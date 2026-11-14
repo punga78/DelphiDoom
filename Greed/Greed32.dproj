@@ -59,7 +59,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_UnitSearchPath>..\Libs\AudioMix;..\Libs\Greed;..\Libs\GameHost;..\Libs\Audio;..\Libs\Mikmod;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\Libs\AudioMix;..\Libs\Greed;..\Libs\GameHost;..\Libs\Audio;..\Libs\Mikmod;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;..\Libs\Net;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Greed</DCC_ExeOutput>
         <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Greed\Greed32</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>

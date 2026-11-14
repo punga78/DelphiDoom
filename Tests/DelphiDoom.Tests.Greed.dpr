@@ -198,7 +198,12 @@ uses
   DelphiDoom.Tests.Greed.MapSession in 'Source\DelphiDoom.Tests.Greed.MapSession.pas',
   DelphiDoom.Tests.Greed.WeaponPictures in 'Source\DelphiDoom.Tests.Greed.WeaponPictures.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
-  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
+  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas',
+  DelphiDoom.Tests.Greed.NetScenarios in 'Source\DelphiDoom.Tests.Greed.NetScenarios.pas',
+  DelphiDoom.Tests.Greed.NetRunner in 'Source\DelphiDoom.Tests.Greed.NetRunner.pas',
+  DelphiDoom.Tests.Greed.NetFakes in 'Source\DelphiDoom.Tests.Greed.NetFakes.pas',
+  DelphiDoom.Tests.Greed.NetLibraryRunner in 'Source\DelphiDoom.Tests.Greed.NetLibraryRunner.pas',
+  DelphiDoom.Tests.Greed.NetParity in 'Source\DelphiDoom.Tests.Greed.NetParity.pas';
 
 var
   Runner: ITestRunner;
