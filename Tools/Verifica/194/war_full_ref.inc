@@ -875,6 +875,74 @@ static void printCommandTables(void)
     worldFree();
 }
 
+/* il costo di ogni parte del tic intero per unita' e per tic (per confrontarlo con quello di Delphi: DELPHIDOOM_WAR_BENCH_FULL):
+   chierici fermi (unita' magiche: hanno lo stato idle, le azioni e il mana), ogni parte misurata con il contatore del sistema */
+__declspec(dllimport) int __stdcall QueryPerformanceCounter(long long* value);
+__declspec(dllimport) int __stdcall QueryPerformanceFrequency(long long* value);
+
+static void benchFull(s32 units, s32 tics)
+{
+    static const char* names[7] = { "stati", "griglia", "azioni", "animazioni", "proiettili", "mana", "incantesimi" };
+    long long freq, t0, t1, acc[7] = {0};
+    worldInit(12345, 678);
+    gSpawnedCount = 0;
+    for (s32 i = 0; i < units; i++)
+        if (!spawnDude(WAR_UNIT_CLERIC, 0, 2 + (i % 56), 2 + (i / 56) * 4))
+            break;
+    QueryPerformanceFrequency(&freq);
+    const f32 delta = 1.0f / 60.0f;
+    for (s32 t = 0; t < tics; t++)
+    {
+        gContext->gameDeltaTime = delta;
+        gContext->gameTime += (f64)delta;
+        QueryPerformanceCounter(&t0);
+        wst_processPendingTransitions(gContext);
+        wst_updateIdleStates(gContext);
+        wst_updateMoveStates(gContext);
+        wst_updatePatrolStates(gContext);
+        wst_updateFollowStates(gContext);
+        wst_updateAttackStates(gContext);
+        wst_updateGoldStates(gContext);
+        wst_updateMiningStates(gContext);
+        wst_updateWoodStates(gContext);
+        wst_updateChoppingStates(gContext);
+        wst_updateDeliverStates(gContext);
+        wst_updateDeathStates(gContext);
+        wst_updateCollapseStates(gContext);
+        wst_updateTrainStates(gContext);
+        wst_updateUpgradeStates(gContext);
+        wst_updateBuildStates(gContext);
+        wst_updateRepairStates(gContext);
+        wst_updateRepairingStates(gContext);
+        wst_updateCastStates(gContext);
+        wst_updateWaitStates(gContext);
+        QueryPerformanceCounter(&t1); acc[0] += t1 - t0; t0 = t1;
+        wgrid_build(gContext);
+        QueryPerformanceCounter(&t1); acc[1] += t1 - t0; t0 = t1;
+        updateActions(gContext);
+        QueryPerformanceCounter(&t1); acc[2] += t1 - t0; t0 = t1;
+        wanim_updateAnimations(gContext);
+        QueryPerformanceCounter(&t1); acc[3] += t1 - t0; t0 = t1;
+        updateProjectiles(gContext);
+        QueryPerformanceCounter(&t1); acc[4] += t1 - t0; t0 = t1;
+        updateMagic(gContext);
+        QueryPerformanceCounter(&t1); acc[5] += t1 - t0; t0 = t1;
+        updateSpells(gContext);
+        QueryPerformanceCounter(&t1); acc[6] += t1 - t0;
+    }
+    s32 count = we_getEntitiesOfType(gContext, WAR_ENTITY_TYPE_UNIT)->count;
+    double total = 0;
+    printf("C %d unita', %d tic (us per unita' e tic):", count, tics);
+    for (s32 k = 0; k < 7; k++)
+    {
+        double us = 1e6 * (double)acc[k] / (double)freq / ((double)count * tics);
+        total += us;
+        printf(" %s %.4f", names[k], us);
+    }
+    printf(" totale %.4f\n", total);
+    worldFree();
+}
+
 static int fullModeOf(const char* name)
 {
     if (strcmp(name, "commands") == 0) return 0;

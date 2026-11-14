@@ -203,8 +203,14 @@ begin
   LDelta := LContext.Clock^.DeltaTime;
   LClouds := LContext.Pool.OfType[WAR_ENTITY_POISON_CLOUD];
   LSights := LContext.Pool.OfType[WAR_ENTITY_SIGHT];
-  LGone := TList<Word>.Create;
-  LNear := TList<Integer>.Create;
+  // the two lists are made only in the tics that have a cloud or a sight (almost none): nothing is allocated otherwise
+  LGone := nil;
+  LNear := nil;
+  if (LClouds.Count > 0) or (LSights.Count > 0) then
+  begin
+    LGone := TList<Word>.Create;
+    LNear := TList<Integer>.Create;
+  end;
   try
     for LIndex := 0 to LClouds.Count - 1 do
     begin
@@ -259,8 +265,9 @@ begin
         end;
       end;
     end;
-    for LIndex := 0 to LGone.Count - 1 do
-      LContext.Entities.RemoveEntityById(LGone[LIndex]);
+    if Assigned(LGone) then
+      for LIndex := 0 to LGone.Count - 1 do
+        LContext.Entities.RemoveEntityById(LGone[LIndex]);
   finally
     LNear.Free;
     LGone.Free;

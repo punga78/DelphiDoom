@@ -47,12 +47,15 @@ type
     procedure DovrebbeFarConvivereRaccoltaCombattimentoCostruzioneEIncantesimiNelTicIntero;
     [Test]
     procedure DovrebbeScrivereLeRigheELoStatoSeRichiesto;
+    [Test]
+    procedure DovrebbeMisurareIlCostoDiOgniParteDelTicSeRichiesto;
   end;
 
 implementation
 
 uses
-  DelphiDoom.War.Model.Types;
+  System.Diagnostics, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.ActionRunner,
+  DelphiDoom.War.Model.Animations, DelphiDoom.War.Model.Spells, DelphiDoom.Tests.War.CommandRig;
 
 const
   SCENARIOS = 12;
@@ -233,6 +236,96 @@ begin
     LLines.Free;
   end;
   Assert.Pass('scritto ' + LParts[3]);
+end;
+
+procedure TTestWarFullParity.DovrebbeMisurareIlCostoDiOgniParteDelTicSeRichiesto;
+const
+  NAMES: array[0..6] of string = ('stati', 'griglia', 'azioni', 'animazioni', 'proiettili', 'mana', 'incantesimi');
+var
+  LRequest: string;
+  LParts: TArray<string>;
+  LUnits: Integer;
+  LTics: Integer;
+  LRig: TCommandRig;
+  LIndex: Integer;
+  LTic: Integer;
+  LSlot: Integer;
+  LCount: Integer;
+  LWatch: TStopwatch;
+  LTicks: array[0..6] of Int64;
+  LLast: Int64;
+  LNow: Int64;
+  LLine: string;
+  LTotal: Double;
+  LMicroseconds: Double;
+
+  procedure Lap(ASection: Integer);
+  begin
+    LNow := LWatch.ElapsedTicks;
+    Inc(LTicks[ASection], LNow - LLast);
+    LLast := LNow;
+  end;
+
+begin
+  // DELPHIDOOM_WAR_BENCH_FULL=unita,tic,file: the same world as `war_model_ref benchfull` (clerics that stand still),
+  // each part of the whole tic timed apart; microseconds per unit and tic
+  LRequest := GetEnvironmentVariable('DELPHIDOOM_WAR_BENCH_FULL');
+  if LRequest = '' then
+  begin
+    Assert.Pass('DELPHIDOOM_WAR_BENCH_FULL non impostata');
+    Exit;
+  end;
+  LParts := LRequest.Split([',']);
+  Assert.AreEqual<Integer>(3, Length(LParts), 'unita,tic,file');
+  LUnits := StrToInt(LParts[0]);
+  LTics := StrToInt(LParts[1]);
+  for LIndex := 0 to High(LTicks) do
+    LTicks[LIndex] := 0;
+  LRig := TCommandRig.Create(12345);
+  try
+    for LIndex := 0 to LUnits - 1 do
+    begin
+      LSlot := LRig.World.Entities.CreateDude(WAR_UNIT_CLERIC, 2 + (LIndex mod 56), 2 + (LIndex div 56) * 4, 0, False);
+      if LSlot = 0 then
+        Break;
+      LRig.World.Entities.SetInitialIdle(LSlot);
+    end;
+    LCount := LRig.Context.Pool.OfType[WAR_ENTITY_UNIT].Count;
+    LWatch := TStopwatch.StartNew;
+    LLast := LWatch.ElapsedTicks;
+    for LTic := 1 to LTics do
+    begin
+      LRig.World.AdvanceClock(0.016666668);
+      LLast := LWatch.ElapsedTicks;
+      LRig.World.Update;
+      Lap(0);
+      LRig.Context.Combat.BuildNearUnits;
+      Lap(1);
+      TWarActionRunner.UpdateAll(LRig.Context);
+      Lap(2);
+      TWarAnimations.UpdateAll(LRig.Context);
+      Lap(3);
+      LRig.Context.Combat.UpdateProjectiles;
+      Lap(4);
+      TWarSpells.UpdateMagic(LRig.Machine);
+      Lap(5);
+      TWarSpells.UpdateSpells(LRig.Machine);
+      Lap(6);
+    end;
+  finally
+    LRig.Free;
+  end;
+  LLine := Format('Delphi %d bit, %d unita'', %d tic (us per unita'' e tic):', [SizeOf(Pointer) * 8, LCount, LTics]);
+  LTotal := 0;
+  for LIndex := 0 to High(LTicks) do
+  begin
+    LMicroseconds := 1E6 * LTicks[LIndex] / TStopwatch.Frequency / (LCount * Double(LTics));
+    LTotal := LTotal + LMicroseconds;
+    LLine := LLine + Format(' %s %.4f', [NAMES[LIndex], LMicroseconds], TFormatSettings.Invariant);
+  end;
+  LLine := LLine + Format(' totale %.4f', [LTotal], TFormatSettings.Invariant);
+  TFile.WriteAllText(LParts[2], LLine + sLineBreak);
+  Assert.Pass(LLine);
 end;
 
 end.

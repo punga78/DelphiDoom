@@ -1769,6 +1769,11 @@ int main(int argc, char** argv)
             runFull(fullModeOf(argv[1]), seed, -1, true, false);
         return 0;
     }
+    if (strcmp(argv[1], "benchfull") == 0)
+    {
+        benchFull(argc > 2 ? atoi(argv[2]) : 400, argc > 3 ? atoi(argv[3]) : 3000);
+        return 0;
+    }
     if (strcmp(argv[1], "command-tables") == 0)
     {
         printCommandTables();

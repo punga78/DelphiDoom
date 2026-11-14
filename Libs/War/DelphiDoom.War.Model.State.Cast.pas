@@ -258,7 +258,7 @@ begin
   LUnit := @LEntity^.UnitData;
   LUnitTile := TWarUnitGeometry.CenterTile(LEntity);
   LTargetTile := TWarModelMath.MapToTile(AState^.TargetPosition);
-  LStats := LContext.Database.GetSpellStats(AState^.SpellType);
+  LStats := LContext.SpellStats(AState^.SpellType);
   if (LStats.Range <> 0) and not TWarUnitGeometry.TileInRange(LEntity, LTargetTile, LStats.Range) then
   begin
     LFollow := AMachine.CreateFollow(ASlot, AState^.TargetEntityId, AState^.TargetPosition,

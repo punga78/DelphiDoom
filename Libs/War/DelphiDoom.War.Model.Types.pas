@@ -459,12 +459,10 @@ resourcestring
   SWarModelBadPlayer = 'The player %d does not exist';
   SWarModelBadEntity = 'The slot %d does not hold a unit';
   SWarModelNotRegistered = 'The model needs %s';
-  SWarModelTooManyAnimations = 'The entity %d has too many animations';
   SWarModelSelectionGone = 'The selected entity %d does not exist any more';
   SWarModelBadCommand = 'The command %d is not known';
   SWarModelBadSelection = 'The command %d needs %s';
   SWarModelBadGroup = 'The selection group %d does not exist';
-  SWarModelNoWallPiece = 'The wall has no piece at %d, %d';
 
 implementation
 

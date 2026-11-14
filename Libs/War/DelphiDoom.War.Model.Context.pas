@@ -53,6 +53,8 @@ type
     FSpellEvents: IWarSpellEvents;
     FViewportTop: Single;
     FInterruptibleCasts: Boolean;
+    FSpellStats: array[0..WAR_SPELL_COUNT - 1] of TWarSpellStats;
+    FSpellStatsRead: array[0..WAR_SPELL_COUNT - 1] of Boolean;
     FHurryUp: Boolean;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
@@ -131,6 +133,11 @@ type
     /// </summary>
     function UnitSpeed(AUnitType, ALevel: Integer): Single;
     /// <summary>
+    ///   wu_getSpellStats, read from the database the first time a spell is asked for (a unit that casts asks at every
+    ///   tic: no call to an interface there after the first). EWarException for a type that is not a spell (the original stops on an assert)
+    /// </summary>
+    function SpellStats(ASpellType: Integer): TWarSpellStats;
+    /// <summary>
     ///   The directions of the original are an enum: the game written for MSVC (signed) turns from North to North West, the same C built with gcc (unsigned) turns
     ///   from North to North, because a negative step wraps around. False (the default) is the first; the golden of parity was made with gcc and sets True
     /// </summary>
@@ -175,6 +182,18 @@ begin
         FSpeeds[LIndex, LLevel] := LStats.Speeds[LLevel];
   FClock.GlobalSpeed := 1.0;
   FClock.GameSpeed := 2;
+end;
+
+function TWarModelContext.SpellStats(ASpellType: Integer): TWarSpellStats;
+begin
+  if (ASpellType < 0) or (ASpellType >= WAR_SPELL_COUNT) then
+    raise EWarException.CreateFmt(SWarModelNoSpellStats, [ASpellType]);
+  if not FSpellStatsRead[ASpellType] then
+  begin
+    FSpellStats[ASpellType] := FDatabase.GetSpellStats(ASpellType);
+    FSpellStatsRead[ASpellType] := True;
+  end;
+  Result := FSpellStats[ASpellType];
 end;
 
 destructor TWarModelContext.Destroy;

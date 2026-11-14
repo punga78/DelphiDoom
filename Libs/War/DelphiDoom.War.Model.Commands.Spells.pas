@@ -116,7 +116,7 @@ var
   LUnit: PWarEntity;
 begin
   Result := False;
-  LStats := Context.Database.GetSpellStats(ASpellType);
+  LStats := Context.SpellStats(ASpellType);
   for LIndex := 0 to Commander.Selection.Count - 1 do
   begin
     LSlot := SelectedSlot(LIndex);

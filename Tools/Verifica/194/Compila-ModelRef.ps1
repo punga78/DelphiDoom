@@ -15,7 +15,9 @@
 param(
   [Parameter(Mandatory)][string]$Out,
   [string]$War1 = 'C:\Progetti\DelphiDoom\Reference\war1',
-  [string]$Gcc = 'C:\Progetti\DelphiDoom\Reference\_dati\_strumenti\w64devkit\w64devkit\bin\gcc.exe'
+  [string]$Gcc = 'C:\Progetti\DelphiDoom\Reference\_dati\_strumenti\w64devkit\w64devkit\bin\gcc.exe',
+  # il livello di ottimizzazione: i golden si fanno con -O1; -O2 serve solo a misurare (war_model_ref bench, benchfull)
+  [string]$Opt = '-O1'
 )
 $ErrorActionPreference = 'Stop'
 if ((Test-Path $Out) -and (Get-ChildItem $Out -Force | Select-Object -First 1)) { throw "La cartella $Out non e' vuota." }
@@ -34,7 +36,7 @@ Copy-Item (Join-Path $PSScriptRoot 'war_full_ref.inc') (Join-Path $Out 'war_full
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'
-$flags = @('-std=gnu11', '-O1', '-ffunction-sections', '-fdata-sections', '-Wno-misleading-indentation',
+$flags = @('-std=gnu11', $Opt, '-ffunction-sections', '-fdata-sections', '-Wno-misleading-indentation',
            "-I$Out", "-I$(Join-Path $War1 'deps\include')", "-I$(Join-Path $War1 'src')")
 $ErrorActionPreference = 'Continue'   # gcc scrive gli avvisi su stderr
 & $Gcc @flags -c (Join-Path $Out 'war_model_ref.c') -o $obj 2>&1 | Out-Null

@@ -84,6 +84,8 @@ type
     [Test]
     procedure DovrebbeSeguireIlBersaglioFuoriPortata;
     [Test]
+    procedure DovrebbeMisurareLaPortataAlPuntoDellOrdine;
+    [Test]
     procedure DovrebbeCreareUnaVistaCheDuraDieciSecondi;
     [Test]
     procedure DovrebbeAvvisareSenzaManaPerLaVista;
@@ -503,6 +505,22 @@ begin
   Assert.IsTrue(FRig.Machine.Contains(LCleric, WAR_STATE_CAST));
 end;
 
+procedure TTestWarSpells.DovrebbeMisurareLaPortataAlPuntoDellOrdine;
+var
+  LCleric: Integer;
+  LFootman: Integer;
+begin
+  LCleric := FRig.AddDude(WAR_UNIT_CLERIC, 10, 10);
+  LFootman := FRig.AddDude(WAR_UNIT_FOOTMAN, 50, 50);
+  FRig.UnitOf(LCleric)^.ManaTime := 1000;
+  FRig.UnitOf(LFootman)^.Hp := 10;
+  // defect of the original kept: the point of the order is next to the caster, the target is far away, and it is healed
+  Cast(LCleric, WAR_SPELL_HEALING, LFootman, FRig.TilePoint(12, 10));
+  Assert.IsTrue(CastDone(LCleric));
+  Assert.IsFalse(FRig.Machine.Contains(LCleric, WAR_STATE_FOLLOW));
+  Assert.AreEqual(10 + 100 div 6, FRig.UnitOf(LFootman)^.Hp);
+end;
+
 procedure TTestWarSpells.DovrebbeCreareUnaVistaCheDuraDieciSecondi;
 var
   LCleric: Integer;
@@ -795,6 +813,15 @@ var
   LIndex: Integer;
   LValue: Single;
 begin
+  // the statistics of the spells are those of the tables of the game; a type that is not a spell is an error
+  Assert.AreEqual(6, FRig.Context.SpellStats(WAR_SPELL_HEALING).ManaCost);
+  Assert.AreEqual(6, FRig.Context.SpellStats(WAR_SPELL_HEALING).Range);
+  Assert.AreEqual<Integer>(WAR_UNIT_DAEMON, FRig.Context.SpellStats(WAR_SUMMON_DAEMON).MappedUnit);
+  Assert.WillRaise(
+    procedure
+    begin
+      FRig.Context.SpellStats(WAR_SPELL_COUNT);
+    end, EWarException);
   for LIndex := 1 to 200 do
   begin
     LValue := TWarSpells.RandomUnit(FRig.Context);
