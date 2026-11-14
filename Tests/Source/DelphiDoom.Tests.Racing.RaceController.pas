@@ -27,6 +27,7 @@ type
     procedure RaceStarted;
     procedure LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
     procedure RaceFinished(const AScore: TRacingScore; AWon: Boolean);
+    procedure Collision(AKeyA, AKeyB: Cardinal);
     procedure LeaveLevel;
     property Lines: TStringList read FLines;
     property Tic: Integer read FTic write FTic;
@@ -114,6 +115,11 @@ end;
 procedure TFakeRaceEvents.RaceFinished(const AScore: TRacingScore; AWon: Boolean);
 begin
   FLines.Add(Format('%d finished %d', [FTic, Ord(AWon)]));
+end;
+
+procedure TFakeRaceEvents.Collision(AKeyA, AKeyB: Cardinal);
+begin
+  FLines.Add(Format('%d collision', [FTic]));
 end;
 
 procedure TFakeRaceEvents.LeaveLevel;

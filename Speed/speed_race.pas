@@ -101,6 +101,14 @@ function SH_RaceSettings: IRacingRaceState;
 
 //==============================================================================
 //
+// SH_Random
+// The random numbers of the race (the saved game keeps where they are)
+//
+//==============================================================================
+function SH_Random: IGameRandom;
+
+//==============================================================================
+//
 // SH_ScoreTable
 // The table of the best times (the file SPEED.REC of the data folder)
 //
@@ -168,11 +176,14 @@ uses
   DelphiDoom.MathCore.Types,
   DelphiDoom.Engine.Speed.Geometry,
   DelphiDoom.Engine.Speed.Effects,
+  speed_controls,
   speed_statelog;
 
 const
   LAPS_OPTION = '-laps';
   CAR_OPTION = '-car';
+  MANUAL_OPTION = '-manual';
+  PRACTICE_OPTION = '-practice';
   DEFAULT_LAPS = 2;
   DEFAULT_PLAYER_CAR = 1;
   GROUND_LUMP_FORMAT = 'FMAP%.2d';
@@ -231,6 +242,16 @@ end;
 function SH_RaceSettings: IRacingRaceState;
 begin
   Result := race_settings;
+end;
+
+//==============================================================================
+//
+// SH_Random
+//
+//==============================================================================
+function SH_Random: IGameRandom;
+begin
+  Result := race_random;
 end;
 
 //==============================================================================
@@ -369,6 +390,10 @@ begin
   Result.ForwardMove := cmd.forwardmove;
   // the transmission is automatic: the gear buttons are not read yet
   Result.Buttons := 0;
+  if cmd.jump_crouch and SHCMD_GEARUP <> 0 then
+    Result.Buttons := Result.Buttons or RACING_BUTTON_GEAR_UP
+  else if cmd.jump_crouch and SHCMD_GEARDOWN <> 0 then
+    Result.Buttons := Result.Buttons or RACING_BUTTON_GEAR_DOWN;
 end;
 
 //==============================================================================
@@ -580,9 +605,16 @@ begin
 
   race_crashtic := SH_ParmInt('-speedcrash', -1);
   race_settings := TRacingFactory.CreateRaceState;
-  race_settings.SetNumLaps(SH_ParmInt(LAPS_OPTION, DEFAULT_LAPS));
+  race_settings.SetNumLaps(SH_ParmInt(LAPS_OPTION, speed_laps));
+  if (M_CheckParm(MANUAL_OPTION) > 0) or (speed_transmission = 1) then
+    race_settings.SetTransmissionType(RACING_TRANSMISSION_MANUAL)
+  else
+    race_settings.SetTransmissionType(RACING_TRANSMISSION_AUTOMATIC);
   race_settings.SetCarType(TRacingCarType.Any);
-  race_settings.SetGameType(TRacingGameType.SingleRace);
+  if M_CheckParm(PRACTICE_OPTION) > 0 then
+    race_settings.SetGameType(TRacingGameType.Practice)
+  else
+    race_settings.SetGameType(TRacingGameType(speed_gametype));
   race_settings.SetSkill(SH_ToRacingSkill);
   race_settings.SetEpisode(gameepisode);
   race_settings.SetMap(gamemap);
@@ -601,7 +633,7 @@ begin
   geometry := TEngineSpeedGeometry.Create;
   race_effects_object := TEngineSpeedEffects.Create(SH_FindCarMobj);
   race_effects := race_effects_object;
-  race_events_object := TEngineSpeedRaceEvents.Create(race_log);
+  race_events_object := TEngineSpeedRaceEvents.Create(race_log, SH_FindCarMobj);
   race_events := race_events_object;
 
   ground := TRacingFactory.CreateGround(race_random);
@@ -646,7 +678,7 @@ begin
   end;
 
   player := @players[consoleplayer];
-  playercar := SH_ParmInt(CAR_OPTION, DEFAULT_PLAYER_CAR);
+  playercar := SH_ParmInt(CAR_OPTION, speed_car);
   if (playercar < 0) or (playercar >= RACING_CAR_COUNT) then
     playercar := DEFAULT_PLAYER_CAR;
   carids := TRacingFactory.CreateGridAssigner(race_random).Assign(aicount, TRacingCarType.Any, [playercar]);

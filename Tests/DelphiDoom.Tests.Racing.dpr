@@ -55,6 +55,8 @@ uses
   DelphiDoom.Racing.PlayerEventRelay in '..\Libs\Racing\DelphiDoom.Racing.PlayerEventRelay.pas',
   DelphiDoom.Racing.RaceController in '..\Libs\Racing\DelphiDoom.Racing.RaceController.pas',
   DelphiDoom.Tests.Racing.RaceController in 'Source\DelphiDoom.Tests.Racing.RaceController.pas',
+  DelphiDoom.Racing.CarCollisions in '..\Libs\Racing\DelphiDoom.Racing.CarCollisions.pas',
+  DelphiDoom.Tests.Racing.CarCollisions in 'Source\DelphiDoom.Tests.Racing.CarCollisions.pas',
   DelphiDoom.Racing.SaveGameCodec in '..\Libs\Racing\DelphiDoom.Racing.SaveGameCodec.pas',
   DelphiDoom.Tests.Racing.SaveGameCodec in 'Source\DelphiDoom.Tests.Racing.SaveGameCodec.pas';
 

@@ -15,7 +15,7 @@ unit DelphiDoom.Racing.SaveGameCodec;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Racing.RaceController;
+  System.SysUtils, DelphiDoom.MathCore.Intf, DelphiDoom.Racing.RaceController;
 
 type
   /// <summary>
@@ -28,13 +28,14 @@ type
   TRacingSaveGameCodec = class
   public
     /// <summary>The state of the race of the controller as bytes</summary>
-    class function Encode(const AController: TRacingRaceController): TBytes; static;
+    class function Encode(const AController: TRacingRaceController; const ARandom: IGameRandom = nil): TBytes; static;
     /// <summary>
     ///   Puts a state back into a controller that has the same cars and the same track as the one that
     ///   was saved. Nothing is changed when the bytes are not a state of this race
     /// </summary>
     /// <returns>False when the bytes are too short, of another version, of another number of cars or of points</returns>
-    class function Decode(const AController: TRacingRaceController; const ABytes: TBytes): Boolean; static;
+    class function Decode(const AController: TRacingRaceController; const ABytes: TBytes;
+      const ARandom: IGameRandom = nil): Boolean; static;
   end;
 
 implementation
@@ -44,7 +45,7 @@ uses
 
 const
   MAGIC: array[0..7] of AnsiChar = ('R', 'A', 'C', 'I', 'N', 'G', 'S', 'V');
-  VERSION = 1;
+  VERSION = 2;
 
 type
   TWriter = class
@@ -277,11 +278,13 @@ end;
 
 { TRacingSaveGameCodec }
 
-class function TRacingSaveGameCodec.Encode(const AController: TRacingRaceController): TBytes;
+class function TRacingSaveGameCodec.Encode(const AController: TRacingRaceController; const ARandom: IGameRandom): TBytes;
 var
   LWriter: TWriter;
   LIndex, LCar, LVisit: Integer;
   LRace: IRacingRaceSettings;
+  LHasRandom: Boolean;
+  LRandomIndex, LRandomSeed: Integer;
   LState: TRacingControllerState;
   LPath: PRacingPath;
 begin
@@ -291,6 +294,18 @@ begin
       LWriter.Int(Ord(MAGIC[LIndex]));
     LWriter.Int(VERSION);
     LRace := AController.Race;
+    // the random numbers of the system (the grip of the ground): where the table is and its step
+    LWriter.Bool(Assigned(ARandom));
+    if Assigned(ARandom) then
+    begin
+      LWriter.Int(ARandom.SystemIndex);
+      LWriter.Int(ARandom.SystemSeed);
+    end
+    else
+    begin
+      LWriter.Int(0);
+      LWriter.Int(0);
+    end;
     LWriter.Int(Ord(LRace.Status));
     LWriter.Int(Ord(LRace.CarType));
     LWriter.Int(Ord(LRace.GameType));
@@ -335,7 +350,7 @@ begin
 end;
 
 class function TRacingSaveGameCodec.Decode(const AController: TRacingRaceController;
-  const ABytes: TBytes): Boolean;
+  const ABytes: TBytes; const ARandom: IGameRandom): Boolean;
 var
   LReader: TReader;
   LIndex, LCar, LVisit, LCount: Integer;
@@ -345,6 +360,8 @@ var
   LVisits: TArray<TRacingPathVisit>;
   LPath: PRacingPath;
   LRace: IRacingRaceSettings;
+  LHasRandom: Boolean;
+  LRandomIndex, LRandomSeed: Integer;
 begin
   Result := False;
   LReader := TReader.Create(ABytes);
@@ -354,6 +371,9 @@ begin
         Exit;
     if LReader.Int <> VERSION then
       Exit;
+    LHasRandom := LReader.Bool;
+    LRandomIndex := LReader.Int;
+    LRandomSeed := LReader.Int;
     LStatus := LReader.Int;
     LCarType := LReader.Int;
     LGameType := LReader.Int;
@@ -396,6 +416,11 @@ begin
       Exit;
 
     // everything was read: now the controller changes
+    if Assigned(ARandom) and LHasRandom then
+    begin
+      ARandom.SystemSeed := LRandomSeed;
+      ARandom.SystemIndex := LRandomIndex;
+    end;
     LRace := AController.Race;
     LRace.SetStatus(TRacingStatus(LStatus));
     LRace.SetCarType(TRacingCarType(LCarType));

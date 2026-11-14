@@ -73,8 +73,11 @@ type
     FFinalScore: TRacingScore;
     FHasFinalScore: Boolean;
     FInputs: TArray<TRacingPositionInput>;
+    FTouching: TArray<Boolean>;
+    FCollisions: Boolean;
     procedure UpdateTimeline(ALevelTime: Integer);
     procedure UpdatePositions;
+    procedure ResolveCollisions;
     procedure CheckPlayerFinish(ALevelTime: Integer);
     procedure PlayerLapCompleted(const AScore: TRacingScore);
     procedure PlayerScoreChanged(const AScore: TRacingScore);
@@ -98,6 +101,8 @@ type
     /// <summary>The car with the given index, to copy its fields to and from the object of the game</summary>
     property Cars[AIndex: Integer]: PRacingCarState read GetCar;
     property Count: Integer read FCount;
+    /// <summary>The cars that touch push each other away and bump (on by default)</summary>
+    property Collisions: Boolean read FCollisions write FCollisions;
     /// <summary>The index of the car of the player, -1 if there is none</summary>
     property PlayerIndex: Integer read FPlayerIndex;
     /// <summary>The result of the player once the race is over (HasFinalScore)</summary>
@@ -116,7 +121,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Racing.CarData;
+  DelphiDoom.Racing.CarData, DelphiDoom.Racing.CarCollisions;
 
 { TRacingRaceController }
 
@@ -152,6 +157,7 @@ begin
   FPilotName := APilotName;
   FPlayerIndex := -1;
   FFinishTic := -1;
+  FCollisions := True;
   ARelay.OnLapCompleted := PlayerLapCompleted;
   ARelay.OnScoreChanged := PlayerScoreChanged;
 end;
@@ -304,8 +310,28 @@ begin
     FCars[LIndex].OldX := FCars[LIndex].X;
     FCars[LIndex].OldY := FCars[LIndex].Y;
   end;
+  ResolveCollisions;
   UpdatePositions;
   CheckPlayerFinish(ALevelTime);
+end;
+
+procedure TRacingRaceController.ResolveCollisions;
+var
+  LCars: array of PRacingCarState;
+  LIndex: Integer;
+  LBumps: TArray<TRacingBump>;
+  LNow: TArray<Boolean>;
+begin
+  if (FCount < 2) or not FCollisions then
+    Exit;
+  SetLength(LCars, FCount);
+  for LIndex := 0 to FCount - 1 do
+    LCars[LIndex] := @FCars[LIndex];
+  LNow := nil;
+  LBumps := TRacingCarCollisions.Resolve(LCars, FTouching, LNow);
+  FTouching := LNow;
+  for LIndex := 0 to High(LBumps) do
+    FEvents.Collision(LBumps[LIndex].KeyA, LBumps[LIndex].KeyB);
 end;
 
 end.

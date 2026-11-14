@@ -31,6 +31,7 @@ uses
   st_stuff,
   speed_hud,
   speed_saveg,
+  speed_controls,
   g_game,
   DelphiDoom.Engine.Parity.PilotCommand,
   speed_intermission;
@@ -40,6 +41,8 @@ begin
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
   // the gauge, the lap, the position and the time of the race in the place of the status bar of Doom
   ST_ConfigureReplacement(SH_HudDrawer);
+  // the gear keys in the ticcmd (the transmission is manual with -manual or speed_transmission 1)
+  G_ConfigureTiccmdExtension(SH_TiccmdKeys);
   // the state of the race in a file beside each saved game of the engine
   G_ConfigureSaveGameExtension(SH_SaveGame, SH_LoadGame);
   // the steps "save" and "load" of a script of commands

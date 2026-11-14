@@ -12,7 +12,7 @@ unit DelphiDoom.Engine.Speed.RaceEvents;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.Racing.Types, DelphiDoom.Racing.Intf;
+  System.SysUtils, DelphiDoom.Logging.Intf, DelphiDoom.Racing.Types, DelphiDoom.Racing.Intf;
 
 type
   /// <summary>How the race of the player ended, for the display</summary>
@@ -27,6 +27,7 @@ type
   TEngineSpeedRaceEvents = class(TInterfacedObject, IRacingRaceEvents)
   strict private
     FLog: ILog;
+    FFindCar: TFunc<Cardinal, Pointer>;
     FCountdownStep: Integer;
     FCountdownTic: Integer;
     FOutcome: TSpeedRaceOutcome;
@@ -37,11 +38,12 @@ type
     procedure Say(const AText: string);
   public
     /// <exception cref="EArgumentNilException">ALog is nil</exception>
-    constructor Create(const ALog: ILog);
+    constructor Create(const ALog: ILog; const AFindCar: TFunc<Cardinal, Pointer>);
     procedure Countdown(AStep: TRacingCountdownStep);
     procedure RaceStarted;
     procedure LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
     procedure RaceFinished(const AScore: TRacingScore; AWon: Boolean);
+    procedure Collision(AKeyA, AKeyB: Cardinal);
     procedure LeaveLevel;
     /// <summary>The last step of the start that was announced (Ord of TRacingCountdownStep), -1 before the first</summary>
     property CountdownStep: Integer read FCountdownStep;
@@ -58,7 +60,6 @@ type
 implementation
 
 uses
-  System.SysUtils,
   d_player,
   g_game,
   p_tick,
@@ -73,12 +74,15 @@ resourcestring
 
 { TEngineSpeedRaceEvents }
 
-constructor TEngineSpeedRaceEvents.Create(const ALog: ILog);
+constructor TEngineSpeedRaceEvents.Create(const ALog: ILog; const AFindCar: TFunc<Cardinal, Pointer>);
 begin
   inherited Create;
   if not Assigned(ALog) then
     raise EArgumentNilException.Create('ALog');
   FLog := ALog;
+  if not Assigned(AFindCar) then
+    raise EArgumentNilException.Create('AFindCar');
+  FFindCar := AFindCar;
   FCountdownStep := -1;
   FLapRecordTic := -1;
   FLapCompletedTic := -1;
@@ -136,6 +140,11 @@ begin
   end;
   FLog.Info(Format('Speed Haste: race over at tic %d, position %d, total time %d tics'#13#10,
     [leveltime, AScore.RacePosition, AScore.TotalTime]));
+end;
+
+procedure TEngineSpeedRaceEvents.Collision(AKeyA, AKeyB: Cardinal);
+begin
+  S_StartSound(FFindCar(AKeyA), 'speedhaste/CRASH.RAW');
 end;
 
 procedure TEngineSpeedRaceEvents.LeaveLevel;

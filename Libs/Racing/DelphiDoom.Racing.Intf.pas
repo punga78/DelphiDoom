@@ -103,6 +103,8 @@ type
     procedure LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
     /// <summary>The player has completed the last lap and the result is known (the first one wins)</summary>
     procedure RaceFinished(const AScore: TRacingScore; AWon: Boolean);
+    /// <summary>Two cars touched hard enough to slow down: their keys</summary>
+    procedure Collision(AKeyA, AKeyB: Cardinal);
     /// <summary>The result has been shown: the level is over</summary>
     procedure LeaveLevel;
   end;
