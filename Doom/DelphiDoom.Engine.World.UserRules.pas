@@ -16,7 +16,8 @@ uses
   m_fixed,
   tables,
   p_mobj_h,
-  d_player;
+  d_player,
+  d_ticcmd;
 
 type
   /// <summary>
@@ -35,7 +36,23 @@ type
       SlopesFloorMargin = 4 * FRACUNIT;
       /// <summary>P_DeathThink is a method of the rules (Hexen: the skull and the ice chunk, the poison, the palette, the reborn state)</summary>
       OwnsDeathThink = False;
+      /// <summary>The jump and the crouch work out of the new engine too (Strife); the other games run them only in it</summary>
+      JumpsAlways = False;
 
+    /// <summary>Sets onground, the state of the player towards the floor</summary>
+    class procedure SetOnGround(const player: Pplayer_t); static;
+    /// <summary>The sector or the map forbids the jump</summary>
+    class function MapNoJump: boolean; static;
+    /// <summary>The sector or the map forbids the crouch</summary>
+    class function MapNoCrouch: boolean; static;
+    /// <summary>The movement of the player for the commands of the tic (thrust, flight, the running state)</summary>
+    class procedure MoveByCommand(const player: Pplayer_t; const cmd: Pticcmd_t; const cmd_jump, cmd_crouch: byte); static;
+    /// <summary>The look up and down of the command</summary>
+    class function LookUpDown(const cmd: Pticcmd_t): integer; static; inline;
+    /// <summary>The player turns to a target: the look commands only center the view (Doom, Strife)</summary>
+    class function AimsAtTarget(const player: Pplayer_t): boolean; static; inline;
+    /// <summary>What comes after the movement and the look (Heretic, Hexen: the flight)</summary>
+    class procedure AfterMove(const player: Pplayer_t; const cmd: Pticcmd_t); static;
     /// <summary>The death of the player (only when OwnsDeathThink)</summary>
     class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
@@ -57,7 +74,6 @@ implementation
 uses
   d_delphi,
   m_rnd,
-  d_ticcmd,
   d_event,
   info_h,
   info,
@@ -88,283 +104,6 @@ uses
   p_user,
   DelphiDoom.Engine.World.PlayerExtras;
 
-
-//==============================================================================
-//
-// P_MovePlayer
-//
-//==============================================================================
-procedure P_MovePlayer(player: Pplayer_t);
-var
-  cmd: Pticcmd_t;
-  look: integer;
-  look16: integer; // JVAL Smooth Look Up/Down
-  look2: integer;
-  movefactor: fixed_t;
-  cmd_crouch, cmd_jump: byte;
-begin
-  cmd := @player.cmd;
-
-  player.mo.angle := player.mo.angle + _SHLW(cmd.angleturn, 16);
-
-  // Do not let the player control movement
-  //  if not onground.
-  onground := player.mo.z <= player.mo.floorz;
-
-  if not onground then
-    if G_PlayingEngineVersion > VERSION120 then
-      onground := player.mo.flags2_ex and MF2_EX_ONMOBJ <> 0;
-
-  if onground then
-    player.lastongroundtime := leveltime; // JVAL: 20211101 - Crouch
-
-  // JVAL: 20220225 - NOJUMP sector flag (UDMF)
-  if Psubsector_t(player.mo.subsector).sector.flags and SF_NOJUMP <> 0 then
-    cmd_jump := 0
-  else if (gamemapinfo <> nil) and gamemapinfo.nojump then
-    cmd_jump := 0
-  else
-    cmd_jump := (cmd.jump_crouch and CMD_JUMP_MASK) shr CMD_JUMP_SHIFT;
-
-  // JVAL: 20220226 - NOCROUCH sector flag (UDMF)
-  if Psubsector_t(player.mo.subsector).sector.flags and SF_NOCROUCH <> 0 then
-    cmd_crouch := 0
-  else if (gamemapinfo <> nil) and gamemapinfo.nocrouch then
-    cmd_crouch := 0
-  else
-    cmd_crouch := (cmd.jump_crouch and CMD_CROUCH_MASK) shr CMD_CROUCH_SHIFT;
-
-  // villsa [STRIFE] allows player to climb over things by jumping
-  // haleyjd 20110205: air control thrust should be 256, not cmd.forwardmove
-  if (G_PlayingEngineVersion >= VERSION121) and not onground and (player.cheats and CF_LOWGRAVITY = 0) and (cmd.forwardmove <> 0) then
-  begin
-    P_Thrust(player, player.mo.angle, 256);
-  end
-  else
-  begin
-    movefactor := ORIG_FRICTION_FACTOR;
-
-    if player.cheats and CF_LOWGRAVITY = 0 then
-      if G_PlayingEngineVersion >= VERSION120 then
-        if Psubsector_t(player.mo.subsector).sector.special and FRICTION_MASK <> 0 then
-          movefactor := P_GetMoveFactor(player.mo); //movefactor * 2;
-
-    // JVAL: 20211101 - Crouch
-    if cmd_crouch > 0 then
-      movefactor := FixedMul(FixedDiv(CROUCH_FRICTION_FACTOR, ORIG_FRICTION_FACTOR), movefactor);
-
-    if (player.cheats and CF_LOWGRAVITY <> 0) or
-      ((cmd.forwardmove <> 0) and
-       (onground or ((cmd_jump > 0) and (player.mo.momx = 0) and (player.mo.momy = 0)))) then
-      P_Thrust(player, player.mo.angle, cmd.forwardmove * movefactor);
-
-    if (player.cheats and CF_LOWGRAVITY <> 0) or
-      ((cmd.sidemove <> 0) and
-       (onground or ((cmd_jump > 0) and (player.mo.momx = 0) and (player.mo.momy = 0)))) then
-      P_Thrust(player, player.mo.angle - ANG90, cmd.sidemove * movefactor);
-  end;
-
-  if G_PlayingEngineVersion >= VERSION115 then
-  begin
-    // JVAL: Adjust speed while flying
-    if (player.cheats and CF_LOWGRAVITY <> 0) and (player.mo.z > player.mo.floorz) then
-    begin
-      if player.mo.momx > 18 * FRACUNIT then
-        player.mo.momx := 18 * FRACUNIT
-      else if player.mo.momx < -18 * FRACUNIT then
-        player.mo.momx := -18 * FRACUNIT;
-      if player.mo.momy > 18 * FRACUNIT then
-        player.mo.momy := 18 * FRACUNIT
-      else if player.mo.momy < -18 * FRACUNIT then
-        player.mo.momy := -18 * FRACUNIT;
-
-      if (cmd.forwardmove = 0) and (cmd.sidemove = 0) then
-      begin
-        player.mo.momx := player.mo.momx * 15 div 16;
-        player.mo.momy := player.mo.momy * 15 div 16;
-      end;
-    end
-    else if (G_PlayingEngineVersion >= VERSION205) and (player.mo.flags2_ex and MF2_EX_ONMOBJ <> 0) then
-    begin
-      if (cmd.forwardmove = 0) and (cmd.sidemove = 0) then
-      begin
-        player.mo.momx := player.mo.momx * 15 div 16;
-        player.mo.momy := player.mo.momy * 15 div 16;
-      end;
-    end;
-  end;
-
-  if ((cmd.forwardmove <> 0) or (cmd.sidemove <> 0)) and
-     (player.mo.state = @states[Ord(S_PLAY)]) then
-    P_SetMobjState(player.mo, S_PLAY_RUN1);
-
-// JVAL Look UP and DOWN
-  if zaxisshift then
-  begin
-    if G_PlayingEngineVersion < VERSION203 then // JVAL Smooth Look Up/Down
-    begin
-      look := cmd.lookupdown;
-      if look > 7 then
-        look := look - 16;
-
-      if player.angletargetticks > 0 then
-        player.centering := true
-      else if look <> 0 then
-      begin
-        if look = TOCENTER then
-          player.centering := true
-        else
-        begin
-          player.lookdir := player.lookdir + 5 * look;
-          if player.lookdir > MAXLOOKDIR then
-            player.lookdir := MAXLOOKDIR
-          else if player.lookdir < MINLOOKDIR then
-            player.lookdir := MINLOOKDIR;
-        end;
-      end;
-      player.lookdir16 := player.lookdir * 16;
-    end
-    else
-    begin // JVAL Smooth Look Up/Down
-      look16 := cmd.lookupdown16;
-      if look16 > 7 * 256 then
-        look16 := look16 - 16 * 256;
-
-      if player.angletargetticks > 0 then
-        player.centering := true
-      else if look16 <> 0 then
-      begin
-        if look16 = TOCENTER * 256 then
-          player.centering := true
-        else
-        begin
-          player.lookdir16 := player.lookdir16 + Round(5 * look16 / 16);
-          player.lookdir := player.lookdir16 div 16;
-
-          if player.lookdir16 > MAXLOOKDIR * 16 then
-            player.lookdir16 := MAXLOOKDIR * 16
-          else if player.lookdir16 < MINLOOKDIR * 16 then
-            player.lookdir16 := MINLOOKDIR * 16;
-
-          if player.lookdir > MAXLOOKDIR then
-            player.lookdir := MAXLOOKDIR
-          else if player.lookdir < MINLOOKDIR then
-            player.lookdir := MINLOOKDIR;
-        end;
-      end;
-    end;
-
-    if player.centering then
-    begin
-      if G_PlayingEngineVersion < VERSION203 then // JVAL Smooth Look Up/Down
-      begin
-        if player.lookdir > 0 then
-          player.lookdir := player.lookdir - 8
-        else if player.lookdir < 0 then
-          player.lookdir := player.lookdir + 8;
-
-        if abs(player.lookdir) < 8 then
-        begin
-          player.lookdir := 0;
-          player.centering := false;
-        end;
-
-        player.lookdir16 := player.lookdir * 16;
-      end
-      else
-      begin // JVAL Smooth Look Up/Down
-        if player.lookdir16 > 0 then
-          player.lookdir16 := player.lookdir16 - 8 * 16
-        else if player.lookdir16 < 0 then
-          player.lookdir16 := player.lookdir16 + 8 * 16;
-
-        if abs(player.lookdir16) < 8 * 16 then
-        begin
-          player.lookdir16 := 0;
-          player.centering := false;
-        end;
-
-        player.lookdir := player.lookdir16 div 16;
-      end;
-    end;
-  end;
-
-  if not G_NeedsCompatibilityMode then
-  begin
-  // JVAL Look LEFT and RIGHT
-    look2 := cmd.lookleftright;
-    if look2 > 7 then
-      look2 := look2 - 16;
-
-    if player.angletargetticks > 0 then
-      player.forwarding := true
-    else if look2 <> 0 then
-    begin
-      if look2 = TOFORWARD then
-        player.forwarding := true
-      else
-      begin
-        player.lookdir2 := (player.lookdir2 + 2 * look2) and 255;
-        if player.lookdir2 in [64..127] then
-          player.lookdir2 := 63
-        else if player.lookdir2 in [128..191] then
-          player.lookdir2 := 192;
-      end;
-    end
-    else
-      if player.oldlook2 <> 0 then
-        player.forwarding := true;
-
-    if player.forwarding then
-    begin
-      if player.lookdir2 in [3..63] then
-        player.lookdir2 := player.lookdir2 - 6
-      else if player.lookdir2 in [192..251] then
-        player.lookdir2 := player.lookdir2 + 6;
-
-      if (player.lookdir2 < 8) or (player.lookdir2 > 247) then
-      begin
-        player.lookdir2 := 0;
-        player.forwarding := false;
-      end;
-    end;
-    player.mo.viewangle := player.lookdir2 shl 24;
-
-    player.oldlook2 := look2;
-
-    if (onground or (player.cheats and CF_LOWGRAVITY <> 0)) and (cmd_jump > 1) then
-    begin
-      // JVAL: 20211101 - Crouch
-      if cmd_crouch > 0 then
-        player.mo.momz := 4 * FRACUNIT
-      else
-        player.mo.momz := 8 * FRACUNIT;
-    end;
-
-    // JVAL: 20211101 - Crouch
-    if (leveltime - player.lastongroundtime < TICRATE) and (cmd_crouch <> 0) then
-    begin
-      player.crouchheight := player.crouchheight + cmd_crouch * FRACUNIT;
-      if player.crouchheight > PMAXCROUCHHEIGHT then
-        player.crouchheight := PMAXCROUCHHEIGHT;
-    end
-    else if (leveltime - player.lastautocrouchtime > TICRATE) and (player.crouchheight <> 0) then
-    begin
-      player.crouchheight := player.crouchheight - 2 * FRACUNIT;
-      if player.crouchheight < 0 then
-        player.crouchheight := 0;
-    end;
-    if not onground and (cmd_crouch <> 0) then
-      if player.mo.momz > -4 * FRACUNIT then
-      begin
-        player.mo.momz := player.mo.momz - FRACUNIT div 2;
-        if player.mo.momz < -4 * FRACUNIT then
-          player.mo.momz := -4 * FRACUNIT;
-      end;
-  end
-  else
-    player.lookdir2 := 0;
-end;
 
 //==============================================================================
 //
@@ -610,6 +349,143 @@ end;
 //
 //==============================================================================
 class procedure TUserGameRules.DeathThink(player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TUserGameRules.SetOnGround
+//
+//==============================================================================
+class procedure TUserGameRules.SetOnGround(const player: Pplayer_t);
+begin
+  onground := player.mo.z <= player.mo.floorz;
+
+  if not onground then
+    if G_PlayingEngineVersion > VERSION120 then
+      onground := player.mo.flags2_ex and MF2_EX_ONMOBJ <> 0;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.MapNoJump
+//
+//==============================================================================
+class function TUserGameRules.MapNoJump: boolean;
+begin
+  result := (gamemapinfo <> nil) and gamemapinfo.nojump;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.MapNoCrouch
+//
+//==============================================================================
+class function TUserGameRules.MapNoCrouch: boolean;
+begin
+  result := (gamemapinfo <> nil) and gamemapinfo.nocrouch;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.MoveByCommand
+//
+//==============================================================================
+class procedure TUserGameRules.MoveByCommand(const player: Pplayer_t; const cmd: Pticcmd_t; const cmd_jump, cmd_crouch: byte);
+var
+  movefactor: fixed_t;
+begin
+  // villsa [STRIFE] allows player to climb over things by jumping
+  // haleyjd 20110205: air control thrust should be 256, not cmd.forwardmove
+  if (G_PlayingEngineVersion >= VERSION121) and not onground and (player.cheats and CF_LOWGRAVITY = 0) and (cmd.forwardmove <> 0) then
+  begin
+    P_Thrust(player, player.mo.angle, 256);
+  end
+  else
+  begin
+    movefactor := ORIG_FRICTION_FACTOR;
+
+    if player.cheats and CF_LOWGRAVITY = 0 then
+      if G_PlayingEngineVersion >= VERSION120 then
+        if Psubsector_t(player.mo.subsector).sector.special and FRICTION_MASK <> 0 then
+          movefactor := P_GetMoveFactor(player.mo); //movefactor * 2;
+
+    // JVAL: 20211101 - Crouch
+    if cmd_crouch > 0 then
+      movefactor := FixedMul(FixedDiv(CROUCH_FRICTION_FACTOR, ORIG_FRICTION_FACTOR), movefactor);
+
+    if (player.cheats and CF_LOWGRAVITY <> 0) or
+      ((cmd.forwardmove <> 0) and
+       (onground or ((cmd_jump > 0) and (player.mo.momx = 0) and (player.mo.momy = 0)))) then
+      P_Thrust(player, player.mo.angle, cmd.forwardmove * movefactor);
+
+    if (player.cheats and CF_LOWGRAVITY <> 0) or
+      ((cmd.sidemove <> 0) and
+       (onground or ((cmd_jump > 0) and (player.mo.momx = 0) and (player.mo.momy = 0)))) then
+      P_Thrust(player, player.mo.angle - ANG90, cmd.sidemove * movefactor);
+  end;
+
+  if G_PlayingEngineVersion >= VERSION115 then
+  begin
+    // JVAL: Adjust speed while flying
+    if (player.cheats and CF_LOWGRAVITY <> 0) and (player.mo.z > player.mo.floorz) then
+    begin
+      if player.mo.momx > 18 * FRACUNIT then
+        player.mo.momx := 18 * FRACUNIT
+      else if player.mo.momx < -18 * FRACUNIT then
+        player.mo.momx := -18 * FRACUNIT;
+      if player.mo.momy > 18 * FRACUNIT then
+        player.mo.momy := 18 * FRACUNIT
+      else if player.mo.momy < -18 * FRACUNIT then
+        player.mo.momy := -18 * FRACUNIT;
+
+      if (cmd.forwardmove = 0) and (cmd.sidemove = 0) then
+      begin
+        player.mo.momx := player.mo.momx * 15 div 16;
+        player.mo.momy := player.mo.momy * 15 div 16;
+      end;
+    end
+    else if (G_PlayingEngineVersion >= VERSION205) and (player.mo.flags2_ex and MF2_EX_ONMOBJ <> 0) then
+    begin
+      if (cmd.forwardmove = 0) and (cmd.sidemove = 0) then
+      begin
+        player.mo.momx := player.mo.momx * 15 div 16;
+        player.mo.momy := player.mo.momy * 15 div 16;
+      end;
+    end;
+  end;
+
+  if ((cmd.forwardmove <> 0) or (cmd.sidemove <> 0)) and
+     (player.mo.state = @states[Ord(S_PLAY)]) then
+    P_SetMobjState(player.mo, S_PLAY_RUN1);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.LookUpDown
+//
+//==============================================================================
+class function TUserGameRules.LookUpDown(const cmd: Pticcmd_t): integer;
+begin
+  result := cmd.lookupdown;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AimsAtTarget
+//
+//==============================================================================
+class function TUserGameRules.AimsAtTarget(const player: Pplayer_t): boolean;
+begin
+  result := player.angletargetticks > 0;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AfterMove
+//
+//==============================================================================
+class procedure TUserGameRules.AfterMove(const player: Pplayer_t; const cmd: Pticcmd_t);
 begin
 end;
 

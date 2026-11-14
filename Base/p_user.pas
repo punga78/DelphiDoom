@@ -89,6 +89,13 @@ procedure P_DeathThink(player: Pplayer_t);
 
 //==============================================================================
 //
+// P_MovePlayer
+//
+//==============================================================================
+procedure P_MovePlayer(player: Pplayer_t);
+
+//==============================================================================
+//
 // P_Thrust
 // Moves the given origin along a given angle.
 //
@@ -98,7 +105,9 @@ procedure P_Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
 implementation
 
 uses
+  d_delphi,
   g_game,
+  p_common,
   p_local,
   p_tick,
   p_3dfloors, // JVAL: Slopes
@@ -546,6 +555,233 @@ begin
 
   if player.cmd.buttons and BT_USE <> 0 then
     player.playerstate := PST_REBORN;
+end;
+
+//==============================================================================
+//
+// P_JumpAndCrouch
+// The jump and the crouch of a move (JVAL: 20211101 - Crouch)
+//
+//==============================================================================
+procedure P_JumpAndCrouch(player: Pplayer_t; const cmd_jump, cmd_crouch: byte);
+begin
+  if (onground or (player.cheats and CF_LOWGRAVITY <> 0)) and (cmd_jump > 1) then
+  begin
+    // JVAL: 20211101 - Crouch
+    if cmd_crouch > 0 then
+      player.mo.momz := 4 * FRACUNIT
+    else
+      player.mo.momz := 8 * FRACUNIT;
+  end;
+
+  // JVAL: 20211101 - Crouch
+  if (leveltime - player.lastongroundtime < TICRATE) and (cmd_crouch <> 0) then
+  begin
+    player.crouchheight := player.crouchheight + cmd_crouch * FRACUNIT;
+    if player.crouchheight > PMAXCROUCHHEIGHT then
+      player.crouchheight := PMAXCROUCHHEIGHT;
+  end
+  else if (leveltime - player.lastautocrouchtime > TICRATE) and (player.crouchheight <> 0) then
+  begin
+    player.crouchheight := player.crouchheight - 2 * FRACUNIT;
+    if player.crouchheight < 0 then
+      player.crouchheight := 0;
+  end;
+  if not onground and (cmd_crouch <> 0) then
+    if player.mo.momz > -4 * FRACUNIT then
+    begin
+      player.mo.momz := player.mo.momz - FRACUNIT div 2;
+      if player.mo.momz < -4 * FRACUNIT then
+        player.mo.momz := -4 * FRACUNIT;
+    end;
+end;
+
+//==============================================================================
+//
+// P_MovePlayer
+//
+//==============================================================================
+procedure P_MovePlayer(player: Pplayer_t);
+var
+  cmd: Pticcmd_t;
+  look: integer;
+  look16: integer; // JVAL Smooth Look Up/Down
+  look2: integer;
+  cmd_crouch, cmd_jump: byte;
+begin
+  cmd := @player.cmd;
+
+  player.mo.angle := player.mo.angle + _SHLW(cmd.angleturn, 16);
+
+  // Do not let the player control movement
+  //  if not onground.
+  TUserGameRules.SetOnGround(player);
+
+  if onground then
+    player.lastongroundtime := leveltime; // JVAL: 20211101 - Crouch
+
+  // JVAL: 20220225 - NOJUMP sector flag (UDMF)
+  if Psubsector_t(player.mo.subsector).sector.flags and SF_NOJUMP <> 0 then
+    cmd_jump := 0
+  else if TUserGameRules.MapNoJump then
+    cmd_jump := 0
+  else
+    cmd_jump := (cmd.jump_crouch and CMD_JUMP_MASK) shr CMD_JUMP_SHIFT;
+
+  // JVAL: 20220226 - NOCROUCH sector flag (UDMF)
+  if Psubsector_t(player.mo.subsector).sector.flags and SF_NOCROUCH <> 0 then
+    cmd_crouch := 0
+  else if TUserGameRules.MapNoCrouch then
+    cmd_crouch := 0
+  else
+    cmd_crouch := (cmd.jump_crouch and CMD_CROUCH_MASK) shr CMD_CROUCH_SHIFT;
+
+  TUserGameRules.MoveByCommand(player, cmd, cmd_jump, cmd_crouch);
+
+// JVAL Look UP and DOWN
+  if zaxisshift then
+  begin
+    if G_PlayingEngineVersion < VERSION203 then // JVAL Smooth Look Up/Down
+    begin
+      look := TUserGameRules.LookUpDown(cmd);
+      if look > 7 then
+        look := look - 16;
+
+      if TUserGameRules.AimsAtTarget(player) then
+        player.centering := true
+      else if look <> 0 then
+      begin
+        if look = TOCENTER then
+          player.centering := true
+        else
+        begin
+          player.lookdir := player.lookdir + 5 * look;
+          if player.lookdir > MAXLOOKDIR then
+            player.lookdir := MAXLOOKDIR
+          else if player.lookdir < MINLOOKDIR then
+            player.lookdir := MINLOOKDIR;
+        end;
+      end;
+      player.lookdir16 := player.lookdir * 16;
+    end
+    else
+    begin // JVAL Smooth Look Up/Down
+      look16 := cmd.lookupdown16;
+      if look16 > 7 * 256 then
+        look16 := look16 - 16 * 256;
+
+      if TUserGameRules.AimsAtTarget(player) then
+        player.centering := true
+      else if look16 <> 0 then
+      begin
+        if look16 = TOCENTER * 256 then
+          player.centering := true
+        else
+        begin
+          player.lookdir16 := player.lookdir16 + Round(5 * look16 / 16);
+          player.lookdir := player.lookdir16 div 16;
+
+          if player.lookdir16 > MAXLOOKDIR * 16 then
+            player.lookdir16 := MAXLOOKDIR * 16
+          else if player.lookdir16 < MINLOOKDIR * 16 then
+            player.lookdir16 := MINLOOKDIR * 16;
+
+          if player.lookdir > MAXLOOKDIR then
+            player.lookdir := MAXLOOKDIR
+          else if player.lookdir < MINLOOKDIR then
+            player.lookdir := MINLOOKDIR;
+        end;
+      end;
+    end;
+
+    if player.centering then
+    begin
+      if G_PlayingEngineVersion < VERSION203 then // JVAL Smooth Look Up/Down
+      begin
+        if player.lookdir > 0 then
+          player.lookdir := player.lookdir - 8
+        else if player.lookdir < 0 then
+          player.lookdir := player.lookdir + 8;
+
+        if abs(player.lookdir) < 8 then
+        begin
+          player.lookdir := 0;
+          player.centering := false;
+        end;
+
+        player.lookdir16 := player.lookdir * 16;
+      end
+      else
+      begin // JVAL Smooth Look Up/Down
+        if player.lookdir16 > 0 then
+          player.lookdir16 := player.lookdir16 - 8 * 16
+        else if player.lookdir16 < 0 then
+          player.lookdir16 := player.lookdir16 + 8 * 16;
+
+        if abs(player.lookdir16) < 8 * 16 then
+        begin
+          player.lookdir16 := 0;
+          player.centering := false;
+        end;
+
+        player.lookdir := player.lookdir16 div 16;
+      end;
+    end;
+  end;
+
+  if not G_NeedsCompatibilityMode then
+  begin
+  // JVAL Look LEFT and RIGHT
+    look2 := cmd.lookleftright;
+    if look2 > 7 then
+      look2 := look2 - 16;
+
+    if TUserGameRules.AimsAtTarget(player) then
+      player.forwarding := true
+    else if look2 <> 0 then
+    begin
+      if look2 = TOFORWARD then
+        player.forwarding := true
+      else
+      begin
+        player.lookdir2 := (player.lookdir2 + 2 * look2) and 255;
+        if player.lookdir2 in [64..127] then
+          player.lookdir2 := 63
+        else if player.lookdir2 in [128..191] then
+          player.lookdir2 := 192;
+      end;
+    end
+    else
+      if player.oldlook2 <> 0 then
+        player.forwarding := true;
+
+    if player.forwarding then
+    begin
+      if player.lookdir2 in [3..63] then
+        player.lookdir2 := player.lookdir2 - 6
+      else if player.lookdir2 in [192..251] then
+        player.lookdir2 := player.lookdir2 + 6;
+
+      if (player.lookdir2 < 8) or (player.lookdir2 > 247) then
+      begin
+        player.lookdir2 := 0;
+        player.forwarding := false;
+      end;
+    end;
+    player.mo.viewangle := player.lookdir2 shl 24;
+
+    player.oldlook2 := look2;
+
+    if not TUserGameRules.JumpsAlways then
+      P_JumpAndCrouch(player, cmd_jump, cmd_crouch);
+  end
+  else
+    player.lookdir2 := 0;
+
+  if TUserGameRules.JumpsAlways then
+    P_JumpAndCrouch(player, cmd_jump, cmd_crouch);
+
+  TUserGameRules.AfterMove(player, cmd);
 end;
 
 end.

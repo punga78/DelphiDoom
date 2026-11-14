@@ -57,6 +57,25 @@ $Expansions = @(
   @{ F = 'TMapGameRules.SlopesVersion'; Doom = 'VERSION122'; Heretic = 'VERSION115'; Hexen = 'VERSION142'; Strife = 'VERSION122'; All = $true }
   @{ F = 'if TUserGameRules.KeepsOldViewZInAir then player.oldviewz := oldviewz;'; D = 'player.oldviewz := oldviewz;'; Hexen = '' }
   @{ F = '+ TUserGameRules.SlopesFloorMargin'; D = '+ 4 * FRACUNIT'; Strife = ''; All = $true }
+
+  # --- P_MovePlayer ---
+  # le variabili: la copia unica non ha quelle del movimento (movefactor in Doom e Strife; fly, onair e mfactor in Heretic, onair e fly in Hexen)
+  @{ R = 'P_MovePlayer'; F = 'look2: integer; cmd_crouch, cmd_jump: byte; begin'
+     D = 'look2: integer; movefactor: fixed_t; cmd_crouch, cmd_jump: byte; begin'
+     Heretic = 'look2: integer; fly: integer; onair: boolean; mfactor: integer; cmd_crouch, cmd_jump: byte; begin'
+     Hexen = 'look2: integer; fly: integer; onair: boolean; cmd_crouch, cmd_jump: byte; begin'
+     Note = 'le variabili locali del movimento e del volo sono ora nelle regole MoveByCommand e AfterMove (le stesse dichiarazioni)' }
+  @{ R = 'P_MovePlayer'; F = 'TUserGameRules.SetOnGround(player);'; D = '<<B:SetOnGround>>' }
+  @{ R = 'P_MovePlayer'; F = 'else if TUserGameRules.MapNoJump then'; D = 'else if (gamemapinfo <> nil) and gamemapinfo.nojump then'; Hexen = 'else if P_GetMapNoJump(gamemap) then' }
+  @{ R = 'P_MovePlayer'; F = 'else if TUserGameRules.MapNoCrouch then'; D = 'else if (gamemapinfo <> nil) and gamemapinfo.nocrouch then'; Hexen = 'else if P_GetMapNoCrouch(gamemap) then' }
+  @{ R = 'P_MovePlayer'; F = 'TUserGameRules.MoveByCommand(player, cmd, cmd_jump, cmd_crouch);'; D = '<<B:MoveByCommand>>' }
+  @{ R = 'P_MovePlayer'; F = 'look := TUserGameRules.LookUpDown(cmd);'; D = 'look := cmd.lookupdown;'; Heretic = 'look := cmd.lookfly and 15;'; Hexen = 'look := cmd.lookfly and 15;' }
+  @{ R = 'P_MovePlayer'; F = 'if TUserGameRules.AimsAtTarget(player) then player.centering := true else'; D = 'if player.angletargetticks > 0 then player.centering := true else'; Heretic = ''; Hexen = ''; All = $true }
+  @{ R = 'P_MovePlayer'; F = 'if TUserGameRules.AimsAtTarget(player) then player.forwarding := true else'; D = 'if player.angletargetticks > 0 then player.forwarding := true else'; Heretic = ''; Hexen = '' }
+  @{ R = 'P_MovePlayer'; F = 'if not TUserGameRules.JumpsAlways then P_JumpAndCrouch(player, cmd_jump, cmd_crouch);'; D = '<<S:P_JumpAndCrouch>>'; Strife = ''
+     Note = 'il salto e l''accovacciamento sono una procedura (P_JumpAndCrouch): in Strife stanno fuori dal blocco del nuovo motore (JumpsAlways), negli altri dentro' }
+  @{ R = 'P_MovePlayer'; F = 'if TUserGameRules.JumpsAlways then P_JumpAndCrouch(player, cmd_jump, cmd_crouch);'; D = ''; Strife = '<<S:P_JumpAndCrouch>>' }
+  @{ R = 'P_MovePlayer'; F = 'TUserGameRules.AfterMove(player, cmd);'; D = '<<B:AfterMove>>' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
@@ -72,5 +91,5 @@ $Methods = @{
 
 $bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.UserRules.pas' -Class 'TUserGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Methods $Methods
+  -NotTextual $NotTextual -Methods $Methods -Extra @{ S = 'Base\p_user.pas' }
 exit $bad
