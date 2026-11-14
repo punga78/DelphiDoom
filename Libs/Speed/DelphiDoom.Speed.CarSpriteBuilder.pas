@@ -36,6 +36,8 @@ type
     FLength: Single;
     FPitch: Single;
     FTransparent: Byte;
+    FTextureSource: ISpeedTextureSource;
+    procedure ApplyTextures(const ARenderer: TSpeedCarSpriteRenderer; ACar: Integer);
     function Transpose(const AImage: TSpeedCarSpriteImage): TBytes;
     function SpriteNameOf(ACar: Integer): string;
   public
@@ -59,6 +61,8 @@ type
     ///   hexadecimal: XPR05A is the thing 90) and writes the ACTORDEF of their actors
     /// </summary>
     /// <returns>The ACTORDEF text of the scenery that has a picture (empty when there is none)</returns>
+    /// <summary>Where the textures that the table of the cars names (f_1_4_01_03.png...) are read from; without it the cars get the colors of a variant</summary>
+    property TextureSource: ISpeedTextureSource read FTextureSource write FTextureSource;
     function BuildScenery(const AContainer: ISpeedContainer; const AWad: IGameWadComposer): string;
   end;
 
@@ -116,6 +120,26 @@ begin
       Result[LColumn * AImage.Height + LRow] := AImage.Pixels[LRow * AImage.Width + LColumn];
 end;
 
+procedure TSpeedCarSpriteBuilder.ApplyTextures(const ARenderer: TSpeedCarSpriteRenderer; ACar: Integer);
+var
+  LPairs: array[0..1, 0..1] of string;
+  LIndex, LWidth, LHeight, LTexture: Integer;
+  LRgba: TBytes;
+begin
+  LPairs[0, 0] := RACING_CAR_DATA[ACar].OriginalTexture1;
+  LPairs[0, 1] := RACING_CAR_DATA[ACar].Texture1;
+  LPairs[1, 0] := RACING_CAR_DATA[ACar].OriginalTexture2;
+  LPairs[1, 1] := RACING_CAR_DATA[ACar].Texture2;
+  for LIndex := 0 to 1 do
+  begin
+    if LPairs[LIndex, 1] = '' then
+      Continue;
+    LTexture := ARenderer.TextureIndexOf(LPairs[LIndex, 0]);
+    if (LTexture >= 0) and FTextureSource.TryLoad(LPairs[LIndex, 1], LWidth, LHeight, LRgba) then
+      ARenderer.OverrideTexture(LTexture, ARenderer.ToPalette(LRgba, LWidth, LHeight));
+  end;
+end;
+
 function TSpeedCarSpriteBuilder.Build(const AContainer: ISpeedContainer;
   const AWad: IGameWadComposer): TArray<string>;
 const
@@ -127,7 +151,7 @@ var
   LFailed: TList<string>;
   LRenderer: TSpeedCarSpriteRenderer;
   LPlayPal, LColorMap, LModel: TBytes;
-  LCar, LStep: Integer;
+  LCar, LStep, LVariant: Integer;
   LImage: TSpeedCarSpriteImage;
   LModelName: string;
 begin
@@ -171,9 +195,17 @@ begin
         end;
         LRenderers.Add(LModelName, LRenderer);
       end;
+      LVariant := LCar mod SPEED_CAR_VARIANTS;
+      LRenderer.ClearTextureOverrides;
+      if Assigned(FTextureSource) then
+      begin
+        // the textures of the data: true colors, no variant
+        LVariant := 0;
+        ApplyTextures(LRenderer, LCar);
+      end;
       for LStep := 0 to High(ROTATIONS) do
       begin
-        LImage := LRenderer.Render(ROTATIONS[LStep], LCar mod SPEED_CAR_VARIANTS);
+        LImage := LRenderer.Render(ROTATIONS[LStep], LVariant);
         AWad.AddLump(SpriteNameOf(LCar) + FRAME + SUFFIXES[LStep],
           FPatches.FromColumns(Transpose(LImage), LImage.Width, LImage.Height, False, LImage.LeftOffset,
             LImage.TopOffset));

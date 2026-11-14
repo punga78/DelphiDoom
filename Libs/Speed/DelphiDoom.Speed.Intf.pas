@@ -113,6 +113,13 @@ type
   end;
 
   /// <summary>The whole game: SPEEDH.JCL into the lumps of a WAD</summary>
+  /// <summary>Textures that are not in the container: the PNG files of the data folder (the cars of the fork)</summary>
+  ISpeedTextureSource = interface
+    ['{6E3B8A14-5D92-4C07-B1F6-A08C47D2E951}']
+    /// <summary>The picture of a file as R, G, B, A bytes, row after row from the top; False when there is none</summary>
+    function TryLoad(const AFileName: string; out AWidth, AHeight: Integer; out ARgba: TBytes): Boolean;
+  end;
+
   ISpeedTranslator = interface
     ['{F1A9C605-4E83-4D27-8B5C-70D2E96A13B4}']
     /// <summary>

@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.Speed.WorldActors,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.Speed.WorldActors, DelphiDoom.Engine.Speed.TextureFiles, System.IOUtils,
   DelphiDoom.Speed.Factory;
 
 const
@@ -62,6 +62,8 @@ var
   LCarSprites: TArray<string>;
   LMapInfo: string;
   LExtras: string;
+  LTextures: TEngineSpeedTextureFiles;
+  LTexturesReference: ISpeedTextureSource;
 begin
   AWad := nil;
   try
@@ -78,6 +80,11 @@ begin
   // the cars, the start and the cameras of the circuits (the engine reads the lump ACTORDEF)
   // the cars are 3D models: the software renderer shows them as sprites drawn once from five sides
   LSprites := TSpeedFactory.CreateCarSpriteBuilder;
+  // the cars of the fork have their own PNG textures: TEXTURES\ beside the container, when it is there
+  LTextures := TEngineSpeedTextureFiles.Create(TPath.Combine(ExtractFilePath(ExpandFileName(AFileName)), 'TEXTURES'));
+  LTexturesReference := LTextures;
+  if LTextures.HasFiles then
+    LSprites.TextureSource := LTextures;
   try
     LCarSprites := LSprites.Build(LContainer, LWad);
     LExtras := LSprites.BuildScenery(LContainer, LWad);
