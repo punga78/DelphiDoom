@@ -59,7 +59,7 @@ type
     FSprite: PGreedSprite;
     procedure Select(AIndex: Integer);
     procedure SetRealLight(AValue: PGreedTileLights);
-    procedure PutMapSprite(ASpot: Integer; AValue: Byte);
+    procedure PutMapSprite(ASpot: Integer; AValue: Byte); inline;
     function Spawn(AKind: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer; AActive: Boolean;
       ASpawnId: Integer): Integer;
     procedure SpawnBlood(ACount: Integer);
@@ -199,7 +199,7 @@ end;
 
 procedure TGreedSpriteLogic.PutMapSprite(ASpot: Integer; AValue: Byte);
 begin
-  if (ASpot >= 0) and (ASpot < GREED_MAP_TILES) then
+  if Cardinal(ASpot) < GREED_MAP_TILES then
     FWorld^.Planes[gpMapSprites]^[ASpot] := AValue;
 end;
 
@@ -395,17 +395,24 @@ var
   LIndex, LSpot, LOldAngle, LShooter: Integer;
   LOldSpeed: TGreedFixed;
   LOldFall: Boolean;
-  LOther, LBullet: PGreedSprite;
+  LOther, LBullet, LShot: PGreedSprite;
+  LHitSpot: Integer;
+  LShotZ: TGreedFixed;
 begin
+  // the shot, its height and the tile do not change until a sprite is found, and then the loop ends: read once,
+  // not for every sprite of the list
+  LShot := FSprite;
+  LShotZ := LShot^.Z;
+  LHitSpot := FState.SpriteLoc;
   LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
     LOther := PGreedSprite(FSprites.Item(LIndex));
-    if LOther <> FSprite then
+    if LOther <> LShot then
     begin
       LSpot := (LOther^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (LOther^.X div GREED_FRACTILEUNIT);
-      if (LSpot = FState.SpriteLoc) and (FSprite^.Z >= LOther^.Z) and
-        (FSprite^.Z <= LOther^.Z + LOther^.Height) and (LOther^.HitPoints <> 0) then
+      if (LSpot = LHitSpot) and (LShotZ >= LOther^.Z) and (LShotZ <= LOther^.Z + LOther^.Height) and
+        (LOther^.HitPoints <> 0) then
       begin
         if LOther^.Kind <> GREED_S_MONSTER5 then
           LOther^.ActionTime := LOther^.ActionTime + 15

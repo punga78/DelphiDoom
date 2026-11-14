@@ -39,7 +39,7 @@ type
     FWorld: PGreedWorldView;
     function BumpDoor(ASprite: PGreedSprite; AIndex: Integer; ACenterX, ACenterY: TGreedFixed;
       AHorizontal: Boolean): Boolean;
-    procedure PutMapSprite(ASpot: Integer; AValue: Byte);
+    procedure PutMapSprite(ASpot: Integer; AValue: Byte); inline;
   public
     constructor Create(const AState: TGreedGameState; const ASound: IGreedGameSound);
     /// <summary>
@@ -99,7 +99,7 @@ end;
 
 procedure TGreedSpriteMovement.PutMapSprite(ASpot: Integer; AValue: Byte);
 begin
-  if (ASpot >= 0) and (ASpot < GREED_MAP_TILES) then
+  if Cardinal(ASpot) < GREED_MAP_TILES then
     FWorld^.Planes[gpMapSprites]^[ASpot] := AValue;
 end;
 

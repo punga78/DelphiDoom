@@ -549,7 +549,8 @@ begin
   Sampler.Terminate;
   Sampler.WaitFor;
   timeEndPeriod(1);
-  // the publics by value of the map file: " 0001:000A1234       Unit.Symbol", the code segment starts at $401000
+  // the publics by value of the map file: " 0001:000A1234       Unit.Symbol", the code segment starts $1000 after the
+  // base of the module (which is not $400000 when the system moves the image)
   Map := TStringList.Create;
   Map.LoadFromFile(ChangeFileExt(ParamStr(0), '.map'));
   SetLength(Addresses, Map.Count);
@@ -566,7 +567,7 @@ begin
     else if InPublics and (Copy(Line, 1, 6) = ' 0001:') then
     begin
       Address := Copy(Line, 7, 8);
-      Addresses[SymbolCount] := Cardinal(StrToInt('$' + Address)) + $401000;
+      Addresses[SymbolCount] := Cardinal(StrToInt('$' + Address)) + Cardinal(GetModuleHandle(nil)) + $1000;
       Names[SymbolCount] := Trim(Copy(Line, 15, MaxInt));
       Inc(SymbolCount);
     end;
