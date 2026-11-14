@@ -81,6 +81,11 @@ var
 begin
   if not FContext.Database.TryGetUnitSize(AUnitType, LSizeX, LSizeY) then
     raise EWarException.CreateFmt(SWarModelNoUnitData, [AUnitType]);
+  // the statistics are looked for before the entity is made, so that a type without them leaves nothing behind
+  if TWarUnitClassifier.IsDude(AUnitType) then
+    LDudeStats := FContext.Database.GetUnitStats(AUnitType)
+  else if TWarUnitClassifier.IsBuilding(AUnitType) then
+    LBuildingStats := FContext.Database.GetBuildingStats(AUnitType);
   Result := FContext.Pool.CreateEntity(WAR_ENTITY_UNIT, AAddToMap);
   if Result = 0 then
     Exit;
@@ -108,7 +113,6 @@ begin
   LEntity^.StateMachine.Pending.CancellationTargetRef := TWarStateRefs.Invalid;
   if TWarUnitClassifier.IsDude(AUnitType) then
   begin
-    LDudeStats := FContext.Database.GetUnitStats(AUnitType);
     LUnit^.MaxHp := LDudeStats.Hp;
     LUnit^.Hp := LDudeStats.Hp;
     LUnit^.MaxMana := LDudeStats.Mana;
@@ -125,7 +129,6 @@ begin
   end
   else if TWarUnitClassifier.IsBuilding(AUnitType) then
   begin
-    LBuildingStats := FContext.Database.GetBuildingStats(AUnitType);
     LUnit^.MaxHp := LBuildingStats.Hp;
     LUnit^.Hp := LBuildingStats.Hp;
     LUnit^.Armor := LBuildingStats.Armor;
