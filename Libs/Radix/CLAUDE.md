@@ -132,6 +132,38 @@ Dettaglio storico delle tappe: unit del fork riportate al 2026-11-12: 7 su 98, d
   * *Launcher*: conosce Radix. La logica "quale programma, quali dati per un motore" e' la classe pura `TLauncherEngines` (`Libs\Launcher`, 52 test, copertura 100%: vedi `Libs\Launcher\CLAUDE.md`), che `Launcher_main.pas` usa al posto delle tabelle `exenames`/`glexenames` e delle catene di `FileExists`. `ge_radix` in `gameengine_t`, `gt_radix` in fondo a `gametype_t` (`Radix: Beyond the Void`, `RADIX.DAT`), `radix_path` in `Launcher.ini` (`radix\`), la riga `Radix` nel gruppo "Engine" e nella casella del motore delle proprieta' di un gioco (le due sole modifiche ai `.dfm`). Radix **non ha un eseguibile OpenGL**: con la casella OpenGL accesa parte `radix32.exe`. `RADIX.DAT` non e' un WAD: la casella dei dati lo trova per nome (`*.dat`), le mappe sono `E1M1`..`E3M9` senza leggere il file (prima `GetWadMapNames` su un file non WAD avrebbe letto un numero di lump a caso). **Difetto trovato e corretto, di tutti i giochi**: dalla #230 gli eseguibili stanno in `bin\<Piattaforma>\<Configurazione>\<Gioco>` e il Launcher li avviava per nome con la cartella corrente sui dati (`bin\<Gioco>`): `WinExec` non li trova, se nella cartella dei dati non e' rimasta una copia vecchia (dedotto dal codice: il Launcher di prima non e' stato avviato). Ora `ExecutablePath` li cerca nella cartella dei dati, poi accanto al Launcher. **Prova**: il Launcher parte e si chiude (codice 0); scelto `Radix` nel gruppo "Engine" (messaggi alla finestra), le caselle hanno i conteggi attesi (2 righe quella dei dati, 28 quella delle mappe: i testi non sono stati letti); `Play` scrive `Launcher.last.cmd` = `<worktree>\bin\Win32\Release\radix\radix32.exe  -screenwidth 640 -screenheight 480` e Radix32 parte, traduce RADIX.DAT (`Radix v2.0 Remix Shareware`) e arriva al titolo. Immagine nella lista "Easy Start": la quinta di `IconsImageList`, un punto interrogativo (nessuna immagine nuova nel `.dfm`).
   * *DD_IDE*: un progetto puo' avere il gioco `radix` ma `ddc_radix.dll` non esiste (e non serve: Radix32 e' il motore di Doom, le funzioni di script sono quelle di Doom; `psi_radix` del fork non e' portato). Prima: `ERROR: ddc_radix.dll not found.` alla compilazione, nessun elenco di costanti ed eventi, e la casella del gioco mostrava `Doom`. Ora `TIdeGames.CompilerGame('radix')` = `doom` e `TDdcIdeLibrary` lo usa per ogni chiamata a `ddc_base`; `TIdeGames.BoxIndex` da' 4 a `radix` e 5 a `mars` (le righe che la casella della finestra principale ha). Test in `DelphiDoom.Tests.Ide.ItemKinds` (265 nel progetto dell'IDE). **Non provato a finestra aperta.**
 
+* **Copertura dei test (2026-11-14, sera; `Tools\Copertura.ps1 -Test Radix`, `-Test Parity`, `-Test Launcher`: DelphiCodeCoverage sull'eseguibile di Debug, righe)**: progetto di Radix 95% (4101 righe su 4282, 787 test). Le unit aggiunte dalla ripresa della #169 sono **tutte sopra il 90%**; quelle di prima di questa tappa non hanno avuto test nuovi (il numero misurato oggi e' quello che avevano), quelle della fisica sono nate con i loro:
+
+  | Unit `DelphiDoom.Radix.*` | Prima | Dopo | Righe |
+  |---|---|---|---|
+  | `Hud.Gauges` | 99% | 99% | 75/76 |
+  | `Flight.Model` | 100% | 100% | 24/24 |
+  | `ActorProperties` | 100% | 100% | 235/235 |
+  | `Pilot.Rules` | 100% | 100% | 113/113 |
+  | `Weapon.Rules` | 98% | 98% | 163/167 |
+  | `Control.Rules` | 100% | 100% | 20/20 |
+  | `LevelLogic.Types` | 100% | 100% | 13/13 |
+  | `LevelLumps.Reader` | 100% | 100% | 48/48 |
+  | `TriggerGrid` | 100% | 100% | 46/46 |
+  | `TriggerLogic` | 100% | 100% | 151/151 |
+  | `Action.Rules` | 98% | 98% | 169/172 |
+  | `Messages` | 100% | 100% | 20/20 |
+  | `Thing.Spawn` | 100% | 100% | 18/18 |
+  | `Debriefing` | 100% | 100% | 43/43 |
+  | `Score.Table` | 100% | 100% | 77/77 |
+  | `Briefing.Script` | 100% | 100% | 98/98 |
+  | `Briefing.Player` | 96% | 96% | 85/89 |
+  | `SaveGame.Codec` | 100% | 100% | 89/89 |
+  | `Editions`, `LumpAliases`, `MapInfo.Reader`, `SlopePlanes` | 100% | 100% | 22, 29, 162, 36 |
+  | `Physics.Bounce` | - | 100% | 68/68 |
+  | `Physics.Damage` | - | 100% | 21/21 |
+  | `Physics.Impact` | - | 100% | 48/48 |
+  | `Physics.Movement` | - (98% alla prima misura) | 100% | 48/48 |
+  | `Physics.Contact` | - | 100% | 17/17 |
+  | `Physics.ForceField` | - | 100% | 15/15 |
+
+  `Briefing.Types`, `SaveGame.Types`, `MapInfo.Types` hanno solo tipi (nessuna riga di codice). Le righe non coperte delle unit sopra il 90%, non approfondite: `Briefing.Player` 112 (`Dec(FMapPosition, LSpeed)`), 126-127 (la figura che si chiude), 210 (`FScrollSpeed := MAX_SCROLL_SPEED`); `Weapon.Rules` 351-353 (un ramo di raffica con due colpi bassi) e 451; `Action.Rules` 173 e 389-390 (un ramo di `WallOnPath`); `Hud.Gauges` 206 (`Dec(Result)`). `Libs\Parity`: 97% (849 su 870), `DelphiDoom.Parity.ScriptParser` 100% (143/143) e `ScriptPilot` 100% (144/144): nessun test da aggiungere. `Libs\Launcher`: 100% (117/117). **Sotto il 90% nel progetto di Radix restano quattro unit del traduttore, di prima della ripresa**: `Level.FixV2` 40% (85/211), `Level.FixV10` 67% (6/9), `Level.FixV11` 71% (5/7): sono le correzioni di singoli livelli, che girano solo sul RADIX.DAT che ha quel livello (i dati registrati, la 1.1 e gli episodi 2 e 3 non ci sono: righe **non raggiungibili** con i dati presenti, e un livello sintetico che le attivi proverebbe solo la riga, non la correzione); `PalettePart` 86% (25/29: un costruttore di comodo e il controllo del nil). `DelphiDoom.Tests.Launcher` e' anche in `DelphiDoom.Tests.groupproj`.
+
 ## Aggancio della fisica dopo la #185
 
 Le regole della fisica di Rad-X sono classi pure di `Libs\Radix` (`DelphiDoom.Radix.Physics.*`, una classe per unit, nessuna dipendenza dal motore, 167 test): `TRadixBounceRules` (`Bounce`), `TRadixDamageRules` (`Damage`), `TRadixCraftImpactRules` (`Impact`), `TRadixMovementRules` (`Movement`), `TRadixContactRules` (`Contact`), `TRadixForceFieldRules` (`ForceField`). Cio' che gira **gia' ora** dai thinker di livello sta in `Radix\radix_physics.pas` (vedi il punto datato "Fisica" di "Stato del gioco"). Il resto chiede una chiamata dentro il movimento del motore (`Doom\p_mobj.pas`, `p_map.pas`, `p_inter.pas`, `p_enemy.pas`), che la #185 sta trasformando: qui sotto, per ogni regola, **dove** va la chiamata, la **firma** del punto di estensione minimo, la **classe** che risponde e **cosa la sostituisce oggi**. Convenzioni: ogni punto di estensione e' una variabile procedurale configurata da `ComposeRadix` (`P_Configure...`), `nil` per gli altri giochi, e con `nil` il codice e' quello di oggi byte per byte; dove la chiamata cadrebbe nel percorso caldo (una volta per mossa di ogni thinker) la proposta e' un **bit del mobj** provato sul posto, non una chiamata. I numeri di riga sono quelli di `9e12abaf`.
