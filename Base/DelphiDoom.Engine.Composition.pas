@@ -413,6 +413,7 @@ uses
   s_pk3sounds,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
+  DelphiDoom.Engine.World,
   DelphiDoom.Input.Intf,
   DelphiDoom.Input.Factory,
   DelphiDoom.Engine.Input.KeyMap,
@@ -1292,6 +1293,13 @@ begin
   ComposePlanes;
 end;
 
+// The world of a level (p_tick): the list of the thinkers on the head that the saved games know,
+// the time of the level where the engine keeps it and the random of the game
+procedure ComposeWorld(const ARandom: IGameRandom);
+begin
+  P_ConfigureWorld(TEngineWorld.Create(@thinkercap, P_WorldTime, ARandom));
+end;
+
 procedure ComposeSerializer;
 var
   LResolver: TEngineSerializerResolver;
@@ -1647,6 +1655,7 @@ begin
   ComposeScriptHost(LLog, LContext, LConsole, LDefaults, LRandom, LPakFiles, LTempFiles);
   ComposeThreading;
   ComposeMathCore(LRandom);
+  ComposeWorld(LRandom);
   ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl(LPreprocessor);
