@@ -33,7 +33,9 @@ type
     procedure Warn(const AText: string);
     procedure ParseVertices(ASource: TCollisionTokenizer; AModel: TCollisionModel);
     procedure ParseEdges(ASource: TCollisionTokenizer; AModel: TCollisionModel);
-    function ParseNodes(ASource: TCollisionTokenizer; AModel: TCollisionModel; AParent: TCmNode): TCmNode;
+    function ParseNodes(ASource: TCollisionTokenizer; AModel: TCollisionModel; AParent: TCmNode;
+      ADepth: Integer): TCmNode;
+    function ParseCoordinate(ASource: TCollisionTokenizer): Single;
     procedure ParsePolygons(ASource: TCollisionTokenizer; AModel: TCollisionModel);
     procedure ParseBrushes(ASource: TCollisionTokenizer; AModel: TCollisionModel);
     function ParseCollisionModel(ASource: TCollisionTokenizer): TCollisionModel;
@@ -65,6 +67,23 @@ resourcestring
   SBadToken = 'ParseCollisionModel: bad token "%s"';
   SBadFileToken = 'LoadCollisionModelFile: bad token "%s"';
   STooManyModels = 'LoadModel: no free slots';
+  SBadCount = 'collision model file: bad %s count %d at line %d';
+  SBadVertexNumber = 'collision model file: edge %d uses vertex %d, which does not exist, at line %d';
+  SBadEdgeNumber = 'collision model file: polygon uses edge %d, which does not exist, at line %d';
+  SBadPlaneType = 'collision model file: bad node plane type %d at line %d';
+  STreeTooDeep = 'collision model file: the tree of nodes is more than %d levels deep at line %d';
+  SBadCoordinate = 'collision model file: coordinate %g is outside the world at line %d';
+
+const
+  /// <summary>
+  ///   What the reader accepts. The original trusts the file; these are far above what dmap writes, and keep
+  ///   an altered file from allocating gigabytes, recursing without end or reaching outside an array
+  /// </summary>
+  MAX_FILE_VERTICES = 1 shl 20;
+  MAX_FILE_EDGES = 1 shl 21;
+  MAX_FILE_PLANES = 1024;
+  MAX_TREE_DEPTH = 512;
+  MAX_COORDINATE = 1.0E9;
 
 { TCollisionFileReader }
 
@@ -85,10 +104,17 @@ procedure TCollisionFileReader.ParseVector(ASource: TCollisionTokenizer; out AX,
 begin
   // Parse1DMatrix( 3, ... ): ( x y z )
   ASource.ExpectTokenString('(');
-  AX := ASource.ParseFloat;
-  AY := ASource.ParseFloat;
-  AZ := ASource.ParseFloat;
+  AX := ParseCoordinate(ASource);
+  AY := ParseCoordinate(ASource);
+  AZ := ParseCoordinate(ASource);
   ASource.ExpectTokenString(')');
+end;
+
+function TCollisionFileReader.ParseCoordinate(ASource: TCollisionTokenizer): Single;
+begin
+  Result := ASource.ParseFloat;
+  if Abs(Result) > MAX_COORDINATE then
+    raise ECollisionFormatException.CreateFmt(SBadCoordinate, [Result, ASource.Line]);
 end;
 
 procedure TCollisionFileReader.ParseVertices(ASource: TCollisionTokenizer; AModel: TCollisionModel);
@@ -100,6 +126,8 @@ var
 begin
   ASource.ExpectTokenString('{');
   AModel.NumVertices := ASource.ParseInt;
+  if (AModel.NumVertices < 0) or (AModel.NumVertices > MAX_FILE_VERTICES) then
+    raise ECollisionFormatException.CreateFmt(SBadCount, ['vertex', AModel.NumVertices, ASource.Line]);
   SetLength(AModel.Vertices, AModel.NumVertices);
   for LIndex := 0 to AModel.NumVertices - 1 do
   begin
@@ -118,6 +146,8 @@ var
 begin
   ASource.ExpectTokenString('{');
   AModel.NumEdges := ASource.ParseInt;
+  if (AModel.NumEdges < 0) or (AModel.NumEdges > MAX_FILE_EDGES) then
+    raise ECollisionFormatException.CreateFmt(SBadCount, ['edge', AModel.NumEdges, ASource.Line]);
   SetLength(AModel.Edges, AModel.NumEdges);
   for LIndex := 0 to AModel.NumEdges - 1 do
   begin
@@ -125,10 +155,17 @@ begin
     AModel.Edges[LIndex].VertexNum[0] := ASource.ParseInt;
     AModel.Edges[LIndex].VertexNum[1] := ASource.ParseInt;
     ASource.ExpectTokenString(')');
+    // the vertices of an edge are used to index the vertices: they have to exist
+    // (edge 0 is a dummy that nothing uses)
+    if (LIndex > 0) and ((AModel.Edges[LIndex].VertexNum[0] < 0) or
+      (AModel.Edges[LIndex].VertexNum[0] >= AModel.NumVertices) or (AModel.Edges[LIndex].VertexNum[1] < 0) or
+      (AModel.Edges[LIndex].VertexNum[1] >= AModel.NumVertices)) then
+      raise ECollisionFormatException.CreateFmt(SBadVertexNumber,
+        [LIndex, AModel.Edges[LIndex].VertexNum[0], ASource.Line]);
     AModel.Edges[LIndex].Side := 0;
     AModel.Edges[LIndex].SideSet := 0;
-    AModel.Edges[LIndex].Internal := ASource.ParseInt;
-    AModel.Edges[LIndex].NumUsers := ASource.ParseInt;
+    AModel.Edges[LIndex].Internal := ASource.ParseInt and $FFFF;
+    AModel.Edges[LIndex].NumUsers := ASource.ParseInt and $FFFF;
     AModel.Edges[LIndex].Normal := TGeoVec3.Origin;
     AModel.Edges[LIndex].CheckCount := 0;
     Inc(AModel.NumInternalEdges, AModel.Edges[LIndex].Internal);
@@ -137,18 +174,22 @@ begin
 end;
 
 function TCollisionFileReader.ParseNodes(ASource: TCollisionTokenizer; AModel: TCollisionModel;
-  AParent: TCmNode): TCmNode;
+  AParent: TCmNode; ADepth: Integer): TCmNode;
 begin
+  if ADepth > MAX_TREE_DEPTH then
+    raise ECollisionFormatException.CreateFmt(STreeTooDeep, [MAX_TREE_DEPTH, ASource.Line]);
   Inc(AModel.NumNodes);
   Result := AModel.CreateNode(AParent);
   ASource.ExpectTokenString('(');
   Result.PlaneType := ASource.ParseInt;
-  Result.PlaneDist := ASource.ParseFloat;
+  if (Result.PlaneType < -1) or (Result.PlaneType > 2) then
+    raise ECollisionFormatException.CreateFmt(SBadPlaneType, [Result.PlaneType, ASource.Line]);
+  Result.PlaneDist := ParseCoordinate(ASource);
   ASource.ExpectTokenString(')');
   if Result.PlaneType <> -1 then
   begin
-    Result.Children[0] := ParseNodes(ASource, AModel, Result);
-    Result.Children[1] := ParseNodes(ASource, AModel, Result);
+    Result.Children[0] := ParseNodes(ASource, AModel, Result, ADepth + 1);
+    Result.Children[1] := ParseNodes(ASource, AModel, Result, ADepth + 1);
   end;
 end;
 
@@ -175,14 +216,21 @@ begin
     begin
       // parse polygon
       LNumEdges := ASource.ParseInt;
+      // the collision code keeps one cache entry for each edge of a polygon (CM_MAX_POLYGON_EDGES)
+      if (LNumEdges < 3) or (LNumEdges > CM_MAX_POLYGON_EDGES) then
+        raise ECollisionFormatException.CreateFmt(SBadCount, ['polygon edge', LNumEdges, ASource.Line]);
       LPolygon := AModel.CreatePolygon(LNumEdges);
       ASource.ExpectTokenString('(');
       for LIndex := 0 to LNumEdges - 1 do
+      begin
         LPolygon.Edges[LIndex] := ASource.ParseInt;
+        if (LPolygon.Edges[LIndex] = 0) or (Abs(LPolygon.Edges[LIndex]) >= AModel.NumEdges) then
+          raise ECollisionFormatException.CreateFmt(SBadEdgeNumber, [LPolygon.Edges[LIndex], ASource.Line]);
+      end;
       ASource.ExpectTokenString(')');
       ParseVector(ASource, LX, LY, LZ);
       LPolygon.Plane.SetNormal(TGeoVec3.Make(LX, LY, LZ));
-      LPolygon.Plane.SetDist(ASource.ParseFloat);
+      LPolygon.Plane.SetDist(ParseCoordinate(ASource));
       ParseVector(ASource, LX, LY, LZ);
       LPolygon.Bounds.Mins.SetValues(LX, LY, LZ);
       ParseVector(ASource, LX, LY, LZ);
@@ -223,13 +271,15 @@ begin
     begin
       // parse brush
       LNumPlanes := ASource.ParseInt;
+      if (LNumPlanes < 0) or (LNumPlanes > MAX_FILE_PLANES) then
+        raise ECollisionFormatException.CreateFmt(SBadCount, ['brush plane', LNumPlanes, ASource.Line]);
       LBrush := AModel.CreateBrush(LNumPlanes);
       ASource.ExpectTokenString('{');
       for LIndex := 0 to LNumPlanes - 1 do
       begin
         ParseVector(ASource, LX, LY, LZ);
         LBrush.Planes[LIndex].SetNormal(TGeoVec3.Make(LX, LY, LZ));
-        LBrush.Planes[LIndex].SetDist(ASource.ParseFloat);
+        LBrush.Planes[LIndex].SetDist(ParseCoordinate(ASource));
       end;
       ASource.ExpectTokenString('}');
       ParseVector(ASource, LX, LY, LZ);
@@ -278,7 +328,7 @@ begin
       else if LToken = 'nodes' then
       begin
         ASource.ExpectTokenString('{');
-        Result.Node := ParseNodes(ASource, Result, nil);
+        Result.Node := ParseNodes(ASource, Result, nil, 0);
         ASource.ExpectTokenString('}');
       end
       else if LToken = 'polygons' then

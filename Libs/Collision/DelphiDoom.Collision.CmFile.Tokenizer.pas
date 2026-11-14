@@ -49,7 +49,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Collision.Types;
+  System.SysUtils, System.Math, DelphiDoom.Collision.Types;
 
 resourcestring
   SUnexpectedEnd = 'collision model file: unexpected end of file at line %d';
@@ -214,6 +214,9 @@ begin
   if not ReadToken(LToken, LIsString) then
     raise ECollisionFormatException.CreateFmt(SUnexpectedEnd, [FLine]);
   if LIsString or not TryStrToFloat(LToken, LValue, TFormatSettings.Invariant) then
+    raise ECollisionFormatException.CreateFmt(SBadNumber, [LToken, FLine]);
+  // a value that does not fit a float would raise a floating point exception on the narrowing
+  if (Abs(LValue) > MaxSingle) or LValue.IsNan then
     raise ECollisionFormatException.CreateFmt(SBadNumber, [LToken, FLine]);
   Result := LValue;
 end;

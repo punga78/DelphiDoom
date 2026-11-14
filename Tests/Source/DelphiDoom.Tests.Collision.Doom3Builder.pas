@@ -62,7 +62,6 @@ var
   LProc: TProcFile;
   LNodes: TArray<TCollisionProcNode>;
   LIndex: Integer;
-  LNode: TProcNode;
 begin
   LCatalog := CreateDoom3Catalog;
   LMap := TMapFileFactory.CreateReader(nil).ParseText(AnsiString(TFile.ReadAllText(DataPath(AName + '.map'),
@@ -76,14 +75,7 @@ begin
         LProc := TProcFileFactory.CreateReader(nil).ParseText(AnsiString(TFile.ReadAllText(DataPath(AName + '.proc'),
           TEncoding.ASCII)), AnsiString(AName));
         try
-          SetLength(LNodes, LProc.Nodes.Count);
-          for LIndex := 0 to LProc.Nodes.Count - 1 do
-          begin
-            LNode := LProc.Nodes[LIndex];
-            LNodes[LIndex].Plane := LNode.Plane;
-            LNodes[LIndex].Children[0] := LNode.PositiveChild;
-            LNodes[LIndex].Children[1] := LNode.NegativeChild;
-          end;
+          LNodes := TCollisionChopper.NodesFromProcFile(LProc);
         finally
           LProc.Free;
         end;

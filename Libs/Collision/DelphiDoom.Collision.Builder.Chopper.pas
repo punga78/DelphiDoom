@@ -19,7 +19,8 @@ interface
 uses
   System.Generics.Collections, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Plane, DelphiDoom.Geometry.Bounds,
   DelphiDoom.Geometry.Winding, DelphiDoom.Collision.CheckCounter, DelphiDoom.Collision.Model,
-  DelphiDoom.Collision.Model.Node, DelphiDoom.Collision.Model.Brush, DelphiDoom.Logging.Intf;
+  DelphiDoom.Collision.Model.Node, DelphiDoom.Collision.Model.Brush, DelphiDoom.Logging.Intf,
+  DelphiDoom.MapFile.Proc.ProcFile;
 
 type
   /// <summary>
@@ -78,6 +79,8 @@ type
     /// </summary>
     constructor Create(AModel: TCollisionModel; ACounter: TCollisionCheckCounter;
       const AProcNodes: TArray<TCollisionProcNode>; AWorldModel: Boolean; const ALog: ILog);
+    /// <summary>The nodes of the "nodes" section of a .proc file (ParseProcNodes) as the chopper wants them</summary>
+    class function NodesFromProcFile(AFile: TProcFile): TArray<TCollisionProcNode>; static;
     /// <summary>ChoppedAwayByProcBSP: true if the winding lies completely in solid space of the proc tree</summary>
     function ChoppedAwayByProcBSP(AWinding: TGeoWinding; const APlane: TGeoPlane; AContents: Integer): Boolean;
     /// <summary>
@@ -127,6 +130,19 @@ begin
   FProcNodes := AProcNodes;
   FWorldModel := AWorldModel;
   FLog := ALog;
+end;
+
+class function TCollisionChopper.NodesFromProcFile(AFile: TProcFile): TArray<TCollisionProcNode>;
+var
+  LIndex: Integer;
+begin
+  SetLength(Result, AFile.Nodes.Count);
+  for LIndex := 0 to AFile.Nodes.Count - 1 do
+  begin
+    Result[LIndex].Plane := AFile.Nodes[LIndex].Plane;
+    Result[LIndex].Children[0] := AFile.Nodes[LIndex].PositiveChild;
+    Result[LIndex].Children[1] := AFile.Nodes[LIndex].NegativeChild;
+  end;
 end;
 
 procedure TCollisionChopper.Warn(const AText: string);

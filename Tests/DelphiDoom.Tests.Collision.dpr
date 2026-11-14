@@ -89,7 +89,8 @@ uses
   DelphiDoom.Tests.Collision.Translation in 'Source\DelphiDoom.Tests.Collision.Translation.pas',
   DelphiDoom.Tests.Collision.CmFile in 'Source\DelphiDoom.Tests.Collision.CmFile.pas',
   DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas',
-  DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas';
+  DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas',
+  DelphiDoom.Tests.Collision.Fuzz in 'Source\DelphiDoom.Tests.Collision.Fuzz.pas';
 
 var
   Runner: ITestRunner;
