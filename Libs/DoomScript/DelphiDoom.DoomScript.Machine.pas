@@ -49,8 +49,6 @@ type
     FQueue: TDoomScriptEventQueue;
     FCompiler: TDoomScriptCompiler;
     FSysEvents: TDoomScriptSysEvents;
-    procedure WriteObject(const AStream: TStream; const AObject: TObject);
-    function ReadObject(const AStream: TStream): TObject;
   public
     /// <summary>Takes ownership of the parts</summary>
     constructor Create(const AContext: TDoomScriptContext; const ACompiler: TDoomScriptCompiler;
@@ -84,6 +82,14 @@ type
     /// <summary>idEntity::DeconstructScriptObject: runs <c>destroy</c> of the script object, if any</summary>
     procedure DeconstructScriptObject(const AEntityNumber: Integer);
 
+    /// <summary>
+    ///   idSaveGame::WriteObject for the objects the script system refers to: -1 for nil, the position in the list
+    ///   of the threads plus one for a thread, DS_SAVE_ENTITY_FLAG or the handle for an entity. A host that saves
+    ///   the parts of the machine one by one passes it to their <c>Save</c>.
+    /// </summary>
+    procedure WriteObject(const AStream: TStream; const AObject: TObject);
+    /// <summary>idRestoreGame::ReadObject; raises EDoomScriptError for a thread index out of range</summary>
+    function ReadObject(const AStream: TStream): TObject;
     /// <summary>
     ///   Writes the program state (idProgram::Save), every thread in the order of the list
     ///   (idThread::Save) and the queue of the events (idEvent::Save)

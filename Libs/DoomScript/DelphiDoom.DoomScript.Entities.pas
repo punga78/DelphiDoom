@@ -37,6 +37,8 @@ type
     FTargets: array[0..DS_MAX_GENTITIES - 1] of TDoomScriptEventTarget;
     FNames: array[0..DS_MAX_GENTITIES - 1] of AnsiString;
     FObjects: array[0..DS_MAX_GENTITIES - 1] of TDoomScriptObject;
+    FSpawnIds: array[0..DS_MAX_GENTITIES - 1] of Integer;
+    FSpawnCount: Integer;
     procedure CheckNumber(const ANumber: Integer);
   public
     constructor Create(const AProgram: TDoomScriptProgram);
@@ -49,6 +51,23 @@ type
     /// <summary>The target of an entity handle; nil if there is none</summary>
     function TargetOf(const ANumber: Integer): TDoomScriptEventTarget;
     function NameOf(const ANumber: Integer): AnsiString;
+    /// <summary>Changes the name of an entity (the host does the matching <c>SetEntity</c> of the program)</summary>
+    procedure Rename(const ANumber: Integer; const AName: AnsiString);
+    /// <summary>
+    ///   gameLocal.spawnIds: the serial number the entity got when it was added (INITIAL_SPAWN_COUNT, 3, for the
+    ///   first one); -1 for a handle that was never used. It stays after the entity is removed.
+    /// </summary>
+    function SpawnIdOf(const ANumber: Integer): Integer;
+    /// <summary>
+    ///   idEntityPtr::operator=: the spawn id and the handle of an entity in one integer, what a queued event and a
+    ///   save game hold; 0 for no entity
+    /// </summary>
+    function EntityPtr(const ANumber: Integer): Integer;
+    /// <summary>
+    ///   idEntityPtr::GetEntity: the handle of the entity of a value of <c>EntityPtr</c>, -1 if that entity was
+    ///   removed (even if another one took its handle)
+    /// </summary>
+    function ResolveEntityPtr(const AValue: Integer): Integer;
     /// <summary>The script object of an entity (with or without data); nil if there is no entity</summary>
     function ObjectOf(const ANumber: Integer): TDoomScriptObject;
     /// <summary>The handle of a target, -1 if it is not an entity</summary>
@@ -62,6 +81,8 @@ type
     ///   program: called before the program frees its types, so that no object keeps a freed type
     /// </summary>
     procedure ReleaseObjects(const ATypeCount: Integer);
+    /// <summary>gameLocal.spawnCount: the spawn id of the next entity (a host that restores a game sets it)</summary>
+    property SpawnCount: Integer read FSpawnCount write FSpawnCount;
   end;
 
 implementation
@@ -70,11 +91,15 @@ const
   SBadNumber = 'TDoomScriptEntityTable: entity number %d out of range';
   STaken = 'TDoomScriptEntityTable: entity number %d is already in use';
   SNoTarget = 'TDoomScriptEntityTable: an entity needs a target';
+  INITIAL_SPAWN_COUNT = 3;
+  ENTITY_NUMBER_BITS = 12;
 
 constructor TDoomScriptEntityTable.Create(const AProgram: TDoomScriptProgram);
 begin
   inherited Create;
   FProgram := AProgram;
+  FillChar(FSpawnIds, SizeOf(FSpawnIds), $FF);
+  FSpawnCount := INITIAL_SPAWN_COUNT;
 end;
 
 destructor TDoomScriptEntityTable.Destroy;
@@ -103,6 +128,8 @@ begin
   FTargets[ANumber] := ATarget;
   FNames[ANumber] := AName;
   FObjects[ANumber] := TDoomScriptObject.Create(FProgram);
+  FSpawnIds[ANumber] := FSpawnCount;
+  Inc(FSpawnCount);
 end;
 
 procedure TDoomScriptEntityTable.Remove(const ANumber: Integer);
@@ -132,6 +159,41 @@ begin
     Result := FNames[ANumber]
   else
     Result := '';
+end;
+
+procedure TDoomScriptEntityTable.Rename(const ANumber: Integer; const AName: AnsiString);
+begin
+  CheckNumber(ANumber);
+  if Assigned(FTargets[ANumber]) then
+    FNames[ANumber] := AName;
+end;
+
+function TDoomScriptEntityTable.SpawnIdOf(const ANumber: Integer): Integer;
+begin
+  if (ANumber >= 0) and (ANumber < DS_MAX_GENTITIES) then
+    Result := FSpawnIds[ANumber]
+  else
+    Result := -1;
+end;
+
+function TDoomScriptEntityTable.EntityPtr(const ANumber: Integer): Integer;
+begin
+  if Exists(ANumber) then
+    Result := (FSpawnIds[ANumber] shl ENTITY_NUMBER_BITS) or ANumber
+  else
+    Result := 0;
+end;
+
+function TDoomScriptEntityTable.ResolveEntityPtr(const AValue: Integer): Integer;
+var
+  LNumber: Integer;
+begin
+  LNumber := AValue and (DS_MAX_GENTITIES - 1);
+  // a negative value never matches a spawn id (the shift of the original is arithmetic)
+  if Assigned(FTargets[LNumber]) and (AValue >= 0) and (FSpawnIds[LNumber] = AValue shr ENTITY_NUMBER_BITS) then
+    Result := LNumber
+  else
+    Result := -1;
 end;
 
 function TDoomScriptEntityTable.ObjectOf(const ANumber: Integer): TDoomScriptObject;

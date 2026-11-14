@@ -1,0 +1,181 @@
+// threads: creation, waits, pause, kill, names, waiting for threads and for entities, multi frame events
+
+float	counter;
+float	lastThread;
+string	order;
+
+void mark( string s ) {
+	order = order + s + " ";
+}
+
+void worker( float id, float steps, float delay ) {
+	float i;
+
+	for ( i = 0; i < steps; i++ ) {
+		mark( "w" + id + "." + i );
+		sys.wait( delay );
+	}
+	mark( "w" + id + "end" );
+	counter = counter + 1;
+}
+
+void quick( string name, vector v, entity e ) {
+	mark( name + v + e.getName() );
+}
+
+void framer( float n ) {
+	float i;
+
+	for ( i = 0; i < n; i++ ) {
+		sys.println( "framer " + i + " time " + sys.getTime() );
+		sys.waitFrame();
+	}
+}
+
+void named() {
+	sys.threadname( "my_name_1" );
+	sys.pause();
+	sys.println( "named resumed?" );
+}
+
+void sleeper() {
+	sys.println( "sleeper pauses" );
+	sys.pause();
+	sys.println( "sleeper never wakes by itself" );
+}
+
+float returner() {
+	return 77;
+}
+
+void spawner() {
+	float t1, t2, t3;
+
+	t1 = thread worker( 1, 3, 0.05 );
+	t2 = thread worker( 2, 2, 0.1 );
+	t3 = thread quick( "q", '1 2 3', $ent_one );
+	sys.println( "threads " + t1 + " " + t2 + " " + t3 + " order " + order );
+	lastThread = t2;
+	// a thread call evaluates to the thread number; the function result is not used
+	t3 = thread returner();
+	sys.println( "returner thread " + t3 );
+	sys.waitForThread( t1 );
+	mark( "t1done" );
+	sys.waitForThread( t2 );
+	mark( "t2done" );
+	// a thread that does not exist any more: no wait
+	sys.waitForThread( t1 );
+	sys.waitForThread( 9999 );
+	mark( "nowait" );
+	sys.println( "spawner done: " + order );
+}
+
+void killer() {
+	float t;
+
+	t = thread sleeper();
+	thread named();
+	thread worker( 7, 100, 0.016 );
+	thread worker( 8, 100, 0.016 );
+	sys.wait( 0.1 );
+	sys.println( "killer kills" );
+	sys.terminate( t );
+	sys.killthread( "my_name*" );
+	sys.killthread( "worker" );
+	sys.killthread( "no_such_thread" );
+	sys.terminate( 12345 );
+	sys.wait( 0.05 );
+	sys.println( "killer done" );
+}
+
+void suicide() {
+	sys.println( "suicide starts" );
+	sys.killthread( "suicide" );
+	sys.println( "suicide: after killing itself the statement still ends the frame" );
+}
+
+void killAll() {
+	thread worker( 1, 100, 0.016 );
+	sys.waitFrame();
+	sys.killthread( "*" );
+	sys.println( "killAll: still running this frame" );
+	sys.waitFrame();
+	sys.println( "never" );
+}
+
+void waitForMover() {
+	entity m;
+
+	m = $ent_mover;
+	sys.println( "waitFor without a move" );
+	sys.waitFor( m );
+	sys.println( "not waiting: " + m.isMoving() );
+	m.moveTo( '10 20 30', 0.1 );
+	sys.waitFor( m );
+	sys.println( "move done at " + sys.getTime() + " origin " + m.getOrigin() );
+	// an entity that does not answer the callback event, and a null one
+	sys.waitFor( $ent_one );
+	sys.println( "no wait on ent_one" );
+	sys.waitFor( $null_entity );
+	sys.println( "never: null entity on an 'e' argument" );
+}
+
+void twoWaiters() {
+	entity m;
+
+	m = $ent_mover;
+	m.moveTo( '1 1 1', 0.05 );
+	sys.waitFor( m );
+	sys.println( "first waiter done" );
+}
+
+void secondWaiter() {
+	// the mover already has a thread to call: no wait
+	sys.waitFor( $ent_mover );
+	sys.println( "second waiter did not wait" );
+}
+
+void multiFrame() {
+	sys.println( "slowTurn starts at " + sys.getTime() );
+	$ent_mover.slowTurn( 3 );
+	sys.println( "slowTurn ended at " + sys.getTime() );
+	$ent_mover.slowTurn( 1 );
+	sys.println( "one frame slowTurn ended at " + sys.getTime() );
+}
+
+void waits() {
+	sys.println( "t0 " + sys.getTime() );
+	sys.wait( 0 );
+	sys.println( "t1 " + sys.getTime() );
+	sys.wait( 0.001 );
+	sys.println( "t2 " + sys.getTime() );
+	sys.wait( 0.016 );
+	sys.println( "t3 " + sys.getTime() );
+	sys.wait( 0.017 );
+	sys.println( "t4 " + sys.getTime() );
+	sys.wait( -1 );
+	sys.println( "t5 " + sys.getTime() );
+	sys.waitFrame();
+	sys.println( "t6 " + sys.getTime() );
+	sys.wait( 0.1 );
+	sys.println( "t7 " + sys.getTime() );
+}
+
+void locals() {
+	float	lf = 2.5;
+	vector	lv = '1 2 3';
+	string	ls = "local text";
+	boolean	lb = 1;
+
+	counter = 5;
+	sys.pause();
+	sys.println( "" + lf + lv + ls );
+}
+
+void deep3() { sys.pause(); }
+void deep2() { deep3(); }
+void deep1() { deep2(); }
+
+void framerMain() {
+	framer( 3 );
+}

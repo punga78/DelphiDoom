@@ -330,7 +330,7 @@ begin
       LResult: Single;
     begin
       TDoomScriptThread(ATarget).SpawnArgs.GetFloat(AArgs[0].StringValue,
-        TIdStrings.FloatToPlainText(AArgs[1].FloatValue), LResult);
+        TDoomScriptConvert.FloatToFixed(AArgs[1].FloatValue), LResult);
       LContext.ScriptProgram.ReturnFloat(LResult);
     end);
   Add(SpawnVector,
@@ -339,9 +339,9 @@ begin
       LResult: TIdVec3;
       LDefault: AnsiString;
     begin
-      LDefault := TIdStrings.FloatToPlainText(AArgs[1].VectorValue.X) + ' ' +
-        TIdStrings.FloatToPlainText(AArgs[1].VectorValue.Y) + ' ' +
-        TIdStrings.FloatToPlainText(AArgs[1].VectorValue.Z);
+      LDefault := TDoomScriptConvert.FloatToFixed(AArgs[1].VectorValue.X) + ' ' +
+        TDoomScriptConvert.FloatToFixed(AArgs[1].VectorValue.Y) + ' ' +
+        TDoomScriptConvert.FloatToFixed(AArgs[1].VectorValue.Z);
       TDoomScriptThread(ATarget).SpawnArgs.GetVector(AArgs[0].StringValue, LDefault, LResult);
       LContext.ScriptProgram.ReturnVector(LResult);
     end);

@@ -1,0 +1,113 @@
+// every type of the language: globals, initial values, locals, the components of a vector
+
+float	gf;
+float	gf1 = 1.5, gf2 = -2, gf3 = 0x10, gf4 = .25, gf5 = 1e3;
+vector	gv;
+vector	gv1 = '1 2 3';
+vector	gv2 = '-1.5 0 2.25';
+string	gs;
+string	gs1 = "text", gs2 = "two words\tand a tab\n";
+string	gs3 = "";
+boolean	gb;
+entity	ge;
+entity	ge1 = $some_entity;
+float	result_f;
+vector	result_v;
+string	result_s;
+boolean	result_b;
+entity	result_e;
+
+void locals() {
+	float	f;
+	float	f2 = 7;
+	vector	v;
+	vector	v2 = '4 5 6';
+	string	s;
+	string	s2 = "local";
+	boolean	b;
+	boolean	b2 = 1;
+	boolean	b3 = b2;
+	entity	e;
+	entity	e2 = $some_entity;
+	string	s3 = f2;
+	string	s4 = v2;
+	string	s5 = b2;
+	float	f3 = b2;
+
+	sys.println( "f=" + f + " f2=" + f2 + " f3=" + f3 );
+	sys.println( "v=" + v + " v2=" + v2 );
+	sys.println( "s='" + s + "' s2='" + s2 + "' s3=" + s3 + " s4=" + s4 + " s5=" + s5 );
+	b = f2;
+	s = b;
+	sys.println( "b=" + s );
+	s = b3;
+	sys.println( "b3=" + s );
+	f = b3;
+	sys.println( "f from b3=" + f );
+	e = e2;
+	result_e = e;
+}
+
+void components() {
+	vector v;
+
+	v_x = 1;
+	v_y = 2;
+	v_z = v_x + v_y;
+	gv_x = v_z;
+	gv_y = gv1_y * 10;
+	gv_z = gv2_x;
+	result_v = v;
+	result_f = v_x + v_y + v_z;
+	sys.println( "v=" + v + " gv=" + gv );
+	gv1_x += 1;
+	gv1_y -= 1;
+	gv1_z *= 2;
+	sys.println( "gv1=" + gv1 );
+}
+
+void globals() {
+	sys.println( "gf=" + gf + " gf1=" + gf1 + " gf2=" + gf2 + " gf3=" + gf3 + " gf4=" + gf4 + " gf5=" + gf5 );
+	sys.println( "gv=" + gv + " gv1=" + gv1 + " gv2=" + gv2 );
+	sys.println( "gs='" + gs + "' gs1='" + gs1 + "' gs2='" + gs2 + "' gs3='" + gs3 + "'" );
+	gb = gf1;
+	result_b = gb;
+	gs = gb;
+	sys.println( "gb=" + gs );
+	gb = gf;
+	gs = gb;
+	sys.println( "gb=" + gs );
+	gs = gf1;
+	result_s = gs;
+	gs = gv1;
+	sys.println( "gs=" + gs + " result_s=" + result_s );
+	gf = gb;
+}
+
+void strings() {
+	string a = "abc";
+	string b;
+	string long1 = "0123456789012345678901234567890123456789012345678901234567890123456789";
+	string long2;
+
+	b = a + "def" + 1 + 2.5 + '1 2 3';
+	sys.println( b );
+	b = 1 + a;
+	sys.println( b );
+	b = '1.125 -2.5 100000' + a;
+	sys.println( b );
+	// longer than 127 characters: cut
+	long2 = long1 + long1;
+	sys.println( long2 );
+	sys.println( "length " + sys.strLength( long2 ) );
+	result_s = long2 + "x";
+	sys.println( "1000000=" + 1000000 + " 1.5=" + 1.5 + " -0.001=" + -0.001 + " 16777216=" + 16777216 + " 0.1=" + 0.1 );
+	sys.println( "1e10=" + 1e10 + " 3e9=" + 3000000000 + " -3e9=" + -3000000000 );
+}
+
+void main() {
+	globals();
+	locals();
+	components();
+	strings();
+}

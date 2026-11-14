@@ -46,6 +46,10 @@ type
     function Developer: Boolean;
     /// <summary>The cvar g_disasm: write script/disasm.txt after a compilation</summary>
     function Disassemble: Boolean;
+    /// <summary>
+    ///   gameLocal.DPrintf: text for the developer (the host shows it only when its cvar "developer" is set)
+    /// </summary>
+    procedure DebugPrintf(const AText: string);
   end;
 
   /// <summary>

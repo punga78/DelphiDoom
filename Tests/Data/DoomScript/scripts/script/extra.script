@@ -1,0 +1,20 @@
+// compiled after the startup: Restart forgets it
+
+float	extraValue = 3;
+string	extraText = "extra";
+
+void extraMain() {
+	sys.println( extraText + " " + extraValue + " " + answer + " " + two );
+	two = two + 1;
+	extraValue = extraValue * 2;
+}
+
+void extraLoop() {
+	float n;
+
+	while ( 1 ) {
+		n++;
+		sys.println( "extraLoop " + n );
+		sys.waitFrame();
+	}
+}

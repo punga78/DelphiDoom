@@ -1,0 +1,764 @@
+# compile errors: one wrong text per case, with file and line; "restart" forgets the broken text.
+# The last cases repeat some errors from the console (no file and line, printed, not an Error of the game).
+startup -
+
+# ---- tokens and immediates ----
+restart
+compiletext e_vector_short 0 <<EOF
+vector v = '1 2';
+EOF
+restart
+compiletext e_vector_minus 0 <<EOF
+float a;
+
+vector v = '1 -x 2';
+EOF
+restart
+compiletext e_vector_name 0 <<EOF
+vector v = '1 a 2';
+EOF
+restart
+compiletext e_punctuation 0 <<EOF
+float a;
+void f() {
+	a = a ^ 2;
+}
+EOF
+restart
+compiletext e_expected 0 <<EOF
+float a
+float b;
+EOF
+restart
+compiletext e_not_a_name 0 <<EOF
+float 5;
+EOF
+restart
+compiletext e_not_a_type 0 <<EOF
+float a;
+foo bar;
+EOF
+restart
+compiletext e_string_open 0 <<EOF
+string s = "never closed;
+float a;
+EOF
+
+# ---- definitions ----
+restart
+compiletext e_event_in_namespace 0 <<EOF
+namespace n {
+	scriptEvent void pause();
+}
+EOF
+restart
+compiletext e_namespace_in_function 0 <<EOF
+void f() {
+	namespace n {
+	}
+}
+EOF
+restart
+compiletext e_object_in_function 0 <<EOF
+void f() {
+	object o {
+		float x;
+	};
+}
+EOF
+restart
+compiletext e_object_twice 0 <<EOF
+object o {
+	float x;
+};
+object o {
+	float y;
+};
+EOF
+restart
+compiletext e_object_inherits 0 <<EOF
+object o : float {
+	float x;
+};
+EOF
+restart
+compiletext e_object_variable 0 <<EOF
+object go;
+EOF
+restart
+compiletext e_function_in_function 0 <<EOF
+void f() {
+	void g() {
+	}
+}
+EOF
+restart
+compiletext e_function_twice 0 <<EOF
+void f() {
+}
+
+void f() {
+}
+EOF
+restart
+compiletext e_method_twice 0 <<EOF
+object o {
+	void m();
+};
+void o::m() { }
+void o::m() { }
+EOF
+restart
+compiletext e_variable_twice 0 <<EOF
+float a;
+float a;
+EOF
+restart
+compiletext e_local_twice 0 <<EOF
+void f() {
+	float a;
+	float a;
+}
+EOF
+restart
+compiletext e_shadow_namespace 0 <<EOF
+float a;
+namespace n {
+	float a;
+}
+EOF
+restart
+compiletext e_function_shadow_namespace 0 <<EOF
+void f() { }
+namespace n {
+	void f() { }
+}
+EOF
+restart
+compiletext e_parm_twice 0 <<EOF
+void f( float a, float a ) {
+}
+EOF
+restart
+compiletext e_redeclared_type 0 <<EOF
+float a;
+void a() {
+}
+EOF
+restart
+compiletext e_redeclared_namespace 0 <<EOF
+float a;
+namespace a {
+}
+EOF
+restart
+compiletext e_prototype_mismatch 0 <<EOF
+void f( float a );
+void f( string a ) {
+}
+EOF
+restart
+compiletext e_not_defined 0 <<EOF
+void f();
+void g() {
+	f();
+}
+EOF
+restart
+compiletext e_method_not_defined 0 <<EOF
+object o {
+	void m();
+};
+EOF
+restart
+compiletext e_unknown_object 0 <<EOF
+void nothing::f() {
+}
+EOF
+restart
+compiletext e_bad_init_local 0 <<EOF
+void f() {
+	float a = "x";
+}
+EOF
+restart
+compiletext e_bad_init_minus 0 <<EOF
+vector v = -'1 2 3';
+EOF
+restart
+compiletext e_bad_init_global 0 <<EOF
+float a = "x";
+EOF
+restart
+compiletext e_bad_init_boolean 0 <<EOF
+boolean b = 1;
+EOF
+restart
+compiletext e_bad_init_expression 0 <<EOF
+float a = 1;
+float b = a;
+EOF
+
+# ---- events ----
+restart
+compiletext e_event_unknown 0 <<EOF
+scriptEvent void nothing();
+EOF
+restart
+compiletext e_event_return_invalid 0 <<EOF
+scriptEvent float traceRet();
+EOF
+restart
+compiletext e_event_return_mismatch 0 <<EOF
+scriptEvent void getValue();
+EOF
+restart
+compiletext e_event_parm_invalid 0 <<EOF
+scriptEvent void traceArg( float t );
+EOF
+restart
+compiletext e_event_parm_mismatch 0 <<EOF
+scriptEvent void setKey( string key, float value );
+EOF
+restart
+compiletext e_event_too_few 0 <<EOF
+scriptEvent void setKey( string key );
+EOF
+restart
+compiletext e_event_too_many 0 <<EOF
+scriptEvent void setValue( float a, float b );
+EOF
+restart
+compiletext e_event_redefinition 0 <<EOF
+void spare( float x ) {
+}
+scriptEvent void spare( float x );
+EOF
+
+# ---- calls ----
+restart
+compiletext e_not_a_function 0 <<EOF
+float a;
+void f() {
+	a();
+}
+EOF
+restart
+compiletext e_too_many_parms 0 <<EOF
+void g( float a ) { }
+void f() {
+	g( 1, 2 );
+}
+EOF
+restart
+compiletext e_too_few_parms 0 <<EOF
+void g( float a, float b ) { }
+void f() {
+	g( 1 );
+}
+EOF
+restart
+compiletext e_parm_mismatch 0 <<EOF
+void g( float a, float b ) { }
+void f() {
+	g( 1, "x" );
+}
+EOF
+restart
+compiletext e_parm_mismatch_object 0 <<EOF
+object o1 { float x; };
+object o2 { float y; };
+void g( o1 a ) { }
+void f() {
+	o2 b;
+	g( b );
+}
+EOF
+restart
+compiletext e_builtin_thread 0 <<EOF
+object o {
+	void m();
+};
+void o::m() {
+	thread setValue( 1 );
+}
+EOF
+restart
+compiletext e_builtin_no_object 0 <<EOF
+void f() {
+	println( "x" );
+}
+EOF
+restart
+compiletext e_event_thread 0 <<EOF
+entity e;
+void f() {
+	thread e.setValue( 1 );
+}
+EOF
+restart
+compiletext e_sys_thread 0 <<EOF
+void f() {
+	thread sys.println( "x" );
+}
+EOF
+restart
+compiletext e_sys_function 0 <<EOF
+void g() { }
+void f() {
+	sys.g();
+}
+EOF
+restart
+compiletext e_sys_not_callable 0 <<EOF
+void f() {
+	sys.setValue( 1 );
+}
+EOF
+restart
+compiletext e_sys_no_call 0 <<EOF
+void f() {
+	sys.pause;
+}
+EOF
+restart
+compiletext e_invalid_thread 0 <<EOF
+float a;
+void f() {
+	thread a;
+}
+EOF
+restart
+compiletext e_thread_not_a_call 0 <<EOF
+object o { float x; };
+void f() {
+	o v;
+	thread v.x;
+}
+EOF
+
+# ---- values and operators ----
+restart
+compiletext e_unknown_value 0 <<EOF
+void f() {
+	x = 1;
+}
+EOF
+restart
+compiletext e_unknown_member_in_method 0 <<EOF
+object o {
+	float x;
+	void m();
+};
+void o::m() {
+	zz = 1;
+}
+EOF
+restart
+compiletext e_not_a_member 0 <<EOF
+object o { float x; };
+void f() {
+	o v;
+	v.zz = 1;
+}
+EOF
+restart
+compiletext e_unknown_in_namespace 0 <<EOF
+namespace n {
+	float a;
+}
+void f() {
+	n::zz = 1;
+}
+EOF
+restart
+compiletext e_namespace_no_colons 0 <<EOF
+namespace n {
+	float a;
+}
+void f() {
+	n.a = 1;
+}
+EOF
+restart
+compiletext e_increment_string_field 0 <<EOF
+object o {
+	string s;
+	void m();
+};
+void o::m() {
+	s++;
+}
+EOF
+restart
+compiletext e_decrement_vector_field 0 <<EOF
+object o {
+	vector v;
+	void m();
+};
+void o::m() {
+	v--;
+}
+EOF
+restart
+compiletext e_void_field 0 <<EOF
+object o {
+	void x;
+	void m();
+};
+void o::m() {
+	x;
+}
+EOF
+restart
+compiletext e_tilde 0 <<EOF
+void f() {
+	float a;
+	a = ~"x";
+}
+EOF
+restart
+compiletext e_not_function 0 <<EOF
+void g() { }
+void f() {
+	float a;
+	a = !g;
+}
+EOF
+restart
+compiletext e_not_mismatch 0 <<EOF
+void f() {
+	float a;
+	a = !sys;
+}
+EOF
+restart
+compiletext e_negate 0 <<EOF
+void f() {
+	string s;
+	s = -s;
+}
+EOF
+restart
+compiletext e_int_mismatch 0 <<EOF
+void f() {
+	float a;
+	a = int( "x" );
+}
+EOF
+restart
+compiletext e_int_expression 0 <<EOF
+void f() {
+	float a;
+	a = int( a / 2 );
+}
+EOF
+restart
+compiletext e_operator_mismatch 0 <<EOF
+void f() {
+	string s;
+	s = "a" - "b";
+}
+EOF
+restart
+compiletext e_compare_mismatch 0 <<EOF
+void f() {
+	float a;
+	a = "a" < "b";
+}
+EOF
+restart
+compiletext e_assign_mismatch 0 <<EOF
+void f() {
+	float a;
+	a = "text";
+}
+EOF
+restart
+compiletext e_assign_vector 0 <<EOF
+void f() {
+	vector v;
+	v = 1;
+}
+EOF
+restart
+compiletext e_field_assign_mismatch 0 <<EOF
+object o { float x; };
+void f() {
+	o v;
+	v.x = "text";
+}
+EOF
+restart
+compiletext e_field_assign_object 0 <<EOF
+object o {
+	entity other;
+	void m();
+};
+void o::m() {
+	other = self;
+}
+EOF
+restart
+compiletext e_field_compound 0 <<EOF
+object o {
+	float x;
+	void m();
+};
+void o::m() {
+	x += 1;
+}
+EOF
+restart
+compiletext e_dot_number 0 <<EOF
+entity e;
+void f() {
+	e . 5;
+}
+EOF
+restart
+compiletext e_divide_by_zero 0 <<EOF
+void f() {
+	float a;
+	a = 1;
+	a = 5 / 0;
+}
+EOF
+restart
+compiletext e_modulo_by_zero_folds 0 <<EOF
+void f() {
+	float a;
+	a = 5 / ( 2 - 2 );
+}
+EOF
+
+# ---- statements ----
+restart
+compiletext e_return_missing 0 <<EOF
+float f() {
+	return;
+}
+EOF
+restart
+compiletext e_return_mismatch 0 <<EOF
+float f() {
+	return '1 2 3';
+}
+EOF
+restart
+compiletext e_return_string_from_float 0 <<EOF
+string f() {
+	return 1.5;
+}
+EOF
+restart
+compiletext e_return_value_from_void 0 <<EOF
+void f() {
+	return 1;
+}
+EOF
+restart
+compiletext e_break 0 <<EOF
+void f() {
+	break;
+}
+EOF
+restart
+compiletext e_continue 0 <<EOF
+void f() {
+	if ( 1 ) {
+		continue;
+	}
+}
+EOF
+restart
+compiletext e_empty_block 0 <<EOF
+void f() {
+	if ( 1 ) {
+	}
+}
+EOF
+restart
+compiletext e_missing_paren 0 <<EOF
+void f() {
+	while ( 1 {
+		break;
+	}
+}
+EOF
+restart
+compiletext e_do_without_while 0 <<EOF
+void f() {
+	do {
+		break;
+	} until ( 1 );
+}
+EOF
+restart
+compiletext e_missing_semicolon 0 <<EOF
+float a;
+void f() {
+	a = 1
+	a = 2;
+}
+EOF
+restart
+compiletext e_object_no_semicolon 0 <<EOF
+object o {
+	float x;
+}
+float a;
+EOF
+
+# ---- files: included files, missing closing braces, the preprocessor ----
+restart
+compiletext e_in_include 0 <<EOF
+float before;
+#include "script/err_include.script"
+float after;
+EOF
+restart
+compiletext e_after_include 0 <<EOF
+#include "script/ok_include.script"
+float after = "x";
+EOF
+restart
+compiletext e_unclosed_function 0 <<EOF
+#include "script/err_unclosed_function.script"
+float after;
+EOF
+restart
+compiletext e_unclosed_object 0 <<EOF
+#include "script/err_unclosed_object.script"
+float after;
+EOF
+restart
+compiletext e_unclosed_namespace 0 <<EOF
+#include "script/err_unclosed_namespace.script"
+float after;
+EOF
+restart
+compiletext e_include_missing 0 <<EOF
+float a;
+#include "script/no_such_file.script"
+EOF
+restart
+compiletext e_directive_error 0 <<EOF
+float a;
+#error stop here
+EOF
+restart
+compiletext e_directive_unknown 0 <<EOF
+float a;
+#nothing
+EOF
+restart
+compiletext e_directive_warning 0 <<EOF
+float a;
+#warning only a warning
+float b = "x";
+EOF
+restart
+compiletext e_elif_after_if 0 <<EOF
+#if 1
+float a;
+#elif 1
+float a;
+#endif
+EOF
+restart
+compiletext e_directive_error_text 0 <<EOF
+float a;
+#error "stop here"
+EOF
+restart
+compiletext e_directive_warning_text 0 <<EOF
+float a;
+#warning "only a warning"
+float b = "x";
+EOF
+restart
+compilefile script/no_such_script.script
+restart
+compilefile script/err_include.script
+restart
+compilefunction e_function <<EOF
+void e_function() {
+	x = 1;
+}
+EOF
+restart
+compilefunction not_there <<EOF
+void other_name() {
+}
+EOF
+
+# ---- the text ends too early: the last token read is empty ----
+restart
+compiletext e_eof_function 0 <<EOF
+float a;
+void f() {
+	a = 1;
+EOF
+restart
+compiletext e_eof_function_empty 0 <<EOF
+void f() {
+EOF
+restart
+compiletext e_eof_object 0 <<EOF
+object o {
+	float a;
+EOF
+restart
+compiletext e_eof_namespace_is_accepted 0 <<EOF
+namespace n {
+	float a;
+EOF
+restart
+compiletext e_eof_initializer 0 <<EOF
+float a =
+EOF
+restart
+compiletext e_eof_name 0 <<EOF
+float a
+EOF
+restart
+compiletext e_eof_call 0 <<EOF
+void g( float x ) { }
+void f() {
+	g( 1,
+EOF
+restart
+compiletext e_empty_text 0 <<EOF
+EOF
+restart
+compiletext e_only_comment 0 <<EOF
+// nothing here
+/* and nothing
+   here */
+EOF
+
+# ---- the same from the console: printed, no file and line ----
+restart
+compiletext console 1 <<EOF
+float a = "x";
+EOF
+restart
+compiletext console 1 <<EOF
+void f() {
+	x = 1;
+}
+EOF
+restart
+compiletext console 1 <<EOF
+void f();
+EOF
+restart
+compiletext console 1 <<EOF
+float a;
+void f() {
+	a = 2;
+}
+EOF
+callnow f
+dump globals

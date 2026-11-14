@@ -490,27 +490,27 @@ begin
     Exit(False);
   LOldThread := FContext.CurrentThread;
   FContext.CurrentThread := Self;
-  try
-    FLastExecuteTime := LTime;
-    ClearWaitFor;
-    Result := FInterpreter.Execute;
-    if Result then
-    begin
-      EndThread;
-      if FInterpreter.TerminateOnExit then
-        FContext.Queue.PostEventMS(Self, FContext.EvRemove, 0);
-    end
-    else if not FManualControl then
-    begin
-      if FWaitingUntil > FLastExecuteTime then
-        FContext.Queue.PostEventMS(Self, FContext.EvExecute, FWaitingUntil - FLastExecuteTime)
-      else if FInterpreter.MultiFrameEventInProgress then
-        FContext.Queue.PostEventMS(Self, FContext.EvExecute, FContext.Host.GetFrameMsec);
-    end;
-  finally
-    // the original left the failed thread as the current one after an error
-    FContext.CurrentThread := LOldThread;
+  FLastExecuteTime := LTime;
+  ClearWaitFor;
+  Result := FInterpreter.Execute;
+  if Result then
+  begin
+    EndThread;
+    if FInterpreter.TerminateOnExit then
+      FContext.Queue.PostEventMS(Self, FContext.EvRemove, 0);
+  end
+  else if not FManualControl then
+  begin
+    if FWaitingUntil > FLastExecuteTime then
+      FContext.Queue.PostEventMS(Self, FContext.EvExecute, FWaitingUntil - FLastExecuteTime)
+    else if FInterpreter.MultiFrameEventInProgress then
+      FContext.Queue.PostEventMS(Self, FContext.EvExecute, FContext.Host.GetFrameMsec);
   end;
+  // As in the original, an error leaves this thread as the current one (no try/finally). The thread that was
+  // current before may have been removed meanwhile: the original would keep its dangling pointer.
+  if Assigned(LOldThread) and (FContext.Threads.IndexOf(LOldThread) < 0) then
+    LOldThread := nil;
+  FContext.CurrentThread := LOldThread;
 end;
 
 procedure TDoomScriptThread.ManualControl;

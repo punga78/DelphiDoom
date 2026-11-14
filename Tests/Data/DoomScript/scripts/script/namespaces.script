@@ -1,0 +1,89 @@
+// namespaces: nested, reopened, the :: operator. A name of an enclosing namespace cannot be declared again
+// (see the compile errors), so every name is different.
+
+float	a = 10;
+string	who = "global";
+
+void f() {
+	sys.println( "::f a=" + a + " who=" + who );
+}
+
+namespace outer {
+	float	oa = 1;
+	string	owho = "outer";
+
+	void of() {
+		sys.println( "outer::of a=" + a + " oa=" + oa + " who=" + who + " owho=" + owho );
+		f();
+	}
+
+	namespace inner {
+		float	ia = 2;
+		float	b = 3;
+		void	g();
+
+		void inf() {
+			sys.println( "outer::inner::inf a=" + a + " oa=" + oa + " ia=" + ia + " b=" + b + " owho=" + owho );
+			outer::of();
+			of();
+			g();
+		}
+	}
+
+	void h() {
+		sys.println( "outer::h" );
+		inner::inf();
+		of();
+		sys.println( "inner::ia=" + inner::ia + " outer::inner::b=" + outer::inner::b + " oa=" + oa );
+		inner::ia = inner::ia + 100;
+	}
+
+	object ns_obj {
+		float	n;
+		void	init();
+		void	show();
+	};
+
+	void ns_obj::init() {
+		n = oa;
+	}
+
+	void ns_obj::show() {
+		sys.println( "ns_obj::show n=" + n + " oa=" + oa + " owho=" + owho );
+		of();
+	}
+}
+
+// reopened
+namespace outer {
+	float	c = 5;
+	namespace inner {
+		void g() {
+			sys.println( "outer::inner::g c=" + c );
+		}
+	}
+}
+
+// a function of a namespace defined from outside
+void outer::late() {
+	sys.println( "outer::late oa=" + oa + " c=" + c );
+}
+
+void main() {
+	f();
+	outer::of();
+	outer::h();
+	outer::inner::inf();
+	outer::late();
+	sys.println( "sum " + ( a + outer::oa + outer::inner::ia + outer::c ) );
+	a = outer::inner::b;
+	outer::oa = a * 2;
+	sys.println( "a=" + a + " outer::oa=" + outer::oa );
+}
+
+void useObject() {
+	ns_obj o;
+
+	o = $ent_ns;
+	o.show();
+}

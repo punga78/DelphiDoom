@@ -111,6 +111,17 @@ type
     class function FloatToInt(const AValue: Single): Integer; static;
     /// <summary>idInterpreter::FloatToString: "%d" for a whole value, "%f" otherwise</summary>
     class function FloatToString(const AValue: Single): AnsiString; static;
+    /// <summary>
+    ///   "%f" of C. A value too large for the exact scaling of TIdStrings.FormatFixed (9e12 and more: a whole
+    ///   number) is written with its exact digits rounded to FIXED_SIGNIFICANT_DIGITS significant digits and
+    ///   zeros after them, as the C runtime of the parity harness does (the runtime of the game stopped at 17).
+    /// </summary>
+    class function FloatToFixed(const AValue: Single): AnsiString; static;
+    /// <summary>
+    ///   idVec3::ToString: the three components with "%.2f", without the zeros at the end, separated by a blank;
+    ///   a huge component as <c>FloatToFixed</c> writes it
+    /// </summary>
+    class function VectorToString(const AValue: TIdVec3): AnsiString; static;
     /// <summary>SEC2MS: idMath::FtoiFast( t * 1000 ), the x87 rounding to nearest even</summary>
     class function SecToMs(const ASeconds: Single): Integer; static;
     /// <summary><c>a == b</c> of C: false when either is not a number (Delphi would say true)</summary>
@@ -188,7 +199,88 @@ begin
   if AValue = LBack then
     Result := AnsiString(IntToStr(LInt))
   else
-    Result := TIdStrings.FloatToPlainText(AValue);
+    Result := FloatToFixed(AValue);
+end;
+
+const
+  FIXED_SIGNIFICANT_DIGITS = 20;
+  EXACT_LIMIT = 9.0E12;
+
+class function TDoomScriptConvert.VectorToString(const AValue: TIdVec3): AnsiString;
+var
+  LIndex: Integer;
+  LPart: AnsiString;
+  LValue: Single;
+begin
+  Result := '';
+  for LIndex := 0 to 2 do
+  begin
+    LValue := AValue[LIndex];
+    if (((PCardinal(@LValue)^ shr 23) and $FF) = $FF) or (Abs(LValue) < EXACT_LIMIT) then
+      LPart := TIdStrings.FloatArrayToString([LValue], 2)
+    else
+    begin
+      // a whole number: "%.2f" and the zeros taken away leave the digits
+      LPart := FloatToFixed(LValue);
+      SetLength(LPart, Pos(AnsiChar('.'), LPart) - 1);
+    end;
+    if LIndex > 0 then
+      Result := Result + ' ';
+    Result := Result + LPart;
+  end;
+end;
+
+class function TDoomScriptConvert.FloatToFixed(const AValue: Single): AnsiString;
+var
+  LBits: Cardinal;
+  LExponent: Integer;
+  LDigits: AnsiString;
+  LIndex: Integer;
+  LCarry: Integer;
+  LDigit: Integer;
+  LShift: Integer;
+begin
+  LBits := PCardinal(@AValue)^;
+  LExponent := Integer((LBits shr 23) and $FF);
+  if (LExponent = $FF) or (Abs(AValue) < EXACT_LIMIT) then
+    Exit(TIdStrings.FloatToPlainText(AValue));
+  // a whole number: the 24 bits of the mantissa times a power of two, in decimal digits
+  LDigits := AnsiString(IntToStr((LBits and $7FFFFF) or $800000));
+  for LShift := 1 to LExponent - 150 do
+  begin
+    LCarry := 0;
+    for LIndex := Length(LDigits) downto 1 do
+    begin
+      LDigit := (Ord(LDigits[LIndex]) - Ord('0')) * 2 + LCarry;
+      LDigits[LIndex] := AnsiChar(Ord('0') + LDigit mod 10);
+      LCarry := LDigit div 10;
+    end;
+    if LCarry > 0 then
+      LDigits := AnsiChar(Ord('0') + LCarry) + LDigits;
+  end;
+  if Length(LDigits) > FIXED_SIGNIFICANT_DIGITS then
+  begin
+    LCarry := Ord(LDigits[FIXED_SIGNIFICANT_DIGITS + 1] >= '5');
+    for LIndex := FIXED_SIGNIFICANT_DIGITS + 1 to Length(LDigits) do
+      LDigits[LIndex] := '0';
+    LIndex := FIXED_SIGNIFICANT_DIGITS;
+    while (LCarry > 0) and (LIndex >= 1) do
+    begin
+      if LDigits[LIndex] = '9' then
+        LDigits[LIndex] := '0'
+      else
+      begin
+        Inc(LDigits[LIndex]);
+        LCarry := 0;
+      end;
+      Dec(LIndex);
+    end;
+    if LCarry > 0 then
+      LDigits := '1' + LDigits;
+  end;
+  Result := LDigits + '.000000';
+  if (LBits and $80000000) <> 0 then
+    Result := '-' + Result;
 end;
 
 class function TDoomScriptConvert.SecToMs(const ASeconds: Single): Integer;

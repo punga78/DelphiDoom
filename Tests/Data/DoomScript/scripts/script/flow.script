@@ -1,0 +1,220 @@
+// control flow, functions, parameters and return values of every type, recursion, prototypes
+
+float	total;
+string	log;
+
+// prototypes: defined later
+float	fact( float n );
+float	fib( float n );
+void	later( string s );
+float	isEven( float n );
+float	isOdd( float n );
+
+void note( string s ) {
+	log = log + s + ",";
+}
+
+void flush( string name ) {
+	sys.println( name + ": " + log );
+	log = "";
+}
+
+void ifs( float a ) {
+	if ( a ) note( "a" );
+	if ( !a ) note( "!a" );
+	if ( a > 1 ) {
+		note( ">1" );
+	} else {
+		note( "<=1" );
+	}
+	if ( a == 0 ) note( "zero" ); else if ( a == 1 ) note( "one" ); else if ( a == 2 ) note( "two" ); else note( "many" );
+	if ( a ) ;
+	if ( 1 ) note( "const1" );
+	if ( 0 ) note( "const0" );
+	;
+}
+
+void whiles() {
+	float i;
+
+	i = 0;
+	while ( i < 3 ) {
+		note( "w" + i );
+		i++;
+	}
+	while ( i ) i--;
+	note( "i" + i );
+	while ( 1 ) {
+		i++;
+		if ( i == 2 ) continue;
+		if ( i > 4 ) break;
+		note( "t" + i );
+	}
+	while ( 0 ) note( "never" );
+	do {
+		i--;
+		note( "d" + i );
+	} while ( i > 2 );
+	do note( "once" ); while ( 0 );
+	do {
+		i++;
+		if ( i == 4 ) continue;
+		if ( i == 6 ) break;
+		note( "e" + i );
+	} while ( 1 );
+}
+
+void fors() {
+	float i, j;
+
+	for ( i = 0; i < 3; i++ ) note( "f" + i );
+	for ( i = 0; i < 6; i++ ) {
+		if ( i == 1 ) continue;
+		if ( i == 4 ) break;
+		note( "g" + i );
+	}
+	// no counter part
+	for ( i = 3; i > 0; ) {
+		i--;
+		note( "h" + i );
+	}
+	// no init part
+	for ( ; i < 2; i++ ) note( "k" + i );
+	// two inits, two counters
+	for ( i = 0, j = 10; i < j; i += 3, j -= 3 ) note( "m" + i + "-" + j );
+	// nested, break of the inner one only
+	for ( i = 0; i < 3; i++ ) {
+		for ( j = 0; j < 3; j++ ) {
+			if ( j > i ) break;
+			note( "n" + i + j );
+		}
+	}
+	for ( i = 0; i < 2; i++ ) {
+		j = 0;
+		while ( 1 ) {
+			j++;
+			if ( j > 2 ) break;
+			continue;
+		}
+		note( "p" + i + j );
+	}
+}
+
+float early( float a ) {
+	if ( a < 0 ) {
+		return -1;
+	}
+	if ( a == 0 ) return 0;
+	while ( 1 ) {
+		if ( a > 10 ) return 10;
+		a++;
+	}
+	return 99;
+}
+
+void noReturn( float a ) {
+	if ( a ) {
+		note( "nr" );
+		return;
+	}
+	note( "nr0" );
+}
+
+float fact( float n ) {
+	if ( n <= 1 ) {
+		return 1;
+	}
+	return n * fact( n - 1 );
+}
+
+float fib( float n ) {
+	if ( n < 2 ) return n;
+	return fib( n - 1 ) + fib( n - 2 );
+}
+
+float isEven( float n ) {
+	if ( n == 0 ) return 1;
+	return isOdd( n - 1 );
+}
+
+float isOdd( float n ) {
+	if ( n == 0 ) return 0;
+	return isEven( n - 1 );
+}
+
+void later( string s ) {
+	note( "later " + s );
+}
+
+// parameters and returns of every type
+float	retFloat( float a, float b ) { return a * 10 + b; }
+vector	retVector( vector a, float s ) { return a * s; }
+string	retString( string a, string b ) { return b + a; }
+boolean	retBool( float a ) { return a; }
+entity	retEntity( entity e ) { return e; }
+float	retFromBool( boolean b ) { return b; }
+float	manyParms( float a, vector b, string c, boolean d, entity e, float f ) {
+	note( "many " + a + " " + b + " " + c + " " + f );
+	if ( d ) note( "d" );
+	if ( e ) note( "e" );
+	return a + b_x + b_y + b_z + f;
+}
+
+void calls() {
+	float	f;
+	vector	v;
+	string	s;
+	boolean	b;
+	entity	e;
+
+	f = retFloat( 1, 2 );
+	v = retVector( '1 2 3', 2 );
+	s = retString( "tail", "head" );
+	b = retBool( 5 );
+	e = retEntity( $ent_one );
+	note( "f" + f + " v" + v + " s" + s );
+	if ( b ) note( "b" );
+	if ( e == $ent_one ) note( "e" );
+	// conversions of the arguments: float to string, vector to string, float to boolean, boolean to float and string
+	s = retString( 1.5, '1 2 3' );
+	note( s );
+	f = retFromBool( 3 );
+	note( "fb" + f );
+	b = 1;
+	f = retFloat( b, b );
+	note( "bf" + f );
+	s = retString( b, b );
+	note( s );
+	f = manyParms( 1, '2 3 4', "five", 6, $ent_one, 7 );
+	note( "mp" + f );
+	// nested calls and expressions as arguments
+	f = retFloat( retFloat( 1, 2 ), retFloat( 3, 4 ) );
+	note( "nest" + f );
+	f = retFloat( fact( 3 ) + 1, fib( 6 ) ) + retFloat( 0, 1 );
+	note( "nest2 " + f );
+	v = retVector( retVector( '1 1 1', 2 ), 3 ) + retVector( '1 0 0', 1 );
+	note( "nestv" + v );
+	// results that are not used
+	retFloat( 1, 1 );
+	retString( "x", "y" );
+	fact( 2 );
+}
+
+void main() {
+	ifs( 0 ); ifs( 1 ); ifs( 2 ); ifs( 3 );
+	flush( "ifs" );
+	whiles();
+	flush( "whiles" );
+	fors();
+	flush( "fors" );
+	note( early( -5 ) ); note( early( 0 ) ); note( early( 3 ) );
+	noReturn( 1 ); noReturn( 0 );
+	flush( "returns" );
+	note( fact( 1 ) ); note( fact( 5 ) ); note( fact( 10 ) ); note( fib( 10 ) );
+	note( isEven( 10 ) ); note( isOdd( 7 ) ); note( isEven( 7 ) );
+	later( "ok" );
+	flush( "recursion" );
+	calls();
+	flush( "calls" );
+	total = fact( 12 ) + fib( 15 );
+}

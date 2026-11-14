@@ -1,0 +1,471 @@
+CMD startup -
+PRINT Initializing scripts
+CMD restart
+CMD compiletext e_vector_short 0 <<EOF
+ERROR Error: file e_vector_short, line 1: Couldn't read vector. '1 2' is not in the form of 'x y z'\n\n
+CMD restart
+CMD compiletext e_vector_minus 0 <<EOF
+ERROR Error: file e_vector_minus, line 3: expected a number following '-' but found '-' in vector '1 -x 2'\n\n
+CMD restart
+CMD compiletext e_vector_name 0 <<EOF
+ERROR Error: file e_vector_name, line 1: vector '1 a 2' is not in the form of 'x y z'.  expected float value, found 'a'\n\n
+CMD restart
+CMD compiletext e_punctuation 0 <<EOF
+ERROR Error: file e_punctuation, line 3: Unknown punctuation '^'\n\n
+CMD restart
+CMD compiletext e_expected 0 <<EOF
+ERROR Error: file e_expected, line 1: expected ';', found 'float'\n\n
+CMD restart
+CMD compiletext e_not_a_name 0 <<EOF
+ERROR Error: file e_not_a_name, line 1: '5' is not a name\n\n
+CMD restart
+CMD compiletext e_not_a_type 0 <<EOF
+ERROR Error: file e_not_a_type, line 1: \"foo\" is not a type\n\n
+CMD restart
+CMD compiletext e_string_open 0 <<EOF
+ERROR file /base/e_string_open, line 1: newline inside string
+CMD restart
+CMD compiletext e_event_in_namespace 0 <<EOF
+ERROR Error: file e_event_in_namespace, line 1: scriptEvents can only defined in the global namespace\n\n
+CMD restart
+CMD compiletext e_namespace_in_function 0 <<EOF
+ERROR Error: file e_namespace_in_function, line 1: A namespace may only be defined globally, or within another namespace\n\n
+CMD restart
+CMD compiletext e_object_in_function 0 <<EOF
+ERROR Error: file e_object_in_function, line 2: Objects cannot be defined within functions or other objects\n\n
+CMD restart
+CMD compiletext e_object_twice 0 <<EOF
+ERROR Error: file e_object_twice, line 4: 'o' : redefinition; different basic types\n\n
+CMD restart
+CMD compiletext e_object_inherits 0 <<EOF
+ERROR Error: file e_object_inherits, line 1: Objects may only inherit from objects.\n\n
+CMD restart
+CMD compiletext e_object_variable 0 <<EOF
+ERROR Error: file e_object_variable, line 1: expected '{', found ';'\n\n
+CMD restart
+CMD compiletext e_function_in_function 0 <<EOF
+ERROR Error: file e_function_in_function, line 2: Functions may not be defined within other functions\n\n
+CMD restart
+CMD compiletext e_function_twice 0 <<EOF
+ERROR Error: file e_function_twice, line 4: f redeclared\n\n
+CMD restart
+CMD compiletext e_method_twice 0 <<EOF
+ERROR Error: file e_method_twice, line 5: o::m redeclared\n\n
+CMD restart
+CMD compiletext e_variable_twice 0 <<EOF
+ERROR Error: file e_variable_twice, line 2: a redeclared\n\n
+CMD restart
+CMD compiletext e_local_twice 0 <<EOF
+ERROR Error: file e_local_twice, line 3: a redeclared\n\n
+CMD restart
+CMD compiletext e_shadow_namespace 0 <<EOF
+ERROR Error: file e_shadow_namespace, line 3: a redeclared\n\n
+CMD restart
+CMD compiletext e_function_shadow_namespace 0 <<EOF
+ERROR Error: file e_function_shadow_namespace, line 3: f redeclared\n\n
+CMD restart
+CMD compiletext e_parm_twice 0 <<EOF
+ERROR Error: file e_parm_twice, line 1: 'a' defined more than once in function parameters\n\n
+CMD restart
+CMD compiletext e_redeclared_type 0 <<EOF
+ERROR Error: file e_redeclared_type, line 2: Type mismatch on redeclaration of a\n\n
+CMD restart
+CMD compiletext e_redeclared_namespace 0 <<EOF
+ERROR Error: file e_redeclared_namespace, line 2: Type mismatch on redeclaration of a\n\n
+CMD restart
+CMD compiletext e_prototype_mismatch 0 <<EOF
+ERROR Error: file e_prototype_mismatch, line 2: Type mismatch on redeclaration of f\n\n
+CMD restart
+CMD compiletext e_not_defined 0 <<EOF
+PRINT Compiled '/base/e_not_defined': ? ms
+ERROR function f was not defined\n\n
+CMD restart
+CMD compiletext e_method_not_defined 0 <<EOF
+PRINT Compiled '/base/e_method_not_defined': ? ms
+ERROR function o::m was not defined\n\n
+CMD restart
+CMD compiletext e_unknown_object 0 <<EOF
+ERROR Error: file e_unknown_object, line 1: Unknown object name 'nothing'\n\n
+CMD restart
+CMD compiletext e_bad_init_local 0 <<EOF
+ERROR Error: file e_bad_init_local, line 2: bad initialization for 'a'\n\n
+CMD restart
+CMD compiletext e_bad_init_minus 0 <<EOF
+ERROR Error: file e_bad_init_minus, line 1: wrong immediate type for '-' on variable 'v'\n\n
+CMD restart
+CMD compiletext e_bad_init_global 0 <<EOF
+ERROR Error: file e_bad_init_global, line 1: wrong immediate type for 'a'\n\n
+CMD restart
+CMD compiletext e_bad_init_boolean 0 <<EOF
+ERROR Error: file e_bad_init_boolean, line 1: wrong immediate type for 'b'\n\n
+CMD restart
+CMD compiletext e_bad_init_expression 0 <<EOF
+ERROR Error: file e_bad_init_expression, line 2: wrong immediate type for 'b'\n\n
+CMD restart
+CMD compiletext e_event_unknown 0 <<EOF
+ERROR Error: file e_event_unknown, line 1: Unknown event 'nothing'\n\n
+CMD restart
+CMD compiletext e_event_return_invalid 0 <<EOF
+ERROR Error: file e_event_return_invalid, line 1: Invalid return type 't' in definition of 'traceRet' event.\n\n
+CMD restart
+CMD compiletext e_event_return_mismatch 0 <<EOF
+ERROR Error: file e_event_return_mismatch, line 1: Return type doesn't match internal return type 'float'\n\n
+CMD restart
+CMD compiletext e_event_parm_invalid 0 <<EOF
+ERROR Error: file e_event_parm_invalid, line 1: Invalid parameter 't' in definition of 'traceArg' event.\n\n
+CMD restart
+CMD compiletext e_event_parm_mismatch 0 <<EOF
+ERROR Error: file e_event_parm_mismatch, line 1: The type of parm 2 ('value') does not match the internal type 'string' in definition of 'setKey' event.\n\n
+CMD restart
+CMD compiletext e_event_too_few 0 <<EOF
+ERROR Error: file e_event_too_few, line 1: Too few parameters for event definition.  Internal definition has 2 parameters.\n\n
+CMD restart
+CMD compiletext e_event_too_many 0 <<EOF
+ERROR Error: file e_event_too_many, line 1: Too many parameters for event definition.  Internal definition has 1 parameters.\n\n
+CMD restart
+CMD compiletext e_event_redefinition 0 <<EOF
+ERROR Error: file e_event_redefinition, line 3: Type mismatch on redefinition of 'spare'\n\n
+CMD restart
+CMD compiletext e_not_a_function 0 <<EOF
+ERROR Error: file e_not_a_function, line 3: 'a' is not a function\n\n
+CMD restart
+CMD compiletext e_too_many_parms 0 <<EOF
+ERROR Error: file e_too_many_parms, line 3: too many parameters\n\n
+CMD restart
+CMD compiletext e_too_few_parms 0 <<EOF
+ERROR Error: file e_too_few_parms, line 3: too few parameters for function 'g'\n\n
+CMD restart
+CMD compiletext e_parm_mismatch 0 <<EOF
+ERROR Error: file e_parm_mismatch, line 3: type mismatch on parm 2 of call to 'g'\n\n
+CMD restart
+CMD compiletext e_parm_mismatch_object 0 <<EOF
+PRINT Compiled '/base/e_parm_mismatch_object': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    e_parm_mismatch_object
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 5, ? bytes
+PRINT    Functions: 97, ? bytes
+PRINT    Variables: 528 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD restart
+CMD compiletext e_builtin_thread 0 <<EOF
+ERROR Error: file e_builtin_thread, line 5: Built-in functions cannot be called as threads\n\n
+CMD restart
+CMD compiletext e_builtin_no_object 0 <<EOF
+ERROR Error: file e_builtin_no_object, line 2: Built-in functions cannot be called without an object\n\n
+CMD restart
+CMD compiletext e_event_thread 0 <<EOF
+ERROR Error: file e_event_thread, line 3: Cannot call built-in functions as a thread\n\n
+CMD restart
+CMD compiletext e_sys_thread 0 <<EOF
+ERROR Error: file e_sys_thread, line 2: Cannot call built-in functions as a thread\n\n
+CMD restart
+CMD compiletext e_sys_function 0 <<EOF
+ERROR Error: file e_sys_function, line 3: \"g\" cannot be called with object notation\n\n
+CMD restart
+CMD compiletext e_sys_not_callable 0 <<EOF
+ERROR Error: file e_sys_not_callable, line 2: \"setValue\" is not callable as a 'sys' function\n\n
+CMD restart
+CMD compiletext e_sys_no_call 0 <<EOF
+ERROR Error: file e_sys_no_call, line 2: expected '(', found ';'\n\n
+CMD restart
+CMD compiletext e_invalid_thread 0 <<EOF
+ERROR Error: file e_invalid_thread, line 3: Invalid thread call\n\n
+CMD restart
+CMD compiletext e_thread_not_a_call 0 <<EOF
+ERROR Error: file e_thread_not_a_call, line 4: Expecting function call after 'thread'\n\n
+CMD restart
+CMD compiletext e_unknown_value 0 <<EOF
+ERROR Error: file e_unknown_value, line 2: Unknown value \"x\"\n\n
+CMD restart
+CMD compiletext e_unknown_member_in_method 0 <<EOF
+ERROR Error: file e_unknown_member_in_method, line 6: Unknown value \"zz\"\n\n
+CMD restart
+CMD compiletext e_not_a_member 0 <<EOF
+ERROR Error: file e_not_a_member, line 4: zz is not a member of o\n\n
+CMD restart
+CMD compiletext e_unknown_in_namespace 0 <<EOF
+ERROR Error: file e_unknown_in_namespace, line 5: Unknown value \"n::zz\"\n\n
+CMD restart
+CMD compiletext e_namespace_no_colons 0 <<EOF
+ERROR Error: file e_namespace_no_colons, line 5: expected '::', found '.'\n\n
+CMD restart
+CMD compiletext e_increment_string_field 0 <<EOF
+ERROR Error: file e_increment_string_field, line 6: Invalid type for ++\n\n
+CMD restart
+CMD compiletext e_decrement_vector_field 0 <<EOF
+ERROR Error: file e_decrement_vector_field, line 6: Invalid type for --\n\n
+CMD restart
+CMD compiletext e_void_field 0 <<EOF
+ERROR Error: file e_void_field, line 6: idTypeDef::SuperClass : tried to get superclass of a non-object type\n\n
+CMD restart
+CMD compiletext e_tilde 0 <<EOF
+ERROR Error: file e_tilde, line 3: type mismatch for ~\n\n
+CMD restart
+CMD compiletext e_not_function 0 <<EOF
+ERROR Error: file e_not_function, line 4: Invalid type for !\n\n
+CMD restart
+CMD compiletext e_not_mismatch 0 <<EOF
+ERROR Error: file e_not_mismatch, line 3: type mismatch for !\n\n
+CMD restart
+CMD compiletext e_negate 0 <<EOF
+ERROR Error: file e_negate, line 3: type mismatch for -\n\n
+CMD restart
+CMD compiletext e_int_mismatch 0 <<EOF
+ERROR Error: file e_int_mismatch, line 3: type mismatch for int()\n\n
+CMD restart
+CMD compiletext e_int_expression 0 <<EOF
+ERROR Error: file e_int_expression, line 3: expected ')', found '/'\n\n
+CMD restart
+CMD compiletext e_operator_mismatch 0 <<EOF
+ERROR Error: file e_operator_mismatch, line 3: type mismatch for '-'\n\n
+CMD restart
+CMD compiletext e_compare_mismatch 0 <<EOF
+ERROR Error: file e_compare_mismatch, line 3: type mismatch for '<'\n\n
+CMD restart
+CMD compiletext e_assign_mismatch 0 <<EOF
+ERROR Error: file e_assign_mismatch, line 3: type mismatch for '='\n\n
+CMD restart
+CMD compiletext e_assign_vector 0 <<EOF
+ERROR Error: file e_assign_vector, line 3: type mismatch for '='\n\n
+CMD restart
+CMD compiletext e_field_assign_mismatch 0 <<EOF
+ERROR Error: file e_field_assign_mismatch, line 4: type mismatch for '='\n\n
+CMD restart
+CMD compiletext e_field_assign_object 0 <<EOF
+ERROR Error: file e_field_assign_object, line 6: type mismatch for '='\n\n
+CMD restart
+CMD compiletext e_field_compound 0 <<EOF
+ERROR Error: file e_field_compound, line 6: type mismatch for '+='\n\n
+CMD restart
+CMD compiletext e_dot_number 0 <<EOF
+ERROR Error: file e_dot_number, line 3: idTypeDef::FieldType: tried to get field type on non-field type\n\n
+CMD restart
+CMD compiletext e_divide_by_zero 0 <<EOF
+ERROR Error: file e_divide_by_zero, line 4: Divide by zero\n\n
+CMD restart
+CMD compiletext e_modulo_by_zero_folds 0 <<EOF
+ERROR Error: file e_modulo_by_zero_folds, line 3: Divide by zero\n\n
+CMD restart
+CMD compiletext e_return_missing 0 <<EOF
+ERROR Error: file e_return_missing, line 2: expecting return value\n\n
+CMD restart
+CMD compiletext e_return_mismatch 0 <<EOF
+ERROR Error: file e_return_mismatch, line 2: type mismatch for return value\n\n
+CMD restart
+CMD compiletext e_return_string_from_float 0 <<EOF
+ERROR Error: file e_return_string_from_float, line 2: type mismatch for return value\n\n
+CMD restart
+CMD compiletext e_return_value_from_void 0 <<EOF
+ERROR Error: file e_return_value_from_void, line 2: type mismatch for return value\n\n
+CMD restart
+CMD compiletext e_break 0 <<EOF
+ERROR Error: file e_break, line 2: cannot break outside of a loop\n\n
+CMD restart
+CMD compiletext e_continue 0 <<EOF
+ERROR Error: file e_continue, line 3: cannot contine outside of a loop\n\n
+CMD restart
+CMD compiletext e_empty_block 0 <<EOF
+ERROR Error: file e_empty_block, line 2: '}' is not a name\n\n
+CMD restart
+CMD compiletext e_missing_paren 0 <<EOF
+ERROR Error: file e_missing_paren, line 2: expected ')', found '{'\n\n
+CMD restart
+CMD compiletext e_do_without_while 0 <<EOF
+ERROR Error: file e_do_without_while, line 4: expected 'while', found 'until'\n\n
+CMD restart
+CMD compiletext e_missing_semicolon 0 <<EOF
+ERROR Error: file e_missing_semicolon, line 3: expected ';', found 'a'\n\n
+CMD restart
+CMD compiletext e_object_no_semicolon 0 <<EOF
+ERROR Error: file e_object_no_semicolon, line 3: expected ';', found 'float'\n\n
+CMD restart
+CMD compiletext e_in_include 0 <<EOF
+ERROR Error: file script/err_include.script, line 3: wrong immediate type for 'included_bad'\n\n
+CMD restart
+CMD compiletext e_after_include 0 <<EOF
+ERROR Error: file e_after_include, line 2: wrong immediate type for 'after'\n\n
+CMD restart
+CMD compiletext e_unclosed_function 0 <<EOF
+ERROR Error: file script/err_unclosed_function.script, line 4: Unexpected end of file inside function 'broken'.  Missing closing braces.\n\n
+CMD restart
+CMD compiletext e_unclosed_object 0 <<EOF
+ERROR Error: file script/err_unclosed_object.script, line 3: Unexpected end of file inside object 'broken_obj'.  Missing closing braces.\n\n
+CMD restart
+CMD compiletext e_unclosed_namespace 0 <<EOF
+ERROR Error: file script/err_unclosed_namespace.script, line 3: Unexpected end of file inside namespace 'broken_ns'.  Missing closing braces.\n\n
+CMD restart
+CMD compiletext e_include_missing 0 <<EOF
+ERROR file /base/e_include_missing, line 2: file 'script/no_such_file.script' not found
+CMD restart
+CMD compiletext e_directive_error 0 <<EOF
+ERROR file /base/e_directive_error, line 2: #error without string
+CMD restart
+CMD compiletext e_directive_unknown 0 <<EOF
+ERROR file /base/e_directive_unknown, line 2: unknown precompiler directive 'nothing'
+CMD restart
+CMD compiletext e_directive_warning 0 <<EOF
+WARN file /base/e_directive_warning, line 2: #warning without string
+PRINT Compiled '/base/e_directive_warning': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    e_directive_warning
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 1, ? bytes
+PRINT    Functions: 95, ? bytes
+PRINT    Variables: 524 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD restart
+CMD compiletext e_elif_after_if 0 <<EOF
+ERROR Error: file e_elif_after_if, line 4: a redeclared\n\n
+CMD restart
+CMD compiletext e_directive_error_text 0 <<EOF
+ERROR file /base/e_directive_error_text, line 2: #error: stop here
+CMD restart
+CMD compiletext e_directive_warning_text 0 <<EOF
+WARN file /base/e_directive_warning_text, line 2: #warning: only a warning
+ERROR Error: file e_directive_warning_text, line 3: wrong immediate type for 'b'\n\n
+CMD restart
+CMD compilefile script/no_such_script.script
+ERROR Couldn't load script/no_such_script.script\n
+CMD restart
+CMD compilefile script/err_include.script
+ERROR Error: file script/err_include.script, line 3: wrong immediate type for 'included_bad'\n\n
+CMD restart
+CMD compilefunction e_function <<EOF
+ERROR Error: file e_function, line 2: Unknown value \"x\"\n\n
+CMD restart
+CMD compilefunction not_there <<EOF
+PRINT Compiled '/base/not_there': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    not_there
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 2, ? bytes
+PRINT    Functions: 96, ? bytes
+PRINT    Variables: 524 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+FUNCTION -1
+CMD restart
+CMD compiletext e_eof_function 0 <<EOF
+ERROR Error: file e_eof_function, line 3: '' is not a name\n\n
+CMD restart
+CMD compiletext e_eof_function_empty 0 <<EOF
+ERROR Error: file e_eof_function_empty, line 1: '' is not a name\n\n
+CMD restart
+CMD compiletext e_eof_object 0 <<EOF
+ERROR Error: file e_eof_object, line 2: \"\" is not a type\n\n
+CMD restart
+CMD compiletext e_eof_namespace_is_accepted 0 <<EOF
+PRINT Compiled '/base/e_eof_namespace_is_accepted': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    e_eof_namespace_is_accepted
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 1, ? bytes
+PRINT    Functions: 95, ? bytes
+PRINT    Variables: 528 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD restart
+CMD compiletext e_eof_initializer 0 <<EOF
+ERROR Error: file e_eof_initializer, line 1: wrong immediate type for 'a'\n\n
+CMD restart
+CMD compiletext e_eof_name 0 <<EOF
+ERROR Error: file e_eof_name, line 1: expected ';', found ''\n\n
+CMD restart
+CMD compiletext e_eof_call 0 <<EOF
+ERROR Error: file e_eof_call, line 3: too many parameters\n\n
+CMD restart
+CMD compiletext e_empty_text 0 <<EOF
+PRINT Compiled '/base/e_empty_text': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    e_empty_text
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 1, ? bytes
+PRINT    Functions: 95, ? bytes
+PRINT    Variables: 520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD restart
+CMD compiletext e_only_comment 0 <<EOF
+PRINT Compiled '/base/script/doom_defs.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    e_only_comment
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 1, ? bytes
+PRINT    Functions: 95, ? bytes
+PRINT    Variables: 520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD restart
+CMD compiletext console 1 <<EOF
+PRINT Error: wrong immediate type for 'a'
+PRINT 
+RESULT 0
+CMD restart
+CMD compiletext console 1 <<EOF
+PRINT Error: Unknown value \"x\"
+PRINT 
+RESULT 0
+CMD restart
+CMD compiletext console 1 <<EOF
+PRINT function f was not defined
+PRINT 
+RESULT 0
+CMD restart
+CMD compiletext console 1 <<EOF
+RESULT 1
+CMD callnow f
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 532
+G 000200 0000000000000000000000400000000000000040

@@ -1,0 +1,1840 @@
+CMD startup script/flow.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/flow.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/flow.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 534, ? bytes
+PRINT    Functions: 116, ? bytes
+PRINT    Variables: 7860 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/flow.script
+FILE 1 script/doom_defs.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="fact" etype=8 size=4 aux=float def=103 parms=[float:n] funcs=[]
+TYPE 96 name="fib" etype=8 size=4 aux=float def=104 parms=[float:n] funcs=[]
+TYPE 97 name="later" etype=8 size=4 aux=void def=105 parms=[string:s] funcs=[]
+TYPE 98 name="isEven" etype=8 size=4 aux=float def=106 parms=[float:n] funcs=[]
+TYPE 99 name="isOdd" etype=8 size=4 aux=float def=107 parms=[float:n] funcs=[]
+TYPE 100 name="note" etype=8 size=4 aux=void def=108 parms=[string:s] funcs=[]
+TYPE 101 name="flush" etype=8 size=4 aux=void def=113 parms=[string:name] funcs=[]
+TYPE 102 name="ifs" etype=8 size=4 aux=void def=120 parms=[float:a] funcs=[]
+TYPE 103 name="whiles" etype=8 size=4 aux=void def=141 parms=[] funcs=[]
+TYPE 104 name="fors" etype=8 size=4 aux=void def=163 parms=[] funcs=[]
+TYPE 105 name="early" etype=8 size=4 aux=float def=189 parms=[float:a] funcs=[]
+TYPE 106 name="noReturn" etype=8 size=4 aux=void def=194 parms=[float:a] funcs=[]
+TYPE 107 name="retFloat" etype=8 size=4 aux=float def=212 parms=[float:a,float:b] funcs=[]
+TYPE 108 name="retVector" etype=8 size=4 aux=vector def=217 parms=[vector:a,float:s] funcs=[]
+TYPE 109 name="retString" etype=8 size=4 aux=string def=224 parms=[string:a,string:b] funcs=[]
+TYPE 110 name="retBool" etype=8 size=4 aux=boolean def=228 parms=[float:a] funcs=[]
+TYPE 111 name="retEntity" etype=8 size=4 aux=entity def=230 parms=[entity:e] funcs=[]
+TYPE 112 name="retFromBool" etype=8 size=4 aux=float def=232 parms=[boolean:b] funcs=[]
+TYPE 113 name="manyParms" etype=8 size=4 aux=float def=234 parms=[float:a,vector:b,string:c,boolean:d,entity:e,float:f] funcs=[]
+TYPE 114 name="calls" etype=8 size=4 aux=void def=250 parms=[] funcs=[]
+TYPE 115 name="main" etype=8 size=4 aux=void def=303 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="total" type=float/4 scope=@namespace init=0 users=1 value=global:520=#00000000
+DEF 102 name="log" type=string/3 scope=@namespace init=1 users=1 value=global:524=""
+DEF 103 name="fact" type=fact/8 scope=@namespace init=2 users=1 value=func:95
+DEF 104 name="fib" type=fib/8 scope=@namespace init=2 users=1 value=func:96
+DEF 105 name="later" type=later/8 scope=@namespace init=2 users=1 value=func:97
+DEF 106 name="isEven" type=isEven/8 scope=@namespace init=2 users=1 value=func:98
+DEF 107 name="isOdd" type=isOdd/8 scope=@namespace init=2 users=1 value=func:99
+DEF 108 name="note" type=note/8 scope=@namespace init=2 users=1 value=func:100
+DEF 109 name="s" type=string/3 scope=108 init=3 users=1 value=stack:0
+DEF 110 name="<RESULT>" type=string/3 scope=108 init=3 users=2 value=stack:128
+DEF 111 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:676=","
+DEF 112 name="<RESULT>" type=string/3 scope=108 init=3 users=2 value=stack:256
+DEF 113 name="flush" type=flush/8 scope=@namespace init=2 users=1 value=func:101
+DEF 114 name="name" type=string/3 scope=113 init=3 users=1 value=stack:0
+DEF 115 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:808=": "
+DEF 116 name="<RESULT>" type=string/3 scope=113 init=3 users=2 value=stack:128
+DEF 117 name="<RESULT>" type=string/3 scope=113 init=3 users=2 value=stack:256
+DEF 118 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:128
+DEF 119 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:940=""
+DEF 120 name="ifs" type=ifs/8 scope=@namespace init=2 users=1 value=func:102
+DEF 121 name="a" type=float/4 scope=120 init=3 users=1 value=stack:0
+DEF 122 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1072="a"
+DEF 123 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=18 value=jump:3
+DEF 124 name="<RESULT>" type=float/4 scope=120 init=3 users=2 value=stack:4
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1204="!a"
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=27 value=global:1332=#3F800000
+DEF 127 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1336=">1"
+DEF 128 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=7 value=jump:4
+DEF 129 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1468="<=1"
+DEF 130 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=23 value=global:1596=#00000000
+DEF 131 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1600="zero"
+DEF 132 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1728="one"
+DEF 133 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=14 value=global:1856=#40000000
+DEF 134 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1860="two"
+DEF 135 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1988="many"
+DEF 136 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=3 value=jump:8
+DEF 137 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:13
+DEF 138 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:1
+DEF 139 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2128="const1"
+DEF 140 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2256="const0"
+DEF 141 name="whiles" type=whiles/8 scope=@namespace init=2 users=1 value=func:103
+DEF 142 name="i" type=float/4 scope=141 init=3 users=1 value=stack:0
+DEF 143 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=13 value=global:2388=#40400000
+DEF 144 name="<RESULT>" type=float/4 scope=141 init=3 users=2 value=stack:4
+DEF 145 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2392="w"
+DEF 146 name="<RESULT>" type=string/3 scope=141 init=3 users=2 value=stack:8
+DEF 147 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=2 value=jump:-6
+DEF 148 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=3 value=jump:6
+DEF 149 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=2 value=jump:-2
+DEF 150 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2532="i"
+DEF 151 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=15 value=jump:2
+DEF 152 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=4 value=global:2664=#40800000
+DEF 153 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2668="t"
+DEF 154 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=2 value=jump:-10
+DEF 155 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=3 value=jump:-3
+DEF 156 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=3 value=jump:5
+DEF 157 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2808="never"
+DEF 158 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:2936="d"
+DEF 159 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=5 value=jump:-5
+DEF 160 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3068="once"
+DEF 161 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=4 value=global:3196=#40C00000
+DEF 162 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=3 value=global:3200="e"
+DEF 163 name="fors" type=fors/8 scope=@namespace init=2 users=1 value=func:104
+DEF 164 name="i" type=float/4 scope=163 init=3 users=1 value=stack:0
+DEF 165 name="j" type=float/4 scope=163 init=3 users=1 value=stack:4
+DEF 166 name="<RESULT>" type=float/4 scope=163 init=3 users=2 value=stack:8
+DEF 167 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=9 value=jump:-4
+DEF 168 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:3336="f"
+DEF 169 name="<RESULT>" type=string/3 scope=163 init=3 users=2 value=stack:12
+DEF 170 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3464="g"
+DEF 171 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-11
+DEF 172 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:14
+DEF 173 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3600="h"
+DEF 174 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3728="k"
+DEF 175 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=7 value=global:3856=#41200000
+DEF 176 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3860="m"
+DEF 177 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3988="-"
+DEF 178 name="<RESULT>" type=string/3 scope=163 init=3 users=2 value=stack:140
+DEF 179 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-8
+DEF 180 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:11
+DEF 181 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4124="n"
+DEF 182 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-9
+DEF 183 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:12
+DEF 184 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-16
+DEF 185 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:19
+DEF 186 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4268="p"
+DEF 187 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-13
+DEF 188 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:16
+DEF 189 name="early" type=early/8 scope=@namespace init=2 users=1 value=func:105
+DEF 190 name="a" type=float/4 scope=189 init=3 users=1 value=stack:0
+DEF 191 name="<RESULT>" type=float/4 scope=189 init=3 users=2 value=stack:4
+DEF 192 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4408=#BF800000
+DEF 193 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4412=#42C60000
+DEF 194 name="noReturn" type=noReturn/8 scope=@namespace init=2 users=1 value=func:106
+DEF 195 name="a" type=float/4 scope=194 init=3 users=1 value=stack:0
+DEF 196 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4420="nr"
+DEF 197 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4548="nr0"
+DEF 198 name="n" type=float/4 scope=103 init=3 users=1 value=stack:0
+DEF 199 name="<RESULT>" type=float/4 scope=103 init=3 users=2 value=stack:4
+DEF 200 name="<RESULT>" type=float/4 scope=103 init=3 users=2 value=stack:8
+DEF 201 name="n" type=float/4 scope=104 init=3 users=1 value=stack:0
+DEF 202 name="<RESULT>" type=float/4 scope=104 init=3 users=2 value=stack:4
+DEF 203 name="<RESULT>" type=float/4 scope=104 init=3 users=2 value=stack:8
+DEF 204 name="<RESULT>" type=float/4 scope=104 init=3 users=2 value=stack:12
+DEF 205 name="n" type=float/4 scope=106 init=3 users=1 value=stack:0
+DEF 206 name="<RESULT>" type=float/4 scope=106 init=3 users=2 value=stack:4
+DEF 207 name="n" type=float/4 scope=107 init=3 users=1 value=stack:0
+DEF 208 name="<RESULT>" type=float/4 scope=107 init=3 users=2 value=stack:4
+DEF 209 name="s" type=string/3 scope=105 init=3 users=1 value=stack:0
+DEF 210 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4676="later "
+DEF 211 name="<RESULT>" type=string/3 scope=105 init=3 users=2 value=stack:128
+DEF 212 name="retFloat" type=retFloat/8 scope=@namespace init=2 users=1 value=func:107
+DEF 213 name="a" type=float/4 scope=212 init=3 users=1 value=stack:0
+DEF 214 name="b" type=float/4 scope=212 init=3 users=1 value=stack:4
+DEF 215 name="<RESULT>" type=float/4 scope=212 init=3 users=2 value=stack:8
+DEF 216 name="<RESULT>" type=float/4 scope=212 init=3 users=2 value=stack:12
+DEF 217 name="retVector" type=retVector/8 scope=@namespace init=2 users=1 value=func:108
+DEF 218 name="a" type=vector/5 scope=217 init=3 users=1 value=stack:0
+DEF 219 name="a_x" type=float/4 scope=217 init=3 users=1 value=stack:0
+DEF 220 name="a_y" type=float/4 scope=217 init=3 users=1 value=stack:4
+DEF 221 name="a_z" type=float/4 scope=217 init=3 users=1 value=stack:8
+DEF 222 name="s" type=float/4 scope=217 init=3 users=1 value=stack:12
+DEF 223 name="<RESULT>" type=vector/5 scope=217 init=3 users=2 value=stack:16
+DEF 224 name="retString" type=retString/8 scope=@namespace init=2 users=1 value=func:109
+DEF 225 name="a" type=string/3 scope=224 init=3 users=1 value=stack:0
+DEF 226 name="b" type=string/3 scope=224 init=3 users=1 value=stack:128
+DEF 227 name="<RESULT>" type=string/3 scope=224 init=3 users=2 value=stack:256
+DEF 228 name="retBool" type=retBool/8 scope=@namespace init=2 users=1 value=func:110
+DEF 229 name="a" type=float/4 scope=228 init=3 users=1 value=stack:0
+DEF 230 name="retEntity" type=retEntity/8 scope=@namespace init=2 users=1 value=func:111
+DEF 231 name="e" type=entity/6 scope=230 init=3 users=1 value=stack:0
+DEF 232 name="retFromBool" type=retFromBool/8 scope=@namespace init=2 users=1 value=func:112
+DEF 233 name="b" type=boolean/14 scope=232 init=3 users=1 value=stack:0
+DEF 234 name="manyParms" type=manyParms/8 scope=@namespace init=2 users=1 value=func:113
+DEF 235 name="a" type=float/4 scope=234 init=3 users=1 value=stack:0
+DEF 236 name="b" type=vector/5 scope=234 init=3 users=1 value=stack:4
+DEF 237 name="b_x" type=float/4 scope=234 init=3 users=1 value=stack:4
+DEF 238 name="b_y" type=float/4 scope=234 init=3 users=1 value=stack:8
+DEF 239 name="b_z" type=float/4 scope=234 init=3 users=1 value=stack:12
+DEF 240 name="c" type=string/3 scope=234 init=3 users=1 value=stack:16
+DEF 241 name="d" type=boolean/14 scope=234 init=3 users=1 value=stack:144
+DEF 242 name="e" type=entity/6 scope=234 init=3 users=1 value=stack:148
+DEF 243 name="f" type=float/4 scope=234 init=3 users=1 value=stack:152
+DEF 244 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4832="many "
+DEF 245 name="<RESULT>" type=string/3 scope=234 init=3 users=2 value=stack:156
+DEF 246 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=3 value=global:4960=" "
+DEF 247 name="<RESULT>" type=string/3 scope=234 init=3 users=2 value=stack:284
+DEF 248 name="<RESULT>" type=float/4 scope=234 init=3 users=2 value=stack:412
+DEF 249 name="<RESULT>" type=float/4 scope=234 init=3 users=2 value=stack:416
+DEF 250 name="calls" type=calls/8 scope=@namespace init=2 users=1 value=func:114
+DEF 251 name="f" type=float/4 scope=250 init=3 users=1 value=stack:0
+DEF 252 name="v" type=vector/5 scope=250 init=3 users=1 value=stack:4
+DEF 253 name="v_x" type=float/4 scope=250 init=3 users=1 value=stack:4
+DEF 254 name="v_y" type=float/4 scope=250 init=3 users=1 value=stack:8
+DEF 255 name="v_z" type=float/4 scope=250 init=3 users=1 value=stack:12
+DEF 256 name="s" type=string/3 scope=250 init=3 users=1 value=stack:16
+DEF 257 name="b" type=boolean/14 scope=250 init=3 users=1 value=stack:144
+DEF 258 name="e" type=entity/6 scope=250 init=3 users=1 value=stack:148
+DEF 259 name="<RESULT>" type=float/4 scope=250 init=3 users=2 value=stack:152
+DEF 260 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=2 value=global:5092=#3F800000,#40000000,#40400000
+DEF 261 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:5092=#3F800000
+DEF 262 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:5096=#40000000
+DEF 263 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:5100=#40400000
+DEF 264 name="<RESULT>" type=vector/5 scope=250 init=3 users=2 value=stack:156
+DEF 265 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5104="tail"
+DEF 266 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5232="head"
+DEF 267 name="<RESULT>" type=string/3 scope=250 init=3 users=2 value=stack:168
+DEF 268 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:5360=#40A00000
+DEF 269 name="<RESULT>" type=boolean/14 scope=250 init=3 users=2 value=stack:296
+DEF 270 name="$ent_one" type=entity/6 scope=@namespace init=0 users=1 value=global:5364=0
+DEF 271 name="<RESULT>" type=entity/6 scope=250 init=3 users=2 value=stack:300
+DEF 272 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5368=" v"
+DEF 273 name="<RESULT>" type=string/3 scope=250 init=3 users=1 value=stack:304
+DEF 274 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5496=" s"
+DEF 275 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5624="b"
+DEF 276 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:5752=#3FC00000
+DEF 277 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5756="fb"
+DEF 278 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5884="bf"
+DEF 279 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:6012=#40000000,#40400000,#40800000
+DEF 280 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:6012=#40000000
+DEF 281 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:6016=#40400000
+DEF 282 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:6020=#40800000
+DEF 283 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6024="five"
+DEF 284 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:6152=#40E00000
+DEF 285 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6156="mp"
+DEF 286 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6284="nest"
+DEF 287 name="<RESULT>" type=float/4 scope=250 init=3 users=1 value=stack:432
+DEF 288 name="<RESULT>" type=float/4 scope=250 init=3 users=1 value=stack:436
+DEF 289 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6412="nest2 "
+DEF 290 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:6540=#3F800000,#3F800000,#3F800000
+DEF 291 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:6540=#3F800000
+DEF 292 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:6544=#3F800000
+DEF 293 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:6548=#3F800000
+DEF 294 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:6552=#3F800000,#00000000,#00000000
+DEF 295 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:6552=#3F800000
+DEF 296 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:6556=#00000000
+DEF 297 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:6560=#00000000
+DEF 298 name="<RESULT>" type=vector/5 scope=250 init=3 users=2 value=stack:440
+DEF 299 name="<RESULT>" type=vector/5 scope=250 init=3 users=2 value=stack:452
+DEF 300 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6564="nestv"
+DEF 301 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6692="x"
+DEF 302 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6820="y"
+DEF 303 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:115
+DEF 304 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6952="ifs"
+DEF 305 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7080="whiles"
+DEF 306 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7208="fors"
+DEF 307 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:7336=#C0A00000
+DEF 308 name="<RESULT>" type=float/4 scope=303 init=3 users=2 value=stack:0
+DEF 309 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7340="returns"
+DEF 310 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7468="ok"
+DEF 311 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7596="recursion"
+DEF 312 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7724="calls"
+DEF 313 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:7852=#41400000
+DEF 314 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:7856=#41700000
+DEF 315 name="<RESULT>" type=float/4 scope=303 init=3 users=2 value=stack:4
+DEF 316 name="<RESULT>" type=float/4 scope=303 init=3 users=2 value=stack:8
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="fact" event=- def=103 first=217 num=10 parmTotal=4 locals=12 filenum=0 parmSize=[4]
+FUNC 96 name="fib" event=- def=104 first=227 num=14 parmTotal=4 locals=16 filenum=0 parmSize=[4]
+FUNC 97 name="later" event=- def=105 first=259 num=4 parmTotal=128 locals=256 filenum=0 parmSize=[128]
+FUNC 98 name="isEven" event=- def=106 first=241 num=9 parmTotal=4 locals=8 filenum=0 parmSize=[4]
+FUNC 99 name="isOdd" event=- def=107 first=250 num=9 parmTotal=4 locals=8 filenum=0 parmSize=[4]
+FUNC 100 name="note" event=- def=108 first=1 num=4 parmTotal=128 locals=384 filenum=0 parmSize=[128]
+FUNC 101 name="flush" event=- def=113 first=5 num=6 parmTotal=128 locals=384 filenum=0 parmSize=[128]
+FUNC 102 name="ifs" event=- def=120 first=11 num=39 parmTotal=4 locals=8 filenum=0 parmSize=[4]
+FUNC 103 name="whiles" event=- def=141 first=50 num=50 parmTotal=0 locals=136 filenum=0 parmSize=[]
+FUNC 104 name="fors" event=- def=163 first=100 num=97 parmTotal=0 locals=268 filenum=0 parmSize=[]
+FUNC 105 name="early" event=- def=189 first=197 num=13 parmTotal=4 locals=8 filenum=0 parmSize=[4]
+FUNC 106 name="noReturn" event=- def=194 first=210 num=7 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 107 name="retFloat" event=- def=212 first=263 num=4 parmTotal=8 locals=16 filenum=0 parmSize=[4,4]
+FUNC 108 name="retVector" event=- def=217 first=267 num=3 parmTotal=16 locals=28 filenum=0 parmSize=[12,4]
+FUNC 109 name="retString" event=- def=224 first=270 num=3 parmTotal=256 locals=384 filenum=0 parmSize=[128,128]
+FUNC 110 name="retBool" event=- def=228 first=273 num=3 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 111 name="retEntity" event=- def=230 first=276 num=2 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 112 name="retFromBool" event=- def=232 first=278 num=3 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 113 name="manyParms" event=- def=234 first=281 num=21 parmTotal=156 locals=420 filenum=0 parmSize=[4,12,128,4,4,4]
+FUNC 114 name="calls" event=- def=250 first=302 num=144 parmTotal=0 locals=464 filenum=0 parmSize=[]
+FUNC 115 name="main" event=- def=303 first=446 num=88 parmTotal=0 locals=12 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_S a=102 b=109 c=110 line=14 file=0
+STMT 2 ADD_S a=110 b=111 c=112 line=14 file=0
+STMT 3 STORE_S a=112 b=102 c=- line=14 file=0
+STMT 4 RETURN a=- b=- c=- line=15 file=0
+STMT 5 ADD_S a=114 b=115 c=116 line=18 file=0
+STMT 6 ADD_S a=116 b=102 c=117 line=18 file=0
+STMT 7 PUSH_S a=117 b=- c=- line=18 file=0
+STMT 8 SYSCALL a=15 b=118 c=- line=18 file=0
+STMT 9 STORE_S a=119 b=102 c=- line=19 file=0
+STMT 10 RETURN a=- b=- c=- line=20 file=0
+STMT 11 IFNOT a=121 b=123 c=- line=23 file=0
+STMT 12 PUSH_S a=122 b=- c=- line=23 file=0
+STMT 13 CALL a=108 b=- c=- line=23 file=0
+STMT 14 NOT_F a=121 b=- c=124 line=24 file=0
+STMT 15 IFNOT a=124 b=123 c=- line=24 file=0
+STMT 16 PUSH_S a=125 b=- c=- line=24 file=0
+STMT 17 CALL a=108 b=- c=- line=24 file=0
+STMT 18 GT a=121 b=126 c=124 line=25 file=0
+STMT 19 IFNOT a=124 b=128 c=- line=25 file=0
+STMT 20 PUSH_S a=127 b=- c=- line=26 file=0
+STMT 21 CALL a=108 b=- c=- line=26 file=0
+STMT 22 GOTO a=123 b=- c=- line=27 file=0
+STMT 23 PUSH_S a=129 b=- c=- line=28 file=0
+STMT 24 CALL a=108 b=- c=- line=28 file=0
+STMT 25 EQ_F a=121 b=130 c=124 line=30 file=0
+STMT 26 IFNOT a=124 b=128 c=- line=30 file=0
+STMT 27 PUSH_S a=131 b=- c=- line=30 file=0
+STMT 28 CALL a=108 b=- c=- line=30 file=0
+STMT 29 GOTO a=137 b=- c=- line=30 file=0
+STMT 30 EQ_F a=121 b=126 c=124 line=30 file=0
+STMT 31 IFNOT a=124 b=128 c=- line=30 file=0
+STMT 32 PUSH_S a=132 b=- c=- line=30 file=0
+STMT 33 CALL a=108 b=- c=- line=30 file=0
+STMT 34 GOTO a=136 b=- c=- line=30 file=0
+STMT 35 EQ_F a=121 b=133 c=124 line=30 file=0
+STMT 36 IFNOT a=124 b=128 c=- line=30 file=0
+STMT 37 PUSH_S a=134 b=- c=- line=30 file=0
+STMT 38 CALL a=108 b=- c=- line=30 file=0
+STMT 39 GOTO a=123 b=- c=- line=30 file=0
+STMT 40 PUSH_S a=135 b=- c=- line=30 file=0
+STMT 41 CALL a=108 b=- c=- line=30 file=0
+STMT 42 IFNOT a=121 b=138 c=- line=31 file=0
+STMT 43 IFNOT a=126 b=123 c=- line=32 file=0
+STMT 44 PUSH_S a=139 b=- c=- line=32 file=0
+STMT 45 CALL a=108 b=- c=- line=32 file=0
+STMT 46 IFNOT a=130 b=123 c=- line=33 file=0
+STMT 47 PUSH_S a=140 b=- c=- line=33 file=0
+STMT 48 CALL a=108 b=- c=- line=33 file=0
+STMT 49 RETURN a=- b=- c=- line=35 file=0
+STMT 50 STORE_F a=130 b=142 c=- line=40 file=0
+STMT 51 LT a=142 b=143 c=144 line=41 file=0
+STMT 52 IFNOT a=144 b=148 c=- line=41 file=0
+STMT 53 ADD_SF a=145 b=142 c=146 line=42 file=0
+STMT 54 PUSH_S a=146 b=- c=- line=42 file=0
+STMT 55 CALL a=108 b=- c=- line=42 file=0
+STMT 56 UINC_F a=142 b=- c=- line=43 file=0
+STMT 57 GOTO a=147 b=- c=- line=44 file=0
+STMT 58 IFNOT a=142 b=123 c=- line=45 file=0
+STMT 59 UDEC_F a=142 b=- c=- line=45 file=0
+STMT 60 GOTO a=149 b=- c=- line=45 file=0
+STMT 61 ADD_SF a=150 b=142 c=146 line=46 file=0
+STMT 62 PUSH_S a=146 b=- c=- line=46 file=0
+STMT 63 CALL a=108 b=- c=- line=46 file=0
+STMT 64 UINC_F a=142 b=- c=- line=48 file=0
+STMT 65 EQ_F a=142 b=133 c=144 line=49 file=0
+STMT 66 IFNOT a=144 b=151 c=- line=49 file=0
+STMT 67 GOTO a=155 b=- c=- line=49 file=0
+STMT 68 GT a=142 b=152 c=144 line=50 file=0
+STMT 69 IFNOT a=144 b=151 c=- line=50 file=0
+STMT 70 GOTO a=156 b=- c=- line=50 file=0
+STMT 71 ADD_SF a=153 b=142 c=146 line=51 file=0
+STMT 72 PUSH_S a=146 b=- c=- line=51 file=0
+STMT 73 CALL a=108 b=- c=- line=51 file=0
+STMT 74 GOTO a=154 b=- c=- line=52 file=0
+STMT 75 IFNOT a=130 b=128 c=- line=53 file=0
+STMT 76 PUSH_S a=157 b=- c=- line=53 file=0
+STMT 77 CALL a=108 b=- c=- line=53 file=0
+STMT 78 GOTO a=155 b=- c=- line=53 file=0
+STMT 79 UDEC_F a=142 b=- c=- line=55 file=0
+STMT 80 ADD_SF a=158 b=142 c=146 line=56 file=0
+STMT 81 PUSH_S a=146 b=- c=- line=56 file=0
+STMT 82 CALL a=108 b=- c=- line=56 file=0
+STMT 83 GT a=142 b=133 c=144 line=57 file=0
+STMT 84 IF a=144 b=159 c=- line=57 file=0
+STMT 85 PUSH_S a=160 b=- c=- line=58 file=0
+STMT 86 CALL a=108 b=- c=- line=58 file=0
+STMT 87 IF a=130 b=149 c=- line=58 file=0
+STMT 88 UINC_F a=142 b=- c=- line=60 file=0
+STMT 89 EQ_F a=142 b=152 c=144 line=61 file=0
+STMT 90 IFNOT a=144 b=151 c=- line=61 file=0
+STMT 91 GOTO a=155 b=- c=- line=61 file=0
+STMT 92 EQ_F a=142 b=161 c=144 line=62 file=0
+STMT 93 IFNOT a=144 b=151 c=- line=62 file=0
+STMT 94 GOTO a=156 b=- c=- line=62 file=0
+STMT 95 ADD_SF a=162 b=142 c=146 line=63 file=0
+STMT 96 PUSH_S a=146 b=- c=- line=63 file=0
+STMT 97 CALL a=108 b=- c=- line=63 file=0
+STMT 98 IF a=126 b=154 c=- line=64 file=0
+STMT 99 RETURN a=- b=- c=- line=65 file=0
+STMT 100 STORE_F a=130 b=164 c=- line=70 file=0
+STMT 101 LT a=164 b=143 c=166 line=70 file=0
+STMT 102 IFNOT a=166 b=136 c=- line=70 file=0
+STMT 103 IF a=166 b=123 c=- line=70 file=0
+STMT 104 UINC_F a=164 b=- c=- line=70 file=0
+STMT 105 GOTO a=167 b=- c=- line=70 file=0
+STMT 106 ADD_SF a=168 b=164 c=169 line=70 file=0
+STMT 107 PUSH_S a=169 b=- c=- line=70 file=0
+STMT 108 CALL a=108 b=- c=- line=70 file=0
+STMT 109 GOTO a=159 b=- c=- line=70 file=0
+STMT 110 STORE_F a=130 b=164 c=- line=71 file=0
+STMT 111 LT a=164 b=161 c=166 line=71 file=0
+STMT 112 IFNOT a=166 b=172 c=- line=71 file=0
+STMT 113 IF a=166 b=123 c=- line=71 file=0
+STMT 114 UINC_F a=164 b=- c=- line=71 file=0
+STMT 115 GOTO a=167 b=- c=- line=71 file=0
+STMT 116 EQ_F a=164 b=126 c=166 line=72 file=0
+STMT 117 IFNOT a=166 b=151 c=- line=72 file=0
+STMT 118 GOTO a=167 b=- c=- line=72 file=0
+STMT 119 EQ_F a=164 b=152 c=166 line=73 file=0
+STMT 120 IFNOT a=166 b=151 c=- line=73 file=0
+STMT 121 GOTO a=156 b=- c=- line=73 file=0
+STMT 122 ADD_SF a=170 b=164 c=169 line=74 file=0
+STMT 123 PUSH_S a=169 b=- c=- line=74 file=0
+STMT 124 CALL a=108 b=- c=- line=74 file=0
+STMT 125 GOTO a=171 b=- c=- line=75 file=0
+STMT 126 STORE_F a=143 b=164 c=- line=77 file=0
+STMT 127 GT a=164 b=130 c=166 line=77 file=0
+STMT 128 IFNOT a=166 b=148 c=- line=77 file=0
+STMT 129 UDEC_F a=164 b=- c=- line=78 file=0
+STMT 130 ADD_SF a=173 b=164 c=169 line=79 file=0
+STMT 131 PUSH_S a=169 b=- c=- line=79 file=0
+STMT 132 CALL a=108 b=- c=- line=79 file=0
+STMT 133 GOTO a=147 b=- c=- line=80 file=0
+STMT 134 LT a=164 b=133 c=166 line=82 file=0
+STMT 135 IFNOT a=166 b=136 c=- line=82 file=0
+STMT 136 IF a=166 b=123 c=- line=82 file=0
+STMT 137 UINC_F a=164 b=- c=- line=82 file=0
+STMT 138 GOTO a=167 b=- c=- line=82 file=0
+STMT 139 ADD_SF a=174 b=164 c=169 line=82 file=0
+STMT 140 PUSH_S a=169 b=- c=- line=82 file=0
+STMT 141 CALL a=108 b=- c=- line=82 file=0
+STMT 142 GOTO a=159 b=- c=- line=82 file=0
+STMT 143 STORE_F a=130 b=164 c=- line=84 file=0
+STMT 144 STORE_F a=175 b=165 c=- line=84 file=0
+STMT 145 LT a=164 b=165 c=166 line=84 file=0
+STMT 146 IFNOT a=166 b=180 c=- line=84 file=0
+STMT 147 IF a=166 b=128 c=- line=84 file=0
+STMT 148 UADD_F a=143 b=164 c=- line=84 file=0
+STMT 149 USUB_F a=143 b=165 c=- line=84 file=0
+STMT 150 GOTO a=159 b=- c=- line=84 file=0
+STMT 151 ADD_SF a=176 b=164 c=169 line=84 file=0
+STMT 152 ADD_S a=169 b=177 c=178 line=84 file=0
+STMT 153 ADD_SF a=178 b=165 c=169 line=84 file=0
+STMT 154 PUSH_S a=169 b=- c=- line=84 file=0
+STMT 155 CALL a=108 b=- c=- line=84 file=0
+STMT 156 GOTO a=179 b=- c=- line=84 file=0
+STMT 157 STORE_F a=130 b=164 c=- line=86 file=0
+STMT 158 LT a=164 b=143 c=166 line=86 file=0
+STMT 159 IFNOT a=166 b=185 c=- line=86 file=0
+STMT 160 IF a=166 b=123 c=- line=86 file=0
+STMT 161 UINC_F a=164 b=- c=- line=86 file=0
+STMT 162 GOTO a=167 b=- c=- line=86 file=0
+STMT 163 STORE_F a=130 b=165 c=- line=87 file=0
+STMT 164 LT a=165 b=143 c=166 line=87 file=0
+STMT 165 IFNOT a=166 b=183 c=- line=87 file=0
+STMT 166 IF a=166 b=123 c=- line=87 file=0
+STMT 167 UINC_F a=165 b=- c=- line=87 file=0
+STMT 168 GOTO a=167 b=- c=- line=87 file=0
+STMT 169 GT a=165 b=164 c=166 line=88 file=0
+STMT 170 IFNOT a=166 b=151 c=- line=88 file=0
+STMT 171 GOTO a=148 b=- c=- line=88 file=0
+STMT 172 ADD_SF a=181 b=164 c=178 line=89 file=0
+STMT 173 ADD_SF a=178 b=165 c=169 line=89 file=0
+STMT 174 PUSH_S a=169 b=- c=- line=89 file=0
+STMT 175 CALL a=108 b=- c=- line=89 file=0
+STMT 176 GOTO a=182 b=- c=- line=90 file=0
+STMT 177 GOTO a=184 b=- c=- line=91 file=0
+STMT 178 STORE_F a=130 b=164 c=- line=92 file=0
+STMT 179 LT a=164 b=133 c=166 line=92 file=0
+STMT 180 IFNOT a=166 b=188 c=- line=92 file=0
+STMT 181 IF a=166 b=123 c=- line=92 file=0
+STMT 182 UINC_F a=164 b=- c=- line=92 file=0
+STMT 183 GOTO a=167 b=- c=- line=92 file=0
+STMT 184 STORE_F a=130 b=165 c=- line=93 file=0
+STMT 185 UINC_F a=165 b=- c=- line=95 file=0
+STMT 186 GT a=165 b=133 c=166 line=96 file=0
+STMT 187 IFNOT a=166 b=151 c=- line=96 file=0
+STMT 188 GOTO a=123 b=- c=- line=96 file=0
+STMT 189 GOTO a=167 b=- c=- line=97 file=0
+STMT 190 GOTO a=159 b=- c=- line=98 file=0
+STMT 191 ADD_SF a=186 b=164 c=178 line=99 file=0
+STMT 192 ADD_SF a=178 b=165 c=169 line=99 file=0
+STMT 193 PUSH_S a=169 b=- c=- line=99 file=0
+STMT 194 CALL a=108 b=- c=- line=99 file=0
+STMT 195 GOTO a=187 b=- c=- line=100 file=0
+STMT 196 RETURN a=- b=- c=- line=101 file=0
+STMT 197 LT a=190 b=130 c=191 line=104 file=0
+STMT 198 IFNOT a=191 b=151 c=- line=104 file=0
+STMT 199 RETURN a=192 b=- c=- line=105 file=0
+STMT 200 EQ_F a=190 b=130 c=191 line=107 file=0
+STMT 201 IFNOT a=191 b=151 c=- line=107 file=0
+STMT 202 RETURN a=130 b=- c=- line=107 file=0
+STMT 203 GT a=190 b=175 c=191 line=109 file=0
+STMT 204 IFNOT a=191 b=151 c=- line=109 file=0
+STMT 205 RETURN a=175 b=- c=- line=109 file=0
+STMT 206 UINC_F a=190 b=- c=- line=110 file=0
+STMT 207 GOTO a=167 b=- c=- line=111 file=0
+STMT 208 RETURN a=193 b=- c=- line=112 file=0
+STMT 209 RETURN a=- b=- c=- line=113 file=0
+STMT 210 IFNOT a=195 b=128 c=- line=116 file=0
+STMT 211 PUSH_S a=196 b=- c=- line=117 file=0
+STMT 212 CALL a=108 b=- c=- line=117 file=0
+STMT 213 RETURN a=- b=- c=- line=118 file=0
+STMT 214 PUSH_S a=197 b=- c=- line=120 file=0
+STMT 215 CALL a=108 b=- c=- line=120 file=0
+STMT 216 RETURN a=- b=- c=- line=121 file=0
+STMT 217 LE a=198 b=126 c=199 line=124 file=0
+STMT 218 IFNOT a=199 b=151 c=- line=124 file=0
+STMT 219 RETURN a=126 b=- c=- line=125 file=0
+STMT 220 SUB_F a=198 b=126 c=199 line=127 file=0
+STMT 221 PUSH_F a=199 b=- c=- line=127 file=0
+STMT 222 CALL a=103 b=- c=- line=127 file=0
+STMT 223 STORE_F a=0 b=199 c=- line=127 file=0
+STMT 224 MUL_F a=198 b=199 c=200 line=127 file=0
+STMT 225 RETURN a=200 b=- c=- line=127 file=0
+STMT 226 RETURN a=- b=- c=- line=128 file=0
+STMT 227 LT a=201 b=133 c=202 line=131 file=0
+STMT 228 IFNOT a=202 b=151 c=- line=131 file=0
+STMT 229 RETURN a=201 b=- c=- line=131 file=0
+STMT 230 SUB_F a=201 b=126 c=202 line=132 file=0
+STMT 231 PUSH_F a=202 b=- c=- line=132 file=0
+STMT 232 CALL a=104 b=- c=- line=132 file=0
+STMT 233 STORE_F a=0 b=202 c=- line=132 file=0
+STMT 234 SUB_F a=201 b=133 c=203 line=132 file=0
+STMT 235 PUSH_F a=203 b=- c=- line=132 file=0
+STMT 236 CALL a=104 b=- c=- line=132 file=0
+STMT 237 STORE_F a=0 b=203 c=- line=132 file=0
+STMT 238 ADD_F a=202 b=203 c=204 line=132 file=0
+STMT 239 RETURN a=204 b=- c=- line=132 file=0
+STMT 240 RETURN a=- b=- c=- line=133 file=0
+STMT 241 EQ_F a=205 b=130 c=206 line=136 file=0
+STMT 242 IFNOT a=206 b=151 c=- line=136 file=0
+STMT 243 RETURN a=126 b=- c=- line=136 file=0
+STMT 244 SUB_F a=205 b=126 c=206 line=137 file=0
+STMT 245 PUSH_F a=206 b=- c=- line=137 file=0
+STMT 246 CALL a=107 b=- c=- line=137 file=0
+STMT 247 STORE_F a=0 b=206 c=- line=137 file=0
+STMT 248 RETURN a=206 b=- c=- line=137 file=0
+STMT 249 RETURN a=- b=- c=- line=138 file=0
+STMT 250 EQ_F a=207 b=130 c=208 line=141 file=0
+STMT 251 IFNOT a=208 b=151 c=- line=141 file=0
+STMT 252 RETURN a=130 b=- c=- line=141 file=0
+STMT 253 SUB_F a=207 b=126 c=208 line=142 file=0
+STMT 254 PUSH_F a=208 b=- c=- line=142 file=0
+STMT 255 CALL a=106 b=- c=- line=142 file=0
+STMT 256 STORE_F a=0 b=208 c=- line=142 file=0
+STMT 257 RETURN a=208 b=- c=- line=142 file=0
+STMT 258 RETURN a=- b=- c=- line=143 file=0
+STMT 259 ADD_S a=210 b=209 c=211 line=146 file=0
+STMT 260 PUSH_S a=211 b=- c=- line=146 file=0
+STMT 261 CALL a=108 b=- c=- line=146 file=0
+STMT 262 RETURN a=- b=- c=- line=147 file=0
+STMT 263 MUL_F a=213 b=175 c=215 line=150 file=0
+STMT 264 ADD_F a=215 b=214 c=216 line=150 file=0
+STMT 265 RETURN a=216 b=- c=- line=150 file=0
+STMT 266 RETURN a=- b=- c=- line=150 file=0
+STMT 267 MUL_VF a=218 b=222 c=223 line=151 file=0
+STMT 268 RETURN a=223 b=- c=- line=151 file=0
+STMT 269 RETURN a=- b=- c=- line=151 file=0
+STMT 270 ADD_S a=226 b=225 c=227 line=152 file=0
+STMT 271 RETURN a=227 b=- c=- line=152 file=0
+STMT 272 RETURN a=- b=- c=- line=152 file=0
+STMT 273 STORE_BOOLTOF a=229 b=0 c=- line=153 file=0
+STMT 274 RETURN a=- b=- c=- line=153 file=0
+STMT 275 RETURN a=- b=- c=- line=153 file=0
+STMT 276 RETURN a=231 b=- c=- line=154 file=0
+STMT 277 RETURN a=- b=- c=- line=154 file=0
+STMT 278 STORE_FTOBOOL a=233 b=0 c=- line=155 file=0
+STMT 279 RETURN a=- b=- c=- line=155 file=0
+STMT 280 RETURN a=- b=- c=- line=155 file=0
+STMT 281 ADD_SF a=244 b=235 c=245 line=157 file=0
+STMT 282 ADD_S a=245 b=246 c=247 line=157 file=0
+STMT 283 ADD_SV a=247 b=236 c=245 line=157 file=0
+STMT 284 ADD_S a=245 b=246 c=247 line=157 file=0
+STMT 285 ADD_S a=247 b=240 c=245 line=157 file=0
+STMT 286 ADD_S a=245 b=246 c=247 line=157 file=0
+STMT 287 ADD_SF a=247 b=243 c=245 line=157 file=0
+STMT 288 PUSH_S a=245 b=- c=- line=157 file=0
+STMT 289 CALL a=108 b=- c=- line=157 file=0
+STMT 290 IFNOT a=241 b=123 c=- line=158 file=0
+STMT 291 PUSH_S a=158 b=- c=- line=158 file=0
+STMT 292 CALL a=108 b=- c=- line=158 file=0
+STMT 293 IFNOT a=242 b=123 c=- line=159 file=0
+STMT 294 PUSH_S a=162 b=- c=- line=159 file=0
+STMT 295 CALL a=108 b=- c=- line=159 file=0
+STMT 296 ADD_F a=235 b=237 c=248 line=160 file=0
+STMT 297 ADD_F a=248 b=238 c=249 line=160 file=0
+STMT 298 ADD_F a=249 b=239 c=248 line=160 file=0
+STMT 299 ADD_F a=248 b=243 c=249 line=160 file=0
+STMT 300 RETURN a=249 b=- c=- line=160 file=0
+STMT 301 RETURN a=- b=- c=- line=161 file=0
+STMT 302 PUSH_F a=126 b=- c=- line=170 file=0
+STMT 303 PUSH_F a=133 b=- c=- line=170 file=0
+STMT 304 CALL a=212 b=- c=- line=170 file=0
+STMT 305 STORE_F a=0 b=259 c=- line=170 file=0
+STMT 306 STORE_F a=259 b=251 c=- line=170 file=0
+STMT 307 PUSH_V a=260 b=- c=- line=171 file=0
+STMT 308 PUSH_F a=133 b=- c=- line=171 file=0
+STMT 309 CALL a=217 b=- c=- line=171 file=0
+STMT 310 STORE_V a=0 b=264 c=- line=171 file=0
+STMT 311 STORE_V a=264 b=252 c=- line=171 file=0
+STMT 312 PUSH_S a=265 b=- c=- line=172 file=0
+STMT 313 PUSH_S a=266 b=- c=- line=172 file=0
+STMT 314 CALL a=224 b=- c=- line=172 file=0
+STMT 315 STORE_S a=4 b=267 c=- line=172 file=0
+STMT 316 STORE_S a=267 b=256 c=- line=172 file=0
+STMT 317 PUSH_F a=268 b=- c=- line=173 file=0
+STMT 318 CALL a=228 b=- c=- line=173 file=0
+STMT 319 STORE_BOOL a=0 b=269 c=- line=173 file=0
+STMT 320 STORE_BOOL a=269 b=257 c=- line=173 file=0
+STMT 321 PUSH_ENT a=270 b=- c=- line=174 file=0
+STMT 322 CALL a=230 b=- c=- line=174 file=0
+STMT 323 STORE_ENT a=0 b=271 c=- line=174 file=0
+STMT 324 STORE_ENT a=271 b=258 c=- line=174 file=0
+STMT 325 ADD_SF a=168 b=251 c=267 line=175 file=0
+STMT 326 ADD_S a=267 b=272 c=273 line=175 file=0
+STMT 327 ADD_SV a=273 b=252 c=267 line=175 file=0
+STMT 328 ADD_S a=267 b=274 c=273 line=175 file=0
+STMT 329 ADD_S a=273 b=256 c=267 line=175 file=0
+STMT 330 PUSH_S a=267 b=- c=- line=175 file=0
+STMT 331 CALL a=108 b=- c=- line=175 file=0
+STMT 332 IFNOT a=257 b=123 c=- line=176 file=0
+STMT 333 PUSH_S a=275 b=- c=- line=176 file=0
+STMT 334 CALL a=108 b=- c=- line=176 file=0
+STMT 335 EQ_E a=258 b=270 c=259 line=177 file=0
+STMT 336 IFNOT a=259 b=123 c=- line=177 file=0
+STMT 337 PUSH_S a=162 b=- c=- line=177 file=0
+STMT 338 CALL a=108 b=- c=- line=177 file=0
+STMT 339 PUSH_FTOS a=276 b=- c=- line=179 file=0
+STMT 340 PUSH_VTOS a=260 b=- c=- line=179 file=0
+STMT 341 CALL a=224 b=- c=- line=179 file=0
+STMT 342 STORE_S a=4 b=273 c=- line=179 file=0
+STMT 343 STORE_S a=273 b=256 c=- line=179 file=0
+STMT 344 PUSH_S a=256 b=- c=- line=180 file=0
+STMT 345 CALL a=108 b=- c=- line=180 file=0
+STMT 346 PUSH_FTOB a=143 b=- c=- line=181 file=0
+STMT 347 CALL a=232 b=- c=- line=181 file=0
+STMT 348 STORE_F a=0 b=259 c=- line=181 file=0
+STMT 349 STORE_F a=259 b=251 c=- line=181 file=0
+STMT 350 ADD_SF a=277 b=251 c=273 line=182 file=0
+STMT 351 PUSH_S a=273 b=- c=- line=182 file=0
+STMT 352 CALL a=108 b=- c=- line=182 file=0
+STMT 353 STORE_FTOBOOL a=126 b=257 c=- line=183 file=0
+STMT 354 PUSH_BTOF a=257 b=- c=- line=184 file=0
+STMT 355 PUSH_BTOF a=257 b=- c=- line=184 file=0
+STMT 356 CALL a=212 b=- c=- line=184 file=0
+STMT 357 STORE_F a=0 b=259 c=- line=184 file=0
+STMT 358 STORE_F a=259 b=251 c=- line=184 file=0
+STMT 359 ADD_SF a=278 b=251 c=273 line=185 file=0
+STMT 360 PUSH_S a=273 b=- c=- line=185 file=0
+STMT 361 CALL a=108 b=- c=- line=185 file=0
+STMT 362 PUSH_BTOS a=257 b=- c=- line=186 file=0
+STMT 363 PUSH_BTOS a=257 b=- c=- line=186 file=0
+STMT 364 CALL a=224 b=- c=- line=186 file=0
+STMT 365 STORE_S a=4 b=273 c=- line=186 file=0
+STMT 366 STORE_S a=273 b=256 c=- line=186 file=0
+STMT 367 PUSH_S a=256 b=- c=- line=187 file=0
+STMT 368 CALL a=108 b=- c=- line=187 file=0
+STMT 369 PUSH_F a=126 b=- c=- line=188 file=0
+STMT 370 PUSH_V a=279 b=- c=- line=188 file=0
+STMT 371 PUSH_S a=283 b=- c=- line=188 file=0
+STMT 372 PUSH_FTOB a=161 b=- c=- line=188 file=0
+STMT 373 PUSH_ENT a=270 b=- c=- line=188 file=0
+STMT 374 PUSH_F a=284 b=- c=- line=188 file=0
+STMT 375 CALL a=234 b=- c=- line=188 file=0
+STMT 376 STORE_F a=0 b=259 c=- line=188 file=0
+STMT 377 STORE_F a=259 b=251 c=- line=188 file=0
+STMT 378 ADD_SF a=285 b=251 c=273 line=189 file=0
+STMT 379 PUSH_S a=273 b=- c=- line=189 file=0
+STMT 380 CALL a=108 b=- c=- line=189 file=0
+STMT 381 PUSH_F a=126 b=- c=- line=191 file=0
+STMT 382 PUSH_F a=133 b=- c=- line=191 file=0
+STMT 383 CALL a=212 b=- c=- line=191 file=0
+STMT 384 STORE_F a=0 b=259 c=- line=191 file=0
+STMT 385 PUSH_F a=259 b=- c=- line=191 file=0
+STMT 386 PUSH_F a=143 b=- c=- line=191 file=0
+STMT 387 PUSH_F a=152 b=- c=- line=191 file=0
+STMT 388 CALL a=212 b=- c=- line=191 file=0
+STMT 389 STORE_F a=0 b=259 c=- line=191 file=0
+STMT 390 PUSH_F a=259 b=- c=- line=191 file=0
+STMT 391 CALL a=212 b=- c=- line=191 file=0
+STMT 392 STORE_F a=0 b=259 c=- line=191 file=0
+STMT 393 STORE_F a=259 b=251 c=- line=191 file=0
+STMT 394 ADD_SF a=286 b=251 c=273 line=192 file=0
+STMT 395 PUSH_S a=273 b=- c=- line=192 file=0
+STMT 396 CALL a=108 b=- c=- line=192 file=0
+STMT 397 PUSH_F a=143 b=- c=- line=193 file=0
+STMT 398 CALL a=103 b=- c=- line=193 file=0
+STMT 399 STORE_F a=0 b=259 c=- line=193 file=0
+STMT 400 ADD_F a=259 b=126 c=287 line=193 file=0
+STMT 401 PUSH_F a=287 b=- c=- line=193 file=0
+STMT 402 PUSH_F a=161 b=- c=- line=193 file=0
+STMT 403 CALL a=104 b=- c=- line=193 file=0
+STMT 404 STORE_F a=0 b=287 c=- line=193 file=0
+STMT 405 PUSH_F a=287 b=- c=- line=193 file=0
+STMT 406 CALL a=212 b=- c=- line=193 file=0
+STMT 407 STORE_F a=0 b=287 c=- line=193 file=0
+STMT 408 PUSH_F a=130 b=- c=- line=193 file=0
+STMT 409 PUSH_F a=126 b=- c=- line=193 file=0
+STMT 410 CALL a=212 b=- c=- line=193 file=0
+STMT 411 STORE_F a=0 b=259 c=- line=193 file=0
+STMT 412 ADD_F a=287 b=259 c=288 line=193 file=0
+STMT 413 STORE_F a=288 b=251 c=- line=193 file=0
+STMT 414 ADD_SF a=289 b=251 c=273 line=194 file=0
+STMT 415 PUSH_S a=273 b=- c=- line=194 file=0
+STMT 416 CALL a=108 b=- c=- line=194 file=0
+STMT 417 PUSH_V a=290 b=- c=- line=195 file=0
+STMT 418 PUSH_F a=133 b=- c=- line=195 file=0
+STMT 419 CALL a=217 b=- c=- line=195 file=0
+STMT 420 STORE_V a=0 b=264 c=- line=195 file=0
+STMT 421 PUSH_V a=264 b=- c=- line=195 file=0
+STMT 422 PUSH_F a=143 b=- c=- line=195 file=0
+STMT 423 CALL a=217 b=- c=- line=195 file=0
+STMT 424 STORE_V a=0 b=264 c=- line=195 file=0
+STMT 425 PUSH_V a=294 b=- c=- line=195 file=0
+STMT 426 PUSH_F a=126 b=- c=- line=195 file=0
+STMT 427 CALL a=217 b=- c=- line=195 file=0
+STMT 428 STORE_V a=0 b=298 c=- line=195 file=0
+STMT 429 ADD_V a=264 b=298 c=299 line=195 file=0
+STMT 430 STORE_V a=299 b=252 c=- line=195 file=0
+STMT 431 ADD_SV a=300 b=252 c=273 line=196 file=0
+STMT 432 PUSH_S a=273 b=- c=- line=196 file=0
+STMT 433 CALL a=108 b=- c=- line=196 file=0
+STMT 434 PUSH_F a=126 b=- c=- line=198 file=0
+STMT 435 PUSH_F a=126 b=- c=- line=198 file=0
+STMT 436 CALL a=212 b=- c=- line=198 file=0
+STMT 437 STORE_F a=0 b=288 c=- line=198 file=0
+STMT 438 PUSH_S a=301 b=- c=- line=199 file=0
+STMT 439 PUSH_S a=302 b=- c=- line=199 file=0
+STMT 440 CALL a=224 b=- c=- line=199 file=0
+STMT 441 STORE_S a=4 b=273 c=- line=199 file=0
+STMT 442 PUSH_F a=133 b=- c=- line=200 file=0
+STMT 443 CALL a=103 b=- c=- line=200 file=0
+STMT 444 STORE_F a=0 b=287 c=- line=200 file=0
+STMT 445 RETURN a=- b=- c=- line=201 file=0
+STMT 446 PUSH_F a=130 b=- c=- line=204 file=0
+STMT 447 CALL a=120 b=- c=- line=204 file=0
+STMT 448 PUSH_F a=126 b=- c=- line=204 file=0
+STMT 449 CALL a=120 b=- c=- line=204 file=0
+STMT 450 PUSH_F a=133 b=- c=- line=204 file=0
+STMT 451 CALL a=120 b=- c=- line=204 file=0
+STMT 452 PUSH_F a=143 b=- c=- line=204 file=0
+STMT 453 CALL a=120 b=- c=- line=204 file=0
+STMT 454 PUSH_S a=304 b=- c=- line=205 file=0
+STMT 455 CALL a=113 b=- c=- line=205 file=0
+STMT 456 CALL a=141 b=- c=- line=206 file=0
+STMT 457 PUSH_S a=305 b=- c=- line=207 file=0
+STMT 458 CALL a=113 b=- c=- line=207 file=0
+STMT 459 CALL a=163 b=- c=- line=208 file=0
+STMT 460 PUSH_S a=306 b=- c=- line=209 file=0
+STMT 461 CALL a=113 b=- c=- line=209 file=0
+STMT 462 PUSH_F a=307 b=- c=- line=210 file=0
+STMT 463 CALL a=189 b=- c=- line=210 file=0
+STMT 464 STORE_F a=0 b=308 c=- line=210 file=0
+STMT 465 PUSH_FTOS a=308 b=- c=- line=210 file=0
+STMT 466 CALL a=108 b=- c=- line=210 file=0
+STMT 467 PUSH_F a=130 b=- c=- line=210 file=0
+STMT 468 CALL a=189 b=- c=- line=210 file=0
+STMT 469 STORE_F a=0 b=308 c=- line=210 file=0
+STMT 470 PUSH_FTOS a=308 b=- c=- line=210 file=0
+STMT 471 CALL a=108 b=- c=- line=210 file=0
+STMT 472 PUSH_F a=143 b=- c=- line=210 file=0
+STMT 473 CALL a=189 b=- c=- line=210 file=0
+STMT 474 STORE_F a=0 b=308 c=- line=210 file=0
+STMT 475 PUSH_FTOS a=308 b=- c=- line=210 file=0
+STMT 476 CALL a=108 b=- c=- line=210 file=0
+STMT 477 PUSH_F a=126 b=- c=- line=211 file=0
+STMT 478 CALL a=194 b=- c=- line=211 file=0
+STMT 479 PUSH_F a=130 b=- c=- line=211 file=0
+STMT 480 CALL a=194 b=- c=- line=211 file=0
+STMT 481 PUSH_S a=309 b=- c=- line=212 file=0
+STMT 482 CALL a=113 b=- c=- line=212 file=0
+STMT 483 PUSH_F a=126 b=- c=- line=213 file=0
+STMT 484 CALL a=103 b=- c=- line=213 file=0
+STMT 485 STORE_F a=0 b=308 c=- line=213 file=0
+STMT 486 PUSH_FTOS a=308 b=- c=- line=213 file=0
+STMT 487 CALL a=108 b=- c=- line=213 file=0
+STMT 488 PUSH_F a=268 b=- c=- line=213 file=0
+STMT 489 CALL a=103 b=- c=- line=213 file=0
+STMT 490 STORE_F a=0 b=308 c=- line=213 file=0
+STMT 491 PUSH_FTOS a=308 b=- c=- line=213 file=0
+STMT 492 CALL a=108 b=- c=- line=213 file=0
+STMT 493 PUSH_F a=175 b=- c=- line=213 file=0
+STMT 494 CALL a=103 b=- c=- line=213 file=0
+STMT 495 STORE_F a=0 b=308 c=- line=213 file=0
+STMT 496 PUSH_FTOS a=308 b=- c=- line=213 file=0
+STMT 497 CALL a=108 b=- c=- line=213 file=0
+STMT 498 PUSH_F a=175 b=- c=- line=213 file=0
+STMT 499 CALL a=104 b=- c=- line=213 file=0
+STMT 500 STORE_F a=0 b=308 c=- line=213 file=0
+STMT 501 PUSH_FTOS a=308 b=- c=- line=213 file=0
+STMT 502 CALL a=108 b=- c=- line=213 file=0
+STMT 503 PUSH_F a=175 b=- c=- line=214 file=0
+STMT 504 CALL a=106 b=- c=- line=214 file=0
+STMT 505 STORE_F a=0 b=308 c=- line=214 file=0
+STMT 506 PUSH_FTOS a=308 b=- c=- line=214 file=0
+STMT 507 CALL a=108 b=- c=- line=214 file=0
+STMT 508 PUSH_F a=284 b=- c=- line=214 file=0
+STMT 509 CALL a=107 b=- c=- line=214 file=0
+STMT 510 STORE_F a=0 b=308 c=- line=214 file=0
+STMT 511 PUSH_FTOS a=308 b=- c=- line=214 file=0
+STMT 512 CALL a=108 b=- c=- line=214 file=0
+STMT 513 PUSH_F a=284 b=- c=- line=214 file=0
+STMT 514 CALL a=106 b=- c=- line=214 file=0
+STMT 515 STORE_F a=0 b=308 c=- line=214 file=0
+STMT 516 PUSH_FTOS a=308 b=- c=- line=214 file=0
+STMT 517 CALL a=108 b=- c=- line=214 file=0
+STMT 518 PUSH_S a=310 b=- c=- line=215 file=0
+STMT 519 CALL a=105 b=- c=- line=215 file=0
+STMT 520 PUSH_S a=311 b=- c=- line=216 file=0
+STMT 521 CALL a=113 b=- c=- line=216 file=0
+STMT 522 CALL a=250 b=- c=- line=217 file=0
+STMT 523 PUSH_S a=312 b=- c=- line=218 file=0
+STMT 524 CALL a=113 b=- c=- line=218 file=0
+STMT 525 PUSH_F a=313 b=- c=- line=219 file=0
+STMT 526 CALL a=103 b=- c=- line=219 file=0
+STMT 527 STORE_F a=0 b=308 c=- line=219 file=0
+STMT 528 PUSH_F a=314 b=- c=- line=219 file=0
+STMT 529 CALL a=104 b=- c=- line=219 file=0
+STMT 530 STORE_F a=0 b=315 c=- line=219 file=0
+STMT 531 ADD_F a=308 b=315 c=316 line=219 file=0
+STMT 532 STORE_F a=316 b=101 c=- line=219 file=0
+STMT 533 RETURN a=- b=- c=- line=220 file=0
+TOP functions=116 statements=534 types=116 defs=317 files=2
+GLOBALS 7860
+G 0002A0 000000002C000000000000000000000000000000000000000000000000000000
+G 000320 00000000000000003A2000000000000000000000000000000000000000000000
+G 000420 0000000000000000000000000000000061000000000000000000000000000000
+G 0004A0 0000000000000000000000000000000000000000216100000000000000000000
+G 000520 00000000000000000000000000000000000000000000803F3E31000000000000
+G 0005A0 000000000000000000000000000000000000000000000000000000003C3D3100
+G 000640 7A65726F00000000000000000000000000000000000000000000000000000000
+G 0006C0 6F6E650000000000000000000000000000000000000000000000000000000000
+G 000740 0000004074776F00000000000000000000000000000000000000000000000000
+G 0007C0 000000006D616E79000000000000000000000000000000000000000000000000
+G 000840 00000000000000000000000000000000636F6E73743100000000000000000000
+G 0008C0 00000000000000000000000000000000636F6E73743000000000000000000000
+G 000940 0000000000000000000000000000000000000000000040407700000000000000
+G 0009E0 0000000069000000000000000000000000000000000000000000000000000000
+G 000A60 0000000000000000000080407400000000000000000000000000000000000000
+G 000AE0 0000000000000000000000000000000000000000000000006E65766572000000
+G 000B60 0000000000000000000000000000000000000000000000006400000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006F6E6365
+G 000C60 000000000000000000000000000000000000000000000000000000000000C040
+G 000C80 6500000000000000000000000000000000000000000000000000000000000000
+G 000D00 0000000000000000660000000000000000000000000000000000000000000000
+G 000D80 0000000000000000670000000000000000000000000000000000000000000000
+G 000E00 0000000000000000000000000000000068000000000000000000000000000000
+G 000E80 000000000000000000000000000000006B000000000000000000000000000000
+G 000F00 00000000000000000000000000000000000020416D0000000000000000000000
+G 000F80 00000000000000000000000000000000000000002D0000000000000000000000
+G 001000 000000000000000000000000000000000000000000000000000000006E000000
+G 0010A0 0000000000000000000000007000000000000000000000000000000000000000
+G 001120 000000000000000000000000000000000000000000000000000080BF0000C642
+G 001140 000000006E720000000000000000000000000000000000000000000000000000
+G 0011C0 000000006E723000000000000000000000000000000000000000000000000000
+G 001240 000000006C617465722000000000000000000000000000000000000000000000
+G 0012E0 6D616E7920000000000000000000000000000000000000000000000000000000
+G 001360 2000000000000000000000000000000000000000000000000000000000000000
+G 0013E0 000000000000803F00000040000040407461696C000000000000000000000000
+G 001460 0000000000000000000000000000000068656164000000000000000000000000
+G 0014E0 000000000000000000000000000000000000A040000000002076000000000000
+G 001560 0000000000000000000000000000000000000000000000002073000000000000
+G 0015E0 0000000000000000000000000000000000000000000000006200000000000000
+G 001660 0000000000000000000000000000000000000000000000000000C03F66620000
+G 0016E0 0000000000000000000000000000000000000000000000000000000062660000
+G 001760 0000000000000000000000000000000000000000000000000000000000000040
+G 001780 0000404000008040666976650000000000000000000000000000000000000000
+G 001800 00000000000000000000E0406D70000000000000000000000000000000000000
+G 001880 0000000000000000000000006E65737400000000000000000000000000000000
+G 001900 0000000000000000000000006E65737432200000000000000000000000000000
+G 001980 0000000000000000000000000000803F0000803F0000803F0000803F00000000
+G 0019A0 000000006E657374760000000000000000000000000000000000000000000000
+G 001A20 0000000078000000000000000000000000000000000000000000000000000000
+G 001AA0 0000000079000000000000000000000000000000000000000000000000000000
+G 001B20 0000000000000000696673000000000000000000000000000000000000000000
+G 001BA0 00000000000000007768696C6573000000000000000000000000000000000000
+G 001C20 0000000000000000666F72730000000000000000000000000000000000000000
+G 001CA0 00000000000000000000A0C072657475726E7300000000000000000000000000
+G 001D20 0000000000000000000000006F6B000000000000000000000000000000000000
+G 001DA0 000000000000000000000000726563757273696F6E0000000000000000000000
+G 001E20 00000000000000000000000063616C6C73000000000000000000000000000000
+G 001EA0 0000000000000000000000000000404100007041
+CHECKSUM C7713118
+CMD dump disasm
+DISASM 
+DISASM function fact() 12 stack used, 4 parms, 8 locals {
+DISASM   script/flow.script(124):\t   217:              LE\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(124):\t   218:           IFNOT\t\ta: float stack[4]\tb: const address 220 [script/flow.script(127)]
+DISASM   script/flow.script(125):\t   219:          RETURN\t\ta: const float 1.000000
+DISASM   script/flow.script(127):\t   220:           SUB_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(127):\t   221:          PUSH_F\t\ta: float stack[4]
+DISASM   script/flow.script(127):\t   222:            CALL\t\ta: const function fact
+DISASM   script/flow.script(127):\t   223:         STORE_F\t\ta: float global[0]\tb: float stack[4]
+DISASM   script/flow.script(127):\t   224:           MUL_F\t\ta: float stack[0]\tb: float stack[4]\tc: float stack[8]
+DISASM   script/flow.script(127):\t   225:          RETURN\t\ta: float stack[8]
+DISASM   script/flow.script(128):\t   226:          RETURN\t
+DISASM }
+DISASM 
+DISASM function fib() 16 stack used, 4 parms, 12 locals {
+DISASM   script/flow.script(131):\t   227:              LT\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[4]
+DISASM   script/flow.script(131):\t   228:           IFNOT\t\ta: float stack[4]\tb: const address 230 [script/flow.script(132)]
+DISASM   script/flow.script(131):\t   229:          RETURN\t\ta: float stack[0]
+DISASM   script/flow.script(132):\t   230:           SUB_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(132):\t   231:          PUSH_F\t\ta: float stack[4]
+DISASM   script/flow.script(132):\t   232:            CALL\t\ta: const function fib
+DISASM   script/flow.script(132):\t   233:         STORE_F\t\ta: float global[0]\tb: float stack[4]
+DISASM   script/flow.script(132):\t   234:           SUB_F\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[8]
+DISASM   script/flow.script(132):\t   235:          PUSH_F\t\ta: float stack[8]
+DISASM   script/flow.script(132):\t   236:            CALL\t\ta: const function fib
+DISASM   script/flow.script(132):\t   237:         STORE_F\t\ta: float global[0]\tb: float stack[8]
+DISASM   script/flow.script(132):\t   238:           ADD_F\t\ta: float stack[4]\tb: float stack[8]\tc: float stack[12]
+DISASM   script/flow.script(132):\t   239:          RETURN\t\ta: float stack[12]
+DISASM   script/flow.script(133):\t   240:          RETURN\t
+DISASM }
+DISASM 
+DISASM function later() 256 stack used, 128 parms, 128 locals {
+DISASM   script/flow.script(146):\t   259:           ADD_S\t\ta: const string \"later \"\tb: string stack[0]\tc: string stack[128]
+DISASM   script/flow.script(146):\t   260:          PUSH_S\t\ta: string stack[128]
+DISASM   script/flow.script(146):\t   261:            CALL\t\ta: const function note
+DISASM   script/flow.script(147):\t   262:          RETURN\t
+DISASM }
+DISASM 
+DISASM function isEven() 8 stack used, 4 parms, 4 locals {
+DISASM   script/flow.script(136):\t   241:            EQ_F\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[4]
+DISASM   script/flow.script(136):\t   242:           IFNOT\t\ta: float stack[4]\tb: const address 244 [script/flow.script(137)]
+DISASM   script/flow.script(136):\t   243:          RETURN\t\ta: const float 1.000000
+DISASM   script/flow.script(137):\t   244:           SUB_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(137):\t   245:          PUSH_F\t\ta: float stack[4]
+DISASM   script/flow.script(137):\t   246:            CALL\t\ta: const function isOdd
+DISASM   script/flow.script(137):\t   247:         STORE_F\t\ta: float global[0]\tb: float stack[4]
+DISASM   script/flow.script(137):\t   248:          RETURN\t\ta: float stack[4]
+DISASM   script/flow.script(138):\t   249:          RETURN\t
+DISASM }
+DISASM 
+DISASM function isOdd() 8 stack used, 4 parms, 4 locals {
+DISASM   script/flow.script(141):\t   250:            EQ_F\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[4]
+DISASM   script/flow.script(141):\t   251:           IFNOT\t\ta: float stack[4]\tb: const address 253 [script/flow.script(142)]
+DISASM   script/flow.script(141):\t   252:          RETURN\t\ta: const float 0.000000
+DISASM   script/flow.script(142):\t   253:           SUB_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(142):\t   254:          PUSH_F\t\ta: float stack[4]
+DISASM   script/flow.script(142):\t   255:            CALL\t\ta: const function isEven
+DISASM   script/flow.script(142):\t   256:         STORE_F\t\ta: float global[0]\tb: float stack[4]
+DISASM   script/flow.script(142):\t   257:          RETURN\t\ta: float stack[4]
+DISASM   script/flow.script(143):\t   258:          RETURN\t
+DISASM }
+DISASM 
+DISASM function note() 384 stack used, 128 parms, 256 locals {
+DISASM   script/flow.script(14):\t     1:           ADD_S\t\ta: string global[102]\tb: string stack[0]\tc: string stack[128]
+DISASM   script/flow.script(14):\t     2:           ADD_S\t\ta: string stack[128]\tb: const string \",\"\tc: string stack[256]
+DISASM   script/flow.script(14):\t     3:         STORE_S\t\ta: string stack[256]\tb: string global[102]
+DISASM   script/flow.script(15):\t     4:          RETURN\t
+DISASM }
+DISASM 
+DISASM function flush() 384 stack used, 128 parms, 256 locals {
+DISASM   script/flow.script(18):\t     5:           ADD_S\t\ta: string stack[0]\tb: const string \": \"\tc: string stack[128]
+DISASM   script/flow.script(18):\t     6:           ADD_S\t\ta: string stack[128]\tb: string global[102]\tc: string stack[256]
+DISASM   script/flow.script(18):\t     7:          PUSH_S\t\ta: string stack[256]
+DISASM   script/flow.script(18):\t     8:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM   script/flow.script(19):\t     9:         STORE_S\t\ta: const string \"\"\tb: string global[102]
+DISASM   script/flow.script(20):\t    10:          RETURN\t
+DISASM }
+DISASM 
+DISASM function ifs() 8 stack used, 4 parms, 4 locals {
+DISASM   script/flow.script(23):\t    11:           IFNOT\t\ta: float stack[0]\tb: const address 14 [script/flow.script(24)]
+DISASM   script/flow.script(23):\t    12:          PUSH_S\t\ta: const string \"a\"
+DISASM   script/flow.script(23):\t    13:            CALL\t\ta: const function note
+DISASM   script/flow.script(24):\t    14:           NOT_F\t\ta: float stack[0]\tc: float stack[4]
+DISASM   script/flow.script(24):\t    15:           IFNOT\t\ta: float stack[4]\tb: const address 18 [script/flow.script(25)]
+DISASM   script/flow.script(24):\t    16:          PUSH_S\t\ta: const string \"!a\"
+DISASM   script/flow.script(24):\t    17:            CALL\t\ta: const function note
+DISASM   script/flow.script(25):\t    18:              GT\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(25):\t    19:           IFNOT\t\ta: float stack[4]\tb: const address 23 [script/flow.script(28)]
+DISASM   script/flow.script(26):\t    20:          PUSH_S\t\ta: const string \">1\"
+DISASM   script/flow.script(26):\t    21:            CALL\t\ta: const function note
+DISASM   script/flow.script(27):\t    22:            GOTO\t\ta: const address 25 [script/flow.script(30)]
+DISASM   script/flow.script(28):\t    23:          PUSH_S\t\ta: const string \"<=1\"
+DISASM   script/flow.script(28):\t    24:            CALL\t\ta: const function note
+DISASM   script/flow.script(30):\t    25:            EQ_F\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[4]
+DISASM   script/flow.script(30):\t    26:           IFNOT\t\ta: float stack[4]\tb: const address 30 [script/flow.script(30)]
+DISASM   script/flow.script(30):\t    27:          PUSH_S\t\ta: const string \"zero\"
+DISASM   script/flow.script(30):\t    28:            CALL\t\ta: const function note
+DISASM   script/flow.script(30):\t    29:            GOTO\t\ta: const address 42 [script/flow.script(31)]
+DISASM   script/flow.script(30):\t    30:            EQ_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[4]
+DISASM   script/flow.script(30):\t    31:           IFNOT\t\ta: float stack[4]\tb: const address 35 [script/flow.script(30)]
+DISASM   script/flow.script(30):\t    32:          PUSH_S\t\ta: const string \"one\"
+DISASM   script/flow.script(30):\t    33:            CALL\t\ta: const function note
+DISASM   script/flow.script(30):\t    34:            GOTO\t\ta: const address 42 [script/flow.script(31)]
+DISASM   script/flow.script(30):\t    35:            EQ_F\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[4]
+DISASM   script/flow.script(30):\t    36:           IFNOT\t\ta: float stack[4]\tb: const address 40 [script/flow.script(30)]
+DISASM   script/flow.script(30):\t    37:          PUSH_S\t\ta: const string \"two\"
+DISASM   script/flow.script(30):\t    38:            CALL\t\ta: const function note
+DISASM   script/flow.script(30):\t    39:            GOTO\t\ta: const address 42 [script/flow.script(31)]
+DISASM   script/flow.script(30):\t    40:          PUSH_S\t\ta: const string \"many\"
+DISASM   script/flow.script(30):\t    41:            CALL\t\ta: const function note
+DISASM   script/flow.script(31):\t    42:           IFNOT\t\ta: float stack[0]\tb: const address 43 [script/flow.script(32)]
+DISASM   script/flow.script(32):\t    43:           IFNOT\t\ta: const float 1.000000\tb: const address 46 [script/flow.script(33)]
+DISASM   script/flow.script(32):\t    44:          PUSH_S\t\ta: const string \"const1\"
+DISASM   script/flow.script(32):\t    45:            CALL\t\ta: const function note
+DISASM   script/flow.script(33):\t    46:           IFNOT\t\ta: const float 0.000000\tb: const address 49 [script/flow.script(35)]
+DISASM   script/flow.script(33):\t    47:          PUSH_S\t\ta: const string \"const0\"
+DISASM   script/flow.script(33):\t    48:            CALL\t\ta: const function note
+DISASM   script/flow.script(35):\t    49:          RETURN\t
+DISASM }
+DISASM 
+DISASM function whiles() 136 stack used, 0 parms, 136 locals {
+DISASM   script/flow.script(40):\t    50:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(41):\t    51:              LT\t\ta: float stack[0]\tb: const float 3.000000\tc: float stack[4]
+DISASM   script/flow.script(41):\t    52:           IFNOT\t\ta: float stack[4]\tb: const address 58 [script/flow.script(45)]
+DISASM   script/flow.script(42):\t    53:          ADD_SF\t\ta: const string \"w\"\tb: float stack[0]\tc: string stack[8]
+DISASM   script/flow.script(42):\t    54:          PUSH_S\t\ta: string stack[8]
+DISASM   script/flow.script(42):\t    55:            CALL\t\ta: const function note
+DISASM   script/flow.script(43):\t    56:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(44):\t    57:            GOTO\t\ta: const address 51 [script/flow.script(41)]
+DISASM   script/flow.script(45):\t    58:           IFNOT\t\ta: float stack[0]\tb: const address 61 [script/flow.script(46)]
+DISASM   script/flow.script(45):\t    59:          UDEC_F\t\ta: float stack[0]
+DISASM   script/flow.script(45):\t    60:            GOTO\t\ta: const address 58 [script/flow.script(45)]
+DISASM   script/flow.script(46):\t    61:          ADD_SF\t\ta: const string \"i\"\tb: float stack[0]\tc: string stack[8]
+DISASM   script/flow.script(46):\t    62:          PUSH_S\t\ta: string stack[8]
+DISASM   script/flow.script(46):\t    63:            CALL\t\ta: const function note
+DISASM   script/flow.script(48):\t    64:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(49):\t    65:            EQ_F\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[4]
+DISASM   script/flow.script(49):\t    66:           IFNOT\t\ta: float stack[4]\tb: const address 68 [script/flow.script(50)]
+DISASM   script/flow.script(49):\t    67:            GOTO\t\ta: const address 64 [script/flow.script(48)]
+DISASM   script/flow.script(50):\t    68:              GT\t\ta: float stack[0]\tb: const float 4.000000\tc: float stack[4]
+DISASM   script/flow.script(50):\t    69:           IFNOT\t\ta: float stack[4]\tb: const address 71 [script/flow.script(51)]
+DISASM   script/flow.script(50):\t    70:            GOTO\t\ta: const address 75 [script/flow.script(53)]
+DISASM   script/flow.script(51):\t    71:          ADD_SF\t\ta: const string \"t\"\tb: float stack[0]\tc: string stack[8]
+DISASM   script/flow.script(51):\t    72:          PUSH_S\t\ta: string stack[8]
+DISASM   script/flow.script(51):\t    73:            CALL\t\ta: const function note
+DISASM   script/flow.script(52):\t    74:            GOTO\t\ta: const address 64 [script/flow.script(48)]
+DISASM   script/flow.script(53):\t    75:           IFNOT\t\ta: const float 0.000000\tb: const address 79 [script/flow.script(55)]
+DISASM   script/flow.script(53):\t    76:          PUSH_S\t\ta: const string \"never\"
+DISASM   script/flow.script(53):\t    77:            CALL\t\ta: const function note
+DISASM   script/flow.script(53):\t    78:            GOTO\t\ta: const address 75 [script/flow.script(53)]
+DISASM   script/flow.script(55):\t    79:          UDEC_F\t\ta: float stack[0]
+DISASM   script/flow.script(56):\t    80:          ADD_SF\t\ta: const string \"d\"\tb: float stack[0]\tc: string stack[8]
+DISASM   script/flow.script(56):\t    81:          PUSH_S\t\ta: string stack[8]
+DISASM   script/flow.script(56):\t    82:            CALL\t\ta: const function note
+DISASM   script/flow.script(57):\t    83:              GT\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[4]
+DISASM   script/flow.script(57):\t    84:              IF\t\ta: float stack[4]\tb: const address 79 [script/flow.script(55)]
+DISASM   script/flow.script(58):\t    85:          PUSH_S\t\ta: const string \"once\"
+DISASM   script/flow.script(58):\t    86:            CALL\t\ta: const function note
+DISASM   script/flow.script(58):\t    87:              IF\t\ta: const float 0.000000\tb: const address 85 [script/flow.script(58)]
+DISASM   script/flow.script(60):\t    88:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(61):\t    89:            EQ_F\t\ta: float stack[0]\tb: const float 4.000000\tc: float stack[4]
+DISASM   script/flow.script(61):\t    90:           IFNOT\t\ta: float stack[4]\tb: const address 92 [script/flow.script(62)]
+DISASM   script/flow.script(61):\t    91:            GOTO\t\ta: const address 88 [script/flow.script(60)]
+DISASM   script/flow.script(62):\t    92:            EQ_F\t\ta: float stack[0]\tb: const float 6.000000\tc: float stack[4]
+DISASM   script/flow.script(62):\t    93:           IFNOT\t\ta: float stack[4]\tb: const address 95 [script/flow.script(63)]
+DISASM   script/flow.script(62):\t    94:            GOTO\t\ta: const address 99 [script/flow.script(65)]
+DISASM   script/flow.script(63):\t    95:          ADD_SF\t\ta: const string \"e\"\tb: float stack[0]\tc: string stack[8]
+DISASM   script/flow.script(63):\t    96:          PUSH_S\t\ta: string stack[8]
+DISASM   script/flow.script(63):\t    97:            CALL\t\ta: const function note
+DISASM   script/flow.script(64):\t    98:              IF\t\ta: const float 1.000000\tb: const address 88 [script/flow.script(60)]
+DISASM   script/flow.script(65):\t    99:          RETURN\t
+DISASM }
+DISASM 
+DISASM function fors() 268 stack used, 0 parms, 268 locals {
+DISASM   script/flow.script(70):\t   100:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(70):\t   101:              LT\t\ta: float stack[0]\tb: const float 3.000000\tc: float stack[8]
+DISASM   script/flow.script(70):\t   102:           IFNOT\t\ta: float stack[8]\tb: const address 110 [script/flow.script(71)]
+DISASM   script/flow.script(70):\t   103:              IF\t\ta: float stack[8]\tb: const address 106 [script/flow.script(70)]
+DISASM   script/flow.script(70):\t   104:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(70):\t   105:            GOTO\t\ta: const address 101 [script/flow.script(70)]
+DISASM   script/flow.script(70):\t   106:          ADD_SF\t\ta: const string \"f\"\tb: float stack[0]\tc: string stack[12]
+DISASM   script/flow.script(70):\t   107:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(70):\t   108:            CALL\t\ta: const function note
+DISASM   script/flow.script(70):\t   109:            GOTO\t\ta: const address 104 [script/flow.script(70)]
+DISASM   script/flow.script(71):\t   110:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(71):\t   111:              LT\t\ta: float stack[0]\tb: const float 6.000000\tc: float stack[8]
+DISASM   script/flow.script(71):\t   112:           IFNOT\t\ta: float stack[8]\tb: const address 126 [script/flow.script(77)]
+DISASM   script/flow.script(71):\t   113:              IF\t\ta: float stack[8]\tb: const address 116 [script/flow.script(72)]
+DISASM   script/flow.script(71):\t   114:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(71):\t   115:            GOTO\t\ta: const address 111 [script/flow.script(71)]
+DISASM   script/flow.script(72):\t   116:            EQ_F\t\ta: float stack[0]\tb: const float 1.000000\tc: float stack[8]
+DISASM   script/flow.script(72):\t   117:           IFNOT\t\ta: float stack[8]\tb: const address 119 [script/flow.script(73)]
+DISASM   script/flow.script(72):\t   118:            GOTO\t\ta: const address 114 [script/flow.script(71)]
+DISASM   script/flow.script(73):\t   119:            EQ_F\t\ta: float stack[0]\tb: const float 4.000000\tc: float stack[8]
+DISASM   script/flow.script(73):\t   120:           IFNOT\t\ta: float stack[8]\tb: const address 122 [script/flow.script(74)]
+DISASM   script/flow.script(73):\t   121:            GOTO\t\ta: const address 126 [script/flow.script(77)]
+DISASM   script/flow.script(74):\t   122:          ADD_SF\t\ta: const string \"g\"\tb: float stack[0]\tc: string stack[12]
+DISASM   script/flow.script(74):\t   123:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(74):\t   124:            CALL\t\ta: const function note
+DISASM   script/flow.script(75):\t   125:            GOTO\t\ta: const address 114 [script/flow.script(71)]
+DISASM   script/flow.script(77):\t   126:         STORE_F\t\ta: const float 3.000000\tb: float stack[0]
+DISASM   script/flow.script(77):\t   127:              GT\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[8]
+DISASM   script/flow.script(77):\t   128:           IFNOT\t\ta: float stack[8]\tb: const address 134 [script/flow.script(82)]
+DISASM   script/flow.script(78):\t   129:          UDEC_F\t\ta: float stack[0]
+DISASM   script/flow.script(79):\t   130:          ADD_SF\t\ta: const string \"h\"\tb: float stack[0]\tc: string stack[12]
+DISASM   script/flow.script(79):\t   131:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(79):\t   132:            CALL\t\ta: const function note
+DISASM   script/flow.script(80):\t   133:            GOTO\t\ta: const address 127 [script/flow.script(77)]
+DISASM   script/flow.script(82):\t   134:              LT\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[8]
+DISASM   script/flow.script(82):\t   135:           IFNOT\t\ta: float stack[8]\tb: const address 143 [script/flow.script(84)]
+DISASM   script/flow.script(82):\t   136:              IF\t\ta: float stack[8]\tb: const address 139 [script/flow.script(82)]
+DISASM   script/flow.script(82):\t   137:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(82):\t   138:            GOTO\t\ta: const address 134 [script/flow.script(82)]
+DISASM   script/flow.script(82):\t   139:          ADD_SF\t\ta: const string \"k\"\tb: float stack[0]\tc: string stack[12]
+DISASM   script/flow.script(82):\t   140:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(82):\t   141:            CALL\t\ta: const function note
+DISASM   script/flow.script(82):\t   142:            GOTO\t\ta: const address 137 [script/flow.script(82)]
+DISASM   script/flow.script(84):\t   143:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(84):\t   144:         STORE_F\t\ta: const float 10.000000\tb: float stack[4]
+DISASM   script/flow.script(84):\t   145:              LT\t\ta: float stack[0]\tb: float stack[4]\tc: float stack[8]
+DISASM   script/flow.script(84):\t   146:           IFNOT\t\ta: float stack[8]\tb: const address 157 [script/flow.script(86)]
+DISASM   script/flow.script(84):\t   147:              IF\t\ta: float stack[8]\tb: const address 151 [script/flow.script(84)]
+DISASM   script/flow.script(84):\t   148:          UADD_F\t\ta: const float 3.000000\tb: float stack[0]
+DISASM   script/flow.script(84):\t   149:          USUB_F\t\ta: const float 3.000000\tb: float stack[4]
+DISASM   script/flow.script(84):\t   150:            GOTO\t\ta: const address 145 [script/flow.script(84)]
+DISASM   script/flow.script(84):\t   151:          ADD_SF\t\ta: const string \"m\"\tb: float stack[0]\tc: string stack[12]
+DISASM   script/flow.script(84):\t   152:           ADD_S\t\ta: string stack[12]\tb: const string \"-\"\tc: string stack[140]
+DISASM   script/flow.script(84):\t   153:          ADD_SF\t\ta: string stack[140]\tb: float stack[4]\tc: string stack[12]
+DISASM   script/flow.script(84):\t   154:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(84):\t   155:            CALL\t\ta: const function note
+DISASM   script/flow.script(84):\t   156:            GOTO\t\ta: const address 148 [script/flow.script(84)]
+DISASM   script/flow.script(86):\t   157:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(86):\t   158:              LT\t\ta: float stack[0]\tb: const float 3.000000\tc: float stack[8]
+DISASM   script/flow.script(86):\t   159:           IFNOT\t\ta: float stack[8]\tb: const address 178 [script/flow.script(92)]
+DISASM   script/flow.script(86):\t   160:              IF\t\ta: float stack[8]\tb: const address 163 [script/flow.script(87)]
+DISASM   script/flow.script(86):\t   161:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(86):\t   162:            GOTO\t\ta: const address 158 [script/flow.script(86)]
+DISASM   script/flow.script(87):\t   163:         STORE_F\t\ta: const float 0.000000\tb: float stack[4]
+DISASM   script/flow.script(87):\t   164:              LT\t\ta: float stack[4]\tb: const float 3.000000\tc: float stack[8]
+DISASM   script/flow.script(87):\t   165:           IFNOT\t\ta: float stack[8]\tb: const address 177 [script/flow.script(91)]
+DISASM   script/flow.script(87):\t   166:              IF\t\ta: float stack[8]\tb: const address 169 [script/flow.script(88)]
+DISASM   script/flow.script(87):\t   167:          UINC_F\t\ta: float stack[4]
+DISASM   script/flow.script(87):\t   168:            GOTO\t\ta: const address 164 [script/flow.script(87)]
+DISASM   script/flow.script(88):\t   169:              GT\t\ta: float stack[4]\tb: float stack[0]\tc: float stack[8]
+DISASM   script/flow.script(88):\t   170:           IFNOT\t\ta: float stack[8]\tb: const address 172 [script/flow.script(89)]
+DISASM   script/flow.script(88):\t   171:            GOTO\t\ta: const address 177 [script/flow.script(91)]
+DISASM   script/flow.script(89):\t   172:          ADD_SF\t\ta: const string \"n\"\tb: float stack[0]\tc: string stack[140]
+DISASM   script/flow.script(89):\t   173:          ADD_SF\t\ta: string stack[140]\tb: float stack[4]\tc: string stack[12]
+DISASM   script/flow.script(89):\t   174:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(89):\t   175:            CALL\t\ta: const function note
+DISASM   script/flow.script(90):\t   176:            GOTO\t\ta: const address 167 [script/flow.script(87)]
+DISASM   script/flow.script(91):\t   177:            GOTO\t\ta: const address 161 [script/flow.script(86)]
+DISASM   script/flow.script(92):\t   178:         STORE_F\t\ta: const float 0.000000\tb: float stack[0]
+DISASM   script/flow.script(92):\t   179:              LT\t\ta: float stack[0]\tb: const float 2.000000\tc: float stack[8]
+DISASM   script/flow.script(92):\t   180:           IFNOT\t\ta: float stack[8]\tb: const address 196 [script/flow.script(101)]
+DISASM   script/flow.script(92):\t   181:              IF\t\ta: float stack[8]\tb: const address 184 [script/flow.script(93)]
+DISASM   script/flow.script(92):\t   182:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(92):\t   183:            GOTO\t\ta: const address 179 [script/flow.script(92)]
+DISASM   script/flow.script(93):\t   184:         STORE_F\t\ta: const float 0.000000\tb: float stack[4]
+DISASM   script/flow.script(95):\t   185:          UINC_F\t\ta: float stack[4]
+DISASM   script/flow.script(96):\t   186:              GT\t\ta: float stack[4]\tb: const float 2.000000\tc: float stack[8]
+DISASM   script/flow.script(96):\t   187:           IFNOT\t\ta: float stack[8]\tb: const address 189 [script/flow.script(97)]
+DISASM   script/flow.script(96):\t   188:            GOTO\t\ta: const address 191 [script/flow.script(99)]
+DISASM   script/flow.script(97):\t   189:            GOTO\t\ta: const address 185 [script/flow.script(95)]
+DISASM   script/flow.script(98):\t   190:            GOTO\t\ta: const address 185 [script/flow.script(95)]
+DISASM   script/flow.script(99):\t   191:          ADD_SF\t\ta: const string \"p\"\tb: float stack[0]\tc: string stack[140]
+DISASM   script/flow.script(99):\t   192:          ADD_SF\t\ta: string stack[140]\tb: float stack[4]\tc: string stack[12]
+DISASM   script/flow.script(99):\t   193:          PUSH_S\t\ta: string stack[12]
+DISASM   script/flow.script(99):\t   194:            CALL\t\ta: const function note
+DISASM   script/flow.script(100):\t   195:            GOTO\t\ta: const address 182 [script/flow.script(92)]
+DISASM   script/flow.script(101):\t   196:          RETURN\t
+DISASM }
+DISASM 
+DISASM function early() 8 stack used, 4 parms, 4 locals {
+DISASM   script/flow.script(104):\t   197:              LT\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[4]
+DISASM   script/flow.script(104):\t   198:           IFNOT\t\ta: float stack[4]\tb: const address 200 [script/flow.script(107)]
+DISASM   script/flow.script(105):\t   199:          RETURN\t\ta: const float -1.000000
+DISASM   script/flow.script(107):\t   200:            EQ_F\t\ta: float stack[0]\tb: const float 0.000000\tc: float stack[4]
+DISASM   script/flow.script(107):\t   201:           IFNOT\t\ta: float stack[4]\tb: const address 203 [script/flow.script(109)]
+DISASM   script/flow.script(107):\t   202:          RETURN\t\ta: const float 0.000000
+DISASM   script/flow.script(109):\t   203:              GT\t\ta: float stack[0]\tb: const float 10.000000\tc: float stack[4]
+DISASM   script/flow.script(109):\t   204:           IFNOT\t\ta: float stack[4]\tb: const address 206 [script/flow.script(110)]
+DISASM   script/flow.script(109):\t   205:          RETURN\t\ta: const float 10.000000
+DISASM   script/flow.script(110):\t   206:          UINC_F\t\ta: float stack[0]
+DISASM   script/flow.script(111):\t   207:            GOTO\t\ta: const address 203 [script/flow.script(109)]
+DISASM   script/flow.script(112):\t   208:          RETURN\t\ta: const float 99.000000
+DISASM   script/flow.script(113):\t   209:          RETURN\t
+DISASM }
+DISASM 
+DISASM function noReturn() 4 stack used, 4 parms, 0 locals {
+DISASM   script/flow.script(116):\t   210:           IFNOT\t\ta: float stack[0]\tb: const address 214 [script/flow.script(120)]
+DISASM   script/flow.script(117):\t   211:          PUSH_S\t\ta: const string \"nr\"
+DISASM   script/flow.script(117):\t   212:            CALL\t\ta: const function note
+DISASM   script/flow.script(118):\t   213:          RETURN\t
+DISASM   script/flow.script(120):\t   214:          PUSH_S\t\ta: const string \"nr0\"
+DISASM   script/flow.script(120):\t   215:            CALL\t\ta: const function note
+DISASM   script/flow.script(121):\t   216:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retFloat() 16 stack used, 8 parms, 8 locals {
+DISASM   script/flow.script(150):\t   263:           MUL_F\t\ta: float stack[0]\tb: const float 10.000000\tc: float stack[8]
+DISASM   script/flow.script(150):\t   264:           ADD_F\t\ta: float stack[8]\tb: float stack[4]\tc: float stack[12]
+DISASM   script/flow.script(150):\t   265:          RETURN\t\ta: float stack[12]
+DISASM   script/flow.script(150):\t   266:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retVector() 28 stack used, 16 parms, 12 locals {
+DISASM   script/flow.script(151):\t   267:          MUL_VF\t\ta: vector stack[0]\tb: float stack[12]\tc: vector stack[16]
+DISASM   script/flow.script(151):\t   268:          RETURN\t\ta: vector stack[16]
+DISASM   script/flow.script(151):\t   269:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retString() 384 stack used, 256 parms, 128 locals {
+DISASM   script/flow.script(152):\t   270:           ADD_S\t\ta: string stack[128]\tb: string stack[0]\tc: string stack[256]
+DISASM   script/flow.script(152):\t   271:          RETURN\t\ta: string stack[256]
+DISASM   script/flow.script(152):\t   272:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retBool() 4 stack used, 4 parms, 0 locals {
+DISASM   script/flow.script(153):\t   273:   STORE_BOOLTOF\t\ta: float stack[0]\tb: float global[0]
+DISASM   script/flow.script(153):\t   274:          RETURN\t
+DISASM   script/flow.script(153):\t   275:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retEntity() 4 stack used, 4 parms, 0 locals {
+DISASM   script/flow.script(154):\t   276:          RETURN\t\ta: entity stack[0]
+DISASM   script/flow.script(154):\t   277:          RETURN\t
+DISASM }
+DISASM 
+DISASM function retFromBool() 4 stack used, 4 parms, 0 locals {
+DISASM   script/flow.script(155):\t   278:   STORE_FTOBOOL\t\ta: boolean stack[0]\tb: float global[0]
+DISASM   script/flow.script(155):\t   279:          RETURN\t
+DISASM   script/flow.script(155):\t   280:          RETURN\t
+DISASM }
+DISASM 
+DISASM function manyParms() 420 stack used, 156 parms, 264 locals {
+DISASM   script/flow.script(157):\t   281:          ADD_SF\t\ta: const string \"many \"\tb: float stack[0]\tc: string stack[156]
+DISASM   script/flow.script(157):\t   282:           ADD_S\t\ta: string stack[156]\tb: const string \" \"\tc: string stack[284]
+DISASM   script/flow.script(157):\t   283:          ADD_SV\t\ta: string stack[284]\tb: vector stack[4]\tc: string stack[156]
+DISASM   script/flow.script(157):\t   284:           ADD_S\t\ta: string stack[156]\tb: const string \" \"\tc: string stack[284]
+DISASM   script/flow.script(157):\t   285:           ADD_S\t\ta: string stack[284]\tb: string stack[16]\tc: string stack[156]
+DISASM   script/flow.script(157):\t   286:           ADD_S\t\ta: string stack[156]\tb: const string \" \"\tc: string stack[284]
+DISASM   script/flow.script(157):\t   287:          ADD_SF\t\ta: string stack[284]\tb: float stack[152]\tc: string stack[156]
+DISASM   script/flow.script(157):\t   288:          PUSH_S\t\ta: string stack[156]
+DISASM   script/flow.script(157):\t   289:            CALL\t\ta: const function note
+DISASM   script/flow.script(158):\t   290:           IFNOT\t\ta: boolean stack[144]\tb: const address 293 [script/flow.script(159)]
+DISASM   script/flow.script(158):\t   291:          PUSH_S\t\ta: const string \"d\"
+DISASM   script/flow.script(158):\t   292:            CALL\t\ta: const function note
+DISASM   script/flow.script(159):\t   293:           IFNOT\t\ta: entity stack[148]\tb: const address 296 [script/flow.script(160)]
+DISASM   script/flow.script(159):\t   294:          PUSH_S\t\ta: const string \"e\"
+DISASM   script/flow.script(159):\t   295:            CALL\t\ta: const function note
+DISASM   script/flow.script(160):\t   296:           ADD_F\t\ta: float stack[0]\tb: float stack[4]\tc: float stack[412]
+DISASM   script/flow.script(160):\t   297:           ADD_F\t\ta: float stack[412]\tb: float stack[8]\tc: float stack[416]
+DISASM   script/flow.script(160):\t   298:           ADD_F\t\ta: float stack[416]\tb: float stack[12]\tc: float stack[412]
+DISASM   script/flow.script(160):\t   299:           ADD_F\t\ta: float stack[412]\tb: float stack[152]\tc: float stack[416]
+DISASM   script/flow.script(160):\t   300:          RETURN\t\ta: float stack[416]
+DISASM   script/flow.script(161):\t   301:          RETURN\t
+DISASM }
+DISASM 
+DISASM function calls() 464 stack used, 0 parms, 464 locals {
+DISASM   script/flow.script(170):\t   302:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(170):\t   303:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(170):\t   304:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(170):\t   305:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(170):\t   306:         STORE_F\t\ta: float stack[152]\tb: float stack[0]
+DISASM   script/flow.script(171):\t   307:          PUSH_V\t\ta: const vector '1 2 3'
+DISASM   script/flow.script(171):\t   308:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(171):\t   309:            CALL\t\ta: const function retVector
+DISASM   script/flow.script(171):\t   310:         STORE_V\t\ta: float global[0]\tb: vector stack[156]
+DISASM   script/flow.script(171):\t   311:         STORE_V\t\ta: vector stack[156]\tb: vector stack[4]
+DISASM   script/flow.script(172):\t   312:          PUSH_S\t\ta: const string \"tail\"
+DISASM   script/flow.script(172):\t   313:          PUSH_S\t\ta: const string \"head\"
+DISASM   script/flow.script(172):\t   314:            CALL\t\ta: const function retString
+DISASM   script/flow.script(172):\t   315:         STORE_S\t\ta: string global[4]\tb: string stack[168]
+DISASM   script/flow.script(172):\t   316:         STORE_S\t\ta: string stack[168]\tb: string stack[16]
+DISASM   script/flow.script(173):\t   317:          PUSH_F\t\ta: const float 5.000000
+DISASM   script/flow.script(173):\t   318:            CALL\t\ta: const function retBool
+DISASM   script/flow.script(173):\t   319:      STORE_BOOL\t\ta: float global[0]\tb: boolean stack[296]
+DISASM   script/flow.script(173):\t   320:      STORE_BOOL\t\ta: boolean stack[296]\tb: boolean stack[144]
+DISASM   script/flow.script(174):\t   321:        PUSH_ENT\t\ta: entity global[270]
+DISASM   script/flow.script(174):\t   322:            CALL\t\ta: const function retEntity
+DISASM   script/flow.script(174):\t   323:       STORE_ENT\t\ta: float global[0]\tb: entity stack[300]
+DISASM   script/flow.script(174):\t   324:       STORE_ENT\t\ta: entity stack[300]\tb: entity stack[148]
+DISASM   script/flow.script(175):\t   325:          ADD_SF\t\ta: const string \"f\"\tb: float stack[0]\tc: string stack[168]
+DISASM   script/flow.script(175):\t   326:           ADD_S\t\ta: string stack[168]\tb: const string \" v\"\tc: string stack[304]
+DISASM   script/flow.script(175):\t   327:          ADD_SV\t\ta: string stack[304]\tb: vector stack[4]\tc: string stack[168]
+DISASM   script/flow.script(175):\t   328:           ADD_S\t\ta: string stack[168]\tb: const string \" s\"\tc: string stack[304]
+DISASM   script/flow.script(175):\t   329:           ADD_S\t\ta: string stack[304]\tb: string stack[16]\tc: string stack[168]
+DISASM   script/flow.script(175):\t   330:          PUSH_S\t\ta: string stack[168]
+DISASM   script/flow.script(175):\t   331:            CALL\t\ta: const function note
+DISASM   script/flow.script(176):\t   332:           IFNOT\t\ta: boolean stack[144]\tb: const address 335 [script/flow.script(177)]
+DISASM   script/flow.script(176):\t   333:          PUSH_S\t\ta: const string \"b\"
+DISASM   script/flow.script(176):\t   334:            CALL\t\ta: const function note
+DISASM   script/flow.script(177):\t   335:            EQ_E\t\ta: entity stack[148]\tb: entity global[270]\tc: float stack[152]
+DISASM   script/flow.script(177):\t   336:           IFNOT\t\ta: float stack[152]\tb: const address 339 [script/flow.script(179)]
+DISASM   script/flow.script(177):\t   337:          PUSH_S\t\ta: const string \"e\"
+DISASM   script/flow.script(177):\t   338:            CALL\t\ta: const function note
+DISASM   script/flow.script(179):\t   339:       PUSH_FTOS\t\ta: const float 1.500000
+DISASM   script/flow.script(179):\t   340:       PUSH_VTOS\t\ta: const vector '1 2 3'
+DISASM   script/flow.script(179):\t   341:            CALL\t\ta: const function retString
+DISASM   script/flow.script(179):\t   342:         STORE_S\t\ta: string global[4]\tb: string stack[304]
+DISASM   script/flow.script(179):\t   343:         STORE_S\t\ta: string stack[304]\tb: string stack[16]
+DISASM   script/flow.script(180):\t   344:          PUSH_S\t\ta: string stack[16]
+DISASM   script/flow.script(180):\t   345:            CALL\t\ta: const function note
+DISASM   script/flow.script(181):\t   346:       PUSH_FTOB\t\ta: const float 3.000000
+DISASM   script/flow.script(181):\t   347:            CALL\t\ta: const function retFromBool
+DISASM   script/flow.script(181):\t   348:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(181):\t   349:         STORE_F\t\ta: float stack[152]\tb: float stack[0]
+DISASM   script/flow.script(182):\t   350:          ADD_SF\t\ta: const string \"fb\"\tb: float stack[0]\tc: string stack[304]
+DISASM   script/flow.script(182):\t   351:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(182):\t   352:            CALL\t\ta: const function note
+DISASM   script/flow.script(183):\t   353:   STORE_FTOBOOL\t\ta: const float 1.000000\tb: boolean stack[144]
+DISASM   script/flow.script(184):\t   354:       PUSH_BTOF\t\ta: boolean stack[144]
+DISASM   script/flow.script(184):\t   355:       PUSH_BTOF\t\ta: boolean stack[144]
+DISASM   script/flow.script(184):\t   356:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(184):\t   357:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(184):\t   358:         STORE_F\t\ta: float stack[152]\tb: float stack[0]
+DISASM   script/flow.script(185):\t   359:          ADD_SF\t\ta: const string \"bf\"\tb: float stack[0]\tc: string stack[304]
+DISASM   script/flow.script(185):\t   360:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(185):\t   361:            CALL\t\ta: const function note
+DISASM   script/flow.script(186):\t   362:       PUSH_BTOS\t\ta: boolean stack[144]
+DISASM   script/flow.script(186):\t   363:       PUSH_BTOS\t\ta: boolean stack[144]
+DISASM   script/flow.script(186):\t   364:            CALL\t\ta: const function retString
+DISASM   script/flow.script(186):\t   365:         STORE_S\t\ta: string global[4]\tb: string stack[304]
+DISASM   script/flow.script(186):\t   366:         STORE_S\t\ta: string stack[304]\tb: string stack[16]
+DISASM   script/flow.script(187):\t   367:          PUSH_S\t\ta: string stack[16]
+DISASM   script/flow.script(187):\t   368:            CALL\t\ta: const function note
+DISASM   script/flow.script(188):\t   369:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(188):\t   370:          PUSH_V\t\ta: const vector '2 3 4'
+DISASM   script/flow.script(188):\t   371:          PUSH_S\t\ta: const string \"five\"
+DISASM   script/flow.script(188):\t   372:       PUSH_FTOB\t\ta: const float 6.000000
+DISASM   script/flow.script(188):\t   373:        PUSH_ENT\t\ta: entity global[270]
+DISASM   script/flow.script(188):\t   374:          PUSH_F\t\ta: const float 7.000000
+DISASM   script/flow.script(188):\t   375:            CALL\t\ta: const function manyParms
+DISASM   script/flow.script(188):\t   376:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(188):\t   377:         STORE_F\t\ta: float stack[152]\tb: float stack[0]
+DISASM   script/flow.script(189):\t   378:          ADD_SF\t\ta: const string \"mp\"\tb: float stack[0]\tc: string stack[304]
+DISASM   script/flow.script(189):\t   379:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(189):\t   380:            CALL\t\ta: const function note
+DISASM   script/flow.script(191):\t   381:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(191):\t   382:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(191):\t   383:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(191):\t   384:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(191):\t   385:          PUSH_F\t\ta: float stack[152]
+DISASM   script/flow.script(191):\t   386:          PUSH_F\t\ta: const float 3.000000
+DISASM   script/flow.script(191):\t   387:          PUSH_F\t\ta: const float 4.000000
+DISASM   script/flow.script(191):\t   388:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(191):\t   389:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(191):\t   390:          PUSH_F\t\ta: float stack[152]
+DISASM   script/flow.script(191):\t   391:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(191):\t   392:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(191):\t   393:         STORE_F\t\ta: float stack[152]\tb: float stack[0]
+DISASM   script/flow.script(192):\t   394:          ADD_SF\t\ta: const string \"nest\"\tb: float stack[0]\tc: string stack[304]
+DISASM   script/flow.script(192):\t   395:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(192):\t   396:            CALL\t\ta: const function note
+DISASM   script/flow.script(193):\t   397:          PUSH_F\t\ta: const float 3.000000
+DISASM   script/flow.script(193):\t   398:            CALL\t\ta: const function fact
+DISASM   script/flow.script(193):\t   399:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(193):\t   400:           ADD_F\t\ta: float stack[152]\tb: const float 1.000000\tc: float stack[432]
+DISASM   script/flow.script(193):\t   401:          PUSH_F\t\ta: float stack[432]
+DISASM   script/flow.script(193):\t   402:          PUSH_F\t\ta: const float 6.000000
+DISASM   script/flow.script(193):\t   403:            CALL\t\ta: const function fib
+DISASM   script/flow.script(193):\t   404:         STORE_F\t\ta: float global[0]\tb: float stack[432]
+DISASM   script/flow.script(193):\t   405:          PUSH_F\t\ta: float stack[432]
+DISASM   script/flow.script(193):\t   406:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(193):\t   407:         STORE_F\t\ta: float global[0]\tb: float stack[432]
+DISASM   script/flow.script(193):\t   408:          PUSH_F\t\ta: const float 0.000000
+DISASM   script/flow.script(193):\t   409:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(193):\t   410:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(193):\t   411:         STORE_F\t\ta: float global[0]\tb: float stack[152]
+DISASM   script/flow.script(193):\t   412:           ADD_F\t\ta: float stack[432]\tb: float stack[152]\tc: float stack[436]
+DISASM   script/flow.script(193):\t   413:         STORE_F\t\ta: float stack[436]\tb: float stack[0]
+DISASM   script/flow.script(194):\t   414:          ADD_SF\t\ta: const string \"nest2 \"\tb: float stack[0]\tc: string stack[304]
+DISASM   script/flow.script(194):\t   415:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(194):\t   416:            CALL\t\ta: const function note
+DISASM   script/flow.script(195):\t   417:          PUSH_V\t\ta: const vector '1 1 1'
+DISASM   script/flow.script(195):\t   418:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(195):\t   419:            CALL\t\ta: const function retVector
+DISASM   script/flow.script(195):\t   420:         STORE_V\t\ta: float global[0]\tb: vector stack[156]
+DISASM   script/flow.script(195):\t   421:          PUSH_V\t\ta: vector stack[156]
+DISASM   script/flow.script(195):\t   422:          PUSH_F\t\ta: const float 3.000000
+DISASM   script/flow.script(195):\t   423:            CALL\t\ta: const function retVector
+DISASM   script/flow.script(195):\t   424:         STORE_V\t\ta: float global[0]\tb: vector stack[156]
+DISASM   script/flow.script(195):\t   425:          PUSH_V\t\ta: const vector '1 0 0'
+DISASM   script/flow.script(195):\t   426:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(195):\t   427:            CALL\t\ta: const function retVector
+DISASM   script/flow.script(195):\t   428:         STORE_V\t\ta: float global[0]\tb: vector stack[440]
+DISASM   script/flow.script(195):\t   429:           ADD_V\t\ta: vector stack[156]\tb: vector stack[440]\tc: vector stack[452]
+DISASM   script/flow.script(195):\t   430:         STORE_V\t\ta: vector stack[452]\tb: vector stack[4]
+DISASM   script/flow.script(196):\t   431:          ADD_SV\t\ta: const string \"nestv\"\tb: vector stack[4]\tc: string stack[304]
+DISASM   script/flow.script(196):\t   432:          PUSH_S\t\ta: string stack[304]
+DISASM   script/flow.script(196):\t   433:            CALL\t\ta: const function note
+DISASM   script/flow.script(198):\t   434:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(198):\t   435:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(198):\t   436:            CALL\t\ta: const function retFloat
+DISASM   script/flow.script(198):\t   437:         STORE_F\t\ta: float global[0]\tb: float stack[436]
+DISASM   script/flow.script(199):\t   438:          PUSH_S\t\ta: const string \"x\"
+DISASM   script/flow.script(199):\t   439:          PUSH_S\t\ta: const string \"y\"
+DISASM   script/flow.script(199):\t   440:            CALL\t\ta: const function retString
+DISASM   script/flow.script(199):\t   441:         STORE_S\t\ta: string global[4]\tb: string stack[304]
+DISASM   script/flow.script(200):\t   442:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(200):\t   443:            CALL\t\ta: const function fact
+DISASM   script/flow.script(200):\t   444:         STORE_F\t\ta: float global[0]\tb: float stack[432]
+DISASM   script/flow.script(201):\t   445:          RETURN\t
+DISASM }
+DISASM 
+DISASM function main() 12 stack used, 0 parms, 12 locals {
+DISASM   script/flow.script(204):\t   446:          PUSH_F\t\ta: const float 0.000000
+DISASM   script/flow.script(204):\t   447:            CALL\t\ta: const function ifs
+DISASM   script/flow.script(204):\t   448:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(204):\t   449:            CALL\t\ta: const function ifs
+DISASM   script/flow.script(204):\t   450:          PUSH_F\t\ta: const float 2.000000
+DISASM   script/flow.script(204):\t   451:            CALL\t\ta: const function ifs
+DISASM   script/flow.script(204):\t   452:          PUSH_F\t\ta: const float 3.000000
+DISASM   script/flow.script(204):\t   453:            CALL\t\ta: const function ifs
+DISASM   script/flow.script(205):\t   454:          PUSH_S\t\ta: const string \"ifs\"
+DISASM   script/flow.script(205):\t   455:            CALL\t\ta: const function flush
+DISASM   script/flow.script(206):\t   456:            CALL\t\ta: const function whiles
+DISASM   script/flow.script(207):\t   457:          PUSH_S\t\ta: const string \"whiles\"
+DISASM   script/flow.script(207):\t   458:            CALL\t\ta: const function flush
+DISASM   script/flow.script(208):\t   459:            CALL\t\ta: const function fors
+DISASM   script/flow.script(209):\t   460:          PUSH_S\t\ta: const string \"fors\"
+DISASM   script/flow.script(209):\t   461:            CALL\t\ta: const function flush
+DISASM   script/flow.script(210):\t   462:          PUSH_F\t\ta: const float -5.000000
+DISASM   script/flow.script(210):\t   463:            CALL\t\ta: const function early
+DISASM   script/flow.script(210):\t   464:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(210):\t   465:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(210):\t   466:            CALL\t\ta: const function note
+DISASM   script/flow.script(210):\t   467:          PUSH_F\t\ta: const float 0.000000
+DISASM   script/flow.script(210):\t   468:            CALL\t\ta: const function early
+DISASM   script/flow.script(210):\t   469:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(210):\t   470:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(210):\t   471:            CALL\t\ta: const function note
+DISASM   script/flow.script(210):\t   472:          PUSH_F\t\ta: const float 3.000000
+DISASM   script/flow.script(210):\t   473:            CALL\t\ta: const function early
+DISASM   script/flow.script(210):\t   474:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(210):\t   475:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(210):\t   476:            CALL\t\ta: const function note
+DISASM   script/flow.script(211):\t   477:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(211):\t   478:            CALL\t\ta: const function noReturn
+DISASM   script/flow.script(211):\t   479:          PUSH_F\t\ta: const float 0.000000
+DISASM   script/flow.script(211):\t   480:            CALL\t\ta: const function noReturn
+DISASM   script/flow.script(212):\t   481:          PUSH_S\t\ta: const string \"returns\"
+DISASM   script/flow.script(212):\t   482:            CALL\t\ta: const function flush
+DISASM   script/flow.script(213):\t   483:          PUSH_F\t\ta: const float 1.000000
+DISASM   script/flow.script(213):\t   484:            CALL\t\ta: const function fact
+DISASM   script/flow.script(213):\t   485:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(213):\t   486:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(213):\t   487:            CALL\t\ta: const function note
+DISASM   script/flow.script(213):\t   488:          PUSH_F\t\ta: const float 5.000000
+DISASM   script/flow.script(213):\t   489:            CALL\t\ta: const function fact
+DISASM   script/flow.script(213):\t   490:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(213):\t   491:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(213):\t   492:            CALL\t\ta: const function note
+DISASM   script/flow.script(213):\t   493:          PUSH_F\t\ta: const float 10.000000
+DISASM   script/flow.script(213):\t   494:            CALL\t\ta: const function fact
+DISASM   script/flow.script(213):\t   495:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(213):\t   496:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(213):\t   497:            CALL\t\ta: const function note
+DISASM   script/flow.script(213):\t   498:          PUSH_F\t\ta: const float 10.000000
+DISASM   script/flow.script(213):\t   499:            CALL\t\ta: const function fib
+DISASM   script/flow.script(213):\t   500:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(213):\t   501:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(213):\t   502:            CALL\t\ta: const function note
+DISASM   script/flow.script(214):\t   503:          PUSH_F\t\ta: const float 10.000000
+DISASM   script/flow.script(214):\t   504:            CALL\t\ta: const function isEven
+DISASM   script/flow.script(214):\t   505:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(214):\t   506:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(214):\t   507:            CALL\t\ta: const function note
+DISASM   script/flow.script(214):\t   508:          PUSH_F\t\ta: const float 7.000000
+DISASM   script/flow.script(214):\t   509:            CALL\t\ta: const function isOdd
+DISASM   script/flow.script(214):\t   510:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(214):\t   511:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(214):\t   512:            CALL\t\ta: const function note
+DISASM   script/flow.script(214):\t   513:          PUSH_F\t\ta: const float 7.000000
+DISASM   script/flow.script(214):\t   514:            CALL\t\ta: const function isEven
+DISASM   script/flow.script(214):\t   515:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(214):\t   516:       PUSH_FTOS\t\ta: float stack[0]
+DISASM   script/flow.script(214):\t   517:            CALL\t\ta: const function note
+DISASM   script/flow.script(215):\t   518:          PUSH_S\t\ta: const string \"ok\"
+DISASM   script/flow.script(215):\t   519:            CALL\t\ta: const function later
+DISASM   script/flow.script(216):\t   520:          PUSH_S\t\ta: const string \"recursion\"
+DISASM   script/flow.script(216):\t   521:            CALL\t\ta: const function flush
+DISASM   script/flow.script(217):\t   522:            CALL\t\ta: const function calls
+DISASM   script/flow.script(218):\t   523:          PUSH_S\t\ta: const string \"calls\"
+DISASM   script/flow.script(218):\t   524:            CALL\t\ta: const function flush
+DISASM   script/flow.script(219):\t   525:          PUSH_F\t\ta: const float 12.000000
+DISASM   script/flow.script(219):\t   526:            CALL\t\ta: const function fact
+DISASM   script/flow.script(219):\t   527:         STORE_F\t\ta: float global[0]\tb: float stack[0]
+DISASM   script/flow.script(219):\t   528:          PUSH_F\t\ta: const float 15.000000
+DISASM   script/flow.script(219):\t   529:            CALL\t\ta: const function fib
+DISASM   script/flow.script(219):\t   530:         STORE_F\t\ta: float global[0]\tb: float stack[4]
+DISASM   script/flow.script(219):\t   531:           ADD_F\t\ta: float stack[0]\tb: float stack[4]\tc: float stack[8]
+DISASM   script/flow.script(219):\t   532:         STORE_F\t\ta: float stack[8]\tb: float global[101]
+DISASM   script/flow.script(220):\t   533:          RETURN\t
+DISASM }
+CMD spawn 1 idEntity ent_one
+CMD callnow main
+PRINT ifs: !a,<=1,zero,const1,a,<=1,one,const1,a,>1,two,const1,a,>1,many,const1,
+PRINT whiles: w0,w1,w2,i0,t1,t3,t4,d4,d3,d2,once,e3,e5,
+PRINT fors: f0,f1,f2,g0,g2,g3,h2,h1,h0,k0,k1,m0-10,m3-7,n00,n10,n11,n20,n21,n22,p03,p13,
+PRINT returns: -1,0,10,nr,nr0,
+PRINT recursion: 1,120,3628800,55,1,1,0,later ok,
+PRINT calls: f12 v2 4 6 sheadtail,b,e,1 2 31.500000,fb0.000000,bf11,truetrue,many 1 2 3 4 five 7,d,e,mp17,nest154,nest2 79,nestv7 6 6
+DONE 1
+RETURN 44188000 00000000 00000000 "yx"
+CMD dump globals
+GLOBALS 7860
+G 000000 0080184400000000000000007978000000000000000000000000000000000000
+G 000200 0000000000000000F367E44D0000000000000000000000000000000000000000
+G 0002A0 000000002C000000000000000000000000000000000000000000000000000000
+G 000320 00000000000000003A2000000000000000000000000000000000000000000000
+G 000420 0000000000000000000000000000000061000000000000000000000000000000
+G 0004A0 0000000000000000000000000000000000000000216100000000000000000000
+G 000520 00000000000000000000000000000000000000000000803F3E31000000000000
+G 0005A0 000000000000000000000000000000000000000000000000000000003C3D3100
+G 000640 7A65726F00000000000000000000000000000000000000000000000000000000
+G 0006C0 6F6E650000000000000000000000000000000000000000000000000000000000
+G 000740 0000004074776F00000000000000000000000000000000000000000000000000
+G 0007C0 000000006D616E79000000000000000000000000000000000000000000000000
+G 000840 00000000000000000000000000000000636F6E73743100000000000000000000
+G 0008C0 00000000000000000000000000000000636F6E73743000000000000000000000
+G 000940 0000000000000000000000000000000000000000000040407700000000000000
+G 0009E0 0000000069000000000000000000000000000000000000000000000000000000
+G 000A60 0000000000000000000080407400000000000000000000000000000000000000
+G 000AE0 0000000000000000000000000000000000000000000000006E65766572000000
+G 000B60 0000000000000000000000000000000000000000000000006400000000000000
+G 000BE0 000000000000000000000000000000000000000000000000000000006F6E6365
+G 000C60 000000000000000000000000000000000000000000000000000000000000C040
+G 000C80 6500000000000000000000000000000000000000000000000000000000000000
+G 000D00 0000000000000000660000000000000000000000000000000000000000000000
+G 000D80 0000000000000000670000000000000000000000000000000000000000000000
+G 000E00 0000000000000000000000000000000068000000000000000000000000000000
+G 000E80 000000000000000000000000000000006B000000000000000000000000000000
+G 000F00 00000000000000000000000000000000000020416D0000000000000000000000
+G 000F80 00000000000000000000000000000000000000002D0000000000000000000000
+G 001000 000000000000000000000000000000000000000000000000000000006E000000
+G 0010A0 0000000000000000000000007000000000000000000000000000000000000000
+G 001120 000000000000000000000000000000000000000000000000000080BF0000C642
+G 001140 000000006E720000000000000000000000000000000000000000000000000000
+G 0011C0 000000006E723000000000000000000000000000000000000000000000000000
+G 001240 000000006C617465722000000000000000000000000000000000000000000000
+G 0012E0 6D616E7920000000000000000000000000000000000000000000000000000000
+G 001360 2000000000000000000000000000000000000000000000000000000000000000
+G 0013E0 000000000000803F00000040000040407461696C000000000000000000000000
+G 001460 0000000000000000000000000000000068656164000000000000000000000000
+G 0014E0 000000000000000000000000000000000000A040020000002076000000000000
+G 001560 0000000000000000000000000000000000000000000000002073000000000000
+G 0015E0 0000000000000000000000000000000000000000000000006200000000000000
+G 001660 0000000000000000000000000000000000000000000000000000C03F66620000
+G 0016E0 0000000000000000000000000000000000000000000000000000000062660000
+G 001760 0000000000000000000000000000000000000000000000000000000000000040
+G 001780 0000404000008040666976650000000000000000000000000000000000000000
+G 001800 00000000000000000000E0406D70000000000000000000000000000000000000
+G 001880 0000000000000000000000006E65737400000000000000000000000000000000
+G 001900 0000000000000000000000006E65737432200000000000000000000000000000
+G 001980 0000000000000000000000000000803F0000803F0000803F0000803F00000000
+G 0019A0 000000006E657374760000000000000000000000000000000000000000000000
+G 001A20 0000000078000000000000000000000000000000000000000000000000000000
+G 001AA0 0000000079000000000000000000000000000000000000000000000000000000
+G 001B20 0000000000000000696673000000000000000000000000000000000000000000
+G 001BA0 00000000000000007768696C6573000000000000000000000000000000000000
+G 001C20 0000000000000000666F72730000000000000000000000000000000000000000
+G 001CA0 00000000000000000000A0C072657475726E7300000000000000000000000000
+G 001D20 0000000000000000000000006F6B000000000000000000000000000000000000
+G 001DA0 000000000000000000000000726563757273696F6E0000000000000000000000
+G 001E20 00000000000000000000000063616C6C73000000000000000000000000000000
+G 001EA0 0000000000000000000000000000404100007041
+CMD dump return
+RETURN 44188000 00000000 00000000 "yx"
+CMD dump threads
+CURRENT 0
+THREADINDEX 1
+THREAD 1 name="main" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=0 created=0 manual=0 depth=0 used=0 base=0 maxDepth=16 maxUsed=1280 ip=-1 func=-1 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]

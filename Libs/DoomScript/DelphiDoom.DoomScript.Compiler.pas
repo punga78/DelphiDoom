@@ -796,7 +796,6 @@ function TDoomScriptCompiler.ParseFunctionCall(const AFuncDef: TDoomScriptVarDef
 var
   LThisDef: TDoomScriptVarDef;
 begin
-  Result := nil;
   if AFuncDef.Kind <> evFunction then
     Error('''%s'' is not a function', [string(AFuncDef.Name)]);
   if AFuncDef.Initialized = diUninitialized then
@@ -1979,7 +1978,9 @@ procedure TDoomScriptCompiler.CompileFile(const AText, AFileName: AnsiString; co
 var
   LText: string;
   LSavedMask: TArithmeticExceptionMask;
+  LBuffer: Integer;
 begin
+  LBuffer := FProgram.FileNameBuffer;
   ResetState;
   FConsole := AConsole;
   // folding constants gives infinities and NaN as in C, never a floating point exception
@@ -2028,9 +2029,10 @@ begin
     FreeAndNil(FParser);
     SetExceptionMask(LSavedMask);
   end;
-  // the original printed the time the compilation took: the library has no clock
+  // the original printed the time the compilation took: the library has no clock. The name is what the
+  // pointer the original received reads at the end (TDoomScriptProgram.FileNameInBuffer).
   if (not AConsole) and Assigned(FLog) then
-    FLog.Printf(Format('Compiled ''%s'': 0.0 ms'#10, [string(AFileName)]));
+    FLog.Printf(Format('Compiled ''%s'': 0.0 ms'#10, [string(FProgram.FileNameInBuffer(LBuffer, AFileName))]));
 end;
 
 end.

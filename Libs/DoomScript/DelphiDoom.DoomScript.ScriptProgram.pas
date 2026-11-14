@@ -49,6 +49,12 @@ type
     FReleaseObjects: TProc<Integer>;
     FFileList: TList<AnsiString>;
     FFileName: AnsiString;
+    // the buffer of the idStr "filename" of the original: its size, which block it is (0 = the buffer inside
+    // the string) and what the inside buffer still holds after the text moved to the heap
+    FFileNameAlloc: Integer;
+    FFileNameBlock: Integer;
+    FFileNameBlocks: Integer;
+    FFileNameBase: AnsiString;
     FFileNum: Integer;
     FNumVariables: Integer;
     FVariables: TBytes;
@@ -71,6 +77,8 @@ type
     FTopFiles: Integer;
     FBuiltinTypes: array[TDoomScriptEType] of TDoomScriptTypeDef;
     FBuiltinDefs: array[TDoomScriptEType] of TDoomScriptVarDef;
+    procedure AssignFileName(const AName: AnsiString);
+    procedure ClearFileName;
     procedure CreateBuiltins;
     procedure FreeBuiltins;
     procedure CompileStats;
@@ -116,6 +124,18 @@ type
     procedure FreeData;
     function GetFilename(const ANum: Integer): AnsiString;
     function GetFilenum(const AName: AnsiString): Integer;
+    /// <summary>
+    ///   Which buffer holds the name of the file being compiled now (see <c>FileNameInBuffer</c>)
+    /// </summary>
+    function FileNameBuffer: Integer;
+    /// <summary>
+    ///   What a C pointer taken with <c>FileNameBuffer</c> reads now. The original passes the buffer of its
+    ///   string "filename" to the compiler and changes the string while it compiles: "Compiled '...'" shows
+    ///   the last file a token came from when the buffer was reused, the first name when the string left its
+    ///   inside buffer (names shorter than 20 characters). When the buffer was freed (undefined in the
+    ///   original) the answer is <c>AFallback</c>.
+    /// </summary>
+    function FileNameInBuffer(const ABuffer: Integer; const AFallback: AnsiString): AnsiString;
     function GetLineNumberForStatement(const AIndex: Integer): Integer;
     function GetFilenameForStatement(const AIndex: Integer): AnsiString;
     function NumFilenames: Integer;
@@ -180,6 +200,16 @@ type
     property ReturnStringDef: TDoomScriptVarDef read FReturnStringDef;
     property SysDef: TDoomScriptVarDef read FSysDef;
     property NumVariables: Integer read FNumVariables;
+    /// <summary>top_functions: the functions the program had at FinishCompilation (a restart goes back there)</summary>
+    property TopFunctions: Integer read FTopFunctions;
+    /// <summary>top_statements</summary>
+    property TopStatements: Integer read FTopStatements;
+    /// <summary>top_types</summary>
+    property TopTypes: Integer read FTopTypes;
+    /// <summary>top_defs</summary>
+    property TopDefs: Integer read FTopDefs;
+    /// <summary>top_files</summary>
+    property TopFiles: Integer read FTopFiles;
     property Host: IDoomScriptHost read FHost;
     property Log: IIdLibLog read FLog;
     property FileSystem: IIdLibFileSystem read FFileSystem;
@@ -227,7 +257,8 @@ begin
   FHost := AHost;
   FLog := ALog;
   FFileSystem := AFileSystem;
-  FFileList := TList<AnsiString>.Create;
+  ClearFileName;
+  FFileList :=TList<AnsiString>.Create;
   FFunctions := TObjectList<TDoomScriptFunction>.Create(True);
   FRemovedFunctions := TObjectList<TDoomScriptFunction>.Create(True);
   FTypes := TObjectList<TDoomScriptTypeDef>.Create(True);
@@ -403,6 +434,51 @@ begin
   Result := GetFilename(GetStatement(AIndex).FileNum);
 end;
 
+const
+  STR_ALLOC_BASE = 20;
+  STR_ALLOC_GRAN = 32;
+
+procedure TDoomScriptProgram.AssignFileName(const AName: AnsiString);
+var
+  LNeeded: Integer;
+begin
+  // idStr::operator= with EnsureAlloced: a longer text moves to a new block, a shorter one stays
+  LNeeded := Length(AName) + 1;
+  if LNeeded > FFileNameAlloc then
+  begin
+    if FFileNameBlock = 0 then
+      FFileNameBase := FFileName;
+    FFileNameAlloc := ((LNeeded + STR_ALLOC_GRAN - 1) div STR_ALLOC_GRAN) * STR_ALLOC_GRAN;
+    Inc(FFileNameBlocks);
+    FFileNameBlock := FFileNameBlocks;
+  end;
+  FFileName := AName;
+end;
+
+procedure TDoomScriptProgram.ClearFileName;
+begin
+  // idStr::Clear: back to the buffer inside the string
+  FFileNameAlloc := STR_ALLOC_BASE;
+  FFileNameBlock := 0;
+  FFileName := '';
+  FFileNameBase := '';
+end;
+
+function TDoomScriptProgram.FileNameBuffer: Integer;
+begin
+  Result := FFileNameBlock;
+end;
+
+function TDoomScriptProgram.FileNameInBuffer(const ABuffer: Integer; const AFallback: AnsiString): AnsiString;
+begin
+  if ABuffer = FFileNameBlock then
+    Result := FFileName
+  else if ABuffer = 0 then
+    Result := FFileNameBase
+  else
+    Result := AFallback;
+end;
+
 function TDoomScriptProgram.GetFilenum(const AName: AnsiString): Integer;
 var
   LStripped: AnsiString;
@@ -420,7 +496,7 @@ begin
   if FFileNum < 0 then
     FFileNum := FFileList.Add(LName);
   // save the unstripped name so that the incoming name is not stripped at every call
-  FFileName := AName;
+  AssignFileName(AName);
   Result := FFileNum;
 end;
 
@@ -865,10 +941,10 @@ begin
         evVector:
           begin
             Move(GlobalPtr(ADef.Value, 12)^, LVector, 12);
-            Result := Result + '''' + LVector.ToString + '''';
+            Result := Result + '''' + TDoomScriptConvert.VectorToString(LVector) + '''';
           end;
         evFloat:
-          Result := Result + TIdStrings.FloatToPlainText(PSingle(GlobalPtr(ADef.Value, 4))^);
+          Result := Result + TDoomScriptConvert.FloatToFixed(PSingle(GlobalPtr(ADef.Value, 4))^);
         evVirtualFunction:
           Result := Result + AnsiString(Format('vtable[ %d ]', [ADef.Value]));
       else
@@ -939,20 +1015,34 @@ end;
 procedure TDoomScriptProgram.CompileStats;
 var
   LIndex: Integer;
+  LStringSpace: Integer;
+  LStatementBytes: Integer;
+  LFunctionBytes: Integer;
+  LMemUsed: Integer;
 begin
   PrintLine('---------- Compile stats ----------'#10);
-  if FHost.Developer then
+  FHost.DebugPrintf('Files loaded:'#10);
+  LStringSpace := 0;
+  for LIndex := 0 to FFileList.Count - 1 do
   begin
-    PrintLine('Files loaded:'#10);
-    for LIndex := 0 to FFileList.Count - 1 do
-      PrintLine(Format('   %s'#10, [string(FFileList[LIndex])]));
+    FHost.DebugPrintf(Format('   %s'#10, [string(FFileList[LIndex])]));
+    Inc(LStringSpace, Length(FFileList[LIndex]) + 1);
   end;
-  // the byte counts of the original are sizes of its C++ structures: only the counts are reported
+  // the byte counts of the original are sizes of its C++ objects: the ones printed here are the sizes of
+  // this port, the same lines with other numbers (only the counts and "Variables" are the same)
+  LStatementBytes := FNumStatements * SizeOf(TDoomScriptStatement);
+  LFunctionBytes := FFunctions.Count * TDoomScriptFunction.InstanceSize;
+  LMemUsed := FVarDefs.Count * TDoomScriptVarDef.InstanceSize + FTypes.Count * TDoomScriptTypeDef.InstanceSize +
+    LStringSpace + LStatementBytes + LFunctionBytes + DS_MAX_GLOBALS;
   PrintLine(#10'Memory usage:'#10);
-  PrintLine(Format('     Strings: %d'#10, [FFileList.Count]));
-  PrintLine(Format('  Statements: %d'#10, [FNumStatements]));
-  PrintLine(Format('   Functions: %d'#10, [FFunctions.Count]));
+  PrintLine(Format('     Strings: %d, %d bytes'#10, [FFileList.Count, LStringSpace]));
+  PrintLine(Format('  Statements: %d, %d bytes'#10, [FNumStatements, LStatementBytes]));
+  PrintLine(Format('   Functions: %d, %d bytes'#10, [FFunctions.Count, LFunctionBytes]));
   PrintLine(Format('   Variables: %d bytes'#10, [FNumVariables]));
+  PrintLine(Format('    Mem used: %d bytes'#10, [LMemUsed]));
+  PrintLine(Format(' Static data: %d bytes'#10, [InstanceSize]));
+  PrintLine(Format('   Allocated: %d bytes'#10, [LMemUsed + InstanceSize]));
+  PrintLine(Format(' Thread size: %d bytes'#10#10, [DS_LOCALSTACK_SIZE]));
 end;
 
 function TDoomScriptProgram.CompileText(const ASource, AText: AnsiString; const AConsole: Boolean): Boolean;
@@ -1037,7 +1127,7 @@ begin
   FFileNum := 0;
   FNumVariables := 0;
   FillChar(FVariables[0], DS_MAX_GLOBALS, 0);
-  FFileName := '';
+  ClearFileName;
   FFileList.Clear;
   FNumStatements := 0;
   FFunctions.Clear;
@@ -1185,7 +1275,7 @@ begin
     FNumStatements := FTopStatements;
   while FFileList.Count > FTopFiles do
     FFileList.Delete(FFileList.Count - 1);
-  FFileName := '';
+  ClearFileName;
   // reset the variables to their default values
   FNumVariables := Length(FVariableDefaults);
   if FNumVariables > 0 then

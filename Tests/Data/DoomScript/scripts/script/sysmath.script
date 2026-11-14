@@ -1,0 +1,133 @@
+// the system events that only compute: math, vectors, angles, strings, time
+
+float	f0, f1, f2, f3, f4, f5, f6, f7, f8, f9;
+vector	v0, v1, v2, v3, v4, v5, v6, v7, v8, v9;
+
+void math() {
+	f0 = sys.sin( 0 );
+	f1 = sys.sin( 30 );
+	f2 = sys.sin( 90 );
+	f3 = sys.sin( -45 );
+	f4 = sys.sin( 1234.5 );
+	f5 = sys.cos( 0 );
+	f6 = sys.cos( 60 );
+	f7 = sys.cos( 90 );
+	f8 = sys.cos( 180 );
+	f9 = sys.cos( -777.25 );
+	sys.println( "sin cos " + f0 + " " + f1 + " " + f2 + " " + f3 + " " + f4 + " " + f5 + " " + f6 + " " + f7 + " " + f8 + " " + f9 );
+}
+
+void roots() {
+	f0 = sys.sqrt( 0 );
+	f1 = sys.sqrt( 1 );
+	f2 = sys.sqrt( 2 );
+	f3 = sys.sqrt( 144 );
+	f4 = sys.sqrt( 0.0001 );
+	f5 = sys.sqrt( 1e10 );
+	f6 = sys.sqrt( 3 ) * sys.sqrt( 3 );
+	sys.println( "sqrt " + f0 + " " + f1 + " " + f2 + " " + f3 + " " + f4 + " " + f5 + " " + f6 );
+}
+
+void vectors() {
+	v0 = sys.vecNormalize( '3 4 0' );
+	v1 = sys.vecNormalize( '0 0 0' );
+	v2 = sys.vecNormalize( '1 1 1' );
+	v3 = sys.vecNormalize( '-10 0.5 1000' );
+	f0 = sys.vecLength( '3 4 0' );
+	f1 = sys.vecLength( '0 0 0' );
+	f2 = sys.vecLength( '1 2 3' );
+	f3 = sys.DotProduct( '1 2 3', '4 5 6' );
+	f4 = sys.DotProduct( '1 0 0', '0 1 0' );
+	v4 = sys.CrossProduct( '1 0 0', '0 1 0' );
+	v5 = sys.CrossProduct( '1 2 3', '4 5 6' );
+	v6 = sys.CrossProduct( '1 2 3', '1 2 3' );
+	sys.println( "vectors " + v0 + " " + v1 + " " + v2 + " " + v3 + " " + v4 + " " + v5 + " " + v6 );
+	sys.println( "lengths " + f0 + " " + f1 + " " + f2 + " " + f3 + " " + f4 );
+}
+
+void angles() {
+	v0 = sys.angToForward( '0 0 0' );
+	v1 = sys.angToRight( '0 0 0' );
+	v2 = sys.angToUp( '0 0 0' );
+	v3 = sys.angToForward( '30 45 60' );
+	v4 = sys.angToRight( '30 45 60' );
+	v5 = sys.angToUp( '30 45 60' );
+	v6 = sys.angToForward( '-90 720 0' );
+	v7 = sys.angToRight( '10 -200 33.5' );
+	v8 = sys.angToUp( '89 1 -1' );
+	sys.println( "angles " + v0 + " " + v1 + " " + v2 + " " + v3 + " " + v4 + " " + v5 );
+	sys.println( "angles2 " + v6 + " " + v7 + " " + v8 );
+	v0 = sys.VecToAngles( '1 0 0' );
+	v1 = sys.VecToAngles( '0 1 0' );
+	v2 = sys.VecToAngles( '0 0 1' );
+	v3 = sys.VecToAngles( '0 0 -1' );
+	v4 = sys.VecToAngles( '1 1 1' );
+	v5 = sys.VecToAngles( '-3 2 -0.5' );
+	v6 = sys.VecToAngles( '0 0 0' );
+	v7 = sys.VecToAngles( '0 -1 0' );
+	v8 = sys.VecToAngles( '-1 0 0' );
+	sys.println( "toangles " + v0 + " " + v1 + " " + v2 + " " + v3 + " " + v4 + " " + v5 );
+	sys.println( "toangles2 " + v6 + " " + v7 + " " + v8 );
+}
+
+void strings() {
+	string s = "Hello, world";
+
+	f0 = sys.strLength( s );
+	f1 = sys.strLength( "" );
+	sys.println( "len " + f0 + " " + f1 );
+	sys.println( "left '" + sys.strLeft( s, 5 ) + "' '" + sys.strLeft( s, 0 ) + "' '" + sys.strLeft( s, 100 ) + "' '" + sys.strLeft( s, -1 ) + "' '" + sys.strLeft( s, 12 ) + "'" );
+	sys.println( "right '" + sys.strRight( s, 5 ) + "' '" + sys.strRight( s, 0 ) + "' '" + sys.strRight( s, 100 ) + "' '" + sys.strRight( s, -1 ) + "' '" + sys.strRight( s, 12 ) + "'" );
+	sys.println( "skip '" + sys.strSkip( s, 7 ) + "' '" + sys.strSkip( s, 0 ) + "' '" + sys.strSkip( s, 100 ) + "' '" + sys.strSkip( s, -1 ) + "' '" + sys.strSkip( s, 12 ) + "'" );
+	sys.println( "mid '" + sys.strMid( s, 7, 3 ) + "' '" + sys.strMid( s, 0, 5 ) + "' '" + sys.strMid( s, -4, 2 ) + "' '" + sys.strMid( s, 7, 100 ) + "' '" + sys.strMid( s, 50, 2 ) + "' '" + sys.strMid( s, 3, -1 ) + "' '" + sys.strMid( s, 3, 0 ) + "'" );
+	sys.println( "left frac '" + sys.strLeft( s, 2.9 ) + "'" );
+	f0 = sys.strToFloat( "12.5" );
+	f1 = sys.strToFloat( "-3" );
+	f2 = sys.strToFloat( "abc" );
+	f3 = sys.strToFloat( "  7.25xyz" );
+	f4 = sys.strToFloat( "1e3" );
+	f5 = sys.strToFloat( "" );
+	f6 = sys.strToFloat( "0x10" );
+	f7 = sys.strToFloat( ".5" );
+	sys.println( "tofloat " + f0 + " " + f1 + " " + f2 + " " + f3 + " " + f4 + " " + f5 + " " + f6 + " " + f7 );
+}
+
+void timeAndRandom() {
+	f0 = sys.getTime();
+	f1 = sys.getFrameTime();
+	f2 = sys.getTicsPerSecond();
+	f3 = sys.random( 1 );
+	f4 = sys.random( 100 );
+	f5 = sys.random( 0 );
+	f6 = sys.random( -8 );
+	f7 = sys.isClient();
+	f8 = sys.isMultiplayer();
+	sys.println( "time " + f0 + " " + f1 + " " + f2 + " random " + f3 + " " + f4 + " " + f5 + " " + f6 + " net " + f7 + " " + f8 );
+	sys.wait( 0.1 );
+	f9 = sys.getTime();
+	sys.println( "time later " + f9 );
+}
+
+void output() {
+	sys.print( "no newline, " );
+	sys.print( "still the same line\n" );
+	sys.println( "" );
+	sys.println( "a line with a \"quote\" and a \\ and a tab\tend" );
+	sys.print( 12 );
+	sys.print( '1 2 3' );
+	sys.print( "\n" );
+	sys.assert( 1 );
+	sys.assert( 0 );
+	sys.warning( "a script warning" );
+	sys.say( "hello there" );
+	sys.println( "output done" );
+}
+
+void main() {
+	math();
+	roots();
+	vectors();
+	angles();
+	strings();
+	output();
+}

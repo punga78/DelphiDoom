@@ -44,6 +44,7 @@ type
     function DebugScript: Boolean;
     function Developer: Boolean;
     function Disassemble: Boolean;
+    procedure DebugPrintf(const AText: string);
     function FindEntity(const AName: AnsiString): Integer;
     function SpawnEntity(const ASpawnArgs: TIdDict): Integer;
     procedure CopyEntitySpawnArgs(const AEntityNumber: Integer; const ATarget: TIdDict);
@@ -122,6 +123,11 @@ end;
 function TDoomScriptFakeHost.Disassemble: Boolean;
 begin
   Result := DisassembleOn;
+end;
+
+procedure TDoomScriptFakeHost.DebugPrintf(const AText: string);
+begin
+  FCalls.Add('DPRINT ' + AText);
 end;
 
 function TDoomScriptFakeHost.FindEntity(const AName: AnsiString): Integer;

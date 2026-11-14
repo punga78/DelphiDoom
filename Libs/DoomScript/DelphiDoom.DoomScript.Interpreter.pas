@@ -1170,14 +1170,14 @@ begin
         end;
       OP_ADD_VS:
         begin
-          SetString(LStatement.C, PIdVec3(VarPtr(LStatement.A, 12)).ToString);
+          SetString(LStatement.C, TDoomScriptConvert.VectorToString(PIdVec3(VarPtr(LStatement.A, 12))^));
           AppendString(LStatement.C, GetString(LStatement.B));
         end;
       OP_ADD_SV:
         begin
           LB := VarPtr(LStatement.B, 12);
           SetString(LStatement.C, GetString(LStatement.A));
-          AppendString(LStatement.C, PIdVec3(LB).ToString);
+          AppendString(LStatement.C, TDoomScriptConvert.VectorToString(PIdVec3(LB)^));
         end;
       OP_SUB_F:
         begin
@@ -1570,7 +1570,7 @@ begin
         else
           SetString(LStatement.B, 'false');
       OP_STORE_VTOS:
-        SetString(LStatement.B, PIdVec3(VarPtr(LStatement.A, 12)).ToString);
+        SetString(LStatement.B, TDoomScriptConvert.VectorToString(PIdVec3(VarPtr(LStatement.A, 12))^));
       OP_STORE_FTOBOOL:
         begin
           LA := VarPtr(LStatement.A, 4);
@@ -1630,7 +1630,7 @@ begin
           LHandle := PCardinal(VarPtr(LStatement.B, 4))^;
           if LHandle <> 0 then
             TDoomScriptMemory.CopyString(DerefPointer(LHandle, DS_MAX_STRING_LEN),
-              PIdVec3(VarPtr(LStatement.A, 12)).ToString);
+              TDoomScriptConvert.VectorToString(PIdVec3(VarPtr(LStatement.A, 12))^));
         end;
       OP_STOREP_FTOBOOL:
         begin
@@ -1726,7 +1726,7 @@ begin
         else
           Push(0);
       OP_PUSH_VTOS:
-        PushString(PIdVec3(VarPtr(LStatement.A, 12)).ToString);
+        PushString(TDoomScriptConvert.VectorToString(PIdVec3(VarPtr(LStatement.A, 12))^));
       OP_PUSH_BTOS:
         if PInteger(VarPtr(LStatement.A, 4))^ <> 0 then
           PushString('true')

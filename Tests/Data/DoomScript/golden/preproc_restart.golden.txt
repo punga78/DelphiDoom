@@ -1,0 +1,2296 @@
+CMD startup script/preproc.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/preproc.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 3, ? bytes
+PRINT   Statements: 34, ? bytes
+PRINT    Functions: 97, ? bytes
+PRINT    Variables: 1244 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/preproc.script
+FILE 1 script/doom_defs.script
+FILE 2 script/ok_include.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="included_function" etype=8 size=4 aux=void def=106 parms=[] funcs=[]
+TYPE 96 name="main" etype=8 size=4 aux=void def=112 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="debugOn" type=float/4 scope=@namespace init=1 users=1 value=global:520=#3F800000
+DEF 102 name="debugOff" type=float/4 scope=@namespace init=1 users=1 value=global:524=#00000000
+DEF 103 name="two" type=float/4 scope=@namespace init=1 users=1 value=global:528=#40000000
+DEF 104 name="three" type=float/4 scope=@namespace init=1 users=1 value=global:532=#40400000
+DEF 105 name="included_value" type=float/4 scope=@namespace init=1 users=1 value=global:536=#40A00000
+DEF 106 name="included_function" type=included_function/8 scope=@namespace init=2 users=1 value=func:95
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:544="included_function "
+DEF 108 name="<RESULT>" type=string/3 scope=106 init=3 users=2 value=stack:0
+DEF 109 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=4 value=args:128
+DEF 110 name="answer" type=float/4 scope=@namespace init=1 users=1 value=global:676=#42280000
+DEF 111 name="nobody" type=entity/6 scope=@namespace init=1 users=1 value=global:680=0
+DEF 112 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:96
+DEF 113 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:688="hello"
+DEF 114 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=4 value=global:816=" "
+DEF 115 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:0
+DEF 116 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:952=#42280000
+DEF 117 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:128
+DEF 118 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:964=#40400000
+DEF 119 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:968=0
+DEF 120 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:256
+DEF 121 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:972="nobody is NULL "
+DEF 122 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1100=#3F800000
+DEF 123 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1104=#00000000
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:5
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1112="values "
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:1240=#40000000
+DEF 127 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:260
+DEF 128 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:264
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="included_function" event=- def=106 first=1 num=4 parmTotal=0 locals=128 filenum=2 parmSize=[]
+FUNC 96 name="main" event=- def=112 first=5 num=29 parmTotal=0 locals=268 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_SF a=107 b=105 c=108 line=5 file=2
+STMT 2 PUSH_S a=108 b=- c=- line=5 file=2
+STMT 3 SYSCALL a=15 b=109 c=- line=5 file=2
+STMT 4 RETURN a=- b=- c=- line=6 file=2
+STMT 5 ADD_S a=113 b=114 c=115 line=45 file=0
+STMT 6 ADD_SF a=115 b=116 c=117 line=45 file=0
+STMT 7 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 8 ADD_SF a=115 b=118 c=117 line=45 file=0
+STMT 9 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 10 ADD_SF a=115 b=110 c=117 line=45 file=0
+STMT 11 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 12 ADD_SF a=115 b=105 c=117 line=45 file=0
+STMT 13 PUSH_S a=117 b=- c=- line=45 file=0
+STMT 14 SYSCALL a=15 b=109 c=- line=45 file=0
+STMT 15 CALL a=106 b=- c=- line=46 file=0
+STMT 16 EQ_E a=111 b=119 c=120 line=47 file=0
+STMT 17 IFNOT a=120 b=124 c=- line=47 file=0
+STMT 18 ADD_SF a=121 b=122 c=117 line=48 file=0
+STMT 19 ADD_SF a=117 b=123 c=115 line=48 file=0
+STMT 20 PUSH_S a=115 b=- c=- line=48 file=0
+STMT 21 SYSCALL a=15 b=109 c=- line=48 file=0
+STMT 22 ADD_SF a=125 b=101 c=117 line=50 file=0
+STMT 23 ADD_SF a=117 b=102 c=115 line=50 file=0
+STMT 24 ADD_SF a=115 b=103 c=117 line=50 file=0
+STMT 25 ADD_SF a=117 b=104 c=115 line=50 file=0
+STMT 26 MUL_F a=103 b=126 c=120 line=50 file=0
+STMT 27 ADD_F a=103 b=104 c=127 line=50 file=0
+STMT 28 ADD_F a=120 b=127 c=128 line=50 file=0
+STMT 29 MUL_F a=128 b=126 c=127 line=50 file=0
+STMT 30 ADD_SF a=115 b=127 c=117 line=50 file=0
+STMT 31 PUSH_S a=117 b=- c=- line=50 file=0
+STMT 32 SYSCALL a=15 b=109 c=- line=50 file=0
+STMT 33 RETURN a=- b=- c=- line=51 file=0
+TOP functions=97 statements=34 types=97 defs=129 files=3
+GLOBALS 1244
+G 000200 00000000000000000000803F0000000000000040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 00000000000000000000000000000000000000000000000000000040
+CHECKSUM 83B9139E
+CMD callnow main
+PRINT hello 42 3 42 5
+PRINT included_function 5
+PRINT nobody is NULL 10
+PRINT values 102318
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD compilefile script/extra.script
+PRINT Compiled '/base/script/extra.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+DPRINT    script/extra.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 4, ? bytes
+PRINT   Statements: 54, ? bytes
+PRINT    Functions: 99, ? bytes
+PRINT    Variables: 1520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD compiletext more 0 <<EOF
+PRINT Compiled '/base/more': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+DPRINT    script/extra.script
+DPRINT    more
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 5, ? bytes
+PRINT   Statements: 61, ? bytes
+PRINT    Functions: 100, ? bytes
+PRINT    Variables: 1656 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD compilefunction oneShot <<EOF
+PRINT Compiled '/base/oneShot': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+DPRINT    script/extra.script
+DPRINT    more
+DPRINT    oneShot
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 6, ? bytes
+PRINT   Statements: 64, ? bytes
+PRINT    Functions: 101, ? bytes
+PRINT    Variables: 1788 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+FUNCTION 100
+CMD dump program
+FILE 0 script/preproc.script
+FILE 1 script/doom_defs.script
+FILE 2 script/ok_include.script
+FILE 3 script/extra.script
+FILE 4 more
+FILE 5 oneShot
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="included_function" etype=8 size=4 aux=void def=106 parms=[] funcs=[]
+TYPE 96 name="main" etype=8 size=4 aux=void def=112 parms=[] funcs=[]
+TYPE 97 name="extraMain" etype=8 size=4 aux=void def=131 parms=[] funcs=[]
+TYPE 98 name="extraLoop" etype=8 size=4 aux=void def=135 parms=[] funcs=[]
+TYPE 99 name="moreMain" etype=8 size=4 aux=void def=142 parms=[] funcs=[]
+TYPE 100 name="oneShot" etype=8 size=4 aux=void def=146 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="debugOn" type=float/4 scope=@namespace init=1 users=1 value=global:520=#3F800000
+DEF 102 name="debugOff" type=float/4 scope=@namespace init=1 users=1 value=global:524=#00000000
+DEF 103 name="two" type=float/4 scope=@namespace init=1 users=1 value=global:528=#40000000
+DEF 104 name="three" type=float/4 scope=@namespace init=1 users=1 value=global:532=#40400000
+DEF 105 name="included_value" type=float/4 scope=@namespace init=1 users=1 value=global:536=#40A00000
+DEF 106 name="included_function" type=included_function/8 scope=@namespace init=2 users=1 value=func:95
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:544="included_function "
+DEF 108 name="<RESULT>" type=string/3 scope=106 init=3 users=2 value=stack:0
+DEF 109 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=8 value=args:128
+DEF 110 name="answer" type=float/4 scope=@namespace init=1 users=1 value=global:676=#42280000
+DEF 111 name="nobody" type=entity/6 scope=@namespace init=1 users=1 value=global:680=0
+DEF 112 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:96
+DEF 113 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:688="hello"
+DEF 114 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=8 value=global:816=" "
+DEF 115 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:0
+DEF 116 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:952=#42280000
+DEF 117 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:128
+DEF 118 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:964=#40400000
+DEF 119 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:968=0
+DEF 120 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:256
+DEF 121 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:972="nobody is NULL "
+DEF 122 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1100=#3F800000
+DEF 123 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1104=#00000000
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:5
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1112="values "
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1240=#40000000
+DEF 127 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:260
+DEF 128 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:264
+DEF 129 name="extraValue" type=float/4 scope=@namespace init=1 users=1 value=global:1244=#40400000
+DEF 130 name="extraText" type=string/3 scope=@namespace init=1 users=1 value=global:1248="extra"
+DEF 131 name="extraMain" type=extraMain/8 scope=@namespace init=2 users=1 value=func:97
+DEF 132 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:0
+DEF 133 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:128
+DEF 134 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:256
+DEF 135 name="extraLoop" type=extraLoop/8 scope=@namespace init=2 users=1 value=func:98
+DEF 136 name="n" type=float/4 scope=135 init=3 users=1 value=stack:0
+DEF 137 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1384="extraLoop "
+DEF 138 name="<RESULT>" type=string/3 scope=135 init=3 users=2 value=stack:4
+DEF 139 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:0
+DEF 140 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-5
+DEF 141 name="moreValue" type=float/4 scope=@namespace init=1 users=1 value=global:1520=#41100000
+DEF 142 name="moreMain" type=moreMain/8 scope=@namespace init=2 users=1 value=func:99
+DEF 143 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1528="more "
+DEF 144 name="<RESULT>" type=string/3 scope=142 init=3 users=2 value=stack:0
+DEF 145 name="<RESULT>" type=string/3 scope=142 init=3 users=2 value=stack:128
+DEF 146 name="oneShot" type=oneShot/8 scope=@namespace init=2 users=1 value=func:100
+DEF 147 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1660="one shot"
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="included_function" event=- def=106 first=1 num=4 parmTotal=0 locals=128 filenum=2 parmSize=[]
+FUNC 96 name="main" event=- def=112 first=5 num=29 parmTotal=0 locals=268 filenum=0 parmSize=[]
+FUNC 97 name="extraMain" event=- def=131 first=34 num=13 parmTotal=0 locals=260 filenum=3 parmSize=[]
+FUNC 98 name="extraLoop" event=- def=135 first=47 num=7 parmTotal=0 locals=132 filenum=3 parmSize=[]
+FUNC 99 name="moreMain" event=- def=142 first=54 num=7 parmTotal=0 locals=256 filenum=4 parmSize=[]
+FUNC 100 name="oneShot" event=- def=146 first=61 num=3 parmTotal=0 locals=0 filenum=5 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_SF a=107 b=105 c=108 line=5 file=2
+STMT 2 PUSH_S a=108 b=- c=- line=5 file=2
+STMT 3 SYSCALL a=15 b=109 c=- line=5 file=2
+STMT 4 RETURN a=- b=- c=- line=6 file=2
+STMT 5 ADD_S a=113 b=114 c=115 line=45 file=0
+STMT 6 ADD_SF a=115 b=116 c=117 line=45 file=0
+STMT 7 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 8 ADD_SF a=115 b=118 c=117 line=45 file=0
+STMT 9 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 10 ADD_SF a=115 b=110 c=117 line=45 file=0
+STMT 11 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 12 ADD_SF a=115 b=105 c=117 line=45 file=0
+STMT 13 PUSH_S a=117 b=- c=- line=45 file=0
+STMT 14 SYSCALL a=15 b=109 c=- line=45 file=0
+STMT 15 CALL a=106 b=- c=- line=46 file=0
+STMT 16 EQ_E a=111 b=119 c=120 line=47 file=0
+STMT 17 IFNOT a=120 b=124 c=- line=47 file=0
+STMT 18 ADD_SF a=121 b=122 c=117 line=48 file=0
+STMT 19 ADD_SF a=117 b=123 c=115 line=48 file=0
+STMT 20 PUSH_S a=115 b=- c=- line=48 file=0
+STMT 21 SYSCALL a=15 b=109 c=- line=48 file=0
+STMT 22 ADD_SF a=125 b=101 c=117 line=50 file=0
+STMT 23 ADD_SF a=117 b=102 c=115 line=50 file=0
+STMT 24 ADD_SF a=115 b=103 c=117 line=50 file=0
+STMT 25 ADD_SF a=117 b=104 c=115 line=50 file=0
+STMT 26 MUL_F a=103 b=126 c=120 line=50 file=0
+STMT 27 ADD_F a=103 b=104 c=127 line=50 file=0
+STMT 28 ADD_F a=120 b=127 c=128 line=50 file=0
+STMT 29 MUL_F a=128 b=126 c=127 line=50 file=0
+STMT 30 ADD_SF a=115 b=127 c=117 line=50 file=0
+STMT 31 PUSH_S a=117 b=- c=- line=50 file=0
+STMT 32 SYSCALL a=15 b=109 c=- line=50 file=0
+STMT 33 RETURN a=- b=- c=- line=51 file=0
+STMT 34 ADD_S a=130 b=114 c=132 line=7 file=3
+STMT 35 ADD_SF a=132 b=129 c=133 line=7 file=3
+STMT 36 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 37 ADD_SF a=132 b=110 c=133 line=7 file=3
+STMT 38 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 39 ADD_SF a=132 b=103 c=133 line=7 file=3
+STMT 40 PUSH_S a=133 b=- c=- line=7 file=3
+STMT 41 SYSCALL a=15 b=109 c=- line=7 file=3
+STMT 42 ADD_F a=103 b=122 c=134 line=8 file=3
+STMT 43 STORE_F a=134 b=103 c=- line=8 file=3
+STMT 44 MUL_F a=129 b=126 c=134 line=9 file=3
+STMT 45 STORE_F a=134 b=129 c=- line=9 file=3
+STMT 46 RETURN a=- b=- c=- line=10 file=3
+STMT 47 UINC_F a=136 b=- c=- line=16 file=3
+STMT 48 ADD_SF a=137 b=136 c=138 line=17 file=3
+STMT 49 PUSH_S a=138 b=- c=- line=17 file=3
+STMT 50 SYSCALL a=15 b=109 c=- line=17 file=3
+STMT 51 SYSCALL a=9 b=139 c=- line=18 file=3
+STMT 52 GOTO a=140 b=- c=- line=19 file=3
+STMT 53 RETURN a=- b=- c=- line=20 file=3
+STMT 54 CALL a=131 b=- c=- line=3 file=4
+STMT 55 ADD_SF a=143 b=141 c=144 line=4 file=4
+STMT 56 ADD_S a=144 b=114 c=145 line=4 file=4
+STMT 57 ADD_SF a=145 b=129 c=144 line=4 file=4
+STMT 58 PUSH_S a=144 b=- c=- line=4 file=4
+STMT 59 SYSCALL a=15 b=109 c=- line=4 file=4
+STMT 60 RETURN a=- b=- c=- line=5 file=4
+STMT 61 PUSH_S a=147 b=- c=- line=2 file=5
+STMT 62 SYSCALL a=15 b=109 c=- line=2 file=5
+STMT 63 RETURN a=- b=- c=- line=3 file=5
+TOP functions=97 statements=34 types=97 defs=129 files=3
+GLOBALS 1788
+G 000200 00000000000000000000803F0000000000000040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 0000000000000000000000000000000000000000000000000000004000004040
+G 0004E0 6578747261000000000000000000000000000000000000000000000000000000
+G 000560 000000000000000065787472614C6F6F70200000000000000000000000000000
+G 0005E0 0000000000000000000000000000000000001041000000006D6F726520000000
+G 000660 000000000000000000000000000000000000000000000000000000006F6E6520
+G 000680 73686F7400000000000000000000000000000000000000000000000000000000
+CHECKSUM A8A2BC01
+CMD callnow moreMain
+PRINT extra 3 42 2
+PRINT more 9 6
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD callnow oneShot
+PRINT one shot
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD thread extraLoop
+THREADNUM 4
+CMD frame 2
+PRINT extraLoop 1
+FRAME time=16 framenum=1 events=1
+THREAD 4 name="extraLoop" dying=0 done=1 waitingFor=4095 waitingUntil=32 waitingForThread=0 lastExec=16 created=0 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=51 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+PRINT extraLoop 2
+FRAME time=32 framenum=2 events=1
+THREAD 4 name="extraLoop" dying=0 done=1 waitingFor=4095 waitingUntil=48 waitingForThread=0 lastExec=32 created=0 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=51 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 4
+THREAD 4 name="extraLoop" dying=0 done=1 waitingFor=4095 waitingUntil=48 waitingForThread=0 lastExec=32 created=0 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=51 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=48 name=<execute> class=idThread object=thread:4 args=
+CMD dump globals
+GLOBALS 1788
+G 000200 00000000000000000000803F0000000000004040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 000000000000000000000000000000000000000000000000000000400000C040
+G 0004E0 6578747261000000000000000000000000000000000000000000000000000000
+G 000560 000000000000000065787472614C6F6F70200000000000000000000000000000
+G 0005E0 0000000000000000000000000000000000001041000000006D6F726520000000
+G 000660 000000000000000000000000000000000000000000000000000000006F6E6520
+G 000680 73686F7400000000000000000000000000000000000000000000000000000000
+CMD restart
+CMD dump program
+FILE 0 script/preproc.script
+FILE 1 script/doom_defs.script
+FILE 2 script/ok_include.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="included_function" etype=8 size=4 aux=void def=106 parms=[] funcs=[]
+TYPE 96 name="main" etype=8 size=4 aux=void def=112 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="debugOn" type=float/4 scope=@namespace init=1 users=1 value=global:520=#3F800000
+DEF 102 name="debugOff" type=float/4 scope=@namespace init=1 users=1 value=global:524=#00000000
+DEF 103 name="two" type=float/4 scope=@namespace init=1 users=1 value=global:528=#40000000
+DEF 104 name="three" type=float/4 scope=@namespace init=1 users=1 value=global:532=#40400000
+DEF 105 name="included_value" type=float/4 scope=@namespace init=1 users=1 value=global:536=#40A00000
+DEF 106 name="included_function" type=included_function/8 scope=@namespace init=2 users=1 value=func:95
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:544="included_function "
+DEF 108 name="<RESULT>" type=string/3 scope=106 init=3 users=2 value=stack:0
+DEF 109 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=8 value=args:128
+DEF 110 name="answer" type=float/4 scope=@namespace init=1 users=1 value=global:676=#42280000
+DEF 111 name="nobody" type=entity/6 scope=@namespace init=1 users=1 value=global:680=0
+DEF 112 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:96
+DEF 113 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:688="hello"
+DEF 114 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=8 value=global:816=" "
+DEF 115 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:0
+DEF 116 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:952=#42280000
+DEF 117 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:128
+DEF 118 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:964=#40400000
+DEF 119 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:968=0
+DEF 120 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:256
+DEF 121 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:972="nobody is NULL "
+DEF 122 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1100=#3F800000
+DEF 123 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1104=#00000000
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:5
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1112="values "
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1240=#40000000
+DEF 127 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:260
+DEF 128 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:264
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="included_function" event=- def=106 first=1 num=4 parmTotal=0 locals=128 filenum=2 parmSize=[]
+FUNC 96 name="main" event=- def=112 first=5 num=29 parmTotal=0 locals=268 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_SF a=107 b=105 c=108 line=5 file=2
+STMT 2 PUSH_S a=108 b=- c=- line=5 file=2
+STMT 3 SYSCALL a=15 b=109 c=- line=5 file=2
+STMT 4 RETURN a=- b=- c=- line=6 file=2
+STMT 5 ADD_S a=113 b=114 c=115 line=45 file=0
+STMT 6 ADD_SF a=115 b=116 c=117 line=45 file=0
+STMT 7 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 8 ADD_SF a=115 b=118 c=117 line=45 file=0
+STMT 9 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 10 ADD_SF a=115 b=110 c=117 line=45 file=0
+STMT 11 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 12 ADD_SF a=115 b=105 c=117 line=45 file=0
+STMT 13 PUSH_S a=117 b=- c=- line=45 file=0
+STMT 14 SYSCALL a=15 b=109 c=- line=45 file=0
+STMT 15 CALL a=106 b=- c=- line=46 file=0
+STMT 16 EQ_E a=111 b=119 c=120 line=47 file=0
+STMT 17 IFNOT a=120 b=124 c=- line=47 file=0
+STMT 18 ADD_SF a=121 b=122 c=117 line=48 file=0
+STMT 19 ADD_SF a=117 b=123 c=115 line=48 file=0
+STMT 20 PUSH_S a=115 b=- c=- line=48 file=0
+STMT 21 SYSCALL a=15 b=109 c=- line=48 file=0
+STMT 22 ADD_SF a=125 b=101 c=117 line=50 file=0
+STMT 23 ADD_SF a=117 b=102 c=115 line=50 file=0
+STMT 24 ADD_SF a=115 b=103 c=117 line=50 file=0
+STMT 25 ADD_SF a=117 b=104 c=115 line=50 file=0
+STMT 26 MUL_F a=103 b=126 c=120 line=50 file=0
+STMT 27 ADD_F a=103 b=104 c=127 line=50 file=0
+STMT 28 ADD_F a=120 b=127 c=128 line=50 file=0
+STMT 29 MUL_F a=128 b=126 c=127 line=50 file=0
+STMT 30 ADD_SF a=115 b=127 c=117 line=50 file=0
+STMT 31 PUSH_S a=117 b=- c=- line=50 file=0
+STMT 32 SYSCALL a=15 b=109 c=- line=50 file=0
+STMT 33 RETURN a=- b=- c=- line=51 file=0
+TOP functions=97 statements=34 types=97 defs=129 files=3
+GLOBALS 1244
+G 000200 00000000000000000000803F0000000000000040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 00000000000000000000000000000000000000000000000000000040
+CHECKSUM 83B9139E
+CMD dump threads
+CURRENT 0
+THREADINDEX 0
+CMD dump events
+CMD findfunction extraMain
+FUNCTION -1
+CMD findfunction moreMain
+FUNCTION -1
+CMD findfunction main
+FUNCTION 96
+CMD callnow main
+PRINT hello 42 3 42 5
+PRINT included_function 5
+PRINT nobody is NULL 10
+PRINT values 102318
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 1244
+G 000200 00000000000000000000803F0000000000000040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 00000000000000000000000000000000000000000000000000000040
+CMD compilefile script/extra.script
+PRINT Compiled '/base/script/extra.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+DPRINT    script/extra.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 4, ? bytes
+PRINT   Statements: 54, ? bytes
+PRINT    Functions: 99, ? bytes
+PRINT    Variables: 1520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD callnow extraMain
+PRINT extra 3 42 2
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD thread extraLoop
+THREADNUM 3
+CMD frame 1
+PRINT extraLoop 1
+FRAME time=48 framenum=3 events=1
+THREAD 3 name="extraLoop" dying=0 done=1 waitingFor=4095 waitingUntil=64 waitingForThread=0 lastExec=48 created=32 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=51 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump program
+FILE 0 script/preproc.script
+FILE 1 script/doom_defs.script
+FILE 2 script/ok_include.script
+FILE 3 script/extra.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="included_function" etype=8 size=4 aux=void def=106 parms=[] funcs=[]
+TYPE 96 name="main" etype=8 size=4 aux=void def=112 parms=[] funcs=[]
+TYPE 97 name="extraMain" etype=8 size=4 aux=void def=131 parms=[] funcs=[]
+TYPE 98 name="extraLoop" etype=8 size=4 aux=void def=135 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="debugOn" type=float/4 scope=@namespace init=1 users=1 value=global:520=#3F800000
+DEF 102 name="debugOff" type=float/4 scope=@namespace init=1 users=1 value=global:524=#00000000
+DEF 103 name="two" type=float/4 scope=@namespace init=1 users=1 value=global:528=#40400000
+DEF 104 name="three" type=float/4 scope=@namespace init=1 users=1 value=global:532=#40400000
+DEF 105 name="included_value" type=float/4 scope=@namespace init=1 users=1 value=global:536=#40A00000
+DEF 106 name="included_function" type=included_function/8 scope=@namespace init=2 users=1 value=func:95
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:544="included_function "
+DEF 108 name="<RESULT>" type=string/3 scope=106 init=3 users=2 value=stack:0
+DEF 109 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=10 value=args:128
+DEF 110 name="answer" type=float/4 scope=@namespace init=1 users=1 value=global:676=#42280000
+DEF 111 name="nobody" type=entity/6 scope=@namespace init=1 users=1 value=global:680=0
+DEF 112 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:96
+DEF 113 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:688="hello"
+DEF 114 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=11 value=global:816=" "
+DEF 115 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:0
+DEF 116 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:952=#42280000
+DEF 117 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:128
+DEF 118 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:964=#40400000
+DEF 119 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:968=0
+DEF 120 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:256
+DEF 121 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:972="nobody is NULL "
+DEF 122 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=5 value=global:1100=#3F800000
+DEF 123 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1104=#00000000
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:5
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1112="values "
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=4 value=global:1240=#40000000
+DEF 127 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:260
+DEF 128 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:264
+DEF 129 name="extraValue" type=float/4 scope=@namespace init=1 users=1 value=global:1244=#40C00000
+DEF 130 name="extraText" type=string/3 scope=@namespace init=1 users=1 value=global:1248="extra"
+DEF 131 name="extraMain" type=extraMain/8 scope=@namespace init=2 users=1 value=func:97
+DEF 132 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:0
+DEF 133 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:128
+DEF 134 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:256
+DEF 135 name="extraLoop" type=extraLoop/8 scope=@namespace init=2 users=1 value=func:98
+DEF 136 name="n" type=float/4 scope=135 init=3 users=1 value=stack:0
+DEF 137 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1384="extraLoop "
+DEF 138 name="<RESULT>" type=string/3 scope=135 init=3 users=2 value=stack:4
+DEF 139 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:0
+DEF 140 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-5
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="included_function" event=- def=106 first=1 num=4 parmTotal=0 locals=128 filenum=2 parmSize=[]
+FUNC 96 name="main" event=- def=112 first=5 num=29 parmTotal=0 locals=268 filenum=0 parmSize=[]
+FUNC 97 name="extraMain" event=- def=131 first=34 num=13 parmTotal=0 locals=260 filenum=3 parmSize=[]
+FUNC 98 name="extraLoop" event=- def=135 first=47 num=7 parmTotal=0 locals=132 filenum=3 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_SF a=107 b=105 c=108 line=5 file=2
+STMT 2 PUSH_S a=108 b=- c=- line=5 file=2
+STMT 3 SYSCALL a=15 b=109 c=- line=5 file=2
+STMT 4 RETURN a=- b=- c=- line=6 file=2
+STMT 5 ADD_S a=113 b=114 c=115 line=45 file=0
+STMT 6 ADD_SF a=115 b=116 c=117 line=45 file=0
+STMT 7 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 8 ADD_SF a=115 b=118 c=117 line=45 file=0
+STMT 9 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 10 ADD_SF a=115 b=110 c=117 line=45 file=0
+STMT 11 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 12 ADD_SF a=115 b=105 c=117 line=45 file=0
+STMT 13 PUSH_S a=117 b=- c=- line=45 file=0
+STMT 14 SYSCALL a=15 b=109 c=- line=45 file=0
+STMT 15 CALL a=106 b=- c=- line=46 file=0
+STMT 16 EQ_E a=111 b=119 c=120 line=47 file=0
+STMT 17 IFNOT a=120 b=124 c=- line=47 file=0
+STMT 18 ADD_SF a=121 b=122 c=117 line=48 file=0
+STMT 19 ADD_SF a=117 b=123 c=115 line=48 file=0
+STMT 20 PUSH_S a=115 b=- c=- line=48 file=0
+STMT 21 SYSCALL a=15 b=109 c=- line=48 file=0
+STMT 22 ADD_SF a=125 b=101 c=117 line=50 file=0
+STMT 23 ADD_SF a=117 b=102 c=115 line=50 file=0
+STMT 24 ADD_SF a=115 b=103 c=117 line=50 file=0
+STMT 25 ADD_SF a=117 b=104 c=115 line=50 file=0
+STMT 26 MUL_F a=103 b=126 c=120 line=50 file=0
+STMT 27 ADD_F a=103 b=104 c=127 line=50 file=0
+STMT 28 ADD_F a=120 b=127 c=128 line=50 file=0
+STMT 29 MUL_F a=128 b=126 c=127 line=50 file=0
+STMT 30 ADD_SF a=115 b=127 c=117 line=50 file=0
+STMT 31 PUSH_S a=117 b=- c=- line=50 file=0
+STMT 32 SYSCALL a=15 b=109 c=- line=50 file=0
+STMT 33 RETURN a=- b=- c=- line=51 file=0
+STMT 34 ADD_S a=130 b=114 c=132 line=7 file=3
+STMT 35 ADD_SF a=132 b=129 c=133 line=7 file=3
+STMT 36 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 37 ADD_SF a=132 b=110 c=133 line=7 file=3
+STMT 38 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 39 ADD_SF a=132 b=103 c=133 line=7 file=3
+STMT 40 PUSH_S a=133 b=- c=- line=7 file=3
+STMT 41 SYSCALL a=15 b=109 c=- line=7 file=3
+STMT 42 ADD_F a=103 b=122 c=134 line=8 file=3
+STMT 43 STORE_F a=134 b=103 c=- line=8 file=3
+STMT 44 MUL_F a=129 b=126 c=134 line=9 file=3
+STMT 45 STORE_F a=134 b=129 c=- line=9 file=3
+STMT 46 RETURN a=- b=- c=- line=10 file=3
+STMT 47 UINC_F a=136 b=- c=- line=16 file=3
+STMT 48 ADD_SF a=137 b=136 c=138 line=17 file=3
+STMT 49 PUSH_S a=138 b=- c=- line=17 file=3
+STMT 50 SYSCALL a=15 b=109 c=- line=17 file=3
+STMT 51 SYSCALL a=9 b=139 c=- line=18 file=3
+STMT 52 GOTO a=140 b=- c=- line=19 file=3
+STMT 53 RETURN a=- b=- c=- line=20 file=3
+TOP functions=97 statements=34 types=97 defs=129 files=3
+GLOBALS 1520
+G 000200 00000000000000000000803F0000000000004040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 000000000000000000000000000000000000000000000000000000400000C040
+G 0004E0 6578747261000000000000000000000000000000000000000000000000000000
+G 000560 000000000000000065787472614C6F6F70200000000000000000000000000000
+CHECKSUM 0556AFF2
+CMD startup script/extra.script
+PRINT Initializing scripts
+ERROR Error: file script/extra.script, line 7: Unknown value \"answer\"\n\n
+CMD startup script/preproc.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/preproc.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 3, ? bytes
+PRINT   Statements: 34, ? bytes
+PRINT    Functions: 97, ? bytes
+PRINT    Variables: 1244 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump threads
+CURRENT 0
+THREADINDEX 0
+CMD callnow main
+PRINT hello 42 3 42 5
+PRINT included_function 5
+PRINT nobody is NULL 10
+PRINT values 102318
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD finish
+CMD restart
+CMD callnow main
+PRINT hello 42 3 42 5
+PRINT included_function 5
+PRINT nobody is NULL 10
+PRINT values 102318
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD begin
+CMD dump program
+DEF 0 name="<RETURN>" type=vector/5 scope=@namespace init=0 users=1 value=global:0=#00000000,#00000000,#00000000
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+TOP functions=0 statements=0 types=0 defs=0 files=0
+GLOBALS 140
+CHECKSUM 07BAB17F
+CMD compilefile script/preproc.script
+PRINT Compiled '/base/script/preproc.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 3, ? bytes
+PRINT   Statements: 34, ? bytes
+PRINT    Functions: 97, ? bytes
+PRINT    Variables: 1244 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD compilefile script/extra.script
+PRINT Compiled '/base/script/extra.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/preproc.script
+DPRINT    script/doom_defs.script
+DPRINT    script/ok_include.script
+DPRINT    script/extra.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 4, ? bytes
+PRINT   Statements: 54, ? bytes
+PRINT    Functions: 99, ? bytes
+PRINT    Variables: 1520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD finish
+CMD dump program
+FILE 0 script/preproc.script
+FILE 1 script/doom_defs.script
+FILE 2 script/ok_include.script
+FILE 3 script/extra.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="included_function" etype=8 size=4 aux=void def=106 parms=[] funcs=[]
+TYPE 96 name="main" etype=8 size=4 aux=void def=112 parms=[] funcs=[]
+TYPE 97 name="extraMain" etype=8 size=4 aux=void def=131 parms=[] funcs=[]
+TYPE 98 name="extraLoop" etype=8 size=4 aux=void def=135 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="debugOn" type=float/4 scope=@namespace init=1 users=1 value=global:520=#3F800000
+DEF 102 name="debugOff" type=float/4 scope=@namespace init=1 users=1 value=global:524=#00000000
+DEF 103 name="two" type=float/4 scope=@namespace init=1 users=1 value=global:528=#40000000
+DEF 104 name="three" type=float/4 scope=@namespace init=1 users=1 value=global:532=#40400000
+DEF 105 name="included_value" type=float/4 scope=@namespace init=1 users=1 value=global:536=#40A00000
+DEF 106 name="included_function" type=included_function/8 scope=@namespace init=2 users=1 value=func:95
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:544="included_function "
+DEF 108 name="<RESULT>" type=string/3 scope=106 init=3 users=2 value=stack:0
+DEF 109 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=6 value=args:128
+DEF 110 name="answer" type=float/4 scope=@namespace init=1 users=1 value=global:676=#42280000
+DEF 111 name="nobody" type=entity/6 scope=@namespace init=1 users=1 value=global:680=0
+DEF 112 name="main" type=main/8 scope=@namespace init=2 users=1 value=func:96
+DEF 113 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:688="hello"
+DEF 114 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=7 value=global:816=" "
+DEF 115 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:0
+DEF 116 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:952=#42280000
+DEF 117 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:128
+DEF 118 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:964=#40400000
+DEF 119 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:968=0
+DEF 120 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:256
+DEF 121 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:972="nobody is NULL "
+DEF 122 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1100=#3F800000
+DEF 123 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1104=#00000000
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:5
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1112="values "
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:1240=#40000000
+DEF 127 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:260
+DEF 128 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:264
+DEF 129 name="extraValue" type=float/4 scope=@namespace init=1 users=1 value=global:1244=#40400000
+DEF 130 name="extraText" type=string/3 scope=@namespace init=1 users=1 value=global:1248="extra"
+DEF 131 name="extraMain" type=extraMain/8 scope=@namespace init=2 users=1 value=func:97
+DEF 132 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:0
+DEF 133 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:128
+DEF 134 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:256
+DEF 135 name="extraLoop" type=extraLoop/8 scope=@namespace init=2 users=1 value=func:98
+DEF 136 name="n" type=float/4 scope=135 init=3 users=1 value=stack:0
+DEF 137 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1384="extraLoop "
+DEF 138 name="<RESULT>" type=string/3 scope=135 init=3 users=2 value=stack:4
+DEF 139 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:0
+DEF 140 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-5
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="included_function" event=- def=106 first=1 num=4 parmTotal=0 locals=128 filenum=2 parmSize=[]
+FUNC 96 name="main" event=- def=112 first=5 num=29 parmTotal=0 locals=268 filenum=0 parmSize=[]
+FUNC 97 name="extraMain" event=- def=131 first=34 num=13 parmTotal=0 locals=260 filenum=3 parmSize=[]
+FUNC 98 name="extraLoop" event=- def=135 first=47 num=7 parmTotal=0 locals=132 filenum=3 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_SF a=107 b=105 c=108 line=5 file=2
+STMT 2 PUSH_S a=108 b=- c=- line=5 file=2
+STMT 3 SYSCALL a=15 b=109 c=- line=5 file=2
+STMT 4 RETURN a=- b=- c=- line=6 file=2
+STMT 5 ADD_S a=113 b=114 c=115 line=45 file=0
+STMT 6 ADD_SF a=115 b=116 c=117 line=45 file=0
+STMT 7 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 8 ADD_SF a=115 b=118 c=117 line=45 file=0
+STMT 9 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 10 ADD_SF a=115 b=110 c=117 line=45 file=0
+STMT 11 ADD_S a=117 b=114 c=115 line=45 file=0
+STMT 12 ADD_SF a=115 b=105 c=117 line=45 file=0
+STMT 13 PUSH_S a=117 b=- c=- line=45 file=0
+STMT 14 SYSCALL a=15 b=109 c=- line=45 file=0
+STMT 15 CALL a=106 b=- c=- line=46 file=0
+STMT 16 EQ_E a=111 b=119 c=120 line=47 file=0
+STMT 17 IFNOT a=120 b=124 c=- line=47 file=0
+STMT 18 ADD_SF a=121 b=122 c=117 line=48 file=0
+STMT 19 ADD_SF a=117 b=123 c=115 line=48 file=0
+STMT 20 PUSH_S a=115 b=- c=- line=48 file=0
+STMT 21 SYSCALL a=15 b=109 c=- line=48 file=0
+STMT 22 ADD_SF a=125 b=101 c=117 line=50 file=0
+STMT 23 ADD_SF a=117 b=102 c=115 line=50 file=0
+STMT 24 ADD_SF a=115 b=103 c=117 line=50 file=0
+STMT 25 ADD_SF a=117 b=104 c=115 line=50 file=0
+STMT 26 MUL_F a=103 b=126 c=120 line=50 file=0
+STMT 27 ADD_F a=103 b=104 c=127 line=50 file=0
+STMT 28 ADD_F a=120 b=127 c=128 line=50 file=0
+STMT 29 MUL_F a=128 b=126 c=127 line=50 file=0
+STMT 30 ADD_SF a=115 b=127 c=117 line=50 file=0
+STMT 31 PUSH_S a=117 b=- c=- line=50 file=0
+STMT 32 SYSCALL a=15 b=109 c=- line=50 file=0
+STMT 33 RETURN a=- b=- c=- line=51 file=0
+STMT 34 ADD_S a=130 b=114 c=132 line=7 file=3
+STMT 35 ADD_SF a=132 b=129 c=133 line=7 file=3
+STMT 36 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 37 ADD_SF a=132 b=110 c=133 line=7 file=3
+STMT 38 ADD_S a=133 b=114 c=132 line=7 file=3
+STMT 39 ADD_SF a=132 b=103 c=133 line=7 file=3
+STMT 40 PUSH_S a=133 b=- c=- line=7 file=3
+STMT 41 SYSCALL a=15 b=109 c=- line=7 file=3
+STMT 42 ADD_F a=103 b=122 c=134 line=8 file=3
+STMT 43 STORE_F a=134 b=103 c=- line=8 file=3
+STMT 44 MUL_F a=129 b=126 c=134 line=9 file=3
+STMT 45 STORE_F a=134 b=129 c=- line=9 file=3
+STMT 46 RETURN a=- b=- c=- line=10 file=3
+STMT 47 UINC_F a=136 b=- c=- line=16 file=3
+STMT 48 ADD_SF a=137 b=136 c=138 line=17 file=3
+STMT 49 PUSH_S a=138 b=- c=- line=17 file=3
+STMT 50 SYSCALL a=15 b=109 c=- line=17 file=3
+STMT 51 SYSCALL a=9 b=139 c=- line=18 file=3
+STMT 52 GOTO a=140 b=- c=- line=19 file=3
+STMT 53 RETURN a=- b=- c=- line=20 file=3
+TOP functions=99 statements=54 types=99 defs=141 files=4
+GLOBALS 1520
+G 000200 00000000000000000000803F0000000000000040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 0000000000000000000000000000000000000000000000000000004000004040
+G 0004E0 6578747261000000000000000000000000000000000000000000000000000000
+G 000560 000000000000000065787472614C6F6F70200000000000000000000000000000
+CHECKSUM 0556AFF2
+CMD restart
+CMD callnow extraMain
+PRINT extra 3 42 2
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 1520
+G 000200 00000000000000000000803F0000000000004040000040400000A04000000000
+G 000220 696E636C756465645F66756E6374696F6E200000000000000000000000000000
+G 0002A0 0000000000002842000000000000000068656C6C6F0000000000000000000000
+G 000320 0000000000000000000000000000000020000000000000000000000000000000
+G 0003A0 000000000000000000000000000000000000A84100000040000028420000803F
+G 0003C0 0000004000004040000000006E6F626F6479206973204E554C4C200000000000
+G 000440 0000000000000000000000000000803F000000000000000076616C7565732000
+G 0004C0 000000000000000000000000000000000000000000000000000000400000C040
+G 0004E0 6578747261000000000000000000000000000000000000000000000000000000
+G 000560 000000000000000065787472614C6F6F70200000000000000000000000000000

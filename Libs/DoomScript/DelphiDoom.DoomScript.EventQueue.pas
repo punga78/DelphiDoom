@@ -35,8 +35,9 @@ type
     /// <summary>The class of the target when the event was posted</summary>
     TargetClass: TDoomScriptClassInfo;
     Args: TDoomScriptEventArgs;
-    // the targets of the entity arguments, to know at delivery if the entity is still the same
-    EntityTargets: array[0..DS_EVENT_MAXARGS - 1] of TDoomScriptEventTarget;
+    // the entity arguments as the idEntityPtr of the original (spawn id and handle): what is saved, and what
+    // tells at delivery if the entity is still the same
+    EntityPtrs: array[0..DS_EVENT_MAXARGS - 1] of Integer;
   end;
 
 
@@ -53,6 +54,9 @@ type
     FClasses: TDoomScriptClassRegistry;
     FEntities: TDoomScriptEntityTable;
     FQueue: TObjectList<TDoomScriptQueuedEvent>;
+    // the events of the pool of the original that are neither queued nor free: the one being delivered and,
+    // for ever, the ones whose delivery ended with an error
+    FOutOfPool: Integer;
     function Alloc(const AEvent: TDoomScriptEventDef; const AArgs: array of TDoomScriptEventArg): TDoomScriptQueuedEvent;
   public
     constructor Create(const AHost: IDoomScriptHost; const AEvents: TDoomScriptEventRegistry;
@@ -134,7 +138,7 @@ var
   LFormat: AnsiString;
   LKind: AnsiChar;
 begin
-  if FQueue.Count >= DS_MAX_EVENTS then
+  if FQueue.Count + FOutOfPool >= DS_MAX_EVENTS then
     raise EDoomScriptError.Create(SNoFreeEvents);
   if Length(AArgs) <> AEvent.GetNumArgs then
     raise EDoomScriptError.CreateFmt(SWrongArgCount, [string(AEvent.Name)]);
@@ -156,7 +160,7 @@ begin
       begin
         if AArgs[LIndex].Kind = DS_EVENT_INTEGER then
           Result.Args[LIndex].IntValue := -1;
-        Result.EntityTargets[LIndex] := FEntities.TargetOf(Result.Args[LIndex].IntValue);
+        Result.EntityPtrs[LIndex] := FEntities.EntityPtr(Result.Args[LIndex].IntValue);
       end;
       if LKind = DS_EVENT_STRING then
         // idStr::Copynz into MAX_STRING_LEN bytes
@@ -213,6 +217,8 @@ end;
 procedure TDoomScriptEventQueue.Clear;
 begin
   FQueue.Clear;
+  // idEvent::ClearEventList gives every event of the pool back
+  FOutOfPool := 0;
 end;
 
 procedure TDoomScriptEventQueue.ServiceEvents;
@@ -228,14 +234,17 @@ begin
       Break;
     // the event leaves the queue first, so that if the object is deleted the event isn't freed twice
     LEvent := FQueue.Extract(FQueue[0]);
+    // The original takes the event out of the queue and gives it back to the pool after the delivery: while
+    // the handler runs the pool has one event less, and an error in the handler loses the event for good
+    // (until Clear). The limit of DS_MAX_EVENTS counts them, to give the same "No more free events".
+    Inc(FOutOfPool);
     try
       // an entity that was removed after the event was posted is delivered as no entity
       for LIndex := 0 to LEvent.EventDef.GetNumArgs - 1 do
-        if (LEvent.Args[LIndex].Kind in [DS_EVENT_ENTITY, DS_EVENT_ENTITY_NULL]) and
-          ((not Assigned(LEvent.EntityTargets[LIndex])) or
-          (FEntities.TargetOf(LEvent.Args[LIndex].IntValue) <> LEvent.EntityTargets[LIndex])) then
-          LEvent.Args[LIndex].IntValue := -1;
+        if LEvent.Args[LIndex].Kind in [DS_EVENT_ENTITY, DS_EVENT_ENTITY_NULL] then
+          LEvent.Args[LIndex].IntValue := FEntities.ResolveEntityPtr(LEvent.EntityPtrs[LIndex]);
       LEvent.Target.ProcessEvent(LEvent.EventDef, LEvent.Args);
+      Dec(FOutOfPool);
     finally
       LEvent.Free;
     end;
@@ -268,8 +277,8 @@ begin
         DS_EVENT_INTEGER:
           TDoomScriptSaveStream.WriteInt(AStream, LEvent.Args[LArg].IntValue);
         DS_EVENT_ENTITY, DS_EVENT_ENTITY_NULL:
-          // the entity handle plus one, zero for none
-          TDoomScriptSaveStream.WriteInt(AStream, LEvent.Args[LArg].IntValue + 1);
+          // the idEntityPtr: spawn id and handle, zero for none
+          TDoomScriptSaveStream.WriteInt(AStream, LEvent.EntityPtrs[LArg]);
         DS_EVENT_VECTOR:
           TDoomScriptSaveStream.WriteVec3(AStream, LEvent.Args[LArg].VectorValue);
         // a string is not written (a defect of the original); a trace cannot be posted here
@@ -291,7 +300,7 @@ begin
   LCount := TDoomScriptSaveStream.ReadInt(AStream);
   for LIndex := 0 to LCount - 1 do
   begin
-    if FQueue.Count >= DS_MAX_EVENTS then
+    if FQueue.Count + FOutOfPool >= DS_MAX_EVENTS then
       raise EDoomScriptError.Create(SRestoreNoFree);
     LEvent := TDoomScriptQueuedEvent.Create;
     try
@@ -326,8 +335,8 @@ begin
             LEvent.Args[LArg].IntValue := TDoomScriptSaveStream.ReadInt(AStream);
           DS_EVENT_ENTITY, DS_EVENT_ENTITY_NULL:
             begin
-              LEvent.Args[LArg].IntValue := TDoomScriptSaveStream.ReadInt(AStream) - 1;
-              LEvent.EntityTargets[LArg] := FEntities.TargetOf(LEvent.Args[LArg].IntValue);
+              LEvent.EntityPtrs[LArg] := TDoomScriptSaveStream.ReadInt(AStream);
+              LEvent.Args[LArg].IntValue := FEntities.ResolveEntityPtr(LEvent.EntityPtrs[LArg]);
             end;
           DS_EVENT_VECTOR:
             LEvent.Args[LArg].VectorValue := TDoomScriptSaveStream.ReadVec3(AStream);
