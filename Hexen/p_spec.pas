@@ -510,6 +510,7 @@ uses
   udmf_doors,
   p_mobj,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   udmf_floor,
   udmf_telept,
   p_acs,

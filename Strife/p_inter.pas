@@ -164,6 +164,7 @@ uses
   p_spec,
   p_enemy,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   ps_main, // JVAL: Script Events
   r_defs,
   r_main,

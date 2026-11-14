@@ -58,7 +58,7 @@ uses
 {$ENDIF}
   p_setup,
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
-  p_user,
+  DelphiDoom.Engine.World.PlayerExtras,
 {$ENDIF}
   p_adjust,
 {$IFDEF STRIFE}

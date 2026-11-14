@@ -577,6 +577,7 @@ uses
   p_setup,
 {$IFDEF HEXEN}
   p_user,
+  DelphiDoom.Engine.World.UserRules,
 {$ENDIF}
    // JVAL: 3d floors
   {$IFNDEF OPENGL}

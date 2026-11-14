@@ -298,6 +298,7 @@ uses
   p_pspr_h,
   p_tick,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_spec,
   p_acs,
   ps_main, // JVAL: Script Events

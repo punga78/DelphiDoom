@@ -129,6 +129,7 @@ uses
   p_pspr_h,
   p_inter,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_musinfo,
   p_sounds,
   p_simpledialog,

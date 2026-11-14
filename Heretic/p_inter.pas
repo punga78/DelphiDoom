@@ -194,6 +194,7 @@ uses
   p_pspr_h,
   p_tick,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_enemy,
   ps_main, // JVAL: Script Events
   r_defs,

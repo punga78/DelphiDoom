@@ -69,6 +69,12 @@ uses
   p_inter,
   p_mobj_h,
   p_user,
+{$IFDEF DOOM_OR_STRIFE}
+  DelphiDoom.Engine.World.PlayerExtras,
+{$ENDIF}
+{$IFDEF HERETIC_OR_HEXEN}
+  DelphiDoom.Engine.World.UserRules,
+{$ENDIF}
   psi_game;
 
 { TEngineScriptPlayers }

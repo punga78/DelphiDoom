@@ -1,37 +1,14 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiDoom is a source port of the game Doom and it is
-//  based on original Linux Doom as published by "id Software"
-//  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Player related stuff.
-//  Bobbing POV/weapon, movement.
-//  Pending weapon.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Doom for the player (p_user)              }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
-
-unit p_user;
+unit DelphiDoom.Engine.World.UserRules;
 
 interface
 
@@ -41,36 +18,23 @@ uses
   p_mobj_h,
   d_player;
 
-//==============================================================================
-//
-// P_PlayerThink
-//
-//==============================================================================
-procedure P_PlayerThink(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_CalcHeight
-//
-//==============================================================================
-procedure P_CalcHeight(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_Thrust
-//
-//==============================================================================
-procedure P_Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
-
-//==============================================================================
-//
-// P_PlayerFaceMobj
-//
-//==============================================================================
-procedure P_PlayerFaceMobj(const player: Pplayer_t; const face: Pmobj_t; const ticks: integer);
-
-var
-  allowplayerbreath: Boolean = false;
+type
+  /// <summary>
+  ///   What Doom does in the player code of p_user (issue #185, step 2f-1). The routines that
+  ///   are the same in the games are in Base\p_user.pas; the ones that only this game has stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TUserGameRules = class sealed
+  public
+    /// <summary>The player thinker (called every tic for every player)</summary>
+    class procedure PlayerThink(player: Pplayer_t); static;
+    /// <summary>The height of the view</summary>
+    class procedure CalcHeight(player: Pplayer_t); static;
+    /// <summary>Moves the player along an angle</summary>
+    class procedure Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t); static;
+  end;
 
 implementation
 
@@ -104,7 +68,9 @@ uses
   sounds,
   s_sound,
   doomdef,
-  doomstat;
+  doomstat,
+  p_user,
+  DelphiDoom.Engine.World.PlayerExtras;
 
 //
 // Movement.
@@ -122,7 +88,7 @@ var
 // Moves the given origin along a given angle.
 //
 //==============================================================================
-procedure P_Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
+class procedure TUserGameRules.Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
 begin
   {$IFDEF FPC}
   angle := _SHRW(angle, ANGLETOFINESHIFT);
@@ -140,7 +106,7 @@ end;
 // Calculate the walking / running height adjustment
 //
 //==============================================================================
-procedure P_CalcHeight(player: Pplayer_t);
+class procedure TUserGameRules.CalcHeight(player: Pplayer_t);
 var
   angle: integer;
   clheight: fixed_t; // JVAL: 20211101 - Crouch
@@ -419,52 +385,6 @@ begin
     player.viewz := player.mo.floorz + 4 * FRACUNIT;
 
   player.oldviewz := oldviewz;
-end;
-
-//==============================================================================
-//
-// P_GetMoveFactor
-//
-//==============================================================================
-function P_GetMoveFactor(const mo: Pmobj_t): fixed_t;
-var
-  momentum, friction: integer;
-begin
-  result := ORIG_FRICTION_FACTOR;
-
-  // If the floor is icy or muddy, it's harder to get moving. This is where
-  // the different friction factors are applied to 'trying to move'. In
-  // p_mobj.c, the friction factors are applied as you coast and slow down.
-
-  if (mo.flags and (MF_NOGRAVITY or MF_NOCLIP) = 0) and
-     (mo.flags_ex and MF_EX_LOWGRAVITY = 0) then
-  begin
-    friction := mo.friction;
-    if friction = ORIG_FRICTION then            // normal floor
-
-    else if friction > ORIG_FRICTION then       // ice
-    begin
-      result := mo.movefactor;
-      mo.movefactor := ORIG_FRICTION_FACTOR;    // reset
-    end
-    else                                        // sludge
-    begin
-
-      // phares 3/11/98: you start off slowly, then increase as
-      // you get better footing
-
-      momentum := P_AproxDistance(mo.momx, mo.momy);
-      result := mo.movefactor;
-      if momentum > MORE_FRICTION_MOMENTUM shl 2 then
-        result := result shl 3
-      else if momentum > MORE_FRICTION_MOMENTUM shl 1 then
-        result := result shl 2
-      else if momentum > MORE_FRICTION_MOMENTUM then
-        result := result shl 1;
-
-      mo.movefactor := ORIG_FRICTION_FACTOR;  // reset
-    end;
-  end;
 end;
 
 //==============================================================================
@@ -813,98 +733,12 @@ begin
     player.playerstate := PST_REBORN;
 end;
 
-var
-  brsnd: integer = -1;
-  brsnd2: integer = -1;
-  rnd_breath: Integer = 0;
-
-//==============================================================================
-//
-// A_PlayerBreath
-//
-//==============================================================================
-procedure A_PlayerBreath(p: Pplayer_t);
-var
-  sndidx: integer;
-begin
-  if p.health <= 0 then
-    exit;
-
-  if p.playerstate = PST_DEAD then
-    exit;
-
-  if leveltime - p.lastbreath < 3 * TICRATE + (C_Random(rnd_breath) mod TICRATE) then
-    exit;
-
-  p.lastbreath := leveltime;
-
-  if allowplayerbreath then
-  begin
-    if p.hardbreathtics > 0 then
-    begin
-      if brsnd2 < 0 then
-        brsnd2 := S_GetSoundNumForName('player/breath2');
-      sndidx := brsnd2;
-    end
-    else
-    begin
-      if brsnd < 0 then
-        brsnd := S_GetSoundNumForName('player/breath');
-      sndidx := brsnd;
-    end;
-    if sndidx > 0 then
-      S_StartSound(p.mo, sndidx);
-  end;
-end;
-
-//==============================================================================
-//
-// P_AngleTarget
-//
-//==============================================================================
-procedure P_AngleTarget(player: Pplayer_t);
-var
-  ticks: LongWord;
-  angle: angle_t;
-  diff: angle_t;
-begin
-  if player.angletargetticks <= 0 then
-    exit;
-
-  player.cmd.angleturn := 0;
-  angle := R_PointToAngle2(player.mo.x, player.mo.y, player.angletargetx, player.angletargety);
-  diff := player.mo.angle - angle;
-
-  ticks := player.angletargetticks;
-  if diff > ANG180 then
-  begin
-    diff := ANGLE_MAX - diff;
-    player.mo.angle := player.mo.angle + (diff div ticks);
-  end
-  else
-    player.mo.angle := player.mo.angle - (diff div ticks);
-
-  dec(player.angletargetticks);
-end;
-
-//==============================================================================
-//
-// P_PlayerFaceMobj
-//
-//==============================================================================
-procedure P_PlayerFaceMobj(const player: Pplayer_t; const face: Pmobj_t; const ticks: integer);
-begin
-  player.angletargetx := face.x;
-  player.angletargety := face.y;
-  player.angletargetticks := ticks;
-end;
-
 //==============================================================================
 //
 // P_PlayerThink
 //
 //==============================================================================
-procedure P_PlayerThink(player: Pplayer_t);
+class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
 var
   cmd: Pticcmd_t;
   newweapon: weapontype_t;

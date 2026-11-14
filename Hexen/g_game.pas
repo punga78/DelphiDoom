@@ -416,6 +416,7 @@ uses
   p_inter,
   p_map,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_acs,
   p_levelinfo,
   ps_main,

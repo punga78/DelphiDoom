@@ -1,38 +1,14 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Player related stuff.
-//  Bobbing POV/weapon, movement.
-//  Pending weapon.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Heretic for the player (p_user)           }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
-
-unit p_user;
+unit DelphiDoom.Engine.World.UserRules;
 
 interface
 
@@ -42,19 +18,23 @@ uses
   m_fixed,
   tables;
 
-//==============================================================================
-//
-// P_PlayerThink
-//
-//==============================================================================
-procedure P_PlayerThink(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_Thrust
-//
-//==============================================================================
-procedure P_Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
+type
+  /// <summary>
+  ///   What Heretic does in the player code of p_user (issue #185, step 2f-1). The routines that
+  ///   are the same in the games are in Base\p_user.pas; the ones that only this game has stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TUserGameRules = class sealed
+  public
+    /// <summary>The player thinker (called every tic for every player)</summary>
+    class procedure PlayerThink(player: Pplayer_t); static;
+    /// <summary>The height of the view</summary>
+    class procedure CalcHeight(player: Pplayer_t); static;
+    /// <summary>Moves the player along an angle</summary>
+    class procedure Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t); static;
+  end;
 
 //==============================================================================
 //
@@ -131,7 +111,8 @@ uses
   r_defs,
   sb_bar,
   sounddata,
-  s_sound;
+  s_sound,
+  p_user;
 
 //
 // Movement.
@@ -149,7 +130,7 @@ var
 // Moves the given origin along a given angle.
 //
 //==============================================================================
-procedure P_Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
+class procedure TUserGameRules.Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
 var
   mv: fixed_t;
 begin
@@ -179,7 +160,7 @@ end;
 // Calculate the walking / running height adjustment
 //
 //==============================================================================
-procedure P_CalcHeight(player: Pplayer_t);
+class procedure TUserGameRules.CalcHeight(player: Pplayer_t);
 var
   angle: integer;
   clheight: fixed_t; // JVAL: 20211101 - Crouch
@@ -897,7 +878,7 @@ end;
 // P_PlayerThink
 //
 //==============================================================================
-procedure P_PlayerThink(player: Pplayer_t);
+class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
 var
   cmd: Pticcmd_t;
   newweapon: weapontype_t;

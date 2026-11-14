@@ -116,6 +116,7 @@ uses
   p_inter,
   p_extra,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_spec,
   p_common,
   info_common,

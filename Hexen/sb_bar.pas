@@ -129,6 +129,7 @@ uses
   p_enemy,
   p_inter,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_pspr,
   r_defs,
   r_data,

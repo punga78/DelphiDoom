@@ -207,6 +207,7 @@ uses
   p_spec,
   p_map,
   p_user,
+  DelphiDoom.Engine.World.PlayerExtras,
   p_tick,
   info,
   r_defs,

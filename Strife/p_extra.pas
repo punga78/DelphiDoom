@@ -249,6 +249,7 @@ uses
   p_mobj,
   p_inter,
   p_user,
+  DelphiDoom.Engine.World.PlayerExtras,
   p_map,
   p_local,
   p_sounds,
