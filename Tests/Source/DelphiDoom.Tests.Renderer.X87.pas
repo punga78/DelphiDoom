@@ -39,6 +39,8 @@ type
     procedure DovrebbeDareLaScalaDiUnMuro;
     [Test]
     procedure DovrebbeLimitareLaScalaDiUnMuro;
+    [Test]
+    procedure DovrebbeDareDistanzaELarghezzaDiUnaLuce;
   end;
 
 implementation
@@ -315,6 +317,54 @@ begin
   // facing the wall at the distance of the projection: the scale is one
   Assert.AreEqual(Double(FRACUNIT), TRendererX87.ScaleFromAngles(160 * FRACUNIT, 160 * FRACUNIT, $40000000, $40000000,
     MAX_SCALE), 1E-6);
+end;
+
+procedure TTestRendererX87.DovrebbeDareDistanzaELarghezzaDiUnaLuce;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LX, LY, LZ, LLightX, LLightY, LLightZ, LRadius: Single;
+  LDistance, LWidth: Single;
+  LFactor: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LDeltaX, LDeltaY, LDeltaZ, LNative: Single;
+  {$IFEND}
+begin
+  LRandom.State := 289;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 199999 do
+    begin
+      // one draw per statement; the positions are 16.16 numbers divided by 65536, the offsets of the lights
+      // are the decimal numbers of a definition
+      LX := (Integer(LRandom.Next) div 64) / 65536;
+      LY := (Integer(LRandom.Next) div 64) / 65536;
+      LZ := (Integer(LRandom.Next) div 4096) / 65536;
+      LLightX := (Integer(LRandom.Next mod 2001) - 1000) / 100;
+      LLightY := (Integer(LRandom.Next mod 2001) - 1000) / 100;
+      LLightZ := (Integer(LRandom.Next mod 6401)) / 100;
+      LRadius := (1 + Integer(LRandom.Next mod 25600)) / 100;
+      LFactor := 1 + Integer(LRandom.Next mod 10);
+      LDistance := TRendererX87.LightSquareDistance(LX, LY, LZ, LLightX, LLightY, LLightZ);
+      LWidth := TRendererX87.LightWidth(LRadius, LFactor, 5);
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      // R_MarkDLights and R_DrawVisLight
+      LDeltaX := LX - LLightX;
+      LDeltaY := LY - LLightY;
+      LDeltaZ := LZ - LLightZ;
+      LNative := LDeltaX * LDeltaX + LDeltaY * LDeltaY + LDeltaZ * LDeltaZ;
+      Assert.AreEqual(PCardinal(@LNative)^, PCardinal(@LDistance)^, Format('distance of case %d', [LIndex]));
+      LNative := 2 * LRadius * LFactor / 5;
+      Assert.AreEqual(PCardinal(@LNative)^, PCardinal(@LWidth)^, Format('width of case %d', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddSingle(LDistance);
+      LFingerprint.AddSingle(LWidth);
+    end;
+    Assert.AreEqual('FBFF728970162698/400000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
 end;
 
 end.

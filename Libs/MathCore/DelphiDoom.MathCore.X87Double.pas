@@ -40,6 +40,10 @@ type
       static;
     class function RoundQuotientExact(const ANumerator, ADenominator: Double): Integer; static;
     class function RoundProductExact(const A, B: Double): Integer; static;
+    class function TruncQuotientExact(const ANumerator, ADenominator: Double): Integer; static;
+    class function TruncMulDivideExact(const AValue: Double; AMultiplier, ADivisor: Integer): Integer; static;
+    class function RoundScaledInverseExact(AScale, ANumerator, ADenominator: Integer): Integer; static;
+    class function TruncReciprocalProductExact(AScale, AFirst, ASecond: Integer): Integer; static;
 
     /// <summary>A + B stored in a Double: rounded to 64 bits and then to 53, as "fadd, fstp qword" do</summary>
     class function Add(const A, B: Double): Double; static; inline;
@@ -64,6 +68,26 @@ type
     class function RoundQuotient(const ANumerator, ADenominator: Double): Integer; static; inline;
     /// <summary>Round(A * B)</summary>
     class function RoundProduct(const A, B: Double): Integer; static; inline;
+    /// <summary>Trunc(ANumerator / ADenominator)</summary>
+    class function TruncQuotient(const ANumerator, ADenominator: Double): Integer; static; inline;
+    /// <summary>Trunc(AMultiplier * AValue / ADivisor)</summary>
+    class function TruncMulDivide(const AValue: Double; AMultiplier, ADivisor: Integer): Integer; static; inline;
+    /// <summary>
+    ///   Round(AScale / (ANumerator / ADenominator) * AScale), integers; AScale is a power of two. 0 when
+    ///   ANumerator is 0 (the FPU gives the "integer indefinite", whose low 32 bits are 0)
+    /// </summary>
+    class function RoundScaledInverse(AScale, ANumerator, ADenominator: Integer): Integer; static; inline;
+    /// <summary>
+    ///   Trunc((AScale / AFirst) * (AScale / ASecond) * AScale), integers; AScale is a power of two. 0 when a
+    ///   divisor is 0
+    /// </summary>
+    class function TruncReciprocalProduct(AScale, AFirst, ASecond: Integer): Integer; static; inline;
+    /// <summary>
+    ///   Trunc((65536 / AValue) * 65536): 2^32 div AValue, exactly (the quotient rounded to 64 bits never
+    ///   reaches the next integer, because AValue has at most 31 bits); 0 when AValue is 0, as the low 32
+    ///   bits of what the FPU gives
+    /// </summary>
+    class function TruncFixedReciprocal(AValue: Integer): Integer; static; inline;
     /// <summary>A * B stored in a Double (always the exact way: not for the hot paths)</summary>
     class function Multiply(const A, B: Double): Double; static;
     /// <summary>AMinuend - A * B stored in a Double (always the exact way)</summary>
@@ -263,6 +287,123 @@ begin
     Result := RoundProductExact(A, B);
 end;
 {$IFEND}
+
+class function TX87Double.TruncQuotientExact(const ANumerator, ADenominator: Double): Integer;
+begin
+  if ADenominator = 0 then
+    Exit(0);
+  Result := Integer((TSoftExtended.FromDouble(ANumerator) / TSoftExtended.FromDouble(ADenominator)).Truncate);
+end;
+
+class function TX87Double.TruncQuotient(const ANumerator, ADenominator: Double): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Trunc(ANumerator / ADenominator));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  LValue := ANumerator / ADenominator;
+  if CanTruncate(LValue, Abs(LValue)) then
+    Result := Trunc(LValue)
+  else
+    Result := TruncQuotientExact(ANumerator, ADenominator);
+end;
+{$IFEND}
+
+class function TX87Double.TruncMulDivideExact(const AValue: Double; AMultiplier, ADivisor: Integer): Integer;
+begin
+  if ADivisor = 0 then
+    Exit(0);
+  Result := Integer((TSoftExtended.FromInt64(AMultiplier) * TSoftExtended.FromDouble(AValue) /
+    TSoftExtended.FromInt64(ADivisor)).Truncate);
+end;
+
+class function TX87Double.TruncMulDivide(const AValue: Double; AMultiplier, ADivisor: Integer): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Trunc(AMultiplier * AValue / ADivisor));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  LValue := AMultiplier * AValue / ADivisor;
+  if CanTruncate(LValue, Abs(LValue)) then
+    Result := Trunc(LValue)
+  else
+    Result := TruncMulDivideExact(AValue, AMultiplier, ADivisor);
+end;
+{$IFEND}
+
+class function TX87Double.RoundScaledInverseExact(AScale, ANumerator, ADenominator: Integer): Integer;
+var
+  LScale: TSoftExtended;
+begin
+  if (ANumerator = 0) or (ADenominator = 0) then
+    Exit(0);
+  LScale := TSoftExtended.FromInt64(AScale);
+  Result := Integer((LScale / (TSoftExtended.FromInt64(ANumerator) / TSoftExtended.FromInt64(ADenominator)) *
+    LScale).Round);
+end;
+
+class function TX87Double.RoundScaledInverse(AScale, ANumerator, ADenominator: Integer): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Round(AScale / (ANumerator / ADenominator) * AScale));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  if (ANumerator = 0) or (ADenominator = 0) then
+    Exit(0);
+  LValue := AScale / (ANumerator / ADenominator) * AScale;
+  if CanRound(LValue, Abs(LValue)) then
+    Result := Round(LValue)
+  else
+    Result := RoundScaledInverseExact(AScale, ANumerator, ADenominator);
+end;
+{$IFEND}
+
+class function TX87Double.TruncReciprocalProductExact(AScale, AFirst, ASecond: Integer): Integer;
+var
+  LScale: TSoftExtended;
+begin
+  if (AFirst = 0) or (ASecond = 0) then
+    Exit(0);
+  LScale := TSoftExtended.FromInt64(AScale);
+  Result := Integer(((LScale / TSoftExtended.FromInt64(AFirst)) * (LScale / TSoftExtended.FromInt64(ASecond)) *
+    LScale).Truncate);
+end;
+
+class function TX87Double.TruncReciprocalProduct(AScale, AFirst, ASecond: Integer): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Trunc((AScale / AFirst) * (AScale / ASecond) * AScale));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  if (AFirst = 0) or (ASecond = 0) then
+    Exit(0);
+  LValue := (AScale / AFirst) * (AScale / ASecond) * AScale;
+  if CanTruncate(LValue, Abs(LValue)) then
+    Result := Trunc(LValue)
+  else
+    Result := TruncReciprocalProductExact(AScale, AFirst, ASecond);
+end;
+{$IFEND}
+
+class function TX87Double.TruncFixedReciprocal(AValue: Integer): Integer;
+begin
+  if AValue = 0 then
+    Result := 0
+  else
+    Result := Integer(Int64($100000000) div AValue);
+end;
 
 class function TX87Double.Multiply(const A, B: Double): Double;
 begin

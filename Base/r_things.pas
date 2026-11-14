@@ -238,6 +238,9 @@ procedure R_ExecuteSpriteCache(const cache: Pvisspritecache_t);
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   tables,
   {$IFDEF HEXEN}
   d_player,
@@ -1259,7 +1262,11 @@ begin
   if vis.infoscale = FRACUNIT then
     dbscale := vis.scale
   else
+{$IFDEF CPUX86}
     dbscale := trunc((FRACUNIT / dc_iscale) * (FRACUNIT / vis.infoscale) * FRACUNIT);
+{$ELSE}
+    dbscale := TX87Double.TruncReciprocalProduct(FRACUNIT, dc_iscale, vis.infoscale);
+{$ENDIF}
 
   dc_fog := vis.fog; // JVAL: Mars fog sectors
 

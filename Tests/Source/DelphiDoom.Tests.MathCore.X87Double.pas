@@ -48,6 +48,14 @@ type
     [Test]
     procedure DovrebbeArrotondareProdottiEQuozientiComeLaFpu;
     [Test]
+    procedure DovrebbeDareIlReciprocoInVirgolaFissaConIDivisoriInteri;
+    [Test]
+    procedure DovrebbeDareLeProfonditaDeiPianiEDegliSprite;
+    [Test]
+    procedure DovrebbeTroncareIQuozientiDelleLuci;
+    [Test]
+    procedure DovrebbeDareZeroConUnDivisoreNullo;
+    [Test]
     procedure DovrebbeDareIDoubleDelleEspressioniFredde;
     [Test]
     procedure DovrebbeRifiutareIlRisultatoNativoVicinoAlConfine;
@@ -522,6 +530,189 @@ begin
   finally
     LFingerprint.Free;
   end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareIlReciprocoInVirgolaFissaConIDivisoriInteri;
+const
+  FRACUNIT = 65536;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LValue: Integer;
+  LResult: Integer;
+  LSoft: Integer;
+begin
+  // Trunc((FRACUNIT / dc_iscale) * FRACUNIT) of the depth buffers: an integer division gives the same
+  LRandom.State := $0F0F0F0F12345678;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 1999999 do
+    begin
+      case LIndex mod 5 of
+        0:
+          LValue := 1 + LIndex div 5;
+        1:
+          LValue := (1 shl (1 + LIndex mod 30)) + LRandom.NextInteger(3);
+        2:
+          LValue := MaxInt - Integer(LRandom.Next mod 100000);
+        3:
+          LValue := -1 - Integer(LRandom.Next mod $7FFFFFFF);
+      else
+        LValue := 1 + Integer(LRandom.Next mod $7FFFFFFF);
+      end;
+      if LValue = 0 then
+        LValue := 1;
+      LResult := TX87Double.TruncFixedReciprocal(LValue);
+      LSoft := Integer(((TSoftExtended.FromInt64(FRACUNIT) / TSoftExtended.FromInt64(LValue)) *
+        TSoftExtended.FromInt64(FRACUNIT)).Truncate);
+      Assert.AreEqual(LSoft, LResult, Format('reciprocal of %d', [LValue]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(Integer(Trunc((FRACUNIT / LValue) * FRACUNIT)), LResult,
+        Format('reciprocal of %d against the FPU', [LValue]));
+      {$IFEND}
+      LFingerprint.AddInteger(LResult);
+    end;
+    FGolden.Check('x87.fixedreciprocal', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareLeProfonditaDeiPianiEDegliSprite;
+const
+  FRACUNIT = 65536;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LA, LB: Integer;
+  LFast, LExact: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Integer;
+  {$IFEND}
+begin
+  LRandom.State := $7777000011112222;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 499999 do
+    begin
+      if Odd(LIndex) then
+      begin
+        // Round(FRACUNIT / (planeheight / rows) * FRACUNIT)
+        LA := 1 + Integer(LRandom.Next mod (2048 * FRACUNIT));
+        LB := 1 + Integer(LRandom.Next mod 1080);
+        if LIndex mod 7 = 0 then
+          // 2^32 * rows / height on a half: height = 2^33 * rows / (2n + 1) is not an integer, but near to one
+          LA := Integer(Int64(8589934592) * LB div (2 * (4 * LB + Integer(LRandom.Next mod 100000)) + 1));
+        LFast := TX87Double.RoundScaledInverse(FRACUNIT, LA, LB);
+        LExact := TX87Double.RoundScaledInverseExact(FRACUNIT, LA, LB);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Round(FRACUNIT / (LA / LB) * FRACUNIT));
+        {$IFEND}
+      end
+      else
+      begin
+        // Trunc((FRACUNIT / dc_iscale) * (FRACUNIT / infoscale) * FRACUNIT)
+        LA := 64 + Integer(LRandom.Next mod (64 * FRACUNIT));
+        LB := 4096 + Integer(LRandom.Next mod (8 * FRACUNIT));
+        if LIndex mod 6 = 0 then
+        begin
+          // powers of two: the result is an integer
+          LA := 1 shl (6 + LIndex mod 16);
+          LB := 1 shl (12 + LIndex mod 7);
+        end;
+        LFast := TX87Double.TruncReciprocalProduct(FRACUNIT, LA, LB);
+        LExact := TX87Double.TruncReciprocalProductExact(FRACUNIT, LA, LB);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Trunc((FRACUNIT / LA) * (FRACUNIT / LB) * FRACUNIT));
+        {$IFEND}
+      end;
+      Assert.AreEqual(LExact, LFast, Format('case %d: %d %d', [LIndex, LA, LB]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(LNative, LExact, Format('case %d against the FPU: %d %d', [LIndex, LA, LB]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+    end;
+    FGolden.Check('x87.depth', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeTroncareIQuozientiDelleLuci;
+const
+  LIGHTTEXTURESIZE = 128;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LScale: Integer;
+  LWidth: Single;
+  LFast, LExact: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Integer;
+  {$IFEND}
+begin
+  // R_DrawVisLight: Trunc(xiscale * LIGHTTEXTURESIZE / w) and Trunc(scale * w / LIGHTTEXTURESIZE), w a Single
+  LRandom.State := $3333444455556666;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 499999 do
+    begin
+      LScale := 1 + Integer(LRandom.Next mod (16 * 65536));
+      // a width as the definitions of the lights give it: a few units, often a round number
+      LWidth := (16 + Integer(LRandom.Next mod 4096)) / 16;
+      if LIndex mod 3 = 0 then
+        LWidth := Single(LRandom.NextDouble(2, 9));
+      if LIndex mod 4 = 0 then
+        LScale := LScale and not $FFF;
+      if Odd(LIndex) then
+      begin
+        LFast := TX87Double.TruncQuotient(LScale * LIGHTTEXTURESIZE, LWidth);
+        LExact := TX87Double.TruncQuotientExact(LScale * LIGHTTEXTURESIZE, LWidth);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Trunc(LScale * LIGHTTEXTURESIZE / LWidth));
+        {$IFEND}
+      end
+      else
+      begin
+        LFast := TX87Double.TruncMulDivide(LWidth, LScale, LIGHTTEXTURESIZE);
+        LExact := TX87Double.TruncMulDivideExact(LWidth, LScale, LIGHTTEXTURESIZE);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Trunc(LScale * LWidth / LIGHTTEXTURESIZE));
+        {$IFEND}
+      end;
+      Assert.AreEqual(LExact, LFast, Format('case %d: %d %.9g', [LIndex, LScale, LWidth]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(LNative, LExact, Format('case %d against the FPU: %d %.9g', [LIndex, LScale, LWidth]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+    end;
+    FGolden.Check('x87.lights', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareZeroConUnDivisoreNullo;
+begin
+  // the FPU gives an infinity and then the "integer indefinite" ($8000000000000000): its low 32 bits are 0
+  Assert.AreEqual(0, TX87Double.TruncFixedReciprocal(0));
+  Assert.AreEqual(0, TX87Double.RoundScaledInverseExact(65536, 0, 100));
+  Assert.AreEqual(0, TX87Double.TruncReciprocalProductExact(65536, 0, 65536));
+  Assert.AreEqual(0, TX87Double.TruncReciprocalProductExact(65536, 65536, 0));
+  Assert.AreEqual(0, TX87Double.TruncQuotientExact(1000, 0));
+  Assert.AreEqual(0, TX87Double.TruncMulDivideExact(2.5, 1000, 0));
+  {$IF SizeOf(Extended) = SizeOf(Double)}
+  Assert.AreEqual(0, TX87Double.RoundScaledInverse(65536, 0, 100));
+  Assert.AreEqual(0, TX87Double.TruncReciprocalProduct(65536, 0, 65536));
+  Assert.AreEqual(0, TX87Double.TruncQuotient(1000, 0));
+  {$IFEND}
+  // one is the only divisor that gives 2^32: the low 32 bits are 0 here too
+  Assert.AreEqual(0, TX87Double.TruncFixedReciprocal(1));
+  Assert.AreEqual(Integer($80000000), TX87Double.TruncFixedReciprocal(2));
+  Assert.AreEqual(65536, TX87Double.TruncFixedReciprocal(65536));
 end;
 
 procedure TTestMathCoreX87Double.DovrebbeDareIDoubleDelleEspressioniFredde;

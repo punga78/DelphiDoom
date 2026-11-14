@@ -57,6 +57,13 @@ type
     /// </summary>
     class function ScaleFromAngles(AProjectionY, ADistance: Integer; AAngleA, AAngleB: Cardinal;
       AMaxScale: Integer): Double; static;
+    /// <summary>
+    ///   squaredist of R_MarkDLights: dx := AX - ALightX (a Single), the same for y and z,
+    ///   dx * dx + dy * dy + dz * dz stored in a Single
+    /// </summary>
+    class function LightSquareDistance(const AX, AY, AZ, ALightX, ALightY, ALightZ: Single): Single; static;
+    /// <summary>w of R_DrawVisLight: 2 * ARadius * AWidthFactor / ADefaultWidthFactor stored in a Single</summary>
+    class function LightWidth(const ARadius: Single; AWidthFactor, ADefaultWidthFactor: Integer): Single; static;
   end;
 
 implementation
@@ -166,6 +173,23 @@ begin
     else if Result > AMaxScale then
       Result := AMaxScale;
   end;
+end;
+
+class function TRendererX87.LightSquareDistance(const AX, AY, AZ, ALightX, ALightY, ALightZ: Single): Single;
+var
+  LX, LY, LZ: TSoftExtended;
+begin
+  // each difference is stored in a Single before it is squared
+  LX := TSoftExtended.FromDouble((TSoftExtended.FromDouble(AX) - TSoftExtended.FromDouble(ALightX)).ToSingle);
+  LY := TSoftExtended.FromDouble((TSoftExtended.FromDouble(AY) - TSoftExtended.FromDouble(ALightY)).ToSingle);
+  LZ := TSoftExtended.FromDouble((TSoftExtended.FromDouble(AZ) - TSoftExtended.FromDouble(ALightZ)).ToSingle);
+  Result := (LX * LX + LY * LY + LZ * LZ).ToSingle;
+end;
+
+class function TRendererX87.LightWidth(const ARadius: Single; AWidthFactor, ADefaultWidthFactor: Integer): Single;
+begin
+  Result := (TSoftExtended.FromInt64(2) * TSoftExtended.FromDouble(ARadius) * TSoftExtended.FromInt64(AWidthFactor) /
+    TSoftExtended.FromInt64(ADefaultWidthFactor)).ToSingle;
 end;
 
 end.

@@ -460,7 +460,11 @@ begin
   // JVAL: 3d Floors
   if depthbufferactive then
   begin
+{$IFDEF CPUX86}
     db_distance := Round(FRACUNIT / (planeheight / abs(centery - y)) * FRACUNIT);
+{$ELSE}
+    db_distance := TX87Double.RoundScaledInverse(FRACUNIT, planeheight, abs(centery - y));
+{$ENDIF}
     spandepthbufferproc;
   end;
 
@@ -568,7 +572,11 @@ begin
   // JVAL: 3d Floors
   if depthbufferactive then
   begin
+{$IFDEF CPUX86}
     db_distance := Round(FRACUNIT / (planeheight / abs(centery - y)) * FRACUNIT);
+{$ELSE}
+    db_distance := TX87Double.RoundScaledInverse(FRACUNIT, planeheight, abs(centery - y));
+{$ENDIF}
     spandepthbufferproc;
   end;
 
