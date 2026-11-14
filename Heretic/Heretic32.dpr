@@ -350,6 +350,8 @@ uses
   DelphiDoom.Clock.PerformanceSource in '..\Libs\Clock\DelphiDoom.Clock.PerformanceSource.pas',
   DelphiDoom.Clock.WindowsCounters in '..\Libs\Clock\DelphiDoom.Clock.WindowsCounters.pas',
   DelphiDoom.Clock.Factory in '..\Libs\Clock\DelphiDoom.Clock.Factory.pas',
+  DelphiDoom.Clock.TimerResolution in '..\Libs\Clock\DelphiDoom.Clock.TimerResolution.pas',
+  DelphiDoom.Clock.WindowsTimerResolution in '..\Libs\Clock\DelphiDoom.Clock.WindowsTimerResolution.pas',
   DelphiDoom.Threading.Types in '..\Libs\Threading\DelphiDoom.Threading.Types.pas',
   DelphiDoom.Threading.Intf in '..\Libs\Threading\DelphiDoom.Threading.Intf.pas',
   DelphiDoom.Threading.WorkerThread in '..\Libs\Threading\DelphiDoom.Threading.WorkerThread.pas',
