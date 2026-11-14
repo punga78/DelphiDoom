@@ -22,7 +22,7 @@ cp "$HERE/stub/botlib/be_aas_def.h" "$WORK/botlib/"
 for f in l_precomp.h l_struct.h l_utils.h; do cp "$PARENT/stub/botlib/l_script.h" "$WORK/botlib/$f"; done
 echo "unsigned short CRC_ProcessString(unsigned char *data, int length);" > "$WORK/botlib/l_crc.h"
 echo "void QDECL Log_Write(char *fmt, ...);" > "$WORK/botlib/l_log.h"
-for f in be_aas_file.c be_aas_sample.c be_aas_route.c be_aas_routealt.c; do cp "$CODE/botlib/$f" "$WORK/botlib/"; done
+for f in be_aas_file.c be_aas_sample.c be_aas_route.c be_aas_routealt.c be_aas_move.c; do cp "$CODE/botlib/$f" "$WORK/botlib/"; done
 # the one change to the real code: AAS_AreaTravelTimeToGoalArea and AAS_AreaReachabilityToGoalArea do not initialise reachnum,
 # and a route through a portal with no origin reads it (bestreachnum = *reachnum; if (bestreachnum < 0) return qfalse): the answer
 # depends on what the stack held. The copy starts it at 0, as the Delphi port does.
@@ -41,6 +41,8 @@ line() { grep -n "$1" "$2" | head -1 | cut -d: -f1; }
   sed -n "$(line '^#define TFL_INVALID' "$CODE/game/be_aas.h"),$(( $(line '^#define TFL_DEFAULT' "$CODE/game/be_aas.h") + 5 ))p" "$CODE/game/be_aas.h"
   sed -n "$(line '^#define ALTROUTEGOAL_ALL' "$CODE/game/be_aas.h"),$(line '^#define ALTROUTEGOAL_VIEWPORTALS' "$CODE/game/be_aas.h")p" "$CODE/game/be_aas.h"
   sed -n "$(line '^#define RSE_NONE' "$CODE/game/be_aas.h"),$(line '^#define RSE_ENTERAREA' "$CODE/game/be_aas.h")p" "$CODE/game/be_aas.h"
+  sed -n "$(line '^#define SE_NONE' "$CODE/game/be_aas.h"),$(line '^#define SE_TOUCHCLUSTERPORTAL' "$CODE/game/be_aas.h")p" "$CODE/game/be_aas.h"
+  sed -n "$(line '^typedef struct aas_clientmove_s' "$CODE/game/be_aas.h"),$(line '} aas_clientmove_t;' "$CODE/game/be_aas.h")p" "$CODE/game/be_aas.h"
 } > "$WORK/game/be_aas.h.tmp"
 { echo "#ifndef BEAAS_GUARD"; echo "#define BEAAS_GUARD"; cat "$WORK/game/be_aas.h.tmp"; echo "#endif"; } > "$WORK/game/be_aas.h"
 {
@@ -58,6 +60,8 @@ sed -n "$(line '^void AAS_ProjectPointOntoVector' "$CODE/botlib/be_aas_main.c"),
   E=$(line '^int AAS_AreaDoNotEnter' "$R")
   sed -n "${S},$(( E + 3 ))p" "$R"
 } > "$WORK/areareach.inc"
+# AngleVectors of q_math.c (31 lines)
+awk -v s="$(line '^void AngleVectors' "$CODE/game/q_math.c")" 'NR>=s {print} NR>s && /^}/ {exit}' "$CODE/game/q_math.c" > "$WORK/anglevec.inc"
 cp "$HERE/routegen.c" "$WORK/"
 "$KIT/gcc.exe" -O1 -w -ffp-contract=off -DBOTLIB -I"$WORK" -I"$WORK/botlib" -o "$OUT/routegen.exe" "$WORK/routegen.c" -lm
 echo "built in $OUT"

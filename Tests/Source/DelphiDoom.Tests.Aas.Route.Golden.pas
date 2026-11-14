@@ -28,7 +28,8 @@ type
   strict private
     FDataFolder: string;
     function DataFolder: string;
-    procedure Compare(const AName: string; const ABytes: TBytes; const AGolden: string; const AMemoryLimit: Integer);
+    procedure Compare(const AName: string; const ABytes: TBytes; const AGolden: string; const AMemoryLimit: Integer;
+      const AMove: Boolean = False);
     function OpenArenaMap(const AName: string): TBytes;
   public
     [Test]
@@ -49,12 +50,21 @@ type
     /// </summary>
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelCPerTutteLeMappeDiOpenArena;
+    [Test]
+    procedure DovrebbeDareLaStessaPrevisioneDelMovimentoPerFan;
+    [Test]
+    procedure DovrebbeDareLaStessaPrevisioneDelMovimentoPerOaBases3;
+    [Test]
+    procedure DovrebbeDareLaStessaPrevisioneDelMovimentoPerBlitzkrieg3;
+    [Test]
+    procedure DovrebbeDareLaStessaPrevisioneDelMovimentoPerTutteLeMappeDiOpenArena;
   end;
 
 implementation
 
 uses
-  System.IOUtils, System.Zip, DUnitX.Exceptions, DelphiDoom.Tests.Aas.Sample, DelphiDoom.Tests.Aas.Route.Scenario;
+  System.IOUtils, System.Zip, DUnitX.Exceptions, DelphiDoom.Tests.Aas.Sample, DelphiDoom.Tests.Aas.Route.Scenario,
+  DelphiDoom.Tests.Aas.Move.Scenario;
 
 const
   // 1 MB + 20000 bytes: the routing keeps at most 20000 bytes of cache (see Make-Golden.ps1)
@@ -105,10 +115,11 @@ begin
 end;
 
 procedure TTestAasRouteGolden.Compare(const AName: string; const ABytes: TBytes; const AGolden: string;
-  const AMemoryLimit: Integer);
+  const AMemoryLimit: Integer; const AMove: Boolean);
 var
   LActual, LGolden, LExpected: TStringList;
   LRunner: TAasRouteScenario;
+  LMoveRunner: TAasMoveScenario;
   LLine, LActualLine: string;
   LIndex: Integer;
 begin
@@ -117,11 +128,23 @@ begin
   LExpected := TStringList.Create;
   try
     Assert.IsTrue(TFile.Exists(DataFolder + AGolden), AGolden + ' not found in ' + DataFolder);
-    LRunner := TAasRouteScenario.Create(LActual, AMemoryLimit);
-    try
-      LRunner.Run(AName, ABytes);
-    finally
-      LRunner.Free;
+    if AMove then
+    begin
+      LMoveRunner := TAasMoveScenario.Create(LActual);
+      try
+        LMoveRunner.Run(AName, ABytes);
+      finally
+        LMoveRunner.Free;
+      end;
+    end
+    else
+    begin
+      LRunner := TAasRouteScenario.Create(LActual, AMemoryLimit);
+      try
+        LRunner.Run(AName, ABytes);
+      finally
+        LRunner.Free;
+      end;
     end;
     LGolden.LoadFromFile(DataFolder + AGolden);
     // the C tool reads the file through AAS_LoadAASFile, which prints one line before the checks
@@ -202,7 +225,41 @@ begin
   Assert.IsTrue(LCount > 0);
 end;
 
-initialization
-  TDUnitX.RegisterTestFixture(TTestAasRouteGolden);
+procedure TTestAasRouteGolden.DovrebbeDareLaStessaPrevisioneDelMovimentoPerFan;
+begin
+  Compare('fan.aas', OpenArenaMap('fan'), 'move_fan.golden.txt', 0, True);
+end;
+
+procedure TTestAasRouteGolden.DovrebbeDareLaStessaPrevisioneDelMovimentoPerOaBases3;
+begin
+  Compare('oa_bases3.aas', OpenArenaMap('oa_bases3'), 'move_oa_bases3.golden.txt', 0, True);
+end;
+
+procedure TTestAasRouteGolden.DovrebbeDareLaStessaPrevisioneDelMovimentoPerBlitzkrieg3;
+begin
+  Compare('blitzkrieg3.aas', OpenArenaMap('blitzkrieg3'), 'move_blitzkrieg3.golden.txt', 0, True);
+end;
+
+procedure TTestAasRouteGolden.DovrebbeDareLaStessaPrevisioneDelMovimentoPerTutteLeMappeDiOpenArena;
+var
+  LFolder, LFile, LName: string;
+  LCount: Integer;
+begin
+  LFolder := GetEnvironmentVariable('DELPHIDOOM_ROUTE_GOLDENS');
+  if (LFolder = '') or not TDirectory.Exists(LFolder) then
+    raise ETestIgnored.Create('DELPHIDOOM_ROUTE_GOLDENS non c''e'': prova ignorata');
+  LCount := 0;
+  for LFile in TDirectory.GetFiles(LFolder, 'move_*.golden.txt') do
+  begin
+    LName := TPath.GetFileName(LFile);
+    LName := Copy(LName, 6, Length(LName) - 6 - Length('.golden.txt') + 1);
+    FDataFolder := LFolder + PathDelim;
+    Compare(LName + '.aas', OpenArenaMap(LName), TPath.GetFileName(LFile), 0, True);
+    Inc(LCount);
+  end;
+  Assert.IsTrue(LCount > 0);
+end;
+
+initialization  TDUnitX.RegisterTestFixture(TTestAasRouteGolden);
 
 end.
