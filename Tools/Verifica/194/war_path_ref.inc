@@ -650,3 +650,56 @@ static void benchMove(s32 units, s32 tics)
            moving, 1e6 * states / ((double)count * tics), 1e6 * rest / ((double)count * tics), gFieldComputes);
     worldFree();
 }
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* units: la mappa hash di shl (l'ordine dei bucket) e il candidato piu' vicino di A star con due a pari distanza        */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+/* WarMapNodeMap (shl/map.h, definita in war_pathfinder.c) con chiavi a caso: quanti bucket e in che ordine stanno le chiavi */
+static void runScatter(u32 seed)
+{
+    gScriptState = seed * 2654435761u + 31u;
+    wm_allocInit(256ull * 1024 * 1024, 8ull * 1024 * 1024, 1ull * 1024 * 1024);
+    WarMapNodeMap map;
+    WarMapNodeMapInit(&map, wm_frameAllocator(), hashMapNode, equalsMapNodeId);
+    u32 n = 1 + scriptBelow(400);
+    for (u32 i = 0; i < n; i++)
+    {
+        s32 key = (s32)scriptBelow(4096);
+        WarMapNode node = createNode(key & 63, key >> 6);
+        WarMapNodeMapSet(&map, key, node);
+    }
+    u32 h = 2166136261u;
+    for (s32 k = 0; k < map.capacity; k++)
+        if (map.entries[k].active)
+        {
+            h = (h ^ (u32)map.entries[k].key) * 16777619u;
+            h = (h ^ (u32)k) * 16777619u;
+        }
+    printf("S %u draws=%u count=%d cap=%d h=%08x\n", seed, n, map.count, map.capacity, h);
+    WarMapNodeMapFree(&map);
+    wm_allocFree();
+}
+
+/* una mappa libera con un muro intero in x = 26 e la casella (25, y) libera del muro: l'arrivo e' dietro il muro, irraggiungibile;
+   le due caselle (25, y - 1) e (25, y + 1) sono a pari distanza dall'arrivo e dalla partenza e decide l'ordine dei bucket */
+static void runTieBreak(s32 variant)
+{
+    wm_allocInit(256ull * 1024 * 1024, 8ull * 1024 * 1024, 1ull * 1024 * 1024);
+    u16 passable[MAP_TILES_WIDTH * MAP_TILES_HEIGHT];
+    memset(passable, 0, sizeof(passable));
+    s32 y = 10 + variant * 11;
+    for (s32 yy = 0; yy < MAP_TILES_HEIGHT; yy++)
+        passable[yy * MAP_TILES_WIDTH + 26] = 128;
+    passable[y * MAP_TILES_WIDTH + 25] = 128;
+    gMap = (WarMap*)wm_alloc(sizeof(WarMap));
+    memset(gMap, 0, sizeof(WarMap));
+    gMap->finder = wpath_initPathFinder(passable);
+    memset(&gPathResult, 0, sizeof(gPathResult));
+    wpath_astar(&gMap->finder, 10, y, 30, y, &gPathResult);
+    vec2 last = gPathResult.count > 0 ? gPathResult.nodes[gPathResult.count - 1] : VEC2_ZERO;
+    printf("T %d 10,%d -> 30,%d n=%d last=%d,%d h=%08x\n", variant, y, y, gPathResult.count, (s32)last.x, (s32)last.y,
+           pathHashNodes(&gPathResult));
+    wm_allocFree();
+    gMap = NULL;
+}

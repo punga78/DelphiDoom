@@ -64,10 +64,20 @@ type
   /// </summary>
   TWarRvo = class
   strict private
+    type
+      // what does not depend on the candidate velocity, once per neighbor: the position of A relative to B, and the part of the
+      // time to collision that is a constant of the pair (c: how far the two discs are from touching, squared; negative: overlap)
+      TPairs = record
+        RelX: array[0..WAR_RVO_MAX_NEIGHBOURS - 1] of Single;
+        RelY: array[0..WAR_RVO_MAX_NEIGHBOURS - 1] of Single;
+        C: array[0..WAR_RVO_MAX_NEIGHBOURS - 1] of Single;
+      end;
     class function TimeToCollision(const APositionA, AVelocityA, APositionB, AVelocityB: TWarVec2; ARadius: Single;
       const ACandidate: TWarVec2): Single; static;
-    class function Score(const ACandidate: TWarVec2; AMaxSpeed: Single; const APreferred, APositionA,
-      AVelocityA: TWarVec2; ARadiusA: Single; const ANeighbours: TWarRvoNeighbours): Single; static;
+    class procedure PreparePairs(const APositionA: TWarVec2; ARadiusA: Single; const ANeighbours: TWarRvoNeighbours;
+      var APairs: TPairs); static;
+    class function Score(const ACandidate, APreferred, AVelocityA: TWarVec2; AWeight: Single;
+      const ANeighbours: TWarRvoNeighbours; const APairs: TPairs): Single; static;
   public
     /// <summary>
     ///   The new velocity (never longer than AMaxSpeed); ADeltaTime is not used (it is there for the ORCA variant, in the
@@ -158,8 +168,33 @@ begin
     Result := FLOAT_MAX;
 end;
 
-class function TWarRvo.Score(const ACandidate: TWarVec2; AMaxSpeed: Single; const APreferred, APositionA,
-  AVelocityA: TWarVec2; ARadiusA: Single; const ANeighbours: TWarRvoNeighbours): Single;
+class procedure TWarRvo.PreparePairs(const APositionA: TWarVec2; ARadiusA: Single; const ANeighbours: TWarRvoNeighbours;
+  var APairs: TPairs);
+var
+  LIndex: Integer;
+  LRadius: Single;
+  LRadiusSqr: Single;
+  LProductX: Single;
+  LProductY: Single;
+  LC: Single;
+begin
+  for LIndex := 0 to ANeighbours.Count - 1 do
+  begin
+    APairs.RelX[LIndex] := APositionA.X - ANeighbours.Items[LIndex].Position.X;
+    APairs.RelY[LIndex] := APositionA.Y - ANeighbours.Items[LIndex].Position.Y;
+    LRadius := ARadiusA + ANeighbours.Items[LIndex].Radius;
+    LRadiusSqr := LRadius * LRadius;
+    LProductX := APairs.RelX[LIndex] * APairs.RelX[LIndex];
+    LProductY := APairs.RelY[LIndex] * APairs.RelY[LIndex];
+    LC := LProductX + LProductY;
+    APairs.C[LIndex] := LC - LRadiusSqr;
+  end;
+end;
+
+// wrvo_score with wrvo_tcc written out in the loop: the same operations on the same values, in the same order, with what
+// does not depend on the candidate (the relative position, c, 2 * candidate - velocityA, the weight) computed once
+class function TWarRvo.Score(const ACandidate, APreferred, AVelocityA: TWarVec2; AWeight: Single;
+  const ANeighbours: TWarRvoNeighbours; const APairs: TPairs): Single;
 var
   LDx: Single;
   LDy: Single;
@@ -168,9 +203,15 @@ var
   LSum: Single;
   LRoot: Single;
   LIndex: Integer;
-  LRadius: Single;
+  LTwiceX: Single;
+  LTwiceY: Single;
+  LRelVelX: Single;
+  LRelVelY: Single;
+  LA: Single;
+  LB: Single;
+  LDiscriminant: Single;
+  LNumerator: Single;
   LTime: Single;
-  LWeight: Single;
   LRemaining: Single;
   LPenalty: Single;
 begin
@@ -180,19 +221,55 @@ begin
   LProductX := LDx * LDx;
   LProductY := LDy * LDy;
   LSum := LProductX + LProductY;
-  LRoot := Sqrt(LSum);
+  LRoot := System.Sqrt(Double(LSum));
   Result := DEVIATION_WEIGHT * LRoot;
+  LTwiceX := 2.0 * ACandidate.X;
+  LTwiceX := LTwiceX - AVelocityA.X;
+  LTwiceY := 2.0 * ACandidate.Y;
+  LTwiceY := LTwiceY - AVelocityA.Y;
   // the penalty for every neighbor that would be hit before the horizon
   for LIndex := 0 to ANeighbours.Count - 1 do
   begin
-    LRadius := ARadiusA + ANeighbours.Items[LIndex].Radius;
-    LTime := TimeToCollision(APositionA, AVelocityA, ANeighbours.Items[LIndex].Position,
-      ANeighbours.Items[LIndex].Velocity, LRadius, ACandidate);
+    if APairs.C[LIndex] < 0.0 then
+      // already overlapping: immediate collision
+      LTime := 0.0
+    else
+    begin
+      LRelVelX := LTwiceX - ANeighbours.Items[LIndex].Velocity.X;
+      LRelVelY := LTwiceY - ANeighbours.Items[LIndex].Velocity.Y;
+      LProductX := LRelVelX * LRelVelX;
+      LProductY := LRelVelY * LRelVelY;
+      LA := LProductX + LProductY;
+      if LA < NANO then
+        // no relative motion
+        LTime := FLOAT_MAX
+      else
+      begin
+        LProductX := APairs.RelX[LIndex] * LRelVelX;
+        LProductY := APairs.RelY[LIndex] * LRelVelY;
+        LB := LProductX + LProductY;
+        LProductX := LB * LB;
+        LProductY := LA * APairs.C[LIndex];
+        LDiscriminant := LProductX - LProductY;
+        if LDiscriminant < 0.0 then
+          // the paths do not meet
+          LTime := FLOAT_MAX
+        else
+        begin
+          // the square root of a 32 bit float through the 64 bit one is as exact as sqrtf (the double rounding cannot show)
+          LRoot := System.Sqrt(Double(LDiscriminant));
+          LNumerator := -LB;
+          LNumerator := LNumerator - LRoot;
+          LTime := LNumerator / LA;
+          if not (LTime >= 0.0) then
+            LTime := FLOAT_MAX;
+        end;
+      end;
+    end;
     if LTime < TIME_HORIZON then
     begin
-      LWeight := COLLISION_WEIGHT * AMaxSpeed;
       LRemaining := TIME_HORIZON - LTime;
-      LPenalty := LWeight * LRemaining;
+      LPenalty := AWeight * LRemaining;
       Result := Result + LPenalty;
     end;
   end;
@@ -221,6 +298,8 @@ var
   LRadius: Single;
   LTime: Single;
   LHad: Boolean;
+  LPairs: TPairs;
+  LWeight: Single;
 begin
   LCount := 0;
   // the preferred velocity, cut to the maximum speed
@@ -256,11 +335,13 @@ begin
   LCandidates[LCount].X := 0.0;
   LCandidates[LCount].Y := 0.0;
   Inc(LCount);
+  PreparePairs(APositionA, ARadiusA, ANeighbours, LPairs);
+  LWeight := COLLISION_WEIGHT * AMaxSpeed;
   LBestIndex := 0;
-  LBestScore := Score(LCandidates[0], AMaxSpeed, APreferred, APositionA, AVelocityA, ARadiusA, ANeighbours);
+  LBestScore := Score(LCandidates[0], APreferred, AVelocityA, LWeight, ANeighbours, LPairs);
   for LIndex := 1 to LCount - 1 do
   begin
-    LScore := Score(LCandidates[LIndex], AMaxSpeed, APreferred, APositionA, AVelocityA, ARadiusA, ANeighbours);
+    LScore := Score(LCandidates[LIndex], APreferred, AVelocityA, LWeight, ANeighbours, LPairs);
     if LScore < LBestScore then
     begin
       LBestScore := LScore;

@@ -102,7 +102,9 @@ var
   LSquare: Single;
 begin
   LSquare := LengthSqr(A);
-  Result := Sqrt(LSquare);
+  // sqrtf through the 64 bit square root: the same value (the double rounding of a square root cannot show), and at Win64 much
+  // faster than the routine that Sqrt of a Single calls
+  Result := System.Sqrt(Double(LSquare));
 end;
 
 class function TWarModelMath.DistanceSqr(const A, B: TWarVec2): Single;

@@ -27,8 +27,10 @@ type
   ///   player 0 lights its tiles and its sight range (without the four corners, with the quirks of wmap_setMapTileState),
   ///   the target of a unit that attacks is revealed if it is in range (a unit, or the piece of a wall) and so is whoever
   ///   attacks it, the buildings of the player are seen for good, the units of the others that are not partly in sight
-  ///   leave the selection and their buildings that are in sight are seen for good; last, the piece of fog and the boundary of every
-  ///   tile. What a unit sees can be asked of nobody but its own type: the sight is read from the tables once per type
+  ///   leave the selection and their buildings that are in sight are seen for good; last, the piece of fog and the
+  ///   boundary of every tile (what the drawing needs, as data). The sight range of a type is read from the tables once.
+  ///   Defect of the original kept: the piece of a wall that is attacked is lit as a rectangle of one tile, and
+  ///   wmap_setMapTileState leaves out the corners of a rectangle, which here are all of it: it changes nothing
   /// </summary>
   TWarFogRevealer = class(TInterfacedObject, IWarFogUpdater)
   strict private

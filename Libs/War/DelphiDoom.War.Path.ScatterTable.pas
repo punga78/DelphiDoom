@@ -43,9 +43,9 @@ type
     function FindEmptyBucket(AStart: Integer): Integer;
     procedure Resize;
     procedure Insert(AKey: Integer);
-    function GetCapacity: Integer; inline;
-    function GetActive(ABucket: Integer): Boolean; inline;
-    function GetKey(ABucket: Integer): Integer; inline;
+    function GetCapacity: Integer;
+    function GetActive(ABucket: Integer): Boolean;
+    function GetKey(ABucket: Integer): Integer;
   public
     constructor Create;
     /// <summary>WarMapNodeMapSet: adds the key (a key that is already there stays where it is)</summary>
@@ -158,6 +158,8 @@ begin
   LOld := FEntries;
   FLoadFactor := Length(LOld);
   Dec(FShift);
+  // a new array of empty buckets (SetLength on the shared array would keep the old ones)
+  FEntries := nil;
   SetLength(FEntries, 1 shl (32 - FShift));
   FCount := 0;
   for LIndex := 0 to Length(LOld) - 1 do

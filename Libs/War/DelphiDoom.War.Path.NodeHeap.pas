@@ -37,7 +37,7 @@ type
     procedure HeapUp(AIndex: Integer);
     procedure HeapDown(AIndex: Integer);
     function Compare(AFirst, ASecond: Integer): Integer; inline;
-    function GetItem(AIndex: Integer): TWarPathNode; inline;
+    function GetItem(AIndex: Integer): TWarPathNode;
   public
     /// <summary>Empties the heap</summary>
     procedure Clear;

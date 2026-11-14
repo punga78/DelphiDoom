@@ -32,13 +32,13 @@ type
     class var
       FUnitVectors: array[0..WAR_PATH_DIRECTION_COUNT - 1] of TWarVec2;
     class constructor Create;
-    function GetCost(AIndex: Integer): Integer; inline;
-    function GetDirection(AIndex: Integer): Integer; inline;
+    function GetCost(AIndex: Integer): Integer;
+    function GetDirection(AIndex: Integer): Integer;
   public
     /// <summary>Every tile not reached: cost INT32_MAX, no direction (the start of wpath_computeFlowField)</summary>
     procedure Clear;
     /// <summary>Sets the direction and the cost of the tile number AIndex (y * 64 + x)</summary>
-    procedure SetTile(AIndex, ACost, ADirection: Integer); inline;
+    procedure SetTile(AIndex, ACost, ADirection: Integer);
     /// <summary>
     ///   wpath_flowFieldSample: the unit vector of the direction of the tile, the zero vector if it has none; a tile
     ///   outside the map is the zero vector too

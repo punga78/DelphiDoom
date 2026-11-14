@@ -74,6 +74,8 @@ $script:Groups = @(
   @{ Name = '195 percorsi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('paths', '36'); Golden = 'path.paths.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('rvo', '20'); Golden = 'path.rvo.golden.txt'; NeedsData = $false },
+      # la mappa hash di shl (ordine dei bucket) e il candidato piu' vicino di A star con due caselle a pari distanza
+      @{ Exe = 'war_model_ref.exe'; Args = @('units'); Golden = 'path.units.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('move', '12'); Golden = 'path.move.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'move', '2', '300'); Golden = 'path.move.dump.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('real', 'combat', '12'); Golden = 'path.combat.golden.txt'; NeedsData = $false },

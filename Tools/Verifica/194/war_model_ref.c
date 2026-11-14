@@ -1756,6 +1756,14 @@ int main(int argc, char** argv)
         runMove((u32)atoi(argv[3]), atoi(argv[4]), false);
         return 0;
     }
+    if (strcmp(argv[1], "units") == 0)
+    {
+        for (u32 seed = 1; seed <= 20; seed++)
+            runScatter(seed);
+        for (s32 variant = 0; variant < 4; variant++)
+            runTieBreak(variant);
+        return 0;
+    }
     if (strcmp(argv[1], "levelpaths") == 0 && argc >= 3)
     {
         runLevelPaths(argv[2]);

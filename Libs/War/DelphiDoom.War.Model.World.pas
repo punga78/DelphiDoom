@@ -44,14 +44,16 @@ type
     procedure Update;
     /// <summary>
     ///   The rest of the tic of wmap_updateMap that the model has, after the states, in its order: the grid of the units,
-    ///   the steps of the actions of every unit (the frames, the blow, the sounds: TWarActionRunner) and the projectiles.
-    ///   The game calls it after Update. This is the only place that runs the actions
+    ///   the steps of the actions of every unit (the frames, the blow, the sounds: TWarActionRunner) and the projectiles,
+    ///   then the fog if the world has an updater (TWarModelFactory.AttachFog). The game calls it after Update. This is the
+    ///   only place that runs the actions
     /// </summary>
     procedure UpdateAfterStates;
     /// <summary>
     ///   The whole rest of the tic of wmap_updateMap, in its order: the grid of the units, the steps of the actions, the
-    ///   animations, the projectiles, the mana and the spells. It is UpdateAfterStates with the animations, the mana and
-    ///   the spells (UpdateAfterStates stays for who wants the tic without them)
+    ///   animations, the projectiles, the mana, the spells and the fog (updateFoW and determineFoWTypes, if the world has an
+    ///   updater). It is UpdateAfterStates with the animations, the mana and the spells (UpdateAfterStates stays for who
+    ///   wants the tic without them)
     /// </summary>
     procedure FinishTic;
     /// <summary>A whole tic: AdvanceClock, Update and FinishTic. The orders of the tic are given before it</summary>

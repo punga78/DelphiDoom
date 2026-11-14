@@ -23,10 +23,11 @@ type
   strict private
     function RvoNumber(ARange: Integer): Single;
     procedure PathPoint(ARingX, ARingY: Integer; out AX, AY: Integer);
-    function BuildGrid(ASeed: Cardinal; out ARingX, ARingY: Integer): TWarPathGrid;
   public
     /// <summary>The LCG of the script (the C's gScriptState): the movement scenarios go on drawing from it</summary>
     FState: Cardinal;
+    /// <summary>pathScenarioInit: the map of the seed with the rectangles taken by static entities; the script goes on from there</summary>
+    function BuildGrid(ASeed: Cardinal; out ARingX, ARingY: Integer): TWarPathGrid;
     /// <summary>scriptBelow: the next number of the LCG below ALimit (0 if the limit is 0)</summary>
     function Below(ALimit: Cardinal): Integer;
     /// <summary>pathPassable: the passable map of a kind (kind mod 6), from the numbers of the script</summary>
