@@ -48,7 +48,8 @@ begin
   Writeln('  -quitafter <s>   close the window after some seconds');
   Writeln('  -script <file>   no window: the keys and the pictures of a script, a tic of the game for each wait');
   Writeln('  -shots <folder>  where the pictures of the script go');
-  Writeln('  -report          write the state of the game and of the mixer at the end');
+  Writeln('  -report          write the speed (tics, refreshes, pictures a second), the state of the game and of the mixer at the end');
+  Writeln('  -coarsetimer     leave the timer of Windows at its tick of 15.6 ms (to compare the speed of the game)');
 end;
 
 var
@@ -144,6 +145,8 @@ begin
         LOptions.ShotFolder := LCursor.Value
       else if LArgument = '-report' then
         LOptions.Report := True
+      else if LArgument = '-coarsetimer' then
+        LOptions.CoarseTimer := True
       else
       begin
         ShowUsage;

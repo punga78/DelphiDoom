@@ -39,6 +39,8 @@ type
     class function CreateViewExporter(const AData: IKeenGameData): IKeenViewExporter; static;
     /// <summary>The clock of the machine</summary>
     class function CreateClock: IClock; static;
+    /// <summary>A finer timer of Windows (1 ms) for as long as the result is held: Sleep(1) of the loops of the game then lasts 1 ms and not 15.6</summary>
+    class function AcquireTimerResolution: ITimerResolutionLease; static;
     /// <summary>
     ///   The sound manager (PC speaker and AdLib card on the OPL emulator), its mixer and the waveOut output, not
     ///   opened. AUseDevice false leaves the output out (the time of the sound then goes on with Host.Pump).
@@ -64,6 +66,8 @@ uses
   DelphiDoom.Keen.LockedSoundManager;
 
 const
+  /// <summary>The finest timer that the loops of the game ask for</summary>
+  TIMER_RESOLUTION_MILLISECONDS = 1;
   /// <summary>Samples per second of the sound of the game</summary>
   KEEN_AUDIO_RATE = 44100;
 
@@ -91,6 +95,11 @@ end;
 class function TKeenComposition.CreateClock: IClock;
 begin
   Result := TClockFactory.CreateClock(nil);
+end;
+
+class function TKeenComposition.AcquireTimerResolution: ITimerResolutionLease;
+begin
+  Result := TClockFactory.AcquireTimerResolution(TIMER_RESOLUTION_MILLISECONDS);
 end;
 
 class function TKeenComposition.CreateAudio(const AData: IKeenGameData; const AClock: IClock; AUseDevice: Boolean;

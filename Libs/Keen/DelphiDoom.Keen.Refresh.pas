@@ -99,6 +99,7 @@ type
     FBackTiles: array of TBytes;
     FForeTiles: array of TBytes;
     FTics: Integer;
+    FRefreshCount: Integer;
     FLastTimeCount: Integer;
     FOriginXGlobal: Integer;
     FOriginYGlobal: Integer;
@@ -177,6 +178,7 @@ type
       const ATileInfo: IKeenTileInfo; const ASprites: IKeenSpriteCache; const AClock: IKeenClock;
       ACompatibility: Boolean = False);
     function GetTics: Integer;
+    function GetRefreshCount: Integer;
     function GetOriginXGlobal: Integer;
     function GetOriginYGlobal: Integer;
     function GetOriginXTile: Integer;
@@ -274,6 +276,11 @@ procedure TKeenRefresh.RequireMap;
 begin
   if not Assigned(FMap) then
     raise EKeenException.Create(SKeenRefreshNoMap);
+end;
+
+function TKeenRefresh.GetRefreshCount: Integer;
+begin
+  Result := FRefreshCount;
 end;
 
 function TKeenRefresh.GetTics: Integer;
@@ -1493,6 +1500,7 @@ procedure TKeenRefresh.Refresh;
 var
   LNewTime: Integer;
 begin
+  Inc(FRefreshCount);
   FUpdatePage := FOtherPage;
   FUpdatePtr := FUpdateStart[FOtherPage];
   AnimateTiles;

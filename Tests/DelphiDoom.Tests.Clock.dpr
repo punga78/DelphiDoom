@@ -25,9 +25,12 @@ uses
   DelphiDoom.Clock.PerformanceSource in '..\Libs\Clock\DelphiDoom.Clock.PerformanceSource.pas',
   DelphiDoom.Clock.WindowsCounters in '..\Libs\Clock\DelphiDoom.Clock.WindowsCounters.pas',
   DelphiDoom.Clock.Factory in '..\Libs\Clock\DelphiDoom.Clock.Factory.pas',
+  DelphiDoom.Clock.TimerResolution in '..\Libs\Clock\DelphiDoom.Clock.TimerResolution.pas',
+  DelphiDoom.Clock.WindowsTimerResolution in '..\Libs\Clock\DelphiDoom.Clock.WindowsTimerResolution.pas',
   DelphiDoom.Clock.ManualClock in '..\Libs\Clock\DelphiDoom.Clock.ManualClock.pas',
   DelphiDoom.Tests.Clock.Clock in 'Source\DelphiDoom.Tests.Clock.Clock.pas',
   DelphiDoom.Tests.Clock.ManualClock in 'Source\DelphiDoom.Tests.Clock.ManualClock.pas',
+  DelphiDoom.Tests.Clock.TimerResolution in 'Source\DelphiDoom.Tests.Clock.TimerResolution.pas',
   DelphiDoom.Tests.Clock.PerformanceSource in 'Source\DelphiDoom.Tests.Clock.PerformanceSource.pas';
 
 var
