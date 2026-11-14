@@ -95,6 +95,16 @@ type
     procedure DovrebbeMisurareLaDistanzaDallEstremoDelMuro;
     [Test]
     procedure DovrebbeVedereIlMuroCheIlColpoToccaGia;
+    [Test]
+    procedure IlColpoCheAttraversaIlMuroDovrebbeAverloSullaStrada;
+    [Test]
+    procedure IlColpoCheSiFermaPrimaDelMuroNonDovrebbeAverloSullaStrada;
+    [Test]
+    procedure IlMuroDiFiancoODietroNonDovrebbeEssereSullaStrada;
+    [Test]
+    procedure IlColpoCheSfioraLEstremoDelMuroDovrebbeContareEntroIlMargine;
+    [Test]
+    procedure UnColpoFermoOUnMuroPuntoNonDovrebberoDareErrori;
   end;
 
   [TestFixture]
@@ -464,6 +474,66 @@ var
 begin
   Assert.IsTrue(TRadixActionRules.WallAhead(99.5, 0, -30, 0, 100, -50, 100, 50, LDistance));
   Assert.AreEqual(0.5, LDistance, 0.0001);
+end;
+
+procedure TTestRadixActionRules.IlColpoCheAttraversaIlMuroDovrebbeAverloSullaStrada;
+var
+  LDistance: Double;
+begin
+  // the computer of E1M1: a wall along x = 10369, the shot seen at x = 10354 that flies east 56 a tic
+  Assert.IsTrue(TRadixActionRules.WallOnPath(10354, -541, 10354 + 86, -541, 10369, -512, 10369, -640, 14,
+    LDistance));
+  Assert.AreEqual(15.0, LDistance, 0.0001);
+  // across, at an angle
+  Assert.IsTrue(TRadixActionRules.WallOnPath(0, 0, 200, 40, 100, -50, 100, 50, 0.001, LDistance));
+  Assert.AreEqual(Sqrt(100.0 * 100.0 + 20.0 * 20.0), LDistance, 0.0001);
+end;
+
+procedure TTestRadixActionRules.IlColpoCheSiFermaPrimaDelMuroNonDovrebbeAverloSullaStrada;
+var
+  LDistance: Double;
+begin
+  Assert.IsFalse(TRadixActionRules.WallOnPath(0, 0, 80, 0, 100, -50, 100, 50, 14, LDistance));
+  // near enough with its radius
+  Assert.IsTrue(TRadixActionRules.WallOnPath(0, 0, 90, 0, 100, -50, 100, 50, 14, LDistance));
+  Assert.AreEqual(90.0, LDistance, 0.0001);
+end;
+
+procedure TTestRadixActionRules.IlMuroDiFiancoODietroNonDovrebbeEssereSullaStrada;
+var
+  LDistance: Double;
+begin
+  // the shot flies along the wall, 30 units beside it: WallAhead would take it
+  Assert.IsFalse(TRadixActionRules.WallOnPath(70, -40, 70, 40, 100, -50, 100, 50, 14, LDistance));
+  // the wall is behind the start
+  Assert.IsFalse(TRadixActionRules.WallOnPath(130, 0, 230, 0, 100, -50, 100, 50, 14, LDistance));
+  // the exploded missile is left past the wall: from there the wall is not on the way
+  Assert.IsFalse(TRadixActionRules.WallOnPath(10410, -541, 10496, -541, 10369, -512, 10369, -640, 14, LDistance));
+end;
+
+procedure TTestRadixActionRules.IlColpoCheSfioraLEstremoDelMuroDovrebbeContareEntroIlMargine;
+var
+  LDistance: Double;
+begin
+  // the way passes 10 units past the end (100, 50) of the wall
+  Assert.IsTrue(TRadixActionRules.WallOnPath(0, 60, 200, 60, 100, -50, 100, 50, 14, LDistance));
+  Assert.AreEqual(100.0, LDistance, 0.0001);
+  Assert.IsFalse(TRadixActionRules.WallOnPath(0, 60, 200, 60, 100, -50, 100, 50, 5, LDistance));
+end;
+
+procedure TTestRadixActionRules.UnColpoFermoOUnMuroPuntoNonDovrebberoDareErrori;
+var
+  LDistance: Double;
+begin
+  // a shot that does not move is on a wall only if it touches it
+  Assert.IsTrue(TRadixActionRules.WallOnPath(95, 0, 95, 0, 100, -50, 100, 50, 14, LDistance));
+  Assert.AreEqual(0.0, LDistance, 0.0001);
+  Assert.IsFalse(TRadixActionRules.WallOnPath(50, 0, 50, 0, 100, -50, 100, 50, 14, LDistance));
+  // a wall that is a point
+  Assert.IsTrue(TRadixActionRules.WallOnPath(0, 0, 10, 0, 6, 3, 6, 3, 4, LDistance));
+  Assert.AreEqual(6.0, LDistance, 0.0001);
+  // both without length
+  Assert.IsTrue(TRadixActionRules.WallOnPath(1, 1, 1, 1, 2, 1, 2, 1, 2, LDistance));
 end;
 
 { TTestRadixThingSpawnRules }

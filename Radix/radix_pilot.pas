@@ -53,11 +53,14 @@ uses
   d_player,
   d_think,
   d_ticcmd,
+  d_englsh,
   g_game,
   m_fixed,
   tables,
+  p_genlin,
   p_mobj_h,
   p_tick,
+  r_defs,
   r_main,
   z_zone,
   radix_playerstate,
@@ -113,6 +116,12 @@ begin
   p.cheats := p.cheats or CF_LOWGRAVITY;
   pmo.flags := pmo.flags or MF_NOGRAVITY;
 
+  // P_DamageMobj of Rad-X scaled what hits a craft: damage * (1 + skill) div 5, then
+  // * (128 + P_Random) div 384 (about a quarter of the damage at "easy", a half at "hard").
+  // P_DamageMobj of Doom has only the half damage of a thing that resists fire: without it
+  // one laser (10 * 1..8) took up to 80 of the 100 points of the shield
+  pmo.flags_ex := pmo.flags_ex or MF_EX_FIRERESIST;
+
   has_mj := rp.radixpowers[Ord(rpu_maneuverjets)] > 0;
   pmo.momx := TRadixFlightModel.Drag(pmo.momx, has_mj);
   pmo.momy := TRadixFlightModel.Drag(pmo.momy, has_mj);
@@ -133,6 +142,29 @@ begin
     pmo.momz := TRadixFlightModel.FLY_KEY_SPEED
   else if p.cmd.jump_crouch and CMD_CROUCH_MASK <> 0 then
     pmo.momz := -TRadixFlightModel.FLY_KEY_SPEED;
+end;
+
+//==============================================================================
+//
+// RX_PilotFindsSecret
+// JVAL: 20200409 - Secret sector handling does not require to be on ground.
+// P_PlayerInSpecialSector of Doom looks at the sector only when the player
+// stands on its floor, and a craft never does: the secret sectors of Radix
+// (RA_SecretSprite marks them with the generalized type) are counted here
+//
+//==============================================================================
+procedure RX_PilotFindsSecret(const p: Pplayer_t);
+var
+  sec: Psector_t;
+begin
+  sec := Psubsector_t(p.mo.subsector).sector;
+  if sec.special and SECRET_MASK = 0 then
+    exit;
+  inc(p.secretcount);
+  p._message := ShortString(MSGSECRETSECTOR);
+  sec.special := sec.special and not SECRET_MASK;
+  if sec.special < 32 then // if all extended bits clear,
+    sec.special := 0;      // sector is not special anymore
 end;
 
 //==============================================================================
@@ -162,6 +194,7 @@ begin
       if p.playerstate = PST_LIVE then
       begin
         RX_PilotFly(p, RX_PlayerState(p));
+        RX_PilotFindsSecret(p);
         RX_PilotInventoryTick(p);
         RX_PilotWeaponsTick(p);
       end;
