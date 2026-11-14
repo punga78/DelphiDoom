@@ -24,6 +24,13 @@
 //  Movement, collision handling.
 //  Shooting and aiming.
 //
+//  One copy for Doom, Heretic, Hexen and Strife (issue #185, step 2c-1): what
+//  a game does differently is in TMapGameRules, in the unit
+//  DelphiDoom.Engine.World.MapRules of the folder of the game (chosen by the
+//  project: static calls, no virtual call and no interface in this path).
+//  The routines only one game has are in that unit too; the lists of the
+//  sectors a thing touches (Doom, Strife) are in p_secnodes.
+//
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
@@ -156,6 +163,13 @@ function P_ThingsInSameZ(const A, B: Pmobj_t): boolean;
 //==============================================================================
 function P_ThingHeightClip(thing: Pmobj_t): boolean;
 
+//==============================================================================
+//
+// PIT_CheckThing
+//
+//==============================================================================
+function PIT_CheckThing(thing: Pmobj_t): boolean;
+
 var
   linetarget: Pmobj_t;  // who got hit (or NULL)
 
@@ -210,7 +224,6 @@ var
   // ???: use slope for monsters?
   shootz: fixed_t;
   la_damage: integer;
-  aimslope: fixed_t;
 
   crushchange: boolean;
   nofit: boolean;
@@ -663,6 +676,117 @@ begin
       IsIntegerInRange(Az2, Bz1 + 1, Bz2 - 1) or
       IsIntegerInRange(Bz1, Az1 + 1, Az2 - 1) or
       IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1)
+end;
+
+//==============================================================================
+//
+// PIT_CheckThing
+//
+//==============================================================================
+function PIT_CheckThing(thing: Pmobj_t): boolean;
+var
+  blockdist: fixed_t;
+begin
+  if thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE) = 0 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // don't clip against self
+  if thing = tmthing then
+  begin
+    result := true;
+    exit;
+  end;
+
+  if G_PlayingEngineVersion >= VERSION205 then
+    if (thing.player <> nil) or (tmthing.player <> nil) then  // Only if a player is involved
+      if not P_ThingsInSameZ(thing, tmthing) then // JVAL: 20200413 -> Check z axis
+      begin
+        result := true;
+        exit;
+      end;
+
+  // JVAL: 20200130 - MF2_EX_DONTBLOCKPLAYER flag - does not block players
+  if (thing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (tmthing.player <> nil) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  if (tmthing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (thing.player <> nil) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20210209 - MF3_EX_THRUACTORS flag - does not colide with actors
+  if (tmthing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
+  if (tmthing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20211031 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
+  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(tmthing._type) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20210209 - MF3_EX_THRUSPECIES flag - does not colide with same species (also inheritance)
+  if tmthing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
+  begin
+    if tmthing._type = thing._type then
+    begin
+      result := true;
+      exit;
+    end;
+    if Info_GetInheritance(tmthing.info) = Info_GetInheritance(thing.info) then
+    begin
+      result := true;
+      exit;
+    end;
+  end;
+
+  blockdist := thing.radius + tmthing.radius;
+
+  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
+  begin
+    // didn't hit it
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 3d Floors
+  if G_PlayingEngineVersion >= TMapGameRules.SlopesVersion then
+  begin
+    if (tmthing.player <> nil) or (thing.player <> nil) then
+      if tmfloorz <> thing.floorz then
+      begin
+        if tmthing.z > thing.z + thing.height then
+        begin
+          result := true;
+          exit;
+        end;
+
+        if tmthing.z + tmthing.height < thing.z then
+        begin // under thing
+          result := true;
+          exit;
+        end;
+      end;
+  end;
+
+  result := TMapGameRules.CheckThingContact(thing);
 end;
 
 //
@@ -1582,6 +1706,8 @@ end;
 // P_LineAttack
 //
 var
+  aimslope: fixed_t;
+
   aim_flags_mask2_ex: integer;  // JVAL: 20220111 - MBF21
 
 // JVAL: 3d floors : Moved from P_Sight
@@ -1720,6 +1846,248 @@ begin
   linetarget := th;
 
   result := false; // don't go any farther
+end;
+
+//==============================================================================
+//
+// PTR_ShootTraverse
+//
+//==============================================================================
+function PTR_ShootTraverse(intr: Pintercept_t): boolean;
+var
+  x: fixed_t;
+  y: fixed_t;
+  z: fixed_t;
+  frac: fixed_t;
+  li: Pline_t;
+  th: Pmobj_t;
+  slope: fixed_t;
+  dist: fixed_t;
+  thingtopslope: fixed_t;
+  thingbottomslope: fixed_t;
+  mid: Psector_t;  // JVAL: 3d Floors
+  midn: integer;
+
+  function hitline(const check3dfloors: boolean): boolean;
+  var
+    zoffs: fixed_t;
+    midfront: Psector_t;
+    midback: Psector_t;
+    ok: boolean;
+  begin
+    if check3dfloors then
+    begin
+      // JVAL: 3d Floors
+      if li.frontsector.midsec >= 0 then
+        midfront := @sectors[li.frontsector.midsec]
+      else
+        midfront := nil;
+
+      if li.backsector.midsec >= 0 then
+        midback := @sectors[li.backsector.midsec]
+      else
+        midback := nil;
+
+      if (midfront <> nil) or (midback <> nil) then
+      begin
+        if midfront = nil then
+        begin
+          midfront := midback;
+          midback := nil;
+        end;
+        ok := true;
+        if (FixedDiv(midfront.ceilingheight - shootz, dist) <= aimslope) or
+           (FixedDiv(midfront.floorheight - shootz, dist) >= aimslope) then
+        else
+          ok := false;
+        if midback <> nil then
+        begin
+          if (FixedDiv(midback.ceilingheight - shootz, dist) <= aimslope) or
+             (FixedDiv(midback.floorheight - shootz, dist) >= aimslope) then
+            ok := true
+          else
+            ok := false;
+        end;
+        if ok then
+        begin
+          result := true;
+          exit;
+        end;
+      end;
+    end;
+
+    // hit line
+    // position a bit closer
+    frac := intr.frac - FixedDiv(4 * FRACUNIT, attackrange);
+    x := trace.x + FixedMul(trace.dx, frac);
+    y := trace.y + FixedMul(trace.dy, frac);
+    z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+
+    if li.frontsector.ceilingpic = skyflatnum then
+    begin
+      // don't shoot the sky!
+      if z > li.frontsector.ceilingheight then
+      begin
+        result := false;
+        exit;
+      end;
+
+      // it's a sky hack wall
+      if (li.backsector <> nil) and (li.backsector.ceilingpic = skyflatnum) then
+      begin
+        if li.backsector.ceilingheight < z then
+        begin
+          result := false;
+          exit;
+        end;
+      // JVAL: Spawn puff to lower textures.
+        // Doom spawns the puff out of the compatibility mode and always stops the shot here;
+        // the other games spawn it in the compatibility mode, and only then the shot stops here
+        if G_NeedsCompatibilityMode = TMapGameRules.SkyHackPuffInCompatibility then
+        begin
+          P_SaveRandom;
+          zoffs := (li.backsector.ceilingheight - z) * P_Random div 256;
+          if zoffs > dist div 2 then
+            zoffs := dist div 2;
+          P_SpawnPuff(x, y, z + zoffs);
+          P_RestoreRandom;
+          result := false;
+          exit;
+        end;
+        if not TMapGameRules.SkyHackPuffInCompatibility then
+        begin
+          result := false;
+          exit;
+        end;
+      end;
+    end;
+    // Spawn bullet puffs.
+    TMapGameRules.SpawnWallPuff(x, y, z);
+
+    // don't go any farther
+    result := false;
+  end;
+
+begin
+  if intr.isaline then
+  begin
+    li := intr.d.line;
+
+    if li.flags and ML_TRIGGERSCRIPTS <> 0 then
+      if shootthing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+        PS_EventShootLine(shootthing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(shootthing.x, shootthing.y, li));
+
+    if li.special <> 0 then
+      TMapGameRules.ShootSpecialLine(shootthing, li);
+
+    if li.flags and ML_TWOSIDED = 0 then
+    begin
+      result := hitline(false);
+      exit;
+    end;
+
+    if li.backsector = nil then
+    begin
+      result := hitline(false);
+      exit;
+    end;
+
+    // crosses a two sided line
+    P_LineOpening(li, false);
+
+    dist := FixedMul(attackrange, intr.frac);
+
+    if li.frontsector.floorheight <> li.backsector.floorheight then
+    begin
+      slope := FixedDiv(openbottom - shootz, dist);
+      if slope > aimslope then
+      begin
+        result := hitline(true);
+        exit;
+      end;
+    end;
+
+    if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
+    begin
+      slope := FixedDiv(opentop - shootz, dist);
+      if slope < aimslope then
+      begin
+        result := hitline(true);
+        exit;
+      end;
+    end;
+
+    // shot continues
+    result := true;
+    exit;
+  end;
+
+  // shoot a thing
+  th := intr.d.thing;
+  if th = shootthing then
+  begin
+    result := true; // can't shoot self
+    exit;
+  end;
+
+  if th.flags and MF_SHOOTABLE = 0 then
+  begin
+    result := true; // corpse or something
+    exit;
+  end;
+
+  if TMapGameRules.ShotPassesThrough(th) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // check angles to see if the thing can be aimed at
+  dist := FixedMul(attackrange, intr.frac);
+  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
+
+  if thingtopslope < aimslope then
+  begin
+    result := true; // shot over the thing
+    exit;
+  end;
+
+  thingbottomslope := FixedDiv(th.z - shootz, dist);
+
+  if thingbottomslope > aimslope then
+  begin
+    result := true; // shot under the thing
+    exit;
+  end;
+
+  // JVAL: 3d Floors
+  // Can not shoot if in same subsector but different floor
+  if shootthing.subsector = th.subsector then
+  begin
+    midn := Psubsector_t(shootthing.subsector).sector.midsec;
+
+    if midn > -1 then
+    begin
+      mid := @sectors[midn];
+      if ((shootz <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
+         ((th.z + th.height <= mid.floorheight) and (shootz >= mid.ceilingheight)) then
+      begin
+        result := false;
+        exit;
+      end;
+    end;
+  end;
+
+  // hit thing
+  // position a bit closer
+  frac := intr.frac - FixedDiv(10 * FRACUNIT, attackrange);
+
+  x := trace.x + FixedMul(trace.dx, frac);
+  y := trace.y + FixedMul(trace.dy, frac);
+  z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
+
+  // Puff or blood, and the damage: never goes any farther
+  result := TMapGameRules.ShotHitsThing(intr, th, x, y, z);
 end;
 
 //==============================================================================

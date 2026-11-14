@@ -46,7 +46,8 @@ type
       SlopesVersion = VERSION115;
       /// <summary>A teleported thing is put on the floor of the destination</summary>
       TeleportSetsZ = False;
-      /// <summary>The step a sliding thing climbs</summary>
+      /// <summary>The puff on a sky hack wall is spawned in the compatibility mode (Doom: out of it, and the shot always stops there)</summary>
+      SkyHackPuffInCompatibility = True;
       /// <summary>The flags of a thing that runs no special of the lines it touches or crosses</summary>
       NoSpecHitFlags = MF_TELEPORT or MF_NOCLIP;
       /// <summary>A move stopped by a thing or by a wall pushes the lines it touched</summary>
@@ -55,6 +56,7 @@ type
       DropoffHeight = 24 * FRACUNIT;
       /// <summary>What a thing that jumps down adds to it</summary>
       JumpDownMargin = 120 * FRACUNIT;
+      /// <summary>The step a sliding thing climbs</summary>
       SlideStepMargin = 24 * FRACUNIT;
 
     /// <summary>The sector of a point (Doom follows the original nodes while an old demo plays)</summary>
@@ -148,6 +150,19 @@ type
     /// <summary>The thing crossed a special line</summary>
     class procedure CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t); static;
     /// <summary>
+    ///   The second half of PIT_CheckThing, after the checks that are the same in every game:
+    ///   what happens when tmthing touches the thing; false when tmthing is blocked
+    /// </summary>
+    class function CheckThingContact(thing: Pmobj_t): boolean; static;
+    /// <summary>The puff of a shot that hit a wall</summary>
+    class procedure SpawnWallPuff(x, y, z: fixed_t); static;
+    /// <summary>A shot hit a special line</summary>
+    class procedure ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t); static;
+    /// <summary>A shot goes through this thing (Strife: the spectral ones)</summary>
+    class function ShotPassesThrough(th: Pmobj_t): boolean; static; inline;
+    /// <summary>A shot hit the thing at this point: puff or blood, and the damage; the result of PTR_ShootTraverse</summary>
+    class function ShotHitsThing(intr: Pintercept_t; th: Pmobj_t; x, y, z: fixed_t): boolean; static;
+    /// <summary>
     ///   Rechecks the things of a sector that moved through the list of the things that touch
     ///   it; false when the caller has to walk the blockmap instead
     /// </summary>
@@ -169,8 +184,6 @@ procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 //==============================================================================
 function PIT_ChangeSector(thing: Pmobj_t): boolean;
 
-function PIT_CheckThing(thing: Pmobj_t): boolean;
-function PTR_ShootTraverse(intr: Pintercept_t): boolean;
 
 implementation
 
@@ -559,134 +572,12 @@ begin
   end;
 end;
 
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-begin
-  if line.special <> 0 then
-  begin
-    if mobj.flags5_ex and MF5_EX_PUSHWALL <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_PUSH)
-    else if mobj.flags5_ex and MF5_EX_IMPACT <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_IMPACT);
-  end;
-end;
-
-//==============================================================================
-//
-// PIT_CheckThing
-//
-//==============================================================================
-function PIT_CheckThing(thing: Pmobj_t): boolean;
+class function TMapGameRules.CheckThingContact(thing: Pmobj_t): boolean;
 var
-  blockdist: fixed_t;
   solid: boolean;
   damage: integer;
   pushfactor: fixed_t;
 begin
-  if (thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE)) = 0 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // don't clip against self
-  if thing = tmthing then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if G_PlayingEngineVersion >= VERSION205 then
-    if (thing.player <> nil) or (tmthing.player <> nil) then  // Only if a player is involved
-      if not P_ThingsInSameZ(thing, tmthing) then // JVAL: 20200413 -> Check z axis
-      begin
-        result := true;
-        exit;
-      end;
-
-  // JVAL: 20200130 - MF2_EX_DONTBLOCKPLAYER flag - does not block players
-  if (thing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (tmthing.player <> nil) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if (tmthing.flags2_ex and MF2_EX_DONTBLOCKPLAYER <> 0) and (thing.player <> nil) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 20210209 - MF3_EX_THRUACTORS flag - does not colide with actors
-  if (tmthing.flags3_ex and MF3_EX_THRUACTORS <> 0) or (thing.flags3_ex and MF3_EX_THRUACTORS <> 0) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 20211121 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (tmthing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(thing._type) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 20211121 - MF4_EX_THRUMONSTERS flag - does not colide with monsters
-  if (thing.flags4_ex and MF4_EX_THRUMONSTERS <> 0) and Info_IsMonster(tmthing._type) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 20210209 - MF3_EX_THRUSPECIES flag - does not colide with same species (also inheritance)
-  if tmthing.flags3_ex and MF3_EX_THRUSPECIES <> 0 then
-  begin
-    if tmthing._type = thing._type then
-    begin
-      result := true;
-      exit;
-    end;
-    if Info_GetInheritance(tmthing.info) = Info_GetInheritance(thing.info) then
-    begin
-      result := true;
-      exit;
-    end;
-  end;
-
-  blockdist := thing.radius + tmthing.radius;
-
-  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
-  begin
-    // didn't hit it
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 3d Floors
-  if G_PlayingEngineVersion >= VERSION115 then
-  begin
-    if (tmthing.player <> nil) or (thing.player <> nil) then
-      if tmfloorz <> thing.floorz then
-      begin
-        if tmthing.z > thing.z + thing.height then
-        begin
-          result := true;
-          exit;
-        end;
-
-        if tmthing.z + tmthing.height < thing.z then
-        begin // under thing
-          result := true;
-          exit;
-        end;
-      end;
-  end;
-
   if tmthing.flags2 and MF2_PASSMOBJ <> 0 then
   begin // check if a mobj passed over/under another object
 
@@ -890,234 +781,24 @@ begin
     result := thing.flags and MF_SOLID = 0;
 end;
 
-//==============================================================================
-//
-// PTR_ShootTraverse
-//
-//==============================================================================
-function PTR_ShootTraverse(intr: Pintercept_t): boolean;
-var
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  frac: fixed_t;
-  li: Pline_t;
-  th: Pmobj_t;
-  slope: fixed_t;
-  dist: fixed_t;
-  thingtopslope: fixed_t;
-  thingbottomslope: fixed_t;
-  mid: Psector_t;  // JVAL: 3d Floors
-  midn: integer;
-
-  function hitline(const check3dfloors: boolean): boolean;
-  var
-    zoffs: fixed_t;
-    midfront: Psector_t;
-    midback: Psector_t;
-    ok: boolean;
-  begin
-    if check3dfloors then
-    begin
-      // JVAL: 3d Floors
-      if li.frontsector.midsec >= 0 then
-        midfront := @sectors[li.frontsector.midsec]
-      else
-        midfront := nil;
-
-      if li.backsector.midsec >= 0 then
-        midback := @sectors[li.backsector.midsec]
-      else
-        midback := nil;
-
-      if (midfront <> nil) or (midback <> nil) then
-      begin
-        if midfront = nil then
-        begin
-          midfront := midback;
-          midback := nil;
-        end;
-        ok := true;
-        if (FixedDiv(midfront.ceilingheight - shootz, dist) <= aimslope) or
-           (FixedDiv(midfront.floorheight - shootz, dist) >= aimslope) then
-        else
-          ok := false;
-        if midback <> nil then
-        begin
-          if (FixedDiv(midback.ceilingheight - shootz, dist) <= aimslope) or
-             (FixedDiv(midback.floorheight - shootz, dist) >= aimslope) then
-            ok := true
-          else
-            ok := false;
-        end;
-        if ok then
-        begin
-          result := true;
-          exit;
-        end;
-      end;
-    end;
-
-    // hit line
-    // position a bit closer
-    frac := intr.frac - FixedDiv(4 * FRACUNIT, attackrange);
-    x := trace.x + FixedMul(trace.dx, frac);
-    y := trace.y + FixedMul(trace.dy, frac);
-    z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
-
-    if li.frontsector.ceilingpic = skyflatnum then
-    begin
-      // don't shoot the sky!
-      if z > li.frontsector.ceilingheight then
-      begin
-        result := false;
-        exit;
-      end;
-
-      // it's a sky hack wall
-      if (li.backsector <> nil) and (li.backsector.ceilingpic = skyflatnum) then
-      begin
-        if li.backsector.ceilingheight < z then
-        begin
-          result := false;
-          exit;
-        end;
-      // JVAL: Spawn puff to lower textures.
-        if G_NeedsCompatibilityMode then
-        begin
-          P_SaveRandom;
-          zoffs := (li.backsector.ceilingheight - z) * P_Random div 256;
-          if zoffs > dist div 2 then
-            zoffs := dist div 2;
-          P_SpawnPuff(x, y, z + zoffs);
-          P_RestoreRandom;
-          result := false;
-          exit;
-        end;
-      end;
-    end;
-    // Spawn bullet puffs.
-    P_SpawnPuff(x, y, z);
-
-    // don't go any farther
-    result := false;
-  end;
-
+class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
 begin
-  if intr.isaline then
-  begin
-    li := intr.d.line;
+  P_SpawnPuff(x, y, z);
+end;
 
-    if li.flags and ML_TRIGGERSCRIPTS <> 0 then
-      if shootthing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-        PS_EventShootLine(shootthing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(shootthing.x, shootthing.y, li));
+class procedure TMapGameRules.ShootSpecialLine(shootthing: Pmobj_t; li: Pline_t);
+begin
+  P_ShootSpecialLine(shootthing, li);
+  P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
+end;
 
-    if li.special <> 0 then
-    begin
-      P_ShootSpecialLine(shootthing, li);
-      P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
-    end;
+class function TMapGameRules.ShotPassesThrough(th: Pmobj_t): boolean;
+begin
+  result := false;
+end;
 
-    if li.flags and ML_TWOSIDED = 0 then
-    begin
-      result := hitline(false);
-      exit;
-    end;
-
-    if li.backsector = nil then
-    begin
-      result := hitline(false);
-      exit;
-    end;
-
-    // crosses a two sided line
-    P_LineOpening(li, false);
-
-    dist := FixedMul(attackrange, intr.frac);
-
-    if li.frontsector.floorheight <> li.backsector.floorheight then
-    begin
-      slope := FixedDiv(openbottom - shootz, dist);
-      if slope > aimslope then
-      begin
-        result := hitline(true);
-        exit;
-      end;
-    end;
-
-    if li.frontsector.ceilingheight <> li.backsector.ceilingheight then
-    begin
-      slope := FixedDiv(opentop - shootz, dist);
-      if slope < aimslope then
-      begin
-        result := hitline(true);
-        exit;
-      end;
-    end;
-
-    // shot continues
-    result := true;
-    exit;
-  end;
-
-  // shoot a thing
-  th := intr.d.thing;
-  if th = shootthing then
-  begin
-    result := true; // can't shoot self
-    exit;
-  end;
-
-  if th.flags and MF_SHOOTABLE = 0 then
-  begin
-    result := true; // corpse or something
-    exit;
-  end;
-
-  // check angles to see if the thing can be aimed at
-  dist := FixedMul(attackrange, intr.frac);
-  thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
-
-  if thingtopslope < aimslope then
-  begin
-    result := true; // shot over the thing
-    exit;
-  end;
-
-  thingbottomslope := FixedDiv(th.z - shootz, dist);
-
-  if thingbottomslope > aimslope then
-  begin
-    result := true; // shot under the thing
-    exit;
-  end;
-
-  // JVAL: 3d Floors
-  // Can not shoot if in same subsector but different floor
-  if shootthing.subsector = th.subsector then
-  begin
-    midn := Psubsector_t(shootthing.subsector).sector.midsec;
-
-    if midn > -1 then
-    begin
-      mid := @sectors[midn];
-      if ((shootz <= mid.floorheight) and (th.z >= mid.ceilingheight)) or
-         ((th.z + th.height <= mid.floorheight) and (shootz >= mid.ceilingheight)) then
-      begin
-        result := false;
-        exit;
-      end;
-    end;
-  end;
-
-  // hit thing
-  // position a bit closer
-  frac := intr.frac - FixedDiv(10 * FRACUNIT, attackrange);
-
-  x := trace.x + FixedMul(trace.dx, frac);
-  y := trace.y + FixedMul(trace.dy, frac);
-  z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
-
+class function TMapGameRules.ShotHitsThing(intr: Pintercept_t; th: Pmobj_t; x, y, z: fixed_t): boolean;
+begin
   // Spawn bullet puffs or blood spots,
   // depending on target type.
   if intr.d.thing.flags and MF_NOBLOOD <> 0 then
@@ -1131,6 +812,24 @@ begin
   // don't go any farther
   result := false;
 end;
+
+//==============================================================================
+// P_CheckForPushSpecial
+//
+// CheckForPushSpecial
+//
+//==============================================================================
+procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
+begin
+  if line.special <> 0 then
+  begin
+    if mobj.flags5_ex and MF5_EX_PUSHWALL <> 0 then
+      P_ActivateLine(line, mobj, side, ULAC_PUSH)
+    else if mobj.flags5_ex and MF5_EX_IMPACT <> 0 then
+      P_ActivateLine(line, mobj, side, ULAC_IMPACT);
+  end;
+end;
+
 
 //==============================================================================
 //
