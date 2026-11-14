@@ -5,10 +5,9 @@
 {  Port of cm_traceWork_t (CollisionModel_local.h) and of SetupTrm and         }
 {  SetupTranslationHeartPlanes (CollisionModel_translate.cpp), Doom 3 GPL      }
 {  Source Code. Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media       }
-{  company. Doom 3 Source Code: GNU General Public License version 3 with      }
-{  additional terms. This unit is a derived work (GPL v3). The fields of the   }
-{  rotational collision (rotation origin, axis, angle, rotation bounds) are    }
-{  not ported.                                                                 }
+{  company. Based on the Doom 3 GPL Source Code (id Software). Doom 3 Source   }
+{  Code: GNU General Public License version 3 with additional terms. This      }
+{  unit is a derived work (GPL v3).                                            }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Collision.TraceWork;
@@ -18,7 +17,8 @@ interface
 uses
   System.Generics.Collections, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Plane,
   DelphiDoom.Geometry.Bounds, DelphiDoom.Geometry.Pluecker, DelphiDoom.Geometry.TraceModel,
-  DelphiDoom.Collision.Types, DelphiDoom.Collision.Model;
+  DelphiDoom.Geometry.Mat3, DelphiDoom.MathCore.Float.Rotation, DelphiDoom.Collision.Types,
+  DelphiDoom.Collision.Model;
 
 type
   /// <summary>A vertex of the moving trace model (cm_trmVertex_t)</summary>
@@ -31,6 +31,12 @@ type
     EndP: TGeoVec3;
     /// <summary>pluecker coordinate for vertex movement</summary>
     Pl: TGeoPluecker;
+    /// <summary>side of polygon this vertex is on, 0 or 1 (rotational collision)</summary>
+    PolygonSide: Integer;
+    /// <summary>rotation origin for this vertex</summary>
+    RotationOrigin: TGeoVec3;
+    /// <summary>rotation bounds for this vertex</summary>
+    RotationBounds: TGeoBounds;
   end;
 
   /// <summary>An edge of the moving trace model (cm_trmEdge_t)</summary>
@@ -46,6 +52,10 @@ type
     Cross: TGeoVec3;
     /// <summary>vertex bit number</summary>
     BitNum: Word;
+    /// <summary>rotation bounds for this edge</summary>
+    RotationBounds: TGeoBounds;
+    /// <summary>pluecker coordinate for rotation about the z-axis</summary>
+    PlZAxis: TGeoPluecker;
   end;
 
   /// <summary>A polygon of the moving trace model (cm_trmPolygon_t)</summary>
@@ -55,6 +65,8 @@ type
     NumEdges: Integer;
     /// <summary>signed index into the edges of the trace work</summary>
     Edges: array[0..MAX_TRACEMODEL_POLYEDGES - 1] of Integer;
+    /// <summary>rotation bounds for this polygon</summary>
+    RotationBounds: TGeoBounds;
   end;
 
   /// <summary>
@@ -108,6 +120,26 @@ type
     MaxDistFromHeartPlane2: Single;
     PolygonEdgePlueckerCache: array[0..CM_MAX_POLYGON_EDGES - 1] of TGeoPluecker;
     PolygonVertexPlueckerCache: array[0..CM_MAX_POLYGON_EDGES] of TGeoPluecker;
+    /// <summary>true if calculating rotational collision</summary>
+    Rotation: Boolean;
+    /// <summary>true if the rotation axis intersects the trace model</summary>
+    AxisIntersectsTrm: Boolean;
+    /// <summary>origin of rotation in model space</summary>
+    Origin: TGeoVec3;
+    /// <summary>rotation axis in model space</summary>
+    Axis: TGeoVec3;
+    /// <summary>rotates the axis of rotation to the z-axis</summary>
+    Matrix: TGeoMat3;
+    /// <summary>angle for rotational collision, in degrees</summary>
+    Angle: Single;
+    /// <summary>max tangent of half the positive angle, used instead of the fraction</summary>
+    MaxTan: Single;
+    /// <summary>rotation radius of the trm start</summary>
+    Radius: Single;
+    /// <summary>inverse rotation for the model vertices</summary>
+    ModelVertexRotation: TIdRotation;
+    /// <summary>one more than the edges of a polygon, the first is repeated at the end</summary>
+    PolygonRotationOriginCache: array[0..CM_MAX_POLYGON_EDGES] of TGeoVec3;
 
     constructor Create;
     /// <summary>Copies the vertices, edges and polygons of the trace model (SetupTrm)</summary>

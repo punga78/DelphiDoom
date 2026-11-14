@@ -19,7 +19,8 @@ uses
   DelphiDoom.Logging.Intf, DelphiDoom.Collision.Types, DelphiDoom.Collision.Intf,
   DelphiDoom.Collision.Model, DelphiDoom.Collision.CheckCounter, DelphiDoom.Collision.Translator,
   DelphiDoom.Collision.ContentsTester, DelphiDoom.Collision.Tracer, DelphiDoom.Collision.ContentsRunner,
-  DelphiDoom.Collision.TranslationRunner, DelphiDoom.Collision.TrmModel;
+  DelphiDoom.Collision.TranslationRunner, DelphiDoom.Collision.TrmModel, DelphiDoom.MathCore.Float.Rotation,
+  DelphiDoom.Collision.Rotator, DelphiDoom.Collision.RotationRunner;
 
 type
   /// <summary>
@@ -41,6 +42,8 @@ type
     FTracer: TCollisionTracer;
     FContentsRunner: TCollisionContentsRunner;
     FTranslationRunner: TCollisionTranslationRunner;
+    FRotator: TCollisionRotator;
+    FRotationRunner: TCollisionRotationRunner;
     FTrmSlot: TCollisionTrmModelSlot;
     function ModelOf(AHandle: Integer; const AFunction: string): TCollisionModel;
     procedure Say(const AText: string);
@@ -67,6 +70,9 @@ type
     procedure Translation(var AResults: TCollisionTrace; const AStart, AEnd: TGeoVec3; ATrm: TTraceModel;
       const ATrmAxis: TGeoMat3; AContentMask: Integer; AModel: Integer; const AModelOrigin: TGeoVec3;
       const AModelAxis: TGeoMat3);
+    procedure Rotation(var AResults: TCollisionTrace; const AStart: TGeoVec3; const ARotation: TIdRotation;
+      ATrm: TTraceModel; const ATrmAxis: TGeoMat3; AContentMask: Integer; AModel: Integer;
+      const AModelOrigin: TGeoVec3; const AModelAxis: TGeoMat3);
     function Contents(const AStart: TGeoVec3; ATrm: TTraceModel; const ATrmAxis: TGeoMat3;
       AContentMask: Integer; AModel: Integer; const AModelOrigin: TGeoVec3; const AModelAxis: TGeoMat3): Integer;
     function Contacts(AContacts: TList<TContactInfo>; AMaxContacts: Integer; const AStart, ADir: TGeoVec3;
@@ -97,18 +103,22 @@ begin
   FCounter := TCollisionCheckCounter.Create;
   FTranslator := TCollisionTranslator.Create(FCounter);
   FContentsTester := TCollisionContentsTester.Create(FCounter);
-  FTracer := TCollisionTracer.Create(FTranslator, FContentsTester);
+  FRotator := TCollisionRotator.Create(FCounter);
+  FTracer := TCollisionTracer.Create(FTranslator, FContentsTester, FRotator);
   FContentsRunner := TCollisionContentsRunner.Create(FCounter, FTracer);
   FTranslationRunner := TCollisionTranslationRunner.Create(FLog, FCounter, FTracer, FContentsRunner);
+  FRotationRunner := TCollisionRotationRunner.Create(FCounter, FTracer, FContentsRunner);
   FTrmSlot := TCollisionTrmModelSlot.Create(FCatalog.FindMaterial(STraceModelMaterial));
 end;
 
 destructor TCollisionModelManager.Destroy;
 begin
   FTrmSlot.Free;
+  FRotationRunner.Free;
   FTranslationRunner.Free;
   FContentsRunner.Free;
   FTracer.Free;
+  FRotator.Free;
   FContentsTester.Free;
   FTranslator.Free;
   FCounter.Free;
@@ -301,6 +311,23 @@ begin
   if not Assigned(LModel) then
     Exit;
   FTranslationRunner.Translate(AResults, AStart, AEnd, ATrm, ATrmAxis, AContentMask, LModel, AModelOrigin,
+    AModelAxis);
+end;
+
+procedure TCollisionModelManager.Rotation(var AResults: TCollisionTrace; const AStart: TGeoVec3;
+  const ARotation: TIdRotation; ATrm: TTraceModel; const ATrmAxis: TGeoMat3; AContentMask: Integer;
+  AModel: Integer; const AModelOrigin: TGeoVec3; const AModelAxis: TGeoMat3);
+var
+  LModel: TCollisionModel;
+  LRotation: TIdRotation;
+begin
+  AResults := Default(TCollisionTrace);
+  LModel := ModelOf(AModel, 'Rotation');
+  if not Assigned(LModel) then
+    Exit;
+  // the rotation caches its matrix: work on a copy
+  LRotation := ARotation;
+  FRotationRunner.Rotate(AResults, AStart, LRotation, ATrm, ATrmAxis, AContentMask, LModel, AModelOrigin,
     AModelAxis);
 end;
 

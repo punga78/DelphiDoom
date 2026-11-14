@@ -319,3 +319,8 @@ con origine e angoli, contro il mondo, un modello interno e un box temporaneo), 
 bit (i float uguali come bit); a 32 bit (x87) tolleranza di 4 ULP, 16 per i trace ruotati.** I BSP sono dati prodotti dal
 generatore (nessuna mappa di gioco); ogni float e' scritto come bit. Test: `Tests\DelphiDoom.Tests.Collision` (133 con i 95 di Doom
 3), copertura delle unit nuove 97-100%.
+
+
+## Completamento delle issue 108 e 118
+
+Rotazione, fusione dei poligoni, spigoli interni, proc BSP, costruzione da mappa con patch, `TCollisionMotion`, `.cm` robusto, collisione delle patch di Quake III (`cm_patch.c`, `cm_polylib.c`) e prova sulle 72 mappe di OpenArena sono portati; vedi `CLAUDE.md` per numeri, difetti degli originali e trappole. Ricette dei riscontri sul C vero: `Tools\Verifica\108` (Doom 3, `Build-Harness.ps1`, `Make-Maps.ps1`, `Make-Golden.ps1`) e `Tools\Verifica\118` (Quake III, `build.sh`, `Make-OpenArena-Golden.ps1`). Licenza: le unit di Doom 3 sono GPL v3 con termini aggiuntivi, quelle di Quake III GPL v2 o successiva.

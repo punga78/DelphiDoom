@@ -21,6 +21,11 @@ type
   TQ3CollisionFactory = class
   public
     /// <summary>
+    ///   The builder of the collision geometry of the patches (cm_patch.c): give it to CreateFromBsp and the
+    ///   patches collide. It builds one patch at a time (the C keeps its planes in statics)
+    /// </summary>
+    class function CreatePatchBuilder: IQ3PatchCollideBuilder; static;
+    /// <summary>
     ///   CM_LoadMap on a BSP that was read already: the lumps are checked with the validator of
     ///   Libs\MapFile (a corrupt file raises EQ3CollisionException). The patches do not
     ///   collide unless a builder is given.
@@ -39,10 +44,15 @@ implementation
 
 uses
   DelphiDoom.MapFile.Bsp.Factory, DelphiDoom.Collision.Q3.Types, DelphiDoom.Collision.Q3.ClipMap,
-  DelphiDoom.Collision.Q3.Loader, DelphiDoom.Collision.Q3.Model;
+  DelphiDoom.Collision.Q3.Loader, DelphiDoom.Collision.Q3.Model, DelphiDoom.Collision.Q3.PatchCollideBuilder;
 
 resourcestring
   SCouldNotLoad = 'Couldn''t load %s';
+
+class function TQ3CollisionFactory.CreatePatchBuilder: IQ3PatchCollideBuilder;
+begin
+  Result := TQ3PatchCollideBuilder.Create;
+end;
 
 class function TQ3CollisionFactory.CreateFromBsp(const AFile: IBspFile; const AName: AnsiString;
   const APatchBuilder: IQ3PatchCollideBuilder): IQ3CollisionModel;

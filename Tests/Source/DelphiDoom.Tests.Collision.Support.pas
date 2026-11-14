@@ -54,6 +54,8 @@ type
   end;
 
 /// <summary>The six outward planes of a box</summary>
+/// <summary>The materials of the synthetic Doom 3 maps (the table of the C++ harness stubs)</summary>
+function CreateDoom3Catalog: ICollisionMaterialCatalog;
 function BoxSides(const ABounds: TGeoBounds; AMaterial: TCollisionMaterial): TArray<TCollisionBrushSide>;
 function Bounds3(AMinX, AMinY, AMinZ, AMaxX, AMaxY, AMaxZ: Single): TGeoBounds;
 
@@ -80,6 +82,24 @@ begin
   Result[3].Material := AMaterial;
   Result[4].Material := AMaterial;
   Result[5].Material := AMaterial;
+end;
+
+function CreateDoom3Catalog: ICollisionMaterialCatalog;
+var
+  LCatalog: TFakeMaterialCatalog;
+begin
+  LCatalog := TFakeMaterialCatalog.Create;
+  Result := LCatalog;
+  // the same table as FindMaterial in Tools\Verifica\108\stubs.cpp
+  LCatalog.Define('textures/solid', CONTENTS_SOLID);
+  LCatalog.Define('textures/clip', CONTENTS_PLAYERCLIP or CONTENTS_MONSTERCLIP);
+  LCatalog.Define('textures/water', CONTENTS_WATER);
+  LCatalog.Define('textures/glass', CONTENTS_SOLID or CONTENTS_OPAQUE, True);
+  LCatalog.Define('textures/backsides', CONTENTS_SOLID, True);
+  LCatalog.Define('textures/body', CONTENTS_BODY);
+  LCatalog.Define('textures/areaportal', CONTENTS_AREAPORTAL);
+  LCatalog.Define('textures/nonsolid', 0);
+  LCatalog.Define('_tracemodel', CONTENTS_SOLID);
 end;
 
 { TFakeMaterialCatalog }

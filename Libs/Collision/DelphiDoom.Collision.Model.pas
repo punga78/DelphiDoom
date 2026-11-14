@@ -70,6 +70,11 @@ type
     /// <summary>A new polygon owned by the model, with ANumEdges edge slots and a unique Id</summary>
     function CreatePolygon(ANumEdges: Integer): TCmPolygon;
     function CreateBrush(ANumPlanes: Integer): TCmBrush;
+    /// <summary>
+    ///   FreePolygon: a polygon that was merged into another one is not counted any more. The object stays
+    ///   owned by the model (the C++ code does not free the memory of a block either)
+    /// </summary>
+    procedure ReleasePolygon(APolygon: TCmPolygon);
     /// <summary>Links the polygon at the head of the node chain (AddPolygonToNode)</summary>
     procedure AddPolygonToNode(ANode: TCmNode; APolygon: TCmPolygon);
     procedure AddBrushToNode(ANode: TCmNode; ABrush: TCmBrush);
@@ -134,6 +139,11 @@ begin
   SetLength(Result.Planes, ANumPlanes);
   FBrushes.Add(Result);
   Inc(NumBrushes);
+end;
+
+procedure TCollisionModel.ReleasePolygon(APolygon: TCmPolygon);
+begin
+  Dec(NumPolygons);
 end;
 
 procedure TCollisionModel.AddPolygonToNode(ANode: TCmNode; APolygon: TCmPolygon);

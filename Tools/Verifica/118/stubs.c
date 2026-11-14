@@ -1,6 +1,6 @@
 /*
  * Stubs for the collision model of Quake III Arena (issue #118): memory, errors, cvars, file
- * system, and a patch collide that never collides (cm_patch.c is not ported yet).
+ * system, and the zone memory of the windings (cm_patch.c and cm_polylib.c are compiled as they are).
  */
 #include "qcommon/cm_local.h"
 #include <stdarg.h>
@@ -41,8 +41,13 @@ void Com_Printf(const char *fmt, ...) {
 }
 
 cvar_t *Cvar_Get(const char *name, const char *value, int flags) {
-	(void)name; (void)value; (void)flags;
-	return calloc(1, sizeof(cvar_t));
+	cvar_t *cvar = calloc(1, sizeof(cvar_t));
+	(void)value; (void)flags;
+	/* cm_playerCurveClip is 1 by default (ARCHIVE), the other cvars used here are 0 */
+	if (strcmp(name, "cm_playerCurveClip") == 0) {
+		cvar->integer = 1;
+	}
+	return cvar;
 }
 
 int FS_ReadFile(const char *qpath, void **buffer) {
@@ -80,22 +85,16 @@ void Q_strncpyz(char *dest, const char *src, int destsize) {
 	dest[destsize - 1] = 0;
 }
 
-/* the patch collide: present as a pointer, never collides */
-static int g_patch_marker;
-
-struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t *points) {
-	(void)width; (void)height; (void)points;
-	return (struct patchCollide_s *)&g_patch_marker;
+/* the zone memory of cm_polylib.c (windings) */
+void *Z_Malloc(int size) {
+	return malloc(size);
 }
 
-void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *pc) {
-	(void)tw; (void)pc;
+void Z_Free(void *ptr) {
+	free(ptr);
 }
 
-qboolean CM_PositionTestInPatchCollide(traceWork_t *tw, const struct patchCollide_s *pc) {
-	(void)tw; (void)pc;
-	return qfalse;
-}
-
-void CM_ClearLevelPatches(void) {
+/* only called by CM_DrawDebugSurface, which nothing here calls */
+void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value) {
+	(void)drawPoly; (void)value;
 }

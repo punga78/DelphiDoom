@@ -73,6 +73,8 @@ type
     /// <summary>cm_noAreas and cm_noCurves</summary>
     NoAreas: Boolean;
     NoCurves: Boolean;
+    /// <summary>cm_playerCurveClip is 1 by default: True here turns it off (the field starts at False)</summary>
+    PlayerCurveClipOff: Boolean;
     /// <summary>c_pointcontents, c_traces, c_brush_traces, c_patch_traces</summary>
     PointContentsCount: Integer;
     TraceCount: Integer;

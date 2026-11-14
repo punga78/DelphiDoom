@@ -44,6 +44,8 @@ type
     procedure SetNoAreas(const AValue: Boolean);
     function GetNoCurves: Boolean;
     procedure SetNoCurves(const AValue: Boolean);
+    function GetPlayerCurveClip: Boolean;
+    procedure SetPlayerCurveClip(const AValue: Boolean);
     function GetTraceCount: Integer;
     function GetBrushTraceCount: Integer;
     function GetPatchTraceCount: Integer;
@@ -141,6 +143,16 @@ end;
 procedure TQ3CollisionModel.SetNoCurves(const AValue: Boolean);
 begin
   FMap.NoCurves := AValue;
+end;
+
+function TQ3CollisionModel.GetPlayerCurveClip: Boolean;
+begin
+  Result := not FMap.PlayerCurveClipOff;
+end;
+
+procedure TQ3CollisionModel.SetPlayerCurveClip(const AValue: Boolean);
+begin
+  FMap.PlayerCurveClipOff := not AValue;
 end;
 
 function TQ3CollisionModel.GetTraceCount: Integer;

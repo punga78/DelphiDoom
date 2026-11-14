@@ -15,7 +15,8 @@ interface
 uses
   System.Classes, System.Generics.Collections, DelphiDoom.Geometry.Vec3, DelphiDoom.Geometry.Mat3,
   DelphiDoom.Geometry.Plane, DelphiDoom.Geometry.Bounds, DelphiDoom.Geometry.Winding,
-  DelphiDoom.Geometry.TraceModel, DelphiDoom.Collision.Types, DelphiDoom.Collision.Model;
+  DelphiDoom.Geometry.TraceModel, DelphiDoom.MathCore.Float.Rotation, DelphiDoom.Collision.Types,
+  DelphiDoom.Collision.Model;
 
 type
   /// <summary>
@@ -54,7 +55,7 @@ type
   /// <summary>
   ///   What the game asks of the collision system (idCollisionModelManager of CollisionModel.h):
   ///   a registry of models and the queries on them. Models are referred to by handle.
-  ///   Rotation, debug drawing and model listing are not part of the contract.
+  ///   Debug drawing and model listing are not part of the contract.
   /// </summary>
   ICollisionModelManager = interface
     ['{8E2F6A71-0B4D-4C95-A3E8-D17C5B906F24}']
@@ -89,6 +90,15 @@ type
     procedure Translation(var AResults: TCollisionTrace; const AStart, AEnd: TGeoVec3; ATrm: TTraceModel;
       const ATrmAxis: TGeoMat3; AContentMask: Integer; AModel: Integer; const AModelOrigin: TGeoVec3;
       const AModelAxis: TGeoMat3);
+    /// <summary>
+    ///   Rotates a trm (nil for a point) about the axis of ARotation (its origin, vector and
+    ///   angle in degrees) and reports the first collision, if any: AResults.Fraction is the part
+    ///   of the rotation done, EndPos and EndAxis the final position and axis of the trm. An
+    ///   angle of 0 is a position test; 180 degrees or more is done in steps below 180
+    /// </summary>
+    procedure Rotation(var AResults: TCollisionTrace; const AStart: TGeoVec3; const ARotation: TIdRotation;
+      ATrm: TTraceModel; const ATrmAxis: TGeoMat3; AContentMask: Integer; AModel: Integer;
+      const AModelOrigin: TGeoVec3; const AModelAxis: TGeoMat3);
     /// <summary>Returns the contents the trm is stuck in or 0 if the trm is in free space</summary>
     function Contents(const AStart: TGeoVec3; ATrm: TTraceModel; const ATrmAxis: TGeoMat3;
       AContentMask: Integer; AModel: Integer; const AModelOrigin: TGeoVec3; const AModelAxis: TGeoMat3): Integer;

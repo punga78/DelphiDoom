@@ -59,7 +59,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Collision.Types, DelphiDoom.Collision.ContentsNames,
+  DelphiDoom.IdLib.Text.Strings, DelphiDoom.Collision.Types, DelphiDoom.Collision.ContentsNames,
   DelphiDoom.Collision.Model.Polygon, DelphiDoom.Collision.Model.Brush;
 
 const
@@ -85,7 +85,8 @@ end;
 class function TCollisionFileWriter.FloatText(AValue: Single): string;
 begin
   // high precision floating point number without trailing zeros
-  Result := Format('%1.10f', [Double(AValue)], TFormatSettings.Invariant);
+  // printf rounds the exact binary value to even and keeps the sign of a negative zero ("-0"), as FormatFixed does
+  Result := string(TIdStrings.FormatFixed(AValue, 10));
   while (Result <> '') and (Result[Length(Result)] = '0') do
     Delete(Result, Length(Result), 1);
   while (Result <> '') and (Result[Length(Result)] = '.') do

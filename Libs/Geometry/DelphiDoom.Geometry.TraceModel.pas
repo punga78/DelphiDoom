@@ -74,6 +74,8 @@ type
     procedure SetupBox(const ABounds: TGeoBounds);
     /// <summary>Cylinder approximation with an axis along Z (idTraceModel::SetupCylinder)</summary>
     procedure SetupCylinder(const ABounds: TGeoBounds; ANumSides: Integer);
+    /// <summary>Bone: a small double pyramid with its axis along Z (idTraceModel::SetupBone and InitBone)</summary>
+    procedure SetupBone(ALength, AWidth: Single);
     /// <summary>Arbitrary convex polygon, without volume (idTraceModel::SetupPolygon)</summary>
     procedure SetupPolygon(const AVertices: array of TGeoVec3); overload;
     procedure SetupPolygon(AWinding: TGeoWinding); overload;
@@ -286,6 +288,87 @@ begin
   Polys[LN + 1].Bounds.Mins.Z := Bounds.Maxs.Z;
   // convex model
   IsConvex := True;
+
+  GenerateEdgeNormals;
+end;
+
+procedure TTraceModel.SetupBone(ALength, AWidth: Single);
+var
+  LIndex: Integer;
+  LJ: Integer;
+  LEdgeNum: Integer;
+  LHalfLength: Single;
+  LBack: Integer;
+  procedure SetPoly(APoly, AEdge0, AEdge1, AEdge2: Integer);
+  begin
+    Polys[APoly].NumEdges := 3;
+    Polys[APoly].Edges[0] := AEdge0;
+    Polys[APoly].Edges[1] := AEdge1;
+    Polys[APoly].Edges[2] := AEdge2;
+  end;
+begin
+  LHalfLength := ALength * 0.5;
+  if Kind <> tmkBone then
+  begin
+    // InitBone: the size independent part
+    Kind := tmkBone;
+    NumVerts := 5;
+    NumEdges := 9;
+    NumPolys := 6;
+    for LIndex := 0 to 2 do
+    begin
+      Edges[LIndex + 1].V[0] := 0;
+      Edges[LIndex + 1].V[1] := LIndex + 1;
+      Edges[LIndex + 4].V[0] := 1 + LIndex;
+      Edges[LIndex + 4].V[1] := 1 + ((LIndex + 1) mod 3);
+      Edges[LIndex + 7].V[0] := LIndex + 1;
+      Edges[LIndex + 7].V[1] := 4;
+    end;
+    // all edges of a polygon go counter clockwise
+    SetPoly(0, 2, -4, -1);
+    SetPoly(1, 3, -5, -2);
+    SetPoly(2, 1, -6, -3);
+    SetPoly(3, 4, 8, -7);
+    SetPoly(4, 5, 9, -8);
+    SetPoly(5, 6, 7, -9);
+    // convex model
+    IsConvex := True;
+  end;
+  // offset to center
+  Offset.SetValues(0, 0, 0);
+  // set vertices
+  Verts[0].SetValues(0, 0, -LHalfLength);
+  Verts[1].SetValues(0, AWidth * -0.5, 0);
+  Verts[2].SetValues(AWidth * 0.5, AWidth * 0.25, 0);
+  Verts[3].SetValues(AWidth * -0.5, AWidth * 0.25, 0);
+  Verts[4].SetValues(0, 0, LHalfLength);
+  // set bounds
+  Bounds.Mins.SetValues(AWidth * -0.5, AWidth * -0.5, -LHalfLength);
+  Bounds.Maxs.SetValues(AWidth * 0.5, AWidth * 0.25, LHalfLength);
+  // poly plane normals
+  Polys[0].Normal := (Verts[2] - Verts[0]).Cross(Verts[1] - Verts[0]);
+  Polys[0].Normal.NormalizeSelf;
+  Polys[2].Normal.SetValues(-Polys[0].Normal.X, Polys[0].Normal.Y, Polys[0].Normal.Z);
+  Polys[3].Normal.SetValues(Polys[0].Normal.X, Polys[0].Normal.Y, -Polys[0].Normal.Z);
+  Polys[5].Normal.SetValues(-Polys[0].Normal.X, Polys[0].Normal.Y, -Polys[0].Normal.Z);
+  Polys[1].Normal := (Verts[3] - Verts[0]).Cross(Verts[2] - Verts[0]);
+  Polys[1].Normal.NormalizeSelf;
+  Polys[4].Normal.SetValues(Polys[1].Normal.X, Polys[1].Normal.Y, -Polys[1].Normal.Z);
+  // poly plane distances
+  for LIndex := 0 to 5 do
+  begin
+    Polys[LIndex].Dist := Polys[LIndex].Normal.Dot(Verts[Edges[Abs(Polys[LIndex].Edges[0])].V[0]]);
+    Polys[LIndex].Bounds.Clear;
+    for LJ := 0 to 2 do
+    begin
+      LEdgeNum := Polys[LIndex].Edges[LJ];
+      if LEdgeNum < 0 then
+        LBack := 1
+      else
+        LBack := 0;
+      Polys[LIndex].Bounds.AddPoint(Verts[Edges[Abs(LEdgeNum)].V[LBack]]);
+    end;
+  end;
 
   GenerateEdgeNormals;
 end;

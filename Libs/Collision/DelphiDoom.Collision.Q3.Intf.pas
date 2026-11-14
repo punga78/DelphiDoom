@@ -37,13 +37,39 @@ type
   end;
 
   /// <summary>
+  ///   The small contract that the player movement (bg_pmove) and the game use to ask the world:
+  ///   CM_BoxTrace, CM_TransformedBoxTrace, CM_PointContents and the handles of the models. The
+  ///   model is created by TQ3CollisionFactory (from a BSP, a file or bytes: CM_LoadMap) and is
+  ///   released when the last reference goes away (CM_ClearMap): there is no Free to call.
+  ///   AModel 0 is the world, 1 and over the inline models of the map, Q3_BOX_MODEL_HANDLE the
+  ///   box of TempBoxModel. A bad handle or bad arguments raise EQ3CollisionException.
+  /// </summary>
+  IQ3Collision = interface
+    ['{3A6D9C14-72E8-4B05-8F1D-C95B02E7A418}']
+    /// <summary>CM_InlineModel</summary>
+    function InlineModel(const AIndex: Integer): Integer;
+    /// <summary>CM_TempBoxModel: the handle of the box (Q3_BOX_MODEL_HANDLE, or the capsule handle)</summary>
+    function TempBoxModel(const AMins, AMaxs: TQ3Vec3; const ACapsule: Boolean): Integer;
+    /// <summary>CM_ModelBounds</summary>
+    procedure ModelBounds(const AModel: Integer; out AMins, AMaxs: TQ3Vec3);
+    /// <summary>CM_PointContents: an ORed contents mask (AModel 0 = the world tree)</summary>
+    function PointContents(const APoint: TQ3Vec3; const AModel: Integer): Integer;
+    /// <summary>CM_BoxTrace: a point (AMins = AMaxs = 0), a box or a capsule swept from AStart to AEnd</summary>
+    function BoxTrace(const AStart, AEnd, AMins, AMaxs: TQ3Vec3; const AModel, ABrushMask: Integer;
+      const ACapsule: Boolean): TQ3Trace;
+    /// <summary>CM_TransformedBoxTrace</summary>
+    function TransformedBoxTrace(const AStart, AEnd, AMins, AMaxs: TQ3Vec3; const AModel, ABrushMask: Integer;
+      const AOrigin, AAngles: TQ3Vec3; const ACapsule: Boolean): TQ3Trace;
+  end;
+
+  /// <summary>
   ///   The collision model of one Quake III map (the public functions of cm_public.h with the
   ///   state of clipMap_t in the object instead of globals). A model handle is the index of an
   ///   inline model (0 = the world, 1 and over = the brush models of the map), or
   ///   Q3_BOX_MODEL_HANDLE for the box of TempBoxModel. Errors that the original reports with
   ///   ERR_DROP raise EQ3CollisionException.
   /// </summary>
-  IQ3CollisionModel = interface
+  IQ3CollisionModel = interface(IQ3Collision)
     ['{E1B94A37-5D82-4C16-93A0-2F7D8B6C0E54}']
     function GetNumClusters: Integer;
     function GetNumInlineModels: Integer;
@@ -53,22 +79,15 @@ type
     procedure SetNoAreas(const AValue: Boolean);
     function GetNoCurves: Boolean;
     procedure SetNoCurves(const AValue: Boolean);
+    function GetPlayerCurveClip: Boolean;
+    procedure SetPlayerCurveClip(const AValue: Boolean);
     function GetTraceCount: Integer;
     function GetBrushTraceCount: Integer;
     function GetPatchTraceCount: Integer;
     function GetPointContentsCount: Integer;
 
-    /// <summary>CM_InlineModel</summary>
-    function InlineModel(const AIndex: Integer): Integer;
-    /// <summary>CM_TempBoxModel: the handle of the box (Q3_BOX_MODEL_HANDLE, or the capsule handle)</summary>
-    function TempBoxModel(const AMins, AMaxs: TQ3Vec3; const ACapsule: Boolean): Integer;
-    /// <summary>CM_ModelBounds</summary>
-    procedure ModelBounds(const AModel: Integer; out AMins, AMaxs: TQ3Vec3);
-
     /// <summary>CM_PointLeafnum: 0 if the map is not loaded</summary>
     function PointLeafnum(const APoint: TQ3Vec3): Integer;
-    /// <summary>CM_PointContents: an ORed contents mask (AModel 0 = the world tree)</summary>
-    function PointContents(const APoint: TQ3Vec3; const AModel: Integer): Integer;
     /// <summary>CM_TransformedPointContents</summary>
     function TransformedPointContents(const APoint: TQ3Vec3; const AModel: Integer;
       const AOrigin, AAngles: TQ3Vec3): Integer;
@@ -80,13 +99,6 @@ type
       out ALastLeaf: Integer): Integer;
     /// <summary>CM_BoxBrushes: the numbers of the brushes whose bounds touch the box</summary>
     function BoxBrushes(const AMins, AMaxs: TQ3Vec3; const AMaxCount: Integer): TArray<Integer>;
-
-    /// <summary>CM_BoxTrace</summary>
-    function BoxTrace(const AStart, AEnd, AMins, AMaxs: TQ3Vec3; const AModel, ABrushMask: Integer;
-      const ACapsule: Boolean): TQ3Trace;
-    /// <summary>CM_TransformedBoxTrace</summary>
-    function TransformedBoxTrace(const AStart, AEnd, AMins, AMaxs: TQ3Vec3; const AModel, ABrushMask: Integer;
-      const AOrigin, AAngles: TQ3Vec3; const ACapsule: Boolean): TQ3Trace;
 
     /// <summary>CM_LeafCluster</summary>
     function LeafCluster(const ALeaf: Integer): Integer;
@@ -113,6 +125,8 @@ type
     property NoAreas: Boolean read GetNoAreas write SetNoAreas;
     /// <summary>The cvar cm_noCurves: the patches are not tested</summary>
     property NoCurves: Boolean read GetNoCurves write SetNoCurves;
+    /// <summary>The cvar cm_playerCurveClip (True by default): a point trace is clipped by the patches</summary>
+    property PlayerCurveClip: Boolean read GetPlayerCurveClip write SetPlayerCurveClip;
     /// <summary>c_traces, c_brush_traces, c_patch_traces, c_pointcontents</summary>
     property TraceCount: Integer read GetTraceCount;
     property BrushTraceCount: Integer read GetBrushTraceCount;

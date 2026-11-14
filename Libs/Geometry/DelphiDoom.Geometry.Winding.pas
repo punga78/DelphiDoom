@@ -44,6 +44,12 @@ type
     ///   nothing is left (then the winding is empty)
     /// </summary>
     function ClipInPlace(const APlane: TGeoPlane; AEpsilon: Single = 0.1; AKeepOn: Boolean = False): Boolean;
+    /// <summary>
+    ///   Splits the winding by the plane (idFixedWinding::Split): the part in front stays in this winding, the
+    ///   part behind goes to ABack. Returns PLANESIDE_FRONT, PLANESIDE_BACK or PLANESIDE_ON when the winding
+    ///   is not cut (ABack is not touched), PLANESIDE_CROSS when it is
+    /// </summary>
+    function Split(ABack: TGeoWinding; const APlane: TGeoPlane; AEpsilon: Single = 0.1): Integer;
     procedure ReverseSelf;
     function GetBounds: TGeoBounds;
     /// <summary>True when a point is outside of the world limits (idWinding::IsHuge)</summary>
@@ -280,6 +286,109 @@ begin
       if (FPoints[LIndex][LAxis] <= MIN_WORLD_COORD) or (FPoints[LIndex][LAxis] >= MAX_WORLD_COORD) then
         Exit(True);
   Result := False;
+end;
+
+function TGeoWinding.Split(ABack: TGeoWinding; const APlane: TGeoPlane; AEpsilon: Single): Integer;
+var
+  LDists: TArray<Single>;
+  LSides: TArray<Integer>;
+  LCounts: array[0..2] of Integer;
+  LFront: TArray<TGeoVec3>;
+  LFrontCount: Integer;
+  LDot: Single;
+  LIndex: Integer;
+  LAxis: Integer;
+  LNext: Integer;
+  LP1: TGeoVec3;
+  LP2: TGeoVec3;
+  LMid: TGeoVec3;
+  LNormal: TGeoVec3;
+begin
+  LNormal := APlane.Normal;
+  SetLength(LDists, FCount + 1);
+  SetLength(LSides, FCount + 1);
+  LCounts[PLANESIDE_FRONT] := 0;
+  LCounts[PLANESIDE_BACK] := 0;
+  LCounts[PLANESIDE_ON] := 0;
+
+  // determine sides for each point
+  for LIndex := 0 to FCount - 1 do
+  begin
+    LDot := APlane.Distance(FPoints[LIndex]);
+    LDists[LIndex] := LDot;
+    if LDot > AEpsilon then
+      LSides[LIndex] := PLANESIDE_FRONT
+    else if LDot < -AEpsilon then
+      LSides[LIndex] := PLANESIDE_BACK
+    else
+      LSides[LIndex] := PLANESIDE_ON;
+    Inc(LCounts[LSides[LIndex]]);
+  end;
+
+  if LCounts[PLANESIDE_BACK] = 0 then
+  begin
+    if LCounts[PLANESIDE_FRONT] = 0 then
+      Exit(PLANESIDE_ON);
+    Exit(PLANESIDE_FRONT);
+  end;
+  if LCounts[PLANESIDE_FRONT] = 0 then
+    Exit(PLANESIDE_BACK);
+
+  LSides[FCount] := LSides[0];
+  LDists[FCount] := LDists[0];
+
+  SetLength(LFront, FCount + 4);
+  LFrontCount := 0;
+  ABack.Clear;
+
+  for LIndex := 0 to FCount - 1 do
+  begin
+    LP1 := FPoints[LIndex];
+
+    if LSides[LIndex] = PLANESIDE_ON then
+    begin
+      LFront[LFrontCount] := LP1;
+      Inc(LFrontCount);
+      ABack.AddPoint(LP1);
+      Continue;
+    end;
+
+    if LSides[LIndex] = PLANESIDE_FRONT then
+    begin
+      LFront[LFrontCount] := LP1;
+      Inc(LFrontCount);
+    end;
+    if LSides[LIndex] = PLANESIDE_BACK then
+      ABack.AddPoint(LP1);
+
+    if (LSides[LIndex + 1] = PLANESIDE_ON) or (LSides[LIndex + 1] = LSides[LIndex]) then
+      Continue;
+
+    // generate a split point
+    LNext := LIndex + 1;
+    if LNext >= FCount then
+      LP2 := FPoints[0]
+    else
+      LP2 := FPoints[LNext];
+
+    LDot := LDists[LIndex] / (LDists[LIndex] - LDists[LIndex + 1]);
+    for LAxis := 0 to 2 do
+      // avoid round off error when possible
+      if LNormal[LAxis] = 1.0 then
+        LMid[LAxis] := APlane.Dist
+      else if LNormal[LAxis] = -1.0 then
+        LMid[LAxis] := -APlane.Dist
+      else
+        LMid[LAxis] := LP1[LAxis] + LDot * (LP2[LAxis] - LP1[LAxis]);
+
+    LFront[LFrontCount] := LMid;
+    Inc(LFrontCount);
+    ABack.AddPoint(LMid);
+  end;
+
+  FPoints := System.Copy(LFront, 0, LFrontCount);
+  FCount := LFrontCount;
+  Result := PLANESIDE_CROSS;
 end;
 
 function TGeoWinding.Copy: TGeoWinding;

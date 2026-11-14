@@ -45,6 +45,9 @@ uses
   DelphiDoom.Collision.Builder.Bsp in '..\Libs\Collision\DelphiDoom.Collision.Builder.Bsp.pas',
   DelphiDoom.Collision.Builder.EdgeNormals in '..\Libs\Collision\DelphiDoom.Collision.Builder.EdgeNormals.pas',
   DelphiDoom.Collision.Builder.Optimizer in '..\Libs\Collision\DelphiDoom.Collision.Builder.Optimizer.pas',
+  DelphiDoom.Collision.Builder.Merger in '..\Libs\Collision\DelphiDoom.Collision.Builder.Merger.pas',
+  DelphiDoom.Collision.Builder.InternalEdges in '..\Libs\Collision\DelphiDoom.Collision.Builder.InternalEdges.pas',
+  DelphiDoom.Collision.Builder.Chopper in '..\Libs\Collision\DelphiDoom.Collision.Builder.Chopper.pas',
   DelphiDoom.Collision.Builder in '..\Libs\Collision\DelphiDoom.Collision.Builder.pas',
   DelphiDoom.Collision.TraceWork in '..\Libs\Collision\DelphiDoom.Collision.TraceWork.pas',
   DelphiDoom.Collision.Translator in '..\Libs\Collision\DelphiDoom.Collision.Translator.pas',
@@ -52,6 +55,10 @@ uses
   DelphiDoom.Collision.Tracer in '..\Libs\Collision\DelphiDoom.Collision.Tracer.pas',
   DelphiDoom.Collision.ContentsRunner in '..\Libs\Collision\DelphiDoom.Collision.ContentsRunner.pas',
   DelphiDoom.Collision.TranslationRunner in '..\Libs\Collision\DelphiDoom.Collision.TranslationRunner.pas',
+  DelphiDoom.Collision.RotationMath in '..\Libs\Collision\DelphiDoom.Collision.RotationMath.pas',
+  DelphiDoom.Collision.Rotator in '..\Libs\Collision\DelphiDoom.Collision.Rotator.pas',
+  DelphiDoom.Collision.RotationRunner in '..\Libs\Collision\DelphiDoom.Collision.RotationRunner.pas',
+  DelphiDoom.Collision.Motion in '..\Libs\Collision\DelphiDoom.Collision.Motion.pas',
   DelphiDoom.Collision.TrmModel in '..\Libs\Collision\DelphiDoom.Collision.TrmModel.pas',
   DelphiDoom.Collision.TrmExtractor in '..\Libs\Collision\DelphiDoom.Collision.TrmExtractor.pas',
   DelphiDoom.Collision.ContentsNames in '..\Libs\Collision\DelphiDoom.Collision.ContentsNames.pas',
@@ -63,6 +70,11 @@ uses
   DelphiDoom.Collision.Q3.Types in '..\Libs\Collision\DelphiDoom.Collision.Q3.Types.pas',
   DelphiDoom.Collision.Q3.Intf in '..\Libs\Collision\DelphiDoom.Collision.Q3.Intf.pas',
   DelphiDoom.Collision.Q3.Math in '..\Libs\Collision\DelphiDoom.Collision.Q3.Math.pas',
+  DelphiDoom.Collision.Q3.VectorMath in '..\Libs\Collision\DelphiDoom.Collision.Q3.VectorMath.pas',
+  DelphiDoom.Collision.Q3.Winding in '..\Libs\Collision\DelphiDoom.Collision.Q3.Winding.pas',
+  DelphiDoom.Collision.Q3.PatchGrid in '..\Libs\Collision\DelphiDoom.Collision.Q3.PatchGrid.pas',
+  DelphiDoom.Collision.Q3.PatchCollide in '..\Libs\Collision\DelphiDoom.Collision.Q3.PatchCollide.pas',
+  DelphiDoom.Collision.Q3.PatchCollideBuilder in '..\Libs\Collision\DelphiDoom.Collision.Q3.PatchCollideBuilder.pas',
   DelphiDoom.Collision.Q3.ClipMap in '..\Libs\Collision\DelphiDoom.Collision.Q3.ClipMap.pas',
   DelphiDoom.Collision.Q3.BoxHull in '..\Libs\Collision\DelphiDoom.Collision.Q3.BoxHull.pas',
   DelphiDoom.Collision.Q3.AreaFlood in '..\Libs\Collision\DelphiDoom.Collision.Q3.AreaFlood.pas',
@@ -82,7 +94,11 @@ uses
   DelphiDoom.Tests.Collision.Builder in 'Source\DelphiDoom.Tests.Collision.Builder.pas',
   DelphiDoom.Tests.Collision.Translation in 'Source\DelphiDoom.Tests.Collision.Translation.pas',
   DelphiDoom.Tests.Collision.CmFile in 'Source\DelphiDoom.Tests.Collision.CmFile.pas',
-  DelphiDoom.Tests.Collision.Parity in 'Source\DelphiDoom.Tests.Collision.Parity.pas';
+  DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas',
+  DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas',
+  DelphiDoom.Tests.Collision.Fuzz in 'Source\DelphiDoom.Tests.Collision.Fuzz.pas',
+  DelphiDoom.Tests.Collision.Q3OpenArena in 'Source\DelphiDoom.Tests.Collision.Q3OpenArena.pas',
+  DelphiDoom.Tests.Collision.Extras in 'Source\DelphiDoom.Tests.Collision.Extras.pas';
 
 var
   Runner: ITestRunner;
