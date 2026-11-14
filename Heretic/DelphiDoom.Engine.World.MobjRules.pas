@@ -148,6 +148,14 @@ type
     class function NeverRespawns(mobj: Pmobj_t): boolean; static; inline;
     /// <summary>P_NightmareRespawn of the game</summary>
     class procedure NightmareRespawn(mobj: Pmobj_t); static;
+    /// <summary>P_NightmareRespawn: the fog spawned at the old spot of the monster</summary>
+    class function RespawnOldFog(mobj: Pmobj_t): Pmobj_t; static;
+    /// <summary>P_NightmareRespawn: the height of the fog at the new spot (fog is the old one)</summary>
+    class function RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t; static;
+    /// <summary>P_NightmareRespawn: where the new monster is spawned</summary>
+    class function RespawnSpawnZ(mobj: Pmobj_t): fixed_t; static;
+    /// <summary>P_NightmareRespawn: what the new monster inherits from the map thing and the old one, after the ambush flag</summary>
+    class procedure RespawnInherit(mo, mobj: Pmobj_t; mthing: Pmapthing_t); static;
     /// <summary>The tics a dead monster waits before it may respawn</summary>
     class function RespawnTime: integer; static; inline;
     /// <summary>P_SpawnMobj: the flags of the game, the "just appeared" flag and the fields only some games copy from the info</summary>
@@ -262,7 +270,8 @@ uses
   info_rnd,
   info_common,
   doomstat,
-  p_mobj;
+  p_mobj,
+  DelphiDoom.Engine.World.Respawner;
 
 //----------------------------------------------------------------------------
 //
@@ -550,78 +559,59 @@ end;
 //
 //==============================================================================
 class procedure TMobjGameRules.NightmareRespawn(mobj: Pmobj_t);
-var
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  ss: Psubsector_t;
-  mo: Pmobj_t;
-  mthing: Pmapthing_t;
-  h: fixed_t; // JVAL: 3d floors
 begin
-  x := mobj.spawnpoint.x * FRACUNIT;
-  y := mobj.spawnpoint.y * FRACUNIT;
+  TMobjRespawner.Respawn(mobj);
+end;
 
-  // somthing is occupying it's position?
-  if not P_CheckPosition(mobj, x, y) then
-    exit; // no respwan
+//==============================================================================
+//
+// P_NightmareRespawn: the fog at the old spot
+//
+//==============================================================================
+class function TMobjGameRules.RespawnOldFog(mobj: Pmobj_t): Pmobj_t;
+begin
+  result := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));
+end;
 
-  // spawn a teleport fog at old spot
-  // because of removal of the body?
-  mo := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));
-  // initiate teleport sound
-  S_StartSound(mo, Ord(sfx_telept));
+//==============================================================================
+//
+// P_NightmareRespawn: the height of the fog at the new spot
+//
+//==============================================================================
+class function TMobjGameRules.RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t;
+begin
+  result := P_FloorHeight(ss, fog.x, fog.y);
+end;
 
-  // spawn a teleport fog at the new spot
-  ss := R_PointInSubsector(x, y);
-
-// JVAL: 3d floors
-  h := P_FloorHeight(ss.sector, mo.x, mo.y);
-  if ss.sector.midsec >= 0 then
-    if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then
-      h := sectors[ss.sector.midsec].ceilingheight;
-
-  mo := P_SpawnMobj(x, y, h, Ord(MT_TFOG));
-
-  S_StartSound(mo, Ord(sfx_telept));
-
-  // spawn the new monster
-  mthing := @(mobj.spawnpoint);
-
-  // spawn it
+//==============================================================================
+//
+// P_NightmareRespawn: where the new monster is spawned
+//
+//==============================================================================
+class function TMobjGameRules.RespawnSpawnZ(mobj: Pmobj_t): fixed_t;
+begin
   if mobj.flags and MF_SPAWNCEILING <> 0 then
-    z := ONCEILINGZ
+    result := ONCEILINGZ
   else if mobj.flags_ex and MF_EX_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
+    result := ONFLOATZ
   else if mobj.flags2 and MF2_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
+    result := ONFLOATZ
   else
-    z := ONFLOORZ;
+    result := ONFLOORZ;
+end;
 
-  // inherit attributes from deceased one
-  mo := P_SpawnMobj(x, y, z, Ord(mobj._type), mthing);
-  mo.spawnpoint := mobj.spawnpoint;
-  if mo.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then
-    mo.angle := ANG1 * mthing.angle
-  else
-    mo.angle := ANG45 * (mthing.angle div 45);
-
-  if mthing.options and MTF_DONOTTRIGGERSCRIPTS <> 0 then
-    mobj.flags2_ex := mobj.flags2_ex or MF2_EX_DONTRUNSCRIPTS;
-
-  if mthing.options and MTF_AMBUSH <> 0 then
-    mo.flags := mo.flags or MF_AMBUSH;
-
+//==============================================================================
+//
+// P_NightmareRespawn: what the new monster inherits from the map thing and the old one
+//
+//==============================================================================
+class procedure TMobjGameRules.RespawnInherit(mo, mobj: Pmobj_t; mthing: Pmapthing_t);
+begin
   // killough 11/98: transfer friendliness from deceased
   if mobj.flags2_ex and MF2_EX_FRIEND = 0 then
     mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND
   else
     mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;
-
-  mo.reactiontime := 18;
-
-  // remove the old monster,
-  P_RemoveMobj(mobj);
 end;
 
 //==============================================================================

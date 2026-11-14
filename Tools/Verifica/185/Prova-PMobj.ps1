@@ -190,6 +190,25 @@ $Expansions = @(
   @{ R = 'P_MobjThinker'; F = 'if mobj.movecount < TMobjGameRules.RespawnTime then exit;'; Heretic = 'if mobj.movecount < 12 * TICRATE then begin exit; end;' }
   @{ F = 'TMobjGameRules.RespawnTime'; D = '12 * TICRATE'; Strife = '16 * TICRATE' }
   @{ F = 'if TMobjGameRules.NeverRespawns(mobj) then exit;'; D = ''; Strife = 'if mobj.flags and MF_NOTDMATCH <> 0 then exit;' }
+  # --- P_NightmareRespawn (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.Respawner.pas; Hexen e' un metodo) ---
+  @{ R = 'P_NightmareRespawn'; F = 'class procedure TMobjRespawner.Respawn(mobj: Pmobj_t);'; D = 'procedure P_NightmareRespawn(mobj: Pmobj_t);' }
+  @{ R = 'P_NightmareRespawn'; F = 'ss: Psector_t;'; Heretic = 'ss: Psubsector_t;'; Strife = 'ss: Psubsector_t;'; Note = $oneread }
+  @{ R = 'P_NightmareRespawn'; F = 'mo := TMobjGameRules.RespawnOldFog(mobj);'
+     Doom = 'if G_PlayingEngineVersion >= VERSION122 then mo := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG)) else mo := P_SpawnMobj(mobj.x, mobj.y, Psubsector_t(mobj.subsector).sector.floorheight, Ord(MT_TFOG));'
+     Heretic = 'mo := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));'; Strife = 'mo := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));' }
+  @{ R = 'P_NightmareRespawn'; F = 'ss := TMapGameRules.PointInSector(x, y);'; Doom = 'ss := P_PointInSector(x, y);'; Heretic = 'ss := R_PointInSubsector(x, y);'; Strife = 'ss := R_PointInSubsector(x, y);' }
+  @{ R = 'P_NightmareRespawn'; F = 'h := TMobjGameRules.RespawnFogFloor(ss, mo); if ss.midsec >= 0 then if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then h := sectors[ss.midsec].ceilingheight;'
+     Doom = 'h := P_FloorHeight(ss, mo.x, mo.y); if ss.midsec >= 0 then if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then h := sectors[ss.midsec].ceilingheight;'
+     Heretic = 'h := P_FloorHeight(ss.sector, mo.x, mo.y); if ss.sector.midsec >= 0 then if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then h := sectors[ss.sector.midsec].ceilingheight;'
+     Strife = 'h := ONFLOORZ; if ss.sector.midsec >= 0 then if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then h := sectors[ss.sector.midsec].ceilingheight;' }
+  @{ R = 'P_NightmareRespawn'; F = 'z := TMobjGameRules.RespawnSpawnZ(mobj);'
+     Doom = 'if mobj.flags and MF_SPAWNCEILING <> 0 then z := ONCEILINGZ else if mobj.flags_ex and MF_EX_SPAWNFLOAT <> 0 then z := ONFLOATZ else z := ONFLOORZ;'
+     Heretic = 'if mobj.flags and MF_SPAWNCEILING <> 0 then z := ONCEILINGZ else if mobj.flags_ex and MF_EX_SPAWNFLOAT <> 0 then z := ONFLOATZ else if mobj.flags2 and MF2_SPAWNFLOAT <> 0 then z := ONFLOATZ else z := ONFLOORZ;'
+     Strife = 'if mobj.flags and MF_SPAWNCEILING <> 0 then z := ONCEILINGZ else if mobj.flags_ex and MF_EX_SPAWNFLOAT <> 0 then z := ONFLOATZ else z := ONFLOORZ;' }
+  @{ R = 'P_NightmareRespawn'; F = 'TMobjGameRules.RespawnInherit(mo, mobj, mthing);'
+     Doom = 'if mobj.flags2_ex and MF2_EX_FRIEND = 0 then mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND else mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;'
+     Heretic = 'if mobj.flags2_ex and MF2_EX_FRIEND = 0 then mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND else mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;'
+     Strife = 'if mthing.options and MTF_STAND <> 0 then mo.flags := mo.flags or MF_STAND; if mthing.options and MTF_ALLY <> 0 then mo.flags := mo.flags or MF_ALLY; if mthing.options and MTF_FRIEND <> 0 then mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND; if mthing.options and MTF_TRANSLUCENT <> 0 then mo.flags := mo.flags or MF_SHADOW; if mthing.options and MTF_MVIS <> 0 then mo.flags := mo.flags or MF_MVIS;' }
   @{ F = 'TMobjGameRules.NightmareRespawn(mobj);'; D = 'P_NightmareRespawn(mobj);' }
 )
 
@@ -200,15 +219,15 @@ $NotTextual = @{
 
 # le routine che sono tutte di un gioco: metodi delle regole con il testo vecchio
 $Methods = @{
-  'P_NightmareRespawn' = 'NightmareRespawn'; 'P_SpawnPlayer' = 'SpawnPlayer'; 'P_SpawnMapThing' = 'SpawnMapThing'
+  'Hexen|P_NightmareRespawn' = 'NightmareRespawn'; 'P_SpawnPlayer' = 'SpawnPlayer'; 'P_SpawnMapThing' = 'SpawnMapThing'
   'P_SpawnPuff' = 'SpawnPuff'; 'P_SpawnMissile' = 'SpawnMissile'; 'P_SpawnMissileXYZ' = 'SpawnMissileXYZ'
   'P_SpawnPlayerMissile' = 'SpawnPlayerMissile'; 'P_HitFloor' = 'HitFloor'
   'Heretic|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_CreateTIDList' = 'CreateTIDList'
 }
 # la routine unificata ha un altro nome
-$Alias = @{ 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
+$Alias = @{ 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.MobjRules.pas' -Class 'TMobjGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias
 exit $bad
