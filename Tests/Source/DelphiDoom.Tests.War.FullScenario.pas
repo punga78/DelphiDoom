@@ -14,11 +14,15 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.War.Map.Types, DelphiDoom.War.Map.Intf, DelphiDoom.War.Map.PathGrid,
   DelphiDoom.War.Map.Fog, DelphiDoom.War.Map.Forests, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.World,
   DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Dispatcher,
-  DelphiDoom.War.Model.FlowSteering, DelphiDoom.Tests.War.ConstructionObserver, DelphiDoom.Tests.War.GatherScenario;
+  DelphiDoom.War.Model.FlowSteering, DelphiDoom.Tests.War.ConstructionObserver, DelphiDoom.Tests.War.GatherScenario,
+  DelphiDoom.War.Ai.Players;
 
 type
-  /// <summary>The three kinds of scenario of war_full_ref.inc: the lines of the golden start with O, I and A</summary>
-  TFullMode = (fmCommands, fmSpells, fmFull);
+  /// <summary>
+  ///   The kinds of scenario of war_full_ref.inc: the lines of the golden start with O, I and A, and W for the computer
+  ///   player (issue #196: the same world with the AI of war_ai.c playing the player 1, 3000 tics)
+  /// </summary>
+  TFullMode = (fmCommands, fmSpells, fmFull, fmAi);
 
   /// <summary>
   ///   The scenarios of war_full_ref.inc (Tools\Verifica\194) written again: two bases, a forest, a mine, a wall, the
@@ -49,6 +53,8 @@ type
     FAiSelection: TWarSelection;
     FAiCommands: TWarCommands;
     FSteering: TWarFlowSteering;
+    FAi: TWarComputerPlayers;
+    FRealFactor: Double;
     function ScriptBelow(ALimit: Cardinal): Integer;
     procedure ResultMix(AValue: Cardinal);
     procedure Setup(ASeed: Cardinal; AMode: TFullMode; AReal: Boolean);
@@ -97,10 +103,20 @@ type
     procedure OpRaise;
     procedure OpSight;
     procedure OpMana;
+    // the operations of the scenarios with the computer player (aiOp* of war_ai_ref.inc)
+    procedure OpAiEconomy;
+    procedure OpAiFarm;
+    procedure OpAiHall;
+    procedure OpAiPreempt;
+    procedure OpAiCancel;
+    procedure OpAiDamage;
+    procedure OpAiTime;
+    procedure OpAiHurry;
     procedure RunOp(AIndex: Integer);
     procedure ScriptStep;
     procedure Tick;
     function DumpNow(ATic: Integer): string;
+    procedure DumpAi(const AText: TStringBuilder);
   public
     /// <summary>
     ///   Runs the scenario of the seed (900 tics). For each tic ALines gets 'O|I|A seed tic hash entities'; with
@@ -115,10 +131,21 @@ type
     ///   for each type of entity the tics with at least one entity (what `war_model_ref fullstats` prints)
     /// </summary>
     class procedure Coverage(AMode: TFullMode; ASeed: Cardinal; out AStates, AEntities: TArray<Integer>); static;
+    /// <summary>
+    ///   What the computer player did in a scenario of the mode fmAi: the id of the last command (the pauses count), how far
+    ///   the script went, how many times a training told the AI that a request was paid (AProgressCalls) and the tics with a
+    ///   sleep running
+    /// </summary>
+    class procedure AiCoverage(ASeed: Cardinal; out ALastCommandId: Cardinal; out AScriptIndex: Integer;
+      out AProgressCalls, ASleepTics: Integer); static;
+    /// <summary>How many tics a scenario of the mode lasts</summary>
+    class function ScenarioTics(AMode: TFullMode): Integer; static;
   end;
 
 const
   FULL_SCENARIO_TICS = 900;
+  /// <summary>The length of the scenarios with the computer player (AI_TICS_FULL of war_full_ref.inc)</summary>
+  AI_SCENARIO_TICS = 3000;
 
 implementation
 
@@ -129,12 +156,24 @@ uses
   DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.Math,
   DelphiDoom.War.Model.Walls, DelphiDoom.War.Model.TerrainEntities, DelphiDoom.War.Model.Construction.Types,
   DelphiDoom.War.Model.Commands.Types, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.GridMap,
-  DelphiDoom.War.Path.FlowFields, DelphiDoom.Tests.War.ModelDump;
+  DelphiDoom.War.Path.FlowFields, DelphiDoom.Tests.War.ModelDump, DelphiDoom.War.Ai.Intf, DelphiDoom.War.Ai.Player,
+  DelphiDoom.War.Ai.Command, DelphiDoom.War.Ai.Types;
 
 {$Q-}
 {$R-}
 
 type
+  /// <summary>Counts how many times a training state tells the AI that a request was paid, and passes it on</summary>
+  TProgressProbe = class(TInterfacedObject, IWarAiProgress)
+  strict private
+    FTarget: IWarAiProgress;
+    FCalls: Integer;
+  public
+    constructor Create(const ATarget: IWarAiProgress);
+    procedure UnitRequestProgress(AHandle: Cardinal);
+    property Calls: Integer read FCalls;
+  end;
+
   TPlacedUnit = record
     UnitType: Integer;
     X: Integer;
@@ -160,6 +199,11 @@ const
   PICK_CORPSE = 10;
   // predBuilding of war_construction_ref.inc: a building of the player 0, whatever it is doing
   PICK_ANY_OWN_BUILDING = 11;
+  // the farms and the town halls of the player 1 (fAiFarm, fAiHall of war_ai_ref.inc), alive
+  PICK_AI_FARM = 12;
+  PICK_AI_HALL = 13;
+  // kAiRealFactors: how many seconds of real time pass for each second of the game, by seed
+  REAL_FACTORS: array[0..3] of Double = (1.0, 4.0, 10.0, 40.0);
 
   BASE: array[0..9] of TPlacedUnit = (
     (UnitType: WAR_UNIT_TOWNHALL_HUMANS; X: 6; Y: 6), (UnitType: WAR_UNIT_BARRACKS_HUMANS; X: 11; Y: 6),
@@ -186,21 +230,37 @@ const
     (UnitType: WAR_UNIT_PEON; X: 38; Y: 26), (UnitType: WAR_UNIT_RAIDER; X: 30; Y: 28));
 
   // kFullOps of war_full_ref.inc: the weights of each operation for the three kinds of scenario, in the same order
-  OPS: array[0..34] of TFullOp = (
-    (Weights: (40, 10, 25)), (Weights: (30, 10, 20)), (Weights: (30, 0, 15)), (Weights: (25, 6, 12)),
-    (Weights: (6, 2, 3)), (Weights: (20, 10, 12)), (Weights: (8, 0, 4)), (Weights: (10, 0, 5)),
-    (Weights: (12, 0, 8)), (Weights: (12, 0, 8)), (Weights: (6, 0, 3)), (Weights: (8, 0, 4)),
-    (Weights: (30, 4, 14)), (Weights: (6, 0, 4)), (Weights: (3, 0, 2)), (Weights: (3, 0, 2)),
-    (Weights: (5, 0, 3)), (Weights: (5, 0, 3)), (Weights: (5, 0, 3)), (Weights: (10, 2, 5)),
-    (Weights: (15, 25, 18)), (Weights: (5, 0, 4)), (Weights: (2, 0, 1)), (Weights: (5, 0, 3)),
-    (Weights: (2, 0, 1)), (Weights: (1, 1, 1)), (Weights: (0, 8, 4)), (Weights: (0, 10, 5)),
-    (Weights: (0, 8, 4)), (Weights: (0, 10, 5)), (Weights: (0, 8, 4)), (Weights: (0, 8, 4)),
-    (Weights: (0, 10, 5)), (Weights: (0, 8, 4)), (Weights: (0, 10, 5)));
+  OPS: array[0..42] of TFullOp = (
+    (Weights: (40, 10, 25, 25)), (Weights: (30, 10, 20, 20)), (Weights: (30, 0, 15, 15)), (Weights: (25, 6, 12, 12)),
+    (Weights: (6, 2, 3, 3)), (Weights: (20, 10, 12, 12)), (Weights: (8, 0, 4, 4)), (Weights: (10, 0, 5, 5)),
+    (Weights: (12, 0, 8, 8)), (Weights: (12, 0, 8, 8)), (Weights: (6, 0, 3, 3)), (Weights: (8, 0, 4, 4)),
+    (Weights: (30, 4, 14, 14)), (Weights: (6, 0, 4, 4)), (Weights: (3, 0, 2, 2)), (Weights: (3, 0, 2, 2)),
+    (Weights: (5, 0, 3, 3)), (Weights: (5, 0, 3, 3)), (Weights: (5, 0, 3, 3)), (Weights: (10, 2, 5, 5)),
+    (Weights: (15, 25, 18, 18)), (Weights: (5, 0, 4, 4)), (Weights: (2, 0, 1, 1)), (Weights: (5, 0, 3, 0)),
+    (Weights: (2, 0, 1, 1)), (Weights: (1, 1, 1, 1)), (Weights: (0, 8, 4, 4)), (Weights: (0, 10, 5, 5)),
+    (Weights: (0, 8, 4, 4)), (Weights: (0, 10, 5, 5)), (Weights: (0, 8, 4, 4)), (Weights: (0, 8, 4, 4)),
+    (Weights: (0, 10, 5, 5)), (Weights: (0, 8, 4, 4)), (Weights: (0, 10, 5, 5)),
+    (Weights: (0, 0, 0, 20)), (Weights: (0, 0, 0, 15)), (Weights: (0, 0, 0, 12)), (Weights: (0, 0, 0, 12)),
+    (Weights: (0, 0, 0, 12)), (Weights: (0, 0, 0, 15)), (Weights: (0, 0, 0, 12)), (Weights: (0, 0, 0, 3)));
 
   BUILD_TYPES: array[0..15] of Integer = (WAR_UNIT_FARM_HUMANS, WAR_UNIT_FARM_ORCS, WAR_UNIT_BARRACKS_HUMANS,
     WAR_UNIT_BARRACKS_ORCS, WAR_UNIT_CHURCH, WAR_UNIT_TEMPLE, WAR_UNIT_TOWER_HUMANS, WAR_UNIT_TOWER_ORCS,
     WAR_UNIT_TOWNHALL_HUMANS, WAR_UNIT_TOWNHALL_ORCS, WAR_UNIT_LUMBERMILL_HUMANS, WAR_UNIT_LUMBERMILL_ORCS,
     WAR_UNIT_STABLE, WAR_UNIT_KENNEL, WAR_UNIT_BLACKSMITH_HUMANS, WAR_UNIT_BLACKSMITH_ORCS);
+
+{ TProgressProbe }
+
+constructor TProgressProbe.Create(const ATarget: IWarAiProgress);
+begin
+  inherited Create;
+  FTarget := ATarget;
+end;
+
+procedure TProgressProbe.UnitRequestProgress(AHandle: Cardinal);
+begin
+  Inc(FCalls);
+  FTarget.UnitRequestProgress(AHandle);
+end;
 
 { TFullScenario }
 
@@ -260,8 +320,11 @@ var
   LAmount: Integer;
   LMap: IWarCommandMap;
   LPiece: Integer;
+  LHumanAi: Boolean;
 begin
   FMode := AMode;
+  FAi := nil;
+  FRealFactor := REAL_FACTORS[(ASeed div 4) mod 4];
   FObserver := TConstructionObserver.Create(ASeed xor $C3C3C3C3);
   FScriptState := ASeed * 2654435761 + 4242 + Cardinal(Ord(AMode)) * 977;
   FResults := 2166136261;
@@ -328,10 +391,28 @@ begin
   FMineId := FWorld.Context.Pool.Slots[LSlot]^.Id;
   for LIndex := 0 to High(DUDES) do
     SpawnDude(DUDES[LIndex].UnitType, 0, DUDES[LIndex].X, DUDES[LIndex].Y);
+  // the scenarios with the computer: with an odd seed the player 1 is of the humans (same places, the types of the race)
+  LHumanAi := (AMode = fmAi) and Odd(ASeed);
+  if LHumanAi then
+    FWorld.Context.Players[1]^.Race := wraHumans;
   for LIndex := 0 to High(ENEMY_BASE) do
-    SpawnBuilding(ENEMY_BASE[LIndex].UnitType, 1, ENEMY_BASE[LIndex].X, ENEMY_BASE[LIndex].Y);
+    if LHumanAi then
+      SpawnBuilding(TWarUnitClassifier.TypeForRace(ENEMY_BASE[LIndex].UnitType, wraHumans), 1, ENEMY_BASE[LIndex].X,
+        ENEMY_BASE[LIndex].Y)
+    else
+      SpawnBuilding(ENEMY_BASE[LIndex].UnitType, 1, ENEMY_BASE[LIndex].X, ENEMY_BASE[LIndex].Y);
   for LIndex := 0 to High(ENEMY_DUDES) do
-    SpawnDude(ENEMY_DUDES[LIndex].UnitType, 1, ENEMY_DUDES[LIndex].X, ENEMY_DUDES[LIndex].Y);
+    if LHumanAi then
+      SpawnDude(TWarUnitClassifier.TypeForRace(ENEMY_DUDES[LIndex].UnitType, wraHumans), 1, ENEMY_DUDES[LIndex].X,
+        ENEMY_DUDES[LIndex].Y)
+    else
+      SpawnDude(ENEMY_DUDES[LIndex].UnitType, 1, ENEMY_DUDES[LIndex].X, ENEMY_DUDES[LIndex].Y);
+  if AMode = fmAi then
+  begin
+    // wmap_enterMap: wai_initAIPlayers after the starting units
+    FWorld.Context.RealTime := 0;
+    FAi := TWarModelFactory.AttachComputerPlayers(FWorld, [1]);
+  end;
   // a stretch of wall already standing between the two bases
   for LIndex := 28 to 33 do
   begin
@@ -422,6 +503,12 @@ begin
       Result := TWarUnitClassifier.IsCorpse(LUnit^.UnitType);
     PICK_ANY_OWN_BUILDING:
       Result := (LUnit^.Player = 0) and TWarUnitClassifier.IsBuilding(LUnit^.UnitType);
+    PICK_AI_FARM:
+      Result := (LUnit^.Player = 1) and ((LUnit^.UnitType = WAR_UNIT_FARM_HUMANS) or
+        (LUnit^.UnitType = WAR_UNIT_FARM_ORCS)) and LAlive;
+    PICK_AI_HALL:
+      Result := (LUnit^.Player = 1) and ((LUnit^.UnitType = WAR_UNIT_TOWNHALL_HUMANS) or
+        (LUnit^.UnitType = WAR_UNIT_TOWNHALL_ORCS)) and LAlive;
   else
     Result := False;
   end;
@@ -1021,6 +1108,155 @@ begin
     LUnit^.Mana := LUnit^.MaxMana;
 end;
 
+procedure TFullScenario.OpAiEconomy;
+var
+  LKind: Integer;
+  LGold: Integer;
+  LWood: Integer;
+  LPlayer: PWarPlayerInfo;
+begin
+  LKind := ScriptBelow(4);
+  LGold := ScriptBelow(900);
+  LWood := ScriptBelow(900);
+  LPlayer := FWorld.Context.Players[1];
+  case LKind of
+    0:
+      begin
+        LPlayer^.Gold := LGold;
+        LPlayer^.Wood := LWood;
+      end;
+    1:
+      begin
+        Inc(LPlayer^.Gold, 400);
+        Inc(LPlayer^.Wood, 200);
+      end;
+    2:
+      LPlayer^.Gold := 0;
+  else
+    LPlayer^.Gold := 5000;
+    LPlayer^.Wood := 5000;
+  end;
+end;
+
+procedure TFullScenario.OpAiFarm;
+var
+  LKind: Integer;
+  LColumn: Integer;
+  LRow: Integer;
+  LSlot: Integer;
+begin
+  LKind := ScriptBelow(3);
+  LColumn := ScriptBelow(6);
+  LRow := ScriptBelow(3);
+  if LKind = 0 then
+  begin
+    SpawnBuilding(TWarUnitClassifier.TypeForRace(WAR_UNIT_FARM_HUMANS, FWorld.Context.Players[1]^.Race), 1,
+      36 + 3 * LColumn, 41 + 3 * LRow);
+    Exit;
+  end;
+  LSlot := PickWhere(PICK_AI_FARM);
+  if LSlot = 0 then
+    Exit;
+  if LKind = 1 then
+    FWorld.Entities.RemoveEntityById(FWorld.Context.Pool.Slots[LSlot]^.Id)
+  else
+    FWorld.Combat.TakeDamage(LSlot, 200, 200);
+end;
+
+procedure TFullScenario.OpAiHall;
+var
+  LKind: Integer;
+  LColumn: Integer;
+  LRow: Integer;
+  LRace: TWarRace;
+  LHall: Integer;
+  LX: Integer;
+  LY: Integer;
+  LWorker: Integer;
+begin
+  LKind := ScriptBelow(2);
+  LColumn := ScriptBelow(5);
+  LRow := ScriptBelow(3);
+  LRace := FWorld.Context.Players[1]^.Race;
+  LHall := TWarUnitClassifier.TypeForRace(WAR_UNIT_TOWNHALL_HUMANS, LRace);
+  LX := 34 + 4 * LColumn;
+  LY := 44 + 4 * LRow;
+  if LKind = 0 then
+  begin
+    SpawnBuilding(LHall, 1, LX, LY);
+    Exit;
+  end;
+  // a town hall under construction: a worker of the player 1 places it
+  LWorker := SpawnDude(TWarUnitClassifier.TypeForRace(WAR_UNIT_PEON, LRace), 1, LX - 2, LY);
+  if LWorker = 0 then
+    Exit;
+  FCommands.Construction.PlaceBuilding(LWorker, LHall, LX, LY);
+end;
+
+procedure TFullScenario.OpAiPreempt;
+var
+  LBuilding: Integer;
+  LType: Integer;
+  LUnit: Integer;
+begin
+  LBuilding := PickWhere(PICK_ENEMY_BUILDING);
+  if LBuilding = 0 then
+    Exit;
+  LType := FWorld.Context.Pool.Slots[LBuilding]^.UnitData.UnitType;
+  if LType = WAR_UNIT_TOWNHALL_ORCS then
+    LUnit := WAR_UNIT_PEON
+  else if LType = WAR_UNIT_TOWNHALL_HUMANS then
+    LUnit := WAR_UNIT_PEASANT
+  else if LType = WAR_UNIT_BARRACKS_ORCS then
+    LUnit := WAR_UNIT_GRUNT
+  else if LType = WAR_UNIT_BARRACKS_HUMANS then
+    LUnit := WAR_UNIT_FOOTMAN
+  else
+    Exit;
+  // an order of the PLAYER to a building of the computer: the same train order with the cause of the player
+  FCommands.Construction.OrderTrain(LBuilding, LUnit, WAR_CAUSE_PLAYER_ORDER);
+end;
+
+procedure TFullScenario.OpAiCancel;
+var
+  LBuilding: Integer;
+begin
+  LBuilding := PickWhere(PICK_ENEMY_BUILDING);
+  if LBuilding = 0 then
+    Exit;
+  SelectOnly(LBuilding);
+  FCommands.Execute(WAR_COMMAND_CANCEL);
+end;
+
+procedure TFullScenario.OpAiDamage;
+var
+  LMin: Integer;
+  LRnd: Integer;
+  LWhich: Integer;
+  LSlot: Integer;
+begin
+  LMin := ScriptBelow(300);
+  LRnd := ScriptBelow(400);
+  LWhich := ScriptBelow(2);
+  if LWhich <> 0 then
+    LSlot := PickWhere(PICK_AI_HALL)
+  else
+    LSlot := PickWhere(PICK_ENEMY_BUILDING);
+  if LSlot = 0 then
+    Exit;
+  FWorld.Combat.TakeDamage(LSlot, LMin, LRnd);
+end;
+
+procedure TFullScenario.OpAiTime;
+begin
+  FWorld.Context.RealTime := FWorld.Context.RealTime + ScriptBelow(20);
+end;
+
+procedure TFullScenario.OpAiHurry;
+begin
+  FWorld.Context.HurryUp := not FWorld.Context.HurryUp;
+end;
+
 procedure TFullScenario.RunOp(AIndex: Integer);
 begin
   case AIndex of
@@ -1059,6 +1295,14 @@ begin
     32: OpRaise;
     33: OpSight;
     34: OpMana;
+    35: OpAiEconomy;
+    36: OpAiFarm;
+    37: OpAiHall;
+    38: OpAiPreempt;
+    39: OpAiCancel;
+    40: OpAiDamage;
+    41: OpAiTime;
+    42: OpAiHurry;
   end;
 end;
 
@@ -1085,9 +1329,55 @@ end;
 procedure TFullScenario.Tick;
 begin
   FWorld.AdvanceClock(FDelta);
+  // the real time of the scenarios with the computer: the length of the tic times a factor of the seed
+  if FMode = fmAi then
+    FWorld.Context.RealTime := FWorld.Context.RealTime + Double(FDelta) * FRealFactor;
   ScriptStep;
   FWorld.Update;
   FWorld.FinishTic;
+end;
+
+procedure TFullScenario.DumpAi(const AText: TStringBuilder);
+
+  function DoubleBits(AValue: Double): string;
+  var
+    LBits: UInt64;
+  begin
+    LBits := PUInt64(@AValue)^;
+    Result := LowerCase(IntToHex(Cardinal(LBits shr 32), 8) + IntToHex(Cardinal(LBits and $FFFFFFFF), 8));
+  end;
+
+var
+  LPlayer: TWarComputerPlayer;
+  LCommand: TWarAiCommand;
+  LContext: TWarModelContext;
+  LIndex: Integer;
+  LState: PWarStateTrain;
+begin
+  LContext := FWorld.Context;
+  LPlayer := FAi.FindPlayer(1);
+  // the line I of dumpAi: the ids, how far the script went, the running commands and their state
+  AText.AppendFormat('I id=%u idx=%d rt=%s cur=%d nxt=%d', [LPlayer.StaticCommandId, LPlayer.ScriptIndex,
+    DoubleBits(LContext.RealTime), LPlayer.CurrentCount, LPlayer.NextCount]);
+  for LIndex := 0 to LPlayer.CurrentCount - 1 do
+  begin
+    LCommand := LPlayer.Current[LIndex];
+    AText.AppendFormat(' %u,%d,%d,', [LCommand.Id, LCommand.CommandType, LCommand.Status]);
+    if LCommand.CommandType = WAR_AI_COMMAND_SLEEP then
+      AText.Append(DoubleBits(LCommand.EndRealTime))
+    else
+      AText.AppendFormat('%d,%d', [LCommand.UnitType, LCommand.Count]);
+  end;
+  AText.Append(#10);
+  // the line J: the request that each training state keeps
+  AText.Append('J');
+  for LIndex := 0 to WAR_MODEL_MAX_STATES_PER_TYPE - 1 do
+    if LContext.Storage.Occupied[WAR_STATE_TRAIN, LIndex] then
+    begin
+      LState := PWarStateTrain(LContext.Storage.StateAt(WAR_STATE_TRAIN, LIndex));
+      AText.AppendFormat(' %d:%u', [LIndex, TWarAiCommand.HandleId(LState^.AiCommand)]);
+    end;
+  AText.Append(#10);
 end;
 
 function TFullScenario.DumpNow(ATic: Integer): string;
@@ -1203,6 +1493,8 @@ begin
       if LEntity^.EntityType = WAR_ENTITY_UNIT then
         LText.AppendFormat('K %d spr=%d'#10, [LEntity^.Id, LEntity^.SpriteResource - Ord(LEntity^.SpriteResource = 0)]);
     end;
+    if FMode = fmAi then
+      DumpAi(LText);
     Result := LText.ToString;
   finally
     LText.Free;
@@ -1212,18 +1504,20 @@ end;
 class procedure TFullScenario.Run(AMode: TFullMode; ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings;
   out ADumpText: string; AReal: Boolean);
 const
-  PREFIX: array[TFullMode] of Char = ('O', 'I', 'A');
+  PREFIX: array[TFullMode] of Char = ('O', 'I', 'A', 'W');
 var
   LScenario: TFullScenario;
   LTic: Integer;
+  LTics: Integer;
   LText: string;
 begin
   ADumpText := '';
+  LTics := ScenarioTics(AMode);
   LScenario := TFullScenario.Create;
   try
     LScenario.Setup(ASeed, AMode, AReal);
     try
-      for LTic := 0 to FULL_SCENARIO_TICS - 1 do
+      for LTic := 0 to LTics - 1 do
       begin
         LScenario.Tick;
         if (ADumpTic >= 0) and (LTic <> ADumpTic) then
@@ -1246,6 +1540,56 @@ begin
   end;
 end;
 
+class procedure TFullScenario.AiCoverage(ASeed: Cardinal; out ALastCommandId: Cardinal; out AScriptIndex: Integer;
+  out AProgressCalls, ASleepTics: Integer);
+var
+  LScenario: TFullScenario;
+  LTic: Integer;
+  LIndex: Integer;
+  LContext: TWarModelContext;
+  LPlayer: TWarComputerPlayer;
+  LSleeping: Boolean;
+  LProbe: TProgressProbe;
+begin
+  AProgressCalls := 0;
+  ASleepTics := 0;
+  LScenario := TFullScenario.Create;
+  try
+    LScenario.Setup(ASeed, fmAi, False);
+    try
+      LContext := LScenario.FWorld.Context;
+      LPlayer := LScenario.FAi.FindPlayer(1);
+      // a probe between the training states and the AI counts what they tell it
+      LProbe := TProgressProbe.Create(LScenario.FAi);
+      LContext.AiProgress := LProbe;
+      for LTic := 0 to AI_SCENARIO_TICS - 1 do
+      begin
+        LScenario.Tick;
+        LSleeping := False;
+        for LIndex := 0 to LPlayer.CurrentCount - 1 do
+          if LPlayer.Current[LIndex].CommandType = WAR_AI_COMMAND_SLEEP then
+            LSleeping := True;
+        Inc(ASleepTics, Ord(LSleeping));
+      end;
+      AProgressCalls := LProbe.Calls;
+      ALastCommandId := LPlayer.StaticCommandId;
+      AScriptIndex := LPlayer.ScriptIndex;
+    finally
+      LScenario.Teardown;
+    end;
+  finally
+    LScenario.Free;
+  end;
+end;
+
+class function TFullScenario.ScenarioTics(AMode: TFullMode): Integer;
+begin
+  if AMode = fmAi then
+    Result := AI_SCENARIO_TICS
+  else
+    Result := FULL_SCENARIO_TICS;
+end;
+
 class procedure TFullScenario.Coverage(AMode: TFullMode; ASeed: Cardinal; out AStates, AEntities: TArray<Integer>);
 var
   LScenario: TFullScenario;
@@ -1261,7 +1605,7 @@ begin
   try
     LScenario.Setup(ASeed, AMode, False);
     try
-      for LTic := 0 to FULL_SCENARIO_TICS - 1 do
+      for LTic := 0 to ScenarioTics(AMode) - 1 do
       begin
         LScenario.Tick;
         for LType := 0 to WAR_STATE_COUNT - 1 do

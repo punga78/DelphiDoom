@@ -19,7 +19,7 @@ uses
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Construction.Intf,
   DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins, DelphiDoom.War.Autotile.Line,
-  DelphiDoom.War.Model.Selection, DelphiDoom.War.Map.Grid, DelphiDoom.War.Map.Fog;
+  DelphiDoom.War.Model.Selection, DelphiDoom.War.Map.Grid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Ai.Intf;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -59,6 +59,8 @@ type
     FSpellStats: array[0..WAR_SPELL_COUNT - 1] of TWarSpellStats;
     FSpellStatsRead: array[0..WAR_SPELL_COUNT - 1] of Boolean;
     FHurryUp: Boolean;
+    FRealTime: Double;
+    FAiProgress: IWarAiProgress;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
     FUnsignedDirections: Boolean;
@@ -147,6 +149,16 @@ type
     property InterruptibleCasts: Boolean read FInterruptibleCasts write FInterruptibleCasts;
     /// <summary>map->hurryUp, the cheat that makes buildings, units and upgrades 100 times faster</summary>
     property HurryUp: Boolean read FHurryUp write FHurryUp;
+    /// <summary>
+    ///   context->realTime (seconds): the wall clock of the game, which the sleeps of the computer player wait on (the clock of
+    ///   the game does not move while paused and the hurry up cheat does not shorten them). The game writes it once per tic
+    /// </summary>
+    property RealTime: Double read FRealTime write FRealTime;
+    /// <summary>
+    ///   Who is told that a training ordered by a computer request has been paid (wai_applyUnitRequestProgress); nil when
+    ///   nobody plays the computer: the training states then keep no request
+    /// </summary>
+    property AiProgress: IWarAiProgress read FAiProgress write FAiProgress;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
     property Players[AIndex: Integer]: PWarPlayerInfo read GetPlayer;
     property PlayersCount: Integer read FPlayersCount write FPlayersCount;

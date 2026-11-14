@@ -15,7 +15,7 @@ interface
 
 uses
   DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine,
-  DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Economy;
+  DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Economy, DelphiDoom.War.Ai.Intf;
 
 type
   /// <summary>
@@ -30,6 +30,7 @@ type
     FEntities: IWarEntityManager;
     FCombat: TWarCombat;
     FEconomy: TWarEconomy;
+    FComputerPlayers: IWarComputerUpdate;
   public
     constructor Create(const AContext: TWarModelContext; const AMachine: TWarStateMachine;
       const AQueries: IWarUnitQueries; const AEntities: IWarEntityManager; const ACombat: TWarCombat;
@@ -64,6 +65,12 @@ type
     property Entities: IWarEntityManager read FEntities;
     property Combat: TWarCombat read FCombat;
     property Economy: TWarEconomy read FEconomy;
+    /// <summary>
+    ///   The computer players (TWarModelFactory.AttachComputerPlayers), nil if nobody plays the computer. Update runs them
+    ///   first, as wmap_updateMap does (wai_updateAIPlayers comes after the orders of the player and before the requests of
+    ///   change of the states)
+    /// </summary>
+    property ComputerPlayers: IWarComputerUpdate read FComputerPlayers write FComputerPlayers;
   end;
 
 implementation
@@ -88,6 +95,9 @@ end;
 
 destructor TWarModelWorld.Destroy;
 begin
+  // the training states call the computer players: they go before the context does
+  FContext.AiProgress := nil;
+  FComputerPlayers := nil;
   FEconomy.Free;
   FCombat.Free;
   FQueries := nil;
@@ -108,6 +118,8 @@ end;
 
 procedure TWarModelWorld.Update;
 begin
+  if Assigned(FComputerPlayers) then
+    FComputerPlayers.UpdateComputerPlayers;
   FMachine.ProcessPendingTransitions;
   FMachine.UpdateStates;
 end;

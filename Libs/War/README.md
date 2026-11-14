@@ -319,7 +319,7 @@ Gli stati di costruzione del remake (`war_state_machine_build.c`, `_repair.c`, `
 
 **Servizi opzionali** (nessun finto da aggiornare per le classi della prima fetta): `IWarConstructionHost` (`UnitFrames`, `ConstructionFrames`, `PlaySound`, `PlayRandomSound`, `Acknowledge`, `IsTileKnown`; `TWarNullConstructionHost` e' il predefinito: niente fotogrammi, nessun suono, mappa tutta nota) e `IWarOccupancyProbe` (si prende dall'occupazione con `Supports`, altrimenti ogni casella e' vuota). La nebbia di guerra, i fotogrammi delle immagini del `DATA.WAR` e i suoni sono del gioco (#200).
 
-**Cosa NON e' portato**: l'IA (`aiCommand`), le animazioni dei danni e del crollo, le strade (`BUILD_ROAD`, `we_checkTileToBuildRoadOrWall` per le strade), la selezione, i bottoni e il mouse (la scelta della casella), `wcmd_cancel` sulla selezione (si chiama per entita'), le incantesimi, l'attacco e la raccolta (altre fette).
+**Cosa NON e' portato** (l'IA e' della #196: `aiCommand` e' ora una maniglia nello stato): le animazioni dei danni e del crollo, le strade (`BUILD_ROAD`, `we_checkTileToBuildRoadOrWall` per le strade), la selezione, i bottoni e il mouse (la scelta della casella), `wcmd_cancel` sulla selezione (si chiama per entita'), le incantesimi, l'attacco e la raccolta (altre fette).
 
 **Difetti del C conservati** (servono per avere le stesse impronte; ognuno ha un test): (1) un edificio **in costruzione** accetta l'ordine di addestramento o di miglioramento, e lo stato nuovo prende il posto di `build` (che esce senza rimborso e senza crollo); (2) `we_checkRectToBuild` salta le caselle fuori dalla mappa (un edificio mezzo fuori e' permesso); (3) ogni pezzo di muro e' del giocatore 0; (4) un colpo di martello da' sempre 9 punti ferita per 1 oro e 1 legna; (5) la voce di "pronto" e' della razza dell'unita' addestrata; (6) lo stato idle del muro gira ad ogni tic; (7) l'oro si controlla prima della legna (messaggio del primo che manca, come nella prima fetta); (8) i miglioramenti a coppie condividono un livello.
 **Differenze volute** (ognuna con un test): due miglioramenti della stessa coppia in corso insieme: il C si ferma su un `assert` in `we_increaseUpgradeLevel` quando finisce il secondo, il port **rifiuta l'ordine** (`RejectOverbookedUpgrades`, predefinito True; a False lo accetta come il C e al termine solleva `EWarException`); un miglioramento oltre il massimo o il terzo livello (il C legge `goldCost[2]` fuori dall'array) e' rifiutato; `wst_enterRepairingState` su un edificio "da costruire" il cui stato non e' ancora sulla pila (il C si ferma su un `assert`) solleva `EWarException`; un'unita' addestrata con la piscina piena (il C usa un puntatore nullo) aspetta; un'immagine di costruzione senza fotogrammi non divide per zero (il C ottiene infinito, che nessuna percentuale raggiunge); un pezzo di muro senza massimo e' senza punti ferita (il C divide per zero); `FindEmptyTile` da una casella fuori mappa solleva `EWarException`; `CheckTileToBuild` per un tipo senza misura solleva `EWarException`; l'azione di un'unita' che non ha quel tipo si ferma come nel C; `TWarEconomy` e gli stati usano `TWarPurse`.
@@ -402,10 +402,10 @@ attacca; amico: segui; muro o niente: muovi).
 l'evitamento, #195). Non c'e' nemmeno un comando di pattuglia: lo stato `patrol` esiste e riceve punti con SHIFT, ma
 nessun `WAR_COMMAND_*` lo crea.
 
-**L'IA (#196) non e' portata; il suo punto d'ingresso si'**: `TWarModelFactory.CreateComputerCommands(mondo, selezione,
+**L'IA (#196, vedi la sezione "Intelligenza artificiale")**: `TWarModelFactory.CreateComputerCommands(mondo, selezione,
 giocatore)` da' lo stesso `TWarCommands` con una selezione propria, il giocatore del computer e
-`WAR_CAUSE_AI_ORDER`/`WAR_INTERRUPT_AI_ORDER` (`TWarCommander.Computer`). L'unico ordine che `war_ai.c` da' oggi
-(addestrare) e' provato cosi' nei golden (`fOpAi`) e nei test.
+`WAR_CAUSE_AI_ORDER`/`WAR_INTERRUPT_AI_ORDER` (`TWarCommander.Computer`); e' stato il punto d'ingresso dei golden `194 *`
+(`fOpAi`). `war_ai.c` stesso non passa da qui (chiama direttamente gli stati di addestramento): `TWarComputerPlayers`.
 
 ### Incantesimi e mana
 
@@ -474,7 +474,7 @@ cio' che `SyncUnits` copia da loro: la mappa non ha piu' unita' proprie. I golde
 ### Non portato (e di chi e')
 
 - **#195** (fatto, sezione "Percorsi, evitamento e nebbia"): percorsi, evitamento e nebbia per tic.
-- **#196**: `war_ai.c` (`wai_updateAIPlayers`, `aiCommand` dello stato di addestramento).
+- **#196** (fatto, sezione "Intelligenza artificiale"): `war_ai.c` (`wai_updateAIPlayers`, `aiCommand` dello stato di addestramento).
 - **#197**: lo stato del comando che aspetta un clic (`map->commandState`, `consumeCommand`,
   `suppressSelectionOnRelease`), i bottoni e i pannelli, il rettangolo di selezione e il clic, i suoni della selezione
   (`wa_playDudeSelectionSound`), immagine, scostamento e scala delle animazioni, il disegno di muri, strade e rovine.
@@ -549,9 +549,57 @@ Un vicino senza macchina a stati ha velocita' zero (il C ha un `assert`); una ca
 
 ### Non portato
 
-Il disegno della nebbia (restano i dati: pezzo e confine di ogni casella), il campo di flusso di debug (`map->debug.flowField`), `war_ai.c` (#196).
+Il disegno della nebbia (restano i dati: pezzo e confine di ogni casella), il campo di flusso di debug (`map->debug.flowField`). (`war_ai.c`: fatto, #196.)
 
 ### Parita' e costo
 
 `Tools\Verifica\194\war_path_ref.inc` e `war_levels_ref.inc` (`LEGGIMI.md`): le funzioni **originali** accese al posto degli stub; golden `path.*` (gruppo `195 percorsi`), **zero differenze a Win32 e a Win64**, e i 20 golden `194 *` identici. Costo (macchina carica, minimi di piu' esecuzioni; `DelphiDoom.Tests.War.PathBench`, `war_model_ref benchpaths|benchmove`): A star 125-157 us Delphi Win32 (83 Win64) contro 257-295 us C `-O1` e 146-155 us `-O2`; campo di flusso 1,2-1,7 ms Win32 (0,8-1,3 Win64) contro 2,7-3,5 ms `-O1` e 1,4-1,7 ms `-O2`; movimento di 200 unita' (stati con campi, evitamento e vicini) **17 us per unita' e tic Win32**, 19-22 Win64, contro 22-24 us C `-O1` e 14-16 us `-O2` (433 campi calcolati, circa 10 us per unita' e tic del C sono i campi); griglia, azioni e nebbia 2,3-2,6 us Win32 contro 2,4 us `-O1` e 1,3 us `-O2`. Il 5% sul `-O2` non e' dimostrato; contro `-O1` Delphi sta sotto.
 
+
+## Intelligenza artificiale (issue #196)
+
+### Cosa c'e' nell'originale (e quindi cosa si porta)
+
+`war_ai.c` del remake ha **408 righe** e fa una cosa sola: un **copione fisso** per il giocatore 1 (`wai_initAIPlayers` assume che sia l'unico). `wai_initAI` mette in coda sei comandi: richiesta di un municipio, attesa di averne 1, richiesta di 2 lavoratori, attesa di 2, richiesta di altri 2, attesa di 4 (le unita' sono quelle della razza del giocatore). Una **richiesta** di un'unita' mobile cerca il primo edificio del suo produttore (`wu_getProducerUnitOfType`: il municipio per i lavoratori, la caserma per i soldati) che sia del giocatore e non sia occupato, e gli ordina di addestrare con `WAR_TRANSITION_CAUSE_AI_ORDER`; una richiesta di un **edificio** e' "fatta" subito senza costruire niente (il C ha solo i commenti di cosa farebbe); l'**attesa** blocca il copione finche' il giocatore ha almeno quella quantita'; finito il copione l'IA crea una **pausa** di 10 secondi di tempo **reale** (`context->realTime`), all'infinito. `WAR_AI_COMMAND_ATTACK` e `DEFEND` sono nell'enum e cadono nel `default` di `wai_executeAICommand` (un avviso, "fatto"). **Non esistono nell'originale**: ondate di attacco, difesa, scelta dei bersagli, raccolta e costruzione automatiche, uso degli incantesimi dei maghi (`war_cheats.c` non tocca l'IA). Il testo della issue #196 dice di decidere se il port segue il remake o il gioco DOS: **segue il remake** (l'unico oracolo eseguibile; non c'e' un modo di far girare il gioco DOS in modo ripetibile) e cio' che il remake non ha **non si inventa**: non c'e' un C con cui confrontarlo, e un comportamento scritto a mano non sarebbe un port. Il punto di estensione c'e' (vedi sotto: il registro dei tipi di comando).
+
+### Mappa nome C -> classe
+
+| C | Delphi |
+|---|---|
+| `WarAICommand`, `wai_createAICommand`, `wai_equalsAICommand` | `TWarAiCommand` (`Ai.Command`: id, tipo, stato, unita', quantita', fine della pausa; `MakeHandle`) |
+| `WarAICommandType`, `WarAICommandStatus`, `WarAICommand.request/wait/sleep` | `Ai.Types` (`WAR_AI_COMMAND_*`, `WAR_AI_STATUS_*`, `TWarAiScriptEntry`) |
+| `wai_applyUnitRequestProgress` | `TWarAiCommand.ApplyUnitRequestProgress` |
+| `wai_executeAICommand` (il `switch`) | `TWarAiCommandRegistry.Execute` (`Ai.Registry`: tabella tipo -> gestore, `RegisterHandler`) |
+| `wai_executeRequestAICommand`, `wai_tryCreateUnit`, `wai_hasUnresolvedTrainRequest` | `TWarAiRequestHandler` (`Ai.RequestHandler`) |
+| `wai_executeWaitAICommand` | `TWarAiWaitHandler` |
+| `wai_executeSleepAICommand` | `TWarAiSleepHandler` |
+| `wai_initAI`, `wai_getNextAICommand` (il copione) | `TWarComputerPlayer` (costruttore, `GetNextCommand`) sopra `Ai.Tables.Data` (**generata**: `WAR_AI_SCRIPT` per razza, `Make-WarAiTables.ps1` dal golden `ai.tables`) |
+| `WarAI`, `wai_updateAIPlayer`, `wai_updateAICurrentCommands`, `wai_updateAINextCommands`, `wai_removeCompletedAICommands` | `TWarComputerPlayer.Update` (`Ai.Player`) |
+| `wai_initAIPlayers`, `wai_updateAIPlayers` | `TWarComputerPlayers` (`Ai.Players`), `TWarModelFactory.AttachComputerPlayers(mondo, [giocatori])`, `TWarModelWorld.Update` (lo chiama **prima** di `ProcessPendingTransitions`) |
+| `wu_getProducerUnitOfType`, `wu_isValidUnitType` | `TWarUnitProducers` (`Model.UnitProducers`, tabella generata) |
+| `aiCommand` di `WarStateTrain`, `wst_applyTrainTransaction` | `TWarStateTrain.AiCommand` (una **maniglia**: giocatore e id del comando, non un puntatore), `TWarTrainState.ApplyTransaction` -> `Context.AiProgress` (`IWarAiProgress`, `Ai.Intf`) |
+| `context->realTime` | `Context.RealTime` (il gioco lo scrive una volta per tic) |
+| `logWarning` | `TWarAiEnvironment.Warn` (contatore e ultimo testo: il modello non ha un log) |
+
+Le dipendenze verso il resto sono interfacce piccole: `IWarAiProgress` (una chiamata per acquisto pagato, mai per unita' e per tic) e `IWarComputerUpdate` (una per tic). Una classe per unit; la composizione sta in `TWarModelFactory.AttachComputerPlayers`; nessun globale; due giocatori del computer non condividono stato (il registro dei tipi di comando e' dell'insieme dei giocatori, i comandi e il copione di ognuno).
+
+### Perche' non passa da `TWarCommands`
+
+`wai_tryCreateUnit` chiama **direttamente** `wst_createTrainState` e `wst_resetState` con la causa dell'IA: controlla prima le risorse e poi il cibo **senza il messaggio** (`TWarEconomy.EnoughFarmFood`; l'ordine del giocatore usa `CheckFarmFood`, che fa lampeggiare "NOT ENOUGH FOOD" e cambierebbe i contatori), scandisce gli stati di addestramento per sapere se la richiesta e' gia' in corso, e sceglie il primo edificio della lista dei suoi tipi (non l'edificio sotto il clic). `TWarCommands.CreateComputerCommands` resta il punto d'ingresso per **altri** ordini dell'IA (mettere in marcia o far attaccare unita', quando un'IA piu' ricca li chieda); l'unico che il C da' oggi e' questo, e non lo usa.
+
+### Come funziona nel modello
+
+Il giro di `TWarComputerPlayer.Update` e' quello di `wai_updateAIPlayer` alla lettera: tutti i comandi in corso si eseguono (senza fermarsi al primo), una richiesta torna **sempre** `True` (non blocca mai), attese e pause bloccano, il comando successivo arriva solo se tutti hanno dato `True`, il travaso dalla coda e' un `do ... while` che si ferma dopo un'attesa o una pausa, i completati si tolgono dalla fine. Un comando che finisce **durante** l'ingresso nello stato di addestramento (dopo l'IA, nello stesso tic) si toglie al tic dopo. Gli id dei comandi sono per giocatore da 1: i sei del copione, poi le pause. `TWarModelWorld.Update` esegue l'IA prima delle richieste di cambio di stato (l'ordine di `wmap_updateMap`: dopo comandi e selezione); un mondo senza IA non cambia (i 31 golden precedenti).
+
+### Difetti del C conservati (ognuno con un test)
+
+(1) Una richiesta di un edificio non costruisce niente e finisce subito, e l'attesa dello stesso edificio guarda solo le entita': un edificio in costruzione conta. (2) La richiesta di un'unita' **conta quando il costo si addebita** (all'ingresso nello stato), non quando l'unita' nasce: se l'addestramento e' poi annullato (il denaro torna) la richiesta resta una unita' piu' corta e l'attesa successiva puo' non finire mai. (3) L'IA sceglie il primo edificio libero **anche se e' in costruzione** (lo stato di costruzione accetta gli ordini dell'IA e l'addestramento lo sostituisce: e' il difetto (1) dell'addestramento della #194). (4) La razza neutrale usa i tipi degli umani (`wu_getUnitTypeForRace` da' il tipo com'e'). (5) Un tipo che non e' ne' un'unita' mobile ne' un edificio da' un avviso a ogni tic e la richiesta resta. (6) `ATTACK` e `DEFEND` non hanno gestore: un avviso e "fatto". (7) La pausa usa il tempo reale, non quello del gioco: il trucco del tempo non l'accorcia e il gioco in pausa non la ferma (per il port e' un valore scritto dal gioco: `Context.RealTime`).
+**Differenze volute** (ognuna con un test): il computer gioca i giocatori che si danno (il C assume solo il giocatore 1); le pause che finiscono si liberano (il C non libera mai un comando: ne crea una ogni 10 secondi per tutta la partita); un giocatore del computer due volte o fuori dal gioco, un indice fuori dai limiti, un registro senza gestore per un tipo non valido: `EWarException` (il C ha un `assert`); la scansione degli stati di addestramento si ferma quando ha visto quelli allocati (stessa risposta del giro dei 512 posti); l'avviso e' un contatore (`Warnings`, `LastWarning`) e non una riga di log.
+
+### Non portato
+
+Tutto cio' che l'originale non ha (sopra). L'IA del gioco DOS (ondate, difesa, bersagli, raccolta, costruzione, incantesimi dei maghi: l'oggetto della seconda parte del titolo della issue) non ha un oracolo eseguibile in questo repository: `Reference\_dati\_download\warcraft.zip` ha il gioco ma nessuno strumento lo fa girare in modo ripetibile e confrontabile; le campagne "intere senza finestra" dipendono da `Warcraft32` (#200) e dalle condizioni di vittoria. Scenari su livelli veri di `DATA.WAR`: non fatti, `war_levels_ref.inc` legge soltanto le mappe dei passaggi.
+
+### Parita' e costo
+
+`Tools\Verifica\194\war_ai_ref.inc` (`LEGGIMI.md`): il C include `war_ai.c` **intero**; gruppo `196 ia` di `Tools\Verifica\201\Golden-Common.ps1`: `ai.tables` (le costanti, i produttori di 54 tipi, il copione di 3 razze), `ai.scenarios` (8 scenari x 3000 tic = 24000 impronte dello stato, con il giocatore 1 guidato dall'IA: razza, economia, fattorie, centri urbani in costruzione, ordini del giocatore agli edifici dell'IA, annullamenti, danni, tempo reale a 1, 4, 10 e 40 volte il tempo del gioco, trucco del tempo), `ai.dump` e `ai.dump2` (il testo dello stato a meta' e alla fine di due scenari): **zero differenze**. In ogni scenario il copione arriva alla fine e l'IA dorme; i 31 golden di prima restano identici (`Confronta-Golden.ps1 -Solo 194`).

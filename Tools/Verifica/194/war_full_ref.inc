@@ -26,7 +26,11 @@
 #define FULL_TICS 900
 static const f32 kFullDeltas[4] = { 1.0f / 60.0f, 1.0f / 30.0f, 0.1f, 0.25f };
 
-static int gFullMode;          /* 0 comandi, 1 incantesimi, 2 tutto */
+static int gFullMode;          /* 0 comandi, 1 incantesimi, 2 tutto, 3 ia (#196: war_ai_ref.inc) */
+#define AI_TICS_FULL 3000
+static const f64 kAiRealFactors[4] = { 1.0, 4.0, 10.0, 40.0 };
+static f64 gAiRealFactor;
+static void dumpAi(Text* t);
 static f32 gFullDelta;
 static WarEntity* gRoadEntity;
 static WarEntityId gFullForest;
@@ -115,6 +119,8 @@ static void dumpFull(Text* t)
             textAdd(t, "K %d spr=%d\n", e->id, sprite ? sprite->resourceIndex : -1);
         }
     }
+    if (gFullMode == 3)
+        dumpAi(t);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -597,44 +603,61 @@ static void fOpMana(void)
         unit->mana = unit->maxMana;
 }
 
-typedef struct { void (*op)(void); u16 weight[3]; } FullOp;
+/* le operazioni del modo "ia" (war_ai_ref.inc, incluso dopo questo file) */
+static void aiOpEconomy(void);
+static void aiOpFarm(void);
+static void aiOpHall(void);
+static void aiOpPreempt(void);
+static void aiOpCancel(void);
+static void aiOpDamage(void);
+static void aiOpTime(void);
+static void aiOpHurry(void);
+typedef struct { void (*op)(void); u16 weight[4]; } FullOp;
 static const FullOp kFullOps[] = {
     /*                         comandi incantesimi tutto */
-    { fOpSelDudes,           {  40,  10,  25 } },
-    { fOpSelWarriors,        {  30,  10,  20 } },
-    { fOpSelWorkers,         {  30,   0,  15 } },
-    { fOpMove,               {  25,   6,  12 } },
-    { fOpStop,               {   6,   2,   3 } },
-    { fOpAttackUnit,         {  20,  10,  12 } },
-    { fOpAttackPoint,        {   8,   0,   4 } },
-    { fOpAttackWall,         {  10,   0,   5 } },
-    { fOpHarvestMine,        {  12,   0,   8 } },
-    { fOpHarvestTree,        {  12,   0,   8 } },
-    { fOpDeliver,            {   6,   0,   3 } },
-    { fOpRepair,             {   8,   0,   4 } },
-    { fOpRight,              {  30,   4,  14 } },
-    { cOpTrain,              {   6,   0,   4 } },
-    { cOpUpgrade,            {   3,   0,   2 } },
-    { cOpCancel,             {   3,   0,   2 } },
-    { fOpBuild,              {   5,   0,   3 } },
-    { fOpWall,               {   5,   0,   3 } },
-    { fOpRoad,               {   5,   0,   3 } },
-    { fOpGroup,              {  10,   2,   5 } },
-    { fOpHurt,               {  15,  25,  18 } },
-    { cOpDamageBuilding,     {   5,   0,   4 } },
-    { cOpWallDamage,         {   2,   0,   1 } },
-    { fOpAi,                 {   5,   0,   3 } },
-    { opEconomy,             {   2,   0,   1 } },
-    { opRemove,              {   1,   1,   1 } },
-    { fOpSummon,             {   0,   8,   4 } },
-    { fOpRain,               {   0,  10,   5 } },
-    { fOpPoison,             {   0,   8,   4 } },
-    { fOpHeal,               {   0,  10,   5 } },
-    { fOpInvisibility,       {   0,   8,   4 } },
-    { fOpUnholy,             {   0,   8,   4 } },
-    { fOpRaise,              {   0,  10,   5 } },
-    { fOpSight,              {   0,   8,   4 } },
-    { fOpMana,               {   0,  10,   5 } }
+    { fOpSelDudes,           {  40,  10,  25, 25 } },
+    { fOpSelWarriors,        {  30,  10,  20, 20 } },
+    { fOpSelWorkers,         {  30,   0,  15, 15 } },
+    { fOpMove,               {  25,   6,  12, 12 } },
+    { fOpStop,               {   6,   2,   3, 3 } },
+    { fOpAttackUnit,         {  20,  10,  12, 12 } },
+    { fOpAttackPoint,        {   8,   0,   4, 4 } },
+    { fOpAttackWall,         {  10,   0,   5, 5 } },
+    { fOpHarvestMine,        {  12,   0,   8, 8 } },
+    { fOpHarvestTree,        {  12,   0,   8, 8 } },
+    { fOpDeliver,            {   6,   0,   3, 3 } },
+    { fOpRepair,             {   8,   0,   4, 4 } },
+    { fOpRight,              {  30,   4,  14, 14 } },
+    { cOpTrain,              {   6,   0,   4, 4 } },
+    { cOpUpgrade,            {   3,   0,   2, 2 } },
+    { cOpCancel,             {   3,   0,   2, 2 } },
+    { fOpBuild,              {   5,   0,   3, 3 } },
+    { fOpWall,               {   5,   0,   3, 3 } },
+    { fOpRoad,               {   5,   0,   3, 3 } },
+    { fOpGroup,              {  10,   2,   5, 5 } },
+    { fOpHurt,               {  15,  25,  18, 18 } },
+    { cOpDamageBuilding,     {   5,   0,   4, 4 } },
+    { cOpWallDamage,         {   2,   0,   1, 1 } },
+    { fOpAi,                 {   5,   0,   3, 0 } },
+    { opEconomy,             {   2,   0,   1, 1 } },
+    { opRemove,              {   1,   1,   1, 1 } },
+    { fOpSummon,             {   0,   8,   4, 4 } },
+    { fOpRain,               {   0,  10,   5, 5 } },
+    { fOpPoison,             {   0,   8,   4, 4 } },
+    { fOpHeal,               {   0,  10,   5, 5 } },
+    { fOpInvisibility,       {   0,   8,   4, 4 } },
+    { fOpUnholy,             {   0,   8,   4, 4 } },
+    { fOpRaise,              {   0,  10,   5, 5 } },
+    { fOpSight,              {   0,   8,   4, 4 } },
+    { fOpMana,               {   0,  10,   5, 5 } },
+    { aiOpEconomy,           {   0,   0,   0, 20 } },
+    { aiOpFarm,              {   0,   0,   0, 15 } },
+    { aiOpHall,              {   0,   0,   0, 12 } },
+    { aiOpPreempt,           {   0,   0,   0, 12 } },
+    { aiOpCancel,            {   0,   0,   0, 12 } },
+    { aiOpDamage,            {   0,   0,   0, 15 } },
+    { aiOpTime,              {   0,   0,   0, 12 } },
+    { aiOpHurry,             {   0,   0,   0, 3 } }
 };
 
 static void fullScriptStep(void)
@@ -691,6 +714,7 @@ static void fullInit(u32 seed, int mode)
     gTileHash = 2166136261u;
     gFullMode = mode;
     gFullDelta = kFullDeltas[seed % 4];
+    gAiRealFactor = kAiRealFactors[(seed / 4) % 4];
     gSpawnedCount = 0;
     gMap->ui.mapPanel = rectf(0, 0, 1024, 1024);
     gMap->camera.viewport = rectf(0, (f32)(16 * (s32)(seed % 5)), 320, 200);
@@ -719,10 +743,22 @@ static void fullInit(u32 seed, int mode)
     gFullMine = mine->id;
     for (s32 i = 0; i < (s32)arrayLength(kFullDudes); i++)
         spawnDude(kFullDudes[i].type, 0, kFullDudes[i].x, kFullDudes[i].y);
+    /* modo "ia": con il seme dispari il giocatore 1 e' degli umani (stessi posti, tipi della razza) */
+    bool humanAi = mode == 3 && (seed & 1u) != 0;
+    if (humanAi)
+        gMap->players[1].race = WAR_RACE_HUMANS;
     for (s32 i = 0; i < (s32)arrayLength(kFullEnemyBase); i++)
-        spawnBuilding(kFullEnemyBase[i].type, 1, kFullEnemyBase[i].x, kFullEnemyBase[i].y);
+        spawnBuilding(humanAi ? wu_getUnitTypeForRace(kFullEnemyBase[i].type, WAR_RACE_HUMANS) : kFullEnemyBase[i].type, 1,
+                      kFullEnemyBase[i].x, kFullEnemyBase[i].y);
     for (s32 i = 0; i < (s32)arrayLength(kFullEnemyDudes); i++)
-        spawnDude(kFullEnemyDudes[i].type, 1, kFullEnemyDudes[i].x, kFullEnemyDudes[i].y);
+        spawnDude(humanAi ? wu_getUnitTypeForRace(kFullEnemyDudes[i].type, WAR_RACE_HUMANS) : kFullEnemyDudes[i].type, 1,
+                  kFullEnemyDudes[i].x, kFullEnemyDudes[i].y);
+    if (mode == 3)
+    {
+        /* wmap_enterMap: wai_initAIPlayers dopo le unita' di partenza */
+        gContext->realTime = 0;
+        wai_initAIPlayers(gContext);
+    }
 
     /* un tratto di muro gia' in piedi tra le due basi */
     for (s32 x = 28; x <= 33; x++)
@@ -741,8 +777,14 @@ static void tickFull(void (*scriptStep)(void), f32 delta)
         fprintf(stderr, "T\n");
     gContext->gameDeltaTime = delta;
     gContext->gameTime += (f64)delta;
+    if (gFullMode == 3)
+        gContext->realTime += (f64)delta * gAiRealFactor;
 
     scriptStep();
+
+    /* wmap_updateMap: dopo i comandi e la selezione, prima delle richieste di cambio di stato */
+    if (gFullMode == 3)
+        wai_updateAIPlayers(gContext);
 
     wst_processPendingTransitions(gContext);
     wst_updateIdleStates(gContext);
@@ -779,7 +821,7 @@ static void runFull(int mode, u32 seed, s32 dumpTic, bool perTic, bool stats)
     fullInit(seed, mode);
     s32 cover[WAR_STATE_COUNT] = {0};
     s32 kinds[WAR_ENTITY_TYPE_COUNT] = {0};
-    for (s32 tic = 0; tic < FULL_TICS; tic++)
+    for (s32 tic = 0; tic < (mode == 3 ? AI_TICS_FULL : FULL_TICS); tic++)
     {
         tickFull(fullScriptStep, gFullDelta);
         for (s32 k = 0; k < WAR_STATE_COUNT; k++)
@@ -800,7 +842,7 @@ static void runFull(int mode, u32 seed, s32 dumpTic, bool perTic, bool stats)
         if (dumpTic >= 0 && tic == dumpTic)
             printf("%s", text.data);
         else if (perTic)
-            printf("%c %u %d %08x %d\n", "OIA"[mode], seed, tic, fnv1a(text.data, text.length), gMap->entityManager.entityCount);
+            printf("%c %u %d %08x %d\n", "OIAW"[mode], seed, tic, fnv1a(text.data, text.length), gMap->entityManager.entityCount);
         free(text.data);
     }
     if (stats)
@@ -949,5 +991,6 @@ static int fullModeOf(const char* name)
     if (strcmp(name, "commands") == 0) return 0;
     if (strcmp(name, "spells") == 0) return 1;
     if (strcmp(name, "full") == 0) return 2;
+    if (strcmp(name, "ai") == 0) return 3;
     return -1;
 }
