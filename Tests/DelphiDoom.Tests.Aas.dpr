@@ -77,6 +77,7 @@ uses
   DelphiDoom.Tests.Aas.D3.Golden in 'Source\DelphiDoom.Tests.Aas.D3.Golden.pas',
   DelphiDoom.Tests.Aas.D3.AvoidScenario in 'Source\DelphiDoom.Tests.Aas.D3.AvoidScenario.pas',
   DelphiDoom.Tests.Aas.D3.AvoidGolden in 'Source\DelphiDoom.Tests.Aas.D3.AvoidGolden.pas',
+  DelphiDoom.Tests.Aas.D3.Avoid in 'Source\DelphiDoom.Tests.Aas.D3.Avoid.pas',
   DelphiDoom.Tests.Aas.D3.Routing in 'Source\DelphiDoom.Tests.Aas.D3.Routing.pas';
 
 var
