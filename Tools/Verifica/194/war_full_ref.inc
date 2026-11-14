@@ -771,6 +771,7 @@ static void tickFull(void (*scriptStep)(void), f32 delta)
     updateProjectiles(gContext);
     updateMagic(gContext);
     updateSpells(gContext);
+    realFogUpdate();
 }
 
 static void runFull(int mode, u32 seed, s32 dumpTic, bool perTic, bool stats)

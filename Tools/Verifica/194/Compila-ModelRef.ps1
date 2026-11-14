@@ -33,6 +33,8 @@ Copy-Item (Join-Path $PSScriptRoot 'war_model_ref.c') (Join-Path $Out 'war_model
 Copy-Item (Join-Path $PSScriptRoot 'war_construction_ref.inc') (Join-Path $Out 'war_construction_ref.inc')
 # gli scenari dei comandi, degli incantesimi e del tic intero (completamento della #194)
 Copy-Item (Join-Path $PSScriptRoot 'war_full_ref.inc') (Join-Path $Out 'war_full_ref.inc')
+# percorsi, evitamento tra unita' e nebbia di guerra (issue #195)
+Copy-Item (Join-Path $PSScriptRoot 'war_path_ref.inc') (Join-Path $Out 'war_path_ref.inc')
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'
