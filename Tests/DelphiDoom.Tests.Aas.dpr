@@ -98,6 +98,7 @@ uses
   DelphiDoom.Tests.Aas.Route.Units in 'Source\DelphiDoom.Tests.Aas.Route.Units.pas',
   DelphiDoom.Tests.Aas.Bsp.Units in 'Source\DelphiDoom.Tests.Aas.Bsp.Units.pas',
   DelphiDoom.Tests.Aas.Main.Units in 'Source\DelphiDoom.Tests.Aas.Main.Units.pas',
+  DelphiDoom.Tests.Aas.Bsp.Collision in 'Source\DelphiDoom.Tests.Aas.Bsp.Collision.pas',
   DelphiDoom.Tests.Aas.Move.Scenario in 'Source\DelphiDoom.Tests.Aas.Move.Scenario.pas',
   DelphiDoom.Tests.Aas.Route.Scenario in 'Source\DelphiDoom.Tests.Aas.Route.Scenario.pas',
   DelphiDoom.Tests.Aas.Route.Golden in 'Source\DelphiDoom.Tests.Aas.Route.Golden.pas',

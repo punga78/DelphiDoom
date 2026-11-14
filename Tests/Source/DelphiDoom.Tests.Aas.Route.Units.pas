@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - the routing of Quake III on a world  }
 {  of three areas in a row, built here                                         }
@@ -38,6 +38,8 @@ type
     procedure DovrebbeDareIlTempoEDLaPrimaRaggiungibilita;
     [Test]
     procedure DovrebbeDareTempoUnoPerLaStessaArea;
+    [Test]
+    procedure DovrebbeDareIlTempoPerAttraversareUnArea;
     [Test]
     procedure DovrebbeNonContareIlTempoDentroLAreaSenzaOrigine;
     [Test]
@@ -230,6 +232,13 @@ begin
   Assert.IsTrue(FRouter.AreaRouteToGoalArea(2, nil, 2, TFL_DEFAULT, LTime, LReach));
   Assert.AreEqual(1, LTime);
   Assert.AreEqual(0, LReach);
+end;
+
+procedure TTestAasRoute.DovrebbeDareIlTempoPerAttraversareUnArea;
+begin
+  // the same point: at least one hundredth of a second; farther points take longer
+  Assert.AreEqual(1, FRouter.AreaTravelTime(2, Vec(0, 0, 0), Vec(0, 0, 0)));
+  Assert.IsTrue(FRouter.AreaTravelTime(2, Vec(0, 0, 0), Vec(300, 0, 0)) > 1);
 end;
 
 procedure TTestAasRoute.DovrebbeNonContareIlTempoDentroLAreaSenzaOrigine;

@@ -153,6 +153,8 @@ type
     FSystemIntf: IInterface;
     FReader: IAasReader;
     FSteps: TObject;
+    FLibVarsIntf: IBotLibVars;
+    FVars: TObject;
     procedure MakeSystem(const AReachabilityRounds: Integer);
   public
     [Setup]
@@ -175,6 +177,10 @@ type
     procedure DovrebbeProiettareUnPuntoSuUnaRetta;
     [Test]
     procedure DovrebbeChiudereTuttoNelloShutdown;
+    [Test]
+    procedure DovrebbeLiberareIlRoutingDellaMappaVecchia;
+    [Test]
+    procedure DovrebbeOttimizzareSeLeVariabiliLoChiedono;
   end;
 
 implementation
@@ -1247,6 +1253,7 @@ begin
   FSystemIntf := nil;
   FSystem := nil;
   FReader := nil;
+  FLibVarsIntf := nil;
   FImportIntf := nil;
 end;
 
@@ -1263,6 +1270,8 @@ begin
   LModels.Text := '{ "classname" "worldspawn" }';
   LVars := TFakeVars.Create;
   LVars.Values.Add('maxentities', 16);
+  FVars := LVars;
+  FLibVarsIntf := LVars;
   LReader := TFakeReader.Create;
   FReader := LReader;
   FSystem := TAasSystem.Create(FImportIntf, LVars, FReader, LModels, LBuilder,
@@ -1366,6 +1375,34 @@ begin
   LResult := TAasSystem.ProjectPointOntoVector(Vec(5, 7, 0), Vec(0, 0, 0), Vec(10, 0, 0));
   Assert.AreEqual(Double(5), Double(LResult[0]), 0.0);
   Assert.AreEqual(Double(0), Double(LResult[1]), 0.0);
+end;
+
+procedure TTestAasSystem.DovrebbeLiberareIlRoutingDellaMappaVecchia;
+var
+  LOld: TFakeSteps;
+begin
+  MakeSystem(0);
+  FSystem.Setup;
+  FSystem.LoadMap('a');
+  LOld := TFakeBuilder(FSteps).Steps;
+  FSystem.LoadMap('b');
+  Assert.IsTrue(LOld.Calls.IndexOf('free') >= 0);
+  Assert.AreEqual('maps/b.aas', string(FSystem.FileName));
+end;
+
+procedure TTestAasSystem.DovrebbeOttimizzareSeLeVariabiliLoChiedono;
+var
+  LBuilder: TFakeBuilder;
+begin
+  MakeSystem(0);
+  TFakeVars(FVars).Values.Add('forcewrite', 1);
+  TFakeVars(FVars).Values.Add('aasoptimize', 1);
+  FSystem.Setup;
+  FSystem.LoadMap('q3dm1');
+  LBuilder := TFakeBuilder(FSteps);
+  FSystem.StartFrame(1);
+  Assert.IsTrue(LBuilder.Steps.Calls.IndexOf('optimize') > LBuilder.Steps.Calls.IndexOf('cluster'));
+  Assert.IsTrue(LBuilder.Steps.Calls.IndexOf('routing') > LBuilder.Steps.Calls.IndexOf('optimize'));
 end;
 
 procedure TTestAasSystem.DovrebbeChiudereTuttoNelloShutdown;
