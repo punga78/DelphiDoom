@@ -1704,6 +1704,8 @@ static void bench(s32 units, s32 tics)
 #include "war_full_ref.inc"
 /* percorsi, evitamento e nebbia di guerra (issue #195) */
 #include "war_path_ref.inc"
+/* percorsi sui livelli veri di DATA.WAR (war_file.c originale) */
+#include "war_levels_ref.inc"
 
 int main(int argc, char** argv)
 {
@@ -1752,6 +1754,11 @@ int main(int argc, char** argv)
     if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "move") == 0)
     {
         runMove((u32)atoi(argv[3]), atoi(argv[4]), false);
+        return 0;
+    }
+    if (strcmp(argv[1], "levelpaths") == 0 && argc >= 3)
+    {
+        runLevelPaths(argv[2]);
         return 0;
     }
     if (strcmp(argv[1], "benchpaths") == 0)

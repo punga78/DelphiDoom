@@ -15,7 +15,7 @@ interface
 uses
   DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World,
   DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher,
-  DelphiDoom.War.Map.Game, DelphiDoom.War.Model.MapBinding;
+  DelphiDoom.War.Map.Game, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Model.MapBinding;
 
 type
   /// <summary>
@@ -32,6 +32,19 @@ type
     /// </summary>
     class function CreateWorld(const ARandom: IWarRandom; const AOccupancy: IWarOccupancy = nil;
       const AEvents: IWarModelEvents = nil; const ADatabase: IWarDatabase = nil): TWarModelWorld; static;
+    /// <summary>
+    ///   Turns on the flow fields and the avoidance between units (issue #195): the units walk around what is on the grid
+    ///   and around each other, as in the original. Without it (the default of CreateWorld) a unit goes straight to its
+    ///   next waypoint. The grid is the one that the world's occupancy writes (not owned: it must outlive the world); the
+    ///   avoidance reads the grid of the units of the combat services, which every world made here has
+    /// </summary>
+    class procedure AttachFlowSteering(const AWorld: TWarModelWorld; const AGrid: TWarPathGrid); static;
+    /// <summary>
+    ///   Makes the world update the fog at the end of every tic (updateFoW and determineFoWTypes: TWarFogRevealer): what
+    ///   the units of the player 0 see, the targets they attack, whoever attacks them, the sight spells. The fog is the one
+    ///   of the map (not owned: it must outlive the world). Without it the model does not touch the fog
+    /// </summary>
+    class procedure AttachFog(const AWorld: TWarModelWorld; const AFog: TWarFogOfWar); static;
     /// <summary>
     ///   The commands of the player of the original: the selection of the context of the world, the player 0,
     ///   WAR_CAUSE_PLAYER_ORDER. The map tells who stands on a tile and what the player sees (TWarGridCommandMap over the
@@ -64,9 +77,21 @@ uses
   DelphiDoom.War.Model.State.Wait, DelphiDoom.War.Model.State.Attack.Registration,
   DelphiDoom.War.Model.State.GatherRegistry, DelphiDoom.War.Model.State.Construction,
   DelphiDoom.War.Model.Commands.Family, DelphiDoom.War.Model.Commands.GridMap, DelphiDoom.War.Model.GridOccupancy,
-  DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Gather.Intf, System.SysUtils;
+  DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Gather.Intf, DelphiDoom.War.Model.FlowSteering,
+  DelphiDoom.War.Model.FogRevealer, System.SysUtils;
 
 { TWarModelFactory }
+
+class procedure TWarModelFactory.AttachFog(const AWorld: TWarModelWorld; const AFog: TWarFogOfWar);
+begin
+  AWorld.Context.FogUpdater := TWarFogRevealer.Create(AWorld.Context, AWorld.Machine, AFog);
+  AWorld.Context.Fog := AFog;
+end;
+
+class procedure TWarModelFactory.AttachFlowSteering(const AWorld: TWarModelWorld; const AGrid: TWarPathGrid);
+begin
+  AWorld.Context.Steering := TWarFlowSteering.Create(AWorld.Machine, AGrid);
+end;
 
 class function TWarModelFactory.CreateMapBinding(const AMap: TWarGameMap; const ARandom: IWarRandom;
   const AEvents: IWarModelEvents): TWarMapBinding;
@@ -78,6 +103,10 @@ var
   LCommands: TWarCommands;
 begin
   LWorld := CreateWorld(ARandom, TWarGridOccupancy.Create(AMap.Grid), AEvents);
+  // the game map has paths and avoidance: the units walk around the trees, the buildings and each other
+  AttachFlowSteering(LWorld, AMap.Grid);
+  // and the fog of the map is what the units of the model see, at the end of every tic
+  AttachFog(LWorld, AMap.Fog);
   LGatherEvents := nil;
   Supports(AEvents, IWarGatherEvents, LGatherEvents);
   LGather := TWarGatherWorld.Create(AMap.Grid, AMap.Forests, LGatherEvents);

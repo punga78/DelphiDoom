@@ -35,6 +35,7 @@ Copy-Item (Join-Path $PSScriptRoot 'war_construction_ref.inc') (Join-Path $Out '
 Copy-Item (Join-Path $PSScriptRoot 'war_full_ref.inc') (Join-Path $Out 'war_full_ref.inc')
 # percorsi, evitamento tra unita' e nebbia di guerra (issue #195)
 Copy-Item (Join-Path $PSScriptRoot 'war_path_ref.inc') (Join-Path $Out 'war_path_ref.inc')
+Copy-Item (Join-Path $PSScriptRoot 'war_levels_ref.inc') (Join-Path $Out 'war_levels_ref.inc')
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'

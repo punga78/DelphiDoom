@@ -118,6 +118,9 @@ begin
   TWarActionRunner.UpdateAll(FContext);
   if Assigned(FContext.Combat) then
     FContext.Combat.UpdateProjectiles;
+  // the fog is the last thing of wmap_updateMap that the model has (nothing if the game gave no updater)
+  if Assigned(FContext.FogUpdater) then
+    FContext.FogUpdater.Update;
 end;
 
 procedure TWarModelWorld.FinishTic;
@@ -130,6 +133,9 @@ begin
     FContext.Combat.UpdateProjectiles;
   TWarSpells.UpdateMagic(FMachine);
   TWarSpells.UpdateSpells(FMachine);
+  // updateFoW and determineFoWTypes come after the spells (a Holy Sight that was just cast shows in this very tic)
+  if Assigned(FContext.FogUpdater) then
+    FContext.FogUpdater.Update;
 end;
 
 procedure TWarModelWorld.Tick(ADeltaTime: Single);

@@ -74,6 +74,10 @@ var
 begin
   Result := False;
   LAcknowledge := 0;
+  // wcmd_executeMoveCommand makes the flow field of the target before it looks at the units, as long as somebody is
+  // selected: the units that get the order walk around what is on the grid at this moment
+  if (Commander.Selection.Count > 0) and Assigned(Context.Steering) then
+    Context.Steering.PlanMove(ATarget);
   for LIndex := 0 to Commander.Selection.Count - 1 do
   begin
     LSlot := SelectedSlot(LIndex);

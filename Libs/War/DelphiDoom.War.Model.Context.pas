@@ -19,7 +19,7 @@ uses
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Construction.Intf,
   DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins, DelphiDoom.War.Autotile.Line,
-  DelphiDoom.War.Model.Selection;
+  DelphiDoom.War.Model.Selection, DelphiDoom.War.Map.Grid, DelphiDoom.War.Map.Fog;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -39,6 +39,9 @@ type
     FEvents: IWarModelEvents;
     FOccupancy: IWarOccupancy;
     FSteering: IWarMovementSteering;
+    FUnitGrid: TWarMapGrid;
+    FFogUpdater: IWarFogUpdater;
+    FFog: TWarFogOfWar;
     FQueries: IWarUnitQueries;
     FEntities: IWarEntityManager;
     FCombat: IWarCombatServices;
@@ -75,8 +78,28 @@ type
     property Random: IWarRandom read FRandom;
     property Events: IWarModelEvents read FEvents;
     property Occupancy: IWarOccupancy read FOccupancy;
-    /// <summary>The avoidance of obstacles; nil (the default) means that the units go straight</summary>
+    /// <summary>
+    ///   The flow fields and the avoidance between units (TWarFlowSteering); nil (the default) means that the units go
+    ///   straight to their next waypoint
+    /// </summary>
     property Steering: IWarMovementSteering read FSteering write FSteering;
+    /// <summary>
+    ///   wgrid_build's grid (map->grid): the units by cell of 4 x 4 tiles, rebuilt once per tic after the states. Given by
+    ///   the combat services that build it; not owned. The avoidance reads it during the states, so it is the grid of the
+    ///   tic before. nil while nobody builds it (the avoidance then sees no neighbor)
+    /// </summary>
+    property UnitGrid: TWarMapGrid read FUnitGrid write FUnitGrid;
+    /// <summary>
+    ///   updateFoW and determineFoWTypes at the end of the tic (TWarFogRevealer over the fog of the map); nil (the default)
+    ///   and the fog is not updated
+    /// </summary>
+    property FogUpdater: IWarFogUpdater read FFogUpdater write FFogUpdater;
+    /// <summary>
+    ///   map->tiles seen from the model: what the player knows. Not owned; nil (the default) means that every tile is known.
+    ///   Where a rule of the original asks wmap_isTileUnknown (we_checkRectToBuild: nothing can be built on a tile that was
+    ///   never seen) the model reads it here
+    /// </summary>
+    property Fog: TWarFogOfWar read FFog write FFog;
     /// <summary>Questions about the units and the creation of units: given by the factory once the model is built</summary>
     property Queries: IWarUnitQueries read FQueries write FQueries;
     property Entities: IWarEntityManager read FEntities write FEntities;

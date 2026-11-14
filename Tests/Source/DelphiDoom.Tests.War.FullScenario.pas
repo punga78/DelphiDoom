@@ -14,7 +14,7 @@ uses
   System.SysUtils, System.Classes, DelphiDoom.War.Map.Types, DelphiDoom.War.Map.Intf, DelphiDoom.War.Map.PathGrid,
   DelphiDoom.War.Map.Fog, DelphiDoom.War.Map.Forests, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.World,
   DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Dispatcher,
-  DelphiDoom.Tests.War.ConstructionObserver, DelphiDoom.Tests.War.GatherScenario;
+  DelphiDoom.War.Model.FlowSteering, DelphiDoom.Tests.War.ConstructionObserver, DelphiDoom.Tests.War.GatherScenario;
 
 type
   /// <summary>The three kinds of scenario of war_full_ref.inc: the lines of the golden start with O, I and A</summary>
@@ -48,9 +48,10 @@ type
     FCommands: TWarCommands;
     FAiSelection: TWarSelection;
     FAiCommands: TWarCommands;
+    FSteering: TWarFlowSteering;
     function ScriptBelow(ALimit: Cardinal): Integer;
     procedure ResultMix(AValue: Cardinal);
-    procedure Setup(ASeed: Cardinal; AMode: TFullMode);
+    procedure Setup(ASeed: Cardinal; AMode: TFullMode; AReal: Boolean);
     procedure Teardown;
     procedure CreateForest(AX, AY, AWidth, AHeight: Integer);
     function SpawnDude(AType: Integer; APlayer: Byte; AX, AY: Integer): Integer;
@@ -105,8 +106,10 @@ type
     ///   Runs the scenario of the seed (900 tics). For each tic ALines gets 'O|I|A seed tic hash entities'; with
     ///   ADumpTic >= 0 the lines are not written and ADumpText is the text of the state at that tic
     /// </summary>
+    ///   With AReal the units have the flow fields and the avoidance and the fog is updated at the end of every tic
+    ///   (`war_model_ref real commands|spells|full`, issue #195)
     class procedure Run(AMode: TFullMode; ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings;
-      out ADumpText: string); static;
+      out ADumpText: string; AReal: Boolean = False); static;
     /// <summary>
     ///   Runs the scenario and counts, for each type of state, the tics with at least one active state of the type, and
     ///   for each type of entity the tics with at least one entity (what `war_model_ref fullstats` prints)
@@ -126,7 +129,7 @@ uses
   DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.Math,
   DelphiDoom.War.Model.Walls, DelphiDoom.War.Model.TerrainEntities, DelphiDoom.War.Model.Construction.Types,
   DelphiDoom.War.Model.Commands.Types, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.GridMap,
-  DelphiDoom.Tests.War.ModelDump;
+  DelphiDoom.War.Path.FlowFields, DelphiDoom.Tests.War.ModelDump;
 
 {$Q-}
 {$R-}
@@ -246,7 +249,7 @@ begin
   FForestId := LForest.Id;
 end;
 
-procedure TFullScenario.Setup(ASeed: Cardinal; AMode: TFullMode);
+procedure TFullScenario.Setup(ASeed: Cardinal; AMode: TFullMode; AReal: Boolean);
 var
   LPlayer: Integer;
   LUpgrade: Integer;
@@ -265,7 +268,7 @@ begin
   SetLength(LZeros, 4096);
   FGrid := TWarPathGrid.Create(LZeros);
   FFog := TWarFogOfWar.Create;
-  FFog.Enabled := False;
+  FFog.Enabled := AReal;
   FPainter := TRecordingPainter.Create;
   FPainterRef := FPainter;
   FForests := TWarMapForests.Create(FGrid, FFog, FPainterRef, WAR_TILESET_FOREST);
@@ -275,7 +278,18 @@ begin
   FWorld.Context.Gather := FGather;
   // the C of the golden was built with gcc, where the enum of the directions is unsigned
   FWorld.Context.UnsignedDirections := True;
-  LMap := TWarGridCommandMap.Create(FGrid);
+  if AReal then
+  begin
+    // the real paths and the fog of war: the units walk around what is on the grid and each other, the fog is updated
+    // at the end of every tic, and the commands see it
+    TWarModelFactory.AttachFlowSteering(FWorld, FGrid);
+    FSteering := FWorld.Context.Steering as TWarFlowSteering;
+    FSteering.Fields.TrackSignature := True;
+    TWarModelFactory.AttachFog(FWorld, FFog);
+    LMap := TWarGridCommandMap.Create(FGrid, FFog);
+  end
+  else
+    LMap := TWarGridCommandMap.Create(FGrid);
   FCommands := TWarModelFactory.CreateCommands(FWorld, LMap);
   FAiSelection := TWarSelection.Create;
   FAiCommands := TWarModelFactory.CreateComputerCommands(FWorld, FAiSelection, 1, LMap);
@@ -1101,7 +1115,10 @@ begin
   LContext := FWorld.Context;
   LText := TStringBuilder.Create;
   try
-    LText.Append(TModelDump.Dump(FWorld, FGrid, FObserver, ATic, FResults, True));
+    if Assigned(FSteering) then
+      LText.Append(TModelDump.Dump(FWorld, FGrid, FObserver, ATic, FResults, True, FSteering.Fields, FFog))
+    else
+      LText.Append(TModelDump.Dump(FWorld, FGrid, FObserver, ATic, FResults, True));
     // the lines of the construction scenarios (dumpConstruction)
     LText.AppendFormat('X audio=%u mix=%s hurry=%d'#10, [FObserver.AudioCount, LowerCase(IntToHex(FObserver.AudioMix, 8)),
       Ord(LContext.HurryUp)]);
@@ -1193,7 +1210,7 @@ begin
 end;
 
 class procedure TFullScenario.Run(AMode: TFullMode; ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings;
-  out ADumpText: string);
+  out ADumpText: string; AReal: Boolean);
 const
   PREFIX: array[TFullMode] of Char = ('O', 'I', 'A');
 var
@@ -1204,7 +1221,7 @@ begin
   ADumpText := '';
   LScenario := TFullScenario.Create;
   try
-    LScenario.Setup(ASeed, AMode);
+    LScenario.Setup(ASeed, AMode, AReal);
     try
       for LTic := 0 to FULL_SCENARIO_TICS - 1 do
       begin
@@ -1242,7 +1259,7 @@ begin
   SetLength(AEntities, WAR_ENTITY_TYPE_COUNT);
   LScenario := TFullScenario.Create;
   try
-    LScenario.Setup(ASeed, AMode);
+    LScenario.Setup(ASeed, AMode, False);
     try
       for LTic := 0 to FULL_SCENARIO_TICS - 1 do
       begin

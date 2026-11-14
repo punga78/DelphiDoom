@@ -57,6 +57,8 @@ begin
   FContext := AContext;
   FCombat := TWarCombat.Create(AContext, AMachine);
   FNear := TWarNearUnits.Create(AContext, AMachine);
+  // the avoidance between units reads the same grid, built once per tic after the states
+  AContext.UnitGrid := FNear.Grid;
   FAttacks := TWarAttacks.Create(AContext, AMachine, FCombat);
   FProjectiles := TWarProjectiles.Create(AContext, AMachine, FCombat, FNear, FAttacks.Melee);
   FProjectiles.WallMelee := FAttacks.WallMelee;
@@ -65,6 +67,7 @@ end;
 
 destructor TWarCombatServices.Destroy;
 begin
+  FContext.UnitGrid := nil;
   FAttacks.Free;
   FProjectiles.Free;
   FNear.Free;

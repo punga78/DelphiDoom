@@ -10,8 +10,8 @@ unit DelphiDoom.Tests.War.CombatScenario;
 interface
 
 uses
-  System.SysUtils, System.Classes, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Model.Types,
-  DelphiDoom.War.Model.World, DelphiDoom.Tests.War.ModelObserver;
+  System.SysUtils, System.Classes, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Model.Types,
+  DelphiDoom.War.Model.World, DelphiDoom.War.Model.FlowSteering, DelphiDoom.Tests.War.ModelObserver;
 
 type
   /// <summary>
@@ -29,9 +29,12 @@ type
     FWorld: TWarModelWorld;
     FGrid: TWarPathGrid;
     FObserver: TModelObserver;
+    FReal: Boolean;
+    FFog: TWarFogOfWar;
+    FSteering: TWarFlowSteering;
     function ScriptBelow(ALimit: Cardinal): Integer;
     procedure ResultMix(AValue: Cardinal);
-    procedure Setup(ASeed: Cardinal);
+    procedure Setup(ASeed: Cardinal; AReal: Boolean);
     procedure SpawnDude(AType: Integer; APlayer: Byte; AX, AY: Integer);
     procedure SpawnBuilding(AType: Integer; APlayer: Byte; AX, AY: Integer);
     procedure SpawnCombat;
@@ -51,9 +54,12 @@ type
   public
     /// <summary>
     ///   Runs the scenario of the seed for 600 tics: ALines gets 'C seed tic hash entities' for each tic; with
-    ///   ADumpTic >= 0 the lines are not written and ADumpText is the text of the state at that tic
+    ///   ADumpTic >= 0 the lines are not written and ADumpText is the text of the state at that tic. With AReal the
+    ///   units have the flow fields and the avoidance and the fog is updated at the end of every tic (`war_model_ref real
+    ///   combat`, issue #195)
     /// </summary>
-    class procedure Run(ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings; out ADumpText: string); static;
+    class procedure Run(ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings; out ADumpText: string;
+      AReal: Boolean = False); static;
   end;
 
 implementation
@@ -62,7 +68,8 @@ uses
   DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Factory, DelphiDoom.War.Model.GridOccupancy,
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.EntityPool, DelphiDoom.War.Model.StateMachine,
   DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry,
-  DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Math, DelphiDoom.Tests.War.ModelDump;
+  DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Math, DelphiDoom.War.Path.FlowFields,
+  DelphiDoom.Tests.War.ModelDump;
 
 {$Q-}
 {$R-}
@@ -93,7 +100,7 @@ begin
   FResults := (FResults * 16777619) xor AValue;
 end;
 
-procedure TCombatScenario.Setup(ASeed: Cardinal);
+procedure TCombatScenario.Setup(ASeed: Cardinal; AReal: Boolean);
 var
   LPlayer: Integer;
   LUpgrade: Integer;
@@ -109,6 +116,16 @@ begin
   FGrid := TWarPathGrid.Create(LZeros);
   FWorld := TWarModelFactory.CreateWorld(FObserver, TWarGridOccupancy.Create(FGrid), FObserver);
   FWorld.Context.UnsignedDirections := True;
+  FReal := AReal;
+  if AReal then
+  begin
+    FFog := TWarFogOfWar.Create;
+    FFog.Enabled := True;
+    TWarModelFactory.AttachFlowSteering(FWorld, FGrid);
+    FSteering := FWorld.Context.Steering as TWarFlowSteering;
+    FSteering.Fields.TrackSignature := True;
+    TWarModelFactory.AttachFog(FWorld, FFog);
+  end;
   for LPlayer := 0 to WAR_MAX_PLAYERS_COUNT - 1 do
   begin
     LInfo := FWorld.Context.Players[LPlayer];
@@ -493,21 +510,27 @@ begin
   FWorld.UpdateAfterStates;
 end;
 
-class procedure TCombatScenario.Run(ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings; out ADumpText: string);
+class procedure TCombatScenario.Run(ASeed: Cardinal; ADumpTic: Integer; ALines: TStrings; out ADumpText: string;
+  AReal: Boolean);
 var
   LScenario: TCombatScenario;
   LTic: Integer;
   LText: string;
+  LFields: TWarFlowFields;
 begin
   ADumpText := '';
   LScenario := TCombatScenario.Create;
   try
-    LScenario.Setup(ASeed);
+    LScenario.Setup(ASeed, AReal);
+    LFields := nil;
+    if AReal then
+      LFields := LScenario.FSteering.Fields;
     try
       for LTic := 0 to COMBAT_TICS - 1 do
       begin
         LScenario.Tick;
-        LText := TModelDump.Dump(LScenario.FWorld, LScenario.FGrid, LScenario.FObserver, LTic, LScenario.FResults, True);
+        LText := TModelDump.Dump(LScenario.FWorld, LScenario.FGrid, LScenario.FObserver, LTic, LScenario.FResults, True,
+          LFields, LScenario.FFog);
         if (ADumpTic >= 0) and (LTic = ADumpTic) then
           ADumpText := LText
         else if (ADumpTic < 0) and Assigned(ALines) then
@@ -516,6 +539,7 @@ begin
       end;
     finally
       LScenario.FWorld.Free;
+      LScenario.FFog.Free;
       LScenario.FGrid.Free;
     end;
   finally

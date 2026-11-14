@@ -10,8 +10,9 @@ unit DelphiDoom.Tests.War.ModelDump;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Model.Types,
-  DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.World, DelphiDoom.Tests.War.ModelObserver;
+  System.SysUtils, System.Generics.Collections, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog,
+  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.World,
+  DelphiDoom.War.Path.FlowFields, DelphiDoom.Tests.War.ModelObserver;
 
 type
   /// <summary>
@@ -29,8 +30,14 @@ type
     class procedure AddState(var AText: string; AWorld: TWarModelWorld; AState: PWarStateBase;
       const ARef: TWarStateRef); static;
   public
+    /// <summary>
+    ///   With AFields the line PF (how many flow fields were computed and the signature of all of them) and with AFog the
+    ///   line FG (the tiles in sight, in fog and unknown, and a hash of every tile) after the line of the grid, as dumpReal
+    ///   of war_path_ref.inc does when the real paths and the fog are on (issue #195)
+    /// </summary>
     class function Dump(AWorld: TWarModelWorld; AGrid: TWarPathGrid; AObserver: TModelObserver; ATic: Integer;
-      AResults: Cardinal; AExtended: Boolean = False): string; static;
+      AResults: Cardinal; AExtended: Boolean = False; AFields: TWarFlowFields = nil;
+      AFog: TWarFogOfWar = nil): string; static;
     /// <summary>FNV-1a 32 bit of the bytes of the text</summary>
     class function Fnv1a(const AText: string): Cardinal; static;
   end;
@@ -38,7 +45,8 @@ type
 implementation
 
 uses
-  System.StrUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.EntityPool,
+  System.StrUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Context,
+  DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage;
 
 {$Q-}
@@ -190,8 +198,15 @@ begin
 end;
 
 class function TModelDump.Dump(AWorld: TWarModelWorld; AGrid: TWarPathGrid; AObserver: TModelObserver; ATic: Integer;
-  AResults: Cardinal; AExtended: Boolean): string;
+  AResults: Cardinal; AExtended: Boolean; AFields: TWarFlowFields; AFog: TWarFogOfWar): string;
 var
+  LFogHash: Cardinal;
+  LVisible: Integer;
+  LFog: Integer;
+  LUnknown: Integer;
+  LFogTile: TWarMapTile;
+  LFogX: Integer;
+  LFogY: Integer;
   LContext: TWarModelContext;
   LText: string;
   LLow: Cardinal;
@@ -246,6 +261,29 @@ begin
     LGridHash := LGridHash * 16777619;
   end;
   LText := LText + Format('G %s'#10, [H8(LGridHash)]);
+  if Assigned(AFields) then
+    LText := LText + Format('PF c=%u mix=%s n=%d'#10, [AFields.ComputeCount, H8(AFields.Signature), AFields.Count]);
+  if Assigned(AFog) then
+  begin
+    LVisible := 0;
+    LFog := 0;
+    LUnknown := 0;
+    LFogHash := 2166136261;
+    for LFogY := 0 to WAR_MAP_TILES_HEIGHT - 1 do
+      for LFogX := 0 to WAR_MAP_TILES_WIDTH - 1 do
+      begin
+        LFogTile := AFog.GetTile(LFogX, LFogY);
+        case LFogTile.State of
+          wtsUnknown: Inc(LUnknown);
+          wtsFog: Inc(LFog);
+          wtsVisible: Inc(LVisible);
+        end;
+        LFogHash := (LFogHash xor Cardinal(Ord(LFogTile.State))) * 16777619;
+        LFogHash := (LFogHash xor Cardinal(LFogTile.PieceType)) * 16777619;
+        LFogHash := (LFogHash xor Cardinal(Ord(LFogTile.Boundary))) * 16777619;
+      end;
+    LText := LText + Format('FG v=%d f=%d u=%d h=%s'#10, [LVisible, LFog, LUnknown, H8(LFogHash)]);
+  end;
   for LSlot := 1 to WAR_MODEL_MAX_ENTITIES - 1 do
   begin
     LEntity := LContext.Pool.Slots[LSlot];

@@ -40,6 +40,8 @@ type
     procedure Build;
     /// <summary>we_getNearUnits: the slots go to AResult (cleared before)</summary>
     procedure Collect(const ATile: TWarVec2; ADistance: Integer; AResult: TList<Integer>);
+    /// <summary>The grid of the units (map->grid), owned; the avoidance between units reads it too</summary>
+    property Grid: TWarMapGrid read FGrid;
   end;
 
 implementation
@@ -83,7 +85,7 @@ begin
     FUnits[LIndex].Active := FContext.Pool.Slots[LSlot]^.HasTransform and not FMachine.IsGoingToDie(LSlot) and
       not FMachine.IsCollapsing(LSlot) and not FMachine.IsGoingToCollapse(LSlot);
   end;
-  FGrid.Build(Copy(FUnits, 0, LList.Count));
+  FGrid.Build(FUnits, LList.Count);
 end;
 
 procedure TWarNearUnits.Collect(const ATile: TWarVec2; ADistance: Integer; AResult: TList<Integer>);

@@ -59,6 +59,11 @@ type
     function IsEmpty(AX, AY: Integer): Boolean;
     /// <summary>wpath_isStatic</summary>
     function IsStatic(AX, AY: Integer): Boolean;
+    /// <summary>
+    ///   wpath_isStatic of the tile number AIndex (y * 64 + x) without the range check: for the loops of the path finding,
+    ///   which have already checked the tile (a number outside the map is a bug of the caller)
+    /// </summary>
+    function IsStaticAt(AIndex: Integer): Boolean; inline;
     /// <summary>wpath_isTileAccesible: one of the eight neighbors is empty</summary>
     function IsTileAccessible(AX, AY: Integer): Boolean;
     /// <summary>
@@ -72,9 +77,8 @@ type
 
 implementation
 
-const
-  DIR_X: array[0..7] of Integer = (0, 1, 1, 1, 0, -1, -1, -1);
-  DIR_Y: array[0..7] of Integer = (-1, -1, 0, 1, 1, 1, 0, -1);
+uses
+  DelphiDoom.War.Path.Types;
 
 { TWarPathGrid }
 
@@ -159,6 +163,11 @@ begin
   Result := GetTileValueType(AX, AY) = WAR_PATH_STATIC;
 end;
 
+function TWarPathGrid.IsStaticAt(AIndex: Integer): Boolean;
+begin
+  Result := (FData[AIndex] and $000F) = WAR_PATH_STATIC;
+end;
+
 function TWarPathGrid.IsTileAccessible(AX, AY: Integer): Boolean;
 var
   LDirection: Integer;
@@ -167,8 +176,8 @@ var
 begin
   for LDirection := 0 to 7 do
   begin
-    LX := AX + DIR_X[LDirection];
-    LY := AY + DIR_Y[LDirection];
+    LX := AX + WAR_PATH_DIR_X[LDirection];
+    LY := AY + WAR_PATH_DIR_Y[LDirection];
     if IsInside(LX, LY) and IsEmpty(LX, LY) then
       Exit(True);
   end;
@@ -202,8 +211,8 @@ begin
       Exit(Point(LX, LY));
     for LDirection := 0 to 7 do
     begin
-      LNextX := LX + DIR_X[LDirection];
-      LNextY := LY + DIR_Y[LDirection];
+      LNextX := LX + WAR_PATH_DIR_X[LDirection];
+      LNextY := LY + WAR_PATH_DIR_Y[LDirection];
       if IsInside(LNextX, LNextY) and not LSeen[LNextY * WAR_MAP_TILES_WIDTH + LNextX] then
       begin
         LSeen[LNextY * WAR_MAP_TILES_WIDTH + LNextX] := True;
