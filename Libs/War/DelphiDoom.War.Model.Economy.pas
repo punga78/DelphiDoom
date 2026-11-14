@@ -54,7 +54,8 @@ type
 implementation
 
 uses
-  System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.UnitClassifier;
+  System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.UnitClassifier,
+  DelphiDoom.War.Model.Purse;
 
 { TWarEconomy }
 
@@ -67,30 +68,17 @@ end;
 
 function TWarEconomy.EnoughResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer): Boolean;
 begin
-  Result := (APlayer^.Gold >= AGold) and (APlayer^.Wood >= AWood);
+  Result := TWarPurse.Enough(APlayer, AGold, AWood);
 end;
 
 function TWarEconomy.DecreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer): Boolean;
 begin
-  if APlayer^.Gold < AGold then
-  begin
-    FContext.Events.FlashStatus(wsmNotEnoughGold);
-    Exit(False);
-  end;
-  if APlayer^.Wood < AWood then
-  begin
-    FContext.Events.FlashStatus(wsmNotEnoughLumber);
-    Exit(False);
-  end;
-  APlayer^.Gold := APlayer^.Gold - AGold;
-  APlayer^.Wood := APlayer^.Wood - AWood;
-  Result := True;
+  Result := TWarPurse.Decrease(FContext, APlayer, AGold, AWood);
 end;
 
 procedure TWarEconomy.IncreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer);
 begin
-  APlayer^.Gold := APlayer^.Gold + AGold;
-  APlayer^.Wood := APlayer^.Wood + AWood;
+  TWarPurse.Increase(APlayer, AGold, AWood);
 end;
 
 function TWarEconomy.EnoughFarmFood(APlayer: PWarPlayerInfo): Boolean;

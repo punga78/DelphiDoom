@@ -27,6 +27,8 @@ $end = ($lines | Select-String -SimpleMatch '#include "war_game.h"' | Select-Obj
 if (-not $end) { throw 'war_game.h non trovato in tests\test_main.c' }
 $lines[0..($end - 1)] | Set-Content (Join-Path $Out 'war_head.inc') -Encoding ASCII
 Copy-Item (Join-Path $PSScriptRoot 'war_model_ref.c') (Join-Path $Out 'war_model_ref.c')
+# gli scenari della seconda fetta (costruzione e addestramento) sono inclusi da war_model_ref.c
+Copy-Item (Join-Path $PSScriptRoot 'war_construction_ref.inc') (Join-Path $Out 'war_construction_ref.inc')
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'

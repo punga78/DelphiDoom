@@ -108,6 +108,11 @@ begin
   LUnit^.ResourceKind := AResourceKind;
   LUnit^.Amount := Integer(AAmount);
   TWarActionTable.InitActions(LUnit^);
+  // the sprite of the unit (we_addSpriteComponentFromResource) and the scale of its transform
+  LEntity^.ScaleX := 1.0;
+  LEntity^.HasSprite := True;
+  LEntity^.SpriteEnabled := True;
+  LEntity^.SpriteFrames := FContext.ConstructionHost.UnitFrames(AUnitType);
   LEntity^.HasStateMachine := True;
   LEntity^.StateMachine.Pending.StateRef := TWarStateRefs.Invalid;
   LEntity^.StateMachine.Pending.CancellationTargetRef := TWarStateRefs.Invalid;

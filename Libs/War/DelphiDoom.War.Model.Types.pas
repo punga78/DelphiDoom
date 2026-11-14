@@ -295,6 +295,17 @@ type
     HasTransform: Boolean;
     HasUnit: Boolean;
     HasStateMachine: Boolean;
+    /// <summary>
+    ///   The sprite component, as far as the model needs it: whether the entity has one (a building under construction
+    ///   swaps it), whether it is enabled, how many frames the image has and the frame that is shown. The image itself
+    ///   is the business of whoever draws
+    /// </summary>
+    HasSprite: Boolean;
+    SpriteEnabled: Boolean;
+    SpriteFrames: Integer;
+    SpriteFrame: Integer;
+    /// <summary>WarTransformComponent.scale.x: -1 when the unit looks to the west (the frames of the east are mirrored)</summary>
+    ScaleX: Single;
     /// <summary>WarTransformComponent.position: the top left corner of the unit, in pixels of the map</summary>
     Position: TWarVec2;
     UnitData: TWarUnitComponent;
@@ -320,7 +331,7 @@ type
   end;
 
   /// <summary>The messages that the original flashes on the status bar</summary>
-  TWarStatusMessage = (wsmNotEnoughGold, wsmNotEnoughLumber, wsmNotEnoughMana, wsmNotEnoughFood);
+  TWarStatusMessage = (wsmNotEnoughGold, wsmNotEnoughLumber, wsmNotEnoughMana, wsmNotEnoughFood, wsmCantBuildThere);
 
 resourcestring
   SWarModelEntityPoolFull = 'The entity pool is full (%d entities)';

@@ -17,15 +17,23 @@ unit DelphiDoom.War.Model.State.Idle;
 interface
 
 uses
-  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.StateMachine;
+  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.StateMachine,
+  DelphiDoom.War.Model.Context;
 
 type
   /// <summary>
   ///   A unit that stands: it occupies its tiles, looks around now and then (one chance in five, each second, to turn a
-  ///   step) and a warrior attacks the first enemy that it sees within 5 tiles. The state updates once a second.
-  ///   The walls (an idle wall frees or fills its tiles by their hit points) are not in the model yet
+  ///   step) and a warrior attacks the first enemy that it sees within 5 tiles. The state updates once a second. The
+  ///   entity of the wall (the pieces are in the walls of the context) is idle too: every tic its pieces free or
+  ///   fill their tiles by their hit points
   /// </summary>
   TWarIdleState = class
+  strict private
+    /// <summary>
+    ///   The idle state of the wall (wst_updateIdleState for a wall): a piece with no hit points frees its tile, any other
+    ///   one fills it with the entity of the wall. No delay: it runs at every tic
+    /// </summary>
+    class procedure UpdateWall(AContext: TWarModelContext; AEntity: PWarEntity); static;
   public
     /// <summary>wst_enterIdleState</summary>
     class procedure Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase); static;
@@ -38,10 +46,31 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Model.Context, DelphiDoom.War.Model.Math, DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.UnitClassifier,
-  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.StateStorage;
+  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.UnitClassifier,
+  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.Construction.Types;
 
 { TWarIdleState }
+
+class procedure TWarIdleState.UpdateWall(AContext: TWarModelContext; AEntity: PWarEntity);
+var
+  LIndex: Integer;
+  LPiece: PWarWallPiece;
+  LPercent: Integer;
+begin
+  for LIndex := 0 to AContext.Walls.Count - 1 do
+  begin
+    LPiece := AContext.Walls[LIndex];
+    // a piece with no maximum has no hit points (the original divides by zero there)
+    if LPiece^.MaxHp <= 0 then
+      LPercent := 0
+    else
+      LPercent := TWarModelMath.PercentOf(LPiece^.Hp, LPiece^.MaxHp);
+    if LPercent <= 0 then
+      AContext.Occupancy.SetFreeTiles(LPiece^.TileX, LPiece^.TileY, 1, 1)
+    else
+      AContext.Occupancy.SetStaticEntity(LPiece^.TileX, LPiece^.TileY, 1, 1, AEntity^.Id);
+  end;
+end;
 
 class procedure TWarIdleState.Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase);
 var
@@ -98,6 +127,11 @@ begin
     if not AMachine.IsNextUpdateTime(PWarStateBase(LState)) then
       Continue;
     LEntity := LContext.Pool.Slots[LSlot];
+    if LEntity^.EntityType = WAR_ENTITY_WALL then
+    begin
+      UpdateWall(LContext, LEntity);
+      Continue;
+    end;
     if LEntity^.EntityType <> WAR_ENTITY_UNIT then
       Continue;
     if LState^.LookAround then

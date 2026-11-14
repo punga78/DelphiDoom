@@ -156,17 +156,21 @@ end;
 procedure TTestWarCombat.DovrebbeFarCrollareUnEdificioSenzaPuntiFerita;
 var
   LFarm: Integer;
+  LId: Word;
 begin
   LFarm := FRig.AddBuilding(WAR_UNIT_FARM_HUMANS, 20, 20);
   FRig.World.Combat.TakeDamage(LFarm, 500, 0);
   Assert.AreEqual<Integer>(0, FRig.Entity(LFarm)^.UnitData.Hp);
   Assert.IsTrue(FRig.World.Machine.IsGoingToCollapse(LFarm));
   Assert.AreEqual<Integer>(1, FRig.Observer.Collapsing);
+  LId := FRig.Entity(LFarm)^.Id;
   FRig.Tick;
-  // the collapse is not ported: the state is there and nothing updates it
+  // the collapse state holds the building for the animation (17 frames of a tenth of a second), then the building goes
   Assert.IsTrue(FRig.World.Machine.IsCollapsing(LFarm));
-  FRig.Run(5);
+  FRig.Run(1);
   Assert.IsTrue(FRig.World.Machine.IsCollapsing(LFarm));
+  FRig.Run(1);
+  Assert.AreEqual<Integer>(0, FRig.World.Context.Pool.FindSlot(LId));
 end;
 
 procedure TTestWarCombat.DovrebbeDireQuantoEDanneggiatoUnEdificioInPiedi;

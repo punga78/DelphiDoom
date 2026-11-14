@@ -61,6 +61,12 @@ type
     function IsStatic(AX, AY: Integer): Boolean;
     /// <summary>wpath_isTileAccesible: one of the eight neighbors is empty</summary>
     function IsTileAccessible(AX, AY: Integer): Boolean;
+    /// <summary>
+    ///   wpath_findEmptyTile: the first empty tile of a breadth first search that starts at the tile, with the neighbors
+    ///   visited in the order of the original (up, up right, right, ...); the tile itself if it is empty, or if there
+    ///   is none. A start outside the map is EWarException (the original asserts)
+    /// </summary>
+    procedure FindEmptyTile(AX, AY: Integer; out AFoundX, AFoundY: Integer);
     /// <summary>The 4096 values, row by row</summary>
     function ToArray: TArray<Word>;
   end;
@@ -168,6 +174,55 @@ begin
       Exit(True);
   end;
   Result := False;
+end;
+
+procedure TWarPathGrid.FindEmptyTile(AX, AY: Integer; out AFoundX, AFoundY: Integer);
+var
+  LQueue: TArray<Integer>;
+  LSeen: array[0..WAR_MAP_TILE_COUNT - 1] of Boolean;
+  LHead: Integer;
+  LTail: Integer;
+  LCurrent: Integer;
+  LDirection: Integer;
+  LX: Integer;
+  LY: Integer;
+begin
+  if IsEmpty(AX, AY) then
+  begin
+    AFoundX := AX;
+    AFoundY := AY;
+    Exit;
+  end;
+  FillChar(LSeen, SizeOf(LSeen), 0);
+  SetLength(LQueue, WAR_MAP_TILE_COUNT);
+  LHead := 0;
+  LTail := 1;
+  LQueue[0] := IndexOf(AX, AY);
+  LSeen[LQueue[0]] := True;
+  while LHead < LTail do
+  begin
+    LCurrent := LQueue[LHead];
+    Inc(LHead);
+    LX := LCurrent mod WAR_MAP_TILES_WIDTH;
+    LY := LCurrent div WAR_MAP_TILES_WIDTH;
+    if (FData[LCurrent] and $000F) = WAR_PATH_EMPTY then
+    begin
+      AFoundX := LX;
+      AFoundY := LY;
+      Exit;
+    end;
+    for LDirection := 0 to 7 do
+      if IsInside(LX + DIR_X[LDirection], LY + DIR_Y[LDirection]) and
+        not LSeen[IndexOf(LX + DIR_X[LDirection], LY + DIR_Y[LDirection])] then
+      begin
+        LCurrent := IndexOf(LX + DIR_X[LDirection], LY + DIR_Y[LDirection]);
+        LSeen[LCurrent] := True;
+        LQueue[LTail] := LCurrent;
+        Inc(LTail);
+      end;
+  end;
+  AFoundX := AX;
+  AFoundY := AY;
 end;
 
 function TWarPathGrid.ToArray: TArray<Word>;

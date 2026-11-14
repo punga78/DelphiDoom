@@ -90,6 +90,9 @@ void wproj_updateProjectile(WarContext* context, WarEntity* entity);
 #include "war_state_machine.c"
 #include "war_map_grid.c"
 #include "war_map.c"
+/* war_commands.c intero (issue #194, seconda fetta): gli ordini di costruzione, riparazione, addestramento, miglioramento e
+   annullamento sono i VERI wcmd_*; gli scenari li chiamano nella stessa unita' (anche le funzioni static) */
+#include "war_commands.c"
 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -128,10 +131,16 @@ void SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_ST
 int SDL_vsnprintf(char* text, size_t maxlen, const char* fmt, va_list ap) { return vsnprintf(text, maxlen, fmt, ap); }
 
 /* la grafica: lo sprite di una unita' non e' stato di gioco */
+/* gli sprite delle unita' non sono stato di gioco (zero fotogrammi); le immagini di costruzione degli edifici (risorse 331..346
+   di buildingsData) hanno un numero di fotogrammi che dipende dal DATA.WAR: qui 1 + risorsa % 4, lo stesso della classe
+   finta dei test (TConstructionObserver) */
 WarSprite wspr_createSpriteFromResourceIndex(WarContext* context, WarSpriteResourceRef ref)
 {
-    (void)context; (void)ref;
-    return (WarSprite){0};
+    (void)context;
+    WarSprite sprite = (WarSprite){0};
+    if (ref.resourceIndex >= 331 && ref.resourceIndex <= 346)
+        sprite.framesCount = 1 + ref.resourceIndex % 4;
+    return sprite;
 }
 void wspr_freeSprite(WarContext* context, WarSprite sprite) { (void)context; (void)sprite; }
 
@@ -145,6 +154,30 @@ void wmui_setFlashStatus(WarContext* context, f32 time, String text)
 static u32 gAudioCount = 0;
 WarEntity* wa_createAudioWithPosition(WarContext* context, const CreateAudioArgs* args) { (void)context; (void)args; gAudioCount++; return NULL; }
 WarEntity* wa_createAudioRandomWithPosition(WarContext* context, const CreateAudioArgs* args) { (void)context; (void)args; gAudioCount++; return NULL; }
+/* i suoni degli ordini e degli stati di costruzione (seconda fetta): oltre a contarli ne mescolano l'identificatore in gAudioMix
+   (stampato dalle righe X degli scenari di costruzione) */
+static u32 gAudioMix = 0;
+WarEntity* wa_createAudio(WarContext* context, const CreateAudioArgs* args)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + (u32)args->audioId;
+    return NULL;
+}
+WarEntity* wa_createAudioRandom(WarContext* context, const CreateAudioArgs* args)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + (u32)args->randomFromId * 1000u + (u32)args->randomToId;
+    return NULL;
+}
+WarEntity* wa_playAcknowledgementSound(WarContext* context, WarPlayerInfo* player)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + 9000u + player->index;
+    return NULL;
+}
 
 /* war_ui.c non e' incluso: wui_isUIEntity e' una funzione di sola lettura del tipo dell'entita' (le unita' non sono dell'interfaccia) */
 bool wui_isUIEntity(WarEntity* entity)
@@ -330,10 +363,45 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
             textAdd(t, " we=%08x%08x", hi, lo);
             break;
         }
+        /* costruzione, riparazione, crollo, addestramento e miglioramenti (seconda fetta della #194) */
+        case WAR_STATE_TRAIN:
+        {
+            WarStateTrain* a = (WarStateTrain*)s;
+            textAdd(t, " ut=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->unitToBuild, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_UPGRADE:
+        {
+            WarStateUpgrade* a = (WarStateUpgrade*)s;
+            textAdd(t, " ug=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->upgradeToBuild, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_BUILD:
+        {
+            WarStateBuild* a = (WarStateBuild*)s;
+            textAdd(t, " wk=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->workerId, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_REPAIR:
+            textAdd(t, " bd=%d", ((WarStateRepair*)s)->buildingId);
+            break;
+        case WAR_STATE_REPAIRING:
+            textAdd(t, " bd=%d in=%d", ((WarStateRepairing*)s)->buildingId, ((WarStateRepairing*)s)->insideBuilding ? 1 : 0);
+            break;
         default:
             break;
     }
 }
+
+/* le righe in piu' degli scenari di costruzione (war_construction_ref.inc): sprite, rovine, mura, suoni */
+static int gConstructionDump = 0;
+static void dumpConstruction(Text* t);
 
 static void dumpWorld(Text* t, s32 tic)
 {
@@ -417,6 +485,8 @@ static void dumpWorld(Text* t, s32 tic)
         }
         textAdd(t, "\n");
     }
+    if (gConstructionDump)
+        dumpConstruction(t);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -821,6 +891,9 @@ static void bench(s32 units, s32 tics)
            1000.0 * ms / ((double)gMap->entityManager.entityCount * tics));
     worldFree();
 }
+/* gli scenari di costruzione e addestramento (seconda fetta della #194) */
+#include "war_construction_ref.inc"
+
 int main(int argc, char** argv)
 {
     gTrace = getenv("WAR_REF_TRACE") != NULL;
@@ -851,6 +924,23 @@ int main(int argc, char** argv)
         u32 n = argc > 2 ? (u32)atoi(argv[2]) : 10;
         for (u32 seed = 1; seed <= n; seed++)
             runScenario(1, seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "construction-tables") == 0)
+    {
+        printConstructionTables();
+        return 0;
+    }
+    if (strcmp(argv[1], "construction") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 24;
+        for (u32 seed = 1; seed <= n; seed++)
+            runConstruction(seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "construction") == 0)
+    {
+        runConstruction((u32)atoi(argv[3]), atoi(argv[4]), false);
         return 0;
     }
     if (strcmp(argv[1], "dump") == 0 && argc >= 5)

@@ -88,6 +88,9 @@ var
   LLow: Cardinal;
   LHigh: Cardinal;
   LMove: PWarStateMove;
+  LTrain: PWarStateTrain;
+  LUpgrade: PWarStateUpgrade;
+  LBuild: PWarStateBuild;
   LIndex: Integer;
 begin
   DBits(AState^.NextUpdateGameTime, LLow, LHigh);
@@ -121,6 +124,36 @@ begin
         DBits(PWarStateWait(AState)^.WaitEndGameTime, LLow, LHigh);
         AText := AText + Format(' we=%s%s', [H8(LHigh), H8(LLow)]);
       end;
+    // building, repairing, collapsing, training and upgrading (second slice of the issue 194)
+    WAR_STATE_TRAIN:
+      begin
+        LTrain := PWarStateTrain(AState);
+        AText := AText + Format(' ut=%d bt=%s tt=%s gc=%d wc=%d fl=%d%d%d%d', [LTrain^.UnitToBuild,
+          H8(FBits(LTrain^.BuildTime)), H8(FBits(LTrain^.TotalBuildTime)), LTrain^.GoldCost, LTrain^.WoodCost,
+          Ord(LTrain^.TransactionApplied), Ord(LTrain^.OutputCommitted), Ord(LTrain^.Cancelled),
+          Ord(LTrain^.AlreadyRefunded)]);
+      end;
+    WAR_STATE_UPGRADE:
+      begin
+        LUpgrade := PWarStateUpgrade(AState);
+        AText := AText + Format(' ug=%d bt=%s tt=%s gc=%d wc=%d fl=%d%d%d%d', [LUpgrade^.UpgradeToBuild,
+          H8(FBits(LUpgrade^.BuildTime)), H8(FBits(LUpgrade^.TotalBuildTime)), LUpgrade^.GoldCost, LUpgrade^.WoodCost,
+          Ord(LUpgrade^.TransactionApplied), Ord(LUpgrade^.OutputCommitted), Ord(LUpgrade^.Cancelled),
+          Ord(LUpgrade^.AlreadyRefunded)]);
+      end;
+    WAR_STATE_BUILD:
+      begin
+        LBuild := PWarStateBuild(AState);
+        AText := AText + Format(' wk=%d bt=%s tt=%s gc=%d wc=%d fl=%d%d%d%d', [LBuild^.WorkerId,
+          H8(FBits(LBuild^.BuildTime)), H8(FBits(LBuild^.TotalBuildTime)), LBuild^.GoldCost, LBuild^.WoodCost,
+          Ord(LBuild^.TransactionApplied), Ord(LBuild^.OutputCommitted), Ord(LBuild^.Cancelled),
+          Ord(LBuild^.AlreadyRefunded)]);
+      end;
+    WAR_STATE_REPAIR:
+      AText := AText + Format(' bd=%d', [PWarStateRepair(AState)^.BuildingId]);
+    WAR_STATE_REPAIRING:
+      AText := AText + Format(' bd=%d in=%d', [PWarStateRepairing(AState)^.BuildingId,
+        Ord(PWarStateRepairing(AState)^.InsideBuilding)]);
   end;
 end;
 

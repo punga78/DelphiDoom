@@ -42,7 +42,12 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('tables'); Golden = 'model.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('scenarios', '20'); Golden = 'model.friendly.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('hostile', '16'); Golden = 'model.hostile.golden.txt'; NeedsData = $false },
-      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'friendly', '3', '120'); Golden = 'model.dump.golden.txt'; NeedsData = $false }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'friendly', '3', '120'); Golden = 'model.dump.golden.txt'; NeedsData = $false }) },
+  # seconda fetta della #194: costruzione, riparazione, crollo, addestramento e miglioramenti (stesso programma, altri scenari)
+  @{ Name = '194 costruzione'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('construction-tables'); Golden = 'model.construction.tables.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('construction', '24'); Golden = 'model.construction.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'construction', '17', '200'); Golden = 'model.construction.dump.golden.txt'; NeedsData = $false }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

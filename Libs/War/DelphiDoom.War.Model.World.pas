@@ -42,6 +42,11 @@ type
     ///   type of state
     /// </summary>
     procedure Update;
+    /// <summary>
+    ///   updateActions of wmap_updateMap, which runs after the states in the same tic: the steps of the actions of every unit
+    ///   (the frames, the blow of the hammer of a worker that repairs). A game calls it after Update
+    /// </summary>
+    procedure UpdateActions;
     property Context: TWarModelContext read FContext;
     property Machine: TWarStateMachine read FMachine;
     property Queries: IWarUnitQueries read FQueries;
@@ -51,6 +56,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.War.Model.ActionStepper;
 
 { TWarModelWorld }
 
@@ -90,6 +98,11 @@ procedure TWarModelWorld.Update;
 begin
   FMachine.ProcessPendingTransitions;
   FMachine.UpdateStates;
+end;
+
+procedure TWarModelWorld.UpdateActions;
+begin
+  TWarActionStepper.UpdateAll(FContext);
 end;
 
 end.
