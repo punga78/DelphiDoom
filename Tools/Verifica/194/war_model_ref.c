@@ -252,14 +252,41 @@ bool wui_isUIEntity(WarEntity* entity)
     }
 }
 
-/* il percorso: nessun ostacolo, il campo di flusso e' nullo e il passo e' verso il prossimo punto */
+/* il percorso: per i golden della #194 nessun ostacolo, il campo di flusso e' nullo e il passo e' verso il prossimo punto; per i
+   golden della #195 (gRealPaths, acceso dai comandi "path*" e dalle modalita' "real*") le funzioni sono quelle ORIGINALI di
+   war_pathfinder.c e war_rvo.c (rinominate con #define piu' sopra) */
+static int gRealPaths = 0;
+static int gRealFog = 0;     /* la nebbia di guerra a ogni tic (updateFoW e determineFoWTypes, come wmap_updateMap) */
+static int gWantReal = 0;    /* worldInit accende da solo i due interruttori (gli scenari "real ...") */
+static u32 gFieldComputes = 0;
+static u32 gFieldMix = 2166136261u;
+static WarMapFlowField* realComputeFlowField(WarPathFinder* finder, s32 x, s32 y);
+static WarMapFlowField* realEnsureFlowField(WarPathFinder* finder, s32 x, s32 y);
+static void realWorldSetup(void);
+static void realFogUpdate(void);
 static WarMapFlowField gNullFlowField;
-WarMapFlowField* wpath_ensureFlowField(WarPathFinder* finder, s32 x, s32 y) { (void)finder; (void)x; (void)y; return &gNullFlowField; }
-vec2 wpath_flowFieldSample(WarMapFlowField* flowField, s32 x, s32 y) { (void)flowField; (void)x; (void)y; return VEC2_ZERO; }
-WarMapFlowField* wpath_computeFlowField(WarPathFinder* finder, s32 x, s32 y) { (void)finder; (void)x; (void)y; return &gNullFlowField; }
+WarMapFlowField* wpath_ensureFlowField(WarPathFinder* finder, s32 x, s32 y)
+{
+    if (gRealPaths)
+        return realEnsureFlowField(finder, x, y);
+    return &gNullFlowField;
+}
+vec2 wpath_flowFieldSample(WarMapFlowField* flowField, s32 x, s32 y)
+{
+    if (gRealPaths)
+        return wpath_flowFieldSample_orig(flowField, x, y);
+    return VEC2_ZERO;
+}
+WarMapFlowField* wpath_computeFlowField(WarPathFinder* finder, s32 x, s32 y)
+{
+    if (gRealPaths)
+        return realComputeFlowField(finder, x, y);
+    return &gNullFlowField;
+}
 s32 wrvo_gatherNeighbours(WarContext* context, s32 selfId, vec2 centrePixel, f32 radiusPx, WarRvoNeighbour out[RVO_MAX_NB])
 {
-    (void)context; (void)selfId; (void)centrePixel; (void)radiusPx; (void)out;
+    if (gRealPaths)
+        return wrvo_gatherNeighbours_orig(context, selfId, centrePixel, radiusPx, out);
     return 0;
 }
 
@@ -323,10 +350,16 @@ static void worldInit(u32 gameSeed, u32 scriptSeed)
             gMap->players[i].upgrades[u].allowed = 2;
     }
     gMap->playersCount = MAX_PLAYERS_COUNT;
+    gRealPaths = 0;
+    gRealFog = 0;
+    if (gWantReal)
+        realWorldSetup();
 }
 
 static void worldFree(void)
 {
+    gRealPaths = 0;
+    gRealFog = 0;
     wm_allocFree();
     gContext = NULL;
     gMap = NULL;
@@ -505,6 +538,8 @@ static void dumpConstruction(Text* t);
 /* le righe in piu' degli scenari dei comandi, degli incantesimi e del tic intero (war_full_ref.inc) */
 static int gFullDump = 0;
 static void dumpFull(Text* t);
+/* le righe in piu' dei percorsi e della nebbia (war_path_ref.inc, #195): solo se gRealPaths o gRealFog */
+static void dumpReal(Text* t);
 /* le tessere scritte nella mappa visiva (un albero abbattuto) si registrano anche negli scenari del tic intero */
 static bool gTileStub = false;
 static u32 gTileWrites = 0;
@@ -546,6 +581,8 @@ static void dumpWorld(Text* t, s32 tic)
         gridHash *= 16777619u;
     }
     textAdd(t, "G %08x\n", gridHash);
+    if (gRealPaths || gRealFog)
+        dumpReal(t);
 
     for (s32 i = 1; i < MAX_ENTITIES_COUNT; i++)
     {
@@ -1325,6 +1362,7 @@ static void tickModel(void (*scriptStep)(void), f32 delta)
     wgrid_build(gContext);
     updateActions(gContext);
     updateProjectiles(gContext);
+    realFogUpdate();
 }
 
 static void tickCombat(void)
@@ -1664,10 +1702,83 @@ static void bench(s32 units, s32 tics)
 #include "war_construction_ref.inc"
 /* gli scenari dei comandi, degli incantesimi e del tic intero (completamento della #194) */
 #include "war_full_ref.inc"
+/* percorsi, evitamento e nebbia di guerra (issue #195) */
+#include "war_path_ref.inc"
+/* percorsi sui livelli veri di DATA.WAR (war_file.c originale) */
+#include "war_levels_ref.inc"
 
 int main(int argc, char** argv)
 {
     gTrace = getenv("WAR_REF_TRACE") != NULL;
+    /* #195: "real" prima del nome di uno scenario accende i percorsi veri e la nebbia (campi di flusso, vicini dell'evitamento,
+       updateFoW e determineFoWTypes a ogni tic) */
+    if (argc >= 3 && strcmp(argv[1], "real") == 0)
+    {
+        gWantReal = 1;
+        argv[1] = argv[0];
+        argv++;
+        argc--;
+    }
+    if (strcmp(argv[1], "paths") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 36;
+        for (u32 seed = 1; seed <= n; seed++)
+            runPaths(seed, -1);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "paths") == 0)
+    {
+        runPaths((u32)atoi(argv[3]), atoi(argv[4]));
+        return 0;
+    }
+    if (strcmp(argv[1], "rvo") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 20;
+        printRvoTables();
+        for (u32 seed = 1; seed <= n; seed++)
+            runRvo(seed, -1);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "rvo") == 0)
+    {
+        runRvo((u32)atoi(argv[3]), atoi(argv[4]));
+        return 0;
+    }
+    if (strcmp(argv[1], "move") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 12;
+        for (u32 seed = 1; seed <= n; seed++)
+            runMove(seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "move") == 0)
+    {
+        runMove((u32)atoi(argv[3]), atoi(argv[4]), false);
+        return 0;
+    }
+    if (strcmp(argv[1], "units") == 0)
+    {
+        for (u32 seed = 1; seed <= 20; seed++)
+            runScatter(seed);
+        for (s32 variant = 0; variant < 4; variant++)
+            runTieBreak(variant);
+        return 0;
+    }
+    if (strcmp(argv[1], "levelpaths") == 0 && argc >= 3)
+    {
+        runLevelPaths(argv[2]);
+        return 0;
+    }
+    if (strcmp(argv[1], "benchpaths") == 0)
+    {
+        benchPaths(argc > 2 ? atoi(argv[2]) : 3);
+        return 0;
+    }
+    if (strcmp(argv[1], "benchmove") == 0)
+    {
+        benchMove(argc > 2 ? atoi(argv[2]) : 200, argc > 3 ? atoi(argv[3]) : 600);
+        return 0;
+    }
     if (argc < 2)
     {
         fprintf(stderr, "uso: war_model_ref tables | scenarios [n] | hostile [n] | dump friendly|hostile SEED TIC\n");

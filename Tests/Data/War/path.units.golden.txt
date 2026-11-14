@@ -1,0 +1,24 @@
+S 1 draws=387 count=371 cap=1024 h=1c22a7d6
+S 2 draws=247 count=239 cap=512 h=4ac9906d
+S 3 draws=107 count=104 cap=256 h=ef962cf7
+S 4 draws=367 count=351 cap=1024 h=80056438
+S 5 draws=227 count=222 cap=512 h=5b8fc04a
+S 6 draws=87 count=86 cap=256 h=29506117
+S 7 draws=347 count=331 cap=1024 h=da381bc4
+S 8 draws=207 count=203 cap=512 h=0c630b37
+S 9 draws=67 count=67 cap=256 h=5566e9c4
+S 10 draws=327 count=318 cap=1024 h=7398d1cf
+S 11 draws=187 count=182 cap=512 h=2b1a5735
+S 12 draws=47 count=47 cap=128 h=4c2f3b33
+S 13 draws=307 count=297 cap=1024 h=e52c4d3f
+S 14 draws=167 count=163 cap=512 h=6d6e326b
+S 15 draws=27 count=27 cap=64 h=f1112e68
+S 16 draws=287 count=280 cap=1024 h=d5bd27b8
+S 17 draws=147 count=144 cap=512 h=9ef09120
+S 18 draws=7 count=7 cap=16 h=d684df3d
+S 19 draws=267 count=254 cap=512 h=c2e18772
+S 20 draws=127 count=126 cap=256 h=5864841f
+T 0 10,10 -> 30,10 n=16 last=25,9 h=de0f15ec
+T 1 10,21 -> 30,21 n=16 last=25,20 h=9401b222
+T 2 10,32 -> 30,32 n=16 last=25,31 h=e7ac7408
+T 3 10,43 -> 30,43 n=16 last=25,42 h=82f99b32

@@ -56,7 +56,9 @@ type
     ///   wgrid_build: clears the grid and puts the active units in their cell, in the order of the list; a unit
     ///   outside the map is not put. A slot outside the table is EWarException (the original asserted)
     /// </summary>
-    procedure Build(const AUnits: array of TWarGridUnit);
+    procedure Build(const AUnits: array of TWarGridUnit); overload;
+    /// <summary>The same for the first ACount units of an array that the caller keeps (no copy: the model builds the grid every tic)</summary>
+    procedure Build(const AUnits: TArray<TWarGridUnit>; ACount: Integer); overload;
     /// <summary>wgrid_tileFromMapTile: the cell of a tile (the quotient truncated toward zero)</summary>
     class procedure TileFromMapTile(ATileX, ATileY: Single; out ACellX, ACellY: Integer); static;
     /// <summary>wgrid_getTileIndex: the number of the cell, -1 if it is not in the 16 x 16 grid</summary>
@@ -94,24 +96,37 @@ end;
 
 procedure TWarMapGrid.Build(const AUnits: array of TWarGridUnit);
 var
-  LUnit: TWarGridUnit;
+  LUnits: TArray<TWarGridUnit>;
+  LIndex: Integer;
+begin
+  SetLength(LUnits, System.Length(AUnits));
+  for LIndex := 0 to High(AUnits) do
+    LUnits[LIndex] := AUnits[LIndex];
+  Build(LUnits, System.Length(LUnits));
+end;
+
+procedure TWarMapGrid.Build(const AUnits: TArray<TWarGridUnit>; ACount: Integer);
+var
+  LIndex: Integer;
   LCellX: Integer;
   LCellY: Integer;
   LCell: Integer;
+  LSlot: Integer;
 begin
   Clear;
-  for LUnit in AUnits do
+  for LIndex := 0 to ACount - 1 do
   begin
-    if (LUnit.Slot < 0) or (LUnit.Slot >= WAR_MAX_ENTITIES_COUNT) then
-      raise EWarException.CreateFmt(SWarIndexOutOfRange, [LUnit.Slot, WAR_MAX_ENTITIES_COUNT]);
-    if not LUnit.Active then
+    LSlot := AUnits[LIndex].Slot;
+    if (LSlot < 0) or (LSlot >= WAR_MAX_ENTITIES_COUNT) then
+      raise EWarException.CreateFmt(SWarIndexOutOfRange, [LSlot, WAR_MAX_ENTITIES_COUNT]);
+    if not AUnits[LIndex].Active then
       Continue;
-    TileFromMapTile(LUnit.TileX, LUnit.TileY, LCellX, LCellY);
+    TileFromMapTile(AUnits[LIndex].TileX, AUnits[LIndex].TileY, LCellX, LCellY);
     LCell := GetTileIndex(LCellX, LCellY);
     if LCell < 0 then
       Continue;
-    FNext[LUnit.Slot] := FHead[LCell];
-    FHead[LCell] := LUnit.Slot;
+    FNext[LSlot] := FHead[LCell];
+    FHead[LCell] := LSlot;
   end;
 end;
 

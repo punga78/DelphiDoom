@@ -21,16 +21,31 @@ uses
   DelphiDoom.War.Model.StateMachine;
 
 type
+  /// <summary>One pass of wst_updateMoveStates over a moving unit: the entity slot and its move state</summary>
+  TWarMovePass = procedure(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateMove) of object;
+
   /// <summary>
   ///   A unit that goes through a list of waypoints (centers in pixels, the first is where it was). Every tic runs the
   ///   seven passes of the original over all the moving units: no velocity, look for an attacker, preferred
   ///   velocity, adjusted velocity, new position, progress and recovery, and the velocity kept for the next tic. Without
-  ///   an IWarMovementSteering (the pathfinding and the avoidance of the units, issue #195) a unit goes straight to the
-  ///   next waypoint: it is what the original does on a free field with no other unit near, and what the golden of parity
-  ///   covers. A unit that does not get closer by 4 pixels for 3 seconds gives up (BLOCKED)
+  ///   an IWarMovementSteering (the flow fields and the avoidance of the units, issue #195: TWarFlowSteering) a unit goes
+  ///   straight to the next waypoint: it is what the original does on a free field with no other unit near, and what the
+  ///   golden of the first slice covers. With one, the third and the fourth pass belong to it. A unit that does not get
+  ///   closer by 4 pixels for 3 seconds gives up (BLOCKED)
   /// </summary>
   TWarMoveState = class
   public
+    /// <summary>
+    ///   Runs a pass over the units whose active state is a move state, in the order of the slots of the states (the
+    ///   order of the original: it decides the order of the updates)
+    /// </summary>
+    class procedure ForEachActive(AMachine: TWarStateMachine; const APass: TWarMovePass); static;
+    /// <summary>
+    ///   The end of the third pass for a direction that somebody else has chosen: the speed of the unit, the slowdown on
+    ///   the last leg (3 tiles from the goal, down to a quarter) and the preferred velocity of the state
+    /// </summary>
+    class procedure SetPreferredVelocity(AContext: TWarModelContext; AEntity: PWarEntity; AState: PWarStateMove;
+      const APosition, ADirection: TWarVec2); static;
     /// <summary>wst_enterMoveState: a move with fewer than two waypoints ends at once (NO_DESTINATION)</summary>
     class procedure Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase); static;
     /// <summary>wst_exitMoveState</summary>
@@ -105,21 +120,14 @@ begin
   end;
 end;
 
-// pass 3
+// pass 3 without the flow fields: the flow field of the original is zero on a free field and the unit goes straight
 procedure UpdatePreferredVelocity(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateMove);
 var
   LContext: TWarModelContext;
   LEntity: PWarEntity;
   LPosition: TWarVec2;
   LNext: TWarVec2;
-  LGoal: TWarVec2;
   LDirection: TWarVec2;
-  LSpeed: Single;
-  LPreferred: TWarVec2;
-  LDistanceSqr: Single;
-  LDistance: Single;
-  LScale: Single;
-  LRadiusSqr: Single;
 begin
   if AState^.WaypointsIndex >= AState^.WaypointsCount - 1 then
     Exit;
@@ -127,27 +135,9 @@ begin
   LEntity := LContext.Pool.Slots[ASlot];
   LPosition := TWarUnitGeometry.CenterPosition(LEntity);
   LNext := AState^.Waypoints[AState^.WaypointsIndex + 1];
-  // the flow field of the original is zero on a free field and the unit goes straight: a vector to the next waypoint
   LDirection := TWarModelMath.Sub(LNext, LPosition);
   LDirection := TWarModelMath.Normalize(LDirection);
-  LSpeed := LContext.UnitSpeed(LEntity^.UnitData.UnitType, LEntity^.UnitData.Speed);
-  LPreferred := TWarModelMath.Scale(LDirection, LSpeed);
-  // slow down when approaching the final waypoint to avoid overshooting
-  if AState^.WaypointsIndex >= AState^.WaypointsCount - 2 then
-  begin
-    LGoal := AState^.Waypoints[AState^.WaypointsCount - 1];
-    LDistanceSqr := TWarModelMath.DistanceSqr(LPosition, LGoal);
-    LRadiusSqr := ARRIVAL_SLOWDOWN_RADIUS * ARRIVAL_SLOWDOWN_RADIUS;
-    if LDistanceSqr < LRadiusSqr then
-    begin
-      LDistance := Sqrt(LDistanceSqr);
-      LScale := LDistance / ARRIVAL_SLOWDOWN_RADIUS;
-      if not (LScale > ARRIVAL_MIN_SCALE) then
-        LScale := ARRIVAL_MIN_SCALE;
-      LPreferred := TWarModelMath.Scale(LPreferred, LScale);
-    end;
-  end;
-  AState^.RvoPreferredVelocity := LPreferred;
+  TWarMoveState.SetPreferredVelocity(LContext, LEntity, AState, LPosition, LDirection);
 end;
 
 // pass 4
@@ -259,9 +249,13 @@ begin
     AState^.Progress.LowVelocityTime := AState^.Progress.LowVelocityTime + LContext.Clock^.DeltaTime
   else
     AState^.Progress.LowVelocityTime := 0;
-  // the first recovery asks for a new flow field, which is the business of the pathfinding
+  // the first recovery asks for a new flow field (there is none without the pathfinding: the unit goes straight)
   if (AState^.Progress.RecoveryAttempt < 1) and (AState^.Progress.NoProgressTime >= PATH_REFRESH_TIME) then
+  begin
+    if Assigned(LContext.Steering) then
+      LContext.Steering.RefreshFlowField(LGoal);
     AState^.Progress.RecoveryAttempt := 1;
+  end;
   if (AState^.Progress.RecoveryAttempt < 2) and (AState^.Progress.NoProgressTime >= AVOIDANCE_RECOVERY_TIME) then
     AState^.Progress.RecoveryAttempt := 2;
   if AState^.Progress.NoProgressTime >= BLOCKED_TIME then
@@ -313,6 +307,59 @@ end;
 
 { TWarMoveState }
 
+class procedure TWarMoveState.ForEachActive(AMachine: TWarStateMachine; const APass: TWarMovePass);
+var
+  LContext: TWarModelContext;
+  LIndex: Integer;
+  LState: PWarStateMove;
+  LSlot: Integer;
+begin
+  LContext := AMachine.Context;
+  for LIndex := 0 to WAR_MODEL_MAX_STATES_PER_TYPE - 1 do
+  begin
+    if not LContext.Storage.Occupied[WAR_STATE_MOVE, LIndex] then
+      Continue;
+    LState := PWarStateMove(LContext.Storage.StateAt(WAR_STATE_MOVE, LIndex));
+    LSlot := LContext.Pool.FindSlot(LState^.Base.EntityId);
+    if (LSlot = 0) or (LContext.Pool.Slots[LSlot]^.EntityType <> WAR_ENTITY_UNIT) then
+      Continue;
+    if AMachine.ActiveState(LSlot) <> PWarStateBase(LState) then
+      Continue;
+    APass(AMachine, LSlot, LState);
+  end;
+end;
+
+class procedure TWarMoveState.SetPreferredVelocity(AContext: TWarModelContext; AEntity: PWarEntity;
+  AState: PWarStateMove; const APosition, ADirection: TWarVec2);
+var
+  LGoal: TWarVec2;
+  LSpeed: Single;
+  LPreferred: TWarVec2;
+  LDistanceSqr: Single;
+  LDistance: Single;
+  LScale: Single;
+  LRadiusSqr: Single;
+begin
+  LSpeed := AContext.UnitSpeed(AEntity^.UnitData.UnitType, AEntity^.UnitData.Speed);
+  LPreferred := TWarModelMath.Scale(ADirection, LSpeed);
+  // slow down when approaching the final waypoint to avoid overshooting
+  if AState^.WaypointsIndex >= AState^.WaypointsCount - 2 then
+  begin
+    LGoal := AState^.Waypoints[AState^.WaypointsCount - 1];
+    LDistanceSqr := TWarModelMath.DistanceSqr(APosition, LGoal);
+    LRadiusSqr := ARRIVAL_SLOWDOWN_RADIUS * ARRIVAL_SLOWDOWN_RADIUS;
+    if LDistanceSqr < LRadiusSqr then
+    begin
+      LDistance := Sqrt(LDistanceSqr);
+      LScale := LDistance / ARRIVAL_SLOWDOWN_RADIUS;
+      if not (LScale > ARRIVAL_MIN_SCALE) then
+        LScale := ARRIVAL_MIN_SCALE;
+      LPreferred := TWarModelMath.Scale(LPreferred, LScale);
+    end;
+  end;
+  AState^.RvoPreferredVelocity := LPreferred;
+end;
+
 class procedure TWarMoveState.Enter(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateBase);
 var
   LState: PWarStateMove;
@@ -340,8 +387,17 @@ class procedure TWarMoveState.UpdateAll(AMachine: TWarStateMachine);
 begin
   RunPass(AMachine, ForgetPreferredVelocity);
   RunPass(AMachine, CheckForAttacks);
-  RunPass(AMachine, UpdatePreferredVelocity);
-  RunPass(AMachine, UpdateAdjustedVelocity);
+  // the flow fields and the avoidance, if there are any: one call per pass, not per unit
+  if Assigned(AMachine.Context.Steering) then
+  begin
+    AMachine.Context.Steering.UpdatePreferredVelocities;
+    AMachine.Context.Steering.UpdateAdjustedVelocities;
+  end
+  else
+  begin
+    RunPass(AMachine, UpdatePreferredVelocity);
+    RunPass(AMachine, UpdateAdjustedVelocity);
+  end;
   RunPass(AMachine, UpdatePosition);
   RunPass(AMachine, UpdateProgressAndRecovery);
   RunPass(AMachine, KeepVelocity);

@@ -187,7 +187,7 @@ Il PNG dei font non e' nel `DATA.WAR`: il chiamante da' a `TWarImageBlitter` l'i
 | `we_increase/decreaseUnitHp/Mana`, `we_getTotalDamage`, `we_takeDamage` | `TWarCombat` |
 | `we_*PlayerResources`, `we_enoughFarmFood`, `we_checkFarmFood`, `we_increaseUpgradeLevel` | `TWarEconomy` |
 | `vec2_*`, `wmap_mapToTileCoordinatesV`, `wmap_getMapScaledTime`, `wu_getDirectionFromDiff` | `TWarModelMath` |
-| `wrvo_computeNewVelocity` (senza vicini) | `TWarStraightSteering` |
+| `wrvo_computeNewVelocity` (senza vicini) | `TWarStraightSteering` (il passo in linea retta); con i vicini `TWarRvo` (#195) |
 | `WarContext` e le parti di `WarMap` che servono (giocatori, tempo) | `TWarModelContext` (nessun globale); `TWarModelWorld` e' il modello intero (`AdvanceClock`, `Update`) |
 
 **Il registro degli stati** e' una tabella di descrittori (come `Libs\Specials`): per ogni tipo di stato una procedura di ingresso, una di uscita
@@ -206,8 +206,8 @@ economia (oro, legna, cibo, miglioramenti); danni e vita (`we_takeDamage`); gene
 
 **Non portato (resta della #194)**: vedi "Resta" in `Libs\War\CLAUDE.md` (attacco, raccolta, incantesimi, pattuglia, inseguimento, consegna, il resto di `war_commands.c`,
 `war_projectiles.c`). Costruzione, riparazione, crollo, addestramento, miglioramenti, passi delle azioni e muri come entita' sono nella seconda fetta (sezione piu' sotto).
-**Percorsi e collisioni** sono la #195: senza un `IWarMovementSteering` una unita' va dritta al prossimo punto (il C su un campo libero fa lo stesso: campo di flusso nullo e
-nessun vicino). La proprieta' `Steering` del contesto c'e' ma nessuno la usa ancora.
+**Percorsi e collisioni** sono la #195 (sezione "Percorsi, evitamento e nebbia"): senza un `IWarMovementSteering` una unita' va dritta al prossimo punto (il C su un campo libero fa lo stesso: campo di flusso nullo e
+nessun vicino); `TWarModelFactory.AttachFlowSteering` mette quello vero.
 
 **Difetti del C conservati** (servono per avere gli stessi dati): (1) `wst_exitWaitState` libera le caselle solo se la pila e' vuota, ma quando un'uscita avviene la pila non lo e' mai: un'attesa non libera mai le caselle; (2) un corpo colpito di nuovo (con 0 punti ferita) rifa lo stato di morte e il conto riparte; (3) `we_decreasePlayerResources` controlla l'oro prima della legna e da' il messaggio del primo che manca; (4) i miglioramenti a coppie (frecce/lance, spade/asce, cavalli/lupi) condividono un livello (`upgrades[upgrade / 2]`); (5) `wst_enterIdleState` occupa le caselle e il suo `exit` le libera, ma un `Wait` che finisce non le riprende ne' le libera: un'unita' che ha aspettato puo' restare senza caselle occupate; (6) `wst_updateMoveStates` non guarda piu' le unita' che non sono `WAR_ENTITY_UNIT` (solo le unita' si muovono).
 **Il C compilato con gcc ha un'enum senza segno**: `unit->direction += randomi(-1, 2)` da NORD con -1 da' un numero enorme, `< 0` e' falso e la direzione diventa NORD, non NORD-OVEST come con
@@ -473,9 +473,7 @@ cio' che `SyncUnits` copia da loro: la mappa non ha piu' unita' proprie. I golde
 
 ### Non portato (e di chi e')
 
-- **#195**: percorsi e evitamento (`wpath_computeFlowField`, RVO: resta `IWarMovementSteering`), la nebbia che legge le
-  entita' di vista (`updateFoW` con `WAR_ENTITY_TYPE_SIGHT`: l'entita' c'e', con casella e tempo) e che rivela bersaglio
-  e attaccante.
+- **#195** (fatto, sezione "Percorsi, evitamento e nebbia"): percorsi, evitamento e nebbia per tic.
 - **#196**: `war_ai.c` (`wai_updateAIPlayers`, `aiCommand` dello stato di addestramento).
 - **#197**: lo stato del comando che aspetta un clic (`map->commandState`, `consumeCommand`,
   `suppressSelectionOnRelease`), i bottoni e i pannelli, il rettangolo di selezione e il clic, i suoni della selezione
@@ -514,4 +512,46 @@ centesimi di microsecondo; gli stati sono piu' veloci del C; la griglia delle un
 lenta del C e porta il totale a Win32 l'11% sopra il C a `-O1`: **il 5% non e' dimostrato** (il rumore tra un'esecuzione
 e l'altra e' del 20-30%). Nessuna chiamata virtuale nei cicli; a interfaccia, per unita' e per tic, solo
 `Occupancy.SetStaticEntity` di chi sta lanciando un incantesimo (come lo stato di attacco).
+
+## Percorsi, evitamento e nebbia (issue #195)
+
+### Mappa nome C -> classe
+
+| C | Delphi |
+|---|---|
+| `wpath_astar`, `WarMapNode`, `WarMapPath` | `TWarAStar.FindPath`, `TWarPathNode`, `TWarMapPath` (`Path.Types`) |
+| `WarMapNodeHeap` (`shl/binary_heap.h`) | `TWarNodeHeap` |
+| `WarMapNodeMap` (`shl/map.h`) | `TWarScatterTable` (solo l'ordine dei bucket, per la casella piu' vicina) |
+| `wpath_flowField`, `wpath_computeFlowField`, `wpath_getFlowField`, `wpath_ensureFlowField` | `TWarFlowFields` (`Compute`, `Get`, `Ensure`) |
+| `WarMapFlowField`, `wpath_flowFieldSample` | `TWarFlowField` (`Sample`) |
+| `wpath_dirX/dirY`, `wpath_isStatic` | `WAR_PATH_DIR_X/Y`, `TWarPathGrid.IsStaticAt` |
+| `wrvo_computeNewVelocity` | `TWarRvo.ComputeNewVelocity` |
+| `wrvo_gatherNeighbours`, `updatePreferredVelocity`, `updateAdjustedVelocity` | `TWarFlowSteering` (`IWarMovementSteering`) |
+| `wcmd_executeMoveCommand` (il campo di flusso) | `TWarMovementCommands.Move` -> `Steering.PlanMove` |
+| `wgrid_build` letta dall'evitamento | `TWarNearUnits.Grid`, `Context.UnitGrid` |
+| `updateFoW`, `determineFoWTypes` | `TWarFogRevealer` (`IWarFogUpdater`) sopra `TWarFogOfWar` (#193) |
+
+Il remake **non ha** `wpath_findPath` (c'e' `wpath_astar`, che il gioco non chiama: le unita' seguono i campi di flusso), ne' unita' aeree o navali nel
+percorso (acqua e legna sono soltanto "fisso"), ne' ORCA (l'evitamento e' la scelta tra 34 velocita'): sono parole dell'issue, non del C.
+Il C e' l'oracolo: nessuna collisione fisica con le caselle fisse (i campi guidano la direzione, `updatePosition` non controlla), nessuna prenotazione di caselle per chi si muove (chi sta fermo o lavora occupa la griglia).
+
+### Come funziona nel modello
+
+`IWarMovementSteering` e' una strategia **a passo intero** (era per unita': vietato nel percorso caldo): `UpdatePreferredVelocities` e `UpdateAdjustedVelocities` si chiamano una volta per tic e fanno il giro delle unita' in marcia (`TWarMoveState.ForEachActive`); `RefreshFlowField` alla prima ripresa di una unita' ferma (0,5 s); `PlanMove` da un ordine di movimento. `nil` = in linea retta (i golden `194 *`). Il campo di flusso del punto di arrivo si fa la prima volta che serve e **non si invalida mai**; la griglia e' quella di `TWarPathGrid` (le unita' ferme, gli edifici e gli alberi sono fissi), letta dall'array. I vicini dell'evitamento: la griglia delle unita' del tic prima (`wgrid_build` va dopo gli stati) con la posizione di ora e la velocita' dello stato `move` piu' in alto nella pila. La nebbia e' l'ultimo passo del tic (`FinishTic`, `UpdateAfterStates`).
+
+### Difetti del C conservati (ognuno con un test)
+
+(1) A star: costo 1 per passo anche in diagonale e guida Manhattan (non ottimo); un A star che chiude una sola casella (partenza = arrivo, partenza chiusa) **non scrive** il percorso; l'arrivo fisso non si entra mai (si va alla casella raggiunta piu' vicina; a pari distanza da arrivo e partenza decide l'**ordine dei bucket** della mappa hash, ricostruito). (2) Il campo taglia l'angolo tra due caselle fisse; il goal e le caselle irraggiungibili hanno costo `INT32_MAX` e nessuna direzione (campione nullo, la unita' va dritta al punto). (3) I campi non si invalidano: una unita' ferma messa dopo non li cambia; si rifanno con un ordine di movimento o alla prima ripresa. (4) Il progresso di una unita' e' la distanza in linea retta dal prossimo punto: aggirare un muro lungo la allontana e dopo 3 s il movimento finisce `BLOCKED`. (5) Le unita' non sono fermate dalle caselle fisse (passano dagli angoli). (6) I vicini sono al piu' 16, nell'ordine delle celle (riga, poi colonna, poi la catena dalla piu' recente), tolti i lontani; chi e' appena nato non e' nella griglia del tic prima. (7) Una casella 1 x 1 di nebbia non si illumina (`wmap_setMapTileState` non illumina gli angoli): il pezzo di muro bersaglio non si rivela. (8) Una unita' nemica che esce dalla vista esce dalla selezione a ogni tic.
+
+### Differenze volute
+
+Un vicino senza macchina a stati ha velocita' zero (il C ha un `assert`); una casella fuori mappa in A star, campi e `Sample`, e il bersaglio di una unita' che non ha statistiche di unita' (un edificio che attacca): `EWarException`; il heap cerca per casella con una tabella invece di scandire (stessa risposta, provato contro una copia del C); i dati di debug dell'evitamento (candidati e collisioni per stato) non si tengono (solo nei test: `TWarRvoDebug`).
+
+### Non portato
+
+Il disegno della nebbia (restano i dati: pezzo e confine di ogni casella), il campo di flusso di debug (`map->debug.flowField`), `war_ai.c` (#196).
+
+### Parita' e costo
+
+`Tools\Verifica\194\war_path_ref.inc` e `war_levels_ref.inc` (`LEGGIMI.md`): le funzioni **originali** accese al posto degli stub; golden `path.*` (gruppo `195 percorsi`), **zero differenze a Win32 e a Win64**, e i 20 golden `194 *` identici. Costo (macchina carica, minimi di piu' esecuzioni; `DelphiDoom.Tests.War.PathBench`, `war_model_ref benchpaths|benchmove`): A star 125-157 us Delphi Win32 (83 Win64) contro 257-295 us C `-O1` e 146-155 us `-O2`; campo di flusso 1,2-1,7 ms Win32 (0,8-1,3 Win64) contro 2,7-3,5 ms `-O1` e 1,4-1,7 ms `-O2`; movimento di 200 unita' (stati con campi, evitamento e vicini) **17 us per unita' e tic Win32**, 19-22 Win64, contro 22-24 us C `-O1` e 14-16 us `-O2` (433 campi calcolati, circa 10 us per unita' e tic del C sono i campi); griglia, azioni e nebbia 2,3-2,6 us Win32 contro 2,4 us `-O1` e 1,3 us `-O2`. Il 5% sul `-O2` non e' dimostrato; contro `-O1` Delphi sta sotto.
 

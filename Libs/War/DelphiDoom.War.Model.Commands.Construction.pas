@@ -145,7 +145,8 @@ begin
       LX := ATileX + LDeltaX;
       LY := ATileY + LDeltaY;
       if (LX >= 0) and (LX < WAR_MAP_TILES_WIDTH) and (LY >= 0) and (LY < WAR_MAP_TILES_HEIGHT) then
-        if (not FContext.Probe.IsEmpty(LX, LY)) or (not FContext.ConstructionHost.IsTileKnown(LX, LY)) then
+        if (not FContext.Probe.IsEmpty(LX, LY)) or (not FContext.ConstructionHost.IsTileKnown(LX, LY)) or
+          (Assigned(FContext.Fog) and FContext.Fog.IsTileUnknown(LX, LY)) then
           Exit(False);
     end;
   Result := True;

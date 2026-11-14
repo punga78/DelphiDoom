@@ -33,6 +33,15 @@ type
     function TryGetUnitSize(AUnitType: Integer; out ASizeX, ASizeY: Integer): Boolean;
   end;
 
+  /// <summary>
+  ///   updateFoW and determineFoWTypes: what the player sees, once at the end of every tic (TWarFogRevealer). Without one
+  ///   the fog of the map is not touched by the model
+  /// </summary>
+  IWarFogUpdater = interface
+    ['{B2E6D704-8A3F-4C19-9D5E-61F8C0A7E3B2}']
+    procedure Update;
+  end;
+
   /// <summary>Questions about the units that the states ask (slots of the pool; 0 means nobody)</summary>
   IWarUnitQueries = interface
     ['{2F6A8D14-93B7-4C05-A8E1-5D70C93B1F68}']
@@ -92,17 +101,28 @@ type
   end;
 
   /// <summary>
-  ///   How a unit that moves chooses its velocity when there are obstacles or other units (the flow field and the
-  ///   avoidance of the original, issue #195). Without one the unit goes straight to its next waypoint
+  ///   How the units that move choose their velocity when there are obstacles or other units: the flow fields and the
+  ///   avoidance of the original (issue #195). It is a strategy for a whole pass, called once per tic and not once per
+  ///   unit: the loop over the moving units is the strategy's own (the model does not call an interface for every unit).
+  ///   Without one (the default) the units go straight to their next waypoint, which is what the original does on a free
+  ///   field with no other unit near
   /// </summary>
   IWarMovementSteering = interface
     ['{E5B07D39-1C84-4A62-B3F9-6D2A8E4C0715}']
+    /// <summary>The third pass of wst_updateMoveStates: the velocity that every moving unit wants</summary>
+    procedure UpdatePreferredVelocities;
+    /// <summary>The fourth pass: the velocity that every moving unit gets once the other units are taken into account</summary>
+    procedure UpdateAdjustedVelocities;
     /// <summary>
-    ///   The velocity (pixels per second) that the unit with the given center, last velocity and maximum speed will
-    ///   have; ANextWaypoint and AGoal are centers in pixels. False if there is no way: the move ends with NO_PATH
+    ///   The first recovery of a unit that does not get closer to its goal (half a second): the flow field of the tile of
+    ///   the next waypoint is made again from what is on the grid now
     /// </summary>
-    function Steer(AEntityId: Word; const APosition, ANextWaypoint, AGoal, ALastVelocity: TWarVec2;
-      AIsLastLeg: Boolean; AMaxSpeed, ARadius: Single; ADeltaTime: Single; out AVelocity: TWarVec2): Boolean;
+    procedure RefreshFlowField(const AGoalPosition: TWarVec2);
+    /// <summary>
+    ///   wcmd_executeMoveCommand: the flow field of the target of a move command is made (again) before the units get their
+    ///   orders, so that they walk around what is there now
+    /// </summary>
+    procedure PlanMove(const ATargetPosition: TWarVec2);
   end;
 
 implementation

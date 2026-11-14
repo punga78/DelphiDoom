@@ -67,7 +67,24 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'spells', '3', '450'); Golden = 'model.spells.dump.golden.txt'; NeedsData = $false }) },
   @{ Name = '194 completo'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('full', '12'); Golden = 'model.full.golden.txt'; NeedsData = $false },
-      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'full', '11', '450'); Golden = 'model.full.dump.golden.txt'; NeedsData = $false }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'full', '11', '450'); Golden = 'model.full.dump.golden.txt'; NeedsData = $false }) },
+  # issue #195 (war_path_ref.inc): lo stesso programma con le funzioni ORIGINALI di war_pathfinder.c, war_rvo.c e la nebbia di guerra
+  # (updateFoW, determineFoWTypes) al posto degli stub della #194: A star e campi di flusso su mappe sintetiche, la scelta della
+  # velocita', gruppi che si incrociano e il tic intero con percorsi, evitamento e nebbia. I golden del gruppo '194 ...' non cambiano
+  @{ Name = '195 percorsi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('paths', '36'); Golden = 'path.paths.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('rvo', '20'); Golden = 'path.rvo.golden.txt'; NeedsData = $false },
+      # la mappa hash di shl (ordine dei bucket) e il candidato piu' vicino di A star con due caselle a pari distanza
+      @{ Exe = 'war_model_ref.exe'; Args = @('units'); Golden = 'path.units.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('move', '12'); Golden = 'path.move.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'move', '2', '300'); Golden = 'path.move.dump.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('real', 'combat', '12'); Golden = 'path.combat.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('real', 'commands', '12'); Golden = 'path.commands.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('real', 'spells', '12'); Golden = 'path.spells.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('real', 'full', '12'); Golden = 'path.full.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('real', 'dump', 'full', '11', '450'); Golden = 'path.full.dump.golden.txt'; NeedsData = $false },
+      # le mappe dei passaggi dei 36 livelli di DATA.WAR (war_file.c originale): A star e campi di flusso
+      @{ Exe = 'war_model_ref.exe'; Args = @('levelpaths', '{DATA}'); Golden = 'path.levels.golden.txt'; NeedsData = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.
