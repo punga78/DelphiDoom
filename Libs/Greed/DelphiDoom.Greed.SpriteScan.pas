@@ -17,7 +17,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.World.Intf,
-  DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.State;
+  DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.State;
 
 type
   /// <summary>
@@ -33,7 +33,11 @@ type
   strict private
     FState: TGreedGameState;
     FRandom: IGreedRandom;
-    function StopsBullets(const AWorld: IGreedWorld; AWall, AFlags: TGreedPlane; ASpot: Integer): Boolean;
+    // the memory of the world of the state, asked once: the state keeps its world for all its life
+    FWorld: PGreedWorldView;
+    // ... and its pool of sprites
+    FSprites: TGreedLinkedPool<TGreedSprite>;
+    function StopsBullets(AWall, AFlags: TGreedPlane; ASpot: Integer): Boolean; inline;
   public
     constructor Create(const AState: TGreedGameState; const ARandom: IGreedRandom);
     /// <summary>ScanX: along the row, east then west. 2 target, 1 a sprite in the way to the west, 0 nothing</summary>
@@ -63,7 +67,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.LinkedPool,
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath,
   DelphiDoom.Greed.Game.Constants, DelphiDoom.Greed.TargetAngles;
 
 const
@@ -88,17 +92,20 @@ begin
     raise EArgumentNilException.Create('ARandom');
   FState := AState;
   FRandom := ARandom;
+  FWorld := AState.World.View;
+  FSprites := AState.Sprites;
 end;
 
-function TGreedSpriteScan.StopsBullets(const AWorld: IGreedWorld; AWall, AFlags: TGreedPlane;
-  ASpot: Integer): Boolean;
+function TGreedSpriteScan.StopsBullets(AWall, AFlags: TGreedPlane; ASpot: Integer): Boolean;
 var
   LFlags: Byte;
 begin
-  if AWorld.GetValue(AWall, ASpot) = 0 then
-    Exit(False);
-  LFlags := AWorld.GetValue(AFlags, ASpot);
-  Result := (LFlags and WALL_NO_CLIP = 0) and (LFlags and WALL_NO_BULLET_CLIP = 0);
+  Result := False;
+  if FWorld^.Value(AWall, ASpot) <> 0 then
+  begin
+    LFlags := FWorld^.Value(AFlags, ASpot);
+    Result := LFlags and (WALL_NO_CLIP or WALL_NO_BULLET_CLIP) = 0;
+  end;
 end;
 
 function TGreedSpriteScan.ScanX(ASprite: PGreedSprite; ALimit, AX1, AY1, AX2, AY2: Integer;
@@ -114,7 +121,7 @@ begin
   LLimit := ALimit;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_NETPLAYER) or (LMapSprite = GREED_SM_CLONE) or ((LX = AX2) and (AY1 = AY2)) then
     begin
       ATargetX := LX + 1;
@@ -128,7 +135,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpWestWall, gpWestFlags, LSpot) then
+    if StopsBullets(gpWestWall, gpWestFlags, LSpot) then
       Break;
     Inc(LSpot);
     Inc(LX);
@@ -141,7 +148,7 @@ begin
   LX := AX1;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_NETPLAYER) or (LMapSprite = GREED_SM_CLONE) or ((LX = AX2) and (AY1 = AY2)) then
     begin
       ATargetX := LX - 1;
@@ -155,7 +162,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Exit(1);
-    if StopsBullets(FState.World, gpWestWall, gpWestFlags, LSpot + 1) then
+    if StopsBullets(gpWestWall, gpWestFlags, LSpot + 1) then
       Exit(0);
     Dec(LSpot);
     Dec(LX);
@@ -179,7 +186,7 @@ begin
   LY := AY1;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_NETPLAYER) or (LMapSprite = GREED_SM_CLONE) or ((LY = AY2) and (AX1 = AX2)) then
     begin
       ATargetY := LY + 1;
@@ -193,7 +200,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpNorthWall, gpNorthFlags, LSpot) then
+    if StopsBullets(gpNorthWall, gpNorthFlags, LSpot) then
       Break;
     LSpot := LSpot + GREED_MAP_SIZE;
     Inc(LY);
@@ -210,7 +217,7 @@ begin
   LY := AY1;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_NETPLAYER) or (LMapSprite = GREED_SM_CLONE) or ((LY = AY2) and (AX1 = AX2)) then
     begin
       ATargetY := LY - 1;
@@ -224,7 +231,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpNorthWall, gpNorthFlags, LSpot + GREED_MAP_SIZE) then
+    if StopsBullets(gpNorthWall, gpNorthFlags, LSpot + GREED_MAP_SIZE) then
       Break;
     LSpot := LSpot - GREED_MAP_SIZE;
     Dec(LY);
@@ -265,12 +272,12 @@ begin
     LX := AX1;
     while True do
     begin
-      if StopsBullets(FState.World, gpNorthWall, gpNorthFlags, LSpot + DIAGONALS[LIndex].NorthOffset) then
+      if StopsBullets(gpNorthWall, gpNorthFlags, LSpot + DIAGONALS[LIndex].NorthOffset) then
         Break;
       // a west wall ends the whole scan, not only this diagonal
-      if StopsBullets(FState.World, gpWestWall, gpWestFlags, LSpot - GREED_MAP_SIZE) then
+      if StopsBullets(gpWestWall, gpWestFlags, LSpot - GREED_MAP_SIZE) then
         Exit(0);
-      LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+      LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
       if (LMapSprite = GREED_SM_NETPLAYER) or (LMapSprite = GREED_SM_CLONE) or ((LY = AY2) and (LX = AX2)) then
       begin
         ATargetX := LX + DIAGONALS[LIndex].StepX;
@@ -307,10 +314,10 @@ begin
   if (AX1 <> ATargetX div GREED_FRACTILEUNIT) or (AY1 <> ATargetY div GREED_FRACTILEUNIT) then
   begin
     LTile := AY1 * GREED_MAP_SIZE + AX1;
-    LIndex := FState.Sprites.First;
+    LIndex := FSprites.First;
     while LIndex <> GREED_POOL_NIL do
     begin
-      LOther := PGreedSprite(FState.Sprites.Item(LIndex));
+      LOther := PGreedSprite(FSprites.Item(LIndex));
       if LOther^.HitPoints <> 0 then
       begin
         LSpot := (LOther^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (LOther^.X div GREED_FRACTILEUNIT);
@@ -322,7 +329,7 @@ begin
           Break;
         end;
       end;
-      LIndex := FState.Sprites.Next(LIndex);
+      LIndex := FSprites.Next(LIndex);
     end;
   end
   else
@@ -360,7 +367,7 @@ begin
   LLimit := CLONE_SCAN_LIMIT;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_CLONE) or (LMapSprite = MAP_SPRITE_MONSTER) then
     begin
       ATargetX := LX + 1;
@@ -368,7 +375,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpWestWall, gpWestFlags, LSpot) then
+    if StopsBullets(gpWestWall, gpWestFlags, LSpot) then
       Break;
     Inc(LSpot);
     Inc(LX);
@@ -381,7 +388,7 @@ begin
   LX := AX;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_CLONE) or (LMapSprite = MAP_SPRITE_MONSTER) then
     begin
       ATargetX := LX - 1;
@@ -389,7 +396,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Exit(1);
-    if StopsBullets(FState.World, gpWestWall, gpWestFlags, LSpot + 1) then
+    if StopsBullets(gpWestWall, gpWestFlags, LSpot + 1) then
       Exit(0);
     Dec(LSpot);
     Dec(LX);
@@ -410,7 +417,7 @@ begin
   LY := AY;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_CLONE) or (LMapSprite = MAP_SPRITE_MONSTER) then
     begin
       ATargetY := LY + 1;
@@ -418,7 +425,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpNorthWall, gpNorthFlags, LSpot) then
+    if StopsBullets(gpNorthWall, gpNorthFlags, LSpot) then
       Break;
     LSpot := LSpot + GREED_MAP_SIZE;
     Inc(LY);
@@ -431,7 +438,7 @@ begin
   LY := AY;
   while True do
   begin
-    LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+    LMapSprite := FWorld^.Value(gpMapSprites, LSpot);
     if (LMapSprite = GREED_SM_CLONE) or (LMapSprite = MAP_SPRITE_MONSTER) then
     begin
       ATargetY := LY - 1;
@@ -439,7 +446,7 @@ begin
     end;
     if (LMapSprite > 0) and (LMapSprite < 128) then
       Break;
-    if StopsBullets(FState.World, gpNorthWall, gpNorthFlags, LSpot + GREED_MAP_SIZE) then
+    if StopsBullets(gpNorthWall, gpNorthFlags, LSpot + GREED_MAP_SIZE) then
       Break;
     LSpot := LSpot - GREED_MAP_SIZE;
     Dec(LY);

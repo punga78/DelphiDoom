@@ -35,9 +35,11 @@ type
   strict private
     FState: TGreedGameState;
     FSound: IGreedGameSound;
+    // the memory of the world of the state, asked once: the state keeps its world for all its life
+    FWorld: PGreedWorldView;
     function BumpDoor(ASprite: PGreedSprite; AIndex: Integer; ACenterX, ACenterY: TGreedFixed;
       AHorizontal: Boolean): Boolean;
-    procedure PutMapSprite(ASpot: Integer; AValue: Byte);
+    procedure PutMapSprite(ASpot: Integer; AValue: Byte); inline;
   public
     constructor Create(const AState: TGreedGameState; const ASound: IGreedGameSound);
     /// <summary>
@@ -92,12 +94,13 @@ begin
     raise EArgumentNilException.Create('ASound');
   FState := AState;
   FSound := ASound;
+  FWorld := AState.World.View;
 end;
 
 procedure TGreedSpriteMovement.PutMapSprite(ASpot: Integer; AValue: Byte);
 begin
-  if (ASpot >= 0) and (ASpot < GREED_MAP_TILES) then
-    FState.World.SetValue(gpMapSprites, ASpot, AValue);
+  if Cardinal(ASpot) < GREED_MAP_TILES then
+    FWorld^.Planes[gpMapSprites]^[ASpot] := AValue;
 end;
 
 // The branches of SP_TryDoor for the first door of the tile that has the right orientation: the final answer
@@ -106,7 +109,7 @@ function TGreedSpriteMovement.BumpDoor(ASprite: PGreedSprite; AIndex: Integer; A
 var
   LDoor: TGreedDoor;
 begin
-  LDoor := FState.World.GetDoor(AIndex);
+  LDoor := FWorld^.Doors^[AIndex];
   if LDoor.Open and not LDoor.Closing then
     Exit(True);
   // closed and still, or closing: both branches of the original turn the door to opening
@@ -117,7 +120,7 @@ begin
     FSound.SoundEffect(GREED_SN_DOOR, DOOR_SOUND_VARIATION, LDoor.TileX * GREED_FRACTILEUNIT,
       LDoor.TileY * GREED_FRACTILEUNIT);
     LDoor.Timer := LDoor.Timer + DOOR_BUMP_TIME;
-    FState.World.SetDoor(AIndex, LDoor);
+    FWorld^.Doors^[AIndex] := LDoor;
     // the door of the tile beyond, for the doors made of two
     if AHorizontal then
     begin
@@ -140,7 +143,7 @@ end;
 function TGreedSpriteMovement.TryDoor(ASprite: PGreedSprite; ACenterX, ACenterY: TGreedFixed): Boolean;
 var
   LXLow, LYLow, LXHigh, LYHigh, LX, LY, LIndex: Integer;
-  LDoor: TGreedDoor;
+  LDoor: PGreedDoor;
 begin
   if ASprite = @FState.Probe then
     Exit(True);
@@ -152,13 +155,13 @@ begin
   for LY := LYLow + 1 to LYHigh do
     for LX := LXLow to LXHigh do
     begin
-      if FState.World.GetMapFlags(LY * GREED_MAP_SIZE + LX) and GREED_FL_DOOR <> 0 then
+      if FWorld^.Flags(LY * GREED_MAP_SIZE + LX) and GREED_FL_DOOR <> 0 then
       begin
-        for LIndex := 0 to FState.World.DoorCount - 1 do
+        for LIndex := 0 to FWorld^.DoorCount^ - 1 do
         begin
-          LDoor := FState.World.GetDoor(LIndex);
-          if (LDoor.TileX = LX) and (LDoor.TileY = LY) and
-            ((LDoor.Orientation = gdoHorizontal) or (LDoor.Orientation = gdoHorizontal2)) then
+          LDoor := @FWorld^.Doors^[LIndex];
+          if (LDoor^.TileX = LX) and (LDoor^.TileY = LY) and
+            ((LDoor^.Orientation = gdoHorizontal) or (LDoor^.Orientation = gdoHorizontal2)) then
             Exit(BumpDoor(ASprite, LIndex, ACenterX, ACenterY, True));
         end;
       end;
@@ -167,13 +170,13 @@ begin
   for LY := LYLow to LYHigh do
     for LX := LXLow + 1 to LXHigh do
     begin
-      if FState.World.GetMapFlags(LY * GREED_MAP_SIZE + LX) and GREED_FL_DOOR <> 0 then
+      if FWorld^.Flags(LY * GREED_MAP_SIZE + LX) and GREED_FL_DOOR <> 0 then
       begin
-        for LIndex := 0 to FState.World.DoorCount - 1 do
+        for LIndex := 0 to FWorld^.DoorCount^ - 1 do
         begin
-          LDoor := FState.World.GetDoor(LIndex);
-          if (LDoor.TileX = LX) and (LDoor.TileY = LY) and
-            ((LDoor.Orientation = gdoVertical) or (LDoor.Orientation = gdoVertical2)) then
+          LDoor := @FWorld^.Doors^[LIndex];
+          if (LDoor^.TileX = LX) and (LDoor^.TileY = LY) and
+            ((LDoor^.Orientation = gdoVertical) or (LDoor^.Orientation = gdoVertical2)) then
             Exit(BumpDoor(ASprite, LIndex, ACenterX, ACenterY, False));
         end;
       end;
@@ -185,7 +188,12 @@ function TGreedSpriteMovement.TryMove(ASprite: PGreedSprite; ACenterX, ACenterY:
 var
   LXLow, LYLow, LXHigh, LYHigh, LX, LY, LSpot: Integer;
   LNorthFlags, LWestFlags, LMapSprite: Byte;
+  LWorld: PGreedWorldView;
+  LIsProbe: Boolean;
 begin
+  // once, not for every tile
+  LWorld := FWorld;
+  LIsProbe := ASprite = @FState.Probe;
   LXLow := (ACenterX - ASprite^.MoveSize) div GREED_FRACTILEUNIT;
   LYLow := (ACenterY - ASprite^.MoveSize) div GREED_FRACTILEUNIT;
   LXHigh := (ACenterX + ASprite^.MoveSize) div GREED_FRACTILEUNIT;
@@ -194,29 +202,29 @@ begin
     for LX := LXLow to LXHigh do
     begin
       LSpot := GREED_MAP_SIZE * LY + LX;
-      if (LY > LYLow) and (FState.World.GetValue(gpNorthWall, LSpot) <> 0) then
+      if (LY > LYLow) and (LWorld^.Value(gpNorthWall, LSpot) <> 0) then
       begin
-        LNorthFlags := FState.World.GetValue(gpNorthFlags, LSpot);
+        LNorthFlags := LWorld^.Value(gpNorthFlags, LSpot);
         if (LNorthFlags and WALL_NO_CLIP = 0) and (LNorthFlags and WALL_NO_BULLET_CLIP = 0) then
           Exit(2);
       end;
-      if (LX > LXLow) and (FState.World.GetValue(gpWestWall, LSpot) <> 0) then
+      if (LX > LXLow) and (LWorld^.Value(gpWestWall, LSpot) <> 0) then
       begin
-        LWestFlags := FState.World.GetValue(gpWestFlags, LSpot);
+        LWestFlags := LWorld^.Value(gpWestFlags, LSpot);
         if (LWestFlags and WALL_NO_CLIP = 0) and (LWestFlags and WALL_NO_BULLET_CLIP = 0) then
           Exit(2);
       end;
-      if ASprite <> @FState.Probe then
+      if not LIsProbe then
       begin
         // below the floor or above the ceiling
-        if ASprite^.Z < TGreedTerrain.FloorZ(FState.World, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
+        if ASprite^.Z < TGreedTerrain.FloorZ(LWorld, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
           (LY * GREED_FRACTILEUNIT) + HALF_TILE) then
           Exit(2);
-        if ASprite^.Z > TGreedTerrain.CeilingZ(FState.World, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
+        if ASprite^.Z > TGreedTerrain.CeilingZ(LWorld, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
           (LY * GREED_FRACTILEUNIT) + HALF_TILE) then
           Exit(2);
       end;
-      LMapSprite := FState.World.GetValue(gpMapSprites, LSpot);
+      LMapSprite := LWorld^.Value(gpMapSprites, LSpot);
       if LMapSprite = MAP_SPRITE_INSTAWALL then
         Exit(2);
       if (LMapSprite > 0) and (LMapSprite < 128) and (LSpot <> ASprite^.StartSpot) then
@@ -311,25 +319,25 @@ begin
       LSpot := GREED_MAP_SIZE * LY + LX;
       if LSpot = FState.Player.MapSpot then
         Exit(False);
-      if (LY > LYLow) and (FState.World.GetValue(gpNorthWall, LSpot) <> 0) and
-        (FState.World.GetValue(gpNorthFlags, LSpot) and WALL_NO_CLIP = 0) then
+      if (LY > LYLow) and (FWorld^.Value(gpNorthWall, LSpot) <> 0) and
+        (FWorld^.Value(gpNorthFlags, LSpot) and WALL_NO_CLIP = 0) then
         Exit(False);
-      if (LX > LXLow) and (FState.World.GetValue(gpWestWall, LSpot) <> 0) and
-        (FState.World.GetValue(gpWestFlags, LSpot) and WALL_NO_CLIP = 0) then
+      if (LX > LXLow) and (FWorld^.Value(gpWestWall, LSpot) <> 0) and
+        (FWorld^.Value(gpWestFlags, LSpot) and WALL_NO_CLIP = 0) then
         Exit(False);
-      LFloorZ := TGreedTerrain.FloorZ(FState.World, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
+      LFloorZ := TGreedTerrain.FloorZ(FWorld, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
         (LY * GREED_FRACTILEUNIT) + HALF_TILE);
       if LFloorZ > LStepZ then
         Exit(False);
       if ASprite^.NoFalling and (LFloorZ + (5 * GREED_FRACUNIT) < LFeetZ) then
         Exit(False);
-      LCeilingZ := TGreedTerrain.CeilingZ(FState.World, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
+      LCeilingZ := TGreedTerrain.CeilingZ(FWorld, (LX * GREED_FRACTILEUNIT) + HALF_TILE,
         (LY * GREED_FRACTILEUNIT) + HALF_TILE);
       if LCeilingZ < ASprite^.Z + ASprite^.Height then
         Exit(False);
       if LCeilingZ - LFloorZ < ASprite^.Height then
         Exit(False);
-      if (LSpot <> ASourceSpot) and (FState.World.GetValue(gpMapSprites, LSpot) <> 0) then
+      if (LSpot <> ASourceSpot) and (FWorld^.Value(gpMapSprites, LSpot) <> 0) then
         Exit(False);
     end;
   Result := True;
@@ -350,7 +358,7 @@ begin
   LSourceSpot := (ASprite^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (ASprite^.X div GREED_FRACTILEUNIT);
   if TryMove2(ASprite, ASprite^.Angle, LNewX, LNewY, LSourceSpot) and TryDoor(ASprite, LNewX, LNewY) then
   begin
-    if FState.World.GetValue(gpFloorPic, (LNewY div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
+    if FWorld^.Value(gpFloorPic, (LNewY div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
       (LNewX div GREED_FRACTILEUNIT)) = 0 then
       Exit(0);
     PutMapSprite(LSourceSpot, 0);
@@ -372,7 +380,7 @@ begin
   end;
   if TryMove2(ASprite, LAngle, LNewX, ASprite^.Y, LSourceSpot) and TryDoor(ASprite, LNewX, ASprite^.Y) then
   begin
-    if FState.World.GetValue(gpFloorPic, (ASprite^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
+    if FWorld^.Value(gpFloorPic, (ASprite^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
       (LNewX div GREED_FRACTILEUNIT)) = 0 then
       Exit(0);
     PutMapSprite(LSourceSpot, 0);
@@ -393,7 +401,7 @@ begin
   end;
   if TryMove2(ASprite, LAngle, ASprite^.X, LNewY, LSourceSpot) and TryDoor(ASprite, ASprite^.X, LNewY) then
   begin
-    if FState.World.GetValue(gpFloorPic, (LNewY div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
+    if FWorld^.Value(gpFloorPic, (LNewY div GREED_FRACTILEUNIT) * GREED_MAP_SIZE +
       (ASprite^.X div GREED_FRACTILEUNIT)) = 0 then
       Exit(0);
     PutMapSprite(LSourceSpot, 0);

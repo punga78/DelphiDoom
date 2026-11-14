@@ -42,6 +42,7 @@ type
     function FirstSentinel: Integer; inline;
     function LastSentinel: Integer; inline;
     procedure CheckIndex(AIndex: Integer);
+    procedure RaiseIndex(AIndex: Integer);
   public
     /// <summary>AName is the kind of object in the message of the error when the pool is full</summary>
     constructor Create(ACapacity: Integer; const AName: string);
@@ -55,13 +56,13 @@ type
     /// <summary>RF_RemoveSprite and RF_RemoveElevator: out of the list, to the front of the free list</summary>
     procedure Remove(AIndex: Integer);
     /// <summary>The first object of the list, GREED_POOL_NIL if it is empty</summary>
-    function First: Integer;
+    function First: Integer; inline;
     /// <summary>The object after AIndex, GREED_POOL_NIL after the last one</summary>
-    function Next(AIndex: Integer): Integer;
+    function Next(AIndex: Integer): Integer; inline;
     /// <summary>The object before AIndex, GREED_POOL_NIL before the first one</summary>
     function Previous(AIndex: Integer): Integer;
     /// <summary>The object itself, to read and to write</summary>
-    function Item(AIndex: Integer): PItem;
+    function Item(AIndex: Integer): PItem; inline;
     property Count: Integer read FCount;
     property Capacity: Integer read FCapacity;
   end;
@@ -93,10 +94,40 @@ begin
   Result := FCapacity + 1;
 end;
 
+procedure TGreedLinkedPool<T>.RaiseIndex(AIndex: Integer);
+begin
+  raise EGreedException.CreateFmt(SGreedArgumentRange, [AIndex, 'AIndex', 0, FCapacity - 1]);
+end;
+
 procedure TGreedLinkedPool<T>.CheckIndex(AIndex: Integer);
 begin
   if (AIndex < 0) or (AIndex >= FCapacity) then
-    raise EGreedException.CreateFmt(SGreedArgumentRange, [AIndex, 'AIndex', 0, FCapacity - 1]);
+    RaiseIndex(AIndex);
+end;
+
+// Next, First and Item are inline and before the methods that call them: the logic of the sprites walks the list
+// and takes the objects for every sprite at every tic, and the original does it with two pointers
+
+function TGreedLinkedPool<T>.Next(AIndex: Integer): Integer;
+begin
+  Result := FNext[AIndex];
+  if Result = FCapacity + 1 then
+    Result := GREED_POOL_NIL;
+end;
+
+function TGreedLinkedPool<T>.First: Integer;
+begin
+  Result := FNext[FCapacity];
+  if Result = FCapacity + 1 then
+    Result := GREED_POOL_NIL;
+end;
+
+function TGreedLinkedPool<T>.Item(AIndex: Integer): PItem;
+begin
+  // one unsigned comparison for both ends
+  if Cardinal(AIndex) >= Cardinal(FCapacity) then
+    RaiseIndex(AIndex);
+  Result := @FItems[AIndex];
 end;
 
 procedure TGreedLinkedPool<T>.Clear;
@@ -144,29 +175,11 @@ begin
   Dec(FCount);
 end;
 
-function TGreedLinkedPool<T>.First: Integer;
-begin
-  Result := Next(FirstSentinel);
-end;
-
-function TGreedLinkedPool<T>.Next(AIndex: Integer): Integer;
-begin
-  Result := FNext[AIndex];
-  if Result = LastSentinel then
-    Result := GREED_POOL_NIL;
-end;
-
 function TGreedLinkedPool<T>.Previous(AIndex: Integer): Integer;
 begin
   Result := FPrev[AIndex];
   if Result = FirstSentinel then
     Result := GREED_POOL_NIL;
-end;
-
-function TGreedLinkedPool<T>.Item(AIndex: Integer): PItem;
-begin
-  CheckIndex(AIndex);
-  Result := @FItems[AIndex];
 end;
 
 end.

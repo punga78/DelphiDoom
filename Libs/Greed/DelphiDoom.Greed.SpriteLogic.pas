@@ -18,7 +18,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.World.Intf,
-  DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State,
+  DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State,
   DelphiDoom.Greed.SpriteLogic.Intf, DelphiDoom.Greed.SpriteMovement, DelphiDoom.Greed.SpriteScan;
 
 type
@@ -49,13 +49,17 @@ type
     FHost: IGreedSpriteHost;
     FMovement: TGreedSpriteMovement;
     FScan: TGreedSpriteScan;
+    // the memory of the world of the state, asked once: the state keeps its world for all its life
+    FWorld: PGreedWorldView;
+    // ... and its pool of sprites
+    FSprites: TGreedLinkedPool<TGreedSprite>;
     FOwnLights: TGreedTileLights;
     FRealLight: PGreedTileLights;
     // msprite as a pointer; State.MSprite is its index
     FSprite: PGreedSprite;
     procedure Select(AIndex: Integer);
     procedure SetRealLight(AValue: PGreedTileLights);
-    procedure PutMapSprite(ASpot: Integer; AValue: Byte);
+    procedure PutMapSprite(ASpot: Integer; AValue: Byte); inline;
     function Spawn(AKind: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer; AActive: Boolean;
       ASpawnId: Integer): Integer;
     procedure SpawnBlood(ACount: Integer);
@@ -115,7 +119,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.Terrain,
+  DelphiDoom.Greed.FixedMath, DelphiDoom.MathCore.FixedMath, DelphiDoom.Greed.Terrain,
   DelphiDoom.Greed.Game.Constants, DelphiDoom.Greed.Game.Tables;
 
 const
@@ -165,6 +169,8 @@ begin
   FHealth := AHealth;
   FKiller := AKiller;
   FHost := AHost;
+  FWorld := AState.World.View;
+  FSprites := AState.Sprites;
   FMovement := TGreedSpriteMovement.Create(AState, ASound);
   FScan := TGreedSpriteScan.Create(AState, ARandom);
   FRealLight := @FOwnLights;
@@ -188,13 +194,13 @@ end;
 procedure TGreedSpriteLogic.Select(AIndex: Integer);
 begin
   FState.MSprite := AIndex;
-  FSprite := PGreedSprite(FState.Sprites.Item(AIndex));
+  FSprite := PGreedSprite(FSprites.Item(AIndex));
 end;
 
 procedure TGreedSpriteLogic.PutMapSprite(ASpot: Integer; AValue: Byte);
 begin
-  if (ASpot >= 0) and (ASpot < GREED_MAP_TILES) then
-    FState.World.SetValue(gpMapSprites, ASpot, AValue);
+  if Cardinal(ASpot) < GREED_MAP_TILES then
+    FWorld^.Planes[gpMapSprites]^[ASpot] := AValue;
 end;
 
 function TGreedSpriteLogic.Spawn(AKind: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer;
@@ -226,7 +232,7 @@ begin
     // the original would write through a nil pointer
     if (AMaxMove <> 0) and (LNew <> GREED_POOL_NIL) then
     begin
-      LBullet := PGreedSprite(FState.Sprites.Item(LNew));
+      LBullet := PGreedSprite(FSprites.Item(LNew));
       LBullet^.MaxMove := AMaxMove;
       LBullet^.StartSpot := -1;
     end;
@@ -268,7 +274,7 @@ end;
 
 procedure TGreedSpriteLogic.ActivationSound(ASprite: Integer);
 begin
-  WakeSound(PGreedSprite(FState.Sprites.Item(ASprite)));
+  WakeSound(PGreedSprite(FSprites.Item(ASprite)));
 end;
 
 procedure TGreedSpriteLogic.ActivateSprites(ATileX, ATileY: Integer);
@@ -276,10 +282,10 @@ var
   LIndex, LX, LY: Integer;
   LSprite: PGreedSprite;
 begin
-  LIndex := FState.Sprites.First;
+  LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
-    LSprite := PGreedSprite(FState.Sprites.Item(LIndex));
+    LSprite := PGreedSprite(FSprites.Item(LIndex));
     if (not LSprite^.Active) and (LSprite^.MoveSpeed <> 0) then
     begin
       LX := LSprite^.X div GREED_FRACTILEUNIT;
@@ -294,7 +300,7 @@ begin
         ActivateSprites(LX, LY);
       end;
     end;
-    LIndex := FState.Sprites.Next(LIndex);
+    LIndex := FSprites.Next(LIndex);
   end;
 end;
 
@@ -362,10 +368,10 @@ var
   LIndex, LSpot: Integer;
   LOther: PGreedSprite;
 begin
-  LIndex := FState.Sprites.First;
+  LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
-    LOther := PGreedSprite(FState.Sprites.Item(LIndex));
+    LOther := PGreedSprite(FSprites.Item(LIndex));
     if LOther <> FSprite then
     begin
       LSpot := (LOther^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (LOther^.X div GREED_FRACTILEUNIT);
@@ -379,7 +385,7 @@ begin
         AKilled := True;
       end;
     end;
-    LIndex := FState.Sprites.Next(LIndex);
+    LIndex := FSprites.Next(LIndex);
   end;
 end;
 
@@ -389,17 +395,24 @@ var
   LIndex, LSpot, LOldAngle, LShooter: Integer;
   LOldSpeed: TGreedFixed;
   LOldFall: Boolean;
-  LOther, LBullet: PGreedSprite;
+  LOther, LBullet, LShot: PGreedSprite;
+  LHitSpot: Integer;
+  LShotZ: TGreedFixed;
 begin
-  LIndex := FState.Sprites.First;
+  // the shot, its height and the tile do not change until a sprite is found, and then the loop ends: read once,
+  // not for every sprite of the list
+  LShot := FSprite;
+  LShotZ := LShot^.Z;
+  LHitSpot := FState.SpriteLoc;
+  LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
-    LOther := PGreedSprite(FState.Sprites.Item(LIndex));
-    if LOther <> FSprite then
+    LOther := PGreedSprite(FSprites.Item(LIndex));
+    if LOther <> LShot then
     begin
       LSpot := (LOther^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (LOther^.X div GREED_FRACTILEUNIT);
-      if (LSpot = FState.SpriteLoc) and (FSprite^.Z >= LOther^.Z) and
-        (FSprite^.Z <= LOther^.Z + LOther^.Height) and (LOther^.HitPoints <> 0) then
+      if (LSpot = LHitSpot) and (LShotZ >= LOther^.Z) and (LShotZ <= LOther^.Z + LOther^.Height) and
+        (LOther^.HitPoints <> 0) then
       begin
         if LOther^.Kind <> GREED_S_MONSTER5 then
           LOther^.ActionTime := LOther^.ActionTime + 15
@@ -451,7 +464,7 @@ begin
         Break;
       end;
     end;
-    LIndex := FState.Sprites.Next(LIndex);
+    LIndex := FSprites.Next(LIndex);
   end;
 end;
 
@@ -503,7 +516,7 @@ begin
     Inc(LCounter);
     LHit := FMovement.Thrust(FSprite);
     if FSprite^.Kind = GREED_S_BULLET3 then
-      FSprite^.Z := TGreedTerrain.FloorZ(FState.World, FSprite^.X, FSprite^.Y) + (20 * GREED_FRACUNIT);
+      FSprite^.Z := TGreedTerrain.FloorZ(FWorld, FSprite^.X, FSprite^.Y) + (20 * GREED_FRACUNIT);
     if LHit <> 0 then
     begin
       if FSprite^.Kind = GREED_S_BLOODSPLAT then
@@ -520,7 +533,7 @@ begin
       end;
       if FState.SpriteHit then
       begin
-        if FState.World.GetValue(gpMapSprites, FState.SpriteLoc) = GREED_SM_NETPLAYER then
+        if FWorld^.Value(gpMapSprites, FState.SpriteLoc) = GREED_SM_NETPLAYER then
           HitNetPlayers(LKilled, LBlood)
         else
           HitSprites(LKilled, LBlood);
@@ -633,7 +646,7 @@ begin
     LAngle := FSprite^.Angle + DEGREE45;
     FSprite^.Angle := LAngle and GREED_ANGLES;
   end;
-  LFloorZ := TGreedTerrain.FloorZ(FState.World, FSprite^.X, FSprite^.Y);
+  LFloorZ := TGreedTerrain.FloorZ(FWorld, FSprite^.X, FSprite^.Y);
   if LFloorZ + FSprite^.ZAdjust < FSprite^.Z then
     FSprite^.Z := FSprite^.Z - FALL_STEP;
   if LFloorZ + FSprite^.ZAdjust > FSprite^.Z then
@@ -763,10 +776,10 @@ begin
       (Abs(LY - (FState.Player.Y div GREED_FRACTILEUNIT)) < 2);
     if not LActivate then
     begin
-      LIndex := FState.Sprites.First;
+      LIndex := FSprites.First;
       while LIndex <> GREED_POOL_NIL do
       begin
-        LOther := PGreedSprite(FState.Sprites.Item(LIndex));
+        LOther := PGreedSprite(FSprites.Item(LIndex));
         if LOther^.HitPoints <> 0 then
         begin
           LOtherX := LOther^.X div GREED_FRACTILEUNIT;
@@ -777,12 +790,12 @@ begin
             Break;
           end;
         end;
-        LIndex := FState.Sprites.Next(LIndex);
+        LIndex := FSprites.Next(LIndex);
       end;
     end;
     for LRow := -1 to 1 do
       for LColumn := -1 to 1 do
-        if FState.World.GetValue(gpMapSprites, (LRow + LY) * GREED_MAP_SIZE + LColumn + LX) = GREED_SM_NETPLAYER then
+        if FWorld^.Value(gpMapSprites, (LRow + LY) * GREED_MAP_SIZE + LColumn + LX) = GREED_SM_NETPLAYER then
           LActivate := True;
     if LActivate then
     begin
@@ -1271,23 +1284,22 @@ end;
 
 procedure TGreedSpriteLogic.RecreateMapSprites;
 var
-  LTiles: array[0..GREED_MAP_TILES - 1] of Byte;
+  LTiles: PGreedTiles;
   LSpot, LIndex: Integer;
   LSprite: PGreedSprite;
 begin
-  // one call for the plane instead of one for each tile
-  FState.World.CopyPlane(gpMapSprites, @LTiles[0]);
+  LTiles := FWorld^.Planes[gpMapSprites];
   for LSpot := 0 to GREED_MAP_TILES - 1 do
-    if LTiles[LSpot] = MAP_SPRITE_MONSTER then
-      FState.World.SetValue(gpMapSprites, LSpot, 0);
-  LIndex := FState.Sprites.First;
+    if LTiles^[LSpot] = MAP_SPRITE_MONSTER then
+      LTiles^[LSpot] := 0;
+  LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
-    LSprite := PGreedSprite(FState.Sprites.Item(LIndex));
+    LSprite := PGreedSprite(FSprites.Item(LIndex));
     if TGreedGameTables.IsMonster(LSprite^.Kind) and (LSprite^.DeathEvent = 0) and (LSprite^.HitPoints <> 0) then
       PutMapSprite((LSprite^.Y div GREED_FRACTILEUNIT) * GREED_MAP_SIZE + (LSprite^.X div GREED_FRACTILEUNIT),
         MAP_SPRITE_MONSTER);
-    LIndex := FState.Sprites.Next(LIndex);
+    LIndex := FSprites.Next(LIndex);
   end;
 end;
 
@@ -1312,7 +1324,7 @@ begin
   FSprite^.NewZ := FSprite^.Z;
   FSprite^.NewAngle := FSprite^.Angle;
   FSprite^.NewAngle2 := FSprite^.Angle2;
-  FSprite^.NewFloorZ := TGreedTerrain.FloorZ(FState.World, FSprite^.X, FSprite^.Y);
+  FSprite^.NewFloorZ := TGreedTerrain.FloorZ(FWorld, FSprite^.X, FSprite^.Y);
 end;
 
 // A hot sprite takes light from its tile, a very hot one from the eight around too; a sleeping one cools down
@@ -1352,7 +1364,7 @@ begin
   LPlayerY := FState.TargY div GREED_FRACTILEUNIT;
   // the original does not give a value to this variable before the first sprite reads it
   LKilled := False;
-  LIndex := FState.Sprites.First;
+  LIndex := FSprites.First;
   while LIndex <> GREED_POOL_NIL do
   begin
     Select(LIndex);
@@ -1373,15 +1385,15 @@ begin
                 begin
                   LKilled := False;
                   SaveNew;
-                  LIndex := FState.Sprites.Next(LIndex);
+                  LIndex := FSprites.Next(LIndex);
                   Continue;
                 end;
                 if FSprite^.Kind <> GREED_S_BLOODSPLAT then
                 begin
                   SaveNew;
                   // the sprites that Int0 made are after it in the list: the next one is read before the removal
-                  LNext := FState.Sprites.Next(LIndex);
-                  FState.Sprites.Remove(LIndex);
+                  LNext := FSprites.Next(LIndex);
+                  FSprites.Remove(LIndex);
                   LKilled := False;
                   LIndex := LNext;
                   Continue;
@@ -1396,8 +1408,8 @@ begin
               if LKilled then
               begin
                 SaveNew;
-                LNext := FState.Sprites.Next(LIndex);
-                FState.Sprites.Remove(LIndex);
+                LNext := FSprites.Next(LIndex);
+                FSprites.Remove(LIndex);
                 LKilled := False;
                 LIndex := LNext;
                 Continue;
@@ -1413,7 +1425,7 @@ begin
             Int10;
           128:
             begin
-              LFloor := TGreedTerrain.FloorZ(FState.World, FSprite^.X, FSprite^.Y);
+              LFloor := TGreedTerrain.FloorZ(FWorld, FSprite^.X, FSprite^.Y);
               if FSprite^.Z > LFloor + GREED_FRACUNIT then
                 FSprite^.Z := FSprite^.Z - GREED_FRACUNIT * 2;
               if FSprite^.Z < LFloor then
@@ -1436,7 +1448,7 @@ begin
           ActivateSprites(LSourceX, LSourceY);
         end;
       end;
-      LFloor := TGreedTerrain.FloorZ(FState.World, FSprite^.X, FSprite^.Y) + FSprite^.ZAdjust;
+      LFloor := TGreedTerrain.FloorZ(FWorld, FSprite^.X, FSprite^.Y) + FSprite^.ZAdjust;
       if FSprite^.Z > LFloor then
         FSprite^.Z := FSprite^.Z - FALL_STEP;
       if FSprite^.Z < LFloor then
@@ -1445,7 +1457,7 @@ begin
         Heat(True);
     end;
     SaveNew;
-    LIndex := FState.Sprites.Next(LIndex);
+    LIndex := FSprites.Next(LIndex);
   end;
   FState.MSprite := GREED_POOL_NIL;
   RecreateMapSprites;
