@@ -28,12 +28,24 @@ type
   /// </remarks>
   TUserGameRules = class sealed
   public
+    const
+      /// <summary>The slopes version of P_SlopesCalcHeight keeps the old view height when the player is in the air</summary>
+      KeepsOldViewZInAir = True;
+      /// <summary>The distance from the floor under which the view height is not let to go (slopes version)</summary>
+      SlopesFloorMargin = 0;
+
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
-    /// <summary>The height of the view</summary>
-    class procedure CalcHeight(player: Pplayer_t); static;
-    /// <summary>Moves the player along an angle</summary>
-    class procedure Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t); static;
+    /// <summary>The thrust of P_Thrust: Heretic and Hexen weaken it on ice and keep it when flying</summary>
+    class function ThrustMove(const player: Pplayer_t; const move: fixed_t): fixed_t; static;
+    /// <summary>The bob of a player that flies is fixed (Heretic, Hexen)</summary>
+    class function FlyBobs(const player: Pplayer_t): boolean; static; inline;
+    /// <summary>The player is a chicken (Heretic) or a pig (Hexen): no crouch, lower view</summary>
+    class function IsMorphed(const player: Pplayer_t): boolean; static; inline;
+    /// <summary>What a game does to the view height before the ceiling clamp (feet in water)</summary>
+    class procedure AdjustViewZ(const player: Pplayer_t); static; inline;
+    /// <summary>What a game does to the view height after the ceiling clamp (the floor clamp)</summary>
+    class procedure ClampViewZ(const player: Pplayer_t); static; inline;
   end;
 
 //==============================================================================
@@ -106,339 +118,6 @@ uses
   p_user,
   DelphiDoom.Engine.World.PlayerExtras;
 
-//
-// Movement.
-//
-const
-// 16 pixels of bob
-  MAXBOB = $100000;
-
-var
-  onground: boolean;
-
-//==============================================================================
-//
-// P_Thrust
-// Moves the given origin along a given angle.
-//
-//==============================================================================
-class procedure TUserGameRules.Thrust(player: Pplayer_t; angle: angle_t; const move: fixed_t);
-begin
-  {$IFDEF FPC}
-  angle := _SHRW(angle, ANGLETOFINESHIFT);
-  {$ELSE}
-  angle := angle shr ANGLETOFINESHIFT;
-  {$ENDIF}
-
-  player.mo.momx := player.mo.momx + FixedMul(move, finecosine[angle]);
-  player.mo.momy := player.mo.momy + FixedMul(move, finesine[angle]);
-end;
-
-//==============================================================================
-//
-// P_CalcHeight
-// Calculate the walking / running height adjustment
-//
-//==============================================================================
-class procedure TUserGameRules.CalcHeight(player: Pplayer_t);
-var
-  angle: integer;
-  clheight: fixed_t; // JVAL: 20211101 - Crouch
-  flheight: fixed_t; // JVAL: 20211101 - Crouch
-  range: fixed_t; // JVAL: 20211101 - Crouch
-begin
-  // Regular movement bobbing
-  // (needs to be calculated for gun swing
-  // even if not on ground)
-  // OPTIMIZE: tablify angle
-  // Note: a LUT allows for effects
-  //  like a ramp with low health.
-
-  player.bob := FixedMul(player.mo.momx, player.mo.momx) +
-                FixedMul(player.mo.momy, player.mo.momy);
-  player.bob := player.bob div 4;
-
-  if player.bob > MAXBOB then
-    player.bob := MAXBOB;
-
-  player.oldviewz := player.viewz;  // JVAL: Slopes
-
-  // JVAL: 20211101 - Crouch
-  player.mo.height := player.mo.info.height - player.crouchheight;
-  clheight := P_3dCeilingHeight(player.mo);
-  if player.mo.z + player.mo.height > clheight then
-  begin
-    flheight := P_3dFloorHeight(player.mo);
-    player.mo.z := clheight - player.mo.height;
-    if player.mo.z < flheight then
-    begin
-      player.mo.z := flheight;
-      player.lastautocrouchtime := leveltime;
-      player.lastongroundtime := leveltime;
-      range := clheight - flheight;
-      player.crouchheight := player.mo.info.height - range;
-      if player.crouchheight > PMAXCROUCHHEIGHT then
-        player.crouchheight := PMAXCROUCHHEIGHT;
-      player.mo.height := player.mo.info.height - player.crouchheight;
-    end;
-  end;
-
-  if (player.cheats and CF_NOMOMENTUM <> 0) or not onground then
-  begin
-    player.viewz := player.mo.z + PVIEWHEIGHT - player.crouchheight;  // JVAL: 20211101 - Crouch
-
-    if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-      player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-    exit;
-  end;
-
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
-  player.viewbob := FixedMul(player.bob div 2, finesine[angle]);
-
-  // move viewheight
-  if player.playerstate = PST_LIVE then
-  begin
-    player.viewheight := player.viewheight + player.deltaviewheight;
-
-    if player.viewheight > PVIEWHEIGHT then
-    begin
-      player.viewheight := PVIEWHEIGHT;
-      player.deltaviewheight := 0;
-    end;
-
-    if player.viewheight < PVIEWHEIGHT div 2 then
-    begin
-      player.viewheight := PVIEWHEIGHT div 2;
-      if player.deltaviewheight <= 0 then
-        player.deltaviewheight := 1;
-    end;
-
-    if player.deltaviewheight <> 0 then
-    begin
-      player.deltaviewheight := player.deltaviewheight + FRACUNIT div 4;
-      if player.deltaviewheight = 0 then
-        player.deltaviewheight := 1;
-    end;
-  end;
-  player.viewz := player.mo.z + player.viewheight + player.viewbob - player.crouchheight; // JVAL: 20211101 - Crouch
-
-  // villsa [STRIFE] account for terrain lowering the view
-  if player.mo.flags and MF_FEETCLIPPED <> 0 then
-    player.viewz := player.viewz - 13 * FRACUNIT;
-
-  if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-    player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-  // haleyjd [STRIFE]: added a floorz clip here
-  if player.viewz < player.mo.floorz then
-    player.viewz := player.mo.floorz;
-
-end;
-
-//==============================================================================
-//
-// P_CalcHeight205
-//
-//==============================================================================
-procedure P_CalcHeight205(player: Pplayer_t);
-var
-  angle: integer;
-begin
-  // Regular movement bobbing
-  // (needs to be calculated for gun swing
-  // even if not on ground)
-  // OPTIMIZE: tablify angle
-  // Note: a LUT allows for effects
-  //  like a ramp with low health.
-
-  player.bob := FixedMul(player.mo.momx, player.mo.momx) +
-                FixedMul(player.mo.momy, player.mo.momy);
-  player.bob := player.bob div 4;
-
-  if player.bob > MAXBOB then
-    player.bob := MAXBOB;
-
-  player.oldviewz := player.viewz;  // JVAL: Slopes
-
-  if (player.cheats and CF_NOMOMENTUM <> 0) or not onground then
-  begin
-    player.viewz := player.mo.z + PVIEWHEIGHT;
-
-    if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-      player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-    exit;
-  end;
-
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
-  player.viewbob := FixedMul(player.bob div 2, finesine[angle]);
-
-  // move viewheight
-  if player.playerstate = PST_LIVE then
-  begin
-    player.viewheight := player.viewheight + player.deltaviewheight;
-
-    if player.viewheight > PVIEWHEIGHT then
-    begin
-      player.viewheight := PVIEWHEIGHT;
-      player.deltaviewheight := 0;
-    end;
-
-    if player.viewheight < PVIEWHEIGHT div 2 then
-    begin
-      player.viewheight := PVIEWHEIGHT div 2;
-      if player.deltaviewheight <= 0 then
-        player.deltaviewheight := 1;
-    end;
-
-    if player.deltaviewheight <> 0 then
-    begin
-      player.deltaviewheight := player.deltaviewheight + FRACUNIT div 4;
-      if player.deltaviewheight = 0 then
-        player.deltaviewheight := 1;
-    end;
-  end;
-  player.viewz := player.mo.z + player.viewheight + player.viewbob;
-
-  // villsa [STRIFE] account for terrain lowering the view
-  if player.mo.flags and MF_FEETCLIPPED <> 0 then
-    player.viewz := player.viewz - 13 * FRACUNIT;
-
-  if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-    player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-  // haleyjd [STRIFE]: added a floorz clip here
-  if player.viewz < player.mo.floorz then
-    player.viewz := player.mo.floorz;
-
-end;
-
-//==============================================================================
-// P_SlopesCalcHeight
-//
-// JVAL: Slopes
-//
-//==============================================================================
-procedure P_SlopesCalcHeight(player: Pplayer_t);
-var
-  angle: integer;
-  oldviewz: fixed_t;
-  oldviewz2: fixed_t;
-begin
-  // Regular movement bobbing
-  // (needs to be calculated for gun swing
-  // even if not on ground)
-  // OPTIMIZE: tablify angle
-  // Note: a LUT allows for effects
-  //  like a ramp with low health.
-
-  if G_PlayingEngineVersion >= VERSION207 then
-  begin
-    P_CalcHeight(player);
-    exit;
-  end;
-
-  if (G_PlayingEngineVersion < VERSION122) or
-     (G_PlayingEngineVersion >= VERSION205) then
-  begin
-    P_CalcHeight205(player);
-    exit;
-  end;
-
-  player.bob := FixedMul(player.mo.momx, player.mo.momx) +
-                FixedMul(player.mo.momy, player.mo.momy);
-  player.bob := player.bob div 4;
-
-  if player.bob > MAXBOB then
-    player.bob := MAXBOB;
-
-  oldviewz := player.viewz;
-
-  if (player.cheats and CF_NOMOMENTUM <> 0) or not onground then
-  begin
-    player.viewz := player.mo.z + PVIEWHEIGHT;
-
-    if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-      player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-    player.oldviewz := oldviewz;
-
-    exit;
-  end;
-
-  angle := (FINEANGLES div 20 * leveltime) and FINEMASK;
-  player.viewbob := FixedMul(player.bob div 2, finesine[angle]) div (player.slopetics + 1);
-
-  // move viewheight
-  if player.playerstate = PST_LIVE then
-  begin
-    player.viewheight := player.viewheight + player.deltaviewheight;
-
-    if player.viewheight > PVIEWHEIGHT then
-    begin
-      player.viewheight := PVIEWHEIGHT;
-      player.deltaviewheight := 0;
-    end;
-
-    if player.viewheight < PVIEWHEIGHT div 2 then
-    begin
-      player.viewheight := PVIEWHEIGHT div 2;
-      if player.deltaviewheight <= 0 then
-        player.deltaviewheight := 1;
-    end;
-
-    if player.deltaviewheight <> 0 then
-    begin
-      if player.slopetics > 0 then
-        player.deltaviewheight := player.deltaviewheight + (FRACUNIT div 4) * player.slopetics
-      else
-        player.deltaviewheight := player.deltaviewheight + FRACUNIT div 4;
-      if player.deltaviewheight = 0 then
-        player.deltaviewheight := 1;
-    end;
-  end;
-
-  if player.slopetics > 0 then
-  begin
-    oldviewz2 := player.oldviewz;
-
-    player.viewz :=
-      (player.slopetics * player.viewz +
-       player.mo.z + player.viewheight + player.viewbob) div (player.slopetics + 1); // Extra smooth
-
-    if oldviewz2 < oldviewz then
-    begin
-      if player.viewz < oldviewz then
-        player.viewz := oldviewz;
-    end
-    else if oldviewz2 > oldviewz then
-    begin
-      if player.viewz > oldviewz then
-        player.viewz := oldviewz;
-    end;
-
-    if player.viewz < player.mo.floorz + PVIEWHEIGHT div 2 - 4 * FRACUNIT then
-      player.viewz := player.mo.floorz + PVIEWHEIGHT div 2 - 4 * FRACUNIT;
-    if player.viewz < player.mo.floorz + 4 * FRACUNIT then
-      player.viewz := player.mo.floorz + 4 * FRACUNIT;
-  end
-  else
-    player.viewz := player.mo.z + player.viewheight + player.viewbob;
-
-  // villsa [STRIFE] account for terrain lowering the view
-  if player.mo.flags and MF_FEETCLIPPED <> 0 then
-    player.viewz := player.viewz - 13 * FRACUNIT;
-
-  if player.viewz > player.mo.ceilingz - 4 * FRACUNIT then
-    player.viewz := player.mo.ceilingz - 4 * FRACUNIT;
-
-  // haleyjd [STRIFE]: added a floorz clip here
-  if player.viewz < player.mo.floorz then
-    player.viewz := player.mo.floorz;
-
-  player.oldviewz := oldviewz;
-end;
 
 //==============================================================================
 //
@@ -1334,6 +1013,58 @@ begin
   end;
 
   result := false;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.ThrustMove
+//
+//==============================================================================
+class function TUserGameRules.ThrustMove(const player: Pplayer_t; const move: fixed_t): fixed_t;
+begin
+  result := move;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.FlyBobs
+//
+//==============================================================================
+class function TUserGameRules.FlyBobs(const player: Pplayer_t): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.IsMorphed
+//
+//==============================================================================
+class function TUserGameRules.IsMorphed(const player: Pplayer_t): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AdjustViewZ
+//
+//==============================================================================
+class procedure TUserGameRules.AdjustViewZ(const player: Pplayer_t);
+begin
+  if player.mo.flags and MF_FEETCLIPPED <> 0 then
+    player.viewz := player.viewz - 13 * FRACUNIT;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.ClampViewZ
+//
+//==============================================================================
+class procedure TUserGameRules.ClampViewZ(const player: Pplayer_t);
+begin
+  if player.viewz < player.mo.floorz then
+    player.viewz := player.mo.floorz;
 end;
 
 end.

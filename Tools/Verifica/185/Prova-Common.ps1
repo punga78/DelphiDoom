@@ -75,6 +75,8 @@ function Get-Part {
     if ($v -lt 0 -or $v -gt $b) { return '' }
     return Get-Normalized $Lines[($v + 1)..($b - 1)]
   }
+  # una regola con il corpo vuoto ("begin" e "end;" di fila): l'intervallo andrebbe all'indietro
+  if ($b + 1 -gt $Lines.Length - 2) { return '' }
   Get-Normalized $Lines[($b + 1)..($Lines.Length - 2)]
 }
 
