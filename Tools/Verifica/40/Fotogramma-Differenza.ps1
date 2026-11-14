@@ -26,8 +26,14 @@ $files = @{}
 foreach ($tag in 'new', 'ref') {
   $bmp = "fd_$tag.bmp"
   Remove-Item (Join-Path $dir $bmp) -ErrorAction SilentlyContinue
+  # Il fotogramma si chiede con la variabile d'ambiente e non con -framedump: la riga di comando resta quella
+  # dei golden (la sua lunghezza sposta i blocchi di memoria, e il renderer legge a volte un byte fuori da un
+  # buffer: con un'altra riga di comando il fotogramma puo' cambiare)
+  $env:DDPARITY_FRAMEDUMP = "$Tic;$bmp"
+  Remove-Item (Join-Path $dir "$bmp.raw") -ErrorAction SilentlyContinue
   $null = Invoke-ParityEntry -Entry $entry -Mode $Mode -RunDir $dir -ExeName "fd_$tag.exe" `
-    -StateFile (Join-Path $dir "fd_$tag.state.txt") -FrameFile (Join-Path $dir "fd_$tag.frame.txt") -Extra "-framedump $Tic $bmp"
+    -StateFile (Join-Path $dir "fd_$tag.state.txt") -FrameFile (Join-Path $dir "fd_$tag.frame.txt")
+  $env:DDPARITY_FRAMEDUMP = $null
   $files[$tag] = Join-Path $dir $bmp
   if (-not (Test-Path $files[$tag])) { throw "Fotogramma non scritto: $($files[$tag])" }
 }
@@ -54,3 +60,23 @@ for ($i = $offset; $i -lt $a.Length - 3; $i += 4) {
 }
 "{0} {1} modo {2} tic {3}: {4} pixel diversi ({5}x{6}); file: {7} e {8}" -f $Game, $Name, $Mode, $Tic, $count, $width, $rows, $files['ref'], $files['new']
 $list
+# Il buffer che l'impronta legge (indici della tavolozza nei modi a 8 bit): due indici diversi possono avere lo
+# stesso colore, e allora il BMP e' uguale ma l'impronta no. Lo scrive il motore accanto al BMP (nome + .raw).
+$rawRef = $files['ref'] + '.raw'
+$rawNew = $files['new'] + '.raw'
+if ((Test-Path $rawRef) -and (Test-Path $rawNew)) {
+  $ra = [IO.File]::ReadAllBytes($rawRef)
+  $rb = [IO.File]::ReadAllBytes($rawNew)
+  $bpp = [int]($ra.Length / ($width * $rows))
+  $rawCount = 0
+  $rawList = New-Object System.Collections.Generic.List[string]
+  for ($i = 0; $i -lt $ra.Length; $i++) {
+    if ($ra[$i] -ne $rb[$i]) {
+      $rawCount++
+      $pixel = [Math]::Floor($i / $bpp)
+      if ($rawList.Count -lt 40) { $rawList.Add(("({0},{1}) byte {2}: rif {3} nuovo {4}" -f ($pixel % $width), [Math]::Floor($pixel / $width), ($i % $bpp), $ra[$i], $rb[$i])) }
+    }
+  }
+  "buffer dell'impronta ({0} byte per pixel): {1} byte diversi" -f $bpp, $rawCount
+  $rawList
+}
