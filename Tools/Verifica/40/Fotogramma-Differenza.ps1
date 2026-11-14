@@ -14,6 +14,10 @@ param(
   [int]$Mode = 8,
   [Parameter(Mandatory = $true)][string]$Exe,
   [Parameter(Mandatory = $true)][string]$RefExe,
+  # nomi con cui i due eseguibili sono copiati nella cartella di lavoro: il nome fa parte della riga di comando,
+  # e la sua lunghezza sposta i blocchi di memoria (i golden sono fatti con parity_<Gioco>32.exe)
+  [string]$NewName = 'fd_new.exe',
+  [string]$RefName = 'fd_ref.exe',
   [string]$WorkRoot = 'C:\ddpari40',
   [string]$DataRoot = ''
 )
@@ -21,7 +25,8 @@ param(
 $entry = @(Get-ParityCorpus -Game @($Game) -Name $Name)[0]
 if ($null -eq $entry) { throw "Voce non trovata: $Game $Name" }
 $dir = Initialize-ParityRunDir -Game $Game -WorkRoot $WorkRoot -DataRoot $DataRoot `
-  -Executables @{ 'fd_new.exe' = (Resolve-Path $Exe).Path; 'fd_ref.exe' = (Resolve-Path $RefExe).Path }
+  -Executables @{ $NewName = (Resolve-Path $Exe).Path; $RefName = (Resolve-Path $RefExe).Path }
+$names = @{ 'new' = $NewName; 'ref' = $RefName }
 $files = @{}
 foreach ($tag in 'new', 'ref') {
   $bmp = "fd_$tag.bmp"
@@ -31,7 +36,7 @@ foreach ($tag in 'new', 'ref') {
   # buffer: con un'altra riga di comando il fotogramma puo' cambiare)
   $env:DDPARITY_FRAMEDUMP = "$Tic;$bmp"
   Remove-Item (Join-Path $dir "$bmp.raw") -ErrorAction SilentlyContinue
-  $null = Invoke-ParityEntry -Entry $entry -Mode $Mode -RunDir $dir -ExeName "fd_$tag.exe" `
+  $null = Invoke-ParityEntry -Entry $entry -Mode $Mode -RunDir $dir -ExeName $names[$tag] `
     -StateFile (Join-Path $dir "fd_$tag.state.txt") -FrameFile (Join-Path $dir "fd_$tag.frame.txt")
   $env:DDPARITY_FRAMEDUMP = $null
   $files[$tag] = Join-Path $dir $bmp
