@@ -42,7 +42,11 @@ uses
 // Size of statusbar.
 // Now sensitive for scaling.
 const
+{$IFDEF RADIX}
+  ST_HEIGHT = 41; // the status bar of the craft
+{$ELSE}
   ST_HEIGHT = 32;
+{$ENDIF}
   ST_WIDTH = 320;
   ST_WIDTH426 = 426;
   ST_Y = 200 - ST_HEIGHT;
@@ -99,6 +103,29 @@ procedure ST_Start;
 //
 //==============================================================================
 procedure ST_Init;
+
+type
+  st_replacement_t = procedure;
+
+//==============================================================================
+// ST_ConfigureReplacement
+//
+// A game on the engine of Doom that has its own display (Radix: the cockpit of
+// the craft) gives the procedure that draws it: the pictures and the widgets of
+// the status bar of Doom are not loaded and ST_OverlayDrawer calls the procedure
+// after the view. Cheats, palette effects and the rest stay. To call before
+// ST_Init; Doom does not call it.
+//
+//==============================================================================
+procedure ST_ConfigureReplacement(const drawer: st_replacement_t);
+
+//==============================================================================
+// ST_OverlayDrawer
+//
+// Called by the main loop after the view of a level has been drawn.
+//
+//==============================================================================
+procedure ST_OverlayDrawer;
 
 // States for status bar code.
 type
@@ -373,6 +400,9 @@ const
   ST_MWY = 29;
 
 var
+
+// the display of a game that does not have the status bar of Doom (ST_ConfigureReplacement)
+  st_replacement: st_replacement_t = nil;
 
 // main player in game
   plyr: Pplayer_t;
@@ -1400,7 +1430,8 @@ begin
   inc(st_clock);
   st_randomnumber := M_Random;
 {$IFNDEF SPEED}
-  ST_UpdateWidgets;
+  if not Assigned(st_replacement) then
+    ST_UpdateWidgets;
 {$ENDIF}
   if plyr <> nil then
     st_oldhealth := plyr.health;
@@ -1635,6 +1666,12 @@ begin
   ST_DoPaletteStuff;
   exit;
 {$ENDIF}
+  if Assigned(st_replacement) then
+  begin
+    // the display of the game is drawn over the view (ST_OverlayDrawer)
+    ST_DoPaletteStuff;
+    exit;
+  end;
   {$IFDEF OPENGL}
   if not st_statusbaron then
   begin
@@ -1788,7 +1825,8 @@ begin
   lu_palette := W_GetNumForName(PLAYPAL);
 {$IFNDEF SPEED}
   // Speed Haste has none of the pictures of the status bar of Doom
-  ST_LoadGraphics;
+  if not Assigned(st_replacement) then
+    ST_LoadGraphics;
 {$ENDIF}
 end;
 
@@ -2073,9 +2111,31 @@ begin
 
   ST_InitData;
 {$IFNDEF SPEED}
-  ST_CreateWidgets;
+  if not Assigned(st_replacement) then
+    ST_CreateWidgets;
 {$ENDIF}
   st_stopped := false;
+end;
+
+//==============================================================================
+//
+// ST_ConfigureReplacement
+//
+//==============================================================================
+procedure ST_ConfigureReplacement(const drawer: st_replacement_t);
+begin
+  st_replacement := drawer;
+end;
+
+//==============================================================================
+//
+// ST_OverlayDrawer
+//
+//==============================================================================
+procedure ST_OverlayDrawer;
+begin
+  if Assigned(st_replacement) then
+    st_replacement;
 end;
 
 //==============================================================================

@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.MapInfo.Types;
+  DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.MapInfo.Types,
+  DelphiDoom.Radix.Level.Types, DelphiDoom.Radix.LevelLogic.Types;
 
 type
   /// <summary>
@@ -99,6 +100,26 @@ type
     ['{B81F3D06-2A9C-4E57-9D40-6C3E1F7A85B9}']
     /// <summary>ERadixException when a statement has no number where it wants one</summary>
     function Read(const AText: string): TRadixMapInfo;
+  end;
+
+  /// <summary>
+  ///   Reads the binary lumps that the translation writes after the map of every level: RACTION,
+  ///   RTRIGGER, RGRID, RMAPGRID and RTHINGS (Rad-X: P_LoadRadixSprites, P_LoadRadixTriggers,
+  ///   P_LoadGrid, P_LoadMapGrid and the extra data of P_LoadThings). An empty lump is a level
+  ///   without that data; a lump of a size that is not the one of its records is an ERadixException
+  /// </summary>
+  IRadixLevelLumpReader = interface
+    ['{5E0C7A91-3B64-4D2F-8A17-C9D2E6F4B103}']
+    /// <summary>RACTION: the actions of the level, 168 bytes each</summary>
+    function ReadActions(const ABytes: TBytes): TArray<TRadixLevelAction>;
+    /// <summary>RTRIGGER: the triggers of the level, 1834 bytes each</summary>
+    function ReadTriggers(const ABytes: TBytes): TArray<TRadixLevelTrigger>;
+    /// <summary>RGRID: the trigger of every cell; a width and a height that do not make the 40960 cells are an error</summary>
+    function ReadGrid(const ABytes: TBytes): TRadixTriggerGridData;
+    /// <summary>RMAPGRID: the place in the Doom map of every cell of the grid (all zero for an empty lump)</summary>
+    function ReadMapPoints(const ABytes: TBytes): TArray<TRadixLevelMapPoint>;
+    /// <summary>RTHINGS: what a thing of Radix has more than one of Doom, one record for each thing of THINGS</summary>
+    function ReadThingExtras(const ABytes: TBytes): TArray<TRadixDoomThingExtra>;
   end;
 
 implementation
