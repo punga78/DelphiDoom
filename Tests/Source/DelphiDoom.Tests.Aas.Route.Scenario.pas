@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - the scenario of the routing golden   }
 {                                                                              }
@@ -38,6 +38,7 @@ type
     procedure Routes(const ATag: string; const ACount, AVariant: Integer);
     procedure Predict(const ACount: Integer);
     procedure Alternatives(const ACount: Integer);
+    procedure Hides(const ACount: Integer);
     procedure Enables;
     procedure Reaches;
     procedure DumpData;
@@ -248,6 +249,19 @@ begin
   end;
 end;
 
+procedure TAasRouteScenario.Hides(const ACount: Integer);
+var
+  LIndex, LA, LE, LResult: Integer;
+begin
+  for LIndex := 0 to ACount - 1 do
+  begin
+    LA := Pick;
+    LE := Pick;
+    LResult := FRouterIntf.NearestHideArea(0, FFile.Areas[LA].Center, LA, 1, FFile.Areas[LE].Center, LE, FLAGS[LIndex mod 3]);
+    FOutput.Add(Format('HD %d %d %d %d', [LIndex, LA, LE, LResult]));
+  end;
+end;
+
 procedure TAasRouteScenario.Enables;
 var
   LIndex, LA, LR: Integer;
@@ -409,6 +423,7 @@ begin
   Counts('C2');
   Reaches;
   Counts('C3');
+  Hides(12);
   FRouterIntf := nil;
   FRouter := nil;
 end;

@@ -227,7 +227,6 @@ static void alternatives(int count)
 	}
 }
 
-static void hides(int count) __attribute__((unused));
 static void hides(int count)
 {
 	int k, n = aasworld.numareas, a, e, r;
@@ -357,11 +356,11 @@ static void run_file(const char *path)
 	counts("C1");
 	predict(60);
 	alternatives(12);
-	/* hides(12): AAS_NearestHideArea indexes aasworld.areaupdate (made for maxreachabilityareas entries) by the area number: a heap overflow in the original, that is not run here */
 	enables();
 	counts("C2");
 	reaches();
 	counts("C3");
+	hides(12);
 	AAS_FreeRoutingCaches();
 	free(g_file);
 }

@@ -30,6 +30,11 @@ sed -i 's/^\tint traveltime, reachnum;/\tint traveltime, reachnum = 0;/' "$WORK/
 # the second change: UpdateAreaRoutingCache starts with the travel times of the goal area read from a stack array of 128 entries, and
 # an area with more than 128 reversed links (an area of 266 in oa_koth1) reads past its end: the copy makes it large enough to be zero.
 sed -i 's/startareatraveltimes\[128\]/startareatraveltimes[4096]/' "$WORK/botlib/be_aas_route.c"
+# the third change: AAS_NearestHideArea indexes aasworld.areaupdate by the area number, but AAS_InitRouting makes the table for
+# maxreachabilityareas entries (the areas of the largest cluster): a heap overflow in the original. The copy makes it for the larger of
+# the two, as the Delphi port does, so that the answers of AAS_NearestHideArea can be compared (the other users of the table index
+# it by a number below maxreachabilityareas, so nothing else changes).
+sed -i 's/maxreachabilityareas \* sizeof(aas_routingupdate_t)/(maxreachabilityareas > aasworld.numareas ? maxreachabilityareas : aasworld.numareas) * sizeof(aas_routingupdate_t)/' "$WORK/botlib/be_aas_route.c"
 { echo "#ifndef AASFILE_GUARD"; echo "#define AASFILE_GUARD"; cat "$CODE/botlib/aasfile.h"; echo "#endif"; } > "$WORK/botlib/aasfile.h"
 line() { grep -n "$1" "$2" | head -1 | cut -d: -f1; }
 {
