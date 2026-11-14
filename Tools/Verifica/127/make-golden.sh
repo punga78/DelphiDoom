@@ -7,6 +7,6 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 OUT=${1:-$HERE/out}
 GOLDEN=$HERE/../../../Tests/Data/Pmove/pmove-golden.txt
 mkdir -p "$(dirname "$GOLDEN")"
-"$OUT/pmgen.exe" golden > "$GOLDEN" 2> "$OUT/coverage.txt"
+"$OUT/pmgen.exe" golden 2> "$OUT/coverage.txt" | tr -d '\r' > "$GOLDEN"
 cat "$OUT/coverage.txt"
 echo "written $GOLDEN"

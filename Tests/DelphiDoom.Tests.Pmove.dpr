@@ -58,10 +58,14 @@ uses
   DelphiDoom.Pmove.Factory in '..\Libs\Pmove\DelphiDoom.Pmove.Factory.pas',
   DelphiDoom.Tests.Shared.Files in 'Source\DelphiDoom.Tests.Shared.Files.pas',
   DelphiDoom.Tests.Shared.Fnv in 'Source\DelphiDoom.Tests.Shared.Fnv.pas',
+  DelphiDoom.Tests.Shared.Skip in 'Source\DelphiDoom.Tests.Shared.Skip.pas',
   DelphiDoom.Tests.Collision.Q3Support in 'Source\DelphiDoom.Tests.Collision.Q3Support.pas',
   DelphiDoom.Tests.Pmove.Support.World in 'Source\DelphiDoom.Tests.Pmove.Support.World.pas',
   DelphiDoom.Tests.Pmove.Support.Golden in 'Source\DelphiDoom.Tests.Pmove.Support.Golden.pas',
-  DelphiDoom.Tests.Pmove.Parity in 'Source\DelphiDoom.Tests.Pmove.Parity.pas';
+  DelphiDoom.Tests.Pmove.Parity in 'Source\DelphiDoom.Tests.Pmove.Parity.pas',
+  DelphiDoom.Tests.Pmove.Mover in 'Source\DelphiDoom.Tests.Pmove.Mover.pas',
+  DelphiDoom.Tests.Pmove.Parts in 'Source\DelphiDoom.Tests.Pmove.Parts.pas',
+  DelphiDoom.Tests.Pmove.Collision in 'Source\DelphiDoom.Tests.Pmove.Collision.pas';
 
 var
   Runner: ITestRunner;

@@ -152,7 +152,8 @@ static void build_world(void) {
   pool(-1500, 700, -1000, 1200, 100, CONTENTS_SLIME);
   pool(-1500, 1400, -1000, 1900, 100, CONTENTS_LAVA);
   /* shallow water in the open */
-  box(-900, -500, 0, -500, 500, 30, CONTENTS_WATER, 0, 0);
+  box(-900, -500, 0, -700, 500, 12, CONTENTS_WATER, 0, 0);
+  box(-700, -500, 0, -500, 500, 30, CONTENTS_WATER, 0, 0);
   /* a high platform and a pillar */
   box(-500, -300, -64, -300, -100, 128, CONTENTS_SOLID, 0, 0);
   box(-250, -50, -64, -150, 50, 200, CONTENTS_SOLID, 0, 0);
@@ -416,7 +417,7 @@ static void make_scenario(scn_t *s, int id) {
   case 5: x = rf(120, 280); y = rf(320, 480); z = 24 + (float)ri(0, 200); if (id % 5 == 1) x += 300; if (id % 5 == 2) x += 600; if (id % 5 == 3) x += 900; if (id % 5 == 4) x += 1200; break;
   case 6: x = rf(-1400, -1100); y = rf(-400, 400); z = rf(20, 120); break; /* pool */
   case 7: x = rf(-1400, -1100); y = (id % 2) ? rf(800, 1100) : rf(1500, 1800); z = rf(120, 400); break;
-  case 8: x = rf(-480, -320); y = rf(-280, -120); z = 128 + 24; if (id % 3 == 2) { x = rf(-600, -400); y = rf(600, 800); z = 420 + rf(0, 150); } break; /* platform, a high fall */
+  case 8: x = rf(-480, -320); y = rf(-280, -120); z = 128 + 24; if (id % 3 == 2) { x = rf(-600, -400); y = rf(600, 800); z = 420 + rf(0, 150); } if (id % 3 == 1) { x = rf(-880, -720); y = rf(-300, 300); z = 300 + rf(0, 100); } break; /* platform, a high fall, a fall into shallow water */
   case 9: x = rf(-100, 100); y = rf(1400, 1600); break; /* creases */
   case 10: x = rf(-2000, 2000); y = rf(-2000, 2000); z = rf(24, 500); break;
   case 11: x = rf(-100, 100); y = rf(-100, 100); z = rf(24, 80); break;
@@ -429,7 +430,7 @@ static void make_scenario(scn_t *s, int id) {
     z = rf(24, 100);
     break;
   }
-  if (mode == 9 && (id % 3 == 2)) { x = 2980; y = 2980; }       /* a corner of the room */
+  if (mode == 9 && (id % 3 == 2)) { x = 2980; y = 2980; z = 120; }       /* a corner of the room, in the air */
   if (mode == 9 && (id % 3 == 1)) { x = 2584; y = -190; yaw = 16384; }  /* along the posts */
 
   base_ps(&p, x, y, z);
@@ -440,6 +441,23 @@ static void make_scenario(scn_t *s, int id) {
     break;
   case 8:
     if (id % 3 == 0) p.stats[STAT_HEALTH] = 10;
+    break;
+  case 9:
+    if (id % 3 == 2) {
+      /* into the corner of the room: two walls and the floor */
+      p.velocity[0] = 400;
+      p.velocity[1] = 400;
+      p.velocity[2] = -300;
+      p.groundEntityNum = ENTITYNUM_NONE;
+      if ((id / NMODES) % 2) {
+        /* on the floor in the corner, running at it */
+        p.origin[0] = 2984.5f;
+        p.origin[1] = 2984.5f;
+        p.origin[2] = 24.0f;
+        p.velocity[0] = p.velocity[1] = p.velocity[2] = 0;
+        p.groundEntityNum = ENTITYNUM_WORLD;
+      }
+    }
     break;
   case 10:
     p.pm_type = (id / NMODES) % 3 == 0 ? PM_NOCLIP : (id / NMODES) % 3 == 1 ? PM_SPECTATOR : PM_NORMAL;
@@ -468,7 +486,7 @@ static void make_scenario(scn_t *s, int id) {
     case 2: p.pm_flags = PMF_GRAPPLE_PULL; p.grapplePoint[0] = rf(-300, 300); p.grapplePoint[1] = rf(-300, 300); p.grapplePoint[2] = rf(100, 400); break;
     case 3: p.pm_flags = PMF_RESPAWNED | PMF_JUMP_HELD; break;
     case 4: p.pm_flags = PMF_DUCKED | PMF_BACKWARDS_JUMP | PMF_BACKWARDS_RUN | PMF_TIME_LAND; p.pm_time = 250; break;
-    default: p.pm_flags = PMF_INVULEXPAND | PMF_USE_ITEM_HELD | PMF_FOLLOW | PMF_SCOREBOARD; p.powerups[PW_INVULNERABILITY] = (id / NMODES) & 1; break;
+    default: p.pm_flags = PMF_INVULEXPAND | PMF_USE_ITEM_HELD | PMF_FOLLOW | PMF_SCOREBOARD; p.powerups[PW_INVULNERABILITY] = (id / NMODES) & 1; if ((id / NMODES) == 11) p.pm_flags &= ~PMF_INVULEXPAND; break;
     }
     break;
   case 13:
@@ -483,10 +501,26 @@ static void make_scenario(scn_t *s, int id) {
     if ((id / NMODES) % 7 == 3) p.stats[STAT_WEAPONS] = 0;
     s->gaunt = (id / NMODES) & 1;
     s->nofoot = ((id / NMODES) / 2) & 1;
+    if (id % 3 != 0) {
+      /* every weapon fires: ready, with ammo, the attack button held (the gauntlet when it hits) */
+      int w = (id / NMODES) % 10 + 1, k;
+      p.weapon = w;
+      p.weaponstate = WEAPON_READY;
+      p.weaponTime = 0;
+      for (k = 1; k < WP_NUM_WEAPONS; k++) p.ammo[k] = 5;
+      p.ammo[WP_GRAPPLING_HOOK] = -1;
+      if (w == WP_GAUNTLET) s->gaunt = 1;
+      p.persistant[PERS_TEAM] = TEAM_FREE;
+      p.stats[STAT_HEALTH] = 100;
+      p.stats[STAT_WEAPONS] = 0x7FE;
+      p.pm_flags &= ~PMF_RESPAWNED;
+      add_seg(s, 30, 100, 0, 0, 0, BUTTON_ATTACK, w, yaw, 0, 0, 0, 0, 0);
+      add_seg(s, 6, 100, 0, 0, 0, 0, (w % 10) + 1, yaw, 0, 0, 0, 0, 0);
+    }
     break;
   case 14:
     s->fixed = (id / NMODES) % 3 == 0;
-    s->fixmsec = pick((const int[]){8, 10, 20, 33}, 4);
+    s->fixmsec = (id / NMODES == 0) ? 250 : pick((const int[]){8, 10, 20, 33, 250}, 5);
     break;
   case 15:
     p.gravity = pick((const int[]){800, 0, 200, 1600, 800, -300}, 6);
@@ -512,9 +546,12 @@ static void make_scenario(scn_t *s, int id) {
     s->nofoot = rnd() & 1;
     s->gaunt = rnd() & 1;
     if (id % 4 == 0) p.powerups[PW_FLIGHT] = 100000;
+    if (id % 5 == 1) p.powerups[PW_INVULNERABILITY] = 1;
+    if (id % 11 == 0) p.velocity[2] = 3.0e9f; /* the snap of a velocity that does not fit 32 bits */
+    if (id % 7 == 3) p.velocity[0] = -3.0e9f;
     break;
   }
-  if (rnd() % 3 == 0 && !(mode == 9 && id % 3 == 1)) {
+  if (rnd() % 3 == 0 && !(mode == 9 && id % 3 != 0)) {
     p.delta_angles[0] = ri(-30000, 30000);
     p.delta_angles[1] = ri(-70000, 70000);
     p.delta_angles[2] = ri(-3000, 3000);
@@ -583,6 +620,12 @@ static void make_scenario(scn_t *s, int id) {
     if (id % 3 == 1) {
       add_seg(s, 2, 1000, 127, 64, 0, 0, 2, yaw, 0, 0, 0, 0, 0);
       add_seg(s, 60, 16, 127, 64, 0, 0, 2, yaw, 0, 0, 0, 0, 0);
+    }
+    if (id % 3 == 2) {
+      /* diagonal into the corner (45 degrees), then along each wall */
+      add_seg(s, 40, 16, 127, 0, 0, 0, 2, 8192, 0, 0, 0, 0, 0);
+      add_seg(s, 20, 16, 127, 127, 127, 0, 2, 8192, 0, 0, 0, 0, 0);
+      add_seg(s, 20, 16, 127, -127, 0, 0, 2, 8192, 0, 0, 0, 0, 0);
     }
     for (n = 0; n < 4; n++) rand_seg(s, mode, yaw, n % 2);
     break;
