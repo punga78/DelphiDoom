@@ -119,6 +119,24 @@ type
     procedure DovrebbeMandareIlMessaggioScrittoAllaTastiera;
     [Test]
     procedure DovrebbeFarSentireAgliAltriLaCaduta;
+    [Test]
+    procedure DovrebbeScegliereGliOggettiDelleAreeDalleTabelleDiRete;
+    [Test]
+    procedure DovrebbeRaccogliereOgniTipoDiOggettoPerTutti;
+    [Test]
+    procedure DovrebbeDireAgliAltriGliInterruttoriDegliAscensori;
+    [Test]
+    procedure DovrebbeFarSentireAgliAltriIlGrilletto;
+    [Test]
+    procedure DovrebbeRaccogliereIlBonusPerTutti;
+    [Test]
+    procedure DovrebbeDireAgliAltriAnimeEGranata;
+    [Test]
+    procedure DovrebbeDireAgliAltriIColpiDiOgniArma;
+    [Test]
+    procedure DovrebbeSvegliareIMostriVicinoAUnGiocatoreQualsiasi;
+    [Test]
+    procedure NonDovrebbeFermareLOrologioPerIlMenuInRete;
   end;
 
 implementation
@@ -982,6 +1000,391 @@ begin
   FTable.Play(1);
   // the character of player 0 grunts in the game of player 1
   Assert.IsTrue(FTable.Seats[1].Sound.CountOf(GREED_SN_HIT0) >= 1);
+end;
+
+type
+  TAreaLimit = record
+    Below: Integer;
+    Kind: Integer;
+  end;
+
+const
+  // the lists of CheckSpawnAreas for a net game, from raven.pas: a number below the limit gives the kind
+  NET_AMMO: array[0..11] of TAreaLimit = (
+    (Below: 30; Kind: GREED_S_ENERGY), (Below: 60; Kind: GREED_S_BALLISTIC), (Below: 90; Kind: GREED_S_PLASMA),
+    (Below: 98; Kind: GREED_S_IGRENADE), (Below: 102; Kind: GREED_S_IREVERSO), (Below: 112; Kind: GREED_S_IPROXMINE),
+    (Below: 116; Kind: GREED_S_ITIMEMINE), (Below: 120; Kind: GREED_S_IDECOY),
+    (Below: 134; Kind: GREED_S_IINSTAWALL), (Below: 138; Kind: GREED_S_IINVIS), (Below: 142; Kind: GREED_S_ISTEALER),
+    (Below: MaxInt; Kind: GREED_S_IHOLO));
+  NET_HEALTH: array[0..16] of TAreaLimit = (
+    (Below: 15; Kind: GREED_S_MEDPAK1), (Below: 22; Kind: GREED_S_MEDPAK2), (Below: 30; Kind: GREED_S_MEDPAK3),
+    (Below: 45; Kind: GREED_S_MEDPAK4), (Below: 60; Kind: GREED_S_SHIELD4), (Below: 67; Kind: GREED_S_SHIELD3),
+    (Below: 75; Kind: GREED_S_SHIELD2), (Below: 90; Kind: GREED_S_SHIELD1), (Below: 96; Kind: GREED_S_IGRENADE),
+    (Below: 98; Kind: GREED_S_IREVERSO), (Below: 102; Kind: GREED_S_IPROXMINE), (Below: 106; Kind: GREED_S_ITIMEMINE),
+    (Below: 108; Kind: GREED_S_IDECOY), (Below: 110; Kind: GREED_S_IINSTAWALL), (Below: 112; Kind: GREED_S_IJAMMER),
+    (Below: 114; Kind: GREED_S_ISTEALER), (Below: MaxInt; Kind: GREED_S_IHOLO));
+  // the demo: after the ammunition (or the health) the same six for both kinds of area
+  NET_DEMO_TAIL: array[0..5] of TAreaLimit = (
+    (Below: 96; Kind: GREED_S_IGRENADE), (Below: 98; Kind: GREED_S_IREVERSO), (Below: 102; Kind: GREED_S_IPROXMINE),
+    (Below: 106; Kind: GREED_S_ITIMEMINE), (Below: 108; Kind: GREED_S_IDECOY),
+    (Below: MaxInt; Kind: GREED_S_IINSTAWALL));
+
+function ExpectedAreaKind(ADemo: Boolean; AArea, ANumber: Integer): Integer;
+var
+  LIndex: Integer;
+begin
+  Result := 0;
+  if ADemo and (ANumber >= 90) then
+  begin
+    for LIndex := Low(NET_DEMO_TAIL) to High(NET_DEMO_TAIL) do
+      if ANumber < NET_DEMO_TAIL[LIndex].Below then
+        Exit(NET_DEMO_TAIL[LIndex].Kind);
+  end
+  else if AArea = 0 then
+  begin
+    for LIndex := Low(NET_AMMO) to High(NET_AMMO) do
+      if ANumber < NET_AMMO[LIndex].Below then
+        Exit(NET_AMMO[LIndex].Kind);
+  end
+  else
+    for LIndex := Low(NET_HEALTH) to High(NET_HEALTH) do
+      if ANumber < NET_HEALTH[LIndex].Below then
+        Exit(NET_HEALTH[LIndex].Kind);
+end;
+
+procedure TTestGreedNetGame.DovrebbeScegliereGliOggettiDelleAreeDalleTabelleDiRete;
+const
+  AREA_SPOT = 30 * GREED_MAP_SIZE + 30;
+var
+  LSeat: TFakeGameSetup;
+  LState: TGreedGameState;
+  LArea: TGreedSpawnArea;
+  LAreaIndex, LAreaKind, LClock, LRandom, LModulus, LNumber, LSprite, LNext, LFound, LChecked: Integer;
+  LDemo: Boolean;
+  LItem: PGreedSprite;
+begin
+  Start(2);
+  LSeat := FTable.Seats[0];
+  LState := LSeat.Game.State;
+  LAreaIndex := LSeat.Game.World.AddSpawnArea;
+  LChecked := 0;
+  for LDemo := False to True do
+    for LAreaKind := 0 to 1 do
+      for LClock := 0 to 149 do
+      begin
+        LState.Demo := LDemo;
+        LSeat.Clock.Value := Cardinal(LClock);
+        // the number of the area is (clock + the next random number) mod the length of its list
+        LSeat.Random.Offset := 0;
+        LRandom := LSeat.Random.Next;
+        LSeat.Random.Offset := 0;
+        if LDemo then
+          LModulus := 110
+        else if LAreaKind = 0 then
+          LModulus := 146
+        else
+          LModulus := 116;
+        LNumber := (LClock + LRandom) mod LModulus;
+        LArea := Default(TGreedSpawnArea);
+        LArea.MapSpot := AREA_SPOT;
+        LArea.MapX := 30 * GREED_FRACTILEUNIT + HALF_TILE;
+        LArea.MapY := 30 * GREED_FRACTILEUNIT + HALF_TILE;
+        LArea.Kind := LAreaKind;
+        LSeat.Game.World.SetSpawnArea(LAreaIndex, LArea);
+        LState.TimeCount := 10;
+        LSeat.Game.Parts.Level.CheckSpawnAreas;
+        // what the area made: the item and the warp that brings it; both are taken away for the next turn
+        LFound := 0;
+        LSprite := LState.Sprites.First;
+        while LSprite <> GREED_POOL_NIL do
+        begin
+          LNext := LState.Sprites.Next(LSprite);
+          LItem := PGreedSprite(LState.Sprites.Item(LSprite));
+          if (LItem^.Kind >= GREED_S_MEDPAK1) and (LItem^.Kind <= GREED_S_ISTEALER) then
+          begin
+            LFound := LItem^.Kind;
+            LState.Sprites.Remove(LSprite);
+          end
+          else if LItem^.Kind = GREED_S_WARP then
+            LState.Sprites.Remove(LSprite);
+          LSprite := LNext;
+        end;
+        LSeat.Game.World.SetValue(gpMapSprites, AREA_SPOT, 0);
+        if LFound <> ExpectedAreaKind(LDemo, LAreaKind, LNumber) then
+          Assert.Fail(Format('demo %s, area %d, number %d: the item %d, the list of the original says %d',
+            [BoolToStr(LDemo, True), LAreaKind, LNumber, LFound, ExpectedAreaKind(LDemo, LAreaKind, LNumber)]));
+        Inc(LChecked);
+      end;
+  Assert.AreEqual(600, LChecked);
+end;
+
+procedure TTestGreedNetGame.DovrebbeRaccogliereOgniTipoDiOggettoPerTutti;
+const
+  KINDS: array[0..4] of Integer = (GREED_S_SHIELD1, GREED_S_ENERGY, GREED_S_IGRENADE, GREED_S_AMMOBOX,
+    GREED_S_MEDBOX);
+var
+  LIndex, LSeat, LX, LY, LKind: Integer;
+  LTaker: TGreedGameState;
+begin
+  Start(2);
+  FTable.Play(2);
+  LTaker := FTable.Seats[1].Game.State;
+  for LIndex := Low(KINDS) to High(KINDS) do
+  begin
+    LKind := KINDS[LIndex];
+    LX := 20 + LIndex * 2;
+    LY := 22;
+    if (LKind = GREED_S_AMMOBOX) or (LKind = GREED_S_MEDBOX) then
+    begin
+      // the boxes of the map are not told: each game has its own
+      for LSeat := 0 to 1 do
+        FTable.Seats[LSeat].Game.Parts.SpawnerIntf.SpawnSprite(LKind, LX * GREED_FRACTILEUNIT + HALF_TILE,
+          LY * GREED_FRACTILEUNIT + HALF_TILE, 0, 0, 0, 0, False, 0);
+    end
+    else
+    begin
+      FTable.Seats[0].Game.Parts.SpawnerIntf.SpawnSprite(LKind, LX * GREED_FRACTILEUNIT + HALF_TILE,
+        LY * GREED_FRACTILEUNIT + HALF_TILE, 0, 0, 0, 0, False, 0);
+      FTable.Link(1).GetData;
+    end;
+    Assert.AreEqual(1, FTable.Seats[1].SpritesOfKind(LKind), Format('the item %d is in the game of player 1', [LKind]));
+    // player 1 needs everything
+    LTaker.Player.Angst := 100;
+    LTaker.Player.Shield := 0;
+    LTaker.Player.Ammo[0] := 0;
+    LTaker.Player.Ammo[1] := 0;
+    LTaker.Player.Ammo[2] := 0;
+    FTable.Seats[1].Game.Parts.Items.CheckItems(LX, LY, True, LTaker.Player.CharType);
+    Assert.AreEqual(0, FTable.Seats[1].SpritesOfKind(LKind), Format('player 1 takes the item %d', [LKind]));
+    FTable.Link(0).GetData;
+    Assert.AreEqual(0, FTable.Seats[0].SpritesOfKind(LKind), Format('the item %d is gone for player 0 too', [LKind]));
+    Assert.AreEqual(0, Integer(FTable.Seats[0].Game.World.GetValue(gpMapSprites, LY * GREED_MAP_SIZE + LX)));
+  end;
+  Assert.AreEqual(0, FTable.Seats[0].Game.State.Player.Inventory[2] - 4, 'player 0 got no grenades from it');
+end;
+
+procedure TTestGreedNetGame.DovrebbeDireAgliAltriGliInterruttoriDegliAscensori;
+const
+  SWITCH_X = 26;
+  SWITCH_Y = 25;
+var
+  LSeat, LPass, LSounds: Integer;
+  LElevators: array[0..1] of Integer;
+  LItem: TGreedLinkedPool<TGreedElevator>.PItem;
+begin
+  Start(2);
+  FTable.Play(2);
+  for LPass := 0 to 1 do
+  begin
+    for LSeat := 0 to 1 do
+    begin
+      LElevators[LSeat] := FTable.Seats[LSeat].Game.State.Elevators.Add;
+      LItem := FTable.Seats[LSeat].Game.State.Elevators.Item(LElevators[LSeat]);
+      LItem^.MapSpot := 25 * GREED_MAP_SIZE + 25;
+      if LPass = 0 then
+      begin
+        LItem^.Kind := getSwitchDown;
+        FTable.Seats[LSeat].Game.World.SetValue(gpMapSprites, SWITCH_Y * GREED_MAP_SIZE + SWITCH_X,
+          GREED_SM_SWITCHDOWN);
+      end
+      else
+      begin
+        LItem^.Kind := getSwitchUp;
+        FTable.Seats[LSeat].Game.World.SetValue(gpMapSprites, SWITCH_Y * GREED_MAP_SIZE + SWITCH_X,
+          GREED_SM_SWITCHUP);
+      end;
+    end;
+    LSounds := FTable.Seats[0].Sound.CountOf(GREED_SN_TRIGGER);
+    // player 1 steps on the switch
+    FTable.Seats[1].Game.Parts.Items.CheckItems(SWITCH_X, SWITCH_Y, True, 1);
+    FTable.Link(0).GetData;
+    LItem := FTable.Seats[0].Game.State.Elevators.Item(LElevators[0]);
+    if LPass = 0 then
+    begin
+      Assert.IsTrue(LItem^.Down, 'the elevator of player 0 goes down with the one of player 1');
+      Assert.IsTrue(FTable.Seats[0].Sound.CountOf(GREED_SN_TRIGGER) >= LSounds + 2,
+        'the click of the first kind of switch is told twice');
+    end
+    else
+      Assert.IsTrue(LItem^.Up, 'the elevator of player 0 goes up with the one of player 1');
+    Assert.AreEqual(0, Integer(FTable.Seats[0].Game.World.GetValue(gpMapSprites,
+      SWITCH_Y * GREED_MAP_SIZE + SWITCH_X)), 'the switch is used up for player 0 too');
+  end;
+end;
+
+procedure TTestGreedNetGame.DovrebbeFarSentireAgliAltriIlGrilletto;
+const
+  TRIGGER_X = 33;
+  TRIGGER_Y = 34;
+begin
+  Start(2);
+  FTable.Play(2);
+  // triggers[x][y] of the script: an event that nothing answers
+  FTable.Seats[1].Game.State.Triggers[TRIGGER_X * GREED_MAP_SIZE + TRIGGER_Y] := 5;
+  FTable.Seats[1].Game.Parts.Items.CheckWarps(TRIGGER_X * GREED_FRACTILEUNIT + HALF_TILE,
+    TRIGGER_Y * GREED_FRACTILEUNIT + HALF_TILE);
+  Assert.AreEqual(2, FTable.Seats[1].Sound.CountOf(GREED_SN_TRIGGER));
+  FTable.Link(0).GetData;
+  Assert.AreEqual(2, FTable.Seats[0].Sound.CountOf(GREED_SN_TRIGGER), 'player 0 hears the two clicks');
+end;
+
+procedure TTestGreedNetGame.DovrebbeRaccogliereIlBonusPerTutti;
+var
+  LHost, LGuest: TGreedGameState;
+  LScore: Integer;
+begin
+  Start(2);
+  LHost := FTable.Seats[0].Game.State;
+  LGuest := FTable.Seats[1].Game.State;
+  LHost.BonusItem.Time := 0;
+  FTable.Play(2);
+  LScore := LGuest.BonusItem.Score;
+  Assert.IsTrue(LScore > 0);
+  // player 1 walks on the bonus item
+  FTable.Seats[1].Game.Parts.Items.CheckItems(LGuest.BonusItem.TileX, LGuest.BonusItem.TileY, True, 1);
+  Assert.AreEqual(LScore, LGuest.Player.Score, 'the score of the bonus item');
+  Assert.AreEqual(0, LGuest.BonusItem.Score);
+  FTable.Link(0).GetData;
+  Assert.AreEqual(0, LHost.BonusItem.Score, 'the bonus item is gone for player 0 too');
+  Assert.AreEqual(0, FTable.Seats[0].SpritesOfKind(GREED_S_BONUSITEM));
+  Assert.AreEqual(0, LHost.Player.Score, 'and player 0 gets nothing from it');
+end;
+
+procedure TTestGreedNetGame.DovrebbeDireAgliAltriAnimeEGranata;
+var
+  LState: TGreedGameState;
+begin
+  Start(2);
+  FTable.Play(2);
+  LState := FTable.Seats[0].Game.State;
+  // the soul stealer: sixteen shots around the player, told with one packet
+  FTable.Seats[0].Game.Inventory.Cursor := 12;
+  LState.Player.Inventory[12] := 1;
+  LState.UseItem := True;
+  FTable.Seats[0].Play(1);
+  Assert.AreEqual(0, LState.Player.Inventory[12]);
+  FTable.Link(1).GetData;
+  Assert.AreEqual(16, FTable.Seats[1].SpritesOfKind(GREED_S_SOULBULLET), 'the ring of the soul stealer');
+  Assert.AreEqual(2, FTable.Seats[1].Sound.CountOf(GREED_SN_SOULSTEALER), 'heard twice, as who used it');
+  // the grenade
+  FTable.Seats[0].Game.Inventory.Cursor := 2;
+  LState.UseItem := True;
+  FTable.Seats[0].Play(2);
+  FTable.Link(1).GetData;
+  Assert.IsTrue(FTable.Seats[1].Sound.CountOf(GREED_SN_GRENADE) >= 1, 'the throw of the grenade is heard');
+  Assert.IsTrue(FTable.Seats[1].SpritesOfKind(GREED_S_GRENADE) + FTable.Seats[1].SpritesOfKind(GREED_S_GRENADEBULLET) +
+    FTable.Seats[1].SpritesOfKind(GREED_S_EXPLODE) >= 1, 'the grenade flies in the game of player 1');
+end;
+
+procedure TTestGreedNetGame.DovrebbeDireAgliAltriIColpiDiOgniArma;
+const
+  SPAWN_VALUE_OFFSET = 8;
+  SOUND_EFFECT_OFFSET = 16;
+  // weapon, the shot, how many are told, the sound that the others hear
+  CASES: array[0..4, 0..3] of Integer = (
+    (4, GREED_S_BULLET4, 5, GREED_SN_BULLET4),
+    (9, GREED_S_BULLET9, 1, GREED_SN_BULLET1),
+    (12, GREED_S_BULLET12, 2, GREED_SN_BULLET12),
+    (17, GREED_S_BULLET17, 1, GREED_SN_BULLET1),
+    (18, GREED_S_BULLET18, 1, GREED_SN_BULLET18));
+var
+  LState: TGreedGameState;
+  LCase, LWeapon, LIndex, LSpawns, LSounds, LTurn: Integer;
+  LSent: TArray<TBytes>;
+
+  function NumberAt(const ABytes: TBytes; AOffset: Integer): Integer;
+  begin
+    Result := Integer(Cardinal(ABytes[AOffset]) or (Cardinal(ABytes[AOffset + 1]) shl 8) or
+      (Cardinal(ABytes[AOffset + 2]) shl 16) or (Cardinal(ABytes[AOffset + 3]) shl 24));
+  end;
+
+begin
+  Start(2);
+  FTable.Play(2);
+  LState := FTable.Seats[0].Game.State;
+  for LCase := Low(CASES) to High(CASES) do
+  begin
+    LWeapon := CASES[LCase, 0];
+    LState.Player.Weapons[0] := LWeapon;
+    LState.Player.CurrentWeapon := 0;
+    LState.Player.Ammo[0] := 100;
+    LState.Player.Ammo[1] := 100;
+    LState.Player.Ammo[2] := 100;
+    FTable.Net.TakeSent(0);
+    if (LWeapon = 4) or (LWeapon = 18) then
+    begin
+      // these two fire at the end of the animation of the weapon, that makes their sound when it starts
+      LState.WeapMode := 1;
+      LTurn := 0;
+      repeat
+        LState.WeapDelay := LState.TimeCount;
+        FTable.Seats[0].Game.Parts.WeaponsIntf.AdvanceWeaponMode;
+        Inc(LTurn);
+      until (LState.WeapMode = 0) or (LTurn > 40);
+      Assert.AreEqual(0, LState.WeapMode, 'the animation of the weapon ends');
+    end
+    else
+      FTable.Seats[0].Game.Parts.WeaponsIntf.FireWeapon;
+    LSent := FTable.Net.TakeSent(0);
+    LSpawns := 0;
+    LSounds := 0;
+    for LIndex := 0 to High(LSent) do
+      if (LSent[LIndex][0] = GREED_NET_EVENT_SPAWN) and (NumberAt(LSent[LIndex], SPAWN_VALUE_OFFSET) = CASES[LCase, 1]) then
+        Inc(LSpawns)
+      else if (LSent[LIndex][0] = GREED_NET_EVENT_SOUND) and
+        (NumberAt(LSent[LIndex], SOUND_EFFECT_OFFSET) = CASES[LCase, 3]) then
+        Inc(LSounds);
+    Assert.AreEqual(CASES[LCase, 2], LSpawns, Format('the shots of the weapon %d that are told', [LWeapon]));
+    Assert.IsTrue(LSounds >= 1, Format('the sound of the weapon %d that the others hear', [LWeapon]));
+    LState.WeapMode := 0;
+  end;
+  // the ring of the green gun: twelve shots in the game of player 1 from one packet
+  FTable.Link(1).GetData;
+  Assert.AreEqual(12, FTable.Seats[1].SpritesOfKind(GREED_S_BULLET18));
+end;
+
+procedure TTestGreedNetGame.DovrebbeSvegliareIMostriVicinoAUnGiocatoreQualsiasi;
+const
+  // four tiles east of player 2, eight from player 0
+  MONSTER_X = NET_START_2_X + 4;
+  MONSTER_Y = NET_START_2_Y;
+var
+  LSeat, LSprite: Integer;
+  LState: TGreedGameState;
+  LAwake: Boolean;
+begin
+  Start(3);
+  FTable.Play(3);
+  // a sleeping monster in the game of player 0 only: its own player is too far to wake it
+  FTable.Seats[0].Game.Parts.SpawnerIntf.SpawnSprite(GREED_S_MONSTER1, MONSTER_X * GREED_FRACTILEUNIT + HALF_TILE,
+    MONSTER_Y * GREED_FRACTILEUNIT + HALF_TILE, 0, 0, 0, 0, False, 0);
+  for LSeat := 0 to 2 do
+    FTable.Seats[LSeat].Play(15);
+  LState := FTable.Seats[0].Game.State;
+  LAwake := False;
+  LSprite := LState.Sprites.First;
+  while LSprite <> GREED_POOL_NIL do
+  begin
+    if PGreedSprite(LState.Sprites.Item(LSprite))^.Kind = GREED_S_MONSTER1 then
+      LAwake := PGreedSprite(LState.Sprites.Item(LSprite))^.Active;
+    LSprite := LState.Sprites.Next(LSprite);
+  end;
+  Assert.IsTrue(LAwake, 'the monster wakes up for the player of another computer');
+  Assert.AreEqual(FTable.Link(0).PlayerData[2].X, LState.TargX, 'and its target is that player');
+end;
+
+procedure TTestGreedNetGame.NonDovrebbeFermareLOrologioPerIlMenuInRete;
+var
+  LState: TGreedGameState;
+begin
+  Start(2);
+  FTable.Play(2);
+  LState := FTable.Seats[0].Game.State;
+  LState.ActivateMenu := True;
+  FTable.Seats[0].Play(1);
+  Assert.AreEqual(1, FTable.Seats[0].View.CountOf('ShowMenu'));
+  Assert.IsFalse(LState.ActivateMenu);
+  Assert.AreEqual(6, LState.TimeCount, 'the clock of the game went on');
 end;
 
 end.

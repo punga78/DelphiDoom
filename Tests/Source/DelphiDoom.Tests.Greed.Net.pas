@@ -104,6 +104,8 @@ type
     [Test]
     procedure DovrebbeFermareLeAreeConIlJammerDiUnAltro;
     [Test]
+    procedure DovrebbeAccettareUnBonusSenzaNomeEUnaCasellaFuoriMappa;
+    [Test]
     procedure DovrebbeDireChiHaLasciatoIlGioco;
     [Test]
     procedure DovrebbeMandareJammerEdEvento;
@@ -748,6 +750,25 @@ begin
   Assert.IsTrue(Link.WarpJammer);
   Assert.AreEqual(100 + GREED_NET_WARP_JAM_TICS, Link.WarpJamTime);
   Assert.IsTrue(FSetup.View.Messages.IndexOf(' activated Warp Jammer!') >= 0);
+end;
+
+procedure TTestGreedNetSession.DovrebbeAccettareUnBonusSenzaNomeEUnaCasellaFuoriMappa;
+var
+  LSent: TArray<TBytes>;
+begin
+  Sit(0, 2);
+  // a bonus item whose number is not in the table of the names: the original would read after the table
+  Arrive([GREED_NET_EVENT_BONUS, 1, 9000, 2500, 12, 13, 99]);
+  Link.GetData;
+  Assert.AreEqual(2500, FSetup.Game.State.BonusItem.Score);
+  Assert.AreEqual('', FSetup.Game.State.BonusItem.Name);
+  Assert.AreEqual(13 * GREED_MAP_SIZE + 12, FSetup.Game.State.BonusItem.MapSpot);
+  // a pickup outside the map says that the tile had nothing
+  FNet.TakeSent(0);
+  Link.ItemPickup(100, 100);
+  LSent := FNet.TakeSent(0);
+  Assert.AreEqual(SizeOf(TGreedNetItemEvent), Integer(Length(LSent[0])));
+  Assert.AreEqual(0, Integer(LSent[0][20]), 'the kind of what was on the tile');
 end;
 
 procedure TTestGreedNetSession.DovrebbeDireChiHaLasciatoIlGioco;
