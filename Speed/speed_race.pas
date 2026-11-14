@@ -115,6 +115,31 @@ function SH_ScoreTable: IRacingScoreTable;
 //==============================================================================
 procedure SH_SaveRecords;
 
+//==============================================================================
+//
+// SH_RebindCars
+// The objects of the cars after a saved game has been loaded (the engine made them again): the player
+// has its own, the cars of the computer take the objects of the grid in the order of the thinkers
+//
+//==============================================================================
+procedure SH_RebindCars;
+
+//==============================================================================
+//
+// SH_AddRaceThinker
+// Puts the thinker of the race at the head of the list when the level does not have it
+//
+//==============================================================================
+procedure SH_AddRaceThinker;
+
+//==============================================================================
+//
+// SH_RaceLog
+// A line in the log of the game
+//
+//==============================================================================
+procedure SH_RaceLog(const text: string);
+
 implementation
 
 uses
@@ -421,6 +446,58 @@ begin
   race.thinker.prev := @thinkercap;
   thinkercap.next.prev := @race.thinker;
   thinkercap.next := @race.thinker;
+end;
+
+//==============================================================================
+//
+// SH_RaceLog
+//
+//==============================================================================
+procedure SH_RaceLog(const text: string);
+begin
+  if race_log <> nil then
+    race_log.Info(text + #13#10);
+end;
+
+//==============================================================================
+//
+// SH_RebindCars
+//
+//==============================================================================
+procedure SH_RebindCars;
+var
+  think: Pthinker_t;
+  mo: Pmobj_t;
+  aicars: array[0..RACING_MAX_CARS - 1] of Pmobj_t;
+  aicount, i, nextai: integer;
+begin
+  if race_controller = nil then
+    exit;
+  aicount := 0;
+  think := thinkercap.next;
+  while think <> @thinkercap do
+  begin
+    if @think._function.acp1 = @P_MobjThinker then
+    begin
+      mo := Pmobj_t(think);
+      if (mo.info.doomednum = 241) and (aicount < RACING_MAX_CARS) then
+      begin
+        aicars[aicount] := mo;
+        inc(aicount);
+      end;
+    end;
+    think := think.next;
+  end;
+  ZeroMemory(@race_cars, SizeOf(race_cars));
+  nextai := 0;
+  for i := 0 to race_controller.Count - 1 do
+    if race_controller.Cars[i].IsPlayer then
+      race_cars[i] := players[consoleplayer].mo
+    else if nextai < aicount then
+    begin
+      race_cars[i] := aicars[nextai];
+      inc(nextai);
+    end;
 end;
 
 //==============================================================================

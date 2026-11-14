@@ -30,6 +30,9 @@ uses
   wi_stuff,
   st_stuff,
   speed_hud,
+  speed_saveg,
+  g_game,
+  DelphiDoom.Engine.Parity.PilotCommand,
   speed_intermission;
 
 procedure ComposeSpeed(const ALog: ILog);
@@ -37,6 +40,10 @@ begin
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
   // the gauge, the lap, the position and the time of the race in the place of the status bar of Doom
   ST_ConfigureReplacement(SH_HudDrawer);
+  // the state of the race in a file beside each saved game of the engine
+  G_ConfigureSaveGameExtension(SH_SaveGame, SH_LoadGame);
+  // the steps "save" and "load" of a script of commands
+  TEngineParityPilotCommand.ConfigureSaveGames(SH_ScriptSaveGame, SH_ScriptLoadGame);
   // the result of the race and the tables of the records in the place of the intermission of Doom
   WI_ConfigureReplacement(SH_Intermission_Start, SH_Intermission_Ticker, SH_Intermission_Drawer);
 end;

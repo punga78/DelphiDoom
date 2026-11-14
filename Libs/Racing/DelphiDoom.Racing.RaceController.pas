@@ -38,6 +38,16 @@ const
   RACING_LEAVE_DELAY_TICS = 110;
 
 type
+  /// <summary>What a race controller remembers besides the state of the cars</summary>
+  TRacingControllerState = record
+    FinishTic: Integer;
+    ResultGiven: Boolean;
+    Left: Boolean;
+    HasFinalScore: Boolean;
+    FinalScore: TRacingScore;
+    PlayerState: TRacingPlayerState;
+  end;
+
   /// <summary>
   ///   The cars of a race and the rules around them. The game copies the position of every car
   ///   from its object, calls Tick, and copies the momentum and the angle back; the controller
@@ -69,6 +79,8 @@ type
     procedure PlayerLapCompleted(const AScore: TRacingScore);
     procedure PlayerScoreChanged(const AScore: TRacingScore);
     function GetCar(AIndex: Integer): PRacingCarState;
+    function GetState: TRacingControllerState;
+    procedure SetState(const AValue: TRacingControllerState);
   public
     /// <param name="ARelay">
     ///   The relay that the player driver was made with: the controller sets its procedures
@@ -94,6 +106,11 @@ type
     /// <summary>The tic of the level at which the player completed the last lap, -1 before</summary>
     property FinishTic: Integer read FFinishTic;
     property PlayerState: TRacingPlayerState read FPlayerState;
+    /// <summary>What the controller remembers besides the cars (for a saved game); setting it puts it back</summary>
+    property State: TRacingControllerState read GetState write SetState;
+    /// <summary>The track and the race of the controller, for the code that saves them</summary>
+    property Track: IRacingTrack read FTrack;
+    property Race: IRacingRaceSettings read FRace;
   end;
 
 implementation
@@ -142,6 +159,26 @@ end;
 function TRacingRaceController.GetCar(AIndex: Integer): PRacingCarState;
 begin
   Result := @FCars[AIndex];
+end;
+
+function TRacingRaceController.GetState: TRacingControllerState;
+begin
+  Result.FinishTic := FFinishTic;
+  Result.ResultGiven := FResultGiven;
+  Result.Left := FLeft;
+  Result.HasFinalScore := FHasFinalScore;
+  Result.FinalScore := FFinalScore;
+  Result.PlayerState := FPlayerState;
+end;
+
+procedure TRacingRaceController.SetState(const AValue: TRacingControllerState);
+begin
+  FFinishTic := AValue.FinishTic;
+  FResultGiven := AValue.ResultGiven;
+  FLeft := AValue.Left;
+  FHasFinalScore := AValue.HasFinalScore;
+  FFinalScore := AValue.FinalScore;
+  FPlayerState := AValue.PlayerState;
 end;
 
 function TRacingRaceController.AddCar(const ACar: TRacingCarState): Integer;
