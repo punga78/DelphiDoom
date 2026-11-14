@@ -100,7 +100,7 @@ Con il **C vero** (`Tools\Verifica\120`: `vm.c` e `vm_interpreted.c` inclusi all
 
 ## Prestazioni
 
-Il ciclo non ha chiamate virtuali ne' a interfaccia per istruzione: solo una syscall arriva all'host (`IQvmHost.SystemCall`). Sieve fino a 2 000 000 su un'immagine di 4 MB (155 878 069 istruzioni; `TTestQvmPerformance` stampa la misura, senza soglia): su una macchina virtuale rumorosa, in piu' giri, **tra 190 e 240 milioni di istruzioni al secondo a Win32 e tra 160 e 265 a Win64** (il migliore di 5 passaggi per giro); il C originale a `-O2` (`qvmrun_o2 bench`, x86 a 32 bit, senza alcun controllo, media di 5 passaggi) sulla stessa macchina tra 340 e 490. In breve: circa la meta' del C, con tutti i controlli e il contatore delle istruzioni.
+Il ciclo non ha chiamate virtuali ne' a interfaccia per istruzione: solo una syscall arriva all'host (`IQvmHost.SystemCall`). Sieve fino a 2 000 000 su un'immagine di 4 MB (155 878 069 istruzioni; `TTestQvmPerformance` stampa la misura, senza soglia): su una macchina virtuale rumorosa, in piu' giri, **tra 190 e 240 milioni di istruzioni al secondo a Win32 e tra 160 e 280 a Win64** (il migliore di 5 passaggi per giro); il C originale a `-O2` (`qvmrun_o2 bench`, x86 a 32 bit, senza alcun controllo, media di 5 passaggi) sulla stessa macchina tra 340 e 490. In breve: circa la meta' del C, con tutti i controlli e il contatore delle istruzioni.
 
 ## Test
 
