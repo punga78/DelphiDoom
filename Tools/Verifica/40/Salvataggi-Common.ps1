@@ -22,7 +22,13 @@ function Invoke-SaveRun {
     [int]$EnoughLines = 0,
     [switch]$NoLock
   )
-  if (-not $NoLock) { return (Invoke-ParityGame -Exe $Exe -Arguments $Arguments -WorkDir $WorkDir -TimeoutSeconds $TimeoutSeconds) }
+  if (-not $NoLock) {
+    # Con il lock il gioco parte da Esegui-gioco.ps1, che non guarda il log: un programma che non esce da solo (il
+    # riferimento, senza -autoquit) girerebbe fino al tempo massimo (5 minuti per caricamento, tenendo il lock per
+    # tutti). Le poche centinaia di tic che servono durano un paio di secondi: lo si ferma dopo 40.
+    if ($StateFile -ne '' -and $EnoughLines -gt 0) { $TimeoutSeconds = [Math]::Min($TimeoutSeconds, 40) }
+    return (Invoke-ParityGame -Exe $Exe -Arguments $Arguments -WorkDir $WorkDir -TimeoutSeconds $TimeoutSeconds)
+  }
   $process = Start-Process -FilePath $Exe -ArgumentList $Arguments -WorkingDirectory $WorkDir -PassThru
   if ($StateFile -ne '' -and $EnoughLines -gt 0) {
     $watch = [Diagnostics.Stopwatch]::StartNew()
