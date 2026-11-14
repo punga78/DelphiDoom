@@ -19,7 +19,7 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Factory,
-  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys;
 
 type
   /// <summary>
@@ -63,6 +63,8 @@ type
     procedure RunFrame(const ATime: Integer);
     /// <summary>idUserInterfaceLocal::Redraw: the desktop is drawn with the screen (640 by 480) as the first clipping rectangle</summary>
     procedure Redraw(const ATime: Integer);
+    /// <summary>idUserInterfaceLocal::HandleEvent: the mouse moves the cursor of the gui, then the desktop handles the event</summary>
+    function HandleEvent(const AEvent: TGuiSysEvent; const ATime: Integer; var AUpdateVisuals: Boolean): AnsiString;
     procedure HandleNamedEvent(const AEventName: AnsiString);
     procedure StateChanged(const ATime: Integer; const ARedraw: Boolean);
     /// <summary>Activate: the commands that the windows left for the game</summary>
@@ -227,6 +229,25 @@ begin
     FDesktop.Redraw(0, 0);
     FContext.DrawContext.PopClipRect;
   end;
+end;
+
+function TGuiUserInterface.HandleEvent(const AEvent: TGuiSysEvent; const ATime: Integer;
+  var AUpdateVisuals: Boolean): AnsiString;
+begin
+  FContext.Time := ATime;
+  if AEvent.EventType = GUI_SE_MOUSE then
+  begin
+    FContext.CursorX := FContext.CursorX + AEvent.Value;
+    FContext.CursorY := FContext.CursorY + AEvent.Value2;
+    if FContext.CursorX < 0 then
+      FContext.CursorX := 0;
+    if FContext.CursorY < 0 then
+      FContext.CursorY := 0;
+  end;
+  if Assigned(FDesktop) then
+    Result := FDesktop.HandleEvent(AEvent, AUpdateVisuals)
+  else
+    Result := '';
 end;
 
 procedure TGuiUserInterface.HandleNamedEvent(const AEventName: AnsiString);

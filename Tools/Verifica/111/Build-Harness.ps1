@@ -80,7 +80,12 @@ function Compile($f) {
   Push-Location "$Work\neo\$dir"
   $o = "$Work\obj\" + ($dir -replace '\\', '_') + "_$name.o"
   $ErrorActionPreference = 'Continue'
-  $out = & $B -c -w- -Xclang -target-feature -Xclang +sse2 -Xclang -target-feature -Xclang +avx -Xclang -mfpmath -Xclang sse -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
+  # The device context is built for SSE: every float operation is rounded to a float, as in the Delphi code (Win32 and
+  # Win64 alike). bcc32c puts its 16 byte constants (the mask of a negation) in a segment that is not aligned, so
+  # code that negates a float crashes: the rest is built for the x87 (single operations give the same floats).
+  $fp = @()
+  if ($f -eq 'ui\DeviceContext') { $fp = '-Xclang', '-target-feature', '-Xclang', '+sse2', '-Xclang', '-mfpmath', '-Xclang', 'sse' }
+  $out = & $B -c -w- @fp -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
   if ($LASTEXITCODE -ne 0) { Write-Host "== $f FAILED"; $out | Select-String 'error' | Select-Object -First 10 | ForEach-Object { $_.Line }; throw "compile $f" }
   Pop-Location
 }

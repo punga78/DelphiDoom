@@ -15,7 +15,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Math.Vec4,
-  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf;
+  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Window.Keys;
 
 type
   /// <summary>The bits of a float in hexadecimal, as the harness writes them</summary>
@@ -23,6 +23,18 @@ type
   public
     class function Float(const AValue: Single): string; static;
     class function Vec4(const AValue: TIdVec4): string; static;
+  end;
+
+  /// <summary>The keys that are down (idKeyInput::IsDown): the scenarios set them</summary>
+  TGuiHarnessKeys = class(TInterfacedObject, IGuiKeyState)
+  strict private
+    FDown: TList<Integer>;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Clear;
+    procedure SetDown(const AKey: Integer; const AValue: Boolean);
+    function IsDown(const AKey: Integer): Boolean;
   end;
 
   /// <summary>Files in memory: the names are in lower case with "/" (the driver of the harness does the same)</summary>
@@ -114,6 +126,41 @@ type
     function IsDefaulted: Boolean;
     procedure SetGuiSort;
   end;
+
+{ TGuiHarnessKeys }
+
+constructor TGuiHarnessKeys.Create;
+begin
+  inherited Create;
+  FDown := TList<Integer>.Create;
+end;
+
+destructor TGuiHarnessKeys.Destroy;
+begin
+  FDown.Free;
+  inherited Destroy;
+end;
+
+procedure TGuiHarnessKeys.Clear;
+begin
+  FDown.Clear;
+end;
+
+procedure TGuiHarnessKeys.SetDown(const AKey: Integer; const AValue: Boolean);
+begin
+  if AValue then
+  begin
+    if FDown.IndexOf(AKey) < 0 then
+      FDown.Add(AKey);
+  end
+  else
+    FDown.Remove(AKey);
+end;
+
+function TGuiHarnessKeys.IsDown(const AKey: Integer): Boolean;
+begin
+  Result := FDown.IndexOf(AKey) >= 0;
+end;
 
 { TGuiBits }
 

@@ -26,7 +26,7 @@ uses
   DelphiDoom.Gui.Regs.Store, DelphiDoom.Gui.Regs.RegisterList, DelphiDoom.Gui.Regs.Evaluator,
   DelphiDoom.Gui.Regs.Parser, DelphiDoom.Gui.Script, DelphiDoom.Gui.Script.Parser,
   DelphiDoom.Gui.Window.TimeLineEvent, DelphiDoom.Gui.Window.NamedEvent, DelphiDoom.Gui.Window.Transition,
-  DelphiDoom.Gui.Material.Intf;
+  DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys;
 
 type
   TGuiWindow = class;
@@ -79,6 +79,8 @@ type
     FYOffset: Single;
     FActualX: Single;
     FActualY: Single;
+    FOverChild: TGuiWindow;
+    FHover: Boolean;
     FBackground: IGuiMaterial;
     FBackgroundFor: AnsiString;
     FForceAspectWidth: Single;
@@ -231,6 +233,35 @@ type
     /// <summary>The rectangles move by an offset (drawRect, clientRect and textRect of Redraw)</summary>
     procedure OffsetRects(const AX, AY: Single);
     procedure UpdateBackgroundCinematic;
+    /// <summary>
+    ///   idWindow::HandleEvent: a key, a character or a movement of the mouse; the keys go to the child under the
+    ///   cursor or with the focus. The result is the command for the game (and what the windows asked in
+    ///   <c>Command</c> and the context in <c>PendingCommand</c>)
+    /// </summary>
+    function HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString; virtual;
+    /// <summary>idWindow::RouteMouseCoords: the window under the cursor gets MouseEnter and the one it left MouseExit</summary>
+    function RouteMouseCoords(const AX, AY: Single): AnsiString; virtual;
+    procedure MouseEnter; virtual;
+    procedure MouseExit; virtual;
+    procedure GainFocus; virtual;
+    procedure LoseFocus; virtual;
+    procedure GainCapture; virtual;
+    procedure LoseCapture; virtual;
+    /// <summary>idWindow::SetCapture: the window takes the mouse; the desktop remembers it</summary>
+    function SetCapture(const AWindow: TGuiWindow): TGuiWindow;
+    /// <summary>idWindow::BringToTop: a modal child goes last, to be drawn and hit first</summary>
+    procedure BringToTop(const AWindow: TGuiWindow);
+    /// <summary>idWindow::GetCaptureChild: only the desktop knows it</summary>
+    function GetCaptureChild: TGuiWindow;
+    /// <summary>idWindow::GetFocusedChild: only the desktop knows it</summary>
+    function GetFocusedChild: TGuiWindow;
+    /// <summary>idWindow::Contains(rect, x, y): the rectangle moved to where the window is on the screen</summary>
+    function ContainsRect(const ARect: TGuiRectangle; const AX, AY: Single): Boolean;
+    function ContainsPoint(const AX, AY: Single): Boolean;
+    function GetChildIndex(const AWindow: TGuiWindow): Integer;
+    property OverChild: TGuiWindow read FOverChild write FOverChild;
+    property Hover: Boolean read FHover write FHover;
+    property CaptureChildRaw: TGuiWindow read FCaptureChild write FCaptureChild;
     /// <summary>The material of the background: found by name when the name changed, nil for an empty name</summary>
     function GetBackground: IGuiMaterial;
     property Context: TGuiContext read FContext;
@@ -305,7 +336,7 @@ implementation
 uses
   System.SysUtils, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Strings,
   DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Gui.WinVar.Int, DelphiDoom.Gui.Regs.Register,
-  DelphiDoom.Gui.Window.Painter;
+  DelphiDoom.Gui.Window.Painter, DelphiDoom.Gui.Window.Events;
 
 type
   TGuiRegisterEntry = record
@@ -985,9 +1016,129 @@ begin
     Exit;
   Result := LDesktop.FFocusedChild;
   if Assigned(Result) then
+  begin
     Result.ClearFlag(WIN_FOCUS);
+    Result.LoseFocus;
+  end;
   AWindow.SetFlag(WIN_FOCUS);
+  AWindow.GainFocus;
   LDesktop.FFocusedChild := AWindow;
+end;
+
+procedure TGuiWindow.MouseEnter;
+begin
+  if FNoEvents.Value then
+    Exit;
+  RunScript(seMouseEnter);
+end;
+
+procedure TGuiWindow.MouseExit;
+begin
+  if FNoEvents.Value then
+    Exit;
+  RunScript(seMouseExit);
+end;
+
+procedure TGuiWindow.GainFocus;
+begin
+end;
+
+procedure TGuiWindow.LoseFocus;
+begin
+end;
+
+procedure TGuiWindow.GainCapture;
+begin
+end;
+
+procedure TGuiWindow.LoseCapture;
+begin
+  FFlags := FFlags and (not WIN_CAPTURE);
+end;
+
+function TGuiWindow.SetCapture(const AWindow: TGuiWindow): TGuiWindow;
+var
+  LIndex: Integer;
+begin
+  // only one child can have the capture
+  Result := nil;
+  for LIndex := 0 to FChildren.Count - 1 do
+    if (FChildren[LIndex].FFlags and WIN_CAPTURE) <> 0 then
+    begin
+      Result := FChildren[LIndex];
+      Result.LoseCapture;
+      Break;
+    end;
+  AWindow.FFlags := AWindow.FFlags or WIN_CAPTURE;
+  AWindow.GainCapture;
+  GetDesktopWindow.FCaptureChild := AWindow;
+end;
+
+procedure TGuiWindow.BringToTop(const AWindow: TGuiWindow);
+var
+  LIndex: Integer;
+begin
+  if Assigned(AWindow) and ((AWindow.FFlags and WIN_MODAL) = 0) then
+    Exit;
+  for LIndex := 0 to FChildren.Count - 1 do
+    if FChildren[LIndex] = AWindow then
+    begin
+      FChildren.Delete(LIndex);
+      FChildren.Add(AWindow);
+      Break;
+    end;
+end;
+
+function TGuiWindow.GetCaptureChild: TGuiWindow;
+begin
+  Result := nil;
+  if (FFlags and WIN_DESKTOP) <> 0 then
+    Result := GetDesktopWindow.FCaptureChild;
+end;
+
+function TGuiWindow.GetFocusedChild: TGuiWindow;
+begin
+  Result := nil;
+  if (FFlags and WIN_DESKTOP) <> 0 then
+    Result := GetDesktopWindow.FFocusedChild;
+end;
+
+function TGuiWindow.ContainsRect(const ARect: TGuiRectangle; const AX, AY: Single): Boolean;
+var
+  LRect: TGuiRectangle;
+  LDelta: Single;
+begin
+  LRect := ARect;
+  LDelta := FActualX - FDrawRect.X;
+  LRect.X := LRect.X + LDelta;
+  LDelta := FActualY - FDrawRect.Y;
+  LRect.Y := LRect.Y + LDelta;
+  Result := LRect.Contains(AX, AY);
+end;
+
+function TGuiWindow.ContainsPoint(const AX, AY: Single): Boolean;
+var
+  LRect: TGuiRectangle;
+begin
+  LRect := FDrawRect;
+  LRect.X := FActualX;
+  LRect.Y := FActualY;
+  Result := LRect.Contains(AX, AY);
+end;
+
+function TGuiWindow.GetChildIndex(const AWindow: TGuiWindow): Integer;
+begin
+  Result := FChildren.IndexOf(AWindow);
+end;
+
+function TGuiWindow.HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString;
+begin
+  Result := TGuiWindowEvents.HandleEvent(Self, AEvent, AUpdateVisuals);
+end;
+
+function TGuiWindow.RouteMouseCoords(const AX, AY: Single): AnsiString;
+begin
+  Result := TGuiWindowEvents.RouteMouseCoords(Self, AX, AY);
 end;
 
 procedure TGuiWindow.NodeSetFocus(const AWindow: IGuiWindowNode);

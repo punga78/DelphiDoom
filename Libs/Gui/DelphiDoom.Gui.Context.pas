@@ -19,7 +19,8 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Scanner.IdDict, DelphiDoom.Gui.Regs.Types, DelphiDoom.Gui.Regs.Intf,
-  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Cvars.Intf, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DrawContext;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Cvars.Intf, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DrawContext,
+  DelphiDoom.Gui.Window.Keys;
 
 type
   /// <summary>
@@ -46,6 +47,13 @@ type
     DrawContext: TGuiDrawContext;
     Materials: IGuiMaterialLookup;
     Cvars: IGuiCvars;
+    /// <summary>idKeyInput::IsDown (shift and control); nil: no key is down</summary>
+    Keys: IGuiKeyState;
+    /// <summary>The command the last HandleEvent returned (idUserInterfaceLocal::GetReturnCmd)</summary>
+    ReturnCommand: AnsiString;
+    /// <summary>The statics actionDownRun and actionUpRun of idWindow::HandleEvent</summary>
+    ActionDownRun: Boolean;
+    ActionUpRun: Boolean;
     /// <summary>The mouse cursor of the gui (CursorX and CursorY)</summary>
     CursorX: Single;
     CursorY: Single;

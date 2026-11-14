@@ -96,6 +96,8 @@ uses
   DelphiDoom.Gui.Window.Field in '..\Libs\Gui\DelphiDoom.Gui.Window.Field.pas',
   DelphiDoom.Gui.Window.Factory in '..\Libs\Gui\DelphiDoom.Gui.Window.Factory.pas',
   DelphiDoom.Gui.UserInterface in '..\Libs\Gui\DelphiDoom.Gui.UserInterface.pas',
+  DelphiDoom.Gui.Window.Events in '..\Libs\Gui\DelphiDoom.Gui.Window.Events.pas',
+  DelphiDoom.Gui.Window.Keys in '..\Libs\Gui\DelphiDoom.Gui.Window.Keys.pas',
   DelphiDoom.Gui.Window.Painter in '..\Libs\Gui\DelphiDoom.Gui.Window.Painter.pas',
   DelphiDoom.Gui.DrawContext in '..\Libs\Gui\DelphiDoom.Gui.DrawContext.pas',
   DelphiDoom.Gui.Font.DoomLoader in '..\Libs\Gui\DelphiDoom.Gui.Font.DoomLoader.pas',

@@ -321,6 +321,12 @@ int main(int argc, char **argv) {
 					printf("act \"%s\"\n", esc(r).c_str());
 				} else if (w[0] == "trigger") {
 					gui->Trigger(atoi(w[1].c_str()));
+				} else if (w[0] == "event") {
+					// event <type> <value> <value2> <time>
+					sysEvent_t ev; ev.evType = atoi(w[1].c_str()); ev.evValue = atoi(w[2].c_str()); ev.evValue2 = atoi(w[3].c_str()); ev.evPtrLength = 0; ev.evPtr = 0;
+					bool upd = false;
+					const char *r = gui->HandleEvent(&ev, atoi(w[4].c_str()), &upd);
+					printf("E \"%s\" upd=%d cur=%s %s\n", esc(r).c_str(), (int)upd, fb(gui->cursorX).c_str(), fb(gui->cursorY).c_str());
 				} else if (w[0] == "redraw") {
 					gui->Redraw(atoi(w[1].c_str()));
 				} else if (w[0] == "guicursor") {

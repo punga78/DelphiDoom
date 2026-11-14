@@ -14,6 +14,9 @@ uses
   DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.UserInterface, DelphiDoom.Gui.Window.Factory,
   DelphiDoom.Tests.Gui.Fakes;
 
+/// <summary>esc() of the driver of the harness</summary>
+function EscapeText(const AText: string): string;
+
 type
   /// <summary>The log as lines "P: text" and "W: text", as the harness of the C++ writes them</summary>
   TGuiWindowFakeLog = class(TInterfacedObject, IIdLibLog)

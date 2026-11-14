@@ -69,7 +69,7 @@ const int MAX_LOGGED_STATS = 3600;
 const int CVAR_GUI = 4;
 const int USERCMD_MSEC = 16;
 const int EDITOR_GUI = 4;
-enum { K_TAB = 9, K_ENTER = 13, K_ESCAPE = 27, K_SHIFT = 160, K_MOUSE1 = 187, K_MOUSE2, K_MOUSE3, K_KP_ENTER = 140, K_BACKSPACE = 127, K_DEL, K_LEFTARROW, K_RIGHTARROW, K_UPARROW, K_DOWNARROW, K_HOME, K_END, K_MWHEELDOWN, K_MWHEELUP, K_PGUP, K_PGDN, K_INS, K_ALT, K_CTRL, K_JOY1, K_JOY2, K_JOY3, K_JOY4, K_AUX1, K_MOUSE4, K_MOUSE5 };
+enum { K_TAB = 9, K_ENTER = 13, K_ESCAPE = 27, K_BACKSPACE = 127, K_UPARROW = 133, K_DOWNARROW = 134, K_LEFTARROW = 135, K_RIGHTARROW = 136, K_ALT = 140, K_CTRL = 141, K_SHIFT = 142, K_INS = 143, K_DEL = 144, K_PGDN = 145, K_PGUP = 146, K_HOME = 147, K_END = 148, K_KP_ENTER = 174, K_MOUSE1 = 187, K_MOUSE2 = 188, K_MOUSE3 = 189, K_MOUSE4 = 190, K_MOUSE5 = 191, K_MWHEELDOWN = 195, K_MWHEELUP = 196, K_JOY1 = 197, K_JOY2, K_JOY3, K_JOY4, K_AUX1 = 220 };
 // the keys that are down come from the scenario ("keydown K")
 extern std::set<int> &keysDown();
 class idKeyInput { public: static bool IsDown(int k) { return keysDown().count(k) != 0; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };

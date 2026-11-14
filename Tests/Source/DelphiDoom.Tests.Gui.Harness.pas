@@ -35,6 +35,8 @@ type
     FCvarsRef: IInterface;
     FSurfaceRef: IInterface;
     FLogRef: IInterface;
+    FKeys: TGuiHarnessKeys;
+    FKeysRef: IInterface;
     FDrawContext: TGuiDrawContext;
     FInterface: TGuiUserInterface;
     function Unescape(const AText: string; const AWithReturn: Boolean): string;
@@ -69,7 +71,7 @@ implementation
 uses
   System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Mat3,
   DelphiDoom.Scanner.IdCNumbers,
-  DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Window.Factory,
+  DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Window.Factory, DelphiDoom.Gui.Window.Keys,
   DUnitX.TestFramework, DelphiDoom.Tests.Gui.Fakes, DelphiDoom.Tests.Gui.WindowFakes, DelphiDoom.Tests.Gui.WindowDump;
 
 constructor TGuiHarnessRunner.Create;
@@ -84,6 +86,8 @@ begin
   FCvarsRef := FCvars;
   FSurfaceRef := TGuiHarnessSurface.Create(FLines);
   FLogRef := TGuiWindowFakeLog.Create(FLines);
+  FKeys := TGuiHarnessKeys.Create;
+  FKeysRef := FKeys;
 end;
 
 destructor TGuiHarnessRunner.Destroy;
@@ -163,6 +167,7 @@ begin
   FreeAndNil(FInterface);
   FreeAndNil(FDrawContext);
   FFiles.Clear;
+  FKeys.Clear;
   FMaterials.Clear;
   FCvarsRef := nil;
   FCvars := TGuiCvarSet.Create;
@@ -183,6 +188,7 @@ begin
   FInterface.Context.DrawContext := FDrawContext;
   FInterface.Context.Materials := FMaterials;
   FInterface.Context.Cvars := FCvars;
+  FInterface.Context.Keys := FKeys;
 end;
 
 procedure TGuiHarnessRunner.RunDeviceContext(const AText: string; const AWords: TArray<string>);
@@ -315,7 +321,8 @@ procedure TGuiHarnessRunner.RunOperation(const AText: string);
 var
   LWords: TArray<string>;
   LKey: string;
-  LActivation: AnsiString;
+  LActivation, LReturn: AnsiString;
+  LUpdate: Boolean;
 begin
   FLines.Add('> ' + AText);
   LWords := AText.Split([' '], TStringSplitOptions.ExcludeEmpty);
@@ -346,6 +353,18 @@ begin
   end
   else if LWords[0] = 'trigger' then
     FInterface.Trigger(StrToInt(LWords[1]))
+  else if LWords[0] = 'event' then
+  begin
+    LUpdate := False;
+    LReturn := FInterface.HandleEvent(TGuiSysEvent.Make(StrToInt(LWords[1]), StrToInt(LWords[2]),
+      StrToInt(LWords[3])), StrToInt(LWords[4]), LUpdate);
+    FLines.Add(Format('E "%s" upd=%d cur=%s %s', [EscapeText(string(LReturn)), Ord(LUpdate),
+      TGuiBits.Float(FInterface.Context.CursorX), TGuiBits.Float(FInterface.Context.CursorY)]));
+  end
+  else if LWords[0] = 'keydown' then
+    FKeys.SetDown(StrToInt(LWords[1]), True)
+  else if LWords[0] = 'keyup' then
+    FKeys.SetDown(StrToInt(LWords[1]), False)
   else if LWords[0] = 'redraw' then
     FInterface.Redraw(StrToInt(LWords[1]))
   else if LWords[0] = 'guicursor' then
