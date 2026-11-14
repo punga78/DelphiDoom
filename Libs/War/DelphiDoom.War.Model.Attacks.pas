@@ -24,7 +24,8 @@ type
   /// <summary>
   ///   A blow: in melee it takes the damage of the unit from the target, with a chance of 4 in 5 to hit (a catapult never
   ///   misses; a player in god mode hits for 255); at range it throws a projectile, which hurts when it arrives. A
-  ///   magic unit pays 2 mana for a shot and, with no mana, goes idle. The walls are not in the model yet
+  ///   magic unit pays 2 mana for a shot and, with no mana, goes idle. A piece of wall is hit in the same way (its
+  ///   index in the walls of the context), with no armor
   /// </summary>
   TWarAttacks = class
   strict private
@@ -40,12 +41,17 @@ type
     procedure Melee(AAttackerSlot, ATargetSlot: Integer);
     /// <summary>we_rangeAttack</summary>
     procedure Range(AAttackerSlot, ATargetSlot: Integer);
+    /// <summary>we_meleeWallAttack</summary>
+    procedure WallMelee(AAttackerSlot, APieceIndex: Integer);
+    /// <summary>we_rangeWallAttack: the projectile flies to the centre of the tile of the piece and has the wall as target</summary>
+    procedure WallRange(AAttackerSlot, AWallSlot, APieceIndex: Integer);
   end;
 
 implementation
 
 uses
-  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.State.Types;
+  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.State.Types,
+  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.Construction.Types;
 
 { TWarAttacks }
 
@@ -95,6 +101,47 @@ begin
   end;
   FProjectiles.Launch(TWarProjectiles.TypeOfUnit(LAttacker^.UnitData.UnitType), LAttacker^.Id, LTarget^.Id,
     TWarUnitGeometry.CenterPosition(LAttacker), TWarUnitGeometry.CenterPosition(LTarget));
+end;
+
+procedure TWarAttacks.WallMelee(AAttackerSlot, APieceIndex: Integer);
+var
+  LUnit: PWarUnitComponent;
+  LMinDamage: Integer;
+  LHit: Boolean;
+begin
+  LUnit := @FContext.Pool.Slots[AAttackerSlot]^.UnitData;
+  // every unit has a 20 percent chance to miss (except catapults)
+  LHit := TWarUnitClassifier.IsCatapult(LUnit^.UnitType);
+  if not LHit then
+    LHit := FContext.Random.Below(100) < 80;
+  if not LHit then
+    Exit;
+  LMinDamage := LUnit^.MinDamage;
+  if FContext.Players[LUnit^.Player]^.GodMode then
+    LMinDamage := WAR_MODEL_GOD_MODE_MIN_DAMAGE;
+  FContext.Walls.TakeDamage(APieceIndex, LMinDamage, LUnit^.RndDamage);
+end;
+
+procedure TWarAttacks.WallRange(AAttackerSlot, AWallSlot, APieceIndex: Integer);
+var
+  LAttacker: PWarEntity;
+  LPiece: PWarWallPiece;
+  LIdle: PWarStateIdle;
+  LTarget: TWarVec2;
+begin
+  LAttacker := FContext.Pool.Slots[AAttackerSlot];
+  if TWarUnitClassifier.IsMagic(LAttacker^.UnitData.UnitType) and
+    not FCombat.DecreaseMana(AAttackerSlot, 2) then
+  begin
+    // stop attacking if the magic unit runs out of mana
+    LIdle := FMachine.CreateIdle(AAttackerSlot, True);
+    FMachine.ResetState(AAttackerSlot, PWarStateBase(LIdle), WAR_CAUSE_COMPLETION);
+    Exit;
+  end;
+  LPiece := FContext.Walls[APieceIndex];
+  LTarget := TWarModelMath.TileToMap(TWarModelMath.Vec(LPiece^.TileX, LPiece^.TileY), True);
+  FProjectiles.Launch(TWarProjectiles.TypeOfUnit(LAttacker^.UnitData.UnitType), LAttacker^.Id,
+    FContext.Pool.Slots[AWallSlot]^.Id, TWarUnitGeometry.CenterPosition(LAttacker), LTarget);
 end;
 
 end.

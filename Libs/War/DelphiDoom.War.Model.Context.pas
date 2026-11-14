@@ -18,7 +18,8 @@ uses
   DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf,
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Construction.Intf,
-  DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins;
+  DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins, DelphiDoom.War.Autotile.Line,
+  DelphiDoom.War.Model.Selection;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -47,6 +48,10 @@ type
     FProbe: IWarOccupancyProbe;
     FWalls: TWarWalls;
     FRuins: TWarRuins;
+    FRoads: TWarLine;
+    FSelection: TWarSelection;
+    FSpellEvents: IWarSpellEvents;
+    FViewportTop: Single;
     FHurryUp: Boolean;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
@@ -97,6 +102,17 @@ type
     property Walls: TWarWalls read FWalls;
     /// <summary>The ruins that the buildings that collapsed leave (map->editing.ruin); owned by the context</summary>
     property Ruins: TWarRuins read FRuins;
+    /// <summary>The road of the map (map->editing.road: the pieces that the town hall builds); owned by the context</summary>
+    property Roads: TWarLine read FRoads;
+    /// <summary>The selected entities and the selection groups (map->selectedEntities, map->selectionGroups); owned by the context</summary>
+    property Selection: TWarSelection read FSelection;
+    /// <summary>The sounds of the spells; nil if nobody listens</summary>
+    property SpellEvents: IWarSpellEvents read FSpellEvents write FSpellEvents;
+    /// <summary>
+    ///   map->camera.viewport.y: the top of what the player sees, in pixels of the map. Defect of the original kept: the
+    ///   fire of a rain of fire starts from above the top of the view, so where the camera is changes how long it falls
+    /// </summary>
+    property ViewportTop: Single read FViewportTop write FViewportTop;
     /// <summary>map->hurryUp, the cheat that makes buildings, units and upgrades 100 times faster</summary>
     property HurryUp: Boolean read FHurryUp write FHurryUp;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
@@ -141,6 +157,8 @@ begin
   FProbe := TWarNullOccupancyProbe.Create;
   FWalls := TWarWalls.Create;
   FRuins := TWarRuins.Create;
+  FRoads := TWarLine.CreateRoad;
+  FSelection := TWarSelection.Create;
   FPlayersCount := WAR_MAX_PLAYERS_COUNT;
   for LIndex := 0 to High(FPlayers) do
     FPlayers[LIndex].Index := Byte(LIndex);
@@ -154,6 +172,8 @@ end;
 
 destructor TWarModelContext.Destroy;
 begin
+  FSelection.Free;
+  FRoads.Free;
   FRuins.Free;
   FWalls.Free;
   FStorage.Free;

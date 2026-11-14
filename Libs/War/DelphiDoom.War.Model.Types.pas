@@ -46,6 +46,27 @@ const
   WAR_MODEL_GOD_MODE_MIN_DAMAGE = 255;
   /// <summary>The pixels of a tile of the map (MEGA_TILE_WIDTH)</summary>
   WAR_MODEL_MEGA_TILE = 16;
+  /// <summary>POISON_CLOUD_DAMAGE of war.h: what a poison cloud takes each second from who stands in it</summary>
+  WAR_MODEL_POISON_CLOUD_DAMAGE = 10;
+  /// <summary>MAX_SELECTED_ENTITIES_COUNT and MAX_SELECTION_GROUPS of war.h</summary>
+  WAR_MODEL_MAX_SELECTED = 32;
+  WAR_MODEL_SELECTION_GROUPS = 9;
+
+  // The animations of war_animations.c (the name of the original: littleDamage, hugeDamage, collapse, explosion_x_y,
+  // spell_x_y, poison_cloud_x_y)
+  WAR_ANIMATION_NONE = 0;
+  WAR_ANIMATION_LITTLE_DAMAGE = 1;
+  WAR_ANIMATION_HUGE_DAMAGE = 2;
+  WAR_ANIMATION_COLLAPSE = 3;
+  WAR_ANIMATION_EXPLOSION = 4;
+  WAR_ANIMATION_RAIN_OF_FIRE_EXPLOSION = 5;
+  WAR_ANIMATION_SPELL = 6;
+  WAR_ANIMATION_POISON_CLOUD = 7;
+
+  // WarSpriteAnimationStatus
+  WAR_ANIM_NOT_STARTED = 0;
+  WAR_ANIM_RUNNING = 1;
+  WAR_ANIM_FINISHED = 2;
 
   // WarUnitActionStepType
   WAR_ACTION_STEP_NONE = 0;
@@ -325,6 +346,26 @@ type
     FlipX: Boolean;
   end;
 
+  /// <summary>
+  ///   WarSpriteAnimation, as far as the model needs it: which animation it is (the name of the original), how long a
+  ///   frame lasts, how many frames it has and how far it has gone (0..1). The sprite, the offset and the scale are the
+  ///   business of whoever draws: Position is the point given to the wanim_create* of the original (the centre of the
+  ///   effect; zero for the animations of a building)
+  /// </summary>
+  TWarAnimation = record
+    Kind: Byte;
+    Loop: Boolean;
+    Status: Byte;
+    FramesCount: Integer;
+    FrameDelay: Single;
+    AnimTime: Single;
+    LoopTime: Single;
+    LoopDelay: Single;
+    Position: TWarVec2;
+  end;
+
+  PWarAnimation = ^TWarAnimation;
+
   /// <summary>WarStateMachineComponent: the stack of states (the last is the active one) and the request that waits</summary>
   TWarStateMachineComponent = record
     Stack: array[0..WAR_MODEL_STATE_STACK_DEPTH - 1] of TWarStateRef;
@@ -346,6 +387,21 @@ type
     HasUnit: Boolean;
     HasStateMachine: Boolean;
     HasProjectile: Boolean;
+    /// <summary>WarAnimationsComponent: every unit has one; an entity of an effect (explosion, spell) gets one</summary>
+    HasAnimations: Boolean;
+    /// <summary>WarSightComponent (far sight, dark vision): SpellTile is the tile that is seen, SpellTime the seconds left</summary>
+    HasSight: Boolean;
+    /// <summary>WarPoisonCloudComponent: SpellTile, SpellTime and the seconds left to the next damage</summary>
+    HasPoisonCloud: Boolean;
+    SpellTile: TWarVec2;
+    SpellTime: Single;
+    SpellDamageTime: Single;
+    /// <summary>
+    ///   The list of the animations (the first AnimationCount items; the array only grows). It is the only managed field
+    ///   of the record: an entity is never copied or cleared as raw memory
+    /// </summary>
+    AnimationCount: Integer;
+    Animations: TArray<TWarAnimation>;
     /// <summary>
     ///   The sprite component, as far as the model needs it: whether the entity has one (a building under construction
     ///   swaps it), whether it is enabled, how many frames the image has and the frame that is shown. The image itself
@@ -403,6 +459,12 @@ resourcestring
   SWarModelBadPlayer = 'The player %d does not exist';
   SWarModelBadEntity = 'The slot %d does not hold a unit';
   SWarModelNotRegistered = 'The model needs %s';
+  SWarModelTooManyAnimations = 'The entity %d has too many animations';
+  SWarModelSelectionGone = 'The selected entity %d does not exist any more';
+  SWarModelBadCommand = 'The command %d is not known';
+  SWarModelBadSelection = 'The command %d needs %s';
+  SWarModelBadGroup = 'The selection group %d does not exist';
+  SWarModelNoWallPiece = 'The wall has no piece at %d, %d';
 
 implementation
 

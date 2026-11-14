@@ -67,6 +67,7 @@ begin
   PWarStateMining(AState)^.MiningTime := 2.0;
   TWarUnitSprites.Remove(LEntity);
   TWarActionRunner.Reset(LEntity^.UnitData, LEntity^.UnitData.ActionType);
+  AMachine.Context.Selection.Remove(LEntity^.Id);
   AMachine.Context.Events.EntityLeftSelection(LEntity^.Id);
 end;
 

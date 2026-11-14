@@ -39,7 +39,7 @@ implementation
 
 uses
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.Math, DelphiDoom.War.Model.Construction.Types,
-  DelphiDoom.War.Model.StateStorage;
+  DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.Animations;
 
 const
   // 0.1f of the original: the float, not the double 0.1
@@ -63,7 +63,11 @@ begin
   LEntity := LContext.Pool.Slots[ASlot];
   LPosition := TWarModelMath.MapToTile(LEntity^.Position);
   // the animations of damage go away (the game draws them) and the sprite is hidden
+  TWarAnimations.Remove(LEntity, WAR_ANIMATION_LITTLE_DAMAGE);
+  TWarAnimations.Remove(LEntity, WAR_ANIMATION_HUGE_DAMAGE);
   LEntity^.SpriteEnabled := False;
+  TWarAnimations.CreateCollapse(LEntity);
+  LContext.Selection.Remove(LEntity^.Id);
   // wanim_getAnimationDuration of the collapse animation: the delay of a frame by the frames
   LDuration := FRAME_DELAY * WAR_COLLAPSE_FRAMES;
   AState^.NextUpdateGameTime := LContext.Clock^.GameTime + TWarModelMath.ScaledTime(LContext.Clock^, LDuration);

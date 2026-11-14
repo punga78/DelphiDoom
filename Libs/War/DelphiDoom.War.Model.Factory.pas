@@ -13,13 +13,14 @@ unit DelphiDoom.War.Model.Factory;
 interface
 
 uses
-  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World;
+  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World,
+  DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher;
 
 type
   /// <summary>
-  ///   The only place that knows the concrete classes of the model. It registers the states that are ported (idle, move,
-  ///   death, wait); the others (attack, patrol, follow, gathering, building, ...) have their records and are created, but
-  ///   no procedure updates them yet
+  ///   The only place that knows the concrete classes of the model. It registers every state of the original (idle,
+  ///   move, patrol, follow, attack, the gathering, death, collapse, train, upgrade, build, repair, cast, wait) and makes
+  ///   the commands of who gives orders
   /// </summary>
   TWarModelFactory = class
   public
@@ -30,6 +31,18 @@ type
     /// </summary>
     class function CreateWorld(const ARandom: IWarRandom; const AOccupancy: IWarOccupancy = nil;
       const AEvents: IWarModelEvents = nil; const ADatabase: IWarDatabase = nil): TWarModelWorld; static;
+    /// <summary>
+    ///   The commands of the player of the original: the selection of the context of the world, the player 0,
+    ///   WAR_CAUSE_PLAYER_ORDER. The map tells who stands on a tile and what the player sees (TWarGridCommandMap over the
+    ///   grid of the game map); nil and the orders on a point find nobody there. The caller frees it before the world
+    /// </summary>
+    class function CreateCommands(const AWorld: TWarModelWorld; const AMap: IWarCommandMap = nil): TWarCommands; static;
+    /// <summary>
+    ///   The commands of a computer player (issue #196): the same orders, given to its own selection (not owned) for its
+    ///   player with WAR_CAUSE_AI_ORDER
+    /// </summary>
+    class function CreateComputerCommands(const AWorld: TWarModelWorld; const ASelection: TWarSelection;
+      APlayer: Integer; const AMap: IWarCommandMap = nil): TWarCommands; static;
   end;
 
 implementation
@@ -40,9 +53,23 @@ uses
   DelphiDoom.War.Model.EntityManager, DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Economy,
   DelphiDoom.War.Model.State.Idle, DelphiDoom.War.Model.State.Move, DelphiDoom.War.Model.State.Death,
   DelphiDoom.War.Model.State.Wait, DelphiDoom.War.Model.State.Attack.Registration,
-  DelphiDoom.War.Model.State.GatherRegistry, DelphiDoom.War.Model.State.Construction;
+  DelphiDoom.War.Model.State.GatherRegistry, DelphiDoom.War.Model.State.Construction,
+  DelphiDoom.War.Model.Commands.Family;
 
 { TWarModelFactory }
+
+class function TWarModelFactory.CreateCommands(const AWorld: TWarModelWorld; const AMap: IWarCommandMap): TWarCommands;
+begin
+  Result := TWarCommands.Create(AWorld.Context, AWorld.Machine, AWorld.Economy, TWarCommander.Human(AWorld.Context),
+    AMap);
+end;
+
+class function TWarModelFactory.CreateComputerCommands(const AWorld: TWarModelWorld; const ASelection: TWarSelection;
+  APlayer: Integer; const AMap: IWarCommandMap): TWarCommands;
+begin
+  Result := TWarCommands.Create(AWorld.Context, AWorld.Machine, AWorld.Economy,
+    TWarCommander.Computer(ASelection, APlayer), AMap);
+end;
 
 class function TWarModelFactory.CreateWorld(const ARandom: IWarRandom; const AOccupancy: IWarOccupancy;
   const AEvents: IWarModelEvents; const ADatabase: IWarDatabase): TWarModelWorld;

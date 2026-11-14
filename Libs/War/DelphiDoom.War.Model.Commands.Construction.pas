@@ -74,7 +74,17 @@ type
     ///   The case TRAIN_* of wcmd_executeCommand: if the building accepts the order, there is room for one more unit in the
     ///   farms (with the message otherwise) and the owner can pay, the training starts. True if it does
     /// </summary>
-    function OrderTrain(ABuildingSlot, AUnitType: Integer): Boolean;
+    function OrderTrain(ABuildingSlot, AUnitType: Integer): Boolean; overload;
+    /// <summary>
+    ///   The same order with its cause: WAR_CAUSE_AI_ORDER is the training that the computer orders (war_ai.c), which
+    ///   interrupts what WAR_INTERRUPT_AI_ORDER can
+    /// </summary>
+    function OrderTrain(ABuildingSlot, AUnitType, ACause: Integer): Boolean; overload;
+    /// <summary>
+    ///   The case BUILD_ROAD of wcmd_executeCommand after the click: as PlaceWall, with the cost of a road and a piece of
+    ///   the road of the context (of the player 0, as in the original). True if it was built
+    /// </summary>
+    function PlaceRoad(APlayer, ATileX, ATileY: Integer): Boolean;
     /// <summary>
     ///   The case UPGRADE_* of wcmd_executeCommand: the cost is the one of the level that the player has now. The
     ///   upgrades of a pair (arrows and spears, swords and axes, ...) share a level, so two of them in progress at once would
@@ -108,7 +118,7 @@ uses
   DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.StateStorage,
   DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.Construction.Types,
   DelphiDoom.War.Model.State.Train, DelphiDoom.War.Model.State.Upgrade, DelphiDoom.War.Model.State.Repair,
-  DelphiDoom.War.Model.State.Collapse;
+  DelphiDoom.War.Model.State.Collapse, DelphiDoom.War.Model.Commands.Types;
 
 { TWarConstructionCommands }
 
@@ -231,13 +241,44 @@ begin
 end;
 
 function TWarConstructionCommands.OrderTrain(ABuildingSlot, AUnitType: Integer): Boolean;
+begin
+  Result := OrderTrain(ABuildingSlot, AUnitType, WAR_CAUSE_PLAYER_ORDER);
+end;
+
+function TWarConstructionCommands.PlaceRoad(APlayer, ATileX, ATileY: Integer): Boolean;
+begin
+  Result := False;
+  if CheckRectToBuild(ATileX, ATileY, 1, 1) then
+  begin
+    if FEconomy.DecreaseResources(FContext.Players[APlayer], WAR_ROAD_GOLD_COST, WAR_ROAD_WOOD_COST) then
+    begin
+      // the piece is of the player 0 whoever builds it (we_addRoadPiece(context, road, x, y, 0))
+      FContext.Roads.AddPiece(ATileX, ATileY, 0);
+      FContext.Roads.DetermineTypes;
+      FContext.ConstructionHost.PlaySound(WAR_SOUND_BUILD_ROAD);
+      Result := True;
+    end;
+  end
+  else
+  begin
+    FContext.Events.FlashStatus(wsmCantBuildThere);
+    FContext.ConstructionHost.PlaySound(WAR_SOUND_UI_CANCEL);
+  end;
+end;
+
+function TWarConstructionCommands.OrderTrain(ABuildingSlot, AUnitType, ACause: Integer): Boolean;
 var
   LPlayer: PWarPlayerInfo;
   LStats: TWarUnitStatsFull;
   LTrain: PWarStateTrain;
+  LInterrupt: Integer;
 begin
   Result := False;
-  if not FMachine.CanSubmitTransition(ABuildingSlot, WAR_INTERRUPT_PLAYER_ORDER) then
+  if ACause = WAR_CAUSE_AI_ORDER then
+    LInterrupt := WAR_INTERRUPT_AI_ORDER
+  else
+    LInterrupt := WAR_INTERRUPT_PLAYER_ORDER;
+  if not FMachine.CanSubmitTransition(ABuildingSlot, LInterrupt) then
     Exit;
   LPlayer := FContext.Players[FContext.Pool.Slots[ABuildingSlot]^.UnitData.Player];
   LStats := FContext.Database.GetUnitStats(AUnitType);
@@ -245,7 +286,7 @@ begin
   begin
     LTrain := TWarTrainState.CreateState(FMachine, ABuildingSlot, AUnitType, LStats.BuildTime, LStats.GoldCost,
       LStats.WoodCost);
-    Result := FMachine.ResetState(ABuildingSlot, PWarStateBase(LTrain), WAR_CAUSE_PLAYER_ORDER);
+    Result := FMachine.ResetState(ABuildingSlot, PWarStateBase(LTrain), ACause);
   end;
 end;
 

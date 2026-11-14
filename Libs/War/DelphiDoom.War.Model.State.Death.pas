@@ -56,6 +56,7 @@ begin
   LContext.Occupancy.SetFreeTiles(Trunc(LPosition.X), Trunc(LPosition.Y), LEntity^.UnitData.SizeX,
     LEntity^.UnitData.SizeY);
   TWarActionTable.SetAction(LEntity^.UnitData, WAR_ACTION_DEATH, True, 1.0);
+  LContext.Selection.Remove(LEntity^.Id);
   LContext.Events.EntityLeftSelection(LEntity^.Id);
   LDuration := TWarActionTable.Duration(LEntity^.UnitData.UnitType, WAR_ACTION_DEATH);
   LSeconds := TWarModelMath.ScaledTime(LContext.Clock^, TWarModelMath.FramesToSeconds(LDuration));

@@ -31,7 +31,8 @@ implementation
 
 uses
   System.SysUtils, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.CombatServices,
-  DelphiDoom.War.Model.State.Attack, DelphiDoom.War.Model.State.Follow, DelphiDoom.War.Model.State.Patrol;
+  DelphiDoom.War.Model.State.Attack, DelphiDoom.War.Model.State.Follow, DelphiDoom.War.Model.State.Patrol,
+  DelphiDoom.War.Model.State.Cast;
 
 { TWarAttackRegistration }
 
@@ -39,9 +40,14 @@ class procedure TWarAttackRegistration.Register(const AContext: TWarModelContext
   const AEvents: IWarModelEvents);
 var
   LCombatEvents: IWarCombatEvents;
+  LSpellEvents: IWarSpellEvents;
 begin
   if Supports(AEvents, IWarCombatEvents, LCombatEvents) then
     AContext.CombatEvents := LCombatEvents;
+  if Supports(AEvents, IWarSpellEvents, LSpellEvents) then
+    AContext.SpellEvents := LSpellEvents;
+  // the spells are blows too: the cast state reads the same step of the attack action and asks the same services
+  AMachine.RegisterHooks(WAR_STATE_CAST, nil, nil, TWarCastState.UpdateAll);
   AContext.Combat := TWarCombatServices.Create(AContext, AMachine);
   AMachine.RegisterHooks(WAR_STATE_ATTACK, nil, nil, TWarAttackState.UpdateAll);
   AMachine.RegisterHooks(WAR_STATE_FOLLOW, nil, nil, TWarFollowState.UpdateAll);
