@@ -19,8 +19,13 @@ responsabilita': ha uno stato (il giocatore), il tempo, gli eventi, le animazion
 `pointcontents`), che arrivano da un'interfaccia piccola (`IPmoveTrace`). Tenerlo fuori fa si' che il movimento si provi con un mondo finto (il golden), con
 il modello di una mappa (`TPmoveCollisionTrace` sopra `IQ3CollisionModel`) o con quello che un gioco compone (mondo piu' entita': il server di Quake III aggiunge
 mover e corpi al trace del mondo). `Libs\Collision` non e' stata toccata. Riusa e non duplica: `TQ3PlayerState` e `TQ3UserCmd` di `Libs\Net`
-(`Net.Q3.Types`, i record verificati sul C), `TQ3Vec3`, `TQ3Trace`, `TQ3Math.AngleVectors` e `TQ3Math.Dot` di `Libs\Collision` (gia' provate sul C), `ILog` di `Libs\Logging`,
-`TTestFnv` e `TTestFiles` dei test.
+(`Net.Q3.Types`, i record verificati sul C), `TQ3Vec3`, `TQ3Trace`, `TQ3Math.AngleVectors` e `TQ3Math.Dot` di `Libs\Collision` (gia' provate sul C), le costanti delle animazioni di
+`Libs\Models` (`Models.Q3Player.Types`, le stesse del `TQ3PlayerAnimator`), `ILog` di `Libs\Logging`; nei test `TTestFnv`, `TTestFiles`, `TTestSkip`
+(`Tests.Shared.*`) e `BitsOfFloat`/`FloatOfBits`/`BuildRoomBsp` di `Tests.Collision.Q3Support`.
+**`Libs\MathCore` e' stata esaminata e non e' usata**: `TVectorMath` (`DelphiDoom.MathCore.VectorMath`) e' il port del vecchio `m_vectors` di DelphiDoom, verificato bit per
+bit contro il vecchio codice Pascal e non contro il C di Quake III; lavora su `TVec3` (un altro tipo, non assegnabile a `TQ3Vec3` e ai campi di `TQ3PlayerState`), vieta lo stesso
+vettore in ingresso e in uscita (il movimento lavora sul posto: `PM_ClipVelocity (v, n, v)`) e non ha `VectorNormalize2` ne' `PM_ClipVelocity`. `TPmoveVector` e' un
+guscio sottile (un'operazione float per istruzione) sulla stessa funzione di `Libs\Collision` per il prodotto scalare e provato sul C vero dalla parita' a ogni comando.
 
 ## Cosa c'e'
 
@@ -93,13 +98,18 @@ Contratto non verificato: `ps.weapon` deve essere 0..15 (indice di `ammo`) e `st
 ## Parita'
 
 Con il codice **vero** (`Tools\Verifica\127`, gcc di w64devkit, SSE, vedi `LEGGIMI.md` e `Tests\Data\README.md`): `bg_pmove.c`, `bg_slidemove.c` e `bg_misc.c` compilati tali e quali con un mondo finto scritto da noi (90 brush: pavimento, scale, ostacoli, rampe, acqua, melma, lava, corridoio basso, creste a 45 gradi, 36 pali, mover) implementato in modo identico in C e in Pascal.
-**192 scenari, 34343 comandi, 16 tipi di movimento**: dopo ogni comando l'impronta dello stato (117 parole, risultati, comando, testo di diagnostica) e' **identica bit per bit** a Win32 (x87) e a Win64 (SSE). Nessuna tolleranza.
+**192 scenari, 32220 comandi, 16 tipi di movimento**: dopo ogni comando l'impronta dello stato (117 parole, risultati, comando, testo di diagnostica) e' **identica bit per bit** a Win32 (x87) e a Win64 (SSE). Nessuna tolleranza.
 Secondo livello: sul modello di collisione di Quake III (`TPmoveCollisionTrace` su `IQ3CollisionModel`) con mappe di OpenArena 0.8.8 (`pak1-maps.pk3`, lette dove sono e ignorate se mancano): 18 partenze su 6 mappe, 500 comandi ciascuna (corsa, giri, salti, tempi diversi), **mai dentro un muro** e risultato uguale a ogni esecuzione.
-Il caricatore del modello (`Libs\Collision`, #118) rifiuta alcune mappe di OpenArena con il suo validatore (per esempio `aggressor.bsp`: "fog 0 is outside the 0 fogs"): il test passa alla mappa successiva.
+Il caricatore del modello (`Libs\Collision`, #118) rifiuta con il suo validatore una mappa di OpenArena su 50 di `pak1-maps.pk3` (`aggressor.bsp`: "fog 0 is outside the 0 fogs", 74 problemi; le altre 49 si caricano): il test passa alla mappa successiva. E' una segnalazione per chi ha in carico la #118 (il motore vero la carica).
 
 ## Test
 
-`Tests\DelphiDoom.Tests.Pmove` (`Tools\build.bat Tests\DelphiDoom.Tests.Pmove Release [Win64]`): 85 test (parita' 20, mover 28, parti 28, collisione 7 e OpenArena 2), copertura di `Libs\Pmove` **98%** (`Tools\Copertura.ps1 -Test Pmove`); le righe non coperte sono rami che il C stesso non raggiunge (`Msec < 1` di `PmoveSingle`, `numplanes >= MAX_CLIP_PLANES`, lo stop a tre piani, `Copy`/`Clear` inline).
+`Tests\DelphiDoom.Tests.Pmove` (`Tools\build.bat Tests\DelphiDoom.Tests.Pmove Release [Win64]`): 85 test (parita' 20, mover 28, parti 28, collisione 7 e OpenArena 2), copertura di `Libs\Pmove` **98%** (`Tools\Copertura.ps1 -Test Pmove`); le righe non coperte (18 su 1371) sono: `Msec < 1` di `PmoveSingle` (la guardia di `Execute` lancia prima: non raggiungibile), `numplanes >= MAX_CLIP_PLANES` e lo stop a tre piani di `PM_SlideMove`
+(raggiungibili nel C ma non da nessuno degli scenari: servono quattro piani diversi in quattro urti o una cresta non assiale con un terzo piano; nemmeno la valle a 45 gradi del golden ci arriva),
+il ramo di errore di `TPmoveFactory` (`except`, libera lo stato) e `Copy`/`Clear` di `TPmoveVector`, che il compilatore espande in linea.
+
+**Teletrasporto**: `bg_pmove.c` non ha codice di teletrasporto. Il lato del movimento di `TeleportPlayer` (`g_misc.c`) e' lo stato che lascia: `pm_time` 160, `PMF_TIME_KNOCKBACK`, la velocita' di 400 unita' al secondo lungo
+la vista e i `delta_angles` del bersaglio; il golden parte da quello stato (modo 12, `pm_time` 160 e velocita' 400) e dai `delta_angles` casuali del modo 14.
 
 ## Resta da fare
 

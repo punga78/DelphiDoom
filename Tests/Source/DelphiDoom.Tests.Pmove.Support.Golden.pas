@@ -94,7 +94,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Tests.Shared.Fnv;
+  DelphiDoom.Tests.Shared.Fnv, DelphiDoom.Tests.Collision.Q3Support;
 
 constructor TGoldenLog.Create(const AText: TStringBuilder);
 begin
@@ -124,21 +124,6 @@ begin
   Result := Cardinal(StrToInt64('$' + AText));
 end;
 
-function BitsToSingle(const ABits: Cardinal): Single;
-var
-  LBits: TQ3FloatBits;
-begin
-  LBits.AsInteger := Integer(ABits);
-  Result := LBits.AsSingle;
-end;
-
-function FloatBits(const AValue: Single): Cardinal;
-var
-  LBits: TQ3FloatBits;
-begin
-  LBits.AsSingle := AValue;
-  Result := Cardinal(LBits.AsInteger);
-end;
 
 constructor TGoldenFile.Create(const ALines: TStrings);
 var
@@ -186,11 +171,11 @@ begin
         for LPlane := 0 to StrToInt(LParts[4]) - 1 do
         begin
           LPart := 5 + LPlane * 4;
-          LNormal[0] := BitsToSingle(ParseHex(LParts[LPart]));
-          LNormal[1] := BitsToSingle(ParseHex(LParts[LPart + 1]));
-          LNormal[2] := BitsToSingle(ParseHex(LParts[LPart + 2]));
+          LNormal[0] := FloatOfBits(ParseHex(LParts[LPart]));
+          LNormal[1] := FloatOfBits(ParseHex(LParts[LPart + 1]));
+          LNormal[2] := FloatOfBits(ParseHex(LParts[LPart + 2]));
           LBrush.Normals := LBrush.Normals + [LNormal];
-          LBrush.Distances := LBrush.Distances + [BitsToSingle(ParseHex(LParts[LPart + 3]))];
+          LBrush.Distances := LBrush.Distances + [FloatOfBits(ParseHex(LParts[LPart + 3]))];
         end;
         FBrushes := FBrushes + [LBrush];
       end
@@ -376,9 +361,9 @@ begin
           for LIndex := 0 to LPmove.NumTouch - 1 do
             LLine := LLine + ',' + IntToStr(LPmove.TouchEnts[LIndex]);
           ADump.Add(LLine + Format(' mins=%.8x,%.8x,%.8x maxs=%.8x,%.8x,%.8x wt=%d wl=%d xy=%.8x cmd=%d,%d,%d,%d text=[%s]',
-            [FloatBits(LPmove.Mins[0]), FloatBits(LPmove.Mins[1]), FloatBits(LPmove.Mins[2]),
-            FloatBits(LPmove.Maxs[0]), FloatBits(LPmove.Maxs[1]), FloatBits(LPmove.Maxs[2]), LPmove.WaterType,
-            LPmove.WaterLevel, FloatBits(LPmove.XySpeed), LPmove.Cmd.Buttons, LPmove.Cmd.ForwardMove,
+            [BitsOfFloat(LPmove.Mins[0]), BitsOfFloat(LPmove.Mins[1]), BitsOfFloat(LPmove.Mins[2]),
+            BitsOfFloat(LPmove.Maxs[0]), BitsOfFloat(LPmove.Maxs[1]), BitsOfFloat(LPmove.Maxs[2]), LPmove.WaterType,
+            LPmove.WaterLevel, BitsOfFloat(LPmove.XySpeed), LPmove.Cmd.Buttons, LPmove.Cmd.ForwardMove,
             LPmove.Cmd.RightMove, LPmove.Cmd.UpMove, LText]));
         end;
         Inc(LCommand);

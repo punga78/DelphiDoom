@@ -54,7 +54,7 @@ type
     [Test]
     procedure DovrebbeScivolareLungoUnMuro;
     [Test]
-    procedure DovrebbeFermarsiNellAngoloDiTrePiani;
+    procedure DovrebbeNonAttraversareUnAngoloDiDueMuri;
     [Test]
     procedure DovrebbeSentireUnaCadutaLungaSoloDaVivo;
     [Test]
@@ -266,7 +266,7 @@ begin
   Assert.IsTrue(Origin(1) > 200, 'scivola lungo il muro');
 end;
 
-procedure TTestPmoveMover.DovrebbeFermarsiNellAngoloDiTrePiani;
+procedure TTestPmoveMover.DovrebbeNonAttraversareUnAngoloDiDueMuri;
 var
   LIndex: Integer;
 begin

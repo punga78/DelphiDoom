@@ -2,9 +2,9 @@
 {                                                                              }
 {  DelphiDoom: pmove library - the ground under the player                     }
 {                                                                              }
-{  Port of PM_GroundTrace, PM_GroundTraceMissed, PM_CorrectAllSolid,           }
-{  PM_CrashLand and PM_FootstepForSurface of bg_pmove.c, from the Quake III    }
-{  Arena GPL Source Code (id Software). Copyright (C) 1999-2005 Id Software,   }
+{  Based on the Quake III Arena GPL Source Code (id Software):                 }
+{  PM_GroundTrace, PM_GroundTraceMissed, PM_CorrectAllSolid, PM_CrashLand and  }
+{  PM_FootstepForSurface of bg_pmove.c. Copyright (C) 1999-2005 Id Software,   }
 {  Inc. This unit is derived from the Quake III Arena source code and is       }
 {  therefore available under the GNU General Public License, version 2 or (at  }
 {  your option) any later version.                                             }

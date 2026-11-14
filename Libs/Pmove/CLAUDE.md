@@ -23,7 +23,7 @@ La parita' e' **esatta** (nessuna tolleranza) con il C compilato da gcc/SSE. Reg
 
 ### Il golden e come si regge
 
-`Tests\Data\Pmove\pmove-golden.txt` (430 KB, 34343 comandi) e' scritto da `Tools\Verifica\127` (vedi `LEGGIMI.md` li'): il vero `bg_pmove.c`, `bg_slidemove.c`, `bg_misc.c` con un mondo finto (brush e sweep di `CM_TraceThroughBrush`) che il Pascal rilegge **dal golden** (piani come bit). Il golden ha mondo, scenari, comandi e un'impronta per comando: il test non genera niente. Quando un'impronta differisce il test scrive `%TEMP%\pmove-scenario-<id>.txt` (stesso formato di `pmgen dump <id>`): `diff` in minuscolo da' il primo comando e il campo.
+`Tests\Data\Pmove\pmove-golden.txt` (430 KB, 32220 comandi) e' scritto da `Tools\Verifica\127` (vedi `LEGGIMI.md` li'): il vero `bg_pmove.c`, `bg_slidemove.c`, `bg_misc.c` con un mondo finto (brush e sweep di `CM_TraceThroughBrush`) che il Pascal rilegge **dal golden** (piani come bit). Il golden ha mondo, scenari, comandi e un'impronta per comando: il test non genera niente. Quando un'impronta differisce il test scrive `%TEMP%\pmove-scenario-<id>.txt` (stesso formato di `pmgen dump <id>`): `diff` in minuscolo da' il primo comando e il campo.
 Se si cambia `pmgen.c` il golden **cambia per intero** (la generazione e' a seme fisso ma sequenziale): rifarlo con `make-golden.sh`, controllare le coperture (stderr) e rieseguire i test a Win32 e Win64.
 
 ### Cose da sapere

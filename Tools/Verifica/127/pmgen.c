@@ -482,7 +482,19 @@ static void make_scenario(scn_t *s, int id) {
     break;
   case 12:
     switch ((id / NMODES) % 6) {
-    case 0: p.pm_flags = PMF_TIME_KNOCKBACK; p.pm_time = ri(50, 300); p.velocity[0] = rf(-500, 500); p.velocity[1] = rf(-500, 500); break;
+    case 0:
+      p.pm_flags = PMF_TIME_KNOCKBACK;
+      p.pm_time = ri(50, 300);
+      p.velocity[0] = rf(-500, 500);
+      p.velocity[1] = rf(-500, 500);
+      if (id / NMODES == 6) {
+        /* the state TeleportPlayer leaves: pm_time 160, knockback, 400 units/s along the view */
+        p.pm_time = 160;
+        p.velocity[0] = 400;
+        p.velocity[1] = 0;
+        p.velocity[2] = 0;
+      }
+      break;
     case 1: p.pm_flags = PMF_TIME_WATERJUMP; p.pm_time = ri(100, 2000); p.velocity[0] = 200; p.velocity[2] = 350; break;
     case 2: p.pm_flags = PMF_GRAPPLE_PULL; p.grapplePoint[0] = rf(-300, 300); p.grapplePoint[1] = rf(-300, 300); p.grapplePoint[2] = rf(100, 400); break;
     case 3: p.pm_flags = PMF_RESPAWNED | PMF_JUMP_HELD; break;

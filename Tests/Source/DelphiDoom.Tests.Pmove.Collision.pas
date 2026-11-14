@@ -377,6 +377,7 @@ begin
   Assert.IsTrue(LFarthest > 100, Format('il giocatore si e'' mosso (al piu'' %d unita'')', [LFarthest]));
 end;
 
+
 procedure TTestPmoveOpenArena.DovrebbeDareLoStessoRisultatoSuUnaMappaPiuVolte;
 var
   LChecked: Integer;

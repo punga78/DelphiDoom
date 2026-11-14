@@ -2,8 +2,8 @@
 {                                                                              }
 {  DelphiDoom: pmove library - sliding along the walls and over steps          }
 {                                                                              }
-{  Port of PM_SlideMove and PM_StepSlideMove of bg_slidemove.c, from the       }
-{  Quake III Arena GPL Source Code (id Software). Copyright (C) 1999-2005 Id   }
+{  Based on the Quake III Arena GPL Source Code (id Software): PM_SlideMove    }
+{  and PM_StepSlideMove of bg_slidemove.c. Copyright (C) 1999-2005 Id          }
 {  Software, Inc. This unit is derived from the Quake III Arena source code    }
 {  and is therefore available under the GNU General Public License, version 2  }
 {  or (at your option) any later version.                                      }

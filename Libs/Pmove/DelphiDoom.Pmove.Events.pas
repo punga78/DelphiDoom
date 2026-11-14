@@ -2,10 +2,10 @@
 {                                                                              }
 {  DelphiDoom: pmove library - events, touched entities and animations         }
 {                                                                              }
-{  Port of PM_AddEvent, PM_AddTouchEnt, PM_StartTorsoAnim, PM_StartLegsAnim,   }
-{  PM_ContinueLegsAnim, PM_ContinueTorsoAnim and PM_ForceLegsAnim of           }
-{  bg_pmove.c and of BG_AddPredictableEventToPlayerstate of bg_misc.c, from    }
-{  the Quake III Arena GPL Source Code (id Software). Copyright (C) 1999-2005  }
+{  Based on the Quake III Arena GPL Source Code (id Software): PM_AddEvent,    }
+{  PM_AddTouchEnt, PM_StartTorsoAnim, PM_StartLegsAnim, PM_ContinueLegsAnim,   }
+{  PM_ContinueTorsoAnim and PM_ForceLegsAnim of bg_pmove.c and                 }
+{  BG_AddPredictableEventToPlayerstate of bg_misc.c. Copyright (C) 1999-2005   }
 {  Id Software, Inc. This unit is derived from the Quake III Arena source      }
 {  code and is therefore available under the GNU General Public License,       }
 {  version 2 or (at your option) any later version.                            }

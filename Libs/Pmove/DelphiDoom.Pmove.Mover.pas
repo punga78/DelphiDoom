@@ -2,8 +2,8 @@
 {                                                                              }
 {  DelphiDoom: pmove library - the player movement of Quake III Arena          }
 {                                                                              }
-{  Port of Pmove, PmoveSingle, PM_DropTimers and the view of the state of      }
-{  bg_pmove.c, from the Quake III Arena GPL Source Code (id Software).         }
+{  Based on the Quake III Arena GPL Source Code (id Software): Pmove,          }
+{  PmoveSingle, PM_DropTimers and the snap of the velocity of bg_pmove.c.      }
 {  Copyright (C) 1999-2005 Id Software, Inc. This unit is derived from the     }
 {  Quake III Arena source code and is therefore available under the GNU        }
 {  General Public License, version 2 or (at your option) any later version.    }
