@@ -63,6 +63,8 @@ type
     EndPos: TVec3;
     Contents: Integer;
     EntityNum: Integer;
+    /// <summary>surface.flags of bsp_trace_t (SURF_SKY ...): the grapple reachability does not stick to the sky</summary>
+    SurfaceFlags: Integer;
   end;
 
   /// <summary>

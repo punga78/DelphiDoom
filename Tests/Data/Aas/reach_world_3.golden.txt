@@ -1,0 +1,19 @@
+FILE world3.aas
+P1|trying to load maps/reach.aas\x0A
+LOAD 0
+AAS 5 7
+GEO 22 37 21 25
+BSP 0 0
+P1|1 weapon jump areas\x0A
+P1|calculating reachability...\x0A
+P1|\x0Aplease wait while storing reachability...\x0A
+P1|calculating clusters...\x0A
+CALLS 4
+PCT 3 1686727110
+CT 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+RS 1 7
+A 0 0 0 2166136261
+A 1 0 1 2166136261
+A 2 0 2 2166136261
+A 3 0 8194 2166136261
+A 4 0 1 2166136261
