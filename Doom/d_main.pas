@@ -412,6 +412,7 @@ uses
   r_lights,
 {$IFDEF RADIX}
   radix_version,
+  radix_codepointers,
 {$ENDIF}
   sounddata,
   s_sound,
@@ -2685,6 +2686,10 @@ begin
   printf('DEH_Init: Initializing dehacked subsystem.'#13#10);
   SC_DefaultStatedefLump;
   DEH_Init;
+{$IFDEF RADIX}
+  // the codepointers of Radix, before GAMEDEF and the ACTORDEF lumps name them
+  RX_RegisterActions;
+{$ENDIF}
 
   if M_CheckParm('-internalgamedef') = 0 then
   begin

@@ -61,6 +61,7 @@ uses
   z_zone,
   radix_playerstate,
   radix_pickups,
+  radix_weapons,
   DelphiDoom.Radix.Flight.Model;
 
 type
@@ -154,6 +155,7 @@ begin
       begin
         RX_PilotFly(p, RX_PlayerState(p));
         RX_PilotInventoryTick(p);
+        RX_PilotWeaponsTick(p);
       end;
     end;
 end;

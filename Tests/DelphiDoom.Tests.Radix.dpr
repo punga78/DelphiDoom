@@ -110,6 +110,8 @@ uses
   DelphiDoom.Tests.Radix.ActorProperties in 'Source\DelphiDoom.Tests.Radix.ActorProperties.pas',
   DelphiDoom.Radix.Pilot.Rules in '..\Libs\Radix\DelphiDoom.Radix.Pilot.Rules.pas',
   DelphiDoom.Tests.Radix.PilotRules in 'Source\DelphiDoom.Tests.Radix.PilotRules.pas',
+  DelphiDoom.Radix.Weapon.Rules in '..\Libs\Radix\DelphiDoom.Radix.Weapon.Rules.pas',
+  DelphiDoom.Tests.Radix.WeaponRules in 'Source\DelphiDoom.Tests.Radix.WeaponRules.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var

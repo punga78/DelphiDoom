@@ -41,6 +41,35 @@ public static class RadixWindow {
   [DllImport("user32.dll")] static extern bool GetClientRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] static extern uint MapVirtualKey(uint code, uint type);
   [StructLayout(LayoutKind.Sequential)] struct RECT { public int L, T, R, B; }
+  [DllImport("kernel32.dll")] static extern IntPtr OpenThread(uint access, bool inherit, uint id);
+  [DllImport("kernel32.dll")] static extern uint Wow64SuspendThread(IntPtr h);
+  [DllImport("kernel32.dll")] static extern uint ResumeThread(IntPtr h);
+  [DllImport("kernel32.dll")] static extern bool Wow64GetThreadContext(IntPtr h, byte[] context);
+  [DllImport("kernel32.dll")] static extern bool ReadProcessMemory(IntPtr p, IntPtr address, byte[] buffer, int size, out int read);
+  [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+  // Where a 32 bit thread is: its instruction pointer and the code addresses that are on its stack (the callers,
+  // with some old ones among them). For a game that hangs: the addresses go to the .map file
+  public static uint[] Where(IntPtr process, uint threadId, uint codeLow, uint codeHigh) {
+    var result = new List<uint>();
+    IntPtr t = OpenThread(0x0002 | 0x0008 | 0x0040, false, threadId);
+    if (t == IntPtr.Zero) return result.ToArray();
+    try {
+      Wow64SuspendThread(t);
+      byte[] context = new byte[716];
+      BitConverter.GetBytes(0x00010007u).CopyTo(context, 0);   // WOW64_CONTEXT_FULL
+      if (Wow64GetThreadContext(t, context)) {
+        result.Add(BitConverter.ToUInt32(context, 184));        // Eip
+        uint esp = BitConverter.ToUInt32(context, 196);
+        byte[] stack = new byte[4 * 600]; int read;
+        if (ReadProcessMemory(process, (IntPtr)esp, stack, stack.Length, out read))
+          for (int i = 0; i + 4 <= read; i += 4) {
+            uint v = BitConverter.ToUInt32(stack, i);
+            if (v >= codeLow && v < codeHigh) result.Add(v); }
+      }
+      ResumeThread(t);
+    } finally { CloseHandle(t); }
+    return result.ToArray();
+  }
   public static List<string> List(uint pid) {
     var result = new List<string>();
     EnumWindows((h, l) => {
@@ -96,6 +125,32 @@ $waited = [Diagnostics.Stopwatch]::StartNew()
 try { $got = $mutex.WaitOne([TimeSpan]::FromSeconds(3600)) } catch [System.Threading.AbandonedMutexException] { $got = $true }
 if (-not $got) { throw 'the lock of the games was not taken' }
 "lock waited $([int]$waited.Elapsed.TotalSeconds) s"
+# The publics of the .map (segment 0001, the code), sorted by address, for the step "where"
+$script:mapOffsets = New-Object System.Collections.Generic.List[uint32]
+$script:mapNames = New-Object System.Collections.Generic.List[string]
+$script:mapCodeSize = 0x1000000
+$script:mapCodeBase = 0x401000
+$mapPath = [IO.Path]::ChangeExtension($exePath, '.map')
+if ((@($Steps) + @($Steps2)) -contains 'where' -and (Test-Path -LiteralPath $mapPath)) {
+  $inPublics = $false
+  foreach ($line in [IO.File]::ReadLines($mapPath)) {
+    # the first lines tell where the code is in memory and how long it is: " 0001:01001000 008C69F0H .text"
+    if ($line -match '^\s*0001:([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})H\s+\.text') {
+      $script:mapCodeBase = [Convert]::ToUInt32($Matches[1], 16); $script:mapCodeSize = [Convert]::ToUInt32($Matches[2], 16)
+    }
+    if ($line -match 'Publics by Value') { $inPublics = $true; continue }
+    if ($inPublics -and $line -match '^\s*0001:([0-9A-Fa-f]{8})\s+(\S+)') {
+      $script:mapOffsets.Add([Convert]::ToUInt32($Matches[1], 16)); $script:mapNames.Add($Matches[2])
+    } elseif ($inPublics -and $line -match '^\s*000[2-9]:') { break }
+  }
+}
+function Resolve-MapAddress([uint32]$Address) {
+  $offset = [uint32]($Address - $script:mapCodeBase)
+  $index = $script:mapOffsets.BinarySearch($offset)
+  if ($index -lt 0) { $index = (-bnot $index) - 1 }
+  if ($index -lt 0 -or $index -ge $script:mapNames.Count) { return ('{0:X8}' -f $Address) }
+  return ('{0}+{1:X}' -f $script:mapNames[$index], ($offset - $script:mapOffsets[$index]))
+}
 function Invoke-RadixRun([string]$Arguments, [string[]]$Steps) {
   "run: $Arguments"
   $crash = Join-Path (Split-Path -Parent $exePath) 'crash.txt'
@@ -121,6 +176,17 @@ function Invoke-RadixRun([string]$Arguments, [string[]]$Steps) {
         else { "shot $($parts[1]): " + [RadixWindow]::Shot($h, (Join-Path $Out ($parts[1] + '.png'))) }
       }
       'windows' { [RadixWindow]::List([uint32]$p.Id) | ForEach-Object { "window: $_" } }
+      'where' {
+        # where every thread is, by the names of the .map beside the program (for a game that hangs)
+        $p.Refresh()
+        foreach ($thread in $p.Threads) {
+          $addresses = [RadixWindow]::Where($p.Handle, [uint32]$thread.Id, [uint32]$script:mapCodeBase, [uint32]($script:mapCodeBase + $script:mapCodeSize))
+          if ($addresses.Count -gt 0) {
+            $names = @($addresses | Select-Object -First 14 | ForEach-Object { Resolve-MapAddress $_ })
+            "thread $($thread.Id): " + ($names -join ' < ')
+          }
+        }
+      }
       'close' { if ($h -ne [IntPtr]::Zero) { [RadixWindow]::Close($h) } }
       default { throw "unknown step $step" }
     }

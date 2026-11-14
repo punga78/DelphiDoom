@@ -70,10 +70,19 @@ const
   // (neutroncannoninfo[].firelevel of Rad-X)
   neutronfirelevel: array[0..MAXNEUTRONCANNONLEVEL - 1] of integer = (0, 1, 1, 2, 2, 2, 3);
 
+  // weaponflags: which side fires next (PWF_???? of Rad-X)
+  PWF_NEURONCANNON = 1;
+  PWF_NUKE = 2;
+  PWF_PHASETORPEDO = 4;
+  PWF_NEURONSPREADER = 8;
+
+  NUMRADIXWEAPONS = 9;
+
 var
   PLAYERSPAWNARMOR: integer = 100;
   PLAYERSPAWNSHIELD: integer = 100;
   PLAYERSPAWNENERGY: integer = 100;
+  GRAVITYWAVEENERGY: integer = 30;
 
 type
   radixplayer_t = record
@@ -93,6 +102,9 @@ type
     gravitywave: integer;           // Number of gravity wave shots
     plinetarget: Pmobj_t;           // For the crosshair target
     pcrosstic: integer;
+    lastfire: array[0..NUMRADIXWEAPONS - 1] of integer; // Refire control (leveltime of the last shot)
+    plasmabombcount: integer;       // Tics left of the flash of a plasma bomb
+    floorslidetics: integer;        // Slide to floors/ceilings (A_PlayerFloorSlide)
   end;
   Pradixplayer_t = ^radixplayer_t;
 
