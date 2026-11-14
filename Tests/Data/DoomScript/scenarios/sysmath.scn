@@ -1,0 +1,22 @@
+# system events that only compute: math, vectors, angles, strings, time, output
+startup script/sysmath.script
+callnow math
+dump globals
+callnow roots
+dump globals
+callnow vectors
+dump globals
+callnow angles
+dump globals
+callnow strings
+dump globals
+callnow output
+thread timeAndRandom
+frame 8
+dump globals
+set isClient 1
+set isMultiplayer 1
+set time 1000
+thread timeAndRandom
+frame 8
+dump globals

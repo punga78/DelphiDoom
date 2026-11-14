@@ -23,6 +23,7 @@ type
   strict private
     FEvents: IGameHostEventSink;
     FKeyboard: IGameHostKeyboard;
+    FSuppressKeyMenu: Boolean;
     procedure PostKey(AKind: TGameHostEventKind; AWParam: WPARAM; ALParam: LPARAM);
     procedure PostMouse(AKind: TGameHostEventKind; AButton: TGameHostMouseButton; ALParam: LPARAM;
       const AState: TGameHostWindowState);
@@ -38,6 +39,12 @@ type
     /// </summary>
     function Translate(AMessage: UINT; AWParam: WPARAM; ALParam: LPARAM; const AState: TGameHostWindowState;
       out AResult: LRESULT): Boolean;
+    /// <summary>
+    ///   The window does not enter the menu of the system from the keyboard (WM_SYSCOMMAND SC_KEYMENU: Alt alone,
+    ///   F10, Alt+Space): for a game that uses Alt or F10 as keys, where the menu mode of Windows would take the
+    ///   key that follows. Alt+F4 still closes. False by default
+    /// </summary>
+    property SuppressKeyMenu: Boolean read FSuppressKeyMenu write FSuppressKeyMenu;
   end;
 
 implementation
@@ -175,6 +182,9 @@ begin
         PostResize(AWParam, ALParam, AState);
         Result := False;
       end;
+    WM_SYSCOMMAND:
+      // the four low bits of the command are used by the system
+      Result := FSuppressKeyMenu and ((AWParam and $FFF0) = SC_KEYMENU);
   else
     Result := False;
   end;

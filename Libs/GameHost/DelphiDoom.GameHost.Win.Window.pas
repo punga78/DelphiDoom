@@ -84,6 +84,8 @@ type
     function Pump: Boolean;
     /// <summary>0 before the first SetMode and after DestroyHandle</summary>
     property Handle: HWND read FHandle;
+    /// <summary>The translator of the messages, for its options (SuppressKeyMenu); owned by the window</summary>
+    property Translator: TGameHostWinMessageTranslator read FTranslator;
   end;
 
 implementation

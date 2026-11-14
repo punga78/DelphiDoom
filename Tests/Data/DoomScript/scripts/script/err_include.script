@@ -1,0 +1,3 @@
+// an included file with an error on its third line
+float included_ok;
+float included_bad = "text";

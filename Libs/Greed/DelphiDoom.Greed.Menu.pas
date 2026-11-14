@@ -15,7 +15,7 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Greed.Intf, DelphiDoom.Greed.SaveTypes,
   DelphiDoom.Greed.Save.Intf, DelphiDoom.Greed.Settings.Intf, DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.Canvas,
   DelphiDoom.Greed.Font, DelphiDoom.Greed.TextPrinter, DelphiDoom.Greed.Display, DelphiDoom.Greed.MenuInput,
-  DelphiDoom.Greed.Menu.Intf;
+  DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Mouse.Intf;
 
 const
   /// <summary>MENUS: main, character, load, save, options, difficulty</summary>
@@ -45,8 +45,10 @@ type
   ///   ambientlight, screensize, camdelay) and the volumes go to IGreedSoundVolumes.
   ///   The text printer is the one of the game: as in the original the menu leaves its font, color and position
   ///   changed.
-  ///   Not ported: the mouse (CheckMouse, the mouse part of MenuCommand and of ShowQuit), the net game (netmode is
-  ///   always false) and the VR helmet (vrhelmet is always 0).
+  ///   The mouse is the one of the input (TGreedMenuInput.Mouse, nil if none is installed): the pointer chooses
+  ///   the entry it is over (the mouse part of MenuCommand), a click runs it or moves a slider (CheckMouse) and
+  ///   answers the panel of ShowQuit; MouseShow, MouseHide and ResetMouse are called where the original calls them.
+  ///   Not ported: the net game (netmode is always false) and the VR helmet (vrhelmet is always 0).
   ///   Differences from the original: what falls outside the buffer is not drawn; a missing lump is an exception
   ///   of the archive
   /// </summary>
@@ -56,6 +58,7 @@ type
     FCanvas: TGreedCanvas;
     FArchive: IGreedArchive;
     FInput: TGreedMenuInput;
+    FMouse: IGreedMouse;
     FPrinter: TGreedTextPrinter;
     FFont: TGreedFont;
     FSettings: IGreedSettings;
@@ -114,6 +117,12 @@ type
     procedure MenuLeft;
     procedure MenuRight;
     procedure MenuCommand;
+    procedure MouseShow;
+    procedure MouseHide;
+    procedure ResetMouse;
+    function MouseGetClick(out AX, AY: Integer): Boolean;
+    procedure CheckMouse;
+    procedure CheckSlider(AX, AY: Integer);
     procedure MenuShowCursor(ACursor: Integer);
     procedure ShowMenuLevel(ALevel: Integer);
     procedure Execute(ALevel, ACursor: Integer);
@@ -284,6 +293,7 @@ begin
   FCanvas := ADisplay.Canvas;
   FArchive := ADisplay.Archive;
   FInput := AInput;
+  FMouse := AInput.Mouse;
   FPrinter := APrinter;
   FFont := AFont1;
   FSettings := ASettings;
@@ -408,6 +418,7 @@ var
   LRow: Integer;
   LColor: Integer;
 begin
+  MouseHide;
   LFilled := (AValue * 49) div ARange;
   for LColumn := 0 to LFilled - 1 do
   begin
@@ -419,6 +430,7 @@ begin
     for LColumn := LFilled to 48 do
       for LRow := 49 to 64 do
         FCanvas.PutPixel(LColumn + 42, LRow, FCanvas.ApproxZero);
+  MouseShow;
 end;
 
 procedure TGreedMenu.ShowSaveDir;
@@ -430,6 +442,7 @@ begin
   FSaveDir := FSaveGames.ReadDirectory;
   FPrinter.BaseColor := SAVE_NAME_COLOR;
   FPrinter.Font := FFont;
+  MouseHide;
   for LIndex := 0 to GREED_MAX_SAVE_GAMES - 1 do
   begin
     FPrinter.PrintX := 148;
@@ -438,10 +451,12 @@ begin
       FCanvas.FillRow(FPrinter.PrintX, FPrinter.PrintY + LRow, 110, FCanvas.ApproxZero);
     FPrinter.Print(string(FSaveDir[LIndex]));
   end;
+  MouseShow;
 end;
 
 procedure TGreedMenu.MenuShowOptions;
 begin
+  MouseHide;
   case FCursor of
     2:
       begin
@@ -479,6 +494,7 @@ begin
         ShowMenuSliders(FSettings.GetInteger(SETTING_CAMERA_DELAY), 70);
       end;
   end;
+  MouseShow;
 end;
 
 procedure TGreedMenu.MenuLeft;
@@ -487,6 +503,7 @@ var
 begin
   if FLevel <> GREED_MENU_OPTIONS then
     Exit;
+  MouseHide;
   case FCursor of
     2:
       begin
@@ -560,6 +577,7 @@ begin
         end;
       end;
   end;
+  MouseShow;
 end;
 
 procedure TGreedMenu.MenuRight;
@@ -568,6 +586,7 @@ var
 begin
   if FLevel <> GREED_MENU_OPTIONS then
     Exit;
+  MouseHide;
   case FCursor of
     2:
       begin
@@ -641,11 +660,16 @@ begin
         end;
       end;
   end;
+  MouseShow;
 end;
 
 procedure TGreedMenu.MenuCommand;
 var
   LTime: Integer;
+  LIndex: Integer;
+  LBox: TMenuCursorBox;
+  LPointerX: Single;
+  LPointerY: Single;
 begin
   LTime := FInput.TimeCount;
   if (FInput.Keyboard[GREED_SC_ESCAPE] = 1) and (LTime > FTimeDelay) then
@@ -680,6 +704,140 @@ begin
     FExecute := True;
     FTimeDelay := LTime + GREED_MENU_KEY_DELAY;
   end;
+
+  // the pointer chooses the entry it is over, at every tic: the keys cannot move the cursor away from it
+  if Assigned(FMouse) and FMouse.MenuEnabled then
+  begin
+    LPointerX := FMouse.PointerX;
+    LPointerY := FMouse.PointerY;
+    for LIndex := Low(CURSORS[FLevel]) to High(CURSORS[FLevel]) do
+    begin
+      LBox := CURSORS[FLevel][LIndex];
+      if (LPointerX > LBox.X) and (LPointerX < LBox.X + LBox.W) and (LPointerY > LBox.Y) and
+        (LPointerY < LBox.Y + LBox.H) then
+      begin
+        FCursor := LIndex;
+        Break;
+      end;
+    end;
+  end;
+end;
+
+procedure TGreedMenu.MouseShow;
+begin
+  if Assigned(FMouse) then
+    FMouse.Show;
+end;
+
+procedure TGreedMenu.MouseHide;
+begin
+  if Assigned(FMouse) then
+    FMouse.Hide;
+end;
+
+procedure TGreedMenu.ResetMouse;
+begin
+  if Assigned(FMouse) then
+    FMouse.Reset;
+end;
+
+function TGreedMenu.MouseGetClick(out AX, AY: Integer): Boolean;
+begin
+  AX := 0;
+  AY := 0;
+  Result := Assigned(FMouse) and FMouse.TakeClick(AX, AY);
+end;
+
+procedure TGreedMenu.CheckSlider(AX, AY: Integer);
+var
+  LValue: Integer;
+begin
+  // the options: a click on the bar of a slider sets its value, on the two arrows of a switch turns it
+  case FCursor of
+    2:
+      if (AY >= 49) and (AY <= 64) and (AX >= 42) and (AX <= 90) then
+      begin
+        LValue := ((AX - 40) * 256) div 49;
+        if LValue > 255 then
+          LValue := 255;
+        FSettings.SetInteger(SETTING_MUSIC, LValue);
+        FVolumes.SetVolumes(LValue, FSettings.GetInteger(SETTING_SFX));
+        ShowMenuSliders(LValue, 255);
+      end;
+    3:
+      if (AY >= 49) and (AY <= 64) and (AX >= 42) and (AX <= 90) then
+      begin
+        LValue := ((AX - 40) * 256) div 49;
+        if LValue > 255 then
+          LValue := 255;
+        FSettings.SetInteger(SETTING_SFX, LValue);
+        FVolumes.SetVolumes(FSettings.GetInteger(SETTING_MUSIC), LValue);
+        ShowMenuSliders(LValue, 255);
+      end;
+    4, 5:
+      if (AY >= 62) and (AY <= 70) then
+      begin
+        if (AX >= 50) and (AX <= 61) then
+          FGoLeft := True
+        else if (AX >= 72) and (AX <= 83) then
+          FGoRight := True;
+      end;
+    6:
+      if (AY >= 49) and (AY <= 64) and (AX >= 42) and (AX <= 90) then
+      begin
+        LValue := ((AX - 40) * 4096) div 49;
+        if LValue > 4096 then
+          LValue := 4096;
+        FSettings.SetInteger(SETTING_LIGHT, LValue);
+        ShowMenuSliders(LValue, 4096);
+        FHost.AmbientLightChanged(LValue);
+      end;
+    7:
+      if (AY >= 49) and (AY <= 64) and (AX >= 42) and (AX <= 90) then
+      begin
+        LValue := MAX_VIEW_SIZE - 1 - (((AX - 40) * MAX_VIEW_SIZE) div 49);
+        if LValue > MAX_VIEW_SIZE - 1 then
+          LValue := MAX_VIEW_SIZE - 1
+        else if LValue < 0 then
+          LValue := 0;
+        FSettings.SetInteger(SETTING_SCREEN_SIZE, LValue);
+        // not the bar that the keys draw (MenuLeft): the one of the original for a click
+        ShowMenuSliders(MAX_VIEW_SIZE - LValue, MAX_VIEW_SIZE);
+      end;
+    8:
+      if (AY >= 49) and (AY <= 64) and (AX >= 42) and (AX <= 90) then
+      begin
+        LValue := ((AX - 40) * 70) div 49;
+        if LValue > 70 then
+          LValue := 70;
+        FSettings.SetInteger(SETTING_CAMERA_DELAY, LValue);
+        ShowMenuSliders(LValue, 70);
+      end;
+  end;
+end;
+
+procedure TGreedMenu.CheckMouse;
+var
+  LIndex: Integer;
+  LX: Integer;
+  LY: Integer;
+  LBox: TMenuCursorBox;
+begin
+  if not MouseGetClick(LX, LY) then
+    Exit;
+  for LIndex := 0 to MENU_MAX[FLevel] - 1 do
+  begin
+    LBox := CURSORS[FLevel][LIndex];
+    if (LX < LBox.X + LBox.W) and (LX > LBox.X) and (LY < LBox.Y + LBox.H) and (LY > LBox.Y) then
+    begin
+      FCursor := LIndex;
+      MenuShowCursor(FCursor);
+      FExecute := True;
+      Exit;
+    end;
+  end;
+  if FLevel = GREED_MENU_OPTIONS then
+    CheckSlider(LX, LY);
 end;
 
 procedure TGreedMenu.MenuShowCursor(ACursor: Integer);
@@ -689,6 +847,7 @@ var
 begin
   if (ACursor = -1) or (ACursor = FCursorLocation) then
     Exit;
+  MouseHide;
   FCanvas.DrawMaskedPic(20, 15, Lump('menumain', FLevel));
   FCursorLocation := ACursor;
   if (ACursor >= Low(CURSORS[FLevel])) and (ACursor <= High(CURSORS[FLevel])) then
@@ -702,6 +861,7 @@ begin
       FCanvas.PutPixel(LBox.X + LBox.W - 1, LRow, CURSOR_COLOR);
     end;
   end;
+  MouseShow;
   if (FLevel = GREED_MENU_LOAD) or (FLevel = GREED_MENU_SAVE) then
     ShowSaveDir;
   if FLevel = GREED_MENU_OPTIONS then
@@ -713,7 +873,9 @@ begin
   if FLevel = GREED_MENU_MAIN then
     FMainCursor := FCursor;
   FLevel := ALevel;
+  MouseHide;
   FCanvas.DrawMaskedPic(20, 15, Lump('menumain', ALevel));
+  MouseShow;
 
   if FLevel = GREED_MENU_MAIN then
     FCursor := FMainCursor
@@ -751,6 +913,7 @@ begin
         5:
           begin
             FHook := False;
+            MouseHide;
             EnterHelp(True);
           end;
         6: FQuitMenu := True;
@@ -770,8 +933,10 @@ begin
         0: EnterQuit(True);
         11: FDownLevel := True;
       else
+        MouseHide;
         FHost.LoadGame(FCursor - 1);
         FQuitMenu := True;
+        MouseShow;
         FSavePosition := ACursor;
       end;
     GREED_MENU_SAVE:
@@ -800,7 +965,9 @@ begin
             else
               LMap := 0;
             end;
+            MouseHide;
             FHost.NewGame(LMap, FIdentity, 6 - ACursor);
+            MouseShow;
             FQuitMenu := True;
           end;
         7: ShowMenuLevel(GREED_MENU_CHARACTER);
@@ -843,6 +1010,7 @@ procedure TGreedMenu.CloseMenu;
 var
   LSize: Integer;
 begin
+  MouseHide;
   Move(FMenuScreen[0], FCanvas.Pixels[0], SCREEN_BYTES);
   FMenuScreen := nil;
   if FHost.GameLoaded then
@@ -857,6 +1025,7 @@ begin
   end;
   FHost.SaveSettings;
   FHost.ResetControls;
+  ResetMouse;
   // the caller of the original puts its own timer hook back
   FHook := False;
   FState := gmsClosed;
@@ -882,6 +1051,7 @@ begin
     FState := gmsAnimate;
     Exit;
   end;
+  MouseShow;
   ShowMenuLevel(ALevel);
   FQuitMenu := False;
   FState := gmsMain;
@@ -895,6 +1065,7 @@ begin
   if FAnimFrame = 8 then
   begin
     FreeLumps('menuanim', 8);
+    MouseShow;
     ShowMenuLevel(FOpenLevel);
     FQuitMenu := False;
     FState := gmsMain;
@@ -907,6 +1078,7 @@ end;
 procedure TGreedMenu.StepMain;
 begin
   MenuShowCursor(FCursor);
+  CheckMouse;
   if FExecute then
   begin
     Execute(FLevel, FCursor);
@@ -932,14 +1104,35 @@ procedure TGreedMenu.EnterQuit(ANested: Boolean);
 begin
   FNested := ANested;
   FHook := False;
+  MouseHide;
   FBackup := Copy(FCanvas.Pixels, 0, SCREEN_BYTES);
+  MouseShow;
   FTimeDelay := FInput.TimeCount + GREED_MENU_KEY_DELAY;
   FWaitUntil := FInput.TimeCount + GREED_MENU_KEY_DELAY;
   FState := gmsQuitDelay;
 end;
 
 procedure TGreedMenu.StepQuitDrop;
+var
+  LX: Integer;
+  LY: Integer;
 begin
+  // a click on YES or on NO of the panel, once it has stopped
+  if (FPanelY >= 67) and MouseGetClick(LX, LY) and (LY >= 110) and (LY <= 117) then
+  begin
+    if (LX >= 130) and (LX <= 153) then
+    begin
+      FQuitChar := 'y';
+      QuitLeave;
+      Exit;
+    end
+    else if (LX >= 162) and (LX <= 186) then
+    begin
+      FQuitChar := 'n';
+      QuitLeave;
+      Exit;
+    end;
+  end;
   if FInput.NewAscii and (FPanelY >= 67) and (FInput.LastAscii <> #0) then
   begin
     FQuitChar := FInput.LastAscii;
@@ -954,12 +1147,17 @@ begin
     FPanelY := FPanelY + 2;
     FDropTime := FInput.TimeCount + 1;
     DrawMaskedPic2(111, FPanelY, Lump('quit', FPanelAnim), FBackup);
+    if FPanelY >= 67 then
+      MouseShow;
   end;
   if FInput.TimeCount >= FAnimTime then
   begin
     FPanelAnim := (FPanelAnim + 1) mod 3;
     FAnimTime := FAnimTime + 10;
+    // the pointer comes back with each picture of the panel, also while the panel is still dropping
+    MouseHide;
     DrawMaskedPic2(111, FPanelY, Lump('quit', FPanelAnim), FBackup);
+    MouseShow;
   end;
 end;
 
@@ -970,6 +1168,7 @@ begin
   FAnimTime := FInput.TimeCount;
   if not Animation then
     FPanelY := 200;
+  MouseHide;
   if FPanelY < 199 then
     FState := gmsQuitLeave
   else
@@ -1000,8 +1199,10 @@ begin
   Move(FBackup[0], FCanvas.Pixels[0], SCREEN_BYTES);
   FBackup := nil;
   FreeLumps('quit', 3);
+  MouseShow;
   FTimeDelay := FInput.TimeCount + GREED_MENU_KEY_DELAY;
   FHost.ResetControls;
+  ResetMouse;
   if not FNested then
   begin
     FState := gmsClosed;
@@ -1090,6 +1291,7 @@ begin
     FState := gmsClosed;
     Exit;
   end;
+  MouseShow;
   FHook := True;
   MainRest;
 end;
@@ -1100,6 +1302,7 @@ end;
 
 procedure TGreedMenu.EnterSaveName(ASlot: Integer);
 begin
+  MouseHide;
   FNameSlot := ASlot;
   FNameCursor := Length(FSaveDir[ASlot]);
   if FNameCursor > 20 then
@@ -1181,6 +1384,7 @@ begin
   end;
   FTimeDelay := FInput.TimeCount + GREED_MENU_KEY_DELAY;
   FHook := True;
+  MouseShow;
   FSavePosition := FExecuteCursor;
   MainRest;
 end;
@@ -1285,10 +1489,14 @@ begin
       begin
         FInput.NewAscii := False;
         FPanelAnim := 0;
+        MouseHide;
         if Animation then
           FPanelY := -66
         else
+        begin
           FPanelY := 68;
+          MouseShow;
+        end;
         FDropTime := FInput.TimeCount;
         FAnimTime := FInput.TimeCount;
         FQuitChar := #0;

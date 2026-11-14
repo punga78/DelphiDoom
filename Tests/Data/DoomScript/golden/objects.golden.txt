@@ -1,0 +1,1966 @@
+CMD startup script/objects.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/objects.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/objects.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 478, ? bytes
+PRINT    Functions: 112, ? bytes
+PRINT    Variables: 7056 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/objects.script
+FILE 1 script/doom_defs.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="base_obj" etype=11 size=152 aux=object def=101 parms=[float field:count,vector field:pos,string field:label,boolean field:flag,entity field:other] funcs=[95,96,97,98,99,100,101,102]
+TYPE 96 name="float field" etype=7 size=0 aux=float def=- parms=[] funcs=[]
+TYPE 97 name="vector field" etype=7 size=0 aux=vector def=- parms=[] funcs=[]
+TYPE 98 name="string field" etype=7 size=0 aux=string def=- parms=[] funcs=[]
+TYPE 99 name="boolean field" etype=7 size=0 aux=boolean def=- parms=[] funcs=[]
+TYPE 100 name="entity field" etype=7 size=0 aux=entity def=- parms=[] funcs=[]
+TYPE 101 name="init" etype=8 size=4 aux=void def=110 parms=[base_obj:self] funcs=[]
+TYPE 102 name="destroy" etype=8 size=4 aux=void def=111 parms=[base_obj:self] funcs=[]
+TYPE 103 name="describe" etype=8 size=4 aux=float def=112 parms=[base_obj:self,string:prefix] funcs=[]
+TYPE 104 name="value" etype=8 size=4 aux=float def=113 parms=[base_obj:self] funcs=[]
+TYPE 105 name="bump" etype=8 size=4 aux=void def=114 parms=[base_obj:self] funcs=[]
+TYPE 106 name="fields" etype=8 size=4 aux=void def=115 parms=[base_obj:self] funcs=[]
+TYPE 107 name="loop" etype=8 size=4 aux=void def=116 parms=[base_obj:self,float:n] funcs=[]
+TYPE 108 name="selfEvents" etype=8 size=4 aux=void def=117 parms=[base_obj:self] funcs=[]
+TYPE 109 name="derived_obj" etype=11 size=160 aux=base_obj def=118 parms=[float field:extra,base_obj field:friend] funcs=[103,104,97,105,99,100,101,102,106,107]
+TYPE 110 name="base_obj field" etype=7 size=0 aux=base_obj def=- parms=[] funcs=[]
+TYPE 111 name="init" etype=8 size=4 aux=void def=121 parms=[derived_obj:self] funcs=[]
+TYPE 112 name="destroy" etype=8 size=4 aux=void def=122 parms=[derived_obj:self] funcs=[]
+TYPE 113 name="value" etype=8 size=4 aux=float def=123 parms=[derived_obj:self] funcs=[]
+TYPE 114 name="onlyDerived" etype=8 size=4 aux=void def=124 parms=[derived_obj:self,float:a] funcs=[]
+TYPE 115 name="link" etype=8 size=4 aux=void def=125 parms=[derived_obj:self,entity:e] funcs=[]
+TYPE 116 name="leaf_obj" etype=11 size=288 aux=derived_obj def=126 parms=[string field:leaf] funcs=[103,104,97,108,99,100,101,102,106,107]
+TYPE 117 name="value" etype=8 size=4 aux=float def=128 parms=[leaf_obj:self] funcs=[]
+TYPE 118 name="plain_obj" etype=11 size=4 aux=object def=129 parms=[float field:x] funcs=[109]
+TYPE 119 name="hello" etype=8 size=4 aux=void def=131 parms=[plain_obj:self] funcs=[]
+TYPE 120 name="useObjects" etype=8 size=4 aux=void def=307 parms=[] funcs=[]
+TYPE 121 name="threads" etype=8 size=4 aux=void def=353 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="base_obj" type=base_obj/11 scope=@namespace init=0 users=1 value=global:520=0
+DEF 102 name="count" type=float field/7 scope=101 init=0 users=1 value=ptr:0
+DEF 103 name="pos" type=vector field/7 scope=101 init=0 users=1 value=ptr:4
+DEF 104 name="pos_x" type=float field/7 scope=101 init=0 users=1 value=ptr:4
+DEF 105 name="pos_y" type=float field/7 scope=101 init=0 users=1 value=ptr:8
+DEF 106 name="pos_z" type=float field/7 scope=101 init=0 users=1 value=ptr:12
+DEF 107 name="label" type=string field/7 scope=101 init=0 users=1 value=ptr:16
+DEF 108 name="flag" type=boolean field/7 scope=101 init=0 users=1 value=ptr:144
+DEF 109 name="other" type=entity field/7 scope=101 init=0 users=1 value=ptr:148
+DEF 110 name="init" type=init/8 scope=101 init=2 users=1 value=func:95
+DEF 111 name="destroy" type=destroy/8 scope=101 init=2 users=1 value=func:96
+DEF 112 name="describe" type=describe/8 scope=101 init=2 users=1 value=func:97
+DEF 113 name="value" type=value/8 scope=101 init=2 users=1 value=func:98
+DEF 114 name="bump" type=bump/8 scope=101 init=2 users=1 value=func:99
+DEF 115 name="fields" type=fields/8 scope=101 init=2 users=1 value=func:100
+DEF 116 name="loop" type=loop/8 scope=101 init=2 users=1 value=func:101
+DEF 117 name="selfEvents" type=selfEvents/8 scope=101 init=2 users=1 value=func:102
+DEF 118 name="derived_obj" type=derived_obj/11 scope=@namespace init=0 users=1 value=global:520=0
+DEF 119 name="extra" type=float field/7 scope=118 init=0 users=1 value=ptr:152
+DEF 120 name="friend" type=base_obj field/7 scope=118 init=0 users=1 value=ptr:156
+DEF 121 name="init" type=init/8 scope=118 init=2 users=1 value=func:103
+DEF 122 name="destroy" type=destroy/8 scope=118 init=2 users=1 value=func:104
+DEF 123 name="value" type=value/8 scope=118 init=2 users=1 value=func:105
+DEF 124 name="onlyDerived" type=onlyDerived/8 scope=118 init=2 users=1 value=func:106
+DEF 125 name="link" type=link/8 scope=118 init=2 users=1 value=func:107
+DEF 126 name="leaf_obj" type=leaf_obj/11 scope=@namespace init=0 users=1 value=global:672=0
+DEF 127 name="leaf" type=string field/7 scope=126 init=0 users=1 value=ptr:160
+DEF 128 name="value" type=value/8 scope=126 init=2 users=1 value=func:108
+DEF 129 name="plain_obj" type=plain_obj/11 scope=@namespace init=0 users=1 value=global:832=0
+DEF 130 name="x" type=float field/7 scope=129 init=0 users=1 value=ptr:0
+DEF 131 name="hello" type=hello/8 scope=129 init=2 users=1 value=func:109
+DEF 132 name="results" type=float/4 scope=@namespace init=0 users=1 value=global:832=#00000000
+DEF 133 name="self" type=base_obj/11 scope=110 init=3 users=1 value=stack:0
+DEF 134 name="<RESULT>" type=pointer/10 scope=110 init=3 users=2 value=stack:4
+DEF 135 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=7 value=global:836=#3F800000
+DEF 136 name="<RESULT>" type=pointer/10 scope=110 init=3 users=2 value=stack:8
+DEF 137 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:840="base"
+DEF 138 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:968="base_obj::init "
+DEF 139 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=21 value=args:4
+DEF 140 name="<RESULT>" type=string/3 scope=110 init=3 users=2 value=stack:136
+DEF 141 name="<RESULT>" type=string/3 scope=110 init=3 users=2 value=stack:264
+DEF 142 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=34 value=args:128
+DEF 143 name="self" type=base_obj/11 scope=111 init=3 users=1 value=stack:0
+DEF 144 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1104="base_obj::destroy "
+DEF 145 name="<RESULT>" type=string/3 scope=111 init=3 users=2 value=stack:4
+DEF 146 name="<RESULT>" type=string/3 scope=111 init=3 users=2 value=stack:132
+DEF 147 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=3 value=global:1232=" count="
+DEF 148 name="<RESULT>" type=float/4 scope=111 init=3 users=2 value=stack:260
+DEF 149 name="self" type=base_obj/11 scope=113 init=3 users=1 value=stack:0
+DEF 150 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:1360=#41200000
+DEF 151 name="self" type=base_obj/11 scope=112 init=3 users=1 value=stack:0
+DEF 152 name="prefix" type=string/3 scope=112 init=3 users=1 value=stack:4
+DEF 153 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1364=": label="
+DEF 154 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:132
+DEF 155 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:260
+DEF 156 name="<RESULT>" type=string/3 scope=112 init=3 users=2 value=stack:388
+DEF 157 name="<RESULT>" type=float/4 scope=112 init=3 users=2 value=stack:516
+DEF 158 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1492=" pos="
+DEF 159 name="<RESULT>" type=vector/5 scope=112 init=3 users=2 value=stack:520
+DEF 160 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1620=" value="
+DEF 161 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=9 value=virt:3
+DEF 162 name="self" type=base_obj/11 scope=114 init=3 users=1 value=stack:0
+DEF 163 name="<RESULT>" type=pointer/10 scope=114 init=3 users=2 value=stack:4
+DEF 164 name="<RESULT>" type=pointer/10 scope=114 init=3 users=2 value=stack:8
+DEF 165 name="<RESULT>" type=pointer/10 scope=114 init=3 users=2 value=stack:12
+DEF 166 name="<RESULT>" type=float/4 scope=114 init=3 users=2 value=stack:16
+DEF 167 name="<RESULT>" type=float/4 scope=114 init=3 users=2 value=stack:20
+DEF 168 name="self" type=base_obj/11 scope=115 init=3 users=1 value=stack:0
+DEF 169 name="f" type=float/4 scope=115 init=3 users=1 value=stack:4
+DEF 170 name="s" type=string/3 scope=115 init=3 users=1 value=stack:8
+DEF 171 name="v" type=vector/5 scope=115 init=3 users=1 value=stack:136
+DEF 172 name="v_x" type=float/4 scope=115 init=3 users=1 value=stack:136
+DEF 173 name="v_y" type=float/4 scope=115 init=3 users=1 value=stack:140
+DEF 174 name="v_z" type=float/4 scope=115 init=3 users=1 value=stack:144
+DEF 175 name="b" type=boolean/14 scope=115 init=3 users=1 value=stack:148
+DEF 176 name="me" type=entity/6 scope=115 init=3 users=1 value=stack:152
+DEF 177 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:156
+DEF 178 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1752=#40200000
+DEF 179 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:160
+DEF 180 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:1756=#3F800000,#40000000,#40400000
+DEF 181 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:1756=#3F800000
+DEF 182 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:1760=#40000000
+DEF 183 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:1764=#40400000
+DEF 184 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:172
+DEF 185 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1768="set"
+DEF 186 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:300
+DEF 187 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:304
+DEF 188 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:308
+DEF 189 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:436
+DEF 190 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1896="label from float: "
+DEF 191 name="<RESULT>" type=string/3 scope=115 init=3 users=2 value=stack:440
+DEF 192 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:568
+DEF 193 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:696
+DEF 194 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2024="label from vector: "
+DEF 195 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:708
+DEF 196 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:836
+DEF 197 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2152="label from boolean: "
+DEF 198 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:840
+DEF 199 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2280="count from boolean: "
+DEF 200 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:968
+DEF 201 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:2408=#00000000
+DEF 202 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:972
+DEF 203 name="<RESULT>" type=boolean/14 scope=115 init=3 users=2 value=stack:976
+DEF 204 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2412="flag from float: "
+DEF 205 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:980
+DEF 206 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2540="read: "
+DEF 207 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=10 value=global:2668=" "
+DEF 208 name="<RESULT>" type=float/4 scope=115 init=3 users=2 value=stack:1108
+DEF 209 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:2796=#40800000
+DEF 210 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1112
+DEF 211 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1116
+DEF 212 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:2800=#40400000
+DEF 213 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1120
+DEF 214 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=5 value=global:2804=#40000000
+DEF 215 name="<RESULT>" type=float/4 scope=115 init=3 users=2 value=stack:1124
+DEF 216 name="<RESULT>" type=vector/5 scope=115 init=3 users=2 value=stack:1128
+DEF 217 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2808=#3F800000,#3F800000,#3F800000
+DEF 218 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2808=#3F800000
+DEF 219 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2812=#3F800000
+DEF 220 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2816=#3F800000
+DEF 221 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1140
+DEF 222 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2820=#00000000,#00000000,#3F800000
+DEF 223 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2820=#00000000
+DEF 224 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2824=#00000000
+DEF 225 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2828=#3F800000
+DEF 226 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1152
+DEF 227 name="<RESULT>" type=vector/5 scope=115 init=3 users=2 value=stack:1164
+DEF 228 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2832="compound: "
+DEF 229 name="<RESULT>" type=pointer/10 scope=115 init=3 users=2 value=stack:1176
+DEF 230 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2960="other is self"
+DEF 231 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=10 value=jump:3
+DEF 232 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:3092=0
+DEF 233 name="<RESULT>" type=entity/6 scope=115 init=3 users=2 value=stack:1180
+DEF 234 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3096="other is null"
+DEF 235 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3224="after fields"
+DEF 236 name="self" type=base_obj/11 scope=116 init=3 users=1 value=stack:0
+DEF 237 name="n" type=float/4 scope=116 init=3 users=1 value=stack:4
+DEF 238 name="i" type=float/4 scope=116 init=3 users=1 value=stack:8
+DEF 239 name="<RESULT>" type=float/4 scope=116 init=3 users=2 value=stack:12
+DEF 240 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-4
+DEF 241 name="<RESULT>" type=string/3 scope=116 init=3 users=2 value=stack:16
+DEF 242 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3356=" loop "
+DEF 243 name="<RESULT>" type=string/3 scope=116 init=3 users=2 value=stack:144
+DEF 244 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=4 value=args:0
+DEF 245 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-14
+DEF 246 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:17
+DEF 247 name="self" type=base_obj/11 scope=117 init=3 users=1 value=stack:0
+DEF 248 name="<RESULT>" type=float/4 scope=117 init=3 users=2 value=stack:4
+DEF 249 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=10 value=args:8
+DEF 250 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:3500="selfEvents "
+DEF 251 name="<RESULT>" type=string/3 scope=117 init=3 users=2 value=stack:8
+DEF 252 name="<RESULT>" type=string/3 scope=117 init=3 users=2 value=stack:136
+DEF 253 name="self" type=derived_obj/11 scope=121 init=3 users=1 value=stack:0
+DEF 254 name="<RESULT>" type=pointer/10 scope=121 init=3 users=2 value=stack:4
+DEF 255 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:3628=#40A00000
+DEF 256 name="<RESULT>" type=pointer/10 scope=121 init=3 users=2 value=stack:8
+DEF 257 name="<RESULT>" type=string/3 scope=121 init=3 users=2 value=stack:136
+DEF 258 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3632="+derived"
+DEF 259 name="<RESULT>" type=string/3 scope=121 init=3 users=2 value=stack:264
+DEF 260 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3760="derived_obj::init "
+DEF 261 name="self" type=derived_obj/11 scope=122 init=3 users=1 value=stack:0
+DEF 262 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3888="derived_obj::destroy extra="
+DEF 263 name="<RESULT>" type=float/4 scope=122 init=3 users=2 value=stack:4
+DEF 264 name="<RESULT>" type=string/3 scope=122 init=3 users=2 value=stack:8
+DEF 265 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4016=#42C80000
+DEF 266 name="<RESULT>" type=pointer/10 scope=122 init=3 users=2 value=stack:136
+DEF 267 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:2
+DEF 268 name="self" type=derived_obj/11 scope=123 init=3 users=1 value=stack:0
+DEF 269 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4024=#41A00000
+DEF 270 name="<RESULT>" type=float/4 scope=123 init=3 users=2 value=stack:4
+DEF 271 name="<RESULT>" type=float/4 scope=123 init=3 users=2 value=stack:8
+DEF 272 name="self" type=derived_obj/11 scope=124 init=3 users=1 value=stack:0
+DEF 273 name="a" type=float/4 scope=124 init=3 users=1 value=stack:4
+DEF 274 name="<RESULT>" type=pointer/10 scope=124 init=3 users=2 value=stack:8
+DEF 275 name="<RESULT>" type=float/4 scope=124 init=3 users=2 value=stack:12
+DEF 276 name="<RESULT>" type=pointer/10 scope=124 init=3 users=2 value=stack:16
+DEF 277 name="<RESULT>" type=float/4 scope=124 init=3 users=2 value=stack:20
+DEF 278 name="self" type=derived_obj/11 scope=125 init=3 users=1 value=stack:0
+DEF 279 name="e" type=entity/6 scope=125 init=3 users=1 value=stack:4
+DEF 280 name="<RESULT>" type=pointer/10 scope=125 init=3 users=2 value=stack:8
+DEF 281 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=2 value=stack:12
+DEF 282 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4028="friend value="
+DEF 283 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=3 value=stack:16
+DEF 284 name="<RESULT>" type=pointer/10 scope=125 init=3 users=2 value=stack:20
+DEF 285 name="<RESULT>" type=string/3 scope=125 init=3 users=2 value=stack:24
+DEF 286 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4156=" label="
+DEF 287 name="<RESULT>" type=string/3 scope=125 init=3 users=2 value=stack:152
+DEF 288 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=2 value=stack:280
+DEF 289 name="<RESULT>" type=pointer/10 scope=125 init=3 users=2 value=stack:284
+DEF 290 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=2 value=stack:412
+DEF 291 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4284=#429A0000
+DEF 292 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=2 value=stack:416
+DEF 293 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4288="linked"
+DEF 294 name="<RESULT>" type=base_obj/11 scope=125 init=3 users=2 value=stack:420
+DEF 295 name="<RESULT>" type=pointer/10 scope=125 init=3 users=2 value=stack:424
+DEF 296 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4416=#41100000
+DEF 297 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:22
+DEF 298 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4424="no friend"
+DEF 299 name="self" type=leaf_obj/11 scope=128 init=3 users=1 value=stack:0
+DEF 300 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4552=#41F00000
+DEF 301 name="self" type=plain_obj/11 scope=131 init=3 users=1 value=stack:0
+DEF 302 name="<RESULT>" type=pointer/10 scope=131 init=3 users=2 value=stack:4
+DEF 303 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:8
+DEF 304 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:12
+DEF 305 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4556="plain hello "
+DEF 306 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:16
+DEF 307 name="useObjects" type=useObjects/8 scope=@namespace init=2 users=1 value=func:110
+DEF 308 name="b" type=base_obj/11 scope=307 init=3 users=1 value=stack:0
+DEF 309 name="d" type=derived_obj/11 scope=307 init=3 users=1 value=stack:4
+DEF 310 name="l" type=leaf_obj/11 scope=307 init=3 users=1 value=stack:8
+DEF 311 name="p" type=plain_obj/11 scope=307 init=3 users=1 value=stack:12
+DEF 312 name="e" type=entity/6 scope=307 init=3 users=1 value=stack:16
+DEF 313 name="f" type=float/4 scope=307 init=3 users=1 value=stack:20
+DEF 314 name="$ent_base" type=entity/6 scope=@namespace init=0 users=1 value=global:4688=0
+DEF 315 name="$ent_derived" type=entity/6 scope=@namespace init=0 users=1 value=global:4692=0
+DEF 316 name="$ent_leaf" type=entity/6 scope=@namespace init=0 users=1 value=global:4696=0
+DEF 317 name="$ent_plain" type=entity/6 scope=@namespace init=0 users=1 value=global:4700=0
+DEF 318 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4704="b"
+DEF 319 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=3 value=virt:2
+DEF 320 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=3 value=args:132
+DEF 321 name="<RESULT>" type=float/4 scope=307 init=3 users=2 value=stack:24
+DEF 322 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4840="d"
+DEF 323 name="<RESULT>" type=pointer/10 scope=307 init=3 users=2 value=stack:28
+DEF 324 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4968="l"
+DEF 325 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=3 value=virt:4
+DEF 326 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5100="counts "
+DEF 327 name="<RESULT>" type=string/3 scope=307 init=3 users=2 value=stack:32
+DEF 328 name="<RESULT>" type=string/3 scope=307 init=3 users=2 value=stack:160
+DEF 329 name="<RESULT>" type=vector/5 scope=307 init=3 users=2 value=stack:288
+DEF 330 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=2 value=virt:8
+DEF 331 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5232="values "
+DEF 332 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:5360="virtual "
+DEF 333 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5488="plain is not a base_obj"
+DEF 334 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5616="null call "
+DEF 335 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5744=" '"
+DEF 336 name="<RESULT>" type=string/3 scope=307 init=3 users=2 value=stack:300
+DEF 337 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5872="' "
+DEF 338 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6000="base is not a derived_obj"
+DEF 339 name="<RESULT>" type=float/4 scope=307 init=3 users=2 value=stack:428
+DEF 340 name="<RESULT>" type=pointer/10 scope=307 init=3 users=2 value=stack:432
+DEF 341 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6128="leaf converts"
+DEF 342 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6256="d != b"
+DEF 343 name="$ent_none" type=entity/6 scope=@namespace init=0 users=1 value=global:6384=0
+DEF 344 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6388="no object on ent_none"
+DEF 345 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=2 value=virt:0
+DEF 346 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:6520=#42240000
+DEF 347 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=3 value=virt:9
+DEF 348 name="<RESULT>" type=pointer/10 scope=307 init=3 users=2 value=stack:436
+DEF 349 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6528="friend through field "
+DEF 350 name="<RESULT>" type=base_obj/11 scope=307 init=3 users=3 value=stack:440
+DEF 351 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=1 value=virt:5
+DEF 352 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=1 value=virt:7
+DEF 353 name="threads" type=threads/8 scope=@namespace init=2 users=1 value=func:111
+DEF 354 name="b" type=base_obj/11 scope=353 init=3 users=1 value=stack:0
+DEF 355 name="t" type=float/4 scope=353 init=3 users=1 value=stack:4
+DEF 356 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=3 value=virt:6
+DEF 357 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6672="thread "
+DEF 358 name="<RESULT>" type=string/3 scope=353 init=3 users=2 value=stack:8
+DEF 359 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6800="thread on null "
+DEF 360 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6928="threads done"
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="base_obj::init" event=- def=110 first=1 num=11 parmTotal=4 locals=392 filenum=0 parmSize=[4]
+FUNC 96 name="base_obj::destroy" event=- def=111 first=12 num=8 parmTotal=4 locals=264 filenum=0 parmSize=[4]
+FUNC 97 name="base_obj::describe" event=- def=112 first=22 num=19 parmTotal=132 locals=532 filenum=0 parmSize=[4,128]
+FUNC 98 name="base_obj::value" event=- def=113 first=20 num=2 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 99 name="base_obj::bump" event=- def=114 first=41 num=18 parmTotal=4 locals=24 filenum=0 parmSize=[4]
+FUNC 100 name="base_obj::fields" event=- def=115 first=59 num=116 parmTotal=4 locals=1184 filenum=0 parmSize=[4]
+FUNC 101 name="base_obj::loop" event=- def=116 first=175 num=20 parmTotal=8 locals=272 filenum=0 parmSize=[4,4]
+FUNC 102 name="base_obj::selfEvents" event=- def=117 first=195 num=25 parmTotal=4 locals=264 filenum=0 parmSize=[4]
+FUNC 103 name="derived_obj::init" event=- def=121 first=220 num=13 parmTotal=4 locals=392 filenum=0 parmSize=[4]
+FUNC 104 name="derived_obj::destroy" event=- def=122 first=233 num=13 parmTotal=4 locals=140 filenum=0 parmSize=[4]
+FUNC 105 name="derived_obj::value" event=- def=123 first=246 num=4 parmTotal=4 locals=12 filenum=0 parmSize=[4]
+FUNC 106 name="derived_obj::onlyDerived" event=- def=124 first=250 num=9 parmTotal=8 locals=24 filenum=0 parmSize=[4,4]
+FUNC 107 name="derived_obj::link" event=- def=125 first=259 num=28 parmTotal=8 locals=428 filenum=0 parmSize=[4,4]
+FUNC 108 name="leaf_obj::value" event=- def=128 first=287 num=2 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 109 name="plain_obj::hello" event=- def=131 first=289 num=9 parmTotal=4 locals=144 filenum=0 parmSize=[4]
+FUNC 110 name="useObjects" event=- def=307 first=298 num=154 parmTotal=0 locals=444 filenum=0 parmSize=[]
+FUNC 111 name="threads" event=- def=353 first=452 num=26 parmTotal=0 locals=136 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADDRESS a=133 b=102 c=134 line=44 file=0
+STMT 2 STOREP_F a=135 b=134 c=- line=44 file=0
+STMT 3 ADDRESS a=133 b=107 c=136 line=45 file=0
+STMT 4 STOREP_S a=137 b=136 c=- line=45 file=0
+STMT 5 PUSH_OBJENT a=133 b=- c=- line=46 file=0
+STMT 6 EVENTCALL a=85 b=139 c=- line=46 file=0
+STMT 7 STORE_S a=4 b=140 c=- line=46 file=0
+STMT 8 ADD_S a=138 b=140 c=141 line=46 file=0
+STMT 9 PUSH_S a=141 b=- c=- line=46 file=0
+STMT 10 SYSCALL a=15 b=142 c=- line=46 file=0
+STMT 11 RETURN a=- b=- c=- line=47 file=0
+STMT 12 INDIRECT_S a=143 b=107 c=145 line=50 file=0
+STMT 13 ADD_S a=144 b=145 c=146 line=50 file=0
+STMT 14 ADD_S a=146 b=147 c=145 line=50 file=0
+STMT 15 INDIRECT_F a=143 b=102 c=148 line=50 file=0
+STMT 16 ADD_SF a=145 b=148 c=146 line=50 file=0
+STMT 17 PUSH_S a=146 b=- c=- line=50 file=0
+STMT 18 SYSCALL a=15 b=142 c=- line=50 file=0
+STMT 19 RETURN a=- b=- c=- line=51 file=0
+STMT 20 RETURN a=150 b=- c=- line=54 file=0
+STMT 21 RETURN a=- b=- c=- line=55 file=0
+STMT 22 ADD_S a=152 b=153 c=154 line=58 file=0
+STMT 23 INDIRECT_S a=151 b=107 c=155 line=58 file=0
+STMT 24 ADD_S a=154 b=155 c=156 line=58 file=0
+STMT 25 ADD_S a=156 b=147 c=155 line=58 file=0
+STMT 26 INDIRECT_F a=151 b=102 c=157 line=58 file=0
+STMT 27 ADD_SF a=155 b=157 c=156 line=58 file=0
+STMT 28 ADD_S a=156 b=158 c=155 line=58 file=0
+STMT 29 INDIRECT_V a=151 b=103 c=159 line=58 file=0
+STMT 30 ADD_SV a=155 b=159 c=156 line=58 file=0
+STMT 31 ADD_S a=156 b=160 c=155 line=58 file=0
+STMT 32 PUSH_OBJ a=151 b=- c=- line=58 file=0
+STMT 33 OBJECTCALL a=151 b=161 c=139 line=58 file=0
+STMT 34 STORE_F a=0 b=157 c=- line=58 file=0
+STMT 35 ADD_SF a=155 b=157 c=156 line=58 file=0
+STMT 36 PUSH_S a=156 b=- c=- line=58 file=0
+STMT 37 SYSCALL a=15 b=142 c=- line=58 file=0
+STMT 38 INDIRECT_F a=151 b=102 c=157 line=59 file=0
+STMT 39 RETURN a=157 b=- c=- line=59 file=0
+STMT 40 RETURN a=- b=- c=- line=60 file=0
+STMT 41 UINCP_F a=162 b=102 c=- line=63 file=0
+STMT 42 UINCP_F a=162 b=102 c=- line=64 file=0
+STMT 43 UDECP_F a=162 b=102 c=- line=65 file=0
+STMT 44 INDIRECT_F a=162 b=102 c=163 line=67 file=0
+STMT 45 UINC_F a=163 b=- c=- line=67 file=0
+STMT 46 ADDRESS a=162 b=102 c=163 line=68 file=0
+STMT 47 INDIRECT_F a=162 b=102 c=164 line=68 file=0
+STMT 48 ADD_F a=164 b=150 c=165 line=68 file=0
+STMT 49 STOREP_F a=165 b=163 c=- line=68 file=0
+STMT 50 ADDRESS a=162 b=104 c=165 line=69 file=0
+STMT 51 INDIRECT_F a=162 b=102 c=164 line=69 file=0
+STMT 52 STOREP_F a=164 b=165 c=- line=69 file=0
+STMT 53 UINCP_F a=162 b=105 c=- line=70 file=0
+STMT 54 ADDRESS a=162 b=106 c=164 line=71 file=0
+STMT 55 INDIRECT_F a=162 b=104 c=166 line=71 file=0
+STMT 56 ADD_F a=166 b=135 c=167 line=71 file=0
+STMT 57 STOREP_F a=167 b=164 c=- line=71 file=0
+STMT 58 RETURN a=- b=- c=- line=72 file=0
+STMT 59 ADDRESS a=168 b=102 c=177 line=82 file=0
+STMT 60 STOREP_F a=178 b=177 c=- line=82 file=0
+STMT 61 ADDRESS a=168 b=103 c=179 line=83 file=0
+STMT 62 STOREP_V a=180 b=179 c=- line=83 file=0
+STMT 63 ADDRESS a=168 b=107 c=184 line=84 file=0
+STMT 64 STOREP_S a=185 b=184 c=- line=84 file=0
+STMT 65 ADDRESS a=168 b=108 c=186 line=85 file=0
+STMT 66 STOREP_FTOBOOL a=135 b=186 c=- line=85 file=0
+STMT 67 STORE_OBJENT a=168 b=176 c=- line=86 file=0
+STMT 68 ADDRESS a=168 b=109 c=187 line=87 file=0
+STMT 69 STOREP_ENT a=176 b=187 c=- line=87 file=0
+STMT 70 ADDRESS a=168 b=107 c=188 line=88 file=0
+STMT 71 INDIRECT_F a=168 b=102 c=189 line=88 file=0
+STMT 72 STOREP_FTOS a=189 b=188 c=- line=88 file=0
+STMT 73 INDIRECT_S a=168 b=107 c=191 line=89 file=0
+STMT 74 ADD_S a=190 b=191 c=192 line=89 file=0
+STMT 75 PUSH_S a=192 b=- c=- line=89 file=0
+STMT 76 SYSCALL a=15 b=142 c=- line=89 file=0
+STMT 77 ADDRESS a=168 b=107 c=192 line=90 file=0
+STMT 78 INDIRECT_V a=168 b=103 c=193 line=90 file=0
+STMT 79 STOREP_VTOS a=193 b=192 c=- line=90 file=0
+STMT 80 INDIRECT_S a=168 b=107 c=191 line=91 file=0
+STMT 81 ADD_S a=194 b=191 c=195 line=91 file=0
+STMT 82 PUSH_S a=195 b=- c=- line=91 file=0
+STMT 83 SYSCALL a=15 b=142 c=- line=91 file=0
+STMT 84 ADDRESS a=168 b=107 c=195 line=92 file=0
+STMT 85 INDIRECT_BOOL a=168 b=108 c=196 line=92 file=0
+STMT 86 STOREP_BTOS a=196 b=195 c=- line=92 file=0
+STMT 87 INDIRECT_S a=168 b=107 c=191 line=93 file=0
+STMT 88 ADD_S a=197 b=191 c=198 line=93 file=0
+STMT 89 PUSH_S a=198 b=- c=- line=93 file=0
+STMT 90 SYSCALL a=15 b=142 c=- line=93 file=0
+STMT 91 STORE_FTOBOOL a=135 b=175 c=- line=94 file=0
+STMT 92 ADDRESS a=168 b=102 c=189 line=95 file=0
+STMT 93 STOREP_BOOLTOF a=175 b=189 c=- line=95 file=0
+STMT 94 INDIRECT_F a=168 b=102 c=200 line=96 file=0
+STMT 95 ADD_SF a=199 b=200 c=198 line=96 file=0
+STMT 96 PUSH_S a=198 b=- c=- line=96 file=0
+STMT 97 SYSCALL a=15 b=142 c=- line=96 file=0
+STMT 98 ADDRESS a=168 b=108 c=196 line=97 file=0
+STMT 99 STOREP_FTOBOOL a=201 b=196 c=- line=97 file=0
+STMT 100 ADDRESS a=168 b=108 c=202 line=98 file=0
+STMT 101 INDIRECT_F a=168 b=102 c=200 line=98 file=0
+STMT 102 STOREP_FTOBOOL a=200 b=202 c=- line=98 file=0
+STMT 103 ADDRESS a=168 b=107 c=198 line=99 file=0
+STMT 104 INDIRECT_BOOL a=168 b=108 c=203 line=99 file=0
+STMT 105 STOREP_BTOS a=203 b=198 c=- line=99 file=0
+STMT 106 INDIRECT_S a=168 b=107 c=191 line=100 file=0
+STMT 107 ADD_S a=204 b=191 c=205 line=100 file=0
+STMT 108 PUSH_S a=205 b=- c=- line=100 file=0
+STMT 109 SYSCALL a=15 b=142 c=- line=100 file=0
+STMT 110 INDIRECT_F a=168 b=102 c=200 line=102 file=0
+STMT 111 STORE_F a=200 b=169 c=- line=102 file=0
+STMT 112 INDIRECT_V a=168 b=103 c=193 line=103 file=0
+STMT 113 STORE_V a=193 b=171 c=- line=103 file=0
+STMT 114 INDIRECT_S a=168 b=107 c=205 line=104 file=0
+STMT 115 STORE_S a=205 b=170 c=- line=104 file=0
+STMT 116 INDIRECT_BOOL a=168 b=108 c=203 line=105 file=0
+STMT 117 STORE_BOOL a=203 b=175 c=- line=105 file=0
+STMT 118 ADD_SF a=206 b=169 c=205 line=106 file=0
+STMT 119 ADD_S a=205 b=207 c=191 line=106 file=0
+STMT 120 ADD_SV a=191 b=171 c=205 line=106 file=0
+STMT 121 ADD_S a=205 b=207 c=191 line=106 file=0
+STMT 122 ADD_S a=191 b=170 c=205 line=106 file=0
+STMT 123 PUSH_S a=205 b=- c=- line=106 file=0
+STMT 124 SYSCALL a=15 b=142 c=- line=106 file=0
+STMT 125 ADDRESS a=168 b=102 c=200 line=107 file=0
+STMT 126 INDIRECT_F a=168 b=102 c=208 line=107 file=0
+STMT 127 ADD_F a=208 b=209 c=210 line=107 file=0
+STMT 128 STOREP_F a=210 b=200 c=- line=107 file=0
+STMT 129 ADDRESS a=168 b=102 c=210 line=108 file=0
+STMT 130 INDIRECT_F a=168 b=102 c=208 line=108 file=0
+STMT 131 SUB_F a=208 b=135 c=211 line=108 file=0
+STMT 132 STOREP_F a=211 b=210 c=- line=108 file=0
+STMT 133 ADDRESS a=168 b=102 c=211 line=109 file=0
+STMT 134 INDIRECT_F a=168 b=102 c=208 line=109 file=0
+STMT 135 MUL_F a=208 b=212 c=213 line=109 file=0
+STMT 136 STOREP_F a=213 b=211 c=- line=109 file=0
+STMT 137 ADDRESS a=168 b=102 c=213 line=110 file=0
+STMT 138 INDIRECT_F a=168 b=102 c=208 line=110 file=0
+STMT 139 DIV a=208 b=214 c=215 line=110 file=0
+STMT 140 STOREP_F a=215 b=213 c=- line=110 file=0
+STMT 141 ADDRESS a=168 b=103 c=193 line=111 file=0
+STMT 142 INDIRECT_V a=168 b=103 c=216 line=111 file=0
+STMT 143 ADD_V a=216 b=217 c=221 line=111 file=0
+STMT 144 STOREP_V a=221 b=193 c=- line=111 file=0
+STMT 145 ADDRESS a=168 b=103 c=221 line=112 file=0
+STMT 146 INDIRECT_V a=168 b=103 c=216 line=112 file=0
+STMT 147 SUB_V a=216 b=222 c=226 line=112 file=0
+STMT 148 STOREP_V a=226 b=221 c=- line=112 file=0
+STMT 149 ADDRESS a=168 b=103 c=226 line=113 file=0
+STMT 150 INDIRECT_V a=168 b=103 c=216 line=113 file=0
+STMT 151 MUL_VF a=216 b=214 c=227 line=113 file=0
+STMT 152 STOREP_V a=227 b=226 c=- line=113 file=0
+STMT 153 INDIRECT_F a=168 b=102 c=215 line=114 file=0
+STMT 154 ADD_SF a=228 b=215 c=205 line=114 file=0
+STMT 155 ADD_S a=205 b=207 c=191 line=114 file=0
+STMT 156 INDIRECT_V a=168 b=103 c=227 line=114 file=0
+STMT 157 ADD_SV a=191 b=227 c=205 line=114 file=0
+STMT 158 PUSH_S a=205 b=- c=- line=114 file=0
+STMT 159 SYSCALL a=15 b=142 c=- line=114 file=0
+STMT 160 INDIRECT_E a=168 b=109 c=229 line=115 file=0
+STMT 161 EQ_EO a=229 b=168 c=215 line=115 file=0
+STMT 162 IFNOT a=215 b=231 c=- line=115 file=0
+STMT 163 PUSH_S a=230 b=- c=- line=116 file=0
+STMT 164 SYSCALL a=15 b=142 c=- line=116 file=0
+STMT 165 ADDRESS a=168 b=109 c=229 line=118 file=0
+STMT 166 STOREP_ENT a=232 b=229 c=- line=118 file=0
+STMT 167 INDIRECT_E a=168 b=109 c=233 line=119 file=0
+STMT 168 NOT_ENT a=233 b=- c=215 line=119 file=0
+STMT 169 IFNOT a=215 b=231 c=- line=119 file=0
+STMT 170 PUSH_S a=234 b=- c=- line=120 file=0
+STMT 171 SYSCALL a=15 b=142 c=- line=120 file=0
+STMT 172 ADDRESS a=168 b=107 c=205 line=122 file=0
+STMT 173 STOREP_S a=235 b=205 c=- line=122 file=0
+STMT 174 RETURN a=- b=- c=- line=123 file=0
+STMT 175 STORE_F a=201 b=238 c=- line=128 file=0
+STMT 176 LT a=238 b=237 c=239 line=128 file=0
+STMT 177 IFNOT a=239 b=246 c=- line=128 file=0
+STMT 178 IF a=239 b=231 c=- line=128 file=0
+STMT 179 UINC_F a=238 b=- c=- line=128 file=0
+STMT 180 GOTO a=240 b=- c=- line=128 file=0
+STMT 181 UINCP_F a=236 b=102 c=- line=129 file=0
+STMT 182 PUSH_OBJENT a=236 b=- c=- line=130 file=0
+STMT 183 EVENTCALL a=85 b=139 c=- line=130 file=0
+STMT 184 STORE_S a=4 b=241 c=- line=130 file=0
+STMT 185 ADD_S a=241 b=242 c=243 line=130 file=0
+STMT 186 ADD_SF a=243 b=238 c=241 line=130 file=0
+STMT 187 ADD_S a=241 b=147 c=243 line=130 file=0
+STMT 188 INDIRECT_F a=236 b=102 c=239 line=130 file=0
+STMT 189 ADD_SF a=243 b=239 c=241 line=130 file=0
+STMT 190 PUSH_S a=241 b=- c=- line=130 file=0
+STMT 191 SYSCALL a=15 b=142 c=- line=130 file=0
+STMT 192 SYSCALL a=9 b=244 c=- line=131 file=0
+STMT 193 GOTO a=245 b=- c=- line=132 file=0
+STMT 194 RETURN a=- b=- c=- line=133 file=0
+STMT 195 PUSH_OBJENT a=247 b=- c=- line=137 file=0
+STMT 196 INDIRECT_F a=247 b=102 c=248 line=137 file=0
+STMT 197 PUSH_F a=248 b=- c=- line=137 file=0
+STMT 198 EVENTCALL a=87 b=249 c=- line=137 file=0
+STMT 199 PUSH_OBJENT a=247 b=- c=- line=138 file=0
+STMT 200 EVENTCALL a=85 b=139 c=- line=138 file=0
+STMT 201 STORE_S a=4 b=251 c=- line=138 file=0
+STMT 202 ADD_S a=250 b=251 c=252 line=138 file=0
+STMT 203 ADD_S a=252 b=207 c=251 line=138 file=0
+STMT 204 PUSH_OBJENT a=247 b=- c=- line=138 file=0
+STMT 205 EVENTCALL a=88 b=139 c=- line=138 file=0
+STMT 206 STORE_F a=0 b=248 c=- line=138 file=0
+STMT 207 ADD_SF a=251 b=248 c=252 line=138 file=0
+STMT 208 PUSH_S a=252 b=- c=- line=138 file=0
+STMT 209 SYSCALL a=15 b=142 c=- line=138 file=0
+STMT 210 PUSH_OBJENT a=247 b=- c=- line=139 file=0
+STMT 211 PUSH_F a=214 b=- c=- line=139 file=0
+STMT 212 EVENTCALL a=87 b=249 c=- line=139 file=0
+STMT 213 PUSH_OBJENT a=247 b=- c=- line=140 file=0
+STMT 214 EVENTCALL a=88 b=139 c=- line=140 file=0
+STMT 215 STORE_F a=0 b=248 c=- line=140 file=0
+STMT 216 ADD_SF a=250 b=248 c=252 line=140 file=0
+STMT 217 PUSH_S a=252 b=- c=- line=140 file=0
+STMT 218 SYSCALL a=15 b=142 c=- line=140 file=0
+STMT 219 RETURN a=- b=- c=- line=141 file=0
+STMT 220 PUSH_OBJ a=253 b=- c=- line=143 file=0
+STMT 221 CALL a=110 b=- c=- line=143 file=0
+STMT 222 ADDRESS a=253 b=119 c=254 line=144 file=0
+STMT 223 STOREP_F a=255 b=254 c=- line=144 file=0
+STMT 224 ADDRESS a=253 b=107 c=256 line=145 file=0
+STMT 225 INDIRECT_S a=253 b=107 c=257 line=145 file=0
+STMT 226 ADD_S a=257 b=258 c=259 line=145 file=0
+STMT 227 STOREP_S a=259 b=256 c=- line=145 file=0
+STMT 228 INDIRECT_S a=253 b=107 c=259 line=146 file=0
+STMT 229 ADD_S a=260 b=259 c=257 line=146 file=0
+STMT 230 PUSH_S a=257 b=- c=- line=146 file=0
+STMT 231 SYSCALL a=15 b=142 c=- line=146 file=0
+STMT 232 RETURN a=- b=- c=- line=147 file=0
+STMT 233 INDIRECT_F a=261 b=119 c=263 line=150 file=0
+STMT 234 ADD_SF a=262 b=263 c=264 line=150 file=0
+STMT 235 PUSH_S a=264 b=- c=- line=150 file=0
+STMT 236 SYSCALL a=15 b=142 c=- line=150 file=0
+STMT 237 INDIRECT_F a=261 b=119 c=263 line=151 file=0
+STMT 238 GT a=263 b=265 c=266 line=151 file=0
+STMT 239 IFNOT a=266 b=267 c=- line=151 file=0
+STMT 240 GOTO a=231 b=- c=- line=152 file=0
+STMT 241 ADDRESS a=261 b=119 c=266 line=154 file=0
+STMT 242 STOREP_F a=201 b=266 c=- line=154 file=0
+STMT 243 PUSH_OBJ a=261 b=- c=- line=155 file=0
+STMT 244 CALL a=111 b=- c=- line=155 file=0
+STMT 245 RETURN a=- b=- c=- line=155 file=0
+STMT 246 INDIRECT_F a=268 b=119 c=270 line=158 file=0
+STMT 247 ADD_F a=269 b=270 c=271 line=158 file=0
+STMT 248 RETURN a=271 b=- c=- line=158 file=0
+STMT 249 RETURN a=- b=- c=- line=159 file=0
+STMT 250 ADDRESS a=272 b=119 c=274 line=162 file=0
+STMT 251 INDIRECT_F a=272 b=119 c=275 line=162 file=0
+STMT 252 ADD_F a=275 b=273 c=276 line=162 file=0
+STMT 253 STOREP_F a=276 b=274 c=- line=162 file=0
+STMT 254 ADDRESS a=272 b=102 c=276 line=163 file=0
+STMT 255 INDIRECT_F a=272 b=102 c=275 line=163 file=0
+STMT 256 ADD_F a=275 b=273 c=277 line=163 file=0
+STMT 257 STOREP_F a=277 b=276 c=- line=163 file=0
+STMT 258 RETURN a=- b=- c=- line=164 file=0
+STMT 259 ADDRESS a=278 b=120 c=280 line=167 file=0
+STMT 260 STOREP_OBJENT a=279 b=280 c=101 line=167 file=0
+STMT 261 INDIRECT_OBJ a=278 b=120 c=281 line=168 file=0
+STMT 262 IFNOT a=281 b=297 c=- line=168 file=0
+STMT 263 INDIRECT_OBJ a=278 b=120 c=283 line=169 file=0
+STMT 264 PUSH_OBJ a=283 b=- c=- line=169 file=0
+STMT 265 OBJECTCALL a=283 b=161 c=139 line=169 file=0
+STMT 266 STORE_F a=0 b=284 c=- line=169 file=0
+STMT 267 ADD_SF a=282 b=284 c=285 line=169 file=0
+STMT 268 ADD_S a=285 b=286 c=287 line=169 file=0
+STMT 269 INDIRECT_OBJ a=278 b=120 c=288 line=169 file=0
+STMT 270 INDIRECT_S a=288 b=107 c=285 line=169 file=0
+STMT 271 ADD_S a=287 b=285 c=289 line=169 file=0
+STMT 272 PUSH_S a=289 b=- c=- line=169 file=0
+STMT 273 SYSCALL a=15 b=142 c=- line=169 file=0
+STMT 274 INDIRECT_OBJ a=278 b=120 c=290 line=170 file=0
+STMT 275 ADDRESS a=290 b=102 c=284 line=170 file=0
+STMT 276 STOREP_F a=291 b=284 c=- line=170 file=0
+STMT 277 INDIRECT_OBJ a=278 b=120 c=292 line=171 file=0
+STMT 278 ADDRESS a=292 b=107 c=289 line=171 file=0
+STMT 279 STOREP_S a=293 b=289 c=- line=171 file=0
+STMT 280 INDIRECT_OBJ a=278 b=120 c=294 line=172 file=0
+STMT 281 ADDRESS a=294 b=105 c=295 line=172 file=0
+STMT 282 STOREP_F a=296 b=295 c=- line=172 file=0
+STMT 283 GOTO a=231 b=- c=- line=173 file=0
+STMT 284 PUSH_S a=298 b=- c=- line=174 file=0
+STMT 285 SYSCALL a=15 b=142 c=- line=174 file=0
+STMT 286 RETURN a=- b=- c=- line=176 file=0
+STMT 287 RETURN a=300 b=- c=- line=179 file=0
+STMT 288 RETURN a=- b=- c=- line=180 file=0
+STMT 289 ADDRESS a=301 b=130 c=302 line=183 file=0
+STMT 290 INDIRECT_F a=301 b=130 c=303 line=183 file=0
+STMT 291 ADD_F a=303 b=135 c=304 line=183 file=0
+STMT 292 STOREP_F a=304 b=302 c=- line=183 file=0
+STMT 293 INDIRECT_F a=301 b=130 c=304 line=184 file=0
+STMT 294 ADD_SF a=305 b=304 c=306 line=184 file=0
+STMT 295 PUSH_S a=306 b=- c=- line=184 file=0
+STMT 296 SYSCALL a=15 b=142 c=- line=184 file=0
+STMT 297 RETURN a=- b=- c=- line=185 file=0
+STMT 298 STORE_OBJENT a=314 b=308 c=- line=195 file=0
+STMT 299 STORE_OBJENT a=315 b=309 c=- line=196 file=0
+STMT 300 STORE_OBJENT a=316 b=310 c=- line=197 file=0
+STMT 301 STORE_OBJENT a=317 b=311 c=- line=198 file=0
+STMT 302 PUSH_OBJ a=308 b=- c=- line=199 file=0
+STMT 303 PUSH_S a=318 b=- c=- line=199 file=0
+STMT 304 OBJECTCALL a=308 b=319 c=320 line=199 file=0
+STMT 305 STORE_F a=0 b=321 c=- line=199 file=0
+STMT 306 STORE_F a=321 b=313 c=- line=199 file=0
+STMT 307 PUSH_OBJ a=309 b=- c=- line=200 file=0
+STMT 308 PUSH_S a=322 b=- c=- line=200 file=0
+STMT 309 OBJECTCALL a=309 b=319 c=320 line=200 file=0
+STMT 310 STORE_F a=0 b=321 c=- line=200 file=0
+STMT 311 ADD_F a=313 b=321 c=323 line=200 file=0
+STMT 312 STORE_F a=323 b=313 c=- line=200 file=0
+STMT 313 PUSH_OBJ a=310 b=- c=- line=201 file=0
+STMT 314 PUSH_S a=324 b=- c=- line=201 file=0
+STMT 315 OBJECTCALL a=310 b=319 c=320 line=201 file=0
+STMT 316 STORE_F a=0 b=323 c=- line=201 file=0
+STMT 317 ADD_F a=313 b=323 c=321 line=201 file=0
+STMT 318 STORE_F a=321 b=313 c=- line=201 file=0
+STMT 319 STORE_F a=313 b=132 c=- line=202 file=0
+STMT 320 PUSH_OBJ a=308 b=- c=- line=203 file=0
+STMT 321 OBJECTCALL a=308 b=325 c=139 line=203 file=0
+STMT 322 PUSH_OBJ a=309 b=- c=- line=204 file=0
+STMT 323 OBJECTCALL a=309 b=325 c=139 line=204 file=0
+STMT 324 INDIRECT_F a=308 b=102 c=323 line=205 file=0
+STMT 325 ADD_SF a=326 b=323 c=327 line=205 file=0
+STMT 326 ADD_S a=327 b=207 c=328 line=205 file=0
+STMT 327 INDIRECT_F a=309 b=102 c=323 line=205 file=0
+STMT 328 ADD_SF a=328 b=323 c=327 line=205 file=0
+STMT 329 ADD_S a=327 b=207 c=328 line=205 file=0
+STMT 330 INDIRECT_V a=308 b=103 c=329 line=205 file=0
+STMT 331 ADD_SV a=328 b=329 c=327 line=205 file=0
+STMT 332 ADD_S a=327 b=207 c=328 line=205 file=0
+STMT 333 INDIRECT_V a=309 b=103 c=329 line=205 file=0
+STMT 334 ADD_SV a=328 b=329 c=327 line=205 file=0
+STMT 335 PUSH_S a=327 b=- c=- line=205 file=0
+STMT 336 SYSCALL a=15 b=142 c=- line=205 file=0
+STMT 337 PUSH_OBJ a=309 b=- c=- line=206 file=0
+STMT 338 PUSH_F a=212 b=- c=- line=206 file=0
+STMT 339 OBJECTCALL a=309 b=330 c=249 line=206 file=0
+STMT 340 PUSH_OBJ a=310 b=- c=- line=207 file=0
+STMT 341 PUSH_F a=209 b=- c=- line=207 file=0
+STMT 342 OBJECTCALL a=310 b=330 c=249 line=207 file=0
+STMT 343 PUSH_OBJ a=308 b=- c=- line=208 file=0
+STMT 344 OBJECTCALL a=308 b=161 c=139 line=208 file=0
+STMT 345 STORE_F a=0 b=323 c=- line=208 file=0
+STMT 346 ADD_SF a=331 b=323 c=328 line=208 file=0
+STMT 347 ADD_S a=328 b=207 c=327 line=208 file=0
+STMT 348 PUSH_OBJ a=309 b=- c=- line=208 file=0
+STMT 349 OBJECTCALL a=309 b=161 c=139 line=208 file=0
+STMT 350 STORE_F a=0 b=323 c=- line=208 file=0
+STMT 351 ADD_SF a=327 b=323 c=328 line=208 file=0
+STMT 352 ADD_S a=328 b=207 c=327 line=208 file=0
+STMT 353 PUSH_OBJ a=310 b=- c=- line=208 file=0
+STMT 354 OBJECTCALL a=310 b=161 c=139 line=208 file=0
+STMT 355 STORE_F a=0 b=323 c=- line=208 file=0
+STMT 356 ADD_SF a=327 b=323 c=328 line=208 file=0
+STMT 357 PUSH_S a=328 b=- c=- line=208 file=0
+STMT 358 SYSCALL a=15 b=142 c=- line=208 file=0
+STMT 359 STORE_OBJ a=309 b=308 c=- line=210 file=0
+STMT 360 PUSH_OBJ a=308 b=- c=- line=211 file=0
+STMT 361 OBJECTCALL a=308 b=161 c=139 line=211 file=0
+STMT 362 STORE_F a=0 b=323 c=- line=211 file=0
+STMT 363 ADD_SF a=332 b=323 c=328 line=211 file=0
+STMT 364 PUSH_S a=328 b=- c=- line=211 file=0
+STMT 365 SYSCALL a=15 b=142 c=- line=211 file=0
+STMT 366 STORE_OBJ a=310 b=308 c=- line=212 file=0
+STMT 367 PUSH_OBJ a=308 b=- c=- line=213 file=0
+STMT 368 OBJECTCALL a=308 b=161 c=139 line=213 file=0
+STMT 369 STORE_F a=0 b=323 c=- line=213 file=0
+STMT 370 ADD_SF a=332 b=323 c=328 line=213 file=0
+STMT 371 PUSH_S a=328 b=- c=- line=213 file=0
+STMT 372 SYSCALL a=15 b=142 c=- line=213 file=0
+STMT 373 STORE_OBJENT a=317 b=308 c=- line=215 file=0
+STMT 374 NOT_ENT a=308 b=- c=323 line=216 file=0
+STMT 375 IFNOT a=323 b=231 c=- line=216 file=0
+STMT 376 PUSH_S a=333 b=- c=- line=217 file=0
+STMT 377 SYSCALL a=15 b=142 c=- line=217 file=0
+STMT 378 PUSH_OBJ a=308 b=- c=- line=219 file=0
+STMT 379 OBJECTCALL a=308 b=161 c=139 line=219 file=0
+STMT 380 STORE_F a=0 b=323 c=- line=219 file=0
+STMT 381 ADD_SF a=334 b=323 c=328 line=219 file=0
+STMT 382 ADD_S a=328 b=207 c=327 line=219 file=0
+STMT 383 INDIRECT_F a=308 b=102 c=323 line=219 file=0
+STMT 384 ADD_SF a=327 b=323 c=328 line=219 file=0
+STMT 385 ADD_S a=328 b=335 c=327 line=219 file=0
+STMT 386 INDIRECT_S a=308 b=107 c=328 line=219 file=0
+STMT 387 ADD_S a=327 b=328 c=336 line=219 file=0
+STMT 388 ADD_S a=336 b=337 c=328 line=219 file=0
+STMT 389 INDIRECT_V a=308 b=103 c=329 line=219 file=0
+STMT 390 ADD_SV a=328 b=329 c=336 line=219 file=0
+STMT 391 PUSH_S a=336 b=- c=- line=219 file=0
+STMT 392 SYSCALL a=15 b=142 c=- line=219 file=0
+STMT 393 ADDRESS a=308 b=102 c=323 line=220 file=0
+STMT 394 STOREP_F a=255 b=323 c=- line=220 file=0
+STMT 395 PUSH_OBJ a=308 b=- c=- line=221 file=0
+STMT 396 OBJECTCALL a=308 b=325 c=139 line=221 file=0
+STMT 397 STORE_OBJENT a=314 b=309 c=- line=222 file=0
+STMT 398 NOT_ENT a=309 b=- c=321 line=223 file=0
+STMT 399 IFNOT a=321 b=231 c=- line=223 file=0
+STMT 400 PUSH_S a=338 b=- c=- line=224 file=0
+STMT 401 SYSCALL a=15 b=142 c=- line=224 file=0
+STMT 402 STORE_ENT a=316 b=312 c=- line=227 file=0
+STMT 403 STORE_OBJENT a=312 b=309 c=- line=228 file=0
+STMT 404 STORE_OBJENT a=309 b=312 c=- line=229 file=0
+STMT 405 EQ_E a=312 b=316 c=321 line=230 file=0
+STMT 406 EQ_OO a=309 b=310 c=339 line=230 file=0
+STMT 407 AND a=321 b=339 c=340 line=230 file=0
+STMT 408 IFNOT a=340 b=231 c=- line=230 file=0
+STMT 409 PUSH_S a=341 b=- c=- line=231 file=0
+STMT 410 SYSCALL a=15 b=142 c=- line=231 file=0
+STMT 411 NE_OO a=309 b=308 c=340 line=233 file=0
+STMT 412 IFNOT a=340 b=231 c=- line=233 file=0
+STMT 413 PUSH_S a=342 b=- c=- line=234 file=0
+STMT 414 SYSCALL a=15 b=142 c=- line=234 file=0
+STMT 415 STORE_ENT a=343 b=312 c=- line=236 file=0
+STMT 416 STORE_OBJENT a=312 b=308 c=- line=237 file=0
+STMT 417 NOT_ENT a=308 b=- c=340 line=238 file=0
+STMT 418 IFNOT a=340 b=231 c=- line=238 file=0
+STMT 419 PUSH_S a=344 b=- c=- line=239 file=0
+STMT 420 SYSCALL a=15 b=142 c=- line=239 file=0
+STMT 421 PUSH_OBJ a=311 b=- c=- line=241 file=0
+STMT 422 OBJECTCALL a=311 b=345 c=139 line=241 file=0
+STMT 423 ADDRESS a=311 b=130 c=340 line=242 file=0
+STMT 424 STOREP_F a=346 b=340 c=- line=242 file=0
+STMT 425 PUSH_OBJ a=311 b=- c=- line=243 file=0
+STMT 426 OBJECTCALL a=311 b=345 c=139 line=243 file=0
+STMT 427 STORE_OBJENT a=315 b=309 c=- line=244 file=0
+STMT 428 PUSH_OBJ a=309 b=- c=- line=245 file=0
+STMT 429 PUSH_ENT a=314 b=- c=- line=245 file=0
+STMT 430 OBJECTCALL a=309 b=347 c=249 line=245 file=0
+STMT 431 PUSH_OBJ a=309 b=- c=- line=246 file=0
+STMT 432 PUSH_ENT a=317 b=- c=- line=246 file=0
+STMT 433 OBJECTCALL a=309 b=347 c=249 line=246 file=0
+STMT 434 PUSH_OBJ a=309 b=- c=- line=247 file=0
+STMT 435 PUSH_ENT a=232 b=- c=- line=247 file=0
+STMT 436 OBJECTCALL a=309 b=347 c=249 line=247 file=0
+STMT 437 ADDRESS a=309 b=120 c=348 line=248 file=0
+STMT 438 STOREP_OBJENT a=316 b=348 c=101 line=248 file=0
+STMT 439 INDIRECT_OBJ a=309 b=120 c=350 line=249 file=0
+STMT 440 PUSH_OBJ a=350 b=- c=- line=249 file=0
+STMT 441 OBJECTCALL a=350 b=161 c=139 line=249 file=0
+STMT 442 STORE_F a=0 b=339 c=- line=249 file=0
+STMT 443 ADD_SF a=349 b=339 c=336 line=249 file=0
+STMT 444 PUSH_S a=336 b=- c=- line=249 file=0
+STMT 445 SYSCALL a=15 b=142 c=- line=249 file=0
+STMT 446 STORE_OBJENT a=314 b=308 c=- line=250 file=0
+STMT 447 PUSH_OBJ a=308 b=- c=- line=251 file=0
+STMT 448 OBJECTCALL a=308 b=351 c=139 line=251 file=0
+STMT 449 PUSH_OBJ a=308 b=- c=- line=252 file=0
+STMT 450 OBJECTCALL a=308 b=352 c=139 line=252 file=0
+STMT 451 RETURN a=- b=- c=- line=253 file=0
+STMT 452 STORE_OBJENT a=314 b=354 c=- line=259 file=0
+STMT 453 PUSH_OBJ a=354 b=- c=- line=260 file=0
+STMT 454 PUSH_F a=214 b=- c=- line=260 file=0
+STMT 455 OBJTHREAD a=354 b=356 c=249 line=260 file=0
+STMT 456 STORE_F a=0 b=355 c=- line=260 file=0
+STMT 457 ADD_SF a=357 b=355 c=358 line=261 file=0
+STMT 458 PUSH_S a=358 b=- c=- line=261 file=0
+STMT 459 SYSCALL a=15 b=142 c=- line=261 file=0
+STMT 460 STORE_OBJENT a=343 b=354 c=- line=262 file=0
+STMT 461 PUSH_OBJ a=354 b=- c=- line=263 file=0
+STMT 462 PUSH_F a=214 b=- c=- line=263 file=0
+STMT 463 OBJTHREAD a=354 b=356 c=249 line=263 file=0
+STMT 464 STORE_F a=0 b=355 c=- line=263 file=0
+STMT 465 ADD_SF a=359 b=355 c=358 line=264 file=0
+STMT 466 PUSH_S a=358 b=- c=- line=264 file=0
+STMT 467 SYSCALL a=15 b=142 c=- line=264 file=0
+STMT 468 SYSCALL a=9 b=244 c=- line=265 file=0
+STMT 469 SYSCALL a=9 b=244 c=- line=266 file=0
+STMT 470 SYSCALL a=9 b=244 c=- line=267 file=0
+STMT 471 STORE_OBJENT a=315 b=354 c=- line=268 file=0
+STMT 472 PUSH_OBJ a=354 b=- c=- line=269 file=0
+STMT 473 PUSH_F a=135 b=- c=- line=269 file=0
+STMT 474 OBJECTCALL a=354 b=356 c=249 line=269 file=0
+STMT 475 PUSH_S a=360 b=- c=- line=270 file=0
+STMT 476 SYSCALL a=15 b=142 c=- line=270 file=0
+STMT 477 RETURN a=- b=- c=- line=271 file=0
+TOP functions=112 statements=478 types=122 defs=361 files=2
+GLOBALS 7056
+G 000340 000000000000803F626173650000000000000000000000000000000000000000
+G 0003C0 0000000000000000626173655F6F626A3A3A696E697420000000000000000000
+G 000440 00000000000000000000000000000000626173655F6F626A3A3A64657374726F
+G 000460 7920000000000000000000000000000000000000000000000000000000000000
+G 0004C0 0000000000000000000000000000000020636F756E743D000000000000000000
+G 000540 00000000000000000000000000000000000020413A206C6162656C3D00000000
+G 0005C0 000000000000000000000000000000000000000020706F733D00000000000000
+G 000640 00000000000000000000000000000000000000002076616C75653D0000000000
+G 0006C0 000000000000000000000000000000000000000000000000000020400000803F
+G 0006E0 0000004000004040736574000000000000000000000000000000000000000000
+G 000760 00000000000000006C6162656C2066726F6D20666C6F61743A20000000000000
+G 0007E0 00000000000000006C6162656C2066726F6D20766563746F723A200000000000
+G 000860 00000000000000006C6162656C2066726F6D20626F6F6C65616E3A2000000000
+G 0008E0 0000000000000000636F756E742066726F6D20626F6F6C65616E3A2000000000
+G 000960 000000000000000000000000666C61672066726F6D20666C6F61743A20000000
+G 0009E0 000000000000000000000000726561643A200000000000000000000000000000
+G 000A60 0000000000000000000000002000000000000000000000000000000000000000
+G 000AE0 0000000000000000000000000000804000004040000000400000803F0000803F
+G 000B00 0000803F00000000000000000000803F636F6D706F756E643A20000000000000
+G 000B80 000000000000000000000000000000006F746865722069732073656C66000000
+G 000C00 0000000000000000000000000000000000000000000000006F74686572206973
+G 000C20 206E756C6C000000000000000000000000000000000000000000000000000000
+G 000C80 0000000000000000000000000000000000000000000000006166746572206669
+G 000CA0 656C647300000000000000000000000000000000000000000000000000000000
+G 000D00 00000000000000000000000000000000000000000000000000000000206C6F6F
+G 000D20 7020000000000000000000000000000000000000000000000000000000000000
+G 000DA0 00000000000000000000000073656C664576656E747320000000000000000000
+G 000E20 0000000000000000000000000000A0402B646572697665640000000000000000
+G 000EA0 00000000000000000000000000000000646572697665645F6F626A3A3A696E69
+G 000EC0 7420000000000000000000000000000000000000000000000000000000000000
+G 000F20 00000000000000000000000000000000646572697665645F6F626A3A3A646573
+G 000F40 74726F792065787472613D000000000000000000000000000000000000000000
+G 000FA0 000000000000000000000000000000000000C842000000000000A04166726965
+G 000FC0 6E642076616C75653D0000000000000000000000000000000000000000000000
+G 001020 00000000000000000000000000000000000000000000000000000000206C6162
+G 001040 656C3D0000000000000000000000000000000000000000000000000000000000
+G 0010A0 0000000000000000000000000000000000000000000000000000000000009A42
+G 0010C0 6C696E6B65640000000000000000000000000000000000000000000000000000
+G 001140 00001041000000006E6F20667269656E64000000000000000000000000000000
+G 0011C0 00000000000000000000F041706C61696E2068656C6C6F200000000000000000
+G 001260 6200000000000000000000000000000000000000000000000000000000000000
+G 0012E0 0000000000000000640000000000000000000000000000000000000000000000
+G 001360 00000000000000006C0000000000000000000000000000000000000000000000
+G 0013E0 000000000000000000000000636F756E74732000000000000000000000000000
+G 001460 0000000000000000000000000000000076616C75657320000000000000000000
+G 0014E0 000000000000000000000000000000007669727475616C200000000000000000
+G 001560 00000000000000000000000000000000706C61696E206973206E6F7420612062
+G 001580 6173655F6F626A00000000000000000000000000000000000000000000000000
+G 0015E0 000000000000000000000000000000006E756C6C2063616C6C20000000000000
+G 001660 0000000000000000000000000000000020270000000000000000000000000000
+G 0016E0 0000000000000000000000000000000027200000000000000000000000000000
+G 001760 0000000000000000000000000000000062617365206973206E6F742061206465
+G 001780 72697665645F6F626A0000000000000000000000000000000000000000000000
+G 0017E0 000000000000000000000000000000006C65616620636F6E7665727473000000
+G 001860 000000000000000000000000000000006420213D206200000000000000000000
+G 0018E0 00000000000000000000000000000000000000006E6F206F626A656374206F6E
+G 001900 20656E745F6E6F6E650000000000000000000000000000000000000000000000
+G 001960 0000000000000000000000000000000000000000000000000000244200000000
+G 001980 667269656E64207468726F756768206669656C64200000000000000000000000
+G 001A00 0000000000000000000000000000000074687265616420000000000000000000
+G 001A80 00000000000000000000000000000000746872656164206F6E206E756C6C2000
+G 001B00 000000000000000000000000000000007468726561647320646F6E6500000000
+CHECKSUM 84D24E37
+CMD dump disasm
+DISASM 
+DISASM function base_obj::init() 392 stack used, 4 parms, 388 locals {
+DISASM script/objects.script(44):\t     1:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[4]
+DISASM script/objects.script(44):\t     2:        STOREP_F\t\ta: const float 1.000000\tb: pointer stack[4]
+DISASM script/objects.script(45):\t     3:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[8]
+DISASM script/objects.script(45):\t     4:        STOREP_S\t\ta: const string \"base\"\tb: pointer stack[8]
+DISASM script/objects.script(46):\t     5:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(46):\t     6:       EVENTCALL\t\ta: const event getName\tb: const args 4
+DISASM script/objects.script(46):\t     7:         STORE_S\t\ta: string global[4]\tb: string stack[136]
+DISASM script/objects.script(46):\t     8:           ADD_S\t\ta: const string \"base_obj::init \"\tb: string stack[136]\tc: string stack[264]
+DISASM script/objects.script(46):\t     9:          PUSH_S\t\ta: string stack[264]
+DISASM script/objects.script(46):\t    10:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(47):\t    11:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::destroy() 264 stack used, 4 parms, 260 locals {
+DISASM script/objects.script(50):\t    12:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[4]
+DISASM script/objects.script(50):\t    13:           ADD_S\t\ta: const string \"base_obj::destroy \"\tb: string stack[4]\tc: string stack[132]
+DISASM script/objects.script(50):\t    14:           ADD_S\t\ta: string stack[132]\tb: const string \" count=\"\tc: string stack[4]
+DISASM script/objects.script(50):\t    15:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[260]
+DISASM script/objects.script(50):\t    16:          ADD_SF\t\ta: string stack[4]\tb: float stack[260]\tc: string stack[132]
+DISASM script/objects.script(50):\t    17:          PUSH_S\t\ta: string stack[132]
+DISASM script/objects.script(50):\t    18:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(51):\t    19:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::describe() 532 stack used, 132 parms, 400 locals {
+DISASM script/objects.script(58):\t    22:           ADD_S\t\ta: string stack[4]\tb: const string \": label=\"\tc: string stack[132]
+DISASM script/objects.script(58):\t    23:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[260]
+DISASM script/objects.script(58):\t    24:           ADD_S\t\ta: string stack[132]\tb: string stack[260]\tc: string stack[388]
+DISASM script/objects.script(58):\t    25:           ADD_S\t\ta: string stack[388]\tb: const string \" count=\"\tc: string stack[260]
+DISASM script/objects.script(58):\t    26:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[516]
+DISASM script/objects.script(58):\t    27:          ADD_SF\t\ta: string stack[260]\tb: float stack[516]\tc: string stack[388]
+DISASM script/objects.script(58):\t    28:           ADD_S\t\ta: string stack[388]\tb: const string \" pos=\"\tc: string stack[260]
+DISASM script/objects.script(58):\t    29:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[520]
+DISASM script/objects.script(58):\t    30:          ADD_SV\t\ta: string stack[260]\tb: vector stack[520]\tc: string stack[388]
+DISASM script/objects.script(58):\t    31:           ADD_S\t\ta: string stack[388]\tb: const string \" value=\"\tc: string stack[260]
+DISASM script/objects.script(58):\t    32:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(58):\t    33:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(58):\t    34:         STORE_F\t\ta: void global[0]\tb: float stack[516]
+DISASM script/objects.script(58):\t    35:          ADD_SF\t\ta: string stack[260]\tb: float stack[516]\tc: string stack[388]
+DISASM script/objects.script(58):\t    36:          PUSH_S\t\ta: string stack[388]
+DISASM script/objects.script(58):\t    37:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(59):\t    38:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[516]
+DISASM script/objects.script(59):\t    39:          RETURN\t\ta: float stack[516]
+DISASM script/objects.script(60):\t    40:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::value() 4 stack used, 4 parms, 0 locals {
+DISASM script/objects.script(54):\t    20:          RETURN\t\ta: const float 10.000000
+DISASM script/objects.script(55):\t    21:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::bump() 24 stack used, 4 parms, 20 locals {
+DISASM script/objects.script(63):\t    41:         UINCP_F\t\ta: base_obj stack[0]\tb: field 0
+DISASM script/objects.script(64):\t    42:         UINCP_F\t\ta: base_obj stack[0]\tb: field 0
+DISASM script/objects.script(65):\t    43:         UDECP_F\t\ta: base_obj stack[0]\tb: field 0
+DISASM script/objects.script(67):\t    44:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[4]
+DISASM script/objects.script(67):\t    45:          UINC_F\t\ta: pointer stack[4]
+DISASM script/objects.script(68):\t    46:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[4]
+DISASM script/objects.script(68):\t    47:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[8]
+DISASM script/objects.script(68):\t    48:           ADD_F\t\ta: pointer stack[8]\tb: const float 10.000000\tc: pointer stack[12]
+DISASM script/objects.script(68):\t    49:        STOREP_F\t\ta: pointer stack[12]\tb: pointer stack[4]
+DISASM script/objects.script(69):\t    50:         ADDRESS\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[12]
+DISASM script/objects.script(69):\t    51:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[8]
+DISASM script/objects.script(69):\t    52:        STOREP_F\t\ta: pointer stack[8]\tb: pointer stack[12]
+DISASM script/objects.script(70):\t    53:         UINCP_F\t\ta: base_obj stack[0]\tb: field 8
+DISASM script/objects.script(71):\t    54:         ADDRESS\t\ta: base_obj stack[0]\tb: field 12\tc: pointer stack[8]
+DISASM script/objects.script(71):\t    55:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 4\tc: float stack[16]
+DISASM script/objects.script(71):\t    56:           ADD_F\t\ta: float stack[16]\tb: const float 1.000000\tc: float stack[20]
+DISASM script/objects.script(71):\t    57:        STOREP_F\t\ta: float stack[20]\tb: pointer stack[8]
+DISASM script/objects.script(72):\t    58:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::fields() 1184 stack used, 4 parms, 1180 locals {
+DISASM script/objects.script(82):\t    59:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[156]
+DISASM script/objects.script(82):\t    60:        STOREP_F\t\ta: const float 2.500000\tb: pointer stack[156]
+DISASM script/objects.script(83):\t    61:         ADDRESS\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[160]
+DISASM script/objects.script(83):\t    62:        STOREP_V\t\ta: const vector '1 2 3'\tb: pointer stack[160]
+DISASM script/objects.script(84):\t    63:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[172]
+DISASM script/objects.script(84):\t    64:        STOREP_S\t\ta: const string \"set\"\tb: pointer stack[172]
+DISASM script/objects.script(85):\t    65:         ADDRESS\t\ta: base_obj stack[0]\tb: field 144\tc: pointer stack[300]
+DISASM script/objects.script(85):\t    66:  STOREP_FTOBOOL\t\ta: const float 1.000000\tb: pointer stack[300]
+DISASM script/objects.script(86):\t    67:    STORE_OBJENT\t\ta: base_obj stack[0]\tb: entity stack[152]
+DISASM script/objects.script(87):\t    68:         ADDRESS\t\ta: base_obj stack[0]\tb: field 148\tc: pointer stack[304]
+DISASM script/objects.script(87):\t    69:      STOREP_ENT\t\ta: entity stack[152]\tb: pointer stack[304]
+DISASM script/objects.script(88):\t    70:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[308]
+DISASM script/objects.script(88):\t    71:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[436]
+DISASM script/objects.script(88):\t    72:     STOREP_FTOS\t\ta: pointer stack[436]\tb: pointer stack[308]
+DISASM script/objects.script(89):\t    73:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[440]
+DISASM script/objects.script(89):\t    74:           ADD_S\t\ta: const string \"label from float: \"\tb: string stack[440]\tc: pointer stack[568]
+DISASM script/objects.script(89):\t    75:          PUSH_S\t\ta: pointer stack[568]
+DISASM script/objects.script(89):\t    76:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(90):\t    77:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[568]
+DISASM script/objects.script(90):\t    78:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[696]
+DISASM script/objects.script(90):\t    79:     STOREP_VTOS\t\ta: pointer stack[696]\tb: pointer stack[568]
+DISASM script/objects.script(91):\t    80:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[440]
+DISASM script/objects.script(91):\t    81:           ADD_S\t\ta: const string \"label from vector: \"\tb: string stack[440]\tc: pointer stack[708]
+DISASM script/objects.script(91):\t    82:          PUSH_S\t\ta: pointer stack[708]
+DISASM script/objects.script(91):\t    83:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(92):\t    84:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[708]
+DISASM script/objects.script(92):\t    85:   INDIRECT_BOOL\t\ta: base_obj stack[0]\tb: field 144\tc: pointer stack[836]
+DISASM script/objects.script(92):\t    86:     STOREP_BTOS\t\ta: pointer stack[836]\tb: pointer stack[708]
+DISASM script/objects.script(93):\t    87:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[440]
+DISASM script/objects.script(93):\t    88:           ADD_S\t\ta: const string \"label from boolean: \"\tb: string stack[440]\tc: pointer stack[840]
+DISASM script/objects.script(93):\t    89:          PUSH_S\t\ta: pointer stack[840]
+DISASM script/objects.script(93):\t    90:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(94):\t    91:   STORE_FTOBOOL\t\ta: const float 1.000000\tb: boolean stack[148]
+DISASM script/objects.script(95):\t    92:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[436]
+DISASM script/objects.script(95):\t    93:  STOREP_BOOLTOF\t\ta: boolean stack[148]\tb: pointer stack[436]
+DISASM script/objects.script(96):\t    94:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[968]
+DISASM script/objects.script(96):\t    95:          ADD_SF\t\ta: const string \"count from boolean: \"\tb: pointer stack[968]\tc: pointer stack[840]
+DISASM script/objects.script(96):\t    96:          PUSH_S\t\ta: pointer stack[840]
+DISASM script/objects.script(96):\t    97:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(97):\t    98:         ADDRESS\t\ta: base_obj stack[0]\tb: field 144\tc: pointer stack[836]
+DISASM script/objects.script(97):\t    99:  STOREP_FTOBOOL\t\ta: const float 0.000000\tb: pointer stack[836]
+DISASM script/objects.script(98):\t   100:         ADDRESS\t\ta: base_obj stack[0]\tb: field 144\tc: pointer stack[972]
+DISASM script/objects.script(98):\t   101:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[968]
+DISASM script/objects.script(98):\t   102:  STOREP_FTOBOOL\t\ta: pointer stack[968]\tb: pointer stack[972]
+DISASM script/objects.script(99):\t   103:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[840]
+DISASM script/objects.script(99):\t   104:   INDIRECT_BOOL\t\ta: base_obj stack[0]\tb: field 144\tc: boolean stack[976]
+DISASM script/objects.script(99):\t   105:     STOREP_BTOS\t\ta: boolean stack[976]\tb: pointer stack[840]
+DISASM script/objects.script(100):\t   106:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[440]
+DISASM script/objects.script(100):\t   107:           ADD_S\t\ta: const string \"flag from float: \"\tb: string stack[440]\tc: pointer stack[980]
+DISASM script/objects.script(100):\t   108:          PUSH_S\t\ta: pointer stack[980]
+DISASM script/objects.script(100):\t   109:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(102):\t   110:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[968]
+DISASM script/objects.script(102):\t   111:         STORE_F\t\ta: pointer stack[968]\tb: float stack[4]
+DISASM script/objects.script(103):\t   112:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[696]
+DISASM script/objects.script(103):\t   113:         STORE_V\t\ta: pointer stack[696]\tb: vector stack[136]
+DISASM script/objects.script(104):\t   114:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[980]
+DISASM script/objects.script(104):\t   115:         STORE_S\t\ta: pointer stack[980]\tb: string stack[8]
+DISASM script/objects.script(105):\t   116:   INDIRECT_BOOL\t\ta: base_obj stack[0]\tb: field 144\tc: boolean stack[976]
+DISASM script/objects.script(105):\t   117:      STORE_BOOL\t\ta: boolean stack[976]\tb: boolean stack[148]
+DISASM script/objects.script(106):\t   118:          ADD_SF\t\ta: const string \"read: \"\tb: float stack[4]\tc: pointer stack[980]
+DISASM script/objects.script(106):\t   119:           ADD_S\t\ta: pointer stack[980]\tb: const string \" \"\tc: string stack[440]
+DISASM script/objects.script(106):\t   120:          ADD_SV\t\ta: string stack[440]\tb: vector stack[136]\tc: pointer stack[980]
+DISASM script/objects.script(106):\t   121:           ADD_S\t\ta: pointer stack[980]\tb: const string \" \"\tc: string stack[440]
+DISASM script/objects.script(106):\t   122:           ADD_S\t\ta: string stack[440]\tb: string stack[8]\tc: pointer stack[980]
+DISASM script/objects.script(106):\t   123:          PUSH_S\t\ta: pointer stack[980]
+DISASM script/objects.script(106):\t   124:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(107):\t   125:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[968]
+DISASM script/objects.script(107):\t   126:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[1108]
+DISASM script/objects.script(107):\t   127:           ADD_F\t\ta: float stack[1108]\tb: const float 4.000000\tc: pointer stack[1112]
+DISASM script/objects.script(107):\t   128:        STOREP_F\t\ta: pointer stack[1112]\tb: pointer stack[968]
+DISASM script/objects.script(108):\t   129:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[1112]
+DISASM script/objects.script(108):\t   130:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[1108]
+DISASM script/objects.script(108):\t   131:           SUB_F\t\ta: float stack[1108]\tb: const float 1.000000\tc: pointer stack[1116]
+DISASM script/objects.script(108):\t   132:        STOREP_F\t\ta: pointer stack[1116]\tb: pointer stack[1112]
+DISASM script/objects.script(109):\t   133:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[1116]
+DISASM script/objects.script(109):\t   134:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[1108]
+DISASM script/objects.script(109):\t   135:           MUL_F\t\ta: float stack[1108]\tb: const float 3.000000\tc: pointer stack[1120]
+DISASM script/objects.script(109):\t   136:        STOREP_F\t\ta: pointer stack[1120]\tb: pointer stack[1116]
+DISASM script/objects.script(110):\t   137:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[1120]
+DISASM script/objects.script(110):\t   138:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[1108]
+DISASM script/objects.script(110):\t   139:             DIV\t\ta: float stack[1108]\tb: const float 2.000000\tc: float stack[1124]
+DISASM script/objects.script(110):\t   140:        STOREP_F\t\ta: float stack[1124]\tb: pointer stack[1120]
+DISASM script/objects.script(111):\t   141:         ADDRESS\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[696]
+DISASM script/objects.script(111):\t   142:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[1128]
+DISASM script/objects.script(111):\t   143:           ADD_V\t\ta: vector stack[1128]\tb: const vector '1 1 1'\tc: pointer stack[1140]
+DISASM script/objects.script(111):\t   144:        STOREP_V\t\ta: pointer stack[1140]\tb: pointer stack[696]
+DISASM script/objects.script(112):\t   145:         ADDRESS\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[1140]
+DISASM script/objects.script(112):\t   146:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[1128]
+DISASM script/objects.script(112):\t   147:           SUB_V\t\ta: vector stack[1128]\tb: const vector '0 0 1'\tc: pointer stack[1152]
+DISASM script/objects.script(112):\t   148:        STOREP_V\t\ta: pointer stack[1152]\tb: pointer stack[1140]
+DISASM script/objects.script(113):\t   149:         ADDRESS\t\ta: base_obj stack[0]\tb: field 4\tc: pointer stack[1152]
+DISASM script/objects.script(113):\t   150:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[1128]
+DISASM script/objects.script(113):\t   151:          MUL_VF\t\ta: vector stack[1128]\tb: const float 2.000000\tc: vector stack[1164]
+DISASM script/objects.script(113):\t   152:        STOREP_V\t\ta: vector stack[1164]\tb: pointer stack[1152]
+DISASM script/objects.script(114):\t   153:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[1124]
+DISASM script/objects.script(114):\t   154:          ADD_SF\t\ta: const string \"compound: \"\tb: float stack[1124]\tc: pointer stack[980]
+DISASM script/objects.script(114):\t   155:           ADD_S\t\ta: pointer stack[980]\tb: const string \" \"\tc: string stack[440]
+DISASM script/objects.script(114):\t   156:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[1164]
+DISASM script/objects.script(114):\t   157:          ADD_SV\t\ta: string stack[440]\tb: vector stack[1164]\tc: pointer stack[980]
+DISASM script/objects.script(114):\t   158:          PUSH_S\t\ta: pointer stack[980]
+DISASM script/objects.script(114):\t   159:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(115):\t   160:      INDIRECT_E\t\ta: base_obj stack[0]\tb: field 148\tc: pointer stack[1176]
+DISASM script/objects.script(115):\t   161:           EQ_EO\t\ta: pointer stack[1176]\tb: base_obj stack[0]\tc: float stack[1124]
+DISASM script/objects.script(115):\t   162:           IFNOT\t\ta: float stack[1124]\tb: const address 165 [script/objects.script(118)]
+DISASM script/objects.script(116):\t   163:          PUSH_S\t\ta: const string \"other is self\"
+DISASM script/objects.script(116):\t   164:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(118):\t   165:         ADDRESS\t\ta: base_obj stack[0]\tb: field 148\tc: pointer stack[1176]
+DISASM script/objects.script(118):\t   166:      STOREP_ENT\t\ta: entity global[232]\tb: pointer stack[1176]
+DISASM script/objects.script(119):\t   167:      INDIRECT_E\t\ta: base_obj stack[0]\tb: field 148\tc: entity stack[1180]
+DISASM script/objects.script(119):\t   168:         NOT_ENT\t\ta: entity stack[1180]\tc: float stack[1124]
+DISASM script/objects.script(119):\t   169:           IFNOT\t\ta: float stack[1124]\tb: const address 172 [script/objects.script(122)]
+DISASM script/objects.script(120):\t   170:          PUSH_S\t\ta: const string \"other is null\"
+DISASM script/objects.script(120):\t   171:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(122):\t   172:         ADDRESS\t\ta: base_obj stack[0]\tb: field 16\tc: pointer stack[980]
+DISASM script/objects.script(122):\t   173:        STOREP_S\t\ta: const string \"after fields\"\tb: pointer stack[980]
+DISASM script/objects.script(123):\t   174:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::loop() 272 stack used, 8 parms, 264 locals {
+DISASM script/objects.script(128):\t   175:         STORE_F\t\ta: const float 0.000000\tb: float stack[8]
+DISASM script/objects.script(128):\t   176:              LT\t\ta: float stack[8]\tb: float stack[4]\tc: float stack[12]
+DISASM script/objects.script(128):\t   177:           IFNOT\t\ta: float stack[12]\tb: const address 194 [script/objects.script(133)]
+DISASM script/objects.script(128):\t   178:              IF\t\ta: float stack[12]\tb: const address 181 [script/objects.script(129)]
+DISASM script/objects.script(128):\t   179:          UINC_F\t\ta: float stack[8]
+DISASM script/objects.script(128):\t   180:            GOTO\t\ta: const address 176 [script/objects.script(128)]
+DISASM script/objects.script(129):\t   181:         UINCP_F\t\ta: base_obj stack[0]\tb: field 0
+DISASM script/objects.script(130):\t   182:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(130):\t   183:       EVENTCALL\t\ta: const event getName\tb: const args 4
+DISASM script/objects.script(130):\t   184:         STORE_S\t\ta: string global[4]\tb: string stack[16]
+DISASM script/objects.script(130):\t   185:           ADD_S\t\ta: string stack[16]\tb: const string \" loop \"\tc: string stack[144]
+DISASM script/objects.script(130):\t   186:          ADD_SF\t\ta: string stack[144]\tb: float stack[8]\tc: string stack[16]
+DISASM script/objects.script(130):\t   187:           ADD_S\t\ta: string stack[16]\tb: const string \" count=\"\tc: string stack[144]
+DISASM script/objects.script(130):\t   188:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[12]
+DISASM script/objects.script(130):\t   189:          ADD_SF\t\ta: string stack[144]\tb: float stack[12]\tc: string stack[16]
+DISASM script/objects.script(130):\t   190:          PUSH_S\t\ta: string stack[16]
+DISASM script/objects.script(130):\t   191:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(131):\t   192:         SYSCALL\t\ta: const event waitFrame\tb: const args 0
+DISASM script/objects.script(132):\t   193:            GOTO\t\ta: const address 179 [script/objects.script(128)]
+DISASM script/objects.script(133):\t   194:          RETURN\t
+DISASM }
+DISASM 
+DISASM function base_obj::selfEvents() 264 stack used, 4 parms, 260 locals {
+DISASM script/objects.script(137):\t   195:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(137):\t   196:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: float stack[4]
+DISASM script/objects.script(137):\t   197:          PUSH_F\t\ta: float stack[4]
+DISASM script/objects.script(137):\t   198:       EVENTCALL\t\ta: const event setValue\tb: const args 8
+DISASM script/objects.script(138):\t   199:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(138):\t   200:       EVENTCALL\t\ta: const event getName\tb: const args 4
+DISASM script/objects.script(138):\t   201:         STORE_S\t\ta: string global[4]\tb: string stack[8]
+DISASM script/objects.script(138):\t   202:           ADD_S\t\ta: const string \"selfEvents \"\tb: string stack[8]\tc: string stack[136]
+DISASM script/objects.script(138):\t   203:           ADD_S\t\ta: string stack[136]\tb: const string \" \"\tc: string stack[8]
+DISASM script/objects.script(138):\t   204:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(138):\t   205:       EVENTCALL\t\ta: const event getValue\tb: const args 4
+DISASM script/objects.script(138):\t   206:         STORE_F\t\ta: void global[0]\tb: float stack[4]
+DISASM script/objects.script(138):\t   207:          ADD_SF\t\ta: string stack[8]\tb: float stack[4]\tc: string stack[136]
+DISASM script/objects.script(138):\t   208:          PUSH_S\t\ta: string stack[136]
+DISASM script/objects.script(138):\t   209:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(139):\t   210:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(139):\t   211:          PUSH_F\t\ta: const float 2.000000
+DISASM script/objects.script(139):\t   212:       EVENTCALL\t\ta: const event setValue\tb: const args 8
+DISASM script/objects.script(140):\t   213:     PUSH_OBJENT\t\ta: base_obj stack[0]
+DISASM script/objects.script(140):\t   214:       EVENTCALL\t\ta: const event getValue\tb: const args 4
+DISASM script/objects.script(140):\t   215:         STORE_F\t\ta: void global[0]\tb: float stack[4]
+DISASM script/objects.script(140):\t   216:          ADD_SF\t\ta: const string \"selfEvents \"\tb: float stack[4]\tc: string stack[136]
+DISASM script/objects.script(140):\t   217:          PUSH_S\t\ta: string stack[136]
+DISASM script/objects.script(140):\t   218:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(141):\t   219:          RETURN\t
+DISASM }
+DISASM 
+DISASM function derived_obj::init() 392 stack used, 4 parms, 388 locals {
+DISASM script/objects.script(143):\t   220:        PUSH_OBJ\t\ta: derived_obj stack[0]
+DISASM script/objects.script(143):\t   221:            CALL\t\ta: const function base_obj::init
+DISASM script/objects.script(144):\t   222:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 152\tc: pointer stack[4]
+DISASM script/objects.script(144):\t   223:        STOREP_F\t\ta: const float 5.000000\tb: pointer stack[4]
+DISASM script/objects.script(145):\t   224:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 16\tc: pointer stack[8]
+DISASM script/objects.script(145):\t   225:      INDIRECT_S\t\ta: derived_obj stack[0]\tb: field 16\tc: string stack[136]
+DISASM script/objects.script(145):\t   226:           ADD_S\t\ta: string stack[136]\tb: const string \"+derived\"\tc: string stack[264]
+DISASM script/objects.script(145):\t   227:        STOREP_S\t\ta: string stack[264]\tb: pointer stack[8]
+DISASM script/objects.script(146):\t   228:      INDIRECT_S\t\ta: derived_obj stack[0]\tb: field 16\tc: string stack[264]
+DISASM script/objects.script(146):\t   229:           ADD_S\t\ta: const string \"derived_obj::init \"\tb: string stack[264]\tc: string stack[136]
+DISASM script/objects.script(146):\t   230:          PUSH_S\t\ta: string stack[136]
+DISASM script/objects.script(146):\t   231:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(147):\t   232:          RETURN\t
+DISASM }
+DISASM 
+DISASM function derived_obj::destroy() 140 stack used, 4 parms, 136 locals {
+DISASM script/objects.script(150):\t   233:      INDIRECT_F\t\ta: derived_obj stack[0]\tb: field 152\tc: float stack[4]
+DISASM script/objects.script(150):\t   234:          ADD_SF\t\ta: const string \"derived_obj::destroy extra=\"\tb: float stack[4]\tc: string stack[8]
+DISASM script/objects.script(150):\t   235:          PUSH_S\t\ta: string stack[8]
+DISASM script/objects.script(150):\t   236:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(151):\t   237:      INDIRECT_F\t\ta: derived_obj stack[0]\tb: field 152\tc: float stack[4]
+DISASM script/objects.script(151):\t   238:              GT\t\ta: float stack[4]\tb: const float 100.000000\tc: pointer stack[136]
+DISASM script/objects.script(151):\t   239:           IFNOT\t\ta: pointer stack[136]\tb: const address 241 [script/objects.script(154)]
+DISASM script/objects.script(152):\t   240:            GOTO\t\ta: const address 243 [script/objects.script(155)]
+DISASM script/objects.script(154):\t   241:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 152\tc: pointer stack[136]
+DISASM script/objects.script(154):\t   242:        STOREP_F\t\ta: const float 0.000000\tb: pointer stack[136]
+DISASM script/objects.script(155):\t   243:        PUSH_OBJ\t\ta: derived_obj stack[0]
+DISASM script/objects.script(155):\t   244:            CALL\t\ta: const function base_obj::destroy
+DISASM script/objects.script(155):\t   245:          RETURN\t
+DISASM }
+DISASM 
+DISASM function derived_obj::value() 12 stack used, 4 parms, 8 locals {
+DISASM script/objects.script(158):\t   246:      INDIRECT_F\t\ta: derived_obj stack[0]\tb: field 152\tc: float stack[4]
+DISASM script/objects.script(158):\t   247:           ADD_F\t\ta: const float 20.000000\tb: float stack[4]\tc: float stack[8]
+DISASM script/objects.script(158):\t   248:          RETURN\t\ta: float stack[8]
+DISASM script/objects.script(159):\t   249:          RETURN\t
+DISASM }
+DISASM 
+DISASM function derived_obj::onlyDerived() 24 stack used, 8 parms, 16 locals {
+DISASM script/objects.script(162):\t   250:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 152\tc: pointer stack[8]
+DISASM script/objects.script(162):\t   251:      INDIRECT_F\t\ta: derived_obj stack[0]\tb: field 152\tc: float stack[12]
+DISASM script/objects.script(162):\t   252:           ADD_F\t\ta: float stack[12]\tb: float stack[4]\tc: pointer stack[16]
+DISASM script/objects.script(162):\t   253:        STOREP_F\t\ta: pointer stack[16]\tb: pointer stack[8]
+DISASM script/objects.script(163):\t   254:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 0\tc: pointer stack[16]
+DISASM script/objects.script(163):\t   255:      INDIRECT_F\t\ta: derived_obj stack[0]\tb: field 0\tc: float stack[12]
+DISASM script/objects.script(163):\t   256:           ADD_F\t\ta: float stack[12]\tb: float stack[4]\tc: float stack[20]
+DISASM script/objects.script(163):\t   257:        STOREP_F\t\ta: float stack[20]\tb: pointer stack[16]
+DISASM script/objects.script(164):\t   258:          RETURN\t
+DISASM }
+DISASM 
+DISASM function derived_obj::link() 428 stack used, 8 parms, 420 locals {
+DISASM script/objects.script(167):\t   259:         ADDRESS\t\ta: derived_obj stack[0]\tb: field 156\tc: pointer stack[8]
+DISASM script/objects.script(167):\t   260:   STOREP_OBJENT\t\ta: entity stack[4]\tb: pointer stack[8]\tc: base_obj global[101]
+DISASM script/objects.script(168):\t   261:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[12]
+DISASM script/objects.script(168):\t   262:           IFNOT\t\ta: base_obj stack[12]\tb: const address 284 [script/objects.script(174)]
+DISASM script/objects.script(169):\t   263:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[16]
+DISASM script/objects.script(169):\t   264:        PUSH_OBJ\t\ta: base_obj stack[16]
+DISASM script/objects.script(169):\t   265:      OBJECTCALL\t\ta: base_obj stack[16]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(169):\t   266:         STORE_F\t\ta: void global[0]\tb: pointer stack[20]
+DISASM script/objects.script(169):\t   267:          ADD_SF\t\ta: const string \"friend value=\"\tb: pointer stack[20]\tc: string stack[24]
+DISASM script/objects.script(169):\t   268:           ADD_S\t\ta: string stack[24]\tb: const string \" label=\"\tc: string stack[152]
+DISASM script/objects.script(169):\t   269:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[280]
+DISASM script/objects.script(169):\t   270:      INDIRECT_S\t\ta: base_obj stack[280]\tb: field 16\tc: string stack[24]
+DISASM script/objects.script(169):\t   271:           ADD_S\t\ta: string stack[152]\tb: string stack[24]\tc: pointer stack[284]
+DISASM script/objects.script(169):\t   272:          PUSH_S\t\ta: pointer stack[284]
+DISASM script/objects.script(169):\t   273:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(170):\t   274:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[412]
+DISASM script/objects.script(170):\t   275:         ADDRESS\t\ta: base_obj stack[412]\tb: field 0\tc: pointer stack[20]
+DISASM script/objects.script(170):\t   276:        STOREP_F\t\ta: const float 77.000000\tb: pointer stack[20]
+DISASM script/objects.script(171):\t   277:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[416]
+DISASM script/objects.script(171):\t   278:         ADDRESS\t\ta: base_obj stack[416]\tb: field 16\tc: pointer stack[284]
+DISASM script/objects.script(171):\t   279:        STOREP_S\t\ta: const string \"linked\"\tb: pointer stack[284]
+DISASM script/objects.script(172):\t   280:    INDIRECT_OBJ\t\ta: derived_obj stack[0]\tb: field 156\tc: base_obj stack[420]
+DISASM script/objects.script(172):\t   281:         ADDRESS\t\ta: base_obj stack[420]\tb: field 8\tc: pointer stack[424]
+DISASM script/objects.script(172):\t   282:        STOREP_F\t\ta: const float 9.000000\tb: pointer stack[424]
+DISASM script/objects.script(173):\t   283:            GOTO\t\ta: const address 286 [script/objects.script(176)]
+DISASM script/objects.script(174):\t   284:          PUSH_S\t\ta: const string \"no friend\"
+DISASM script/objects.script(174):\t   285:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(176):\t   286:          RETURN\t
+DISASM }
+DISASM 
+DISASM function leaf_obj::value() 4 stack used, 4 parms, 0 locals {
+DISASM script/objects.script(179):\t   287:          RETURN\t\ta: const float 30.000000
+DISASM script/objects.script(180):\t   288:          RETURN\t
+DISASM }
+DISASM 
+DISASM function plain_obj::hello() 144 stack used, 4 parms, 140 locals {
+DISASM script/objects.script(183):\t   289:         ADDRESS\t\ta: plain_obj stack[0]\tb: field 0\tc: pointer stack[4]
+DISASM script/objects.script(183):\t   290:      INDIRECT_F\t\ta: plain_obj stack[0]\tb: field 0\tc: float stack[8]
+DISASM script/objects.script(183):\t   291:           ADD_F\t\ta: float stack[8]\tb: const float 1.000000\tc: float stack[12]
+DISASM script/objects.script(183):\t   292:        STOREP_F\t\ta: float stack[12]\tb: pointer stack[4]
+DISASM script/objects.script(184):\t   293:      INDIRECT_F\t\ta: plain_obj stack[0]\tb: field 0\tc: float stack[12]
+DISASM script/objects.script(184):\t   294:          ADD_SF\t\ta: const string \"plain hello \"\tb: float stack[12]\tc: string stack[16]
+DISASM script/objects.script(184):\t   295:          PUSH_S\t\ta: string stack[16]
+DISASM script/objects.script(184):\t   296:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(185):\t   297:          RETURN\t
+DISASM }
+DISASM 
+DISASM function useObjects() 444 stack used, 0 parms, 444 locals {
+DISASM script/objects.script(195):\t   298:    STORE_OBJENT\t\ta: entity global[314]\tb: base_obj stack[0]
+DISASM script/objects.script(196):\t   299:    STORE_OBJENT\t\ta: entity global[315]\tb: derived_obj stack[4]
+DISASM script/objects.script(197):\t   300:    STORE_OBJENT\t\ta: entity global[316]\tb: leaf_obj stack[8]
+DISASM script/objects.script(198):\t   301:    STORE_OBJENT\t\ta: entity global[317]\tb: plain_obj stack[12]
+DISASM script/objects.script(199):\t   302:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(199):\t   303:          PUSH_S\t\ta: const string \"b\"
+DISASM script/objects.script(199):\t   304:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 2 ]\tc: const args 132
+DISASM script/objects.script(199):\t   305:         STORE_F\t\ta: void global[0]\tb: float stack[24]
+DISASM script/objects.script(199):\t   306:         STORE_F\t\ta: float stack[24]\tb: float stack[20]
+DISASM script/objects.script(200):\t   307:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(200):\t   308:          PUSH_S\t\ta: const string \"d\"
+DISASM script/objects.script(200):\t   309:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 2 ]\tc: const args 132
+DISASM script/objects.script(200):\t   310:         STORE_F\t\ta: void global[0]\tb: float stack[24]
+DISASM script/objects.script(200):\t   311:           ADD_F\t\ta: float stack[20]\tb: float stack[24]\tc: pointer stack[28]
+DISASM script/objects.script(200):\t   312:         STORE_F\t\ta: pointer stack[28]\tb: float stack[20]
+DISASM script/objects.script(201):\t   313:        PUSH_OBJ\t\ta: leaf_obj stack[8]
+DISASM script/objects.script(201):\t   314:          PUSH_S\t\ta: const string \"l\"
+DISASM script/objects.script(201):\t   315:      OBJECTCALL\t\ta: leaf_obj stack[8]\tb: const virtual function vtable[ 2 ]\tc: const args 132
+DISASM script/objects.script(201):\t   316:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(201):\t   317:           ADD_F\t\ta: float stack[20]\tb: pointer stack[28]\tc: float stack[24]
+DISASM script/objects.script(201):\t   318:         STORE_F\t\ta: float stack[24]\tb: float stack[20]
+DISASM script/objects.script(202):\t   319:         STORE_F\t\ta: float stack[20]\tb: float global[132]
+DISASM script/objects.script(203):\t   320:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(203):\t   321:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 4 ]\tc: const args 4
+DISASM script/objects.script(204):\t   322:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(204):\t   323:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 4 ]\tc: const args 4
+DISASM script/objects.script(205):\t   324:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[28]
+DISASM script/objects.script(205):\t   325:          ADD_SF\t\ta: const string \"counts \"\tb: pointer stack[28]\tc: string stack[32]
+DISASM script/objects.script(205):\t   326:           ADD_S\t\ta: string stack[32]\tb: const string \" \"\tc: string stack[160]
+DISASM script/objects.script(205):\t   327:      INDIRECT_F\t\ta: derived_obj stack[4]\tb: field 0\tc: pointer stack[28]
+DISASM script/objects.script(205):\t   328:          ADD_SF\t\ta: string stack[160]\tb: pointer stack[28]\tc: string stack[32]
+DISASM script/objects.script(205):\t   329:           ADD_S\t\ta: string stack[32]\tb: const string \" \"\tc: string stack[160]
+DISASM script/objects.script(205):\t   330:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[288]
+DISASM script/objects.script(205):\t   331:          ADD_SV\t\ta: string stack[160]\tb: vector stack[288]\tc: string stack[32]
+DISASM script/objects.script(205):\t   332:           ADD_S\t\ta: string stack[32]\tb: const string \" \"\tc: string stack[160]
+DISASM script/objects.script(205):\t   333:      INDIRECT_V\t\ta: derived_obj stack[4]\tb: field 4\tc: vector stack[288]
+DISASM script/objects.script(205):\t   334:          ADD_SV\t\ta: string stack[160]\tb: vector stack[288]\tc: string stack[32]
+DISASM script/objects.script(205):\t   335:          PUSH_S\t\ta: string stack[32]
+DISASM script/objects.script(205):\t   336:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(206):\t   337:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(206):\t   338:          PUSH_F\t\ta: const float 3.000000
+DISASM script/objects.script(206):\t   339:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 8 ]\tc: const args 8
+DISASM script/objects.script(207):\t   340:        PUSH_OBJ\t\ta: leaf_obj stack[8]
+DISASM script/objects.script(207):\t   341:          PUSH_F\t\ta: const float 4.000000
+DISASM script/objects.script(207):\t   342:      OBJECTCALL\t\ta: leaf_obj stack[8]\tb: const virtual function vtable[ 8 ]\tc: const args 8
+DISASM script/objects.script(208):\t   343:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(208):\t   344:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(208):\t   345:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(208):\t   346:          ADD_SF\t\ta: const string \"values \"\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(208):\t   347:           ADD_S\t\ta: string stack[160]\tb: const string \" \"\tc: string stack[32]
+DISASM script/objects.script(208):\t   348:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(208):\t   349:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(208):\t   350:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(208):\t   351:          ADD_SF\t\ta: string stack[32]\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(208):\t   352:           ADD_S\t\ta: string stack[160]\tb: const string \" \"\tc: string stack[32]
+DISASM script/objects.script(208):\t   353:        PUSH_OBJ\t\ta: leaf_obj stack[8]
+DISASM script/objects.script(208):\t   354:      OBJECTCALL\t\ta: leaf_obj stack[8]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(208):\t   355:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(208):\t   356:          ADD_SF\t\ta: string stack[32]\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(208):\t   357:          PUSH_S\t\ta: string stack[160]
+DISASM script/objects.script(208):\t   358:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(210):\t   359:       STORE_OBJ\t\ta: derived_obj stack[4]\tb: base_obj stack[0]
+DISASM script/objects.script(211):\t   360:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(211):\t   361:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(211):\t   362:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(211):\t   363:          ADD_SF\t\ta: const string \"virtual \"\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(211):\t   364:          PUSH_S\t\ta: string stack[160]
+DISASM script/objects.script(211):\t   365:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(212):\t   366:       STORE_OBJ\t\ta: leaf_obj stack[8]\tb: base_obj stack[0]
+DISASM script/objects.script(213):\t   367:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(213):\t   368:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(213):\t   369:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(213):\t   370:          ADD_SF\t\ta: const string \"virtual \"\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(213):\t   371:          PUSH_S\t\ta: string stack[160]
+DISASM script/objects.script(213):\t   372:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(215):\t   373:    STORE_OBJENT\t\ta: entity global[317]\tb: base_obj stack[0]
+DISASM script/objects.script(216):\t   374:         NOT_ENT\t\ta: base_obj stack[0]\tc: pointer stack[28]
+DISASM script/objects.script(216):\t   375:           IFNOT\t\ta: pointer stack[28]\tb: const address 378 [script/objects.script(219)]
+DISASM script/objects.script(217):\t   376:          PUSH_S\t\ta: const string \"plain is not a base_obj\"
+DISASM script/objects.script(217):\t   377:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(219):\t   378:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(219):\t   379:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(219):\t   380:         STORE_F\t\ta: void global[0]\tb: pointer stack[28]
+DISASM script/objects.script(219):\t   381:          ADD_SF\t\ta: const string \"null call \"\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(219):\t   382:           ADD_S\t\ta: string stack[160]\tb: const string \" \"\tc: string stack[32]
+DISASM script/objects.script(219):\t   383:      INDIRECT_F\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[28]
+DISASM script/objects.script(219):\t   384:          ADD_SF\t\ta: string stack[32]\tb: pointer stack[28]\tc: string stack[160]
+DISASM script/objects.script(219):\t   385:           ADD_S\t\ta: string stack[160]\tb: const string \" '\"\tc: string stack[32]
+DISASM script/objects.script(219):\t   386:      INDIRECT_S\t\ta: base_obj stack[0]\tb: field 16\tc: string stack[160]
+DISASM script/objects.script(219):\t   387:           ADD_S\t\ta: string stack[32]\tb: string stack[160]\tc: string stack[300]
+DISASM script/objects.script(219):\t   388:           ADD_S\t\ta: string stack[300]\tb: const string \"' \"\tc: string stack[160]
+DISASM script/objects.script(219):\t   389:      INDIRECT_V\t\ta: base_obj stack[0]\tb: field 4\tc: vector stack[288]
+DISASM script/objects.script(219):\t   390:          ADD_SV\t\ta: string stack[160]\tb: vector stack[288]\tc: string stack[300]
+DISASM script/objects.script(219):\t   391:          PUSH_S\t\ta: string stack[300]
+DISASM script/objects.script(219):\t   392:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(220):\t   393:         ADDRESS\t\ta: base_obj stack[0]\tb: field 0\tc: pointer stack[28]
+DISASM script/objects.script(220):\t   394:        STOREP_F\t\ta: const float 5.000000\tb: pointer stack[28]
+DISASM script/objects.script(221):\t   395:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(221):\t   396:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 4 ]\tc: const args 4
+DISASM script/objects.script(222):\t   397:    STORE_OBJENT\t\ta: entity global[314]\tb: derived_obj stack[4]
+DISASM script/objects.script(223):\t   398:         NOT_ENT\t\ta: derived_obj stack[4]\tc: float stack[24]
+DISASM script/objects.script(223):\t   399:           IFNOT\t\ta: float stack[24]\tb: const address 402 [script/objects.script(227)]
+DISASM script/objects.script(224):\t   400:          PUSH_S\t\ta: const string \"base is not a derived_obj\"
+DISASM script/objects.script(224):\t   401:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(227):\t   402:       STORE_ENT\t\ta: entity global[316]\tb: entity stack[16]
+DISASM script/objects.script(228):\t   403:    STORE_OBJENT\t\ta: entity stack[16]\tb: derived_obj stack[4]
+DISASM script/objects.script(229):\t   404:    STORE_OBJENT\t\ta: derived_obj stack[4]\tb: entity stack[16]
+DISASM script/objects.script(230):\t   405:            EQ_E\t\ta: entity stack[16]\tb: entity global[316]\tc: float stack[24]
+DISASM script/objects.script(230):\t   406:           EQ_OO\t\ta: derived_obj stack[4]\tb: leaf_obj stack[8]\tc: float stack[428]
+DISASM script/objects.script(230):\t   407:             AND\t\ta: float stack[24]\tb: float stack[428]\tc: pointer stack[432]
+DISASM script/objects.script(230):\t   408:           IFNOT\t\ta: pointer stack[432]\tb: const address 411 [script/objects.script(233)]
+DISASM script/objects.script(231):\t   409:          PUSH_S\t\ta: const string \"leaf converts\"
+DISASM script/objects.script(231):\t   410:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(233):\t   411:           NE_OO\t\ta: derived_obj stack[4]\tb: base_obj stack[0]\tc: pointer stack[432]
+DISASM script/objects.script(233):\t   412:           IFNOT\t\ta: pointer stack[432]\tb: const address 415 [script/objects.script(236)]
+DISASM script/objects.script(234):\t   413:          PUSH_S\t\ta: const string \"d != b\"
+DISASM script/objects.script(234):\t   414:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(236):\t   415:       STORE_ENT\t\ta: entity global[343]\tb: entity stack[16]
+DISASM script/objects.script(237):\t   416:    STORE_OBJENT\t\ta: entity stack[16]\tb: base_obj stack[0]
+DISASM script/objects.script(238):\t   417:         NOT_ENT\t\ta: base_obj stack[0]\tc: pointer stack[432]
+DISASM script/objects.script(238):\t   418:           IFNOT\t\ta: pointer stack[432]\tb: const address 421 [script/objects.script(241)]
+DISASM script/objects.script(239):\t   419:          PUSH_S\t\ta: const string \"no object on ent_none\"
+DISASM script/objects.script(239):\t   420:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(241):\t   421:        PUSH_OBJ\t\ta: plain_obj stack[12]
+DISASM script/objects.script(241):\t   422:      OBJECTCALL\t\ta: plain_obj stack[12]\tb: const virtual function vtable[ 0 ]\tc: const args 4
+DISASM script/objects.script(242):\t   423:         ADDRESS\t\ta: plain_obj stack[12]\tb: field 0\tc: pointer stack[432]
+DISASM script/objects.script(242):\t   424:        STOREP_F\t\ta: const float 41.000000\tb: pointer stack[432]
+DISASM script/objects.script(243):\t   425:        PUSH_OBJ\t\ta: plain_obj stack[12]
+DISASM script/objects.script(243):\t   426:      OBJECTCALL\t\ta: plain_obj stack[12]\tb: const virtual function vtable[ 0 ]\tc: const args 4
+DISASM script/objects.script(244):\t   427:    STORE_OBJENT\t\ta: entity global[315]\tb: derived_obj stack[4]
+DISASM script/objects.script(245):\t   428:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(245):\t   429:        PUSH_ENT\t\ta: entity global[314]
+DISASM script/objects.script(245):\t   430:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 9 ]\tc: const args 8
+DISASM script/objects.script(246):\t   431:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(246):\t   432:        PUSH_ENT\t\ta: entity global[317]
+DISASM script/objects.script(246):\t   433:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 9 ]\tc: const args 8
+DISASM script/objects.script(247):\t   434:        PUSH_OBJ\t\ta: derived_obj stack[4]
+DISASM script/objects.script(247):\t   435:        PUSH_ENT\t\ta: entity global[232]
+DISASM script/objects.script(247):\t   436:      OBJECTCALL\t\ta: derived_obj stack[4]\tb: const virtual function vtable[ 9 ]\tc: const args 8
+DISASM script/objects.script(248):\t   437:         ADDRESS\t\ta: derived_obj stack[4]\tb: field 156\tc: pointer stack[436]
+DISASM script/objects.script(248):\t   438:   STOREP_OBJENT\t\ta: entity global[316]\tb: pointer stack[436]\tc: base_obj global[101]
+DISASM script/objects.script(249):\t   439:    INDIRECT_OBJ\t\ta: derived_obj stack[4]\tb: field 156\tc: base_obj stack[440]
+DISASM script/objects.script(249):\t   440:        PUSH_OBJ\t\ta: base_obj stack[440]
+DISASM script/objects.script(249):\t   441:      OBJECTCALL\t\ta: base_obj stack[440]\tb: const virtual function vtable[ 3 ]\tc: const args 4
+DISASM script/objects.script(249):\t   442:         STORE_F\t\ta: void global[0]\tb: float stack[428]
+DISASM script/objects.script(249):\t   443:          ADD_SF\t\ta: const string \"friend through field \"\tb: float stack[428]\tc: string stack[300]
+DISASM script/objects.script(249):\t   444:          PUSH_S\t\ta: string stack[300]
+DISASM script/objects.script(249):\t   445:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(250):\t   446:    STORE_OBJENT\t\ta: entity global[314]\tb: base_obj stack[0]
+DISASM script/objects.script(251):\t   447:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(251):\t   448:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 5 ]\tc: const args 4
+DISASM script/objects.script(252):\t   449:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(252):\t   450:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 7 ]\tc: const args 4
+DISASM script/objects.script(253):\t   451:          RETURN\t
+DISASM }
+DISASM 
+DISASM function threads() 136 stack used, 0 parms, 136 locals {
+DISASM script/objects.script(259):\t   452:    STORE_OBJENT\t\ta: entity global[314]\tb: base_obj stack[0]
+DISASM script/objects.script(260):\t   453:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(260):\t   454:          PUSH_F\t\ta: const float 2.000000
+DISASM script/objects.script(260):\t   455:       OBJTHREAD\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 6 ]\tc: const args 8
+DISASM script/objects.script(260):\t   456:         STORE_F\t\ta: void global[0]\tb: float stack[4]
+DISASM script/objects.script(261):\t   457:          ADD_SF\t\ta: const string \"thread \"\tb: float stack[4]\tc: string stack[8]
+DISASM script/objects.script(261):\t   458:          PUSH_S\t\ta: string stack[8]
+DISASM script/objects.script(261):\t   459:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(262):\t   460:    STORE_OBJENT\t\ta: entity global[343]\tb: base_obj stack[0]
+DISASM script/objects.script(263):\t   461:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(263):\t   462:          PUSH_F\t\ta: const float 2.000000
+DISASM script/objects.script(263):\t   463:       OBJTHREAD\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 6 ]\tc: const args 8
+DISASM script/objects.script(263):\t   464:         STORE_F\t\ta: void global[0]\tb: float stack[4]
+DISASM script/objects.script(264):\t   465:          ADD_SF\t\ta: const string \"thread on null \"\tb: float stack[4]\tc: string stack[8]
+DISASM script/objects.script(264):\t   466:          PUSH_S\t\ta: string stack[8]
+DISASM script/objects.script(264):\t   467:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(265):\t   468:         SYSCALL\t\ta: const event waitFrame\tb: const args 0
+DISASM script/objects.script(266):\t   469:         SYSCALL\t\ta: const event waitFrame\tb: const args 0
+DISASM script/objects.script(267):\t   470:         SYSCALL\t\ta: const event waitFrame\tb: const args 0
+DISASM script/objects.script(268):\t   471:    STORE_OBJENT\t\ta: entity global[315]\tb: base_obj stack[0]
+DISASM script/objects.script(269):\t   472:        PUSH_OBJ\t\ta: base_obj stack[0]
+DISASM script/objects.script(269):\t   473:          PUSH_F\t\ta: const float 1.000000
+DISASM script/objects.script(269):\t   474:      OBJECTCALL\t\ta: base_obj stack[0]\tb: const virtual function vtable[ 6 ]\tc: const args 8
+DISASM script/objects.script(270):\t   475:          PUSH_S\t\ta: const string \"threads done\"
+DISASM script/objects.script(270):\t   476:         SYSCALL\t\ta: const event println\tb: const args 128
+DISASM script/objects.script(271):\t   477:          RETURN\t
+DISASM }
+CMD spawn 1 idEntity ent_base
+CMD spawn 2 idEntity ent_derived
+CMD spawn 3 idMover ent_leaf
+CMD spawn 4 idEntity ent_plain
+CMD spawn 5 idEntity ent_none
+CMD setobject 1 base_obj
+SETTYPE 1
+CMD setobject 2 derived_obj
+SETTYPE 1
+CMD setobject 3 leaf_obj
+SETTYPE 1
+CMD setobject 4 plain_obj
+SETTYPE 1
+CMD setobject 5 no_such_type
+WARN idScriptObject::SetType: Unknown type 'no_such_type'
+SETTYPE 0
+CMD setobject 5 useObjects
+WARN idScriptObject::SetType: Can't create object of type 'useObjects'.  Must be an object type.
+SETTYPE 0
+CMD dump threads
+CURRENT 0
+THREADINDEX 3
+THREAD 1 name="ent_base" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=0 created=0 manual=0 depth=1 used=392 base=0 maxDepth=1 maxUsed=392 ip=0 func=95 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 2 name="ent_derived" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=0 created=0 manual=0 depth=1 used=392 base=0 maxDepth=1 maxUsed=392 ip=219 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 3 name="ent_leaf" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=0 created=0 manual=0 depth=1 used=392 base=0 maxDepth=1 maxUsed=392 ip=219 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=1 name=<execute> class=idThread object=thread:1 args=
+EVENT time=1 name=<execute> class=idThread object=thread:2 args=
+EVENT time=1 name=<execute> class=idThread object=thread:3 args=
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_base" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 2 class=idEntity name="ent_derived" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=derived_obj data=00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 3 class=idMover name="ent_leaf" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=leaf_obj data=000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 4 class=idEntity name="ent_plain" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=plain_obj data=00000000
+ENTITY 5 class=idEntity name="ent_none" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+CMD frame 1
+HOST event 1 getName
+PRINT base_obj::init ent_base
+HOST event 2 getName
+PRINT base_obj::init ent_derived
+PRINT derived_obj::init base+derived
+HOST event 3 getName
+PRINT base_obj::init ent_leaf
+PRINT derived_obj::init base+derived
+FRAME time=16 framenum=1 events=0
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_base" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000803F00000000000000000000000062617365000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 2 class=idEntity name="ent_derived" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=derived_obj data=0000803F000000000000000000000000626173652B64657269766564000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A04000000000
+ENTITY 3 class=idMover name="ent_leaf" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=leaf_obj data=0000803F000000000000000000000000626173652B64657269766564000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 4 class=idEntity name="ent_plain" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=plain_obj data=00000000
+ENTITY 5 class=idEntity name="ent_none" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+CMD dump threads
+CURRENT 0
+THREADINDEX 3
+CMD scriptvar 1 count float
+SCRIPTVAR 0 #3F800000
+CMD scriptvar 1 pos vector
+SCRIPTVAR 4 #00000000,#00000000,#00000000
+CMD scriptvar 1 label string
+SCRIPTVAR 16 "base"
+CMD scriptvar 1 flag boolean
+SCRIPTVAR 144 0
+CMD scriptvar 1 other entity
+SCRIPTVAR 148 0
+CMD scriptvar 1 count vector
+SCRIPTVAR -1
+CMD scriptvar 1 nothing float
+SCRIPTVAR -1
+CMD scriptvar 2 extra float
+SCRIPTVAR 152 #40A00000
+CMD scriptvar 2 friend object
+SCRIPTVAR 156 0
+CMD scriptvar 2 friend entity
+SCRIPTVAR -1
+CMD scriptvar 2 label string
+SCRIPTVAR 16 "base+derived"
+CMD scriptvar 3 leaf string
+SCRIPTVAR 160 ""
+CMD scriptvar 3 count float
+SCRIPTVAR 0 #3F800000
+CMD scriptvar 5 count float
+SCRIPTVAR -1
+CMD callnow useObjects
+PRINT b: label=base count=1 pos=0 0 0 value=10
+PRINT d: label=base+derived count=1 pos=0 0 0 value=25
+PRINT l: label=base+derived count=1 pos=0 0 0 value=30
+PRINT counts 12 12 12 1 13 12 1 13
+PRINT values 10 28 30
+PRINT virtual 28
+PRINT virtual 30
+PRINT plain is not a base_obj
+PRINT null call 0 0 '' 0 0 0
+PRINT base is not a derived_obj
+PRINT leaf converts
+PRINT d != b
+PRINT no object on ent_none
+PRINT plain hello 1
+PRINT plain hello 42
+PRINT friend value=10 label=base
+PRINT no friend
+PRINT no friend
+PRINT friend through field 30
+PRINT label from float: 2.500000
+PRINT label from vector: 1 2 3
+PRINT label from boolean: true
+PRINT count from boolean: 1
+PRINT flag from float: true
+PRINT read: 1 1 2 3 true
+PRINT compound: 6 4 6 6
+PRINT other is self
+PRINT other is null
+HOST event 1 setValue #40C00000
+HOST event 1 getName
+HOST event 1 getValue
+PRINT selfEvents ent_base 6
+HOST event 1 setValue #40000000
+HOST event 1 getValue
+PRINT selfEvents 2
+DONE 1
+RETURN 40000000 00000000 00000000 "ent_base"
+CMD dump globals
+GLOBALS 7056
+G 000000 000000400000000000000000656E745F62617365000000000000000000000000
+G 000340 000040400000803F626173650000000000000000000000000000000000000000
+G 0003C0 0000000000000000626173655F6F626A3A3A696E697420000000000000000000
+G 000440 00000000000000000000000000000000626173655F6F626A3A3A64657374726F
+G 000460 7920000000000000000000000000000000000000000000000000000000000000
+G 0004C0 0000000000000000000000000000000020636F756E743D000000000000000000
+G 000540 00000000000000000000000000000000000020413A206C6162656C3D00000000
+G 0005C0 000000000000000000000000000000000000000020706F733D00000000000000
+G 000640 00000000000000000000000000000000000000002076616C75653D0000000000
+G 0006C0 000000000000000000000000000000000000000000000000000020400000803F
+G 0006E0 0000004000004040736574000000000000000000000000000000000000000000
+G 000760 00000000000000006C6162656C2066726F6D20666C6F61743A20000000000000
+G 0007E0 00000000000000006C6162656C2066726F6D20766563746F723A200000000000
+G 000860 00000000000000006C6162656C2066726F6D20626F6F6C65616E3A2000000000
+G 0008E0 0000000000000000636F756E742066726F6D20626F6F6C65616E3A2000000000
+G 000960 000000000000000000000000666C61672066726F6D20666C6F61743A20000000
+G 0009E0 000000000000000000000000726561643A200000000000000000000000000000
+G 000A60 0000000000000000000000002000000000000000000000000000000000000000
+G 000AE0 0000000000000000000000000000804000004040000000400000803F0000803F
+G 000B00 0000803F00000000000000000000803F636F6D706F756E643A20000000000000
+G 000B80 000000000000000000000000000000006F746865722069732073656C66000000
+G 000C00 0000000000000000000000000000000000000000000000006F74686572206973
+G 000C20 206E756C6C000000000000000000000000000000000000000000000000000000
+G 000C80 0000000000000000000000000000000000000000000000006166746572206669
+G 000CA0 656C647300000000000000000000000000000000000000000000000000000000
+G 000D00 00000000000000000000000000000000000000000000000000000000206C6F6F
+G 000D20 7020000000000000000000000000000000000000000000000000000000000000
+G 000DA0 00000000000000000000000073656C664576656E747320000000000000000000
+G 000E20 0000000000000000000000000000A0402B646572697665640000000000000000
+G 000EA0 00000000000000000000000000000000646572697665645F6F626A3A3A696E69
+G 000EC0 7420000000000000000000000000000000000000000000000000000000000000
+G 000F20 00000000000000000000000000000000646572697665645F6F626A3A3A646573
+G 000F40 74726F792065787472613D000000000000000000000000000000000000000000
+G 000FA0 000000000000000000000000000000000000C842000000000000A04166726965
+G 000FC0 6E642076616C75653D0000000000000000000000000000000000000000000000
+G 001020 00000000000000000000000000000000000000000000000000000000206C6162
+G 001040 656C3D0000000000000000000000000000000000000000000000000000000000
+G 0010A0 0000000000000000000000000000000000000000000000000000000000009A42
+G 0010C0 6C696E6B65640000000000000000000000000000000000000000000000000000
+G 001140 00001041000000006E6F20667269656E64000000000000000000000000000000
+G 0011C0 00000000000000000000F041706C61696E2068656C6C6F200000000000000000
+G 001240 0000000000000000000000000000000002000000030000000400000005000000
+G 001260 6200000000000000000000000000000000000000000000000000000000000000
+G 0012E0 0000000000000000640000000000000000000000000000000000000000000000
+G 001360 00000000000000006C0000000000000000000000000000000000000000000000
+G 0013E0 000000000000000000000000636F756E74732000000000000000000000000000
+G 001460 0000000000000000000000000000000076616C75657320000000000000000000
+G 0014E0 000000000000000000000000000000007669727475616C200000000000000000
+G 001560 00000000000000000000000000000000706C61696E206973206E6F7420612062
+G 001580 6173655F6F626A00000000000000000000000000000000000000000000000000
+G 0015E0 000000000000000000000000000000006E756C6C2063616C6C20000000000000
+G 001660 0000000000000000000000000000000020270000000000000000000000000000
+G 0016E0 0000000000000000000000000000000027200000000000000000000000000000
+G 001760 0000000000000000000000000000000062617365206973206E6F742061206465
+G 001780 72697665645F6F626A0000000000000000000000000000000000000000000000
+G 0017E0 000000000000000000000000000000006C65616620636F6E7665727473000000
+G 001860 000000000000000000000000000000006420213D206200000000000000000000
+G 0018E0 00000000000000000000000000000000060000006E6F206F626A656374206F6E
+G 001900 20656E745F6E6F6E650000000000000000000000000000000000000000000000
+G 001960 0000000000000000000000000000000000000000000000000000244200000000
+G 001980 667269656E64207468726F756768206669656C64200000000000000000000000
+G 001A00 0000000000000000000000000000000074687265616420000000000000000000
+G 001A80 00000000000000000000000000000000746872656164206F6E206E756C6C2000
+G 001B00 000000000000000000000000000000007468726561647320646F6E6500000000
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_base" value=#40000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000C040000080400000C0400000C0406166746572206669656C647300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000
+ENTITY 2 class=idEntity name="ent_derived" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=derived_obj data=00007041000040410000803F00005041626173652B64657269766564000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104000000
+ENTITY 3 class=idMover name="ent_leaf" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=leaf_obj data=0000A040000000000000000000000000626173652B646572697665640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001041000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 4 class=idEntity name="ent_plain" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=plain_obj data=00002842
+ENTITY 5 class=idEntity name="ent_none" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+CMD scriptvar 1 count float
+SCRIPTVAR 0 #40C00000
+CMD scriptvar 2 friend object
+SCRIPTVAR 156 4
+CMD thread threads
+THREADNUM 5
+CMD frame 8
+HOST event 1 getName
+PRINT ent_base loop 0 count=7
+PRINT thread 6
+PRINT thread on null 0
+FRAME time=32 framenum=2 events=2
+THREAD 5 name="threads" dying=0 done=1 waitingFor=4095 waitingUntil=48 waitingForThread=0 lastExec=32 created=16 manual=0 depth=1 used=136 base=0 maxDepth=1 maxUsed=136 ip=468 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 6 name="base_obj::loop" dying=0 done=1 waitingFor=4095 waitingUntil=48 waitingForThread=0 lastExec=32 created=32 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=192 func=101 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 1 getName
+PRINT ent_base loop 1 count=8
+FRAME time=48 framenum=3 events=2
+THREAD 5 name="threads" dying=0 done=1 waitingFor=4095 waitingUntil=64 waitingForThread=0 lastExec=48 created=16 manual=0 depth=1 used=136 base=0 maxDepth=1 maxUsed=136 ip=469 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 6 name="base_obj::loop" dying=0 done=1 waitingFor=4095 waitingUntil=64 waitingForThread=0 lastExec=48 created=32 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=192 func=101 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=64 framenum=4 events=1
+THREAD 5 name="threads" dying=0 done=1 waitingFor=4095 waitingUntil=80 waitingForThread=0 lastExec=64 created=16 manual=0 depth=1 used=136 base=0 maxDepth=1 maxUsed=136 ip=470 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 2 getName
+PRINT ent_derived loop 0 count=16
+FRAME time=80 framenum=5 events=1
+THREAD 5 name="threads" dying=0 done=1 waitingFor=4095 waitingUntil=96 waitingForThread=0 lastExec=80 created=16 manual=0 depth=2 used=408 base=136 maxDepth=2 maxUsed=408 ip=192 func=101 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+PRINT threads done
+FRAME time=96 framenum=6 events=0
+FRAME time=112 framenum=7 events=0
+FRAME time=128 framenum=8 events=0
+FRAME time=144 framenum=9 events=0
+CMD dump threads
+CURRENT 0
+THREADINDEX 6
+CMD objthread 1 bump
+THREADNUM 7
+CMD objthread 3 value
+THREADNUM 8
+CMD frame 2
+FRAME time=160 framenum=10 events=0
+FRAME time=176 framenum=11 events=0
+CMD dump threads
+CURRENT 0
+THREADINDEX 8
+CMD setobject 4 base_obj
+SETTYPE 1
+CMD setobject 1 base_obj
+SETTYPE 1
+CMD frame 1
+HOST event 4 getName
+PRINT base_obj::init ent_plain
+HOST event 1 getName
+PRINT base_obj::init ent_base
+FRAME time=192 framenum=12 events=0
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_base" value=#40000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000803F00000000000000000000000062617365000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 2 class=idEntity name="ent_derived" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=derived_obj data=00008041000040410000803F00005041626173652B64657269766564000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104000000
+ENTITY 3 class=idMover name="ent_leaf" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=leaf_obj data=0000A040000000000000000000000000626173652B646572697665640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001041000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 4 class=idEntity name="ent_plain" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000803F00000000000000000000000062617365000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ENTITY 5 class=idEntity name="ent_none" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+CMD remove 2
+HOST free 2
+PRINT derived_obj::destroy extra=8
+PRINT base_obj::destroy base+derived count=16
+HOST Signal 2 3
+CMD remove 3
+HOST free 3
+PRINT derived_obj::destroy extra=9
+PRINT base_obj::destroy base+derived count=5
+HOST Signal 3 3
+CMD remove 4
+HOST free 4
+PRINT base_obj::destroy base count=1
+HOST Signal 4 3
+CMD remove 5
+HOST free 5
+HOST Signal 5 3
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_base" value=#40000000 origin=#00000000,#00000000,#00000000 owner=0 object=base_obj data=0000803F00000000000000000000000062617365000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+CMD dump threads
+CURRENT 0
+THREADINDEX 13
+CMD frame 1
+FRAME time=208 framenum=13 events=0

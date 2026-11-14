@@ -1,0 +1,61 @@
+# errors and warnings at run time, the limits of the interpreter and of the event queue.
+# After an Error of the game the state is not clean (the original would end the map): a new startup follows.
+startup script/runtime_errors.script
+callnow divisions
+dump globals
+callnow warnings
+callnow longString
+callnow deepOk
+dump threads
+frame 1
+
+callnow scriptError
+dump threads
+startup script/runtime_errors.script
+callnow scriptErrorNested
+startup script/runtime_errors.script
+thread scriptError
+frame 1
+dump threads
+dump events
+
+startup script/runtime_errors.script
+callnow runaway
+startup script/runtime_errors.script
+callnow deepRecursion
+dump globals
+startup script/runtime_errors.script
+callnow deepTooMuch
+startup script/runtime_errors.script
+callnow stackOverflow
+dump globals
+startup script/runtime_errors.script
+callnow stackOverflow2
+startup script/runtime_errors.script
+callnow stackOverflow3
+
+startup script/runtime_errors.script
+spawn 1 idEntity ent_one
+callnow badEntityArg
+frame 1
+thread staleEntity
+frame 3
+dump threads
+
+# more threads than events: every waiting thread holds one event of the pool of 4096
+startup script/runtime_errors.script
+callnow tooManyEvents
+dump globals
+startup script/runtime_errors.script
+callnow tooManyThreads
+dump globals
+
+# an event that posts itself again without delay
+startup script/runtime_errors.script
+spawn 1 idEntity ent_one
+postevent 1 0 <hostping> 5
+postevent 1 0 <hostping> -1
+frame 1
+remove 1
+frame 1
+dump events

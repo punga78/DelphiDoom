@@ -1,0 +1,137 @@
+// events of the entities: arguments and returns of every kind, null entities, entities that do not answer
+
+object evt_obj {
+	float	n;
+	void	init();
+	void	implicitSelf();
+};
+
+float	gf;
+vector	gv;
+string	gs;
+entity	ge;
+
+void evt_obj::init() {
+	n = 3;
+}
+
+void evt_obj::implicitSelf() {
+	// inside a method an event without an object goes to self
+	setValue( n );
+	n = getValue() + 1;
+	setKey( "who", getName() );
+	sys.println( "implicit " + getKey( "who" ) + " " + n );
+	activate( self );
+	setOwner( self );
+	ge = getOwner();
+}
+
+void basics() {
+	entity e;
+
+	e = $ent_one;
+	e.setValue( 12.5 );
+	gf = e.getValue();
+	e.setOrigin( '1 2 3' );
+	gv = e.getOrigin();
+	gs = e.getName();
+	sys.println( "basics " + gf + " " + gv + " " + gs );
+	$ent_one.setKey( "color", "red" );
+	sys.println( "key " + $ent_one.getKey( "color" ) + " missing '" + $ent_one.getKey( "nothing" ) + "'" );
+	// integer arguments are truncated, the integer result comes back as a float
+	gf = e.addInts( 2.9, -3.9 );
+	sys.println( "addInts " + gf );
+	gf = e.mix( 1.5, 7.9, '4 5 6', "text", $ent_two );
+	sys.println( "mix " + gf );
+	gf = e.mix( 1, 2, gv, gs, $null_entity );
+	// conversions of the arguments
+	e.setKey( 1.5, '1 2 3' );
+	e.setValue( e.getValue() * 2 );
+	e.setOwner( $ent_two );
+	ge = e.getOwner();
+	if ( ge == $ent_two ) {
+		sys.println( "owner ok" );
+	}
+	e.setOwner( $null_entity );
+	ge = e.getOwner();
+	if ( !ge ) {
+		sys.println( "owner null" );
+	}
+	e.activate( $ent_two );
+	e.setShaderParm( 3.7, 0.5 );
+	e.cacheSoundShader( "snd" );
+	// chained: the result of an event is the object of the next
+	e.setOwner( $ent_two );
+	e.getOwner().setValue( 99 );
+	gf = e.getOwner().getValue();
+	sys.println( "chained " + gf + " " + $ent_two.getValue() );
+}
+
+void nullAndMissing() {
+	entity e;
+
+	// a null entity: nothing is called, safe values come back
+	gf = 5; gv = '5 5 5'; gs = "five"; ge = $ent_one;
+	e.setValue( 1 );
+	gf = e.getValue();
+	gv = e.getOrigin();
+	gs = e.getName();
+	ge = e.getOwner();
+	sys.println( "null: " + gf + " " + gv + " '" + gs + "'" );
+	if ( !ge ) sys.println( "null owner" );
+	gf = e.addInts( 1, 2 );
+	sys.println( "null addInts " + gf );
+	// an entity that does not answer the event (moveTo is of the mover only)
+	e = $ent_one;
+	e.moveTo( '1 1 1', 1 );
+	gf = 3;
+	gf = e.isMoving();
+	sys.println( "missing: " + gf );
+	e = $ent_mover;
+	gf = e.isMoving();
+	sys.println( "mover: " + gf );
+	// the mover is an idEntity too
+	e.setValue( 4 );
+	sys.println( "mover value " + e.getValue() );
+	// an entity that was removed
+	e = $ent_gone;
+	e.setValue( 1 );
+	sys.println( "gone: " + e.getValue() + " '" + e.getName() + "'" );
+}
+
+void requiredEntity() {
+	sys.println( "before bind" );
+	// 'E' accepts null, 'e' does not: the thread ends here
+	$ent_one.setOwner( $null_entity );
+	$ent_one.bind( $null_entity );
+	sys.println( "never printed" );
+}
+
+void requiredEntity2() {
+	$ent_one.bind( $ent_two );
+	sys.println( "bind ok" );
+	$ent_one.activate( $null_entity );
+	sys.println( "never printed" );
+}
+
+void methods() {
+	evt_obj o;
+
+	o = $ent_obj;
+	o.implicitSelf();
+	o.setValue( 50 );
+	sys.println( "methods " + o.getValue() + " " + o.n );
+	if ( ge == $ent_obj ) sys.println( "owner is self" );
+}
+
+void removal() {
+	entity e;
+
+	e = $ent_two;
+	e.remove();
+	sys.println( "remove posted " + e.getName() );
+	sys.waitFrame();
+	sys.println( "after remove '" + e.getName() + "'" );
+	if ( !e ) sys.println( "e is null now" );
+	if ( !$ent_two ) sys.println( "$ent_two is null now" );
+}

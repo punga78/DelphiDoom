@@ -1,0 +1,59 @@
+# system events that reach the game: cvars, spawn args and spawn, entities by name, persistent args, traces,
+# fades, camera, sounds, damage, debug drawing, signals
+startup script/sysworld.script
+spawn 1 idEntity ent_one
+spawn 2 idEntity ent_two
+spawn 5 idCamera ent_cam
+spawn 6 idAFEntity_Base ent_af
+callnow cvars
+dump globals
+thread spawning
+frame 2
+dump entities
+dump threads
+callnow finding
+callnow persistent
+dump globals
+callnow tracing
+settrace 0.25 1 0
+callnow tracing2
+settrace 0.5 6 -3
+callnow tracing2
+settrace 0.5 1 -3
+callnow tracing2
+settrace 0.5 4095 -1
+callnow tracing2
+settrace 1 6 -3
+callnow tracing2
+dump globals
+# no player: the fades do nothing
+callnow screen
+spawn 7 idPlayer player1
+callnow screen
+set influence 2
+callnow screen
+callnow screenText
+callnow cameraErrors
+callnow cameraErrors2
+callnow shaderParmError
+frame 1
+thread signals
+frame 1
+dump threads
+signal 1 0
+frame 1
+signal 1 2
+signal 1 2
+signal 2 0
+frame 5
+dump threads
+callnow signalErrors1
+callnow signalErrors2
+callnow signalErrors3
+callnow signalErrors4
+callnow signalErrors5
+callnow signalErrors6
+callnow entityRange
+callnow entityRange2
+frame 1
+dump threads

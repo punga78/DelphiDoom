@@ -51,7 +51,7 @@ implementation
 
 uses
   DelphiDoom.War.Model.Math, DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry,
-  DelphiDoom.War.Model.State.Types;
+  DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.Animations;
 
 { TWarCombat }
 
@@ -158,6 +158,20 @@ begin
   else if TWarUnitClassifier.IsBuilding(LUnit^.UnitType) then
   begin
     LPercent := TWarModelMath.PercentOf(LUnit^.Hp, LUnit^.MaxHp);
+    // the animations of the damage: the fire of a building that has a third of its hit points takes the place of the smoke
+    if LPercent <= 33 then
+    begin
+      if not TWarAnimations.Contains(LEntity, WAR_ANIMATION_HUGE_DAMAGE) then
+      begin
+        TWarAnimations.Remove(LEntity, WAR_ANIMATION_LITTLE_DAMAGE);
+        TWarAnimations.CreateDamage(LEntity, 2);
+      end;
+    end
+    else if LPercent <= 66 then
+    begin
+      if not TWarAnimations.Contains(LEntity, WAR_ANIMATION_LITTLE_DAMAGE) then
+        TWarAnimations.CreateDamage(LEntity, 1);
+    end;
     if LPercent <= 66 then
       FContext.Events.BuildingDamaged(LEntity^.Id, LPercent);
   end;

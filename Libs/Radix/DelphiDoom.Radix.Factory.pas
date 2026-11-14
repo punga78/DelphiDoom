@@ -35,6 +35,8 @@ type
     class function CreateLumpAliases: IRadixLumpAliases; static;
     /// <summary>The reader of the lump RMAP of a level (slopes, positions and flags of sectors and walls)</summary>
     class function CreateMapInfoReader: IRadixMapInfoReader; static;
+    /// <summary>The reader of the binary lumps of Radix of a level (RACTION, RTRIGGER, RGRID, RMAPGRID, RTHINGS)</summary>
+    class function CreateLevelLumpReader: IRadixLevelLumpReader; static;
   end;
 
 implementation
@@ -49,9 +51,14 @@ uses
   DelphiDoom.Radix.BigFontPart, DelphiDoom.Radix.DosFontPart, DelphiDoom.Radix.MenuTranslationPart,
   DelphiDoom.Radix.CockpitPart, DelphiDoom.Radix.SoundPart, DelphiDoom.Radix.SpritePart,
   DelphiDoom.Radix.SpriteCatalog, DelphiDoom.Radix.Level.Factory, DelphiDoom.Radix.Translator,
-  DelphiDoom.Radix.LumpAliases, DelphiDoom.Radix.MapInfo.Reader;
+  DelphiDoom.Radix.LumpAliases, DelphiDoom.Radix.MapInfo.Reader, DelphiDoom.Radix.LevelLumps.Reader;
 
 { TRadixFactory }
+
+class function TRadixFactory.CreateLevelLumpReader: IRadixLevelLumpReader;
+begin
+  Result := TRadixLevelLumpReader.Create;
+end;
 
 class function TRadixFactory.CreateMapInfoReader: IRadixMapInfoReader;
 begin

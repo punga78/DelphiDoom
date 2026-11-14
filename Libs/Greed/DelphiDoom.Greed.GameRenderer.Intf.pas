@@ -28,6 +28,12 @@ type
     /// <summary>RF_RenderView(x, y, z, angle) into AFrame; the walls seen are marked in the maps of APlayer</summary>
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
+    /// <summary>
+    ///   RF_RenderView for the rear view camera (RearView of raven.pas): as RenderView, with the view not moved
+    ///   up or down by the look of the player
+    /// </summary>
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
     /// <summary>reallight: 4096 lights that the sprites write and the renderer reads; nil if there are none</summary>
     function TileLights: PGreedTileLights;
     /// <summary>RF_SetLights(blackz)</summary>
@@ -50,6 +56,21 @@ type
     function WeaponLight: IGreedWeaponLight;
     /// <summary>reallight as the HUD reads it (the heat map); nil if there is none</summary>
     function TileLightReader: IGreedTileLights;
+  end;
+
+  /// <summary>
+  ///   The variables that r_render.pas declares after reallight and that its compiler puts after it in memory, one
+  ///   integer each: actionflag (which belongs to the game), then wallglow, wallglowindex, wallrotate, maplight,
+  ///   wallflicker1 .. wallflicker4, wallflags, wallcycle, frameon and the first entries of framevalid. Optional
+  ///   (asked with Supports): only who plays the game with the defect of the light written outside the map needs it
+  /// </summary>
+  IGreedRenderMemory = interface
+    ['{91F3B6D4-2A7C-4E05-B8C1-5D60E4A927F3}']
+    /// <summary>
+    ///   The integer AOffset places after actionflag (1 is wallglow, 11 frameon, 12 framevalid[0]) gets AAmount
+    ///   less. Nothing for an offset below 1 or past framevalid
+    /// </summary>
+    procedure SubtractAfterTileLights(AOffset, AAmount: Integer);
   end;
 
   /// <summary>

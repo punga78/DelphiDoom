@@ -1,0 +1,1237 @@
+CMD startup script/events.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/events.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/events.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 343, ? bytes
+PRINT    Functions: 103, ? bytes
+PRINT    Variables: 5348 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/events.script
+FILE 1 script/doom_defs.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="evt_obj" etype=11 size=4 aux=object def=101 parms=[float field:n] funcs=[95,96]
+TYPE 96 name="float field" etype=7 size=0 aux=float def=- parms=[] funcs=[]
+TYPE 97 name="init" etype=8 size=4 aux=void def=103 parms=[evt_obj:self] funcs=[]
+TYPE 98 name="implicitSelf" etype=8 size=4 aux=void def=104 parms=[evt_obj:self] funcs=[]
+TYPE 99 name="basics" etype=8 size=4 aux=void def=131 parms=[] funcs=[]
+TYPE 100 name="nullAndMissing" etype=8 size=4 aux=void def=178 parms=[] funcs=[]
+TYPE 101 name="requiredEntity" etype=8 size=4 aux=void def=208 parms=[] funcs=[]
+TYPE 102 name="requiredEntity2" etype=8 size=4 aux=void def=211 parms=[] funcs=[]
+TYPE 103 name="methods" etype=8 size=4 aux=void def=213 parms=[] funcs=[]
+TYPE 104 name="removal" etype=8 size=4 aux=void def=223 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="evt_obj" type=evt_obj/11 scope=@namespace init=0 users=1 value=global:520=0
+DEF 102 name="n" type=float field/7 scope=101 init=0 users=1 value=ptr:0
+DEF 103 name="init" type=init/8 scope=101 init=2 users=1 value=func:95
+DEF 104 name="implicitSelf" type=implicitSelf/8 scope=101 init=2 users=1 value=func:96
+DEF 105 name="gf" type=float/4 scope=@namespace init=0 users=1 value=global:520=#00000000
+DEF 106 name="gv" type=vector/5 scope=@namespace init=0 users=1 value=global:524=#00000000,#00000000,#00000000
+DEF 107 name="gv_x" type=float/4 scope=@namespace init=0 users=1 value=global:524=#00000000
+DEF 108 name="gv_y" type=float/4 scope=@namespace init=0 users=1 value=global:528=#00000000
+DEF 109 name="gv_z" type=float/4 scope=@namespace init=0 users=1 value=global:532=#00000000
+DEF 110 name="gs" type=string/3 scope=@namespace init=1 users=1 value=global:536=""
+DEF 111 name="ge" type=entity/6 scope=@namespace init=0 users=1 value=global:664=0
+DEF 112 name="self" type=evt_obj/11 scope=103 init=3 users=1 value=stack:0
+DEF 113 name="<RESULT>" type=pointer/10 scope=103 init=3 users=2 value=stack:4
+DEF 114 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:668=#40400000
+DEF 115 name="self" type=evt_obj/11 scope=104 init=3 users=1 value=stack:0
+DEF 116 name="<RESULT>" type=pointer/10 scope=104 init=3 users=2 value=stack:4
+DEF 117 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=18 value=args:8
+DEF 118 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=27 value=args:4
+DEF 119 name="<RESULT>" type=float/4 scope=104 init=3 users=2 value=stack:8
+DEF 120 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=6 value=global:680=#3F800000
+DEF 121 name="<RESULT>" type=float/4 scope=104 init=3 users=2 value=stack:12
+DEF 122 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:684="who"
+DEF 123 name="<RESULT>" type=string/3 scope=104 init=3 users=2 value=stack:16
+DEF 124 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=3 value=args:260
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:816="implicit "
+DEF 126 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=4 value=args:132
+DEF 127 name="<RESULT>" type=string/3 scope=104 init=3 users=2 value=stack:144
+DEF 128 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=6 value=global:948=" "
+DEF 129 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=25 value=args:128
+DEF 130 name="<RESULT>" type=entity/6 scope=104 init=3 users=2 value=stack:272
+DEF 131 name="basics" type=basics/8 scope=@namespace init=2 users=1 value=func:97
+DEF 132 name="e" type=entity/6 scope=131 init=3 users=1 value=stack:0
+DEF 133 name="$ent_one" type=entity/6 scope=@namespace init=0 users=1 value=global:1084=0
+DEF 134 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:1088=#41480000
+DEF 135 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:4
+DEF 136 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=2 value=global:1092=#3F800000,#40000000,#40400000
+DEF 137 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:1092=#3F800000
+DEF 138 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:1096=#40000000
+DEF 139 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:1100=#40400000
+DEF 140 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:16
+DEF 141 name="<RESULT>" type=vector/5 scope=131 init=3 users=2 value=stack:8
+DEF 142 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:20
+DEF 143 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1108="basics "
+DEF 144 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:148
+DEF 145 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:1236="color"
+DEF 146 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1364="red"
+DEF 147 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1492="key "
+DEF 148 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1620=" missing '"
+DEF 149 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1748="nothing"
+DEF 150 name="<RESULT>" type=string/3 scope=131 init=3 users=2 value=stack:276
+DEF 151 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=4 value=global:1876="'"
+DEF 152 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2004=#4039999A
+DEF 153 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2008=#C079999A
+DEF 154 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=3 value=args:12
+DEF 155 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2016="addInts "
+DEF 156 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:2144=#3FC00000
+DEF 157 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2148=#40FCCCCD
+DEF 158 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2152=#40800000,#40A00000,#40C00000
+DEF 159 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2152=#40800000
+DEF 160 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2156=#40A00000
+DEF 161 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2160=#40C00000
+DEF 162 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2164="text"
+DEF 163 name="$ent_two" type=entity/6 scope=@namespace init=0 users=1 value=global:2292=0
+DEF 164 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=2 value=args:156
+DEF 165 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2300="mix "
+DEF 166 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:2428=#40000000
+DEF 167 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:2432=0
+DEF 168 name="<RESULT>" type=float/4 scope=131 init=3 users=2 value=stack:404
+DEF 169 name="<RESULT>" type=entity/6 scope=131 init=3 users=2 value=stack:408
+DEF 170 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2436="owner ok"
+DEF 171 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=6 value=jump:3
+DEF 172 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2568="owner null"
+DEF 173 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2696=#406CCCCD
+DEF 174 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2700=#3F000000
+DEF 175 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2704="snd"
+DEF 176 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2832=#42C60000
+DEF 177 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2836="chained "
+DEF 178 name="nullAndMissing" type=nullAndMissing/8 scope=@namespace init=2 users=1 value=func:98
+DEF 179 name="e" type=entity/6 scope=178 init=3 users=1 value=stack:0
+DEF 180 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2968=#40A00000
+DEF 181 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:2972=#40A00000,#40A00000,#40A00000
+DEF 182 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2972=#40A00000
+DEF 183 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2976=#40A00000
+DEF 184 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2980=#40A00000
+DEF 185 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2984="five"
+DEF 186 name="<RESULT>" type=float/4 scope=178 init=3 users=2 value=stack:4
+DEF 187 name="<RESULT>" type=vector/5 scope=178 init=3 users=2 value=stack:8
+DEF 188 name="<RESULT>" type=string/3 scope=178 init=3 users=2 value=stack:20
+DEF 189 name="<RESULT>" type=entity/6 scope=178 init=3 users=2 value=stack:148
+DEF 190 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3112="null: "
+DEF 191 name="<RESULT>" type=string/3 scope=178 init=3 users=2 value=stack:152
+DEF 192 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:3240=" '"
+DEF 193 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3368="null owner"
+DEF 194 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3496="null addInts "
+DEF 195 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:3624=#3F800000,#3F800000,#3F800000
+DEF 196 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:3624=#3F800000
+DEF 197 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:3628=#3F800000
+DEF 198 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:3632=#3F800000
+DEF 199 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:20
+DEF 200 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3640="missing: "
+DEF 201 name="$ent_mover" type=entity/6 scope=@namespace init=0 users=1 value=global:3768=0
+DEF 202 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3772="mover: "
+DEF 203 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:3900=#40800000
+DEF 204 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3904="mover value "
+DEF 205 name="$ent_gone" type=entity/6 scope=@namespace init=0 users=1 value=global:4032=0
+DEF 206 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4036="gone: "
+DEF 207 name="<RESULT>" type=string/3 scope=178 init=3 users=2 value=stack:280
+DEF 208 name="requiredEntity" type=requiredEntity/8 scope=@namespace init=2 users=1 value=func:99
+DEF 209 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4168="before bind"
+DEF 210 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:4296="never printed"
+DEF 211 name="requiredEntity2" type=requiredEntity2/8 scope=@namespace init=2 users=1 value=func:100
+DEF 212 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4428="bind ok"
+DEF 213 name="methods" type=methods/8 scope=@namespace init=2 users=1 value=func:101
+DEF 214 name="o" type=evt_obj/11 scope=213 init=3 users=1 value=stack:0
+DEF 215 name="$ent_obj" type=entity/6 scope=@namespace init=0 users=1 value=global:4560=0
+DEF 216 name="<IMMEDIATE>" type=virtual function/9 scope=@namespace init=2 users=1 value=virt:1
+DEF 217 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:4568=#42480000
+DEF 218 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4572="methods "
+DEF 219 name="<RESULT>" type=float/4 scope=213 init=3 users=2 value=stack:4
+DEF 220 name="<RESULT>" type=string/3 scope=213 init=3 users=2 value=stack:8
+DEF 221 name="<RESULT>" type=string/3 scope=213 init=3 users=2 value=stack:136
+DEF 222 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4700="owner is self"
+DEF 223 name="removal" type=removal/8 scope=@namespace init=2 users=1 value=func:102
+DEF 224 name="e" type=entity/6 scope=223 init=3 users=1 value=stack:0
+DEF 225 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4832="remove posted "
+DEF 226 name="<RESULT>" type=string/3 scope=223 init=3 users=2 value=stack:4
+DEF 227 name="<RESULT>" type=string/3 scope=223 init=3 users=2 value=stack:132
+DEF 228 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:0
+DEF 229 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4964="after remove '"
+DEF 230 name="<RESULT>" type=float/4 scope=223 init=3 users=2 value=stack:260
+DEF 231 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5092="e is null now"
+DEF 232 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5220="$ent_two is null now"
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="evt_obj::init" event=- def=103 first=1 num=3 parmTotal=4 locals=8 filenum=0 parmSize=[4]
+FUNC 96 name="evt_obj::implicitSelf" event=- def=104 first=4 num=38 parmTotal=4 locals=276 filenum=0 parmSize=[4]
+FUNC 97 name="basics" event=- def=131 first=42 num=142 parmTotal=0 locals=412 filenum=0 parmSize=[]
+FUNC 98 name="nullAndMissing" event=- def=178 first=184 num=91 parmTotal=0 locals=408 filenum=0 parmSize=[]
+FUNC 99 name="requiredEntity" event=- def=208 first=275 num=11 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 100 name="requiredEntity2" event=- def=211 first=286 num=11 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 101 name="methods" event=- def=213 first=297 num=20 parmTotal=0 locals=264 filenum=0 parmSize=[]
+FUNC 102 name="removal" event=- def=223 first=317 num=26 parmTotal=0 locals=264 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADDRESS a=112 b=102 c=113 line=15 file=0
+STMT 2 STOREP_F a=114 b=113 c=- line=15 file=0
+STMT 3 RETURN a=- b=- c=- line=16 file=0
+STMT 4 PUSH_OBJENT a=115 b=- c=- line=20 file=0
+STMT 5 INDIRECT_F a=115 b=102 c=116 line=20 file=0
+STMT 6 PUSH_F a=116 b=- c=- line=20 file=0
+STMT 7 EVENTCALL a=87 b=117 c=- line=20 file=0
+STMT 8 ADDRESS a=115 b=102 c=116 line=21 file=0
+STMT 9 PUSH_OBJENT a=115 b=- c=- line=21 file=0
+STMT 10 EVENTCALL a=88 b=118 c=- line=21 file=0
+STMT 11 STORE_F a=0 b=119 c=- line=21 file=0
+STMT 12 ADD_F a=119 b=120 c=121 line=21 file=0
+STMT 13 STOREP_F a=121 b=116 c=- line=21 file=0
+STMT 14 PUSH_OBJENT a=115 b=- c=- line=22 file=0
+STMT 15 PUSH_S a=122 b=- c=- line=22 file=0
+STMT 16 PUSH_OBJENT a=115 b=- c=- line=22 file=0
+STMT 17 EVENTCALL a=85 b=118 c=- line=22 file=0
+STMT 18 STORE_S a=4 b=123 c=- line=22 file=0
+STMT 19 PUSH_S a=123 b=- c=- line=22 file=0
+STMT 20 EVENTCALL a=94 b=124 c=- line=22 file=0
+STMT 21 PUSH_OBJENT a=115 b=- c=- line=23 file=0
+STMT 22 PUSH_S a=122 b=- c=- line=23 file=0
+STMT 23 EVENTCALL a=95 b=126 c=- line=23 file=0
+STMT 24 STORE_S a=4 b=123 c=- line=23 file=0
+STMT 25 ADD_S a=125 b=123 c=127 line=23 file=0
+STMT 26 ADD_S a=127 b=128 c=123 line=23 file=0
+STMT 27 INDIRECT_F a=115 b=102 c=121 line=23 file=0
+STMT 28 ADD_SF a=123 b=121 c=127 line=23 file=0
+STMT 29 PUSH_S a=127 b=- c=- line=23 file=0
+STMT 30 SYSCALL a=15 b=129 c=- line=23 file=0
+STMT 31 PUSH_OBJENT a=115 b=- c=- line=24 file=0
+STMT 32 PUSH_OBJENT a=115 b=- c=- line=24 file=0
+STMT 33 EVENTCALL a=82 b=117 c=- line=24 file=0
+STMT 34 PUSH_OBJENT a=115 b=- c=- line=25 file=0
+STMT 35 PUSH_OBJENT a=115 b=- c=- line=25 file=0
+STMT 36 EVENTCALL a=91 b=117 c=- line=25 file=0
+STMT 37 PUSH_OBJENT a=115 b=- c=- line=26 file=0
+STMT 38 EVENTCALL a=92 b=118 c=- line=26 file=0
+STMT 39 STORE_ENT a=0 b=130 c=- line=26 file=0
+STMT 40 STORE_ENT a=130 b=111 c=- line=26 file=0
+STMT 41 RETURN a=- b=- c=- line=27 file=0
+STMT 42 STORE_ENT a=133 b=132 c=- line=32 file=0
+STMT 43 PUSH_ENT a=132 b=- c=- line=33 file=0
+STMT 44 PUSH_F a=134 b=- c=- line=33 file=0
+STMT 45 EVENTCALL a=87 b=117 c=- line=33 file=0
+STMT 46 PUSH_ENT a=132 b=- c=- line=34 file=0
+STMT 47 EVENTCALL a=88 b=118 c=- line=34 file=0
+STMT 48 STORE_F a=0 b=135 c=- line=34 file=0
+STMT 49 STORE_F a=135 b=105 c=- line=34 file=0
+STMT 50 PUSH_ENT a=132 b=- c=- line=35 file=0
+STMT 51 PUSH_V a=136 b=- c=- line=35 file=0
+STMT 52 EVENTCALL a=89 b=140 c=- line=35 file=0
+STMT 53 PUSH_ENT a=132 b=- c=- line=36 file=0
+STMT 54 EVENTCALL a=90 b=118 c=- line=36 file=0
+STMT 55 STORE_V a=0 b=141 c=- line=36 file=0
+STMT 56 STORE_V a=141 b=106 c=- line=36 file=0
+STMT 57 PUSH_ENT a=132 b=- c=- line=37 file=0
+STMT 58 EVENTCALL a=85 b=118 c=- line=37 file=0
+STMT 59 STORE_S a=4 b=142 c=- line=37 file=0
+STMT 60 STORE_S a=142 b=110 c=- line=37 file=0
+STMT 61 ADD_SF a=143 b=105 c=142 line=38 file=0
+STMT 62 ADD_S a=142 b=128 c=144 line=38 file=0
+STMT 63 ADD_SV a=144 b=106 c=142 line=38 file=0
+STMT 64 ADD_S a=142 b=128 c=144 line=38 file=0
+STMT 65 ADD_S a=144 b=110 c=142 line=38 file=0
+STMT 66 PUSH_S a=142 b=- c=- line=38 file=0
+STMT 67 SYSCALL a=15 b=129 c=- line=38 file=0
+STMT 68 PUSH_ENT a=133 b=- c=- line=39 file=0
+STMT 69 PUSH_S a=145 b=- c=- line=39 file=0
+STMT 70 PUSH_S a=146 b=- c=- line=39 file=0
+STMT 71 EVENTCALL a=94 b=124 c=- line=39 file=0
+STMT 72 PUSH_ENT a=133 b=- c=- line=40 file=0
+STMT 73 PUSH_S a=145 b=- c=- line=40 file=0
+STMT 74 EVENTCALL a=95 b=126 c=- line=40 file=0
+STMT 75 STORE_S a=4 b=144 c=- line=40 file=0
+STMT 76 ADD_S a=147 b=144 c=142 line=40 file=0
+STMT 77 ADD_S a=142 b=148 c=144 line=40 file=0
+STMT 78 PUSH_ENT a=133 b=- c=- line=40 file=0
+STMT 79 PUSH_S a=149 b=- c=- line=40 file=0
+STMT 80 EVENTCALL a=95 b=126 c=- line=40 file=0
+STMT 81 STORE_S a=4 b=142 c=- line=40 file=0
+STMT 82 ADD_S a=144 b=142 c=150 line=40 file=0
+STMT 83 ADD_S a=150 b=151 c=144 line=40 file=0
+STMT 84 PUSH_S a=144 b=- c=- line=40 file=0
+STMT 85 SYSCALL a=15 b=129 c=- line=40 file=0
+STMT 86 PUSH_ENT a=132 b=- c=- line=42 file=0
+STMT 87 PUSH_F a=152 b=- c=- line=42 file=0
+STMT 88 PUSH_F a=153 b=- c=- line=42 file=0
+STMT 89 EVENTCALL a=96 b=154 c=- line=42 file=0
+STMT 90 STORE_F a=0 b=135 c=- line=42 file=0
+STMT 91 STORE_F a=135 b=105 c=- line=42 file=0
+STMT 92 ADD_SF a=155 b=105 c=150 line=43 file=0
+STMT 93 PUSH_S a=150 b=- c=- line=43 file=0
+STMT 94 SYSCALL a=15 b=129 c=- line=43 file=0
+STMT 95 PUSH_ENT a=132 b=- c=- line=44 file=0
+STMT 96 PUSH_F a=156 b=- c=- line=44 file=0
+STMT 97 PUSH_F a=157 b=- c=- line=44 file=0
+STMT 98 PUSH_V a=158 b=- c=- line=44 file=0
+STMT 99 PUSH_S a=162 b=- c=- line=44 file=0
+STMT 100 PUSH_ENT a=163 b=- c=- line=44 file=0
+STMT 101 EVENTCALL a=97 b=164 c=- line=44 file=0
+STMT 102 STORE_F a=0 b=135 c=- line=44 file=0
+STMT 103 STORE_F a=135 b=105 c=- line=44 file=0
+STMT 104 ADD_SF a=165 b=105 c=150 line=45 file=0
+STMT 105 PUSH_S a=150 b=- c=- line=45 file=0
+STMT 106 SYSCALL a=15 b=129 c=- line=45 file=0
+STMT 107 PUSH_ENT a=132 b=- c=- line=46 file=0
+STMT 108 PUSH_F a=120 b=- c=- line=46 file=0
+STMT 109 PUSH_F a=166 b=- c=- line=46 file=0
+STMT 110 PUSH_V a=106 b=- c=- line=46 file=0
+STMT 111 PUSH_S a=110 b=- c=- line=46 file=0
+STMT 112 PUSH_ENT a=167 b=- c=- line=46 file=0
+STMT 113 EVENTCALL a=97 b=164 c=- line=46 file=0
+STMT 114 STORE_F a=0 b=135 c=- line=46 file=0
+STMT 115 STORE_F a=135 b=105 c=- line=46 file=0
+STMT 116 PUSH_ENT a=132 b=- c=- line=48 file=0
+STMT 117 PUSH_FTOS a=156 b=- c=- line=48 file=0
+STMT 118 PUSH_VTOS a=136 b=- c=- line=48 file=0
+STMT 119 EVENTCALL a=94 b=124 c=- line=48 file=0
+STMT 120 PUSH_ENT a=132 b=- c=- line=49 file=0
+STMT 121 PUSH_ENT a=132 b=- c=- line=49 file=0
+STMT 122 EVENTCALL a=88 b=118 c=- line=49 file=0
+STMT 123 STORE_F a=0 b=135 c=- line=49 file=0
+STMT 124 MUL_F a=135 b=166 c=168 line=49 file=0
+STMT 125 PUSH_F a=168 b=- c=- line=49 file=0
+STMT 126 EVENTCALL a=87 b=117 c=- line=49 file=0
+STMT 127 PUSH_ENT a=132 b=- c=- line=50 file=0
+STMT 128 PUSH_ENT a=163 b=- c=- line=50 file=0
+STMT 129 EVENTCALL a=91 b=117 c=- line=50 file=0
+STMT 130 PUSH_ENT a=132 b=- c=- line=51 file=0
+STMT 131 EVENTCALL a=92 b=118 c=- line=51 file=0
+STMT 132 STORE_ENT a=0 b=169 c=- line=51 file=0
+STMT 133 STORE_ENT a=169 b=111 c=- line=51 file=0
+STMT 134 EQ_E a=111 b=163 c=168 line=52 file=0
+STMT 135 IFNOT a=168 b=171 c=- line=52 file=0
+STMT 136 PUSH_S a=170 b=- c=- line=53 file=0
+STMT 137 SYSCALL a=15 b=129 c=- line=53 file=0
+STMT 138 PUSH_ENT a=132 b=- c=- line=55 file=0
+STMT 139 PUSH_ENT a=167 b=- c=- line=55 file=0
+STMT 140 EVENTCALL a=91 b=117 c=- line=55 file=0
+STMT 141 PUSH_ENT a=132 b=- c=- line=56 file=0
+STMT 142 EVENTCALL a=92 b=118 c=- line=56 file=0
+STMT 143 STORE_ENT a=0 b=169 c=- line=56 file=0
+STMT 144 STORE_ENT a=169 b=111 c=- line=56 file=0
+STMT 145 NOT_ENT a=111 b=- c=168 line=57 file=0
+STMT 146 IFNOT a=168 b=171 c=- line=57 file=0
+STMT 147 PUSH_S a=172 b=- c=- line=58 file=0
+STMT 148 SYSCALL a=15 b=129 c=- line=58 file=0
+STMT 149 PUSH_ENT a=132 b=- c=- line=60 file=0
+STMT 150 PUSH_ENT a=163 b=- c=- line=60 file=0
+STMT 151 EVENTCALL a=82 b=117 c=- line=60 file=0
+STMT 152 PUSH_ENT a=132 b=- c=- line=61 file=0
+STMT 153 PUSH_F a=173 b=- c=- line=61 file=0
+STMT 154 PUSH_F a=174 b=- c=- line=61 file=0
+STMT 155 EVENTCALL a=83 b=154 c=- line=61 file=0
+STMT 156 PUSH_ENT a=132 b=- c=- line=62 file=0
+STMT 157 PUSH_S a=175 b=- c=- line=62 file=0
+STMT 158 EVENTCALL a=84 b=126 c=- line=62 file=0
+STMT 159 PUSH_ENT a=132 b=- c=- line=64 file=0
+STMT 160 PUSH_ENT a=163 b=- c=- line=64 file=0
+STMT 161 EVENTCALL a=91 b=117 c=- line=64 file=0
+STMT 162 PUSH_ENT a=132 b=- c=- line=65 file=0
+STMT 163 EVENTCALL a=92 b=118 c=- line=65 file=0
+STMT 164 STORE_ENT a=0 b=169 c=- line=65 file=0
+STMT 165 PUSH_ENT a=169 b=- c=- line=65 file=0
+STMT 166 PUSH_F a=176 b=- c=- line=65 file=0
+STMT 167 EVENTCALL a=87 b=117 c=- line=65 file=0
+STMT 168 PUSH_ENT a=132 b=- c=- line=66 file=0
+STMT 169 EVENTCALL a=92 b=118 c=- line=66 file=0
+STMT 170 STORE_ENT a=0 b=169 c=- line=66 file=0
+STMT 171 PUSH_ENT a=169 b=- c=- line=66 file=0
+STMT 172 EVENTCALL a=88 b=118 c=- line=66 file=0
+STMT 173 STORE_F a=0 b=168 c=- line=66 file=0
+STMT 174 STORE_F a=168 b=105 c=- line=66 file=0
+STMT 175 ADD_SF a=177 b=105 c=150 line=67 file=0
+STMT 176 ADD_S a=150 b=128 c=144 line=67 file=0
+STMT 177 PUSH_ENT a=163 b=- c=- line=67 file=0
+STMT 178 EVENTCALL a=88 b=118 c=- line=67 file=0
+STMT 179 STORE_F a=0 b=168 c=- line=67 file=0
+STMT 180 ADD_SF a=144 b=168 c=150 line=67 file=0
+STMT 181 PUSH_S a=150 b=- c=- line=67 file=0
+STMT 182 SYSCALL a=15 b=129 c=- line=67 file=0
+STMT 183 RETURN a=- b=- c=- line=68 file=0
+STMT 184 STORE_F a=180 b=105 c=- line=74 file=0
+STMT 185 STORE_V a=181 b=106 c=- line=74 file=0
+STMT 186 STORE_S a=185 b=110 c=- line=74 file=0
+STMT 187 STORE_ENT a=133 b=111 c=- line=74 file=0
+STMT 188 PUSH_ENT a=179 b=- c=- line=75 file=0
+STMT 189 PUSH_F a=120 b=- c=- line=75 file=0
+STMT 190 EVENTCALL a=87 b=117 c=- line=75 file=0
+STMT 191 PUSH_ENT a=179 b=- c=- line=76 file=0
+STMT 192 EVENTCALL a=88 b=118 c=- line=76 file=0
+STMT 193 STORE_F a=0 b=186 c=- line=76 file=0
+STMT 194 STORE_F a=186 b=105 c=- line=76 file=0
+STMT 195 PUSH_ENT a=179 b=- c=- line=77 file=0
+STMT 196 EVENTCALL a=90 b=118 c=- line=77 file=0
+STMT 197 STORE_V a=0 b=187 c=- line=77 file=0
+STMT 198 STORE_V a=187 b=106 c=- line=77 file=0
+STMT 199 PUSH_ENT a=179 b=- c=- line=78 file=0
+STMT 200 EVENTCALL a=85 b=118 c=- line=78 file=0
+STMT 201 STORE_S a=4 b=188 c=- line=78 file=0
+STMT 202 STORE_S a=188 b=110 c=- line=78 file=0
+STMT 203 PUSH_ENT a=179 b=- c=- line=79 file=0
+STMT 204 EVENTCALL a=92 b=118 c=- line=79 file=0
+STMT 205 STORE_ENT a=0 b=189 c=- line=79 file=0
+STMT 206 STORE_ENT a=189 b=111 c=- line=79 file=0
+STMT 207 ADD_SF a=190 b=105 c=188 line=80 file=0
+STMT 208 ADD_S a=188 b=128 c=191 line=80 file=0
+STMT 209 ADD_SV a=191 b=106 c=188 line=80 file=0
+STMT 210 ADD_S a=188 b=192 c=191 line=80 file=0
+STMT 211 ADD_S a=191 b=110 c=188 line=80 file=0
+STMT 212 ADD_S a=188 b=151 c=191 line=80 file=0
+STMT 213 PUSH_S a=191 b=- c=- line=80 file=0
+STMT 214 SYSCALL a=15 b=129 c=- line=80 file=0
+STMT 215 NOT_ENT a=111 b=- c=186 line=81 file=0
+STMT 216 IFNOT a=186 b=171 c=- line=81 file=0
+STMT 217 PUSH_S a=193 b=- c=- line=81 file=0
+STMT 218 SYSCALL a=15 b=129 c=- line=81 file=0
+STMT 219 PUSH_ENT a=179 b=- c=- line=82 file=0
+STMT 220 PUSH_F a=120 b=- c=- line=82 file=0
+STMT 221 PUSH_F a=166 b=- c=- line=82 file=0
+STMT 222 EVENTCALL a=96 b=154 c=- line=82 file=0
+STMT 223 STORE_F a=0 b=186 c=- line=82 file=0
+STMT 224 STORE_F a=186 b=105 c=- line=82 file=0
+STMT 225 ADD_SF a=194 b=105 c=191 line=83 file=0
+STMT 226 PUSH_S a=191 b=- c=- line=83 file=0
+STMT 227 SYSCALL a=15 b=129 c=- line=83 file=0
+STMT 228 STORE_ENT a=133 b=179 c=- line=85 file=0
+STMT 229 PUSH_ENT a=179 b=- c=- line=86 file=0
+STMT 230 PUSH_V a=195 b=- c=- line=86 file=0
+STMT 231 PUSH_F a=120 b=- c=- line=86 file=0
+STMT 232 EVENTCALL a=98 b=199 c=- line=86 file=0
+STMT 233 STORE_F a=114 b=105 c=- line=87 file=0
+STMT 234 PUSH_ENT a=179 b=- c=- line=88 file=0
+STMT 235 EVENTCALL a=99 b=118 c=- line=88 file=0
+STMT 236 STORE_F a=0 b=186 c=- line=88 file=0
+STMT 237 STORE_F a=186 b=105 c=- line=88 file=0
+STMT 238 ADD_SF a=200 b=105 c=191 line=89 file=0
+STMT 239 PUSH_S a=191 b=- c=- line=89 file=0
+STMT 240 SYSCALL a=15 b=129 c=- line=89 file=0
+STMT 241 STORE_ENT a=201 b=179 c=- line=90 file=0
+STMT 242 PUSH_ENT a=179 b=- c=- line=91 file=0
+STMT 243 EVENTCALL a=99 b=118 c=- line=91 file=0
+STMT 244 STORE_F a=0 b=186 c=- line=91 file=0
+STMT 245 STORE_F a=186 b=105 c=- line=91 file=0
+STMT 246 ADD_SF a=202 b=105 c=191 line=92 file=0
+STMT 247 PUSH_S a=191 b=- c=- line=92 file=0
+STMT 248 SYSCALL a=15 b=129 c=- line=92 file=0
+STMT 249 PUSH_ENT a=179 b=- c=- line=94 file=0
+STMT 250 PUSH_F a=203 b=- c=- line=94 file=0
+STMT 251 EVENTCALL a=87 b=117 c=- line=94 file=0
+STMT 252 PUSH_ENT a=179 b=- c=- line=95 file=0
+STMT 253 EVENTCALL a=88 b=118 c=- line=95 file=0
+STMT 254 STORE_F a=0 b=186 c=- line=95 file=0
+STMT 255 ADD_SF a=204 b=186 c=191 line=95 file=0
+STMT 256 PUSH_S a=191 b=- c=- line=95 file=0
+STMT 257 SYSCALL a=15 b=129 c=- line=95 file=0
+STMT 258 STORE_ENT a=205 b=179 c=- line=97 file=0
+STMT 259 PUSH_ENT a=179 b=- c=- line=98 file=0
+STMT 260 PUSH_F a=120 b=- c=- line=98 file=0
+STMT 261 EVENTCALL a=87 b=117 c=- line=98 file=0
+STMT 262 PUSH_ENT a=179 b=- c=- line=99 file=0
+STMT 263 EVENTCALL a=88 b=118 c=- line=99 file=0
+STMT 264 STORE_F a=0 b=186 c=- line=99 file=0
+STMT 265 ADD_SF a=206 b=186 c=191 line=99 file=0
+STMT 266 ADD_S a=191 b=192 c=188 line=99 file=0
+STMT 267 PUSH_ENT a=179 b=- c=- line=99 file=0
+STMT 268 EVENTCALL a=85 b=118 c=- line=99 file=0
+STMT 269 STORE_S a=4 b=191 c=- line=99 file=0
+STMT 270 ADD_S a=188 b=191 c=207 line=99 file=0
+STMT 271 ADD_S a=207 b=151 c=191 line=99 file=0
+STMT 272 PUSH_S a=191 b=- c=- line=99 file=0
+STMT 273 SYSCALL a=15 b=129 c=- line=99 file=0
+STMT 274 RETURN a=- b=- c=- line=100 file=0
+STMT 275 PUSH_S a=209 b=- c=- line=103 file=0
+STMT 276 SYSCALL a=15 b=129 c=- line=103 file=0
+STMT 277 PUSH_ENT a=133 b=- c=- line=105 file=0
+STMT 278 PUSH_ENT a=167 b=- c=- line=105 file=0
+STMT 279 EVENTCALL a=91 b=117 c=- line=105 file=0
+STMT 280 PUSH_ENT a=133 b=- c=- line=106 file=0
+STMT 281 PUSH_ENT a=167 b=- c=- line=106 file=0
+STMT 282 EVENTCALL a=93 b=117 c=- line=106 file=0
+STMT 283 PUSH_S a=210 b=- c=- line=107 file=0
+STMT 284 SYSCALL a=15 b=129 c=- line=107 file=0
+STMT 285 RETURN a=- b=- c=- line=108 file=0
+STMT 286 PUSH_ENT a=133 b=- c=- line=111 file=0
+STMT 287 PUSH_ENT a=163 b=- c=- line=111 file=0
+STMT 288 EVENTCALL a=93 b=117 c=- line=111 file=0
+STMT 289 PUSH_S a=212 b=- c=- line=112 file=0
+STMT 290 SYSCALL a=15 b=129 c=- line=112 file=0
+STMT 291 PUSH_ENT a=133 b=- c=- line=113 file=0
+STMT 292 PUSH_ENT a=167 b=- c=- line=113 file=0
+STMT 293 EVENTCALL a=82 b=117 c=- line=113 file=0
+STMT 294 PUSH_S a=210 b=- c=- line=114 file=0
+STMT 295 SYSCALL a=15 b=129 c=- line=114 file=0
+STMT 296 RETURN a=- b=- c=- line=115 file=0
+STMT 297 STORE_OBJENT a=215 b=214 c=- line=120 file=0
+STMT 298 PUSH_OBJ a=214 b=- c=- line=121 file=0
+STMT 299 OBJECTCALL a=214 b=216 c=118 line=121 file=0
+STMT 300 PUSH_OBJENT a=214 b=- c=- line=122 file=0
+STMT 301 PUSH_F a=217 b=- c=- line=122 file=0
+STMT 302 EVENTCALL a=87 b=117 c=- line=122 file=0
+STMT 303 PUSH_OBJENT a=214 b=- c=- line=123 file=0
+STMT 304 EVENTCALL a=88 b=118 c=- line=123 file=0
+STMT 305 STORE_F a=0 b=219 c=- line=123 file=0
+STMT 306 ADD_SF a=218 b=219 c=220 line=123 file=0
+STMT 307 ADD_S a=220 b=128 c=221 line=123 file=0
+STMT 308 INDIRECT_F a=214 b=102 c=219 line=123 file=0
+STMT 309 ADD_SF a=221 b=219 c=220 line=123 file=0
+STMT 310 PUSH_S a=220 b=- c=- line=123 file=0
+STMT 311 SYSCALL a=15 b=129 c=- line=123 file=0
+STMT 312 EQ_E a=111 b=215 c=219 line=124 file=0
+STMT 313 IFNOT a=219 b=171 c=- line=124 file=0
+STMT 314 PUSH_S a=222 b=- c=- line=124 file=0
+STMT 315 SYSCALL a=15 b=129 c=- line=124 file=0
+STMT 316 RETURN a=- b=- c=- line=125 file=0
+STMT 317 STORE_ENT a=163 b=224 c=- line=130 file=0
+STMT 318 PUSH_ENT a=224 b=- c=- line=131 file=0
+STMT 319 EVENTCALL a=81 b=118 c=- line=131 file=0
+STMT 320 PUSH_ENT a=224 b=- c=- line=132 file=0
+STMT 321 EVENTCALL a=85 b=118 c=- line=132 file=0
+STMT 322 STORE_S a=4 b=226 c=- line=132 file=0
+STMT 323 ADD_S a=225 b=226 c=227 line=132 file=0
+STMT 324 PUSH_S a=227 b=- c=- line=132 file=0
+STMT 325 SYSCALL a=15 b=129 c=- line=132 file=0
+STMT 326 SYSCALL a=9 b=228 c=- line=133 file=0
+STMT 327 PUSH_ENT a=224 b=- c=- line=134 file=0
+STMT 328 EVENTCALL a=85 b=118 c=- line=134 file=0
+STMT 329 STORE_S a=4 b=227 c=- line=134 file=0
+STMT 330 ADD_S a=229 b=227 c=226 line=134 file=0
+STMT 331 ADD_S a=226 b=151 c=227 line=134 file=0
+STMT 332 PUSH_S a=227 b=- c=- line=134 file=0
+STMT 333 SYSCALL a=15 b=129 c=- line=134 file=0
+STMT 334 NOT_ENT a=224 b=- c=230 line=135 file=0
+STMT 335 IFNOT a=230 b=171 c=- line=135 file=0
+STMT 336 PUSH_S a=231 b=- c=- line=135 file=0
+STMT 337 SYSCALL a=15 b=129 c=- line=135 file=0
+STMT 338 NOT_ENT a=163 b=- c=230 line=136 file=0
+STMT 339 IFNOT a=230 b=171 c=- line=136 file=0
+STMT 340 PUSH_S a=232 b=- c=- line=136 file=0
+STMT 341 SYSCALL a=15 b=129 c=- line=136 file=0
+STMT 342 RETURN a=- b=- c=- line=137 file=0
+TOP functions=103 statements=343 types=105 defs=233 files=2
+GLOBALS 5348
+G 000280 0000000000000000000000000000000000000000000000000000000000004040
+G 0002A0 00000000000000000000803F77686F0000000000000000000000000000000000
+G 000320 00000000000000000000000000000000696D706C696369742000000000000000
+G 0003A0 0000000000000000000000000000000000000000200000000000000000000000
+G 000440 000048410000803F000000400000404000000000626173696373200000000000
+G 0004C0 0000000000000000000000000000000000000000636F6C6F7200000000000000
+G 000540 0000000000000000000000000000000000000000726564000000000000000000
+G 0005C0 00000000000000000000000000000000000000006B6579200000000000000000
+G 000640 0000000000000000000000000000000000000000206D697373696E6720270000
+G 0006C0 00000000000000000000000000000000000000006E6F7468696E670000000000
+G 000740 0000000000000000000000000000000000000000270000000000000000000000
+G 0007C0 00000000000000000000000000000000000000009A9939409A9979C000000000
+G 0007E0 616464496E747320000000000000000000000000000000000000000000000000
+G 000860 0000C03FCDCCFC40000080400000A0400000C040746578740000000000000000
+G 0008E0 000000000000000000000000000000000000000000000000000000006D697820
+G 000960 0000000000000000000000000000000000000000000000000000000000000040
+G 000980 000000006F776E6572206F6B0000000000000000000000000000000000000000
+G 000A00 00000000000000006F776E6572206E756C6C0000000000000000000000000000
+G 000A80 0000000000000000CDCC6C400000003F736E6400000000000000000000000000
+G 000B00 000000000000000000000000000000000000C642636861696E65642000000000
+G 000B80 0000000000000000000000000000000000000000000000000000A0400000A040
+G 000BA0 0000A0400000A040666976650000000000000000000000000000000000000000
+G 000C20 00000000000000006E756C6C3A20000000000000000000000000000000000000
+G 000CA0 0000000000000000202700000000000000000000000000000000000000000000
+G 000D20 00000000000000006E756C6C206F776E65720000000000000000000000000000
+G 000DA0 00000000000000006E756C6C20616464496E7473200000000000000000000000
+G 000E20 00000000000000000000803F0000803F0000803F000000006D697373696E673A
+G 000E40 2000000000000000000000000000000000000000000000000000000000000000
+G 000EA0 000000000000000000000000000000000000000000000000000000006D6F7665
+G 000EC0 723A200000000000000000000000000000000000000000000000000000000000
+G 000F20 0000000000000000000000000000000000000000000000000000000000008040
+G 000F40 6D6F7665722076616C7565200000000000000000000000000000000000000000
+G 000FC0 00000000676F6E653A2000000000000000000000000000000000000000000000
+G 001040 00000000000000006265666F72652062696E6400000000000000000000000000
+G 0010C0 00000000000000006E65766572207072696E7465640000000000000000000000
+G 001140 00000000000000000000000062696E64206F6B00000000000000000000000000
+G 0011C0 000000000000000000000000000000000000000000000000000048426D657468
+G 0011E0 6F64732000000000000000000000000000000000000000000000000000000000
+G 001240 000000000000000000000000000000000000000000000000000000006F776E65
+G 001260 722069732073656C660000000000000000000000000000000000000000000000
+G 0012E0 72656D6F766520706F7374656420000000000000000000000000000000000000
+G 001360 0000000061667465722072656D6F766520270000000000000000000000000000
+G 0013E0 0000000065206973206E756C6C206E6F77000000000000000000000000000000
+G 001460 0000000024656E745F74776F206973206E756C6C206E6F770000000000000000
+CHECKSUM BECAF45F
+CMD spawn 1 idEntity ent_one
+CMD spawn 2 idEntity ent_two
+CMD spawn 3 idMover ent_mover
+CMD spawn 4 idEntity ent_obj
+CMD setobject 4 evt_obj
+SETTYPE 1
+CMD frame 1
+FRAME time=16 framenum=1 events=0
+CMD callnow basics
+HOST event 1 setValue #41480000
+HOST event 1 getValue
+HOST event 1 setOrigin #3F800000,#40000000,#40400000
+HOST event 1 getOrigin
+HOST event 1 getName
+PRINT basics 12.500000 1 2 3 ent_one
+HOST event 1 setKey "color" "red"
+HOST event 1 getKey "color"
+HOST event 1 getKey "nothing"
+PRINT key red missing ''
+HOST event 1 addInts 2 -3
+PRINT addInts -1
+HOST event 1 mix #3FC00000 7 #40800000,#40A00000,#40C00000 "text" ent:2
+PRINT mix 8.500000
+HOST event 1 mix #3F800000 2 #3F800000,#40000000,#40400000 "ent_one" null
+HOST event 1 setKey "1.500000" "1 2 3"
+HOST event 1 getValue
+HOST event 1 setValue #41C80000
+HOST event 1 setOwner ent:2
+HOST event 1 getOwner
+PRINT owner ok
+HOST event 1 setOwner null
+HOST event 1 getOwner
+PRINT owner null
+HOST event 1 activate ent:2
+HOST event 1 setShaderParm 3 #3F000000
+HOST event 1 cacheSoundShader "snd"
+HOST event 1 setOwner ent:2
+HOST event 1 getOwner
+HOST event 2 setValue #42C60000
+HOST event 1 getOwner
+HOST event 2 getValue
+HOST event 2 getValue
+PRINT chained 99 99
+DONE 1
+RETURN 42C60000 40000000 40400000 ""
+CMD dump globals
+GLOBALS 5348
+G 000000 0000C64200000040000040400000000000000000000000000000000000000000
+G 000200 00000000000000000000C6420000803F0000004000004040656E745F6F6E6500
+G 000280 0000000000000000000000000000000000000000000000000000000000004040
+G 0002A0 00000000000000000000803F77686F0000000000000000000000000000000000
+G 000320 00000000000000000000000000000000696D706C696369742000000000000000
+G 0003A0 0000000000000000000000000000000000000000200000000000000000000000
+G 000420 0000000000000000000000000000000000000000000000000000000002000000
+G 000440 000048410000803F000000400000404000000000626173696373200000000000
+G 0004C0 0000000000000000000000000000000000000000636F6C6F7200000000000000
+G 000540 0000000000000000000000000000000000000000726564000000000000000000
+G 0005C0 00000000000000000000000000000000000000006B6579200000000000000000
+G 000640 0000000000000000000000000000000000000000206D697373696E6720270000
+G 0006C0 00000000000000000000000000000000000000006E6F7468696E670000000000
+G 000740 0000000000000000000000000000000000000000270000000000000000000000
+G 0007C0 00000000000000000000000000000000000000009A9939409A9979C000000000
+G 0007E0 616464496E747320000000000000000000000000000000000000000000000000
+G 000860 0000C03FCDCCFC40000080400000A0400000C040746578740000000000000000
+G 0008E0 000000000000000000000000000000000000000003000000000000006D697820
+G 000960 0000000000000000000000000000000000000000000000000000000000000040
+G 000980 000000006F776E6572206F6B0000000000000000000000000000000000000000
+G 000A00 00000000000000006F776E6572206E756C6C0000000000000000000000000000
+G 000A80 0000000000000000CDCC6C400000003F736E6400000000000000000000000000
+G 000B00 000000000000000000000000000000000000C642636861696E65642000000000
+G 000B80 0000000000000000000000000000000000000000000000000000A0400000A040
+G 000BA0 0000A0400000A040666976650000000000000000000000000000000000000000
+G 000C20 00000000000000006E756C6C3A20000000000000000000000000000000000000
+G 000CA0 0000000000000000202700000000000000000000000000000000000000000000
+G 000D20 00000000000000006E756C6C206F776E65720000000000000000000000000000
+G 000DA0 00000000000000006E756C6C20616464496E7473200000000000000000000000
+G 000E20 00000000000000000000803F0000803F0000803F000000006D697373696E673A
+G 000E40 2000000000000000000000000000000000000000000000000000000000000000
+G 000EA0 000000000000000000000000000000000000000000000000040000006D6F7665
+G 000EC0 723A200000000000000000000000000000000000000000000000000000000000
+G 000F20 0000000000000000000000000000000000000000000000000000000000008040
+G 000F40 6D6F7665722076616C7565200000000000000000000000000000000000000000
+G 000FC0 00000000676F6E653A2000000000000000000000000000000000000000000000
+G 001040 00000000000000006265666F72652062696E6400000000000000000000000000
+G 0010C0 00000000000000006E65766572207072696E7465640000000000000000000000
+G 001140 00000000000000000000000062696E64206F6B00000000000000000000000000
+G 0011C0 000000000000000000000000000000000500000000000000000048426D657468
+G 0011E0 6F64732000000000000000000000000000000000000000000000000000000000
+G 001240 000000000000000000000000000000000000000000000000000000006F776E65
+G 001260 722069732073656C660000000000000000000000000000000000000000000000
+G 0012E0 72656D6F766520706F7374656420000000000000000000000000000000000000
+G 001360 0000000061667465722072656D6F766520270000000000000000000000000000
+G 0013E0 0000000065206973206E756C6C206E6F77000000000000000000000000000000
+G 001460 0000000024656E745F74776F206973206E756C6C206E6F770000000000000000
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_one" value=#41C80000 origin=#3F800000,#40000000,#40400000 owner=3 object=- data=
+ENTITY 2 class=idEntity name="ent_two" value=#42C60000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+ENTITY 3 class=idMover name="ent_mover" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+ENTITY 4 class=idEntity name="ent_obj" value=#00000000 origin=#00000000,#00000000,#00000000 owner=0 object=evt_obj data=00004040
+CMD callnow nullAndMissing
+PRINT null: 0 0 0 0 ''
+PRINT null owner
+PRINT null addInts 0
+PRINT missing: 0
+HOST event 3 isMoving
+PRINT mover: 0
+HOST event 3 setValue #40800000
+HOST event 3 getValue
+PRINT mover value 4
+PRINT gone: 0 ''
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 5348
+G 000280 0000000000000000000000000000000000000000000000000000000000004040
+G 0002A0 00000000000000000000803F77686F0000000000000000000000000000000000
+G 000320 00000000000000000000000000000000696D706C696369742000000000000000
+G 0003A0 0000000000000000000000000000000000000000200000000000000000000000
+G 000420 0000000000000000000000000000000000000000000000000000000002000000
+G 000440 000048410000803F000000400000404000000000626173696373200000000000
+G 0004C0 0000000000000000000000000000000000000000636F6C6F7200000000000000
+G 000540 0000000000000000000000000000000000000000726564000000000000000000
+G 0005C0 00000000000000000000000000000000000000006B6579200000000000000000
+G 000640 0000000000000000000000000000000000000000206D697373696E6720270000
+G 0006C0 00000000000000000000000000000000000000006E6F7468696E670000000000
+G 000740 0000000000000000000000000000000000000000270000000000000000000000
+G 0007C0 00000000000000000000000000000000000000009A9939409A9979C000000000
+G 0007E0 616464496E747320000000000000000000000000000000000000000000000000
+G 000860 0000C03FCDCCFC40000080400000A0400000C040746578740000000000000000
+G 0008E0 000000000000000000000000000000000000000003000000000000006D697820
+G 000960 0000000000000000000000000000000000000000000000000000000000000040
+G 000980 000000006F776E6572206F6B0000000000000000000000000000000000000000
+G 000A00 00000000000000006F776E6572206E756C6C0000000000000000000000000000
+G 000A80 0000000000000000CDCC6C400000003F736E6400000000000000000000000000
+G 000B00 000000000000000000000000000000000000C642636861696E65642000000000
+G 000B80 0000000000000000000000000000000000000000000000000000A0400000A040
+G 000BA0 0000A0400000A040666976650000000000000000000000000000000000000000
+G 000C20 00000000000000006E756C6C3A20000000000000000000000000000000000000
+G 000CA0 0000000000000000202700000000000000000000000000000000000000000000
+G 000D20 00000000000000006E756C6C206F776E65720000000000000000000000000000
+G 000DA0 00000000000000006E756C6C20616464496E7473200000000000000000000000
+G 000E20 00000000000000000000803F0000803F0000803F000000006D697373696E673A
+G 000E40 2000000000000000000000000000000000000000000000000000000000000000
+G 000EA0 000000000000000000000000000000000000000000000000040000006D6F7665
+G 000EC0 723A200000000000000000000000000000000000000000000000000000000000
+G 000F20 0000000000000000000000000000000000000000000000000000000000008040
+G 000F40 6D6F7665722076616C7565200000000000000000000000000000000000000000
+G 000FC0 00000000676F6E653A2000000000000000000000000000000000000000000000
+G 001040 00000000000000006265666F72652062696E6400000000000000000000000000
+G 0010C0 00000000000000006E65766572207072696E7465640000000000000000000000
+G 001140 00000000000000000000000062696E64206F6B00000000000000000000000000
+G 0011C0 000000000000000000000000000000000500000000000000000048426D657468
+G 0011E0 6F64732000000000000000000000000000000000000000000000000000000000
+G 001240 000000000000000000000000000000000000000000000000000000006F776E65
+G 001260 722069732073656C660000000000000000000000000000000000000000000000
+G 0012E0 72656D6F766520706F7374656420000000000000000000000000000000000000
+G 001360 0000000061667465722072656D6F766520270000000000000000000000000000
+G 0013E0 0000000065206973206E756C6C206E6F77000000000000000000000000000000
+G 001460 0000000024656E745F74776F206973206E756C6C206E6F770000000000000000
+CMD setcvar developer 1
+CMD callnow nullAndMissing
+PRINT null: 0 0 0 0 ''
+PRINT null owner
+PRINT null addInts 0
+WARN script/events.script(86): Thread 'nullAndMissing': Function 'moveTo' not supported on entity 'ent_one'
+WARN script/events.script(88): Thread 'nullAndMissing': Function 'isMoving' not supported on entity 'ent_one'
+PRINT missing: 0
+HOST event 3 isMoving
+PRINT mover: 0
+HOST event 3 setValue #40800000
+HOST event 3 getValue
+PRINT mover value 4
+PRINT gone: 0 ''
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD setcvar developer 0
+CMD callnow requiredEntity
+PRINT before bind
+HOST event 1 setOwner null
+WARN script/events.script(106): Thread 'requiredEntity': Entity not found for event 'bind'. Terminating thread.
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump threads
+CURRENT 0
+THREADINDEX 5
+THREAD 2 name="basics" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=16 created=16 manual=0 depth=0 used=0 base=0 maxDepth=1 maxUsed=412 ip=-1 func=-1 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="nullAndMissing" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=16 created=16 manual=0 depth=0 used=0 base=0 maxDepth=1 maxUsed=408 ip=-1 func=-1 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 4 name="nullAndMissing" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=16 created=16 manual=0 depth=0 used=0 base=0 maxDepth=1 maxUsed=408 ip=-1 func=-1 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 5 name="requiredEntity" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=282 func=99 popParms=0 multiFrame=- eventEntity=1 terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD frame 1
+FRAME time=32 framenum=2 events=0
+CMD callnow requiredEntity2
+HOST event 1 bind ent:2
+PRINT bind ok
+WARN script/events.script(113): Thread 'requiredEntity2': Entity not found for event 'activate'. Terminating thread.
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD frame 1
+FRAME time=48 framenum=3 events=0
+CMD callnow methods
+HOST event 4 setValue #40400000
+HOST event 4 getValue
+HOST event 4 getName
+HOST event 4 setKey "who" "ent_obj"
+HOST event 4 getKey "who"
+PRINT implicit ent_obj 4
+HOST event 4 activate ent:4
+HOST event 4 setOwner ent:4
+HOST event 4 getOwner
+HOST event 4 setValue #42480000
+HOST event 4 getValue
+PRINT methods 50 4
+PRINT owner is self
+DONE 1
+RETURN 42480000 00000000 00000000 "ent_obj"
+CMD dump globals
+GLOBALS 5348
+G 000000 000048420000000000000000656E745F6F626A00000000000000000000000000
+G 000280 0000000000000000000000000000000000000000000000000500000000004040
+G 0002A0 00000000000000000000803F77686F0000000000000000000000000000000000
+G 000320 00000000000000000000000000000000696D706C696369742000000000000000
+G 0003A0 0000000000000000000000000000000000000000200000000000000000000000
+G 000420 0000000000000000000000000000000000000000000000000000000002000000
+G 000440 000048410000803F000000400000404000000000626173696373200000000000
+G 0004C0 0000000000000000000000000000000000000000636F6C6F7200000000000000
+G 000540 0000000000000000000000000000000000000000726564000000000000000000
+G 0005C0 00000000000000000000000000000000000000006B6579200000000000000000
+G 000640 0000000000000000000000000000000000000000206D697373696E6720270000
+G 0006C0 00000000000000000000000000000000000000006E6F7468696E670000000000
+G 000740 0000000000000000000000000000000000000000270000000000000000000000
+G 0007C0 00000000000000000000000000000000000000009A9939409A9979C000000000
+G 0007E0 616464496E747320000000000000000000000000000000000000000000000000
+G 000860 0000C03FCDCCFC40000080400000A0400000C040746578740000000000000000
+G 0008E0 000000000000000000000000000000000000000003000000000000006D697820
+G 000960 0000000000000000000000000000000000000000000000000000000000000040
+G 000980 000000006F776E6572206F6B0000000000000000000000000000000000000000
+G 000A00 00000000000000006F776E6572206E756C6C0000000000000000000000000000
+G 000A80 0000000000000000CDCC6C400000003F736E6400000000000000000000000000
+G 000B00 000000000000000000000000000000000000C642636861696E65642000000000
+G 000B80 0000000000000000000000000000000000000000000000000000A0400000A040
+G 000BA0 0000A0400000A040666976650000000000000000000000000000000000000000
+G 000C20 00000000000000006E756C6C3A20000000000000000000000000000000000000
+G 000CA0 0000000000000000202700000000000000000000000000000000000000000000
+G 000D20 00000000000000006E756C6C206F776E65720000000000000000000000000000
+G 000DA0 00000000000000006E756C6C20616464496E7473200000000000000000000000
+G 000E20 00000000000000000000803F0000803F0000803F000000006D697373696E673A
+G 000E40 2000000000000000000000000000000000000000000000000000000000000000
+G 000EA0 000000000000000000000000000000000000000000000000040000006D6F7665
+G 000EC0 723A200000000000000000000000000000000000000000000000000000000000
+G 000F20 0000000000000000000000000000000000000000000000000000000000008040
+G 000F40 6D6F7665722076616C7565200000000000000000000000000000000000000000
+G 000FC0 00000000676F6E653A2000000000000000000000000000000000000000000000
+G 001040 00000000000000006265666F72652062696E6400000000000000000000000000
+G 0010C0 00000000000000006E65766572207072696E7465640000000000000000000000
+G 001140 00000000000000000000000062696E64206F6B00000000000000000000000000
+G 0011C0 000000000000000000000000000000000500000000000000000048426D657468
+G 0011E0 6F64732000000000000000000000000000000000000000000000000000000000
+G 001240 000000000000000000000000000000000000000000000000000000006F776E65
+G 001260 722069732073656C660000000000000000000000000000000000000000000000
+G 0012E0 72656D6F766520706F7374656420000000000000000000000000000000000000
+G 001360 0000000061667465722072656D6F766520270000000000000000000000000000
+G 0013E0 0000000065206973206E756C6C206E6F77000000000000000000000000000000
+G 001460 0000000024656E745F74776F206973206E756C6C206E6F770000000000000000
+CMD thread removal
+THREADNUM 8
+CMD frame 3
+HOST event 2 getName
+PRINT remove posted ent_two
+HOST free 2
+HOST Signal 2 3
+FRAME time=64 framenum=4 events=1
+THREAD 8 name="removal" dying=0 done=1 waitingFor=4095 waitingUntil=80 waitingForThread=0 lastExec=64 created=48 manual=0 depth=1 used=264 base=0 maxDepth=1 maxUsed=264 ip=326 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+PRINT after remove ''
+PRINT e is null now
+PRINT $ent_two is null now
+FRAME time=80 framenum=5 events=0
+FRAME time=96 framenum=6 events=0
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_one" value=#41C80000 origin=#3F800000,#40000000,#40400000 owner=0 object=- data=
+ENTITY 3 class=idMover name="ent_mover" value=#40800000 origin=#00000000,#00000000,#00000000 owner=0 object=- data=
+ENTITY 4 class=idEntity name="ent_obj" value=#42480000 origin=#00000000,#00000000,#00000000 owner=5 object=evt_obj data=00008040
+CMD dump globals
+GLOBALS 5348
+G 000000 0000484200000000000000000000000000000000000000000000000000000000
+G 000280 0000000000000000000000000000000000000000000000000500000000004040
+G 0002A0 00000000000000000000803F77686F0000000000000000000000000000000000
+G 000320 00000000000000000000000000000000696D706C696369742000000000000000
+G 0003A0 0000000000000000000000000000000000000000200000000000000000000000
+G 000420 0000000000000000000000000000000000000000000000000000000002000000
+G 000440 000048410000803F000000400000404000000000626173696373200000000000
+G 0004C0 0000000000000000000000000000000000000000636F6C6F7200000000000000
+G 000540 0000000000000000000000000000000000000000726564000000000000000000
+G 0005C0 00000000000000000000000000000000000000006B6579200000000000000000
+G 000640 0000000000000000000000000000000000000000206D697373696E6720270000
+G 0006C0 00000000000000000000000000000000000000006E6F7468696E670000000000
+G 000740 0000000000000000000000000000000000000000270000000000000000000000
+G 0007C0 00000000000000000000000000000000000000009A9939409A9979C000000000
+G 0007E0 616464496E747320000000000000000000000000000000000000000000000000
+G 000860 0000C03FCDCCFC40000080400000A0400000C040746578740000000000000000
+G 0008E0 000000000000000000000000000000000000000000000000000000006D697820
+G 000960 0000000000000000000000000000000000000000000000000000000000000040
+G 000980 000000006F776E6572206F6B0000000000000000000000000000000000000000
+G 000A00 00000000000000006F776E6572206E756C6C0000000000000000000000000000
+G 000A80 0000000000000000CDCC6C400000003F736E6400000000000000000000000000
+G 000B00 000000000000000000000000000000000000C642636861696E65642000000000
+G 000B80 0000000000000000000000000000000000000000000000000000A0400000A040
+G 000BA0 0000A0400000A040666976650000000000000000000000000000000000000000
+G 000C20 00000000000000006E756C6C3A20000000000000000000000000000000000000
+G 000CA0 0000000000000000202700000000000000000000000000000000000000000000
+G 000D20 00000000000000006E756C6C206F776E65720000000000000000000000000000
+G 000DA0 00000000000000006E756C6C20616464496E7473200000000000000000000000
+G 000E20 00000000000000000000803F0000803F0000803F000000006D697373696E673A
+G 000E40 2000000000000000000000000000000000000000000000000000000000000000
+G 000EA0 000000000000000000000000000000000000000000000000040000006D6F7665
+G 000EC0 723A200000000000000000000000000000000000000000000000000000000000
+G 000F20 0000000000000000000000000000000000000000000000000000000000008040
+G 000F40 6D6F7665722076616C7565200000000000000000000000000000000000000000
+G 000FC0 00000000676F6E653A2000000000000000000000000000000000000000000000
+G 001040 00000000000000006265666F72652062696E6400000000000000000000000000
+G 0010C0 00000000000000006E65766572207072696E7465640000000000000000000000
+G 001140 00000000000000000000000062696E64206F6B00000000000000000000000000
+G 0011C0 000000000000000000000000000000000500000000000000000048426D657468
+G 0011E0 6F64732000000000000000000000000000000000000000000000000000000000
+G 001240 000000000000000000000000000000000000000000000000000000006F776E65
+G 001260 722069732073656C660000000000000000000000000000000000000000000000
+G 0012E0 72656D6F766520706F7374656420000000000000000000000000000000000000
+G 001360 0000000061667465722072656D6F766520270000000000000000000000000000
+G 0013E0 0000000065206973206E756C6C206E6F77000000000000000000000000000000
+G 001460 0000000024656E745F74776F206973206E756C6C206E6F770000000000000000
+CMD event 1 setValue 2.5
+HOST event 1 setValue #40200000
+PROCESSED 1
+CMD event 1 getValue
+HOST event 1 getValue
+PROCESSED 1
+CMD dump return
+RETURN 40200000 00000000 00000000 ""
+CMD event 1 moveTo "1 2 3" 1
+PROCESSED 0
+CMD event 3 moveTo "1 2 3" 0.05
+HOST event 3 moveTo #3F800000,#40000000,#40400000 #3D4CCCCD
+PROCESSED 1
+CMD event 1 getName
+HOST event 1 getName
+PROCESSED 1
+CMD dump return
+RETURN 40200000 00000000 00000000 "ent_one"
+CMD postevent 1 40 setKey late value
+POSTED 1
+CMD postevent 1 20 setKey early value
+POSTED 1
+CMD postevent 1 20 setValue 7
+POSTED 1
+CMD postevent 1 0 mix 1 2 "3 4 5" six 3
+ERROR idEvent::Alloc : Wrong type passed in for arg # 4 on 'mix' event.
+CMD postevent 1 10 activate null
+POSTED 1
+CMD postevent 1 10 isMoving
+POSTED 0
+CMD postevent 3 10 remove
+POSTED 1
+CMD dump events
+EVENT time=106 name=activate class=idEntity object=ent:1 args=00000000
+EVENT time=106 name=remove class=idMover object=ent:3 args=
+EVENT time=116 name=setKey class=idEntity object=ent:1 args=6561726C7900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000076616C7565000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+EVENT time=116 name=setValue class=idEntity object=ent:1 args=0000E040
+EVENT time=136 name=setKey class=idEntity object=ent:1 args=6C6174650000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000076616C7565000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+EVENT time=146 name=<movedone> class=idMover object=ent:3 args=
+CMD frame 5
+HOST event 1 activate null
+HOST free 3
+HOST Signal 3 3
+FRAME time=112 framenum=7 events=3
+HOST event 1 setKey "early" "value"
+HOST event 1 setValue #40E00000
+FRAME time=128 framenum=8 events=1
+HOST event 1 setKey "late" "value"
+FRAME time=144 framenum=9 events=0
+FRAME time=160 framenum=10 events=0
+FRAME time=176 framenum=11 events=0
+CMD dump entities
+ENTITY 1 class=idEntity name="ent_one" value=#40E00000 origin=#3F800000,#40000000,#40400000 owner=0 object=- data=
+ENTITY 4 class=idEntity name="ent_obj" value=#42480000 origin=#00000000,#00000000,#00000000 owner=5 object=evt_obj data=00008040
+CMD dump events

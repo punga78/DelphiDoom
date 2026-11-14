@@ -2,7 +2,8 @@ program WorldLibrary;
 // Issue #175: the same game of WorldGolden.dpr played by TGreedGame of Libs\Greed, with the same lines. It is what
 // the test DelphiDoom.Tests.Greed.WorldParity does (the same runner), as a program: Compila.ps1 -Libreria compares
 // its lines with the ones of the original and says the first that differs.
-// Usage: WorldLibrary <folder of GREED.BLO> <map> <seed> <turns> <output> [every] [dump turn] [dump file] [all]
+// Usage: WorldLibrary <folder of GREED.BLO> <map> <seed> <turns> <output> [every] [dump turn] [dump file] [tutti]
+//        [retro]
 {$APPTYPE CONSOLE}
 uses
   System.SysUtils,
@@ -12,7 +13,7 @@ uses
 var
   LRunner: TLibraryWorldRunner;
   LLines, LOld: TStringList;
-  LEvery: Integer;
+  LEvery, LIndex: Integer;
 
 begin
   try
@@ -28,7 +29,19 @@ begin
         LRunner.DumpFrame := StrToInt(ParamStr(7));
         LRunner.DumpFile := ParamStr(8);
       end;
-      LRunner.AllFrames := ParamCount >= 9;
+      LRunner.AllFrames := (ParamCount >= 9) and (ParamStr(9) = 'tutti');
+      // the last word "retro": the player uses the rear view camera and each line ends with its picture
+      for LIndex := 6 to ParamCount do
+      begin
+        if ParamStr(LIndex) = 'retro' then
+          LRunner.RearView := True;
+        // "difetto": the light of a very hot sprite goes outside the map as in the original
+        if ParamStr(LIndex) = 'difetto' then
+          LRunner.LightOverflow := True;
+        // "salva=300,700": the game is saved and loaded again after those turns
+        if Copy(ParamStr(LIndex), 1, 6) = 'salva=' then
+          LRunner.SaveTurns := Copy(ParamStr(LIndex), 7, 1000);
+      end;
       LRunner.Play(StrToInt(ParamStr(2)), StrToInt(ParamStr(3)), StrToInt(ParamStr(4)), LEvery, LLines);
       if FileExists(ParamStr(5)) then
         LOld.LoadFromFile(ParamStr(5));

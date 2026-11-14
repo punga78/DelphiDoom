@@ -6,7 +6,8 @@ program WorldGolden;
 // window and the video (i_video, i_windows), the timer thread (timer), the keyboard and the mouse (d_ints: the
 // commands come from a seed), the sound (modplay: written in the fingerprint) and the films (playfli).
 // The start is LoadData and startup of intro.pas with nointro, without the configuration file.
-// Usage: WorldGolden <folder of GREED.BLO> <map> <seed> <turns> <output> [every] [dump turn] [dump file] [all]
+// Usage: WorldGolden <folder of GREED.BLO> <map> <seed> <turns> <output> [every] [dump turn] [dump file] [tutti]
+//        [retro]
 // The lines are appended to the output file.
 uses
   SysUtils,
@@ -67,7 +68,18 @@ begin
       HarnessDumpFrame := StrToInt(ParamStr(7));
       HarnessDumpFile := ParamStr(8);
     end;
-    HarnessAllFrames := ParamCount >= 9;
+    HarnessAllFrames := (ParamCount >= 9) and (ParamStr(9) = 'tutti');
+    // the last word "retro": the player uses the rear view camera (RearView) and each line ends with the
+    // fingerprint of rearbuf
+    HarnessRearView := False;
+    for i := 6 to ParamCount do
+    begin
+      if ParamStr(i) = 'retro' then
+        HarnessRearView := True;
+      // "salva=300,700": the game is saved and loaded again after those turns
+      if Copy(ParamStr(i), 1, 6) = 'salva=' then
+        HarnessSaveTurns := Copy(ParamStr(i), 7, 1000);
+    end;
     HarnessMap := map;
     HarnessSeed := seed;
     HarnessOutput := TStringList.Create;

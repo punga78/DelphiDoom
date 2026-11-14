@@ -1,0 +1,59 @@
+# the preprocessor, then texts compiled after the startup and forgotten by Restart
+startup script/preproc.script
+dump program
+callnow main
+# after the startup
+compilefile script/extra.script
+compiletext more 0 <<EOF
+float moreValue = 9;
+void moreMain() {
+	extraMain();
+	sys.println( "more " + moreValue + " " + extraValue );
+}
+EOF
+compilefunction oneShot <<EOF
+void oneShot() {
+	sys.println( "one shot" );
+}
+EOF
+dump program
+callnow moreMain
+callnow oneShot
+thread extraLoop
+frame 2
+dump threads
+dump events
+dump globals
+restart
+dump program
+dump threads
+dump events
+findfunction extraMain
+findfunction moreMain
+findfunction main
+callnow main
+dump globals
+# the same file again: it compiles as new
+compilefile script/extra.script
+callnow extraMain
+thread extraLoop
+frame 1
+dump program
+# a second startup frees everything
+startup script/extra.script
+startup script/preproc.script
+dump threads
+callnow main
+finish
+restart
+callnow main
+# begin and finish by hand
+begin
+dump program
+compilefile script/preproc.script
+compilefile script/extra.script
+finish
+dump program
+restart
+callnow extraMain
+dump globals

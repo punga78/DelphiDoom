@@ -101,7 +101,7 @@ procedure TGreedWallRenderer.DrawWall(AX1, AX2: Integer);
 var
   S: TGreedRenderState;
   LBaseAngle, LDistance, LPointZ, LAngleCos, LTextureAdjust, LCeiling, LFloor, LTop, LBottom, LScale: Integer;
-  LTopY, LBottomY, LFracAdjust, LAngle, LTexture, LX, LLight: Integer;
+  LTopY, LBottomY, LFracAdjust, LAngle, LTexture, LX: Integer;
   LWall: PGreedRenderWall;
   LTransparent, LRotateRight, LRotateLeft, LRotateUp, LRotateDown, LInvisible, LFlagsBoth: Integer;
   LKind: TGreedSpanKind;

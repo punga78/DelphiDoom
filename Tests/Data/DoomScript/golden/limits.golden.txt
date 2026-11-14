@@ -1,0 +1,83 @@
+CMD startup -
+PRINT Initializing scripts
+CMD genfile script/gen_strings_ok.script 1500 <<EOF
+CMD compilefile script/gen_strings_ok.script
+PRINT Compiled '/base/script/gen_strings_ok.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/gen_strings_ok.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 1, ? bytes
+PRINT    Functions: 95, ? bytes
+PRINT    Variables: 192520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD restart
+CMD genfile script/gen_strings.script 1600 <<EOF
+CMD compilefile script/gen_strings.script
+ERROR Error: file script/gen_strings.script, line 1532: Exceeded global memory size (196608 bytes)\n\n
+CMD restart
+CMD genfile script/gen_functions.script 3100 <<EOF
+CMD compilefile script/gen_functions.script
+ERROR Error: file script/gen_functions.script, line 2978: Exceeded maximum allowed number of functions (3072)\n\n
+CMD restart
+CMD genfile script/gen_functions_ok.script 2500 <<EOF
+CMD compilefile script/gen_functions_ok.script
+PRINT Compiled '/base/script/gen_functions_ok.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/gen_functions_ok.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 7501, ? bytes
+PRINT    Functions: 2595, ? bytes
+PRINT    Variables: 20520 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD findfunction f0
+FUNCTION 95
+CMD findfunction f2499
+FUNCTION 2594
+CMD findfunction f2500
+FUNCTION -1
+CMD restart
+CMD genfile script/gen_statements.script 2800 <<EOF
+CMD compiletext statements 0 <<EOF
+ERROR Error: file script/gen_statements.script, line 2643: Exceeded maximum allowed number of statements (81920)\n\n
+CMD restart
+CMD compiletext after 0 <<EOF
+PRINT Compiled '/base/after': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    after
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 7, ? bytes
+PRINT    Functions: 96, ? bytes
+PRINT    Variables: 664 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+RESULT 1
+CMD callnow main
+PRINT a=42
+DONE 1
+RETURN 00000000 00000000 00000000 ""
+CMD dump globals
+GLOBALS 664
+G 000200 000000000000000000002842000000000000A841613D00000000000000000000

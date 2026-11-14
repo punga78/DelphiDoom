@@ -15,7 +15,8 @@ uses
   System.SysUtils, DelphiDoom.Greed.Intf, DelphiDoom.Greed.Save.Intf, DelphiDoom.Greed.Settings.Intf,
   DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.Canvas, DelphiDoom.Greed.Display, DelphiDoom.Greed.MenuInput,
   DelphiDoom.Greed.Font, DelphiDoom.Greed.TextPrinter, DelphiDoom.Greed.FliPlayer, DelphiDoom.Greed.Menu,
-  DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro, DelphiDoom.Greed.Briefing, DelphiDoom.Greed.EndGame;
+  DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro, DelphiDoom.Greed.Briefing, DelphiDoom.Greed.EndGame,
+  DelphiDoom.Greed.Mouse.Intf, DelphiDoom.Greed.MouseCursor;
 
 type
   /// <summary>
@@ -23,7 +24,8 @@ type
   ///   original), the display with its palette, the keys and the clock of the menus, the printer with the font
   ///   FONT1, the player of the movies, the menu, the introduction, the briefing and the endings. They are made
   ///   together because each of them draws on the same canvas and reads the same input; the hosts, who answer what
-  ///   they ask of the game, come from outside. The object owns all of them
+  ///   they ask of the game, come from outside. The object owns all of them. With a mouse the input reads it
+  ///   with the keys and the picture of the pointer (the lump MCURSOR, if the archive has it) is made
   /// </summary>
   TGreedScreens = class
   strict private
@@ -37,16 +39,20 @@ type
     FIntro: TGreedIntro;
     FBriefing: TGreedBriefing;
     FEndGame: TGreedEndGame;
+    FMouse: IGreedMouse;
+    FMouseCursor: TGreedMouseCursor;
   public
     /// <summary>
-    ///   EArgumentNilException for a missing dependency (AMovies may be nil: no movie is found). ADemo is DEMO of
+    ///   EArgumentNilException for a missing dependency (AMovies may be nil: no movie is found; AMouse may be nil:
+    ///   no mouse is installed). ADemo is DEMO of
     ///   the original (the help has three pages, the briefing is the one of the demo) and AVariant the game of the
     ///   family that the texts of the briefings and of the endings depend on
     /// </summary>
     constructor Create(const AArchive: IGreedArchive; const ASettings: IGreedSettings;
       const AVolumes: IGreedSoundVolumes; const ASaveGames: IGreedSaveGames; const AMovies: IGreedExternalFiles;
       const AMenuHost: IGreedMenuHost; const AIntroHost: IGreedIntroHost; const ABriefingHost: IGreedBriefingHost;
-      const AEndGameHost: IGreedEndGameHost; ADemo: Boolean; AVariant: TGreedGameVariant);
+      const AEndGameHost: IGreedEndGameHost; ADemo: Boolean; AVariant: TGreedGameVariant;
+      const AMouse: IGreedMouse = nil);
     destructor Destroy; override;
     property Canvas: TGreedCanvas read FCanvas;
     property Display: TGreedDisplay read FDisplay;
@@ -58,6 +64,10 @@ type
     property Intro: TGreedIntro read FIntro;
     property Briefing: TGreedBriefing read FBriefing;
     property EndGame: TGreedEndGame read FEndGame;
+    /// <summary>The mouse of the menus; nil if none is installed</summary>
+    property Mouse: IGreedMouse read FMouse;
+    /// <summary>The picture of the pointer; nil without a mouse or without the lump MCURSOR</summary>
+    property MouseCursor: TGreedMouseCursor read FMouseCursor;
   end;
 
 implementation
@@ -70,7 +80,9 @@ const
 constructor TGreedScreens.Create(const AArchive: IGreedArchive; const ASettings: IGreedSettings;
   const AVolumes: IGreedSoundVolumes; const ASaveGames: IGreedSaveGames; const AMovies: IGreedExternalFiles;
   const AMenuHost: IGreedMenuHost; const AIntroHost: IGreedIntroHost; const ABriefingHost: IGreedBriefingHost;
-  const AEndGameHost: IGreedEndGameHost; ADemo: Boolean; AVariant: TGreedGameVariant);
+  const AEndGameHost: IGreedEndGameHost; ADemo: Boolean; AVariant: TGreedGameVariant; const AMouse: IGreedMouse);
+var
+  LCursorLump: Integer;
 begin
   inherited Create;
   if not Assigned(AArchive) then
@@ -91,7 +103,8 @@ begin
     raise EArgumentNilException.Create('AEndGameHost');
   FCanvas := TGreedCanvas.Create;
   FDisplay := TGreedDisplay.Create(FCanvas, AArchive);
-  FInput := TGreedMenuInput.Create;
+  FMouse := AMouse;
+  FInput := TGreedMenuInput.Create(AMouse);
   FFont := TGreedFont.Create(AArchive.ReadLump(AArchive.RequireIndexOf(LUMP_FONT1)));
   FPrinter := TGreedTextPrinter.Create(FCanvas);
   FPrinter.Font := FFont;
@@ -101,10 +114,18 @@ begin
   FBriefing := TGreedBriefing.Create(FDisplay, FInput, FPrinter, FFont, FPlayer, AMovies, ABriefingHost, ADemo,
     AVariant);
   FEndGame := TGreedEndGame.Create(FDisplay, FInput, FPrinter, FFont, FPlayer, AMovies, AEndGameHost, AVariant);
+  if Assigned(AMouse) then
+  begin
+    // M_InitMouse stops the original if the lump is missing: here the pointer is not drawn
+    LCursorLump := AArchive.IndexOf(GREED_LUMP_MOUSE_CURSOR);
+    if LCursorLump >= 0 then
+      FMouseCursor := TGreedMouseCursor.Create(AArchive.ReadLumpRaw(LCursorLump));
+  end;
 end;
 
 destructor TGreedScreens.Destroy;
 begin
+  FMouseCursor.Free;
   FEndGame.Free;
   FBriefing.Free;
   FIntro.Free;

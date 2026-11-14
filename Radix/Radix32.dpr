@@ -43,6 +43,7 @@ program Radix32;
 
 {$R *.RES}
 {$R 'Radix32_Icon.res' 'Radix32_Icon.rc'}
+{$R 'Radix32_Data.res' 'Radix32_Data.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',
@@ -224,6 +225,30 @@ uses
   radix_map_extra in 'radix_map_extra.pas',
   DelphiDoom.Engine.Level.RadixRules in 'DelphiDoom.Engine.Level.RadixRules.pas',
   radix_version in 'radix_version.pas',
+  radix_playerstate in 'radix_playerstate.pas',
+  radix_hud in 'radix_hud.pas',
+  radix_pilot in 'radix_pilot.pas',
+  radix_pickups in 'radix_pickups.pas',
+  radix_weapons in 'radix_weapons.pas',
+  radix_codepointers in 'radix_codepointers.pas',
+  radix_grid in 'radix_grid.pas',
+  radix_logic in 'radix_logic.pas',
+  radix_actions in 'radix_actions.pas',
+  radix_walls in 'radix_walls.pas',
+  radix_forcefield in 'radix_forcefield.pas',
+  radix_teleport in 'radix_teleport.pas',
+  DelphiDoom.Radix.LevelLogic.Types in '..\Libs\Radix\DelphiDoom.Radix.LevelLogic.Types.pas',
+  DelphiDoom.Radix.LevelLumps.Reader in '..\Libs\Radix\DelphiDoom.Radix.LevelLumps.Reader.pas',
+  DelphiDoom.Radix.TriggerGrid in '..\Libs\Radix\DelphiDoom.Radix.TriggerGrid.pas',
+  DelphiDoom.Radix.TriggerLogic in '..\Libs\Radix\DelphiDoom.Radix.TriggerLogic.pas',
+  DelphiDoom.Radix.Action.Rules in '..\Libs\Radix\DelphiDoom.Radix.Action.Rules.pas',
+  DelphiDoom.Radix.Messages in '..\Libs\Radix\DelphiDoom.Radix.Messages.pas',
+  DelphiDoom.Radix.Thing.Spawn in '..\Libs\Radix\DelphiDoom.Radix.Thing.Spawn.pas',
+  DelphiDoom.Radix.Weapon.Rules in '..\Libs\Radix\DelphiDoom.Radix.Weapon.Rules.pas',
+  DelphiDoom.Radix.ActorProperties in '..\Libs\Radix\DelphiDoom.Radix.ActorProperties.pas',
+  DelphiDoom.Radix.Pilot.Rules in '..\Libs\Radix\DelphiDoom.Radix.Pilot.Rules.pas',
+  DelphiDoom.Radix.Flight.Model in '..\Libs\Radix\DelphiDoom.Radix.Flight.Model.pas',
+  DelphiDoom.Radix.Hud.Gauges in '..\Libs\Radix\DelphiDoom.Radix.Hud.Gauges.pas',
   i_io in '..\Base\i_io.pas',
   i_main in '..\Base\i_main.pas',
   i_midi in '..\Base\i_midi.pas',
@@ -307,7 +332,7 @@ uses
   sc_params in '..\Base\sc_params.pas',
   sounds in '..\Base\sounds.pas',
   st_lib in '..\Doom\st_lib.pas',
-  st_stuff in 'st_stuff.pas',
+  st_stuff in '..\Doom\st_stuff.pas',
   tables in '..\Base\tables.pas',
   v_data in '..\Base\v_data.pas',
   v_video in '..\Base\v_video.pas',

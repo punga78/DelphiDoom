@@ -22,8 +22,53 @@ var
   Different: Integer;
   Counts: array[0..3] of Integer;
 
+var
+  // the screen of 640 x 400 on which the ORIGINAL I_DrawMouse draws the pointer
+  PointerScreen: array[0..MENU_POINTER_SCREEN_WIDTH * MENU_POINTER_SCREEN_HEIGHT - 1] of LongWord;
+
+// the pointer as the original draws it (I_DrawMouse, called by I_FinishUpdate after the picture is on the screen):
+// over an empty screen and with a palette that gives each color its own index, so that the block of 32 x 32 pixels
+// at the place of the pointer can be compared with the frame of bytes of the library
+function PointerHash(hash: Cardinal): Cardinal;
+var
+  saved: array[0..255] of LongWord;
+  block: TBytes;
+  i, bx, by, row, col, x, y: Integer;
+begin
+  if not mousevisible then
+  begin
+    Result := MenuPointerHash(hash, False, 0, 0, nil);
+    Exit;
+  end;
+  Move(curpal, saved, SizeOf(saved));
+  for i := 0 to 255 do
+    curpal[i] := i;
+  screen32 := @PointerScreen;
+  bpp := 32;
+  I_DrawMouse;
+  Move(saved, curpal, SizeOf(saved));
+  bx := Round(2 * mousehx);
+  by := Round(2 * mousehy);
+  SetLength(block, MENU_POINTER_BLOCK * MENU_POINTER_BLOCK);
+  for row := 0 to MENU_POINTER_BLOCK - 1 do
+    for col := 0 to MENU_POINTER_BLOCK - 1 do
+    begin
+      x := bx + col;
+      y := by + row;
+      if (x >= 0) and (x < MENU_POINTER_SCREEN_WIDTH) and (y >= 0) and (y < MENU_POINTER_SCREEN_HEIGHT) then
+      begin
+        block[row * MENU_POINTER_BLOCK + col] := Byte(PointerScreen[y * MENU_POINTER_SCREEN_WIDTH + x]);
+        PointerScreen[y * MENU_POINTER_SCREEN_WIDTH + x] := 0;
+      end;
+    end;
+  // the original draws nowhere else: the screen must be empty again
+  Result := MenuPointerHash(hash, True, bx, by, block);
+end;
+
 procedure Capture;
 begin
+  if HScenario.UseMouse then
+    Outcome.Pixels := PointerHash(Outcome.Pixels);
   Outcome.Pixels := MenuFnv(Outcome.Pixels, viewbuffer, 64000);
   Outcome.Palette := MenuFnv(Outcome.Palette, LastPalette, 768);
   OriginalFrames.Add(MenuFnv(MENU_FNV_START, viewbuffer, 64000));
@@ -122,6 +167,16 @@ begin
       DeleteFile(name);
   if sc.HasDirectory then
     WriteFileBytes(DirectoryName(sc), TMenuScenarios.DirectoryBytes(sc));
+  // the mouse: not installed in the scenarios of the keys. M_InitMouse reads the picture of the pointer from the
+  // lump MCURSOR, 256 bytes after the 8 of its header
+  HarnessResetMouse(sc.UseMouse, sc.UseMouse and sc.MenuMouse);
+  HNextMouse := 0;
+  HCursorX := sc.CursorX;
+  HCursorY := sc.CursorY;
+  HWindowWidth := sc.WindowWidth;
+  HWindowHeight := sc.WindowHeight;
+  if sc.UseMouse then
+    Move(PByteArray(CA_CacheLump(CA_GetNamedNum('MCURSOR')))[8], mcursor, SizeOf(mcursor));
   HScenario := sc;
   HTics := 0;
   HNextKey := 0;
@@ -170,6 +225,9 @@ begin
   Outcome.Finish := TMenuScenarios.FinishHash(menulevel, menucursor, identity, saveposition, modplay.SC.musicvol, modplay.SC.sfxvol,
     Ord(modplay.SC.violence), Ord(modplay.SC.animation), modplay.SC.ambientlight, modplay.SC.screensize, modplay.SC.camdelay, currentViewSize, changelight,
     lighting, Ord(quitgame), Ord(answer), timecount, ReadFileBytes(DirectoryName(sc)));
+  if sc.UseMouse then
+    Outcome.Finish := MenuMouseFinish(Outcome.Finish, mouse.flags, mouse.oldflags, mouse.dx, mouse.dy, mousehx,
+      mousehy, mousevisible);
   Result := Outcome;
 end;
 

@@ -28,8 +28,8 @@ type
   ///   and the walk over a tile: it opens the door nearby (TryDoor of the host), runs the event of the switch of
   ///   the script (switches of event.pas, here TGreedGameState.Switches), swaps the E_SWAP elevators (SM_SWAPSWITCH)
   ///   and starts the secret elevators around a secret trigger (SM_STRIGGER). The globals are the fields of
-  ///   TGreedGameState (TimeCount, SwitchTime, Switches, Elevators, World). The net game is not ported: the
-  ///   NetCheckHere calls of the original are not here.
+  ///   TGreedGameState (TimeCount, SwitchTime, Switches, Elevators, World). In a net game (State.NetMode)
+  ///   what the use key did is told to the others (State.Net.CheckHere), who do it with AUseIt = False.
   ///   Switches is the array switches[x][y] of the original as it lies in memory: the index is x * 64 + y.
   ///   Kept defects: an SM_SWAPSWITCH switches the wall once for each elevator of the list that follows the first
   ///   E_SWAP that could move. Difference: a tile outside the map reads 0 and is not written (the original used
@@ -41,6 +41,7 @@ type
     FSound: IGreedGameSound;
     FEvents: IGreedEventRunner;
     FHost: IGreedSwitchHost;
+    procedure NetCheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
     function WallSpot(AX, AY, AAngle: Integer; out APlane: TGreedPlane; out ASpot: Integer): Boolean;
     function ReadTile(APlane: TGreedPlane; ASpot: Integer): Integer;
     procedure WriteTile(APlane: TGreedPlane; ASpot, AValue: Integer);
@@ -57,9 +58,11 @@ type
     ///   CheckForSwitch(x, y, angle, doubleswitch): True if the wall in front, on the tile (x, y), is a switch
     ///   that can be used now (False until SwitchTime)
     /// </summary>
-    function CheckForSwitch(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
+    /// Virtual, as SwitchWall: the comparison of the control of the player with the original replaces the two
+    /// with a log, as its harness does (Tests.Greed.PlayerControl)
+    function CheckForSwitch(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean; virtual;
     /// <summary>SwitchWall(x, y, angle, doubleswitch): the sound, and the picture of the wall in front</summary>
-    procedure SwitchWall(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean);
+    procedure SwitchWall(AX, AY, AAngle: Integer; ADoubleSwitch: Boolean); virtual;
     /// <summary>CheckHere(useit, cx, cy, angle): the place is in fixed point; AUseIt is the use key</summary>
     procedure CheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
   end;
@@ -191,6 +194,13 @@ begin
     WriteTile(LPlane, LSpot, LOther);
 end;
 
+// NetCheckHere: what the use key did is told to the other players of a net game (they do it with useit false)
+procedure TGreedSwitchRules.NetCheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
+begin
+  if AUseIt and FState.NetMode then
+    FState.Net.CheckHere(ACenterX, ACenterY, AAngle);
+end;
+
 procedure TGreedSwitchRules.CheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
 var
   LMapSpot, LX, LY, LX1, LY1, LIndex, LSwitch: Integer;
@@ -214,6 +224,7 @@ begin
       LSkip := not CheckForSwitch(LX, LY, AAngle, True);
     if not LSkip then
     begin
+      NetCheckHere(AUseIt, ACenterX, ACenterY, AAngle);
       SwitchWall(LX, LY, AAngle, True);
       // read again as the original does: the two calls before do not change it
       FEvents.RunEvent(FState.Switches[LX * GREED_MAP_SIZE + LY], False);
@@ -225,6 +236,7 @@ begin
       begin
         if AUseIt and not CheckForSwitch(LX, LY, AAngle, True) then
           Exit;
+        NetCheckHere(AUseIt, ACenterX, ACenterY, AAngle);
         LIndex := FState.Elevators.First;
         while LIndex <> GREED_POOL_NIL do
         begin
@@ -265,6 +277,7 @@ begin
             LY1 := LElevator^.MapSpot div GREED_MAP_SIZE;
             if (Abs(LX1 - LX) < 2) and (Abs(LY1 - LY) < 2) then
             begin
+              LSwitchIt := True;
               LElevator^.Down := True;
               LElevator^.Timer := FState.TimeCount;
               CheckHere(False, LX1 * GREED_FRACTILEUNIT, LY1 * GREED_FRACTILEUNIT, AAngle);
@@ -272,6 +285,8 @@ begin
           end;
           LIndex := FState.Elevators.Next(LIndex);
         end;
+        if LSwitchIt then
+          NetCheckHere(AUseIt, ACenterX, ACenterY, AAngle);
       end;
   end;
 end;

@@ -22,6 +22,11 @@ var
   HarnessDumpFile: string = '';
   // every turn gets its line
   HarnessAllFrames: boolean = false;
+  // the generated player uses the rear view camera, and each line ends with the fingerprint of rearbuf
+  HarnessRearView: boolean = false;
+  // the turns after which the game is saved and loaded again (SaveGame and LoadGame of utils.pas, as the menu
+  // does), as a list "300,700"; the bytes of the file that SaveGame writes go in the history of the fingerprints
+  HarnessSaveTurns: string = '';
   HarnessOutput: TStringList;
   HarnessMap: integer = 0;
   HarnessSeed: integer = 0;
@@ -50,7 +55,7 @@ var
 procedure HarnessStart(const seed: LongWord);
 begin
   Print := TWorldPrint.Create;
-  Commands := TWorldCommands.Create(seed);
+  Commands := TWorldCommands.Create(seed, HarnessRearView);
   ClockBase := seed * 1000;
   HarnessClock := ClockBase;
 end;
@@ -79,6 +84,17 @@ begin
   pressed[SC_HOME] := wkCenterView in keys;
   pressed[SC_1] := wkWeapon1 in keys;
   pressed[SC_2] := wkWeapon2 in keys;
+  pressed[SC_A] := wkRearView in keys;
+end;
+
+// FNV-1a of rearbuf, the picture of the rear view camera (64 x 64 pixels)
+function RearPrint: LongWord;
+var
+  i: integer;
+begin
+  Result := 2166136261;
+  for i := 0 to SizeOf(rearbuf) - 1 do
+    Result := (Result xor rearbuf[i]) * 16777619;
 end;
 
 procedure HarnessSound(const n, variation, x, y: integer);
@@ -429,9 +445,45 @@ begin
     IntToStr(NativeInt(@actionflag) - NativeInt(@reallight)) + ' size=' + IntToStr(SizeOf(reallight)));
 end;
 
+function IsSaveTurn(const n: integer): boolean;
+begin
+  Result := (HarnessSaveTurns <> '') and (Pos(',' + IntToStr(n) + ',', ',' + HarnessSaveTurns + ',') > 0);
+end;
+
+// what RunMenu of raven.pas does around the menu, with the menu saving the game and loading it at once
+procedure SaveAndLoad;
+var
+  f: file;
+  name: string;
+  bytes: array of byte;
+  i, n: integer;
+  print: LongWord;
+begin
+  player.timecount := timecount;
+  SaveGame(1);
+  // the file as the original wrote it
+  name := Format(SAVENAME, [1]);
+  AssignFile(f, name);
+  FileMode := 0;
+  Reset(f, 1);
+  n := FileSize(f);
+  SetLength(bytes, n);
+  BlockRead(f, bytes[0], n);
+  CloseFile(f);
+  print := 2166136261;
+  for i := 0 to n - 1 do
+    print := (print xor bytes[i]) * 16777619;
+  AddHistory(LongWord(n));
+  AddHistory(print);
+  LoadGame(1);
+  timecount := player.timecount;
+  keyboardDelay := timecount + KBDELAY;
+end;
+
 function HarnessNextFrame: boolean;
 var
-  i: integer;
+  i, j: integer;
+  row: string;
   lines: TStringList;
 begin
   // a game that ended inside a turn is asked twice for its last state
@@ -441,6 +493,8 @@ begin
     exit;
   end;
   LastPrinted := Frame;
+  if IsSaveTurn(Frame) and not quitgame then
+    SaveAndLoad;
   Trace(Format('E %d end tc %d', [Frame, timecount]));
   // the state after the turn that has just ended (the turn 0 is the state before the first one)
   if Frame = HarnessDumpFrame then
@@ -449,15 +503,31 @@ begin
     Print.Lines := lines;
     PrintWorld;
     Print.Lines := nil;
+    if HarnessRearView then
+      for i := 0 to 63 do
+      begin
+        row := '';
+        for j := 0 to 63 do
+          row := row + IntToHex(rearbuf[i * 64 + j], 2);
+        lines.Add(Format('rear.%d=%s', [i, row]));
+      end;
     lines.SaveToFile(HarnessDumpFile);
     lines.Free;
   end
   else
     PrintWorld;
   AddHistory(Print.Total);
+  if HarnessRearView then
+    AddHistory(RearPrint);
   if HarnessAllFrames or (Frame mod HarnessEvery = 0) or (Frame = HarnessFrames) or quitgame then
-    HarnessOutput.Add(Format('W %d %d %d %d %s %s', [HarnessMap, HarnessSeed, Frame, timecount,
-      IntToHex(History, 8), Print.Line]));
+  begin
+    if HarnessRearView then
+      HarnessOutput.Add(Format('W %d %d %d %d %s %s %s', [HarnessMap, HarnessSeed, Frame, timecount,
+        IntToHex(History, 8), Print.Line, IntToHex(RearPrint, 8)]))
+    else
+      HarnessOutput.Add(Format('W %d %d %d %d %s %s', [HarnessMap, HarnessSeed, Frame, timecount,
+        IntToHex(History, 8), Print.Line]));
+  end;
   if (Frame >= HarnessFrames) or quitgame then
   begin
     Result := false;

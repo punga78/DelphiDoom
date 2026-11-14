@@ -44,9 +44,10 @@ type
   ///   that the game uses for what is born while playing) makes a sprite in the pool, an elevator, a door, a spawn
   ///   area, or only marks the tile. The globals of the original are the fields of TGreedGameState; the three that
   ///   are not there are properties of this class: BloodCount and MetalCount (r_public.pas, zeroed by RF_ClearWorld:
-  ///   call ResetCounts when the world is cleared) and Violence (SC.violence). The net game is not ported: the
-  ///   NetSendSpawn calls of the original are not here and the start places of the other players only fill
-  ///   StartLocations. A value that the original does not know does nothing and gives GREED_POOL_NIL.
+  ///   call ResetCounts when the world is cleared) and Violence (SC.violence). The net game (State.NetMode,
+  ///   State.Net): the shots, the devices and the items are told to the others (NetSendSpawn) unless
+  ///   State.GameLoading, and the player starts at the place of its number; in a game of one player the start
+  ///   places of the others only fill StartLocations. A value that the original does not know does nothing and gives GREED_POOL_NIL.
   ///   Kept defects of the original: MetalCount never goes down; S_ELEVATORHIGH leaves Position64 at zero; a
   ///   generator gives GREED_POOL_NIL although it makes the sprite of the generator; the picture of a door is
   ///   relative to the lump startwalls. Differences: a tile outside the map reads 0 and cannot be written
@@ -89,6 +90,7 @@ type
     procedure SpawnArea(const ARequest: TGreedSpawnRequest; AKind: Integer);
     function SpawnExit(const ARequest: TGreedSpawnRequest): Integer;
     function SpawnByValue(const ARequest: TGreedSpawnRequest): Integer;
+    class function IsToldToTheNet(AValue: Integer): Boolean; static;
   public
     /// <summary>
     ///   AState has the world, the pools and the globals of the game; AArchive gives the numbers of the lumps
@@ -839,8 +841,8 @@ begin
   begin
     FState.StartLocations[0][0] := ARequest.TileX;
     FState.StartLocations[0][1] := ARequest.TileY;
-    // the net game is not ported: the player of the game is always the first one
-    if FState.Player.X = -1 then
+    // in a net game this is the start of player 0
+    if (FState.Player.X = -1) and ((not FState.NetMode) or (FState.PlayerNum = 0)) then
     begin
       FState.Player.X := ARequest.X;
       FState.Player.Y := ARequest.Y;
@@ -857,6 +859,16 @@ begin
       raise EGreedException.CreateFmt(SInvalidStart, [ARequest.Value, ARequest.TileX, ARequest.TileY]);
     FState.StartLocations[ARequest.Value - 1][0] := ARequest.TileX;
     FState.StartLocations[ARequest.Value - 1][1] := ARequest.TileY;
+    // S_NETPLAYER2 .. S_NETPLAYER8: the start of the players 1 .. 7 of a net game
+    if FState.NetMode and (FState.PlayerNum = ARequest.Value - 1) and (FState.Player.X = -1) then
+    begin
+      FState.Player.X := ARequest.X;
+      FState.Player.Y := ARequest.Y;
+      FState.Player.Z := FloorZ(FState.Player.X, FState.Player.Y) + FState.Player.Height;
+      FState.Player.MapSpot := ARequest.MapSpot;
+      FState.Player.Angle := NORTH;
+      FState.PlayerAngle64 := NORTH * 64;
+    end;
   end;
   SetMapSprite(ARequest.MapSpot, 0);
 end;
@@ -1126,6 +1138,21 @@ begin
   end;
 end;
 
+class function TGreedSpawner.IsToldToTheNet(AValue: Integer): Boolean;
+begin
+  // the cases of SpawnSprite that end with NetSendSpawn: the ring shots (S_BULLET18, S_SOULBULLET) are told once
+  // by who fires them, the shots of the monsters and the puffs are not told at all
+  case AValue of
+    GREED_S_BULLET1, GREED_S_BULLET2, GREED_S_BULLET3, GREED_S_BULLET4, GREED_S_BULLET7, GREED_S_BULLET9,
+    GREED_S_BULLET10, GREED_S_BULLET11, GREED_S_BULLET12, GREED_S_BULLET16, GREED_S_BULLET17, GREED_S_HANDBULLET,
+    GREED_S_PROXMINE, GREED_S_TIMEMINE, GREED_S_INSTAWALL, GREED_S_DECOY, GREED_S_CLONE, GREED_S_GRENADE,
+    GREED_S_MEDPAK1..GREED_S_ISTEALER:
+      Result := True;
+  else
+    Result := False;
+  end;
+end;
+
 function TGreedSpawner.SpawnSprite(AValue: Integer; AX, AY, AZ, AZAdjust: TGreedFixed; AAngle, AAngle2: Integer;
   AActive: Boolean; ASpawnId: Integer): Integer;
 var
@@ -1145,6 +1172,10 @@ begin
   LRequest.TileY := AY div GREED_FRACTILEUNIT;
   LRequest.MapSpot := LRequest.TileY * GREED_MAP_SIZE + LRequest.TileX;
   Result := SpawnByValue(LRequest);
+  // NetSendSpawn: the shots, the devices and the items that a player makes are told to the others (not the
+  // ones of a packet or of the loading of the map: gameloading)
+  if FState.NetMode and (not FState.GameLoading) and IsToldToTheNet(AValue) then
+    FState.Net.SendSpawn(AValue, AX, AY, AZ, AZAdjust, LRequest.Angle, AAngle2, AActive, ASpawnId);
   if Result = GREED_POOL_NIL then
     Exit;
   LSprite := PGreedSprite(FState.Sprites.Item(Result));

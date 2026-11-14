@@ -23,8 +23,8 @@ type
   ///   needs its view and its message line to be made, and they need its state: the object is made first, gives
   ///   the messages that are written before the game exists to the line when Attach is called, and makes the HUD
   ///   then. The screens between the maps, the films and the menus are not here (they are a job of another unit):
-  ///   the menu and the quick exit end the game. Not drawn: the rear view camera (the game does not make its
-  ///   picture)
+  ///   the menu and the quick exit end the game. The box of the rear view camera is the picture that the game gives
+  ///   with the overlay
   /// </summary>
   TGreedHudView = class(TInterfacedObject, IGreedGameView, IGreedMessages, IGreedViewSize)
   strict private
@@ -47,7 +47,7 @@ type
     destructor Destroy; override;
     /// <summary>
     ///   Makes the HUD on the state of AGame (the game keeps no reference to this object that is not an
-    ///   interface): ApproxZero is 0, the transparency table is the lump TRANSPARENCY, the fonts are FONT1 .. FONT3
+    ///   interface): ApproxZero is the one of the palette of the game, the transparency table is the lump TRANSPARENCY, the fonts are FONT1 .. FONT3
     ///   and the size of the view is the one of the settings (4)
     /// </summary>
     procedure Attach(AGame: TGreedGame);
@@ -84,9 +84,12 @@ type
 implementation
 
 uses
-  DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.Game.Constants;
+  DelphiDoom.Greed.GameRenderer.Intf, DelphiDoom.Greed.Hud.Intf, DelphiDoom.Greed.Game.Constants,
+  DelphiDoom.Greed.PaletteFader;
 
 const
+  LUMP_PALETTE = 'palette';
+  PALETTE_BYTES = 768;
   LUMP_TRANSPARENCY = 'TRANSPARENCY';
   LUMP_FONT = 'FONT';
   SETTINGS_VIEW_SIZE = 4;
@@ -127,12 +130,19 @@ end;
 procedure TGreedHudView.Attach(AGame: TGreedGame);
 var
   LIndex: Integer;
+  LPalette: TBytes;
 begin
   if not Assigned(AGame) then
     raise EArgumentNilException.Create('AGame');
   FGame := AGame;
   FCanvas := TGreedCanvas.Create;
-  FCanvas.ApproxZero := 0;
+  // approx_zero of I_SetPalette, for the palette of the game: the color 0 of the canvas is "nothing here", so what
+  // the original paints black (the rear view, the gaps of the status bar) is painted with the nearest color
+  LPalette := FArchive.ReadLump(FArchive.RequireIndexOf(LUMP_PALETTE));
+  if Length(LPalette) >= PALETTE_BYTES then
+    FCanvas.ApproxZero := TGreedPaletteFader.ApproximateZero(Copy(LPalette, 0, PALETTE_BYTES))
+  else
+    FCanvas.ApproxZero := 0;
   FCanvas.SetTransparency(FArchive.ReadLump(FArchive.RequireIndexOf(LUMP_TRANSPARENCY)));
   FFont1 := LoadFont(LUMP_FONT + '1');
   FFont2 := LoadFont(LUMP_FONT + '2');
@@ -242,12 +252,21 @@ begin
 end;
 
 procedure TGreedHudView.DrawOverlay(var AFrame: TGreedFrame; const AOverlay: TGreedViewOverlay);
+var
+  LRear: TBytes;
 begin
   if not Assigned(FHud) then
     Exit;
   FCanvas.Clear;
   if FGame.State.Player.HoloPic <> 0 then
     FHud.DrawHolo;
+  if AOverlay.RearViewVisible then
+  begin
+    // I_TranslateBuffer of RearView: the 0 of the picture would let the view of the player show through
+    LRear := Copy(AOverlay.RearView, 0, Length(AOverlay.RearView));
+    FCanvas.TranslateBuffer(LRear, 0, Length(LRear));
+    FHud.DrawRearView(LRear);
+  end;
   if AOverlay.WeaponVisible then
     FPainter.Draw(AOverlay.WeaponX, AOverlay.WeaponY, GREED_GAME_VIEW_HEIGHT);
   FHud.DrawOverlay;

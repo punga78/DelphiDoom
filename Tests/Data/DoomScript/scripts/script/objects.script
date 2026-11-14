@@ -1,0 +1,271 @@
+// objects: fields of every type, inheritance, virtual methods, init and destroy, self, threads on methods
+
+object base_obj {
+	float	count;
+	vector	pos;
+	string	label;
+	boolean	flag;
+	entity	other;
+
+	void	init();
+	void	destroy();
+	float	describe( string prefix );
+	float	value();
+	void	bump();
+	void	fields();
+	void	loop( float n );
+	void	selfEvents();
+};
+
+object derived_obj : base_obj {
+	float	extra;
+	base_obj	friend;
+
+	void	init();
+	void	destroy();
+	float	value();
+	void	onlyDerived( float a );
+	void	link( entity e );
+};
+
+object leaf_obj : derived_obj {
+	string	leaf;
+	float	value();
+};
+
+object plain_obj {
+	float	x;
+	void	hello();
+};
+
+float	results;
+
+void base_obj::init() {
+	count = 1;
+	label = "base";
+	sys.println( "base_obj::init " + getName() );
+}
+
+void base_obj::destroy() {
+	sys.println( "base_obj::destroy " + label + " count=" + count );
+}
+
+float base_obj::value() {
+	return 10;
+}
+
+float base_obj::describe( string prefix ) {
+	sys.println( prefix + ": label=" + label + " count=" + count + " pos=" + pos + " value=" + value() );
+	return count;
+}
+
+void base_obj::bump() {
+	count++;
+	count++;
+	count--;
+	// this increments a temporary copy, not the field
+	self.count++;
+	count = count + 10;
+	pos_x = count;
+	pos_y++;
+	self.pos_z = self.pos_x + 1;
+}
+
+void base_obj::fields() {
+	float	f;
+	string	s;
+	vector	v;
+	boolean	b;
+	entity	me;
+
+	// stores through a pointer, with every conversion
+	count = 2.5;
+	pos = '1 2 3';
+	label = "set";
+	flag = 1;
+	me = self;
+	other = me;
+	label = count;
+	sys.println( "label from float: " + label );
+	label = pos;
+	sys.println( "label from vector: " + label );
+	label = flag;
+	sys.println( "label from boolean: " + label );
+	b = 1;
+	count = b;
+	sys.println( "count from boolean: " + count );
+	flag = 0;
+	flag = count;
+	label = flag;
+	sys.println( "flag from float: " + label );
+	// reads
+	f = count;
+	v = pos;
+	s = label;
+	b = flag;
+	sys.println( "read: " + f + " " + v + " " + s );
+	count = count + 4;
+	count = count - 1;
+	count = count * 3;
+	count = count / 2;
+	pos = pos + '1 1 1';
+	pos = pos - '0 0 1';
+	pos = pos * 2;
+	sys.println( "compound: " + count + " " + pos );
+	if ( other == self ) {
+		sys.println( "other is self" );
+	}
+	other = $null_entity;
+	if ( !other ) {
+		sys.println( "other is null" );
+	}
+	label = "after fields";
+}
+
+void base_obj::loop( float n ) {
+	float i;
+
+	for ( i = 0; i < n; i++ ) {
+		count++;
+		sys.println( getName() + " loop " + i + " count=" + count );
+		sys.waitFrame();
+	}
+}
+
+void base_obj::selfEvents() {
+	// events of the entity without an object: the compiler passes self
+	setValue( count );
+	sys.println( "selfEvents " + getName() + " " + getValue() );
+	self.setValue( 2 );
+	sys.println( "selfEvents " + self.getValue() );
+}
+
+void derived_obj::init() {
+	extra = 5;
+	label = label + "+derived";
+	sys.println( "derived_obj::init " + label );
+}
+
+void derived_obj::destroy() {
+	sys.println( "derived_obj::destroy extra=" + extra );
+	if ( extra > 100 ) {
+		return;
+	}
+	extra = 0;
+}
+
+float derived_obj::value() {
+	return 20 + extra;
+}
+
+void derived_obj::onlyDerived( float a ) {
+	extra = extra + a;
+	count = count + a;
+}
+
+void derived_obj::link( entity e ) {
+	friend = e;
+	if ( friend ) {
+		sys.println( "friend value=" + friend.value() + " label=" + friend.label );
+		friend.count = 77;
+		friend.label = "linked";
+		friend.pos_y = 9;
+	} else {
+		sys.println( "no friend" );
+	}
+}
+
+float leaf_obj::value() {
+	return 30;
+}
+
+void plain_obj::hello() {
+	x = x + 1;
+	sys.println( "plain hello " + x );
+}
+
+void useObjects() {
+	base_obj	b;
+	derived_obj	d;
+	leaf_obj	l;
+	plain_obj	p;
+	entity		e;
+	float		f;
+
+	b = $ent_base;
+	d = $ent_derived;
+	l = $ent_leaf;
+	p = $ent_plain;
+	f = b.describe( "b" );
+	f = f + d.describe( "d" );
+	f = f + l.describe( "l" );
+	results = f;
+	b.bump();
+	d.bump();
+	sys.println( "counts " + b.count + " " + d.count + " " + b.pos + " " + d.pos );
+	d.onlyDerived( 3 );
+	l.onlyDerived( 4 );
+	sys.println( "values " + b.value() + " " + d.value() + " " + l.value() );
+	// a derived object through a base variable: virtual call
+	b = d;
+	sys.println( "virtual " + b.value() );
+	b = l;
+	sys.println( "virtual " + b.value() );
+	// an entity whose object is of another type gives a null object
+	b = $ent_plain;
+	if ( !b ) {
+		sys.println( "plain is not a base_obj" );
+	}
+	sys.println( "null call " + b.value() + " " + b.count + " '" + b.label + "' " + b.pos );
+	b.count = 5;
+	b.bump();
+	d = $ent_base;
+	if ( !d ) {
+		sys.println( "base is not a derived_obj" );
+	}
+	// entity to object and back
+	e = $ent_leaf;
+	d = e;
+	e = d;
+	if ( e == $ent_leaf && d == l ) {
+		sys.println( "leaf converts" );
+	}
+	if ( d != b ) {
+		sys.println( "d != b" );
+	}
+	e = $ent_none;
+	b = e;
+	if ( !b ) {
+		sys.println( "no object on ent_none" );
+	}
+	p.hello();
+	p.x = 41;
+	p.hello();
+	d = $ent_derived;
+	d.link( $ent_base );
+	d.link( $ent_plain );
+	d.link( $null_entity );
+	d.friend = $ent_leaf;
+	sys.println( "friend through field " + d.friend.value() );
+	b = $ent_base;
+	b.fields();
+	b.selfEvents();
+}
+
+void threads() {
+	base_obj b;
+	float t;
+
+	b = $ent_base;
+	t = thread b.loop( 2 );
+	sys.println( "thread " + t );
+	b = $ent_none;
+	t = thread b.loop( 2 );
+	sys.println( "thread on null " + t );
+	sys.waitFrame();
+	sys.waitFrame();
+	sys.waitFrame();
+	b = $ent_derived;
+	b.loop( 1 );
+	sys.println( "threads done" );
+}

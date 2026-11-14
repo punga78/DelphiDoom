@@ -1,0 +1,3 @@
+// the closing brace is missing
+object broken_obj {
+	float a;
