@@ -383,9 +383,10 @@ begin
   LActiveRef := LMachine^.Stack[LMachine^.Depth - 1];
   if not Assigned(FContext.Storage.Deref(LActiveRef)) then
     Exit(False);
-  // wst_canInterruptCast: a rain of fire goes on until an order (not until the unit decides by itself); any other
-  // spell can always be interrupted
-  if LActiveRef.StateType = WAR_STATE_CAST then
+  // wst_canInterruptCast (a rain of fire goes on until an order, not until the unit decides by itself; any other spell
+  // can always be interrupted) is written in the original but never put in the table of the states: a unit that casts
+  // takes no order at all (mask 0) until its spell is done. Context.InterruptibleCasts turns the rule on
+  if (LActiveRef.StateType = WAR_STATE_CAST) and FContext.InterruptibleCasts then
   begin
     if PWarStateCast(FContext.Storage.Deref(LActiveRef))^.SpellType = WAR_SPELL_RAIN_OF_FIRE then
       Exit((AInterrupt and (WAR_INTERRUPT_PLAYER_ORDER or WAR_INTERRUPT_AI_ORDER or WAR_INTERRUPT_STATUS or

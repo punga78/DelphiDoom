@@ -47,7 +47,8 @@ implementation
 uses
   DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.Math,
   DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.UnitPlacement, DelphiDoom.War.Model.Purse,
-  DelphiDoom.War.Model.Construction.Types, DelphiDoom.War.Model.StateStorage;
+  DelphiDoom.War.Model.Construction.Types, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.UnitSprites,
+  DelphiDoom.War.Model.BuildingResources.Data;
 
 { TWarBuildState }
 
@@ -63,6 +64,7 @@ var
   LContext: TWarModelContext;
   LEntity: PWarEntity;
   LPosition: TWarVec2;
+  LResource: Integer;
 begin
   LContext := AMachine.Context;
   LEntity := LContext.Pool.Slots[ASlot];
@@ -70,10 +72,12 @@ begin
   LContext.Occupancy.SetStaticEntity(Trunc(LPosition.X), Trunc(LPosition.Y), LEntity^.UnitData.SizeX,
     LEntity^.UnitData.SizeY, LEntity^.Id);
   // the image of the construction in place of the one of the building
-  LEntity^.HasSprite := True;
-  LEntity^.SpriteEnabled := True;
+  LResource := LEntity^.UnitData.UnitType - WAR_BUILDING_FIRST_TYPE;
+  if (LResource >= 0) and (LResource <= High(WAR_BUILDING_CONSTRUCTION_RESOURCES)) then
+    TWarUnitSprites.Add(LEntity, WAR_BUILDING_CONSTRUCTION_RESOURCES[LResource])
+  else
+    TWarUnitSprites.AddDefault(LEntity);
   LEntity^.SpriteFrames := LContext.ConstructionHost.ConstructionFrames(LEntity^.UnitData.UnitType);
-  LEntity^.SpriteFrame := 0;
   TWarActionTable.SetAction(LEntity^.UnitData, WAR_ACTION_NONE, True, 1.0);
   LEntity^.UnitData.Building := True;
   LEntity^.UnitData.BuildPercent := 0;
@@ -156,10 +160,8 @@ begin
     // the worker comes out on the nearest empty tile
     TWarUnitPlacement.PlaceNear(LContext, LEntity, LContext.Pool.Slots[LWorker]);
     // the building takes its own image
-    LEntity^.HasSprite := True;
-    LEntity^.SpriteEnabled := True;
+    TWarUnitSprites.AddDefault(LEntity);
     LEntity^.SpriteFrames := LContext.ConstructionHost.UnitFrames(LUnit^.UnitType);
-    LEntity^.SpriteFrame := 0;
     AMachine.PopState(ASlot, WAR_CAUSE_COMPLETION, WAR_RESULT_SUCCESS);
     if LUnit^.Player = 0 then
     begin

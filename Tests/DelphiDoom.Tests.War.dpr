@@ -263,6 +263,8 @@ uses
   DelphiDoom.Tests.War.ConstructionObserver in 'Source\DelphiDoom.Tests.War.ConstructionObserver.pas',
   DelphiDoom.Tests.War.ConstructionScenario in 'Source\DelphiDoom.Tests.War.ConstructionScenario.pas',
   DelphiDoom.Tests.War.ConstructionParity in 'Source\DelphiDoom.Tests.War.ConstructionParity.pas',
+  DelphiDoom.Tests.War.FullScenario in 'Source\DelphiDoom.Tests.War.FullScenario.pas',
+  DelphiDoom.Tests.War.FullParity in 'Source\DelphiDoom.Tests.War.FullParity.pas',
   DelphiDoom.Tests.War.ConstructionRig in 'Source\DelphiDoom.Tests.War.ConstructionRig.pas',
   DelphiDoom.Tests.War.ConstructionBuild in 'Source\DelphiDoom.Tests.War.ConstructionBuild.pas',
   DelphiDoom.Tests.War.ConstructionTraining in 'Source\DelphiDoom.Tests.War.ConstructionTraining.pas',

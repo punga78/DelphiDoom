@@ -182,6 +182,10 @@ begin
     WAR_STATE_REPAIRING:
       AText := AText + Format(' bd=%d in=%d', [PWarStateRepairing(AState)^.BuildingId,
         Ord(PWarStateRepairing(AState)^.InsideBuilding)]);
+    WAR_STATE_CAST:
+      AText := AText + Format(' sp=%d tg=%d tp=%s,%s', [PWarStateCast(AState)^.SpellType,
+        PWarStateCast(AState)^.TargetEntityId, H8(FBits(PWarStateCast(AState)^.TargetPosition.X)),
+        H8(FBits(PWarStateCast(AState)^.TargetPosition.Y))]);
   end;
 end;
 

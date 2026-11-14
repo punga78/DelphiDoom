@@ -19,9 +19,10 @@ uses
 type
   /// <summary>
   ///   The attack of a unit, of the wall (the piece of the tile of the point) or of a point (the units go there and fight
-  ///   who they meet). A worker told to attack a unit follows it instead. Defects of the original kept: buildings and
-  ///   workers get the attack of a point too (their attack state ends when they are there, or never for a building);
-  ///   there is no acknowledgement when only workers follow
+  ///   who they meet). A worker told to attack a unit follows it instead. Defects of the original kept: workers get the
+  ///   attack of a point too (their attack state ends when they are there); there is no acknowledgement when only
+  ///   workers follow. Wanted differences (the original stops on an assert at the next update): a building is not given
+  ///   the attack of a point, and a worker is not told to follow a wall or a forest
   /// </summary>
   TWarAttackCommands = class(TWarCommandFamily)
   public
@@ -63,11 +64,16 @@ begin
         Continue;
       if not Context.Queries.CanAttack(LSlot, ATargetSlot) then
       begin
-        if TWarUnitClassifier.IsWorker(Context.Pool.Slots[LSlot]^.UnitData.UnitType) then
+        // a worker follows a unit; a wall or a forest has no place to follow (the original stops on an assert there)
+        if TWarUnitClassifier.IsWorker(Context.Pool.Slots[LSlot]^.UnitData.UnitType) and
+          (Context.Pool.Slots[ATargetSlot]^.EntityType = WAR_ENTITY_UNIT) then
           Order(LSlot, Machine.CreateFollow(LSlot, LTargetId, Default(TWarVec2), WAR_MODEL_MEGA_TILE));
         Continue;
       end;
-    end;
+    end
+    // a building can not go to a point (its attack state stops the original on an assert: no statistics of a unit)
+    else if not TWarUnitClassifier.IsDude(Context.Pool.Slots[LSlot]^.UnitData.UnitType) then
+      Continue;
     Order(LSlot, Machine.CreateAttack(LSlot, LTargetId, ATarget));
     if LAcknowledge = 0 then
       LAcknowledge := LSlot;

@@ -31,7 +31,10 @@ type
     ///   point is added to the way of who is already moving or patrolling. True if someone obeyed
     /// </summary>
     function Move(const ATarget: TWarVec2; AQueue: Boolean = False): Boolean;
-    /// <summary>wcmd_executeFollowCommand: the units of the commander follow the entity at one tile</summary>
+    /// <summary>
+    ///   wcmd_executeFollowCommand: the dudes of the commander follow the entity at one tile. Wanted difference: the
+    ///   original gives the order to the buildings too, and stops on an assert at their first step
+    /// </summary>
     function Follow(ATargetSlot: Integer): Boolean;
     /// <summary>wcmd_executeStopCommand: idle, looking around</summary>
     function Stop: Boolean;
@@ -118,6 +121,9 @@ begin
   begin
     LSlot := SelectedSlot(LIndex);
     if not (IsOwn(LSlot) and CanOrder(LSlot)) then
+      Continue;
+    // a building can not follow (the original gives it the order and stops on an assert when it tries to move)
+    if not TWarUnitClassifier.IsDude(Context.Pool.Slots[LSlot]^.UnitData.UnitType) then
       Continue;
     Order(LSlot, Machine.CreateFollow(LSlot, LTargetId, Default(TWarVec2), WAR_MODEL_MEGA_TILE));
     if LAcknowledge = 0 then

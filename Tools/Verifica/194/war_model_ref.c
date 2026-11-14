@@ -117,7 +117,20 @@ WarSpriteComponent* we_addSpriteComponentFromResource(WarContext* context, WarEn
 #undef wmap_setMapTileIndex
 /* war_commands.c intero (issue #194, seconda fetta): gli ordini di costruzione, riparazione, addestramento, miglioramento e
    annullamento sono i VERI wcmd_*; gli scenari li chiamano nella stessa unita' (anche le funzioni static) */
+/* DIFETTO DEL REMAKE NON CONSERVATO: wcmd_executeSummonCommand crea l'entita' dell'animazione dell'evocazione senza darle
+   il componente delle animazioni (gli incantesimi di war_state_machine_cast.c lo fanno) e wanim_addAnimation si ferma su un
+   assert: evocare ferma il gioco. Qui, per il solo war_commands.c, wanim_createSpellAnimation aggiunge prima il componente
+   che manca (e cosi' in Delphi: l'evocazione crea il lampo come gli altri incantesimi). */
+WarSpriteAnimation wanim_createSpellAnimation_cmd(WarContext* context, WarEntity* entity, vec2 position);
+#define wanim_createSpellAnimation wanim_createSpellAnimation_cmd
 #include "war_commands.c"
+#undef wanim_createSpellAnimation
+WarSpriteAnimation wanim_createSpellAnimation_cmd(WarContext* context, WarEntity* entity, vec2 position)
+{
+    if (entity && entity->components[COMP_ANIMATIONS] == INVALID_COMP_INDEX)
+        we_addAnimationsComponent(context, entity);
+    return wanim_createSpellAnimation(context, entity, position);
+}
 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -145,6 +158,12 @@ Sint32 SDL_rand(Sint32 n)
         fprintf(stderr, "r %d %d\n", (int)n, (int)r);
     gGameSum = gGameSum * 31u + (u32)r + 1u;
     return r;
+}
+
+/* SDL_randf dallo stesso generatore: 24 bit a caso su 2^24, in [0, 1) (come TWarSpells.RandomUnit) */
+float SDL_randf(void)
+{
+    return (float)SDL_rand(16777216) / 16777216.0f;
 }
 
 void SDL_LockMutex(SDL_Mutex* mutex) { (void)mutex; }
@@ -211,6 +230,10 @@ WarEntity* wa_playAcknowledgementSound(WarContext* context, WarPlayerInfo* playe
     gAudioMix = gAudioMix * 31u + 9000u + player->index;
     return NULL;
 }
+
+/* i suoni della selezione (updateSelectionFromList): sono dell'interfaccia, il modello non li ha e non si contano */
+WarEntity* wa_playDudeSelectionSound(WarContext* context, WarEntity* entity) { (void)context; (void)entity; return NULL; }
+WarEntity* wa_playBuildingSelectionSound(WarContext* context, WarEntity* entity) { (void)context; (void)entity; return NULL; }
 
 /* war_ui.c non e' incluso: wui_isUIEntity e' una funzione di sola lettura del tipo dell'entita' (le unita' non sono dell'interfaccia) */
 bool wui_isUIEntity(WarEntity* entity)
@@ -463,6 +486,14 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
         case WAR_STATE_REPAIRING:
             textAdd(t, " bd=%d in=%d", ((WarStateRepairing*)s)->buildingId, ((WarStateRepairing*)s)->insideBuilding ? 1 : 0);
             break;
+        /* gli incantesimi (completamento della #194) */
+        case WAR_STATE_CAST:
+        {
+            WarStateCast* c = (WarStateCast*)s;
+            textAdd(t, " sp=%d tg=%d tp=%08x,%08x", (s32)c->spellType, c->targetEntityId, fbits(c->targetPosition.x),
+                    fbits(c->targetPosition.y));
+            break;
+        }
         default:
             break;
     }
@@ -471,6 +502,13 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
 /* le righe in piu' degli scenari di costruzione (war_construction_ref.inc): sprite, rovine, mura, suoni */
 static int gConstructionDump = 0;
 static void dumpConstruction(Text* t);
+/* le righe in piu' degli scenari dei comandi, degli incantesimi e del tic intero (war_full_ref.inc) */
+static int gFullDump = 0;
+static void dumpFull(Text* t);
+/* le tessere scritte nella mappa visiva (un albero abbattuto) si registrano anche negli scenari del tic intero */
+static bool gTileStub = false;
+static u32 gTileWrites = 0;
+static u32 gTileHash = 2166136261u;
 
 static void dumpWorld(Text* t, s32 tic)
 {
@@ -579,6 +617,8 @@ static void dumpWorld(Text* t, s32 tic)
     }
     if (gConstructionDump)
         dumpConstruction(t);
+    if (gFullDump)
+        dumpFull(t);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -1004,7 +1044,7 @@ static bool gGatherStubs = false;
 /* la tessera scritta nella mappa visiva (un albero abbattuto): si registra in ordine; l'impronta e' FNV-1a di (x, y, tessera) */
 void wmap_setMapTileIndex(WarContext* context, s32 x, s32 y, s32 tile)
 {
-    if (!gGatherStubs)
+    if (!gGatherStubs && !gTileStub)
     {
         wmap_setMapTileIndex_orig(context, x, y, tile);
         return;
@@ -1622,6 +1662,8 @@ static void bench(s32 units, s32 tics)
 }
 /* gli scenari di costruzione e addestramento (seconda fetta della #194) */
 #include "war_construction_ref.inc"
+/* gli scenari dei comandi, degli incantesimi e del tic intero (completamento della #194) */
+#include "war_full_ref.inc"
 
 int main(int argc, char** argv)
 {
@@ -1718,6 +1760,31 @@ int main(int argc, char** argv)
     if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "construction") == 0)
     {
         runConstruction((u32)atoi(argv[3]), atoi(argv[4]), false);
+        return 0;
+    }
+    if (fullModeOf(argv[1]) >= 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 12;
+        for (u32 seed = 1; seed <= n; seed++)
+            runFull(fullModeOf(argv[1]), seed, -1, true, false);
+        return 0;
+    }
+    /* le righe di un solo scenario (per cercare una differenza) */
+    if (strcmp(argv[1], "lines") == 0 && argc >= 4 && fullModeOf(argv[2]) >= 0)
+    {
+        runFull(fullModeOf(argv[2]), (u32)atoi(argv[3]), -1, true, false);
+        return 0;
+    }
+    if (strcmp(argv[1], "fullstats") == 0 && argc >= 3 && fullModeOf(argv[2]) >= 0)
+    {
+        u32 n = argc > 3 ? (u32)atoi(argv[3]) : 12;
+        for (u32 seed = 1; seed <= n; seed++)
+            runFull(fullModeOf(argv[2]), seed, -1, false, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && fullModeOf(argv[2]) >= 0)
+    {
+        runFull(fullModeOf(argv[2]), (u32)atoi(argv[3]), atoi(argv[4]), false, false);
         return 0;
     }
     if (strcmp(argv[1], "dump") == 0 && argc >= 5)

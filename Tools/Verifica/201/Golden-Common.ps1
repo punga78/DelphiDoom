@@ -55,7 +55,18 @@ $script:Groups = @(
   @{ Name = '194 costruzione'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('construction-tables'); Golden = 'model.construction.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('construction', '24'); Golden = 'model.construction.golden.txt'; NeedsData = $false },
-      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'construction', '17', '200'); Golden = 'model.construction.dump.golden.txt'; NeedsData = $false }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'construction', '17', '200'); Golden = 'model.construction.dump.golden.txt'; NeedsData = $false }) },
+  # completamento della #194 (war_full_ref.inc): il tic INTERO di wmap_updateMap (stati, griglia, azioni, animazioni, proiettili,
+  # mana, incantesimi) con gli ordini dati dai veri wcmd_executeCommand e updateCommandFromRightClick
+  @{ Name = '194 comandi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('commands', '12'); Golden = 'model.commands.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'commands', '6', '450'); Golden = 'model.commands.dump.golden.txt'; NeedsData = $false }) },
+  @{ Name = '194 incantesimi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('spells', '12'); Golden = 'model.spells.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'spells', '3', '450'); Golden = 'model.spells.dump.golden.txt'; NeedsData = $false }) },
+  @{ Name = '194 completo'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('full', '12'); Golden = 'model.full.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'full', '11', '450'); Golden = 'model.full.dump.golden.txt'; NeedsData = $false }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

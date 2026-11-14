@@ -29,6 +29,8 @@ $lines[0..($end - 1)] | Set-Content (Join-Path $Out 'war_head.inc') -Encoding AS
 Copy-Item (Join-Path $PSScriptRoot 'war_model_ref.c') (Join-Path $Out 'war_model_ref.c')
 # gli scenari della seconda fetta (costruzione e addestramento) sono inclusi da war_model_ref.c
 Copy-Item (Join-Path $PSScriptRoot 'war_construction_ref.inc') (Join-Path $Out 'war_construction_ref.inc')
+# gli scenari dei comandi, degli incantesimi e del tic intero (completamento della #194)
+Copy-Item (Join-Path $PSScriptRoot 'war_full_ref.inc') (Join-Path $Out 'war_full_ref.inc')
 
 $exe = Join-Path $Out 'war_model_ref.exe'
 $obj = Join-Path $Out 'war_model_ref.o'

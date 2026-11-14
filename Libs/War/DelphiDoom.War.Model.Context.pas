@@ -52,6 +52,7 @@ type
     FSelection: TWarSelection;
     FSpellEvents: IWarSpellEvents;
     FViewportTop: Single;
+    FInterruptibleCasts: Boolean;
     FHurryUp: Boolean;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
@@ -113,6 +114,12 @@ type
     ///   fire of a rain of fire starts from above the top of the view, so where the camera is changes how long it falls
     /// </summary>
     property ViewportTop: Single read FViewportTop write FViewportTop;
+    /// <summary>
+    ///   Defect of the original kept by default (False): a unit that is casting a spell accepts no order, because the
+    ///   function that says when a cast can be interrupted (wst_canInterruptCast) is never registered. True applies that
+    ///   function: any order interrupts a cast, and a rain of fire is not interrupted by what the unit decides by itself
+    /// </summary>
+    property InterruptibleCasts: Boolean read FInterruptibleCasts write FInterruptibleCasts;
     /// <summary>map->hurryUp, the cheat that makes buildings, units and upgrades 100 times faster</summary>
     property HurryUp: Boolean read FHurryUp write FHurryUp;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>

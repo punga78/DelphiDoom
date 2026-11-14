@@ -19,8 +19,11 @@ type
   ///   model in a single object that counts the calls: the draws and their sum, the messages of the status bar, the
   ///   sounds that the original would ask for, and the other events in order. war_model_ref.c counts the same things
   /// </summary>
-  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents, IWarCombatEvents, IWarGatherEvents)
+  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents, IWarCombatEvents, IWarGatherEvents,
+    IWarSpellEvents)
   strict private
+    FSpellsCast: Integer;
+    FSummonsExpired: Integer;
     FAttackSounds: Integer;
     FArrowHits: Integer;
     FExplosions: Integer;
@@ -57,6 +60,11 @@ type
     property Chops: Integer read FChops;
     /// <summary>A sound that the host of building and training was asked for: it counts as one and its id is mixed in AudioMix</summary>
     procedure AddAudio(AMix: Cardinal);
+    /// <summary>The sounds of the spells: one sound each, as wa_createAudioWithPosition of war_model_ref.c</summary>
+    procedure SpellCast(const APosition: TWarVec2);
+    procedure SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
+    property SpellsCast: Integer read FSpellsCast;
+    property SummonsExpired: Integer read FSummonsExpired;
     property AudioMix: Cardinal read FAudioMix;
     property Draws: Cardinal read FDraws;
     property Sum: Cardinal read FSum;
@@ -145,6 +153,18 @@ end;
 procedure TModelObserver.TreeChopped(const APosition: TWarVec2);
 begin
   Inc(FChops);
+  Inc(FAudioCount);
+end;
+
+procedure TModelObserver.SpellCast(const APosition: TWarVec2);
+begin
+  Inc(FSpellsCast);
+  Inc(FAudioCount);
+end;
+
+procedure TModelObserver.SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
+begin
+  Inc(FSummonsExpired);
   Inc(FAudioCount);
 end;
 
