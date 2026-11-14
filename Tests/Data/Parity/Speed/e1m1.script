@@ -183,3 +183,18 @@ goto 5216 1270 drive speed 17 radius 170 timeout 3000
 goto 5504 1284 drive speed 16 radius 170 timeout 3000
 goto 5708 1326 drive speed 15 radius 170 timeout 3000
 hold 900
+hold 20
+shot 1
+hold 3
+hold 8 use
+hold 5
+shot 2
+hold 20
+hold 8 use
+hold 5
+shot 3
+hold 20
+hold 8 use
+hold 60
+shot 4
+hold 5
