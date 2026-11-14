@@ -147,7 +147,8 @@ begin
       raise EAasRouteException.Create(Format(SReachOutOfRange, [LIndex]));
     if LIndex = 0 then
       Continue;
-    if (LSettings.Cluster >= Length(LClusters)) or ((LSettings.Cluster < 0) and (-LSettings.Cluster >= Length(LPortals))) then
+    if (LSettings.Cluster >= Length(LClusters)) or ((LSettings.Cluster < 0) and (-LSettings.Cluster >= Length(LPortals))) or
+      (LSettings.ClusterAreaNum < 0) then
       raise EAasRouteException.Create(Format(SClusterOutOfRange, [LIndex, LSettings.Cluster]));
   end;
   for LIndex := 0 to High(FReachability) do
