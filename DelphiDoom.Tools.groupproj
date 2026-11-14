@@ -1,0 +1,133 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E6703D82-CBEC-4792-A606-911B00250EC4}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup/>
+    <ItemGroup>
+        <Projects Include="DD_IDE\DD_IDE.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DD_Tools\DD_Tools.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Doom\ddc_doom.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Heretic\ddc_heretic.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hexen\ddc_hexen.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Launcher\Launcher.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Ddc\ddc.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Parity\ParityTool.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Strife\ddc_strife.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DD_IDE">
+        <MSBuild Projects="DD_IDE\DD_IDE.dproj"/>
+    </Target>
+    <Target Name="DD_IDE:Clean">
+        <MSBuild Projects="DD_IDE\DD_IDE.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DD_IDE:Make">
+        <MSBuild Projects="DD_IDE\DD_IDE.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DD_Tools">
+        <MSBuild Projects="DD_Tools\DD_Tools.dproj"/>
+    </Target>
+    <Target Name="DD_Tools:Clean">
+        <MSBuild Projects="DD_Tools\DD_Tools.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DD_Tools:Make">
+        <MSBuild Projects="DD_Tools\DD_Tools.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ddc_doom">
+        <MSBuild Projects="Doom\ddc_doom.dproj"/>
+    </Target>
+    <Target Name="ddc_doom:Clean">
+        <MSBuild Projects="Doom\ddc_doom.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ddc_doom:Make">
+        <MSBuild Projects="Doom\ddc_doom.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ddc_heretic">
+        <MSBuild Projects="Heretic\ddc_heretic.dproj"/>
+    </Target>
+    <Target Name="ddc_heretic:Clean">
+        <MSBuild Projects="Heretic\ddc_heretic.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ddc_heretic:Make">
+        <MSBuild Projects="Heretic\ddc_heretic.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ddc_hexen">
+        <MSBuild Projects="Hexen\ddc_hexen.dproj"/>
+    </Target>
+    <Target Name="ddc_hexen:Clean">
+        <MSBuild Projects="Hexen\ddc_hexen.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ddc_hexen:Make">
+        <MSBuild Projects="Hexen\ddc_hexen.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Launcher">
+        <MSBuild Projects="Launcher\Launcher.dproj"/>
+    </Target>
+    <Target Name="Launcher:Clean">
+        <MSBuild Projects="Launcher\Launcher.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Launcher:Make">
+        <MSBuild Projects="Launcher\Launcher.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ddc">
+        <MSBuild Projects="Libs\Ddc\ddc.dproj"/>
+    </Target>
+    <Target Name="ddc:Clean">
+        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ddc:Make">
+        <MSBuild Projects="Libs\Ddc\ddc.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ParityTool">
+        <MSBuild Projects="Libs\Parity\ParityTool.dproj"/>
+    </Target>
+    <Target Name="ParityTool:Clean">
+        <MSBuild Projects="Libs\Parity\ParityTool.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ParityTool:Make">
+        <MSBuild Projects="Libs\Parity\ParityTool.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ddc_strife">
+        <MSBuild Projects="Strife\ddc_strife.dproj"/>
+    </Target>
+    <Target Name="ddc_strife:Clean">
+        <MSBuild Projects="Strife\ddc_strife.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ddc_strife:Make">
+        <MSBuild Projects="Strife\ddc_strife.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DD_IDE;DD_Tools;ddc_doom;ddc_heretic;ddc_hexen;Launcher;ddc;ParityTool;ddc_strife"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DD_IDE:Clean;DD_Tools:Clean;ddc_doom:Clean;ddc_heretic:Clean;ddc_hexen:Clean;Launcher:Clean;ddc:Clean;ParityTool:Clean;ddc_strife:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DD_IDE:Make;DD_Tools:Make;ddc_doom:Make;ddc_heretic:Make;ddc_hexen:Make;Launcher:Make;ddc:Make;ParityTool:Make;ddc_strife:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

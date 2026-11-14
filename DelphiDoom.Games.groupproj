@@ -1,0 +1,193 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{77094ABF-DF2B-456B-8FAD-6A8BBF76A899}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup/>
+    <ItemGroup>
+        <Projects Include="Doom\Doom32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Doom\GLDoom32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Heretic\Heretic32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Heretic\GLHeretic32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hexen\Hexen32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Hexen\GLHexen32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Strife\Strife32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Strife\GLStrife32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Radix\Radix32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Speed\SpeedHaste32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Keen\Keen32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Greed\Greed32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Speed\Speed32.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OpenXcom\Xcom32.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Doom32">
+        <MSBuild Projects="Doom\Doom32.dproj"/>
+    </Target>
+    <Target Name="Doom32:Clean">
+        <MSBuild Projects="Doom\Doom32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Doom32:Make">
+        <MSBuild Projects="Doom\Doom32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLDoom32">
+        <MSBuild Projects="Doom\GLDoom32.dproj"/>
+    </Target>
+    <Target Name="GLDoom32:Clean">
+        <MSBuild Projects="Doom\GLDoom32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLDoom32:Make">
+        <MSBuild Projects="Doom\GLDoom32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Heretic32">
+        <MSBuild Projects="Heretic\Heretic32.dproj"/>
+    </Target>
+    <Target Name="Heretic32:Clean">
+        <MSBuild Projects="Heretic\Heretic32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Heretic32:Make">
+        <MSBuild Projects="Heretic\Heretic32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLHeretic32">
+        <MSBuild Projects="Heretic\GLHeretic32.dproj"/>
+    </Target>
+    <Target Name="GLHeretic32:Clean">
+        <MSBuild Projects="Heretic\GLHeretic32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLHeretic32:Make">
+        <MSBuild Projects="Heretic\GLHeretic32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hexen32">
+        <MSBuild Projects="Hexen\Hexen32.dproj"/>
+    </Target>
+    <Target Name="Hexen32:Clean">
+        <MSBuild Projects="Hexen\Hexen32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hexen32:Make">
+        <MSBuild Projects="Hexen\Hexen32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLHexen32">
+        <MSBuild Projects="Hexen\GLHexen32.dproj"/>
+    </Target>
+    <Target Name="GLHexen32:Clean">
+        <MSBuild Projects="Hexen\GLHexen32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLHexen32:Make">
+        <MSBuild Projects="Hexen\GLHexen32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Strife32">
+        <MSBuild Projects="Strife\Strife32.dproj"/>
+    </Target>
+    <Target Name="Strife32:Clean">
+        <MSBuild Projects="Strife\Strife32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Strife32:Make">
+        <MSBuild Projects="Strife\Strife32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLStrife32">
+        <MSBuild Projects="Strife\GLStrife32.dproj"/>
+    </Target>
+    <Target Name="GLStrife32:Clean">
+        <MSBuild Projects="Strife\GLStrife32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLStrife32:Make">
+        <MSBuild Projects="Strife\GLStrife32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Radix32">
+        <MSBuild Projects="Radix\Radix32.dproj"/>
+    </Target>
+    <Target Name="Radix32:Clean">
+        <MSBuild Projects="Radix\Radix32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Radix32:Make">
+        <MSBuild Projects="Radix\Radix32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SpeedHaste32">
+        <MSBuild Projects="Speed\SpeedHaste32.dproj"/>
+    </Target>
+    <Target Name="SpeedHaste32:Clean">
+        <MSBuild Projects="Speed\SpeedHaste32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SpeedHaste32:Make">
+        <MSBuild Projects="Speed\SpeedHaste32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Keen32">
+        <MSBuild Projects="Keen\Keen32.dproj"/>
+    </Target>
+    <Target Name="Keen32:Clean">
+        <MSBuild Projects="Keen\Keen32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Keen32:Make">
+        <MSBuild Projects="Keen\Keen32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Greed32">
+        <MSBuild Projects="Greed\Greed32.dproj"/>
+    </Target>
+    <Target Name="Greed32:Clean">
+        <MSBuild Projects="Greed\Greed32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Greed32:Make">
+        <MSBuild Projects="Greed\Greed32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Speed32">
+        <MSBuild Projects="Speed\Speed32.dproj"/>
+    </Target>
+    <Target Name="Speed32:Clean">
+        <MSBuild Projects="Speed\Speed32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Speed32:Make">
+        <MSBuild Projects="Speed\Speed32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Xcom32">
+        <MSBuild Projects="OpenXcom\Xcom32.dproj"/>
+    </Target>
+    <Target Name="Xcom32:Clean">
+        <MSBuild Projects="OpenXcom\Xcom32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Xcom32:Make">
+        <MSBuild Projects="OpenXcom\Xcom32.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Doom32;GLDoom32;Heretic32;GLHeretic32;Hexen32;GLHexen32;Strife32;GLStrife32;Radix32;SpeedHaste32;Keen32;Greed32;Speed32;Xcom32"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Doom32:Clean;GLDoom32:Clean;Heretic32:Clean;GLHeretic32:Clean;Hexen32:Clean;GLHexen32:Clean;Strife32:Clean;GLStrife32:Clean;Radix32:Clean;SpeedHaste32:Clean;Keen32:Clean;Greed32:Clean;Speed32:Clean;Xcom32:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Doom32:Make;GLDoom32:Make;Heretic32:Make;GLHeretic32:Make;Hexen32:Make;GLHexen32:Make;Strife32:Make;GLStrife32:Make;Radix32:Make;SpeedHaste32:Make;Keen32:Make;Greed32:Make;Speed32:Make;Xcom32:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

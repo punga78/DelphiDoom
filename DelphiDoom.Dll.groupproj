@@ -1,0 +1,145 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{120E344B-09DC-42F6-A443-2F074A571A23}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup/>
+    <ItemGroup>
+        <Projects Include="Libs\Glbsp\DDGlbsp.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Jpeg\DDJpeg.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Mikmod\DDMikmod.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Mp3\DDMp3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Png\DDPng.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Script\DDScript.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Sndfile\DDSndfile.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Wad\DDWad.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Xmi\DDXmi.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Libs\Zlib\DDZlib.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DDGlbsp">
+        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj"/>
+    </Target>
+    <Target Name="DDGlbsp:Clean">
+        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDGlbsp:Make">
+        <MSBuild Projects="Libs\Glbsp\DDGlbsp.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDJpeg">
+        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj"/>
+    </Target>
+    <Target Name="DDJpeg:Clean">
+        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDJpeg:Make">
+        <MSBuild Projects="Libs\Jpeg\DDJpeg.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDMikmod">
+        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj"/>
+    </Target>
+    <Target Name="DDMikmod:Clean">
+        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDMikmod:Make">
+        <MSBuild Projects="Libs\Mikmod\DDMikmod.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDMp3">
+        <MSBuild Projects="Libs\Mp3\DDMp3.dproj"/>
+    </Target>
+    <Target Name="DDMp3:Clean">
+        <MSBuild Projects="Libs\Mp3\DDMp3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDMp3:Make">
+        <MSBuild Projects="Libs\Mp3\DDMp3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDPng">
+        <MSBuild Projects="Libs\Png\DDPng.dproj"/>
+    </Target>
+    <Target Name="DDPng:Clean">
+        <MSBuild Projects="Libs\Png\DDPng.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDPng:Make">
+        <MSBuild Projects="Libs\Png\DDPng.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDScript">
+        <MSBuild Projects="Libs\Script\DDScript.dproj"/>
+    </Target>
+    <Target Name="DDScript:Clean">
+        <MSBuild Projects="Libs\Script\DDScript.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDScript:Make">
+        <MSBuild Projects="Libs\Script\DDScript.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDSndfile">
+        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj"/>
+    </Target>
+    <Target Name="DDSndfile:Clean">
+        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDSndfile:Make">
+        <MSBuild Projects="Libs\Sndfile\DDSndfile.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDWad">
+        <MSBuild Projects="Libs\Wad\DDWad.dproj"/>
+    </Target>
+    <Target Name="DDWad:Clean">
+        <MSBuild Projects="Libs\Wad\DDWad.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDWad:Make">
+        <MSBuild Projects="Libs\Wad\DDWad.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDXmi">
+        <MSBuild Projects="Libs\Xmi\DDXmi.dproj"/>
+    </Target>
+    <Target Name="DDXmi:Clean">
+        <MSBuild Projects="Libs\Xmi\DDXmi.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDXmi:Make">
+        <MSBuild Projects="Libs\Xmi\DDXmi.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DDZlib">
+        <MSBuild Projects="Libs\Zlib\DDZlib.dproj"/>
+    </Target>
+    <Target Name="DDZlib:Clean">
+        <MSBuild Projects="Libs\Zlib\DDZlib.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DDZlib:Make">
+        <MSBuild Projects="Libs\Zlib\DDZlib.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DDGlbsp;DDJpeg;DDMikmod;DDMp3;DDPng;DDScript;DDSndfile;DDWad;DDXmi;DDZlib"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DDGlbsp:Clean;DDJpeg:Clean;DDMikmod:Clean;DDMp3:Clean;DDPng:Clean;DDScript:Clean;DDSndfile:Clean;DDWad:Clean;DDXmi:Clean;DDZlib:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DDGlbsp:Make;DDJpeg:Make;DDMikmod:Make;DDMp3:Make;DDPng:Make;DDScript:Make;DDSndfile:Make;DDWad:Make;DDXmi:Make;DDZlib:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
