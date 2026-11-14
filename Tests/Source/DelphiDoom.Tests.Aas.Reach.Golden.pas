@@ -32,26 +32,36 @@ type
     FDataFolder: string;
     function DataFolder: string;
     procedure Compare(const AName: string; const AFull: Boolean; const AGolden: string);
+    procedure CompareBytes(const AName: string; const AAas, ABsp: TBytes; const AFull: Boolean; const AGolden: string);
     function ReadFromPaks(const AName, AExtension: string; const APaks: array of string): TBytes;
   public
     [Test]
     procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerFan;
     [Test]
-    procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerOaBases5;
-    [Test]
     procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerOaDm4;
+    [Test]
+    procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerOaShine;
+    [Test]
+    procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerKaos;
     /// <summary>
     ///   Every map of OpenArena: the goldens of the maps are not in the repository, Make-Golden.ps1 -All writes them in
     ///   <c>goldens</c> of the folder of the tool; DELPHIDOOM_REACH_GOLDENS names it
     /// </summary>
     [Test]
     procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerTutteLeMappeDiOpenArena;
+    /// <summary>The little worlds with ladders (no map of OpenArena has one): they are in the repository (no file of a game)</summary>
+    [Test]
+    procedure DovrebbeDareLeStesseRaggiungibilitaDelCPerIMondiConLeScale;
+    /// <summary>With DELPHIDOOM_WRITE_WORLDS naming a folder the worlds are written there for the C tool</summary>
+    [Test]
+    procedure ScrivereIMondiDiProvaPerIlPilotaC;
   end;
 
 implementation
 
 uses
-  System.IOUtils, System.Zip, DUnitX.Exceptions, DelphiDoom.Tests.Aas.Reach.Scenario;
+  System.IOUtils, System.Zip, DUnitX.Exceptions, DelphiDoom.Tests.Aas.Reach.Scenario,
+  DelphiDoom.Tests.Aas.Reach.Worlds;
 
 const
   AAS_PAKS: array[0..2] of string = ('pak6-misc.pk3', 'pak6-patch085.pk3', 'pak6-patch088.pk3');
@@ -100,6 +110,12 @@ begin
 end;
 
 procedure TTestAasReachGolden.Compare(const AName: string; const AFull: Boolean; const AGolden: string);
+begin
+  CompareBytes(AName, ReadFromPaks(AName, '.aas', AAS_PAKS), ReadFromPaks(AName, '.bsp', BSP_PAKS), AFull, AGolden);
+end;
+
+procedure TTestAasReachGolden.CompareBytes(const AName: string; const AAas, ABsp: TBytes; const AFull: Boolean;
+  const AGolden: string);
 var
   LActual, LGolden, LExpected: TStringList;
   LRunner: TAasReachScenario;
@@ -107,8 +123,8 @@ var
   LIndex: Integer;
   LAas, LBsp: TBytes;
 begin
-  LAas := ReadFromPaks(AName, '.aas', AAS_PAKS);
-  LBsp := ReadFromPaks(AName, '.bsp', BSP_PAKS);
+  LAas := AAas;
+  LBsp := ABsp;
   LActual := TStringList.Create;
   LGolden := TStringList.Create;
   LExpected := TStringList.Create;
@@ -152,9 +168,14 @@ begin
   Compare('fan', False, 'reach_fan.golden.txt');
 end;
 
-procedure TTestAasReachGolden.DovrebbeDareLeStesseRaggiungibilitaDelCPerOaBases5;
+procedure TTestAasReachGolden.DovrebbeDareLeStesseRaggiungibilitaDelCPerOaShine;
 begin
-  Compare('oa_bases5', False, 'reach_oa_bases5.golden.txt');
+  Compare('oa_shine', False, 'reach_oa_shine.golden.txt');
+end;
+
+procedure TTestAasReachGolden.DovrebbeDareLeStesseRaggiungibilitaDelCPerKaos;
+begin
+  Compare('kaos', False, 'reach_kaos.golden.txt');
 end;
 
 procedure TTestAasReachGolden.DovrebbeDareLeStesseRaggiungibilitaDelCPerOaDm4;
@@ -176,10 +197,36 @@ begin
     LName := TPath.GetFileName(LFile);
     LName := Copy(LName, 7, Length(LName) - 7 - Length('.golden.txt') + 1);
     FDataFolder := LFolder + PathDelim;
-    Compare(LName, True, TPath.GetFileName(LFile));
+    try
+      Compare(LName, True, TPath.GetFileName(LFile));
+    finally
+      FDataFolder := '';
+    end;
     Inc(LCount);
   end;
   Assert.IsTrue(LCount > 0);
+end;
+
+procedure TTestAasReachGolden.DovrebbeDareLeStesseRaggiungibilitaDelCPerIMondiConLeScale;
+var
+  LVariant: Integer;
+begin
+  for LVariant := 1 to TAasReachWorlds.Count do
+    CompareBytes('world' + IntToStr(LVariant), TAasReachWorlds.Bytes(LVariant), nil, True,
+      'reach_world_' + IntToStr(LVariant) + '.golden.txt');
+end;
+
+procedure TTestAasReachGolden.ScrivereIMondiDiProvaPerIlPilotaC;
+var
+  LFolder: string;
+  LVariant: Integer;
+begin
+  LFolder := GetEnvironmentVariable('DELPHIDOOM_WRITE_WORLDS');
+  if LFolder = '' then
+    raise ETestIgnored.Create('DELPHIDOOM_WRITE_WORLDS non c''e'': prova ignorata');
+  ForceDirectories(LFolder);
+  for LVariant := 1 to TAasReachWorlds.Count do
+    TFile.WriteAllBytes(TPath.Combine(LFolder, 'world' + IntToStr(LVariant) + '.aas'), TAasReachWorlds.Bytes(LVariant));
 end;
 
 initialization

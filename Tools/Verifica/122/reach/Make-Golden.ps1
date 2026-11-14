@@ -8,8 +8,9 @@ param(
   [string]$Repo = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path,
   [string]$Root = 'C:/Progetti/DelphiDoom',
   [string]$Dir = 'C:/harness/q3reach',
-  [string[]]$Maps = @('fan', 'oa_bases5', 'oa_dm4'),
-  [switch]$All
+  [string[]]$Maps = @('fan', 'oa_dm4', 'oa_shine', 'kaos'),
+  [switch]$All,
+  [switch]$Worlds
 )
 $ErrorActionPreference = 'Continue'
 $env:DELPHIDOOM_ROOT = $Root
@@ -41,5 +42,13 @@ if ($All) {
   foreach ($f in Get-ChildItem "$Dir\aas" -Filter *.aas) {
     $m = [IO.Path]::GetFileNameWithoutExtension($f.Name)
     Run 'full' $m "$Dir\goldens\reach_$m.golden.txt"
+  }
+}
+if ($Worlds) {
+  # the little worlds of the tests (Tests\Source\DelphiDoom.Tests.Aas.Reach.Worlds.pas): the test ScrivereIMondiDiProvaPerIlPilotaC
+  # writes them in $Dir\worlds when DELPHIDOOM_WRITE_WORLDS names that folder
+  foreach ($f in Get-ChildItem "$Dir\worlds" -Filter world*.aas) {
+    $n = $f.BaseName.Substring(5)
+    & "$Dir\reachgen.exe" full 1 $f.FullName "$Dir\worlds\none.bsp" | Set-Content (Join-Path $data "reach_world_$n.golden.txt") -Encoding ascii
   }
 }

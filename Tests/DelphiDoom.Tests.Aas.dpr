@@ -118,6 +118,7 @@ uses
   DelphiDoom.Aas.Reach.Calculator in '..\Libs\Aas\DelphiDoom.Aas.Reach.Calculator.pas',
   DelphiDoom.Aas.Reach.Factory in '..\Libs\Aas\DelphiDoom.Aas.Reach.Factory.pas',
   DelphiDoom.Tests.Aas.Reach.Scenario in 'Source\DelphiDoom.Tests.Aas.Reach.Scenario.pas',
+  DelphiDoom.Tests.Aas.Reach.Worlds in 'Source\DelphiDoom.Tests.Aas.Reach.Worlds.pas',
   DelphiDoom.Tests.Aas.Reach.Golden in 'Source\DelphiDoom.Tests.Aas.Reach.Golden.pas',
   DelphiDoom.Tests.Aas.Reach.Units in 'Source\DelphiDoom.Tests.Aas.Reach.Units.pas',
   DelphiDoom.Tests.Aas.Links in 'Source\DelphiDoom.Tests.Aas.Links.pas';

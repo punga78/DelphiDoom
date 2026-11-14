@@ -4,8 +4,9 @@
 {                                                                              }
 {  The messages print floats with %f, %1.0f, %1.1f and %6.1f: printf rounds    }
 {  the exact value of the double and takes the even digit on a tie, which      }
-{  Format of Delphi does not. Based on the Quake III Arena GPL Source Code     }
-{  (id Software). Copyright (C) 1999-2005 Id Software, Inc. This unit is       }
+{  Format of Delphi does not (and on Win64 it has 17 digits only). The digits  }
+{  come from the integer mantissa. Based on the Quake III Arena GPL Source     }
+{  Code (id Software). Copyright (C) 1999-2005 Id Software, Inc. This unit is  }
 {  derived from the Quake III Arena source code and is therefore available     }
 {  under the GNU General Public License, version 2 or (at your option) any     }
 {  later version.                                                              }
@@ -13,13 +14,16 @@
 {******************************************************************************}
 unit DelphiDoom.Aas.Reach.Format;
 
+{$Q-}
+{$R-}
+
 interface
 
 type
   /// <summary>printf("%.Nf") of a double</summary>
   TAasReachFormat = class sealed
   public
-    /// <summary>The value with ADecimals decimals (at most 6), rounded as printf does, padded on the left to AWidth</summary>
+    /// <summary>The value with ADecimals decimals (at most 9), rounded as printf does, padded on the left to AWidth</summary>
     class function Fixed(const AValue: Double; const ADecimals: Integer; const AWidth: Integer = 0): string; static;
   end;
 
@@ -32,52 +36,67 @@ uses
 
 class function TAasReachFormat.Fixed(const AValue: Double; const ADecimals, AWidth: Integer): string;
 var
-  LText, LDigits, LRest: string;
-  LPoint, LIndex, LCarry, LDigit: Integer;
+  LBits, LMantissa, LInteger, LFraction, LOne, LRemainder: UInt64;
+  LExponent, LShift, LIndex: Integer;
   LNegative, LRoundUp: Boolean;
+  LDigits: string;
+  LDigit: Integer;
 begin
-  // the exact decimals of the double (a float has at most 24 bits, so 18 decimals are enough to see a tie)
-  LText := Format('%.18f', [Abs(AValue)], TFormatSettings.Invariant);
-  LNegative := AValue < 0;
-  LPoint := Pos('.', LText);
-  LDigits := Copy(LText, 1, LPoint - 1) + Copy(LText, LPoint + 1, ADecimals);
-  LRest := Copy(LText, LPoint + 1 + ADecimals, 18);
-  LRoundUp := False;
-  if LRest <> '' then
+  LBits := PUInt64(@AValue)^;
+  LNegative := (LBits shr 63) <> 0;
+  LExponent := Integer((LBits shr 52) and $7FF);
+  LMantissa := LBits and ((UInt64(1) shl 52) - 1);
+  if LExponent <> 0 then
+    LMantissa := LMantissa or (UInt64(1) shl 52)
+  else
+    LExponent := 1;
+  // the value is the mantissa times 2^(exponent - 1075)
+  LShift := 1075 - LExponent;
+  if (LExponent = $7FF) or (LShift < 0) or (LShift > 60) then
   begin
-    if LRest[1] > '5' then
-      LRoundUp := True
-    else if LRest[1] = '5' then
-    begin
-      if Copy(LRest, 2, 18) <> StringOfChar('0', Length(LRest) - 1) then
-        LRoundUp := True
-      else
-        // a tie: the even digit
-        LRoundUp := (Ord(LDigits[Length(LDigits)]) - Ord('0')) mod 2 = 1;
-    end;
+    // out of the range of the integer arithmetic: infinity, not a number, huge or tiny values
+    Result := Format('%.*f', [ADecimals, AValue], TFormatSettings.Invariant);
+    if Length(Result) < AWidth then
+      Result := StringOfChar(' ', AWidth - Length(Result)) + Result;
+    Exit;
   end;
+  LInteger := LMantissa shr LShift;
+  LOne := UInt64(1) shl LShift;
+  LFraction := LMantissa and (LOne - 1);
+  LDigits := UIntToStr(LInteger);
+  for LIndex := 1 to ADecimals do
+  begin
+    LFraction := LFraction * 10;
+    LDigit := Integer(LFraction shr LShift);
+    LFraction := LFraction and (LOne - 1);
+    LDigits := LDigits + Chr(Ord('0') + LDigit);
+  end;
+  // what is left is compared with one half: the tie goes to the even digit
+  LRemainder := LFraction;
+  LRoundUp := (LRemainder > (LOne shr 1)) or ((LRemainder = (LOne shr 1)) and (LShift > 0) and
+    (((Ord(LDigits[Length(LDigits)]) - Ord('0')) and 1) = 1));
   if LRoundUp then
   begin
-    LCarry := 1;
     LIndex := Length(LDigits);
-    while (LIndex >= 1) and (LCarry > 0) do
+    while LIndex >= 1 do
     begin
-      LDigit := Ord(LDigits[LIndex]) - Ord('0') + LCarry;
-      if LDigit >= 10 then
+      if LDigits[LIndex] = '9' then
       begin
-        LDigit := LDigit - 10;
-        LCarry := 1;
+        LDigits[LIndex] := '0';
+        Dec(LIndex);
       end
       else
-        LCarry := 0;
-      LDigits[LIndex] := Chr(Ord('0') + LDigit);
-      Dec(LIndex);
+      begin
+        LDigits[LIndex] := Chr(Ord(LDigits[LIndex]) + 1);
+        Break;
+      end;
     end;
-    if LCarry > 0 then
+    if LIndex < 1 then
       LDigits := '1' + LDigits;
   end;
   if ADecimals > 0 then
-    Result := Copy(LDigits, 1, Length(LDigits) - ADecimals) + '.' + Copy(LDigits, Length(LDigits) - ADecimals + 1, ADecimals)
+    Result := Copy(LDigits, 1, Length(LDigits) - ADecimals) + '.' + Copy(LDigits, Length(LDigits) - ADecimals + 1,
+      ADecimals)
   else
     Result := LDigits;
   if LNegative then

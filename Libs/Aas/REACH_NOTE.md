@@ -52,8 +52,12 @@ usato com'e'.
 * **Le mappe di OpenArena non hanno la geometria quasi mai**: sono state ottimizzate (`bspc -optimize`): 52 file su 71 hanno 1 faccia, 1 spigolo
   e 0 vertici (`GEO 1 1 0 0` nelle golden). Li' i calcoli sulle facce non trovano niente e restano solo quelli delle entita' (ascensori,
   teletrasporti, trampolini). Hanno la geometria `am_galmevish`, `ce1m7`, `dm4ish`, `dm6ish`, `islanddm`, `kaos`, `oa_bases3cl`, `oa_bases5`,
-  `oa_dm1`..`oa_dm7`, `oa_rpg3dm2`, `oa_shine`, `ps37ctf`, `q3dm6ish`: le golden del repository sono `fan` (entita'), `oa_bases5` e `oa_dm4`
-  (geometria, tutti i tipi), non `oa_bases3` e `blitzkrieg3`.
+  `oa_dm1`..`oa_dm7`, `oa_rpg3dm2`, `oa_shine`, `ps37ctf`, `q3dm6ish`: le golden del repository (digest: un hash per area e le righe della prima area
+  con ogni tipo di viaggio, 100 KB in tutto) sono `fan` (ascensori), `oa_dm4` (geometria), `oa_shine` (func_bobbing, trampolini) e `kaos`
+  (trampolini), non `oa_bases3` e `blitzkrieg3` (senza geometria). **Nessuna mappa ha una scala** (`reach_ladder` e' 0 su tutte e 71): la scala e' provata
+  con tre mondi di prova (`Tests\Source\DelphiDoom.Tests.Aas.Reach.Worlds.pas`, dalla fila di scatole di `TAasSample` con gli assi scambiati e i
+  flag `FACE_LADDER`; i file li scrive il test `ScrivereIMondiDiProvaPerIlPilotaC` con `DELPHIDOOM_WRITE_WORLDS`, `Make-Golden.ps1 -Worlds` li fa
+  calcolare al C: `reach_world_1..3.golden.txt`, parita' completa sulle righe `R`).
 
 ## Parita' col C vero
 
@@ -69,6 +73,10 @@ modelli vengono dal `.bsp` di OpenArena, lump 0 e 7, con i limiti allargati di u
 piccolo gemello del parser: l'ultima coppia con la stessa chiave vince come nell'originale), quindi le raggiungibilita' calcolate **non sono
 quelle del file del gioco** (che erano per il BSP vero): conta solo che C e Delphi diano le stesse righe. Le trace con grapple 1
 (`grapplereach`) sono nelle golden.
+
+**Risultato**: zero righe diverse su tutte e 71 le mappe (golden complete) e sui 3 mondi con le scale, a 32 e a 64 bit (grapple compreso).
+Test: `Tests\DelphiDoom.Tests.Aas` 264 (`Reach.Golden`, `Reach.Units`, `Links`); copertura di `Libs\Aas` 94% con `Tools\Copertura.ps1 -Test Aas
+-Cartella Libs\Aas` (le unit `Reach.*` tra 89% e 100%, `Links` 95%; `BestReachable` e `Ladder` 89%).
 
 ## Difetti del C vero conservati
 
