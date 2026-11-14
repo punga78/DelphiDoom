@@ -44,11 +44,30 @@ type
     class function VerticalMomentum(AMomentum, APreviousThrust, ANewThrust: Integer): Integer; static;
     /// <summary>The move factor of the craft: the one of the sector, larger with the maneuver jets</summary>
     class function MoveFactor(ASectorFactor: Integer; AManeuverJets: Boolean): Integer; static;
+    /// <summary>
+    ///   True for a craft that something stopped: it had a speed of at least STOPPED_MIN_SPEED on
+    ///   the plane at the end of the tic before and in this tic it has made less than half of that
+    ///   way (16.16 fixed point). The count of the hits against the walls of the debriefing
+    /// </summary>
+    class function IsStopped(AMomentumX, AMomentumY, ADeltaX, ADeltaY: Integer): Boolean; static;
+  public const
+    /// <summary>A slower craft is not counted as stopped (4 map units a tic)</summary>
+    STOPPED_MIN_SPEED = 4 * 65536;
   end;
 
 implementation
 
 { TRadixFlightModel }
+
+class function TRadixFlightModel.IsStopped(AMomentumX, AMomentumY, ADeltaX, ADeltaY: Integer): Boolean;
+var
+  LSpeedSquare: Double;
+  LWaySquare: Double;
+begin
+  LSpeedSquare := Double(AMomentumX) * AMomentumX + Double(AMomentumY) * AMomentumY;
+  LWaySquare := Double(ADeltaX) * ADeltaX + Double(ADeltaY) * ADeltaY;
+  Result := (LSpeedSquare >= Double(STOPPED_MIN_SPEED) * STOPPED_MIN_SPEED) and (4 * LWaySquare < LSpeedSquare);
+end;
 
 class function TRadixFlightModel.Drag(AMomentum: Integer; AManeuverJets: Boolean): Integer;
 begin

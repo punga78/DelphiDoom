@@ -21,6 +21,8 @@ type
   ///   ddc_doom.dll, ddc_heretic.dll, ddc_hexen.dll and ddc_strife.dll (the same ones the
   ///   command line compiler ddc.exe uses, through Libs\Ddc\ddc_base). Between Open and Close the dll
   ///   stays loaded, so that the many calls that follow do not load it again
+  ///   A game without a dll of its own asks the one of the game whose engine it runs on
+  ///   (TIdeGames.CompilerGame: Radix compiles with ddc_doom.dll)
   /// </summary>
   TDdcIdeLibrary = class(TInterfacedObject, IIdeScriptCompiler, IIdeGameLibrary)
   public
@@ -38,7 +40,8 @@ implementation
 
 uses
   System.Classes,
-  ddc_base;
+  ddc_base,
+  DelphiDoom.Ide.Games;
 
 const
   EXPORT_PREFIXES: array[TIdeLibraryData] of string = (
@@ -58,17 +61,17 @@ function TDdcIdeLibrary.Compile(const AGame, ASource: string; out APCode, AMessa
 begin
   APCode := '';
   AMessages := '';
-  Result := dll_compile(AGame, ASource, APCode, AMessages);
+  Result := dll_compile(TIdeGames.CompilerGame(AGame), ASource, APCode, AMessages);
 end;
 
 function TDdcIdeLibrary.Disassemble(const AGame, APCode: string): string;
 begin
-  Result := dll_getdisassembly(AGame, APCode);
+  Result := dll_getdisassembly(TIdeGames.CompilerGame(AGame), APCode);
 end;
 
 procedure TDdcIdeLibrary.Open(const AGame: string);
 begin
-  dll_loadlibrary(AGame);
+  dll_loadlibrary(TIdeGames.CompilerGame(AGame));
 end;
 
 procedure TDdcIdeLibrary.Close;
@@ -81,7 +84,7 @@ function TDdcIdeLibrary.TryGetLines(const AData: TIdeLibraryData; const AGame: s
 var
   LList: TStringList;
 begin
-  LList := dll_getpcharfunc(AGame, EXPORT_PREFIXES[AData]);
+  LList := dll_getpcharfunc(TIdeGames.CompilerGame(AGame), EXPORT_PREFIXES[AData]);
   Result := LList <> nil;
   if not Result then
   begin
@@ -102,7 +105,7 @@ var
   LIndex: Integer;
   LDeclarations: TStringList;
 begin
-  LUnits := dll_getuntisfuncdeclarations(AGame);
+  LUnits := dll_getuntisfuncdeclarations(TIdeGames.CompilerGame(AGame));
   Result := LUnits <> nil;
   if not Result then
   begin

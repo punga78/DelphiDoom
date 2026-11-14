@@ -1,0 +1,124 @@
+# Radix 2.0 shareware, E1M1: the same way as e1m1.script, with a saved game in the middle (issue #169).
+#   Radix32.exe -warp 1 1 -skill 2 -autoscript e1m1_save.script -radixstate r1.txt   (no -record: a demo drops the save)
+# After the access panel is shot (force field off, wall 696 destroyed, rapid shield on) the game is saved in the
+# slot 0 (GAMESAV0.dsg and GAMESAV0.dsg.radix); e1m1_load.script loads it in another run. The three neutral tics
+# after the save are the ones that the loaded game makes before it goes on (see docs\PARITA_MOTORE.md, 2 bis).
+
+
+# A: the hangar. The cells of the trigger 1 open the door to B
+goto -13500 -684
+hold 60
+
+# B: the corridor with the first two biomechs
+goto -11700 -690 fight timeout 1500
+hunt 300
+heal 90 1200
+goto -11250 -950 fight timeout 900
+goto -11050 -1350 fight timeout 900
+goto -10500 -1620 fight timeout 900
+goto -10020 -1620 fight timeout 900
+hunt 600
+heal 90 1200
+
+# C: the room of the battle; with its drones dead the door to D opens
+goto -9500 -1300 z 600 fight timeout 2000
+hunt 900
+goto -8700 -1100 z 600 fight timeout 2000
+hunt 900
+goto -8200 -1150 z 600 fight timeout 2000
+hunt 600
+# rapid shield regeneration, on the floor of the pit in the middle
+goto -8635 -1476 z 140 radius 24
+heal 95 1000
+goto -7500 -1470 z 420 fight
+hold 100
+goto -7000 -1470 z 420 fight timeout 300
+
+# D: the cells of the trigger 6 open the lower door, to the canyon F
+hunt 400
+heal 95 1000
+goto -6300 -1250 z 420 fight timeout 1500
+hunt 400
+heal 95 1000
+goto -5700 -1200 z 420 fight timeout 1500
+hold 60
+goto -4900 -1216 z 420 fight timeout 1500
+hunt 400
+heal 95 1000
+
+# F: the canyon, to the force field
+goto -4600 -1150 z 450 fight timeout 1500
+goto -3500 -1250 z 450 fight timeout 1500
+hunt 400
+heal 95 1000
+goto -2800 -1380 z 450 fight timeout 1500
+goto -2100 -1420 z 450 fight timeout 1500
+hunt 400
+# the access panel (wall 696): shot, it switches the force field off and opens the secret corridor
+goto -2150 -1500 z 420 fight timeout 1500
+face -1855 -1568
+hold 150 fire
+heal 95 1000
+save 0
+hold 3
+
+# the secret corridor under the canyon: rapid energy, full shield, full armor
+goto -3000 -1400 z 450 fight timeout 1500
+goto -3700 -1500 z 430 fight timeout 1500
+goto -3700 -1750 z 430 fight timeout 1500
+goto -3300 -1760 z 430 fight timeout 900
+goto -2600 -1700 z 430 fight timeout 900
+goto -1198 -1792 z 400 radius 30 fight timeout 900
+heal 95 1500
+goto -452 -1834 z 400 radius 30 fight timeout 900
+goto 359 -1821 z 400 radius 30 fight timeout 900
+goto 900 -1800 z 430 fight timeout 900
+hunt 400
+heal 95 1500
+goto 1400 -1750 z 430 fight timeout 900
+hunt 400
+heal 95 1500
+
+# the big room with the shields, then north to the door to I
+goto 2100 -1650 z 430 fight timeout 1500
+hunt 600
+heal 95 1500
+goto 3400 -1650 z 450 fight timeout 1500
+hunt 600
+heal 95 1500
+goto 3900 -1350 z 450 fight timeout 1500
+goto 4350 -900 z 450 fight timeout 1500
+goto 4400 -570 z 450 fight timeout 1500
+hold 60
+goto 5100 -570 z 450 fight timeout 900
+hunt 600
+heal 95 1500
+
+# H and I: the hall, high over its steps, to the two computers (walls 754 and 605)
+goto 6000 -300 z 700 fight timeout 1500
+hunt 600
+goto 7500 -500 z 700 fight timeout 1500
+hunt 600
+heal 95 1500
+goto 9000 -576 z 700 fight timeout 1500
+hunt 600
+heal 95 1500
+goto 10050 -576 z 700 fight timeout 1500
+face 10369 -576
+hold 200 fire
+goto 10050 -1344 z 700 fight timeout 1500
+face 10369 -1344
+hold 200 fire
+hunt 400
+
+# the mud goes down and the pipe of the exit opens: down into it, to the cells of the trigger 0
+goto 11500 -960 z 700 fight timeout 1500
+hold 300
+climb 180
+goto 12300 -960 z 180 timeout 600
+goto 12800 -960 z 180 timeout 600
+
+# the debriefing; fire ends it and the second level starts
+hold 200
+hold 20 fire
+hold 300 forward 25

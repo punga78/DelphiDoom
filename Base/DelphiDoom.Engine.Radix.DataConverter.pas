@@ -26,6 +26,7 @@ type
     FCrc32: Cardinal;
     FEdition: TRadixEdition;
     FActorDefinitions: TBytes;
+    FEndScreens: TFunc<TRadixEdition, TBytes>;
     function FileCrc32(const AFileName: string): Cardinal;
   public
     /// <param name="ALog">Where the problems of the file go; EArgumentNilException when nil</param>
@@ -34,7 +35,13 @@ type
     ///   the program): it goes after the translated lumps as the lump ACTORDEF, so that the
     ///   engine reads it as the one of any WAD. Empty: no lump is added
     /// </param>
-    constructor Create(const ALog: ILog; const AActorDefinitions: TBytes = nil);
+    /// <param name="AEndScreens">
+    ///   The text screen shown when the game is left, for a release of RADIX.DAT (the old fork had
+    ///   one for each inside the program): it goes in the WAD as the lump ENDOOM. Nil, or an
+    ///   empty answer: no lump is added
+    /// </param>
+    constructor Create(const ALog: ILog; const AActorDefinitions: TBytes = nil;
+      const AEndScreens: TFunc<TRadixEdition, TBytes> = nil);
     function TryConvert(const AFileName: string; out AWad: TBytes): Boolean;
     function GetEdition: TRadixEdition;
     function GetCrc32: Cardinal;
@@ -44,20 +51,27 @@ implementation
 
 uses
   System.Classes,
-  DelphiDoom.MathCore.Crc32, DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.Intf, DelphiDoom.Radix.Factory;
+  DelphiDoom.MathCore.Crc32, DelphiDoom.GameData.Intf, DelphiDoom.Radix.Types, DelphiDoom.Radix.Intf, DelphiDoom.Radix.Factory,
+  DelphiDoom.Radix.FontData;
 
 const
   ACTOR_DEFINITIONS_LUMP = 'ACTORDEF';
+  END_SCREEN_LUMP = 'ENDOOM';
+  // the name that GAMEDEF of the *32.swd of Radix gives to the end screen
+  END_SCREEN_RADIX_LUMP = 'ENDRADIX';
+  END_SCREEN_FONT_LUMP = 'DOSFONT';
 
 { TEngineRadixDataConverter }
 
-constructor TEngineRadixDataConverter.Create(const ALog: ILog; const AActorDefinitions: TBytes);
+constructor TEngineRadixDataConverter.Create(const ALog: ILog; const AActorDefinitions: TBytes;
+  const AEndScreens: TFunc<TRadixEdition, TBytes>);
 begin
   inherited Create;
   if not Assigned(ALog) then
     raise EArgumentNilException.Create('ALog');
   FLog := ALog;
   FActorDefinitions := AActorDefinitions;
+  FEndScreens := AEndScreens;
   FEdition := reUnknown;
 end;
 
@@ -87,6 +101,7 @@ function TEngineRadixDataConverter.TryConvert(const AFileName: string; out AWad:
 var
   LContainer: IRadixContainer;
   LWad: IGameWadComposer;
+  LEndScreen: TBytes;
 begin
   AWad := nil;
   try
@@ -102,6 +117,18 @@ begin
     [LWad.Count, IntToHex(FCrc32, 8), TRadixEditions.Title(FEdition)]));
   if Length(FActorDefinitions) > 0 then
     LWad.AddLump(ACTOR_DEFINITIONS_LUMP, FActorDefinitions);
+  if Assigned(FEndScreens) then
+  begin
+    LEndScreen := FEndScreens(FEdition);
+    if Length(LEndScreen) > 0 then
+    begin
+      LWad.AddLump(END_SCREEN_LUMP, LEndScreen);
+      LWad.AddLump(END_SCREEN_RADIX_LUMP, LEndScreen);
+      // the font of the text screen: Rad-X had it inside the program, the engine reads a lump
+      // (the *32.swd of Radix does not have it)
+      LWad.AddLump(END_SCREEN_FONT_LUMP, TRadixFontData.SmallDosFont);
+    end;
+  end;
   AWad := LWad.ToBytes;
   Result := True;
 end;

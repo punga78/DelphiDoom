@@ -1169,7 +1169,8 @@ object GamePropertiesForm: TGamePropertiesForm
       'Doom'
       'Heretic'
       'Hexen'
-      'Strife')
+      'Strife'
+      'Radix')
   end
   object AdditionalParamsEdit: TEdit
     Left = 104

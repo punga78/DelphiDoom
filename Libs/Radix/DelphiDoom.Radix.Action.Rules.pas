@@ -119,6 +119,14 @@ type
     /// </summary>
     class function WallAhead(APointX, APointY, ADirectionX, ADirectionY, AX1, AY1, AX2, AY2: Double;
       out ADistance: Double): Boolean; static;
+    /// <summary>
+    ///   True when a shot that flies straight from (AFromX, AFromY) to (AToX, AToY) passes within
+    ///   AMargin of the wall from (AX1, AY1) to (AX2, AY2); ADistance is how far from the start
+    ///   of its way the shot is nearest to the wall. A wall beside the way, or behind its start,
+    ///   is not on it
+    /// </summary>
+    class function WallOnPath(AFromX, AFromY, AToX, AToY, AX1, AY1, AX2, AY2, AMargin: Double;
+      out ADistance: Double): Boolean; static;
   end;
 
 implementation
@@ -330,6 +338,68 @@ begin
   LNearY := AY1 + LAlong * LWallY - APointY;
   ADistance := Sqrt(LNearX * LNearX + LNearY * LNearY);
   Result := (ADistance < TOUCHING) or (LNearX * ADirectionX + LNearY * ADirectionY > 0.0);
+end;
+
+class function TRadixActionRules.WallOnPath(AFromX, AFromY, AToX, AToY, AX1, AY1, AX2, AY2, AMargin: Double;
+  out ADistance: Double): Boolean;
+const
+  NO_LENGTH = 1E-9;
+var
+  LPathX, LPathY: Double;
+  LWallX, LWallY: Double;
+  LOffsetX, LOffsetY: Double;
+  LPathSquared, LWallSquared: Double;
+  LPathDotWall, LPathDotOffset, LWallDotOffset: Double;
+  LDenominator: Double;
+  LOnPath, LOnWall: Double;
+  LGapX, LGapY: Double;
+begin
+  // the nearest points of two segments: LOnPath and LOnWall are where they are, 0..1, on each
+  LPathX := AToX - AFromX;
+  LPathY := AToY - AFromY;
+  LWallX := AX2 - AX1;
+  LWallY := AY2 - AY1;
+  LOffsetX := AFromX - AX1;
+  LOffsetY := AFromY - AY1;
+  LPathSquared := LPathX * LPathX + LPathY * LPathY;
+  LWallSquared := LWallX * LWallX + LWallY * LWallY;
+  LWallDotOffset := LWallX * LOffsetX + LWallY * LOffsetY;
+  LOnPath := 0.0;
+  LOnWall := 0.0;
+  if LPathSquared <= NO_LENGTH then
+  begin
+    if LWallSquared > NO_LENGTH then
+      LOnWall := EnsureRange(LWallDotOffset / LWallSquared, 0.0, 1.0);
+  end
+  else
+  begin
+    LPathDotOffset := LPathX * LOffsetX + LPathY * LOffsetY;
+    if LWallSquared <= NO_LENGTH then
+      LOnPath := EnsureRange(-LPathDotOffset / LPathSquared, 0.0, 1.0)
+    else
+    begin
+      LPathDotWall := LPathX * LWallX + LPathY * LWallY;
+      LDenominator := LPathSquared * LWallSquared - LPathDotWall * LPathDotWall;
+      if LDenominator > NO_LENGTH then
+        LOnPath := EnsureRange((LPathDotWall * LWallDotOffset - LPathDotOffset * LWallSquared) / LDenominator,
+          0.0, 1.0);
+      LOnWall := (LPathDotWall * LOnPath + LWallDotOffset) / LWallSquared;
+      if LOnWall < 0.0 then
+      begin
+        LOnWall := 0.0;
+        LOnPath := EnsureRange(-LPathDotOffset / LPathSquared, 0.0, 1.0);
+      end
+      else if LOnWall > 1.0 then
+      begin
+        LOnWall := 1.0;
+        LOnPath := EnsureRange((LPathDotWall - LPathDotOffset) / LPathSquared, 0.0, 1.0);
+      end;
+    end;
+  end;
+  LGapX := (AFromX + LPathX * LOnPath) - (AX1 + LWallX * LOnWall);
+  LGapY := (AFromY + LPathY * LOnPath) - (AY1 + LWallY * LOnWall);
+  ADistance := LOnPath * Sqrt(LPathSquared);
+  Result := Sqrt(LGapX * LGapX + LGapY * LGapY) <= AMargin;
 end;
 
 class function TRadixActionRules.TranspoMomentum(AStart, ATarget, AStartTics, ATicsLeft: Integer): Integer;

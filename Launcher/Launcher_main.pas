@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, CheckLst, ExtCtrls, Launcher_defs, Menus,
-  XPMan, ImgList;
+  XPMan, ImgList, DelphiDoom.Launcher.Engines;
 
 type
   resolution_t = record
@@ -181,6 +181,9 @@ type
     procedure UpdateEasyStart;
     procedure QuickConfigureEasyStart(idx: integer);
     procedure RunCmd(const cmd: string);
+    function EngineExecutable(const engine: gameengine_t): string;
+    function EngineImageIndex(const engine: gameengine_t): integer;
+    function FileThere: TLauncherFileExists;
   public
     { Public declarations }
   end;
@@ -196,9 +199,54 @@ uses
   WinSock, Launcher_utils, Launcher_wads, Launcher_about, Launcher_options,
   Launcher_gameproperties, DelphiDoom.Platform.DataFolder.Factory;
 
+const
+  // the picture of an engine in IconsImageList is its number; the sixth and last picture is the
+  // unknown engine. Radix has no picture of its own: its number gives the fifth of the list,
+  // a question mark as the sixth
+  UNKNOWNENGINEIMAGE = 5;
+
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   Close;
+end;
+
+//==============================================================================
+//
+// TForm1.EngineExecutable
+// The program of an engine, with its folder when it is found: the games are
+// built beside the Launcher (bin\<Platform>\<Configuration>\<Game>), not in the
+// folder of their data. An engine without an OpenGL program gives its software
+// one. '' for no engine
+//
+//==============================================================================
+function TForm1.EngineExecutable(const engine: gameengine_t): string;
+var
+  datafolder: string;
+begin
+  if engine < NUMGAMEENGINES then
+    datafolder := basedir + gamepaths[Ord(engine)]
+  else
+    datafolder := '';
+  result := TLauncherEngines.Quoted(
+    TLauncherEngines.ExecutablePath(Ord(engine), OpenGLCheckBox.Checked, ExtractFilePath(ParamStr(0)), datafolder,
+      FileThere()));
+end;
+
+function TForm1.FileThere: TLauncherFileExists;
+begin
+  result :=
+    function(const AFileName: string): Boolean
+    begin
+      Result := FileExists(AFileName);
+    end;
+end;
+
+function TForm1.EngineImageIndex(const engine: gameengine_t): integer;
+begin
+  if engine < NUMGAMEENGINES then
+    result := Ord(engine)
+  else
+    result := UNKNOWNENGINEIMAGE;
 end;
 
 procedure TForm1.PopulateIWADS;
@@ -207,6 +255,19 @@ var
 begin
   IWADsComboBox.Items.Clear;
   IWADsComboBox.Items.Add('(default)');
+  if not TLauncherEngines.MainDataIsWad(Ord(gameengine)) then
+  begin
+    // RADIX.DAT is not a WAD: the main data files of the engine, by name
+    if FindFirst(TLauncherEngines.MainDataMask(Ord(gameengine)), faAnyFile, sr) = 0 then
+    begin
+      repeat
+        if TLauncherEngines.EngineOfDataFile(sr.Name) = Ord(gameengine) then
+          IWADsComboBox.Items.Add(sr.Name);
+      until FindNext(sr) <> 0;
+      FindClose(sr);
+    end;
+  end
+  else
   if FindFirst('*.wad', faAnyFile, sr) = 0 then
   begin
     repeat
@@ -450,7 +511,12 @@ begin
   if IWADsComboBox.ItemIndex > 0 then
   begin
     mainwad := UpperCase(Trim(IWADsComboBox.Items[IWADsComboBox.ItemIndex]));
-    if (Pos('HERETIC.WAD', mainwad) > 0) or
+    if TLauncherEngines.EngineOfDataFile(mainwad) = TLauncherEngines.RADIX then
+    begin
+      result := 'radix';
+      exit;
+    end
+    else if (Pos('HERETIC.WAD', mainwad) > 0) or
        (Pos('HERETIC1.WAD', mainwad) > 0) then
     begin
       result := 'heretic';
@@ -469,69 +535,21 @@ begin
       exit;
     end;
   end;
-  if FileExists('doom2f.wad') then
-    result := 'doom'
-  else if FileExists('doom2.wad') then
-    result := 'doom'
-  else if FileExists('plutonia.wad') then
-    result := 'doom'
-  else if FileExists('tnt.wad') then
-    result := 'doom'
-  else if FileExists('doomu.wad') then
-    result := 'doom'
-  else if FileExists('doom.wad') then
-    result := 'doom'
-  else if FileExists('doom1.wad') then
-    result := 'doom'
-  else if FileExists('heretic.wad') then
-    result := 'heretic'
-  else if FileExists('heretic1.wad') then
-    result := 'heretic'
-  else if FileExists('hexen.wad') then
-    result := 'hexen'
-  else if FileExists('hexen1.wad') then
-    result := 'hexen'
-  else if FileExists('strife0.wad') then
-    result := 'strife'
-  else if FileExists('strife1.wad') then
-    result := 'strife'
-  else
-    result := 'doom'; // ????
+  // the first engine, in their order, that has one of its main data files here; Doom when none has
+  result := LowerCase(TLauncherEngines.Name(TLauncherEngines.DefaultEngine(FileThere())));
 end;
 
 procedure TForm1.CheckGameEngine;
 var
-  exename: string;
+  engine: integer;
 begin
-  exename := UpperCase(GetExecutableName);
-  if exename = 'DOOM' then
-    gameengine := ge_doom
-  else if exename = 'HERETIC' then
-    gameengine := ge_heretic
-  else if exename = 'HEXEN' then
-    gameengine := ge_hexen
-  else if exename = 'STRIFE' then
-    gameengine := ge_strife
+  // the names of the radio group are the ones of TLauncherEngines, in the order of gameengine_t
+  engine := TLauncherEngines.IndexOfName(GetExecutableName);
+  if engine = TLauncherEngines.NONE then
+    gameengine := ge_unknown
   else
-    gameengine := ge_unknown;
+    gameengine := gameengine_t(engine);
 end;
-
-const
-  exenames: array[0..4] of string = (
-    'doom32.exe',
-    'heretic32.exe',
-    'hexen32.exe',
-    'strife32.exe',
-    ''
-  );
-
-  glexenames: array[0..4] of string = (
-    'gldoom32.exe',
-    'glheretic32.exe',
-    'glhexen32.exe',
-    'glstrife32.exe',
-    ''
-  );
 
 function TForm1.GetCurrentCmd: string;
 var
@@ -548,10 +566,7 @@ var
 
 begin
   CheckGameEngine;
-  if OpenGLCheckBox.Checked then
-    executable := glexenames[Ord(gameengine)]
-  else
-    executable := exenames[Ord(gameengine)];
+  executable := EngineExecutable(gameengine);
   cmd := executable;
 
   if SelectGameComboBox.ItemIndex > 0 then
@@ -1028,12 +1043,7 @@ begin
     else
     begin
       CheckGameEngine;
-      if gameengine = ge_hexen then
-        maxpl := 8
-      else if gameengine = ge_strife then
-        maxpl := 8
-      else
-        maxpl := 4;
+      maxpl := TLauncherEngines.MaxPlayers(Ord(gameengine));
       NETComputersCheckListBox.Enabled := true;
       pl := 1;
       for i := 0 to NETComputersCheckListBox.Count - 1 do
@@ -1063,6 +1073,7 @@ end;
 procedure TForm1.UpdateWads;
 var
   wadname: string;
+  mapname: string;
   s: TStringList;
   dem: string;
   idx: integer;
@@ -1086,64 +1097,29 @@ begin
   else if IWADsComboBox.ItemIndex = 0 then
   begin
     CheckGameEngine;
-    if gameengine = ge_hexen then
-    begin
-      if FileExists('hexen.wad') then
-        wadname := 'hexen.wad'
-      else if FileExists('hexen1.wad') then
-        wadname := 'hexen1.wad'
-      else
-        exit; // No WADS!
-    end
-    else if gameengine = ge_heretic then
-    begin
-      if FileExists('heretic.wad') then
-        wadname := 'heretic.wad'
-      else if FileExists('heretic1.wad') then
-        wadname := 'heretic1.wad'
-      else
-        exit; // No WADS!
-    end
-    else if gameengine = ge_strife then
-    begin
-      if FileExists('strife1.wad') then
-        wadname := 'strife1.wad'
-      else if FileExists('strife0.wad') then
-        wadname := 'strife0.wad'
-      else
-        exit; // No WADS!
-    end
-    else if FileExists('doom2f.wad') then
-      wadname := 'doom2f.wad'
-    else if FileExists('doom2.wad') then
-      wadname := 'doom2.wad'
-    else if FileExists('plutonia.wad') then
-      wadname := 'plutonia.wad'
-    else if FileExists('tnt.wad') then
-      wadname := 'tnt.wad'
-    else if FileExists('doomu.wad') then
-      wadname := 'doomu.wad'
-    else if FileExists('doom.wad') then
-      wadname := 'doom.wad'
-    else if FileExists('doom1.wad') then
-      wadname := 'doom1.wad'
-    else if FileExists('heretic.wad') then
-      wadname := 'heretic.wad'
-    else if FileExists('heretic1.wad') then
-      wadname := 'heretic1.wad'
-    else if FileExists('hexen.wad') then
-      wadname := 'hexen.wad'
-    else if FileExists('hexen1.wad') then
-      wadname := 'hexen1.wad'
-    else if FileExists('strife1.wad') then
-      wadname := 'strife1.wad'
-    else if FileExists('strife0.wad') then
-      wadname := 'strife0.wad'
+    // the main data file of the engine; for Doom (and for no engine) the one of the first engine that has any
+    if (gameengine = ge_doom) or (gameengine >= NUMGAMEENGINES) then
+      wadname := TLauncherEngines.DefaultDataFile(TLauncherEngines.DefaultEngine(FileThere()), FileThere())
     else
+      wadname := TLauncherEngines.DefaultDataFile(Ord(gameengine), FileThere());
+    if wadname = '' then
       exit; // NO WADS found
   end
   else
     wadname := IWADsComboBox.Items[IWADsComboBox.itemindex];
+
+  if TLauncherEngines.EngineOfDataFile(wadname) = TLauncherEngines.RADIX then
+  begin
+    // RADIX.DAT is not a WAD: the names of its maps are known and it has no demos
+    MapsComboBox.Items.Clear;
+    MapsComboBox.Items.Add('(default)');
+    for mapname in TLauncherEngines.BuiltInMapNames(TLauncherEngines.RADIX) do
+      MapsComboBox.Items.Add(mapname);
+    MapsComboBox.ItemIndex := 0;
+    PlayDemoComboBox.Items.Clear;
+    PlayDemoComboBox.Items.AddStrings(privatedemos);
+    exit;
+  end;
 
   Screen.Cursor := crHourglass;
 
@@ -1263,14 +1239,9 @@ end;
 procedure TForm1.UpdateZoneParams;
 begin
   CheckGameEngine;
-  if gameengine = ge_hexen then
-  begin
-    if ZoneSizeTrackBar.Position < 8 then
-      ZoneSizeTrackBar.Position := 8;
-    ZoneSizeTrackBar.Min := 8;
-  end
-  else
-    ZoneSizeTrackBar.Min := 6;
+  if ZoneSizeTrackBar.Position < TLauncherEngines.MinZoneSize(Ord(gameengine)) then
+    ZoneSizeTrackBar.Position := TLauncherEngines.MinZoneSize(Ord(gameengine));
+  ZoneSizeTrackBar.Min := TLauncherEngines.MinZoneSize(Ord(gameengine));
   ZoneSizeTrackBar.Enabled := SpecifyZoneSizeCheckBox.Checked;
   ZoneSizeTrackBar.Visible := SpecifyZoneSizeCheckBox.Checked;
   ZoneSizeLabel.Caption := Format('%d MB', [ZoneSizeTrackBar.Position]);
@@ -1332,7 +1303,9 @@ begin
   else if gameengine = ge_hexen then
     RunDelphiDoom1.Caption := '&Run DelphiHexen'
   else if gameengine = ge_strife then
-    RunDelphiDoom1.Caption := '&Run DelphiStrife';
+    RunDelphiDoom1.Caption := '&Run DelphiStrife'
+  else if gameengine < NUMGAMEENGINES then
+    RunDelphiDoom1.Caption := TLauncherEngines.RunCaption(Ord(gameengine));
 end;
 
 procedure TForm1.SelectGameComboBoxClick(Sender: TObject);
@@ -1406,7 +1379,7 @@ begin
   begin
     item := ListView1.Items.Insert(idx);
     item.Caption := gameinfo[idx].description;
-    item.ImageIndex := Ord(gameinfo[idx].gameengine);
+    item.ImageIndex := EngineImageIndex(gameinfo[idx].gameengine);
     inc(idx);
   end;
 
@@ -1418,7 +1391,7 @@ begin
     if GamePropertiesDialog(@gameinfo[idx]) then
     begin
       ListView1.Items[idx].Caption := gameinfo[idx].description;
-      ListView1.Items[idx].ImageIndex := Ord(gameinfo[idx].gameengine);
+      ListView1.Items[idx].ImageIndex := EngineImageIndex(gameinfo[idx].gameengine);
     end;
 end;
 
@@ -1446,10 +1419,7 @@ begin
     gi := @gameinfo[idx];
     if Ord(gi.gameengine) < Ord(NUMGAMEENGINES) then
     begin
-      if OpenGLCheckBox.Checked then
-        cmd := glexenames[Ord(gi.gameengine)]
-      else
-        cmd := exenames[Ord(gi.gameengine)];
+      cmd := EngineExecutable(gi.gameengine);
 
       if gi.mainwad <> '' then
       begin
@@ -1530,7 +1500,7 @@ begin
       if GamePropertiesDialog(@gameinfo[idx]) then
       begin
         ListView1.Items[idx].Caption := gameinfo[idx].description;
-        ListView1.Items[idx].ImageIndex := Ord(gameinfo[idx].gameengine);
+        ListView1.Items[idx].ImageIndex := EngineImageIndex(gameinfo[idx].gameengine);
       end;
       exit;
     end;

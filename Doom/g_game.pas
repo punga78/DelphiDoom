@@ -508,6 +508,37 @@ procedure G_ConfigureFiles(const AFiles: IEngineFiles);
 //==============================================================================
 procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 
+type
+  ticcmdextension_t = procedure(cmd: Pticcmd_t);
+
+//==============================================================================
+//
+// G_ConfigureTiccmdExtension
+//
+// The keys that only one game has (Radix: afterburner, plasma bomb): G_BuildTiccmd
+// calls the extension on the ticcmd it has built from the keyboard, the mouse and
+// the joystick, before the special buttons. Nothing is called without it.
+//
+//==============================================================================
+procedure G_ConfigureTiccmdExtension(const extension: ticcmdextension_t);
+
+type
+  savegameextension_t = procedure(const filename: string);
+
+//==============================================================================
+//
+// G_ConfigureSaveGameExtension
+//
+// The state that a game keeps beside the one of the engine (Radix: the craft,
+// the triggers and the actions of the level). The file of the saved game does
+// not change: saveproc is called with its name when it has been written, and
+// writes what it wants beside it; loadproc is called with the same name when
+// the engine has read the file and rebuilt the level. Nothing is called
+// without them.
+//
+//==============================================================================
+procedure G_ConfigureSaveGameExtension(const saveproc, loadproc: savegameextension_t);
+
 implementation
 
 uses
@@ -824,6 +855,36 @@ const
 
 var
   bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
+
+var
+  // given by the composition root of a game with keys of its own (G_ConfigureTiccmdExtension)
+  game_ticcmdextension: ticcmdextension_t = nil;
+
+//==============================================================================
+//
+// G_ConfigureTiccmdExtension
+//
+//==============================================================================
+procedure G_ConfigureTiccmdExtension(const extension: ticcmdextension_t);
+begin
+  game_ticcmdextension := extension;
+end;
+
+var
+  // given by the composition root of a game with a state of its own (G_ConfigureSaveGameExtension)
+  game_savegameextension: savegameextension_t = nil;
+  game_loadgameextension: savegameextension_t = nil;
+
+//==============================================================================
+//
+// G_ConfigureSaveGameExtension
+//
+//==============================================================================
+procedure G_ConfigureSaveGameExtension(const saveproc, loadproc: savegameextension_t);
+begin
+  game_savegameextension := saveproc;
+  game_loadgameextension := loadproc;
+end;
 
 //==============================================================================
 //
@@ -1181,6 +1242,9 @@ begin
       ((cmd_jump shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK) +
       ((cmd_crouch shl CMD_CROUCH_SHIFT) and CMD_CROUCH_MASK);
   end;
+
+  if Assigned(game_ticcmdextension) then
+    game_ticcmdextension(cmd);
 
   // special buttons
   if sendpause then
@@ -2451,6 +2515,9 @@ begin
   // done
   Z_Free(savebuffer);
 
+  if Assigned(game_loadgameextension) then
+    game_loadgameextension(savename);
+
   if setsizeneeded then
     R_ExecuteSetViewSize;
 
@@ -2600,6 +2667,8 @@ begin
   G_Files.AppendFile(name, savebuffer, len);
 
   Z_Free(savebuffer);
+  if Assigned(game_savegameextension) then
+    game_savegameextension(name);
   gameaction := ga_nothing;
   savedescription := '';
 

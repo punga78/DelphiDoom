@@ -3218,7 +3218,8 @@ object Form1: TForm1
                   'Doom'
                   'Heretic'
                   'Hexen'
-                  'Strife')
+                  'Strife'
+                  'Radix')
                 TabOrder = 2
                 OnClick = EngineRadioGroupClick
               end

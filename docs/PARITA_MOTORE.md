@@ -11,6 +11,7 @@ Issue #185, fase 0 del piano `docs\PIANO_TUTTO_A_CLASSI.md`. Prima di riscrivere
 | Impronta del fotogramma | `-framehash file` | per ogni fotogramma (prima della presentazione) hash della vista 3D, del resto (bordo, HUD, menu) e dell'insieme; modi a 8 bit (indici + tavolozza) e a 32 bit |
 | Fotogramma in un file | `-framedump tic file` | il primo fotogramma dal tic dato come BMP a 32 bit |
 | Pilota automatico | `-autodemo seme tic` | genera i ticcmd (corsa, curve, passi laterali, sparo, uso, cambio arma, uscita dagli angoli) con un generatore proprio, senza toccare quello del gioco; con `-record` scrive la demo |
+| Copione di comandi | `-autoscript file` | il primo giocatore fa cio' che dice un file di testo (tasti tenuti per N tic, "vai al punto x y", "guarda il punto", "sali alla quota"): stesso punto d'ingresso del pilota automatico, per percorrere un livello di cui si conosce la strada (vedi 2 bis) |
 | Corpus | `Tools\Verifica\185\Corpus.psd1` | le demo interne dei WAD e quelle del pilota, per i quattro giochi |
 | Golden | `Registra-Golden.ps1`, `Confronta-Golden.ps1` | le impronte del codice di partenza, compresse, in `Tests\Data\Parity\<Gioco>\` e il confronto |
 | Rumore zero | `Rumore-Zero.ps1` | due esecuzioni dello stesso eseguibile devono dare impronte uguali |
@@ -30,6 +31,47 @@ powershell -NoProfile -File Tools\Verifica\185\Registra-Golden.ps1 -Exe "Doom=C:
 ```
 
 I golden si registrano **con un eseguibile del codice di partenza** (il commit prima della fase che si sta per fare, piu' gli strumenti), mai con quello che si vuole provare; conservare quell'eseguibile come riferimento (serve a `-RefExe`). I WAD non sono nel repository: gli script li prendono da `-DataRoot` (predefinito: `bin` del repository principale). Cartella di lavoro: `-WorkRoot` (predefinita `C:\ddparity`: stesso percorso su ogni macchina, perche' la lunghezza degli argomenti puo' spostare i blocchi di memoria, vedi i limiti). Le demo del pilota stanno in `Tests\Data\Parity\<Gioco>\*.lmp` (solo ticcmd, nessun dato del gioco); servono il WAD e la mappa di `Corpus.psd1`.
+
+## 2 bis. Copione di comandi (`-autoscript file`)
+
+Il pilota automatico non sa la strada: per attraversare un livello (aprire una porta con un trigger, raggiungere i nemici, arrivare all'uscita) si scrive un copione. `-autoscript file` usa lo stesso punto d'ingresso di `-autodemo` (il comando entra nel `ticcmd` in `BuildTicCmd`, con tastiera e mouse chiusi e orologio virtuale) e non si puo' usare insieme a lui; con `-record` la partita diventa una demo. Alla fine del copione il gioco si chiude come con `-autodemo` (con `-record` e' l'`I_Error` "Demo ... recorded").
+
+Un passo per riga, parole separate da spazi, maiuscole indifferenti, `#` apre un commento. Le coordinate sono unita' di mappa (quelle di `px`/`py` di `-statehash`).
+
+| Passo | Cosa fa |
+|---|---|
+| `hold tic [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n] [afterburner] [bomb]` | tiene premuti quei tasti per `tic` tic. `forward`/`back` 0..50, `side` -40..40 (positivo = destra), `turn` -5..5 passi da 256/65536 di giro a tic (1,4 gradi; positivo = sinistra), `look` -7..7 (positivo = su; serve `zaxisshift=1`), `center` riporta lo sguardo all'orizzonte, `weapon` 1..8 (chiesta al primo tic), `use` premuto un tic ogni 6, `jump`/`crouch` a ogni tic (in Radix sono "vola su"/"vola giu'"); `afterburner` e `bomb` sono i due tasti "di un gioco" (i bit liberi `CMD_GAMEKEY1_MASK`/`CMD_GAMEKEY2_MASK` di `jump_crouch`: in Radix postbruciatore e bomba al plasma, negli altri giochi niente); `bomb` e' premuto solo al primo tic del passo |
+| `goto x y [z quota] [radius n] [speed n] [timeout tic] [fire] [use] [fight] [range n] [afterburner]` | gira verso il punto (al massimo 5 passi a tic) e spinge avanti quando il punto e' entro 22,5 gradi dal muso; finisce entro `radius` (48) dal punto; con `z` preme `jump`/`crouch` per tenere la quota (tolleranza 8); con `fight` si ferma a combattere i nemici in vista entro `range` (1200) e poi riprende |
+| `face x y [timeout tic] [fire]` | gira verso il punto senza muoversi; finisce quando e' allineato |
+| `climb quota [timeout tic]` | `jump` o `crouch` fino alla quota (tolleranza 8) |
+| `hunt tic [range n]` | combatte il nemico in vista piu' vicino; finisce dopo 20 tic senza nemici o dopo `tic` tic (non e' una rinuncia) |
+| `heal salute tic [range n]` | aspetta (combattendo chi si avvicina) che la salute torni almeno a `salute`, al massimo per `tic` tic (in Radix lo scudo si rigenera da solo) |
+| `save slot`, `load slot` | salva la partita nello slot (0..5, quelli dei menu) o la carica. Non occupano un tic: la richiesta parte insieme al comando del passo seguente e il gioco salva o carica tra due tic (il salvataggio due tic dopo, come dal menu: un tic con i bottoni speciali, nel quale i tasti del pilota sono persi ma i movimenti no). **Solo nei giochi che danno le loro routine** a `TEngineParityPilotCommand.ConfigureSaveGames` (oggi Radix; negli altri i due passi non fanno niente) e **non con `-record`** (una demo toglie i bottoni speciali). Un `save` in fondo al copione non fa in tempo: mettere un `hold` dopo |
+| `key codice` | un tasto del motore (il suo codice: 27 esc, 13 invio, 127 backspace, 172..175 sinistra, su, destra, giu', le lettere minuscole in ASCII) va giu' e su come due eventi della coda del gioco (`D_PostEvent`): un tic. Serve per i menu, che la tastiera chiusa non raggiunge; il copione gira solo dentro un livello (il giocatore deve esistere) |
+| `shot numero` | il fotogramma che segue e' scritto come `<copione>.<numero>.bmp` (1..999): un tic. I menu fermano i tic del gioco, quindi `-framedump` non li puo' chiedere |
+
+**Radix**: con uno strumento acceso il briefing della missione non parte (un copione vola il livello come una demo); `-briefing` lo fa partire (i passi `hold ... fire`/`use` lo fanno avanzare). `-radixendlevel tic next` fa finire il livello a quel tic come dalla sua uscita (`next`: 0 il livello dopo, -1 la fine dell'episodio, un numero quel livello).
+
+**Menu**: `key 27`, `hold 4`, `shot 1` apre il menu principale e lo fotografa; mettere un `hold` di qualche tic dopo ogni `key` (l'evento e' letto al giro dopo). Esempio: i menu di Radix in `Libs\Radix\CLAUDE.md`.
+
+**Salva in una esecuzione, carica in un'altra**: per avere le stesse righe nelle due esecuzioni dopo il caricamento, nel copione che salva mettere `save 0` e poi `hold 3`, in quello che carica `hold 10`, `load 0`, `hold 2` e poi gli stessi passi (il gioco salvato ha gia' fatto due dei tre tic fermi; il caricato fa il terzo). Esempio: `Tests\Data\Parity\Radix\e1m1_save.script` e `e1m1_load.script`.
+
+**Combattere** (`fight`, `hunt`, `heal`): il motore dice al pilota il mostro vivo piu' vicino entro il raggio che il giocatore vede (`MF_COUNTKILL`, `P_CheckSight`: la ricerca si fa solo se il copione ha un passo che combatte, mai per `-autodemo`); il pilota gira verso di lui, spara quando e' entro 5,6 gradi dal muso, si mette alla sua quota (`jump`/`crouch`), si sposta di lato 16 tic di qua e 16 di la', si avvicina se e' oltre 900 unita' (la mira automatica del gioco arriva a 1024) e arretra sotto 300.
+
+`goto`, `face` e `climb` guardano la posizione del giocatore: se non arrivano entro `timeout` tic (700 se non detto) **il copione rinuncia e il gioco si chiude** (meglio fermarsi che proseguire da un posto sbagliato); lo stesso se il giocatore muore. Accanto al copione il pilota scrive `<file>.log`: una riga per ogni passo finito (`line 12 goto: done at tic 345 after 80 tics, player at -13538 -683 576`), `GAVE UP`, `THE PLAYER DIED`, `script complete at tic N`. Non ci sono numeri casuali: lo stesso copione sullo stesso eseguibile da' la stessa partita.
+
+```
+# Radix E1M1: dalla partenza alla porta B
+goto -13500 -684          # la cella del trigger apre la porta
+hold 70                   # la porta sale
+goto -12900 -684 fire
+```
+
+```
+Radix32.exe -warp 1 1 -skill 2 -record prova -autoscript C:\ddpar169\e1m1.script -statehash C:\ddpar169\s.txt -framedump 500 C:\ddpar169\f.bmp
+```
+
+Un copione intero: `Tests\Data\Parity\Radix\e1m1.script` porta la navetta dall'hangar alla fine di E1M1 di Radix 2.0 shareware (circa 10000 tic), passa il debriefing e entra in E1M2. Per trovare la strada di un livello di Radix: `Tools\Verifica\169\RadixMapDump` (cose con quota e numero, linee, settori, `RMAP`, azioni, trigger, celle della griglia con il loro posto nella mappa) e `px`/`py` di `-statehash`.
 
 ## 3. Confrontare e localizzare una differenza
 

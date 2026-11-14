@@ -68,6 +68,15 @@ procedure RX_InitActors;
 //==============================================================================
 procedure RX_PilotInventoryTick(const p: Pplayer_t);
 
+//==============================================================================
+//
+// RX_ActorTouchDamage
+// The touch damage of the definition of a kind of thing (touchdamage of the
+// mobjinfo_t of Rad-X); 0 for a thing without a Radix part
+//
+//==============================================================================
+function RX_ActorTouchDamage(const mobjtype: integer): integer;
+
 implementation
 
 uses
@@ -79,6 +88,7 @@ uses
   info_h,
   info_common,
   i_system,
+  m_argv,
   m_fixed,
   p_local,
   p_maputl,
@@ -92,6 +102,8 @@ uses
 
 const
   BONUSADD = 6;
+  // "-radixthruspecies": the actors with MF3_EX_DONTBLOCKSPECIES get MF3_EX_THRUSPECIES of the engine
+  THRUSPECIES_OPTION = '-radixthruspecies';
 
   neutronlevelmessages: array[0..MAXNEUTRONCANNONLEVEL - 1] of string = (
     '',
@@ -131,19 +143,49 @@ end;
 procedure RX_InitActors;
 var
   i: integer;
+  thruspecies: boolean;
 begin
   if radix_actors = nil then
     I_Error('RX_InitActors(): RX_ConfigureActors() was not called');
+
+  // Off unless it is asked (for the tests): with the enemies that come together and the damage to
+  // the craft that is still an approximation (MF_EX_FIRERESIST in the place of the scale of
+  // P_DamageMobj of Rad-X) the pilot of e1m1.script dies in the last hall
+  thruspecies := M_CheckParm(THRUSPECIES_OPTION) > 0;
 
   SetLength(radixmobjinfo, nummobjtypes);
   SetLength(radixmobjhasinfo, nummobjtypes);
   for i := 0 to nummobjtypes - 1 do
   begin
     radixmobjhasinfo[i] := radix_actors.TryGet(Info_GetMobjName(i), radixmobjinfo[i]);
+    // a thing that only a patch describes (the fields of Rad-X of a Thing block with a number)
+    if not radixmobjhasinfo[i] then
+      radixmobjhasinfo[i] := radix_actors.TryGetByNumber(i, radixmobjinfo[i]);
     if radixmobjhasinfo[i] then
+    begin
       if TRadixActorFlag.CustomPickup in radixmobjinfo[i].Flags then
         mobjinfo[i].flags := mobjinfo[i].flags and not MF_SPECIAL;
+      // MF3_EX_DONTBLOCKSPECIES of Rad-X is the "thru species" flag that the engine has now
+      // (PIT_CheckThing): things of the same kind, or with the same ancestor, do not block each
+      // other. Rad-X let any two things with the flag through (TRadixContactRules.PassesSpecies)
+      if thruspecies and (TRadixActorFlag.DontBlockSpecies in radixmobjinfo[i].Flags) then
+        mobjinfo[i].flags3_ex := mobjinfo[i].flags3_ex or MF3_EX_THRUSPECIES;
+    end;
   end;
+end;
+
+//==============================================================================
+//
+// RX_ActorTouchDamage
+//
+//==============================================================================
+function RX_ActorTouchDamage(const mobjtype: integer): integer;
+begin
+  result := 0;
+  if (mobjtype < 0) or (mobjtype >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[mobjtype] then
+    result := radixmobjinfo[mobjtype].TouchDamage;
 end;
 
 //==============================================================================

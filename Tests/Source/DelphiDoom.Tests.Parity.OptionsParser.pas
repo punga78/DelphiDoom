@@ -66,6 +66,12 @@ type
     procedure DovrebbeLeggereIlFileDeiLayoutDeiSalvataggi;
     [Test]
     procedure DovrebbeLeggereIlTicDiUscita;
+    [Test]
+    procedure DovrebbeLeggereIlFileDelCopione;
+    [Test]
+    procedure IlCopioneSenzaFileDovrebbeDareEccezione;
+    [Test]
+    procedure IlCopioneInsiemeAlPilotaAutomaticoDovrebbeDareEccezione;
   end;
 
 implementation
@@ -299,6 +305,34 @@ begin
       TParityOptionsParser.Parse(TArray<string>.Create('-autoquit', '-5'));
     end,
     EParityException);
+end;
+
+procedure TTestParityOptionsParser.DovrebbeLeggereIlFileDelCopione;
+var
+  LOptions: TParityOptions;
+begin
+  LOptions := TParityOptionsParser.Parse(TArray<string>.Create('X.EXE', '-AutoScript', 'e1m1.script'));
+  Assert.AreEqual('e1m1.script', LOptions.AutoScriptFile);
+  Assert.IsFalse(LOptions.AutoDemo);
+  Assert.IsTrue(LOptions.IsActive);
+end;
+
+procedure TTestParityOptionsParser.IlCopioneSenzaFileDovrebbeDareEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('X.EXE', '-autoscript'));
+    end, EParityException);
+end;
+
+procedure TTestParityOptionsParser.IlCopioneInsiemeAlPilotaAutomaticoDovrebbeDareEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('X.EXE', '-autodemo', '1', '10', '-autoscript', 'a.script'));
+    end, EParityException);
 end;
 
 end.

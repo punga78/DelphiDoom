@@ -55,7 +55,7 @@ implementation
 
 uses
   d_delphi, g_game, info_common, m_fixed, p_mobj_h, p_mobj, p_setup, r_main, w_wad,
-  radix_map_extra, radix_pilot, radix_pickups, radix_logic,
+  radix_map_extra, radix_pilot, radix_pickups, radix_logic, radix_briefing,
   DelphiDoom.Radix.Thing.Spawn;
 
 const
@@ -159,6 +159,8 @@ begin
   if FUndefinedThings > 0 then
     printf('TRadixLevelRules: %d things of the map have a type without definition and are not spawned'#13#10,
       [FUndefinedThings]);
+  // the mission briefing comes before the level (it draws the map of the level just loaded)
+  RB_LevelLoaded(gameepisode, gamemap);
 end;
 
 end.

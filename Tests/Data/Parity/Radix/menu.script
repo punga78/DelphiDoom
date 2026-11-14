@@ -1,0 +1,130 @@
+hold 20
+key 27        # main menu
+hold 4
+shot 1
+key 13        # new game -> pilot name
+hold 4
+key 97
+hold 2
+key 99
+hold 2
+key 101
+hold 4
+shot 2
+key 13        # -> episode
+hold 4
+shot 3
+key 13        # -> skill
+hold 4
+key 175
+hold 3
+shot 4
+key 127
+hold 3
+key 127
+hold 3
+key 175       # options
+hold 2
+key 13
+hold 4
+shot 5
+key 13        # general
+hold 4
+shot 6
+key 127
+hold 3
+key 175       # display
+hold 2
+key 13
+hold 4
+shot 7
+key 127
+hold 3
+key 175       # sound
+hold 2
+key 13
+hold 4
+shot 8
+key 13        # volume
+hold 4
+shot 9
+key 127
+hold 3
+key 127
+hold 3
+key 175       # compatibility
+hold 2
+key 13
+hold 4
+shot 10
+key 127
+hold 3
+key 175       # controls
+hold 2
+key 13
+hold 4
+shot 11
+key 173       # last item: key bindings
+hold 2
+key 13
+hold 4
+shot 12
+key 172       # the page on the left: the keys of Radix
+hold 4
+shot 13
+key 127
+hold 3
+key 127
+hold 3
+key 175       # system
+hold 2
+key 175       # gameplay
+hold 2
+key 13
+hold 4
+shot 14
+key 13        # toggle the first
+hold 4
+shot 15
+key 13
+hold 3
+key 127
+hold 3
+key 127
+hold 3
+key 175       # load game
+hold 2
+key 13
+hold 4
+shot 16
+key 127
+hold 3
+key 175       # save game
+hold 2
+key 13
+hold 4
+shot 17
+key 127
+hold 3
+key 175       # read this
+hold 2
+key 13
+hold 4
+shot 18
+key 13
+hold 4
+shot 19
+key 13
+hold 4
+shot 20
+key 27
+hold 4
+key 27        # main menu again
+hold 4
+key 175       # top ten
+hold 2
+key 13
+hold 4
+shot 21
+key 27
+hold 5

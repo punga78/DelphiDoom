@@ -70,6 +70,23 @@ procedure WI_Drawer;
 //==============================================================================
 procedure WI_Start(wbstartstruct: Pwbstartstruct_t);
 
+type
+  wi_replacementstart_t = procedure(wbstartstruct: Pwbstartstruct_t);
+  wi_replacement_t = procedure;
+
+//==============================================================================
+// WI_ConfigureReplacement
+//
+// A game on the engine of Doom that has its own screen between two levels
+// (Radix: the debriefing) gives the three procedures that take the place of
+// WI_Start, WI_Ticker and WI_Drawer: the pictures of the intermission of Doom
+// are not loaded. The replacement ends by calling G_WorldDone. Doom does not
+// call it.
+//
+//==============================================================================
+procedure WI_ConfigureReplacement(const start: wi_replacementstart_t;
+  const ticker, drawer: wi_replacement_t);
+
 implementation
 
 uses
@@ -410,6 +427,11 @@ var
   wibackground: string;
 
   exitpic, enterpic: string; // UMAPINFO
+
+  // the screen of a game that does not have the intermission of Doom (WI_ConfigureReplacement)
+  wi_replacementstart: wi_replacementstart_t = nil;
+  wi_replacementticker: wi_replacement_t = nil;
+  wi_replacementdrawer: wi_replacement_t = nil;
 
   wide_inter: integer = 320;
 
@@ -1707,6 +1729,12 @@ end;
 //==============================================================================
 procedure WI_Ticker;
 begin
+  if Assigned(wi_replacementticker) then
+  begin
+    wi_replacementticker;
+    exit;
+  end;
+
   // counter for general background animation
   inc(bcnt);
 
@@ -1999,6 +2027,12 @@ end;
 //==============================================================================
 procedure WI_Drawer;
 begin
+  if Assigned(wi_replacementdrawer) then
+  begin
+    wi_replacementdrawer;
+    exit;
+  end;
+
   if not wi_loaded then
     WI_LoadData;
 
@@ -2075,6 +2109,12 @@ end;
 //==============================================================================
 procedure WI_Start(wbstartstruct: Pwbstartstruct_t);
 begin
+  if Assigned(wi_replacementstart) then
+  begin
+    wi_replacementstart(wbstartstruct);
+    exit;
+  end;
+
   WI_InitVariables(wbstartstruct);
 
   if (wbs.lastmapinfo <> nil) and (wbs.lastmapinfo.exitpic <> '') then
@@ -2095,6 +2135,19 @@ begin
     WI_InitNetgameStats
   else
     WI_InitStats;
+end;
+
+//==============================================================================
+//
+// WI_ConfigureReplacement
+//
+//==============================================================================
+procedure WI_ConfigureReplacement(const start: wi_replacementstart_t;
+  const ticker, drawer: wi_replacement_t);
+begin
+  wi_replacementstart := start;
+  wi_replacementticker := ticker;
+  wi_replacementdrawer := drawer;
 end;
 
 initialization
