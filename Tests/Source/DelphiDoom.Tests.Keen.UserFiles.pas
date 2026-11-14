@@ -171,7 +171,7 @@ begin
   Assert.AreEqual(64, SizeOf(TKeenHighScoreRecord), 'HighScore');
   Assert.AreEqual(10, SizeOf(TKeenKeyboardRecord), 'KeyboardDef');
   Assert.AreEqual(656, SizeOf(TKeenConfigRecord), 'KDREAMS.CFG');
-  Assert.AreEqual(39, SizeOf(TKeenSaveHeader), 'SaveGame');
+  Assert.AreEqual(40, SizeOf(TKeenSaveHeader), 'SaveGame');
   Assert.AreEqual(60, SizeOf(TKeenSaveGameState), 'gametype');
   Assert.AreEqual(76, SizeOf(TKeenSaveObject), 'objtype');
 end;
@@ -507,7 +507,7 @@ begin
   LSlot.Present := True;
   LSlot.Name := 'Tuberia';
   LBytes := TKeenSaveSlots.EncodeHeader(LSlot);
-  Assert.AreEqual<Integer>(39, Length(LBytes));
+  Assert.AreEqual<Integer>(40, Length(LBytes));
   Assert.AreEqual(Ord('K'), Integer(LBytes[0]));
   Assert.AreEqual(Ord('R'), Integer(LBytes[2]));
   Assert.AreEqual(0, Integer(LBytes[3]));
@@ -573,14 +573,14 @@ begin
   LSlots.Slots[3] := LSlot;
   Assert.IsTrue(LSlots.Save(3, TFakeHooks.Create));
   Assert.IsTrue(LFilesIntf.TryRead('SAVEGM3.KDR', LBytes));
-  Assert.AreEqual<Integer>(39 + 4, Length(LBytes));
+  Assert.AreEqual<Integer>(40 + 4, Length(LBytes));
   Assert.AreEqual(Ord('m'), Integer(LBytes[6]));
-  Assert.AreEqual(9, Integer(LBytes[39]));
-  Assert.AreEqual(6, Integer(LBytes[42]));
+  Assert.AreEqual(9, Integer(LBytes[40]));
+  Assert.AreEqual(6, Integer(LBytes[43]));
   // without a game the file is the header alone
   Assert.IsTrue(LSlots.Save(1, nil));
   Assert.IsTrue(LFilesIntf.TryRead('SAVEGM1.KDR', LBytes));
-  Assert.AreEqual<Integer>(39, Length(LBytes));
+  Assert.AreEqual<Integer>(40, Length(LBytes));
 end;
 
 procedure TTestKeenSaveSlots.SalvareDovrebbeTogliereIlFileSeIlGiocoRifiuta;

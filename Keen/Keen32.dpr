@@ -51,6 +51,7 @@ begin
   Writeln('  -shots <folder>  where the pictures of the script go');
   Writeln('  -report          write the speed (tics, refreshes, pictures a second), the state of the game and of the mixer at the end');
   Writeln('  nomouse, nojoys, noal, comp, TEDLEVEL <n>  the parameters of the original, with or without a dash (nosb, nodr, noss, sst, ss1..ss3 and HIDDENCARD are accepted and change nothing)');
+  Writeln('  -importsave <file> -exe <KDREAMS.EXE> [-slot <0..6>] [-save <folder>]  make a saved game of the DOS program one of this port');
   Writeln('  -coarsetimer     leave the timer of Windows at its tick of 15.6 ms (to compare the speed of the game)');
 end;
 
@@ -74,6 +75,9 @@ var
   LOptions: TKeenRunOptions;
   LProgramFolder: string;
   LOriginal: TArray<string>;
+  LImportSave: string;
+  LImportExe: string;
+  LImportSlot: Integer;
   LParameters: TKeenOriginalParameters;
 
 begin
@@ -83,6 +87,7 @@ begin
 {$ENDIF}
   try
     LMapNumber := 0;
+    LImportSlot := 0;
     LPng := '';
     LList := False;
     LView := False;
@@ -151,6 +156,12 @@ begin
         LOptions.Report := True
       else if LArgument = '-coarsetimer' then
         LOptions.CoarseTimer := True
+      else if (LArgument = '-importsave') and (LCursor.Remaining >= 1) then
+        LImportSave := LCursor.Value
+      else if (LArgument = '-exe') and (LCursor.Remaining >= 1) then
+        LImportExe := LCursor.Value
+      else if (LArgument = '-slot') and (LCursor.Remaining >= 1) then
+        LImportSlot := StrToInt(LCursor.Value)
       else if TKeenParameters.IsOriginal(LArgument) then
       begin
         // the parameters of the original (nomouse, nojoys, comp, noal, TEDLEVEL <n>...), with or without the dash
@@ -164,6 +175,16 @@ begin
         System.ExitCode := 2;
         Exit;
       end;
+    end;
+    if LImportSave <> '' then
+    begin
+      // a saved game of the DOS program becomes one of this port
+      if LImportExe = '' then
+        raise EKeenException.Create('Keen: -importsave needs -exe with the KDREAMS.EXE that wrote the game');
+      if LOptions.SaveFolder = '' then
+        LOptions.SaveFolder := GetCurrentDir;
+      Writeln(TKeenComposition.ImportDosSave(LImportSave, LImportExe, LOptions.SaveFolder, LImportSlot));
+      Exit;
     end;
     LParameters := TKeenParameters.Parse(LOriginal);
     LOptions.NoMouse := LParameters.NoMouse;

@@ -379,7 +379,7 @@ begin
   FPanel.Run;
   Assert.AreEqual('save', FHooksLog.CommaText);
   Assert.IsTrue(FFilesIntf.TryRead('SAVEGM0.KDR', LBytes));
-  Assert.AreEqual<Integer>(39 + 3, Length(LBytes));
+  Assert.AreEqual<Integer>(40 + 3, Length(LBytes));
   Assert.IsTrue(TKeenSaveSlots.TryDecodeHeader(LBytes, LSlot));
   Assert.AreEqual(AnsiString('abc'), LSlot.Name);
   Assert.IsTrue(FSlots.Slots[0].Present);
@@ -399,7 +399,7 @@ begin
   FPanel.Run;
   Assert.IsTrue(FState.LoadedGame);
   Assert.IsFalse(FState.AbortGame);
-  Assert.AreEqual('"load 39 of 41"', FHooksLog.CommaText);
+  Assert.AreEqual('"load 40 of 42"', FHooksLog.CommaText);
   Assert.IsTrue(FWorld.Input.Paused, 'a loaded game starts paused');
 end;
 

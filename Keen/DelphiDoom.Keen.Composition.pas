@@ -60,6 +60,13 @@ type
     /// </summary>
     class function CreateWindowDevices(AWindow: TGameHostWinWindow; const AButtons: IGameHostMouseState;
       AUseMouse, AUseJoystick: Boolean): TKeenWindowDevices; static;
+    /// <summary>
+    ///   Reads a saved game of the DOS program (SAVEGMn.KDR) and the executable that wrote it (KDREAMS.EXE: the
+    ///   addresses of the states are in it), writes it as the saved game of this port in a slot of the folder, and
+    ///   gives a line of text for what it did. EKeenDataException if the file is not one of the DOS program or the
+    ///   executable is not the one that wrote it
+    /// </summary>
+    class function ImportDosSave(const ASaveFile, AExecutableFile, ASaveFolder: string; ASlot: Integer): string; static;
     /// <summary>The clock of the machine</summary>
     class function CreateClock: IClock; static;
     /// <summary>A finer timer of Windows (1 ms) for as long as the result is held: Sleep(1) of the loops of the game then lasts 1 ms and not 15.6</summary>
@@ -86,7 +93,8 @@ uses
   DelphiDoom.Png.Provider, DelphiDoom.Png.IndexedEncoder, DelphiDoom.Platform.Factory, DelphiDoom.Clock.Factory,
   DelphiDoom.Opl.Factory, DelphiDoom.GameHost.Factory, DelphiDoom.GameHost.Audio.Intf, DelphiDoom.Keen.SoundManager,
   DelphiDoom.Keen.SpeakerSynth, DelphiDoom.Keen.OplAdLib, DelphiDoom.Keen.AudioLock, DelphiDoom.Keen.AudioMixer,
-  DelphiDoom.Keen.LockedSoundManager, DelphiDoom.Keen.MouseAdapter, DelphiDoom.Keen.JoystickAdapter,
+  DelphiDoom.Keen.LockedSoundManager, DelphiDoom.Keen.DosSaveConverter, DelphiDoom.Keen.DosStateLocator,
+  DelphiDoom.Keen.LzExe, DelphiDoom.Keen.SaveSlots, DelphiDoom.Keen.UserTypes, System.IOUtils, DelphiDoom.Keen.MouseAdapter, DelphiDoom.Keen.JoystickAdapter,
   DelphiDoom.GameHost.WindowMouse, DelphiDoom.GameHost.ForegroundGate, DelphiDoom.Input.Factory;
 
 const
@@ -157,6 +165,26 @@ begin
   Result := TKeenViewExporter.Create(AData,
     TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client)),
     TPlatformFactory.CreateFileStore);
+end;
+
+class function TKeenComposition.ImportDosSave(const ASaveFile, AExecutableFile, ASaveFolder: string;
+  ASlot: Integer): string;
+var
+  LStates: IKeenStateTable;
+  LMap: TKeenDosStateMap;
+  LInfo: TKeenDosSaveInfo;
+  LConverted: TBytes;
+  LTarget: string;
+begin
+  if (ASlot < 0) or (ASlot >= KEEN_MAX_SAVE_GAMES) then
+    raise EKeenException.CreateFmt(SKeenSaveBadSlot, [ASlot, KEEN_MAX_SAVE_GAMES - 1]);
+  LStates := TKeenFactory.CreateGameStateTable;
+  LMap := TKeenDosStateLocator.Locate(TKeenLzExe.LoadImage(TFile.ReadAllBytes(AExecutableFile)), LStates);
+  LConverted := TKeenDosSaveConverter.Convert(TFile.ReadAllBytes(ASaveFile), LMap, LInfo);
+  LTarget := TPath.Combine(ASaveFolder, TKeenSaveSlots.FileName(ASlot));
+  TFile.WriteAllBytes(LTarget, LConverted);
+  Result := Format('Game "%s" (level %d, %d actors, %d pointers turned into numbers) saved in %s',
+    [string(LInfo.Name), LInfo.MapOn, LInfo.Actors, LInfo.PointersConverted, LTarget]);
 end;
 
 class function TKeenComposition.CreateClock: IClock;
