@@ -404,6 +404,9 @@ uses
   i_system,
 {$ENDIF}
   DelphiDoom.Automap.Rotation,
+{$IFNDEF OPENGL}
+  DelphiDoom.Automap.LineRasterizer,
+{$ENDIF}
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
   d_englsh,
 {$ENDIF}
@@ -1112,32 +1115,7 @@ begin
 end;
 {$ELSE}
 var
-  x, y,
-  dx, dy,
-  sx, sy,
-  ax, ay,
-  d: integer;
-
-  procedure PUTDOT(xx, yy, cc: integer);
-  begin
-  // JVAL Clip line if in overlay mode
-    if amstate = am_overlay then
-    begin
-      if yy <= viewwindowy then
-        exit;
-      if yy >= viewwindowy + viewheight then
-        exit;
-      if xx <= viewwindowx then
-        exit;
-      if xx >= viewwindowx + viewwidth then
-        exit;
-    end;
-    if videomode = vm32bit then
-      fb32[yy * f_w + xx] := videopal[cc]
-    else
-      fb[yy * f_w + xx] := cc;
-  end;
-
+  target: TAutomapRasterTarget;
 begin
   // For debugging only
   {$IFDEF DEBUG}
@@ -1151,54 +1129,24 @@ begin
   end;
   {$ENDIF}
 
-  dx := fl.b.x - fl.a.x;
-  ax := 2 * abs(dx);
-  if dx < 0 then
-    sx := -1
-  else
-    sx := 1;
-
-  dy := fl.b.y - fl.a.y;
-  ay := 2 * abs(dy);
-  if dy < 0 then
-    sy := -1
-  else
-    sy := 1;
-
-  x := fl.a.x;
-  y := fl.a.y;
-
-  if ax > ay then
+  // The Bresenham is TAutomapLineRasterizer of Libs\Automap: here the
+  // buffer and, in overlay mode, the window of the view that clips the line
+  target.Width := f_w;
+  // JVAL Clip line if in overlay mode
+  target.Clipped := amstate = am_overlay;
+  target.ClipLeft := viewwindowx;
+  target.ClipTop := viewwindowy;
+  target.ClipRight := viewwindowx + viewwidth;
+  target.ClipBottom := viewwindowy + viewheight;
+  if videomode = vm32bit then
   begin
-    d := ay - ax div 2;
-    while true do
-    begin
-      PUTDOT(x, y, color);
-      if x = fl.b.x then exit;
-      if d >= 0 then
-      begin
-        y := y + sy;
-        d := d - ax;
-      end;
-      x := x + sx;
-      d := d + ay;
-    end;
+    target.Pixels := fb32;
+    TAutomapLineRasterizer.Draw32(target, fl^, videopal[color]);
   end
   else
   begin
-    d := ax - ay div 2;
-    while true do
-    begin
-      PUTDOT(x, y, color);
-      if y = fl.b.y then exit;
-      if d >= 0 then
-      begin
-        x := x + sx;
-        d := d - ay;
-      end;
-      y := y + sy;
-      d := d + ax;
-    end;
+    target.Pixels := fb;
+    TAutomapLineRasterizer.Draw8(target, fl^, color);
   end;
 end;
 {$ENDIF}
