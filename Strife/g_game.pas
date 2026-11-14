@@ -118,6 +118,13 @@ procedure G_DoLoadGame(const userload: boolean);
 
 //==============================================================================
 //
+// G_SaveGameNow
+//
+//==============================================================================
+procedure G_SaveGameNow(slot: integer; const description: string);
+
+//==============================================================================
+//
 // G_CmdSaveGame
 //
 //==============================================================================
@@ -2474,6 +2481,24 @@ begin
 {$IFNDEF OPENGL}
   R_FillBackScreen;
 {$ENDIF}
+end;
+
+//==============================================================================
+//
+// G_SaveGameNow
+//
+// The save of the test options (-autosave): the game is saved at the start of the
+// next tic, whatever the commands of the players are (a demo or the automatic pilot
+// replace them, so the button of G_SaveGame would be lost).
+//
+//==============================================================================
+procedure G_SaveGameNow(slot: integer; const description: string);
+begin
+  // as M_DoSave of the menu does, without waiting for the command of the next tic
+  G_WriteSaveName(slot, description);
+  M_ClearSlot;
+  M_FromCurr;
+  gameaction := ga_savegame;
 end;
 
 //==============================================================================

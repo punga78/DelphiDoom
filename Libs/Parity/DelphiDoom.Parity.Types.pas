@@ -37,6 +37,14 @@ type
     AutoDemo: Boolean;
     AutoDemoSeed: Cardinal;
     AutoDemoTics: Integer;
+    /// <summary>-autosave tic slot: the game is saved in that slot after that tic (issue #40: the saved games)</summary>
+    AutoSave: Boolean;
+    AutoSaveTic: Integer;
+    AutoSaveSlot: Integer;
+    /// <summary>-savelayouts file: the layouts on disk of the records of the saved games, as text</summary>
+    SaveLayoutsFile: string;
+    /// <summary>-autoquit tic: the program ends after that tic (-1 when not asked); for a run with no pilot</summary>
+    AutoQuitTic: Integer;
     /// <summary>True when at least one option was given</summary>
     function IsActive: Boolean;
   end;
@@ -96,7 +104,8 @@ implementation
 
 function TParityOptions.IsActive: Boolean;
 begin
-  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo;
+  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo or AutoSave or
+    (SaveLayoutsFile <> '') or (AutoQuitTic >= 0);
 end;
 
 { TParityDifference }

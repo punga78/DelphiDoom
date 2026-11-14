@@ -6,7 +6,8 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 
 ## Contenuto
 
-- Unit nella cartella: 6 (nome a punti `DelphiDoom.Serializer.*`).
+- Unit nella cartella: 10 (nome a punti `DelphiDoom.Serializer.*`).
+- Record salvati interi, uguali a 32 e a 64 bit (issue #40): `IDiskLayout`, `IDiskLayouts`, `IDiskRecordWriter`; prove con i salvataggi veri in `Tools\Verifica\40`, descritte in [docs\SALVATAGGI_32_64.md](../../docs/SALVATAGGI_32_64.md).
 - Interfacce dichiarate: `ISerializer`, `ISerializerFactory`, `ISerializerMobjResolver`, `ISerializerPlayerResolver`, `ISerializerStateResolver`.
 - Punto di creazione delle classi: `DelphiDoom.Serializer.Factory`.
 

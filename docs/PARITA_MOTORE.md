@@ -16,6 +16,8 @@ Issue #185, fase 0 del piano `docs\PIANO_TUTTO_A_CLASSI.md`. Prima di riscrivere
 | Rumore zero | `Rumore-Zero.ps1` | due esecuzioni dello stesso eseguibile devono dare impronte uguali |
 | Misura a coppie | `Tools\Misura-Coppie.ps1` | vecchio contro nuovo, alternati, con rifiuto della misura non affidabile |
 
+Per i salvataggi (issue #40) ci sono in piu' `-autosave tic slot` e `-savelayouts file`, con gli script di `Tools\Verifica\40`: vedi `docs\SALVATAGGI_32_64.md`.
+
 **Inerti se spenti.** Senza opzioni il motore non costruisce niente: l'unico costo e' il controllo di un puntatore a interfaccia (`parity_hooks`) in `P_Ticker`, in `D_FinishUpdate` e in `BuildTicCmd`.
 
 **Con un'opzione accesa l'esecuzione e' ripetibile**: orologio virtuale (un tic a ogni fine fotogramma, wipe compreso), tastiera, mouse e joystick chiusi, numeri casuali "imprevedibili" (`I_Random` del wipe) con seme fisso, nessuna finestra di errore. In piu' serve una configurazione fissa: gli script passano `-config p8.ini` o `p32.ini` (640x480, `detaillevel=2` a 8 bit o `3` a 32 bit, `usemultithread=0`, niente interpolazione); **i fili del renderer danno pixel diversi tra due esecuzioni**, quindi le impronte dei fotogrammi si confrontano solo con `usemultithread=0`. Le demo si riproducono con `-timedemo` (un fotogramma per tic) e `-noblit` (la presentazione e' legata al vsync).

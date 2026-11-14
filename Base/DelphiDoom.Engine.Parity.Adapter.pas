@@ -51,6 +51,9 @@ type
     FPilot: IParityPilot;
     FDumped: Boolean;
     FPilotDone: Boolean;
+    FSaved: Boolean;
+    FLayoutsWritten: Boolean;
+    procedure WriteSaveLayouts;
     procedure Resolve;
     procedure Activate;
     procedure DumpFrame;
@@ -82,11 +85,13 @@ uses
   DelphiDoom.Parity.BitmapWriter,
   DelphiDoom.Parity.Factory,
   DelphiDoom.Parity.OptionsParser,
+  doomdef,
 {$IFDEF HEXEN}
   g_demo,
 {$ENDIF}
   g_game,
-  i_system;
+  i_system,
+  p_serializer;
 
 { TEngineParity }
 
@@ -191,10 +196,38 @@ begin
   parity_hooks := Self;
 end;
 
+procedure TEngineParity.WriteSaveLayouts;
+var
+  LLog: IParityLog;
+  LLine: string;
+begin
+  // the 32 and the 64 bit programs must write the same lines (issue #40)
+  FLayoutsWritten := True;
+  LLog := TParityFactory.CreateFileLog(FOptions.SaveLayoutsFile);
+  for LLine in P_SaveRecords.DescribeAll do
+    LLog.WriteLine(LLine);
+  LLog.Flush;
+end;
+
 procedure TEngineParity.AfterTick;
 begin
+  if (FOptions.SaveLayoutsFile <> '') and not FLayoutsWritten then
+    WriteSaveLayouts;
   if FStateSource <> nil then
     FStateSource.Publish(g_game.gametic);
+  // -autosave: the save is done at the start of the next tic, with the state of the end of this one
+  if FOptions.AutoSave and not FSaved and (g_game.gametic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
+  begin
+    FSaved := True;
+    G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');
+  end;
+  // -autoquit: a run with no pilot (a game loaded with -loadgame) ends by itself
+  if (FOptions.AutoQuitTic >= 0) and (g_game.gametic >= FOptions.AutoQuitTic) and not FPilotDone then
+  begin
+    FPilotDone := True;
+    Flush;
+    I_Quit;
+  end;
 end;
 
 procedure TEngineParity.DumpFrame;

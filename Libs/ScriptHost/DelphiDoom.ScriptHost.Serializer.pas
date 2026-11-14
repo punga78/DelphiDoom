@@ -70,6 +70,7 @@ var
   LIndex: Integer;
   LSize: Integer;
   LOffset: Cardinal;
+  LExtended: TExtended80Rec;
 begin
   Result := True;
   case AType.BaseType of
@@ -98,7 +99,12 @@ begin
     btDouble:
       ASaveStream.Write(TbtDouble(ASource^), SizeOf(TbtDouble));
     btExtended:
-      ASaveStream.Write(TbtExtended(ASource^), SizeOf(TbtExtended));
+      begin
+        // always the 10 bytes of the x87 image: an Extended is 10 bytes for the 32 bit compiler and 8 for the
+        // 64 bit one, and a saved game must be read by both (issue #40)
+        LExtended := TExtended80Rec(Extended(TbtExtended(ASource^)));
+        ASaveStream.Write(LExtended, SizeOf(TExtended80Rec));
+      end;
     btCurrency:
       ASaveStream.Write(TbtCurrency(ASource^), SizeOf(TbtCurrency));
     btString:
@@ -185,6 +191,7 @@ var
   LIndex: Integer;
   LSize: Integer;
   LOffset: Cardinal;
+  LExtended: TExtended80Rec;
 begin
   Result := True;
   case AType.BaseType of
@@ -213,7 +220,10 @@ begin
     btDouble:
       ALoadStream.Read(TbtDouble(ASource^), SizeOf(TbtDouble)); // Double
     btExtended:
-      ALoadStream.Read(TbtExtended(ASource^), SizeOf(TbtExtended)); // Extended
+      begin
+        ALoadStream.Read(LExtended, SizeOf(TExtended80Rec));
+        TbtExtended(ASource^) := Extended(LExtended);
+      end;
     btCurrency:
       ALoadStream.Read(TbtCurrency(ASource^), SizeOf(TbtCurrency)); // Currency
     btString:

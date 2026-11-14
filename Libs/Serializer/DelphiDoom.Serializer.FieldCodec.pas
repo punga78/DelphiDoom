@@ -102,6 +102,7 @@ var
   LSlot: PByte;
   LReference: Pointer;
   LNumber: Cardinal;
+  LNative: Integer;
   LLength: Byte;
 begin
   LSlot := Slot(AStruct, AField);
@@ -133,6 +134,13 @@ begin
     TSerializerFieldKind.Float:
       if PSingle(LSlot)^ <> AField.FloatDefault then
         WriteValue(AStream, AField, LSlot);
+    TSerializerFieldKind.NativeInteger:
+      if Int64(PNativeInt(LSlot)^) <> AField.IntegerDefault then
+      begin
+        WriteId(AStream, AField);
+        LNative := TSerializerNativeValue.ToDisk(PNativeInt(LSlot)^);
+        AStream.WriteBuffer(LNative, SizeOf(Integer));
+      end;
     TSerializerFieldKind.Text:
       begin
         // always written, even when empty
@@ -184,6 +192,7 @@ var
   LSlot: PByte;
   LLength: Byte;
   LRaw: Cardinal;
+  LNative: Integer;
 begin
   LSlot := Slot(AStruct, AField);
   case AField.Kind of
@@ -203,6 +212,11 @@ begin
         AStream.ReadBuffer(LRaw, SizeOf(Cardinal));
         PPointer(LSlot)^ := nil;
         PCardinal(LSlot)^ := LRaw;
+      end;
+    TSerializerFieldKind.NativeInteger:
+      begin
+        AStream.ReadBuffer(LNative, SizeOf(Integer));
+        PNativeInt(LSlot)^ := TSerializerNativeValue.FromDisk(LNative);
       end;
   else
     AStream.ReadBuffer(LSlot^, AField.Size);
@@ -236,6 +250,8 @@ begin
       PInt64(LSlot)^ := AField.IntegerDefault;
     TSerializerFieldKind.Float:
       PSingle(LSlot)^ := AField.FloatDefault;
+    TSerializerFieldKind.NativeInteger:
+      PNativeInt(LSlot)^ := NativeInt(AField.IntegerDefault);
     TSerializerFieldKind.Text:
       begin
         LSlot^ := Byte(Length(AField.TextDefault));
