@@ -19,7 +19,7 @@ type
   ///   blanks, not case sensitive, the rest of a line after # is a comment. The steps:
   ///   hold tics [forward n] [back n] [side n] [turn n] [look n] [center] [fire] [use] [jump] [crouch] [weapon n]
   ///   [afterburner] [bomb];
-  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use] [fight] [range n] [afterburner];
+  ///   goto x y [z height] [radius n] [speed n] [timeout tics] [fire] [use] [fight] [range n] [afterburner] [drive];
   ///   face x y [timeout tics] [fire];
   ///   climb height [timeout tics];
   ///   hunt tics [range n];
@@ -265,6 +265,8 @@ begin
       Result.Command.Jump := True
     else if (LWord = 'crouch') and LIsHold then
       Result.Command.Crouch := True
+    else if (LWord = 'drive') and LIsGoto then
+      Result.Drive := True
     else if (LWord = 'afterburner') and (LIsHold or LIsGoto) then
       Result.Command.Afterburner := True
     else if (LWord = 'bomb') and LIsHold then

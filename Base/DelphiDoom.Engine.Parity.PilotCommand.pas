@@ -15,7 +15,8 @@ uses
   DelphiDoom.Parity.Intf,
   DelphiDoom.Parity.Types,
   d_ticcmd,
-  p_mobj_h;
+  p_mobj_h,
+  p_maputl;
 
 type
   /// <summary>What saves or loads the game of a slot for a script (the routines of the menus of a game)</summary>
@@ -162,6 +163,7 @@ begin
       LView.Y := players[consoleplayer].mo.y;
       LView.Z := players[consoleplayer].mo.z;
       LView.Angle := players[consoleplayer].mo.angle;
+      LView.Speed := P_AproxDistance(players[consoleplayer].mo.momx, players[consoleplayer].mo.momy);
     end;
     // only a script that fights asks for the enemies: the automatic pilot never searches the level
     if LView.Alive and (gamestate = GS_LEVEL) and (APilot.EnemyRange > 0) then

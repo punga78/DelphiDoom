@@ -32,6 +32,10 @@ type
     USE_PERIOD = 6;
     /// <summary>A goto pushes forward only when the point is less than this far from the nose (22.5 degrees)</summary>
     ALIGNED_ANGLE = 4096;
+    /// <summary>A goto with drive: the throttle, or the brake, in the units of the ticcmd</summary>
+    DRIVE_THROTTLE = 50;
+    /// <summary>A goto with drive: how much faster than the target (map units for each tic) before braking</summary>
+    DRIVE_SPEED_MARGIN = 2;
     /// <summary>How near a height is "there" (map units)</summary>
     HEIGHT_TOLERANCE = 8;
     /// <summary>A fight fires only when the enemy is less than this far from the nose (5.6 degrees)</summary>
@@ -130,7 +134,7 @@ begin
   ACommand.Turn := TurnTo(AView, AView.EnemyX div FRACUNIT, AView.EnemyY div FRACUNIT, LOffAngle);
   ACommand.Fire := Abs(LOffAngle) <= FIRE_ANGLE;
   // near enough for the aim of the game to help, not so near that the enemy is touched
-  if Abs(LOffAngle) <= ALIGNED_ANGLE then
+  if AStep.Drive or (Abs(LOffAngle) <= ALIGNED_ANGLE) then
   begin
     if LDeltaX * LDeltaX + LDeltaY * LDeltaY > FIGHT_FAR * FIGHT_FAR then
       ACommand.Forward := FIGHT_SPEED
@@ -215,7 +219,15 @@ begin
     Exit;
   Result.Turn := TurnTo(AView, AStep.X, AStep.Y, LOffAngle);
   // off the line the craft only turns: what it had of speed fades and it does not circle around the point
-  if Abs(LOffAngle) <= ALIGNED_ANGLE then
+  if AStep.Drive then
+  begin
+    // a car: the speed is a target (map units for each tic): the throttle below it, the brake above it
+    if AView.Speed div FRACUNIT < AStep.Command.Forward then
+      Result.Forward := DRIVE_THROTTLE
+    else if AView.Speed div FRACUNIT > AStep.Command.Forward + DRIVE_SPEED_MARGIN then
+      Result.Forward := -DRIVE_THROTTLE;
+  end
+  else if Abs(LOffAngle) <= ALIGNED_ANGLE then
     Result.Forward := AStep.Command.Forward;
   Result.Afterburner := AStep.Command.Afterburner;
   Result.Fire := AStep.Command.Fire;

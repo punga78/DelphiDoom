@@ -90,6 +90,21 @@ type
   end;
 
   /// <summary>The ground of the track, from the map of the ground (the old SH_GroundTypeAtXY and SH_SlipperFactorAtXY)</summary>
+  /// <summary>What the game shows and does when the race goes on (the messages, the results, the exit)</summary>
+  IRacingRaceEvents = interface
+    ['{2B7D5E81-4A39-4C06-9F1D-83E6A0C57D24}']
+    /// <summary>A step of the start: the message "Start your engines", the numbers and "GO!"</summary>
+    procedure Countdown(AStep: TRacingCountdownStep);
+    /// <summary>The lights are off: the cars can move</summary>
+    procedure RaceStarted;
+    /// <summary>The player has completed a lap; AIsRecord when it beats the table of the lap records</summary>
+    procedure LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
+    /// <summary>The player has completed the last lap and the result is known (the first one wins)</summary>
+    procedure RaceFinished(const AScore: TRacingScore; AWon: Boolean);
+    /// <summary>The result has been shown: the level is over</summary>
+    procedure LeaveLevel;
+  end;
+
   IRacingGround = interface
     ['{A3C84E19-7B52-4D06-9E3F-58D1A2C6B704}']
     /// <summary>The map of the ground: 4096 x 4096 bytes. The memory belongs to the caller (the lump cache). A map of another size is the same as no map: always asphalt</summary>

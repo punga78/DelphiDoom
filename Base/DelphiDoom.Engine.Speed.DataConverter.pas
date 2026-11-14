@@ -38,8 +38,11 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.ActorDefinitions,
   DelphiDoom.Speed.Factory;
+
+const
+  ACTOR_DEFINITIONS_LUMP = 'ACTORDEF';
 
 { TEngineSpeedDataConverter }
 
@@ -67,6 +70,8 @@ begin
   FModels := TSpeedFactory.CreateTranslator(FLog).Translate(LContainer, LWad);
   // the messages of the engine are written with the font of the game
   TSpeedDoomFontAliases.Append(LWad);
+  // the cars, the start and the cameras of the circuits (the engine reads the lump ACTORDEF)
+  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(nil)));
   AWad := LWad.ToBytes;
   FLog.Info(Format('SPEEDH.JCL: %d lumps translated, %d models'#13#10, [LWad.Count, Length(FModels)]));
   Result := True;

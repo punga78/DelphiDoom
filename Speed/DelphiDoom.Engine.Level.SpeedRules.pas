@@ -13,6 +13,7 @@ unit DelphiDoom.Engine.Level.SpeedRules;
 interface
 
 uses
+  System.SysUtils,
   doomdata,
   p_udmf,
   DelphiDoom.Logging.Intf,
@@ -28,6 +29,9 @@ type
   ///   and after the level the points of the track are read (SH_LoadPath of the old fork). The
   ///   cars and the race (SH_InitRace, SH_InitLevelCars) are not made yet
   /// </summary>
+  /// <summary>Called with the points of the path when the level has been loaded</summary>
+  TSpeedTrackReadyEvent = procedure(const APath: TArray<TRacingPathThing>);
+
   TSpeedLevelRules = class(TInterfacedObject, ILevelGameRules, ILevelGeometryRules, ILevelThingRules)
   strict private
     FGame: ILevelGameRules;
@@ -38,6 +42,8 @@ type
     FMapLump: Integer;
     FPath: TArray<TRacingPathThing>;
     FStartPositions: Integer;
+    FOnTrackReady: TSpeedTrackReadyEvent;
+    FOnLevelCleared: TProc;
     function ReadLevelLump(const AName: string): TArray<Byte>;
     procedure ReadTrack;
   public
@@ -51,6 +57,10 @@ type
     property Path: TArray<TRacingPathThing> read FPath;
     /// <summary>How many places of the starting grid (things of type 241) the level has</summary>
     property StartPositions: Integer read FStartPositions;
+    /// <summary>The race: called when the level and its track are loaded (SH_InitRace of the old fork)</summary>
+    property OnTrackReady: TSpeedTrackReadyEvent read FOnTrackReady write FOnTrackReady;
+    /// <summary>Called when the data of a level are cleared, before the next one is loaded</summary>
+    property OnLevelCleared: TProc read FOnLevelCleared write FOnLevelCleared;
     // ILevelGameRules
     procedure InitializeData;
     procedure ShutDownData;
@@ -79,7 +89,6 @@ type
 implementation
 
 uses
-  System.SysUtils,
   DelphiDoom.Racing.PathReader;
 
 const
@@ -199,6 +208,8 @@ begin
   FStartPositions := 0;
   FMapLump := -1;
   FGame.ClearLevelData;
+  if Assigned(FOnLevelCleared) then
+    FOnLevelCleared();
 end;
 
 procedure TSpeedLevelRules.AfterBlockmap;
@@ -246,6 +257,8 @@ procedure TSpeedLevelRules.AfterLevel;
 begin
   FGame.AfterLevel;
   ReadTrack;
+  if Assigned(FOnTrackReady) then
+    FOnTrackReady(FPath);
 end;
 
 procedure TSpeedLevelRules.SpawnMapThing(AThing: Pmapthing_t; AExtra: Pextrathing_t);

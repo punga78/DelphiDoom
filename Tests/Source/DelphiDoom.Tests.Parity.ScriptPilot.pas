@@ -79,6 +79,10 @@ type
     [Test]
     procedure LaBombaDovrebbeEsserePremutaUnaVoltaEIlPostbruciatoreTenuto;
     [Test]
+    procedure DriveDovrebbeAccelerareSottoLaVelocitaObiettivoEFrenareSopra;
+    [Test]
+    procedure DriveDovrebbeSpingereAncheFuoriLineaEGirare;
+    [Test]
     procedure SalvaECaricaDovrebberoEssereChiestiPerUnTicSolo;
     [Test]
     procedure UnSalvaInFondoAlCopioneDovrebbeEssereChiestoLoStesso;
@@ -409,6 +413,30 @@ begin
   Place(1000, 0, 0, 0);
   LCommand := Next;
   Assert.IsFalse(LCommand.Afterburner);
+end;
+
+procedure TTestParityScriptPilot.DriveDovrebbeAccelerareSottoLaVelocitaObiettivoEFrenareSopra;
+begin
+  Load('goto 5000 0 drive speed 10');
+  Place(0, 0, 0, 0);
+  FView.Speed := 5 * FRACUNIT;
+  Assert.AreEqual(50, Next.Forward, 'sotto l obiettivo: acceleratore');
+  FView.Speed := 11 * FRACUNIT;
+  Assert.AreEqual(0, Next.Forward, 'poco sopra: nessun comando');
+  FView.Speed := 13 * FRACUNIT;
+  Assert.AreEqual(-50, Next.Forward, 'molto sopra: freno');
+end;
+
+procedure TTestParityScriptPilot.DriveDovrebbeSpingereAncheFuoriLineaEGirare;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('goto 0 5000 drive speed 10');
+  Place(0, 0, 0, 0);
+  FView.Speed := 0;
+  LCommand := Next;
+  Assert.AreEqual(50, LCommand.Forward, 'una macchina non puo girare da ferma');
+  Assert.IsTrue(LCommand.Turn > 0, 'il punto e a sinistra');
 end;
 
 procedure TTestParityScriptPilot.SalvaECaricaDovrebberoEssereChiestiPerUnTicSolo;
