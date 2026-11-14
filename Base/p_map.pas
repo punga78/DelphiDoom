@@ -123,6 +123,13 @@ procedure P_RadiusAttackPlayer(spot: Pmobj_t; source: Pmobj_t; const damage, dis
 
 //==============================================================================
 //
+// PIT_ChangeSector
+//
+//==============================================================================
+function PIT_ChangeSector(thing: Pmobj_t): boolean;
+
+//==============================================================================
+//
 // P_ChangeSector
 //
 //==============================================================================
@@ -2662,6 +2669,63 @@ end;
 //  to undo the changes.
 //
 
+//==============================================================================
+//
+// PIT_ChangeSector
+//
+//==============================================================================
+function PIT_ChangeSector(thing: Pmobj_t): boolean;
+begin
+  if P_ThingHeightClip(thing) then
+  begin
+    // keep checking
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20200329 - New flag, can not be crushed by sector
+  if thing.flags3_ex and MF3_EX_NOCRUSH <> 0 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // crunch bodies to giblets
+  if TMapGameRules.IsCrushedBody(thing) then
+  begin
+    result := TMapGameRules.CrunchBody(thing);
+    exit;
+  end;
+
+  // crunch dropped items
+  if TMapGameRules.IsDroppedItem(thing) then
+  begin
+    P_RemoveMobj(thing);
+
+    // keep checking
+    result := true;
+    exit;
+  end;
+
+  if thing.flags and MF_SHOOTABLE = 0 then
+  begin
+    // assume it is bloody gibs or something
+    result := true;
+    exit;
+  end;
+
+  nofit := true;
+
+  if crushchange and (leveltime and 3 = 0) then
+  begin
+    P_DamageMobj(thing, nil, nil, TMapGameRules.CrushDamage);
+
+    TMapGameRules.CrushBlood(thing);
+  end;
+
+  // keep checking (crush other things)
+  result := true;
+end;
 //==============================================================================
 // P_DoChangeSector
 //

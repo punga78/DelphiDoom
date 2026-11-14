@@ -198,7 +198,17 @@ $Expansions = @(
   # --- P_ThingsInSameZ (Doom; gli altri giochi sono in $NotTextual) ---
   @{ F = 'TMapGameRules.KeepsOldSameZ(A, B)'; Doom = '((A.flags2_ex and MF2_EX_ONMOBJ = 0) and (B.flags2_ex and MF2_EX_ONMOBJ = 0))'; All = $true }
 
-  # --- PIT_CheckThing ---
+  # --- PIT_ChangeSector (Base\p_map.pas: lo scheletro; il corpo che schiaccia e il sangue sono regole del gioco) ---
+  $csHead = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; var'
+  $csNote = 'le variabili locali sono passate dalla vecchia routine alle regole (CrunchBody, CrushBlood) che le usano'
+  @{ R = 'PIT_ChangeSector'; F = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; begin'
+     Doom = "$csHead mo: Pmobj_t; plr: Pplayer_t; st: integer; bt: bloodtype_t; begin"; Heretic = "$csHead mo: Pmobj_t; begin"
+     Hexen = "$csHead mo: Pmobj_t; st: integer; begin"; Strife = "$csHead mo: Pmobj_t; plr: Pplayer_t; begin"; Note = $csNote }
+  @{ R = 'PIT_ChangeSector'; F = 'if TMapGameRules.IsCrushedBody(thing) then begin result := TMapGameRules.CrunchBody(thing); exit; end;'
+     D = 'if thing.health <= 0 then begin <<B:CrunchBody>> end;'; Hexen = 'if (thing.flags and MF_CORPSE <> 0) and (thing.health <= 0) then begin <<B:CrunchBody>> end;' }
+  @{ R = 'PIT_ChangeSector'; F = 'if TMapGameRules.IsDroppedItem(thing) then'; D = 'if thing.flags and MF_DROPPED <> 0 then'; Hexen = 'if thing.flags2 and MF2_DROPPED <> 0 then' }
+  @{ R = 'PIT_ChangeSector'; F = 'TMapGameRules.CrushDamage'; D = '10'; Hexen = '1' }
+  @{ R = 'PIT_ChangeSector'; F = 'TMapGameRules.CrushBlood(thing);'; D = '<<B:CrushBlood|map=exitr>>' }  # --- PIT_CheckThing ---
   @{ R = 'PIT_CheckThing'; F = 'if thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE) = 0 then'; Heretic = 'if (thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE)) = 0 then'
      Note = 'Heretic aveva una coppia di parentesi in piu'' attorno al primo operando' }
   @{ R = 'PIT_CheckThing'; F = 'blockdist: fixed_t; begin'; D = 'blockdist: fixed_t; <<V:CheckThingContact>> begin' }
@@ -221,5 +231,5 @@ $NotTextual = @{
 }
 
 $bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_map' -BaseFiles 'Base\p_map.pas', 'Base\p_secnodes.pas' `
-  -Extra @{ S = 'Base\p_secnodes.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual
+  -Extra @{ S = 'Base\p_secnodes.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual -Maps @{ exitr = @(,@('exit;', 'result := true; exit;')) }
 exit $bad
