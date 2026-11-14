@@ -34,6 +34,9 @@ $Expansions = @(
   # --- P_Thrust (Doom e Strife; Heretic e Hexen sono in $NotTextual) ---
   @{ R = 'P_Thrust'; F = 'FixedMul(TUserGameRules.ThrustMove(player, move), '; D = 'FixedMul(move, '; All = $true }
 
+  # --- P_DeathThink (Doom, Heretic, Strife; Hexen e' il metodo DeathThink) ---
+  @{ R = 'P_DeathThink'; F = 'if TUserGameRules.OwnsDeathThink then begin TUserGameRules.DeathThink(player); exit; end;'; D = ''; Note = 'la copia unica passa alla regola DeathThink solo quando OwnsDeathThink (Hexen, che ha il suo metodo)' }
+
   # --- la famiglia di P_CalcHeight ---
   # il rialzo fisso del volo: Heretic e Hexen avvolgono il calcolo del rimbalzo con if / else
   @{ F = 'if TUserGameRules.FlyBobs(player) then player.bob := FRACUNIT div 2 else begin'; D = ''
@@ -64,7 +67,7 @@ $NotTextual = @{
 
 # le routine che sono tutte di un gioco: metodi delle regole con il testo vecchio
 $Methods = @{
-  'P_PlayerThink' = 'PlayerThink'
+  'P_PlayerThink' = 'PlayerThink'; 'Hexen|P_DeathThink' = 'DeathThink'
 }
 
 $bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas' `

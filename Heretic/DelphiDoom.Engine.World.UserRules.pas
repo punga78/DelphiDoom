@@ -33,7 +33,11 @@ type
       KeepsOldViewZInAir = True;
       /// <summary>The distance from the floor under which the view height is not let to go (slopes version)</summary>
       SlopesFloorMargin = 4 * FRACUNIT;
+      /// <summary>P_DeathThink is a method of the rules (Hexen: the skull and the ice chunk, the poison, the palette, the reborn state)</summary>
+      OwnsDeathThink = False;
 
+    /// <summary>The death of the player (only when OwnsDeathThink)</summary>
+    class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
     /// <summary>The thrust of P_Thrust: Heretic and Hexen weaken it on ice and keep it when flying</summary>
@@ -409,75 +413,6 @@ begin
       player.flyheight := player.flyheight div 2;
   end;
 
-end;
-
-//
-// P_DeathThink
-// Fall on your face when dying.
-// Decrease POV height to floor height.
-//
-const
-  ANG5 = ANG90 div 18;
-  ANG355 = ANG270 +  ANG5 * 17; // add by JVAL
-
-//==============================================================================
-//
-// P_DeathThink
-//
-//==============================================================================
-procedure P_DeathThink(player: Pplayer_t);
-var
-  angle: angle_t;
-  delta: angle_t;
-begin
-  P_MovePsprites(player);
-
-  // fall to the ground
-  if player.viewheight > 6 * FRACUNIT then
-    player.viewheight := player.viewheight - FRACUNIT;
-
-  if player.viewheight < 6 * FRACUNIT then
-    player.viewheight := 6 * FRACUNIT;
-
-  if player.viewheight > 6 * FRACUNIT then
-    if player.lookdir < 45 then
-    begin
-      player.lookdir := player.lookdir + 5;
-      player.lookdir16 := player.lookdir * 16; // JVAL Smooth Look Up/Down
-    end;
-
-  player.deltaviewheight := 0;
-  onground := player.mo.z <= player.mo.floorz;
-  P_SlopesCalcHeight(player); // JVAL: Slopes
-
-  if (player.attacker <> nil) and (player.attacker <> player.mo) then
-  begin
-
-    angle := R_PointToAngle2(
-      player.mo.x, player.mo.y, player.attackerx, player.attackery);
-
-    delta := angle - player.mo.angle;
-
-    if (delta < ANG5) or (delta > ANG355) then
-    begin
-      // Looking at killer,
-      //  so fade damage flash down.
-      player.mo.angle := angle;
-
-      if player.damagecount <> 0 then
-        player.damagecount := player.damagecount - 1;
-    end
-    else if delta < ANG180 then
-      player.mo.angle := player.mo.angle + ANG5
-    else
-      player.mo.angle := player.mo.angle - ANG5;
-
-  end
-  else if player.damagecount <> 0 then
-    player.damagecount := player.damagecount - 1;
-
-  if player.cmd.buttons and BT_USE <> 0 then
-    player.playerstate := PST_REBORN;
 end;
 
 //----------------------------------------------------------------------------
@@ -1142,6 +1077,15 @@ class procedure TUserGameRules.ClampViewZ(const player: Pplayer_t);
 begin
   if player.viewz < player.mo.floorz + 4 * FRACUNIT then
     player.viewz := player.mo.floorz + 4 * FRACUNIT;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.DeathThink
+//
+//==============================================================================
+class procedure TUserGameRules.DeathThink(player: Pplayer_t);
+begin
 end;
 
 end.

@@ -80,6 +80,15 @@ procedure P_SlopesCalcHeight(player: Pplayer_t);
 
 //==============================================================================
 //
+// P_DeathThink
+// Fall on your face when dying.
+// Decrease POV height to floor height.
+//
+//==============================================================================
+procedure P_DeathThink(player: Pplayer_t);
+
+//==============================================================================
+//
 // P_Thrust
 // Moves the given origin along a given angle.
 //
@@ -94,6 +103,10 @@ uses
   p_tick,
   p_3dfloors, // JVAL: Slopes
   r_defs,
+  r_main,
+  p_pspr,
+  d_ticcmd,
+  d_event,
   doomdef,
   DelphiDoom.Engine.World.MapRules,
   DelphiDoom.Engine.World.UserRules;
@@ -458,6 +471,81 @@ begin
     player.viewz := player.mo.floorz + TUserGameRules.SlopesFloorMargin;
 
   player.oldviewz := oldviewz;
+end;
+
+//
+// P_DeathThink
+// Fall on your face when dying.
+// Decrease POV height to floor height.
+//
+const
+  ANG5 = ANG90 div 18;
+  ANG355 = ANG270 +  ANG5 * 17; // add by JVAL
+
+//==============================================================================
+//
+// P_DeathThink
+//
+//==============================================================================
+procedure P_DeathThink(player: Pplayer_t);
+var
+  angle: angle_t;
+  delta: angle_t;
+begin
+  if TUserGameRules.OwnsDeathThink then
+  begin
+    TUserGameRules.DeathThink(player);
+    exit;
+  end;
+
+  P_MovePsprites(player);
+
+  // fall to the ground
+  if player.viewheight > 6 * FRACUNIT then
+    player.viewheight := player.viewheight - FRACUNIT;
+
+  if player.viewheight < 6 * FRACUNIT then
+    player.viewheight := 6 * FRACUNIT;
+
+  if player.viewheight > 6 * FRACUNIT then
+    if player.lookdir < 45 then
+    begin
+      player.lookdir := player.lookdir + 5;
+      player.lookdir16 := player.lookdir * 16; // JVAL Smooth Look Up/Down
+    end;
+
+  player.deltaviewheight := 0;
+  onground := player.mo.z <= player.mo.floorz;
+  P_SlopesCalcHeight(player); // JVAL: Slopes
+
+  if (player.attacker <> nil) and (player.attacker <> player.mo) then
+  begin
+
+    angle := R_PointToAngle2(
+      player.mo.x, player.mo.y, player.attackerx, player.attackery);
+
+    delta := angle - player.mo.angle;
+
+    if (delta < ANG5) or (delta > ANG355) then
+    begin
+      // Looking at killer,
+      //  so fade damage flash down.
+      player.mo.angle := angle;
+
+      if player.damagecount <> 0 then
+        player.damagecount := player.damagecount - 1;
+    end
+    else if delta < ANG180 then
+      player.mo.angle := player.mo.angle + ANG5
+    else
+      player.mo.angle := player.mo.angle - ANG5;
+
+  end
+  else if player.damagecount <> 0 then
+    player.damagecount := player.damagecount - 1;
+
+  if player.cmd.buttons and BT_USE <> 0 then
+    player.playerstate := PST_REBORN;
 end;
 
 end.

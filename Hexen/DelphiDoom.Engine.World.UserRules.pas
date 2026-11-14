@@ -35,7 +35,11 @@ type
       KeepsOldViewZInAir = False;
       /// <summary>The distance from the floor under which the view height is not let to go (slopes version)</summary>
       SlopesFloorMargin = 4 * FRACUNIT;
+      /// <summary>P_DeathThink is a method of the rules (Hexen: the skull and the ice chunk, the poison, the palette, the reborn state)</summary>
+      OwnsDeathThink = True;
 
+    /// <summary>The death of the player (only when OwnsDeathThink)</summary>
+    class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
     /// <summary>The thrust of P_Thrust: Heretic and Hexen weaken it on ice and keep it when flying</summary>
@@ -480,7 +484,7 @@ end;
 // Decrease POV height to floor height.
 //
 //==============================================================================
-procedure P_DeathThink(player: Pplayer_t);
+class procedure TUserGameRules.DeathThink(player: Pplayer_t);
 var
   angle: angle_t;
   delta: angle_t;
