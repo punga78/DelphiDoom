@@ -1005,6 +1005,9 @@ begin
       else if R_FullStOn and (gametic <> 0) then
         ST_Drawer(stdo_small, redrawsbar);
     end;
+    // the display of a game without the status bar of Doom goes over view, automap and border
+    if gametic <> 0 then
+      ST_OverlayDrawer;
   end;
 
   menuactivestate := menuactive;

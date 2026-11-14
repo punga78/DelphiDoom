@@ -43,6 +43,7 @@ program Radix32;
 
 {$R *.RES}
 {$R 'Radix32_Icon.res' 'Radix32_Icon.rc'}
+{$R 'Radix32_Data.res' 'Radix32_Data.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',
@@ -224,6 +225,14 @@ uses
   radix_map_extra in 'radix_map_extra.pas',
   DelphiDoom.Engine.Level.RadixRules in 'DelphiDoom.Engine.Level.RadixRules.pas',
   radix_version in 'radix_version.pas',
+  radix_playerstate in 'radix_playerstate.pas',
+  radix_hud in 'radix_hud.pas',
+  radix_pilot in 'radix_pilot.pas',
+  radix_pickups in 'radix_pickups.pas',
+  DelphiDoom.Radix.ActorProperties in '..\Libs\Radix\DelphiDoom.Radix.ActorProperties.pas',
+  DelphiDoom.Radix.Pilot.Rules in '..\Libs\Radix\DelphiDoom.Radix.Pilot.Rules.pas',
+  DelphiDoom.Radix.Flight.Model in '..\Libs\Radix\DelphiDoom.Radix.Flight.Model.pas',
+  DelphiDoom.Radix.Hud.Gauges in '..\Libs\Radix\DelphiDoom.Radix.Hud.Gauges.pas',
   i_io in '..\Base\i_io.pas',
   i_main in '..\Base\i_main.pas',
   i_midi in '..\Base\i_midi.pas',
@@ -307,7 +316,7 @@ uses
   sc_params in '..\Base\sc_params.pas',
   sounds in '..\Base\sounds.pas',
   st_lib in '..\Doom\st_lib.pas',
-  st_stuff in 'st_stuff.pas',
+  st_stuff in '..\Doom\st_stuff.pas',
   tables in '..\Base\tables.pas',
   v_data in '..\Base\v_data.pas',
   v_video in '..\Base\v_video.pas',

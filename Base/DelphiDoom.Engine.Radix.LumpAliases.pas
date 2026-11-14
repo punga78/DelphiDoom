@@ -39,6 +39,10 @@ implementation
 
 const
   ALIASES_LUMP = 'RADIXINF';
+  // The lumps that the engine of Doom asks for by name and RADIX.DAT does not have, in the format
+  // of RADIXINF: the flat of the border of the view is the background of the menus of Rad-X
+  // (menubackgroundflat)
+  ENGINE_NAMES = 'RDXF0000=FLOOR7_2'#13#10;
 
 { TEngineRadixLumpAliases }
 
@@ -69,6 +73,11 @@ begin
           begin
             Result := FLumps.CheckNumForName(ALumpName) >= 0;
           end);
+    LTable.AddText(ENGINE_NAMES,
+      function(const ALumpName: string): Boolean
+      begin
+        Result := FLumps.CheckNumForName(ALumpName) >= 0;
+      end);
   finally
     FLoading := False;
   end;

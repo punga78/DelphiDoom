@@ -1,0 +1,4 @@
+// The definitions of the actors of Radix (RADIXDEF of Rad-X: WADSRC/DOOM/DOOMALIAS.TXT and WADSRC/RADIX/*.txt in the
+// order of WADSRC/RADIXDEF.txt) as ACTORDEF text. ComposeRadix reads the resource and the converter of RADIX.DAT
+// adds it to the translated WAD as the lump ACTORDEF. Compiled by MSBuild (RcCompile item in Radix32.dproj).
+RADIXDEF RCDATA "Data/RADIXDEF.txt"

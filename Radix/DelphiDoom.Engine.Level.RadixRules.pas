@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  d_delphi, info_common, radix_map_extra;
+  d_delphi, info_common, radix_map_extra, radix_pilot, radix_pickups;
 
 const
   // the place of RMAP after the lumps of a map of Doom (ML_RMAP of Rad-X)
@@ -65,6 +65,8 @@ procedure TRadixLevelRules.AfterNodes(AMapLump: Integer);
 begin
   FMapLump := AMapLump;
   FUndefinedThings := 0;
+  // before the things of the map are spawned: the pickups of Radix must not be the ones of Doom
+  RX_InitActors;
   inherited AfterNodes(AMapLump);
 end;
 
@@ -87,6 +89,7 @@ end;
 procedure TRadixLevelRules.AfterMapThingsSpawned;
 begin
   inherited AfterMapThingsSpawned;
+  RX_SpawnPilotThinker;
   if FUndefinedThings > 0 then
     printf('TRadixLevelRules: %d things of the map have a type without definition and are not spawned'#13#10,
       [FUndefinedThings]);

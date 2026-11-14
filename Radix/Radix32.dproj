@@ -107,6 +107,9 @@
         <RcCompile Include="Radix32_Icon.rc">
             <Form>Radix32_Icon.res</Form>
         </RcCompile>
+        <RcCompile Include="Radix32_Data.rc">
+            <Form>Radix32_Data.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

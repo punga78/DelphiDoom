@@ -101,6 +101,15 @@ uses
   DelphiDoom.Engine.Wad.Aliases.Intf in '..\Base\DelphiDoom.Engine.Wad.Aliases.Intf.pas',
   DelphiDoom.Engine.Radix.LumpAliases in '..\Base\DelphiDoom.Engine.Radix.LumpAliases.pas',
   DelphiDoom.Tests.Radix.EngineLumpAliases in 'Source\DelphiDoom.Tests.Radix.EngineLumpAliases.pas',
+  DelphiDoom.Radix.Hud.Gauges in '..\Libs\Radix\DelphiDoom.Radix.Hud.Gauges.pas',
+  DelphiDoom.Tests.Radix.HudGauges in 'Source\DelphiDoom.Tests.Radix.HudGauges.pas',
+  DelphiDoom.Radix.Flight.Model in '..\Libs\Radix\DelphiDoom.Radix.Flight.Model.pas',
+  DelphiDoom.Tests.Radix.FlightModel in 'Source\DelphiDoom.Tests.Radix.FlightModel.pas',
+  DelphiDoom.ActorDef.Types in '..\Libs\ActorDef\DelphiDoom.ActorDef.Types.pas',
+  DelphiDoom.Radix.ActorProperties in '..\Libs\Radix\DelphiDoom.Radix.ActorProperties.pas',
+  DelphiDoom.Tests.Radix.ActorProperties in 'Source\DelphiDoom.Tests.Radix.ActorProperties.pas',
+  DelphiDoom.Radix.Pilot.Rules in '..\Libs\Radix\DelphiDoom.Radix.Pilot.Rules.pas',
+  DelphiDoom.Tests.Radix.PilotRules in 'Source\DelphiDoom.Tests.Radix.PilotRules.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var

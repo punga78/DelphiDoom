@@ -1410,6 +1410,10 @@ begin
   if not TActorDefProfiles.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.ActorDef), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of ACTORDEF', [_GAME]);
   LProfile := TActorDefProfiles.ForGame(LGame);
+{$IFDEF RADIX}
+  // the properties of the actors that only Radix has (the INVENTORY block of the pickups ...)
+  LProfile.ExtraProperties := ComposeRadixActorProperties(ALog);
+{$ENDIF}
   LCatalog := TEngineActorDefCatalog.Create;
   LCatalogRef := LCatalog;
   // a thinker is an actor written as text: it goes back to the parser through the reader of
