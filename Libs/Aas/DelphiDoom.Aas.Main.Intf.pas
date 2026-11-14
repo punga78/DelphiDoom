@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: AAS library - contracts of the AAS system (be_aas_main.c)        }
 {                                                                              }
@@ -13,7 +13,7 @@ unit DelphiDoom.Aas.Main.Intf;
 interface
 
 uses
-  DelphiDoom.Aas.Intf, DelphiDoom.Aas.Links;
+  DelphiDoom.Aas.Intf, DelphiDoom.Aas.Links, DelphiDoom.Aas.Bsp.Intf;
 
 type
   /// <summary>The flags and the clock of aasworld that the entities and the initialization read</summary>
@@ -77,7 +77,7 @@ type
   IAasMapBuilder = interface
     ['{6C4F1B33-2D70-4A96-B1E5-8F03A7D26C23}']
     /// <summary>The links of the entities have AMaxLinks entries (the library variable max_aaslinks)</summary>
-    function Build(const AFile: IAasFile; const AMaxLinks: Integer): IAasMap;
+    function Build(const AFile: IAasFile; const AMaxLinks: Integer; const AEntities: IAasBspEntities): IAasMap;
   end;
 
 implementation

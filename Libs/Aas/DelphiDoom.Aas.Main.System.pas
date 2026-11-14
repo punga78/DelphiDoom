@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: AAS library - the AAS system                                     }
 {                                                                              }
@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.MathCore.Types, DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Intf,
-  DelphiDoom.Aas.Bsp.Intf, DelphiDoom.Aas.Main.Intf, DelphiDoom.Aas.Main.StringIndexes, DelphiDoom.Aas.Entity.Table;
+  DelphiDoom.Aas.Bsp.Intf, DelphiDoom.Aas.Main.Intf, DelphiDoom.Aas.Main.StringIndexes, DelphiDoom.Aas.Entity.Table, DelphiDoom.Aas.Reach.Intf;
 
 type
   /// <summary>
@@ -45,6 +45,7 @@ type
     FMap: IAasMap;
     FStrings: TAasStringIndexes;
     FBestLinkArea: TAasBestLinkArea;
+    FBestReachable: TFunc<IAasBestReachable>;
     function GetLoaded: Boolean;
     function GetInitialized: Boolean;
     function GetTime: Single;
@@ -58,7 +59,7 @@ type
     /// </summary>
     constructor Create(const AImport: IBotImport; const ALibVars: IBotLibVars; const AReader: IAasReader;
       const AModels: IAasBspModels; const ABuilder: IAasMapBuilder; const ABestLinkArea: TAasBestLinkArea;
-      const ADeveloper: Boolean);
+      const ABestReachable: TFunc<IAasBestReachable>; const ADeveloper: Boolean);
     destructor Destroy; override;
     /// <summary>
     ///   AAS_Setup: maxclients and maxentities from the library variables; the entities are made and invalid
@@ -89,6 +90,8 @@ type
     property Map: IAasMap read FMap;
     property BspEntities: IAasBspEntities read FBspEntities;
     property Strings: TAasStringIndexes read FStrings;
+    /// <summary>The functions of be_aas_reach.c for the bots (AAS_BestReachableArea ...) on the map that is loaded; nil before one</summary>
+    function BestReachable: IAasBestReachable;
   end;
 
 implementation
@@ -111,7 +114,7 @@ const
 
 constructor TAasSystem.Create(const AImport: IBotImport; const ALibVars: IBotLibVars; const AReader: IAasReader;
   const AModels: IAasBspModels; const ABuilder: IAasMapBuilder; const ABestLinkArea: TAasBestLinkArea;
-  const ADeveloper: Boolean);
+  const ABestReachable: TFunc<IAasBestReachable>; const ADeveloper: Boolean);
 begin
   inherited Create;
   FImport := AImport;
@@ -120,6 +123,7 @@ begin
   FModels := AModels;
   FBuilder := ABuilder;
   FBestLinkArea := ABestLinkArea;
+  FBestReachable := ABestReachable;
   FDeveloper := ADeveloper;
   FStrings := TAasStringIndexes.Create(AImport);
 end;
@@ -129,6 +133,14 @@ begin
   FEntities.Free;
   FStrings.Free;
   inherited Destroy;
+end;
+
+function TAasSystem.BestReachable: IAasBestReachable;
+begin
+  if Assigned(FBestReachable) then
+    Result := FBestReachable()
+  else
+    Result := nil;
 end;
 
 function TAasSystem.GetLoaded: Boolean;
@@ -196,7 +208,7 @@ begin
   if Result <> BLERR_NOERROR then
     Exit;
   FLoaded := True;
-  FMap := FBuilder.Build(LFile, Trunc(FLibVars.GetValueOrCreate('max_aaslinks', '6144')));
+  FMap := FBuilder.Build(LFile, Trunc(FLibVars.GetValueOrCreate('max_aaslinks', '6144')), FBspEntities);
   TAasPrinter.Print(FImport, PRT_MESSAGE, Format(SLoaded, [string(LName)]));
   FFileName := LName;
   Result := BLERR_NOERROR;

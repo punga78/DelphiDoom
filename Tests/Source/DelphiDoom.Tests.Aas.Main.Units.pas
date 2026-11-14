@@ -15,9 +15,9 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DUnitX.TestFramework, DelphiDoom.MathCore.Types,
-  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Types, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Route.Types, DelphiDoom.Aas.Move.Types,
-  DelphiDoom.Aas.Bsp.Intf, DelphiDoom.Aas.Links, DelphiDoom.Aas.Main.Intf, DelphiDoom.Aas.Main.System,
-  DelphiDoom.Aas.Entity.Table, DelphiDoom.Aas.Entity.Types, DelphiDoom.Tests.Aas.Support;
+  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Types, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Route.Types, DelphiDoom.Aas.Move.Types, DelphiDoom.Aas.Move.Intf,
+  DelphiDoom.Aas.Bsp.Intf, DelphiDoom.Aas.Links, DelphiDoom.Aas.Main.Intf, DelphiDoom.Aas.Main.System, DelphiDoom.Aas.Main.Factory,
+  DelphiDoom.Aas.Entity.Table, DelphiDoom.Aas.Entity.Types, DelphiDoom.Aas.Reach.Intf, DelphiDoom.Tests.Aas.Support;
 
 type
   /// <summary>A world of three areas: area 1 where x is above 0, area 2 where x and y are below 0 and above</summary>
@@ -145,6 +145,14 @@ type
 
   [TestFixture]
   [Category('Aas')]
+  TTestAasSystemFactory = class
+  public
+    [Test]
+    procedure DovrebbeInizializzareUnaMappaConLeClassiVere;
+  end;
+
+  [TestFixture]
+  [Category('Aas')]
   TTestAasSystem = class
   strict private
     FImport: TFakeImport;
@@ -186,7 +194,7 @@ type
 implementation
 
 uses
-  DelphiDoom.BotAi.Types, DelphiDoom.Aas.AasFile, DelphiDoom.Aas.Main.StringIndexes;
+  DelphiDoom.BotAi.Types, DelphiDoom.Tests.Aas.Sample, DelphiDoom.Aas.AasFile, DelphiDoom.Aas.Main.StringIndexes;
 
 function World: TAasFileData;
 begin
@@ -607,6 +615,13 @@ type
     procedure ModelMinsMaxsOrigin(const AModelNum: Integer; const AAngles: TVec3; out AMins, AMaxs, AOrigin: TVec3);
   end;
 
+  TFakeWorld = class(TInterfacedObject, IAasBspWorld)
+  public
+    function PointContents(const APoint: TVec3): Integer;
+    function Trace(const AStart: TVec3; const AMins, AMaxs: PVec3; const AEnd: TVec3; const APassEnt,
+      AContentMask: Integer): TAasBspTrace;
+  end;
+
   TFakeSteps = class(TInterfacedObject, IAasInitSteps)
   public
     Calls: TStringList;
@@ -646,7 +661,7 @@ type
     StepsIntf: IAasInitSteps;
     MaxLinks: Integer;
     constructor Create(const AImport: IBotImport; const ARounds: Integer; const ANeedsSave: Boolean);
-    function Build(const AFile: IAasFile; const AMaxLinks: Integer): IAasMap;
+    function Build(const AFile: IAasFile; const AMaxLinks: Integer; const AEntities: IAasBspEntities): IAasMap;
   end;
 
   TFakeReader = class(TInterfacedObject, IAasReader)
@@ -660,12 +675,28 @@ type
   TFakeVars = class(TInterfacedObject, IBotLibVars)
   public
     Values: TDictionary<string, Single>;
+    Checksum: AnsiString;
     constructor Create;
     destructor Destroy; override;
     function GetValue(const AName: AnsiString): Single;
     function GetValueOrCreate(const AName, ADefault: AnsiString): Single;
     function GetStringOrCreate(const AName, ADefault: AnsiString): AnsiString;
   end;
+
+{ TFakeWorld }
+
+function TFakeWorld.PointContents(const APoint: TVec3): Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeWorld.Trace(const AStart: TVec3; const AMins, AMaxs: PVec3; const AEnd: TVec3; const APassEnt,
+  AContentMask: Integer): TAasBspTrace;
+begin
+  FillChar(Result, SizeOf(Result), 0);
+  Result.Fraction := 1;
+  Result.EndPos := AEnd;
+end;
 
 { TFakeState }
 
@@ -822,7 +853,7 @@ begin
   StepsIntf := Steps;
 end;
 
-function TFakeBuilder.Build(const AFile: IAasFile; const AMaxLinks: Integer): IAasMap;
+function TFakeBuilder.Build(const AFile: IAasFile; const AMaxLinks: Integer; const AEntities: IAasBspEntities): IAasMap;
 begin
   MaxLinks := AMaxLinks;
   Result := TFakeMap.Create(AFile, TAasEntityLinks.Create(AFile, FImport, AMaxLinks, True), StepsIntf);
@@ -873,7 +904,10 @@ end;
 
 function TFakeVars.GetStringOrCreate(const AName, ADefault: AnsiString): AnsiString;
 begin
-  Result := ADefault;
+  if AName = 'sv_mapChecksum' then
+    Result := Checksum
+  else
+    Result := ADefault;
 end;
 
 { TTestAasEntityTable }
@@ -1240,6 +1274,52 @@ begin
   Assert.AreEqual(Double(1), Double(LMaxs[1]), 0.0);
 end;
 
+{ TTestAasSystemFactory }
+
+procedure TTestAasSystemFactory.DovrebbeInizializzareUnaMappaConLeClassiVere;
+var
+  LImport: TFakeImport;
+  LKeeper: IBotImport;
+  LVars: TFakeVars;
+  LVarsIntf: IBotLibVars;
+  LModels: TFakeModels;
+  LModelsIntf: IAasBspModels;
+  LWorld: IAasBspWorld;
+  LSystem: TAasSystem;
+  LBest: IAasBestReachable;
+  LFrame: Integer;
+begin
+  LImport := TFakeImport.Create;
+  LKeeper := LImport;
+  LVars := TFakeVars.Create;
+  LVarsIntf := LVars;
+  LVars.Checksum := AnsiString(IntToStr(SAMPLE_CHECKSUM));
+  LVars.Values.Add('maxentities', 8);
+  LVars.Values.Add('max_aaslinks', 50);
+  LModels := TFakeModels.Create;
+  LModels.Text := '{ "classname" "worldspawn" }';
+  LModelsIntf := LModels;
+  LWorld := TFakeWorld.Create;
+  LSystem := TAasSystemFactory.CreateSystem(LKeeper, TFakeFiles.Create('maps/m.aas', TAasSample.Bytes(0)), LVarsIntf,
+    LWorld, LModelsIntf, nil, nil, True);
+  try
+    Assert.AreEqual(BLERR_NOERROR, LSystem.Setup);
+    Assert.AreEqual(0, LSystem.LoadMap('m'));
+    Assert.IsTrue(LSystem.Loaded);
+    for LFrame := 1 to 6 do
+      LSystem.StartFrame(LFrame);
+    Assert.IsTrue(LSystem.Initialized);
+    Assert.IsTrue(Assigned(LSystem.Map));
+    // the functions of the reachability calculation for the bots are there
+    LBest := LSystem.BestReachable;
+    Assert.IsTrue(Assigned(LBest));
+    Assert.AreEqual(0, LBest.BestReachableLinkArea(AAS_NO_LINK));
+  finally
+    LSystem.Shutdown;
+    LSystem.Free;
+  end;
+end;
+
 { TTestAasSystem }
 
 procedure TTestAasSystem.Setup;
@@ -1278,7 +1358,7 @@ begin
     function(const AHead: Integer): Integer
     begin
       Result := 0;
-    end, True);
+    end, nil, True);
   FSystemIntf := FSystem;
 end;
 
@@ -1424,5 +1504,6 @@ initialization
   TDUnitX.RegisterTestFixture(TTestAasStringIndexes);
   TDUnitX.RegisterTestFixture(TTestAasEntityTable);
   TDUnitX.RegisterTestFixture(TTestAasSystem);
+  TDUnitX.RegisterTestFixture(TTestAasSystemFactory);
 
 end.
