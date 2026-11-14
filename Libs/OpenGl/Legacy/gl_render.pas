@@ -3512,7 +3512,7 @@ begin
   ZeroMemory(@lastitem, SizeOf(dlsortitem_t));
   // Draw each light in order
   pdls := @dlbuffer[numdlitems];
-  while integer(pdls) <> integer(dlbuffer) do
+  while NativeInt(pdls) <> NativeInt(dlbuffer) do
   begin
     dec(pdls);
     if (pdls.l <> lastitem.l) or

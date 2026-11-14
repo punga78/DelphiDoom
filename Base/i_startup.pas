@@ -95,7 +95,7 @@ procedure SUC_SetGameMode(const s: string);
 // SUC_GetHandle
 //
 //==============================================================================
-function SUC_GetHandle: integer;
+function SUC_GetHandle: HWND;
 
 //==============================================================================
 //
@@ -287,7 +287,7 @@ end;
 // SUC_GetHandle
 //
 //==============================================================================
-function SUC_GetHandle: integer;
+function SUC_GetHandle: HWND;
 begin
   if startupformactive then
     result := StartUpConsoleForm.Handle
