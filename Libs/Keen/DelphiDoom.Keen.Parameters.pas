@@ -65,6 +65,11 @@ type
     class function TakesValue(const AParameter: string): Boolean; static;
     /// <summary>The loops of IN_Startup, RF_Startup, SD_Startup, US_Startup and VW_Startup over the arguments</summary>
     class function Parse(const AArguments: array of string): TKeenOriginalParameters; static;
+    /// <summary>
+    ///   main of kd_main.c: when the first argument is "/VER" or "/?" (stricmp: any case) the program writes a text and
+    ///   ends. Gives the text (lines with LF, as printf writes them), or false for any other argument
+    /// </summary>
+    class function TryInformation(const AFirstArgument: string; out AText: string): Boolean; static;
   end;
 
 implementation
@@ -122,6 +127,37 @@ begin
 end;
 
 { TKeenParameters }
+
+class function TKeenParameters.TryInformation(const AFirstArgument: string; out AText: string): Boolean;
+begin
+  Result := True;
+  if SameText(AFirstArgument, '/VER') then
+    AText := #10'Keen Dreams version 1.93  (Rev 1)'#10 +
+      'developed for use with 100% IBM compatibles'#10 +
+      'that have 640K memory, DOS version 3.3 or later,'#10 +
+      'and an EGA or VGA display adapter.'#10 +
+      'Copyright 1991-1993 Softdisk Publishing.'#10 +
+      'Commander Keen is a trademark of Id Software.'#10
+  else if SameText(AFirstArgument, '/?') then
+    AText := #10'Keen Dreams version 1.93'#10 +
+      'Copyright 1991-1993 Softdisk Publishing.'#10#10 +
+      'Commander Keen is a trademark of Id Software.'#10 +
+      'Type KDREAMS from the DOS prompt to run.'#10#10 +
+      'KDREAMS /COMP for SVGA compatibility mode'#10 +
+      'KDREAMS /NODR stops program hang with the drive still on'#10 +
+      'KDREAMS /NOAL disables AdLib and Sound Blaster detection'#10 +
+      'KDREAMS /NOSB disables Sound Blaster detection'#10 +
+      'KDREAMS /NOJOYS ignores joystick'#10 +
+      'KDREAMS /NOMOUSE ignores mouse'#10 +
+      'KDREAMS /HIDDENCARD overrides video card detection'#10 +
+      'KDREAMS /VER  for version and compatibility information'#10 +
+      'KDREAMS /? for this help information'#10
+  else
+  begin
+    AText := '';
+    Result := False;
+  end;
+end;
 
 class function TKeenParameters.Check(const AParameter: string; const AStrings: array of string): Integer;
 var

@@ -12,8 +12,8 @@ unit DelphiDoom.Tests.Keen.Parameters;
 interface
 
 uses
-  System.SysUtils, System.Classes, DUnitX.TestFramework, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf, DelphiDoom.Keen.Parameters, DelphiDoom.Keen.Script,
-  DelphiDoom.Keen.ScriptedHost, DelphiDoom.Keen.ScriptedDevices, DelphiDoom.Tests.Shared.Files;
+  System.SysUtils, System.Classes, System.StrUtils, DUnitX.TestFramework, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf, DelphiDoom.Keen.Parameters, DelphiDoom.Keen.Script,
+  DelphiDoom.Keen.ScriptedHost, DelphiDoom.Keen.ScriptedDevices, DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.Shared.Skip;
 
 type
   [TestFixture]
@@ -62,9 +62,17 @@ type
   [TestFixture]
   [Category('keen')]
   TTestKeenParametersParity = class(TObject)
+  strict private
+    class function PrintedBy(const ASourceLines: TStringList; const AKey: string): string; static;
   public
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelC;
+    [Test]
+    procedure IlTestoDiVerEDelPuntoInterrogativoDovrebbeEssereQuelloDelSorgente;
+    [Test]
+    procedure DovrebbeRispondereSoloAlPrimoArgomento;
+    [Test]
+    procedure DovrebbeIgnorareIlMaiuscoloInVer;
   end;
 
   [TestFixture]
@@ -236,6 +244,77 @@ begin
 end;
 
 { TTestKeenParametersParity }
+
+class function TTestKeenParametersParity.PrintedBy(const ASourceLines: TStringList; const AKey: string): string;
+var
+  LIndex: Integer;
+  LLine: string;
+  LStart: Integer;
+  LEnd: Integer;
+  LText: string;
+begin
+  Result := '';
+  LIndex := 0;
+  while (LIndex < ASourceLines.Count) and (Pos(AKey, ASourceLines[LIndex]) = 0) do
+    Inc(LIndex);
+  Assert.IsTrue(LIndex < ASourceLines.Count, 'the key ' + AKey + ' is in main');
+  Inc(LIndex);
+  while (LIndex < ASourceLines.Count) and (Pos('exit(0)', ASourceLines[LIndex]) = 0) do
+  begin
+    LLine := Trim(ASourceLines[LIndex]);
+    LStart := Pos('printf("', LLine);
+    if LStart > 0 then
+    begin
+      LStart := LStart + Length('printf("');
+      LEnd := LastDelimiter('"', LLine);
+      LText := Copy(LLine, LStart, LEnd - LStart);
+      LText := StringReplace(LText, '\n', #10, [rfReplaceAll]);
+      LText := StringReplace(LText, '%%', '%', [rfReplaceAll]);
+      Result := Result + LText;
+    end;
+    Inc(LIndex);
+  end;
+end;
+
+procedure TTestKeenParametersParity.IlTestoDiVerEDelPuntoInterrogativoDovrebbeEssereQuelloDelSorgente;
+var
+  LPath: string;
+  LLines: TStringList;
+  LText: string;
+begin
+  LPath := TTestFiles.FindFileUp('Reference\keen\kd_main.c');
+  if LPath = '' then
+    TTestSkip.Ignore('i sorgenti di Keen Dreams non sono su questa macchina');
+  LLines := TTestFiles.Lines(LPath);
+  try
+    Assert.IsTrue(TKeenParameters.TryInformation('/VER', LText));
+    Assert.AreEqual(PrintedBy(LLines, '"/VER"'), LText);
+    Assert.IsTrue(TKeenParameters.TryInformation('/?', LText));
+    Assert.AreEqual(PrintedBy(LLines, '"/?"'), LText);
+  finally
+    LLines.Free;
+  end;
+end;
+
+procedure TTestKeenParametersParity.DovrebbeRispondereSoloAlPrimoArgomento;
+var
+  LText: string;
+begin
+  Assert.IsFalse(TKeenParameters.TryInformation('-ver', LText));
+  Assert.IsFalse(TKeenParameters.TryInformation('VER', LText));
+  Assert.IsFalse(TKeenParameters.TryInformation('/VERSION', LText));
+  Assert.IsFalse(TKeenParameters.TryInformation('', LText));
+  Assert.AreEqual('', LText);
+end;
+
+procedure TTestKeenParametersParity.DovrebbeIgnorareIlMaiuscoloInVer;
+var
+  LText: string;
+begin
+  Assert.IsTrue(TKeenParameters.TryInformation('/ver', LText));
+  Assert.IsTrue(StartsText(#10'Keen Dreams version 1.93  (Rev 1)', LText));
+  Assert.IsTrue(TKeenParameters.TryInformation('/VeR', LText));
+end;
 
 procedure TTestKeenParametersParity.DovrebbeDareLeStesseRisposteDelC;
 var

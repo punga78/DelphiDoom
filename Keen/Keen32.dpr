@@ -75,6 +75,7 @@ var
   LOptions: TKeenRunOptions;
   LProgramFolder: string;
   LOriginal: TArray<string>;
+  LInformation: string;
   LImportSave: string;
   LImportExe: string;
   LImportSlot: Integer;
@@ -86,6 +87,12 @@ begin
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
   try
+    // main of kd_main.c: /VER and /? as the first argument write a text and end
+    if (ParamCount >= 1) and TKeenParameters.TryInformation(ParamStr(1), LInformation) then
+    begin
+      Write(LInformation);
+      Exit;
+    end;
     LMapNumber := 0;
     LImportSlot := 0;
     LPng := '';
