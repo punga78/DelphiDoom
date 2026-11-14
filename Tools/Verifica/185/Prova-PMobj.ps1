@@ -190,6 +190,29 @@ $Expansions = @(
   @{ R = 'P_MobjThinker'; F = 'if mobj.movecount < TMobjGameRules.RespawnTime then exit;'; Heretic = 'if mobj.movecount < 12 * TICRATE then begin exit; end;' }
   @{ F = 'TMobjGameRules.RespawnTime'; D = '12 * TICRATE'; Strife = '16 * TICRATE' }
   @{ F = 'if TMobjGameRules.NeverRespawns(mobj) then exit;'; D = ''; Strife = 'if mobj.flags and MF_NOTDMATCH <> 0 then exit;' }
+  # --- P_ZMovement (Base\p_mobj.pas: lo scheletro; le fasi sono regole del gioco) ---
+  $zNote = 'le variabili locali sono passate dalla vecchia routine alle regole che le usano; ogni regola rilegge il giocatore (puro) dove la vecchia routine lo teneva in una variabile'
+  @{ R = 'P_ZMovement'; F = 'procedure P_ZMovement(mo: Pmobj_t); var ladderticks: integer; ceilz: fixed_t; begin'
+     Doom = 'procedure P_ZMovement(mo: Pmobj_t); var dist: fixed_t; delta: fixed_t; ceilz: fixed_t; grav: integer; momomz: fixed_t; correct_lost_soul_bounce: Boolean; ladderticks: integer; player: Pplayer_t; begin'
+     Heretic = 'procedure P_ZMovement(mo: Pmobj_t); var dist: fixed_t; delta: fixed_t; ceilz: fixed_t; grav: integer; ladderticks: integer; player: Pplayer_t; oldz: fixed_t; begin'
+     Strife = 'procedure P_ZMovement(mo: Pmobj_t); var dist: fixed_t; delta: fixed_t; ceilz: fixed_t; grav: integer; momomz: fixed_t; laddertics: integer; player: Pplayer_t; begin'
+     Hexen = 'procedure P_ZMovement(mo: Pmobj_t); var dist: integer; delta: integer; pl: Pplayer_t; laddertics: integer; oldz: fixed_t; begin'; Note = $zNote }
+  @{ R = 'P_ZMovement'; F = 'ladderticks := TMobjGameRules.ZPrelude(mo);'; Doom = '<<B:ZPrelude|strip=result := ladderticks;>>'; Heretic = '<<B:ZPrelude|strip=result := ladderticks;>>'
+     Strife = '<<B:ZPrelude|strip=result := laddertics;>>'; Hexen = '<<B:ZPrelude|strip=result := laddertics;>>' }
+  @{ R = 'P_ZMovement'; F = 'mo.momz < TMobjGameRules.LadderStopMomz'; Doom = 'mo.momz < FRACUNIT div 16'; Heretic = 'mo.momz < FRACUNIT div 8'; Strife = 'mo.momz < FRACUNIT div 8'; Hexen = 'mo.momz < FRACUNIT div 8' }
+  @{ R = 'P_ZMovement'; F = 'ladderticks'; Strife = 'laddertics'; Hexen = 'laddertics'; All = $true; Note = 'Strife e Hexen chiamavano la variabile laddertics' }
+  @{ R = 'P_ZMovement'; F = 'TMobjGameRules.AfterZAdjust(mo);'; D = ''; Strife = '<<B:AfterZAdjust>>' }
+  @{ R = 'P_ZMovement'; F = 'TMobjGameRules.ZFloat(mo);'; D = '<<B:ZFloat>>'; Heretic = '<<B:ZFloat|lead=player := Pplayer_t(mo.player);>>' }
+  @{ R = 'P_ZMovement'; F = 'if not TMobjGameRules.ZHitFloor(mo) then exit;'; D = '<<B:ZHitFloor|lead=result := false;|lead=player := Pplayer_t(mo.player);|strip=result := true;>>'
+     Hexen = '<<B:ZHitFloor|lead=result := false;|lead=pl := mo.player;|strip=result := true;>>' }
+  @{ R = 'P_ZMovement'; F = 'TMobjGameRules.ZGravity(mo);'; D = '<<B:ZGravity|lead=player := Pplayer_t(mo.player);>>'; Hexen = '<<B:ZGravity>>' }
+  @{ R = 'P_ZMovement'; F = 'ceilz := TMobjGameRules.CeilingLimit(mo);'
+     Doom = 'ceilz := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector);'
+     Heretic = 'ceilz := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector, mo.player);'
+     Strife = 'ceilz := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector);'; Hexen = '' }
+  @{ R = 'P_ZMovement'; F = 'if mo.z + mo.height > ceilz then'; Hexen = 'if mo.z + mo.height > mo.ceilingz then'; Note = 'Hexen non aggiungeva nulla al soffitto: la regola CeilingLimit e'' mo.ceilingz' }
+  @{ R = 'P_ZMovement'; F = 'TMobjGameRules.ZHitCeiling(mo, ceilz);'; D = 'begin <<B:ZHitCeiling>> end;' }
+
   # --- P_NightmareRespawn (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.Respawner.pas; Hexen e' un metodo) ---
   @{ R = 'P_NightmareRespawn'; F = 'class procedure TMobjRespawner.Respawn(mobj: Pmobj_t);'; D = 'procedure P_NightmareRespawn(mobj: Pmobj_t);' }
   @{ R = 'P_NightmareRespawn'; F = 'ss: Psector_t;'; Heretic = 'ss: Psubsector_t;'; Strife = 'ss: Psubsector_t;'; Note = $oneread }

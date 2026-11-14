@@ -83,6 +83,13 @@ procedure P_ExplodeMissile(mo: Pmobj_t);
 
 //==============================================================================
 //
+// P_ZMovement
+//
+//==============================================================================
+procedure P_ZMovement(mo: Pmobj_t);
+
+//==============================================================================
+//
 // P_MobjThinker
 //
 //==============================================================================
@@ -717,6 +724,53 @@ begin
   end
   else
     TMobjGameRules.ApplyFriction(mo, special);
+end;
+
+//==============================================================================
+//
+// P_ZMovement
+//
+// One routine for Doom, Heretic, Hexen and Strife (issue #185, step 2c-3): the four games did the
+// same things in the same order; what a game does at each stage is in TMobjGameRules. The floor
+// stage, the longest, is a rule of its own because the order of what happens when a thing lands
+// (splash, state, bounce, damage, explosion) is different in every game and decides states and sounds.
+//
+//==============================================================================
+procedure P_ZMovement(mo: Pmobj_t);
+var
+  ladderticks: integer;
+  ceilz: fixed_t;
+begin
+  ladderticks := TMobjGameRules.ZPrelude(mo);
+
+  // adjust height
+  if ladderticks > 0 then
+  begin
+    mo.z := mo.z + mo.momz;
+    mo.momz := (mo.momz * 7) div 8;
+    if mo.momz < TMobjGameRules.LadderStopMomz then
+      mo.momz := 0;
+  end
+  else
+    mo.z := mo.z + mo.momz;
+
+  TMobjGameRules.AfterZAdjust(mo);
+
+  TMobjGameRules.ZFloat(mo);
+
+  // clip movement
+  if mo.z <= mo.floorz then
+  begin
+    if not TMobjGameRules.ZHitFloor(mo) then
+      exit;
+  end
+  else
+    TMobjGameRules.ZGravity(mo);
+
+  ceilz := TMobjGameRules.CeilingLimit(mo);
+
+  if mo.z + mo.height > ceilz then
+    TMobjGameRules.ZHitCeiling(mo, ceilz);
 end;
 
 //==============================================================================

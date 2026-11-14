@@ -52,6 +52,8 @@ type
       CyclesStatesWhileNoTics = True;
       /// <summary>The dead monsters respawn (nightmare, -respawn)</summary>
       MonstersRespawn = True;
+      /// <summary>P_ZMovement: the momentum under which a thing leaving a ladder stops</summary>
+      LadderStopMomz = FRACUNIT div 8;
 
     /// <summary>P_SetMobjState: what the thing remembers of the state it leaves</summary>
     class procedure KeepPreviousState(mobj: Pmobj_t); static; inline;
@@ -156,6 +158,20 @@ type
     class function RespawnSpawnZ(mobj: Pmobj_t): fixed_t; static;
     /// <summary>P_NightmareRespawn: what the new monster inherits from the map thing and the old one, after the ambush flag</summary>
     class procedure RespawnInherit(mo, mobj: Pmobj_t; mthing: Pmapthing_t); static;
+    /// <summary>P_ZMovement: the player on a ladder and the smooth step up; gives the tics left on the ladder</summary>
+    class function ZPrelude(mo: Pmobj_t): integer; static;
+    /// <summary>P_ZMovement: what the game does after the height is adjusted (Strife: things standing on things)</summary>
+    class procedure AfterZAdjust(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: floating monsters go toward their target (the flying player bobs)</summary>
+    class procedure ZFloat(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: the thing is at or under the floor (landing, bounce, splash); false when P_ZMovement is over</summary>
+    class function ZHitFloor(mo: Pmobj_t): boolean; static;
+    /// <summary>P_ZMovement: the thing is in the air (gravity)</summary>
+    class procedure ZGravity(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: the height of the ceiling a thing hits</summary>
+    class function CeilingLimit(mo: Pmobj_t): fixed_t; static;
+    /// <summary>P_ZMovement: the thing hit the ceiling at this height</summary>
+    class procedure ZHitCeiling(mo: Pmobj_t; ceilz: fixed_t); static;
     /// <summary>The tics a dead monster waits before it may respawn</summary>
     class function RespawnTime: integer; static; inline;
     /// <summary>P_SpawnMobj: the flags of the game, the "just appeared" flag and the fields only some games copy from the info</summary>
@@ -332,15 +348,15 @@ end;
 // P_ZMovement
 //
 //==============================================================================
-procedure P_ZMovement(mo: Pmobj_t);
+//==============================================================================
+//
+// P_ZMovement: the player on a ladder, the smooth step up; gives the tics left on the ladder
+//
+//==============================================================================
+class function TMobjGameRules.ZPrelude(mo: Pmobj_t): integer;
 var
-  dist: fixed_t;
-  delta: fixed_t;
-  ceilz: fixed_t;
-  grav: integer;
   ladderticks: integer;
   player: Pplayer_t;
-  oldz: fixed_t;
 begin
   ladderticks := 0;
   player := Pplayer_t(mo.player);
@@ -360,18 +376,30 @@ begin
     player.deltaviewheight :=
       _SHR((PVIEWHEIGHT - player.crouchheight - player.viewheight), 3);
   end;
+  result := ladderticks;
+end;
 
-  // adjust height
-  if ladderticks > 0 then
-  begin
-    mo.z := mo.z + mo.momz;
-    mo.momz := (mo.momz * 7) div 8;
-    if mo.momz < FRACUNIT div 8 then
-      mo.momz := 0;
-  end
-  else
-    mo.z := mo.z + mo.momz;
+//==============================================================================
+//
+// P_ZMovement: after the height is adjusted (nothing in this game)
+//
+//==============================================================================
+class procedure TMobjGameRules.AfterZAdjust(mo: Pmobj_t);
+begin
+end;
 
+//==============================================================================
+//
+// P_ZMovement: floating monsters go toward their target
+//
+//==============================================================================
+class procedure TMobjGameRules.ZFloat(mo: Pmobj_t);
+var
+  dist: fixed_t;
+  delta: fixed_t;
+  player: Pplayer_t;
+begin
+  player := Pplayer_t(mo.player);
   if (mo.flags and MF_FLOAT <> 0) and (mo.target <> nil) then
   begin
     // float down towards target if too close
@@ -391,10 +419,20 @@ begin
 
   if (player <> nil) and (mo.flags2 and MF2_FLY <> 0) and (mo.z > mo.floorz) and (leveltime and 2 <> 0) then
     mo.z := mo.z + finesine[(FINEANGLES div 20 * leveltime div 4) and FINEMASK];
+end;
 
-  // clip movement
-  if mo.z <= mo.floorz then
-  begin
+//==============================================================================
+//
+// P_ZMovement: the thing is at or under the floor; false when the routine is over
+//
+//==============================================================================
+class function TMobjGameRules.ZHitFloor(mo: Pmobj_t): boolean;
+var
+  oldz: fixed_t;
+  player: Pplayer_t;
+begin
+  result := false;
+  player := Pplayer_t(mo.player);
     // hit the floor
     if mo.flags and MF_MISSILE <> 0 then
     begin
@@ -484,8 +522,21 @@ begin
       P_ExplodeMissile(mo);
       exit;
     end;
-  end
-  else if (mo.flags2 and MF2_LOGRAV <> 0) or (mo.flags_ex and MF_EX_LOWGRAVITY <> 0) then
+  result := true;
+end;
+
+//==============================================================================
+//
+// P_ZMovement: the thing is in the air
+//
+//==============================================================================
+class procedure TMobjGameRules.ZGravity(mo: Pmobj_t);
+var
+  grav: integer;
+  player: Pplayer_t;
+begin
+  player := Pplayer_t(mo.player);
+  if (mo.flags2 and MF2_LOGRAV <> 0) or (mo.flags_ex and MF_EX_LOWGRAVITY <> 0) then
   begin
     if mo.momz = 0 then
       mo.momz := -(P_GetMobjGravity(mo) div 8) * 2
@@ -514,11 +565,25 @@ begin
       mo.momz := mo.momz - grav;
 
   end;
+end;
 
-  ceilz := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector, mo.player);
+//==============================================================================
+//
+// P_ZMovement: the height of the ceiling a thing hits
+//
+//==============================================================================
+class function TMobjGameRules.CeilingLimit(mo: Pmobj_t): fixed_t;
+begin
+  result := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector, mo.player);
+end;
 
-  if mo.z + mo.height > ceilz then
-  begin
+//==============================================================================
+//
+// P_ZMovement: the thing hit the ceiling
+//
+//==============================================================================
+class procedure TMobjGameRules.ZHitCeiling(mo: Pmobj_t; ceilz: fixed_t);
+begin
     // hit the ceiling
     if mo.momz > 0 then
     begin
@@ -550,7 +615,6 @@ begin
       end;
       P_ExplodeMissile(mo);
     end;
-  end;
 end;
 
 //==============================================================================
