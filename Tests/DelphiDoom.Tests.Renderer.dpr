@@ -22,6 +22,11 @@ uses
   DelphiDoom.Renderer.TextureLookup in '..\Libs\Renderer\DelphiDoom.Renderer.TextureLookup.pas',
   DelphiDoom.Renderer.LevelPrecalc in '..\Libs\Renderer\DelphiDoom.Renderer.LevelPrecalc.pas',
   DelphiDoom.Renderer.Factory in '..\Libs\Renderer\DelphiDoom.Renderer.Factory.pas',
+  DelphiDoom.MathCore.SoftExtended in '..\Libs\MathCore\DelphiDoom.MathCore.SoftExtended.pas',
+  DelphiDoom.MathCore.X87Double in '..\Libs\MathCore\DelphiDoom.MathCore.X87Double.pas',
+  DelphiDoom.Renderer.X87 in '..\Libs\Renderer\DelphiDoom.Renderer.X87.pas',
+  DelphiDoom.Tests.MathCore.Fingerprint in 'Source\DelphiDoom.Tests.MathCore.Fingerprint.pas',
+  DelphiDoom.Tests.Renderer.X87 in 'Source\DelphiDoom.Tests.Renderer.X87.pas',
   DelphiDoom.Tests.Renderer.Fakes in 'Source\DelphiDoom.Tests.Renderer.Fakes.pas',
   DelphiDoom.Tests.Renderer.TextureLookup in 'Source\DelphiDoom.Tests.Renderer.TextureLookup.pas',
   DelphiDoom.Tests.Renderer.LevelPrecalc in 'Source\DelphiDoom.Tests.Renderer.LevelPrecalc.pas';

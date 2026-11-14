@@ -165,6 +165,9 @@ var
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   i_system,
   g_game,
   r_bsp,
@@ -402,7 +405,11 @@ begin
   if ds.use_double then
   begin
     rw_scalestep_dbl := ds.scalestep_dbl;
+{$IFDEF CPUX86}
     spryscale := trunc(ds.scale_dbl + (x1 - ds.x1) * rw_scalestep_dbl);
+{$ELSE}
+    spryscale := TX87Double.TruncMulAdd(ds.scale_dbl, x1 - ds.x1, rw_scalestep_dbl);
+{$ENDIF}
   end
   else
   begin
@@ -502,12 +509,23 @@ begin
       sprtopscreen := FixedInt64(t); }
 
      //t -> double (delphidoom)
+{$IFDEF CPUX86}
       spryscale_dbl := spryscale / FRACUNIT;
       t := centery - texturemid_dbl * spryscale_dbl;
       if (t + (textureheight[texnum] / FRACUNIT) * spryscale_dbl < 0) or (t > SCREENHEIGHT * 2) or (t < -32000.0) then
+{$ELSE}
+      // issue #40: the same t as the 32 bit FPU, which holds the product of two 16.16 numbers and the
+      // difference without rounding (64 bits of mantissa): here they are exact as integers of 64 bits
+      t := (Int64(centery) * 4294967296 - Int64(dc_texturemid) * spryscale) / 4294967296.0;
+      if (Round(t * 4294967296.0) + Int64(textureheight[texnum]) * spryscale < 0) or (t > SCREENHEIGHT * 2) or (t < -32000.0) then
+{$ENDIF}
       begin
         if ds.use_double then
+{$IFDEF CPUX86}
           spryscale := Trunc(ds.scale_dbl + (dc_x - ds.x1) * rw_scalestep_dbl)
+{$ELSE}
+          spryscale := TX87Double.TruncMulAdd(ds.scale_dbl, dc_x - ds.x1, rw_scalestep_dbl)
+{$ENDIF}
         else
           spryscale := spryscale + rw_scalestep;
         continue;
@@ -537,7 +555,11 @@ begin
       maskedtexturecol[dc_x] := MAXSHORT;
     end;
     if ds.use_double then
+{$IFDEF CPUX86}
       spryscale := Trunc(ds.scale_dbl + (dc_x - ds.x1) * rw_scalestep_dbl)
+{$ELSE}
+      spryscale := TX87Double.TruncMulAdd(ds.scale_dbl, dc_x - ds.x1, rw_scalestep_dbl)
+{$ENDIF}
     else
       spryscale := spryscale + rw_scalestep;
   end;
@@ -637,7 +659,11 @@ begin
   if stop > start then
   begin
     rw_scale_dbl2 := R_ScaleFromGlobalAngle_DBL(viewangle + xtoviewangle[stop]);
+{$IFDEF CPUX86}
     rw_scalestep_dbl := (rw_scale_dbl2 - rw_scale_dbl) / (stop - start);
+{$ELSE}
+    rw_scalestep_dbl := TX87Double.DifferenceQuotient(rw_scale_dbl2, rw_scale_dbl, stop - start);
+{$ENDIF}
     pds.scale2 := Round(rw_scale_dbl2);
     rw_scalestep := Round(rw_scalestep_dbl);
     pds.scalestep := rw_scalestep;
@@ -1051,6 +1077,7 @@ begin
   worldbottom := worldbottom div WORLDUNIT;
 //  worldbottom := worldbottom shr WORLDBITS;
 
+{$IFDEF CPUX86}
   topstep_dbl := - rw_scalestep_dbl / FRACUNIT * worldtop_dbl;
 
   topfrac_dbl := (centeryfrac / WORLDUNIT) - worldtop_dbl / FRACUNIT * rw_scale_dbl;
@@ -1058,6 +1085,16 @@ begin
   bottomstep_dbl := - rw_scalestep_dbl / FRACUNIT * worldbottom_dbl;
 
   bottomfrac_dbl := (centeryfrac / WORLDUNIT) - worldbottom_dbl / FRACUNIT * rw_scale_dbl;
+{$ELSE}
+  // issue #40: the same Doubles as the 32 bit FPU (the divisions by a power of two are exact)
+  topstep_dbl := TX87Double.Multiply(-rw_scalestep_dbl / FRACUNIT, worldtop_dbl);
+
+  topfrac_dbl := TX87Double.SubtractProduct(centeryfrac / WORLDUNIT, worldtop_dbl / FRACUNIT, rw_scale_dbl);
+
+  bottomstep_dbl := TX87Double.Multiply(-rw_scalestep_dbl / FRACUNIT, worldbottom_dbl);
+
+  bottomfrac_dbl := TX87Double.SubtractProduct(centeryfrac / WORLDUNIT, worldbottom_dbl / FRACUNIT, rw_scale_dbl);
+{$ENDIF}
 
   topstep := round(topstep_dbl);
   topfrac := round(topfrac_dbl);
@@ -1078,8 +1115,13 @@ begin
       pixhigh := (centeryfrac div WORLDUNIT) - FixedMul(worldhigh, rw_scale);
 //      pixhigh := (centeryfrac shr WORLDBITS) - FixedMul(worldhigh, rw_scale);
       pixhighstep := -FixedMul(rw_scalestep, worldhigh);
+{$IFDEF CPUX86}
       pixhigh_dbl := (centeryfrac / WORLDUNIT) - worldhigh_dbl / FRACUNIT * rw_scale_dbl;
       pixhighstep_dbl := -rw_scalestep_dbl / FRACUNIT * worldhigh_dbl;
+{$ELSE}
+      pixhigh_dbl := TX87Double.SubtractProduct(centeryfrac / WORLDUNIT, worldhigh_dbl / FRACUNIT, rw_scale_dbl);
+      pixhighstep_dbl := TX87Double.Multiply(-rw_scalestep_dbl / FRACUNIT, worldhigh_dbl);
+{$ENDIF}
     end;
 
     if worldlow_dbl > worldbottom_dbl then
@@ -1087,8 +1129,13 @@ begin
       pixlow := (centeryfrac div WORLDUNIT) - FixedMul(worldlow, rw_scale);
 //      pixlow := (centeryfrac shr WORLDBITS) - FixedMul(worldlow, rw_scale);
       pixlowstep := -FixedMul(rw_scalestep, worldlow);
+{$IFDEF CPUX86}
       pixlow_dbl := (centeryfrac / WORLDUNIT) - worldlow_dbl / FRACUNIT * rw_scale_dbl;
       pixlowstep_dbl := -rw_scalestep_dbl / FRACUNIT * worldlow_dbl;
+{$ELSE}
+      pixlow_dbl := TX87Double.SubtractProduct(centeryfrac / WORLDUNIT, worldlow_dbl / FRACUNIT, rw_scale_dbl);
+      pixlowstep_dbl := TX87Double.Multiply(-rw_scalestep_dbl / FRACUNIT, worldlow_dbl);
+{$ENDIF}
     end;
   end;
 

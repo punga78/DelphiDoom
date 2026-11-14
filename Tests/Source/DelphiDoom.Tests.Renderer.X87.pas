@@ -1,0 +1,320 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: tests of the renderer library - the floating point of the       }
+{  32 bit renderer                                                             }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+unit DelphiDoom.Tests.Renderer.X87;
+
+{$Q-}
+{$R-}
+
+interface
+
+uses
+  System.SysUtils, DUnitX.TestFramework;
+
+type
+  /// <summary>
+  ///   TRendererX87 against the expressions of r_main.pas, r_plane.pas and r_scale.pas (issue #40). At 32 bit
+  ///   each result is compared with the expression of the renderer computed by the FPU (copied here); the
+  ///   fingerprint of the results is a constant and at 64 bit, where the renderer calls the class, the same
+  ///   fingerprint must come out
+  /// </summary>
+  [TestFixture]
+  [Category('renderer')]
+  TTestRendererX87 = class(TObject)
+  public
+    [Test]
+    procedure DovrebbeDareSenoECosenoDellaVista;
+    [Test]
+    procedure DovrebbeDareIlRapportoDeiPiani;
+    [Test]
+    procedure DovrebbeDareIPassiDiUnoSpan;
+    [Test]
+    procedure DovrebbeDareIPassiDiUnoSpanVicinoAllaMeta;
+    [Test]
+    procedure DovrebbeDareLaScalaDiUnMuro;
+    [Test]
+    procedure DovrebbeLimitareLaScalaDiUnMuro;
+  end;
+
+implementation
+
+uses
+  System.Math, DelphiDoom.MathCore.SoftExtended, DelphiDoom.Renderer.X87, DelphiDoom.Tests.MathCore.Fingerprint;
+
+const
+  // the constants of tables.pas, as the renderer has them
+  D_PI = 3.141592657;
+  ANGLE_T_TO_RAD = 2 * D_PI / $100000000;
+  FRACUNIT = 65536;
+
+type
+  TRandomSource = record
+    State: Cardinal;
+    function Next: Cardinal;
+  end;
+
+function TRandomSource.Next: Cardinal;
+begin
+  State := State * 1664525 + 1013904223;
+  Result := State xor (State shr 13);
+end;
+
+function SameBits(const A, B: Double): Boolean;
+begin
+  Result := PUInt64(@A)^ = PUInt64(@B)^;
+end;
+
+{ TTestRendererX87 }
+
+procedure TTestRendererX87.DovrebbeDareSenoECosenoDellaVista;
+const
+  COUNT = 100000;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LAngle: Cardinal;
+  LSine, LCosine: Double;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Double;
+  LDifferent: Integer;
+  {$IFEND}
+begin
+  LRandom.State := 2026;
+  LFingerprint := TFingerprint.Create;
+  try
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    LDifferent := 0;
+    {$IFEND}
+    for LIndex := 0 to COUNT - 1 do
+    begin
+      LAngle := LRandom.Next;
+      if LIndex < 8 then
+        LAngle := Cardinal(LIndex) shl 29;
+      LSine := TRendererX87.ViewSine(LAngle);
+      LCosine := TRendererX87.ViewCosine(LAngle);
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      LNative := Sin(LAngle / $FFFFFFFF * 2 * Pi);
+      if not SameBits(LNative, LSine) then
+        Inc(LDifferent);
+      Assert.AreEqual(LNative, LSine, 1E-15, Format('sine of %u', [LAngle]));
+      LNative := Cos(LAngle / $FFFFFFFF * 2 * Pi);
+      if not SameBits(LNative, LCosine) then
+        Inc(LDifferent);
+      Assert.AreEqual(LNative, LCosine, 1E-15, Format('cosine of %u', [LAngle]));
+      {$IFEND}
+      LFingerprint.AddDouble(LSine);
+      LFingerprint.AddDouble(LCosine);
+    end;
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    // the sine of the processor is not correctly rounded: measured, one Double in a hundred thousand differs
+    // (by its last bit)
+    Assert.IsTrue(LDifferent <= 2 * COUNT div 5000, Format('%d Doubles differ from the FPU', [LDifferent]));
+    {$IFEND}
+    Assert.AreEqual('BD5975BF45A31350/200000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareIlRapportoDeiPiani;
+const
+  WIDTHS: array[0..7] of Integer = (320, 640, 800, 1024, 1280, 1366, 1920, 2560);
+  HEIGHTS: array[0..7] of Integer = (200, 480, 600, 768, 720, 768, 1080, 1440);
+  ASPECTS: array[0..4] of Double = (1.0, 1.2, 0.8333333333333334, 1.3333333333333333, 0.75);
+var
+  LFingerprint: TFingerprint;
+  LSize, LAspect: Integer;
+  LResult: Double;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Double;
+  LHeight, LWidth: Integer;
+  {$IFEND}
+begin
+  LFingerprint := TFingerprint.Create;
+  try
+    for LSize := 0 to High(WIDTHS) do
+      for LAspect := 0 to High(ASPECTS) do
+      begin
+        LResult := TRendererX87.PlaneRelativeAspect(HEIGHTS[LSize], WIDTHS[LSize], ASPECTS[LAspect]);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LHeight := HEIGHTS[LSize];
+        LWidth := WIDTHS[LSize];
+        LNative := 320 / 200 * LHeight / LWidth * ASPECTS[LAspect];
+        Assert.IsTrue(SameBits(LNative, LResult), Format('%d x %d, aspect %d', [LWidth, LHeight, LAspect]));
+        {$IFEND}
+        LFingerprint.AddDouble(LResult);
+      end;
+    Assert.AreEqual(1.2, TRendererX87.PlaneRelativeAspect(480, 640, 1.0), 1E-12);
+    Assert.AreEqual('52153BEDE91559E8/40', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareIPassiDiUnoSpan;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LHeight, LRows: Integer;
+  LScreenWidth, LScreenHeight: Integer;
+  LAspect, LSine, LCosine: Double;
+  LX, LY, LExactX, LExactY: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LSlope: Double;
+  {$IFEND}
+begin
+  LRandom.State := 4040;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 299999 do
+    begin
+      LHeight := Integer(LRandom.Next mod (512 * FRACUNIT)) + 1;
+      LRows := 1 + Integer(LRandom.Next mod 1080);
+      // one draw per statement: the order of evaluation of the arguments differs between the two compilers
+      LScreenWidth := 320 + Integer(LRandom.Next mod 2300);
+      LScreenHeight := 200 + Integer(LRandom.Next mod 1300);
+      LAspect := TRendererX87.PlaneRelativeAspect(LScreenHeight, LScreenWidth, 1.0);
+      LSine := TRendererX87.ViewSine(LRandom.Next);
+      LCosine := TRendererX87.ViewCosine(LRandom.Next);
+      TRendererX87.PlaneSteps(LHeight, LRows, LAspect, LSine, LCosine, LX, LY);
+      TRendererX87.PlaneStepsExact(LHeight, LRows, LAspect, LSine, LCosine, LExactX, LExactY);
+      Assert.AreEqual(LExactX, LX, Format('x step of case %d', [LIndex]));
+      Assert.AreEqual(LExactY, LY, Format('y step of case %d', [LIndex]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      // R_MapPlane
+      LSlope := (LHeight / LRows) * LAspect;
+      Assert.AreEqual(Integer(Round(LSine * LSlope)), LExactX, Format('x step of case %d against the FPU', [LIndex]));
+      Assert.AreEqual(Integer(Round(LCosine * LSlope)), LExactY, Format('y step of case %d against the FPU', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExactX);
+      LFingerprint.AddInteger(LExactY);
+    end;
+    Assert.AreEqual('987BFCAFCCA92048/600000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareIPassiDiUnoSpanVicinoAllaMeta;
+var
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LHeight, LRows: Integer;
+  LX, LY, LExactX, LExactY: Integer;
+  LSine: Double;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LSlope: Double;
+  {$IFEND}
+begin
+  // sine 0.5 and 0.25 with an aspect of 1: the product falls on a half whenever the slope is an odd integer
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 49999 do
+    begin
+      LRows := 1 + LIndex mod 7;
+      LHeight := (2 * LIndex + 1) * LRows;
+      LSine := 0.5;
+      if Odd(LIndex shr 3) then
+        LSine := -0.25;
+      TRendererX87.PlaneSteps(LHeight, LRows, 1.0, LSine, 0.75, LX, LY);
+      TRendererX87.PlaneStepsExact(LHeight, LRows, 1.0, LSine, 0.75, LExactX, LExactY);
+      Assert.AreEqual(LExactX, LX, Format('x step of case %d', [LIndex]));
+      Assert.AreEqual(LExactY, LY, Format('y step of case %d', [LIndex]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      LSlope := (LHeight / LRows) * 1.0;
+      Assert.AreEqual(Integer(Round(LSine * LSlope)), LExactX, Format('x step of case %d against the FPU', [LIndex]));
+      Assert.AreEqual(Integer(Round(0.75 * LSlope)), LExactY, Format('y step of case %d against the FPU', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExactX);
+      LFingerprint.AddInteger(LExactY);
+    end;
+    // halves go to the even integer
+    TRendererX87.PlaneSteps(3, 1, 1.0, 0.5, -0.5, LX, LY);
+    Assert.AreEqual(2, LX);
+    Assert.AreEqual(-2, LY);
+    TRendererX87.PlaneSteps(5, 1, 1.0, 0.5, -0.5, LX, LY);
+    Assert.AreEqual(2, LX);
+    Assert.AreEqual(-2, LY);
+    Assert.AreEqual('1450C4399C1592BC/100000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareLaScalaDiUnMuro;
+const
+  COUNT = 100000;
+  MAX_SCALE = 64 * FRACUNIT;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LProjection, LDistance: Integer;
+  LAngleA, LAngleB: Cardinal;
+  LResult: Double;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNumerator, LDenominator, LNative: Double;
+  LDifferent: Integer;
+  {$IFEND}
+begin
+  LRandom.State := 630;
+  LFingerprint := TFingerprint.Create;
+  try
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    LDifferent := 0;
+    {$IFEND}
+    for LIndex := 0 to COUNT - 1 do
+    begin
+      LProjection := (160 + Integer(LRandom.Next mod 1200)) * FRACUNIT;
+      LDistance := 1 + Integer(LRandom.Next mod (4096 * FRACUNIT));
+      // the angle of the column is within the field of view, the one of the wall anywhere in front
+      LAngleA := $40000000 + LRandom.Next mod $20000000 - $10000000;
+      LAngleB := LRandom.Next mod $7FFFFFFF + 1;
+      LResult := TRendererX87.ScaleFromAngles(LProjection, LDistance, LAngleA, LAngleB, MAX_SCALE);
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      // R_ScaleFromGlobalAngle_DBL
+      LNumerator := LProjection * Sin(LAngleB * ANGLE_T_TO_RAD);
+      LDenominator := LDistance * Sin(LAngleA * ANGLE_T_TO_RAD);
+      LNative := (LNumerator / LDenominator) * FRACUNIT;
+      if LNative < 256 then
+        LNative := 256
+      else if LNative > MAX_SCALE then
+        LNative := MAX_SCALE;
+      if not SameBits(LNative, LResult) then
+        Inc(LDifferent);
+      Assert.AreEqual(LNative, LResult, Abs(LNative) * 1E-15, Format('case %d', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddDouble(LResult);
+    end;
+    {$IF SizeOf(Extended) > SizeOf(Double)}
+    Assert.IsTrue(LDifferent <= COUNT div 2000, Format('%d Doubles differ from the FPU', [LDifferent]));
+    {$IFEND}
+    Assert.AreEqual('21F977DEFCF71FDB/100000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeLimitareLaScalaDiUnMuro;
+const
+  MAX_SCALE = 64 * FRACUNIT;
+begin
+  // a wall at distance zero: the denominator is zero
+  Assert.AreEqual(Double(MAX_SCALE), TRendererX87.ScaleFromAngles(160 * FRACUNIT, 0, $40000000, $40000000, MAX_SCALE));
+  Assert.AreEqual(Double(256), TRendererX87.ScaleFromAngles(160 * FRACUNIT, 0, $40000000, $C0000000, MAX_SCALE));
+  // very far and very near
+  Assert.AreEqual(Double(256), TRendererX87.ScaleFromAngles(FRACUNIT, MaxInt, $40000000, $40000000, MAX_SCALE));
+  Assert.AreEqual(Double(MAX_SCALE), TRendererX87.ScaleFromAngles(160 * FRACUNIT, 1, $40000000, $40000000, MAX_SCALE));
+  // facing the wall at the distance of the projection: the scale is one
+  Assert.AreEqual(Double(FRACUNIT), TRendererX87.ScaleFromAngles(160 * FRACUNIT, 160 * FRACUNIT, $40000000, $40000000,
+    MAX_SCALE), 1E-6);
+end;
+
+end.

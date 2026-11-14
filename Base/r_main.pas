@@ -565,6 +565,9 @@ uses
   g_game,
 {$ENDIF}
   DelphiDoom.MathCore.Types,
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   m_misc,
 {$IFDEF HEXEN}
   m_rnd,
@@ -3447,10 +3450,17 @@ begin
   viewsin := fixedsine[vangle];
   viewcos := fixedcosine[vangle];
 {$IFNDEF OPENGL}
+{$IFDEF CPUX86}
   dviewsin := Sin(viewangle / $FFFFFFFF * 2 * pi);
   dviewcos := Cos(viewangle / $FFFFFFFF * 2 * pi);
 // JVAL: Widescreen support
   planerelativeaspect := 320 / 200 * SCREENHEIGHT / SCREENWIDTH * monitor_relative_aspect;
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  dviewsin := TRendererX87.ViewSine(viewangle);
+  dviewcos := TRendererX87.ViewCosine(viewangle);
+  planerelativeaspect := TRendererX87.PlaneRelativeAspect(SCREENHEIGHT, SCREENWIDTH, monitor_relative_aspect);
+{$ENDIF}
 {$ENDIF}
 
 {$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}

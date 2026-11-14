@@ -262,6 +262,10 @@ const
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
 {$IFDEF HEXEN}
   doomstat,
   d_player,
@@ -380,9 +384,15 @@ begin
     cachedheight[y] := planeheight;
     cacheddistance[y] := FixedMul(planeheight, yslope[y]);
     distance := cacheddistance[y];
+{$IFDEF CPUX86}
     slope := (planeheight / abs(centery - y)) * planerelativeaspect;
     ds_xstep := round(dviewsin * slope);
     ds_ystep := round(dviewcos * slope);
+{$ELSE}
+    // the same numbers as the 32 bit FPU (issue #40)
+    TRendererX87.PlaneSteps(planeheight, abs(centery - y), planerelativeaspect, dviewsin, dviewcos,
+      ds_xstep, ds_ystep);
+{$ENDIF}
 
     cachedxstep[y] := ds_xstep;
     cachedystep[y] := ds_ystep;

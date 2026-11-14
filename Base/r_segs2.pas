@@ -147,6 +147,9 @@ procedure R_SetDrawSegFunctions;
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   doomtype,
   doomdef,
   i_system,

@@ -34,6 +34,9 @@ type
       ASticky: Boolean): TSoftExtended; static;
     class procedure Multiply128(const A, B: UInt64; out AHigh, ALow: UInt64); static;
     class function CompareMagnitude(const ALeft, ARight: TSoftExtended): Integer; static;
+    class procedure WideMultiplyHigh(const AHigh, ALow, BHigh, BLow: UInt64; out RHigh, RLow: UInt64); static;
+    class procedure WideDivideSmall(var AHigh, ALow: UInt64; ADivisor: Cardinal); static;
+    class function Circular(const AValue: TSoftExtended; ACosine: Boolean): TSoftExtended; static;
   public
     /// <summary>The number of a Double (exact)</summary>
     class function FromDouble(const AValue: Double): TSoftExtended; static;
@@ -65,6 +68,17 @@ type
     function Truncate: Int64;
     /// <summary>Round: to the nearest integer, halves to the even one</summary>
     function Round: Int64;
+    /// <summary>Stored in a Single: rounded to 24 bits, to the nearest even (what fstp dword does)</summary>
+    function ToSingle: Single;
+    /// <summary>
+    ///   The sine as the fsin instruction computes it: the argument is reduced with the 68 bit approximation of
+    ///   Pi of the processor (not with the true Pi) and the result is rounded to 64 bits. The processor is not
+    ///   correctly rounded: its last bit may differ (see the parity test for the measured rate)
+    /// </summary>
+    /// <remarks>|AValue| must be less than 64</remarks>
+    class function Sin(const AValue: TSoftExtended): TSoftExtended; static;
+    /// <summary>The cosine as the fcos instruction computes it (see Sin)</summary>
+    class function Cos(const AValue: TSoftExtended): TSoftExtended; static;
     function IsZero: Boolean;
     function IsNegative: Boolean;
     /// <summary>-1, 0 or 1</summary>
@@ -339,6 +353,14 @@ begin
     raise EZeroDivide.Create('Division by zero');
   if ALeft.FMantissa = 0 then
     Exit(Normalized(False, 0, 0, 0, False));
+  if ARight.FMantissa = $8000000000000000 then
+  begin
+    // a power of two: the quotient is exact, only the exponent changes
+    Result.FMantissa := ALeft.FMantissa;
+    Result.FExponent := ALeft.FExponent - ARight.FExponent - 63;
+    Result.FNegative := ALeft.FNegative <> ARight.FNegative;
+    Exit;
+  end;
   // 66 bits of quotient of two mantissas in [2^63, 2^64): the first one is the integer part (0 or 1)
   LRemainder := ALeft.FMantissa;
   LHigh := 0;
@@ -497,6 +519,264 @@ begin
   Result := Int64(LQuotient);
   if FNegative then
     Result := -Result;
+end;
+
+function TSoftExtended.ToSingle: Single;
+var
+  LSignificand: UInt64;
+  LLow: UInt64;
+begin
+  if FMantissa = 0 then
+    Exit(0.0);
+  LSignificand := FMantissa shr 40;
+  LLow := FMantissa and $FFFFFFFFFF;
+  if (LLow > $8000000000) or ((LLow = $8000000000) and ((LSignificand and 1) <> 0)) then
+    Inc(LSignificand);
+  // LSignificand has at most 25 bits (2^24 exactly after a carry), both exact in a Single
+  Result := Ldexp(Double(LSignificand), FExponent + 40);
+  if FNegative then
+    Result := -Result;
+end;
+
+// the high 128 bits of the 256 bit product of two 128 bit numbers (the low half is dropped, not rounded)
+class procedure TSoftExtended.WideMultiplyHigh(const AHigh, ALow, BHigh, BLow: UInt64; out RHigh, RLow: UInt64);
+var
+  LHighHigh, LHighLow: UInt64;
+  LCrossAHigh, LCrossALow: UInt64;
+  LCrossBHigh, LCrossBLow: UInt64;
+  LLowHigh, LLowLow: UInt64;
+  LMiddle: UInt64;
+  LCarry: UInt64;
+  LSum: UInt64;
+  LResultHigh, LResultLow: UInt64;
+begin
+  Multiply128(AHigh, BHigh, LHighHigh, LHighLow);
+  Multiply128(AHigh, BLow, LCrossAHigh, LCrossALow);
+  Multiply128(ALow, BHigh, LCrossBHigh, LCrossBLow);
+  Multiply128(ALow, BLow, LLowHigh, LLowLow);
+  LCarry := 0;
+  LMiddle := LCrossALow + LCrossBLow;
+  if LMiddle < LCrossALow then
+    Inc(LCarry);
+  LSum := LMiddle + LLowHigh;
+  if LSum < LMiddle then
+    Inc(LCarry);
+  LResultHigh := LHighHigh;
+  LResultLow := LHighLow + LCrossAHigh;
+  if LResultLow < LHighLow then
+    Inc(LResultHigh);
+  LSum := LResultLow + LCrossBHigh;
+  if LSum < LResultLow then
+    Inc(LResultHigh);
+  LResultLow := LSum + LCarry;
+  if LResultLow < LSum then
+    Inc(LResultHigh);
+  RHigh := LResultHigh;
+  RLow := LResultLow;
+end;
+
+// (AHigh:ALow) div ADivisor, by 32 bit digits
+class procedure TSoftExtended.WideDivideSmall(var AHigh, ALow: UInt64; ADivisor: Cardinal);
+var
+  LRemainder: UInt64;
+  LDigit: UInt64;
+  LQuotientHigh, LQuotientLow: UInt64;
+begin
+  LDigit := AHigh shr 32;
+  LQuotientHigh := (LDigit div ADivisor) shl 32;
+  LRemainder := LDigit mod ADivisor;
+  LDigit := (LRemainder shl 32) or (AHigh and $FFFFFFFF);
+  LQuotientHigh := LQuotientHigh or (LDigit div ADivisor);
+  LRemainder := LDigit mod ADivisor;
+  LDigit := (LRemainder shl 32) or (ALow shr 32);
+  LQuotientLow := (LDigit div ADivisor) shl 32;
+  LRemainder := LDigit mod ADivisor;
+  LDigit := (LRemainder shl 32) or (ALow and $FFFFFFFF);
+  LQuotientLow := LQuotientLow or (LDigit div ADivisor);
+  AHigh := LQuotientHigh;
+  ALow := LQuotientLow;
+end;
+
+class function TSoftExtended.Circular(const AValue: TSoftExtended; ACosine: Boolean): TSoftExtended;
+const
+  // Pi / 2 of the processor in units of 2^-67: its Pi is $C90FDAA22168C234C * 2^-66 (68 bits)
+  HALF_PI_HIGH = UInt64($C);
+  HALF_PI_LOW = UInt64($90FDAA22168C234C);
+  // 1 in the fixed point of the series: 127 bits of fraction
+  ONE_HIGH = UInt64($8000000000000000);
+  TERMS = 17;
+var
+  LShift: Integer;
+  LHigh, LLow: UInt64;
+  LDoubleHigh, LDoubleLow: UInt64;
+  LQuadrant: Integer;
+  LReducedNegative: Boolean;
+  LExponent: Integer;
+  LSquareHigh, LSquareLow: UInt64;
+  LSeriesHigh, LSeriesLow: UInt64;
+  LTermHigh, LTermLow: UInt64;
+  LIndex: Integer;
+  LDivisor: Cardinal;
+  LUseCosine: Boolean;
+  LNegative: Boolean;
+begin
+  if AValue.FMantissa = 0 then
+  begin
+    if ACosine then
+      Exit(FromInt64(1));
+    Exit(AValue);
+  end;
+  if AValue.FExponent > -58 then
+    raise EArgumentOutOfRangeException.Create('TSoftExtended: the argument of Sin and Cos must be less than 64');
+  // the argument without its sign is k * (Pi / 2) + r, r in [-Pi / 4, Pi / 4]; |r| = (LHigh:LLow) * 2^LExponent
+  LQuadrant := 0;
+  LReducedNegative := False;
+  LShift := AValue.FExponent + 67;
+  if LShift < 0 then
+  begin
+    LHigh := AValue.FMantissa;
+    LLow := 0;
+    LExponent := AValue.FExponent - 64;
+  end
+  else
+  begin
+    if LShift = 0 then
+    begin
+      LHigh := 0;
+      LLow := AValue.FMantissa;
+    end
+    else
+    begin
+      LHigh := AValue.FMantissa shr (64 - LShift);
+      LLow := AValue.FMantissa shl LShift;
+    end;
+    while (LHigh > HALF_PI_HIGH) or ((LHigh = HALF_PI_HIGH) and (LLow >= HALF_PI_LOW)) do
+    begin
+      if LLow < HALF_PI_LOW then
+        Dec(LHigh);
+      LLow := LLow - HALF_PI_LOW;
+      LHigh := LHigh - HALF_PI_HIGH;
+      Inc(LQuadrant);
+    end;
+    LDoubleHigh := (LHigh shl 1) or (LLow shr 63);
+    LDoubleLow := LLow shl 1;
+    if (LDoubleHigh > HALF_PI_HIGH) or ((LDoubleHigh = HALF_PI_HIGH) and (LDoubleLow > HALF_PI_LOW)) then
+    begin
+      // nearer to the next multiple: r = -(Pi / 2 - rest)
+      LDoubleLow := HALF_PI_LOW - LLow;
+      LDoubleHigh := HALF_PI_HIGH - LHigh;
+      if HALF_PI_LOW < LLow then
+        Dec(LDoubleHigh);
+      LHigh := LDoubleHigh;
+      LLow := LDoubleLow;
+      LReducedNegative := True;
+      Inc(LQuadrant);
+    end;
+    LExponent := -67;
+    if (LHigh = 0) and (LLow = 0) then
+      LExponent := 0
+    else
+    begin
+      if LHigh = 0 then
+      begin
+        LHigh := LLow;
+        LLow := 0;
+        Dec(LExponent, 64);
+      end;
+      while (LHigh and $8000000000000000) = 0 do
+      begin
+        LHigh := (LHigh shl 1) or (LLow shr 63);
+        LLow := LLow shl 1;
+        Dec(LExponent);
+      end;
+    end;
+  end;
+  // which function of r, and its sign
+  LQuadrant := LQuadrant and 3;
+  if ACosine then
+  begin
+    LUseCosine := (LQuadrant and 1) = 0;
+    LNegative := (LQuadrant = 1) or (LQuadrant = 2);
+    if not LUseCosine then
+      LNegative := LNegative <> LReducedNegative;
+  end
+  else
+  begin
+    LUseCosine := (LQuadrant and 1) <> 0;
+    LNegative := LQuadrant >= 2;
+    if not LUseCosine then
+      LNegative := LNegative <> LReducedNegative;
+    LNegative := LNegative <> AValue.FNegative;
+  end;
+  // z = r * r with 127 bits of fraction
+  LSquareHigh := 0;
+  LSquareLow := 0;
+  if (LHigh <> 0) or (LLow <> 0) then
+  begin
+    WideMultiplyHigh(LHigh, LLow, LHigh, LLow, LSquareHigh, LSquareLow);
+    LShift := -(255 + 2 * LExponent);
+    if LShift >= 128 then
+    begin
+      LSquareHigh := 0;
+      LSquareLow := 0;
+    end
+    else if LShift >= 64 then
+    begin
+      LSquareLow := LSquareHigh shr (LShift - 64);
+      LSquareHigh := 0;
+    end
+    else
+    begin
+      LSquareLow := (LSquareLow shr LShift) or (LSquareHigh shl (64 - LShift));
+      LSquareHigh := LSquareHigh shr LShift;
+    end;
+  end;
+  if (LSquareHigh = 0) and (LSquareLow = 0) then
+  begin
+    // r is zero or so small that the series is 1 at this precision
+    if LUseCosine then
+      Result := FromInt64(1)
+    else
+      Result := Normalized(False, LHigh, LLow, LExponent, False);
+    if (Result.FMantissa <> 0) and LNegative then
+      Result.FNegative := True;
+    Exit;
+  end;
+  // sin(r) / r = 1 - z/(2*3) * (1 - z/(4*5) * (...)), cos(r) = 1 - z/(1*2) * (1 - z/(3*4) * (...))
+  LSeriesHigh := ONE_HIGH;
+  LSeriesLow := 0;
+  for LIndex := TERMS downto 1 do
+  begin
+    WideMultiplyHigh(LSquareHigh, LSquareLow, LSeriesHigh, LSeriesLow, LTermHigh, LTermLow);
+    LTermHigh := (LTermHigh shl 1) or (LTermLow shr 63);
+    LTermLow := LTermLow shl 1;
+    if LUseCosine then
+      LDivisor := Cardinal((2 * LIndex - 1) * (2 * LIndex))
+    else
+      LDivisor := Cardinal((2 * LIndex) * (2 * LIndex + 1));
+    WideDivideSmall(LTermHigh, LTermLow, LDivisor);
+    LSeriesLow := UInt64(0) - LTermLow;
+    LSeriesHigh := ONE_HIGH - LTermHigh;
+    if LTermLow <> 0 then
+      Dec(LSeriesHigh);
+  end;
+  if LUseCosine then
+    Result := Normalized(LNegative, LSeriesHigh, LSeriesLow, -127, True)
+  else
+  begin
+    WideMultiplyHigh(LHigh, LLow, LSeriesHigh, LSeriesLow, LTermHigh, LTermLow);
+    Result := Normalized(LNegative, LTermHigh, LTermLow, LExponent + 1, True);
+  end;
+end;
+
+class function TSoftExtended.Sin(const AValue: TSoftExtended): TSoftExtended;
+begin
+  Result := Circular(AValue, False);
+end;
+
+class function TSoftExtended.Cos(const AValue: TSoftExtended): TSoftExtended;
+begin
+  Result := Circular(AValue, True);
 end;
 
 function TSoftExtended.IsZero: Boolean;
