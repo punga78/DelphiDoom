@@ -20,7 +20,7 @@ interface
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Scanner.IdDict, DelphiDoom.Gui.Regs.Types, DelphiDoom.Gui.Regs.Intf,
   DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Cvars.Intf, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DrawContext,
-  DelphiDoom.Gui.Window.Keys, System.SysUtils;
+  DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Window.Hosts, System.SysUtils;
 
 type
   /// <summary>
@@ -50,6 +50,9 @@ type
     /// <summary>idKeyInput::IsDown (shift and control); nil: no key is down</summary>
     Keys: IGuiKeyState;
     KeyBindings: IGuiKeyBindings;
+    FileLister: IGuiFileLister;
+    ScratchImages: IGuiScratchImages;
+    RenderHost: IGuiRenderHost;
     /// <summary>The command the last HandleEvent returned (idUserInterfaceLocal::GetReturnCmd)</summary>
     ReturnCommand: AnsiString;
     /// <summary>The statics actionDownRun and actionUpRun of idWindow::HandleEvent</summary>

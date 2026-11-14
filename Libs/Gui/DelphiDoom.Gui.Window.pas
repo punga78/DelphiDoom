@@ -277,6 +277,8 @@ type
     function ContainsRect(const ARect: TGuiRectangle; const AX, AY: Single): Boolean;
     function ContainsPoint(const AX, AY: Single): Boolean;
     function GetChildIndex(const AWindow: TGuiWindow): Integer;
+    /// <summary>idWindow::SetChildWinVarVal: sets a variable of a window by names and stops the registers from driving it</summary>
+    procedure SetChildWinVarVal(const AName, AVariable, AValue: AnsiString);
     /// <summary>idWindow::InsertChild: a child that is not read from the text (the scroll bar of a list); it is drawn before ABefore, or last</summary>
     function InsertChild(const AWindow: TGuiWindow; const ABefore: TGuiWindow = nil): Boolean;
     /// <summary>idWindow::SetFont, GetMaxCharHeight and GetMaxCharWidth: sizes of the font of the window at its text scale</summary>
@@ -1165,6 +1167,27 @@ begin
   LRect.X := FActualX;
   LRect.Y := FActualY;
   Result := LRect.Contains(AX, AY);
+end;
+
+procedure TGuiWindow.SetChildWinVarVal(const AName, AVariable, AValue: AnsiString);
+var
+  LWindow: TGuiWindow;
+  LSimple: Boolean;
+  LVariable: TGuiWinVar;
+  LOwner: IGuiWindowNode;
+begin
+  LWindow := FindDrawWindow(AName, LSimple);
+  if not Assigned(LWindow) then
+    Exit;
+  if LSimple then
+    LVariable := LWindow.GetSimpleWinVarByName(AVariable)
+  else
+    LVariable := LWindow.GetWinVarByName(AVariable, False, LOwner);
+  if Assigned(LVariable) then
+  begin
+    LVariable.SetFromText(AValue);
+    LVariable.Eval := False;
+  end;
 end;
 
 function TGuiWindow.GetChildIndex(const AWindow: TGuiWindow): Integer;
