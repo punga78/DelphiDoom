@@ -37,6 +37,8 @@ type
     AutoDemo: Boolean;
     AutoDemoSeed: Cardinal;
     AutoDemoTics: Integer;
+    /// <summary>-autoscript file: a script of commands plays the first player (empty when not asked)</summary>
+    AutoScriptFile: string;
     /// <summary>True when at least one option was given</summary>
     function IsActive: Boolean;
   end;
@@ -53,6 +55,14 @@ type
     Use: Boolean;
     /// <summary>Number of the weapon to take (1 and up), 0 to keep the one in hand</summary>
     Weapon: Integer;
+    /// <summary>Look up (positive) or down, in steps of the look of the ticcmd (-7..7); 0 keeps the pitch</summary>
+    Look: Integer;
+    /// <summary>Brings the look back to the horizon (wins over Look)</summary>
+    LookCenter: Boolean;
+    /// <summary>The jump key (a craft that flies goes up)</summary>
+    Jump: Boolean;
+    /// <summary>The crouch key (a craft that flies goes down)</summary>
+    Crouch: Boolean;
   end;
 
   /// <summary>What the pilot may know about the world: the player and nothing else</summary>
@@ -63,6 +73,41 @@ type
     /// <summary>Position of the player (fixed point 16.16)</summary>
     X: Integer;
     Y: Integer;
+    Z: Integer;
+    /// <summary>Where the player looks: a binary angle (2^32 = a full turn, 0 = east, counterclockwise)</summary>
+    Angle: Cardinal;
+  end;
+
+  /// <summary>What a step of a script of commands does</summary>
+  TParityScriptStepKind = (
+    /// <summary>Keeps the same keys pressed for some tics</summary>
+    skHold,
+    /// <summary>Turns to a point of the map and goes there</summary>
+    skGoto,
+    /// <summary>Turns to a point of the map without moving</summary>
+    skFace,
+    /// <summary>Flies up or down to a height</summary>
+    skClimb);
+
+  /// <summary>One step of a script of commands (-autoscript); the coordinates are map units</summary>
+  TParityScriptStep = record
+    Kind: TParityScriptStepKind;
+    /// <summary>1-based line of the script, for the messages</summary>
+    Line: Integer;
+    /// <summary>skHold: how long the step lasts; the others: after how many tics the script gives up</summary>
+    Tics: Integer;
+    /// <summary>
+    ///   skHold: the keys pressed; skGoto: Forward is the speed, Fire and Use are pressed on the way;
+    ///   skFace: Fire is pressed while turning
+    /// </summary>
+    Command: TParityPilotCommand;
+    X: Integer;
+    Y: Integer;
+    /// <summary>skGoto: the height to reach on the way (when HasZ); skClimb: the height to reach</summary>
+    Z: Integer;
+    HasZ: Boolean;
+    /// <summary>skGoto: how near the point is "there"</summary>
+    Radius: Integer;
   end;
 
   /// <summary>Where the 3D view is inside a frame (all the numbers are pixels)</summary>
@@ -96,7 +141,8 @@ implementation
 
 function TParityOptions.IsActive: Boolean;
 begin
-  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo;
+  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo or
+    (AutoScriptFile <> '');
 end;
 
 { TParityDifference }

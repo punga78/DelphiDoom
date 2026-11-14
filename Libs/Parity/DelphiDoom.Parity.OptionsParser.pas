@@ -17,7 +17,7 @@ type
   /// <summary>
   ///   Reads the options of the parity tools from the arguments of the program (the names are not case
   ///   sensitive): -statehash file, -statehash-detail first last, -framehash file, -framedump tic file,
-  ///   -autodemo seed tics. What is not one of them is ignored
+  ///   -autodemo seed tics, -autoscript file. What is not one of them is ignored
   /// </summary>
   TParityOptionsParser = class
   strict private
@@ -41,6 +41,7 @@ const
   SDetailWithoutHash = 'The option -statehash-detail needs -statehash';
   SWrongRange = 'The range of -statehash-detail is wrong';
   SWrongTics = 'The number of tics of -autodemo must be more than 0';
+  STwoPilots = 'The options -autodemo and -autoscript cannot be used together';
 
 { TParityOptionsParser }
 
@@ -118,6 +119,14 @@ begin
     Result.AutoDemoTics := Integer(ReadInteger(AArguments, LIndex + 2, '-autodemo'));
     if Result.AutoDemoTics <= 0 then
       raise EParityException.Create(SWrongTics);
+  end;
+
+  LIndex := FindName(AArguments, '-autoscript');
+  if LIndex >= 0 then
+  begin
+    if Result.AutoDemo then
+      raise EParityException.Create(STwoPilots);
+    Result.AutoScriptFile := ReadText(AArguments, LIndex + 1, '-autoscript');
   end;
 end;
 

@@ -29,7 +29,7 @@ type
   /// <summary>
   ///   The tools that tell where and when the behavior of the engine changes: the hash of the state for every
   ///   tic (-statehash), the hash of every frame (-framehash, -framedump) and the automatic pilot
-  ///   (-autodemo). It reads the command line the first time somebody asks IsActive (the clock and the
+  ///   (-autodemo, or -autoscript with a script of commands). It reads the command line the first time somebody asks IsActive (the clock and the
   ///   gate of the input do, early); with no option nothing is built and the engine never calls it. With an
   ///   option the run becomes repeatable: the clock counts tics, the input is closed, the unpredictable
   ///   random numbers have a fixed seed
@@ -86,6 +86,10 @@ uses
 {$ENDIF}
   g_game,
   i_system;
+
+const
+  // what the pilot of -autoscript did, step by step, goes in a file beside the script
+  SScriptReportExtension = '.log';
 
 { TEngineParity }
 
@@ -174,7 +178,10 @@ begin
     FFrameWriter := TParityFactory.CreateFrameWriter(FFrameLog);
   end;
   if FOptions.AutoDemo then
-    FPilot := TParityFactory.CreatePilot(FOptions);
+    FPilot := TParityFactory.CreatePilot(FOptions)
+  else if FOptions.AutoScriptFile <> '' then
+    FPilot := TParityFactory.CreateScriptPilot(FOptions.AutoScriptFile,
+      TParityFactory.CreateFileLog(FOptions.AutoScriptFile + SScriptReportExtension));
   FActive := True;
   parity_hooks := Self;
 end;

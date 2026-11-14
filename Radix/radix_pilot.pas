@@ -52,6 +52,7 @@ uses
   doomdef,
   d_player,
   d_think,
+  d_ticcmd,
   g_game,
   m_fixed,
   tables,
@@ -125,6 +126,13 @@ begin
   end;
   pmo.momz := TRadixFlightModel.VerticalMomentum(pmo.momz, rp.thrustmomz, newthrust);
   rp.thrustmomz := newthrust;
+
+  // the keys "fly up" and "fly down" of Rad-X are the jump and the crouch keys of the engine: its
+  // ticcmd has no field for them (the jump of Doom pushes up only when the key goes down)
+  if p.cmd.jump_crouch and CMD_JUMP_MASK <> 0 then
+    pmo.momz := TRadixFlightModel.FLY_KEY_SPEED
+  else if p.cmd.jump_crouch and CMD_CROUCH_MASK <> 0 then
+    pmo.momz := -TRadixFlightModel.FLY_KEY_SPEED;
 end;
 
 //==============================================================================

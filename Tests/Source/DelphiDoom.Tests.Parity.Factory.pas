@@ -35,6 +35,12 @@ type
     [Test]
     procedure DovrebbeCreareUnPilotaDalleOpzioni;
     [Test]
+    procedure DovrebbeCreareUnPilotaDaUnFileDiScript;
+    [Test]
+    procedure UnFileDiScriptCheNonEsisteDovrebbeDareEccezione;
+    [Test]
+    procedure UnFileDiScriptSbagliatoDovrebbeDareEccezione;
+    [Test]
     procedure DovrebbeCreareUnOrologioInterruttore;
     [Test]
     procedure IRecordDelleOpzioniEDelPilotaDovrebberoPartireVuoti;
@@ -107,6 +113,58 @@ begin
   LPilot := TParityFactory.CreatePilot(LOptions);
   Assert.IsFalse(LPilot.IsFinished(9));
   Assert.IsTrue(LPilot.IsFinished(10));
+end;
+
+procedure TTestParityFactory.DovrebbeCreareUnPilotaDaUnFileDiScript;
+var
+  LFileName: string;
+  LLog: TFakeParityLog;
+  LLogRef: IParityLog;
+  LPilot: IParityPilot;
+  LView: TParityPilotView;
+begin
+  LFileName := TPath.Combine(TPath.GetTempPath, 'parity_factory_test.script');
+  TFile.WriteAllText(LFileName, '# test'#13#10'hold 2 fire'#13#10);
+  try
+    LLog := TFakeParityLog.Create;
+    LLogRef := LLog;
+    LPilot := TParityFactory.CreateScriptPilot(LFileName, LLogRef);
+    LView := Default(TParityPilotView);
+    LView.Alive := True;
+    Assert.IsTrue(LPilot.NextCommand(LView).Fire);
+    Assert.IsTrue(LPilot.NextCommand(LView).Fire);
+    Assert.IsFalse(LPilot.NextCommand(LView).Fire);
+    Assert.IsTrue(LPilot.IsFinished(3));
+    Assert.AreEqual(2, LLog.Lines.Count);
+  finally
+    TFile.Delete(LFileName);
+  end;
+end;
+
+procedure TTestParityFactory.UnFileDiScriptCheNonEsisteDovrebbeDareEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityFactory.CreateScriptPilot(TPath.Combine(TPath.GetTempPath, 'parity_no_such_file.script'), nil);
+    end, EParityException);
+end;
+
+procedure TTestParityFactory.UnFileDiScriptSbagliatoDovrebbeDareEccezione;
+var
+  LFileName: string;
+begin
+  LFileName := TPath.Combine(TPath.GetTempPath, 'parity_factory_wrong.script');
+  TFile.WriteAllText(LFileName, 'hold 2 fire'#10'hop 3');
+  try
+    Assert.WillRaise(
+      procedure
+      begin
+        TParityFactory.CreateScriptPilot(LFileName, nil);
+      end, EParityException);
+  finally
+    TFile.Delete(LFileName);
+  end;
 end;
 
 procedure TTestParityFactory.DovrebbeCreareUnOrologioInterruttore;

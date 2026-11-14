@@ -37,6 +37,13 @@ uses
 
 const
   MAX_WEAPONS_BY_MASK = 8;
+  // TOCENTER of p_local
+  LOOK_TO_CENTER = -8;
+  LOOK_WRAP = 16;
+  LOOK_FRACTION = 256;
+  // what G_BuildTiccmd gives for a key that has just gone down (a jump starts only then)
+  JUMP_PRESSED = 2;
+  CROUCH_PRESSED = 1;
 
 { TEngineParityPilotCommand }
 
@@ -47,6 +54,7 @@ var
   LCommand: TParityPilotCommand;
   LConsistency: SmallInt;
   LWeapons: Integer;
+  LLook: Integer;
 begin
   if APilot.IsFinished(ATic) then
     Exit(False);
@@ -60,6 +68,8 @@ begin
     begin
       LView.X := players[consoleplayer].mo.x;
       LView.Y := players[consoleplayer].mo.y;
+      LView.Z := players[consoleplayer].mo.z;
+      LView.Angle := players[consoleplayer].mo.angle;
     end;
   end;
   LCommand := APilot.NextCommand(LView);
@@ -82,6 +92,22 @@ begin
     ACommand.buttons := ACommand.buttons or BT_CHANGE or
       (((LCommand.Weapon - 1) mod LWeapons) shl BT_WEAPONSHIFT);
   end;
+  // the keys below are asked only by a script (-autoscript): the automatic pilot leaves them at zero
+  LLook := LCommand.Look;
+  if LCommand.LookCenter then
+    LLook := LOOK_TO_CENTER;
+  if LLook <> 0 then
+  begin
+    // the ticcmd keeps the look in four bits (and, since 2.03, in 4.8 fixed point too)
+    if LLook < 0 then
+      LLook := LLook + LOOK_WRAP;
+    ACommand.lookupdown := LLook;
+    ACommand.lookupdown16 := LLook * LOOK_FRACTION;
+  end;
+  if LCommand.Jump then
+    ACommand.jump_crouch := (JUMP_PRESSED shl CMD_JUMP_SHIFT) and CMD_JUMP_MASK
+  else if LCommand.Crouch then
+    ACommand.jump_crouch := (CROUCH_PRESSED shl CMD_CROUCH_SHIFT) and CMD_CROUCH_MASK;
   Result := True;
 end;
 

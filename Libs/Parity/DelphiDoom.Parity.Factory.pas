@@ -30,6 +30,11 @@ type
     class function CreateFrameWriter(const ALog: IParityLog): TFrameHashWriter; static;
     /// <summary>The pilot of the options (-autodemo)</summary>
     class function CreatePilot(const AOptions: TParityOptions): IParityPilot; static;
+    /// <summary>
+    ///   The pilot that follows the script of a text file (-autoscript); AReport (may be nil) gets a line for
+    ///   every step that ends. EParityException if the file cannot be read or has a wrong line
+    /// </summary>
+    class function CreateScriptPilot(const AFileName: string; const AReport: IParityLog): IParityPilot; static;
     /// <summary>The clock that is the real one until ASwitch says that the tools are on</summary>
     class function CreateSwitchClock(const AReal: IClock; const ASwitch: IParitySwitch;
       ARate: Integer): TParitySwitchClock; static;
@@ -38,9 +43,17 @@ type
 implementation
 
 uses
+  System.Classes,
+  System.IOUtils,
+  System.SysUtils,
   DelphiDoom.Parity.FileLog,
   DelphiDoom.Parity.Pilot,
+  DelphiDoom.Parity.ScriptParser,
+  DelphiDoom.Parity.ScriptPilot,
   DelphiDoom.Parity.StateHashWriter;
+
+const
+  SScriptNotRead = 'The script "%s" cannot be read: %s';
 
 { TParityFactory }
 
@@ -63,6 +76,23 @@ end;
 class function TParityFactory.CreatePilot(const AOptions: TParityOptions): IParityPilot;
 begin
   Result := TParityPilot.Create(AOptions.AutoDemoSeed, AOptions.AutoDemoTics);
+end;
+
+class function TParityFactory.CreateScriptPilot(const AFileName: string; const AReport: IParityLog): IParityPilot;
+var
+  LText: string;
+begin
+  try
+    LText := TFile.ReadAllText(AFileName);
+  except
+    on E: EInOutError do
+      raise EParityException.CreateFmt(SScriptNotRead, [AFileName, E.Message]);
+    on E: EStreamError do
+      raise EParityException.CreateFmt(SScriptNotRead, [AFileName, E.Message]);
+    on E: EArgumentException do
+      raise EParityException.CreateFmt(SScriptNotRead, [AFileName, E.Message]);
+  end;
+  Result := TParityScriptPilot.Create(TParityScriptParser.Parse(LText), AReport);
 end;
 
 class function TParityFactory.CreateSwitchClock(const AReal: IClock; const ASwitch: IParitySwitch;

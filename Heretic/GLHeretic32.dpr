@@ -1006,6 +1006,8 @@ uses
   DelphiDoom.Parity.OptionsParser in '..\Libs\Parity\DelphiDoom.Parity.OptionsParser.pas',
   DelphiDoom.Parity.Random in '..\Libs\Parity\DelphiDoom.Parity.Random.pas',
   DelphiDoom.Parity.Pilot in '..\Libs\Parity\DelphiDoom.Parity.Pilot.pas',
+  DelphiDoom.Parity.ScriptParser in '..\Libs\Parity\DelphiDoom.Parity.ScriptParser.pas',
+  DelphiDoom.Parity.ScriptPilot in '..\Libs\Parity\DelphiDoom.Parity.ScriptPilot.pas',
   DelphiDoom.Parity.VirtualClock in '..\Libs\Parity\DelphiDoom.Parity.VirtualClock.pas',
   DelphiDoom.Parity.SwitchClock in '..\Libs\Parity\DelphiDoom.Parity.SwitchClock.pas',
   DelphiDoom.Parity.SwitchEntropy in '..\Libs\Parity\DelphiDoom.Parity.SwitchEntropy.pas',
