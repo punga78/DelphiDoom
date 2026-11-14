@@ -126,7 +126,7 @@ implementation
 
 uses
   DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Lexer, DelphiDoom.IdLib.Text.Strings,
-  DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Opcodes;
+  System.Math, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.DoomScript.Opcodes;
 
 const
   Punctuation: array[0..35] of AnsiString = ('+=', '-=', '*=', '/=', '%=', '&=', '|=', '++', '--', '&&', '||',
@@ -1978,9 +1978,12 @@ end;
 procedure TDoomScriptCompiler.CompileFile(const AText, AFileName: AnsiString; const AConsole: Boolean);
 var
   LText: string;
+  LSavedMask: TArithmeticExceptionMask;
 begin
   ResetState;
   FConsole := AConsole;
+  // folding constants gives infinities and NaN as in C, never a floating point exception
+  LSavedMask := SetExceptionMask(exAllArithmeticExceptions);
   FParser := TIdParser.Create(0, FLog, FFileSystem);
   try
     FParser.SetFlags(LEXFL_ALLOWMULTICHARLITERALS);
@@ -2023,6 +2026,7 @@ begin
     end;
   finally
     FreeAndNil(FParser);
+    SetExceptionMask(LSavedMask);
   end;
   // the original printed the time the compilation took: the library has no clock
   if (not AConsole) and Assigned(FLog) then

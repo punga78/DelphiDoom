@@ -30,7 +30,7 @@ type
   ///   original are created here, with the same names, formats and return types. The events that only
   ///   need the language, the threads, mathematics, strings and time are implemented by the library; the
   ///   others touch the game world and have no handler until the host adds one to the class of the
-  ///   threads (<c>Context.ThreadClass.AddEvent</c>): see <c>IsWorldEvent</c>. A script that calls a
+  ///   threads (<c>Context.ThreadClass.AddEvent</c>). A script that calls a
   ///   <c>sys</c> event without a handler does not compile ("is not callable as a 'sys' function").
   /// </summary>
   TDoomScriptSysEvents = class
