@@ -196,7 +196,7 @@ begin
           LNew[LChoice.Channel].Origin := LOrigin;
         end
         else
-          Assert.AreEqual(LStoppedBefore, Length(LOld.Stopped),
+          Assert.AreEqual<Integer>(LStoppedBefore, Length(LOld.Stopped),
             'il vecchio non dovrebbe aver fermato niente: ' + LWhere);
 
         for LIndex := 0 to LCount - 1 do
