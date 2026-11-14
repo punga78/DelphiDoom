@@ -94,14 +94,38 @@ begin
   FLines := ALines;
 end;
 
+// esc() of the driver of the harness: backslash, newline, return, tab and the bytes outside 32 to 126
+function EscapeText(const AText: string): string;
+var
+  LChar: Char;
+begin
+  Result := '';
+  for LChar in AText do
+    case LChar of
+      '\':
+        Result := Result + '\\';
+      #10:
+        Result := Result + '\n';
+      #13:
+        Result := Result + '\r';
+      #9:
+        Result := Result + '\t';
+    else
+      if (Ord(LChar) < 32) or (Ord(LChar) > 126) then
+        Result := Result + '\x' + IntToHex(Ord(LChar) and $FF, 2)
+      else
+        Result := Result + LChar;
+    end;
+end;
+
 procedure TGuiWindowFakeLog.Printf(const AMessage: string);
 begin
-  FLines.Add('P: ' + AMessage);
+  FLines.Add('P: ' + EscapeText(AMessage));
 end;
 
 procedure TGuiWindowFakeLog.Warning(const AMessage: string);
 begin
-  FLines.Add('W: ' + AMessage);
+  FLines.Add('W: ' + EscapeText(AMessage));
 end;
 
 { TGuiWindowFakeHost }

@@ -96,6 +96,13 @@ uses
   DelphiDoom.Gui.Window.Field in '..\Libs\Gui\DelphiDoom.Gui.Window.Field.pas',
   DelphiDoom.Gui.Window.Factory in '..\Libs\Gui\DelphiDoom.Gui.Window.Factory.pas',
   DelphiDoom.Gui.UserInterface in '..\Libs\Gui\DelphiDoom.Gui.UserInterface.pas',
+  DelphiDoom.Gui.DrawContext in '..\Libs\Gui\DelphiDoom.Gui.DrawContext.pas',
+  DelphiDoom.Gui.Font.DoomLoader in '..\Libs\Gui\DelphiDoom.Gui.Font.DoomLoader.pas',
+  DelphiDoom.Gui.Font.DoomEx in '..\Libs\Gui\DelphiDoom.Gui.Font.DoomEx.pas',
+  DelphiDoom.Gui.Font.Doom in '..\Libs\Gui\DelphiDoom.Gui.Font.Doom.pas',
+  DelphiDoom.Gui.Cvars in '..\Libs\Gui\DelphiDoom.Gui.Cvars.pas',
+  DelphiDoom.Gui.Cvars.Intf in '..\Libs\Gui\DelphiDoom.Gui.Cvars.Intf.pas',
+  DelphiDoom.Gui.Material.Intf in '..\Libs\Gui\DelphiDoom.Gui.Material.Intf.pas',
   DelphiDoom.Tests.Gui.Fakes in 'Source\DelphiDoom.Tests.Gui.Fakes.pas',
   DelphiDoom.Tests.Gui.WindowFakes in 'Source\DelphiDoom.Tests.Gui.WindowFakes.pas',
   DelphiDoom.Tests.Gui.WindowDump in 'Source\DelphiDoom.Tests.Gui.WindowDump.pas',
@@ -115,7 +122,10 @@ uses
   DelphiDoom.Tests.Gui.Fonts in 'Source\DelphiDoom.Tests.Gui.Fonts.pas',
   DelphiDoom.Tests.Gui.Model in 'Source\DelphiDoom.Tests.Gui.Model.pas',
   DelphiDoom.Tests.Gui.Parsers in 'Source\DelphiDoom.Tests.Gui.Parsers.pas',
-  DelphiDoom.Tests.Gui.OpenArena in 'Source\DelphiDoom.Tests.Gui.OpenArena.pas';
+  DelphiDoom.Tests.Gui.OpenArena in 'Source\DelphiDoom.Tests.Gui.OpenArena.pas',
+  DelphiDoom.Tests.Gui.DrawFakes in 'Source\DelphiDoom.Tests.Gui.DrawFakes.pas',
+  DelphiDoom.Tests.Gui.Harness in 'Source\DelphiDoom.Tests.Gui.Harness.pas',
+  DelphiDoom.Tests.Gui.DrawParity in 'Source\DelphiDoom.Tests.Gui.DrawParity.pas';
 
 var
   Runner: ITestRunner;

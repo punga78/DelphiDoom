@@ -1,0 +1,204 @@
+# scenarios of the device context of the gui of Doom 3 (written for the test; no file of Doom 3)
+# Every case starts with the fonts of Tools\Verifica\111 generated for fonts/english (12, 24 and 48 points).
+# "dc <op> ..." drives idDeviceContext; the lines C (SetColor) and Q (DrawStretchPic) are what it sends to the renderer.
+@case dc_rects
+@op dc filled 10 20 100 50 1 0 0 1
+@op dc rect 10 20 100 50 2 0 1 0 0.5
+@op dc filled 10 20 100 50 1 0 0 0
+@op dc rect 10 20 100 50 2 0 1 0 0
+@op dc clip 0 0 640 480
+@op dc clip 30 30 40 40
+@op dc filled 10 20 100 50 1 1 1 1
+@op dc rect 0 0 200 200 3 1 1 0 1
+@op dc filled 35 35 10 10 0 0 1 1
+@op dc filled 80 80 10 10 0 0 1 1
+@op dc filled -20 -20 10 10 1 0 1 1
+@op dc popclip
+@op dc popclip
+@op dc popclip
+@op dc filled 700 10 10 10 1 1 1 1
+@op dc size 320 240
+@op dc filled 10 20 100 50 1 0 0 1
+@op dc size 0 0
+@op dc filled 10 20 100 50 1 0 0 1
+@op dc size 640 480
+@op dc clipping 0
+@op dc clip 0 0 640 480
+@op dc clip 30 30 40 40
+@op dc filled 10 20 100 50 1 1 1 1
+@op dc clipping 1
+@op dc filled 10 20 100 50 1 1 1 1
+@end
+@case dc_coords
+@op dc clip 0 0 640 480
+@op dc clip 100 100 200 150
+@op dc coords 50 50 100 100
+@op dc coords 150 150 400 400
+@op dc coords 350 120 10 10
+@op dc coords 150 400 10 10
+@op dc coords 0 0 0 10
+@op dc coords 120 110 50 20
+@op dc coordst 50 50 100 100 0 0 1 1
+@op dc coordst 150 150 400 400 0 0 2 2
+@op dc coordst 90 90 30 30 0.25 0.5 0.75 1
+@op dc clip 120 120 30 30
+@op dc coordst 90 90 100 100 0 0 1 1
+@op dc popclip
+@op dc popclip
+@op dc popclip
+@op dc coords 50 50 100 100
+@end
+@case dc_materials
+@op mat guis/a 32 64 0 0
+@op dc material guis/a 10 10 100 100 1 1 1 1 1 1
+@op dc material guis/a 10 10 100 100 1 1 1 1 2.5 0.5
+@op dc material guis/a 10 10 100 100 1 1 1 1 -1 1
+@op dc material guis/a 10 10 100 100 1 1 1 1 1 -2
+@op dc material guis/a 10 10 -100 100 1 1 1 1 1 1
+@op dc material guis/a 10 10 100 -100 1 1 1 1 1 1
+@op dc material guis/a 10 10 -100 -100 1 1 1 1 -1 -1
+@op dc clip 0 0 640 480
+@op dc clip 40 40 30 30
+@op dc material guis/a 10 10 100 100 1 1 1 1 1 1
+@op dc material guis/a 60 60 100 100 0.5 0.5 0.5 0.5 3 3
+@op dc matrect guis/b 5 5 50 40 3 1 1 1 1
+@op dc matrect guis/b 5 5 50 40 3 1 1 1 0
+@op dc popclip
+@op dc popclip
+@op dc matrot guis/a 10 10 100 100 1 1 1 1 1 1 0
+@op dc matrot guis/a 10 10 100 100 1 1 1 1 1 1 0.5
+@op dc matrot guis/a 10 10 100 100 1 1 1 1 1 1 1.5
+@op dc matrot guis/a 10 10 -100 100 1 1 1 1 -1 1 0.7
+@op dc scrollbar 0
+@op dc scrollbar 6
+@op dc scrollbar 9
+@end
+@case dc_transform
+@op dc transform 100 100 0 0.8660254 0.5 0 -0.5 0.8660254 0 0 0 1
+@op dc filled 50 50 100 100 1 0 0 1
+@op dc rect 50 50 100 100 2 0 1 0 1
+@op mat guis/t 16 16 0 0
+@op dc material guis/t 50 50 100 100 1 1 1 1 1 1
+@op dc matrot guis/t 50 50 100 100 1 1 1 1 1 1 0.3
+@op dc transform 0 0 0 1 0 0 0 1 0 0 0 1
+@op dc filled 50 50 100 100 1 0 0 1
+@op dc transform 100 100 0 1 0.2 0 0 1 0 0 0 1
+@op dc filled 50 50 100 100 0 1 0 1
+@end
+@case dc_cursor
+@op dc cursor 10 20 32
+@op dc cursor -5 -9 32
+@op dc cursor 700 500 64
+@op dc size 320 240
+@op dc cursor 100 100 32
+@op dc setcursor 1
+@op dc cursor 100 100 32
+@op dc setcursor 7
+@op dc cursor 100 100 32
+@end
+@case dc_fonts
+@op dc findfont fonts
+@op dc findfont FONTS
+@op dc findfont fonts/missing
+@op dc findfont fonts/missing
+@op dc fontset fonts/english/bank
+@op dc findfont fonts/bank
+@op dc findfont fonts/bank
+# the font list grew: the active font of the original points to freed memory until the next SetFont
+@op dc font 0
+@op dc maxchar 0.2
+@op dc maxchar 0.3
+@op dc maxchar 0.31
+@op dc maxchar 0.6
+@op dc maxchar 0.61
+@op dc maxchar 1
+@op dc font 1
+@op dc maxchar 0.4
+@op dc font 5
+@op dc maxchar 0.4
+@op dc font -1
+@op dc maxchar 0.4
+@op dc charwidth 0.25 65
+@op dc charwidth 0.5 66
+@op dc charwidth 1 200
+@op dc textwidth 0.25 0 Hello world
+@op dc textwidth 0.25 5 Hello world
+@op dc textwidth 0.5 0 ^1Hello^0 world
+@op dc textwidth 0.5 3 ^1Hello^0 world
+@op dc textwidth 0.5 0 ^
+@op dc textwidth 0.5 0 a^ b
+@op dc textwidth 1 0
+@op dc textheight 0.25 0 Hello world
+@op dc textheight 0.5 3 ^1Hello^0 world
+@op dc textheight 0.5 0 ^1
+@end
+@case dc_text_simple
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 0 0 Hello world
+@op dc text 0.5 0 1 1 1 1 10 10 200 100 1 -1 0 0 Hello world
+@op dc text 0.8 0 1 1 1 1 10 10 200 100 0 -1 0 0 Hello world
+@op dc text 0.25 1 1 0 0 1 10 10 200 100 1 -1 0 0 Centered
+@op dc text 0.25 2 1 0 0 1 10 10 200 100 1 -1 0 0 Right
+@op dc text 0.25 0 1 1 1 0 10 10 200 100 1 -1 0 0 Invisible
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 0 0
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 0 0 0
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 1 0 Calc only
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 1 0
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 0 5 Limit of five
+@end
+@case dc_text_wrap
+@op dc text 0.5 0 1 1 1 1 10 10 100 200 1 -1 0 0 The quick brown fox jumps over the lazy dog and runs away
+@op dc text 0.5 0 1 1 1 1 10 10 100 200 0 -1 0 0 The quick brown fox jumps over the lazy dog and runs away
+@op dc text 0.5 1 1 1 1 1 10 10 100 200 1 -1 0 0 The quick brown fox jumps over the lazy dog
+@op dc text 0.5 2 1 1 1 1 10 10 100 200 1 -1 0 0 The quick brown fox jumps over the lazy dog
+@op dc text 0.5 0 1 1 1 1 10 10 100 40 1 -1 0 0 The quick brown fox jumps over the lazy dog and runs away
+@op dc text 0.5 0 1 1 1 1 10 10 100 40 1 -1 1 0 The quick brown fox jumps over the lazy dog and runs away
+@op dc text 0.25 0 1 1 1 1 10 10 60 100 1 -1 0 0 Averyveryverylongwordthatdoesnotfit and more
+@op dc text 0.25 0 1 1 1 1 10 10 60 100 0 -1 0 0 Averyveryverylongwordthatdoesnotfit and more
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 0 0 line one\nline two\r\nline three\n\nafter blank\r\rend
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 0 -1 0 0 line one\nline two
+@op dc text 0.25 0 1 1 1 1 10 10 200 100 1 -1 0 10 limit stops the lines after the first ten characters here
+@op dc text 0.25 0 1 1 1 1 10 10 0 100 1 -1 0 0 zero width text
+@op dc text 0.25 0 1 1 1 1 10 10 40 100 1 -1 0 0 a b c d e f g h i j k l m n o p
+@end
+@case dc_text_colors_cursor
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 -1 0 0 plain ^1red^2green^0back ^9x^ end
+@op dc text 0.5 0 1 1 1 0.5 10 10 300 100 1 -1 0 0 ^7white ^
+@op dc tick 0
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 0 0 0 cursor at start
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 5 0 0 cursor in the middle
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 12 0 0 cursor at the end
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 13 0 0 cursor past the end
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 0 0 0
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 3 0 0 ^1red^0 text
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 4 0 0 ^1red^0 text
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 5 0 0 ^1red^0 text
+@op dc overstrike 0
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 2 0 0 insert mode
+@op dc overstrike 1
+@op dc tick 16
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 2 0 0 the cursor blinks off
+@op dc tick 48
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 2 0 0 the cursor is on again
+@op dc text 0.5 0 1 1 1 1 10 10 100 100 1 20 0 0 cursor in a wrapped text that goes over several lines
+@end
+@case dc_text_clip_transform
+@op dc clip 0 0 640 480
+@op dc clip 20 20 90 40
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 -1 0 0 text under a clipping rectangle
+@op dc transform 100 100 0 0.8660254 0.5 0 -0.5 0.8660254 0 0 0 1
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 -1 0 0 text under a transform
+@op dc popclip
+@op dc popclip
+@op dc size 320 240
+@op dc transform 0 0 0 1 0 0 0 1 0 0 0 1
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 -1 0 0 text at half size
+@end
+@case dc_fonts_missing
+@op dc fontset fonts/english/bank
+@op dc findfont fonts/bank
+@op dc findfont fonts/nothere
+@op dc font 2
+@op dc text 0.5 0 1 1 1 1 10 10 300 100 1 -1 0 0 text with an empty font
+@op dc textwidth 0.5 0 Hello
+@op dc maxchar 0.5
+@end

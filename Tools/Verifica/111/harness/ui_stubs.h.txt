@@ -1,16 +1,23 @@
 // stubs of the ui harness (written for the test; no code of Doom 3)
 #ifndef __UI_STUBS_H__
 #define __UI_STUBS_H__
+typedef int glIndex_t;
+// the images of the materials come from the scenario (@mat name width height cinematic defaulted)
+struct MatInfo { int w, h, cine; bool defaulted; };
+extern std::map<std::string, MatInfo> &matTable();
+extern void harnessLog(const char *fmt, ...);
 class idMaterial : public idDecl {
 public:
-	bool TestMaterialFlag(int) const { return false; }
+	std::string nm;
+	MatInfo info() const { std::map<std::string, MatInfo>::const_iterator it = matTable().find(nm); if (it != matTable().end()) return it->second; MatInfo m = { 16, 16, 0, false }; return m; }
+	bool TestMaterialFlag(int) const { return info().defaulted; }
 	void SetSort(float) const {}
 	void SetImageClassifications(int) const {}
-	int GetImageWidth() const { return 16; }
-	int GetImageHeight() const { return 16; }
-	int CinematicLength() const { return 0; }
-	void UpdateCinematic(int) const {}
-	void ResetCinematicTime(int) const {}
+	int GetImageWidth() const { return info().w; }
+	int GetImageHeight() const { return info().h; }
+	int CinematicLength() const { return info().cine; }
+	void UpdateCinematic(int t) const { harnessLog("M %s update %d", nm.c_str(), t); }
+	void ResetCinematicTime(int t) const { harnessLog("M %s reset %d", nm.c_str(), t); }
 	void SetShaderParm(int, float) const {}
 };
 enum { MF_DEFAULTED = 1 };
@@ -26,13 +33,29 @@ class idCmdSystem { public: void BufferCommandText(int, const char *t) { printf(
 extern idCmdSystem *cmdSystem;
 enum { CMD_EXEC_APPEND = 1 };
 class idCVarSystemFull { public: void SetCVarBool(const char *n, bool v) { printf("host cvar %s %d\n", n, v); } };
-class idRenderSystemStub {};
-class idCVarSystem { public: idCVar *Find(const char *) { return NULL; } void SetCVarBool(const char *n, bool v) { printf("host cvar %s %d\n", n, v); } const char *GetCVarString(const char *) { return ""; } int GetCVarInteger(const char *) { return 0; } bool GetCVarBool(const char *) { return false; } };
+// the console variables are a table of strings (the scenario sets them with "cvar name value")
+extern std::map<std::string, std::string> &cvarTable();
+class idCVarSystem { public:
+	idCVar *Find(const char *name);
+	void SetCVarBool(const char *n, bool v) { printf("host cvar %s %d\n", n, v); }
+	const char *GetCVarString(const char *n);
+	int GetCVarInteger(const char *n) { return atoi(GetCVarString(n)); }
+	bool GetCVarBool(const char *n) { return atoi(GetCVarString(n)) != 0; }
+};
 extern idCVarSystem *cvarSystem;
-extern idRenderSystemStub *renderSystem;
+extern volatile int com_ticNumber;
+extern int com_frameTime;
 
 //@FONTS@
 #include "../ui/UserInterface.h"
+
+// what idDeviceContext sends to the renderer is written to the dump
+class idRenderSystemStub { public:
+	void SetColor(const idVec4 &c);
+	void DrawStretchPic(const idDrawVert *verts, const glIndex_t *indexes, int vertCount, int indexCount, const idMaterial *shader, bool clip = true, float min_x = 0.0f, float min_y = 0.0f, float max_x = 1.0f, float max_y = 1.0f);
+	bool RegisterFont(const char *fontName, fontInfoEx_t &font);
+};
+extern idRenderSystemStub *renderSystem;
 
 typedef int qhandle_t;
 template<class T> class idHashTable { std::map<std::string,T> m; public: void Set(const char *k, T v) { m[k] = v; } bool Get(const char *k, T *v = NULL) const { typename std::map<std::string,T>::const_iterator it = m.find(k); if (it == m.end()) return false; if (v) *v = it->second; return true; } void Clear() { m.clear(); } };
@@ -47,7 +70,9 @@ const int CVAR_GUI = 4;
 const int USERCMD_MSEC = 16;
 const int EDITOR_GUI = 4;
 enum { K_TAB = 9, K_ENTER = 13, K_ESCAPE = 27, K_SHIFT = 160, K_MOUSE1 = 187, K_MOUSE2, K_MOUSE3, K_KP_ENTER = 140, K_BACKSPACE = 127, K_DEL, K_LEFTARROW, K_RIGHTARROW, K_UPARROW, K_DOWNARROW, K_HOME, K_END, K_MWHEELDOWN, K_MWHEELUP, K_PGUP, K_PGDN, K_INS, K_ALT, K_CTRL, K_JOY1, K_JOY2, K_JOY3, K_JOY4, K_AUX1, K_MOUSE4, K_MOUSE5 };
-class idKeyInput { public: static bool IsDown(int) { return false; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };
+// the keys that are down come from the scenario ("keydown K")
+extern std::set<int> &keysDown();
+class idKeyInput { public: static bool IsDown(int k) { return keysDown().count(k) != 0; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };
 static idVec4 colorBlack(0.0f, 0.0f, 0.0f, 1.0f);
 const int CVAR_ARCHIVE = 8;
 enum { K_KP_RIGHTARROW = 200, K_KP_LEFTARROW, K_KP_UPARROW, K_KP_DOWNARROW, K_KP_HOME, K_KP_END, K_KP_PGUP, K_KP_PGDN, K_KP_INS, K_KP_DEL, K_KP_5, K_KP_PLUS, K_KP_MINUS, K_KP_STAR, K_KP_SLASH, K_KP_NUMLOCK, K_KP_EQUALS };
@@ -55,8 +80,12 @@ inline int Sys_GetConsoleKey(bool) { return 96; }
 static idVec4 colorWhite(1.0f, 1.0f, 1.0f, 1.0f);
 class idDeclManagerStub : public idDeclManager {
 public:
-	idMaterial mat;
-	virtual const idMaterial *FindMaterial( const char *name, bool makeDefault = true ) { return &mat; }
+	virtual const idMaterial *FindMaterial( const char *name, bool makeDefault = true ) {
+		static std::map<std::string, idMaterial *> mats;
+		std::map<std::string, idMaterial *>::iterator it = mats.find(name);
+		if (it != mats.end()) return it->second;
+		idMaterial *m = new idMaterial; m->nm = name; mats[name] = m; return m;
+	}
 	virtual const idDecl *FindType( declType_t type, const char *name, bool makeDefault = true ) { return NULL; }
 	virtual const idDecl *DeclByIndex( declType_t type, int index, bool forceParse = true ) { return NULL; }
 };

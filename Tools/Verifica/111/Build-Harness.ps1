@@ -37,7 +37,9 @@ $p = [IO.File]::ReadAllText((Join-Path $repo 'Tests\Data\Decl\harness\material\p
 $p = $p.Replace('#include "../renderer/Material.h"', '')
 $p = $p.Replace('#include "Str.h"', "#include `"Str.h`"`r`n#include `"bv/Sphere.h`"`r`n#include `"bv/Bounds.h`"")
 $p = $p.Replace('class idCommon { public:', 'class idLangDict; class idCommon { public: idLangDict *GetLanguageDict();')
-$p = $p.Replace('bool GetBool() const {return b;}', 'bool GetBool() const {return b;} const char *GetString() const {return "";} void SetString(const char *) {} float GetFloat() const {return 0;} void SetFloat(float) {} void SetInteger(int) {} void SetBool(bool) {}')
+# the console variables are a table of strings (driver.cpp): idCVar of the harness of the declarations is replaced
+$p = [regex]::Replace($p, 'class idCVar \{[^\r\n]*', 'class idCVar { public: idCVar(const char *n, const char *v, int f, const char *d, float mn = 0, float mx = 0, void *c = 0); bool GetBool() const; int GetInteger() const; float GetFloat() const; const char *GetString() const; void SetString(const char *); void SetInteger(int); void SetFloat(float); void SetBool(bool); std::string name; };')
+$p = $p.Replace('#include <vector>', "#include <vector>`r`n#include <set>")
 $idx = $p.LastIndexOf('#endif'); $p = $p.Substring(0, $idx) + "#include `"ui_stubs.h`"`r`n#endif"
 [IO.File]::WriteAllText("$i\precompiled.h", $p)
 
@@ -63,19 +65,27 @@ $first = ($ui | Select-String 'idUserInterfaceLocal::idUserInterfaceLocal\(\) \{
 $last = ($ui | Select-String 'void idUserInterfaceLocal::ReadFromDemoFile').LineNumber - 3
 $ui[$first..$last] | Set-Content "$i\ui_extract.inc"
 
+# RegisterFont of renderer\tr_font.cpp: the readInt and readFloat helpers and the function (the FreeType code is not built)
+$tf = Get-Content "$Work\neo\renderer\tr_font.cpp"
+$ffirst = ($tf | Select-String 'static int fdOffset;').LineNumber - 1
+
+$fend = $ffirst
+for ($k = ($tf | Select-String 'bool idRenderSystemLocal::RegisterFont').LineNumber; $k -lt $tf.Count; $k++) { if ($tf[$k] -eq '}') { $fend = $k; break } }
+(($tf[$ffirst..$fend]) -join "`r`n").Replace('bool idRenderSystemLocal::RegisterFont(', 'static bool harnessRegisterFont(') | Set-Content "$i\font_extract.inc"
+
 function Compile($f) {
   $dir = Split-Path $f -Parent; $name = [IO.Path]::GetFileNameWithoutExtension($f)
   Push-Location "$Work\neo\$dir"
   $o = "$Work\obj\" + ($dir -replace '\\', '_') + "_$name.o"
   $ErrorActionPreference = 'Continue'
-  $out = & $B -c -w- -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
+  $out = & $B -c -w- -Xclang -target-feature -Xclang +sse2 -Xclang -mfpmath -Xclang sse -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
   if ($LASTEXITCODE -ne 0) { Write-Host "== $f FAILED"; $out | Select-String 'error' | Select-Object -First 10 | ForEach-Object { $_.Line }; throw "compile $f" }
   Pop-Location
 }
 $files = 'idlib\driver', 'idlib\stubs', 'idlib\Str', 'idlib\Token', 'idlib\Lexer', 'idlib\Parser', 'idlib\CmdArgs', 'idlib\Dict', 'idlib\Heap', 'idlib\BitMsg', 'idlib\LangDict',
   'idlib\math\Math', 'idlib\math\Vector', 'idlib\math\Matrix', 'idlib\math\Angles', 'idlib\math\Quat', 'idlib\math\Rotation', 'idlib\math\Plane', 'idlib\math\Pluecker', 'idlib\math\Polynomial',
   'idlib\math\Complex', 'idlib\math\Simd_Generic', 'idlib\hashing\CRC32', 'idlib\hashing\MD5', 'idlib\containers\HashIndex', 'idlib\geometry\JointTransform',
-  'ui\Winvar', 'ui\RegExp', 'ui\GuiScript', 'ui\Window', 'ui\SimpleWindow', 'ui\ChoiceWindow', 'ui\SliderWindow', 'ui\BindWindow', 'ui\FieldWindow'
+  'ui\DeviceContext', 'ui\Winvar', 'ui\RegExp', 'ui\GuiScript', 'ui\Window', 'ui\SimpleWindow', 'ui\ChoiceWindow', 'ui\SliderWindow', 'ui\BindWindow', 'ui\FieldWindow'
 foreach ($f in $files) { Compile $f }
 $objs = Get-ChildItem "$Work\obj\*.o" | ForEach-Object { $_.FullName }
 $ErrorActionPreference = 'Continue'
