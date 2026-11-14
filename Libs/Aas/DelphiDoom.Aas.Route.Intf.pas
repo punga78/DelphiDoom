@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: AAS library - contract of the routing of Quake III              }
 {                                                                              }
@@ -56,6 +56,8 @@ type
     /// </summary>
     function EnableRoutingArea(const AAreaNum, AEnable: Integer): Integer;
     function AreaContentsTravelFlags(const AAreaNum: Integer): Integer;
+    /// <summary>AAS_AreaTravelTime: the time to cross the area from the start to the end (at least 1, hundredths of a second)</summary>
+    function AreaTravelTime(const AAreaNum: Integer; const AStart, AEnd: TVec3): Integer;
     function TravelFlagForType(const ATravelType: Integer): Integer;
     /// <summary>A copy of the reachability; zeros if the number is not in the file</summary>
     procedure ReachabilityFromNum(const ANum: Integer; var AReach: TAasReachability);

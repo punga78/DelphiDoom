@@ -14,6 +14,48 @@ typedef struct aas_link_s
 	struct aas_link_s *next_area, *prev_area;
 } aas_link_t;
 
+/* aas_settings_t: copied from the real be_aas_def.h */
+typedef struct aas_settings_s
+{
+	vec3_t phys_gravitydirection;
+	float phys_friction;
+	float phys_stopspeed;
+	float phys_gravity;
+	float phys_waterfriction;
+	float phys_watergravity;
+	float phys_maxvelocity;
+	float phys_maxwalkvelocity;
+	float phys_maxcrouchvelocity;
+	float phys_maxswimvelocity;
+	float phys_walkaccelerate;
+	float phys_airaccelerate;
+	float phys_swimaccelerate;
+	float phys_maxstep;
+	float phys_maxsteepness;
+	float phys_maxwaterjump;
+	float phys_maxbarrier;
+	float phys_jumpvel;
+	float phys_falldelta5;
+	float phys_falldelta10;
+	float rs_waterjump;
+	float rs_teleport;
+	float rs_barrierjump;
+	float rs_startcrouch;
+	float rs_startgrapple;
+	float rs_startwalkoffledge;
+	float rs_startjump;
+	float rs_rocketjump;
+	float rs_bfgjump;
+	float rs_jumppad;
+	float rs_aircontrolledjumppad;
+	float rs_funcbob;
+	float rs_startelevator;
+	float rs_falldamage5;
+	float rs_falldamage10;
+	float rs_maxfallheight;
+	float rs_maxjumpfallheight;
+} aas_settings_t;
+
 #define CACHETYPE_PORTAL		0
 #define CACHETYPE_AREA			1
 

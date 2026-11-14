@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: AAS library - routes between areas (be_aas_route.c)             }
 {                                                                              }
@@ -63,6 +63,7 @@ type
       AStopAreaNum: Integer): Boolean;
     function EnableRoutingArea(const AAreaNum, AEnable: Integer): Integer;
     function AreaContentsTravelFlags(const AAreaNum: Integer): Integer;
+    function AreaTravelTime(const AAreaNum: Integer; const AStart, AEnd: TVec3): Integer;
     function TravelFlagForType(const ATravelType: Integer): Integer;
     procedure ReachabilityFromNum(const ANum: Integer; var AReach: TAasReachability);
     function NextAreaReachability(const AAreaNum, AReachNum: Integer): Integer;
@@ -428,6 +429,11 @@ begin
     // remove all routing cache involving this area
     FStore.RemoveRoutingCacheUsingArea(AAreaNum);
   Result := Ord(LFlags = 0);
+end;
+
+function TAasRouter.AreaTravelTime(const AAreaNum: Integer; const AStart, AEnd: TVec3): Integer;
+begin
+  Result := FData.AreaTravelTime(AAreaNum, AStart, AEnd);
 end;
 
 function TAasRouter.AreaContentsTravelFlags(const AAreaNum: Integer): Integer;

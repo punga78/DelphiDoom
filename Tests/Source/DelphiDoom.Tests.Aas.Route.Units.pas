@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: tests of the AAS library - the routing of Quake III on a world  }
 {  of three areas in a row, built here                                         }
@@ -38,6 +38,12 @@ type
     procedure DovrebbeDareIlTempoEDLaPrimaRaggiungibilita;
     [Test]
     procedure DovrebbeDareTempoUnoPerLaStessaArea;
+    [Test]
+    procedure DovrebbeDareIlTempoPerAttraversareUnArea;
+    [Test]
+    procedure DovrebbeScegliereUnAreaCasualeDoveSiNuota;
+    [Test]
+    procedure DovrebbeNonTrovareUnAreaCasualeSenzaTerrenoNeRaggiungibilita;
     [Test]
     procedure DovrebbeNonContareIlTempoDentroLAreaSenzaOrigine;
     [Test]
@@ -83,7 +89,7 @@ type
 implementation
 
 uses
-  DelphiDoom.BotAi.Types, DelphiDoom.Aas.AasFile, DelphiDoom.Aas.Factory, DelphiDoom.Aas.Route.Types, DelphiDoom.Aas.Route.Router;
+  DelphiDoom.Aas.Route.RandomGoal, DelphiDoom.Aas.Reach.Factory, DelphiDoom.BotAi.Types, DelphiDoom.Aas.AasFile, DelphiDoom.Aas.Factory, DelphiDoom.Aas.Route.Types, DelphiDoom.Aas.Route.Router;
 
 type
   TNoMemory = class(TInterfacedObject, IAasRoutingMemory)
@@ -230,6 +236,72 @@ begin
   Assert.IsTrue(FRouter.AreaRouteToGoalArea(2, nil, 2, TFL_DEFAULT, LTime, LReach));
   Assert.AreEqual(1, LTime);
   Assert.AreEqual(0, LReach);
+end;
+
+type
+  TFixedRandom = class(TInterfacedObject, IBotRandom)
+  strict private
+    FValue: Single;
+  public
+    constructor Create(const AValue: Single);
+    function NextFloat: Single;
+  end;
+
+constructor TFixedRandom.Create(const AValue: Single);
+begin
+  inherited Create;
+  FValue := AValue;
+end;
+
+function TFixedRandom.NextFloat: Single;
+begin
+  Result := FValue;
+end;
+
+procedure TTestAasRoute.DovrebbeScegliereUnAreaCasualeDoveSiNuota;
+var
+  LData: TAasFileData;
+  LGoal: TAasRandomGoal;
+  LArea: Integer;
+  LOrigin: TVec3;
+begin
+  LData := BuildData;
+  LData.AreaSettings[3].AreaFlags := AREA_LIQUID;
+  Use(LData);
+  LGoal := TAasRandomGoal.Create(FFile, TAasFactory.CreateSampler(FFile, FImportIntf, True), TAasFactory.CreateTracer(FFile, FImportIntf), FRouter, TAasFactory.CreateAreaQuery(FFile, FImportIntf), TAasReachFactory.CreateGeometry(FFile), TFixedRandom.Create(0.75));
+  try
+    // 4 areas * 0.75 = 3: the area in the water
+    Assert.IsTrue(LGoal.RandomGoalArea(1, TFL_DEFAULT, LArea, LOrigin));
+    Assert.AreEqual(3, LArea);
+    Assert.AreEqual(Double(FFile.Areas[3].Center[0]), Double(LOrigin[0]), 0.0);
+  finally
+    LGoal.Free;
+  end;
+end;
+
+procedure TTestAasRoute.DovrebbeNonTrovareUnAreaCasualeSenzaTerrenoNeRaggiungibilita;
+var
+  LGoal: TAasRandomGoal;
+  LArea: Integer;
+  LOrigin: TVec3;
+begin
+  LGoal := TAasRandomGoal.Create(FFile, TAasFactory.CreateSampler(FFile, FImportIntf, True), TAasFactory.CreateTracer(FFile, FImportIntf), FRouter, TAasFactory.CreateAreaQuery(FFile, FImportIntf), TAasReachFactory.CreateGeometry(FFile), TFixedRandom.Create(0));
+  try
+    // no reachabilities in the area 0
+    Assert.IsFalse(LGoal.RandomGoalArea(0, TFL_DEFAULT, LArea, LOrigin));
+    // no ground below the centers: nothing is found after every area was tried
+    Assert.IsFalse(LGoal.RandomGoalArea(1, TFL_DEFAULT, LArea, LOrigin));
+    Assert.AreEqual(0, LArea);
+  finally
+    LGoal.Free;
+  end;
+end;
+
+procedure TTestAasRoute.DovrebbeDareIlTempoPerAttraversareUnArea;
+begin
+  // the same point: at least one hundredth of a second; farther points take longer
+  Assert.AreEqual(1, FRouter.AreaTravelTime(2, Vec(0, 0, 0), Vec(0, 0, 0)));
+  Assert.IsTrue(FRouter.AreaTravelTime(2, Vec(0, 0, 0), Vec(300, 0, 0)) > 1);
 end;
 
 procedure TTestAasRoute.DovrebbeNonContareIlTempoDentroLAreaSenzaOrigine;

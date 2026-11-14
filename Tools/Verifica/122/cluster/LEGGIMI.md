@@ -1,0 +1,5 @@
+# Parita' del clustering e dell'ottimizzatore di Quake III (#122)
+
+`build.sh [cartella]` compila `clustergen.c` con il vero `be_aas_file.c`, `be_aas_sample.c`, `be_aas_cluster.c` e `be_aas_optimize.c` (gcc di w64devkit, `-O1`). `clustergen file.aas [...]` stampa, per ogni file, i sei casi A-F (vedi il commento in testa a `clustergen.c`): le tabelle dei cluster e dei portali riga per riga, gli hash FNV e i messaggi (`P<n>|`, `L|`). Le righe `P1|trying to load` vengono dal caricamento del C e il gemello Delphi (`TAasClusterScenario`) non le stampa: il confronto le salta.
+
+Golden di tutte le mappe: estrarre i `.aas` dai pak di OpenArena (`pak6-misc`, `pak6-patch085`, `pak6-patch088`; vince l'ultimo), lanciare `clustergen.exe <file>` per ognuno e salvare l'uscita come `cluster_<mappa>.golden.txt` in una cartella; i mondi di prova si ottengono con `..\build.sh` + `aasgen dump N file`. Poi `DELPHIDOOM_CLUSTER_GOLDENS=<cartella>` e `DELPHIDOOM_OPENARENA=<baseoa>` per `TTestAasClusterGolden`.

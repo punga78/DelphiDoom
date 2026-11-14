@@ -59,4 +59,22 @@ vec_t VectorNormalize( vec3_t v );
 #define Com_Memset memset
 #define Com_Memcpy memcpy
 
+/* the movement (be_aas_move.c): contents of the BSP, angles, the null vector */
+#define CONTENTS_LAVA 8
+#define CONTENTS_SLIME 16
+#define CONTENTS_WATER 32
+#define PITCH 0
+#define YAW 1
+#define ROLL 2
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+static const vec3_t vec3_origin = {0, 0, 0};
+/* VectorCompare of q_math.c: exact comparison */
+static int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
+	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) return 0;
+	return 1;
+}
+void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
+
 #endif
