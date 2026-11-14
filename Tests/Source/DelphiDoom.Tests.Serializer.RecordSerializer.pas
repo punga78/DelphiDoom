@@ -73,6 +73,10 @@ type
     procedure DovrebbeTroncareUnDefaultDiTestoOltre255Caratteri;
     [Test]
     procedure DovrebbeConfrontareIFloatConSegnoENonConDifferenzaMinima;
+    [Test]
+    procedure DovrebbeScrivereUnInteroNativoIn4ByteConIlSegno;
+    [Test]
+    procedure DovrebbeNonScrivereUnInteroNativoAlDefault;
   end;
 
 implementation
@@ -494,6 +498,42 @@ begin
   Assert.AreEqual(11, Save(LRecord));
   LRecord.Float0 := 1.0E-30;
   Assert.AreEqual(11 + 6, Save(LRecord));
+end;
+
+procedure TTestSerializerRecordSerializer.DovrebbeScrivereUnInteroNativoIn4ByteConIlSegno;
+var
+  LSerializer: ISerializer;
+  LValue: NativeInt;
+  LRead: NativeInt;
+  LSize: Integer;
+begin
+  // special1 and special2 of a mobj: 4 bytes in the saved game, 8 in the memory of the 64 bit program
+  LSerializer := TSerializerFactory.Create(FResolver, FResolver, FResolver).CreateSerializer;
+  LSerializer.AddTyped(0, TSerializerFieldKind.NativeInteger, 0);
+  LValue := -3;
+  LSize := LSerializer.SaveToMemory(@FBuffer[0], @LValue, Length(FBuffer));
+  Assert.AreEqual<Integer>(2 + 4 + 2, LSize);
+  Assert.AreEqual<Integer>(1, PWord(@FBuffer[0])^);
+  Assert.AreEqual<Integer>(-3, PInteger(@FBuffer[2])^);
+  LRead := 12345;
+  Assert.AreEqual<Integer>(LSize, LSerializer.LoadFromMemory(@FBuffer[0], @LRead, LSize));
+  Assert.AreEqual<NativeInt>(-3, LRead);
+end;
+
+procedure TTestSerializerRecordSerializer.DovrebbeNonScrivereUnInteroNativoAlDefault;
+var
+  LSerializer: ISerializer;
+  LValue: NativeInt;
+  LRead: NativeInt;
+begin
+  LSerializer := TSerializerFactory.Create(FResolver, FResolver, FResolver).CreateSerializer;
+  LSerializer.AddTyped(0, TSerializerFieldKind.NativeInteger, 0);
+  LValue := 0;
+  Assert.AreEqual<Integer>(2, LSerializer.SaveToMemory(@FBuffer[0], @LValue, Length(FBuffer)));
+  // the whole value takes the default, not only its low half
+  LRead := -1;
+  LSerializer.LoadFromMemory(@FBuffer[0], @LRead, 2);
+  Assert.AreEqual<NativeInt>(0, LRead);
 end;
 
 end.

@@ -20,10 +20,16 @@ uses
   DelphiDoom.Serializer.MemoryStream in '..\Libs\Serializer\DelphiDoom.Serializer.MemoryStream.pas',
   DelphiDoom.Serializer.FieldCodec in '..\Libs\Serializer\DelphiDoom.Serializer.FieldCodec.pas',
   DelphiDoom.Serializer.RecordSerializer in '..\Libs\Serializer\DelphiDoom.Serializer.RecordSerializer.pas',
+  DelphiDoom.Serializer.DiskLayout in '..\Libs\Serializer\DelphiDoom.Serializer.DiskLayout.pas',
+  DelphiDoom.Serializer.DiskLayoutBuilder in '..\Libs\Serializer\DelphiDoom.Serializer.DiskLayoutBuilder.pas',
+  DelphiDoom.Serializer.DiskLayouts in '..\Libs\Serializer\DelphiDoom.Serializer.DiskLayouts.pas',
+  DelphiDoom.Serializer.DiskRecordWriter in '..\Libs\Serializer\DelphiDoom.Serializer.DiskRecordWriter.pas',
   DelphiDoom.Serializer.Factory in '..\Libs\Serializer\DelphiDoom.Serializer.Factory.pas',
   DelphiDoom.Tests.Serializer.Fakes in 'Source\DelphiDoom.Tests.Serializer.Fakes.pas',
   DelphiDoom.Tests.Serializer.RecordSerializer in 'Source\DelphiDoom.Tests.Serializer.RecordSerializer.pas',
   DelphiDoom.Tests.Serializer.Golden in 'Source\DelphiDoom.Tests.Serializer.Golden.pas',
+  DelphiDoom.Tests.Serializer.DiskLayout in 'Source\DelphiDoom.Tests.Serializer.DiskLayout.pas',
+  DelphiDoom.Tests.Serializer.DiskRecordWriter in 'Source\DelphiDoom.Tests.Serializer.DiskRecordWriter.pas',
   DelphiDoom.Tests.Serializer.MemoryStream in 'Source\DelphiDoom.Tests.Serializer.MemoryStream.pas';
 
 var

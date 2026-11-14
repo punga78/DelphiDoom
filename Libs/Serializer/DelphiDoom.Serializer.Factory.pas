@@ -25,12 +25,16 @@ type
     constructor Create(const AStates: ISerializerStateResolver; const AMobjs: ISerializerMobjResolver;
       const APlayers: ISerializerPlayerResolver);
     function CreateSerializer: ISerializer;
+    /// <summary>The layouts on disk of the records that are saved raw (issue #40)</summary>
+    class function CreateDiskLayouts: IDiskLayouts; static;
+    /// <summary>The copies of the raw records while a game is being saved</summary>
+    class function CreateDiskRecordWriter: IDiskRecordWriter; static;
   end;
 
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Serializer.FieldCodec, DelphiDoom.Serializer.RecordSerializer;
+  System.SysUtils, DelphiDoom.Serializer.DiskLayouts, DelphiDoom.Serializer.DiskRecordWriter, DelphiDoom.Serializer.FieldCodec, DelphiDoom.Serializer.RecordSerializer;
 
 { TSerializerFactory }
 
@@ -52,6 +56,16 @@ end;
 function TSerializerFactory.CreateSerializer: ISerializer;
 begin
   Result := TRecordSerializer.Create(TSerializerFieldCodec.Create(FStates, FMobjs, FPlayers));
+end;
+
+class function TSerializerFactory.CreateDiskLayouts: IDiskLayouts;
+begin
+  Result := TDiskLayouts.Create;
+end;
+
+class function TSerializerFactory.CreateDiskRecordWriter: IDiskRecordWriter;
+begin
+  Result := TDiskRecordWriter.Create;
 end;
 
 end.

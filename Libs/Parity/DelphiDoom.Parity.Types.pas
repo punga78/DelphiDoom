@@ -41,6 +41,8 @@ type
     AutoSave: Boolean;
     AutoSaveTic: Integer;
     AutoSaveSlot: Integer;
+    /// <summary>-savelayouts file: the layouts on disk of the records of the saved games, as text</summary>
+    SaveLayoutsFile: string;
     /// <summary>True when at least one option was given</summary>
     function IsActive: Boolean;
   end;
@@ -100,7 +102,8 @@ implementation
 
 function TParityOptions.IsActive: Boolean;
 begin
-  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo or AutoSave;
+  Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo or AutoSave or
+    (SaveLayoutsFile <> '');
 end;
 
 { TParityDifference }

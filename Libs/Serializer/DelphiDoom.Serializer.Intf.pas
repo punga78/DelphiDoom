@@ -77,6 +77,67 @@ type
     function CreateSerializer: ISerializer;
   end;
 
+  /// <summary>
+  ///   How a record that is saved "raw" (the whole record, not field by field) lies on disk. On disk it
+  ///   is what the 32 bit program keeps in memory: a pointer and a NativeInt are 4 bytes and the fields are
+  ///   aligned as the 32 bit compiler aligns them. In memory it is what the running program has. With a
+  ///   32 bit program the two are the same bytes (issue #40)
+  /// </summary>
+  IDiskLayout = interface
+    ['{6D0B4F1A-93C7-4E52-8A1D-B7E260F4C935}']
+    function GetName: string;
+    function GetNativeSize: Integer;
+    function GetDiskSize: Integer;
+    /// <summary>Writes the record of memory into ADisk (DiskSize bytes)</summary>
+    procedure Pack(const ANative: Pointer; const ADisk: Pointer);
+    /// <summary>Reads the DiskSize bytes of ADisk into the record of memory; a 4 byte value keeps its sign</summary>
+    procedure Unpack(const ADisk: Pointer; const ANative: Pointer);
+    /// <summary>
+    ///   Reads only the first ADiskBytes bytes of the layout on disk. The engine reads the record of an old
+    ///   version of the saved games over the start of the record of today: the old one is a prefix of it
+    ///   for the 32 bit program, so on disk, but not always in the memory of the 64 bit program
+    /// </summary>
+    procedure UnpackPrefix(const ADisk: Pointer; const ANative: Pointer; ADiskBytes: Integer);
+    /// <summary>
+    ///   The layout on disk in words: the size, then offset, size and name of every field and the offsets of
+    ///   the values that are pointers in memory. It never tells anything of the layout in memory, so the
+    ///   32 and the 64 bit programs must say the same lines
+    /// </summary>
+    function Describe: TArray<string>;
+    property Name: string read GetName;
+    property NativeSize: Integer read GetNativeSize;
+    property DiskSize: Integer read GetDiskSize;
+  end;
+
+  /// <summary>The layouts on disk of the records of the saved games, by type</summary>
+  IDiskLayouts = interface
+    ['{F38A27C1-5B60-4D0E-9C74-1E8D53A6B0F2}']
+    /// <summary>
+    ///   Tells what a field with an unnamed type is (the compiler keeps no type information for
+    ///   "array[0..3] of pspdef_t" written in the record): ACount elements of the type AElement
+    /// </summary>
+    procedure DescribeArray(const ARecord: Pointer; const AField: string; const AElement: Pointer;
+      ACount: Integer);
+    /// <summary>Adds a record to the list that DescribeAll tells (ATypeInfo is TypeInfo(the record))</summary>
+    procedure Declare(const ATypeInfo: Pointer);
+    /// <summary>The layout of a record; ESerializerException when the record cannot be understood</summary>
+    function LayoutOf(const ATypeInfo: Pointer): IDiskLayout;
+    /// <summary>The lines of Describe of every declared record, in the order of the declarations</summary>
+    function DescribeAll: TArray<string>;
+  end;
+
+  /// <summary>
+  ///   The raw records being written to the buffer of a saved game: a copy in memory to change (pointers
+  ///   into numbers) and, at the end, the copies written to their places with the layout on disk
+  /// </summary>
+  IDiskRecordWriter = interface
+    ['{2C9E61B4-A7D3-4F08-B5E2-90D14C3F7A68}']
+    /// <summary>A copy of ASource to change; its place is ADisk, which moves after the record</summary>
+    function Reserve(const ALayout: IDiskLayout; const ASource: Pointer; var ADisk: Pointer): Pointer;
+    /// <summary>Writes the copies to their places and frees them</summary>
+    procedure Commit;
+  end;
+
 implementation
 
 end.

@@ -56,6 +56,14 @@ type
     procedure UnTicDiScaricoNegativoDovrebbeDareEccezione;
     [Test]
     procedure LeOpzioniDovrebberoPoterEssereUsateInsieme;
+    [Test]
+    procedure DovrebbeLeggereIlSalvataggioAutomatico;
+    [Test]
+    procedure UnoSlotDiSalvataggioFuoriDaiLimitiDovrebbeDareEccezione;
+    [Test]
+    procedure UnTicDiSalvataggioNegativoDovrebbeDareEccezione;
+    [Test]
+    procedure DovrebbeLeggereIlFileDeiLayoutDeiSalvataggi;
   end;
 
 implementation
@@ -225,6 +233,54 @@ begin
   Assert.AreEqual('f.txt', LOptions.FrameHashFile);
   Assert.AreEqual(5, LOptions.FrameDumpTic);
   Assert.AreEqual(100, LOptions.AutoDemoTics);
+end;
+
+procedure TTestParityOptionsParser.DovrebbeLeggereIlSalvataggioAutomatico;
+var
+  LOptions: TParityOptions;
+begin
+  LOptions := TParityOptionsParser.Parse(TArray<string>.Create('-AutoSave', '350', '2'));
+  Assert.IsTrue(LOptions.IsActive);
+  Assert.IsTrue(LOptions.AutoSave);
+  Assert.AreEqual(350, LOptions.AutoSaveTic);
+  Assert.AreEqual(2, LOptions.AutoSaveSlot);
+  Assert.IsFalse(TParityOptionsParser.Parse(TArray<string>.Create('-statehash', 'a.txt')).AutoSave);
+end;
+
+procedure TTestParityOptionsParser.UnoSlotDiSalvataggioFuoriDaiLimitiDovrebbeDareEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('-autosave', '10', '12'));
+    end,
+    EParityException);
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('-autosave', '10'));
+    end,
+    EParityException);
+end;
+
+procedure TTestParityOptionsParser.UnTicDiSalvataggioNegativoDovrebbeDareEccezione;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('-autosave', '-1', '2'));
+    end,
+    EParityException);
+end;
+
+procedure TTestParityOptionsParser.DovrebbeLeggereIlFileDeiLayoutDeiSalvataggi;
+var
+  LOptions: TParityOptions;
+begin
+  LOptions := TParityOptionsParser.Parse(TArray<string>.Create('-savelayouts', 'layouts.txt'));
+  Assert.IsTrue(LOptions.IsActive);
+  Assert.AreEqual('layouts.txt', LOptions.SaveLayoutsFile);
+  Assert.AreEqual('', TParityOptionsParser.Parse(nil).SaveLayoutsFile);
 end;
 
 end.

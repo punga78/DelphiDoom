@@ -17,7 +17,7 @@ type
   /// <summary>
   ///   Reads the options of the parity tools from the arguments of the program (the names are not case
   ///   sensitive): -statehash file, -statehash-detail first last, -framehash file, -framedump tic file,
-  ///   -autodemo seed tics, -autosave tic slot. What is not one of them is ignored
+  ///   -autodemo seed tics, -autosave tic slot, -savelayouts file. What is not one of them is ignored
   /// </summary>
   TParityOptionsParser = class
   strict private
@@ -133,6 +133,10 @@ begin
     if (Result.AutoSaveSlot < 0) or (Result.AutoSaveSlot > 9) then
       raise EParityException.Create(SWrongSaveSlot);
   end;
+
+  LIndex := FindName(AArguments, '-savelayouts');
+  if LIndex >= 0 then
+    Result.SaveLayoutsFile := ReadText(AArguments, LIndex + 1, '-savelayouts');
 end;
 
 end.
