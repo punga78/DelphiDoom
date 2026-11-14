@@ -79,6 +79,10 @@ type
     [Test]
     procedure LaBombaDovrebbeEsserePremutaUnaVoltaEIlPostbruciatoreTenuto;
     [Test]
+    procedure SalvaECaricaDovrebberoEssereChiestiPerUnTicSolo;
+    [Test]
+    procedure UnSalvaInFondoAlCopioneDovrebbeEssereChiestoLoStesso;
+    [Test]
     procedure UnSaliVersoIlBassoDovrebbePremereAbbassati;
     [Test]
     procedure SenzaPassiCheCombattonoNonDovrebbeChiedereINemici;
@@ -405,6 +409,48 @@ begin
   Place(1000, 0, 0, 0);
   LCommand := Next;
   Assert.IsFalse(LCommand.Afterburner);
+end;
+
+procedure TTestParityScriptPilot.SalvaECaricaDovrebberoEssereChiestiPerUnTicSolo;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('hold 1 forward 10'#10'save 2'#10'hold 2 forward 20'#10'load 4'#10'hold 1 forward 30');
+  Place(0, 0, 0, 0);
+  LCommand := Next;
+  Assert.AreEqual(10, LCommand.Forward);
+  Assert.IsFalse(LCommand.Save);
+  // the save takes no tic: it goes with the first command of the step after it
+  LCommand := Next;
+  Assert.IsTrue(LCommand.Save);
+  Assert.IsFalse(LCommand.Load);
+  Assert.AreEqual(2, LCommand.Slot);
+  Assert.AreEqual(20, LCommand.Forward);
+  LCommand := Next;
+  Assert.IsFalse(LCommand.Save);
+  Assert.AreEqual(20, LCommand.Forward);
+  LCommand := Next;
+  Assert.IsTrue(LCommand.Load);
+  Assert.IsFalse(LCommand.Save);
+  Assert.AreEqual(4, LCommand.Slot);
+  Assert.AreEqual(30, LCommand.Forward);
+  LCommand := Next;
+  Assert.IsFalse(LCommand.Load);
+  Assert.IsTrue(FPilot.IsFinished(0));
+end;
+
+procedure TTestParityScriptPilot.UnSalvaInFondoAlCopioneDovrebbeEssereChiestoLoStesso;
+var
+  LCommand: TParityPilotCommand;
+begin
+  Load('hold 1 forward 10'#10'save 1');
+  Place(0, 0, 0, 0);
+  Next;
+  LCommand := Next;
+  Assert.IsTrue(LCommand.Save);
+  Assert.AreEqual(1, LCommand.Slot);
+  Assert.AreEqual(0, LCommand.Forward);
+  Assert.IsTrue(FPilot.IsFinished(0));
 end;
 
 procedure TTestParityScriptPilot.UnSaliDovrebbePremereSaltoFinoAllaQuota;

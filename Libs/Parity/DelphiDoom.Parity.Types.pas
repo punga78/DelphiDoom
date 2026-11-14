@@ -67,6 +67,12 @@ type
     Afterburner: Boolean;
     /// <summary>The second key that only one game has (Radix: the plasma bomb, once for every press)</summary>
     Bomb: Boolean;
+    /// <summary>The game is saved in the slot Slot (a script only; it does nothing while a demo is recorded)</summary>
+    Save: Boolean;
+    /// <summary>The saved game of the slot Slot is loaded (a script only)</summary>
+    Load: Boolean;
+    /// <summary>The slot of Save and Load, from 0</summary>
+    Slot: Integer;
   end;
 
   /// <summary>What the pilot may know about the world: the player and nothing else</summary>
@@ -105,7 +111,11 @@ type
     /// <summary>Turns to the nearest enemy and fires at it, until none is left near or the tics are over</summary>
     skHunt,
     /// <summary>Waits (fighting the enemies that come near) until the health is back, or the tics are over</summary>
-    skHeal);
+    skHeal,
+    /// <summary>Saves the game in a slot (one tic)</summary>
+    skSave,
+    /// <summary>Loads the saved game of a slot (one tic)</summary>
+    skLoad);
 
   /// <summary>One step of a script of commands (-autoscript); the coordinates are map units</summary>
   TParityScriptStep = record

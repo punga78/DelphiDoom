@@ -106,6 +106,16 @@ procedure RX_LoadLevelLogic(const lastdoomlump: integer);
 
 //==============================================================================
 //
+// RX_SpawnLevelLogicThinker
+// Adds the thinker that runs the triggers and the actions; nothing when the
+// level already has it. RX_LoadLevelLogic calls it, and the loading of a saved
+// game after the engine has freed the thinkers it does not know
+//
+//==============================================================================
+procedure RX_SpawnLevelLogicThinker;
+
+//==============================================================================
+//
 // RX_RunTrigger
 //
 //==============================================================================
@@ -482,6 +492,29 @@ end;
 
 //==============================================================================
 //
+// RX_SpawnLevelLogicThinker
+//
+//==============================================================================
+procedure RX_SpawnLevelLogicThinker;
+var
+  logic: Pradixlevellogic_t;
+  think: Pthinker_t;
+begin
+  think := thinkercap.next;
+  while think <> @thinkercap do
+  begin
+    if @think._function.acp1 = @T_RadixLevelLogic then
+      exit;
+    think := think.next;
+  end;
+
+  logic := Z_Malloc(SizeOf(radixlevellogic_t), PU_LEVSPEC, nil);
+  P_AddThinker(@logic.thinker);
+  logic.thinker._function.acp1 := @T_RadixLevelLogic;
+end;
+
+//==============================================================================
+//
 // RX_LoadLevelLogic
 //
 //==============================================================================
@@ -491,7 +524,6 @@ var
   mappoints: TArray<TRadixLevelMapPoint>;
   actions: TArray<TRadixLevelAction>;
   triggers: TArray<TRadixLevelTrigger>;
-  logic: Pradixlevellogic_t;
   i: integer;
 begin
   if radix_levellumpreader = nil then
@@ -527,9 +559,7 @@ begin
   RX_InitWalls;
   RX_InitForceFields; // JVAL: 20200429 - Initalize forcefields
 
-  logic := Z_Malloc(SizeOf(radixlevellogic_t), PU_LEVSPEC, nil);
-  P_AddThinker(@logic.thinker);
-  logic.thinker._function.acp1 := @T_RadixLevelLogic;
+  RX_SpawnLevelLogicThinker;
 
   if devparm then
     printf('RX_LoadLevelLogic(): %d actions, %d triggers, grid %d x %d'#13#10,

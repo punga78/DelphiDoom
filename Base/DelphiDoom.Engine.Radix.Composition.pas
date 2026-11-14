@@ -12,7 +12,7 @@ interface
 
 uses
   DelphiDoom.Logging.Intf, DelphiDoom.ActorDef.Types, DelphiDoom.Engine.Wad.Lumps.Intf,
-  DelphiDoom.Engine.Dehacked.ThingFields;
+  DelphiDoom.Engine.Dehacked.ThingFields, DelphiDoom.MathCore.Intf;
 
 /// <summary>
 ///   The part of the composition root that only the Radix game has: ComposeEngine calls it (under
@@ -26,8 +26,9 @@ uses
 ///   The place that the parser of DEHACKED asks for the fields of the things it does not know: it
 ///   gets the table of the Radix part of the actors
 /// </param>
+/// <param name="ARandom">The random numbers of the game: a saved game of Radix keeps where they are</param>
 procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps;
-  const AThingFields: IEngineDehackedThingFields);
+  const AThingFields: IEngineDehackedThingFields; const ARandom: IGameRandom);
 
 /// <summary>
 ///   The reader of the properties of the actors that only Radix has, for the profile of the
@@ -44,9 +45,9 @@ uses
   DelphiDoom.Engine.Wad.Converter.Intf, DelphiDoom.Engine.Wad.Aliases.Intf,
   DelphiDoom.Engine.Radix.Edition.Intf, DelphiDoom.Engine.Radix.DataConverter,
   DelphiDoom.Engine.Radix.LumpAliases,
-  DelphiDoom.Radix.ActorProperties, DelphiDoom.Dehacked.Intf,
+  DelphiDoom.Radix.ActorProperties, DelphiDoom.Dehacked.Intf, DelphiDoom.Engine.Parity.PilotCommand,
   w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
-  radix_intermission, radix_controls, g_game;
+  radix_intermission, radix_controls, radix_saveg, g_game;
 
 var
   // The one table of the Radix part of the actors: ComposeActorDef asks for it first (the parser of
@@ -90,7 +91,7 @@ begin
 end;
 
 procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps;
-  const AThingFields: IEngineDehackedThingFields);
+  const AThingFields: IEngineDehackedThingFields; const ARandom: IGameRandom);
 var
   LConverter: IEngineWadConverter;
   LAliases: IEngineLumpAliases;
@@ -117,6 +118,11 @@ begin
   AThingFields.Attach(ComposeRadixActorProperties(ALog) as IDehackedExtraThingFields);
   // the keys of the afterburner and of the plasma bomb
   G_ConfigureTiccmdExtension(RX_TiccmdKeys);
+  // the state of Radix in a file beside each saved game of the engine
+  RX_ConfigureSaveGame(ARandom);
+  G_ConfigureSaveGameExtension(RX_SaveGame, RX_LoadGame);
+  // the steps "save" and "load" of a script of commands
+  TEngineParityPilotCommand.ConfigureSaveGames(RX_ScriptSaveGame, RX_ScriptLoadGame);
 end;
 
 end.

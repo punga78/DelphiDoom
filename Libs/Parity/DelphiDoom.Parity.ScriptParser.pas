@@ -23,7 +23,8 @@ type
   ///   face x y [timeout tics] [fire];
   ///   climb height [timeout tics];
   ///   hunt tics [range n];
-  ///   heal health tics [range n].
+  ///   heal health tics [range n];
+  ///   save slot; load slot (slot 0..5: the saved games of the menus of the engine).
   ///   forward, back and speed are 1..50, side is -40..40 (positive = right), turn is in steps of 256/65536 of
   ///   a turn for every tic (-5..5, positive = left), look is -7..7 (positive = up), x, y and the heights are
   ///   map units
@@ -39,6 +40,8 @@ type
     MAX_TURN_STEPS = 5;
     MAX_LOOK = 7;
     MAX_WEAPON = 8;
+    /// <summary>The last slot of the saved games of the menus of the engine</summary>
+    MAX_SLOT = 5;
     /// <summary>One step of turn in the units of the ticcmd: a demo keeps the high byte of the angle</summary>
     TURN_UNIT = 256;
   strict private
@@ -146,6 +149,22 @@ begin
     Result.EnemyRange := DEFAULT_ENEMY_RANGE;
     LIndex := 3;
   end
+  else if (AWords[0] = 'save') or (AWords[0] = 'load') then
+  begin
+    if AWords[0] = 'save' then
+    begin
+      Result.Kind := skSave;
+      Result.Command.Save := True;
+    end
+    else
+    begin
+      Result.Kind := skLoad;
+      Result.Command.Load := True;
+    end;
+    Result.Command.Slot := ReadNumber(AWords, 1, ALine, 0, MAX_SLOT);
+    Result.Tics := 1;
+    LIndex := 2;
+  end
   else
     raise EParityException.CreateFmt(SUnknownStep, [ALine, AWords[0]]);
 
@@ -155,7 +174,7 @@ begin
   begin
     LWord := AWords[LIndex];
     Inc(LIndex);
-    if (LWord = 'timeout') and not (Result.Kind in [skHold, skHunt, skHeal]) then
+    if (LWord = 'timeout') and not (Result.Kind in [skHold, skHunt, skHeal, skSave, skLoad]) then
     begin
       Result.Tics := ReadNumber(AWords, LIndex, ALine, 1, MAX_TICS);
       Inc(LIndex);

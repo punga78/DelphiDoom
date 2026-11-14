@@ -21,7 +21,8 @@ type
   ///   (hunt, heal, and goto with fight: turn to the nearest one, fire when it is in front, fly level with it,
   ///   move sideways). The steps that look at the player (goto, face, climb) end when the player is there; if
   ///   that does not happen within their timeout the script gives up and the pilot has finished, as it does
-  ///   when the player dies or the steps are over; hunt and heal just end when their tics are over. It
+  ///   when the player dies or the steps are over; hunt and heal just end when their tics are over. The
+  ///   steps save and load take no tic: they are asked with the command of the step that follows. It
   ///   has no random numbers: the same script and the same positions always give the same commands. The turns
   ///   are multiples of 256, which a demo keeps exactly
   /// </summary>
@@ -52,7 +53,11 @@ type
     FEnemyRange: Integer;
     FFinished: Boolean;
     FWasAlive: Boolean;
+    FAskSave: Boolean;
+    FAskLoad: Boolean;
+    FAskSlot: Integer;
     FReport: IParityLog;
+    function StepCommand(const AView: TParityPilotView): TParityPilotCommand;
     class function TurnTo(const AView: TParityPilotView; AX, AY: Integer; out AOffAngle: Integer): Integer; static;
     class function HeightKeys(const AView: TParityPilotView; AZ: Integer;
       var ACommand: TParityPilotCommand): Boolean; static;
@@ -87,7 +92,7 @@ uses
 const
   FRACUNIT = 65536;
   STEP_NAMES: array[TParityScriptStepKind] of string = ('hold', 'goto', 'face', 'climb', 'hunt',
-    'heal');
+    'heal', 'save', 'load');
 
 { TParityScriptPilot }
 
@@ -234,6 +239,19 @@ begin
 end;
 
 function TParityScriptPilot.NextCommand(const AView: TParityPilotView): TParityPilotCommand;
+begin
+  Result := StepCommand(AView);
+  if FAskSave or FAskLoad then
+  begin
+    Result.Save := FAskSave;
+    Result.Load := FAskLoad;
+    Result.Slot := FAskSlot;
+    FAskSave := False;
+    FAskLoad := False;
+  end;
+end;
+
+function TParityScriptPilot.StepCommand(const AView: TParityPilotView): TParityPilotCommand;
 var
   LStep: TParityScriptStep;
   LDone: Boolean;
@@ -290,6 +308,16 @@ begin
           if not LDone then
             FightCommand(LStep, AView, Result);
         end;
+      skSave, skLoad:
+        begin
+          // The step takes no tic of its own: what it asks goes with the command of the step after it
+          // (the game saves or loads between two tics), so a script with a "save" flies as the same
+          // script without it
+          FAskSave := FAskSave or LStep.Command.Save;
+          FAskLoad := FAskLoad or LStep.Command.Load;
+          FAskSlot := LStep.Command.Slot;
+          LDone := True;
+        end;
     else
       LDone := HeightKeys(AView, LStep.Z, Result);
     end;
@@ -302,7 +330,7 @@ begin
       FQuietTics := 0;
       Continue;
     end;
-    if not (LStep.Kind in [skHold, skHunt, skHeal]) and (FStepTics >= LStep.Tics) then
+    if not (LStep.Kind in [skHold, skHunt, skHeal, skSave, skLoad]) and (FStepTics >= LStep.Tics) then
     begin
       Note(LStep, AView, 'GAVE UP');
       Finish(AView, 'script stopped');

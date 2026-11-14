@@ -1698,7 +1698,7 @@ begin
 
   W_Configure(LWadServices);
 {$IFDEF RADIX}
-  ComposeRadix(LLog, LLumps, LThingFields);
+  ComposeRadix(LLog, LLumps, LThingFields, LRandom);
 {$ENDIF}
 {$IFDEF SPEED}
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));

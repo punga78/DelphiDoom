@@ -76,6 +76,31 @@ procedure RX_DamageLine(const lineid: integer; const damage: integer);
 //==============================================================================
 procedure RX_TrackShots;
 
+type
+  trackedshot_t = record
+    key: LongWord;
+    x, y: integer;        // where it is now (fixed_t)
+    oldx, oldy: integer;  // where it was a tic ago (where it is now, for a new shot)
+    momx, momy: integer;
+  end;
+  trackedshot_tArray = array of trackedshot_t;
+
+//==============================================================================
+//
+// RX_GetTrackedShots
+// The shots of the players that were flying at the last tic, for a saved game
+//
+//==============================================================================
+function RX_GetTrackedShots: trackedshot_tArray;
+
+//==============================================================================
+//
+// RX_SetTrackedShots
+// The shots of a saved game in the place of the ones that are tracked
+//
+//==============================================================================
+procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
+
 implementation
 
 uses
@@ -107,15 +132,6 @@ const
 const
   // how far past its own step and radius an exploded shot reaches a wall (map units)
   SHOTREACHMARGIN = 16;
-
-type
-  trackedshot_t = record
-    key: LongWord;
-    x, y: fixed_t;        // where it is now
-    oldx, oldy: fixed_t;  // where it was a tic ago (where it is now, for a new shot)
-    momx, momy: fixed_t;
-  end;
-  trackedshot_tArray = array of trackedshot_t;
 
 var
   shootablelines: array of integer;
@@ -468,6 +484,28 @@ begin
   prevshots := shots;
   shots := tmp;
   numprevshots := numshots;
+  numshots := 0;
+end;
+
+//==============================================================================
+//
+// RX_GetTrackedShots
+//
+//==============================================================================
+function RX_GetTrackedShots: trackedshot_tArray;
+begin
+  result := Copy(prevshots, 0, numprevshots);
+end;
+
+//==============================================================================
+//
+// RX_SetTrackedShots
+//
+//==============================================================================
+procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
+begin
+  prevshots := Copy(saved);
+  numprevshots := Length(prevshots);
   numshots := 0;
 end;
 

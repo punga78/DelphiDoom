@@ -57,6 +57,8 @@ type
     [Test]
     procedure DovrebbeLeggereITastiDiUnGiocoSoloSeNominati;
     [Test]
+    procedure DovrebbeLeggereSalvaECaricaConLoSlot;
+    [Test]
     procedure UnaParolaSconosciutaDovrebbeDareEccezione;
     [Test]
     procedure UnaParolaDiUnAltroPassoDovrebbeDareEccezione;
@@ -281,6 +283,27 @@ begin
   Assert.IsTrue(LSteps[3].Command.Afterburner);
   AssertRaises('goto 1 2 bomb', 'bomb');
   AssertRaises('face 1 2 afterburner', 'afterburner');
+end;
+
+procedure TTestParityScriptParser.DovrebbeLeggereSalvaECaricaConLoSlot;
+var
+  LSteps: TArray<TParityScriptStep>;
+begin
+  LSteps := TParityScriptParser.Parse('save 3'#10'load 0'#10'hold 1');
+  Assert.IsTrue(LSteps[0].Kind = skSave);
+  Assert.IsTrue(LSteps[0].Command.Save);
+  Assert.IsFalse(LSteps[0].Command.Load);
+  Assert.AreEqual(3, LSteps[0].Command.Slot);
+  Assert.IsTrue(LSteps[1].Kind = skLoad);
+  Assert.IsTrue(LSteps[1].Command.Load);
+  Assert.IsFalse(LSteps[1].Command.Save);
+  Assert.AreEqual(0, LSteps[1].Command.Slot);
+  Assert.IsFalse(LSteps[2].Command.Save or LSteps[2].Command.Load);
+  AssertRaises('save', 'number is missing');
+  AssertRaises('save 6', 'not between');
+  AssertRaises('load -1', 'not between');
+  AssertRaises('save 1 fire', 'fire');
+  AssertRaises('load 1 timeout 5', 'timeout');
 end;
 
 procedure TTestParityScriptParser.UnaParolaSconosciutaDovrebbeDareEccezione;

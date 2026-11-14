@@ -40,7 +40,9 @@ interface
 //==============================================================================
 //
 // RX_SpawnPilotThinker
-// Adds the thinker of the crafts to the level that has just been loaded
+// Adds the thinker of the crafts to the level that has just been loaded, or to
+// the one of a saved game that the engine has just read; nothing when the level
+// already has it
 //
 //==============================================================================
 procedure RX_SpawnPilotThinker;
@@ -253,7 +255,18 @@ end;
 procedure RX_SpawnPilotThinker;
 var
   pilot: Pradixpilot_t;
+  think: Pthinker_t;
 begin
+  // one for a level: a saved game that is loaded asks again (the engine frees the thinkers it
+  // does not know when it loads its own)
+  think := thinkercap.next;
+  while think <> @thinkercap do
+  begin
+    if @think._function.acp1 = @T_RadixPilot then
+      exit;
+    think := think.next;
+  end;
+
   pilot := Z_Malloc(SizeOf(radixpilot_t), PU_LEVSPEC, nil);
   P_AddThinker(@pilot.thinker);
   pilot.thinker._function.acp1 := @T_RadixPilot;

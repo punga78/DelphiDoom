@@ -129,6 +129,9 @@ uses
   DelphiDoom.Tests.Radix.LevelLumps in 'Source\DelphiDoom.Tests.Radix.LevelLumps.pas',
   DelphiDoom.Tests.Radix.TriggerGrid in 'Source\DelphiDoom.Tests.Radix.TriggerGrid.pas',
   DelphiDoom.Tests.Radix.TriggerLogic in 'Source\DelphiDoom.Tests.Radix.TriggerLogic.pas',
+  DelphiDoom.Radix.SaveGame.Types in '..\Libs\Radix\DelphiDoom.Radix.SaveGame.Types.pas',
+  DelphiDoom.Radix.SaveGame.Codec in '..\Libs\Radix\DelphiDoom.Radix.SaveGame.Codec.pas',
+  DelphiDoom.Tests.Radix.SaveGameCodec in 'Source\DelphiDoom.Tests.Radix.SaveGameCodec.pas',
   DelphiDoom.Tests.Radix.ActionRules in 'Source\DelphiDoom.Tests.Radix.ActionRules.pas',
   DelphiDoom.Tests.Radix.Debriefing in 'Source\DelphiDoom.Tests.Radix.Debriefing.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
