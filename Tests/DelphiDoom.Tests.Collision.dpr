@@ -45,6 +45,9 @@ uses
   DelphiDoom.Collision.Builder.Bsp in '..\Libs\Collision\DelphiDoom.Collision.Builder.Bsp.pas',
   DelphiDoom.Collision.Builder.EdgeNormals in '..\Libs\Collision\DelphiDoom.Collision.Builder.EdgeNormals.pas',
   DelphiDoom.Collision.Builder.Optimizer in '..\Libs\Collision\DelphiDoom.Collision.Builder.Optimizer.pas',
+  DelphiDoom.Collision.Builder.Merger in '..\Libs\Collision\DelphiDoom.Collision.Builder.Merger.pas',
+  DelphiDoom.Collision.Builder.InternalEdges in '..\Libs\Collision\DelphiDoom.Collision.Builder.InternalEdges.pas',
+  DelphiDoom.Collision.Builder.Chopper in '..\Libs\Collision\DelphiDoom.Collision.Builder.Chopper.pas',
   DelphiDoom.Collision.Builder in '..\Libs\Collision\DelphiDoom.Collision.Builder.pas',
   DelphiDoom.Collision.TraceWork in '..\Libs\Collision\DelphiDoom.Collision.TraceWork.pas',
   DelphiDoom.Collision.Translator in '..\Libs\Collision\DelphiDoom.Collision.Translator.pas',
@@ -85,8 +88,8 @@ uses
   DelphiDoom.Tests.Collision.Builder in 'Source\DelphiDoom.Tests.Collision.Builder.pas',
   DelphiDoom.Tests.Collision.Translation in 'Source\DelphiDoom.Tests.Collision.Translation.pas',
   DelphiDoom.Tests.Collision.CmFile in 'Source\DelphiDoom.Tests.Collision.CmFile.pas',
-  DelphiDoom.Tests.Collision.Parity in 'Source\DelphiDoom.Tests.Collision.Parity.pas',
-  DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas';
+  DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas',
+  DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas';
 
 var
   Runner: ITestRunner;
