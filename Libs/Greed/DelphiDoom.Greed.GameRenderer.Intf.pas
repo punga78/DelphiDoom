@@ -28,6 +28,12 @@ type
     /// <summary>RF_RenderView(x, y, z, angle) into AFrame; the walls seen are marked in the maps of APlayer</summary>
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
+    /// <summary>
+    ///   RF_RenderView for the rear view camera (RearView of raven.pas): as RenderView, with the view not moved
+    ///   up or down by the look of the player
+    /// </summary>
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
     /// <summary>reallight: 4096 lights that the sprites write and the renderer reads; nil if there are none</summary>
     function TileLights: PGreedTileLights;
     /// <summary>RF_SetLights(blackz)</summary>

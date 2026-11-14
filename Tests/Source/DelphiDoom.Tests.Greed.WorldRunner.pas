@@ -42,6 +42,11 @@ type
     FDumpFrame: Integer;
     FDumpFile: string;
     FAllFrames: Boolean;
+    FRearView: Boolean;
+    FRecordTo: TStream;
+    FPlayFrom: TBytes;
+    FTapeOutOfStep: Boolean;
+    FSaveTurns: string;
     procedure PrintWorld(AGame: TGreedGame; ARandom: TGreedRandomTable; APrint: TWorldPrint);
   public
     /// <summary>EGreedNotFoundException if the folder has no GREED.BLO</summary>
@@ -56,6 +61,29 @@ type
     property DumpFile: string read FDumpFile write FDumpFile;
     /// <summary>A line for every turn</summary>
     property AllFrames: Boolean read FAllFrames write FAllFrames;
+    /// <summary>
+    ///   The player also uses the rear view camera (the key A), and each line gets one more column: the
+    ///   fingerprint of the picture of the camera (rearbuf), which also goes in the history
+    /// </summary>
+    property RearView: Boolean read FRearView write FRearView;
+    /// <summary>
+    ///   The game is recorded on this stream as a tape of TGreedDemoWriter (nil, the default: no tape). The stream
+    ///   is not owned
+    /// </summary>
+    property RecordTo: TStream read FRecordTo write FRecordTo;
+    /// <summary>
+    ///   The game is not driven by the commands of the seed but by this tape (TGreedDemoPlayer): the commands, the
+    ///   clock of the system and the tics of each turn. Empty (the default): no tape
+    /// </summary>
+    property PlayFrom: TBytes read FPlayFrom write FPlayFrom;
+    /// <summary>The last game played from a tape asked for something that the tape did not have next</summary>
+    property TapeOutOfStep: Boolean read FTapeOutOfStep;
+    /// <summary>
+    ///   The turns after which the game is saved and loaded again as the menu does (SaveGame and LoadGame), as a
+    ///   list "300,700"; the length and the fingerprint of the bytes of the saved game go in the history. Empty
+    ///   (the default): never
+    /// </summary>
+    property SaveTurns: string read FSaveTurns write FSaveTurns;
   end;
 
 implementation
@@ -65,7 +93,9 @@ uses
   DelphiDoom.Greed.Actor.Types, DelphiDoom.Greed.LinkedPool, DelphiDoom.Greed.World.Intf,
   DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.Level.Intf, DelphiDoom.Greed.Game.Intf,
   DelphiDoom.Greed.Game.State, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState,
-  DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRendererFactory;
+  DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRendererFactory, DelphiDoom.Greed.HudView,
+  DelphiDoom.Greed.Demo.Types, DelphiDoom.Greed.Demo.Intf, DelphiDoom.Greed.Demo.Writer, DelphiDoom.Greed.Demo.Reader,
+  DelphiDoom.Greed.Demo.Recorder, DelphiDoom.Greed.Demo.Player, DelphiDoom.Greed.Game.Constants;
 
 const
   ARCHIVE_NAME = 'GREED.BLO';
@@ -83,7 +113,7 @@ type
     FKeys: TWorldKeys;
     FTyped: string;
   public
-    constructor Create(ASeed: Cardinal);
+    constructor Create(ASeed: Cardinal; ARearView: Boolean);
     destructor Destroy; override;
     procedure BeginReading;
     function IsPressed(ACommand: TGreedCommand): Boolean;
@@ -105,8 +135,14 @@ type
     procedure Stop;
   end;
 
+  /// <summary>The saved games stay in memory: each is the record as SaveGame of the original writes it to its file</summary>
   TWorldSaveGames = class(TInterfacedObject, IGreedSaveGames)
+  strict private
+    FGames: array[0..9] of TGreedPlayerRecord;
+    FSaved: array[0..9] of Boolean;
   public
+    /// <summary>FNV-1a of the bytes of the saved game ANumber and their number; 0 bytes if it was never saved</summary>
+    function Fingerprint(ANumber: Integer; out ALength: Cardinal): Cardinal;
     function GameFileName(ANumber: Integer): string;
     function DirectoryFileName: string;
     procedure SaveGame(ANumber: Integer; const APlayer: TGreedPlayerRecord);
@@ -121,37 +157,12 @@ type
     function Clock: Cardinal;
   end;
 
-  /// <summary>Nothing is drawn around the view and nothing is shown between the maps</summary>
-  TWorldView = class(TInterfacedObject, IGreedGameView, IGreedMessages)
-  public
-    procedure RefreshAmmo;
-    procedure RefreshGoalItem;
-    procedure ResetDisplay;
-    procedure ResetMessages;
-    procedure SetTotalEffectTime(ATics: Integer);
-    procedure MissionBriefing(AMap: Integer);
-    procedure EndGame(AEpisode: Integer);
-    procedure PlayFli(AMovie: Integer);
-    procedure StartWait;
-    procedure UpdateWait;
-    procedure EndWait;
-    procedure FadeOutLevel;
-    procedure ChangeViewSize(ABigger: Boolean);
-    procedure SetGameEpisode(AEpisode: Integer);
-    function ShowMenu: Boolean;
-    procedure ShowHelp;
-    procedure ShowPause;
-    function ConfirmQuit: Boolean;
-    procedure DrawOverlay(var AFrame: TGreedFrame; const AOverlay: TGreedViewOverlay);
-    procedure WriteMessage(const AText: string);
-  end;
-
 { TWorldCommandSource }
 
-constructor TWorldCommandSource.Create(ASeed: Cardinal);
+constructor TWorldCommandSource.Create(ASeed: Cardinal; ARearView: Boolean);
 begin
   inherited Create;
-  FCommands := TWorldCommands.Create(ASeed);
+  FCommands := TWorldCommands.Create(ASeed, ARearView);
 end;
 
 destructor TWorldCommandSource.Destroy;
@@ -164,9 +175,10 @@ procedure TWorldCommandSource.BeginReading;
 const
   // the keys that type a character, in the order of their scan codes (the last one typed in a reading wins):
   // 1, 2, Z, X, comma, period, space, Delete (which is the character 127 in the table of the original)
-  TYPING: array[0..7] of TWorldKey = (wkWeapon1, wkWeapon2, wkJump, wkUseItem, wkSlideLeft, wkSlideRight, wkSpace,
-    wkInventoryRight);
-  TYPED: array[0..7] of Char = ('1', '2', 'Z', 'X', ',', '.', ' ', #127);
+  // (A, the rear view, is between 2 and Z)
+  TYPING: array[0..8] of TWorldKey = (wkWeapon1, wkWeapon2, wkRearView, wkJump, wkUseItem, wkSlideLeft,
+    wkSlideRight, wkSpace, wkInventoryRight);
+  TYPED: array[0..8] of Char = ('1', '2', 'A', 'Z', 'X', ',', '.', ' ', #127);
 var
   LNew: TWorldKeys;
   LIndex: Integer;
@@ -200,6 +212,7 @@ begin
     gcCenterView: Result := wkCenterView in FKeys;
     gcWeapon1: Result := wkWeapon1 in FKeys;
     gcWeapon2: Result := wkWeapon2 in FKeys;
+    gcRearView: Result := wkRearView in FKeys;
   else
     Result := False;
   end;
@@ -273,12 +286,34 @@ end;
 
 procedure TWorldSaveGames.SaveGame(ANumber: Integer; const APlayer: TGreedPlayerRecord);
 begin
+  if (ANumber < Low(FGames)) or (ANumber > High(FGames)) then
+    Exit;
+  FGames[ANumber] := APlayer;
+  FSaved[ANumber] := True;
+end;
+
+function TWorldSaveGames.Fingerprint(ANumber: Integer; out ALength: Cardinal): Cardinal;
+var
+  LBytes: PByte;
+  LIndex: Integer;
+begin
+  Result := FNV_OFFSET;
+  ALength := 0;
+  if (ANumber < Low(FGames)) or (ANumber > High(FGames)) or not FSaved[ANumber] then
+    Exit;
+  ALength := SizeOf(TGreedPlayerRecord);
+  LBytes := PByte(@FGames[ANumber]);
+  for LIndex := 0 to SizeOf(TGreedPlayerRecord) - 1 do
+    Result := (Result xor LBytes[LIndex]) * FNV_PRIME;
 end;
 
 function TWorldSaveGames.LoadGame(ANumber: Integer; out APlayer: TGreedPlayerRecord): Boolean;
 begin
-  FillChar(APlayer, SizeOf(APlayer), 0);
-  Result := False;
+  Result := (ANumber >= Low(FGames)) and (ANumber <= High(FGames)) and FSaved[ANumber];
+  if Result then
+    APlayer := FGames[ANumber]
+  else
+    FillChar(APlayer, SizeOf(APlayer), 0);
 end;
 
 function TWorldSaveGames.ReadDirectory: TGreedSaveDirectory;
@@ -295,90 +330,6 @@ end;
 function TWorldClock.Clock: Cardinal;
 begin
   Result := Value;
-end;
-
-{ TWorldView }
-
-procedure TWorldView.RefreshAmmo;
-begin
-end;
-
-procedure TWorldView.RefreshGoalItem;
-begin
-end;
-
-procedure TWorldView.ResetMessages;
-begin
-end;
-
-procedure TWorldView.ResetDisplay;
-begin
-end;
-
-procedure TWorldView.SetTotalEffectTime(ATics: Integer);
-begin
-end;
-
-procedure TWorldView.MissionBriefing(AMap: Integer);
-begin
-end;
-
-procedure TWorldView.EndGame(AEpisode: Integer);
-begin
-end;
-
-procedure TWorldView.PlayFli(AMovie: Integer);
-begin
-end;
-
-procedure TWorldView.StartWait;
-begin
-end;
-
-procedure TWorldView.UpdateWait;
-begin
-end;
-
-procedure TWorldView.EndWait;
-begin
-end;
-
-procedure TWorldView.FadeOutLevel;
-begin
-end;
-
-procedure TWorldView.ChangeViewSize(ABigger: Boolean);
-begin
-end;
-
-procedure TWorldView.SetGameEpisode(AEpisode: Integer);
-begin
-end;
-
-function TWorldView.ShowMenu: Boolean;
-begin
-  Result := False;
-end;
-
-procedure TWorldView.ShowHelp;
-begin
-end;
-
-procedure TWorldView.ShowPause;
-begin
-end;
-
-function TWorldView.ConfirmQuit: Boolean;
-begin
-  Result := False;
-end;
-
-procedure TWorldView.DrawOverlay(var AFrame: TGreedFrame; const AOverlay: TGreedViewOverlay);
-begin
-end;
-
-procedure TWorldView.WriteMessage(const AText: string);
-begin
 end;
 
 { TLibraryWorldRunner }
@@ -577,12 +528,87 @@ var
   LClockIntf: IGreedSystemClock;
   LSound: TWorldSound;
   LSoundIntf: IGreedSoundEffects;
-  LView: TWorldView;
+  LView: TGreedHudView;
   LViewIntf: IGreedGameView;
   LFrame: TGreedFrame;
   LFrameNumber, LTic, LTotalTics, LEpisode, LShift: Integer;
-  LHistory, LTotal, LClockBase: Cardinal;
+  LHistory, LTotal, LClockBase, LRear: Cardinal;
   LValues: TStringList;
+  LSource: IGreedCommandSource;
+  LPacer: IGreedFramePacer;
+  LGameClock: IGreedSystemClock;
+  LHeader: TGreedDemoHeader;
+  LWriter: TGreedDemoWriter;
+  LReader: TGreedDemoReader;
+  LRecorder: TGreedDemoRecorder;
+  LPlayer: TGreedDemoPlayer;
+  LTicsOfTurn: Integer;
+  LSaves: TWorldSaveGames;
+  LSavesIntf: IGreedSaveGames;
+  LSaveLength, LSavePrint: Cardinal;
+
+  procedure AddToHistory(AValue: Cardinal);
+  var
+    LBits: Integer;
+  begin
+    LBits := 0;
+    while LBits < 32 do
+    begin
+      LHistory := (LHistory xor ((AValue shr LBits) and $FF)) * FNV_PRIME;
+      Inc(LBits, 8);
+    end;
+  end;
+
+  // what RunMenu of raven.pas does around the menu, with the menu saving the game and loading it at once
+  procedure SaveAndLoad;
+  begin
+    LGame.State.Player.TimeCount := LGame.State.TimeCount;
+    LGame.SaveGame(1);
+    LSavePrint := LSaves.Fingerprint(1, LSaveLength);
+    AddToHistory(LSaveLength);
+    AddToHistory(LSavePrint);
+    LGame.LoadGame(1);
+    LGame.State.TimeCount := LGame.State.Player.TimeCount;
+    LGame.State.KeyboardDelay := LGame.State.TimeCount + GREED_KBDELAY;
+  end;
+
+  // FNV-1a of rearbuf (64 x 64 pixels, all zero before the first picture of the camera, as the array of the original)
+  function RearPrint(const ABuffer: TBytes): Cardinal;
+  var
+    LIndex: Integer;
+    LByte: Byte;
+  begin
+    Result := FNV_OFFSET;
+    for LIndex := 0 to 64 * 64 - 1 do
+    begin
+      if LIndex < Length(ABuffer) then
+        LByte := ABuffer[LIndex]
+      else
+        LByte := 0;
+      Result := (Result xor LByte) * FNV_PRIME;
+    end;
+  end;
+
+  // the rows of rearbuf as hexadecimal text, as the harness of the original writes them with -Valori
+  procedure DumpRear(const ABuffer: TBytes; ALines: TStrings);
+  var
+    LRow, LColumn, LIndex: Integer;
+    LText: string;
+  begin
+    for LRow := 0 to 63 do
+    begin
+      LText := '';
+      for LColumn := 0 to 63 do
+      begin
+        LIndex := LRow * 64 + LColumn;
+        if LIndex < Length(ABuffer) then
+          LText := LText + IntToHex(ABuffer[LIndex], 2)
+        else
+          LText := LText + '00';
+      end;
+      ALines.Add(Format('rear.%d=%s', [LRow, LText]));
+    end;
+  end;
 
   // per-tic trace of the fields of the weapon (GREED_TRACE = "<first turn>-<last turn>", GREED_TRACE_FILE): the
   // same lines of the harness of the original, to find the first value that differs
@@ -627,6 +653,8 @@ var
         LPrint.Lines := LValues;
         PrintWorld(LGame, LRandom, LPrint);
         LPrint.Lines := nil;
+        if FRearView then
+          DumpRear(LGame.RearBuffer, LValues);
         LValues.SaveToFile(FDumpFile);
       finally
         LValues.Free;
@@ -641,14 +669,35 @@ var
       LHistory := (LHistory xor ((LTotal shr LShift) and $FF)) * FNV_PRIME;
       Inc(LShift, 8);
     end;
+    if FRearView then
+    begin
+      LRear := RearPrint(LGame.RearBuffer);
+      LShift := 0;
+      while LShift < 32 do
+      begin
+        LHistory := (LHistory xor ((LRear shr LShift) and $FF)) * FNV_PRIME;
+        Inc(LShift, 8);
+      end;
+    end;
     if FAllFrames or (LFrameNumber mod AEvery = 0) or (LFrameNumber = AFrames) or LGame.QuitGame then
-      ALines.Add(Format('W %d %d %d %d %s %s', [AMap, ASeed, LFrameNumber, LGame.State.TimeCount,
-        IntToHex(LHistory, 8), LPrint.Line]));
+    begin
+      if FRearView then
+        ALines.Add(Format('W %d %d %d %d %s %s %s', [AMap, ASeed, LFrameNumber, LGame.State.TimeCount,
+          IntToHex(LHistory, 8), LPrint.Line, IntToHex(LRear, 8)]))
+      else
+        ALines.Add(Format('W %d %d %d %d %s %s', [AMap, ASeed, LFrameNumber, LGame.State.TimeCount,
+          IntToHex(LHistory, 8), LPrint.Line]));
+    end;
   end;
 
 begin
   LPrint := TWorldPrint.Create;
   LGame := nil;
+  LWriter := nil;
+  LReader := nil;
+  LRecorder := nil;
+  LPlayer := nil;
+  FTapeOutOfStep := False;
   try
     LRandom := TGreedRandomTable.Create;
     LRandomIntf := LRandom;
@@ -656,13 +705,43 @@ begin
     LClockIntf := LClock;
     LSound := TWorldSound.Create(LPrint);
     LSoundIntf := LSound;
-    LView := TWorldView.Create;
+    // the status bar of the original changes the game too (the goal item that it shows moves on when the bonus
+    // item goes away): the game is played with the HUD of the program, drawn at every turn
+    LView := TGreedHudView.Create(FArchive);
     LViewIntf := LView;
+    LSaves := TWorldSaveGames.Create;
+    LSavesIntf := LSaves;
+    LSource := TWorldCommandSource.Create(Cardinal(ASeed), FRearView);
+    LPacer := nil;
+    LGameClock := LClockIntf;
+    if Length(FPlayFrom) > 0 then
+    begin
+      // the tape instead of the commands of the seed and of the clock
+      LReader := TGreedDemoReader.Create(FPlayFrom);
+      LPlayer := TGreedDemoPlayer.Create(LReader, False);
+      LSource := LPlayer;
+      LGameClock := LPlayer;
+      LPacer := LPlayer;
+    end
+    else if Assigned(FRecordTo) then
+    begin
+      LHeader := Default(TGreedDemoHeader);
+      LHeader.Map := AMap;
+      LHeader.Difficulty := 2;
+      LHeader.LowResolution := True;
+      LHeader.RandomOffset := ASeed;
+      LWriter := TGreedDemoWriter.Create(FRecordTo, LHeader);
+      LRecorder := TGreedDemoRecorder.Create(LWriter, LSource, LClockIntf);
+      LSource := LRecorder;
+      LGameClock := LRecorder;
+      LPacer := LRecorder;
+    end;
     LGame := TGreedGame.Create(FArchive,
       TGreedFactory.CreateMapLoader(FArchive, TGreedFactory.CreateFolderFiles([FFolder])),
       TGreedGameRendererFactory.Create(FArchive),
-      TGreedCommandState.Create(TWorldCommandSource.Create(Cardinal(ASeed))), LSoundIntf, LSound as IGreedMusic,
-      LRandomIntf, TWorldSaveGames.Create, LClockIntf, LViewIntf, LView as IGreedMessages);
+      TGreedCommandState.Create(LSource), LSoundIntf, LSound as IGreedMusic,
+      LRandomIntf, LSavesIntf, LGameClock, LViewIntf, LView as IGreedMessages);
+    LView.Attach(LGame);
     LGame.LowResolution := True;
     if AMap >= 16 then
       LEpisode := 3
@@ -683,7 +762,10 @@ begin
     while (LFrameNumber < AFrames) and not LGame.QuitGame do
     begin
       Inc(LFrameNumber);
-      for LTic := 1 to WORLD_TICS_PER_FRAME do
+      LTicsOfTurn := WORLD_TICS_PER_FRAME;
+      if Assigned(LPacer) then
+        LPacer.NextFrame(LTicsOfTurn);
+      for LTic := 1 to LTicsOfTurn do
       begin
         Inc(LTotalTics);
         LClock.Value := LClockBase + Cardinal(LTotalTics) * WORLD_CLOCK_PER_TIC;
@@ -691,10 +773,22 @@ begin
         Trace(Format('T %d tic %d tc %d', [LFrameNumber, LTic, LGame.State.TimeCount]));
       end;
       LGame.Frame(LFrame);
+      if (FSaveTurns <> '') and (Pos(',' + IntToStr(LFrameNumber) + ',', ',' + FSaveTurns + ',') > 0) and
+        not LGame.QuitGame then
+        SaveAndLoad;
       Note;
     end;
+    if Assigned(LRecorder) then
+      LRecorder.Close;
+    if Assigned(LPlayer) then
+      FTapeOutOfStep := LPlayer.Desynchronized;
   finally
     LGame.Free;
+    LPacer := nil;
+    LSource := nil;
+    LGameClock := nil;
+    LWriter.Free;
+    LReader.Free;
     LPrint.Free;
   end;
 end;

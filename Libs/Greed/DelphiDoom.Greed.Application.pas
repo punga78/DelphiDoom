@@ -15,7 +15,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.Generics.Defaults, DelphiDoom.Greed.Types, DelphiDoom.Greed.Intf,
   DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Settings.Intf, DelphiDoom.Greed.Game, DelphiDoom.Greed.Screens,
-  DelphiDoom.Greed.Application.Intf, DelphiDoom.Clock.Intf;
+  DelphiDoom.Greed.Application.Intf, DelphiDoom.Greed.Demo.Intf, DelphiDoom.Clock.Intf;
 
 const
   /// <summary>TICRATE: every phase of the program runs at 70 tics a second</summary>
@@ -49,6 +49,17 @@ type
     StartMap: Integer;
     Character: Integer;
     Difficulty: Integer;
+    /// <summary>
+    ///   A recorded game (it is being recorded or played): decides the tics before each turn of the loop of the
+    ///   game. With it the menu and the quick exit end the game (what a menu does is not on the tape) and the
+    ///   program ends with the game. nil for a game that is not recorded
+    /// </summary>
+    Pacer: IGreedFramePacer;
+    /// <summary>
+    ///   With Pacer: the tape is being played. The screens that wait for a key (help, pause, briefing, the end of
+    ///   an episode, the movies) are not shown: nobody is there to press it
+    /// </summary>
+    PlayingBack: Boolean;
     class function Standard: TGreedApplicationOptions; static;
   end;
 
@@ -92,6 +103,7 @@ type
     FTics: Integer;
     FFrames: Integer;
     function DueTics: Integer;
+    function Taped: Boolean;
     procedure SampleKeys;
     procedure SyncInputWithGame;
     procedure PresentFrame(const AFrame: TGreedFrame);
@@ -333,6 +345,20 @@ begin
       Break;
     end;
     LDue := DueTics;
+    if Taped and (FMode = gamPlaying) then
+    begin
+      if FOptions.Pacer.Finished then
+      begin
+        Stop;
+        Break;
+      end;
+      if not FOptions.Pacer.NextFrame(LDue) then
+      begin
+        // the clock has not reached the next turn of the tape yet
+        FClock.Wait(1);
+        Continue;
+      end;
+    end;
     LPlayed := 0;
     while (LPlayed < LDue) and (not FStopped) and AActive() do
     begin
@@ -384,8 +410,19 @@ begin
   FSnapshot := nil;
 end;
 
+function TGreedApplication.Taped: Boolean;
+begin
+  Result := Assigned(FOptions.Pacer);
+end;
+
 function TGreedApplication.ShowMenu: Boolean;
 begin
+  if Taped then
+  begin
+    // what a menu does (another game, a saved game) is not on a tape: the menu ends the recorded game
+    FGame.State.QuitGame := True;
+    Exit(True);
+  end;
   BeginOverlay;
   try
     FScreens.Menu.OpenMenu;
@@ -408,6 +445,8 @@ end;
 
 procedure TGreedApplication.ShowHelp;
 begin
+  if FOptions.PlayingBack then
+    Exit;
   BeginOverlay;
   try
     FScreens.Menu.OpenHelp;
@@ -429,6 +468,8 @@ end;
 
 procedure TGreedApplication.ShowPause;
 begin
+  if FOptions.PlayingBack then
+    Exit;
   BeginOverlay;
   try
     FScreens.Menu.OpenPause;
@@ -450,6 +491,8 @@ end;
 
 function TGreedApplication.ConfirmQuit: Boolean;
 begin
+  if Taped then
+    Exit(True);
   BeginOverlay;
   try
     FScreens.Menu.OpenQuit;
@@ -476,7 +519,7 @@ var
   LIndex: Integer;
   S: TGreedGameState;
 begin
-  if FOptions.NoBriefing then
+  if FOptions.NoBriefing or FOptions.PlayingBack then
     Exit;
   S := FGame.State;
   LStats := Default(TGreedBriefingStats);
@@ -506,6 +549,8 @@ end;
 procedure TGreedApplication.EndGame(AEpisode: Integer);
 begin
   FRedo := True;
+  if FOptions.PlayingBack then
+    Exit;
   FScreens.EndGame.Start(AEpisode);
   RunModal(gamEndGame, True,
     procedure
@@ -538,7 +583,7 @@ end;
 
 procedure TGreedApplication.PlayFli(AMovie: Integer);
 begin
-  if (AMovie < Low(FLI_NAMES)) or (AMovie > High(FLI_NAMES)) then
+  if (AMovie < Low(FLI_NAMES)) or (AMovie > High(FLI_NAMES)) or FOptions.PlayingBack then
     Exit;
   FScreens.Player.Open(LoadMovie(FLI_NAMES[AMovie]));
   RunModal(gamMovie, True,
@@ -677,7 +722,8 @@ begin
   while (not FStopped) and (not FGame.QuitGame) do
   begin
     RunGame;
-    if FStopped or not FRedo then
+    // a recorded game is one game: the program ends with it
+    if FStopped or Taped or not FRedo then
       Break;
     // the end of an episode: the introduction again, without its titles
     FRedo := False;

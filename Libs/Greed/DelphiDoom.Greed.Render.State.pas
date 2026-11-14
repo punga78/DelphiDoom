@@ -54,7 +54,15 @@ type
     FColorMapBytes: TBytes;
     FTransparencyBytes: TBytes;
     FBackdropBytes: TBytes;
-    FViewTables: TGreedViewTables;
+    /// the tables of the sizes used so far (the view of the player and the rear view camera take turns)
+    FViewTables: TArray<TGreedViewTables>;
+    /// pixelangle, pixelcosine and xslope of the original: arrays as wide as the widest view, of which a view
+    /// writes only its part. The renderer reads them also past the width of the view (a span that ends at the
+    /// column of a vertex of the picture before): what is there is what the original has there
+    FPixelAngleStore: array[0..GREED_RENDER_MAX_WIDTH] of Integer;
+    FPixelCosineStore: array[0..GREED_RENDER_MAX_WIDTH] of Integer;
+    FXSlopeStore: array[0..GREED_RENDER_MAX_WIDTH] of Integer;
+    function TablesOf(AWidth, AHeight: Integer): TGreedViewTables;
   public
     // ---- the size of the picture (SetViewSize) ----
     Tables: TGreedViewTables;
@@ -71,6 +79,11 @@ type
     AFrac: Integer;
     /// <summary>The picture: WindowWidth * WindowHeight pixels, the first row on top</summary>
     Buffer: PByte;
+    /// <summary>
+    ///   The pixels of Buffer. A row of a floor that goes past the right side of the view goes on in the row below,
+    ///   as in the original (its buffer is one array); what would go past the end of the picture is not written
+    /// </summary>
+    BufferSize: Integer;
     // ---- the tables ----
     Tangents: PGreedFixedArray;
     Cosines: PGreedFixedArray;
@@ -214,15 +227,35 @@ begin
   SetLength(FFlatLoaded, AAssets.FlatCount + 1);
   SpColormap := ColorMaps;
   SetLights(GREED_MAX_Z);
+  // RF_Startup: SetViewSize of the widest view fills xslope before any other size is used
+  Move(TablesOf(GREED_RENDER_MAX_WIDTH, GREED_RENDER_MAX_HEIGHT).XSlope[0], FXSlopeStore[0], SizeOf(FXSlopeStore));
 end;
 
 destructor TGreedRenderState.Destroy;
+var
+  LTables: TGreedViewTables;
 begin
-  FreeAndNil(FViewTables);
+  for LTables in FViewTables do
+    LTables.Free;
+  FViewTables := nil;
   inherited Destroy;
 end;
 
+function TGreedRenderState.TablesOf(AWidth, AHeight: Integer): TGreedViewTables;
+var
+  LTables: TGreedViewTables;
+begin
+  for LTables in FViewTables do
+    if (LTables.Width = AWidth) and (LTables.Height = AHeight) then
+      Exit(LTables);
+  Result := TGreedViewTables.Create(AWidth, AHeight);
+  SetLength(FViewTables, Length(FViewTables) + 1);
+  FViewTables[High(FViewTables)] := Result;
+end;
+
 procedure TGreedRenderState.Configure(AWidth, AHeight: Integer);
+var
+  LCount: Integer;
 begin
   if Assigned(Tables) and (Tables.Width = AWidth) and (Tables.Height = AHeight) then
   begin
@@ -231,9 +264,16 @@ begin
     ScrollMax := WindowHeight + ScrollMin;
     Exit;
   end;
-  FreeAndNil(FViewTables);
-  FViewTables := TGreedViewTables.Create(AWidth, AHeight);
-  Tables := FViewTables;
+  Tables := TablesOf(AWidth, AHeight);
+  // the angles of the columns are copied whole from the table of the kind of view (wallpixelangle, lowpixelangle,
+  // campixelangle), which is zero past its width; xslope is written by SetViewSize up to the width and keeps
+  // what the view before left after it
+  LCount := (AWidth + 1) * SizeOf(Integer);
+  FillChar(FPixelAngleStore, SizeOf(FPixelAngleStore), 0);
+  FillChar(FPixelCosineStore, SizeOf(FPixelCosineStore), 0);
+  Move(Tables.PixelAngle[0], FPixelAngleStore[0], LCount);
+  Move(Tables.PixelCosine[0], FPixelCosineStore[0], LCount);
+  Move(Tables.XSlope[0], FXSlopeStore[0], LCount);
   WindowWidth := AWidth;
   WindowHeight := AHeight;
   CenterX := Tables.CenterX;
@@ -243,9 +283,9 @@ begin
   MaxScroll := Tables.MaxScroll;
   HFrac := Tables.HFrac;
   AFrac := Tables.AFrac;
-  PixelAngle := PGreedFixedArray(@Tables.PixelAngle[0]);
-  PixelCosine := PGreedFixedArray(@Tables.PixelCosine[0]);
-  XSlope := PGreedFixedArray(@Tables.XSlope[0]);
+  PixelAngle := PGreedFixedArray(@FPixelAngleStore[0]);
+  PixelCosine := PGreedFixedArray(@FPixelCosineStore[0]);
+  XSlope := PGreedFixedArray(@FXSlopeStore[0]);
   YSlope := PGreedFixedArray(@Tables.YSlope[0]);
   BackTangents := PGreedFixedArray(@Tables.BackTangents[0]);
   ScrollMax := WindowHeight + ScrollMin;

@@ -43,6 +43,8 @@ type
     procedure Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
     function TileLights: PGreedTileLights;
     procedure SetLights(ABlackZ: TGreedFixed);
     procedure SetFlatTranslation(AFlat, APicture: Integer);
@@ -74,6 +76,8 @@ begin
   FArchive := AArchive;
   FAssets := TGreedArchiveRenderAssets.Create(AArchive);
   FAssetsIntf := FAssets;
+  // LoadData of intro.pas calls RF_PreloadGraphics before the game starts
+  FAssets.PreloadGraphics;
   FRenderer := TGreedFrameRenderer.Create(FAssetsIntf, ASprites, AClock, ARandom);
   FRendererIntf := FRenderer;
   SetLength(FFixed, AArchive.LumpCount);
@@ -91,6 +95,12 @@ procedure TGreedGameRenderer.RenderView(const AWorld: IGreedWorld; var APlayer: 
   AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
 begin
   FRenderer.RenderView(AWorld, APlayer, AX, AY, AZ, AAngle, AFrame);
+end;
+
+procedure TGreedGameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  FRenderer.RenderCamera(AWorld, APlayer, AX, AY, AZ, AAngle, AFrame);
 end;
 
 function TGreedGameRenderer.TileLights: PGreedTileLights;

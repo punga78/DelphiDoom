@@ -200,7 +200,9 @@ uses
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
   DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas',
   DelphiDoom.Tests.GameHost.Fakes in 'Source\DelphiDoom.Tests.GameHost.Fakes.pas',
-  DelphiDoom.Tests.Greed.HostKeys in 'Source\DelphiDoom.Tests.Greed.HostKeys.pas';
+  DelphiDoom.Tests.Greed.HostKeys in 'Source\DelphiDoom.Tests.Greed.HostKeys.pas',
+  DelphiDoom.Tests.Greed.RearView in 'Source\DelphiDoom.Tests.Greed.RearView.pas',
+  DelphiDoom.Tests.Greed.Demo in 'Source\DelphiDoom.Tests.Greed.Demo.pas';
 
 var
   Runner: ITestRunner;

@@ -26,12 +26,18 @@ type
   [Category('greed')]
   TTestGreedWorldParity = class(TObject)
   strict private
-    procedure CheckGolden(const AFolder, AGoldenName: string);
+    procedure CheckGolden(const AFolder, AGoldenName: string; ARearView: Boolean; const ASaveTurns: string);
   public
     [Test]
     procedure DovrebbeDareLoStessoMondoDelloOriginaleNelGiocoCompleto;
     [Test]
+    procedure DovrebbeDareLoStessoSpecchiettoDelloOriginale;
+    [Test]
+    procedure DovrebbeSalvareECaricareComeLOriginale;
+    [Test]
     procedure DovrebbeDareLeStesseRigheDueVolte;
+    [Test]
+    procedure UnaPartitaRegistrataDovrebbeRidareIlMondoDelloOriginale;
   end;
 
 implementation
@@ -42,6 +48,10 @@ uses
 
 const
   GOLDEN_FULL = 'world.full.golden.txt';
+  GOLDEN_REAR = 'world.rear.golden.txt';
+  GOLDEN_SAVE = 'world.save.golden.txt';
+  /// the turns of -Salva with which world.save.golden.txt was made
+  GOLDEN_SAVE_TURNS = '300,700,1100';
   // the columns of a line: W map seed turn timecount history total and a fingerprint for each section
   COLUMN_MAP = 1;
   COLUMN_SEED = 2;
@@ -54,7 +64,8 @@ const
 
 { TTestGreedWorldParity }
 
-procedure TTestGreedWorldParity.CheckGolden(const AFolder, AGoldenName: string);
+procedure TTestGreedWorldParity.CheckGolden(const AFolder, AGoldenName: string; ARearView: Boolean;
+  const ASaveTurns: string);
 var
   LGolden, LGame, LMine: TStringList;
   LRunner: TLibraryWorldRunner;
@@ -105,6 +116,10 @@ var
             (LParts[LColumn] <> LMineParts[LColumn]) then
             LDifferent := LDifferent + ' ' + WORLD_SECTION_NAMES[LSection];
         end;
+        // the column after the sections is the picture of the rear view camera
+        LColumn := COLUMN_FIRST_SECTION + Ord(High(TWorldSection)) + 1;
+        if (LColumn < Length(LParts)) and (LColumn < Length(LMineParts)) and (LParts[LColumn] <> LMineParts[LColumn]) then
+          LDifferent := LDifferent + ' rearview';
       end
       else
         LDifferent := ' (the game of the library ended before)';
@@ -125,6 +140,8 @@ begin
   LMine := TStringList.Create;
   LRunner := TLibraryWorldRunner.Create(AFolder);
   try
+    LRunner.RearView := ARearView;
+    LRunner.SaveTurns := ASaveTurns;
     LGolden.LoadFromFile(TGreedRealData.GoldenPath(AGoldenName));
     LKey := '';
     for LIndex := 0 to LGolden.Count - 1 do
@@ -159,7 +176,24 @@ procedure TTestGreedWorldParity.DovrebbeDareLoStessoMondoDelloOriginaleNelGiocoC
 begin
   if TGreedRealData.FullFolder = '' then
     TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
-  CheckGolden(TGreedRealData.FullFolder, GOLDEN_FULL);
+  CheckGolden(TGreedRealData.FullFolder, GOLDEN_FULL, False, '');
+end;
+
+procedure TTestGreedWorldParity.DovrebbeDareLoStessoSpecchiettoDelloOriginale;
+begin
+  if TGreedRealData.FullFolder = '' then
+    TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
+  // the player uses the rear view camera: each line has also the fingerprint of the picture of the camera
+  CheckGolden(TGreedRealData.FullFolder, GOLDEN_REAR, True, '');
+end;
+
+procedure TTestGreedWorldParity.DovrebbeSalvareECaricareComeLOriginale;
+begin
+  if TGreedRealData.FullFolder = '' then
+    TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
+  // the game is saved and loaded again three times: the bytes of each saved game are in the history of the lines,
+  // and what the game is after each load is in the lines that follow
+  CheckGolden(TGreedRealData.FullFolder, GOLDEN_SAVE, False, GOLDEN_SAVE_TURNS);
 end;
 
 procedure TTestGreedWorldParity.DovrebbeDareLeStesseRigheDueVolte;
@@ -187,6 +221,71 @@ begin
     LOther.Free;
     LSecond.Free;
     LFirst.Free;
+  end;
+end;
+
+procedure TTestGreedWorldParity.UnaPartitaRegistrataDovrebbeRidareIlMondoDelloOriginale;
+const
+  TAPE_MAPS: array[0..3] of Integer = (0, 9, 17, 29);
+  TAPE_SEED = 2;
+var
+  LGolden, LExpected, LRecorded, LPlayed: TStringList;
+  LRunner: TLibraryWorldRunner;
+  LTape: TMemoryStream;
+  LBytes: TBytes;
+  LMap, LIndex, LFrames, LEvery: Integer;
+  LParts: TArray<string>;
+begin
+  if TGreedRealData.FullFolder = '' then
+    TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
+  LGolden := TStringList.Create;
+  LExpected := TStringList.Create;
+  LRecorded := TStringList.Create;
+  LPlayed := TStringList.Create;
+  LTape := TMemoryStream.Create;
+  LRunner := TLibraryWorldRunner.Create(TGreedRealData.FullFolder);
+  try
+    LGolden.LoadFromFile(TGreedRealData.GoldenPath(GOLDEN_FULL));
+    for LMap in TAPE_MAPS do
+    begin
+      // the lines of the ORIGINAL for this game
+      LExpected.Clear;
+      for LIndex := 0 to LGolden.Count - 1 do
+      begin
+        LParts := LGolden[LIndex].Split([' ']);
+        if (Length(LParts) > COLUMN_FRAME) and (LParts[0] = 'W') and (LParts[COLUMN_MAP] = IntToStr(LMap)) and
+          (LParts[COLUMN_SEED] = IntToStr(TAPE_SEED)) then
+          LExpected.Add(LGolden[LIndex]);
+      end;
+      Assert.IsTrue(LExpected.Count > 1, Format('the golden file has no game of the map %d with the seed %d',
+        [LMap, TAPE_SEED]));
+      LFrames := StrToInt(LExpected[LExpected.Count - 1].Split([' '])[COLUMN_FRAME]);
+      LEvery := StrToInt(LExpected[1].Split([' '])[COLUMN_FRAME]);
+      // the game is played with the commands of the seed and recorded ...
+      LTape.Clear;
+      LRecorded.Clear;
+      LRunner.PlayFrom := nil;
+      LRunner.RecordTo := LTape;
+      LRunner.Play(LMap, TAPE_SEED, LFrames, LEvery, LRecorded);
+      Assert.AreEqual(LExpected.Text, LRecorded.Text, Format('map %d: recording must not change the game', [LMap]));
+      // ... and then played from the tape alone: no seed of the commands, no clock
+      SetLength(LBytes, LTape.Size);
+      Move(LTape.Memory^, LBytes[0], LTape.Size);
+      LPlayed.Clear;
+      LRunner.RecordTo := nil;
+      LRunner.PlayFrom := LBytes;
+      LRunner.Play(LMap, TAPE_SEED, LFrames, LEvery, LPlayed);
+      Assert.IsFalse(LRunner.TapeOutOfStep, Format('map %d: the tape went out of step', [LMap]));
+      Assert.AreEqual(LExpected.Text, LPlayed.Text, Format('map %d: the tape must give the game of the original',
+        [LMap]));
+    end;
+  finally
+    LRunner.Free;
+    LTape.Free;
+    LPlayed.Free;
+    LRecorded.Free;
+    LExpected.Free;
+    LGolden.Free;
   end;
 end;
 

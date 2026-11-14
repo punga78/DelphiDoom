@@ -38,6 +38,8 @@ begin
   Writeln('  -nobriefing  no screens before a map');
   Writeln('  -game1, -game2, -game3  the game (episode) of the full data');
   Writeln('  -shotat  with -shot: the tics at which a picture is saved, as a list 100,300 (file_100.png ...)');
+  Writeln('  -record file  a new game (as -skipintro) is recorded in the file: the menu ends it');
+  Writeln('  -playback file  plays the game recorded in the file (its map, character, difficulty and seed)');
   Writeln('  -data   a folder with GREED.BLO (and the LEVEL*.LAY maps of the demos); default the current one');
   Writeln('  -list   write the lumps of the archive with their kind and stop');
   Writeln('  -map    the map to draw as a PNG (the first is 0)');
@@ -159,6 +161,16 @@ begin
         LPlay.Game := 2
       else if LArgument = '-game3' then
         LPlay.Game := 3
+      else if (LArgument = '-record') and (LCursor.Remaining >= 1) then
+      begin
+        LPlay.RecordPath := LCursor.Value;
+        LPlay.SkipIntro := True;
+      end
+      else if (LArgument = '-playback') and (LCursor.Remaining >= 1) then
+      begin
+        LPlay.PlaybackPath := LCursor.Value;
+        LPlay.SkipIntro := True;
+      end
       else if (LArgument = '-shotat') and (LCursor.Remaining >= 1) then
       begin
         for LText in LCursor.Value.Split([',']) do

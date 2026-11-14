@@ -12,7 +12,7 @@ unit DelphiDoom.Greed.GameView.Intf;
 interface
 
 uses
-  DelphiDoom.Greed.Frame.Intf;
+  System.SysUtils, DelphiDoom.Greed.Frame.Intf;
 
 type
   /// <summary>
@@ -36,6 +36,14 @@ type
     MotionMode: Boolean;
     /// <summary>timecount when the view was drawn</summary>
     TimeCount: Integer;
+    /// <summary>timecount &lt; RearViewTime: the box of the rear view camera is shown</summary>
+    RearViewVisible: Boolean;
+    /// <summary>
+    ///   rearbuf before I_TranslateBuffer: the last picture of the rear view camera, 64 x 64 pixels as the renderer
+    ///   made them (who draws turns its 0 into the color nearest to black, or the view shows through); nil until
+    ///   the camera takes its first picture
+    /// </summary>
+    RearView: TBytes;
   end;
 
   /// <summary>

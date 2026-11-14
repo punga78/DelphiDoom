@@ -37,6 +37,12 @@ const
   GREED_GAME_AMBIENT_LIGHT = 2048;
 
 type
+  /// <summary>Where the rear view camera of the enemy view looks from (x, y, z and angle of a pevent_t)</summary>
+  TGreedEnemyView = record
+    X, Y, Z: TGreedFixed;
+    Angle: Integer;
+  end;
+
   /// <summary>
   ///   A game of Greed: the state, the world, the lists of sprites and elevators and every part of the logic
   ///   (spawner, sprites, player, weapons, items, switches, doors, elevators, events, the life of a map), wired to
@@ -50,9 +56,10 @@ type
   ///   in the hand goes on with its animation. NewGame is newplayer and the start of maingame.
   ///   What is drawn over the view and what is shown between the maps is asked of IGreedGameView; the messages of
   ///   IGreedMessages; the sounds of IGreedSoundEffects and IGreedMusic; the commands come from IGreedControls.
-  ///   Not ported: the net game, the demos (recording and playback), the rear view camera (its flags and clocks
-  ///   change as in the original, the second view is not drawn, so its TimeUpdate calls are not made) and the
-  ///   VR helmet (the TimeUpdate of RF_CheckActionFlag are always made, as with SC.vrhelmet 0).
+  ///   The rear view camera (RearView) is a second view of 64 x 64 pixels drawn by the same renderer before the
+  ///   view of the player, every CameraDelay tics while it is on: its picture is given to the view with the overlay.
+  ///   Not ported: the net game, the demos (recording and playback) and the VR helmet (the TimeUpdate of
+  ///   RF_CheckActionFlag are always made, as with SC.vrhelmet 0).
   ///   Difference: the original runs the timer in a thread, held while a view is drawn; here the program calls Tic
   ///   between two Frame
   /// </summary>
@@ -71,6 +78,9 @@ type
     FWeaponX: Integer;
     FWeaponY: Integer;
     FStartPending: Boolean;
+    FRearFrame: TGreedFrame;
+    FRearBuffer: TBytes;
+    FEnemyView: TGreedEnemyView;
     function GetState: TGreedGameState;
     function GetWorld: IGreedWorld;
     function GetInventory: TGreedInventory;
@@ -90,6 +100,7 @@ type
     procedure ServeInventory;
     procedure AnimateWalls;
     procedure ServeDisplayToggles;
+    procedure RearView;
     procedure ServeRearView;
     procedure UpdateView(var AFrame: TGreedFrame);
     procedure SelectNewSong;
@@ -167,6 +178,16 @@ type
     property StatusBar: Boolean read FStatusBar write FStatusBar;
     /// <summary>SC.camdelay: tics between two pictures of the rear view (TICRATE = one picture and off)</summary>
     property CameraDelay: Integer read FCameraDelay write FCameraDelay;
+    /// <summary>
+    ///   rearbuf: the last picture of the rear view camera (64 x 64 pixels as the renderer made them, before
+    ///   I_TranslateBuffer); nil until the camera takes its first picture
+    /// </summary>
+    property RearBuffer: TBytes read FRearBuffer;
+    /// <summary>
+    ///   playerdata[goalitem - 1] of net.pas for the camera: where the rear view looks from when the secret code
+    ///   "taco" (enemy view) is on and a goal item is chosen. All zero out of a net game, as in the original
+    /// </summary>
+    property EnemyView: TGreedEnemyView read FEnemyView write FEnemyView;
     /// <summary>A game was loaded (LoadGame) and StartPlay has not run since; NewGame clears it</summary>
     property StartPending: Boolean read FStartPending;
     /// <summary>weaponx and weapony of the last view, in the 320 x 200 view</summary>
@@ -645,6 +666,26 @@ begin
     FParts.Level.NewGoalItem;
 end;
 
+procedure TGreedGame.RearView;
+var
+  S: TGreedGameState;
+begin
+  S := FParts.State;
+  if Length(FRearFrame.Pixels) = 0 then
+    FRearFrame := TGreedFrame.Make(GREED_REAR_VIEW_SIZE, GREED_REAR_VIEW_SIZE);
+  // a whole view of the renderer: its four RF_CheckActionFlag run the level and the shot of the player, the walls
+  // it sees are marked in the map of the player, its animations go on
+  if (S.EnemyViewMode <> 0) and (S.GoalItem > 0) then
+    // playerdata[goalitem - 1] of net.pas: the place of another player, which is all zero out of a net game
+    FParts.Renderer.RenderCamera(FParts.World, S.Player, FEnemyView.X, FEnemyView.Y, FEnemyView.Z, FEnemyView.Angle,
+      FRearFrame)
+  else
+    FParts.Renderer.RenderCamera(FParts.World, S.Player, S.Player.X, S.Player.Y, S.Player.Z,
+      S.Player.Angle + GREED_WEST, FRearFrame);
+  // rearbuf: the picture stays until the next one
+  FRearBuffer := Copy(FRearFrame.Pixels, 0, GREED_REAR_VIEW_SIZE * GREED_REAR_VIEW_SIZE);
+end;
+
 procedure TGreedGame.ServeRearView;
 var
   S: TGreedGameState;
@@ -658,8 +699,8 @@ begin
   end;
   if S.RearViewOn and (S.TimeCount >= S.RearViewDelay) then
   begin
-    // RearView (the second view of 64 x 64) is not drawn
     S.RearViewTime := S.TimeCount + 2 * TIC_RATE;
+    RearView;
     S.RearViewDelay := S.TimeCount + FCameraDelay;
     if FCameraDelay = TIC_RATE then
       S.RearViewOn := False;
@@ -684,7 +725,10 @@ begin
   FParts.Renderer.RenderView(FParts.World, S.Player, S.Player.X, S.Player.Y, S.Player.Z + LHeadBob, S.Player.Angle,
     AFrame);
   FParts.Level.TimeUpdate;
-  // (the holo picture and the rear view go here)
+  // the holo picture and the box of the rear view are drawn here by the original: the view draws them with the
+  // rest of the overlay, the clock does not move in between
+  LOverlay.RearViewVisible := (S.TimeCount < S.RearViewTime) and (Length(FRearBuffer) > 0);
+  LOverlay.RearView := FRearBuffer;
   FParts.Level.TimeUpdate;
   LOverlay.WeaponVisible := S.Player.Angst <> 0;
   LOverlay.WeaponLump := -1;

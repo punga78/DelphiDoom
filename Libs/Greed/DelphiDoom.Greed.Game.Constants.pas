@@ -13,6 +13,9 @@ interface
 // The constants of protos_h.pas with their original names after GREED_ (S_ the kinds of the sprites that the game
 // makes, SM_ and the others the values of the plane mapsprites, SN_ the sound effects, SE_ the special effects)
 const
+  /// <summary>The side of the picture of the rear view camera (rearbuf of raven.pas: 64 x 64 pixels)</summary>
+  GREED_REAR_VIEW_SIZE = 64;
+
   GREED_S_START = 513;
   GREED_S_BULLET1 = 513;
   GREED_S_BULLET2 = 514;

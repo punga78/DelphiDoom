@@ -74,6 +74,12 @@ type
     FLights: TGreedTileLights;
   public
     Views: Integer;
+    /// the views of the rear camera: where from, at which angle, how large, and the color they are painted with
+    CameraViews: Integer;
+    CameraX, CameraY, CameraZ: TGreedFixed;
+    CameraAngle: Integer;
+    CameraWidth, CameraHeight: Integer;
+    CameraColor: Byte;
     LastZ: TGreedFixed;
     LastBlackZ: TGreedFixed;
     FlatTranslations: TDictionary<Integer, Integer>;
@@ -87,6 +93,8 @@ type
     function CreateRenderer(ASprites: TGreedLinkedPool<TGreedSprite>; const AClock: IGreedRenderClock;
       const ARandom: IGreedRandom): IGreedGameRenderer;
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
     function TileLights: PGreedTileLights;
     procedure SetLights(ABlackZ: TGreedFixed);
@@ -354,6 +362,26 @@ var
 begin
   Inc(Views);
   LastZ := AZ;
+  for LIndex := 1 to 4 do
+    if Assigned(FHook) then
+      FHook.CheckActionFlag;
+end;
+
+procedure TFakeGameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+var
+  LIndex: Integer;
+begin
+  Inc(CameraViews);
+  CameraX := AX;
+  CameraY := AY;
+  CameraZ := AZ;
+  CameraAngle := AAngle;
+  CameraWidth := AFrame.Width;
+  CameraHeight := AFrame.Height;
+  FillChar(AFrame.Pixels[0], Length(AFrame.Pixels), CameraColor);
+  // the first pixel stays 0, as a hole of the view
+  AFrame.Pixels[0] := 0;
   for LIndex := 1 to 4 do
     if Assigned(FHook) then
       FHook.CheckActionFlag;

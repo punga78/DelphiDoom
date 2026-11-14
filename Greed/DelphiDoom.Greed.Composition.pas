@@ -56,6 +56,12 @@ type
     Game: Integer;
     /// <summary>With the program: the tics at which a picture is saved, as ShotPath with the tic before the extension</summary>
     ShotTics: TArray<Integer>;
+    /// <summary>
+    ///   With the program: the game is recorded in this file (-record) or the game of this file is played
+    ///   (-playback); see TGreedDemoWriter for the format. Empty for none
+    /// </summary>
+    RecordPath: string;
+    PlaybackPath: string;
     /// <summary>The options of a game that was not asked anything</summary>
     class function Standard: TGreedPlayOptions; static;
   end;
@@ -119,6 +125,8 @@ uses
   DelphiDoom.Greed.Application.Intf, DelphiDoom.Greed.ApplicationScript, DelphiDoom.Greed.Application,
   DelphiDoom.Greed.Screens, DelphiDoom.Greed.ScreenView, DelphiDoom.Greed.MenuHost, DelphiDoom.Greed.IntroHost,
   DelphiDoom.Greed.EpisodeHost, DelphiDoom.Greed.HostKeyboard, DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro,
+  DelphiDoom.Greed.Demo.Types, DelphiDoom.Greed.Demo.Intf, DelphiDoom.Greed.Demo.Reader, DelphiDoom.Greed.Demo.Writer,
+  DelphiDoom.Greed.Demo.Recorder, DelphiDoom.Greed.Demo.Player,
   DelphiDoom.GameHost.Events.Intf,
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
 
@@ -206,6 +214,8 @@ type
     function CreateRenderer(ASprites: TGreedLinkedPool<TGreedSprite>; const AClock: IGreedRenderClock;
       const ARandom: IGreedRandom): IGreedGameRenderer;
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
     function TileLights: PGreedTileLights;
     procedure SetLights(ABlackZ: TGreedFixed);
@@ -412,6 +422,13 @@ procedure TGreedTopDownGameRenderer.RenderView(const AWorld: IGreedWorld; var AP
   AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
 begin
   FRenderer.Render(AWorld, APlayer, AFrame);
+end;
+
+procedure TGreedTopDownGameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX,
+  AY, AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  // the map seen from above has no rear view: the picture of the camera stays black
+  FillChar(AFrame.Pixels[0], Length(AFrame.Pixels), 0);
 end;
 
 function TGreedTopDownGameRenderer.TileLights: PGreedTileLights;
@@ -880,11 +897,49 @@ var
   LShotPalette: TBytes;
   LDump: TStringList;
   LMusicVolume, LSfxVolume: Integer;
+  LOptions: TGreedPlayOptions;
+  LGameClock: IGreedSystemClock;
+  LTapeReader: TGreedDemoReader;
+  LTapeStream: TFileStream;
+  LTapeWriter: TGreedDemoWriter;
+  LTapeHeader: TGreedDemoHeader;
+  LPlayer: TGreedDemoPlayer;
+  LRecorder: TGreedDemoRecorder;
+  LTapeIntf: IInterface;
+  LPacer: IGreedFramePacer;
 begin
-  if AOptions.TopDown then
+  LOptions := AOptions;
+  LTapeReader := nil;
+  LTapeStream := nil;
+  LTapeWriter := nil;
+  LPlayer := nil;
+  LRecorder := nil;
+  LPacer := nil;
+  if LOptions.TopDown then
     raise EGreedException.Create('Greed32: the view from above is only for -play');
+  if (LOptions.PlaybackPath <> '') and (LOptions.RecordPath <> '') then
+    raise EGreedException.Create('Greed32: -record and -playback cannot be asked together');
+  if LOptions.PlaybackPath <> '' then
+  begin
+    // a recorded game says how it starts: the options of the command line that would change it are not read
+    LTapeReader := TGreedDemoReader.Create(TFile.ReadAllBytes(LOptions.PlaybackPath));
+    LTapeHeader := LTapeReader.Header;
+    LOptions.MapNumber := LTapeHeader.Map;
+    LOptions.Character := LTapeHeader.Character;
+    LOptions.Difficulty := LTapeHeader.Difficulty;
+    LOptions.Seed := LTapeHeader.RandomOffset;
+    LOptions.LowResolution := LTapeHeader.LowResolution;
+    LOptions.Game := LTapeHeader.Episode;
+    LOptions.ScriptPath := '';
+    LOptions.AutoPlay := False;
+  end;
+  if (LOptions.PlaybackPath <> '') or (LOptions.RecordPath <> '') then
+  begin
+    LOptions.SkipIntro := True;
+    LOptions.NoBriefing := True;
+  end;
   LPalette := TGreedPalette.FromLump(AArchive.ReadLump(AArchive.RequireIndexOf(GREED_LUMP_PALETTE)));
-  if AOptions.LowResolution then
+  if LOptions.LowResolution then
   begin
     LFrameWidth := 320;
     LFrameHeight := 200;
@@ -913,7 +968,7 @@ begin
   LAudio := nil;
   LScript := TStringList.Create;
   try
-    if AOptions.Headless then
+    if LOptions.Headless then
     begin
       LShown := TGreedLastFramePresenter.Create(TGreedNoWindow.Create);
       LShownIntf := LShown;
@@ -940,10 +995,10 @@ begin
       SetLength(LKeyboards, 1);
       LKeyboards[0] := TGreedHostKeyboard.Create(LKeys);
     end;
-    if AOptions.ScriptPath <> '' then
-      LScript.LoadFromFile(AOptions.ScriptPath);
-    if AOptions.AutoPlay then
-      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    if LOptions.ScriptPath <> '' then
+      LScript.LoadFromFile(LOptions.ScriptPath);
+    if LOptions.AutoPlay then
+      AddAutoPlay(LScript, LOptions.MaxTics, LOptions.Seed);
     LListener := nil;
     if LScript.Count > 0 then
     begin
@@ -955,13 +1010,13 @@ begin
       LListener := LScriptKeys;
     end;
     LEncoder := TGreedPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
-    if Length(AOptions.ShotTics) > 0 then
-      LListener := TGreedShotTaker.Create(LShown, LListener, LEncoder, AOptions.ShotPath, AOptions.ShotTics);
+    if Length(LOptions.ShotTics) > 0 then
+      LListener := TGreedShotTaker.Create(LShown, LListener, LEncoder, LOptions.ShotPath, LOptions.ShotTics);
 
     LTime := TGreedPlayTime.Create;
     LTimeIntf := LTime;
-    LTime.Headless := AOptions.Headless;
-    if AOptions.Headless then
+    LTime.Headless := LOptions.Headless;
+    if LOptions.Headless then
       LClock := TManualClock.Create
     else
       LClock := TClockFactory.CreateClock(nil);
@@ -970,11 +1025,11 @@ begin
     // the settings: xGreed.ini in the folder of the data of the program, then the volumes asked on the command line
     LSettings := TGreedSettings.Create;
     LStore := TGreedSettingsStore.Create(TGreedSaveFolder.Create(ADataFolder), GREED_SETTINGS_FILE);
-    LStore.Load(LSettings, AOptions.Game);
-    if AOptions.MusicVolume >= 0 then
-      LSettings.SetInteger('musicvol', AOptions.MusicVolume);
-    if AOptions.SfxVolume >= 0 then
-      LSettings.SetInteger('sfxvol', AOptions.SfxVolume);
+    LStore.Load(LSettings, LOptions.Game);
+    if LOptions.MusicVolume >= 0 then
+      LSettings.SetInteger('musicvol', LOptions.MusicVolume);
+    if LOptions.SfxVolume >= 0 then
+      LSettings.SetInteger('sfxvol', LOptions.SfxVolume);
 
     // the sound: the mixer of the game on the PCM output of the host; without a device the game is silent
     LDevice := TGreedPcmMixer.Create(GREED_PCM_DEFAULT_RATE, TGreedTrackerSongDecoder.Create,
@@ -982,7 +1037,7 @@ begin
     LMixer := LDevice as IGreedPcmRenderer;
     LDevice.Initialize;
     LDeviceOpen := False;
-    if not AOptions.Headless then
+    if not LOptions.Headless then
     begin
       LAudio := TGreedHostAudio.Create(TGameHostFactory.CreatePcmOutput, LMixer);
       LAudioSource := LAudio;
@@ -997,9 +1052,9 @@ begin
 
     LRandom := TGreedRandomTable.Create;
     LRandomIntf := LRandom;
-    LRandom.Offset := AOptions.Seed;
+    LRandom.Offset := LOptions.Seed;
     LHud := TGreedHudView.Create(AArchive);
-    LHud.Echo := AOptions.EchoMessages;
+    LHud.Echo := LOptions.EchoMessages;
     LHudIntf := LHud;
     LMessages := LHud;
     LScreenView := TGreedScreenView.Create(LHudIntf);
@@ -1007,16 +1062,68 @@ begin
     LRendererFactory := TGreedGameRendererFactory.Create(AArchive);
     LSaves := TGreedSaveGames.Create(TGreedSaveFolder.Create(ADataFolder), LSettings.GetGameVariant);
 
+    // the first map of the episode that is played (the demo has one episode)
+    LFirstMap := 0;
+    if not LDemo then
+      case LSettings.Episode of
+        2: LFirstMap := FIRST_MAP_OF_GAME2;
+        3: LFirstMap := FIRST_MAP_OF_GAME3;
+      end;
+    if LOptions.MapNumber >= 0 then
+      LFirstMap := LOptions.MapNumber;
+
+    // a recorded game: the tape stands between the game and its commands, its clock and the pace of its loop
+    LGameClock := LTime;
+    if Assigned(LTapeReader) then
+    begin
+      if LTapeHeader.DemoEdition <> LDemo then
+        raise EGreedException.Create('Greed32: the recorded game was made with other data (demo or full game)');
+      LPlayer := TGreedDemoPlayer.Create(LTapeReader, not LOptions.Headless);
+      LTapeIntf := LPlayer as IInterface;
+      LSource := LPlayer;
+      LGameClock := LPlayer;
+      LPacer := LPlayer;
+    end
+    else if LOptions.RecordPath <> '' then
+    begin
+      LTapeHeader := Default(TGreedDemoHeader);
+      LTapeHeader.Map := LFirstMap;
+      LTapeHeader.Character := LOptions.Character;
+      LTapeHeader.Difficulty := LOptions.Difficulty;
+      LTapeHeader.Episode := LSettings.Episode;
+      LTapeHeader.DemoEdition := LDemo;
+      LTapeHeader.LowResolution := LOptions.LowResolution;
+      LTapeHeader.RandomOffset := LOptions.Seed;
+      LTapeHeader.CameraDelay := LSettings.GetInteger('camdelay');
+      LTapeHeader.ViewSize := LSettings.GetInteger('screensize');
+      LTapeHeader.Violence := LSettings.GetBoolean('violence');
+      LTapeStream := TFileStream.Create(LOptions.RecordPath, fmCreate);
+      LTapeWriter := TGreedDemoWriter.Create(LTapeStream, LTapeHeader);
+      LRecorder := TGreedDemoRecorder.Create(LTapeWriter, LSource, LTime);
+      LTapeIntf := LRecorder as IInterface;
+      LSource := LRecorder;
+      LGameClock := LRecorder;
+      LPacer := LRecorder;
+    end;
+
     LGame := TGreedGame.Create(AArchive, TGreedFactory.CreateMapLoader(AArchive, LFiles), LRendererFactory,
-      TGreedCommandState.Create(LSource), LEffects, LMusic, LRandomIntf, LSaves, LTime, LScreenViewIntf, LMessages);
+      TGreedCommandState.Create(LSource), LEffects, LMusic, LRandomIntf, LSaves, LGameClock, LScreenViewIntf,
+      LMessages);
     LHud.Attach(LGame);
     LHud.SetSize(LSettings.GetInteger('screensize'));
     LTime.Game := LGame;
-    LGame.LowResolution := AOptions.LowResolution;
+    LGame.LowResolution := LOptions.LowResolution;
     LGame.SetEdition(LDemo, LSettings.Episode);
     LGame.Violence := LSettings.GetBoolean('violence');
     LGame.AmbientLight := LSettings.GetInteger('ambientlight');
     LGame.CameraDelay := LSettings.GetInteger('camdelay');
+    if Assigned(LTapeReader) then
+    begin
+      // the settings that change what the game does are the ones of the tape
+      LHud.SetSize(LTapeHeader.ViewSize);
+      LGame.Violence := LTapeHeader.Violence;
+      LGame.CameraDelay := LTapeHeader.CameraDelay;
+    end;
 
     LMenuHost := TGreedMenuHost.Create(LGame, LSettings, LStore, LHud);
     LIntroHost := TGreedIntroHost.Create(LGame);
@@ -1026,35 +1133,42 @@ begin
       LEpisodeHost, LEpisodeHost, LDemo, LSettings.GetGameVariant);
 
     LApplicationOptions := TGreedApplicationOptions.Standard;
-    LApplicationOptions.FreeRunning := AOptions.Headless;
-    LApplicationOptions.MaxTics := AOptions.MaxTics;
-    if AOptions.Headless and (LApplicationOptions.MaxTics = 0) then
+    LApplicationOptions.FreeRunning := LOptions.Headless;
+    LApplicationOptions.MaxTics := LOptions.MaxTics;
+    if LOptions.Headless and (LApplicationOptions.MaxTics = 0) then
       LApplicationOptions.MaxTics := HEADLESS_DEFAULT_TICS;
-    LApplicationOptions.SkipIntro := AOptions.SkipIntro;
-    LApplicationOptions.NoBriefing := AOptions.NoBriefing;
-    LApplicationOptions.Character := AOptions.Character;
-    LApplicationOptions.Difficulty := AOptions.Difficulty;
-    // the first map of the episode that is played (the demo has one episode)
-    LFirstMap := 0;
-    if not LDemo then
-      case LSettings.Episode of
-        2: LFirstMap := FIRST_MAP_OF_GAME2;
-        3: LFirstMap := FIRST_MAP_OF_GAME3;
-      end;
-    if AOptions.MapNumber >= 0 then
-      LFirstMap := AOptions.MapNumber;
+    LApplicationOptions.SkipIntro := LOptions.SkipIntro;
+    LApplicationOptions.NoBriefing := LOptions.NoBriefing;
+    LApplicationOptions.Character := LOptions.Character;
+    LApplicationOptions.Difficulty := LOptions.Difficulty;
     LApplicationOptions.StartMap := LFirstMap;
+    LApplicationOptions.Pacer := LPacer;
+    LApplicationOptions.PlayingBack := Assigned(LPlayer);
     LApplication := TGreedApplication.Create(LGame, LScreens, LSettings, LStore, LPresenter, LInput, LClock,
       LKeyboards, LListener, LMovies, LFrameWidth, LFrameHeight, LApplicationOptions);
     LTime.Application := LApplication;
     LScreenView.Screens := LApplication;
     try
       Result := LApplication.Run;
-      if AOptions.ShotPath <> '' then
+      if Assigned(LRecorder) then
+      begin
+        LRecorder.Close;
+        Writeln(Format('Recorded %d records in %s', [LTapeWriter.Records, LOptions.RecordPath]));
+      end;
+      if Assigned(LPlayer) then
+      begin
+        if LPlayer.Desynchronized then
+          Writeln(Format('Playback of %s went out of step after %d turns: the game is not the one that was recorded',
+            [LOptions.PlaybackPath, LPlayer.Frames]))
+        else
+          Writeln(Format('Played back %d turns and %d readings of %s', [LPlayer.Frames, LPlayer.Readings,
+            LOptions.PlaybackPath]));
+      end;
+      if LOptions.ShotPath <> '' then
         if LShown.Snapshot(LImage, LShotPalette) then
-          TFile.WriteAllBytes(AOptions.ShotPath, LEncoder.Encode(LImage, LShotPalette, False));
+          TFile.WriteAllBytes(LOptions.ShotPath, LEncoder.Encode(LImage, LShotPalette, False));
       LStatistics := LMixer.Statistics;
-      if AOptions.DumpPath <> '' then
+      if LOptions.DumpPath <> '' then
       begin
         LDump := TStringList.Create;
         try
@@ -1065,13 +1179,13 @@ begin
           LDump.Add(Format('messages=%d', [LHud.Messages.Count]));
           for LIndex := 0 to LHud.Messages.Count - 1 do
             LDump.Add(Format('message.%d=%s', [LIndex, LHud.Messages[LIndex]]));
-          LDump.SaveToFile(AOptions.DumpPath);
+          LDump.SaveToFile(LOptions.DumpPath);
         finally
           LDump.Free;
         end;
       end;
     finally
-      if AOptions.AudioStatistics then
+      if LOptions.AudioStatistics then
       begin
         LStatistics := LMixer.Statistics;
         LIndex := 0;
@@ -1103,6 +1217,15 @@ begin
     end;
   finally
     LScript.Free;
+    // the tape: who reads or writes it goes before it
+    LApplicationOptions := Default(TGreedApplicationOptions);
+    LPacer := nil;
+    LGameClock := nil;
+    LSource := nil;
+    LTapeIntf := nil;
+    LTapeWriter.Free;
+    LTapeStream.Free;
+    LTapeReader.Free;
     // the display draws in the window: its last references go before the window
     LInput := nil;
     LPresenter := nil;
