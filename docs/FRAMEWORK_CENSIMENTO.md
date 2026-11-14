@@ -102,3 +102,26 @@ Sei cartelle di `Libs\` sono nate dopo l'analisi dei punti 1-5 (che resta com'e'
 | `BotAi` (#123, #124) | id Tech 3 (porta) | Modulo IdTech3/4 | `IdLib`, `Scanner` | chat dei bot di botlib; senza chiamanti |
 
 Da fare e non fatto qui: `Libs\Aas` (#122) e `AudioMix` (#228) erano in lavorazione in altri rami quando questa sezione e' stata scritta e non sono classificate; le sei librerie sopra non hanno cicli con le altre. **Duplicazioni viste in questo giro** (da unificare nelle fette seguenti della #229 o in altre issue): lettore ILBM (`XcomFormats.TXcomLbmReader` e `Keen.Shape`), lettore di byte (otto copie, fetta 2 della #229), decoder FLI (`Flic` e `Greed.FliDecoder`: differiscono nei byte, vedi `Libs\Flic\CLAUDE.md`).
+
+## 7. Controllo automatico degli strati (issue #219, 2026-11-14)
+
+La strada B del punto 6 e' fatta: manifesto `Libs\Strati.psd1` (spiegato in `Libs\STRATI.md`) e controllo `Tools\Verifica\219\Controlla-Strati.ps1` (prova: `Prova-Controlla-Strati.ps1` su 18 casi di `Tests\Data\Strati`; `Tools\build.bat strati` esegue entrambi). Lo script estende il metodo del punto 1 (nomi duplicati, cartelle `Shim`, `uses` sotto `{$IFDEF}` dichiarati a parte) e ne chiude i difetti noti in un elenco di eccezioni con motivo e issue che le toglie.
+
+**Stato reale sul repository** (3972 `.pas`, 133 aree, 10153 `uses` verso unit del repository di cui 378 sotto `{$IFDEF}`, 444 archi tra aree, 11 usi ambigui ma ammessi, 6 usi risolti da una `Shim`):
+
+| Strato o modulo | Aree | File |
+|---|---|---|
+| L0 Fondazione | 11 | 236 |
+| L1 Formati e codec | 18 | 397 |
+| L2 Servizi di runtime | 9 | 277 |
+| L3 Piattaforma e scripting | 6 | 130 |
+| modulo IdTech1 | 48 (8 cartelle di prodotto, 40 librerie) | 1248 |
+| modulo IdTech4 | 8 | 409 |
+| modulo Giochi | 23 (3 cartelle di prodotto, 20 librerie) | 1100 |
+| modulo Strumenti | 10 (3 cartelle di prodotto, 7 librerie) | 175 |
+
+**Violazioni nuove: 0. Eccezioni dichiarate: 14** (13 coppie di aree per 108 usi fuori regola, e 1 ciclo): #221 5 (`ScriptHost` e `Ddc` verso `Base` e i giochi id, piu' il ciclo `PascalScript` - `ScriptHost` - `Ddc`), #224 3 (`Common` da `PascalScript`, `ScriptHost`, `Ddc`), #225 4 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` e `Libs\Greed` -> `Net`), #226 1 (`Speed` -> `Racing`), #229 1 (`Opl` -> `XcomFormats`). I cicli `Sndfile`-`Sound` (#222) e `XcomStrategy`-`XcomGeoscape`-`XcomBasescape` (#223) non ci sono piu'; non servono eccezioni per #220 (`OpenGl\Binding` e `OpenGl\Legacy` sono gia' aree distinte).
+
+**Che cosa ha mostrato che il censimento non diceva**: (1) `IdLib` e `Geometry` (nessuna dipendenza) sono ormai la base di `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net`, `Models`: nel manifesto stanno in L0, non nel modulo id Tech 4; con loro `Cinematic` e `Compression` sono L1 e `Models` L2. (2) Le librerie miste con un uso fuori regola sono `Console`, `Palette`, `Net` (non era nell'elenco di #225: va aggiunta), `Opl` e la cartella `Speed` (due programmi insieme). (3) `Mp3` nasconde con la `Shim` unit di `Base` e `Common` (6 usi; quella di `Script` non nasconde nessun uso): non sono archi, ma restano il contenuto di #224. (4) `ScriptHost` usa 30 unit di `Base` (il censimento ne contava 28) e 9 dei giochi id; `Ddc` 4 e 3.
+
+Regola d'uso dalla #226 in poi: spostare una cartella (o correggere un difetto) si fa con il controllo verde; quando un'eccezione diventa stantia (uscita 2) la si toglie nello stesso commit.

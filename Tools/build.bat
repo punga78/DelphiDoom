@@ -2,7 +2,7 @@
 rem ---------------------------------------------------------------------------
 rem  Compila i progetti DelphiDoom con Delphi 11 (XE11) senza IDE.
 rem
-rem  Uso:   Tools\build.bat [progetto|all|giochi|strumenti] [Release|Debug] [Win32|Win64|both] [clean]
+rem  Uso:   Tools\build.bat [progetto|all|giochi|strumenti|strati] [Release|Debug] [Win32|Win64|both] [clean]
 rem         (si puo' chiamare da qualsiasi cartella: la radice del repository si
 rem          ricava dal percorso di questo file; i log vanno in <radice>\logs)
 rem
@@ -15,6 +15,7 @@ rem    build.bat all                tutti i progetti
 rem    build.bat giochi             i 8 eseguibili di gioco (software + OpenGL)
 rem    build.bat strumenti          Launcher, DD_IDE, DD_Tools, ddc e le 4 DLL ddc_*
 rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod, DDGlbsp, DDPng, DDScript, DDWad -> bin\<Piattaforma>\<Configurazione>\Libs)
+rem    build.bat strati             controllo degli strati delle librerie (#219): prova dello script e controllo del repository; non compila
 rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\<Piattaforma>\<Configurazione>\Tests); li esegue
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
 rem    build.bat all Release clean  cancella prima i dcu di quella piattaforma e configurazione (dcu\<Piattaforma>\<Configurazione>)
@@ -54,6 +55,18 @@ for %%A in (%3 %4) do (
   if /i "%%~A"=="Win32" set "PLATS=Win32"
   if /i "%%~A"=="Win64" set "PLATS=Win64"
   if /i "%%~A"=="both"  set "PLATS=Win32 Win64"
+)
+
+rem --- Gruppo strati (issue #219): non compila nulla, controlla gli strati delle librerie ---
+rem  Prima prova lo script sui casi di Tests\Data\Strati, poi lo esegue sul repository
+rem  (manifesto Libs\Strati.psd1, spiegato in Libs\STRATI.md). Uscita 0 solo se entrambi passano.
+if /i "%WHAT%"=="strati" (
+  set "STRATI_USCITA=0"
+  powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Verifica\219\Prova-Controlla-Strati.ps1"
+  if errorlevel 1 set "STRATI_USCITA=1"
+  powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Verifica\219\Controlla-Strati.ps1" -Riepilogo
+  if errorlevel 1 set "STRATI_USCITA=1"
+  exit /b !STRATI_USCITA!
 )
 
 set "GIOCHI=Doom\Doom32 Radix\Radix32 Speed\SpeedHaste32 Doom\GLDoom32 Heretic\Heretic32 Heretic\GLHeretic32 Hexen\Hexen32 Hexen\GLHexen32 Strife\Strife32 Strife\GLStrife32"

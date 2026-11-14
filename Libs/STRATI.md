@@ -1,0 +1,56 @@
+# Strati delle librerie (issue #219)
+
+Ogni cartella di `Libs\` (e `Base`, `Common`, le cartelle dei giochi e dei programmi) sta in **uno strato** o in **un modulo**.
+Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regole. Analisi di partenza: `docs\FRAMEWORK_CENSIMENTO.md`.
+
+## Regola
+
+- Uno **strato** (`L0` ... `L3`) puo' usare solo strati **uguali o piu' bassi**. Non usa mai un modulo.
+- Un **modulo** puo' usare ogni strato, se stesso e i moduli che dichiara in `Ammessi` (oggi solo `Strumenti` -> `IdTech1`). I moduli non si usano tra loro.
+- Dentro uno stesso strato le librerie si usano liberamente, ma **non devono formare cicli**; dentro un modulo anche i cicli sono ammessi (`Base` e le sue librerie sono un solo corpo).
+
+| Strato | Titolo | Aree (`Libs\` salvo dove scritto) |
+|---|---|---|
+| `L0` | Fondazione | Clock CommandLine Configuration Geometry IdLib Logging MathCore Platform Threading Yaml Zlib |
+| `L1` | Formati e codec | Cinematic Compression Flic Imaging Jpeg M2m Midi Mikmod Mp3 Ogg Opl Palette Png Sndfile Sound Texture Wad Xmi |
+| `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
+| `L3` | Piattaforma e scripting | GameHost OpenGl\Binding PascalScript Script ScriptHost Ddc |
+| `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (48 aree) |
+| `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile Qvm |
+| `Giochi` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*`, e le cartelle `Keen`, `Greed`, `OpenXcom` |
+| `Strumenti` (modulo) | Strumenti | Ide ToolsCore EndoomEditor Font FontEditor VoxelEditor Launcher e le cartelle `DD_IDE`, `DD_Tools`, `Launcher` |
+
+Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` di oggi:
+
+- `IdLib` e `Geometry` stanno in **L0**: non hanno nessuna dipendenza e li usano `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net` e `Models` (nel censimento erano porte senza chiamanti).
+- `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
+- `Libs\OpenGl` e' diviso in sottocartelle gia' nel manifesto: `Binding` (L3, usato da `GameHost`) e `Legacy`/`Recorder` (modulo `IdTech1`); #220 resta la divisione in due librerie vere.
+- `ScriptHost` e `Ddc` sono in L3 **come obiettivo** (scripting generico): oggi usano il motore e sono eccezioni (#221).
+
+## Come si usa
+
+```
+powershell -File Tools\Verifica\219\Controlla-Strati.ps1 [-Riepilogo] [-Dettaglio] [-Grafo]
+Tools\build.bat strati            # prova dello script sui casi di Tests\Data\Strati + controllo del repository
+powershell -File Tools\Verifica\219\Prova-Controlla-Strati.ps1 [-Caso <nome>]
+```
+
+Uscita **0**: nessuna violazione nuova e nessuna eccezione da aggiornare. **1**: violazione nuova (uso di uno strato piu' alto o di un modulo non ammesso, ciclo nuovo, eccezione superata, area non assegnata); l'elenco dice file, unit usata, area e strato di partenza e di arrivo (e la condizione `{$IFDEF}` se c'e'). **2**: solo eccezioni stantie (il difetto e' stato corretto: togliere o ridurre la voce). `-Riepilogo` stampa i numeri per strato, `-Dettaglio` elenca ogni uso coperto da un'eccezione, `-Grafo` gli archi tra aree.
+
+### Come si aggiunge una libreria
+
+1. Creare `Libs\<Nome>` con le sue unit (una cartella = una area; le sottocartelle appartengono alla cartella).
+2. Aggiungere una riga a `Aree` in `Libs\Strati.psd1`: `'Libs\<Nome>' = '<strato o modulo>'`. Scegliere il **piu' basso** strato che contiene le sue dipendenze (si vede con `-Grafo`); una libreria di un gioco o di id Tech va nel modulo corrispondente. Senza la riga il controllo fallisce con `AREA NON ASSEGNATA`.
+3. Eseguire `Tools\build.bat strati`. Se la libreria usa uno strato piu' alto non si aggiunge un'eccezione: si sposta la dipendenza (un'interfaccia piccola nello strato basso, iniettata) o si cambia strato.
+4. Una cartella di prodotto fuori da `Libs\` (un nuovo gioco) si aggiunge alla stessa tabella con il suo modulo.
+
+### Eccezioni
+
+Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 14 (13 coppie e 1 ciclo): #221 (ScriptHost e Ddc usano `Base` e i giochi, ciclo `PascalScript` - `ScriptHost` - `Ddc`), #224 (`Common`), #225 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
+
+## Metodo e limiti
+
+- Si leggono i `uses` di interface e implementation di ogni `.pas` (commenti e stringhe tolti; `Tests`, `Tools`, `Reference`, `bin`, `dcu` esclusi). Non si leggono i `.dpr`, ne' gli `.inc`.
+- **Nomi duplicati** (42 nomi in piu' cartelle): vince l'area del file (compresa la sua cartella `Shim`); le cartelle in `Gruppi` (i quattro giochi id) contano come una; se restano piu' aree e almeno una e' ammessa l'uso e' "ambiguo" (conteggiato, nessun arco), altrimenti e' una violazione. Le unit di una cartella `Shim` (`Libs\Mp3\Shim`, `Libs\Script\Shim`) sono visibili solo alla loro libreria: i 6 usi di `Mp3` che ne risultano nascondono unit di `Base` e `Common` (sono il contenuto di #224, non archi del grafo) e il riepilogo li conta a parte.
+- **`{$IFDEF}`**: gli `uses` sotto una condizione contano come gli altri (composizione condizionale) ma sono marcati con la condizione e contati a parte (378 su 10153 oggi).
+- **Cicli**: componenti fortemente connesse del grafo tra aree, senza gli archi dentro uno stesso modulo e senza quelli gia' violazioni.

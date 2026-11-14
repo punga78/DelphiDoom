@@ -52,6 +52,8 @@ type
       CyclesStatesWhileNoTics = True;
       /// <summary>The dead monsters respawn (nightmare, -respawn)</summary>
       MonstersRespawn = True;
+      /// <summary>P_ZMovement: the momentum under which a thing leaving a ladder stops</summary>
+      LadderStopMomz = FRACUNIT div 8;
 
     /// <summary>P_SetMobjState: what the thing remembers of the state it leaves</summary>
     class procedure KeepPreviousState(mobj: Pmobj_t); static; inline;
@@ -102,12 +104,22 @@ type
     class function ConsoleSpawnForbidden: boolean; static;
     /// <summary>P_SpawnPlayer of the game</summary>
     class function SpawnPlayer(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; static;
+    /// <summary>P_SpawnPlayer: the bits of the color of the sprites of a player after the first</summary>
+    class function PlayerTranslation(plnum: integer): integer; static;
+    /// <summary>P_SpawnPlayer: the fields of the player that count the breath (only some games have them)</summary>
+    class procedure ResetBreath(p: Pplayer_t); static;
+    /// <summary>P_SpawnPlayer: what the game does when the player is ready (the keys of deathmatch, the interface)</summary>
+    class procedure FinishPlayerSpawn(p: Pplayer_t; plnum: integer); static;
     /// <summary>P_SpawnMapThing of the game</summary>
     class function SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; static;
     /// <summary>P_SpawnPuff of the game</summary>
     class procedure SpawnPuff(x, y, z: fixed_t); static;
     /// <summary>P_SpawnMissile of the game</summary>
     class function SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
+    /// <summary>P_SpawnMissile: spawns the missile in front of its source</summary>
+    class function MissileOrigin(source: Pmobj_t; _type: integer): Pmobj_t; static;
+    /// <summary>P_SpawnMissile: the angle of a shot at a player that cannot be seen well (a random error, or none)</summary>
+    class function FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t; static;
     /// <summary>P_SpawnMissileXYZ of the game</summary>
     class function SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
     /// <summary>P_SpawnPlayerMissile of the game</summary>
@@ -148,6 +160,28 @@ type
     class function NeverRespawns(mobj: Pmobj_t): boolean; static; inline;
     /// <summary>P_NightmareRespawn of the game</summary>
     class procedure NightmareRespawn(mobj: Pmobj_t); static;
+    /// <summary>P_NightmareRespawn: the fog spawned at the old spot of the monster</summary>
+    class function RespawnOldFog(mobj: Pmobj_t): Pmobj_t; static;
+    /// <summary>P_NightmareRespawn: the height of the fog at the new spot (fog is the old one)</summary>
+    class function RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t; static;
+    /// <summary>P_NightmareRespawn: where the new monster is spawned</summary>
+    class function RespawnSpawnZ(mobj: Pmobj_t): fixed_t; static;
+    /// <summary>P_NightmareRespawn: what the new monster inherits from the map thing and the old one, after the ambush flag</summary>
+    class procedure RespawnInherit(mo, mobj: Pmobj_t; mthing: Pmapthing_t); static;
+    /// <summary>P_ZMovement: the player on a ladder and the smooth step up; gives the tics left on the ladder</summary>
+    class function ZPrelude(mo: Pmobj_t): integer; static;
+    /// <summary>P_ZMovement: what the game does after the height is adjusted (Strife: things standing on things)</summary>
+    class procedure AfterZAdjust(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: floating monsters go toward their target (the flying player bobs)</summary>
+    class procedure ZFloat(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: the thing is at or under the floor (landing, bounce, splash); false when P_ZMovement is over</summary>
+    class function ZHitFloor(mo: Pmobj_t): boolean; static;
+    /// <summary>P_ZMovement: the thing is in the air (gravity)</summary>
+    class procedure ZGravity(mo: Pmobj_t); static;
+    /// <summary>P_ZMovement: the height of the ceiling a thing hits</summary>
+    class function CeilingLimit(mo: Pmobj_t): fixed_t; static;
+    /// <summary>P_ZMovement: the thing hit the ceiling at this height</summary>
+    class procedure ZHitCeiling(mo: Pmobj_t; ceilz: fixed_t); static;
     /// <summary>The tics a dead monster waits before it may respawn</summary>
     class function RespawnTime: integer; static; inline;
     /// <summary>P_SpawnMobj: the flags of the game, the "just appeared" flag and the fields only some games copy from the info</summary>
@@ -262,7 +296,10 @@ uses
   info_rnd,
   info_common,
   doomstat,
-  p_mobj;
+  p_mobj,
+  DelphiDoom.Engine.World.Respawner,
+  DelphiDoom.Engine.World.MissileSpawner,
+  DelphiDoom.Engine.World.PlayerSpawner;
 
 //----------------------------------------------------------------------------
 //
@@ -323,15 +360,15 @@ end;
 // P_ZMovement
 //
 //==============================================================================
-procedure P_ZMovement(mo: Pmobj_t);
+//==============================================================================
+//
+// P_ZMovement: the player on a ladder, the smooth step up; gives the tics left on the ladder
+//
+//==============================================================================
+class function TMobjGameRules.ZPrelude(mo: Pmobj_t): integer;
 var
-  dist: fixed_t;
-  delta: fixed_t;
-  ceilz: fixed_t;
-  grav: integer;
   ladderticks: integer;
   player: Pplayer_t;
-  oldz: fixed_t;
 begin
   ladderticks := 0;
   player := Pplayer_t(mo.player);
@@ -351,18 +388,30 @@ begin
     player.deltaviewheight :=
       _SHR((PVIEWHEIGHT - player.crouchheight - player.viewheight), 3);
   end;
+  result := ladderticks;
+end;
 
-  // adjust height
-  if ladderticks > 0 then
-  begin
-    mo.z := mo.z + mo.momz;
-    mo.momz := (mo.momz * 7) div 8;
-    if mo.momz < FRACUNIT div 8 then
-      mo.momz := 0;
-  end
-  else
-    mo.z := mo.z + mo.momz;
+//==============================================================================
+//
+// P_ZMovement: after the height is adjusted (nothing in this game)
+//
+//==============================================================================
+class procedure TMobjGameRules.AfterZAdjust(mo: Pmobj_t);
+begin
+end;
 
+//==============================================================================
+//
+// P_ZMovement: floating monsters go toward their target
+//
+//==============================================================================
+class procedure TMobjGameRules.ZFloat(mo: Pmobj_t);
+var
+  dist: fixed_t;
+  delta: fixed_t;
+  player: Pplayer_t;
+begin
+  player := Pplayer_t(mo.player);
   if (mo.flags and MF_FLOAT <> 0) and (mo.target <> nil) then
   begin
     // float down towards target if too close
@@ -382,10 +431,20 @@ begin
 
   if (player <> nil) and (mo.flags2 and MF2_FLY <> 0) and (mo.z > mo.floorz) and (leveltime and 2 <> 0) then
     mo.z := mo.z + finesine[(FINEANGLES div 20 * leveltime div 4) and FINEMASK];
+end;
 
-  // clip movement
-  if mo.z <= mo.floorz then
-  begin
+//==============================================================================
+//
+// P_ZMovement: the thing is at or under the floor; false when the routine is over
+//
+//==============================================================================
+class function TMobjGameRules.ZHitFloor(mo: Pmobj_t): boolean;
+var
+  oldz: fixed_t;
+  player: Pplayer_t;
+begin
+  result := false;
+  player := Pplayer_t(mo.player);
     // hit the floor
     if mo.flags and MF_MISSILE <> 0 then
     begin
@@ -475,8 +534,21 @@ begin
       P_ExplodeMissile(mo);
       exit;
     end;
-  end
-  else if (mo.flags2 and MF2_LOGRAV <> 0) or (mo.flags_ex and MF_EX_LOWGRAVITY <> 0) then
+  result := true;
+end;
+
+//==============================================================================
+//
+// P_ZMovement: the thing is in the air
+//
+//==============================================================================
+class procedure TMobjGameRules.ZGravity(mo: Pmobj_t);
+var
+  grav: integer;
+  player: Pplayer_t;
+begin
+  player := Pplayer_t(mo.player);
+  if (mo.flags2 and MF2_LOGRAV <> 0) or (mo.flags_ex and MF_EX_LOWGRAVITY <> 0) then
   begin
     if mo.momz = 0 then
       mo.momz := -(P_GetMobjGravity(mo) div 8) * 2
@@ -505,11 +577,25 @@ begin
       mo.momz := mo.momz - grav;
 
   end;
+end;
 
-  ceilz := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector, mo.player);
+//==============================================================================
+//
+// P_ZMovement: the height of the ceiling a thing hits
+//
+//==============================================================================
+class function TMobjGameRules.CeilingLimit(mo: Pmobj_t): fixed_t;
+begin
+  result := mo.ceilingz + P_SectorJumpOverhead(Psubsector_t(mo.subsector).sector, mo.player);
+end;
 
-  if mo.z + mo.height > ceilz then
-  begin
+//==============================================================================
+//
+// P_ZMovement: the thing hit the ceiling
+//
+//==============================================================================
+class procedure TMobjGameRules.ZHitCeiling(mo: Pmobj_t; ceilz: fixed_t);
+begin
     // hit the ceiling
     if mo.momz > 0 then
     begin
@@ -541,7 +627,6 @@ begin
       end;
       P_ExplodeMissile(mo);
     end;
-  end;
 end;
 
 //==============================================================================
@@ -550,78 +635,59 @@ end;
 //
 //==============================================================================
 class procedure TMobjGameRules.NightmareRespawn(mobj: Pmobj_t);
-var
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  ss: Psubsector_t;
-  mo: Pmobj_t;
-  mthing: Pmapthing_t;
-  h: fixed_t; // JVAL: 3d floors
 begin
-  x := mobj.spawnpoint.x * FRACUNIT;
-  y := mobj.spawnpoint.y * FRACUNIT;
+  TMobjRespawner.Respawn(mobj);
+end;
 
-  // somthing is occupying it's position?
-  if not P_CheckPosition(mobj, x, y) then
-    exit; // no respwan
+//==============================================================================
+//
+// P_NightmareRespawn: the fog at the old spot
+//
+//==============================================================================
+class function TMobjGameRules.RespawnOldFog(mobj: Pmobj_t): Pmobj_t;
+begin
+  result := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));
+end;
 
-  // spawn a teleport fog at old spot
-  // because of removal of the body?
-  mo := P_SpawnMobj(mobj.x, mobj.y, mobj.z, Ord(MT_TFOG));
-  // initiate teleport sound
-  S_StartSound(mo, Ord(sfx_telept));
+//==============================================================================
+//
+// P_NightmareRespawn: the height of the fog at the new spot
+//
+//==============================================================================
+class function TMobjGameRules.RespawnFogFloor(ss: Psector_t; fog: Pmobj_t): fixed_t;
+begin
+  result := P_FloorHeight(ss, fog.x, fog.y);
+end;
 
-  // spawn a teleport fog at the new spot
-  ss := R_PointInSubsector(x, y);
-
-// JVAL: 3d floors
-  h := P_FloorHeight(ss.sector, mo.x, mo.y);
-  if ss.sector.midsec >= 0 then
-    if mobj.spawnpoint.options and MTF_ONMIDSECTOR <> 0 then
-      h := sectors[ss.sector.midsec].ceilingheight;
-
-  mo := P_SpawnMobj(x, y, h, Ord(MT_TFOG));
-
-  S_StartSound(mo, Ord(sfx_telept));
-
-  // spawn the new monster
-  mthing := @(mobj.spawnpoint);
-
-  // spawn it
+//==============================================================================
+//
+// P_NightmareRespawn: where the new monster is spawned
+//
+//==============================================================================
+class function TMobjGameRules.RespawnSpawnZ(mobj: Pmobj_t): fixed_t;
+begin
   if mobj.flags and MF_SPAWNCEILING <> 0 then
-    z := ONCEILINGZ
+    result := ONCEILINGZ
   else if mobj.flags_ex and MF_EX_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
+    result := ONFLOATZ
   else if mobj.flags2 and MF2_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
+    result := ONFLOATZ
   else
-    z := ONFLOORZ;
+    result := ONFLOORZ;
+end;
 
-  // inherit attributes from deceased one
-  mo := P_SpawnMobj(x, y, z, Ord(mobj._type), mthing);
-  mo.spawnpoint := mobj.spawnpoint;
-  if mo.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then
-    mo.angle := ANG1 * mthing.angle
-  else
-    mo.angle := ANG45 * (mthing.angle div 45);
-
-  if mthing.options and MTF_DONOTTRIGGERSCRIPTS <> 0 then
-    mobj.flags2_ex := mobj.flags2_ex or MF2_EX_DONTRUNSCRIPTS;
-
-  if mthing.options and MTF_AMBUSH <> 0 then
-    mo.flags := mo.flags or MF_AMBUSH;
-
+//==============================================================================
+//
+// P_NightmareRespawn: what the new monster inherits from the map thing and the old one
+//
+//==============================================================================
+class procedure TMobjGameRules.RespawnInherit(mo, mobj: Pmobj_t; mthing: Pmapthing_t);
+begin
   // killough 11/98: transfer friendliness from deceased
   if mobj.flags2_ex and MF2_EX_FRIEND = 0 then
     mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND
   else
     mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;
-
-  mo.reactiontime := 18;
-
-  // remove the old monster,
-  P_RemoveMobj(mobj);
 end;
 
 //==============================================================================
@@ -707,117 +773,38 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnPlayer(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t;
-var
-  p: Pplayer_t;
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  i: integer;
-  plnum: integer;
-  ss: Psubsector_t;
 begin
-  result := nil;
-  // not playing?
-  if not playeringame[mthing._type - 1] then
-    exit;
+  result := TMobjPlayerSpawner.Spawn(mthing, uthing);
+end;
 
-  plnum := mthing._type - 1;
-  p := @players[plnum];
+//==============================================================================
+//
+// P_SpawnPlayer: the bits of the color of the sprites of a player after the first
+//
+//==============================================================================
+class function TMobjGameRules.PlayerTranslation(plnum: integer): integer;
+begin
+  result := _SHL(plnum, MF_TRANSSHIFT);
+end;
 
-  if p.playerstate = PST_REBORN then
-    G_PlayerReborn(plnum);
+//==============================================================================
+//
+// P_SpawnPlayer: the fields of the player that count the breath
+//
+//==============================================================================
+class procedure TMobjGameRules.ResetBreath(p: Pplayer_t);
+begin
+end;
 
-  if uthing <> nil then
-  begin
-    x := uthing.x;
-    y := uthing.y;
-    if uthing.extraflags and UDMF_TF_HASZ <> 0 then
-      z := uthing.z
-    else
-      z := ONFLOORZ;
-  end
-  else
-  begin
-    x := mthing.x * FRACUNIT;
-    y := mthing.y * FRACUNIT;
-    z := ONFLOORZ;
-  end;
-
-  // JVAL: 20191209 - 3d floors - Fixed Player spawned in 3d floor
-  ss := R_PointInSubsector(x, y);
-  if ss.sector.midsec >= 0 then
-    if mthing.options and MTF_ONMIDSECTOR <> 0 then
-      z := sectors[ss.sector.midsec].ceilingheight;
-
-  result := P_SpawnMobj(x, y, z, Ord(MT_PLAYER), @mthing);
-
-  // set color translations for player sprites
-  if mthing._type > 1 then
-    result.flags := result.flags or _SHL(plnum, MF_TRANSSHIFT);
-
-  if result.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then
-    result.angle := ANG1 * mthing.angle
-  else
-    result.angle := ANG45 * (mthing.angle div 45);
-  result.player := p;
-  result.health := p.health;
-  result.customparams := nil; // JVAL: Should keep the old params!
-
-  p.mo := result;
-  p.playerstate := PST_LIVE;
-  p.refire := 0;
-  p._message := '';
-  p.damagecount := 0;
-  p.bonuscount := 0;
-  p.extralight := 0;
-  p.fixedcolormap := 0;
-  p.viewheight := PVIEWHEIGHT;
-  // JVAL: 20211117 - Reset extra player fields when spawning player
-  p.laddertics := 0;
-  p.slopetics := 0;
-  p.teleporttics := 0;
-  p.nextoof := 0;
-  p.quakeintensity := 0;
-  p.quaketics := 0;
-  p.oldcrouch := 0;
-  p.lastongroundtime := 0;
-  p.lastautocrouchtime := 0;
-  p.crouchheight := 0;
-  p.plinetarget := nil;
-  p.pcrosstic := leveltime;
-  // JVAL: 20211224 - Clear player history
-  P_ClearPlayerHistory(p);
-  p.nextfire := 0;
-
-  // JVAL: 20220123 - Gravity & Health from UDMF
-  if uthing <> nil then
-  begin
-    if uthing.extraflags and UDMF_TF_HASGRAVITY <> 0 then
-    begin
-      if uthing.gravity < 0.0 then
-        p.mo.gravity := -Round(uthing.gravity * FRACUNIT)
-      else
-        p.mo.gravity := Round(p.mo.gravity * uthing.gravity);
-    end;
-    if uthing.extraflags and UDMF_TF_HASHEALTH <> 0 then
-    begin
-      if uthing.health < 0.0 then
-      begin
-        p.health := -Round(uthing.health);
-        p.mo.health := p.health;
-      end
-      else
-      begin
-        p.health := Round(p.health * uthing.health);
-        p.mo.health := p.health;
-      end
-    end;
-    p.mo.tid := uthing.id;
-  end;
-
-  // setup gun psprite
-  P_SetupPsprites(p);
-
+//==============================================================================
+//
+// P_SpawnPlayer: what the game does when the player is ready (the keys of deathmatch, the interface)
+//
+//==============================================================================
+class procedure TMobjGameRules.FinishPlayerSpawn(p: Pplayer_t; plnum: integer);
+var
+  i: integer;
+begin
   // give all cards in death match mode
   if deathmatch <> 0 then
     for i := 0 to Ord(NUMKEYCARDS) - 1 do
@@ -1227,19 +1214,19 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t;
+begin
+  result := TMobjMissileSpawner.SpawnMissile(source, dest, _type);
+end;
+
+//==============================================================================
+//
+// P_SpawnMissile: the missile is spawned in front of its source
+//
+//==============================================================================
+class function TMobjGameRules.MissileOrigin(source: Pmobj_t; _type: integer): Pmobj_t;
 var
-  th: Pmobj_t;
-  an: angle_t;
-  dist: integer;
   z: fixed_t;
 begin
-  // JVAL: Prevent savegame bug
-  if dest = nil then
-  begin
-    result := nil;
-    exit;
-  end;
-
   if source.info.missileheight = 0 then
   begin
     case _type of
@@ -1264,47 +1251,20 @@ begin
   if source.flags2 and MF2_FEETARECLIPPED <> 0 then
     z := z - FOOTCLIPSIZE;
 
-  th := P_SpawnMobj(source.x, source.y, z, _type);
+  result := P_SpawnMobj(source.x, source.y, z, _type);
+end;
 
-  if th.info.seesound <> 0 then
-  begin
-    if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
-    else
-      S_StartSound(th, th.info.seesound);
-  end;
-
-  th.target := source;  // where it came from
-  an := R_PointToAngle2(source.x, source.y, dest.x, dest.y);
-
-  // fuzzy player
+//==============================================================================
+//
+// P_SpawnMissile: a player that cannot be seen is aimed at with an error
+//
+//==============================================================================
+class function TMobjGameRules.FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t;
+begin
   if dest.flags and MF_SHADOW <> 0 then
     if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
       an := an + _SHLW(P_Random - P_Random, 20);
-
-  th.angle := an;
-  {$IFDEF FPC}
-  an := _SHRW(an, ANGLETOFINESHIFT);
-  {$ELSE}
-  an := an shr ANGLETOFINESHIFT;
-  {$ENDIF}
-  th.momx := FixedMul(th.info.speed, finecosine[an]);
-  th.momy := FixedMul(th.info.speed, finesine[an]);
-
-  dist := P_AproxDistance(dest.x - source.x, dest.y - source.y);
-  // JVAL: If forgot to set custom missile speed we use default (12 * FRACUNIT)
-  if th.info.speed = 0 then
-    dist := dist div (12 * FRACUNIT)
-  else
-    dist := dist div th.info.speed;
-
-  if dist < 1 then
-    dist := 1;
-
-  th.momz := (dest.z - source.z) div dist;
-  P_CheckMissileSpawn(th);
-
-  result := th;
+  result := an;
 end;
 
 //==============================================================================
@@ -1371,90 +1331,8 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t;
-var
-  flags_ex: integer;
-  th: Pmobj_t;
-  velocity: TVec3;
-  speed: float;
-  an: angle_t;
 begin
-  // JVAL: Prevent savegame bug
-  if dest = nil then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  P_SaveRandom;
-
-  flags_ex := mobjinfo[Ord(_type)].flags_ex;
-
-  if flags_ex and MF_EX_FLOORHUGGER <> 0 then
-  begin
-    if G_PlayingEngineVersion >= VERSION115 then
-      z := source.floorz
-    else
-      z := ONFLOORZ;
-  end
-  else if flags_ex and MF_EX_CEILINGHUGGER <> 0 then
-  begin
-    if G_PlayingEngineVersion >= VERSION115 then
-      z := source.ceilingz
-    else
-      z := ONCEILINGZ;
-  end
-  else if z <> ONFLOORZ then
-    z := z - source.floorz;
-
-  th := P_SpawnMobj(x, y, z, _type);
-
-  if th.info.seesound <> 0 then
-  begin
-    if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
-    else
-      S_StartSound(th, th.info.seesound);
-  end;
-
-  th.target := source;  // record missile's originator
-
-  speed := th.info.speed;
-
-  velocity[0] := dest.x - source.x;
-  velocity[1] := dest.y - source.y;
-  // Floor and ceiling huggers should never have a vertical component to their velocity
-  if flags_ex and (MF_EX_FLOORHUGGER or MF_EX_CEILINGHUGGER) <> 0 then
-    velocity[2] := 0.0
-  else
-  begin
-    velocity[2] := dest.z - source.z;
-    if dest.height <= z - source.z then
-      velocity[2] := velocity[2] + dest.height - z + source.z;
-  end;
-
-  TVectorMath.Normalize3(velocity);
-  th.momx := round(velocity[0] * speed);
-  th.momy := round(velocity[1] * speed);
-  th.momz := round(velocity[2] * speed);
-
-  // fuzzy player
-  if dest.flags and MF_SHADOW <> 0 then
-    if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
-    begin
-      an := _SHLW(P_Random - P_Random, 20);
-      an := an shr ANGLETOFINESHIFT;
-      th.momx := th.momx + FixedMul(th.info.speed, finecosine[an]);
-      th.momy := th.momy + FixedMul(th.info.speed, finesine[an]);
-    end;
-
-  th.angle := R_PointToAngle2(0, 0, th.momx, th.momy);
-
-  if P_CheckMissileSpawn(th) then
-    result := th
-  else
-    result := nil;
-
-  P_RestoreRandom;
+  result := TMobjMissileSpawner.SpawnMissileXYZ(x, y, z, source, dest, _type);
 end;
 
 

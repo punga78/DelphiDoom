@@ -60,6 +60,7 @@ Sezioni trasversali (non di una singola libreria), in [docs/CLAUDE_TRASVERSALI.m
 - **Uscita e schermi per le classi del motore** (issue #155): `IEngineShutdown`, `IEngineScreens`.
 - **Lump e zone per le classi del motore** (issue #151): `IEngineLumps`, `TEngineZoneAllocator`.
 - **Prova dei percorsi PK3** (issue #48): dati di prova e `Prova-Pk3.ps1`.
+- **Strati delle librerie** (issue #219): ogni cartella di `Libs\`, `Base` e dei prodotti sta in uno strato (`L0` fondazione, `L1` formati, `L2` servizi, `L3` piattaforma e scripting) o in un modulo (`IdTech1`, `IdTech4`, `Giochi`, `Strumenti`) in `Libs\Strati.psd1` (spiegato in [Libs/STRATI.md](Libs/STRATI.md)); uno strato usa solo strati uguali o piu' bassi, un modulo gli strati e se stesso. **`Tools\build.bat strati`** (non compila: prova lo script su 18 casi di `Tests\Data\Strati` ed esegue `Tools\Verifica\219\Controlla-Strati.ps1` sul repository) deve dare 0 violazioni nuove prima di ogni commit che tocca i `uses` di una libreria; oggi 0 violazioni nuove e 14 eccezioni dichiarate (difetti noti #221, #224, #225, #226, #229: uscita 2 se una diventa stantia, va tolta con la correzione). **Per aggiungere una libreria**: una riga in `Aree` di `Libs\Strati.psd1` con il piu' basso strato che contiene le sue dipendenze (senza, il controllo dice `AREA NON ASSEGNATA`); mai un'eccezione per una dipendenza nuova. Numeri e differenze dal censimento: `docs\FRAMEWORK_CENSIMENTO.md` §7.
 
 Librerie (CLAUDE.md di dettaglio, README):
 
