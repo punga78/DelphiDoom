@@ -190,6 +190,24 @@ $Expansions = @(
   @{ R = 'P_MobjThinker'; F = 'if mobj.movecount < TMobjGameRules.RespawnTime then exit;'; Heretic = 'if mobj.movecount < 12 * TICRATE then begin exit; end;' }
   @{ F = 'TMobjGameRules.RespawnTime'; D = '12 * TICRATE'; Strife = '16 * TICRATE' }
   @{ F = 'if TMobjGameRules.NeverRespawns(mobj) then exit;'; D = ''; Strife = 'if mobj.flags and MF_NOTDMATCH <> 0 then exit;' }
+  # --- P_SpawnMissile, P_SpawnMissileXYZ (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.MissileSpawner.pas; Hexen e' un metodo) ---
+  $mOrigin = 'if source.info.missileheight = 0 then th := P_SpawnMobj(source.x, source.y, source.z + 4 * 8 * FRACUNIT, _type) else if source.info.missileheight < FRACUNIT div 2 then th := P_SpawnMobj(source.x, source.y, source.z + source.info.missileheight * FRACUNIT, _type) else th := P_SpawnMobj(source.x, source.y, source.z + source.info.missileheight, _type);'
+  $mOriginHeretic = 'if source.info.missileheight = 0 then begin case _type of Ord(MT_MNTRFX1): z := source.z + 40 * FRACUNIT; Ord(MT_MNTRFX2): z := ONFLOORZ; Ord(MT_SRCRFX1): z := source.z + 48 * FRACUNIT; Ord(MT_KNIGHTAXE), Ord(MT_REDAXE): z := source.z + 36 * FRACUNIT; else z := source.z + 32 * FRACUNIT; end; end else if source.info.missileheight < FRACUNIT div 2 then z := source.z + source.info.missileheight * FRACUNIT else z := source.z + source.info.missileheight; if source.flags2 and MF2_FEETARECLIPPED <> 0 then z := z - FOOTCLIPSIZE; th := P_SpawnMobj(source.x, source.y, z, _type);'
+  $mFuzzy = 'if dest.flags and MF_SHADOW <> 0 then if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then an := an + _SHLW(P_Random - P_Random, 20);'
+  $mFuzzyStrife = 'if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then begin if dest.flags and MF_SHADOW <> 0 then an := an + _SHLW(P_Random - P_Random, 21); if dest.flags and MF_MVIS <> 0 then an := an + _SHLW(P_Random - P_Random, 22); end;'
+  @{ R = 'P_SpawnMissile'; F = 'class function TMobjMissileSpawner.SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; dist: integer; begin'
+     D = 'function P_SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; dist: integer; begin'
+     Heretic = $null }
+  @{ R = 'P_SpawnMissile'; F = 'class function TMobjMissileSpawner.SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; dist: integer; begin'
+     Heretic = 'function P_SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; var th: Pmobj_t; an: angle_t; dist: integer; z: fixed_t; begin'
+     Note = 'la variabile z di Heretic e'' ora nella regola MissileOrigin' }
+  @{ R = 'P_SpawnMissileXYZ'; F = 'TMobjGameRules.MissileSeeSound(th);'; D = 'A_SeeSound(th, th);'; Strife = 'A_SeeSound1(th);'
+     Heretic = 'if th.info.seesound <> 0 then begin if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then P_RandomSound(th, th.info.seesound) else S_StartSound(th, th.info.seesound); end;' }
+  @{ R = 'P_SpawnMissile'; F = 'th := TMobjGameRules.MissileOrigin(source, _type); TMobjGameRules.MissileSeeSound(th);'
+     Doom = "$mOrigin A_SeeSound(th, th);"; Strife = "$mOrigin A_SeeSound1(th);"
+     Heretic = "$mOriginHeretic if th.info.seesound <> 0 then begin if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then P_RandomSound(th, th.info.seesound) else S_StartSound(th, th.info.seesound); end;" }
+  @{ R = 'P_SpawnMissile'; F = 'an := TMobjGameRules.FuzzyAim(source, dest, an);'; D = $mFuzzy; Strife = $mFuzzyStrife }
+  @{ R = 'P_SpawnMissileXYZ'; F = 'class function TMobjMissileSpawner.SpawnMissileXYZ('; D = 'function P_SpawnMissileXYZ(' }
   # --- P_ZMovement (Base\p_mobj.pas: lo scheletro; le fasi sono regole del gioco) ---
   $zNote = 'le variabili locali sono passate dalla vecchia routine alle regole che le usano; ogni regola rilegge il giocatore (puro) dove la vecchia routine lo teneva in una variabile'
   @{ R = 'P_ZMovement'; F = 'procedure P_ZMovement(mo: Pmobj_t); var ladderticks: integer; ceilz: fixed_t; begin'
@@ -243,14 +261,14 @@ $NotTextual = @{
 # le routine che sono tutte di un gioco: metodi delle regole con il testo vecchio
 $Methods = @{
   'Hexen|P_NightmareRespawn' = 'NightmareRespawn'; 'P_SpawnPlayer' = 'SpawnPlayer'; 'P_SpawnMapThing' = 'SpawnMapThing'
-  'P_SpawnPuff' = 'SpawnPuff'; 'P_SpawnMissile' = 'SpawnMissile'; 'P_SpawnMissileXYZ' = 'SpawnMissileXYZ'
+  'P_SpawnPuff' = 'SpawnPuff'; 'Hexen|P_SpawnMissile' = 'SpawnMissile'; 'Hexen|P_SpawnMissileXYZ' = 'SpawnMissileXYZ'
   'P_SpawnPlayerMissile' = 'SpawnPlayerMissile'; 'P_HitFloor' = 'HitFloor'
   'Heretic|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_CreateTIDList' = 'CreateTIDList'
 }
 # la routine unificata ha un altro nome
-$Alias = @{ 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
+$Alias = @{ 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Doom|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Heretic|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Strife|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Doom|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Strife|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas', 'Base\DelphiDoom.Engine.World.MissileSpawner.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.MobjRules.pas' -Class 'TMobjGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias
 exit $bad

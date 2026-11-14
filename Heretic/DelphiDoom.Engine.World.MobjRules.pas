@@ -110,6 +110,10 @@ type
     class procedure SpawnPuff(x, y, z: fixed_t); static;
     /// <summary>P_SpawnMissile of the game</summary>
     class function SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
+    /// <summary>P_SpawnMissile: spawns the missile in front of its source</summary>
+    class function MissileOrigin(source: Pmobj_t; _type: integer): Pmobj_t; static;
+    /// <summary>P_SpawnMissile: the angle of a shot at a player that cannot be seen well (a random error, or none)</summary>
+    class function FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t; static;
     /// <summary>P_SpawnMissileXYZ of the game</summary>
     class function SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
     /// <summary>P_SpawnPlayerMissile of the game</summary>
@@ -287,7 +291,8 @@ uses
   info_common,
   doomstat,
   p_mobj,
-  DelphiDoom.Engine.World.Respawner;
+  DelphiDoom.Engine.World.Respawner,
+  DelphiDoom.Engine.World.MissileSpawner;
 
 //----------------------------------------------------------------------------
 //
@@ -1281,19 +1286,19 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMissile(source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t;
+begin
+  result := TMobjMissileSpawner.SpawnMissile(source, dest, _type);
+end;
+
+//==============================================================================
+//
+// P_SpawnMissile: the missile is spawned in front of its source
+//
+//==============================================================================
+class function TMobjGameRules.MissileOrigin(source: Pmobj_t; _type: integer): Pmobj_t;
 var
-  th: Pmobj_t;
-  an: angle_t;
-  dist: integer;
   z: fixed_t;
 begin
-  // JVAL: Prevent savegame bug
-  if dest = nil then
-  begin
-    result := nil;
-    exit;
-  end;
-
   if source.info.missileheight = 0 then
   begin
     case _type of
@@ -1318,47 +1323,20 @@ begin
   if source.flags2 and MF2_FEETARECLIPPED <> 0 then
     z := z - FOOTCLIPSIZE;
 
-  th := P_SpawnMobj(source.x, source.y, z, _type);
+  result := P_SpawnMobj(source.x, source.y, z, _type);
+end;
 
-  if th.info.seesound <> 0 then
-  begin
-    if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
-    else
-      S_StartSound(th, th.info.seesound);
-  end;
-
-  th.target := source;  // where it came from
-  an := R_PointToAngle2(source.x, source.y, dest.x, dest.y);
-
-  // fuzzy player
+//==============================================================================
+//
+// P_SpawnMissile: a player that cannot be seen is aimed at with an error
+//
+//==============================================================================
+class function TMobjGameRules.FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t;
+begin
   if dest.flags and MF_SHADOW <> 0 then
     if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
       an := an + _SHLW(P_Random - P_Random, 20);
-
-  th.angle := an;
-  {$IFDEF FPC}
-  an := _SHRW(an, ANGLETOFINESHIFT);
-  {$ELSE}
-  an := an shr ANGLETOFINESHIFT;
-  {$ENDIF}
-  th.momx := FixedMul(th.info.speed, finecosine[an]);
-  th.momy := FixedMul(th.info.speed, finesine[an]);
-
-  dist := P_AproxDistance(dest.x - source.x, dest.y - source.y);
-  // JVAL: If forgot to set custom missile speed we use default (12 * FRACUNIT)
-  if th.info.speed = 0 then
-    dist := dist div (12 * FRACUNIT)
-  else
-    dist := dist div th.info.speed;
-
-  if dist < 1 then
-    dist := 1;
-
-  th.momz := (dest.z - source.z) div dist;
-  P_CheckMissileSpawn(th);
-
-  result := th;
+  result := an;
 end;
 
 //==============================================================================
@@ -1425,90 +1403,8 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t;
-var
-  flags_ex: integer;
-  th: Pmobj_t;
-  velocity: TVec3;
-  speed: float;
-  an: angle_t;
 begin
-  // JVAL: Prevent savegame bug
-  if dest = nil then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  P_SaveRandom;
-
-  flags_ex := mobjinfo[Ord(_type)].flags_ex;
-
-  if flags_ex and MF_EX_FLOORHUGGER <> 0 then
-  begin
-    if G_PlayingEngineVersion >= VERSION115 then
-      z := source.floorz
-    else
-      z := ONFLOORZ;
-  end
-  else if flags_ex and MF_EX_CEILINGHUGGER <> 0 then
-  begin
-    if G_PlayingEngineVersion >= VERSION115 then
-      z := source.ceilingz
-    else
-      z := ONCEILINGZ;
-  end
-  else if z <> ONFLOORZ then
-    z := z - source.floorz;
-
-  th := P_SpawnMobj(x, y, z, _type);
-
-  if th.info.seesound <> 0 then
-  begin
-    if th.flags_ex and MF_EX_RANDOMSEESOUND <> 0 then
-      P_RandomSound(th, th.info.seesound)
-    else
-      S_StartSound(th, th.info.seesound);
-  end;
-
-  th.target := source;  // record missile's originator
-
-  speed := th.info.speed;
-
-  velocity[0] := dest.x - source.x;
-  velocity[1] := dest.y - source.y;
-  // Floor and ceiling huggers should never have a vertical component to their velocity
-  if flags_ex and (MF_EX_FLOORHUGGER or MF_EX_CEILINGHUGGER) <> 0 then
-    velocity[2] := 0.0
-  else
-  begin
-    velocity[2] := dest.z - source.z;
-    if dest.height <= z - source.z then
-      velocity[2] := velocity[2] + dest.height - z + source.z;
-  end;
-
-  TVectorMath.Normalize3(velocity);
-  th.momx := round(velocity[0] * speed);
-  th.momy := round(velocity[1] * speed);
-  th.momz := round(velocity[2] * speed);
-
-  // fuzzy player
-  if dest.flags and MF_SHADOW <> 0 then
-    if source.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
-    begin
-      an := _SHLW(P_Random - P_Random, 20);
-      an := an shr ANGLETOFINESHIFT;
-      th.momx := th.momx + FixedMul(th.info.speed, finecosine[an]);
-      th.momy := th.momy + FixedMul(th.info.speed, finesine[an]);
-    end;
-
-  th.angle := R_PointToAngle2(0, 0, th.momx, th.momy);
-
-  if P_CheckMissileSpawn(th) then
-    result := th
-  else
-    result := nil;
-
-  P_RestoreRandom;
+  result := TMobjMissileSpawner.SpawnMissileXYZ(x, y, z, source, dest, _type);
 end;
 
 

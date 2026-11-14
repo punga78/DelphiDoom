@@ -278,6 +278,7 @@ uses
   p_mobj in '..\Base\p_mobj.pas',
   DelphiDoom.Engine.World.MobjRules in '..\Doom\DelphiDoom.Engine.World.MobjRules.pas',
   DelphiDoom.Engine.World.Respawner in '..\Base\DelphiDoom.Engine.World.Respawner.pas',
+  DelphiDoom.Engine.World.MissileSpawner in '..\Base\DelphiDoom.Engine.World.MissileSpawner.pas',
   p_mobj_h in '..\Base\p_mobj_h.pas',
   p_plats in '..\Doom\p_plats.pas',
   p_pspr in '..\Doom\p_pspr.pas',
