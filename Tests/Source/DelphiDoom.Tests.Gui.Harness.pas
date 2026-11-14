@@ -82,7 +82,7 @@ begin
   FFilesRef := FFiles;
   FMaterials := TGuiHarnessMaterials.Create(FLines);
   FMaterialsRef := FMaterials;
-  FCvars := TGuiCvarSet.Create;
+  FCvars := TGuiHarnessCvars.Create(FLines);
   FCvarsRef := FCvars;
   FSurfaceRef := TGuiHarnessSurface.Create(FLines);
   FLogRef := TGuiWindowFakeLog.Create(FLines);
@@ -170,7 +170,7 @@ begin
   FKeys.Clear;
   FMaterials.Clear;
   FCvarsRef := nil;
-  FCvars := TGuiCvarSet.Create;
+  FCvars := TGuiHarnessCvars.Create(FLines);
   FCvarsRef := FCvars;
   TGuiHarnessFonts.AddSet(FFiles, 'fonts/english');
   Supports(FLogRef, IIdLibLog, LLog);
@@ -377,9 +377,9 @@ begin
   else if LWords[0] = 'cvar' then
   begin
     if Length(LWords) > 2 then
-      FCvars.SetString(AnsiString(LWords[1]), AnsiString(LWords[2]))
+      FCvars.SetQuiet(AnsiString(LWords[1]), AnsiString(LWords[2]))
     else
-      FCvars.SetString(AnsiString(LWords[1]), '');
+      FCvars.SetQuiet(AnsiString(LWords[1]), '');
   end
   else if LWords[0] = 'mat' then
     FMaterials.SetInfo(AnsiString(LWords[1]), StrToInt(LWords[2]), StrToInt(LWords[3]), StrToInt(LWords[4]),

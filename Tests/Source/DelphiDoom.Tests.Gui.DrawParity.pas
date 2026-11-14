@@ -38,6 +38,10 @@ type
     procedure IlGoldenDegliEventiHaTuttiICasi;
     [Test]
     procedure IScenariDelDisegnoDelleFinestreAncoraCoincidonoConIlCpp;
+    [Test]
+    procedure ISliderCoincidonoConIlCpp;
+    [Test]
+    procedure LeSceltePortanoICvarEdIGuiCoincidonoConIlCpp;
   end;
 
 implementation
@@ -79,6 +83,16 @@ end;
 procedure TTestGuiDrawParity.IScenariDelDisegnoDelleFinestreAncoraCoincidonoConIlCpp;
 begin
   TGuiHarnessCompare.Check('draw\redraw2.input.txt', 'draw\redraw2.golden.txt', 'redraw_flags', 4);
+end;
+
+procedure TTestGuiDrawParity.ISliderCoincidonoConIlCpp;
+begin
+  TGuiHarnessCompare.Check('draw\slider.input.txt', 'draw\slider.golden.txt');
+end;
+
+procedure TTestGuiDrawParity.LeSceltePortanoICvarEdIGuiCoincidonoConIlCpp;
+begin
+  TGuiHarnessCompare.Check('draw\choice.input.txt', 'draw\choice.golden.txt');
 end;
 
 initialization

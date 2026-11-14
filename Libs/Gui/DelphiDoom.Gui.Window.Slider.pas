@@ -18,7 +18,8 @@ interface
 
 uses
   DelphiDoom.Scanner.IdParser, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Intf,
-  DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Float, DelphiDoom.Gui.WinVar.Str;
+  DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Float, DelphiDoom.Gui.WinVar.Str,
+  DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys;
 
 type
   /// <summary>
@@ -39,6 +40,16 @@ type
     FCvarStr: TGuiWinStr;
     FCvarGroup: TGuiWinStr;
     FLiveUpdate: TGuiWinBool;
+    FThumbMat: IGuiMaterial;
+    FThumbWidth: Single;
+    FThumbHeight: Single;
+    FThumbRect: TGuiRectangle;
+    FBuddy: TGuiWindow;
+    FHasCvar: Boolean;
+    FCvarInit: Boolean;
+    procedure InitCvar;
+    procedure UpdateCvar(const ARead: Boolean; const AForce: Boolean = False);
+    procedure FindThumb;
   protected
     function ParseInternalVar(const AName: AnsiString; const ASource: TIdParser): Boolean; override;
     procedure PostParse; override;
@@ -47,6 +58,18 @@ type
     destructor Destroy; override;
     function GetWinVarByName(const AName: AnsiString; const AFixup: Boolean;
       out AOwner: IGuiWindowNode): TGuiWinVar; override;
+    procedure SetBuddy(const ABuddy: TGuiWindow); override;
+    /// <summary>idSliderWindow::SetRange and SetValue (the list and edit windows drive their scroll bar with them)</summary>
+    procedure SetRange(const ALow, AHigh, AStep: Single);
+    procedure SetValue(const AValue: Single);
+    function HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString; override;
+    function RouteMouseCoords(const AX, AY: Single): AnsiString; override;
+    procedure Draw(const ATime: Integer; const AX, AY: Single); override;
+    procedure DrawBackground(const ARect: TGuiRectangle); override;
+    procedure Activate(const AActivate: Boolean; var AAct: AnsiString); override;
+    procedure RunNamedEvent(const AEventName: AnsiString); override;
+    property ThumbRect: TGuiRectangle read FThumbRect;
+    property HasCvar: Boolean read FHasCvar;
     property Low: Single read FLow;
     property High: Single read FHigh;
     property StepSize: Single read FStepSize;
@@ -60,7 +83,8 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types;
+  System.SysUtils, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types,
+  DelphiDoom.Gui.DrawContext;
 
 constructor TGuiSliderWindow.Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator);
 begin
@@ -121,15 +145,292 @@ begin
   Result := inherited GetWinVarByName(AName, AFixup, AOwner);
 end;
 
+procedure TGuiSliderWindow.FindThumb;
+begin
+  if Assigned(Context.Materials) then
+  begin
+    FThumbMat := Context.Materials.FindMaterial(FThumbShader);
+    FThumbMat.SetGuiSort;
+    FThumbWidth := FThumbMat.GetImageWidth;
+    FThumbHeight := FThumbMat.GetImageHeight;
+  end;
+end;
+
 procedure TGuiSliderWindow.PostParse;
 begin
   inherited PostParse;
   FValue.Value := 0.0;
+  FindThumb;
   SetFlag(WIN_HOLDCAPTURE or WIN_CANFOCUS);
-  // InitCvar: the cvar itself is not ported (there is no cvar system here), the empty name is reported as in the original
-  if FCvarStr.AsText = '' then
-    Warning(Format('idSliderWindow::InitCvar: gui ''%s'' window ''%s'' has an empty cvar string',
-      [string(Context.SourceFile), string(Name)]));
+  InitCvar;
 end;
 
+procedure TGuiSliderWindow.InitCvar;
+begin
+  if FCvarStr.AsText = '' then
+  begin
+    if not Assigned(FBuddy) then
+      Warning(Format('idSliderWindow::InitCvar: gui ''%s'' window ''%s'' has an empty cvar string',
+        [string(Context.SourceFile), string(Name)]));
+    FCvarInit := True;
+    FHasCvar := False;
+    Exit;
+  end;
+  FHasCvar := Assigned(Context.Cvars) and Context.Cvars.Exists(FCvarStr.AsText);
+  if not FHasCvar then
+  begin
+    Warning(Format('idSliderWindow::InitCvar: gui ''%s'' window ''%s'' references undefined cvar ''%s''',
+      [string(Context.SourceFile), string(Name), string(FCvarStr.AsText)]));
+    FCvarInit := True;
+  end;
+end;
+
+procedure TGuiSliderWindow.UpdateCvar(const ARead: Boolean; const AForce: Boolean);
+var
+  LState: Single;
+begin
+  if Assigned(FBuddy) or (not FHasCvar) then
+    Exit;
+  if AForce or FLiveUpdate.Value then
+  begin
+    FValue.Value := Context.Cvars.GetFloat(FCvarStr.AsText);
+    LState := Context.StateDict.GetFloat(FCvarStr.AsText);
+    if FValue.Value <> LState then
+    begin
+      if ARead then
+        Context.StateDict.SetFloat(FCvarStr.AsText, FValue.Value)
+      else
+      begin
+        FValue.Value := Context.StateDict.GetFloat(FCvarStr.AsText);
+        Context.Cvars.SetFloat(FCvarStr.AsText, FValue.Value);
+      end;
+    end;
+  end;
+end;
+
+procedure TGuiSliderWindow.SetBuddy(const ABuddy: TGuiWindow);
+begin
+  FBuddy := ABuddy;
+end;
+
+procedure TGuiSliderWindow.SetRange(const ALow, AHigh, AStep: Single);
+begin
+  FLow := ALow;
+  FHigh := AHigh;
+  FStepSize := AStep;
+end;
+
+procedure TGuiSliderWindow.SetValue(const AValue: Single);
+begin
+  FValue.Value := AValue;
+end;
+
+function TGuiSliderWindow.HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString;
+var
+  LKey: Integer;
+begin
+  Result := '';
+  if not ((AEvent.EventType = GUI_SE_KEY) and (AEvent.Value2 <> 0)) then
+    Exit;
+  LKey := AEvent.Value;
+  if (AEvent.Value2 <> 0) and (LKey = GUI_K_MOUSE1) then
+  begin
+    SetCapture(Self);
+    RouteMouseCoords(0.0, 0.0);
+    Exit;
+  end;
+  if (LKey = GUI_K_RIGHTARROW) or (LKey = GUI_K_KP_RIGHTARROW) or
+    ((LKey = GUI_K_MOUSE2) and (Context.CursorY > FThumbRect.Y)) then
+    FValue.Value := FValue.Value + FStepSize;
+  if (LKey = GUI_K_LEFTARROW) or (LKey = GUI_K_KP_LEFTARROW) or
+    ((LKey = GUI_K_MOUSE2) and (Context.CursorY < FThumbRect.Y)) then
+    FValue.Value := FValue.Value - FStepSize;
+  if Assigned(FBuddy) then
+    FBuddy.HandleBuddyUpdate(Self)
+  else
+  begin
+    Context.StateDict.SetFloat(FCvarStr.AsText, FValue.Value);
+    UpdateCvar(False);
+  end;
+end;
+
+procedure TGuiSliderWindow.Draw(const ATime: Integer; const AX, AY: Single);
+var
+  LColor: TIdVec4;
+  LRange, LThumbPos, LTemp: Single;
+  LDc: TGuiDrawContext;
+begin
+  LColor := ForeColor.Value;
+  LDc := Context.DrawContext;
+  if (not FHasCvar) and (not Assigned(FBuddy)) then
+    Exit;
+  if (FThumbWidth = 0.0) or (FThumbHeight = 0.0) then
+  begin
+    FThumbWidth := FThumbMat.GetImageWidth;
+    FThumbHeight := FThumbMat.GetImageHeight;
+  end;
+  UpdateCvar(True);
+  if FValue.Value > FHigh then
+    FValue.Value := FHigh
+  else if FValue.Value < FLow then
+    FValue.Value := FLow;
+  LRange := FHigh - FLow;
+  if LRange <= 0.0 then
+    Exit;
+  LTemp := FValue.Value - FLow;
+  LThumbPos := LTemp / LRange;
+  if FVertical then
+  begin
+    if FVerticalFlip then
+      LThumbPos := 1.0 - LThumbPos;
+    LTemp := DrawRect.H - FThumbHeight;
+    LThumbPos := LThumbPos * LTemp;
+    LThumbPos := LThumbPos + DrawRect.Y;
+    FThumbRect.Y := LThumbPos;
+    FThumbRect.X := DrawRect.X;
+  end
+  else
+  begin
+    LTemp := DrawRect.W - FThumbWidth;
+    LThumbPos := LThumbPos * LTemp;
+    LThumbPos := LThumbPos + DrawRect.X;
+    FThumbRect.X := LThumbPos;
+    FThumbRect.Y := DrawRect.Y;
+  end;
+  FThumbRect.W := FThumbWidth;
+  FThumbRect.H := FThumbHeight;
+  if Hover and (not NoEvents.Value) and ContainsPoint(Context.CursorX, Context.CursorY) then
+    LColor := HoverColor.Value
+  else
+    Hover := False;
+  if (Flags and WIN_CAPTURE) <> 0 then
+  begin
+    LColor := HoverColor.Value;
+    Hover := True;
+  end;
+  LDc.DrawMaterial(FThumbRect.X, FThumbRect.Y, FThumbRect.W, FThumbRect.H, FThumbMat, LColor);
+  if (Flags and WIN_FOCUS) <> 0 then
+  begin
+    LDc.DrawRect(FThumbRect.X + 1.0, FThumbRect.Y + 1.0, FThumbRect.W - 2.0, FThumbRect.H - 2.0, 1.0, LColor);
+  end;
+end;
+
+procedure TGuiSliderWindow.DrawBackground(const ARect: TGuiRectangle);
+var
+  LRect: TGuiRectangle;
+  LHalf: Single;
+begin
+  if (not FHasCvar) and (not Assigned(FBuddy)) then
+    Exit;
+  if FHigh - FLow <= 0.0 then
+    Exit;
+  LRect := ARect;
+  if not FScrollbar then
+  begin
+    if FVertical then
+    begin
+      LHalf := FThumbHeight / 2.0;
+      LRect.Y := LRect.Y + LHalf;
+      LRect.H := LRect.H - FThumbHeight;
+    end
+    else
+    begin
+      LHalf := FThumbWidth / 2.0;
+      LRect.X := LRect.X + LHalf;
+      LRect.W := LRect.W - FThumbWidth;
+    end;
+  end;
+  inherited DrawBackground(LRect);
+end;
+
+function TGuiSliderWindow.RouteMouseCoords(const AX, AY: Single): AnsiString;
+var
+  LRect: TGuiRectangle;
+  LPct, LHalf, LTemp: Single;
+begin
+  Result := '';
+  if (Flags and WIN_CAPTURE) = 0 then
+    Exit;
+  LRect := DrawRect;
+  LRect.X := ActualX;
+  LRect.Y := ActualY;
+  LHalf := FThumbWidth / 2.0;
+  LRect.X := LRect.X + LHalf;
+  LRect.W := LRect.W - FThumbWidth;
+  if FVertical then
+  begin
+    LHalf := FThumbHeight / 2;
+    LRect.Y := LRect.Y + LHalf;
+    LRect.H := LRect.H - FThumbHeight;
+    if (Context.CursorY >= LRect.Y) and (Context.CursorY <= LRect.Bottom) then
+    begin
+      LTemp := Context.CursorY - LRect.Y;
+      LPct := LTemp / LRect.H;
+      if FVerticalFlip then
+        LPct := 1.0 - LPct;
+      LTemp := FHigh - FLow;
+      LTemp := LTemp * LPct;
+      FValue.Value := FLow + LTemp;
+    end
+    else if Context.CursorY < LRect.Y then
+    begin
+      if FVerticalFlip then
+        FValue.Value := FHigh
+      else
+        FValue.Value := FLow;
+    end
+    else if FVerticalFlip then
+      FValue.Value := FLow
+    else
+      FValue.Value := FHigh;
+  end
+  else
+  begin
+    LHalf := FThumbWidth / 2;
+    LRect.X := LRect.X + LHalf;
+    LRect.W := LRect.W - FThumbWidth;
+    if (Context.CursorX >= LRect.X) and (Context.CursorX <= LRect.Right) then
+    begin
+      LTemp := Context.CursorX - LRect.X;
+      LPct := LTemp / LRect.W;
+      LTemp := FHigh - FLow;
+      LTemp := LTemp * LPct;
+      FValue.Value := FLow + LTemp;
+    end
+    else if Context.CursorX < LRect.X then
+      FValue.Value := FLow
+    else
+      FValue.Value := FHigh;
+  end;
+  if Assigned(FBuddy) then
+    FBuddy.HandleBuddyUpdate(Self)
+  else
+    Context.StateDict.SetFloat(FCvarStr.AsText, FValue.Value);
+  UpdateCvar(False);
+end;
+
+procedure TGuiSliderWindow.Activate(const AActivate: Boolean; var AAct: AnsiString);
+begin
+  inherited Activate(AActivate, AAct);
+  if AActivate then
+    UpdateCvar(True, True);
+end;
+
+procedure TGuiSliderWindow.RunNamedEvent(const AEventName: AnsiString);
+var
+  LGroup: AnsiString;
+begin
+  if TIdStrings.Icmpn(AEventName, 'cvar read ', 10) = 0 then
+  begin
+    LGroup := Copy(AEventName, 11, MaxInt);
+    if LGroup = FCvarGroup.AsText then
+      UpdateCvar(True, True);
+  end
+  else if TIdStrings.Icmpn(AEventName, 'cvar write ', 11) = 0 then
+  begin
+    LGroup := Copy(AEventName, 12, MaxInt);
+    if LGroup = FCvarGroup.AsText then
+      UpdateCvar(False, True);
+  end;
+end;
 end.

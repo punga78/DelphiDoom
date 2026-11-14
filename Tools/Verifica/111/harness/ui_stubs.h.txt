@@ -75,7 +75,7 @@ extern std::set<int> &keysDown();
 class idKeyInput { public: static bool IsDown(int k) { return keysDown().count(k) != 0; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };
 static idVec4 colorBlack(0.0f, 0.0f, 0.0f, 1.0f);
 const int CVAR_ARCHIVE = 8;
-enum { K_KP_RIGHTARROW = 200, K_KP_LEFTARROW, K_KP_UPARROW, K_KP_DOWNARROW, K_KP_HOME, K_KP_END, K_KP_PGUP, K_KP_PGDN, K_KP_INS, K_KP_DEL, K_KP_5, K_KP_PLUS, K_KP_MINUS, K_KP_STAR, K_KP_SLASH, K_KP_NUMLOCK, K_KP_EQUALS };
+enum { K_KP_HOME = 165, K_KP_UPARROW, K_KP_PGUP, K_KP_LEFTARROW, K_KP_5, K_KP_RIGHTARROW, K_KP_END, K_KP_DOWNARROW, K_KP_PGDN, K_KP_INS = 175, K_KP_DEL, K_KP_SLASH, K_KP_MINUS = 179, K_KP_PLUS = 181, K_KP_NUMLOCK, K_KP_STAR, K_KP_EQUALS };
 inline int Sys_GetConsoleKey(bool) { return 96; }
 static idVec4 colorWhite(1.0f, 1.0f, 1.0f, 1.0f);
 class idDeclManagerStub : public idDeclManager {

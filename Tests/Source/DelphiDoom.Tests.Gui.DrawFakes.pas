@@ -15,7 +15,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Math.Vec4,
-  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Window.Keys;
+  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Cvars;
 
 type
   /// <summary>The bits of a float in hexadecimal, as the harness writes them</summary>
@@ -23,6 +23,15 @@ type
   public
     class function Float(const AValue: Single): string; static;
     class function Vec4(const AValue: TIdVec4): string; static;
+  end;
+
+  /// <summary>The console variables of the harness: a window that sets one writes the line "host cvar set name value"</summary>
+  TGuiHarnessCvars = class(TGuiCvarSet)
+  strict private
+    FLines: TStrings;
+  public
+    constructor Create(const ALines: TStrings);
+    procedure SetString(const AName, AValue: AnsiString); override;
   end;
 
   /// <summary>The keys that are down (idKeyInput::IsDown): the scenarios set them</summary>
@@ -126,6 +135,20 @@ type
     function IsDefaulted: Boolean;
     procedure SetGuiSort;
   end;
+
+{ TGuiHarnessCvars }
+
+constructor TGuiHarnessCvars.Create(const ALines: TStrings);
+begin
+  inherited Create;
+  FLines := ALines;
+end;
+
+procedure TGuiHarnessCvars.SetString(const AName, AValue: AnsiString);
+begin
+  FLines.Add('host cvar set ' + string(AName) + ' ' + string(AValue));
+  inherited SetString(AName, AValue);
+end;
 
 { TGuiHarnessKeys }
 

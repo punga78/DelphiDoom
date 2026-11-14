@@ -18,7 +18,8 @@ interface
 
 uses
   System.Generics.Collections, DelphiDoom.Scanner.IdParser, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window,
-  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Str;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Str,
+  DelphiDoom.Gui.Window.Keys;
 
 type
   /// <summary>
@@ -41,10 +42,14 @@ type
     FUpdateGroup: TGuiWinStr;
     FChoices: TList<AnsiString>;
     FValues: TList<AnsiString>;
-    FHasUpdateVar: Boolean;
+    FUpdateStr: TList<TGuiWinVar>;
+    FCvarFound: Boolean;
+    FCvarName: AnsiString;
     procedure ValidateChoice;
     procedure InitVars;
     procedure UpdateChoice;
+    procedure UpdateVars(const ARead: Boolean; const AForce: Boolean = False);
+    function ChoiceText: AnsiString;
     function Tokens(const AText, AName: AnsiString; const AFlags: Integer): TArray<AnsiString>;
   protected
     function ParseInternalVar(const AName: AnsiString; const ASource: TIdParser): Boolean; override;
@@ -54,6 +59,10 @@ type
     destructor Destroy; override;
     function GetWinVarByName(const AName: AnsiString; const AFixup: Boolean;
       out AOwner: IGuiWindowNode): TGuiWinVar; override;
+    function HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString; override;
+    procedure Draw(const ATime: Integer; const AX, AY: Single); override;
+    procedure Activate(const AActivate: Boolean; var AAct: AnsiString); override;
+    procedure RunNamedEvent(const AEventName: AnsiString); override;
     /// <summary>UpdateChoicesAndVals: cuts the strings at ";" when they changed since the last time</summary>
     procedure UpdateChoicesAndVals;
     property CurrentChoice: Integer read FCurrentChoice;
@@ -65,7 +74,8 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Strings,
+  System.SysUtils, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.DrawContext, DelphiDoom.Gui.Rectangle,
+  DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Strings,
   DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Gui.Window.Types;
 
 constructor TGuiChoiceWindow.Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator);
@@ -79,6 +89,7 @@ begin
   FUpdateGroup := TGuiWinStr.Create;
   FChoices := TList<AnsiString>.Create;
   FValues := TList<AnsiString>.Create;
+  FUpdateStr := TList<TGuiWinVar>.Create;
   FCurrentChoice := 0;
   FChoiceType := 0;
   FLiveUpdate.Value := True;
@@ -86,6 +97,7 @@ end;
 
 destructor TGuiChoiceWindow.Destroy;
 begin
+  FUpdateStr.Free;
   FValues.Free;
   FChoices.Free;
   FUpdateGroup.Free;
@@ -226,35 +238,66 @@ begin
 end;
 
 procedure TGuiChoiceWindow.InitVars;
+var
+  LVar: TGuiWinVar;
 begin
-  // the cvar of the original is not ported: only the variable of the gui is updated
-  FHasUpdateVar := FGuiStr.Length > 0;
-  if FHasUpdateVar then
+  if FCvarStr.Length > 0 then
   begin
-    FGuiStr.SetGuiInfo(Context.StateDict, FGuiStr.AsText);
-    FGuiStr.Update;
+    FCvarFound := Assigned(Context.Cvars) and Context.Cvars.Exists(FCvarStr.AsText);
+    if not FCvarFound then
+    begin
+      Warning(Format('idChoiceWindow::InitVars: gui ''%s'' window ''%s'' references undefined cvar ''%s''',
+        [string(Context.SourceFile), string(Name), string(FCvarStr.AsText)]));
+      Exit;
+    end;
+    FCvarName := FCvarStr.AsText;
+    FUpdateStr.Add(FCvarStr);
+  end;
+  if FGuiStr.Length > 0 then
+    FUpdateStr.Add(FGuiStr);
+  // idMultiWinVar::SetGuiInfo: each variable is bound to the key that is its own text
+  for LVar in FUpdateStr do
+    LVar.SetGuiInfo(Context.StateDict, LVar.AsText);
+  for LVar in FUpdateStr do
+    LVar.Update;
+end;
+
+procedure TGuiChoiceWindow.UpdateVars(const ARead: Boolean; const AForce: Boolean);
+begin
+  if AForce or FLiveUpdate.Value then
+  begin
+    if FCvarFound and FCvarStr.NeedsUpdate then
+    begin
+      if ARead then
+        FCvarStr.SetFromText(Context.Cvars.GetString(FCvarName))
+      else
+        Context.Cvars.SetString(FCvarName, FCvarStr.AsText);
+    end;
+    if (not ARead) and FGuiStr.NeedsUpdate then
+      FGuiStr.SetFromText(AnsiString(IntToStr(FCurrentChoice)));
   end;
 end;
 
 procedure TGuiChoiceWindow.UpdateChoice;
 var
-  LCount: Integer;
-  LIndex: Integer;
+  LCount, LIndex: Integer;
   LList: TList<AnsiString>;
+  LVar: TGuiWinVar;
 begin
-  if not FHasUpdateVar then
+  if FUpdateStr.Count = 0 then
     Exit;
-  FGuiStr.Update;
+  UpdateVars(True);
+  for LVar in FUpdateStr do
+    LVar.Update;
   if FChoiceType = 0 then
   begin
-    // the choice is an integer in the gui (or the cvar)
-    if FGuiStr.NeedsUpdate then
-      FCurrentChoice := TIdCNumbers.Atoi(FGuiStr.AsText);
+    // the choice is an integer in the cvar or the gui; the cvar wins
+    if FUpdateStr[0].NeedsUpdate then
+      FCurrentChoice := TIdCNumbers.Atoi(FUpdateStr[0].AsText);
     ValidateChoice;
   end
   else
   begin
-    // the choice is a string, searched in the values (or the choices)
     if FValues.Count > 0 then
       LList := FValues
     else
@@ -280,7 +323,163 @@ begin
   UpdateChoicesAndVals;
   InitVars;
   UpdateChoice;
+  UpdateVars(False);
   SetFlag(WIN_CANFOCUS);
 end;
 
+function TGuiChoiceWindow.ChoiceText: AnsiString;
+begin
+  // the original reads choices[currentChoice] whatever the index
+  if (FCurrentChoice >= 0) and (FCurrentChoice < FChoices.Count) then
+    Result := FChoices[FCurrentChoice]
+  else
+    Result := '';
+end;
+
+procedure TGuiChoiceWindow.RunNamedEvent(const AEventName: AnsiString);
+var
+  LGroup: AnsiString;
+begin
+  if TIdStrings.Icmpn(AEventName, 'cvar read ', 10) = 0 then
+  begin
+    // idStr::Cmpn is case sensitive
+    if Copy(AEventName, 1, 10) = 'cvar read ' then
+    begin
+      LGroup := Copy(AEventName, 11, MaxInt);
+      if LGroup = FUpdateGroup.AsText then
+        UpdateVars(True, True);
+    end;
+  end
+  else if Copy(AEventName, 1, 11) = 'cvar write ' then
+  begin
+    LGroup := Copy(AEventName, 12, MaxInt);
+    if LGroup = FUpdateGroup.AsText then
+      UpdateVars(False, True);
+  end;
+end;
+
+function TGuiChoiceWindow.HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString;
+var
+  LKey, LIndex, LPotential: Integer;
+  LRunAction, LRunAction2: Boolean;
+  LFirst: Integer;
+begin
+  LRunAction := False;
+  LRunAction2 := False;
+  if AEvent.EventType = GUI_SE_KEY then
+  begin
+    LKey := AEvent.Value;
+    if (LKey = GUI_K_RIGHTARROW) or (LKey = GUI_K_KP_RIGHTARROW) or (LKey = GUI_K_MOUSE1) then
+    begin
+      // never affects the state, but we want to execute script handlers anyway
+      if AEvent.Value2 = 0 then
+      begin
+        RunScript(seActionRelease);
+        Exit(Command);
+      end;
+      Inc(FCurrentChoice);
+      if FCurrentChoice >= FChoices.Count then
+        FCurrentChoice := 0;
+      LRunAction := True;
+    end;
+    if (LKey = GUI_K_LEFTARROW) or (LKey = GUI_K_KP_LEFTARROW) or (LKey = GUI_K_MOUSE2) then
+    begin
+      if AEvent.Value2 = 0 then
+      begin
+        RunScript(seActionRelease);
+        Exit(Command);
+      end;
+      Dec(FCurrentChoice);
+      if FCurrentChoice < 0 then
+        FCurrentChoice := FChoices.Count - 1;
+      LRunAction := True;
+    end;
+    if AEvent.Value2 = 0 then
+      // is a key release with no action catch
+      Exit('');
+  end
+  else if AEvent.EventType = GUI_SE_CHAR then
+  begin
+    LKey := AEvent.Value;
+    LPotential := -1;
+    for LIndex := 0 to FChoices.Count - 1 do
+    begin
+      if FChoices[LIndex] = '' then
+        LFirst := 0
+      else
+        LFirst := Ord(FChoices[LIndex][1]);
+      if (LKey < 128) and (LFirst < 128) and (Ord(UpCase(Chr(LKey and $7F))) = Ord(UpCase(Chr(LFirst)))) or
+        ((LKey >= 128) and (LKey = LFirst)) then
+      begin
+        if (LIndex < FCurrentChoice) and (LPotential < 0) then
+          LPotential := LIndex
+        else if LIndex > FCurrentChoice then
+        begin
+          LPotential := -1;
+          FCurrentChoice := LIndex;
+          Break;
+        end;
+      end;
+    end;
+    if LPotential >= 0 then
+      FCurrentChoice := LPotential;
+    LRunAction := True;
+    LRunAction2 := True;
+  end
+  else
+    Exit('');
+  if LRunAction then
+    RunScript(seAction);
+  if FChoiceType = 0 then
+    FCvarStr.SetFromText(AnsiString(IntToStr(FCurrentChoice)))
+  else if FValues.Count > 0 then
+  begin
+    if (FCurrentChoice >= 0) and (FCurrentChoice < FValues.Count) then
+      FCvarStr.SetFromText(FValues[FCurrentChoice])
+    else
+      FCvarStr.SetFromText('');
+  end
+  else
+    FCvarStr.SetFromText(ChoiceText);
+  UpdateVars(False);
+  if LRunAction2 then
+    RunScript(seActionRelease);
+  Result := Command;
+end;
+
+procedure TGuiChoiceWindow.Draw(const ATime: Integer; const AX, AY: Single);
+var
+  LColor: TIdVec4;
+  LDc: TGuiDrawContext;
+  LShadow: TGuiRectangle;
+begin
+  LColor := ForeColor.Value;
+  LDc := Context.DrawContext;
+  UpdateChoicesAndVals;
+  UpdateChoice;
+  // FIXME of the original: textAlign would be nice, but many guis have it set wrong
+  TextAlign := 0;
+  if TextShadow <> 0 then
+  begin
+    LShadow := TextRect;
+    LShadow.X := LShadow.X + TextShadow;
+    LShadow.Y := LShadow.Y + TextShadow;
+    LDc.DrawText(TIdStrings.RemoveColors(ChoiceText), TextScale.Value, TextAlign, LDc.ColorBlack, LShadow, False, -1);
+  end;
+  if Hover and (not NoEvents.Value) and ContainsPoint(Context.CursorX, Context.CursorY) then
+    LColor := HoverColor.Value
+  else
+    Hover := False;
+  if (Flags and WIN_FOCUS) <> 0 then
+    LColor := HoverColor.Value;
+  LDc.DrawText(ChoiceText, TextScale.Value, TextAlign, LColor, TextRect, False, -1);
+end;
+
+procedure TGuiChoiceWindow.Activate(const AActivate: Boolean; var AAct: AnsiString);
+begin
+  inherited Activate(AActivate, AAct);
+  if AActivate then
+    // sets the gui state based on the current choice the window contains
+    UpdateChoice;
+end;
 end.

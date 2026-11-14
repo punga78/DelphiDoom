@@ -84,6 +84,7 @@ type
 implementation
 
 uses
+  DelphiDoom.Gui.Cvars,
   System.SysUtils, System.Classes, DelphiDoom.Scanner.IdDict, DelphiDoom.IdLib.Math.Vec2, DelphiDoom.IdLib.Math.Vec3,
   DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Types,
   DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Window.Choice, DelphiDoom.Gui.Window.Edit,
@@ -506,6 +507,11 @@ begin
   FreeAndNil(FWorld);
   FWorld := TGuiWindowWorld.Create;
   FWorld.UserInterface.SetStateString('gui::mode', 'b');
+  // the cvar variable is bound to the key that is its own text and read from the state of the gui
+  FWorld.UserInterface.SetStateString('b', 'b');
+  FWorld.UserInterface.Context.Cvars := TGuiCvarSet.Create;
+  (FWorld.UserInterface.Context.Cvars as TGuiCvarSet).Register('b', 'b');
+  (FWorld.UserInterface.Context.Cvars as TGuiCvarSet).Register('zzz', '');
   FWorld.Load('windowDef Desktop { choiceDef c { choices "A;B;C" values "a;b;c" choicetype 1 gui "gui::mode" ' +
     'cvar "b" } choiceDef d { choices "A;B" choicetype 1 gui "gui::mode" cvar "zzz" } }');
   LChoice := FWorld.UserInterface.Desktop.Children[0] as TGuiChoiceWindow;

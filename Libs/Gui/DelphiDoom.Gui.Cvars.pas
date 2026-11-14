@@ -31,12 +31,14 @@ type
     destructor Destroy; override;
     /// <summary>idCVar construction: the variable exists with the default, and an existing one keeps its value</summary>
     procedure Register(const AName, AValue: AnsiString);
+    /// <summary>Sets a value without any notification (a subclass that watches SetString does not see it)</summary>
+    procedure SetQuiet(const AName, AValue: AnsiString);
     function Exists(const AName: AnsiString): Boolean;
     function GetString(const AName: AnsiString): AnsiString;
     function GetInteger(const AName: AnsiString): Integer;
     function GetFloat(const AName: AnsiString): Single;
     function GetBool(const AName: AnsiString): Boolean;
-    procedure SetString(const AName, AValue: AnsiString);
+    procedure SetString(const AName, AValue: AnsiString); virtual;
     procedure SetInteger(const AName: AnsiString; const AValue: Integer);
     /// <summary>The value is text as printf("%f") writes it (six decimals)</summary>
     procedure SetFloat(const AName: AnsiString; const AValue: Single);
@@ -98,9 +100,14 @@ begin
   Result := GetInteger(AName) <> 0;
 end;
 
-procedure TGuiCvarSet.SetString(const AName, AValue: AnsiString);
+procedure TGuiCvarSet.SetQuiet(const AName, AValue: AnsiString);
 begin
   FValues.AddOrSetValue(string(AName), AValue);
+end;
+
+procedure TGuiCvarSet.SetString(const AName, AValue: AnsiString);
+begin
+  SetQuiet(AName, AValue);
 end;
 
 procedure TGuiCvarSet.SetInteger(const AName: AnsiString; const AValue: Integer);

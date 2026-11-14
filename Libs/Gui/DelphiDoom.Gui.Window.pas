@@ -220,8 +220,12 @@ type
     ///   moves the transitions, runs the time line and the onEvent script, then the children
     /// </summary>
     function RunTimeEvents(const ATime: Integer): Boolean;
-    procedure RunNamedEvent(const AEventName: AnsiString);
-    procedure Activate(const AActivate: Boolean; var AAct: AnsiString);
+    procedure RunNamedEvent(const AEventName: AnsiString); virtual;
+    procedure Activate(const AActivate: Boolean; var AAct: AnsiString); virtual;
+    /// <summary>idWindow::SetBuddy: a slider tells its buddy window (a list or an edit window) who it is</summary>
+    procedure SetBuddy(const ABuddy: TGuiWindow); virtual;
+    /// <summary>idWindow::HandleBuddyUpdate: the buddy slider changed its value</summary>
+    procedure HandleBuddyUpdate(const ABuddy: TGuiWindow); virtual;
     procedure Trigger;
     procedure StateChanged(const ARedraw: Boolean); virtual;
     /// <summary>idWindow::Redraw: the window and its children, with time events (the desktop), clipping and the transform</summary>
@@ -300,7 +304,7 @@ type
     property Shear: TIdVec2 read FShear;
     property FontNum: Integer read FFontNum;
     property Cursor: Integer read FCursor;
-    property TextAlign: Integer read FTextAlign;
+    property TextAlign: Integer read FTextAlign write FTextAlign;
     property TextAlignX: Single read FTextAlignX;
     property TextAlignY: Single read FTextAlignY;
     property TextShadow: Integer read FTextShadow;
@@ -1037,6 +1041,14 @@ begin
   if FNoEvents.Value then
     Exit;
   RunScript(seMouseExit);
+end;
+
+procedure TGuiWindow.SetBuddy(const ABuddy: TGuiWindow);
+begin
+end;
+
+procedure TGuiWindow.HandleBuddyUpdate(const ABuddy: TGuiWindow);
+begin
 end;
 
 procedure TGuiWindow.GainFocus;
