@@ -73,6 +73,13 @@ type
     Load: Boolean;
     /// <summary>The slot of Save and Load, from 0</summary>
     Slot: Integer;
+    /// <summary>
+    ///   A key of the engine (its own code: 27 escape, 13 enter, 173 up, 175 down...) that goes down and up
+    ///   as an event, for the menus (a script only); 0 = none
+    /// </summary>
+    Key: Integer;
+    /// <summary>The frame that follows is written beside the script as picture number Shot (a script only); 0 = none</summary>
+    Shot: Integer;
   end;
 
   /// <summary>What the pilot may know about the world: the player and nothing else</summary>

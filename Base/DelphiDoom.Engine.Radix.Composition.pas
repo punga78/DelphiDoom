@@ -47,7 +47,7 @@ uses
   DelphiDoom.Engine.Radix.LumpAliases,
   DelphiDoom.Radix.ActorProperties, DelphiDoom.Dehacked.Intf, DelphiDoom.Engine.Parity.PilotCommand,
   w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
-  radix_intermission, radix_controls, radix_saveg, g_game;
+  radix_intermission, radix_controls, radix_saveg, radix_menu, m_menu, g_game;
 
 var
   // The one table of the Radix part of the actors: ComposeActorDef asks for it first (the parser of
@@ -114,6 +114,8 @@ begin
   ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
+  // the look of the menus of Rad-X, the name of the pilot, the top ten, the gameplay options
+  M_ConfigureExtension(RX_MenuExtension);
   // the fields of Rad-X of the Thing blocks of DEHACKED (GAMEDEF has them) go to the same table
   AThingFields.Attach(ComposeRadixActorProperties(ALog) as IDehackedExtraThingFields);
   // the keys of the afterburner and of the plasma bomb

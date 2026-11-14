@@ -24,7 +24,9 @@ type
   ///   climb height [timeout tics];
   ///   hunt tics [range n];
   ///   heal health tics [range n];
-  ///   save slot; load slot (slot 0..5: the saved games of the menus of the engine).
+  ///   save slot; load slot (slot 0..5: the saved games of the menus of the engine);
+  ///   key code (a key of the engine, 1..255, goes down and up as an event: one tic, for the menus);
+  ///   shot number (the next frame is written as a picture beside the script: one tic).
   ///   forward, back and speed are 1..50, side is -40..40 (positive = right), turn is in steps of 256/65536 of
   ///   a turn for every tic (-5..5, positive = left), look is -7..7 (positive = up), x, y and the heights are
   ///   map units
@@ -42,6 +44,10 @@ type
     MAX_WEAPON = 8;
     /// <summary>The last slot of the saved games of the menus of the engine</summary>
     MAX_SLOT = 5;
+    /// <summary>The last code of a key of the engine</summary>
+    MAX_KEY = 255;
+    /// <summary>The last number of a picture of a script</summary>
+    MAX_SHOT = 999;
     /// <summary>One step of turn in the units of the ticcmd: a demo keeps the high byte of the angle</summary>
     TURN_UNIT = 256;
   strict private
@@ -163,6 +169,19 @@ begin
     end;
     Result.Command.Slot := ReadNumber(AWords, 1, ALine, 0, MAX_SLOT);
     Result.Tics := 1;
+    LIndex := 2;
+  end
+  else if (AWords[0] = 'key') or (AWords[0] = 'shot') then
+  begin
+    // a hold of one tic that carries the key or the picture, and nothing else
+    Result.Kind := skHold;
+    Result.Tics := 1;
+    if AWords[0] = 'key' then
+      Result.Command.Key := ReadNumber(AWords, 1, ALine, 1, MAX_KEY)
+    else
+      Result.Command.Shot := ReadNumber(AWords, 1, ALine, 1, MAX_SHOT);
+    if Length(AWords) > 2 then
+      raise EParityException.CreateFmt(SUnknownWord, [ALine, AWords[2]]);
     LIndex := 2;
   end
   else

@@ -26,6 +26,9 @@ type
   strict private
     class var FSaveGame: TEngineParitySlotProc;
     class var FLoadGame: TEngineParitySlotProc;
+    class var FPendingShot: Integer;
+    /// <summary>A key of the engine goes down and up, as two events of the queue of the game</summary>
+    class procedure PostKey(AKey: Integer); static;
     /// <summary>The nearest living monster within ARange map units that the player can see</summary>
     class procedure FindEnemy(APlayer: Pmobj_t; ARange: Integer; var AView: TParityPilotView); static;
   public
@@ -35,6 +38,11 @@ type
     ///   them the two steps do nothing
     /// </summary>
     class procedure ConfigureSaveGames(ASaveGame, ALoadGame: TEngineParitySlotProc); static;
+    /// <summary>
+    ///   The number of the picture that the step "shot" of a script has asked for since the last call
+    ///   (0 = none): who writes the frames takes it once
+    /// </summary>
+    class function TakePendingShot: Integer; static;
     /// <summary>
     ///   Replaces what the keyboard and the mouse made (nothing, as the input is closed) with the command of
     ///   the pilot for the tic. False, and the ticcmd untouched, when the pilot has finished
@@ -46,6 +54,7 @@ implementation
 
 uses
   d_event,
+  d_main,
   d_player,
   d_think,
   doomdef,
@@ -71,6 +80,24 @@ class procedure TEngineParityPilotCommand.ConfigureSaveGames(ASaveGame, ALoadGam
 begin
   FSaveGame := ASaveGame;
   FLoadGame := ALoadGame;
+end;
+
+class function TEngineParityPilotCommand.TakePendingShot: Integer;
+begin
+  Result := FPendingShot;
+  FPendingShot := 0;
+end;
+
+class procedure TEngineParityPilotCommand.PostKey(AKey: Integer);
+var
+  LEvent: event_t;
+begin
+  FillChar(LEvent, SizeOf(LEvent), 0);
+  LEvent._type := ev_keydown;
+  LEvent.data1 := AKey;
+  D_PostEvent(@LEvent);
+  LEvent._type := ev_keyup;
+  D_PostEvent(@LEvent);
 end;
 
 class procedure TEngineParityPilotCommand.FindEnemy(APlayer: Pmobj_t; ARange: Integer; var AView: TParityPilotView);
@@ -147,6 +174,11 @@ begin
     FSaveGame(LCommand.Slot);
   if LCommand.Load and Assigned(FLoadGame) then
     FLoadGame(LCommand.Slot);
+  // a script that works the menus: the key goes where the keyboard (closed) would have put it
+  if LCommand.Key > 0 then
+    PostKey(LCommand.Key);
+  if LCommand.Shot > 0 then
+    FPendingShot := LCommand.Shot;
 
   LConsistency := ACommand.consistency;
   LButtons := ACommand.buttons;

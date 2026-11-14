@@ -209,9 +209,24 @@ var
   LBytesPerPixel: Integer;
   LLayout: TParityFrameLayout;
   LPaletteHash: UInt64;
+  LShot: Integer;
+  LWidth: Integer;
+  LHeight: Integer;
 begin
   if (FFrameWriter <> nil) and FFrameSource.Capture(LPixels, LBytesPerPixel, LLayout, LPaletteHash) then
     FFrameWriter.WriteFrame(g_game.gametic, LLayout, LPixels, LBytesPerPixel, LPaletteHash);
+  // the step "shot" of a script: this frame, beside the script (the menus stop the tics of the game,
+  // so -framedump cannot ask for them)
+  if (FPilot <> nil) and (FOptions.AutoScriptFile <> '') then
+  begin
+    LShot := TEngineParityPilotCommand.TakePendingShot;
+    if LShot > 0 then
+    begin
+      LPixels := FFrameSource.ReadRgb(LWidth, LHeight);
+      TParityBitmapWriter.SaveToFile(Format('%s.%d.bmp', [FOptions.AutoScriptFile, LShot]), LWidth, LHeight,
+        LPixels);
+    end;
+  end;
   if (FOptions.FrameDumpTic >= 0) and not FDumped and (g_game.gametic >= FOptions.FrameDumpTic) then
     DumpFrame;
   // the end of a frame is the time that goes by

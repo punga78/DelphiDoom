@@ -59,6 +59,8 @@ type
     [Test]
     procedure DovrebbeLeggereSalvaECaricaConLoSlot;
     [Test]
+    procedure DovrebbeLeggereUnTastoEUnaFotoComeTenuteDiUnTic;
+    [Test]
     procedure UnaParolaSconosciutaDovrebbeDareEccezione;
     [Test]
     procedure UnaParolaDiUnAltroPassoDovrebbeDareEccezione;
@@ -304,6 +306,27 @@ begin
   AssertRaises('load -1', 'not between');
   AssertRaises('save 1 fire', 'fire');
   AssertRaises('load 1 timeout 5', 'timeout');
+end;
+
+procedure TTestParityScriptParser.DovrebbeLeggereUnTastoEUnaFotoComeTenuteDiUnTic;
+var
+  LSteps: TArray<TParityScriptStep>;
+begin
+  LSteps := TParityScriptParser.Parse('key 27'#10'shot 3'#10'hold 2');
+  Assert.IsTrue(LSteps[0].Kind = skHold);
+  Assert.AreEqual(1, LSteps[0].Tics);
+  Assert.AreEqual(27, LSteps[0].Command.Key);
+  Assert.AreEqual(0, LSteps[0].Command.Shot);
+  Assert.IsTrue(LSteps[1].Kind = skHold);
+  Assert.AreEqual(1, LSteps[1].Tics);
+  Assert.AreEqual(3, LSteps[1].Command.Shot);
+  Assert.AreEqual(0, LSteps[1].Command.Key);
+  Assert.AreEqual(0, LSteps[2].Command.Key + LSteps[2].Command.Shot);
+  AssertRaises('key', 'number is missing');
+  AssertRaises('key 0', 'not between');
+  AssertRaises('key 256', 'not between');
+  AssertRaises('shot 0', 'not between');
+  AssertRaises('key 27 fire', 'fire');
 end;
 
 procedure TTestParityScriptParser.UnaParolaSconosciutaDovrebbeDareEccezione;
