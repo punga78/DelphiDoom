@@ -863,6 +863,7 @@ var
   LFingerprint: TFingerprint;
   LIndex: Integer;
   LCenter: Integer;
+  LWidth, LHeight: Integer;
   LAspect, LQuotient: Double;
   LFast, LExact: Integer;
   {$IF SizeOf(Extended) > SizeOf(Double)}
@@ -878,8 +879,12 @@ begin
     begin
       LCenter := 160 + Integer(LRandom.Next mod 2000);
       // an aspect between 1 and 2, as the widest mode of the monitor over 4 / 3 gives
-      LAspect := (TSoftExtended.FromInt64(1000 + Integer(LRandom.Next mod 3000)) /
-        TSoftExtended.FromInt64(1000 + Integer(LRandom.Next mod 1000)) / TSoftExtended.FromRatio(4, 3)).ToDouble;
+      // one draw per statement: with two draws in one expression the two compilers take them in a different
+      // order (the denominator first is the order of the 32 bit compiler, which made the golden)
+      LHeight := 1000 + Integer(LRandom.Next mod 1000);
+      LWidth := 1000 + Integer(LRandom.Next mod 3000);
+      LAspect := (TSoftExtended.FromInt64(LWidth) / TSoftExtended.FromInt64(LHeight) /
+        TSoftExtended.FromRatio(4, 3)).ToDouble;
       if LAspect < 1 then
         LAspect := 1;
       if Odd(LIndex) then

@@ -1073,7 +1073,7 @@ procedure P_ArchiveThinkers;
 var
   th: Pthinker_t;
   mobj: Pmobj_t;
-  parm, parm1: Pmobjcustomparam_t;
+  parm: Pmobjcustomparam_t;
 begin
   // save off the current thinkers
   th := thinkercap.next;
@@ -1091,7 +1091,7 @@ begin
       parm := mobj.customparams;
       while parm <> nil do
       begin
-        parm1 := P_ReserveRecord(pointer(save_p), TypeInfo(mobjcustomparam_t), parm);
+        P_ReserveRecord(pointer(save_p), TypeInfo(mobjcustomparam_t), parm);
         parm := parm.next;
       end;
     end;
@@ -1849,17 +1849,12 @@ var
   flash: Plightflash_t;
   strobe: Pstrobe_t;
   glow: Pglow_t;
-  scroll: Pscroll_t;
-  friction: Pfriction_t;
-  pusher: Ppusher_t;
   flicker: Pfireflicker_t;
   elevator: Pelevator_t;
   light: Plight_t;
   phase: Pphase_t;
   acs: Pacs_t;
-  polyevent: Ppolyevent_t;
   pillar: Ppillar_t;
-  polydoor: Ppolydoor_t;
   floorwaggle: PfloorWaggle_t;
   i: integer;
 
@@ -2001,7 +1996,7 @@ begin
       save_p[0] := Ord(tc_scroll);
       save_p := @save_p[1];
       PADSAVEP;
-      scroll := P_ReserveRecord(pointer(save_p), TypeInfo(scroll_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(scroll_t), th);
       continue;
     end;
 
@@ -2010,7 +2005,7 @@ begin
       save_p[0] := Ord(tc_friction);
       save_p := @save_p[1];
       PADSAVEP;
-      friction := P_ReserveRecord(pointer(save_p), TypeInfo(friction_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(friction_t), th);
       continue;
     end;
 
@@ -2019,7 +2014,7 @@ begin
       save_p[0] := Ord(tc_pusher);
       save_p := @save_p[1];
       PADSAVEP;
-      pusher := P_ReserveRecord(pointer(save_p), TypeInfo(pusher_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(pusher_t), th);
       continue;
     end;
 
@@ -2125,7 +2120,7 @@ begin
       save_p[0] := Ord(tch_rotatepoly);
       save_p := @save_p[1];
       PADSAVEP;
-      polyevent := P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
       continue;
     end;
 
@@ -2144,7 +2139,7 @@ begin
       save_p[0] := Ord(tch_movepoly);
       save_p := @save_p[1];
       PADSAVEP;
-      polyevent := P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
       continue;
     end;
 
@@ -2153,7 +2148,7 @@ begin
       save_p[0] := Ord(tch_polydoor);
       save_p := @save_p[1];
       PADSAVEP;
-      polydoor := P_ReserveRecord(pointer(save_p), TypeInfo(polydoor_t), th);
+      P_ReserveRecord(pointer(save_p), TypeInfo(polydoor_t), th);
       continue;
     end;
 
