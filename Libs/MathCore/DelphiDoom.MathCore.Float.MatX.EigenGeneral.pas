@@ -34,9 +34,10 @@ type
   TIdMatXEigenGeneral = class sealed
   public
     /// <summary>
-    ///   idMatX::Eigen_Solve. False when the matrix is all zeros or when the QR iteration does
-    ///   not converge (the C++ would loop for ever on such input, for example with a NaN: here
-    ///   the iteration stops after 100 steps per row).
+    ///   idMatX::Eigen_Solve. False when the matrix is all zeros or has a NaN or an infinite
+    ///   value, or when the QR iteration does not converge. The C++ loops for ever on such input
+    ///   (a zero matrix of two or more rows, a NaN): this is a deliberate difference, the
+    ///   checks come before the iteration and the iteration itself stops after 100 steps per row.
     /// </summary>
     class function Solve(const AMatrix: TIdMatX; const ARealEigenValues,
       AImaginaryEigenValues: TIdVecX): Boolean; static;
@@ -219,6 +220,11 @@ begin
       LNorm := LNorm + Abs(AH[LI, LJ]);
     end;
   end;
+  // The C++ never leaves its loop with a NaN or an infinite norm, nor with a zero matrix of two
+  // or more rows (no sub-diagonal element is small against a zero norm test that fails on 0 < 0);
+  // here they are refused, which also keeps the invalid operations of the FPU from being raised.
+  if IsNan(LNorm) or IsInfinite(LNorm) or ((LNorm = 0.0) and (LRows > 1)) then
+    Exit(False);
   LIter := 0;
   LSteps := 0;
   LMaxSteps := 100 * (LRows + 1);
@@ -637,10 +643,17 @@ class function TIdMatXEigenGeneral.Solve(const AMatrix: TIdMatX; const ARealEige
   AImaginaryEigenValues: TIdVecX): Boolean;
 var
   LH: TIdMatX;
+  LIndex: Integer;
 begin
   Assert(AMatrix.NumRows = AMatrix.NumColumns);
   ARealEigenValues.SetSize(AMatrix.NumRows);
   AImaginaryEigenValues.SetSize(AMatrix.NumRows);
+  // a NaN or an infinite value never converges and the reduction would raise the FPU exceptions
+  for LIndex := 0 to AMatrix.NumRows * AMatrix.NumColumns - 1 do
+  begin
+    if IsNan(AMatrix.Data^[LIndex]) or IsInfinite(AMatrix.Data^[LIndex]) then
+      Exit(False);
+  end;
   LH := TIdMatX.Create;
   try
     LH.Assign(AMatrix);

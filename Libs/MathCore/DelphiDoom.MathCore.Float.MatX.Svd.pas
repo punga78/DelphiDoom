@@ -36,6 +36,12 @@ type
     class procedure InitialWV(const AMatrix: TIdMatX; const AW: TIdVecX; const AV: TIdMatX;
       const ARv1: TIdVecX); static;
   public
+    /// <summary>
+    ///   True when <c>|a| + b = b</c> in the 64 bit mantissa of the x87 (the C++ evaluates the test of the QR
+    ///   iteration of <c>SVD_Factor</c> in extended precision): <c>|a|</c> is at most half a unit in the
+    ///   last place of <c>b</c>. Exact and the same at 32 and 64 bit.
+    /// </summary>
+    class function IsNegligible(const AValue, ANorm: Single): Boolean; static;
     /// <summary>(a^2 + b^2)^1/2 without underflow or overflow (idMatX::Pythag)</summary>
     class function Pythag(const AA, AB: Single): Single; static;
     /// <summary>False when the matrix has fewer rows than columns or the iteration does not converge in 30 steps</summary>
@@ -53,10 +59,28 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Math.Math;
+  System.Math, DelphiDoom.IdLib.Math.Math;
 
 { TIdMatXSvd }
 
+class function TIdMatXSvd.IsNegligible(const AValue, ANorm: Single): Boolean;
+var
+  LBits: Cardinal;
+  LExponent: Integer;
+  LValue: Single;
+begin
+  LValue := Abs(AValue);
+  if LValue = 0.0 then
+    Exit(True);
+  LBits := PCardinal(@ANorm)^ and $7FFFFFFF;
+  if (LBits = 0) or (LBits >= $7F800000) then
+    Exit(False);
+  LExponent := Integer(LBits shr 23);
+  if LExponent = 0 then
+    Exit(False);
+  // half a unit in the last place of a 64 bit mantissa; a tie goes to the even value, which is ANorm
+  Result := LValue <= Ldexp(1.0, LExponent - 127 - 64);
+end;
 class function TIdMatXSvd.Pythag(const AA, AB: Single): Single;
 var
   LAt, LBt, LCt: Double;
@@ -286,7 +310,6 @@ var
   LRows, LColumns, LFlag, LI, LIts, LJ, LJJ, LK, LL, LNm: Integer;
   LC, LF, LH, LS, LX, LY, LZ, LR, LG: Double;
   LNorm: Single;
-  LTest: Extended;
   LRv1: TIdVecX;
 begin
   LRows := AMatrix.NumRows;
@@ -313,14 +336,12 @@ begin
         while LL >= 0 do
         begin
           LNm := LL - 1;
-          LTest := Abs(LRv1[LL]) + LNorm;
-          if LTest = LNorm then
+          if IsNegligible(LRv1[LL], LNorm) then
           begin
             LFlag := 0;
             Break;
           end;
-          LTest := Abs(AW[LNm]) + LNorm;
-          if LTest = LNorm then
+          if IsNegligible(AW[LNm], LNorm) then
             Break;
           Dec(LL);
         end;
@@ -331,8 +352,7 @@ begin
           for LI := LL to LK do
           begin
             LF := LS * LRv1[LI];
-            LTest := Abs(LF) + LNorm;
-            if LTest <> LNorm then
+            if not IsNegligible(LF, LNorm) then
             begin
               LG := AW[LI];
               LH := Pythag(LF, LG);

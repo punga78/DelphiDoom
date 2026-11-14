@@ -156,6 +156,7 @@ uses
   DelphiDoom.Tests.MathCore.Matrix.Values in 'Source\DelphiDoom.Tests.MathCore.Matrix.Values.pas',
   DelphiDoom.Tests.MathCore.Matrix.Parity in 'Source\DelphiDoom.Tests.MathCore.Matrix.Parity.pas',
   DelphiDoom.Tests.MathCore.Matrix.Decompositions.Parity in 'Source\DelphiDoom.Tests.MathCore.Matrix.Decompositions.Parity.pas',
+  DelphiDoom.Tests.MathCore.Matrix.Decompositions.Values in 'Source\DelphiDoom.Tests.MathCore.Matrix.Decompositions.Values.pas',
   DelphiDoom.MathCore.Patch.Types in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Types.pas',
   DelphiDoom.MathCore.Patch.Intf in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Intf.pas',
   DelphiDoom.MathCore.Patch.VertexMath in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.VertexMath.pas',
