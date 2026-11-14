@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{7D3E5A12-9C41-4B68-A2F0-176DEB000001}</ProjectGuid>
+        <ProjectGuid>{7E7C8AAA-15DF-44FD-8ABD-84E9F54573E8}</ProjectGuid>
         <MainSource>DelphiDoom.Tests.XcomDebriefing.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>

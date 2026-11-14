@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{C5A1D7E2-3B48-4F90-8A6D-1E7F92B04C35}</ProjectGuid>
+        <ProjectGuid>{A4CAAC3A-C5F9-4C3E-B5AD-D7FA19B9B036}</ProjectGuid>
         <MainSource>DelphiDoom.Tests.Serializer.dpr</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
