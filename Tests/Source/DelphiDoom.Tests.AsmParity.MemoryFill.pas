@@ -227,6 +227,9 @@ var
   LExpected: TBytes;
   LActual: TBytes;
   LPascal: TBytes;
+{$IFNDEF CPUX86}
+  LIndex: Integer;
+{$ENDIF}
 begin
   for LCount in COUNTS do
     for LValue in VALUES do
@@ -238,7 +241,9 @@ begin
         {$IFDEF CPUX86}
         OldFillDWord(@LExpected[GUARD_BYTES + LOffset], LCount, LValue);
         {$ELSE}
-        TMemoryFill.FillDWords(@LExpected[GUARD_BYTES + LOffset], LCount, LValue);
+        // no assembler in this build: what rep stosd writes, one value at a time
+        for LIndex := 0 to LCount - 1 do
+          Move(LValue, LExpected[GUARD_BYTES + LOffset + LIndex * SizeOf(LValue)], SizeOf(LValue));
         {$ENDIF}
         TMemoryFill.FillDWords(@LPascal[GUARD_BYTES + LOffset], LCount, LValue);
         d_delphi.FillDWord(@LActual[GUARD_BYTES + LOffset], LCount, LValue);

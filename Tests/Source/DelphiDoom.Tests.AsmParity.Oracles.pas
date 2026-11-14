@@ -11,6 +11,22 @@ unit DelphiDoom.Tests.AsmParity.Oracles;
 
 interface
 
+uses
+  DelphiDoom.Tests.AsmParity.Parity;
+
+type
+  /// <summary>
+  ///   The old assembler by name, as the functions the parity runner calls. In the 32 bit build a
+  ///   name that is not there raises; in the 64 bit build, where the assembler cannot run, every
+  ///   name gives nil and the runner compares the Pascal code with the golden fingerprints.
+  /// </summary>
+  TAsmOracles = class
+  public
+    class function Binary(const AName: string): TParityBinary; static;
+    class function BinaryUnsigned(const AName: string): TParityBinaryUnsigned; static;
+    class function Unary(const AName: string): TParityUnary; static;
+  end;
+
 {$IFDEF CPUX86}
 
 // The functions below are the assembler blocks of the engine, copied as they were (m_fixed,
@@ -73,6 +89,9 @@ function OldToLowerAnsi(ch: AnsiChar): AnsiChar;
 implementation
 
 {$IFDEF CPUX86}
+
+uses
+  System.SysUtils;
 
 const
   FRACBITS = 16;
@@ -369,6 +388,140 @@ asm
 @@exit:
 end;
 
+type
+  TOldBinary = function(const a, b: Integer): Integer;
+  TOldBinaryUnsigned = function(const a, b: LongWord): LongWord;
+  TOldUnary = function(const x: Integer): Integer;
+
+  TOldBinaryEntry = record
+    Name: string;
+    Code: TOldBinary;
+  end;
+
+  TOldBinaryUnsignedEntry = record
+    Name: string;
+    Code: TOldBinaryUnsigned;
+  end;
+
+  TOldUnaryEntry = record
+    Name: string;
+    Code: TOldUnary;
+  end;
+
+const
+  SUnknownOracle = 'No old assembler function is called %s';
+
+  BINARY_ORACLES: array[0..18] of TOldBinaryEntry = (
+    (Name: 'FixedMul'; Code: OldFixedMul),
+    (Name: 'FixedMulShl3'; Code: OldFixedMulShl3),
+    (Name: 'FixedMulShl4'; Code: OldFixedMulShl4),
+    (Name: 'FixedMulShl5'; Code: OldFixedMulShl5),
+    (Name: 'FixedMulShl8'; Code: OldFixedMulShl8),
+    (Name: 'FixedMulShl10'; Code: OldFixedMulShl10),
+    (Name: 'FixedMulShl14'; Code: OldFixedMulShl14),
+    (Name: 'FixedMulDiv8'; Code: OldFixedMulDiv8),
+    (Name: 'FixedMulDiv16'; Code: OldFixedMulDiv16),
+    (Name: 'FixedMulDiv256'; Code: OldFixedMulDiv256),
+    (Name: 'FixedMul88'; Code: OldFixedMul88),
+    (Name: 'FixedMul8'; Code: OldFixedMul8),
+    (Name: 'FixedIntMul'; Code: OldFixedIntMul),
+    (Name: 'IntFixedMul'; Code: OldIntFixedMul),
+    (Name: 'FixedInt_FixedMul'; Code: OldFixedInt_FixedMul),
+    (Name: 'FixedDiv2'; Code: OldFixedDiv2),
+    (Name: 'FixedDiv_fast'; Code: OldFixedDiv_fast),
+    (Name: '_SHR'; Code: OldSHR),
+    (Name: '_SHL'; Code: OldSHL));
+
+  BINARY_UNSIGNED_ORACLES: array[0..1] of TOldBinaryUnsignedEntry = (
+    (Name: 'FixedDivLW'; Code: OldFixedDivLW),
+    (Name: 'ASM_CalcFactor'; Code: OldCalcFactor));
+
+  UNARY_ORACLES: array[0..9] of TOldUnaryEntry = (
+    (Name: 'FixedInt'; Code: OldFixedInt),
+    (Name: '_SHR1'; Code: OldSHR1),
+    (Name: '_SHR2'; Code: OldSHR2),
+    (Name: '_SHR3'; Code: OldSHR3),
+    (Name: '_SHR4'; Code: OldSHR4),
+    (Name: '_SHR7'; Code: OldSHR7),
+    (Name: '_SHR8'; Code: OldSHR8),
+    (Name: '_SHR14'; Code: OldSHR14),
+    (Name: 'MapBlockInt'; Code: OldMapBlockInt),
+    (Name: 'MapToFrac'; Code: OldMapToFrac));
+
+function WrapBinary(const ACode: TOldBinary): TParityBinary;
+begin
+  Result :=
+    function(A, B: Integer): Integer
+    begin
+      Result := ACode(A, B);
+    end;
+end;
+
+function WrapBinaryUnsigned(const ACode: TOldBinaryUnsigned): TParityBinaryUnsigned;
+begin
+  Result :=
+    function(A, B: Cardinal): Cardinal
+    begin
+      Result := ACode(A, B);
+    end;
+end;
+
+function WrapUnary(const ACode: TOldUnary): TParityUnary;
+begin
+  Result :=
+    function(A: Integer): Integer
+    begin
+      Result := ACode(A);
+    end;
+end;
+
 {$ENDIF}
+
+{ TAsmOracles }
+
+class function TAsmOracles.Binary(const AName: string): TParityBinary;
+{$IFDEF CPUX86}
+var
+  LIndex: Integer;
+begin
+  for LIndex := Low(BINARY_ORACLES) to High(BINARY_ORACLES) do
+    if BINARY_ORACLES[LIndex].Name = AName then
+      Exit(WrapBinary(BINARY_ORACLES[LIndex].Code));
+  raise EArgumentException.CreateFmt(SUnknownOracle, [AName]);
+{$ELSE}
+begin
+  Result := nil;
+{$ENDIF}
+end;
+
+class function TAsmOracles.BinaryUnsigned(const AName: string): TParityBinaryUnsigned;
+{$IFDEF CPUX86}
+var
+  LIndex: Integer;
+begin
+  for LIndex := Low(BINARY_UNSIGNED_ORACLES) to High(BINARY_UNSIGNED_ORACLES) do
+    if BINARY_UNSIGNED_ORACLES[LIndex].Name = AName then
+      Exit(WrapBinaryUnsigned(BINARY_UNSIGNED_ORACLES[LIndex].Code));
+  raise EArgumentException.CreateFmt(SUnknownOracle, [AName]);
+{$ELSE}
+begin
+  Result := nil;
+{$ENDIF}
+end;
+
+class function TAsmOracles.Unary(const AName: string): TParityUnary;
+{$IFDEF CPUX86}
+var
+  LIndex: Integer;
+begin
+  for LIndex := Low(UNARY_ORACLES) to High(UNARY_ORACLES) do
+    if UNARY_ORACLES[LIndex].Name = AName then
+      Exit(WrapUnary(UNARY_ORACLES[LIndex].Code));
+  raise EArgumentException.CreateFmt(SUnknownOracle, [AName]);
+{$ELSE}
+begin
+  Result := nil;
+{$ENDIF}
+end;
 
 end.
