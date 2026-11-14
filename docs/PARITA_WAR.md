@@ -84,6 +84,7 @@ parte (da `Tests\`): `dcc64 -B -Q -$O+ -NSSystem;Winapi;System.Win;Xml;Data;Vcl 
 Dopo il completamento della #194 (2026-11-14): `Libs\War` 98% (7923 righe su 8004), le unit dei comandi, degli
 incantesimi e delle animazioni 97-100%. Dopo la #195: `Libs\War` 98% (8646 su 8740), 1291 test (1290 passati, 1 ignorato) a Win32 e a Win64,
 `Confronta-Golden.ps1 -Solo 194` 31 golden su 31 identici; le unit nuove 94-100% (gli `inline` non sono contati dallo strumento).
+Dopo la #196 (l'IA, 2026-11-14): `Libs\War` 98% (8940 righe su 9046), 1335 test (1334 passati, 1 ignorato) a Win32 e a Win64, `Confronta-Golden.ps1 -Solo 194` 35 golden su 35 identici (31 + 4 del gruppo `196 ia`); le unit dell'IA 94-100% (`Ai.Command` e `Model.UnitProducers` meno solo per gli `inline`).
 
 ## Cosa non e' coperto
 
