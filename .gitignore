@@ -90,3 +90,6 @@ Reference/
 # log di compilazione scritti nella radice dai worktree
 logs_build_*.txt
 /lb*.txt
+
+# log di DelphiCodeCoverage
+Delphi-Code-Coverage-Debug.log
