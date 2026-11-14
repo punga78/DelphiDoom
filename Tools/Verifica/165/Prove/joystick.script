@@ -1,0 +1,16 @@
+# Keen32 -warp 1 -script with KDREAMS.CFG that has the first joystick as the control of the player 0 (Prova-Dispositivi.ps1 -Control 2)
+# The stick at the right end of the game port walks Keen to the right, at the left end back, the button jumps.
+wait 150
+shot j1.png
+joy 1900 1000
+wait 30
+shot j2.png
+joy 100 1000
+wait 40
+shot j3.png
+joy 1000 1000
+joybuttons 1
+wait 20
+shot j4.png
+joybuttons 0
+quit

@@ -1,0 +1,21 @@
+# Keen32 -warp 1 -script with KDREAMS.CFG that has the mouse as the control of the player 0 (Prova-Dispositivi.ps1)
+# The mouse moves Keen as the keys do: a movement to the right is "right", the left button is the jump button.
+wait 150
+shot m1.png
+mouse 4 0
+wait 2
+mouse 4 0
+wait 2
+mouse 4 0
+wait 20
+shot m2.png
+mouse -4 0
+wait 2
+mouse -4 0
+wait 30
+shot m3.png
+mousebuttons 1
+wait 20
+shot m4.png
+mousebuttons 0
+quit

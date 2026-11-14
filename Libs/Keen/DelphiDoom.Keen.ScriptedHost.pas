@@ -11,7 +11,8 @@ unit DelphiDoom.Keen.ScriptedHost;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf, DelphiDoom.Keen.Script;
+  System.SysUtils, DelphiDoom.Keen.Types, DelphiDoom.Keen.Intf, DelphiDoom.Keen.Script,
+  DelphiDoom.Keen.ScriptedDevices;
 
 const
   /// <summary>The steps that the game can wait after the last event of a script before the run is called stuck</summary>
@@ -38,6 +39,7 @@ type
     FOnShot: TProc<string>;
     FOnStep: TProc;
     FStepping: Boolean;
+    FDevices: TKeenScriptedDevices;
   public
     /// <param name="AEvents">The script (TKeenScript.Parse)</param>
     constructor Create(const AEvents: TArray<TKeenScriptEvent>);
@@ -49,6 +51,11 @@ type
     ///   KEEN_SCRIPT_GRACE_STEPS steps ago is an EKeenScriptEndedException
     /// </summary>
     procedure Step;
+    /// <summary>
+    ///   The mouse and the joystick that the script moves (the host does not own them); nil drops what the script
+    ///   says about them
+    /// </summary>
+    property Devices: TKeenScriptedDevices read FDevices write FDevices;
     /// <summary>The steps since the start</summary>
     property Steps: Integer read FSteps;
     /// <summary>Where the bytes of the keyboard go (IKeenInput.KeyService)</summary>
@@ -113,6 +120,18 @@ begin
             FOnShot(LEvent.Name);
         kseQuit:
           raise EKeenQuitException.Create(SKeenQuit);
+        kseMouseMove:
+          if Assigned(FDevices) then
+            FDevices.MoveMouse(LEvent.X, LEvent.Y);
+        kseMouseButtons:
+          if Assigned(FDevices) then
+            FDevices.SetMouseButtons(Word(LEvent.X));
+        kseJoystickPosition:
+          if Assigned(FDevices) then
+            FDevices.SetJoystickPosition(Word(LEvent.X), Word(LEvent.Y));
+        kseJoystickButtons:
+          if Assigned(FDevices) then
+            FDevices.SetJoystickButtons(Word(LEvent.X));
       end;
     end;
     if (FNext >= Length(FEvents)) and

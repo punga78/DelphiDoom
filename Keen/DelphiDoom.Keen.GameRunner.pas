@@ -39,6 +39,12 @@ type
     Report: Boolean;
     /// <summary>Leaves the timer of Windows at its default tick (15.6 ms), to compare the speed with and without the fine timer</summary>
     CoarseTimer: Boolean;
+    /// <summary>The parameter "nomouse" of the original: the mouse is not looked for</summary>
+    NoMouse: Boolean;
+    /// <summary>The parameter "nojoys" of the original: the joysticks are not looked for</summary>
+    NoJoysticks: Boolean;
+    /// <summary>The parameter "noal" of the original: the AdLib card is not detected, the game has none</summary>
+    NoAdLib: Boolean;
     class function Defaults: TKeenRunOptions; static;
   end;
 
@@ -60,7 +66,7 @@ uses
   System.Classes, System.IOUtils, DelphiDoom.Keen.Intf, DelphiDoom.Keen.UserIntf, DelphiDoom.Keen.Factory,
   DelphiDoom.Keen.GameFactory, DelphiDoom.Keen.HelpFiles, DelphiDoom.Keen.UserFiles, DelphiDoom.Keen.ScreenPicture,
   DelphiDoom.Keen.Script, DelphiDoom.Keen.ScriptedHost, DelphiDoom.Keen.SoundJournal, DelphiDoom.Keen.PngEncoder, DelphiDoom.Keen.Composition,
-  DelphiDoom.Keen.HostClock, DelphiDoom.Keen.HostEvents, DelphiDoom.Keen.LoopProfile, DelphiDoom.Keen.UserTypes, DelphiDoom.Clock.Intf,
+  DelphiDoom.Keen.HostClock, DelphiDoom.Keen.HostEvents, DelphiDoom.Keen.LoopProfile, DelphiDoom.Keen.ScriptedDevices, DelphiDoom.GameHost.MouseState, DelphiDoom.GameHost.EventFanOut, DelphiDoom.GameHost.Events.Intf, DelphiDoom.Keen.UserTypes, DelphiDoom.Clock.Intf,
   DelphiDoom.GameHost.Types, DelphiDoom.GameHost.Video.Intf, DelphiDoom.GameHost.Factory,
   DelphiDoom.GameHost.Win.Window, DelphiDoom.Platform.Intf, DelphiDoom.Platform.Factory, DelphiDoom.Png.Provider,
   DelphiDoom.Png.IndexedEncoder;
@@ -85,6 +91,7 @@ type
     Game: TKeenGameSet;
     Journal: TKeenSoundJournal;
     JournalKeeper: IKeenSoundManager;
+    Joysticks: IKeenJoysticks;
     procedure OpenData;
     function Parts(const AClock: IKeenClock; const AInput: IKeenInput; ARandomize: Boolean): TKeenGameParts;
     procedure Play;
@@ -139,6 +146,9 @@ begin
   Result.Help := TKeenHelpFiles.Create(Files);
   Result.Title := TKeenGameFactory.LoadTitle(Files.ReadAll(LIBRARY_FILE_NAME));
   Result.Compatibility := Options.Compatibility;
+  Result.Joysticks := Joysticks;
+  Result.NoMouse := Options.NoMouse;
+  Result.NoJoysticks := Options.NoJoysticks;
   Result.Randomize := ARandomize;
   // the hundredths of a second of the time of the day, as the clock of the DOS gives them to US_InitRndT
   Result.RandomTime := Integer(Trunc(Frac(Now) * 8640000) mod 256);
@@ -196,6 +206,8 @@ var
   LPalette: TGameHostPalette;
   LProfile: TKeenLoopProfile;
   LTimer: ITimerResolutionLease;
+  LButtons: IGameHostMouseState;
+  LDevices: TKeenWindowDevices;
 begin
   Result := 0;
   // the waits of the loops are Sleep(1): without this they last a tick of Windows, 15.6 ms
@@ -208,14 +220,24 @@ begin
   LGameClock := LHostClock;
   LEvents := TKeenHostEvents.Create;
   LEventsIntf := LEvents;
-  LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LEvents, False);
+  LButtons := TGameHostMouseState.Create;
+  // the system cursor is hidden when the mouse is the game's: it is kept at the middle of the window
+  LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+    TGameHostEventFanOut.Create([LEvents as IGameHostEventSink, LButtons as IGameHostEventSink]),
+    not ARun.Options.NoMouse);
+  // Alt (throw) and F10 are keys of the game: they must not open the menu of the window
+  LWindow.Translator.SuppressKeyMenu := True;
+  LDevices := Default(TKeenWindowDevices);
   try
     LDevice := TGameHostFactory.CreateGdiDevice(LWindow);
     LDevice.SetTitle(WINDOW_TITLE);
     LWidth := KEEN_DISPLAY_WIDTH * ARun.Options.Scale;
     LHeight := KEEN_DISPLAY_HEIGHT * ARun.Options.Scale;
     LDevice.SetMode(LWidth, LHeight, False);
-    LInput := TKeenFactory.CreateInput(LGameClock, nil, nil, nil);
+    LDevices := TKeenComposition.CreateWindowDevices(LWindow, LButtons, not ARun.Options.NoMouse,
+      not ARun.Options.NoJoysticks);
+    ARun.Joysticks := LDevices.Joysticks;
+    LInput := TKeenFactory.CreateInput(LGameClock, LDevices.Mouse, LDevices.Joysticks, nil);
     LEvents.Keys :=
       procedure(AByte: Byte)
       begin
@@ -266,7 +288,8 @@ begin
         LProfile.Leave;
       end;
     LHostClock.OnIdle := LYield;
-    ARun.Audio := TKeenComposition.CreateAudio(ARun.Data, LClock, ARun.Options.UseSoundDevice, LYield);
+    ARun.Audio := TKeenComposition.CreateAudio(ARun.Data, LClock, ARun.Options.UseSoundDevice, LYield,
+      ARun.Options.NoAdLib);
     ARun.Game := TKeenGameFactory.CreateGame(ARun.Parts(LGameClock, LInput, True));
     ARun.Game.Buffered.SetUpdateHook(LYield);
     ARun.Audio.Host.Open;
@@ -291,6 +314,8 @@ begin
       FreeAndNil(ARun.Game);
     end;
   finally
+    // the devices let go of the window and of the cursor before the window goes
+    LDevices.Shutdown;
     // the display draws in the window: it goes before the window
     LDevice := nil;
     LWindow.Free;
@@ -306,12 +331,19 @@ var
   LEncoder: IKeenImageEncoder;
   LStore: IFileStore;
   LShots: Integer;
+  LDevices: TKeenScriptedDevices;
+  LDevicesKeeper: IInterface;
 begin
   Result := 0;
   LShots := 0;
   LHost := TKeenScriptedHost.Create(TKeenScript.Parse(TFile.ReadAllText(ARun.Options.ScriptFile)));
   LGameClock := LHost;
-  LInput := TKeenFactory.CreateInput(LGameClock, nil, nil, nil);
+  // the mouse and the joystick are the ones that the script moves
+  LDevices := TKeenScriptedDevices.Create(not ARun.Options.NoMouse, not ARun.Options.NoJoysticks);
+  LDevicesKeeper := LDevices;
+  LHost.Devices := LDevices;
+  ARun.Joysticks := LDevices;
+  LInput := TKeenFactory.CreateInput(LGameClock, LDevices, LDevices, nil);
   LEncoder := TKeenPngEncoder.Create(TPngIndexedEncoder.Create(TPngProvider.Client));
   LStore := TPlatformFactory.CreateFileStore;
   SetLength(LScratch, AUDIO_FRAMES_PER_TIC * 4);
@@ -320,7 +352,7 @@ begin
     procedure
     begin
       LHost.Step;
-    end);
+    end, ARun.Options.NoAdLib);
   ARun.Game := TKeenGameFactory.CreateGame(ARun.Parts(LGameClock, LInput, False));
   LHost.Keys :=
     procedure(AByte: Byte)

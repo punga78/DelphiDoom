@@ -181,7 +181,11 @@ uses
   DelphiDoom.Tests.Keen.GameLoader in 'Source\DelphiDoom.Tests.Keen.GameLoader.pas',
   DelphiDoom.Tests.Keen.Golden in 'Source\DelphiDoom.Tests.Keen.Golden.pas',
   DelphiDoom.Tests.Keen.HostClock in 'Source\DelphiDoom.Tests.Keen.HostClock.pas',
-  DelphiDoom.Tests.Keen.LoopProfile in 'Source\DelphiDoom.Tests.Keen.LoopProfile.pas';
+  DelphiDoom.Tests.Keen.LoopProfile in 'Source\DelphiDoom.Tests.Keen.LoopProfile.pas',
+  DelphiDoom.Keen.ScriptedDevices in '..\Libs\Keen\DelphiDoom.Keen.ScriptedDevices.pas',
+  DelphiDoom.Keen.Parameters in '..\Libs\Keen\DelphiDoom.Keen.Parameters.pas',
+  DelphiDoom.Tests.Keen.InputDevices in 'Source\DelphiDoom.Tests.Keen.InputDevices.pas',
+  DelphiDoom.Tests.Keen.Parameters in 'Source\DelphiDoom.Tests.Keen.Parameters.pas';
 
 var
   Runner: ITestRunner;
