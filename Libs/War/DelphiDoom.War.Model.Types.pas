@@ -36,6 +36,39 @@ const
   /// <summary>The player of the corpses (the neutral one)</summary>
   WAR_MODEL_CORPSE_PLAYER = 4;
 
+  /// <summary>NEAR_CATAPULT_RADIUS of war.h: tiles of the splash of a catapult</summary>
+  WAR_MODEL_NEAR_CATAPULT_RADIUS = 2;
+  /// <summary>NEAR_RAIN_OF_FIRE_RADIUS of war.h: tiles of the splash of a rain of fire</summary>
+  WAR_MODEL_NEAR_RAIN_OF_FIRE_RADIUS = 1;
+  /// <summary>RAIN_OF_FIRE_PROJECTILE_DAMAGE of war.h</summary>
+  WAR_MODEL_RAIN_OF_FIRE_DAMAGE = 10;
+  /// <summary>GOD_MODE_MIN_DAMAGE of war_units.h</summary>
+  WAR_MODEL_GOD_MODE_MIN_DAMAGE = 255;
+  /// <summary>The pixels of a tile of the map (MEGA_TILE_WIDTH)</summary>
+  WAR_MODEL_MEGA_TILE = 16;
+
+  // WarUnitActionStepType
+  WAR_ACTION_STEP_NONE = 0;
+  WAR_ACTION_STEP_FRAME = 1;
+  WAR_ACTION_STEP_WAIT = 2;
+  WAR_ACTION_STEP_ATTACK = 3;
+  WAR_ACTION_STEP_SOUND_SWORD = 4;
+  WAR_ACTION_STEP_SOUND_FIST = 5;
+  WAR_ACTION_STEP_SOUND_FIREBALL = 6;
+  WAR_ACTION_STEP_SOUND_CHOPPING = 7;
+  WAR_ACTION_STEP_SOUND_CATAPULT = 8;
+  WAR_ACTION_STEP_SOUND_ARROW = 9;
+  WAR_ACTION_STEP_SOUND_LIGHTNING = 10;
+
+  // WarProjectileType
+  WAR_PROJECTILE_ARROW = 0;
+  WAR_PROJECTILE_CATAPULT = 1;
+  WAR_PROJECTILE_FIREBALL = 2;
+  WAR_PROJECTILE_FIREBALL_2 = 3;
+  WAR_PROJECTILE_WATER_ELEMENTAL = 4;
+  WAR_PROJECTILE_RAIN_OF_FIRE = 5;
+  WAR_PROJECTILE_TYPE_COUNT = 6;
+
   // WarEntityType
   WAR_ENTITY_NONE = 0;
   WAR_ENTITY_IMAGE = 1;
@@ -275,6 +308,23 @@ type
     LastAttackSoundGameTime: Double;
   end;
 
+  /// <summary>
+  ///   WarProjectileComponent: an arrow, a fireball or a catapult stone that flies from where it was shot to where its
+  ///   target was; the position is the transform of the entity. FrameIndex and FlipX are what the sprite component and
+  ///   the scale of the transform of the original get from the direction and the distance already flown
+  /// </summary>
+  TWarProjectileComponent = record
+    ProjectileType: Integer;
+    SourceEntityId: Word;
+    TargetEntityId: Word;
+    Origin: TWarVec2;
+    Target: TWarVec2;
+    /// <summary>Pixels per second</summary>
+    Speed: Integer;
+    FrameIndex: Integer;
+    FlipX: Boolean;
+  end;
+
   /// <summary>WarStateMachineComponent: the stack of states (the last is the active one) and the request that waits</summary>
   TWarStateMachineComponent = record
     Stack: array[0..WAR_MODEL_STATE_STACK_DEPTH - 1] of TWarStateRef;
@@ -295,13 +345,16 @@ type
     HasTransform: Boolean;
     HasUnit: Boolean;
     HasStateMachine: Boolean;
+    HasProjectile: Boolean;
     /// <summary>WarTransformComponent.position: the top left corner of the unit, in pixels of the map</summary>
     Position: TWarVec2;
     UnitData: TWarUnitComponent;
     StateMachine: TWarStateMachineComponent;
+    Projectile: TWarProjectileComponent;
   end;
 
   PWarEntity = ^TWarEntity;
+  PWarProjectileComponent = ^TWarProjectileComponent;
   PWarUnitComponent = ^TWarUnitComponent;
   PWarStateMachineComponent = ^TWarStateMachineComponent;
 
