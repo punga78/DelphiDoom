@@ -14,7 +14,7 @@ interface
 
 uses
   DelphiDoom.Geometry.Vec3, DelphiDoom.Collision.TraceWork, DelphiDoom.Collision.Model.Node,
-  DelphiDoom.Collision.Translator, DelphiDoom.Collision.ContentsTester;
+  DelphiDoom.Collision.Translator, DelphiDoom.Collision.ContentsTester, DelphiDoom.Collision.Rotator;
 
 type
   /// <summary>
@@ -25,12 +25,17 @@ type
   private
     FTranslator: TCollisionTranslator;
     FContentsTester: TCollisionContentsTester;
+    FRotator: TCollisionRotator;
     procedure TraceTrmThroughNode(ATraceWork: TCmTraceWork; ANode: TCmNode);
     procedure TraceThroughAxialBSPTree(ATraceWork: TCmTraceWork; ANode: TCmNode; AP1F, AP2F: Single;
       const AP1, AP2: TGeoVec3);
   public
-    /// <summary>The translator and the tester are not owned</summary>
-    constructor Create(ATranslator: TCollisionTranslator; AContentsTester: TCollisionContentsTester);
+    /// <summary>
+    ///   The translator, the tester and the rotator are not owned. Without a rotator a
+    ///   trace work that has Rotation set is not traced (the first slice of the port had none)
+    /// </summary>
+    constructor Create(ATranslator: TCollisionTranslator; AContentsTester: TCollisionContentsTester;
+      ARotator: TCollisionRotator = nil);
     /// <summary>Traces through the whole model of the trace work (TraceThroughModel)</summary>
     procedure TraceThroughModel(ATraceWork: TCmTraceWork);
   end;
@@ -38,16 +43,19 @@ type
 implementation
 
 uses
-  DelphiDoom.Collision.Model.Polygon, DelphiDoom.Collision.Model.Brush;
+  System.SysUtils, DelphiDoom.Geometry.FloatMath, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.MathCore.Float.Rotation,
+  DelphiDoom.MathCore.Float.GeometryAdapter, DelphiDoom.Collision.Types, DelphiDoom.Collision.Model.Polygon,
+  DelphiDoom.Collision.Model.Brush;
 
 { TCollisionTracer }
 
 constructor TCollisionTracer.Create(ATranslator: TCollisionTranslator;
-  AContentsTester: TCollisionContentsTester);
+  AContentsTester: TCollisionContentsTester; ARotator: TCollisionRotator);
 begin
   inherited Create;
   FTranslator := ATranslator;
   FContentsTester := AContentsTester;
+  FRotator := ARotator;
 end;
 
 procedure TCollisionTracer.TraceTrmThroughNode(ATraceWork: TCmTraceWork; ANode: TCmNode);
@@ -72,6 +80,14 @@ begin
     for LPolygon in ANode.Polygons do
       if FContentsTester.TestTrmInPolygon(ATraceWork, LPolygon) then
         Exit;
+  end
+  else if ATraceWork.Rotation then
+  begin
+    // rotate through all polygons in this leaf
+    if Assigned(FRotator) then
+      for LPolygon in ANode.Polygons do
+        if FRotator.RotateTrmThroughPolygon(ATraceWork, LPolygon) then
+          Exit;
   end
   else
   begin
@@ -183,9 +199,54 @@ begin
 end;
 
 procedure TCollisionTracer.TraceThroughModel(ATraceWork: TCmTraceWork);
+var
+  LDist: Single;
+  LIndex: Integer;
+  LNumSteps: Integer;
+  LStart: TGeoVec3;
+  LEnd: TGeoVec3;
+  LRotation: TIdRotation;
+  LIdPoint: TIdVec3;
 begin
-  // trace through spatial subdivision and then through leafs
-  TraceThroughAxialBSPTree(ATraceWork, ATraceWork.Model.Node, 0, 1, ATraceWork.Start, ATraceWork.EndPoint);
+  if not ATraceWork.Rotation then
+  begin
+    // trace through spatial subdivision and then through leafs
+    TraceThroughAxialBSPTree(ATraceWork, ATraceWork.Model.Node, 0, 1, ATraceWork.Start, ATraceWork.EndPoint);
+    Exit;
+  end;
+
+  // approximate the rotation with a series of straight line movements
+  // total length covered along circle
+  LDist := ATraceWork.Radius * TGeoMath.Deg2Rad(ATraceWork.Angle);
+  // if more than one step
+  if LDist > CIRCLE_APPROXIMATION_LENGTH then
+  begin
+    // number of steps for the approximation (the original divides the other way round, so
+    // this is always 0 for a distance over the length: the loop below never runs)
+    LNumSteps := Trunc(CIRCLE_APPROXIMATION_LENGTH / LDist);
+    // start of approximation
+    LStart := ATraceWork.Start;
+    // trace circle approximation steps through the BSP tree
+    for LIndex := 0 to LNumSteps - 1 do
+    begin
+      // calculate next point on approximated circle
+      LRotation := TIdRotation.Create(TIdGeometryAdapter.ToId(ATraceWork.Origin),
+        TIdGeometryAdapter.ToId(ATraceWork.Axis), ATraceWork.Angle * ((LIndex + 1) / LNumSteps));
+      LIdPoint := TIdGeometryAdapter.ToId(LStart);
+      LRotation.RotatePoint(LIdPoint);
+      LEnd := TIdGeometryAdapter.ToGeo(LIdPoint);
+      // trace through spatial subdivision and then through leafs
+      TraceThroughAxialBSPTree(ATraceWork, ATraceWork.Model.Node, 0, 1, LStart, LEnd);
+      // no need to continue if something was hit already
+      if ATraceWork.Trace.Fraction < 1 then
+        Exit;
+      LStart := LEnd;
+    end;
+  end
+  else
+    LStart := ATraceWork.Start;
+  // last step of the approximation
+  TraceThroughAxialBSPTree(ATraceWork, ATraceWork.Model.Node, 0, 1, LStart, ATraceWork.EndPoint);
 end;
 
 end.

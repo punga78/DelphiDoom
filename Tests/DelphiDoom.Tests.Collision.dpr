@@ -52,6 +52,9 @@ uses
   DelphiDoom.Collision.Tracer in '..\Libs\Collision\DelphiDoom.Collision.Tracer.pas',
   DelphiDoom.Collision.ContentsRunner in '..\Libs\Collision\DelphiDoom.Collision.ContentsRunner.pas',
   DelphiDoom.Collision.TranslationRunner in '..\Libs\Collision\DelphiDoom.Collision.TranslationRunner.pas',
+  DelphiDoom.Collision.RotationMath in '..\Libs\Collision\DelphiDoom.Collision.RotationMath.pas',
+  DelphiDoom.Collision.Rotator in '..\Libs\Collision\DelphiDoom.Collision.Rotator.pas',
+  DelphiDoom.Collision.RotationRunner in '..\Libs\Collision\DelphiDoom.Collision.RotationRunner.pas',
   DelphiDoom.Collision.TrmModel in '..\Libs\Collision\DelphiDoom.Collision.TrmModel.pas',
   DelphiDoom.Collision.TrmExtractor in '..\Libs\Collision\DelphiDoom.Collision.TrmExtractor.pas',
   DelphiDoom.Collision.ContentsNames in '..\Libs\Collision\DelphiDoom.Collision.ContentsNames.pas',
@@ -82,7 +85,8 @@ uses
   DelphiDoom.Tests.Collision.Builder in 'Source\DelphiDoom.Tests.Collision.Builder.pas',
   DelphiDoom.Tests.Collision.Translation in 'Source\DelphiDoom.Tests.Collision.Translation.pas',
   DelphiDoom.Tests.Collision.CmFile in 'Source\DelphiDoom.Tests.Collision.CmFile.pas',
-  DelphiDoom.Tests.Collision.Parity in 'Source\DelphiDoom.Tests.Collision.Parity.pas';
+  DelphiDoom.Tests.Collision.Parity in 'Source\DelphiDoom.Tests.Collision.Parity.pas',
+  DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas';
 
 var
   Runner: ITestRunner;
