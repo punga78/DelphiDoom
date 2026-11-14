@@ -1,0 +1,175 @@
+# scenarios of the drawing of the windows of a .gui of Doom 3 (written for the test; no file of Doom 3)
+# "redraw T" is idUserInterfaceLocal::Redraw; the lines C, Q and M are what is sent to the renderer and to the materials.
+@case redraw_basic
+@file basic.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  backcolor 0.1, 0.2, 0.3, 1
+  bordercolor 1, 1, 0, 1
+  bordersize 2
+  text "Hello desktop"
+  textscale 0.5
+  forecolor 1, 1, 1, 1
+  windowDef box {
+    rect 20, 30, 200, 100
+    backcolor 1, 0, 0, 0.5
+    matcolor 1, 1, 1, 1
+    background "guis/assets/box"
+    bordercolor 0, 1, 0, 1
+    bordersize 3
+    text "Inside the box with words that wrap around the edge"
+    textscale 0.3
+    onAction { set "visible" "1" }
+  }
+  windowDef shadow {
+    rect 300, 30, 200, 60
+    text "Shadowed ^1text^0 here"
+    textscale 0.4
+    shadow 2
+    textalign 1
+    nowrap 1
+    onAction { resetTime "0" }
+  }
+  windowDef hidden {
+    rect 0, 0, 50, 50
+    visible 0
+    backcolor 1, 1, 1, 1
+    onAction { set "visible" "1" }
+  }
+}
+@op mat guis/assets/box 64 32 0 0
+@op load basic.gui
+@op redraw 100
+@op redraw 120
+@op frame 200
+@op redraw 200
+@end
+@case redraw_simple
+@file simple.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  windowDef plain {
+    rect 10, 10, 100, 50
+    backcolor 0, 0, 1, 1
+    bordersize 1
+    bordercolor 1, 1, 1, 0
+    background "guis/assets/plain"
+    matcolor 1, 1, 1, 0.5
+    text "simple window"
+    textscale 0.3
+  }
+  windowDef natural {
+    rect 200, 10, 128, 64
+    background "guis/assets/natural"
+    naturalmat 1
+    matcolor 1, 1, 1, 1
+  }
+  windowDef noclip {
+    rect 400, 10, 100, 50
+    noclip 1
+    backcolor 1, 0, 1, 1
+    text "no clip"
+    textscale 0.3
+    shadow 1
+  }
+  windowDef invisible {
+    rect 0, 100, 10, 10
+    visible 0
+    backcolor 1, 1, 1, 1
+  }
+}
+@op mat guis/assets/natural 32 16 0 0
+@op load simple.gui
+@op redraw 10
+@op redraw 30
+@end
+@case redraw_cursor_and_flags
+@file flags.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  backcolor 0, 0, 0, 1
+  windowDef button {
+    rect 100, 100, 80, 20
+    backcolor 0.5, 0.5, 0.5, 1
+    text "button"
+    onAction { set "visible" "1" }
+  }
+}
+@op load flags.gui
+@op guicursor 33.5 44.25
+@op redraw 20
+@op activate 1 30
+@op redraw 40
+@op guicursor 900 -20
+@op redraw 60
+@op dc setcursor 1
+@op redraw 80
+@op cvar gui_edit 1
+@op redraw 100
+@op cvar gui_edit 0
+@op cvar gui_debug 1
+@op redraw 120
+@op cvar gui_debug 2
+@op redraw 140
+@op cvar gui_debug 0
+@op cvar r_skipGuiShaders 2
+@op redraw 160
+@op cvar r_skipGuiShaders 1
+@op redraw 180
+@op cvar r_skipGuiShaders 6
+@op redraw 200
+@end
+@case redraw_transform
+@file transform.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  windowDef spin {
+    rect 100, 100, 100, 100
+    backcolor 1, 0, 0, 1
+    rotate 20
+    text "spin"
+    textscale 0.3
+    onAction { set "visible" "1" }
+  }
+  windowDef flat {
+    rect 300, 100, 100, 100
+    backcolor 0, 1, 0, 1
+    text "flat"
+    textscale 0.3
+    onAction { set "visible" "1" }
+  }
+  windowDef animated {
+    rect 400, 300, 100, 100
+    backcolor 0, 0, 1, 1
+    rotate time / 10
+    onAction { set "visible" "1" }
+  }
+}
+@op load transform.gui
+@op redraw 20
+@op frame 100
+@op redraw 100
+@op frame 300
+@op redraw 300
+@end
+@case redraw_resettime_cinematic
+@file movie.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  background "movie"
+  matcolor 1, 1, 1, 1
+  onActivate { resetCinematics }
+  windowDef kid {
+    rect 0, 0, 10, 10
+    background "kidmovie"
+    onAction { set "visible" "1" }
+  }
+}
+@op mat movie 64 64 500 0
+@op mat kidmovie 16 16 700 0
+@op load movie.gui
+@op statechanged 50
+@op trigger 60
+@op activate 1 70
+@op redraw 80
+@end

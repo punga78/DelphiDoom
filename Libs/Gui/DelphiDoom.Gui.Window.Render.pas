@@ -18,13 +18,15 @@ interface
 
 uses
   DelphiDoom.Scanner.IdParser, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Intf,
-  DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Str, DelphiDoom.Gui.WinVar.Vec4;
+  DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Str, DelphiDoom.Gui.WinVar.Vec4,
+  DelphiDoom.Gui.Window.Hosts;
 
 type
   /// <summary>
   ///   idRenderWindow: the key <c>animClass</c> and the variables <c>model</c>, <c>anim</c>,
   ///   <c>lightOrigin</c>, <c>lightColor</c>, <c>modelOrigin</c>, <c>modelRotate</c>, <c>viewOffset</c>,
-  ///   <c>needsRender</c>. Not ported: the render world, the model and the animation.
+  ///   <c>needsRender</c>. It draws a model with a light into the rectangle of the window through <c>IGuiRenderHost</c> and its
+  ///   render world; the game edit functions (the model, the animation) are the host's.
   /// </summary>
   TGuiRenderWindow = class(TGuiWindow)
   strict private
@@ -37,11 +39,25 @@ type
     FModelRotate: TGuiWinVec4;
     FViewOffset: TGuiWinVec4;
     FNeedsRender: TGuiWinBool;
+    FWorld: IGuiRenderWorld;
+    FLight: TGuiRenderLight;
+    FEntity: TGuiRenderEntity;
+    FLightDef: Integer;
+    FModelDef: Integer;
+    FAnimLength: Integer;
+    FAnimEndTime: Integer;
+    FUpdateAnimation: Boolean;
+    FAnimated: Boolean;
+    procedure BuildAnimation(const ATime: Integer);
+    procedure PreRender;
+    procedure Render(const ATime: Integer);
   protected
     function ParseInternalVar(const AName: AnsiString; const ASource: TIdParser): Boolean; override;
   public
     constructor Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator); override;
     destructor Destroy; override;
+    /// <summary>idRenderWindow::Draw: the light and the model are made at the first draw, then updated and the scene is rendered</summary>
+    procedure Draw(const ATime: Integer; const AX, AY: Single); override;
     function GetWinVarByName(const AName: AnsiString; const AFixup: Boolean;
       out AOwner: IGuiWindowNode): TGuiWinVar; override;
     property AnimClass: AnsiString read FAnimClass;
@@ -58,11 +74,14 @@ type
 implementation
 
 uses
-  DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Text.Strings;
+  System.SysUtils, System.Math, DelphiDoom.IdLib.Math.Vec3, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Text.Strings;
 
 constructor TGuiRenderWindow.Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator);
 begin
   inherited Create(AContext, ACreator);
+  FModelDef := -1;
+  FAnimEndTime := -1;
+  FUpdateAnimation := True;
   FModelName := TGuiWinStr.Create;
   FAnimName := TGuiWinStr.Create;
   FLightOrigin := TGuiWinVec4.Create;
@@ -71,6 +90,7 @@ begin
   FModelRotate := TGuiWinVec4.Create;
   FViewOffset := TGuiWinVec4.Create;
   FNeedsRender := TGuiWinBool.Create;
+  FNeedsRender.Value := True;
   FNeedsRender.Value := True;
   FLightOrigin.Value := TIdVec4.Create(-128.0, 0.0, 0.0, 1.0);
   FLightColor.Value := TIdVec4.Create(1.0, 1.0, 1.0, 1.0);
@@ -123,6 +143,94 @@ begin
   if TIdStrings.Icmp(AName, 'needsRender') = 0 then
     Exit(FNeedsRender);
   Result := inherited GetWinVarByName(AName, AFixup, AOwner);
+end;
+
+procedure TGuiRenderWindow.BuildAnimation(const ATime: Integer);
+begin
+  if not FUpdateAnimation then
+    Exit;
+  if (FAnimName.AsText <> '') and (FAnimClass <> '') and Assigned(Context.RenderHost) then
+  begin
+    FAnimLength := Context.RenderHost.AnimationLength(FAnimClass, FAnimName.AsText);
+    FAnimated := FAnimLength > 0;
+    if FAnimated then
+      FAnimEndTime := ATime + FAnimLength;
+  end;
+  FUpdateAnimation := False;
+end;
+
+procedure TGuiRenderWindow.PreRender;
+begin
+  if not FNeedsRender.Value then
+    Exit;
+  FWorld.InitFromMap;
+  FLight.Origin := TIdVec3.Create(FLightOrigin.Value.X, FLightOrigin.Value.Y, FLightOrigin.Value.Z);
+  FLight.Red := FLightColor.Value.X;
+  FLight.Green := FLightColor.Value.Y;
+  FLight.Blue := FLightColor.Value.Z;
+  FLightDef := FWorld.AddLightDef(FLight);
+  if FModelName.AsText = '' then
+    Warning(Format('Window ''%s'' in gui ''%s'': no model set', [string(Name), string(Context.SourceFile)]));
+  FEntity := Context.RenderHost.ParseModelEntity(FModelName.AsText, FModelOrigin.AsText);
+  if FEntity.HasModel then
+  begin
+    FEntity.Pitch := FModelRotate.Value.X;
+    FEntity.Yaw := FModelRotate.Value.Y;
+    FEntity.Roll := FModelRotate.Value.Z;
+    FModelDef := FWorld.AddEntityDef(FEntity);
+  end;
+  FNeedsRender.Value := False;
+end;
+
+procedure TGuiRenderWindow.Render(const ATime: Integer);
+begin
+  FLight.Origin := TIdVec3.Create(FLightOrigin.Value.X, FLightOrigin.Value.Y, FLightOrigin.Value.Z);
+  FLight.Red := FLightColor.Value.X;
+  FLight.Green := FLightColor.Value.Y;
+  FLight.Blue := FLightColor.Value.Z;
+  FWorld.UpdateLightDef(FLightDef, FLight);
+  if FEntity.HasModel then
+  begin
+    if FUpdateAnimation then
+      BuildAnimation(ATime);
+    if FAnimated then
+    begin
+      if ATime > FAnimEndTime then
+        FAnimEndTime := ATime + FAnimLength;
+      Context.RenderHost.CreateAnimationFrame(FAnimClass, FAnimName.AsText, FAnimLength - (FAnimEndTime - ATime));
+    end;
+    FEntity.Pitch := FModelRotate.Value.X;
+    FEntity.Yaw := FModelRotate.Value.Y;
+    FEntity.Roll := FModelRotate.Value.Z;
+    FWorld.UpdateEntityDef(FModelDef, FEntity);
+  end;
+end;
+
+procedure TGuiRenderWindow.Draw(const ATime: Integer; const AX, AY: Single);
+var
+  LView: TGuiRenderView;
+  LRatio, LAngle: Single;
+begin
+  if not Assigned(Context.RenderHost) then
+    Exit;
+  if not Assigned(FWorld) then
+    FWorld := Context.RenderHost.AllocRenderWorld;
+  PreRender;
+  Render(ATime);
+  LView.ViewOrigin := TIdVec3.Create(FViewOffset.Value.X, FViewOffset.Value.Y, FViewOffset.Value.Z);
+  LView.X := DrawRect.X;
+  LView.Y := DrawRect.Y;
+  LView.Width := DrawRect.W;
+  LView.Height := DrawRect.H;
+  LView.FovX := 90;
+  // refdef.fov_y = 2 * atan( h / w ) * M_RAD2DEG
+  LRatio := DrawRect.H / DrawRect.W;
+  LAngle := ArcTan(LRatio);
+  LAngle := 2 * LAngle;
+  LAngle := LAngle * Single(180.0 / Pi);
+  LView.FovY := LAngle;
+  LView.Time := ATime;
+  FWorld.RenderScene(LView);
 end;
 
 end.

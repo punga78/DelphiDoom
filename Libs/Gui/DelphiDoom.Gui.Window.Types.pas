@@ -67,6 +67,12 @@ type
   /// <summary>A contract violation of the windows (idCommon::FatalError of the original)</summary>
   EGuiWindowException = class(Exception);
 
+  /// <summary>
+  ///   Text or geometry that the original would write outside a buffer (a line of 1024 characters or more in
+  ///   <c>idDeviceContext::DrawText</c>) or loop over for ever (a layout that does not advance)
+  /// </summary>
+  EGuiDrawException = class(EGuiWindowException);
+
   /// <summary>A .gui that does not parse, with file and line (raised only in strict mode)</summary>
   EGuiWindowParseException = class(EGuiWindowException)
   strict private

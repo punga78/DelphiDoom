@@ -1,0 +1,71 @@
+# more scenarios of the drawing of the windows of a .gui of Doom 3 (written for the test; no file of Doom 3)
+@case redraw_flags
+@file showtime.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  showtime 1
+  showcoords 1
+  menugui 1
+  text "desk"
+  textscale 0.3
+  windowDef spinner {
+    rect 100, 100, 50, 50
+    rotate 15
+    shear 0.1, 0.2
+    backcolor 1, 0, 0, 1
+    onAction { set "visible" "1" }
+  }
+  windowDef sheared {
+    rect 200, 100, 50, 50
+    shear 0.3, 0
+    backcolor 0, 1, 0, 1
+    onAction { set "visible" "1" }
+  }
+  windowDef inverted {
+    rect 300, 300, 50, 50
+    invertrect 1
+    backcolor 0, 0, 1, 1
+    onAction { set "visible" "1" }
+  }
+}
+@op load showtime.gui
+@op state name flags.gui
+@op frame 200
+@op redraw 1250
+@op redraw 1500
+@op cvar r_skipGuiShaders 3
+@op redraw 2000
+@op cvar r_skipGuiShaders 5
+@op redraw 2500
+@op cvar r_skipGuiShaders 0
+@op cvar gui_debug 2
+@op redraw 3000
+@op redraw 3500
+@end
+@case redraw_nocursor_hidden
+@file nocursor.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  nocursor 1
+  hidecursor 1
+  windowDef box {
+    rect 10, 10, 100, 100
+    bordersize 4
+    bordercolor 1, 1, 1, 1
+    backcolor 0, 0, 0, 0
+    text "bordered"
+    textscale 0.3
+    onAction { set "visible" "1" }
+  }
+}
+@op load nocursor.gui
+@op activate 1 10
+@op redraw 20
+@op cvar gui_edit 1
+@op redraw 40
+@end
+@case redraw_invalid_gui
+@op load nothing.gui
+@op redraw 10
+@op dump
+@end

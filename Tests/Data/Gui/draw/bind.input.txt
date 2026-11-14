@@ -1,0 +1,57 @@
+# scenarios of bindDef and fieldDef (written for the test; no file of Doom 3)
+@case bind_and_field
+@file bind.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  bindDef attack {
+    rect 10, 10, 200, 20
+    bind "_attack"
+    textscale 0.4
+    forecolor 1, 1, 1, 1
+    hovercolor 1, 0, 0, 1
+  }
+  bindDef empty {
+    rect 10, 40, 200, 20
+    textscale 0.4
+  }
+  fieldDef name {
+    rect 10, 100, 80, 20
+    text "gui::nametext"
+    cursorvar "namepos"
+    textscale 0.4
+    forecolor 1, 1, 1, 1
+  }
+  fieldDef shown {
+    rect 10, 140, 400, 20
+    text "short"
+    cursorvar "shownpos"
+    showcursor 1
+    textscale 0.4
+  }
+}
+@op load bind.gui
+@op state _attack mouse1
+@op state nametext A rather long name that does not fit the box
+@op state namepos 30
+@op state shownpos 99
+@op redraw 10
+@op activate 1 20
+@op redraw 30
+@op guicursor 20 20
+@op event 3 0 0 40
+@op redraw 50
+@op event 1 187 1 60
+@op redraw 70
+@op event 1 65 1 80
+@op event 1 187 1 90
+@op event 1 27 1 100
+@op event 1 187 1 110
+@op event 1 187 0 120
+@op event 1 187 1 130
+@op event 1 187 1 140
+@op state namepos 3
+@op redraw 150
+@op state nametext x
+@op redraw 160
+@op dump
+@end

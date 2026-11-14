@@ -1,0 +1,82 @@
+# scenarios of sliderDef (written for the test; no file of Doom 3)
+@case slider_cvar
+@file slider.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  sliderDef horiz {
+    rect 100, 100, 200, 20
+    low 0
+    high 10
+    step 2
+    cvar "s_volume"
+    cvarGroup "audio"
+    thumbshader "guis/thumb"
+    backcolor 0.2, 0.2, 0.2, 1
+    forecolor 1, 1, 1, 1
+    hovercolor 1, 1, 0, 1
+  }
+  sliderDef vert {
+    rect 400, 50, 20, 200
+    low -5
+    high 5
+    vertical 1
+    verticalflip 1
+    cvar "s_pan"
+    thumbshader "guis/thumb"
+    backcolor 0.3, 0.3, 0.3, 1
+  }
+  sliderDef bar {
+    rect 100, 300, 200, 20
+    scrollbar 1
+    cvar "s_bar"
+    thumbshader "guis/thumb"
+    backcolor 0.3, 0, 0, 1
+  }
+  sliderDef nocvar {
+    rect 100, 400, 200, 20
+    thumbshader "guis/thumb"
+  }
+  sliderDef bad {
+    rect 100, 440, 200, 20
+    cvar "s_missing"
+    thumbshader "guis/thumb"
+  }
+}
+@op mat guis/thumb 16 8 0 0
+@op cvar s_volume 4
+@op cvar s_pan 1.5
+@op cvar s_bar 50
+@op load slider.gui
+@op redraw 10
+@op activate 1 20
+@op redraw 30
+@op guicursor 200 110
+@op event 1 187 1 40
+@op redraw 50
+@op guicursor 150 110
+@op event 3 0 0 60
+@op redraw 70
+@op guicursor 900 110
+@op event 3 0 0 80
+@op event 1 187 0 90
+@op redraw 100
+@op guicursor 410 60
+@op event 1 187 1 110
+@op guicursor 410 20
+@op event 3 0 0 120
+@op redraw 130
+@op guicursor 410 500
+@op event 3 0 0 140
+@op event 1 187 0 150
+@op event 1 136 1 160
+@op event 1 135 1 170
+@op event 1 135 1 180
+@op redraw 190
+@op cvar s_volume 9
+@op named cvar read audio
+@op redraw 200
+@op cvar s_volume 1
+@op named cvar write audio
+@op named cvar read other
+@op dump
+@end

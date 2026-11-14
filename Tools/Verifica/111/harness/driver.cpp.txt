@@ -34,13 +34,50 @@ static idCommon theCommon;
 static idFileSystem theFs;
 static idDeclManagerStub theDecls;
 idDeclManager *declManager = &theDecls;
+static idSysStub theSys; idSysStub *sys = &theSys;
 static idSession theSession; idSession *session = &theSession;
 static idCmdSystem theCmd; idCmdSystem *cmdSystem = &theCmd;
 static idCVarSystem theCvars; idCVarSystem *cvarSystem = &theCvars;
-idRenderSystemStub *renderSystem = 0;
+volatile int com_ticNumber = 0;
+int com_frameTime = 0;
+static idRenderSystemStub theRender; idRenderSystemStub *renderSystem = &theRender;
 idCVar r_skipGuiShaders("r_skipGuiShaders", "0", 0, "");
 static idLangDict theLang;
 idLangDict *idCommon::GetLanguageDict() { return &theLang; }
+
+// RegisterFont of renderer/tr_font.cpp, cut from the real file by Build-Harness.ps1 (as harnessRegisterFont)
+#include "font_extract.inc"
+// the console variables, the materials and the keys that are down: tables that the scenario fills
+std::map<std::string, std::string> &cvarTable() { static std::map<std::string, std::string> t; return t; }
+std::map<std::string, MatInfo> &matTable() { static std::map<std::string, MatInfo> t; return t; }
+std::set<int> &keysDown() { static std::set<int> s; return s; }
+void harnessLog(const char *fmt, ...) { char b[1024]; va_list ap; va_start(ap, fmt); vsprintf(b, fmt, ap); va_end(ap); printf("%s\n", b); }
+idCVar::idCVar(const char *n, const char *v, int, const char *, float, float, void *) : name(n) { if (cvarTable().find(name) == cvarTable().end()) cvarTable()[name] = v; }
+const char *idCVar::GetString() const { return cvarTable()[name].c_str(); }
+int idCVar::GetInteger() const { return atoi(GetString()); }
+float idCVar::GetFloat() const { return (float)atof(GetString()); }
+bool idCVar::GetBool() const { return atoi(GetString()) != 0; }
+void idCVar::SetString(const char *v) { cvarTable()[name] = v; printf("host cvar set %s %s\n", name.c_str(), v); }
+void idCVar::SetInteger(int v) { char b[32]; sprintf(b, "%i", v); SetString(b); }
+void idCVar::SetFloat(float v) { char b[64]; sprintf(b, "%f", v); SetString(b); }
+void idCVar::SetBool(bool v) { SetString(v ? "1" : "0"); }
+idCVar *idCVarSystem::Find(const char *n) {
+	static std::map<std::string, idCVar *> found;
+	if (cvarTable().find(n) == cvarTable().end()) return NULL;
+	if (found.find(n) == found.end()) found[n] = new idCVar(n, "", 0, "");
+	return found[n];
+}
+const char *idCVarSystem::GetCVarString(const char *n) { return cvarTable()[n].c_str(); }
+
+static std::string fb(float f);
+static std::string v4(const idVec4 &v);
+void idRenderSystemStub::SetColor(const idVec4 &c) { printf("C %s\n", v4(c).c_str()); }
+void idRenderSystemStub::DrawStretchPic(const idDrawVert *v, const glIndex_t *, int, int, const idMaterial *m, bool t, float, float, float, float) {
+	printf("Q %s %d", m ? m->nm.c_str() : "-", (int)t);
+	for (int i = 0; i < 4; i++) printf(" %s %s %s %s %s", fb(v[i].xyz[0]).c_str(), fb(v[i].xyz[1]).c_str(), fb(v[i].xyz[2]).c_str(), fb(v[i].st[0]).c_str(), fb(v[i].st[1]).c_str());
+	printf("\n");
+}
+bool idRenderSystemStub::RegisterFont(const char *fontName, fontInfoEx_t &font) { return harnessRegisterFont(fontName, font); }
 
 struct MemFile { std::string text; long ts; };
 static std::map<std::string, MemFile> files;
@@ -153,10 +190,94 @@ static std::string unesc(const std::string &s) {
 	return r;
 }
 
+// a font of the harness: the metrics come from formulas that the Delphi test repeats (TGuiTestFonts)
+static std::string genFontData(int p) {
+	std::string d;
+	for (int i = 0; i < 256; i++) {
+		int height = 6 + p / 4 + (i % 5), top = height - 2 + (i % 3), bottom = i % 2, pitch = 8, xSkip = 4 + p / 6 + (i % 7);
+		int iw = xSkip + 2, ih = height + 1, zero = 0;
+		float s = (float)(i % 16) / 16.0f, t = (float)(i / 16) / 16.0f, s2 = s + 0.0625f, t2 = t + 0.0625f;
+		d.append((const char *)&height, 4); d.append((const char *)&top, 4); d.append((const char *)&bottom, 4); d.append((const char *)&pitch, 4);
+		d.append((const char *)&xSkip, 4); d.append((const char *)&iw, 4); d.append((const char *)&ih, 4);
+		d.append((const char *)&s, 4); d.append((const char *)&t, 4); d.append((const char *)&s2, 4); d.append((const char *)&t2, 4); d.append((const char *)&zero, 4);
+		char sh[32]; memset(sh, 0, 32); sprintf(sh, "xxxxxxg%d_%d", p, i); d.append(sh, 32);
+	}
+	float gs = 48.0f / p; d.append((const char *)&gs, 4);
+	char nm[64]; memset(nm, 0, 64); sprintf(nm, "fonts/english/fontImage_%d.dat", p); d.append(nm, 64);
+	return d;
+}
+static void addFontSet(const std::string &dir) {
+	int sizes[3] = { 12, 24, 48 };
+	for (int k = 0; k < 3; k++) { char n[256]; sprintf(n, "%s/fontImage_%d.dat", dir.c_str(), sizes[k]); MemFile m; m.text = genFontData(sizes[k]); m.ts = ++clockTicks; files[norm(n)] = m; }
+}
+static std::string unescText(const std::string &s) {
+	std::string r;
+	for (size_t i = 0; i < s.size(); i++) {
+		if (s[i] == '\\' && i + 1 < s.size()) { i++; r += (s[i] == 'n') ? '\n' : (s[i] == 't') ? '\t' : (s[i] == 'r') ? '\r' : s[i]; }
+		else r += s[i];
+	}
+	return r;
+}
+static float F(const std::string &s) { return (float)atof(s.c_str()); }
+static idVec4 col(const std::vector<std::string> &w, size_t i) { return idVec4(F(w[i]), F(w[i + 1]), F(w[i + 2]), F(w[i + 3])); }
+static std::string restFrom(const std::string &line, size_t words) {
+	size_t pos = 0;
+	for (size_t k = 0; k < words; k++) {
+		while (pos < line.size() && line[pos] == ' ') pos++;
+		while (pos < line.size() && line[pos] != ' ') pos++;
+	}
+	if (pos < line.size()) pos++;
+	return line.substr(pos < line.size() ? pos : line.size());
+}
+
+// the operations on the device context: "dc <op> ..."
+static void dcOp(const std::vector<std::string> &w, const std::string &rest) {
+	idDeviceContext &dc = uiManagerLocal.dc;
+	const std::string &op = w[1];
+	if (op == "size") dc.SetSize(F(w[2]), F(w[3]));
+	else if (op == "font") dc.SetFont(atoi(w[2].c_str()));
+	else if (op == "findfont") printf("F %d\n", dc.FindFont(w[2].c_str()));
+	else if (op == "fontset") addFontSet(w[2]);
+	else if (op == "clip") dc.PushClipRect(F(w[2]), F(w[3]), F(w[4]), F(w[5]));
+	else if (op == "popclip") dc.PopClipRect();
+	else if (op == "clipping") dc.EnableClipping(atoi(w[2].c_str()) != 0);
+	else if (op == "overstrike") dc.SetOverStrike(atoi(w[2].c_str()) != 0);
+	else if (op == "tick") com_ticNumber = atoi(w[2].c_str());
+	else if (op == "setcursor") dc.SetCursor(atoi(w[2].c_str()));
+	else if (op == "transform") {
+		idVec3 o(F(w[2]), F(w[3]), F(w[4]));
+		idMat3 m(F(w[5]), F(w[6]), F(w[7]), F(w[8]), F(w[9]), F(w[10]), F(w[11]), F(w[12]), F(w[13]));
+		dc.SetTransformInfo(o, m);
+	}
+	else if (op == "filled") dc.DrawFilledRect(F(w[2]), F(w[3]), F(w[4]), F(w[5]), col(w, 6));
+	else if (op == "rect") dc.DrawRect(F(w[2]), F(w[3]), F(w[4]), F(w[5]), F(w[6]), col(w, 7));
+	else if (op == "material") dc.DrawMaterial(F(w[3]), F(w[4]), F(w[5]), F(w[6]), declManager->FindMaterial(w[2].c_str()), col(w, 7), F(w[11]), F(w[12]));
+	else if (op == "matrot") dc.DrawMaterialRotated(F(w[3]), F(w[4]), F(w[5]), F(w[6]), declManager->FindMaterial(w[2].c_str()), col(w, 7), F(w[11]), F(w[12]), F(w[13]));
+	else if (op == "matrect") dc.DrawMaterialRect(F(w[3]), F(w[4]), F(w[5]), F(w[6]), F(w[7]), declManager->FindMaterial(w[2].c_str()), col(w, 8));
+	else if (op == "cursor") { float x = F(w[2]), y = F(w[3]); dc.DrawCursor(&x, &y, F(w[4])); printf("K %s %s\n", fb(x).c_str(), fb(y).c_str()); }
+	else if (op == "coords") { float x = F(w[2]), y = F(w[3]), ww = F(w[4]), h = F(w[5]); bool r = dc.ClippedCoords(&x, &y, &ww, &h, NULL, NULL, NULL, NULL); printf("O %d %s %s %s %s\n", (int)r, fb(x).c_str(), fb(y).c_str(), fb(ww).c_str(), fb(h).c_str()); }
+	else if (op == "coordst") { float x = F(w[2]), y = F(w[3]), ww = F(w[4]), h = F(w[5]), s1 = F(w[6]), t1 = F(w[7]), s2 = F(w[8]), t2 = F(w[9]); bool r = dc.ClippedCoords(&x, &y, &ww, &h, &s1, &t1, &s2, &t2); printf("O %d %s %s %s %s %s %s %s %s\n", (int)r, fb(x).c_str(), fb(y).c_str(), fb(ww).c_str(), fb(h).c_str(), fb(s1).c_str(), fb(t1).c_str(), fb(s2).c_str(), fb(t2).c_str()); }
+	else if (op == "text") {
+		// dc text scale align r g b a x y w h wrap cursor calc limit <text>
+		idList<int> breaks;
+		idRectangle r(F(w[8]), F(w[9]), F(w[10]), F(w[11]));
+		int n = dc.DrawText(unescText(restFrom(rest, 16)).c_str(), F(w[2]), atoi(w[3].c_str()), col(w, 4), r, atoi(w[12].c_str()) != 0, atoi(w[13].c_str()), atoi(w[14].c_str()) != 0, &breaks, atoi(w[15].c_str()));
+		printf("T %d breaks", n); for (int i = 0; i < breaks.Num(); i++) printf(" %d", breaks[i]); printf("\n");
+	}
+	else if (op == "textwidth") printf("W %d\n", dc.TextWidth(unescText(restFrom(rest, 4)).c_str(), F(w[2]), atoi(w[3].c_str())));
+	else if (op == "textheight") printf("H %d\n", dc.TextHeight(unescText(restFrom(rest, 4)).c_str(), F(w[2]), atoi(w[3].c_str())));
+	else if (op == "charwidth") printf("CW %d\n", dc.CharWidth((char)atoi(w[3].c_str()), F(w[2])));
+	else if (op == "maxchar") printf("MC %d %d\n", dc.MaxCharWidth(F(w[2])), dc.MaxCharHeight(F(w[2])));
+	else if (op == "scrollbar") printf("SB %s\n", dc.GetScrollBarImage(atoi(w[2].c_str())) ? "ok" : "none");
+}
+
+static std::map<std::string, std::string> defaultCvars;
+
 int main(int argc, char **argv) {
 	setvbuf(stdout, 0, _IONBF, 0);
 	idLib::common = &theCommon; idLib::fileSystem = &theFs; common = &theCommon; fileSystem = &theFs;
 	if (argc < 2) return 2;
+	cvarTable()["sys_lang"] = "english"; defaultCvars = cvarTable();
 	std::ifstream in(argv[1], std::ios::binary);
 	std::string line, curFile;
 	std::vector<std::string> ops;
@@ -168,7 +289,9 @@ int main(int argc, char **argv) {
 	while (std::getline(in, line)) {
 		if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
 		if (line.compare(0, 6, "@case ") == 0) {
-			caseName = line.substr(6); printf("## %s\n", caseName.c_str()); files.clear(); gui = 0; inCase = true; inFile = false; continue;
+			caseName = line.substr(6); printf("## %s\n", caseName.c_str());
+			uiManagerLocal.dc.Shutdown(); files.clear(); cvarTable() = defaultCvars; matTable().clear(); keysDown().clear(); com_ticNumber = 0;
+			addFontSet("fonts/english"); uiManagerLocal.dc.Init(); gui = 0; inCase = true; inFile = false; continue;
 		}
 		if (line == "@end") { if (inFile) { MemFile m; m.text = fileText; m.ts = ++clockTicks; files[norm(fileName.c_str())] = m; inFile = false; } inCase = false; continue; }
 		if (line.compare(0, 6, "@file ") == 0) {
@@ -199,6 +322,27 @@ int main(int argc, char **argv) {
 					printf("act \"%s\"\n", esc(r).c_str());
 				} else if (w[0] == "trigger") {
 					gui->Trigger(atoi(w[1].c_str()));
+				} else if (w[0] == "event") {
+					// event <type> <value> <value2> <time>
+					sysEvent_t ev; ev.evType = atoi(w[1].c_str()); ev.evValue = atoi(w[2].c_str()); ev.evValue2 = atoi(w[3].c_str()); ev.evPtrLength = 0; ev.evPtr = 0;
+					bool upd = false;
+					const char *r = gui->HandleEvent(&ev, atoi(w[4].c_str()), &upd);
+					printf("E \"%s\" upd=%d cur=%s %s\n", esc(r).c_str(), (int)upd, fb(gui->cursorX).c_str(), fb(gui->cursorY).c_str());
+				} else if (w[0] == "redraw") {
+					gui->Redraw(atoi(w[1].c_str()));
+				} else if (w[0] == "guicursor") {
+					gui->SetCursor(F(w[1]), F(w[2]));
+				} else if (w[0] == "dc") {
+					dcOp(w, rest);
+				} else if (w[0] == "cvar") {
+					cvarTable()[w[1]] = (w.size() > 2) ? w[2] : "";
+				} else if (w[0] == "keydown") {
+					keysDown().insert(atoi(w[1].c_str()));
+				} else if (w[0] == "keyup") {
+					keysDown().erase(atoi(w[1].c_str()));
+				} else if (w[0] == "mat") {
+					MatInfo mi; mi.w = atoi(w[2].c_str()); mi.h = atoi(w[3].c_str()); mi.cine = atoi(w[4].c_str()); mi.defaulted = atoi(w[5].c_str()) != 0;
+					matTable()[w[1]] = mi;
 				} else if (w[0] == "dump") {
 					printf("I interactive=%d pending=\"%s\"\n", (int)gui->IsInteractive(), esc(gui->GetPendingCmd().c_str()).c_str());
 					dumpWindow(gui->GetDesktop(), false, 0);

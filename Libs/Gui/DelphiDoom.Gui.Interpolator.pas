@@ -18,7 +18,7 @@ unit DelphiDoom.Gui.Interpolator;
 interface
 
 uses
-  DelphiDoom.IdLib.Math.Vec4;
+  DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.SaveStream;
 
 type
   /// <summary>EXTRAPOLATION_NONE, LINEAR, ACCELLINEAR and DECELLINEAR (the sine modes are not used by the GUI)</summary>
@@ -57,6 +57,11 @@ type
       AEndValue: TIdVec4);
     function GetCurrentValue(const ATime: Single): TIdVec4;
     function IsDone(const ATime: Single): Boolean;
+    /// <summary>The state of the interpolation (the interpolator and the extrapolation inside it) to the save game</summary>
+    procedure WriteToSaveGame(const AWriter: TGuiSaveWriter);
+    procedure ReadFromSaveGame(const AReader: TGuiSaveReader);
+    /// <summary>Copies the whole state of another interpolator</summary>
+    procedure Assign(const AOther: TGuiInterpolator);
     property EndValue: TIdVec4 read FEndValue;
     property StartValue: TIdVec4 read FStartValue;
   end;
@@ -192,6 +197,79 @@ function TGuiInterpolator.GetCurrentValue(const ATime: Single): TIdVec4;
 begin
   SetPhase(ATime);
   Result := ExtrapolateValue(ATime);
+end;
+
+procedure TGuiInterpolator.WriteToSaveGame(const AWriter: TGuiSaveWriter);
+  procedure PutVec(const AValue: TIdVec4);
+  begin
+    AWriter.WriteFloat(AValue.X);
+    AWriter.WriteFloat(AValue.Y);
+    AWriter.WriteFloat(AValue.Z);
+    AWriter.WriteFloat(AValue.W);
+  end;
+begin
+  AWriter.WriteFloat(FStartTime);
+  AWriter.WriteFloat(FAccelTime);
+  AWriter.WriteFloat(FLinearTime);
+  AWriter.WriteFloat(FDecelTime);
+  PutVec(FStartValue);
+  PutVec(FEndValue);
+  AWriter.WriteInt(Ord(FExtrapolation));
+  AWriter.WriteFloat(FExStartTime);
+  AWriter.WriteFloat(FExDuration);
+  PutVec(FExStartValue);
+  PutVec(FExBaseSpeed);
+  PutVec(FExSpeed);
+  AWriter.WriteFloat(FCurrentTime);
+  PutVec(FCurrentValue);
+end;
+
+procedure TGuiInterpolator.Assign(const AOther: TGuiInterpolator);
+begin
+  FStartTime := AOther.FStartTime;
+  FAccelTime := AOther.FAccelTime;
+  FLinearTime := AOther.FLinearTime;
+  FDecelTime := AOther.FDecelTime;
+  FStartValue := AOther.FStartValue;
+  FEndValue := AOther.FEndValue;
+  FExtrapolation := AOther.FExtrapolation;
+  FExStartTime := AOther.FExStartTime;
+  FExDuration := AOther.FExDuration;
+  FExStartValue := AOther.FExStartValue;
+  FExBaseSpeed := AOther.FExBaseSpeed;
+  FExSpeed := AOther.FExSpeed;
+  FCurrentTime := AOther.FCurrentTime;
+  FCurrentValue := AOther.FCurrentValue;
+end;
+
+procedure TGuiInterpolator.ReadFromSaveGame(const AReader: TGuiSaveReader);
+  function GetVec: TIdVec4;
+  begin
+    Result.X := AReader.ReadFloat;
+    Result.Y := AReader.ReadFloat;
+    Result.Z := AReader.ReadFloat;
+    Result.W := AReader.ReadFloat;
+  end;
+var
+  LMode: Integer;
+begin
+  FStartTime := AReader.ReadFloat;
+  FAccelTime := AReader.ReadFloat;
+  FLinearTime := AReader.ReadFloat;
+  FDecelTime := AReader.ReadFloat;
+  FStartValue := GetVec;
+  FEndValue := GetVec;
+  LMode := AReader.ReadInt;
+  if (LMode < Ord(Low(TGuiExtrapolation))) or (LMode > Ord(High(TGuiExtrapolation))) then
+    raise EGuiSaveException.CreateFmt('the save game has an extrapolation of %d', [LMode]);
+  FExtrapolation := TGuiExtrapolation(LMode);
+  FExStartTime := AReader.ReadFloat;
+  FExDuration := AReader.ReadFloat;
+  FExStartValue := GetVec;
+  FExBaseSpeed := GetVec;
+  FExSpeed := GetVec;
+  FCurrentTime := AReader.ReadFloat;
+  FCurrentValue := GetVec;
 end;
 
 function TGuiInterpolator.IsDone(const ATime: Single): Boolean;

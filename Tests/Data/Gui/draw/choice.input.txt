@@ -1,0 +1,81 @@
+# scenarios of choiceDef (written for the test; no file of Doom 3)
+@case choice_cvar_and_gui
+@file choice.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  choiceDef num {
+    rect 10, 10, 200, 20
+    choices "Low;Medium;High;Ultra"
+    cvar "r_quality"
+    updateGroup "video"
+    textscale 0.4
+    forecolor 1, 1, 1, 1
+    hovercolor 1, 1, 0, 1
+    shadow 1
+    onAction { set "cmd" "num changed" }
+    onActionRelease { set "cmd" "num released" }
+  }
+  choiceDef str {
+    rect 10, 40, 200, 20
+    choices "Off;On;Auto"
+    values "off;on;auto"
+    choicetype 1
+    cvar "r_mode"
+    textscale 0.4
+  }
+  choiceDef onlygui {
+    rect 10, 70, 200, 20
+    choices "Red;Green;Blue"
+    gui "gui::color"
+    textscale 0.4
+  }
+  choiceDef bad {
+    rect 10, 100, 200, 20
+    choices "A;B"
+    cvar "r_missing"
+    gui "gui::other"
+  }
+  choiceDef plain {
+    rect 10, 130, 200, 20
+    choices "X;Y;Z"
+    currentchoice 1
+    textscale 0.4
+  }
+  choiceDef mismatch {
+    rect 10, 160, 200, 20
+    choices "P;Q;R"
+    values "p;q"
+    choicetype 1
+    cvar "r_mode"
+  }
+}
+@op cvar r_quality 2
+@op cvar r_mode auto
+@op load choice.gui
+@op state color 1
+@op redraw 10
+@op activate 1 20
+@op redraw 30
+@op guicursor 20 20
+@op event 3 0 0 35
+@op redraw 40
+@op event 1 187 1 50
+@op event 1 187 0 60
+@op event 1 136 1 70
+@op event 1 136 0 80
+@op event 1 135 1 90
+@op event 1 188 1 100
+@op event 1 188 0 110
+@op event 2 117 0 120
+@op event 2 72 0 130
+@op event 2 108 0 140
+@op event 3 0 0 150
+@op redraw 160
+@op cvar r_quality 0
+@op named cvar read video
+@op redraw 170
+@op named cvar write video
+@op named cvar read other
+@op named cvar write
+@op dump
+@end

@@ -19,7 +19,8 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Scanner.IdDict, DelphiDoom.Gui.Regs.Types, DelphiDoom.Gui.Regs.Intf,
-  DelphiDoom.Gui.Window.Intf;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Cvars.Intf, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DrawContext,
+  DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Window.Hosts, System.SysUtils;
 
 type
   /// <summary>
@@ -42,6 +43,35 @@ type
     Language: IGuiLanguage;
     Tables: IGuiTables;
     Fonts: IGuiFontLookup;
+    /// <summary>The device context the windows draw with (not owned); nil: nothing is drawn</summary>
+    DrawContext: TGuiDrawContext;
+    Materials: IGuiMaterialLookup;
+    Cvars: IGuiCvars;
+    /// <summary>idKeyInput::IsDown (shift and control); nil: no key is down</summary>
+    Keys: IGuiKeyState;
+    KeyBindings: IGuiKeyBindings;
+    FileLister: IGuiFileLister;
+    ScratchImages: IGuiScratchImages;
+    RenderHost: IGuiRenderHost;
+    /// <summary>The command the last HandleEvent returned (idUserInterfaceLocal::GetReturnCmd)</summary>
+    ReturnCommand: AnsiString;
+    /// <summary>The statics actionDownRun and actionUpRun of idWindow::HandleEvent</summary>
+    ActionDownRun: Boolean;
+    /// <summary>The window that waits for a key (idUserInterfaceLocal::SetBindHandler): a TGuiWindow, not owned</summary>
+    BindHandler: TObject;
+    /// <summary>The static buffer of idEditWindow::HandleEvent (MAX_EDITFIELD bytes): its bytes stay from one event to the next</summary>
+    EditBuffer: TBytes;
+    /// <summary>Sys_GetConsoleKey(false) and (true): the characters that open the console and are not typed in a field</summary>
+    ConsoleKey: Integer;
+    ConsoleKeyShifted: Integer;
+    /// <summary>Where a window reads a file (the <c>source</c> of an edit window)</summary>
+    FileSystem: IIdLibFileSystem;
+    ActionUpRun: Boolean;
+    /// <summary>The mouse cursor of the gui (CursorX and CursorY)</summary>
+    CursorX: Single;
+    CursorY: Single;
+    /// <summary>The static text buffer of idWindow::DebugDraw: it is never cleared</summary>
+    DebugBuffer: AnsiString;
     /// <summary>The registers of the last evaluation and the window that made it (idWindow::EvalRegs statics)</summary>
     EvalRegisters: TGuiRegisters;
     LastEvalWindow: TObject;
@@ -57,6 +87,9 @@ constructor TGuiContext.Create(const ALog: IIdLibLog);
 begin
   inherited Create;
   FLog := ALog;
+  SetLength(EditBuffer, 4096);
+  ConsoleKey := 96;
+  ConsoleKeyShifted := 126;
   FStateDict := TIdDict.Create(ALog);
 end;
 
