@@ -22,6 +22,7 @@ uses
   DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Random, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Sound.Intf,
   DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State, DelphiDoom.Greed.Level.Intf,
   DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRenderer.Intf,
+  DelphiDoom.Greed.Mouse.Intf,
   DelphiDoom.Greed.Inventory, DelphiDoom.Greed.Game.Parts;
 
 const
@@ -82,6 +83,8 @@ type
     function GetLowResolution: Boolean;
     procedure SetLowResolution(AValue: Boolean);
     function GetViolence: Boolean;
+    function GetMouse: IGreedMouse;
+    procedure SetMouse(const AValue: IGreedMouse);
     procedure SetViolence(AValue: Boolean);
     procedure CreateParts;
     procedure InitData;
@@ -160,6 +163,12 @@ type
     property LowResolution: Boolean read GetLowResolution write SetLowResolution;
     /// <summary>SC.violence: blood and corpses</summary>
     property Violence: Boolean read GetViolence write SetViolence;
+    /// <summary>
+    ///   The mouse that the game puts back in the middle of the window when the player is moved by a warp or a
+    ///   level starts (ResetMouse of d_ints.pas); nil, the default, if none is installed. Its buttons and its
+    ///   movement come with the commands (IGreedControls)
+    /// </summary>
+    property Mouse: IGreedMouse read GetMouse write SetMouse;
     /// <summary>
     ///   The status bar is shown (currentViewSize is not the full view): drawing it chooses an item of the
     ///   inventory when none is chosen. True by default
@@ -424,6 +433,16 @@ begin
     FParts.Control.MaxScroll := GREED_MAXSCROLL1;
     FParts.Control.ScrollRate := GREED_SCROLLRATE1;
   end;
+end;
+
+function TGreedGame.GetMouse: IGreedMouse;
+begin
+  Result := FParts.Mouse;
+end;
+
+procedure TGreedGame.SetMouse(const AValue: IGreedMouse);
+begin
+  FParts.Mouse := AValue;
 end;
 
 function TGreedGame.GetViolence: Boolean;

@@ -21,7 +21,8 @@ uses
   DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.PlayerControl, DelphiDoom.Greed.PlayerWeapons,
   DelphiDoom.Greed.WeaponPictures, DelphiDoom.Greed.ElevatorRules, DelphiDoom.Greed.DoorRules,
   DelphiDoom.Greed.ItemRules, DelphiDoom.Greed.SwitchRules, DelphiDoom.Greed.LevelRules,
-  DelphiDoom.Greed.CheatCodes, DelphiDoom.Greed.MapSession, DelphiDoom.Greed.Inventory;
+  DelphiDoom.Greed.CheatCodes, DelphiDoom.Greed.MapSession, DelphiDoom.Greed.Inventory,
+  DelphiDoom.Greed.Mouse.Intf;
 
 type
   /// <summary>
@@ -42,6 +43,8 @@ type
     View: IGreedGameView;
     Messages: IGreedMessages;
     Controls: IGreedControls;
+    /// <summary>The mouse, for ResetMouse; nil if none is installed</summary>
+    Mouse: IGreedMouse;
     // ---- made by the game ----
     World: IGreedWorld;
     Sprites: TGreedLinkedPool<TGreedSprite>;

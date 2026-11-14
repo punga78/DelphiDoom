@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState,
-  DelphiDoom.Greed.Application.Intf;
+  DelphiDoom.Greed.Application.Intf, DelphiDoom.Greed.Mouse.Intf, DelphiDoom.Greed.ScriptMouseLine;
 
 type
   /// <summary>
@@ -20,7 +20,11 @@ type
   ///   driven without a keyboard. The lines are
   ///     tic name down|up    the key goes down or up when the tic runs (the first tic of the program is 1)
   ///     tic type TEXT       the characters are typed, one for each reading of the game (a secret code)
-  ///   The name is a key of the menus (up, down, left, right, enter, esc, backspace, space, a letter or a digit)
+  ///     tic mouse DX DY     the mouse moves DX pixels to the right and DY down
+  ///     tic mousebutton fire|use|north down|up   a button of the mouse (left, right, middle)
+  ///     tic click X Y       a click of the left button at the pixel X, Y of a menu (320 x 200)
+  ///   The lines of the mouse go to the mouse of the script (IGreedScriptMouse), which the mouse of the game reads
+  ///   as its device. The name is a key of the menus (up, down, left, right, enter, esc, backspace, space, a letter or a digit)
   ///   or a command of the game without the "gc" (north, east, fire, use, weapon2, menu ...); "space" is also use
   ///   and restart, "esc" is also the menu command, "shift" is run and shift, "alt" is strafe and alt, as the keys
   ///   of the original. Empty lines and lines that start with # are skipped; the lines may be in any order of tics.
@@ -39,9 +43,12 @@ type
         Commands: TGreedCommandSet;
         Down: Boolean;
         Text: string;
+        IsMouse: Boolean;
+        Mouse: TGreedScriptMouseLine;
       end;
     var
       FInner: IGreedCommandSource;
+      FMouse: IGreedScriptMouse;
       FSteps: TList<TStep>;
       FNext: Integer;
       FKeys: array[0..KEY_COUNT - 1] of Boolean;
@@ -51,8 +58,12 @@ type
     class function CommandsOf(const AName: string; out ACommands: TGreedCommandSet): Boolean; static;
     class function ScanCodeOfName(const AName: string): Integer; static;
   public
-    /// <summary>AInner can be nil (the script alone); EGreedException with the number of the line if one is not understood</summary>
-    constructor Create(const AScript: TStrings; const AInner: IGreedCommandSource);
+    /// <summary>
+    ///   AInner can be nil (the script alone). AMouse can be nil if the script has no lines for the mouse.
+    ///   EGreedException with the number of the line if one is not understood, or is for the mouse and there is none
+    /// </summary>
+    constructor Create(const AScript: TStrings; const AInner: IGreedCommandSource;
+      const AMouse: IGreedScriptMouse = nil);
     destructor Destroy; override;
     // IGreedKeyboard
     function IsDown(AScanCode: Integer): Boolean;
@@ -72,7 +83,9 @@ uses
   System.TypInfo, DelphiDoom.Greed.Types, DelphiDoom.Greed.MenuInput;
 
 resourcestring
-  SScriptLine = 'Greed: line %d of the script is not "tic key|command down|up" or "tic type TEXT": %s';
+  SScriptLine = 'Greed: line %d of the script is not "tic key|command down|up", "tic type TEXT", "tic mouse DX DY", ' +
+    '"tic mousebutton fire|use|north down|up" or "tic click X Y": %s';
+  SScriptNoMouse = 'Greed: line %d of the script is for the mouse and the script has no mouse: %s';
 
 const
   WORD_TYPE = 'type';
@@ -82,7 +95,8 @@ const
 
 { TGreedApplicationScript }
 
-constructor TGreedApplicationScript.Create(const AScript: TStrings; const AInner: IGreedCommandSource);
+constructor TGreedApplicationScript.Create(const AScript: TStrings; const AInner: IGreedCommandSource;
+  const AMouse: IGreedScriptMouse);
 var
   LIndex, LPosition: Integer;
   LLine: string;
@@ -93,6 +107,7 @@ begin
   if not Assigned(AScript) then
     raise EArgumentNilException.Create('AScript');
   FInner := AInner;
+  FMouse := AMouse;
   FSteps := TList<TStep>.Create;
   for LIndex := 0 to AScript.Count - 1 do
   begin
@@ -104,7 +119,15 @@ begin
     LStep.ScanCode := NO_SCAN_CODE;
     if (Length(LWords) < 3) or not TryStrToInt(LWords[0], LStep.Tic) then
       raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
-    if SameText(LWords[1], WORD_TYPE) then
+    if TGreedScriptMouseLine.IsMouseWord(LWords[1]) then
+    begin
+      if not TGreedScriptMouseLine.TryParse(LWords, LStep.Mouse) then
+        raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
+      if not Assigned(FMouse) then
+        raise EGreedException.CreateFmt(SScriptNoMouse, [LIndex + 1, LLine]);
+      LStep.IsMouse := True;
+    end
+    else if SameText(LWords[1], WORD_TYPE) then
       LStep.Text := UpperCase(LWords[2])
     else
     begin
@@ -188,7 +211,9 @@ begin
   while (FNext < FSteps.Count) and (FSteps[FNext].Tic <= ATic) do
   begin
     LStep := FSteps[FNext];
-    if LStep.Text <> '' then
+    if LStep.IsMouse then
+      LStep.Mouse.ApplyTo(FMouse)
+    else if LStep.Text <> '' then
       FTyping := FTyping + LStep.Text
     else
     begin

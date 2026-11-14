@@ -63,7 +63,10 @@ type
   ///   display (scaled to the frame, over the last picture of the game for the menus, over black for the others);
   ///   the palette is always the one of the display, so the fades and the movies show their colors.
   ///   The keys of the screens come from the keyboards (the window and a script), the commands of the game from its
-  ///   own source. Not ported: the mouse, the net game, the demos.
+  ///   own source. With a mouse (the one of the screens) the pointer of the menus is drawn over the picture that
+  ///   goes to the window while it is shown (I_DrawMouse of the original, called by I_FinishUpdate), on a copy:
+  ///   the frames of the game and of the screens never have the pointer in them. Not ported: the net game, the
+  ///   demos.
   ///   Differences from the original: a window that is closed ends the program from any phase; a movie that is not
   ///   found is skipped
   /// </summary>
@@ -286,11 +289,21 @@ var
   LPalette: TBytes;
   LColors: TGreedColors;
   LIndex: Integer;
+  LShown: TGreedFrame;
 begin
   LPalette := FScreens.Display.Palette;
   for LIndex := 0 to 255 do
     LColors[LIndex] := (Cardinal(LPalette[LIndex * 3]) shl 16) or (Cardinal(LPalette[LIndex * 3 + 1]) shl 8) or
       Cardinal(LPalette[LIndex * 3 + 2]);
+  if Assigned(FScreens.Mouse) and Assigned(FScreens.MouseCursor) and FScreens.Mouse.IsVisible then
+  begin
+    LShown.Width := AFrame.Width;
+    LShown.Height := AFrame.Height;
+    LShown.Pixels := Copy(AFrame.Pixels, 0, Length(AFrame.Pixels));
+    FScreens.MouseCursor.Draw(LShown, FScreens.Mouse.PointerX, FScreens.Mouse.PointerY);
+    FPresenter.Present(LShown, LColors);
+    Exit;
+  end;
   FPresenter.Present(AFrame, LColors);
 end;
 
@@ -452,6 +465,9 @@ function TGreedApplication.ConfirmQuit: Boolean;
 begin
   BeginOverlay;
   try
+    // RunQuickExit of raven.pas: MouseShow, ShowQuit, MouseHide
+    if Assigned(FScreens.Mouse) then
+      FScreens.Mouse.Show;
     FScreens.Menu.OpenQuit;
     RunModal(gamQuit, False,
       procedure
@@ -464,6 +480,8 @@ begin
         Result := FScreens.Menu.Active;
       end,
       ShowCanvas);
+    if Assigned(FScreens.Mouse) then
+      FScreens.Mouse.Hide;
   finally
     EndOverlay;
   end;
@@ -714,6 +732,12 @@ begin
   ALines.Add(Format('screens.movie.active=%d', [Ord(FScreens.Player.Active)]));
   ALines.Add(Format('screens.display.paletteversion=%d', [FScreens.Display.PaletteVersion]));
   ALines.Add(Format('screens.input.timecount=%d', [FScreens.Input.TimeCount]));
+  if Assigned(FScreens.Mouse) then
+  begin
+    ALines.Add(Format('screens.mouse.visible=%d', [Ord(FScreens.Mouse.IsVisible)]));
+    ALines.Add(Format('screens.mouse.x=%d', [Round(FScreens.Mouse.PointerX)]));
+    ALines.Add(Format('screens.mouse.y=%d', [Round(FScreens.Mouse.PointerY)]));
+  end;
 end;
 
 end.

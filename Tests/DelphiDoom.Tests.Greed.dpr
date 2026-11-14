@@ -198,7 +198,23 @@ uses
   DelphiDoom.Tests.Greed.MapSession in 'Source\DelphiDoom.Tests.Greed.MapSession.pas',
   DelphiDoom.Tests.Greed.WeaponPictures in 'Source\DelphiDoom.Tests.Greed.WeaponPictures.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
-  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
+  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas',
+  DelphiDoom.Greed.Mouse.Intf in '..\Libs\Greed\DelphiDoom.Greed.Mouse.Intf.pas',
+  DelphiDoom.Greed.Mouse in '..\Libs\Greed\DelphiDoom.Greed.Mouse.pas',
+  DelphiDoom.Greed.MouseCursor in '..\Libs\Greed\DelphiDoom.Greed.MouseCursor.pas',
+  DelphiDoom.Greed.MouseControls in '..\Libs\Greed\DelphiDoom.Greed.MouseControls.pas',
+  DelphiDoom.Greed.MouseSettings in '..\Libs\Greed\DelphiDoom.Greed.MouseSettings.pas',
+  DelphiDoom.Greed.ScriptMouse in '..\Libs\Greed\DelphiDoom.Greed.ScriptMouse.pas',
+  DelphiDoom.Greed.ScriptMouseLine in '..\Libs\Greed\DelphiDoom.Greed.ScriptMouseLine.pas',
+  DelphiDoom.Greed.JoystickControls in '..\Libs\Greed\DelphiDoom.Greed.JoystickControls.pas',
+  DelphiDoom.Greed.HostMouse in '..\Greed\DelphiDoom.Greed.HostMouse.pas',
+  DelphiDoom.Tests.Greed.Mouse in 'Source\DelphiDoom.Tests.Greed.Mouse.pas',
+  DelphiDoom.Tests.Greed.MouseCursor in 'Source\DelphiDoom.Tests.Greed.MouseCursor.pas',
+  DelphiDoom.Tests.Greed.MouseControls in 'Source\DelphiDoom.Tests.Greed.MouseControls.pas',
+  DelphiDoom.Tests.Greed.JoystickControls in 'Source\DelphiDoom.Tests.Greed.JoystickControls.pas',
+  DelphiDoom.Tests.Greed.ScriptMouse in 'Source\DelphiDoom.Tests.Greed.ScriptMouse.pas',
+  DelphiDoom.Tests.Greed.HostMouse in 'Source\DelphiDoom.Tests.Greed.HostMouse.pas',
+  DelphiDoom.Tests.Greed.MenuMouse in 'Source\DelphiDoom.Tests.Greed.MenuMouse.pas';
 
 var
   Runner: ITestRunner;
