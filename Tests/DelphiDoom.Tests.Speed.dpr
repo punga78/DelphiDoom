@@ -83,7 +83,10 @@ uses
   DelphiDoom.Speed.ActorDefinitions in '..\Libs\Speed\DelphiDoom.Speed.ActorDefinitions.pas',
   DelphiDoom.Speed.DoomPictureAliases in '..\Libs\Speed\DelphiDoom.Speed.DoomPictureAliases.pas',
   DelphiDoom.Speed.CarSpriteBuilder in '..\Libs\Speed\DelphiDoom.Speed.CarSpriteBuilder.pas',
-  DelphiDoom.Tests.Speed.ActorDefinitions in 'Source\DelphiDoom.Tests.Speed.ActorDefinitions.pas';
+  DelphiDoom.Tests.Speed.ActorDefinitions in 'Source\DelphiDoom.Tests.Speed.ActorDefinitions.pas',
+  DelphiDoom.Speed.SkyTextures in '..\Libs\Speed\DelphiDoom.Speed.SkyTextures.pas',
+  DelphiDoom.Speed.UmapInfoBuilder in '..\Libs\Speed\DelphiDoom.Speed.UmapInfoBuilder.pas',
+  DelphiDoom.Tests.Speed.SkyTextures in 'Source\DelphiDoom.Tests.Speed.SkyTextures.pas';
 
 var
   Runner: ITestRunner;

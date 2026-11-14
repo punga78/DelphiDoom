@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-  DelphiDoom.Logging.Intf, DelphiDoom.Speed.Intf, DelphiDoom.Speed.CarSpriteBuilder;
+  DelphiDoom.Logging.Intf, DelphiDoom.Speed.Intf, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.GameData.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the library</summary>
@@ -31,6 +31,8 @@ type
     class function CreateTranslator(const ALog: ILog): ISpeedTranslator; static;
     /// <summary>The builder of the sprites of the cars (the models drawn from five sides), with the axes of the models of the game</summary>
     class function CreateCarSpriteBuilder: TSpeedCarSpriteBuilder; static;
+    /// <summary>Adds the sky textures of the circuits (the clouds and the mountains as one picture) to a WAD</summary>
+    class function AppendSkyTextures(const AWad: IGameWadComposer): TArray<TSpeedSkyEntry>; static;
   end;
 
 implementation
@@ -38,7 +40,7 @@ implementation
 uses
   System.Classes,
   DelphiDoom.Palette.Intf, DelphiDoom.Palette.Factory, DelphiDoom.GameData.Types,
-  DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory,
+  DelphiDoom.GameData.Factory,
   DelphiDoom.Speed.Container, DelphiDoom.Speed.PaletteBuilder, DelphiDoom.Speed.Is2Decoder,
   DelphiDoom.Speed.MapBitmapBuilder, DelphiDoom.Speed.CircuitReader, DelphiDoom.Speed.LevelBuilder,
   DelphiDoom.Speed.FontBuilder, DelphiDoom.Speed.Translator, DelphiDoom.Models.I3d.Intf,
@@ -91,6 +93,13 @@ begin
   Result := TSpeedTranslator.Create(ALog, LMatcher, LPatches, TSpeedPaletteBuilder.Create(LMatcher),
     TSpeedIs2Decoder.Create, TSpeedCircuitReader.Create(ALog), TSpeedLevelBuilder.Create(ALog),
     TSpeedFontBuilder.Create(LPatches, LMatcher), TSpeedMapBitmapBuilder.Create);
+end;
+
+class function TSpeedFactory.AppendSkyTextures(const AWad: IGameWadComposer): TArray<TSpeedSkyEntry>;
+begin
+  Result := TSpeedSkyTextures.Append(AWad,
+    TGameDataFactory.CreatePatchBuilder(TGamePatchOptions.Speed, TPaletteFactory.CreateColorMatcher),
+    TGamePatchOptions.Speed.TransparentIndex);
 end;
 
 class function TSpeedFactory.CreateCarSpriteBuilder: TSpeedCarSpriteBuilder;

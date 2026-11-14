@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures,
   DelphiDoom.Speed.Factory;
 
 const
@@ -60,6 +60,7 @@ var
   LWad: IGameWadComposer;
   LSprites: TSpeedCarSpriteBuilder;
   LCarSprites: TArray<string>;
+  LMapInfo: string;
 begin
   AWad := nil;
   try
@@ -82,6 +83,10 @@ begin
     LSprites.Free;
   end;
   LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites)));
+  // the name and the sky of every circuit
+  LMapInfo := TSpeedUmapInfoBuilder.Build(LWad, TSpeedFactory.AppendSkyTextures(LWad));
+  if LMapInfo <> '' then
+    LWad.AddLump(SPEED_UMAPINFO_LUMP, TEncoding.ASCII.GetBytes(LMapInfo));
   AWad := LWad.ToBytes;
   FLog.Info(Format('SPEEDH.JCL: %d lumps translated, %d models'#13#10, [LWad.Count, Length(FModels)]));
   Result := True;

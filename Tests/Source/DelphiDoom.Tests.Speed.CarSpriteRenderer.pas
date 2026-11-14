@@ -256,6 +256,32 @@ begin
   end;
 end;
 
+// A picture lump (patch) as a picture to look at
+procedure WritePatchBmp(const AFileName: string; const APatch, APlayPal: TBytes);
+var
+  LImage: TSpeedCarSpriteImage;
+  LColumn, LOffset, LRow, LCount, LIndex: Integer;
+begin
+  LImage.Width := PSmallInt(@APatch[0])^;
+  LImage.Height := PSmallInt(@APatch[2])^;
+  SetLength(LImage.Pixels, LImage.Width * LImage.Height);
+  FillChar(LImage.Pixels[0], Length(LImage.Pixels), 255);
+  for LColumn := 0 to LImage.Width - 1 do
+  begin
+    LOffset := PInteger(@APatch[8 + 4 * LColumn])^;
+    while APatch[LOffset] <> 255 do
+    begin
+      LRow := APatch[LOffset];
+      LCount := APatch[LOffset + 1];
+      for LIndex := 0 to LCount - 1 do
+        if LRow + LIndex < LImage.Height then
+          LImage.Pixels[(LRow + LIndex) * LImage.Width + LColumn] := APatch[LOffset + 3 + LIndex];
+      Inc(LOffset, LCount + 4);
+    end;
+  end;
+  WriteBmp(AFileName, LImage, APlayPal);
+end;
+
 procedure TTestSpeedCarSpriteRenderer.DovrebbeRifiutareGliOggettiNil;
 var
   LPalette, LColorMap: TBytes;
@@ -306,6 +332,8 @@ var
   LRotation, LIndex, LOpaque: Integer;
   LMinimum, LMaximum: Single;
   LText: TStringList;
+  LName: string;
+  LData: TBytes;
 begin
   LPath := FindShareware;
   if LPath = '' then
@@ -346,6 +374,16 @@ begin
         Assert.IsTrue(LOpaque > 100, 'the car is not drawn');
         WriteBmp(TPath.Combine(LDump, Format('car_%d.bmp', [LRotation])), LImage, LWad.LumpData[LWad.IndexOf('PLAYPAL')]);
       end;
+      for LName in ['NUBES0','NUBES1','NUBES7','MOUNT0','MOUNT1','MOUNT7','SKY1','SKY2','MBG_CAR','CARPOS0','RACEPOS0','RACE_3','MFBG0','MMHELMET','MREVO0','MG0','MPOS','MLAP','MTIME','MGEAR','MWQUOTE','MLAPS'] do
+        if LWad.IndexOf(LName) >= 0 then
+        begin
+          LData := LWad.LumpData[LWad.IndexOf(LName)];
+          if Length(LData) >= 8 then
+            LText.Add(Format('lump %s: %d bytes, patch %dx%d offsets %d,%d', [LName, Length(LData), PSmallInt(@LData[0])^, PSmallInt(@LData[2])^, PSmallInt(@LData[4])^, PSmallInt(@LData[6])^]));
+        end;
+      for LName in ['NUBES0', 'MOUNT0', 'SKY1'] do
+        WritePatchBmp(TPath.Combine(LDump, 'lump_' + LName + '.bmp'), LWad.LumpData[LWad.IndexOf(LName)],
+          LWad.LumpData[LWad.IndexOf('PLAYPAL')]);
       LText.SaveToFile(TPath.Combine(LDump, 'extents.txt'));
     finally
       LText.Free;
