@@ -184,7 +184,7 @@ var
 begin
   Supports(FLogRef, IIdLibLog, LLog);
   FInterface := TGuiUserInterface.Create(FFiles, LLog, TGuiWindowFactory.Create,
-    TGuiWindowFakeHost.Create(FLines), nil, nil, FDrawContext);
+    TGuiWindowFakeHost.Create(FLines), TGuiHarnessLanguage.Create(FLines), nil, FDrawContext);
   FInterface.Context.DrawContext := FDrawContext;
   FInterface.Context.Materials := FMaterials;
   FInterface.Context.Cvars := FCvars;

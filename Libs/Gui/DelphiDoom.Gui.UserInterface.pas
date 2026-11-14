@@ -243,9 +243,16 @@ function TGuiUserInterface.HandleEvent(const AEvent: TGuiSysEvent; const ATime: 
   var AUpdateVisuals: Boolean): AnsiString;
 var
   LMask: IInterface;
+  LHandler: TGuiWindow;
 begin
   LMask := TGuiFloatMask.Enter;
   FContext.Time := ATime;
+  if Assigned(FContext.BindHandler) and (AEvent.EventType = GUI_SE_KEY) and (AEvent.Value2 = 1) then
+  begin
+    LHandler := TGuiWindow(FContext.BindHandler);
+    FContext.BindHandler := nil;
+    Exit(LHandler.HandleEvent(AEvent, AUpdateVisuals));
+  end;
   if AEvent.EventType = GUI_SE_MOUSE then
   begin
     FContext.CursorX := FContext.CursorX + AEvent.Value;

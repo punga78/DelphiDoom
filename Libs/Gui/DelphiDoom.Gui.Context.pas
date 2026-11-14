@@ -53,6 +53,8 @@ type
     ReturnCommand: AnsiString;
     /// <summary>The statics actionDownRun and actionUpRun of idWindow::HandleEvent</summary>
     ActionDownRun: Boolean;
+    /// <summary>The window that waits for a key (idUserInterfaceLocal::SetBindHandler): a TGuiWindow, not owned</summary>
+    BindHandler: TObject;
     ActionUpRun: Boolean;
     /// <summary>The mouse cursor of the gui (CursorX and CursorY)</summary>
     CursorX: Single;

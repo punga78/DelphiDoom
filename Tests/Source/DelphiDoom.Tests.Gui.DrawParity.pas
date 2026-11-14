@@ -41,6 +41,8 @@ type
     [Test]
     procedure ISliderCoincidonoConIlCpp;
     [Test]
+    procedure BindEFieldCoincidonoConIlCpp;
+    [Test]
     procedure LeSceltePortanoICvarEdIGuiCoincidonoConIlCpp;
   end;
 
@@ -93,6 +95,11 @@ end;
 procedure TTestGuiDrawParity.LeSceltePortanoICvarEdIGuiCoincidonoConIlCpp;
 begin
   TGuiHarnessCompare.Check('draw\choice.input.txt', 'draw\choice.golden.txt');
+end;
+
+procedure TTestGuiDrawParity.BindEFieldCoincidonoConIlCpp;
+begin
+  TGuiHarnessCompare.Check('draw\bind.input.txt', 'draw\bind.golden.txt');
 end;
 
 initialization

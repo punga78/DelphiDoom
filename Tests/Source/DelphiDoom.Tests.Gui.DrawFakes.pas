@@ -15,7 +15,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Math.Vec4,
-  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Cvars;
+  DelphiDoom.Gui.Types, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DeviceContext.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Cvars, DelphiDoom.Gui.Regs.Intf;
 
 type
   /// <summary>The bits of a float in hexadecimal, as the harness writes them</summary>
@@ -32,6 +32,15 @@ type
   public
     constructor Create(const ALines: TStrings);
     procedure SetString(const AName, AValue: AnsiString); override;
+  end;
+
+  /// <summary>idLangDict of the harness: it has no strings; a string id is reported and returned as it is</summary>
+  TGuiHarnessLanguage = class(TInterfacedObject, IGuiLanguage)
+  strict private
+    FLines: TStrings;
+  public
+    constructor Create(const ALines: TStrings);
+    function GetString(const AText: AnsiString): AnsiString;
   end;
 
   /// <summary>The keys that are down (idKeyInput::IsDown): the scenarios set them</summary>
@@ -148,6 +157,21 @@ procedure TGuiHarnessCvars.SetString(const AName, AValue: AnsiString);
 begin
   FLines.Add('host cvar set ' + string(AName) + ' ' + string(AValue));
   inherited SetString(AName, AValue);
+end;
+
+{ TGuiHarnessLanguage }
+
+constructor TGuiHarnessLanguage.Create(const ALines: TStrings);
+begin
+  inherited Create;
+  FLines := ALines;
+end;
+
+function TGuiHarnessLanguage.GetString(const AText: AnsiString): AnsiString;
+begin
+  Result := AText;
+  if (AText <> '') and (Copy(AText, 1, 5) = '#str_') then
+    FLines.Add('W: Unknown string id ' + string(AText));
 end;
 
 { TGuiHarnessKeys }
