@@ -35,10 +35,8 @@ type
 
     [Test]
     procedure DovrebbeDareLoStessoLivelloDiGrigioDelVecchioPerOgniColore;
-    {$IFDEF CPUX86}
     [Test]
     procedure DovrebbeDare62PerIlGrigio63ComeIlVecchioInTrentaDueBit;
-    {$ENDIF}
     [Test]
     procedure DovrebbeDareIlLivelloDiUnPixelBiancoENero;
     [Test]
@@ -160,14 +158,13 @@ begin
   Assert.AreEqual(LExpected, IntToHex(LDigest.Value, 16));
 end;
 
-{$IFDEF CPUX86}
 procedure TTestFontColorizer.DovrebbeDare62PerIlGrigio63ComeIlVecchioInTrentaDueBit;
 begin
-  // 63 * 0.299 + 63 * 0.587 + 63 * 0.114 is 62.99999... in Extended: the old tool cut it to 62
+  // 63 * 0.299 + 63 * 0.587 + 63 * 0.114 is 62.99999... in Extended: the old tool cut it to 62.
+  // The 64 bit build has no Extended: the library computes it in software, and must give 62 too
   Assert.AreEqual(62, Integer(TFontColorizer.GrayLevel(63, 63, 63)));
   Assert.AreEqual(125, Integer(TFontColorizer.GrayLevel(126, 126, 126)));
 end;
-{$ENDIF}
 
 procedure TTestFontColorizer.DovrebbeDareIlLivelloDiUnPixelBiancoENero;
 begin

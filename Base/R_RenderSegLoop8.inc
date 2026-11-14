@@ -34,7 +34,11 @@ begin
   begin
     // mark floor / ceiling areas
     {$IFDEF USEDOUBLE}
+    {$IFDEF CPUX86}
     yl := Trunc((topfrac_dbl + (HEIGHTUNIT - 1)) / HEIGHTUNIT);
+    {$ELSE}
+    yl := TX87Double.TruncOffsetDivide(topfrac_dbl, HEIGHTUNIT - 1, 0, HEIGHTUNIT);
+    {$ENDIF}
     {$ELSE}
     yl := (topfrac + (HEIGHTUNIT - 1)) shr HEIGHTBITS;
     {$ENDIF}
@@ -136,7 +140,11 @@ begin
       texturecolumn := texturecolumn shr FRACBITS;
       // calculate lighting
       {$IFDEF USEDOUBLE}
+      {$IFDEF CPUX86}
       index := _SHR(Round(rw_scale_dbl * 320 / SCREENWIDTH), LIGHTSCALESHIFT);
+      {$ELSE}
+      index := _SHR(TX87Double.RoundMulDivide(rw_scale_dbl, 320, SCREENWIDTH), LIGHTSCALESHIFT);
+      {$ENDIF}
       {$ELSE}
       // Old code: index := _SHR(rw_scale * 320 div SCREENWIDTH, LIGHTSCALESHIFT);
       index := rw_scale div renderlightscale;
@@ -166,7 +174,11 @@ begin
 
       dc_x := rwx;
       {$IFDEF USEDOUBLE}
+      {$IFDEF CPUX86}
       dc_iscale := round($100000000 / rw_scale_dbl);
+      {$ELSE}
+      dc_iscale := TX87Double.RoundQuotient(4294967296.0, rw_scale_dbl);
+      {$ENDIF}
       {$ELSE}
       dc_iscale := LongWord($ffffffff) div LongWord(rw_scale);
       {$ENDIF}
@@ -264,7 +276,11 @@ begin
         // top wall
         {$IFDEF USEDOUBLE}
         mid := Trunc(pixhigh_dbl / HEIGHTUNIT);
+        {$IFDEF CPUX86}
         pixhigh_dbl := pixhigh_dbl + pixhighstep_dbl;
+        {$ELSE}
+        pixhigh_dbl := TX87Double.Add(pixhigh_dbl, pixhighstep_dbl);
+        {$ENDIF}
         {$ELSE}
         mid := pixhigh shr HEIGHTBITS;
         pixhigh := pixhigh + pixhighstep;
@@ -403,8 +419,13 @@ begin
       begin
         // bottom wall
         {$IFDEF USEDOUBLE}
+        {$IFDEF CPUX86}
         mid := Trunc((pixlow_dbl + HEIGHTUNIT - 1) / HEIGHTUNIT);
         pixlow_dbl := pixlow_dbl + pixlowstep_dbl;
+        {$ELSE}
+        mid := TX87Double.TruncOffsetDivide(pixlow_dbl, HEIGHTUNIT, -1, HEIGHTUNIT);
+        pixlow_dbl := TX87Double.Add(pixlow_dbl, pixlowstep_dbl);
+        {$ENDIF}
         {$ELSE}
         mid := (pixlow + HEIGHTUNIT - 1) shr HEIGHTBITS;
         pixlow := pixlow + pixlowstep;
@@ -551,9 +572,15 @@ begin
     end;
 
     {$IFDEF USEDOUBLE}
+    {$IFDEF CPUX86}
     rw_scale_dbl := rw_scale_dbl + rw_scalestep_dbl;
     topfrac_dbl := topfrac_dbl + topstep_dbl;
     bottomfrac_dbl := bottomfrac_dbl + bottomstep_dbl;
+    {$ELSE}
+    rw_scale_dbl := TX87Double.Add(rw_scale_dbl, rw_scalestep_dbl);
+    topfrac_dbl := TX87Double.Add(topfrac_dbl, topstep_dbl);
+    bottomfrac_dbl := TX87Double.Add(bottomfrac_dbl, bottomstep_dbl);
+    {$ENDIF}
     {$ELSE}
     rw_scale := rw_scale + rw_scalestep;
     topfrac := topfrac + topstep;

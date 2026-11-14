@@ -164,6 +164,9 @@ var
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   doomdef,
   i_threads,
   i_system,
@@ -362,7 +365,11 @@ end;
 procedure R_DrawColumnWithDepthBufferCheckWrite(const cfunc: Pprocedure);
 // db_distance := rw_scale/fracunit;
 begin
+{$IFDEF CPUX86}
   R_DrawColumnWithDepthBufferCheckWrite(cfunc, trunc((FRACUNIT / dc_iscale) * FRACUNIT));
+{$ELSE}
+  R_DrawColumnWithDepthBufferCheckWrite(cfunc, LongWord(TX87Double.TruncFixedReciprocal(dc_iscale)));
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -433,7 +440,11 @@ end;
 //==============================================================================
 procedure R_DrawBatchColumnWithDepthBufferCheckWrite(const cfunc: Pprocedure); overload;
 begin
+{$IFDEF CPUX86}
   R_DrawBatchColumnWithDepthBufferCheckWrite(cfunc, trunc((FRACUNIT / dc_iscale) * FRACUNIT));
+{$ELSE}
+  R_DrawBatchColumnWithDepthBufferCheckWrite(cfunc, LongWord(TX87Double.TruncFixedReciprocal(dc_iscale)));
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -515,7 +526,11 @@ end;
 //==============================================================================
 procedure R_DrawColumnWithDepthBufferCheckOnly(const cfunc: Pprocedure);
 begin
+{$IFDEF CPUX86}
   R_DrawColumnWithDepthBufferCheckOnly(cfunc, trunc((FRACUNIT / dc_iscale) * FRACUNIT));
+{$ELSE}
+  R_DrawColumnWithDepthBufferCheckOnly(cfunc, LongWord(TX87Double.TruncFixedReciprocal(dc_iscale)));
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -586,7 +601,11 @@ end;
 //==============================================================================
 procedure R_DrawBatchColumnWithDepthBufferCheckOnly(const cfunc: Pprocedure); overload;
 begin
+{$IFDEF CPUX86}
   R_DrawBatchColumnWithDepthBufferCheckOnly(cfunc, trunc((FRACUNIT / dc_iscale) * FRACUNIT));
+{$ELSE}
+  R_DrawBatchColumnWithDepthBufferCheckOnly(cfunc, LongWord(TX87Double.TruncFixedReciprocal(dc_iscale)));
+{$ENDIF}
 end;
 
 //==============================================================================

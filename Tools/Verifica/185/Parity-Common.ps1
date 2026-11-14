@@ -174,7 +174,9 @@ function Invoke-ParityEntry {
     [Parameter(Mandatory = $true)][string]$StateFile,
     [Parameter(Mandatory = $true)][string]$FrameFile,
     [string]$Extra = '',
-    [int]$TimeoutSeconds = 300
+    # a macchina carica (altri agenti che compilano o provano) una demo puo' durare piu' di cinque minuti:
+    # la variabile d'ambiente DDPARITY_TIMEOUT allunga l'attesa senza toccare gli script che chiamano
+    [int]$TimeoutSeconds = $(if ($env:DDPARITY_TIMEOUT) { [int]$env:DDPARITY_TIMEOUT } else { 300 })
   )
   # a macchina carica una demo puo' superare il limite: DD_PARITY_TIMEOUT (secondi) lo alza
   if ($env:DD_PARITY_TIMEOUT) { $TimeoutSeconds = [int]$env:DD_PARITY_TIMEOUT }

@@ -122,6 +122,10 @@ procedure R_ShutDownLightTexture;
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   d_delphi,
   Math,
   doomdef,
@@ -283,10 +287,15 @@ begin
       psl := @dlbuffer[numdlitems];
       psl.l := l;
       // Convert offset coordinates from LIGHTDEF lump
+{$IFDEF CPUX86}
       dx := xdist - l.x;
       dy := ydist - l.z;
       dz := zdist - l.y;
       psl.squaredist := dx * dx + dy * dy + dz * dz;
+{$ELSE}
+      // the same number as the 32 bit FPU (issue #40): it decides the order in which the lights are drawn
+      psl.squaredist := TRendererX87.LightSquareDistance(xdist, ydist, zdist, l.x, l.z, l.y);
+{$ENDIF}
       if psl.squaredist < MAXSQRLIGHTDISTANCE then
       begin
         psl.x := mo.x + trunc(FRACUNIT * l.x);
@@ -1472,11 +1481,20 @@ var
   lcolumn: Plightparams_t;
 begin
   vis := psl.vis;
+{$IFDEF CPUX86}
   w := 2 * psl.l.radius * lightwidthfactor / DEFLIGHTWIDTHFACTOR;
   fracstep := trunc(vis.xiscale * LIGHTTEXTURESIZE / w);
   frac := trunc(vis.startfrac * LIGHTTEXTURESIZE / w) + fracstep * threadid;
   fracstep := fracstep * numlthreads;
   spryscale := trunc(vis.scale * w / LIGHTTEXTURESIZE);
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  w := TRendererX87.LightWidth(psl.l.radius, lightwidthfactor, DEFLIGHTWIDTHFACTOR);
+  fracstep := TX87Double.TruncQuotient(vis.xiscale * LIGHTTEXTURESIZE, w);
+  frac := TX87Double.TruncQuotient(vis.startfrac * LIGHTTEXTURESIZE, w) + fracstep * threadid;
+  fracstep := fracstep * numlthreads;
+  spryscale := TX87Double.TruncMulDivide(w, vis.scale, LIGHTTEXTURESIZE);
+{$ENDIF}
   lcolumn := @lcolumns[threadid];
   lcolumn.lightsourcex := psl.x;
   lcolumn.lightsourcey := psl.y;

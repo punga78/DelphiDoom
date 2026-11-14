@@ -147,6 +147,9 @@ procedure R_SetDrawSegFunctions;
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   doomtype,
   doomdef,
   i_system,
@@ -4508,7 +4511,12 @@ begin
   dy := seg.v2.y - seg.v1.y;
   dx1 := viewx - seg.v1.x;
   dy1 := viewy - seg.v1.y;
+{$IFDEF CPUX86}
   result := round((dy * dx1 - dx * dy1) * seg.inv_length);
+{$ELSE}
+  // the same number as the 32 bit FPU (issue #40)
+  result := TX87Double.RoundScaledCross(dy, dx1, -dx, dy1, seg.inv_length);
+{$ENDIF}
   if result < 0 then
     result := -result;
 end;
@@ -4526,7 +4534,11 @@ begin
   dy := seg.v2.y - seg.v1.y;
   dx1 := viewx - seg.v1.x;
   dy1 := viewy - seg.v1.y;
+{$IFDEF CPUX86}
   result := round((dx * dx1 + dy * dy1) * seg.inv_length);
+{$ELSE}
+  result := TX87Double.RoundScaledCross(dx, dx1, dy, dy1, seg.inv_length);
+{$ENDIF}
   if result < 0 then
     result := -result;
 end;

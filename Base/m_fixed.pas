@@ -497,7 +497,12 @@ end;
 //==============================================================================
 function FixedMulEx(const a, b: fixed_t): fixed_t;
 begin
+{$IFDEF CPUX86}
   result := Round(a / FRACUNIT * b);
+{$ELSE}
+  // the same number as the 32 bit FPU (issue #40)
+  result := TFixedMath.MulRounded(a, b);
+{$ENDIF}
 end;
 
 //==============================================================================
@@ -676,6 +681,12 @@ begin
   end
   else
   begin
+{$IFNDEF CPUX86}
+    // the same number as the 32 bit FPU, which rounds the quotient to 64 bits and then to 53 (issue #40):
+    // the sprites and the lights take their scales from here
+    result := TFixedMath.DivideEx(a, b);
+    exit;
+{$ENDIF}
     ret := (a / b) * FRACUNIT;
     if ret < MININT + 1 then
       result := MININT
@@ -843,7 +854,11 @@ end;
 //==============================================================================
 function FixedMul64(const a, b: fixed64_t): fixed64_t;
 begin
+{$IFDEF CPUX86}
   result := Round(a / FRACUNIT * b);
+{$ELSE}
+  result := TFixedMath.Mul64(a, b);
+{$ENDIF}
 end;
 
 //==============================================================================

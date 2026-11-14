@@ -78,6 +78,10 @@ function TEngineExportSettings.CommandLine: string;
 var
   LIndex: Integer;
 begin
+  // the libraries of the script compiler (ddc_<game>.dll) never read a command line: the old
+  // code found an empty myargv there, asking the item 0 raised and closed DD_IDE at its start
+  if FCommandLine.Count = 0 then
+    Exit('');
   Result := fname(FCommandLine[0]);
   for LIndex := 1 to FCommandLine.Count - 1 do
     Result := Result + ' ' + FCommandLine[LIndex];

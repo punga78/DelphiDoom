@@ -64,6 +64,9 @@ var
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   r_segs,
   r_main;
 
@@ -177,6 +180,11 @@ begin
   anglea := ANG90 + (visangle - viewangle);
   angleb := ANG90 + (visangle - rw_normalangle);
 
+{$IFNDEF CPUX86}
+  // the same number as the 32 bit FPU (issue #40)
+  result := TRendererX87.ScaleFromAngles(projectiony, rw_distance, anglea, angleb, max_rwscale);
+  exit;
+{$ENDIF}
   num := projectiony * Sin(angleb * ANGLE_T_TO_RAD);
   den := rw_distance * Sin(anglea * ANGLE_T_TO_RAD);
 

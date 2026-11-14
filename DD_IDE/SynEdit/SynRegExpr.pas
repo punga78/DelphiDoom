@@ -4060,13 +4060,6 @@ end; { of function TRegExpr.Dump
 {$ENDIF}
 procedure TRegExpr.Error (AErrorID : Integer);
 
-{$IFDEF reRealExceptionAddr}
-  function ReturnAddr : Pointer; //###0.938
-  asm
-    mov  eax,[ebp+4]
-  end;
-{$ENDIF}
-
 var
   e : ERegExpr;
 begin
@@ -4081,7 +4074,7 @@ begin
   raise
     e
 {$IFDEF reRealExceptionAddr}
-      At ReturnAddr; //###0.938
+      At ReturnAddress; // the intrinsic, not "mov eax,[ebp+4]" (issue #41): the caller of Error at 32 and 64 bit
 {$ENDIF}
 end; { of procedure TRegExpr.Error
 --------------------------------------------------------------}

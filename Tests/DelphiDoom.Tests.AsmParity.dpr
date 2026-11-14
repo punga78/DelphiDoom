@@ -5,7 +5,8 @@
 {  The old assembler (copied in Source\DelphiDoom.Tests.AsmParity.Oracles or, for    }
 {  the MMX code, the 32 bit functions of d_delphi and r_mmx) against the       }
 {  Pascal versions, on limit values and millions of pseudo random inputs.      }
-{  The project is built for 32 bit: the assembler cannot run in 64 bit.        }
+{  The assembler runs in the 32 bit build only: the 64 bit build compares the  }
+{  Pascal code with the fingerprints the assembler gave (asm.golden.txt).      }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -26,8 +27,10 @@ uses
   DelphiDoom.MathCore.FixedMath in '..\Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
   DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
   DelphiDoom.MathCore.PixelBatch in '..\Libs\MathCore\DelphiDoom.MathCore.PixelBatch.pas',
-  DelphiDoom.Tests.AsmParity.Oracles in 'Source\DelphiDoom.Tests.AsmParity.Oracles.pas',
+  DelphiDoom.Tests.MathCore.Fingerprint in 'Source\DelphiDoom.Tests.MathCore.Fingerprint.pas',
+  DelphiDoom.Tests.MathCore.Golden in 'Source\DelphiDoom.Tests.MathCore.Golden.pas',
   DelphiDoom.Tests.AsmParity.Parity in 'Source\DelphiDoom.Tests.AsmParity.Parity.pas',
+  DelphiDoom.Tests.AsmParity.Oracles in 'Source\DelphiDoom.Tests.AsmParity.Oracles.pas',
   DelphiDoom.Tests.AsmParity.FixedMath in 'Source\DelphiDoom.Tests.AsmParity.FixedMath.pas',
   DelphiDoom.Tests.AsmParity.MemoryFill in 'Source\DelphiDoom.Tests.AsmParity.MemoryFill.pas',
   DelphiDoom.Tests.AsmParity.PixelBatch in 'Source\DelphiDoom.Tests.AsmParity.PixelBatch.pas',

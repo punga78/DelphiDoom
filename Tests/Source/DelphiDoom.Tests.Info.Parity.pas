@@ -373,14 +373,14 @@ begin
         LOld := Legacy_Info_GetStatesForMobjInfo(LIndex);
         try
           LNew := LWalker.StatesOf(LIndex);
-          Assert.AreEqual(LOld.Count, Length(LNew), 'round ' + IntToStr(LRound) + ' thing ' + IntToStr(LIndex));
+          Assert.AreEqual<Integer>(LOld.Count, Length(LNew), 'round ' + IntToStr(LRound) + ' thing ' + IntToStr(LIndex));
           for LNumber := 0 to LOld.Count - 1 do
             Assert.AreEqual(LOld.Numbers[LNumber], LNew[LNumber]);
         finally
           LOld.Free;
         end;
       end;
-      Assert.AreEqual(0, Length(LWalker.StatesOf(-1)));
+      Assert.AreEqual<Integer>(0, Length(LWalker.StatesOf(-1)));
     finally
       LWalker.Free;
       End_;
@@ -502,7 +502,7 @@ begin
         LOld := Legacy_Info_FindStatesFromSprite(LText);
         try
           LNew := LFinder.Find(LText);
-          Assert.AreEqual(LOld.Count, Length(LNew), 'round ' + IntToStr(LRound) + ' sprite ' + LText);
+          Assert.AreEqual<Integer>(LOld.Count, Length(LNew), 'round ' + IntToStr(LRound) + ' sprite ' + LText);
           for LIndex := 0 to LOld.Count - 1 do
             Assert.AreEqual(LOld.Numbers[LIndex], LNew[LIndex]);
         finally

@@ -83,7 +83,7 @@ var
   inst: THandle;
 begin
   inst := LoadLibrary('shell32');
-  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteW');
   shellexecutefunc(0, 'open', PChar(cmd), nil, nil, SW_SHOWNORMAL);
   FreeLibrary(inst);
 end;
@@ -101,15 +101,15 @@ var
   inst: THandle;
 begin
   inst := LoadLibrary('shell32');
-  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteW');
   shellexecutefunc(0, 'open',
         PChar(Format(rsFmtMail, [rsMailTo, rsJimmyValavanis, rsProvider, rsSubject, 'DelphiDoom Launcher'])),
           nil, nil, SW_SHOWNORMAL);
   FreeLibrary(inst);
 end;
 
-{$IFNDEF CPUX86}
-// No inline asm at 64 bit: the nominal clock (MHz) comes from the registry.
+// No inline asm (issue #41): the nominal clock (MHz) comes from the registry, at 32 and at
+// 64 bit alike. The old 32 bit code measured it with RDTSC around a Sleep(DelayTime).
 function GetCPUSpeed(const DelayTime: integer = 500): Double;
 var
   Key: HKEY;
@@ -126,35 +126,6 @@ begin
     RegCloseKey(Key);
   end;
 end;
-{$ELSE}
-function GetCPUSpeed(const DelayTime: integer = 500): Double;
-var
-  TimerHi, TimerLo: DWORD;
-  PriorityClass, Priority: Integer;
-begin
-  PriorityClass := GetPriorityClass(GetCurrentProcess);
-  Priority      := GetThreadPriority(GetCurrentThread);
-  SetPriorityClass(GetCurrentProcess, REALTIME_PRIORITY_CLASS);
-  SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_TIME_CRITICAL);
-  Sleep(10);
-  asm
-    dw 310Fh
-    mov TimerLo, eax
-    mov TimerHi, edx
-  end;
-  Sleep(DelayTime);
-  asm
-    dw 310Fh
-    sub eax, TimerLo
-    sbb edx, TimerHi
-    mov TimerLo, eax
-    mov TimerHi, edx
-  end;
-  SetThreadPriority(GetCurrentThread, Priority);
-  SetPriorityClass(GetCurrentProcess, PriorityClass);
-  Result := TimerLo / (1000 * DelayTime);
-end;
-{$ENDIF}
 
 function I_WinsockEnabled: Boolean;
 var

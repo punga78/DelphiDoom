@@ -638,7 +638,8 @@ end;
 //==============================================================================
 function S_GetSequenceOffset(sequence: integer; sequencePtr: PInteger): integer;
 begin
-  result := (NativeInt(sequencePtr) - integer(SequenceData[SequenceTranslate[sequence].scriptNum])) div SizeOf(integer);
+  // integer(pointer) cut the address of the 64 bit program: the offset written in a saved game was garbage
+  result := (NativeInt(sequencePtr) - NativeInt(SequenceData[SequenceTranslate[sequence].scriptNum])) div SizeOf(integer);
 end;
 
 //==============================================================================

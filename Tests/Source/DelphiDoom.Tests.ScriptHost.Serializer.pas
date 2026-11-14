@@ -41,6 +41,8 @@ type
     [Test]
     procedure DovrebbeScrivereIByteDelloStatoComeIlVecchioCodice;
     [Test]
+    procedure DovrebbeScrivereUnExtendedIn10ByteA32EA64Bit;
+    [Test]
     procedure DovrebbeDareUnaSaveSizeUgualeAiByteScritti;
     [Test]
     procedure DovrebbeScrivereNellaPosizioneCorrenteDelFlusso;
@@ -530,6 +532,49 @@ begin
   finally
     LInterpreter.Free;
   end;
+end;
+
+procedure TTestScriptHostSerializer.DovrebbeScrivereUnExtendedIn10ByteA32EA64Bit;
+const
+  SCRIPT_EXTENDED = 'var E: Extended;'#13#10'begin'#13#10'  E := 3.125;'#13#10'end.';
+  SCRIPT_EXTENDED_EMPTY = 'var E: Extended;'#13#10'begin'#13#10'end.';
+var
+  LInterpreter: TTestInterpreter;
+  LBytes: TBytes;
+  LAgain: TBytes;
+  LExpected: TBytes;
+  LStream: TBytesStream;
+begin
+  // the image of the x87 (10 bytes), as the 32 bit program has always written it: a game saved by the 32 bit
+  // program is read by the 64 bit one, where an Extended in memory is 8 bytes, and back (issue #40)
+  LExpected := TBytes.Create(
+    14, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, $C8, $00, $40);
+  LInterpreter := TTestInterpreter.Create(SCRIPT_EXTENDED, True);
+  try
+    LBytes := Saved(LInterpreter);
+  finally
+    LInterpreter.Free;
+  end;
+  Assert.AreEqual(Length(LExpected), Length(LBytes));
+  Assert.IsTrue(CompareMem(@LExpected[0], @LBytes[0], Length(LExpected)));
+
+  // the bytes written by hand are read and written again the same
+  LInterpreter := TTestInterpreter.Create(SCRIPT_EXTENDED_EMPTY, False);
+  try
+    LStream := TBytesStream.Create(LExpected);
+    try
+      Assert.IsTrue(SerializerOf(LInterpreter).LoadFromStream(LStream));
+    finally
+      LStream.Free;
+    end;
+    LAgain := Saved(LInterpreter);
+  finally
+    LInterpreter.Free;
+  end;
+  Assert.AreEqual(Length(LExpected), Length(LAgain));
+  Assert.IsTrue(CompareMem(@LExpected[0], @LAgain[0], Length(LExpected)));
 end;
 
 end.

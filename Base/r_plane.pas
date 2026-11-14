@@ -262,6 +262,10 @@ const
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
 {$IFDEF HEXEN}
   doomstat,
   d_player,
@@ -380,9 +384,15 @@ begin
     cachedheight[y] := planeheight;
     cacheddistance[y] := FixedMul(planeheight, yslope[y]);
     distance := cacheddistance[y];
+{$IFDEF CPUX86}
     slope := (planeheight / abs(centery - y)) * planerelativeaspect;
     ds_xstep := round(dviewsin * slope);
     ds_ystep := round(dviewcos * slope);
+{$ELSE}
+    // the same numbers as the 32 bit FPU (issue #40)
+    TRendererX87.PlaneSteps(planeheight, abs(centery - y), planerelativeaspect, dviewsin, dviewcos,
+      ds_xstep, ds_ystep);
+{$ENDIF}
 
     cachedxstep[y] := ds_xstep;
     cachedystep[y] := ds_ystep;
@@ -450,7 +460,11 @@ begin
   // JVAL: 3d Floors
   if depthbufferactive then
   begin
+{$IFDEF CPUX86}
     db_distance := Round(FRACUNIT / (planeheight / abs(centery - y)) * FRACUNIT);
+{$ELSE}
+    db_distance := TX87Double.RoundScaledInverse(FRACUNIT, planeheight, abs(centery - y));
+{$ENDIF}
     spandepthbufferproc;
   end;
 
@@ -494,6 +508,7 @@ begin
   else
     dy := y - centery;
 
+{$IFDEF CPUX86}
   slope := (planeheight / dy) * planerelativeaspect;
 
   pviewsin := ds_viewsine;
@@ -511,6 +526,24 @@ begin
 {$ELSE}
   ds_xfrac :=  ds_tviewx + xoffs + round(pviewcos * distance) + (x1 - centerx) * ds_xstep;
   ds_yfrac := -ds_tviewy + yoffs - round(pviewsin * distance) + (x1 - centerx) * ds_ystep;
+{$ENDIF}
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40); dy is a whole number of rows
+  pviewsin := ds_viewsine;
+  pviewcos := ds_viewcosine;
+  TRendererX87.PlaneSteps(planeheight, abs(centery - y), planerelativeaspect, pviewsin, pviewcos,
+    ds_xstep, ds_ystep);
+
+{$IF DEFINED(HERETIC)}
+  ds_xfrac :=  ds_tviewx + TX87Double.RoundProduct(pviewcos, distance) + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -ds_tviewy - TX87Double.RoundProduct(pviewsin, distance) + (x1 - centerx) * ds_ystep;
+{$ELSEIF DEFINED(HEXEN)}
+  ds_xfrac :=  ds_tviewx + TX87Double.RoundProduct(pviewcos, distance) + ds_xoffset + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -ds_tviewy - TX87Double.RoundProduct(pviewsin, distance) + ds_yoffset + (x1 - centerx) * ds_ystep;
+{$ELSE}
+  ds_xfrac :=  ds_tviewx + xoffs + TX87Double.RoundProduct(pviewcos, distance) + (x1 - centerx) * ds_xstep;
+  ds_yfrac := -ds_tviewy + yoffs - TX87Double.RoundProduct(pviewsin, distance) + (x1 - centerx) * ds_ystep;
+{$ENDIF}
 {$ENDIF}
 
   if fixedcolormap <> nil then
@@ -558,7 +591,11 @@ begin
   // JVAL: 3d Floors
   if depthbufferactive then
   begin
+{$IFDEF CPUX86}
     db_distance := Round(FRACUNIT / (planeheight / abs(centery - y)) * FRACUNIT);
+{$ELSE}
+    db_distance := TX87Double.RoundScaledInverse(FRACUNIT, planeheight, abs(centery - y));
+{$ENDIF}
     spandepthbufferproc;
   end;
 
@@ -1736,12 +1773,22 @@ begin
   begin
     ds_anglex := pl.anglex;
     ds_angley := pl.angley;
+{$IFDEF CPUX86}
     ds_sine := sin(-ds_angle * ANGLE_T_TO_RAD);   // JVAL: 20200225 - Texture angle
     ds_cosine := cos(ds_angle * ANGLE_T_TO_RAD);  // JVAL: 20200225 - Texture angle
     ds_viewsine := sin((viewangle - ds_angle) * ANGLE_T_TO_RAD);    // JVAL: 20200225 - Texture angle
     ds_viewcosine := cos((viewangle - ds_angle) * ANGLE_T_TO_RAD);  // JVAL: 20200225 - Texture angle
     ds_tviewx := Round((viewx - ds_anglex) * ds_cosine - (viewy - ds_angley) * ds_sine) + ds_anglex;
     ds_tviewy := Round((viewx - ds_anglex) * ds_sine + (viewy - ds_angley) * ds_cosine) + ds_angley;
+{$ELSE}
+    // the same numbers as the 32 bit FPU (issue #40)
+    ds_sine := TRendererX87.AngleSineSingle(-Int64(ds_angle));
+    ds_cosine := TRendererX87.AngleCosineSingle(ds_angle);
+    ds_viewsine := TRendererX87.AngleSineSingle(angle_t(viewangle - ds_angle));
+    ds_viewcosine := TRendererX87.AngleCosineSingle(angle_t(viewangle - ds_angle));
+    ds_tviewx := TX87Double.RoundCrossProducts(viewx - ds_anglex, ds_cosine, viewy - ds_angley, -ds_sine) + ds_anglex;
+    ds_tviewy := TX87Double.RoundCrossProducts(viewx - ds_anglex, ds_sine, viewy - ds_angley, ds_cosine) + ds_angley;
+{$ENDIF}
     for x := pl.minx to stop do
     begin
       R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapPlaneAngle);

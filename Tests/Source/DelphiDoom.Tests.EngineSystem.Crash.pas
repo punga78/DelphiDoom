@@ -73,20 +73,26 @@ type
   [Category('enginesystem')]
   TTestWindowsCrashLogger = class(TObject)
   public
+{$IFDEF CPUX86}
     [Test]
     procedure DovrebbeScrivereIlFileDelRapporto;
     [Test]
     procedure DovrebbeScrivereLoStessoRapportoDelVecchioFiltro;
     [Test]
     procedure DovrebbeDireFalsoSeIlFileNonSiCrea;
+{$ELSE}
+    [Test]
+    procedure DovrebbeNonInstallareNessunFiltroASessantaquattroBit;
+{$ENDIF}
   end;
 
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.EngineSystem.CrashReportWriter
+  System.IOUtils, DelphiDoom.EngineSystem.CrashReportWriter,
+  Winapi.Windows, DelphiDoom.EngineSystem.WindowsCrashLogger
 {$IFDEF CPUX86}
-  , Winapi.Windows, DelphiDoom.EngineSystem.WindowsCrashLogger, DelphiDoom.Tests.EngineSystem.LegacyCrash
+  , DelphiDoom.Tests.EngineSystem.LegacyCrash
 {$ENDIF}
   ;
 
@@ -396,10 +402,8 @@ begin
   ACrash.Pointers.ExceptionRecord := @ACrash.ExceptionRecord;
   ACrash.Pointers.ContextRecord := @ACrash.Context;
 end;
-{$ENDIF}
 
 procedure TTestWindowsCrashLogger.DovrebbeScrivereIlFileDelRapporto;
-{$IFDEF CPUX86}
 var
   LCrash: TMadeUpCrash;
   LFileName: string;
@@ -418,14 +422,8 @@ begin
     System.SysUtils.DeleteFile(LFileName);
   end;
 end;
-{$ELSE}
-begin
-  Assert.Pass('the report is for a 32 bit process');
-end;
-{$ENDIF}
 
 procedure TTestWindowsCrashLogger.DovrebbeScrivereLoStessoRapportoDelVecchioFiltro;
-{$IFDEF CPUX86}
 var
   LCrash: TMadeUpCrash;
   LNewFile: string;
@@ -449,14 +447,8 @@ begin
     System.SysUtils.DeleteFile(LOldFile);
   end;
 end;
-{$ELSE}
-begin
-  Assert.Pass('the report is for a 32 bit process');
-end;
-{$ENDIF}
 
 procedure TTestWindowsCrashLogger.DovrebbeDireFalsoSeIlFileNonSiCrea;
-{$IFDEF CPUX86}
 var
   LCrash: TMadeUpCrash;
 begin
@@ -468,10 +460,34 @@ begin
     TWindowsCrashLogger.Uninstall;
   end;
 end;
+
 {$ELSE}
+
+procedure TTestWindowsCrashLogger.DovrebbeNonInstallareNessunFiltroASessantaquattroBit;
+var
+  LBefore: TFNTopLevelExceptionFilter;
+  LAfter: TFNTopLevelExceptionFilter;
+  LFileName: string;
 begin
-  Assert.Pass('the report is for a 32 bit process');
+  // The report is made of the registers of the x86 context (TWindowsCrashLogger.Report exists in
+  // the 32 bit build only), so the three tests of the report cannot run here. What the library
+  // says for a 64 bit process is that Install does nothing: the filter of the process stays the
+  // same and no file is made.
+  LFileName := TPath.Combine(TPath.GetTempPath, 'enginesystem_crash_64.txt');
+  System.SysUtils.DeleteFile(LFileName);
+  LBefore := SetUnhandledExceptionFilter(nil);
+  SetUnhandledExceptionFilter(LBefore);
+  TWindowsCrashLogger.Install(LFileName);
+  try
+    LAfter := SetUnhandledExceptionFilter(nil);
+    SetUnhandledExceptionFilter(LAfter);
+    Assert.IsTrue(LBefore = LAfter, 'the filter of the process');
+    Assert.IsFalse(FileExists(LFileName));
+  finally
+    TWindowsCrashLogger.Uninstall;
+  end;
 end;
+
 {$ENDIF}
 
 end.

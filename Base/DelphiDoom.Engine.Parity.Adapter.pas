@@ -51,6 +51,9 @@ type
     FPilot: IParityPilot;
     FDumped: Boolean;
     FPilotDone: Boolean;
+    FSaved: Boolean;
+    FLayoutsWritten: Boolean;
+    procedure WriteSaveLayouts;
     procedure Resolve;
     procedure Activate;
     procedure DumpFrame;
@@ -77,15 +80,18 @@ implementation
 
 uses
   System.SysUtils,
+  System.Classes,
   DelphiDoom.Engine.Parity.PilotCommand,
   DelphiDoom.Parity.BitmapWriter,
   DelphiDoom.Parity.Factory,
   DelphiDoom.Parity.OptionsParser,
+  doomdef,
 {$IFDEF HEXEN}
   g_demo,
 {$ENDIF}
   g_game,
-  i_system;
+  i_system,
+  p_serializer;
 
 { TEngineParity }
 
@@ -131,6 +137,7 @@ procedure TEngineParity.Resolve;
 var
   LArguments: TArray<string>;
   LIndex: Integer;
+  LEnvironment: string;
 begin
   // until the arguments are attached the command line is empty: ask again later
   if (FCommandLine = nil) or (FCommandLine.Count = 0) then
@@ -141,6 +148,16 @@ begin
     LArguments[LIndex] := FCommandLine[LIndex];
   try
     FOptions := TParityOptionsParser.Parse(LArguments);
+    // The frame to dump may come from the environment (DDPARITY_FRAMEDUMP = tic;file) instead of the command
+    // line, and only when the other options are there: the renderer reads now and then a byte out of a buffer,
+    // what it finds depends on where the blocks of memory are, and that changes with the length of the command
+    // line. So a frame is dumped by the very run whose hash is in the golden file
+    LEnvironment := GetEnvironmentVariable('DDPARITY_FRAMEDUMP');
+    if FOptions.IsActive and (FOptions.FrameDumpTic < 0) and (Pos(';', LEnvironment) > 1) then
+    begin
+      FOptions.FrameDumpTic := StrToIntDef(Copy(LEnvironment, 1, Pos(';', LEnvironment) - 1), -1);
+      FOptions.FrameDumpFile := Copy(LEnvironment, Pos(';', LEnvironment) + 1, MaxInt);
+    end;
     if FOptions.IsActive then
       Activate;
   except
@@ -179,10 +196,38 @@ begin
   parity_hooks := Self;
 end;
 
+procedure TEngineParity.WriteSaveLayouts;
+var
+  LLog: IParityLog;
+  LLine: string;
+begin
+  // the 32 and the 64 bit programs must write the same lines (issue #40)
+  FLayoutsWritten := True;
+  LLog := TParityFactory.CreateFileLog(FOptions.SaveLayoutsFile);
+  for LLine in P_SaveRecords.DescribeAll do
+    LLog.WriteLine(LLine);
+  LLog.Flush;
+end;
+
 procedure TEngineParity.AfterTick;
 begin
+  if (FOptions.SaveLayoutsFile <> '') and not FLayoutsWritten then
+    WriteSaveLayouts;
   if FStateSource <> nil then
     FStateSource.Publish(g_game.gametic);
+  // -autosave: the save is done at the start of the next tic, with the state of the end of this one
+  if FOptions.AutoSave and not FSaved and (g_game.gametic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
+  begin
+    FSaved := True;
+    G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');
+  end;
+  // -autoquit: a run with no pilot (a game loaded with -loadgame) ends by itself
+  if (FOptions.AutoQuitTic >= 0) and (g_game.gametic >= FOptions.AutoQuitTic) and not FPilotDone then
+  begin
+    FPilotDone := True;
+    Flush;
+    I_Quit;
+  end;
 end;
 
 procedure TEngineParity.DumpFrame;
@@ -190,9 +235,26 @@ var
   LPixels: Pointer;
   LWidth: Integer;
   LHeight: Integer;
+  LRaw: Pointer;
+  LBytesPerPixel: Integer;
+  LLayout: TParityFrameLayout;
+  LPaletteHash: UInt64;
+  LStream: TFileStream;
 begin
   LPixels := FFrameSource.ReadRgb(LWidth, LHeight);
   TParityBitmapWriter.SaveToFile(FOptions.FrameDumpFile, LWidth, LHeight, LPixels);
+  // In the 8 bit modes the hash is made on the indexes of the palette, and two indexes may have the same
+  // colour: the buffer that the hash reads goes in a second file (the name of the dump plus .raw), row by row
+  // from the top, one byte per pixel (or four in the 32 bit modes)
+  if FFrameSource.Capture(LRaw, LBytesPerPixel, LLayout, LPaletteHash) then
+  begin
+    LStream := TFileStream.Create(FOptions.FrameDumpFile + '.raw', fmCreate);
+    try
+      LStream.WriteBuffer(LRaw^, LLayout.Width * LLayout.Height * LBytesPerPixel);
+    finally
+      LStream.Free;
+    end;
+  end;
   FDumped := True;
 end;
 

@@ -17,7 +17,7 @@ type
   /// <summary>
   ///   Reads the options of the parity tools from the arguments of the program (the names are not case
   ///   sensitive): -statehash file, -statehash-detail first last, -framehash file, -framedump tic file,
-  ///   -autodemo seed tics. What is not one of them is ignored
+  ///   -autodemo seed tics, -autosave tic slot, -savelayouts file, -autoquit tic. What is not one of them is ignored
   /// </summary>
   TParityOptionsParser = class
   strict private
@@ -41,6 +41,8 @@ const
   SDetailWithoutHash = 'The option -statehash-detail needs -statehash';
   SWrongRange = 'The range of -statehash-detail is wrong';
   SWrongTics = 'The number of tics of -autodemo must be more than 0';
+  SWrongSaveTic = 'The tic of -autosave must not be less than 0';
+  SWrongSaveSlot = 'The slot of -autosave must be a number from 0 to 9';
 
 { TParityOptionsParser }
 
@@ -80,6 +82,7 @@ var
 begin
   Result := Default(TParityOptions);
   Result.FrameDumpTic := -1;
+  Result.AutoQuitTic := -1;
 
   LIndex := FindName(AArguments, '-statehash');
   if LIndex >= 0 then
@@ -118,6 +121,30 @@ begin
     Result.AutoDemoTics := Integer(ReadInteger(AArguments, LIndex + 2, '-autodemo'));
     if Result.AutoDemoTics <= 0 then
       raise EParityException.Create(SWrongTics);
+  end;
+
+  LIndex := FindName(AArguments, '-autosave');
+  if LIndex >= 0 then
+  begin
+    Result.AutoSave := True;
+    Result.AutoSaveTic := Integer(ReadInteger(AArguments, LIndex + 1, '-autosave'));
+    Result.AutoSaveSlot := Integer(ReadInteger(AArguments, LIndex + 2, '-autosave'));
+    if Result.AutoSaveTic < 0 then
+      raise EParityException.Create(SWrongSaveTic);
+    if (Result.AutoSaveSlot < 0) or (Result.AutoSaveSlot > 9) then
+      raise EParityException.Create(SWrongSaveSlot);
+  end;
+
+  LIndex := FindName(AArguments, '-savelayouts');
+  if LIndex >= 0 then
+    Result.SaveLayoutsFile := ReadText(AArguments, LIndex + 1, '-savelayouts');
+
+  LIndex := FindName(AArguments, '-autoquit');
+  if LIndex >= 0 then
+  begin
+    Result.AutoQuitTic := Integer(ReadInteger(AArguments, LIndex + 1, '-autoquit'));
+    if Result.AutoQuitTic < 0 then
+      raise EParityException.CreateFmt(SWrongNumber, ['-autoquit', IntToStr(Result.AutoQuitTic)]);
   end;
 end;
 

@@ -70,10 +70,10 @@ var
   LNames: TArray<string>;
 begin
   LNames := TScannerTokenEntry.Split('  S_PLAY ');
-  Assert.AreEqual(1, Length(LNames));
+  Assert.AreEqual<Integer>(1, Length(LNames));
   Assert.AreEqual('S_PLAY', LNames[0]);
   LNames := TScannerTokenEntry.Split('');
-  Assert.AreEqual(1, Length(LNames));
+  Assert.AreEqual<Integer>(1, Length(LNames));
   Assert.AreEqual('', LNames[0]);
 end;
 
@@ -82,7 +82,7 @@ var
   LNames: TArray<string>;
 begin
   LNames := TScannerTokenEntry.Split(' S_A , S_B,S_C ');
-  Assert.AreEqual(3, Length(LNames));
+  Assert.AreEqual<Integer>(3, Length(LNames));
   Assert.AreEqual('S_A', LNames[0]);
   Assert.AreEqual('S_B', LNames[1]);
   Assert.AreEqual('S_C', LNames[2]);
@@ -90,7 +90,7 @@ end;
 
 procedure TTestScannerTokenEntry.DovrebbeDareNienteSeLeVirgoleSonoDaSole;
 begin
-  Assert.AreEqual(0, Length(TScannerTokenEntry.Split(' , ')));
+  Assert.AreEqual<Integer>(0, Length(TScannerTokenEntry.Split(' , ')));
 end;
 
 procedure TTestScannerTokenEntry.ListsTokenDovrebbeIgnorareLeVoceSingole;

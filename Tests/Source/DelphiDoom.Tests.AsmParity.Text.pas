@@ -53,60 +53,81 @@ uses
 
 { TTestAsmText }
 
+// What the old assembler gave for a code below 256: only the 26 letters of ASCII change. The
+// 32 bit build checks the rule against the assembler itself for every code, so that the 64 bit
+// build, where the assembler cannot run, compares d_delphi with the same 256 values.
+function OldUpperCode(ACode: Integer): Integer;
+begin
+  Result := ACode;
+  if (ACode >= Ord('a')) and (ACode <= Ord('z')) then
+    Result := ACode - 32;
+end;
+
+function OldLowerCode(ACode: Integer): Integer;
+begin
+  Result := ACode;
+  if (ACode >= Ord('A')) and (ACode <= Ord('Z')) then
+    Result := ACode + 32;
+end;
+
 procedure TTestAsmText.DovrebbeDareLeMaiuscoleDegliAnsiCharCometProcessoreVecchio;
-{$IFDEF CPUX86}
 var
   LCode: Integer;
 begin
   for LCode := 0 to 255 do
-    Assert.AreEqual(Integer(OldToUpperAnsi(AnsiChar(LCode))),
-      Integer(d_delphi.toupper(AnsiChar(LCode))), 'code ' + IntToStr(LCode));
-{$ELSE}
-begin
-  Assert.AreEqual(Integer(Ord('A')), Integer(Ord(d_delphi.toupper(AnsiChar('a')))));
+  begin
+{$IFDEF CPUX86}
+    Assert.AreEqual(Integer(OldToUpperAnsi(AnsiChar(LCode))), OldUpperCode(LCode),
+      'assembler, code ' + IntToStr(LCode));
 {$ENDIF}
+    Assert.AreEqual(OldUpperCode(LCode), Integer(d_delphi.toupper(AnsiChar(LCode))),
+      'code ' + IntToStr(LCode));
+  end;
 end;
 
 procedure TTestAsmText.DovrebbeDareLeMinuscoleDegliAnsiCharCometProcessoreVecchio;
-{$IFDEF CPUX86}
 var
   LCode: Integer;
 begin
   for LCode := 0 to 255 do
-    Assert.AreEqual(Integer(OldToLowerAnsi(AnsiChar(LCode))),
-      Integer(d_delphi.tolower(AnsiChar(LCode))), 'code ' + IntToStr(LCode));
-{$ELSE}
-begin
-  Assert.AreEqual(Integer(Ord('a')), Integer(Ord(d_delphi.tolower(AnsiChar('A')))));
+  begin
+{$IFDEF CPUX86}
+    Assert.AreEqual(Integer(OldToLowerAnsi(AnsiChar(LCode))), OldLowerCode(LCode),
+      'assembler, code ' + IntToStr(LCode));
 {$ENDIF}
+    Assert.AreEqual(OldLowerCode(LCode), Integer(d_delphi.tolower(AnsiChar(LCode))),
+      'code ' + IntToStr(LCode));
+  end;
 end;
 
 procedure TTestAsmText.DovrebbeDareLeMaiuscoleDeiCharSottoDuecentocinquantasei;
-{$IFDEF CPUX86}
 var
   LCode: Integer;
 begin
   for LCode := 0 to 255 do
-    Assert.AreEqual(Integer(Ord(OldToUpperChar(Char(LCode)))),
-      Integer(Ord(d_delphi.toupper(Char(LCode)))), 'code ' + IntToStr(LCode));
-{$ELSE}
-begin
-  Assert.AreEqual(Integer(Ord('Z')), Integer(Ord(d_delphi.toupper(Char('z')))));
+  begin
+{$IFDEF CPUX86}
+    Assert.AreEqual(Integer(Ord(OldToUpperChar(Char(LCode)))), OldUpperCode(LCode),
+      'assembler, code ' + IntToStr(LCode));
 {$ENDIF}
+    Assert.AreEqual(OldUpperCode(LCode), Integer(Ord(d_delphi.toupper(Char(LCode)))),
+      'code ' + IntToStr(LCode));
+  end;
 end;
 
 procedure TTestAsmText.DovrebbeDareLeMinuscoleDeiCharSottoDuecentocinquantasei;
-{$IFDEF CPUX86}
 var
   LCode: Integer;
 begin
   for LCode := 0 to 255 do
-    Assert.AreEqual(Integer(Ord(OldToLowerChar(Char(LCode)))),
-      Integer(Ord(d_delphi.tolower(Char(LCode)))), 'code ' + IntToStr(LCode));
-{$ELSE}
-begin
-  Assert.AreEqual(Integer(Ord('z')), Integer(Ord(d_delphi.tolower(Char('Z')))));
+  begin
+{$IFDEF CPUX86}
+    Assert.AreEqual(Integer(Ord(OldToLowerChar(Char(LCode)))), OldLowerCode(LCode),
+      'assembler, code ' + IntToStr(LCode));
 {$ENDIF}
+    Assert.AreEqual(OldLowerCode(LCode), Integer(Ord(d_delphi.tolower(Char(LCode)))),
+      'code ' + IntToStr(LCode));
+  end;
 end;
 
 procedure TTestAsmText.DovrebbeLasciareInvariatiICharSopraDuecentocinquantacinque;

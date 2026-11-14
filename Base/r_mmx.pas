@@ -339,6 +339,15 @@ end;
 // No 3DNow at 64 bit: the same bytes, in Pascal (DelphiDoom.MathCore.PixelBatch)
 function R_BatchColorShade_AMD(const dest0: PByte; const numbytes: integer): boolean;
 begin
+  // Issue #40: as at 32 bit, only on a processor with 3DNow. pavgusb rounds the half up, the plain code of
+  // the caller rounds it down: on the same machine the two programs must shade the screen alike (a
+  // processor without 3DNow, that is every recent one, gave a pixel one unit brighter at 64 bit)
+  if AMD3DNowMachine = 0 then
+  begin
+    result := false;
+    exit;
+  end;
+
   result := true;
 
   if numbytes = 0 then

@@ -1566,26 +1566,22 @@ end;
 {$ENDIF}
 
 function WStrLen(const Str: PWideChar): Cardinal;
-asm
-        MOV     EDX,EDI
-        MOV     EDI,EAX
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        MOV     EAX,0FFFFFFFEH
-        SUB     EAX,ECX
-        MOV     EDI,EDX
+var
+  P: PWideChar;
+begin
+  // Pascal instead of the 32 bit REPNE SCASW (issue #41): the asm read EAX, wrong at 64 bit
+  P := Str;
+  while P^ <> #0 do
+    Inc(P);
+  Result := Cardinal(P - Str);
 end;
 
 function WStrEnd(const Str: PWideChar): PWideChar;
-asm
-        MOV     EDX,EDI
-        MOV     EDI,EAX
-        MOV     ECX,0FFFFFFFFH
-        XOR     AX,AX
-        REPNE   SCASW
-        LEA     EAX,[EDI-2]
-        MOV     EDI,EDX
+begin
+  // Pascal instead of the 32 bit REPNE SCASW (issue #41): the asm read EAX, wrong at 64 bit
+  Result := Str;
+  while Result^ <> #0 do
+    Inc(Result);
 end;
 
 function WStrMove(Dest: PWideChar; const Source: PWideChar; Count: Integer): PWideChar;

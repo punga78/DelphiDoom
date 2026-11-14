@@ -179,6 +179,9 @@ var
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+{$ENDIF}
   d_delphi,
   {$IFDEF DEBUG}
   i_system,
@@ -235,7 +238,11 @@ begin
   if ds_y = centery then
     item.depth := 0
   else
+{$IFDEF CPUX86}
     item.depth := Round(FRACUNIT / (planeheight / abs(centery - ds_y)) * FRACUNIT);
+{$ELSE}
+    item.depth := LongWord(TX87Double.RoundScaledInverse(FRACUNIT, planeheight, abs(centery - ds_y)));
+{$ENDIF}
 
   item.seg := nil;
   item.mo := nil;
@@ -270,10 +277,17 @@ begin
   item := R_NewZBufferItem(@Zspans[ds_y]);
 
   ddy := abs(centery - ds_y);
+{$IFDEF CPUX86}
   if ddy < 4 then
     item.depth := Round(FRACUNIT / (planeheight / 4) * FRACUNIT)
   else
     item.depth := Round(FRACUNIT / (planeheight / ddy) * FRACUNIT);
+{$ELSE}
+  if ddy < 4 then
+    item.depth := LongWord(TX87Double.RoundScaledInverse(FRACUNIT, planeheight, 4))
+  else
+    item.depth := LongWord(TX87Double.RoundScaledInverse(FRACUNIT, planeheight, ddy));
+{$ENDIF}
 
   item.seg := nil;
   item.mo := nil;
@@ -306,7 +320,11 @@ begin
 
   item := R_NewZBufferItem(@Zcolumns[dc_x]);
 
+{$IFDEF CPUX86}
   item.depth := trunc((FRACUNIT / dc_iscale) * FRACUNIT);
+{$ELSE}
+  item.depth := LongWord(TX87Double.TruncFixedReciprocal(dc_iscale));
+{$ENDIF}
   item.seg := curline;
   item.mo := nil;
   item.pass := 0;

@@ -12,7 +12,7 @@ unit DelphiDoom.Tests.AsmParity.Parity;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Tests.MathCore.Fingerprint;
 
 type
   TParityBinary = reference to function(A, B: Integer): Integer;
@@ -26,6 +26,14 @@ type
   ///   give the same number or if both raise an exception (the old code raised the exception of
   ///   the processor, the Pascal one an exception of its own).
   /// </summary>
+  /// <remarks>
+  ///   The assembler runs in the 32 bit build only. There the fingerprint of the series of its
+  ///   results must also be the one of Tests\Data\MathCore\asm.golden.txt, so the file is known
+  ///   to come from the assembler. In the 64 bit build the oracle is nil and the fingerprint of
+  ///   the Pascal results on the same inputs is compared with that file. With the variable
+  ///   DELPHIDOOM_ASMPARITY_RECORD (a file name) the 32 bit build writes the fingerprints instead
+  ///   of comparing them.
+  /// </remarks>
   TParityRunner = class
   strict private
     class function Describe(AValue: Cardinal; ARaised: Boolean): string; static;
@@ -33,6 +41,8 @@ type
       out AResult: Integer): Boolean; static;
     class function CallUnsigned(const AFunction: TParityBinaryUnsigned; A, B: Cardinal;
       out AResult: Cardinal): Boolean; static;
+    class procedure RequireOracle(const AName: string; AAssigned: Boolean); static;
+    class procedure CheckGolden(const AName: string; AFingerprint: TFingerprint); static;
   public
     /// <summary>The values that sit on the borders of 32 bit arithmetic and of 16.16 numbers</summary>
     class function EdgeValues: TArray<Integer>; static;
@@ -44,6 +54,7 @@ type
     /// </summary>
     class function NextScaled(var AState: Cardinal): Integer; static;
 
+    /// <summary>AOracle is the old assembler in the 32 bit build and nil in the 64 bit one</summary>
     class procedure CompareBinary(const AName: string; const AOracle, ACandidate: TParityBinary;
       ARandomPairs: Integer); static;
     class procedure CompareBinaryUnsigned(const AName: string;
@@ -53,6 +64,15 @@ type
   end;
 
 implementation
+
+uses
+  System.Classes, DelphiDoom.Tests.MathCore.Golden;
+
+const
+  GOLDEN_FILE = 'asm.golden.txt';
+  RECORD_VARIABLE = 'DELPHIDOOM_ASMPARITY_RECORD';
+  SOracleMissing = '%s: the 32 bit build must compare with the old assembler';
+  SOracleUnexpected = '%s: there is no assembler in this build';
 
 { TParityRunner }
 
@@ -87,6 +107,47 @@ begin
   except
     on E: Exception do
       Result := False;
+  end;
+end;
+
+class procedure TParityRunner.RequireOracle(const AName: string; AAssigned: Boolean);
+begin
+{$IFDEF CPUX86}
+  Assert.IsTrue(AAssigned, Format(SOracleMissing, [AName]));
+{$ELSE}
+  Assert.IsFalse(AAssigned, Format(SOracleUnexpected, [AName]));
+{$ENDIF}
+end;
+
+class procedure TParityRunner.CheckGolden(const AName: string; AFingerprint: TFingerprint);
+var
+  LGolden: TGoldenFile;
+{$IFDEF CPUX86}
+  LRecordName: string;
+  LLines: TStringList;
+{$ENDIF}
+begin
+{$IFDEF CPUX86}
+  LRecordName := GetEnvironmentVariable(RECORD_VARIABLE);
+  if LRecordName <> '' then
+  begin
+    LLines := TStringList.Create;
+    try
+      if FileExists(LRecordName) then
+        LLines.LoadFromFile(LRecordName);
+      LLines.Values[AName] := AFingerprint.ToHex;
+      LLines.SaveToFile(LRecordName);
+    finally
+      LLines.Free;
+    end;
+    Exit;
+  end;
+{$ENDIF}
+  LGolden := TGoldenFile.Create(GOLDEN_FILE);
+  try
+    LGolden.Check(AName, AFingerprint.ToHex);
+  finally
+    LGolden.Free;
   end;
 end;
 
@@ -139,6 +200,7 @@ var
   LCount: Integer;
   A: Integer;
   B: Integer;
+  LFingerprint: TFingerprint;
 
   procedure Check(AFirst, ASecond: Integer);
   var
@@ -147,29 +209,52 @@ var
     LOracleOk: Boolean;
     LCandidateOk: Boolean;
   begin
-    LOracleOk := CallBinary(AOracle, AFirst, ASecond, LOracleValue);
     LCandidateOk := CallBinary(ACandidate, AFirst, ASecond, LCandidateValue);
-    if (LOracleOk <> LCandidateOk) or (LOracleOk and (LOracleValue <> LCandidateValue)) then
-      Assert.Fail(Format('%s: a=$%.8x b=$%.8x old=%s new=%s',
-        [AName, Cardinal(AFirst), Cardinal(ASecond),
-         Describe(Cardinal(LOracleValue), not LOracleOk),
-         Describe(Cardinal(LCandidateValue), not LCandidateOk)]));
+    if Assigned(AOracle) then
+    begin
+      LOracleOk := CallBinary(AOracle, AFirst, ASecond, LOracleValue);
+      if (LOracleOk <> LCandidateOk) or (LOracleOk and (LOracleValue <> LCandidateValue)) then
+        Assert.Fail(Format('%s: a=$%.8x b=$%.8x old=%s new=%s',
+          [AName, Cardinal(AFirst), Cardinal(ASecond),
+           Describe(Cardinal(LOracleValue), not LOracleOk),
+           Describe(Cardinal(LCandidateValue), not LCandidateOk)]));
+    end
+    else
+    begin
+      LOracleOk := LCandidateOk;
+      LOracleValue := LCandidateValue;
+    end;
+    if LOracleOk then
+      LFingerprint.AddInteger(LOracleValue)
+    else
+      LFingerprint.AddException;
   end;
 
 begin
-  LEdges := EdgeValues;
-  for LIndexA := 0 to High(LEdges) do
-    for LIndexB := 0 to High(LEdges) do
-      Check(LEdges[LIndexA], LEdges[LIndexB]);
+  RequireOracle(AName, Assigned(AOracle));
+  LFingerprint := TFingerprint.Create;
+  try
+    LEdges := EdgeValues;
+    for LIndexA := 0 to High(LEdges) do
+      for LIndexB := 0 to High(LEdges) do
+        Check(LEdges[LIndexA], LEdges[LIndexB]);
 
-  LState := $2545F491;
-  for LCount := 1 to ARandomPairs do
-  begin
-    A := NextScaled(LState);
-    B := NextScaled(LState);
-    Check(A, B);
-    // also the plain 32 bit values, whatever their size
-    Check(Integer(NextRandom(LState)), Integer(NextRandom(LState)));
+    LState := $2545F491;
+    for LCount := 1 to ARandomPairs do
+    begin
+      A := NextScaled(LState);
+      B := NextScaled(LState);
+      Check(A, B);
+      // also the plain 32 bit values, whatever their size. The second one is drawn first: it is
+      // the order the 32 bit compiler gave to the two calls when they were arguments (the 64 bit
+      // one goes left to right), and the golden fingerprints were made with those inputs
+      B := Integer(NextRandom(LState));
+      A := Integer(NextRandom(LState));
+      Check(A, B);
+    end;
+    CheckGolden(AName, LFingerprint);
+  finally
+    LFingerprint.Free;
   end;
 end;
 
@@ -181,6 +266,9 @@ var
   LIndexA: Integer;
   LIndexB: Integer;
   LCount: Integer;
+  A: Cardinal;
+  B: Cardinal;
+  LFingerprint: TFingerprint;
 
   procedure Check(AFirst, ASecond: Cardinal);
   var
@@ -189,25 +277,49 @@ var
     LOracleOk: Boolean;
     LCandidateOk: Boolean;
   begin
-    LOracleOk := CallUnsigned(AOracle, AFirst, ASecond, LOracleValue);
     LCandidateOk := CallUnsigned(ACandidate, AFirst, ASecond, LCandidateValue);
-    if (LOracleOk <> LCandidateOk) or (LOracleOk and (LOracleValue <> LCandidateValue)) then
-      Assert.Fail(Format('%s: a=$%.8x b=$%.8x old=%s new=%s',
-        [AName, AFirst, ASecond,
-         Describe(LOracleValue, not LOracleOk), Describe(LCandidateValue, not LCandidateOk)]));
+    if Assigned(AOracle) then
+    begin
+      LOracleOk := CallUnsigned(AOracle, AFirst, ASecond, LOracleValue);
+      if (LOracleOk <> LCandidateOk) or (LOracleOk and (LOracleValue <> LCandidateValue)) then
+        Assert.Fail(Format('%s: a=$%.8x b=$%.8x old=%s new=%s',
+          [AName, AFirst, ASecond,
+           Describe(LOracleValue, not LOracleOk), Describe(LCandidateValue, not LCandidateOk)]));
+    end
+    else
+    begin
+      LOracleOk := LCandidateOk;
+      LOracleValue := LCandidateValue;
+    end;
+    if LOracleOk then
+      LFingerprint.AddCardinal(LOracleValue)
+    else
+      LFingerprint.AddException;
   end;
 
 begin
-  LEdges := EdgeValues;
-  for LIndexA := 0 to High(LEdges) do
-    for LIndexB := 0 to High(LEdges) do
-      Check(Cardinal(LEdges[LIndexA]), Cardinal(LEdges[LIndexB]));
+  RequireOracle(AName, Assigned(AOracle));
+  LFingerprint := TFingerprint.Create;
+  try
+    LEdges := EdgeValues;
+    for LIndexA := 0 to High(LEdges) do
+      for LIndexB := 0 to High(LEdges) do
+        Check(Cardinal(LEdges[LIndexA]), Cardinal(LEdges[LIndexB]));
 
-  LState := $1B873593;
-  for LCount := 1 to ARandomPairs do
-  begin
-    Check(Cardinal(NextScaled(LState)), Cardinal(NextScaled(LState)));
-    Check(NextRandom(LState), NextRandom(LState));
+    LState := $1B873593;
+    for LCount := 1 to ARandomPairs do
+    begin
+      // the second value is drawn first, as the 32 bit compiler did (see CompareBinary)
+      B := Cardinal(NextScaled(LState));
+      A := Cardinal(NextScaled(LState));
+      Check(A, B);
+      B := NextRandom(LState);
+      A := NextRandom(LState);
+      Check(A, B);
+    end;
+    CheckGolden(AName, LFingerprint);
+  finally
+    LFingerprint.Free;
   end;
 end;
 
@@ -219,30 +331,44 @@ var
   LIndex: Integer;
   LCount: Integer;
   LValue: Integer;
+  LFingerprint: TFingerprint;
 
   procedure Check(AValue: Integer);
   var
     LOracleValue: Integer;
     LCandidateValue: Integer;
   begin
-    LOracleValue := AOracle(AValue);
     LCandidateValue := ACandidate(AValue);
-    if LOracleValue <> LCandidateValue then
-      Assert.Fail(Format('%s: x=$%.8x old=$%.8x new=$%.8x',
-        [AName, Cardinal(AValue), Cardinal(LOracleValue), Cardinal(LCandidateValue)]));
+    if Assigned(AOracle) then
+    begin
+      LOracleValue := AOracle(AValue);
+      if LOracleValue <> LCandidateValue then
+        Assert.Fail(Format('%s: x=$%.8x old=$%.8x new=$%.8x',
+          [AName, Cardinal(AValue), Cardinal(LOracleValue), Cardinal(LCandidateValue)]));
+    end
+    else
+      LOracleValue := LCandidateValue;
+    LFingerprint.AddInteger(LOracleValue);
   end;
 
 begin
-  LEdges := EdgeValues;
-  for LIndex := 0 to High(LEdges) do
-    Check(LEdges[LIndex]);
+  RequireOracle(AName, Assigned(AOracle));
+  LFingerprint := TFingerprint.Create;
+  try
+    LEdges := EdgeValues;
+    for LIndex := 0 to High(LEdges) do
+      Check(LEdges[LIndex]);
 
-  LState := $6C078965;
-  for LCount := 1 to ARandomValues do
-  begin
-    LValue := NextScaled(LState);
-    Check(LValue);
-    Check(Integer(NextRandom(LState)));
+    LState := $6C078965;
+    for LCount := 1 to ARandomValues do
+    begin
+      LValue := NextScaled(LState);
+      Check(LValue);
+      Check(Integer(NextRandom(LState)));
+    end;
+    CheckGolden(AName, LFingerprint);
+  finally
+    LFingerprint.Free;
   end;
 end;
 

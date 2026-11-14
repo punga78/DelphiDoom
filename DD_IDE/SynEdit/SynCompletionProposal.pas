@@ -1310,7 +1310,8 @@ begin
   begin
     // "redefine" window-procedure to get Unicode messages
     if Win32Platform = VER_PLATFORM_WIN32_NT then
-      SetWindowLongW(Handle, GWL_WNDPROC, Integer(GetWindowLongA(Handle, GWL_WNDPROC)));
+      // the Ptr variants: the window procedure is a pointer, 8 bytes at 64 bit
+      SetWindowLongPtrW(Handle, GWLP_WNDPROC, GetWindowLongPtrA(Handle, GWLP_WNDPROC));
   end;
 end;
 

@@ -141,9 +141,19 @@ procedure SV_SaveGame(slot: integer; description: string);
 //==============================================================================
 procedure SV_ConfigureFiles(const AFiles: IEngineFiles);
 
+//==============================================================================
+//
+// P_DeclareSaveRecords
+//
+//==============================================================================
+procedure P_DeclareSaveRecords;
+
+
 implementation
 
 uses
+  DelphiDoom.Serializer.Intf,
+  p_serializer,
   d_delphi,
   d_ticcmd,
   d_think,
@@ -201,6 +211,54 @@ uses
 var
   // given by the composition root
   sv_files_ref: IEngineFiles = nil;
+
+//==============================================================================
+//
+// P_DeclareSaveRecords
+//
+// The records that a saved game keeps whole. On disk they have the layout of the
+// 32 bit program (a pointer is 4 bytes): see P_ConfigureSaveRecords. A field whose
+// type has no name and holds pointers, or comes before a pointer, is described here.
+//
+//==============================================================================
+procedure P_DeclareSaveRecords;
+var
+  recs: IDiskLayouts;
+begin
+  recs := P_SaveRecords;
+  recs.DescribeArray(TypeInfo(acs_t), 'vars', TypeInfo(integer), Length(Pacs_t(nil).vars));
+  recs.DescribeArray(TypeInfo(player_t), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t141), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t142), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t205), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t206), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(mobj_t), 'translationname', TypeInfo(byte), 9);
+
+  recs.Declare(TypeInfo(acs_t));
+  recs.Declare(TypeInfo(ceiling_t));
+  recs.Declare(TypeInfo(floormove_t));
+  recs.Declare(TypeInfo(floorWaggle_t));
+  recs.Declare(TypeInfo(light_t));
+  recs.Declare(TypeInfo(mobj_t));
+  recs.Declare(TypeInfo(mobj_t140));
+  recs.Declare(TypeInfo(mobj_t141));
+  recs.Declare(TypeInfo(mobj_t204));
+  recs.Declare(TypeInfo(mobj_t205));
+  recs.Declare(TypeInfo(mobj_t206));
+  recs.Declare(TypeInfo(mobjcustomparam_t));
+  recs.Declare(TypeInfo(phase_t));
+  recs.Declare(TypeInfo(pillar_t));
+  recs.Declare(TypeInfo(plat_t));
+  recs.Declare(TypeInfo(player_t));
+  recs.Declare(TypeInfo(player_t141));
+  recs.Declare(TypeInfo(player_t142));
+  recs.Declare(TypeInfo(player_t205));
+  recs.Declare(TypeInfo(player_t206));
+  recs.Declare(TypeInfo(playertracehistory_t));
+  recs.Declare(TypeInfo(polydoor_t));
+  recs.Declare(TypeInfo(polyevent_t));
+  recs.Declare(TypeInfo(vldoor_t));
+end;
 
 //==============================================================================
 //
@@ -412,6 +470,26 @@ end;
 
 //==============================================================================
 //
+// StreamOutRecord
+//
+// A record that is saved whole: on disk it has the layout of the 32 bit program
+// (typ is TypeInfo of the record, see P_ConfigureSaveRecords)
+//
+//==============================================================================
+procedure StreamOutRecord(const typ: pointer; const rec: pointer);
+var
+  disk: pointer;
+  size: integer;
+begin
+  size := P_RecordDiskSize(typ);
+  disk := malloc(size);
+  P_PackRecord(typ, rec, disk);
+  SavingFP.Write(disk^, size);
+  memfree(disk, size);
+end;
+
+//==============================================================================
+//
 // StreamOutByte
 //
 //==============================================================================
@@ -497,7 +575,7 @@ const
   BASE_SLOT = 8;
   REBORN_SLOT = 9;
   REBORN_DESCRIPTION = 'TEMP GAME';
-  MAX_THINKER_SIZE = 256;
+  MAX_THINKER_SIZE = 512;
 
 const
   ASEG_GAME_HEADER = 101;
@@ -539,6 +617,7 @@ type
     mangleFunc: PArchieveFunc;
     restoreFunc: PArchieveFunc;
     size: integer;
+    typ: pointer; // TypeInfo of the record: its layout in a saved game (P_ConfigureSaveRecords)
   end;
   PthinkInfo_t = ^thinkInfo_t;
 
@@ -653,7 +732,9 @@ begin
     Ord(MT_THRUSTFLOOR_UP),
     Ord(MT_THRUSTFLOOR_DOWN),
     Ord(MT_MINOTAUR),
-    Ord(MT_SORCFX1):
+    Ord(MT_SORCFX1),
+    // MangleMobj turns its special1 into an archive number: without this it stayed a number after the load
+    Ord(MT_MSTAFF_FX2):
       begin
         SetMobjPtr(@mobj.special1);
       end;
@@ -782,6 +863,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(floormove_t);
+  pti.typ := TypeInfo(floormove_t);
 
   inc(pti);
   pti.tClass := TC_PLAT_RAISE;
@@ -789,6 +871,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestorePlatRaise;
   pti.size := SizeOf(plat_t);
+  pti.typ := TypeInfo(plat_t);
 
   inc(pti);
   pti.tClass := TC_MOVE_CEILING;
@@ -796,6 +879,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreMoveCeiling;
   pti.size := SizeOf(ceiling_t);
+  pti.typ := TypeInfo(ceiling_t);
 
   inc(pti);
   pti.tClass := TC_LIGHT;
@@ -803,6 +887,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinkerNoSD;
   pti.size := SizeOf(light_t);
+  pti.typ := TypeInfo(light_t);
 
   inc(pti);
   pti.tClass := TC_VERTICAL_DOOR;
@@ -810,6 +895,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(vldoor_t);
+  pti.typ := TypeInfo(vldoor_t);
 
   inc(pti);
   pti.tClass := TC_PHASE;
@@ -817,6 +903,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinkerNoSD;
   pti.size := SizeOf(phase_t);
+  pti.typ := TypeInfo(phase_t);
 
   inc(pti);
   pti.tClass := TC_INTERPRET_ACS;
@@ -824,6 +911,7 @@ begin
   pti.mangleFunc := @MangleScript;
   pti.restoreFunc := @RestoreScript;
   pti.size := SizeOf(acs_t);
+  pti.typ := TypeInfo(acs_t);
 
   inc(pti);
   pti.tClass := TC_ROTATE_POLY;
@@ -831,6 +919,7 @@ begin
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polyevent_t);
+  pti.typ := TypeInfo(polyevent_t);
 
   inc(pti);
   pti.tClass := TC_BUILD_PILLAR;
@@ -838,6 +927,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(pillar_t);
+  pti.typ := TypeInfo(pillar_t);
 
   inc(pti);
   pti.tClass := TC_MOVE_POLY;
@@ -845,6 +935,7 @@ begin
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polyevent_t);
+  pti.typ := TypeInfo(polyevent_t);
 
   inc(pti);
   pti.tClass := TC_POLY_DOOR;
@@ -852,6 +943,7 @@ begin
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := SizeOf(polydoor_t);
+  pti.typ := TypeInfo(polydoor_t);
 
   inc(pti);
   pti.tClass := TC_FLOOR_WAGGLE;
@@ -859,6 +951,7 @@ begin
   pti.mangleFunc := @MangleSSThinker;
   pti.restoreFunc := @RestoreSSThinker;
   pti.size := SizeOf(floorWaggle_t);
+  pti.typ := TypeInfo(floorWaggle_t);
 
   inc(pti);
   pti.tClass := TC_NULL;
@@ -866,6 +959,7 @@ begin
   pti.mangleFunc := nil;
   pti.restoreFunc := nil;
   pti.size := 0;
+  pti.typ := nil;
 
 end;
 
@@ -922,9 +1016,9 @@ begin
     end;
     if tempPlayer.plinetarget <> nil then
       tempPlayer.plinetarget := Pmobj_t(tempPlayer.plinetarget.key);
-    StreamOutBuffer(@tempPlayer, SizeOf(player_t));
+    StreamOutRecord(TypeInfo(player_t), @tempPlayer);
     // JVAL: 20211224 - Save player history
-    StreamOutBuffer(@playerhistory[i], SizeOf(playertracehistory_t));
+    StreamOutRecord(TypeInfo(playertracehistory_t), @playerhistory[i]);
   end;
 end;
 
@@ -962,7 +1056,7 @@ begin
     if LOADVERSION <= VERSION141 then
     begin
       ZeroMemory(@players[i], SizeOf(player_t));
-      memcpy(@players[i], saveptr, SizeOf(player_t141));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t141));
       players[i].laddertics := 0;
       players[i].viewbob := players[i].bob;
       players[i].slopetics := 0; // JVAL: Slopes
@@ -974,12 +1068,12 @@ begin
       Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
       players[i].cmd.lookupdown16 := (players[i].cmd.lookfly and 15) * 256;
       P_ClearPlayerHistory(@players[i]);
-      incp(saveptr, SizeOf(player_t141));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(player_t141)));
     end
     else if LOADVERSION <= VERSION142 then
     begin
       ZeroMemory(@players[i], SizeOf(player_t));
-      memcpy(@players[i], saveptr, SizeOf(player_t142));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t142));
       if players[i].quaketics > 0 then
         players[i].quakeintensity := FRACUNIT
       else
@@ -988,35 +1082,35 @@ begin
       Pticcmd_t202(@players[i].cmd)^ := players[i].cmd202;
       players[i].cmd.lookupdown16 := (players[i].cmd.lookfly and 15) * 256;
       P_ClearPlayerHistory(@players[i]);
-      incp(saveptr, SizeOf(player_t142));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(player_t142)));
     end
     else if LOADVERSION <= VERSION205 then
     begin
       ZeroMemory(@players[i], SizeOf(player_t));
-      memcpy(@players[i], saveptr, SizeOf(player_t205));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t205));
       if players[i].quaketics > 0 then
         players[i].quakeintensity := FRACUNIT
       else
         players[i].quakeintensity := 0;
       P_ClearPlayerHistory(@players[i]);
-      incp(saveptr, SizeOf(player_t205));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(player_t205)));
     end
     else if LOADVERSION <= VERSION206 then
     begin
       ZeroMemory(@players[i], SizeOf(player_t));
-      memcpy(@players[i], saveptr, SizeOf(player_t206));
+      P_UnpackRecordPrefix(TypeInfo(player_t), saveptr, @players[i], TypeInfo(player_t206));
       P_ClearPlayerHistory(@players[i]);
-      incp(saveptr, SizeOf(player_t206));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(player_t206)));
     end
     else
     begin
-      memcpy(@players[i], saveptr, SizeOf(player_t));
-      incp(saveptr, SizeOf(player_t));
+      P_UnpackRecord(TypeInfo(player_t), saveptr, @players[i]);
+      incp(saveptr, P_RecordDiskSize(TypeInfo(player_t)));
     end;
     if LOADVERSION >= VERSION207 then
     begin
-      memcpy(@playerhistory[i], saveptr, SizeOf(playertracehistory_t));
-      incp(saveptr, SizeOf(playertracehistory_t));
+      P_UnpackRecord(TypeInfo(playertracehistory_t), saveptr, @playerhistory[i]);
+      incp(saveptr, P_RecordDiskSize(TypeInfo(playertracehistory_t)));
     end;
     players[i].mo := nil; // Will be set when unarc thinker
     P_ClearMessage(@players[i]);
@@ -1476,7 +1570,7 @@ begin
     parm := tempMobj.customparams;
     while parm <> nil do
     begin
-      StreamOutBuffer(parm, SizeOf(mobjcustomparam_t));
+      StreamOutRecord(TypeInfo(mobjcustomparam_t), parm);
       parm := parm.next;
     end;
 
@@ -1516,8 +1610,8 @@ begin
       incp(saveptr, MobjSerializer.LoadFromMem(saveptr, mobj, $FFFF))
     else if LOADVERSION = VERSION140 then
     begin
-      memcpy(mobj, saveptr, SizeOf(mobj_t140));
-      incp(saveptr, SizeOf(mobj_t140));
+      P_UnpackRecordPrefix(TypeInfo(mobj_t), saveptr, mobj, TypeInfo(mobj_t140));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(mobj_t140)));
       mobj.prevx := mobj.x;
       mobj.prevy := mobj.y;
       mobj.prevz := mobj.z;
@@ -1568,8 +1662,8 @@ begin
     end
     else if LOADVERSION = VERSION141 then
     begin
-      memcpy(mobj, saveptr, SizeOf(mobj_t141));
-      incp(saveptr, SizeOf(mobj_t141));
+      P_UnpackRecordPrefix(TypeInfo(mobj_t), saveptr, mobj, TypeInfo(mobj_t141));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(mobj_t141)));
 
       mobj.dropitem := 0;
 
@@ -1609,8 +1703,8 @@ begin
     end
     else if LOADVERSION <= VERSION204 then
     begin
-      memcpy(mobj, saveptr, SizeOf(mobj_t204));
-      incp(saveptr, SizeOf(mobj_t204));
+      P_UnpackRecordPrefix(TypeInfo(mobj_t), saveptr, mobj, TypeInfo(mobj_t204));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(mobj_t204)));
 
       mobj.lightvalidcount := 0;
       mobj.scale := FRACUNIT;
@@ -1648,8 +1742,8 @@ begin
     end
     else if LOADVERSION <= VERSION205 then
     begin
-      memcpy(mobj, saveptr, SizeOf(mobj_t205));
-      incp(saveptr, SizeOf(mobj_t205));
+      P_UnpackRecordPrefix(TypeInfo(mobj_t), saveptr, mobj, TypeInfo(mobj_t205));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(mobj_t205)));
 
       mobj.mass := mobjinfo[Ord(mobj._type)].mass;
       mobj.master := nil;
@@ -1677,8 +1771,8 @@ begin
     end
     else if LOADVERSION <= VERSION206 then
     begin
-      memcpy(mobj, saveptr, SizeOf(mobj_t206));
-      incp(saveptr, SizeOf(mobj_t206));
+      P_UnpackRecordPrefix(TypeInfo(mobj_t), saveptr, mobj, TypeInfo(mobj_t206));
+      incp(saveptr, P_RecordDiskSize(TypeInfo(mobj_t206)));
 
       // version 207
       mobj.painchance := mobjinfo[Ord(mobj._type)].painchance;
@@ -1712,8 +1806,8 @@ begin
     begin
       mobj.customparams := nil;
       repeat
-        memcpy(@parm, saveptr, SizeOf(mobjcustomparam_t));
-        incp(saveptr, SizeOf(mobjcustomparam_t));
+        P_UnpackRecord(TypeInfo(mobjcustomparam_t), saveptr, @parm);
+        incp(saveptr, P_RecordDiskSize(TypeInfo(mobjcustomparam_t)));
         P_SetMobjCustomParam(mobj, parm.name, parm.value);
       until parm.next = nil;
     end;
@@ -1758,7 +1852,7 @@ begin
           begin
             info.mangleFunc(@buffer);
           end;
-          StreamOutBuffer(@buffer, info.size);
+          StreamOutRecord(info.typ, @buffer);
           break;
         end;
         inc(info);
@@ -1790,8 +1884,7 @@ begin
       if thinkClass_t(tClass) = info.tClass then
       begin
         thinker := Z_Malloc(info.size, PU_LEVEL, nil);
-        memcpy(thinker, saveptr, info.size);
-        incp(saveptr, info.size);
+        P_GetRecord(saveptr, info.typ, thinker);
         thinker._function.acp1 := @info.thinkerFunc.acp1;
         if Assigned(info.restoreFunc) then
           info.restoreFunc(thinker);
@@ -2057,12 +2150,16 @@ begin
     StreamOutLong(node.volume);
     StreamOutLong(S_GetSequenceOffset(node.sequence, node.sequencePtr));
     StreamOutLong(node.currentSoundID);
-    for i := 0 to po_NumPolyobjs - 1 do
+    // not a for: with no polyobj the loop did not run and i was left with what the register had, so the
+    // sound was saved as the one of a polyobj with a number at random (and the saved game did not load)
+    i := 0;
+    while i < po_NumPolyobjs do
     begin
       if node.mobj = Pmobj_t(@polyobjs[i].startSpot) then
       begin
         break;
       end;
+      inc(i);
     end;
     if i = po_NumPolyobjs then
     begin // Sound is attached to a sector, not a polyobj
@@ -2097,8 +2194,10 @@ var
   polySnd: integer;
   secNum: integer;
   sndMobj: Pmobj_t;
+  started: integer;
 begin
   AssertSegment(ASEG_SOUNDS);
+  started := 0;
 
   // Reload and restart all sound sequences
   numSequences := GET_LONG;
@@ -2113,17 +2212,30 @@ begin
     soundID := GET_LONG;
     polySnd := GET_LONG;
     secNum := GET_LONG;
+    inc(i);
+    // a game saved before the fix of ArchiveSounds may have a polyobj number at random: that sound is lost,
+    // the game is not
     if polySnd = 0 then
     begin
+      if (secNum < 0) or (secNum >= numsectors) then
+      begin
+        I_Warning('UnarchiveSounds(): sound sequence of sector %d skipped'#13#10, [secNum]);
+        continue;
+      end;
       sndMobj := Pmobj_t(@sectors[secNum].soundorg);
     end
     else
     begin
+      if (secNum < 0) or (secNum >= po_NumPolyobjs) then
+      begin
+        I_Warning('UnarchiveSounds(): sound sequence of polyobj %d skipped'#13#10, [secNum]);
+        continue;
+      end;
       sndMobj := Pmobj_t(@polyobjs[secNum].startSpot);
     end;
     S_StartSequence(sndMobj, sequence);
-    S_ChangeNodeData(i, seqOffset, delayTics, volume, soundID);
-    inc(i);
+    S_ChangeNodeData(started, seqOffset, delayTics, volume, soundID);
+    inc(started);
   end;
 end;
 

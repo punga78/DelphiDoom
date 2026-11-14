@@ -492,7 +492,7 @@ begin
   else
   begin
     markp := @lightmapmarks[nummarks];
-    while integer(markp) > integer(lightmapmarks) do
+    while NativeInt(markp) > NativeInt(lightmapmarks) do
     begin
       dec(markp);
       // JVAL 20171205 We must clear the mark BEFORE calling glTexSubImage3D :)
@@ -516,7 +516,7 @@ begin
 
   pdls := @dlbuffer[numdlitems];
   ZeroMemory(@lastitem, SizeOf(dlsortitem_t));
-  while integer(pdls) <> integer(dlbuffer) do
+  while NativeInt(pdls) <> NativeInt(dlbuffer) do
   begin
     dec(pdls);
     if (pdls.l <> lastitem.l) or
@@ -687,7 +687,7 @@ begin
 // -----------------------------------------------------------------------------
 // Create the lightmap texture, uses the affected regions and the rtl lightmap
   markp := @lightmapmarks[nummarks];
-  while integer(markp) > integer(lightmapmarks) do
+  while NativeInt(markp) > NativeInt(lightmapmarks) do
   begin
     dec(markp);
     point := @lightmapbuffer[0];

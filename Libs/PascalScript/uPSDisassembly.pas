@@ -232,6 +232,7 @@ var
           ff: Int64;
           {$ENDIF}
           e: extended;
+          e80: TExtended80Rec; // an Extended on disk: 10 bytes at 32 and at 64 bit
           ss: single;
           d: double;
           s: ansistring;
@@ -310,8 +311,9 @@ var
               end;
             btExtended:
               begin
-                if not ReadData(e, Sizeof(tbtextended)) then
+                if not ReadData(e80, SizeOf(e80)) then
                   Exit;
+                e := Extended(e80);
                 Result := MyFloatToStr(e);
               end;
             btPChar,

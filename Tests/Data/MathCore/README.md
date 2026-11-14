@@ -65,3 +65,7 @@ Risposte di `idPlane`, `idBounds`, `idSphere` e `idBox` veri (compilati con `bcc
 ## `patch.golden.txt` (issue #117)
 
 Risposte vere di `R_SubdividePatchToGrid`, `R_GridInsertColumn` e `R_GridInsertRow` di Quake III (`tr_curve.c`, compilato con il gcc di w64devkit a 64 bit, SSE): 45 casi, per ognuno dimensioni, tabelle degli errori, bounds, origine, raggio, hash FNV-1a dei vertici e tre vertici, float come bit. Prodotto da `Tools\Verifica\117` (vedi `LEGGIMI.md` li'). Test: `DelphiDoom.Tests.MathCore.Patch.Parity`, confronto esatto.
+
+## `asm.golden.txt` (issue #43)
+
+Impronte (`TFingerprint`) dei risultati del vecchio assembler x86 di `m_fixed`, `r_softlights`, `p_local` e degli shift di `d_delphi` (copiato in `DelphiDoom.Tests.AsmParity.Oracles`) sugli ingressi di `TParityRunner` (valori limite e serie pseudo casuali a seme fisso): una riga `nome=impronta/numero di risultati` per funzione. A 32 bit `DelphiDoom.Tests.AsmParity` esegue l'assembler, lo confronta risultato per risultato con `TFixedMath` e controlla che l'impronta sia quella del file; a 64 bit, dove l'assembler non esiste, confronta con il file l'impronta dei risultati del Pascal sugli stessi ingressi. Per rifarlo: eseguire l'exe a 32 bit con la variabile `DELPHIDOOM_ASMPARITY_RECORD=<file>` (scrive le impronte invece di confrontarle).
