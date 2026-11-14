@@ -81,7 +81,7 @@ procedure I_IOprintf(const s: string);
 // I_IOSetWindowHandle
 //
 //==============================================================================
-procedure I_IOSetWindowHandle(const handle: integer);
+procedure I_IOSetWindowHandle(const handle: NativeUInt);
 
 implementation
 
@@ -98,7 +98,7 @@ uses
   DelphiDoom.EngineSystem.LogFileNames;
 
 var
-  msghandle: integer = 0;
+  msghandle: NativeUInt = 0; // an HWND: pointer sized
 
 //==============================================================================
 //
@@ -202,9 +202,9 @@ end;
 // I_IOSetWindowHandle
 //
 //==============================================================================
-procedure I_IOSetWindowHandle(const handle: integer);
+procedure I_IOSetWindowHandle(const handle: NativeUInt);
 begin
-  if handle > 0 then
+  if handle <> 0 then
     msghandle := handle
   else
     msghandle := hMainWnd

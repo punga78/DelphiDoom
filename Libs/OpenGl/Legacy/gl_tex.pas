@@ -1472,7 +1472,7 @@ begin
   ZeroMemory(hitlist, numflats);
 
   psec := @sectors[numsectors];
-  while integer(psec) <> NativeInt(sectors) do
+  while NativeInt(psec) <> NativeInt(sectors) do
   begin
     dec(psec);
     hitlist[psec.floorpic] := true;
@@ -1488,7 +1488,7 @@ begin
   ZeroMemory(hitlist, numtextures);
 
   psd := @sides[numsides];
-  while integer(psd) <> integer(sides) do
+  while NativeInt(psd) <> NativeInt(sides) do
   begin
     dec(psd);
     hitlist[psd.bottomtexture] := true;

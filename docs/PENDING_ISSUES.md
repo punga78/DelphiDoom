@@ -285,3 +285,10 @@ Piano e stato delle fette: `docs\OPENGL_PIANO.md`; dettaglio di ogni fetta e num
 - **`m_rnd`**: resta la facciata sopra `IGameRandom` (una chiamata a interfaccia per numero). Una classe `sealed` con metodi statici sarebbe un'ottimizzazione da misurare, non una conversione.
 - **`m_smartpointerlist`**: resta in `Base` (gia' una classe); la `Clear` sottrae a `memoryusage` gli elementi e non la capacita' (solo il comando `mem`). Spostarla in una libreria richiede di toccare `Libs\OpenGl\Legacy\mdl_dllmodel`.
 - `myargv`/`myargc` (circa 340 letture) e `M_CheckParm` (347) restano per i chiamanti procedurali.
+
+## #40 — avvio a runtime a 64 bit dei programmi diversi dai giochi software (2026-11-14): cosa resta aperto
+
+- **Stato degli script nei salvataggi**: `TScriptSerializer` (`Libs\ScriptHost\DelphiDoom.ScriptHost.Serializer.pas`) scrive una variabile `Extended` con `SizeOf(TbtExtended)`: 10 byte a 32 bit, 8 a 64. Va deciso insieme ai salvataggi a 64 bit (stessa immagine a 10 byte dei `.ddout`, `TExtended80Rec`).
+- **Radix32 a 64 bit** si ferma dove si ferma a 32 bit (`-warp 1 1`: `I_Error: STlib_updateBinIcon(): y - ST_Y < 0`, vedi "Radix (#169)"); senza `-warp` arriva al titolo.
+- **Non provato a 64 bit**: schermo intero, una scheda grafica vera per i giochi OpenGL (la macchina di prova disegna in software), l'audio (tutte le prove con `-nosound -nomusic` o senza dispositivo), mouse e joystick, la rete, i salvataggi, i modelli MD2 e i voxel in OpenGL, gli eventi degli script `OnActorDied`/`OnCrossLine`/`OnShootLine`/`OnUseLine`, i pannelli di DD_IDE diversi dall'editor, i moduli di DD_Tools oltre la finestra iniziale, Launcher oltre la finestra principale (avvio di un gioco, rilevamento automatico del dettaglio), Greed32 e Xcom32 oltre il menu e una partita pilotata, Keen32 oltre il livello 1.
+- **Launcher**: `GetCPUSpeed` ora legge la frequenza nominale dal registro anche a 32 bit (prima la misurava con RDTSC): "Autodetect detail" puo' scegliere una risoluzione diversa da prima sulle macchine dove le due frequenze differiscono.

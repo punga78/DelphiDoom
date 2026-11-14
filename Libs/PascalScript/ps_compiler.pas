@@ -1526,6 +1526,7 @@ procedure BlockWriteVariant(BlockInfo: TPSBlockInfo; p: PIfRVariant);
 var
   du8: TbtU8;
   du16: TbtU16;
+  ext80: TExtended80Rec;
 begin
   BlockWriteLong(BlockInfo, p^.FType.FinalTypeNo);
   case p.FType.BaseType of
@@ -1550,7 +1551,11 @@ begin
     btDouble:
       BlockWriteData(BlockInfo, p^.tdouble, SizeOf(TbtDouble));
     btExtended:
-      BlockWriteData(BlockInfo, p^.textended, SizeOf(TbtExtended));
+      begin
+        // 10 bytes on disk at 32 and at 64 bit: the x87 image, also where Extended is a Double
+        ext80 := TExtended80Rec(p^.textended);
+        BlockWriteData(BlockInfo, ext80, SizeOf(ext80));
+      end;
     btCurrency:
       BlockWriteData(BlockInfo, p^.tcurrency, SizeOf(TbtCurrency));
     btChar:
@@ -12352,6 +12357,8 @@ var
     end;
 
     procedure WriteVariant(p: PIfRVariant);
+    var
+      ext80: TExtended80Rec;
     begin
       WriteLong(p^.FType.FinalTypeNo);
       case p.FType.BaseType of
@@ -12376,7 +12383,11 @@ var
         btDouble:
           WriteData(p^.tsingle, SizeOf(TbtDouble));
         btExtended:
-          WriteData(p^.tsingle, SizeOf(TbtExtended));
+          begin
+            // 10 bytes on disk at 32 and at 64 bit: the x87 image, also where Extended is a Double
+            ext80 := TExtended80Rec(p^.textended);
+            WriteData(ext80, SizeOf(ext80));
+          end;
         btCurrency:
           WriteData(p^.tsingle, SizeOf(TbtCurrency));
         btChar:

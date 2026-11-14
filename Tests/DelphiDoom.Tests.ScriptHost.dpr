@@ -112,6 +112,7 @@ uses
   DelphiDoom.Tests.ScriptHost.ConstantsCompiler in 'Source\DelphiDoom.Tests.ScriptHost.ConstantsCompiler.pas',
   DelphiDoom.Tests.ScriptHost.ClassCatalog in 'Source\DelphiDoom.Tests.ScriptHost.ClassCatalog.pas',
   DelphiDoom.Tests.ScriptHost.Interpreter in 'Source\DelphiDoom.Tests.ScriptHost.Interpreter.pas',
+  DelphiDoom.Tests.ScriptHost.CompiledExtended in 'Source\DelphiDoom.Tests.ScriptHost.CompiledExtended.pas',
   DelphiDoom.Tests.ScriptHost.VariablesFakes in 'Source\DelphiDoom.Tests.ScriptHost.VariablesFakes.pas',
   DelphiDoom.Tests.ScriptHost.Variables in 'Source\DelphiDoom.Tests.ScriptHost.Variables.pas',
   DelphiDoom.Tests.ScriptHost.VariablesHash in 'Source\DelphiDoom.Tests.ScriptHost.VariablesHash.pas',

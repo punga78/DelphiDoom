@@ -57,7 +57,7 @@ begin
     if PChar(res)^ = #0 then
       break;
     result := result + PChar(res)^;
-    res := pointer(integer(res) + 1);
+    res := PChar(res) + 1; // one character (2 bytes), and no pointer cut to 32 bit
   end;
   FreeMem(pointer(buffer), vsize + 1);
 end;
