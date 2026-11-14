@@ -51,6 +51,7 @@ uses
   DelphiDoom.Aas.Move.Settings in '..\Libs\Aas\DelphiDoom.Aas.Move.Settings.pas',
   DelphiDoom.Aas.Move.Movement in '..\Libs\Aas\DelphiDoom.Aas.Move.Movement.pas',
   DelphiDoom.Aas.Move.CollisionWorld in '..\Libs\Aas\DelphiDoom.Aas.Move.CollisionWorld.pas',
+  DelphiDoom.Aas.Links in '..\Libs\Aas\DelphiDoom.Aas.Links.pas',
   DelphiDoom.Aas.Bsp.Intf in '..\Libs\Aas\DelphiDoom.Aas.Bsp.Intf.pas',
   DelphiDoom.Aas.Bsp.CNumbers in '..\Libs\Aas\DelphiDoom.Aas.Bsp.CNumbers.pas',
   DelphiDoom.Aas.Bsp.Entities in '..\Libs\Aas\DelphiDoom.Aas.Bsp.Entities.pas',
