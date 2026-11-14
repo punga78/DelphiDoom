@@ -58,6 +58,7 @@ uses
   DelphiDoom.Collision.RotationMath in '..\Libs\Collision\DelphiDoom.Collision.RotationMath.pas',
   DelphiDoom.Collision.Rotator in '..\Libs\Collision\DelphiDoom.Collision.Rotator.pas',
   DelphiDoom.Collision.RotationRunner in '..\Libs\Collision\DelphiDoom.Collision.RotationRunner.pas',
+  DelphiDoom.Collision.Motion in '..\Libs\Collision\DelphiDoom.Collision.Motion.pas',
   DelphiDoom.Collision.TrmModel in '..\Libs\Collision\DelphiDoom.Collision.TrmModel.pas',
   DelphiDoom.Collision.TrmExtractor in '..\Libs\Collision\DelphiDoom.Collision.TrmExtractor.pas',
   DelphiDoom.Collision.ContentsNames in '..\Libs\Collision\DelphiDoom.Collision.ContentsNames.pas',
@@ -96,7 +97,8 @@ uses
   DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas',
   DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas',
   DelphiDoom.Tests.Collision.Fuzz in 'Source\DelphiDoom.Tests.Collision.Fuzz.pas',
-  DelphiDoom.Tests.Collision.Q3OpenArena in 'Source\DelphiDoom.Tests.Collision.Q3OpenArena.pas';
+  DelphiDoom.Tests.Collision.Q3OpenArena in 'Source\DelphiDoom.Tests.Collision.Q3OpenArena.pas',
+  DelphiDoom.Tests.Collision.Extras in 'Source\DelphiDoom.Tests.Collision.Extras.pas';
 
 var
   Runner: ITestRunner;
