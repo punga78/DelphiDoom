@@ -196,7 +196,7 @@ Un merge non passa se un golden cambia senza che sia dichiarato e motivato (un d
 | 1d (nel piano 1c) i_* | **fatta** (#185, 2026-11-13): censimento nel paragrafo qui sotto; Libs\EngineSystem (20 unit, 19 classi, 2357 righe) + Base\DelphiDoom.Engine.System.* (2 unit) + facciate; 116 test, copertura 93%; dieci eseguibili, quattro ddc_*, Launcher, DD_IDE e DD_Tools compilano (un avviso in meno per eseguibile); verifica a runtime a carico dell'agente di verifica (Tools\Verifica\185\Fetta-1d.txt) |
 | 1 freddo, **fetta 1e** (avanzi meccanici di `Base\`) | **fatta** (#185, 2026-11-13). Censimento delle 15 unit (3833 righe, quasi tutto tipi e dati): **trasformate** `mt_utils` (1347 -> 764 righe, facciata sopra `TWorkerJobRunner`, `TWorkerMemoryRunner`, `TWorkerTaskScheduler` di `Libs\Threading`), `c_utils` (219 -> 69, `TConsoleUtilityCommands` in `Libs\Console`) e `d_notifications` (129 -> 100, `TDeferredNotifications` in `Libs\Video`); **gia' facciate o delegate** a classi dalle ondate precedenti: `c_cmds` (registro e interprete di `Libs\Console`), `c_con` (tiene 4 variabili; la console e' `TEngineConsoleScreen`), `nd_main` (i nodi sono `Libs\Nodes`; restano i tipi dei record GL e `gld_GetGLVertexes` che chiama `TNodesGlParser`); **restano storiche, solo tipi o dati**: `doomtype` (costanti e due funzioni `smallintwarp`), `doomdata` (record dei lump WAD, packed: formato su disco), `d_ticcmd` e `d_event` (`ticcmd_t`, `event_t`: record di rete, demo e salvataggi, non cambiano di un byte), `d_think` (`think_t` e `thinker_t`: puntatori a funzione salvati grezzi da `p_saveg`, regola dei thinker), `d_net_h` (costanti), `d_net` (due variabili e una stringa), `tables` (tabelle seno, tangente, arcotangente: percorso caldo, restano costanti accedute per indice, stesso costo; `SlopeDiv`/`AngleToSlope` sono funzioni pure di una riga, usate dal renderer), `vx_base` (il registro che i renderer leggono per ogni voxel: vedi `docs\PENDING_ISSUES.md`). Nuovo: 36 test in `Libs\Threading` (82 in tutto, copertura 97%), 10 in `Libs\Console` (185, 96%), 7 in `Libs\Video` (75, 98%); parita' sul vecchio codice copiato in `Tests\Source\DelphiDoom.Tests.Threading.Legacy.pas` e nel test di `UtilityCommands`. Verifica di runtime e confronti con i fili accesi: `Tools\Verifica\185\Fetta-1e.txt` (da fare da un agente di verifica) |
 | 1 freddo, **chiusura** (`f_wipe`, `s_sound`, `am_map`, censimento di tutto il resto) | **censimento fatto, tre famiglie toccate** (#185, 2026-11-14; par. 12). `f_wipe` 354 -> 260 righe sopra `TImagingMeltWipe` (`Libs\Imaging`, riusata ed estesa con `StartOnBuffers`); `s_sound` 2297 -> 2135 con `TSfxAttenuation`, `TSfxChannelPicker`, `TExternalMusicNames` (`Libs\Audio`, 404 righe nuove); `am_map` 2315 -> 2263 con `TAutomapLineRasterizer` (`Libs\Automap`, 201 righe). Test: Imaging 216 -> 220, Audio 301 -> 341, Automap 65 -> 72, con le copie del vecchio codice (`OldWipe`, `OldSound`, `OldMusicNames`, `OldLine`, 812 righe) e parita' su scenari casuali; copertura Imaging 98%, Audio 99%, Automap 100%, le cinque unit nuove o estese 100%. Build: dieci giochi con 382/381/382/332/305/255/200/150/413/340 avvisi (base 383/382/383/333/305/255/200/150/414/341: uno in meno dove e' sparito `S_GetListFromAlias`), zero nel codice nuovo; strumenti (`ddc_*` 381/304/199/412, Launcher 9, DD_IDE 24, DD_Tools 0) e `Doom32`/`Strife32` a Win64 compilano. Golden: sugli eseguibili di `0046420a` solo `d1_demo1` a 8 e a 32 bit, UGUALE (stato e fotogrammi); il resto del corpus non e' stato eseguito da chi ha scritto il codice (sei agenti in coda sul lock dei giochi, circa mezz'ora per voce): la verifica passa al responsabile sul ramo unito. **Non verificato a runtime**: l'automap aperta (nessuna chiave di configurazione la apre e l'input e' chiuso), il wipe degli eseguibili OpenGL, la musica mp3 esterna, le voci di Strife con tutti i canali occupati; misura a coppie non fatta (macchina occupata): i punti dove guardare sono `S_UpdateSounds` (una chiamata statica per canale e per tic) e il wipe (un `Advance` per fotogramma) |
-| 2 logica | da fare (thinker di luci, porte, piattaforme, teletrasporti già a classi in `Libs\Thinkers`) |
+| 2 logica | **in corso** (#185, 2026-11-14): progetto nel par. 10; fatti 2a, 2e-1, 2c-1 (`p_map`) e 2c-2 (`p_mobj`, parziale); stato, verifica e prossimi sottosistemi nel par. 11.0 |
 | 3 renderer software | da fare (`Libs\Renderer` ha le prime fette fredde) |
 | 4 renderer OpenGL | in corso (#177: fatte 0-5 in parte, 8, 9) |
 | 5 chiusura | da fare |
@@ -344,6 +344,41 @@ I thinker restano record nella zone memory con il puntatore a funzione che `p_sa
 ## 11. Fase 2: stato dei passi
 
 (aggiornato a ogni passo)
+
+### 11.0 Riepilogo del giro del 2026-11-14 e prossimi sottosistemi
+
+Stato sul ramo `worktree-agent-af54720ab9045a4f7` dopo l'unione di `master` (`a5a1ea6b`: Rad-X #169, #110, #120, #175, #194).
+
+| Passo | Cosa | Copie prima -> dopo (righe) | Golden per passo (ridotto, 8 bit) |
+|---|---|---|---|
+| 2a | `TEngineWorld`, `TThinkerList` (`Libs\Thinkers`), `IGameContext` esteso | `p_tick` 362 -> 353 (era gia' in copia unica) | 4 voci su 4 UGUALI |
+| 2e-1 | `p_scroll`, `p_ceilng`, `p_genlin`, `p_floor` (Doom e Strife) in copia unica | 6740 -> 2940 (+ `Heretic\p_floor` 411 che resta) | 4 su 4 UGUALI |
+| fase 1 | `f_wipe`, regole di `s_sound`, linee di `am_map` (par. 12) | 4966 -> 4658 | 4 su 4 a 8 bit, Doom e Strife a 32 bit UGUALI |
+| 2c-1 | `p_map` in copia unica, `TMapGameRules` per gioco | 14079 -> 7769 | 12 su 12 UGUALI |
+| 2c-2 | `p_mobj` in copia unica (parziale: 18 routine su 52), `TMobjGameRules` | 11673 -> 10349 | 12 su 12 UGUALI |
+
+**Verifica finale sul ramo unito** (eseguibili compilati dopo `git merge master`):
+
+- Build Release Win32: dieci eseguibili, errori 0, avvisi 382/381/382/332/305/255/200/150/413/340 (Doom32, Radix32, SpeedHaste32, GLDoom32, Heretic32, GLHeretic32, Hexen32, GLHexen32, Strife32, GLStrife32; base 383/382/383/333/305/255/200/150/414/341). Doom32 e Strife32 Release Win64 compilano (405 e 441 avvisi; non avviati).
+- **Corpus intero dei golden: 44 voci su 44 UGUALI a 8 bit** (Doom 21, Heretic 9, Hexen 8, Strife 6: stato per tic e fotogrammi) e **27 su 27 UGUALI a 32 bit** (Doom 21, Strife 6). Cartella di lavoro `C:\ddparity_185` (non `C:\ddparity`, in uso da un altro lavoro nello stesso momento); le due voci di Freedoom che possono dipendere dal percorso (`a_f2_map10`, `f2_demo2`) sono risultate UGUALI anche li'.
+- Suite a Win32: Thinkers 352/352, Imaging 220/220, Audio 341/341, Automap 72/72, Console 369/369, DynLights 39/39, Net 244/244. Copertura misurata con DelphiCodeCoverage: `Libs\Thinkers` 98% (1414 righe su 1438, 44 unit; `TThinkerList` 99%); Imaging 98%, Audio 99%, Automap 100% (misurate nel ramo della fase 1).
+- Radix32 `-devparm -nomusic -nosound -warp 1 1` (RADIX.DAT 2.0 shareware): carica E1M1 (precache di texture, sprite e suoni), vivo dopo 40 secondi, nessun `crash.txt` ne' `I_Error`. Non guardato a schermo.
+- **Misura a coppie: NON conclusiva** (da rifare a macchina scarica; nessun passo e' dichiarato entro il 5%). Doom32 `demo1`, 8 bit, 5 coppie, eseguibile di `c57fbf77` contro quello finale: (a) dopo 2c-1: vecchio mediana 235, nuovo 231 (mediane -1,70%, minimi -3,85%), rifiutata per dispersione del vecchio 3,85% e CPU al 50%; (b) finale: vecchio minimo 195 mediana 210, nuovo minimo 199 mediana 199 (mediane -5,24%, minimi +2,05%), rifiutata per dispersione del vecchio 23,08% e CPU al 48-72%. Il "nuovo" finale contiene anche le unioni di `master`. Gli eseguibili sono in `C:\ddref185` (`Doom32.exe` di partenza, `fin\Doom\Doom32.exe`).
+- **Test DUnitX**: le classi nuove di libreria hanno i loro test (lista dei thinker, scorrimenti, soffitti, pavimenti, wipe, attenuazione e canali, nomi mp3, linee dell'automap). Non hanno test di unita', e la loro prova sono i golden e la prova meccanica sul testo: `TEngineWorld`, gli adattatori `Engine.Ceiling.Thinker`, `Engine.Floor.Thinker`, `Engine.Generalized.Rules`, `TEngineImagingRandom` e le unit delle regole `TMapGameRules`/`TMobjGameRules` (testo del gioco spostato, legato ai record del motore).
+- **Non verificato**: salvataggi (non toccati, non provati), rete, avvio dei giochi OpenGL, di SpeedHaste32 e di qualsiasi eseguibile Win64, suite a Win64 dopo l'unione, rami che il corpus non esercita (elencati nei par. 11.1-11.3 e 12).
+- **Passi annullati**: nessuno. Il commit `1134d540` (tappa A di `p_map`) da solo ha un difetto di risoluzione di `P_ThingsInSameZ` in Doom, corretto da `d37a3575`: non va usato come punto di bisezione.
+
+**Prossimi sottosistemi (ordine)**:
+
+1. **Resto di `p_mobj`**: `P_ZMovement` (quattro versioni con lo stesso lavoro in ordine diverso nel ramo del pavimento: serve una demo per gioco che lo eserciti prima di riordinare), `P_SpawnPlayer`, `P_SpawnMapThing` (da appoggiare a `ILevelThingRules`, che c'e' gia'), i tre `P_SpawnMissile*`, `P_SpawnPuff`, `P_HitFloor`, `P_NightmareRespawn`, `P_SetMobjStateNF`.
+2. **Resto di `p_map`**: `P_CheckForPushSpecial`, `PIT_ChangeSector`, la coda di contatto di `PIT_CheckThing`.
+3. **`p_user`** (35 routine: 5 uguali, 12 parametriche, 18 proprie), stessa forma (`TUserGameRules`).
+4. **`p_inter`** (39: 5, 16, 18) e il nucleo comune di **`p_enemy`** (381 routine, 344 proprie: solo `P_LookForPlayers`, `P_Move`, `P_NewChaseDir`, `A_Chase` e simili; il resto e' un gruppo di azioni per gioco in `Libs\Actions`) e di **`p_pspr`**.
+5. **`p_spec`** (50: 19 uguali, 19 parametriche) e **`p_switch`**, con `Libs\Specials`.
+6. Thinker rimasti: `Heretic\p_floor`, le tre facciate di `p_plats` e `p_lights`, `p_telept`, `p_doors`; `udmf_ceilng`/`udmf_floor` come secondo profilo di `TCeilingMachine`/`TFloorMachine`.
+7. **Stadio 2 dello stato** (par. 10.3) e `g_game`/salvataggi (2h): solo quando `p_saveg`/`sv_save` saranno liberi.
+
+Per ogni passo: `Confronta-Copie.ps1 -Unit <unit>` per la tabella, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni tappa, corpus intero una volta sul ramo unito, misura a coppie a macchina scarica.
 
 ### 2a: involucro del mondo (2026-11-14)
 
