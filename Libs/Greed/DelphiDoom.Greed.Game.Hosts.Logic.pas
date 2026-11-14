@@ -15,7 +15,7 @@ uses
   System.SysUtils, DelphiDoom.Greed.Types, DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Player.Intf,
   DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.Level.Intf, DelphiDoom.Greed.Elevator.Intf,
   DelphiDoom.Greed.Door.Intf, DelphiDoom.Greed.SpriteLogic.Intf, DelphiDoom.Greed.SpriteDeath,
-  DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.Game.Parts;
+  DelphiDoom.Greed.PlayerMovement, DelphiDoom.Greed.Game.Parts, DelphiDoom.Greed.Net.Intf;
 
 type
   /// <summary>
@@ -27,9 +27,17 @@ type
   TGreedGameLogicHost = class(TInterfacedObject, IGreedGameSound, IGreedPlayerHealth, IGreedSpriteKiller,
     IGreedSpriteHost, IGreedDeathHost, IGreedPlayerContext, IGreedPlayerFeedback, IGreedMovementHost,
     IGreedDoorSoundSink, IGreedElevatorHost, IGreedDoorHost, IGreedSwitchHost, IGreedTicParts,
-    IGreedPlayerControlHost)
+    IGreedPlayerControlHost, IGreedNetHost)
   strict private
     FParts: TGreedGameParts;
+    // IGreedNetHost: what a packet of another player asks of raven.pas
+    procedure NetTryDoor(ACenterX, ACenterY: TGreedFixed);
+    procedure NetCheckItems(ATileX, ATileY: Integer; AUseIt: Boolean; ACharType: Integer);
+    procedure NetCheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
+    procedure RefreshGoalItem;
+    procedure IGreedNetHost.TryDoor = NetTryDoor;
+    procedure IGreedNetHost.CheckItems = NetCheckItems;
+    procedure IGreedNetHost.CheckHere = NetCheckHere;
   public
     /// <summary>EArgumentNilException if AParts is nil</summary>
     constructor Create(AParts: TGreedGameParts);
@@ -78,8 +86,6 @@ type
     procedure MoveSprites;
     procedure CheckElevators;
     // IGreedPlayerControlHost
-    function CheckForSwitch(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
-    procedure SwitchWall(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean);
     procedure SetLights(ABlackZ: TGreedFixed);
   end;
 
@@ -180,7 +186,7 @@ end;
 
 function TGreedGameLogicHost.GetNetMode: Boolean;
 begin
-  Result := False;
+  Result := FParts.State.NetMode;
 end;
 
 function TGreedGameLogicHost.GetTimeCount: Integer;
@@ -190,12 +196,12 @@ end;
 
 function TGreedGameLogicHost.GetNetHurtSoundTime: Integer;
 begin
-  Result := FParts.NetHurtSoundTime;
+  Result := FParts.State.NetHurtSoundTime;
 end;
 
 procedure TGreedGameLogicHost.SetNetHurtSoundTime(AValue: Integer);
 begin
-  FParts.NetHurtSoundTime := AValue;
+  FParts.State.NetHurtSoundTime := AValue;
 end;
 
 procedure TGreedGameLogicHost.ShowHurtBorder;
@@ -205,12 +211,36 @@ end;
 
 procedure TGreedGameLogicHost.PlayNetSound(ASound, AVariation: Integer; AX, AY: TGreedFixed);
 begin
-  // the net game is not ported: there is nobody else to tell
+  if FParts.State.NetMode then
+    FParts.State.Net.SoundEffect(ASound, AVariation, AX, AY);
 end;
 
 procedure TGreedGameLogicHost.NetOpenDoor(AX, AY: TGreedFixed);
 begin
-  // the net game is not ported
+  if FParts.State.NetMode then
+    FParts.State.Net.OpenDoor(AX, AY);
+end;
+
+procedure TGreedGameLogicHost.NetTryDoor(ACenterX, ACenterY: TGreedFixed);
+begin
+  FParts.Movement.TryDoor(ACenterX, ACenterY);
+end;
+
+procedure TGreedGameLogicHost.NetCheckItems(ATileX, ATileY: Integer; AUseIt: Boolean; ACharType: Integer);
+begin
+  FParts.Items.CheckItems(ATileX, ATileY, AUseIt, ACharType);
+end;
+
+procedure TGreedGameLogicHost.NetCheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
+begin
+  FParts.Switches.CheckHere(AUseIt, ACenterX, ACenterY, AAngle);
+end;
+
+procedure TGreedGameLogicHost.RefreshGoalItem;
+begin
+  // oldgoalitem := -1
+  FParts.Session.OldGoalItem := -1;
+  FParts.View.RefreshGoalItem;
 end;
 
 procedure TGreedGameLogicHost.DoorBumped(ADoorX, ADoorY: Integer);
@@ -262,16 +292,6 @@ end;
 procedure TGreedGameLogicHost.CheckElevators;
 begin
   FParts.ElevatorRules.Check(FParts.State.Player, FParts.State.FallRate);
-end;
-
-function TGreedGameLogicHost.CheckForSwitch(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
-begin
-  Result := FParts.Switches.CheckForSwitch(ATileX, ATileY, AAngle, ADoubleSwitch);
-end;
-
-procedure TGreedGameLogicHost.SwitchWall(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean);
-begin
-  FParts.Switches.SwitchWall(ATileX, ATileY, AAngle, ADoubleSwitch);
 end;
 
 procedure TGreedGameLogicHost.SetLights(ABlackZ: TGreedFixed);

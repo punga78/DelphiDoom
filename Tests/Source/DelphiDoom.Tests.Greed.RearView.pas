@@ -99,7 +99,7 @@ begin
   Start;
   FSetup.Play(30);
   Assert.AreEqual(0, FSetup.Renderer.CameraViews);
-  Assert.AreEqual(0, Length(FSetup.Game.RearBuffer));
+  Assert.AreEqual(0, Integer(Length(FSetup.Game.RearBuffer)));
   Assert.IsFalse(FSetup.View.LastOverlay.RearViewVisible);
   Assert.IsFalse(FSetup.Game.State.RearViewOn);
 end;

@@ -218,7 +218,15 @@ uses
   DelphiDoom.Tests.Greed.JoystickControls in 'Source\DelphiDoom.Tests.Greed.JoystickControls.pas',
   DelphiDoom.Tests.Greed.ScriptMouse in 'Source\DelphiDoom.Tests.Greed.ScriptMouse.pas',
   DelphiDoom.Tests.Greed.HostMouse in 'Source\DelphiDoom.Tests.Greed.HostMouse.pas',
-  DelphiDoom.Tests.Greed.MenuMouse in 'Source\DelphiDoom.Tests.Greed.MenuMouse.pas';
+  DelphiDoom.Tests.Greed.MenuMouse in 'Source\DelphiDoom.Tests.Greed.MenuMouse.pas',
+  DelphiDoom.Tests.Greed.NetScenarios in 'Source\DelphiDoom.Tests.Greed.NetScenarios.pas',
+  DelphiDoom.Tests.Greed.NetRunner in 'Source\DelphiDoom.Tests.Greed.NetRunner.pas',
+  DelphiDoom.Tests.Greed.NetFakes in 'Source\DelphiDoom.Tests.Greed.NetFakes.pas',
+  DelphiDoom.Tests.Greed.NetLibraryRunner in 'Source\DelphiDoom.Tests.Greed.NetLibraryRunner.pas',
+  DelphiDoom.Tests.Greed.NetParity in 'Source\DelphiDoom.Tests.Greed.NetParity.pas',
+  DelphiDoom.Tests.Greed.NetGame in 'Source\DelphiDoom.Tests.Greed.NetGame.pas',
+  DelphiDoom.Tests.Greed.Net in 'Source\DelphiDoom.Tests.Greed.Net.pas',
+  DelphiDoom.Tests.Greed.LightOverflow in 'Source\DelphiDoom.Tests.Greed.LightOverflow.pas';
 
 var
   Runner: ITestRunner;

@@ -23,6 +23,9 @@
 #           e' il golden world.rear.golden.txt
 # -Salva    "300,700": dopo quei giri la partita e' salvata e ricaricata (SaveGame e LoadGame di utils.pas, come
 #           fa il menu); i byte del file scritto da SaveGame entrano in <storia>: e' il golden world.save.golden.txt
+# -Difetto  l'originale si compila SENZA la correzione di reallight (la luce di uno sprite molto caldo sull'ultima
+#           riga finisce su actionflag e sulle variabili che seguono) e alla libreria si chiede lo stesso difetto
+#           (TGreedGame.OriginalLightOverflow): e' il golden world.overflow.golden.txt
 # -Valori   scrive tutti i valori del mondo dopo quel giro in %TEMP%\WorldGolden\valori.<mappa>.<seme>.txt (e, con
 #           -Libreria, in valori.<mappa>.<seme>.libreria.txt): il confronto dei due file da' il campo diverso
 param(
@@ -38,6 +41,7 @@ param(
   [switch]$SenzaCompilare,
   [switch]$Retro,
   [string]$Salva = '',
+  [switch]$Difetto,
   [string]$Riferimento = 'C:\Progetti\DelphiDoom\Reference\xGreed'
 )
 $radice = Resolve-Path "$PSScriptRoot\..\..\.."
@@ -89,7 +93,12 @@ if (-not $SenzaCompilare) {
   $q = Get-Content "$Riferimento\Greed\r_render.pas" -Raw
   $q2 = $q.Replace("reallight: array[0..MAPROWS * MAPCOLS - 1] of integer;", "reallight: array[0..MAPROWS * MAPCOLS - 1 + 3 * MAPCOLS] of integer;")
   if ($q2 -eq $q) { Write-Error 'r_render.pas: reallight non e'' dove era'; exit 1 }
-  Set-Content "$uscita\src\r_render.pas" $q2
+  if ($Difetto) {
+    # the original as it is: the light of a very hot sprite goes outside reallight (the library is asked to do the same)
+    if (Test-Path -LiteralPath "$uscita\src\r_render.pas") { [IO.File]::Delete("$uscita\src\r_render.pas") }
+  } else {
+    Set-Content "$uscita\src\r_render.pas" $q2
+  }
 
   # sprites.pas: MoveSprites reads its local variable "killed" before giving it a value ("if not killed and
   # (msprite.heat <> 0)" for the first active sprite that does not move): what it finds is what the calls before
@@ -137,10 +146,11 @@ $falliti = 0
 $diverse = 0
 function Esegui([string]$programma, [string]$file, [string]$fileValori, [string]$mappa, [string]$seme) {
   $argomenti = @("`"$Dati`"", $mappa, $seme, $Giri, "`"$file`"", $Ogni)
-  if ($Valori -ge 0) { $argomenti += @($Valori, "`"$fileValori`"") } elseif ($Completo -or $Retro -or ($Salva -ne '')) { $argomenti += @(-1, 'nessuno') }
+  if ($Valori -ge 0) { $argomenti += @($Valori, "`"$fileValori`"") } elseif ($Completo -or $Retro -or $Difetto -or ($Salva -ne '')) { $argomenti += @(-1, 'nessuno') }
   if ($Completo) { $argomenti += 'tutti' }
   if ($Retro) { $argomenti += 'retro' }
   if ($Salva -ne '') { $argomenti += "salva=$Salva" }
+  if ($Difetto) { $argomenti += 'difetto' }
   # dalla cartella di lavoro (l'originale scrive dove si trova), aspettando l'uscita: il programma dell'originale
   # ha il sottosistema GUI di xGreed.inc e senza -Wait PowerShell non lo aspetterebbe
   $processo = Start-Process -FilePath $programma -ArgumentList $argomenti -WorkingDirectory "$uscita\lavoro" -Wait -PassThru -NoNewWindow

@@ -2,12 +2,26 @@
 
 > Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
 
-Port in classi di **xGreed**, il source port Delphi di Jim Valavanis (2020-2022, GPL v2 o successiva) di **"In Pursuit of Greed"** (Softdisk / Channel 7, 1996, motore "Raven 3D", disegno di John Carmack). Sorgenti originali in `Reference\xGreed` (non si modificano); issue #175.
+Port in classi di **xGreed**, il source port Delphi di Jim Valavanis (2020-2022; licenza: vedi sotto, **non risolta**) di **"In Pursuit of Greed"** (Softdisk / Channel 7, 1996, motore "Raven 3D", disegno di John Carmack). Sorgenti originali in `Reference\xGreed` (non si modificano); issue #175.
 
 Non e' un gioco del motore Doom: ha il suo eseguibile (`Greed\Greed32.dpr`, composition root `Greed\DelphiDoom.Greed.Composition.pas`, `Tools\build.bat Greed\Greed32`, output `bin\Greed`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration`. Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`), `Libs\Platform` (`IFileStore`) e `Libs\MathCore` (`TCrc32`).
 
-**Licenza.** Le unit di xGreed hanno l'intestazione GPL v2 o successiva; il codice originale Raven 3D e' (c) 1996 Softdisk Publishing e il repository di xGreed non ha un file di licenza: **da chiarire con l'autore** (decisione di prodotto, non bloccante per queste fette, che leggono dati e non portano il motore). Le unit portate lo dichiarano nell'intestazione. `DelphiDoom.Greed.PstCorrection` e' la copia dei 10463 byte di `pst_corrected` di `g_fixlump.pas`. I dati di gioco (`GREED.BLO`, le musiche) non sono nel repository.
+## Licenza: stato esatto (2026-11-14) — NON risolta
 
+Cosa dice il sorgente che abbiamo (`Reference\xGreed`, 45 file `.pas`, verificato file per file):
+
+- **Non c'e' un file di licenza** (`LICENSE`, `COPYING`) e il `README.md` di xGreed non nomina nessuna licenza.
+- **10 unit hanno il testo della GPL v2 o successiva** ("License applies to this source file", copyright 2020-2022 Jim Valavanis): `Base\g_delphi`, `g_fixlump`, `i_main`, `i_video`, `i_windows`, `m_crc32`, `m_screenshot`, `scriptengine`, `Greed\m_defs`, `Greed\r_interpolate`. Sono il codice scritto da Valavanis per il port (finestra, video, configurazione, interpolazione, correzione dei lump).
+- **Le 28 unit del gioco in `Greed\`, `LaunchXG\main` e `xGreed.dpr` non hanno nessun testo di licenza**: `Greed\raven`, `utils`, `spawn`, `sprites`, `event`, `display`, `menu`, `intro`, `net`, `modplay`, `playfli`, `constant`, `protos_h`, `timer`, `d_disk`, `d_font`, `d_ints`, `d_ints_h`, `d_misc`, `d_video`, `r_conten`, `r_plane`, `r_public`, `r_public_h`, `r_refdef`, `r_render`, `r_spans`, `r_walls`. Hanno solo l'intestazione "xGreed (C) 2020-2022 by Jim Valavanis / Raven 3D Engine (C) 1996 by Softdisk Publishing / Original Design: John Carmack of id Software / Enhancements by: Robert Morgan of Channel 7, Todd Lewis e John Bianca of Softdisk Publishing, Carlos Hasan". E' un avviso di copyright, non una licenza.
+- Di terzi: `Base\bass.pas` (BASS di Un4seen, licenza proprietaria: non usato, sostituito da `Libs\Mikmod` e dal mixer), `Base\DirectX.pas` (JEDI), `Base\pngimage.pas`, `FASTMM4`, `zlib` (nessuno e' portato).
+
+Cosa ne segue per questa libreria:
+
+- Quasi tutto `Libs\Greed` e' il port delle 28 unit del gioco **senza licenza** (logica, renderer, HUD, menu, rete). Le intestazioni delle nostre unit dicono "Port of xGreed (Jim Valavanis, GPL v2 or later)": **per quelle unit il sorgente non lo dice**. E' vero solo per cio' che viene dalle 10 unit con il testo della GPL (`Settings*` da `m_defs`, `LumpFixes`/`PstCorrection` da `g_fixlump`, `Render.SpriteInterpolator` da `r_interpolate`, `ScriptScanner` da `scriptengine`).
+- **Cosa manca**: una dichiarazione di chi ha i diritti sul codice Raven 3D del gioco (Softdisk Publishing o chi ne ha rilevato i diritti; Channel 7 / Robert Morgan per la parte sua) che lo metta sotto la GPL v2 o successiva o sotto una licenza compatibile, e la conferma di Jim Valavanis che la sua traduzione in Pascal di quelle unit e' sotto la stessa licenza. Senza, la distribuzione di `Libs\Greed` e di `Greed32` come GPL non ha un fondamento scritto.
+- **Cercato in rete il 2026-11-14, senza trovare una licenza**: una discussione pubblica (forum Duke4.net, dicembre 2014) riferisce che il sorgente originale e un port per Windows incompiuto furono pubblicati sul sito dello sviluppatore, e nella stessa discussione la licenza dei dati e' detta "da chiarire"; le pagine di xGreed (SourceForge) non dichiarano una licenza per il codice del gioco. Queste sono notizie di seconda mano, non verificate sul sorgente originale, che non e' in `Reference`.
+- I dati del gioco (`GREED.BLO`, musiche, filmati) sono proprietari e **non sono nel repository** (ci sono solo i numeri dei golden); `DelphiDoom.Greed.PstCorrection` e' la copia dei 10463 byte di `pst_corrected` di `g_fixlump.pas` (unit con la GPL).
+- **Non e' una cosa che il codice puo' risolvere**: va chiesto agli autori (decisione dell'utente). Fino ad allora la libreria resta nel repository come lavoro di port con questa avvertenza.
 ## Stato: fette G0-G4 (issue #175; l'elenco completo e lo stato sono sopra e in CLAUDE.md)
 
 | Fetta | Fatto | Dove |

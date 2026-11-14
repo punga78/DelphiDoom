@@ -114,10 +114,6 @@ type
   /// </summary>
   IGreedPlayerControlHost = interface
     ['{4A7C9E12-D8B3-4065-B1F4-27E5A0C36D89}']
-    /// <summary>CheckForSwitch(x, y, angle, doubleswitch): True if the player faces a switch of that tile</summary>
-    function CheckForSwitch(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean): Boolean;
-    /// <summary>SwitchWall(x, y, angle, doubleswitch): the picture of the switch changes</summary>
-    procedure SwitchWall(ATileX, ATileY, AAngle: Integer; ADoubleSwitch: Boolean);
     /// <summary>RF_SetLights(blackz): the distance at which the view is black</summary>
     procedure SetLights(ABlackZ: TGreedFixed);
   end;
@@ -138,8 +134,6 @@ type
   /// <summary>The weapons of the player (TGreedPlayerWeapons)</summary>
   IGreedPlayerWeapons = interface
     ['{8D2F5B67-A1C4-4E90-B3D8-6C0E4F9A1257}']
-    /// <summary>chargeweapons: the weapons of the player get 20 of charge at their rate, up to 100</summary>
-    procedure ChargeWeapons;
     /// <summary>GetTargetAngle(n, pz): the vertical angle of a shot</summary>
     function GetTargetAngle(AOffset: Integer; AHeight: TGreedFixed): Integer;
     /// <summary>fireweapon: the weapon in the hands shoots if there is ammunition</summary>

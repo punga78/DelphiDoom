@@ -2,8 +2,7 @@
 {                                                                              }
 {  DelphiDoom: greed library - the commands of the player                       }
 {  Port of xGreed (Jim Valavanis, GPL v2 or later): ControlMovement,            }
-{  ControlBobbing, PlayerCommand, CheckHere, newlights and ChangeScroll of      }
-{  raven.pas                                                                    }
+{  ControlBobbing, PlayerCommand, newlights and ChangeScroll of raven.pas       }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
@@ -36,8 +35,8 @@ type
   ///   on the odd tics, reads the commands: the mouse, the keys of the menus and of the modes (they only raise the
   ///   flags of TGreedGameState that PlayLoop serves), the look up and down, the inventory, the change of weapon,
   ///   the jump, the walk and the run with their acceleration (MoveRate, StrafRate), the turn, the use, the fire,
-  ///   the step up, the floors that push, the fall and the ceiling. With it: CheckHere (the use of what is in front
-  ///   of the player: doors, switches, elevators), newlights and ChangeScroll, that PlayLoop calls.
+  ///   the step up, the floors that push, the fall and the ceiling. With it: newlights and ChangeScroll, that PlayLoop
+  ///   calls. The use command only raises CheckTrigger: CheckHere is TGreedSwitchRules.CheckHere.
   ///   The globals of the original are the fields of TGreedGameState. The ones that are not there are properties
   ///   of this class: the state of the mouse (MouseDX, MouseDY and the three buttons of d_ints.pas), the settings
   ///   that the original reads from SC and d_ints (MouseEnabled, MouseSensitivity, MouseSensitivityX,
@@ -46,13 +45,10 @@ type
   ///   ScrollRate and MaxScroll (variables in the original: halved at low resolution) and FirePending (the action
   ///   hook of the renderer: the original shoots inside RF_RenderView; here PlayLoop calls RunActionHook where it
   ///   draws the view). switches[x][y] of event.pas is Switches[x * 64 + y] of the state.
-  ///   Not ported: the net game (NetCheckHere; the message can be typed only when NetMode is true), the demos
-  ///   (recording and playback) and the joystick, that xGreed does not read either.
+  ///   The message of the net game can be typed only when NetMode is true.
   ///   Kept defects of the original: the search of the floor to step on looks only at the first column of the tiles
   ///   under the player (the inner counter is not reset); when the tile found has no floor above 0 the floor under
-  ///   the player is used; in CheckHere, once an elevator has swapped, the wall is switched again for every
-  ///   elevator that follows in the list; SHIFT with F1, F4 or F5 also opens the help, the quick exit and the
-  ///   briefing.
+  ///   the player is used; SHIFT with F1, F4 or F5 also opens the help, the quick exit and the briefing.
   ///   Differences: a tile outside the map reads 0 (the original read the memory near the arrays); a slot without
   ///   a weapon (-1) does not fire (the original read before the table of the weapons)
   /// </summary>
@@ -62,7 +58,6 @@ type
     FMovement: TGreedPlayerMovement;
     FControls: IGreedControls;
     FHost: IGreedPlayerControlHost;
-    FEvents: IGreedEventRunner;
     FWeapons: IGreedPlayerWeapons;
     FMouseDX: Integer;
     FMouseDY: Integer;
@@ -85,6 +80,7 @@ type
     FScrollRate: Integer;
     FMaxScroll: Integer;
     FFirePending: Boolean;
+    FActionHookSet: Boolean;
     function FloorZ(AX, AY: TGreedFixed): TGreedFixed;
     function FloorPic(ASpot: Integer): Integer;
     function OnWater: Boolean;
@@ -111,11 +107,10 @@ type
   public
     /// <summary>
     ///   AState has the player and the globals of the game; AMovement is the movement of the player against the
-    ///   map (TryDoor, Thrust); AControls is the state of the commands; AHost has the switches and the lights;
-    ///   AEvents is RunEvent; AWeapons shoots. EArgumentNilException if one is nil
+    ///   map (TryDoor, Thrust); AControls is the state of the commands; AHost has the lights; AWeapons shoots. EArgumentNilException if one is nil
     /// </summary>
     constructor Create(AState: TGreedGameState; AMovement: TGreedPlayerMovement; const AControls: IGreedControls;
-      const AHost: IGreedPlayerControlHost; const AEvents: IGreedEventRunner; const AWeapons: IGreedPlayerWeapons);
+      const AHost: IGreedPlayerControlHost; const AWeapons: IGreedPlayerWeapons);
     /// <summary>ControlBobbing: the head and the weapon swing while the player moves and come back when it stops</summary>
     procedure ControlBobbing;
     /// <summary>ControlMovement: one tic of the commands of the player</summary>
@@ -127,11 +122,6 @@ type
     ///   shoots now. PlayLoop calls it where the original draws the view
     /// </summary>
     procedure RunActionHook;
-    /// <summary>
-    ///   CheckHere(useit, cx, cy, angle): the door, the switch and the elevators of the tile of (cx, cy). AUseIt is
-    ///   True when the player pressed the use command (the switch must be in front of it)
-    /// </summary>
-    procedure CheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
     /// <summary>newlights: ChangeLight is added to Lighting (1 .. 4096) and the renderer is told</summary>
     procedure NewLights;
     /// <summary>ChangeScroll: the look of the player moves by ScrollView, inside MaxScroll</summary>
@@ -169,6 +159,11 @@ type
     property MaxScroll: Integer read FMaxScroll write FMaxScroll;
     /// <summary>actionflag of r_public.pas: a fire waits for the next image</summary>
     property FirePending: Boolean read FFirePending write FFirePending;
+    /// <summary>
+    ///   actionhook of r_public.pas is not nil any more: the player has fired at least once (RF_SetActionHook), and
+    ///   the hook stays the shot for the rest of the program
+    /// </summary>
+    property ActionHookSet: Boolean read FActionHookSet;
   end;
 
 implementation
@@ -196,8 +191,7 @@ const
 { TGreedPlayerControl }
 
 constructor TGreedPlayerControl.Create(AState: TGreedGameState; AMovement: TGreedPlayerMovement;
-  const AControls: IGreedControls; const AHost: IGreedPlayerControlHost; const AEvents: IGreedEventRunner;
-  const AWeapons: IGreedPlayerWeapons);
+  const AControls: IGreedControls; const AHost: IGreedPlayerControlHost; const AWeapons: IGreedPlayerWeapons);
 begin
   inherited Create;
   if not Assigned(AState) then
@@ -208,15 +202,12 @@ begin
     raise EArgumentNilException.Create('AControls');
   if not Assigned(AHost) then
     raise EArgumentNilException.Create('AHost');
-  if not Assigned(AEvents) then
-    raise EArgumentNilException.Create('AEvents');
   if not Assigned(AWeapons) then
     raise EArgumentNilException.Create('AWeapons');
   FState := AState;
   FMovement := AMovement;
   FControls := AControls;
   FHost := AHost;
-  FEvents := AEvents;
   FWeapons := AWeapons;
   FMouseSensitivityX := 10;
   FMouseSensitivityY := 5;
@@ -766,7 +757,10 @@ begin
         FState.WeapMode := 1;
     end
     else
+    begin
       FFirePending := True;
+      FActionHookSet := True;
+    end;
   end;
 end;
 
@@ -963,85 +957,6 @@ begin
     Exit;
   FWeapons.FireWeapon;
   FFirePending := False;
-end;
-
-procedure TGreedPlayerControl.CheckHere(AUseIt: Boolean; ACenterX, ACenterY: TGreedFixed; AAngle: Integer);
-var
-  LSpot, LX, LY, LOtherX, LOtherY, LIndex, LSwitch: Integer;
-  LElevator: TGreedLinkedPool<TGreedElevator>.PItem;
-  LSwitchIt, LSkip: Boolean;
-begin
-  FMovement.TryDoor(ACenterX, ACenterY);
-  LX := ACenterX div GREED_FRACTILEUNIT;
-  LY := ACenterY div GREED_FRACTILEUNIT;
-  LSpot := LY * GREED_MAP_SIZE + LX;
-  LSwitchIt := False;
-  LSwitch := 0;
-  if (LX >= 0) and (LX < GREED_MAP_SIZE) and (LY >= 0) and (LY < GREED_MAP_SIZE) then
-    LSwitch := FState.Switches[LX * GREED_MAP_SIZE + LY];
-  if LSwitch <> 0 then
-  begin
-    LSkip := AUseIt and not FHost.CheckForSwitch(LX, LY, AAngle, True);
-    if not LSkip then
-    begin
-      FHost.SwitchWall(LX, LY, AAngle, True);
-      FEvents.RunEvent(LSwitch, False);
-    end;
-  end;
-  case FState.World.GetValue(gpMapSprites, LSpot) of
-    GREED_SM_SWAPSWITCH:
-      begin
-        if AUseIt and not FHost.CheckForSwitch(LX, LY, AAngle, True) then
-          Exit;
-        LIndex := FState.Elevators.First;
-        while LIndex <> GREED_POOL_NIL do
-        begin
-          LElevator := FState.Elevators.Item(LIndex);
-          if LElevator^.Kind = getSwap then
-          begin
-            if LElevator^.Position = LElevator^.Ceiling then
-            begin
-              LElevator^.Down := True;
-              LElevator^.Timer := FState.TimeCount;
-              LSwitchIt := True;
-            end
-            else if LElevator^.Position = LElevator^.Floor then
-            begin
-              LElevator^.Up := True;
-              LElevator^.Timer := FState.TimeCount;
-              LSwitchIt := True;
-            end;
-          end;
-          // LSwitchIt stays true for the elevators that follow, as in the original
-          if LSwitchIt then
-          begin
-            FHost.SwitchWall(LX, LY, AAngle, True);
-            FState.SwitchTime := FState.TimeCount + 3 * TIC_RATE;
-          end;
-          LIndex := FState.Elevators.Next(LIndex);
-        end;
-      end;
-    GREED_SM_STRIGGER:
-      begin
-        LIndex := FState.Elevators.First;
-        while LIndex <> GREED_POOL_NIL do
-        begin
-          LElevator := FState.Elevators.Item(LIndex);
-          if (LElevator^.Kind = getSecret) and not LElevator^.Down and not LElevator^.Up then
-          begin
-            LOtherX := LElevator^.MapSpot mod GREED_MAP_SIZE;
-            LOtherY := LElevator^.MapSpot div GREED_MAP_SIZE;
-            if (Abs(LOtherX - LX) < 2) and (Abs(LOtherY - LY) < 2) then
-            begin
-              LElevator^.Down := True;
-              LElevator^.Timer := FState.TimeCount;
-              CheckHere(False, LOtherX * GREED_FRACTILEUNIT, LOtherY * GREED_FRACTILEUNIT, AAngle);
-            end;
-          end;
-          LIndex := FState.Elevators.Next(LIndex);
-        end;
-      end;
-  end;
 end;
 
 procedure TGreedPlayerControl.NewLights;

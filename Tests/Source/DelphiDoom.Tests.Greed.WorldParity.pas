@@ -26,7 +26,8 @@ type
   [Category('greed')]
   TTestGreedWorldParity = class(TObject)
   strict private
-    procedure CheckGolden(const AFolder, AGoldenName: string; ARearView: Boolean; const ASaveTurns: string);
+    procedure CheckGolden(const AFolder, AGoldenName: string; ARearView: Boolean; const ASaveTurns: string;
+      ALightOverflow: Boolean = False);
   public
     [Test]
     procedure DovrebbeDareLoStessoMondoDelloOriginaleNelGiocoCompleto;
@@ -34,6 +35,10 @@ type
     procedure DovrebbeDareLoStessoSpecchiettoDelloOriginale;
     [Test]
     procedure DovrebbeSalvareECaricareComeLOriginale;
+    [Test]
+    procedure ConIlDifettoDellaLuceDovrebbeDareIlMondoDelloOriginaleNonCorretto;
+    [Test]
+    procedure SenzaIlDifettoDellaLuceNonDovrebbeDareIlMondoDelloOriginaleNonCorretto;
     [Test]
     procedure DovrebbeDareLeStesseRigheDueVolte;
     [Test]
@@ -50,6 +55,7 @@ const
   GOLDEN_FULL = 'world.full.golden.txt';
   GOLDEN_REAR = 'world.rear.golden.txt';
   GOLDEN_SAVE = 'world.save.golden.txt';
+  GOLDEN_OVERFLOW = 'world.overflow.golden.txt';
   /// the turns of -Salva with which world.save.golden.txt was made
   GOLDEN_SAVE_TURNS = '300,700,1100';
   // the columns of a line: W map seed turn timecount history total and a fingerprint for each section
@@ -65,7 +71,7 @@ const
 { TTestGreedWorldParity }
 
 procedure TTestGreedWorldParity.CheckGolden(const AFolder, AGoldenName: string; ARearView: Boolean;
-  const ASaveTurns: string);
+  const ASaveTurns: string; ALightOverflow: Boolean);
 var
   LGolden, LGame, LMine: TStringList;
   LRunner: TLibraryWorldRunner;
@@ -142,6 +148,7 @@ begin
   try
     LRunner.RearView := ARearView;
     LRunner.SaveTurns := ASaveTurns;
+    LRunner.LightOverflow := ALightOverflow;
     LGolden.LoadFromFile(TGreedRealData.GoldenPath(AGoldenName));
     LKey := '';
     for LIndex := 0 to LGolden.Count - 1 do
@@ -194,6 +201,41 @@ begin
   // the game is saved and loaded again three times: the bytes of each saved game are in the history of the lines,
   // and what the game is after each load is in the lines that follow
   CheckGolden(TGreedRealData.FullFolder, GOLDEN_SAVE, False, GOLDEN_SAVE_TURNS);
+end;
+
+procedure TTestGreedWorldParity.ConIlDifettoDellaLuceDovrebbeDareIlMondoDelloOriginaleNonCorretto;
+begin
+  if TGreedRealData.FullFolder = '' then
+    TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
+  // the two games (of 155) in which the light written outside the map changes the game, played by the original
+  // without the correction of its harness
+  CheckGolden(TGreedRealData.FullFolder, GOLDEN_OVERFLOW, False, '', True);
+end;
+
+procedure TTestGreedWorldParity.SenzaIlDifettoDellaLuceNonDovrebbeDareIlMondoDelloOriginaleNonCorretto;
+var
+  LGolden, LMine: TStringList;
+  LRunner: TLibraryWorldRunner;
+  LLast: string;
+begin
+  if TGreedRealData.FullFolder = '' then
+    TTestSkip.Ignore('the data of the full game are not on this machine (Reference\_dati\greed\full)');
+  LGolden := TStringList.Create;
+  LMine := TStringList.Create;
+  LRunner := TLibraryWorldRunner.Create(TGreedRealData.FullFolder);
+  try
+    LGolden.LoadFromFile(TGreedRealData.GoldenPath(GOLDEN_OVERFLOW));
+    LLast := LGolden[LGolden.Count - 1];
+    Assert.AreEqual('29', LLast.Split([' '])[COLUMN_MAP]);
+    Assert.AreEqual('4', LLast.Split([' '])[COLUMN_SEED]);
+    // the default of the library is the game without the defect: the same game ends in another world
+    LRunner.Play(29, 4, StrToInt(LLast.Split([' '])[COLUMN_FRAME]), 50, LMine);
+    Assert.AreNotEqual(LLast, LMine[LMine.Count - 1]);
+  finally
+    LRunner.Free;
+    LMine.Free;
+    LGolden.Free;
+  end;
 end;
 
 procedure TTestGreedWorldParity.DovrebbeDareLeStesseRigheDueVolte;

@@ -59,6 +59,21 @@ type
   end;
 
   /// <summary>
+  ///   The variables that r_render.pas declares after reallight and that its compiler puts after it in memory, one
+  ///   integer each: actionflag (which belongs to the game), then wallglow, wallglowindex, wallrotate, maplight,
+  ///   wallflicker1 .. wallflicker4, wallflags, wallcycle, frameon and the first entries of framevalid. Optional
+  ///   (asked with Supports): only who plays the game with the defect of the light written outside the map needs it
+  /// </summary>
+  IGreedRenderMemory = interface
+    ['{91F3B6D4-2A7C-4E05-B8C1-5D60E4A927F3}']
+    /// <summary>
+    ///   The integer AOffset places after actionflag (1 is wallglow, 11 frameon, 12 framevalid[0]) gets AAmount
+    ///   less. Nothing for an offset below 1 or past framevalid
+    /// </summary>
+    procedure SubtractAfterTileLights(AOffset, AAmount: Integer);
+  end;
+
+  /// <summary>
   ///   Makes the renderer of a game. The game owns the list of the sprites, the clock of the tics and the sequence
   ///   of the random numbers, and the renderer of the original reads all three: so the game is made first and asks
   ///   for its renderer with them

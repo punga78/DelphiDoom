@@ -47,7 +47,8 @@ type
   ///   only sets the flag of the game (JamWarps of the level does the rest and takes the item); the soul stealer
   ///   shoots 16 bullets around and plays its sound twice. After any use the cursor goes to the previous kind that
   ///   the player has and then to the next one: it stays where it is if that kind is not finished.
-  ///   Not ported: the net game (NetSendSpawn, NetSoundEffect).
+  ///   In a net game (State.NetMode) the soul stealer and the sound of the grenade are told to the others
+  ///   (State.Net: NetSendSpawn, NetSoundEffect).
   ///   Kept from the original: the scale of the holosuit is the one of the nearest sprite found, and the angle of
   ///   the 16th bullet is not used after the loop
   /// </summary>
@@ -243,6 +244,14 @@ begin
   end;
   FSound.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
   FSound.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
+  if FState.NetMode then
+  begin
+    // the ring is told once: who receives it makes the sixteen shots
+    FState.Net.SendSpawn(GREED_S_SOULBULLET, FState.Player.X, FState.Player.Y, FState.Player.Z,
+      FState.Player.Height - (52 * GREED_FRACUNIT), LAngle, 0, True, FState.PlayerNum);
+    FState.Net.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
+    FState.Net.SoundEffect(GREED_SN_SOULSTEALER, 0, FState.Player.X, FState.Player.Y);
+  end;
   Dec(FState.Player.Inventory[Cursor]);
   FMessages.WriteMessage(SGreedUsedSoulStealer);
 end;
@@ -302,6 +311,8 @@ begin
     FState.Player.Height - (50 * GREED_FRACUNIT), FState.Player.Angle, (-FState.Player.ScrollMin) and GREED_ANGLES,
     True, FState.PlayerNum);
   FSound.SoundEffect(GREED_SN_GRENADE, 0, FState.Player.X, FState.Player.Y);
+  if FState.NetMode then
+    FState.Net.SoundEffect(GREED_SN_GRENADE, 0, FState.Player.X, FState.Player.Y);
   Dec(FState.Player.Inventory[ITEM_GRENADE]);
   FireGrenade := False;
 end;

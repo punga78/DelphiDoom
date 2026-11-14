@@ -89,6 +89,16 @@ type
     procedure NewMap(AMap, AActivate: Integer);
   end;
 
+  /// <summary>
+  ///   What startover asks more in a net game; the host of the rules of the level answers it too (a game of one
+  ///   player never asks)
+  /// </summary>
+  IGreedLevelNetHost = interface
+    ['{6A0D4C97-E2B1-4F58-9C36-B17E5D80A243}']
+    /// <summary>respawnplayer of utils.pas: a free start place, and the others are told (NetNewPlayerData)</summary>
+    procedure RespawnPlayer;
+  end;
+
   /// <summary>What the secret codes ask of the rest of the game</summary>
   IGreedCheatHost = interface
     ['{D8E25F14-6B09-4A7C-91D3-2F5C0A84B6E7}']

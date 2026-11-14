@@ -47,6 +47,7 @@ type
     FPlayFrom: TBytes;
     FTapeOutOfStep: Boolean;
     FSaveTurns: string;
+    FLightOverflow: Boolean;
     procedure PrintWorld(AGame: TGreedGame; ARandom: TGreedRandomTable; APrint: TWorldPrint);
   public
     /// <summary>EGreedNotFoundException if the folder has no GREED.BLO</summary>
@@ -84,6 +85,11 @@ type
     ///   (the default): never
     /// </summary>
     property SaveTurns: string read FSaveTurns write FSaveTurns;
+    /// <summary>
+    ///   The game is played with the defect of the original that the comparison usually takes away from both
+    ///   sides: the light of a very hot sprite written outside the map (TGreedGame.OriginalLightOverflow)
+    /// </summary>
+    property LightOverflow: Boolean read FLightOverflow write FLightOverflow;
   end;
 
 implementation
@@ -742,6 +748,7 @@ begin
       TGreedCommandState.Create(LSource), LSoundIntf, LSound as IGreedMusic,
       LRandomIntf, LSavesIntf, LGameClock, LViewIntf, LView as IGreedMessages);
     LView.Attach(LGame);
+    LGame.OriginalLightOverflow := FLightOverflow;
     LGame.LowResolution := True;
     if AMap >= 16 then
       LEpisode := 3

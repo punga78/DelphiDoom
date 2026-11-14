@@ -35,6 +35,9 @@ begin
       begin
         if ParamStr(LIndex) = 'retro' then
           LRunner.RearView := True;
+        // "difetto": the light of a very hot sprite goes outside the map as in the original
+        if ParamStr(LIndex) = 'difetto' then
+          LRunner.LightOverflow := True;
         // "salva=300,700": the game is saved and loaded again after those turns
         if Copy(ParamStr(LIndex), 1, 6) = 'salva=' then
           LRunner.SaveTurns := Copy(ParamStr(LIndex), 7, 1000);
