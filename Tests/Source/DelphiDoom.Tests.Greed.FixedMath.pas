@@ -45,9 +45,13 @@ type
 implementation
 
 uses
-  System.Math;
+  System.Math, System.Classes, DelphiDoom.Tests.Shared.Files, DelphiDoom.Tests.MathCore.Fingerprint;
 
 const
+  // the fingerprints of the results of the original code of xGreed (made by the 32 bit build)
+  GOLDEN_FILE = 'fixedmath.golden.txt';
+  GOLDEN_KEYS: array[0..5] of string = ('Mul', 'MulSaturated', 'Divide', 'Mul64', 'ShiftLeft', 'ShiftRight');
+
   Edges: array[0..13] of Integer = (0, 1, -1, 65536, -65536, 32768, -32768, 98304, $7FFFFFFF, Integer($80000000),
     $7FFF0000, Integer($80010000), 12345678, -87654321);
 
@@ -188,41 +192,70 @@ begin
 end;
 
 procedure TTestGreedFixedMath.DovrebbeDareGliStessiRisultatiDelCodiceOriginale;
-{$IFDEF CPUX86}
 var
   LIndex, LJ, LA, LB: Integer;
   LA64, LB64: Int64;
+  LFingerprints: array[0..5] of TFingerprint;
+  LGolden: TStringList;
+  LKey: Integer;
+  LDifferent: string;
 begin
-  for LIndex := 0 to 200000 do
-  begin
-    if LIndex < Length(Edges) * Length(Edges) then
+  // The originals are assembler and x87: they run in the 32 bit build only, where every result
+  // is compared with them. The fingerprint of each series must be the one of the golden file in
+  // both builds: at 32 bit this says that the file comes from the original code, at 64 bit that
+  // the library gives the results of the original code on the same inputs.
+  for LKey := Low(LFingerprints) to High(LFingerprints) do
+    LFingerprints[LKey] := nil;
+  try
+    for LKey := Low(LFingerprints) to High(LFingerprints) do
+      LFingerprints[LKey] := TFingerprint.Create;
+    for LIndex := 0 to 200000 do
     begin
-      LA := Edges[LIndex div Length(Edges)];
-      LB := Edges[LIndex mod Length(Edges)];
-    end
-    else
-    begin
-      LA := NextValue;
-      LB := NextValue;
+      if LIndex < Length(Edges) * Length(Edges) then
+      begin
+        LA := Edges[LIndex div Length(Edges)];
+        LB := Edges[LIndex mod Length(Edges)];
+      end
+      else
+      begin
+        LA := NextValue;
+        LB := NextValue;
+      end;
+      // products that fit in the 64 bit mantissa of the FPU: the 64 bit values are the 32 bit ones, widened
+      LA64 := Int64(LA) * (Int64(NextValue) and $FFFF);
+      LB64 := LB;
+      LJ := NextValue and 31;
+{$IFDEF CPUX86}
+      Assert.AreEqual(OldFixedMul(LA, LB), TGreedFixedMath.Mul(LA, LB), Format('Mul %d %d', [LA, LB]));
+      Assert.AreEqual(OldFixedMul1(LA, LB), TGreedFixedMath.MulSaturated(LA, LB), Format('MulSaturated %d %d', [LA, LB]));
+      Assert.AreEqual(OldFixedDiv(LA, LB), TGreedFixedMath.Divide(LA, LB), Format('Divide %d %d', [LA, LB]));
+      Assert.AreEqual(OldFixedMul64(LA64, LB64), TGreedFixedMath.Mul64(LA64, LB64), Format('Mul64 %d %d', [LA64, LB64]));
+      Assert.AreEqual(OldShl(LA, LJ), TGreedFixedMath.ShiftLeft(LA, LJ), 'ShiftLeft');
+      Assert.AreEqual(OldShr(LA, LJ), TGreedFixedMath.ShiftRight(LA, LJ), 'ShiftRight');
+{$ENDIF}
+      LFingerprints[0].AddInteger(TGreedFixedMath.Mul(LA, LB));
+      LFingerprints[1].AddInteger(TGreedFixedMath.MulSaturated(LA, LB));
+      LFingerprints[2].AddInteger(TGreedFixedMath.Divide(LA, LB));
+      LFingerprints[3].AddInt64(TGreedFixedMath.Mul64(LA64, LB64));
+      LFingerprints[4].AddInteger(TGreedFixedMath.ShiftLeft(LA, LJ));
+      LFingerprints[5].AddInteger(TGreedFixedMath.ShiftRight(LA, LJ));
     end;
-    Assert.AreEqual(OldFixedMul(LA, LB), TGreedFixedMath.Mul(LA, LB), Format('Mul %d %d', [LA, LB]));
-    Assert.AreEqual(OldFixedMul1(LA, LB), TGreedFixedMath.MulSaturated(LA, LB), Format('MulSaturated %d %d', [LA, LB]));
-    Assert.AreEqual(OldFixedDiv(LA, LB), TGreedFixedMath.Divide(LA, LB), Format('Divide %d %d', [LA, LB]));
-    // products that fit in the 64 bit mantissa of the FPU: the 64 bit values are the 32 bit ones, widened
-    LA64 := Int64(LA) * (Int64(NextValue) and $FFFF);
-    LB64 := LB;
-    Assert.AreEqual(OldFixedMul64(LA64, LB64), TGreedFixedMath.Mul64(LA64, LB64), Format('Mul64 %d %d', [LA64, LB64]));
-    LJ := NextValue and 31;
-    Assert.AreEqual(OldShl(LA, LJ), TGreedFixedMath.ShiftLeft(LA, LJ), 'ShiftLeft');
-    Assert.AreEqual(OldShr(LA, LJ), TGreedFixedMath.ShiftRight(LA, LJ), 'ShiftRight');
+    LGolden := TTestFiles.Lines(TTestFiles.DataFile('Greed', GOLDEN_FILE));
+    try
+      LGolden.NameValueSeparator := '=';
+      LDifferent := '';
+      for LKey := Low(GOLDEN_KEYS) to High(GOLDEN_KEYS) do
+        if LGolden.Values[GOLDEN_KEYS[LKey]] <> LFingerprints[LKey].ToHex then
+          LDifferent := LDifferent + ' ' + GOLDEN_KEYS[LKey] + '=' + LFingerprints[LKey].ToHex;
+      Assert.AreEqual('', LDifferent, 'results that are not the ones of the original code');
+    finally
+      LGolden.Free;
+    end;
+  finally
+    for LKey := Low(LFingerprints) to High(LFingerprints) do
+      LFingerprints[LKey].Free;
   end;
 end;
-{$ELSE}
-begin
-  // the originals are asm: nothing to compare at 64 bit
-  Assert.Pass('asm originals exist only at 32 bit');
-end;
-{$ENDIF}
 
 initialization
   TDUnitX.RegisterTestFixture(TTestGreedFixedMath);
