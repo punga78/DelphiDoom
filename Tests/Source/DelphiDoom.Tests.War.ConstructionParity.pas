@@ -11,7 +11,8 @@ unit DelphiDoom.Tests.War.ConstructionParity;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IOUtils, DUnitX.TestFramework, DelphiDoom.Tests.War.RealData;
+  System.SysUtils, System.Classes, System.IOUtils, System.Diagnostics, DUnitX.TestFramework,
+  DelphiDoom.Tests.War.RealData;
 
 type
   /// <summary>
@@ -45,13 +46,20 @@ type
     /// </summary>
     [Test]
     procedure DovrebbeScrivereIlTestoDelloStatoSeRichiesto;
+    /// <summary>
+    ///   A measure, only if DELPHIDOOM_WAR_BENCH=file is set: 400 footmen that stand and play their idle action, 1500 tics, with
+    ///   the update of the states alone and with the update of the actions too; the microseconds per unit and tic go in the file
+    /// </summary>
+    [Test]
+    procedure DovrebbeMisurareIlCostoDeiPassiDelleAzioniSeRichiesto;
   end;
 
 implementation
 
 uses
-  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.ActionStepData, DelphiDoom.War.Model.Construction.Types,
-  DelphiDoom.Tests.War.ConstructionScenario;
+  DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.ActionStepData,
+  DelphiDoom.War.Model.Construction.Types,
+  DelphiDoom.Tests.War.ConstructionScenario, DelphiDoom.Tests.War.ConstructionRig;
 
 { TTestWarConstructionParity }
 
@@ -218,6 +226,49 @@ begin
   LParts := LRequest.Split([',']);
   TConstructionScenario.Run(StrToInt(LParts[0]), StrToInt(LParts[1]), nil, LDump);
   TFile.WriteAllText(LParts[2], LDump, TEncoding.ASCII);
+end;
+
+procedure TTestWarConstructionParity.DovrebbeMisurareIlCostoDeiPassiDelleAzioniSeRichiesto;
+var
+  LFile: string;
+  LRig: TConstructionRig;
+  LIndex: Integer;
+  LWatch: TStopwatch;
+  LStates: Double;
+  LActions: Double;
+begin
+  LFile := GetEnvironmentVariable('DELPHIDOOM_WAR_BENCH');
+  if LFile = '' then
+  begin
+    Assert.Pass;
+    Exit;
+  end;
+  LRig := TConstructionRig.Create;
+  try
+    for LIndex := 0 to 399 do
+      LRig.World.Entities.SetInitialIdle(LRig.World.Entities.CreateDude(WAR_UNIT_FOOTMAN, 2 + LIndex mod 56,
+        2 + (LIndex div 56) * 4, 0, False));
+    LRig.Tick(5);
+    LWatch := TStopwatch.StartNew;
+    for LIndex := 1 to 1500 do
+    begin
+      LRig.World.AdvanceClock(0.016666668);
+      LRig.World.Update;
+    end;
+    LStates := LWatch.Elapsed.TotalMilliseconds * 1000 / (400 * 1500);
+    LWatch := TStopwatch.StartNew;
+    for LIndex := 1 to 1500 do
+    begin
+      LRig.World.AdvanceClock(0.016666668);
+      LRig.World.Update;
+      LRig.World.UpdateActions;
+    end;
+    LActions := LWatch.Elapsed.TotalMilliseconds * 1000 / (400 * 1500);
+    TFile.WriteAllText(LFile, Format('states %.4f us, states+actions %.4f us (per unit and tic)', [LStates, LActions],
+      TFormatSettings.Invariant));
+  finally
+    LRig.Free;
+  end;
 end;
 
 procedure TTestWarConstructionParity.DovrebbeRaggiungereTuttiGliStatiDiCostruzioneNegliScenari;

@@ -107,7 +107,7 @@ for ($t = 0; $t -le 53; $t++) {
 $o.Add('  );')
 $o.Add('')
 $rs = @($lines | Where-Object { $_.StartsWith('R ') } | ForEach-Object { , $_.Split(' ') })
-$o.Add("  /// <summary>buildingsData of war_units.c: the resource of the image of a building under construction, by unit type - $($rs[0][1])</summary>")
+$o.Add("  /// <summary>buildingsData of war_units.c: the resource of the image of a building under construction, by unit type, counting from the type that WAR_BUILDING_FIRST_TYPE says</summary>")
 $o.Add("  WAR_BUILDING_FIRST_TYPE = $($rs[0][1]);")
 $o.Add("  WAR_BUILDING_CONSTRUCTION_RESOURCES: array[0..$($rs.Count - 1)] of Integer = (" + (($rs | ForEach-Object { $_[2] }) -join ', ') + ');')
 $o.Add('')

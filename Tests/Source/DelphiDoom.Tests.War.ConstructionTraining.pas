@@ -71,6 +71,8 @@ type
     procedure DovrebbeAnnullarsiSeIlDenaroFinisceTraLOrdineELIngressoDelMiglioramento;
     [Test]
     procedure DovrebbeContareIMiglioramentiDellaCoppiaInCorsoERichiesti;
+    [Test]
+    procedure DovrebbeConservareIlDifettoDelCDelLAddestramentoOrdinatoAUnEdificioInCostruzione;
   end;
 
 implementation
@@ -440,6 +442,27 @@ begin
   Assert.AreEqual<Integer>(WAR_STATE_IDLE, FRig.ActiveType(LSmithy));
   Assert.AreEqual<Integer>(0, FRig.Context.Players[0]^.Gold);
   Assert.IsFalse(FRig.Entity(LSmithy)^.UnitData.Building);
+end;
+
+procedure TTestWarConstructionTraining.DovrebbeConservareIlDifettoDelCDelLAddestramentoOrdinatoAUnEdificioInCostruzione;
+var
+  LWorker: Integer;
+  LBarracks: Integer;
+begin
+  // a defect of the original that is kept: a building that is being built accepts the order to train a unit, and the
+  // state of the training takes the place of the one of the construction, which is left with no refund and no collapse
+  AddFarms(1);
+  LWorker := FRig.AddDude(WAR_UNIT_PEASANT, 9, 10);
+  Assert.IsTrue(FRig.Commands.PlaceBuilding(LWorker, WAR_UNIT_BARRACKS_HUMANS, 10, 10));
+  LBarracks := FRig.FirstOfType(WAR_UNIT_BARRACKS_HUMANS);
+  FRig.Tick(3, 1);
+  Assert.AreEqual<Integer>(WAR_STATE_BUILD, FRig.ActiveType(LBarracks));
+  Assert.IsTrue(FRig.Commands.OrderTrain(LBarracks, WAR_UNIT_FOOTMAN));
+  FRig.Tick(2, 1);
+  Assert.AreEqual<Integer>(WAR_STATE_TRAIN, FRig.ActiveType(LBarracks));
+  Assert.IsFalse(FRig.Machine.IsCollapsing(LBarracks));
+  // the cost of the barracks (600) and of the footman (400) are both paid
+  Assert.AreEqual<Integer>(5000 - 600 - 400, FRig.Context.Players[0]^.Gold);
 end;
 
 procedure TTestWarConstructionTraining.DovrebbeContareIMiglioramentiDellaCoppiaInCorsoERichiesti;

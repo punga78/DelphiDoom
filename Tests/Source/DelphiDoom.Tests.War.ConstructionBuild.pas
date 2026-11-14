@@ -84,6 +84,24 @@ type
     procedure DovrebbeRimuovereLEdificioQuandoFinisceLAnimazioneDelCrollo;
     [Test]
     procedure DovrebbeIgnorareLAnnullamentoDiUnaCosaCheNonEUnEdificio;
+    [Test]
+    procedure DovrebbeDireLavoroFinitoConLaVoceDegliOrchiSeIlGiocatoreEOrco;
+    [Test]
+    procedure DovrebbeUscireDalloStatoSeLaCostruzioneEGiaCompletata;
+    [Test]
+    procedure DovrebbeFarCrollareUnEdificioAnnullatoSenzaAltriStati;
+    [Test]
+    procedure DovrebbeTornareAlloStatoPrecedenteSeUnaCostruzioneSottoUnAltroStatoVieneAnnullata;
+    [Test]
+    procedure DovrebbeDimenticareUnOperaioCheNonEsistePiu;
+    [Test]
+    procedure DovrebbeCrearePerLoStatoDiCostruzioneDelCostoGiaPagato;
+    [Test]
+    procedure DovrebbeCostruireSenzaDividerePerZeroSeLImmagineNonHaFotogrammi;
+    [Test]
+    procedure DovrebbeConservareIlDifettoDelCDeiNoveVitaPerUnOroEUnaLegnaAncheSeNeMancaUno;
+    [Test]
+    procedure DovrebbeConservareIlDifettoDelCDelMuroDelGiocatoreZeroAnchePerGliAltri;
   end;
 
 implementation
@@ -91,7 +109,7 @@ implementation
 uses
   DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Types,
   DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.Construction.Types, DelphiDoom.War.Model.State.Repairing,
-  DelphiDoom.War.Model.Context;
+  DelphiDoom.War.Model.Context, DelphiDoom.War.Model.State.Build;
 
 { TTestWarConstructionBuild }
 
@@ -579,6 +597,128 @@ begin
   FRig.World.Combat.TakeDamage(LFarm, 500, 0);
   FRig.Tick;
   Assert.IsFalse(FRig.Commands.Cancel(LFarm));
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeDireLavoroFinitoConLaVoceDegliOrchiSeIlGiocatoreEOrco;
+var
+  LWorker: Integer;
+  LBuilding: Integer;
+begin
+  FRig.Context.Players[0]^.Race := wraOrcs;
+  StartFarm(LWorker, LBuilding);
+  FRig.Tick(40, 10);
+  Assert.AreEqual<Integer>(WAR_SOUND_ORC_WORK_COMPLETE, FRig.Observer.LastSound);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeUscireDalloStatoSeLaCostruzioneEGiaCompletata;
+var
+  LWorker: Integer;
+  LBuilding: Integer;
+begin
+  StartFarm(LWorker, LBuilding);
+  FRig.Tick(3, 1);
+  FRig.BuildState(LBuilding)^.OutputCommitted := True;
+  FRig.Tick(3, 1);
+  Assert.AreEqual<Integer>(WAR_STATE_IDLE, FRig.ActiveType(LBuilding));
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeFarCrollareUnEdificioAnnullatoSenzaAltriStati;
+var
+  LWorker: Integer;
+  LBuilding: Integer;
+begin
+  StartFarm(LWorker, LBuilding);
+  FRig.Tick(3, 1);
+  // a build state that is cancelled and is the only one of the building: the building collapses, and leaving the state
+  // gives the money back
+  FRig.BuildState(LBuilding)^.Cancelled := True;
+  FRig.Tick(3, 1);
+  Assert.IsTrue(FRig.Machine.IsCollapsing(LBuilding));
+  Assert.AreEqual<Integer>(5000, FRig.Context.Players[0]^.Gold);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeTornareAlloStatoPrecedenteSeUnaCostruzioneSottoUnAltroStatoVieneAnnullata;
+var
+  LFarm: Integer;
+  LBuild: PWarStateBase;
+begin
+  LFarm := FRig.AddBuilding(WAR_UNIT_FARM_HUMANS, 10, 10);
+  LBuild := FRig.Machine.CreateBuild(LFarm, 5, 100, 50);
+  Assert.IsTrue(FRig.Machine.PushState(LFarm, LBuild, WAR_CAUSE_PLAYER_ORDER));
+  FRig.Tick;
+  Assert.AreEqual<Integer>(WAR_STATE_BUILD, FRig.ActiveType(LFarm));
+  PWarStateBuild(LBuild)^.Cancelled := True;
+  FRig.Tick(2);
+  Assert.AreEqual<Integer>(WAR_STATE_IDLE, FRig.ActiveType(LFarm));
+  Assert.AreEqual<Integer>(5000 + 100, FRig.Context.Players[0]^.Gold);
+  Assert.AreEqual<Integer>(5000 + 50, FRig.Context.Players[0]^.Wood);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeDimenticareUnOperaioCheNonEsistePiu;
+var
+  LWorker: Integer;
+  LBuilding: Integer;
+begin
+  StartFarm(LWorker, LBuilding);
+  FRig.Tick(3, 1);
+  FRig.BuildState(LBuilding)^.WorkerId := 999;
+  FRig.Tick(1, 1);
+  Assert.AreEqual<Integer>(0, FRig.BuildState(LBuilding)^.WorkerId);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeCostruireSenzaDividerePerZeroSeLImmagineNonHaFotogrammi;
+var
+  LWorker: Integer;
+  LBuilding: Integer;
+begin
+  // the default host has no frames for the image of the construction (the original divides 1 by 0 and gets infinity, which
+  // no percent reaches): the time goes on and the frame stays
+  FRig.Context.ConstructionHost := nil;
+  StartFarm(LWorker, LBuilding);
+  FRig.Tick(5, 10);
+  Assert.AreEqual<Integer>(0, FRig.Entity(LBuilding)^.SpriteFrames);
+  Assert.AreEqual<Integer>(0, FRig.Entity(LBuilding)^.SpriteFrame);
+  Assert.IsTrue(FRig.Entity(LBuilding)^.UnitData.BuildPercent > 0);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeConservareIlDifettoDelCDeiNoveVitaPerUnOroEUnaLegnaAncheSeNeMancaUno;
+var
+  LFarm: Integer;
+  LWorker: Integer;
+begin
+  // a defect of the original that is kept: a blow of the hammer pays a gold and a lumber and heals 9 hit points, even
+  // for the one hit point that is missing
+  LFarm := FRig.AddBuilding(WAR_UNIT_FARM_HUMANS, 10, 10);
+  FRig.World.Combat.TakeDamage(LFarm, 1, 0);
+  Assert.AreEqual<Integer>(399, FRig.Entity(LFarm)^.UnitData.Hp);
+  LWorker := FRig.AddDude(WAR_UNIT_PEASANT, 9, 10);
+  FRig.Commands.OrderRepair([LWorker], LFarm);
+  FRig.Run(2);
+  Assert.AreEqual<Integer>(400, FRig.Entity(LFarm)^.UnitData.Hp);
+  Assert.AreEqual<Integer>(4999, FRig.Context.Players[0]^.Gold);
+  Assert.AreEqual<Integer>(4999, FRig.Context.Players[0]^.Wood);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeConservareIlDifettoDelCDelMuroDelGiocatoreZeroAnchePerGliAltri;
+begin
+  // a defect of the original that is kept: the piece belongs to the player 0 whoever pays for it
+  Assert.IsTrue(FRig.Commands.PlaceWall(2, 20, 20));
+  Assert.AreEqual<Integer>(0, FRig.Context.Walls[0]^.Player);
+  Assert.AreEqual<Integer>(5000 - WAR_WALL_GOLD_COST, FRig.Context.Players[2]^.Gold);
+end;
+
+procedure TTestWarConstructionBuild.DovrebbeCrearePerLoStatoDiCostruzioneDelCostoGiaPagato;
+var
+  LFarm: Integer;
+  LBuild: PWarStateBuild;
+begin
+  LFarm := FRig.AddBuilding(WAR_UNIT_FARM_HUMANS, 10, 10);
+  LBuild := TWarBuildState.CreateState(FRig.Machine, LFarm, 80, 500, 300);
+  Assert.IsTrue(Assigned(LBuild));
+  Assert.AreEqual(80.0, Double(LBuild^.TotalBuildTime), 0);
+  Assert.IsTrue(LBuild^.TransactionApplied);
+  Assert.AreEqual<Integer>(0, LBuild^.WorkerId);
+  Assert.AreEqual<Integer>(500, LBuild^.GoldCost);
 end;
 
 end.

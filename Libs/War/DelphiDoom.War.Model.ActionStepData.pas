@@ -832,7 +832,7 @@ const
     (-1, -1, -1, 50, -1, -1, -1)
   );
 
-  /// <summary>buildingsData of war_units.c: the resource of the image of a building under construction, by unit type - 32</summary>
+  /// <summary>buildingsData of war_units.c: the resource of the image of a building under construction, by unit type, counting from the type that WAR_BUILDING_FIRST_TYPE says</summary>
   WAR_BUILDING_FIRST_TYPE = 32;
   WAR_BUILDING_CONSTRUCTION_RESOURCES: array[0..15] of Integer = (331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346);
 
