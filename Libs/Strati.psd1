@@ -1,4 +1,4 @@
-﻿# Issue #219: manifesto degli strati. Letto da Tools\Verifica\219\Controlla-Strati.ps1.
+# Issue #219: manifesto degli strati. Letto da Tools\Verifica\219\Controlla-Strati.ps1.
 # Versione leggibile e motivata: Libs\STRATI.md. Solo caratteri ASCII.
 #
 # Regola: uno STRATO puo' usare solo strati uguali o piu' bassi (Livello); un MODULO puo' usare
@@ -185,6 +185,8 @@
     @{ Da = 'Libs\ScriptHost'; A = 'Common'; Massimo = 1; Issue = 224
        Motivo = 'le unit del compilatore e del dll di Pascal Script usano d_delphi' }
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
+    @{ Da = 'Libs\Speed'; A = 'Libs\Racing'; Massimo = 2; Issue = 226
+       Motivo = 'ActorDefinitions, CarSpriteBuilder e SkyTextures di SpeedHaste32 (motore id Tech 1) usano Racing.Types e Racing.CarData (auto e piste, strato Giochi): Speed32 e SpeedHaste32 stanno nella stessa area, da separare quando si spostano le cartelle' }
     @{ Da = 'Libs\Pmove'; A = 'Libs\Net'; Massimo = 1; Issue = 225
        Motivo = 'Pmove usa TQ3PlayerState e TQ3UserCmd di DelphiDoom.Net.Q3.Types: Net e'' mista (trasporto e protocollo di Doom e Quake III) e i tipi di Quake III vanno in un''area id Tech 3' }
     @{ Da = 'Libs\Console'; A = 'Libs\GameState'; Massimo = 1; Issue = 225
@@ -199,7 +201,7 @@
     @{ Da = 'Libs\Opl'; A = 'Libs\XcomFormats'; Massimo = 1; Issue = 229
        Motivo = 'CatSource e Factory dell''Adlib usano DelphiDoom.Xcom.Intf (lettura di archivi CAT): il contratto va in una libreria comune' }
     # --- #226: cartella di prodotto mista ---
-    @{ Da = 'Speed'; A = 'Libs\Racing'; Massimo = 5; Issue = 226
+    @{ Da = 'Speed'; A = 'Libs\Racing'; Massimo = 9; Issue = 226
        Motivo = 'la cartella Speed ha Speed32 (corse, usa Racing) e SpeedHaste32 (motore id): da separare quando si spostano le cartelle' }
   )
 }
