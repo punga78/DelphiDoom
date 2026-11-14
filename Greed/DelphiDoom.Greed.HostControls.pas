@@ -26,7 +26,7 @@ type
   ///   zoom of the map. The letters and the digits that go down between two readings are the characters typed
   ///   (the secret codes). A key that goes down and up between two readings of the controls is seen by the next
   ///   reading (TGameHostKeyLatch): the original, which asks Windows for the keys every two tics, loses it.
-  ///   The mouse is not read: the key state of the window has no mouse
+  ///   The mouse is not read here: TGreedMouseControls adds it to these keys
   /// </summary>
   TGreedHostControls = class(TInterfacedObject, IGreedCommandSource)
   strict private

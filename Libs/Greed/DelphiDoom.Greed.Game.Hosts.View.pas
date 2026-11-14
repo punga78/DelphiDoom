@@ -105,8 +105,10 @@ end;
 
 procedure TGreedGameViewHost.ResetMouse;
 begin
-  // ResetMouse of d_ints.pas puts the cursor of the system at the centre of the window: the commands of the
-  // game come from IGreedControls, that gives movements and has no cursor
+  // ResetMouse of d_ints.pas puts the cursor of the system at the centre of the window: what the mouse moved
+  // and was not read yet is thrown away
+  if Assigned(FParts.Mouse) then
+    FParts.Mouse.Reset;
 end;
 
 procedure TGreedGameViewHost.EngineWasReset;

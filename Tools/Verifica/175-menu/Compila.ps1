@@ -48,16 +48,42 @@ $cast = 'savedir[menucursor][Length(savedir[menucursor])] := lastascii'
 if (-not $m.Contains($cast)) { throw 'menu.pas: riga del carattere non trovata' }
 Set-Content "$uscita\src\menu.pas" $m.Replace($cast, 'savedir[menucursor][Length(savedir[menucursor])] := AnsiChar(lastascii)')
 
-# i_video: la palette e la traduzione dello zero
+# d_ints: il mouse ORIGINALE (MouseGetClick, ResetMouse, INT_ReadMouse, MouseHide, MouseShow e le variabili mlastx,
+# mlasty, mflags) ritagliato in un file incluso dallo stub stubs\d_ints.pas. Due soli cambi di nome: ResetMouse
+# diventa ResetMouse_Cut (lo stub tiene il nome ResetMouse per annotare nel registro le chiamate del menu, come
+# prima), e la chiamata dentro INT_ReadMouse va a ResetMouse_Cut (non e' una chiamata del menu). Cio' che il mouse
+# chiede a Windows (getcursorposfunc, setcursorposfunc, i tre bottoni, I_WindowWidth) lo da' lo scenario
+$d = Get-Content "$Riferimento\Greed\d_ints.pas" -Raw
+$dimpl = $d.IndexOf("`nimplementation")
+$click = Ritaglia $d 'function MouseGetClick(var x, y: smallint): boolean;' "type`r`n  setcursorposfunc_t" $dimpl
+$reset = Ritaglia $d "var`r`n// Mouse support" 'procedure M_InitMouse;' $dimpl
+$leggi = Ritaglia $d 'procedure INT_ReadMouse;' 'procedure INT_Setup;' $dimpl
+$mostra = Ritaglia $d 'procedure MouseHide;' "`r`nend." ($d.IndexOf('procedure INT_Shutdown;', $dimpl))
+if (-not $reset.Contains('procedure ResetMouse;')) { throw 'd_ints.pas: ResetMouse non trovata' }
+if (-not $leggi.Contains("  ResetMouse;`r`n")) { throw 'd_ints.pas: la chiamata a ResetMouse in INT_ReadMouse non trovata' }
+$reset = $reset.Replace('procedure ResetMouse;', 'procedure ResetMouse_Cut;')
+$leggi = $leggi.Replace("  ResetMouse;`r`n", "  ResetMouse_Cut;`r`n")
+Set-Content "$uscita\src\d_ints_mouse.inc" @"
+// GENERATO da Tools\Verifica\175-menu\Compila.ps1: ritagliato da Reference\xGreed\Greed\d_ints.pas, con ResetMouse
+// rinominata ResetMouse_Cut. Non modificare, non mettere nel repository.
+$click
+$reset
+$leggi
+$mostra
+"@
+
+# i_video: la palette, la traduzione dello zero e il disegno del puntatore del mouse
 $i = Get-Content "$Riferimento\Base\i_video.pas" -Raw
 $impl = $i.IndexOf("`nimplementation")
 $palette = Ritaglia $i 'procedure I_SetPalette(const palette: PByteArray);' "var`r`n  NATIVEWIDTH" $impl
 $palette = $palette.Replace('procedure I_SetPalette(const palette: PByteArray);', 'procedure I_SetPalette_Cut(const palette: PByteArray);')
 $traduci = Ritaglia $i 'procedure I_TranslateBuffer(const buf: PByteArray; const sz: integer);' "`r`nend." $impl
+$puntatore = Ritaglia $i 'procedure I_DrawMouse;' "var`r`n  old_pillarbox_pct" $impl
 Set-Content "$uscita\src\i_video.pas" @"
 unit i_video;
-// GENERATA da Tools\Verifica\175-menu\Compila.ps1: I_SetPalette (qui I_SetPalette_Cut), I_GetPalette e
-// I_TranslateBuffer sono ritagliate da Reference\xGreed\Base\i_video.pas. Non modificare, non mettere nel repository.
+// GENERATA da Tools\Verifica\175-menu\Compila.ps1: I_SetPalette (qui I_SetPalette_Cut), I_GetPalette,
+// I_TranslateBuffer e I_DrawMouse sono ritagliate da Reference\xGreed\Base\i_video.pas. Non modificare, non mettere
+// nel repository.
 interface
 uses g_delphi;
 var
@@ -65,10 +91,30 @@ var
   curpal: array[0..255] of LongWord;
   // the bytes given to the last I_SetPalette
   LastPalette: packed array[0..767] of byte;
+  // the screen that I_FinishUpdate fills and I_DrawMouse draws the pointer on (640 x 400, 32 bits)
+  bpp: integer = 32;
+  screen16: PWordArray = nil;
+  screen32: PLongWordArray = nil;
 procedure I_SetPalette(const palette: PByteArray);
 procedure I_GetPalette(const palette: PByteArray);
 procedure I_TranslateBuffer(const buf: PByteArray; const sz: integer);
+procedure I_DrawMouse;
+// the size of the window is the one of the scenario
+function I_WindowWidth: integer;
+function I_WindowHeight: integer;
 implementation
+uses d_ints, r_public_h, harness_menu;
+
+function I_WindowWidth: integer;
+begin
+  result := HWindowWidth;
+end;
+
+function I_WindowHeight: integer;
+begin
+  result := HWindowHeight;
+end;
+
 $palette
 procedure I_SetPalette(const palette: PByteArray);
 begin
@@ -76,6 +122,7 @@ begin
   I_SetPalette_Cut(palette);
 end;
 
+$puntatore
 $traduci
 end.
 "@
@@ -218,7 +265,7 @@ end.
 
 $programma = @{ menu = 'MenuParity'; fli = 'FliParity'; intro = 'IntroParity' }[$Parte]
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$libs = 'Greed', 'Platform', 'MathCore', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
+$libs = 'Greed', 'Input', 'Platform', 'MathCore', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
 $primo = ''
 if ($Parte -eq 'intro') { $primo = "$uscita\intro;" }
 $u = "$primo$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"

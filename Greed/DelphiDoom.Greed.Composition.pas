@@ -62,6 +62,13 @@ type
     /// </summary>
     RecordPath: string;
     PlaybackPath: string;
+    /// <summary>The mouse of the system is not read (the menus and the game are used with the keys only)</summary>
+    NoMouse: Boolean;
+    /// <summary>
+    ///   SC.joystick = 1: the first joystick gives the four directions and the commands of its first two buttons
+    ///   (an extension: xGreed does not read a joystick)
+    /// </summary>
+    Joystick: Boolean;
     /// <summary>The options of a game that was not asked anything</summary>
     class function Standard: TGreedPlayOptions; static;
   end;
@@ -127,7 +134,10 @@ uses
   DelphiDoom.Greed.EpisodeHost, DelphiDoom.Greed.HostKeyboard, DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro,
   DelphiDoom.Greed.Demo.Types, DelphiDoom.Greed.Demo.Intf, DelphiDoom.Greed.Demo.Reader, DelphiDoom.Greed.Demo.Writer,
   DelphiDoom.Greed.Demo.Recorder, DelphiDoom.Greed.Demo.Player,
-  DelphiDoom.GameHost.Events.Intf,
+  DelphiDoom.Greed.Mouse.Intf, DelphiDoom.Greed.Mouse, DelphiDoom.Greed.MouseControls, DelphiDoom.Greed.MouseSettings,
+  DelphiDoom.Greed.ScriptMouse, DelphiDoom.Greed.ScriptMouseLine, DelphiDoom.Greed.JoystickControls,
+  DelphiDoom.Greed.HostMouse, DelphiDoom.Input.Intf, DelphiDoom.Input.Factory,
+  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.MouseState, DelphiDoom.GameHost.EventFanOut,
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory;
 
 const
@@ -568,6 +578,45 @@ begin
     Inc(LStart, LLength + Roll(2, 40));
   end;
 end;
+// the mouse of a script: the device that its lines move, read by the mouse of the game; nil without such lines
+function CreateScriptMouse(AScript: TStrings; out AScriptMouse: IGreedScriptMouse): IGreedMouse;
+var
+  LDevice: TGreedScriptMouse;
+  LDeviceIntf: IMouseDevice;
+begin
+  Result := nil;
+  AScriptMouse := nil;
+  if not TGreedScriptMouseLine.AnyIn(AScript) then
+    Exit;
+  LDevice := TGreedScriptMouse.Create;
+  LDeviceIntf := LDevice;
+  AScriptMouse := LDevice;
+  Result := TGreedMouse.Create(LDeviceIntf, LDevice, nil);
+end;
+
+// the mouse of the system in the window of the game; ADevice is to be shut down before the window goes
+function CreateWindowMouse(AWindow: TGameHostWinWindow; const AButtons: IGameHostMouseState;
+  out ADevice: IMouseDevice): IGreedMouse;
+var
+  LHost: TGreedHostMouse;
+begin
+  LHost := TGreedHostMouse.Create(TInputFactory.CreateWindowsMouse, TGameHostFactory.CreateCursorArea(AWindow),
+    AButtons);
+  ADevice := LHost;
+  ADevice.Initialize;
+  Result := TGreedMouse.Create(ADevice, LHost, LHost);
+end;
+
+// SC.joystick: the first joystick of the system added to the keys (an extension, see TGreedJoystickControls)
+function CreateJoystickControls(const AKeys: IGreedCommandSource; AWindow: TGameHostWinWindow): IGreedCommandSource;
+begin
+  Result := TGreedJoystickControls.Create(AKeys, TInputFactory.CreateWindowsJoystick(
+    function: THandle
+    begin
+      Result := AWindow.Handle;
+    end), TGreedJoystickOptions.Standard);
+end;
+
 class function TGreedComposition.Play(const AArchive: IGreedArchive; const AFolders: array of string;
   const AOptions: TGreedPlayOptions): Integer;
 var
@@ -595,6 +644,12 @@ var
   LPresenter: IGreedFramePresenter;
   LInput: IGreedInput;
   LSource: IGreedCommandSource;
+  LButtons: IGameHostMouseState;
+  LMouse: IGreedMouse;
+  LScriptMouse: IGreedScriptMouse;
+  LHostMouse: IMouseDevice;
+  LRealMouse: Boolean;
+  LMouseDefaults: IGreedSettings;
   LScript: TStringList;
   LTime: TGreedPlayTime;
   LTimeIntf: IInterface;
@@ -647,8 +702,16 @@ begin
   LAudio := nil;
   LScript := TStringList.Create;
   try
+    if AOptions.ScriptPath <> '' then
+      LScript.LoadFromFile(AOptions.ScriptPath);
+    if AOptions.AutoPlay then
+      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    // the mouse: the one of a script that has lines for it; otherwise, in a window that no script drives, the
+    // one of the system (a run with a script must give the same game whatever the mouse of the machine does)
+    LMouse := CreateScriptMouse(LScript, LScriptMouse);
+    LRealMouse := (not AOptions.Headless) and (not AOptions.NoMouse) and (LScript.Count = 0);
     // the window of Libs\GameHost with its display on GDI and the keys of the original, or nothing at all. The
-    // system cursor stays visible: the game draws none
+    // system cursor is hidden when the game reads it: the game keeps it in the middle of the window
     if AOptions.Headless then
     begin
       LPresenter := TGreedNoWindow.Create;
@@ -658,7 +721,9 @@ begin
     else
     begin
       LKeys := TGameHostKeyState.Create;
-      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      LButtons := TGameHostMouseState.Create;
+      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+        TGameHostEventFanOut.Create([LKeys as IGameHostEventSink, LButtons as IGameHostEventSink]), LRealMouse);
       // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
       LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
@@ -669,13 +734,15 @@ begin
       LPresenter := LHostWindow;
       LInput := LHostWindow;
       LSource := TGreedHostControls.Create(LKeys);
+      if LRealMouse then
+        LMouse := CreateWindowMouse(LWindow, LButtons, LHostMouse);
+      if AOptions.Joystick then
+        LSource := CreateJoystickControls(LSource, LWindow);
     end;
-    if AOptions.ScriptPath <> '' then
-      LScript.LoadFromFile(AOptions.ScriptPath);
-    if AOptions.AutoPlay then
-      AddAutoPlay(LScript, AOptions.MaxTics, AOptions.Seed);
+    if Assigned(LMouse) then
+      LSource := TGreedMouseControls.Create(LSource, LMouse);
     if LScript.Count > 0 then
-      LSource := TGreedScriptControls.Create(LScript, LSource);
+      LSource := TGreedScriptControls.Create(LScript, LSource, LScriptMouse);
 
     LTime := TGreedPlayTime.Create;
     LTimeIntf := LTime;
@@ -749,6 +816,10 @@ begin
       LHudView.Attach(LGame);
     LTime.Game := LGame;
     LGame.LowResolution := AOptions.LowResolution;
+    // -play has no file of settings: the mouse has the ones of InitDefaults
+    LGame.Mouse := LMouse;
+    LMouseDefaults := TGreedSettings.Create;
+    TGreedMouseSettings.Apply(LMouseDefaults, LGame.Parts.Control, LMouse);
     // the full game has three episodes that start at the maps 0, 8 and 16
     LDemo := ADemo;
     if AOptions.MapNumber >= FIRST_MAP_OF_GAME3 then
@@ -820,6 +891,11 @@ begin
     // the display draws in the window: its last references go before the window
     LInput := nil;
     LPresenter := nil;
+    LSource := nil;
+    LMouse := nil;
+    if Assigned(LHostMouse) then
+      LHostMouse.Shutdown;
+    LHostMouse := nil;
     LWindow.Free;
   end;
 end;
@@ -856,6 +932,11 @@ var
   LShown: TGreedLastFramePresenter;
   LShownIntf: IGreedFramePresenter;
   LSource: IGreedCommandSource;
+  LButtons: IGameHostMouseState;
+  LMouse: IGreedMouse;
+  LScriptMouse: IGreedScriptMouse;
+  LHostMouse: IMouseDevice;
+  LRealMouse: Boolean;
   LScript: TStringList;
   LScriptKeys: TGreedApplicationScript;
   LScriptIntf: IInterface;
@@ -932,6 +1013,9 @@ begin
     LOptions.Game := LTapeHeader.Episode;
     LOptions.ScriptPath := '';
     LOptions.AutoPlay := False;
+    // the mouse and the joystick of the machine are not read: the tape has its own
+    LOptions.NoMouse := True;
+    LOptions.Joystick := False;
   end;
   if (LOptions.PlaybackPath <> '') or (LOptions.RecordPath <> '') then
   begin
@@ -968,6 +1052,14 @@ begin
   LAudio := nil;
   LScript := TStringList.Create;
   try
+    if LOptions.ScriptPath <> '' then
+      LScript.LoadFromFile(LOptions.ScriptPath);
+    if LOptions.AutoPlay then
+      AddAutoPlay(LScript, LOptions.MaxTics, LOptions.Seed);
+    // the mouse: the one of a script that has lines for it; otherwise, in a window that no script drives, the
+    // one of the system (a run with a script must give the same program whatever the mouse of the machine does)
+    LMouse := CreateScriptMouse(LScript, LScriptMouse);
+    LRealMouse := (not LOptions.Headless) and (not LOptions.NoMouse) and (LScript.Count = 0);
     if LOptions.Headless then
     begin
       LShown := TGreedLastFramePresenter.Create(TGreedNoWindow.Create);
@@ -979,7 +1071,10 @@ begin
     else
     begin
       LKeys := TGameHostKeyState.Create;
-      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      LButtons := TGameHostMouseState.Create;
+      // the system cursor is hidden when the game reads it: the menus draw their own pointer
+      LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE,
+        TGameHostEventFanOut.Create([LKeys as IGameHostEventSink, LButtons as IGameHostEventSink]), LRealMouse);
       // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
       LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
@@ -994,15 +1089,17 @@ begin
       LSource := TGreedHostControls.Create(LKeys);
       SetLength(LKeyboards, 1);
       LKeyboards[0] := TGreedHostKeyboard.Create(LKeys);
+      if LRealMouse then
+        LMouse := CreateWindowMouse(LWindow, LButtons, LHostMouse);
+      if LOptions.Joystick then
+        LSource := CreateJoystickControls(LSource, LWindow);
     end;
-    if LOptions.ScriptPath <> '' then
-      LScript.LoadFromFile(LOptions.ScriptPath);
-    if LOptions.AutoPlay then
-      AddAutoPlay(LScript, LOptions.MaxTics, LOptions.Seed);
+    if Assigned(LMouse) then
+      LSource := TGreedMouseControls.Create(LSource, LMouse);
     LListener := nil;
     if LScript.Count > 0 then
     begin
-      LScriptKeys := TGreedApplicationScript.Create(LScript, LSource);
+      LScriptKeys := TGreedApplicationScript.Create(LScript, LSource, LScriptMouse);
       LScriptIntf := LScriptKeys;
       LSource := LScriptKeys;
       SetLength(LKeyboards, Length(LKeyboards) + 1);
@@ -1097,6 +1194,12 @@ begin
       LTapeHeader.CameraDelay := LSettings.GetInteger('camdelay');
       LTapeHeader.ViewSize := LSettings.GetInteger('screensize');
       LTapeHeader.Violence := LSettings.GetBoolean('violence');
+      LTapeHeader.MouseEnabled := Assigned(LMouse) and LSettings.GetBoolean(GREED_SETTING_MOUSE);
+      LTapeHeader.MouseSensitivity := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY);
+      LTapeHeader.MouseSensitivityX := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY_X);
+      LTapeHeader.MouseSensitivityY := LSettings.GetInteger(GREED_SETTING_MOUSE_SENSITIVITY_Y);
+      LTapeHeader.InvertMouseTurn := LSettings.GetBoolean(GREED_SETTING_INVERT_MOUSE_TURN);
+      LTapeHeader.InvertMouseLook := LSettings.GetBoolean(GREED_SETTING_INVERT_MOUSE_LOOK);
       LTapeStream := TFileStream.Create(LOptions.RecordPath, fmCreate);
       LTapeWriter := TGreedDemoWriter.Create(LTapeStream, LTapeHeader);
       LRecorder := TGreedDemoRecorder.Create(LTapeWriter, LSource, LTime);
@@ -1124,13 +1227,26 @@ begin
       LGame.Violence := LTapeHeader.Violence;
       LGame.CameraDelay := LTapeHeader.CameraDelay;
     end;
+    // SC.mouse, the sensitivities and the inversions of ControlMovement, menuusemouse of the menus
+    LGame.Mouse := LMouse;
+    TGreedMouseSettings.Apply(LSettings, LGame.Parts.Control, LMouse);
+    if Assigned(LTapeReader) then
+    begin
+      // the mouse of a tape is the one of its readings, used as the settings of the recording said
+      LGame.Parts.Control.MouseEnabled := LTapeHeader.MouseEnabled;
+      LGame.Parts.Control.MouseSensitivity := LTapeHeader.MouseSensitivity;
+      LGame.Parts.Control.MouseSensitivityX := LTapeHeader.MouseSensitivityX;
+      LGame.Parts.Control.MouseSensitivityY := LTapeHeader.MouseSensitivityY;
+      LGame.Parts.Control.InvertMouseTurn := LTapeHeader.InvertMouseTurn;
+      LGame.Parts.Control.InvertMouseLook := LTapeHeader.InvertMouseLook;
+    end;
 
     LMenuHost := TGreedMenuHost.Create(LGame, LSettings, LStore, LHud);
     LIntroHost := TGreedIntroHost.Create(LGame);
     LEpisodeHost := TGreedEpisodeHost.Create(LGame);
     LEpisodeIntf := LEpisodeHost;
     LScreens := TGreedScreens.Create(AArchive, LSettings, LVolumes, LSaves, LMovies, LMenuHost, LIntroHost,
-      LEpisodeHost, LEpisodeHost, LDemo, LSettings.GetGameVariant);
+      LEpisodeHost, LEpisodeHost, LDemo, LSettings.GetGameVariant, LMouse);
 
     LApplicationOptions := TGreedApplicationOptions.Standard;
     LApplicationOptions.FreeRunning := LOptions.Headless;
@@ -1230,6 +1346,14 @@ begin
     LInput := nil;
     LPresenter := nil;
     LShownIntf := nil;
+    LSource := nil;
+    LScriptIntf := nil;
+    LListener := nil;
+    LKeyboards := nil;
+    LMouse := nil;
+    if Assigned(LHostMouse) then
+      LHostMouse.Shutdown;
+    LHostMouse := nil;
     LWindow.Free;
   end;
 end;

@@ -14,7 +14,7 @@ uses
 
 type
   /// <summary>
-  ///   Writes a tape on a stream, byte by byte in little endian order: the header ("GRDM", the version, the ten
+  ///   Writes a tape on a stream, byte by byte in little endian order: the header ("GRDM", the version, the sixteen
   ///   numbers of TGreedDemoHeader as 32 bit integers), then the records, each a byte with its kind and
   ///   - a reading: 6 bytes with a bit for each command (the bit n of the byte n div 8 is the command n), a byte
   ///     with a bit for each button of the mouse, the two movements of the mouse as 32 bit integers, a byte with
@@ -72,6 +72,12 @@ begin
   WriteInt32(AHeader.CameraDelay);
   WriteInt32(AHeader.ViewSize);
   WriteInt32(Ord(AHeader.Violence));
+  WriteInt32(Ord(AHeader.MouseEnabled));
+  WriteInt32(AHeader.MouseSensitivity);
+  WriteInt32(AHeader.MouseSensitivityX);
+  WriteInt32(AHeader.MouseSensitivityY);
+  WriteInt32(Ord(AHeader.InvertMouseTurn));
+  WriteInt32(Ord(AHeader.InvertMouseLook));
 end;
 
 procedure TGreedDemoWriter.WriteByte(AValue: Byte);

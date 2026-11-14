@@ -20,8 +20,8 @@ const
   /// <summary>The first four bytes of a tape: "GRDM"</summary>
   GREED_DEMO_MAGIC: array[0..3] of Byte = (Ord('G'), Ord('R'), Ord('D'), Ord('M'));
   GREED_DEMO_VERSION = 1;
-  /// <summary>The bytes of the header: the magic, the version and ten numbers of 32 bits</summary>
-  GREED_DEMO_HEADER_BYTES = 4 + 4 + 10 * 4;
+  /// <summary>The bytes of the header: the magic, the version and sixteen numbers of 32 bits</summary>
+  GREED_DEMO_HEADER_BYTES = 4 + 4 + 16 * 4;
   /// <summary>RECBUFSIZE of protos_h.pas: the size of the buffer that the original writes to "demo1"</summary>
   GREED_DEMO_ORIGINAL_BYTES = 16000;
   /// <summary>The name of the file of the original</summary>
@@ -69,6 +69,17 @@ type
     ViewSize: Integer;
     /// <summary>SC.violence: blood and corpses are sprites, and their making takes random numbers</summary>
     Violence: Boolean;
+    /// <summary>
+    ///   SC.mouse with a mouse installed, SC.mousesensitivity, mousesensitivityx, mousesensitivityy, invertmouseturn
+    ///   and invertmouselook: how ControlMovement turns the movement of the mouse of a reading into a movement of
+    ///   the player
+    /// </summary>
+    MouseEnabled: Boolean;
+    MouseSensitivity: Integer;
+    MouseSensitivityX: Integer;
+    MouseSensitivityY: Integer;
+    InvertMouseTurn: Boolean;
+    InvertMouseLook: Boolean;
   end;
 
   /// <summary>One reading of the controls: what was down, what was typed, the mouse</summary>

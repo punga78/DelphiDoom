@@ -68,6 +68,12 @@ begin
   FHeader.CameraDelay := ReadInt32;
   FHeader.ViewSize := ReadInt32;
   FHeader.Violence := ReadInt32 <> 0;
+  FHeader.MouseEnabled := ReadInt32 <> 0;
+  FHeader.MouseSensitivity := ReadInt32;
+  FHeader.MouseSensitivityX := ReadInt32;
+  FHeader.MouseSensitivityY := ReadInt32;
+  FHeader.InvertMouseTurn := ReadInt32 <> 0;
+  FHeader.InvertMouseLook := ReadInt32 <> 0;
 end;
 
 function TGreedDemoReader.ReadByte: Byte;

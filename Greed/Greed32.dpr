@@ -61,6 +61,16 @@ begin
   Writeln('          (the commands: north east south west fire strafe use run jump useitem lookup lookdown');
   Writeln('          centerview slideleft slideright inventoryleft inventoryright weapon1..weapon5 mapmode');
   Writeln('          heatmode goalitem menu ...; space is use and restart, shift run, alt strafe)');
+  Writeln('          the mouse in a script (with or without -play): "tic mouse DX DY" moves it DX pixels right and DY');
+  Writeln('          down, "tic mousebutton fire|use|north down|up" is its left, right or middle button and, in a');
+  Writeln('          menu, "tic click X Y" is a click at the pixel X, Y of the 320 x 200 screen');
+  Writeln('  the mouse: in the window, without a script, the mouse turns and looks (xGreed.ini: mouse, mousesensitivity,');
+  Writeln('          mousesensitivityx, mousesensitivityy, invertmouseturn, invertmouselook), its buttons fire (left),');
+  Writeln('          use (right) and walk (middle), and the menus have a pointer (menumouse); with a script the mouse');
+  Writeln('          of the system is not read: the script has its own');
+  Writeln('  -nomouse   the mouse of the system is not read');
+  Writeln('  -joystick  the first joystick walks and turns, its first two buttons fire and strafe (xGreed has no');
+  Writeln('          joystick: this is an addition, off unless asked)');
   Writeln('  -headless  with -play: no window, no sound device and no clock: as fast as the machine goes, and');
   Writeln('          the same options always give the same game');
   Writeln('  -lowres    with -play: the view is 320 x 200 instead of 640 x 400');
@@ -171,6 +181,10 @@ begin
         LPlay.PlaybackPath := LCursor.Value;
         LPlay.SkipIntro := True;
       end
+      else if LArgument = '-nomouse' then
+        LPlay.NoMouse := True
+      else if LArgument = '-joystick' then
+        LPlay.Joystick := True
       else if (LArgument = '-shotat') and (LCursor.Remaining >= 1) then
       begin
         for LText in LCursor.Value.Split([',']) do

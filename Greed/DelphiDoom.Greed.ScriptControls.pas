@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.Greed.Types,
-  DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState;
+  DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState, DelphiDoom.Greed.Mouse.Intf,
+  DelphiDoom.Greed.ScriptMouseLine;
 
 type
   /// <summary>
@@ -21,6 +22,10 @@ type
   ///                            down or up at that tic; "space" is use and restart, "shift" is run and shift,
   ///                            "alt" is strafe and alt, as the keys of the original
   ///     tic type TEXT          the characters are typed, one for each reading (a secret code)
+  ///     tic mouse DX DY        the mouse moves DX pixels to the right and DY down
+  ///     tic mousebutton fire|use|north down|up   a button of the mouse (left, right, middle)
+  ///   The lines of the mouse go to the mouse of the script (IGreedScriptMouse), which the mouse of the game reads
+  ///   as its device.
   ///   Empty lines and the ones that start with # are skipped; the lines are served in the order of their tics. The game reads the controls on the odd tics: the
   ///   tic of a reading is counted here (the first reading is the tic 1, the next the tic 3 ...). With an inner
   ///   source (the keyboard) a command is pressed if the script or the inner source says so.
@@ -35,9 +40,12 @@ type
         Commands: TGreedCommandSet;
         Down: Boolean;
         Text: string;
+        IsMouse: Boolean;
+        Mouse: TGreedScriptMouseLine;
       end;
     var
       FInner: IGreedCommandSource;
+      FMouse: IGreedScriptMouse;
       FSteps: TList<TStep>;
       FNext: Integer;
       FReadings: Integer;
@@ -47,8 +55,9 @@ type
     class function CommandsOf(const AName: string; out ACommands: TGreedCommandSet): Boolean; static;
     function GetTic: Integer;
   public
-    /// <summary>AInner can be nil (the script alone)</summary>
-    constructor Create(const AScript: TStrings; const AInner: IGreedCommandSource);
+    /// <summary>AInner can be nil (the script alone); AMouse can be nil if the script has no lines for the mouse</summary>
+    constructor Create(const AScript: TStrings; const AInner: IGreedCommandSource;
+      const AMouse: IGreedScriptMouse = nil);
     destructor Destroy; override;
     procedure BeginReading;
     function IsPressed(ACommand: TGreedCommand): Boolean;
@@ -65,7 +74,9 @@ uses
   System.TypInfo;
 
 resourcestring
-  SScriptLine = 'Greed: line %d of the script of the commands is not "tic command down|up" or "tic type TEXT": %s';
+  SScriptLine = 'Greed: line %d of the script of the commands is not "tic command down|up", "tic type TEXT", ' +
+    '"tic mouse DX DY" or "tic mousebutton fire|use|north down|up": %s';
+  SScriptNoMouse = 'Greed: line %d of the script of the commands is for the mouse and the script has no mouse: %s';
 
 const
   WORD_TYPE = 'type';
@@ -74,7 +85,8 @@ const
 
 { TGreedScriptControls }
 
-constructor TGreedScriptControls.Create(const AScript: TStrings; const AInner: IGreedCommandSource);
+constructor TGreedScriptControls.Create(const AScript: TStrings; const AInner: IGreedCommandSource;
+  const AMouse: IGreedScriptMouse);
 var
   LIndex, LPosition: Integer;
   LLine: string;
@@ -85,6 +97,7 @@ begin
   if not Assigned(AScript) then
     raise EArgumentNilException.Create('AScript');
   FInner := AInner;
+  FMouse := AMouse;
   FSteps := TList<TStep>.Create;
   for LIndex := 0 to AScript.Count - 1 do
   begin
@@ -95,7 +108,15 @@ begin
     LStep := Default(TStep);
     if (Length(LWords) < 3) or not TryStrToInt(LWords[0], LStep.Tic) then
       raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
-    if SameText(LWords[1], WORD_TYPE) then
+    if TGreedScriptMouseLine.IsMouseWord(LWords[1]) then
+    begin
+      if not TGreedScriptMouseLine.TryParse(LWords, LStep.Mouse) then
+        raise EGreedException.CreateFmt(SScriptLine, [LIndex + 1, LLine]);
+      if not Assigned(FMouse) then
+        raise EGreedException.CreateFmt(SScriptNoMouse, [LIndex + 1, LLine]);
+      LStep.IsMouse := True;
+    end
+    else if SameText(LWords[1], WORD_TYPE) then
       LStep.Text := UpperCase(LWords[2])
     else
     begin
@@ -160,7 +181,9 @@ begin
   while (FNext < FSteps.Count) and (FSteps[FNext].Tic <= LTic) do
   begin
     LStep := FSteps[FNext];
-    if LStep.Text <> '' then
+    if LStep.IsMouse then
+      LStep.Mouse.ApplyTo(FMouse)
+    else if LStep.Text <> '' then
       FTyping := FTyping + LStep.Text
     else if LStep.Down then
       FPressed := FPressed + LStep.Commands

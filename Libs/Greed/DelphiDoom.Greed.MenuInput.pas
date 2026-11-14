@@ -12,7 +12,7 @@ unit DelphiDoom.Greed.MenuInput;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, DelphiDoom.Greed.Mouse.Intf;
 
 const
   /// <summary>NUMCODES: the scan codes of the keyboard table</summary>
@@ -40,11 +40,13 @@ type
   ///   the odd tics the keys are read as INT_ReadControls does (a key that goes down gives its upper case character
   ///   in LastAscii and sets NewAscii; LastAscii is cleared at each read, NewAscii only by who uses it).
   ///   Differences from the original: a key pressed and released between two reads is still seen by the next read
-  ///   (the original loses it); the half second without keys after the window gets the focus, the mouse and the
-  ///   joystick are not here
+  ///   (the original loses it); the half second without keys after the window gets the focus is not here (the
+  ///   mouse has its own). With a mouse (IGreedMouse) each read of the keys is followed by a read of the mouse, as
+  ///   INT_ReadControls ends with INT_ReadMouse; the joystick is not read, as in xGreed
   /// </summary>
   TGreedMenuInput = class
   strict private
+    FMouse: IGreedMouse;
     FDown: array[0..GREED_MENU_SCAN_CODES - 1] of Boolean;
     FLatched: array[0..GREED_MENU_SCAN_CODES - 1] of Boolean;
     FOldKeyboard: array[0..GREED_MENU_SCAN_CODES - 1] of SmallInt;
@@ -54,6 +56,8 @@ type
     FLastAscii: AnsiChar;
     function GetKeyboard(AScanCode: Integer): Integer;
   public
+    /// <summary>AMouse can be nil: no mouse is installed (the menus are used with the keys only)</summary>
+    constructor Create(const AMouse: IGreedMouse = nil);
     /// <summary>The key with that scan code (0..127) is down or up; other codes are ignored</summary>
     procedure SetKey(AScanCode: Integer; ADown: Boolean);
     /// <summary>The same for a key with a name</summary>
@@ -76,6 +80,8 @@ type
     property TimeCount: Integer read FTimeCount write FTimeCount;
     property NewAscii: Boolean read FNewAscii write FNewAscii;
     property LastAscii: AnsiChar read FLastAscii write FLastAscii;
+    /// <summary>The mouse that is read with the keys; nil if none is installed</summary>
+    property Mouse: IGreedMouse read FMouse;
   end;
 
 implementation
@@ -97,6 +103,12 @@ const
     GREED_SC_RIGHTARROW, GREED_SC_ENTER, GREED_SC_ESCAPE, GREED_SC_SPACE, GREED_SC_BACKSPACE);
 
 { TGreedMenuInput }
+
+constructor TGreedMenuInput.Create(const AMouse: IGreedMouse);
+begin
+  inherited Create;
+  FMouse := AMouse;
+end;
 
 function TGreedMenuInput.GetKeyboard(AScanCode: Integer): Integer;
 begin
@@ -164,6 +176,9 @@ begin
     FLatched[LIndex] := False;
     FOldKeyboard[LIndex] := FKeyboard[LIndex];
   end;
+  // if mouseinstalled then INT_ReadMouse
+  if Assigned(FMouse) then
+    FMouse.Read;
 end;
 
 procedure TGreedMenuInput.EatKey(AScanCode: Integer);

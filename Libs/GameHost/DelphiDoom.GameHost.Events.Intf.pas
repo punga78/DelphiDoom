@@ -54,6 +54,30 @@ type
     function PressCount(AVirtualKey: Integer): Cardinal;
   end;
 
+  /// <summary>Which buttons of the mouse are held, for a game that asks instead of reading events</summary>
+  IGameHostMouseState = interface
+    ['{D5B0E7A2-41C8-4F36-A9D1-63E2F08B4C75}']
+    /// <summary>The button is down; false for hmbNone</summary>
+    function IsDown(AButton: TGameHostMouseButton): Boolean;
+    /// <summary>The window has the focus and is not minimized (true until the window says otherwise)</summary>
+    function IsFocused: Boolean;
+  end;
+
+  /// <summary>
+  ///   Where the client area of the window of the game is on the screen, for a game that reads the cursor of the
+  ///   system and puts it back in the middle of its window
+  /// </summary>
+  IGameHostCursorArea = interface
+    ['{2A94C6F1-7E05-4B8D-B3A7-90D15C2E6F48}']
+    /// <summary>The top left corner of the client area in pixels of the screen; false while there is no window</summary>
+    function ClientOrigin(out AX, AY: Integer): Boolean;
+    /// <summary>The size of the client area; 0 while there is no window</summary>
+    function ClientWidth: Integer;
+    function ClientHeight: Integer;
+    /// <summary>The window is the one the player is working with and is not minimized</summary>
+    function IsForeground: Boolean;
+  end;
+
   /// <summary>Reads the messages of the window of the game; false once the player has closed it</summary>
   TGameHostPump = reference to function: Boolean;
 

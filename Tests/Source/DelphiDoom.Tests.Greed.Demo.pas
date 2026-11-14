@@ -53,7 +53,7 @@ type
     [Test]
     procedure LoScrittoreDovrebbeRifiutareIlFlussoNil;
     [Test]
-    procedure LIntestazioneDovrebbeEssereGrdmVersioneEDieciNumeri;
+    procedure LIntestazioneDovrebbeEssereGrdmVersioneESediciNumeri;
     [Test]
     procedure DovrebbeRileggereLIntestazione;
     [Test]
@@ -197,6 +197,12 @@ begin
   Result.CameraDelay := 35;
   Result.ViewSize := 2;
   Result.Violence := True;
+  Result.MouseEnabled := True;
+  Result.MouseSensitivity := 7;
+  Result.MouseSensitivityX := 12;
+  Result.MouseSensitivityY := 3;
+  Result.InvertMouseTurn := False;
+  Result.InvertMouseLook := True;
 end;
 
 function TTestGreedDemoTape.Bytes: TBytes;
@@ -215,7 +221,7 @@ begin
     end, EArgumentNilException);
 end;
 
-procedure TTestGreedDemoTape.LIntestazioneDovrebbeEssereGrdmVersioneEDieciNumeri;
+procedure TTestGreedDemoTape.LIntestazioneDovrebbeEssereGrdmVersioneESediciNumeri;
 var
   LWriter: TGreedDemoWriter;
   LBytes: TBytes;
@@ -234,7 +240,13 @@ begin
     Assert.AreEqual(17, Integer(LBytes[8]));
     Assert.AreEqual(0, Integer(LBytes[11]));
     Assert.AreEqual(201, Integer(LBytes[32]), 'the random offset is the seventh number');
-    Assert.AreEqual(1, Integer(LBytes[44]), 'the violence is the last');
+    Assert.AreEqual(1, Integer(LBytes[44]), 'the violence is the tenth');
+    Assert.AreEqual(1, Integer(LBytes[48]), 'the mouse');
+    Assert.AreEqual(7, Integer(LBytes[52]));
+    Assert.AreEqual(12, Integer(LBytes[56]));
+    Assert.AreEqual(3, Integer(LBytes[60]));
+    Assert.AreEqual(0, Integer(LBytes[64]));
+    Assert.AreEqual(1, Integer(LBytes[68]), 'the inverted look is the last');
   finally
     LWriter.Free;
   end;
@@ -263,6 +275,12 @@ begin
     Assert.AreEqual(35, LReader.Header.CameraDelay);
     Assert.AreEqual(2, LReader.Header.ViewSize);
     Assert.IsTrue(LReader.Header.Violence);
+    Assert.IsTrue(LReader.Header.MouseEnabled);
+    Assert.AreEqual(7, LReader.Header.MouseSensitivity);
+    Assert.AreEqual(12, LReader.Header.MouseSensitivityX);
+    Assert.AreEqual(3, LReader.Header.MouseSensitivityY);
+    Assert.IsFalse(LReader.Header.InvertMouseTurn);
+    Assert.IsTrue(LReader.Header.InvertMouseLook);
     Assert.AreEqual(Ord(gdrEnd), Ord(LReader.PeekKind));
   finally
     LReader.Free;

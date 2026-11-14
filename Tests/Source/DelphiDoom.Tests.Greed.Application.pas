@@ -21,7 +21,8 @@ uses
   DelphiDoom.Greed.Screens, DelphiDoom.Greed.ScreenView, DelphiDoom.Greed.Application,
   DelphiDoom.Greed.Application.Intf, DelphiDoom.Clock.Intf, DelphiDoom.Tests.Greed.GameFakes,
   DelphiDoom.Greed.CommandState, DelphiDoom.Greed.Sound.Intf, DelphiDoom.Greed.Menu.Intf, DelphiDoom.Greed.Intro,
-  DelphiDoom.Greed.Briefing, DelphiDoom.Greed.EndGame, DelphiDoom.Tests.Greed.IntroScenarios;
+  DelphiDoom.Greed.Briefing, DelphiDoom.Greed.EndGame, DelphiDoom.Tests.Greed.IntroScenarios,
+  DelphiDoom.Input.Intf, DelphiDoom.Greed.Mouse.Intf, DelphiDoom.Greed.Mouse, DelphiDoom.Tests.Greed.MenuScenarios;
 
 type
   /// <summary>The window: it pumps until the test says it is closed</summary>
@@ -139,6 +140,11 @@ type
     FStore: TFakeSettingsStore;
     FStoreRef: IGreedSettingsStore;
     FApplication: TGreedApplication;
+    FMouseFake: TMenuMouseFake;
+    FMouseDevice: IMouseDevice;
+    FMouse: IGreedMouse;
+    procedure CreateScreens(const AMouse: IGreedMouse);
+    procedure UseMouse;
     function Options(AMaxTics: Integer; ASkipIntro, ANoBriefing: Boolean): TGreedApplicationOptions;
     procedure Build(const AOptions: TGreedApplicationOptions);
     function Line(const AName: string): string;
@@ -189,6 +195,14 @@ type
     procedure DovrebbeContareITicDiOgniFase;
     [Test]
     procedure DovrebbeAspettareSeIlRelogioNonHaTic;
+    [Test]
+    procedure DovrebbeDisegnareIlPuntatoreSullImmagineCheVaAllaFinestra;
+    [Test]
+    procedure DovrebbeNascondereIlPuntatoreDopoLaConfermaDiUscita;
+    [Test]
+    procedure DovrebbeDescrivereIlMouse;
+    [Test]
+    procedure DovrebbeRispondereAlClicSulPannelloDiUscita;
   end;
 
   [TestFixture]
@@ -256,7 +270,7 @@ implementation
 uses
   DelphiDoom.Greed.SaveTypes, DelphiDoom.Greed.Settings, DelphiDoom.Greed.SaveGames, DelphiDoom.Greed.MenuHost,
   DelphiDoom.Greed.IntroHost, DelphiDoom.Greed.EpisodeHost, DelphiDoom.Greed.MenuInput,
-  DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.Intf, DelphiDoom.Tests.Greed.MenuScenarios;
+  DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.Intf;
 
 // True if the procedure raises an exception of that class
 function Raises(const AProc: TProc; AClass: ExceptClass): Boolean;
@@ -494,8 +508,7 @@ begin
   FHost := TIntroHostFake.Create;
   FHostRef := FHost;
   FHost.Trace.Clear;
-  FScreens := TGreedScreens.Create(FScreenArchive, FSettings, FHost,
-    TGreedSaveGames.Create(TMenuSaveFilesFake.Create, ggvGame1), nil, FHost, FHost, FHost, FHost, False, ggvGame1);
+  CreateScreens(nil);
   FGameArchive := TFakeGameArchive.Create;
   FMaps := TFakeGameMaps.Create;
   FRenderer := TFakeGameRenderer.Create;
@@ -522,12 +535,33 @@ begin
   FStoreRef := FStore;
 end;
 
+procedure TTestGreedApplication.CreateScreens(const AMouse: IGreedMouse);
+begin
+  FreeAndNil(FScreens);
+  FScreens := TGreedScreens.Create(FScreenArchive, FSettings, FHost,
+    TGreedSaveGames.Create(TMenuSaveFilesFake.Create, ggvGame1), nil, FHost, FHost, FHost, FHost, False, ggvGame1,
+    AMouse);
+end;
+
+procedure TTestGreedApplication.UseMouse;
+begin
+  // a mouse on a window of 640 x 400 whose cursor does not move: the pointer stays at 160, 100
+  FMouseFake := TMenuMouseFake.Create;
+  FMouseDevice := FMouseFake;
+  FMouseFake.Width := 640;
+  FMouseFake.Height := 400;
+  FMouse := TGreedMouse.Create(FMouseDevice, FMouseFake, nil);
+  CreateScreens(FMouse);
+end;
+
 procedure TTestGreedApplication.TearDown;
 begin
   FScreenView.Screens := nil;
   FreeAndNil(FApplication);
   FreeAndNil(FScreens);
   FreeAndNil(FGame);
+  FMouse := nil;
+  FMouseDevice := nil;
 end;
 
 function TTestGreedApplication.Options(AMaxTics: Integer; ASkipIntro, ANoBriefing: Boolean): TGreedApplicationOptions;
@@ -725,6 +759,114 @@ begin
   LTics := FApplication.Run;
   Assert.IsTrue(LTics < 2000, 'the program ended before the limit');
   Assert.AreEqual('0', Line('application.stopped'));
+  Assert.AreEqual('1', Line('application.quitgame'));
+end;
+
+procedure TTestGreedApplication.DovrebbeDisegnareIlPuntatoreSullImmagineCheVaAllaFinestra;
+var
+  LOutside, LInside, LChecked: Integer;
+begin
+  UseMouse;
+  FSettings.SetBoolean('animation', False);
+  FCommands.Pressed := [gcQuickExit];
+  LOutside := -1;
+  LInside := -1;
+  LChecked := 0;
+  FKeys.OnTic :=
+    procedure(ATic: Integer)
+    var
+      LIndex, LX, LY: Integer;
+    begin
+      if ATic = 30 then
+        FCommands.Pressed := [];
+      // the panel is up and the pointer is shown: the picture given to the window against the one of the program
+      if (ATic = 200) and (Line('application.mode') = 'quit') then
+      begin
+        Inc(LChecked);
+        LOutside := 0;
+        LInside := 0;
+        for LIndex := 0 to High(FShower.LastFrame.Pixels) do
+          if FShower.LastFrame.Pixels[LIndex] <> FApplication.ScreenFrame.Pixels[LIndex] then
+          begin
+            LX := LIndex mod 640;
+            LY := LIndex div 640;
+            if (LX >= 320) and (LX < 352) and (LY >= 200) and (LY < 232) then
+              Inc(LInside)
+            else
+              Inc(LOutside);
+          end;
+      end;
+    end;
+  FKeys.Press(400, GREED_SC_N);
+  Build(Options(1200, True, True));
+  FApplication.Run;
+  Assert.AreEqual(1, LChecked, 'the panel was up at the tic 200');
+  Assert.IsTrue(LInside > 0, 'the pointer is in the picture of the window, at 160, 100 of the screen');
+  Assert.AreEqual(0, LOutside, 'and nowhere else');
+end;
+
+procedure TTestGreedApplication.DovrebbeNascondereIlPuntatoreDopoLaConfermaDiUscita;
+var
+  LShownInPanel: Boolean;
+begin
+  UseMouse;
+  FSettings.SetBoolean('animation', False);
+  FCommands.Pressed := [gcQuickExit];
+  LShownInPanel := False;
+  FKeys.OnTic :=
+    procedure(ATic: Integer)
+    begin
+      if ATic = 30 then
+        FCommands.Pressed := [];
+      if ATic = 200 then
+        LShownInPanel := FMouse.IsVisible;
+    end;
+  FKeys.Press(400, GREED_SC_N);
+  Build(Options(600, True, True));
+  FApplication.Run;
+  Assert.IsTrue(LShownInPanel, 'MouseShow before ShowQuit');
+  Assert.IsFalse(FMouse.IsVisible, 'MouseHide after it: the game has no pointer');
+  Assert.IsFalse(FScreens.Menu.QuitAnswer, 'the answer was no');
+  Assert.AreEqual('playing', Line('application.stoppedin'), 'the game went on until the tics were over');
+end;
+
+procedure TTestGreedApplication.DovrebbeDescrivereIlMouse;
+begin
+  Build(Options(10, True, True));
+  Assert.AreEqual('', Line('screens.mouse.visible'), 'no mouse, no line');
+  UseMouse;
+  Build(Options(10, True, True));
+  Assert.AreEqual('0', Line('screens.mouse.visible'));
+  Assert.AreEqual('160', Line('screens.mouse.x'));
+  Assert.AreEqual('100', Line('screens.mouse.y'));
+end;
+
+procedure TTestGreedApplication.DovrebbeRispondereAlClicSulPannelloDiUscita;
+var
+  LTics: Integer;
+begin
+  UseMouse;
+  FSettings.SetBoolean('animation', False);
+  FCommands.Pressed := [gcQuickExit];
+  FKeys.OnTic :=
+    procedure(ATic: Integer)
+    begin
+      if ATic = 30 then
+        FCommands.Pressed := [];
+      // the pointer goes from 160, 100 to 140, 113 (YES): 40 pixels of the window to the left, 26 down
+      if ATic = 200 then
+      begin
+        FMouseFake.X := FMouseFake.X - 40;
+        FMouseFake.Y := FMouseFake.Y + 26;
+      end;
+      if ATic = 204 then
+        FMouseFake.Buttons := 1;
+      if ATic = 210 then
+        FMouseFake.Buttons := 0;
+    end;
+  Build(Options(2000, True, True));
+  LTics := FApplication.Run;
+  Assert.IsTrue(LTics < 2000, 'the click on YES ended the program');
   Assert.AreEqual('1', Line('application.quitgame'));
 end;
 
