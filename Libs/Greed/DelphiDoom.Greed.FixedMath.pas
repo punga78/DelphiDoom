@@ -45,6 +45,11 @@ type
 
 implementation
 
+{$IF SizeOf(Extended) <= SizeOf(Double)}
+uses
+  DelphiDoom.MathCore.SoftExtended;
+{$IFEND}
+
 { TGreedFixedMath }
 
 class function TGreedFixedMath.Mul(const A, B: TFixed): TFixed;
@@ -97,7 +102,17 @@ begin
   else if (A <> Low(Int64)) and (B <> Low(Int64)) and (LAbsA <= UInt64(High(Int64)) div LAbsB) then
     Result := TFixedMath.RoundDivide(A * B, FIXED_ONE)
   else
+  begin
+    // The product does not fit in 64 bits: the original rounded it twice, to the 64 bits of
+    // mantissa of the FPU and then to the integer. Without the Extended of the 32 bit compiler
+    // (in the 64 bit build it is a Double, 53 bits) the same two roundings are done in software
+{$IF SizeOf(Extended) > SizeOf(Double)}
     Result := TFixedMath.Mul64(A, B);
+{$ELSE}
+    Result := (TSoftExtended.FromInt64(A) / TSoftExtended.FromInt64(FIXED_ONE) *
+      TSoftExtended.FromInt64(B)).Round;
+{$IFEND}
+  end;
 end;
 
 class function TGreedFixedMath.Divide(const A, B: TFixed): TFixed;

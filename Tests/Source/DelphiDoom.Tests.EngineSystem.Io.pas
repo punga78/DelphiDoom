@@ -187,7 +187,7 @@ begin
     finally
       LStream.Free;
     end;
-    Assert.AreEqual(4, Length(LBytes));
+    Assert.AreEqual<Integer>(4, Length(LBytes));
     Assert.AreEqual(Byte(Ord('a')), LBytes[0]);
     Assert.AreEqual(Byte(13), LBytes[2]);
     Assert.AreEqual(Byte(10), LBytes[3]);

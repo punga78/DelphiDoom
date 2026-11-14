@@ -127,7 +127,7 @@ begin
   Assert.AreEqual(5029, LOptions.Port);
   Assert.AreEqual(1, LOptions.NumNodes);
   Assert.AreEqual(0, LOptions.ConsolePlayer);
-  Assert.AreEqual(0, Length(LOptions.Peers));
+  Assert.AreEqual<Integer>(0, Length(LOptions.Peers));
   Assert.IsTrue(LOptions.Drone = ndvNone);
   Assert.AreEqual('', FLog.InfoText);
 end;
@@ -198,7 +198,7 @@ begin
   Assert.IsTrue(LOptions.IsNetGame);
   Assert.AreEqual(1, LOptions.ConsolePlayer);
   Assert.AreEqual(3, LOptions.NumNodes);
-  Assert.AreEqual(2, Length(LOptions.Peers));
+  Assert.AreEqual<Integer>(2, Length(LOptions.Peers));
   Assert.AreEqual('ALPHA', LOptions.Peers[0].Host);
   Assert.AreEqual(5029, Integer(LOptions.Peers[0].Port));
   Assert.AreEqual(6001, Integer(LOptions.Peers[1].Port));
@@ -243,7 +243,7 @@ begin
     LAsked.Duplicates := dupIgnore;
     for LName in LLegacy.Asked do
       LAsked.Add(UpperCase(LName));
-    Assert.AreEqual(LAsked.Count, Length(LQueried.QueriedNames));
+    Assert.AreEqual<Integer>(LAsked.Count, Length(LQueried.QueriedNames));
     for LName in LQueried.QueriedNames do
       Assert.IsTrue(LAsked.IndexOf(UpperCase(LName)) >= 0, LName);
   finally

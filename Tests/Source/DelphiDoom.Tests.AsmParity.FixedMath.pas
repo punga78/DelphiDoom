@@ -18,8 +18,10 @@ type
   /// <summary>
   ///   Parity of the old assembler of m_fixed, r_softlights, p_local and of the shifts of d_delphi
   ///   (copied in DelphiDoom.Tests.AsmParity.Oracles) with the Pascal ones of TFixedMath, on the limit
-  ///   values and on millions of pseudo random inputs. Only for the 32 bit build, where the
-  ///   assembler can run.
+  ///   values and on millions of pseudo random inputs. In the 32 bit build the assembler runs and
+  ///   is compared result by result; in the 64 bit build, where it cannot run, the Pascal results
+  ///   on the same inputs must have the fingerprint that the assembler gave at 32 bit
+  ///   (Tests\Data\MathCore\asm.golden.txt).
   /// </summary>
   [TestFixture]
   [Category('asm')]
@@ -59,8 +61,6 @@ type
 
 implementation
 
-{$IFDEF CPUX86}
-
 uses
   DelphiDoom.MathCore.FixedMath, DelphiDoom.Tests.AsmParity.Oracles, DelphiDoom.Tests.AsmParity.Parity;
 
@@ -69,257 +69,164 @@ const
   RANDOM_PAIRS = 1000000;
   RANDOM_PAIRS_RAISING = 100000;
 
-{$ENDIF}
-
 { TTestAsmFixedMath }
 
 procedure TTestAsmFixedMath.DovrebbeMoltiplicareCometFixedMul;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedMul',
-    function(A, B: Integer): Integer begin Result := OldFixedMul(A, B); end,
+  TParityRunner.CompareBinary('FixedMul', TAsmOracles.Binary('FixedMul'),
     function(A, B: Integer): Integer begin Result := TFixedMath.Mul(A, B); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeMoltiplicareEScorrereCometFixedMulShl;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedMulShl3',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl3(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl3', TAsmOracles.Binary('FixedMulShl3'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl3(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulShl4',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl4(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl4', TAsmOracles.Binary('FixedMulShl4'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl4(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulShl5',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl5(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl5', TAsmOracles.Binary('FixedMulShl5'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl5(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulShl8',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl8(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl8', TAsmOracles.Binary('FixedMulShl8'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl8(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulShl10',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl10(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl10', TAsmOracles.Binary('FixedMulShl10'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl10(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulShl14',
-    function(A, B: Integer): Integer begin Result := OldFixedMulShl14(A, B); end,
+  TParityRunner.CompareBinary('FixedMulShl14', TAsmOracles.Binary('FixedMulShl14'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulShl14(A, B); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeMoltiplicareEDividereCometFixedMulDiv;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedMulDiv8',
-    function(A, B: Integer): Integer begin Result := OldFixedMulDiv8(A, B); end,
+  TParityRunner.CompareBinary('FixedMulDiv8', TAsmOracles.Binary('FixedMulDiv8'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulDiv8(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulDiv16',
-    function(A, B: Integer): Integer begin Result := OldFixedMulDiv16(A, B); end,
+  TParityRunner.CompareBinary('FixedMulDiv16', TAsmOracles.Binary('FixedMulDiv16'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulDiv16(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMulDiv256',
-    function(A, B: Integer): Integer begin Result := OldFixedMulDiv256(A, B); end,
+  TParityRunner.CompareBinary('FixedMulDiv256', TAsmOracles.Binary('FixedMulDiv256'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulDiv256(A, B); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeMoltiplicareConLeVarianti88E8;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedMul88',
-    function(A, B: Integer): Integer begin Result := OldFixedMul88(A, B); end,
+  TParityRunner.CompareBinary('FixedMul88', TAsmOracles.Binary('FixedMul88'),
     function(A, B: Integer): Integer begin Result := TFixedMath.Mul88(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedMul8',
-    function(A, B: Integer): Integer begin Result := OldFixedMul8(A, B); end,
+  TParityRunner.CompareBinary('FixedMul8', TAsmOracles.Binary('FixedMul8'),
     function(A, B: Integer): Integer begin Result := TFixedMath.Mul8(A, B); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeMoltiplicareConLaParteIntera;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedIntMul',
-    function(A, B: Integer): Integer begin Result := OldFixedIntMul(A, B); end,
+  TParityRunner.CompareBinary('FixedIntMul', TAsmOracles.Binary('FixedIntMul'),
     function(A, B: Integer): Integer begin Result := TFixedMath.MulByInteger(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('IntFixedMul',
-    function(A, B: Integer): Integer begin Result := OldIntFixedMul(A, B); end,
+  TParityRunner.CompareBinary('IntFixedMul', TAsmOracles.Binary('IntFixedMul'),
     function(A, B: Integer): Integer begin Result := TFixedMath.IntegerMul(A, B); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareBinary('FixedInt_FixedMul',
-    function(A, B: Integer): Integer begin Result := OldFixedInt_FixedMul(A, B); end,
+  TParityRunner.CompareBinary('FixedInt_FixedMul', TAsmOracles.Binary('FixedInt_FixedMul'),
     function(A, B: Integer): Integer begin Result := TFixedMath.IntegerOfMul(A, B); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeDareLaParteInteraCometFixedInt;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareUnary('FixedInt',
-    function(A: Integer): Integer begin Result := OldFixedInt(A); end,
+  TParityRunner.CompareUnary('FixedInt', TAsmOracles.Unary('FixedInt'),
     function(A: Integer): Integer begin Result := TFixedMath.ToInteger(A); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeDividereCometFixedDiv2ESollevareNegliStessiCasi;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedDiv2',
-    function(A, B: Integer): Integer begin Result := OldFixedDiv2(A, B); end,
+  TParityRunner.CompareBinary('FixedDiv2', TAsmOracles.Binary('FixedDiv2'),
     function(A, B: Integer): Integer begin Result := TFixedMath.DivideRaw(A, B); end,
     RANDOM_PAIRS_RAISING);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeDividereCometFixedDivFastESollevareNegliStessiCasi;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinary('FixedDiv_fast',
-    function(A, B: Integer): Integer begin Result := OldFixedDiv_fast(A, B); end,
+  TParityRunner.CompareBinary('FixedDiv_fast', TAsmOracles.Binary('FixedDiv_fast'),
     function(A, B: Integer): Integer begin Result := TFixedMath.DivideFast(A, B); end,
     RANDOM_PAIRS_RAISING);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeDividereCometFixedDivLWESollevareNegliStessiCasi;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinaryUnsigned('FixedDivLW',
-    function(A, B: Cardinal): Cardinal begin Result := OldFixedDivLW(A, B); end,
+  TParityRunner.CompareBinaryUnsigned('FixedDivLW', TAsmOracles.BinaryUnsigned('FixedDivLW'),
     function(A, B: Cardinal): Cardinal begin Result := TFixedMath.DivideUnsigned(A, B); end,
     RANDOM_PAIRS_RAISING);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeCalcolareIlFattoreDellaLuceCometAsmCalcFactor;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareBinaryUnsigned('ASM_CalcFactor',
-    function(A, B: Cardinal): Cardinal begin Result := OldCalcFactor(A, B); end,
+  TParityRunner.CompareBinaryUnsigned('ASM_CalcFactor', TAsmOracles.BinaryUnsigned('ASM_CalcFactor'),
     function(A, B: Cardinal): Cardinal begin Result := TFixedMath.OneMinusDivideUnsigned(A, B); end,
     RANDOM_PAIRS_RAISING);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeScorrereConSegnoCometSar;
 begin
-  {$IFDEF CPUX86}
-  TParityRunner.CompareUnary('_SHR1',
-    function(A: Integer): Integer begin Result := OldSHR1(A); end,
+  TParityRunner.CompareUnary('_SHR1', TAsmOracles.Unary('_SHR1'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 1); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR2',
-    function(A: Integer): Integer begin Result := OldSHR2(A); end,
+  TParityRunner.CompareUnary('_SHR2', TAsmOracles.Unary('_SHR2'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 2); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR3',
-    function(A: Integer): Integer begin Result := OldSHR3(A); end,
+  TParityRunner.CompareUnary('_SHR3', TAsmOracles.Unary('_SHR3'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 3); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR4',
-    function(A: Integer): Integer begin Result := OldSHR4(A); end,
+  TParityRunner.CompareUnary('_SHR4', TAsmOracles.Unary('_SHR4'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 4); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR7',
-    function(A: Integer): Integer begin Result := OldSHR7(A); end,
+  TParityRunner.CompareUnary('_SHR7', TAsmOracles.Unary('_SHR7'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 7); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR8',
-    function(A: Integer): Integer begin Result := OldSHR8(A); end,
+  TParityRunner.CompareUnary('_SHR8', TAsmOracles.Unary('_SHR8'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 8); end,
     RANDOM_PAIRS);
-  TParityRunner.CompareUnary('_SHR14',
-    function(A: Integer): Integer begin Result := OldSHR14(A); end,
+  TParityRunner.CompareUnary('_SHR14', TAsmOracles.Unary('_SHR14'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 14); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeScorrereAVariabileConLaStessaMaschera;
 begin
-  {$IFDEF CPUX86}
   // the Pascal _SHR of d_delphi is TFixedMath.ShiftRight(x, bits and 31): the processor uses the
   // low five bits of the count
-  TParityRunner.CompareBinary('_SHR',
-    function(A, B: Integer): Integer begin Result := OldSHR(A, B); end,
+  TParityRunner.CompareBinary('_SHR', TAsmOracles.Binary('_SHR'),
     function(A, B: Integer): Integer begin Result := TFixedMath.ShiftRight(A, B and 31); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeScorrereASinistraConLaStessaMaschera;
 begin
-  {$IFDEF CPUX86}
   // the Pascal _SHL of d_delphi is x shl (bits and 31)
-  TParityRunner.CompareBinary('_SHL',
-    function(A, B: Integer): Integer begin Result := OldSHL(A, B); end,
+  TParityRunner.CompareBinary('_SHL', TAsmOracles.Binary('_SHL'),
     function(A, B: Integer): Integer begin Result := A shl (B and 31); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeCalcolareIlBloccoDellaMappaCometMapBlockInt;
 begin
-  {$IFDEF CPUX86}
   // MAPBLOCKSHIFT = FRACBITS + 7
-  TParityRunner.CompareUnary('MapBlockInt',
-    function(A: Integer): Integer begin Result := OldMapBlockInt(A); end,
+  TParityRunner.CompareUnary('MapBlockInt', TAsmOracles.Unary('MapBlockInt'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 23); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 procedure TTestAsmFixedMath.DovrebbeCalcolareLaFrazioneDellaMappaCometMapToFrac;
 begin
-  {$IFDEF CPUX86}
   // MAPBTOFRAC = MAPBLOCKSHIFT - FRACBITS
-  TParityRunner.CompareUnary('MapToFrac',
-    function(A: Integer): Integer begin Result := OldMapToFrac(A); end,
+  TParityRunner.CompareUnary('MapToFrac', TAsmOracles.Unary('MapToFrac'),
     function(A: Integer): Integer begin Result := TFixedMath.ShiftRight(A, 7); end,
     RANDOM_PAIRS);
-  {$ELSE}
-  Assert.Pass('Assembler comparison only in the 32 bit build');
-  {$ENDIF}
 end;
 
 end.
