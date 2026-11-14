@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the AAS library of Quake III (DUnitX)             }
 {                                                                              }
@@ -57,6 +57,16 @@ uses
   DelphiDoom.Aas.D3.PathFinder in '..\Libs\Aas\DelphiDoom.Aas.D3.PathFinder.pas',
   DelphiDoom.Aas.D3.WallEdges in '..\Libs\Aas\DelphiDoom.Aas.D3.WallEdges.pas',
   DelphiDoom.Aas.D3.Navigator in '..\Libs\Aas\DelphiDoom.Aas.D3.Navigator.pas',
+  DelphiDoom.Aas.D3.Avoid.Types in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.Types.pas',
+  DelphiDoom.Aas.D3.Avoid.Intf in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.Intf.pas',
+  DelphiDoom.Aas.D3.Avoid.Obstacle in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.Obstacle.pas',
+  DelphiDoom.Aas.D3.Avoid.ObstacleSet in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.ObstacleSet.pas',
+  DelphiDoom.Aas.D3.Avoid.ObstacleCollector in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.ObstacleCollector.pas',
+  DelphiDoom.Aas.D3.Avoid.PathNode in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.PathNode.pas',
+  DelphiDoom.Aas.D3.Avoid.PathTree in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.PathTree.pas',
+  DelphiDoom.Aas.D3.Avoid.PathOptimizer in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.PathOptimizer.pas',
+  DelphiDoom.Aas.D3.Avoid.PathFinder in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.PathFinder.pas',
+  DelphiDoom.Aas.D3.Avoid.Ballistics in '..\Libs\Aas\DelphiDoom.Aas.D3.Avoid.Ballistics.pas',
   DelphiDoom.Aas.D3.Factory in '..\Libs\Aas\DelphiDoom.Aas.D3.Factory.pas',
   DelphiDoom.Tests.Aas.D3.Support in 'Source\DelphiDoom.Tests.Aas.D3.Support.pas',
   DelphiDoom.Tests.Aas.Route.Units in 'Source\DelphiDoom.Tests.Aas.Route.Units.pas',
@@ -65,6 +75,8 @@ uses
   DelphiDoom.Tests.Aas.D3.Units in 'Source\DelphiDoom.Tests.Aas.D3.Units.pas',
   DelphiDoom.Tests.Aas.D3.Scenario in 'Source\DelphiDoom.Tests.Aas.D3.Scenario.pas',
   DelphiDoom.Tests.Aas.D3.Golden in 'Source\DelphiDoom.Tests.Aas.D3.Golden.pas',
+  DelphiDoom.Tests.Aas.D3.AvoidScenario in 'Source\DelphiDoom.Tests.Aas.D3.AvoidScenario.pas',
+  DelphiDoom.Tests.Aas.D3.AvoidGolden in 'Source\DelphiDoom.Tests.Aas.D3.AvoidGolden.pas',
   DelphiDoom.Tests.Aas.D3.Routing in 'Source\DelphiDoom.Tests.Aas.D3.Routing.pas';
 
 var
