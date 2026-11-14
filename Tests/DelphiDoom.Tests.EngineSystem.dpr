@@ -45,6 +45,8 @@ uses
   DelphiDoom.Tests.EngineSystem.Legacy in 'Source\DelphiDoom.Tests.EngineSystem.Legacy.pas',
   DelphiDoom.Tests.EngineSystem.LegacyCrash in 'Source\DelphiDoom.Tests.EngineSystem.LegacyCrash.pas',
   DelphiDoom.Tests.EngineSystem.NetCommandLineReader in 'Source\DelphiDoom.Tests.EngineSystem.NetCommandLineReader.pas',
+  DelphiDoom.EngineSystem.MainExceptionReport in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.MainExceptionReport.pas',
+  DelphiDoom.Tests.EngineSystem.MainExceptionReport in 'Source\DelphiDoom.Tests.EngineSystem.MainExceptionReport.pas',
   DelphiDoom.Tests.EngineSystem.Midi in 'Source\DelphiDoom.Tests.EngineSystem.Midi.pas',
   DelphiDoom.Tests.EngineSystem.ModuleMusicPlayer in 'Source\DelphiDoom.Tests.EngineSystem.ModuleMusicPlayer.pas',
   DelphiDoom.Tests.EngineSystem.Io in 'Source\DelphiDoom.Tests.EngineSystem.Io.pas',

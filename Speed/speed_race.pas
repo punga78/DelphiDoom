@@ -173,6 +173,9 @@ var
   race_cars: array[0..RACING_MAX_CARS - 1] of Pmobj_t;
   // the ground map is a lump of the level: the zone keeps it until the level ends
   race_ground_map: System.PByte = nil;
+  // -speedcrash tic: the tic of the level at which the thinker writes through a nil pointer, -1 for never
+  race_crashtic: integer = -1;
+  race_crashpointer: pointer = nil;
 
 //==============================================================================
 //
@@ -358,6 +361,10 @@ begin
   if race_controller = nil then
     exit;
 
+  // a test of the report of the exceptions of the loop (-speedcrash tic): a real access violation
+  if (race_crashtic >= 0) and (leveltime = race_crashtic) then
+    PInteger(race_crashpointer)^ := 1;
+
   for i := 0 to race_controller.Count - 1 do
   begin
     mo := race_cars[i];
@@ -475,6 +482,7 @@ begin
   if (Length(path) = 0) or (race_random = nil) or (race_log = nil) then
     exit;
 
+  race_crashtic := SH_ParmInt('-speedcrash', -1);
   race_settings := TRacingFactory.CreateRaceState;
   race_settings.SetNumLaps(SH_ParmInt(LAPS_OPTION, DEFAULT_LAPS));
   race_settings.SetCarType(TRacingCarType.Any);
