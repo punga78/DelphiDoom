@@ -23,15 +23,20 @@ type
   /// <remarks>
   ///   Kept as in the old code: the pixels are copied only in the last tic of each call of
   ///   Advance (the columns move in all of them), and a column that has not started is not
-  ///   drawn
+  ///   drawn. The engine calls Advance once for each frame of the wipe: the loops of the
+  ///   columns and of the pixels are inside the class, on plain pointers
   /// </remarks>
-  TImagingMeltWipe = class(TInterfacedObject, IImagingMeltWipe)
-  private
+  TImagingMeltWipe = class sealed(TInterfacedObject, IImagingMeltWipe)
+  strict private
     FRandom: IImagingRandom;
     FSettings: TImagingWipeSettings;
-    FStartScreen: TImagingPixels;
-    FEndScreen: TImagingPixels;
-    FDestination: TImagingPixels;
+    // the arrays of Start are kept alive here; the pointers are what the loops read
+    FStartScreenOwner: TImagingPixels;
+    FEndScreenOwner: TImagingPixels;
+    FDestinationOwner: TImagingPixels;
+    FStartScreen: PCardinal;
+    FEndScreen: PCardinal;
+    FDestination: PCardinal;
     FPositions: TArray<Integer>;
     FVelocity: Integer;
     FStarted: Boolean;
@@ -40,6 +45,8 @@ type
     constructor Create(const ARandom: IImagingRandom);
     procedure Start(const ASettings: TImagingWipeSettings; const AStartScreen,
       AEndScreen: TImagingPixels; const ADestination: TImagingPixels);
+    procedure StartOnBuffers(const ASettings: TImagingWipeSettings; AStartScreen,
+      AEndScreen, ADestination: PCardinal);
     function Advance(ATicks: Integer): Boolean;
   end;
 
@@ -55,12 +62,6 @@ end;
 
 procedure TImagingMeltWipe.Start(const ASettings: TImagingWipeSettings; const AStartScreen,
   AEndScreen: TImagingPixels; const ADestination: TImagingPixels);
-var
-  LColumn: Integer;
-  LRow: Integer;
-  LHeights: TArray<Integer>;
-  LRandoms: array[0..319] of Byte;
-  LStep: Integer;
 begin
   if (ASettings.Width <= 0) or (ASettings.Height <= 0) or
     (ASettings.DestinationPitch < ASettings.Width) then
@@ -70,7 +71,33 @@ begin
     (Length(ADestination) < ASettings.DestinationPitch * ASettings.Height) then
     raise EImagingException.Create(SImagingWipeBufferSize);
 
+  StartOnBuffers(ASettings, @AStartScreen[0], @AEndScreen[0], @ADestination[0]);
+  FStartScreenOwner := AStartScreen;
+  FEndScreenOwner := AEndScreen;
+  FDestinationOwner := ADestination;
+end;
+
+procedure TImagingMeltWipe.StartOnBuffers(const ASettings: TImagingWipeSettings; AStartScreen,
+  AEndScreen, ADestination: PCardinal);
+var
+  LColumn: Integer;
+  LRow: Integer;
+  LHeights: TArray<Integer>;
+  LRandoms: array[0..319] of Byte;
+  LStep: Integer;
+  LSource: PCardinal;
+  LTarget: PCardinal;
+begin
+  if (ASettings.Width <= 0) or (ASettings.Height <= 0) or
+    (ASettings.DestinationPitch < ASettings.Width) then
+    raise EImagingException.Create(SImagingBadWipeSettings);
+  if not (Assigned(AStartScreen) and Assigned(AEndScreen) and Assigned(ADestination)) then
+    raise EImagingException.Create(SImagingWipeBufferSize);
+
   FSettings := ASettings;
+  FStartScreenOwner := nil;
+  FEndScreenOwner := nil;
+  FDestinationOwner := nil;
   FStartScreen := AStartScreen;
   FEndScreen := AEndScreen;
   FDestination := ADestination;
@@ -82,10 +109,14 @@ begin
     LRandoms[LStep] := FRandom.NextByte;
 
   // the start screen goes to the destination
+  LSource := FStartScreen;
+  LTarget := FDestination;
   for LRow := 0 to FSettings.Height - 1 do
-    for LColumn := 0 to FSettings.Width - 1 do
-      FDestination[LRow * FSettings.DestinationPitch + LColumn] :=
-        FStartScreen[LRow * FSettings.Width + LColumn];
+  begin
+    Move(LSource^, LTarget^, FSettings.Width * SizeOf(Cardinal));
+    Inc(LSource, FSettings.Width);
+    Inc(LTarget, FSettings.DestinationPitch);
+  end;
 
   // the initial positions of the columns (negative: they have not started to slide)
   SetLength(FPositions, FSettings.Width);
@@ -113,14 +144,30 @@ end;
 procedure TImagingMeltWipe.DrawColumn(AColumn, APosition: Integer);
 var
   LRow: Integer;
+  LSource: PCardinal;
+  LTarget: PCardinal;
+  LAlpha: Cardinal;
 begin
+  LAlpha := FSettings.AlphaMask;
+  LTarget := FDestination;
+  Inc(LTarget, AColumn);
+  LSource := FEndScreen;
+  Inc(LSource, AColumn);
   for LRow := 0 to APosition - 1 do
-    FDestination[LRow * FSettings.DestinationPitch + AColumn] :=
-      FEndScreen[LRow * FSettings.Width + AColumn] or FSettings.AlphaMask;
+  begin
+    LTarget^ := LSource^ or LAlpha;
+    Inc(LTarget, FSettings.DestinationPitch);
+    Inc(LSource, FSettings.Width);
+  end;
   // below the new screen slides the old one, from its first row
+  LSource := FStartScreen;
+  Inc(LSource, AColumn);
   for LRow := APosition to FSettings.Height - 1 do
-    FDestination[LRow * FSettings.DestinationPitch + AColumn] :=
-      FStartScreen[(LRow - APosition) * FSettings.Width + AColumn] or FSettings.AlphaMask;
+  begin
+    LTarget^ := LSource^ or LAlpha;
+    Inc(LTarget, FSettings.DestinationPitch);
+    Inc(LSource, FSettings.Width);
+  end;
 end;
 
 function TImagingMeltWipe.Advance(ATicks: Integer): Boolean;

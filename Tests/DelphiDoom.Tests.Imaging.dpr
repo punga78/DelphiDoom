@@ -50,6 +50,7 @@ uses
   DelphiDoom.Tests.Imaging.ColumnExpander in 'Source\DelphiDoom.Tests.Imaging.ColumnExpander.pas',
   DelphiDoom.Tests.Imaging.HiResTables in 'Source\DelphiDoom.Tests.Imaging.HiResTables.pas',
   DelphiDoom.Tests.Imaging.MeltWipe in 'Source\DelphiDoom.Tests.Imaging.MeltWipe.pas',
+  DelphiDoom.Tests.Imaging.OldWipe in 'Source\DelphiDoom.Tests.Imaging.OldWipe.pas',
   DelphiDoom.Tests.Imaging.SineTable in 'Source\DelphiDoom.Tests.Imaging.SineTable.pas',
   DelphiDoom.Tests.Imaging.WallScale in 'Source\DelphiDoom.Tests.Imaging.WallScale.pas',
   DelphiDoom.Tests.Imaging.ThumbnailBuilder in 'Source\DelphiDoom.Tests.Imaging.ThumbnailBuilder.pas',

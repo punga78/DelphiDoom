@@ -813,6 +813,7 @@ uses
   DelphiDoom.Screenshot.Factory in '..\Libs\Screenshot\DelphiDoom.Screenshot.Factory.pas',
   DelphiDoom.Engine.Screenshot.Folders in '..\Base\DelphiDoom.Engine.Screenshot.Folders.pas',
   DelphiDoom.Engine.Imaging.ColorIndex in '..\Base\DelphiDoom.Engine.Imaging.ColorIndex.pas',
+  DelphiDoom.Engine.Imaging.Random in '..\Base\DelphiDoom.Engine.Imaging.Random.pas',
   DelphiDoom.Engine.Renderer.PatchSource in '..\Base\DelphiDoom.Engine.Renderer.PatchSource.pas',
   r_debug in '..\Base\r_debug.pas',
   ps_import in '..\Libs\ScriptHost\ps_import.pas',
