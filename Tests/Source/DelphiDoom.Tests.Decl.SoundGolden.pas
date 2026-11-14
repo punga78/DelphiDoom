@@ -312,7 +312,7 @@ end;
 
 function TTestDeclSoundGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Decl\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Decl\');
 end;
 
 procedure TTestDeclSoundGolden.DovrebbeDareLeStesseRisposteDelVeroIdSoundShader;

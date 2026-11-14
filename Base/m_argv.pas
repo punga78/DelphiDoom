@@ -34,7 +34,8 @@ unit m_argv;
 interface
 
 uses
-  DelphiDoom.CommandLine.Intf;
+  DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Platform.DataFolder.Intf;
 
 //
 // MISC
@@ -84,6 +85,16 @@ procedure M_ConfigureArgv(const AStartup: ICommandLineStartup;
 
 //==============================================================================
 //
+// M_ConfigureDataFolder
+// Gives the unit what finds the folder of the data of the game (WAD, ini, DATA, logs): the folder the program works
+// in. The executables are built in bin\Platform\Configuration\Game, the data stay in bin\Game; -data <folder> asks
+// for another one. Without it the program works in the folder of its executable, as it always did
+//
+//==============================================================================
+procedure M_ConfigureDataFolder(const ALocator: IDataFolderLocator);
+
+//==============================================================================
+//
 // M_SaveFileName
 //
 //==============================================================================
@@ -106,6 +117,7 @@ const
 implementation
 
 uses
+  SysUtils,
   d_delphi,
   i_system;
 
@@ -115,6 +127,8 @@ var
   // answers the questions and remembers what was asked; M_InitArgv attaches the command line to it
   argv_queried: IQueriedCommandLine = nil;
   argv_savenames: ISaveFileNames = nil;
+  // finds the folder of the data (M_ConfigureDataFolder); nil: the folder of the executable
+  argv_datafolder: IDataFolderLocator = nil;
   // what M_InitArgv built: myargv/myargc are a copy of it for the code that reads them
   commandline: ICommandLine = nil;
 
@@ -158,6 +172,51 @@ end;
 
 //==============================================================================
 //
+// M_ConfigureDataFolder
+//
+//==============================================================================
+procedure M_ConfigureDataFolder(const ALocator: IDataFolderLocator);
+begin
+  argv_datafolder := ALocator;
+end;
+
+//==============================================================================
+//
+// M_EnterDataFolder
+// Changes the current folder to the one of the data. It happens before the default file of the arguments is read:
+// that file, the ini file, DATA and the WADs are all looked for in the current folder
+//
+//==============================================================================
+procedure M_EnterDataFolder;
+var
+  i: integer;
+  requested: string;
+begin
+  if argv_datafolder = nil then
+  begin
+    ChDir(fpath(ParamStr(0)));
+    exit;
+  end;
+
+  // the option is read from the process: the arguments are not built yet (the default file comes after the folder)
+  requested := '';
+  for i := 1 to ParamCount - 1 do
+    if SameText(ParamStr(i), '-data') then
+    begin
+      requested := ParamStr(i + 1);
+      break;
+    end;
+
+  try
+    ChDir(argv_datafolder.Locate(fpath(ParamStr(0)), requested));
+  except
+    on E: Exception do
+      I_Error('M_InitArgv(): %s', [E.Message]);
+  end;
+end;
+
+//==============================================================================
+//
 // M_InitArgv
 //
 //==============================================================================
@@ -168,6 +227,8 @@ var
 begin
   if (argv_startup = nil) or (argv_queried = nil) then
     I_Error('M_InitArgv(): the command line was not configured (M_ConfigureArgv)');
+
+  M_EnterDataFolder;
 
   // the process, then the default file of the program (TCommandLineStartup)
   commandline := argv_startup.Collect;
@@ -184,8 +245,6 @@ begin
   for i := 1 to myargc - 1 do
     cmdln := cmdln + ' ' + myargv[i];
   printf('%s'#13#10, [cmdln]);
-
-  ChDir(fpath(myargv[0]));
 end;
 
 //==============================================================================

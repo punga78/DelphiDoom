@@ -122,7 +122,7 @@ end;
 
 function TTestXcomLbmReader.DataFile(const AName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Xcom\' + AName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Xcom\' + AName);
 end;
 
 function TTestXcomLbmReader.Describe(const AReader: IXcomLbmReader; const ABytes: TBytes): string;

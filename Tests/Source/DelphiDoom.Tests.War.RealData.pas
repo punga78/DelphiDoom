@@ -71,7 +71,7 @@ end;
 
 class function TWarRealData.GoldenPath(const AName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\War\' + AName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\War\' + AName);
 end;
 
 class function TWarRealData.RequireDataWar: string;

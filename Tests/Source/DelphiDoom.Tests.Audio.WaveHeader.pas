@@ -305,7 +305,7 @@ end;
 
 function TTestWaveHeaderGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Audio\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Audio\');
 end;
 
 procedure TTestWaveHeaderGolden.Emit(const ALine: string);

@@ -58,7 +58,7 @@ uses
 function TTestTextureDefsParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\TextureDefs\' + AFileName));
+    '..\..\..\..\Tests\Data\TextureDefs\' + AFileName));
 end;
 
 class procedure TTestTextureDefsParity.SplitSections(ALines: TStrings; ASections: TDictionary<string, string>);
@@ -254,7 +254,7 @@ var
   LExpected: string;
   LWadName: string;
 begin
-  LWadFile := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\' + AWadPath));
+  LWadFile := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\' + AWadPath));
   if not TFile.Exists(LWadFile) then
   begin
     Assert.Pass('WAD mancante: prova saltata');

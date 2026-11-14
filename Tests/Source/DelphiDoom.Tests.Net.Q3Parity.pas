@@ -149,7 +149,7 @@ begin
   FSections := TDictionary<string, TStringList>.Create;
   LCurrent := '';
   for LLine in TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Net\q3net-golden.txt'))) do
+    '..\..\..\..\Tests\Data\Net\q3net-golden.txt'))) do
   begin
     LSection := SectionOfLine(LLine, LCurrent);
     LCurrent := LSection;

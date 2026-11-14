@@ -57,7 +57,12 @@ const
   SCRIPT_GLOBAL_TEXT = 3;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDScript64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDSCRIPT_LIBRARY_NAME = 'DDScript64.dll';
+{$ELSE}
   DDSCRIPT_LIBRARY_NAME = 'DDScript.dll';
+{$ENDIF}
   DDSCRIPT_CREATE_EXPORT = 'DDScriptCreate';
 
 type

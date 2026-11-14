@@ -431,7 +431,7 @@ end;
 
 function TTestEfxGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Audio\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Audio\');
 end;
 
 procedure TTestEfxGolden.Emit(const ALine: string);

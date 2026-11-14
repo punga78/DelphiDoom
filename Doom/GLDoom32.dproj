@@ -16,8 +16,8 @@
         <DCC_IncludePath>..\Doom;..\Base;..\Common;..\Libs\PascalScript;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ResourcePath>..\Doom;..\Base;$(DCC_ResourcePath)</DCC_ResourcePath>
         <DCC_ObjPath>..\Doom;..\Base;$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_ExeOutput>..\bin\Doom</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Doom\GL\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Doom</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Doom\GL</DCC_DcuOutput>
         <DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;Vcl;Vcl.Imaging;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
@@ -38,8 +38,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!='' And '$(Platform)'=='Win64'">
         <DCC_Platform>x64</DCC_Platform>
-        <DCC_ExeOutput>..\bin\Win64\Doom</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Win64\Doom\GL\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

@@ -101,7 +101,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Models\i3d.synthetic.golden.txt')));
+      '..\..\..\..\Tests\Data\Models\i3d.synthetic.golden.txt')));
     Result := LLines.ToStringArray;
   finally
     LLines.Free;

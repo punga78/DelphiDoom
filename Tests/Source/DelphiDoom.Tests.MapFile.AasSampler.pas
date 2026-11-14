@@ -81,7 +81,7 @@ var
 
 function TTestAasSampler.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestAasSampler.LoadFile(const AName: string): TAasFile;

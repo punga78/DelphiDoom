@@ -95,7 +95,7 @@ const
 class function TTestPaletteParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Palette\' + AFileName));
+    '..\..\..\..\Tests\Data\Palette\' + AFileName));
 end;
 
 class function TTestPaletteParity.Load(const AFileName: string): TDictionary<string, string>;

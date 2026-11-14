@@ -46,7 +46,12 @@ const
   GLBSP_DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDGlbsp64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDGLBSP_LIBRARY_NAME = 'DDGlbsp64.dll';
+{$ELSE}
   DDGLBSP_LIBRARY_NAME = 'DDGlbsp.dll';
+{$ENDIF}
   DDGLBSP_CREATE_EXPORT = 'DDGlbspCreate';
 
 type

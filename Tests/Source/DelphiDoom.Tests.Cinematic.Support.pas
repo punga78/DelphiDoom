@@ -219,7 +219,7 @@ end;
 
 class function TRoqTestData.Path(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Cinematic\' +
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Cinematic\' +
     AFileName);
 end;
 
@@ -231,7 +231,7 @@ end;
 class function TRoqTestData.ReadJpeg(const AFileName: string): TBytes;
 begin
   Result := TFile.ReadAllBytes(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) +
-    '..\..\Tests\Data\Jpeg\' + AFileName));
+    '..\..\..\..\Tests\Data\Jpeg\' + AFileName));
 end;
 
 class function TRoqTestData.ReadLines(const AFileName: string): TStringList;

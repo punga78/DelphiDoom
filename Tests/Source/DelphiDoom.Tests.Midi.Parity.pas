@@ -57,13 +57,13 @@ implementation
 function TTestMidiParity.GoldenPath: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Midi\stream.golden.txt'));
+    '..\..\..\..\Tests\Data\Midi\stream.golden.txt'));
 end;
 
 function TTestMidiParity.BinPath(const AGame, AFile: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\bin\' + AGame + '\' + AFile));
+    '..\..\..\..\bin\' + AGame + '\' + AFile));
 end;
 
 procedure TTestMidiParity.Setup;

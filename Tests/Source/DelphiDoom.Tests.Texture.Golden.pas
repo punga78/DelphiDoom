@@ -43,7 +43,7 @@ implementation
 class function TTextureGolden.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Texture\'));
+    '..\..\..\..\Tests\Data\Texture\'));
 end;
 
 class function TTextureGolden.Load(const AFile: string): TStringList;

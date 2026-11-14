@@ -12,8 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_UnitSearchPath>..\Libs\Keen;..\Libs\GameHost;..\Libs\Opl;..\Libs\Clock;..\Libs\Logging;..\Libs\Input;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_ExeOutput>..\bin\Keen</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Keen\Keen32\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Keen</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Keen\Keen32</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
@@ -29,8 +29,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!='' And '$(Platform)'=='Win64'">
         <DCC_Platform>x64</DCC_Platform>
-        <DCC_ExeOutput>..\bin\Win64\Keen</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Win64\Keen\Keen32\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

@@ -89,7 +89,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\GameData\patch.golden.txt')));
+      '..\..\..\..\Tests\Data\GameData\patch.golden.txt')));
     for LIndex := 0 to LLines.Count - 1 do
     begin
       LParts := LLines[LIndex].Split([' ']);

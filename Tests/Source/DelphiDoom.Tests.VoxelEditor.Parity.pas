@@ -128,7 +128,7 @@ end;
 
 class function TTestVoxelEditorParity.FileNameOfGolden: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\VoxelEditor\voxel.golden.txt');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\VoxelEditor\voxel.golden.txt');
 end;
 
 procedure TTestVoxelEditorParity.Setup;

@@ -62,7 +62,7 @@ const
 function TTestIwadParity.DataPath: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Iwad\iwad_golden.txt'));
+    '..\..\..\..\Tests\Data\Iwad\iwad_golden.txt'));
 end;
 
 function TTestIwadParity.Expand(const AText: string): string;

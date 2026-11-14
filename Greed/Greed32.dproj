@@ -12,8 +12,8 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_UnitSearchPath>..\Libs\AudioMix;..\Libs\Greed;..\Libs\GameHost;..\Libs\Audio;..\Libs\Mikmod;..\Libs\Clock;..\Libs\Logging;..\Libs\MathCore;..\Libs\Video;..\Libs\CommandLine;..\Libs\Png;..\Libs\Zlib;..\Libs\Platform;.\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_ExeOutput>..\bin\Greed</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Greed\Greed32\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Greed</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Greed\Greed32</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
@@ -29,8 +29,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!='' And '$(Platform)'=='Win64'">
         <DCC_Platform>x64</DCC_Platform>
-        <DCC_ExeOutput>..\bin\Win64\Greed</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Win64\Greed\Greed32\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug'">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>

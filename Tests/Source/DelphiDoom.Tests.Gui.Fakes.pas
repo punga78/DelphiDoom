@@ -181,7 +181,7 @@ end;
 
 function GuiDataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Gui\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Gui\');
 end;
 
 { TGuiFakeFileSystem }

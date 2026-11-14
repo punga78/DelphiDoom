@@ -84,7 +84,7 @@ begin
   FGolden := TDictionary<string, string>.Create;
   LLines := TStringList.Create;
   try
-    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Xcom\xcom_golden.txt'));
+    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Xcom\xcom_golden.txt'));
     for LLine in LLines do
     begin
       LFirst := Pos(' ', LLine);

@@ -96,7 +96,7 @@ const
 
 procedure TTestWadPk3.Setup;
 begin
-  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Pk3'));
+  FDataDir := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Pk3'));
   FPk3 := TWadFactory.OpenPath(TPath.Combine(FDataDir, 'zpktest.pk3'));
   FHires := TWadFactory.OpenPath(TPath.Combine(FDataDir, 'zpkhires.wad'));
 end;

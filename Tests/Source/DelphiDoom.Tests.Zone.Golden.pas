@@ -103,7 +103,7 @@ end;
 procedure TTestZoneGolden.Setup;
 begin
   FDataFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Zone'));
+    '..\..\..\..\Tests\Data\Zone'));
 end;
 
 procedure TTestZoneGolden.DovrebbeDareLeStesseImpronteDelVecchioCodice;

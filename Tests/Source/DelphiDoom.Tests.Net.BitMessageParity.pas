@@ -127,7 +127,7 @@ begin
   FLines := TStringList.Create;
   LList := nil;
   for LLine in TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Net\bitmsg-golden.txt'))) do
+    '..\..\..\..\Tests\Data\Net\bitmsg-golden.txt'))) do
   begin
     if (LLine <> '') and (LLine[1] = '[') then
     begin

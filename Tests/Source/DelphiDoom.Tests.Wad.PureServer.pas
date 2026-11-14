@@ -114,7 +114,7 @@ uses
 
 function GoldenPath: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Wad\GameFs\pureparity.expected.txt');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Wad\GameFs\pureparity.expected.txt');
 end;
 
 { TTestGamePackStatus }

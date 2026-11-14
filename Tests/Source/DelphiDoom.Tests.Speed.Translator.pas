@@ -167,7 +167,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Speed\' + AFileName)));
+      '..\..\..\..\Tests\Data\Speed\' + AFileName)));
     Result := LLines.ToStringArray;
   finally
     LLines.Free;
@@ -180,7 +180,7 @@ var
   LCandidates: TArray<string>;
   LCandidate: string;
 begin
-  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..'));
+  LRoot := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..'));
   LCandidates := [TPath.Combine(LRoot, 'bin\Speed\SPEEDH.JCL'), TPath.Combine(LRoot, 'Reference\_dati\speed\SPEEDH.JCL'),
     // the worktrees of the repository are under .claude\worktrees\<name>
     TPath.GetFullPath(TPath.Combine(LRoot, '..\..\..\Reference\_dati\speed\SPEEDH.JCL'))];

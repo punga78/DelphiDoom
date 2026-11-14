@@ -71,7 +71,7 @@ const
 
 function TTestQ3Parity.DataPath(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Collision\' + AFileName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Collision\' + AFileName);
 end;
 
 function TTestQ3Parity.Hex(const AToken: string): Cardinal;

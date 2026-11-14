@@ -43,7 +43,12 @@ const
   WADDLL_KIND_DWAD = 2;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDWad64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDWAD_LIBRARY_NAME = 'DDWad64.dll';
+{$ELSE}
   DDWAD_LIBRARY_NAME = 'DDWad.dll';
+{$ENDIF}
   DDWAD_CREATE_EXPORT = 'DDWadCreate';
 
 type

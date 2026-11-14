@@ -91,7 +91,7 @@ procedure TTestXmiReference.Setup;
 begin
   FGolden := TStringList.Create;
   FGolden.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Xmi\reference.golden.txt')));
+    '..\..\..\..\Tests\Data\Xmi\reference.golden.txt')));
 end;
 
 procedure TTestXmiReference.TearDown;

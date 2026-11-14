@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDZlib;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 uses
   DelphiDoom.Zlib.Intf in 'DelphiDoom.Zlib.Intf.pas',
   DelphiDoom.Zlib.Inflater in 'DelphiDoom.Zlib.Inflater.pas',

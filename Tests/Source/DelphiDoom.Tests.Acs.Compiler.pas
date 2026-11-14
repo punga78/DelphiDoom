@@ -184,7 +184,7 @@ end;
 function TTestAcsCompiler.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Acs\' + AFileName));
+    '..\..\..\..\Tests\Data\Acs\' + AFileName));
 end;
 
 function TTestAcsCompiler.ReadBytes(const AFileName: string): TBytes;

@@ -164,7 +164,7 @@ var
   LIndex: Integer;
 begin
   LFile := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\ScriptHost\Doom.registration.golden.txt'));
+    '..\..\..\..\Tests\Data\ScriptHost\Doom.registration.golden.txt'));
   SetLength(Result, 0);
   if not TFile.Exists(LFile) then
     Exit;

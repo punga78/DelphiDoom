@@ -82,7 +82,7 @@ end;
 class function TMatrixLines.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\MathCore\' + AFileName));
+    '..\..\..\..\Tests\Data\MathCore\' + AFileName));
 end;
 
 class function TMatrixLines.Bits(const AToken: string): Single;

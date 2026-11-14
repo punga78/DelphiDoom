@@ -565,7 +565,7 @@ begin
   // and kept as files, so that the answer does not depend on how the encoder
   // rounds
   LFiles := TDirectory.GetFiles(TPath.GetFullPath(TPath.Combine(
-    TPath.GetDirectoryName(ParamStr(0)), '..\..\Tests\Data\Jpeg')), '*.jpg');
+    TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Jpeg')), '*.jpg');
   TArray.Sort<string>(LFiles);
   LIndex := 0;
   for LFile in LFiles do

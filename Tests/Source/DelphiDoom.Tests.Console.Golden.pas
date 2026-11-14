@@ -66,7 +66,7 @@ uses
 procedure TTestConsoleGolden.Setup;
 begin
   FDataFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Console'));
+    '..\..\..\..\Tests\Data\Console'));
   BuildConsole;
 end;
 

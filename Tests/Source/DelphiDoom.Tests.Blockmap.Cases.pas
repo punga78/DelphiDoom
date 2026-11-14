@@ -49,7 +49,7 @@ implementation
 class function TBlockmapCase.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Blockmap\'));
+    '..\..\..\..\Tests\Data\Blockmap\'));
 end;
 
 class function TBlockmapCase.FileNames: TArray<string>;

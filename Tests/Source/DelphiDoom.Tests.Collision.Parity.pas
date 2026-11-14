@@ -70,7 +70,7 @@ end;
 
 function TTestCollisionParity.DataPath(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Collision\' + AFileName);
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Collision\' + AFileName);
 end;
 
 procedure TTestCollisionParity.TestTranslationsContentsAndContactsMatchTheCppCode;

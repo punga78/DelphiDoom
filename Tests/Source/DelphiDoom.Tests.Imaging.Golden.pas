@@ -33,7 +33,7 @@ implementation
 class function TImagingGolden.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Imaging\'));
+    '..\..\..\..\Tests\Data\Imaging\'));
 end;
 
 class function TImagingGolden.Load(const AFile: string): TStringList;

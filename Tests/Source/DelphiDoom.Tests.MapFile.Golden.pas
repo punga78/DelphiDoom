@@ -48,7 +48,7 @@ const
 
 function TTestMapFileGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestMapFileGolden.LoadText(const AName: string): AnsiString;

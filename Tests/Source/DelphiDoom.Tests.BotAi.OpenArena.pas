@@ -51,7 +51,7 @@ begin
   Result := GetEnvironmentVariable('DELPHIDOOM_OPENARENA');
   if (Result <> '') and TFile.Exists(Result) then
     Exit;
-  LRelative := '..\..\Reference\openarena\openarena-0.8.8\baseoa\pak6-misc.pk3';
+  LRelative := '..\..\..\..\Reference\openarena\openarena-0.8.8\baseoa\pak6-misc.pk3';
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), LRelative));
   if not TFile.Exists(Result) then
     raise ETestIgnored.Create('pak6-misc.pk3 di OpenArena non c''e'' (DELPHIDOOM_OPENARENA o Reference\openarena): prova ignorata');

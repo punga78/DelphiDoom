@@ -56,7 +56,7 @@ uses
 class function TIdImagesGolden.DataDir: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\IdImages\'));
+    '..\..\..\..\Tests\Data\IdImages\'));
 end;
 
 class function TIdImagesGolden.Generate(const AWidth, AHeight: Integer; const ASeed: Cardinal;

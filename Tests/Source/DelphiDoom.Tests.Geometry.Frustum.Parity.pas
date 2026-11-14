@@ -643,7 +643,7 @@ begin
   FOldMask := SetExceptionMask(exAllArithmeticExceptions);
   FLines := TStringList.Create;
   FLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Geometry\frustum.golden.txt')));
+    '..\..\..\..\Tests\Data\Geometry\frustum.golden.txt')));
 end;
 
 procedure TTestGeometryFrustumParity.TearDown;

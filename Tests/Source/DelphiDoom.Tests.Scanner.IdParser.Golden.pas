@@ -462,7 +462,7 @@ end;
 
 function TTestIdParserGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\IdParser\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\IdParser\');
 end;
 
 function ActualLine(const ALines: TStrings; const AIndex: Integer): string;

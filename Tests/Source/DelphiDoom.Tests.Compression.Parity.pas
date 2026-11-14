@@ -296,7 +296,7 @@ var
 begin
   FGolden := TDictionary<string, TArray<string>>.Create;
   for LLine in TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Compression\golden.txt'))) do
+    '..\..\..\..\Tests\Data\Compression\golden.txt'))) do
   begin
     LParts := LLine.Split(['|']);
     if (Length(LParts) = 8) and (LParts[0] = 'C') then

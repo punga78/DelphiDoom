@@ -42,7 +42,12 @@ const
   MP3_SAMPLES_PER_FRAME = 1152;
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDMp364.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDMP3_LIBRARY_NAME = 'DDMp364.dll';
+{$ELSE}
   DDMP3_LIBRARY_NAME = 'DDMp3.dll';
+{$ENDIF}
   DDMP3_CREATE_EXPORT = 'DDMp3Create';
 
   DDMP3_VERSION_TEXT: PAnsiChar = 'DDMp3 1.0 (MPEG-1/2 layer III)';

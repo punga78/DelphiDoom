@@ -133,7 +133,7 @@ end;
 
 function TTestBspGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\MapFile\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\MapFile\');
 end;
 
 function TTestBspGolden.Expected(const AVariant: Integer): TStringList;

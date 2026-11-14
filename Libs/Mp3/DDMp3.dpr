@@ -8,6 +8,11 @@
 {******************************************************************************}
 library DDMp3;
 
+// the 64-bit library is DD<Name>64.dll, so that it never overwrites or gets confused with the 32-bit one
+{$IFDEF CPUX64}
+{$LIBSUFFIX '64'}
+{$ENDIF}
+
 // d_delphi and i_system are the stand-ins of Libs\Mp3\Shim, not the units of
 // the engine. The player units of the old player of the engine (mp3_MPEGPlayer, mp3_Player,
 // mp3_Args, mp3_OBuffer_MCI, mp3_OBuffer_Wave) and the layer I and II units

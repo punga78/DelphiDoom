@@ -109,7 +109,7 @@ end;
 function TTestGlbspWadBuilder.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\' + AFileName));
+    '..\..\..\..\Tests\Data\' + AFileName));
 end;
 
 function TTestGlbspWadBuilder.ReadAllBytes(const AFileName: string): TBytes;

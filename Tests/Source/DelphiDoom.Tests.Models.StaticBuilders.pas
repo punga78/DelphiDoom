@@ -119,7 +119,7 @@ end;
 function StaticDataFile(const AName: string): TBytes;
 begin
   Result := TFile.ReadAllBytes(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Models\static\' + AName)));
+    '..\..\..\..\Tests\Data\Models\static\' + AName)));
 end;
 
 function TArrayEquals(const ALeft, ARight: TBytes): Boolean;

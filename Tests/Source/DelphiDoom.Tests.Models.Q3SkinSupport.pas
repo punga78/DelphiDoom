@@ -69,7 +69,7 @@ uses
 function Q3SkinDataPath(const AName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Models\q3player\skins'));
+    '..\..\..\..\Tests\Data\Models\q3player\skins'));
   if AName <> '' then
     Result := TPath.Combine(Result, AName);
 end;

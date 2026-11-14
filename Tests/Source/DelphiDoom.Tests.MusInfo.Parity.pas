@@ -41,7 +41,7 @@ uses
 function TTestMusInfoParity.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\MusInfo\' + AFileName));
+    '..\..\..\..\Tests\Data\MusInfo\' + AFileName));
 end;
 
 class procedure TTestMusInfoParity.SplitCases(ALines: TStringList;

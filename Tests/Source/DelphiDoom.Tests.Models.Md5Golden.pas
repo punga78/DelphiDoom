@@ -83,7 +83,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\Models\md5\cube.golden.txt')));
+      '..\..\..\..\Tests\Data\Models\md5\cube.golden.txt')));
     for LLine in LLines do
     begin
       LPos := Pos(' |', LLine);
@@ -151,7 +151,7 @@ var
   LBytes: TBytes;
 begin
   LBytes := TFile.ReadAllBytes(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Models\md5\' + AFileName)));
+    '..\..\..\..\Tests\Data\Models\md5\' + AFileName)));
   SetString(Result, PAnsiChar(@LBytes[0]), Length(LBytes));
 end;
 

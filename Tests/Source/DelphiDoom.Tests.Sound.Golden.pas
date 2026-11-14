@@ -58,7 +58,7 @@ end;
 class function TSoundGolden.FilePath: string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\sound_golden.txt'));
+    '..\..\..\..\Tests\Data\sound_golden.txt'));
 end;
 
 function TSoundGolden.Get(const AKey: string): UInt64;

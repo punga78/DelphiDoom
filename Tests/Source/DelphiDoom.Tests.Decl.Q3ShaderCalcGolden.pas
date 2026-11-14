@@ -40,7 +40,7 @@ uses
 
 function TTestQ3ShaderCalcGolden.DataFolder: string;
 begin
-  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Decl\');
+  Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Decl\');
 end;
 
 procedure TTestQ3ShaderCalcGolden.Compare(const AGolden, AActual: TStringList; const AName: string);

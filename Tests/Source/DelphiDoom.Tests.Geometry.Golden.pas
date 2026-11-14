@@ -259,7 +259,7 @@ end;
 class function TGeoGolden.DataPath(const AFileName: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Geometry\' + AFileName));
+    '..\..\..\..\Tests\Data\Geometry\' + AFileName));
 end;
 
 class function TGeoGolden.Load(const AFileName: string; const ANames: array of string): TStringList;

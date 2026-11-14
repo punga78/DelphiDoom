@@ -378,7 +378,7 @@ begin
   LLines := TStringList.Create;
   try
     LLines.LoadFromFile(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-      '..\..\Tests\Data\MathCore\patch.golden.txt')));
+      '..\..\..\..\Tests\Data\MathCore\patch.golden.txt')));
     LName := '';
     LBlock := '';
     for LLine in LLines do

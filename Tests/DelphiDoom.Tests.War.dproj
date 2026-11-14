@@ -15,8 +15,8 @@
         <DCC_UnitSearchPath>..\Libs\AudioMix;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\War;..\Libs\MathCore;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_ExeOutput>..\bin\Tests</DCC_ExeOutput>
-        <DCC_DcuOutput>..\dcu\Tests\War\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>
+        <DCC_DcuOutput>..\dcu\$(Platform)\$(Config)\Tests\War</DCC_DcuOutput>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>

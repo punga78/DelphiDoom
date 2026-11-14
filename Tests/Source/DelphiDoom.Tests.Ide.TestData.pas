@@ -37,7 +37,7 @@ uses
 class function TIdeTestData.Path(const ARelativePath: string): string;
 begin
   Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Ide\' + ARelativePath));
+    '..\..\..\..\Tests\Data\Ide\' + ARelativePath));
 end;
 
 class function TIdeTestData.Exists(const ARelativePath: string): Boolean;

@@ -42,7 +42,12 @@ const
   ZLIB_API_VERSION: PAnsiChar = '1.2.8';
 
   // Name of the DLL and of its only export
+  // the 64-bit library has the suffix 64 (DDZlib64.dll): the two never share a name
+{$IFDEF CPUX64}
+  DDZLIB_LIBRARY_NAME = 'DDZlib64.dll';
+{$ELSE}
   DDZLIB_LIBRARY_NAME = 'DDZlib.dll';
+{$ENDIF}
   DDZLIB_CREATE_EXPORT = 'DDZlibCreate';
 
 type

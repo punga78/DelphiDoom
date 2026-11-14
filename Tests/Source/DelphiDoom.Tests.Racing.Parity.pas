@@ -63,7 +63,7 @@ begin
   FGolden := TStringList.Create;
   FActual := TStringList.Create;
   LPath := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\Tests\Data\Racing\racing.golden.txt'));
+    '..\..\..\..\Tests\Data\Racing\racing.golden.txt'));
   FGolden.LoadFromFile(LPath);
   TRacingScenarios.Run(TRacingLibraryTarget.Create, FActual);
 end;

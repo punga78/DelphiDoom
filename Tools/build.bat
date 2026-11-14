@@ -14,10 +14,10 @@ rem    build.bat                    Doom32, Release
 rem    build.bat all                tutti i progetti
 rem    build.bat giochi             i 8 eseguibili di gioco (software + OpenGL)
 rem    build.bat strumenti          Launcher, DD_IDE, DD_Tools, ddc e le 4 DLL ddc_*
-rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod, DDGlbsp, DDPng, DDScript, DDWad -> bin\Libs)
-rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\Tests); li esegue
+rem    build.bat librerie           le DLL delle librerie (DDZlib, DDJpeg, DDMp3, DDXmi, DDSndfile, DDMikmod, DDGlbsp, DDPng, DDScript, DDWad -> bin\<Piattaforma>\<Configurazione>\Libs)
+rem    build.bat tests              librerie + un progetto di test DUnitX per libreria (bin\<Piattaforma>\<Configurazione>\Tests); li esegue
 rem    build.bat Heretic32 Debug    un solo progetto, configurazione Debug
-rem    build.bat all Release clean  cancella tutta la cartella dcu prima di compilare
+rem    build.bat all Release clean  cancella prima i dcu di quella piattaforma e configurazione (dcu\<Piattaforma>\<Configurazione>)
 rem    build.bat all Release Win64  tutti i progetti a 64 bit (dcc64); i progetti che non
 rem                                 compilano ancora a 64 bit (#41, #42, #43) sono elencati a parte
 rem    build.bat tests Release Win64  librerie e test a 64 bit, li esegue (DLL e exe della stessa bitness)
@@ -25,14 +25,16 @@ rem    build.bat all Release both   Win32 e poi Win64, riepilogo per piattaforma
 rem  La piattaforma e il clean si possono dare in qualsiasi ordine dopo la configurazione;
 rem  predefinita Win32 (comportamento di sempre).
 rem
-rem  Cartelle (tutte dentro il progetto):
-rem    bin\Doom, bin\Heretic, bin\Hexen, bin\Strife   eseguibili dei giochi
-rem    bin\Tools                                      DD_IDE, ddc, ddc_*.dll
-rem    bin                                            Launcher
-rem    dcu\...\<Release|Debug>                        file .dcu
-rem    logs\<progetto>.log                            log completo di ogni build
-rem  Win64: bin\Win64\... (stesse sottocartelle, DLL in bin\Win64\Libs), dcu\Win64\...,
-rem         logs\Win64\<progetto>.log. Win32 resta dov'e' sempre.
+rem  Cartelle (tutte dentro il progetto; ogni combinazione piattaforma x configurazione ha le sue, issue #230):
+rem    bin\<Piattaforma>\<Configurazione>\Doom|Heretic|Hexen|Strife   eseguibili dei giochi (es. bin\Win32\Release\Doom\Doom32.exe)
+rem    bin\<Piattaforma>\<Configurazione>\Tools                       DD_IDE, ddc, ddc_*.dll
+rem    bin\<Piattaforma>\<Configurazione>\Libs                        DDZlib.dll (Win32) e DDZlib64.dll (Win64), ...
+rem    bin\<Piattaforma>\<Configurazione>\Tests                       i progetti di test
+rem    bin\<Piattaforma>\<Configurazione>                             Launcher
+rem    dcu\<Piattaforma>\<Configurazione>\<progetto>                  file .dcu
+rem    logs\<progetto>.log (Win32), logs\Win64\<progetto>.log         log completo di ogni build
+rem  I DATI dei giochi (WAD, *.swd, .ini, DATA, salvataggi, log di gioco) restano in bin\<Gioco> (non si copiano):
+rem  il gioco avviato da bin\<Piattaforma>\<Configurazione>\<Gioco> li cerca li' da solo (o con -data <cartella>).
 rem  Codice di uscita: errori di Win32 -> 1; i progetti che non compilano a 64 bit non lo alzano.
 rem
 rem  Variabile opzionale:
@@ -109,12 +111,9 @@ rem possono restituire dimensioni vecchie e far vedere i sorgenti troncati)
 echo Aggiornamento elenco file...
 dir /s /a-d *.pas *.inc *.dpr *.dproj *.dfm *.res >nul 2>&1
 if /i "%CLEAN%"=="clean" (
-  if "%PLATS%"=="Win64" (
-    echo Pulizia cartella dcu\Win64...
-    if exist dcu\Win64 rd /s /q dcu\Win64
-  ) else (
-    echo Pulizia cartella dcu...
-    if exist dcu rd /s /q dcu
+  for %%Q in (%PLATS%) do (
+    echo Pulizia cartella dcu\%%Q\%CONFIG%...
+    if exist "dcu\%%Q\%CONFIG%" rd /s /q "dcu\%%Q\%CONFIG%"
   )
 )
 
@@ -124,11 +123,10 @@ for %%Q in (%PLATS%) do (
   set "PLAT=%%Q"
   set "OK="
   set "KO="
+  set "PBIN=bin\%%Q\%CONFIG%"
   if /i "%%Q"=="Win64" (
-    set "PBIN=bin\Win64"
     set "PLOG=logs\Win64"
   ) else (
-    set "PBIN=bin"
     set "PLOG=logs"
   )
   if not exist "!PLOG!" mkdir "!PLOG!"
@@ -165,10 +163,8 @@ for %%Q in (%PLATS%) do (
   )
 
   if /i "%WHAT%"=="tests" (
-    rem I test cercano i dati con ..\..\Tests\Data a partire dalla cartella dell'exe: a 64 bit l'exe sta
-    rem in bin\Win64\Tests e quel percorso diventa bin\Tests\Data, quindi si copia Tests\Data li' (solo i
-    rem file mancanti o piu' vecchi; nessuna giunzione ne' link simbolico). bin e' ignorata da git.
-    if /i "%%Q"=="Win64" robocopy "Tests\Data" "bin\Tests\Data" /E /NJH /NJS /NP /NFL /NDL >nul
+    rem I test cercano Tests\Data risalendo dalla cartella dell'exe (bin\<Piattaforma>\<Configurazione>\Tests):
+    rem non serve copiare nulla.
     for %%T in (!PBIN!\Tests\DelphiDoom.Tests*.exe) do (
       echo ===== esecuzione %%~nxT ^(%%Q^) =====
       "%%T" --exitbehavior:Continue | findstr /B /C:"Tests " /C:"  DelphiDoom" /C:"  Message"

@@ -69,7 +69,7 @@ begin
   FillGoldenTable(FSerializer);
   FLines := TStringList.Create;
   FLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) +
-    '..\..\Tests\Data\Serializer\serializer.golden.txt'));
+    '..\..\..\..\Tests\Data\Serializer\serializer.golden.txt'));
 end;
 
 procedure TTestSerializerGolden.TearDown;

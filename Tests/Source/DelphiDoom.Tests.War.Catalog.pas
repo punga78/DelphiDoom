@@ -199,7 +199,7 @@ begin
   // il golden e' la tabella assets[] di war_database.h stampata dal C del remake compilato (war_ref.exe)
   LLines := TStringList.Create;
   try
-    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\War\catalog.golden.txt'));
+    LLines.LoadFromFile(TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\War\catalog.golden.txt'));
     LCatalog := TWarFactory.CreateCatalog;
     Assert.AreEqual(LLines.Count, LCatalog.Count);
     for LPosition := 0 to LLines.Count - 1 do

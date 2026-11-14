@@ -222,7 +222,7 @@ end;
 
 class function TFlicTestData.Path(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\Tests\Data\Cinematic\' +
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\Cinematic\' +
     AFileName);
 end;
 
