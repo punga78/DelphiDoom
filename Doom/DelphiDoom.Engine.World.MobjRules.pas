@@ -110,8 +110,24 @@ type
     class procedure ResetBreath(p: Pplayer_t); static;
     /// <summary>P_SpawnPlayer: what the game does when the player is ready (the keys of deathmatch, the interface)</summary>
     class procedure FinishPlayerSpawn(p: Pplayer_t; plnum: integer); static;
-    /// <summary>P_SpawnMapThing of the game</summary>
+    /// <summary>P_SpawnMapThing of the game (the skeleton is TMobjMapThingSpawner)</summary>
     class function SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; static;
+    /// <summary>P_SpawnMapThing: what the game does to the options of the thing first</summary>
+    class procedure MapThingPrologue(mthing: Pmapthing_t); static;
+    /// <summary>P_SpawnMapThing: a type of thing the game ignores (players that are not played, type 0); true when the thing is ignored</summary>
+    class function IgnoresMapThing(mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: player starts (and what is placed on the map like them); true when the thing is done, with the thing spawned in spawned</summary>
+    class function SpawnStartSpot(mthing: Pmapthing_t; uthing: Pextrathing_t; var spawned: Pmobj_t): boolean; static;
+    /// <summary>P_SpawnMapThing: options of the thing that exclude it from this kind of net game; true when it is excluded</summary>
+    class function ExcludedByNetOptions(mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: a monster that -nomonsters removes</summary>
+    class function SkipsMonster(const i: integer): boolean; static; inline;
+    /// <summary>P_SpawnMapThing: a thing that the game does not place on the map as a mobj (spots of its own); true when it is not spawned</summary>
+    class function KeepsMapThingOff(const i: integer; mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: the flags of the new thing that come from the options of the map thing, after the ambush flag</summary>
+    class procedure MapThingFlags(mo: Pmobj_t; mthing: Pmapthing_t); static;
+    /// <summary>P_SpawnMapThing: counts the new thing as an item of the level (Strife has no item count)</summary>
+    class procedure CountItem(mo: Pmobj_t); static; inline;
     /// <summary>P_SpawnPuff of the game</summary>
     class procedure SpawnPuff(x, y, z: fixed_t); static;
     /// <summary>P_SpawnMissile of the game</summary>
@@ -122,10 +138,22 @@ type
     class function FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t; static;
     /// <summary>P_SpawnMissileXYZ of the game</summary>
     class function SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
-    /// <summary>P_SpawnPlayerMissile of the game</summary>
+    /// <summary>P_SpawnPlayerMissile of the game (the routine is TMobjPlayerMissileSpawner)</summary>
     class function SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t; static;
-    /// <summary>P_HitFloor of the game</summary>
+    /// <summary>P_SpawnPlayerMissile: where to aim when no target is in sight (the direction of the player, or the free look)</summary>
+    class procedure AimWithoutTarget(source: Pmobj_t; var an: angle_t; var slope: fixed_t); static;
+    /// <summary>P_SpawnPlayerMissile: what the game does once the aim is done (Strife: the target of the player)</summary>
+    class procedure AfterAim(source: Pmobj_t); static; inline;
+    /// <summary>P_SpawnPlayerMissile: the height the missile starts at, once the free look is counted (Strife: the feet of the player may be clipped)</summary>
+    class procedure AdjustMissileZ(source: Pmobj_t; var z: fixed_t); static; inline;
+    /// <summary>P_HitFloor of the game (the routine is TMobjHitFloor)</summary>
     class function HitFloor(thing: Pmobj_t): integer; static;
+    /// <summary>P_HitFloor: a demo of the old engine versions has no splashes (Strife has none to protect)</summary>
+    class function HitFloorIgnoredByVersion: boolean; static; inline;
+    /// <summary>P_HitFloor: the height of the nukage splash, where the floor is at z</summary>
+    class function NukageSplashZ(const z: fixed_t): fixed_t; static; inline;
+    /// <summary>P_HitFloor: the sound of the nukage splash</summary>
+    class function NukageSplashSound: integer; static; inline;
     /// <summary>P_XYMovement: the thing has no momentum (a monster thrown at its target stops here); true when there is nothing to move</summary>
     class function StoppedBeforeMoving(mo: Pmobj_t): boolean; static;
     /// <summary>P_XYMovement: the wind of the sector special pushes the thing; gives the special of the sector (0 where the game has no such winds)</summary>
@@ -280,7 +308,10 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.Respawner,
   DelphiDoom.Engine.World.MissileSpawner,
-  DelphiDoom.Engine.World.PlayerSpawner;
+  DelphiDoom.Engine.World.PlayerSpawner,
+  DelphiDoom.Engine.World.MapThingSpawner,
+  DelphiDoom.Engine.World.HitFloor,
+  DelphiDoom.Engine.World.PlayerMissileSpawner;
 
 //
 // P_XYMovement
@@ -687,69 +718,27 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t;
-var
-  i: integer;
-  bit: integer;
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  ss: Psector_t; // JVAL: 3d floors
-  msec: Psector_t;  // JVAL: 3d floors
-  musinfoparam: integer;
+begin
+  result := TMobjMapThingSpawner.Spawn(mthing, uthing);
+end;
+
+class procedure TMobjGameRules.MapThingPrologue(mthing: Pmapthing_t);
 begin
   mthing.options := mthing.options and spawnmask;
+end;
 
-  // Count deathmatch start positions
-  if mthing._type = 11 then
-  begin
-    if deathmatch_p < MAX_DEATHMATCH_STARTS then
-    begin
-      memcpy(@deathmatchstarts[deathmatch_p], mthing, SizeOf(mthing^));
-      if uthing <> nil then
-        memcpy(@udeathmatchstarts[deathmatch_p], uthing, SizeOf(uthing^))
-      else
-      begin
-        ZeroMemory(@udeathmatchstarts[deathmatch_p], SizeOf(uthing^));
-        if mthing.options and 1 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL1 or UDMF_TF_SKILL2;
-        if mthing.options and 2 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL3;
-        if mthing.options and 4 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL4 or UDMF_TF_SKILL5;
-        udeathmatchstarts[deathmatch_p].x := mthing.x * FRACUNIT;
-        udeathmatchstarts[deathmatch_p].y := mthing.y * FRACUNIT;
-      end;
-      inc(deathmatch_p);
-    end;
-    result := nil;
-    exit;
-  end;
-
+class function TMobjGameRules.IgnoresMapThing(mthing: Pmapthing_t): boolean;
+begin
   // phares 5/14/98: Ignore Player 5-8 starts (for now)
-  if (mthing._type = DEN_PLAYER5) or
-     (mthing._type = DEN_PLAYER6) or
-     (mthing._type = DEN_PLAYER7) or
-     (mthing._type = DEN_PLAYER8) then
-  begin
-    result := nil;
-    exit;
-  end;
+  result := (mthing._type = DEN_PLAYER5) or
+            (mthing._type = DEN_PLAYER6) or
+            (mthing._type = DEN_PLAYER7) or
+            (mthing._type = DEN_PLAYER8);
+end;
 
-  if mthing._type = PO_ANCHOR_TYPE then
-  begin // Polyobj Anchor Pt.
-    result := nil;
-    exit;
-  end
-  else if (mthing._type = PO_SPAWN_TYPE) or
-          (mthing._type = PO_SPAWNCRUSH_TYPE) then
-  begin // Polyobj Anchor Pt.
-    inc(po_NumPolyobjs);
-    result := nil;
-    exit;
-  end;
+class function TMobjGameRules.SpawnStartSpot(mthing: Pmapthing_t; uthing: Pextrathing_t; var spawned: Pmobj_t): boolean;
+begin
+  result := False;
 
   // check for players specially
   if mthing._type <= 4 then
@@ -762,7 +751,8 @@ begin
       mthing._type := mobjinfo[Ord(MT_DOGS)].doomednum;
       if mthing._type <= 0 then
       begin
-        result := nil;
+        spawned := nil;
+        result := True;
         exit;
       end;
       mthing.options := mthing.options or MTF_FRIEND;
@@ -771,224 +761,54 @@ begin
     begin
       playerstarts[mthing._type - 1] := mthing^;
       if deathmatch = 0 then
-        result := P_SpawnPlayer(mthing, uthing)
+        spawned := P_SpawnPlayer(mthing, uthing)
       else
-        result := nil;
+        spawned := nil;
+      result := True;
       exit;
     end;
-  end;
-
-  if uthing <> nil then
-  begin
-    if not netgame then
-      if uthing.extraflags and UDMF_TF_SINGLE = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
-
-    if netgame and (deathmatch <> 0) then
-      if uthing.extraflags and UDMF_TF_DM = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
-
-    if netgame and (deathmatch = 0) then
-      if uthing.extraflags and UDMF_TF_COOP = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
-  end
-  else
-  begin
-    // check for apropriate skill level
-    if not netgame and (mthing.options and 16 <> 0) then
-    begin
-      result := nil;
-      exit;
-    end;
-
-    //jff 3/30/98 implement "not deathmatch" thing flag
-    if netgame and (deathmatch <> 0) and (mthing.options and 32 <> 0) then
-    begin
-      result := nil;
-      exit;
-    end;
-
-    //jff 3/30/98 implement "not cooperative" thing flag
-    if netgame and (deathmatch = 0) and (mthing.options and 64 <> 0) then
-    begin
-      result := nil;
-      exit;
-    end;
-  end;
-
-  if uthing <> nil then
-  begin
-    bit := _SHL(1, Ord(gameskill));
-    if bit and uthing.extraflags = 0 then
-    begin
-      result := nil;
-      exit;
-    end;
-  end
-  else
-  begin
-    if gameskill = sk_baby then
-      bit := 1
-    else if gameskill = sk_nightmare then
-      bit := 4
-    else
-      bit := _SHL(1, Ord(gameskill) - 1);
-
-    if mthing.options and bit = 0 then
-    begin
-      result := nil;
-      exit;
-    end;
-  end;
-
-  musinfoparam := -1;
-  if (mthing._type >= MUSICCHANGER_LO) and (mthing._type <= MUSICCHANGER_HI) then
-  begin
-    musinfoparam := mthing._type - MUSICCHANGER_LO;
-    mthing._type := MUSICCHANGER;
-  end;
-
-  // find which type to spawn
-  i := Info_GetMobjNumForDoomNum(mthing._type);
-  if i < 0 then
-  begin
-    I_Warning('P_SpawnMapThing(): Unknown type %d at (%d, %d)'#13#10,
-      [mthing._type, mthing.x, mthing.y]);
-    i := Info_GetMobjNumForName('UNKNOWN');
-    if i < 0 then
-    begin
-      result := nil;
-      exit;
-    end;
-  end;
-
-  // don't spawn keycards and players in deathmatch
-  if (deathmatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  // don't spawn any monsters if -nomonsters
-  if nomonsters and
-    ((i = Ord(MT_SKULL)) or (mobjinfo[i].flags and MF_COUNTKILL <> 0)) then
-  begin
-    result := nil;
-    exit;
-  end;
-
-  // spawn it
-  if uthing <> nil then
-  begin
-    x := uthing.x;
-    y := uthing.y;
-  end
-  else
-  begin
-    x := mthing.x * FRACUNIT;
-    y := mthing.y * FRACUNIT;
-  end;
-
-  // JVAL
-  // Random map enemies
-  if spawnrandommonsters and Info_IsMonster(i) then
-    i := Info_SelectRandomMonster(i);
-
-  if mobjinfo[i].flags and MF_SPAWNCEILING <> 0 then
-    z := ONCEILINGZ
-  else if mobjinfo[i].flags_ex and MF_EX_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
-  else
-    z := ONFLOORZ;
-
-  if uthing <> nil then
-    if uthing.extraflags and UDMF_TF_HASZ <> 0 then
-      z := uthing.z;
-
-// JVAL: 3d floors
-  ss := P_PointInSector(x, y);
-  if ss.midsec >= 0 then
-  begin
-    msec := @sectors[ss.midsec];
-    if mthing.options and MTF_ONMIDSECTOR <> 0 then
-    begin
-      if z = ONFLOATZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss, x, y)) div 2
-      else if z = ONFLOORZ then
-        z := msec.ceilingheight;
-    end
-    else
-    begin
-      if z = ONFLOATZ then
-        z := (P_FloorHeight(ss, x, y) + msec.floorheight) div 2
-      else if z = ONCEILINGZ then
-        z := msec.floorheight;
-    end;
-  end;
-
-  result := P_SpawnMobj(x, y, z, i, mthing);
-  result.spawnpoint := mthing^;
-
-  if mthing.options and MTF_FRIEND <> 0 then
-    result.flags2_ex := result.flags2_ex or MF2_EX_FRIEND;
-
-  if musinfoparam >= 0 then
-    P_SetMobjCustomParam(result, S_MUSINFO_PARAM, musinfoparam);
-
-  if result.tics > 0 then
-    result.tics := 1 + (P_Random mod result.tics);
-  if result.flags and MF_COUNTKILL <> 0 then
-    inc(totalkills);
-  if result.flags and MF_COUNTITEM <> 0 then
-    inc(totalitems);
-
-  if result.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then
-    result.angle := ANG1 * mthing.angle
-  else
-    result.angle := ANG45 * (mthing.angle div 45);
-
-  if mthing.options and MTF_DONOTTRIGGERSCRIPTS <> 0 then
-    result.flags2_ex := result.flags2_ex or MF2_EX_DONTRUNSCRIPTS;
-
-  if mthing.options and MTF_AMBUSH <> 0 then
-    result.flags := result.flags or MF_AMBUSH;
-
-  // JVAL: 20220123 - Gravity & Health from UDMF
-  if uthing <> nil then
-  begin
-    if uthing.extraflags and UDMF_TF_HASGRAVITY <> 0 then
-    begin
-      if uthing.gravity < 0.0 then
-        result.gravity := -Round(uthing.gravity * FRACUNIT)
-      else
-        result.gravity := Round(result.gravity * uthing.gravity);
-    end;
-    if uthing.extraflags and UDMF_TF_HASHEALTH <> 0 then
-    begin
-      if uthing.health < 0.0 then
-        result.health := -Round(uthing.health)
-      else
-        result.health := Round(result.health * uthing.health);
-    end;
-    result.special := uthing.special;
-    result.args[0] := uthing.arg1;
-    result.args[1] := uthing.arg2;
-    result.args[2] := uthing.arg3;
-    result.args[3] := uthing.arg4;
-    result.args[4] := uthing.arg5;
-    result.tid := uthing.id;
   end;
 end;
 
+class function TMobjGameRules.ExcludedByNetOptions(mthing: Pmapthing_t): boolean;
+begin
+  result := False;
+
+  //jff 3/30/98 implement "not deathmatch" thing flag
+  if netgame and (deathmatch <> 0) and (mthing.options and 32 <> 0) then
+  begin
+    result := True;
+    exit;
+  end;
+
+  //jff 3/30/98 implement "not cooperative" thing flag
+  if netgame and (deathmatch = 0) and (mthing.options and 64 <> 0) then
+  begin
+    result := True;
+    exit;
+  end;
+end;
+
+class function TMobjGameRules.SkipsMonster(const i: integer): boolean;
+begin
+  result := (i = Ord(MT_SKULL)) or (mobjinfo[i].flags and MF_COUNTKILL <> 0);
+end;
+
+class function TMobjGameRules.KeepsMapThingOff(const i: integer; mthing: Pmapthing_t): boolean;
+begin
+  result := False;
+end;
+
+class procedure TMobjGameRules.MapThingFlags(mo: Pmobj_t; mthing: Pmapthing_t);
+begin
+end;
+
+
+class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
+begin
+  if mo.flags and MF_COUNTITEM <> 0 then
+    inc(totalitems);
+end;
 //
 // GAME SPAWN FUNCTIONS
 //
@@ -1157,86 +977,50 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t;
-var
-  th: Pmobj_t;
-  an: angle_t;
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  slope: fixed_t;
-  ver: integer;
-  speed: fixed_t;
 begin
-  // see which target is to be aimed at
-  an := source.angle;
-  slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
+  result := TMobjPlayerMissileSpawner.Spawn(source, _type);
+end;
 
-  if linetarget = nil then
+class procedure TMobjGameRules.AimWithoutTarget(source: Pmobj_t; var an: angle_t; var slope: fixed_t);
+var
+  ver: integer;
+begin
+  ver := G_PlayingEngineVersion;
+  if ver > VERSION110 then
   begin
-    an := an + $4000000;
-    slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-
+    if ver < VERSION204 then
+    begin
+      if zaxisshift and (linetarget = nil) then
+      begin
+        an := source.angle;
+        slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
+      end;
+    end
+    else
+    begin
+      if linetarget = nil then
+      begin
+        an := source.angle;
+        slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
+      end;
+    end;
+  end
+  else
+  begin
     if linetarget = nil then
     begin
-      an := an - $8000000;
-      slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-
-      ver := G_PlayingEngineVersion;
-      if ver > VERSION110 then
-      begin
-        if ver < VERSION204 then
-        begin
-          if zaxisshift and (linetarget = nil) then
-          begin
-            an := source.angle;
-            slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
-          end;
-        end
-        else
-        begin
-          if linetarget = nil then
-          begin
-            an := source.angle;
-            slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
-          end;
-        end;
-      end
-      else
-      begin
-        if linetarget = nil then
-        begin
-          an := source.angle;
-          slope := 0;
-        end;
-      end;
-
+      an := source.angle;
+      slope := 0;
     end;
   end;
+end;
 
-  x := source.x;
-  y := source.y;
-  // Also z axis shift calculation
-  if zaxisshift then
-    z := source.z + 4 * 8 * FRACUNIT + (Pplayer_t(source.player).lookdir * FRACUNIT) div 173
-  else
-    z := source.z + 4 * 8 * FRACUNIT;
+class procedure TMobjGameRules.AfterAim(source: Pmobj_t);
+begin
+end;
 
-  th := P_SpawnMobj(x, y, z, _type);
-
-  A_SeeSound(th, th);
-
-  th.target := source;
-  th.angle := an;
-  an := an shr ANGLETOFINESHIFT;
-  speed := th.info.speed;
-  th.momx := FixedMul(speed, finecosine[an]);
-  th.momy := FixedMul(speed, finesine[an]);
-  th.momz := FixedMul(speed, slope);
-
-  if P_CheckMissileSpawn(th) then
-    result := th
-  else
-    result := nil;
+class procedure TMobjGameRules.AdjustMissileZ(source: Pmobj_t; var z: fixed_t);
+begin
 end;
 
 
@@ -1246,108 +1030,24 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.HitFloor(thing: Pmobj_t): integer;
-var
-  mo: Pmobj_t;
-  sec: Psector_t;
-  z: fixed_t; // JVAL: 3d Floors
-  ss: Psubsector_t;
 begin
-  result := FLOOR_SOLID;
+  result := TMobjHitFloor.Hit(thing);
+end;
 
-  // don't splash if has MF2_EX_NOHITFLOOR flag
-  if thing.flags2_ex and MF2_EX_NOHITFLOOR <> 0 then
-    exit;
-
-  // Exit if playing old engine demo or in compatibility mode
-  if G_NeedsCompatibilityMode then
-    exit;
-
+class function TMobjGameRules.HitFloorIgnoredByVersion: boolean;
+begin
   // Exit if playing DelphiDoom demo from version 114 or lower
-  if G_PlayingEngineVersion <= VERSION114 then
-    exit;
+  result := G_PlayingEngineVersion <= VERSION114;
+end;
 
-  ss := thing.subsector;
+class function TMobjGameRules.NukageSplashZ(const z: fixed_t): fixed_t;
+begin
+  result := z;
+end;
 
-  if ss.flags and SSF_BRIDGE <> 0 then
-    if G_PlayingEngineVersion >= VERSION204 then
-      exit;
-
-  sec := ss.sector;
-  // don't splash if landing on the edge above water/lava/etc....
-  if thing.floorz <> sec.floorheight then
-    exit;
-
-  if sec.heightsec <> -1 then
-    exit;
-
-  // JVAL: 3d Floors
-  if G_PlayingEngineVersion >= VERSION122 then
-    z := thing.floorz
-  else
-    z := ONFLOORZ;
-
-  case P_GetThingFloorType(thing) of
-    FLOOR_WATER:
-      begin
-      // JVAL
-      // If we record a demo or playing demo (version > 114)
-      // then we force splashes
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASHBASE));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASH));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := 2 * FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_gloop));
-        end;
-        result := FLOOR_WATER;
-        exit;
-      end;
-    FLOOR_LAVA:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASMOKE));
-          mo.momz := FRACUNIT + (P_Random * 128);
-          S_StartSound(mo, Ord(sfx_burn));
-        end;
-        result := FLOOR_LAVA;
-        exit;
-      end;
-    FLOOR_SLUDGE:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGESPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGECHUNK));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_sgloop));
-        end;
-        result := FLOOR_SLUDGE;
-        exit;
-      end;
-    FLOOR_NUKAGE:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_NUKAGESPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_NUKAGECHUNK));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_sgloo2));
-        end;
-        result := FLOOR_NUKAGE;
-        exit;
-      end;
-  end;
+class function TMobjGameRules.NukageSplashSound: integer;
+begin
+  result := Ord(sfx_sgloo2);
 end;
 
 

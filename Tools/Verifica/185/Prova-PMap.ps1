@@ -198,11 +198,31 @@ $Expansions = @(
   # --- P_ThingsInSameZ (Doom; gli altri giochi sono in $NotTextual) ---
   @{ F = 'TMapGameRules.KeepsOldSameZ(A, B)'; Doom = '((A.flags2_ex and MF2_EX_ONMOBJ = 0) and (B.flags2_ex and MF2_EX_ONMOBJ = 0))'; All = $true }
 
+  # --- PIT_ChangeSector (Base\p_map.pas: lo scheletro; il corpo che schiaccia e il sangue sono regole del gioco) ---
+  $csHead = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; var'
+  $csNote = 'le variabili locali sono passate dalla vecchia routine alle regole (CrunchBody, CrushBlood) che le usano'
+  @{ R = 'PIT_ChangeSector'; F = 'function PIT_ChangeSector(thing: Pmobj_t): boolean; begin'
+     Doom = "$csHead mo: Pmobj_t; plr: Pplayer_t; st: integer; bt: bloodtype_t; begin"; Heretic = "$csHead mo: Pmobj_t; begin"
+     Hexen = "$csHead mo: Pmobj_t; st: integer; begin"; Strife = "$csHead mo: Pmobj_t; plr: Pplayer_t; begin"; Note = $csNote }
+  @{ R = 'PIT_ChangeSector'; F = 'if TMapGameRules.IsCrushedBody(thing) then begin result := TMapGameRules.CrunchBody(thing); exit; end;'
+     D = 'if thing.health <= 0 then begin <<B:CrunchBody>> end;'; Hexen = 'if (thing.flags and MF_CORPSE <> 0) and (thing.health <= 0) then begin <<B:CrunchBody>> end;' }
+  @{ R = 'PIT_ChangeSector'; F = 'if TMapGameRules.IsDroppedItem(thing) then'; D = 'if thing.flags and MF_DROPPED <> 0 then'; Hexen = 'if thing.flags2 and MF2_DROPPED <> 0 then' }
+  @{ R = 'PIT_ChangeSector'; F = 'TMapGameRules.CrushDamage'; D = '10'; Hexen = '1' }
+  @{ R = 'PIT_ChangeSector'; F = 'TMapGameRules.CrushBlood(thing);'; D = '<<B:CrushBlood|map=exitr>>' }
   # --- PIT_CheckThing ---
   @{ R = 'PIT_CheckThing'; F = 'if thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE) = 0 then'; Heretic = 'if (thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE)) = 0 then'
      Note = 'Heretic aveva una coppia di parentesi in piu'' attorno al primo operando' }
-  @{ R = 'PIT_CheckThing'; F = 'blockdist: fixed_t; begin'; D = 'blockdist: fixed_t; <<V:CheckThingContact>> begin' }
+  @{ R = 'PIT_CheckThing'; F = 'blockdist: fixed_t; begin'; D = 'blockdist: fixed_t; <<V:CheckThingContact|map=cvA>> begin'; Hexen = 'blockdist: fixed_t; <<V:CheckThingContact|map=cvHexen>> begin'
+     Note = 'solid e pushfactor sono passate alle funzioni P_ContactPickup e P_PushByContact che le usano' }
   @{ F = 'result := TMapGameRules.CheckThingContact(thing);'; D = '<<B:CheckThingContact>>' }
+  # il contatto: i due blocchi che spingono una cosa e la coda della raccolta sono P_PushByContact e P_ContactPickup di p_map
+  @{ R = 'PIT_CheckThing'; F = 'P_PushByContact(thing);'; D = '<<M:P_PushByContact>>'; All = $true }
+  @{ R = 'PIT_CheckThing'; F = 'result := P_ContactPickup(thing);'; D = '<<M:P_ContactPickup>>' }
+  @{ R = 'PIT_CheckThing'; F = 'TMapGameRules.CanBePushed(thing)'; D = '(thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0)'
+     Heretic = '(thing.flags2 and MF2_PUSHABLE <> 0) and (tmthing.flags2 and MF2_CANNOTPUSH = 0)'; Hexen = '(thing.flags2 and MF2_PUSHABLE <> 0) and (tmthing.flags2 and MF2_CANNOTPUSH = 0)'; All = $true }
+  @{ R = 'PIT_CheckThing'; F = 'TMapGameRules.QuarterMomentum(tmthing.momx)'; D = 'tmthing.momx div 4'; Hexen = '_SHR2(tmthing.momx)'; All = $true }
+  @{ R = 'PIT_CheckThing'; F = 'TMapGameRules.QuarterMomentum(tmthing.momy)'; D = 'tmthing.momy div 4'; Hexen = '_SHR2(tmthing.momy)'; All = $true }
+  @{ R = 'PIT_CheckThing'; F = 'TMapGameRules.PicksUpOnContact'; D = 'tmflags and MF_PICKUP <> 0'; Strife = 'tmthing.player <> nil' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
@@ -221,5 +241,5 @@ $NotTextual = @{
 }
 
 $bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_map' -BaseFiles 'Base\p_map.pas', 'Base\p_secnodes.pas' `
-  -Extra @{ S = 'Base\p_secnodes.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual
+  -Extra @{ S = 'Base\p_secnodes.pas'; M = 'Base\p_map.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual -Maps @{ exitr = @(,@('exit;', 'result := true; exit;')); cvA = @(,@('damage: integer;', 'solid: boolean; damage: integer; pushfactor: fixed_t;')); cvHexen = @(@('damage: integer;', 'solid: boolean; damage: integer;'), @('lmo: Pmobj_t;', 'lmo: Pmobj_t; pushfactor: fixed_t;')) }
 exit $bad

@@ -110,8 +110,24 @@ type
     class procedure ResetBreath(p: Pplayer_t); static;
     /// <summary>P_SpawnPlayer: what the game does when the player is ready (the keys of deathmatch, the interface)</summary>
     class procedure FinishPlayerSpawn(p: Pplayer_t; plnum: integer); static;
-    /// <summary>P_SpawnMapThing of the game</summary>
+    /// <summary>P_SpawnMapThing of the game (the skeleton is TMobjMapThingSpawner)</summary>
     class function SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; static;
+    /// <summary>P_SpawnMapThing: what the game does to the options of the thing first</summary>
+    class procedure MapThingPrologue(mthing: Pmapthing_t); static;
+    /// <summary>P_SpawnMapThing: a type of thing the game ignores (players that are not played, type 0); true when the thing is ignored</summary>
+    class function IgnoresMapThing(mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: player starts (and what is placed on the map like them); true when the thing is done, with the thing spawned in spawned</summary>
+    class function SpawnStartSpot(mthing: Pmapthing_t; uthing: Pextrathing_t; var spawned: Pmobj_t): boolean; static;
+    /// <summary>P_SpawnMapThing: options of the thing that exclude it from this kind of net game; true when it is excluded</summary>
+    class function ExcludedByNetOptions(mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: a monster that -nomonsters removes</summary>
+    class function SkipsMonster(const i: integer): boolean; static; inline;
+    /// <summary>P_SpawnMapThing: a thing that the game does not place on the map as a mobj (spots of its own); true when it is not spawned</summary>
+    class function KeepsMapThingOff(const i: integer; mthing: Pmapthing_t): boolean; static;
+    /// <summary>P_SpawnMapThing: the flags of the new thing that come from the options of the map thing, after the ambush flag</summary>
+    class procedure MapThingFlags(mo: Pmobj_t; mthing: Pmapthing_t); static;
+    /// <summary>P_SpawnMapThing: counts the new thing as an item of the level (Strife has no item count)</summary>
+    class procedure CountItem(mo: Pmobj_t); static; inline;
     /// <summary>P_SpawnPuff of the game</summary>
     class procedure SpawnPuff(x, y, z: fixed_t); static;
     /// <summary>P_SpawnMissile of the game</summary>
@@ -299,7 +315,8 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.Respawner,
   DelphiDoom.Engine.World.MissileSpawner,
-  DelphiDoom.Engine.World.PlayerSpawner;
+  DelphiDoom.Engine.World.PlayerSpawner,
+  DelphiDoom.Engine.World.MapThingSpawner;
 
 //----------------------------------------------------------------------------
 //
@@ -311,24 +328,8 @@ uses
 //
 //==============================================================================
 class function TMobjGameRules.SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean;
-var
-  st: Pstate_t;
 begin
-  if state = S_NULL then
-  begin // Remove mobj
-    mobj.state := @states[Ord(S_NULL)];
-    P_RemoveMobj(mobj);
-    result := false;
-  end
-  else
-  begin
-    st := @states[Ord(state)];
-    mobj.state := st;
-    mobj.tics := P_TicsFromState(st);
-    mobj.sprite := st.sprite;
-    mobj.frame := st.frame;
-    result := true;
-  end;
+  result := P_SetMobjStateOnce(mobj, state);
 end;
 
 
@@ -827,55 +828,22 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t;
-var
-  i: integer;
-  bit: integer;
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  ss: Psubsector_t; // JVAL: 3d floors
-  msec: Psector_t;  // JVAL: 3d floors
-  musinfoparam: integer;
 begin
-  result := nil;
-  // Count deathmatch start positions
-  if mthing._type = 11 then
-  begin
-    if deathmatch_p < MAX_DEATHMATCH_STARTS then
-    begin
-      memcpy(@deathmatchstarts[deathmatch_p], mthing, SizeOf(mthing^));
-      if uthing <> nil then
-        memcpy(@udeathmatchstarts[deathmatch_p], uthing, SizeOf(uthing^))
-      else
-      begin
-        ZeroMemory(@udeathmatchstarts[deathmatch_p], SizeOf(uthing^));
-        if mthing.options and 1 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL1 or UDMF_TF_SKILL2;
-        if mthing.options and 2 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL3;
-        if mthing.options and 4 <> 0 then
-          udeathmatchstarts[deathmatch_p].extraflags :=
-            udeathmatchstarts[deathmatch_p].extraflags or UDMF_TF_SKILL4 or UDMF_TF_SKILL5;
-        udeathmatchstarts[deathmatch_p].x := mthing.x * FRACUNIT;
-        udeathmatchstarts[deathmatch_p].y := mthing.y * FRACUNIT;
-      end;
-      inc(deathmatch_p);
-    end;
-    exit;
-  end;
+  result := TMobjMapThingSpawner.Spawn(mthing, uthing);
+end;
 
-  if mthing._type = PO_ANCHOR_TYPE then
-  begin // Polyobj Anchor Pt.
-    exit;
-  end
-  else if (mthing._type = PO_SPAWN_TYPE) or
-          (mthing._type = PO_SPAWNCRUSH_TYPE) then
-  begin // Polyobj Anchor Pt.
-    inc(po_NumPolyobjs);
-    exit;
-  end;
+class procedure TMobjGameRules.MapThingPrologue(mthing: Pmapthing_t);
+begin
+end;
+
+class function TMobjGameRules.IgnoresMapThing(mthing: Pmapthing_t): boolean;
+begin
+  result := False;
+end;
+
+class function TMobjGameRules.SpawnStartSpot(mthing: Pmapthing_t; uthing: Pextrathing_t; var spawned: Pmobj_t): boolean;
+begin
+  result := False;
 
   // check for players specially
   if mthing._type <= 4 then
@@ -883,7 +851,8 @@ begin
     // save spots for respawning in network games
     playerstarts[mthing._type - 1] := mthing^;
     if deathmatch = 0 then
-      result := P_SpawnPlayer(mthing, uthing);
+      spawned := P_SpawnPlayer(mthing, uthing);
+    result := True;
     exit;
   end;
 
@@ -891,6 +860,7 @@ begin
   if (mthing._type >= 1200) and (mthing._type < 1300) then
   begin
     P_AddAmbientSfx(mthing._type - 1200);
+    result := True;
     exit;
   end;
 
@@ -898,87 +868,24 @@ begin
   if mthing._type = 56 then // Monster_BossSpot
   begin
     P_AddBossSpot(mthing.x * FRACUNIT, mthing.y * FRACUNIT,  ANG1 * mthing.angle);
+    result := True;
     exit;
   end;
+end;
 
-  if uthing <> nil then
-  begin
-    if not netgame then
-      if uthing.extraflags and UDMF_TF_SINGLE = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
+class function TMobjGameRules.ExcludedByNetOptions(mthing: Pmapthing_t): boolean;
+begin
+  result := False;
+end;
 
-    if netgame and (deathmatch <> 0) then
-      if uthing.extraflags and UDMF_TF_DM = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
+class function TMobjGameRules.SkipsMonster(const i: integer): boolean;
+begin
+  result := mobjinfo[i].flags and MF_COUNTKILL <> 0;
+end;
 
-    if netgame and (deathmatch = 0) then
-      if uthing.extraflags and UDMF_TF_COOP = 0 then
-      begin
-        result := nil;
-        exit;
-      end;
-  end
-  else
-  begin
-    // check for apropriate skill level
-    if not netgame and (mthing.options and 16 <> 0) then
-      exit;
-  end;
-
-  if uthing <> nil then
-  begin
-    bit := _SHL(1, Ord(gameskill));
-    if bit and uthing.extraflags = 0 then
-    begin
-      result := nil;
-      exit;
-    end;
-  end
-  else
-  begin
-    if gameskill = sk_baby then
-      bit := 1
-    else if gameskill = sk_nightmare then
-      bit := 4
-    else
-      bit := _SHL(1, Ord(gameskill) - 1);
-
-    if mthing.options and bit = 0 then
-      exit;
-  end;
-
-  musinfoparam := -1;
-  if (mthing._type >= MUSICCHANGER_LO) and (mthing._type <= MUSICCHANGER_HI) then
-  begin
-    musinfoparam := mthing._type - MUSICCHANGER_LO;
-    mthing._type := MUSICCHANGER;
-  end;
-
-  // find which type to spawn
-  i := Info_GetMobjNumForDoomNum(mthing._type);
-  if i < 0 then
-  begin
-    I_Warning('P_SpawnMapThing(): Unknown type %d at (%d, %d)'#13#10,
-      [mthing._type, mthing.x, mthing.y]);
-    i := Info_GetMobjNumForName('UNKNOWN');
-    if i < 0 then
-      exit;
-  end;
-  // don't spawn keycards and players in deathmatch
-  if (deathmatch <> 0) and (mobjinfo[i].flags and MF_NOTDMATCH <> 0) then
-    exit;
-
-  // don't spawn any monsters if -nomonsters
-  if nomonsters and (mobjinfo[i].flags and MF_COUNTKILL <> 0) then
-    exit;
-
-// spawn it
+class function TMobjGameRules.KeepsMapThingOff(const i: integer; mthing: Pmapthing_t): boolean;
+begin
+  result := False;
   case i of
   // Special stuff
     Ord(MT_WSKULLROD),
@@ -994,122 +901,28 @@ begin
     Ord(MT_ITEMSHIELD2):
       begin
         if gamemode = shareware then // Don't place on map in shareware version
-          exit;
+          result := True;
       end;
 
     Ord(MT_WMACE):
       begin
         if gamemode <> shareware then // Put in the mace spot list
           P_AddMaceSpot(mthing);
-        exit;
+        result := True;
       end;
-  end;
-
-  // spawn it
-  if uthing <> nil then
-  begin
-    x := uthing.x;
-    y := uthing.y;
-  end
-  else
-  begin
-    x := mthing.x * FRACUNIT;
-    y := mthing.y * FRACUNIT;
-  end;
-
-  // JVAL
-  // Random map enemies
-  if spawnrandommonsters and Info_IsMonster(i) then
-    i := Info_SelectRandomMonster(i);
-
-  if mobjinfo[i].flags and MF_SPAWNCEILING <> 0 then
-    z := ONCEILINGZ
-  else if mobjinfo[i].flags_ex and MF_EX_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
-  else if mobjinfo[i].flags2 and MF2_SPAWNFLOAT <> 0 then
-    z := ONFLOATZ
-  else
-    z := ONFLOORZ;
-
-  if uthing <> nil then
-    if uthing.extraflags and UDMF_TF_HASZ <> 0 then
-      z := uthing.z;
-
-// JVAL: 3d floors
-  ss := R_PointInSubsector(x, y);
-  if ss.sector.midsec >= 0 then
-  begin
-    msec := @sectors[ss.sector.midsec];
-    if mthing.options and MTF_ONMIDSECTOR <> 0 then
-    begin
-      if z = ONFLOATZ then
-        z := (msec.ceilingheight + P_CeilingHeight(ss.sector, x, y)) div 2
-      else if z = ONFLOORZ then
-        z := msec.ceilingheight;
-    end
-    else
-    begin
-      if z = ONFLOATZ then
-        z := (P_FloorHeight(ss.sector, x, y) + msec.floorheight) div 2
-      else if z = ONCEILINGZ then
-        z := msec.floorheight;
-    end;
-  end;
-
-  result := P_SpawnMobj(x, y, z, i, mthing);
-  result.spawnpoint := mthing^;
-
-  if mthing.options and MTF_FRIEND <> 0 then
-    result.flags2_ex := result.flags2_ex or MF2_EX_FRIEND;
-
-  if musinfoparam >= 0 then
-    P_SetMobjCustomParam(result, S_MUSINFO_PARAM, musinfoparam);
-
-  if result.tics > 0 then
-    result.tics := 1 + (P_Random mod result.tics);
-  if result.flags and MF_COUNTKILL <> 0 then
-    inc(totalkills);
-  if result.flags and MF_COUNTITEM <> 0 then
-    inc(totalitems);
-
-  if result.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then
-    result.angle := ANG1 * mthing.angle
-  else
-    result.angle := ANG45 * (mthing.angle div 45);
-
-  if mthing.options and MTF_DONOTTRIGGERSCRIPTS <> 0 then
-    result.flags2_ex := result.flags2_ex or MF2_EX_DONTRUNSCRIPTS;
-
-  if mthing.options and MTF_AMBUSH <> 0 then
-    result.flags := result.flags or MF_AMBUSH;
-
-  // JVAL: 20220123 - Gravity & Health from UDMF
-  if uthing <> nil then
-  begin
-    if uthing.extraflags and UDMF_TF_HASGRAVITY <> 0 then
-    begin
-      if uthing.gravity < 0.0 then
-        result.gravity := -Round(uthing.gravity * FRACUNIT)
-      else
-        result.gravity := Round(result.gravity * uthing.gravity);
-    end;
-    if uthing.extraflags and UDMF_TF_HASHEALTH <> 0 then
-    begin
-      if uthing.health < 0.0 then
-        result.health := -Round(uthing.health)
-      else
-        result.health := Round(result.health * uthing.health);
-    end;
-    result.special := uthing.special;
-    result.args[0] := uthing.arg1;
-    result.args[1] := uthing.arg2;
-    result.args[2] := uthing.arg3;
-    result.args[3] := uthing.arg4;
-    result.args[4] := uthing.arg5;
-    result.tid := uthing.id;
   end;
 end;
 
+class procedure TMobjGameRules.MapThingFlags(mo: Pmobj_t; mthing: Pmapthing_t);
+begin
+end;
+
+
+class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
+begin
+  if mo.flags and MF_COUNTITEM <> 0 then
+    inc(totalitems);
+end;
 //==============================================================================
 //
 // GAME SPAWN FUNCTIONS

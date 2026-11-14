@@ -76,6 +76,14 @@ function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean;
 
 //==============================================================================
 //
+// P_SetMobjStateOnce
+// Sets one state without calling its action and without going on through the
+// states of no tics (the P_SetMobjStateNF of Heretic and Hexen)
+//
+//==============================================================================
+function P_SetMobjStateOnce(mobj: Pmobj_t; state: statenum_t): boolean;
+//==============================================================================
+//
 // P_ExplodeMissile
 //
 //==============================================================================
@@ -557,6 +565,31 @@ begin
   result := TMobjGameRules.SetMobjStateNF(mobj, state);
 end;
 
+//==============================================================================
+//
+// P_SetMobjStateOnce
+//
+//==============================================================================
+function P_SetMobjStateOnce(mobj: Pmobj_t; state: statenum_t): boolean;
+var
+  st: Pstate_t;
+begin
+  if state = S_NULL then
+  begin // Remove mobj
+    mobj.state := @states[Ord(S_NULL)];
+    P_RemoveMobj(mobj);
+    result := false;
+  end
+  else
+  begin
+    st := @states[Ord(state)];
+    mobj.state := st;
+    mobj.tics := P_TicsFromState(st);
+    mobj.sprite := st.sprite;
+    mobj.frame := st.frame;
+    result := true;
+  end;
+end;
 //==============================================================================
 //
 // P_ExplodeMissile

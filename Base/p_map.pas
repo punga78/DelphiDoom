@@ -123,6 +123,13 @@ procedure P_RadiusAttackPlayer(spot: Pmobj_t; source: Pmobj_t; const damage, dis
 
 //==============================================================================
 //
+// PIT_ChangeSector
+//
+//==============================================================================
+function PIT_ChangeSector(thing: Pmobj_t): boolean;
+
+//==============================================================================
+//
 // P_ChangeSector
 //
 //==============================================================================
@@ -163,6 +170,23 @@ function P_ThingsInSameZ(const A, B: Pmobj_t): boolean;
 //==============================================================================
 function P_ThingHeightClip(thing: Pmobj_t): boolean;
 
+//==============================================================================
+//
+// P_PushByContact
+// The moving thing pushes a thing that can be pushed (the last part of
+// PIT_CheckThing, and the ripper missiles)
+//
+//==============================================================================
+procedure P_PushByContact(thing: Pmobj_t);
+
+//==============================================================================
+//
+// P_ContactPickup
+// A special thing that is touched: picked up, or not; gives what
+// PIT_CheckThing gives (true when the thing does not block the move)
+//
+//==============================================================================
+function P_ContactPickup(thing: Pmobj_t): boolean;
 //==============================================================================
 //
 // PIT_CheckThing
@@ -678,6 +702,54 @@ begin
       IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1)
 end;
 
+//==============================================================================
+//
+// P_PushByContact
+//
+//==============================================================================
+procedure P_PushByContact(thing: Pmobj_t);
+var
+  pushfactor: fixed_t;
+begin
+  if TMapGameRules.CanBePushed(thing) then
+  begin // Push thing
+    pushfactor := thing.pushfactor;
+    if pushfactor <= 0 then
+    begin
+      thing.momx := thing.momx + TMapGameRules.QuarterMomentum(tmthing.momx);
+      thing.momy := thing.momy + TMapGameRules.QuarterMomentum(tmthing.momy);
+    end
+    else
+    begin
+      thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
+      thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// P_ContactPickup
+//
+//==============================================================================
+function P_ContactPickup(thing: Pmobj_t): boolean;
+var
+  solid: boolean;
+begin
+  // check for special pickup
+  if thing.flags and MF_SPECIAL <> 0 then
+  begin
+    solid := thing.flags and MF_SOLID <> 0;
+    if TMapGameRules.PicksUpOnContact then
+    begin
+      // can remove thing
+      P_TouchSpecialThing(thing, tmthing);
+    end;
+    result := not solid;
+  end
+  else
+    result := thing.flags and MF_SOLID = 0;
+end;
 //==============================================================================
 //
 // PIT_CheckThing
@@ -2662,6 +2734,63 @@ end;
 //  to undo the changes.
 //
 
+//==============================================================================
+//
+// PIT_ChangeSector
+//
+//==============================================================================
+function PIT_ChangeSector(thing: Pmobj_t): boolean;
+begin
+  if P_ThingHeightClip(thing) then
+  begin
+    // keep checking
+    result := true;
+    exit;
+  end;
+
+  // JVAL: 20200329 - New flag, can not be crushed by sector
+  if thing.flags3_ex and MF3_EX_NOCRUSH <> 0 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // crunch bodies to giblets
+  if TMapGameRules.IsCrushedBody(thing) then
+  begin
+    result := TMapGameRules.CrunchBody(thing);
+    exit;
+  end;
+
+  // crunch dropped items
+  if TMapGameRules.IsDroppedItem(thing) then
+  begin
+    P_RemoveMobj(thing);
+
+    // keep checking
+    result := true;
+    exit;
+  end;
+
+  if thing.flags and MF_SHOOTABLE = 0 then
+  begin
+    // assume it is bloody gibs or something
+    result := true;
+    exit;
+  end;
+
+  nofit := true;
+
+  if crushchange and (leveltime and 3 = 0) then
+  begin
+    P_DamageMobj(thing, nil, nil, TMapGameRules.CrushDamage);
+
+    TMapGameRules.CrushBlood(thing);
+  end;
+
+  // keep checking (crush other things)
+  result := true;
+end;
 //==============================================================================
 // P_DoChangeSector
 //

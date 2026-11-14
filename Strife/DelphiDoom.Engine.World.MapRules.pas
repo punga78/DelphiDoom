@@ -58,6 +58,8 @@ type
       JumpDownMargin = 112 * FRACUNIT;
       /// <summary>The step a sliding thing climbs</summary>
       SlideStepMargin = 16 * FRACUNIT; // villsa [STRIFE] change from 24 to 16
+      /// <summary>The damage a sector that crushes a thing does to it every fourth tic</summary>
+      CrushDamage = 10;
 
     /// <summary>The sector of a point (Doom follows the original nodes while an old demo plays)</summary>
     class function PointInSector(const x, y: fixed_t): Psector_t; static; inline;
@@ -154,6 +156,12 @@ type
     ///   what happens when tmthing touches the thing; false when tmthing is blocked
     /// </summary>
     class function CheckThingContact(thing: Pmobj_t): boolean; static;
+    /// <summary>PIT_CheckThing: a thing that the moving thing pushes when it touches it</summary>
+    class function CanBePushed(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>PIT_CheckThing: the part of the momentum a thing that is not a pushable weight gets (a quarter; Hexen shifts, the others divide)</summary>
+    class function QuarterMomentum(const momentum: fixed_t): fixed_t; static; inline;
+    /// <summary>PIT_CheckThing: the moving thing can pick up a special thing it touches</summary>
+    class function PicksUpOnContact: boolean; static; inline;
     /// <summary>The puff of a shot that hit a wall</summary>
     class procedure SpawnWallPuff(x, y, z: fixed_t); static;
     /// <summary>A shot hit a special line</summary>
@@ -167,6 +175,14 @@ type
     ///   it; false when the caller has to walk the blockmap instead
     /// </summary>
     class function ChangeSectorByThingList(sector: Psector_t): boolean; static;
+    /// <summary>PIT_ChangeSector: the thing is a body that the moving sector crunches (to giblets or to nothing)</summary>
+    class function IsCrushedBody(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>PIT_ChangeSector: the body is crunched; gives what PIT_ChangeSector gives (true to go on, false to stop: the sector does not fit)</summary>
+    class function CrunchBody(thing: Pmobj_t): boolean; static;
+    /// <summary>PIT_ChangeSector: the thing is a dropped item, that the moving sector crunches</summary>
+    class function IsDroppedItem(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>PIT_ChangeSector: the blood a crushed thing sprays (nothing for a thing without blood or invulnerable)</summary>
+    class procedure CrushBlood(thing: Pmobj_t); static;
   end;
 
 //==============================================================================
@@ -176,13 +192,6 @@ type
 //
 //==============================================================================
 procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-
-//==============================================================================
-//
-// PIT_ChangeSector
-//
-//==============================================================================
-function PIT_ChangeSector(thing: Pmobj_t): boolean;
 
 
 //==============================================================================
@@ -608,9 +617,7 @@ end;
 
 class function TMapGameRules.CheckThingContact(thing: Pmobj_t): boolean;
 var
-  solid: boolean;
   damage: integer;
-  pushfactor: fixed_t;
 begin
   // villsa [STRIFE] see if it went over / under
   if thing.height + thing.z < tmthing.z then
@@ -710,20 +717,7 @@ begin
       P_DamageMobj(thing, tmthing, tmthing.target, damage);
 
       // JVAL: Pushable things
-      if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-      begin // Push thing
-        pushfactor := thing.pushfactor;
-        if pushfactor <= 0 then
-        begin
-          thing.momx := thing.momx + tmthing.momx div 4;
-          thing.momy := thing.momy + tmthing.momy div 4;
-        end
-        else
-        begin
-          thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-          thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-        end;
-      end;
+      P_PushByContact(thing);
 
       numspechit := 0;
 
@@ -747,34 +741,26 @@ begin
   end;
 
   // JVAL: Pushable things
-  if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-  begin // Push thing
-    pushfactor := thing.pushfactor;
-    if pushfactor <= 0 then
-    begin
-      thing.momx := thing.momx + tmthing.momx div 4;
-      thing.momy := thing.momy + tmthing.momy div 4;
-    end
-    else
-    begin
-      thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-      thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-    end;
-  end;
+  P_PushByContact(thing);
 
   // check for special pickup
-  if thing.flags and MF_SPECIAL <> 0 then
-  begin
-    solid := thing.flags and MF_SOLID <> 0;
-    if tmthing.player <> nil then   // villsa [STRIFE] no longer checks MF_PICKUP flag
-    begin
-      // can remove thing
-      P_TouchSpecialThing(thing, tmthing);
-    end;
-    result := not solid;
-  end
-  else
-    result := thing.flags and MF_SOLID = 0;
+  result := P_ContactPickup(thing);
+end;
+
+class function TMapGameRules.CanBePushed(thing: Pmobj_t): boolean;
+begin
+  result := (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0);
+end;
+
+class function TMapGameRules.QuarterMomentum(const momentum: fixed_t): fixed_t;
+begin
+  result := momentum div 4;
+end;
+
+class function TMapGameRules.PicksUpOnContact: boolean;
+begin
+  // villsa [STRIFE] no longer checks MF_PICKUP flag
+  result := tmthing.player <> nil;
 end;
 
 class procedure TMapGameRules.SpawnWallPuff(x, y, z: fixed_t);
@@ -862,117 +848,83 @@ end;
 // [STRIFE] Changes to crushing behavior
 //
 //==============================================================================
-function PIT_ChangeSector(thing: Pmobj_t): boolean;
+class function TMapGameRules.IsCrushedBody(thing: Pmobj_t): boolean;
+begin
+  result := thing.health <= 0;
+end;
+
+class function TMapGameRules.CrunchBody(thing: Pmobj_t): boolean;
+begin
+  // villsa [STRIFE] do something with the player
+  if thing.player <> nil then
+    if Psubsector_t(thing.subsector).sector.ceilingdata <> nil then
+    begin
+      nofit := true;
+      result := false;
+      exit;
+    end;
+
+  if G_PlayingEngineVersion >= VERSION207 then
+  begin
+    if (thing.flags4_ex and MF4_EX_DONTGIB = 0) and (thing.info.crushstate > 0) then
+    begin
+      if thing.state <> @states[thing.info.crushstate] then
+      begin
+        P_SetMobjState(thing, statenum_t(thing.info.crushstate));
+        if thing.bloodcolor <> 0 then
+          R_SetMobjBloodTranslation(thing, thing.bloodcolor);
+      end;
+      thing.flags4_ex := thing.flags4_ex or MF4_EX_DONTGIB;
+    end
+    else if thing.flags4_ex and MF4_EX_DONTGIB = 0 then
+      A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+  end
+  else
+    A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
+
+  thing.flags := thing.flags and not MF_SOLID;
+  thing.height := 0;
+  thing.radius := 0;
+
+  // keep checking
+  result := true;
+  exit;
+end;
+
+class function TMapGameRules.IsDroppedItem(thing: Pmobj_t): boolean;
+begin
+  result := thing.flags and MF_DROPPED <> 0;
+end;
+
+class procedure TMapGameRules.CrushBlood(thing: Pmobj_t);
 var
   mo: Pmobj_t;
   plr: Pplayer_t;
 begin
-  if P_ThingHeightClip(thing) then
+  if (thing.flags and MF_NOBLOOD <> 0) or
+     (thing.flags_ex and MF_EX_INVULNERABLE <> 0) then
   begin
-    // keep checking
-    result := true;
     exit;
   end;
 
-  // JVAL: 20200329 - New flag, can not be crushed by sector
-  if thing.flags3_ex and MF3_EX_NOCRUSH <> 0 then
-  begin
-    result := true;
-    exit;
-  end;
+  plr := thing.player;
+  if plr <> nil then
+   if plr.cheats and CF_GODMODE <> 0 then
+   begin
+     exit;
+   end;
 
-  // crunch bodies to giblets
-  if thing.health <= 0 then
-  begin
-    // villsa [STRIFE] do something with the player
-    if thing.player <> nil then
-      if Psubsector_t(thing.subsector).sector.ceilingdata <> nil then
-      begin
-        nofit := true;
-        result := false;
-        exit;
-      end;
+  // spray blood in a random direction
+  // JVAL: player with custom blood color :)
+  if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
+    mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLUEBLOOD))
+  else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
+    mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_GREENBLOOD))
+  else
+    mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLOOD_DEATH));
 
-    if G_PlayingEngineVersion >= VERSION207 then
-    begin
-      if (thing.flags4_ex and MF4_EX_DONTGIB = 0) and (thing.info.crushstate > 0) then
-      begin
-        if thing.state <> @states[thing.info.crushstate] then
-        begin
-          P_SetMobjState(thing, statenum_t(thing.info.crushstate));
-          if thing.bloodcolor <> 0 then
-            R_SetMobjBloodTranslation(thing, thing.bloodcolor);
-        end;
-        thing.flags4_ex := thing.flags4_ex or MF4_EX_DONTGIB;
-      end
-      else if thing.flags4_ex and MF4_EX_DONTGIB = 0 then
-        A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
-    end
-    else
-      A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
-
-    thing.flags := thing.flags and not MF_SOLID;
-    thing.height := 0;
-    thing.radius := 0;
-
-    // keep checking
-    result := true;
-    exit;
-  end;
-
-  // crunch dropped items
-  if thing.flags and MF_DROPPED <> 0 then
-  begin
-    P_RemoveMobj(thing);
-
-    // keep checking
-    result := true;
-    exit;
-  end;
-
-  if thing.flags and MF_SHOOTABLE = 0 then
-  begin
-    // assume it is bloody gibs or something
-    result := true;
-    exit;
-  end;
-
-  nofit := true;
-
-  if crushchange and (leveltime and 3 = 0) then
-  begin
-    P_DamageMobj(thing, nil, nil, 10);
-
-    if (thing.flags and MF_NOBLOOD <> 0) or
-       (thing.flags_ex and MF_EX_INVULNERABLE <> 0) then
-    begin
-      result := true;
-      exit;
-    end;
-
-    plr := thing.player;
-    if plr <> nil then
-     if plr.cheats and CF_GODMODE <> 0 then
-     begin
-       result := true;
-       exit;
-     end;
-
-    // spray blood in a random direction
-    // JVAL: player with custom blood color :)
-    if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLUEBLOOD))
-    else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_GREENBLOOD))
-    else
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLOOD_DEATH));
-
-    mo.momx := _SHL(P_Random - P_Random, 12);
-    mo.momy := _SHL(P_Random - P_Random, 12);
-  end;
-
-  // keep checking (crush other things)
-  result := true;
+  mo.momx := _SHL(P_Random - P_Random, 12);
+  mo.momy := _SHL(P_Random - P_Random, 12);
 end;
 
 //==============================================================================
