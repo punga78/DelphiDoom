@@ -372,6 +372,8 @@ uses
   DelphiDoom.Audio.Types in '..\Libs\Audio\DelphiDoom.Audio.Types.pas',
   DelphiDoom.Audio.Intf in '..\Libs\Audio\DelphiDoom.Audio.Intf.pas',
   DelphiDoom.Audio.Levels in '..\Libs\Audio\DelphiDoom.Audio.Levels.pas',
+  DelphiDoom.Audio.SfxAttenuation in '..\Libs\Audio\DelphiDoom.Audio.SfxAttenuation.pas',
+  DelphiDoom.Audio.ChannelPicker in '..\Libs\Audio\DelphiDoom.Audio.ChannelPicker.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.Factory in '..\Libs\Audio\DelphiDoom.Audio.Factory.pas',
   DelphiDoom.Audio.SoundParameters in '..\Libs\Audio\DelphiDoom.Audio.SoundParameters.pas',

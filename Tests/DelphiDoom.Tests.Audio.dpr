@@ -23,6 +23,8 @@ uses
   DelphiDoom.Audio.Types in '..\Libs\Audio\DelphiDoom.Audio.Types.pas',
   DelphiDoom.Audio.Intf in '..\Libs\Audio\DelphiDoom.Audio.Intf.pas',
   DelphiDoom.Audio.Levels in '..\Libs\Audio\DelphiDoom.Audio.Levels.pas',
+  DelphiDoom.Audio.SfxAttenuation in '..\Libs\Audio\DelphiDoom.Audio.SfxAttenuation.pas',
+  DelphiDoom.Audio.ChannelPicker in '..\Libs\Audio\DelphiDoom.Audio.ChannelPicker.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.MusicPlayer in '..\Libs\Audio\DelphiDoom.Audio.MusicPlayer.pas',
   DelphiDoom.Audio.ExternalMusicCache in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicCache.pas',
@@ -141,7 +143,10 @@ uses
   DelphiDoom.Engine.Audio.WaveOutDevice in '..\Base\DelphiDoom.Engine.Audio.WaveOutDevice.pas',
   DelphiDoom.Tests.Audio.Mixer.Gains in 'Source\DelphiDoom.Tests.Audio.Mixer.Gains.pas',
   DelphiDoom.Tests.Audio.Mixer in 'Source\DelphiDoom.Tests.Audio.Mixer.pas',
-  DelphiDoom.Tests.Audio.WaveOutDevice in 'Source\DelphiDoom.Tests.Audio.WaveOutDevice.pas';
+  DelphiDoom.Tests.Audio.WaveOutDevice in 'Source\DelphiDoom.Tests.Audio.WaveOutDevice.pas',
+  DelphiDoom.Tests.Audio.OldSound in 'Source\DelphiDoom.Tests.Audio.OldSound.pas',
+  DelphiDoom.Tests.Audio.SfxAttenuation in 'Source\DelphiDoom.Tests.Audio.SfxAttenuation.pas',
+  DelphiDoom.Tests.Audio.ChannelPicker in 'Source\DelphiDoom.Tests.Audio.ChannelPicker.pas';
 
 var
   Runner: ITestRunner;
