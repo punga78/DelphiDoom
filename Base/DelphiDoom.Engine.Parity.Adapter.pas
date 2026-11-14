@@ -29,7 +29,7 @@ type
   /// <summary>
   ///   The tools that tell where and when the behavior of the engine changes: the hash of the state for every
   ///   tic (-statehash), the hash of every frame (-framehash, -framedump) and the automatic pilot
-  ///   (-autodemo). It reads the command line the first time somebody asks IsActive (the clock and the
+  ///   (-autodemo, or -autoscript with a script of commands). It reads the command line the first time somebody asks IsActive (the clock and the
   ///   gate of the input do, early); with no option nothing is built and the engine never calls it. With an
   ///   option the run becomes repeatable: the clock counts tics, the input is closed, the unpredictable
   ///   random numbers have a fixed seed
@@ -92,6 +92,10 @@ uses
   g_game,
   i_system,
   p_serializer;
+
+const
+  // what the pilot of -autoscript did, step by step, goes in a file beside the script
+  SScriptReportExtension = '.log';
 
 { TEngineParity }
 
@@ -191,7 +195,10 @@ begin
     FFrameWriter := TParityFactory.CreateFrameWriter(FFrameLog);
   end;
   if FOptions.AutoDemo then
-    FPilot := TParityFactory.CreatePilot(FOptions);
+    FPilot := TParityFactory.CreatePilot(FOptions)
+  else if FOptions.AutoScriptFile <> '' then
+    FPilot := TParityFactory.CreateScriptPilot(FOptions.AutoScriptFile,
+      TParityFactory.CreateFileLog(FOptions.AutoScriptFile + SScriptReportExtension));
   FActive := True;
   parity_hooks := Self;
 end;
@@ -264,9 +271,24 @@ var
   LBytesPerPixel: Integer;
   LLayout: TParityFrameLayout;
   LPaletteHash: UInt64;
+  LShot: Integer;
+  LWidth: Integer;
+  LHeight: Integer;
 begin
   if (FFrameWriter <> nil) and FFrameSource.Capture(LPixels, LBytesPerPixel, LLayout, LPaletteHash) then
     FFrameWriter.WriteFrame(g_game.gametic, LLayout, LPixels, LBytesPerPixel, LPaletteHash);
+  // the step "shot" of a script: this frame, beside the script (the menus stop the tics of the game,
+  // so -framedump cannot ask for them)
+  if (FPilot <> nil) and (FOptions.AutoScriptFile <> '') then
+  begin
+    LShot := TEngineParityPilotCommand.TakePendingShot;
+    if LShot > 0 then
+    begin
+      LPixels := FFrameSource.ReadRgb(LWidth, LHeight);
+      TParityBitmapWriter.SaveToFile(Format('%s.%d.bmp', [FOptions.AutoScriptFile, LShot]), LWidth, LHeight,
+        LPixels);
+    end;
+  end;
   if (FOptions.FrameDumpTic >= 0) and not FDumped and (g_game.gametic >= FOptions.FrameDumpTic) then
     DumpFrame;
   // the end of a frame is the time that goes by

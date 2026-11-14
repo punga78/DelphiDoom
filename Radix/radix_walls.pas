@@ -76,6 +76,31 @@ procedure RX_DamageLine(const lineid: integer; const damage: integer);
 //==============================================================================
 procedure RX_TrackShots;
 
+type
+  trackedshot_t = record
+    key: LongWord;
+    x, y: integer;        // where it is now (fixed_t)
+    oldx, oldy: integer;  // where it was a tic ago (where it is now, for a new shot)
+    momx, momy: integer;
+  end;
+  trackedshot_tArray = array of trackedshot_t;
+
+//==============================================================================
+//
+// RX_GetTrackedShots
+// The shots of the players that were flying at the last tic, for a saved game
+//
+//==============================================================================
+function RX_GetTrackedShots: trackedshot_tArray;
+
+//==============================================================================
+//
+// RX_SetTrackedShots
+// The shots of a saved game in the place of the ones that are tracked
+//
+//==============================================================================
+procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
+
 implementation
 
 uses
@@ -107,13 +132,6 @@ const
 const
   // how far past its own step and radius an exploded shot reaches a wall (map units)
   SHOTREACHMARGIN = 16;
-
-type
-  trackedshot_t = record
-    key: LongWord;
-    momx, momy: fixed_t;
-  end;
-  trackedshot_tArray = array of trackedshot_t;
 
 var
   shootablelines: array of integer;
@@ -334,8 +352,8 @@ end;
 //==============================================================================
 //
 // RX_ShotHitsWall
-// A missile of a player has exploded: the nearest wall that can be shot in
-// front of it, within its last step, is damaged
+// A missile of a player has exploded: the first wall that can be shot on its
+// way, within its last step from where it was seen flying, is damaged
 //
 //==============================================================================
 procedure RX_ShotHitsWall(const mo: Pmobj_t; const shot: trackedshot_t);
@@ -347,14 +365,23 @@ var
   bestdist: double;
   dist: double;
   reach: double;
+  speed: double;
+  flown: double;
   px, py, dx, dy: double;
   rnd: integer;
 begin
-  px := mo.x / FRACUNIT;
-  py := mo.y / FRACUNIT;
+  // The way of the shot starts where it was two tics before it exploded: a fast and small
+  // shot (56 units a tic, radius 13: the engine moves it 28 units at a time) goes through a
+  // one sided wall and explodes against the next one, inside the solid part of the map
+  px := shot.oldx / FRACUNIT;
+  py := shot.oldy / FRACUNIT;
   dx := shot.momx / FRACUNIT;
   dy := shot.momy / FRACUNIT;
-  reach := sqrt(dx * dx + dy * dy) + mo.radius / FRACUNIT + SHOTREACHMARGIN;
+  speed := sqrt(dx * dx + dy * dy);
+  if speed <= 0.0 then
+    exit;
+  flown := sqrt(sqr(shot.x / FRACUNIT - px) + sqr(shot.y / FRACUNIT - py));
+  reach := flown + speed + mo.radius / FRACUNIT + SHOTREACHMARGIN;
 
   best := -1;
   bestdist := reach;
@@ -364,8 +391,9 @@ begin
     if not RX_ShootableLine(lineid) then
       continue;
     l := @lines[lineid];
-    if not TRadixActionRules.WallAhead(px, py, dx, dy,
-         l.v1.x / FRACUNIT, l.v1.y / FRACUNIT, l.v2.x / FRACUNIT, l.v2.y / FRACUNIT, dist) then
+    if not TRadixActionRules.WallOnPath(px, py, px + dx / speed * reach, py + dy / speed * reach,
+         l.v1.x / FRACUNIT, l.v1.y / FRACUNIT, l.v2.x / FRACUNIT, l.v2.y / FRACUNIT,
+         mo.radius / FRACUNIT, dist) then
       continue;
     if dist > bestdist then
       continue;
@@ -388,10 +416,23 @@ end;
 //
 //==============================================================================
 procedure RX_RememberShot(const mo: Pmobj_t);
+var
+  i: integer;
 begin
   if numshots >= Length(shots) then
     SetLength(shots, numshots + 64);
   shots[numshots].key := mo.key;
+  shots[numshots].x := mo.x;
+  shots[numshots].y := mo.y;
+  shots[numshots].oldx := mo.x;
+  shots[numshots].oldy := mo.y;
+  for i := 0 to numprevshots - 1 do
+    if prevshots[i].key = mo.key then
+    begin
+      shots[numshots].oldx := prevshots[i].x;
+      shots[numshots].oldy := prevshots[i].y;
+      break;
+    end;
   shots[numshots].momx := mo.momx;
   shots[numshots].momy := mo.momy;
   inc(numshots);
@@ -443,6 +484,28 @@ begin
   prevshots := shots;
   shots := tmp;
   numprevshots := numshots;
+  numshots := 0;
+end;
+
+//==============================================================================
+//
+// RX_GetTrackedShots
+//
+//==============================================================================
+function RX_GetTrackedShots: trackedshot_tArray;
+begin
+  result := Copy(prevshots, 0, numprevshots);
+end;
+
+//==============================================================================
+//
+// RX_SetTrackedShots
+//
+//==============================================================================
+procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
+begin
+  prevshots := Copy(saved);
+  numprevshots := Length(prevshots);
   numshots := 0;
 end;
 

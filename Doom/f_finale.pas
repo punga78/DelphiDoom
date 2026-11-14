@@ -69,6 +69,20 @@ procedure F_Drawer;
 //==============================================================================
 procedure F_StartFinale;
 
+type
+  f_replacement_t = procedure;
+
+//==============================================================================
+// F_ConfigureReplacement
+//
+// A game on the engine of Doom that has its own end of an episode (Radix: the
+// text over the flight among the stars) gives the three procedures that take
+// the place of the body of F_StartFinale (after the game state is set),
+// F_Ticker and F_Drawer. Doom does not call it.
+//
+//==============================================================================
+procedure F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t);
+
 //
 // Final DOOM 2 animation
 // Casting by id Software.
@@ -141,6 +155,23 @@ var
   finaleflat: string;
   using_FMI: boolean;
 
+  // the end of an episode of a game that does not have the one of Doom (F_ConfigureReplacement)
+  f_replacementstart: f_replacement_t = nil;
+  f_replacementticker: f_replacement_t = nil;
+  f_replacementdrawer: f_replacement_t = nil;
+
+//==============================================================================
+//
+// F_ConfigureReplacement
+//
+//==============================================================================
+procedure F_ConfigureReplacement(const start, ticker, drawer: f_replacement_t);
+begin
+  f_replacementstart := start;
+  f_replacementticker := ticker;
+  f_replacementdrawer := drawer;
+end;
+
 //==============================================================================
 //
 // F_StartCast
@@ -183,6 +214,12 @@ begin
   viewactive := false;
   amstate := am_inactive;
   mus_changed := false;
+
+  if Assigned(f_replacementstart) then
+  begin
+    f_replacementstart;
+    exit;
+  end;
 
   finaletext := '';
   finaleflat := '';
@@ -384,6 +421,12 @@ procedure F_Ticker;
 var
   i: integer;
 begin
+  if Assigned(f_replacementticker) then
+  begin
+    f_replacementticker;
+    exit;
+  end;
+
   // check for skipping
   if (gamemode = commercial) and (finalecount > 50) then
   begin
@@ -892,6 +935,12 @@ end;
 //==============================================================================
 procedure F_Drawer;
 begin
+  if Assigned(f_replacementdrawer) then
+  begin
+    f_replacementdrawer;
+    exit;
+  end;
+
   if using_FMI then
   begin
     if finalestage = 0 then

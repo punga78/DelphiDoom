@@ -45,6 +45,8 @@ type
     SaveLayoutsFile: string;
     /// <summary>-autoquit tic: the program ends after that tic (-1 when not asked); for a run with no pilot</summary>
     AutoQuitTic: Integer;
+    /// <summary>-autoscript file: a script of commands plays the first player (empty when not asked)</summary>
+    AutoScriptFile: string;
     /// <summary>True when at least one option was given</summary>
     function IsActive: Boolean;
   end;
@@ -61,6 +63,31 @@ type
     Use: Boolean;
     /// <summary>Number of the weapon to take (1 and up), 0 to keep the one in hand</summary>
     Weapon: Integer;
+    /// <summary>Look up (positive) or down, in steps of the look of the ticcmd (-7..7); 0 keeps the pitch</summary>
+    Look: Integer;
+    /// <summary>Brings the look back to the horizon (wins over Look)</summary>
+    LookCenter: Boolean;
+    /// <summary>The jump key (a craft that flies goes up)</summary>
+    Jump: Boolean;
+    /// <summary>The crouch key (a craft that flies goes down)</summary>
+    Crouch: Boolean;
+    /// <summary>The first key that only one game has (Radix: the afterburner); nothing for the other games</summary>
+    Afterburner: Boolean;
+    /// <summary>The second key that only one game has (Radix: the plasma bomb, once for every press)</summary>
+    Bomb: Boolean;
+    /// <summary>The game is saved in the slot Slot (a script only; it does nothing while a demo is recorded)</summary>
+    Save: Boolean;
+    /// <summary>The saved game of the slot Slot is loaded (a script only)</summary>
+    Load: Boolean;
+    /// <summary>The slot of Save and Load, from 0</summary>
+    Slot: Integer;
+    /// <summary>
+    ///   A key of the engine (its own code: 27 escape, 13 enter, 173 up, 175 down...) that goes down and up
+    ///   as an event, for the menus (a script only); 0 = none
+    /// </summary>
+    Key: Integer;
+    /// <summary>The frame that follows is written beside the script as picture number Shot (a script only); 0 = none</summary>
+    Shot: Integer;
   end;
 
   /// <summary>What the pilot may know about the world: the player and nothing else</summary>
@@ -71,6 +98,70 @@ type
     /// <summary>Position of the player (fixed point 16.16)</summary>
     X: Integer;
     Y: Integer;
+    Z: Integer;
+    /// <summary>Where the player looks: a binary angle (2^32 = a full turn, 0 = east, counterclockwise)</summary>
+    Angle: Cardinal;
+    /// <summary>The health of the player (in Radix: the shield)</summary>
+    Health: Integer;
+    /// <summary>
+    ///   True when a living enemy that the player can see is within the range that the pilot asked for;
+    ///   EnemyX, EnemyY and EnemyZ are the place of the nearest one (fixed point 16.16)
+    /// </summary>
+    HasEnemy: Boolean;
+    EnemyX: Integer;
+    EnemyY: Integer;
+    EnemyZ: Integer;
+  end;
+
+  /// <summary>What a step of a script of commands does</summary>
+  TParityScriptStepKind = (
+    /// <summary>Keeps the same keys pressed for some tics</summary>
+    skHold,
+    /// <summary>Turns to a point of the map and goes there</summary>
+    skGoto,
+    /// <summary>Turns to a point of the map without moving</summary>
+    skFace,
+    /// <summary>Flies up or down to a height</summary>
+    skClimb,
+    /// <summary>Turns to the nearest enemy and fires at it, until none is left near or the tics are over</summary>
+    skHunt,
+    /// <summary>Waits (fighting the enemies that come near) until the health is back, or the tics are over</summary>
+    skHeal,
+    /// <summary>Saves the game in a slot (one tic)</summary>
+    skSave,
+    /// <summary>Loads the saved game of a slot (one tic)</summary>
+    skLoad);
+
+  /// <summary>One step of a script of commands (-autoscript); the coordinates are map units</summary>
+  TParityScriptStep = record
+    Kind: TParityScriptStepKind;
+    /// <summary>1-based line of the script, for the messages</summary>
+    Line: Integer;
+    /// <summary>
+    ///   skHold: how long the step lasts; skHunt, skHeal: how long it lasts at most; the others: after how
+    ///   many tics the script gives up
+    /// </summary>
+    Tics: Integer;
+    /// <summary>
+    ///   skGoto: on the way the pilot stops to fight the enemies that are near; skHunt, skHeal: always True
+    /// </summary>
+    Fight: Boolean;
+    /// <summary>skGoto with Fight, skHunt, skHeal: how near an enemy is fought (map units)</summary>
+    EnemyRange: Integer;
+    /// <summary>skHeal: the health to wait for</summary>
+    Health: Integer;
+    /// <summary>
+    ///   skHold: the keys pressed; skGoto: Forward is the speed, Fire and Use are pressed on the way;
+    ///   skFace: Fire is pressed while turning
+    /// </summary>
+    Command: TParityPilotCommand;
+    X: Integer;
+    Y: Integer;
+    /// <summary>skGoto: the height to reach on the way (when HasZ); skClimb: the height to reach</summary>
+    Z: Integer;
+    HasZ: Boolean;
+    /// <summary>skGoto: how near the point is "there"</summary>
+    Radius: Integer;
   end;
 
   /// <summary>Where the 3D view is inside a frame (all the numbers are pixels)</summary>
@@ -105,7 +196,7 @@ implementation
 function TParityOptions.IsActive: Boolean;
 begin
   Result := (StateHashFile <> '') or (FrameHashFile <> '') or (FrameDumpTic >= 0) or AutoDemo or AutoSave or
-    (SaveLayoutsFile <> '') or (AutoQuitTic >= 0);
+    (SaveLayoutsFile <> '') or (AutoQuitTic >= 0) or (AutoScriptFile <> '');
 end;
 
 { TParityDifference }

@@ -35,3 +35,4 @@ Tests/Data/Models/q3player/** -text
 Tests/Data/Models/deform/** -text
 Tests/Data/Models/ma/** -text
 Tests/Data/DoomScript/** -text
+Radix/Data/*.bin binary

@@ -255,6 +255,97 @@ procedure M_ConfigureDisplayModes(const ACatalog: IDisplayModeCatalog);
 //==============================================================================
 procedure M_ConfigureScreenshot(const AScreenshot: IEngineScreenshot);
 
+//==============================================================================
+//
+// M_WriteWhiteText
+//
+//==============================================================================
+function M_WriteWhiteText(x, y: integer; const str: string): menupos_t;
+
+const
+  MAXMENUEXTRABINDINGS = 8;
+
+type
+  bindinginfo_t = record
+    text: string[25];
+    pkey: PInteger;
+  end;
+  Pbindinginfo_t = ^bindinginfo_t;
+
+  menustrings_t = array[0..9] of string;
+  Pmenustrings_t = ^menustrings_t;
+
+  // The menus that a game with its own look may want to change (see menuextension_t.init)
+  menuset_t = record
+    main: Pmenu_t;
+    episode: Pmenu_t;
+    newgame: Pmenu_t;
+    options: Pmenu_t;
+    load: Pmenu_t;
+    save: Pmenu_t;
+  end;
+
+  // What the screens of load and save show (see menuextension_t.loadsave)
+  menuloadsave_t = record
+    saving: boolean;          // the save screen (else the load screen)
+    entering: boolean;        // the description of slot is being typed
+    slot: integer;            // the slot that is being typed
+    itemon: integer;          // the slot under the cursor
+    numslots: integer;
+    descriptions: Pmenustrings_t; // numslots descriptions
+    screenshot: pointer;      // Pmenuscreenbuffer_t of the slot under the cursor (the view, when saving)
+  end;
+
+  // A game with its own look of the menus (Radix) gives these with M_ConfigureExtension.
+  // Every field may be nil (or zero): the menu then does what it did before.
+  menuextension_t = record
+    // in place of a patch of a menu (a title, a state): true = drawn, the patch is not
+    patch: function(const x, y: integer; const name: string): boolean;
+    // in place of an item that is not a "!" item: true = drawn (or hidden)
+    item: function(const menu: Pmenu_t; const idx, x, y: integer; const selected: boolean): boolean;
+    // in place of the skull or of the arrow beside the item under the cursor: true = drawn (or hidden)
+    cursor: function(const menu: Pmenu_t; const idx: integer): boolean;
+    // in place of a slider: true = drawn
+    thermo: function(const x, y, thermWidth, thermDot, numdots: integer): boolean;
+    // in place of the border of a description of the load and save screens: true = drawn
+    saveloadborder: function(const x, y: integer): boolean;
+    // in place of the whole screen of load or save: true = drawn
+    loadsave: function(const info: menuloadsave_t): boolean;
+    // a key while a menu is open, before the menu sees it: true = eaten
+    responder: function(const ch: integer): boolean;
+    // after M_SetKeyboardMode has set the keys of a preset
+    keyboardmode: procedure(const mode: integer);
+    // the text of a key binding of the engine, to rename it ('' = keep)
+    bindingtext: function(const text: string): string;
+    // at the end of M_Init: the game may change items, sizes and links of the menus
+    init: procedure(const menus: menuset_t);
+    // how many of the pages HELP01.. take the place of the help pages of Doom (0, 1 or 2);
+    // the extended help screens start after them
+    helppages: integer;
+    // key bindings of the game, shown in a page of their own after the pages of the engine
+    numbindings: integer;
+    bindings: array[0..MAXMENUEXTRABINDINGS - 1] of bindinginfo_t;
+  end;
+
+//==============================================================================
+//
+// M_ConfigureExtension
+//
+// The look and the extra items of the menus of a game that is not Doom, given by the
+// composition root before M_Init. Never called for Doom: every menu is drawn as before.
+//
+//==============================================================================
+procedure M_ConfigureExtension(const extension: menuextension_t);
+
+//==============================================================================
+//
+// M_ItemOn
+//
+// The item of the current menu under the cursor
+//
+//==============================================================================
+function M_ItemOn: integer;
+
 implementation
 
 uses
@@ -416,7 +507,7 @@ const
   LINEHEIGHT2 = 8;
 
 var
-  savegamestrings: array[0..9] of string;
+  savegamestrings: menustrings_t;
   savegameshots: array[0..Ord(load_end) - 1] of menuscreenbuffer_t;
   endstring: string;
 
@@ -428,6 +519,54 @@ var
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
   skullName: array[0..1] of string;
+
+// The look of the menus of a game that is not Doom (all nil for Doom)
+  menuext: menuextension_t;
+
+//==============================================================================
+//
+// M_ConfigureExtension
+//
+//==============================================================================
+procedure M_ConfigureExtension(const extension: menuextension_t);
+begin
+  menuext := extension;
+end;
+
+//==============================================================================
+//
+// M_ItemOn
+//
+//==============================================================================
+function M_ItemOn: integer;
+begin
+  result := itemOn;
+end;
+
+//==============================================================================
+//
+// M_ExtPatch
+//
+// True when the extension has drawn something in place of the patch
+//
+//==============================================================================
+function M_ExtPatch(const x, y: integer; const name: string): boolean;
+begin
+  result := Assigned(menuext.patch) and menuext.patch(x, y, name);
+end;
+
+//==============================================================================
+//
+// M_DrawMenuPatch
+//
+// A patch of a menu (a title, a state), or what the extension draws in its place
+//
+//==============================================================================
+procedure M_DrawMenuPatch(const x, y: integer; const name: string);
+begin
+  if not M_ExtPatch(x, y, name) then
+    V_DrawPatch(x, y, SCN_TMP, name, false);
+end;
 
 //==============================================================================
 // M_DrawThermo
@@ -441,6 +580,10 @@ var
   i: integer;
   tmpdot: integer;
 begin
+  if Assigned(menuext.thermo) then
+    if menuext.thermo(x, y, thermWidth, thermDot, numdots) then
+      exit;
+
   xx := x;
   V_DrawPatch(xx, y, SCN_TMP, 'M_THERML', false);
   xx := xx + 8;
@@ -1254,12 +1397,9 @@ var
   KeyBindingsDef3: menu_t;
   KeyBindingsMenu4: array[0..Ord(kb_end) - Ord(kb_am_gobigkey) - 1] of menuitem_t;
   KeyBindingsDef4: menu_t;
-
-type
-  bindinginfo_t = record
-    text: string[25];
-    pkey: PInteger;
-  end;
+  // the key bindings of the game (menuext.bindings): a page only when there are some
+  KeyBindingsMenu5: array[0..MAXMENUEXTRABINDINGS - 1] of menuitem_t;
+  KeyBindingsDef5: menu_t;
 
 const
   KeyBindingsInfo: array [0..Ord(kb_end) - 1] of bindinginfo_t = (
@@ -1367,6 +1507,31 @@ end;
 
 //==============================================================================
 //
+// M_NumBindings
+//
+// The key bindings of the engine and, after them, the ones of the game (none for Doom)
+//
+//==============================================================================
+function M_NumBindings: integer;
+begin
+  result := Ord(kb_end) + menuext.numbindings;
+end;
+
+//==============================================================================
+//
+// M_BindingInfo
+//
+//==============================================================================
+function M_BindingInfo(const slot: integer): Pbindinginfo_t;
+begin
+  if slot < Ord(kb_end) then
+    result := @KeyBindingsInfo[slot]
+  else
+    result := @menuext.bindings[slot - Ord(kb_end)];
+end;
+
+//==============================================================================
+//
 // M_SetKeyBinding
 //
 //==============================================================================
@@ -1375,7 +1540,7 @@ var
   i: integer;
   oldk: integer;
 begin
-  if (slot < 0) or (slot >= Ord(kb_end)) then
+  if (slot < 0) or (slot >= M_NumBindings) then
   begin
     result := false;
     exit;
@@ -1408,12 +1573,12 @@ begin
   if not result then
     exit;
 
-  oldk := KeyBindingsInfo[slot].pkey^;
-  for i := 0 to Ord(kb_end) - 1 do
+  oldk := M_BindingInfo(slot).pkey^;
+  for i := 0 to M_NumBindings - 1 do
     if i <> slot then
-     if KeyBindingsInfo[i].pkey^ = key then
-       KeyBindingsInfo[i].pkey^ := oldk;
-  KeyBindingsInfo[slot].pkey^ := key;
+     if M_BindingInfo(i).pkey^ = key then
+       M_BindingInfo(i).pkey^ := oldk;
+  M_BindingInfo(slot).pkey^ := key;
 end;
 
 //==============================================================================
@@ -1425,13 +1590,20 @@ procedure M_DrawBindings(const m: menu_t; const start, stop: integer);
 var
   i: integer;
   len: integer;
-  s: string;
+  s, s2: string;
   drawkey: boolean;
 begin
-  V_DrawPatch(81, 15, SCN_TMP, 'MENU_KEY', false);
+  M_DrawMenuPatch(81, 15, 'MENU_KEY');
   for i := 0 to stop - start - 1 do
   begin
-    s := KeyBindingsInfo[start + i].text + ': ';
+    s := string(M_BindingInfo(start + i).text);
+    if Assigned(menuext.bindingtext) then
+    begin
+      s2 := menuext.bindingtext(s);
+      if s2 <> '' then
+        s := s2;
+    end;
+    s := s + ': ';
     len := M_StringWidth(s);
     M_WriteText(m.x, m.y + m.itemheight * i, s);
     drawkey := true;
@@ -1440,7 +1612,7 @@ begin
         if (gametic div 18) mod 2 <> 0 then
           drawkey := false;
     if drawkey then
-      M_WriteWhiteText(m.x + len, m.y + m.itemheight * i, M_KeyToString(KeyBindingsInfo[start + i].pkey^));
+      M_WriteWhiteText(m.x + len, m.y + m.itemheight * i, M_KeyToString(M_BindingInfo(start + i).pkey^));
   end;
 end;
 
@@ -1575,6 +1747,32 @@ begin
   saveOldkey := KeyBindingsInfo[Ord(kb_am_gobigkey) + choice].pkey^;
 end;
 
+//==============================================================================
+//
+// M_DrawBindings5
+//
+// The key bindings of the game (menuext.bindings)
+//
+//==============================================================================
+procedure M_DrawBindings5;
+begin
+  M_DrawBindings(KeyBindingsDef5, Ord(kb_end), M_NumBindings);
+end;
+
+//==============================================================================
+//
+// M_KeyBindingSelect5
+//
+//==============================================================================
+procedure M_KeyBindingSelect5(choice: integer);
+begin
+  bindkeyEnter := true;
+
+  bindkeySlot := Ord(kb_end) + choice;
+
+  saveOldkey := M_BindingInfo(bindkeySlot).pkey^;
+end;
+
 type
 //
 // SYSTEM  MENU
@@ -1646,6 +1844,10 @@ procedure M_DrawSaveLoadBorder(x, y: integer);
 var
   i: integer;
 begin
+  if Assigned(menuext.saveloadborder) then
+    if menuext.saveloadborder(x, y) then
+      exit;
+
   V_DrawPatch(x - 8, y + 7, SCN_TMP, 'M_LSLEFT', false);
 
   for i := 0 to 23 do
@@ -1734,6 +1936,36 @@ begin
 end;
 
 //==============================================================================
+//
+// M_ExtLoadSave
+//
+// True when the extension has drawn the whole screen of load or save
+//
+//==============================================================================
+function M_ExtLoadSave(const saving: boolean): boolean;
+var
+  info: menuloadsave_t;
+begin
+  result := false;
+  if not Assigned(menuext.loadsave) then
+    exit;
+
+  info.saving := saving;
+  info.entering := saving and (saveStringEnter <> 0);
+  info.slot := saveSlot;
+  info.itemon := itemOn;
+  info.numslots := Ord(load_end);
+  info.descriptions := @savegamestrings;
+  if saving then
+    info.screenshot := @mn_screenshotbuffer
+  else if (itemOn >= 0) and (itemOn < Ord(load_end)) then
+    info.screenshot := @savegameshots[itemOn]
+  else
+    info.screenshot := nil;
+  result := menuext.loadsave(info);
+end;
+
+//==============================================================================
 // M_DrawLoad
 //
 // M_LoadGame & Cie.
@@ -1743,7 +1975,10 @@ procedure M_DrawLoad;
 var
   i: integer;
 begin
-  V_DrawPatch(72, LoadDef.y - 26, SCN_TMP, 'M_LOADG', false);
+  if M_ExtLoadSave(false) then
+    exit;
+
+  M_DrawMenuPatch(72, LoadDef.y - 26, 'M_LOADG');
   for i := 0 to Ord(load_end) - 1 do
   begin
     M_DrawSaveLoadBorder(LoadDef.x, LoadDef.y + LoadDef.itemheight * i);
@@ -1796,7 +2031,10 @@ procedure M_DrawSave;
 var
   i: integer;
 begin
-  V_DrawPatch(72, LoadDef.y - 28, SCN_TMP, 'M_SAVEG', false);
+  if M_ExtLoadSave(true) then
+    exit;
+
+  M_DrawMenuPatch(72, LoadDef.y - 28, 'M_SAVEG');
   for i := 0 to Ord(load_end) - 1 do
   begin
     M_DrawSaveLoadBorder(LoadDef.x, LoadDef.y + LoadDef.itemheight * i);
@@ -2014,6 +2252,11 @@ end;
 procedure M_DrawReadThis1;
 begin
   inhelpscreens := true;
+  if menuext.helppages >= 1 then
+  begin
+    V_PageDrawer('HELP01');
+    exit;
+  end;
   case gamemode of
     commercial:
       V_PageDrawer(pg_HELP);
@@ -2033,6 +2276,11 @@ end;
 procedure M_DrawReadThis2;
 begin
   inhelpscreens := true;
+  if menuext.helppages >= 2 then
+  begin
+    V_PageDrawer('HELP02');
+    exit;
+  end;
   case gamemode of
     retail,
     commercial:
@@ -2063,7 +2311,7 @@ end;
 //==============================================================================
 procedure M_DrawSoundVol;
 begin
-  V_DrawPatch(60, 38, SCN_TMP, 'M_SVOL', false);
+  M_DrawMenuPatch(60, 38, 'M_SVOL');
 
   M_DrawThermo(
     SoundVolDef.x, SoundVolDef.y + SoundVolDef.itemheight * (Ord(sfx_vol) + 1), 16, snd_SfxVolume);
@@ -2094,8 +2342,8 @@ procedure M_DrawCompatibility;
 var
   ppos: menupos_t;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_COM', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
+  M_DrawMenuPatch(20, 48, 'MENU_COM');
 
   dogs := GetIntegerInRange(dogs, 0, MAXPLAYERS - 1);
   ppos := M_WriteText(CompatibilityDef.x, CompatibilityDef.y + CompatibilityDef.itemheight * Ord(cmp_dogs), 'Dogs (Marine Best Friend): ');
@@ -2222,6 +2470,9 @@ begin
     AM_MARKKEY := Ord('m');
     AM_CLEARMARKKEY := Ord('c');
   end;
+
+  if Assigned(menuext.keyboardmode) then
+    menuext.keyboardmode(mode);
 end;
 
 //==============================================================================
@@ -2446,8 +2697,8 @@ procedure M_DrawControls;
 var
   ppos: menupos_t;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_CON', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
+  M_DrawMenuPatch(20, 48, 'MENU_CON');
 
   ppos := M_WriteText(ControlsDef.x, ControlsDef.y + ControlsDef.itemheight * Ord(cttl_mousemove), 'Y mouse axis: ');
   M_WriteWhiteText(ppos.x, ppos.y, mmouseyoptions[mousemove]);
@@ -2467,8 +2718,8 @@ end;
 //==============================================================================
 procedure M_DrawSound;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_SOU', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
+  M_DrawMenuPatch(20, 48, 'MENU_SOU');
 end;
 
 //==============================================================================
@@ -2480,8 +2731,8 @@ procedure M_DrawSystem;
 var
   ppos: menupos_t;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_SYS', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
+  M_DrawMenuPatch(20, 48, 'MENU_SYS');
 
   M_Screenshot.FixFormat;
   ppos := M_WriteText(SystemDef.x, SystemDef.y + SystemDef.itemheight * Ord(sys_screenshottype), 'Screenshot format: ');
@@ -2887,7 +3138,7 @@ end;
 //==============================================================================
 procedure M_DrawMainMenu;
 begin
-  V_DrawPatch(94, 2, SCN_TMP, 'M_DOOM', false);
+  M_DrawMenuPatch(94, 2, 'M_DOOM');
 end;
 
 //==============================================================================
@@ -2898,8 +3149,8 @@ end;
 //==============================================================================
 procedure M_DrawNewGame;
 begin
-  V_DrawPatch(96, 14, SCN_TMP, 'M_NEWG', false);
-  V_DrawPatch(54, 38, SCN_TMP, 'M_SKILL', false);
+  M_DrawMenuPatch(96, 14, 'M_NEWG');
+  M_DrawMenuPatch(54, 38, 'M_SKILL');
 end;
 
 //==============================================================================
@@ -3002,6 +3253,9 @@ var
 //==============================================================================
 procedure M_DrawEpisode;
 begin
+  if M_ExtPatch(54, 38, 'M_EPISOD') then
+    exit;
+
   if lumpepi = -2 then
     lumpepi := W_CheckNumForName('M_EPISOD');
   if lumpepi >= 0 then
@@ -3092,7 +3346,7 @@ var
 //==============================================================================
 procedure M_DrawOptions;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
 end;
 
 //==============================================================================
@@ -3102,10 +3356,10 @@ end;
 //==============================================================================
 procedure M_DrawGeneralOptions;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
 
-  V_DrawPatch(OptionsGeneralDef.x + 120, OptionsGeneralDef.y + OptionsGeneralDef.itemheight * Ord(messages), SCN_TMP,
-    msgNames[showMessages], false);
+  M_DrawMenuPatch(OptionsGeneralDef.x + 120, OptionsGeneralDef.y + OptionsGeneralDef.itemheight * Ord(messages),
+    msgNames[showMessages]);
 
   M_DrawThermo(
     OptionsGeneralDef.x, OptionsGeneralDef.y + OptionsGeneralDef.itemheight * (Ord(scrnsize) + 1), 9, m_screensize);
@@ -3121,8 +3375,8 @@ end;
 //==============================================================================
 procedure M_DrawSensitivity;
 begin
-  V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
-  V_DrawPatch(20, 48, SCN_TMP, 'M_MSENS', false);
+  M_DrawMenuPatch(108, 15, 'M_OPTTTL');
+  M_DrawMenuPatch(20, 48, 'M_MSENS');
 
   M_DrawThermo(
     SensitivityDef.x, SensitivityDef.y + SensitivityDef.itemheight * (Ord(sens_mousesensitivity) + 1), 20, mouseSensitivity);
@@ -3143,11 +3397,14 @@ procedure M_DrawDisplayOptions;
 var
   lump: integer;
 begin
+  if M_ExtPatch(52, 15, 'M_DISOPT') then
+    exit;
+
   lump := W_CheckNumForName('M_DISOPT');
   if lump >= 0 then
     V_DrawPatch(52, 15, SCN_TMP, lump, false)
   else
-    V_DrawPatch(108, 15, SCN_TMP, 'M_OPTTTL', false);
+    M_DrawMenuPatch(108, 15, 'M_OPTTTL');
 end;
 
 var
@@ -3307,7 +3564,7 @@ var
   ppos: menupos_t;
 begin
   M_DrawDisplayOptions;
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_ASP', false);
+  M_DrawMenuPatch(20, 48, 'MENU_ASP');
 
   aspectratioidx := _nearest_aspect_index;
   ppos := M_WriteText(OptionsDisplayAspectRatioDef.x, OptionsDisplayAspectRatioDef.y + OptionsDisplayAspectRatioDef.itemheight * Ord(oda_forceaspectratio), 'Force Aspect Ratio: ');
@@ -3324,7 +3581,7 @@ var
   ppos: menupos_t;
 begin
   M_DrawDisplayOptions;
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_CAM', false);
+  M_DrawMenuPatch(20, 48, 'MENU_CAM');
 
   chasecamera_viewxy := ibetween(chasecamera_viewxy, CHASECAMERA_XY_MIN, CHASECAMERA_XY_MAX);
   ppos := M_WriteText(OptionsDisplayCameraDef.x, OptionsDisplayCameraDef.y + OptionsDisplayCameraDef.itemheight * Ord(odc_chasecameraxy), 'Chase Camera XY position: ');
@@ -3433,7 +3690,7 @@ var
   ppos: menupos_t;
 begin
   M_DrawDisplayOptions;
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_LIG', false);
+  M_DrawMenuPatch(20, 48, 'MENU_LIG');
 
   r_voxellightmapaccuracy := ibetween(r_voxellightmapaccuracy, 0, 2);
 
@@ -3466,7 +3723,7 @@ end;
 procedure M_DrawOptionsUncappedFrameRate;
 begin
   M_DrawDisplayOptions;
-  V_DrawPatch(20, 48, SCN_TMP, 'MENU_UNC', false);
+  M_DrawMenuPatch(20, 48, 'MENU_UNC');
 end;
 
 //==============================================================================
@@ -4239,6 +4496,14 @@ begin
     exit;
   end;
 
+  // A game with its own text input in a menu (Radix: the name of the pilot)
+  if menuactive and Assigned(menuext.responder) then
+    if menuext.responder(ch) then
+    begin
+      result := true;
+      exit;
+    end;
+
   // Save Game string input
   if saveStringEnter <> 0 then
   begin
@@ -4290,7 +4555,7 @@ begin
       KEY_ESCAPE:
         begin
           bindkeyEnter := false;
-          KeyBindingsInfo[bindkeySlot].pkey^ := saveOldkey;
+          M_BindingInfo(bindkeySlot).pkey^ := saveOldkey;
         end;
       KEY_ENTER:
         begin
@@ -4924,6 +5189,8 @@ begin
         else
           M_WriteText(x, y, str);
       end
+      else if Assigned(menuext.item) and menuext.item(currentMenu, i, x, y, i = itemOn) then
+        // drawn (or hidden) by the game
       else
       begin
         lump := W_CheckNumForName(currentMenu.menuitems[i].name);
@@ -4946,7 +5213,9 @@ begin
     M_WriteWhiteText(315 - rlen, 158, rstr);
   end;
 
-  if currentMenu.itemheight > LINEHEIGHT2 then
+  if Assigned(menuext.cursor) and menuext.cursor(currentMenu, itemOn) then
+    // drawn (or hidden) by the game
+  else if currentMenu.itemheight > LINEHEIGHT2 then
     // DRAW SKULL
     V_DrawPatch(x + SKULLXOFF, currentMenu.y + SKULLYOFF + itemOn * currentMenu.itemheight, SCN_TMP,
       skullName[whichSkull], false)
@@ -5167,6 +5436,7 @@ procedure M_Init;
 var
   i: integer;
   lump: integer;
+  menus: menuset_t;
 begin
   currentMenu := @MainDef;
   menuactive := false;
@@ -5215,7 +5485,7 @@ begin
 
   // JVAL 20200122 - Extended help screens
   extrahelpscreens := TDNumberList.Create;
-  for i := 1 to 99 do
+  for i := 1 + menuext.helppages to 99 do
   begin
     lump := W_CheckNumForName('HELP' + IntToStrzFill(2, i));
     if lump >= 0 then
@@ -5247,6 +5517,25 @@ begin
   C_AddCmd('menu_optionssystem, menu_systemoptions, menu_system', @M_CmdMenuSystemDef);
   C_AddCmd('menu_load, menu_loadgame', @M_CmdMenuLoadDef);
   C_AddCmd('menu_save, menu_savegame', @M_CmdMenuSaveDef);
+
+  // The keys of the game are one more page of the key bindings
+  if menuext.numbindings > 0 then
+  begin
+    KeyBindingsDef5.numitems := menuext.numbindings;
+    KeyBindingsDef4.rightMenu := @KeyBindingsDef5;
+    KeyBindingsDef1.leftMenu := @KeyBindingsDef5;
+  end;
+
+  if Assigned(menuext.init) then
+  begin
+    menus.main := @MainDef;
+    menus.episode := @EpiDef;
+    menus.newgame := @NewDef;
+    menus.options := @OptionsDef;
+    menus.load := @LoadDef;
+    menus.save := @SaveDef;
+    menuext.init(menus);
+  end;
 end;
 
 //==============================================================================
@@ -7386,6 +7675,34 @@ begin
   KeyBindingsDef4.lastOn := 0; // last item user was on in menu
   KeyBindingsDef4.itemheight := LINEHEIGHT2;
   KeyBindingsDef4.texturebk := true;
+
+////////////////////////////////////////////////////////////////////////////////
+//KeyBindingsMenu5 (the keys of the game: M_Init links the page only when there are some)
+  pmi := @KeyBindingsMenu5[0];
+  for i := 0 to MAXMENUEXTRABINDINGS - 1 do
+  begin
+    pmi.status := 1;
+    pmi.name := '';
+    pmi.cmd := '';
+    pmi.routine := @M_KeyBindingSelect5;
+    pmi.pBoolVal := nil;
+    pmi.alphaKey := Chr(Ord('1') + i);
+    inc(pmi);
+  end;
+
+////////////////////////////////////////////////////////////////////////////////
+//KeyBindingsDef5
+  KeyBindingsDef5.numitems := 0; // # of menu items
+  KeyBindingsDef5.prevMenu := @ControlsDef; // previous menu
+  KeyBindingsDef5.leftMenu := @KeyBindingsDef4; // left menu
+  KeyBindingsDef5.rightMenu := @KeyBindingsDef1; // right menu
+  KeyBindingsDef5.menuitems := Pmenuitem_tArray(@KeyBindingsMenu5);  // menu items
+  KeyBindingsDef5.drawproc := @M_DrawBindings5;  // draw routine
+  KeyBindingsDef5.x := 32;
+  KeyBindingsDef5.y := 34; // x,y of menu
+  KeyBindingsDef5.lastOn := 0; // last item user was on in menu
+  KeyBindingsDef5.itemheight := LINEHEIGHT2;
+  KeyBindingsDef5.texturebk := true;
 
 ////////////////////////////////////////////////////////////////////////////////
 //LoadMenu

@@ -72,6 +72,7 @@ uses
   radix_playerstate,
   radix_teleport,
   radix_walls,
+  radix_pilotsound,
   DelphiDoom.Radix.LevelLogic.Types,
   DelphiDoom.Radix.Action.Rules,
   DelphiDoom.Radix.Messages,
@@ -1902,7 +1903,7 @@ begin
   begin
     name := RX_SoundName(snd);
     if (name <> '') and (players[radixplayer].mo <> nil) then
-      S_StartSound(players[radixplayer].mo, name);
+      S_StartSound(RX_PilotMessageOrigin(radixplayer, @players[radixplayer]), name);
   end;
   nextsoundtime := leveltime + RX_SoundDuration(snd) + 1;
 end;

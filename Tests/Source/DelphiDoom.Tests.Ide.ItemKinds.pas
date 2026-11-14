@@ -32,6 +32,8 @@ type
     procedure DovrebbeRiconoscereISeiGiochi;
     [Test]
     procedure DovrebbeDareLaRigaDelMenuDeiGiochi;
+    [Test]
+    procedure RadixDovrebbeUsareIlCompilatoreDiDoom;
   end;
 
 implementation
@@ -84,8 +86,20 @@ begin
   Assert.AreEqual(1, TIdeGames.BoxIndex('heretic'));
   Assert.AreEqual(2, TIdeGames.BoxIndex('hexen'));
   Assert.AreEqual(3, TIdeGames.BoxIndex('strife'));
-  Assert.AreEqual(0, TIdeGames.BoxIndex('radix'));
+  Assert.AreEqual(4, TIdeGames.BoxIndex('radix'));
+  Assert.AreEqual(5, TIdeGames.BoxIndex('mars'));
+  Assert.AreEqual(0, TIdeGames.BoxIndex('quake'));
   Assert.AreEqual(0, TIdeGames.BoxIndex(''));
+end;
+
+procedure TTestIdeItemKinds.RadixDovrebbeUsareIlCompilatoreDiDoom;
+begin
+  Assert.AreEqual('doom', TIdeGames.CompilerGame('radix'));
+  Assert.AreEqual('doom', TIdeGames.CompilerGame(' Radix '));
+  Assert.AreEqual('doom', TIdeGames.CompilerGame('Doom'));
+  Assert.AreEqual('hexen', TIdeGames.CompilerGame('hexen'));
+  // Mars3D has no engine in this repository: its compiler is still asked by its own name
+  Assert.AreEqual('mars', TIdeGames.CompilerGame('mars'));
 end;
 
 end.

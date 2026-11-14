@@ -68,6 +68,23 @@ procedure wipe_EndScreen;
 function wipe_Ticker(ticks: integer): boolean;
 
 type
+  // The wipe of a game that does not melt the screen (Radix fades): it draws on dest (count pixels)
+  // what the wipe shows after ticks more tics, between the screen before (scr_start) and the screen
+  // after (scr_end); first is true at the first call of a wipe; true when the wipe is over
+  wipe_custom_t = function(const scr_start, scr_end, dest: PLongWordArray; const count, ticks: integer;
+    const first: boolean): boolean;
+
+//==============================================================================
+//
+// wipe_ConfigureCustom
+//
+// Given by the part of the composition of a game with its own wipe (software
+// renderer only). Without it, and for every other game, the screen melts.
+//
+//==============================================================================
+procedure wipe_ConfigureCustom(const custom: wipe_custom_t);
+
+type
   wipe_t = (
     // simple gradual pixel change for 8-bit only
     wipe_ColorXForm,
@@ -230,6 +247,17 @@ end;
 
 var
   wiping: boolean = false;
+  wipe_custom: wipe_custom_t = nil;
+
+//==============================================================================
+//
+// wipe_ConfigureCustom
+//
+//==============================================================================
+procedure wipe_ConfigureCustom(const custom: wipe_custom_t);
+begin
+  wipe_custom := custom;
+end;
 
 //==============================================================================
 // wipe_Ticker
@@ -238,7 +266,27 @@ var
 //
 //==============================================================================
 function wipe_Ticker(ticks: integer): boolean;
+{$IFNDEF OPENGL}
+var
+  first: boolean;
+{$ENDIF}
 begin
+{$IFNDEF OPENGL}
+  if Assigned(wipe_custom) then
+  begin
+    first := not wiping;
+    wiping := true;
+    if wipe_custom(wipe_scr_start, wipe_scr_end, screen32, SCREENWIDTH * SCREENHEIGHT, ticks, first) then
+    begin
+      wiping := false;
+      memfree(pointer(wipe_scr_start), SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
+      memfree(pointer(wipe_scr_end), SCREENWIDTH * SCREENHEIGHT * SizeOf(LongWord));
+    end;
+    result := not wiping;
+    exit;
+  end;
+{$ENDIF}
+
   // initial stuff
   if not wiping then
   begin

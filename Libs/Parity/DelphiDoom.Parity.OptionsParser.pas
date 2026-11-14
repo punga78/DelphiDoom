@@ -17,7 +17,8 @@ type
   /// <summary>
   ///   Reads the options of the parity tools from the arguments of the program (the names are not case
   ///   sensitive): -statehash file, -statehash-detail first last, -framehash file, -framedump tic file,
-  ///   -autodemo seed tics, -autosave tic slot, -savelayouts file, -autoquit tic. What is not one of them is ignored
+  ///   -autodemo seed tics, -autoscript file, -autosave tic slot, -savelayouts file, -autoquit tic. What is not one of
+  ///   them is ignored
   /// </summary>
   TParityOptionsParser = class
   strict private
@@ -43,6 +44,7 @@ const
   SWrongTics = 'The number of tics of -autodemo must be more than 0';
   SWrongSaveTic = 'The tic of -autosave must not be less than 0';
   SWrongSaveSlot = 'The slot of -autosave must be a number from 0 to 9';
+  STwoPilots = 'The options -autodemo and -autoscript cannot be used together';
 
 { TParityOptionsParser }
 
@@ -145,6 +147,14 @@ begin
     Result.AutoQuitTic := Integer(ReadInteger(AArguments, LIndex + 1, '-autoquit'));
     if Result.AutoQuitTic < 0 then
       raise EParityException.CreateFmt(SWrongNumber, ['-autoquit', IntToStr(Result.AutoQuitTic)]);
+  end;
+
+  LIndex := FindName(AArguments, '-autoscript');
+  if LIndex >= 0 then
+  begin
+    if Result.AutoDemo then
+      raise EParityException.Create(STwoPilots);
+    Result.AutoScriptFile := ReadText(AArguments, LIndex + 1, '-autoscript');
   end;
 end;
 

@@ -64,6 +64,9 @@ var
   radixlevelplayers: array[0..MAXPLAYERS - 1] of radixlevelplayer_t;
   levelhassecondaryobjective: boolean = false; // JVAL: 20200314 - Radix secondary objective
   totalradixkills: integer = 0; // JVAL: 20200429 - The enemies of the map of Radix
+  // The level (1 based) that the action that ended this one named (E1M9 names the fifth);
+  // 0 when the next level is the one the engine goes to
+  radixnamedlevel: integer = 0;
 
 const
   // the places of the lumps of Radix after the lumps of a map of Doom (ML_R???? of Rad-X)
@@ -100,6 +103,16 @@ function RX_ReadThingExtras(const lastdoomlump: integer): TArray<TRadixDoomThing
 //
 //==============================================================================
 procedure RX_LoadLevelLogic(const lastdoomlump: integer);
+
+//==============================================================================
+//
+// RX_SpawnLevelLogicThinker
+// Adds the thinker that runs the triggers and the actions; nothing when the
+// level already has it. RX_LoadLevelLogic calls it, and the loading of a saved
+// game after the engine has freed the thinkers it does not know
+//
+//==============================================================================
+procedure RX_SpawnLevelLogicThinker;
 
 //==============================================================================
 //
@@ -167,6 +180,7 @@ uses
   radix_forcefield,
   radix_grid,
   radix_map_extra,
+  radix_physics,
   radix_walls,
   DelphiDoom.Radix.Types,
   DelphiDoom.Radix.SoundPart,
@@ -328,8 +342,6 @@ end;
 //==============================================================================
 //
 // RX_ExitLevel
-// Missing: the level that the action names (the way back from the secret
-// level) needs G_DoCompleted, that knows only the levels of Doom
 //
 //==============================================================================
 procedure RX_ExitLevel(const nextlevel: integer);
@@ -347,8 +359,9 @@ begin
       G_SecretExitLevel;
     rekNamedLevel:
       begin
-        I_Warning('RX_ExitLevel(): The level asks for the level %d, the engine goes to its own next level'#13#10,
-          [ex.Map]);
+        // G_DoCompleted knows only the levels of Doom (from the secret level of the first
+        // episode it goes back to the fourth): the debriefing puts this level in its place
+        radixnamedlevel := ex.Map;
         G_ExitLevel;
       end;
   else
@@ -450,6 +463,7 @@ begin
 
   RX_RunForceFields; // JVAL: 20200429 - Forcefields
   RX_TrackShots;
+  RX_IdleExplodeTick; // JVAL: 20200503 - P_VelocityHandler
   RX_RunTriggers; // JVAL: 20200305 - Run radix triggers
   RX_RunActions;  // JVAL: 20200305 - Run radix actions
 end;
@@ -480,6 +494,29 @@ end;
 
 //==============================================================================
 //
+// RX_SpawnLevelLogicThinker
+//
+//==============================================================================
+procedure RX_SpawnLevelLogicThinker;
+var
+  logic: Pradixlevellogic_t;
+  think: Pthinker_t;
+begin
+  think := thinkercap.next;
+  while think <> @thinkercap do
+  begin
+    if @think._function.acp1 = @T_RadixLevelLogic then
+      exit;
+    think := think.next;
+  end;
+
+  logic := Z_Malloc(SizeOf(radixlevellogic_t), PU_LEVSPEC, nil);
+  P_AddThinker(@logic.thinker);
+  logic.thinker._function.acp1 := @T_RadixLevelLogic;
+end;
+
+//==============================================================================
+//
 // RX_LoadLevelLogic
 //
 //==============================================================================
@@ -489,7 +526,6 @@ var
   mappoints: TArray<TRadixLevelMapPoint>;
   actions: TArray<TRadixLevelAction>;
   triggers: TArray<TRadixLevelTrigger>;
-  logic: Pradixlevellogic_t;
   i: integer;
 begin
   if radix_levellumpreader = nil then
@@ -519,14 +555,13 @@ begin
   levelhassecondaryobjective := radixlogic.HasActionOfKind(RADIX_ACTION_SECONDARY_OBJECTIVE);
   ZeroMemory(@radixlevelplayers, SizeOf(radixlevelplayers));
   radixplayer := consoleplayer;
+  radixnamedlevel := 0;
 
   RX_MarkMissileWalls;
   RX_InitWalls;
   RX_InitForceFields; // JVAL: 20200429 - Initalize forcefields
 
-  logic := Z_Malloc(SizeOf(radixlevellogic_t), PU_LEVSPEC, nil);
-  P_AddThinker(@logic.thinker);
-  logic.thinker._function.acp1 := @T_RadixLevelLogic;
+  RX_SpawnLevelLogicThinker;
 
   if devparm then
     printf('RX_LoadLevelLogic(): %d actions, %d triggers, grid %d x %d'#13#10,

@@ -41,8 +41,33 @@ const
   ALIASES_LUMP = 'RADIXINF';
   // The lumps that the engine of Doom asks for by name and RADIX.DAT does not have, in the format
   // of RADIXINF: the flat of the border of the view is the background of the menus of Rad-X
-  // (menubackgroundflat)
-  ENGINE_NAMES = 'RDXF0000=FLOOR7_2'#13#10;
+  // (menubackgroundflat). The sounds of Doom that the engine plays by number (doors and platforms,
+  // switches, the teleport, the craft that hits something, the menus) are the sounds of
+  // RADIX.DAT that Rad-X gave them (radixalias of its sound_data.pas; DS_nnnnn is the sound nnnnn
+  // of the table of TRadixSoundPart); the three of the menus and of the switches, which Rad-X
+  // played from its own menu, are the click of the buttons
+  ENGINE_NAMES = 'RDXF0000=FLOOR7_2'#13#10 +
+    'DS_00001=DSPLASMA'#13#10 +
+    'DS_00004=DSRLAUNC'#13#10 +
+    'DS_00005=DSRXPLOD'#13#10 +
+    'DS_00002=DSPSTART'#13#10 +
+    'DS_00003=DSPSTOP'#13#10 +
+    'DS_00002=DSSTNMOV'#13#10 +
+    'DS_00015=DSWPNUP'#13#10 +
+    'DS_00025=DSOOF'#13#10 +
+    'DS_00014=DSTELEPT'#13#10 +
+    'DS_00000=DSPLDETH'#13#10 +
+    'DS_00000=DSNOWAY'#13#10 +
+    'DS_00017=DSPISTOL'#13#10 +
+    'DS_00017=DSSWTCHN'#13#10 +
+    'DS_00017=DSSWTCHX'#13#10 +
+    // the menu of Doom leaves the game with the voice of one of its monsters (Radix has none);
+    // Rad-X left with the sound of the teleport
+    'DS_00014=DSDMPAIN'#13#10 +
+    'DS_00014=DSPOPAIN'#13#10 +
+    'DS_00014=DSPOSIT1'#13#10 +
+    'DS_00014=DSPOSIT3'#13#10 +
+    'DS_00014=DSSGTATK'#13#10;
 
 { TEngineRadixLumpAliases }
 

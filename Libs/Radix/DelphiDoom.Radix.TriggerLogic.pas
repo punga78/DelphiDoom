@@ -82,13 +82,27 @@ type
     function MissileWalls: TArray<Integer>;
     /// <summary>True when a trigger has, among its actions, one of the given kind (a force field is found so)</summary>
     function TriggerHasActionOfKind(ATrigger: Integer; AKind: Integer): Boolean;
+    /// <summary>A copy of the actions, of the triggers and of the last triggers of the crafts, for a saved game</summary>
+    procedure CopyState(out AActions: TArray<TRadixLevelAction>; out ATriggers: TArray<TRadixLevelTrigger>;
+      out ALastTriggers: TArray<Integer>);
+    /// <summary>The state of a saved game of this level in the place of the current one</summary>
+    /// <remarks>
+    ///   Raises ERadixException, and changes nothing, when the actions, the triggers or the crafts
+    ///   are not as many as the ones of the level
+    /// </remarks>
+    procedure RestoreState(const AActions: TArray<TRadixLevelAction>; const ATriggers: TArray<TRadixLevelTrigger>;
+      const ALastTriggers: TArray<Integer>);
     property ActionCount: Integer read GetActionCount;
     property TriggerCount: Integer read GetTriggerCount;
   end;
 
 implementation
 
+uses
+  System.SysUtils, DelphiDoom.Radix.Types;
+
 const
+  SStateOfAnotherLevel = 'Radix saved game: %d actions, %d triggers and %d players, the level has %d, %d and %d';
   ACTION_ENABLED = 1;
   ACTION_RUNNING = 0;
   // not the $FFFF of RADIX.DAT (an action that waits for its trigger): one that has finished
@@ -339,6 +353,26 @@ begin
     if Assigned(LAction) and (LAction.ActionType = AKind) then
       Exit(True);
   end;
+end;
+
+procedure TRadixTriggerLogic.CopyState(out AActions: TArray<TRadixLevelAction>;
+  out ATriggers: TArray<TRadixLevelTrigger>; out ALastTriggers: TArray<Integer>);
+begin
+  AActions := Copy(FActions);
+  ATriggers := Copy(FTriggers);
+  ALastTriggers := Copy(FLastTrigger);
+end;
+
+procedure TRadixTriggerLogic.RestoreState(const AActions: TArray<TRadixLevelAction>;
+  const ATriggers: TArray<TRadixLevelTrigger>; const ALastTriggers: TArray<Integer>);
+begin
+  if (Length(AActions) <> Length(FActions)) or (Length(ATriggers) <> Length(FTriggers)) or
+    (Length(ALastTriggers) <> Length(FLastTrigger)) then
+    raise ERadixException.CreateFmt(SStateOfAnotherLevel, [Length(AActions), Length(ATriggers),
+      Length(ALastTriggers), Length(FActions), Length(FTriggers), Length(FLastTrigger)]);
+  FActions := Copy(AActions);
+  FTriggers := Copy(ATriggers);
+  FLastTrigger := Copy(ALastTriggers);
 end;
 
 end.

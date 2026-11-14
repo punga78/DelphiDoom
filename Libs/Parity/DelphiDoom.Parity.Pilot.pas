@@ -52,6 +52,8 @@ type
     destructor Destroy; override;
     function NextCommand(const AView: TParityPilotView): TParityPilotCommand;
     function IsFinished(ATic: Integer): Boolean;
+    /// <summary>Always 0: this pilot does not look at the enemies</summary>
+    function EnemyRange: Integer;
   end;
 
 implementation
@@ -215,6 +217,11 @@ end;
 function TParityPilot.IsFinished(ATic: Integer): Boolean;
 begin
   Result := ATic >= FTics;
+end;
+
+function TParityPilot.EnemyRange: Integer;
+begin
+  Result := 0;
 end;
 
 end.
