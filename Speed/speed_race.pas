@@ -93,6 +93,14 @@ function SH_RaceEvents: TEngineSpeedRaceEvents;
 
 //==============================================================================
 //
+// SH_RaceSettings
+// The laps, the time and the state of the race of this level (nil when there is none)
+//
+//==============================================================================
+function SH_RaceSettings: IRacingRaceState;
+
+//==============================================================================
+//
 // SH_ScoreTable
 // The table of the best times (the file SPEED.REC of the data folder)
 //
@@ -185,6 +193,16 @@ end;
 function SH_Race: TRacingRaceController;
 begin
   Result := race_controller;
+end;
+
+//==============================================================================
+//
+// SH_RaceSettings
+//
+//==============================================================================
+function SH_RaceSettings: IRacingRaceState;
+begin
+  Result := race_settings;
 end;
 
 //==============================================================================

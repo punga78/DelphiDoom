@@ -28,11 +28,15 @@ uses
   DelphiDoom.Engine.Speed.DataConverter,
   w_wad,
   wi_stuff,
+  st_stuff,
+  speed_hud,
   speed_intermission;
 
 procedure ComposeSpeed(const ALog: ILog);
 begin
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
+  // the gauge, the lap, the position and the time of the race in the place of the status bar of Doom
+  ST_ConfigureReplacement(SH_HudDrawer);
   // the result of the race and the tables of the records in the place of the intermission of Doom
   WI_ConfigureReplacement(SH_Intermission_Start, SH_Intermission_Ticker, SH_Intermission_Drawer);
 end;

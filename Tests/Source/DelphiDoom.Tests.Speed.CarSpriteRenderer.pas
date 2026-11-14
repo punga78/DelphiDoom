@@ -381,6 +381,11 @@ begin
           if Length(LData) >= 8 then
             LText.Add(Format('lump %s: %d bytes, patch %dx%d offsets %d,%d', [LName, Length(LData), PSmallInt(@LData[0])^, PSmallInt(@LData[2])^, PSmallInt(@LData[4])^, PSmallInt(@LData[6])^]));
         end;
+      for LName in ['MFBG0', 'MFBW0', 'MFLG0', 'MFLW0', 'MFMG0', 'MFMW0', 'MFMG5', 'MFMW5', 'MG0', 'MG3', 'MREVO0', 'MREVO1', 'MPOS', 'MLAP', 'MTIME',
+        'MLAPS', 'MMHELMET', 'MGEAR', 'MSCBAR', 'MPOSBAR', 'RACEPOS0', 'RACEPOS1', 'MBEST', 'MRECORD', 'REXTTIME', 'RFINLAP', 'RTIMEOUT', 'MFBGB', 'MFMGB', 'CARPOS0', 'MSFBAR'] do
+        if LWad.IndexOf(LName) >= 0 then
+          WritePatchBmp(TPath.Combine(LDump, 'hud_' + LName + '.bmp'), LWad.LumpData[LWad.IndexOf(LName)],
+            LWad.LumpData[LWad.IndexOf('PLAYPAL')]);
       for LName in ['NUBES0', 'MOUNT0', 'SKY1'] do
         WritePatchBmp(TPath.Combine(LDump, 'lump_' + LName + '.bmp'), LWad.LumpData[LWad.IndexOf(LName)],
           LWad.LumpData[LWad.IndexOf('PLAYPAL')]);
