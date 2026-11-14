@@ -24,7 +24,7 @@ type
   ///   the goal item, 1..5 the weapons, P pauses, Escape the menu, F1 help, F4 quick exit, F5 briefing, F7 another
   ///   song, F9 and F10 the size of the view, Caps Lock the auto run, Num Lock the auto target, minus and plus the
   ///   zoom of the map. The letters and the digits that go down between two readings are the characters typed
-  ///   (the secret codes). The mouse is not read: the key state of the window has no mouse
+  ///   (the secret codes). The mouse is not read here: TGreedMouseControls adds it to these keys
   /// </summary>
   TGreedHostControls = class(TInterfacedObject, IGreedCommandSource)
   strict private
