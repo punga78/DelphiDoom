@@ -1769,6 +1769,11 @@ int main(int argc, char** argv)
             runFull(fullModeOf(argv[1]), seed, -1, true, false);
         return 0;
     }
+    if (strcmp(argv[1], "command-tables") == 0)
+    {
+        printCommandTables();
+        return 0;
+    }
     /* le righe di un solo scenario (per cercare una differenza) */
     if (strcmp(argv[1], "lines") == 0 && argc >= 4 && fullModeOf(argv[2]) >= 0)
     {

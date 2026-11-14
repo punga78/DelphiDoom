@@ -14,7 +14,8 @@ interface
 
 uses
   DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World,
-  DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher;
+  DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher,
+  DelphiDoom.War.Map.Game, DelphiDoom.War.Model.MapBinding;
 
 type
   /// <summary>
@@ -43,6 +44,14 @@ type
     /// </summary>
     class function CreateComputerCommands(const AWorld: TWarModelWorld; const ASelection: TWarSelection;
       APlayer: Integer; const AMap: IWarCommandMap = nil): TWarCommands; static;
+    /// <summary>
+    ///   The model of a game map made by TWarMapBuilder: a world over the grid of the map, with its forests and its fog,
+    ///   whose entities are the ones of the map (the same ids) created by TWarEntityManager; the commands of the player
+    ///   see the grid and the fog of the map. The events object is also asked for IWarGatherEvents. The map is not
+    ///   owned and must outlive the binding
+    /// </summary>
+    class function CreateMapBinding(const AMap: TWarGameMap; const ARandom: IWarRandom;
+      const AEvents: IWarModelEvents = nil): TWarMapBinding; static;
   end;
 
 implementation
@@ -54,9 +63,29 @@ uses
   DelphiDoom.War.Model.State.Idle, DelphiDoom.War.Model.State.Move, DelphiDoom.War.Model.State.Death,
   DelphiDoom.War.Model.State.Wait, DelphiDoom.War.Model.State.Attack.Registration,
   DelphiDoom.War.Model.State.GatherRegistry, DelphiDoom.War.Model.State.Construction,
-  DelphiDoom.War.Model.Commands.Family;
+  DelphiDoom.War.Model.Commands.Family, DelphiDoom.War.Model.Commands.GridMap, DelphiDoom.War.Model.GridOccupancy,
+  DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Gather.Intf, System.SysUtils;
 
 { TWarModelFactory }
+
+class function TWarModelFactory.CreateMapBinding(const AMap: TWarGameMap; const ARandom: IWarRandom;
+  const AEvents: IWarModelEvents): TWarMapBinding;
+var
+  LWorld: TWarModelWorld;
+  LGather: TWarGatherWorld;
+  LGatherEvents: IWarGatherEvents;
+  LCommandMap: IWarCommandMap;
+  LCommands: TWarCommands;
+begin
+  LWorld := CreateWorld(ARandom, TWarGridOccupancy.Create(AMap.Grid), AEvents);
+  LGatherEvents := nil;
+  Supports(AEvents, IWarGatherEvents, LGatherEvents);
+  LGather := TWarGatherWorld.Create(AMap.Grid, AMap.Forests, LGatherEvents);
+  LCommandMap := TWarGridCommandMap.Create(AMap.Grid, AMap.Fog);
+  LCommands := CreateCommands(LWorld, LCommandMap);
+  // the binding owns the parts from here, also when its constructor fails
+  Result := TWarMapBinding.Create(AMap, LWorld, LGather, LCommandMap, LCommands);
+end;
 
 class function TWarModelFactory.CreateCommands(const AWorld: TWarModelWorld; const AMap: IWarCommandMap): TWarCommands;
 begin

@@ -59,6 +59,7 @@ $script:Groups = @(
   # completamento della #194 (war_full_ref.inc): il tic INTERO di wmap_updateMap (stati, griglia, azioni, animazioni, proiettili,
   # mana, incantesimi) con gli ordini dati dai veri wcmd_executeCommand e updateCommandFromRightClick
   @{ Name = '194 comandi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('command-tables'); Golden = 'model.commands.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('commands', '12'); Golden = 'model.commands.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'commands', '6', '450'); Golden = 'model.commands.dump.golden.txt'; NeedsData = $false }) },
   @{ Name = '194 incantesimi'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(

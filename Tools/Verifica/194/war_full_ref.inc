@@ -6,8 +6,8 @@
 
   Il codice del remake (acoto87/war1, zlib License, (C) 2019 Alejandro Coto Gutierrez) e' quello ORIGINALE, incluso intero:
   gli ordini passano dai VERI wcmd_executeCommand (con un clic sintetico: input->pos, il tasto sinistro "appena premuto", il
-  pannello della mappa grande quanto la mappa e la vista in alto a sinistra, cosi' le coordinate dello schermo sono quelle
-  della mappa), updateCommandFromRightClick (clic destro), updateSelectionFromList e updateSelectionGroups (selezione e
+  pannello della mappa grande quanto la mappa; il punto dello schermo e' quello della mappa meno l'origine della vista, che
+  non e' in alto a sinistra perche' la pioggia di fuoco parte da sopra la vista), updateCommandFromRightClick (clic destro), updateSelectionFromList e updateSelectionGroups (selezione e
   gruppi), wcmd_cancel; il tic e' l'ordine intero di wmap_updateMap: stati, griglia, azioni, wanim_updateAnimations,
   proiettili, updateMagic, updateSpells (tickFull).
 
@@ -19,6 +19,8 @@
   Uso:  war_model_ref commands [n] | spells [n] | full [n]      n scenari (default 12) di 900 tic: una riga per tic
         war_model_ref dump commands|spells|full SEME TIC        il testo dello stato a quel tic
         war_model_ref fullstats commands|spells|full [n]        copertura: tic con almeno uno stato per tipo, entita' per tipo
+        war_model_ref lines commands|spells|full SEME           le righe di un solo scenario
+        war_model_ref command-tables                            cio' che ogni wcmd_train*, wcmd_upgrade*, wcmd_build* mette nel comando
 */
 
 #define FULL_TICS 900
@@ -814,6 +816,62 @@ static void runFull(int mode, u32 seed, s32 dumpTic, bool perTic, bool stats)
     gExtended = 0;
     gFullDump = 0;
     gTileStub = false;
+    worldFree();
+}
+
+/* le tabelle dei comandi: cio' che ogni wcmd_train*, wcmd_upgrade* e wcmd_build* mette nel comando corrente, l'incantesimo di
+   ogni comando di incantesimo e le costanti dei comandi */
+typedef void (*CommandSetter)(WarContext*, WarEntity*);
+
+static void printCommandTables(void)
+{
+    static const CommandSetter trains[14] = {
+        wcmd_trainFootman, wcmd_trainGrunt, wcmd_trainPeasant, wcmd_trainPeon, wcmd_trainHumanCatapult, wcmd_trainOrcCatapult,
+        wcmd_trainKnight, wcmd_trainRaider, wcmd_trainArcher, wcmd_trainSpearman, wcmd_trainConjurer, wcmd_trainWarlock,
+        wcmd_trainCleric, wcmd_trainNecrolyte
+    };
+    static const CommandSetter upgrades[20] = {
+        wcmd_upgradeSwords, wcmd_upgradeAxes, wcmd_upgradeHumanShields, wcmd_upgradeOrcsShields, wcmd_upgradeArrows,
+        wcmd_upgradeSpears, wcmd_upgradeHorses, wcmd_upgradeWolves, wcmd_upgradeScorpions, wcmd_upgradeSpiders,
+        wcmd_upgradeRainOfFire, wcmd_upgradePoisonCloud, wcmd_upgradeWaterElemental, wcmd_upgradeDaemon, wcmd_upgradeHealing,
+        wcmd_upgradeRaiseDead, wcmd_upgradeFarSight, wcmd_upgradeDarkVision, wcmd_upgradeInvisibility, wcmd_upgradeUnholyArmor
+    };
+    static const CommandSetter builds[16] = {
+        wcmd_buildFarmHumans, wcmd_buildFarmOrcs, wcmd_buildBarracksHumans, wcmd_buildBarracksOrcs, wcmd_buildChurch,
+        wcmd_buildTemple, wcmd_buildTowerHumans, wcmd_buildTowerOrcs, wcmd_buildTownHallHumans, wcmd_buildTownHallOrcs,
+        wcmd_buildLumbermillHumans, wcmd_buildLumbermillOrcs, wcmd_buildStable, wcmd_buildKennel, wcmd_buildBlacksmithHumans,
+        wcmd_buildBlacksmithOrcs
+    };
+    worldInit(1, 1);
+    WarUnitCommand* command = &gMap->commandState.command;
+    printf("# train commands: T command unit building\n");
+    for (s32 i = 0; i < 14; i++)
+    {
+        trains[i](gContext, NULL);
+        printf("T %d %d %d\n", (s32)command->type, (s32)command->train.unitToTrain, (s32)command->train.buildingUnit);
+    }
+    printf("# upgrade commands: U command upgrade\n");
+    for (s32 i = 0; i < 20; i++)
+    {
+        upgrades[i](gContext, NULL);
+        printf("U %d %d\n", (s32)command->type, (s32)command->upgrade.upgradeToBuild);
+    }
+    printf("# build commands: B command building\n");
+    for (s32 i = 0; i < 16; i++)
+    {
+        builds[i](gContext, NULL);
+        printf("B %d %d\n", (s32)command->type, (s32)command->build.buildingToBuild);
+    }
+    printf("# spell commands: S command spell\n");
+    for (s32 c = WAR_COMMAND_SPELL_HEALING; c <= WAR_COMMAND_SUMMON_WATER_ELEMENTAL; c++)
+        printf("S %d %d\n", c, (s32)wu_getCommandMapping((WarUnitCommandType)c)->mappedType);
+    printf("# constants: K roadGold roadWood maxSelected groups poisonDamage normalSpell cancel\n");
+    printf("K %d %d %d %d %d %d %d\n", WAR_ROAD_GOLD_COST, WAR_ROAD_WOOD_COST, MAX_SELECTED_ENTITIES_COUNT, MAX_SELECTION_GROUPS,
+           POISON_CLOUD_DAMAGE, (s32)WAR_NORMAL_SPELL, (s32)WAR_COMMAND_CANCEL);
+    printf("# basic commands: C none move stop harvest deliver repair attack buildBasic buildAdvanced buildRoad buildWall\n");
+    printf("C %d %d %d %d %d %d %d %d %d %d %d\n", (s32)WAR_COMMAND_NONE, (s32)WAR_COMMAND_MOVE, (s32)WAR_COMMAND_STOP,
+           (s32)WAR_COMMAND_HARVEST, (s32)WAR_COMMAND_DELIVER, (s32)WAR_COMMAND_REPAIR, (s32)WAR_COMMAND_ATTACK,
+           (s32)WAR_COMMAND_BUILD_BASIC, (s32)WAR_COMMAND_BUILD_ADVANCED, (s32)WAR_COMMAND_BUILD_ROAD, (s32)WAR_COMMAND_BUILD_WALL);
     worldFree();
 }
 
