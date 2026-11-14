@@ -15,7 +15,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Sound.Intf,
-  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.EntityPool,
+  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf,
+  DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage;
 
 type
@@ -38,6 +39,8 @@ type
     FSteering: IWarMovementSteering;
     FQueries: IWarUnitQueries;
     FEntities: IWarEntityManager;
+    FCombat: IWarCombatServices;
+    FCombatEvents: IWarCombatEvents;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
     FUnsignedDirections: Boolean;
@@ -60,6 +63,10 @@ type
     /// <summary>Questions about the units and the creation of units: given by the factory once the model is built</summary>
     property Queries: IWarUnitQueries read FQueries write FQueries;
     property Entities: IWarEntityManager read FEntities write FEntities;
+    /// <summary>The blows and the projectiles (given by the registration of the attack states); nil if none</summary>
+    property Combat: IWarCombatServices read FCombat write FCombat;
+    /// <summary>Sounds and explosions of the combat; nil if nobody listens</summary>
+    property CombatEvents: IWarCombatEvents read FCombatEvents write FCombatEvents;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
     property Players[AIndex: Integer]: PWarPlayerInfo read GetPlayer;
     property PlayersCount: Integer read FPlayersCount write FPlayersCount;

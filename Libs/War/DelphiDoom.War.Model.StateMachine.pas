@@ -99,6 +99,11 @@ type
     function CreateWait(ASlot: Integer; ATime: Single): PWarStateWait;
     /// <summary>wst_createAttackState</summary>
     function CreateAttack(ASlot: Integer; ATargetId: Word; const ATargetPosition: TWarVec2): PWarStateAttack;
+    /// <summary>wst_createFollowState: ATargetId 0 follows the position</summary>
+    function CreateFollow(ASlot: Integer; ATargetId: Word; const ATargetPosition: TWarVec2;
+      ATargetDistance: Integer): PWarStateFollow;
+    /// <summary>wst_createPatrolState: at most 64 waypoints (the first is where the unit is now)</summary>
+    function CreatePatrol(ASlot: Integer; const APositions: array of TWarVec2): PWarStatePatrol;
     /// <summary>wst_createCollapseState</summary>
     function CreateCollapse(ASlot: Integer): PWarStateBase;
     /// <summary>wst_createBuildState: paid already (the cost is the one stored)</summary>
@@ -664,6 +669,36 @@ begin
     Result^.TargetEntityId := ATargetId;
     Result^.TargetPosition := ATargetPosition;
   end;
+end;
+
+function TWarStateMachine.CreateFollow(ASlot: Integer; ATargetId: Word; const ATargetPosition: TWarVec2;
+  ATargetDistance: Integer): PWarStateFollow;
+begin
+  Result := PWarStateFollow(AllocState(ASlot, WAR_STATE_FOLLOW));
+  if Assigned(Result) then
+  begin
+    Result^.TargetEntityId := ATargetId;
+    Result^.TargetPosition := ATargetPosition;
+    Result^.TargetDistance := ATargetDistance;
+  end;
+end;
+
+function TWarStateMachine.CreatePatrol(ASlot: Integer; const APositions: array of TWarVec2): PWarStatePatrol;
+var
+  LCount: Integer;
+  LIndex: Integer;
+begin
+  Result := PWarStatePatrol(AllocState(ASlot, WAR_STATE_PATROL));
+  if not Assigned(Result) then
+    Exit;
+  LCount := System.Length(APositions);
+  if LCount > WAR_MODEL_MAX_WAYPOINTS then
+    LCount := WAR_MODEL_MAX_WAYPOINTS;
+  Result^.Dir := 1;
+  Result^.WaypointsIndex := 0;
+  Result^.WaypointsCount := LCount;
+  for LIndex := 0 to LCount - 1 do
+    Result^.Waypoints[LIndex] := APositions[LIndex];
 end;
 
 function TWarStateMachine.CreateCollapse(ASlot: Integer): PWarStateBase;

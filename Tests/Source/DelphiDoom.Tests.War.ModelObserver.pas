@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.War.ModelObserver;
 interface
 
 uses
-  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf;
+  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Combat.Intf;
 
 type
   /// <summary>
@@ -18,8 +18,12 @@ type
   ///   model in a single object that counts the calls: the draws and their sum, the messages of the status bar, the
   ///   sounds that the original would ask for, and the other events in order. war_model_ref.c counts the same things
   /// </summary>
-  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents)
+  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents, IWarCombatEvents)
   strict private
+    FAttackSounds: Integer;
+    FArrowHits: Integer;
+    FExplosions: Integer;
+    FLastSoundStep: Integer;
     FState: Cardinal;
     FDraws: Cardinal;
     FSum: Cardinal;
@@ -38,6 +42,13 @@ type
     procedure UnitDied(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
     procedure BuildingCollapsing(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
     procedure BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
+    procedure AttackSound(const APosition: TWarVec2; ASoundStep: Integer);
+    procedure ArrowHit(const APosition: TWarVec2);
+    procedure Explosion(const APosition: TWarVec2; ARainOfFire: Boolean);
+    property AttackSounds: Integer read FAttackSounds;
+    property ArrowHits: Integer read FArrowHits;
+    property Explosions: Integer read FExplosions;
+    property LastSoundStep: Integer read FLastSoundStep;
     property Draws: Cardinal read FDraws;
     property Sum: Cardinal read FSum;
     property FlashCount: Cardinal read FFlashCount;
@@ -101,6 +112,25 @@ end;
 procedure TModelObserver.BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
 begin
   FDamagePercent := AHpPercent;
+end;
+
+procedure TModelObserver.AttackSound(const APosition: TWarVec2; ASoundStep: Integer);
+begin
+  Inc(FAttackSounds);
+  FLastSoundStep := ASoundStep;
+  Inc(FAudioCount);
+end;
+
+procedure TModelObserver.ArrowHit(const APosition: TWarVec2);
+begin
+  Inc(FArrowHits);
+  Inc(FAudioCount);
+end;
+
+procedure TModelObserver.Explosion(const APosition: TWarVec2; ARainOfFire: Boolean);
+begin
+  Inc(FExplosions);
+  Inc(FAudioCount);
 end;
 
 end.

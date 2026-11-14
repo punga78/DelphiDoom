@@ -5,6 +5,8 @@
 ```r
 powershell -NoProfile -File Compila-ModelRef.ps1 -Out <cartella nuova fuori dal repository>       # compila war_model_ref.exe
 war_model_ref tables | scenarios [n] | hostile [n] | dump friendly|hostile SEME TIC | bench [unita' tic]
+war_model_ref actions | combat [n] | combatstats [n] | dump combat SEME TIC                      # seconda fetta: passi delle azioni, combattimento (gruppo '194 attacco'), copertura degli scenari
+powershell -NoProfile -File Make-WarActionSteps.ps1                                                    # rigenera Model.ActionSteps.Data dal golden dei passi
 powershell -NoProfile -File Make-WarModelTables.ps1                                                    # rigenera Model.StatData e Model.ActionData dal golden delle tabelle
 powershell -NoProfile -File ..\201\Registra-Golden.ps1 -Solo 194                                      # riscrive model.*.golden.txt (solo se il C e' cambiato di proposito)
 powershell -NoProfile -File ..\201\Confronta-Golden.ps1 -Solo 194                                      # confronta

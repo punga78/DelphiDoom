@@ -53,6 +53,7 @@ void wproj_updateProjectile(WarContext* context, WarEntity* entity);
 #include "war_trees.c"
 #include "war_units.c"
 #include "war_entities.c"
+#include "war_projectiles.c"
 
 /* il percorso: il remake sa girare attorno agli ostacoli (#195); qui le tre funzioni del campo di flusso sono sostituite
    da stub (piu' sotto) e le definizioni originali restano con un altro nome */
@@ -101,6 +102,7 @@ static u32 gGameState = 0;
 static u32 gGameDraws = 0;
 static u32 gGameSum = 0;
 static int gTrace = 0;
+static int gExtended = 0;   /* il testo dello stato della seconda fetta (azioni, proiettili): solo per gli scenari di combattimento */
 
 static u32 lcgNext(u32* state)
 {
@@ -145,6 +147,13 @@ void wmui_setFlashStatus(WarContext* context, f32 time, String text)
 static u32 gAudioCount = 0;
 WarEntity* wa_createAudioWithPosition(WarContext* context, const CreateAudioArgs* args) { (void)context; (void)args; gAudioCount++; return NULL; }
 WarEntity* wa_createAudioRandomWithPosition(WarContext* context, const CreateAudioArgs* args) { (void)context; (void)args; gAudioCount++; return NULL; }
+/* il suono di un colpo (seconda fetta: attacco): una chiamata e un suono */
+WarEntity* wa_playAttackSound(WarContext* context, vec2 position, WarUnitActionStepType soundStep)
+{
+    (void)context; (void)position; (void)soundStep;
+    gAudioCount++;
+    return NULL;
+}
 
 /* war_ui.c non e' incluso: wui_isUIEntity e' una funzione di sola lettura del tipo dell'entita' (le unita' non sono dell'interfaccia) */
 bool wui_isUIEntity(WarEntity* entity)
@@ -323,6 +332,21 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
             textAdd(t, " tg=%d tp=%08x,%08x", a->targetEntityId, fbits(a->targetPosition.x), fbits(a->targetPosition.y));
             break;
         }
+        case WAR_STATE_FOLLOW:
+        {
+            WarStateFollow* f = (WarStateFollow*)s;
+            textAdd(t, " tg=%d tp=%08x,%08x td=%d", f->targetEntityId, fbits(f->targetPosition.x), fbits(f->targetPosition.y),
+                    f->targetDistance);
+            break;
+        }
+        case WAR_STATE_PATROL:
+        {
+            WarStatePatrol* p = (WarStatePatrol*)s;
+            textAdd(t, " wi=%d wc=%d dir=%d", p->waypointsIndex, p->waypointsCount, p->dir);
+            for (s32 i = 0; i < p->waypointsCount; i++)
+                textAdd(t, " w%d=%08x,%08x", i, fbits(p->waypoints[i].x), fbits(p->waypoints[i].y));
+            break;
+        }
         case WAR_STATE_WAIT:
         {
             u32 lo, hi;
@@ -391,6 +415,29 @@ static void dumpWorld(Text* t, s32 tic)
                     u->speed, u->actionType, fbits(u->manaTime), fbits(u->invisibilityTime), fbits(u->invulnerabilityTime));
             for (s32 a = 0; a < WAR_ACTION_TYPE_COUNT; a++)
                 textAdd(t, " a%d=%d,%08x,%d", a, u->actions[a].status, fbits(u->actions[a].scale), u->actions[a].stepIndex);
+            if (gExtended)
+            {
+                /* seconda fetta (attacco): i passi delle azioni e l'ultimo suono di colpo */
+                u32 llo, lhi;
+                dbits(u->lastAttackSoundGameTime, &llo, &lhi);
+                textAdd(t, " ls=%08x%08x", lhi, llo);
+                for (s32 a = 0; a < WAR_ACTION_TYPE_COUNT; a++)
+                {
+                    u32 wlo, whi;
+                    dbits(u->actions[a].waitEndGameTime, &wlo, &whi);
+                    textAdd(t, " x%d=%d,%d,%08x%08x", a, u->actions[a].lastActionStep, u->actions[a].lastSoundStep, whi, wlo);
+                }
+            }
+        }
+        if (gExtended && e->type == WAR_ENTITY_TYPE_PROJECTILE)
+        {
+            WarProjectileComponent* pj = we_getProjectileComponent(gContext, e);
+            WarSpriteComponent* sp = we_getSpriteComponent(gContext, e);
+            if (pj)
+                textAdd(t, " pj=%d,%d,%d,%08x,%08x,%08x,%08x,%d", pj->type, pj->sourceEntityId, pj->targetEntityId,
+                        fbits(pj->origin.x), fbits(pj->origin.y), fbits(pj->target.x), fbits(pj->target.y), pj->speed);
+            if (sp && tr)
+                textAdd(t, " fi=%d sx=%08x", sp->frameIndex, fbits(tr->scale.x));
         }
         WarStateMachineComponent* sm = we_getStateMachineComponent(gContext, e);
         if (sm)
@@ -700,6 +747,256 @@ static void runScenario(u32 hostile, u32 seed, s32 dumpTic, bool perTic)
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
+/* seconda fetta (#194): attacco, proiettili, inseguire e pattugliare                                                  */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+static const WarUnitType kCombatPool[16] = {
+    WAR_UNIT_FOOTMAN, WAR_UNIT_GRUNT, WAR_UNIT_ARCHER, WAR_UNIT_SPEARMAN, WAR_UNIT_CATAPULT_ORCS, WAR_UNIT_CATAPULT_HUMANS,
+    WAR_UNIT_CONJURER, WAR_UNIT_WARLOCK, WAR_UNIT_CLERIC, WAR_UNIT_NECROLYTE, WAR_UNIT_KNIGHT, WAR_UNIT_OGRE,
+    WAR_UNIT_SPIDER, WAR_UNIT_SKELETON, WAR_UNIT_WATER_ELEMENTAL, WAR_UNIT_PEASANT
+};
+static const WarUnitType kCombatBuildingPool[3] = { WAR_UNIT_FARM_HUMANS, WAR_UNIT_BARRACKS_ORCS, WAR_UNIT_CHURCH };
+
+/* due schieramenti vicini (meno di 5 caselle: i guerrieri si notano da soli) e qualche edificio come bersaglio */
+static void spawnCombat(void)
+{
+    u32 kind = scriptBelow(100);
+    u32 yr = scriptBelow(24);
+    u32 xr = scriptBelow(8);
+    if (kind < 88)
+    {
+        u32 type = scriptBelow(16);
+        u8 player = (u8)scriptBelow(2);
+        s32 x = (player == 0 ? 14 : 21) + (s32)xr;
+        s32 y = 8 + (s32)yr;
+        spawnDude(kCombatPool[type], player, x, y);
+    }
+    else
+    {
+        u32 type = scriptBelow(3);
+        u8 player = (u8)scriptBelow(2);
+        s32 x = (player == 0 ? 12 : 26) + (s32)xr;
+        s32 y = 8 + (s32)yr;
+        spawnBuilding(kCombatBuildingPool[type], player, x, y);
+    }
+}
+
+static void opAttack(void)
+{
+    WarEntity* e = pickSpawned();
+    WarEntity* t = pickSpawned();
+    u32 point = scriptBelow(10);
+    s32 px = (s32)scriptBelow(60);
+    s32 py = (s32)scriptBelow(60);
+    u32 push = scriptBelow(2);
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    WarEntityId targetId = 0;
+    vec2 targetPosition;
+    if (point == 0 || !t)
+        targetPosition = vec2f((f32)(px * MEGA_TILE_WIDTH + MINI_TILE_WIDTH), (f32)(py * MEGA_TILE_HEIGHT + MINI_TILE_HEIGHT));
+    else
+    {
+        targetId = t->id;
+        targetPosition = wu_getUnitCenterPosition(gContext, t);
+    }
+    WarStateAttack* state = wst_createAttackState(gContext, e, targetId, targetPosition);
+    if (push)
+        wst_pushState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_AI_ORDER);
+    else
+        wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+static void opFollow(void)
+{
+    WarEntity* e = pickSpawned();
+    WarEntity* t = pickSpawned();
+    s32 distance = 1 + (s32)scriptBelow(4);
+    u32 push = scriptBelow(2);
+    s32 px = (s32)scriptBelow(60);
+    s32 py = (s32)scriptBelow(60);
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    WarEntityId targetId = t ? t->id : 0;
+    vec2 targetPosition = t ? VEC2_ZERO : vec2f((f32)(px * MEGA_TILE_WIDTH + MINI_TILE_WIDTH), (f32)(py * MEGA_TILE_HEIGHT + MINI_TILE_HEIGHT));
+    WarStateFollow* state = wst_createFollowState(gContext, e, targetId, targetPosition, distance * MEGA_TILE_WIDTH);
+    if (push)
+        wst_pushState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_AI_ORDER);
+    else
+        wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+static void opPatrol(void)
+{
+    WarEntity* e = pickSpawned();
+    s32 count = 2 + (s32)scriptBelow(3);
+    s32 px[3], py[3];
+    for (s32 i = 0; i < 3; i++)
+    {
+        px[i] = 10 + (s32)scriptBelow(24);
+        py[i] = 8 + (s32)scriptBelow(24);
+    }
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    vec2 positions[4];
+    positions[0] = wu_getUnitCenterPosition(gContext, e);
+    for (s32 i = 1; i < count; i++)
+        positions[i] = vec2f((f32)(px[i - 1] * MEGA_TILE_WIDTH + MINI_TILE_WIDTH), (f32)(py[i - 1] * MEGA_TILE_HEIGHT + MINI_TILE_HEIGHT));
+    WarStatePatrol* state = wst_createPatrolState(gContext, e, count, positions);
+    wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+/* un proiettile che non lancia un'unita' con le sue armi (lo lancia lo stato cast): la pioggia di fuoco (due volte su
+   quattro), la palla di fuoco dei demoni e un colpo di catapulta, da un punto fuori dalla casella */
+static void opRain(void)
+{
+    WarEntity* e = pickSpawned();
+    WarEntity* t = pickSpawned();
+    u32 k = scriptBelow(4);
+    s32 tx = 10 + (s32)scriptBelow(24);
+    s32 ty = 8 + (s32)scriptBelow(24);
+    vec2 target = vec2f((f32)(tx * MEGA_TILE_WIDTH + MINI_TILE_WIDTH), (f32)(ty * MEGA_TILE_HEIGHT + MINI_TILE_HEIGHT));
+    vec2 origin = vec2f(target.x - 80.0f, target.y - 120.0f);
+    WarProjectileType type = k < 2 ? WAR_PROJECTILE_RAIN_OF_FIRE : (k == 2 ? WAR_PROJECTILE_FIREBALL_2 : WAR_PROJECTILE_CATAPULT);
+    WarEntityId targetId = (k >= 2 && t) ? t->id : 0;
+    wproj_createProjectile(gContext, type, e ? e->id : 0, targetId, origin, target);
+}
+
+static void combatScriptStep(void)
+{
+    u32 r = scriptBelow(100);
+    if (r < 6) opAttack();
+    else if (r < 9) opFollow();
+    else if (r < 11) opPatrol();
+    else if (r < 14) opMove(1);
+    else if (r < 16) opDamage();
+    else if (r < 17) opRemove();
+    else if (r < 20) spawnCombat();
+    else if (r < 22) opRain();
+    else if (r < 26) opHeal();
+    else if (r < 27) opWait();
+}
+
+/* come wmap_updateMap, senza gli incantesimi, la magia (la rigenerazione del mana), le animazioni e l'interfaccia */
+static void tickCombat(void)
+{
+    const f32 delta = 1.0f / 60.0f;
+    if (gTrace)
+        fprintf(stderr, "T\n");
+    gContext->gameDeltaTime = delta;
+    gContext->gameTime += (f64)delta;
+
+    combatScriptStep();
+
+    wst_processPendingTransitions(gContext);
+    wst_updateIdleStates(gContext);
+    wst_updateMoveStates(gContext);
+    wst_updatePatrolStates(gContext);
+    wst_updateFollowStates(gContext);
+    wst_updateAttackStates(gContext);
+    wst_updateGoldStates(gContext);
+    wst_updateMiningStates(gContext);
+    wst_updateWoodStates(gContext);
+    wst_updateChoppingStates(gContext);
+    wst_updateDeliverStates(gContext);
+    wst_updateDeathStates(gContext);
+    wst_updateCollapseStates(gContext);
+    wst_updateTrainStates(gContext);
+    wst_updateUpgradeStates(gContext);
+    wst_updateBuildStates(gContext);
+    wst_updateRepairStates(gContext);
+    wst_updateRepairingStates(gContext);
+    wst_updateCastStates(gContext);
+    wst_updateWaitStates(gContext);
+
+    wgrid_build(gContext);
+    updateActions(gContext);
+    updateProjectiles(gContext);
+}
+
+#define COMBAT_TICS 600
+
+typedef struct { s32 projectileTics[6]; s32 attackTics; s32 followTics; s32 patrolTics; s32 deadTics; s32 explosions; s32 maxProjectiles; } CombatStats;
+
+static void runCombat(u32 seed, s32 dumpTic, bool perTic, CombatStats* stats)
+{
+    gExtended = 1;
+    worldInit(seed ^ 0xA5A5A5A5u, seed * 2654435761u + 12345u);
+    gSpawnedCount = 0;
+    s32 count = 10 + (s32)scriptBelow(8);
+    for (s32 i = 0; i < count; i++)
+        spawnCombat();
+
+    for (s32 tic = 0; tic < COMBAT_TICS; tic++)
+    {
+        tickCombat();
+        Text text = {0};
+        if (perTic || tic == dumpTic)
+            dumpWorld(&text, tic);
+        if (dumpTic >= 0 && tic == dumpTic)
+            printf("%s", text.data);
+        else if (perTic)
+            printf("C %u %d %08x %d\n", seed, tic, fnv1a(text.data, text.length), gMap->entityManager.entityCount);
+        free(text.data);
+        if (stats)
+        {
+            WarEntityManager* m = &gMap->entityManager;
+            s32 projectiles = 0;
+            for (s32 i = 1; i < MAX_ENTITIES_COUNT; i++)
+            {
+                WarEntity* e = &m->entities[i];
+                if (e->id == 0)
+                    continue;
+                if (e->type == WAR_ENTITY_TYPE_PROJECTILE)
+                {
+                    WarProjectileComponent* pj = we_getProjectileComponent(gContext, e);
+                    if (pj)
+                        stats->projectileTics[pj->type]++;
+                    projectiles++;
+                }
+                if (wu_isUnit(e))
+                {
+                    if (wst_isActivelyAttacking(gContext, e)) stats->attackTics++;
+                    if (wst_isActivelyFollowing(gContext, e)) stats->followTics++;
+                    if (wst_isActivelyPatrolling(gContext, e)) stats->patrolTics++;
+                    if (wst_isDead(gContext, e)) stats->deadTics++;
+                }
+            }
+            if (projectiles > stats->maxProjectiles) stats->maxProjectiles = projectiles;
+        }
+    }
+    if (stats)
+        stats->explosions = we_getEntitiesOfType(gContext, WAR_ENTITY_TYPE_ANIMATION)->count;
+    worldFree();
+    gExtended = 0;
+}
+
+/* i passi di tutte le azioni (per Make-WarActionSteps.ps1): K tipo azione presente loop direzionale n tipo,param ... */
+static void printActionSteps(void)
+{
+    wm_allocInit(64ull * 1024 * 1024, 4ull * 1024 * 1024, 1ull * 1024 * 1024);
+    wact_initUnitActionDefs();
+    printf("# steps: type action present loop directional count (steptype,param)*  (step types: 0 none 1 frame 2 wait 3 attack 4..10 sounds)\n");
+    for (s32 t = 0; t < WAR_UNIT_COUNT; t++)
+    {
+        for (s32 a = 0; a < WAR_ACTION_TYPE_COUNT; a++)
+        {
+            WarUnitActionDef* d = &gUnitActionDefs[t][a];
+            if (d->type == WAR_ACTION_TYPE_NONE)
+            {
+                printf("K %d %d 0\n", t, a);
+                continue;
+            }
+            printf("K %d %d 1 %d %d %d", t, a, d->loop ? 1 : 0, d->directional ? 1 : 0, d->steps.count);
+            for (s32 i = 0; i < d->steps.count; i++)
+                printf(" %d,%d", d->steps.items[i].type, d->steps.items[i].param);
+            printf("\n");
+        }
+    }
+    wm_allocFree();
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
 /* le tabelle                                                                                                         */
 /* ------------------------------------------------------------------------------------------------------------------ */
 
@@ -851,6 +1148,37 @@ int main(int argc, char** argv)
         u32 n = argc > 2 ? (u32)atoi(argv[2]) : 10;
         for (u32 seed = 1; seed <= n; seed++)
             runScenario(1, seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "actions") == 0)
+    {
+        printActionSteps();
+        return 0;
+    }
+    if (strcmp(argv[1], "combat") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 16;
+        for (u32 seed = 1; seed <= n; seed++)
+            runCombat(seed, -1, true, NULL);
+        return 0;
+    }
+    if (strcmp(argv[1], "combatstats") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 16;
+        for (u32 seed = 1; seed <= n; seed++)
+        {
+            CombatStats st = {{0}};
+            runCombat(seed, -1, false, &st);
+            printf("Q %u arrow=%d catapult=%d fireball=%d fireball2=%d water=%d rain=%d attack=%d follow=%d patrol=%d dead=%d explosions=%d maxproj=%d\n",
+                   seed, st.projectileTics[0], st.projectileTics[1], st.projectileTics[2], st.projectileTics[3],
+                   st.projectileTics[4], st.projectileTics[5], st.attackTics, st.followTics, st.patrolTics, st.deadTics,
+                   st.explosions, st.maxProjectiles);
+        }
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "combat") == 0)
+    {
+        runCombat((u32)atoi(argv[3]), atoi(argv[4]), false, NULL);
         return 0;
     }
     if (strcmp(argv[1], "dump") == 0 && argc >= 5)

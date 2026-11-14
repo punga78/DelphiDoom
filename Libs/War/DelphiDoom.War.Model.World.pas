@@ -42,6 +42,11 @@ type
     ///   type of state
     /// </summary>
     procedure Update;
+    /// <summary>
+    ///   The rest of the tic of wmap_updateMap that the model has, after the states: the grid of the units, the steps of
+    ///   the actions and the projectiles (nothing without the attack registration). The game calls it after Update
+    /// </summary>
+    procedure UpdateAfterStates;
     property Context: TWarModelContext read FContext;
     property Machine: TWarStateMachine read FMachine;
     property Queries: IWarUnitQueries read FQueries;
@@ -75,6 +80,7 @@ begin
   FEntities := nil;
   FContext.Queries := nil;
   FContext.Entities := nil;
+  FContext.Combat := nil;
   FMachine.Free;
   FContext.Free;
   inherited;
@@ -90,6 +96,12 @@ procedure TWarModelWorld.Update;
 begin
   FMachine.ProcessPendingTransitions;
   FMachine.UpdateStates;
+end;
+
+procedure TWarModelWorld.UpdateAfterStates;
+begin
+  if Assigned(FContext.Combat) then
+    FContext.Combat.UpdateAfterStates;
 end;
 
 end.

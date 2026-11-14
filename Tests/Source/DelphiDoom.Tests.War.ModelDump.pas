@@ -30,7 +30,7 @@ type
       const ARef: TWarStateRef); static;
   public
     class function Dump(AWorld: TWarModelWorld; AGrid: TWarPathGrid; AObserver: TModelObserver; ATic: Integer;
-      AResults: Cardinal): string; static;
+      AResults: Cardinal; AExtended: Boolean = False): string; static;
     /// <summary>FNV-1a 32 bit of the bytes of the text</summary>
     class function Fnv1a(const AText: string): Cardinal; static;
   end;
@@ -38,7 +38,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.EntityPool,
+  System.StrUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateStorage;
 
 {$Q-}
@@ -116,6 +116,18 @@ begin
     WAR_STATE_ATTACK:
       AText := AText + Format(' tg=%d tp=%s,%s', [PWarStateAttack(AState)^.TargetEntityId,
         H8(FBits(PWarStateAttack(AState)^.TargetPosition.X)), H8(FBits(PWarStateAttack(AState)^.TargetPosition.Y))]);
+    WAR_STATE_FOLLOW:
+      AText := AText + Format(' tg=%d tp=%s,%s td=%d', [PWarStateFollow(AState)^.TargetEntityId,
+        H8(FBits(PWarStateFollow(AState)^.TargetPosition.X)), H8(FBits(PWarStateFollow(AState)^.TargetPosition.Y)),
+        PWarStateFollow(AState)^.TargetDistance]);
+    WAR_STATE_PATROL:
+      begin
+        AText := AText + Format(' wi=%d wc=%d dir=%d', [PWarStatePatrol(AState)^.WaypointsIndex,
+          PWarStatePatrol(AState)^.WaypointsCount, PWarStatePatrol(AState)^.Dir]);
+        for LIndex := 0 to PWarStatePatrol(AState)^.WaypointsCount - 1 do
+          AText := AText + Format(' w%d=%s,%s', [LIndex, H8(FBits(PWarStatePatrol(AState)^.Waypoints[LIndex].X)),
+            H8(FBits(PWarStatePatrol(AState)^.Waypoints[LIndex].Y))]);
+      end;
     WAR_STATE_WAIT:
       begin
         DBits(PWarStateWait(AState)^.WaitEndGameTime, LLow, LHigh);
@@ -125,7 +137,7 @@ begin
 end;
 
 class function TModelDump.Dump(AWorld: TWarModelWorld; AGrid: TWarPathGrid; AObserver: TModelObserver; ATic: Integer;
-  AResults: Cardinal): string;
+  AResults: Cardinal; AExtended: Boolean): string;
 var
   LContext: TWarModelContext;
   LText: string;
@@ -202,7 +214,24 @@ begin
       for LAction := 0 to WAR_ACTION_TYPE_COUNT - 1 do
         LText := LText + Format(' a%d=%d,%s,%d', [LAction, LUnit^.Actions[LAction].Status,
           H8(FBits(LUnit^.Actions[LAction].Scale)), LUnit^.Actions[LAction].StepIndex]);
+      if AExtended then
+      begin
+        DBits(LUnit^.LastAttackSoundGameTime, LLow, LHigh);
+        LText := LText + Format(' ls=%s%s', [H8(LHigh), H8(LLow)]);
+        for LAction := 0 to WAR_ACTION_TYPE_COUNT - 1 do
+        begin
+          DBits(LUnit^.Actions[LAction].WaitEndGameTime, LLow, LHigh);
+          LText := LText + Format(' x%d=%d,%d,%s%s', [LAction, LUnit^.Actions[LAction].LastActionStep,
+            LUnit^.Actions[LAction].LastSoundStep, H8(LHigh), H8(LLow)]);
+        end;
+      end;
     end;
+    if AExtended and LEntity^.HasProjectile and LEntity^.HasTransform then
+      LText := LText + Format(' pj=%d,%d,%d,%s,%s,%s,%s,%d fi=%d sx=%s', [LEntity^.Projectile.ProjectileType,
+        LEntity^.Projectile.SourceEntityId, LEntity^.Projectile.TargetEntityId,
+        H8(FBits(LEntity^.Projectile.Origin.X)), H8(FBits(LEntity^.Projectile.Origin.Y)),
+        H8(FBits(LEntity^.Projectile.Target.X)), H8(FBits(LEntity^.Projectile.Target.Y)), LEntity^.Projectile.Speed,
+        LEntity^.Projectile.FrameIndex, IfThen(LEntity^.Projectile.FlipX, 'bf800000', '3f800000')]);
     if LEntity^.HasStateMachine then
     begin
       LMachine := @LEntity^.StateMachine;
