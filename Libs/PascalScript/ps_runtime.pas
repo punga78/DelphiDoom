@@ -3257,6 +3257,7 @@ var
       i, h, FieldCount: Longint;
       att: TPSRuntimeAttribute;
       varp: PIFVariant;
+      ext80: TExtended80Rec;
     begin
       if (not DoRead(NameLen, 4)) or (NameLen > Length(s) - Longint(Pos)) then
       begin
@@ -3389,7 +3390,10 @@ var
               Exit;
             end;
           btExtended:
-            if not DoRead(PPSVariantExtended(varp)^.Data, SizeOf(TbtExtended)) then
+            // 10 bytes on disk at 32 and at 64 bit (see ReadVariable)
+            if DoRead(ext80, SizeOf(ext80)) then
+              PPSVariantExtended(varp)^.Data := TbtExtended(ext80)
+            else
             begin
               CMD_Err(erOutOfRange);
               DestroyHeapVariant(VarP);
@@ -9260,19 +9264,21 @@ begin
             end;
           btExtended:
             begin
-              if FCurrentPosition + (SizeOf(Extended) - 1) >= FDataLength then
+              // In a compiled script an Extended is always the 10 bytes of the x87, also where the
+              // type is a Double (Win64): the same file loads at 32 and at 64 bit
+              if FCurrentPosition + (SizeOf(TExtended80Rec) - 1) >= FDataLength then
               begin
                 CMD_Err(erOutOfRange);
                 FTempVars.Pop;
                 Result := False;
                 Exit;
               end;
-              {$IFDEF FPC_REQUIRES_PROPER_ALIGNMENT}
-              TbtExtended(dest.p^) := unaligned(TbtExtended((@FData^[FCurrentPosition])^));
-              {$ELSE}
+              {$IFDEF CPUX86}
               TbtExtended(dest.p^) := TbtExtended((@FData^[FCurrentPosition])^);
+              {$ELSE}
+              TbtExtended(dest.p^) := TbtExtended(TExtended80Rec((@FData^[FCurrentPosition])^));
               {$ENDIF}
-              Inc(FCurrentPosition, SizeOf(Extended));
+              Inc(FCurrentPosition, SizeOf(TExtended80Rec));
             end;
           btPchar,
           btString:
