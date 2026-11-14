@@ -11,7 +11,8 @@ unit DelphiDoom.Engine.Radix.Composition;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.ActorDef.Types, DelphiDoom.Engine.Wad.Lumps.Intf;
+  DelphiDoom.Logging.Intf, DelphiDoom.ActorDef.Types, DelphiDoom.Engine.Wad.Lumps.Intf,
+  DelphiDoom.Engine.Dehacked.ThingFields;
 
 /// <summary>
 ///   The part of the composition root that only the Radix game has: ComposeEngine calls it (under
@@ -21,7 +22,12 @@ uses
 ///   them to the historical units (W_ConfigureConverter, W_ConfigureAliases, RX_ConfigureVersion,
 ///   RX_ConfigureMapInfo, RX_ConfigureLevelLogic)
 /// </summary>
-procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps);
+/// <param name="AThingFields">
+///   The place that the parser of DEHACKED asks for the fields of the things it does not know: it
+///   gets the table of the Radix part of the actors
+/// </param>
+procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps;
+  const AThingFields: IEngineDehackedThingFields);
 
 /// <summary>
 ///   The reader of the properties of the actors that only Radix has, for the profile of the
@@ -38,17 +44,27 @@ uses
   DelphiDoom.Engine.Wad.Converter.Intf, DelphiDoom.Engine.Wad.Aliases.Intf,
   DelphiDoom.Engine.Radix.Edition.Intf, DelphiDoom.Engine.Radix.DataConverter,
   DelphiDoom.Engine.Radix.LumpAliases,
-  DelphiDoom.Radix.ActorProperties,
+  DelphiDoom.Radix.ActorProperties, DelphiDoom.Dehacked.Intf,
   w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
   radix_intermission, radix_controls, g_game;
+
+var
+  // The one table of the Radix part of the actors: ComposeActorDef asks for it first (the parser of
+  // ACTORDEF fills it), ComposeRadix then gives it to the parser of DEHACKED. Only this part of the
+  // composition root sees it
+  radix_actor_properties: IActorDefExtraProperties = nil;
 
 function ComposeRadixActorProperties(const ALog: ILog): IActorDefExtraProperties;
 var
   LProperties: TRadixActorProperties;
 begin
-  LProperties := TRadixActorProperties.Create(ALog);
-  Result := LProperties;
-  RX_ConfigureActors(LProperties);
+  if not Assigned(radix_actor_properties) then
+  begin
+    LProperties := TRadixActorProperties.Create(ALog);
+    radix_actor_properties := LProperties;
+    RX_ConfigureActors(LProperties);
+  end;
+  Result := radix_actor_properties;
 end;
 
 const
@@ -73,7 +89,8 @@ begin
   end;
 end;
 
-procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps);
+procedure ComposeRadix(const ALog: ILog; const ALumps: IEngineLumps;
+  const AThingFields: IEngineDehackedThingFields);
 var
   LConverter: IEngineWadConverter;
   LAliases: IEngineLumpAliases;
@@ -96,6 +113,8 @@ begin
   ST_ConfigureReplacement(RX_HudDrawer);
   // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
   WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
+  // the fields of Rad-X of the Thing blocks of DEHACKED (GAMEDEF has them) go to the same table
+  AThingFields.Attach(ComposeRadixActorProperties(ALog) as IDehackedExtraThingFields);
   // the keys of the afterburner and of the plasma bomb
   G_ConfigureTiccmdExtension(RX_TiccmdKeys);
 end;

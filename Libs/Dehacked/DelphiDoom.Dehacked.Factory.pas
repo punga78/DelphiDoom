@@ -19,7 +19,9 @@ type
   public
     /// <summary>The parser of the patches of a game</summary>
     /// <param name="ALog">May be nil</param>
-    class function CreateParser(AGame: TDehackedGame; const ALog: ILog): IDehackedParser; overload; static;
+    /// <param name="AExtraThingFields">Who reads the fields of the things that only one game has; may be nil</param>
+    class function CreateParser(AGame: TDehackedGame; const ALog: ILog;
+      const AExtraThingFields: IDehackedExtraThingFields = nil): IDehackedParser; overload; static;
     /// <summary>A parser on any profile (a different game, or one for the tests)</summary>
     class function CreateParser(const AProfile: IDehackedProfile): IDehackedParser; overload; static;
   end;
@@ -31,9 +33,10 @@ uses
 
 { TDehackedFactory }
 
-class function TDehackedFactory.CreateParser(AGame: TDehackedGame; const ALog: ILog): IDehackedParser;
+class function TDehackedFactory.CreateParser(AGame: TDehackedGame; const ALog: ILog;
+  const AExtraThingFields: IDehackedExtraThingFields): IDehackedParser;
 begin
-  Result := TDehackedParser.Create(TDehackedGames.CreateProfile(AGame, ALog));
+  Result := TDehackedParser.Create(TDehackedGames.CreateProfile(AGame, ALog, AExtraThingFields));
 end;
 
 class function TDehackedFactory.CreateParser(const AProfile: IDehackedProfile): IDehackedParser;

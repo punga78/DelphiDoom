@@ -62,6 +62,7 @@ uses
   DelphiDoom.Dehacked.Factory,
   DelphiDoom.Actions.Factory,
   DelphiDoom.Engine.Dehacked.Applier,
+  DelphiDoom.Engine.Dehacked.ThingFields,
   deh_base,
   DelphiDoom.Clock.Intf,
   DelphiDoom.Iwad.Intf,
@@ -746,14 +747,16 @@ begin
 end;
 {$ENDIF}
 
-procedure ComposeDehacked(const ALog: ILog; const AEvaluator: IContextExpressionEvaluator);
+procedure ComposeDehacked(const ALog: ILog; const AEvaluator: IContextExpressionEvaluator;
+  const AThingFields: IEngineDehackedThingFields);
 var
   LGame: TDehackedGame;
 begin
   if not TDehackedGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Dehacked), LGame) then
     I_Error('ComposeEngine(): the game %s has no profile of DEHACKED', [_GAME]);
-  // TEngineDehackedApplier is the class of the game (one unit with this name in each folder)
-  DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog),
+  // TEngineDehackedApplier is the class of the game (one unit with this name in each folder).
+  // AThingFields knows no field until a game with things of its own fills it (ComposeRadix)
+  DEH_ConfigureApplier(TEngineDehackedApplier.Create(TDehackedFactory.CreateParser(LGame, ALog, AThingFields),
     AEvaluator));
   DEH_ConfigureActions(TActionsFactory.CreateRegistry);
 end;
@@ -1590,6 +1593,7 @@ var
   LNetGame: IEngineNetGame;
   LInput: IInputPoller;
   LSettings: IConfigurationTable;
+  LThingFields: IEngineDehackedThingFields;
 begin
   // how a class of the engine stops the game: I_Error and I_Quit of i_system
   LShutdown := TEngineShutdown.Create;
@@ -1666,7 +1670,8 @@ begin
   ComposeSound(LLog);
   ComposeMusic(LTempFiles, LCommandLine, LZone, LLog, LShutdown);
   S_ConfigurePK3Sounds(LTempFiles);
-  ComposeDehacked(LLog, LEvaluator);
+  LThingFields := TEngineDehackedThingFields.Create;
+  ComposeDehacked(LLog, LEvaluator, LThingFields);
   ComposeImaging;
   ComposeRenderer(LLog);
   ComposeScreenshot(LSaveFileNames);
@@ -1693,7 +1698,7 @@ begin
 
   W_Configure(LWadServices);
 {$IFDEF RADIX}
-  ComposeRadix(LLog, LLumps);
+  ComposeRadix(LLog, LLumps, LThingFields);
 {$ENDIF}
 {$IFDEF SPEED}
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));

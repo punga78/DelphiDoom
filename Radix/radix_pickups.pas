@@ -140,6 +140,9 @@ begin
   for i := 0 to nummobjtypes - 1 do
   begin
     radixmobjhasinfo[i] := radix_actors.TryGet(Info_GetMobjName(i), radixmobjinfo[i]);
+    // a thing that only a patch describes (the fields of Rad-X of a Thing block with a number)
+    if not radixmobjhasinfo[i] then
+      radixmobjhasinfo[i] := radix_actors.TryGetByNumber(i, radixmobjinfo[i]);
     if radixmobjhasinfo[i] then
       if TRadixActorFlag.CustomPickup in radixmobjinfo[i].Flags then
         mobjinfo[i].flags := mobjinfo[i].flags and not MF_SPECIAL;

@@ -28,7 +28,12 @@ type
     /// <summary>The game of a name, whatever the case of the letters; false if it is none of the four</summary>
     class function TryFromName(const AName: string; out AGame: TDehackedGame): Boolean; static;
     /// <param name="ALog">May be nil</param>
-    class function CreateProfile(AGame: TDehackedGame; const ALog: ILog): IDehackedProfile; static;
+    /// <param name="AExtraThingFields">
+    ///   The fields of the things that only the game of the program has (a game that runs on the
+    ///   profile of another one: Radix on Doom); nil for the four games
+    /// </param>
+    class function CreateProfile(AGame: TDehackedGame; const ALog: ILog;
+      const AExtraThingFields: IDehackedExtraThingFields = nil): IDehackedProfile; static;
   end;
 
 implementation
@@ -116,8 +121,10 @@ begin
   Result := False;
 end;
 
-class function TDehackedGames.CreateProfile(AGame: TDehackedGame; const ALog: ILog): IDehackedProfile;
+class function TDehackedGames.CreateProfile(AGame: TDehackedGame; const ALog: ILog;
+  const AExtraThingFields: IDehackedExtraThingFields): IDehackedProfile;
 var
+  LThingFields: TDehackedFieldReader;
   LData: TDehackedGameData;
   LSets: IDehackedFlagSets;
   LMessages: TDehackedFieldMessages;
@@ -146,9 +153,10 @@ begin
   LMessages.InvalidKeywordNumber :=
     'DEH_Parse(): After %s keyword found invalid numeric %s (Think number = %d)'#13#10;
   LMessages.Unsupported := 'DEH_Parse(): Unsupported Doom field: "%s".'#13#10;
-  Add(TDehackedThingReader.Create(['THING', 'NEWTHING'], ALog,
-    Fields(TDehackedFieldKinds.ThingDefs(LData.ThingFields, AGame in [dgHeretic, dgHexen]), True,
-      LMessages)));
+  LThingFields := Fields(TDehackedFieldKinds.ThingDefs(LData.ThingFields, AGame in [dgHeretic, dgHexen]),
+    True, LMessages);
+  LThingFields.ExtraThingFields := AExtraThingFields;
+  Add(TDehackedThingReader.Create(['THING', 'NEWTHING'], ALog, LThingFields));
 
   Add(TDehackedFrameReader.Create(['FRAME', 'STATE'], ALog,
     Fields(TDehackedFieldKinds.FrameDefs(LData.FrameFields), False,

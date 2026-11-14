@@ -40,6 +40,7 @@ type
     FLog: ILog;
     FStripQuotes: Boolean;
     FMessages: TDehackedFieldMessages;
+    FExtraThingFields: IDehackedExtraThingFields;
     procedure Warn(const AFormat: string; const AArguments: array of const);
     function ReadState(const AText: string; var AEntry: TDehackedEntry; AReference: Integer): Boolean;
     function ReadNextState(const AText: string; var AEntry: TDehackedEntry): Boolean;
@@ -58,6 +59,11 @@ type
     procedure Read(const ASource: IDehackedLineSource; ASection: TDehackedSection;
       AReference: Integer);
     property Table: TDehackedFieldTable read FTable;
+    /// <summary>
+    ///   Who reads the fields that the table does not have (the reader of the things of a game with
+    ///   fields of its own); nil, as it starts, for every other block
+    /// </summary>
+    property ExtraThingFields: IDehackedExtraThingFields read FExtraThingFields write FExtraThingFields;
   end;
 
 implementation
@@ -184,6 +190,8 @@ begin
     LIndex := FTable.IndexOf(LKey);
     if LIndex < 0 then
     begin
+      if Assigned(FExtraThingFields) and FExtraThingFields.TryRead(ASection.Reference, LKey, LValue) then
+        Continue;
       Warn(FMessages.UnknownField, [LKey, AReference]);
       ASource.PushBack;
       Break;

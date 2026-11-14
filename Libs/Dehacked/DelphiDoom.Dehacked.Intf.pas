@@ -96,6 +96,23 @@ type
   end;
 
   /// <summary>Reads the text of a patch (DEH or BEX)</summary>
+  /// <summary>
+  ///   The fields of a thing that only one game has (Radix: ARMOR INC, AMMO ADD, PICKUP MESSAGE ...).
+  ///   The profile of a game may have one: the reader of the things asks it for a field that its table
+  ///   does not have, before the warning that ends the block. The other games have none (nil)
+  /// </summary>
+  IDehackedExtraThingFields = interface
+    ['{6E0B3D52-41C7-4F9A-B286-97D1A0C35E48}']
+    /// <summary>
+    ///   True when the game has the field: its value is taken and the block goes on. False leaves the
+    ///   line to the reader (the warning of an unknown field)
+    /// </summary>
+    /// <param name="AThing">The thing of the block: its number in the patch (from 1) or the name of a new thing</param>
+    /// <param name="AKey">The name of the field, in upper case as the lines of a patch are</param>
+    /// <param name="AValue">What follows "=", in upper case and without quotes</param>
+    function TryRead(const AThing: TDehackedReference; const AKey, AValue: string): Boolean;
+  end;
+
   IDehackedParser = interface
     ['{91D4A6F2-83B7-4E15-AC60-D58E2F17B934}']
     function Parse(const AText: string): IDehackedPatch;
