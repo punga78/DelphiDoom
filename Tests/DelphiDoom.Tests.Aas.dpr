@@ -38,7 +38,21 @@ uses
   DelphiDoom.Tests.Aas.Golden in 'Source\DelphiDoom.Tests.Aas.Golden.pas',
   DelphiDoom.Tests.Aas.Reader in 'Source\DelphiDoom.Tests.Aas.Reader.pas',
   DelphiDoom.Tests.Aas.Sampling in 'Source\DelphiDoom.Tests.Aas.Sampling.pas',
-  DelphiDoom.Tests.Aas.OpenArena in 'Source\DelphiDoom.Tests.Aas.OpenArena.pas';
+  DelphiDoom.Tests.Aas.OpenArena in 'Source\DelphiDoom.Tests.Aas.OpenArena.pas',
+  DelphiDoom.Aas.D3.Types in '..\Libs\Aas\DelphiDoom.Aas.D3.Types.pas',
+  DelphiDoom.Aas.D3.Intf in '..\Libs\Aas\DelphiDoom.Aas.D3.Intf.pas',
+  DelphiDoom.Aas.D3.TravelTime in '..\Libs\Aas\DelphiDoom.Aas.D3.TravelTime.pas',
+  DelphiDoom.Aas.D3.Topology in '..\Libs\Aas\DelphiDoom.Aas.D3.Topology.pas',
+  DelphiDoom.Aas.D3.RoutingCache in '..\Libs\Aas\DelphiDoom.Aas.D3.RoutingCache.pas',
+  DelphiDoom.Aas.D3.CacheStore in '..\Libs\Aas\DelphiDoom.Aas.D3.CacheStore.pas',
+  DelphiDoom.Aas.D3.Router in '..\Libs\Aas\DelphiDoom.Aas.D3.Router.pas',
+  DelphiDoom.Aas.D3.Obstacles in '..\Libs\Aas\DelphiDoom.Aas.D3.Obstacles.pas',
+  DelphiDoom.Aas.D3.PathFinder in '..\Libs\Aas\DelphiDoom.Aas.D3.PathFinder.pas',
+  DelphiDoom.Aas.D3.WallEdges in '..\Libs\Aas\DelphiDoom.Aas.D3.WallEdges.pas',
+  DelphiDoom.Aas.D3.Navigator in '..\Libs\Aas\DelphiDoom.Aas.D3.Navigator.pas',
+  DelphiDoom.Aas.D3.Factory in '..\Libs\Aas\DelphiDoom.Aas.D3.Factory.pas',
+  DelphiDoom.Tests.Aas.D3.Support in 'Source\DelphiDoom.Tests.Aas.D3.Support.pas',
+  DelphiDoom.Tests.Aas.D3.Routing in 'Source\DelphiDoom.Tests.Aas.D3.Routing.pas';
 
 var
   Runner: ITestRunner;
