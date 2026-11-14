@@ -122,15 +122,12 @@ var
   LSmall: IAasMapNavigator;
   LFrom, LTo, LTimeBig, LTimeSmall: Integer;
   LReach: TAasReachability;
-  LBigReach, LSmallReach: Integer;
 begin
   Use('aas_ring.aas');
   LSmall := TAasNavigationFactory.CreateNavigatorForFile(D3LoadFile('aas_ring.aas'), True, nil, 600);
   for LFrom := 1 to 12 do
     for LTo := 1 to 12 do
     begin
-      LBigReach := -1;
-      LSmallReach := -1;
       Assert.AreEqual(
         FNavigator.RouteToGoalArea(LFrom, FNavigator.AreaCenter(LFrom), LTo, EVERYTHING, LTimeBig, LReach),
         LSmall.RouteToGoalArea(LFrom, LSmall.AreaCenter(LFrom), LTo, EVERYTHING, LTimeSmall, LReach),

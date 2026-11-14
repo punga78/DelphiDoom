@@ -93,7 +93,7 @@ function TAasPathFinder.EdgeSplitPoint(out ASplit: TGeoVec3; const AEdgeNum: Int
 var
   LEdge: TAasEdge;
   LV1, LV2, LDelta: TGeoVec3;
-  LD1, LD2, LRatio, LDifference: Single;
+  LD1, LD2, LRatio: Single;
 begin
   if (AEdgeNum < 0) or (AEdgeNum >= FTopology.AasFile.NumEdges) then
     raise EAasRoutingException.Create(Format(SEdgeOutOfRange, [AEdgeNum]));
