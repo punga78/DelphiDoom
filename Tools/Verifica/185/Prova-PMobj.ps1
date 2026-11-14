@@ -36,6 +36,8 @@ $forbidden = 'if (gamestate <> GS_LEVEL) or demoplayback or demorecording or net
 $setstate = 'if not P_SetMobjState(mobj, mobj.state.nextstate) then exit;'
 $slope = 'if G_PlayingEngineVersion <= VERSION203 then exit; if wasonfloorz and wasonslope and (oldsector = Psubsector_t(mo.subsector).sector) then begin if oldsector.flags and SF_SLIPSLOPEDESCENT <> 0 then exit; mo.z := mo.floorz; end else exit;'
 $respawn = 'if mobj.flags and MF_COUNTKILL = 0 then exit; if not respawnmonsters then exit; mobj.movecount := mobj.movecount + 1; if mobj.movecount < TMobjGameRules.RespawnTime then exit; if leveltime and 31 <> 0 then exit; if P_Random > 4 then exit; if TMobjGameRules.NeverRespawns(mobj) then exit; TMobjGameRules.NightmareRespawn(mobj);'
+$infoMid = 'mobj.flags5_ex := info.flags5_ex; mobj.flags6_ex := info.flags6_ex; mobj.scale := info.scale; mobj.gravity := info.gravity; mobj.pushfactor := info.pushfactor; mobj.friction := info.friction;'
+$stInit = 'mobj.state := st; mobj.tics := P_TicsFromState(st); mobj.sprite := st.sprite; mobj.frame := st.frame;'
 function SpawnHeight([string]$i, [string]$middle) {
   "if mobjinfo[$i].flags and MF_SPAWNCEILING <> 0 then z := ONCEILINGZ $middle else z := ONFLOORZ;"
 }
@@ -146,6 +148,31 @@ $Expansions = @(
   @{ F = 'TMobjGameRules.StopWalking(player);'; D = '<<B:StopWalking>>' }
   @{ F = 'else TMobjGameRules.ApplyFriction(mo, special); end;'; D = 'else begin <<B:ApplyFriction>> end; end;' }
 
+  # --- P_SpawnMobj ---
+  @{ R = 'P_SpawnMobj'; F = 'function P_SpawnMobj(x, y, z: fixed_t;'; Hexen = 'function P_SpawnMobj(x: fixed_t; y: fixed_t; z: fixed_t;'; Note = 'in Hexen i tre parametri erano scritti uno per uno' }
+  @{ R = 'P_SpawnMobj'; F = "mobj.flags_ex := info.flags_ex; TMobjGameRules.InitGameFields(mobj, info); mobj.flags3_ex := info.flags3_ex; $infoMid mobj.renderstyle := info.renderstyle;"
+     Doom = "mobj.flags_ex := info.flags_ex; mobj.flags2_ex := info.flags2_ex; mobj.flags3_ex := info.flags3_ex; mobj.flags4_ex := info.flags4_ex or MF4_EX_JUSTAPPEARED; $infoMid mobj.renderstyle := info.renderstyle;"
+     Heretic = "mobj.flags2 := info.flags2; mobj.flags_ex := info.flags_ex; mobj.flags2_ex := info.flags2_ex or MF2_EX_JUSTAPPEARED; mobj.flags3_ex := info.flags3_ex; mobj.flags4_ex := info.flags4_ex; $infoMid mobj.damage := info.damage; mobj.renderstyle := info.renderstyle;"
+     Hexen = "mobj.flags2 := info.flags2; mobj.flags_ex := info.flags_ex; mobj.flags2_ex := info.flags2_ex or MF2_EX_JUSTAPPEARED; mobj.flags3_ex := info.flags3_ex; mobj.flags4_ex := info.flags4_ex; $infoMid mobj.damage := info.damage; mobj.renderstyle := info.renderstyle;"
+     Strife = "mobj.flags_ex := info.flags_ex; mobj.flags2_ex := info.flags2_ex or MF2_EX_JUSTAPPEARED; mobj.flags3_ex := info.flags3_ex; mobj.flags4_ex := info.flags4_ex; $infoMid mobj.renderstyle := info.renderstyle;"
+     Note = 'assegnazioni indipendenti di campi presi dall''info (nessuna legge un campo scritto da un''altra): quelle che cambiano per gioco sono raccolte nella regola InitGameFields, in un altro ordine' }
+  @{ F = 'TMobjGameRules.InitBob(mobj);'; D = '<<B:InitBob>>'; Hexen = '' }
+  @{ F = 'if TMobjGameRules.HasReactionTime then mobj.reactiontime := info.reactiontime;'; D = 'if gameskill <> sk_nightmare then mobj.reactiontime := info.reactiontime;'; Strife = 'mobj.reactiontime := info.reactiontime;' }
+  @{ R = 'P_SpawnMobj'; F = "$stInit TMobjGameRules.InitStateMemory(mobj, st);"; Hexen = $stInit }
+  @{ R = 'P_SpawnMobj'; F = "$stInit TMobjGameRules.InitStateMemory(mobj, st);"
+     D = 'mobj.state := st; mobj.prevstate := st; mobj.validcount := validcount; mobj.tics := P_TicsFromState(st); mobj.sprite := st.sprite; mobj.frame := st.frame; mobj.touching_sectorlist := nil;'
+     Heretic = 'mobj.state := st; mobj.prevstate := st; mobj.tics := P_TicsFromState(st); mobj.sprite := st.sprite; mobj.frame := st.frame;'; Hexen = $null
+     Note = 'prevstate, validcount e touching_sectorlist (assegnazioni indipendenti, P_TicsFromState legge solo lo stato) sono raccolte nella regola InitStateMemory dopo sprite e frame' }
+  @{ R = 'P_SpawnMobj'; F = 'TMobjGameRules.FloatSpawnZ'; D = 'ONFLOATZ'; Hexen = 'FLOATRANDZ'; All = $true }
+  @{ F = 'if z = ONFLOORZ then begin mobj.z := mobj.floorz; TMobjGameRules.SpawnedOnFloor(mobj); end'; D = 'if z = ONFLOORZ then mobj.z := mobj.floorz'
+     Strife = 'if z = ONFLOORZ then begin mobj.z := mobj.floorz; <<B:SpawnedOnFloor>> end' }
+  @{ F = 'mobj.z := TMobjGameRules.RandomFloatHeight(space) + mobj.floorz + 40 * FRACUNIT; end else mobj.z := mobj.floorz end else if TMobjGameRules.SpawnZIsHeight(mobj) then mobj.z := mobj.floorz + z else mobj.z := z;'
+     Doom = 'mobj.z := FixedMul(space, N_Random * 256) + mobj.floorz + 40 * FRACUNIT; end else mobj.z := mobj.floorz end else mobj.z := z;'
+     Heretic = 'mobj.z := FixedMul(space, P_Random * 256) + mobj.floorz + 40 * FRACUNIT end else mobj.z := mobj.floorz end else mobj.z := z;'
+     Hexen = 'mobj.z := _SHR8(space * P_Random) + mobj.floorz + 40 * FRACUNIT; end else begin mobj.z := mobj.floorz; end; end else if (mobj.flags2 and MF2_FLOATBOB <> 0) or (mobj.flags_ex and MF_EX_FLOATBOB <> 0) then begin mobj.z := mobj.floorz + z; end else mobj.z := z;'
+     Strife = 'mobj.z := FixedMul(space, N_Random * 256) + mobj.floorz + 40 * FRACUNIT end else mobj.z := mobj.floorz end else mobj.z := z;' }
+  @{ F = 'TMobjGameRules.FootClipOnMidOrSlope(mobj); end else TMobjGameRules.FootClipOnFloor(mobj, sec);'; D = '<<B:FootClipOnMidOrSlope>> end else begin <<B:FootClipOnFloor>> end;' }
+
   # --- P_MobjThinker ---
   @{ R = 'P_MobjThinker'; F = 'procedure P_MobjThinker(mobj: Pmobj_t); begin'; D = 'procedure P_MobjThinker(mobj: Pmobj_t); var <<V:ZPhase>> begin'; Strife = $null }
   @{ F = 'TMobjGameRules.ClearJustAppeared(mobj);'; D = 'mobj.flags2_ex := mobj.flags2_ex and not MF2_EX_JUSTAPPEARED;'; Doom = 'mobj.flags4_ex := mobj.flags4_ex and not MF4_EX_JUSTAPPEARED;' }
@@ -173,7 +200,7 @@ $NotTextual = @{
 
 # le routine che sono tutte di un gioco: metodi delle regole con il testo vecchio
 $Methods = @{
-  'P_NightmareRespawn' = 'NightmareRespawn'; 'P_SpawnMobj' = 'SpawnMobj'; 'P_SpawnPlayer' = 'SpawnPlayer'; 'P_SpawnMapThing' = 'SpawnMapThing'
+  'P_NightmareRespawn' = 'NightmareRespawn'; 'P_SpawnPlayer' = 'SpawnPlayer'; 'P_SpawnMapThing' = 'SpawnMapThing'
   'P_SpawnPuff' = 'SpawnPuff'; 'P_SpawnMissile' = 'SpawnMissile'; 'P_SpawnMissileXYZ' = 'SpawnMissileXYZ'
   'P_SpawnPlayerMissile' = 'SpawnPlayerMissile'; 'P_HitFloor' = 'HitFloor'
   'Heretic|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_CreateTIDList' = 'CreateTIDList'

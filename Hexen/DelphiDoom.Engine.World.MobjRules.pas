@@ -101,8 +101,6 @@ type
 
     /// <summary>spawnmobj and summon are refused now (no level, a demo, a net game)</summary>
     class function ConsoleSpawnForbidden: boolean; static;
-    /// <summary>P_SpawnMobj of the game</summary>
-    class function SpawnMobj(x, y, z: fixed_t; _type: integer; const mthing: Pmapthing_t = nil): Pmobj_t; static;
     /// <summary>P_SpawnPlayer of the game</summary>
     class function SpawnPlayer(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; static;
     /// <summary>P_SpawnMapThing of the game</summary>
@@ -153,6 +151,24 @@ type
     class procedure NightmareRespawn(mobj: Pmobj_t); static;
     /// <summary>The tics a dead monster waits before it may respawn</summary>
     class function RespawnTime: integer; static; inline;
+    /// <summary>P_SpawnMobj: the flags of the game, the "just appeared" flag and the fields only some games copy from the info</summary>
+    class procedure InitGameFields(mobj: Pmobj_t; info: Pmobjinfo_t); static;
+    /// <summary>P_SpawnMobj: where a floating thing starts to bob (a random draw, or nothing)</summary>
+    class procedure InitBob(mobj: Pmobj_t); static;
+    /// <summary>P_SpawnMobj: the thing gets the reaction time of its type</summary>
+    class function HasReactionTime: boolean; static; inline;
+    /// <summary>P_SpawnMobj: what the thing remembers of its first state, and the list of the sectors it touches</summary>
+    class procedure InitStateMemory(mobj: Pmobj_t; st: Pstate_t); static;
+    /// <summary>P_SpawnMobj: a thing spawned on the floor (Strife: its feet sink in the terrain)</summary>
+    class procedure SpawnedOnFloor(mobj: Pmobj_t); static;
+    /// <summary>P_SpawnMobj: the random part of the height of a floating thing in this space</summary>
+    class function RandomFloatHeight(space: fixed_t): fixed_t; static;
+    /// <summary>P_SpawnMobj: z is a height over the floor (the floating items of Hexen)</summary>
+    class function SpawnZIsHeight(mobj: Pmobj_t): boolean; static; inline;
+    /// <summary>P_SpawnMobj: the feet of a thing spawned in a sector with a 3d floor or a slope</summary>
+    class procedure FootClipOnMidOrSlope(mobj: Pmobj_t); static;
+    /// <summary>P_SpawnMobj: the feet of a thing spawned in a plain sector</summary>
+    class procedure FootClipOnFloor(mobj: Pmobj_t; sec: Psector_t); static;
   end;
 
 //==============================================================================
@@ -900,199 +916,6 @@ begin
   pl.centering := true;
 end;
 
-
-//==============================================================================
-//
-// P_SpawnMobj
-//
-//==============================================================================
-class function TMobjGameRules.SpawnMobj(x: fixed_t; y: fixed_t; z: fixed_t; _type: integer; const mthing: Pmapthing_t = nil): Pmobj_t;
-var
-  mobj: Pmobj_t;
-  st: Pstate_t;
-  info: Pmobjinfo_t;
-  space: fixed_t;
-  sec: Psector_t;
-  msec: Psector_t;  // JVAL: 3d floors
-  lowfloorheight, hifloorheight: fixed_t; // JVAL: 3d floors
-  onmidfloor: Boolean;
-  spawnfloorheight, spawnceilingheight: fixed_t;  // JVAL: Slopes
-begin
-  mobj := Z_Malloc(SizeOf(mobj_t), PU_LEVEL, nil);
-
-  ZeroMemory(mobj, SizeOf(mobj_t));
-
-  mobj.key := P_GenGlobalMobjKey;
-
-  info := @mobjinfo[_type];
-  mobj._type := _type;
-  mobj.info := info;
-  mobj.x := x;
-  mobj.y := y;
-  mobj.radius := info.radius;
-  mobj.height := info.height;
-  mobj.flags := info.flags;
-  mobj.flags2 := info.flags2;
-  mobj.flags_ex := info.flags_ex;
-  // JVAL: Set MF_JUSTAPPEARED flag
-  mobj.flags2_ex := info.flags2_ex or MF2_EX_JUSTAPPEARED;
-  mobj.flags3_ex := info.flags3_ex;
-  mobj.flags4_ex := info.flags4_ex;
-  mobj.flags5_ex := info.flags5_ex;
-  mobj.flags6_ex := info.flags6_ex;
-  mobj.scale := info.scale;
-  mobj.gravity := info.gravity;
-  mobj.pushfactor := info.pushfactor;
-  mobj.friction := info.friction;
-  mobj.damage := info.damage;
-  mobj.renderstyle := info.renderstyle;
-  mobj.alpha := info.alpha;
-  mobj.health := info.spawnhealth;
-  mobj.mass := info.mass;
-  mobj.WeaveIndexXY := info.WeaveIndexXY;
-  mobj.WeaveIndexZ := info.WeaveIndexZ;
-  mobj.painchance := info.painchance;
-  mobj.spriteDX := info.spriteDX;
-  mobj.spriteDY := info.spriteDY;
-  // mbf21+
-  mobj.infighting_group := info.infighting_group;
-  mobj.projectile_group := info.projectile_group;
-  mobj.splash_group := info.splash_group;
-  mobj.bloodcolor := info.bloodcolor;
-  mobj.translationname := info.translationname;
-  R_InitMobjTranslation(mobj);
-
-  if gameskill <> sk_nightmare then
-    mobj.reactiontime := info.reactiontime;
-
-  mobj.lastlook := P_Random mod MAXPLAYERS;
-
-  // Set the state, but do not use P_SetMobjState, because action
-  // routines can't be called yet.  If the spawnstate has an action
-  // routine, it will not be called.
-  st := @states[info.spawnstate];
-
-  mobj.state := st;
-  mobj.tics := P_TicsFromState(st);
-  mobj.sprite := st.sprite;
-  mobj.frame := st.frame;
-
-  // set subsector and/or block links
-  P_SetThingPosition(mobj);
-
-  sec := Psubsector_t(mobj.subsector).sector;
-
-  // JVAL: Slopes
-  spawnfloorheight := P_FloorHeight(sec, x, y);
-  spawnceilingheight := P_CeilingHeight(sec, x, y);
-  mobj.floorz := spawnfloorheight;  // JVAL: Slopes
-  mobj.ceilingz := spawnceilingheight;  // JVAL: Slopes
-  onmidfloor := false;
-
-// JVAL: 3d floors
-  if sec.midsec >= 0 then
-  begin
-    msec := @sectors[sec.midsec];
-    if mthing <> nil then
-      if mthing.options and MTF_ONMIDSECTOR <> 0 then
-        onmidfloor := true;
-    if onmidfloor then
-      mobj.floorz := msec.ceilingheight
-    else if not onmidfloor and (z = ONCEILINGZ) then
-      mobj.ceilingz := msec.floorheight
-    else if z = FLOATRANDZ then
-    begin
-      lowfloorheight := msec.floorheight - spawnfloorheight;  // JVAL: Slopes
-      hifloorheight := spawnceilingheight - msec.ceilingheight; // JVAL: Slopes
-      if lowfloorheight < mobj.info.height then
-        mobj.floorz := msec.ceilingheight
-      else if hifloorheight < mobj.info.height then
-        mobj.ceilingz := msec.floorheight
-      else if mthing = nil then
-      begin
-        if N_Random < Round(lowfloorheight / (lowfloorheight + hifloorheight) * 255) then
-          mobj.ceilingz := msec.floorheight
-        else
-          mobj.floorz := msec.ceilingheight;
-      end;
-    end
-    else
-    begin
-      if z > msec.floorheight then
-        mobj.floorz := msec.ceilingheight
-      else
-        mobj.ceilingz := msec.floorheight;
-    end;
-  end
-  else
-    msec := nil;
-
-  if z = ONFLOORZ then
-    mobj.z := mobj.floorz
-  else if z = ONCEILINGZ then
-    mobj.z := mobj.ceilingz - mobj.info.height
-  else if z = FLOATRANDZ then
-  begin
-    space := mobj.ceilingz - mobj.info.height - mobj.floorz;
-    if space > 48 * FRACUNIT then
-    begin
-      space := space - 40 * FRACUNIT;
-      mobj.z := _SHR8(space * P_Random) + mobj.floorz + 40 * FRACUNIT;
-    end
-    else
-    begin
-      mobj.z := mobj.floorz;
-    end;
-  end
-  else if (mobj.flags2 and MF2_FLOATBOB <> 0) or (mobj.flags_ex and MF_EX_FLOATBOB <> 0) then
-  begin
-    mobj.z := mobj.floorz + z;    // artifact z passed in as height
-  end
-  else
-    mobj.z := z;
-
-  if (msec <> nil) or (sec.renderflags and SRF_SLOPED <> 0) then  // JVAL: Slopes
-  begin
-    if mobj.z > mobj.ceilingz - mobj.info.height then
-      mobj.z := mobj.ceilingz - mobj.info.height;
-    if mobj.z < mobj.floorz then
-      mobj.z := mobj.floorz;
-
-    if (mobj.flags2_ex and MF2_FLOORCLIP <> 0) and
-       (P_GetThingFloorType(mobj) > FLOOR_SOLID) and
-       (mobj.z = mobj.floorz) then
-      mobj.floorclip := FOOTCLIPSIZE
-    else
-      mobj.floorclip := 0;
-  end
-  else
-  begin
-    if (mobj.flags2_ex and MF2_FLOORCLIP <> 0) and
-       (P_GetThingFloorType(mobj) > FLOOR_SOLID) and
-       (mobj.z = sec.floorheight) then
-      mobj.floorclip := FOOTCLIPSIZE
-    else
-      mobj.floorclip := 0;
-  end;
-
-  mobj.momz := mobj.info.vspeed;
-
-  mobj.thinker._function.acp1 := @P_MobjThinker;
-
-  P_AddThinker(@mobj.thinker);
-
-  mobj.prevx := mobj.x;
-  mobj.prevy := mobj.y;
-  mobj.prevz := mobj.z;
-  mobj.nextx := mobj.x;
-  mobj.nexty := mobj.y;
-  mobj.nextz := mobj.z;
-  mobj.prevangle := mobj.angle;
-  mobj.nextangle := mobj.angle;
-  mobj.intrplcnt := 0;
-
-  result := mobj;
-end;
 
 
 //==============================================================================
@@ -3002,6 +2825,62 @@ end;
 class function TMobjGameRules.RespawnTime: integer;
 begin
   result := 0;
+end;
+
+class procedure TMobjGameRules.InitGameFields(mobj: Pmobj_t; info: Pmobjinfo_t);
+begin
+  mobj.flags2 := info.flags2;
+  // JVAL: Set MF_JUSTAPPEARED flag
+  mobj.flags2_ex := info.flags2_ex or MF2_EX_JUSTAPPEARED;
+  mobj.flags4_ex := info.flags4_ex;
+  mobj.damage := info.damage;
+end;
+
+class procedure TMobjGameRules.InitBob(mobj: Pmobj_t);
+begin
+end;
+
+class function TMobjGameRules.HasReactionTime: boolean;
+begin
+  result := gameskill <> sk_nightmare;
+end;
+
+class procedure TMobjGameRules.InitStateMemory(mobj: Pmobj_t; st: Pstate_t);
+begin
+end;
+
+class procedure TMobjGameRules.SpawnedOnFloor(mobj: Pmobj_t);
+begin
+end;
+
+class function TMobjGameRules.RandomFloatHeight(space: fixed_t): fixed_t;
+begin
+  result := _SHR8(space * P_Random);
+end;
+
+class function TMobjGameRules.SpawnZIsHeight(mobj: Pmobj_t): boolean;
+begin
+  result := (mobj.flags2 and MF2_FLOATBOB <> 0) or (mobj.flags_ex and MF_EX_FLOATBOB <> 0);
+end;
+
+class procedure TMobjGameRules.FootClipOnMidOrSlope(mobj: Pmobj_t);
+begin
+  if (mobj.flags2_ex and MF2_FLOORCLIP <> 0) and
+     (P_GetThingFloorType(mobj) > FLOOR_SOLID) and
+     (mobj.z = mobj.floorz) then
+    mobj.floorclip := FOOTCLIPSIZE
+  else
+    mobj.floorclip := 0;
+end;
+
+class procedure TMobjGameRules.FootClipOnFloor(mobj: Pmobj_t; sec: Psector_t);
+begin
+  if (mobj.flags2_ex and MF2_FLOORCLIP <> 0) and
+     (P_GetThingFloorType(mobj) > FLOOR_SOLID) and
+     (mobj.z = sec.floorheight) then
+    mobj.floorclip := FOOTCLIPSIZE
+  else
+    mobj.floorclip := 0;
 end;
 
 end.

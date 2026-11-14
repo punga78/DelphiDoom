@@ -273,6 +273,7 @@ uses
   r_sky,
   r_main,
   r_data,
+  r_translations,
   s_sound,
   sounddata,
   info,
@@ -801,8 +802,179 @@ end;
 //
 //==============================================================================
 function P_SpawnMobj(x, y, z: fixed_t; _type: integer; const mthing: Pmapthing_t = nil): Pmobj_t;
+var
+  mobj: Pmobj_t;
+  st: Pstate_t;
+  info: Pmobjinfo_t;
+  space: fixed_t;
+  sec: Psector_t;
+  msec: Psector_t;  // JVAL: 3d floors
+  lowfloorheight, hifloorheight: fixed_t; // JVAL: 3d floors
+  onmidfloor: Boolean;
+  spawnfloorheight, spawnceilingheight: fixed_t;  // JVAL: Slopes
 begin
-  result := TMobjGameRules.SpawnMobj(x, y, z, _type, mthing);
+  mobj := Z_Malloc(SizeOf(mobj_t), PU_LEVEL, nil);
+
+  ZeroMemory(mobj, SizeOf(mobj_t));
+
+  mobj.key := P_GenGlobalMobjKey;
+
+  info := @mobjinfo[_type];
+  mobj._type := _type;
+  mobj.info := info;
+  mobj.x := x;
+  mobj.y := y;
+  mobj.radius := info.radius;
+  mobj.height := info.height;
+  mobj.flags := info.flags;
+  mobj.flags_ex := info.flags_ex;
+  // The flags of the game, the "just appeared" flag, the fields only some games have
+  TMobjGameRules.InitGameFields(mobj, info);
+  mobj.flags3_ex := info.flags3_ex;
+  mobj.flags5_ex := info.flags5_ex;
+  mobj.flags6_ex := info.flags6_ex;
+  mobj.scale := info.scale;
+  mobj.gravity := info.gravity;
+  mobj.pushfactor := info.pushfactor;
+  mobj.friction := info.friction;
+  mobj.renderstyle := info.renderstyle;
+  mobj.alpha := info.alpha;
+  TMobjGameRules.InitBob(mobj);
+  mobj.health := info.spawnhealth;
+  mobj.mass := info.mass;
+  mobj.WeaveIndexXY := info.WeaveIndexXY;
+  mobj.WeaveIndexZ := info.WeaveIndexZ;
+  mobj.painchance := info.painchance;
+  mobj.spriteDX := info.spriteDX;
+  mobj.spriteDY := info.spriteDY;
+  // mbf21+
+  mobj.infighting_group := info.infighting_group;
+  mobj.projectile_group := info.projectile_group;
+  mobj.splash_group := info.splash_group;
+  mobj.bloodcolor := info.bloodcolor;
+  mobj.translationname := info.translationname;
+  R_InitMobjTranslation(mobj);
+
+  if TMobjGameRules.HasReactionTime then
+    mobj.reactiontime := info.reactiontime;
+
+  mobj.lastlook := P_Random mod MAXPLAYERS;
+  // do not set the state with P_SetMobjState,
+  // because action routines can not be called yet
+
+  // Set the state, but do not use P_SetMobjState, because action
+  // routines can't be called yet.  If the spawnstate has an action
+  // routine, it will not be called.
+  st := @states[info.spawnstate];
+
+  mobj.state := st;
+  mobj.tics := P_TicsFromState(st);
+  mobj.sprite := st.sprite;
+  mobj.frame := st.frame;
+  TMobjGameRules.InitStateMemory(mobj, st);
+
+  // set subsector and/or block links
+  P_SetThingPosition(mobj);
+
+  sec := Psubsector_t(mobj.subsector).sector;
+
+  // JVAL: Slopes
+  spawnfloorheight := P_FloorHeight(sec, x, y);
+  spawnceilingheight := P_CeilingHeight(sec, x, y);
+  mobj.floorz := spawnfloorheight;  // JVAL: Slopes
+  mobj.ceilingz := spawnceilingheight;  // JVAL: Slopes
+  onmidfloor := false;
+
+// JVAL: 3d floors
+  if sec.midsec >= 0 then
+  begin
+    msec := @sectors[sec.midsec];
+    if mthing <> nil then
+      if mthing.options and MTF_ONMIDSECTOR <> 0 then
+        onmidfloor := true;
+    if onmidfloor then
+      mobj.floorz := msec.ceilingheight
+    else if not onmidfloor and (z = ONCEILINGZ) then
+      mobj.ceilingz := msec.floorheight
+    else if z = TMobjGameRules.FloatSpawnZ then
+    begin
+      lowfloorheight := msec.floorheight - spawnfloorheight;  // JVAL: Slopes
+      hifloorheight := spawnceilingheight - msec.ceilingheight; // JVAL: Slopes
+      if lowfloorheight < mobj.info.height then
+        mobj.floorz := msec.ceilingheight
+      else if hifloorheight < mobj.info.height then
+        mobj.ceilingz := msec.floorheight
+      else if mthing = nil then
+      begin
+        if N_Random < Round(lowfloorheight / (lowfloorheight + hifloorheight) * 255) then
+          mobj.ceilingz := msec.floorheight
+        else
+          mobj.floorz := msec.ceilingheight;
+      end;
+    end
+    else
+    begin
+      if z > msec.floorheight then
+        mobj.floorz := msec.ceilingheight
+      else
+        mobj.ceilingz := msec.floorheight;
+    end;
+  end
+  else
+    msec := nil;
+
+  if z = ONFLOORZ then
+  begin
+    mobj.z := mobj.floorz;
+    TMobjGameRules.SpawnedOnFloor(mobj);
+  end
+  else if z = ONCEILINGZ then
+    mobj.z := mobj.ceilingz - mobj.info.height
+  else if z = TMobjGameRules.FloatSpawnZ then
+  begin
+    space := mobj.ceilingz - mobj.info.height - mobj.floorz;
+    if space > 48 * FRACUNIT then
+    begin
+      space := space - 40 * FRACUNIT;
+      mobj.z := TMobjGameRules.RandomFloatHeight(space) + mobj.floorz + 40 * FRACUNIT;
+    end
+    else
+      mobj.z := mobj.floorz
+  end
+  else if TMobjGameRules.SpawnZIsHeight(mobj) then
+    mobj.z := mobj.floorz + z    // artifact z passed in as height
+  else
+    mobj.z := z;
+
+  if (msec <> nil) or (sec.renderflags and SRF_SLOPED <> 0) then  // JVAL: Slopes
+  begin
+    if mobj.z > mobj.ceilingz - mobj.info.height then
+      mobj.z := mobj.ceilingz - mobj.info.height;
+    if mobj.z < mobj.floorz then
+      mobj.z := mobj.floorz;
+
+    TMobjGameRules.FootClipOnMidOrSlope(mobj);
+  end
+  else
+    TMobjGameRules.FootClipOnFloor(mobj, sec);
+
+  mobj.momz := mobj.info.vspeed;
+
+  mobj.thinker._function.acp1 := @P_MobjThinker;
+
+  P_AddThinker(@mobj.thinker);
+
+  mobj.prevx := mobj.x;
+  mobj.prevy := mobj.y;
+  mobj.prevz := mobj.z;
+  mobj.nextx := mobj.x;
+  mobj.nexty := mobj.y;
+  mobj.nextz := mobj.z;
+  mobj.prevangle := mobj.angle;
+  mobj.nextangle := mobj.angle;
+  mobj.intrplcnt := 0;
+
+  result := mobj;
 end;
 
 //==============================================================================
