@@ -28,6 +28,8 @@ type
     [Test]
     procedure UnFileDiStatisticheConTroppeVociDaUnErrore;
     [Test]
+    procedure IlMouseSuiMarcatoriCambiaLAnteprima;
+    [Test]
     procedure LaFinestraDiRenderCreaLuceEModelloAlPrimoDisegno;
     [Test]
     procedure LaFinestraDiRenderAggiornaLAnimazioneEIlCampoVisivo;
@@ -313,6 +315,35 @@ begin
     Assert.AreEqual('', string(LRig.Marker.HandleEvent(TGuiSysEvent.Make(GUI_SE_KEY, GUI_K_SPACE, 0), LUpdate)));
     Assert.AreEqual('', string(LRig.Marker.HandleEvent(TGuiSysEvent.Make(GUI_SE_CHAR, 65, 0), LUpdate)));
     Assert.AreEqual('', string(LRig.Marker.HandleEvent(TGuiSysEvent.Make(GUI_SE_KEY, 65, 1), LUpdate)));
+  finally
+    LRig.Free;
+  end;
+end;
+
+procedure TTestGuiMarkerRender.IlMouseSuiMarcatoriCambiaLAnteprima;
+var
+  LRig: TMarkerRig;
+  LUpdate, LSimple: Boolean;
+begin
+  LRig := TMarkerRig.Create(30);
+  try
+    LRig.World.UserInterface.SetStateString('statData', 'demos/m/stats.dat');
+    LRig.World.UserInterface.SetStateInt('loadLength', 1000);
+    LRig.World.UserInterface.Activate(True, 10);
+    LRig.World.UserInterface.Redraw(20);
+    LRig.Marker.RouteMouseCoords(0, 0);
+    Assert.AreEqual('No Preview', string(LRig.World.UserInterface.Desktop.FindDrawWindow('markerBackground', LSimple).Text.AsText));
+    // a click on a marker keeps it as the current one: the preview then shows its picture
+    LRig.World.UserInterface.Context.CursorX := LRig.Marker.Markers[0].Rect.X + 4;
+    LRig.World.UserInterface.Context.CursorY := LRig.Marker.Markers[0].Rect.Y + 4;
+    LUpdate := False;
+    LRig.Marker.HandleEvent(TGuiSysEvent.Make(GUI_SE_KEY, GUI_K_MOUSE1, 1), LUpdate);
+    LRig.World.UserInterface.Context.CursorX := 390;
+    LRig.World.UserInterface.Context.CursorY := 300;
+    LRig.Marker.RouteMouseCoords(0, 0);
+    Assert.AreEqual('', string(LRig.World.UserInterface.Desktop.FindDrawWindow('markerBackground', LSimple).Text.AsText));
+    LRig.World.UserInterface.Redraw(30);
+    Assert.IsTrue(LRig.Marker.StopTime = 120);
   finally
     LRig.Free;
   end;

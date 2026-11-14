@@ -136,7 +136,8 @@ uses
   DelphiDoom.Tests.Gui.DrawContext in 'Source\DelphiDoom.Tests.Gui.DrawContext.pas',
   DelphiDoom.Tests.Gui.Manager in 'Source\DelphiDoom.Tests.Gui.Manager.pas',
   DelphiDoom.Tests.Gui.SaveGame in 'Source\DelphiDoom.Tests.Gui.SaveGame.pas',
-  DelphiDoom.Tests.Gui.MarkerRender in 'Source\DelphiDoom.Tests.Gui.MarkerRender.pas';
+  DelphiDoom.Tests.Gui.MarkerRender in 'Source\DelphiDoom.Tests.Gui.MarkerRender.pas',
+  DelphiDoom.Tests.Gui.EditExtras in 'Source\DelphiDoom.Tests.Gui.EditExtras.pas';
 
 var
   Runner: ITestRunner;

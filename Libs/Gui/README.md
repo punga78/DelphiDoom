@@ -147,3 +147,16 @@ LCommand := LGui.HandleEvent(TGuiSysEvent.Make(GUI_SE_KEY, GUI_K_MOUSE1, 1), Tim
 ```
 
 Parita' esatta (bit) col vero `DeviceContext.cpp`, `Window.cpp`, `SimpleWindow.cpp` e `UserInterface.cpp` di Doom 3 su 25 casi (`Tests\Data\Gui\draw`), a 32 e 64 bit; unica tolleranza: 4 ULP nelle righe `Q` con `rotate` (la `sinf` del compilatore di riferimento). Difetti conservati, differenze e cosa resta (disegno ed eventi delle sottoclassi, cvar, gestore, `idListGUI`, salvataggi): [CLAUDE.md](CLAUDE.md).
+## Sottoclassi, cvar, gestore e salvataggi (conclusione della #111)
+
+Tutti i controlli (`sliderDef`, `choiceDef`, `editDef`, `listDef`, `bindDef`, `fieldDef`, `markerDef`, `renderDef`) disegnano e rispondono agli eventi; i cvar passano da `IGuiCvars`. `TGuiUserInterfaceManager` tiene il registro delle GUI (`FindGui`, `Reload`, `ListGuis`, `BeginLevelLoad`/`EndLevelLoad`), `TGuiListGui` riempie una `listDef`, e lo stato di una GUI e delle sue finestre si salva e si ripristina su un `TStream` (`TGuiSaveWriter`/`TGuiSaveReader`, `WriteToSaveGame`/`ReadFromSaveGame`, `FixupTransitions`).
+
+```pascal
+LManager := TGuiUserInterfaceManager.Create(LFiles, LLog, LSurface, LMaterials, LCvars, LKeys);
+LManager.Init;
+LGui := LManager.FindGui('guis/main.gui', True);      // letto una volta, condiviso se non e' interattivo
+LGui.Redraw(Time);  LGui.HandleEvent(LEvent, Time, LUpdate);
+LGui.WriteToSaveGame(LWriter);  { ... }  LGui.ReadFromSaveGame(LReader);   // dopo aver riletto il .gui
+```
+
+**Collegamento al motore: non fatto, voluto** (la libreria non ha consumatori). Per collegarla servono gli adattatori di tre interfacce: `IGuiDeviceContext` (`SetColor`, `DrawStretchPic`: il renderer), `IGuiMaterialLookup` (i materiali: `Libs\Decl`) e, se si usano marker e render, `IGuiRenderHost`, `IGuiFileLister` e `IGuiScratchImages`; piu' `IGuiCvars` (la console), `IGuiKeyState`/`IGuiKeyBindings` (la tastiera), `IGuiGameHost`, `IGuiLanguage`, `IGuiTables` e il tempo (`TGuiDrawContext.TickNumber`). Parita' col C++ di Doom 3, difetti conservati, differenze e formato dei salvataggi: [CLAUDE.md](CLAUDE.md).

@@ -48,13 +48,15 @@ type
     procedure LeCvarDelleFinestreHannoIValoriDiPartenza;
     [Test]
     procedure IlFuzzingDelleGuiNonDaAccessViolation;
+    [Test]
+    procedure IlFuzzingDeiControlliNonDaAccessViolation;
   end;
 
 implementation
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.Cvars,
-  DelphiDoom.Gui.DrawContext, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Window.Painter, DelphiDoom.Gui.Window.Types,
+  DelphiDoom.Gui.DrawContext, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Window.Painter, DelphiDoom.Gui.Window.Types, DelphiDoom.Gui.Window.Keys,
   DelphiDoom.Tests.Gui.DrawFakes, DelphiDoom.Tests.Gui.Harness;
 
 function TTestGuiDrawContext.Run(const AScenario: string): string;
@@ -323,6 +325,64 @@ begin
     end;
   end;
   Assert.IsTrue(LRuns >= 0);
+end;
+
+procedure TTestGuiDrawContext.IlFuzzingDeiControlliNonDaAccessViolation;
+const
+  BASE = 'windowDef Desktop { rect 0, 0, 640, 480 ' +
+    'sliderDef s { rect 10, 10, 100, 20 cvar "v" low 0 high 10 thumbshader "t" } ' +
+    'choiceDef c { rect 10, 40, 100, 20 choices "A;B;C" cvar "v" } ' +
+    'editDef e { rect 10, 70, 100, 20 text "hello" maxchars 8 cvar "v" wrap 1 } ' +
+    'listDef l { rect 10, 100, 100, 60 listname "ll" tabstops "0, 50" } ' +
+    'bindDef b { rect 10, 170, 100, 20 bind "x" } fieldDef f { rect 10, 200, 100, 20 text "field" cursorvar "p" } }';
+var
+  LSeed, LStep, LKind: Integer;
+  LScenario: string;
+  LRandom: Cardinal;
+
+  function Next(const ARange: Integer): Integer;
+  begin
+    LRandom := LRandom * 1664525 + 1013904223;
+    Result := Integer((LRandom shr 8) mod Cardinal(ARange));
+  end;
+
+begin
+  for LSeed := 1 to 120 do
+  begin
+    LRandom := Cardinal(LSeed) * 2654435761;
+    LScenario := '@case fuzz'#10'@file f.gui'#10 + BASE + #10'@op cvar v 3'#10'@op load f.gui'#10 +
+      '@op state ll_item_0 aa'#10'@op state ll_item_1 bb\tcc'#10'@op state p 99'#10'@op statechanged 1'#10 +
+      '@op activate 1 2'#10'@op redraw 3'#10;
+    for LStep := 1 to 40 do
+    begin
+      LKind := Next(5);
+      case LKind of
+        0: LScenario := LScenario + Format('@op event 3 %d %d %d'#10, [Next(80) - 20, Next(80) - 20, LStep * 10]);
+        1: LScenario := LScenario + Format('@op event 1 %d %d %d'#10, [GUI_K_MOUSE1 + Next(3), Next(2), LStep * 10]);
+        2: LScenario := LScenario + Format('@op event 1 %d 1 %d'#10, [Next(200), LStep * 10]);
+        3: LScenario := LScenario + Format('@op event 2 %d 0 %d'#10, [Next(256), LStep * 10]);
+      else
+        LScenario := LScenario + Format('@op redraw %d'#10, [LStep * 10]);
+      end;
+    end;
+    try
+      Run(LScenario);
+    except
+      on E: EAccessViolation do
+        Assert.Fail(Format('seed %d: access violation', [LSeed]));
+      on E: ERangeError do
+        Assert.Fail(Format('seed %d: range error %s', [LSeed, E.Message]));
+      on E: EInvalidPointer do
+        Assert.Fail(Format('seed %d: invalid pointer', [LSeed]));
+      on E: EListError do
+        Assert.Fail(Format('seed %d: list error %s', [LSeed, E.Message]));
+      on E: EInvalidOp do
+        Assert.Fail(Format('seed %d: invalid operation', [LSeed]));
+      on E: Exception do
+        ;
+    end;
+  end;
+  Assert.Pass;
 end;
 
 initialization
