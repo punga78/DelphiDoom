@@ -64,6 +64,7 @@ type
     FAxes: TSpeedModelAxes;
     FPixelsPerUnit: Single;
     FLength: Single;
+    FFixedScale: Single;
     FPitch: Single;
     FModel: II3dModel;
     FColorMaps: array[0..SPEED_CAR_VARIANTS - 1] of TBytes;
@@ -93,6 +94,10 @@ type
     function Render(ARotation, AVariant: Integer): TSpeedCarSpriteImage;
     /// <summary>The longest side of the loaded model in the units of its mesh (to find the axes)</summary>
     function Extent(AAxis: Integer; out AMinimum, AMaximum: Single): Boolean;
+    /// <summary>Pixels for each unit of the mesh when the picture keeps the size of the model (0: the length of the car is fixed)</summary>
+    property FixedScale: Single read FFixedScale write FFixedScale;
+    /// <summary>The pixels for each unit of the mesh that the last picture used</summary>
+    property PixelsPerMeshUnit: Single read FPixelsPerUnit;
   end;
 
 implementation
@@ -114,6 +119,8 @@ const
   AMBIENT_LIGHT = 0.55;
   PADDING = 2;
   TRANSLUCENT_LIMIT = 0.99;
+  // a patch is at most 255 rows high
+  MAX_PICTURE_PIXELS = 170;
   // the direction of the light in the axes of the car: front, left, up
   LIGHT_FRONT = 0.35;
   LIGHT_LEFT = 0.35;
@@ -265,7 +272,7 @@ type
 var
   LAngle, LCosPitch, LSinPitch: Single;
   LView, LRight, LScreenUp: TVector;
-  LMinX, LMaxX, LMinY, LMaxY, LMinF, LMaxF, LMinL, LMaxL, LMinU: Single;
+  LMinX, LMaxX, LMinY, LMaxY, LMinF, LMaxF, LMinL, LMaxL, LMinU, LMaxU, LLargest: Single;
   LScale: Single;
   LRasterizer: TSpeedTriangleRasterizer;
   LBatch, LVertex, LCorner, LLevel: Integer;
@@ -345,7 +352,7 @@ begin
   Normalize(LScreenUp);
 
   // the car in its own axes, and how big it is
-  LMinF := MaxSingle; LMaxF := -MaxSingle; LMinL := MaxSingle; LMaxL := -MaxSingle; LMinU := MaxSingle;
+  LMinF := MaxSingle; LMaxF := -MaxSingle; LMinL := MaxSingle; LMaxL := -MaxSingle; LMinU := MaxSingle; LMaxU := -MaxSingle;
   for LBatch := 0 to FMesh.BatchCount - 1 do
     for LVertex := 0 to High(FMesh.Batches[LBatch].Vertices) do
     begin
@@ -353,10 +360,20 @@ begin
       LMinF := Min(LMinF, LCar[0]); LMaxF := Max(LMaxF, LCar[0]);
       LMinL := Min(LMinL, LCar[1]); LMaxL := Max(LMaxL, LCar[1]);
       LMinU := Min(LMinU, LCar[2]);
+      LMaxU := Max(LMaxU, LCar[2]);
     end;
-  if LMaxF <= LMinF then
+  if (LMaxF < LMinF) or ((FFixedScale <= 0) and (LMaxF = LMinF)) then
     raise EInvalidOpException.Create(SSpeedCarNoModel);
-  FPixelsPerUnit := FLength / (LMaxF - LMinF);
+  if FFixedScale > 0 then
+  begin
+    // a scenery model: its own size, reduced when the picture would be taller than a patch can be
+    FPixelsPerUnit := FFixedScale;
+    LLargest := Max(LMaxF - LMinF, Max(LMaxL - LMinL, LMaxU - LMinU)) * FPixelsPerUnit;
+    if LLargest > MAX_PICTURE_PIXELS then
+      FPixelsPerUnit := FPixelsPerUnit * MAX_PICTURE_PIXELS / LLargest;
+  end
+  else
+    FPixelsPerUnit := FLength / (LMaxF - LMinF);
   LScale := FPixelsPerUnit;
   // the center of the car on the ground is the origin
 

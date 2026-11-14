@@ -386,6 +386,9 @@ begin
         if LWad.IndexOf(LName) >= 0 then
           WritePatchBmp(TPath.Combine(LDump, 'hud_' + LName + '.bmp'), LWad.LumpData[LWad.IndexOf(LName)],
             LWad.LumpData[LWad.IndexOf('PLAYPAL')]);
+      for LName in ['SNDINFO', 'SPEEDINF', 'GRAFSPAL', 'FLATSIZE'] do
+        if LWad.IndexOf(LName) >= 0 then
+          TFile.WriteAllBytes(TPath.Combine(LDump, 'lump_' + LName + '.txt'), LWad.LumpData[LWad.IndexOf(LName)]);
       for LName in ['NUBES0', 'MOUNT0', 'SKY1'] do
         WritePatchBmp(TPath.Combine(LDump, 'lump_' + LName + '.bmp'), LWad.LumpData[LWad.IndexOf(LName)],
           LWad.LumpData[LWad.IndexOf('PLAYPAL')]);

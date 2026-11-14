@@ -450,6 +450,25 @@ end;
 
 //==============================================================================
 //
+// SH_FindCarMobj
+// The object of the car that has a key (nil when there is none)
+//
+//==============================================================================
+function SH_FindCarMobj(key: cardinal): pointer;
+var
+  i: integer;
+begin
+  Result := nil;
+  for i := 0 to RACING_MAX_CARS - 1 do
+    if (race_cars[i] <> nil) and (race_cars[i].key = key) then
+    begin
+      Result := race_cars[i];
+      exit;
+    end;
+end;
+
+//==============================================================================
+//
 // SH_RaceLog
 //
 //==============================================================================
@@ -580,7 +599,7 @@ begin
   end;
 
   geometry := TEngineSpeedGeometry.Create;
-  race_effects_object := TEngineSpeedEffects.Create;
+  race_effects_object := TEngineSpeedEffects.Create(SH_FindCarMobj);
   race_effects := race_effects_object;
   race_events_object := TEngineSpeedRaceEvents.Create(race_log);
   race_events := race_events_object;

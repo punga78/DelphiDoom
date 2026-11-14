@@ -36,6 +36,7 @@ type
     procedure SpawnParticle(AKind: TRacingParticleKind; AX, AY, AZ, AMomentumX, AMomentumY: TFixed);
     function PlayEngineSound(AFormula: Boolean; AFraction: Integer): Integer;
     function PlayBrakeSound(AX, AY, AZ: TFixed): Integer;
+    procedure SelectCar(AKey: Cardinal);
     property Log: TStringList read FLog;
   end;
 
@@ -128,6 +129,10 @@ begin
   LNumber := TRacingScenarios.EngineSoundBase(AFormula) + AFraction;
   FLog.Add(TRacingScenarios.FormatEngineSound(LNumber));
   Result := TRacingScenarios.SoundDuration(LNumber);
+end;
+
+procedure TFakeRacingEffects.SelectCar(AKey: Cardinal);
+begin
 end;
 
 function TFakeRacingEffects.PlayBrakeSound(AX, AY, AZ: TFixed): Integer;

@@ -73,6 +73,8 @@ type
   IRacingEffects = interface
     ['{E5B28C71-0A4D-47F3-9B16-2C8D7E3F1A95}']
     /// <summary>A particle that leaves a wheel; the game decides which of the two objects of the kind it creates</summary>
+    /// <summary>The car that the next sound is for (its Key): the game finds its object to play the sound from it</summary>
+    procedure SelectCar(AKey: Cardinal);
     procedure SpawnParticle(AKind: TRacingParticleKind; AX, AY, AZ, AMomentumX, AMomentumY: TFixed);
     /// <summary>The sound of the engine for a fraction (0..9) of the rpm; gives how many tics the sound lasts</summary>
     function PlayEngineSound(AFormula: Boolean; AFraction: Integer): Integer;

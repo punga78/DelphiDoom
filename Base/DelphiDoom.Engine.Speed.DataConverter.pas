@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.Speed.WorldActors,
   DelphiDoom.Speed.Factory;
 
 const
@@ -61,6 +61,7 @@ var
   LSprites: TSpeedCarSpriteBuilder;
   LCarSprites: TArray<string>;
   LMapInfo: string;
+  LExtras: string;
 begin
   AWad := nil;
   try
@@ -79,10 +80,12 @@ begin
   LSprites := TSpeedFactory.CreateCarSpriteBuilder;
   try
     LCarSprites := LSprites.Build(LContainer, LWad);
+    LExtras := LSprites.BuildScenery(LContainer, LWad);
   finally
     LSprites.Free;
   end;
-  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites)));
+  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites,
+    LExtras + TSpeedWorldActors.Scenery(LWad) + TSpeedWorldActors.Particles(LWad))));
   // the name and the sky of every circuit
   LMapInfo := TSpeedUmapInfoBuilder.Build(LWad, TSpeedFactory.AppendSkyTextures(LWad));
   if LMapInfo <> '' then
