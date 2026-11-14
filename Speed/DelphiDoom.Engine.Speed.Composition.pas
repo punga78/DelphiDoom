@@ -1,0 +1,40 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - composition of the Speed Haste game                    }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom, GLSpeed)     }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+{$I Doom32.inc}
+unit DelphiDoom.Engine.Speed.Composition;
+
+interface
+
+uses
+  DelphiDoom.Logging.Intf;
+
+/// <summary>
+///   The part of the composition root that only Speed Haste has: ComposeEngine calls it (under the
+///   define SPEED) where the WAD services are given to w_wad.pas. It gives the historical units
+///   the converter of SPEEDH.JCL, the screens of the end of the race and the display of the race
+///   (W_ConfigureConverter, WI_ConfigureReplacement, ST_ConfigureReplacement)
+/// </summary>
+procedure ComposeSpeed(const ALog: ILog);
+
+implementation
+
+uses
+  DelphiDoom.Engine.Speed.DataConverter,
+  w_wad,
+  wi_stuff,
+  speed_intermission;
+
+procedure ComposeSpeed(const ALog: ILog);
+begin
+  W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
+  // the result of the race and the tables of the records in the place of the intermission of Doom
+  WI_ConfigureReplacement(SH_Intermission_Start, SH_Intermission_Ticker, SH_Intermission_Drawer);
+end;
+
+end.

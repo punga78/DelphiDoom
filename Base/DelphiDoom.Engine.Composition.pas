@@ -25,7 +25,7 @@ uses
   DelphiDoom.Engine.Level.RadixRules,
 {$ENDIF}
 {$IFDEF SPEED}
-  DelphiDoom.Engine.Speed.DataConverter,
+  DelphiDoom.Engine.Speed.Composition,
   DelphiDoom.Engine.Level.SpeedRules,
   speed_race,
 {$ENDIF}
@@ -1746,7 +1746,7 @@ begin
   ComposeRadix(LLog, LLumps, LThingFields, LRandom);
 {$ENDIF}
 {$IFDEF SPEED}
-  W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));
+  ComposeSpeed(LLog);
 {$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);

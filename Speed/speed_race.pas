@@ -46,6 +46,7 @@ uses
   DelphiDoom.Logging.Intf,
   DelphiDoom.MathCore.Intf,
   DelphiDoom.Racing.Types,
+  DelphiDoom.Racing.Intf,
   DelphiDoom.Racing.RaceController,
   DelphiDoom.Engine.Speed.RaceEvents;
 
@@ -90,10 +91,27 @@ function SH_Race: TRacingRaceController;
 //==============================================================================
 function SH_RaceEvents: TEngineSpeedRaceEvents;
 
+//==============================================================================
+//
+// SH_ScoreTable
+// The table of the best times (the file SPEED.REC of the data folder)
+//
+//==============================================================================
+function SH_ScoreTable: IRacingScoreTable;
+
+//==============================================================================
+//
+// SH_SaveRecords
+// Writes the table of the best times to its file
+//
+//==============================================================================
+procedure SH_SaveRecords;
+
 implementation
 
 uses
   SysUtils,
+  Classes,
   d_delphi,
   doomdef,
   doomdata,
@@ -111,7 +129,6 @@ uses
   p_tick,
   w_wad,
   z_zone,
-  DelphiDoom.Racing.Intf,
   DelphiDoom.Racing.Factory,
   DelphiDoom.Racing.PlayerEventRelay,
   DelphiDoom.Racing.CarData,
@@ -126,6 +143,7 @@ const
   DEFAULT_LAPS = 2;
   DEFAULT_PLAYER_CAR = 1;
   GROUND_LUMP_FORMAT = 'FMAP%.2d';
+  RECORDS_FILE = 'SPEED.REC';
 
 type
   speedrace_t = record
@@ -167,6 +185,67 @@ end;
 function SH_Race: TRacingRaceController;
 begin
   Result := race_controller;
+end;
+
+//==============================================================================
+//
+// SH_LoadRecords
+// The file of the records, if there is one that has the right size
+//
+//==============================================================================
+procedure SH_LoadRecords;
+var
+  stream: TFileStream;
+  bytes: TBytes;
+  fname: string;
+begin
+  race_scores := TRacingFactory.CreateScoreTable;
+  fname := M_SaveFileName(RECORDS_FILE);
+  if not FileExists(fname) then
+    exit;
+  stream := TFileStream.Create(fname, fmOpenRead or fmShareDenyNone);
+  try
+    SetLength(bytes, stream.Size);
+    if Length(bytes) > 0 then
+      stream.ReadBuffer(bytes[0], Length(bytes));
+  finally
+    stream.Free;
+  end;
+  if not race_scores.LoadFromBytes(bytes) then
+    race_log.Warning(Format('Speed Haste: %s has the wrong size, the records are cleared'#13#10, [fname]));
+end;
+
+//==============================================================================
+//
+// SH_ScoreTable
+//
+//==============================================================================
+function SH_ScoreTable: IRacingScoreTable;
+begin
+  if race_scores = nil then
+    SH_LoadRecords;
+  Result := race_scores;
+end;
+
+//==============================================================================
+//
+// SH_SaveRecords
+//
+//==============================================================================
+procedure SH_SaveRecords;
+var
+  stream: TFileStream;
+  bytes: TBytes;
+begin
+  if race_scores = nil then
+    exit;
+  bytes := race_scores.SaveToBytes;
+  stream := TFileStream.Create(M_SaveFileName(RECORDS_FILE), fmCreate);
+  try
+    stream.WriteBuffer(bytes[0], Length(bytes));
+  finally
+    stream.Free;
+  end;
 end;
 
 //==============================================================================
@@ -422,7 +501,7 @@ begin
   relay := TRacingPlayerEventRelay.Create;
   relayref := relay;
   if race_scores = nil then
-    race_scores := TRacingFactory.CreateScoreTable;
+    SH_LoadRecords;
   race_controller := TRacingRaceController.Create(race_settings, track, physics, aidriver,
     TRacingFactory.CreatePlayerDriver(race_settings, track, aidriver, relayref), relay,
     race_events, race_scores, 'PILOT');

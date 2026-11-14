@@ -75,13 +75,16 @@ begin
     LBuilder.Append('  Height 32').Append(NEW_LINE);
     LBuilder.Append('  Health 100000').Append(NEW_LINE);
     LBuilder.Append('  Mass 1000').Append(NEW_LINE);
+    if Length(ACarSprites) > 0 then
+      // the pictures are drawn at two pixels for each map unit
+      LBuilder.Append('  Scale 0.5').Append(NEW_LINE);
     LBuilder.Append('  +NORENDERINTERPOLATE').Append(NEW_LINE);
     LBuilder.Append('  States').Append(NEW_LINE);
     LBuilder.Append('  {').Append(NEW_LINE);
     LBuilder.Append('  Spawn:').Append(NEW_LINE);
     for LIndex := 0 to RACING_CAR_COUNT - 1 do
     begin
-      if Length(ACarSprites) = 0 then
+      if (Length(ACarSprites) = 0) or (ACarSprites[LIndex] = '') then
         LSprite := 'TNT1'
       else
       begin

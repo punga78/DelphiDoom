@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.ActorDefinitions,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder,
   DelphiDoom.Speed.Factory;
 
 const
@@ -58,6 +58,8 @@ function TEngineSpeedDataConverter.TryConvert(const AFileName: string; out AWad:
 var
   LContainer: ISpeedContainer;
   LWad: IGameWadComposer;
+  LSprites: TSpeedCarSpriteBuilder;
+  LCarSprites: TArray<string>;
 begin
   AWad := nil;
   try
@@ -70,8 +72,16 @@ begin
   FModels := TSpeedFactory.CreateTranslator(FLog).Translate(LContainer, LWad);
   // the messages of the engine are written with the font of the game
   TSpeedDoomFontAliases.Append(LWad);
+  TSpeedDoomPictureAliases.Append(LWad);
   // the cars, the start and the cameras of the circuits (the engine reads the lump ACTORDEF)
-  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(nil)));
+  // the cars are 3D models: the software renderer shows them as sprites drawn once from five sides
+  LSprites := TSpeedFactory.CreateCarSpriteBuilder;
+  try
+    LCarSprites := LSprites.Build(LContainer, LWad);
+  finally
+    LSprites.Free;
+  end;
+  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites)));
   AWad := LWad.ToBytes;
   FLog.Info(Format('SPEEDH.JCL: %d lumps translated, %d models'#13#10, [LWad.Count, Length(FModels)]));
   Result := True;
