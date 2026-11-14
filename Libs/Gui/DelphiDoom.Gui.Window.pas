@@ -83,6 +83,7 @@ type
     FHover: Boolean;
     FBackground: IGuiMaterial;
     FBackgroundFor: AnsiString;
+    FDirectBackground: IGuiMaterial;
     FForceAspectWidth: Single;
     FForceAspectHeight: Single;
     FMatScaleX: Single;
@@ -263,11 +264,19 @@ type
     function ContainsRect(const ARect: TGuiRectangle; const AX, AY: Single): Boolean;
     function ContainsPoint(const AX, AY: Single): Boolean;
     function GetChildIndex(const AWindow: TGuiWindow): Integer;
+    /// <summary>idWindow::InsertChild: a child that is not read from the text (the scroll bar of a list); it is drawn before ABefore, or last</summary>
+    function InsertChild(const AWindow: TGuiWindow; const ABefore: TGuiWindow = nil): Boolean;
+    /// <summary>idWindow::SetFont, GetMaxCharHeight and GetMaxCharWidth: sizes of the font of the window at its text scale</summary>
+    procedure SetFont;
+    function GetMaxCharHeight: Single;
+    function GetMaxCharWidth: Single;
     property OverChild: TGuiWindow read FOverChild write FOverChild;
     property Hover: Boolean read FHover write FHover;
     property CaptureChildRaw: TGuiWindow read FCaptureChild write FCaptureChild;
     /// <summary>The material of the background: found by name when the name changed, nil for an empty name</summary>
     function GetBackground: IGuiMaterial;
+    /// <summary>The background material set directly, not by name (idWindow::background of a scroll bar made by its owner)</summary>
+    procedure SetBackgroundMaterial(const AMaterial: IGuiMaterial);
     property Context: TGuiContext read FContext;
     property ActualX: Single read FActualX write FActualX;
     property ActualY: Single read FActualY write FActualY;
@@ -1143,6 +1152,46 @@ begin
   Result := FChildren.IndexOf(AWindow);
 end;
 
+function TGuiWindow.InsertChild(const AWindow: TGuiWindow; const ABefore: TGuiWindow): Boolean;
+var
+  LDraw: TGuiDrawWindow;
+  LIndex: Integer;
+begin
+  AddChild(AWindow);
+  AWindow.FParent := Self;
+  LDraw.Window := AWindow;
+  LDraw.IsSimple := False;
+  if Assigned(ABefore) then
+  begin
+    LIndex := GetChildIndex(ABefore);
+    if LIndex <> -1 then
+    begin
+      FDrawWindows.Insert(LIndex, LDraw);
+      Exit(True);
+    end;
+  end;
+  FDrawWindows.Add(LDraw);
+  Result := True;
+end;
+
+procedure TGuiWindow.SetFont;
+begin
+  if Assigned(FContext.DrawContext) then
+    FContext.DrawContext.SetFont(FFontNum);
+end;
+
+function TGuiWindow.GetMaxCharHeight: Single;
+begin
+  SetFont;
+  Result := FContext.DrawContext.MaxCharHeight(FTextScale.Value);
+end;
+
+function TGuiWindow.GetMaxCharWidth: Single;
+begin
+  SetFont;
+  Result := FContext.DrawContext.MaxCharWidth(FTextScale.Value);
+end;
+
 function TGuiWindow.HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString;
 begin
   Result := TGuiWindowEvents.HandleEvent(Self, AEvent, AUpdateVisuals);
@@ -1825,8 +1874,15 @@ begin
     LMaterial.UpdateCinematic(FContext.Time);
 end;
 
+procedure TGuiWindow.SetBackgroundMaterial(const AMaterial: IGuiMaterial);
+begin
+  FDirectBackground := AMaterial;
+end;
+
 function TGuiWindow.GetBackground: IGuiMaterial;
 begin
+  if (FBackgroundName.AsText = '') and Assigned(FDirectBackground) then
+    Exit(FDirectBackground);
   if (not Assigned(FContext.Materials)) or (FBackgroundName.AsText = '') then
     Exit(nil);
   if (not Assigned(FBackground)) or (FBackgroundFor <> FBackgroundName.AsText) then

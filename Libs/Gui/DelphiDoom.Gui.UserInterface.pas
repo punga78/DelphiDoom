@@ -108,6 +108,7 @@ begin
   FContext.Language := ALanguage;
   FContext.Tables := ATables;
   FContext.Fonts := AFonts;
+  FContext.FileSystem := AFileSystem;
   FFactory.Attach(FContext);
   // so the register evaluation of the parse does not get a bogus time
   FContext.Time := 0;

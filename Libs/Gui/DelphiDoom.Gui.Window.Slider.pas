@@ -19,7 +19,7 @@ interface
 uses
   DelphiDoom.Scanner.IdParser, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Intf,
   DelphiDoom.Gui.WinVar.Base, DelphiDoom.Gui.WinVar.Bool, DelphiDoom.Gui.WinVar.Float, DelphiDoom.Gui.WinVar.Str,
-  DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys;
+  DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.IdLib.Math.Vec4;
 
 type
   /// <summary>
@@ -61,6 +61,10 @@ type
     procedure SetBuddy(const ABuddy: TGuiWindow); override;
     /// <summary>idSliderWindow::SetRange and SetValue (the list and edit windows drive their scroll bar with them)</summary>
     procedure SetRange(const ALow, AHigh, AStep: Single);
+    procedure InitWithDefaults(const AName: AnsiString; const ARect: TGuiRectangle; const AForeColor, AMatColor: TIdVec4;
+      const ABackground, AThumbShader: AnsiString; const AVertical, AScrollbar: Boolean);
+    function GetValue: Single;
+    function GetHigh: Single;
     procedure SetValue(const AValue: Single);
     function HandleEvent(const AEvent: TGuiSysEvent; var AUpdateVisuals: Boolean): AnsiString; override;
     function RouteMouseCoords(const AX, AY: Single): AnsiString; override;
@@ -83,7 +87,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types,
+  System.SysUtils, DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Window.Types,
   DelphiDoom.Gui.DrawContext;
 
 constructor TGuiSliderWindow.Create(const AContext: TGuiContext; const ACreator: TGuiWindowCreator);
@@ -218,6 +222,37 @@ begin
   FLow := ALow;
   FHigh := AHigh;
   FStepSize := AStep;
+end;
+
+procedure TGuiSliderWindow.InitWithDefaults(const AName: AnsiString; const ARect: TGuiRectangle; const AForeColor,
+  AMatColor: TIdVec4; const ABackground, AThumbShader: AnsiString; const AVertical, AScrollbar: Boolean);
+begin
+  SetInitialState(AName);
+  Rect.Value := ARect;
+  ForeColor.Value := AForeColor;
+  MatColor.Value := AMatColor;
+  if Assigned(Context.Materials) then
+  begin
+    FThumbMat := Context.Materials.FindMaterial(AThumbShader);
+    FThumbMat.SetGuiSort;
+    FThumbWidth := FThumbMat.GetImageWidth;
+    FThumbHeight := FThumbMat.GetImageHeight;
+    SetBackgroundMaterial(Context.Materials.FindMaterial(ABackground));
+    GetBackground.SetGuiSort;
+  end;
+  FVertical := AVertical;
+  FScrollbar := AScrollbar;
+  SetFlag(WIN_HOLDCAPTURE);
+end;
+
+function TGuiSliderWindow.GetValue: Single;
+begin
+  Result := FValue.Value;
+end;
+
+function TGuiSliderWindow.GetHigh: Single;
+begin
+  Result := FHigh;
 end;
 
 procedure TGuiSliderWindow.SetValue(const AValue: Single);

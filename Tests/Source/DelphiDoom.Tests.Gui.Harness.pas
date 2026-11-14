@@ -189,6 +189,8 @@ begin
   FInterface.Context.Materials := FMaterials;
   FInterface.Context.Cvars := FCvars;
   FInterface.Context.Keys := FKeys;
+  FInterface.Context.ConsoleKey := 96;
+  FInterface.Context.ConsoleKeyShifted := 96;
 end;
 
 procedure TGuiHarnessRunner.RunDeviceContext(const AText: string; const AWords: TArray<string>);

@@ -1,0 +1,95 @@
+# scenarios of editDef (written for the test; no file of Doom 3)
+@case edit_fields
+@file edit.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  editDef name {
+    rect 10, 10, 200, 20
+    text "hello"
+    maxchars 12
+    textscale 0.4
+    forecolor 1, 1, 1, 1
+    hovercolor 1, 1, 0, 1
+    cvar "player_name"
+    cvarGroup "player"
+    cvarMax 5
+    onAction { set "cmd" "typed" }
+    onEnter { set "cmd" "entered" }
+    onESC { set "cmd" "escaped" }
+    onActionRelease { set "cmd" "action released" }
+    onEnterRelease { set "cmd" "enter released" }
+  }
+  editDef num {
+    rect 10, 50, 200, 20
+    text "12"
+    numeric 1
+    maxchars 6
+    textscale 0.4
+    password 0
+  }
+  editDef secret {
+    rect 10, 90, 200, 20
+    text "abc"
+    password 1
+    textscale 0.4
+  }
+  editDef ro {
+    rect 10, 130, 200, 20
+    text "readonly text"
+    readonly 1
+    textscale 0.4
+  }
+  editDef multi {
+    rect 10, 170, 150, 60
+    text "The quick brown fox jumps over the lazy dog and keeps running far away"
+    wrap 1
+    maxchars 200
+    textscale 0.3
+    forceScroll 0
+  }
+  editDef nocvar {
+    rect 10, 250, 200, 20
+    text "x"
+    cvar "missing_cvar"
+    textscale 0.4
+  }
+}
+@op cvar player_name Doomguy
+@op load edit.gui
+@op redraw 10
+@op activate 1 20
+@op redraw 30
+@op guicursor 20 20
+@op event 3 0 0 40
+@op event 1 187 1 50
+@op redraw 60
+@op event 2 65 0 70
+@op event 2 66 0 80
+@op event 1 135 1 90
+@op event 1 135 1 100
+@op event 2 8 0 110
+@op event 2 127 0 120
+@op event 1 144 1 130
+@op event 1 147 1 140
+@op event 1 148 1 150
+@op keydown 141
+@op event 1 135 1 160
+@op event 1 136 1 170
+@op keyup 141
+@op event 1 143 1 180
+@op event 2 90 0 190
+@op event 1 143 1 200
+@op event 2 96 0 210
+@op event 2 7 0 220
+@op event 1 13 1 230
+@op event 1 13 0 240
+@op event 1 27 1 250
+@op event 1 65 0 260
+@op redraw 270
+@op cvar player_name Other
+@op named cvar read player
+@op redraw 280
+@op named cvar write player
+@op named cvar read none
+@op dump
+@end

@@ -57,9 +57,11 @@ Patch "$Work\neo\framework\DeclManager.h" { param($t) $m = [regex]::Match($t, '(
 
 # ui: the windows that are not compared (the game windows, list, marker, render and edit windows) are cut out of Window.cpp
 Patch "$u\Window.cpp" { param($t)
-  $t = [regex]::Replace($t, '(?s)else if \( token == "(game(SSD|BearShoot|BustOut)Def|listDef|markerDef|renderDef|editDef)" \) \{.*?\r?\n\t\t\}', '')
+  $t = [regex]::Replace($t, '(?s)else if \( token == "(game(SSD|BearShoot|BustOut)Def|markerDef|renderDef)" \) \{.*?\r?\n\t\t\}', '')
   $t = [regex]::Replace($t, '#include "Game\w+Window.h"\r?\n', '')
-  $t.Replace('#include "ListWindow.h"', '').Replace('#include "RenderWindow.h"', '').Replace('#include "MarkerWindow.h"', '').Replace('#include "EditWindow.h"', '').Replace('#include "../tools/guied/GEWindowWrapper.h"', '') }
+  $t.Replace('#include "RenderWindow.h"', '').Replace('#include "MarkerWindow.h"', '').Replace('#include "../tools/guied/GEWindowWrapper.h"', '') }
+
+Patch "$u\ListWindow.cpp" { param($t) $t.Replace('#include "../framework/Session_local.h"', '') }
 
 # the methods of idUserInterfaceLocal from the constructor to Trigger, cut from the real UserInterface.cpp
 $ui = Get-Content "$u\UserInterface.cpp"
@@ -92,7 +94,7 @@ function Compile($f) {
 $files = 'idlib\driver', 'idlib\stubs', 'idlib\Str', 'idlib\Token', 'idlib\Lexer', 'idlib\Parser', 'idlib\CmdArgs', 'idlib\Dict', 'idlib\Heap', 'idlib\BitMsg', 'idlib\LangDict',
   'idlib\math\Math', 'idlib\math\Vector', 'idlib\math\Matrix', 'idlib\math\Angles', 'idlib\math\Quat', 'idlib\math\Rotation', 'idlib\math\Plane', 'idlib\math\Pluecker', 'idlib\math\Polynomial',
   'idlib\math\Complex', 'idlib\math\Simd_Generic', 'idlib\hashing\CRC32', 'idlib\hashing\MD5', 'idlib\containers\HashIndex', 'idlib\geometry\JointTransform',
-  'ui\DeviceContext', 'ui\Winvar', 'ui\RegExp', 'ui\GuiScript', 'ui\Window', 'ui\SimpleWindow', 'ui\ChoiceWindow', 'ui\SliderWindow', 'ui\BindWindow', 'ui\FieldWindow'
+  'ui\DeviceContext', 'ui\Winvar', 'ui\RegExp', 'ui\GuiScript', 'ui\Window', 'ui\SimpleWindow', 'ui\ChoiceWindow', 'ui\SliderWindow', 'ui\BindWindow', 'ui\FieldWindow', 'ui\EditWindow', 'ui\ListWindow'
 foreach ($f in $files) { Compile $f }
 $objs = Get-ChildItem "$Work\obj\*.o" | ForEach-Object { $_.FullName }
 $ErrorActionPreference = 'Continue'

@@ -34,6 +34,7 @@ static idCommon theCommon;
 static idFileSystem theFs;
 static idDeclManagerStub theDecls;
 idDeclManager *declManager = &theDecls;
+static idSysStub theSys; idSysStub *sys = &theSys;
 static idSession theSession; idSession *session = &theSession;
 static idCmdSystem theCmd; idCmdSystem *cmdSystem = &theCmd;
 static idCVarSystem theCvars; idCVarSystem *cvarSystem = &theCvars;

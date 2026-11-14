@@ -9,6 +9,7 @@ extern void harnessLog(const char *fmt, ...);
 class idMaterial : public idDecl {
 public:
 	std::string nm;
+	const char *GetName() const { return nm.c_str(); }
 	MatInfo info() const { std::map<std::string, MatInfo>::const_iterator it = matTable().find(nm); if (it != matTable().end()) return it->second; MatInfo m = { 16, 16, 0, false }; return m; }
 	bool TestMaterialFlag(int) const { return info().defaulted; }
 	void SetSort(float) const {}
@@ -58,7 +59,7 @@ class idRenderSystemStub { public:
 extern idRenderSystemStub *renderSystem;
 
 typedef int qhandle_t;
-template<class T> class idHashTable { std::map<std::string,T> m; public: void Set(const char *k, T v) { m[k] = v; } bool Get(const char *k, T *v = NULL) const { typename std::map<std::string,T>::const_iterator it = m.find(k); if (it == m.end()) return false; if (v) *v = it->second; return true; } void Clear() { m.clear(); } };
+template<class T> class idHashTable { std::map<std::string,T> m; public: void Set(const char *k, T v) { m[k] = v; } bool Get(const char *k, T **v = NULL) const { typename std::map<std::string,T>::const_iterator it = m.find(k); if (it == m.end()) return false; if (v) *v = const_cast<T *>(&it->second); return true; } void Clear() { m.clear(); } };
 struct renderView_t { int dummy; };
 class idRenderWorld { public: };
 struct renderEntity_t { int dummy; };
@@ -73,6 +74,8 @@ enum { K_TAB = 9, K_ENTER = 13, K_ESCAPE = 27, K_BACKSPACE = 127, K_UPARROW = 13
 // the keys that are down come from the scenario ("keydown K")
 extern std::set<int> &keysDown();
 class idKeyInput { public: static bool IsDown(int k) { return keysDown().count(k) != 0; } static void SetBinding(int, const char *) {} static const char *GetBinding(int) { return ""; } };
+class idSysStub { public: sysEvent_t GenerateMouseButtonEvent(int button, bool down) { sysEvent_t e; e.evType = SE_KEY; e.evValue = K_MOUSE1 + button - 1; e.evValue2 = down; e.evPtrLength = 0; e.evPtr = 0; return e; } };
+extern idSysStub *sys;
 static idVec4 colorBlack(0.0f, 0.0f, 0.0f, 1.0f);
 const int CVAR_ARCHIVE = 8;
 enum { K_KP_HOME = 165, K_KP_UPARROW, K_KP_PGUP, K_KP_LEFTARROW, K_KP_5, K_KP_RIGHTARROW, K_KP_END, K_KP_DOWNARROW, K_KP_PGDN, K_KP_INS = 175, K_KP_DEL, K_KP_SLASH, K_KP_MINUS = 179, K_KP_PLUS = 181, K_KP_NUMLOCK, K_KP_STAR, K_KP_EQUALS };
