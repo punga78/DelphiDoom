@@ -20,9 +20,9 @@ if (-not (Test-Path "$Dati\GREED.BLO")) { Write-Error "manca $Dati\GREED.BLO"; e
 $uscita = Join-Path $env:TEMP 'GreedUdp'
 New-Item -ItemType Directory -Force $uscita | Out-Null
 Remove-Item "$uscita\*.txt" -ErrorAction SilentlyContinue
-# il giocatore 0 cammina e spara, il giocatore 1 cammina
-Set-Content "$uscita\a.script.txt" @('40 north down', '120 north up', '130 weapon2 down', '140 weapon2 up', '200 fire down', '600 fire up')
-Set-Content "$uscita\b.script.txt" @('60 north down', '160 north up')
+# il giocatore 0 gira, cammina e spara; il giocatore 1 cammina all'indietro, gira e cammina
+Set-Content "$uscita\a.script.txt" @('10 east down', '60 east up', '70 north down', '260 north up', '270 weapon2 down', '280 weapon2 up', '300 fire down', '600 fire up')
+Set-Content "$uscita\b.script.txt" @('10 south down', '150 south up', '160 west down', '220 west up', '230 north down', '400 north up')
 $comuni = @('-data', $Dati, '-play', $Mappa, '-headless', '-ticks', $Tic)
 $a = Start-Process $Exe -ArgumentList ($comuni + @('-net', 0, 2, '-netport', $PortaA, '-netpeer', ".127.0.0.1:$PortaB", '-netname', 'Ann',
   '-script', "$uscita\a.script.txt", '-dump', "$uscita\a.txt")) -PassThru -WindowStyle Hidden -RedirectStandardOutput "$uscita\a.out.txt"
