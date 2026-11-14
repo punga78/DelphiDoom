@@ -1,0 +1,189 @@
+#include "precompiled.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+void idLib::Error(const char *, ...) { abort(); }
+void idLib::Warning(const char *, ...) {}
+void idCommon::Printf(const char *, ...) {}
+void idCommon::Warning(const char *, ...) {}
+void idCommon::DWarning(const char *, ...) {}
+void idCommon::Error(const char *, ...) { abort(); }
+void idCommon::FatalError(const char *, ...) { abort(); }
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+
+// ---------------------------------------------------------------- helpers
+static unsigned int rstate = 777;
+static unsigned int rnext() { rstate = rstate * 1664525u + 1013904223u; return rstate; }
+static float rf(float range) { return (float)((double)(rnext() >> 8) / 8388608.0 - 1.0) * range; }
+static unsigned int bitsOf(float f) { unsigned int u; memcpy(&u, &f, 4); return u; }
+static void P(float f) { printf(" #%08x", bitsOf(f)); }
+static void PV(const float *a, int n) { for (int i = 0; i < n; i++) P(a[i]); }
+static void PI(int v) { printf(" %d", v); }
+static bool mergeOn = false;
+static void head(const char *name, const float *in, int n) { if (mergeOn) { printf(" ;%s", name); return; } printf("%s", name); PV(in, n); printf(" |"); }
+static void tail() { if (!mergeOn) printf("\n"); }
+static void beginCase(const char *prefix, const float *in, int n) { printf("%s_all", prefix); PV(in, n); printf(" |"); mergeOn = true; }
+static void endCase() { mergeOn = false; printf("\n"); }
+static void putVecX(const idVecX &v) { PV(v.ToFloatPtr(), v.GetSize()); }
+static void putMatX(const idMatX &m) { PV(m.ToFloatPtr(), m.GetNumRows() * m.GetNumColumns()); }
+static void fillMat(float *a, int rows, int cols, int kind) {
+	for (int i = 0; i < rows * cols; i++) a[i] = rf(2.0f);
+	if (kind == 0 && rows == cols) for (int i = 0; i < rows; i++) a[i * cols + i] += 3.0f;
+}
+
+// ---------------------------------------------------------------- LU updates
+static void testLuUpdate(int cases) {
+	for (int n = 2; n <= 7; n++) for (int c = 0; c < cases; c++) {
+		float a[64], v[9], w[9], in[200]; int k = 0;
+		fillMat(a, n, n, 0);
+		int r = (int)(rnext() % n); float alpha = (c & 1) ? 0.5f : -0.25f;
+		for (int i = 0; i <= n; i++) { v[i] = rf(1.0f); w[i] = rf(1.0f); }
+		in[k++] = (float)n; in[k++] = (float)r; in[k++] = alpha;
+		for (int i = 0; i < n * n; i++) in[k++] = a[i];
+		for (int i = 0; i <= n; i++) in[k++] = v[i];
+		for (int i = 0; i <= n; i++) in[k++] = w[i];
+		float wr[9]; memcpy(wr, w, sizeof(w)); wr[r] = 0.0f;       // for the row and column update
+		float winc[9]; memcpy(winc, w, sizeof(w)); winc[n] = 0.0f; // for the increment
+		for (int piv = 0; piv < 2; piv++) {
+			beginCase(piv ? "YLp" : "YLn", in, k);
+			idMatX m; m.Set(n, n, a); idMatX f; f = m;
+			int index[16]; int *idx = piv ? index : NULL; float det = 0.0f;
+			bool ok = f.LU_Factor(idx, &det);
+			head("YL_factor", in, k); PI(ok);
+			if (!ok) { endCase(); continue; }
+			putMatX(f); if (piv) for (int i = 0; i < n; i++) PI(index[i]); tail();
+			idVecX vv(n + 1), ww(n + 1), wwr(n + 1), wwi(n + 1);
+			for (int i = 0; i <= n; i++) { vv[i] = v[i]; ww[i] = w[i]; wwr[i] = wr[i]; wwi[i] = winc[i]; }
+			idVecX vn(n), wn(n), wrn(n); for (int i = 0; i < n; i++) { vn[i] = v[i]; wn[i] = w[i]; wrn[i] = wr[i]; }
+			{
+				idMatX u; u = f; int ix[16]; memcpy(ix, index, sizeof(ix));
+				ok = u.LU_UpdateRankOne(vn, wn, alpha, piv ? ix : NULL);
+				head("YL_rank1", in, k); PI(ok); putMatX(u); tail();
+			}
+			{
+				idMatX u; u = f; int ix[16]; memcpy(ix, index, sizeof(ix));
+				ok = u.LU_UpdateRowColumn(vn, wrn, r, piv ? ix : NULL);
+				head("YL_rowcol", in, k); PI(ok); putMatX(u); tail();
+			}
+			{
+				idMatX u; u = f; int ix[16]; memcpy(ix, index, sizeof(ix));
+				ok = u.LU_UpdateIncrement(vv, wwi, piv ? ix : NULL);
+				head("YL_incr", in, k); PI(ok); putMatX(u); if (piv) for (int i = 0; i <= n; i++) PI(ix[i]); tail();
+			}
+			{
+				// v = column r, w = row r, u = row index[r] of the original matrix
+				idVecX col(n), row(n), urow(n);
+				for (int i = 0; i < n; i++) { col[i] = a[i * n + r]; row[i] = a[r * n + i]; }
+				int src = piv ? index[r] : r;
+				for (int i = 0; i < n; i++) urow[i] = a[src * n + i];
+				idMatX u; u = f; int ix[16]; memcpy(ix, index, sizeof(ix));
+				ok = u.LU_UpdateDecrement(col, row, urow, r, piv ? ix : NULL);
+				head("YL_decr", in, k); PI(ok); putMatX(u); if (piv) for (int i = 0; i < n - 1; i++) PI(ix[i]); tail();
+			}
+			endCase();
+		}
+	}
+}
+
+// ---------------------------------------------------------------- QR
+static void testQr(int cases) {
+	for (int n = 2; n <= 7; n++) for (int c = 0; c < cases; c++) {
+		float a[64], v[9], w[9], b[8], in[200]; int k = 0;
+		fillMat(a, n, n, (c % 3 == 2) ? 1 : 0);
+		int r = (int)(rnext() % n); float alpha = (c & 1) ? 0.5f : -0.25f;
+		for (int i = 0; i <= n; i++) { v[i] = rf(1.0f); w[i] = rf(1.0f); }
+		for (int i = 0; i < n; i++) b[i] = rf(2.0f);
+		in[k++] = (float)n; in[k++] = (float)r; in[k++] = alpha;
+		for (int i = 0; i < n * n; i++) in[k++] = a[i];
+		for (int i = 0; i <= n; i++) in[k++] = v[i];
+		for (int i = 0; i <= n; i++) in[k++] = w[i];
+		for (int i = 0; i < n; i++) in[k++] = b[i];
+		float wr[9]; memcpy(wr, w, sizeof(w)); wr[r] = 0.0f;
+		float winc[9]; memcpy(winc, w, sizeof(w)); winc[n] = 0.0f;
+		beginCase("YQ", in, k);
+		idMatX m; m.Set(n, n, a); idMatX f; f = m;
+		idVecX cc(n), dd(n), vb(n), x(n); cc.Zero(); dd.Zero(); for (int i = 0; i < n; i++) vb[i] = b[i];
+		bool ok = f.QR_Factor(cc, dd);
+		head("YQ_factor", in, k); PI(ok); putMatX(f); putVecX(cc); putVecX(dd); tail();
+		if (!ok) { endCase(); continue; }
+		f.QR_Solve(x, vb, cc, dd); head("YQ_solve", in, k); putVecX(x); tail();
+		idMatX inv; f.QR_Inverse(inv, cc, dd); head("YQ_inv", in, k); putMatX(inv); tail();
+		idMatX Q, R, back; back.SetSize(n, n); f.QR_UnpackFactors(Q, R, cc, dd); head("YQ_unpack", in, k); putMatX(Q); putMatX(R); tail();
+		f.QR_MultiplyFactors(back, cc, dd); head("YQ_mul", in, k); putMatX(back); tail();
+		Q.QR_Solve(x, vb, R); head("YQ_solveR", in, k); putVecX(x); tail();
+		idVecX vn(n), wrn(n), wn(n), vv(n + 1), wwi(n + 1);
+		for (int i = 0; i < n; i++) { vn[i] = v[i]; wn[i] = w[i]; wrn[i] = wr[i]; }
+		for (int i = 0; i <= n; i++) { vv[i] = v[i]; wwi[i] = winc[i]; }
+		{ idMatX q2, r2; q2 = Q; r2 = R; ok = q2.QR_UpdateRankOne(r2, vn, wn, alpha); head("YQ_rank1", in, k); PI(ok); putMatX(q2); putMatX(r2); tail(); }
+		{ idMatX q2, r2; q2 = Q; r2 = R; ok = q2.QR_UpdateRowColumn(r2, vn, wrn, r); head("YQ_rowcol", in, k); PI(ok); putMatX(q2); putMatX(r2); tail(); }
+		{ idMatX q2, r2; q2 = Q; r2 = R; ok = q2.QR_UpdateIncrement(r2, vv, wwi); head("YQ_incr", in, k); PI(ok); putMatX(q2); putMatX(r2); tail(); }
+		{
+			idVecX col(n), row(n); for (int i = 0; i < n; i++) { col[i] = a[i * n + r]; row[i] = a[r * n + i]; }
+			idMatX q2, r2; q2 = Q; r2 = R; ok = q2.QR_UpdateDecrement(r2, col, row, r); head("YQ_decr", in, k); PI(ok); putMatX(q2); putMatX(r2); tail();
+		}
+		endCase();
+	}
+}
+
+// ---------------------------------------------------------------- SVD
+static void testSvd(int cases) {
+	for (int n = 1; n <= 6; n++) for (int extra = 0; extra < 3; extra++) for (int c = 0; c < cases; c++) {
+		int m = n + extra; float a[64], b[8], in[100]; int k = 0;
+		fillMat(a, m, n, 1);
+		if (c % 4 == 3 && m > 1) for (int j = 0; j < n; j++) a[(m - 1) * n + j] = a[0 * n + j];   // dependent rows
+		if (c % 5 == 4 && n > 1) for (int i = 0; i < m; i++) a[i * n + n - 1] = a[i * n + 0];       // dependent columns
+		for (int i = 0; i < m; i++) b[i] = rf(2.0f);
+		in[k++] = (float)m; in[k++] = (float)n;
+		for (int i = 0; i < m * n; i++) in[k++] = a[i];
+		for (int i = 0; i < m; i++) in[k++] = b[i];
+		beginCase("YS", in, k);
+		idMatX f; f.SetSize(m, n); memcpy(f.ToFloatPtr(), a, m * n * sizeof(float));
+		idVecX w, x(n), vb(m); idMatX V; for (int i = 0; i < m; i++) vb[i] = b[i];
+		bool ok = f.SVD_Factor(w, V);
+		head("YS_factor", in, k); PI(ok);
+		if (!ok) { endCase(); continue; }
+		putVecX(w); tail();
+		if (m == n) { idMatX back; f.SVD_MultiplyFactors(back, w, V); head("YS_mul", in, k); putMatX(back); tail(); }
+		f.SVD_Solve(x, vb, w, V); head("YS_solve", in, k); putVecX(x); tail();
+		if (m == n) { idMatX inv; inv.SetSize(n, n); f.SVD_Inverse(inv, w, V); head("YS_inv", in, k); putMatX(inv); tail(); }
+		endCase();
+	}
+}
+
+// ---------------------------------------------------------------- general eigenvalues
+static void testEigenGeneral(int cases) {
+	for (int n = 1; n <= 7; n++) for (int c = 0; c < cases; c++) {
+		float a[64], in[80], resid[8];
+		fillMat(a, n, n, (c % 2) ? 1 : 0);
+		if (c % 5 == 4) for (int i = 0; i < n * n; i++) a[i] = (float)((int)(rnext() >> 29) % 5 - 2) * 0.5f;
+		in[0] = (float)n; memcpy(in + 1, a, n * n * sizeof(float));
+		beginCase("YG", in, n * n + 1);
+		idMatX f; f.SetSize(n, n); memcpy(f.ToFloatPtr(), a, n * n * sizeof(float)); idMatX orig; orig = f;
+		idVecX re, im;
+		bool ok = f.Eigen_Solve(re, im);
+		head("YG_solve", in, n * n + 1); PI(ok);
+		if (ok) {
+			// the pairs (re, im) sorted by re then im, the order of the QR iteration depends on the rounding
+			int ord[8]; for (int i = 0; i < n; i++) ord[i] = i;
+			for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) {
+				if (re[ord[j]] < re[ord[i]] || (re[ord[j]] == re[ord[i]] && im[ord[j]] < im[ord[i]])) { int t = ord[i]; ord[i] = ord[j]; ord[j] = t; }
+			}
+			for (int i = 0; i < n; i++) { P(re[ord[i]]); P(im[ord[i]]); }
+		}
+		tail();
+		endCase();
+	}
+}
+
+int main(int argc, char **argv) {
+	idMath::Init(); setvbuf(stdout, 0, _IONBF, 0);
+	testLuUpdate(6);
+	testQr(6);
+	testSvd(4);
+	testEigenGeneral(6);
+	return 0;
+}
