@@ -544,6 +544,7 @@ uses
   p_mobj,
   p_enemy,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_inter,
   p_maputl,
   p_common,

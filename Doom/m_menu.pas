@@ -296,6 +296,7 @@ uses
   p_local,
   p_enemy,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_user,
   p_adjust,
   p_obituaries,

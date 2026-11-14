@@ -185,6 +185,7 @@ uses
   p_3dfloors, // JVAL: Slopes
   p_spec,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_mapinfo,
   p_maputl,
   udmf_telept,

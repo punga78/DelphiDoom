@@ -397,6 +397,7 @@ uses
   p_common,
   p_sight,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_tick,
   p_inter,
   p_enemy,

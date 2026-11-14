@@ -52,6 +52,7 @@ uses
   p_local,
   p_enemy,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
 {$ELSEIF DEFINED(STRIFE)}
   p_local,
 {$ENDIF}

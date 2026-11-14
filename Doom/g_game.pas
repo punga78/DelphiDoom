@@ -532,6 +532,7 @@ uses
   p_mobj,
   p_inter,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_acs,
   p_levelinfo,
   ps_main,

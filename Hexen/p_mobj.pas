@@ -348,6 +348,7 @@ uses
   p_gravity,
   p_local,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_maputl,
   p_mobjlist,
   p_tick,
