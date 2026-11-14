@@ -19,7 +19,8 @@ unit DelphiDoom.Pmove.Ground;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Collision.Q3.Types, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State,
+  System.SysUtils, DelphiDoom.Collision.Q3.Types, DelphiDoom.Models.Q3Player.Types,
+  DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State,
   DelphiDoom.Pmove.Events;
 
 type

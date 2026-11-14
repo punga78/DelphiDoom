@@ -19,6 +19,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Defaults, DelphiDoom.Collision.Q3.Types, DelphiDoom.Net.Q3.Types,
+  DelphiDoom.Models.Q3Player.Types,
   DelphiDoom.Pmove.Types, DelphiDoom.Pmove.Intf,
   DelphiDoom.Pmove.State, DelphiDoom.Pmove.Events, DelphiDoom.Pmove.Physics, DelphiDoom.Pmove.Slider;
 

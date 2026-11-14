@@ -19,7 +19,8 @@ unit DelphiDoom.Pmove.Events;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Q3.Types, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State;
+  System.SysUtils, DelphiDoom.Net.Q3.Types, DelphiDoom.Models.Q3Player.Types,
+  DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State;
 
 type
   /// <summary>What the movement leaves in the player state besides the position: events, touched entities, animations</summary>

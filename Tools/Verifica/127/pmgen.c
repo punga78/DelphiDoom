@@ -431,6 +431,7 @@ static void make_scenario(scn_t *s, int id) {
     break;
   }
   if (mode == 9 && (id % 3 == 2)) { x = 2980; y = 2980; z = 120; }       /* a corner of the room, in the air */
+  if (mode == 9 && id % 3 == 0 && (id / NMODES) % 2 == 0) { x = 0; y = 1500; }  /* the valley of the two walls at 45 degrees, facing the apex */
   if (mode == 9 && (id % 3 == 1)) { x = 2584; y = -190; yaw = 16384; }  /* along the posts */
 
   base_ps(&p, x, y, z);
@@ -551,7 +552,7 @@ static void make_scenario(scn_t *s, int id) {
     if (id % 7 == 3) p.velocity[0] = -3.0e9f;
     break;
   }
-  if (rnd() % 3 == 0 && !(mode == 9 && id % 3 != 0)) {
+  if (rnd() % 3 == 0 && !(mode == 9 && (id % 3 != 0 || (id / NMODES) % 2 == 0))) {
     p.delta_angles[0] = ri(-30000, 30000);
     p.delta_angles[1] = ri(-70000, 70000);
     p.delta_angles[2] = ri(-3000, 3000);
@@ -620,6 +621,12 @@ static void make_scenario(scn_t *s, int id) {
     if (id % 3 == 1) {
       add_seg(s, 2, 1000, 127, 64, 0, 0, 2, yaw, 0, 0, 0, 0, 0);
       add_seg(s, 60, 16, 127, 64, 0, 0, 2, yaw, 0, 0, 0, 0, 0);
+    }
+    if (id % 3 == 0 && (id / NMODES) % 2 == 0) {
+      /* run at the apex of the valley: two slanted planes and the floor */
+      add_seg(s, 80, 16, 127, 0, 0, 0, 2, 16384, 0, 0, 0, 0, 0);
+      add_seg(s, 40, 16, 127, 100, 0, 0, 2, 16384, 0, 0, 0, 0, 0);
+      add_seg(s, 40, 16, 127, -100, 0, 0, 2, 16384, 0, 0, 0, 0, 0);
     }
     if (id % 3 == 2) {
       /* diagonal into the corner (45 degrees), then along each wall */

@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, System.Generics.Defaults, DelphiDoom.Collision.Q3.Types,
-  DelphiDoom.Net.Q3.Types, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.Intf, DelphiDoom.Pmove.State;
+  DelphiDoom.Models.Q3Player.Types, DelphiDoom.Net.Q3.Types, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.Intf, DelphiDoom.Pmove.State;
 
 type
   [TestFixture]

@@ -18,7 +18,8 @@ unit DelphiDoom.Pmove.Weapon;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Q3.Types, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State,
+  System.SysUtils, DelphiDoom.Net.Q3.Types, DelphiDoom.Models.Q3Player.Types,
+  DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State,
   DelphiDoom.Pmove.Events;
 
 type

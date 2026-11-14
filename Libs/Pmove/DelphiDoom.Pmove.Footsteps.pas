@@ -18,7 +18,8 @@ unit DelphiDoom.Pmove.Footsteps;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State, DelphiDoom.Pmove.Events,
+  System.SysUtils, DelphiDoom.Models.Q3Player.Types,
+  DelphiDoom.Pmove.Types, DelphiDoom.Pmove.State, DelphiDoom.Pmove.Events,
   DelphiDoom.Pmove.Ground;
 
 type

@@ -131,30 +131,8 @@ const
   /// <summary>EV_TAUNT (the first one after EV_DEBUG_LINE and EV_STOPLOOPINGSOUND)</summary>
   Q3_EV_TAUNT = 76;
 
-  // animNumber_t (the ones the movement sets)
-  Q3_TORSO_GESTURE = 6;
-  Q3_TORSO_ATTACK = 7;
-  Q3_TORSO_ATTACK2 = 8;
-  Q3_TORSO_DROP = 9;
-  Q3_TORSO_RAISE = 10;
-  Q3_TORSO_STAND = 11;
-  Q3_TORSO_STAND2 = 12;
-  Q3_LEGS_WALKCR = 13;
-  Q3_LEGS_WALK = 14;
-  Q3_LEGS_RUN = 15;
-  Q3_LEGS_BACK = 16;
-  Q3_LEGS_SWIM = 17;
-  Q3_LEGS_JUMP = 18;
-  Q3_LEGS_LAND = 19;
-  Q3_LEGS_JUMPB = 20;
-  Q3_LEGS_LANDB = 21;
-  Q3_LEGS_IDLE = 22;
-  Q3_LEGS_IDLECR = 23;
-  /// <summary>MAX_ANIMATIONS is 31, the animations after it follow</summary>
-  Q3_LEGS_BACKCR = 32;
-  Q3_LEGS_BACKWALK = 33;
-  /// <summary>ANIM_TOGGLEBIT: flipped every time an animation starts</summary>
-  Q3_ANIM_TOGGLEBIT = 128;
+  // the animation numbers (animNumber_t, ANIM_TOGGLEBIT) are those of DelphiDoom.Models.Q3Player.Types, which
+  // the player animator uses: the same constants, not a second copy
 
   // buttons of usercmd_t
   Q3_BUTTON_ATTACK = 1;

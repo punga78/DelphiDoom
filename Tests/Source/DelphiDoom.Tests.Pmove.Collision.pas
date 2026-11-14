@@ -309,7 +309,6 @@ begin
   LYaw := 0;
   LForward := 127;
   LRight := 0;
-  LUp := 0;
   for LIndex := 1 to COMMANDS_PER_SPAWN do
   begin
     // xorshift32: the same commands every time
@@ -359,7 +358,7 @@ begin
       LIndex, LMoved: Integer;
       LStartX, LStartY: Single;
     begin
-      LModel := TQ3CollisionFactory.CreateFromBytes(TBspFactory.CreateReader, ABytes, AName);
+      LModel := TQ3CollisionFactory.CreateFromBytes(TBspFactory.CreateReader, ABytes, AnsiString(AName));
       LSpawns := Spawns(LModel.EntityString);
       for LIndex := 0 to High(LSpawns) do
       begin
@@ -392,7 +391,7 @@ begin
     begin
       if LChecked > 0 then
         Exit;
-      LModel := TQ3CollisionFactory.CreateFromBytes(TBspFactory.CreateReader, ABytes, AName);
+      LModel := TQ3CollisionFactory.CreateFromBytes(TBspFactory.CreateReader, ABytes, AnsiString(AName));
       LSpawns := Spawns(LModel.EntityString);
       if Length(LSpawns) = 0 then
         Exit;

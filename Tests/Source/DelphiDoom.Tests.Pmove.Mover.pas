@@ -91,12 +91,14 @@ type
     procedure DovrebbeScrivereLeRigheDiDiagnosticaSoloConIlLivello;
     [Test]
     procedure DovrebbeIgnorareIlComandoSeIlTastoDelleChiacchiereEPremuto;
+    [Test]
+    procedure DovrebbeTornareSenzaArmaSeLArmaDelComandoNonELaSua;
   end;
 
 implementation
 
 uses
-  System.Math, DelphiDoom.Collision.Q3.Types, DelphiDoom.Logging.Intf, DelphiDoom.Pmove.Factory,
+  System.Math, DelphiDoom.Collision.Q3.Types, DelphiDoom.Models.Q3Player.Types, DelphiDoom.Logging.Intf, DelphiDoom.Pmove.Factory,
   DelphiDoom.Tests.Pmove.Support.Golden;
 
 procedure TTestPmoveMover.Setup;
@@ -550,6 +552,19 @@ begin
   Assert.IsFalse(HasEvent(Q3_EV_FIRE_WEAPON), 'niente colpo');
   // defect of the original, kept: the firing flag is set before the talk button clears the attack
   Assert.IsTrue((FPmove.Ps.EFlags and Q3_EF_FIRING) <> 0, 'EF_FIRING');
+end;
+
+procedure TTestPmoveMover.DovrebbeTornareSenzaArmaSeLArmaDelComandoNonELaSua;
+begin
+  // the weapon is lowered and the one asked for (the shotgun, 3) is not in the weapons of the player
+  FPmove.Ps.WeaponState := Q3_WEAPON_DROPPING;
+  FPmove.Ps.WeaponTime := 0;
+  FPmove.Ps.Weapon := Q3_WP_MACHINEGUN;
+  FPmove.Ps.Stats[Q3_STAT_WEAPONS] := 1 shl Q3_WP_MACHINEGUN;
+  FPmove.Cmd.Weapon := Q3_WP_SHOTGUN;
+  Step(16, 0, 0, 0);
+  Assert.AreEqual(Q3_WP_NONE, FPmove.Ps.Weapon, 'nessun arma');
+  Assert.AreEqual(Q3_WEAPON_RAISING, FPmove.Ps.WeaponState, 'la alza');
 end;
 
 initialization
