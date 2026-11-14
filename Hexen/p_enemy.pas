@@ -1236,6 +1236,7 @@ uses
   p_local,
   p_sight,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_spec,
   p_inter,
   p_pspr,

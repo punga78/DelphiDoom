@@ -175,6 +175,7 @@ uses
   g_game,
   p_common,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_tick,
   p_pspr,
   p_playertrace,

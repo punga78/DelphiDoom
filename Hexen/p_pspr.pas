@@ -542,6 +542,7 @@ uses
   p_local,
   p_tick,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_enemy,
   p_map,
   DelphiDoom.Engine.World.MapRules,

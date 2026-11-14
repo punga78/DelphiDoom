@@ -393,6 +393,7 @@ uses
   info,
   m_rnd,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_things,
   p_common,
   p_sight,

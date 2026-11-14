@@ -399,6 +399,7 @@ uses
   p_setup,
   p_mobj_h,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_acs,
   p_umapinfo,
   ps_main,

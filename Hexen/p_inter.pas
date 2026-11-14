@@ -291,6 +291,7 @@ uses
   p_friends,
   p_common,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_obituaries,
   p_3dfloors,
   p_pspr,

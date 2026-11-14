@@ -813,6 +813,7 @@ uses
   p_switch,
   p_tick,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_doors,
   p_spec,
   p_inter,
