@@ -128,6 +128,10 @@ uses
   DelphiDoom.Engine.Door.Host,
   DelphiDoom.Engine.Plane.Services,
   DelphiDoom.Engine.Plane.Host,
+{$IFNDEF HEXEN}
+  DelphiDoom.Thinkers.Ceiling.Games,
+  DelphiDoom.Thinkers.Floor.Games,
+{$ENDIF}
   DelphiDoom.Serializer.Intf,
   DelphiDoom.Serializer.Factory,
   DelphiDoom.Engine.Serializer.Resolver,
@@ -135,6 +139,10 @@ uses
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Imaging.Factory,
   DelphiDoom.Engine.Imaging.ColorIndex,
+  DelphiDoom.Engine.Imaging.Random,
+{$IFNDEF STRIFE}
+  f_wipe,
+{$ENDIF}
   DelphiDoom.Screenshot.Factory,
   DelphiDoom.Engine.Screenshot.Folders,
   DelphiDoom.Png.Provider,
@@ -413,6 +421,7 @@ uses
   s_pk3sounds,
   DelphiDoom.GameState.Intf,
   DelphiDoom.Engine.GameContext,
+  DelphiDoom.Engine.World,
   DelphiDoom.Input.Intf,
   DelphiDoom.Input.Factory,
   DelphiDoom.Engine.Input.KeyMap,
@@ -1095,8 +1104,12 @@ begin
     TScriptHostFactory.CreateWindowsDllLibrary, ALog));
 end;
 
-procedure ComposeImaging;
+procedure ComposeImaging(const ARandom: IGameRandom);
 begin
+{$IFNDEF STRIFE}
+  // Strife fades (f_fade) instead of melting
+  wipe_Configure(TImagingFactory.CreateMeltWipe(TEngineImagingRandom.Create(ARandom)));
+{$ENDIF}
 {$IFNDEF OPENGL}
   R_ConfigureFlatCache(TImagingFactory.CreateSpanGrower);
 {$ENDIF}
@@ -1264,8 +1277,20 @@ end;
 // The moving planes (floors, ceilings, and soon doors and platforms): what the game does when a
 // plane of a sector moves
 procedure ComposePlanes;
+{$IFNDEF HEXEN}
+var
+  LGame: TPlatGame;
+{$ENDIF}
 begin
   P_ConfigurePlanes(TEnginePlaneHost.Create);
+{$IFNDEF HEXEN}
+  // the classic ceilings (p_ceilng, one unit for Doom, Heretic and Strife) and floors (p_floor, one
+  // unit for Doom and Strife): the rules of the game, which is the one of the classic platforms
+  if not TPlatGames.TryFromName(TGameAliases.ProfileOf(_GAME, TGameProfileArea.Platforms), LGame) then
+    I_Error('ComposeEngine(): the game %s has no profile of ceilings', [_GAME]);
+  P_ConfigureCeilings(TCeilingGames.ProfileOf(LGame));
+  P_ConfigureFloors(TFloorGames.ProfileOf(LGame));
+{$ENDIF}
 end;
 
 procedure ComposeThreading;
@@ -1290,6 +1315,13 @@ begin
   ComposeTeleport(ARandom);
   ComposeDoors;
   ComposePlanes;
+end;
+
+// The world of a level (p_tick): the list of the thinkers on the head that the saved games know,
+// the time of the level where the engine keeps it and the random of the game
+procedure ComposeWorld(const ARandom: IGameRandom);
+begin
+  P_ConfigureWorld(TEngineWorld.Create(@thinkercap, P_WorldTime, ARandom));
 end;
 
 procedure ComposeSerializer;
@@ -1653,6 +1685,7 @@ begin
   ComposeScriptHost(LLog, LContext, LConsole, LDefaults, LRandom, LPakFiles, LTempFiles);
   ComposeThreading;
   ComposeMathCore(LRandom);
+  ComposeWorld(LRandom);
   ComposeSerializer;
 {$IFDEF OPENGL}
   ComposeOpenGl(LPreprocessor);
@@ -1669,7 +1702,7 @@ begin
   ComposeMusic(LTempFiles, LCommandLine, LZone, LLog, LShutdown);
   S_ConfigurePK3Sounds(LTempFiles);
   ComposeDehacked(LLog, LEvaluator);
-  ComposeImaging;
+  ComposeImaging(LRandom);
   ComposeRenderer(LLog);
   ComposeScreenshot(LSaveFileNames);
   ComposeTexture(LLog, LPakFiles, LShutdown);

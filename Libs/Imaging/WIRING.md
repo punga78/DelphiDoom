@@ -139,3 +139,7 @@ La libreria lavora su `TBytes` e `TArray<Cardinal>`, che **non possono avvolgere
 - Verifica (harness temporaneo nello stesso eseguibile, poi tolto): miniatura dallo schermo vero (4014 byte),
   120 ingrandimenti di flat casuali, 3676 riduzioni (tutti i flat di Freedoom 2 e 10 misure sintetiche) e
   FLATINFO di un PWAD di prova identici al vecchio codice.
+
+## 8. Melt del wipe collegato (issue #185)
+
+Il "secondo passo" del paragrafo 3 e' fatto per il melt: `IImagingMeltWipe.StartOnBuffers` prende puntatori ai buffer del motore (nessuna copia per fotogramma) e `Base\f_wipe.pas` e' la facciata (`wipe_Configure` da `ComposeImaging`, numeri casuali da `TEngineImagingRandom`). Le righe dei paragrafi 2, 3 e 4 che lo danno come non collegato valgono per com'era prima. Dettagli: `CLAUDE.md` di questa cartella.

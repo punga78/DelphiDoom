@@ -76,6 +76,7 @@ uses
   p_acs,
   p_inter,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_mobj_h,
   p_setup,
   p_spec,

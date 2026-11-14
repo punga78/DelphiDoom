@@ -52,7 +52,8 @@ implementation
 uses
   d_think,
   p_tick,
-  p_mobj;
+  p_mobj,
+  DelphiDoom.Engine.World.MobjRules;
 
 //==============================================================================
 //

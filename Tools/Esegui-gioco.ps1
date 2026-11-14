@@ -48,11 +48,14 @@ try {
   Remove-Item -LiteralPath $crash -ErrorAction SilentlyContinue
 
   $process = Start-Process -FilePath $Exe -ArgumentList $Arguments -WorkingDirectory $WorkDir -PassThru
-  # Priorita' bassa per non rubare la CPU; a macchina satura (suite di test di altri agenti a priorita' normale)
-  # un processo a priorita' bassa non riceve quasi tempo (visto: 9 s di CPU in 23 minuti, con il lock tenuto per
-  # tutti): la variabile d'ambiente DDGIOCO_PRIORITA (es. Normal) la cambia
+  # Priorita' bassa per non rubare la CPU; a macchina satura (piu' agenti che compilano o suite di test a
+  # priorita' normale) un processo a priorita' bassa non riceve quasi tempo (visto: 9 s di CPU in 23 minuti,
+  # con il lock tenuto per tutti). DD_GAME_PRIORITY (es. Normal) la cambia; DDGIOCO_PRIORITA e' lo stesso
+  # interruttore con il nome usato dagli script della #40. Con l'orologio virtuale della parita' l'esito
+  # non dipende dalla priorita'.
   $priority = 'BelowNormal'
   if ($env:DDGIOCO_PRIORITA) { $priority = $env:DDGIOCO_PRIORITA }
+  if ($env:DD_GAME_PRIORITY) { $priority = $env:DD_GAME_PRIORITY }
   try { $process.PriorityClass = $priority } catch { }
 
   $run = [Diagnostics.Stopwatch]::StartNew()

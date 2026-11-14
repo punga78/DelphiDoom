@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -117,8 +110,10 @@ uses
   p_slopes,
   r_data,
   DelphiDoom.Thinkers.Plane.Types,
-  DelphiDoom.Thinkers.Plane.Rules,
-  DelphiDoom.Engine.Plane.Services;
+  DelphiDoom.Thinkers.Floor.Types,
+  DelphiDoom.Thinkers.Floor.Machine,
+  DelphiDoom.Engine.Plane.Services,
+  DelphiDoom.Engine.Floor.Thinker;
 
 //==============================================================================
 // T_MovePlane
@@ -130,7 +125,7 @@ function T_MovePlane(sector: Psector_t; speed: fixed_t; dest: fixed_t;
   crush: boolean; floorOrCeiling: integer; direction: integer): result_e;
 begin
   case PlaneMove(sector, speed, dest, crush, floorOrCeiling, direction,
-    TPlaneRules.Strife) of
+    FloorPlaneRules) of
     TPlaneMoveResult.Crushed:
       result := crushed;
     TPlaneMoveResult.PastDest:
@@ -150,6 +145,7 @@ procedure T_MoveFloor(floor: Pfloormove_t);
 var
   res: result_e;
   sec: Psector_t;
+  actions: TFloorActions;
 begin
   res := T_MovePlane(floor.sector, floor.speed, floor.floordestheight,
             floor.crush, 0, floor.direction);
@@ -161,51 +157,17 @@ begin
   begin
     floor.sector.floordata := nil;
 
-    if floor.direction = 1 then
+    // what the kind of the floor changes in its sector (TFloorMachine, Libs\Thinkers)
+    actions := TFloorMachine.Arrival(FloorKindOf(floor._type), floor.direction);
+    if actions <> [] then
     begin
-      case floor._type of
-        donutRaise:
-          begin
-            floor.sector.special := floor.newspecial;
-            floor.sector.floorpic := floor.texture;
-          end;
-        genFloorChgT,
-        genFloorChg0,
-        genFloorChg:
-          begin
-            if floor._type <> genFloorChg then
-            begin
-              floor.sector.special := floor.newspecial;
-              //jff add to fix bug in special transfers from changes
-              floor.sector.oldspecial := floor.oldspecial;
-            end;
-            //fall thru
-            floor.sector.floorpic := floor.texture;
-          end;
-      end;
-    end
-    else if floor.direction = -1 then
-    begin
-      case floor._type of
-        lowerAndChange:
-          begin
-            floor.sector.special := floor.newspecial;
-            floor.sector.floorpic := floor.texture;
-          end;
-        genFloorChgT,
-        genFloorChg0,
-        genFloorChg:
-          begin
-            if floor._type <> genFloorChg then
-            begin
-              floor.sector.special := floor.newspecial;
-              //jff add to fix bug in special transfers from changes
-              floor.sector.oldspecial := floor.oldspecial;
-            end;
-            //fall thru
-            floor.sector.floorpic := floor.texture;
-          end;
-      end;
+      if TFloorAction.TransferSpecial in actions then
+        floor.sector.special := floor.newspecial;
+      //jff add to fix bug in special transfers from changes
+      if TFloorAction.TransferOldSpecial in actions then
+        floor.sector.oldspecial := floor.oldspecial;
+      if TFloorAction.ChangeTexture in actions then
+        floor.sector.floorpic := floor.texture;
     end;
 
     floor.sector.floordata := nil;
@@ -325,11 +287,6 @@ end;
 //
 // HANDLE FLOOR TYPES
 //
-// haleyjd 09/16/2010: [STRIFE] Modifications to floortypes:
-// * raiseFloor24 was changed into raiseFloor64
-// * turboLower does not appear to adjust the floor height (STRIFE-TODO: verify)
-// * raiseFloor512AndChange type was added.
-//
 //==============================================================================
 function EV_DoFloor(line: Pline_t; floortype: floor_e): integer;
 var
@@ -339,9 +296,16 @@ var
   floor: Pfloormove_t;
   minsize: integer;
   side: Pside_t;
+  kind: TFloorKind;
+  profile: TFloorProfile;
+  plan: TFloorPlan;
+  modern: boolean;
+  neighbor: fixed_t;
 begin
   secnum := -1;
   result := 0;
+  kind := FloorKindOf(floortype);
+  profile := FloorProfile;
   repeat
     secnum := P_FindSectorFromLineTag(line, secnum);
     if secnum < 0 then
@@ -362,180 +326,87 @@ begin
     floor._type := floortype;
     floor.crush := false;
 
-    case floortype of
-      lowerFloor:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindHighestFloorSurrounding(sec);
-        end;
-      //jff 02/03/30 support lowering floor by 24 absolute
-      lowerFloor24:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 24 * FRACUNIT;
-        end;
-      //jff 02/03/30 support lowering floor by 32 absolute (fast)
-      lowerFloor32Turbo:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED * 4;
-          floor.floordestheight := floor.sector.floorheight + 32 * FRACUNIT;
-        end;
-      lowerFloorToLowest:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindLowestFloorSurrounding(sec);
-        end;
-      //jff 02/03/30 support lowering floor to next lowest floor
-      lowerFloorToNearest:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindNextLowestFloor(sec, floor.sector.floorheight);
-        end;
-      turboLower:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED * 4;
-          floor.floordestheight := P_FindHighestFloorSurrounding(sec);
-        end;
-      raiseFloorCrush,
-      raiseFloor:
-        begin
-          if floortype = raiseFloorCrush then
-            floor.crush := true;
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindLowestCeilingSurrounding(sec);
-          if floor.floordestheight > sec.ceilingheight then
-            floor.floordestheight := sec.ceilingheight;
-          if floortype = raiseFloorCrush then // if floor.crush then
-            floor.floordestheight := floor.floordestheight - 8 * FRACUNIT;
-        end;
-      raiseFloorTurbo:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED * 4;
-          floor.floordestheight := P_FindNextHighestFloor(sec, sec.floorheight);
-        end;
-      raiseFloorToNearest:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindNextHighestFloor(sec, sec.floorheight);
-        end;
-      raiseFloor64:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 64 * FRACUNIT;
-        end;
-      raiseFloor24:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 24 * FRACUNIT;
-        end;
-      // jff 2/03/30 support straight raise by 32 (fast)
-      raiseFloor32Turbo:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED * 4;
-          floor.floordestheight := floor.sector.floorheight + 32 * FRACUNIT;
-        end;
-      raiseFloor512:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 512 * FRACUNIT;
-        end;
-      raiseFloor24AndChange:
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 24 * FRACUNIT;
-          sec.floorpic := line.frontsector.floorpic;
-          sec.special := line.frontsector.special;
-          //jff 3/14/98 transfer both old and new special
-          sec.oldspecial := line.frontsector.oldspecial;
-        end;
-      raiseFloor512AndChange: // [STRIFE] New floor type
-        begin
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := floor.sector.floorheight + 512 * FRACUNIT;
-          sec.floorpic := line.frontsector.floorpic;
-          sec.special := line.frontsector.special;
-        end;
-      raiseToTexture:
-        begin
-          minsize := 32000 * FRACUNIT; // Don't overflow
-          floor.direction := 1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          for i := 0 to sec.linecount - 1 do
-          begin
-            if twoSided(secnum, i) then
-            begin
-              side := getSide(secnum, i, 0);
-              if side.bottomtexture >= 0 then
-                if textureheight[side.bottomtexture] < minsize then
-                  minsize := textureheight[side.bottomtexture];
-              side := getSide(secnum, i, 1);
-              if side.bottomtexture >= 0 then
-                if textureheight[side.bottomtexture] < minsize then
-                  minsize := textureheight[side.bottomtexture];
-            end;
-          end;
-          floor.floordestheight := FixedInt(floor.sector.floorheight) + FixedInt(minsize);
-          if floor.floordestheight > 32000 then
-            floor.floordestheight := 32000 * FRACUNIT
-          else
-            floor.floordestheight := floor.floordestheight * FRACUNIT;
-        end;
-      lowerAndChange:
-        begin
-          floor.direction := -1;
-          floor.sector := sec;
-          floor.speed := FLOORSPEED;
-          floor.floordestheight := P_FindLowestFloorSurrounding(sec);
-          floor.texture := sec.floorpic;
+    // the values of the kind with the rules of the game (TFloorMachine,
+    // Libs\Thinkers); a kind that is not made here leaves the thinker as it is
+    if TFloorMachine.Plan(kind, plan) then
+    begin
+      if plan.Crush then
+        floor.crush := true;
+      floor.direction := plan.Direction;
+      floor.sector := sec;
+      floor.speed := plan.Speed;
 
-          // jff 1/24/98 make sure floor.newspecial gets initialized
-          // in no surrounding sector is at floordestheight
-          // -. should not affect compatibility <--
+      if plan.Target = TFloorTarget.ShortestTexture then
+      begin
+        modern := FloorModernEngine;
+        minsize := TFloorMachine.TextureStartSize(modern);
+        for i := 0 to sec.linecount - 1 do
+        begin
+          if twoSided(secnum, i) then
+          begin
+            side := getSide(secnum, i, 0);
+            if side.bottomtexture >= 0 then
+              if textureheight[side.bottomtexture] < minsize then
+                minsize := textureheight[side.bottomtexture];
+            side := getSide(secnum, i, 1);
+            if side.bottomtexture >= 0 then
+              if textureheight[side.bottomtexture] < minsize then
+                minsize := textureheight[side.bottomtexture];
+          end;
+        end;
+        floor.floordestheight := TFloorMachine.TextureDestination(sec.floorheight,
+          minsize, modern);
+      end
+      else
+      begin
+        case plan.Target of
+          TFloorTarget.HighestFloor:
+            neighbor := P_FindHighestFloorSurrounding(sec);
+          TFloorTarget.LowestFloor:
+            neighbor := P_FindLowestFloorSurrounding(sec);
+          TFloorTarget.NextLowestFloor:
+            neighbor := P_FindNextLowestFloor(sec, sec.floorheight);
+          TFloorTarget.NextHighestFloor:
+            neighbor := P_FindNextHighestFloor(sec, sec.floorheight);
+          TFloorTarget.LowestCeiling:
+            neighbor := P_FindLowestCeilingSurrounding(sec);
+        else
+          neighbor := 0;
+        end;
+        floor.floordestheight := TFloorMachine.Destination(kind, plan, sec.floorheight,
+          sec.ceilingheight, neighbor, profile);
+      end;
+
+      if plan.ChangeFromLine then
+      begin
+        sec.floorpic := line.frontsector.floorpic;
+        sec.special := line.frontsector.special;
+        //jff 3/14/98 transfer both old and new special
+        if plan.ChangeOldSpecialToo then
+          sec.oldspecial := line.frontsector.oldspecial;
+      end;
+
+      if plan.CarriesModel then
+      begin
+        floor.texture := sec.floorpic;
+
+        // jff 1/24/98 make sure floor.newspecial gets initialized
+        // in no surrounding sector is at floordestheight
+        // -. should not affect compatibility <--
+        floor.newspecial := sec.special;
+        //jff 3/14/98 transfer both old and new special
+        floor.oldspecial := sec.oldspecial;
+
+        //jff 5/23/98 use model subroutine to unify fixes and handling
+        sec := P_FindModelFloorSector(floor.floordestheight, pDiff(sec, sectors, SizeOf(sector_t)));
+        if sec <> nil then
+        begin
+          floor.texture := sec.floorpic;
           floor.newspecial := sec.special;
           //jff 3/14/98 transfer both old and new special
           floor.oldspecial := sec.oldspecial;
-
-          //jff 5/23/98 use model subroutine to unify fixes and handling
-          sec := P_FindModelFloorSector(floor.floordestheight, pDiff(sec, sectors, SizeOf(sector_t)));
-          if sec <> nil then
-          begin
-            floor.texture := sec.floorpic;
-            floor.newspecial := sec.special;
-            //jff 3/14/98 transfer both old and new special
-            floor.oldspecial := sec.oldspecial;
-          end;
         end;
+      end;
     end;
     P_DynamicSlope(sec);  // JVAL: Slopes
   until secnum < 0;
@@ -610,37 +481,10 @@ var
   floor: Pfloormove_t;
   stairsize: fixed_t;
   speed: fixed_t;
-  direction: integer;
+  plan: TStairPlan;
 begin
   secnum := -1;
   result := 0;
-
-  case _type of
-    build8:
-      begin
-        speed := FLOORSPEED div 4;
-        stairsize := 8 * FRACUNIT;
-        direction := 1;
-      end;
-    turbo16:
-      begin
-        speed := FLOORSPEED * 4;
-        stairsize := 16 * FRACUNIT;
-        direction := 1;
-      end;
-    buildDown16: // [STRIFE] New stair type
-      begin
-        speed := FLOORSPEED;
-        stairsize := -16 * FRACUNIT;
-        direction := -1;
-      end;
-  else
-    begin
-      speed := 0;
-      stairsize := 0;
-      direction := 0;
-    end;
-  end;
 
   repeat
     secnum := P_FindSectorFromLineTag(line, secnum);
@@ -658,12 +502,20 @@ begin
     floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
     ZeroMemory(floor, SizeOf(floormove_t));
     P_AddThinker(@floor.thinker);
-    sec.tag := 0; // haleyjd 20140919: [STRIFE] clears tag of first stair sector
     sec.floordata := floor;
     floor.thinker._function.acp1 := @T_MoveFloor;
-    floor.direction := direction;
-
+    // speed, step, direction and crushing of the kind with the rules of the
+    // game and of the version of the engine (TFloorMachine, Libs\Thinkers)
+    plan := TFloorMachine.StairPlan(StairKindOf(_type), FloorModernEngine, FloorProfile);
+    speed := plan.Speed;
+    stairsize := plan.StepSize;
+    if plan.ClearFirstTag then
+      sec.tag := 0; // haleyjd 20140919: [STRIFE] clears tag of first stair sector
+    floor.direction := plan.Direction;
     floor.sector := sec;
+    if plan.FirstIsStair then
+      floor._type := buildStair;
+    floor.crush := plan.FirstCrush;
     floor.speed := speed;
 
     height := sec.floorheight + stairsize;
@@ -708,12 +560,12 @@ begin
 
         sec.floordata := floor;
         floor.thinker._function.acp1 := @T_MoveFloor;
-        floor.direction := direction;
+        floor.direction := plan.Direction;
         floor.sector := sec;
         floor.speed := speed;
         floor.floordestheight := height;
         floor._type := buildStair;
-        floor.crush := _type <> build8;
+        floor.crush := plan.NextCrush;
         ok := true;
         break;
       end;
@@ -723,7 +575,7 @@ end;
 
 //==============================================================================
 //
-// EV_DoDonut()
+// EV_DoDonut2
 //
 // Handle donut function: lower pillar, raise surrounding pool, both to height,
 // texture and type of the sector surrounding the pool.
@@ -732,7 +584,7 @@ end;
 // Returns whether a thinker was created
 //
 //==============================================================================
-function EV_DoDonut(line: Pline_t): integer;
+function EV_DoDonut2(line: Pline_t): integer;
 var
   s1: Psector_t;
   s2: Psector_t;
@@ -789,6 +641,79 @@ begin
       floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
       P_AddThinker (@floor.thinker);
       s1.floordata := floor; //jff 2/22/98
+      floor.thinker._function.acp1 := @T_MoveFloor;
+      floor._type := lowerFloor;
+      floor.crush := false;
+      floor.direction := -1;
+      floor.sector := s1;
+      floor.speed := FLOORSPEED div 2;
+      floor.floordestheight := s3.floorheight;
+      break;
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// EV_DoDonut
+//
+//==============================================================================
+function EV_DoDonut(line: Pline_t): integer;
+var
+  s1: Psector_t;
+  s2: Psector_t;
+  s3: Psector_t;
+  secnum: integer;
+  i: integer;
+  floor: Pfloormove_t;
+begin
+  if FloorModernEngine then
+  begin
+    result := EV_DoDonut2(line);
+    exit;
+  end;
+
+  result := 0;
+  secnum := P_FindSectorFromLineTag(line, -1);
+  while secnum >= 0 do
+  begin
+    s1 := @sectors[secnum];
+    secnum := P_FindSectorFromLineTag(line, secnum);
+
+    // ALREADY MOVING?  IF SO, KEEP GOING...
+    if P_SectorActive(floor_special, s1) then
+      continue;
+
+    s2 := getNextSector(s1.lines[0], s1); // s2 is pool's sector
+    if s2 = nil then
+     continue;
+
+    result := 1;
+    for i := 0 to s2.linecount - 1 do
+    begin
+      if (s2.lines[i].flags and ML_TWOSIDED = 0) or
+         (s2.lines[i].backsector = s1) then
+        continue;
+      s3 := s2.lines[i].backsector;
+
+      //  Spawn rising slime
+      floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
+      P_AddThinker(@floor.thinker);
+      s2.floordata := floor;
+      floor.thinker._function.acp1 := @T_MoveFloor;
+      floor._type := donutRaise;
+      floor.crush := false;
+      floor.direction := 1;
+      floor.sector := s2;
+      floor.speed := FLOORSPEED div 2;
+      floor.texture := s3.floorpic;
+      floor.newspecial := 0;
+      floor.floordestheight := s3.floorheight;
+
+      //  Spawn lowering donut-hole
+      floor := Z_Malloc(SizeOf(floormove_t), PU_LEVSPEC, nil);
+      P_AddThinker(@floor.thinker);
+      s1.floordata := floor;
       floor.thinker._function.acp1 := @T_MoveFloor;
       floor._type := lowerFloor;
       floor.crush := false;

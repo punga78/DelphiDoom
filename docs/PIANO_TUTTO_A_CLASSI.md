@@ -192,10 +192,11 @@ Un merge non passa se un golden cambia senza che sia dichiarato e motivato (un d
 | Fase | Stato |
 |---|---|
 | 0 strumenti di parità | **fatta** (issue #185, 2026-11-12): `Libs\Parity`, `Tools\Verifica\185`, `Tools\Misura-Coppie.ps1`, `docs\PARITA_MOTORE.md`; golden per Doom, Heretic, Hexen e Strife (software, 8 e 32 bit) in `Tests\Data\Parity` (44 demo, 11,7 MB), 88 confronti su 88 uguali in una sessione nuova, quattro modifiche finte viste, costo a strumenti spenti nel rumore (+0,00%). Mancano per il renderer (fase 3): pixel-parity degli eseguibili OpenGL con questi strumenti (c'e' il registratore GL), 3D floor e poliobj nel corpus, dettagli video oltre 640x480 a 8 e 32 bit |
-| 1 freddo | **in corso** (80 unit su 181 usavano già classi). **Fetta 1a fatta** (#185, 2026-11-13, la fetta di prova): `hu_stuff` 2026 -> 1172 righe e `hu_lib` 761 -> 68 sono facciate sopra `Libs\Hud` (18 unit, 15 classi, 2453 righe) e `Base\DelphiDoom.Engine.Hud.*` (4 unit, 864 righe) + `ComposeHud`; 168 test (4940 righe di test, di cui 1308 di copia del vecchio codice per la parita'), copertura 100% della libreria; 88 confronti su 88 uguali ai golden, 18 su 18 uguali con configurazione diversa (`drawfps`, mirino, vista ridotta), dieci eseguibili compilati con meno avvisi di prima. Stima, costi e raccomandazioni per le altre fette: rapporto della fetta e `Libs\Hud\CLAUDE.md`. **Fetta 1b codice e test fatti** (#185, 2026-11-13: `sc_tokens`, `sc_consts`, `sc_params`, `sc_states`, `info_common`, `info_fnd`, `info_rnd`, `info_export`, `deh_base`; vedi il censimento qui sotto; verifica a runtime: `Tools\Verifica\185\Fetta-1b.txt`) |
+| 1 freddo | **in corso** (censimento di chiusura e resto: par. 12; 80 unit su 181 usavano già classi). **Fetta 1a fatta** (#185, 2026-11-13, la fetta di prova): `hu_stuff` 2026 -> 1172 righe e `hu_lib` 761 -> 68 sono facciate sopra `Libs\Hud` (18 unit, 15 classi, 2453 righe) e `Base\DelphiDoom.Engine.Hud.*` (4 unit, 864 righe) + `ComposeHud`; 168 test (4940 righe di test, di cui 1308 di copia del vecchio codice per la parita'), copertura 100% della libreria; 88 confronti su 88 uguali ai golden, 18 su 18 uguali con configurazione diversa (`drawfps`, mirino, vista ridotta), dieci eseguibili compilati con meno avvisi di prima. Stima, costi e raccomandazioni per le altre fette: rapporto della fetta e `Libs\Hud\CLAUDE.md`. **Fetta 1b codice e test fatti** (#185, 2026-11-13: `sc_tokens`, `sc_consts`, `sc_params`, `sc_states`, `info_common`, `info_fnd`, `info_rnd`, `info_export`, `deh_base`; vedi il censimento qui sotto; verifica a runtime: `Tools\Verifica\185\Fetta-1b.txt`) |
 | 1d (nel piano 1c) i_* | **fatta** (#185, 2026-11-13): censimento nel paragrafo qui sotto; Libs\EngineSystem (20 unit, 19 classi, 2357 righe) + Base\DelphiDoom.Engine.System.* (2 unit) + facciate; 116 test, copertura 93%; dieci eseguibili, quattro ddc_*, Launcher, DD_IDE e DD_Tools compilano (un avviso in meno per eseguibile); verifica a runtime a carico dell'agente di verifica (Tools\Verifica\185\Fetta-1d.txt) |
 | 1 freddo, **fetta 1e** (avanzi meccanici di `Base\`) | **fatta** (#185, 2026-11-13). Censimento delle 15 unit (3833 righe, quasi tutto tipi e dati): **trasformate** `mt_utils` (1347 -> 764 righe, facciata sopra `TWorkerJobRunner`, `TWorkerMemoryRunner`, `TWorkerTaskScheduler` di `Libs\Threading`), `c_utils` (219 -> 69, `TConsoleUtilityCommands` in `Libs\Console`) e `d_notifications` (129 -> 100, `TDeferredNotifications` in `Libs\Video`); **gia' facciate o delegate** a classi dalle ondate precedenti: `c_cmds` (registro e interprete di `Libs\Console`), `c_con` (tiene 4 variabili; la console e' `TEngineConsoleScreen`), `nd_main` (i nodi sono `Libs\Nodes`; restano i tipi dei record GL e `gld_GetGLVertexes` che chiama `TNodesGlParser`); **restano storiche, solo tipi o dati**: `doomtype` (costanti e due funzioni `smallintwarp`), `doomdata` (record dei lump WAD, packed: formato su disco), `d_ticcmd` e `d_event` (`ticcmd_t`, `event_t`: record di rete, demo e salvataggi, non cambiano di un byte), `d_think` (`think_t` e `thinker_t`: puntatori a funzione salvati grezzi da `p_saveg`, regola dei thinker), `d_net_h` (costanti), `d_net` (due variabili e una stringa), `tables` (tabelle seno, tangente, arcotangente: percorso caldo, restano costanti accedute per indice, stesso costo; `SlopeDiv`/`AngleToSlope` sono funzioni pure di una riga, usate dal renderer), `vx_base` (il registro che i renderer leggono per ogni voxel: vedi `docs\PENDING_ISSUES.md`). Nuovo: 36 test in `Libs\Threading` (82 in tutto, copertura 97%), 10 in `Libs\Console` (185, 96%), 7 in `Libs\Video` (75, 98%); parita' sul vecchio codice copiato in `Tests\Source\DelphiDoom.Tests.Threading.Legacy.pas` e nel test di `UtilityCommands`. Verifica di runtime e confronti con i fili accesi: `Tools\Verifica\185\Fetta-1e.txt` (da fare da un agente di verifica) |
-| 2 logica | da fare (thinker di luci, porte, piattaforme, teletrasporti già a classi in `Libs\Thinkers`) |
+| 1 freddo, **chiusura** (`f_wipe`, `s_sound`, `am_map`, censimento di tutto il resto) | **censimento fatto, tre famiglie toccate** (#185, 2026-11-14; par. 12). `f_wipe` 354 -> 260 righe sopra `TImagingMeltWipe` (`Libs\Imaging`, riusata ed estesa con `StartOnBuffers`); `s_sound` 2297 -> 2135 con `TSfxAttenuation`, `TSfxChannelPicker`, `TExternalMusicNames` (`Libs\Audio`, 404 righe nuove); `am_map` 2315 -> 2263 con `TAutomapLineRasterizer` (`Libs\Automap`, 201 righe). Test: Imaging 216 -> 220, Audio 301 -> 341, Automap 65 -> 72, con le copie del vecchio codice (`OldWipe`, `OldSound`, `OldMusicNames`, `OldLine`, 812 righe) e parita' su scenari casuali; copertura Imaging 98%, Audio 99%, Automap 100%, le cinque unit nuove o estese 100%. Build: dieci giochi con 382/381/382/332/305/255/200/150/413/340 avvisi (base 383/382/383/333/305/255/200/150/414/341: uno in meno dove e' sparito `S_GetListFromAlias`), zero nel codice nuovo; strumenti (`ddc_*` 381/304/199/412, Launcher 9, DD_IDE 24, DD_Tools 0) e `Doom32`/`Strife32` a Win64 compilano. Golden: sugli eseguibili di `0046420a` solo `d1_demo1` a 8 e a 32 bit, UGUALE (stato e fotogrammi); il resto del corpus non e' stato eseguito da chi ha scritto il codice (sei agenti in coda sul lock dei giochi, circa mezz'ora per voce): la verifica passa al responsabile sul ramo unito. **Non verificato a runtime**: l'automap aperta (nessuna chiave di configurazione la apre e l'input e' chiuso), il wipe degli eseguibili OpenGL, la musica mp3 esterna, le voci di Strife con tutti i canali occupati; misura a coppie non fatta (macchina occupata): i punti dove guardare sono `S_UpdateSounds` (una chiamata statica per canale e per tic) e il wipe (un `Advance` per fotogramma) |
+| 2 logica | **in corso** (#185, 2026-11-14): progetto nel par. 10; fatti 2a, 2e-1, 2c-1 (`p_map`) e 2c-2 (`p_mobj`, parziale); stato, verifica e prossimi sottosistemi nel par. 11.0 |
 | 3 renderer software | da fare (`Libs\Renderer` ha le prime fette fredde) |
 | 4 renderer OpenGL | in corso (#177: fatte 0-5 in parte, 8, 9) |
 | 5 chiusura | da fare |
@@ -250,3 +251,405 @@ Conteggi di occorrenze nel codice di `Base`, `Common`, giochi, `Radix`, `Speed`,
 - Test: Configuration 34 -> 58 (copertura 99%, le unit nuove 100%), CommandLine 102 -> 108 (100%), Console 175 -> 178 (96%), MathCore 122 -> 123 (98%); parita' vecchio/nuovo nello stesso eseguibile per tabella (300 tabelle casuali x 120 operazioni con confronto di ogni variabile, del file scritto e dei messaggi a ogni passo, piu' 300 file completi), `M_InitArgv` (2000 scenari, riga di comando e sequenza delle domande all'ambiente), `get_cheatseq_string` (40000 sequenze), `m_rnd` (10 milioni di chiamate). Una modifica finta (la forzatura che non chiude la riga) e' vista dalla parita' al passo 82 del primo scenario.
 - Build: dieci eseguibili con 387/337/309/259/204/154/418/345/386/387 avvisi (uguali a prima), `ddc_*` 386/308/203/417 (uguali al riferimento compilato nello stesso modo), Launcher 9, DD_IDE 24, DD_Tools 0 (uguali); zero avvisi nel codice nuovo.
 - **Non eseguito per il cambio di processo** (lo fa l'agente di verifica, comandi in `Tools\Verifica\185\Fetta-1c.txt`): golden (88 confronti), confronti `-ExtraIni`, confronto dei file `.ini` scritti (`Confronta-Ini.ps1`, scritto senza poterlo eseguire), riga di comando e file di risposta a runtime, `-timedemo`, avvii, misura a coppie.
+
+## 10. Fase 2: progetto (#185, 2026-11-14)
+
+Scritto prima di toccare il codice. Lo stato reale di ogni passo e' nel paragrafo 11.
+
+**Regola del riuso (utente, 2026-11-14)**: si riusa cio' che esiste e lo si estende con sole aggiunte; niente classi parallele. Per la fase 2 la base e': `Libs\Thinkers` (luci, porte, piattaforme, `TPlaneMover`, profili per gioco), `Libs\Actions`, `Libs\Specials`, `Libs\GameState` (`IGameContext`), `Libs\Info`, `Libs\Blockmap`, `Libs\MathCore` (`IGameRandom`, fixed), `Libs\Serializer`, `ILevelLoader`/`ILevelGameRules`/`TDoomLevelRules` e gli adattatori `Base\DelphiDoom.Engine.*` (`Plane.*`, `Plat.*`, `Door.*`, `Light.*`, `Teleport.*`, `GameContext`). Ogni cosa nuova va motivata nel paragrafo 11 ("non esisteva un equivalente perche'...").
+
+### 10.1 Fotografia della quadruplicazione (`c57fbf77`)
+
+Righe diverse tra le copie (`diff` riga per riga, intestazioni comprese):
+
+| Unit | Doom | Heretic | Hexen | Strife | Doom/Strife | Doom/Heretic | Heretic/Hexen |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `p_scroll` | 416 | - | - | 416 | 2 | - | - |
+| `p_plats` | 272 | 256 | - | 279 | 11 | 76 | - |
+| `p_lights` | 387 | 382 | - | 404 | 21 | 37 | - |
+| `p_ceilng` | 428 | 335 | - | 452 | 36 | 127 | - |
+| `p_genlin` | 1452 | - | - | 1431 | 63 | - | - |
+| `p_telept` | 460 | 246 | - | 463 | 61 | 398 | - |
+| `p_floor` | 930 | 411 | - | 880 | 192 | 637 | - |
+| `p_doors` | 394 | 286 | - | 1335 | 1075 | 188 | - |
+| `p_map` | 3581 | 3166 | 3904 | 3428 | 1033 | 813 | 1194 |
+| `p_mobj` | 2626 | 2845 | 3449 | 2753 | 943 | 1187 | 2660 |
+| `p_user` | 1093 | 1468 | 2305 | 1513 | 696 | 955 | 1503 |
+| `p_inter` | 1265 | 1847 | 2682 | 1568 | 1361 | 1394 | 2691 |
+| `p_pspr` | 1195 | 2126 | 2691 | 1260 | 927 | 1873 | 2903 |
+| `p_enemy` | 3391 | 3562 | 6635 | 4545 | 4154 | 3279 | 5929 |
+| `p_spec` | 4333 | 2041 | 1771 | 4496 | 1839 | 3036 | 1734 |
+| `p_switch` | 1312 | 550 | 224 | 1956 | 1104 | 952 | 380 |
+| `g_game` | 3801 | 3609 | 2416 | 3480 | 1725 | 1076 | 2261 |
+
+Tre gruppi: (1) **quasi uguali** (`p_scroll`, `p_plats`, `p_lights`, `p_ceilng`, `p_genlin`, `p_telept` e `p_floor` di Doom e Strife): una implementazione e un profilo di dati; (2) **stesso scheletro con differenze locali** (`p_map`, `p_mobj`, `p_user`): una implementazione con regole per gioco; (3) **contenuto diverso** (`p_enemy`, `p_pspr`, `p_inter`: le azioni dei mostri e delle armi sono di ogni gioco): si unifica solo il nucleo comune (`P_LookForPlayers`, `P_Move`, `P_NewChaseDir`, `A_Chase`...), il resto resta nel gioco come gruppo di azioni (`Libs\Actions`). `Base\` ha gia' in copia unica `p_tick`, `p_maputl`, `p_sight`, `p_slopes`, `p_3dfloors`, `p_common`, `p_setup` (con `{$IFDEF}` di gioco).
+
+### 10.2 Contesti
+
+- **Il mondo** (`TEngineWorld`, `Base\DelphiDoom.Engine.World.pas`, `sealed`, nessun metodo virtuale): lo stato deterministico del livello. Non esiste oggi un equivalente (lo stato e' nei globali di `p_tick`, `p_setup`, `d_player`, `g_game`); e' composto da parti che **esistono gia'** dove possibile:
+  - `Thinkers`: la lista dei thinker (capo della lista doppia, aggiungi, rimuovi pigro, giro del tic). La logica pura della lista entra in **`Libs\Thinkers`** (`DelphiDoom.Thinkers.List`: e' la libreria dei thinker; nessuna libreria nuova), sopra un nodo con il layout di `thinker_t`, provata con nodi finti.
+  - `Time`: `leveltime`, congelamento (`isgamefreezed`, `isgamesuspended`), `TimerGame` di Hexen.
+  - `Map`: vertici, seg, settori, sottosettori, nodi, linee, lati, blockmap, `blocklinks`, reject (oggi i globali di `p_setup`, riempiti da `TLevelLoader`: il mondo li riceve dal caricatore che c'e').
+  - `Players`: `players[]`, `playeringame[]`.
+  - `Random`: l'`IGameRandom` di `ComposeMathCore` (gia' una classe: il mondo lo riceve dal costruttore).
+- **La sessione**: non una classe nuova accanto a `IGameContext`, ma **`IGameContext` esteso** (`Libs\GameState`, sole aggiunte: skill, episodio, mappa, `deathmatch`, giocatore della console, totali) e `TEngineGameContext` che lo implementa. `TGameSession` del piano e' questo.
+- Il mondo nasce in `DelphiDoom.Engine.Composition` (`ComposeWorld`) e arriva alle facciate con `P_ConfigureWorld`; senza configurazione `I_Error`. Le classi nuove lo ricevono dal costruttore.
+
+### 10.3 Proprieta' dello stato: come un globale diventa del contesto
+
+Delphi non ha alias verso un campo (`var leveltime: integer absolute World.FLevelTime` da' `E2088 Variable name expected`: provato con dcc32). Quindi ogni globale passa per tre stadi, **senza mai avere due copie dello stato**:
+
+1. **Riferimento.** Il contesto espone un puntatore tipizzato alla memoria storica (`World.Time.LevelTime` legge un `PInteger`); le classi nuove usano solo il contesto, il codice storico continua a leggere il globale. Nei test il puntatore va a memoria del test.
+2. **Inversione.** Quando tutti gli scrittori fuori dai salvataggi passano dal contesto, la memoria entra nel contesto e il nome storico diventa una funzione `inline` senza parametri (`function leveltime: integer; inline;`): i lettori si ricompilano senza toccarli. Per i globali di cui si prende l'indirizzo (`@thinkercap`, circa 170 occorrenze in 36 unit) i lettori vanno migrati prima: una funzione non ha l'indirizzo della variabile e il confronto `think <> @thinkercap` compilerebbe con un altro significato. E' il punto piu' pericoloso: ricerca completa, mai una funzione omonima.
+3. **Cancellazione.** Il nome storico sparisce con l'ultimo lettore (fase 5).
+
+**Vincolo di questo giro**: `p_saveg`/`sv_save` non si toccano (li ha un altro lavoro, #40) e scrivono direttamente `leveltime`, `thinkercap`, `players[]`, settori e linee. Tutto cio' che i salvataggi scrivono **resta allo stadio 1** fino alla fetta 2h.
+
+### 10.4 Regole per gioco: tre forme, nessun `{$IFDEF}` nel codice comune
+
+| Forma | Quando | Esiste gia' |
+|---|---|---|
+| **Profilo** (record di costanti e interruttori, scelto una volta) | la differenza e' un dato: velocita', suono, quale tipo schiaccia | `TPlatProfile`/`TPlatGames`, `TDoorProfile`/`TDoorProfiles`, `TPlaneMoveRules`/`TPlaneRules`, `TLightGames`: i profili nuovi si aggiungono a `Libs\Thinkers` con lo stesso schema |
+| **Strategia fredda** (interfaccia per gioco, data dal composition root) | codice diverso chiamato poche volte per tic o per livello | `ILevelGameRules`, `ILevelGeometryRules`, `ILevelThingRules` e le classi `T<Gioco>LevelRules`: le regole nuove sono **metodi o interfacce aggiunti a queste classi**, non una seconda gerarchia |
+| **Strategia calda** (classe `sealed` di soli metodi `class ... static`, **stesso nome di unit in ogni cartella di gioco**, risolta dal percorso del progetto) | codice diverso dentro un ciclo per thinker o per cella della blockmap (`PIT_CheckThing`, `P_XYMovement`) | e' cio' che sono oggi le quattro `p_map.pas`: la unit del gioco si riduce alle sole routine *proprie* |
+
+La strategia calda e' una scelta fatta a compilazione dal progetto: nessuna chiamata virtuale ne' a interfaccia, il compilatore puo' fare `inline`. I tipi che cambiano per gioco (`mobjtype_t`, i campi di `mobj_t`, `ceiling_e`...) si nominano **solo** nella unit del gioco. Dove la scelta e' a runtime (versione della demo, `compatibilitymode`) si usa una tabella di puntatori a procedura riempita una volta.
+
+### 10.5 Thinker e salvataggi
+
+I thinker restano record nella zone memory con il puntatore a funzione che `p_saveg` conosce (`T_MoveCeiling`, `T_Scroll`...): la funzione storica resta come guscio che chiama il codice comune. Nessun campo cambia posto o dimensione. Se un passo ha bisogno di cambiare un record salvato, **si ferma e si riporta**.
+
+### 10.6 Ordine dei sottosistemi
+
+| Passo | Contenuto | Forma delle regole | Prova |
+|---|---|---|---|
+| 2a | involucro: `TEngineWorld`, lista dei thinker e giro del tic (`p_tick`), tempo; `IGameContext` esteso | nessuna | golden 8 bit dei quattro giochi; misura a coppie (il giro dei thinker e' caldo); test della lista con nodi finti |
+| 2e-1 | thinker quasi uguali: `p_scroll`, `p_ceilng`, `p_floor`, `p_genlin` (poi il resto di `p_plats`, `p_lights`, `p_doors`, `p_telept`), estendendo `Libs\Thinkers` e `Engine.Plane.*` | profilo | golden; parita' vecchio/nuovo nei test (`Tests\DelphiDoom.Tests.Thinkers`, schema di `OldPlanes`/`OldPlats`/`OldDoors`) |
+| 2c-1 | `p_map`: confronto delle quattro copie routine per routine, poi una implementazione | strategia calda | golden; misura a coppie |
+| 2c-2 | `p_mobj` | strategia calda | golden; misura |
+| 2f | `p_user`, nucleo comune di `p_inter`, `p_enemy`, `p_pspr` | strategia calda + gruppi di azioni per gioco (`Libs\Actions`) | golden; misura |
+| 2g | `p_spec`, `p_switch` | profilo + registro (`Libs\Specials`) | golden |
+| 2b | `p_maputl`, `p_sight`, `p_slopes` come servizi del mondo (sono gia' in copia unica) | - | golden; misura |
+| 2h | `g_game`, sessione, salvataggi (`Libs\Serializer`) | strategia fredda | **bloccato in questo giro** (salvataggi) |
+| 2i, 2j | tabelle `info*` (`Libs\Info`), menu e barre di stato | dati | fuori da questo giro |
+
+### 10.7 Protocollo di ogni passo
+
+1. **Ricerca dell'esistente** (`Libs\*`, `Base\DelphiDoom.Engine.*`, `docs\FRAMEWORK_CENSIMENTO.md`, `docs\ANALISI_DUPLICATI.md`) e **tabella di confronto** delle copie, routine per routine: *uguale* (testo identico tolti commenti e spazi), *parametrica* (poche righe diverse: profilo o regola), *propria* (resta nel gioco).
+2. Codice: la logica pura in una libreria che c'e' gia' (test DUnitX con finti, copertura almeno 90%); cio' che e' legato ai record del motore in `Base\DelphiDoom.Engine.<Area>.*` o nella unit storica unificata (la prova e' il golden); le unit storiche restano facciate con la stessa API finche' hanno chiamanti.
+3. **Verifica**: dieci giochi piu' Radix32 e SpeedHaste32 compilano con avvisi non aumentati (base: 383/382/383/333/305/255/200/150/414/341); Doom32 e Strife32 a Win64; `Confronta-Golden.ps1 -Modes 8` sui quattro giochi (44 voci) UGUALE, e `-Modes 32` per Doom e Strife se il passo disegna; `Misura-Coppie.ps1` vecchio contro nuovo entro il 5%.
+4. Un commit per passo. Un passo che non rispetta parita' o prestazioni si annulla (`git revert`) e si scrive qui perche'.
+5. I rami che il corpus non esercita (rete, difficolta' 4-5, 3D floor, poliobj, dialoghi) si elencano nel passo: per quelli la prova e' la tabella di confronto (codice spostato senza modifiche) o il test di unita', non il golden.
+
+## 11. Fase 2: stato dei passi
+
+(aggiornato a ogni passo)
+
+### 11.0 Riepilogo del giro del 2026-11-14 e prossimi sottosistemi
+
+Stato sul ramo `worktree-agent-af54720ab9045a4f7` dopo l'unione di `master` (`a5a1ea6b`: Rad-X #169, #110, #120, #175, #194).
+
+| Passo | Cosa | Copie prima -> dopo (righe) | Golden per passo (ridotto, 8 bit) |
+|---|---|---|---|
+| 2a | `TEngineWorld`, `TThinkerList` (`Libs\Thinkers`), `IGameContext` esteso | `p_tick` 362 -> 353 (era gia' in copia unica) | 4 voci su 4 UGUALI |
+| 2e-1 | `p_scroll`, `p_ceilng`, `p_genlin`, `p_floor` (Doom e Strife) in copia unica | 6740 -> 2940 (+ `Heretic\p_floor` 411 che resta) | 4 su 4 UGUALI |
+| fase 1 | `f_wipe`, regole di `s_sound`, linee di `am_map` (par. 12) | 4966 -> 4658 | 4 su 4 a 8 bit, Doom e Strife a 32 bit UGUALI |
+| 2c-1 | `p_map` in copia unica, `TMapGameRules` per gioco | 14079 -> 7769 | 12 su 12 UGUALI |
+| 2c-2 | `p_mobj` in copia unica (parziale: 18 routine su 52), `TMobjGameRules` | 11673 -> 10349 | 12 su 12 UGUALI |
+
+**Verifica finale sul ramo unito** (eseguibili compilati dopo `git merge master`):
+
+- Build Release Win32: dieci eseguibili, errori 0, avvisi 382/381/382/332/305/255/200/150/413/340 (Doom32, Radix32, SpeedHaste32, GLDoom32, Heretic32, GLHeretic32, Hexen32, GLHexen32, Strife32, GLStrife32; base 383/382/383/333/305/255/200/150/414/341). Doom32 e Strife32 Release Win64 compilano (405 e 441 avvisi; non avviati).
+- **Corpus intero dei golden: 44 voci su 44 UGUALI a 8 bit** (Doom 21, Heretic 9, Hexen 8, Strife 6: stato per tic e fotogrammi) e **27 su 27 UGUALI a 32 bit** (Doom 21, Strife 6). Cartella di lavoro `C:\ddparity_185` (non `C:\ddparity`, in uso da un altro lavoro nello stesso momento); le due voci di Freedoom che possono dipendere dal percorso (`a_f2_map10`, `f2_demo2`) sono risultate UGUALI anche li'.
+- Suite a Win32: Thinkers 352/352, Imaging 220/220, Audio 341/341, Automap 72/72, Console 369/369, DynLights 39/39, Net 244/244. Copertura misurata con DelphiCodeCoverage: `Libs\Thinkers` 98% (1414 righe su 1438, 44 unit; `TThinkerList` 99%); Imaging 98%, Audio 99%, Automap 100% (misurate nel ramo della fase 1).
+- Radix32 `-devparm -nomusic -nosound -warp 1 1` (RADIX.DAT 2.0 shareware): carica E1M1 (precache di texture, sprite e suoni), vivo dopo 40 secondi, nessun `crash.txt` ne' `I_Error`. Non guardato a schermo.
+- **Misura a coppie: NON conclusiva** (da rifare a macchina scarica; nessun passo e' dichiarato entro il 5%). Doom32 `demo1`, 8 bit, 5 coppie, eseguibile di `c57fbf77` contro quello finale: (a) dopo 2c-1: vecchio mediana 235, nuovo 231 (mediane -1,70%, minimi -3,85%), rifiutata per dispersione del vecchio 3,85% e CPU al 50%; (b) finale: vecchio minimo 195 mediana 210, nuovo minimo 199 mediana 199 (mediane -5,24%, minimi +2,05%), rifiutata per dispersione del vecchio 23,08% e CPU al 48-72%. Il "nuovo" finale contiene anche le unioni di `master`. Gli eseguibili sono in `C:\ddref185` (`Doom32.exe` di partenza, `fin\Doom\Doom32.exe`).
+- **Test DUnitX**: le classi nuove di libreria hanno i loro test (lista dei thinker, scorrimenti, soffitti, pavimenti, wipe, attenuazione e canali, nomi mp3, linee dell'automap). Non hanno test di unita', e la loro prova sono i golden e la prova meccanica sul testo: `TEngineWorld`, gli adattatori `Engine.Ceiling.Thinker`, `Engine.Floor.Thinker`, `Engine.Generalized.Rules`, `TEngineImagingRandom` e le unit delle regole `TMapGameRules`/`TMobjGameRules` (testo del gioco spostato, legato ai record del motore).
+- **Non verificato**: salvataggi (non toccati, non provati), rete, avvio dei giochi OpenGL, di SpeedHaste32 e di qualsiasi eseguibile Win64, suite a Win64 dopo l'unione, rami che il corpus non esercita (elencati nei par. 11.1-11.3 e 12).
+- **Passi annullati**: nessuno. Il commit `1134d540` (tappa A di `p_map`) da solo ha un difetto di risoluzione di `P_ThingsInSameZ` in Doom, corretto da `d37a3575`: non va usato come punto di bisezione.
+
+**Prossimi sottosistemi (ordine)**:
+
+1. **Resto di `p_mobj`**: `P_ZMovement` (quattro versioni con lo stesso lavoro in ordine diverso nel ramo del pavimento: serve una demo per gioco che lo eserciti prima di riordinare), `P_SpawnPlayer`, `P_SpawnMapThing` (da appoggiare a `ILevelThingRules`, che c'e' gia'), i tre `P_SpawnMissile*`, `P_SpawnPuff`, `P_HitFloor`, `P_NightmareRespawn`, `P_SetMobjStateNF`.
+2. **Resto di `p_map`**: `P_CheckForPushSpecial`, `PIT_ChangeSector`, la coda di contatto di `PIT_CheckThing`.
+3. **`p_user`** (35 routine: 5 uguali, 12 parametriche, 18 proprie), stessa forma (`TUserGameRules`).
+4. **`p_inter`** (39: 5, 16, 18) e il nucleo comune di **`p_enemy`** (381 routine, 344 proprie: solo `P_LookForPlayers`, `P_Move`, `P_NewChaseDir`, `A_Chase` e simili; il resto e' un gruppo di azioni per gioco in `Libs\Actions`) e di **`p_pspr`**.
+5. **`p_spec`** (50: 19 uguali, 19 parametriche) e **`p_switch`**, con `Libs\Specials`.
+6. Thinker rimasti: `Heretic\p_floor`, le tre facciate di `p_plats` e `p_lights`, `p_telept`, `p_doors`; `udmf_ceilng`/`udmf_floor` come secondo profilo di `TCeilingMachine`/`TFloorMachine`.
+7. **Stadio 2 dello stato** (par. 10.3) e `g_game`/salvataggi (2h): solo quando `p_saveg`/`sv_save` saranno liberi.
+
+Per ogni passo: `Confronta-Copie.ps1 -Unit <unit>` per la tabella, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni tappa, corpus intero una volta sul ramo unito, misura a coppie a macchina scarica.
+
+### 2a: involucro del mondo (2026-11-14)
+
+**Migrato.** La lista dei thinker e il giro del tic non sono piu' codice di `Base\p_tick.pas`:
+
+- `Libs\Thinkers\DelphiDoom.Thinkers.List.pas` (`TThinkerList`, `sealed`, nessun metodo virtuale): `Clear` (`P_InitThinkers`), `Add` (`P_AddThinker`), `Remove` (`P_RemoveThinker`, rimozione pigra con il marcatore), `IsRemoved` (`P_ThinkerIsRemoved`, `class ... static`), `Run` e `RunFrozen` (i due rami di `P_RunThinkers`). Lavora su `TThinkerNode` (prev, next, funzione: il layout di `thinker_t`) e sul capo dato dal costruttore; cio' che e' del motore arriva una volta come puntatori a procedura (`TThinkerListHooks`: `Cleared`, `Added`, `Removed`, `Release`, `RunsWhenFrozen`). Nel giro: confronto col marcatore, chiamata del thinker, `next` letto dopo la chiamata, come prima; nessuna interfaccia.
+- `Base\DelphiDoom.Engine.World.pas` (`TEngineWorld`, `sealed`; l'unico metodo virtuale e' il `Destroy` ereditato): possiede la `TThinkerList` sul capo `thinkercap` (stadio 1: la memoria resta il globale che `p_saveg`/`sv_save` usano), il tempo come riferimenti tipizzati (`TEngineWorldTime`: `LevelTime`, `IsFrozen`, `IsSuspended`, `TimerGame` che e' `nil` fuori da Hexen) e l'`IGameRandom` di `ComposeEngine`. Le procedure date alla lista stanno in questa unit: `mobjlist.Clear/Add/Remove` per i thinker con `P_MobjThinker`, `Z_Free`, e il filtro del ramo congelato (giocatore o `MF3_EX_NOTIMEFREEZE`). `RunThinkers` sceglie il ramo da `IsFrozen^`.
+- `ComposeWorld` in `DelphiDoom.Engine.Composition` (dopo `ComposeMathCore`) crea il mondo e lo da' a `p_tick` con `P_ConfigureWorld`; `p_tick` lo possiede e lo libera in `finalization`. `P_WorldTime` (facciata) da' gli indirizzi dei globali del tempo: l'`{$IFDEF HEXEN}` di `TimerGame` resta nella facciata storica.
+- `p_tick.pas` (362 -> 353 righe) resta la facciata con la stessa API: `P_InitThinkers` e `P_Ticker` passano da `P_World` (controllo "non configurato" con `I_Error`, una volta per livello e una per tic); `P_AddThinker` e `P_RemoveThinker` usano il riferimento senza controllo (non si puo' aggiungere un thinker prima di `P_InitThinkers`, che controlla; `ComposeEngine` e' la prima istruzione dei `.dpr`). `P_Ticker` resta in `p_tick`. Le unit nuove sono nei 14 `.dpr` che elencano `p_tick` (dieci giochi con Radix32 e SpeedHaste32, quattro `ddc_*`).
+- **Sessione**: `IGameContext` (`Libs\GameState`) ha in piu' `Skill`, `Episode`, `Map`, `Deathmatch`, `ConsolePlayer`, `MaxPlayers` (interi), implementati da `TEngineGameContext`. Strife non ha `gameepisode`: `Episode` da' 1 (un `{$IFDEF STRIFE}` nell'adattatore). I finti di `IGameContext` aggiornati: `Tests.Console.Fakes`, `Tests.DynLights.Fakes`, `Tests.Net.Fakes`.
+
+**Riuso.** Riusati: `Libs\Thinkers` (la lista e' una unit della libreria, nessuna libreria nuova), `IGameRandom` di `Libs\MathCore`, lo schema `P_Configure*`/`Compose*`/`I_Error`, lo schema dei test `Old*` di `Tests\DelphiDoom.Tests.Thinkers`. Estesi: `IGameContext` e `TEngineGameContext` (sei metodi), `ComposeEngine`. Nuovi: `TThinkerList` (non esisteva una lista dei thinker fuori da `p_tick`: `TMobjList` di `p_mobjlist` e' l'indice per chiave dei soli mobj e resta com'e') e `TEngineWorld` (non esisteva un proprietario dello stato del livello: par. 10.2); `ScriptHost.World.*` e' la vista degli script su settori e linee, non lo stato.
+
+**Differenze dal vecchio.** Nessuna voluta nel comportamento. Costo: `Z_Free`, la notifica a `mobjlist` e il filtro del ramo congelato passano da un puntatore a procedura (una chiamata indiretta per aggiunta, rimozione e liberazione, non per thinker nel giro normale); `P_AddThinker` chiama ora la notifica anche per i thinker che non sono mobj (il confronto con `P_MobjThinker` e' dentro la procedura).
+
+**Verifica.**
+
+- Build `Tools\build.bat giochi Release`: 10 su 10, errori 0, avvisi 383/382/383/333/305/255/200/150/414/341 (uguali alla base), nessuno nelle unit nuove. `Doom32` e `Strife32` Release Win64 compilano.
+- Test: `DelphiDoom.Tests.Thinkers` 283 su 283 a Win32 e a Win64 (27 nuovi in `Tests\Source\DelphiDoom.Tests.Thinkers.List.pas`: forma del nodo, argomenti nil, ordine, rimozione pigra, thinker che aggiungono o rimuovono se stessi, il successivo o il precedente, ramo congelato, e la parita' con il vecchio codice copiato in `DelphiDoom.Tests.Thinkers.OldList.pas` su 400 scenari casuali da 40 tic e 8 da 1500 tic: stesse chiamate, stesse notifiche, stesse liberazioni, stessa lista in avanti e all'indietro dopo ogni tic). Copertura di `DelphiDoom.Thinkers.List` con `Tools\Copertura.ps1 -Test Thinkers`: 70 righe su 71 (99%; la riga non coperta e' il corpo del marcatore, che non si chiama mai). Suite dei finti toccati: Console 369/369, DynLights 39/39, Net 244/244.
+- Golden: verifica ridotta, 4 voci su 44 UGUALI (`d1_demo1`, `a_h_e1m1`, `a_x_map01_f`, `a_s_map32` a 8 bit, fatta dal coordinatore prima del commit `45cafc18`); corpus intero e misura a coppie da fare sul ramo unito. Il giro completo `Confronta-Golden.ps1 -Modes 8` e' stato lanciato due volte e non e' arrivato in fondo: la prima volta 11 voci di Doom UGUALI, poi la cartella di lavoro e' stata cancellata (spazio su disco); la seconda e' stata fermata a richiesta (lock dei giochi conteso). Nessuna differenza osservata.
+- Misura a coppie (`Misura-Coppie.ps1`): **non fatta** (macchina occupata dalle build degli altri lavori).
+
+**Non verificato.** `TEngineWorld` non ha test di unita' (legge `mobjlist`, `Z_Free`, `P_MobjThinker`: la sua prova e' il golden, per ora ridotto); il ramo congelato nel motore (il corpus non congela il gioco: la prova e' il test di parita' della lista); salvataggi e caricamenti (non toccati, non provati); giochi OpenGL, Radix32 e SpeedHaste32 compilati ma non avviati; Win64 non avviato; `ddc_doom` e `ddc_hexen` compilano (avvisi 382 e 199, base non misurata); `ddc_heretic` e `ddc_strife` non ricompilati.
+
+### 11.1 Passo 2e-1: thinker quasi uguali (ramo `worktree-agent-ab3c8727792294d50`, 2026-11-14)
+
+Un commit per unit. Schema: logica pura in `Libs\Thinkers` (classi `sealed` di soli metodi `class ... static`, profilo per gioco, tipi neutri), cio' che dipende dai record del gioco in un adattatore `Base\DelphiDoom.Engine.<Area>.Thinker` (l'unico posto con `{$IFDEF}` di gioco, come `Engine.Plat.Thinker`), facciata storica in copia unica in `Base\` senza `{$IFDEF}`. Record dei thinker, puntatori a funzione e firme invariati (`p_saveg` non toccato).
+
+| Unit | Copie prima (righe) | Dopo | Classi nuove (`Libs\Thinkers`) | Adattatore del motore | Test nuovi | Golden 8 bit |
+|---|---|---|---|---|---:|---|
+| `p_scroll` | Doom 416, Strife 416 | `Base\p_scroll.pas` 376 | `TScrollStep`, `TScrollSpawner` | nessuno (record uguali) | 21 | parziale: d1_demo1, d1_demo2, d1_demo3 UGUALI; il resto da fare |
+| `p_ceilng` | Doom 428, Heretic 335, Strife 452 | `Base\p_ceilng.pas` 310 | `TCeilingMachine`, `TCeilingGames` (+ `Ceiling.Types`) | `Engine.Ceiling.Thinker`; `Engine.Plane.Services` esteso (`P_ConfigureCeilings`) | 26 | da fare |
+| `p_genlin` | Doom 1452, Strife 1431 | `Base\p_genlin.pas` 1449 | nessuna (testo spostato) | `Engine.Generalized.Rules`; riuso di `Engine.Door.Kinds` | 0 | da fare |
+| `p_floor` | Doom 930, Strife 880 (Heretic 411: resta) | `Base\p_floor.pas` 805 | `TFloorMachine`, `TFloorGames` (+ `Floor.Types`) | `Engine.Floor.Thinker`; `Engine.Plane.Services` esteso (`P_ConfigureFloors`) | 22 | da fare |
+
+Righe delle copie: 6740 prima, 2940 dopo piu' Heretic `p_floor` 411 (totale 3351); codice nuovo in `Libs\Thinkers` e negli adattatori: 1563 righe (intestazioni e documentazione XML comprese), test 3626 righe.
+
+**Tabelle di confronto (routine per routine).**
+
+- `p_scroll` (Doom/Strife): `T_Scroll`, `P_AddScroller`, `P_AddWallScroller`, `P_SpawnScrollers` tutte *uguali* (le due unit differivano solo nell'intestazione).
+- `p_ceilng` (Doom/Heretic/Strife): `P_AddActiveCeiling`, `EV_CeilingCrushStop` *uguali*; `P_RemoveActiveCeiling` *parametrica* (`ceilingdata` o `specialdata`); `P_ActivateInStasisCeiling` *parametrica* (in Heretic era una procedura non esportata: ora e' la stessa funzione, il risultato non conta per il profilo); `T_MoveCeiling` *uguale* tra Doom e Strife, *parametrica* con Heretic (stesso codice ristretto ai suoi cinque generi, suono `sfx_dormov`, niente campi dei cambiatori di Boom); `EV_DoCeiling` *parametrica*: quattro interruttori (`TCeilingProfile`: velocita' dello schiacciatore rapido x2 o x4, `crushAndRaise` che schiaccia o no, `lowerAndCrush` di Strife che schiaccia e arriva al pavimento, risveglio dalla stasi che conta come "fatto") piu' il controllo del settore occupato (`P_SectorActive` o `specialdata`).
+- `p_genlin` (Doom/Strife): `EV_DoGenFloor`, `EV_DoGenCeiling`, `EV_DoGenLift`, `EV_DoGenCrusher` *uguali*; `EV_DoGenStairs` *parametrica* (il passo prima o dopo il controllo del settore occupato: solo le vecchie demo di Doom); `EV_DoGenLockedDoor`, `EV_DoGenDoor` *parametriche* (nomi dei generi `gen*`/`vld_gen*`, suoni di apertura e chiusura); le costanti MBF21 `DEATH_MASK`/`KILL_MONSTERS_MASK` erano solo in Doom (restano: le usa il suo `p_spec`).
+- `p_floor` (Doom/Strife/Heretic): `T_MovePlane` *parametrica* (regole di `TPlaneRules`); `T_MoveFloor` *uguale* tra Doom e Strife, *propria* in Heretic (`specialdata`, suono di arresto solo per i gradini, nessun blocco delle scale); `T_MoveElevator`, `EV_DoChange`, `EV_DoElevator` *uguali* tra Doom e Strife, assenti in Heretic; `EV_DoFloor` *parametrica* tra Doom e Strife (`turboLower` senza gli 8 in piu', `raiseFloor64` e `raiseFloor512AndChange` solo in Strife, `raiseToTexture` con il ramo delle vecchie versioni solo in Doom), *propria* in Heretic (ricerca del modello di `lowerAndChange` scritta a mano, niente `oldspecial`); `EV_BuildStairs` *parametrica* tra Doom e Strife (in Strife: tag del primo settore azzerato, primo gradino lasciato di genere 0 e senza schiacciamento, `buildDown16`; in Doom lo schiacciamento dipende dalla versione), *propria* in Heretic (firma `(line, step)`); `EV_DoDonut` *parametrica* (Doom ha in piu' il donut delle versioni fino alla 1.15; quello nuovo e' *uguale*).
+
+**Riusato**: `TPlaneMover`/`TPlaneRules`/`PlaneMove` (il passo), `TPlatGame` e `TPlatGames.TryFromName` con `TGameAliases` (il gioco del profilo: nessun secondo elenco di giochi), `DoorKindFromNeutral` di `Engine.Door.Kinds` (generi delle porte generalizzate), `TFixedMath` e le tabelle di `Libs\MathCore`, `ComposePlanes` e `Engine.Plane.Services` (estesi con sole aggiunte), `TFakePlaneHost`/`TestNumberIn` dei test. **Nuovo e perche'**: le classi `Scroll.*`, `Ceiling.*`, `Floor.*` (nessuna classe esistente decideva cosa segue un passo di soffitto o pavimento ne' i valori di `EV_DoCeiling`/`EV_DoFloor`: `TPlaneMover` e' solo il passo, `TPlatMachine` e `TDoorRunner` sono piattaforme e porte); gli adattatori `Engine.Ceiling.Thinker`, `Engine.Floor.Thinker`, `Engine.Generalized.Rules` (gli adattatori esistenti convertono `plattype_e` e `vldoor_e`, non `ceiling_e`, `floor_e`, `stair_e`). Niente host a interfaccia nuovi: la facciata chiama metodi statici e fa lei suoni e rimozioni.
+
+**Verifica**: dieci giochi Release Win32 con gli avvisi della base (383/382/383/333/305/255/200/150/414/341) dopo ogni unit; `strumenti` Release 13 su 13; Doom32 e Strife32 Win64 compilano (406 e 442 avvisi); `DelphiDoom.Tests.Thinkers` 256 -> 325 test, verdi a Win32 e a Win64; prova per mutazione sul soffitto (velocita' rallentata + 1: 4 test rossi). **Golden non conclusi**: il lock globale delle esecuzioni era occupato da altri lavori; fatte solo 3 voci di Doom con il solo `p_scroll` (UGUALI) e 1 di Heretic (`a_h_e1m1`) con lo stato finale dei quattro commit (UGUALE). Le altre 40 voci, e quindi la conferma di `p_ceilng`, `p_genlin` e `p_floor` nel motore, si fanno sul ramo unito (eseguibili dello stato finale conservati in `C:\ddparB2e\exe\floor`). **Non misurato**: le prestazioni a coppie (macchina occupata: da fare sul ramo unito).
+
+**Rami che il corpus non esercita di sicuro** (la prova e' il test di parita' col vecchio codice o il testo spostato): scorrimenti di Boom con settore di controllo e accelerazione, trasporto sott'acqua; schiacciatori silenziosi e generalizzati, cambiatori di soffitto e di pavimento, stasi e risveglio dei soffitti; scale `turbo16` e `buildDown16`, donut, ascensori, `raiseToTexture`, `lowerAndChange`, i rami delle versioni di Doom fino alla 1.15 (pavimenti, scale, donut vecchio); tutte le linee generalizzate (`p_genlin`: nessun test di unita', solo testo spostato e golden).
+
+**Resta**: `Heretic\p_floor.pas` (da portare su `TFloorMachine`: serve `raiseBuildStep` e il modello di `lowerAndChange` di Heretic nel profilo); il residuo di `p_plats`, `p_lights` (tre facciate quasi uguali) e `p_telept` non toccato; `Base\udmf_ceilng.pas` e `Base\udmf_floor.pas` ripetono la **struttura** di `p_ceilng`/`p_floor` (elenco degli attivi, tic su/giu', `case` dei generi, stasi) con altri generi (`CLEV_*`, `FLEV_*`), altro elenco (`hactiveceilings`) e le sequenze sonore: non unificati (non banale: i generi e i suoni sono diversi; la via e' un secondo profilo di `TCeilingMachine`/`TFloorMachine`).
+
+### 11.2 Passo 2c-1: `p_map` in copia unica (ramo `worktree-agent-af54720ab9045a4f7`, 2026-11-14)
+
+Tre commit, uno per tappa (`1134d540` routine uguali e parametriche piccole, `d37a3575` `PIT_CheckLine*`, `P_TryMove`, `P_ThingsInSameZ`, `16d21f20` `PTR_ShootTraverse`, testa di `PIT_CheckThing`, prova meccanica), piu' quello dei documenti. Nessuna tappa annullata.
+
+**Forma.** `Base\p_map.pas` e' l'unica copia: stessa API per i chiamanti, nessun `{$IFDEF}` di gioco (restano i quattro `{$IFDEF FPC}` storici), le variabili globali `tm*`, `floatok`, `spechit`, `linetarget`... dove erano. Cio' che cambia per gioco e' **strategia calda** (par. 10.4): `TMapGameRules`, classe `sealed` di soli metodi `class ... static` (`inline` quelli di una riga) e costanti, nella unit `DelphiDoom.Engine.World.MapRules.pas` che esiste con lo stesso nome in `Doom\`, `Heretic\`, `Hexen\`, `Strife\` ed e' scelta dal percorso del progetto (`Radix32` e `SpeedHaste32` prendono quella di `Doom\`; `p_map` non aveva rami `RADIX`/`SPEED`). Nessuna chiamata virtuale ne' a interfaccia. I tipi e i campi che cambiano per gioco (`mobjtype_t`, `flags2`, `MF_SKULLFLY`, `MF_TELEPORT`, `MF_PICKUP`, `floorpic`, `special1`, `SPAC_*`/`ULAC_*`...) si nominano solo li'. Una differenza che e' un dato e' una costante della classe (8: `SlopesVersion`, `TeleportSetsZ`, `SkyHackPuffInCompatibility`, `NoSpecHitFlags`, `PushesLinesWhenBlocked`, `DropoffHeight`, `JumpDownMargin`, `SlideStepMargin`); le altre sono 49 metodi. Dove il blocco di un gioco e' lungo (linee che bloccano, contatto tra cose, cosa colpita da un colpo) la regola e' il **testo vecchio alla lettera** dentro un metodo che da' il valore con cui la routine prosegue. Le routine che ha un gioco solo stanno nella stessa unit, esportate con il nome di prima; le liste dei settori toccati da una cosa (Boom: `msecnode_t` esiste solo in Doom e Strife) stanno in `Base\p_secnodes.pas`, che solo quei progetti compilano.
+
+**Righe.** Prima: Doom 3581, Heretic 3166, Hexen 3904, Strife 3428 (14079). Dopo: `Base\p_map.pas` 2778, `Base\p_secnodes.pas` 355, unit delle regole Doom 1105, Heretic 916, Hexen 1555, Strife 1060 (7769 in tutto; in ogni unit delle regole circa 135 righe sono la dichiarazione documentata della classe).
+
+**Tabella di confronto** (`Tools\Verifica\185\Confronta-Copie.ps1 -Unit p_map`: 49 routine, 13 uguali, 26 parametriche, 10 proprie; la lettera dice quali copie erano uguali tra loro, il numero le righe) **e decisione**:
+
+| Routine | Doom | Heretic | Hexen | Strife | Diff | Decisione |
+|---|---|---|---|---|---:|---|
+| `P_CheckForPushSpecial` | A10 | B10 | C10 | B10 | 8 | *propria* per gioco (10 righe; in Hexen altro campo dei flag e altre costanti di attivazione): unit del gioco |
+| `PIT_StompThing` | A74 | B73 | B73 | C77 | 2 | unica; regola `CanStomp` |
+| `P_TeleportMove` | A85 | B85 | B85 | C86 | 13 | unica; `PointInSector`, `TeleportSetsZ`, `MarkJustAppeared` |
+| `PIT_CheckLine` | A133 | B132 | C125 | D139 | 29 | unica; il blocco di chi non e' un proiettile e' `CheckLineBlocking` (testo del gioco), `BlastedHitsWall` |
+| `PIT_CheckLineTM` | A142 | B142 | C133 | D131 | 32 | unica; `CheckLineBlockingTM`, `BlastedHitsWall` |
+| `P_ThingsInSameZ` | A52 | B40 | B40 | B40 | 23 | unica: testo di Doom con `KeepsOldSameZ` (falso negli altri giochi) |
+| `P_ThingHeightOffsZ`, `P_ThingsInSameZ206` | - | A7, A34 | A7, A34 | A7, A34 | 0 | assorbite da `P_ThingsInSameZ` (erano i suoi due rami scritti a parte) |
+| `P_BloodType` | A35 | - | - | - | 0 | *propria* di Doom, esportata dalla unit di Doom con `bloodtype_t` e `p_confcoloredblood` |
+| `PIT_CheckThing` | A336 | B308 | C501 | D270 | 232 | **a meta'**: la testa (108 righe, uguale nei quattro salvo `SlopesVersion`) e' unica; il contatto e' `CheckThingContact` del gioco, testo vecchio alla lettera (Doom 228 righe, Heretic 201, Hexen 393, Strife 163) |
+| `P_CheckPosition` | A126 | B129 | C137 | D131 | 15 | unica; `PointInSector`, `BeginCheckPosition`, `NoClipSkipsThings`, `NoClipSkipsLines`, `ClearBlockingThing`, `SlopesVersion` |
+| `P_FakeZMovement` | A69 | B68 | B68 | - | 5 | unica; `IsSkullFlying`, `FlightBobs`, `HasLowGravity` (in Strife compila e nessuno la chiama) |
+| `PIT_CheckOnmobjZ` | A39 | A39 | A39 | - | 0 | *uguale*: spostata |
+| `P_CheckOnmobj` | A78 | B78 | B78 | - | 8 | unica; `PointInSector` |
+| `P_TryMove` | A220 | B216 | C262 | D232 | 61 | unica; `StepsOnBlockingThing`, `PushesLinesWhenBlocked`, `IgnoresCeilingFit`, `FlightBlocked`, `StepTooHighOnFoot`, `IgnoresStepHeight`, `MissileStepTooHigh`, `DropoffHeight`, `JumpDownMargin`, `IgnoresDropoff`, `CannotLeaveFloorPic`, `StoreFloorPic`, `UpdateFloorClip`, `NoSpecHitFlags`, `CrossSpecialLine`, `BlastedHitsWall` |
+| `P_ThingHeightClip` | A26 | A26 | B29 | A26 | 3 | unica; `StoreFloorPic`, `SnapsToFloor` |
+| `P_HitSlideLine`, `P_SlideMove` | A49, A104 | = | = | = | 0 | *uguali*: spostate |
+| `PTR_SlideTraverse` | A76 | B78 | B78 | C77 | 2 | unica; `SlideStepMargin`; tolte le due assegnazioni a `secondslidefrac`/`secondslideline` di Heretic e Hexen (mai lette) |
+| `PTR_AimTraverse` | A121 | A121 | B127 | A121 | 5 | unica; `SkipsAimAt` |
+| `PTR_ShootTraverse` | A238 | B236 | C243 | D269 | 40 | unica; `SkyHackPuffInCompatibility`, `SpawnWallPuff`, `ShootSpecialLine`, `ShotPassesThrough`, `ShotHitsThing` (testo del gioco) |
+| `P_AimLineAttack` | A33 | A33 | A33 | B36 | 4 | unica; `AimOriginZ`, `NoTargetSlope` |
+| `P_LineAttack` | A21 | B23 | C33 | D25 | 16 | unica; `AttackOriginZ`, `LineAttackFlags`, `LineAttackMissed` |
+| `PTR_UseTraverse` | A36 | B33 | C68 | D36 | 61 | unica; `UseBlockedByWall`, `UseNonSpecialLine`, `UseSpecialLine` |
+| `PTR_UseThingTraverse`, `P_UseLines` | A56, A29 | = | = | = | 0 | *uguali*: spostate |
+| `PIT_RadiusAttack` | A104 | B104 | C119 | D112 | 18 | unica; `IsConcussionProof`, `OutOfBlast`, `BlastDamage` |
+| `P_RadiusAttack` | A34 | A34 | B37 | C43 | 6 | unica, firma con i due parametri di Hexen resi facoltativi (`distance = 0`, `dmsource = true`); `SetBlastExtent`, `AfterRadiusAttack` |
+| `P_RadiusAttackEx` | A34 | A34 | A34 | B43 | 6 | unica; `AfterRadiusAttack` |
+| `PIT_RadiusAttackPlayer`, `P_RadiusAttackPlayer` | A86, A35 | = | = | = | 0 | *uguali*: spostate |
+| `PIT_ChangeSector` | A132 | B76 | C98 | D112 | 54 | *propria* per gioco (quattro varianti diverse dall'inizio alla fine: cadaveri, oggetti caduti, sangue, uscite): unit del gioco |
+| `P_DoChangeSector` | A51 | B12 | B12 | A51 | 27 | unica; `ChangeSectorByThingList` (Doom e Strife: `P_ChangeSectorNodes` di `p_secnodes` fuori dal modo di compatibilita') |
+| `P_ChangeSector` | A17 | B17 | C17 | A17 | 2 | unica; `SlopesVersion` |
+| `P_SectorJumpOverhead` | A21 | B29 | C27 | A21 | 10 | unica, firma di Heretic e Hexen (`p: Pplayer_t = nil`) per tutti; `HasFlightPower` |
+| `P_AddSecnode`, `P_DelSecnode`, `PIT_GetSectors`, `P_CreateSecNodeList` | A43, A38, A39, A77 | - | - | = | 0 | *uguali* in Doom e Strife: `Base\p_secnodes.pas` con `sector_list` |
+| `P_TestMobjLocation` | A21 | A21 | A21 | B15 | 6 | unica; `SuspendPickup`, `RestorePickup` |
+| `P_PointInSectorVanilla`, `P_PointInSector` | A18, A7 | - | - | - | 0 | *proprie* di Doom: unit di Doom |
+| `PIT_ThrustStompThing`, `PIT_ThrustSpike`, `PTR_PuzzleItemTraverse`, `P_UsePuzzleItem`, `PTR_BounceTraverse`, `P_BounceWall` | - | - | A30, A33, A71, A16, A50, A40 | - | 0 | *proprie* di Hexen: unit di Hexen (con `PuffSpawned`, `BlockingMobj`) |
+| `P_CheckPositionZ` | - | - | - | A75 | 0 | *propria* di Strife: unit di Strife (con `blockingline`) |
+
+In copia unica: 37 routine su 49 (31 in `Base\p_map.pas`, 4 in `Base\p_secnodes.pas`, 2 assorbite), contando `PIT_CheckThing` per la sola testa. Restano *proprie* e perche': `P_CheckForPushSpecial` e `PIT_ChangeSector` (una per gioco: le differenze sono tutto il corpo, una regola che le contenesse sarebbe la routine stessa), il contatto di `PIT_CheckThing` (le quattro code hanno pezzi in comune, i proiettili e le cose spinte, ma intrecciati a rami del gioco con estrazioni casuali: unificarli vuol dire riordinare del testo che le demo coprono solo in parte), e le dieci routine di un gioco solo.
+
+**Chiamanti toccati** (solo una unit in piu' nella `uses`): `Base\m_defs.pas` (Doom: `p_confcoloredblood`), `Base\p_maputl.pas` (`p_secnodes` per Doom e Strife, le regole per `blockingline` di Strife), `Doom\g_game.pas`, `Doom\m_menu.pas`, `Radix\m_menu.pas`, `Doom\p_mobj.pas`, `Hexen\a_action.pas`, `Hexen\p_mobj.pas`, `Hexen\p_pspr.pas`, `Hexen\p_user.pas`, `Strife\p_mobj.pas`; i 14 `.dpr` che elencano `p_map`.
+
+**Riuso.** Riusati senza toccarli: `Base\p_maputl.pas` (iteratori della blockmap, `P_PathTraverse`, aperture), `p_sight`, `p_slopes`, `p_3dfloors`, `p_gravity`, lo schema "stesso nome di unit in ogni cartella di gioco" del par. 10.4. Guardati e non adatti: `Libs\Blockmap` (costruisce e legge la blockmap come dati: gli iteratori sugli oggetti del motore sono in `p_maputl`), `Libs\MathCore` (gia' usata attraverso `m_fixed`/`tables`), `ILevelGameRules`/`T<Gioco>LevelRules` e `IGameContext` (interfacce: strategia fredda, non entrano in un ciclo per cella della blockmap). **Nuovo e perche'**: `TMapGameRules` nelle quattro cartelle (non esisteva una strategia calda: le regole esistenti sono interfacce o profili di dati dei thinker); `Base\p_secnodes.pas` (il codice dei secnode era in `p_map` e non puo' stare nella copia unica perche' Heretic e Hexen non hanno i tipi; e' codice storico spostato, per questo ha il nome storico); `Tools\Verifica\185\Prova-PMap.ps1`.
+
+**Differenze dal vecchio** (nessuna voluta nel comportamento): (1) `P_RadiusAttack` e `P_SectorJumpOverhead` hanno in ogni gioco la firma piu' larga, con i parametri in piu' facoltativi; (2) variabili della sezione `implementation` passate all'interfaccia di `Base\p_map.pas` perche' le leggono le regole (`tmflags`, `bestslidefrac`, `bestslideline`, `slidemo`, `shootthing`, `shootz`, `la_damage`, `crushchange`, `nofit`; `tmbbox` lo era gia' in Doom e Strife) e funzioni ora esportate (`P_ThingsInSameZ`, `P_ThingHeightClip`, `PIT_CheckThing`); (3) in Hexen `topslope`/`bottomslope` della mira non sono piu' le variabili omonime di `p_sight` ma quelle di `p_map` (ogni uso le inizializza prima di leggerle e i due usi non si intrecciano: `PTR_AimTraverse` non chiama nulla che controlli la vista); (4) le assegnazioni mai lette a `secondslidefrac`/`secondslideline` tolte da `PTR_SlideTraverse`; (5) nelle routine con una regola una condizione senza effetti puo' essere valutata in un altro ordine (elenco nella prova meccanica); l'ordine delle estrazioni casuali non cambia in nessuna copia; (6) in Strife compilano `P_FakeZMovement`, `PIT_CheckOnmobjZ`, `P_CheckOnmobj` (nessuno le chiama). **Difetto introdotto e corretto nel giro**: nella tappa A `PIT_CheckThing` di Doom, spostata intera nella unit di Doom, chiamava `P_ThingsInSameZ` e il nome si risolveva nella variante degli altri giochi rimasta in `Base\p_map.pas` (diversa dalla 2.07 in poi quando nessuna delle due cose ha `MF2_EX_ONMOBJ`); `d1_demo1` non lo vede (demo vecchia). Corretto nella tappa B unificando `P_ThingsInSameZ`; da li' le unit delle regole hanno le `uses` nell'ordine delle vecchie `p_map` con `p_map` per ultima, e un controllo della risoluzione dei nomi (ogni identificatore usato nelle unit nuove, cercato nelle unit usate prima e dopo) non trova altri casi.
+
+**Verifica.**
+
+- Build `Tools\build.bat giochi Release`: 10 su 10, errori 0, avvisi 382/381/382/332/305/255/200/150/413/340 (Doom32, Radix32, SpeedHaste32, GLDoom32, Heretic32, GLHeretic32, Hexen32, GLHexen32, Strife32, GLStrife32: uguali al limite dato); i quattro giochi software ricompilati dopo ogni tappa con gli stessi numeri. `ddc_doom`, `ddc_heretic`, `ddc_hexen`, `ddc_strife` Release: errori 0, avvisi 381/304/199/412. `Doom32` e `Strife32` Release Win64: errori 0, avvisi 405 e 441 (406 e 442 al passo 2e-1).
+- Test: `DelphiDoom.Tests.Thinkers` 352 su 352 prima di cominciare (ramo unito). Il passo non aggiunge test DUnitX: `p_map` e' legata ai record del motore, la prova e' il golden e la prova meccanica.
+- Golden a 8 bit (`Verifica-Ridotta.ps1` dopo ogni tappa, poi `Confronta-Golden.ps1` voce per voce, cartella `C:\ddparity_185`), 12 voci su 44 con lo stato finale, tutte UGUALI: Doom `d1_demo1`, `d1_demo3`, `a_f2_map07`; Heretic `a_h_e1m1`, `a_h_e1m3`, `a_h_e1m8`; Hexen `a_x_map01_f`, `a_x_map02_m`, `a_x_map03_f`; Strife `a_s_map32`, `a_s_map33`, `a_s_map34`. Le altre 32 voci e la misura a coppie (`Misura-Coppie.ps1`) **non fatte** (lock dei giochi conteso; eseguibili finali di Doom32 e Heretic32 in `C:\ddref185\s2c\`).
+- **Prova meccanica** (`Tools\Verifica\185\Prova-PMap.ps1`): per ogni gioco ricostruisce ogni routine della vecchia `p_map` dalla copia unica, sostituendo ogni chiamata a `TMapGameRules` con il corpo della regola di quel gioco (tabella scritta a mano nello script; i corpi lunghi letti dalla unit del gioco), e la confronta col testo vecchio preso da `git show 7bcb9a13` tolti commenti, spazi e maiuscole. 153 routine (Doom 40, Heretic 35, Hexen 41, Strife 37): **108 UGUALI**, **34 uguali dopo una riscrittura dichiarata** nella tabella con il suo perche' (il settore letto una volta invece del sottosettore letto tre volte; il parametro facoltativo in piu'; una condizione senza effetti spostata; lo sbuffo sui muri del cielo scritto con due uscite; il ramo dei secnode in `p_secnodes`; le parentesi in piu' di Heretic; le assegnazioni mai lette), **11 non testuali** (l'equivalenza e' un ragionamento scritto nello script: `P_ThingsInSameZ` con le due routine assorbite in Heretic, Hexen e Strife; `PTR_UseTraverse` e `P_SectorJumpOverhead` di Hexen), **0 diverse**. Limite: la tabella prova che lo scheletro unico piu' le sostituzioni da' il testo vecchio; che il corpo delle regole scritte a mano (quelle di una riga) sia la sostituzione della tabella e' una rilettura, non un confronto automatico.
+
+**Rami che le dodici demo non esercitano di sicuro** (prova: testo spostato e prova meccanica): gioco in rete (mira che salta i compagni in Hexen), 3D floor e pendenze, oggetti puzzle e rimbalzi di Hexen, cose scagliate (`MF2_BLASTED`), lampi e spiriti di Hexen nel contatto, volo e pavimenti obbligati, spettrali e Mauler di Strife, vetri rotti dalle esplosioni di Strife, sangue colorato e proiettili che trapassano (MBF21) di Doom, `P_RadiusAttackEx`, `P_RadiusAttackPlayer`, schiacciamento con le liste dei settori nei casi limite, nodi originali di Doom fuori da `d1_demo1`/`d1_demo3`.
+
+**Non verificato.** Misura a coppie; corpus intero (32 voci); modo a 32 bit (il passo non disegna); `Radix32`, `SpeedHaste32`, i quattro giochi OpenGL e i `ddc_*` compilati ma non avviati; Win64 compilato e non avviato; salvataggi (non toccati, non provati); se il compilatore espande davvero in linea i metodi `inline` di `TMapGameRules` dentro `p_map` (le due unit si usano a vicenda dalla sezione `implementation`: dipende dall'ordine di compilazione; il comportamento non cambia, il costo si vede con la misura a coppie).
+
+**Resta** (passi successivi): il contatto di `PIT_CheckThing` e `PIT_ChangeSector` per gioco; le variabili `tm*` sono ancora globali (stadio 1 del par. 10.3: vanno nel contesto del mondo con `p_mobj`, passo 2c-2); `p_secnodes` e' codice storico spostato, non una classe.
+
+### 11.3 Passo 2c-2: `p_mobj` in copia unica (ramo `worktree-agent-af54720ab9045a4f7`, 2026-11-14)
+
+Tre commit, uno per tappa (`15cf1b88` stato, rimozione, rinascita degli oggetti e missili piccoli; `deec971e` `P_XYMovement`, `P_MobjThinker`, prova meccanica; `615c37db` `P_SpawnMobj`), piu' quello dei documenti. Nessuna tappa annullata. **Il passo e' parziale**: 9 routine restano del gioco (vedi "Resta proprio").
+
+**Forma.** La stessa di `p_map` (par. 11.2). `Base\p_mobj.pas` e' l'unica `p_mobj`: stessa API, nessun `{$IFDEF}` di gioco, `P_MobjThinker` e' una procedura sola con quel nome (l'indirizzo che `p_tick`, i salvataggi e le altre unit confrontano); `mobj_t` e i record salvati non sono toccati. Cio' che cambia per gioco e' **strategia calda**: `TMobjGameRules`, classe `sealed` di soli metodi `class ... static` e costanti, nella unit `DelphiDoom.Engine.World.MobjRules.pas` che esiste con lo stesso nome in `Doom\`, `Heretic\`, `Hexen\`, `Strife\` (sono le vecchie `p_mobj.pas` rinominate con `git mv`: il testo che resta del gioco non e' stato toccato; `Radix32` e `SpeedHaste32` prendono quella di `Doom\`; `p_mobj` non aveva rami `RADIX`/`SPEED`). Nessuna chiamata virtuale ne' a interfaccia. Le regole sono 57 metodi e 4 costanti (`SeekerNeedsSpeed`, `NoFrictionFlags`, `CyclesStatesWhileNoTics`, `MonstersRespawn`). Tre regole servivano gia' a `p_map` e **non sono duplicate**: `TMapGameRules.PointInSector`, `SlopesVersion` (la versione da cui i missili che strisciano partono dal pavimento della sorgente: stesso numero per gioco) e `IsSkullFlying`. Una routine che e' tutta di un gioco ma ha lo stesso nome nei quattro (`P_SpawnPuff`, `P_HitFloor`...) e' un **metodo delle regole con il testo del gioco**, e `Base\p_mobj.pas` ha la routine con quel nome che lo chiama: nessun chiamante cambia. Le routine che ha un gioco solo (o tre) restano nella unit delle regole, esportate con il nome di prima.
+
+**Righe.** Prima: Doom 2626, Heretic 2845, Hexen 3449, Strife 2753 (11673). Dopo: `Base\p_mobj.pas` 1327, unit delle regole Doom 1905, Heretic 2161, Hexen 2886, Strife 2070 (10349 in tutto; in ogni unit delle regole circa 130 righe sono la dichiarazione documentata della classe). Il calo e' piccolo perche' il grosso del testo (`P_ZMovement`, `P_SpawnMapThing`, `P_SpawnPlayer`, `P_HitFloor`, i missili) resta del gioco.
+
+**Tabella di confronto** (`Tools\Verifica\185\Confronta-Copie.ps1 -Unit p_mobj`: 52 routine, 4 uguali, 32 parametriche, 16 proprie; lettera = copie uguali tra loro, numero = righe) **e decisione**:
+
+| Routine | Doom | Heretic | Hexen | Strife | Diff | Decisione |
+|---|---|---|---|---|---:|---|
+| `P_DoSetMobjState`, `P_SetMobjState` | A49, A4 | B44 | C43 | D49 | 38 | unica: il ciclo e' `P_DoSetMobjState` di Doom (ora esportata), `P_SetMobjState` la chiama con `true` in ogni gioco; regola `KeepPreviousState` |
+| `P_SetMobjStateNF` | A4 | B20 | B20 | - | 18 | *propria* (metodo `SetMobjStateNF`): in Doom e' il ciclo senza azioni, in Heretic e Hexen un solo stato; Strife ora la compila (nessuno la chiama) |
+| `P_ExplodeMissile` | A17 | B23 | C21 | D15 | 14 | unica; `DeathState`, `RandomizeExplosionTics`, `ExplosionSound` |
+| `P_XYMovement` | A214 | B247 | C356 | D216 | 215 | unica (testa, vento, mezze mosse, attrito); la mossa bloccata e' `BlockedMove`, **testo del gioco alla lettera** (Doom 58 righe, Heretic 62, Hexen 168 con `SkyExplode`, Strife 82); `StoppedBeforeMoving`, `SectorWind`, `HasWindThrust`, `HalvesBackwardMoves`, `NoFrictionFlags`, `AirborneFriction`, `FallsFree`, `StopWalking`, `ApplyFriction` |
+| `P_ZMovement` | A214 | B220 | C273 | D197 | 215 | ***propria*** per gioco (unit delle regole) |
+| `P_NightmareRespawn` | A76 | B74 | - | C77 | 27 | *propria* (metodo `NightmareRespawn`; vuoto in Hexen) |
+| `P_MobjThinker` | A117 | B117 | C87 | D100 | 68 | unica (mossa, fase z, stati, rinascita dei mostri); la fase z e' `ZPhase`, testo del gioco (Doom 68 righe, Heretic 66, Hexen 54, Strife 32); `ClearJustAppeared`, `BeginThink`, `AfterXYMovement`, `StandsStill`, `BeforeStateCycle`, `CyclesStatesWhileNoTics`, `MonstersRespawn`, `RespawnTime`, `NeverRespawns`; riuso di `TMapGameRules.IsSkullFlying` |
+| `P_SpawnMobj` | A186 | B185 | C187 | D195 | 31 | unica; `InitGameFields`, `InitBob`, `HasReactionTime`, `InitStateMemory`, `SpawnedOnFloor`, `RandomFloatHeight`, `SpawnZIsHeight`, `FootClipOnMidOrSlope`, `FootClipOnFloor`, `FloatSpawnZ` |
+| `P_RemoveMobj` | A41 | B33 | C33 | D57 | 20 | unica; `BeforeRemove` (la coda degli oggetti, o le liste di Hexen), `ReleaseSectorList` |
+| `P_RespawnSpecials` | A59 | B62 | - | C59 | 10 | unica (Hexen la compila e non la chiama); `ItemRespawnWaits`, `SpawnItemFog`, `SpawnHeightOfType`, riuso di `TMapGameRules.PointInSector` |
+| `P_SpawnPlayer` | A132 | B125 | C160 | D149 | 71 | *propria* (metodo `SpawnPlayer`) |
+| `P_SpawnMapThing` | A302 | B283 | C322 | D282 | 157 | *propria* (metodo `SpawnMapThing`) |
+| `P_SpawnPuff` | A17 | B19 | C22 | D13 | 25 | *propria* (metodo `SpawnPuff`) |
+| `P_SpawnBlood` | A24 | B24 | - | C23 | 17 | *propria*, esportata dalla unit del gioco |
+| `P_SpawnGreenBlood`, `P_SpawnBlueBlood` | A21, A21 | - | - | B21, B21 | 6, 6 | *proprie*, esportate dalla unit del gioco |
+| `P_CheckMissileSpawn` | A30 | B21 | C15 | D16 | 24 | unica; `RandomizeSpawnTics`, `HalvesMissileStepByDivision` |
+| `P_SpawnMissile` | A54 | B80 | C70 | D58 | 48 | *propria* (metodo `SpawnMissile`) |
+| `P_SpawnMissileXYZ` | A80 | B86 | C64 | D80 | 41 | *propria* (metodo `SpawnMissileXYZ`) |
+| `P_SpawnMissileAngleZSpeed` | A47 | B53 | C46 | D47 | 12 | unica; `SaveRandom`, `RestoreRandom`, `MissileSeeSound`, riuso di `TMapGameRules.SlopesVersion` |
+| `P_SpawnMissileAngleZ` | A5 | A5 | A5 | A5 | 0 | *uguale*: una copia |
+| `P_SpawnPlayerMissile` | A82 | B83 | C91 | D62 | 59 | *propria* (metodo `SpawnPlayerMissile`) |
+| `P_SeekerMissile` | A55 | A55 | B55 | A55 | 19 | unica; `SeekerTarget`, `SeekerSpeed`, `SeekerNeedsSpeed` |
+| `P_GetThingFloorType` | A4 | A4 | B11 | A4 | 8 | unica; `TerrainFloorPic` |
+| `P_HitFloor` | A104 | B72 | C117 | D100 | 96 | *propria* (metodo `HitFloor`) |
+| `CmdSpawnMobj`, `CmdSummon` | A66, A58 | A66, B60 | B66, C58 | A66, A58 | 4, 6 | uniche; `ConsoleSpawnForbidden`, `IsFloatHeightName`, `FloatSpawnZ`, `SummonerRadius`, `SpawnHeightOfType` |
+| `MObj_Init`, `MObj_ShutDown`, `P_FindMobjFromKey` | A6, A4, A18 | = | = | = | 0 | *uguali*: una copia |
+| `P_FloorBounceMissile`, `P_BlasterMobjThinker`, `P_BloodSplatter`, `P_RipperBlood`, `P_SpawnMissileAngle`, `P_SPMAngle` | - | A5, A65, A14, A14, A49, A46 | B73, B92, B14, B13, B46, B53 | - | 58, 34, 6, 9, 44, 21 | *proprie* di Heretic e di Hexen: unit del gioco (non confrontate tra i due in questo passo) |
+| `P_MonsterFallingDamage`, `P_PlayerLandedOnThing`, `P_InsertMobjIntoTIDList`, `P_RemoveMobjFromTIDList`, `P_FindMobjFromTID` (2), `P_BloodSplatter2`, `P_SpawnMissileAngleSpeed`, `P_SPMAngleXYZ`, `P_SpawnKoraxMissile` | - | - | A | - | 0 | *proprie* di Hexen: unit di Hexen |
+| `P_CreateTIDList` | - | - | A30 | - | 0 | *propria* di Hexen (metodo `CreateTIDList`, vuoto negli altri); il nome resta in `Base\p_mobj.pas` perche' `Hexen\sv_save.pas`, che non si tocca, lo chiama e lo trova in `p_mobj` |
+| `P_SpawnSparkPuff`, `P_SpawnFacingMissile`, `P_SpawnMortar`, `P_GetTerrainType` | - | - | - | A | 0 | *proprie* di Strife: unit di Strife |
+
+In copia unica: 18 routine su 52 (le 4 uguali e 14 parametriche, contando `P_XYMovement` e `P_MobjThinker` per lo scheletro). **Resta proprio e perche'**: (1) `P_ZMovement`: le quattro versioni fanno le stesse cose in un ordine diverso proprio nel ramo "ha toccato il pavimento" (schizzi, stato di schianto, rimbalzo del teschio, danno da caduta, esplosione del missile) e l'ordine decide stato e suoni: unificarla e' riordinare testo che le demo coprono solo in parte; (2) `P_SpawnPlayer` e `P_SpawnMapThing`: scheletro comune ma campi del giocatore, classi, numeri degli oggetti e filtri diversi a ogni blocco, con estrazioni casuali; **non affrontate per tempo**, non perche' impossibili; (3) `P_SpawnMissile`, `P_SpawnMissileXYZ`, `P_SpawnPlayerMissile`: Doom, Heretic e Strife hanno lo stesso scheletro, Hexen un altro (altra distanza, altro risultato quando il missile esplode subito): con la forma "una routine e le regole" servirebbe una regola grande quanto la routine; (4) `P_SpawnPuff`, `P_SpawnBlood` e simili, `P_HitFloor`, `P_NightmareRespawn`: corte o fatte quasi solo di tipi, stati e suoni del gioco, con estrazioni casuali il cui ordine non va toccato; (5) le routine di un gioco solo.
+
+**Chiamanti toccati** (solo `DelphiDoom.Engine.World.MobjRules` in piu' nella `uses`, subito dopo `p_mobj`): `Base\DelphiDoom.Engine.Acs.Host.pas`, `Base\p_common.pas`, `Base\udmf_mobj.pas`, `Base\udmf_spec.pas`, `Base\udmf_telept.pas`, `Base\udmf_things.pas`, `Doom\d_main.pas` (`spawnmask`), le quattro `DelphiDoom.Engine.World.MapRules.pas`, `Heretic\p_enemy.pas`, `p_pspr.pas`, `p_user.pas`, `Hexen\a_action.pas`, `p_enemy.pas`, `p_inter.pas`, `p_pspr.pas`, `p_things.pas`, `p_user.pas`, `Strife\p_enemy.pas`, `p_pspr.pas`; i 14 `.dpr` che elencano `p_mobj`. `p_saveg` e `sv_save` non toccati.
+
+**Riuso.** Riusati: lo schema di 2c-1 (stesso nome di unit in ogni cartella, classe `sealed` statica), `TMapGameRules` (tre regole), `Prova-PMap.ps1` (il suo motore e' ora `Prova-Common.ps1`, comune ai due script; `Prova-PMap.ps1` da' lo stesso esito di prima, 108/34/11/0). Guardati e non adatti: `TEngineTeleportFogSpawner` (interfaccia a istanza: per la nebbia degli oggetti che rinascono basta la regola `SpawnItemFog`), `IGameContext` e `ILevelThingRules` (interfacce, strategia fredda; `P_SpawnMapThing` resta del gioco). **Nuovo e perche'**: `TMobjGameRules` nelle quattro cartelle (le regole di `p_mobj` nominano campi e tipi che `TMapGameRules` non conosce; metterle nella stessa classe avrebbe fatto di `MapRules` una unit di 3000 righe); `Prova-Common.ps1` e `Prova-PMobj.ps1`.
+
+**Differenze dal vecchio** (nessuna voluta nel comportamento): (1) `P_SetMobjState` passa da `P_DoSetMobjState` anche in Heretic, Hexen e Strife (una chiamata in piu' per cambio di stato, come Doom da sempre); (2) `P_MobjThinker` chiama `ZPhase` (una chiamata statica in piu' per oggetto e per tic) e `P_XYMovement` chiama le sue regole: il costo si vede solo con la misura a coppie; (3) `Base\p_mobj.pas` esporta in ogni gioco anche `P_DoSetMobjState`, `P_SetMobjStateNF`, `P_RespawnSpecials`, `P_CreateTIDList`, `ITEMQUESIZE`, `itemrespawnque`, `itemrespawntime` (prima nella sezione `implementation`: ora le scrive la regola `BeforeRemove`); nessun'altra unit dichiara quei nomi; (4) nelle routine unificate qualche assegnazione indipendente o condizione senza effetti e' in un altro ordine (elenco nella prova meccanica: 18 riscritture dichiarate); **l'ordine delle estrazioni casuali non cambia in nessuna copia**; (5) `summon` di Heretic guardava `MF2_SPAWNFLOAT` prima di `MF_EX_SPAWNFLOAT` e `P_RespawnSpecials` il contrario: la regola `SpawnHeightOfType` e' una sola (i due rami danno lo stesso valore); (6) in Hexen `P_SpawnMissileAngleZSpeed` non controlla piu' che `P_SpawnMobj` dia nil (non lo da' mai). **Trappole incontrate**: un metodo delle regole chiamato `AirFriction` nascondeva la costante `AIRFRICTION` di Strife (errore di compilazione: rinominato `AirborneFriction`; un controllo cerca ora ogni nome di membro usato senza qualifica nelle unit delle regole: nessuno); `d_player` e `r_defs` sono passati alla `uses` dell'interfaccia delle unit delle regole e l'ordine della `uses` di `Base\p_mobj.pas` e' nuovo: un controllo della risoluzione dei nomi (ogni identificatore, la unit che lo dichiarava con la `uses` vecchia e con la nuova) trova solo `ANG1`, `ANG45`, `ANGLETOFINESHIFT`, dichiarate uguali in `tables` e in `DelphiDoom.MathCore.Types`.
+
+**Verifica.**
+
+- Build Release Win32, errori 0, avvisi 382/381/382/332/305/255/200/150/413/340 (Doom32, Radix32, SpeedHaste32, GLDoom32, Heretic32, GLHeretic32, Hexen32, GLHexen32, Strife32, GLStrife32: uguali al limite dato; i dieci progetti compilati uno per uno, non con `build.bat giochi`); i quattro giochi software ricompilati dopo ogni tappa con gli stessi numeri. `ddc_doom`, `ddc_heretic`, `ddc_hexen`, `ddc_strife`: errori 0, avvisi 381/304/199/412. `Doom32` e `Strife32` Release Win64: errori 0, avvisi 405 e 441.
+- Golden a 8 bit (`Verifica-Ridotta.ps1` dopo ogni tappa, poi `Confronta-Golden.ps1` voce per voce, cartella `C:\ddparity_185`), 12 voci su 44 con lo stato finale, tutte UGUALI: Doom `d1_demo1`, `d1_demo3`, `a_f2_map07`; Heretic `a_h_e1m1`, `a_h_e1m3`, `a_h_e1m8`; Hexen `a_x_map01_f`, `a_x_map02_m`, `a_x_map03_f`; Strife `a_s_map32`, `a_s_map33`, `a_s_map34`. Le altre 32 voci e la misura a coppie **non fatte** (eseguibili finali di Doom32 e Heretic32 in `C:\ddref185\s2d\`).
+- **Prova meccanica** (`Tools\Verifica\185\Prova-PMobj.ps1`, contro `git show d1852422:<Gioco>/p_mobj.pas`): 140 routine (Doom 31, Heretic 34, Hexen 42, Strife 33): **121 UGUALI** (comprese quelle rimaste del gioco, il cui testo deve essere il vecchio con la sola intestazione cambiata), **18 uguali dopo una riscrittura dichiarata** con il suo perche', **1 non testuale** (`P_SeekerMissile` di Hexen), **0 diverse**. La prova ha trovato la differenza del punto (5) sopra prima dei golden. Limite: come per `p_map`, che il corpo delle regole di una riga sia la sostituzione scritta nella tabella e' una rilettura.
+- Test DUnitX: nessuno aggiunto e nessuno eseguito (il passo non tocca librerie; `p_mobj` e' legata ai record del motore).
+
+**Rami che le dodici demo non esercitano di sicuro** (prova: testo spostato e prova meccanica): rinascita di oggetti e mostri (deathmatch 2, nightmare), `spawnmobj` e `summon`, missili che seguono un bersaglio e missili che strisciano, riflessione dei missili e sfere dello stregone di Hexen, vento dei settori, volo, scale, attrito su pendenza, 3D floor nella nascita degli oggetti, dondolio, `P_SetMobjStateNF`, la lista dei TID dopo un caricamento, gioco in rete.
+
+**Non verificato.** Misura a coppie; corpus intero (32 voci); modo a 32 bit (il passo non disegna); `Radix32`, `SpeedHaste32`, i giochi OpenGL e i `ddc_*` compilati ma non avviati; Win64 compilato e non avviato; salvataggi (non toccati, non provati); `docs\FACCIATE.md` nomina `Doom\p_mobj` solo nelle tabelle dei chiamanti di un censimento vecchio (come `Doom\p_map`): non aggiornate.
+
+**Resta** (passi successivi): le nove routine *proprie* con lo stesso nome nei quattro giochi, `P_ZMovement` per prima; il confronto tra le sei routine comuni a Heretic e Hexen; le variabili globali di `p_mobj` (`iquehead`, `iquetail`, la coda) nel contesto del mondo (stadio 1 del par. 10.3).
+
+## 12. Fase 1: censimento di chiusura (#185, 2026-11-14)
+
+Fatto prima di scrivere codice, su `c4ce14f1`, leggendo per intero la sezione `implementation` di ogni unit. Le routine sono divise in **delega** (una o poche righe verso un oggetto di `Libs\` o di `Base\DelphiDoom.Engine.*`, piu' il controllo "non configurato"), **logica** (cicli, calcoli, stato in globali della unit) e **dati**. Le righe tra parentesi sono righe di corpo, contate dalla firma all'`end`.
+
+### 12.1 Tabella
+
+| Unit | Righe | Delega | Logica propria | Decisione |
+|---|---:|---|---|---|
+| `f_wipe` | 354 | nessuna | `wipe_initMelt` (59) e `wipe_doMelt` (71): il melt; il resto e' lettura dello schermo e buffer | **a classi ora** (fatto, 12.2): `TImagingMeltWipe` c'era gia' in `Libs\Imaging`, non collegata per il costo delle copie |
+| `i_startup` | 422 | nessuna | form VCL `TStartUpConsoleForm` (gia' una classe, con il suo `.dfm`) e 13 `SUC_*` da 4-16 righe sulla form; logica vera solo `SUC_Outproc` (54: toglie `#8`/`#10` e risincronizza il Memo con `TStdoutBuffer` di `Libs\EngineSystem`) | **resta storica**: e' gia' una classe VCL con una facciata di chiamate, e il testo e' gia' di `TStdoutBuffer`. `SUC_Outproc` in una classe vuol dire un finto del Memo per 54 righe: **rimandata** (mezza giornata) con la finestra |
+| `i_main` | 202 | `I_ConfigureWindowInput` | `WindowProc` (51) e `DoomMain` (47): `RegisterClass`, `CreateWindowEx`, messaggi di Windows | **rimandata** (1-2 giorni): `Libs\GameHost` ha `TGameHostWinWindow`, ma il suo `CLAUDE.md` dice che la finestra del motore non e' quella; la copia gemella sta in `Libs\OpenGl\Legacy\gl_main.pas` (fuori dal perimetro di questo giro) e le due vanno unite insieme; nessun golden copre fuoco, riduzione a icona e schermo intero |
+| `i_mainwindow` | 118 | nessuna | tre routine da 8-11 righe su `GetClientRect`/`GetWindowRect`; il resto e' `hMainWnd` e due costanti | **resta storica**: dati e tre chiamate a Windows; segue `i_main` |
+| `s_sound` | 2297 | 14 routine (113): player degli effetti, musica, cache della musica esterna | 35 routine (circa 1290): regole pure (`S_AdjustSoundParams` 103, `S_GetChannel` 80, variazione del pitch, lista dei nomi mp3 con `S_GetListFromAlias`), colla sui record del motore (`S_StartSoundAtVolume` 150, `S_StartVoiceAtVolume` 104, `S_UpdateSounds` 79, `S_DoChangeMusic` 151), tabelle per gioco (`S_DefaultMusicForMap` 71, `S_Init` 68), comandi di console | **a classi ora le regole pure** (fatto, 12.2); **resta nella facciata** la colla su `mobj_t`, `sfxinfo_t`, `musicinfo_t`, `players` (cambia per gioco con una ventina di direttive: e' materia delle regole per gioco, fase 2); `S_DefaultMusicForMap` e' una tabella per gioco |
+| `sounds` | 522 | 2 (alias di SNDINFO, `Libs\ActorDef`) | 6 routine (340): registro di `S_sfx`/`S_music` (`S_GetSoundNumForName` 168 con quattro rami di gioco, liste casuali, `S_GetMusicNumForName`) | **rimandata** (1 giorno): il registro scrive le tabelle `S_sfx`/`S_music` dei giochi (`sounddata.pas`, fetta 2i "una sola forma di dati per gioco"); farlo ora vuol dire un adattatore per tabella e per gioco che la 2i rifarebbe |
+| `s_pk3sounds` | 188 | 1 | `S_AddFileName` (37: regola del nome a 8 caratteri) e `W_InitPK3Sounds` (43: gia' sopra `TWadWriter`, `TSha1`, `ITempFiles`) | **resta storica**: 80 righe quasi tutte chiamate a classi; la regola del nome va con `sounds` |
+| `w_wad` | 1249 | 16 routine (149): directory, finder, lettore, testo, CRC | 15 routine (459): `W_AddFile` 110, `W_RuntimeLoad` 114, `W_Reload` 46, `W_InitMultipleFiles` 47, `W_CacheLumpNum` 23, `W_SyncLumpInfo` 30 e sei lettori di `lumpinfo[]` | **resta storica**: la logica rimasta tiene `lumpinfo[]` e `lumpcache[]`, che `Libs\Wad\CLAUDE.md` lascia al motore per scelta (la cache vive nella zone memory e `W_CacheLumpNum` ha 51 file chiamanti, anche sul percorso di ogni fotogramma); `TLumpCache` esiste ed e' scollegata per questo. Trovati e non toccati: `filelength` senza chiamanti, la condizione rovesciata su `rtllist` (riga 924) |
+| `w_sprite` | 513 | 3 | `W_TextureAsPatch` (127), `W_CacheSpriteNum` (105), `W_CacheSpriteNumUntranslated` (58); `TSpriteLumpCache` e' gia' una classe | **rimandata** (1 giorno): `W_TextureAsPatch` e' pura e va in `Libs\Imaging` estendendo `TImagingPatchWriter` (oggi: altezza massima 255, nessuno spezzamento a 128); il corpus non la esercita (sprite PNG esterni) |
+| `w_pak` | 347 | 15 su 16 | `PAK_DirectoryArray` (11) | **resta storica**: gia' facciata |
+| `w_utils` | 207 | 2 | cinque comandi di console (88) | **rimandata** (mezza giornata): lo schema e' `TConsoleUtilityCommands` di `Libs\Console` (fetta 1e); tre `printf` hanno meno argomenti del formato (righe 108, 133, 135): difetto da decidere se conservare |
+| `w_wadreader`, `w_wadwriter` | 273, 202 | tutto | nessuna (`TWadReader`, `TWadWriter` sono classi sopra `IWadSource`/`IWadBuilder`) | **restano**: gia' classi |
+| `z_zone` | 515 | 17 (150) | tre comandi (52) | **resta storica**: gia' facciata di `TZoneAllocator` |
+| `i_video` | 772 | 7 (47) | fredda: `I_InitGraphics` 60, `I_ChangeFullScreen` 73, `I_FindWindowSize`, Alt-Tab (244 in tutto); calda: `I_BlitBuffer` 89 e le due `I_FinishUpdate8_64*` (la conversione da 8 a 32 bit del fotogramma, in fili), `I_SetPalette64` | **rimandata** con `v_video` (stessa fetta "presentazione del fotogramma"): la parte fredda e' regia sopra classi che ci sono gia' (`IDisplayModeCatalog`, `IEngineFramePresenter`, `IEngineDisplayResolution`); la parte calda converte ogni fotogramma a 8 bit |
+| `v_data` | 196 | - | una routine di 6 righe (`V_ReadPalette`) | **resta storica**: dati |
+| `v_displaymode` | 186 | 2 | `V_SetDisplayMode` (27) e `V_DoSetDisplayMode` (35: chiude e riapre venti sottosistemi) | **resta storica** per ora: la seconda e' la regia del cambio di modo e tocca `r_*` (fuori dal perimetro); alla riga 133 `nwidth := MAXHEIGHT` scrive la larghezza al posto dell'altezza (difetto, non toccato) |
+| `am_map` | 2315 | 11 (63): finestra, zoom, segni, rotazione, ritaglio sono `Libs\Automap` | fredda 12 routine (775): `AM_Init` 339 (forme e cheat), `AM_Responder` 172; calda 10 routine (744): Bresenham, griglia, muri, giocatori, cose, sfondo | **a classi ora il Bresenham** (fatto, 12.2); **rimandato** il resto (3-4 giorni): 62 direttive di gioco nei cicli (colori, flag, tipi di linea): servono le regole per gioco della fase 2 |
+| `am_textured` | 925 | nessuna (usa `TAutomapRotation`, `TAutomapTransform`) | calda 8 routine (600): riempimento a scanline dei sottosettori, quattro `AM_DrawSeg*` per pixel | **rimandata** (2-3 giorni, regole del caldo): legge `flats`, colormap e settori come il renderer dei piani; va con la fetta 3e |
+| `v_video` | 5739 | 6 routine (52) | fredda circa 420 righe, calda circa 4000: vedi 12.3 | **non fatta in questo giro**: censimento per famiglia e proposta di fette in 12.3 |
+
+`d_*` in `Base\` (`d_event`, `d_ticcmd`, `d_think`, `d_net`, `d_net_h`, `d_notifications`): gia' decise dalla fetta 1e (par. 8).
+
+### 12.2 Fatto in questo giro
+
+- **`f_wipe`** (354 -> 260 righe). **Riuso**: `TImagingMeltWipe` (`Libs\Imaging`, c'era dalla #77 con i test sui golden del vecchio codice). **Esteso** con `StartOnBuffers` (stessi calcoli, puntatori ai buffer del motore: non era collegata per la copia di `screen32` a ogni fotogramma) e reso `sealed`. **Nuovo**: `TEngineImagingRandom` (`Base\`, 47 righe: `IImagingRandom` sopra `IGameRandom.NextUnpredictable`; non c'era un adattatore perche' il melt non era collegato). `wipe_Configure` in `ComposeImaging`, senza configurazione `I_Error`. Una chiamata a interfaccia per fotogramma del wipe; i cicli per colonna e per pixel sono dentro la classe, su puntatori. Le posizioni delle colonne non stanno piu' nella zone memory.
+- **`s_sound`** (2297 -> 2135). **Nuovo in `Libs\Audio`**, perche' non c'era un equivalente (`TSfxPlayer.FindChannelToReplace` sceglie tra le 32 voci del dispositivo, non tra i canali del gioco per origine e priorita'; `TQ3Listener` e `TQ3ChannelPool` sono le regole di Quake III, con altre formule): `TSfxAttenuation` (distanza, clipping, separazione, volume, pitch), `TSfxChannelPicker` (la scelta del canale come decisione senza effetti), `TExternalMusicNames` (la lista dei nomi mp3 e gli alias). Classi `sealed` di funzioni statiche, senza interfacce: si chiamano per ogni suono che parte e per ogni canale a ogni tic; `R_PointToAngle2` e `finesine` arrivano una volta in un record di regole.
+- **`am_map`** (2315 -> 2263): `TAutomapLineRasterizer` (`Libs\Automap`, `sealed`, statica: `Draw8`/`Draw32`; la profondita' si sceglie una volta per linea, non per pixel come faceva `PUTDOT`).
+
+Test, copertura e golden: par. 8.
+
+### 12.3 `v_video`: censimento per famiglia e proposta di fette
+
+91 routine (con overload, varianti `_MT`/`_thr` e doppioni per OpenGL), 90 direttive di compilazione. Chiamanti contati per file.
+
+| Famiglia | Varianti | Righe | Chiamanti | Quando gira |
+|---|---:|---:|---|---|
+| configurazione (`V_ConfigureGamma`, `V_ConfigureDrawTextures`, `V_ConfigureFlatShrink`, `V_ShrinkFlatTo64x64`) | 6 | 52 | composition root | avvio: gia' delega |
+| `V_Preserve*`, `V_NeedsPreserve`, `V_CalcPreserveTables` | 11 | 125 | 4 | per chiamata dentro il disegno |
+| `V_Init`, `V_ReInit`, `V_ShutDown`, `V_ScreensSize`, `V_GetScreenWidth/Height` | 6 | 134 | 4-18 | avvio e cambio di modo |
+| palette (`V_SetPalette`, `V_CalcColorMapPalette`, `V_InitDefaultPalette`) | 3 | 100 | 22 | a ogni cambio di palette (anche i lampi) |
+| `V_FindAproxColorIndex` (+ `Excluding`) | 2 | 74 | 15 | costruzione delle tabelle |
+| `V_CopyCustomScreen` | 3 | 86 | 2 | immagini intere a richiesta |
+| `V_CopyRect` (8, 32, `_MT`, fili) | 7 | 955 | 14 | ogni fotogramma (barra di stato, finale, console) |
+| `V_CopyAddRect` | 1 | 97 | 1 | console aperta |
+| `V_CopyRectTransparent` | 7 | 435 | 12 | ogni fotogramma (menu, barra) |
+| `V_CopyRectTransparentEx` | 7 | 325 | 5 | menu |
+| `V_ShadeBackground` / `V_ShadeScreen` | 2 | 122 | 5 | menu |
+| `V_CopyScreenTransparent` | 3 | 74 | 1 | bordo della vista |
+| `V_CopyRawDataToScreen`, `V_RemoveTransparency` | 2 | 51 | 1 | a richiesta |
+| `V_DrawPatch` | 5 | 385 | 29 | ogni fotogramma (HUD, barra, menu) |
+| `V_DrawPatchTransparent` | 8 | 683 | 3 | ogni fotogramma |
+| `V_DrawPatchZoomed` | 3 | 223 | 4 | automap, menu |
+| `V_DrawPatchFlipped` | 1 | 57 | 2 | finale |
+| `V_ScaleBuffer8`, `V_DrawPatchFullScreenTMP*` | 7 | 115 | 5 | intermezzo e finale |
+| `V_PageDrawer` | 2 | 90 | 11 | pagine a schermo intero |
+| `V_TileScreen8` | 1 | 85 | 3 | testo del finale |
+| `V_FullScreenStretch`, `V_StatusBarStretch` | 4 | 206 | 7 + 2 | finale, intermezzo, barra di Doom |
+
+Proposta, dal freddo al caldo (ogni fetta: golden a 8 e a 32 bit, piu' il confronto `-ExtraIni` con `screenblocks` ridotto per bordo e barra; le fette calde anche misura a coppie):
+
+1. **Palette e colori** (circa 175 righe, fredda): `V_SetPalette`, `V_CalcColorMapPalette`, `V_InitDefaultPalette` e `V_FindAproxColorIndex` su `Libs\Palette` (`IColorMatcher` c'e' gia': lo usa `TEngineImagingColorIndex`) e sul `IPaletteConverter` di `Libs\Video`. Mezza giornata. Rischio: il gamma nei lampi (i golden lo coprono: i fotogrammi cambiano palette).
+2. **Schermi e misure** (circa 260 righe, fredda): `V_Init`/`V_ReInit`/`V_ShutDown`, `V_ScreensSize` e le tabelle `V_Preserve*` in una classe `sealed` di `Libs\Video` (le `V_Preserve*` si chiamano per patch: funzioni statiche su tabelle, mai un'interfaccia); `Base\DelphiDoom.Engine.Video.Screens` esiste gia' ed e' il posto dell'adattatore. 1 giorno.
+3. **Patch** (circa 1350 righe, calda): `V_DrawPatch*` in disegnatori `sealed` per profondita' (8 o 32 bit) e variante (opaca, trasparente, ingrandita, rovesciata), scelti una volta per chiamata come oggi; il ciclo per colonna resta su puntatori. Riuso: la lettura dei post e' di `Libs\Imaging` (`TImagingPatchReader`), ma **senza** copie in `TBytes`: serve la variante a puntatori, come per il melt. 3 giorni con misura; le varianti OpenGL (`gld_*`) restano rami della facciata.
+4. **Rettangoli** (circa 1900 righe, calda): `V_CopyRect*` e le trasparenti; le sette varianti di ogni famiglia differiscono per profondita' e per i fili: un solo ciclo per profondita' (metodo statico o include). 3 giorni con misura. E' la fetta con piu' duplicazione da togliere.
+5. **Pagine e stiramenti** (circa 500 righe, tiepida): `V_PageDrawer`, `V_FullScreenStretch`, `V_StatusBarStretch`, `V_TileScreen8`, `V_ScaleBuffer8`. 1 giorno; i golden coprono titolo e intermezzo.
+6. Con la 3 e la 4: `I_BlitBuffer` e `I_FinishUpdate8_64*` di `i_video` (la conversione del fotogramma), con le regole del caldo.
+
+Stima per `v_video` + `i_video`: 9-10 giorni di agente, a macchina scarica per le misure.
+
+### 12.4 Cosa resta della fase 1
+
+| Voce | Stima |
+|---|---|
+| `v_video` e `i_video` (12.3) | 9-10 giorni |
+| `am_map` (forme, tasti, colori, muri, giocatori, cose, griglia) e `am_textured` | 5-7 giorni, dopo le regole per gioco della fase 2 |
+| `sounds`, regola dei nomi di `s_pk3sounds`, colla di `s_sound` | 2 giorni, con la fetta 2i |
+| `w_sprite` (`W_TextureAsPatch` in `Libs\Imaging`) | 1 giorno |
+| `w_utils` (comandi di console in `Libs\Console`) | mezza giornata |
+| `i_main` + `i_mainwindow` + `i_startup` (finestra e schermata di avvio, insieme a `gl_main`) | 2-3 giorni |
+| restano storiche per decisione | `w_wad` (cache e directory del motore), `w_pak`, `w_wadreader`, `w_wadwriter`, `z_zone`, `v_data`, `v_displaymode`, i tipi `d_*` |

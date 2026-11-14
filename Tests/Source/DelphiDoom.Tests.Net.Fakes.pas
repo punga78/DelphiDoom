@@ -100,6 +100,12 @@ type
     function IsDemoPlayback: Boolean;
     function IsPaused: Boolean;
     function GameTic: Integer;
+    function Skill: Integer;
+    function Episode: Integer;
+    function Map: Integer;
+    function Deathmatch: Integer;
+    function ConsolePlayer: Integer;
+    function MaxPlayers: Integer;
   end;
 
   /// <summary>
@@ -386,6 +392,36 @@ end;
 function TFakeGameContext.GameTic: Integer;
 begin
   Result := CurrentGameTic;
+end;
+
+function TFakeGameContext.Skill: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeGameContext.Episode: Integer;
+begin
+  Result := 1;
+end;
+
+function TFakeGameContext.Map: Integer;
+begin
+  Result := 1;
+end;
+
+function TFakeGameContext.Deathmatch: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeGameContext.ConsolePlayer: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeGameContext.MaxPlayers: Integer;
+begin
+  Result := 4;
 end;
 
 { TFakeLocalInput }

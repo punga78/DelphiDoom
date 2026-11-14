@@ -82,11 +82,15 @@ implementation
 
 uses
   i_system,
-  m_fixed,
   p_tick,
   p_setup,
   p_slopes,
-  p_floor;
+  p_floor,
+  DelphiDoom.Thinkers.Plane.Types,
+  DelphiDoom.Thinkers.Ceiling.Types,
+  DelphiDoom.Thinkers.Ceiling.Machine,
+  DelphiDoom.Engine.Plane.Services,
+  DelphiDoom.Engine.Ceiling.Thinker;
 
 //==============================================================================
 // P_AddActiveCeiling
@@ -120,7 +124,7 @@ begin
   for i := 0 to MAXCEILINGS - 1 do
     if activeceilings[i] = c then
     begin
-      activeceilings[i].sector.ceilingdata := nil;
+      CeilingAttach(activeceilings[i].sector, nil);
       P_RemoveThinker(@activeceilings[i].thinker);
       activeceilings[i] := nil;
       exit;
@@ -153,147 +157,53 @@ end;
 //
 // T_MoveCeiling
 //
+// The tic of a ceiling of Doom, Heretic and Strife: the step is T_MovePlane,
+// what follows it is TCeilingMachine (Libs\Thinkers); the thinker stays the
+// record that the savegames know
+//
 //==============================================================================
 procedure T_MoveCeiling(ceiling: Pceiling_t);
 var
   res: result_e;
+  moved: TPlaneMoveResult;
+  state: TCeilingState;
+  actions: TCeilingActions;
 begin
   case ceiling.direction of
-    0:
-    // IN STASIS
-      begin
-      end;
     1:
     // UP
-      begin
-        res := T_MovePlane(ceiling.sector,
-          ceiling.speed,
-          ceiling.topheight,
-          false, 1, ceiling.direction);
-
-        if leveltime and 7 = 0 then
-        begin
-          if (ceiling._type <> silentCrushAndRaise) and
-             (ceiling._type <> genSilentCrusher) then
-            S_StartSound(@ceiling.sector.soundorg, Ord(sfx_stnmov));
-        end;
-
-        if res = pastdest then
-        begin
-          case ceiling._type of
-            raiseToHighest,
-            genCeiling:
-              P_RemoveActiveCeiling(ceiling);
-            genCeilingChgT,
-            genCeilingChg0,
-            genCeilingChg:
-              begin
-                if ceiling._type <> genCeilingChg then
-                begin
-                  ceiling.sector.special := ceiling.newspecial;
-                  //jff 3/14/98 transfer old special field as well
-                  ceiling.sector.oldspecial := ceiling.oldspecial;
-                end;
-                ceiling.sector.ceilingpic := ceiling.texture;
-                P_RemoveActiveCeiling(ceiling);
-              end;
-
-            silentCrushAndRaise:
-              begin
-                S_StartSound(@ceiling.sector.soundorg, Ord(sfx_pstop));
-                ceiling.direction := -1;
-              end;
-            fastCrushAndRaise,
-            crushAndRaise,
-            genSilentCrusher,
-            genCrusher:
-              ceiling.direction := -1;
-          end;
-        end;
-      end;
+      res := T_MovePlane(ceiling.sector,
+        ceiling.speed,
+        ceiling.topheight,
+        false, 1, ceiling.direction);
    -1:
     // DOWN
-      begin
-        res := T_MovePlane(ceiling.sector,
-          ceiling.speed,
-          ceiling.bottomheight,
-          ceiling.crush, 1, ceiling.direction);
+      res := T_MovePlane(ceiling.sector,
+        ceiling.speed,
+        ceiling.bottomheight,
+        ceiling.crush, 1, ceiling.direction);
+  else
+    // IN STASIS
+    exit;
+  end;
 
-        if leveltime and 7 = 0 then
-        begin
-          if (ceiling._type <> silentCrushAndRaise) and
-             (ceiling._type <> genSilentCrusher) then
-            S_StartSound(@ceiling.sector.soundorg, Ord(sfx_stnmov));
-        end;
+  if res = pastdest then
+    moved := TPlaneMoveResult.PastDest
+  else if res = crushed then
+    moved := TPlaneMoveResult.Crushed
+  else
+    moved := TPlaneMoveResult.Ok;
 
-        if res = pastdest then
-        begin
-          case ceiling._type of
-          // 02/09/98 jff change slow crushers' speed back to normal
-          // start back up
-            genSilentCrusher,
-            genCrusher:
-              begin
-                if ceiling.oldspeed < CEILSPEED * 3 then
-                  ceiling.speed := ceiling.oldspeed;
-                ceiling.direction := 1; //jff 2/22/98 make it go back up!
-              end;
-            silentCrushAndRaise:
-              begin
-                S_StartSound(@ceiling.sector.soundorg, Ord(sfx_pstop));
-                ceiling.speed := CEILSPEED;
-                ceiling.direction := 1;
-              end;
-            crushAndRaise:
-              begin
-                ceiling.speed := CEILSPEED;
-                ceiling.direction := 1;
-              end;
-            fastCrushAndRaise:
-              begin
-                ceiling.direction := 1;
-              end;
-          // in the of ceiling mover/changer, change the texture
-          // then remove the active ceiling
-            genCeilingChgT,
-            genCeilingChg0,
-            genCeilingChg:
-              begin
-                if ceiling._type <> genCeilingChg then
-                begin
-                  ceiling.sector.special := ceiling.newspecial;
-                  //jff add to fix bug in special transfers from changes
-                  ceiling.sector.oldspecial := ceiling.oldspecial;
-                end;
-                ceiling.sector.ceilingpic := ceiling.texture;
-                P_RemoveActiveCeiling(ceiling);
-              end;
-            lowerAndCrush,
-            lowerToFloor,
-            lowerToLowest,
-            lowerToMaxFloor,
-            genCeiling:
-              P_RemoveActiveCeiling(ceiling);
-          end;
-        end
-        else // ( res <> pastdest )
-        begin
-          if res = crushed then
-          begin
-            case ceiling._type of
-            //jff 02/08/98 slow down slow crushers on obstacle
-              genCrusher,
-              genSilentCrusher:
-                if ceiling.oldspeed < CEILSPEED * 3 then
-                  ceiling.speed := CEILSPEED div 8;
-              silentCrushAndRaise,
-              crushAndRaise,
-              lowerAndCrush:
-                ceiling.speed := CEILSPEED div 8;
-            end;
-          end;
-        end;
-      end;
+  CeilingLoadState(ceiling, state);
+  actions := TCeilingMachine.AfterMove(CeilingKindOf(ceiling._type), state, moved,
+    leveltime and 7 = 0);
+  CeilingStoreState(ceiling, state);
+
+  if actions <> [] then
+  begin
+    CeilingApply(ceiling, actions);
+    if TCeilingAction.Remove in actions then
+      P_RemoveActiveCeiling(ceiling);
   end;
 end;
 
@@ -309,17 +219,21 @@ var
   secnum: integer;
   sec: Psector_t;
   ceiling: Pceiling_t;
+  kind: TCeilingKind;
+  profile: TCeilingProfile;
+  spawn: TCeilingSpawn;
 begin
   secnum := -1;
+  kind := CeilingKindOf(_type);
+  profile := CeilingProfile;
 
   // Reactivate in-stasis ceilings...for certain types.
-  case _type of
-    fastCrushAndRaise,
-    silentCrushAndRaise,
-    crushAndRaise:
-      result := P_ActivateInStasisCeiling(line);
-  else
-    result := 0;
+  result := 0;
+  if TCeilingMachine.WakesUpStopped(kind) then
+  begin
+    result := P_ActivateInStasisCeiling(line);
+    if not profile.WakeUpCounts then
+      result := 0;
   end;
 
   initial := true;
@@ -331,69 +245,38 @@ begin
       break;
 
     sec := @sectors[secnum];
-    if P_SectorActive(ceiling_special, sec) then
+    if CeilingSectorBusy(sec) then
       continue;
 
     // new door thinker
     result := 1;
     ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVSPEC, nil);
     P_AddThinker(@ceiling.thinker);
-    sec.ceilingdata := ceiling;
+    CeilingAttach(sec, ceiling);
     ceiling.thinker._function.acp1 := @T_MoveCeiling;
     ceiling.sector := sec;
     ceiling.crush := false;
 
-    case _type of
-      fastCrushAndRaise:
-        begin
-          ceiling.crush := true;
-          ceiling.topheight := sec.ceilingheight;
-          ceiling.bottomheight := sec.floorheight + (8 * FRACUNIT);
-          ceiling.direction := -1;
-          ceiling.speed := CEILSPEED * 2;
-        end;
-
-      silentCrushAndRaise,
-      crushAndRaise:
-        begin
-          ceiling.crush := true;
-          ceiling.topheight := sec.ceilingheight;
-          ceiling.bottomheight := sec.floorheight;
-          ceiling.bottomheight := ceiling.bottomheight + 8 * FRACUNIT;
-          ceiling.direction := -1;
-          ceiling.speed := CEILSPEED;
-        end;
-      lowerAndCrush,
-      lowerToFloor:
-        begin
-          ceiling.bottomheight := sec.floorheight;
-          if _type <> lowerToFloor then
-            ceiling.bottomheight := ceiling.bottomheight + 8 * FRACUNIT;
-          ceiling.direction := -1;
-          ceiling.speed := CEILSPEED;
-        end;
-
-      raiseToHighest:
-        begin
-          ceiling.topheight := P_FindHighestCeilingSurrounding(sec);
-          ceiling.direction := 1;
-          ceiling.speed := CEILSPEED;
-        end;
-
-      lowerToLowest:
-        begin
-          ceiling.bottomheight := P_FindLowestCeilingSurrounding(sec);
-          ceiling.direction := -1;
-          ceiling.speed := CEILSPEED;
-        end;
-
-      lowerToMaxFloor:
-        begin
-          ceiling.bottomheight := P_FindHighestFloorSurrounding(sec);
-          ceiling.direction := -1;
-          ceiling.speed := CEILSPEED;
-        end;
+    // the values of the kind with the rules of the game (TCeilingMachine); a
+    // field that the kind does not set stays as the memory of the thinker had it
+    spawn.Crush := ceiling.crush;
+    spawn.TopHeight := ceiling.topheight;
+    spawn.BottomHeight := ceiling.bottomheight;
+    spawn.Direction := ceiling.direction;
+    spawn.Speed := ceiling.speed;
+    case TCeilingMachine.Configure(kind, sec.floorheight, sec.ceilingheight, profile, spawn) of
+      TCeilingNeighbor.TopHighestCeiling:
+        spawn.TopHeight := P_FindHighestCeilingSurrounding(sec);
+      TCeilingNeighbor.BottomLowestCeiling:
+        spawn.BottomHeight := P_FindLowestCeilingSurrounding(sec);
+      TCeilingNeighbor.BottomHighestFloor:
+        spawn.BottomHeight := P_FindHighestFloorSurrounding(sec);
     end;
+    ceiling.crush := spawn.Crush;
+    ceiling.topheight := spawn.TopHeight;
+    ceiling.bottomheight := spawn.BottomHeight;
+    ceiling.direction := spawn.Direction;
+    ceiling.speed := spawn.Speed;
 
     ceiling.tag := sec.tag;
     ceiling._type := _type;

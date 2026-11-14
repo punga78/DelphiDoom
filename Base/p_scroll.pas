@@ -75,15 +75,15 @@ implementation
 
 uses
   d_delphi,
-  doomtype,
   i_system,
   p_mobj_h,
   p_setup,
   p_spec,
   p_tick,
   r_defs,
-  tables,
-  z_zone;
+  z_zone,
+  DelphiDoom.Thinkers.Scroll.Step,
+  DelphiDoom.Thinkers.Scroll.Spawner;
 
 //==============================================================================
 // T_Scroll
@@ -112,7 +112,6 @@ procedure T_Scroll(s: Pscroll_t);
 var
   dx, dy: fixed_t;
   height: fixed_t;
-  delta: fixed_t;
   side: Pside_t;
   sec: Psector_t;
   waterheight: fixed_t;
@@ -122,25 +121,16 @@ begin
   dx := s.dx;
   dy := s.dy;
 
+  // compute scroll amounts based on a sector's height changes
   if s.control <> -1 then
-  begin   // compute scroll amounts based on a sector's height changes
-    height := sectors[s.control].floorheight + sectors[s.control].ceilingheight;
-    delta := height - s.last_height;
-    s.last_height := height;
-    dx := FixedMul(dx, delta);
-    dy := FixedMul(dy, delta);
-  end;
+    height := sectors[s.control].floorheight + sectors[s.control].ceilingheight
+  else
+    height := 0;
 
-  // killough 3/14/98: Add acceleration
-  if s.accel <> 0 then
-  begin
-    dx := dx + s.vdx;
-    dy := dy + s.vdy;
-    s.vdx := dx;
-    s.vdy := dy;
-  end;
-
-  if dx or dy = 0 then // no-op if both (x,y) offsets
+  // the amounts of this tic (control sector, killough 3/14/98: acceleration)
+  // are TScrollStep (Libs\Thinkers); no-op if both (x,y) offsets
+  if not TScrollStep.Advance(dx, dy, s.control <> -1, height, s.last_height,
+    s.accel <> 0, s.vdx, s.vdy) then
     exit;
 
   case s._type of
@@ -174,18 +164,17 @@ begin
 
         sec := @sectors[s.affectee];
         height := sec.floorheight;
-        if (sec.heightsec > -1) and (sectors[sec.heightsec].floorheight > height) then
-          waterheight := sectors[sec.heightsec].floorheight
+        if sec.heightsec > -1 then
+          waterheight := TScrollStep.WaterHeight(true, sectors[sec.heightsec].floorheight, height)
         else
-          waterheight := MININT;
+          waterheight := TScrollStep.WaterHeight(false, 0, height);
 
         node := sec.touching_thinglist;
         while node <> nil do
         begin
           thing := node.m_thing;
-          if (thing.flags and MF_NOCLIP = 0) and
-            (not ((thing.flags and MF_NOGRAVITY <> 0) or (thing.z > height)) or
-             (thing.z < waterheight)) then
+          if TScrollStep.Carries(thing.flags and MF_NOCLIP <> 0,
+            thing.flags and MF_NOGRAVITY <> 0, thing.z, height, waterheight) then
           begin
             // Move objects only if on floor or underwater,
             // non-floating, and clipped.
@@ -253,32 +242,10 @@ procedure P_AddWallScroller(dx, dy: fixed_t; l: Pline_t;
   control: integer; accel: integer);
 var
   x, y: fixed_t;
-  d: fixed_t;
 begin
-  // proff: Changed abs to D_abs (see m_fixed.h)
-  x := abs(l.dx);
-  y := abs(l.dy);
-  if y > x then
-  begin
-    d := x;
-    x := y;
-    y := d;
-  end;
-  d := FixedDiv(x, finesine[LongWord(tantoangle[FixedDiv(y,x) div DRANGE] + ANG90) shr ANGLETOFINESHIFT]);
-  x := -FixedDiv(FixedMul(dy, l.dy) + FixedMul(dx, l.dx), d);
-  y := -FixedDiv(FixedMul(dx, l.dy) - FixedMul(dy, l.dx), d);
+  TScrollSpawner.WallVector(dx, dy, l.dx, l.dy, x, y);
   P_AddScroller(sc_side, x, y, control, l.sidenum[0], accel);
 end;
-
-// Amount (dx,dy) vector linedef is shifted right to get scroll amount
-const
-  SCROLL_SHIFT = 5;
-  SCROLL_FACTOR = 1 shl SCROLL_SHIFT;
-
-// Factor to scale scrolling effect into mobj-carrying properties := 3/32.
-// (This is so scrolling floors and objects on them can move at same speed.)
-const
-  CARRYFACTOR = 6144;
 
 //==============================================================================
 // P_SpawnScrollers
@@ -295,12 +262,13 @@ var
   accel: integer;
   special: integer;
   s: integer;
+  kind: TScrollControl;
 begin
   for i := 0 to numlines - 1 do
   begin
     l := @lines[i];
-    dx := l.dx div SCROLL_FACTOR;  // direction and speed of scrolling
-    dy := l.dy div SCROLL_FACTOR;
+    dx := TScrollSpawner.LineSpeed(l.dx);  // direction and speed of scrolling
+    dy := TScrollSpawner.LineSpeed(l.dy);
     special := l.special;
 
     // killough 3/7/98: Types 245-249 are same as 250-254 except that the
@@ -311,23 +279,15 @@ begin
     // killough 3/15/98: Add acceleration. Types 214-218 are the same but
     // are accelerative.
 
-    if (special >= 245) and (special <= 249) then // displacement scrollers
-    begin
-      accel := 0;
-      special := special + (250 - 245);
-      control := pDiff(sides[l.sidenum[0]].sector, sectors, SizeOf(sector_t));
-    end
-    else if (special >= 214) and (special <= 218) then // accelerative scrollers
-    begin
-      accel := 1;
-      special := special + (250 - 214);
-      control := pDiff(sides[l.sidenum[0]].sector, sectors, SizeOf(sector_t));
-    end
+    special := TScrollSpawner.Decode(special, kind);
+    if kind = TScrollControl.Accelerative then // accelerative scrollers
+      accel := 1
     else
-    begin
       accel := 0;     // no acceleration
+    if kind <> TScrollControl.None then // displacement scrollers
+      control := pDiff(sides[l.sidenum[0]].sector, sectors, SizeOf(sector_t))
+    else
       control := -1;  // no control sector
-    end;
 
     case special of
 
@@ -347,8 +307,8 @@ begin
 
       252: // carry objects on floor
         begin
-          dx := FixedMul(dx, CARRYFACTOR);
-          dy := FixedMul(dy, CARRYFACTOR);
+          dx := TScrollSpawner.CarrySpeed(dx);
+          dy := TScrollSpawner.CarrySpeed(dy);
           s := -1;
           while P_FindSectorFromLineTag2(l, s) >= 0 do
             P_AddScroller(sc_carry, dx, dy, control, s, accel);
@@ -359,8 +319,8 @@ begin
           s := -1;
           while P_FindSectorFromLineTag2(l, s) >= 0 do
             P_AddScroller(sc_floor, -dx, dy, control, s, accel);
-          dx := FixedMul(dx, CARRYFACTOR);
-          dy := FixedMul(dy, CARRYFACTOR);
+          dx := TScrollSpawner.CarrySpeed(dx);
+          dy := TScrollSpawner.CarrySpeed(dy);
           s := -1;
           while P_FindSectorFromLineTag2(l, s) >= 0 do
             P_AddScroller(sc_carry, dx, dy, control, s, accel);

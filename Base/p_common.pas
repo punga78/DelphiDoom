@@ -2437,6 +2437,7 @@ uses
   p_inter,
   p_local,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_pspr,
   p_map,
   p_maputl,

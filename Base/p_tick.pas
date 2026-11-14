@@ -36,6 +36,7 @@ interface
 
 uses
   DelphiDoom.Engine.Console.Intf,
+  DelphiDoom.Engine.World,
   d_think;
 
 //
@@ -101,10 +102,27 @@ var
 //==============================================================================
 procedure P_ConfigureTickerConsole(const AConsole: IEngineConsole);
 
+//==============================================================================
+//
+// P_WorldTime
+// Where the time of the level is kept, for the world of the composition root
+//
+//==============================================================================
+function P_WorldTime: TEngineWorldTime;
+
+//==============================================================================
+//
+// P_ConfigureWorld
+// The world, given by the composition root; p_tick owns it from here on
+//
+//==============================================================================
+procedure P_ConfigureWorld(const AWorld: TEngineWorld);
+
 implementation
 
 uses
   DelphiDoom.Engine.Parity.Hooks,
+  DelphiDoom.Thinkers.List,
   doomdef,
   i_system,
   d_player,
@@ -133,6 +151,7 @@ uses
 var
   // given by the composition root
   p_tickerconsole_ref: IEngineConsole = nil;
+  p_world_ref: TEngineWorld = nil;
 
 //==============================================================================
 //
@@ -156,6 +175,46 @@ begin
   result := p_tickerconsole_ref;
 end;
 
+//==============================================================================
+//
+// P_WorldTime
+//
+//==============================================================================
+function P_WorldTime: TEngineWorldTime;
+begin
+  result.LevelTime := @leveltime;
+  result.IsFrozen := @isgamefreezed;
+  result.IsSuspended := @isgamesuspended;
+{$IFDEF HEXEN}
+  result.TimerGame := @TimerGame;
+{$ELSE}
+  result.TimerGame := nil;
+{$ENDIF}
+end;
+
+//==============================================================================
+//
+// P_ConfigureWorld
+//
+//==============================================================================
+procedure P_ConfigureWorld(const AWorld: TEngineWorld);
+begin
+  if p_world_ref <> AWorld then
+    p_world_ref.Free;
+  p_world_ref := AWorld;
+end;
+
+//==============================================================================
+//
+// P_World
+//
+//==============================================================================
+function P_World: TEngineWorld;
+begin
+  if p_world_ref = nil then
+    I_Error('P_ConfigureWorld() was not called: the world is missing');
+  result := p_world_ref;
+end;
 
 //==============================================================================
 //
@@ -164,26 +223,20 @@ end;
 //==============================================================================
 procedure P_InitThinkers;
 begin
-  mobjlist.Clear;
-  thinkercap.prev := @thinkercap;
-  thinkercap.next := @thinkercap;
+  P_World.Thinkers.Clear;
 end;
 
 //==============================================================================
 //
 // P_AddThinker
 // Adds a new thinker at the end of the list.
+// No check of the configuration here: P_InitThinkers runs (and checks) before
+// the first thinker of a level can be added
 //
 //==============================================================================
 procedure P_AddThinker(thinker: Pthinker_t);
 begin
-  if @thinker._function.acp1 = @P_MobjThinker then
-    mobjlist.Add(Pmobj_t(thinker));
-
-  thinkercap.prev.next := thinker;
-  thinker.next := @thinkercap;
-  thinker.prev := thinkercap.prev;
-  thinkercap.prev := thinker;
+  p_world_ref.Thinkers.Add(PThinkerNode(thinker));
 end;
 
 //==============================================================================
@@ -192,24 +245,13 @@ end;
 // Deallocation is lazy -- it will not actually be freed
 // until its thinking turn comes up.
 //
-//==============================================================================
-procedure _removethinker;
-begin
 // JVAL 20191203 - Fixed non working plats & ceilings thanks to slayermbm
 //                 https://www.doomworld.com/forum/topic/98789-fpcdoom-1124117-updated-dec-2-2019/?do=findComment&comment=2050845
-end;
-
-//==============================================================================
-//
-// P_RemoveThinker
 //
 //==============================================================================
 procedure P_RemoveThinker(thinker: Pthinker_t);
 begin
-  if @thinker._function.acp1 = @P_MobjThinker then
-    mobjlist.Remove(Pmobj_t(thinker));
-  // FIXME: NOP.
-  @thinker._function.acv := @_removethinker;
+  p_world_ref.Thinkers.Remove(PThinkerNode(thinker));
 end;
 
 //==============================================================================
@@ -219,64 +261,7 @@ end;
 //==============================================================================
 function P_ThinkerIsRemoved(thinker: Pthinker_t): boolean;
 begin
-  Result := (@thinker._function.acv = @_removethinker) or not Assigned(thinker._function.acv);
-end;
-
-//==============================================================================
-//
-// P_RunThinkers
-//
-//==============================================================================
-procedure P_RunThinkers;
-var
-  currentthinker: Pthinker_t;
-  nextthinker: Pthinker_t;
-begin
-  currentthinker := thinkercap.next;
-  if isgamefreezed then
-  begin
-    while currentthinker <> @thinkercap do
-    begin
-      if @currentthinker._function.acv = @_removethinker then
-      begin
-        // time to remove it
-        currentthinker.next.prev := currentthinker.prev;
-        currentthinker.prev.next := currentthinker.next;
-        nextthinker := currentthinker.next;
-        Z_Free(currentthinker);
-        currentthinker := nextthinker;
-      end
-      else
-      begin
-        if Assigned(currentthinker._function.acp1) then
-          if @currentthinker._function.acp1 = @P_MobjThinker then
-            if (Pmobj_t(currentthinker).player <> nil) or (Pmobj_t(currentthinker).flags3_ex and MF3_EX_NOTIMEFREEZE <> 0) then
-              currentthinker._function.acp1(currentthinker);
-        currentthinker := currentthinker.next;
-      end;
-    end;
-  end
-  else
-  begin
-    while currentthinker <> @thinkercap do
-    begin
-      if @currentthinker._function.acv = @_removethinker then
-      begin
-        // time to remove it
-        currentthinker.next.prev := currentthinker.prev;
-        currentthinker.prev.next := currentthinker.next;
-        nextthinker := currentthinker.next;
-        Z_Free(currentthinker);
-        currentthinker := nextthinker;
-      end
-      else
-      begin
-        if Assigned(currentthinker._function.acp1) then
-          currentthinker._function.acp1(currentthinker);
-        currentthinker := currentthinker.next;
-      end;
-    end;
-  end;
+  Result := TThinkerList.IsRemoved(PThinkerNode(thinker));
 end;
 
 //==============================================================================
@@ -328,7 +313,7 @@ begin
   if demoplayback or demorecording then
     isgamefreezed := false;
 
-  P_RunThinkers;
+  P_World.RunThinkers;
   if not isgamefreezed then
   begin
     P_UpdateSpecials;
@@ -358,5 +343,11 @@ begin
   // the parity tools (nothing when they are off)
   Parity_AfterTick;
 end;
+
+initialization
+
+finalization
+  p_world_ref.Free;
+  p_world_ref := nil;
 
 end.
