@@ -12,7 +12,7 @@ unit DelphiDoom.Aas.Factory;
 interface
 
 uses
-  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Intf;
+  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Route.Intf;
 
 type
   /// <summary>Makes the objects of the library; the rest of the code knows only the interfaces</summary>
@@ -30,13 +30,20 @@ type
     class function CreateFaceTester(const AFile: IAasFile; const AImport: IBotImport): IAasFaceTester; static;
     class function CreateBoxAreas(const AFile: IAasFile; const AImport: IBotImport): IAasBoxAreas; static;
     class function CreateAreaQuery(const AFile: IAasFile; const AImport: IBotImport): IAasAreaQuery; static;
+    /// <summary>
+    ///   The routing of the bots on a file (AAS_InitRouting): travel times, routes, route prediction and alternative
+    ///   routes. The tracer gives the areas that the reachabilities go through. The memory may be nil; the developer
+    ///   flag is bot_developer. A file that cannot be routed on is an EAasRouteException
+    /// </summary>
+    class function CreateRouter(const AFile: IAasFile; const AImport: IBotImport; const ATracer: IAasTracer;
+      const AMemory: IAasRoutingMemory = nil; const ADeveloper: Boolean = False): IAasRouter; static;
   end;
 
 implementation
 
 uses
   DelphiDoom.Aas.Reader, DelphiDoom.Aas.Sampler, DelphiDoom.Aas.Tracer, DelphiDoom.Aas.FaceTester,
-  DelphiDoom.Aas.BoxAreas, DelphiDoom.Aas.AreaQuery;
+  DelphiDoom.Aas.BoxAreas, DelphiDoom.Aas.AreaQuery, DelphiDoom.Aas.Route.Router;
 
 { TAasFactory }
 
@@ -70,6 +77,12 @@ end;
 class function TAasFactory.CreateAreaQuery(const AFile: IAasFile; const AImport: IBotImport): IAasAreaQuery;
 begin
   Result := TAasAreaQuery.Create(AFile, AImport);
+end;
+
+class function TAasFactory.CreateRouter(const AFile: IAasFile; const AImport: IBotImport; const ATracer: IAasTracer;
+  const AMemory: IAasRoutingMemory; const ADeveloper: Boolean): IAasRouter;
+begin
+  Result := TAasRouter.Create(AFile, AImport, ATracer, AMemory, ADeveloper);
 end;
 
 end.
