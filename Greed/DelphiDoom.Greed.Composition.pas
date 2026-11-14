@@ -642,6 +642,8 @@ begin
     begin
       LKeys := TGameHostKeyState.Create;
       LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
+      LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
         function: Boolean
         begin
@@ -923,6 +925,8 @@ begin
     begin
       LKeys := TGameHostKeyState.Create;
       LWindow := TGameHostFactory.CreateWindow(WINDOW_TITLE, LKeys as IGameHostEventSink, False);
+      // Alt (strafe) and F10 (smaller view) are keys of the game: they must not open the menu of the window
+      LWindow.Translator.SuppressKeyMenu := True;
       LHostWindow := TGreedHostWindow.Create(TGameHostFactory.CreateGdiDevice(LWindow), LKeys,
         function: Boolean
         begin

@@ -40,7 +40,9 @@ uses
   DelphiDoom.Engine.Video.FramePresenter.Intf in '..\Base\DelphiDoom.Engine.Video.FramePresenter.Intf.pas',
   DelphiDoom.Engine.Video.GdiPresenter in '..\Base\DelphiDoom.Engine.Video.GdiPresenter.pas',
   DelphiDoom.Tests.GameHost.GdiBlitter in 'Source\DelphiDoom.Tests.GameHost.GdiBlitter.pas',
-  DelphiDoom.Tests.GameHost.EngineGdiPresenter in 'Source\DelphiDoom.Tests.GameHost.EngineGdiPresenter.pas';
+  DelphiDoom.Tests.GameHost.EngineGdiPresenter in 'Source\DelphiDoom.Tests.GameHost.EngineGdiPresenter.pas',
+  DelphiDoom.GameHost.KeyLatch in '..\Libs\GameHost\DelphiDoom.GameHost.KeyLatch.pas',
+  DelphiDoom.Tests.GameHost.KeyLatch in 'Source\DelphiDoom.Tests.GameHost.KeyLatch.pas';
 
 var
   Runner: ITestRunner;

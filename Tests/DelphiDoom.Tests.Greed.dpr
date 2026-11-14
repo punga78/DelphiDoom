@@ -198,7 +198,9 @@ uses
   DelphiDoom.Tests.Greed.MapSession in 'Source\DelphiDoom.Tests.Greed.MapSession.pas',
   DelphiDoom.Tests.Greed.WeaponPictures in 'Source\DelphiDoom.Tests.Greed.WeaponPictures.pas',
   DelphiDoom.Greed.HostWindow in '..\Greed\DelphiDoom.Greed.HostWindow.pas',
-  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas';
+  DelphiDoom.Tests.Greed.HostWindow in 'Source\DelphiDoom.Tests.Greed.HostWindow.pas',
+  DelphiDoom.Tests.GameHost.Fakes in 'Source\DelphiDoom.Tests.GameHost.Fakes.pas',
+  DelphiDoom.Tests.Greed.HostKeys in 'Source\DelphiDoom.Tests.Greed.HostKeys.pas';
 
 var
   Runner: ITestRunner;
