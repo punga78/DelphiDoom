@@ -159,6 +159,18 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 
 **Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
 
+### `Base\f_wipe.pas` (facciata sopra `Libs\Imaging`, #185 chiusura della fase 1)
+
+**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Libs\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`Strife\f_fade.pas`). Righe 354 -> 260.
+
+### `Base\s_sound.pas` (regole in `Libs\Audio`, #185 chiusura della fase 1)
+
+**In parte facciata (#185)**: `S_AdjustSoundParams` chiama `TSfxAttenuation.Adjust` (la regola per gioco del livello 8 resta qui, e' un booleano passato alla classe), `S_GetChannel` chiama `TSfxChannelPicker.Pick` e poi ferma e riempie il canale, i ritocchi del pitch di `S_StartSoundAtVolume` chiamano `TSfxAttenuation.PerturbPitch`, la lista dei nomi mp3 di `S_DoChangeMusic` e' `TExternalMusicNames.Candidates` (`S_GetListFromAlias` non c'e' piu'). Sono classi di funzioni statiche: non c'e' una `S_Configure*` nuova, le costanti e le due tabelle (`R_PointToAngle2`, `finesine`) le riempie `S_Init` in `sound_attenuation`. Restano nell'unit, perche' legati ai record del motore e diversi per gioco: `S_StartSoundAtVolume`, `S_StartVoiceAtVolume`, `S_UpdateSounds`, `S_StopChannel`, la ricerca del lump della musica, `S_DefaultMusicForMap`, `S_Init`, `S_PrecacheSounds`, i comandi di console. Righe 2297 -> 2135.
+
+### `Base\am_map.pas`: `AM_drawFline` (#185 chiusura della fase 1)
+
+**Delegata (#185)**: nel renderer software `AM_drawFline` riempie un `TAutomapRasterTarget` (buffer a 8 o a 32 bit, larghezza, finestra della vista per l'overlay) e chiama `TAutomapLineRasterizer.Draw8/Draw32` di `Libs\Automap`; il ramo OpenGL (`gld_AddAutomapLine`) non cambia. Righe 2315 -> 2263.
+
 ### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
 
 `c_utils`: `C_RegisterUtilityCommands` chiama il gruppo `IConsoleCommandGroup` (`TConsoleUtilityCommands` di `Libs\Console`: `dir`, `cd`, `cat`, le pagine web; file e browser dietro `IConsoleFileLister` e `IConsoleBrowser`, adattatori `DelphiDoom.Engine.Console.FileLister` e `.Browser`) che `ComposeConsole` da' con `C_ConfigureUtilityCommands`. `d_notifications`: `D_NotifyVideoModeChange`, `D_NotifyGLDisplayMode` (solo GL) e `D_RunNotifications` chiamano `IDeferredNotifications` (`TDeferredNotifications` di `Libs\Video`, applicatore `DelphiDoom.Engine.Video.DisplayModeApplier` con gli `{$IFDEF OPENGL}`), dato da `ComposeDisplayModes` con `D_ConfigureNotifications`. Senza configurazione `I_Error`.
