@@ -126,6 +126,7 @@
     'Libs\BotAi' = 'IdTech4'
     'Libs\Aas' = 'IdTech4'
     'Libs\Qvm' = 'IdTech4'
+    'Libs\Pmove' = 'IdTech4'
     'Libs\DoomScript' = 'IdTech4'
     # Giochi
     'Libs\Keen' = 'Giochi'
@@ -196,6 +197,8 @@
     @{ Da = 'Libs\Ddc'; A = 'Common'; Massimo = 1; Issue = 224
        Motivo = 'dd_compiler usa d_delphi' }
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
+    @{ Da = 'Libs\Pmove'; A = 'Libs\Net'; Massimo = 1; Issue = 225
+       Motivo = 'Pmove usa TQ3PlayerState e TQ3UserCmd di DelphiDoom.Net.Q3.Types: Net e'' mista (trasporto e protocollo di Doom e Quake III) e i tipi di Quake III vanno in un''area id Tech 3' }
     @{ Da = 'Libs\Console'; A = 'Libs\GameState'; Massimo = 1; Issue = 225
        Motivo = 'Console (registro dei comandi, generico) usa IGameContext (gioco in corso, di Doom) in Factory e VariableCommands' }
     @{ Da = 'Libs\Palette'; A = 'Libs\Video'; Massimo = 1; Issue = 225
