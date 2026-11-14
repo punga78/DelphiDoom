@@ -14,6 +14,7 @@ param(
   [Parameter(Mandatory = $true)][string]$Out,
   [int]$Control = 4,
   [int]$Level = 1,
+  [switch]$DefaultKeys,
   [string[]]$ExtraArguments = @()
 )
 $ErrorActionPreference = 'Stop'
@@ -24,10 +25,17 @@ $save = Join-Path $Out 'save'
 $shots = Join-Path $Out 'shots'
 New-Item -ItemType Directory -Force $save, $shots | Out-Null
 # the configuration of the original: 10 scores of 64 bytes, the sound mode, the music mode, the control (words)
-$cfg = New-Object byte[] 656
-[BitConverter]::GetBytes([uint16]$Control).CopyTo($cfg, 644)
-[BitConverter]::GetBytes([uint16]1).CopyTo($cfg, 640)
-[IO.File]::WriteAllBytes((Join-Path $save 'KDREAMS.CFG'), $cfg)
+# (the keys in it are zeros: the keyboard does not play; -Control -1 leaves the file out, the keys of the game work)
+if ($Control -ge 0) {
+  $cfg = New-Object byte[] 656
+  [BitConverter]::GetBytes([uint16]$Control).CopyTo($cfg, 644)
+  [BitConverter]::GetBytes([uint16]1).CopyTo($cfg, 640)
+  if ($DefaultKeys) {
+    # button 0 (ctrl), button 1 (alt), up-left (home), up, up-right (pgup), left, right, down-left (end), down, down-right (pgdn)
+    [byte[]]([byte]0x1D, 0x38, 0x47, 0x48, 0x49, 0x4B, 0x4D, 0x4F, 0x50, 0x51) | ForEach-Object -Begin { $at = 646 } -Process { $cfg[$at++] = $_ }
+  }
+  [IO.File]::WriteAllBytes((Join-Path $save 'KDREAMS.CFG'), $cfg)
+}
 $data = @()
 foreach ($folder in $DataFolders) { $data += '-data'; $data += $folder }
 $arguments = $data + @('-save', $save, '-script', $Script, '-shots', $shots, '-report', '-nodevice', '-warp', "$Level") + $ExtraArguments

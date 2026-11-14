@@ -183,9 +183,11 @@ begin
     if LState^.LevelDone[LIndex] then
       Inc(LDone);
   Result := Format('game: map %d (loaded %d), score %d, lives %d, flower powers %d, bombs %d, keys %d, levels done %d, ' +
-    'actors %d; sound: mode %d, services %d, frames %d, audible frames %d, peak %d, buffers played %d; sounds asked: %s',
+    'actors %d; keen at %d,%d, origin %d,%d (1/16 pixel), mapon %d; sound: mode %d, services %d, frames %d, audible frames %d, peak %d, buffers played %d; sounds asked: %s',
     [LState^.MapOn, Game.Play.MapOn, LState^.Score, LState^.Lives, LState^.FlowerPowers, LState^.BoobusBombs,
-     LState^.Keys, LDone, Game.Objects.Count, Ord(Game.Sound.Mode), LStatistics.Services, LStatistics.Frames,
+     LState^.Keys, LDone, Game.Objects.Count, Game.Objects.Player^.X, Game.Objects.Player^.Y,
+     Game.Refresh.OriginXGlobal, Game.Refresh.OriginYGlobal, Game.Play.MapOn, Ord(Game.Sound.Mode),
+     LStatistics.Services, LStatistics.Frames,
      LStatistics.AudibleFrames, LStatistics.Peak, Audio.Host.CompletedBuffers, Journal.Summary]);
 end;
 
