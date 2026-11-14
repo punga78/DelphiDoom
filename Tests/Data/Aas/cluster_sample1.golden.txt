@@ -1,0 +1,165 @@
+FILE sample1.aas
+P1|trying to load maps/cluster.aas\x0A
+LOAD 0
+A 2 2 3
+PO 1 4 1 2 3 1
+CL 1 3 3 1 0
+CL 2 4 4 1 1
+PI 3967033079
+SH 3477503451
+SA 0 0 0 0
+SA 1 0 1 1
+SA 2 1 1 2
+SA 3 128 2 1
+SA 4 8 -1 3
+SA 5 256 2 2
+SA 6 66 2 3
+L|area 4 is a forced portal area\x0D\x0A
+P1|     1 forced portal areas\x0A
+L|possible portal: 2\x0D\x0A
+P1|\x0D     1 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+P1|\x0A
+L|portal 1: area 2\x0D\x0A
+L|portal 2: area 4\x0D\x0A
+P1|     3 portals created\x0A
+P1|     4 clusters created\x0A
+P1|cluster 1 has 2 reachability areas\x0A
+P1|cluster 2 has 3 reachability areas\x0A
+P1|cluster 3 has 3 reachability areas\x0A
+P1|     8 total reachability areas\x0A
+P1|   138 AAS memory/CPU usage (the lower the better)\x0A
+B 3 4 4
+PO 1 2 1 2 1 1
+PO 2 4 2 3 2 2
+CL 1 2 2 1 0
+CL 2 3 3 2 1
+CL 3 3 3 1 3
+PI 3964367191
+SH 4289634474
+SA 0 0 0 0
+SA 1 0 1 0
+SA 2 553 -1 2
+SA 3 128 2 0
+SA 4 520 -2 3
+SA 5 256 3 0
+SA 6 66 3 1
+P1|trying to load maps/cluster.aas\x0A
+L|area 4 is a forced portal area\x0D\x0A
+P1|     1 forced portal areas\x0A
+L|possible portal: 2\x0D\x0A
+P1|\x0D     1 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+P1|\x0A
+L|portal 1: area 2\x0D\x0A
+L|portal 2: area 4\x0D\x0A
+P1|     3 portals created\x0A
+P1|     4 clusters created\x0A
+P1|cluster 1 has 2 reachability areas\x0A
+P1|cluster 2 has 3 reachability areas\x0A
+P1|cluster 3 has 3 reachability areas\x0A
+P1|     8 total reachability areas\x0A
+P1|   138 AAS memory/CPU usage (the lower the better)\x0A
+C 3 4 4
+PO 1 2 1 2 1 1
+PO 2 4 2 3 2 2
+CL 1 2 2 1 0
+CL 2 3 3 2 1
+CL 3 3 3 1 3
+PI 3964367191
+SH 2963859551
+SA 0 0 0 0
+SA 1 0 1 0
+SA 2 553 -1 0
+SA 3 128 2 0
+SA 4 520 -2 0
+SA 5 256 3 0
+SA 6 66 3 1
+P1|trying to load maps/cluster.aas\x0A
+P1|AAS data optimized.\x0A
+GEO 0 1 0 1 0 7
+GV 2166136261
+GD 292984781
+GI 2166136261
+GC 2138539933
+GJ 2166136261
+GR 3025561042
+GK 688269533
+GE 0 0 0
+GF 0 0 0 0 0 0 0
+GA 0 0 0
+GA 1 0 0
+GA 2 0 0
+GA 3 0 0
+GA 4 0 0
+GA 5 0 0
+GA 6 0 0
+P1|trying to load maps/cluster.aas\x0A
+P1|AAS data optimized.\x0A
+GEO 18 20 20 6 6 7
+GV 3182943069
+GD 3530511130
+GI 3735759046
+GC 3423991585
+GJ 1994495914
+GR 385505002
+GK 2448536001
+GE 0 0 0
+GE 1 0 1
+GE 2 2 3
+GE 3 3 4
+GE 4 1 4
+GE 5 5 6
+GE 6 6 7
+GE 7 7 8
+GE 8 8 5
+GE 9 8 9
+GE 10 10 9
+GE 11 10 7
+GF 0 0 0 0 0 0 0
+GF 1 4 7 4 0 1 0
+GF 2 12 2 4 4 3 2
+GF 3 2 3 4 8 0 3
+GF 4 0 3 4 12 5 0
+GF 5 6 3 4 16 0 6
+GA 0 0 0
+GA 1 1 0
+GA 2 1 1
+GA 3 2 2
+GA 4 0 4
+GA 5 1 4
+GA 6 1 5
+P1|trying to load maps/cluster.aas\x0A
+L|area 4 is a forced portal area\x0D\x0A
+P1|     1 forced portal areas\x0A
+L|possible portal: 2\x0D\x0A
+P1|\x0D     1 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+P1|\x0A
+L|portal 1: area 2\x0D\x0A
+L|portal 2: area 4\x0D\x0A
+P1|     3 portals created\x0A
+P1|     4 clusters created\x0A
+P1|cluster 1 has 2 reachability areas\x0A
+P1|cluster 2 has 3 reachability areas\x0A
+P1|cluster 3 has 3 reachability areas\x0A
+P1|     8 total reachability areas\x0A
+P1|   138 AAS memory/CPU usage (the lower the better)\x0A
+F 3 4 4
+PO 1 2 1 2 1 1
+PO 2 4 2 3 2 2
+CL 1 2 2 1 0
+CL 2 3 3 2 1
+CL 3 3 3 1 3
+PI 3964367191
+SH 2963859551
+SA 0 0 0 0
+SA 1 0 1 0
+SA 2 553 -1 0
+SA 3 128 2 0
+SA 4 520 -2 0
+SA 5 256 3 0
+SA 6 66 3 1

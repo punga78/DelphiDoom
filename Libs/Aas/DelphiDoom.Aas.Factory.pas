@@ -12,7 +12,8 @@ unit DelphiDoom.Aas.Factory;
 interface
 
 uses
-  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Route.Intf;
+  DelphiDoom.BotAi.Import.Intf, DelphiDoom.Aas.Intf, DelphiDoom.Aas.Route.Intf,
+  DelphiDoom.Aas.Cluster.Intf;
 
 type
   /// <summary>Makes the objects of the library; the rest of the code knows only the interfaces</summary>
@@ -37,13 +38,22 @@ type
     /// </summary>
     class function CreateRouter(const AFile: IAasFile; const AImport: IBotImport; const ATracer: IAasTracer;
       const AMemory: IAasRoutingMemory = nil; const ADeveloper: Boolean = False): IAasRouter; static;
+    /// <summary>
+    ///   AAS_InitClustering on a file that is loaded and can be changed (TAasFile). The variables give forceclustering
+    ///   and forcereachability and may be nil. A file that cannot be clustered is an EAasClusterException
+    /// </summary>
+    class function CreateClusterInitializer(const AFile: IAasFile; const AImport: IBotImport;
+      const ALibVars: IBotLibVars = nil): IAasClusterInitializer; static;
+    /// <summary>AAS_Optimize on a file that is loaded and can be changed (TAasFile)</summary>
+    class function CreateOptimizer(const AFile: IAasFile; const AImport: IBotImport): IAasOptimizer; static;
   end;
 
 implementation
 
 uses
   DelphiDoom.Aas.Reader, DelphiDoom.Aas.Sampler, DelphiDoom.Aas.Tracer, DelphiDoom.Aas.FaceTester,
-  DelphiDoom.Aas.BoxAreas, DelphiDoom.Aas.AreaQuery, DelphiDoom.Aas.Route.Router;
+  DelphiDoom.Aas.BoxAreas, DelphiDoom.Aas.AreaQuery, DelphiDoom.Aas.Route.Router,
+  DelphiDoom.Aas.Cluster.Initializer, DelphiDoom.Aas.Optimize.Optimizer;
 
 { TAasFactory }
 
@@ -83,6 +93,17 @@ class function TAasFactory.CreateRouter(const AFile: IAasFile; const AImport: IB
   const AMemory: IAasRoutingMemory; const ADeveloper: Boolean): IAasRouter;
 begin
   Result := TAasRouter.Create(AFile, AImport, ATracer, AMemory, ADeveloper);
+end;
+
+class function TAasFactory.CreateClusterInitializer(const AFile: IAasFile; const AImport: IBotImport;
+  const ALibVars: IBotLibVars): IAasClusterInitializer;
+begin
+  Result := TAasClusterInitializer.Create(AFile, AImport, ALibVars);
+end;
+
+class function TAasFactory.CreateOptimizer(const AFile: IAasFile; const AImport: IBotImport): IAasOptimizer;
+begin
+  Result := TAasOptimizer.Create(AFile, AImport);
 end;
 
 end.

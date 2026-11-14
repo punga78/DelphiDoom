@@ -1,0 +1,1000 @@
+FILE blitzkrieg3.aas
+P1|trying to load maps/cluster.aas\x0A
+LOAD 0
+A 3 4 3
+PO 1 183 1 2 192 3
+PO 2 260 1 2 191 2
+CL 1 195 193 2 0
+CL 2 4 4 2 2
+PI 4195137105
+SH 3017499462
+SA 0 0 0 0
+SA 1 0 0 0
+SA 2 0 1 0
+SA 3 0 1 1
+SA 4 0 0 0
+SA 5 544 0 0
+SA 6 0 1 2
+SA 7 0 1 3
+SA 8 0 1 4
+SA 9 0 1 5
+SA 10 0 1 6
+SA 11 0 0 0
+SA 12 0 1 7
+SA 13 0 1 8
+SA 14 0 1 9
+SA 15 0 0 0
+SA 16 0 0 0
+SA 17 0 1 10
+SA 18 0 0 0
+SA 19 0 1 11
+SA 20 0 1 12
+SA 21 0 0 0
+SA 22 0 0 0
+SA 23 0 0 0
+SA 24 0 0 0
+SA 25 0 0 0
+SA 26 0 0 0
+SA 27 0 0 0
+SA 28 0 0 0
+SA 29 64 1 13
+SA 30 64 1 14
+SA 31 65 1 15
+SA 32 0 0 0
+SA 33 0 0 0
+SA 34 1 1 16
+SA 35 0 0 0
+SA 36 1 1 17
+SA 37 0 1 18
+SA 38 0 1 19
+SA 39 0 0 0
+L|area 5 is a forced portal area\x0D\x0A
+L|area 40 is a forced portal area\x0D\x0A
+L|area 47 is a forced portal area\x0D\x0A
+L|area 48 is a forced portal area\x0D\x0A
+L|area 182 is a forced portal area\x0D\x0A
+L|area 183 is a forced portal area\x0D\x0A
+L|area 254 is a forced portal area\x0D\x0A
+L|area 260 is a forced portal area\x0D\x0A
+L|area 271 is a forced portal area\x0D\x0A
+L|area 272 is a forced portal area\x0D\x0A
+L|area 297 is a forced portal area\x0D\x0A
+L|area 298 is a forced portal area\x0D\x0A
+L|area 377 is a forced portal area\x0D\x0A
+L|area 379 is a forced portal area\x0D\x0A
+L|area 425 is a forced portal area\x0D\x0A
+L|area 427 is a forced portal area\x0D\x0A
+L|area 468 is a forced portal area\x0D\x0A
+L|area 469 is a forced portal area\x0D\x0A
+P1|    18 forced portal areas\x0A
+P1|\x0D     0 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+L|portal area 5 has no front cluster\x0D\x0A
+P1|\x0D     1
+L|portal area 40 has no back cluster\x0D\x0A
+P1|\x0D     2
+L|portal area 47 has no front cluster\x0D\x0A
+P1|\x0D     3
+L|portal area 48 has no back cluster\x0D\x0A
+P1|\x0D     4
+L|portal area 182 has no front cluster\x0D\x0A
+P1|\x0D     5
+L|portal area 254 has no front cluster\x0D\x0A
+P1|\x0D     6
+L|portal area 271 has no front cluster\x0D\x0A
+P1|\x0D     7
+L|portal area 272 has no back cluster\x0D\x0A
+P1|\x0D     8
+L|portal area 297 has no front cluster\x0D\x0A
+P1|\x0D     9
+L|portal area 298 has no back cluster\x0D\x0A
+P1|\x0D    10
+L|portal area 377 has no front cluster\x0D\x0A
+P1|\x0D    11
+L|portal area 379 has no back cluster\x0D\x0A
+P1|\x0D    12
+L|portal area 425 has no front cluster\x0D\x0A
+P1|\x0D    13
+L|portal area 427 has no back cluster\x0D\x0A
+P1|\x0D    14
+L|portal area 468 has no front cluster\x0D\x0A
+P1|\x0D    15
+L|portal area 469 has no back cluster\x0D\x0A
+P1|\x0D    16
+P1|\x0A
+L|portal 1: area 183\x0D\x0A
+L|portal 2: area 260\x0D\x0A
+P1|     3 portals created\x0A
+P1|     3 clusters created\x0A
+P1|cluster 1 has 193 reachability areas\x0A
+P1|cluster 2 has 4 reachability areas\x0A
+P1|   197 total reachability areas\x0A
+P1|113568 AAS memory/CPU usage (the lower the better)\x0A
+B 3 4 3
+PO 1 183 1 2 192 3
+PO 2 260 1 2 191 2
+CL 1 195 193 2 0
+CL 2 4 4 2 2
+PI 4195137105
+SH 3017499462
+SA 0 0 0 0
+SA 1 0 0 0
+SA 2 0 1 0
+SA 3 0 1 1
+SA 4 0 0 0
+SA 5 544 0 0
+SA 6 0 1 2
+SA 7 0 1 3
+SA 8 0 1 4
+SA 9 0 1 5
+SA 10 0 1 6
+SA 11 0 0 0
+SA 12 0 1 7
+SA 13 0 1 8
+SA 14 0 1 9
+SA 15 0 0 0
+SA 16 0 0 0
+SA 17 0 1 10
+SA 18 0 0 0
+SA 19 0 1 11
+SA 20 0 1 12
+SA 21 0 0 0
+SA 22 0 0 0
+SA 23 0 0 0
+SA 24 0 0 0
+SA 25 0 0 0
+SA 26 0 0 0
+SA 27 0 0 0
+SA 28 0 0 0
+SA 29 64 1 13
+SA 30 64 1 14
+SA 31 65 1 15
+SA 32 0 0 0
+SA 33 0 0 0
+SA 34 1 1 16
+SA 35 0 0 0
+SA 36 1 1 17
+SA 37 0 1 18
+SA 38 0 1 19
+SA 39 0 0 0
+P1|trying to load maps/cluster.aas\x0A
+L|area 5 is a forced portal area\x0D\x0A
+L|area 40 is a forced portal area\x0D\x0A
+L|area 47 is a forced portal area\x0D\x0A
+L|area 48 is a forced portal area\x0D\x0A
+L|area 182 is a forced portal area\x0D\x0A
+L|area 183 is a forced portal area\x0D\x0A
+L|area 254 is a forced portal area\x0D\x0A
+L|area 260 is a forced portal area\x0D\x0A
+L|area 271 is a forced portal area\x0D\x0A
+L|area 272 is a forced portal area\x0D\x0A
+L|area 297 is a forced portal area\x0D\x0A
+L|area 298 is a forced portal area\x0D\x0A
+L|area 377 is a forced portal area\x0D\x0A
+L|area 379 is a forced portal area\x0D\x0A
+L|area 425 is a forced portal area\x0D\x0A
+L|area 427 is a forced portal area\x0D\x0A
+L|area 468 is a forced portal area\x0D\x0A
+L|area 469 is a forced portal area\x0D\x0A
+P1|    18 forced portal areas\x0A
+P1|\x0D     0 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+L|portal area 5 has no front cluster\x0D\x0A
+P1|\x0D     1
+L|portal area 40 has no back cluster\x0D\x0A
+P1|\x0D     2
+L|portal area 47 has no front cluster\x0D\x0A
+P1|\x0D     3
+L|portal area 48 has no back cluster\x0D\x0A
+P1|\x0D     4
+L|portal area 182 has no front cluster\x0D\x0A
+P1|\x0D     5
+L|portal area 254 has no front cluster\x0D\x0A
+P1|\x0D     6
+L|portal area 271 has no front cluster\x0D\x0A
+P1|\x0D     7
+L|portal area 272 has no back cluster\x0D\x0A
+P1|\x0D     8
+L|portal area 297 has no front cluster\x0D\x0A
+P1|\x0D     9
+L|portal area 298 has no back cluster\x0D\x0A
+P1|\x0D    10
+L|portal area 377 has no front cluster\x0D\x0A
+P1|\x0D    11
+L|portal area 379 has no back cluster\x0D\x0A
+P1|\x0D    12
+L|portal area 425 has no front cluster\x0D\x0A
+P1|\x0D    13
+L|portal area 427 has no back cluster\x0D\x0A
+P1|\x0D    14
+L|portal area 468 has no front cluster\x0D\x0A
+P1|\x0D    15
+L|portal area 469 has no back cluster\x0D\x0A
+P1|\x0D    16
+P1|\x0A
+L|portal 1: area 183\x0D\x0A
+L|portal 2: area 260\x0D\x0A
+P1|     3 portals created\x0A
+P1|     3 clusters created\x0A
+P1|cluster 1 has 193 reachability areas\x0A
+P1|cluster 2 has 4 reachability areas\x0A
+P1|   197 total reachability areas\x0A
+P1|113568 AAS memory/CPU usage (the lower the better)\x0A
+C 3 4 3
+PO 1 183 1 2 192 3
+PO 2 260 1 2 191 2
+CL 1 195 193 2 0
+CL 2 4 4 2 2
+PI 4195137105
+SH 3017499462
+SA 0 0 0 0
+SA 1 0 0 0
+SA 2 0 1 0
+SA 3 0 1 1
+SA 4 0 0 0
+SA 5 544 0 0
+SA 6 0 1 2
+SA 7 0 1 3
+SA 8 0 1 4
+SA 9 0 1 5
+SA 10 0 1 6
+SA 11 0 0 0
+SA 12 0 1 7
+SA 13 0 1 8
+SA 14 0 1 9
+SA 15 0 0 0
+SA 16 0 0 0
+SA 17 0 1 10
+SA 18 0 0 0
+SA 19 0 1 11
+SA 20 0 1 12
+SA 21 0 0 0
+SA 22 0 0 0
+SA 23 0 0 0
+SA 24 0 0 0
+SA 25 0 0 0
+SA 26 0 0 0
+SA 27 0 0 0
+SA 28 0 0 0
+SA 29 64 1 13
+SA 30 64 1 14
+SA 31 65 1 15
+SA 32 0 0 0
+SA 33 0 0 0
+SA 34 1 1 16
+SA 35 0 0 0
+SA 36 1 1 17
+SA 37 0 1 18
+SA 38 0 1 19
+SA 39 0 0 0
+P1|trying to load maps/cluster.aas\x0A
+P1|AAS data optimized.\x0A
+GEO 0 1 0 1 0 483
+GV 2166136261
+GD 292984781
+GI 2166136261
+GC 2138539933
+GJ 2166136261
+GR 3799789054
+GK 530488136
+GE 0 0 0
+GF 0 0 0 0 0 0 0
+GA 0 0 0
+GA 1 0 0
+GA 2 0 0
+GA 3 0 0
+GA 4 0 0
+GA 5 0 0
+GA 6 0 0
+GA 7 0 0
+GA 8 0 0
+GA 9 0 0
+GA 10 0 0
+GA 11 0 0
+P1|trying to load maps/cluster.aas\x0A
+P1|AAS data optimized.\x0A
+GEO 0 1 0 1 0 483
+GV 2166136261
+GD 292984781
+GI 2166136261
+GC 2138539933
+GJ 2166136261
+GR 3799789054
+GK 530488136
+GE 0 0 0
+GF 0 0 0 0 0 0 0
+GA 0 0 0
+GA 1 0 0
+GA 2 0 0
+GA 3 0 0
+GA 4 0 0
+GA 5 0 0
+GA 6 0 0
+GA 7 0 0
+GA 8 0 0
+GA 9 0 0
+GA 10 0 0
+GA 11 0 0
+P1|trying to load maps/cluster.aas\x0A
+L|area 5 is a forced portal area\x0D\x0A
+L|area 40 is a forced portal area\x0D\x0A
+L|area 47 is a forced portal area\x0D\x0A
+L|area 48 is a forced portal area\x0D\x0A
+L|area 182 is a forced portal area\x0D\x0A
+L|area 183 is a forced portal area\x0D\x0A
+L|area 254 is a forced portal area\x0D\x0A
+L|area 260 is a forced portal area\x0D\x0A
+L|area 271 is a forced portal area\x0D\x0A
+L|area 272 is a forced portal area\x0D\x0A
+L|area 297 is a forced portal area\x0D\x0A
+L|area 298 is a forced portal area\x0D\x0A
+L|area 377 is a forced portal area\x0D\x0A
+L|area 379 is a forced portal area\x0D\x0A
+L|area 425 is a forced portal area\x0D\x0A
+L|area 427 is a forced portal area\x0D\x0A
+L|area 468 is a forced portal area\x0D\x0A
+L|area 469 is a forced portal area\x0D\x0A
+P1|    18 forced portal areas\x0A
+P1|\x0D     0 possible portal areas\x0A
+P1|\x0D     0 removed portal areas
+P1|\x0D     0
+L|portal area 5 has no front cluster\x0D\x0A
+P1|\x0D     1
+L|portal area 40 has no back cluster\x0D\x0A
+P1|\x0D     2
+L|portal area 47 has no front cluster\x0D\x0A
+P1|\x0D     3
+L|portal area 48 has no back cluster\x0D\x0A
+P1|\x0D     4
+L|portal area 182 has no front cluster\x0D\x0A
+P1|\x0D     5
+L|portal area 254 has no front cluster\x0D\x0A
+P1|\x0D     6
+L|portal area 271 has no front cluster\x0D\x0A
+P1|\x0D     7
+L|portal area 272 has no back cluster\x0D\x0A
+P1|\x0D     8
+L|portal area 297 has no front cluster\x0D\x0A
+P1|\x0D     9
+L|portal area 298 has no back cluster\x0D\x0A
+P1|\x0D    10
+L|portal area 377 has no front cluster\x0D\x0A
+P1|\x0D    11
+L|portal area 379 has no back cluster\x0D\x0A
+P1|\x0D    12
+L|portal area 425 has no front cluster\x0D\x0A
+P1|\x0D    13
+L|portal area 427 has no back cluster\x0D\x0A
+P1|\x0D    14
+L|portal area 468 has no front cluster\x0D\x0A
+P1|\x0D    15
+L|portal area 469 has no back cluster\x0D\x0A
+P1|\x0D    16
+P1|\x0A
+L|portal 1: area 183\x0D\x0A
+L|portal 2: area 260\x0D\x0A
+P1|     3 portals created\x0A
+P1|   288 clusters created\x0A
+P1|cluster 1 has 0 reachability areas\x0A
+P1|cluster 2 has 193 reachability areas\x0A
+P1|cluster 3 has 0 reachability areas\x0A
+P1|cluster 4 has 0 reachability areas\x0A
+P1|cluster 5 has 0 reachability areas\x0A
+P1|cluster 6 has 0 reachability areas\x0A
+P1|cluster 7 has 0 reachability areas\x0A
+P1|cluster 8 has 0 reachability areas\x0A
+P1|cluster 9 has 0 reachability areas\x0A
+P1|cluster 10 has 0 reachability areas\x0A
+P1|cluster 11 has 0 reachability areas\x0A
+P1|cluster 12 has 0 reachability areas\x0A
+P1|cluster 13 has 0 reachability areas\x0A
+P1|cluster 14 has 0 reachability areas\x0A
+P1|cluster 15 has 0 reachability areas\x0A
+P1|cluster 16 has 0 reachability areas\x0A
+P1|cluster 17 has 0 reachability areas\x0A
+P1|cluster 18 has 0 reachability areas\x0A
+P1|cluster 19 has 0 reachability areas\x0A
+P1|cluster 20 has 0 reachability areas\x0A
+P1|cluster 21 has 0 reachability areas\x0A
+P1|cluster 22 has 0 reachability areas\x0A
+P1|cluster 23 has 0 reachability areas\x0A
+P1|cluster 24 has 0 reachability areas\x0A
+P1|cluster 25 has 0 reachability areas\x0A
+P1|cluster 26 has 0 reachability areas\x0A
+P1|cluster 27 has 0 reachability areas\x0A
+P1|cluster 28 has 0 reachability areas\x0A
+P1|cluster 29 has 0 reachability areas\x0A
+P1|cluster 30 has 0 reachability areas\x0A
+P1|cluster 31 has 0 reachability areas\x0A
+P1|cluster 32 has 0 reachability areas\x0A
+P1|cluster 33 has 0 reachability areas\x0A
+P1|cluster 34 has 0 reachability areas\x0A
+P1|cluster 35 has 0 reachability areas\x0A
+P1|cluster 36 has 0 reachability areas\x0A
+P1|cluster 37 has 0 reachability areas\x0A
+P1|cluster 38 has 0 reachability areas\x0A
+P1|cluster 39 has 0 reachability areas\x0A
+P1|cluster 40 has 0 reachability areas\x0A
+P1|cluster 41 has 0 reachability areas\x0A
+P1|cluster 42 has 0 reachability areas\x0A
+P1|cluster 43 has 0 reachability areas\x0A
+P1|cluster 44 has 0 reachability areas\x0A
+P1|cluster 45 has 0 reachability areas\x0A
+P1|cluster 46 has 0 reachability areas\x0A
+P1|cluster 47 has 0 reachability areas\x0A
+P1|cluster 48 has 0 reachability areas\x0A
+P1|cluster 49 has 0 reachability areas\x0A
+P1|cluster 50 has 0 reachability areas\x0A
+P1|cluster 51 has 0 reachability areas\x0A
+P1|cluster 52 has 0 reachability areas\x0A
+P1|cluster 53 has 0 reachability areas\x0A
+P1|cluster 54 has 0 reachability areas\x0A
+P1|cluster 55 has 0 reachability areas\x0A
+P1|cluster 56 has 0 reachability areas\x0A
+P1|cluster 57 has 0 reachability areas\x0A
+P1|cluster 58 has 0 reachability areas\x0A
+P1|cluster 59 has 0 reachability areas\x0A
+P1|cluster 60 has 0 reachability areas\x0A
+P1|cluster 61 has 0 reachability areas\x0A
+P1|cluster 62 has 0 reachability areas\x0A
+P1|cluster 63 has 0 reachability areas\x0A
+P1|cluster 64 has 0 reachability areas\x0A
+P1|cluster 65 has 0 reachability areas\x0A
+P1|cluster 66 has 0 reachability areas\x0A
+P1|cluster 67 has 0 reachability areas\x0A
+P1|cluster 68 has 0 reachability areas\x0A
+P1|cluster 69 has 0 reachability areas\x0A
+P1|cluster 70 has 0 reachability areas\x0A
+P1|cluster 71 has 0 reachability areas\x0A
+P1|cluster 72 has 0 reachability areas\x0A
+P1|cluster 73 has 0 reachability areas\x0A
+P1|cluster 74 has 0 reachability areas\x0A
+P1|cluster 75 has 0 reachability areas\x0A
+P1|cluster 76 has 0 reachability areas\x0A
+P1|cluster 77 has 0 reachability areas\x0A
+P1|cluster 78 has 0 reachability areas\x0A
+P1|cluster 79 has 0 reachability areas\x0A
+P1|cluster 80 has 0 reachability areas\x0A
+P1|cluster 81 has 0 reachability areas\x0A
+P1|cluster 82 has 0 reachability areas\x0A
+P1|cluster 83 has 0 reachability areas\x0A
+P1|cluster 84 has 0 reachability areas\x0A
+P1|cluster 85 has 0 reachability areas\x0A
+P1|cluster 86 has 0 reachability areas\x0A
+P1|cluster 87 has 0 reachability areas\x0A
+P1|cluster 88 has 0 reachability areas\x0A
+P1|cluster 89 has 0 reachability areas\x0A
+P1|cluster 90 has 0 reachability areas\x0A
+P1|cluster 91 has 0 reachability areas\x0A
+P1|cluster 92 has 0 reachability areas\x0A
+P1|cluster 93 has 0 reachability areas\x0A
+P1|cluster 94 has 0 reachability areas\x0A
+P1|cluster 95 has 4 reachability areas\x0A
+P1|cluster 96 has 0 reachability areas\x0A
+P1|cluster 97 has 0 reachability areas\x0A
+P1|cluster 98 has 0 reachability areas\x0A
+P1|cluster 99 has 0 reachability areas\x0A
+P1|cluster 100 has 0 reachability areas\x0A
+P1|cluster 101 has 0 reachability areas\x0A
+P1|cluster 102 has 0 reachability areas\x0A
+P1|cluster 103 has 0 reachability areas\x0A
+P1|cluster 104 has 0 reachability areas\x0A
+P1|cluster 105 has 0 reachability areas\x0A
+P1|cluster 106 has 0 reachability areas\x0A
+P1|cluster 107 has 0 reachability areas\x0A
+P1|cluster 108 has 0 reachability areas\x0A
+P1|cluster 109 has 0 reachability areas\x0A
+P1|cluster 110 has 0 reachability areas\x0A
+P1|cluster 111 has 0 reachability areas\x0A
+P1|cluster 112 has 0 reachability areas\x0A
+P1|cluster 113 has 0 reachability areas\x0A
+P1|cluster 114 has 0 reachability areas\x0A
+P1|cluster 115 has 0 reachability areas\x0A
+P1|cluster 116 has 0 reachability areas\x0A
+P1|cluster 117 has 0 reachability areas\x0A
+P1|cluster 118 has 0 reachability areas\x0A
+P1|cluster 119 has 0 reachability areas\x0A
+P1|cluster 120 has 0 reachability areas\x0A
+P1|cluster 121 has 0 reachability areas\x0A
+P1|cluster 122 has 0 reachability areas\x0A
+P1|cluster 123 has 0 reachability areas\x0A
+P1|cluster 124 has 0 reachability areas\x0A
+P1|cluster 125 has 0 reachability areas\x0A
+P1|cluster 126 has 0 reachability areas\x0A
+P1|cluster 127 has 0 reachability areas\x0A
+P1|cluster 128 has 0 reachability areas\x0A
+P1|cluster 129 has 0 reachability areas\x0A
+P1|cluster 130 has 0 reachability areas\x0A
+P1|cluster 131 has 0 reachability areas\x0A
+P1|cluster 132 has 0 reachability areas\x0A
+P1|cluster 133 has 0 reachability areas\x0A
+P1|cluster 134 has 0 reachability areas\x0A
+P1|cluster 135 has 0 reachability areas\x0A
+P1|cluster 136 has 0 reachability areas\x0A
+P1|cluster 137 has 0 reachability areas\x0A
+P1|cluster 138 has 0 reachability areas\x0A
+P1|cluster 139 has 0 reachability areas\x0A
+P1|cluster 140 has 0 reachability areas\x0A
+P1|cluster 141 has 0 reachability areas\x0A
+P1|cluster 142 has 0 reachability areas\x0A
+P1|cluster 143 has 0 reachability areas\x0A
+P1|cluster 144 has 0 reachability areas\x0A
+P1|cluster 145 has 0 reachability areas\x0A
+P1|cluster 146 has 0 reachability areas\x0A
+P1|cluster 147 has 0 reachability areas\x0A
+P1|cluster 148 has 0 reachability areas\x0A
+P1|cluster 149 has 0 reachability areas\x0A
+P1|cluster 150 has 0 reachability areas\x0A
+P1|cluster 151 has 0 reachability areas\x0A
+P1|cluster 152 has 0 reachability areas\x0A
+P1|cluster 153 has 0 reachability areas\x0A
+P1|cluster 154 has 0 reachability areas\x0A
+P1|cluster 155 has 0 reachability areas\x0A
+P1|cluster 156 has 0 reachability areas\x0A
+P1|cluster 157 has 0 reachability areas\x0A
+P1|cluster 158 has 0 reachability areas\x0A
+P1|cluster 159 has 0 reachability areas\x0A
+P1|cluster 160 has 0 reachability areas\x0A
+P1|cluster 161 has 0 reachability areas\x0A
+P1|cluster 162 has 0 reachability areas\x0A
+P1|cluster 163 has 0 reachability areas\x0A
+P1|cluster 164 has 0 reachability areas\x0A
+P1|cluster 165 has 0 reachability areas\x0A
+P1|cluster 166 has 0 reachability areas\x0A
+P1|cluster 167 has 0 reachability areas\x0A
+P1|cluster 168 has 0 reachability areas\x0A
+P1|cluster 169 has 0 reachability areas\x0A
+P1|cluster 170 has 0 reachability areas\x0A
+P1|cluster 171 has 0 reachability areas\x0A
+P1|cluster 172 has 0 reachability areas\x0A
+P1|cluster 173 has 0 reachability areas\x0A
+P1|cluster 174 has 0 reachability areas\x0A
+P1|cluster 175 has 0 reachability areas\x0A
+P1|cluster 176 has 0 reachability areas\x0A
+P1|cluster 177 has 0 reachability areas\x0A
+P1|cluster 178 has 0 reachability areas\x0A
+P1|cluster 179 has 0 reachability areas\x0A
+P1|cluster 180 has 0 reachability areas\x0A
+P1|cluster 181 has 0 reachability areas\x0A
+P1|cluster 182 has 0 reachability areas\x0A
+P1|cluster 183 has 0 reachability areas\x0A
+P1|cluster 184 has 0 reachability areas\x0A
+P1|cluster 185 has 0 reachability areas\x0A
+P1|cluster 186 has 0 reachability areas\x0A
+P1|cluster 187 has 0 reachability areas\x0A
+P1|cluster 188 has 0 reachability areas\x0A
+P1|cluster 189 has 0 reachability areas\x0A
+P1|cluster 190 has 0 reachability areas\x0A
+P1|cluster 191 has 0 reachability areas\x0A
+P1|cluster 192 has 0 reachability areas\x0A
+P1|cluster 193 has 0 reachability areas\x0A
+P1|cluster 194 has 0 reachability areas\x0A
+P1|cluster 195 has 0 reachability areas\x0A
+P1|cluster 196 has 0 reachability areas\x0A
+P1|cluster 197 has 0 reachability areas\x0A
+P1|cluster 198 has 0 reachability areas\x0A
+P1|cluster 199 has 0 reachability areas\x0A
+P1|cluster 200 has 0 reachability areas\x0A
+P1|cluster 201 has 0 reachability areas\x0A
+P1|cluster 202 has 0 reachability areas\x0A
+P1|cluster 203 has 0 reachability areas\x0A
+P1|cluster 204 has 0 reachability areas\x0A
+P1|cluster 205 has 0 reachability areas\x0A
+P1|cluster 206 has 0 reachability areas\x0A
+P1|cluster 207 has 0 reachability areas\x0A
+P1|cluster 208 has 0 reachability areas\x0A
+P1|cluster 209 has 0 reachability areas\x0A
+P1|cluster 210 has 0 reachability areas\x0A
+P1|cluster 211 has 0 reachability areas\x0A
+P1|cluster 212 has 0 reachability areas\x0A
+P1|cluster 213 has 0 reachability areas\x0A
+P1|cluster 214 has 0 reachability areas\x0A
+P1|cluster 215 has 0 reachability areas\x0A
+P1|cluster 216 has 0 reachability areas\x0A
+P1|cluster 217 has 0 reachability areas\x0A
+P1|cluster 218 has 0 reachability areas\x0A
+P1|cluster 219 has 0 reachability areas\x0A
+P1|cluster 220 has 0 reachability areas\x0A
+P1|cluster 221 has 0 reachability areas\x0A
+P1|cluster 222 has 0 reachability areas\x0A
+P1|cluster 223 has 0 reachability areas\x0A
+P1|cluster 224 has 0 reachability areas\x0A
+P1|cluster 225 has 0 reachability areas\x0A
+P1|cluster 226 has 0 reachability areas\x0A
+P1|cluster 227 has 0 reachability areas\x0A
+P1|cluster 228 has 0 reachability areas\x0A
+P1|cluster 229 has 0 reachability areas\x0A
+P1|cluster 230 has 0 reachability areas\x0A
+P1|cluster 231 has 0 reachability areas\x0A
+P1|cluster 232 has 0 reachability areas\x0A
+P1|cluster 233 has 0 reachability areas\x0A
+P1|cluster 234 has 0 reachability areas\x0A
+P1|cluster 235 has 0 reachability areas\x0A
+P1|cluster 236 has 0 reachability areas\x0A
+P1|cluster 237 has 0 reachability areas\x0A
+P1|cluster 238 has 0 reachability areas\x0A
+P1|cluster 239 has 0 reachability areas\x0A
+P1|cluster 240 has 0 reachability areas\x0A
+P1|cluster 241 has 0 reachability areas\x0A
+P1|cluster 242 has 0 reachability areas\x0A
+P1|cluster 243 has 0 reachability areas\x0A
+P1|cluster 244 has 0 reachability areas\x0A
+P1|cluster 245 has 0 reachability areas\x0A
+P1|cluster 246 has 0 reachability areas\x0A
+P1|cluster 247 has 0 reachability areas\x0A
+P1|cluster 248 has 0 reachability areas\x0A
+P1|cluster 249 has 0 reachability areas\x0A
+P1|cluster 250 has 0 reachability areas\x0A
+P1|cluster 251 has 0 reachability areas\x0A
+P1|cluster 252 has 0 reachability areas\x0A
+P1|cluster 253 has 0 reachability areas\x0A
+P1|cluster 254 has 0 reachability areas\x0A
+P1|cluster 255 has 0 reachability areas\x0A
+P1|cluster 256 has 0 reachability areas\x0A
+P1|cluster 257 has 0 reachability areas\x0A
+P1|cluster 258 has 0 reachability areas\x0A
+P1|cluster 259 has 0 reachability areas\x0A
+P1|cluster 260 has 0 reachability areas\x0A
+P1|cluster 261 has 0 reachability areas\x0A
+P1|cluster 262 has 0 reachability areas\x0A
+P1|cluster 263 has 0 reachability areas\x0A
+P1|cluster 264 has 0 reachability areas\x0A
+P1|cluster 265 has 0 reachability areas\x0A
+P1|cluster 266 has 0 reachability areas\x0A
+P1|cluster 267 has 0 reachability areas\x0A
+P1|cluster 268 has 0 reachability areas\x0A
+P1|cluster 269 has 0 reachability areas\x0A
+P1|cluster 270 has 0 reachability areas\x0A
+P1|cluster 271 has 0 reachability areas\x0A
+P1|cluster 272 has 0 reachability areas\x0A
+P1|cluster 273 has 0 reachability areas\x0A
+P1|cluster 274 has 0 reachability areas\x0A
+P1|cluster 275 has 0 reachability areas\x0A
+P1|cluster 276 has 0 reachability areas\x0A
+P1|cluster 277 has 0 reachability areas\x0A
+P1|cluster 278 has 0 reachability areas\x0A
+P1|cluster 279 has 0 reachability areas\x0A
+P1|cluster 280 has 0 reachability areas\x0A
+P1|cluster 281 has 0 reachability areas\x0A
+P1|cluster 282 has 0 reachability areas\x0A
+P1|cluster 283 has 0 reachability areas\x0A
+P1|cluster 284 has 0 reachability areas\x0A
+P1|cluster 285 has 0 reachability areas\x0A
+P1|cluster 286 has 0 reachability areas\x0A
+P1|cluster 287 has 0 reachability areas\x0A
+P1|   197 total reachability areas\x0A
+P1|113568 AAS memory/CPU usage (the lower the better)\x0A
+F 3 4 288
+PO 1 183 2 95 192 3
+PO 2 260 2 95 191 2
+CL 1 1 0 0 0
+CL 2 195 193 2 0
+CL 3 1 0 0 2
+CL 4 1 0 0 2
+CL 5 1 0 0 2
+CL 6 1 0 0 2
+CL 7 1 0 0 2
+CL 8 1 0 0 2
+CL 9 1 0 0 2
+CL 10 1 0 0 2
+CL 11 1 0 0 2
+CL 12 1 0 0 2
+CL 13 1 0 0 2
+CL 14 1 0 0 2
+CL 15 1 0 0 2
+CL 16 1 0 0 2
+CL 17 1 0 0 2
+CL 18 1 0 0 2
+CL 19 1 0 0 2
+CL 20 1 0 0 2
+CL 21 1 0 0 2
+CL 22 1 0 0 2
+CL 23 1 0 0 2
+CL 24 1 0 0 2
+CL 25 1 0 0 2
+CL 26 1 0 0 2
+CL 27 1 0 0 2
+CL 28 1 0 0 2
+CL 29 1 0 0 2
+CL 30 1 0 0 2
+CL 31 1 0 0 2
+CL 32 1 0 0 2
+CL 33 1 0 0 2
+CL 34 1 0 0 2
+CL 35 1 0 0 2
+CL 36 1 0 0 2
+CL 37 1 0 0 2
+CL 38 1 0 0 2
+CL 39 1 0 0 2
+CL 40 1 0 0 2
+CL 41 1 0 0 2
+CL 42 1 0 0 2
+CL 43 1 0 0 2
+CL 44 1 0 0 2
+CL 45 1 0 0 2
+CL 46 1 0 0 2
+CL 47 1 0 0 2
+CL 48 1 0 0 2
+CL 49 1 0 0 2
+CL 50 1 0 0 2
+CL 51 1 0 0 2
+CL 52 1 0 0 2
+CL 53 1 0 0 2
+CL 54 1 0 0 2
+CL 55 1 0 0 2
+CL 56 1 0 0 2
+CL 57 1 0 0 2
+CL 58 1 0 0 2
+CL 59 1 0 0 2
+CL 60 1 0 0 2
+CL 61 1 0 0 2
+CL 62 1 0 0 2
+CL 63 1 0 0 2
+CL 64 1 0 0 2
+CL 65 1 0 0 2
+CL 66 1 0 0 2
+CL 67 1 0 0 2
+CL 68 1 0 0 2
+CL 69 1 0 0 2
+CL 70 1 0 0 2
+CL 71 1 0 0 2
+CL 72 1 0 0 2
+CL 73 1 0 0 2
+CL 74 1 0 0 2
+CL 75 1 0 0 2
+CL 76 1 0 0 2
+CL 77 1 0 0 2
+CL 78 1 0 0 2
+CL 79 1 0 0 2
+CL 80 1 0 0 2
+CL 81 1 0 0 2
+CL 82 1 0 0 2
+CL 83 1 0 0 2
+CL 84 1 0 0 2
+CL 85 1 0 0 2
+CL 86 1 0 0 2
+CL 87 1 0 0 2
+CL 88 1 0 0 2
+CL 89 1 0 0 2
+CL 90 1 0 0 2
+CL 91 1 0 0 2
+CL 92 1 0 0 2
+CL 93 1 0 0 2
+CL 94 1 0 0 2
+CL 95 4 4 2 2
+CL 96 1 0 0 4
+CL 97 1 0 0 4
+CL 98 1 0 0 4
+CL 99 1 0 0 4
+CL 100 1 0 0 4
+CL 101 1 0 0 4
+CL 102 1 0 0 4
+CL 103 1 0 0 4
+CL 104 1 0 0 4
+CL 105 1 0 0 4
+CL 106 1 0 0 4
+CL 107 1 0 0 4
+CL 108 1 0 0 4
+CL 109 1 0 0 4
+CL 110 1 0 0 4
+CL 111 1 0 0 4
+CL 112 1 0 0 4
+CL 113 1 0 0 4
+CL 114 1 0 0 4
+CL 115 1 0 0 4
+CL 116 1 0 0 4
+CL 117 1 0 0 4
+CL 118 1 0 0 4
+CL 119 1 0 0 4
+CL 120 1 0 0 4
+CL 121 1 0 0 4
+CL 122 1 0 0 4
+CL 123 1 0 0 4
+CL 124 1 0 0 4
+CL 125 1 0 0 4
+CL 126 1 0 0 4
+CL 127 1 0 0 4
+CL 128 1 0 0 4
+CL 129 1 0 0 4
+CL 130 1 0 0 4
+CL 131 1 0 0 4
+CL 132 1 0 0 4
+CL 133 1 0 0 4
+CL 134 1 0 0 4
+CL 135 1 0 0 4
+CL 136 1 0 0 4
+CL 137 1 0 0 4
+CL 138 1 0 0 4
+CL 139 1 0 0 4
+CL 140 1 0 0 4
+CL 141 1 0 0 4
+CL 142 1 0 0 4
+CL 143 1 0 0 4
+CL 144 1 0 0 4
+CL 145 1 0 0 4
+CL 146 1 0 0 4
+CL 147 1 0 0 4
+CL 148 1 0 0 4
+CL 149 1 0 0 4
+CL 150 1 0 0 4
+CL 151 1 0 0 4
+CL 152 1 0 0 4
+CL 153 1 0 0 4
+CL 154 1 0 0 4
+CL 155 1 0 0 4
+CL 156 1 0 0 4
+CL 157 1 0 0 4
+CL 158 1 0 0 4
+CL 159 1 0 0 4
+CL 160 1 0 0 4
+CL 161 1 0 0 4
+CL 162 1 0 0 4
+CL 163 1 0 0 4
+CL 164 1 0 0 4
+CL 165 1 0 0 4
+CL 166 1 0 0 4
+CL 167 1 0 0 4
+CL 168 1 0 0 4
+CL 169 1 0 0 4
+CL 170 1 0 0 4
+CL 171 1 0 0 4
+CL 172 1 0 0 4
+CL 173 1 0 0 4
+CL 174 1 0 0 4
+CL 175 1 0 0 4
+CL 176 1 0 0 4
+CL 177 1 0 0 4
+CL 178 1 0 0 4
+CL 179 1 0 0 4
+CL 180 1 0 0 4
+CL 181 1 0 0 4
+CL 182 1 0 0 4
+CL 183 1 0 0 4
+CL 184 1 0 0 4
+CL 185 1 0 0 4
+CL 186 1 0 0 4
+CL 187 1 0 0 4
+CL 188 1 0 0 4
+CL 189 1 0 0 4
+CL 190 1 0 0 4
+CL 191 1 0 0 4
+CL 192 1 0 0 4
+CL 193 1 0 0 4
+CL 194 1 0 0 4
+CL 195 1 0 0 4
+CL 196 1 0 0 4
+CL 197 1 0 0 4
+CL 198 1 0 0 4
+CL 199 1 0 0 4
+CL 200 1 0 0 4
+CL 201 1 0 0 4
+CL 202 1 0 0 4
+CL 203 1 0 0 4
+CL 204 1 0 0 4
+CL 205 1 0 0 4
+CL 206 1 0 0 4
+CL 207 1 0 0 4
+CL 208 1 0 0 4
+CL 209 1 0 0 4
+CL 210 1 0 0 4
+CL 211 1 0 0 4
+CL 212 1 0 0 4
+CL 213 1 0 0 4
+CL 214 1 0 0 4
+CL 215 1 0 0 4
+CL 216 1 0 0 4
+CL 217 1 0 0 4
+CL 218 1 0 0 4
+CL 219 1 0 0 4
+CL 220 1 0 0 4
+CL 221 1 0 0 4
+CL 222 1 0 0 4
+CL 223 1 0 0 4
+CL 224 1 0 0 4
+CL 225 1 0 0 4
+CL 226 1 0 0 4
+CL 227 1 0 0 4
+CL 228 1 0 0 4
+CL 229 1 0 0 4
+CL 230 1 0 0 4
+CL 231 1 0 0 4
+CL 232 1 0 0 4
+CL 233 1 0 0 4
+CL 234 1 0 0 4
+CL 235 1 0 0 4
+CL 236 1 0 0 4
+CL 237 1 0 0 4
+CL 238 1 0 0 4
+CL 239 1 0 0 4
+CL 240 1 0 0 4
+CL 241 1 0 0 4
+CL 242 1 0 0 4
+CL 243 1 0 0 4
+CL 244 1 0 0 4
+CL 245 1 0 0 4
+CL 246 1 0 0 4
+CL 247 1 0 0 4
+CL 248 1 0 0 4
+CL 249 1 0 0 4
+CL 250 1 0 0 4
+CL 251 1 0 0 4
+CL 252 1 0 0 4
+CL 253 1 0 0 4
+CL 254 1 0 0 4
+CL 255 1 0 0 4
+CL 256 1 0 0 4
+CL 257 1 0 0 4
+CL 258 1 0 0 4
+CL 259 1 0 0 4
+CL 260 1 0 0 4
+CL 261 1 0 0 4
+CL 262 1 0 0 4
+CL 263 1 0 0 4
+CL 264 1 0 0 4
+CL 265 1 0 0 4
+CL 266 1 0 0 4
+CL 267 1 0 0 4
+CL 268 1 0 0 4
+CL 269 1 0 0 4
+CL 270 1 0 0 4
+CL 271 1 0 0 4
+CL 272 1 0 0 4
+CL 273 1 0 0 4
+CL 274 1 0 0 4
+CL 275 1 0 0 4
+CL 276 1 0 0 4
+CL 277 1 0 0 4
+CL 278 1 0 0 4
+CL 279 1 0 0 4
+CL 280 1 0 0 4
+CL 281 1 0 0 4
+CL 282 1 0 0 4
+CL 283 1 0 0 4
+CL 284 1 0 0 4
+CL 285 1 0 0 4
+CL 286 1 0 0 4
+CL 287 1 0 0 4
+PI 4195137105
+SH 1078863928
+SA 0 0 0 0
+SA 1 0 1 0
+SA 2 0 2 0
+SA 3 0 2 1
+SA 4 0 3 0
+SA 5 544 4 0
+SA 6 0 2 2
+SA 7 0 2 3
+SA 8 0 2 4
+SA 9 0 2 5
+SA 10 0 2 6
+SA 11 0 5 0
+SA 12 0 2 7
+SA 13 0 2 8
+SA 14 0 2 9
+SA 15 0 6 0
+SA 16 0 7 0
+SA 17 0 2 10
+SA 18 0 8 0
+SA 19 0 2 11
+SA 20 0 2 12
+SA 21 0 9 0
+SA 22 0 10 0
+SA 23 0 11 0
+SA 24 0 12 0
+SA 25 0 13 0
+SA 26 0 14 0
+SA 27 0 15 0
+SA 28 0 16 0
+SA 29 64 2 13
+SA 30 64 2 14
+SA 31 65 2 15
+SA 32 0 17 0
+SA 33 0 18 0
+SA 34 1 2 16
+SA 35 0 19 0
+SA 36 1 2 17
+SA 37 0 2 18
+SA 38 0 2 19
+SA 39 0 20 0
