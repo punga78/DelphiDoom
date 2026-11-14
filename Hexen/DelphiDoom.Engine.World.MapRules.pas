@@ -12,13 +12,22 @@ unit DelphiDoom.Engine.World.MapRules;
 
 interface
 
+// The same units, in the same order, as the old p_map.pas of the game: a name that two units
+// declare is found where it was found before
 uses
+  DelphiDoom.MathCore.Types,
+  m_rnd,
+  i_system,
   doomdef,
-  m_fixed,
   p_local,
   p_mobj_h,
+  s_sound,
+  m_fixed,
+  tables,
   d_player,
-  r_defs;
+  r_defs,
+// Data.
+  sounddata;
 
 type
   /// <summary>
@@ -38,6 +47,14 @@ type
       /// <summary>A teleported thing is put on the floor of the destination</summary>
       TeleportSetsZ = False;
       /// <summary>The step a sliding thing climbs</summary>
+      /// <summary>The flags of a thing that runs no special of the lines it touches or crosses</summary>
+      NoSpecHitFlags = MF_TELEPORT or MF_NOCLIP;
+      /// <summary>A move stopped by a thing or by a wall pushes the lines it touched</summary>
+      PushesLinesWhenBlocked = True;
+      /// <summary>The dropoff a thing does not walk over</summary>
+      DropoffHeight = 24 * FRACUNIT;
+      /// <summary>What a thing that jumps down adds to it</summary>
+      JumpDownMargin = 120 * FRACUNIT;
       SlideStepMargin = 24 * FRACUNIT;
 
     /// <summary>The sector of a point (Doom follows the original nodes while an old demo plays)</summary>
@@ -48,8 +65,8 @@ type
     class procedure MarkJustAppeared(thing: Pmobj_t); static; inline;
     /// <summary>The player flies: no room for a jump is added under the sky</summary>
     class function HasFlightPower(const p: Pplayer_t): boolean; static; inline;
-    /// <summary>The two things overlap in height</summary>
-    class function ThingsInSameZ(const A, B: Pmobj_t): boolean; static;
+    /// <summary>P_ThingsInSameZ compares the two things as the versions before 2.07 did</summary>
+    class function KeepsOldSameZ(const A, B: Pmobj_t): boolean; static; inline;
     /// <summary>What P_CheckPosition clears before it starts (Strife: the blocking line)</summary>
     class procedure BeginCheckPosition; static; inline;
     /// <summary>A thing with these flags is checked against nothing</summary>
@@ -101,6 +118,35 @@ type
     class function SuspendPickup(mobj: Pmobj_t): integer; static; inline;
     /// <summary>Puts back the flags that SuspendPickup gave</summary>
     class procedure RestorePickup(mobj: Pmobj_t; const AFlags: integer); static; inline;
+    /// <summary>A thing thrown by a blast hurts itself against a wall (only Hexen)</summary>
+    class procedure BlastedHitsWall(mo: Pmobj_t); static; inline;
+    /// <summary>
+    ///   The part of PIT_CheckLine for the things that are not missiles: false when the line
+    ///   blocks tmthing (tmbounceline is set and the push specials are run)
+    /// </summary>
+    class function CheckLineBlocking(ld: Pline_t): boolean; static;
+    /// <summary>The same for PIT_CheckLineTM (the check that knows the slopes)</summary>
+    class function CheckLineBlockingTM(ld: Pline_t): boolean; static;
+    /// <summary>The position is taken by a thing the mover can step on (only Hexen)</summary>
+    class function StepsOnBlockingThing(thing: Pmobj_t): boolean; static;
+    /// <summary>The thing moves even where the ceiling is lower than its head</summary>
+    class function IgnoresCeilingFit(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>A flying thing hits the ceiling or the edge of a floor and is pushed back (only Hexen)</summary>
+    class function FlightBlocked(thing: Pmobj_t): boolean; static;
+    /// <summary>The step is too high for a thing on foot (Strife: 16 units for what is not a robot)</summary>
+    class function StepTooHighOnFoot(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>The thing climbs a step of any height</summary>
+    class function IgnoresStepHeight(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>The step is too high for a missile (only Strife)</summary>
+    class function MissileStepTooHigh(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>The thing goes over a dropoff of any height</summary>
+    class function IgnoresDropoff(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>The thing stays on the kind of floor it is on</summary>
+    class function CannotLeaveFloorPic(thing: Pmobj_t): boolean; static; inline;
+    /// <summary>After a move: the feet of the thing sink in the floor it is on, or not</summary>
+    class procedure UpdateFloorClip(thing: Pmobj_t); static;
+    /// <summary>The thing crossed a special line</summary>
+    class procedure CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t); static;
     /// <summary>
     ///   Rechecks the things of a sector that moved through the list of the things that touch
     ///   it; false when the caller has to walk the blockmap instead
@@ -123,10 +169,7 @@ procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
 //==============================================================================
 function PIT_ChangeSector(thing: Pmobj_t): boolean;
 
-function PIT_CheckLine(ld: Pline_t): boolean;
-function PIT_CheckLineTM(ld: Pline_t): boolean;
 function PIT_CheckThing(thing: Pmobj_t): boolean;
-function P_TryMoveGame(thing: Pmobj_t; x, y: fixed_t): boolean;
 function PTR_ShootTraverse(intr: Pintercept_t): boolean;
 
 //==============================================================================
@@ -157,19 +200,15 @@ implementation
 
 uses
   d_delphi,
-  DelphiDoom.MathCore.Types,
   doomdata,
   g_game,
-  i_system,
   info_h,
   info,
   info_common,
   info_rnd,
-  m_rnd,
   p_common,
   p_gravity,
   p_setup,
-  p_map,
   p_maputl,
   p_inter,
   p_mobj,
@@ -185,10 +224,8 @@ uses
   r_sky,
   r_intrpl,
   r_translations,
-  s_sound,
-  sounddata,
-  tables,
-  z_zone;
+  z_zone,
+  p_map;
 
 var
   tsthing: Pmobj_t;
@@ -222,9 +259,9 @@ begin
   result := p.powers[Ord(pw_flight)] <> 0;
 end;
 
-class function TMapGameRules.ThingsInSameZ(const A, B: Pmobj_t): boolean;
+class function TMapGameRules.KeepsOldSameZ(const A, B: Pmobj_t): boolean;
 begin
-  result := P_ThingsInSameZ(A, B);
+  result := false;
 end;
 
 class procedure TMapGameRules.BeginCheckPosition;
@@ -432,6 +469,222 @@ begin
   result := false;
 end;
 
+class procedure TMapGameRules.BlastedHitsWall(mo: Pmobj_t);
+begin
+  if mo.flags2 and MF2_BLASTED <> 0 then
+    P_DamageMobj(mo, nil, nil, _SHR(mo.mass, 5));
+end;
+
+class function TMapGameRules.CheckLineBlocking(ld: Pline_t): boolean;
+begin
+  if G_PlayingEngineVersion <= VERSION206 then
+  begin
+    if ld.flags and ML_BLOCKING <> 0 then
+    begin
+      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      begin
+        if tmthing.flags2 and MF2_BLASTED <> 0 then
+          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+        P_CheckForPushSpecial(ld, 0, tmthing);
+        result := false;  // explicitly blocking everything
+        tmbounceline := ld;
+        exit;
+      end;
+    end;
+
+    if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+    begin
+      if tmthing.flags2 and MF2_BLASTED <> 0 then
+        P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+      result := false;  // block monsters only
+      tmbounceline := ld;
+      exit;
+    end;
+  end
+  else
+  begin
+    if ld.flags and ML_BLOCKING <> 0 then
+    begin
+      if tmthing.flags2 and MF2_BLASTED <> 0 then
+        P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+      P_CheckForPushSpecial(ld, 0, tmthing);
+      result := false;  // explicitly blocking everything
+      tmbounceline := ld;
+      exit;
+    end;
+
+    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+      begin
+        if tmthing.flags2 and MF2_BLASTED <> 0 then
+          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+        result := false;  // block monsters only
+        tmbounceline := ld;
+        exit;
+      end;
+  end;
+
+  result := true;
+end;
+
+class function TMapGameRules.CheckLineBlockingTM(ld: Pline_t): boolean;
+begin
+  if G_PlayingEngineVersion <= VERSION206 then
+  begin
+    if ld.flags and ML_BLOCKING <> 0 then
+      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      begin
+        if tmthing.flags2 and MF2_BLASTED <> 0 then
+          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+        P_CheckForPushSpecial(ld, 0, tmthing);
+        result := false;  // explicitly blocking everything
+        tmbounceline := ld;
+        exit;
+      end;
+
+    if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+    begin
+      if tmthing.flags2 and MF2_BLASTED <> 0 then
+        P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+      result := false;  // block monsters only
+      tmbounceline := ld;
+      exit;
+    end;
+  end
+  else
+  begin
+    if ld.flags and ML_BLOCKING <> 0 then
+    begin
+      if tmthing.flags2 and MF2_BLASTED <> 0 then
+        P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+      P_CheckForPushSpecial(ld, 0, tmthing);
+      result := false;  // explicitly blocking everything
+      tmbounceline := ld;
+      exit;
+    end;
+
+    if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
+      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
+      begin
+        if tmthing.flags2 and MF2_BLASTED <> 0 then
+          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
+        result := false;  // block monsters only
+        tmbounceline := ld;
+        exit;
+      end;
+  end;
+
+  result := true;
+end;
+
+class function TMapGameRules.StepsOnBlockingThing(thing: Pmobj_t): boolean;
+begin
+  if (BlockingMobj = nil) or
+     (BlockingMobj.player <> nil) or
+     (thing.player = nil) then
+  begin
+    result := false;
+    exit;
+  end;
+
+  if (BlockingMobj.z + BlockingMobj.height - thing.z > 24 * FRACUNIT) or
+     (Psubsector_t(BlockingMobj.subsector).sector.ceilingheight - (BlockingMobj.z + BlockingMobj.height) < thing.height) or
+     (tmceilingz - (BlockingMobj.z + BlockingMobj.height) < thing.height) then
+  begin
+    result := false;
+    exit;
+  end;
+
+  result := true;
+end;
+
+class function TMapGameRules.IgnoresCeilingFit(thing: Pmobj_t): boolean;
+begin
+  result := (thing.flags and MF_TELEPORT <> 0) or
+    (thing._type = Ord(MT_LIGHTNING_CEILING)) or
+    (thing.flags2 and MF2_FLY <> 0);
+end;
+
+class function TMapGameRules.FlightBlocked(thing: Pmobj_t): boolean;
+begin
+  if thing.flags2 and MF2_FLY <> 0 then
+  begin
+    if thing.z + thing.height > tmceilingz then
+    begin
+      thing.momz := thing.momz -8 * FRACUNIT;
+      result := true;
+      exit;
+    end;
+
+    if (thing.z < tmfloorz) and (tmfloorz - tmdropoffz > 24 * FRACUNIT) then
+    begin
+      thing.momz := 8 * FRACUNIT;
+      result := true;
+      exit;
+    end;
+
+  end;
+
+  result := false;
+end;
+
+class function TMapGameRules.StepTooHighOnFoot(thing: Pmobj_t): boolean;
+begin
+  result := false;
+end;
+
+class function TMapGameRules.IgnoresStepHeight(thing: Pmobj_t): boolean;
+begin
+  // The Minotaur floor fire (MT_MNTRFX2) can step up any amount
+  result := (thing.flags and MF_TELEPORT <> 0) or
+    (thing._type = Ord(MT_MNTRFX2)) or
+    (thing._type = Ord(MT_LIGHTNING_FLOOR));
+end;
+
+class function TMapGameRules.MissileStepTooHigh(thing: Pmobj_t): boolean;
+begin
+  result := false;
+end;
+
+class function TMapGameRules.IgnoresDropoff(thing: Pmobj_t): boolean;
+begin
+  // Can't move over a dropoff unless it's been blasted
+  result := thing.flags2 and MF2_BLASTED <> 0;
+end;
+
+class function TMapGameRules.CannotLeaveFloorPic(thing: Pmobj_t): boolean;
+begin
+  result := thing.flags2 and MF2_CANTLEAVEFLOORPIC <> 0;
+end;
+
+class procedure TMapGameRules.UpdateFloorClip(thing: Pmobj_t);
+begin
+  if thing.flags2 and MF2_FLOORCLIP <> 0 then
+  begin
+    if (thing.z = Psubsector_t(thing.subsector).sector.floorheight) and
+       (P_GetThingFloorType(thing) >= FLOOR_LIQUID) then
+      thing.floorclip := FOOTCLIPSIZE
+    else
+      thing.floorclip := 0;
+  end;
+end;
+
+class procedure TMapGameRules.CrossSpecialLine(ld: Pline_t; oldside: integer; thing: Pmobj_t);
+begin
+  if thing.player <> nil then
+  begin
+    P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
+  end
+  else if thing.flags2 and MF2_MCROSS <> 0 then
+  begin
+    P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
+  end
+  else if thing.flags2 and MF2_PCROSS <> 0 then
+  begin
+    P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
+  end;
+end;
+
 //==============================================================================
 // P_CheckForPushSpecial
 //
@@ -447,278 +700,6 @@ begin
     else if mobj.flags2 and MF2_IMPACT <> 0 then
       P_ActivateLine(line, mobj, side, SPAC_IMPACT);
   end;
-end;
-
-//==============================================================================
-//
-// PIT_CheckLine
-// Adjusts tmfloorz and tmceilingz as lines are contacted
-//
-//==============================================================================
-function PIT_CheckLine(ld: Pline_t): boolean;
-begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // A line has been hit
-
-  // The moving thing's destination position will cross
-  // the given line.
-  // If this should not be allowed, return false.
-  // If the line is special, keep track of it
-  // to process later if the move is proven ok.
-  // NOTE: specials are NOT sorted by order,
-  // so two special lines that are only 8 pixels apart
-  // could be crossed in either order.
-
-  if ld.backsector = nil then
-  begin
-    if tmthing.flags2 and MF2_BLASTED <> 0 then
-      P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-    P_CheckForPushSpecial(ld, 0, tmthing);
-    result := false;  // one sided line
-    tmbounceline := ld;
-    exit;
-  end;
-
-  if tmthing.flags and MF_MISSILE = 0 then
-  begin
-    if G_PlayingEngineVersion <= VERSION206 then
-    begin
-      if ld.flags and ML_BLOCKING <> 0 then
-      begin
-        if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        begin
-          if tmthing.flags2 and MF2_BLASTED <> 0 then
-            P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-          P_CheckForPushSpecial(ld, 0, tmthing);
-          result := false;  // explicitly blocking everything
-          tmbounceline := ld;
-          exit;
-        end;
-      end;
-
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
-      begin
-        if tmthing.flags2 and MF2_BLASTED <> 0 then
-          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-        result := false;  // block monsters only
-        tmbounceline := ld;
-        exit;
-      end;
-    end
-    else
-    begin
-      if ld.flags and ML_BLOCKING <> 0 then
-      begin
-        if tmthing.flags2 and MF2_BLASTED <> 0 then
-          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-        P_CheckForPushSpecial(ld, 0, tmthing);
-        result := false;  // explicitly blocking everything
-        tmbounceline := ld;
-        exit;
-      end;
-
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
-        begin
-          if tmthing.flags2 and MF2_BLASTED <> 0 then
-            P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-          result := false;  // block monsters only
-          tmbounceline := ld;
-          exit;
-        end;
-    end;
-  end;
-
-  // set openrange, opentop, openbottom
-  P_LineOpening(ld, true);
-
-  // adjust floor / ceiling heights
-  if opentop < tmceilingz then
-  begin
-    tmceilingz := opentop;
-    ceilingline := ld;
-  end;
-
-  if openbottom > tmfloorz then
-    tmfloorz := openbottom;
-
-  if lowfloor < tmdropoffz then
-    tmdropoffz := lowfloor;
-
-  // if contacted a special line, add it to the list
-  if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
-  begin
-    if maxspechit = 0 then
-    begin
-      maxspechit := 64;
-      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
-    end
-    else if numspechit = maxspechit then
-    begin
-      maxspechit := maxspechit + 8;
-      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
-    end;
-
-    spechit[numspechit] := ld;
-    inc(numspechit);
-
-  end;
-
-  result := true;
-end;
-
-//==============================================================================
-// PIT_CheckLineTM
-//
-// JVAL: Slopes
-//
-//==============================================================================
-function PIT_CheckLineTM(ld: Pline_t): boolean;
-begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // JVAL: VERSION 206
-  if ld.flags and ML_NOCLIP <> 0 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // A line has been hit
-
-  // The moving thing's destination position will cross
-  // the given line.
-  // If this should not be allowed, return false.
-  // If the line is special, keep track of it
-  // to process later if the move is proven ok.
-  // NOTE: specials are NOT sorted by order,
-  // so two special lines that are only 8 pixels apart
-  // could be crossed in either order.
-
-  if ld.backsector = nil then
-  begin
-    if tmthing.flags2 and MF2_BLASTED <> 0 then
-      P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-    P_CheckForPushSpecial(ld, 0, tmthing);
-    result := false;  // one sided line
-    tmbounceline := ld;
-    exit;
-  end;
-
-  if tmthing.flags and MF_MISSILE = 0 then
-  begin
-    if G_PlayingEngineVersion <= VERSION206 then
-    begin
-      if ld.flags and ML_BLOCKING <> 0 then
-        if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        begin
-          if tmthing.flags2 and MF2_BLASTED <> 0 then
-            P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-          P_CheckForPushSpecial(ld, 0, tmthing);
-          result := false;  // explicitly blocking everything
-          tmbounceline := ld;
-          exit;
-        end;
-
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
-      begin
-        if tmthing.flags2 and MF2_BLASTED <> 0 then
-          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-        result := false;  // block monsters only
-        tmbounceline := ld;
-        exit;
-      end;
-    end
-    else
-    begin
-      if ld.flags and ML_BLOCKING <> 0 then
-      begin
-        if tmthing.flags2 and MF2_BLASTED <> 0 then
-          P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-        P_CheckForPushSpecial(ld, 0, tmthing);
-        result := false;  // explicitly blocking everything
-        tmbounceline := ld;
-        exit;
-      end;
-
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) then
-        begin
-          if tmthing.flags2 and MF2_BLASTED <> 0 then
-            P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-          result := false;  // block monsters only
-          tmbounceline := ld;
-          exit;
-        end;
-    end;
-  end;
-
-  // set openrange, opentop, openbottom
-{  if G_PlayingEngineVersion >= VERSION205 then
-    P_LineOpeningTM206(ld, true)
-  else}
-    P_LineOpeningTM(ld, true);
-
-  // adjust floor / ceiling heights
-  if opentop < tmceilingz then
-  begin
-    tmceilingz := opentop;
-    ceilingline := ld;
-  end;
-
-  if openbottom > tmfloorz then
-    tmfloorz := openbottom;
-
-  if lowfloor < tmdropoffz then
-    tmdropoffz := lowfloor;
-
-  // if contacted a special line, add it to the list
-  if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
-  begin
-    if maxspechit = 0 then
-    begin
-      maxspechit := 64;
-      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
-    end
-    else if numspechit = maxspechit then
-    begin
-      maxspechit := maxspechit + 8;
-      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
-    end;
-
-    spechit[numspechit] := ld;
-    inc(numspechit);
-
-  end;
-
-  result := true;
 end;
 
 //==============================================================================
@@ -1226,276 +1207,6 @@ begin
   end
   else
     result := thing.flags and MF_SOLID = 0;
-end;
-
-//==============================================================================
-//
-// P_TryMove
-// Attempt to move to a new position,
-// crossing special lines unless MF_TELEPORT is set.
-//
-//==============================================================================
-function P_TryMoveGame(thing: Pmobj_t; x, y: fixed_t): boolean;
-var
-  oldx: fixed_t;
-  oldy: fixed_t;
-  side: integer;
-  oldside: integer;
-  ld: Pline_t;
-  p: Pplayer_t;
-  oldfloorz: fixed_t; // JVAL: Slopes
-  oldonfloorz: boolean;
-  dropoffmargin: fixed_t; // JVAL: Version 204
-  jumpupmargin: fixed_t;
-
-  procedure pushline;
-  var
-    numSpecHitTemp: integer;
-  begin
-    if thing.flags and (MF_TELEPORT or MF_NOCLIP) = 0 then
-    begin
-      if tmthing.flags2 and MF2_BLASTED <> 0 then
-        P_DamageMobj(tmthing, nil, nil, _SHR(tmthing.mass, 5));
-      numSpecHitTemp := numspechit;
-      while numSpecHitTemp > 0 do
-      begin
-        dec(numSpecHitTemp);
-        // see if the line was crossed
-        ld := spechit[numSpecHitTemp];
-        side := P_PointOnLineSide(thing.x, thing.y, ld);
-        P_CheckForPushSpecial(ld, side, thing);
-      end;
-    end;
-  end;
-
-begin
-  floatok := false;
-  if not P_CheckPosition(thing, x, y) then
-  begin // Solid wall or thing
-    if (BlockingMobj = nil) or
-       (BlockingMobj.player <> nil) or
-       (thing.player = nil) then
-    begin
-      pushline;
-      result := false;
-      exit;
-    end;
-
-    if (BlockingMobj.z + BlockingMobj.height - thing.z > 24 * FRACUNIT) or
-       (Psubsector_t(BlockingMobj.subsector).sector.ceilingheight - (BlockingMobj.z + BlockingMobj.height) < thing.height) or
-       (tmceilingz - (BlockingMobj.z + BlockingMobj.height) < thing.height) then
-    begin
-      pushline;
-      result := false;
-      exit;
-    end;
-
-  end;
-
-  if thing.flags and MF_NOCLIP = 0 then
-  begin
-    if tmceilingz - tmfloorz < thing.height then
-    begin
-      pushline;
-      result := false;  // doesn't fit
-      exit;
-    end;
-
-    floatok := true;
-
-    if (thing.flags and MF_TELEPORT = 0) and
-       (tmceilingz - thing.z < thing.height) and
-       (thing._type <> Ord(MT_LIGHTNING_CEILING)) and
-       (thing.flags2 and MF2_FLY = 0) then
-    begin // mobj must lower itself to fit
-      pushline;
-      result := false;
-      exit;
-    end;
-
-    if thing.flags2 and MF2_FLY <> 0 then
-    begin
-      if thing.z + thing.height > tmceilingz then
-      begin
-        thing.momz := thing.momz -8 * FRACUNIT;
-        pushline;
-        result := false;
-        exit;
-      end;
-
-      if (thing.z < tmfloorz) and (tmfloorz - tmdropoffz > 24 * FRACUNIT) then
-      begin
-        thing.momz := 8 * FRACUNIT;
-        pushline;
-        result := false;
-        exit;
-      end;
-
-    end;
-
-    // JVAL: Do not step up in ladder movement
-    p := thing.player;
-    if p <> nil then
-      if p.laddertics > 0 then
-        if tmfloorz > thing.z then
-        begin
-          result := false;
-          exit;
-        end;
-
-    // JVAL: 20210210 - maxstepheight field
-    if thing.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
-      jumpupmargin := 0
-    else
-    begin
-      if thing.info.maxstepheight > 0 then
-      begin
-        jumpupmargin := thing.info.maxstepheight;
-        if jumpupmargin < 64 then
-          jumpupmargin := jumpupmargin * FRACUNIT;
-      end
-      else
-        jumpupmargin := 24 * FRACUNIT;
-    end;
-
-    // JVAL: Version 205
-    if G_PlayingEngineVersion >= VERSION205 then
-      if (thing.flags2_ex and MF2_EX_JUMPUP <> 0) and (N_Random > 20) then
-        jumpupmargin := jumpupmargin + 32 * FRACUNIT;
-
-    if (thing.flags and MF_TELEPORT = 0) and
-      // The Minotaur floor fire (MT_MNTRFX2) can step up any amount
-       (thing._type <> Ord(MT_MNTRFX2)) and
-       (thing._type <> Ord(MT_LIGHTNING_FLOOR)) and
-       (tmfloorz - thing.z > jumpupmargin) then
-    begin
-      pushline;
-      result := false;
-      exit;
-    end;
-
-    if thing.flags4_ex and MF4_EX_CANNOTDROPOFF <> 0 then
-      dropoffmargin := 0
-    else
-    begin
-      // JVAL: 20210210 - maxdropoffheight field
-      if thing.info.maxdropoffheight > 0 then
-      begin
-        dropoffmargin := thing.info.maxdropoffheight;
-        if dropoffmargin < 64 then
-          dropoffmargin := dropoffmargin * FRACUNIT;
-      end
-      else
-        dropoffmargin := 24 * FRACUNIT;
-    end;
-
-    // JVAL: Version 204
-    if G_PlayingEngineVersion >= VERSION204 then
-      if (thing.flags2_ex and MF2_EX_JUMPDOWN <> 0) and (N_Random > 20) then
-        dropoffmargin := dropoffmargin + 120 * FRACUNIT;
-
-    if (thing.flags and (MF_DROPOFF or MF_FLOAT) = 0) and
-       (tmfloorz - tmdropoffz > dropoffmargin) and
-       (thing.flags2 and MF2_BLASTED = 0) then
-    begin
-      result := false; // Can't move over a dropoff unless it's been blasted
-      exit;
-    end;
-
-    if (thing.flags2 and MF2_CANTLEAVEFLOORPIC <> 0) and
-       ((tmfloorpic <> Psubsector_t(thing.subsector).sector.floorpic) or
-         (tmfloorz - thing.z <> 0)) then
-    begin // must stay within a sector of a certain floor type
-      result := false;
-      exit;
-    end;
-
-  end;
-
-  // the move is ok,
-  // so link the thing into its new position
-  oldfloorz := P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
-  oldonfloorz := oldfloorz >= thing.z; // JVAL: Slopes
-  P_UnsetThingPosition(thing);
-
-  oldx := thing.x;
-  oldy := thing.y;
-
-  thing.floorz := tmfloorz;
-  thing.ceilingz := tmceilingz;
-
-  thing.floorpic := tmfloorpic;
-  thing.x := x;
-  thing.y := y;
-
-  P_SetThingPosition(thing);
-
-  // JVAL: Slopes
-  if Psubsector_t(thing.subsector).sector.renderflags and SRF_SLOPED <> 0 then
-  begin
-    p := thing.player;
-    if p = nil then
-    begin
-      if thing.z < tmfloorz then
-        thing.z := tmfloorz;
-    end
-    else
-    begin
-      p.slopetics := SLOPECOUNTDOWN;
-      if oldonfloorz then
-        if oldfloorz > tmfloorz then
-          thing.momz := thing.momz + (tmfloorz - oldfloorz);
-    end;
-
-  end;
-
-  // JVAL: Slopes - 3d Floors SOS -> Get right P_GetThingFloorType()
-  if thing.flags2 and MF2_FLOORCLIP <> 0 then
-  begin
-    if (thing.z = Psubsector_t(thing.subsector).sector.floorheight) and
-       (P_GetThingFloorType(thing) >= FLOOR_LIQUID) then
-      thing.floorclip := FOOTCLIPSIZE
-    else
-      thing.floorclip := 0;
-  end;
-
-  // if any special lines were hit, do the effect
-  if thing.flags and (MF_TELEPORT or MF_NOCLIP) = 0 then
-  begin
-    while numspechit > 0 do
-    begin
-      // see if the line was crossed
-      dec(numspechit);
-      ld := spechit[numspechit];
-      side := P_PointOnLineSide(thing.x, thing.y, ld);
-      oldside := P_PointOnLineSide(oldx, oldy, ld);
-      if side <> oldside then
-      begin
-        // JVAL: Script Events
-        if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
-          if thing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-            PS_EventCrossLine(thing, pDiff(ld, lines, SizeOf(line_t)), oldside);
-
-        if ld.special <> 0 then
-        begin
-          if thing.player <> nil then
-          begin
-            P_ActivateLine(ld, thing, oldside, SPAC_CROSS);
-          end
-          else if thing.flags2 and MF2_MCROSS <> 0 then
-          begin
-            P_ActivateLine(ld, thing, oldside, SPAC_MCROSS);
-          end
-          else if thing.flags2 and MF2_PCROSS <> 0 then
-          begin
-            P_ActivateLine(ld, thing, oldside, SPAC_PCROSS);
-          end;
-        end;
-      end;
-    end;
-  end;
-
-  result := true;
 end;
 
 //==============================================================================

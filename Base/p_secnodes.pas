@@ -68,17 +68,18 @@ var
 
 implementation
 
+// p_map and the rules of the game last: this code was part of p_map
 uses
   d_delphi,
-  DelphiDoom.Engine.World.MapRules,
   DelphiDoom.MathCore.Types,
   doomdef,
   p_local,
-  p_map,
   p_maputl,
   p_setup,
   r_main,
-  z_zone;
+  z_zone,
+  DelphiDoom.Engine.World.MapRules,
+  p_map;
 
 // phares 3/16/98
 //

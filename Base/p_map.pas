@@ -220,7 +220,6 @@ implementation
 uses
   d_delphi,
   doomdata,
-  DelphiDoom.Engine.World.MapRules,
   g_game,
   info_h,
   info,
@@ -243,7 +242,8 @@ uses
   r_sky,
   r_intrpl,
   r_translations,
-  z_zone;
+  z_zone,
+  DelphiDoom.Engine.World.MapRules;
 
 //==============================================================================
 //
@@ -421,57 +421,190 @@ end;
 
 //==============================================================================
 //
-// JVAL: 20220313 - New function
-// P_ThingHeightOffsZ
+// MOVEMENT ITERATOR FUNCTIONS
+//
+// PIT_CheckLine
+// Adjusts tmfloorz and tmceilingz as lines are contacted
 //
 //==============================================================================
-function P_ThingHeightOffsZ(const mo: Pmobj_t): fixed_t;
+function PIT_CheckLine(ld: Pline_t): boolean;
 begin
-  if mo.flags and MF_SPAWNCEILING <> 0 then
-    result := mo.height
-  else
-    result := 0;
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // A line has been hit
+
+  // The moving thing's destination position will cross
+  // the given line.
+  // If this should not be allowed, return false.
+  // If the line is special, keep track of it
+  // to process later if the move is proven ok.
+  // NOTE: specials are NOT sorted by order,
+  // so two special lines that are only 8 pixels apart
+  // could be crossed in either order.
+
+  if ld.backsector = nil then
+  begin
+    TMapGameRules.BlastedHitsWall(tmthing);
+    P_CheckForPushSpecial(ld, 0, tmthing);
+    result := false;  // one sided line
+    tmbounceline := ld;
+    exit;
+  end;
+
+  if tmthing.flags and MF_MISSILE = 0 then
+    if not TMapGameRules.CheckLineBlocking(ld) then
+    begin
+      result := false;
+      exit;
+    end;
+
+  // set openrange, opentop, openbottom
+  P_LineOpening(ld, true);
+
+  // adjust floor / ceiling heights
+  if opentop < tmceilingz then
+  begin
+    tmceilingz := opentop;
+    ceilingline := ld;
+  end;
+
+  if openbottom > tmfloorz then
+    tmfloorz := openbottom;
+
+  if lowfloor < tmdropoffz then
+    tmdropoffz := lowfloor;
+
+  // if contacted a special line, add it to the list
+  if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
+  begin
+    if maxspechit = 0 then
+    begin
+      maxspechit := 64;
+      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
+    end
+    else if numspechit = maxspechit then
+    begin
+      maxspechit := maxspechit + 8;
+      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
+    end;
+
+    spechit[numspechit] := ld;
+    inc(numspechit);
+
+  end;
+
+  result := true;
 end;
 
 //==============================================================================
+// PIT_CheckLineTM
 //
-// JVAL: 20200308 - New function
-// P_ThingsInSameZ206
+// JVAL: Slopes
 //
 //==============================================================================
-function P_ThingsInSameZ206(const A, B: Pmobj_t): boolean;
-var
-  Az1, Az2, Bz1, Bz2: fixed_t;
+function PIT_CheckLineTM(ld: Pline_t): boolean;
 begin
-  Az1 := A.z - A.height div 2;
-  if Az1 < A.floorz then
-    Az1 := A.floorz;
-  Az2 := Az1 + A.height;
-  if Az2 > A.ceilingz then
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
   begin
-    Az2 := A.ceilingz;
-    Az1 := Az2 - A.height;
-    if Az1 < A.floorz then
-      Az1 := A.floorz;
+    result := true;
+    exit;
   end;
 
-  Bz1 := B.z - B.height div 2;
-  if Bz1 < B.floorz then
-    Bz1 := B.floorz;
-  Bz2 := Bz1 + B.height;
-  if Bz2 > B.ceilingz then
+  // JVAL: VERSION 206
+  if ld.flags and ML_NOCLIP <> 0 then
   begin
-    Bz2 := B.ceilingz;
-    Bz1 := Bz2 - B.height;
-    if Bz1 < B.floorz then
-      Bz1 := B.floorz;
+    result := true;
+    exit;
   end;
 
-  result :=
-    IsIntegerInRange(Az1, Bz1, Bz2) or
-    IsIntegerInRange(Az2, Bz1, Bz2) or
-    IsIntegerInRange(Bz1, Az1, Az2) or
-    IsIntegerInRange(Bz2, Az1, Az2);
+  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+  begin
+    result := true;
+    exit;
+  end;
+
+  // A line has been hit
+
+  // The moving thing's destination position will cross
+  // the given line.
+  // If this should not be allowed, return false.
+  // If the line is special, keep track of it
+  // to process later if the move is proven ok.
+  // NOTE: specials are NOT sorted by order,
+  // so two special lines that are only 8 pixels apart
+  // could be crossed in either order.
+
+  if ld.backsector = nil then
+  begin
+    TMapGameRules.BlastedHitsWall(tmthing);
+    P_CheckForPushSpecial(ld, 0, tmthing);
+    result := false;  // one sided line
+    tmbounceline := ld;
+    exit;
+  end;
+
+  if tmthing.flags and MF_MISSILE = 0 then
+    if not TMapGameRules.CheckLineBlockingTM(ld) then
+    begin
+      result := false;
+      exit;
+    end;
+
+  // set openrange, opentop, openbottom
+{  if G_PlayingEngineVersion >= VERSION205 then
+    P_LineOpeningTM206(ld, true)
+  else}
+    P_LineOpeningTM(ld, true);
+
+  // adjust floor / ceiling heights
+  if opentop < tmceilingz then
+  begin
+    tmceilingz := opentop;
+    ceilingline := ld;
+  end;
+
+  if openbottom > tmfloorz then
+    tmfloorz := openbottom;
+
+  if lowfloor < tmdropoffz then
+    tmdropoffz := lowfloor;
+
+  // if contacted a special line, add it to the list
+  if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
+  begin
+    if maxspechit = 0 then
+    begin
+      maxspechit := 64;
+      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
+    end
+    else if numspechit = maxspechit then
+    begin
+      maxspechit := maxspechit + 8;
+      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
+    end;
+
+    spechit[numspechit] := ld;
+    inc(numspechit);
+
+  end;
+
+  result := true;
 end;
 
 //==============================================================================
@@ -482,14 +615,19 @@ end;
 function P_ThingsInSameZ(const A, B: Pmobj_t): boolean;
 var
   Az1, Az2, Bz1, Bz2: fixed_t;
-begin
-  if G_PlayingEngineVersion < VERSION207 then
+
+  function _getheightoffs(const mo: Pmobj_t): fixed_t;
   begin
-    result := P_ThingsInSameZ206(A, B);
-    exit;
+    if (G_PlayingEngineVersion < VERSION207) or TMapGameRules.KeepsOldSameZ(A, B) then
+      result := mo.height div 2
+    else if mo.flags and MF_SPAWNCEILING <> 0 then
+      result := mo.height
+    else
+      result := 0;
   end;
 
-  Az1 := A.z - P_ThingHeightOffsZ(A);
+begin
+  Az1 := A.z - _getheightoffs(A);
   if Az1 < A.floorz then
     Az1 := A.floorz;
   Az2 := Az1 + A.height;
@@ -501,7 +639,7 @@ begin
       Az1 := A.floorz;
   end;
 
-  Bz1 := B.z - P_ThingHeightOffsZ(B);
+  Bz1 := B.z - _getheightoffs(B);
   if Bz1 < B.floorz then
     Bz1 := B.floorz;
   Bz2 := Bz1 + B.height;
@@ -513,11 +651,18 @@ begin
       Bz1 := B.floorz;
   end;
 
-  result :=
-    IsIntegerInRange(Az1, Bz1 + 1, Bz2 - 1) or
-    IsIntegerInRange(Az2, Bz1 + 1, Bz2 - 1) or
-    IsIntegerInRange(Bz1, Az1 + 1, Az2 - 1) or
-    IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1);
+  if (G_PlayingEngineVersion < VERSION207) or TMapGameRules.KeepsOldSameZ(A, B) then
+    result :=
+      IsIntegerInRange(Az1, Bz1, Bz2) or
+      IsIntegerInRange(Az2, Bz1, Bz2) or
+      IsIntegerInRange(Bz1, Az1, Az2) or
+      IsIntegerInRange(Bz2, Az1, Az2)
+  else
+    result :=
+      IsIntegerInRange(Az1, Bz1 + 1, Bz2 - 1) or
+      IsIntegerInRange(Az2, Bz1 + 1, Bz2 - 1) or
+      IsIntegerInRange(Bz1, Az1 + 1, Az2 - 1) or
+      IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1)
 end;
 
 //
@@ -906,8 +1051,227 @@ end;
 //
 //==============================================================================
 function P_TryMove(thing: Pmobj_t; x, y: fixed_t): boolean;
+var
+  oldx: fixed_t;
+  oldy: fixed_t;
+  side: integer;
+  oldside: integer;
+  ld: Pline_t;
+  p: Pplayer_t;
+  oldfloorz: fixed_t; // JVAL: Slopes
+  oldonfloorz: boolean;
+  dropoffmargin: fixed_t;
+  jumpupmargin: fixed_t;
+
+  procedure pushline;
+  var
+    numSpecHitTemp: integer;
+  begin
+    if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
+    begin
+      TMapGameRules.BlastedHitsWall(tmthing);
+      numSpecHitTemp := numspechit;
+      while numSpecHitTemp > 0 do
+      begin
+        dec(numSpecHitTemp);
+        // see if the line was crossed
+        ld := spechit[numSpecHitTemp];
+        side := P_PointOnLineSide(thing.x, thing.y, ld);
+        P_CheckForPushSpecial(ld, side, thing);
+      end;
+    end;
+  end;
+
 begin
-  result := P_TryMoveGame(thing, x, y);
+  floatok := false;
+  if not P_CheckPosition(thing, x, y) then
+    if not TMapGameRules.StepsOnBlockingThing(thing) then
+    begin
+      if TMapGameRules.PushesLinesWhenBlocked then
+        pushline;
+      result := false;  // solid wall or thing
+      exit;
+    end;
+
+  if thing.flags and MF_NOCLIP = 0 then
+  begin
+    if tmceilingz - tmfloorz < thing.height then
+    begin
+      pushline;
+      result := false;  // doesn't fit
+      exit;
+    end;
+
+    floatok := true;
+
+    if not TMapGameRules.IgnoresCeilingFit(thing) and
+       (tmceilingz - thing.z < thing.height) then
+    begin
+      pushline;
+      result := false;  // mobj must lower itself to fit
+      exit;
+    end;
+
+    if TMapGameRules.FlightBlocked(thing) then
+    begin
+      pushline;
+      result := false;
+      exit;
+    end;
+
+    if TMapGameRules.StepTooHighOnFoot(thing) then
+    begin
+      result := false;
+      exit;
+    end;
+
+    // JVAL: Do not step up in ladder movement
+    p := thing.player;
+    if p <> nil then
+      if p.laddertics > 0 then
+        if tmfloorz > thing.z then
+        begin
+          result := false;
+          exit;
+        end;
+
+    // JVAL: 20210210 - maxstepheight field
+    if thing.flags4_ex and MF4_EX_CANNOTSTEP <> 0 then
+      jumpupmargin := 0
+    else
+    begin
+      if thing.info.maxstepheight > 0 then
+      begin
+        jumpupmargin := thing.info.maxstepheight;
+        if jumpupmargin < 64 then
+          jumpupmargin := jumpupmargin * FRACUNIT;
+      end
+      else
+        jumpupmargin := 24 * FRACUNIT;
+    end;
+
+    // JVAL: Version 205
+    if G_PlayingEngineVersion >= VERSION205 then
+      if (thing.flags2_ex and MF2_EX_JUMPUP <> 0) and (N_Random > 20) then
+        jumpupmargin := jumpupmargin + 32 * FRACUNIT;
+
+    if not TMapGameRules.IgnoresStepHeight(thing) and
+       (tmfloorz - thing.z > jumpupmargin) then
+    begin
+      pushline;
+      result := false;  // too big a step up
+      exit;
+    end;
+
+    if TMapGameRules.MissileStepTooHigh(thing) then
+    begin
+      result := false;
+      exit;
+    end;
+
+    if thing.flags4_ex and MF4_EX_CANNOTDROPOFF <> 0 then
+      dropoffmargin := 0
+    else
+    begin
+      // JVAL: 20210210 - maxdropoffheight field
+      if thing.info.maxdropoffheight > 0 then
+      begin
+        dropoffmargin := thing.info.maxdropoffheight;
+        if dropoffmargin < 64 then
+          dropoffmargin := dropoffmargin * FRACUNIT;
+      end
+      else
+        dropoffmargin := TMapGameRules.DropoffHeight;
+    end;
+
+    // JVAL: Version 204
+    if G_PlayingEngineVersion >= VERSION204 then
+      if (thing.flags2_ex and MF2_EX_JUMPDOWN <> 0) and (N_Random > 20) then
+        dropoffmargin := dropoffmargin + TMapGameRules.JumpDownMargin;
+
+    if (thing.flags and (MF_DROPOFF or MF_FLOAT) = 0) and
+       (tmfloorz - tmdropoffz > dropoffmargin) and
+       not TMapGameRules.IgnoresDropoff(thing) then
+    begin
+      result := false;  // don't stand over a dropoff
+      exit;
+    end;
+
+    // JVAL: Version 204
+    if TMapGameRules.CannotLeaveFloorPic(thing) and
+       ((tmfloorpic <> Psubsector_t(thing.subsector).sector.floorpic) or
+         (tmfloorz - thing.z <> 0)) then
+    begin // must stay within a sector of a certain floor type
+      result := false;
+      exit;
+    end;
+
+  end;
+
+  // the move is ok,
+  // so link the thing into its new position
+  oldfloorz := P_FloorHeight(thing.x, thing.y); // JVAL: Slopes
+  oldonfloorz := oldfloorz >= thing.z; // JVAL: Slopes
+  P_UnsetThingPosition(thing);
+
+  oldx := thing.x;
+  oldy := thing.y;
+
+  thing.floorz := tmfloorz;
+  thing.ceilingz := tmceilingz;
+
+  TMapGameRules.StoreFloorPic(thing);
+  thing.x := x;
+  thing.y := y;
+
+  P_SetThingPosition(thing);
+
+  // JVAL: Slopes
+  if Psubsector_t(thing.subsector).sector.renderflags and SRF_SLOPED <> 0 then
+  begin
+    p := thing.player;
+    if p = nil then
+    begin
+      if thing.z < tmfloorz then
+        thing.z := tmfloorz;
+    end
+    else
+    begin
+      p.slopetics := SLOPECOUNTDOWN;
+      if oldonfloorz then
+        if oldfloorz > tmfloorz then
+          thing.momz := thing.momz + (tmfloorz - oldfloorz);
+    end;
+
+  end;
+
+  // JVAL: Slopes - 3d Floors SOS -> Get right P_GetThingFloorType()
+  TMapGameRules.UpdateFloorClip(thing);
+
+  // if any special lines were hit, do the effect
+  if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
+  begin
+    while numspechit > 0 do
+    begin
+      // see if the line was crossed
+      dec(numspechit);
+      ld := spechit[numspechit];
+      side := P_PointOnLineSide(thing.x, thing.y, ld);
+      oldside := P_PointOnLineSide(oldx, oldy, ld);
+      if side <> oldside then
+      begin
+        // JVAL: Script Events
+        if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
+          if thing.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+            PS_EventCrossLine(thing, pDiff(ld, lines, SizeOf(line_t)), oldside);
+
+        if ld.special <> 0 then
+          TMapGameRules.CrossSpecialLine(ld, oldside, thing);
+      end;
+    end;
+  end;
+
+  result := true;
 end;
 
 //==============================================================================
