@@ -52,6 +52,8 @@ uses
   DelphiDoom.Aas.D3.Navigator in '..\Libs\Aas\DelphiDoom.Aas.D3.Navigator.pas',
   DelphiDoom.Aas.D3.Factory in '..\Libs\Aas\DelphiDoom.Aas.D3.Factory.pas',
   DelphiDoom.Tests.Aas.D3.Support in 'Source\DelphiDoom.Tests.Aas.D3.Support.pas',
+  DelphiDoom.Tests.Aas.D3.Scenario in 'Source\DelphiDoom.Tests.Aas.D3.Scenario.pas',
+  DelphiDoom.Tests.Aas.D3.Golden in 'Source\DelphiDoom.Tests.Aas.D3.Golden.pas',
   DelphiDoom.Tests.Aas.D3.Routing in 'Source\DelphiDoom.Tests.Aas.D3.Routing.pas';
 
 var

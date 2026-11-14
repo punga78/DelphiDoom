@@ -29,7 +29,7 @@ type
   ///   it answers like idAASLocal does. The parts that make it up are made when a file comes and
   ///   freed when it goes, in the reverse order. No global: one navigator per map
   /// </summary>
-  TAasNavigator = class(TInterfacedObject, IAasMapNavigator)
+  TAasNavigator = class(TInterfacedObject, IAasMapNavigator, IAasNavigator)
   strict private
     FReader: IAasFileReader;
     FLog: IIdLibLog;

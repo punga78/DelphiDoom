@@ -45,7 +45,7 @@ type
 /// <summary>The folder with the .aas files of the tests</summary>
 function D3DataFolder: string;
 /// <summary>Reads one of them; the caller frees the file</summary>
-function D3LoadFile(const AName: string): TAasFile;
+function D3LoadFile(const AName: string; const ACrc: Cardinal = 0): TAasFile;
 /// <summary>The bits of a float as the tool of the C prints them: #xxxxxxxx</summary>
 function D3Bits(const AValue: Single): string;
 function D3VectorBits(const AValue: TGeoVec3): string;
@@ -99,7 +99,7 @@ begin
   Result := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\AasD3\');
 end;
 
-function D3LoadFile(const AName: string): TAasFile;
+function D3LoadFile(const AName: string; const ACrc: Cardinal): TAasFile;
 var
   LBytes: TBytes;
   LText: AnsiString;
@@ -108,7 +108,7 @@ begin
   LBytes := TFile.ReadAllBytes(D3DataFolder + AName);
   SetLength(LText, Length(LBytes));
   Move(LBytes[0], LText[1], Length(LBytes));
-  Result := TAasFileFactory.CreateReader(nil).ParseText(LText, AnsiString(AName));
+  Result := TAasFileFactory.CreateReader(nil).ParseText(LText, AnsiString(AName), ACrc);
 end;
 
 function D3Bits(const AValue: Single): string;

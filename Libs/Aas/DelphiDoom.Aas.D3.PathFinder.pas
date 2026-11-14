@@ -109,8 +109,8 @@ begin
 
   if TGeoMath.FloatSignBitSet(LD1) = TGeoMath.FloatSignBitSet(LD2) then
     Exit(False);
-  LDifference := LD1 - LD2;
-  LRatio := LD1 / LDifference;
+  // the C++ compiler keeps d1 - d2 in extended precision for the division (x87): one expression
+  LRatio := LD1 / (LD1 - LD2);
   LDelta := LV2 - LV1;
   LDelta := LDelta * LRatio;
   ASplit := LV1 + LDelta;
