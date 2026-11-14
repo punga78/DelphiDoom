@@ -52,6 +52,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.War.Model.ActionStepper;
+
 { TWarModelWorld }
 
 constructor TWarModelWorld.Create(const AContext: TWarModelContext; const AMachine: TWarStateMachine;
@@ -90,6 +93,8 @@ procedure TWarModelWorld.Update;
 begin
   FMachine.ProcessPendingTransitions;
   FMachine.UpdateStates;
+  // updateActions of wmap_updateMap comes after the states
+  TWarActionStepper.UpdateAll(FContext);
 end;
 
 end.

@@ -17,7 +17,7 @@ unit DelphiDoom.War.Map.PathGrid;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types;
+  System.SysUtils, System.Types, DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types;
 
 const
   /// <summary>PATH_FINDER_DATA_EMPTY: nothing on the tile</summary>
@@ -61,6 +61,11 @@ type
     function IsStatic(AX, AY: Integer): Boolean;
     /// <summary>wpath_isTileAccesible: one of the eight neighbors is empty</summary>
     function IsTileAccessible(AX, AY: Integer): Boolean;
+    /// <summary>
+    ///   wpath_findEmptyTile: the tile itself if it is empty, else the first empty one in the breadth first order of the
+    ///   original (the eight neighbors from the north, clockwise); the tile itself if the map has none
+    /// </summary>
+    function FindEmptyTile(AX, AY: Integer): TPoint;
     /// <summary>The 4096 values, row by row</summary>
     function ToArray: TArray<Word>;
   end;
@@ -168,6 +173,47 @@ begin
       Exit(True);
   end;
   Result := False;
+end;
+
+function TWarPathGrid.FindEmptyTile(AX, AY: Integer): TPoint;
+var
+  LQueue: array[0..WAR_MAP_TILE_COUNT - 1] of Integer;
+  LSeen: array[0..WAR_MAP_TILE_COUNT - 1] of Boolean;
+  LCount: Integer;
+  LIndex: Integer;
+  LDirection: Integer;
+  LX: Integer;
+  LY: Integer;
+  LNextX: Integer;
+  LNextY: Integer;
+begin
+  if IsEmpty(AX, AY) then
+    Exit(Point(AX, AY));
+  FillChar(LSeen, SizeOf(LSeen), 0);
+  LQueue[0] := AY * WAR_MAP_TILES_WIDTH + AX;
+  LSeen[LQueue[0]] := True;
+  LCount := 1;
+  LIndex := 0;
+  while LIndex < LCount do
+  begin
+    LX := LQueue[LIndex] mod WAR_MAP_TILES_WIDTH;
+    LY := LQueue[LIndex] div WAR_MAP_TILES_WIDTH;
+    if IsEmpty(LX, LY) then
+      Exit(Point(LX, LY));
+    for LDirection := 0 to 7 do
+    begin
+      LNextX := LX + DIR_X[LDirection];
+      LNextY := LY + DIR_Y[LDirection];
+      if IsInside(LNextX, LNextY) and not LSeen[LNextY * WAR_MAP_TILES_WIDTH + LNextX] then
+      begin
+        LSeen[LNextY * WAR_MAP_TILES_WIDTH + LNextX] := True;
+        LQueue[LCount] := LNextY * WAR_MAP_TILES_WIDTH + LNextX;
+        Inc(LCount);
+      end;
+    end;
+    Inc(LIndex);
+  end;
+  Result := Point(AX, AY);
 end;
 
 function TWarPathGrid.ToArray: TArray<Word>;

@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.War.ModelObserver;
 interface
 
 uses
-  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf;
+  DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Gather.Intf;
 
 type
   /// <summary>
@@ -18,8 +18,9 @@ type
   ///   model in a single object that counts the calls: the draws and their sum, the messages of the status bar, the
   ///   sounds that the original would ask for, and the other events in order. war_model_ref.c counts the same things
   /// </summary>
-  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents)
+  TModelObserver = class(TInterfacedObject, IWarRandom, IWarModelEvents, IWarGatherEvents)
   strict private
+    FChops: Integer;
     FState: Cardinal;
     FDraws: Cardinal;
     FSum: Cardinal;
@@ -38,6 +39,9 @@ type
     procedure UnitDied(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
     procedure BuildingCollapsing(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
     procedure BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
+    procedure TreeChopped(const APosition: TWarVec2);
+    /// <summary>How many blows of an axe were heard</summary>
+    property Chops: Integer read FChops;
     property Draws: Cardinal read FDraws;
     property Sum: Cardinal read FSum;
     property FlashCount: Cardinal read FFlashCount;
@@ -101,6 +105,12 @@ end;
 procedure TModelObserver.BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
 begin
   FDamagePercent := AHpPercent;
+end;
+
+procedure TModelObserver.TreeChopped(const APosition: TWarVec2);
+begin
+  Inc(FChops);
+  Inc(FAudioCount);
 end;
 
 end.

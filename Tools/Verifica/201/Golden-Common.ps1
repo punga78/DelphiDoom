@@ -42,7 +42,11 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('tables'); Golden = 'model.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('scenarios', '20'); Golden = 'model.friendly.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('hostile', '16'); Golden = 'model.hostile.golden.txt'; NeedsData = $false },
-      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'friendly', '3', '120'); Golden = 'model.dump.golden.txt'; NeedsData = $false }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'friendly', '3', '120'); Golden = 'model.dump.golden.txt'; NeedsData = $false }) },
+  @{ Name = '194 raccolta'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('gather-tables'); Golden = 'gather.tables.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('gather', '10'); Golden = 'gather.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'gather', '2', '900'); Golden = 'gather.dump.golden.txt'; NeedsData = $false }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.
