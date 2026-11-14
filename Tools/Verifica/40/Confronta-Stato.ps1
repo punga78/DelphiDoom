@@ -5,11 +5,11 @@
   E' il confronto di stato di Tools\Verifica\185\Confronta-Golden.ps1 (stessa riga di comando delle voci del corpus,
   stesso ParityTool compare) per le macchine cariche, dove il lock di Tools\Esegui-gioco.ps1 e la priorita' bassa
   fanno scadere le esecuzioni: qui i giochi partono uno per volta a priorita' normale. Solo lo stato (i fotogrammi
-  non c'entrano coi salvataggi): con -Small la finestra e' 320x200, che non cambia lo stato e dimezza i tempi; una
-  voce che risultasse diversa va rifatta senza -Small e poi con Confronta-Golden.ps1.
+  non c'entrano coi salvataggi), con la configurazione dei golden: la finestra deve restare 640x480, perche' il
+  renderer segna le linee viste (ML_MAPPED) e l'impronta delle linee dipende da cio' che si vede.
 
   Uso (dalla radice del repository):
-    powershell -NoProfile -File Tools\Verifica\40\Confronta-Stato.ps1 [-Game Doom,Hexen] [-Name 'd1_*'] [-Small]
+    powershell -NoProfile -File Tools\Verifica\40\Confronta-Stato.ps1 [-Game Doom,Hexen] [-Name 'd1_*']
        [-Exe "Doom=...;..."] [-DataRoot <bin coi WAD>] [-WorkRoot C:\ddsave40\golden]
   Codice di uscita: 0 se tutte le voci sono uguali ai golden, 1 altrimenti.
 #>
@@ -18,8 +18,7 @@ param(
   [string]$Name = '*',
   $Exe = @{},
   [string]$DataRoot = '',
-  [string]$WorkRoot = 'C:\ddsave40\golden',
-  [switch]$Small
+  [string]$WorkRoot = 'C:\ddsave40\golden'
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '..\185\Parity-Common.ps1')
@@ -30,8 +29,6 @@ $root = Get-ParityRoot
 $goldenDir = Join-Path $root 'Tests\Data\Parity'
 $games = Get-ParityGames
 $tool = Get-ParityTool
-$extraIni = @()
-if ($Small) { $extraIni = @('soft_screenwidth=320', 'soft_screenheight=200') }
 $equal = 0; $different = 0
 foreach ($gameName in $games.Keys) {
   $mine = @(Get-ParityCorpus -Game $Game -Name $Name | Where-Object { $_.Game -eq $gameName })
@@ -39,7 +36,7 @@ foreach ($gameName in $games.Keys) {
   $source = $Exe[$gameName]
   if (-not $source) { $source = Join-Path (Get-ParityBin $games[$gameName].Folder) $games[$gameName].Exe }
   $exeName = 'parity_' + $games[$gameName].Exe
-  $dir = Initialize-ParityRunDir -Game $gameName -WorkRoot $WorkRoot -DataRoot $DataRoot -Executables @{ $exeName = $source } -ExtraIni $extraIni
+  $dir = Initialize-ParityRunDir -Game $gameName -WorkRoot $WorkRoot -DataRoot $DataRoot -Executables @{ $exeName = $source }
   foreach ($entry in $mine) {
     $demo = $entry.Demo
     $extra = ''

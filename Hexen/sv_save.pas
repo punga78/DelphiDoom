@@ -732,7 +732,9 @@ begin
     Ord(MT_THRUSTFLOOR_UP),
     Ord(MT_THRUSTFLOOR_DOWN),
     Ord(MT_MINOTAUR),
-    Ord(MT_SORCFX1):
+    Ord(MT_SORCFX1),
+    // MangleMobj turns its special1 into an archive number: without this it stayed a number after the load
+    Ord(MT_MSTAFF_FX2):
       begin
         SetMobjPtr(@mobj.special1);
       end;
