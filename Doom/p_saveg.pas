@@ -150,6 +150,13 @@ procedure P_ArchiveScreenShot;
 //==============================================================================
 procedure P_UnArchiveScreenShot;
 
+//==============================================================================
+//
+// P_DeclareSaveRecords
+//
+//==============================================================================
+procedure P_DeclareSaveRecords;
+
 var
   save_p: PByteArray;
   savegameversion: integer;
@@ -173,6 +180,8 @@ uses
   p_local,    // JVAL: sector gravity (VERSION 204)
   p_playertrace,
   p_pspr_h,
+  DelphiDoom.Serializer.Intf,
+  p_serializer,
   p_setup,
   p_mobj_h,
   p_mobj,
@@ -207,6 +216,73 @@ uses
   z_zone;
 
 //==============================================================================
+//
+// P_DeclareSaveRecords
+//
+// The records that a saved game keeps whole. On disk they have the layout of the
+// 32 bit program (a pointer is 4 bytes): see P_ConfigureSaveRecords. A field whose
+// type has no name and holds pointers, or comes before a pointer, is described here.
+//
+//==============================================================================
+procedure P_DeclareSaveRecords;
+var
+  recs: IDiskLayouts;
+begin
+  recs := P_SaveRecords;
+  recs.DescribeArray(TypeInfo(acs_t), 'vars', TypeInfo(integer), Length(Pacs_t(nil).vars));
+  recs.DescribeArray(TypeInfo(player_t), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t114), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t118), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t121), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t122), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t205), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+  recs.DescribeArray(TypeInfo(player_t206), 'psprites', TypeInfo(pspdef_t), Ord(NUMPSPRITES));
+
+  recs.Declare(TypeInfo(acs_t));
+  recs.Declare(TypeInfo(ceiling_t));
+  recs.Declare(TypeInfo(ceiling_t115));
+  recs.Declare(TypeInfo(elevator_t));
+  recs.Declare(TypeInfo(fireflicker_t));
+  recs.Declare(TypeInfo(floormove_t));
+  recs.Declare(TypeInfo(floormove_t115));
+  recs.Declare(TypeInfo(floormove_t206));
+  recs.Declare(TypeInfo(floorWaggle_t));
+  recs.Declare(TypeInfo(friction_t));
+  recs.Declare(TypeInfo(glow_t));
+  recs.Declare(TypeInfo(light_t));
+  recs.Declare(TypeInfo(lightflash_t));
+  recs.Declare(TypeInfo(mobj_t113));
+  recs.Declare(TypeInfo(mobj_t114));
+  recs.Declare(TypeInfo(mobj_t115));
+  recs.Declare(TypeInfo(mobj_t117));
+  recs.Declare(TypeInfo(mobj_t118));
+  recs.Declare(TypeInfo(mobj_t120));
+  recs.Declare(TypeInfo(mobj_t121));
+  recs.Declare(TypeInfo(mobj_t204));
+  recs.Declare(TypeInfo(mobj_t205));
+  recs.Declare(TypeInfo(mobj_t206));
+  recs.Declare(TypeInfo(mobjcustomparam_t));
+  recs.Declare(TypeInfo(phase_t));
+  recs.Declare(TypeInfo(pillar_t));
+  recs.Declare(TypeInfo(plat_t));
+  recs.Declare(TypeInfo(player_t));
+  recs.Declare(TypeInfo(player_t114));
+  recs.Declare(TypeInfo(player_t118));
+  recs.Declare(TypeInfo(player_t121));
+  recs.Declare(TypeInfo(player_t122));
+  recs.Declare(TypeInfo(player_t205));
+  recs.Declare(TypeInfo(player_t206));
+  recs.Declare(TypeInfo(playertracehistory_t));
+  recs.Declare(TypeInfo(polydoor_t));
+  recs.Declare(TypeInfo(polyevent_t));
+  recs.Declare(TypeInfo(pusher_t));
+  recs.Declare(TypeInfo(scroll_t));
+  recs.Declare(TypeInfo(strobe_t));
+  recs.Declare(TypeInfo(vldoor_t));
+  recs.Declare(TypeInfo(vldoor_t115));
+end;
+
+//==============================================================================
 // PADSAVEP
 //
 // Pads save_p to a 4-byte boundary
@@ -237,9 +313,7 @@ begin
 
     PADSAVEP;
 
-    dest := Pplayer_t(save_p);
-    memcpy(dest, @players[i], SizeOf(player_t));
-    incp(pointer(save_p), SizeOf(player_t));
+    dest := P_ReserveRecord(pointer(save_p), TypeInfo(player_t), @players[i]);
     for j := 0 to Ord(NUMPSPRITES) - 1 do
       if dest.psprites[j].state <> nil then
         dest.psprites[j].state := Pstate_t(pDiff(dest.psprites[j].state, @states[0], SizeOf(dest.psprites[j].state^)));
@@ -248,9 +322,11 @@ begin
       dest.plinetarget := Pmobj_t(dest.plinetarget.key);
 
     // JVAL: 20211224 - Save player history
-    memcpy(save_p, @playerhistory[i], SizeOf(playertracehistory_t));
-    incp(pointer(save_p), SizeOf(playertracehistory_t));
+    P_PutRecord(pointer(save_p), TypeInfo(playertracehistory_t), @playerhistory[i]);
   end;
+
+  // the copies of the records go to their places in the buffer
+  P_CommitRecords;
 end;
 
 //==============================================================================
@@ -263,8 +339,7 @@ function P_UnArchiveOldPlayer(p: Pplayer_t): boolean;
 begin
   if savegameversion <= VERSION114 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t114));
-    incp(pointer(save_p), SizeOf(player_t114));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t114));
     p.attackerx := 0;
     p.attackery := 0;
     p.lastsoundstepx := 0;
@@ -301,8 +376,7 @@ begin
   end
   else if savegameversion <= VERSION118 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t118));
-    incp(pointer(save_p), SizeOf(player_t118));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t118));
     p.lastsoundstepx := 0;
     p.lastsoundstepy := 0;
     p.lastbreath := 0;
@@ -337,8 +411,7 @@ begin
   end
   else if savegameversion <= VERSION121 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t121));
-    incp(pointer(save_p), SizeOf(player_t121));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t121));
     p.laddertics := 0;
     p.viewbob := p.bob;
     p.slopetics := 0; // JVAL: Slopes
@@ -366,8 +439,7 @@ begin
   end
   else if savegameversion <= VERSION122 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t122));
-    incp(pointer(save_p), SizeOf(player_t122));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t122));
     p.lookdir16 := p.lookdir * 16; // JVAL Smooth Look Up/Down
     Pticcmd_t202(@p.cmd)^ := p.cmd202;
     p.cmd.lookupdown16 := p.cmd.lookupdown * 256;
@@ -392,8 +464,7 @@ begin
   end
   else if savegameversion <= VERSION205 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t205));
-    incp(pointer(save_p), SizeOf(player_t205));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t205));
 
     // ver 206
     if p.quaketics > 0 then
@@ -415,8 +486,7 @@ begin
   end
   else if savegameversion <= VERSION206 then
   begin
-    memcpy(pointer(p), save_p, SizeOf(player_t206));
-    incp(pointer(save_p), SizeOf(player_t206));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(player_t), pointer(p), TypeInfo(player_t206));
 
     // ver 207
     p.oldcrouch := 0;
@@ -455,8 +525,7 @@ begin
 
     if savegameversion >= VERSION207 then
     begin
-      memcpy(@players[i], save_p, SizeOf(player_t));
-      incp(pointer(save_p), SizeOf(player_t));
+      P_GetRecord(pointer(save_p), TypeInfo(player_t), @players[i]);
     end
     else if not P_UnArchiveOldPlayer(@players[i]) then
       I_Error('P_UnArchivePlayers(): Unsupported saved game version: %d', [savegameversion]);
@@ -473,8 +542,7 @@ begin
     // JVAL: 202111224 - Load player history
     if savegameversion >= VERSION207 then
     begin
-      memcpy(@playerhistory[i], save_p, SizeOf(playertracehistory_t));
-      incp(pointer(save_p), SizeOf(playertracehistory_t));
+      P_GetRecord(pointer(save_p), TypeInfo(playertracehistory_t), @playerhistory[i]);
     end;
   end;
 end;
@@ -1023,9 +1091,7 @@ begin
       parm := mobj.customparams;
       while parm <> nil do
       begin
-        parm1 := Pmobjcustomparam_t(save_p);
-        memcpy(parm1, parm, SizeOf(mobjcustomparam_t));
-        incp(pointer(save_p), SizeOf(mobjcustomparam_t));
+        parm1 := P_ReserveRecord(pointer(save_p), TypeInfo(mobjcustomparam_t), parm);
         parm := parm.next;
       end;
     end;
@@ -1035,6 +1101,9 @@ begin
   // add a terminating marker
   save_p[0] := Ord(tc_end);
   save_p := @save_p[1];
+
+  // the copies of the records go to their places in the buffer
+  P_CommitRecords;
 end;
 
 //==============================================================================
@@ -1059,8 +1128,7 @@ begin
   if savegameversion = VERSION113 then
   begin
     mobj113 := Z_Malloc(SizeOf(mobj_t113), PU_STATIC, nil);
-    memcpy(mobj113, save_p, SizeOf(mobj_t113));
-    incp(pointer(save_p), SizeOf(mobj_t113));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t113), mobj113);
     mobj.thinker := mobj113.thinker;
     mobj.x := mobj113.x;
     mobj.y := mobj113.y;
@@ -1144,8 +1212,7 @@ begin
   else if savegameversion = VERSION114 then
   begin
     mobj114 := Z_Malloc(SizeOf(mobj_t114), PU_STATIC, nil);
-    memcpy(mobj114, save_p, SizeOf(mobj_t114));
-    incp(pointer(save_p), SizeOf(mobj_t114));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t114), mobj114);
     mobj.thinker := mobj114.thinker;
     mobj.x := mobj114.x;
     mobj.y := mobj114.y;
@@ -1229,8 +1296,7 @@ begin
   else if (savegameversion = VERSION115) or (savegameversion = VERSION116) then
   begin
     mobj115 := Z_Malloc(SizeOf(mobj_t115), PU_STATIC, nil);
-    memcpy(mobj115, save_p, SizeOf(mobj_t115));
-    incp(pointer(save_p), SizeOf(mobj_t115));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t115), mobj115);
     mobj.thinker := mobj115.thinker;
     mobj.x := mobj115.x;
     mobj.y := mobj115.y;
@@ -1314,8 +1380,7 @@ begin
   else if savegameversion = VERSION117 then
   begin
     mobj117 := Z_Malloc(SizeOf(mobj_t117), PU_STATIC, nil);
-    memcpy(mobj117, save_p, SizeOf(mobj_t117));
-    incp(pointer(save_p), SizeOf(mobj_t117));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t117), mobj117);
     mobj.thinker := mobj117.thinker;
     mobj.x := mobj117.x;
     mobj.y := mobj117.y;
@@ -1399,8 +1464,7 @@ begin
   else if savegameversion = VERSION118 then
   begin
     mobj118 := Z_Malloc(SizeOf(mobj_t118), PU_STATIC, nil);
-    memcpy(mobj118, save_p, SizeOf(mobj_t118));
-    incp(pointer(save_p), SizeOf(mobj_t118));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t118), mobj118);
     mobj.thinker := mobj118.thinker;
     mobj.x := mobj118.x;
     mobj.y := mobj118.y;
@@ -1483,8 +1547,7 @@ begin
   end
   else if (savegameversion = VERSION119) or (savegameversion = VERSION120) then
   begin
-    memcpy(mobj, save_p, SizeOf(mobj_t120));
-    incp(pointer(save_p), SizeOf(mobj_t120));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(mobj_t206), mobj, TypeInfo(mobj_t120));
 
     mobj.prevx := mobj.x;
     mobj.prevy := mobj.y;
@@ -1524,8 +1587,7 @@ begin
   end
   else if savegameversion = VERSION121 then
   begin
-    memcpy(mobj, save_p, SizeOf(mobj_t121));
-    incp(pointer(save_p), SizeOf(mobj_t121));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(mobj_t206), mobj, TypeInfo(mobj_t121));
 
     mobj.dropitem := 0;
     mobj.lightvalidcount := 0;
@@ -1554,8 +1616,7 @@ begin
   end
   else if (savegameversion = VERSION122) or (savegameversion = VERSION203) or (savegameversion = VERSION204) then
   begin
-    memcpy(mobj, save_p, SizeOf(mobj_t204));
-    incp(pointer(save_p), SizeOf(mobj_t204));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(mobj_t206), mobj, TypeInfo(mobj_t204));
 
     mobj.lightvalidcount := 0;
     mobj.scale := FRACUNIT;
@@ -1583,8 +1644,7 @@ begin
   end
   else if savegameversion = VERSION205 then
   begin
-    memcpy(mobj, save_p, SizeOf(mobj_t205));
-    incp(pointer(save_p), SizeOf(mobj_t205));
+    P_GetRecordPrefix(pointer(save_p), TypeInfo(mobj_t206), mobj, TypeInfo(mobj_t205));
 
     // ver 206
     mobj.target := nil;
@@ -1604,8 +1664,7 @@ begin
   end
   else if savegameversion = VERSION206 then
   begin
-    memcpy(mobj, save_p, SizeOf(mobj_t206));
-    incp(pointer(save_p), SizeOf(mobj_t206));
+    P_GetRecord(pointer(save_p), TypeInfo(mobj_t206), mobj);
 
     result := true;
   end
@@ -1665,9 +1724,9 @@ begin
 
             if @currentthinker._function.acp1 = @P_MobjThinker then
             begin
-              Pmobj_t(currentthinker).target := P_FindMobjFromKey(integer(Pmobj_t(currentthinker).target));
-              Pmobj_t(currentthinker).tracer := P_FindMobjFromKey(integer(Pmobj_t(currentthinker).tracer));
-              Pmobj_t(currentthinker).master := P_FindMobjFromKey(integer(Pmobj_t(currentthinker).master));
+              Pmobj_t(currentthinker).target := P_FindMobjFromKey(NativeInt(Pmobj_t(currentthinker).target));
+              Pmobj_t(currentthinker).tracer := P_FindMobjFromKey(NativeInt(Pmobj_t(currentthinker).tracer));
+              Pmobj_t(currentthinker).master := P_FindMobjFromKey(NativeInt(Pmobj_t(currentthinker).master));
             end;
 
             currentthinker := next;
@@ -1707,8 +1766,7 @@ begin
           begin
             mobj.customparams := nil;
             repeat
-              memcpy(@parm, save_p, SizeOf(mobjcustomparam_t));
-              incp(pointer(save_p), SizeOf(mobjcustomparam_t));
+              P_GetRecord(pointer(save_p), TypeInfo(mobjcustomparam_t), @parm);
               P_SetMobjCustomParam(mobj, parm.name, parm.value);
             until parm.next = nil;
           end;
@@ -1838,9 +1896,7 @@ begin
         save_p[0] := Ord(tc_ceiling);
         save_p := @save_p[1];
         PADSAVEP;
-        ceiling := Pceiling_t(save_p);
-        memcpy(ceiling, th, SizeOf(ceiling_t));
-        incp(pointer(save_p), SizeOf(ceiling_t));
+        ceiling := P_ReserveRecord(pointer(save_p), TypeInfo(ceiling_t), th);
         ceiling.sector := Psector_t(pDiff(ceiling.sector, sectors, SizeOf(sector_t)));
         continue;
       end;
@@ -1859,9 +1915,7 @@ begin
         save_p[0] := Ord(tch_moveceiling);
         save_p := @save_p[1];
         PADSAVEP;
-        ceiling := Pceiling_t(save_p);
-        memcpy(ceiling, th, SizeOf(ceiling_t));
-        incp(pointer(save_p), SizeOf(ceiling_t));
+        ceiling := P_ReserveRecord(pointer(save_p), TypeInfo(ceiling_t), th);
         ceiling.sector := _savesector(ceiling.sector);
       end;
 
@@ -1873,9 +1927,7 @@ begin
       save_p[0] := Ord(tc_ceiling);
       save_p := @save_p[1];
       PADSAVEP;
-      ceiling := Pceiling_t(save_p);
-      memcpy(ceiling, th, SizeOf(ceiling_t));
-      incp(pointer(save_p), SizeOf(ceiling_t));
+      ceiling := P_ReserveRecord(pointer(save_p), TypeInfo(ceiling_t), th);
       ceiling.sector := Psector_t(pDiff(ceiling.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1885,9 +1937,7 @@ begin
       save_p[0] := Ord(tc_door);
       save_p := @save_p[1];
       PADSAVEP;
-      door := Pvldoor_t(save_p);
-      memcpy(door, th, SizeOf(vldoor_t));
-      incp(pointer(save_p), SizeOf(vldoor_t));
+      door := P_ReserveRecord(pointer(save_p), TypeInfo(vldoor_t), th);
       door.sector := Psector_t(pDiff(door.sector, sectors, SizeOf(sector_t)));
       if door.line = nil then
         door.line := Pline_t(-1)
@@ -1901,9 +1951,7 @@ begin
       save_p[0] := Ord(tc_floor);
       save_p := @save_p[1];
       PADSAVEP;
-      floor := Pfloormove_t(save_p);
-      memcpy(floor, th, SizeOf(floormove_t));
-      incp(pointer(save_p), SizeOf(floormove_t));
+      floor := P_ReserveRecord(pointer(save_p), TypeInfo(floormove_t), th);
       floor.sector := Psector_t(pDiff(floor.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1913,9 +1961,7 @@ begin
       save_p[0] := Ord(tc_plat);
       save_p := @save_p[1];
       PADSAVEP;
-      plat := Pplat_t(save_p);
-      memcpy(plat, th, SizeOf(plat_t));
-      incp(pointer(save_p), SizeOf(plat_t));
+      plat := P_ReserveRecord(pointer(save_p), TypeInfo(plat_t), th);
       plat.sector := Psector_t(pDiff(plat.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1925,9 +1971,7 @@ begin
       save_p[0] := Ord(tc_flash);
       save_p := @save_p[1];
       PADSAVEP;
-      flash := Plightflash_t(save_p);
-      memcpy(flash, th, SizeOf(lightflash_t));
-      incp(pointer(save_p), SizeOf(lightflash_t));
+      flash := P_ReserveRecord(pointer(save_p), TypeInfo(lightflash_t), th);
       flash.sector := Psector_t(pDiff(flash.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1937,9 +1981,7 @@ begin
       save_p[0] := Ord(tc_strobe);
       save_p := @save_p[1];
       PADSAVEP;
-      strobe := Pstrobe_t(save_p);
-      memcpy(strobe, th, SizeOf(strobe_t));
-      incp(pointer(save_p), SizeOf(strobe_t));
+      strobe := P_ReserveRecord(pointer(save_p), TypeInfo(strobe_t), th);
       strobe.sector := Psector_t(pDiff(strobe.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1949,9 +1991,7 @@ begin
       save_p[0] := Ord(tc_glow);
       save_p := @save_p[1];
       PADSAVEP;
-      glow := Pglow_t(save_p);
-      memcpy(glow, th, SizeOf(glow_t));
-      incp(pointer(save_p), SizeOf(glow_t));
+      glow := P_ReserveRecord(pointer(save_p), TypeInfo(glow_t), th);
       glow.sector := Psector_t(pDiff(glow.sector, sectors, SizeOf(sector_t)));
       continue;
     end;
@@ -1961,9 +2001,7 @@ begin
       save_p[0] := Ord(tc_scroll);
       save_p := @save_p[1];
       PADSAVEP;
-      scroll := Pscroll_t(save_p);
-      memcpy(scroll, th, SizeOf(scroll_t));
-      incp(pointer(save_p), SizeOf(scroll_t));
+      scroll := P_ReserveRecord(pointer(save_p), TypeInfo(scroll_t), th);
       continue;
     end;
 
@@ -1972,9 +2010,7 @@ begin
       save_p[0] := Ord(tc_friction);
       save_p := @save_p[1];
       PADSAVEP;
-      friction := Pfriction_t(save_p);
-      memcpy(friction, th, SizeOf(friction_t));
-      incp(pointer(save_p), SizeOf(friction_t));
+      friction := P_ReserveRecord(pointer(save_p), TypeInfo(friction_t), th);
       continue;
     end;
 
@@ -1983,9 +2019,7 @@ begin
       save_p[0] := Ord(tc_pusher);
       save_p := @save_p[1];
       PADSAVEP;
-      pusher := Ppusher_t(save_p);
-      memcpy(pusher, th, SizeOf(pusher_t));
-      incp(pointer(save_p), SizeOf(pusher_t));
+      pusher := P_ReserveRecord(pointer(save_p), TypeInfo(pusher_t), th);
       continue;
     end;
 
@@ -1994,9 +2028,7 @@ begin
       save_p[0] := Ord(tc_fireflicker);
       save_p := @save_p[1];
       PADSAVEP;
-      flicker := Pfireflicker_t(save_p);
-      memcpy(flicker, th, SizeOf(fireflicker_t));
-      incp(pointer(save_p), SizeOf(fireflicker_t));
+      flicker := P_ReserveRecord(pointer(save_p), TypeInfo(fireflicker_t), th);
       flicker.sector := Psector_t(flicker.sector.iSectorID);
       continue;
     end;
@@ -2006,9 +2038,7 @@ begin
       save_p[0] := Ord(tc_elevator);
       save_p := @save_p[1];
       PADSAVEP;
-      elevator := Pelevator_t(save_p);
-      memcpy(elevator, th, SizeOf(elevator_t));
-      incp(pointer(save_p), SizeOf(elevator_t));
+      elevator := P_ReserveRecord(pointer(save_p), TypeInfo(elevator_t), th);
       elevator.sector := Psector_t(elevator.sector.iSectorID);
       continue;
     end;
@@ -2019,9 +2049,7 @@ begin
       save_p[0] := Ord(tch_movefloor);
       save_p := @save_p[1];
       PADSAVEP;
-      floor := Pfloormove_t(save_p);
-      memcpy(floor, th, SizeOf(floormove_t));
-      incp(pointer(save_p), SizeOf(floormove_t));
+      floor := P_ReserveRecord(pointer(save_p), TypeInfo(floormove_t), th);
       floor.sector := _savesector(floor.sector);
       continue;
     end;
@@ -2031,9 +2059,7 @@ begin
       save_p[0] := Ord(tch_platraise);
       save_p := @save_p[1];
       PADSAVEP;
-      plat := Pplat_t(save_p);
-      memcpy(plat, th, SizeOf(plat_t));
-      incp(pointer(save_p), SizeOf(plat_t));
+      plat := P_ReserveRecord(pointer(save_p), TypeInfo(plat_t), th);
       plat.sector := _savesector(plat.sector);
       continue;
     end;
@@ -2043,9 +2069,7 @@ begin
       save_p[0] := Ord(tch_moveceiling);
       save_p := @save_p[1];
       PADSAVEP;
-      ceiling := Pceiling_t(save_p);
-      memcpy(ceiling, th, SizeOf(ceiling_t));
-      incp(pointer(save_p), SizeOf(ceiling_t));
+      ceiling := P_ReserveRecord(pointer(save_p), TypeInfo(ceiling_t), th);
       ceiling.sector := _savesector(ceiling.sector);
       continue;
     end;
@@ -2055,9 +2079,7 @@ begin
       save_p[0] := Ord(tch_light);
       save_p := @save_p[1];
       PADSAVEP;
-      light := Plight_t(save_p);
-      memcpy(light, th, SizeOf(light_t));
-      incp(pointer(save_p), SizeOf(light_t));
+      light := P_ReserveRecord(pointer(save_p), TypeInfo(light_t), th);
       light.sector := _savesector(light.sector);
       continue;
     end;
@@ -2067,9 +2089,7 @@ begin
       save_p[0] := Ord(tch_verticaldoor);
       save_p := @save_p[1];
       PADSAVEP;
-      door := Pvldoor_t(save_p);
-      memcpy(door, th, SizeOf(vldoor_t));
-      incp(pointer(save_p), SizeOf(vldoor_t));
+      door := P_ReserveRecord(pointer(save_p), TypeInfo(vldoor_t), th);
       door.sector := _savesector(door.sector);
       continue;
     end;
@@ -2079,9 +2099,7 @@ begin
       save_p[0] := Ord(tch_phase);
       save_p := @save_p[1];
       PADSAVEP;
-      phase := Pphase_t(save_p);
-      memcpy(phase, th, SizeOf(phase_t));
-      incp(pointer(save_p), SizeOf(phase_t));
+      phase := P_ReserveRecord(pointer(save_p), TypeInfo(phase_t), th);
       phase.sector := _savesector(phase.sector);
       continue;
     end;
@@ -2091,9 +2109,7 @@ begin
       save_p[0] := Ord(tch_interpretacs);
       save_p := @save_p[1];
       PADSAVEP;
-      acs := Pacs_t(save_p);
-      memcpy(acs, th, SizeOf(acs_t));
-      incp(pointer(save_p), SizeOf(acs_t));
+      acs := P_ReserveRecord(pointer(save_p), TypeInfo(acs_t), th);
       acs.ip := PInteger(NativeUInt(acs.ip) - NativeUInt(ActionCodeBase));
       if acs.line <> nil then
         acs.line := Pline_t(pDiff(acs.line, lines, SizeOf(line_t)))
@@ -2109,9 +2125,7 @@ begin
       save_p[0] := Ord(tch_rotatepoly);
       save_p := @save_p[1];
       PADSAVEP;
-      polyevent := Ppolyevent_t(save_p);
-      memcpy(polyevent, th, SizeOf(polyevent_t));
-      incp(pointer(save_p), SizeOf(polyevent_t));
+      polyevent := P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
       continue;
     end;
 
@@ -2120,9 +2134,7 @@ begin
       save_p[0] := Ord(tch_buildpillar);
       save_p := @save_p[1];
       PADSAVEP;
-      pillar := Ppillar_t(save_p);
-      memcpy(pillar, th, SizeOf(pillar_t));
-      incp(pointer(save_p), SizeOf(pillar_t));
+      pillar := P_ReserveRecord(pointer(save_p), TypeInfo(pillar_t), th);
       pillar.sector := _savesector(pillar.sector);
       continue;
     end;
@@ -2132,9 +2144,7 @@ begin
       save_p[0] := Ord(tch_movepoly);
       save_p := @save_p[1];
       PADSAVEP;
-      polyevent := Ppolyevent_t(save_p);
-      memcpy(polyevent, th, SizeOf(polyevent_t));
-      incp(pointer(save_p), SizeOf(polyevent_t));
+      polyevent := P_ReserveRecord(pointer(save_p), TypeInfo(polyevent_t), th);
       continue;
     end;
 
@@ -2143,9 +2153,7 @@ begin
       save_p[0] := Ord(tch_polydoor);
       save_p := @save_p[1];
       PADSAVEP;
-      polydoor := Ppolydoor_t(save_p);
-      memcpy(polydoor, th, SizeOf(polydoor_t));
-      incp(pointer(save_p), SizeOf(polydoor_t));
+      polydoor := P_ReserveRecord(pointer(save_p), TypeInfo(polydoor_t), th);
       continue;
     end;
 
@@ -2154,9 +2162,7 @@ begin
       save_p[0] := Ord(tch_floorwaggle);
       save_p := @save_p[1];
       PADSAVEP;
-      floorwaggle := PfloorWaggle_t(save_p);
-      memcpy(floorwaggle, th, SizeOf(floorWaggle_t));
-      incp(pointer(save_p), SizeOf(floorWaggle_t));
+      floorwaggle := P_ReserveRecord(pointer(save_p), TypeInfo(floorWaggle_t), th);
       floorwaggle.sector := _savesector(floorwaggle.sector);
       continue;
     end;
@@ -2165,6 +2171,9 @@ begin
   // add a terminating marker
   save_p[0] := Ord(tc_endspecials);
   save_p := @save_p[1];
+
+  // the copies of the records go to their places in the buffer
+  P_CommitRecords;
 end;
 
 //==============================================================================
@@ -2226,8 +2235,7 @@ begin
           if savegameversion <= VERSION115 then
           begin
             ceiling115 := malloc(SizeOf(ceiling_t115));
-            memcpy(ceiling115, save_p, SizeOf(ceiling_t115));
-            incp(pointer(save_p), SizeOf(ceiling_t115));
+            P_GetRecord(pointer(save_p), TypeInfo(ceiling_t115), ceiling115);
             ceiling.thinker := ceiling115.thinker;
             ceiling._type := ceiling115._type;
             ceiling.sector := ceiling115.sector;
@@ -2246,8 +2254,7 @@ begin
           end
           else
           begin
-            memcpy(ceiling, save_p, SizeOf(ceiling_t));
-            incp(pointer(save_p), SizeOf(ceiling_t));
+            P_GetRecord(pointer(save_p), TypeInfo(ceiling_t), ceiling);
           end;
           ceiling.sector := @sectors[NativeInt(ceiling.sector)];
           ceiling.sector.ceilingdata := ceiling;
@@ -2266,8 +2273,7 @@ begin
           if savegameversion <= VERSION115 then
           begin
             door115 := malloc(SizeOf(vldoor_t115));
-            memcpy(door115, save_p, SizeOf(vldoor_t115));
-            incp(pointer(save_p), SizeOf(vldoor_t115));
+            P_GetRecord(pointer(save_p), TypeInfo(vldoor_t115), door115);
             door.thinker := door115.thinker;
             door._type := door115._type;
             door.sector := door115.sector;
@@ -2281,8 +2287,7 @@ begin
           end
           else
           begin
-            memcpy(door, save_p, SizeOf(vldoor_t));
-            incp(pointer(save_p), SizeOf(vldoor_t));
+            P_GetRecord(pointer(save_p), TypeInfo(vldoor_t), door);
           end;
           door.sector := @sectors[NativeInt(door.sector)];
           door.sector.ceilingdata := door;
@@ -2302,8 +2307,7 @@ begin
           if savegameversion <= VERSION115 then
           begin
             floor115 := malloc(SizeOf(floormove_t115));
-            memcpy(floor115, save_p, SizeOf(floormove_t115));
-            incp(pointer(save_p), SizeOf(floormove_t115));
+            P_GetRecord(pointer(save_p), TypeInfo(floormove_t115), floor115);
             ZeroMemory(floor, SizeOf(floormove_t));
             floor.thinker := floor115.thinker;
             floor._type := floor115._type;
@@ -2320,8 +2324,7 @@ begin
           else if savegameversion <= VERSION206 then
           begin
             floor206 := malloc(SizeOf(floormove_t206));
-            memcpy(floor206, save_p, SizeOf(floormove_t206));
-            incp(pointer(save_p), SizeOf(floormove_t206));
+            P_GetRecord(pointer(save_p), TypeInfo(floormove_t206), floor206);
             ZeroMemory(floor, SizeOf(floormove_t));
             floor.thinker := floor206.thinker;
             floor._type := floor206._type;
@@ -2337,8 +2340,7 @@ begin
           end
           else
           begin
-            memcpy(floor, save_p, SizeOf(floormove_t));
-            incp(pointer(save_p), SizeOf(floormove_t));
+            P_GetRecord(pointer(save_p), TypeInfo(floormove_t), floor);
           end;
           floor.sector := @sectors[NativeInt(floor.sector)];
           floor.sector.floordata := floor;
@@ -2350,8 +2352,7 @@ begin
         begin
           PADSAVEP;
           plat := Z_Malloc(SizeOf(plat_t), PU_LEVEL, nil);
-          memcpy(plat, save_p, SizeOf(plat_t));
-          incp(pointer(save_p), SizeOf(plat_t));
+          P_GetRecord(pointer(save_p), TypeInfo(plat_t), plat);
           plat.sector := @sectors[NativeInt(plat.sector)];
           plat.sector.floordata := plat;
 
@@ -2366,8 +2367,7 @@ begin
         begin
           PADSAVEP;
           flash := Z_Malloc(Sizeof(lightflash_t), PU_LEVEL, nil);
-          memcpy(flash, save_p, SizeOf(lightflash_t));
-          incp(pointer(save_p), SizeOf(lightflash_t));
+          P_GetRecord(pointer(save_p), TypeInfo(lightflash_t), flash);
           flash.sector := @sectors[NativeInt(flash.sector)];
           @flash.thinker._function.acp1 := @T_LightFlash;
           P_AddThinker(@flash.thinker);
@@ -2377,8 +2377,7 @@ begin
         begin
           PADSAVEP;
           strobe := Z_Malloc(SizeOf(strobe_t), PU_LEVEL, nil);
-          memcpy(strobe, save_p, SizeOf(strobe_t));
-          incp(pointer(save_p), SizeOf(strobe_t));
+          P_GetRecord(pointer(save_p), TypeInfo(strobe_t), strobe);
           strobe.sector := @sectors[NativeInt(strobe.sector)];
           @strobe.thinker._function.acp1 := @T_StrobeFlash;
           P_AddThinker(@strobe.thinker);
@@ -2388,8 +2387,7 @@ begin
         begin
           PADSAVEP;
           glow := Z_Malloc(SizeOf(glow_t), PU_LEVEL, nil);
-          memcpy(glow, save_p, SizeOf(glow_t));
-          incp(pointer(save_p), SizeOf(glow_t));
+          P_GetRecord(pointer(save_p), TypeInfo(glow_t), glow);
           glow.sector := @sectors[NativeInt(glow.sector)];
           @glow.thinker._function.acp1 := @T_Glow;
           P_AddThinker(@glow.thinker);
@@ -2402,8 +2400,7 @@ begin
 
           PADSAVEP;
           scroll := Z_Malloc(SizeOf(scroll_t), PU_LEVEL, nil);
-          memcpy(scroll, save_p, SizeOf(scroll_t));
-          incp(pointer(save_p), SizeOf(scroll_t));
+          P_GetRecord(pointer(save_p), TypeInfo(scroll_t), scroll);
           @scroll.thinker._function.acp1 := @T_Scroll;
           P_AddThinker(@scroll.thinker);
         end;
@@ -2415,8 +2412,7 @@ begin
 
           PADSAVEP;
           friction := Z_Malloc(SizeOf(friction_t), PU_LEVEL, nil);
-          memcpy(friction, save_p, SizeOf(friction_t));
-          incp(pointer(save_p), SizeOf(friction_t));
+          P_GetRecord(pointer(save_p), TypeInfo(friction_t), friction);
           @friction.thinker._function.acp1 := @T_Friction;
           P_AddThinker(@friction.thinker);
         end;
@@ -2428,8 +2424,7 @@ begin
 
           PADSAVEP;
           pusher := Z_Malloc(SizeOf(pusher_t), PU_LEVEL, nil);
-          memcpy(pusher, save_p, SizeOf(pusher_t));
-          incp(pointer(save_p), SizeOf(pusher_t));
+          P_GetRecord(pointer(save_p), TypeInfo(pusher_t), pusher);
           @pusher.thinker._function.acp1 := @T_Pusher;
           pusher.source := P_GetPushThing(pusher.affectee);
           P_AddThinker(@pusher.thinker);
@@ -2442,8 +2437,7 @@ begin
 
           PADSAVEP;
           flicker := Z_Malloc(SizeOf(fireflicker_t), PU_LEVEL, nil);
-          memcpy(flicker, save_p, SizeOf(fireflicker_t));
-          incp(pointer(save_p), SizeOf(fireflicker_t));
+          P_GetRecord(pointer(save_p), TypeInfo(fireflicker_t), flicker);
 
           @flicker.thinker._function.acp1 := @T_FireFlicker;
           flicker.sector := @sectors[NativeInt(flicker.sector)];
@@ -2457,8 +2451,7 @@ begin
 
           PADSAVEP;
           elevator := Z_Malloc(SizeOf(elevator_t), PU_LEVEL, nil);
-          memcpy(elevator, save_p, SizeOf(elevator_t));
-          incp(pointer(save_p), SizeOf(elevator_t));
+          P_GetRecord(pointer(save_p), TypeInfo(elevator_t), elevator);
 
           @elevator.thinker._function.acp1 := @T_MoveElevator;
           elevator.sector := @sectors[NativeInt(elevator.sector)];
@@ -2472,8 +2465,7 @@ begin
         begin
           PADSAVEP;
           ceiling := Z_Malloc(SizeOf(ceiling_t), PU_LEVEL, nil);
-          memcpy(ceiling, save_p, SizeOf(ceiling_t));
-          incp(pointer(save_p), SizeOf(ceiling_t));
+          P_GetRecord(pointer(save_p), TypeInfo(ceiling_t), ceiling);
           ceiling.sector := _restoresector(ceiling.sector);
           if ceiling.sector <> nil then
             ceiling.sector.specialdata := ceiling;
@@ -2489,8 +2481,7 @@ begin
         begin
           PADSAVEP;
           floor := Z_Malloc(SizeOf(floormove_t), PU_LEVEL, nil);
-          memcpy(floor, save_p, SizeOf(floormove_t));
-          incp(pointer(save_p), SizeOf(floormove_t));
+          P_GetRecord(pointer(save_p), TypeInfo(floormove_t), floor);
           floor.sector := _restoresector(floor.sector);
           if floor.sector <> nil then
             floor.sector.specialdata := floor;
@@ -2505,8 +2496,7 @@ begin
         begin
           PADSAVEP;
           plat := Z_Malloc(SizeOf(plat_t), PU_LEVEL, nil);
-          memcpy(plat, save_p, SizeOf(plat_t));
-          incp(pointer(save_p), SizeOf(plat_t));
+          P_GetRecord(pointer(save_p), TypeInfo(plat_t), plat);
           plat.sector := _restoresector(plat.sector);
           if plat.sector <> nil then
             plat.sector.specialdata := plat;
@@ -2522,8 +2512,7 @@ begin
         begin
           PADSAVEP;
           light := Z_Malloc(SizeOf(light_t), PU_LEVEL, nil);
-          memcpy(light, save_p, SizeOf(light_t));
-          incp(pointer(save_p), SizeOf(light_t));
+          P_GetRecord(pointer(save_p), TypeInfo(light_t), light);
           light.sector := _restoresector(light.sector);
           {if light.sector <> nil then
             light.sector.specialdata := light;}
@@ -2538,8 +2527,7 @@ begin
         begin
           PADSAVEP;
           door := Z_Malloc(SizeOf(vldoor_t), PU_LEVEL, nil);
-          memcpy(door, save_p, SizeOf(vldoor_t));
-          incp(pointer(save_p), SizeOf(vldoor_t));
+          P_GetRecord(pointer(save_p), TypeInfo(vldoor_t), door);
           door.sector := _restoresector(door.sector);
           if door.sector <> nil then
             door.sector.specialdata := door;
@@ -2554,8 +2542,7 @@ begin
         begin
           PADSAVEP;
           phase := Z_Malloc(SizeOf(phase_t), PU_LEVEL, nil);
-          memcpy(phase, save_p, SizeOf(phase_t));
-          incp(pointer(save_p), SizeOf(phase_t));
+          P_GetRecord(pointer(save_p), TypeInfo(phase_t), phase);
           phase.sector := _restoresector(phase.sector);
           {if phase.sector <> nil then
             phase.sector.specialdata := phase;}
@@ -2570,8 +2557,7 @@ begin
         begin
           PADSAVEP;
           acs := Z_Malloc(SizeOf(acs_t), PU_LEVEL, nil);
-          memcpy(acs, save_p, SizeOf(acs_t));
-          incp(pointer(save_p), SizeOf(acs_t));
+          P_GetRecord(pointer(save_p), TypeInfo(acs_t), acs);
           acs.ip := @ActionCodeBase[NativeInt(acs.ip)];
           if NativeInt(acs.line) = -1 then
             acs.line := nil
@@ -2590,8 +2576,7 @@ begin
         begin
           PADSAVEP;
           polyevent := Z_Malloc(SizeOf(polyevent_t), PU_LEVEL, nil);
-          memcpy(polyevent, save_p, SizeOf(polyevent_t));
-          incp(pointer(save_p), SizeOf(polyevent_t));
+          P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
             @polyevent.thinker._function.acp1 := @TH_RotatePoly;
@@ -2603,8 +2588,7 @@ begin
         begin
           PADSAVEP;
           pillar := Z_Malloc(SizeOf(pillar_t), PU_LEVEL, nil);
-          memcpy(pillar, save_p, SizeOf(pillar_t));
-          incp(pointer(save_p), SizeOf(pillar_t));
+          P_GetRecord(pointer(save_p), TypeInfo(pillar_t), pillar);
           pillar.sector := _restoresector(pillar.sector);
           if pillar.sector <> nil then
             pillar.sector.specialdata := pillar;
@@ -2619,8 +2603,7 @@ begin
         begin
           PADSAVEP;
           polyevent := Z_Malloc(SizeOf(polyevent_t), PU_LEVEL, nil);
-          memcpy(polyevent, save_p, SizeOf(polyevent_t));
-          incp(pointer(save_p), SizeOf(polyevent_t));
+          P_GetRecord(pointer(save_p), TypeInfo(polyevent_t), polyevent);
 
           if Assigned(polyevent.thinker._function.acp1) then
             @polyevent.thinker._function.acp1 := @TH_MovePoly;
@@ -2632,8 +2615,7 @@ begin
         begin
           PADSAVEP;
           polydoor := Z_Malloc(SizeOf(polydoor_t), PU_LEVEL, nil);
-          memcpy(polydoor, save_p, SizeOf(polydoor_t));
-          incp(pointer(save_p), SizeOf(polydoor_t));
+          P_GetRecord(pointer(save_p), TypeInfo(polydoor_t), polydoor);
 
           if Assigned(polydoor.thinker._function.acp1) then
             @polydoor.thinker._function.acp1 := @TH_PolyDoor;
@@ -2645,8 +2627,7 @@ begin
         begin
           PADSAVEP;
           floorwaggle := Z_Malloc(SizeOf(floorWaggle_t), PU_LEVEL, nil);
-          memcpy(floorwaggle, save_p, SizeOf(floorWaggle_t));
-          incp(pointer(save_p), SizeOf(floorWaggle_t));
+          P_GetRecord(pointer(save_p), TypeInfo(floorWaggle_t), floorwaggle);
           floorwaggle.sector := _restoresector(floorwaggle.sector);
           if floorwaggle.sector <> nil then
             floorwaggle.sector.specialdata := floorwaggle;

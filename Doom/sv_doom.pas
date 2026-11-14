@@ -60,6 +60,7 @@ procedure SV_ShutDownSerializers;
 implementation
 
 uses
+  p_saveg,
   m_fixed,
   info,
   info_h,
@@ -105,6 +106,9 @@ var
   ln: Pline_t;
   sd: Pside_t;
 begin
+  // the records that the saved games keep whole (issue #40)
+  P_DeclareSaveRecords;
+
   mo206 := nil;
   MobjSerializer206 := TSerializer.Create;
   MobjSerializer206.AddTypedItem(@mo206.x, st_integer, 0);
@@ -123,8 +127,8 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.momz, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206._type, st_integer, -1, @OnLoadMobjInfoType);
   MobjSerializer206.AddTypedItem(@mo206.tics, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.state, st_integer, 0);  // State translated to id
-  MobjSerializer206.AddTypedItem(@mo206.prevstate, st_integer, 0);  // State translated to id
+  MobjSerializer206.AddTypedItem(@mo206.state, st_nativeint, 0);  // State translated to id
+  MobjSerializer206.AddTypedItem(@mo206.prevstate, st_nativeint, 0);  // State translated to id
   MobjSerializer206.AddTypedItem(@mo206.flags, st_integer, MF_SOLID);
   MobjSerializer206.AddTypedItem(@mo206.flags_ex, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.flags2_ex, st_integer, 0);
@@ -134,21 +138,21 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.health, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.movedir, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.movecount, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.target, st_longword, 0);  // Target translated key
+  MobjSerializer206.AddTypedItem(@mo206.target, st_nativeint, 0);  // Target translated key
   MobjSerializer206.AddTypedItem(@mo206.reactiontime, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.threshold, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.player, st_integer, 0); // Player translated to id
+  MobjSerializer206.AddTypedItem(@mo206.player, st_nativeint, 0); // Player translated to id
   MobjSerializer206.AddTypedItem(@mo206.lastlook, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.x, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.y, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.angle, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint._type, st_word, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.options, st_smallint, 0);
-  MobjSerializer206.AddTypedItem(@mo206.tracer, st_longword, 0);  // Tracer translated key
+  MobjSerializer206.AddTypedItem(@mo206.tracer, st_nativeint, 0);  // Tracer translated key
   MobjSerializer206.AddTypedItem(@mo206.fastchasetics, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.friction, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.movefactor, st_integer, 0);
-  MobjSerializer206.AddItem(@mo206.customparams, SizeOf(pointer));
+  MobjSerializer206.AddTypedItem(@mo206.customparams, st_nativeint, 0);
   MobjSerializer206.AddTypedItem(@mo206.key, st_longword, 0);
   MobjSerializer206.AddTypedItem(@mo206.floorclip, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.prevx, st_integer, 0);
@@ -173,7 +177,7 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.args[3], st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.args[4], st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.special, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.master, st_longword, 0);  // Master translated key
+  MobjSerializer206.AddTypedItem(@mo206.master, st_nativeint, 0);  // Master translated key
   MobjSerializer206.AddTypedItem(@mo206.WeaveIndexXY, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.WeaveIndexZ, st_integer, 0);
 
@@ -220,7 +224,7 @@ begin
   MobjSerializer.AddTypedItem(@mo.fastchasetics, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.friction, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.movefactor, st_integer, 0);
-  MobjSerializer.AddItem(@mo.customparams, SizeOf(pointer));
+  MobjSerializer.AddTypedItem(@mo.customparams, st_nativeint, 0);
   MobjSerializer.AddTypedItem(@mo.key, st_longword, 0);
   MobjSerializer.AddTypedItem(@mo.floorclip, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.prevx, st_integer, 0);

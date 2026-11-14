@@ -61,6 +61,7 @@ procedure SV_ShutDownSerializers;
 implementation
 
 uses
+  sv_save,
   d_delphi,
   m_fixed,
   info,
@@ -111,6 +112,9 @@ var
   ln: Pline_t;
   sd: Pside_t;
 begin
+  // the records that the saved games keep whole (issue #40)
+  P_DeclareSaveRecords;
+
   mo206 := nil;
   MobjSerializer206 := TSerializer.Create;
   MobjSerializer206.AddTypedItem(@mo206.x, st_integer, 0);
@@ -130,7 +134,7 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.momz, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206._type, st_integer, -1, @OnLoadMobjInfoType);
   MobjSerializer206.AddTypedItem(@mo206.tics, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.state, st_integer, 0);  // State translated to id
+  MobjSerializer206.AddTypedItem(@mo206.state, st_nativeint, 0);  // State translated to id
   MobjSerializer206.AddTypedItem(@mo206.flags, st_integer, MF_SOLID);
   MobjSerializer206.AddTypedItem(@mo206.flags2, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.flags_ex, st_integer, 0);
@@ -144,23 +148,23 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.health, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.movedir, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.movecount, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.target, st_integer, 0);  // Target translated key
+  MobjSerializer206.AddTypedItem(@mo206.target, st_nativeint, 0);  // Target translated key
   MobjSerializer206.AddTypedItem(@mo206.reactiontime, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.threshold, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.player, st_integer, 0); // Player translated to id
+  MobjSerializer206.AddTypedItem(@mo206.player, st_nativeint, 0); // Player translated to id
   MobjSerializer206.AddTypedItem(@mo206.lastlook, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.x, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.y, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.angle, st_smallint, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint._type, st_word, 0);
   MobjSerializer206.AddTypedItem(@mo206.spawnpoint.options, st_smallint, 0);
-  MobjSerializer206.AddTypedItem(@mo206.tracer, st_integer, 0);  // Tracer translated key
+  MobjSerializer206.AddTypedItem(@mo206.tracer, st_nativeint, 0);  // Tracer translated key
   MobjSerializer206.AddTypedItem(@mo206.fastchasetics, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.archivenum, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.tid, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.floorclip, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.friction, st_integer, 0);
-  MobjSerializer206.AddItem(@mo206.customparams, SizeOf(pointer));
+  MobjSerializer206.AddTypedItem(@mo206.customparams, st_nativeint, 0);
   MobjSerializer206.AddTypedItem(@mo206.key, st_longword, 0);
   MobjSerializer206.AddTypedItem(@mo206.prevx, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.prevy, st_integer, 0);
@@ -184,7 +188,7 @@ begin
   MobjSerializer206.AddTypedItem(@mo206.args[3], st_byte, 0);
   MobjSerializer206.AddTypedItem(@mo206.args[4], st_byte, 0);
   MobjSerializer206.AddTypedItem(@mo206.special, st_integer, 0);
-  MobjSerializer206.AddTypedItem(@mo206.master, st_integer, 0);  // Master translated key
+  MobjSerializer206.AddTypedItem(@mo206.master, st_nativeint, 0);  // Master translated key
   MobjSerializer206.AddTypedItem(@mo206.WeaveIndexXY, st_integer, 0);
   MobjSerializer206.AddTypedItem(@mo206.WeaveIndexZ, st_integer, 0);
 
@@ -207,37 +211,37 @@ begin
   MobjSerializer.AddTypedItem(@mo.momz, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo._type, st_integer, -1, @OnLoadMobjInfoType);
   MobjSerializer.AddTypedItem(@mo.tics, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.state, st_integer, 0);  // Hexen save system needs untranslated
+  MobjSerializer.AddTypedItem(@mo.state, st_nativeint, 0);  // Hexen save system needs untranslated
   MobjSerializer.AddTypedItem(@mo.flags, st_integer, MF_SOLID);
   MobjSerializer.AddTypedItem(@mo.flags2, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.flags_ex, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.flags2_ex, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.damage, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.special1, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.special2, st_integer, 0);
+  MobjSerializer.AddTypedItem(@mo.special1, st_nativeint, 0);
+  MobjSerializer.AddTypedItem(@mo.special2, st_nativeint, 0);
   MobjSerializer.AddItem(@mo.renderstyle, SizeOf(mobjrenderstyle_t));
   MobjSerializer.AddTypedItem(@mo.alpha, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.bob, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.health, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.movedir, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.movecount, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.target, st_integer, 0); // Hexen save system needs untranslated
+  MobjSerializer.AddTypedItem(@mo.target, st_nativeint, 0); // Hexen save system needs untranslated
   MobjSerializer.AddTypedItem(@mo.reactiontime, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.threshold, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.player, st_integer, 0);
+  MobjSerializer.AddTypedItem(@mo.player, st_nativeint, 0);
   MobjSerializer.AddTypedItem(@mo.lastlook, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.spawnpoint.x, st_smallint, 0);
   MobjSerializer.AddTypedItem(@mo.spawnpoint.y, st_smallint, 0);
   MobjSerializer.AddTypedItem(@mo.spawnpoint.angle, st_smallint, 0);
   MobjSerializer.AddTypedItem(@mo.spawnpoint._type, st_word, 0);
   MobjSerializer.AddTypedItem(@mo.spawnpoint.options, st_smallint, 0);
-  MobjSerializer.AddTypedItem(@mo.tracer, st_integer, 0); // Hexen save system needs untranslated
+  MobjSerializer.AddTypedItem(@mo.tracer, st_nativeint, 0); // Hexen save system needs untranslated
   MobjSerializer.AddTypedItem(@mo.fastchasetics, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.archivenum, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.tid, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.floorclip, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.friction, st_integer, 0);
-  MobjSerializer.AddItem(@mo.customparams, SizeOf(pointer));
+  MobjSerializer.AddTypedItem(@mo.customparams, st_nativeint, 0);
   MobjSerializer.AddTypedItem(@mo.key, st_longword, 0);
   MobjSerializer.AddTypedItem(@mo.prevx, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.prevy, st_integer, 0);
@@ -261,7 +265,7 @@ begin
   MobjSerializer.AddTypedItem(@mo.args[3], st_byte, 0);
   MobjSerializer.AddTypedItem(@mo.args[4], st_byte, 0);
   MobjSerializer.AddTypedItem(@mo.special, st_integer, 0);
-  MobjSerializer.AddTypedItem(@mo.master, st_integer, 0); // Hexen save system needs untranslated
+  MobjSerializer.AddTypedItem(@mo.master, st_nativeint, 0); // Hexen save system needs untranslated
   MobjSerializer.AddTypedItem(@mo.WeaveIndexXY, st_integer, 0);
   MobjSerializer.AddTypedItem(@mo.WeaveIndexZ, st_integer, 0);
   // Version 207

@@ -1301,6 +1301,8 @@ begin
   LResolver := TEngineSerializerResolver.Create;
   LHolder := LResolver;
   P_ConfigureSerializer(TSerializerFactory.Create(LResolver, LResolver, LResolver));
+  // the records that the saved games keep whole: on disk they are the ones of the 32 bit program (issue #40)
+  P_ConfigureSaveRecords(TSerializerFactory.CreateDiskLayouts, TSerializerFactory.CreateDiskRecordWriter);
 end;
 
 {$IFDEF OPENGL}
