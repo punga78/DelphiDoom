@@ -1,4 +1,4 @@
-<#
+﻿<#
   Issue #185, fase 2: codice comune delle prove meccaniche delle unit portate in copia unica (Prova-PMap.ps1,
   Prova-PMobj.ps1). Si carica con il punto (". Prova-Common.ps1") e si chiama Invoke-Prova.
 
@@ -94,7 +94,7 @@ function Get-Part {
                 <<B:X>> = corpo del metodo X delle regole del gioco, <<V:X>> = le sue variabili locali, con
                 "|strip=testo" (toglie un testo in coda), "|lead=testo" (in testa), "|exit=valore" (ogni
                 "begin result := valore; exit; end;" torna "exit;"), "|ret=valore" (ogni "result := valore;"
-                torna "exit;")
+                torna "exit;"), "|map=nome" (applica in ordine le coppie di sostituzioni di $Maps[nome], testo normalizzato)
     NotTextual  "Gioco|Routine" -> perche' e' equivalente
     Methods     "Gioco|Routine" o "Routine" -> metodo delle regole che e' quella routine del gioco (testo spostato
                 con la sola intestazione cambiata)
@@ -105,7 +105,7 @@ function Invoke-Prova {
   param(
     [string]$Root, [string]$Base, [string[]]$Games, [string]$Unit, [string[]]$BaseFiles, [hashtable]$Extra = @{},
     [string]$RulesUnit, [string]$Class, [object[]]$Expansions, [hashtable]$NotTextual = @{},
-    [hashtable]$Methods = @{}, [hashtable]$Alias = @{}
+    [hashtable]$Methods = @{}, [hashtable]$Alias = @{}, [hashtable]$Maps = @{}
   )
   $baseSets = foreach ($f in $BaseFiles) { [pscustomobject]@{ Name = ($f -replace '\.pas$', ''); Routines = (Get-Routines ([IO.File]::ReadAllLines((Join-Path $Root $f)))) } }
   $extraSets = @{}
@@ -119,7 +119,7 @@ function Invoke-Prova {
 
     $expand = {
       param([string]$text)
-      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9]+)((?:\|(?:strip|lead|exit|ret)=[^|>]*)*)>>', {
+      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9]+)((?:\|(?:strip|lead|exit|ret|map)=[^|]*?)*)>>', {
           param($m)
           $kind = $m.Groups[1].Value; $name = $m.Groups[2].Value
           if ($kind -eq 'B' -or $kind -eq 'V') { $lines = $gameRoutines["$Class.$name"] } else { $lines = $extraSets[$kind][$name] }
@@ -134,6 +134,7 @@ function Invoke-Prova {
               'lead' { if (-not $r.StartsWith($norm)) { throw "$game $name`: non comincia con $value" }; $r = $r.Substring($norm.Length) }
               'exit' { $r = $r.Replace("beginresult:=$norm;exit;end;", 'exit;') }
               'ret' { $r = $r.Replace("result:=$norm;", 'exit;') }
+              'map' { foreach ($pair in $Maps[$value]) { $r = $r.Replace((N $pair[0]), (N $pair[1])) } }
             }
           }
           $r
