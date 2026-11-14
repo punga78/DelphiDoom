@@ -138,8 +138,14 @@ type
     class function FuzzyAim(source: Pmobj_t; dest: Pmobj_t; an: angle_t): angle_t; static;
     /// <summary>P_SpawnMissileXYZ of the game</summary>
     class function SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
-    /// <summary>P_SpawnPlayerMissile of the game</summary>
+    /// <summary>P_SpawnPlayerMissile of the game (the routine is TMobjPlayerMissileSpawner)</summary>
     class function SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t; static;
+    /// <summary>P_SpawnPlayerMissile: where to aim when no target is in sight (the direction of the player, or the free look)</summary>
+    class procedure AimWithoutTarget(source: Pmobj_t; var an: angle_t; var slope: fixed_t); static;
+    /// <summary>P_SpawnPlayerMissile: what the game does once the aim is done (Strife: the target of the player)</summary>
+    class procedure AfterAim(source: Pmobj_t); static; inline;
+    /// <summary>P_SpawnPlayerMissile: the height the missile starts at, once the free look is counted (Strife: the feet of the player may be clipped)</summary>
+    class procedure AdjustMissileZ(source: Pmobj_t; var z: fixed_t); static; inline;
     /// <summary>P_HitFloor of the game (the routine is TMobjHitFloor)</summary>
     class function HitFloor(thing: Pmobj_t): integer; static;
     /// <summary>P_HitFloor: a demo of the old engine versions has no splashes (Strife has none to protect)</summary>
@@ -331,7 +337,8 @@ uses
   DelphiDoom.Engine.World.MissileSpawner,
   DelphiDoom.Engine.World.PlayerSpawner,
   DelphiDoom.Engine.World.MapThingSpawner,
-  DelphiDoom.Engine.World.HitFloor;
+  DelphiDoom.Engine.World.HitFloor,
+  DelphiDoom.Engine.World.PlayerMissileSpawner;
 
 //
 // P_XYMovement
@@ -1086,66 +1093,30 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t;
-var
-  th: Pmobj_t;
-  an: angle_t;
-  x: fixed_t;
-  y: fixed_t;
-  z: fixed_t;
-  slope: fixed_t;
 begin
-  // see which target is to be aimed at
-  an := source.angle;
-  slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
+  result := TMobjPlayerMissileSpawner.Spawn(source, _type);
+end;
 
-  if linetarget = nil then
+class procedure TMobjGameRules.AimWithoutTarget(source: Pmobj_t; var an: angle_t; var slope: fixed_t);
+begin
+  if zaxisshift and (linetarget = nil) then
   begin
-    an := an + $4000000;
-    slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-
-    if linetarget = nil then
-    begin
-      an := an - $8000000;
-      slope := P_AimLineAttack(source, an, 16 * 64 * FRACUNIT);
-
-      if zaxisshift and (linetarget = nil) then
-      begin
-        an := source.angle;
-        slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
-      end;
-
-    end;
+    an := source.angle;
+    slope := (Pplayer_t(source.player).lookdir * FRACUNIT) div 173;
   end;
+end;
 
+class procedure TMobjGameRules.AfterAim(source: Pmobj_t);
+begin
   // villsa [STRIFE]
   if linetarget <> nil then
     source.target := linetarget;
+end;
 
-  x := source.x;
-  y := source.y;
-  // Also z axis shift calculation
-  if zaxisshift then
-    z := source.z + 4 * 8 * FRACUNIT + (Pplayer_t(source.player).lookdir * FRACUNIT) div 173
-  else
-    z := source.z + 4 * 8 * FRACUNIT;
-
+class procedure TMobjGameRules.AdjustMissileZ(source: Pmobj_t; var z: fixed_t);
+begin
   if source.flags and MF_FEETCLIPPED <> 0 then
     z := z - source.floorclip;
-
-  th := P_SpawnMobj(x, y, z, _type);
-
-  A_SeeSound1(th);
-
-  th.target := source;
-  th.angle := an;
-  th.momx := FixedMul(th.info.speed, finecosine[{$IFDEF FPC}_SHRW(an, ANGLETOFINESHIFT){$ELSE}an shr ANGLETOFINESHIFT{$ENDIF}]);
-  th.momy := FixedMul(th.info.speed, finesine[{$IFDEF FPC}_SHRW(an, ANGLETOFINESHIFT){$ELSE}an shr ANGLETOFINESHIFT{$ENDIF}]);
-  th.momz := FixedMul(th.info.speed, slope);
-
-  if P_CheckMissileSpawn(th) then
-    result := th
-  else
-    result := nil;
 end;
 
 //==============================================================================
