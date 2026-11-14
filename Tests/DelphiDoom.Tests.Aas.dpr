@@ -68,6 +68,7 @@ uses
   DelphiDoom.Aas.D3.Factory in '..\Libs\Aas\DelphiDoom.Aas.D3.Factory.pas',
   DelphiDoom.Tests.Aas.D3.Support in 'Source\DelphiDoom.Tests.Aas.D3.Support.pas',
   DelphiDoom.Tests.Aas.Cluster.Scenario in 'Source\DelphiDoom.Tests.Aas.Cluster.Scenario.pas',
+  DelphiDoom.Tests.Aas.Cluster.Units in 'Source\DelphiDoom.Tests.Aas.Cluster.Units.pas',
   DelphiDoom.Tests.Aas.Cluster.Golden in 'Source\DelphiDoom.Tests.Aas.Cluster.Golden.pas',
   DelphiDoom.Tests.Aas.Route.Units in 'Source\DelphiDoom.Tests.Aas.Route.Units.pas',
   DelphiDoom.Tests.Aas.Route.Scenario in 'Source\DelphiDoom.Tests.Aas.Route.Scenario.pas',
