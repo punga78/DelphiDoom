@@ -39,7 +39,10 @@ type
   /// <summary>RunEvent of event.pas: the scripts of the map</summary>
   IGreedEventRunner = interface
     ['{C3F9A0D4-5E17-4682-B0A9-7D4E2C15F86A}']
-    /// <summary>RunEvent(eval, netsend); the net is not ported, ANetSend is kept for the order of the calls</summary>
+    /// <summary>
+    ///   RunEvent(eval, netsend); netsend does nothing in the original either (its NetEvent is a comment): ANetSend
+    ///   is kept for the order of the calls
+    /// </summary>
     procedure RunEvent(AEvent: Integer; ANetSend: Boolean);
   end;
 

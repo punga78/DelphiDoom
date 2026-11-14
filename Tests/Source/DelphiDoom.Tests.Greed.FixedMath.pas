@@ -24,7 +24,10 @@ type
   TTestGreedFixedMath = class(TObject)
   private
     FSeed: Cardinal;
+{$IFDEF CPUX86}
+    // the random pairs are only for the comparison with the asm of the original, which is 32 bit
     function NextValue: Integer;
+{$ENDIF}
   public
     [Setup]
     procedure Setup;
@@ -127,6 +130,7 @@ begin
   FSeed := $1234ABCD;
 end;
 
+{$IFDEF CPUX86}
 function TTestGreedFixedMath.NextValue: Integer;
 begin
   // xorshift: deterministic; every third value is small, as the game ones
@@ -138,6 +142,7 @@ begin
   else
     Result := Integer(FSeed);
 end;
+{$ENDIF}
 
 procedure TTestGreedFixedMath.DovrebbeMoltiplicareComeIlProdottoDiDueInteri;
 begin

@@ -24,7 +24,7 @@ type
   ///   object does not own the parts: it finds them in the TGreedGameParts of its game
   /// </summary>
   TGreedGameViewHost = class(TInterfacedObject, IGreedItemHost, IGreedLevelHost, IGreedCheatHost,
-    IGreedMapSessionHost, IGreedEventHost)
+    IGreedMapSessionHost, IGreedEventHost, IGreedLevelNetHost)
   strict private
     FParts: TGreedGameParts;
     function GetSystemClock: Cardinal;
@@ -48,6 +48,8 @@ type
     procedure FadeOutLevel;
     procedure ResetDisplay;
     procedure NewMap(AMap, AActivate: Integer);
+    // IGreedLevelNetHost
+    procedure RespawnPlayer;
     // IGreedCheatHost
     procedure SetGameEpisode(AEpisode: Integer);
     procedure RestoreTimerHook;
@@ -105,8 +107,10 @@ end;
 
 procedure TGreedGameViewHost.ResetMouse;
 begin
-  // ResetMouse of d_ints.pas puts the cursor of the system at the centre of the window: the commands of the
-  // game come from IGreedControls, that gives movements and has no cursor
+  // ResetMouse of d_ints.pas puts the cursor of the system at the centre of the window: what the mouse moved
+  // and was not read yet is thrown away
+  if Assigned(FParts.Mouse) then
+    FParts.Mouse.Reset;
 end;
 
 procedure TGreedGameViewHost.EngineWasReset;
@@ -122,6 +126,11 @@ procedure TGreedGameViewHost.RefreshGoalItem;
 begin
   FParts.Session.OldGoalItem := -1;
   FParts.View.RefreshGoalItem;
+end;
+
+procedure TGreedGameViewHost.RespawnPlayer;
+begin
+  FParts.Session.RespawnPlayer;
 end;
 
 procedure TGreedGameViewHost.SetTotalEffectTime(ATics: Integer);
@@ -171,7 +180,7 @@ procedure TGreedGameViewHost.SelectSong(AMap: Integer);
 var
   LSong: TGreedSong;
 begin
-  LSong := TGreedSongSelector.Select(AMap, FParts.State.Demo, False);
+  LSong := TGreedSongSelector.Select(AMap, FParts.State.Demo, FParts.State.NetMode);
   FParts.Music.Play(LSong.FileName, LSong.Pattern);
 end;
 

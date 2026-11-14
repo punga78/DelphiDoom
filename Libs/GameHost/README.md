@@ -24,13 +24,16 @@ La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Loggin
 | `DelphiDoom.GameHost.Win.OpenGlProgram`, `...Win.OpenGlVideoDevice` | fotogramma con OpenGL (WGL), programma GLSL facoltativo |
 | `DelphiDoom.GameHost.VideoDeviceSelector` | sceglie GDI o OpenGL a ogni `SetMode`, con ripiego su GDI e avviso nel log |
 | `DelphiDoom.GameHost.KeyState` | `IGameHostEventSink` che ricorda i tasti premuti (per i giochi che interrogano lo stato) |
+| `DelphiDoom.GameHost.MouseState` | `IGameHostEventSink` che ricorda i pulsanti del mouse premuti e se la finestra ha il fuoco (`IGameHostMouseState`, issue #175) |
+| `DelphiDoom.GameHost.EventFanOut` | `IGameHostEventSink` che da' ogni evento a piu' ascoltatori (la finestra ne ha uno solo) |
+| `DelphiDoom.GameHost.Win.CursorArea` | `IGameHostCursorArea`: dov'e' l'area client della finestra sullo schermo e se la finestra e' in primo piano (per un gioco che legge il cursore di sistema e lo riporta al centro) |
 | `DelphiDoom.GameHost.Win.PcmOutput` | uscita PCM waveOut a richiesta (16 bit stereo, un thread chiede i campioni alla sorgente) |
 | `DelphiDoom.GameHost.Factory`, `...OpenGl.Factory` | gli unici punti che conoscono le classi (finestra, GDI, PCM; OpenGL e selettore a parte, per non linkare OpenGL dove non serve) |
 
 Adattatori dei giochi (restano nella cartella del gioco):
 
 - `OpenXcom\`: `DelphiDoom.Xcom.HostVideoDevice` (`IXcomVideoDevice`, `IXcomWindowStyle`, `IXcomWindowPlacement`, `IXcomFilteredDisplay` sopra un `IGameHostVideoDevice`), `DelphiDoom.Xcom.HostEventSink` (eventi neutri -> `TXcomQueueEventSource` con i codici SDL 1.2), `DelphiDoom.Xcom.HostShaderLoader` (catalogo e lettore degli shader di XcomEngine), `DelphiDoom.Xcom.HostLog` (`ILog` -> `IXcomLog`), `DelphiDoom.Xcom.HostClock` (`IXcomClock` sopra `IClock` di `Libs\Clock`), `DelphiDoom.Xcom.HostPcmOutput` (`IXcomPcmOutput` sopra `IGameHostPcmOutput`).
-- `Greed\`: `DelphiDoom.Greed.HostWindow` (`IGreedFramePresenter` e `IGreedInput` sopra il dispositivo GDI e `IGameHostKeyState`).
+- `Greed\`: `DelphiDoom.Greed.HostWindow` (`IGreedFramePresenter` e `IGreedInput` sopra il dispositivo GDI e `IGameHostKeyState`), `DelphiDoom.Greed.HostMouse` (`IMouseDevice`, `IScreenSize` e `IInputGate` di `Libs\Input` sopra `IGameHostCursorArea` e `IGameHostMouseState`).
 
 Seconda parte della #179 (dettagli in CLAUDE.md): l'orologio dei giochi e' `IClock` di `Libs\Clock` (`TManualClock` per screenshot e test), la riga di comando e' `TVerbatimCommandLine` e `ICommandLineCursor` di `Libs\CommandLine`, i file su piu' cartelle sono `IFolderFiles` di `Libs\Platform`, l'immagine a 8 bit e l'encoder PNG sono `TIndexedImage` e `TPngIndexedEncoder` di `Libs\Png`, il codice comune dei test e' `Tests\Source\DelphiDoom.Tests.Shared.*`. Restano separati per scelta `IKeenClock`, `IGreedRenderClock` e l'uscita waveOut dei moduli tracker.
 

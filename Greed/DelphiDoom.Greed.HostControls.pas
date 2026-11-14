@@ -13,7 +13,7 @@ interface
 
 uses
   Winapi.Windows, System.SysUtils, DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.CommandState,
-  DelphiDoom.GameHost.Events.Intf;
+  DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.KeyLatch;
 
 type
   /// <summary>
@@ -24,7 +24,9 @@ type
   ///   the goal item, 1..5 the weapons, P pauses, Escape the menu, F1 help, F4 quick exit, F5 briefing, F7 another
   ///   song, F9 and F10 the size of the view, Caps Lock the auto run, Num Lock the auto target, minus and plus the
   ///   zoom of the map. The letters and the digits that go down between two readings are the characters typed
-  ///   (the secret codes). The mouse is not read: the key state of the window has no mouse
+  ///   (the secret codes). A key that goes down and up between two readings of the controls is seen by the next
+  ///   reading (TGameHostKeyLatch): the original, which asks Windows for the keys every two tics, loses it.
+  ///   The mouse is not read here: TGreedMouseControls adds it to these keys
   /// </summary>
   TGreedHostControls = class(TInterfacedObject, IGreedCommandSource)
   strict private
@@ -32,13 +34,14 @@ type
       FIRST_TYPED = Ord('0');
       LAST_TYPED = Ord('Z');
     var
-      FKeys: IGameHostKeyState;
+      FLatch: TGameHostKeyLatch;
       FWasDown: array[FIRST_TYPED..LAST_TYPED] of Boolean;
       FTyped: string;
     class function KeyOf(ACommand: TGreedCommand): Integer; static;
   public
     /// <summary>EArgumentNilException if AKeys is nil</summary>
     constructor Create(const AKeys: IGameHostKeyState);
+    destructor Destroy; override;
     procedure BeginReading;
     function IsPressed(ACommand: TGreedCommand): Boolean;
     function TakeTyped(out ACharacter: Char): Boolean;
@@ -55,7 +58,13 @@ begin
   inherited Create;
   if not Assigned(AKeys) then
     raise EArgumentNilException.Create('AKeys');
-  FKeys := AKeys;
+  FLatch := TGameHostKeyLatch.Create(AKeys);
+end;
+
+destructor TGreedHostControls.Destroy;
+begin
+  FLatch.Free;
+  inherited Destroy;
 end;
 
 class function TGreedHostControls.KeyOf(ACommand: TGreedCommand): Integer;
@@ -114,10 +123,11 @@ var
   LKey: Integer;
   LDown: Boolean;
 begin
+  FLatch.Sample;
   for LKey := FIRST_TYPED to LAST_TYPED do
     if CharInSet(Char(LKey), ['0'..'9', 'A'..'Z']) then
     begin
-      LDown := FKeys.IsDown(LKey);
+      LDown := FLatch.IsDown(LKey);
       if LDown and not FWasDown[LKey] then
         FTyped := FTyped + Char(LKey);
       FWasDown[LKey] := LDown;
@@ -129,7 +139,7 @@ var
   LKey: Integer;
 begin
   LKey := KeyOf(ACommand);
-  Result := (LKey <> 0) and FKeys.IsDown(LKey);
+  Result := (LKey <> 0) and FLatch.IsDown(LKey);
 end;
 
 function TGreedHostControls.TakeTyped(out ACharacter: Char): Boolean;

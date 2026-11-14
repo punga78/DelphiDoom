@@ -48,6 +48,8 @@ type
     procedure RenderTileWalls(AEntry: PGreedRenderEntry);
     procedure SetupFrame;
     procedure FlowView;
+    procedure RenderScene(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle, AScrollMin: Integer; AUpdateTime: Boolean; var AFrame: TGreedFrame);
   public
     constructor Create(const AAssets: IGreedRenderAssets; ASprites: TGreedLinkedPool<TGreedSprite>;
       const AClock: IGreedRenderClock; const ARandom: IGreedRandom);
@@ -63,6 +65,12 @@ type
     ///   game adds the bobbing of the head to z). The maps of the walls seen and the scroll are the ones of APlayer
     /// </summary>
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
+    /// <summary>
+    ///   RF_RenderView as RearView of raven.pas calls it: the same as RenderView, but the view is not moved up or
+    ///   down (scrollmin 0), whatever the look of the player is. The record of the player is not changed for it
+    /// </summary>
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
     /// <summary>
     ///   Called where the original calls RF_CheckActionFlag; nil (the default) calls nothing. What it does can change
@@ -464,6 +472,18 @@ end;
 
 procedure TGreedFrameRenderer.RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
   AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  RenderScene(AWorld, APlayer, AX, AY, AZ, AAngle, APlayer.ScrollMin, True, AFrame);
+end;
+
+procedure TGreedFrameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  RenderScene(AWorld, APlayer, AX, AY, AZ, AAngle, 0, False, AFrame);
+end;
+
+procedure TGreedFrameRenderer.RenderScene(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle, AScrollMin: Integer; AUpdateTime: Boolean; var AFrame: TGreedFrame);
 var
   S: TGreedRenderState;
 begin
@@ -473,15 +493,18 @@ begin
     raise EGreedRenderException.CreateFmt(SGreedRenderSize, [AFrame.Width, AFrame.Height, GREED_RENDER_MAX_WIDTH,
       GREED_RENDER_MAX_HEIGHT]);
   S := FState;
-  S.ScrollMin := APlayer.ScrollMin;
+  S.ScrollMin := AScrollMin;
   S.Configure(AFrame.Width, AFrame.Height);
   S.Buffer := PByte(AFrame.Pixels);
+  S.BufferSize := AFrame.Width * AFrame.Height;
   FillChar(S.Buffer^, S.WindowWidth * S.WindowHeight, 0);
   CopyLevel(AWorld);
   S.NorthMap := @APlayer.NorthMap[0];
   S.WestMap := @APlayer.WestMap[0];
   FContent.World := AWorld;
-  FContent.RenderTime := FClock.GetTimeCount;
+  // rtimecount is set by UpdateView, not by RearView: the camera draws with the time of the last view of the player
+  if AUpdateTime then
+    FContent.RenderTime := FClock.GetTimeCount;
   S.ViewX := AX;
   S.ViewY := AY;
   S.ViewZ := AZ;
@@ -504,7 +527,12 @@ begin
   else if S.ViewTileY > GREED_MAP_SIZE - 1 then
     S.ViewTileY := GREED_MAP_SIZE - 1;
   FlowView;
-  CheckActionFlag;
+  if Assigned(FActionHook) then
+  begin
+    FActionHook.CheckActionFlag;
+    // the sprites take the light and the effect of their tile from the map as it is now
+    CopyLevel(AWorld);
+  end;
   FInterpolator.Interpolate(AWorld);
   FContent.RenderSprites;
   FInterpolator.Restore;

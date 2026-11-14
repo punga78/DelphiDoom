@@ -26,7 +26,7 @@ type
   ///   pictures of a monster get their colour 255 turned into 0 the first time the spawner asks for them
   ///   (DemandLoadMonster), in the copy of the lump that the renderer reads
   /// </summary>
-  TGreedGameRenderer = class(TInterfacedObject, IGreedGameRenderer, IGreedFrameRenderer)
+  TGreedGameRenderer = class(TInterfacedObject, IGreedGameRenderer, IGreedFrameRenderer, IGreedRenderMemory)
   strict private
     FArchive: IGreedArchive;
     FAssets: TGreedArchiveRenderAssets;
@@ -43,6 +43,8 @@ type
     procedure Render(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; var AFrame: TGreedFrame);
     procedure RenderView(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
       AAngle: Integer; var AFrame: TGreedFrame);
+    procedure RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY, AZ: TGreedFixed;
+      AAngle: Integer; var AFrame: TGreedFrame);
     function TileLights: PGreedTileLights;
     procedure SetLights(ABlackZ: TGreedFixed);
     procedure SetFlatTranslation(AFlat, APicture: Integer);
@@ -54,12 +56,13 @@ type
     function WeaponLight: IGreedWeaponLight;
     function TileLightReader: IGreedTileLights;
     procedure DemandLoadMonster(ALump, ACount: Integer);
+    procedure SubtractAfterTileLights(AOffset, AAmount: Integer);
   end;
 
 implementation
 
 uses
-  DelphiDoom.Greed.MonsterPictureFix;
+  DelphiDoom.Greed.MonsterPictureFix, DelphiDoom.Greed.Render.State;
 
 { TGreedGameRenderer }
 
@@ -74,6 +77,8 @@ begin
   FArchive := AArchive;
   FAssets := TGreedArchiveRenderAssets.Create(AArchive);
   FAssetsIntf := FAssets;
+  // LoadData of intro.pas calls RF_PreloadGraphics before the game starts
+  FAssets.PreloadGraphics;
   FRenderer := TGreedFrameRenderer.Create(FAssetsIntf, ASprites, AClock, ARandom);
   FRendererIntf := FRenderer;
   SetLength(FFixed, AArchive.LumpCount);
@@ -91,6 +96,12 @@ procedure TGreedGameRenderer.RenderView(const AWorld: IGreedWorld; var APlayer: 
   AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
 begin
   FRenderer.RenderView(AWorld, APlayer, AX, AY, AZ, AAngle, AFrame);
+end;
+
+procedure TGreedGameRenderer.RenderCamera(const AWorld: IGreedWorld; var APlayer: TGreedPlayerRecord; AX, AY,
+  AZ: TGreedFixed; AAngle: Integer; var AFrame: TGreedFrame);
+begin
+  FRenderer.RenderCamera(AWorld, APlayer, AX, AY, AZ, AAngle, AFrame);
 end;
 
 function TGreedGameRenderer.TileLights: PGreedTileLights;
@@ -158,6 +169,30 @@ end;
 procedure TGreedGameRenderer.SetEffectsTime(ATime: Integer);
 begin
   FRenderer.State.FxTimeCount := ATime;
+end;
+
+procedure TGreedGameRenderer.SubtractAfterTileLights(AOffset, AAmount: Integer);
+var
+  S: TGreedRenderState;
+begin
+  S := FRenderer.State;
+  // the order of the declarations of r_render.pas after "actionflag: integer"
+  case AOffset of
+    1: S.WallGlow := S.WallGlow - AAmount;
+    2: S.WallGlowIndex := S.WallGlowIndex - AAmount;
+    3: S.WallRotate := S.WallRotate - AAmount;
+    4: S.MapLight := S.MapLight - AAmount;
+    5: S.WallFlicker1 := S.WallFlicker1 - AAmount;
+    6: S.WallFlicker2 := S.WallFlicker2 - AAmount;
+    7: S.WallFlicker3 := S.WallFlicker3 - AAmount;
+    8: S.WallFlicker4 := S.WallFlicker4 - AAmount;
+    9: S.WallFlags := S.WallFlags - AAmount;
+    10: S.WallCycle := S.WallCycle - AAmount;
+    11: S.FrameOn := S.FrameOn - AAmount;
+  else
+    if (AOffset >= 12) and (AOffset - 12 <= High(S.FrameValid)) then
+      S.FrameValid[AOffset - 12] := S.FrameValid[AOffset - 12] - AAmount;
+  end;
 end;
 
 procedure TGreedGameRenderer.DemandLoadMonster(ALump, ACount: Integer);

@@ -29,6 +29,18 @@ type
     function ThrustPlayer(AAngle: Integer; ASpeed: TGreedFixed): Boolean;
   end;
 
+  /// <summary>
+  ///   What is next to reallight in the memory of the original. A very hot sprite (heat above 256) lights the nine
+  ///   tiles around it without looking where the map ends: on the first and on the last row of the map the original
+  ///   writes outside reallight, over the variables that its compiler put before and after it (see
+  ///   TGreedLightOverflow). Who implements this takes those writes; without it they are dropped
+  /// </summary>
+  IGreedLightOverflow = interface
+    ['{C4E19A70-5D2B-4B86-9F3E-A07D61B5C3E8}']
+    /// <summary>reallight[AIndex] := reallight[AIndex] - AAmount, with AIndex below 0 or from GREED_MAP_TILES on</summary>
+    procedure LightOutsideTheMap(AIndex, AAmount: Integer);
+  end;
+
 implementation
 
 end.

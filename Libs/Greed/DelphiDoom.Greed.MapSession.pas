@@ -36,9 +36,9 @@ type
   ///   writes it; LoadGame reads it, loads the map without its sprites, makes the saved ones, puts back the walls
   ///   and runs again the events that had happened.
   ///   The globals of the original that TGreedGameState does not have are properties here: OldGoalItem (display.pas),
-  ///   TimeMessage (timemsg of d_font.pas) and FxTimeCount. The net game is not ported: the "or netmode" of the
-  ///   conditions of newmap, netsendtime and nethurtsoundtime of resetengine and NetNewPlayerData of respawnplayer
-  ///   are not here. The map from a file (-file) is the job of the map loader.
+  ///   TimeMessage (timemsg of d_font.pas) and FxTimeCount. The net game (State.NetMode): newmap has no
+  ///   briefing and no end of the episode, resetengine clears netsendtime and nethurtsoundtime and respawnplayer
+  ///   tells the others (State.Net.NewPlayerData). The map from a file (-file) is the job of the map loader.
   ///   Kept defects of the original: LoadGame takes the clock of the saved game after resetengine has cleared it,
   ///   so a loaded game always starts at the tic 0; a dead monster of the kind 2 is not saved; a monster with an
   ///   event of death is not saved (the script makes it again); what is saved later on a tile replaces what was
@@ -213,8 +213,10 @@ begin
   FTimeMessage := 0;
   FState.RearViewTime := 0;
   FState.RearViewDelay := 0;
+  FState.NetSendTime := 0;
   FState.SwitchTime := 0;
   FState.InventoryTime := 0;
+  FState.NetHurtSoundTime := 0;
   FState.MidgetMode := False;
   FFxTimeCount := 0;
   FState.SecretBuf := '';
@@ -301,16 +303,17 @@ begin
   end;
   FState.Player.Map := AMap;
   if (FState.Game1 and (AMap <> LAST_MAP_OF_GAME1)) or (FState.Game2 and (AMap <> LAST_MAP_OF_GAME2)) or
-    (FState.Game3 and (AMap <> LAST_MAP_OF_GAME3)) then
+    (FState.Game3 and (AMap <> LAST_MAP_OF_GAME3)) or FState.NetMode then
     FHost.SelectSong(AMap)
   else
     FHost.StopMusic;
-  if AActivate = 1 then
+  // MissionBriefing does nothing in a net game
+  if (AActivate = 1) and not FState.NetMode then
     FHost.MissionBriefing(AMap);
   ResetEngine;
   if FState.Demo then
   begin
-    if AMap <> LAST_MAP_OF_DEMO then
+    if (AMap <> LAST_MAP_OF_DEMO) or FState.NetMode then
       LoadMapAndScript(AMap, AActivate);
   end
   else
@@ -318,7 +321,7 @@ begin
     LDidEnd := False;
     if FState.Game1 then
     begin
-      if AMap = LAST_MAP_OF_GAME1 then
+      if (AMap = LAST_MAP_OF_GAME1) and not FState.NetMode then
       begin
         FHost.EndGame(1);
         LDidEnd := True;
@@ -326,13 +329,13 @@ begin
     end
     else if FState.Game2 then
     begin
-      if AMap = LAST_MAP_OF_GAME2 then
+      if (AMap = LAST_MAP_OF_GAME2) and not FState.NetMode then
       begin
         FHost.EndGame(2);
         LDidEnd := True;
       end;
     end
-    else if AMap = LAST_MAP_OF_GAME3 then
+    else if (AMap = LAST_MAP_OF_GAME3) and not FState.NetMode then
     begin
       FHost.EndGame(3);
       LDidEnd := True;
@@ -372,6 +375,9 @@ begin
   FState.Player.Z := TGreedTerrain.FloorZ(FState.World, FState.Player.X, FState.Player.Y) + FState.Player.Height;
   FState.Player.Angle := NORTH;
   FState.PlayerAngle64 := NORTH * 64;
+  // NetNewPlayerData: respawnplayer is of the net game only
+  if FState.NetMode then
+    FState.Net.NewPlayerData;
 end;
 
 procedure TGreedMapSession.SaveSpot(ASpot, AValue: Integer);

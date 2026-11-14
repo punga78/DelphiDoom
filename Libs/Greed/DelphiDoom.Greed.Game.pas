@@ -22,7 +22,8 @@ uses
   DelphiDoom.Greed.World.Intf, DelphiDoom.Greed.Random, DelphiDoom.Greed.Frame.Intf, DelphiDoom.Greed.Sound.Intf,
   DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State, DelphiDoom.Greed.Level.Intf,
   DelphiDoom.Greed.PlayerControl.Intf, DelphiDoom.Greed.GameView.Intf, DelphiDoom.Greed.GameRenderer.Intf,
-  DelphiDoom.Greed.Inventory, DelphiDoom.Greed.Game.Parts;
+  DelphiDoom.Greed.Mouse.Intf,
+  DelphiDoom.Greed.Inventory, DelphiDoom.Greed.Game.Parts, DelphiDoom.Greed.Net.Intf;
 
 const
   /// <summary>MAX_VIEW_WIDTH and MAX_VIEW_HEIGHT: the view in which the weapon and the status bar are placed</summary>
@@ -37,6 +38,12 @@ const
   GREED_GAME_AMBIENT_LIGHT = 2048;
 
 type
+  /// <summary>Where the rear view camera of the enemy view looks from (x, y, z and angle of a pevent_t)</summary>
+  TGreedEnemyView = record
+    X, Y, Z: TGreedFixed;
+    Angle: Integer;
+  end;
+
   /// <summary>
   ///   A game of Greed: the state, the world, the lists of sprites and elevators and every part of the logic
   ///   (spawner, sprites, player, weapons, items, switches, doors, elevators, events, the life of a map), wired to
@@ -50,9 +57,13 @@ type
   ///   in the hand goes on with its animation. NewGame is newplayer and the start of maingame.
   ///   What is drawn over the view and what is shown between the maps is asked of IGreedGameView; the messages of
   ///   IGreedMessages; the sounds of IGreedSoundEffects and IGreedMusic; the commands come from IGreedControls.
-  ///   Not ported: the net game, the demos (recording and playback), the rear view camera (its flags and clocks
-  ///   change as in the original, the second view is not drawn, so its TimeUpdate calls are not made) and the
-  ///   VR helmet (the TimeUpdate of RF_CheckActionFlag are always made, as with SC.vrhelmet 0).
+  ///   The rear view camera (RearView) is a second view of 64 x 64 pixels drawn by the same renderer before the
+  ///   view of the player, every CameraDelay tics while it is on: its picture is given to the view with the overlay.
+  ///   The net game: AttachNet gives the game the session (the Net* routines of net.pas); the wait for the other
+  ///   players (NetWaitStart) is run by the program before the first turn.
+  ///   Recording and playing a game are a job of the program (TGreedDemoRecorder, TGreedDemoPlayer): the game only
+  ///   needs its commands, its clock and its tics to be the same.
+  ///   Not ported: the VR helmet (the TimeUpdate of RF_CheckActionFlag are always made, as with SC.vrhelmet 0).
   ///   Difference: the original runs the timer in a thread, held while a view is drawn; here the program calls Tic
   ///   between two Frame
   /// </summary>
@@ -71,7 +82,13 @@ type
     FWeaponX: Integer;
     FWeaponY: Integer;
     FStartPending: Boolean;
+    FRearFrame: TGreedFrame;
+    FRearBuffer: TBytes;
+    FEnemyView: TGreedEnemyView;
+    FNetLeft: Boolean;
     function GetState: TGreedGameState;
+    function GetNetHost: IGreedNetHost;
+    procedure PlayTurn(var AFrame: TGreedFrame);
     function GetWorld: IGreedWorld;
     function GetInventory: TGreedInventory;
     function GetQuitGame: Boolean;
@@ -82,7 +99,11 @@ type
     function GetLowResolution: Boolean;
     procedure SetLowResolution(AValue: Boolean);
     function GetViolence: Boolean;
+    function GetMouse: IGreedMouse;
+    procedure SetMouse(const AValue: IGreedMouse);
     procedure SetViolence(AValue: Boolean);
+    function GetOriginalLightOverflow: Boolean;
+    procedure SetOriginalLightOverflow(AValue: Boolean);
     procedure CreateParts;
     procedure InitData;
     function LastMap: Integer;
@@ -90,6 +111,7 @@ type
     procedure ServeInventory;
     procedure AnimateWalls;
     procedure ServeDisplayToggles;
+    procedure RearView;
     procedure ServeRearView;
     procedure UpdateView(var AFrame: TGreedFrame);
     procedure SelectNewSong;
@@ -137,6 +159,21 @@ type
     /// <summary>SaveGame(n) and LoadGame(n) of utils.pas</summary>
     procedure SaveGame(ANumber: Integer);
     function LoadGame(ANumber: Integer): Boolean;
+    /// <summary>
+    ///   The game becomes a net game (netmode of the original, set by the parameter "-net" before anything is
+    ///   loaded): ALink is the session (TGreedNetSession, made with State, the parts and NetHost of this game; see
+    ///   TGreedNetFactory). To call before NewGame: the player starts at the place of its number, the others are
+    ///   told what it does and what they do arrives during the turns of the loop. A game of one player never
+    ///   calls it and nothing changes for it. EArgumentNilException if ALink is nil
+    /// </summary>
+    procedure AttachNet(const ALink: IGreedNetLink);
+    /// <summary>
+    ///   What maingame does after PlayLoop in a net game: NetQuitGame, once. Frame does it when the game is over
+    ///   (QuitGame); a program that stops playing before that calls it. Nothing in a game of one player
+    /// </summary>
+    procedure LeaveNet;
+    /// <summary>What the session of a net game asks of this game when a packet says so</summary>
+    property NetHost: IGreedNetHost read GetNetHost;
     /// <summary>The globals of the original: the player, the clocks, the flags</summary>
     property State: TGreedGameState read GetState;
     property World: IGreedWorld read GetWorld;
@@ -161,12 +198,35 @@ type
     /// <summary>SC.violence: blood and corpses</summary>
     property Violence: Boolean read GetViolence write SetViolence;
     /// <summary>
+    ///   The mouse that the game puts back in the middle of the window when the player is moved by a warp or a
+    ///   level starts (ResetMouse of d_ints.pas); nil, the default, if none is installed. Its buttons and its
+    ///   movement come with the commands (IGreedControls)
+    /// </summary>
+    property Mouse: IGreedMouse read GetMouse write SetMouse;
+    /// <summary>
     ///   The status bar is shown (currentViewSize is not the full view): drawing it chooses an item of the
     ///   inventory when none is chosen. True by default
     /// </summary>
     property StatusBar: Boolean read FStatusBar write FStatusBar;
     /// <summary>SC.camdelay: tics between two pictures of the rear view (TICRATE = one picture and off)</summary>
     property CameraDelay: Integer read FCameraDelay write FCameraDelay;
+    /// <summary>
+    ///   rearbuf: the last picture of the rear view camera (64 x 64 pixels as the renderer made them, before
+    ///   I_TranslateBuffer); nil until the camera takes its first picture
+    /// </summary>
+    property RearBuffer: TBytes read FRearBuffer;
+    /// <summary>
+    ///   The defect of the original with the light of a very hot sprite on the first or on the last row of the
+    ///   map: the light is written outside reallight, over mapflags, actionflag (the weapon of the player fires by
+    ///   itself) and the variables of the renderer (TGreedLightOverflow). False, the default: the light outside
+    ///   the map is dropped, as the comparison with the original does (its harness gives reallight room)
+    /// </summary>
+    property OriginalLightOverflow: Boolean read GetOriginalLightOverflow write SetOriginalLightOverflow;
+    /// <summary>
+    ///   playerdata[goalitem - 1] of net.pas for the camera: where the rear view looks from when the secret code
+    ///   "taco" (enemy view) is on and a goal item is chosen. All zero out of a net game, as in the original
+    /// </summary>
+    property EnemyView: TGreedEnemyView read FEnemyView write FEnemyView;
     /// <summary>A game was loaded (LoadGame) and StartPlay has not run since; NewGame clears it</summary>
     property StartPending: Boolean read FStartPending;
     /// <summary>weaponx and weapony of the last view, in the 320 x 200 view</summary>
@@ -186,7 +246,8 @@ uses
   DelphiDoom.Greed.Elevator.Intf, DelphiDoom.Greed.ElevatorRules, DelphiDoom.Greed.Door.Intf,
   DelphiDoom.Greed.DoorRules, DelphiDoom.Greed.ItemRules, DelphiDoom.Greed.SwitchRules,
   DelphiDoom.Greed.LevelRules, DelphiDoom.Greed.CheatCodes, DelphiDoom.Greed.MapSession,
-  DelphiDoom.Greed.Game.Hosts.Logic, DelphiDoom.Greed.Game.Hosts.View, DelphiDoom.Greed.Game.Hosts.Render;
+  DelphiDoom.Greed.Game.Hosts.Logic, DelphiDoom.Greed.Game.Hosts.View, DelphiDoom.Greed.Game.Hosts.Render,
+  DelphiDoom.Greed.LightOverflow;
 
 const
   TIC_RATE = 70;
@@ -307,7 +368,7 @@ begin
   P.Weapons := TGreedPlayerWeapons.Create(P.State, P.SpawnerIntf, LSound, P.WeaponView);
   P.WeaponsIntf := P.Weapons;
   P.Control := TGreedPlayerControl.Create(P.State, P.Movement, P.Controls, FLogicHost as IGreedPlayerControlHost,
-    P.EventsIntf, P.WeaponsIntf);
+    P.WeaponsIntf);
   P.Inventory := TGreedInventory.Create(P.State, P.SpawnerIntf, LSound, LHealth, P.Messages);
   P.Items := TGreedItemRules.Create(P.State, P.SpawnerIntf, LSound, P.EventsIntf, P.Messages, LHealth, P.Random,
     P.Clock, FViewHost as IGreedItemHost);
@@ -325,6 +386,9 @@ begin
   begin
     if Assigned(FParts.Renderer) then
       FParts.Renderer.SetActionHook(nil);
+    // the session of the net game has references to the parts
+    if Assigned(FParts.State) then
+      FParts.State.Net := nil;
     FreeAndNil(FParts.Session);
     FreeAndNil(FParts.Cheats);
     FreeAndNil(FParts.Level);
@@ -371,6 +435,33 @@ end;
 function TGreedGame.GetWorld: IGreedWorld;
 begin
   Result := FParts.World;
+end;
+
+function TGreedGame.GetNetHost: IGreedNetHost;
+begin
+  Result := FLogicHost as IGreedNetHost;
+end;
+
+procedure TGreedGame.AttachNet(const ALink: IGreedNetLink);
+begin
+  if not Assigned(ALink) then
+    raise EArgumentNilException.Create('ALink');
+  FParts.State.Net := ALink;
+  FParts.State.NetMode := True;
+  // playernum := greedcom.consoleplayer (NetInit): the first player is 0, not 1 as in a game of one player
+  FParts.State.PlayerNum := ALink.ConsolePlayer;
+  FParts.State.NumPlayers := ALink.NumPlayers;
+  FNetLeft := False;
+end;
+
+procedure TGreedGame.LeaveNet;
+begin
+  // maingame after PlayLoop: NetQuitGame, once
+  if FParts.State.NetMode and not FNetLeft then
+  begin
+    FNetLeft := True;
+    FParts.State.Net.QuitGame;
+  end;
 end;
 
 function TGreedGame.GetInventory: TGreedInventory;
@@ -426,6 +517,16 @@ begin
   end;
 end;
 
+function TGreedGame.GetMouse: IGreedMouse;
+begin
+  Result := FParts.Mouse;
+end;
+
+procedure TGreedGame.SetMouse(const AValue: IGreedMouse);
+begin
+  FParts.Mouse := AValue;
+end;
+
 function TGreedGame.GetViolence: Boolean;
 begin
   Result := FParts.Spawner.Violence;
@@ -434,6 +535,24 @@ end;
 procedure TGreedGame.SetViolence(AValue: Boolean);
 begin
   FParts.Spawner.Violence := AValue;
+end;
+
+function TGreedGame.GetOriginalLightOverflow: Boolean;
+begin
+  Result := Assigned(FParts.SpriteLogic.LightOverflow);
+end;
+
+procedure TGreedGame.SetOriginalLightOverflow(AValue: Boolean);
+var
+  LMemory: IGreedRenderMemory;
+begin
+  if not AValue then
+  begin
+    FParts.SpriteLogic.LightOverflow := nil;
+    Exit;
+  end;
+  Supports(FParts.Renderer, IGreedRenderMemory, LMemory);
+  FParts.SpriteLogic.LightOverflow := TGreedLightOverflow.Create(FParts.World, FParts.Control, LMemory);
 end;
 
 procedure TGreedGame.SetEdition(ADemo: Boolean; AEpisode: Integer);
@@ -645,6 +764,26 @@ begin
     FParts.Level.NewGoalItem;
 end;
 
+procedure TGreedGame.RearView;
+var
+  S: TGreedGameState;
+begin
+  S := FParts.State;
+  if Length(FRearFrame.Pixels) = 0 then
+    FRearFrame := TGreedFrame.Make(GREED_REAR_VIEW_SIZE, GREED_REAR_VIEW_SIZE);
+  // a whole view of the renderer: its four RF_CheckActionFlag run the level and the shot of the player, the walls
+  // it sees are marked in the map of the player, its animations go on
+  if (S.EnemyViewMode <> 0) and (S.GoalItem > 0) then
+    // playerdata[goalitem - 1] of net.pas: the place of another player, which is all zero out of a net game
+    FParts.Renderer.RenderCamera(FParts.World, S.Player, FEnemyView.X, FEnemyView.Y, FEnemyView.Z, FEnemyView.Angle,
+      FRearFrame)
+  else
+    FParts.Renderer.RenderCamera(FParts.World, S.Player, S.Player.X, S.Player.Y, S.Player.Z,
+      S.Player.Angle + GREED_WEST, FRearFrame);
+  // rearbuf: the picture stays until the next one
+  FRearBuffer := Copy(FRearFrame.Pixels, 0, GREED_REAR_VIEW_SIZE * GREED_REAR_VIEW_SIZE);
+end;
+
 procedure TGreedGame.ServeRearView;
 var
   S: TGreedGameState;
@@ -658,8 +797,8 @@ begin
   end;
   if S.RearViewOn and (S.TimeCount >= S.RearViewDelay) then
   begin
-    // RearView (the second view of 64 x 64) is not drawn
     S.RearViewTime := S.TimeCount + 2 * TIC_RATE;
+    RearView;
     S.RearViewDelay := S.TimeCount + FCameraDelay;
     if FCameraDelay = TIC_RATE then
       S.RearViewOn := False;
@@ -684,7 +823,10 @@ begin
   FParts.Renderer.RenderView(FParts.World, S.Player, S.Player.X, S.Player.Y, S.Player.Z + LHeadBob, S.Player.Angle,
     AFrame);
   FParts.Level.TimeUpdate;
-  // (the holo picture and the rear view go here)
+  // the holo picture and the box of the rear view are drawn here by the original: the view draws them with the
+  // rest of the overlay, the clock does not move in between
+  LOverlay.RearViewVisible := (S.TimeCount < S.RearViewTime) and (Length(FRearBuffer) > 0);
+  LOverlay.RearView := FRearBuffer;
   FParts.Level.TimeUpdate;
   LOverlay.WeaponVisible := S.Player.Angst <> 0;
   LOverlay.WeaponLump := -1;
@@ -706,6 +848,13 @@ begin
     (S.Player.Inventory[FParts.Inventory.Cursor] = 0)) then
     FParts.Inventory.Right;
   FParts.View.DrawOverlay(AFrame, LOverlay);
+  // the line that the player typed for the others (netmsgstatus 2: the enter key)
+  if FParts.Control.NetMsgStatus = 2 then
+  begin
+    if S.NetMode then
+      S.Net.SendMessage(AnsiString(FParts.Control.NetMessage));
+    FParts.Control.NetMsgStatus := 0;
+  end;
   FParts.Level.TimeUpdate;
 end;
 
@@ -728,7 +877,9 @@ begin
   S.Player.TimeCount := S.TimeCount;
   if FParts.View.ShowMenu then
     S.QuitGame := True;
-  S.TimeCount := S.Player.TimeCount;
+  // the clock of a net game does not stop for a menu
+  if not S.NetMode then
+    S.TimeCount := S.Player.TimeCount;
   S.ActivateMenu := False;
   S.KeyboardDelay := S.TimeCount + GREED_KBDELAY;
 end;
@@ -768,22 +919,38 @@ var
 begin
   S := FParts.State;
   if S.Paused then
+  begin
     S.GamePause := True;
+    if S.NetMode then
+      S.Net.Pause;
+  end;
   S.Player.TimeCount := S.TimeCount;
   FParts.View.ShowPause;
   S.TimeCount := S.Player.TimeCount;
+  if S.Paused and S.NetMode then
+    S.Net.UnPause;
   S.Paused := False;
   S.GamePause := False;
   S.KeyboardDelay := S.TimeCount + GREED_KBDELAY;
 end;
 
 procedure TGreedGame.Frame(var AFrame: TGreedFrame);
+begin
+  if FParts.State.QuitGame then
+  begin
+    LeaveNet;
+    Exit;
+  end;
+  PlayTurn(AFrame);
+  if FParts.State.QuitGame then
+    LeaveNet;
+end;
+
+procedure TGreedGame.PlayTurn(var AFrame: TGreedFrame);
 var
   S: TGreedGameState;
 begin
   S := FParts.State;
-  if S.QuitGame then
-    Exit;
   // a film was played (the player died in it): nothing moves until the player asks to start again
   if S.FliPlayed <> 0 then
   begin
@@ -806,9 +973,12 @@ begin
   begin
     // just makes a grunt sound
     FParts.Effects.Start(GREED_SN_HIT0 + S.Player.CharType, 15, S.Player.X, S.Player.Y);
+    if S.NetMode then
+      S.Net.SoundEffect(GREED_SN_HIT0 + S.Player.CharType, 15, S.Player.X, S.Player.Y);
     S.FallDamage := 0;
   end;
-  if (S.Player.LevelScore = 0) and (not S.ExitExists) and
+  // a net game has no exit: the level never ends
+  if (S.Player.LevelScore = 0) and (not S.ExitExists) and (not S.NetMode) and
     (((S.Primaries[0] <> -1) and (S.Player.Primaries[0] = S.PCount[0])) or (S.Primaries[0] = -1)) and
     (((S.Primaries[2] <> -1) and (S.Player.Primaries[1] = S.PCount[1])) or (S.Primaries[2] = -1)) then
     FParts.Level.PrepareNexus;
@@ -863,7 +1033,10 @@ begin
   FParts.Level.TimeUpdate;
   if S.QuickExit then
     RunQuickExit;
-  if S.Paused then
+  if S.NetMode then
+    S.Net.GetData;
+  // netpaused: another player of the net game paused
+  if S.Paused or (S.NetMode and S.Net.Paused) then
     RunPause;
   Inc(S.Frames);
   FParts.Level.TimeUpdate;

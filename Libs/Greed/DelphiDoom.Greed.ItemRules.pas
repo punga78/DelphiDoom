@@ -38,8 +38,8 @@ type
   ///   (more ammunition, exchange with the one of the same kind that is dropped nearby, or a new one).
   ///   The globals of the original are the fields of TGreedGameState; the one that is not there is the property
   ///   WarpActive (warpActive of raven.pas). Triggers is the array triggers[x][y] as it lies in memory: the index
-  ///   is x * 64 + y. The net game is not ported: the NetItemPickup and NetSoundEffect calls and the branches
-  ///   "if netmode" are not here (AUseIt = False, the pickup done by another player, is kept).
+  ///   is x * 64 + y. The net game (State.NetMode, State.Net): who picks something up tells the others
+  ///   (NetItemPickup, NetSoundEffect), and they do it with AUseIt = False; a weapon stays on the map for everybody.
   ///   Kept defects: the utility chest gives only the items 6 and 10 of the table (the loop of the original ends
   ///   on "6 or 10 or 12" instead of going on); the ammo box looks at weapons[currentweapon] (the number of the
   ///   slot, not of the weapon) to know if the weapon uses no ammunition; a switch tile is cleared, and its sounds
@@ -71,6 +71,8 @@ type
     function FindSprite(ATileX, ATileY, AKind: Integer): Integer;
     procedure AddAmmo(AKind, AAmount: Integer);
     procedure PickupSound(ASound, ATileX, ATileY: Integer);
+    procedure NetPickup(AUseIt: Boolean; ATileX, ATileY: Integer);
+    procedure NetPickupSound(ASound, ATileX, ATileY: Integer);
     procedure ReplaceWithGenerator(ASprite: Integer);
     procedure RemoveBox(ASprite: Integer);
     procedure PickupMedPak(AValue, ATileX, ATileY, AMapSpot: Integer; AUseIt: Boolean; ACharType: Integer);
@@ -218,6 +220,20 @@ begin
   FSound.SoundEffect(ASound, 0, ATileX * TILE, ATileY * TILE);
 end;
 
+// NetItemPickup: who picks something up in a net game tells the others, while the tile still says what it was
+procedure TGreedItemRules.NetPickup(AUseIt: Boolean; ATileX, ATileY: Integer);
+begin
+  if AUseIt and FState.NetMode then
+    FState.Net.ItemPickup(ATileX, ATileY);
+end;
+
+// NetSoundEffect of a sound of the tile
+procedure TGreedItemRules.NetPickupSound(ASound, ATileX, ATileY: Integer);
+begin
+  if FState.NetMode then
+    FState.Net.SoundEffect(ASound, 0, ATileX * TILE, ATileY * TILE);
+end;
+
 procedure TGreedItemRules.ReplaceWithGenerator(ASprite: Integer);
 var
   LSprite: PGreedSprite;
@@ -269,6 +285,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, AValue - GREED_SM_MEDPAK1 + GREED_S_MEDPAK1);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -298,6 +315,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, AValue - GREED_SM_MEDPAK1 + GREED_S_MEDPAK1);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -327,6 +345,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, AValue - GREED_SM_ENERGY + GREED_S_ENERGY);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -361,6 +380,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, GREED_S_AMMOBOX);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -390,6 +410,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, GREED_S_MEDBOX);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -410,16 +431,23 @@ begin
   LSprite := FindSprite(ATileX, ATileY, GREED_S_GOODIEBOX);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
   begin
     for LCount := 0 to 1 do
     begin
-      // as the original: the loop stops on the items 6 and 10 (12 never comes out of a mod 11)
-      repeat
-        LItem := Integer(Cardinal(FClock.Clock + FRandom.Next) mod 11);
-      until (LItem = 6) or (LItem = 10) or (LItem = 12);
+      if FState.NetMode then
+        // in a net game the box gives only the item 8
+        repeat
+          LItem := Integer(Cardinal(FClock.Clock + FRandom.Next) mod 11);
+        until LItem = 8
+      else
+        // as the original: the loop stops on the items 6 and 10 (12 never comes out of a mod 11)
+        repeat
+          LItem := Integer(Cardinal(FClock.Clock + FRandom.Next) mod 11);
+        until (LItem = 6) or (LItem = 10) or (LItem = 12);
       FState.Player.Inventory[LItem + 2] := FState.Player.Inventory[LItem + 2] +
         TGreedGameTables.PickupAmounts[LItem];
       if LItem = 2 then
@@ -446,6 +474,7 @@ begin
   LSprite := FindSprite(ATileX, ATileY, LItem + GREED_S_IGRENADE);
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_PICKUP0 + ACharType, ATileX, ATileY);
   if AUseIt then
@@ -469,6 +498,7 @@ procedure TGreedItemRules.PickupBonusItem(ATileX, ATileY, AMapSpot: Integer; AUs
 begin
   if AUseIt then
   begin
+    NetPickup(True, ATileX, ATileY);
     FHealth.AddScore(FState.BonusItem.Score);
     FHealth.Heal(150);
     FHealth.MedPaks(150);
@@ -501,6 +531,7 @@ begin
   end;
   if LSprite = GREED_POOL_NIL then
     Exit;
+  NetPickup(AUseIt, ATileX, ATileY);
   FState.Sprites.Remove(LSprite);
   ClearMapSprite(AMapSpot);
   PickupSound(GREED_SN_WEAPPICKUP0 + ACharType, ATileX, ATileY);
@@ -530,6 +561,9 @@ var
   LElevator: TGreedLinkedPool<TGreedElevator>.PItem;
   LSound, LStart: Boolean;
 begin
+  // as the original: the second and the third kind of switch tell the net before the elevators too
+  if AValue <> GREED_SM_SWITCHDOWN then
+    NetPickup(AUseIt, ATileX, ATileY);
   LSound := False;
   LIndex := FState.Elevators.First;
   while LIndex <> GREED_POOL_NIL do
@@ -554,6 +588,7 @@ begin
       FSound.SoundEffect(GREED_SN_ELEVATORSTART, 15, (LElevator^.MapSpot and 63) * TILE,
         (LElevator^.MapSpot div 64) * TILE);
     end;
+    NetPickup(AUseIt, ATileX, ATileY);
     ClearMapSprite(AMapSpot);
     if AValue = GREED_SM_SWITCHDOWN then
     begin
@@ -561,7 +596,9 @@ begin
       if AUseIt and LSound then
       begin
         PickupSound(GREED_SN_TRIGGER, ATileX, ATileY);
+        NetPickupSound(GREED_SN_TRIGGER, ATileX, ATileY);
         PickupSound(GREED_SN_TRIGGER, ATileX, ATileY);
+        NetPickupSound(GREED_SN_TRIGGER, ATileX, ATileY);
       end;
     end
     else if LSound then
@@ -579,6 +616,23 @@ begin
   LSlot := LAmmoKind + 2;
   if (LSlot < Low(FState.Player.Weapons)) or (LSlot > High(FState.Player.Weapons)) then
     Exit;
+
+  if FState.NetMode then
+  begin
+    // in a net game the weapon stays on the map for the others: who has it already takes nothing, who has
+    // another one in that slot loses it
+    if FState.Player.Weapons[LSlot] = LWeapon then
+      Exit;
+    FMessages.WriteMessage(SNewWeapon);
+    FState.Player.Weapons[LSlot] := LWeapon;
+    AddAmmo(LAmmoKind, 100);
+    PickupSound(GREED_SN_WEAPPICKUP0 + ACharType, ATileX, ATileY);
+    NetPickupSound(GREED_SN_WEAPPICKUP0 + ACharType, ATileX, ATileY);
+    FState.ChangingWeapons := True;
+    FState.WeaponLowering := True;
+    FState.NewWeapon := LSlot;
+    Exit;
+  end;
 
   if FState.Player.Weapons[LSlot] = LWeapon then
   begin
@@ -709,7 +763,11 @@ begin
   begin
     // cx and cy are already fixed point numbers: the place of the sound wraps, as in the original
     FSound.SoundEffect(GREED_SN_TRIGGER, 0, ACenterX * TILE, ACenterY * TILE);
+    if FState.NetMode then
+      FState.Net.SoundEffect(GREED_SN_TRIGGER, 0, ACenterX * TILE, ACenterY * TILE);
     FSound.SoundEffect(GREED_SN_TRIGGER, 0, ACenterX * TILE, ACenterY * TILE);
+    if FState.NetMode then
+      FState.Net.SoundEffect(GREED_SN_TRIGGER, 0, ACenterX * TILE, ACenterY * TILE);
     FEvents.RunEvent(LTrigger, True);
   end;
 end;

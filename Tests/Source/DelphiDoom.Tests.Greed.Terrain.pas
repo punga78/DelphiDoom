@@ -81,6 +81,16 @@ type
     procedure DovrebbeSollevareConUnIndiceSbagliato;
     [Test]
     procedure DovrebbeSollevareSenzaMappa;
+    [Test]
+    procedure DovrebbeDareConLaVistaGliStessiValoriDellInterfaccia;
+    [Test]
+    procedure DovrebbeDareZeroConLaVistaFuoriDallaMappa;
+    [Test]
+    procedure DovrebbeTenereValidaLaVistaDopoUnAltraMappa;
+    [Test]
+    procedure DovrebbeMostrareNellaVistaLeScrittureELePorte;
+    [Test]
+    procedure DovrebbeDareConLaVistaLeStesseAltezze;
   end;
 
 implementation
@@ -462,6 +472,120 @@ procedure TTestGreedWorld.Setup;
 begin
   FWorld := TGreedWorld.Create;
   FWorld.Load(MapWith([], gpFloorHeight, 0));
+end;
+
+procedure TTestGreedWorld.DovrebbeDareConLaVistaGliStessiValoriDellInterfaccia;
+var
+  LSeed: Cardinal;
+  LBytes: TBytes;
+  LIndex, LSpot: Integer;
+  LPlane: TGreedPlane;
+  LView: PGreedWorldView;
+begin
+  LSeed := 175;
+  LBytes := TGreedLumps.MapBytes(nil);
+  for LIndex := 0 to High(LBytes) do
+    LBytes[LIndex] := Byte(Next(LSeed));
+  FWorld.Load(TGreedFactory.CreateMapReader.Read(LBytes));
+  LView := FWorld.View;
+  for LPlane := Low(TGreedPlane) to High(TGreedPlane) do
+    for LSpot := 0 to 4095 do
+      if LView^.Value(LPlane, LSpot) <> FWorld.GetValue(LPlane, LSpot) then
+        Assert.Fail(Format('plane %d spot %d', [Ord(LPlane), LSpot]));
+  for LSpot := 0 to 4095 do
+    if LView^.Flags(LSpot) <> FWorld.GetMapFlags(LSpot) then
+      Assert.Fail(Format('mapflags spot %d', [LSpot]));
+  Assert.IsTrue(LView = FWorld.View, 'the same view at every call');
+end;
+
+procedure TTestGreedWorld.DovrebbeDareZeroConLaVistaFuoriDallaMappa;
+var
+  LView: PGreedWorldView;
+begin
+  FWorld.Load(MapWith([], gpNorthWall, 9));
+  FWorld.AddDoor(63, 63);
+  LView := FWorld.View;
+  Assert.AreEqual<Integer>(9, LView^.Value(gpNorthWall, 0));
+  Assert.AreEqual<Integer>(9, LView^.Value(gpNorthWall, 4095));
+  Assert.AreEqual<Integer>(0, LView^.Value(gpNorthWall, -1));
+  Assert.AreEqual<Integer>(0, LView^.Value(gpNorthWall, 4096));
+  Assert.AreEqual<Integer>(0, LView^.Value(gpNorthWall, Low(Integer)));
+  Assert.AreEqual<Integer>(0, LView^.Value(gpNorthWall, High(Integer)));
+  Assert.AreEqual<Integer>(GREED_FL_DOOR, LView^.Flags(4095));
+  Assert.AreEqual<Integer>(0, LView^.Flags(-5));
+  Assert.AreEqual<Integer>(0, LView^.Flags(4096));
+end;
+
+procedure TTestGreedWorld.DovrebbeTenereValidaLaVistaDopoUnAltraMappa;
+var
+  LView: PGreedWorldView;
+  LTiles: PGreedTiles;
+begin
+  LView := FWorld.View;
+  LTiles := LView^.Planes[gpNorthWall];
+  FWorld.Load(MapWith([1, 2, 3], gpNorthWall, 9));
+  Assert.IsTrue(LTiles = LView^.Planes[gpNorthWall], 'the plane did not move');
+  Assert.AreEqual<Integer>(2, LView^.Value(gpNorthWall, 1));
+  FWorld.Load(MapWith([4], gpNorthWall, 7));
+  Assert.IsTrue(LTiles = LView^.Planes[gpNorthWall], 'the plane did not move');
+  Assert.AreEqual<Integer>(4, LTiles^[0]);
+  Assert.AreEqual<Integer>(7, LTiles^[4095]);
+  Assert.AreEqual<Integer>(0, LView^.DoorCount^);
+end;
+
+procedure TTestGreedWorld.DovrebbeMostrareNellaVistaLeScrittureELePorte;
+var
+  LView: PGreedWorldView;
+  LIndex: Integer;
+  LDoor: TGreedDoor;
+begin
+  LView := FWorld.View;
+  FWorld.SetValue(gpMapSprites, 130, 64);
+  Assert.AreEqual<Integer>(64, LView^.Value(gpMapSprites, 130));
+  LView^.Planes[gpMapSprites]^[131] := 5;
+  Assert.AreEqual<Integer>(5, FWorld.GetValue(gpMapSprites, 131));
+  FWorld.SetMapFlags(7, 3);
+  Assert.AreEqual<Integer>(3, LView^.Flags(7));
+  FWorld.AddDoor(1, 1);
+  LIndex := FWorld.AddDoor(10, 20);
+  Assert.AreEqual<Integer>(2, LView^.DoorCount^);
+  Assert.AreEqual(10, LView^.Doors^[LIndex].TileX);
+  Assert.AreEqual(20, LView^.Doors^[LIndex].TileY);
+  LView^.Doors^[LIndex].Opening := True;
+  LView^.Doors^[LIndex].Timer := 33;
+  LDoor := FWorld.GetDoor(LIndex);
+  Assert.IsTrue(LDoor.Opening);
+  Assert.AreEqual(33, LDoor.Timer);
+  LDoor.Position := 12345;
+  FWorld.SetDoor(LIndex, LDoor);
+  Assert.AreEqual(12345, LView^.Doors^[LIndex].Position);
+end;
+
+procedure TTestGreedWorld.DovrebbeDareConLaVistaLeStesseAltezze;
+var
+  LSeed: Cardinal;
+  LBytes: TBytes;
+  LIndex, LX, LY: Integer;
+begin
+  LSeed := 20261114;
+  LBytes := TGreedLumps.MapBytes(nil);
+  for LIndex := 0 to High(LBytes) do
+    LBytes[LIndex] := Byte(Next(LSeed));
+  for LIndex := 0 to 4095 do
+    LBytes[Ord(gpMapSlopes) * 4096 + LIndex] := Byte(48 + Next(LSeed) mod 17);
+  FWorld.Load(TGreedFactory.CreateMapReader.Read(LBytes));
+  for LIndex := 1 to 5000 do
+  begin
+    // from a tile before the map to a tile after it
+    LX := (Integer(Next(LSeed) mod 66) - 1) * 64 * 65536;
+    LX := LX + Integer(Next(LSeed) mod (64 * 65536));
+    LY := (Integer(Next(LSeed) mod 66) - 1) * 64 * 65536;
+    LY := LY + Integer(Next(LSeed) mod (64 * 65536));
+    if TGreedTerrain.FloorZ(FWorld, LX, LY) <> TGreedTerrain.FloorZ(FWorld.View, LX, LY) then
+      Assert.Fail(Format('floor %d %d', [LX, LY]));
+    if TGreedTerrain.CeilingZ(FWorld, LX, LY) <> TGreedTerrain.CeilingZ(FWorld.View, LX, LY) then
+      Assert.Fail(Format('ceiling %d %d', [LX, LY]));
+  end;
 end;
 
 procedure TTestGreedWorld.DovrebbeCopiareIPiani;
