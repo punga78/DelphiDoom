@@ -1,0 +1,514 @@
+# the edit field, the console key handler and the command completion of Quake III
+init
+fwidth	10
+ftext	hello world
+fkey	134
+fkey	134
+fkey	134
+fkey	135
+fkey	143
+fkey	144
+fkey	134
+fkey	140
+fkey	140
+fkey	140
+fchar	1
+fchar	5
+fchar	8
+fchar	8
+fchar	8
+fkey	143
+fchar	8
+fkey	140
+fkey	140
+ftext	12345678901234567890
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	134
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fkey	135
+fchar	3
+ftext	abc\x01\x1f\xc8\xff def
+fchar	0
+fchar	31
+fchar	200
+fchar	-5
+fchar	10
+fkey	134
+fkey	134
+fkey	97
+keydown	137
+fkey	97
+fkey	65
+fkey	101
+fkey	69
+fkey	98
+keyup	137
+fkey	97
+fkey	139
+ftext	XYZ
+fkey	143
+ftext	QW
+fkey	144
+ftext	END
+fkey	139
+ftext	in
+fchar	3
+noclip
+fchar	22
+clip	pasted text
+fchar	22
+keydown	138
+fkey	139
+fkey	170
+keyup	138
+fkey	139
+fkey	139
+clip	\xe9\xe8 non ascii\x02 ctl
+fchar	22
+fchar	3
+ftext	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ftext	bcdefgh
+fkey	143
+ftext	ZZ
+fkey	139
+ftext	OVER
+fkey	144
+ftext	WRITE
+fkey	139
+fchar	3
+ftext	bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+fkey	143
+ftext	L
+fkey	139
+fchar	3
+fwidth	30
+addcmd	mapname	probe
+addcmd	map_restart	probe
+addcmd	maplist	probe
+addcmd	map	probe
+addcmd	mapx	nofunc
+get	mapcvar	1	0
+get	cg_fov	90	0
+get	cg_draw2d	1	0
+get	CG_Zoom	22	0
+fclear
+ftext	ex
+fcomplete
+fclear
+ftext	exec
+fcomplete
+fclear
+ftext	vs
+fcomplete
+fclear
+ftext	ec
+fcomplete
+fclear
+ftext	w
+fcomplete
+fclear
+ftext	wa
+fcomplete
+fclear
+ftext	cvarl
+fcomplete
+fclear
+ftext	map
+fcomplete
+fclear
+ftext	MAP
+fcomplete
+fclear
+ftext	map_
+fcomplete
+fclear
+ftext	mapn
+fcomplete
+fclear
+ftext	mapl
+fcomplete
+fclear
+ftext	/ma
+fcomplete
+fclear
+ftext	\\ma
+fcomplete
+fclear
+ftext	cg_
+fcomplete
+fclear
+ftext	cg_d
+fcomplete
+fclear
+ftext	CG_F
+fcomplete
+fclear
+ftext	cg_f
+fcomplete
+fclear
+ftext	zzz
+fcomplete
+fclear
+ftext	
+fcomplete
+fclear
+ftext	e
+fcomplete
+fclear
+ftext	s
+fcomplete
+fclear
+ftext	se
+fcomplete
+fclear
+ftext	set
+fcomplete
+fclear
+ftext	sets
+fcomplete
+fclear
+ftext	mapx
+fcomplete
+fclear
+ftext	cvar_
+fcomplete
+fclear
+ftext	/exec
+fcomplete
+fclear
+ftext	\\vstr
+fcomplete
+fclear
+ftext	exec autoexec.cfg
+fcomplete
+fclear
+ftext	exec  a  b
+fcomplete
+fclear
+ftext	echo "a b" c
+fcomplete
+fclear
+ftext	vstr "x y z" w
+fcomplete
+fclear
+ftext	se foo bar
+fcomplete
+fclear
+ftext	set  v  "q r"
+fcomplete
+fclear
+ftext	map one two three
+fcomplete
+fclear
+ftext	cg_fov 120
+fcomplete
+fclear
+ftext	cg_ "quoted arg"
+fcomplete
+fclear
+ftext	/set x
+fcomplete
+fclear
+ftext	ex "a b"
+fcomplete
+fclear
+ftext	mapn 
+fcomplete
+fclear
+ftext	 mapn
+fcomplete
+fclear
+ftext	e  
+fcomplete
+fclear
+ftext	ex qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+fcomplete
+fclear
+ftext	exec qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+fcomplete
+fclear
+ftext	exe
+fkey	134
+fcomplete
+fkey	144
+ftext	x
+fclear
+fwidth	12
+fstate	0
+ftext	map q3dm1
+ckey	13
+ftext	/echo slash
+ckey	13
+ftext	\\echo back
+ckey	13
+ftext	chat line
+ckey	13
+ckey	13
+pending
+run
+pending
+fstate	1
+ftext	say hello
+ckey	13
+ftext	/cmdlist m*
+ckey	169
+ftext	part
+ckey	9
+ckey	108
+keydown	137
+ckey	108
+ckey	112
+ckey	110
+ckey	80
+ckey	78
+keyup	137
+ckey	112
+hdump
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	161
+ckey	167
+ckey	112
+keydown	138
+ckey	184
+ckey	183
+ckey	184
+keyup	138
+ckey	184
+ckey	183
+ckey	142
+ckey	141
+ckey	143
+ckey	144
+keydown	137
+ckey	184
+ckey	183
+ckey	143
+ckey	144
+keyup	137
+fclear
+ckey	133
+ckey	132
+ckey	132
+ckey	134
+ckey	140
+ftext	cmd number 1
+ckey	13
+ftext	cmd number 2
+ckey	13
+ftext	cmd number 3
+ckey	13
+ftext	cmd number 4
+ckey	13
+ftext	cmd number 5
+ckey	13
+ftext	cmd number 6
+ckey	13
+ftext	cmd number 7
+ckey	13
+ftext	cmd number 8
+ckey	13
+ftext	cmd number 9
+ckey	13
+ftext	cmd number 10
+ckey	13
+ftext	cmd number 11
+ckey	13
+ftext	cmd number 12
+ckey	13
+ftext	cmd number 13
+ckey	13
+ftext	cmd number 14
+ckey	13
+ftext	cmd number 15
+ckey	13
+ftext	cmd number 16
+ckey	13
+ftext	cmd number 17
+ckey	13
+ftext	cmd number 18
+ckey	13
+ftext	cmd number 19
+ckey	13
+ftext	cmd number 20
+ckey	13
+ftext	cmd number 21
+ckey	13
+ftext	cmd number 22
+ckey	13
+ftext	cmd number 23
+ckey	13
+ftext	cmd number 24
+ckey	13
+ftext	cmd number 25
+ckey	13
+ftext	cmd number 26
+ckey	13
+ftext	cmd number 27
+ckey	13
+ftext	cmd number 28
+ckey	13
+ftext	cmd number 29
+ckey	13
+ftext	cmd number 30
+ckey	13
+ftext	cmd number 31
+ckey	13
+ftext	cmd number 32
+ckey	13
+ftext	cmd number 33
+ckey	13
+ftext	cmd number 34
+ckey	13
+ftext	cmd number 35
+ckey	13
+ftext	cmd number 36
+ckey	13
+ftext	cmd number 37
+ckey	13
+ftext	cmd number 38
+ckey	13
+ftext	cmd number 39
+ckey	13
+ftext	cmd number 40
+ckey	13
+hdump
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	132
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+ckey	133
+fchar	3
+fwidth	0
+ftext	abc
+fkey	134
+fkey	135
+fkey	135
+fkey	135

@@ -61,6 +61,8 @@ const
   SQ3ConsoleMaxCVars = 'MAX_CVARS';
   SQ3ConsoleBadHandle = 'Cvar_Update: handle out of range';
   SQ3ConsoleValueTooLong = 'Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING';
+  SQ3ConsoleBadCursor = 'The cursor of the edit field is outside its text: %d';
+  SQ3ConsoleBufferTooSmall = 'Q_strncpyz: destsize < 1';
   SQ3ConsoleNoInfoWriter = 'The info strings need an IQ3InfoStringWriter';
 
 type

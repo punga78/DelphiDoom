@@ -131,7 +131,7 @@ static void flushOutput(void) {
 static int floatBits(float f) { int b; memcpy(&b, &f, 4); return b; }
 
 static void printCvar(const cvar_t *v) {
-	char line[4096];
+	char line[40000];
 	if (!v) { printf("G: <none>\n"); return; }
 	sprintf(line, "%s|%s|%s|%s|%d|%d|%d|%08X|%d", v->name, v->string, v->resetString,
 		v->latchedString ? v->latchedString : "~", v->flags, v->modified, v->modificationCount,
@@ -178,6 +178,8 @@ static int unescape(char *dst, const char *src) {
 	return n;
 }
 
+#include "fieldops.inc"
+
 #define MAX_FIELDS 8
 static vmCvar_t vms[16];
 
@@ -186,7 +188,7 @@ int main(int argc, char **argv) {
 	static char raw[65536];
 	static char orig[65536];
 	char *fields[MAX_FIELDS];
-	static char storage[MAX_FIELDS][8192];
+	static char storage[MAX_FIELDS][16384];
 	if (!f) { fprintf(stderr, "no scenario\n"); return 1; }
 	while (fgets(raw, sizeof(raw), f)) {
 		int nf = 0, i;
@@ -243,6 +245,16 @@ int main(int argc, char **argv) {
 				escapePrint("C: ", Cmd_Cmd());
 				printf("O: [%s]\n", Cmd_Argv(99));
 			}
+			else if (!strcmp(op, "argvbuf")) {
+				char buf[1024];
+				Cmd_ArgvBuffer(atoi(fields[1]), buf, atoi(fields[2]));
+				escapePrint("X: ", buf);
+			}
+			else if (!strcmp(op, "argsbuf")) {
+				char buf[1024];
+				Cmd_ArgsBuffer(buf, atoi(fields[1]));
+				escapePrint("X: ", buf);
+			}
 			else if (!strcmp(op, "file")) {
 				fileNames[fileCount] = CopyString(fields[1]);
 				fileTexts[fileCount] = CopyString(fields[2]);
@@ -291,6 +303,7 @@ int main(int argc, char **argv) {
 					(unsigned)floatBits(vms[slot].value), vms[slot].integer, vms[slot].string);
 				escapePrint("Y: ", one);
 			}
+			else if (fieldOp(op, fields)) { }
 			else { fprintf(stderr, "unknown operation %s\n", op); return 1; }
 		}
 		flushOutput();

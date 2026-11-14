@@ -43,6 +43,13 @@ type
     function ArgsFrom(AIndex: Integer): AnsiString;
     /// <summary>Cmd_Cmd: the line as it was received, cut to BIG_INFO_STRING - 1 characters</summary>
     function Cmd: AnsiString;
+    /// <summary>
+    ///   Cmd_ArgvBuffer: a token cut to ABufferLength - 1 characters (Q_strncpyz); a length below 1 is
+    ///   <c>EQ3ConsoleException</c> ("Q_strncpyz: destsize &lt; 1")
+    /// </summary>
+    function ArgvBuffer(AIndex, ABufferLength: Integer): AnsiString;
+    /// <summary>Cmd_ArgsBuffer: <c>Args</c> cut as <c>ArgvBuffer</c> does</summary>
+    function ArgsBuffer(ABufferLength: Integer): AnsiString;
   end;
 
   /// <summary>The list of commands (Cmd_AddCommand, Cmd_RemoveCommand, Cmd_ExecuteString)</summary>

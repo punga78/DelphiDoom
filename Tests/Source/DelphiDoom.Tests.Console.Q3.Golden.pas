@@ -24,7 +24,7 @@ type
   TTestQ3Golden = class(TObject)
   private
     FFolder: string;
-    procedure CompareScenario(const AName: string);
+    procedure CompareScenario(const AName: string; ARealInfoWriter: Boolean = False);
   public
     [Setup]
     procedure Setup;
@@ -33,6 +33,12 @@ type
     procedure DovrebbeDareLeStesseRisposteDelCPerIComandi;
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelCPerLeCvar;
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelCPerIBufferDegliArgomenti;
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelCPerLeInfoStringConValoriLunghi;
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelCPerLaRigaDiInputELaCompletezza;
   end;
 
 implementation
@@ -42,7 +48,7 @@ begin
   FFolder := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), '..\..\..\..\Tests\Data\Console\Q3'));
 end;
 
-procedure TTestQ3Golden.CompareScenario(const AName: string);
+procedure TTestQ3Golden.CompareScenario(const AName: string; ARealInfoWriter: Boolean);
 var
   LPlayer: TQ3ScenarioPlayer;
   LActual: TStringList;
@@ -53,7 +59,7 @@ begin
   LPlayer := TQ3ScenarioPlayer.Create;
   try
     LExpected.LoadFromFile(TPath.Combine(FFolder, AName + '.golden.txt'), TEncoding.ANSI);
-    LActual := LPlayer.Run(TPath.Combine(FFolder, AName + '.scn'));
+    LActual := LPlayer.Run(TPath.Combine(FFolder, AName + '.scn'), ARealInfoWriter);
     try
       for LIndex := 0 to LExpected.Count - 1 do
       begin
@@ -78,6 +84,21 @@ end;
 procedure TTestQ3Golden.DovrebbeDareLeStesseRisposteDelCPerLeCvar;
 begin
   CompareScenario('cvars');
+end;
+
+procedure TTestQ3Golden.DovrebbeDareLeStesseRisposteDelCPerIBufferDegliArgomenti;
+begin
+  CompareScenario('argbuffer');
+end;
+
+procedure TTestQ3Golden.DovrebbeDareLeStesseRisposteDelCPerLeInfoStringConValoriLunghi;
+begin
+  CompareScenario('infolong', True);
+end;
+
+procedure TTestQ3Golden.DovrebbeDareLeStesseRisposteDelCPerLaRigaDiInputELaCompletezza;
+begin
+  CompareScenario('field');
 end;
 
 end.
