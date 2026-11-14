@@ -100,6 +100,7 @@ const
   SRestoreUnknownEvent = 'idEvent::Restore: unknown event ''%s''';
   SRestoreUnknownClass = 'idEvent::Restore: unknown class ''%s'' on event ''%s''';
   SRestoreArgSize = 'idEvent::Restore: arg size (%d) doesn''t match saved arg size(%d) on event ''%s''';
+  SRestoreNoObject = 'idEvent::Restore: event ''%s'' has no object that receives events';
   SBadIndex = 'idEvent: event %d out of range';
 
 constructor TDoomScriptEventQueue.Create(const AHost: IDoomScriptHost; const AEvents: TDoomScriptEventRegistry;
@@ -317,7 +318,8 @@ begin
         raise EDoomScriptError.CreateFmt(SRestoreUnknownClass, [string(LName), string(LEvent.EventDef.Name)]);
       LObject := AReadObject(AStream);
       if not (LObject is TDoomScriptEventTarget) then
-        raise EDoomScriptError.CreateFmt(SRestoreUnknownClass, [string(LName), string(LEvent.EventDef.Name)]);
+        // the original would deliver the event to a NULL object
+        raise EDoomScriptError.CreateFmt(SRestoreNoObject, [string(LEvent.EventDef.Name)]);
       LEvent.Target := TDoomScriptEventTarget(LObject);
       // read the args
       LArgSize := TDoomScriptSaveStream.ReadInt(AStream);

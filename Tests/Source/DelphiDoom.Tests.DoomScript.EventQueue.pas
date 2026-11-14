@@ -631,18 +631,18 @@ procedure TTestDoomScriptEventQueue.DovrebbeRifiutareUnOggettoSalvatoNonValido;
 begin
   // no object
   WriteEventHeader(0, 'int', 'listener', -1, 4);
-  TDoomScriptTestSupport.ExpectClass(
+  TDoomScriptTestSupport.ExpectError(
     procedure
     begin
       FQueue.Restore(FStream, Reader());
-    end, EDoomScriptError);
+    end, EDoomScriptError, 'idEvent::Restore: event ''int'' has no object that receives events');
   // an object that is not an event target
   WriteEventHeader(0, 'int', 'listener', 3, 4);
-  TDoomScriptTestSupport.ExpectClass(
+  TDoomScriptTestSupport.ExpectError(
     procedure
     begin
       FQueue.Restore(FStream, Reader());
-    end, EDoomScriptError);
+    end, EDoomScriptError, 'idEvent::Restore: event ''int'' has no object that receives events');
   Assert.AreEqual(0, FQueue.Count);
   // a stream that ends early
   FStream.Clear;

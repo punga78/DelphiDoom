@@ -311,7 +311,9 @@ var
   LIndex: Integer;
   LCount: Integer;
 begin
-  TDoomScriptThread.Restart(FContext);
+  // the save holds the differences from the state of a program just loaded: go back to it (idProgram::Restart
+  // ends the threads and gives the globals their first values), as the game does before it restores
+  FProgram.Restart;
   FQueue.Clear;
   Result := FProgram.Restore(AStream);
   LCount := TDoomScriptSaveStream.ReadInt(AStream);

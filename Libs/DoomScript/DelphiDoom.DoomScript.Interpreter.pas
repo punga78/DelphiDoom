@@ -183,6 +183,7 @@ const
   SBadStatement = 'idInterpreter: instruction pointer %d is outside the program';
   SBadParmSize = 'idInterpreter: the event ''%s'' has more arguments than the function declares';
   SRestoreState = 'idInterpreter::Restore: invalid state (%s = %d)';
+  SNoFrameFunction = 'idInterpreter: return to a call frame that has no function';
 
 constructor TDoomScriptInterpreter.Create(const AProgram: TDoomScriptProgram; const AEntities: TDoomScriptEntityTable;
   const AEvents: TDoomScriptEventRegistry; const AHost: IDoomScriptHost; const ALog: IIdLibLog;
@@ -803,7 +804,10 @@ begin
     DoneProcessing := True;
     ThreadDying := True;
     FCurrentFunction := nil;
-  end;
+  end
+  else if not Assigned(FCurrentFunction) then
+    // only a damaged save has a frame without a function above the first: the original goes on with NULL
+    raise EDoomScriptMemoryError.Create(SNoFrameFunction);
 end;
 
 function TDoomScriptInterpreter.BuildEventArgs(const AFunction: TDoomScriptFunction; const AStart, AFirstPos,

@@ -83,6 +83,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Decl** — Gestore delle dichiarazioni di id Tech 4 (issue #100, prima fetta): tipi registrati, lettura a richiesta, `table`, `skin`, `material` (`.mtr`, #102), `entityDef` con `inherit`, `pda`; parita' col vero DeclManager e col vero idMaterial di Doom 3. [CLAUDE.md](Libs/Decl/CLAUDE.md), [README.md](Libs/Decl/README.md)
 - **Definitions** — Lettura di ANIMDEFS, della tabella degli interruttori e della tabella del terreno. [CLAUDE.md](Libs/Definitions/CLAUDE.md), [README.md](Libs/Definitions/README.md)
 - **Dehacked** — Parser delle patch DEHACKED/BEX con modello neutro. [CLAUDE.md](Libs/Dehacked/CLAUDE.md), [README.md](Libs/Dehacked/README.md)
+- **DoomScript** — Linguaggio di script di Doom 3 / id Tech 4 a classi: compilatore, programma, interprete, thread, eventi (`idEvent`, `idEventDef`) e salvataggio, memoria sempre controllata; parita' riga per riga col vero C++ su 16 scenari (issue #110, senza chiamanti nel motore). [CLAUDE.md](Libs/DoomScript/CLAUDE.md), [README.md](Libs/DoomScript/README.md)
 - **DynLights** — Parser e registro delle luci dinamiche (GLDEFS/LIGHTDEF). [CLAUDE.md](Libs/DynLights/CLAUDE.md), [README.md](Libs/DynLights/README.md)
 - **Endoom** — Schermo di testo di fine gioco (ENDOOM/ENDTEXT/ENDSTRF) e modello modificabile dell'editor. [CLAUDE.md](Libs/Endoom/CLAUDE.md), [README.md](Libs/Endoom/README.md)
 - **EndoomEditor** — Logica della finestra di ENDEDIT senza VCL (presenter e viste). [CLAUDE.md](Libs/EndoomEditor/CLAUDE.md), [README.md](Libs/EndoomEditor/README.md)

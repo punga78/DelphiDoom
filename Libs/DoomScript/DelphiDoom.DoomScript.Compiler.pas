@@ -204,11 +204,20 @@ end;
 function TDoomScriptCompiler.VirtualFunctionConstant(const AFunc: TDoomScriptVarDef): TDoomScriptVarDef;
 var
   LEval: TDoomScriptEval;
+  LScopeName: AnsiString;
 begin
   LEval := Default(TDoomScriptEval);
   LEval.IntValue := AFunc.Scope.TypeDef.GetFunctionNumber(AFunc.FunctionPtr);
   if LEval.IntValue < 0 then
-    Error('Function ''%s'' not found in scope ''%s''', [string(AFunc.Name), string(AFunc.Scope.Name)]);
+  begin
+    // "entity.f()" with f a global function: the scope is def_namespace, which has no name (the original
+    // crashes asking for it)
+    if AFunc.Scope.Builtin then
+      LScopeName := AFunc.Scope.TypeDef.Name
+    else
+      LScopeName := AFunc.Scope.Name;
+    Error('Function ''%s'' not found in scope ''%s''', [string(AFunc.Name), string(LScopeName)]);
+  end;
   Result := GetImmediate(TypeOf(evVirtualFunction), LEval, '');
 end;
 

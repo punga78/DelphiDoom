@@ -62,6 +62,9 @@ type
     FFunctions: TObjectList<TDoomScriptFunction>;
     // the functions a restart removed: cleared, kept alive because an older object type may still list them
     FRemovedFunctions: TObjectList<TDoomScriptFunction>;
+    // the types a restart removed, kept alive for the same reason: the return def (and a temporary of the
+    // compiler) may still have one of them as its type, a dangling pointer in the original
+    FRemovedTypes: TObjectList<TDoomScriptTypeDef>;
     FStatements: TArray<TDoomScriptStatement>;
     FNumStatements: Integer;
     FTypes: TObjectList<TDoomScriptTypeDef>;
@@ -261,6 +264,7 @@ begin
   FFileList :=TList<AnsiString>.Create;
   FFunctions := TObjectList<TDoomScriptFunction>.Create(True);
   FRemovedFunctions := TObjectList<TDoomScriptFunction>.Create(True);
+  FRemovedTypes := TObjectList<TDoomScriptTypeDef>.Create(True);
   FTypes := TObjectList<TDoomScriptTypeDef>.Create(True);
   FVarDefNames := TObjectDictionary<AnsiString, TDoomScriptVarDefName>.Create([doOwnsValues]);
   FVarDefs := TList<TDoomScriptVarDef>.Create;
@@ -278,6 +282,7 @@ begin
   FVarDefNames.Free;
   FTypes.Free;
   FRemovedFunctions.Free;
+  FRemovedTypes.Free;
   FFunctions.Free;
   FFileList.Free;
   inherited;
@@ -1132,6 +1137,7 @@ begin
   FNumStatements := 0;
   FFunctions.Clear;
   FRemovedFunctions.Clear;
+  FRemovedTypes.Clear;
   FVariableDefaults := nil;
   FTopFunctions := 0;
   FTopStatements := 0;
@@ -1259,7 +1265,7 @@ begin
   if Assigned(FReleaseObjects) then
     FReleaseObjects(FTopTypes);
   while FTypes.Count > FTopTypes do
-    FTypes.Delete(FTypes.Count - 1);
+    FRemovedTypes.Add(FTypes.Extract(FTypes[FTypes.Count - 1]));
   for LIndex := FVarDefs.Count - 1 downto FTopDefs do
   begin
     FVarDefs[LIndex].Free;

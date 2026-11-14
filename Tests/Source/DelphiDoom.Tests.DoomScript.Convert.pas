@@ -121,17 +121,21 @@ var
   LValue: Single;
   LText: string;
 begin
-  // (int)1e30 does not fit: the value is not "whole" for the original, which writes it with "%f"
-  // ("1000000015047466219876688855040.000000"). TIdStrings.FormatFixed gives the digits in another form for
-  // a value this large, so only what is common to the two is checked here: it is not the "%d" form
+  // (int)1e30 does not fit: the value is not "whole" for the original, which writes it with "%f". The exact
+  // value is 1000000015047466219876688855040: the C runtime of the parity harness writes 20 significant digits
   LValue := 1E30;
   LText := string(TDoomScriptConvert.FloatToString(LValue));
-  Assert.AreNotEqual(IntToStr(Low(Integer)), LText);
-  Assert.IsTrue(LText.StartsWith('1.0000000150474662') or LText.StartsWith('1000000015047466'), LText);
+  Assert.AreEqual('1000000015047466219900000000000.000000', LText);
+  LValue := -1E30;
+  Assert.AreEqual('-1000000015047466219900000000000.000000', string(TDoomScriptConvert.FloatToString(LValue)));
+  LValue := 3.4028234664E38;
+  Assert.AreEqual('340282346638528859810000000000000000000.000000', string(TDoomScriptConvert.FloatToString(LValue)));
+  LValue := 1E13;
+  Assert.AreEqual('9999999827968.000000', string(TDoomScriptConvert.FloatToString(LValue)));
   // 2^31 is whole but does not fit either
   LValue := 2147483648.0;
   LText := string(TDoomScriptConvert.FloatToString(LValue));
-  Assert.IsTrue(LText.StartsWith('2147483648.'), LText);
+  Assert.AreEqual('2147483648.000000', LText);
 end;
 
 procedure TTestDoomScriptConvert.DovrebbeArrotondareAlPariISecondi;

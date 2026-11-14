@@ -32,6 +32,6 @@ $env:DOOMSCRIPT_PARITY_OUT = $out
 $exe = Join-Path $root "bin\$Piattaforma\Release\Tests\DelphiDoom.Tests.DoomScript.exe"
 & $exe '-exit:Continue' > (Join-Path $out 'runner.txt') 2>&1
 $code = $LASTEXITCODE
-Get-Content (Join-Path $out 'runner.txt') | Select-String -Pattern '^Tests |^  (Passed|Failed|Errored|Ignored)|golden:|port:|, line \d+|the port|the golden' |
+Get-Content (Join-Path $out 'runner.txt') | Select-String -Pattern '^Tests |^\s+Test:|Message:|Exception|golden:|port:|the port|the golden' |
   ForEach-Object { $l = $_.Line; if ($l.Length -gt 400) { $l.Substring(0, 400) + ' ...' } else { $l } }
 exit $code
