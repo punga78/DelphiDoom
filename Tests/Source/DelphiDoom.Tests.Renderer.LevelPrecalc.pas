@@ -280,7 +280,9 @@ var
   LOldInverse: Double;
   dx, dy: Double;
   len: Double;
+  LFingerprint: UInt64;
 begin
+  LFingerprint := UInt64($CBF29CE484222325);
   RandSeed := 20260713;
   SetLength(LStartX, COUNT);
   SetLength(LStartY, COUNT);
@@ -311,9 +313,18 @@ begin
     LOldInverse := 1 / len;
 
     Assert.AreEqual(LOldMapLength, LMapLength[LIndex], Format('lunghezza (seg %d)', [LIndex]));
+    {$IF SizeOf(Extended) > SizeOf(Double)}
     Assert.IsTrue(CompareMem(@LOldInverse, @LInverseLength[LIndex], SizeOf(Double)),
       Format('inverso (seg %d)', [LIndex]));
+    {$ELSE}
+    // a 64 bit il vecchio codice (qui sopra, con l'aritmetica a 53 bit) non e' piu' il riferimento: la classe da'
+    // i Double della FPU a 32 bit (issue #40), che possono distare un'unita' dell'ultima cifra da questi; che
+    // siano proprio quelli lo dice l'impronta qui sotto, presa a 32 bit
+    Assert.AreEqual(LOldInverse, LInverseLength[LIndex], Abs(LOldInverse) * 4E-16, Format('inverso (seg %d)', [LIndex]));
+    {$IFEND}
+    LFingerprint := (LFingerprint xor UInt64(PInt64(@LInverseLength[LIndex])^)) * UInt64($100000001B3);
   end;
+  Assert.AreEqual('CFDEF09A25BB4DCA', IntToHex(LFingerprint, 16), 'impronta degli inversi (uguale a 32 e a 64 bit)');
 end;
 
 initialization

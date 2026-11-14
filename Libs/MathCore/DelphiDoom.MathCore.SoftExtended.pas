@@ -77,6 +77,9 @@ type
     /// </summary>
     /// <remarks>|AValue| must be less than 64</remarks>
     class function Sin(const AValue: TSoftExtended): TSoftExtended; static;
+    /// <summary>The square root rounded to 64 bits, exactly as fsqrt (which is correctly rounded)</summary>
+    /// <remarks>A negative number raises EInvalidOp</remarks>
+    class function Sqrt(const AValue: TSoftExtended): TSoftExtended; static;
     /// <summary>The cosine as the fcos instruction computes it (see Sin)</summary>
     class function Cos(const AValue: TSoftExtended): TSoftExtended; static;
     function IsZero: Boolean;
@@ -816,6 +819,73 @@ begin
     WideMultiplyHigh(LHigh, LLow, LSeriesHigh, LSeriesLow, LTermHigh, LTermLow);
     Result := Normalized(LNegative, LTermHigh, LTermLow, LExponent + 1, True);
   end;
+end;
+
+class function TSoftExtended.Sqrt(const AValue: TSoftExtended): TSoftExtended;
+var
+  LHigh, LLow: UInt64;
+  LExponent: Integer;
+  LRoot: UInt64;
+  LRestHigh, LRestLow: UInt64;
+  LTrialHigh, LTrialLow: UInt64;
+  LIndex: Integer;
+  LCarry: UInt64;
+begin
+  if AValue.FMantissa = 0 then
+    Exit(AValue);
+  if AValue.FNegative then
+    raise EInvalidOp.Create('Square root of a negative number');
+  // the number as N * 2^LExponent with LExponent even and N of 127 or 128 bits: its root has 64 bits
+  if Odd(AValue.FExponent) then
+  begin
+    LHigh := AValue.FMantissa shr 1;
+    LLow := AValue.FMantissa shl 63;
+    LExponent := AValue.FExponent - 63;
+  end
+  else
+  begin
+    LHigh := AValue.FMantissa;
+    LLow := 0;
+    LExponent := AValue.FExponent - 64;
+  end;
+  // the integer root, two bits of N for every bit of the root; the rest stays under 2^66
+  LRoot := 0;
+  LRestHigh := 0;
+  LRestLow := 0;
+  for LIndex := 0 to 63 do
+  begin
+    // rest := rest * 4 + the next two bits of N
+    LRestHigh := (LRestHigh shl 2) or (LRestLow shr 62);
+    LRestLow := (LRestLow shl 2) or (LHigh shr 62);
+    LHigh := (LHigh shl 2) or (LLow shr 62);
+    LLow := LLow shl 2;
+    // trial := root * 4 + 1
+    LTrialHigh := LRoot shr 62;
+    LTrialLow := (LRoot shl 2) or 1;
+    LRoot := LRoot shl 1;
+    if (LRestHigh > LTrialHigh) or ((LRestHigh = LTrialHigh) and (LRestLow >= LTrialLow)) then
+    begin
+      LCarry := 0;
+      if LRestLow < LTrialLow then
+        LCarry := 1;
+      LRestLow := LRestLow - LTrialLow;
+      LRestHigh := LRestHigh - LTrialHigh - LCarry;
+      LRoot := LRoot or 1;
+    end;
+  end;
+  // N = root^2 + rest: nearer to the next integer when rest > root (the middle, root + 1/4, is never reached)
+  Result.FNegative := False;
+  Result.FExponent := LExponent div 2;
+  if (LRestHigh > 0) or (LRestLow > LRoot) then
+  begin
+    Inc(LRoot);
+    if LRoot = 0 then
+    begin
+      LRoot := $8000000000000000;
+      Inc(Result.FExponent);
+    end;
+  end;
+  Result.FMantissa := LRoot;
 end;
 
 class function TSoftExtended.Sin(const AValue: TSoftExtended): TSoftExtended;

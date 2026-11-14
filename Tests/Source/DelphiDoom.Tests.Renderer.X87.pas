@@ -30,6 +30,8 @@ type
     [Test]
     procedure DovrebbeDareSenoECosenoDellaVista;
     [Test]
+    procedure DovrebbeDareIlRapportoDelMonitor;
+    [Test]
     procedure DovrebbeDareIlRapportoDeiPiani;
     [Test]
     procedure DovrebbeDareIPassiDiUnoSpan;
@@ -121,6 +123,45 @@ begin
     Assert.IsTrue(LDifferent <= 2 * COUNT div 5000, Format('%d Doubles differ from the FPU', [LDifferent]));
     {$IFEND}
     Assert.AreEqual('BD5975BF45A31350/200000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestRendererX87.DovrebbeDareIlRapportoDelMonitor;
+const
+  WIDTHS: array[0..11] of Integer = (640, 800, 1024, 1280, 1280, 1366, 1440, 1600, 1920, 2560, 3440, 3840);
+  HEIGHTS: array[0..11] of Integer = (480, 600, 768, 720, 1024, 768, 900, 900, 1080, 1440, 1440, 2160);
+var
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LWidth, LHeight: Integer;
+  LAspect, LForced: Double;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Double;
+  {$IFEND}
+begin
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to High(WIDTHS) do
+    begin
+      LWidth := WIDTHS[LIndex];
+      LHeight := HEIGHTS[LIndex];
+      LAspect := TRendererX87.MonitorAspect(LWidth, LHeight);
+      LForced := TRendererX87.AspectOverFourThirds(LWidth / 1000);
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      // R_InitAspect and R_GetRelativeAspect
+      LNative := LWidth / LHeight / (4 / 3);
+      Assert.IsTrue(SameBits(LNative, LAspect), Format('%d x %d', [LWidth, LHeight]));
+      LNative := LWidth / 1000;
+      LNative := LNative / (4 / 3);
+      Assert.IsTrue(SameBits(LNative, LForced), Format('forced %d', [LWidth]));
+      {$IFEND}
+      LFingerprint.AddDouble(LAspect);
+    end;
+    Assert.AreEqual(1.0, TRendererX87.MonitorAspect(640, 480), 1E-15);
+    Assert.AreEqual(4 / 3, TRendererX87.MonitorAspect(1920, 1080), 1E-15);
+    Assert.AreEqual('A2D7BBEB9ED85481/12', LFingerprint.ToHex);
   finally
     LFingerprint.Free;
   end;

@@ -46,6 +46,10 @@ type
     class function ViewSine(AViewAngle: Cardinal): Double; static;
     /// <summary>dviewcos of R_SetupFrame: Cos(AViewAngle / $FFFFFFFF * 2 * pi)</summary>
     class function ViewCosine(AViewAngle: Cardinal): Double; static;
+    /// <summary>relative_aspect of R_InitAspect: AWidth / AHeight / (4 / 3), the biggest mode of the monitor</summary>
+    class function MonitorAspect(AWidth, AHeight: Integer): Double; static;
+    /// <summary>AAspect / (4 / 3) of R_GetRelativeAspect (a forced aspect)</summary>
+    class function AspectOverFourThirds(const AAspect: Double): Double; static;
     /// <summary>planerelativeaspect: 320 / 200 * AScreenHeight / AScreenWidth * AMonitorAspect</summary>
     class function PlaneRelativeAspect(AScreenHeight, AScreenWidth: Integer;
       const AMonitorAspect: Double): Double; static;
@@ -135,6 +139,18 @@ class function TRendererX87.ViewCosine(AViewAngle: Cardinal): Double;
 begin
   Result := TSoftExtended.Cos(TSoftExtended.FromInt64(AViewAngle) / TSoftExtended.FromInt64($FFFFFFFF) *
     TSoftExtended.FromInt64(2) * TSoftExtended.FromMantissa(PI_MANTISSA, PI_EXPONENT)).ToDouble;
+end;
+
+class function TRendererX87.MonitorAspect(AWidth, AHeight: Integer): Double;
+begin
+  // 4 / 3 is folded by the 32 bit compiler in an Extended
+  Result := (TSoftExtended.FromInt64(AWidth) / TSoftExtended.FromInt64(AHeight) /
+    TSoftExtended.FromRatio(4, 3)).ToDouble;
+end;
+
+class function TRendererX87.AspectOverFourThirds(const AAspect: Double): Double;
+begin
+  Result := (TSoftExtended.FromDouble(AAspect) / TSoftExtended.FromRatio(4, 3)).ToDouble;
 end;
 
 class function TRendererX87.PlaneRelativeAspect(AScreenHeight, AScreenWidth: Integer;

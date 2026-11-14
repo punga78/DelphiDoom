@@ -31,6 +31,11 @@ type
 
 implementation
 
+{$IF SizeOf(Extended) = SizeOf(Double)}
+uses
+  DelphiDoom.MathCore.SoftExtended;
+{$IFEND}
+
 // The differences of the coordinates wrap around in 32 bits before they become Double,
 // as in the old code: the overflow checks are off on purpose
 {$Q-}
@@ -73,6 +78,9 @@ var
   LDeltaX: Double;
   LDeltaY: Double;
   LLength: Double;
+  {$IF SizeOf(Extended) = SizeOf(Double)}
+  LSquare: TSoftExtended;
+  {$IFEND}
 begin
   if (Length(AStartY) <> Length(AStartX)) or (Length(AEndX) <> Length(AStartX)) or
     (Length(AEndY) <> Length(AStartX)) then
@@ -84,9 +92,23 @@ begin
   begin
     LDeltaX := AEndX[LIndex] - AStartX[LIndex];
     LDeltaY := AEndY[LIndex] - AStartY[LIndex];
+    {$IF SizeOf(Extended) > SizeOf(Double)}
     LLength := Sqrt(LDeltaX * LDeltaX + LDeltaY * LDeltaY);
     AMapLength[LIndex] := Round(LLength / RENDERER_FRACUNIT);
     AInverseLength[LIndex] := 1 / LLength;
+    {$ELSE}
+    // Issue #40: the same Doubles as the 32 bit FPU, which keeps the squares and their sum exact (64 bits of
+    // mantissa) and rounds to 53 bits only the root and the reciprocal: the renderer at 64 bit must see the
+    // same lengths, or a wall is drawn a pixel away
+    LSquare := TSoftExtended.FromDouble(LDeltaX) * TSoftExtended.FromDouble(LDeltaX) +
+      TSoftExtended.FromDouble(LDeltaY) * TSoftExtended.FromDouble(LDeltaY);
+    LLength := TSoftExtended.Sqrt(LSquare).ToDouble;
+    AMapLength[LIndex] := Round(LLength / RENDERER_FRACUNIT);
+    if LLength = 0 then
+      AInverseLength[LIndex] := 1 / LLength
+    else
+      AInverseLength[LIndex] := (TSoftExtended.FromInt64(1) / TSoftExtended.FromDouble(LLength)).ToDouble;
+    {$IFEND}
   end;
 end;
 

@@ -566,6 +566,7 @@ uses
 {$ENDIF}
   DelphiDoom.MathCore.Types,
 {$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
   DelphiDoom.Renderer.X87,
 {$ENDIF}
   m_misc,
@@ -2815,8 +2816,14 @@ begin
   centeryfrac := centery * FRACUNIT;
 
 // JVAL: Widescreen support
+{$IFDEF CPUX86}
   monitor_relative_aspect := R_GetRelativeAspect{$IFNDEF OPENGL} * R_Fake3DAspectCorrection(viewplayer){$ENDIF};
   projection := Round(centerx / monitor_relative_aspect * FRACUNIT);
+{$ELSE}
+  // the same numbers as the 32 bit FPU (issue #40)
+  monitor_relative_aspect := {$IFDEF OPENGL}R_GetRelativeAspect{$ELSE}TX87Double.Multiply(R_GetRelativeAspect, R_Fake3DAspectCorrection(viewplayer)){$ENDIF};
+  projection := TX87Double.RoundScaledQuotient(centerx, monitor_relative_aspect, FRACUNIT);
+{$ENDIF}
   projectiony := (((SCREENHEIGHT * centerx * 320) div 200) div SCREENWIDTH * FRACUNIT); // JVAL for correct aspect
 
   if olddetail <> setdetail then
@@ -2836,14 +2843,22 @@ begin
 
 // psprite scales
 // JVAL: Widescreen support
+{$IFDEF CPUX86}
   pspritescale := Round((centerx / monitor_relative_aspect * FRACUNIT) / 160);
+{$ELSE}
+  pspritescale := TX87Double.RoundScaledQuotient(centerx, monitor_relative_aspect, FRACUNIT, 160);
+{$ENDIF}
   pspriteyscale := Round((((SCREENHEIGHT * viewwidth) / SCREENWIDTH) * FRACUNIT) / 200);
   pspriteiscale := FixedDiv(FRACUNIT, pspritescale);
 
   if excludewidescreenplayersprites then
     pspritescalep := Round((centerx * FRACUNIT) / 160)
   else
+{$IFDEF CPUX86}
     pspritescalep := Round((centerx / R_GetRelativeAspect * FRACUNIT) / 160);
+{$ELSE}
+    pspritescalep := TX87Double.RoundScaledQuotient(centerx, R_GetRelativeAspect, FRACUNIT, 160);
+{$ENDIF}
   pspriteiscalep := FixedDiv(FRACUNIT, pspritescalep);
 
   // thing clipping

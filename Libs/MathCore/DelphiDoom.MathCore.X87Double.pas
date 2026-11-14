@@ -46,6 +46,9 @@ type
     class function TruncReciprocalProductExact(AScale, AFirst, ASecond: Integer): Integer; static;
     class function RoundCrossProductsExact(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
       const ASecondFactor: Double): Integer; static;
+    class function RoundScaledCrossExact(const A, B, C, D, AFactor: Double): Integer; static;
+    class function RoundScaledQuotientExact(const ANumerator, ADenominator: Double; AScale, ADivisor: Integer): Integer;
+      static;
 
     /// <summary>A + B stored in a Double: rounded to 64 bits and then to 53, as "fadd, fstp qword" do</summary>
     class function Add(const A, B: Double): Double; static; inline;
@@ -93,6 +96,13 @@ type
     /// <summary>Round(AFirst * AFirstFactor + ASecond * ASecondFactor)</summary>
     class function RoundCrossProducts(AFirst: Integer; const AFirstFactor: Double; ASecond: Integer;
       const ASecondFactor: Double): Integer; static; inline;
+    /// <summary>Round((A * B + C * D) * AFactor)</summary>
+    class function RoundScaledCross(const A, B, C, D, AFactor: Double): Integer; static; inline;
+    /// <summary>Round(ANumerator / ADenominator * AScale / ADivisor)</summary>
+    class function RoundScaledQuotient(const ANumerator, ADenominator: Double; AScale: Integer;
+      ADivisor: Integer = 1): Integer; static; inline;
+    /// <summary>A / B stored in a Double (always the exact way)</summary>
+    class function Divide(const A, B: Double): Double; static;
     /// <summary>A * B stored in a Double (always the exact way: not for the hot paths)</summary>
     class function Multiply(const A, B: Double): Double; static;
     /// <summary>AMinuend - A * B stored in a Double (always the exact way)</summary>
@@ -438,6 +448,79 @@ begin
     Result := RoundCrossProductsExact(AFirst, AFirstFactor, ASecond, ASecondFactor);
 end;
 {$IFEND}
+
+class function TX87Double.RoundScaledCrossExact(const A, B, C, D, AFactor: Double): Integer;
+begin
+  Result := Integer(((TSoftExtended.FromDouble(A) * TSoftExtended.FromDouble(B) +
+    TSoftExtended.FromDouble(C) * TSoftExtended.FromDouble(D)) * TSoftExtended.FromDouble(AFactor)).Round);
+end;
+
+class function TX87Double.RoundScaledCross(const A, B, C, D, AFactor: Double): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Integer(Round((A * B + C * D) * AFactor));
+end;
+{$ELSE}
+var
+  LFirst: Double;
+  LSecond: Double;
+  LValue: Double;
+begin
+  LFirst := A * B;
+  LSecond := C * D;
+  LValue := (LFirst + LSecond) * AFactor;
+  if CanRound(LValue, (Abs(LFirst) + Abs(LSecond)) * Abs(AFactor)) then
+    Result := Round(LValue)
+  else
+    Result := RoundScaledCrossExact(A, B, C, D, AFactor);
+end;
+{$IFEND}
+
+class function TX87Double.RoundScaledQuotientExact(const ANumerator, ADenominator: Double; AScale,
+  ADivisor: Integer): Integer;
+var
+  LValue: TSoftExtended;
+begin
+  if ADenominator = 0 then
+    Exit(0);
+  LValue := TSoftExtended.FromDouble(ANumerator) / TSoftExtended.FromDouble(ADenominator) *
+    TSoftExtended.FromInt64(AScale);
+  if ADivisor <> 1 then
+    LValue := LValue / TSoftExtended.FromInt64(ADivisor);
+  Result := Integer(LValue.Round);
+end;
+
+class function TX87Double.RoundScaledQuotient(const ANumerator, ADenominator: Double; AScale: Integer;
+  ADivisor: Integer): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  if ADivisor <> 1 then
+    Result := Integer(Round((ANumerator / ADenominator * AScale) / ADivisor))
+  else
+    Result := Integer(Round(ANumerator / ADenominator * AScale));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  if ADenominator = 0 then
+    Exit(0);
+  LValue := ANumerator / ADenominator * AScale / ADivisor;
+  if CanRound(LValue, Abs(LValue)) then
+    Result := Round(LValue)
+  else
+    Result := RoundScaledQuotientExact(ANumerator, ADenominator, AScale, ADivisor);
+end;
+{$IFEND}
+
+class function TX87Double.Divide(const A, B: Double): Double;
+begin
+{$IF SizeOf(Extended) > SizeOf(Double)}
+  Result := A / B;
+{$ELSE}
+  Result := (TSoftExtended.FromDouble(A) / TSoftExtended.FromDouble(B)).ToDouble;
+{$IFEND}
+end;
 
 class function TX87Double.Multiply(const A, B: Double): Double;
 begin

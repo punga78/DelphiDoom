@@ -48,7 +48,12 @@ try {
   Remove-Item -LiteralPath $crash -ErrorAction SilentlyContinue
 
   $process = Start-Process -FilePath $Exe -ArgumentList $Arguments -WorkingDirectory $WorkDir -PassThru
-  try { $process.PriorityClass = 'BelowNormal' } catch { }
+  # Priorita' bassa per non rubare la CPU; a macchina satura (suite di test di altri agenti a priorita' normale)
+  # un processo a priorita' bassa non riceve quasi tempo (visto: 9 s di CPU in 23 minuti, con il lock tenuto per
+  # tutti): la variabile d'ambiente DDGIOCO_PRIORITA (es. Normal) la cambia
+  $priority = 'BelowNormal'
+  if ($env:DDGIOCO_PRIORITA) { $priority = $env:DDGIOCO_PRIORITA }
+  try { $process.PriorityClass = $priority } catch { }
 
   $run = [Diagnostics.Stopwatch]::StartNew()
   if ($StopWhenExited) {

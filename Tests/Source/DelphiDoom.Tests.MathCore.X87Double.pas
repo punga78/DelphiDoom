@@ -56,6 +56,12 @@ type
     [Test]
     procedure DovrebbeArrotondareLaSommaDiDueProdotti;
     [Test]
+    procedure DovrebbeDareLaRadiceQuadrataDellaFpu;
+    [Test]
+    procedure DovrebbeDareLaDistanzaDaUnSeg;
+    [Test]
+    procedure DovrebbeDareLaProiezioneDellaVista;
+    [Test]
     procedure DovrebbeDareZeroConUnDivisoreNullo;
     [Test]
     procedure DovrebbeDareIDoubleDelleEspressioniFredde;
@@ -736,6 +742,173 @@ begin
       LFingerprint.AddInteger(LExact);
     end;
     FGolden.Check('x87.cross', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareLaRadiceQuadrataDellaFpu;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LValue: Double;
+  LRoot: TSoftExtended;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Extended;
+  {$IFEND}
+begin
+  LRandom.State := $1357924680ACE135;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 199999 do
+    begin
+      LValue := Abs(LRandom.NextDouble(-40, 62));
+      case LIndex mod 4 of
+        0:
+          // perfect squares and their neighbours
+          LValue := Nudge(Sqr(1.0 + LRandom.Next mod 60000000), LIndex mod 3 - 1);
+        1:
+          LValue := 1 + LRandom.Next mod 1000000;
+      end;
+      LRoot := TSoftExtended.Sqrt(TSoftExtended.FromDouble(LValue));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      LNative := Sqrt(Extended(LValue));
+      Assert.IsTrue((PUInt64(@LNative)^ = LRoot.Mantissa) and
+        (Integer(PWord(PByte(@LNative) + 8)^ and $7FFF) = LRoot.BinaryExponent + 63 + 16383),
+        Format('root of %.17g', [LValue]));
+      {$IFEND}
+      LFingerprint.AddInt64(Int64(LRoot.Mantissa));
+      LFingerprint.AddInteger(LRoot.BinaryExponent);
+    end;
+    Assert.IsTrue(TSoftExtended.Sqrt(TSoftExtended.FromInt64(0)).IsZero);
+    Assert.AreEqual(Int64(12), TSoftExtended.Sqrt(TSoftExtended.FromInt64(144)).Round);
+    Assert.WillRaise(
+      procedure
+      begin
+        TSoftExtended.Sqrt(TSoftExtended.FromInt64(-4));
+      end, EInvalidOp);
+    FGolden.Check('x87.sqrt', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareLaDistanzaDaUnSeg;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LDeltaX, LDeltaY, LViewX, LViewY, LInverse: Double;
+  LFast, LExact: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Integer;
+  {$IFEND}
+begin
+  // R_DistToSeg and R_CalcSegOffset: Round((dy * dx1 - dx * dy1) * inv_length), 16.16 coordinates in Doubles
+  LRandom.State := $2468ACE013579BDF;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 499999 do
+    begin
+      LDeltaX := LRandom.NextInteger($30000000);
+      LDeltaY := LRandom.NextInteger($30000000);
+      LViewX := LRandom.NextInteger($60000000);
+      LViewY := LRandom.NextInteger($60000000);
+      if LIndex mod 5 = 0 then
+      begin
+        // the view point nearly on the line of the seg: the two products nearly cancel
+        LViewX := LDeltaX * 2;
+        LViewY := LDeltaY * 2 + LRandom.NextInteger(1000);
+      end;
+      if (LDeltaX = 0) and (LDeltaY = 0) then
+        LDeltaX := 65536;
+      // the inverse of the length as the level loader stores it
+      LInverse := (TSoftExtended.FromInt64(1) / TSoftExtended.FromDouble(TSoftExtended.Sqrt(
+        TSoftExtended.FromDouble(LDeltaX) * TSoftExtended.FromDouble(LDeltaX) +
+        TSoftExtended.FromDouble(LDeltaY) * TSoftExtended.FromDouble(LDeltaY)).ToDouble)).ToDouble;
+      if Odd(LIndex) then
+      begin
+        LFast := TX87Double.RoundScaledCross(LDeltaY, LViewX, -LDeltaX, LViewY, LInverse);
+        LExact := TX87Double.RoundScaledCrossExact(LDeltaY, LViewX, -LDeltaX, LViewY, LInverse);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Round((LDeltaY * LViewX - LDeltaX * LViewY) * LInverse));
+        {$IFEND}
+      end
+      else
+      begin
+        LFast := TX87Double.RoundScaledCross(LDeltaX, LViewX, LDeltaY, LViewY, LInverse);
+        LExact := TX87Double.RoundScaledCrossExact(LDeltaX, LViewX, LDeltaY, LViewY, LInverse);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Round((LDeltaX * LViewX + LDeltaY * LViewY) * LInverse));
+        {$IFEND}
+      end;
+      Assert.AreEqual(LExact, LFast, Format('case %d', [LIndex]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(LNative, LExact, Format('case %d against the FPU', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+    end;
+    FGolden.Check('x87.segdistance', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
+
+procedure TTestMathCoreX87Double.DovrebbeDareLaProiezioneDellaVista;
+const
+  FRACUNIT = 65536;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LCenter: Integer;
+  LAspect, LQuotient: Double;
+  LFast, LExact: Integer;
+  {$IF SizeOf(Extended) > SizeOf(Double)}
+  LNative: Integer;
+  LNativeQuotient: Double;
+  {$IFEND}
+begin
+  // projection := Round(centerx / aspect * FRACUNIT) and pspritescale := Round((centerx / aspect * FRACUNIT) / 160)
+  LRandom.State := $0102030405060708;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to 299999 do
+    begin
+      LCenter := 160 + Integer(LRandom.Next mod 2000);
+      // an aspect between 1 and 2, as the widest mode of the monitor over 4 / 3 gives
+      LAspect := (TSoftExtended.FromInt64(1000 + Integer(LRandom.Next mod 3000)) /
+        TSoftExtended.FromInt64(1000 + Integer(LRandom.Next mod 1000)) / TSoftExtended.FromRatio(4, 3)).ToDouble;
+      if LAspect < 1 then
+        LAspect := 1;
+      if Odd(LIndex) then
+      begin
+        LFast := TX87Double.RoundScaledQuotient(LCenter, LAspect, FRACUNIT);
+        LExact := TX87Double.RoundScaledQuotientExact(LCenter, LAspect, FRACUNIT, 1);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Round(LCenter / LAspect * FRACUNIT));
+        {$IFEND}
+      end
+      else
+      begin
+        LFast := TX87Double.RoundScaledQuotient(LCenter, LAspect, FRACUNIT, 160);
+        LExact := TX87Double.RoundScaledQuotientExact(LCenter, LAspect, FRACUNIT, 160);
+        {$IF SizeOf(Extended) > SizeOf(Double)}
+        LNative := Integer(Round((LCenter / LAspect * FRACUNIT) / 160));
+        {$IFEND}
+      end;
+      LQuotient := TX87Double.Divide(LCenter, LAspect);
+      Assert.AreEqual(LExact, LFast, Format('case %d: %d %.17g', [LIndex, LCenter, LAspect]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(LNative, LExact, Format('case %d against the FPU: %d %.17g', [LIndex, LCenter, LAspect]));
+      LNativeQuotient := LCenter / LAspect;
+      Assert.IsTrue(SameBits(LNativeQuotient, LQuotient), Format('quotient of case %d', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+      LFingerprint.AddDouble(LQuotient);
+    end;
+    FGolden.Check('x87.projection', LFingerprint.ToHex);
   finally
     LFingerprint.Free;
   end;

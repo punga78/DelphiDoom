@@ -59,6 +59,10 @@ var
 implementation
 
 uses
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
+{$ENDIF}
   DelphiDoom.Console.Numbers,
   Windows,
   d_delphi,
@@ -135,7 +139,11 @@ begin
     nar := atof(strtrim(ar));
     npar := atof(strtrim(par));
     if npar > 0 then
+{$IFDEF CPUX86}
       result := nar / npar
+{$ELSE}
+      result := TX87Double.Divide(nar, npar)
+{$ENDIF}
     else
       result := 0.0;
   end
@@ -203,7 +211,12 @@ begin
 
   if maxheight > 0 then
   begin
+{$IFDEF CPUX86}
     relative_aspect := maxwidth / maxheight / (4 / 3);
+{$ELSE}
+    // the same number as the 32 bit FPU (issue #40): every size of the view comes from it
+    relative_aspect := TRendererX87.MonitorAspect(maxwidth, maxheight);
+{$ENDIF}
     if relative_aspect < 1.0 then
       relative_aspect := 1.0
     else if relative_aspect > 2.0 then
@@ -231,7 +244,11 @@ begin
     if asp < 1.0 then
       result := relative_aspect
     else
+{$IFDEF CPUX86}
       result := asp / (4 / 3);
+{$ELSE}
+      result := TRendererX87.AspectOverFourThirds(asp);
+{$ENDIF}
     if result < 1.0 then
       result := 1.0
     else if result > 2.0 then
