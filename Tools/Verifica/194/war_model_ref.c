@@ -23,6 +23,7 @@
         war_model_ref dump friendly SEED TIC il testo dello stato dello scenario a quel tic (per cercare una differenza)
         war_model_ref dump hostile SEED TIC
 */
+#include <time.h>
 #include "war_head.inc"
 
 #include "war_ui.h"
@@ -789,6 +790,37 @@ static void printTables(void)
     wm_allocFree();
 }
 
+/* misura: unita' che marciano (il percorso caldo): tic al secondo e microsecondi per unita' e per tic */
+static void bench(s32 units, s32 tics)
+{
+    worldInit(12345, 678);
+    gSpawnedCount = 0;
+    for (s32 i = 0; i < units; i++)
+    {
+        WarEntity* e = spawnDude(WAR_UNIT_FOOTMAN, 0, 2 + (i % 56), 2 + (i / 56) * 4);
+        if (!e)
+            break;
+        vec2 positions[2];
+        positions[0] = wu_getUnitCenterPosition(gContext, e);
+        positions[1] = vec2f(60 * 16 + 8, positions[0].y);
+        WarStateMove* state = wst_createMoveState(gContext, e, 2, positions, false);
+        wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+    }
+    clock_t start = clock();
+    const f32 delta = 1.0f / 60.0f;
+    for (s32 t = 0; t < tics; t++)
+    {
+        gContext->gameDeltaTime = delta;
+        gContext->gameTime += (f64)delta;
+        wst_processPendingTransitions(gContext);
+        wst_updateIdleStates(gContext);
+        wst_updateMoveStates(gContext);
+    }
+    double ms = 1000.0 * (double)(clock() - start) / CLOCKS_PER_SEC;
+    printf("C %d unita', %d tic: %.1f ms, %.3f us per unita' e tic\n", gMap->entityManager.entityCount, tics, ms,
+           1000.0 * ms / ((double)gMap->entityManager.entityCount * tics));
+    worldFree();
+}
 int main(int argc, char** argv)
 {
     gTrace = getenv("WAR_REF_TRACE") != NULL;
@@ -800,6 +832,11 @@ int main(int argc, char** argv)
     if (strcmp(argv[1], "tables") == 0)
     {
         printTables();
+        return 0;
+    }
+    if (strcmp(argv[1], "bench") == 0)
+    {
+        bench(argc > 2 ? atoi(argv[2]) : 400, argc > 3 ? atoi(argv[3]) : 1500);
         return 0;
     }
     if (strcmp(argv[1], "scenarios") == 0)
