@@ -19,7 +19,7 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Gui.Context, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Factory,
-  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Display.FloatMask;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.Display.FloatMask, DelphiDoom.Gui.SaveStream;
 
 type
   TGuiUserInterface = class;
@@ -89,6 +89,11 @@ type
     function GetStateFloat(const AName: AnsiString; const ADefault: AnsiString = '0'): Single;
     procedure DeleteStateVar(const AName: AnsiString);
     /// <summary>The count of the users of the gui (the manager shares a gui that is not interactive)</summary>
+    /// <summary>idUserInterfaceLocal::WriteToSaveGame: the state of the gui and of its windows (the .gui is read again before a load)</summary>
+    procedure WriteToSaveGame(const AWriter: TGuiSaveWriter);
+    procedure ReadFromSaveGame(const AReader: TGuiSaveReader);
+    /// <summary>SetKeyBindingNames: the state of each bind window gets the names of the keys bound to it</summary>
+    procedure SetKeyBindingNames;
     procedure AddRef;
     procedure ClearRefs;
     /// <summary>The time of the file when the gui was read (idUserInterfaceLocal::GetTimeStamp): Reload compares it</summary>
@@ -109,7 +114,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Scanner.IdParser, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types,
+  System.SysUtils, DelphiDoom.Scanner.IdDict, DelphiDoom.Gui.WinVar.Base, DelphiDoom.Scanner.IdParser, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types,
   DelphiDoom.IdLib.Text.Strings, DelphiDoom.Gui.Rectangle, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.Window.Types;
 
 constructor TGuiUserInterface.Create(const AFileSystem: IIdLibFileSystem; const ALog: IIdLibLog;
@@ -139,6 +144,76 @@ begin
   FContext.Free;
   FFactory.Free;
   inherited Destroy;
+end;
+
+procedure TGuiUserInterface.WriteToSaveGame(const AWriter: TGuiSaveWriter);
+var
+  LIndex: Integer;
+  LKeyValue: TIdKeyValue;
+begin
+  AWriter.WriteInt(FContext.StateDict.GetNumKeyVals);
+  for LIndex := 0 to FContext.StateDict.GetNumKeyVals - 1 do
+    if FContext.StateDict.TryGetKeyVal(LIndex, LKeyValue) then
+    begin
+      AWriter.WriteString(LKeyValue.Key);
+      AWriter.WriteString(LKeyValue.Value);
+    end;
+  AWriter.WriteBool(FContext.Active);
+  AWriter.WriteBool(FInteractive);
+  AWriter.WriteBool(FUniqued);
+  AWriter.WriteInt(FContext.Time);
+  AWriter.WriteString('');
+  AWriter.WriteString(FContext.PendingCommand);
+  AWriter.WriteString(FContext.ReturnCommand);
+  AWriter.WriteFloat(FContext.CursorX);
+  AWriter.WriteFloat(FContext.CursorY);
+  FDesktop.WriteToSaveGame(AWriter);
+end;
+
+procedure TGuiUserInterface.ReadFromSaveGame(const AReader: TGuiSaveReader);
+var
+  LCount, LIndex: Integer;
+  LKey: AnsiString;
+begin
+  LCount := AReader.ReadInt;
+  if (LCount < 0) or (LCount > 1000000) then
+    raise EGuiSaveException.CreateFmt('the save game has %d keys in the state of a gui', [LCount]);
+  FContext.StateDict.Clear;
+  for LIndex := 0 to LCount - 1 do
+  begin
+    LKey := AReader.ReadString;
+    FContext.StateDict.SetValue(LKey, AReader.ReadString);
+  end;
+  FContext.Active := AReader.ReadBool;
+  FInteractive := AReader.ReadBool;
+  FUniqued := AReader.ReadBool;
+  FContext.Time := AReader.ReadInt;
+  AReader.ReadString;
+  FContext.PendingCommand := AReader.ReadString;
+  FContext.ReturnCommand := AReader.ReadString;
+  FContext.CursorX := AReader.ReadFloat;
+  FContext.CursorY := AReader.ReadFloat;
+  FDesktop.ReadFromSaveGame(AReader);
+end;
+
+procedure TGuiUserInterface.SetKeyBindingNames;
+
+  procedure Recurse(const AWindow: TGuiWindow);
+  var
+    LOwner: IGuiWindowNode;
+    LVar: TGuiWinVar;
+    LIndex: Integer;
+  begin
+    LVar := AWindow.GetWinVarByName('bind', False, LOwner);
+    if Assigned(LVar) and Assigned(FContext.KeyBindings) then
+      SetStateString(LVar.GetName, FContext.KeyBindings.KeysFromBinding(LVar.GetName));
+    for LIndex := 0 to AWindow.ChildCount - 1 do
+      Recurse(AWindow.Children[LIndex]);
+  end;
+
+begin
+  if Assigned(FDesktop) then
+    Recurse(FDesktop);
 end;
 
 procedure TGuiUserInterface.AddRef;

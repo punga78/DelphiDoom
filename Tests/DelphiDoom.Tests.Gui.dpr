@@ -96,6 +96,7 @@ uses
   DelphiDoom.Gui.Window.Field in '..\Libs\Gui\DelphiDoom.Gui.Window.Field.pas',
   DelphiDoom.Gui.Window.Factory in '..\Libs\Gui\DelphiDoom.Gui.Window.Factory.pas',
   DelphiDoom.Gui.UserInterface in '..\Libs\Gui\DelphiDoom.Gui.UserInterface.pas',
+  DelphiDoom.Gui.SaveStream in '..\Libs\Gui\DelphiDoom.Gui.SaveStream.pas',
   DelphiDoom.Gui.Manager in '..\Libs\Gui\DelphiDoom.Gui.Manager.pas',
   DelphiDoom.Gui.ListGui in '..\Libs\Gui\DelphiDoom.Gui.ListGui.pas',
   DelphiDoom.Gui.Window.Events in '..\Libs\Gui\DelphiDoom.Gui.Window.Events.pas',
@@ -132,7 +133,8 @@ uses
   DelphiDoom.Tests.Gui.Harness in 'Source\DelphiDoom.Tests.Gui.Harness.pas',
   DelphiDoom.Tests.Gui.DrawParity in 'Source\DelphiDoom.Tests.Gui.DrawParity.pas',
   DelphiDoom.Tests.Gui.DrawContext in 'Source\DelphiDoom.Tests.Gui.DrawContext.pas',
-  DelphiDoom.Tests.Gui.Manager in 'Source\DelphiDoom.Tests.Gui.Manager.pas';
+  DelphiDoom.Tests.Gui.Manager in 'Source\DelphiDoom.Tests.Gui.Manager.pas',
+  DelphiDoom.Tests.Gui.SaveGame in 'Source\DelphiDoom.Tests.Gui.SaveGame.pas';
 
 var
   Runner: ITestRunner;

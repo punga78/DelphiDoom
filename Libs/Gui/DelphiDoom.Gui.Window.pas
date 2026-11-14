@@ -26,7 +26,7 @@ uses
   DelphiDoom.Gui.Regs.Store, DelphiDoom.Gui.Regs.RegisterList, DelphiDoom.Gui.Regs.Evaluator,
   DelphiDoom.Gui.Regs.Parser, DelphiDoom.Gui.Script, DelphiDoom.Gui.Script.Parser,
   DelphiDoom.Gui.Window.TimeLineEvent, DelphiDoom.Gui.Window.NamedEvent, DelphiDoom.Gui.Window.Transition,
-  DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys;
+  DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.Window.Keys, DelphiDoom.Gui.SaveStream, DelphiDoom.Gui.Interpolator;
 
 type
   TGuiWindow = class;
@@ -36,6 +36,13 @@ type
   ///   <c>windowDef</c> is always a <c>TGuiWindow</c>; the composition root gives the creator that knows the rest.
   /// </summary>
   TGuiWindowCreator = reference to function(const AKeyword: AnsiString): TGuiWindow;
+
+  /// <summary>A transition read from a save game: the variable (kind and window name) is found by FixupTransitions</summary>
+  TGuiPendingTransition = record
+    Kind: Integer;
+    WindowName: AnsiString;
+    Interpolator: TGuiInterpolator;
+  end;
 
   /// <summary>drawWin_t: a window that is drawn, and whether it is a "simple" one (not a child that gets events)</summary>
   TGuiDrawWindow = record
@@ -84,6 +91,7 @@ type
     FBackground: IGuiMaterial;
     FBackgroundFor: AnsiString;
     FDirectBackground: IGuiMaterial;
+    FPendingTransitions: TList<TGuiPendingTransition>;
     FForceAspectWidth: Single;
     FForceAspectHeight: Single;
     FMatScaleX: Single;
@@ -160,6 +168,11 @@ type
     function GetRectVar: TGuiWinVar;
     function GetDesktop: IGuiWindowNode;
     function GetStore: TGuiExpressionStore;
+    procedure WriteTransition(const AWriter: TGuiSaveWriter; const ATransition: TGuiTransition);
+    function FindVariableOwner(const AVariable: TGuiWinVar; out AKind: Integer): TGuiWindow;
+    function VariableOfKind(const AKind: Integer): TGuiWinVar;
+    function ChildIdOf(const AWindow: TGuiWindow): Integer;
+    function ChildById(const AId: Integer): TGuiWindow;
   protected
     /// <summary>idWindow::ParseInternalVar: the keys that are not registers; the subclasses add their own</summary>
     function ParseInternalVar(const AName: AnsiString; const ASource: TIdParser): Boolean; virtual;
@@ -270,6 +283,11 @@ type
     procedure SetFont;
     function GetMaxCharHeight: Single;
     function GetMaxCharWidth: Single;
+    /// <summary>idWindow::WriteToSaveGame: the state that changes at run time (the text of the .gui is read again first)</summary>
+    procedure WriteToSaveGame(const AWriter: TGuiSaveWriter);
+    procedure ReadFromSaveGame(const AReader: TGuiSaveReader);
+    /// <summary>idWindow::FixupTransitions: the transitions read from a save game find their variables by window name</summary>
+    procedure FixupTransitions;
     property OverChild: TGuiWindow read FOverChild write FOverChild;
     property Hover: Boolean read FHover write FHover;
     property CaptureChildRaw: TGuiWindow read FCaptureChild write FCaptureChild;
@@ -349,7 +367,8 @@ implementation
 uses
   System.SysUtils, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Strings,
   DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Gui.WinVar.Int, DelphiDoom.Gui.Regs.Register,
-  DelphiDoom.Gui.Window.Painter, DelphiDoom.Gui.Window.Events;
+  DelphiDoom.Gui.Window.Painter, DelphiDoom.Gui.Window.Events, DelphiDoom.Gui.WinVar.Vec2, DelphiDoom.Gui.WinVar.Vec3,
+  DelphiDoom.IdLib.Math.Vec3;
 
 type
   TGuiRegisterEntry = record
@@ -386,6 +405,7 @@ begin
   FChildren := TList<TGuiWindow>.Create;
   FOwned := TObjectList<TGuiWindow>.Create(True);
   FDrawWindows := TList<TGuiDrawWindow>.Create;
+  FPendingTransitions := TList<TGuiPendingTransition>.Create;
   FDefinedVars := TObjectList<TGuiWinVar>.Create(True);
   FUpdateVars := TList<TGuiWinVar>.Create;
   FTimeLineEvents := TObjectList<TGuiTimeLineEvent>.Create(True);
@@ -1987,6 +2007,372 @@ begin
   end;
   ARect.X := ARect.X - LX;
   ARect.Y := ARect.Y - LY;
+end;
+
+const
+  // the variables a transition can move, in the order of GetWinVarOffset
+  TRANSITION_KINDS = 7;
+
+procedure WriteVar(const AWriter: TGuiSaveWriter; const AVariable: TGuiWinVar);
+begin
+  AWriter.WriteBool(AVariable.Eval);
+  if AVariable is TGuiWinStr then
+    AWriter.WriteString(TGuiWinStr(AVariable).Value)
+  else if AVariable is TGuiWinBool then
+    AWriter.WriteBool(TGuiWinBool(AVariable).Value)
+  else if AVariable is TGuiWinInt then
+    AWriter.WriteInt(TGuiWinInt(AVariable).Value)
+  else if AVariable is TGuiWinFloat then
+    AWriter.WriteFloat(TGuiWinFloat(AVariable).Value)
+  else if AVariable is TGuiWinVec2 then
+  begin
+    AWriter.WriteFloat(TGuiWinVec2(AVariable).Value.X);
+    AWriter.WriteFloat(TGuiWinVec2(AVariable).Value.Y);
+  end
+  else if AVariable is TGuiWinVec3 then
+  begin
+    AWriter.WriteFloat(TGuiWinVec3(AVariable).Value.X);
+    AWriter.WriteFloat(TGuiWinVec3(AVariable).Value.Y);
+    AWriter.WriteFloat(TGuiWinVec3(AVariable).Value.Z);
+  end
+  else if AVariable is TGuiWinVec4 then
+  begin
+    AWriter.WriteFloat(TGuiWinVec4(AVariable).Value.X);
+    AWriter.WriteFloat(TGuiWinVec4(AVariable).Value.Y);
+    AWriter.WriteFloat(TGuiWinVec4(AVariable).Value.Z);
+    AWriter.WriteFloat(TGuiWinVec4(AVariable).Value.W);
+  end
+  else if AVariable is TGuiWinRectangle then
+  begin
+    AWriter.WriteFloat(TGuiWinRectangle(AVariable).Value.X);
+    AWriter.WriteFloat(TGuiWinRectangle(AVariable).Value.Y);
+    AWriter.WriteFloat(TGuiWinRectangle(AVariable).Value.W);
+    AWriter.WriteFloat(TGuiWinRectangle(AVariable).Value.H);
+  end;
+end;
+
+procedure ReadVar(const AReader: TGuiSaveReader; const AVariable: TGuiWinVar);
+var
+  LVec4: TIdVec4;
+  LVec3: TIdVec3;
+  LVec2: TIdVec2;
+  LRect: TGuiRectangle;
+begin
+  AVariable.Eval := AReader.ReadBool;
+  if AVariable is TGuiWinStr then
+    TGuiWinStr(AVariable).Value := AReader.ReadString
+  else if AVariable is TGuiWinBool then
+    TGuiWinBool(AVariable).Value := AReader.ReadBool
+  else if AVariable is TGuiWinInt then
+    TGuiWinInt(AVariable).Value := AReader.ReadInt
+  else if AVariable is TGuiWinFloat then
+    TGuiWinFloat(AVariable).Value := AReader.ReadFloat
+  else if AVariable is TGuiWinVec2 then
+  begin
+    LVec2.X := AReader.ReadFloat;
+    LVec2.Y := AReader.ReadFloat;
+    TGuiWinVec2(AVariable).Value := LVec2;
+  end
+  else if AVariable is TGuiWinVec3 then
+  begin
+    LVec3.X := AReader.ReadFloat;
+    LVec3.Y := AReader.ReadFloat;
+    LVec3.Z := AReader.ReadFloat;
+    TGuiWinVec3(AVariable).Value := LVec3;
+  end
+  else if AVariable is TGuiWinVec4 then
+  begin
+    LVec4.X := AReader.ReadFloat;
+    LVec4.Y := AReader.ReadFloat;
+    LVec4.Z := AReader.ReadFloat;
+    LVec4.W := AReader.ReadFloat;
+    TGuiWinVec4(AVariable).Value := LVec4;
+  end
+  else if AVariable is TGuiWinRectangle then
+  begin
+    LRect.X := AReader.ReadFloat;
+    LRect.Y := AReader.ReadFloat;
+    LRect.W := AReader.ReadFloat;
+    LRect.H := AReader.ReadFloat;
+    TGuiWinRectangle(AVariable).Value := LRect;
+  end;
+end;
+
+procedure WriteRect(const AWriter: TGuiSaveWriter; const ARect: TGuiRectangle);
+begin
+  AWriter.WriteFloat(ARect.X);
+  AWriter.WriteFloat(ARect.Y);
+  AWriter.WriteFloat(ARect.W);
+  AWriter.WriteFloat(ARect.H);
+end;
+
+function ReadRect(const AReader: TGuiSaveReader): TGuiRectangle;
+begin
+  Result.X := AReader.ReadFloat;
+  Result.Y := AReader.ReadFloat;
+  Result.W := AReader.ReadFloat;
+  Result.H := AReader.ReadFloat;
+end;
+
+function TGuiWindow.ChildIdOf(const AWindow: TGuiWindow): Integer;
+begin
+  if Assigned(AWindow) then
+    Result := AWindow.FChildId
+  else
+    Result := -1;
+end;
+
+function TGuiWindow.ChildById(const AId: Integer): TGuiWindow;
+var
+  LIndex: Integer;
+begin
+  Result := nil;
+  for LIndex := 0 to FChildren.Count - 1 do
+    if FChildren[LIndex].FChildId = AId then
+      Result := FChildren[LIndex];
+end;
+
+function TGuiWindow.VariableOfKind(const AKind: Integer): TGuiWinVar;
+begin
+  case AKind of
+    0: Result := FRect;
+    1: Result := FBackColor;
+    2: Result := FMatColor;
+    3: Result := FForeColor;
+    4: Result := FBorderColor;
+    5: Result := FTextScale;
+    6: Result := FRotate;
+  else
+    Result := nil;
+  end;
+end;
+
+// GetWinVarOffset: the window of the tree that has the variable of a transition and which one it is
+function TGuiWindow.FindVariableOwner(const AVariable: TGuiWinVar; out AKind: Integer): TGuiWindow;
+var
+  LIndex, LKind: Integer;
+begin
+  for LKind := 0 to TRANSITION_KINDS - 1 do
+    if VariableOfKind(LKind) = AVariable then
+    begin
+      AKind := LKind;
+      Exit(Self);
+    end;
+  for LIndex := 0 to FDrawWindows.Count - 1 do
+  begin
+    Result := FDrawWindows[LIndex].Window.FindVariableOwner(AVariable, AKind);
+    if Assigned(Result) then
+      Exit;
+  end;
+  Result := nil;
+  AKind := -1;
+end;
+
+procedure TGuiWindow.WriteTransition(const AWriter: TGuiSaveWriter; const ATransition: TGuiTransition);
+var
+  LOwner: TGuiWindow;
+  LKind: Integer;
+  LDesktop: TGuiWindow;
+  LIsSimple: Boolean;
+begin
+  LDesktop := GetDesktopWindow;
+  LOwner := LDesktop.FindVariableOwner(ATransition.Variable, LKind);
+  if Assigned(LOwner) and (LKind >= 0) and Assigned(LDesktop.FindDrawWindow(LOwner.FName, LIsSimple)) then
+  begin
+    AWriter.WriteInt(LKind);
+    AWriter.WriteString(LOwner.FName);
+    ATransition.Interpolator.WriteToSaveGame(AWriter);
+  end
+  else
+    AWriter.WriteInt(-1);
+end;
+
+procedure TGuiWindow.WriteToSaveGame(const AWriter: TGuiSaveWriter);
+var
+  LIndex: Integer;
+begin
+  AWriter.WriteString(FCommand);
+  AWriter.WriteFloat(FActualX);
+  AWriter.WriteFloat(FActualY);
+  AWriter.WriteInt(FChildId);
+  AWriter.WriteInt(Integer(FFlags));
+  AWriter.WriteInt(FLastTimeRun);
+  WriteRect(AWriter, FDrawRect);
+  WriteRect(AWriter, FClientRect);
+  AWriter.WriteFloat(FOrigin.X);
+  AWriter.WriteFloat(FOrigin.Y);
+  AWriter.WriteInt(FFontNum);
+  AWriter.WriteInt(FTimeLine);
+  AWriter.WriteFloat(FXOffset);
+  AWriter.WriteFloat(FYOffset);
+  AWriter.WriteInt(FCursor);
+  AWriter.WriteFloat(FForceAspectWidth);
+  AWriter.WriteFloat(FForceAspectHeight);
+  AWriter.WriteFloat(FMatScaleX);
+  AWriter.WriteFloat(FMatScaleY);
+  AWriter.WriteFloat(FBorderSize);
+  AWriter.WriteInt(FTextAlign);
+  AWriter.WriteFloat(FTextAlignX);
+  AWriter.WriteFloat(FTextAlignY);
+  AWriter.WriteInt(FTextShadow);
+  AWriter.WriteFloat(FShear.X);
+  AWriter.WriteFloat(FShear.Y);
+  AWriter.WriteString(FName);
+  AWriter.WriteString(FComment);
+  WriteVar(AWriter, FNoTime);
+  WriteVar(AWriter, FVisible);
+  WriteVar(AWriter, FRect);
+  WriteVar(AWriter, FBackColor);
+  WriteVar(AWriter, FMatColor);
+  WriteVar(AWriter, FForeColor);
+  WriteVar(AWriter, FHoverColor);
+  WriteVar(AWriter, FBorderColor);
+  WriteVar(AWriter, FTextScale);
+  WriteVar(AWriter, FNoEvents);
+  WriteVar(AWriter, FRotate);
+  WriteVar(AWriter, FText);
+  WriteVar(AWriter, FBackgroundName);
+  WriteVar(AWriter, FHideCursor);
+  for LIndex := 0 to FDefinedVars.Count - 1 do
+    WriteVar(AWriter, FDefinedVars[LIndex]);
+  WriteRect(AWriter, FTextRect);
+  AWriter.WriteInt(ChildIdOf(FFocusedChild));
+  AWriter.WriteInt(ChildIdOf(FCaptureChild));
+  AWriter.WriteInt(ChildIdOf(FOverChild));
+  for LIndex := 0 to FTimeLineEvents.Count - 1 do
+  begin
+    AWriter.WriteBool(FTimeLineEvents[LIndex].Pending);
+    AWriter.WriteInt(FTimeLineEvents[LIndex].Time);
+  end;
+  AWriter.WriteInt(FTransitions.Count);
+  for LIndex := 0 to FTransitions.Count - 1 do
+    WriteTransition(AWriter, FTransitions[LIndex]);
+  AWriter.WriteInt(FRegList.Count);
+  for LIndex := 0 to FRegList.Count - 1 do
+    AWriter.WriteBool(FRegList[LIndex].Enabled);
+  for LIndex := 0 to FDrawWindows.Count - 1 do
+    FDrawWindows[LIndex].Window.WriteToSaveGame(AWriter);
+end;
+
+procedure TGuiWindow.ReadFromSaveGame(const AReader: TGuiSaveReader);
+var
+  LIndex, LCount, LKind: Integer;
+  LPending: TGuiPendingTransition;
+  LRegCount: Integer;
+begin
+  FTransitions.Clear;
+  for LIndex := 0 to FPendingTransitions.Count - 1 do
+    FPendingTransitions[LIndex].Interpolator.Free;
+  FPendingTransitions.Clear;
+  FCommand := AReader.ReadString;
+  FActualX := AReader.ReadFloat;
+  FActualY := AReader.ReadFloat;
+  FChildId := AReader.ReadInt;
+  FFlags := Cardinal(AReader.ReadInt);
+  FLastTimeRun := AReader.ReadInt;
+  FDrawRect := ReadRect(AReader);
+  FClientRect := ReadRect(AReader);
+  FOrigin.X := AReader.ReadFloat;
+  FOrigin.Y := AReader.ReadFloat;
+  FFontNum := AReader.ReadInt;
+  FTimeLine := AReader.ReadInt;
+  FXOffset := AReader.ReadFloat;
+  FYOffset := AReader.ReadFloat;
+  FCursor := AReader.ReadInt;
+  FForceAspectWidth := AReader.ReadFloat;
+  FForceAspectHeight := AReader.ReadFloat;
+  FMatScaleX := AReader.ReadFloat;
+  FMatScaleY := AReader.ReadFloat;
+  FBorderSize := AReader.ReadFloat;
+  FTextAlign := AReader.ReadInt;
+  FTextAlignX := AReader.ReadFloat;
+  FTextAlignY := AReader.ReadFloat;
+  FTextShadow := AReader.ReadInt;
+  FShear.X := AReader.ReadFloat;
+  FShear.Y := AReader.ReadFloat;
+  FName := AReader.ReadString;
+  FComment := AReader.ReadString;
+  ReadVar(AReader, FNoTime);
+  ReadVar(AReader, FVisible);
+  ReadVar(AReader, FRect);
+  ReadVar(AReader, FBackColor);
+  ReadVar(AReader, FMatColor);
+  ReadVar(AReader, FForeColor);
+  ReadVar(AReader, FHoverColor);
+  ReadVar(AReader, FBorderColor);
+  ReadVar(AReader, FTextScale);
+  ReadVar(AReader, FNoEvents);
+  ReadVar(AReader, FRotate);
+  ReadVar(AReader, FText);
+  ReadVar(AReader, FBackgroundName);
+  ReadVar(AReader, FHideCursor);
+  for LIndex := 0 to FDefinedVars.Count - 1 do
+    ReadVar(AReader, FDefinedVars[LIndex]);
+  FTextRect := ReadRect(AReader);
+  FFocusedChild := ChildById(AReader.ReadInt);
+  FCaptureChild := ChildById(AReader.ReadInt);
+  FOverChild := ChildById(AReader.ReadInt);
+  for LIndex := 0 to FTimeLineEvents.Count - 1 do
+  begin
+    FTimeLineEvents[LIndex].Pending := AReader.ReadBool;
+    FTimeLineEvents[LIndex].Time := AReader.ReadInt;
+  end;
+  LCount := AReader.ReadInt;
+  if (LCount < 0) or (LCount > 100000) then
+    raise EGuiSaveException.CreateFmt('the save game has %d transitions in a window', [LCount]);
+  for LIndex := 0 to LCount - 1 do
+  begin
+    LKind := AReader.ReadInt;
+    if LKind <> -1 then
+    begin
+      if (LKind < 0) or (LKind >= TRANSITION_KINDS) then
+        raise EGuiSaveException.CreateFmt('the save game has a transition of kind %d', [LKind]);
+      LPending.Kind := LKind;
+      LPending.WindowName := AReader.ReadString;
+      LPending.Interpolator := TGuiInterpolator.Create;
+      LPending.Interpolator.ReadFromSaveGame(AReader);
+      if LPending.WindowName <> '' then
+        FPendingTransitions.Add(LPending)
+      else
+        LPending.Interpolator.Free;
+    end;
+  end;
+  LRegCount := AReader.ReadInt;
+  if LRegCount <> FRegList.Count then
+    raise EGuiSaveException.CreateFmt('the save game has %d registers in a window of %d', [LRegCount, FRegList.Count]);
+  for LIndex := 0 to LRegCount - 1 do
+    FRegList[LIndex].Enabled := AReader.ReadBool;
+  for LIndex := 0 to FDrawWindows.Count - 1 do
+    FDrawWindows[LIndex].Window.ReadFromSaveGame(AReader);
+  if (FFlags and WIN_DESKTOP) <> 0 then
+    FixupTransitions;
+end;
+
+procedure TGuiWindow.FixupTransitions;
+var
+  LIndex: Integer;
+  LOwner: TGuiWindow;
+  LIsSimple: Boolean;
+  LVariable: TGuiWinVar;
+  LTransition: TGuiTransition;
+begin
+  for LIndex := 0 to FPendingTransitions.Count - 1 do
+  begin
+    LOwner := GetDesktopWindow.FindDrawWindow(FPendingTransitions[LIndex].WindowName, LIsSimple);
+    LVariable := nil;
+    if Assigned(LOwner) then
+      LVariable := LOwner.VariableOfKind(FPendingTransitions[LIndex].Kind);
+    if Assigned(LVariable) then
+    begin
+      LTransition := TGuiTransition.Create(LVariable);
+      LTransition.Interpolator.Assign(FPendingTransitions[LIndex].Interpolator);
+      FTransitions.Add(LTransition);
+    end;
+    FPendingTransitions[LIndex].Interpolator.Free;
+  end;
+  FPendingTransitions.Clear;
+  for LIndex := 0 to FChildren.Count - 1 do
+    FChildren[LIndex].FixupTransitions;
 end;
 
 end.

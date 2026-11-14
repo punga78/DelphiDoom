@@ -49,6 +49,7 @@ type
     Cvars: IGuiCvars;
     /// <summary>idKeyInput::IsDown (shift and control); nil: no key is down</summary>
     Keys: IGuiKeyState;
+    KeyBindings: IGuiKeyBindings;
     /// <summary>The command the last HandleEvent returned (idUserInterfaceLocal::GetReturnCmd)</summary>
     ReturnCommand: AnsiString;
     /// <summary>The statics actionDownRun and actionUpRun of idWindow::HandleEvent</summary>

@@ -75,6 +75,12 @@ type
     class function Make(const AType, AValue, AValue2: Integer): TGuiSysEvent; static;
   end;
 
+  /// <summary>idKeyInput::KeysFromBinding: the names of the keys bound to a command (for the bind windows)</summary>
+  IGuiKeyBindings = interface
+    ['{4C8E2B71-9D35-4F0A-B6E4-71A3D05C8F42}']
+    function KeysFromBinding(const ABinding: AnsiString): AnsiString;
+  end;
+
   /// <summary>idKeyInput::IsDown: which keys are down</summary>
   IGuiKeyState = interface
     ['{4C8E2B71-9D35-4F0A-B6E4-71A3D05C8F41}']
