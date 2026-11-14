@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{62968330-38E7-5B88-A6B8-41CC9F26CFE1}</ProjectGuid>
         <MainSource>GLDoom32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="GLDoom32_Icon.rc">
+            <Form>GLDoom32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

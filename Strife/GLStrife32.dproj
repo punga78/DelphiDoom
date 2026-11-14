@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{6B8BDE26-5DE3-5812-8E52-65CF0474FA3D}</ProjectGuid>
         <MainSource>GLStrife32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="GLStrife32_Icon.rc">
+            <Form>GLStrife32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -42,6 +42,7 @@
 program Doom32;
 
 {$R *.RES}
+{$R 'Doom32_Icon.res' 'Doom32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

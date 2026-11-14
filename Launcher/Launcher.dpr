@@ -16,6 +16,7 @@ uses
   Launcher_gameproperties in '..\Launcher\Launcher_gameproperties.pas' {GamePropertiesForm};
 
 {$R *.res}
+{$R 'Launcher_Icon.res' 'Launcher_Icon.rc'}
 
 begin
   //I_SetDPIAwareness;

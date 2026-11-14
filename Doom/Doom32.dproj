@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{DCC11692-6767-5980-A9BE-6585127847B4}</ProjectGuid>
         <MainSource>Doom32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Doom32_Icon.rc">
+            <Form>Doom32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

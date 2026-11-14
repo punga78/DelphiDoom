@@ -41,6 +41,7 @@
 program GLStrife32;
 
 {$R *.RES}
+{$R 'GLStrife32_Icon.res' 'GLStrife32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

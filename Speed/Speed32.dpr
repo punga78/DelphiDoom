@@ -16,6 +16,8 @@ program Speed32;
 
 {$APPTYPE CONSOLE}
 
+{$R 'Speed32_Icon.res' 'Speed32_Icon.rc'}
+
 uses
   System.SysUtils,
   DelphiDoom.CommandLine.Intf,

@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{4C9E1B83-7D25-4A60-B3F1-2E8A5D07C196}</ProjectGuid>
         <MainSource>Xcom32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -45,6 +46,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Xcom32_Icon.rc">
+            <Form>Xcom32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

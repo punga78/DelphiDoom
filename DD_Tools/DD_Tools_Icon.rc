@@ -1,0 +1,3 @@
+// Icon of DD_Tools.exe (resource MAINICON, read by LoadIcon and by the shell).
+// Referenced by {$R} in DD_Tools.dpr and compiled by MSBuild (RcCompile item in DD_Tools.dproj): no generated .res is versioned.
+MAINICON ICON "../Base/base.ico"

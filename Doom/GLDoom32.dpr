@@ -41,6 +41,7 @@
 program GLDoom32;
 
 {$R *.RES}
+{$R 'GLDoom32_Icon.res' 'GLDoom32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

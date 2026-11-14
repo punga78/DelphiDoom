@@ -10,6 +10,8 @@ program DD_Tools;
 
 {$DESCRIPTION 'DelphiDoom Tools'}
 
+{$R 'DD_Tools_Icon.res' 'DD_Tools_Icon.rc'}
+
 uses
   DelphiDoom.Platform.Types in '..\Libs\Platform\DelphiDoom.Platform.Types.pas',
   DelphiDoom.Platform.DataFolder.Intf in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Intf.pas',

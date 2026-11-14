@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{87AE92B2-F9C2-5713-8C2F-D166DC380C8B}</ProjectGuid>
         <MainSource>ddc_strife.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -55,6 +56,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="ddc_strife_Icon.rc">
+            <Form>ddc_strife_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

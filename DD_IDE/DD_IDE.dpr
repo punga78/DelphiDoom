@@ -134,6 +134,7 @@ uses
   frm_sprites in '..\DD_IDE\frm_sprites.pas' {Frame_Sprites: TFrame};
 
 {$R *.res}
+{$R 'DD_IDE_Icon.res' 'DD_IDE_Icon.rc'}
 
 var
   CommandLineProject: string;

@@ -51,6 +51,7 @@
 library ddc_heretic;
 
 {$R *.RES}
+{$R 'ddc_heretic_Icon.res' 'ddc_heretic_Icon.rc'}
 
 uses
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',

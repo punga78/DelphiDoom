@@ -42,6 +42,7 @@
 program SpeedHaste32;
 
 {$R *.RES}
+{$R 'SpeedHaste32_Icon.res' 'SpeedHaste32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

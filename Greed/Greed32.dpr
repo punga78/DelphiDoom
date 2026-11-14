@@ -17,6 +17,8 @@ program Greed32;
 
 {$APPTYPE CONSOLE}
 
+{$R 'Greed32_Icon.res' 'Greed32_Icon.rc'}
+
 uses
   System.SysUtils, System.IOUtils,
   DelphiDoom.CommandLine.Intf,

@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{C19CD811-25CB-55A7-83CC-5861AB5B4ACA}</ProjectGuid>
         <MainSource>Launcher.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -52,6 +53,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Launcher_Icon.rc">
+            <Form>Launcher_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

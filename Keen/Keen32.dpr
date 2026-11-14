@@ -14,6 +14,8 @@ program Keen32;
 
 {$APPTYPE CONSOLE}
 
+{$R 'Keen32_Icon.res' 'Keen32_Icon.rc'}
+
 uses
   System.SysUtils,
   DelphiDoom.CommandLine.Intf,

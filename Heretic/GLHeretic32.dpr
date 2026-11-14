@@ -43,6 +43,7 @@
 program GLHeretic32;
 
 {$R *.RES}
+{$R 'GLHeretic32_Icon.res' 'GLHeretic32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

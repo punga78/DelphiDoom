@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{5E1D0A77-3C42-4B19-9F60-8A2B7D4C1E35}</ProjectGuid>
         <MainSource>SpeedHaste32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="SpeedHaste32_Icon.rc">
+            <Form>SpeedHaste32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

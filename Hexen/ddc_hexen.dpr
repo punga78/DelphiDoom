@@ -47,6 +47,7 @@
 library ddc_hexen;
 
 {$R *.RES}
+{$R 'ddc_hexen_Icon.res' 'ddc_hexen_Icon.rc'}
 
 uses
   v_video in '..\Base\v_video.pas',
