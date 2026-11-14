@@ -2873,8 +2873,12 @@ begin
   p := M_CheckParm('-loadgame');
   if (p <> 0) and (p < myargc - 1) then
   begin
-    sprintf(filename, M_SaveFileName(SAVEGAMENAME) + '%s.SSG', [myargv[p + 1][1]]);
-    G_LoadGame(filename);
+    // A saved game of Strife is a folder for every slot: the same steps as M_LoadSelect of the menu
+    // (the old G_LoadGame of a file name left loadpath empty and a new game started instead)
+    G_WriteSaveName(Ord(myargv[p + 1][1]) - Ord('0'), '');
+    M_ToCurr;
+    filename := M_SafeFilePath(M_SaveFileName(''), M_MakeStrifeSaveDir(Ord(myargv[p + 1][1]) - Ord('0'), ''));
+    G_ReadCurrent(filename);
   end;
 
   if gameaction <> ga_loadgame then

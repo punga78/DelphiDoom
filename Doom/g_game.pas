@@ -126,6 +126,13 @@ procedure G_SaveGame(slot: integer; const description: string);
 
 //==============================================================================
 //
+// G_SaveGameNow
+//
+//==============================================================================
+procedure G_SaveGameNow(slot: integer; const description: string);
+
+//==============================================================================
+//
 // G_CmdSaveGame
 //
 //==============================================================================
@@ -2621,6 +2628,22 @@ begin
 
   G_DoSaveGameInFile(name);
 
+end;
+
+//==============================================================================
+//
+// G_SaveGameNow
+//
+// The save of the test options (-autosave): the game is saved at the start of the
+// next tic, whatever the commands of the players are (a demo or the automatic pilot
+// replace them, so the button of G_SaveGame would be lost).
+//
+//==============================================================================
+procedure G_SaveGameNow(slot: integer; const description: string);
+begin
+  savegameslot := slot;
+  savedescription := description;
+  gameaction := ga_savegame;
 end;
 
 //==============================================================================

@@ -51,6 +51,7 @@ type
     FPilot: IParityPilot;
     FDumped: Boolean;
     FPilotDone: Boolean;
+    FSaved: Boolean;
     procedure Resolve;
     procedure Activate;
     procedure DumpFrame;
@@ -81,6 +82,7 @@ uses
   DelphiDoom.Parity.BitmapWriter,
   DelphiDoom.Parity.Factory,
   DelphiDoom.Parity.OptionsParser,
+  doomdef,
 {$IFDEF HEXEN}
   g_demo,
 {$ENDIF}
@@ -183,6 +185,12 @@ procedure TEngineParity.AfterTick;
 begin
   if FStateSource <> nil then
     FStateSource.Publish(g_game.gametic);
+  // -autosave: the save is done at the start of the next tic, with the state of the end of this one
+  if FOptions.AutoSave and not FSaved and (g_game.gametic >= FOptions.AutoSaveTic) and (gamestate = GS_LEVEL) then
+  begin
+    FSaved := True;
+    G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');
+  end;
 end;
 
 procedure TEngineParity.DumpFrame;
