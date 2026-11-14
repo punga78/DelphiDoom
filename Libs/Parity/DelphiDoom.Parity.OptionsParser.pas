@@ -17,7 +17,7 @@ type
   /// <summary>
   ///   Reads the options of the parity tools from the arguments of the program (the names are not case
   ///   sensitive): -statehash file, -statehash-detail first last, -framehash file, -framedump tic file,
-  ///   -autodemo seed tics, -autosave tic slot, -savelayouts file. What is not one of them is ignored
+  ///   -autodemo seed tics, -autosave tic slot, -savelayouts file, -autoquit tic. What is not one of them is ignored
   /// </summary>
   TParityOptionsParser = class
   strict private
@@ -82,6 +82,7 @@ var
 begin
   Result := Default(TParityOptions);
   Result.FrameDumpTic := -1;
+  Result.AutoQuitTic := -1;
 
   LIndex := FindName(AArguments, '-statehash');
   if LIndex >= 0 then
@@ -137,6 +138,14 @@ begin
   LIndex := FindName(AArguments, '-savelayouts');
   if LIndex >= 0 then
     Result.SaveLayoutsFile := ReadText(AArguments, LIndex + 1, '-savelayouts');
+
+  LIndex := FindName(AArguments, '-autoquit');
+  if LIndex >= 0 then
+  begin
+    Result.AutoQuitTic := Integer(ReadInteger(AArguments, LIndex + 1, '-autoquit'));
+    if Result.AutoQuitTic < 0 then
+      raise EParityException.CreateFmt(SWrongNumber, ['-autoquit', IntToStr(Result.AutoQuitTic)]);
+  end;
 end;
 
 end.

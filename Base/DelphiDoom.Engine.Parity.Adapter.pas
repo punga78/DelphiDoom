@@ -209,6 +209,13 @@ begin
     FSaved := True;
     G_SaveGameNow(FOptions.AutoSaveSlot, 'AUTOSAVE');
   end;
+  // -autoquit: a run with no pilot (a game loaded with -loadgame) ends by itself
+  if (FOptions.AutoQuitTic >= 0) and (g_game.gametic >= FOptions.AutoQuitTic) and not FPilotDone then
+  begin
+    FPilotDone := True;
+    Flush;
+    I_Quit;
+  end;
 end;
 
 procedure TEngineParity.DumpFrame;

@@ -64,6 +64,8 @@ type
     procedure UnTicDiSalvataggioNegativoDovrebbeDareEccezione;
     [Test]
     procedure DovrebbeLeggereIlFileDeiLayoutDeiSalvataggi;
+    [Test]
+    procedure DovrebbeLeggereIlTicDiUscita;
   end;
 
 implementation
@@ -281,6 +283,22 @@ begin
   Assert.IsTrue(LOptions.IsActive);
   Assert.AreEqual('layouts.txt', LOptions.SaveLayoutsFile);
   Assert.AreEqual('', TParityOptionsParser.Parse(nil).SaveLayoutsFile);
+end;
+
+procedure TTestParityOptionsParser.DovrebbeLeggereIlTicDiUscita;
+var
+  LOptions: TParityOptions;
+begin
+  LOptions := TParityOptionsParser.Parse(TArray<string>.Create('-autoquit', '300'));
+  Assert.IsTrue(LOptions.IsActive);
+  Assert.AreEqual(300, LOptions.AutoQuitTic);
+  Assert.AreEqual(-1, TParityOptionsParser.Parse(nil).AutoQuitTic);
+  Assert.WillRaise(
+    procedure
+    begin
+      TParityOptionsParser.Parse(TArray<string>.Create('-autoquit', '-5'));
+    end,
+    EParityException);
 end;
 
 end.
