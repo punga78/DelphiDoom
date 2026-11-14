@@ -64,6 +64,9 @@ var
   radixlevelplayers: array[0..MAXPLAYERS - 1] of radixlevelplayer_t;
   levelhassecondaryobjective: boolean = false; // JVAL: 20200314 - Radix secondary objective
   totalradixkills: integer = 0; // JVAL: 20200429 - The enemies of the map of Radix
+  // The level (1 based) that the action that ended this one named (E1M9 names the fifth);
+  // 0 when the next level is the one the engine goes to
+  radixnamedlevel: integer = 0;
 
 const
   // the places of the lumps of Radix after the lumps of a map of Doom (ML_R???? of Rad-X)
@@ -328,8 +331,6 @@ end;
 //==============================================================================
 //
 // RX_ExitLevel
-// Missing: the level that the action names (the way back from the secret
-// level) needs G_DoCompleted, that knows only the levels of Doom
 //
 //==============================================================================
 procedure RX_ExitLevel(const nextlevel: integer);
@@ -347,8 +348,9 @@ begin
       G_SecretExitLevel;
     rekNamedLevel:
       begin
-        I_Warning('RX_ExitLevel(): The level asks for the level %d, the engine goes to its own next level'#13#10,
-          [ex.Map]);
+        // G_DoCompleted knows only the levels of Doom (from the secret level of the first
+        // episode it goes back to the fourth): the debriefing puts this level in its place
+        radixnamedlevel := ex.Map;
         G_ExitLevel;
       end;
   else
@@ -519,6 +521,7 @@ begin
   levelhassecondaryobjective := radixlogic.HasActionOfKind(RADIX_ACTION_SECONDARY_OBJECTIVE);
   ZeroMemory(@radixlevelplayers, SizeOf(radixlevelplayers));
   radixplayer := consoleplayer;
+  radixnamedlevel := 0;
 
   RX_MarkMissileWalls;
   RX_InitWalls;

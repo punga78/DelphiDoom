@@ -39,7 +39,8 @@ uses
   DelphiDoom.Engine.Radix.Edition.Intf, DelphiDoom.Engine.Radix.DataConverter,
   DelphiDoom.Engine.Radix.LumpAliases,
   DelphiDoom.Radix.ActorProperties,
-  w_wad, st_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic;
+  w_wad, st_stuff, wi_stuff, radix_version, radix_map_extra, radix_hud, radix_pickups, radix_logic,
+  radix_intermission;
 
 function ComposeRadixActorProperties(const ALog: ILog): IActorDefExtraProperties;
 var
@@ -93,6 +94,8 @@ begin
 
   // the cockpit of the craft in the place of the status bar of Doom
   ST_ConfigureReplacement(RX_HudDrawer);
+  // the debriefing in the place of the intermission of Doom (RADIX.DAT has none of its pictures)
+  WI_ConfigureReplacement(RX_Intermission_Start, RX_Intermission_Ticker, RX_Intermission_Drawer);
 end;
 
 end.

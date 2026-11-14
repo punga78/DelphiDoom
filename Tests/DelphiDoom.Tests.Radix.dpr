@@ -104,6 +104,7 @@ uses
   DelphiDoom.Radix.Hud.Gauges in '..\Libs\Radix\DelphiDoom.Radix.Hud.Gauges.pas',
   DelphiDoom.Tests.Radix.HudGauges in 'Source\DelphiDoom.Tests.Radix.HudGauges.pas',
   DelphiDoom.Radix.Flight.Model in '..\Libs\Radix\DelphiDoom.Radix.Flight.Model.pas',
+  DelphiDoom.Radix.Debriefing in '..\Libs\Radix\DelphiDoom.Radix.Debriefing.pas',
   DelphiDoom.Tests.Radix.FlightModel in 'Source\DelphiDoom.Tests.Radix.FlightModel.pas',
   DelphiDoom.ActorDef.Types in '..\Libs\ActorDef\DelphiDoom.ActorDef.Types.pas',
   DelphiDoom.Radix.ActorProperties in '..\Libs\Radix\DelphiDoom.Radix.ActorProperties.pas',
@@ -123,6 +124,7 @@ uses
   DelphiDoom.Tests.Radix.TriggerGrid in 'Source\DelphiDoom.Tests.Radix.TriggerGrid.pas',
   DelphiDoom.Tests.Radix.TriggerLogic in 'Source\DelphiDoom.Tests.Radix.TriggerLogic.pas',
   DelphiDoom.Tests.Radix.ActionRules in 'Source\DelphiDoom.Tests.Radix.ActionRules.pas',
+  DelphiDoom.Tests.Radix.Debriefing in 'Source\DelphiDoom.Tests.Radix.Debriefing.pas',
   DelphiDoom.Tests.Radix.Translator in 'Source\DelphiDoom.Tests.Radix.Translator.pas';
 
 var
