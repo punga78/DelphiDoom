@@ -302,6 +302,141 @@ begin
   end;
 end;
 
+procedure SortValues(var AValues: TArray<Double>);
+var
+  i, j: Integer;
+  v: Double;
+begin
+  for i := 1 to High(AValues) do
+  begin
+    v := AValues[i];
+    j := i - 1;
+    while (j >= 0) and (AValues[j] > v) do
+    begin
+      AValues[j + 1] := AValues[j];
+      Dec(j);
+    end;
+    AValues[j + 1] := v;
+  end;
+end;
+
+// minimum, median, quartiles and dispersion (max - min) / min of a series, as Tools\Misura-Coppie.ps1
+procedure PrintSeries(const AName: string; const AValues: TArray<Double>; const AFormat: string;
+  out AMin, AMedian, ADispersion: Double);
+var
+  v: TArray<Double>;
+  n: Integer;
+begin
+  v := Copy(AValues);
+  SortValues(v);
+  n := Length(v);
+  AMin := v[0];
+  if Odd(n) then
+    AMedian := v[n div 2]
+  else
+    AMedian := (v[n div 2 - 1] + v[n div 2]) / 2;
+  ADispersion := (v[n - 1] - v[0]) / v[0] * 100;
+  Writeln(Format('%s min ' + AFormat + '  q1 ' + AFormat + '  mediana ' + AFormat + '  q3 ' + AFormat + '  max ' +
+    AFormat + '  dispersione %.2f%%', [AName, v[0], v[n div 4], AMedian, v[(3 * n) div 4], v[n - 1], ADispersion]));
+end;
+
+// Misura a coppie (il criterio di Tools\Misura-Coppie.ps1): a ogni ripetizione l'originale e la libreria fanno tutti gli
+// scenari, in ordine invertito a ogni coppia; il tempo e' quello di MoveSprites da solo (Think), per tic. La misura
+// e' rifiutata se la dispersione dell'originale supera AMaxDispersion
+function Measure(ARepetitions, AFirst, ALast: Integer; AMaxDispersion, AThreshold: Double): Integer;
+var
+  Original: TOriginalRunner;
+  Lib: TLibrarySpriteRunner;
+  Hashes: TList<Cardinal>;
+  Scenarios: TArray<TSpriteScenario>;
+  Scenario: TSpriteScenario;
+  OriginalTimes, LibTimes, Ratios: TArray<Double>;
+  Index, Repetition, Side, Tics, Count: Integer;
+  Frequency, Start, Stop: Int64;
+  OriginalMin, OriginalMedian, OriginalDispersion, LibMin, LibMedian, LibDispersion, RatioMin, RatioMedian,
+    RatioDispersion, Scrub: Double;
+begin
+  Original := TOriginalRunner.Create;
+  Lib := TLibrarySpriteRunner.Create;
+  Hashes := TList<Cardinal>.Create;
+  Tics := 0;
+  Count := 0;
+  SetLength(Scenarios, ALast - AFirst + 1);
+  // the scenarios on which the original does not crash; this pass also warms both sides up
+  for Index := AFirst to ALast do
+  begin
+    Scenario := BuildSpriteScenario(Index);
+    Hashes.Clear;
+    try
+      Original.Run(Scenario, Hashes);
+    except
+      Continue;
+    end;
+    Tics := Tics + Hashes.Count;
+    Hashes.Clear;
+    Lib.Run(Scenario, Hashes);
+    Scenarios[Count] := Scenario;
+    Inc(Count);
+  end;
+  SetLength(Scenarios, Count);
+  SetLength(OriginalTimes, ARepetitions);
+  SetLength(LibTimes, ARepetitions);
+  SetLength(Ratios, ARepetitions);
+  for Repetition := 0 to ARepetitions - 1 do
+  begin
+    for Side := 0 to 1 do
+      if (Side = 0) <> Odd(Repetition) then
+      begin
+        Original.ResetThinkTime;
+        for Index := 0 to Count - 1 do
+        begin
+          Hashes.Clear;
+          Original.Run(Scenarios[Index], Hashes);
+        end;
+        OriginalTimes[Repetition] := Original.ThinkMicroseconds / Tics;
+      end
+      else
+      begin
+        Lib.ResetThinkTime;
+        for Index := 0 to Count - 1 do
+        begin
+          Hashes.Clear;
+          Lib.Run(Scenarios[Index], Hashes);
+        end;
+        LibTimes[Repetition] := Lib.ThinkMicroseconds / Tics;
+      end;
+    Ratios[Repetition] := LibTimes[Repetition] / OriginalTimes[Repetition];
+  end;
+  // the Think of the original also clears 16 KB of stack (ScrubStack): how much of its time that is
+  QueryPerformanceFrequency(Frequency);
+  QueryPerformanceCounter(Start);
+  for Index := 1 to 100000 do
+    ScrubStack;
+  QueryPerformanceCounter(Stop);
+  Scrub := (Stop - Start) * 1000000 / Frequency / 100000;
+  Writeln(Format('misura a coppie: %d scenari, %d tic, %d coppie; MoveSprites da solo, microsecondi per tic',
+    [Count, Tics, ARepetitions]));
+  PrintSeries('originale:', OriginalTimes, '%.2f', OriginalMin, OriginalMedian, OriginalDispersion);
+  PrintSeries('libreria: ', LibTimes, '%.2f', LibMin, LibMedian, LibDispersion);
+  PrintSeries('rapporto per coppia (libreria/originale):', Ratios, '%.3f', RatioMin, RatioMedian, RatioDispersion);
+  Writeln(Format('rapporto delle mediane %.3f, dei minimi %.3f; ScrubStack (solo nell''originale) %.2f us per tic: ' +
+    'senza, mediane %.3f, minimi %.3f', [LibMedian / OriginalMedian, LibMin / OriginalMin, Scrub,
+    LibMedian / (OriginalMedian - Scrub), LibMin / (OriginalMin - Scrub)]));
+  if OriginalDispersion > AMaxDispersion then
+  begin
+    Writeln(Format('verdetto: misura non affidabile (la dispersione dell''originale, %.2f%%, supera %.1f%%)',
+      [OriginalDispersion, AMaxDispersion]));
+    Exit(3);
+  end;
+  if (LibMedian / OriginalMedian <= 1 + AThreshold / 100) and (LibMin / OriginalMin <= 1 + AThreshold / 100) then
+  begin
+    Writeln(Format('verdetto: entro il %.0f%%', [AThreshold]));
+    Exit(0);
+  end;
+  Writeln(Format('verdetto: oltre il %.0f%%', [AThreshold]));
+  Result := 1;
+end;
+
 var
   GoldenPath: string;
   First, Last, Index, Tic, Line, TotalTics, TotalDifferences, Skipped, Compared: Integer;
@@ -323,6 +458,18 @@ begin
     if Last > SPRITE_SCENARIO_COUNT - 1 then
       Last := SPRITE_SCENARIO_COUNT - 1;
     InitOriginalTables;
+    // SpritesParity misura <coppie> [primo] [ultimo] [dispersione massima %] [soglia %]
+    if GoldenPath = 'misura' then
+    begin
+      FormatSettings := TFormatSettings.Invariant;
+      First := StrToIntDef(ParamStr(3), 0);
+      Last := StrToIntDef(ParamStr(4), SPRITE_SCENARIO_COUNT - 1);
+      if Last > SPRITE_SCENARIO_COUNT - 1 then
+        Last := SPRITE_SCENARIO_COUNT - 1;
+      ExitCode := Measure(StrToIntDef(ParamStr(2), 21), First, Last, StrToFloatDef(ParamStr(5), 3),
+        StrToFloatDef(ParamStr(6), 5));
+      Exit;
+    end;
     Golden := TStringList.Create;
     Golden.Add('# impronte FNV-1a, tic per tic, di sprites.pas ORIGINALE di xGreed sugli scenari di');
     Golden.Add('# DelphiDoom.Tests.Greed.SpriteScenarios (harness Tools\Verifica\175-sprites). A = autoangle2;');

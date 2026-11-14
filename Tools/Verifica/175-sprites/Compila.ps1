@@ -3,10 +3,16 @@
 # di g_delphi.pas con i cambi che Delphi 11 richiede (FormatSettings), fuori dal repository. Gli stub del resto del
 # gioco sono in stubs\ (spawn, utils, raven, modplay, net) e in ..\175-render\stubs (d_disk, d_misc, d_ints ...).
 # Uso: .\Compila.ps1 [-Golden ..\..\..\Tests\Data\Greed\sprites.golden.txt] [-Primo 0] [-Ultimo 47]
+#      .\Compila.ps1 -Misura 31 [-Primo 0] [-Ultimo 63] [-MaxDispersione 3] [-Soglia 5]
+# -Misura N: misura a coppie col criterio di Tools\Misura-Coppie.ps1 (MoveSprites dell'originale e della libreria
+# alternati N volte invertendo l'ordine; minimo, mediana, dispersione, verdetto; esce con 3 se la misura non e' affidabile)
 param(
   [string]$Golden = '',
   [int]$Primo = 0,
   [int]$Ultimo = -1,
+  [int]$Misura = 0,
+  [double]$MaxDispersione = 3,
+  [double]$Soglia = 5,
   [string]$Riferimento = 'C:\Progetti\DelphiDoom\Reference\xGreed'
 )
 $radice = Resolve-Path "$PSScriptRoot\..\..\.."
@@ -23,5 +29,9 @@ if ($LASTEXITCODE -ne 0) { exit 1 }
 if ($Golden -eq '') { $Golden = 'nessuno' }
 if ($Ultimo -lt 0) { $Ultimo = 9999 }
 # attraverso cmd: l'eseguibile ha il sottosistema GUI di xGreed.inc e PowerShell non ne aspetta l'uscita
+if ($Misura -gt 0) {
+  cmd /c "`"$uscita\SpritesParity.exe`" misura $Misura $Primo $Ultimo $MaxDispersione $Soglia"
+  exit $LASTEXITCODE
+}
 cmd /c "`"$uscita\SpritesParity.exe`" `"$Golden`" $Primo $Ultimo"
 exit $LASTEXITCODE
