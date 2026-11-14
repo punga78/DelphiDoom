@@ -51,7 +51,12 @@ uses
   DelphiDoom.Tests.Racing.PathReader in 'Source\DelphiDoom.Tests.Racing.PathReader.pas',
   DelphiDoom.Tests.Racing.CarData in 'Source\DelphiDoom.Tests.Racing.CarData.pas',
   DelphiDoom.Racing.TextFormat in '..\Libs\Racing\DelphiDoom.Racing.TextFormat.pas',
-  DelphiDoom.Tests.Racing.TextFormat in 'Source\DelphiDoom.Tests.Racing.TextFormat.pas';
+  DelphiDoom.Tests.Racing.TextFormat in 'Source\DelphiDoom.Tests.Racing.TextFormat.pas',
+  DelphiDoom.Racing.PlayerEventRelay in '..\Libs\Racing\DelphiDoom.Racing.PlayerEventRelay.pas',
+  DelphiDoom.Racing.RaceController in '..\Libs\Racing\DelphiDoom.Racing.RaceController.pas',
+  DelphiDoom.Tests.Racing.RaceController in 'Source\DelphiDoom.Tests.Racing.RaceController.pas',
+  DelphiDoom.Racing.SaveGameCodec in '..\Libs\Racing\DelphiDoom.Racing.SaveGameCodec.pas',
+  DelphiDoom.Tests.Racing.SaveGameCodec in 'Source\DelphiDoom.Tests.Racing.SaveGameCodec.pas';
 
 var
   Runner: ITestRunner;

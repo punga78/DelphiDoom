@@ -25,8 +25,9 @@ uses
   DelphiDoom.Engine.Level.RadixRules,
 {$ENDIF}
 {$IFDEF SPEED}
-  DelphiDoom.Engine.Speed.DataConverter,
+  DelphiDoom.Engine.Speed.Composition,
   DelphiDoom.Engine.Level.SpeedRules,
+  speed_race,
 {$ENDIF}
   System.SysUtils,
   DelphiDoom.GameData.Aliases,
@@ -837,6 +838,10 @@ function ComposeLevelRules(const ALog: ILog; const AContext: IGameContext;
 var
   LAnimDefs: IEngineAnimDefsLoader;
 {$ENDIF}
+{$IFDEF SPEED}
+var
+  LSpeedRules: TSpeedLevelRules;
+{$ENDIF}
 begin
 {$IFNDEF HEXEN}
   LAnimDefs := TEngineAnimDefsLoader.Create(
@@ -855,8 +860,13 @@ begin
     LAnimDefs, TEngineVanillaNodes.Create(ANodesSource), AContext, ARandom);
 {$IFDEF SPEED}
   // Speed Haste loads a level as Doom does and then reads the track of the race from its lumps
-  Result := TSpeedLevelRules.Create(Result, Result as ILevelGeometryRules,
+  LSpeedRules := TSpeedLevelRules.Create(Result, Result as ILevelGeometryRules,
     Result as ILevelThingRules, ALumps, ALog);
+  // the race is built when the level is loaded and forgotten when the next one starts
+  SH_ConfigureRace(ALog, ARandom);
+  LSpeedRules.OnTrackReady := SH_StartLevel;
+  LSpeedRules.OnLevelCleared := SH_EndLevel;
+  Result := LSpeedRules;
 {$ENDIF}
 {$ELSEIF DEFINED(HERETIC)}
   Result := THereticLevelRules.Create(LAnimDefs, ARandom);
@@ -1736,7 +1746,7 @@ begin
   ComposeRadix(LLog, LLumps, LThingFields, LRandom);
 {$ENDIF}
 {$IFDEF SPEED}
-  W_ConfigureConverter(TEngineSpeedDataConverter.Create(LLog));
+  ComposeSpeed(LLog);
 {$ENDIF}
   TWadReader.Configure(LWadServices);
   TWadWriter.Configure(LWadServices);

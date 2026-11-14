@@ -59,6 +59,8 @@ type
     [Test]
     procedure DovrebbeLeggereSalvaECaricaConLoSlot;
     [Test]
+    procedure DovrebbeLeggereDriveSoloNelGoto;
+    [Test]
     procedure DovrebbeLeggereUnTastoEUnaFotoComeTenuteDiUnTic;
     [Test]
     procedure UnaParolaSconosciutaDovrebbeDareEccezione;
@@ -285,6 +287,18 @@ begin
   Assert.IsTrue(LSteps[3].Command.Afterburner);
   AssertRaises('goto 1 2 bomb', 'bomb');
   AssertRaises('face 1 2 afterburner', 'afterburner');
+end;
+
+procedure TTestParityScriptParser.DovrebbeLeggereDriveSoloNelGoto;
+var
+  LSteps: TArray<TParityScriptStep>;
+begin
+  LSteps := TParityScriptParser.Parse('goto 1 2'#10'goto 3 4 drive speed 20');
+  Assert.IsFalse(LSteps[0].Drive);
+  Assert.IsTrue(LSteps[1].Drive);
+  Assert.AreEqual(20, LSteps[1].Command.Forward);
+  AssertRaises('hold 5 drive', 'drive');
+  AssertRaises('face 1 2 drive', 'drive');
 end;
 
 procedure TTestParityScriptParser.DovrebbeLeggereSalvaECaricaConLoSlot;

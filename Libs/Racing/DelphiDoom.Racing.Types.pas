@@ -88,6 +88,9 @@ type
   /// <summary>The kinds of particle that a car leaves behind it</summary>
   TRacingParticleKind = (Spark, Smoke, GrassDirt, Dirt, SandDirt);
 
+  /// <summary>The steps of the start of a race: the engines, the lights 3, 2, 1 and go</summary>
+  TRacingCountdownStep = (Engines, Three, Two, One, Go);
+
   /// <summary>One car of the game (the old carinfo_t)</summary>
   TRacingCarInfo = record
     /// <summary>The textures of the model that the replacement textures take the place of</summary>
@@ -166,6 +169,9 @@ type
     /// <summary>True when a person drives the car (the engine sound of the other cars comes from the car)</summary>
     IsPlayer: Boolean;
   end;
+
+  /// <summary>A pointer to the state of a car</summary>
+  PRacingCarState = ^TRacingCarState;
 
   /// <summary>What a person asks (the fields of the player command that the cars read)</summary>
   TRacingPlayerInput = record

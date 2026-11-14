@@ -46,10 +46,24 @@ interface
 //==============================================================================
 procedure I_InstallCrashLogger;
 
+//==============================================================================
+//
+// I_ReportMainException
+// For the "except" of the main loop of a program (the try ... except around DoomMain): writes
+// crash.txt with the class, the message and the address of the exception that is being handled
+// (the unhandled exception filter never sees it) and sets the exit code to 1. At 32 and at 64 bit
+//
+//==============================================================================
+procedure I_ReportMainException;
+
 implementation
 
 uses
-  DelphiDoom.EngineSystem.WindowsCrashLogger;
+  System.SysUtils,
+  System.Classes,
+  Winapi.Windows,
+  DelphiDoom.EngineSystem.WindowsCrashLogger,
+  DelphiDoom.EngineSystem.MainExceptionReport;
 
 //==============================================================================
 //
@@ -59,6 +73,46 @@ uses
 procedure I_InstallCrashLogger;
 begin
   TWindowsCrashLogger.Install;
+end;
+
+//==============================================================================
+//
+// I_ReportMainException
+//
+//==============================================================================
+procedure I_ReportMainException;
+var
+  LObject: TObject;
+  LClass, LMessage, LPath: string;
+  LText: TBytes;
+  LStream: TFileStream;
+begin
+  LObject := ExceptObject;
+  LClass := '';
+  LMessage := '';
+  if LObject is Exception then
+  begin
+    LClass := LObject.ClassName;
+    LMessage := Exception(LObject).Message;
+  end
+  else if LObject <> nil then
+    LClass := LObject.ClassName;
+  LText := TEncoding.ANSI.GetBytes(TMainExceptionReport.Build(LClass, LMessage, NativeUInt(ExceptAddr),
+    NativeUInt(HInstance)));
+  LPath := ExtractFilePath(ParamStr(0)) + 'crash.txt';
+  try
+    LStream := TFileStream.Create(LPath, fmCreate);
+    try
+      LStream.WriteBuffer(LText[0], Length(LText));
+    finally
+      LStream.Free;
+    end;
+  except
+    on EFCreateError do
+      // the folder of the program cannot be written: the exit code still tells
+      ;
+  end;
+  ExitCode := TMainExceptionReport.ExitCode;
 end;
 
 end.

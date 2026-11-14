@@ -76,7 +76,17 @@ uses
   DelphiDoom.Tests.Speed.DoomFontAliases in 'Source\DelphiDoom.Tests.Speed.DoomFontAliases.pas',
   DelphiDoom.Tests.Speed.EngineDataConverter in 'Source\DelphiDoom.Tests.Speed.EngineDataConverter.pas',
   DelphiDoom.Speed.MapInfoReader in '..\Libs\Speed\DelphiDoom.Speed.MapInfoReader.pas',
-  DelphiDoom.Tests.Speed.MapInfoReader in 'Source\DelphiDoom.Tests.Speed.MapInfoReader.pas';
+  DelphiDoom.Tests.Speed.MapInfoReader in 'Source\DelphiDoom.Tests.Speed.MapInfoReader.pas',
+  DelphiDoom.Speed.TriangleRasterizer in '..\Libs\Speed\DelphiDoom.Speed.TriangleRasterizer.pas',
+  DelphiDoom.Speed.CarSpriteRenderer in '..\Libs\Speed\DelphiDoom.Speed.CarSpriteRenderer.pas',
+  DelphiDoom.Tests.Speed.CarSpriteRenderer in 'Source\DelphiDoom.Tests.Speed.CarSpriteRenderer.pas',
+  DelphiDoom.Speed.ActorDefinitions in '..\Libs\Speed\DelphiDoom.Speed.ActorDefinitions.pas',
+  DelphiDoom.Speed.DoomPictureAliases in '..\Libs\Speed\DelphiDoom.Speed.DoomPictureAliases.pas',
+  DelphiDoom.Speed.CarSpriteBuilder in '..\Libs\Speed\DelphiDoom.Speed.CarSpriteBuilder.pas',
+  DelphiDoom.Tests.Speed.ActorDefinitions in 'Source\DelphiDoom.Tests.Speed.ActorDefinitions.pas',
+  DelphiDoom.Speed.SkyTextures in '..\Libs\Speed\DelphiDoom.Speed.SkyTextures.pas',
+  DelphiDoom.Speed.UmapInfoBuilder in '..\Libs\Speed\DelphiDoom.Speed.UmapInfoBuilder.pas',
+  DelphiDoom.Tests.Speed.SkyTextures in 'Source\DelphiDoom.Tests.Speed.SkyTextures.pas';
 
 var
   Runner: ITestRunner;

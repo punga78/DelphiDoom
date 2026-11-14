@@ -222,6 +222,7 @@ uses
   DelphiDoom.EngineSystem.WindowsCrashMemory in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.WindowsCrashMemory.pas',
   DelphiDoom.EngineSystem.FileCrashSink in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.FileCrashSink.pas',
   DelphiDoom.EngineSystem.WindowsCrashLogger in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.WindowsCrashLogger.pas',
+  DelphiDoom.EngineSystem.MainExceptionReport in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.MainExceptionReport.pas',
   DelphiDoom.EngineSystem.Factory in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.Factory.pas',
   DelphiDoom.Engine.System.ShutdownPlan in '..\Base\DelphiDoom.Engine.System.ShutdownPlan.pas',
   DelphiDoom.Engine.System.FatalErrorSteps in '..\Base\DelphiDoom.Engine.System.FatalErrorSteps.pas',
@@ -1560,6 +1561,7 @@ begin
   try
     DoomMain;
   except
+    I_ReportMainException;
     I_FlashCachedOutput;
   end;
 

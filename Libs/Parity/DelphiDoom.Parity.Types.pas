@@ -101,6 +101,8 @@ type
     Z: Integer;
     /// <summary>Where the player looks: a binary angle (2^32 = a full turn, 0 = east, counterclockwise)</summary>
     Angle: Cardinal;
+    /// <summary>How fast the player moves, in map units for each tic (fixed point 16.16): a car drives to a speed</summary>
+    Speed: Integer;
     /// <summary>The health of the player (in Radix: the shield)</summary>
     Health: Integer;
     /// <summary>
@@ -160,6 +162,8 @@ type
     /// <summary>skGoto: the height to reach on the way (when HasZ); skClimb: the height to reach</summary>
     Z: Integer;
     HasZ: Boolean;
+    /// <summary>skGoto: keep the throttle on while turning (a car cannot turn on the spot)</summary>
+    Drive: Boolean;
     /// <summary>skGoto: how near the point is "there"</summary>
     Radius: Integer;
   end;
