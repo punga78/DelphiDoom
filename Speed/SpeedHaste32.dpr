@@ -264,6 +264,7 @@ uses
   DelphiDoom.Engine.World.MissileSpawner in '..\Base\DelphiDoom.Engine.World.MissileSpawner.pas',
   DelphiDoom.Engine.World.PlayerSpawner in '..\Base\DelphiDoom.Engine.World.PlayerSpawner.pas',
   DelphiDoom.Engine.World.MapThingSpawner in '..\Base\DelphiDoom.Engine.World.MapThingSpawner.pas',
+  DelphiDoom.Engine.World.HitFloor in '..\Base\DelphiDoom.Engine.World.HitFloor.pas',
   p_mobj_h in '..\Base\p_mobj_h.pas',
   p_plats in '..\Doom\p_plats.pas',
   p_pspr in '..\Doom\p_pspr.pas',

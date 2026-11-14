@@ -266,6 +266,16 @@ $Expansions = @(
      Heretic = 'if mobj.flags2_ex and MF2_EX_FRIEND = 0 then mo.flags2_ex := mo.flags2_ex and not MF2_EX_FRIEND else mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND;'
      Strife = 'if mthing.options and MTF_STAND <> 0 then mo.flags := mo.flags or MF_STAND; if mthing.options and MTF_ALLY <> 0 then mo.flags := mo.flags or MF_ALLY; if mthing.options and MTF_FRIEND <> 0 then mo.flags2_ex := mo.flags2_ex or MF2_EX_FRIEND; if mthing.options and MTF_TRANSLUCENT <> 0 then mo.flags := mo.flags or MF_SHADOW; if mthing.options and MTF_MVIS <> 0 then mo.flags := mo.flags or MF_MVIS;' }
   @{ F = 'TMobjGameRules.NightmareRespawn(mobj);'; D = 'P_NightmareRespawn(mobj);' }
+  # --- P_SetMobjStateNF (Heretic, Hexen: el metodo chiama P_SetMobjStateOnce di Base\p_mobj.pas) ---
+  @{ R = 'P_SetMobjStateNF'; F = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; begin result := P_SetMobjStateOnce(mobj, state); end;'
+     Doom = $null; Strife = ''; Heretic = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; var st: Pstate_t; begin <<S:P_SetMobjStateOnce>> end;'
+     Hexen = 'function P_SetMobjStateNF(mobj: Pmobj_t; state: statenum_t): boolean; var st: Pstate_t; begin <<S:P_SetMobjStateOnce>> end;' }
+  # --- P_HitFloor (Doom, Strife: Base\DelphiDoom.Engine.World.HitFloor.pas; Heretic e Hexen sono un metodo) ---
+  $hfVars = 'var mo: Pmobj_t; sec: Psector_t; z: fixed_t; ss: Psubsector_t; begin'
+  @{ R = 'P_HitFloor'; F = "class function TMobjHitFloor.Hit(thing: Pmobj_t): integer; $hfVars"; D = "function P_HitFloor(thing: Pmobj_t): integer; $hfVars" }
+  @{ R = 'P_HitFloor'; F = 'if TMobjGameRules.HitFloorIgnoredByVersion then exit;'; Doom = 'if G_PlayingEngineVersion <= VERSION114 then exit;'; Strife = '' }
+  @{ R = 'P_HitFloor'; F = 'TMobjGameRules.NukageSplashZ(z)'; Doom = 'z'; Strife = 'ONFLOORZ'; All = $true }
+  @{ R = 'P_HitFloor'; F = 'TMobjGameRules.NukageSplashSound'; Doom = 'Ord(sfx_sgloo2)'; Strife = 'Ord(sfx_sgloop)' }
   # --- P_SpawnMapThing (Doom, Heretic, Strife: Base\DelphiDoom.Engine.World.MapThingSpawner.pas; Hexen e' un metodo) ---
   $mtHead = 'function P_SpawnMapThing(mthing: Pmapthing_t; uthing: Pextrathing_t): Pmobj_t; var i: integer; bit: integer; x: fixed_t; y: fixed_t; z: fixed_t;'
   $mtTail = 'msec: Psector_t; musinfoparam: integer; begin'
@@ -318,13 +328,13 @@ $NotTextual = @{
 $Methods = @{
   'Hexen|P_NightmareRespawn' = 'NightmareRespawn'; 'Hexen|P_SpawnPlayer' = 'SpawnPlayer'; 'Hexen|P_SpawnMapThing' = 'SpawnMapThing'
   'P_SpawnPuff' = 'SpawnPuff'; 'Hexen|P_SpawnMissile' = 'SpawnMissile'; 'Hexen|P_SpawnMissileXYZ' = 'SpawnMissileXYZ'
-  'P_SpawnPlayerMissile' = 'SpawnPlayerMissile'; 'P_HitFloor' = 'HitFloor'
+  'P_SpawnPlayerMissile' = 'SpawnPlayerMissile'; 'Heretic|P_HitFloor' = 'HitFloor'; 'Hexen|P_HitFloor' = 'HitFloor'
   'Heretic|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_SetMobjStateNF' = 'SetMobjStateNF'; 'Hexen|P_CreateTIDList' = 'CreateTIDList'
 }
 # la routine unificata ha un altro nome
-$Alias = @{ 'Doom|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Heretic|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Strife|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Doom|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Heretic|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Strife|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Doom|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Heretic|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Strife|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Doom|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Strife|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
+$Alias = @{ 'Doom|P_HitFloor' = 'TMobjHitFloor.Hit'; 'Strife|P_HitFloor' = 'TMobjHitFloor.Hit'; 'Doom|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Heretic|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Strife|P_SpawnMapThing' = 'TMobjMapThingSpawner.Spawn'; 'Doom|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Heretic|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Strife|P_NightmareRespawn' = 'TMobjRespawner.Respawn'; 'Doom|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Heretic|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Strife|P_SpawnPlayer' = 'TMobjPlayerSpawner.Spawn'; 'Doom|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Heretic|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Strife|P_SpawnMissile' = 'TMobjMissileSpawner.SpawnMissile'; 'Doom|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Strife|P_SpawnMissileXYZ' = 'TMobjMissileSpawner.SpawnMissileXYZ'; 'Heretic|P_SetMobjState' = 'P_DoSetMobjState'; 'Hexen|P_SetMobjState' = 'P_DoSetMobjState'; 'Strife|P_SetMobjState' = 'P_DoSetMobjState' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas', 'Base\DelphiDoom.Engine.World.MissileSpawner.pas', 'Base\DelphiDoom.Engine.World.PlayerSpawner.pas', 'Base\DelphiDoom.Engine.World.MapThingSpawner.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_mobj' -BaseFiles 'Base\p_mobj.pas', 'Base\DelphiDoom.Engine.World.Respawner.pas', 'Base\DelphiDoom.Engine.World.MissileSpawner.pas', 'Base\DelphiDoom.Engine.World.PlayerSpawner.pas', 'Base\DelphiDoom.Engine.World.MapThingSpawner.pas', 'Base\DelphiDoom.Engine.World.HitFloor.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.MobjRules.pas' -Class 'TMobjGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps
+  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Maps $Maps -Extra @{ S = 'Base\p_mobj.pas' }
 exit $bad

@@ -140,8 +140,14 @@ type
     class function SpawnMissileXYZ(x, y, z: fixed_t; source: Pmobj_t; dest: Pmobj_t; _type: integer): Pmobj_t; static;
     /// <summary>P_SpawnPlayerMissile of the game</summary>
     class function SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t; static;
-    /// <summary>P_HitFloor of the game</summary>
+    /// <summary>P_HitFloor of the game (the routine is TMobjHitFloor)</summary>
     class function HitFloor(thing: Pmobj_t): integer; static;
+    /// <summary>P_HitFloor: a demo of the old engine versions has no splashes (Strife has none to protect)</summary>
+    class function HitFloorIgnoredByVersion: boolean; static; inline;
+    /// <summary>P_HitFloor: the height of the nukage splash, where the floor is at z</summary>
+    class function NukageSplashZ(const z: fixed_t): fixed_t; static; inline;
+    /// <summary>P_HitFloor: the sound of the nukage splash</summary>
+    class function NukageSplashSound: integer; static; inline;
     /// <summary>P_XYMovement: the thing has no momentum (a monster thrown at its target stops here); true when there is nothing to move</summary>
     class function StoppedBeforeMoving(mo: Pmobj_t): boolean; static;
     /// <summary>P_XYMovement: the wind of the sector special pushes the thing; gives the special of the sector (0 where the game has no such winds)</summary>
@@ -297,7 +303,8 @@ uses
   DelphiDoom.Engine.World.Respawner,
   DelphiDoom.Engine.World.MissileSpawner,
   DelphiDoom.Engine.World.PlayerSpawner,
-  DelphiDoom.Engine.World.MapThingSpawner;
+  DelphiDoom.Engine.World.MapThingSpawner,
+  DelphiDoom.Engine.World.HitFloor;
 
 //
 // P_XYMovement
@@ -1052,108 +1059,24 @@ end;
 //
 //==============================================================================
 class function TMobjGameRules.HitFloor(thing: Pmobj_t): integer;
-var
-  mo: Pmobj_t;
-  sec: Psector_t;
-  z: fixed_t; // JVAL: 3d Floors
-  ss: Psubsector_t;
 begin
-  result := FLOOR_SOLID;
+  result := TMobjHitFloor.Hit(thing);
+end;
 
-  // don't splash if has MF2_EX_NOHITFLOOR flag
-  if thing.flags2_ex and MF2_EX_NOHITFLOOR <> 0 then
-    exit;
-
-  // Exit if playing old engine demo or in compatibility mode
-  if G_NeedsCompatibilityMode then
-    exit;
-
+class function TMobjGameRules.HitFloorIgnoredByVersion: boolean;
+begin
   // Exit if playing DelphiDoom demo from version 114 or lower
-  if G_PlayingEngineVersion <= VERSION114 then
-    exit;
+  result := G_PlayingEngineVersion <= VERSION114;
+end;
 
-  ss := thing.subsector;
+class function TMobjGameRules.NukageSplashZ(const z: fixed_t): fixed_t;
+begin
+  result := z;
+end;
 
-  if ss.flags and SSF_BRIDGE <> 0 then
-    if G_PlayingEngineVersion >= VERSION204 then
-      exit;
-
-  sec := ss.sector;
-  // don't splash if landing on the edge above water/lava/etc....
-  if thing.floorz <> sec.floorheight then
-    exit;
-
-  if sec.heightsec <> -1 then
-    exit;
-
-  // JVAL: 3d Floors
-  if G_PlayingEngineVersion >= VERSION122 then
-    z := thing.floorz
-  else
-    z := ONFLOORZ;
-
-  case P_GetThingFloorType(thing) of
-    FLOOR_WATER:
-      begin
-      // JVAL
-      // If we record a demo or playing demo (version > 114)
-      // then we force splashes
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASHBASE));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SPLASH));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := 2 * FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_gloop));
-        end;
-        result := FLOOR_WATER;
-        exit;
-      end;
-    FLOOR_LAVA:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_LAVASMOKE));
-          mo.momz := FRACUNIT + (P_Random * 128);
-          S_StartSound(mo, Ord(sfx_burn));
-        end;
-        result := FLOOR_LAVA;
-        exit;
-      end;
-    FLOOR_SLUDGE:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGESPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_SLUDGECHUNK));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_sgloop));
-        end;
-        result := FLOOR_SLUDGE;
-        exit;
-      end;
-    FLOOR_NUKAGE:
-      begin
-        if allowterrainsplashes or demorecording or demoplayback then
-        begin
-          P_SpawnMobj(thing.x, thing.y, z, Ord(MT_NUKAGESPLASH));
-          mo := P_SpawnMobj(thing.x, thing.y, z, Ord(MT_NUKAGECHUNK));
-          mo.target := thing;
-          mo.momx := (P_Random - P_Random) * 256;
-          mo.momy := (P_Random - P_Random) * 256;
-          mo.momz := FRACUNIT + (P_Random * 256);
-          S_StartSound(mo, Ord(sfx_sgloo2));
-        end;
-        result := FLOOR_NUKAGE;
-        exit;
-      end;
-  end;
+class function TMobjGameRules.NukageSplashSound: integer;
+begin
+  result := Ord(sfx_sgloo2);
 end;
 
 
