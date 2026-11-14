@@ -50,6 +50,7 @@
 library ddc_doom;
 
 {$R *.RES}
+{$R 'ddc_doom_Icon.res' 'ddc_doom_Icon.rc'}
 
 uses
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',

@@ -45,6 +45,7 @@
 program Strife32;
 
 {$R *.RES}
+{$R 'Strife32_Icon.res' 'Strife32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

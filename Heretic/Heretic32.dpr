@@ -43,6 +43,7 @@
 program Heretic32;
 
 {$R *.RES}
+{$R 'Heretic32_Icon.res' 'Heretic32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

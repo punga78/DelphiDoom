@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{F36B772B-579D-54C4-9140-B04586BBD62A}</ProjectGuid>
         <MainSource>ddc_hexen.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -55,6 +56,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="ddc_hexen_Icon.rc">
+            <Form>ddc_hexen_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

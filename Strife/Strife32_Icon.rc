@@ -1,0 +1,3 @@
+// Icon of Strife32.exe (resource MAINICON, read by LoadIcon and by the shell).
+// Referenced by {$R} in Strife32.dpr and compiled by MSBuild (RcCompile item in Strife32.dproj): no generated .res is versioned.
+MAINICON ICON "strife.ico"

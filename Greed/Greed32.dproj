@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{6C2B9F05-7D31-4A88-B4E6-1F53A0D9C827}</ProjectGuid>
         <MainSource>Greed32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -45,6 +46,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Greed32_Icon.rc">
+            <Form>Greed32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

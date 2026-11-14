@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{99EB27FC-3EC8-4881-9589-903C7441DCEF}</ProjectGuid>
         <MainSource>DD_Tools.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -53,6 +54,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="DD_Tools_Icon.rc">
+            <Form>DD_Tools_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -42,6 +42,7 @@
 program Radix32;
 
 {$R *.RES}
+{$R 'Radix32_Icon.res' 'Radix32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

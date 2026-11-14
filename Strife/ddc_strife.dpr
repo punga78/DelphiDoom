@@ -53,6 +53,7 @@
 library ddc_strife;
 
 {$R *.RES}
+{$R 'ddc_strife_Icon.res' 'ddc_strife_Icon.rc'}
 
 uses
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',

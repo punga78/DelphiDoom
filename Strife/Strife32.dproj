@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{A36D5BDD-0112-52CD-B00A-E220D0EC2291}</ProjectGuid>
         <MainSource>Strife32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Strife32_Icon.rc">
+            <Form>Strife32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

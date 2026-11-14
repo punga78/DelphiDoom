@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{FF5A147D-D0AD-56A2-9FC4-4C45F62D38EC}</ProjectGuid>
         <MainSource>Hexen32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="Hexen32_Icon.rc">
+            <Form>Hexen32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

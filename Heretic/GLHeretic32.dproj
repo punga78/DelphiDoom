@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{A94F286C-F801-509C-AB18-A89302287AE9}</ProjectGuid>
         <MainSource>GLHeretic32.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -54,6 +55,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="GLHeretic32_Icon.rc">
+            <Form>GLHeretic32_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

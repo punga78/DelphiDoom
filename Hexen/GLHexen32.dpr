@@ -43,6 +43,7 @@
 program GLHexen32;
 
 {$R *.RES}
+{$R 'GLHexen32_Icon.res' 'GLHexen32_Icon.rc'}
 
 uses
   i_crashlog in '..\Base\i_crashlog.pas',

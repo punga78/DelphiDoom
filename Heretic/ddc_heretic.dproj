@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{03C840C7-FBF5-5900-A3FC-587B0C8282F9}</ProjectGuid>
         <MainSource>ddc_heretic.dpr</MainSource>
+        <BRCC_CompilerToUse>rc</BRCC_CompilerToUse>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -55,6 +56,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <RcCompile Include="ddc_heretic_Icon.rc">
+            <Form>ddc_heretic_Icon.res</Form>
+        </RcCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

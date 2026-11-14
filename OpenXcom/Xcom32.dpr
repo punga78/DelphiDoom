@@ -50,6 +50,8 @@ program Xcom32;
 
 {$APPTYPE GUI}
 
+{$R 'Xcom32_Icon.res' 'Xcom32_Icon.rc'}
+
 uses
   Winapi.Windows,
   System.SysUtils, System.Classes, System.IOUtils,

@@ -1,0 +1,3 @@
+// Icon of ddc_hexen.exe (resource MAINICON, read by LoadIcon and by the shell).
+// Referenced by {$R} in ddc_hexen.dpr and compiled by MSBuild (RcCompile item in ddc_hexen.dproj): no generated .res is versioned.
+MAINICON ICON "hexen.ico"
