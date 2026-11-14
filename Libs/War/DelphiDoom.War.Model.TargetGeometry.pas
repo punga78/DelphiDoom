@@ -32,6 +32,10 @@ type
     class function TileOnTarget(AEntity, ATarget: PWarEntity): TWarVec2; static;
     /// <summary>wu_unitInRange</summary>
     class function UnitInRange(AEntity, ATarget: PWarEntity; ARange: Integer): Boolean; static;
+    /// <summary>wu_unitDistanceInTiles: the distance in tiles to the nearest tile of the target</summary>
+    class function DistanceInTiles(AEntity, ATarget: PWarEntity): Integer; static;
+    /// <summary>wu_setUnitCenterTile: the center of the unit goes to the middle of the tile</summary>
+    class procedure SetCenterTile(AEntity: PWarEntity; AX, AY: Integer); static;
   end;
 
 implementation
@@ -91,6 +95,16 @@ end;
 class function TWarTargetGeometry.UnitInRange(AEntity, ATarget: PWarEntity; ARange: Integer): Boolean;
 begin
   Result := TWarUnitGeometry.TileInRange(AEntity, TileOnTarget(AEntity, ATarget), ARange);
+end;
+
+class function TWarTargetGeometry.DistanceInTiles(AEntity, ATarget: PWarEntity): Integer;
+begin
+  Result := TWarUnitGeometry.TileDistance(AEntity, TileOnTarget(AEntity, ATarget));
+end;
+
+class procedure TWarTargetGeometry.SetCenterTile(AEntity: PWarEntity; AX, AY: Integer);
+begin
+  TWarUnitGeometry.SetCenterPosition(AEntity, TWarModelMath.TileToMap(TWarModelMath.Vec(AX, AY), True));
 end;
 
 end.

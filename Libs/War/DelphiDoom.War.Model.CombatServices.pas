@@ -36,13 +36,11 @@ type
     procedure RangeAttack(AAttackerSlot, ATargetSlot: Integer);
     function CreateProjectile(AProjectileType: Integer; ASourceId, ATargetId: Word; const AOrigin,
       ATarget: TWarVec2): Integer;
-    procedure UpdateAfterStates;
+    procedure BuildNearUnits;
+    procedure UpdateProjectiles;
   end;
 
 implementation
-
-uses
-  System.Generics.Collections, DelphiDoom.War.Model.ActionRunner;
 
 { TWarCombatServices }
 
@@ -82,15 +80,13 @@ begin
   Result := FProjectiles.Launch(AProjectileType, ASourceId, ATargetId, AOrigin, ATarget);
 end;
 
-procedure TWarCombatServices.UpdateAfterStates;
-var
-  LUnits: TList<Integer>;
-  LIndex: Integer;
+procedure TWarCombatServices.BuildNearUnits;
 begin
   FNear.Build;
-  LUnits := FContext.Pool.OfType[WAR_ENTITY_UNIT];
-  for LIndex := 0 to LUnits.Count - 1 do
-    TWarActionRunner.Update(FContext.Pool.Slots[LUnits[LIndex]], FContext.Clock^.GameTime);
+end;
+
+procedure TWarCombatServices.UpdateProjectiles;
+begin
   FProjectiles.UpdateAll;
 end;
 

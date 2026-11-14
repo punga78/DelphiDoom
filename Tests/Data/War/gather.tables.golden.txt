@@ -1,6 +1,3 @@
-# harvest: type directional loop count (stepType:param)*
-H 2 1 1 16 2:5 1:5 2:6 1:20 2:6 1:35 3:0 7:0 2:6 1:50 2:6 2:6 1:0 2:1 1:0 2:1
-H 3 1 1 16 2:5 1:5 2:6 1:20 2:6 1:35 3:0 7:0 2:6 1:50 2:6 2:6 1:0 2:1 1:0 2:1
 # workers: type carryingWoodResource carryingGoldResource
 W 2 327 329
 W 3 328 330

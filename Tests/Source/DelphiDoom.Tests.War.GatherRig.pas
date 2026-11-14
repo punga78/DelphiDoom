@@ -28,7 +28,11 @@ type
     FPainterRef: IWarTilePainter;
     FGather: TWarGatherWorld;
   public
-    constructor Create(ASeed: Cardinal = 1);
+    /// <summary>
+    ///   Without ARealFollow the follow states stay where they are (they are updated by the follow slice, tested there): the
+    ///   tests of the gatherers look at the follow state that they push. With it the workers really walk
+    /// </summary>
+    constructor Create(ASeed: Cardinal = 1; ARealFollow: Boolean = False);
     destructor Destroy; override;
     /// <summary>A gold mine of the neutral player with that much gold, with its idle state; the slot</summary>
     function AddMine(AX, AY, AGold: Integer): Integer;
@@ -58,10 +62,12 @@ uses
 
 { TGatherRig }
 
-constructor TGatherRig.Create(ASeed: Cardinal);
+constructor TGatherRig.Create(ASeed: Cardinal; ARealFollow: Boolean);
 begin
   inherited Create;
   FRig := TModelRig.Create(ASeed);
+  if not ARealFollow then
+    FRig.World.Machine.RegisterHooks(WAR_STATE_FOLLOW, nil, nil, nil);
   FFog := TWarFogOfWar.Create;
   FFog.Enabled := False;
   FPainter := TRecordingPainter.Create;

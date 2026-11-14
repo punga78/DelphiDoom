@@ -32,7 +32,7 @@ type
     [Test]
     procedure DovrebbeDareLoStessoTestoDelloStatoAUnTicDiRaccolta;
     [Test]
-    procedure DovrebbeDareLeStesseAzioniDiRaccoltaEImmaginiDeiTrasportatoriDelC;
+    procedure DovrebbeDareLeStesseImmaginiDeiTrasportatoriDelC;
     [Test]
     procedure DovrebbeEsercitareOgniParteDellaRaccoltaNegliScenari;
     /// <summary>
@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.War.Model.GatherData, DelphiDoom.Tests.War.GatherScenario;
+  System.IOUtils, DelphiDoom.War.Model.WorkerSprites.Data, DelphiDoom.Tests.War.GatherScenario;
 
 { TTestWarGatherParity }
 
@@ -109,40 +109,20 @@ begin
   end;
 end;
 
-procedure TTestWarGatherParity.DovrebbeDareLeStesseAzioniDiRaccoltaEImmaginiDeiTrasportatoriDelC;
+procedure TTestWarGatherParity.DovrebbeDareLeStesseImmaginiDeiTrasportatoriDelC;
 var
   LGolden: TStringList;
   LLine: string;
   LFields: TArray<string>;
-  LIndex: Integer;
-  LStep: Integer;
-  LPair: TArray<string>;
-  LHarvest: Integer;
   LWorkers: Integer;
 begin
   LGolden := Golden('gather.tables.golden.txt');
   try
-    LHarvest := 0;
     LWorkers := 0;
     for LLine in LGolden do
     begin
       LFields := LLine.Split([' ']);
-      if LLine.StartsWith('H ') then
-      begin
-        LIndex := LHarvest;
-        Assert.AreEqual<Integer>(StrToInt(LFields[1]), WAR_HARVEST_ACTIONS[LIndex].UnitType, LLine);
-        Assert.AreEqual(LFields[2] = '1', WAR_HARVEST_ACTIONS[LIndex].Directional, LLine);
-        Assert.AreEqual(LFields[3] = '1', WAR_HARVEST_ACTIONS[LIndex].Loop, LLine);
-        Assert.AreEqual<Integer>(StrToInt(LFields[4]), WAR_HARVEST_ACTIONS[LIndex].Count, LLine);
-        for LStep := 0 to WAR_HARVEST_ACTIONS[LIndex].Count - 1 do
-        begin
-          LPair := LFields[5 + LStep].Split([':']);
-          Assert.AreEqual<Integer>(StrToInt(LPair[0]), WAR_HARVEST_ACTIONS[LIndex].Steps[LStep].StepType, LLine);
-          Assert.AreEqual<Integer>(StrToInt(LPair[1]), WAR_HARVEST_ACTIONS[LIndex].Steps[LStep].Param, LLine);
-        end;
-        Inc(LHarvest);
-      end
-      else if LLine.StartsWith('W ') then
+      if LLine.StartsWith('W ') then
       begin
         Assert.AreEqual<Integer>(StrToInt(LFields[1]), WAR_WORKER_SPRITES[LWorkers].UnitType, LLine);
         Assert.AreEqual<Integer>(StrToInt(LFields[2]), WAR_WORKER_SPRITES[LWorkers].CarryingWood, LLine);
@@ -150,7 +130,6 @@ begin
         Inc(LWorkers);
       end;
     end;
-    Assert.AreEqual<Integer>(Length(WAR_HARVEST_ACTIONS), LHarvest);
     Assert.AreEqual<Integer>(Length(WAR_WORKER_SPRITES), LWorkers);
   finally
     LGolden.Free;

@@ -39,8 +39,6 @@ type
     function DecreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer): Boolean;
     /// <summary>we_increasePlayerResources</summary>
     procedure IncreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer);
-    /// <summary>we_increasePlayerResources without an instance: the states of the gatherers use it when they deliver</summary>
-    class procedure Increase(APlayer: PWarPlayerInfo; AGold, AWood: Integer); static;
     /// <summary>we_enoughFarmFood: the units that move plus one fit in the food of the finished farms</summary>
     function EnoughFarmFood(APlayer: PWarPlayerInfo): Boolean;
     /// <summary>we_checkFarmFood: the same, with the message of the status bar when there is no room</summary>
@@ -56,7 +54,8 @@ type
 implementation
 
 uses
-  System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.UnitClassifier;
+  System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.UnitClassifier,
+  DelphiDoom.War.Model.Purse;
 
 { TWarEconomy }
 
@@ -69,35 +68,17 @@ end;
 
 function TWarEconomy.EnoughResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer): Boolean;
 begin
-  Result := (APlayer^.Gold >= AGold) and (APlayer^.Wood >= AWood);
+  Result := TWarPurse.Enough(APlayer, AGold, AWood);
 end;
 
 function TWarEconomy.DecreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer): Boolean;
 begin
-  if APlayer^.Gold < AGold then
-  begin
-    FContext.Events.FlashStatus(wsmNotEnoughGold);
-    Exit(False);
-  end;
-  if APlayer^.Wood < AWood then
-  begin
-    FContext.Events.FlashStatus(wsmNotEnoughLumber);
-    Exit(False);
-  end;
-  APlayer^.Gold := APlayer^.Gold - AGold;
-  APlayer^.Wood := APlayer^.Wood - AWood;
-  Result := True;
+  Result := TWarPurse.Decrease(FContext, APlayer, AGold, AWood);
 end;
 
 procedure TWarEconomy.IncreaseResources(APlayer: PWarPlayerInfo; AGold, AWood: Integer);
 begin
-  Increase(APlayer, AGold, AWood);
-end;
-
-class procedure TWarEconomy.Increase(APlayer: PWarPlayerInfo; AGold, AWood: Integer);
-begin
-  APlayer^.Gold := APlayer^.Gold + AGold;
-  APlayer^.Wood := APlayer^.Wood + AWood;
+  TWarPurse.Increase(APlayer, AGold, AWood);
 end;
 
 function TWarEconomy.EnoughFarmFood(APlayer: PWarPlayerInfo): Boolean;

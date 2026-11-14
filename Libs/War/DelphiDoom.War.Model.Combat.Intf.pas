@@ -45,11 +45,10 @@ type
     procedure RangeAttack(AAttackerSlot, ATargetSlot: Integer);
     /// <summary>wproj_createProjectile: the slot of the new entity, 0 if the pool is full</summary>
     function CreateProjectile(AProjectileType: Integer; ASourceId, ATargetId: Word; const AOrigin, ATarget: TWarVec2): Integer;
-    /// <summary>
-    ///   What wmap_updateMap does after the states: the grid of the units, the actions of the units and the
-    ///   projectiles
-    /// </summary>
-    procedure UpdateAfterStates;
+    /// <summary>wgrid_build of wmap_updateMap: the grid of the units that the attacks and the projectiles search in</summary>
+    procedure BuildNearUnits;
+    /// <summary>updateProjectiles of wmap_updateMap: the flight of every projectile</summary>
+    procedure UpdateProjectiles;
   end;
 
 implementation

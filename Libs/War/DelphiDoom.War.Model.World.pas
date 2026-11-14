@@ -43,8 +43,9 @@ type
     /// </summary>
     procedure Update;
     /// <summary>
-    ///   The rest of the tic of wmap_updateMap that the model has, after the states: the grid of the units, the steps of
-    ///   the actions and the projectiles (nothing without the attack registration). The game calls it after Update
+    ///   The rest of the tic of wmap_updateMap that the model has, after the states, in its order: the grid of the units,
+    ///   the steps of the actions of every unit (the frames, the blow, the sounds: TWarActionRunner) and the projectiles.
+    ///   The game calls it after Update. This is the only place that runs the actions
     /// </summary>
     procedure UpdateAfterStates;
     property Context: TWarModelContext read FContext;
@@ -58,7 +59,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Model.ActionStepper;
+  DelphiDoom.War.Model.ActionRunner;
 
 { TWarModelWorld }
 
@@ -99,14 +100,16 @@ procedure TWarModelWorld.Update;
 begin
   FMachine.ProcessPendingTransitions;
   FMachine.UpdateStates;
-  // updateActions of wmap_updateMap comes after the states
-  TWarActionStepper.UpdateAll(FContext);
 end;
 
 procedure TWarModelWorld.UpdateAfterStates;
 begin
+  // the order of wmap_updateMap: the grid of the units, the steps of the actions, the projectiles
   if Assigned(FContext.Combat) then
-    FContext.Combat.UpdateAfterStates;
+    FContext.Combat.BuildNearUnits;
+  TWarActionRunner.UpdateAll(FContext);
+  if Assigned(FContext.Combat) then
+    FContext.Combat.UpdateProjectiles;
 end;
 
 end.

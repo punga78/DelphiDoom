@@ -17,27 +17,45 @@ unit DelphiDoom.War.Model.ActionRunner;
 interface
 
 uses
-  DelphiDoom.War.Model.Types;
+  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context;
 
 type
   /// <summary>
   ///   The current action of a unit advances by its steps: it waits for the end of a wait step, then goes through the
   ///   steps up to the next wait, noting the blow (WAR_ACTION_STEP_ATTACK) and the sound that the steps ask for, which the
-  ///   states read (the attack state hits when the blow is noted). The frame steps would choose the sprite: that is
-  ///   drawing and is not done here (the step index tells it). Static: called once per unit and tic
+  ///   states read (the attack state hits when the blow is noted, the repairing one when the hammer falls, the gatherers
+  ///   when the axe or the pick hits), and showing the frame that a frame step asks for (the sprite of the entity, mirrored
+  ///   for the west). It is the one runner of the actions of all the areas (attack, gathering, repairing, building...): the
+  ///   table of the steps is one, generated from the C (DelphiDoom.War.Model.ActionSteps.Data). Static: called once per
+  ///   unit and tic
   /// </summary>
   TWarActionRunner = class
   public
+    /// <summary>wact_resetAction: from the first step, not started (an action index outside the seven is left alone)</summary>
+    class procedure Reset(var AUnit: TWarUnitComponent; AAction: Integer); static;
     /// <summary>wact_updateAction</summary>
     class procedure Update(AEntity: PWarEntity; AGameTime: Double); static;
+    /// <summary>updateActions of wmap_updateMap: every unit, in the order of the list of the units</summary>
+    class procedure UpdateAll(AContext: TWarModelContext); static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.War.Model.ActionSteps.Data, DelphiDoom.War.Model.Math;
+  System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.ActionSteps.Data,
+  DelphiDoom.War.Model.Math;
 
 { TWarActionRunner }
+
+class procedure TWarActionRunner.Reset(var AUnit: TWarUnitComponent; AAction: Integer);
+begin
+  // the original indexes the array with the action that the unit has (it never has none here)
+  if (AAction < 0) or (AAction >= WAR_ACTION_TYPE_COUNT) then
+    Exit;
+  AUnit.Actions[AAction].StepIndex := 0;
+  AUnit.Actions[AAction].Status := WAR_ACTION_NOT_STARTED;
+  AUnit.Actions[AAction].WaitEndGameTime := 0;
+end;
 
 class procedure TWarActionRunner.Update(AEntity: PWarEntity; AGameTime: Double);
 var
@@ -45,8 +63,11 @@ var
   LAction: ^TWarUnitAction;
   LDef: ^TWarActionDefData;
   LStep: TWarActionStepData;
+  LFrame: Integer;
   LSeconds: Single;
 begin
+  if not AEntity^.HasUnit then
+    Exit;
   LUnit := @AEntity^.UnitData;
   if LUnit^.ActionType = WAR_ACTION_NONE then
     Exit;
@@ -54,16 +75,12 @@ begin
   if LAction^.Status = WAR_ACTION_FINISHED then
     Exit;
   if LAction^.StepIndex < 0 then
-  begin
-    // resetAction
-    LAction^.StepIndex := 0;
-    LAction^.Status := WAR_ACTION_NOT_STARTED;
-    LAction^.WaitEndGameTime := 0;
-  end;
+    Reset(LUnit^, LUnit^.ActionType);
   LAction^.Status := WAR_ACTION_RUNNING;
   LDef := @WAR_ACTION_DEF_DATA[LUnit^.UnitType, LUnit^.ActionType];
   if not LDef^.Present then
   begin
+    // the unit type has no such action: the original warns and stops it
     LAction^.Status := WAR_ACTION_FINISHED;
     LUnit^.ActionType := WAR_ACTION_NONE;
     Exit;
@@ -90,7 +107,22 @@ begin
   LAction^.LastSoundStep := WAR_ACTION_STEP_NONE;
   while LStep.Kind <> WAR_ACTION_STEP_WAIT do
   begin
-    if LStep.Kind = WAR_ACTION_STEP_ATTACK then
+    if LStep.Kind = WAR_ACTION_STEP_FRAME then
+    begin
+      LFrame := LStep.Param;
+      if LDef^.Directional then
+      begin
+        // N 0, NE 1, E 2, SE 3, S 4, SW 3, W 2, NW 1: 4 - |4 - direction|
+        LFrame := LFrame + (4 - Abs(4 - LUnit^.Direction));
+        if (LUnit^.Direction >= WAR_DIRECTION_SOUTH_WEST) and (LUnit^.Direction < WAR_DIRECTION_COUNT) then
+          AEntity^.ScaleX := -1.0
+        else
+          AEntity^.ScaleX := 1.0;
+      end;
+      if AEntity^.HasSprite then
+        AEntity^.SpriteFrame := LFrame;
+    end
+    else if LStep.Kind = WAR_ACTION_STEP_ATTACK then
       LAction^.LastActionStep := WAR_ACTION_STEP_ATTACK
     else if (LStep.Kind >= WAR_ACTION_STEP_SOUND_SWORD) and (LStep.Kind <= WAR_ACTION_STEP_SOUND_LIGHTNING) then
       LAction^.LastSoundStep := LStep.Kind;
@@ -110,6 +142,16 @@ begin
   LSeconds := TWarModelMath.FramesToSeconds(LStep.Param);
   LSeconds := LSeconds * LAction^.Scale;
   LAction^.WaitEndGameTime := AGameTime + LSeconds;
+end;
+
+class procedure TWarActionRunner.UpdateAll(AContext: TWarModelContext);
+var
+  LUnits: TList<Integer>;
+  LIndex: Integer;
+begin
+  LUnits := AContext.Pool.OfType[WAR_ENTITY_UNIT];
+  for LIndex := 0 to LUnits.Count - 1 do
+    Update(AContext.Pool.Slots[LUnits[LIndex]], AContext.Clock^.GameTime);
 end;
 
 end.

@@ -98,7 +98,7 @@ uses
   System.Generics.Collections, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Factory,
   DelphiDoom.War.Model.GridOccupancy, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.EntityPool,
   DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.UnitClassifier,
-  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.UnitRange, DelphiDoom.War.Model.ActionStepper,
+  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.TargetGeometry, DelphiDoom.War.Model.ActionRunner,
   DelphiDoom.War.Model.State.GatherFactory, DelphiDoom.War.Autotile.Types, DelphiDoom.War.Map.Forest,
   DelphiDoom.War.Model.Math, DelphiDoom.Tests.War.ModelDump;
 
@@ -242,6 +242,11 @@ begin
   FWorld.Context.UnsignedDirections := True;
   // the collapse is another slice: no procedure, as in the C harness
   FWorld.Machine.RegisterHooks(WAR_STATE_COLLAPSE, nil, nil, nil);
+  // the C harness (gatherTick) does not update the follow, patrol and attack states either: the follow is the stand-in of
+  // ResolveFollows, and there are no patrols or attacks in the scenarios
+  FWorld.Machine.RegisterHooks(WAR_STATE_FOLLOW, nil, nil, nil);
+  FWorld.Machine.RegisterHooks(WAR_STATE_PATROL, nil, nil, nil);
+  FWorld.Machine.RegisterHooks(WAR_STATE_ATTACK, nil, nil, nil);
   for LPlayer := 0 to WAR_MAX_PLAYERS_COUNT - 1 do
   begin
     LInfo := FWorld.Context.Players[LPlayer];
@@ -590,19 +595,31 @@ begin
       Continue;
     end;
     TWarUnitGeometry.SetCenterPosition(LEntity,
-      TWarUnitRange.PointOnTarget(LEntity, FWorld.Context.Pool.Slots[LTarget]));
+      TWarTargetGeometry.PointOnTarget(LEntity, FWorld.Context.Pool.Slots[LTarget]));
     FWorld.Machine.PopState(LSlot, WAR_CAUSE_COMPLETION, WAR_RESULT_SUCCESS);
   end;
 end;
 
 procedure TGatherScenario.Tick;
+var
+  LUnits: TList<Integer>;
+  LIndex: Integer;
+  LEntity: PWarEntity;
 begin
   FWorld.AdvanceClock(TIC_SECONDS);
   ScriptStep;
   FWorld.Machine.ProcessPendingTransitions;
   ResolveFollows;
   FWorld.Machine.UpdateStates;
-  TWarActionStepper.UpdateAll(FWorld.Context);
+  // as the C harness (gatherTick): of all the actions the scenario steps only the harvest ones, so that the golden measures
+  // the gather states; the model steps every action (TWarModelWorld.UpdateAfterStates) with the one TWarActionRunner
+  LUnits := FWorld.Context.Pool.OfType[WAR_ENTITY_UNIT];
+  for LIndex := 0 to LUnits.Count - 1 do
+  begin
+    LEntity := FWorld.Context.Pool.Slots[LUnits[LIndex]];
+    if LEntity^.HasUnit and (LEntity^.UnitData.ActionType = WAR_ACTION_HARVEST) then
+      TWarActionRunner.Update(LEntity, FWorld.Context.Clock^.GameTime);
+  end;
 end;
 
 function TGatherScenario.DumpNow(ATic: Integer): string;
@@ -630,14 +647,14 @@ begin
     LEntity := FWorld.Context.Pool.Slots[LSlot];
     if (LEntity^.Id = 0) or (LEntity^.EntityType <> WAR_ENTITY_UNIT) then
       Continue;
-    if LEntity^.UnitData.SpriteResource <> 0 then
-      LFrame := LEntity^.UnitData.SpriteFrame
+    if LEntity^.SpriteResource <> 0 then
+      LFrame := LEntity^.SpriteFrame
     else
       LFrame := -1;
     LText := LText + Format('K %d spr=%d en=%d fr=%d mx=%d'#10, [LEntity^.Id,
-      LEntity^.UnitData.SpriteResource - Ord(LEntity^.UnitData.SpriteResource = 0),
-      Ord((LEntity^.UnitData.SpriteResource <> 0) and LEntity^.UnitData.SpriteEnabled), LFrame,
-      Ord(LEntity^.UnitData.Mirrored)]);
+      LEntity^.SpriteResource - Ord(LEntity^.SpriteResource = 0),
+      Ord((LEntity^.SpriteResource <> 0) and LEntity^.SpriteEnabled), LFrame,
+      Ord(LEntity^.ScaleX < 0)]);
   end;
   Result := LText;
 end;

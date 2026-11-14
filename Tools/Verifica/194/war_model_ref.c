@@ -115,6 +115,9 @@ WarSpriteComponent* we_addSpriteComponentFromResource(WarContext* context, WarEn
 #define wmap_setMapTileIndex wmap_setMapTileIndex_orig
 #include "war_map.c"
 #undef wmap_setMapTileIndex
+/* war_commands.c intero (issue #194, seconda fetta): gli ordini di costruzione, riparazione, addestramento, miglioramento e
+   annullamento sono i VERI wcmd_*; gli scenari li chiamano nella stessa unita' (anche le funzioni static) */
+#include "war_commands.c"
 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -154,10 +157,16 @@ void SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_ST
 int SDL_vsnprintf(char* text, size_t maxlen, const char* fmt, va_list ap) { return vsnprintf(text, maxlen, fmt, ap); }
 
 /* la grafica: lo sprite di una unita' non e' stato di gioco */
+/* gli sprite delle unita' non sono stato di gioco (zero fotogrammi); le immagini di costruzione degli edifici (risorse 331..346
+   di buildingsData) hanno un numero di fotogrammi che dipende dal DATA.WAR: qui 1 + risorsa % 4, lo stesso della classe
+   finta dei test (TConstructionObserver) */
 WarSprite wspr_createSpriteFromResourceIndex(WarContext* context, WarSpriteResourceRef ref)
 {
-    (void)context; (void)ref;
-    return (WarSprite){0};
+    (void)context;
+    WarSprite sprite = (WarSprite){0};
+    if (ref.resourceIndex >= 331 && ref.resourceIndex <= 346)
+        sprite.framesCount = 1 + ref.resourceIndex % 4;
+    return sprite;
 }
 void wspr_freeSprite(WarContext* context, WarSprite sprite) { (void)context; (void)sprite; }
 
@@ -176,6 +185,30 @@ WarEntity* wa_playAttackSound(WarContext* context, vec2 position, WarUnitActionS
 {
     (void)context; (void)position; (void)soundStep;
     gAudioCount++;
+    return NULL;
+}
+/* i suoni degli ordini e degli stati di costruzione (seconda fetta): oltre a contarli ne mescolano l'identificatore in gAudioMix
+   (stampato dalle righe X degli scenari di costruzione) */
+static u32 gAudioMix = 0;
+WarEntity* wa_createAudio(WarContext* context, const CreateAudioArgs* args)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + (u32)args->audioId;
+    return NULL;
+}
+WarEntity* wa_createAudioRandom(WarContext* context, const CreateAudioArgs* args)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + (u32)args->randomFromId * 1000u + (u32)args->randomToId;
+    return NULL;
+}
+WarEntity* wa_playAcknowledgementSound(WarContext* context, WarPlayerInfo* player)
+{
+    (void)context;
+    gAudioCount++;
+    gAudioMix = gAudioMix * 31u + 9000u + player->index;
     return NULL;
 }
 
@@ -384,13 +417,6 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
             textAdd(t, " tg=%d tp=%08x,%08x", a->targetEntityId, fbits(a->targetPosition.x), fbits(a->targetPosition.y));
             break;
         }
-        case WAR_STATE_FOLLOW:
-        {
-            WarStateFollow* f = (WarStateFollow*)s;
-            textAdd(t, " tg=%d tp=%08x,%08x td=%d", f->targetEntityId, fbits(f->targetPosition.x), fbits(f->targetPosition.y),
-                    f->targetDistance);
-            break;
-        }
         case WAR_STATE_PATROL:
         {
             WarStatePatrol* p = (WarStatePatrol*)s;
@@ -406,10 +432,45 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
             textAdd(t, " we=%08x%08x", hi, lo);
             break;
         }
+        /* costruzione, riparazione, crollo, addestramento e miglioramenti (seconda fetta della #194) */
+        case WAR_STATE_TRAIN:
+        {
+            WarStateTrain* a = (WarStateTrain*)s;
+            textAdd(t, " ut=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->unitToBuild, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_UPGRADE:
+        {
+            WarStateUpgrade* a = (WarStateUpgrade*)s;
+            textAdd(t, " ug=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->upgradeToBuild, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_BUILD:
+        {
+            WarStateBuild* a = (WarStateBuild*)s;
+            textAdd(t, " wk=%d bt=%08x tt=%08x gc=%d wc=%d fl=%d%d%d%d", a->workerId, fbits(a->buildTime), fbits(a->totalBuildTime),
+                    a->goldCost, a->woodCost, a->transactionApplied ? 1 : 0, a->outputCommitted ? 1 : 0, a->cancelled ? 1 : 0,
+                    a->alreadyRefunded ? 1 : 0);
+            break;
+        }
+        case WAR_STATE_REPAIR:
+            textAdd(t, " bd=%d", ((WarStateRepair*)s)->buildingId);
+            break;
+        case WAR_STATE_REPAIRING:
+            textAdd(t, " bd=%d in=%d", ((WarStateRepairing*)s)->buildingId, ((WarStateRepairing*)s)->insideBuilding ? 1 : 0);
+            break;
         default:
             break;
     }
 }
+
+/* le righe in piu' degli scenari di costruzione (war_construction_ref.inc): sprite, rovine, mura, suoni */
+static int gConstructionDump = 0;
+static void dumpConstruction(Text* t);
 
 static void dumpWorld(Text* t, s32 tic)
 {
@@ -516,6 +577,8 @@ static void dumpWorld(Text* t, s32 tic)
         }
         textAdd(t, "\n");
     }
+    if (gConstructionDump)
+        dumpConstruction(t);
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -934,11 +997,18 @@ static void combatScriptStep(void)
 
 static u32 gTileWrites;
 static u32 gTileHash;
+/* gli scenari di raccolta sostituiscono la scrittura della tessera e l'ingresso nel crollo (qui sotto); gli scenari di
+   combattimento e di costruzione usano le funzioni vere del remake */
+static bool gGatherStubs = false;
 
 /* la tessera scritta nella mappa visiva (un albero abbattuto): si registra in ordine; l'impronta e' FNV-1a di (x, y, tessera) */
 void wmap_setMapTileIndex(WarContext* context, s32 x, s32 y, s32 tile)
 {
-    (void)context;
+    if (!gGatherStubs)
+    {
+        wmap_setMapTileIndex_orig(context, x, y, tile);
+        return;
+    }
     gTileWrites++;
     gTileHash = (gTileHash ^ (u32)x) * 16777619u;
     gTileHash = (gTileHash ^ (u32)y) * 16777619u;
@@ -948,7 +1018,8 @@ void wmap_setMapTileIndex(WarContext* context, s32 x, s32 y, s32 tile)
 /* l'ingresso nel crollo (la miniera esaurita): nulla, vedi sopra */
 void wst_enterCollapseState(WarContext* context, WarEntity* entity, WarState* state)
 {
-    (void)context; (void)entity; (void)state;
+    if (!gGatherStubs)
+        wst_enterCollapseState_orig(context, entity, state);
 }
 
 #define GATHER_TICS 1800
@@ -1028,6 +1099,7 @@ static WarEntity* gatherPickWorker(void)
 static void gatherSetup(u32 seed)
 {
     worldInit(seed ^ 0xB7B7B7B7u, seed * 2654435761u + 777u);
+    gGatherStubs = true;
     gTileWrites = 0;
     gTileHash = 2166136261u;
     gSpawnedCount = 0;
@@ -1179,11 +1251,9 @@ static void gatherResolveFollows(void)
 }
 
 /* un passo di wmap_updateMap nell'ordine del remake, senza gli incantesimi, la magia (la rigenerazione del mana), le
-   animazioni e l'interfaccia: lo scenario di combattimento e quello di raccolta lo usano tutti e due; quello di raccolta
-   fa arrivare anche i seguimenti (vedi gatherResolveFollows) */
-static void tickModel(void (*scriptStep)(void), bool resolveFollows)
+   animazioni e l'interfaccia: lo usano gli scenari di combattimento e di costruzione */
+static void tickModel(void (*scriptStep)(void), f32 delta)
 {
-    const f32 delta = 1.0f / 60.0f;
     if (gTrace)
         fprintf(stderr, "T\n");
     gContext->gameDeltaTime = delta;
@@ -1192,8 +1262,6 @@ static void tickModel(void (*scriptStep)(void), bool resolveFollows)
     scriptStep();
 
     wst_processPendingTransitions(gContext);
-    if (resolveFollows)
-        gatherResolveFollows();
     wst_updateIdleStates(gContext);
     wst_updateMoveStates(gContext);
     wst_updatePatrolStates(gContext);
@@ -1221,12 +1289,48 @@ static void tickModel(void (*scriptStep)(void), bool resolveFollows)
 
 static void tickCombat(void)
 {
-    tickModel(combatScriptStep, false);
+    tickModel(combatScriptStep, 1.0f / 60.0f);
+}
+
+/* il passo degli scenari di raccolta: i soli aggiornamenti che la raccolta usa, come prima dell'unione (il seguimento e' lo
+   stand-in di gatherResolveFollows, il crollo e' sostituito, le azioni che si aggiornano sono le sole di raccolta: i golden di
+   raccolta misurano gli stati di raccolta, non l'intero giro di wmap_updateMap, che e' tickModel) */
+static void gatherUpdateHarvestActions(void)
+{
+    WarEntityList* units = we_getEntitiesOfType(gContext, WAR_ENTITY_TYPE_UNIT);
+    for (s32 i = 0; i < units->count; i++)
+    {
+        WarEntity* e = units->items[i];
+        if (!e)
+            continue;
+        WarUnitComponent* unit = we_getUnitComponent(gContext, e);
+        if (unit && unit->actionType == WAR_ACTION_TYPE_HARVEST)
+            wact_updateAction(gContext, e);
+    }
 }
 
 static void gatherTick(void)
 {
-    tickModel(gatherScriptStep, true);
+    const f32 delta = 1.0f / 60.0f;
+    if (gTrace)
+        fprintf(stderr, "T\n");
+    gContext->gameDeltaTime = delta;
+    gContext->gameTime += (f64)delta;
+
+    gatherScriptStep();
+
+    wst_processPendingTransitions(gContext);
+    gatherResolveFollows();
+    wst_updateIdleStates(gContext);
+    wst_updateMoveStates(gContext);
+    wst_updateGoldStates(gContext);
+    wst_updateMiningStates(gContext);
+    wst_updateWoodStates(gContext);
+    wst_updateChoppingStates(gContext);
+    wst_updateDeliverStates(gContext);
+    wst_updateDeathStates(gContext);
+    wst_updateWaitStates(gContext);
+    gatherUpdateHarvestActions();
 }
 
 #define COMBAT_TICS 600
@@ -1380,24 +1484,14 @@ static void runGather(u32 seed, s32 dumpTic, bool perTic)
                gMap->players[0].wood, gMap->players[1].wood, mineAmount[0], mineAmount[1], trees[0], trees[1], gTileWrites);
     }
     worldFree();
+    gGatherStubs = false;
 }
 
-/* le tabelle della raccolta: i passi dell'azione di raccolta e le immagini dei trasportatori */
+/* le immagini dei trasportatori (i passi dell azione di raccolta sono nella tabella di tutte le azioni: actions) */
 static void printGatherTables(void)
 {
     wm_allocInit(64ull * 1024 * 1024, 4ull * 1024 * 1024, 1ull * 1024 * 1024);
     wact_initUnitActionDefs();
-    printf("# harvest: type directional loop count (stepType:param)*\n");
-    for (s32 t = 0; t < WAR_UNIT_COUNT; t++)
-    {
-        const WarUnitActionDef* def = &gUnitActionDefs[t][WAR_ACTION_TYPE_HARVEST];
-        if (def->type == WAR_ACTION_TYPE_NONE)
-            continue;
-        printf("H %d %d %d %d", t, def->directional ? 1 : 0, def->loop ? 1 : 0, def->steps.count);
-        for (s32 i = 0; i < def->steps.count; i++)
-            printf(" %d:%d", (s32)def->steps.items[i].type, def->steps.items[i].param);
-        printf("\n");
-    }
     printf("# workers: type carryingWoodResource carryingGoldResource\n");
     for (s32 i = 0; i < (s32)arrayLength(workersData); i++)
         printf("W %d %d %d\n", workersData[i].type, workersData[i].carryingWoodResource, workersData[i].carryingGoldResource);
@@ -1526,6 +1620,9 @@ static void bench(s32 units, s32 tics)
            1000.0 * ms / ((double)gMap->entityManager.entityCount * tics));
     worldFree();
 }
+/* gli scenari di costruzione e addestramento (seconda fetta della #194) */
+#include "war_construction_ref.inc"
+
 int main(int argc, char** argv)
 {
     gTrace = getenv("WAR_REF_TRACE") != NULL;
@@ -1604,6 +1701,23 @@ int main(int argc, char** argv)
     if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "gather") == 0)
     {
         runGather((u32)atoi(argv[3]), atoi(argv[4]), false);
+        return 0;
+    }
+    if (strcmp(argv[1], "construction-tables") == 0)
+    {
+        printConstructionTables();
+        return 0;
+    }
+    if (strcmp(argv[1], "construction") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 24;
+        for (u32 seed = 1; seed <= n; seed++)
+            runConstruction(seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "construction") == 0)
+    {
+        runConstruction((u32)atoi(argv[3]), atoi(argv[4]), false);
         return 0;
     }
     if (strcmp(argv[1], "dump") == 0 && argc >= 5)

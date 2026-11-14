@@ -38,8 +38,8 @@ implementation
 
 uses
   System.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Context,
-  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.UnitRange,
-  DelphiDoom.War.Model.UnitSprites, DelphiDoom.War.Model.Economy, DelphiDoom.War.Model.State.FollowRequest,
+  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.TargetGeometry,
+  DelphiDoom.War.Model.UnitSprites, DelphiDoom.War.Model.Purse,
   DelphiDoom.War.Model.State.GatherFactory, DelphiDoom.War.Model.UnitGeometry;
 
 { TWarDeliverState }
@@ -69,10 +69,10 @@ begin
     Exit;
   end;
   LTownHallEntity := LContext.Pool.Slots[LTownHall];
-  if not TWarUnitRange.InRange(LEntity, LTownHallEntity, LRange) then
+  if not TWarTargetGeometry.UnitInRange(LEntity, LTownHallEntity, LRange) then
   begin
-    LTarget := TWarUnitRange.PointOnTarget(LEntity, LTownHallEntity);
-    AMachine.PushState(ASlot, PWarStateBase(TWarFollowRequest.New(AMachine, ASlot, LTownHallEntity^.Id, LTarget,
+    LTarget := TWarTargetGeometry.PointOnTarget(LEntity, LTownHallEntity);
+    AMachine.PushState(ASlot, PWarStateBase(AMachine.CreateFollow(ASlot, LTownHallEntity^.Id, LTarget,
       LRange * WAR_MEGA_TILE_SIZE)), WAR_CAUSE_COMPLETION);
     Exit;
   end;
@@ -81,9 +81,9 @@ begin
     // find a valid spawn position for the unit
     LTile := TWarUnitGeometry.CenterTile(LTownHallEntity);
     LSpawn := LContext.RequireGather.Grid.FindEmptyTile(Trunc(LTile.X), Trunc(LTile.Y));
-    TWarUnitRange.SetCenterTile(LEntity, LSpawn.X, LSpawn.Y);
-    TWarUnitSprites.Remove(LUnit^);
-    TWarUnitSprites.AddDefault(LUnit^);
+    TWarTargetGeometry.SetCenterTile(LEntity, LSpawn.X, LSpawn.Y);
+    TWarUnitSprites.Remove(LEntity);
+    TWarUnitSprites.AddDefault(LEntity);
     if AState^.Cycle then
     begin
       if AState^.SourceKind = wrkGold then
@@ -101,14 +101,14 @@ begin
   end;
   LPlayer := LContext.Players[LUnit^.Player];
   if LUnit^.ResourceKind = wrkGold then
-    TWarEconomy.Increase(LPlayer, LUnit^.Amount, 0)
+    TWarPurse.Increase(LPlayer, LUnit^.Amount, 0)
   else if LUnit^.ResourceKind = wrkWood then
-    TWarEconomy.Increase(LPlayer, 0, LUnit^.Amount);
+    TWarPurse.Increase(LPlayer, 0, LUnit^.Amount);
   LUnit^.ResourceKind := wrkNone;
   LUnit^.Amount := 0;
   // the unit goes inside the building for some time to simulate the depositing, then goes back to the mine or the trees
   AState^.InsideBuilding := True;
-  TWarUnitSprites.Disable(LUnit^);
+  TWarUnitSprites.Disable(LEntity);
   // out of the selection, so that the player does not give it orders while it is inside
   LContext.Events.EntityLeftSelection(LEntity^.Id);
   AState^.Base.Delay := TWarModelMath.ScaledTime(LContext.Clock^, 1.0);

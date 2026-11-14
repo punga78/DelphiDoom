@@ -41,8 +41,8 @@ implementation
 
 uses
   System.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateStorage,
-  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.UnitRange, DelphiDoom.War.Model.UnitSprites,
-  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitSearch, DelphiDoom.War.Model.ActionStepper,
+  DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.TargetGeometry, DelphiDoom.War.Model.UnitSprites,
+  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitSearch, DelphiDoom.War.Model.ActionRunner,
   DelphiDoom.War.Model.Mine, DelphiDoom.War.Model.State.GatherFactory;
 
 const
@@ -54,7 +54,7 @@ var
   LSpawn: TPoint;
 begin
   LSpawn := AContext.RequireGather.Grid.FindEmptyTile(Trunc(ATile.X), Trunc(ATile.Y));
-  TWarUnitRange.SetCenterTile(AEntity, LSpawn.X, LSpawn.Y);
+  TWarTargetGeometry.SetCenterTile(AEntity, LSpawn.X, LSpawn.Y);
 end;
 
 { TWarMiningState }
@@ -65,8 +65,8 @@ var
 begin
   LEntity := AMachine.Context.Pool.Slots[ASlot];
   PWarStateMining(AState)^.MiningTime := 2.0;
-  TWarUnitSprites.Remove(LEntity^.UnitData);
-  TWarActionStepper.Reset(LEntity^.UnitData, LEntity^.UnitData.ActionType);
+  TWarUnitSprites.Remove(LEntity);
+  TWarActionRunner.Reset(LEntity^.UnitData, LEntity^.UnitData.ActionType);
   AMachine.Context.Events.EntityLeftSelection(LEntity^.Id);
 end;
 
@@ -78,7 +78,7 @@ begin
   LMine := AMachine.Context.Pool.FindSlot(PWarStateMining(AState)^.GoldmineId);
   // restore back the sprite component to the worker, so it should be visible again
   if (LMine = 0) or AMachine.IsCollapsing(LMine) or AMachine.IsGoingToCollapse(LMine) then
-    TWarUnitSprites.AddDefault(AMachine.Context.Pool.Slots[ASlot]^.UnitData);
+    TWarUnitSprites.AddDefault(AMachine.Context.Pool.Slots[ASlot]);
 end;
 
 class procedure TWarMiningState.UpdateState(AMachine: TWarStateMachine; ASlot: Integer; AState: PWarStateMining);
@@ -115,7 +115,7 @@ begin
       LEntity^.UnitData.ResourceKind := wrkGold;
     StepOut(LContext, LEntity, TWarUnitGeometry.CenterTile(LMineEntity));
     // set the carrying gold sprites
-    TWarUnitSprites.Add(LEntity^.UnitData, TWarUnitSprites.CarryingGold(LEntity^.UnitData.UnitType));
+    TWarUnitSprites.Add(LEntity, TWarUnitSprites.CarryingGold(LEntity^.UnitData.UnitType));
     // find the closest town hall to deliver the gold
     LTownHall := TWarUnitSearch.FindClosestOfType(LContext, ASlot,
       TWarUnitSearch.TownHallOfRace(TWarUnitClassifier.RaceOf(LEntity^.UnitData.UnitType)));

@@ -17,7 +17,8 @@ uses
   System.SysUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Sound.Intf,
   DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf,
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
-  DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld;
+  DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld, DelphiDoom.War.Model.Construction.Intf,
+  DelphiDoom.War.Model.Walls, DelphiDoom.War.Autotile.Ruins;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -42,6 +43,11 @@ type
     FCombat: IWarCombatServices;
     FCombatEvents: IWarCombatEvents;
     FGather: TWarGatherWorld;
+    FConstructionHost: IWarConstructionHost;
+    FProbe: IWarOccupancyProbe;
+    FWalls: TWarWalls;
+    FRuins: TWarRuins;
+    FHurryUp: Boolean;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
     FUnsignedDirections: Boolean;
@@ -49,6 +55,8 @@ type
     FSpeeds: array[0..WAR_UNIT_COUNT - 1, 0..2] of Single;
     function GetPlayer(AIndex: Integer): PWarPlayerInfo;
     function GetClock: PWarGameClock;
+    procedure SetConstructionHost(const AValue: IWarConstructionHost);
+    procedure SetProbe(const AValue: IWarOccupancyProbe);
   public
     constructor Create(const ADatabase: IWarDatabase; const ARandom: IWarRandom; const AEvents: IWarModelEvents;
       const AOccupancy: IWarOccupancy);
@@ -75,6 +83,22 @@ type
     property Gather: TWarGatherWorld read FGather write FGather;
     /// <summary>The same, EWarException if the game did not give it</summary>
     function RequireGather: TWarGatherWorld;
+    /// <summary>
+    ///   Images, sounds and fog for building and training (a host that does nothing until the game gives its own). Nil
+    ///   gives the default again
+    /// </summary>
+    property ConstructionHost: IWarConstructionHost read FConstructionHost write SetConstructionHost;
+    /// <summary>
+    ///   Which tile is free and where the nearest free one is (wpath_isEmpty, wpath_findEmptyTile). The factory takes it from
+    ///   the occupancy when that can answer; otherwise every tile is free. Nil gives the default again
+    /// </summary>
+    property Probe: IWarOccupancyProbe read FProbe write SetProbe;
+    /// <summary>The wall of the map (map->editing.wall); owned by the context</summary>
+    property Walls: TWarWalls read FWalls;
+    /// <summary>The ruins that the buildings that collapsed leave (map->editing.ruin); owned by the context</summary>
+    property Ruins: TWarRuins read FRuins;
+    /// <summary>map->hurryUp, the cheat that makes buildings, units and upgrades 100 times faster</summary>
+    property HurryUp: Boolean read FHurryUp write FHurryUp;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
     property Players[AIndex: Integer]: PWarPlayerInfo read GetPlayer;
     property PlayersCount: Integer read FPlayersCount write FPlayersCount;
@@ -95,7 +119,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Types;
+  DelphiDoom.War.Types, DelphiDoom.War.Model.Construction.NullHost;
 
 { TWarModelContext }
 
@@ -113,6 +137,10 @@ begin
   FRandom := ARandom;
   FEvents := AEvents;
   FOccupancy := AOccupancy;
+  FConstructionHost := TWarNullConstructionHost.Create;
+  FProbe := TWarNullOccupancyProbe.Create;
+  FWalls := TWarWalls.Create;
+  FRuins := TWarRuins.Create;
   FPlayersCount := WAR_MAX_PLAYERS_COUNT;
   for LIndex := 0 to High(FPlayers) do
     FPlayers[LIndex].Index := Byte(LIndex);
@@ -126,6 +154,8 @@ end;
 
 destructor TWarModelContext.Destroy;
 begin
+  FRuins.Free;
+  FWalls.Free;
   FStorage.Free;
   FPool.Free;
   inherited;
@@ -152,6 +182,22 @@ end;
 function TWarModelContext.GetClock: PWarGameClock;
 begin
   Result := @FClock;
+end;
+
+procedure TWarModelContext.SetConstructionHost(const AValue: IWarConstructionHost);
+begin
+  if Assigned(AValue) then
+    FConstructionHost := AValue
+  else
+    FConstructionHost := TWarNullConstructionHost.Create;
+end;
+
+procedure TWarModelContext.SetProbe(const AValue: IWarOccupancyProbe);
+begin
+  if Assigned(AValue) then
+    FProbe := AValue
+  else
+    FProbe := TWarNullOccupancyProbe.Create;
 end;
 
 function TWarModelContext.GetPlayer(AIndex: Integer): PWarPlayerInfo;

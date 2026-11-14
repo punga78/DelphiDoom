@@ -33,19 +33,19 @@ type
     /// <summary>wu_getWorkerData(type)->carryingWoodResource</summary>
     class function CarryingWood(AUnitType: Integer): Integer; static;
     /// <summary>we_addSpriteComponentFromResource: the image, enabled, at its first frame</summary>
-    class procedure Add(var AUnit: TWarUnitComponent; AResource: Integer); static;
+    class procedure Add(AEntity: PWarEntity; AResource: Integer); static;
     /// <summary>we_addSpriteComponentFromResource with the image of the unit type</summary>
-    class procedure AddDefault(var AUnit: TWarUnitComponent); static;
+    class procedure AddDefault(AEntity: PWarEntity); static;
     /// <summary>we_removeSpriteComponent</summary>
-    class procedure Remove(var AUnit: TWarUnitComponent); static;
-    /// <summary>we_disableComponent(COMP_SPRITE): nothing if the unit has no sprite</summary>
-    class procedure Disable(var AUnit: TWarUnitComponent); static;
+    class procedure Remove(AEntity: PWarEntity); static;
+    /// <summary>we_disableComponent(COMP_SPRITE): nothing if the entity has no sprite</summary>
+    class procedure Disable(AEntity: PWarEntity); static;
   end;
 
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.War.Types, DelphiDoom.War.Map.UnitData, DelphiDoom.War.Model.GatherData;
+  System.SysUtils, DelphiDoom.War.Types, DelphiDoom.War.Map.UnitData, DelphiDoom.War.Model.WorkerSprites.Data;
 
 resourcestring
   SWarModelNoWorkerData = 'The unit type %d is not a worker: it has no carrying images';
@@ -91,29 +91,31 @@ begin
   raise EWarException.CreateFmt(SWarModelNoWorkerData, [AUnitType]);
 end;
 
-class procedure TWarUnitSprites.Add(var AUnit: TWarUnitComponent; AResource: Integer);
+class procedure TWarUnitSprites.Add(AEntity: PWarEntity; AResource: Integer);
 begin
-  AUnit.SpriteResource := AResource;
-  AUnit.SpriteEnabled := True;
-  AUnit.SpriteFrame := 0;
+  AEntity^.HasSprite := True;
+  AEntity^.SpriteResource := AResource;
+  AEntity^.SpriteEnabled := True;
+  AEntity^.SpriteFrame := 0;
 end;
 
-class procedure TWarUnitSprites.AddDefault(var AUnit: TWarUnitComponent);
+class procedure TWarUnitSprites.AddDefault(AEntity: PWarEntity);
 begin
-  Add(AUnit, DefaultResource(AUnit.UnitType));
+  Add(AEntity, DefaultResource(AEntity^.UnitData.UnitType));
 end;
 
-class procedure TWarUnitSprites.Remove(var AUnit: TWarUnitComponent);
+class procedure TWarUnitSprites.Remove(AEntity: PWarEntity);
 begin
-  AUnit.SpriteResource := 0;
-  AUnit.SpriteEnabled := False;
-  AUnit.SpriteFrame := 0;
+  AEntity^.HasSprite := False;
+  AEntity^.SpriteResource := 0;
+  AEntity^.SpriteEnabled := False;
+  AEntity^.SpriteFrame := 0;
 end;
 
-class procedure TWarUnitSprites.Disable(var AUnit: TWarUnitComponent);
+class procedure TWarUnitSprites.Disable(AEntity: PWarEntity);
 begin
-  if AUnit.SpriteResource <> 0 then
-    AUnit.SpriteEnabled := False;
+  if AEntity^.HasSprite then
+    AEntity^.SpriteEnabled := False;
 end;
 
 end.

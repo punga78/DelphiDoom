@@ -193,11 +193,15 @@ type
     BuildingId: Word;
   end;
 
+  PWarStateRepair = ^TWarStateRepair;
+
   TWarStateRepairing = record
     Base: TWarStateBase;
     BuildingId: Word;
     InsideBuilding: Boolean;
   end;
+
+  PWarStateRepairing = ^TWarStateRepairing;
 
   TWarStateCast = record
     Base: TWarStateBase;

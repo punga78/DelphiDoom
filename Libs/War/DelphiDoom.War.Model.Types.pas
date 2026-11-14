@@ -306,17 +306,6 @@ type
     InvisibilityTime: Single;
     InvulnerabilityTime: Single;
     LastAttackSoundGameTime: Double;
-    /// <summary>
-    ///   The image the unit shows (WarSpriteComponent.resourceIndex of the original); 0 if it has no sprite, as when it is
-    ///   inside a mine. Set at creation to the one of the unit type, changed by the states of the gatherers
-    /// </summary>
-    SpriteResource: Integer;
-    /// <summary>The component of the sprite is enabled (a worker that is inside a building has one that is not)</summary>
-    SpriteEnabled: Boolean;
-    /// <summary>WarSpriteComponent.frameIndex: set by the steps of the action that is running</summary>
-    SpriteFrame: Integer;
-    /// <summary>WarTransformComponent.scale.x is -1: the unit is drawn mirrored (it looks to the west)</summary>
-    Mirrored: Boolean;
   end;
 
   /// <summary>
@@ -357,6 +346,22 @@ type
     HasUnit: Boolean;
     HasStateMachine: Boolean;
     HasProjectile: Boolean;
+    /// <summary>
+    ///   The sprite component, as far as the model needs it: whether the entity has one (a building under construction
+    ///   swaps it), whether it is enabled, how many frames the image has and the frame that is shown. The image itself
+    ///   is the business of whoever draws
+    /// </summary>
+    HasSprite: Boolean;
+    SpriteEnabled: Boolean;
+    /// <summary>
+    ///   WarSpriteComponent.resourceIndex: the image shown (the one of the unit type, or the one a worker that carries gold
+    ///   or wood has); 0 when the entity has no sprite
+    /// </summary>
+    SpriteResource: Integer;
+    SpriteFrames: Integer;
+    SpriteFrame: Integer;
+    /// <summary>WarTransformComponent.scale.x: -1 when the unit looks to the west (the frames of the east are mirrored)</summary>
+    ScaleX: Single;
     /// <summary>WarTransformComponent.position: the top left corner of the unit, in pixels of the map</summary>
     Position: TWarVec2;
     UnitData: TWarUnitComponent;
@@ -384,7 +389,7 @@ type
   end;
 
   /// <summary>The messages that the original flashes on the status bar</summary>
-  TWarStatusMessage = (wsmNotEnoughGold, wsmNotEnoughLumber, wsmNotEnoughMana, wsmNotEnoughFood);
+  TWarStatusMessage = (wsmNotEnoughGold, wsmNotEnoughLumber, wsmNotEnoughMana, wsmNotEnoughFood, wsmCantBuildThere);
 
 resourcestring
   SWarModelEntityPoolFull = 'The entity pool is full (%d entities)';

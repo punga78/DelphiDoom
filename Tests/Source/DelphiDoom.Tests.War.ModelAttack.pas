@@ -355,6 +355,8 @@ var
   LTarget: Integer;
 begin
   NewRig([]);
+  // a mining state that only marks the worker as inside the mine (the real one needs the map of the gatherers)
+  FRig.World.Machine.RegisterHooks(WAR_STATE_MINING, nil, nil, nil);
   LAttacker := FRig.AddDude(WAR_UNIT_FOOTMAN, 7, 5, 0);
   LTarget := FRig.AddDude(WAR_UNIT_PEON, 8, 5, 1);
   FRig.World.Machine.PushState(LTarget, FRig.World.Machine.AllocState(LTarget, WAR_STATE_MINING), WAR_CAUSE_AI_ORDER);

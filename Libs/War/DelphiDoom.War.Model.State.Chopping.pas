@@ -22,7 +22,7 @@ uses
 type
   /// <summary>
   ///   A worker that chops a tree: each blow of its harvest action (the step that the action sets, see
-  ///   TWarActionStepper) takes 2 wood from the tree, and when it carries 100 it takes them to the closest town hall.
+  ///   TWarActionRunner) takes 2 wood from the tree, and when it carries 100 it takes them to the closest town hall.
   ///   If the tree is gone it asks for a new one (gather wood). The unit holds its tile while it chops
   /// </summary>
   TWarChoppingState = class
@@ -41,7 +41,7 @@ uses
   DelphiDoom.War.Level.Types, DelphiDoom.War.Autotile.Types, DelphiDoom.War.Map.Forest, DelphiDoom.War.Model.Context,
   DelphiDoom.War.Model.Math, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.UnitGeometry,
   DelphiDoom.War.Model.UnitSprites, DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitSearch,
-  DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.ActionStepper, DelphiDoom.War.Model.State.GatherFactory;
+  DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.ActionRunner, DelphiDoom.War.Model.State.GatherFactory;
 
 const
   UNIT_MAX_CARRY_WOOD = WAR_MODEL_MAX_CARRY;
@@ -114,8 +114,8 @@ begin
     if LUnit^.Amount = UNIT_MAX_CARRY_WOOD then
     begin
       // set the carrying wood sprites
-      TWarUnitSprites.Remove(LUnit^);
-      TWarUnitSprites.Add(LUnit^, TWarUnitSprites.CarryingWood(LUnit^.UnitType));
+      TWarUnitSprites.Remove(LEntity);
+      TWarUnitSprites.Add(LEntity, TWarUnitSprites.CarryingWood(LUnit^.UnitType));
       // find the closest town hall to deliver the wood
       LTownHall := TWarUnitSearch.FindClosestOfType(LContext, ASlot,
         TWarUnitSearch.TownHallOfRace(TWarUnitClassifier.RaceOf(LUnit^.UnitType)));

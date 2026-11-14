@@ -72,10 +72,10 @@ implementation
 
 uses
   System.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Types,
-  DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.UnitRange,
-  DelphiDoom.War.Model.UnitSearch, DelphiDoom.War.Model.Mine, DelphiDoom.War.Model.ActionStepper,
+  DelphiDoom.War.Model.State.Types, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.TargetGeometry,
+  DelphiDoom.War.Model.UnitSearch, DelphiDoom.War.Model.Mine, DelphiDoom.War.Model.ActionRunner,
   DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.UnitSprites, DelphiDoom.War.Model.Math,
-  DelphiDoom.War.Model.State.GatherFactory, DelphiDoom.War.Model.State.FollowRequest,
+  DelphiDoom.War.Model.State.GatherFactory,
   DelphiDoom.War.Model.GatherWorld;
 
 { TTestWarGatherSupport }
@@ -124,7 +124,7 @@ var
   LPoint: TWarVec2;
 begin
   // the rectangle of the tests: (10, 10) with a size of 4 by 3, the last cell is (13, 12)
-  LPoint := TWarUnitRange.ClosestPointOnRect(10, 10, 4, 3, TWarModelMath.Vec(APointX, APointY));
+  LPoint := TWarTargetGeometry.ClosestPointOnRect(10, 10, 4, 3, TWarModelMath.Vec(APointX, APointY));
   Near(AExpectedX, LPoint.X, 0.0001);
   Near(AExpectedY, LPoint.Y, 0.0001);
 end;
@@ -136,11 +136,11 @@ var
 begin
   LMine := FRig.AddMine(20, 20, 100);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 17, 21);
-  Assert.AreEqual(3, TWarUnitRange.DistanceInTiles(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine)));
-  Assert.IsTrue(TWarUnitRange.InRange(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine), 3));
-  Assert.IsFalse(TWarUnitRange.InRange(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine), 2));
-  TWarUnitRange.SetCenterTile(FRig.Rig.Entity(LWorker), 19, 21);
-  Assert.AreEqual(1, TWarUnitRange.DistanceInTiles(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine)));
+  Assert.AreEqual(3, TWarTargetGeometry.DistanceInTiles(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine)));
+  Assert.IsTrue(TWarTargetGeometry.UnitInRange(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine), 3));
+  Assert.IsFalse(TWarTargetGeometry.UnitInRange(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine), 2));
+  TWarTargetGeometry.SetCenterTile(FRig.Rig.Entity(LWorker), 19, 21);
+  Assert.AreEqual(1, TWarTargetGeometry.DistanceInTiles(FRig.Rig.Entity(LWorker), FRig.Rig.Entity(LMine)));
   Near(19 * 16, FRig.Rig.Entity(LWorker)^.Position.X, 0.0001);
 end;
 
@@ -211,7 +211,7 @@ begin
   LSound := False;
   for LTic := 1 to 60 do
   begin
-    FRig.Rig.Tick;
+    FRig.Rig.TickAll;
     if LUnit^.Actions[WAR_ACTION_HARVEST].LastActionStep = WAR_ACTION_STEP_ATTACK then
       LHit := True;
     if LUnit^.Actions[WAR_ACTION_HARVEST].LastSoundStep = WAR_ACTION_STEP_SOUND_CHOPPING then
@@ -221,7 +221,7 @@ begin
   Assert.IsTrue(LSound, 'il passo del suono');
   Assert.AreEqual(WAR_ACTION_RUNNING, LUnit^.Actions[WAR_ACTION_HARVEST].Status);
   // directional: the frame is the one of the step plus 4 - |4 - direction|
-  Assert.IsTrue(LUnit^.SpriteFrame >= 0);
+  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.SpriteFrame >= 0);
 end;
 
 procedure TTestWarGatherSupport.DovrebbeSpecchiareLUnitaCheGuardaVersoOvest;
@@ -233,11 +233,11 @@ begin
   LUnit := @FRig.Rig.Entity(LWorker)^.UnitData;
   TWarActionTable.SetAction(LUnit^, WAR_ACTION_HARVEST, True, 1.0);
   LUnit^.Direction := WAR_DIRECTION_WEST;
-  FRig.Rig.Tick(2);
-  Assert.IsTrue(LUnit^.Mirrored);
+  FRig.Rig.TickAll(2);
+  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.ScaleX < 0);
   LUnit^.Direction := WAR_DIRECTION_EAST;
-  FRig.Rig.Run(1);
-  Assert.IsFalse(LUnit^.Mirrored);
+  FRig.Rig.RunAll(1);
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.ScaleX < 0);
 end;
 
 procedure TTestWarGatherSupport.DovrebbeLasciareStareLeAzioniSenzaPassi;
@@ -245,18 +245,22 @@ var
   LWorker: Integer;
   LUnit: PWarUnitComponent;
 begin
-  Assert.IsFalse(TWarActionStepper.HasSteps(WAR_UNIT_PEASANT, WAR_ACTION_WALK));
-  Assert.IsTrue(TWarActionStepper.HasSteps(WAR_UNIT_PEASANT, WAR_ACTION_HARVEST));
-  Assert.IsFalse(TWarActionStepper.HasSteps(WAR_UNIT_FOOTMAN, WAR_ACTION_HARVEST));
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   LUnit := @FRig.Rig.Entity(LWorker)^.UnitData;
   LUnit^.ActionType := WAR_ACTION_NONE;
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_ACTION_NONE, LUnit^.ActionType);
+  // the one runner of the actions runs every action that has steps, not only the harvest one
   LUnit^.ActionType := WAR_ACTION_IDLE;
-  FRig.Rig.Tick(3);
-  // the idle action has no data yet: it is not run (status as it was)
-  Assert.AreEqual(WAR_ACTION_NOT_STARTED, LUnit^.Actions[WAR_ACTION_IDLE].Status);
+  FRig.Rig.TickAll(3);
+  Assert.AreEqual(WAR_ACTION_RUNNING, LUnit^.Actions[WAR_ACTION_IDLE].Status);
+  // an action that the unit type does not have is finished and the unit has none (the original warns)
+  LWorker := FRig.Rig.AddDude(WAR_UNIT_FOOTMAN, 12, 12);
+  LUnit := @FRig.Rig.Entity(LWorker)^.UnitData;
+  LUnit^.ActionType := WAR_ACTION_HARVEST;
+  FRig.Rig.TickAll(2);
+  Assert.AreEqual(WAR_ACTION_NONE, LUnit^.ActionType);
+  Assert.AreEqual(WAR_ACTION_FINISHED, LUnit^.Actions[WAR_ACTION_HARVEST].Status);
 end;
 
 procedure TTestWarGatherSupport.DovrebbeRipartireDaCapoUnAzione;
@@ -267,12 +271,12 @@ begin
   LUnit.Actions[WAR_ACTION_HARVEST].StepIndex := 9;
   LUnit.Actions[WAR_ACTION_HARVEST].Status := WAR_ACTION_RUNNING;
   LUnit.Actions[WAR_ACTION_HARVEST].WaitEndGameTime := 12.5;
-  TWarActionStepper.Reset(LUnit, WAR_ACTION_HARVEST);
+  TWarActionRunner.Reset(LUnit, WAR_ACTION_HARVEST);
   Assert.AreEqual(0, LUnit.Actions[WAR_ACTION_HARVEST].StepIndex);
   Assert.AreEqual(WAR_ACTION_NOT_STARTED, LUnit.Actions[WAR_ACTION_HARVEST].Status);
   Near(0, LUnit.Actions[WAR_ACTION_HARVEST].WaitEndGameTime, 0.0001);
   // an action that does not exist changes nothing
-  TWarActionStepper.Reset(LUnit, WAR_ACTION_NONE);
+  TWarActionRunner.Reset(LUnit, WAR_ACTION_NONE);
 end;
 
 procedure TTestWarGatherSupport.DovrebbeDareNilSeLoStorageDegliStatiEPieno;
@@ -284,7 +288,7 @@ begin
   for LIndex := 1 to WAR_MODEL_MAX_STATES_PER_TYPE do
     TWarGatherStateFactory.NewGold(FRig.Rig.World.Machine, LWorker, 1);
   Assert.IsNull(TWarGatherStateFactory.NewGold(FRig.Rig.World.Machine, LWorker, 1));
-  Assert.IsTrue(Assigned(TWarFollowRequest.New(FRig.Rig.World.Machine, LWorker, 1, TWarModelMath.Vec(0, 0), 16)));
+  Assert.IsTrue(Assigned(FRig.Rig.World.Machine.CreateFollow(LWorker, 1, TWarModelMath.Vec(0, 0), 16)));
 end;
 
 procedure TTestWarGatherSupport.DovrebbeUsareEventiMutiSeNessunoAscolta;

@@ -33,7 +33,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.UnitRange;
+  DelphiDoom.War.Model.Types, DelphiDoom.War.Model.TargetGeometry;
 
 { TWarUnitSearch }
 
@@ -55,7 +55,7 @@ begin
     LTarget := AContext.Pool.Slots[LUnits[LIndex]];
     if LTarget^.HasUnit and (LTarget^.UnitData.UnitType = AUnitType) then
     begin
-      LDistance := TWarUnitRange.DistanceInTiles(LEntity, LTarget);
+      LDistance := TWarTargetGeometry.DistanceInTiles(LEntity, LTarget);
       if LDistance < LMinimum then
       begin
         Result := LUnits[LIndex];

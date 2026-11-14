@@ -37,6 +37,8 @@ type
     [Test]
     procedure DovrebbeSeguireLaMinieraSeELontana;
     [Test]
+    procedure DovrebbeRaggiungereLaMinieraConIlSeguimentoVero;
+    [Test]
     procedure DovrebbeEntrareNellaMinieraSeELaVicina;
     [Test]
     procedure DovrebbeNascondereIlLavoratoreNellaMiniera;
@@ -167,7 +169,7 @@ var
 begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, 999);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -180,7 +182,7 @@ begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   FRig.Rig.World.Machine.ResetState(LMine, PWarStateBase(FRig.Rig.World.Machine.CreateCollapse(LMine)), WAR_CAUSE_LIFECYCLE);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -193,13 +195,40 @@ begin
   LMine := FRig.AddMine(30, 30, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_FOLLOW, ActiveType(LWorker));
   LFollow := PWarStateFollow(FRig.Rig.World.Machine.ActiveState(LWorker));
   Assert.AreEqual<Integer>(IdOf(LMine), LFollow^.TargetEntityId);
   // the range of a peasant is one tile, 16 pixels
   Assert.AreEqual<Integer>(16, LFollow^.TargetDistance);
   Assert.AreEqual<Integer>(2, Ord(FRig.Rig.Entity(LWorker)^.StateMachine.Depth));
+end;
+
+procedure TTestWarGatherStates.DovrebbeRaggiungereLaMinieraConIlSeguimentoVero;
+var
+  LMine: Integer;
+  LWorker: Integer;
+  LIndex: Integer;
+  LInside: Boolean;
+begin
+  // the follow of the attack slice is the one that the gatherers push: the worker walks to the mine, then mines
+  FRig.Free;
+  FRig := TGatherRig.Create(7, True);
+  LMine := FRig.AddMine(14, 10, 500);
+  LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 8, 10);
+  OrderGold(LWorker, IdOf(LMine));
+  LInside := False;
+  for LIndex := 1 to 1800 do
+  begin
+    FRig.Rig.TickAll;
+    if ActiveType(LWorker) = WAR_STATE_MINING then
+    begin
+      LInside := True;
+      Break;
+    end;
+  end;
+  Assert.IsTrue(LInside, 'the worker reaches the mine by walking');
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
 end;
 
 procedure TTestWarGatherStates.DovrebbeEntrareNellaMinieraSeELaVicina;
@@ -210,7 +239,7 @@ begin
   LMine := FRig.AddMine(11, 10, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_MINING, ActiveType(LWorker));
   Near(2.0, PWarStateMining(FRig.Rig.World.Machine.ActiveState(LWorker))^.MiningTime, 0.1);
 end;
@@ -222,11 +251,11 @@ var
 begin
   LMine := FRig.AddMine(11, 10, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
-  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
+  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.SpriteResource);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
-  Assert.AreEqual(0, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
-  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  FRig.Rig.TickAll(4);
+  Assert.AreEqual(0, FRig.Rig.Entity(LWorker)^.SpriteResource);
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
   Assert.IsTrue(FRig.Rig.Observer.LeftSelection > 0);
 end;
 
@@ -241,13 +270,13 @@ begin
   LTownHall := FRig.AddTownHall(4, 10);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Run(2.2);
+  FRig.Rig.RunAll(2.2);
   // the town hall is far: the delivery is under the walk to it
   Assert.AreEqual(WAR_STATE_FOLLOW, ActiveType(LWorker));
   Assert.AreEqual(100, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
   Assert.AreEqual(Ord(wrkGold), Ord(FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind));
   Assert.AreEqual(400, FRig.Rig.Entity(LMine)^.UnitData.Amount);
-  Assert.AreEqual(PEASANT_CARRYING_GOLD, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
+  Assert.AreEqual(PEASANT_CARRYING_GOLD, FRig.Rig.Entity(LWorker)^.SpriteResource);
   LDeliver := PWarStateDeliver(FRig.Rig.World.Machine.FindState(LWorker, WAR_STATE_DELIVER));
   Assert.IsNotNull(LDeliver);
   Assert.AreEqual<Integer>(IdOf(LTownHall), LDeliver^.TownHallId);
@@ -268,13 +297,13 @@ begin
   FRig.AddTownHall(4, 10);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Run(2.2);
+  FRig.Rig.RunAll(2.2);
   Assert.AreEqual(60, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
   Assert.AreEqual(0, FRig.Rig.Entity(LMine)^.UnitData.Amount);
   Assert.IsTrue(FRig.Rig.World.Machine.IsCollapsing(LMine) or FRig.Rig.World.Machine.IsGoingToCollapse(LMine));
   // the collapse is asked for once, with its sound
   Assert.AreEqual(1, FRig.Rig.Observer.Collapsing);
-  FRig.Rig.Run(0.5);
+  FRig.Rig.RunAll(0.5);
   Assert.AreEqual(1, FRig.Rig.Observer.Collapsing);
 end;
 
@@ -286,14 +315,14 @@ begin
   LMine := FRig.AddMine(11, 10, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_MINING, ActiveType(LWorker));
   FRig.Rig.World.Entities.RemoveEntityById(IdOf(LMine));
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
   Assert.AreEqual(0, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
-  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
-  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.SpriteResource);
+  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
 end;
 
 procedure TTestWarGatherStates.DovrebbeRendereVisibileChiEscePerLaMinieraCheCrolla;
@@ -304,12 +333,12 @@ begin
   LMine := FRig.AddMine(11, 10, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   FRig.Rig.World.Machine.ResetState(LMine, PWarStateBase(FRig.Rig.World.Machine.CreateCollapse(LMine)), WAR_CAUSE_LIFECYCLE);
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
-  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
-  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.SpriteResource);
+  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
   Assert.AreEqual(0, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
 end;
 
@@ -321,7 +350,7 @@ begin
   LMine := FRig.AddMine(11, 10, 500);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Run(2.2);
+  FRig.Rig.RunAll(2.2);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
   // it carries the gold anyway
   Assert.AreEqual(100, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
@@ -333,7 +362,7 @@ var
 begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderWood(LWorker, 999, 12, 10);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -345,7 +374,7 @@ begin
   LForest := FRig.AddForestBlock(12, 10, 4, 3, 0);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -357,11 +386,11 @@ begin
   LForest := FRig.AddForestBlock(30, 10, 4, 3, 50);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 10, 10);
   OrderWood(LWorker, LForest, 30, 10);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_MOVE, ActiveType(LWorker));
   Assert.AreEqual<Integer>(2, PWarStateMove(FRig.Rig.World.Machine.ActiveState(LWorker))^.WaypointsCount);
   // it walks 19 tiles at 1.2 tiles a second and then chops
-  FRig.Rig.Run(20);
+  FRig.Rig.RunAll(20);
   Assert.AreEqual(WAR_STATE_CHOPPING, ActiveType(LWorker));
 end;
 
@@ -376,7 +405,7 @@ begin
   FRig.SetWood(LForest, 12, 10, 0);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Tick(2);
+  FRig.Rig.TickAll(2);
   LState := PWarStateWood(FRig.Rig.World.Machine.FindState(LWorker, WAR_STATE_WOOD));
   Assert.IsNotNull(LState);
   Near(FRig.TileCenter(13, 10).X, LState^.Position.X, 0.001);
@@ -392,7 +421,7 @@ begin
   FRig.SetWood(LForest, 12, 10, 6);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Run(8);
+  FRig.Rig.RunAll(8);
   // 3 blows of 2 wood: the tree is gone, its tile is free and the map shows the felled tile
   Assert.IsTrue(FRig.Rig.Entity(LWorker)^.UnitData.Amount >= 6);
   Assert.AreEqual(Ord(wrkWood), Ord(FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind));
@@ -412,7 +441,7 @@ begin
   LForest := FRig.AddForestBlock(12, 10, 4, 3, 50);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_CHOPPING, ActiveType(LWorker));
   Assert.AreEqual(WAR_DIRECTION_EAST, FRig.Rig.Entity(LWorker)^.UnitData.Direction);
   Assert.AreEqual(WAR_ACTION_HARVEST, FRig.Rig.Entity(LWorker)^.UnitData.ActionType);
@@ -431,11 +460,11 @@ begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   FRig.Rig.Entity(LWorker)^.UnitData.Amount := 98;
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Run(3);
+  FRig.Rig.RunAll(3);
   // the town hall is far: the delivery is under the walk to it
   Assert.AreEqual(WAR_STATE_FOLLOW, ActiveType(LWorker));
   Assert.AreEqual(100, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
-  Assert.AreEqual(PEASANT_CARRYING_WOOD, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
+  Assert.AreEqual(PEASANT_CARRYING_WOOD, FRig.Rig.Entity(LWorker)^.SpriteResource);
   LDeliver := PWarStateDeliver(FRig.Rig.World.Machine.FindState(LWorker, WAR_STATE_DELIVER));
   Assert.IsNotNull(LDeliver);
   Assert.AreEqual<Integer>(IdOf(LTownHall), LDeliver^.TownHallId);
@@ -453,7 +482,7 @@ begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   FRig.Rig.Entity(LWorker)^.UnitData.Amount := 98;
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Run(3);
+  FRig.Rig.RunAll(3);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
   Assert.AreEqual(100, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
 end;
@@ -466,10 +495,10 @@ begin
   LForest := FRig.AddForestBlock(12, 10, 4, 3, 100);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_CHOPPING, ActiveType(LWorker));
   FRig.Rig.World.Entities.RemoveEntityById(LForest);
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -492,14 +521,14 @@ begin
   FRig.Rig.Entity(LOther)^.UnitData.Amount := 30;
   OrderDeliver(LWorker, IdOf(LTownHall));
   OrderDeliver(LOther, IdOf(LTownHall));
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(LGold + 70, FRig.Rig.World.Context.Players[0]^.Gold);
   Assert.AreEqual(LWood + 30, FRig.Rig.World.Context.Players[0]^.Wood);
   Assert.AreEqual(0, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
   Assert.AreEqual(Ord(wrkNone), Ord(FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind));
   Assert.IsTrue(PWarStateDeliver(FRig.Rig.World.Machine.ActiveState(LWorker))^.InsideBuilding);
   // inside the building the worker is not drawn
-  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
 end;
 
 procedure TTestWarGatherStates.DovrebbeUscireDalMunicipioEAndareInattivoDopoUnSecondo;
@@ -510,14 +539,14 @@ begin
   LTownHall := FRig.AddTownHall(10, 10);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 9, 10);
   OrderDeliver(LWorker, IdOf(LTownHall));
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_STATE_DELIVER, ActiveType(LWorker));
-  FRig.Rig.Run(0.9);
+  FRig.Rig.RunAll(0.9);
   Assert.AreEqual(WAR_STATE_DELIVER, ActiveType(LWorker));
-  FRig.Rig.Run(0.4);
+  FRig.Rig.RunAll(0.4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
-  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
-  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.UnitData.SpriteResource);
+  Assert.IsTrue(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
+  Assert.AreEqual(PEASANT_SPRITE, FRig.Rig.Entity(LWorker)^.SpriteResource);
 end;
 
 procedure TTestWarGatherStates.DovrebbeTornareAlloStatoSottostanteDopoLaConsegna;
@@ -530,13 +559,13 @@ begin
   LForest := FRig.AddForestBlock(20, 20, 4, 3, 50);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 9, 10);
   OrderWood(LWorker, LForest, 20, 20);
-  FRig.Rig.Tick(2);
+  FRig.Rig.TickAll(2);
   // a delivery pushed on top of the walk to the tree (depth 2 or more): when it ends the state below is back
   FRig.Rig.World.Machine.PushState(LWorker, PWarStateBase(TWarGatherStateFactory.NewDeliver(FRig.Rig.World.Machine,
     LWorker, IdOf(LTownHall))), WAR_CAUSE_COMPLETION);
-  FRig.Rig.Tick(3);
+  FRig.Rig.TickAll(3);
   Assert.AreEqual(WAR_STATE_DELIVER, ActiveType(LWorker));
-  FRig.Rig.Run(1.4);
+  FRig.Rig.RunAll(1.4);
   // the delivery ended without a cycle and with a state under it: that one is active again
   Assert.AreEqual(WAR_STATE_MOVE, ActiveType(LWorker));
 end;
@@ -556,7 +585,7 @@ begin
   LDeliver^.SourceKind := wrkGold;
   LDeliver^.SourceId := IdOf(LMine);
   Order(LWorker, LDeliver);
-  FRig.Rig.Run(1.5);
+  FRig.Rig.RunAll(1.5);
   Assert.IsTrue(ActiveType(LWorker) in [WAR_STATE_GOLD, WAR_STATE_FOLLOW, WAR_STATE_MINING]);
 end;
 
@@ -576,7 +605,7 @@ begin
   LDeliver^.SourceId := LForest;
   LDeliver^.SourcePosition := FRig.TileCenter(14, 10);
   Order(LWorker, LDeliver);
-  FRig.Rig.Run(1.5);
+  FRig.Rig.RunAll(1.5);
   Assert.IsTrue(ActiveType(LWorker) in [WAR_STATE_WOOD, WAR_STATE_MOVE, WAR_STATE_CHOPPING]);
 end;
 
@@ -586,7 +615,7 @@ var
 begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 9, 10);
   OrderDeliver(LWorker, 999);
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
 end;
 
@@ -599,7 +628,7 @@ begin
   LTownHall := FRig.AddTownHall(30, 30);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 9, 10);
   OrderDeliver(LWorker, IdOf(LTownHall));
-  FRig.Rig.Tick(4);
+  FRig.Rig.TickAll(4);
   Assert.AreEqual(WAR_STATE_FOLLOW, ActiveType(LWorker));
   LFollow := PWarStateFollow(FRig.Rig.World.Machine.ActiveState(LWorker));
   Assert.AreEqual<Integer>(IdOf(LTownHall), LFollow^.TargetEntityId);
@@ -618,7 +647,7 @@ begin
   FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind := wrkGold;
   FRig.Rig.Entity(LWorker)^.UnitData.Amount := 100;
   OrderDeliver(LWorker, IdOf(LTownHall));
-  FRig.Rig.Run(3);
+  FRig.Rig.RunAll(3);
   Assert.AreEqual(WAR_STATE_IDLE, ActiveType(LWorker));
   // 1000 gold at the start of the rig and one delivery of 100
   Assert.AreEqual(1100, FRig.Rig.World.Context.Players[0]^.Gold);
@@ -634,7 +663,7 @@ begin
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 11, 10);
   FRig.Rig.Entity(LWorker)^.UnitData.Amount := 97;
   OrderWood(LWorker, LForest, 12, 10);
-  FRig.Rig.Run(4);
+  FRig.Rig.RunAll(4);
   Assert.AreEqual(WAR_STATE_CHOPPING, ActiveType(LWorker));
   Assert.IsTrue(FRig.Rig.Entity(LWorker)^.UnitData.Amount > 100);
 end;
@@ -648,12 +677,12 @@ begin
   LTownHall := FRig.AddTownHall(10, 10);
   LWorker := FRig.Rig.AddDude(WAR_UNIT_PEASANT, 9, 10);
   OrderDeliver(LWorker, IdOf(LTownHall));
-  FRig.Rig.Tick(3);
-  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  FRig.Rig.TickAll(3);
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
   FRig.Rig.Move(LWorker, [FRig.TileCenter(9, 10), FRig.TileCenter(9, 20)]);
-  FRig.Rig.Tick(5);
+  FRig.Rig.TickAll(5);
   Assert.AreEqual(WAR_STATE_MOVE, ActiveType(LWorker));
-  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.UnitData.SpriteEnabled);
+  Assert.IsFalse(FRig.Rig.Entity(LWorker)^.SpriteEnabled);
 end;
 
 procedure TTestWarGatherStates.DovrebbeConservareIlDifettoDellOroSommatoAllaLegnaTrasportata;
@@ -667,24 +696,26 @@ begin
   FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind := wrkWood;
   FRig.Rig.Entity(LWorker)^.UnitData.Amount := 30;
   OrderGold(LWorker, IdOf(LMine));
-  FRig.Rig.Run(2.2);
+  FRig.Rig.RunAll(2.2);
   Assert.AreEqual(130, FRig.Rig.Entity(LWorker)^.UnitData.Amount);
   Assert.AreEqual(Ord(wrkGold), Ord(FRig.Rig.Entity(LWorker)^.UnitData.ResourceKind));
 end;
 
 procedure TTestWarGatherStates.DovrebbeSostituireLoSpriteSeNeAggiungiUnAltro;
 var
-  LUnit: TWarUnitComponent;
+  LEntity: TWarEntity;
 begin
-  LUnit := Default(TWarUnitComponent);
-  TWarUnitSprites.Add(LUnit, 329);
-  TWarUnitSprites.Add(LUnit, 281);
-  Assert.AreEqual(281, LUnit.SpriteResource);
-  Assert.IsTrue(LUnit.SpriteEnabled);
-  TWarUnitSprites.Remove(LUnit);
-  Assert.AreEqual(0, LUnit.SpriteResource);
-  TWarUnitSprites.Disable(LUnit);
-  Assert.IsFalse(LUnit.SpriteEnabled);
+  LEntity := Default(TWarEntity);
+  TWarUnitSprites.Add(@LEntity, 329);
+  TWarUnitSprites.Add(@LEntity, 281);
+  Assert.AreEqual(281, LEntity.SpriteResource);
+  Assert.IsTrue(LEntity.SpriteEnabled);
+  Assert.IsTrue(LEntity.HasSprite);
+  TWarUnitSprites.Remove(@LEntity);
+  Assert.AreEqual(0, LEntity.SpriteResource);
+  Assert.IsFalse(LEntity.HasSprite);
+  TWarUnitSprites.Disable(@LEntity);
+  Assert.IsFalse(LEntity.SpriteEnabled);
 end;
 
 procedure TTestWarGatherStates.DovrebbeDareEccezioneSeMancaLaMappaDeiRaccoglitori;
@@ -701,7 +732,7 @@ begin
   Assert.WillRaise(
     procedure
     begin
-      FRig.Rig.Tick(4);
+      FRig.Rig.TickAll(4);
     end, EWarException);
   LContext.Gather := FRig.Gather;
 end;

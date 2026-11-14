@@ -35,8 +35,8 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.UnitRange,
-  DelphiDoom.War.Model.State.FollowRequest, DelphiDoom.War.Model.State.GatherFactory;
+  DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.TargetGeometry,
+  DelphiDoom.War.Model.State.GatherFactory;
 
 { TWarGatherGoldState }
 
@@ -59,11 +59,11 @@ begin
     Exit;
   end;
   // if the goldmine is not in range, go to it
-  if not TWarUnitRange.InRange(LEntity, LContext.Pool.Slots[LMine], LRange) then
+  if not TWarTargetGeometry.UnitInRange(LEntity, LContext.Pool.Slots[LMine], LRange) then
   begin
     LZero.X := 0;
     LZero.Y := 0;
-    AMachine.PushState(ASlot, PWarStateBase(TWarFollowRequest.New(AMachine, ASlot, LContext.Pool.Slots[LMine]^.Id, LZero,
+    AMachine.PushState(ASlot, PWarStateBase(AMachine.CreateFollow(ASlot, LContext.Pool.Slots[LMine]^.Id, LZero,
       LRange * WAR_MEGA_TILE_SIZE)), WAR_CAUSE_COMPLETION);
     Exit;
   end;

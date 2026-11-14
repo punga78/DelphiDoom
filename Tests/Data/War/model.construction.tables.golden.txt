@@ -1,0 +1,21 @@
+# construction resources: R type buildingResource resourceIndex
+R 32 331 307
+R 33 332 308
+R 34 333 309
+R 35 334 310
+R 36 335 311
+R 37 336 312
+R 38 337 313
+R 39 338 314
+R 40 339 315
+R 41 340 316
+R 42 341 317
+R 43 342 318
+R 44 343 319
+R 45 344 320
+R 46 345 321
+R 47 346 322
+# costs: K wall gold wood maxhp  road gold wood
+K 100 0 60 50 0
+# cheat: H hurry-up factor bits
+H 42c80000

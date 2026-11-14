@@ -31,6 +31,7 @@ type
     FSum: Cardinal;
     FFlashCount: Cardinal;
     FAudioCount: Cardinal;
+    FAudioMix: Cardinal;
     FLeftSelection: Integer;
     FDied: Integer;
     FCollapsing: Integer;
@@ -54,6 +55,9 @@ type
     procedure TreeChopped(const APosition: TWarVec2);
     /// <summary>How many blows of an axe were heard</summary>
     property Chops: Integer read FChops;
+    /// <summary>A sound that the host of building and training was asked for: it counts as one and its id is mixed in AudioMix</summary>
+    procedure AddAudio(AMix: Cardinal);
+    property AudioMix: Cardinal read FAudioMix;
     property Draws: Cardinal read FDraws;
     property Sum: Cardinal read FSum;
     property FlashCount: Cardinal read FFlashCount;
@@ -142,6 +146,12 @@ procedure TModelObserver.TreeChopped(const APosition: TWarVec2);
 begin
   Inc(FChops);
   Inc(FAudioCount);
+end;
+
+procedure TModelObserver.AddAudio(AMix: Cardinal);
+begin
+  Inc(FAudioCount);
+  FAudioMix := FAudioMix * 31 + AMix;
 end;
 
 end.

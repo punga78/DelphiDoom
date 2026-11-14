@@ -51,6 +51,11 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('gather-tables'); Golden = 'gather.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('gather', '10'); Golden = 'gather.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'gather', '2', '900'); Golden = 'gather.dump.golden.txt'; NeedsData = $false }) }
+  # seconda fetta della #194: costruzione, riparazione, crollo, addestramento e miglioramenti (stesso programma, altri scenari)
+  @{ Name = '194 costruzione'; Dir = '194'; Script = 'Compila-ModelRef.ps1'; Jobs = @(
+      @{ Exe = 'war_model_ref.exe'; Args = @('construction-tables'); Golden = 'model.construction.tables.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('construction', '24'); Golden = 'model.construction.golden.txt'; NeedsData = $false },
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'construction', '17', '200'); Golden = 'model.construction.dump.golden.txt'; NeedsData = $false }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

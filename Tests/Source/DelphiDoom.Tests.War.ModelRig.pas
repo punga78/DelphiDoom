@@ -48,6 +48,9 @@ type
     procedure Tick(ACount: Integer = 1);
     /// <summary>Tics until the game time has gone forward by the seconds</summary>
     procedure Run(ASeconds: Single);
+    /// <summary>A whole tic: the states and then the grid, the actions and the projectiles (wmap_updateMap)</summary>
+    procedure TickAll(ACount: Integer = 1);
+    procedure RunAll(ASeconds: Single);
     /// <summary>The type of the active state of the entity (WAR_STATE_NONE if it has none)</summary>
     function ActiveType(ASlot: Integer): Integer;
     function Entity(ASlot: Integer): PWarEntity;
@@ -149,6 +152,27 @@ begin
     FWorld.AdvanceClock(TIC_LENGTH);
     FWorld.Update;
   end;
+end;
+
+procedure TModelRig.TickAll(ACount: Integer);
+var
+  LIndex: Integer;
+begin
+  for LIndex := 1 to ACount do
+  begin
+    FWorld.AdvanceClock(TIC_LENGTH);
+    FWorld.Update;
+    FWorld.UpdateAfterStates;
+  end;
+end;
+
+procedure TModelRig.RunAll(ASeconds: Single);
+var
+  LEnd: Double;
+begin
+  LEnd := FWorld.Context.Clock^.GameTime + ASeconds;
+  while FWorld.Context.Clock^.GameTime < LEnd do
+    TickAll;
 end;
 
 procedure TModelRig.Run(ASeconds: Single);
