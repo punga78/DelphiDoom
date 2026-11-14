@@ -306,6 +306,17 @@ type
     InvisibilityTime: Single;
     InvulnerabilityTime: Single;
     LastAttackSoundGameTime: Double;
+    /// <summary>
+    ///   The image the unit shows (WarSpriteComponent.resourceIndex of the original); 0 if it has no sprite, as when it is
+    ///   inside a mine. Set at creation to the one of the unit type, changed by the states of the gatherers
+    /// </summary>
+    SpriteResource: Integer;
+    /// <summary>The component of the sprite is enabled (a worker that is inside a building has one that is not)</summary>
+    SpriteEnabled: Boolean;
+    /// <summary>WarSpriteComponent.frameIndex: set by the steps of the action that is running</summary>
+    SpriteFrame: Integer;
+    /// <summary>WarTransformComponent.scale.x is -1: the unit is drawn mirrored (it looks to the west)</summary>
+    Mirrored: Boolean;
   end;
 
   /// <summary>

@@ -39,7 +39,8 @@ uses
   DelphiDoom.War.Model.Database, DelphiDoom.War.Model.NullServices, DelphiDoom.War.Model.UnitQueries,
   DelphiDoom.War.Model.EntityManager, DelphiDoom.War.Model.Combat, DelphiDoom.War.Model.Economy,
   DelphiDoom.War.Model.State.Idle, DelphiDoom.War.Model.State.Move, DelphiDoom.War.Model.State.Death,
-  DelphiDoom.War.Model.State.Wait, DelphiDoom.War.Model.State.Attack.Registration;
+  DelphiDoom.War.Model.State.Wait, DelphiDoom.War.Model.State.Attack.Registration,
+  DelphiDoom.War.Model.State.GatherRegistry;
 
 { TWarModelFactory }
 
@@ -74,6 +75,7 @@ begin
   LMachine.RegisterHooks(WAR_STATE_DEATH, TWarDeathState.Enter, nil, TWarDeathState.UpdateAll);
   LMachine.RegisterHooks(WAR_STATE_WAIT, TWarWaitState.Enter, TWarWaitState.Leave, TWarWaitState.UpdateAll);
   TWarAttackRegistration.Register(LContext, LMachine, LEvents);
+  TWarGatherRegistry.RegisterAll(LMachine);
   Result := TWarModelWorld.Create(LContext, LMachine, LQueries, LEntities, TWarCombat.Create(LContext, LMachine),
     TWarEconomy.Create(LContext, LQueries));
 end;

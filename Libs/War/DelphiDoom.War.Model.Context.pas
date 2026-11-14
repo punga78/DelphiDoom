@@ -17,7 +17,7 @@ uses
   System.SysUtils, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Sound.Intf,
   DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.Intf,
   DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Model.EntityPool,
-  DelphiDoom.War.Model.StateStorage;
+  DelphiDoom.War.Model.StateStorage, DelphiDoom.War.Model.GatherWorld;
 
 type
   PWarPlayerInfo = ^TWarPlayerInfo;
@@ -41,6 +41,7 @@ type
     FEntities: IWarEntityManager;
     FCombat: IWarCombatServices;
     FCombatEvents: IWarCombatEvents;
+    FGather: TWarGatherWorld;
     FPlayers: array[0..WAR_MAX_PLAYERS_COUNT - 1] of TWarPlayerInfo;
     FPlayersCount: Integer;
     FUnsignedDirections: Boolean;
@@ -67,6 +68,13 @@ type
     property Combat: IWarCombatServices read FCombat write FCombat;
     /// <summary>Sounds and explosions of the combat; nil if nobody listens</summary>
     property CombatEvents: IWarCombatEvents read FCombatEvents write FCombatEvents;
+    /// <summary>
+    ///   The grid, the forests and the sounds that the gatherers use; given by the game after the model is built, not owned.
+    ///   nil (the default) and the states of the gatherers raise EWarException when they need it
+    /// </summary>
+    property Gather: TWarGatherWorld read FGather write FGather;
+    /// <summary>The same, EWarException if the game did not give it</summary>
+    function RequireGather: TWarGatherWorld;
     /// <summary>The player 0..4 (the original keeps them in the map); EWarException outside</summary>
     property Players[AIndex: Integer]: PWarPlayerInfo read GetPlayer;
     property PlayersCount: Integer read FPlayersCount write FPlayersCount;
@@ -132,6 +140,13 @@ begin
   if ALevel < 0 then
     ALevel := 0;
   Result := FSpeeds[AUnitType, ALevel];
+end;
+
+function TWarModelContext.RequireGather: TWarGatherWorld;
+begin
+  if not Assigned(FGather) then
+    raise EWarException.CreateFmt(SWarModelNotRegistered, ['the map of the gatherers (Context.Gather)']);
+  Result := FGather;
 end;
 
 function TWarModelContext.GetClock: PWarGameClock;

@@ -94,11 +94,15 @@ type
     GoldmineId: Word;
   end;
 
+  PWarStateGold = ^TWarStateGold;
+
   TWarStateMining = record
     Base: TWarStateBase;
     GoldmineId: Word;
     MiningTime: Single;
   end;
+
+  PWarStateMining = ^TWarStateMining;
 
   TWarStateWood = record
     Base: TWarStateBase;
@@ -106,11 +110,15 @@ type
     Position: TWarVec2;
   end;
 
+  PWarStateWood = ^TWarStateWood;
+
   TWarStateChopping = record
     Base: TWarStateBase;
     ForestId: Word;
     Position: TWarVec2;
   end;
+
+  PWarStateChopping = ^TWarStateChopping;
 
   TWarStateDeliver = record
     Base: TWarStateBase;
@@ -121,6 +129,8 @@ type
     SourceId: Word;
     SourcePosition: TWarVec2;
   end;
+
+  PWarStateDeliver = ^TWarStateDeliver;
 
   TWarStateDeath = record
     Base: TWarStateBase;

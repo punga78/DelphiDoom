@@ -22,6 +22,9 @@
         war_model_ref hostile [n]            n scenari con due fazioni: si fermano al primo ordine di attacco
         war_model_ref dump friendly SEED TIC il testo dello stato dello scenario a quel tic (per cercare una differenza)
         war_model_ref dump hostile SEED TIC
+        war_model_ref gather [n]             n scenari di raccolta (default 10, 1800 tic): oro, legna, consegna, miniere, alberi
+        war_model_ref gather-tables          i passi dell'azione di raccolta e le immagini dei trasportatori
+        war_model_ref dump gather SEED TIC
 */
 #include <time.h>
 #include "war_head.inc"
@@ -52,8 +55,21 @@ void wproj_updateProjectile(WarContext* context, WarEntity* entity);
 #include "war_ruins.c"
 #include "war_trees.c"
 #include "war_units.c"
+/* DIFETTO DEL REMAKE NON CONSERVATO: we_addSpriteComponent non toglie lo sprite che l'entita' ha gia' e ne lascia uno orfano
+   nell'array denso; alla prima we_removeSpriteComponent che sposta l'ultimo elemento l'orfano (stesso proprietario) torna a
+   essere lo sprite dell'entita': un lavoratore che esce dalla miniera che ha esaurito (wst_exitMiningState aggiunge lo sprite
+   normale senza togliere quello che porta l'oro) mostra poi l'immagine sbagliata. Qui lo sprite che c'e' si toglie prima di
+   aggiungerne un altro (e cosi' in Delphi: l'immagine che si aggiunge sostituisce quella che c'e'). */
+#define we_addSpriteComponentFromResource we_addSpriteComponentFromResource_orig
 #include "war_entities.c"
 #include "war_projectiles.c"
+#undef we_addSpriteComponentFromResource
+WarSpriteComponent* we_addSpriteComponentFromResource(WarContext* context, WarEntity* entity, WarSpriteResourceRef spriteResourceRef)
+{
+    if (entity && entity->components[COMP_SPRITE] != INVALID_COMP_INDEX)
+        we_removeSpriteComponent(context, entity);
+    return we_addSpriteComponentFromResource_orig(context, entity, spriteResourceRef);
+}
 
 /* il percorso: il remake sa girare attorno agli ostacoli (#195); qui le tre funzioni del campo di flusso sono sostituite
    da stub (piu' sotto) e le definizioni originali restano con un altro nome */
@@ -75,7 +91,12 @@ void wproj_updateProjectile(WarContext* context, WarEntity* entity);
 #include "war_state_machine_patrol.c"
 #include "war_state_machine_attack.c"
 #include "war_state_machine_death.c"
+/* il crollo e' di un'altra fetta (#194, costruzione e crollo): qui l'ingresso nello stato non fa nulla (il remake chiede una
+   mappa con le rovine e un'animazione) e il giro di aggiornamento del crollo non si chiama negli scenari di raccolta; il
+   modello di Delphi non registra procedure per questo tipo di stato */
+#define wst_enterCollapseState wst_enterCollapseState_orig
 #include "war_state_machine_collapse.c"
+#undef wst_enterCollapseState
 #include "war_state_machine_wait.c"
 #include "war_state_machine_gather_gold.c"
 #include "war_state_machine_mining.c"
@@ -90,7 +111,10 @@ void wproj_updateProjectile(WarContext* context, WarEntity* entity);
 #include "war_state_machine_cast.c"
 #include "war_state_machine.c"
 #include "war_map_grid.c"
+/* la tessera della mappa visiva: il remake la scrive nelle risorse del livello (qui non ci sono); si registra la scrittura */
+#define wmap_setMapTileIndex wmap_setMapTileIndex_orig
 #include "war_map.c"
+#undef wmap_setMapTileIndex
 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -324,6 +348,34 @@ static void dumpState(Text* t, WarStateBase* s, WarStateRef ref)
             textAdd(t, " pg=%08x,%08x pw=%d pv=%08x,%08x av=%08x,%08x", fbits(m->progressGoalPosition.x), fbits(m->progressGoalPosition.y),
                     m->progressWaypointIndex, fbits(m->rvoPreferredVelocity.x), fbits(m->rvoPreferredVelocity.y),
                     fbits(m->rvoAdjustedVelocity.x), fbits(m->rvoAdjustedVelocity.y));
+            break;
+        }
+        case WAR_STATE_FOLLOW:
+        {
+            WarStateFollow* f = (WarStateFollow*)s;
+            textAdd(t, " tg=%d tp=%08x,%08x td=%d", f->targetEntityId, fbits(f->targetPosition.x), fbits(f->targetPosition.y),
+                    f->targetDistance);
+            break;
+        }
+        case WAR_STATE_GOLD:
+            textAdd(t, " gm=%d", ((WarStateGold*)s)->goldmineId);
+            break;
+        case WAR_STATE_MINING:
+            textAdd(t, " gm=%d mt=%08x", ((WarStateMining*)s)->goldmineId, fbits(((WarStateMining*)s)->miningTime));
+            break;
+        case WAR_STATE_WOOD:
+            textAdd(t, " fo=%d fp=%08x,%08x", ((WarStateWood*)s)->forestId, fbits(((WarStateWood*)s)->position.x),
+                    fbits(((WarStateWood*)s)->position.y));
+            break;
+        case WAR_STATE_CHOPPING:
+            textAdd(t, " fo=%d fp=%08x,%08x", ((WarStateChopping*)s)->forestId, fbits(((WarStateChopping*)s)->position.x),
+                    fbits(((WarStateChopping*)s)->position.y));
+            break;
+        case WAR_STATE_DELIVER:
+        {
+            WarStateDeliver* d = (WarStateDeliver*)s;
+            textAdd(t, " th=%d in=%d cy=%d sk=%d si=%d sp=%08x,%08x", d->townHallId, d->insideBuilding ? 1 : 0, d->cycle ? 1 : 0,
+                    (s32)d->sourceKind, d->sourceId, fbits(d->sourcePosition.x), fbits(d->sourcePosition.y));
             break;
         }
         case WAR_STATE_ATTACK:
@@ -877,8 +929,259 @@ static void combatScriptStep(void)
     else if (r < 27) opWait();
 }
 
-/* come wmap_updateMap, senza gli incantesimi, la magia (la rigenerazione del mana), le animazioni e l'interfaccia */
-static void tickCombat(void)
+/* gli scenari di raccolta (#194, seconda fetta): contadini e peoni che raccolgono oro e legna e consegnano               */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+static u32 gTileWrites;
+static u32 gTileHash;
+
+/* la tessera scritta nella mappa visiva (un albero abbattuto): si registra in ordine; l'impronta e' FNV-1a di (x, y, tessera) */
+void wmap_setMapTileIndex(WarContext* context, s32 x, s32 y, s32 tile)
+{
+    (void)context;
+    gTileWrites++;
+    gTileHash = (gTileHash ^ (u32)x) * 16777619u;
+    gTileHash = (gTileHash ^ (u32)y) * 16777619u;
+    gTileHash = (gTileHash ^ (u32)tile) * 16777619u;
+}
+
+/* l'ingresso nel crollo (la miniera esaurita): nulla, vedi sopra */
+void wst_enterCollapseState(WarContext* context, WarEntity* entity, WarState* state)
+{
+    (void)context; (void)entity; (void)state;
+}
+
+#define GATHER_TICS 1800
+#define GATHER_WORKERS 6
+static WarEntityId gTownHalls[2];
+static WarEntityId gMines[2];
+static WarEntityId gForests[2];
+static s32 gForestX[2];
+static s32 gForestY[2];
+static WarEntityId gWorkers[GATHER_WORKERS];
+
+static WarEntity* gatherForest(s32 fx, s32 fy, s32 w, s32 h)
+{
+    WarEntity* forest = we_createForest(gContext);
+    WarForestComponent* fc = we_getForestComponent(gContext, forest);
+    for (s32 y = 0; y < h; y++)
+    {
+        for (s32 x = 0; x < w; x++)
+        {
+            u32 present = scriptBelow(100);
+            s32 amount = 2 + (s32)scriptBelow(15);
+            if (present >= 85)
+                continue;
+            WarTree tree = createTree(fx + x, fy + y, amount);
+            WarTreeListAdd(&fc->trees, tree);
+            wpath_setStaticEntity(&gMap->finder, fx + x, fy + y, 1, 1, forest->id);
+        }
+    }
+    we_determineTreeTiles(gContext, forest);
+    return forest;
+}
+
+static void gatherOrderGold(WarEntity* e, u32 mine)
+{
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    WarStateGold* state = wst_createGatherGoldState(gContext, e, gMines[mine]);
+    wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+static void gatherOrderWood(WarEntity* e, u32 f, u32 pick)
+{
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    s32 tx = gForestX[f];
+    s32 ty = gForestY[f];
+    WarEntity* forest = we_findEntity(gContext, gForests[f]);
+    if (forest)
+    {
+        WarForestComponent* fc = we_getForestComponent(gContext, forest);
+        if (fc->trees.count > 0)
+        {
+            WarTree* tree = &fc->trees.items[pick % (u32)fc->trees.count];
+            tx = tree->tilex;
+            ty = tree->tiley;
+        }
+    }
+    vec2 position = wmap_tileToMapCoordinatesV(vec2i(tx, ty), true);
+    WarStateWood* state = wst_createGatherWoodState(gContext, e, gForests[f], position);
+    wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+static void gatherOrderDeliver(WarEntity* e, u32 townHall)
+{
+    if (!e || !wu_isDudeUnit(gContext, e) || wst_isDead(gContext, e) || wst_isGoingToDie(gContext, e))
+        return;
+    WarStateDeliver* state = wst_createDeliverState(gContext, e, gTownHalls[townHall]);
+    wst_resetState(gContext, e, (WarStateBase*)state, WAR_TRANSITION_CAUSE_PLAYER_ORDER);
+}
+
+static WarEntity* gatherPickWorker(void)
+{
+    u32 index = scriptBelow(GATHER_WORKERS);
+    return we_findEntity(gContext, gWorkers[index]);
+}
+
+static void gatherSetup(u32 seed)
+{
+    worldInit(seed ^ 0xB7B7B7B7u, seed * 2654435761u + 777u);
+    gTileWrites = 0;
+    gTileHash = 2166136261u;
+    gSpawnedCount = 0;
+    for (s32 f = 0; f < 2; f++)
+    {
+        s32 bx = f == 0 ? 6 : 38;
+        s32 by = 8 + (s32)scriptBelow(6);
+        WarEntity* th = we_createBuilding(gContext, CREATE_UNIT_ARGS_INIT(.type = f == 0 ? WAR_UNIT_TOWNHALL_HUMANS : WAR_UNIT_TOWNHALL_ORCS,
+                                                                          .x = bx, .y = by, .player = (u8)f));
+        gTownHalls[f] = th->id;
+
+        s32 mx = bx + 5 + (s32)scriptBelow(3);
+        s32 my = by + (s32)scriptBelow(3);
+        s32 amount = 100 + (s32)scriptBelow(300);
+        WarEntity* mine = we_createUnit(gContext, CREATE_UNIT_ARGS_INIT(.type = WAR_UNIT_GOLDMINE, .x = mx, .y = my, .player = 4,
+                                                                        .resourceKind = WAR_RESOURCE_GOLD, .amount = (u32)amount));
+        we_setInitialIdleState(gContext, mine);
+        gMines[f] = mine->id;
+
+        s32 fx = bx + (s32)scriptBelow(4);
+        s32 fy = by + 8 + (s32)scriptBelow(3);
+        s32 fw = 4 + (s32)scriptBelow(3);
+        s32 fh = 3 + (s32)scriptBelow(3);
+        WarEntity* forest = gatherForest(fx, fy, fw, fh);
+        gForests[f] = forest->id;
+        gForestX[f] = fx;
+        gForestY[f] = fy;
+
+        for (s32 i = 0; i < GATHER_WORKERS / 2; i++)
+        {
+            u32 carryKind = scriptBelow(4);
+            s32 carry = 60 + (s32)scriptBelow(41);
+            WarEntity* w = spawnDude(f == 0 ? WAR_UNIT_PEASANT : WAR_UNIT_PEON, (u8)f, bx + i * 2, by + 5 + (s32)(i % 2));
+            gWorkers[f * (GATHER_WORKERS / 2) + i] = w->id;
+            WarUnitComponent* unit = we_getUnitComponent(gContext, w);
+            if (carryKind == 0)
+            {
+                unit->resourceKind = WAR_RESOURCE_WOOD;
+                unit->amount = carry;
+            }
+            else if (carryKind == 1)
+            {
+                unit->resourceKind = WAR_RESOURCE_GOLD;
+                unit->amount = carry;
+            }
+        }
+    }
+    /* i primi ordini: ogni lavoratore ne riceve uno */
+    for (s32 i = 0; i < GATHER_WORKERS; i++)
+    {
+        u32 what = scriptBelow(3);
+        u32 gate = scriptBelow(4);
+        u32 pick = scriptBelow(40);
+        u32 own = (u32)(i / (GATHER_WORKERS / 2));
+        u32 where = gate == 0 ? 1 - own : own;
+        WarEntity* e = we_findEntity(gContext, gWorkers[i]);
+        if (what == 0) gatherOrderGold(e, where);
+        else if (what == 1) gatherOrderWood(e, where, pick);
+        else gatherOrderDeliver(e, where);
+    }
+}
+
+static void gatherScriptStep(void)
+{
+    u32 r = scriptBelow(1000);
+    if (r < 3)
+    {
+        WarEntity* e = gatherPickWorker();
+        u32 gate = scriptBelow(4);
+        u32 own = e ? (u32)we_getUnitComponent(gContext, e)->player : 0;
+        gatherOrderGold(e, gate == 0 ? 1 - own : own);
+    }
+    else if (r < 6)
+    {
+        WarEntity* e = gatherPickWorker();
+        u32 gate = scriptBelow(4);
+        u32 pick = scriptBelow(40);
+        u32 own = e ? (u32)we_getUnitComponent(gContext, e)->player : 0;
+        gatherOrderWood(e, gate == 0 ? 1 - own : own, pick);
+    }
+    else if (r < 8)
+    {
+        WarEntity* e = gatherPickWorker();
+        u32 gate = scriptBelow(4);
+        u32 own = e ? (u32)we_getUnitComponent(gContext, e)->player : 0;
+        gatherOrderDeliver(e, gate == 0 ? 1 - own : own);
+    }
+    else if (r < 10)
+    {
+        WarEntity* e = gatherPickWorker();
+        u32 gate = scriptBelow(2);
+        s32 minDamage = (s32)scriptBelow(3);
+        s32 rndDamage = (s32)scriptBelow(40);
+        if (e && gate == 0 && wu_isUnit(e))
+            we_takeDamage(gContext, e, minDamage, rndDamage);
+    }
+    else if (r < 12)
+    {
+        WarEntity* e = gatherPickWorker();
+        if (e && wu_isDudeUnit(gContext, e))
+            wst_popState(gContext, e, WAR_TRANSITION_CAUSE_PLAYER_ORDER, WAR_STATE_RESULT_SUCCESS);
+    }
+    else if (r < 14)
+    {
+        opMove(0);
+    }
+    else if (r < 20)
+    {
+        opEconomy();
+    }
+    else if (r < 26)
+    {
+        opHeal();
+    }
+    else if (r < 28)
+    {
+        u32 gate = scriptBelow(4);
+        u32 which = scriptBelow(4);
+        WarEntityId id = which < 2 ? gMines[which] : gTownHalls[which - 2];
+        if (gate == 0)
+            we_removeEntityById(gContext, id);
+    }
+}
+
+/* il seguimento (war_state_machine_follow.c) non e' portato: lo stato si mette e basta; lo scenario fa arrivare l'unita' sul
+   bersaglio come farebbe il seguimento e toglie lo stato con lo stesso passo del remake (wst_popState, COMPLETION) */
+static void gatherResolveFollows(void)
+{
+    WarEntityManager* m = &gMap->entityManager;
+    for (s32 i = 1; i < MAX_ENTITIES_COUNT; i++)
+    {
+        WarEntity* e = &m->entities[i];
+        if (e->id == 0 || !wu_isUnit(e))
+            continue;
+        WarStateBase* active = wst_getActiveState(gContext, e);
+        if (!active || active->type != WAR_STATE_FOLLOW)
+            continue;
+        WarStateFollow* f = (WarStateFollow*)active;
+        WarEntity* target = we_findEntity(gContext, f->targetEntityId);
+        if (!target)
+        {
+            wst_popState(gContext, e, WAR_TRANSITION_CAUSE_COMPLETION, WAR_STATE_RESULT_TARGET_INVALID);
+            continue;
+        }
+        vec2 end = wu_unitPointOnTarget(gContext, e, target);
+        wu_setUnitCenterPosition(gContext, e, end);
+        wst_popState(gContext, e, WAR_TRANSITION_CAUSE_COMPLETION, WAR_STATE_RESULT_SUCCESS);
+    }
+}
+
+/* un passo di wmap_updateMap nell'ordine del remake, senza gli incantesimi, la magia (la rigenerazione del mana), le
+   animazioni e l'interfaccia: lo scenario di combattimento e quello di raccolta lo usano tutti e due; quello di raccolta
+   fa arrivare anche i seguimenti (vedi gatherResolveFollows) */
+static void tickModel(void (*scriptStep)(void), bool resolveFollows)
 {
     const f32 delta = 1.0f / 60.0f;
     if (gTrace)
@@ -886,9 +1189,11 @@ static void tickCombat(void)
     gContext->gameDeltaTime = delta;
     gContext->gameTime += (f64)delta;
 
-    combatScriptStep();
+    scriptStep();
 
     wst_processPendingTransitions(gContext);
+    if (resolveFollows)
+        gatherResolveFollows();
     wst_updateIdleStates(gContext);
     wst_updateMoveStates(gContext);
     wst_updatePatrolStates(gContext);
@@ -912,6 +1217,16 @@ static void tickCombat(void)
     wgrid_build(gContext);
     updateActions(gContext);
     updateProjectiles(gContext);
+}
+
+static void tickCombat(void)
+{
+    tickModel(combatScriptStep, false);
+}
+
+static void gatherTick(void)
+{
+    tickModel(gatherScriptStep, true);
 }
 
 #define COMBAT_TICS 600
@@ -993,6 +1308,99 @@ static void printActionSteps(void)
             printf("\n");
         }
     }
+    wm_allocFree();
+}
+
+static void dumpGather(Text* t, s32 tic)
+{
+    dumpWorld(t, tic);
+    textAdd(t, "M n=%u h=%08x\n", gTileWrites, gTileHash);
+    WarEntityList* forests = we_getEntitiesOfType(gContext, WAR_ENTITY_TYPE_FOREST);
+    for (s32 i = 0; i < forests->count; i++)
+    {
+        WarEntity* forest = forests->items[i];
+        if (!forest)
+            continue;
+        WarForestComponent* fc = we_getForestComponent(gContext, forest);
+        textAdd(t, "F id=%d n=%d", forest->id, fc->trees.count);
+        for (s32 k = 0; k < fc->trees.count; k++)
+        {
+            WarTree* tree = &fc->trees.items[k];
+            textAdd(t, " %d,%d,%d,%d", tree->tilex, tree->tiley, tree->amount, (s32)tree->type);
+        }
+        textAdd(t, "\n");
+    }
+    WarEntityManager* m = &gMap->entityManager;
+    for (s32 i = 1; i < MAX_ENTITIES_COUNT; i++)
+    {
+        WarEntity* e = &m->entities[i];
+        if (e->id == 0 || !wu_isUnit(e))
+            continue;
+        WarSpriteComponent* sprite = we_getSpriteComponent(gContext, e);
+        WarTransformComponent* tr = we_getTransformComponent(gContext, e);
+        textAdd(t, "K %d spr=%d en=%d fr=%d mx=%d\n", e->id, sprite ? sprite->resourceIndex : -1,
+                sprite && we_isComponentEnabled(gContext, e, COMP_SPRITE) ? 1 : 0, sprite ? sprite->frameIndex : -1,
+                tr && tr->scale.x < 0 ? 1 : 0);
+    }
+}
+
+static void runGather(u32 seed, s32 dumpTic, bool perTic)
+{
+    gatherSetup(seed);
+    for (s32 tic = 0; tic < GATHER_TICS; tic++)
+    {
+        gatherTick();
+        Text text = {0};
+        if (perTic || tic == dumpTic)
+            dumpGather(&text, tic);
+        if (dumpTic >= 0 && tic == dumpTic)
+            printf("%s", text.data);
+        else if (perTic)
+            printf("G %u %d %08x %d\n", seed, tic, fnv1a(text.data, text.length), gMap->entityManager.entityCount);
+        free(text.data);
+    }
+    if (perTic)
+    {
+        /* il riassunto: quanto lo scenario ha fatto (e il conto che il golden verifica) */
+        s32 trees[2] = {0, 0};
+        for (s32 f = 0; f < 2; f++)
+        {
+            WarEntity* forest = we_findEntity(gContext, gForests[f]);
+            if (forest)
+                trees[f] = we_getForestComponent(gContext, forest)->trees.count;
+        }
+        s32 mineAmount[2] = {-1, -1};
+        for (s32 f = 0; f < 2; f++)
+        {
+            WarEntity* mine = we_findEntity(gContext, gMines[f]);
+            if (mine)
+                mineAmount[f] = we_getUnitComponent(gContext, mine)->amount;
+        }
+        printf("Q %u gold=%d,%d wood=%d,%d mines=%d,%d trees=%d,%d tiles=%u\n", seed, gMap->players[0].gold, gMap->players[1].gold,
+               gMap->players[0].wood, gMap->players[1].wood, mineAmount[0], mineAmount[1], trees[0], trees[1], gTileWrites);
+    }
+    worldFree();
+}
+
+/* le tabelle della raccolta: i passi dell'azione di raccolta e le immagini dei trasportatori */
+static void printGatherTables(void)
+{
+    wm_allocInit(64ull * 1024 * 1024, 4ull * 1024 * 1024, 1ull * 1024 * 1024);
+    wact_initUnitActionDefs();
+    printf("# harvest: type directional loop count (stepType:param)*\n");
+    for (s32 t = 0; t < WAR_UNIT_COUNT; t++)
+    {
+        const WarUnitActionDef* def = &gUnitActionDefs[t][WAR_ACTION_TYPE_HARVEST];
+        if (def->type == WAR_ACTION_TYPE_NONE)
+            continue;
+        printf("H %d %d %d %d", t, def->directional ? 1 : 0, def->loop ? 1 : 0, def->steps.count);
+        for (s32 i = 0; i < def->steps.count; i++)
+            printf(" %d:%d", (s32)def->steps.items[i].type, def->steps.items[i].param);
+        printf("\n");
+    }
+    printf("# workers: type carryingWoodResource carryingGoldResource\n");
+    for (s32 i = 0; i < (s32)arrayLength(workersData); i++)
+        printf("W %d %d %d\n", workersData[i].type, workersData[i].carryingWoodResource, workersData[i].carryingGoldResource);
     wm_allocFree();
 }
 
@@ -1179,6 +1587,23 @@ int main(int argc, char** argv)
     if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "combat") == 0)
     {
         runCombat((u32)atoi(argv[3]), atoi(argv[4]), false, NULL);
+        return 0;
+    }
+    if (strcmp(argv[1], "gather-tables") == 0)
+    {
+        printGatherTables();
+        return 0;
+    }
+    if (strcmp(argv[1], "gather") == 0)
+    {
+        u32 n = argc > 2 ? (u32)atoi(argv[2]) : 10;
+        for (u32 seed = 1; seed <= n; seed++)
+            runGather(seed, -1, true);
+        return 0;
+    }
+    if (strcmp(argv[1], "dump") == 0 && argc >= 5 && strcmp(argv[2], "gather") == 0)
+    {
+        runGather((u32)atoi(argv[3]), atoi(argv[4]), false);
         return 0;
     }
     if (strcmp(argv[1], "dump") == 0 && argc >= 5)

@@ -113,6 +113,26 @@ begin
           H8(FBits(LMove^.RvoPreferredVelocity.X)), H8(FBits(LMove^.RvoPreferredVelocity.Y)),
           H8(FBits(LMove^.RvoAdjustedVelocity.X)), H8(FBits(LMove^.RvoAdjustedVelocity.Y))]);
       end;
+    WAR_STATE_FOLLOW:
+      AText := AText + Format(' tg=%d tp=%s,%s td=%d', [PWarStateFollow(AState)^.TargetEntityId,
+        H8(FBits(PWarStateFollow(AState)^.TargetPosition.X)), H8(FBits(PWarStateFollow(AState)^.TargetPosition.Y)),
+        PWarStateFollow(AState)^.TargetDistance]);
+    WAR_STATE_GOLD:
+      AText := AText + Format(' gm=%d', [PWarStateGold(AState)^.GoldmineId]);
+    WAR_STATE_MINING:
+      AText := AText + Format(' gm=%d mt=%s', [PWarStateMining(AState)^.GoldmineId,
+        H8(FBits(PWarStateMining(AState)^.MiningTime))]);
+    WAR_STATE_WOOD:
+      AText := AText + Format(' fo=%d fp=%s,%s', [PWarStateWood(AState)^.ForestId,
+        H8(FBits(PWarStateWood(AState)^.Position.X)), H8(FBits(PWarStateWood(AState)^.Position.Y))]);
+    WAR_STATE_CHOPPING:
+      AText := AText + Format(' fo=%d fp=%s,%s', [PWarStateChopping(AState)^.ForestId,
+        H8(FBits(PWarStateChopping(AState)^.Position.X)), H8(FBits(PWarStateChopping(AState)^.Position.Y))]);
+    WAR_STATE_DELIVER:
+      AText := AText + Format(' th=%d in=%d cy=%d sk=%d si=%d sp=%s,%s', [PWarStateDeliver(AState)^.TownHallId,
+        Ord(PWarStateDeliver(AState)^.InsideBuilding), Ord(PWarStateDeliver(AState)^.Cycle),
+        Ord(PWarStateDeliver(AState)^.SourceKind), PWarStateDeliver(AState)^.SourceId,
+        H8(FBits(PWarStateDeliver(AState)^.SourcePosition.X)), H8(FBits(PWarStateDeliver(AState)^.SourcePosition.Y))]);
     WAR_STATE_ATTACK:
       AText := AText + Format(' tg=%d tp=%s,%s', [PWarStateAttack(AState)^.TargetEntityId,
         H8(FBits(PWarStateAttack(AState)^.TargetPosition.X)), H8(FBits(PWarStateAttack(AState)^.TargetPosition.Y))]);

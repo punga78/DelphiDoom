@@ -56,7 +56,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.ActionTable,
+  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.ActionTable, DelphiDoom.War.Model.UnitSprites,
   DelphiDoom.War.Model.Stats.Types, DelphiDoom.War.Model.State.Types, DelphiDoom.War.Map.Types,
   DelphiDoom.War.Model.StateStorage;
 
@@ -108,6 +108,7 @@ begin
   LUnit^.ResourceKind := AResourceKind;
   LUnit^.Amount := Integer(AAmount);
   TWarActionTable.InitActions(LUnit^);
+  TWarUnitSprites.AddDefault(LUnit^);
   LEntity^.HasStateMachine := True;
   LEntity^.StateMachine.Pending.StateRef := TWarStateRefs.Invalid;
   LEntity^.StateMachine.Pending.CancellationTargetRef := TWarStateRefs.Invalid;
