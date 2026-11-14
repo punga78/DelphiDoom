@@ -1,0 +1,106 @@
+# scenarios of listDef (written for the test; no file of Doom 3)
+@case list_selection_and_scroll
+@file list.gui
+windowDef Desktop {
+  rect 0, 0, 640, 480
+  listDef files {
+    rect 10, 10, 200, 100
+    listname "files"
+    textscale 0.3
+    forecolor 1, 1, 1, 1
+    hovercolor 1, 1, 0, 1
+    bordercolor 0.2, 0.2, 0.8, 0.5
+    multipleSel 1
+    onEnter { set "cmd" "opened" }
+  }
+  listDef cols {
+    rect 250, 10, 300, 100
+    listname "cols"
+    textscale 0.3
+    tabstops "0, 100, 200"
+    tabaligns "0, 1, 2"
+    tabTypes "0, 1, 0"
+    tabvaligns "0, 1, 2"
+    tabiconsizes "16, 16, 16, 16, 16, 16"
+    tabiconvoffset "0, 2, 0"
+    mtr_star "guis/assets/star"
+    forecolor 1, 1, 1, 1
+  }
+  listDef hlist {
+    rect 10, 200, 200, 60
+    listname "hlist"
+    horizontal 1
+    textscale 0.3
+  }
+}
+@op mat guis/assets/scrollbarv.tga 8 8 0 0
+@op mat guis/assets/scrollbar_thumb.tga 8 12 0 0
+@op mat guis/assets/scrollbarh.tga 8 8 0 0
+@op load list.gui
+@op state files_item_0 alpha.txt
+@op state files_item_1 beta.txt
+@op state files_item_2 gamma.txt
+@op state files_item_3 delta.txt
+@op state files_item_4 epsilon.txt
+@op state files_item_5 zeta.txt
+@op state files_item_6 eta.txt
+@op state files_item_7 theta.txt
+@op state files_item_8 iota.txt
+@op state files_item_9 kappa.txt
+@op state files_item_10 lambda.txt
+@op state files_item_11 mu.txt
+@op state cols_item_0 one\tstar\ttwo
+@op state cols_item_1 plain text only
+@op state cols_item_2 a\tunknown\tb
+@op state cols_item_3 a\tstar\tb\textra
+@op state hlist_item_0 h one
+@op state hlist_item_1 h two
+@op statechanged 10
+@op redraw 20
+@op activate 1 30
+@op redraw 40
+@op guicursor 20 40
+@op event 3 0 0 50
+@op redraw 60
+@op event 1 187 1 70
+@op event 1 187 0 80
+@op event 1 187 1 90
+@op event 1 187 1 500
+@op redraw 510
+@op event 1 134 1 520
+@op event 1 134 1 530
+@op event 1 133 1 540
+@op event 1 145 1 550
+@op event 1 146 1 560
+@op event 1 196 1 570
+@op event 1 195 1 580
+@op keydown 141
+@op event 1 134 1 590
+@op event 1 134 1 600
+@op keyup 141
+@op event 1 134 1 610
+@op redraw 620
+@op keydown 141
+@op guicursor 20 40
+@op event 1 187 1 700
+@op guicursor 20 55
+@op event 1 187 1 710
+@op guicursor 20 40
+@op event 1 187 1 720
+@op keyup 141
+@op event 1 13 1 730
+@op event 2 103 0 740
+@op event 2 101 0 750
+@op event 2 122 0 2000
+@op event 2 7 0 2010
+@op event 1 187 1 2020
+@op guicursor 500 500
+@op event 1 187 1 2030
+@op guicursor 20 107
+@op event 1 187 1 2040
+@op redraw 2050
+@op state files_sel_0 3
+@op statechanged 2060
+@op redraw 2070
+@op dump
+@end
