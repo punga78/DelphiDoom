@@ -36,12 +36,12 @@ var
   LPoint, LIndex, LCarry, LDigit: Integer;
   LNegative, LRoundUp: Boolean;
 begin
-  // the exact decimals of the double (a float has at most 24 bits, so 12 decimals are enough to see a tie)
-  LText := Format('%.12f', [Abs(AValue)], TFormatSettings.Invariant);
+  // the exact decimals of the double (a float has at most 24 bits, so 18 decimals are enough to see a tie)
+  LText := Format('%.18f', [Abs(AValue)], TFormatSettings.Invariant);
   LNegative := AValue < 0;
   LPoint := Pos('.', LText);
   LDigits := Copy(LText, 1, LPoint - 1) + Copy(LText, LPoint + 1, ADecimals);
-  LRest := Copy(LText, LPoint + 1 + ADecimals, 12);
+  LRest := Copy(LText, LPoint + 1 + ADecimals, 18);
   LRoundUp := False;
   if LRest <> '' then
   begin
@@ -49,7 +49,7 @@ begin
       LRoundUp := True
     else if LRest[1] = '5' then
     begin
-      if Copy(LRest, 2, 12) <> StringOfChar('0', Length(LRest) - 1) then
+      if Copy(LRest, 2, 18) <> StringOfChar('0', Length(LRest) - 1) then
         LRoundUp := True
       else
         // a tie: the even digit

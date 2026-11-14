@@ -40,6 +40,18 @@ type
     function ModelCount: Integer;
   end;
 
+  /// <summary>The library variables of the tool: the defaults of the physics, grapplereach as given</summary>
+  TReachLibVars = class(TInterfacedObject, IBotLibVars)
+  strict private
+    FGrapple: Boolean;
+    FDefaults: IBotLibVars;
+  public
+    constructor Create(const AGrapple: Boolean);
+    function GetValue(const AName: AnsiString): Single;
+    function GetValueOrCreate(const AName, ADefault: AnsiString): Single;
+    function GetStringOrCreate(const AName, ADefault: AnsiString): AnsiString;
+  end;
+
   /// <summary>Runs the scenario on one AAS file with its BSP and writes the lines of the C tool</summary>
   TAasReachScenario = class
   strict private
@@ -77,18 +89,6 @@ type
     procedure ResetPercent;
     property PercentCount: Cardinal read FPercentCount;
     property PercentHash: Cardinal read FPercentHash;
-  end;
-
-  /// <summary>The library variables of the tool: the defaults of the physics, grapplereach as given</summary>
-  TReachLibVars = class(TInterfacedObject, IBotLibVars)
-  strict private
-    FGrapple: Boolean;
-    FDefaults: IBotLibVars;
-  public
-    constructor Create(const AGrapple: Boolean);
-    function GetValue(const AName: AnsiString): Single;
-    function GetValueOrCreate(const AName, ADefault: AnsiString): Single;
-    function GetStringOrCreate(const AName, ADefault: AnsiString): AnsiString;
   end;
 
 { TReachImport }
