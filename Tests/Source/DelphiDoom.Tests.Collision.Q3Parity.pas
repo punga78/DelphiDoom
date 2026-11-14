@@ -39,6 +39,7 @@ type
     FLineTolerance: Integer;
     FAdjustCount: Integer;
     FMismatchCount: Integer;
+    FPatchIndex: Integer;
     function DataPath(const AFileName: string): string;
     function Hex(const AToken: string): Cardinal;
     function FloatAt(const AWords: TArray<string>; const AIndex: Integer): Single;
@@ -63,8 +64,8 @@ type
 implementation
 
 uses
-  DelphiDoom.MapFile.Bsp.Intf, DelphiDoom.MapFile.Bsp.Factory, DelphiDoom.Collision.Q3.Loader,
-  DelphiDoom.Collision.Q3.Model, DelphiDoom.Tests.Collision.Q3Support;
+  DelphiDoom.MapFile.Bsp.Intf, DelphiDoom.MapFile.Bsp.Factory, DelphiDoom.Collision.Q3.Loader, DelphiDoom.Collision.Q3.Factory,
+  DelphiDoom.Collision.Q3.Model, DelphiDoom.Collision.Q3.PatchCollide, DelphiDoom.Tests.Collision.Q3Support;
 
 const
   TOKEN_BAR = '|';
@@ -283,6 +284,9 @@ var
   LRow: TBytes;
   LBuffer: TBytes;
   LText: string;
+  LCollide: TQ3PatchCollide;
+  LPlane: TQ3PatchPlane;
+  LFacet: TQ3Facet;
 begin
   LCommand := AWords[0];
   if LCommand = 'pointleaf' then
@@ -301,6 +305,30 @@ begin
   begin
     LLeafs := FModel.BoxBrushes(VecAt(AWords, 1), VecAt(AWords, 4), StrToInt(AWords[7]));
     Result := [IntToToken(Length(LLeafs)), IntToHex(ListHash(LLeafs), 8).ToLower];
+  end
+  else if LCommand = 'patch' then
+  begin
+    FPatchIndex := StrToInt(AWords[1]);
+    LCollide := FMap.PatchCollides[FPatchIndex] as TQ3PatchCollide;
+    Result := [IntToToken(LCollide.NumPlanes), IntToToken(LCollide.NumFacets), FloatToken(LCollide.Bounds(0)[0]),
+      FloatToken(LCollide.Bounds(0)[1]), FloatToken(LCollide.Bounds(0)[2]), FloatToken(LCollide.Bounds(1)[0]),
+      FloatToken(LCollide.Bounds(1)[1]), FloatToken(LCollide.Bounds(1)[2])];
+  end
+  else if LCommand = 'pplane' then
+  begin
+    LCollide := FMap.PatchCollides[FPatchIndex] as TQ3PatchCollide;
+    LPlane := LCollide.Plane(StrToInt(AWords[1]));
+    Result := [FloatToken(LPlane.Plane[0]), FloatToken(LPlane.Plane[1]), FloatToken(LPlane.Plane[2]),
+      FloatToken(LPlane.Plane[3]), IntToToken(LPlane.SignBits)];
+  end
+  else if LCommand = 'pfacet' then
+  begin
+    LCollide := FMap.PatchCollides[FPatchIndex] as TQ3PatchCollide;
+    LFacet := LCollide.Facet(StrToInt(AWords[1]));
+    Result := [IntToToken(LFacet.SurfacePlane), IntToToken(LFacet.NumBorders)];
+    for LIndex := 0 to LFacet.NumBorders - 1 do
+      Result := Result + [Format('%d:%d:%d', [LFacet.BorderPlanes[LIndex], LFacet.BorderInward[LIndex],
+        LFacet.BorderNoAdjust[LIndex]])];
   end
   else if LCommand = 'trace' then
   begin
@@ -425,6 +453,16 @@ begin
   begin
     LFirstFloat := 0;
     LLastFloat := 5;
+  end
+  else if LWords[0] = 'patch' then
+  begin
+    LFirstFloat := 2;
+    LLastFloat := 7;
+  end
+  else if LWords[0] = 'pplane' then
+  begin
+    LFirstFloat := 0;
+    LLastFloat := 3;
   end;
 
   LOk := Length(LExpected) = Length(LActual);
@@ -434,7 +472,7 @@ begin
         LOk := False;
   if not LOk then
   begin
-    if FMismatches.Count < 8 then
+    if FMismatches.Count < 40 then
       FMismatches.Add(Format('%s'#13#10'  C:      %s'#13#10'  Pascal: %s', [Trim(Copy(ALine, 1, LBar - 1)),
         string.Join(' ', LExpected), string.Join(' ', LActual)]));
     Inc(FMismatchCount);
@@ -450,7 +488,8 @@ var
 begin
   LReader := TBspFactory.CreateReader;
   LFile := LReader.ParseBytes(TFile.ReadAllBytes(DataPath(AName)), AnsiString(AName));
-  LLoader := TQ3ClipMapLoader.Create(TBspFactory.CreateValidator, nil);
+  // the patches collide: the C code of the golden file has cm_patch.c compiled as it is
+  LLoader := TQ3ClipMapLoader.Create(TBspFactory.CreateValidator, TQ3CollisionFactory.CreatePatchBuilder);
   try
     FMap := LLoader.Load(LFile, AnsiString(AName));
   finally

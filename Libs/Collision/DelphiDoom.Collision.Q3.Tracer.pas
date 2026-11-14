@@ -425,6 +425,7 @@ begin
 
   // set basic parms
   LWork.Contents := ABrushMask;
+  LWork.PlayerCurveClip := not FMap.PlayerCurveClipOff;
 
   // adjust so that mins and maxs are always symetric, which avoids some complications with
   // plane expanding of rotated bmodels

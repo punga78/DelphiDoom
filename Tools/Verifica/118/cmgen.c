@@ -8,6 +8,7 @@
  * printed as the 8 hex digits of their bits. A line of the output is "<query> | <answer>".
  */
 #include "qcommon/cm_local.h"
+#include "qcommon/cm_patch.h"
 #include <stdarg.h>
 
 static unsigned g_seed;
@@ -311,6 +312,31 @@ static void print_load(void) {
 		}
 	}
 	printf(" %d\n", patches);
+	/* the collision geometry of the patches: bounds, planes (bits and sign bits) and facets */
+	for (i = 0; i < cm.numSurfaces; i++) {
+		const patchCollide_t *pc;
+		int j, k;
+		if (!cm.surfaces[i]) {
+			continue;
+		}
+		pc = cm.surfaces[i]->pc;
+		printf("patch %d | %d %d", i, pc->numPlanes, pc->numFacets);
+		put3(pc->bounds[0]);
+		put3(pc->bounds[1]);
+		printf("\n");
+		for (j = 0; j < pc->numPlanes; j++) {
+			printf("pplane %d | %08x %08x %08x %08x %d\n", j, fb(pc->planes[j].plane[0]), fb(pc->planes[j].plane[1]),
+				fb(pc->planes[j].plane[2]), fb(pc->planes[j].plane[3]), pc->planes[j].signbits);
+		}
+		for (j = 0; j < pc->numFacets; j++) {
+			printf("pfacet %d | %d %d", j, pc->facets[j].surfacePlane, pc->facets[j].numBorders);
+			for (k = 0; k < pc->facets[j].numBorders; k++) {
+				printf(" %d:%d:%d", pc->facets[j].borderPlanes[k], pc->facets[j].borderInward[k],
+					pc->facets[j].borderNoAdjust[k]);
+			}
+			printf("\n");
+		}
+	}
 	h = 2166136261u;
 	for (i = 0; i < cm.numPlanes; i++) {
 		h = fnv(h, fb(cm.planes[i].normal[0]));
@@ -480,6 +506,54 @@ static void run_traces(int count, int transformed, int tempbox) {
 	}
 }
 
+/* traces that start close to the two patches of the sample BSPs (a 3x3 one around the origin, a 5x3 one
+   around (464, 64)): points, boxes and capsules, short and long moves, positions that do not move */
+static void run_patch_traces(int count) {
+	int i, k;
+	for (i = 0; i < count; i++) {
+		float start[3], end[3], mins[3], maxs[3], centre[3];
+		int model, mask, capsule, zero = rint_(0, 99) < 12, point = rint_(0, 99) < 30;
+		trace_t t;
+		if (i % 2 == 0) {
+			centre[0] = 0; centre[1] = 0; centre[2] = 20;
+			model = rint_(0, 99) < 40 ? 1 : 0;
+		} else {
+			centre[0] = 464; centre[1] = 64; centre[2] = 8;
+			model = 0;
+		}
+		mask = masks[rint_(0, 6)];
+		capsule = rint_(0, 99) < 30;
+		for (k = 0; k < 3; k++) {
+			start[k] = centre[k] + rf(-140, 140) * (k == 2 ? 0.6f : 1.0f);
+			end[k] = start[k] + (rint_(0, 2) == 0 ? rf(-400, 400) : rf(-60, 60));
+		}
+		if (rint_(0, 2) == 0) {
+			/* straight through, from above or below */
+			end[0] = start[0] + rf(-8, 8); end[1] = start[1] + rf(-8, 8);
+			end[2] = start[2] > centre[2] ? start[2] - rf(60, 250) : start[2] + rf(60, 250);
+		}
+		if (zero) {
+			for (k = 0; k < 3; k++) {
+				end[k] = start[k];
+			}
+		}
+		random_box(mins, maxs);
+		if (point) {
+			for (k = 0; k < 3; k++) {
+				mins[k] = maxs[k] = 0;
+			}
+		}
+		printf("trace");
+		put3(start);
+		put3(end);
+		put3(mins);
+		put3(maxs);
+		printf(" %d %d %d", model, mask, capsule);
+		CM_BoxTrace(&t, start, end, mins, maxs, model, mask, capsule);
+		print_trace(&t);
+	}
+}
+
 static void run_queries(int seed) {
 	int i, k;
 	g_seed = (unsigned)seed;
@@ -615,6 +689,7 @@ static void run_queries(int seed) {
 		}
 		printf("\n");
 	}
+	run_patch_traces(700);
 }
 
 static void run_areas(void) {

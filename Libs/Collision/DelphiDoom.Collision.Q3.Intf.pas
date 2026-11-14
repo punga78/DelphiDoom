@@ -79,6 +79,8 @@ type
     procedure SetNoAreas(const AValue: Boolean);
     function GetNoCurves: Boolean;
     procedure SetNoCurves(const AValue: Boolean);
+    function GetPlayerCurveClip: Boolean;
+    procedure SetPlayerCurveClip(const AValue: Boolean);
     function GetTraceCount: Integer;
     function GetBrushTraceCount: Integer;
     function GetPatchTraceCount: Integer;
@@ -123,6 +125,8 @@ type
     property NoAreas: Boolean read GetNoAreas write SetNoAreas;
     /// <summary>The cvar cm_noCurves: the patches are not tested</summary>
     property NoCurves: Boolean read GetNoCurves write SetNoCurves;
+    /// <summary>The cvar cm_playerCurveClip (True by default): a point trace is clipped by the patches</summary>
+    property PlayerCurveClip: Boolean read GetPlayerCurveClip write SetPlayerCurveClip;
     /// <summary>c_traces, c_brush_traces, c_patch_traces, c_pointcontents</summary>
     property TraceCount: Integer read GetTraceCount;
     property BrushTraceCount: Integer read GetBrushTraceCount;

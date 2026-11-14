@@ -153,6 +153,8 @@ type
     IsPoint: Boolean;
     Trace: TQ3Trace;
     Sphere: TQ3Sphere;
+    /// <summary>The cvar cm_playerCurveClip (1 by default): a point trace is clipped by the patches</summary>
+    PlayerCurveClip: Boolean;
   end;
   PQ3TraceWork = ^TQ3TraceWork;
 
@@ -172,6 +174,26 @@ type
     Points: TArray<TQ3Vec3>;
   end;
   PQ3Patch = ^TQ3Patch;
+
+  /// <summary>patchPlane_t: the plane (normal and distance) and the sign bits that select the box offset</summary>
+  TQ3PatchPlaneValue = array[0..3] of Single;
+
+  TQ3PatchPlane = record
+    Plane: TQ3PatchPlaneValue;
+    SignBits: Integer;
+  end;
+
+  /// <summary>
+  ///   facet_t: a surface plane (a triangle or a quad of the grid) and the planes that bound it (the
+  ///   borders, 6 axial bevels, the edge bevels and the opposite plane). The original has room for 4+6+16
+  /// </summary>
+  TQ3Facet = record
+    SurfacePlane: Integer;
+    NumBorders: Integer;
+    BorderPlanes: array[0..25] of Integer;
+    BorderInward: array[0..25] of Integer;
+    BorderNoAdjust: array[0..25] of Integer;
+  end;
 
   /// <summary>
   ///   An error that the original reports with Com_Error( ERR_DROP, ... ): a bad handle, a map

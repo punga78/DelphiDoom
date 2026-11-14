@@ -24,6 +24,9 @@
 #define CVAR_CHEAT 0
 #define CVAR_ARCHIVE 0
 
+#define ERR_FATAL 0
+void *Z_Malloc(int size);
+void Z_Free(void *ptr);
 void Com_Error(int level, const char *fmt, ...);
 void Com_DPrintf(const char *fmt, ...);
 cvar_t *Cvar_Get(const char *name, const char *value, int flags);
