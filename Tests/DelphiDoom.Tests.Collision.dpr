@@ -95,7 +95,8 @@ uses
   DelphiDoom.Tests.Collision.CmFile in 'Source\DelphiDoom.Tests.Collision.CmFile.pas',
   DelphiDoom.Tests.Collision.Doom3Parity in 'Source\DelphiDoom.Tests.Collision.Doom3Parity.pas',
   DelphiDoom.Tests.Collision.Doom3Builder in 'Source\DelphiDoom.Tests.Collision.Doom3Builder.pas',
-  DelphiDoom.Tests.Collision.Fuzz in 'Source\DelphiDoom.Tests.Collision.Fuzz.pas';
+  DelphiDoom.Tests.Collision.Fuzz in 'Source\DelphiDoom.Tests.Collision.Fuzz.pas',
+  DelphiDoom.Tests.Collision.Q3OpenArena in 'Source\DelphiDoom.Tests.Collision.Q3OpenArena.pas';
 
 var
   Runner: ITestRunner;

@@ -78,6 +78,20 @@ begin
   FPatchBuilder := APatchBuilder;
 end;
 
+/// <summary>
+///   The problems of the validator that matter to the collision model: the fogs (a fog number that does not
+///   exist, as the maps of OpenArena have) are only read by the renderer, CM_LoadMap never looks at them
+/// </summary>
+function CollisionIssues(const AIssues: TArray<string>): TArray<string>;
+var
+  LIssue: string;
+begin
+  Result := nil;
+  for LIssue in AIssues do
+    if not (LIssue.StartsWith('fog ') or (Pos(': fog ', LIssue) > 0)) then
+      Result := Result + [LIssue];
+end;
+
 function TQ3ClipMapLoader.Load(const AFile: IBspFile; const AName: AnsiString): TQ3ClipMap;
 var
   LIssues: TArray<string>;
@@ -85,7 +99,7 @@ var
 begin
   if Assigned(FValidator) then
   begin
-    LIssues := FValidator.Validate(AFile);
+    LIssues := CollisionIssues(FValidator.Validate(AFile));
     if Length(LIssues) > 0 then
       raise EQ3CollisionException.CreateFmt(SInvalidBsp, [string(AName), LIssues[0], Length(LIssues)]);
   end;

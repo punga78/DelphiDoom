@@ -726,6 +726,94 @@ int main(int argc, char **argv) {
 		write_bsp(atoi(argv[2]), argv[3]);
 		return 0;
 	}
+	/* probe <bsp> <mask> <capsule> start(3) end(3) mins(3) maxs(3): one trace and the position test where it ended
+	   (decimal numbers with 9 digits are floats exactly) */
+	if (argc >= 17 && !strcmp(argv[1], "probe")) {
+		float start[3], end[3], mins[3], maxs[3];
+		int k, mask = atoi(argv[3]), capsule = atoi(argv[4]);
+		trace_t t, stuck;
+		for (k = 0; k < 3; k++) {
+			start[k] = (float)atof(argv[5 + k]);
+			end[k] = (float)atof(argv[8 + k]);
+			mins[k] = (float)atof(argv[11 + k]);
+			maxs[k] = (float)atof(argv[14 + k]);
+		}
+		CM_LoadMap(argv[2], qfalse, &checksum);
+		CM_BoxTrace(&t, start, end, mins, maxs, 0, mask, capsule);
+		printf("trace");
+		print_trace(&t);
+		CM_BoxTrace(&stuck, t.endpos, t.endpos, mins, maxs, 0, mask, capsule);
+		printf("endpos stuck: allsolid %d startsolid %d fraction %f\n", stuck.allsolid, stuck.startsolid, stuck.fraction);
+		return 0;
+	}
+	/* runmap <bsp> <seed> <count>: for a real map (nothing of it is kept): the counts, one hash per patch collide and
+	   <count> traces and position tests with starts spread over the bounds of the world */
+	if (argc >= 5 && !strcmp(argv[1], "runmap")) {
+		int i, k;
+		float mn[3], mx[3];
+		CM_LoadMap(argv[2], qfalse, &checksum);
+		g_seed = (unsigned)atoi(argv[3]);
+		{
+			int patches = 0;
+			for (i = 0; i < cm.numSurfaces; i++) {
+				if (cm.surfaces[i]) {
+					patches++;
+				}
+			}
+			printf("load %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", cm.numShaders, cm.numPlanes, cm.numNodes,
+				cm.numLeafs, cm.numLeafBrushes, cm.numLeafSurfaces, cm.numSubModels, cm.numBrushes, cm.numBrushSides,
+				cm.numClusters, cm.clusterBytes, cm.vised, cm.numAreas, cm.numEntityChars, cm.numSurfaces, patches);
+		}
+		for (i = 0; i < cm.numSurfaces; i++) {
+			const patchCollide_t *pc;
+			unsigned h = 2166136261u;
+			int j, n;
+			if (!cm.surfaces[i]) {
+				continue;
+			}
+			pc = cm.surfaces[i]->pc;
+			for (j = 0; j < 3; j++) {
+				h = fnv(h, fb(pc->bounds[0][j]));
+				h = fnv(h, fb(pc->bounds[1][j]));
+			}
+			for (j = 0; j < pc->numPlanes; j++) {
+				for (n = 0; n < 4; n++) {
+					h = fnv(h, fb(pc->planes[j].plane[n]));
+				}
+				h = fnv(h, pc->planes[j].signbits);
+			}
+			for (j = 0; j < pc->numFacets; j++) {
+				h = fnv(h, pc->facets[j].surfacePlane);
+				h = fnv(h, pc->facets[j].numBorders);
+				for (n = 0; n < pc->facets[j].numBorders; n++) {
+					h = fnv(h, pc->facets[j].borderPlanes[n]);
+					h = fnv(h, pc->facets[j].borderInward[n]);
+					h = fnv(h, pc->facets[j].borderNoAdjust[n]);
+				}
+			}
+			printf("patchhash %d | %d %d %08x\n", i, pc->numPlanes, pc->numFacets, h);
+		}
+		CM_ModelBounds(0, mn, mx);
+		for (i = 0; i < atoi(argv[4]); i++) {
+			float start[3], end[3], mins[3], maxs[3];
+			int mask = masks[rint_(0, 6)], capsule = rint_(0, 99) < 30, zero = rint_(0, 99) < 10;
+			trace_t t;
+			for (k = 0; k < 3; k++) {
+				start[k] = mn[k] + rf(0, 1) * (mx[k] - mn[k]);
+				end[k] = zero ? start[k] : start[k] + (rint_(0, 2) == 0 ? rf(-600, 600) : rf(-80, 80));
+			}
+			random_box(mins, maxs);
+			printf("trace");
+			put3(start);
+			put3(end);
+			put3(mins);
+			put3(maxs);
+			printf(" %d %d %d", 0, mask, capsule);
+			CM_BoxTrace(&t, start, end, mins, maxs, 0, mask, capsule);
+			print_trace(&t);
+		}
+		return 0;
+	}
 	if (argc >= 4 && !strcmp(argv[1], "run")) {
 		CM_LoadMap(argv[2], qfalse, &checksum);
 		print_load();

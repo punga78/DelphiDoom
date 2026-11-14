@@ -39,6 +39,8 @@
 *.drc
 *.map
 !Tests/Data/MapFile/*.map
+# answers of the C code on the maps of OpenArena (Tools\Verifica\118\Make-OpenArena-Golden.ps1): local only
+Tests/Data/Collision/OpenArena/
 *.dres
 *.rsm
 *.tds

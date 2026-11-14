@@ -15,8 +15,6 @@
 {******************************************************************************}
 unit DelphiDoom.Collision.Q3.PatchCollideBuilder;
 
-{$DEFINE Q3DEBUGPATCH}
-
 {$Q-}
 {$R-}
 
@@ -518,7 +516,6 @@ var
   LNormal: TQ3Vec3;
   LNext: Integer;
   LPlaneVec: TQ3Vec3;
-  LDbg: TQ3Vec3;
 begin
   LPlane := ToValue(FPlanes[AFacet.SurfacePlane]);
 
@@ -550,16 +547,6 @@ begin
       Exit;
 
     LW.Bounds(LMins, LMaxs);
-    {$IFDEF Q3DEBUGPATCH}
-    Write('DBG facet ', AFacet.NumBorders, ' surf ', AFacet.SurfacePlane, ' np ', LW.NumPoints, ':');
-    for LI := 0 to LW.NumPoints - 1 do
-      for LK := 0 to 2 do
-        begin
-          LDbg := LW[LI];
-          Write(' ', LowerCase(IntToHex(PCardinal(@LDbg[LK])^, 8)));
-        end;
-    Writeln;
-    {$ENDIF}
 
     // add the axial planes
     for LAxis := 0 to 2 do
