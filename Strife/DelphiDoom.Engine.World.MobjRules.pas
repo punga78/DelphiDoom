@@ -25,7 +25,9 @@ uses
 // Needs precompiled tables/data structures.
   info_h,
   p_udmf,
-  m_fixed;
+  m_fixed,
+  d_player,
+  r_defs;
 
 type
   /// <summary>
@@ -44,6 +46,12 @@ type
     const
       /// <summary>A seeker missile that does not move stops seeking</summary>
       SeekerNeedsSpeed = True;
+      /// <summary>The flags of a thing that the floor does not slow down</summary>
+      NoFrictionFlags = MF_MISSILE or MF_BOUNCE;
+      /// <summary>A thing whose state ends goes on through the states of no tics in the same tic</summary>
+      CyclesStatesWhileNoTics = False;
+      /// <summary>The dead monsters respawn (nightmare, -respawn)</summary>
+      MonstersRespawn = True;
 
     /// <summary>P_SetMobjState: what the thing remembers of the state it leaves</summary>
     class procedure KeepPreviousState(mobj: Pmobj_t); static; inline;
@@ -92,8 +100,6 @@ type
 
     /// <summary>spawnmobj and summon are refused now (no level, a demo, a net game)</summary>
     class function ConsoleSpawnForbidden: boolean; static;
-    /// <summary>P_MobjThinker of the game</summary>
-    class procedure MobjThinker(mobj: Pmobj_t); static;
     /// <summary>P_SpawnMobj of the game</summary>
     class function SpawnMobj(x, y, z: fixed_t; _type: integer; const mthing: Pmapthing_t = nil): Pmobj_t; static;
     /// <summary>P_SpawnPlayer of the game</summary>
@@ -110,6 +116,42 @@ type
     class function SpawnPlayerMissile(source: Pmobj_t; _type: integer): Pmobj_t; static;
     /// <summary>P_HitFloor of the game</summary>
     class function HitFloor(thing: Pmobj_t): integer; static;
+    /// <summary>P_XYMovement: the thing has no momentum (a monster thrown at its target stops here); true when there is nothing to move</summary>
+    class function StoppedBeforeMoving(mo: Pmobj_t): boolean; static;
+    /// <summary>P_XYMovement: the wind of the sector special pushes the thing; gives the special of the sector (0 where the game has no such winds)</summary>
+    class function SectorWind(mo: Pmobj_t): integer; static;
+    /// <summary>The thing is pushed by the wind of a sector</summary>
+    class function HasWindThrust(mo: Pmobj_t): boolean; static; inline;
+    /// <summary>A fast move backwards is done in two halves like a fast move forwards</summary>
+    class function HalvesBackwardMoves: boolean; static; inline;
+    /// <summary>P_XYMovement: the move was blocked (slide, bounce, explode, stop); true when the thing is gone or the movement is over</summary>
+    class function BlockedMove(mo: Pmobj_t; ptryx, ptryy: fixed_t; var xmove, ymove: fixed_t): boolean; static;
+    /// <summary>P_XYMovement: the friction of a thing in the air where the game has one (Strife); true when there is no more friction to apply</summary>
+    class function AirborneFriction(mo: Pmobj_t; player: Pplayer_t; wasonfloorz, wasonslope: boolean; oldsector: Psector_t): boolean; static;
+    /// <summary>P_XYMovement: the thing is in the air and gets no friction (unless it only left a sloped floor)</summary>
+    class function FallsFree(mo: Pmobj_t; player: Pplayer_t): boolean; static; inline;
+    /// <summary>P_XYMovement: a player that stops leaves the walking frames</summary>
+    class procedure StopWalking(player: Pplayer_t); static;
+    /// <summary>P_XYMovement: the friction of the floor (special is what SectorWind gave)</summary>
+    class procedure ApplyFriction(mo: Pmobj_t; special: integer); static;
+    /// <summary>P_MobjThinker: the thing is no more "just appeared"</summary>
+    class procedure ClearJustAppeared(mobj: Pmobj_t); static; inline;
+    /// <summary>P_MobjThinker: what is cleared before the thing moves (Hexen: the blocking thing)</summary>
+    class procedure BeginThink; static; inline;
+    /// <summary>P_MobjThinker: after a move the thing is still there (Strife: the feet sink in the terrain)</summary>
+    class procedure AfterXYMovement(mobj: Pmobj_t); static;
+    /// <summary>P_MobjThinker: the thing has no momentum (Hexen: it is no more "blasted")</summary>
+    class procedure StandsStill(mobj: Pmobj_t); static;
+    /// <summary>P_MobjThinker: floating bob, z movement and gravity, standing on things; false when the thing was removed</summary>
+    class function ZPhase(mobj: Pmobj_t): boolean; static;
+    /// <summary>P_MobjThinker: before the state of the thing ends (Strife: the stonecold cheat)</summary>
+    class procedure BeforeStateCycle(mobj: Pmobj_t); static;
+    /// <summary>P_MobjThinker: a monster that waits to respawn does not respawn for a reason of the game (asked after the dice)</summary>
+    class function NeverRespawns(mobj: Pmobj_t): boolean; static; inline;
+    /// <summary>P_NightmareRespawn of the game</summary>
+    class procedure NightmareRespawn(mobj: Pmobj_t); static;
+    /// <summary>The tics a dead monster waits before it may respawn</summary>
+    class function RespawnTime: integer; static; inline;
   end;
 
 //==============================================================================
@@ -169,7 +211,6 @@ uses
   DelphiDoom.Scanner.Scanner,
   DelphiDoom.Engine.Scanner.Log,
   doomstat,
-  d_player,
   d_think,
   d_main,
   DelphiDoom.MathCore.Types,
@@ -202,7 +243,6 @@ uses
   p_musinfo,
   p_bouncing,
   ps_main,
-  r_defs,
   r_sky,
   r_main,
   r_data,
@@ -230,227 +270,6 @@ const
   FRICTION = $e800;
   AIRFRICTION = $fff0; // [STRIFE]
 
-//==============================================================================
-//
-// P_XYMovement
-//
-//==============================================================================
-procedure P_XYMovement(mo: Pmobj_t);
-var
-  ptryx: fixed_t;
-  ptryy: fixed_t;
-  player: Pplayer_t;
-  xmove: fixed_t;
-  ymove: fixed_t;
-  wasonfloorz: boolean;
-  wasonslope: boolean;
-  oldsector: Psector_t;
-begin
-  wasonfloorz := mo.z <= mo.floorz;
-  oldsector := Psubsector_t(mo.subsector).sector;
-
-  // JVAL: 20220222 - Wind thrust
-  if mo.flags4_ex and MF4_EX_WINDTHRUST <> 0 then
-    if oldsector.windthrust <> 0 then
-      P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
-
-  wasonslope := oldsector.renderflags and SRF_SLOPED <> 0;
-
-  player := mo.player;
-
-  if mo.flags3_ex and MF3_EX_NOMAXMOVE = 0 then
-  begin
-    if mo.momx > MAXMOVE then
-      mo.momx := MAXMOVE
-    else if mo.momx < -MAXMOVE then
-      mo.momx := -MAXMOVE;
-
-    if mo.momy > MAXMOVE then
-      mo.momy := MAXMOVE
-    else if mo.momy < -MAXMOVE then
-      mo.momy := -MAXMOVE;
-  end;
-
-  xmove := mo.momx;
-  ymove := mo.momy;
-
-  repeat
-    if (xmove > MAXMOVE div 2) or (ymove > MAXMOVE div 2) then
-    begin
-      ptryx := mo.x + xmove div 2;
-      ptryy := mo.y + ymove div 2;
-      xmove := _SHR1(xmove);
-      ymove := _SHR1(ymove);
-    end
-    else
-    begin
-      ptryx := mo.x + xmove;
-      ptryy := mo.y + ymove;
-      xmove := 0;
-      ymove := 0;
-    end;
-
-    // JVAL: Slopes
-    // JVAL 20191209 - Fix 3d floor problem
-    tmfloorz := P_3dFloorHeight(ptryx, ptryy, mo.z);
-    tmceilingz := P_3dCeilingHeight(ptryx, ptryy, mo.z);
-
-    if not P_TryMove(mo, ptryx, ptryy) then
-    begin
-      // blocked move
-      if mo.player <> nil then
-      begin
-        if not P_LadderMove(mo) then
-          P_SlideMove(mo); // try to slide along it
-      end
-      // JVAL: 20210209 - Sliding monsters
-      else if (mo.flags3_ex and (MF3_EX_SLIDING or MF3_EX_SLIDE or MF3_EX_SLIDEONWALLS) <> 0) and (mo.flags and MF_MISSILE = 0) then
-      begin
-        P_SlideMove(mo); // try to slide along it
-      end
-      // JVAL: 20211121 - New bounch on walls mechanics
-      else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (tmbounceline <> nil) and
-        (mo.flags and MF_BOUNCE = 0) then
-      begin
-        P_WallBounceMobj(mo, tmbounceline);
-        xmove := 0;
-        ymove := 0;
-      end
-      // villsa [STRIFE] check for bouncy missiles
-      else if (mo.flags and MF_BOUNCE <> 0) or (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) then
-      begin
-        mo.momx := mo.momx div 8;
-        mo.momy := mo.momy div 8;
-
-        if P_TryMove(mo, mo.x - xmove, ymove + mo.y) then
-          mo.momy := -mo.momy
-        else
-          mo.momx := -mo.momx;
-
-        xmove := 0;
-        ymove := 0;
-      end
-      else if mo.flags and MF_MISSILE <> 0 then
-      begin
-        // haley 20110203: [STRIFE]
-        // This modification allows missiles to activate shoot specials.
-        // *** BUG: In vanilla Strife the second condition is simply
-        // if(numspechit). However, numspechit can be negative, and
-        // when it is, this accesses spechit[-2]. This always causes the
-        // DOS exe to read from NULL, and the 'special' value there (in
-        // DOS 6.22 at least) is 0x70, which does nothing.
-        if blockingline <> nil then
-        begin
-          if blockingline.flags and ML_TRIGGERSCRIPTS <> 0 then
-            if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-              PS_EventShootLine(mo, pDiff(blockingline, lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, blockingline));
-
-          if blockingline.special <> 0 then
-            P_ShootSpecialLine(mo, blockingline);
-        end;
-
-        if numspechit > 0 then
-        begin
-          if spechit[numspechit - 1].flags and ML_TRIGGERSCRIPTS <> 0 then
-            if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-              PS_EventShootLine(mo, pDiff(spechit[numspechit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, spechit[numspechit - 1]));
-
-          P_ShootSpecialLine(mo, spechit[numspechit - 1]);
-        end;
-
-        // explode a missile
-        if (ceilingline <> nil) and
-           (ceilingline.backsector <> nil) and
-           (ceilingline.backsector.ceilingpic = skyflatnum) then
-        begin
-          // Hack to prevent missiles exploding
-          // against the sky.
-          // Does not handle sky floors.
-          P_RemoveMobj(mo);
-          exit;
-        end;
-        P_ExplodeMissile(mo);
-      end
-      else
-      begin
-        mo.momx := 0;
-        mo.momy := 0;
-      end;
-    end;
-  until not ((xmove <> 0) or (ymove <> 0));
-
-  // slow down
-  if (player <> nil) and  (player.cheats and CF_NOMOMENTUM <> 0) then
-  begin
-    // debug option for no sliding at all
-    mo.momx := 0;
-    mo.momy := 0;
-    exit;
-  end;
-
-  // villsa [STRIFE] replace skullfly flag with MF_BOUNCE
-  if mo.flags and (MF_MISSILE or MF_BOUNCE) <> 0 then
-    exit; // no friction for missiles ever
-
-  if mo.flags3_ex and MF3_EX_BOUNCE <> 0 then
-    if G_PlayingEngineVersion <= VERSION206 then
-      exit; // no friction for bouncing objects
-
-  // haleyjd 20110224: [STRIFE] players experience friction even in the air,
-  // although less than when on the ground. With this fix, the 1.2-and-up
-  // IWAD demo is now in sync!
-  if G_PlayingEngineVersion > VERSION203 then
-    if wasonfloorz and wasonslope and (oldsector = Psubsector_t(mo.subsector).sector) then
-      if oldsector.flags and SF_SLIPSLOPEDESCENT = 0 then
-        mo.z := mo.floorz;
-
-  if mo.z > mo.floorz then
-  begin
-    if player <> nil then
-    begin
-      mo.momx := FixedMul(mo.momx, AIRFRICTION);
-      mo.momy := FixedMul(mo.momy, AIRFRICTION);
-    end;
-    exit; // no friction when airborne
-  end;
-
-  if mo.flags and MF_CORPSE <> 0 then
-  begin
-    // do not stop sliding
-    //  if halfway off a step with some momentum
-    if (mo.momx > FRACUNIT div 4) or
-       (mo.momx < -FRACUNIT div 4) or
-       (mo.momy > FRACUNIT div 4) or
-       (mo.momy < -FRACUNIT div 4) then
-    begin
-      if mo.floorz <> P_3dFloorHeight(mo) then // JVAL: 3d floors
-        exit;
-    end;
-  end;
-
-  if (mo.momx > -STOPSPEED) and
-     (mo.momx < STOPSPEED) and
-     (mo.momy > -STOPSPEED) and
-     (mo.momy < STOPSPEED) and
-     ((player = nil) or
-      ((player.cmd.forwardmove = 0) and
-       (player.cmd.sidemove = 0))) then
-  begin
-    // if in a walking frame, stop moving
-    // villsa [STRIFE]: different player state (haleyjd - verified 20110202)
-    if (player <> nil) and
-       (LongWord((pDiff(player.mo.state, @states[0], SizeOf(states[0]))) - Ord(S_PLAY_01)) < 4) then
-      P_SetMobjState(player.mo, S_PLAY_00);
-
-    mo.momx := 0;
-    mo.momy := 0;
-  end
-  else
-  begin
-    mo.momx := FixedMul(mo.momx, FRICTION);
-    mo.momy := FixedMul(mo.momy, FRICTION);
-  end;
-end;
 
 //==============================================================================
 //
@@ -670,7 +489,7 @@ end;
 // * Restoration of all Strife mapthing flags
 //
 //==============================================================================
-procedure P_NightmareRespawn(mobj: Pmobj_t);
+class procedure TMobjGameRules.NightmareRespawn(mobj: Pmobj_t);
 var
   x: fixed_t;
   y: fixed_t;
@@ -748,116 +567,6 @@ begin
   P_RemoveMobj(mobj);
 end;
 
-//==============================================================================
-//
-// P_MobjThinker
-//
-// [STRIFE] Modified for:
-// * Terrain effects
-// * Stonecold cheat
-// * Altered skill 5 respawn behavior
-//
-//==============================================================================
-class procedure TMobjGameRules.MobjThinker(mobj: Pmobj_t);
-begin
-  // JVAL: Clear just spawned flag
-  mobj.flags2_ex := mobj.flags2_ex and not MF2_EX_JUSTAPPEARED;
-
-  // momentum movement
-  if (mobj.momx <> 0) or
-     (mobj.momy <> 0) then
-  begin
-    P_XYMovement(mobj);
-
-    if P_ThinkerIsRemoved(@mobj.thinker) then
-      exit; // mobj was removed
-
-    // villsa [STRIFE] terrain clipping
-    if P_GetTerrainType(mobj) = FLOOR_SOLID then
-    begin
-      mobj.flags := mobj.flags and not MF_FEETCLIPPED;
-      mobj.floorclip := 0;
-    end
-    else
-    begin
-      mobj.flags := mobj.flags or MF_FEETCLIPPED;
-      mobj.floorclip := FOOTCLIPSIZE;
-    end;
-
-  end;
-
-  if mobj.flags_ex and MF_EX_FLOATBOB <> 0 then
-  begin
-    mobj.z := mobj.floorz + FloatBobOffsets[mobj.bob];
-    mobj.bob := (mobj.bob + 1) and FLOATBOBMASK;
-  end
-  else if ((mobj.z <> mobj.floorz) and (mobj.flags and MF_NOGRAVITY = 0)) or (mobj.momz <> 0) then
-  begin
-    P_ZMovement(mobj);
-
-    if P_ThinkerIsRemoved(@mobj.thinker) then
-      exit; // mobj was removed
-
-    // villsa [STRIFE] terrain clipping and sounds
-    if P_GetTerrainType(mobj) = FLOOR_SOLID then
-    begin
-      mobj.flags := mobj.flags and not MF_FEETCLIPPED;
-      mobj.floorclip := 0;
-    end
-    else
-    begin
-      S_StartSound(mobj, Ord(sfx_wsplsh));
-//      if mobj.flags2_ex and MF2_EX_ // JVAL SOS
-      mobj.flags := mobj.flags or MF_FEETCLIPPED;
-      mobj.floorclip := FOOTCLIPSIZE;
-    end;
-
-  end;
-
-  // cycle through states,
-  // calling action functions at transitions
-  if mobj.tics <> -1 then
-  begin
-    dec(mobj.tics);
-
-    // villsa [STRIFE] stonecold cheat
-    if stonecold then
-      if mobj.flags and MF_COUNTKILL <> 0 then
-        P_DamageMobj(mobj, mobj, mobj, 10);
-
-    // you can cycle through multiple states in a tic
-    if mobj.tics = 0 then
-      if not P_SetMobjState(mobj, mobj.state.nextstate) then
-        exit; // freed itself
-  end
-  else
-  begin
-    // check for nightmare respawn
-    if mobj.flags and MF_COUNTKILL = 0 then
-      exit;
-
-    if not respawnmonsters then
-      exit;
-
-    mobj.movecount := mobj.movecount + 1;
-
-    // haleyjd [STRIFE]: respawn time increased from 12 to 16
-    if mobj.movecount < 16 * TICRATE then
-      exit;
-
-    if leveltime and 31 <> 0 then
-      exit;
-
-    if P_Random > 4 then
-      exit;
-
-    // haleyjd [STRIFE]: NOTDMATCH things don't respawn
-    if mobj.flags and MF_NOTDMATCH <> 0 then
-      exit;
-
-    P_NightmareRespawn(mobj);
-  end;
-end;
 
 //==============================================================================
 //
@@ -2241,6 +1950,241 @@ end;
 class function TMobjGameRules.ConsoleSpawnForbidden: boolean;
 begin
   result := (gamestate <> GS_LEVEL) or demoplayback or demorecording or netgame;
+end;
+
+class function TMobjGameRules.StoppedBeforeMoving(mo: Pmobj_t): boolean;
+begin
+  // Strife has no thing thrown at its target: P_XYMovement is called only with a momentum
+  result := false;
+end;
+
+class function TMobjGameRules.SectorWind(mo: Pmobj_t): integer;
+begin
+  result := 0;
+end;
+
+class function TMobjGameRules.HasWindThrust(mo: Pmobj_t): boolean;
+begin
+  result := mo.flags4_ex and MF4_EX_WINDTHRUST <> 0;
+end;
+
+class function TMobjGameRules.HalvesBackwardMoves: boolean;
+begin
+  result := false;
+end;
+
+class function TMobjGameRules.BlockedMove(mo: Pmobj_t; ptryx, ptryy: fixed_t; var xmove, ymove: fixed_t): boolean;
+begin
+  result := false;
+  // blocked move
+  if mo.player <> nil then
+  begin
+    if not P_LadderMove(mo) then
+      P_SlideMove(mo); // try to slide along it
+  end
+  // JVAL: 20210209 - Sliding monsters
+  else if (mo.flags3_ex and (MF3_EX_SLIDING or MF3_EX_SLIDE or MF3_EX_SLIDEONWALLS) <> 0) and (mo.flags and MF_MISSILE = 0) then
+  begin
+    P_SlideMove(mo); // try to slide along it
+  end
+  // JVAL: 20211121 - New bounch on walls mechanics
+  else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (tmbounceline <> nil) and
+    (mo.flags and MF_BOUNCE = 0) then
+  begin
+    P_WallBounceMobj(mo, tmbounceline);
+    xmove := 0;
+    ymove := 0;
+  end
+  // villsa [STRIFE] check for bouncy missiles
+  else if (mo.flags and MF_BOUNCE <> 0) or (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) then
+  begin
+    mo.momx := mo.momx div 8;
+    mo.momy := mo.momy div 8;
+
+    if P_TryMove(mo, mo.x - xmove, ymove + mo.y) then
+      mo.momy := -mo.momy
+    else
+      mo.momx := -mo.momx;
+
+    xmove := 0;
+    ymove := 0;
+  end
+  else if mo.flags and MF_MISSILE <> 0 then
+  begin
+    // haley 20110203: [STRIFE]
+    // This modification allows missiles to activate shoot specials.
+    // *** BUG: In vanilla Strife the second condition is simply
+    // if(numspechit). However, numspechit can be negative, and
+    // when it is, this accesses spechit[-2]. This always causes the
+    // DOS exe to read from NULL, and the 'special' value there (in
+    // DOS 6.22 at least) is 0x70, which does nothing.
+    if blockingline <> nil then
+    begin
+      if blockingline.flags and ML_TRIGGERSCRIPTS <> 0 then
+        if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+          PS_EventShootLine(mo, pDiff(blockingline, lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, blockingline));
+
+      if blockingline.special <> 0 then
+        P_ShootSpecialLine(mo, blockingline);
+    end;
+
+    if numspechit > 0 then
+    begin
+      if spechit[numspechit - 1].flags and ML_TRIGGERSCRIPTS <> 0 then
+        if mo.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
+          PS_EventShootLine(mo, pDiff(spechit[numspechit - 1], lines, SizeOf(line_t)), P_PointOnLineSide(mo.x, mo.y, spechit[numspechit - 1]));
+
+      P_ShootSpecialLine(mo, spechit[numspechit - 1]);
+    end;
+
+    // explode a missile
+    if (ceilingline <> nil) and
+       (ceilingline.backsector <> nil) and
+       (ceilingline.backsector.ceilingpic = skyflatnum) then
+    begin
+      // Hack to prevent missiles exploding
+      // against the sky.
+      // Does not handle sky floors.
+      P_RemoveMobj(mo);
+      begin
+        result := true;
+        exit;
+      end;
+    end;
+    P_ExplodeMissile(mo);
+  end
+  else
+  begin
+    mo.momx := 0;
+    mo.momy := 0;
+  end;
+end;
+
+class function TMobjGameRules.AirborneFriction(mo: Pmobj_t; player: Pplayer_t; wasonfloorz, wasonslope: boolean; oldsector: Psector_t): boolean;
+begin
+  result := false;
+  // haleyjd 20110224: [STRIFE] players experience friction even in the air,
+  // although less than when on the ground. With this fix, the 1.2-and-up
+  // IWAD demo is now in sync!
+  if G_PlayingEngineVersion > VERSION203 then
+    if wasonfloorz and wasonslope and (oldsector = Psubsector_t(mo.subsector).sector) then
+      if oldsector.flags and SF_SLIPSLOPEDESCENT = 0 then
+        mo.z := mo.floorz;
+
+  if mo.z > mo.floorz then
+  begin
+    if player <> nil then
+    begin
+      mo.momx := FixedMul(mo.momx, AIRFRICTION);
+      mo.momy := FixedMul(mo.momy, AIRFRICTION);
+    end;
+    result := true; // no friction when airborne
+  end;
+end;
+
+class function TMobjGameRules.FallsFree(mo: Pmobj_t; player: Pplayer_t): boolean;
+begin
+  result := false;
+end;
+
+class procedure TMobjGameRules.StopWalking(player: Pplayer_t);
+begin
+  // if in a walking frame, stop moving
+  // villsa [STRIFE]: different player state (haleyjd - verified 20110202)
+  if (player <> nil) and
+     (LongWord((pDiff(player.mo.state, @states[0], SizeOf(states[0]))) - Ord(S_PLAY_01)) < 4) then
+    P_SetMobjState(player.mo, S_PLAY_00);
+end;
+
+class procedure TMobjGameRules.ApplyFriction(mo: Pmobj_t; special: integer);
+begin
+  mo.momx := FixedMul(mo.momx, FRICTION);
+  mo.momy := FixedMul(mo.momy, FRICTION);
+end;
+
+class procedure TMobjGameRules.ClearJustAppeared(mobj: Pmobj_t);
+begin
+  mobj.flags2_ex := mobj.flags2_ex and not MF2_EX_JUSTAPPEARED;
+end;
+
+class procedure TMobjGameRules.BeginThink;
+begin
+end;
+
+class procedure TMobjGameRules.AfterXYMovement(mobj: Pmobj_t);
+begin
+  // villsa [STRIFE] terrain clipping
+  if P_GetTerrainType(mobj) = FLOOR_SOLID then
+  begin
+    mobj.flags := mobj.flags and not MF_FEETCLIPPED;
+    mobj.floorclip := 0;
+  end
+  else
+  begin
+    mobj.flags := mobj.flags or MF_FEETCLIPPED;
+    mobj.floorclip := FOOTCLIPSIZE;
+  end;
+end;
+
+class procedure TMobjGameRules.StandsStill(mobj: Pmobj_t);
+begin
+end;
+
+class function TMobjGameRules.ZPhase(mobj: Pmobj_t): boolean;
+begin
+
+  if mobj.flags_ex and MF_EX_FLOATBOB <> 0 then
+  begin
+    mobj.z := mobj.floorz + FloatBobOffsets[mobj.bob];
+    mobj.bob := (mobj.bob + 1) and FLOATBOBMASK;
+  end
+  else if ((mobj.z <> mobj.floorz) and (mobj.flags and MF_NOGRAVITY = 0)) or (mobj.momz <> 0) then
+  begin
+    P_ZMovement(mobj);
+
+    if P_ThinkerIsRemoved(@mobj.thinker) then
+      begin // mobj was removed
+        result := false;
+        exit;
+      end;
+
+    // villsa [STRIFE] terrain clipping and sounds
+    if P_GetTerrainType(mobj) = FLOOR_SOLID then
+    begin
+      mobj.flags := mobj.flags and not MF_FEETCLIPPED;
+      mobj.floorclip := 0;
+    end
+    else
+    begin
+      S_StartSound(mobj, Ord(sfx_wsplsh));
+//      if mobj.flags2_ex and MF2_EX_ // JVAL SOS
+      mobj.flags := mobj.flags or MF_FEETCLIPPED;
+      mobj.floorclip := FOOTCLIPSIZE;
+    end;
+
+  end;
+
+  result := true;
+end;
+
+class procedure TMobjGameRules.BeforeStateCycle(mobj: Pmobj_t);
+begin
+  // villsa [STRIFE] stonecold cheat
+  if stonecold then
+    if mobj.flags and MF_COUNTKILL <> 0 then
+      P_DamageMobj(mobj, mobj, mobj, 10);
+end;
+
+class function TMobjGameRules.NeverRespawns(mobj: Pmobj_t): boolean;
+begin
+  // haleyjd [STRIFE]: NOTDMATCH things don't respawn
+  result := mobj.flags and MF_NOTDMATCH <> 0;
+end;
+
+class function TMobjGameRules.RespawnTime: integer;
+begin
+  // haleyjd [STRIFE]: respawn time increased from 12 to 16
+  result := 16 * TICRATE;
 end;
 
 end.

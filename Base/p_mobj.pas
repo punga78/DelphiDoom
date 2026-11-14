@@ -569,6 +569,155 @@ begin
   TMobjGameRules.ExplosionSound(mo);
 end;
 
+//
+// P_XYMovement
+//
+const
+  STOPSPEED = $1000;
+
+//==============================================================================
+//
+// P_XYMovement
+//
+//==============================================================================
+procedure P_XYMovement(mo: Pmobj_t);
+var
+  ptryx: fixed_t;
+  ptryy: fixed_t;
+  player: Pplayer_t;
+  xmove: fixed_t;
+  ymove: fixed_t;
+  special: integer;
+  wasonfloorz: boolean;
+  wasonslope: boolean;
+  oldsector: Psector_t;
+begin
+  if TMobjGameRules.StoppedBeforeMoving(mo) then
+    exit;
+
+  special := TMobjGameRules.SectorWind(mo);
+
+  wasonfloorz := mo.z <= mo.floorz;
+  oldsector := Psubsector_t(mo.subsector).sector;
+
+  // JVAL: 20220222 - Wind thrust
+  if TMobjGameRules.HasWindThrust(mo) then
+    if oldsector.windthrust <> 0 then
+      P_ThrustMobj(mo, oldsector.windangle, oldsector.windthrust);
+
+  wasonslope := oldsector.renderflags and SRF_SLOPED <> 0;
+
+  player := mo.player;
+
+  if mo.flags3_ex and MF3_EX_NOMAXMOVE = 0 then
+  begin
+    if mo.momx > MAXMOVE then
+      mo.momx := MAXMOVE
+    else if mo.momx < -MAXMOVE then
+      mo.momx := -MAXMOVE;
+
+    if mo.momy > MAXMOVE then
+      mo.momy := MAXMOVE
+    else if mo.momy < -MAXMOVE then
+      mo.momy := -MAXMOVE;
+  end;
+
+  xmove := mo.momx;
+  ymove := mo.momy;
+
+  repeat
+    if (xmove > MAXMOVE div 2) or (ymove > MAXMOVE div 2) or
+       (TMobjGameRules.HalvesBackwardMoves and ((xmove < -MAXMOVE div 2) or (ymove < -MAXMOVE div 2))) then
+    begin
+    // JVAL 20180107
+    // Please do not change, the div and the _SHR1, problem with demo compatibility..
+      ptryx := mo.x + xmove div 2;
+      ptryy := mo.y + ymove div 2;
+      xmove := _SHR1(xmove);
+      ymove := _SHR1(ymove);
+    end
+    else
+    begin
+      ptryx := mo.x + xmove;
+      ptryy := mo.y + ymove;
+      xmove := 0;
+      ymove := 0;
+    end;
+
+    // JVAL: Slopes
+    // JVAL 20191209 - Fix 3d floor problem
+    tmfloorz := P_3dFloorHeight(ptryx, ptryy, mo.z);
+    tmceilingz := P_3dCeilingHeight(ptryx, ptryy, mo.z);
+
+    if not P_TryMove(mo, ptryx, ptryy) then
+      if TMobjGameRules.BlockedMove(mo, ptryx, ptryy, xmove, ymove) then
+        exit;
+  until not ((xmove <> 0) or (ymove <> 0));
+
+  // slow down
+  if (player <> nil) and (player.cheats and CF_NOMOMENTUM <> 0) then
+  begin
+    // debug option for no sliding at all
+    mo.momx := 0;
+    mo.momy := 0;
+    exit;
+  end;
+
+  if mo.flags and TMobjGameRules.NoFrictionFlags <> 0 then
+    exit; // no friction for missiles ever
+
+  if mo.flags3_ex and MF3_EX_BOUNCE <> 0 then
+    if G_PlayingEngineVersion <= VERSION206 then
+      exit; // no friction for bouncing objects
+
+  if TMobjGameRules.AirborneFriction(mo, player, wasonfloorz, wasonslope, oldsector) then
+    exit;
+
+  if TMobjGameRules.FallsFree(mo, player) then
+  begin
+    if G_PlayingEngineVersion <= VERSION203 then
+      exit; // no friction when airborne
+    if wasonfloorz and wasonslope and (oldsector = Psubsector_t(mo.subsector).sector) then
+    begin
+      if oldsector.flags and SF_SLIPSLOPEDESCENT <> 0 then
+        exit; // Slip sector while descenting slope
+      mo.z := mo.floorz;
+    end
+    else
+      exit;
+  end;
+
+  if mo.flags and MF_CORPSE <> 0 then
+  begin
+    // do not stop sliding
+    //  if halfway off a step with some momentum
+    if (mo.momx > FRACUNIT div 4) or
+       (mo.momx < -FRACUNIT div 4) or
+       (mo.momy > FRACUNIT div 4) or
+       (mo.momy < -FRACUNIT div 4) then
+    begin
+      if mo.floorz <> P_3dFloorHeight(mo) then // JVAL: 3d floors
+        exit;
+    end;
+  end;
+
+  if (mo.momx > -STOPSPEED) and
+     (mo.momx < STOPSPEED) and
+     (mo.momy > -STOPSPEED) and
+     (mo.momy < STOPSPEED) and
+     ((player = nil) or
+      ((player.cmd.forwardmove = 0) and
+       (player.cmd.sidemove = 0))) then
+  begin
+    TMobjGameRules.StopWalking(player);
+
+    mo.momx := 0;
+    mo.momy := 0;
+  end
+  else
+    TMobjGameRules.ApplyFriction(mo, special);
+end;
+
 //==============================================================================
 //
 // P_MobjThinker
@@ -578,7 +727,72 @@ end;
 //==============================================================================
 procedure P_MobjThinker(mobj: Pmobj_t);
 begin
-  TMobjGameRules.MobjThinker(mobj);
+  // JVAL: Clear just spawned flag
+  TMobjGameRules.ClearJustAppeared(mobj);
+
+  // momentum movement
+  TMobjGameRules.BeginThink;
+  if (mobj.momx <> 0) or
+     (mobj.momy <> 0) or
+     TMapGameRules.IsSkullFlying(mobj) then
+  begin
+    P_XYMovement(mobj);
+
+    if P_ThinkerIsRemoved(@mobj.thinker) then
+      exit; // mobj was removed
+
+    TMobjGameRules.AfterXYMovement(mobj);
+  end
+  else
+    TMobjGameRules.StandsStill(mobj);
+
+  if not TMobjGameRules.ZPhase(mobj) then
+    exit; // mobj was removed
+
+  // cycle through states,
+  // calling action functions at transitions
+  if mobj.tics <> -1 then
+  begin
+    dec(mobj.tics);
+
+    TMobjGameRules.BeforeStateCycle(mobj);
+
+    // you can cycle through multiple states in a tic
+    if TMobjGameRules.CyclesStatesWhileNoTics then
+    begin
+      while mobj.tics = 0 do
+        if not P_SetMobjState(mobj, mobj.state.nextstate) then
+          exit; // freed itself
+    end
+    else if mobj.tics = 0 then
+      if not P_SetMobjState(mobj, mobj.state.nextstate) then
+        exit; // freed itself
+  end
+  else if TMobjGameRules.MonstersRespawn then
+  begin
+    // check for nightmare respawn
+    if mobj.flags and MF_COUNTKILL = 0 then
+      exit;
+
+    if not respawnmonsters then
+      exit;
+
+    mobj.movecount := mobj.movecount + 1;
+
+    if mobj.movecount < TMobjGameRules.RespawnTime then
+      exit;
+
+    if leveltime and 31 <> 0 then
+      exit;
+
+    if P_Random > 4 then
+      exit;
+
+    if TMobjGameRules.NeverRespawns(mobj) then
+      exit;
+
+    TMobjGameRules.NightmareRespawn(mobj);
+  end;
 end;
 
 //==============================================================================

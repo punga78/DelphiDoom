@@ -1,6 +1,8 @@
 ﻿<#
   Issue #185, passo 2c-1 (p_map in copia unica): prova meccanica delle routine parametriche.
 
+  Il confronto e' in Prova-Common.ps1 (comune a Prova-PMobj.ps1).
+
   Per ogni gioco e per ogni routine della vecchia <Gioco>\p_map.pas (presa dal commit di partenza con git show) prende
   il testo della routine unificata (Base\p_map.pas, Base\p_secnodes.pas o la unit delle regole del gioco), sostituisce
   ogni chiamata a TMapGameRules con il corpo della regola di quel gioco (le sostituzioni sono la tabella $Expansions
@@ -24,65 +26,7 @@ $Games = @($Games | ForEach-Object { $_ -split ',' } | Where-Object { $_ -ne '' 
 $root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
 $rulesUnit = 'DelphiDoom.Engine.World.MapRules.pas'
 
-# testo senza commenti, spazi e maiuscole, su una riga sola
-function Get-Normalized {
-  param([string[]]$Lines)
-  $inBrace = $false
-  $sb = New-Object System.Text.StringBuilder
-  foreach ($line in $Lines) {
-    $text = $line
-    if ($inBrace) {
-      $close = $text.IndexOf('}')
-      if ($close -lt 0) { continue }
-      $text = $text.Substring($close + 1)
-      $inBrace = $false
-    }
-    while ($true) {
-      $open = $text.IndexOf('{')
-      if ($open -lt 0 -or ($open + 1 -lt $text.Length -and $text[$open + 1] -eq '$')) { break }
-      $close = $text.IndexOf('}', $open)
-      if ($close -lt 0) { $text = $text.Substring(0, $open); $inBrace = $true; break }
-      $text = $text.Substring(0, $open) + $text.Substring($close + 1)
-    }
-    $slash = $text.IndexOf('//')
-    if ($slash -ge 0) { $text = $text.Substring(0, $slash) }
-    [void]$sb.Append(($text -replace '\s+', '').ToLowerInvariant())
-  }
-  $sb.ToString()
-}
-function N([string]$Text) { Get-Normalized ($Text -split "`n") }
-
-# le routine di primo livello dopo "implementation": nome -> righe
-function Get-Routines {
-  param([string[]]$Lines)
-  $routines = @{}
-  $start = 0
-  for ($i = 0; $i -lt $Lines.Length; $i++) { if ($Lines[$i] -match '^implementation\b') { $start = $i + 1; break } }
-  $name = ''
-  $body = New-Object System.Collections.Generic.List[string]
-  for ($i = $start; $i -lt $Lines.Length; $i++) {
-    $line = $Lines[$i]
-    if ($name -eq '') {
-      if ($line -match '^(?:class\s+)?(?:procedure|function)\s+([A-Za-z_][A-Za-z_0-9\.]*)') { $name = $Matches[1]; $body.Clear(); $body.Add($line) }
-    } else {
-      $body.Add($line)
-      if ($line -match '^end;') { $routines[$name] = $body.ToArray(); $name = '' }
-    }
-  }
-  $routines
-}
-# le righe tra il primo "begin" a colonna 0 e l'ultimo "end;" (Body) e quelle delle variabili locali (Vars)
-function Get-Part {
-  param([string[]]$Lines, [string]$Part)
-  $b = [Array]::IndexOf($Lines, 'begin')
-  if ($b -lt 0) { throw 'routine senza begin a colonna 0' }
-  if ($Part -eq 'Vars') {
-    $v = [Array]::IndexOf($Lines, 'var')
-    if ($v -lt 0 -or $v -gt $b) { return '' }
-    return Get-Normalized $Lines[($v + 1)..($b - 1)]
-  }
-  Get-Normalized $Lines[($b + 1)..($Lines.Length - 2)]
-}
+. (Join-Path $PSScriptRoot 'Prova-Common.ps1')
 
 # ---------------------------------------------------------------------------------------------------------------
 # Le sostituzioni. F = il testo nella routine unificata; D = con che cosa si sostituisce in ogni gioco, salvo il
@@ -276,78 +220,6 @@ $NotTextual = @{
   'Strife|P_ThingHeightOffsZ' = 'assorbita da P_ThingsInSameZ (_getheightoffs dalla 2.07)'
 }
 
-$baseLines = [IO.File]::ReadAllLines((Join-Path $root 'Base\p_map.pas'))
-$baseRoutines = Get-Routines $baseLines
-$secRoutines = Get-Routines ([IO.File]::ReadAllLines((Join-Path $root 'Base\p_secnodes.pas')))
-$bad = 0
-foreach ($game in $Games) {
-  $oldLines = @(& git -C $root show "${Base}:$game/p_map.pas")
-  if ($LASTEXITCODE -ne 0) { throw "git show ${Base}:$game/p_map.pas" }
-  $oldRoutines = Get-Routines $oldLines
-  $gameRoutines = Get-Routines ([IO.File]::ReadAllLines((Join-Path $root "$game\$rulesUnit")))
-
-  function Expand-Placeholders([string]$text) {
-    [regex]::Replace($text, '<<([BVS]):([A-Za-z_0-9]+)(?:\|strip=([^>]*))?>>', {
-        param($m)
-        $kind = $m.Groups[1].Value; $name = $m.Groups[2].Value
-        if ($kind -eq 'S') { $lines = $secRoutines[$name] } else { $lines = $gameRoutines["TMapGameRules.$name"] }
-        if ($null -eq $lines) { throw "$game`: manca $name" }
-        $part = 'Body'; if ($kind -eq 'V') { $part = 'Vars' }
-        $r = Get-Part $lines $part
-        if ($m.Groups[3].Success) {
-          $tail = N $m.Groups[3].Value
-          if (-not $r.EndsWith($tail)) { throw "$game $name`: non finisce con $tail" }
-          $r = $r.Substring(0, $r.Length - $tail.Length)
-        }
-        $r
-      })
-  }
-
-  $rows = foreach ($name in ($oldRoutines.Keys | Sort-Object)) {
-    $old = Get-Normalized $oldRoutines[$name]
-    $where = 'Base\p_map'
-    if ($baseRoutines.ContainsKey($name)) { $new = Get-Normalized $baseRoutines[$name] }
-    elseif ($secRoutines.ContainsKey($name)) { $new = Get-Normalized $secRoutines[$name]; $where = 'Base\p_secnodes' }
-    elseif ($gameRoutines.ContainsKey($name)) { $new = Get-Normalized $gameRoutines[$name]; $where = "$game (propria)" }
-    else { $new = $null; $where = '-' }
-    $notes = New-Object System.Collections.Generic.List[string]
-    $status = ''
-    if ($NotTextual.ContainsKey("$game|$name")) { $status = 'NON TESTUALE'; $notes.Add($NotTextual["$game|$name"]) }
-    elseif ($null -eq $new) { $status = 'DIVERSA'; $notes.Add('la routine non esiste piu''') }
-    else {
-      foreach ($e in $Expansions) {
-        if ($e.ContainsKey('R') -and ($e.R -notcontains $name)) { continue }
-        if ($e.ContainsKey($game)) { $with = $e[$game] } elseif ($e.ContainsKey('D')) { $with = $e.D } else { continue }
-        if ($null -eq $with) { continue }
-        $find = N $e.F
-        $at = $new.IndexOf($find)
-        if ($at -lt 0) { continue }
-        $with = N (Expand-Placeholders $with)
-        if ($e.ContainsKey('All')) { $new = $new.Replace($find, $with) }
-        else {
-          if ($new.IndexOf($find, $at + 1) -ge 0) { throw "$game $name`: '$($e.F)' compare piu' volte" }
-          $new = $new.Substring(0, $at) + $with + $new.Substring($at + $find.Length)
-        }
-        if ($e.ContainsKey('Note') -and -not $notes.Contains($e.Note)) { $notes.Add($e.Note) }
-      }
-      if ($new -eq $old) { if ($notes.Count -gt 0) { $status = 'DICHIARATA' } else { $status = 'UGUALE' } }
-      else {
-        $status = 'DIVERSA'
-        $i = 0; while ($i -lt $new.Length -and $i -lt $old.Length -and $new[$i] -eq $old[$i]) { $i++ }
-        $from = [Math]::Max(0, $i - 60)
-        $notes.Clear()
-        $notes.Add('vecchia: ...' + $old.Substring($from, [Math]::Min(160, $old.Length - $from)))
-        $notes.Add('nuova:   ...' + $new.Substring($from, [Math]::Min(160, $new.Length - $from)))
-      }
-    }
-    if ($status -eq 'DIVERSA') { $bad++ }
-    [pscustomobject]@{ Routine = $name; Dove = $where; Esito = $status; Note = ($notes -join ' | ') }
-  }
-  Write-Output "==== $game"
-  $rows | Sort-Object Esito, Routine | ForEach-Object {
-    if ($_.Note -ne '') { '{0,-24} {1,-18} {2,-12} {3}' -f $_.Routine, $_.Dove, $_.Esito, $_.Note } else { '{0,-24} {1,-18} {2}' -f $_.Routine, $_.Dove, $_.Esito }
-  }
-  $summary = $rows | Group-Object Esito | ForEach-Object { '{0}: {1}' -f $_.Name, $_.Count }
-  Write-Output ("---- {0}: {1} routine ({2})" -f $game, @($rows).Count, ($summary -join ', '))
-}
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_map' -BaseFiles 'Base\p_map.pas', 'Base\p_secnodes.pas' `
+  -Extra @{ S = 'Base\p_secnodes.pas' } -RulesUnit $rulesUnit -Class 'TMapGameRules' -Expansions $Expansions -NotTextual $NotTextual
 exit $bad
