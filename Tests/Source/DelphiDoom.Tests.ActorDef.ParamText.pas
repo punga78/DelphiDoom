@@ -85,11 +85,11 @@ var
   LWords: TArray<string>;
 begin
   LWords := TActorDefParamText.WordsToList('RANDOM (1, 2)', [' ', '(', ',', ')']);
-  Assert.AreEqual(3, Length(LWords));
+  Assert.AreEqual<Integer>(3, Length(LWords));
   Assert.AreEqual('RANDOM', LWords[0]);
   Assert.AreEqual('1', LWords[1]);
   Assert.AreEqual('2', LWords[2]);
-  Assert.AreEqual(0, Length(TActorDefParamText.WordsToList('(( ))', [' ', '(', ')'])));
+  Assert.AreEqual<Integer>(0, Length(TActorDefParamText.WordsToList('(( ))', [' ', '(', ')'])));
 end;
 
 procedure TTestActorDefParamText.DovrebbeTogliereLeVirgoletteAgliEstremi;
@@ -127,7 +127,7 @@ begin
     LOldList := wordstolist(LText, [' ', #9, '(', ')', ',', '-']);
     try
       LNewList := TActorDefParamText.WordsToList(LText, [' ', #9, '(', ')', ',', '-']);
-      Assert.AreEqual(LOldList.Count, Length(LNewList), 'words ' + LText);
+      Assert.AreEqual<Integer>(LOldList.Count, Length(LNewList), 'words ' + LText);
       for LIndex := 0 to High(LNewList) do
         Assert.AreEqual(LOldList[LIndex], LNewList[LIndex], 'word ' + LText);
     finally

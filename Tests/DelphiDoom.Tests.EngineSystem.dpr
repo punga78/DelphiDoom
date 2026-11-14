@@ -15,6 +15,11 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
+{$IFNDEF CPUX86}
+  DelphiDoom.MathCore.Types in '..\Libs\MathCore\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.FixedMath in '..\Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.MathCore.MemoryFill in '..\Libs\MathCore\DelphiDoom.MathCore.MemoryFill.pas',
+{$ENDIF}
   d_delphi in '..\Common\d_delphi.pas',
   DelphiDoom.EngineSystem.Types in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.Types.pas',
   DelphiDoom.EngineSystem.Intf in '..\Libs\EngineSystem\DelphiDoom.EngineSystem.Intf.pas',

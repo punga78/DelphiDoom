@@ -165,7 +165,7 @@ implementation
 
 uses
   DelphiDoom.Acs.ErrorCodes, DelphiDoom.Acs.Factory, DelphiDoom.Logging.Types,
-  DelphiDoom.Logging.Factory;
+  DelphiDoom.Logging.Factory, DelphiDoom.Tests.Shared.Files;
 
 { TTestAcsCompiler }
 
@@ -183,8 +183,9 @@ end;
 
 function TTestAcsCompiler.DataPath(const AFileName: string): string;
 begin
-  Result := TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
-    '..\..\..\..\Tests\Data\Acs\' + AFileName));
+  // the .o files of the old compiler are not in a worktree (git ignores *.o): TTestFiles looks
+  // for them also in the repository the worktree belongs to
+  Result := TTestFiles.DataFile('Acs', AFileName);
 end;
 
 function TTestAcsCompiler.ReadBytes(const AFileName: string): TBytes;

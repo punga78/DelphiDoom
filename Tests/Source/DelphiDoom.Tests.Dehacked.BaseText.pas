@@ -135,7 +135,7 @@ begin
     begin
       Result := 'save\' + AName;
     end);
-  Assert.AreEqual(4, Length(LNames));
+  Assert.AreEqual<Integer>(4, Length(LNames));
   Assert.AreEqual('patch.deh', LNames[0]);
   Assert.AreEqual('patch.bex', LNames[1]);
   // the folder names come from the last name to the first
@@ -152,7 +152,7 @@ begin
     begin
       Result := AName;
     end);
-  Assert.AreEqual(1, Length(LNames));
+  Assert.AreEqual<Integer>(1, Length(LNames));
   Assert.AreEqual('my.deh', LNames[0]);
 end;
 
