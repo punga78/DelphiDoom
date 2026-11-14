@@ -1,0 +1,250 @@
+// expressions: every operator, precedences, constant folding, compound assignments
+
+float	r0, r1, r2, r3, r4, r5, r6, r7, r8, r9;
+float	q0, q1, q2, q3, q4, q5, q6, q7, q8, q9;
+vector	w0, w1, w2, w3, w4, w5;
+string	t0, t1, t2;
+float	ga = 7, gb = 3, gc = -2.5, gzero;
+vector	gva = '1 2 3', gvb = '4 -5 6', gvzero;
+string	gsa = "abc", gsb = "abd", gsempty;
+boolean	gt, gn;
+entity	ge1 = $ent_one, ge2 = $ent_two, genull;
+
+void show( string name ) {
+	sys.println( name + ": " + r0 + " " + r1 + " " + r2 + " " + r3 + " " + r4 + " " + r5 + " " + r6 + " " + r7 + " " + r8 + " " + r9 );
+}
+
+void arithmetic() {
+	r0 = ga + gb;
+	r1 = ga - gb;
+	r2 = ga * gb;
+	r3 = ga / gb;
+	r4 = ga % gb;
+	r5 = -ga;
+	r6 = gc % gb;
+	r7 = ga & gb;
+	r8 = ga | 8;
+	r9 = ~ga;
+	show( "arithmetic" );
+	q0 = ga / gzero;
+	q1 = ga % gzero;
+	q2 = int( gc );
+	q3 = int( 2.99 ) + int( -2.99 );
+	q4 = 1000000 * 1000000;
+	q5 = gc & 3;
+	q6 = 5.9 | 2.9;
+	q7 = ~gc;
+	q8 = - - ga;
+	q9 = -gva_x;
+}
+
+void precedence() {
+	r0 = 1 + 2 * 3;
+	r1 = ( 1 + 2 ) * 3;
+	r2 = ga + gb * gc - ga / gb;
+	r3 = ga - gb - gc;
+	r4 = ga / gb / gc;
+	r5 = ga + gb < ga * gb;
+	r6 = ga < gb == gb < ga;
+	r7 = ga > gb && gb > gc || gzero;
+	r8 = ga & gb + 1;
+	r9 = ga | gb * 2;
+	show( "precedence" );
+	r0 = -ga * gb;
+	r1 = !ga + 1;
+	r2 = !( ga + 1 );
+	r3 = ga == 7 && gb == 3;
+	r4 = ga != 7 || gb != 3;
+	r5 = 1 + 2 == 3;
+	r6 = 2 * ( 3 + 4 ) * 5;
+	r7 = ( ( ( ga ) ) );
+	r8 = ga * - gb;
+	r9 = int( ( ga / gb ) ) * gb + ga % gb;
+	show( "precedence2" );
+}
+
+void comparisons() {
+	r0 = ga == gb;
+	r1 = ga != gb;
+	r2 = ga < gb;
+	r3 = ga > gb;
+	r4 = ga <= ga;
+	r5 = ga >= gb;
+	r6 = gva == gvb;
+	r7 = gva != gvb;
+	r8 = gva == '1 2 3';
+	r9 = gsa == gsb;
+	show( "comparisons" );
+	r0 = gsa != gsb;
+	r1 = gsa == "abc";
+	r2 = ge1 == ge2;
+	r3 = ge1 != ge2;
+	r4 = ge1 == ge1;
+	r5 = genull == $null_entity;
+	r6 = gsempty == "";
+	r7 = "a" == "A";
+	r8 = ge1 != genull;
+	r9 = gvzero == '0 0 0';
+	show( "comparisons2" );
+}
+
+void logic() {
+	gt = 1;
+	gn = 0;
+	r0 = ga && gb;
+	r1 = ga && gzero;
+	r2 = gzero || gzero;
+	r3 = gzero || gb;
+	r4 = gt && ga;
+	r5 = ga && gt;
+	r6 = gt && gn;
+	r7 = gn || ga;
+	r8 = gzero || gt;
+	r9 = gn || gn;
+	show( "logic" );
+	r0 = !ga;
+	r1 = !gzero;
+	r2 = !gt;
+	r3 = !gn;
+	r4 = !gva;
+	r5 = !gvzero;
+	r6 = !gsa;
+	r7 = !gsempty;
+	r8 = !ge1;
+	r9 = !genull;
+	show( "not" );
+	r0 = !!ga;
+	r1 = !-ga;
+	r2 = gt && gt;
+	r3 = gt || gn;
+	show( "not2" );
+}
+
+void vectors() {
+	w0 = gva + gvb;
+	w1 = gva - gvb;
+	w2 = gva * 2;
+	w3 = 2 * gva;
+	w4 = -gva;
+	r0 = gva * gvb;
+	w5 = gva * gb + gvb * ( ga - gb );
+	sys.println( "vectors: " + w0 + " | " + w1 + " | " + w2 + " | " + w3 + " | " + w4 + " | " + w5 + " | " + r0 );
+	w0 = gva;
+	w0 += gvb;
+	w1 = gva;
+	w1 -= gvb;
+	w2 = gva;
+	w2 *= 3;
+	w3 = gva;
+	w3 /= 4;
+	w4 = gva;
+	w4 /= gzero;
+	sys.println( "vectors2: " + w0 + " | " + w1 + " | " + w2 + " | " + w3 );
+}
+
+void compound() {
+	r0 = ga;
+	r0 += gb;
+	r1 = ga;
+	r1 -= gb;
+	r2 = ga;
+	r2 *= gb;
+	r3 = ga;
+	r3 /= gb;
+	r4 = ga;
+	r4 %= gb;
+	r5 = ga;
+	r5 &= gb;
+	r6 = ga;
+	r6 |= 8;
+	r7 = ga;
+	r7 /= gzero;
+	r8 = ga;
+	r8 %= gzero;
+	r9 = ga;
+	r9++;
+	show( "compound" );
+	r0 = ga;
+	r0--;
+	r1 = 5;
+	r1 += r1;
+	r2 = 2;
+	r2 *= r2 + 1;
+	r3 = r2 = r1 = 4;
+	r4 = ( r5 = 3 ) + 1;
+	show( "compound2" );
+}
+
+void folding() {
+	// constants only: the compiler computes these
+	r0 = 2 + 3;
+	r1 = 2 - 3;
+	r2 = 2 * 3;
+	r3 = 7 / 2;
+	r4 = 7 % 3;
+	r5 = 6 & 3;
+	r6 = 6 | 3;
+	r7 = ~5;
+	r8 = -( 2 + 3 );
+	r9 = int( 7.9 );
+	show( "folding" );
+	r0 = 2 >= 3;
+	r1 = 2 <= 3;
+	r2 = 2 > 3;
+	r3 = 2 < 3;
+	r4 = 2 == 2;
+	r5 = 2 != 2;
+	r6 = 2 && 0;
+	r7 = 0 || 3;
+	r8 = !5;
+	r9 = !0;
+	show( "folding2" );
+	w0 = '1 2 3' + '10 20 30';
+	w1 = '1 2 3' - '10 20 30';
+	w2 = '1 2 3' * 2;
+	w3 = 2 * '1 2 3';
+	w4 = -'1 2 3';
+	r0 = '1 2 3' * '4 5 6';
+	r1 = '1 2 3' == '1 2 3';
+	r2 = '1 2 3' != '1 2 3';
+	r3 = !'0 0 0';
+	r4 = !'0 1 0';
+	r5 = 1.5 + 2.25 * 4 - 10 / 4;
+	r6 = 0.1 + 0.2;
+	r7 = 1 / 3;
+	r8 = 16777216 + 1;
+	r9 = 2 * 3 + 4 * 5 == 26;
+	show( "folding3" );
+	sys.println( "folding vectors: " + w0 + " | " + w1 + " | " + w2 + " | " + w3 + " | " + w4 );
+	t0 = "a" + "b";
+	t1 = "n" + 1 + 2;
+	t2 = 1 + 2 + "n";
+	sys.println( t0 + " " + t1 + " " + t2 );
+}
+
+void stringops() {
+	t0 = gsa + gsb;
+	t1 = gsa + ga;
+	t2 = ga + gsa;
+	sys.println( t0 + " " + t1 + " " + t2 );
+	t0 = gva + gsa;
+	t1 = gsa + gva;
+	t2 = gsa + gc + gva + gsempty + 1;
+	sys.println( t0 + " " + t1 + " " + t2 );
+	t0 = ga;
+	t1 = gva;
+	gt = 1;
+	t2 = gt;
+	sys.println( t0 + " " + t1 + " " + t2 );
+}
+
+void main() {
+	arithmetic();
+	precedence();
+	comparisons();
+	logic();
+	vectors();
+	compound();
+	folding();
+	stringops();
+}

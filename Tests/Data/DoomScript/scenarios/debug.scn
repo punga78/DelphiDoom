@@ -1,0 +1,34 @@
+# debug output: g_debugScript (threads created and ended, waitForThread on a missing thread), the debug flag of an
+# interpreter (calls and returns), g_debugTriggers, g_disasm, developer
+startup script/debug.script
+spawn 1 idEntity ent_one
+spawn 2 idEntity ent_two
+spawn 7 idPlayer player1
+# nothing is printed without the cvars
+thread main
+frame 4
+setcvar g_debugScript 1
+setcvar g_debugTriggers 1
+thread main
+dump threads
+debuginfo 3 1
+frame 1
+dump threads
+frame 3
+event 1 activate 2
+event 1 activate null
+setobject 1 no_such_type
+setcvar g_debugScript 0
+setcvar g_debugTriggers 0
+thread main
+frame 4
+# every CompileFile and CompileFunction writes the whole disassembly
+setcvar g_disasm 1
+compilefunction dis <<EOF
+void dis() {
+	float a;
+	a = twice( a ) + 1;
+}
+EOF
+compilefile script/ok_include.script
+setcvar g_disasm 0

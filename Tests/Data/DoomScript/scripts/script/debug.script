@@ -1,0 +1,28 @@
+// a small program for the debug output of the interpreter and of the threads
+
+float add( float a, float b ) {
+	return a + b;
+}
+
+float twice( float a ) {
+	return add( a, a );
+}
+
+void inner() {
+	sys.waitFrame();
+}
+
+void main() {
+	float r;
+	float t;
+
+	r = twice( 3 );
+	inner();
+	sys.println( "r=" + r );
+	sys.waitForThread( 999 );
+	t = thread inner();
+	$ent_one.activate( $ent_two );
+	sys.trigger( $ent_one );
+	sys.waitForThread( t );
+	sys.println( "main ends" );
+}

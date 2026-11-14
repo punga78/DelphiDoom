@@ -1,0 +1,96 @@
+# threads: creation with arguments, waits, waitForThread, pause, terminate, killthread, waitFor on a mover,
+# multi frame events, events timed by the host, thread listings and the debugger register values
+startup script/threads.script
+dump program
+spawn 1 idEntity ent_one
+spawn 3 idMover ent_mover
+thread spawner
+dump threads
+dump events
+frame 1
+dump threads
+dump events
+dump stacks
+listthreads
+displayinfo 1
+displayinfo 2
+frame 14
+dump globals
+listthreads
+thread waits
+frame 16
+thread killer
+frame 3
+dump threads
+listthreads
+displayinfo 8
+displayinfo 9
+displayinfo 10
+frame 8
+dump threads
+thread suicide
+frame 2
+thread killAll
+frame 3
+dump threads
+thread waitForMover
+frame 2
+dump threads
+displayinfo 15
+frame 8
+dump threads
+thread twoWaiters
+thread secondWaiter
+frame 6
+thread multiFrame
+frame 1
+dump threads
+dump events
+frame 6
+dump threads
+# the host ends a wait early and late
+thread twoWaiters
+frame 1
+dump threads
+movedone 19 1
+movedone 19 3
+movedone 0 3
+movedone 99 3
+dump threads
+dump events
+frame 5
+# threads controlled by the host
+thread sleeper
+thread sleeper
+frame 1
+endthread 20
+killthread 21
+frame 1
+dump threads
+thread named
+frame 1
+killthread my_name_1
+frame 1
+thread framerMain
+callnow returner
+dump return
+thread locals
+frame 1
+getvar 25 lf
+getvar 25 lv
+getvar 25 ls
+getvar 25 lb
+getvar 25 counter
+getvar 25 order
+getvar 25 nothing
+getvar 25 lf 0
+getvar 25 lf 1
+thread deep1
+frame 1
+dump threads
+displayinfo 26
+getvar 26 counter
+getvar 26 counter 1
+getvar 26 counter 2
+getvar 26 counter 3
+getvar 26 self

@@ -1,0 +1,1734 @@
+CMD startup script/threads.script
+PRINT Initializing scripts
+PRINT Compiled '/base/script/threads.script': ? ms
+PRINT ---------- Compile stats ----------
+DPRINT Files loaded:
+DPRINT    script/threads.script
+DPRINT    script/doom_defs.script
+PRINT 
+PRINT Memory usage:
+PRINT      Strings: 2, ? bytes
+PRINT   Statements: 311, ? bytes
+PRINT    Functions: 116, ? bytes
+PRINT    Variables: 7312 bytes
+PRINT     Mem used: ? bytes
+PRINT  Static data: ? bytes
+PRINT    Allocated: ? bytes
+PRINT  Thread size: ? bytes
+PRINT 
+CMD dump program
+FILE 0 script/threads.script
+FILE 1 script/doom_defs.script
+TYPE 0 name="terminate" etype=8 size=4 aux=void def=6 parms=[float:] funcs=[]
+TYPE 1 name="pause" etype=8 size=4 aux=void def=7 parms=[] funcs=[]
+TYPE 2 name="wait" etype=8 size=4 aux=void def=8 parms=[float:] funcs=[]
+TYPE 3 name="waitFrame" etype=8 size=4 aux=void def=9 parms=[] funcs=[]
+TYPE 4 name="waitFor" etype=8 size=4 aux=void def=10 parms=[entity:] funcs=[]
+TYPE 5 name="waitForThread" etype=8 size=4 aux=void def=11 parms=[float:] funcs=[]
+TYPE 6 name="killthread" etype=8 size=4 aux=void def=12 parms=[string:] funcs=[]
+TYPE 7 name="threadname" etype=8 size=4 aux=void def=13 parms=[string:] funcs=[]
+TYPE 8 name="print" etype=8 size=4 aux=void def=14 parms=[string:] funcs=[]
+TYPE 9 name="println" etype=8 size=4 aux=void def=15 parms=[string:] funcs=[]
+TYPE 10 name="say" etype=8 size=4 aux=void def=16 parms=[string:] funcs=[]
+TYPE 11 name="assert" etype=8 size=4 aux=void def=17 parms=[float:] funcs=[]
+TYPE 12 name="warning" etype=8 size=4 aux=void def=18 parms=[string:] funcs=[]
+TYPE 13 name="error" etype=8 size=4 aux=void def=19 parms=[string:] funcs=[]
+TYPE 14 name="trigger" etype=8 size=4 aux=void def=20 parms=[entity:] funcs=[]
+TYPE 15 name="setcvar" etype=8 size=4 aux=void def=21 parms=[string:,string:] funcs=[]
+TYPE 16 name="getcvar" etype=8 size=4 aux=string def=22 parms=[string:] funcs=[]
+TYPE 17 name="random" etype=8 size=4 aux=float def=23 parms=[float:] funcs=[]
+TYPE 18 name="getTime" etype=8 size=4 aux=float def=24 parms=[] funcs=[]
+TYPE 19 name="getEntity" etype=8 size=4 aux=entity def=25 parms=[string:] funcs=[]
+TYPE 20 name="spawn" etype=8 size=4 aux=entity def=26 parms=[string:] funcs=[]
+TYPE 21 name="copySpawnArgs" etype=8 size=4 aux=void def=27 parms=[entity:] funcs=[]
+TYPE 22 name="setSpawnArg" etype=8 size=4 aux=void def=28 parms=[string:,string:] funcs=[]
+TYPE 23 name="SpawnString" etype=8 size=4 aux=string def=29 parms=[string:,string:] funcs=[]
+TYPE 24 name="SpawnFloat" etype=8 size=4 aux=float def=30 parms=[string:,float:] funcs=[]
+TYPE 25 name="SpawnVector" etype=8 size=4 aux=vector def=31 parms=[string:,vector:] funcs=[]
+TYPE 26 name="clearPersistantArgs" etype=8 size=4 aux=void def=32 parms=[] funcs=[]
+TYPE 27 name="setPersistantArg" etype=8 size=4 aux=void def=33 parms=[string:,string:] funcs=[]
+TYPE 28 name="getPersistantString" etype=8 size=4 aux=string def=34 parms=[string:] funcs=[]
+TYPE 29 name="getPersistantFloat" etype=8 size=4 aux=float def=35 parms=[string:] funcs=[]
+TYPE 30 name="getPersistantVector" etype=8 size=4 aux=vector def=36 parms=[string:] funcs=[]
+TYPE 31 name="onSignal" etype=8 size=4 aux=void def=37 parms=[float:,entity:,string:] funcs=[]
+TYPE 32 name="clearSignalThread" etype=8 size=4 aux=void def=38 parms=[float:,entity:] funcs=[]
+TYPE 33 name="setCamera" etype=8 size=4 aux=void def=39 parms=[entity:] funcs=[]
+TYPE 34 name="firstPerson" etype=8 size=4 aux=void def=40 parms=[] funcs=[]
+TYPE 35 name="trace" etype=8 size=4 aux=float def=41 parms=[vector:,vector:,vector:,vector:,float:,entity:] funcs=[]
+TYPE 36 name="tracePoint" etype=8 size=4 aux=float def=42 parms=[vector:,vector:,float:,entity:] funcs=[]
+TYPE 37 name="getTraceFraction" etype=8 size=4 aux=float def=43 parms=[] funcs=[]
+TYPE 38 name="getTraceEndPos" etype=8 size=4 aux=vector def=44 parms=[] funcs=[]
+TYPE 39 name="getTraceNormal" etype=8 size=4 aux=vector def=45 parms=[] funcs=[]
+TYPE 40 name="getTraceEntity" etype=8 size=4 aux=entity def=46 parms=[] funcs=[]
+TYPE 41 name="getTraceJoint" etype=8 size=4 aux=string def=47 parms=[] funcs=[]
+TYPE 42 name="getTraceBody" etype=8 size=4 aux=string def=48 parms=[] funcs=[]
+TYPE 43 name="fadeIn" etype=8 size=4 aux=void def=49 parms=[vector:,float:] funcs=[]
+TYPE 44 name="fadeOut" etype=8 size=4 aux=void def=50 parms=[vector:,float:] funcs=[]
+TYPE 45 name="fadeTo" etype=8 size=4 aux=void def=51 parms=[vector:,float:,float:] funcs=[]
+TYPE 46 name="music" etype=8 size=4 aux=void def=52 parms=[string:] funcs=[]
+TYPE 47 name="radiusDamage" etype=8 size=4 aux=void def=53 parms=[vector:,entity:,entity:,entity:,string:,float:] funcs=[]
+TYPE 48 name="isClient" etype=8 size=4 aux=float def=54 parms=[] funcs=[]
+TYPE 49 name="isMultiplayer" etype=8 size=4 aux=float def=55 parms=[] funcs=[]
+TYPE 50 name="getFrameTime" etype=8 size=4 aux=float def=56 parms=[] funcs=[]
+TYPE 51 name="getTicsPerSecond" etype=8 size=4 aux=float def=57 parms=[] funcs=[]
+TYPE 52 name="debugLine" etype=8 size=4 aux=void def=58 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 53 name="debugArrow" etype=8 size=4 aux=void def=59 parms=[vector:,vector:,vector:,float:,float:] funcs=[]
+TYPE 54 name="debugCircle" etype=8 size=4 aux=void def=60 parms=[vector:,vector:,vector:,float:,float:,float:] funcs=[]
+TYPE 55 name="debugBounds" etype=8 size=4 aux=void def=61 parms=[vector:,vector:,vector:,float:] funcs=[]
+TYPE 56 name="drawText" etype=8 size=4 aux=void def=62 parms=[string:,vector:,float:,vector:,float:,float:] funcs=[]
+TYPE 57 name="influenceActive" etype=8 size=4 aux=float def=63 parms=[] funcs=[]
+TYPE 58 name="angToForward" etype=8 size=4 aux=vector def=64 parms=[vector:] funcs=[]
+TYPE 59 name="angToRight" etype=8 size=4 aux=vector def=65 parms=[vector:] funcs=[]
+TYPE 60 name="angToUp" etype=8 size=4 aux=vector def=66 parms=[vector:] funcs=[]
+TYPE 61 name="sin" etype=8 size=4 aux=float def=67 parms=[float:] funcs=[]
+TYPE 62 name="cos" etype=8 size=4 aux=float def=68 parms=[float:] funcs=[]
+TYPE 63 name="sqrt" etype=8 size=4 aux=float def=69 parms=[float:] funcs=[]
+TYPE 64 name="vecNormalize" etype=8 size=4 aux=vector def=70 parms=[vector:] funcs=[]
+TYPE 65 name="vecLength" etype=8 size=4 aux=float def=71 parms=[vector:] funcs=[]
+TYPE 66 name="DotProduct" etype=8 size=4 aux=float def=72 parms=[vector:,vector:] funcs=[]
+TYPE 67 name="CrossProduct" etype=8 size=4 aux=vector def=73 parms=[vector:,vector:] funcs=[]
+TYPE 68 name="VecToAngles" etype=8 size=4 aux=vector def=74 parms=[vector:] funcs=[]
+TYPE 69 name="strLength" etype=8 size=4 aux=float def=75 parms=[string:] funcs=[]
+TYPE 70 name="strLeft" etype=8 size=4 aux=string def=76 parms=[string:,float:] funcs=[]
+TYPE 71 name="strRight" etype=8 size=4 aux=string def=77 parms=[string:,float:] funcs=[]
+TYPE 72 name="strSkip" etype=8 size=4 aux=string def=78 parms=[string:,float:] funcs=[]
+TYPE 73 name="strMid" etype=8 size=4 aux=string def=79 parms=[string:,float:,float:] funcs=[]
+TYPE 74 name="strToFloat" etype=8 size=4 aux=float def=80 parms=[string:] funcs=[]
+TYPE 75 name="remove" etype=8 size=4 aux=void def=81 parms=[] funcs=[]
+TYPE 76 name="activate" etype=8 size=4 aux=void def=82 parms=[entity:] funcs=[]
+TYPE 77 name="setShaderParm" etype=8 size=4 aux=void def=83 parms=[float:,float:] funcs=[]
+TYPE 78 name="cacheSoundShader" etype=8 size=4 aux=void def=84 parms=[string:] funcs=[]
+TYPE 79 name="getName" etype=8 size=4 aux=string def=85 parms=[] funcs=[]
+TYPE 80 name="setName" etype=8 size=4 aux=void def=86 parms=[string:] funcs=[]
+TYPE 81 name="setValue" etype=8 size=4 aux=void def=87 parms=[float:] funcs=[]
+TYPE 82 name="getValue" etype=8 size=4 aux=float def=88 parms=[] funcs=[]
+TYPE 83 name="setOrigin" etype=8 size=4 aux=void def=89 parms=[vector:] funcs=[]
+TYPE 84 name="getOrigin" etype=8 size=4 aux=vector def=90 parms=[] funcs=[]
+TYPE 85 name="setOwner" etype=8 size=4 aux=void def=91 parms=[entity:] funcs=[]
+TYPE 86 name="getOwner" etype=8 size=4 aux=entity def=92 parms=[] funcs=[]
+TYPE 87 name="bind" etype=8 size=4 aux=void def=93 parms=[entity:] funcs=[]
+TYPE 88 name="setKey" etype=8 size=4 aux=void def=94 parms=[string:,string:] funcs=[]
+TYPE 89 name="getKey" etype=8 size=4 aux=string def=95 parms=[string:] funcs=[]
+TYPE 90 name="addInts" etype=8 size=4 aux=float def=96 parms=[float:,float:] funcs=[]
+TYPE 91 name="mix" etype=8 size=4 aux=float def=97 parms=[float:,float:,vector:,string:,entity:] funcs=[]
+TYPE 92 name="moveTo" etype=8 size=4 aux=void def=98 parms=[vector:,float:] funcs=[]
+TYPE 93 name="isMoving" etype=8 size=4 aux=float def=99 parms=[] funcs=[]
+TYPE 94 name="slowTurn" etype=8 size=4 aux=void def=100 parms=[float:] funcs=[]
+TYPE 95 name="mark" etype=8 size=4 aux=void def=104 parms=[string:s] funcs=[]
+TYPE 96 name="worker" etype=8 size=4 aux=void def=109 parms=[float:id,float:steps,float:delay] funcs=[]
+TYPE 97 name="quick" etype=8 size=4 aux=void def=127 parms=[string:name,vector:v,entity:e] funcs=[]
+TYPE 98 name="framer" etype=8 size=4 aux=void def=137 parms=[float:n] funcs=[]
+TYPE 99 name="named" etype=8 size=4 aux=void def=149 parms=[] funcs=[]
+TYPE 100 name="sleeper" etype=8 size=4 aux=void def=152 parms=[] funcs=[]
+TYPE 101 name="returner" etype=8 size=4 aux=float def=155 parms=[] funcs=[]
+TYPE 102 name="spawner" etype=8 size=4 aux=void def=157 parms=[] funcs=[]
+TYPE 103 name="killer" etype=8 size=4 aux=void def=184 parms=[] funcs=[]
+TYPE 104 name="suicide" etype=8 size=4 aux=void def=196 parms=[] funcs=[]
+TYPE 105 name="killAll" etype=8 size=4 aux=void def=200 parms=[] funcs=[]
+TYPE 106 name="waitForMover" etype=8 size=4 aux=void def=204 parms=[] funcs=[]
+TYPE 107 name="twoWaiters" etype=8 size=4 aux=void def=223 parms=[] funcs=[]
+TYPE 108 name="secondWaiter" etype=8 size=4 aux=void def=230 parms=[] funcs=[]
+TYPE 109 name="multiFrame" etype=8 size=4 aux=void def=232 parms=[] funcs=[]
+TYPE 110 name="waits" etype=8 size=4 aux=void def=239 parms=[] funcs=[]
+TYPE 111 name="locals" etype=8 size=4 aux=void def=253 parms=[] funcs=[]
+TYPE 112 name="deep3" etype=8 size=4 aux=void def=267 parms=[] funcs=[]
+TYPE 113 name="deep2" etype=8 size=4 aux=void def=268 parms=[] funcs=[]
+TYPE 114 name="deep1" etype=8 size=4 aux=void def=269 parms=[] funcs=[]
+TYPE 115 name="framerMain" etype=8 size=4 aux=void def=270 parms=[] funcs=[]
+DEF 0 name="<RETURN>" type=void/0 scope=@namespace init=0 users=1 value=global:0
+DEF 1 name="<RETURN>_x" type=float/4 scope=@namespace init=0 users=1 value=global:0=#00000000
+DEF 2 name="<RETURN>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4=#00000000
+DEF 3 name="<RETURN>_z" type=float/4 scope=@namespace init=0 users=1 value=global:8=#00000000
+DEF 4 name="<RETURN>" type=string/3 scope=@namespace init=0 users=1 value=global:12=""
+DEF 5 name="sys" type=void/0 scope=@namespace init=0 users=1 value=global:140
+DEF 6 name="terminate" type=terminate/8 scope=@namespace init=2 users=1 value=func:0
+DEF 7 name="pause" type=pause/8 scope=@namespace init=2 users=1 value=func:1
+DEF 8 name="wait" type=wait/8 scope=@namespace init=2 users=1 value=func:2
+DEF 9 name="waitFrame" type=waitFrame/8 scope=@namespace init=2 users=1 value=func:3
+DEF 10 name="waitFor" type=waitFor/8 scope=@namespace init=2 users=1 value=func:4
+DEF 11 name="waitForThread" type=waitForThread/8 scope=@namespace init=2 users=1 value=func:5
+DEF 12 name="killthread" type=killthread/8 scope=@namespace init=2 users=1 value=func:6
+DEF 13 name="threadname" type=threadname/8 scope=@namespace init=2 users=1 value=func:7
+DEF 14 name="print" type=print/8 scope=@namespace init=2 users=1 value=func:8
+DEF 15 name="println" type=println/8 scope=@namespace init=2 users=1 value=func:9
+DEF 16 name="say" type=say/8 scope=@namespace init=2 users=1 value=func:10
+DEF 17 name="assert" type=assert/8 scope=@namespace init=2 users=1 value=func:11
+DEF 18 name="warning" type=warning/8 scope=@namespace init=2 users=1 value=func:12
+DEF 19 name="error" type=error/8 scope=@namespace init=2 users=1 value=func:13
+DEF 20 name="trigger" type=trigger/8 scope=@namespace init=2 users=1 value=func:14
+DEF 21 name="setcvar" type=setcvar/8 scope=@namespace init=2 users=1 value=func:15
+DEF 22 name="getcvar" type=getcvar/8 scope=@namespace init=2 users=1 value=func:16
+DEF 23 name="random" type=random/8 scope=@namespace init=2 users=1 value=func:17
+DEF 24 name="getTime" type=getTime/8 scope=@namespace init=2 users=1 value=func:18
+DEF 25 name="getEntity" type=getEntity/8 scope=@namespace init=2 users=1 value=func:19
+DEF 26 name="spawn" type=spawn/8 scope=@namespace init=2 users=1 value=func:20
+DEF 27 name="copySpawnArgs" type=copySpawnArgs/8 scope=@namespace init=2 users=1 value=func:21
+DEF 28 name="setSpawnArg" type=setSpawnArg/8 scope=@namespace init=2 users=1 value=func:22
+DEF 29 name="SpawnString" type=SpawnString/8 scope=@namespace init=2 users=1 value=func:23
+DEF 30 name="SpawnFloat" type=SpawnFloat/8 scope=@namespace init=2 users=1 value=func:24
+DEF 31 name="SpawnVector" type=SpawnVector/8 scope=@namespace init=2 users=1 value=func:25
+DEF 32 name="clearPersistantArgs" type=clearPersistantArgs/8 scope=@namespace init=2 users=1 value=func:26
+DEF 33 name="setPersistantArg" type=setPersistantArg/8 scope=@namespace init=2 users=1 value=func:27
+DEF 34 name="getPersistantString" type=getPersistantString/8 scope=@namespace init=2 users=1 value=func:28
+DEF 35 name="getPersistantFloat" type=getPersistantFloat/8 scope=@namespace init=2 users=1 value=func:29
+DEF 36 name="getPersistantVector" type=getPersistantVector/8 scope=@namespace init=2 users=1 value=func:30
+DEF 37 name="onSignal" type=onSignal/8 scope=@namespace init=2 users=1 value=func:31
+DEF 38 name="clearSignalThread" type=clearSignalThread/8 scope=@namespace init=2 users=1 value=func:32
+DEF 39 name="setCamera" type=setCamera/8 scope=@namespace init=2 users=1 value=func:33
+DEF 40 name="firstPerson" type=firstPerson/8 scope=@namespace init=2 users=1 value=func:34
+DEF 41 name="trace" type=trace/8 scope=@namespace init=2 users=1 value=func:35
+DEF 42 name="tracePoint" type=tracePoint/8 scope=@namespace init=2 users=1 value=func:36
+DEF 43 name="getTraceFraction" type=getTraceFraction/8 scope=@namespace init=2 users=1 value=func:37
+DEF 44 name="getTraceEndPos" type=getTraceEndPos/8 scope=@namespace init=2 users=1 value=func:38
+DEF 45 name="getTraceNormal" type=getTraceNormal/8 scope=@namespace init=2 users=1 value=func:39
+DEF 46 name="getTraceEntity" type=getTraceEntity/8 scope=@namespace init=2 users=1 value=func:40
+DEF 47 name="getTraceJoint" type=getTraceJoint/8 scope=@namespace init=2 users=1 value=func:41
+DEF 48 name="getTraceBody" type=getTraceBody/8 scope=@namespace init=2 users=1 value=func:42
+DEF 49 name="fadeIn" type=fadeIn/8 scope=@namespace init=2 users=1 value=func:43
+DEF 50 name="fadeOut" type=fadeOut/8 scope=@namespace init=2 users=1 value=func:44
+DEF 51 name="fadeTo" type=fadeTo/8 scope=@namespace init=2 users=1 value=func:45
+DEF 52 name="music" type=music/8 scope=@namespace init=2 users=1 value=func:46
+DEF 53 name="radiusDamage" type=radiusDamage/8 scope=@namespace init=2 users=1 value=func:47
+DEF 54 name="isClient" type=isClient/8 scope=@namespace init=2 users=1 value=func:48
+DEF 55 name="isMultiplayer" type=isMultiplayer/8 scope=@namespace init=2 users=1 value=func:49
+DEF 56 name="getFrameTime" type=getFrameTime/8 scope=@namespace init=2 users=1 value=func:50
+DEF 57 name="getTicsPerSecond" type=getTicsPerSecond/8 scope=@namespace init=2 users=1 value=func:51
+DEF 58 name="debugLine" type=debugLine/8 scope=@namespace init=2 users=1 value=func:52
+DEF 59 name="debugArrow" type=debugArrow/8 scope=@namespace init=2 users=1 value=func:53
+DEF 60 name="debugCircle" type=debugCircle/8 scope=@namespace init=2 users=1 value=func:54
+DEF 61 name="debugBounds" type=debugBounds/8 scope=@namespace init=2 users=1 value=func:55
+DEF 62 name="drawText" type=drawText/8 scope=@namespace init=2 users=1 value=func:56
+DEF 63 name="influenceActive" type=influenceActive/8 scope=@namespace init=2 users=1 value=func:57
+DEF 64 name="angToForward" type=angToForward/8 scope=@namespace init=2 users=1 value=func:58
+DEF 65 name="angToRight" type=angToRight/8 scope=@namespace init=2 users=1 value=func:59
+DEF 66 name="angToUp" type=angToUp/8 scope=@namespace init=2 users=1 value=func:60
+DEF 67 name="sin" type=sin/8 scope=@namespace init=2 users=1 value=func:61
+DEF 68 name="cos" type=cos/8 scope=@namespace init=2 users=1 value=func:62
+DEF 69 name="sqrt" type=sqrt/8 scope=@namespace init=2 users=1 value=func:63
+DEF 70 name="vecNormalize" type=vecNormalize/8 scope=@namespace init=2 users=1 value=func:64
+DEF 71 name="vecLength" type=vecLength/8 scope=@namespace init=2 users=1 value=func:65
+DEF 72 name="DotProduct" type=DotProduct/8 scope=@namespace init=2 users=1 value=func:66
+DEF 73 name="CrossProduct" type=CrossProduct/8 scope=@namespace init=2 users=1 value=func:67
+DEF 74 name="VecToAngles" type=VecToAngles/8 scope=@namespace init=2 users=1 value=func:68
+DEF 75 name="strLength" type=strLength/8 scope=@namespace init=2 users=1 value=func:69
+DEF 76 name="strLeft" type=strLeft/8 scope=@namespace init=2 users=1 value=func:70
+DEF 77 name="strRight" type=strRight/8 scope=@namespace init=2 users=1 value=func:71
+DEF 78 name="strSkip" type=strSkip/8 scope=@namespace init=2 users=1 value=func:72
+DEF 79 name="strMid" type=strMid/8 scope=@namespace init=2 users=1 value=func:73
+DEF 80 name="strToFloat" type=strToFloat/8 scope=@namespace init=2 users=1 value=func:74
+DEF 81 name="remove" type=remove/8 scope=@namespace init=2 users=1 value=func:75
+DEF 82 name="activate" type=activate/8 scope=@namespace init=2 users=1 value=func:76
+DEF 83 name="setShaderParm" type=setShaderParm/8 scope=@namespace init=2 users=1 value=func:77
+DEF 84 name="cacheSoundShader" type=cacheSoundShader/8 scope=@namespace init=2 users=1 value=func:78
+DEF 85 name="getName" type=getName/8 scope=@namespace init=2 users=1 value=func:79
+DEF 86 name="setName" type=setName/8 scope=@namespace init=2 users=1 value=func:80
+DEF 87 name="setValue" type=setValue/8 scope=@namespace init=2 users=1 value=func:81
+DEF 88 name="getValue" type=getValue/8 scope=@namespace init=2 users=1 value=func:82
+DEF 89 name="setOrigin" type=setOrigin/8 scope=@namespace init=2 users=1 value=func:83
+DEF 90 name="getOrigin" type=getOrigin/8 scope=@namespace init=2 users=1 value=func:84
+DEF 91 name="setOwner" type=setOwner/8 scope=@namespace init=2 users=1 value=func:85
+DEF 92 name="getOwner" type=getOwner/8 scope=@namespace init=2 users=1 value=func:86
+DEF 93 name="bind" type=bind/8 scope=@namespace init=2 users=1 value=func:87
+DEF 94 name="setKey" type=setKey/8 scope=@namespace init=2 users=1 value=func:88
+DEF 95 name="getKey" type=getKey/8 scope=@namespace init=2 users=1 value=func:89
+DEF 96 name="addInts" type=addInts/8 scope=@namespace init=2 users=1 value=func:90
+DEF 97 name="mix" type=mix/8 scope=@namespace init=2 users=1 value=func:91
+DEF 98 name="moveTo" type=moveTo/8 scope=@namespace init=2 users=1 value=func:92
+DEF 99 name="isMoving" type=isMoving/8 scope=@namespace init=2 users=1 value=func:93
+DEF 100 name="slowTurn" type=slowTurn/8 scope=@namespace init=2 users=1 value=func:94
+DEF 101 name="counter" type=float/4 scope=@namespace init=0 users=1 value=global:520=#00000000
+DEF 102 name="lastThread" type=float/4 scope=@namespace init=0 users=1 value=global:524=#00000000
+DEF 103 name="order" type=string/3 scope=@namespace init=1 users=1 value=global:528=""
+DEF 104 name="mark" type=mark/8 scope=@namespace init=2 users=1 value=func:95
+DEF 105 name="s" type=string/3 scope=104 init=3 users=1 value=stack:0
+DEF 106 name="<RESULT>" type=string/3 scope=104 init=3 users=2 value=stack:128
+DEF 107 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=3 value=global:660=" "
+DEF 108 name="<RESULT>" type=string/3 scope=104 init=3 users=2 value=stack:256
+DEF 109 name="worker" type=worker/8 scope=@namespace init=2 users=1 value=func:96
+DEF 110 name="id" type=float/4 scope=109 init=3 users=1 value=stack:0
+DEF 111 name="steps" type=float/4 scope=109 init=3 users=1 value=stack:4
+DEF 112 name="delay" type=float/4 scope=109 init=3 users=1 value=stack:8
+DEF 113 name="i" type=float/4 scope=109 init=3 users=1 value=stack:12
+DEF 114 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:792=#00000000
+DEF 115 name="<RESULT>" type=float/4 scope=109 init=3 users=2 value=stack:16
+DEF 116 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=2 value=jump:-4
+DEF 117 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=2 value=jump:3
+DEF 118 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=2 value=global:804="w"
+DEF 119 name="<RESULT>" type=string/3 scope=109 init=3 users=2 value=stack:20
+DEF 120 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:932="."
+DEF 121 name="<RESULT>" type=string/3 scope=109 init=3 users=2 value=stack:148
+DEF 122 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=24 value=args:4
+DEF 123 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-9
+DEF 124 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:12
+DEF 125 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1072="end"
+DEF 126 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=5 value=global:1200=#3F800000
+DEF 127 name="quick" type=quick/8 scope=@namespace init=2 users=1 value=func:97
+DEF 128 name="name" type=string/3 scope=127 init=3 users=1 value=stack:0
+DEF 129 name="v" type=vector/5 scope=127 init=3 users=1 value=stack:128
+DEF 130 name="v_x" type=float/4 scope=127 init=3 users=1 value=stack:128
+DEF 131 name="v_y" type=float/4 scope=127 init=3 users=1 value=stack:132
+DEF 132 name="v_z" type=float/4 scope=127 init=3 users=1 value=stack:136
+DEF 133 name="e" type=entity/6 scope=127 init=3 users=1 value=stack:140
+DEF 134 name="<RESULT>" type=string/3 scope=127 init=3 users=2 value=stack:144
+DEF 135 name="<RESULT>" type=string/3 scope=127 init=3 users=2 value=stack:272
+DEF 136 name="<RESULT>" type=string/3 scope=127 init=3 users=2 value=stack:400
+DEF 137 name="framer" type=framer/8 scope=@namespace init=2 users=1 value=func:98
+DEF 138 name="n" type=float/4 scope=137 init=3 users=1 value=stack:0
+DEF 139 name="i" type=float/4 scope=137 init=3 users=1 value=stack:4
+DEF 140 name="<RESULT>" type=float/4 scope=137 init=3 users=2 value=stack:8
+DEF 141 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1212="framer "
+DEF 142 name="<RESULT>" type=string/3 scope=137 init=3 users=2 value=stack:12
+DEF 143 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1340=" time "
+DEF 144 name="<RESULT>" type=string/3 scope=137 init=3 users=2 value=stack:140
+DEF 145 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=24 value=args:0
+DEF 146 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=38 value=args:128
+DEF 147 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:-10
+DEF 148 name="<IMMEDIATE>" type=<jump>/12 scope=@namespace init=2 users=1 value=jump:13
+DEF 149 name="named" type=named/8 scope=@namespace init=2 users=1 value=func:99
+DEF 150 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1488="my_name_1"
+DEF 151 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1616="named resumed?"
+DEF 152 name="sleeper" type=sleeper/8 scope=@namespace init=2 users=1 value=func:100
+DEF 153 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1748="sleeper pauses"
+DEF 154 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:1876="sleeper never wakes by itself"
+DEF 155 name="returner" type=returner/8 scope=@namespace init=2 users=1 value=func:101
+DEF 156 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2008=#429A0000
+DEF 157 name="spawner" type=spawner/8 scope=@namespace init=2 users=1 value=func:102
+DEF 158 name="t1" type=float/4 scope=157 init=3 users=1 value=stack:0
+DEF 159 name="t2" type=float/4 scope=157 init=3 users=1 value=stack:4
+DEF 160 name="t3" type=float/4 scope=157 init=3 users=1 value=stack:8
+DEF 161 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:2016=#40400000
+DEF 162 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:2020=#3D4CCCCD
+DEF 163 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=5 value=args:12
+DEF 164 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=2 value=global:2028=#40000000
+DEF 165 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=4 value=global:2032=#3DCCCCCD
+DEF 166 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2036="q"
+DEF 167 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=2 value=global:2164=#3F800000,#40000000,#40400000
+DEF 168 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:2164=#3F800000
+DEF 169 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:2168=#40000000
+DEF 170 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:2172=#40400000
+DEF 171 name="$ent_one" type=entity/6 scope=@namespace init=0 users=1 value=global:2176=0
+DEF 172 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=1 value=args:144
+DEF 173 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2184="threads "
+DEF 174 name="<RESULT>" type=string/3 scope=157 init=3 users=2 value=stack:12
+DEF 175 name="<RESULT>" type=string/3 scope=157 init=3 users=2 value=stack:140
+DEF 176 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2312=" order "
+DEF 177 name="<RESULT>" type=float/4 scope=157 init=3 users=1 value=stack:268
+DEF 178 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2440="returner thread "
+DEF 179 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2568="t1done"
+DEF 180 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2696="t2done"
+DEF 181 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:2824=#461C3C00
+DEF 182 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2828="nowait"
+DEF 183 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:2956="spawner done: "
+DEF 184 name="killer" type=killer/8 scope=@namespace init=2 users=1 value=func:103
+DEF 185 name="t" type=float/4 scope=184 init=3 users=1 value=stack:0
+DEF 186 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:3088=#40E00000
+DEF 187 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=3 value=global:3092=#42C80000
+DEF 188 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=4 value=global:3096=#3C83126F
+DEF 189 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:3100=#41000000
+DEF 190 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3104="killer kills"
+DEF 191 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3232="my_name*"
+DEF 192 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3360="worker"
+DEF 193 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3488="no_such_thread"
+DEF 194 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:3616=#4640E400
+DEF 195 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3620="killer done"
+DEF 196 name="suicide" type=suicide/8 scope=@namespace init=2 users=1 value=func:104
+DEF 197 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3752="suicide starts"
+DEF 198 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:3880="suicide"
+DEF 199 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4008="suicide: after killing itself the statement still ends the frame"
+DEF 200 name="killAll" type=killAll/8 scope=@namespace init=2 users=1 value=func:105
+DEF 201 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4140="*"
+DEF 202 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4268="killAll: still running this frame"
+DEF 203 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4396="never"
+DEF 204 name="waitForMover" type=waitForMover/8 scope=@namespace init=2 users=1 value=func:106
+DEF 205 name="m" type=entity/6 scope=204 init=3 users=1 value=stack:0
+DEF 206 name="$ent_mover" type=entity/6 scope=@namespace init=0 users=1 value=global:4528=0
+DEF 207 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4532="waitFor without a move"
+DEF 208 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4660="not waiting: "
+DEF 209 name="<RESULT>" type=float/4 scope=204 init=3 users=2 value=stack:4
+DEF 210 name="<RESULT>" type=string/3 scope=204 init=3 users=2 value=stack:8
+DEF 211 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:4788=#41200000,#41A00000,#41F00000
+DEF 212 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:4788=#41200000
+DEF 213 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:4792=#41A00000
+DEF 214 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:4796=#41F00000
+DEF 215 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=2 value=args:20
+DEF 216 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4804="move done at "
+DEF 217 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:4932=" origin "
+DEF 218 name="<RESULT>" type=string/3 scope=204 init=3 users=2 value=stack:136
+DEF 219 name="<RESULT>" type=vector/5 scope=204 init=3 users=2 value=stack:264
+DEF 220 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5060="no wait on ent_one"
+DEF 221 name="$null_entity" type=entity/6 scope=@namespace init=0 users=1 value=global:5188=0
+DEF 222 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5192="never: null entity on an 'e' argument"
+DEF 223 name="twoWaiters" type=twoWaiters/8 scope=@namespace init=2 users=1 value=func:107
+DEF 224 name="m" type=entity/6 scope=223 init=3 users=1 value=stack:0
+DEF 225 name="<IMMEDIATE>" type=vector/5 scope=@namespace init=2 users=1 value=global:5324=#3F800000,#3F800000,#3F800000
+DEF 226 name="<IMMEDIATE>_x" type=float/4 scope=@namespace init=0 users=1 value=global:5324=#3F800000
+DEF 227 name="<IMMEDIATE>_y" type=float/4 scope=@namespace init=0 users=1 value=global:5328=#3F800000
+DEF 228 name="<IMMEDIATE>_z" type=float/4 scope=@namespace init=0 users=1 value=global:5332=#3F800000
+DEF 229 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5336="first waiter done"
+DEF 230 name="secondWaiter" type=secondWaiter/8 scope=@namespace init=2 users=1 value=func:108
+DEF 231 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5468="second waiter did not wait"
+DEF 232 name="multiFrame" type=multiFrame/8 scope=@namespace init=2 users=1 value=func:109
+DEF 233 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5600="slowTurn starts at "
+DEF 234 name="<RESULT>" type=float/4 scope=232 init=3 users=2 value=stack:0
+DEF 235 name="<RESULT>" type=string/3 scope=232 init=3 users=2 value=stack:4
+DEF 236 name="<IMMEDIATE>" type=<argsize>/13 scope=@namespace init=2 users=2 value=args:8
+DEF 237 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5732="slowTurn ended at "
+DEF 238 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5860="one frame slowTurn ended at "
+DEF 239 name="waits" type=waits/8 scope=@namespace init=2 users=1 value=func:110
+DEF 240 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:5992="t0 "
+DEF 241 name="<RESULT>" type=float/4 scope=239 init=3 users=2 value=stack:0
+DEF 242 name="<RESULT>" type=string/3 scope=239 init=3 users=2 value=stack:4
+DEF 243 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6120="t1 "
+DEF 244 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:6248=#3A83126F
+DEF 245 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6252="t2 "
+DEF 246 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6380="t3 "
+DEF 247 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:6508=#3C8B4396
+DEF 248 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6512="t4 "
+DEF 249 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:6640=#BF800000
+DEF 250 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6644="t5 "
+DEF 251 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6772="t6 "
+DEF 252 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:6900="t7 "
+DEF 253 name="locals" type=locals/8 scope=@namespace init=2 users=1 value=func:111
+DEF 254 name="lf" type=float/4 scope=253 init=3 users=1 value=stack:0
+DEF 255 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:7032=#40200000
+DEF 256 name="lv" type=vector/5 scope=253 init=3 users=1 value=stack:4
+DEF 257 name="lv_x" type=float/4 scope=253 init=3 users=1 value=stack:4
+DEF 258 name="lv_y" type=float/4 scope=253 init=3 users=1 value=stack:8
+DEF 259 name="lv_z" type=float/4 scope=253 init=3 users=1 value=stack:12
+DEF 260 name="ls" type=string/3 scope=253 init=3 users=1 value=stack:16
+DEF 261 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7036="local text"
+DEF 262 name="lb" type=boolean/14 scope=253 init=3 users=1 value=stack:144
+DEF 263 name="<IMMEDIATE>" type=float/4 scope=@namespace init=2 users=1 value=global:7164=#40A00000
+DEF 264 name="<IMMEDIATE>" type=string/3 scope=@namespace init=2 users=1 value=global:7168=""
+DEF 265 name="<RESULT>" type=string/3 scope=253 init=3 users=2 value=stack:148
+DEF 266 name="<RESULT>" type=string/3 scope=253 init=3 users=2 value=stack:276
+DEF 267 name="deep3" type=deep3/8 scope=@namespace init=2 users=1 value=func:112
+DEF 268 name="deep2" type=deep2/8 scope=@namespace init=2 users=1 value=func:113
+DEF 269 name="deep1" type=deep1/8 scope=@namespace init=2 users=1 value=func:114
+DEF 270 name="framerMain" type=framerMain/8 scope=@namespace init=2 users=1 value=func:115
+FUNC 0 name="terminate" event=terminate def=6 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 1 name="pause" event=pause def=7 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 2 name="wait" event=wait def=8 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 3 name="waitFrame" event=waitFrame def=9 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 4 name="waitFor" event=waitFor def=10 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 5 name="waitForThread" event=waitForThread def=11 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 6 name="killthread" event=killthread def=12 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 7 name="threadname" event=threadname def=13 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 8 name="print" event=print def=14 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 9 name="println" event=println def=15 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 10 name="say" event=say def=16 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 11 name="assert" event=assert def=17 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 12 name="warning" event=warning def=18 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 13 name="error" event=error def=19 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 14 name="trigger" event=trigger def=20 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 15 name="setcvar" event=setcvar def=21 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 16 name="getcvar" event=getcvar def=22 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 17 name="random" event=random def=23 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 18 name="getTime" event=getTime def=24 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 19 name="getEntity" event=getEntity def=25 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 20 name="spawn" event=spawn def=26 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 21 name="copySpawnArgs" event=copySpawnArgs def=27 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 22 name="setSpawnArg" event=setSpawnArg def=28 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 23 name="SpawnString" event=SpawnString def=29 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 24 name="SpawnFloat" event=SpawnFloat def=30 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 25 name="SpawnVector" event=SpawnVector def=31 first=0 num=0 parmTotal=140 locals=140 filenum=1 parmSize=[128,12]
+FUNC 26 name="clearPersistantArgs" event=clearPersistantArgs def=32 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 27 name="setPersistantArg" event=setPersistantArg def=33 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 28 name="getPersistantString" event=getPersistantString def=34 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 29 name="getPersistantFloat" event=getPersistantFloat def=35 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 30 name="getPersistantVector" event=getPersistantVector def=36 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 31 name="onSignal" event=onSignal def=37 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[4,4,128]
+FUNC 32 name="clearSignalThread" event=clearSignalThread def=38 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 33 name="setCamera" event=setCamera def=39 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 34 name="firstPerson" event=firstPerson def=40 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 35 name="trace" event=trace def=41 first=0 num=0 parmTotal=56 locals=56 filenum=1 parmSize=[12,12,12,12,4,4]
+FUNC 36 name="tracePoint" event=tracePoint def=42 first=0 num=0 parmTotal=32 locals=32 filenum=1 parmSize=[12,12,4,4]
+FUNC 37 name="getTraceFraction" event=getTraceFraction def=43 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 38 name="getTraceEndPos" event=getTraceEndPos def=44 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 39 name="getTraceNormal" event=getTraceNormal def=45 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 40 name="getTraceEntity" event=getTraceEntity def=46 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 41 name="getTraceJoint" event=getTraceJoint def=47 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 42 name="getTraceBody" event=getTraceBody def=48 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 43 name="fadeIn" event=fadeIn def=49 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 44 name="fadeOut" event=fadeOut def=50 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 45 name="fadeTo" event=fadeTo def=51 first=0 num=0 parmTotal=20 locals=20 filenum=1 parmSize=[12,4,4]
+FUNC 46 name="music" event=music def=52 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 47 name="radiusDamage" event=radiusDamage def=53 first=0 num=0 parmTotal=156 locals=156 filenum=1 parmSize=[12,4,4,4,128,4]
+FUNC 48 name="isClient" event=isClient def=54 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 49 name="isMultiplayer" event=isMultiplayer def=55 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 50 name="getFrameTime" event=getFrameTime def=56 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 51 name="getTicsPerSecond" event=getTicsPerSecond def=57 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 52 name="debugLine" event=debugLine def=58 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 53 name="debugArrow" event=debugArrow def=59 first=0 num=0 parmTotal=44 locals=44 filenum=1 parmSize=[12,12,12,4,4]
+FUNC 54 name="debugCircle" event=debugCircle def=60 first=0 num=0 parmTotal=48 locals=48 filenum=1 parmSize=[12,12,12,4,4,4]
+FUNC 55 name="debugBounds" event=debugBounds def=61 first=0 num=0 parmTotal=40 locals=40 filenum=1 parmSize=[12,12,12,4]
+FUNC 56 name="drawText" event=drawText def=62 first=0 num=0 parmTotal=164 locals=164 filenum=1 parmSize=[128,12,4,12,4,4]
+FUNC 57 name="influenceActive" event=influenceActive def=63 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 58 name="angToForward" event=angToForward def=64 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 59 name="angToRight" event=angToRight def=65 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 60 name="angToUp" event=angToUp def=66 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 61 name="sin" event=sin def=67 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 62 name="cos" event=cos def=68 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 63 name="sqrt" event=sqrt def=69 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 64 name="vecNormalize" event=vecNormalize def=70 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 65 name="vecLength" event=vecLength def=71 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 66 name="DotProduct" event=DotProduct def=72 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 67 name="CrossProduct" event=CrossProduct def=73 first=0 num=0 parmTotal=24 locals=24 filenum=1 parmSize=[12,12]
+FUNC 68 name="VecToAngles" event=VecToAngles def=74 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 69 name="strLength" event=strLength def=75 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 70 name="strLeft" event=strLeft def=76 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 71 name="strRight" event=strRight def=77 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 72 name="strSkip" event=strSkip def=78 first=0 num=0 parmTotal=132 locals=132 filenum=1 parmSize=[128,4]
+FUNC 73 name="strMid" event=strMid def=79 first=0 num=0 parmTotal=136 locals=136 filenum=1 parmSize=[128,4,4]
+FUNC 74 name="strToFloat" event=strToFloat def=80 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 75 name="remove" event=remove def=81 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 76 name="activate" event=activate def=82 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 77 name="setShaderParm" event=setShaderParm def=83 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 78 name="cacheSoundShader" event=cacheSoundShader def=84 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 79 name="getName" event=getName def=85 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 80 name="setName" event=setName def=86 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 81 name="setValue" event=setValue def=87 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 82 name="getValue" event=getValue def=88 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 83 name="setOrigin" event=setOrigin def=89 first=0 num=0 parmTotal=12 locals=12 filenum=1 parmSize=[12]
+FUNC 84 name="getOrigin" event=getOrigin def=90 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 85 name="setOwner" event=setOwner def=91 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 86 name="getOwner" event=getOwner def=92 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 87 name="bind" event=bind def=93 first=0 num=0 parmTotal=4 locals=4 filenum=1 parmSize=[4]
+FUNC 88 name="setKey" event=setKey def=94 first=0 num=0 parmTotal=256 locals=256 filenum=1 parmSize=[128,128]
+FUNC 89 name="getKey" event=getKey def=95 first=0 num=0 parmTotal=128 locals=128 filenum=1 parmSize=[128]
+FUNC 90 name="addInts" event=addInts def=96 first=0 num=0 parmTotal=8 locals=8 filenum=1 parmSize=[4,4]
+FUNC 91 name="mix" event=mix def=97 first=0 num=0 parmTotal=152 locals=152 filenum=1 parmSize=[4,4,12,128,4]
+FUNC 92 name="moveTo" event=moveTo def=98 first=0 num=0 parmTotal=16 locals=16 filenum=1 parmSize=[12,4]
+FUNC 93 name="isMoving" event=isMoving def=99 first=0 num=0 parmTotal=0 locals=0 filenum=1 parmSize=[]
+FUNC 94 name="slowTurn" event=slowTurn def=100 first=0 num=0 parmTotal=4 locals=4 filenum=0 parmSize=[4]
+FUNC 95 name="mark" event=- def=104 first=1 num=4 parmTotal=128 locals=384 filenum=0 parmSize=[128]
+FUNC 96 name="worker" event=- def=109 first=5 num=21 parmTotal=12 locals=276 filenum=0 parmSize=[4,4,4]
+FUNC 97 name="quick" event=- def=127 first=26 num=8 parmTotal=144 locals=528 filenum=0 parmSize=[128,12,4]
+FUNC 98 name="framer" event=- def=137 first=34 num=16 parmTotal=4 locals=268 filenum=0 parmSize=[4]
+FUNC 99 name="named" event=- def=149 first=50 num=6 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 100 name="sleeper" event=- def=152 first=56 num=6 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 101 name="returner" event=- def=155 first=62 num=2 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 102 name="spawner" event=- def=157 first=64 num=49 parmTotal=0 locals=272 filenum=0 parmSize=[]
+FUNC 103 name="killer" event=- def=184 first=113 num=30 parmTotal=0 locals=4 filenum=0 parmSize=[]
+FUNC 104 name="suicide" event=- def=196 first=143 num=7 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 105 name="killAll" event=- def=200 first=150 num=13 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 106 name="waitForMover" event=- def=204 first=163 num=36 parmTotal=0 locals=276 filenum=0 parmSize=[]
+FUNC 107 name="twoWaiters" event=- def=223 first=199 num=10 parmTotal=0 locals=4 filenum=0 parmSize=[]
+FUNC 108 name="secondWaiter" event=- def=230 first=209 num=5 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 109 name="multiFrame" event=- def=232 first=214 num=22 parmTotal=0 locals=132 filenum=0 parmSize=[]
+FUNC 110 name="waits" event=- def=239 first=236 num=54 parmTotal=0 locals=132 filenum=0 parmSize=[]
+FUNC 111 name="locals" event=- def=253 first=290 num=12 parmTotal=0 locals=404 filenum=0 parmSize=[]
+FUNC 112 name="deep3" event=- def=267 first=302 num=2 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 113 name="deep2" event=- def=268 first=304 num=2 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 114 name="deep1" event=- def=269 first=306 num=2 parmTotal=0 locals=0 filenum=0 parmSize=[]
+FUNC 115 name="framerMain" event=- def=270 first=308 num=3 parmTotal=0 locals=0 filenum=0 parmSize=[]
+STMT 0 RETURN a=- b=- c=- line=0 file=0
+STMT 1 ADD_S a=103 b=105 c=106 line=8 file=0
+STMT 2 ADD_S a=106 b=107 c=108 line=8 file=0
+STMT 3 STORE_S a=108 b=103 c=- line=8 file=0
+STMT 4 RETURN a=- b=- c=- line=9 file=0
+STMT 5 STORE_F a=114 b=113 c=- line=14 file=0
+STMT 6 LT a=113 b=111 c=115 line=14 file=0
+STMT 7 IFNOT a=115 b=124 c=- line=14 file=0
+STMT 8 IF a=115 b=117 c=- line=14 file=0
+STMT 9 UINC_F a=113 b=- c=- line=14 file=0
+STMT 10 GOTO a=116 b=- c=- line=14 file=0
+STMT 11 ADD_SF a=118 b=110 c=119 line=15 file=0
+STMT 12 ADD_S a=119 b=120 c=121 line=15 file=0
+STMT 13 ADD_SF a=121 b=113 c=119 line=15 file=0
+STMT 14 PUSH_S a=119 b=- c=- line=15 file=0
+STMT 15 CALL a=104 b=- c=- line=15 file=0
+STMT 16 PUSH_F a=112 b=- c=- line=16 file=0
+STMT 17 SYSCALL a=8 b=122 c=- line=16 file=0
+STMT 18 GOTO a=123 b=- c=- line=17 file=0
+STMT 19 ADD_SF a=118 b=110 c=121 line=18 file=0
+STMT 20 ADD_S a=121 b=125 c=119 line=18 file=0
+STMT 21 PUSH_S a=119 b=- c=- line=18 file=0
+STMT 22 CALL a=104 b=- c=- line=18 file=0
+STMT 23 ADD_F a=101 b=126 c=115 line=19 file=0
+STMT 24 STORE_F a=115 b=101 c=- line=19 file=0
+STMT 25 RETURN a=- b=- c=- line=20 file=0
+STMT 26 ADD_SV a=128 b=129 c=134 line=23 file=0
+STMT 27 PUSH_ENT a=133 b=- c=- line=23 file=0
+STMT 28 EVENTCALL a=85 b=122 c=- line=23 file=0
+STMT 29 STORE_S a=4 b=135 c=- line=23 file=0
+STMT 30 ADD_S a=134 b=135 c=136 line=23 file=0
+STMT 31 PUSH_S a=136 b=- c=- line=23 file=0
+STMT 32 CALL a=104 b=- c=- line=23 file=0
+STMT 33 RETURN a=- b=- c=- line=24 file=0
+STMT 34 STORE_F a=114 b=139 c=- line=29 file=0
+STMT 35 LT a=139 b=138 c=140 line=29 file=0
+STMT 36 IFNOT a=140 b=148 c=- line=29 file=0
+STMT 37 IF a=140 b=117 c=- line=29 file=0
+STMT 38 UINC_F a=139 b=- c=- line=29 file=0
+STMT 39 GOTO a=116 b=- c=- line=29 file=0
+STMT 40 ADD_SF a=141 b=139 c=142 line=30 file=0
+STMT 41 ADD_S a=142 b=143 c=144 line=30 file=0
+STMT 42 SYSCALL a=24 b=145 c=- line=30 file=0
+STMT 43 STORE_F a=0 b=140 c=- line=30 file=0
+STMT 44 ADD_SF a=144 b=140 c=142 line=30 file=0
+STMT 45 PUSH_S a=142 b=- c=- line=30 file=0
+STMT 46 SYSCALL a=15 b=146 c=- line=30 file=0
+STMT 47 SYSCALL a=9 b=145 c=- line=31 file=0
+STMT 48 GOTO a=147 b=- c=- line=32 file=0
+STMT 49 RETURN a=- b=- c=- line=33 file=0
+STMT 50 PUSH_S a=150 b=- c=- line=36 file=0
+STMT 51 SYSCALL a=13 b=146 c=- line=36 file=0
+STMT 52 SYSCALL a=7 b=145 c=- line=37 file=0
+STMT 53 PUSH_S a=151 b=- c=- line=38 file=0
+STMT 54 SYSCALL a=15 b=146 c=- line=38 file=0
+STMT 55 RETURN a=- b=- c=- line=39 file=0
+STMT 56 PUSH_S a=153 b=- c=- line=42 file=0
+STMT 57 SYSCALL a=15 b=146 c=- line=42 file=0
+STMT 58 SYSCALL a=7 b=145 c=- line=43 file=0
+STMT 59 PUSH_S a=154 b=- c=- line=44 file=0
+STMT 60 SYSCALL a=15 b=146 c=- line=44 file=0
+STMT 61 RETURN a=- b=- c=- line=45 file=0
+STMT 62 RETURN a=156 b=- c=- line=48 file=0
+STMT 63 RETURN a=- b=- c=- line=49 file=0
+STMT 64 PUSH_F a=126 b=- c=- line=54 file=0
+STMT 65 PUSH_F a=161 b=- c=- line=54 file=0
+STMT 66 PUSH_F a=162 b=- c=- line=54 file=0
+STMT 67 THREAD a=109 b=163 c=- line=54 file=0
+STMT 68 STORE_F a=0 b=158 c=- line=54 file=0
+STMT 69 PUSH_F a=164 b=- c=- line=55 file=0
+STMT 70 PUSH_F a=164 b=- c=- line=55 file=0
+STMT 71 PUSH_F a=165 b=- c=- line=55 file=0
+STMT 72 THREAD a=109 b=163 c=- line=55 file=0
+STMT 73 STORE_F a=0 b=159 c=- line=55 file=0
+STMT 74 PUSH_S a=166 b=- c=- line=56 file=0
+STMT 75 PUSH_V a=167 b=- c=- line=56 file=0
+STMT 76 PUSH_ENT a=171 b=- c=- line=56 file=0
+STMT 77 THREAD a=127 b=172 c=- line=56 file=0
+STMT 78 STORE_F a=0 b=160 c=- line=56 file=0
+STMT 79 ADD_SF a=173 b=158 c=174 line=57 file=0
+STMT 80 ADD_S a=174 b=107 c=175 line=57 file=0
+STMT 81 ADD_SF a=175 b=159 c=174 line=57 file=0
+STMT 82 ADD_S a=174 b=107 c=175 line=57 file=0
+STMT 83 ADD_SF a=175 b=160 c=174 line=57 file=0
+STMT 84 ADD_S a=174 b=176 c=175 line=57 file=0
+STMT 85 ADD_S a=175 b=103 c=174 line=57 file=0
+STMT 86 PUSH_S a=174 b=- c=- line=57 file=0
+STMT 87 SYSCALL a=15 b=146 c=- line=57 file=0
+STMT 88 STORE_F a=159 b=102 c=- line=58 file=0
+STMT 89 THREAD a=155 b=145 c=- line=60 file=0
+STMT 90 STORE_F a=0 b=177 c=- line=60 file=0
+STMT 91 STORE_F a=0 b=160 c=- line=60 file=0
+STMT 92 ADD_SF a=178 b=160 c=175 line=61 file=0
+STMT 93 PUSH_S a=175 b=- c=- line=61 file=0
+STMT 94 SYSCALL a=15 b=146 c=- line=61 file=0
+STMT 95 PUSH_F a=158 b=- c=- line=62 file=0
+STMT 96 SYSCALL a=11 b=122 c=- line=62 file=0
+STMT 97 PUSH_S a=179 b=- c=- line=63 file=0
+STMT 98 CALL a=104 b=- c=- line=63 file=0
+STMT 99 PUSH_F a=159 b=- c=- line=64 file=0
+STMT 100 SYSCALL a=11 b=122 c=- line=64 file=0
+STMT 101 PUSH_S a=180 b=- c=- line=65 file=0
+STMT 102 CALL a=104 b=- c=- line=65 file=0
+STMT 103 PUSH_F a=158 b=- c=- line=67 file=0
+STMT 104 SYSCALL a=11 b=122 c=- line=67 file=0
+STMT 105 PUSH_F a=181 b=- c=- line=68 file=0
+STMT 106 SYSCALL a=11 b=122 c=- line=68 file=0
+STMT 107 PUSH_S a=182 b=- c=- line=69 file=0
+STMT 108 CALL a=104 b=- c=- line=69 file=0
+STMT 109 ADD_S a=183 b=103 c=175 line=70 file=0
+STMT 110 PUSH_S a=175 b=- c=- line=70 file=0
+STMT 111 SYSCALL a=15 b=146 c=- line=70 file=0
+STMT 112 RETURN a=- b=- c=- line=71 file=0
+STMT 113 THREAD a=152 b=145 c=- line=76 file=0
+STMT 114 STORE_F a=0 b=185 c=- line=76 file=0
+STMT 115 THREAD a=149 b=145 c=- line=77 file=0
+STMT 116 PUSH_F a=186 b=- c=- line=78 file=0
+STMT 117 PUSH_F a=187 b=- c=- line=78 file=0
+STMT 118 PUSH_F a=188 b=- c=- line=78 file=0
+STMT 119 THREAD a=109 b=163 c=- line=78 file=0
+STMT 120 PUSH_F a=189 b=- c=- line=79 file=0
+STMT 121 PUSH_F a=187 b=- c=- line=79 file=0
+STMT 122 PUSH_F a=188 b=- c=- line=79 file=0
+STMT 123 THREAD a=109 b=163 c=- line=79 file=0
+STMT 124 PUSH_F a=165 b=- c=- line=80 file=0
+STMT 125 SYSCALL a=8 b=122 c=- line=80 file=0
+STMT 126 PUSH_S a=190 b=- c=- line=81 file=0
+STMT 127 SYSCALL a=15 b=146 c=- line=81 file=0
+STMT 128 PUSH_F a=185 b=- c=- line=82 file=0
+STMT 129 SYSCALL a=6 b=122 c=- line=82 file=0
+STMT 130 PUSH_S a=191 b=- c=- line=83 file=0
+STMT 131 SYSCALL a=12 b=146 c=- line=83 file=0
+STMT 132 PUSH_S a=192 b=- c=- line=84 file=0
+STMT 133 SYSCALL a=12 b=146 c=- line=84 file=0
+STMT 134 PUSH_S a=193 b=- c=- line=85 file=0
+STMT 135 SYSCALL a=12 b=146 c=- line=85 file=0
+STMT 136 PUSH_F a=194 b=- c=- line=86 file=0
+STMT 137 SYSCALL a=6 b=122 c=- line=86 file=0
+STMT 138 PUSH_F a=162 b=- c=- line=87 file=0
+STMT 139 SYSCALL a=8 b=122 c=- line=87 file=0
+STMT 140 PUSH_S a=195 b=- c=- line=88 file=0
+STMT 141 SYSCALL a=15 b=146 c=- line=88 file=0
+STMT 142 RETURN a=- b=- c=- line=89 file=0
+STMT 143 PUSH_S a=197 b=- c=- line=92 file=0
+STMT 144 SYSCALL a=15 b=146 c=- line=92 file=0
+STMT 145 PUSH_S a=198 b=- c=- line=93 file=0
+STMT 146 SYSCALL a=12 b=146 c=- line=93 file=0
+STMT 147 PUSH_S a=199 b=- c=- line=94 file=0
+STMT 148 SYSCALL a=15 b=146 c=- line=94 file=0
+STMT 149 RETURN a=- b=- c=- line=95 file=0
+STMT 150 PUSH_F a=126 b=- c=- line=98 file=0
+STMT 151 PUSH_F a=187 b=- c=- line=98 file=0
+STMT 152 PUSH_F a=188 b=- c=- line=98 file=0
+STMT 153 THREAD a=109 b=163 c=- line=98 file=0
+STMT 154 SYSCALL a=9 b=145 c=- line=99 file=0
+STMT 155 PUSH_S a=201 b=- c=- line=100 file=0
+STMT 156 SYSCALL a=12 b=146 c=- line=100 file=0
+STMT 157 PUSH_S a=202 b=- c=- line=101 file=0
+STMT 158 SYSCALL a=15 b=146 c=- line=101 file=0
+STMT 159 SYSCALL a=9 b=145 c=- line=102 file=0
+STMT 160 PUSH_S a=203 b=- c=- line=103 file=0
+STMT 161 SYSCALL a=15 b=146 c=- line=103 file=0
+STMT 162 RETURN a=- b=- c=- line=104 file=0
+STMT 163 STORE_ENT a=206 b=205 c=- line=109 file=0
+STMT 164 PUSH_S a=207 b=- c=- line=110 file=0
+STMT 165 SYSCALL a=15 b=146 c=- line=110 file=0
+STMT 166 PUSH_ENT a=205 b=- c=- line=111 file=0
+STMT 167 SYSCALL a=10 b=122 c=- line=111 file=0
+STMT 168 PUSH_ENT a=205 b=- c=- line=112 file=0
+STMT 169 EVENTCALL a=99 b=122 c=- line=112 file=0
+STMT 170 STORE_F a=0 b=209 c=- line=112 file=0
+STMT 171 ADD_SF a=208 b=209 c=210 line=112 file=0
+STMT 172 PUSH_S a=210 b=- c=- line=112 file=0
+STMT 173 SYSCALL a=15 b=146 c=- line=112 file=0
+STMT 174 PUSH_ENT a=205 b=- c=- line=113 file=0
+STMT 175 PUSH_V a=211 b=- c=- line=113 file=0
+STMT 176 PUSH_F a=165 b=- c=- line=113 file=0
+STMT 177 EVENTCALL a=98 b=215 c=- line=113 file=0
+STMT 178 PUSH_ENT a=205 b=- c=- line=114 file=0
+STMT 179 SYSCALL a=10 b=122 c=- line=114 file=0
+STMT 180 SYSCALL a=24 b=145 c=- line=115 file=0
+STMT 181 STORE_F a=0 b=209 c=- line=115 file=0
+STMT 182 ADD_SF a=216 b=209 c=210 line=115 file=0
+STMT 183 ADD_S a=210 b=217 c=218 line=115 file=0
+STMT 184 PUSH_ENT a=205 b=- c=- line=115 file=0
+STMT 185 EVENTCALL a=90 b=122 c=- line=115 file=0
+STMT 186 STORE_V a=0 b=219 c=- line=115 file=0
+STMT 187 ADD_SV a=218 b=219 c=210 line=115 file=0
+STMT 188 PUSH_S a=210 b=- c=- line=115 file=0
+STMT 189 SYSCALL a=15 b=146 c=- line=115 file=0
+STMT 190 PUSH_ENT a=171 b=- c=- line=117 file=0
+STMT 191 SYSCALL a=10 b=122 c=- line=117 file=0
+STMT 192 PUSH_S a=220 b=- c=- line=118 file=0
+STMT 193 SYSCALL a=15 b=146 c=- line=118 file=0
+STMT 194 PUSH_ENT a=221 b=- c=- line=119 file=0
+STMT 195 SYSCALL a=10 b=122 c=- line=119 file=0
+STMT 196 PUSH_S a=222 b=- c=- line=120 file=0
+STMT 197 SYSCALL a=15 b=146 c=- line=120 file=0
+STMT 198 RETURN a=- b=- c=- line=121 file=0
+STMT 199 STORE_ENT a=206 b=224 c=- line=126 file=0
+STMT 200 PUSH_ENT a=224 b=- c=- line=127 file=0
+STMT 201 PUSH_V a=225 b=- c=- line=127 file=0
+STMT 202 PUSH_F a=162 b=- c=- line=127 file=0
+STMT 203 EVENTCALL a=98 b=215 c=- line=127 file=0
+STMT 204 PUSH_ENT a=224 b=- c=- line=128 file=0
+STMT 205 SYSCALL a=10 b=122 c=- line=128 file=0
+STMT 206 PUSH_S a=229 b=- c=- line=129 file=0
+STMT 207 SYSCALL a=15 b=146 c=- line=129 file=0
+STMT 208 RETURN a=- b=- c=- line=130 file=0
+STMT 209 PUSH_ENT a=206 b=- c=- line=134 file=0
+STMT 210 SYSCALL a=10 b=122 c=- line=134 file=0
+STMT 211 PUSH_S a=231 b=- c=- line=135 file=0
+STMT 212 SYSCALL a=15 b=146 c=- line=135 file=0
+STMT 213 RETURN a=- b=- c=- line=136 file=0
+STMT 214 SYSCALL a=24 b=145 c=- line=139 file=0
+STMT 215 STORE_F a=0 b=234 c=- line=139 file=0
+STMT 216 ADD_SF a=233 b=234 c=235 line=139 file=0
+STMT 217 PUSH_S a=235 b=- c=- line=139 file=0
+STMT 218 SYSCALL a=15 b=146 c=- line=139 file=0
+STMT 219 PUSH_ENT a=206 b=- c=- line=140 file=0
+STMT 220 PUSH_F a=161 b=- c=- line=140 file=0
+STMT 221 EVENTCALL a=100 b=236 c=- line=140 file=0
+STMT 222 SYSCALL a=24 b=145 c=- line=141 file=0
+STMT 223 STORE_F a=0 b=234 c=- line=141 file=0
+STMT 224 ADD_SF a=237 b=234 c=235 line=141 file=0
+STMT 225 PUSH_S a=235 b=- c=- line=141 file=0
+STMT 226 SYSCALL a=15 b=146 c=- line=141 file=0
+STMT 227 PUSH_ENT a=206 b=- c=- line=142 file=0
+STMT 228 PUSH_F a=126 b=- c=- line=142 file=0
+STMT 229 EVENTCALL a=100 b=236 c=- line=142 file=0
+STMT 230 SYSCALL a=24 b=145 c=- line=143 file=0
+STMT 231 STORE_F a=0 b=234 c=- line=143 file=0
+STMT 232 ADD_SF a=238 b=234 c=235 line=143 file=0
+STMT 233 PUSH_S a=235 b=- c=- line=143 file=0
+STMT 234 SYSCALL a=15 b=146 c=- line=143 file=0
+STMT 235 RETURN a=- b=- c=- line=144 file=0
+STMT 236 SYSCALL a=24 b=145 c=- line=147 file=0
+STMT 237 STORE_F a=0 b=241 c=- line=147 file=0
+STMT 238 ADD_SF a=240 b=241 c=242 line=147 file=0
+STMT 239 PUSH_S a=242 b=- c=- line=147 file=0
+STMT 240 SYSCALL a=15 b=146 c=- line=147 file=0
+STMT 241 PUSH_F a=114 b=- c=- line=148 file=0
+STMT 242 SYSCALL a=8 b=122 c=- line=148 file=0
+STMT 243 SYSCALL a=24 b=145 c=- line=149 file=0
+STMT 244 STORE_F a=0 b=241 c=- line=149 file=0
+STMT 245 ADD_SF a=243 b=241 c=242 line=149 file=0
+STMT 246 PUSH_S a=242 b=- c=- line=149 file=0
+STMT 247 SYSCALL a=15 b=146 c=- line=149 file=0
+STMT 248 PUSH_F a=244 b=- c=- line=150 file=0
+STMT 249 SYSCALL a=8 b=122 c=- line=150 file=0
+STMT 250 SYSCALL a=24 b=145 c=- line=151 file=0
+STMT 251 STORE_F a=0 b=241 c=- line=151 file=0
+STMT 252 ADD_SF a=245 b=241 c=242 line=151 file=0
+STMT 253 PUSH_S a=242 b=- c=- line=151 file=0
+STMT 254 SYSCALL a=15 b=146 c=- line=151 file=0
+STMT 255 PUSH_F a=188 b=- c=- line=152 file=0
+STMT 256 SYSCALL a=8 b=122 c=- line=152 file=0
+STMT 257 SYSCALL a=24 b=145 c=- line=153 file=0
+STMT 258 STORE_F a=0 b=241 c=- line=153 file=0
+STMT 259 ADD_SF a=246 b=241 c=242 line=153 file=0
+STMT 260 PUSH_S a=242 b=- c=- line=153 file=0
+STMT 261 SYSCALL a=15 b=146 c=- line=153 file=0
+STMT 262 PUSH_F a=247 b=- c=- line=154 file=0
+STMT 263 SYSCALL a=8 b=122 c=- line=154 file=0
+STMT 264 SYSCALL a=24 b=145 c=- line=155 file=0
+STMT 265 STORE_F a=0 b=241 c=- line=155 file=0
+STMT 266 ADD_SF a=248 b=241 c=242 line=155 file=0
+STMT 267 PUSH_S a=242 b=- c=- line=155 file=0
+STMT 268 SYSCALL a=15 b=146 c=- line=155 file=0
+STMT 269 PUSH_F a=249 b=- c=- line=156 file=0
+STMT 270 SYSCALL a=8 b=122 c=- line=156 file=0
+STMT 271 SYSCALL a=24 b=145 c=- line=157 file=0
+STMT 272 STORE_F a=0 b=241 c=- line=157 file=0
+STMT 273 ADD_SF a=250 b=241 c=242 line=157 file=0
+STMT 274 PUSH_S a=242 b=- c=- line=157 file=0
+STMT 275 SYSCALL a=15 b=146 c=- line=157 file=0
+STMT 276 SYSCALL a=9 b=145 c=- line=158 file=0
+STMT 277 SYSCALL a=24 b=145 c=- line=159 file=0
+STMT 278 STORE_F a=0 b=241 c=- line=159 file=0
+STMT 279 ADD_SF a=251 b=241 c=242 line=159 file=0
+STMT 280 PUSH_S a=242 b=- c=- line=159 file=0
+STMT 281 SYSCALL a=15 b=146 c=- line=159 file=0
+STMT 282 PUSH_F a=165 b=- c=- line=160 file=0
+STMT 283 SYSCALL a=8 b=122 c=- line=160 file=0
+STMT 284 SYSCALL a=24 b=145 c=- line=161 file=0
+STMT 285 STORE_F a=0 b=241 c=- line=161 file=0
+STMT 286 ADD_SF a=252 b=241 c=242 line=161 file=0
+STMT 287 PUSH_S a=242 b=- c=- line=161 file=0
+STMT 288 SYSCALL a=15 b=146 c=- line=161 file=0
+STMT 289 RETURN a=- b=- c=- line=162 file=0
+STMT 290 STORE_F a=255 b=254 c=- line=165 file=0
+STMT 291 STORE_V a=167 b=256 c=- line=166 file=0
+STMT 292 STORE_S a=261 b=260 c=- line=167 file=0
+STMT 293 STORE_FTOBOOL a=126 b=262 c=- line=168 file=0
+STMT 294 STORE_F a=263 b=101 c=- line=170 file=0
+STMT 295 SYSCALL a=7 b=145 c=- line=171 file=0
+STMT 296 ADD_SF a=264 b=254 c=265 line=172 file=0
+STMT 297 ADD_SV a=265 b=256 c=266 line=172 file=0
+STMT 298 ADD_S a=266 b=260 c=265 line=172 file=0
+STMT 299 PUSH_S a=265 b=- c=- line=172 file=0
+STMT 300 SYSCALL a=15 b=146 c=- line=172 file=0
+STMT 301 RETURN a=- b=- c=- line=173 file=0
+STMT 302 SYSCALL a=7 b=145 c=- line=175 file=0
+STMT 303 RETURN a=- b=- c=- line=175 file=0
+STMT 304 CALL a=267 b=- c=- line=176 file=0
+STMT 305 RETURN a=- b=- c=- line=176 file=0
+STMT 306 CALL a=268 b=- c=- line=177 file=0
+STMT 307 RETURN a=- b=- c=- line=177 file=0
+STMT 308 PUSH_F a=161 b=- c=- line=180 file=0
+STMT 309 CALL a=137 b=- c=- line=180 file=0
+STMT 310 RETURN a=- b=- c=- line=181 file=0
+TOP functions=116 statements=311 types=116 defs=271 files=2
+GLOBALS 7312
+G 000280 0000000000000000000000000000000000000000200000000000000000000000
+G 000320 0000000077000000000000000000000000000000000000000000000000000000
+G 0003A0 000000002E000000000000000000000000000000000000000000000000000000
+G 000420 00000000000000000000000000000000656E6400000000000000000000000000
+G 0004A0 000000000000000000000000000000000000803F00000000000000006672616D
+G 0004C0 6572200000000000000000000000000000000000000000000000000000000000
+G 000520 000000000000000000000000000000000000000000000000000000002074696D
+G 000540 6520000000000000000000000000000000000000000000000000000000000000
+G 0005C0 000000000000000000000000000000006D795F6E616D655F3100000000000000
+G 000640 000000000000000000000000000000006E616D656420726573756D65643F0000
+G 0006C0 0000000000000000000000000000000000000000736C65657065722070617573
+G 0006E0 6573000000000000000000000000000000000000000000000000000000000000
+G 000740 0000000000000000000000000000000000000000736C6565706572206E657665
+G 000760 722077616B657320627920697473656C66000000000000000000000000000000
+G 0007C0 00000000000000000000000000000000000000000000000000009A4200000000
+G 0007E0 00004040CDCC4C3D0000000000000040CDCCCC3D710000000000000000000000
+G 000860 00000000000000000000000000000000000000000000803F0000004000004040
+G 000880 0000000000000000746872656164732000000000000000000000000000000000
+G 000900 0000000000000000206F72646572200000000000000000000000000000000000
+G 000980 000000000000000072657475726E657220746872656164200000000000000000
+G 000A00 00000000000000007431646F6E65000000000000000000000000000000000000
+G 000A80 00000000000000007432646F6E65000000000000000000000000000000000000
+G 000B00 0000000000000000003C1C466E6F776169740000000000000000000000000000
+G 000B80 000000000000000000000000737061776E657220646F6E653A20000000000000
+G 000C00 000000000000000000000000000000000000E0400000C8426F12833C00000041
+G 000C20 6B696C6C6572206B696C6C730000000000000000000000000000000000000000
+G 000CA0 6D795F6E616D652A000000000000000000000000000000000000000000000000
+G 000D20 776F726B65720000000000000000000000000000000000000000000000000000
+G 000DA0 6E6F5F737563685F746872656164000000000000000000000000000000000000
+G 000E20 00E440466B696C6C657220646F6E650000000000000000000000000000000000
+G 000EA0 0000000000000000737569636964652073746172747300000000000000000000
+G 000F20 0000000000000000737569636964650000000000000000000000000000000000
+G 000FA0 0000000000000000737569636964653A206166746572206B696C6C696E672069
+G 000FC0 7473656C66207468652073746174656D656E74207374696C6C20656E64732074
+G 000FE0 6865206672616D65000000000000000000000000000000000000000000000000
+G 001020 0000000000000000000000002A00000000000000000000000000000000000000
+G 0010A0 0000000000000000000000006B696C6C416C6C3A207374696C6C2072756E6E69
+G 0010C0 6E672074686973206672616D6500000000000000000000000000000000000000
+G 001120 0000000000000000000000006E65766572000000000000000000000000000000
+G 0011A0 000000000000000000000000000000000000000077616974466F722077697468
+G 0011C0 6F75742061206D6F766500000000000000000000000000000000000000000000
+G 001220 00000000000000000000000000000000000000006E6F742077616974696E673A
+G 001240 2000000000000000000000000000000000000000000000000000000000000000
+G 0012A0 0000000000000000000000000000000000000000000020410000A0410000F041
+G 0012C0 000000006D6F766520646F6E6520617420000000000000000000000000000000
+G 001340 00000000206F726967696E200000000000000000000000000000000000000000
+G 0013C0 000000006E6F2077616974206F6E20656E745F6F6E6500000000000000000000
+G 001440 00000000000000006E657665723A206E756C6C20656E74697479206F6E20616E
+G 001460 2027652720617267756D656E7400000000000000000000000000000000000000
+G 0014C0 0000000000000000000000000000803F0000803F0000803F6669727374207761
+G 0014E0 6974657220646F6E650000000000000000000000000000000000000000000000
+G 001540 000000000000000000000000000000000000000000000000000000007365636F
+G 001560 6E642077616974657220646964206E6F74207761697400000000000000000000
+G 0015E0 736C6F775475726E207374617274732061742000000000000000000000000000
+G 001660 00000000736C6F775475726E20656E6465642061742000000000000000000000
+G 0016E0 000000006F6E65206672616D6520736C6F775475726E20656E64656420617420
+G 001760 0000000000000000743020000000000000000000000000000000000000000000
+G 0017E0 0000000000000000743120000000000000000000000000000000000000000000
+G 001860 00000000000000006F12833A7432200000000000000000000000000000000000
+G 0018E0 0000000000000000000000007433200000000000000000000000000000000000
+G 001960 00000000000000000000000096438B3C74342000000000000000000000000000
+G 0019E0 00000000000000000000000000000000000080BF743520000000000000000000
+G 001A60 0000000000000000000000000000000000000000743620000000000000000000
+G 001AE0 0000000000000000000000000000000000000000743720000000000000000000
+G 001B60 000000000000000000000000000000000000000000000000000020406C6F6361
+G 001B80 6C20746578740000000000000000000000000000000000000000000000000000
+G 001BE0 000000000000000000000000000000000000000000000000000000000000A040
+CHECKSUM C77639D5
+CMD spawn 1 idEntity ent_one
+CMD spawn 3 idMover ent_mover
+CMD thread spawner
+THREADNUM 1
+CMD dump threads
+CURRENT 0
+THREADINDEX 1
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=0 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=63 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=1 name=<execute> class=idThread object=thread:1 args=
+CMD frame 1
+HOST event 1 getName
+PRINT threads 2 3 4 order w1.0 w2.0 q1 2 3ent_one 
+PRINT returner thread 5
+FRAME time=16 framenum=1 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=66 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 5
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=66 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=66 name=<execute> class=idThread object=thread:2 args=
+EVENT time=116 name=<execute> class=idThread object=thread:3 args=
+CMD dump stacks
+STACK 1 00000040000040400000A04074687265616473203220332034206F726465722077312E302077322E3020713120322033656E745F6F6E652000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000072657475726E65722074687265616420350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A040
+STACK 2 0000803F00004040CDCC4C3D000000000000803F77312E300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000077312E0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+STACK 3 0000004000000040CDCCCC3D000000000000803F77322E300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000077322E0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+CMD listthreads
+PRINT   1: spawner              : script/threads.script(62)
+PRINT   2: worker               : script/threads.script(16)
+PRINT   3: worker               : script/threads.script(16)
+PRINT 3 active threads
+PRINT 
+CMD displayinfo 1
+PRINT            1: 'spawner'
+PRINT         File: script/threads.script(62)
+PRINT      Created: 0 (16 ms ago)
+PRINT       Status: Paused since 16 (0 ms)
+PRINT       Reason: Waiting for thread #  2 'worker'
+PRINT  Stack depth: 272 bytes, 272 max
+PRINT   Call depth: 1, 1 max
+PRINT   Call Stack: script/threads.script : spawner
+PRINT               <NO FUNCTION>
+PRINT 
+CMD displayinfo 2
+PRINT            2: 'worker'
+PRINT         File: script/threads.script(16)
+PRINT      Created: 16 (0 ms ago)
+PRINT       Status: Paused since 16 (0 ms)
+PRINT       Reason: Waiting until 66 (50 ms total wait time)
+PRINT  Stack depth: 276 bytes, 660 max
+PRINT   Call depth: 1, 2 max
+PRINT   Call Stack: script/threads.script : worker
+PRINT               script/threads.script : worker
+PRINT 
+CMD frame 14
+FRAME time=32 framenum=2 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=66 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=48 framenum=3 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=66 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=64 framenum=4 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=66 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=80 framenum=5 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=130 waitingForThread=0 lastExec=80 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=96 framenum=6 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=130 waitingForThread=0 lastExec=80 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=112 framenum=7 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=130 waitingForThread=0 lastExec=80 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=116 waitingForThread=0 lastExec=16 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=128 framenum=8 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=130 waitingForThread=0 lastExec=80 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=144 framenum=9 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=194 waitingForThread=0 lastExec=144 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=160 framenum=10 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=194 waitingForThread=0 lastExec=144 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=176 framenum=11 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=194 waitingForThread=0 lastExec=144 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=192 framenum=12 events=2
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=2 lastExec=16 created=0 manual=0 depth=1 used=272 base=0 maxDepth=1 maxUsed=272 ip=96 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 2 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=194 waitingForThread=0 lastExec=144 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=208 framenum=13 events=1
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=3 lastExec=208 created=0 manual=0 depth=1 used=272 base=0 maxDepth=2 maxUsed=656 ip=100 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=224 framenum=14 events=1
+THREAD 1 name="spawner" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=3 lastExec=208 created=0 manual=0 depth=1 used=272 base=0 maxDepth=2 maxUsed=656 ip=100 func=102 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 3 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=228 waitingForThread=0 lastExec=128 created=16 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+PRINT spawner done: w1.0 w2.0 q1 2 3ent_one w1.1 w2.1 w1.2 w1end t1done w2end t2done nowait 
+FRAME time=240 framenum=15 events=0
+CMD dump globals
+GLOBALS 7312
+G 000000 0000A0400000000000000000656E745F6F6E6500000000000000000000000000
+G 000200 0000000000000000000000400000404077312E302077322E3020713120322033
+G 000220 656E745F6F6E652077312E312077322E312077312E32207731656E6420743164
+G 000240 6F6E65207732656E64207432646F6E65206E6F77616974200000000000000000
+G 000280 0000000000000000000000000000000000000000200000000000000000000000
+G 000320 0000000077000000000000000000000000000000000000000000000000000000
+G 0003A0 000000002E000000000000000000000000000000000000000000000000000000
+G 000420 00000000000000000000000000000000656E6400000000000000000000000000
+G 0004A0 000000000000000000000000000000000000803F00000000000000006672616D
+G 0004C0 6572200000000000000000000000000000000000000000000000000000000000
+G 000520 000000000000000000000000000000000000000000000000000000002074696D
+G 000540 6520000000000000000000000000000000000000000000000000000000000000
+G 0005C0 000000000000000000000000000000006D795F6E616D655F3100000000000000
+G 000640 000000000000000000000000000000006E616D656420726573756D65643F0000
+G 0006C0 0000000000000000000000000000000000000000736C65657065722070617573
+G 0006E0 6573000000000000000000000000000000000000000000000000000000000000
+G 000740 0000000000000000000000000000000000000000736C6565706572206E657665
+G 000760 722077616B657320627920697473656C66000000000000000000000000000000
+G 0007C0 00000000000000000000000000000000000000000000000000009A4200000000
+G 0007E0 00004040CDCC4C3D0000000000000040CDCCCC3D710000000000000000000000
+G 000860 00000000000000000000000000000000000000000000803F0000004000004040
+G 000880 0200000000000000746872656164732000000000000000000000000000000000
+G 000900 0000000000000000206F72646572200000000000000000000000000000000000
+G 000980 000000000000000072657475726E657220746872656164200000000000000000
+G 000A00 00000000000000007431646F6E65000000000000000000000000000000000000
+G 000A80 00000000000000007432646F6E65000000000000000000000000000000000000
+G 000B00 0000000000000000003C1C466E6F776169740000000000000000000000000000
+G 000B80 000000000000000000000000737061776E657220646F6E653A20000000000000
+G 000C00 000000000000000000000000000000000000E0400000C8426F12833C00000041
+G 000C20 6B696C6C6572206B696C6C730000000000000000000000000000000000000000
+G 000CA0 6D795F6E616D652A000000000000000000000000000000000000000000000000
+G 000D20 776F726B65720000000000000000000000000000000000000000000000000000
+G 000DA0 6E6F5F737563685F746872656164000000000000000000000000000000000000
+G 000E20 00E440466B696C6C657220646F6E650000000000000000000000000000000000
+G 000EA0 0000000000000000737569636964652073746172747300000000000000000000
+G 000F20 0000000000000000737569636964650000000000000000000000000000000000
+G 000FA0 0000000000000000737569636964653A206166746572206B696C6C696E672069
+G 000FC0 7473656C66207468652073746174656D656E74207374696C6C20656E64732074
+G 000FE0 6865206672616D65000000000000000000000000000000000000000000000000
+G 001020 0000000000000000000000002A00000000000000000000000000000000000000
+G 0010A0 0000000000000000000000006B696C6C416C6C3A207374696C6C2072756E6E69
+G 0010C0 6E672074686973206672616D6500000000000000000000000000000000000000
+G 001120 0000000000000000000000006E65766572000000000000000000000000000000
+G 0011A0 000000000000000000000000000000000400000077616974466F722077697468
+G 0011C0 6F75742061206D6F766500000000000000000000000000000000000000000000
+G 001220 00000000000000000000000000000000000000006E6F742077616974696E673A
+G 001240 2000000000000000000000000000000000000000000000000000000000000000
+G 0012A0 0000000000000000000000000000000000000000000020410000A0410000F041
+G 0012C0 000000006D6F766520646F6E6520617420000000000000000000000000000000
+G 001340 00000000206F726967696E200000000000000000000000000000000000000000
+G 0013C0 000000006E6F2077616974206F6E20656E745F6F6E6500000000000000000000
+G 001440 00000000000000006E657665723A206E756C6C20656E74697479206F6E20616E
+G 001460 2027652720617267756D656E7400000000000000000000000000000000000000
+G 0014C0 0000000000000000000000000000803F0000803F0000803F6669727374207761
+G 0014E0 6974657220646F6E650000000000000000000000000000000000000000000000
+G 001540 000000000000000000000000000000000000000000000000000000007365636F
+G 001560 6E642077616974657220646964206E6F74207761697400000000000000000000
+G 0015E0 736C6F775475726E207374617274732061742000000000000000000000000000
+G 001660 00000000736C6F775475726E20656E6465642061742000000000000000000000
+G 0016E0 000000006F6E65206672616D6520736C6F775475726E20656E64656420617420
+G 001760 0000000000000000743020000000000000000000000000000000000000000000
+G 0017E0 0000000000000000743120000000000000000000000000000000000000000000
+G 001860 00000000000000006F12833A7432200000000000000000000000000000000000
+G 0018E0 0000000000000000000000007433200000000000000000000000000000000000
+G 001960 00000000000000000000000096438B3C74342000000000000000000000000000
+G 0019E0 00000000000000000000000000000000000080BF743520000000000000000000
+G 001A60 0000000000000000000000000000000000000000743620000000000000000000
+G 001AE0 0000000000000000000000000000000000000000743720000000000000000000
+G 001B60 000000000000000000000000000000000000000000000000000020406C6F6361
+G 001B80 6C20746578740000000000000000000000000000000000000000000000000000
+G 001BE0 000000000000000000000000000000000000000000000000000000000000A040
+CMD listthreads
+PRINT 0 active threads
+PRINT 
+CMD thread waits
+THREADNUM 6
+CMD frame 16
+PRINT t0 0.256000
+FRAME time=256 framenum=16 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=272 framenum=17 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=288 framenum=18 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=304 framenum=19 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=320 framenum=20 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=336 framenum=21 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=352 framenum=22 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=368 framenum=23 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=384 framenum=24 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=400 framenum=25 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=416 framenum=26 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=432 framenum=27 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=448 framenum=28 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=464 framenum=29 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=480 framenum=30 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=496 framenum=31 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD thread killer
+THREADNUM 7
+CMD frame 3
+PRINT sleeper pauses
+FRAME time=512 framenum=32 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=528 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=528 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=528 framenum=33 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=544 waitingForThread=0 lastExec=528 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=544 waitingForThread=0 lastExec=528 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=544 framenum=34 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=560 waitingForThread=0 lastExec=544 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=560 waitingForThread=0 lastExec=544 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 11
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=560 waitingForThread=0 lastExec=544 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=560 waitingForThread=0 lastExec=544 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD listthreads
+PRINT   6: waits                : script/threads.script(148)
+PRINT   7: killer               : script/threads.script(80)
+PRINT   8: sleeper              : script/threads.script(43)
+PRINT   9: my_name_1            : script/threads.script(37)
+PRINT  10: worker               : script/threads.script(16)
+PRINT  11: worker               : script/threads.script(16)
+PRINT 6 active threads
+PRINT 
+CMD displayinfo 8
+PRINT            8: 'sleeper'
+PRINT         File: script/threads.script(43)
+PRINT      Created: 512 (32 ms ago)
+PRINT       Status: Paused since 512 (32 ms)
+PRINT       Reason: None
+PRINT  Stack depth: 0 bytes, 0 max
+PRINT   Call depth: 1, 1 max
+PRINT   Call Stack: script/threads.script : sleeper
+PRINT               <NO FUNCTION>
+PRINT 
+CMD displayinfo 9
+PRINT            9: 'my_name_1'
+PRINT         File: script/threads.script(37)
+PRINT      Created: 512 (32 ms ago)
+PRINT       Status: Paused since 512 (32 ms)
+PRINT       Reason: None
+PRINT  Stack depth: 0 bytes, 0 max
+PRINT   Call depth: 1, 1 max
+PRINT   Call Stack: script/threads.script : named
+PRINT               <NO FUNCTION>
+PRINT 
+CMD displayinfo 10
+PRINT           10: 'worker'
+PRINT         File: script/threads.script(16)
+PRINT      Created: 512 (32 ms ago)
+PRINT       Status: Paused since 544 (0 ms)
+PRINT       Reason: Waiting until 560 (16 ms total wait time)
+PRINT  Stack depth: 276 bytes, 660 max
+PRINT   Call depth: 1, 2 max
+PRINT   Call Stack: script/threads.script : worker
+PRINT               script/threads.script : worker
+PRINT 
+CMD frame 8
+FRAME time=560 framenum=35 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=576 waitingForThread=0 lastExec=560 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=576 waitingForThread=0 lastExec=560 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=576 framenum=36 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=592 waitingForThread=0 lastExec=576 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=592 waitingForThread=0 lastExec=576 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=592 framenum=37 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=608 waitingForThread=0 lastExec=592 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=608 waitingForThread=0 lastExec=592 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=608 framenum=38 events=3
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=612 waitingForThread=0 lastExec=512 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=125 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 10 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=624 waitingForThread=0 lastExec=608 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 11 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=624 waitingForThread=0 lastExec=608 created=512 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+PRINT killer kills
+FRAME time=624 framenum=39 events=1
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=674 waitingForThread=0 lastExec=624 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=139 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=640 framenum=40 events=1
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=674 waitingForThread=0 lastExec=624 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=139 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=656 framenum=41 events=1
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=674 waitingForThread=0 lastExec=624 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=139 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=672 framenum=42 events=1
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=674 waitingForThread=0 lastExec=624 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=139 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 11
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 7 name="killer" dying=0 done=1 waitingFor=4095 waitingUntil=674 waitingForThread=0 lastExec=624 created=496 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=139 func=103 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD thread suicide
+THREADNUM 12
+CMD frame 2
+PRINT suicide starts
+PRINT killer done
+FRAME time=688 framenum=43 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=704 framenum=44 events=0
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD thread killAll
+THREADNUM 13
+CMD frame 3
+FRAME time=720 framenum=45 events=2
+THREAD 6 name="waits" dying=0 done=1 waitingFor=4095 waitingUntil=256 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 13 name="killAll" dying=0 done=1 waitingFor=4095 waitingUntil=736 waitingForThread=0 lastExec=720 created=704 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=154 func=105 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 14 name="worker" dying=0 done=1 waitingFor=4095 waitingUntil=736 waitingForThread=0 lastExec=720 created=720 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=736 framenum=46 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 14 name="worker" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=736 created=720 manual=0 depth=1 used=276 base=0 maxDepth=2 maxUsed=660 ip=17 func=96 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=752 framenum=47 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 14
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD thread waitForMover
+THREADNUM 15
+CMD frame 2
+PRINT waitFor without a move
+HOST event 3 <script_setcallback>
+HOST event 3 isMoving
+PRINT not waiting: 0
+HOST event 3 moveTo #41200000,#41A00000,#41F00000 #3DCCCCCD
+HOST event 3 <script_setcallback>
+FRAME time=768 framenum=48 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=784 framenum=49 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 15
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD displayinfo 15
+PRINT           15: 'waitForMover'
+PRINT         File: script/threads.script(114)
+PRINT      Created: 752 (32 ms ago)
+PRINT       Status: Paused since 768 (16 ms)
+PRINT       Reason: Waiting for entity #  3 'ent_mover'
+PRINT  Stack depth: 276 bytes, 276 max
+PRINT   Call depth: 1, 1 max
+PRINT   Call Stack: script/threads.script : waitForMover
+PRINT               <NO FUNCTION>
+PRINT 
+CMD frame 8
+FRAME time=800 framenum=50 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=816 framenum=51 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=832 framenum=52 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=848 framenum=53 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=864 framenum=54 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 15 name="waitForMover" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=768 created=752 manual=0 depth=1 used=276 base=0 maxDepth=1 maxUsed=276 ip=179 func=106 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 3 <movedone>
+HOST event 3 getOrigin
+PRINT move done at 0.880000 origin 10 20 30
+PRINT no wait on ent_one
+WARN script/threads.script(119): Thread 'waitForMover': Entity not found for event 'waitFor'. Terminating thread.
+FRAME time=880 framenum=55 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=896 framenum=56 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=912 framenum=57 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 15
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD thread twoWaiters
+THREADNUM 16
+CMD thread secondWaiter
+THREADNUM 17
+CMD frame 6
+HOST event 3 moveTo #3F800000,#3F800000,#3F800000 #3D4CCCCD
+HOST event 3 <script_setcallback>
+HOST event 3 <script_setcallback>
+PRINT second waiter did not wait
+FRAME time=928 framenum=58 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 16 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=928 created=912 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=944 framenum=59 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 16 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=928 created=912 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=960 framenum=60 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 16 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=928 created=912 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=976 framenum=61 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 16 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=928 created=912 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 3 <movedone>
+PRINT first waiter done
+FRAME time=992 framenum=62 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1008 framenum=63 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD thread multiFrame
+THREADNUM 18
+CMD frame 1
+PRINT slowTurn starts at 1.024000
+HOST event 3 slowTurn #40400000
+HOST slowTurn begin 3
+HOST slowTurn tick 2
+FRAME time=1024 framenum=64 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 18 name="multiFrame" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1024 created=1008 manual=0 depth=1 used=140 base=0 maxDepth=1 maxUsed=132 ip=221 func=109 popParms=0 multiFrame=slowTurn eventEntity=3 terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 18
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 18 name="multiFrame" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1024 created=1008 manual=0 depth=1 used=140 base=0 maxDepth=1 maxUsed=132 ip=221 func=109 popParms=0 multiFrame=slowTurn eventEntity=3 terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=1040 name=<execute> class=idThread object=thread:18 args=
+CMD frame 6
+HOST event 3 slowTurn #40400000
+HOST slowTurn tick 1
+FRAME time=1040 framenum=65 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 18 name="multiFrame" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1040 created=1008 manual=0 depth=1 used=140 base=0 maxDepth=1 maxUsed=132 ip=221 func=109 popParms=0 multiFrame=slowTurn eventEntity=3 terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 3 slowTurn #40400000
+HOST slowTurn tick 0
+HOST slowTurn end
+PRINT slowTurn ended at 1.056000
+HOST event 3 slowTurn #3F800000
+HOST slowTurn begin 1
+HOST slowTurn tick 0
+HOST slowTurn end
+PRINT one frame slowTurn ended at 1.056000
+FRAME time=1056 framenum=66 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1072 framenum=67 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1088 framenum=68 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1104 framenum=69 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1120 framenum=70 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 18
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD thread twoWaiters
+THREADNUM 19
+CMD frame 1
+HOST event 3 moveTo #3F800000,#3F800000,#3F800000 #3D4CCCCD
+HOST event 3 <script_setcallback>
+FRAME time=1136 framenum=71 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 19 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=1136 created=1120 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 19
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 19 name="twoWaiters" dying=0 done=1 waitingFor=3 waitingUntil=0 waitingForThread=0 lastExec=1136 created=1120 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD movedone 19 1
+CMD movedone 19 3
+CMD movedone 0 3
+CMD movedone 99 3
+CMD dump threads
+CURRENT 0
+THREADINDEX 19
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 19 name="twoWaiters" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1136 created=1120 manual=0 depth=1 used=4 base=0 maxDepth=1 maxUsed=4 ip=205 func=107 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD dump events
+EVENT time=1136 name=<execute> class=idThread object=thread:19 args=
+EVENT time=1186 name=<movedone> class=idMover object=ent:3 args=
+CMD frame 5
+PRINT first waiter done
+FRAME time=1152 framenum=72 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1168 framenum=73 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1184 framenum=74 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+HOST event 3 <movedone>
+FRAME time=1200 framenum=75 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+FRAME time=1216 framenum=76 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD thread sleeper
+THREADNUM 20
+CMD thread sleeper
+THREADNUM 21
+CMD frame 1
+PRINT sleeper pauses
+PRINT sleeper pauses
+FRAME time=1232 framenum=77 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD endthread 20
+CMD killthread 21
+CMD frame 1
+FRAME time=1248 framenum=78 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 21
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CMD thread named
+THREADNUM 22
+CMD frame 1
+FRAME time=1264 framenum=79 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 22 name="my_name_1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1264 created=1248 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD killthread my_name_1
+CMD frame 1
+FRAME time=1280 framenum=80 events=0
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 22 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1264 created=1248 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD thread framerMain
+THREADNUM 23
+CMD callnow returner
+DONE 1
+RETURN 429A0000 41A00000 41F00000 "ent_one"
+CMD dump return
+RETURN 429A0000 41A00000 41F00000 "ent_one"
+CMD thread locals
+THREADNUM 25
+CMD frame 1
+PRINT framer 0 time 1.296000
+FRAME time=1296 framenum=81 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 22 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1264 created=1248 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 23 name="framerMain" dying=0 done=1 waitingFor=4095 waitingUntil=1312 waitingForThread=0 lastExec=1296 created=1280 manual=0 depth=2 used=268 base=0 maxDepth=2 maxUsed=268 ip=47 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 25 name="locals" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1296 created=1280 manual=0 depth=1 used=404 base=0 maxDepth=1 maxUsed=404 ip=295 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD getvar 25 lf
+GETVAR 1 2.5
+CMD getvar 25 lv
+GETVAR 1 1,2,3
+CMD getvar 25 ls
+GETVAR 1 \"local text\"
+CMD getvar 25 lb
+GETVAR 1 1
+CMD getvar 25 counter
+GETVAR 1 5
+CMD getvar 25 order
+GETVAR 1 \"w1.0 w2.0 q1 2 3ent_one w1.1 w2.1 w1.2 w1end t1done w2end t2done nowait w7.0 w8.0 w7.1 w8.1 w7.2 w8.2 w7.3 w8.3 w7.4 w8.4 w7.5 \"
+CMD getvar 25 nothing
+GETVAR 0 
+CMD getvar 25 lf 0
+GETVAR 0 
+CMD getvar 25 lf 1
+GETVAR 1 2.5
+CMD thread deep1
+THREADNUM 26
+CMD frame 1
+PRINT framer 1 time 1.312000
+FRAME time=1312 framenum=82 events=1
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 22 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1264 created=1248 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 23 name="framerMain" dying=0 done=1 waitingFor=4095 waitingUntil=1328 waitingForThread=0 lastExec=1312 created=1280 manual=0 depth=2 used=268 base=0 maxDepth=2 maxUsed=268 ip=47 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 25 name="locals" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1296 created=1280 manual=0 depth=1 used=404 base=0 maxDepth=1 maxUsed=404 ip=295 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+THREAD 26 name="deep1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1312 created=1296 manual=0 depth=3 used=0 base=0 maxDepth=3 maxUsed=0 ip=302 func=112 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CMD dump threads
+CURRENT 0
+THREADINDEX 26
+THREAD 6 name="waits" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=256 created=240 manual=0 depth=1 used=132 base=0 maxDepth=1 maxUsed=132 ip=242 func=110 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 8 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 9 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=512 created=512 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 20 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 21 name="sleeper" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1232 created=1216 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=58 func=100 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 22 name="my_name_1" dying=1 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1264 created=1248 manual=0 depth=1 used=0 base=0 maxDepth=1 maxUsed=0 ip=52 func=99 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 23 name="framerMain" dying=0 done=1 waitingFor=4095 waitingUntil=1328 waitingForThread=0 lastExec=1312 created=1280 manual=0 depth=2 used=268 base=0 maxDepth=2 maxUsed=268 ip=47 func=98 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CALL 1 s=310 f=115 base=0
+THREAD 25 name="locals" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1296 created=1280 manual=0 depth=1 used=404 base=0 maxDepth=1 maxUsed=404 ip=295 func=111 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+THREAD 26 name="deep1" dying=0 done=1 waitingFor=4095 waitingUntil=0 waitingForThread=0 lastExec=1312 created=1296 manual=0 depth=3 used=0 base=0 maxDepth=3 maxUsed=0 ip=302 func=112 popParms=0 multiFrame=- eventEntity=- terminateOnExit=1 debug=0 spawnArgs=[]
+CALL 0 s=0 f=-1 base=0
+CALL 1 s=307 f=114 base=0
+CALL 2 s=305 f=113 base=0
+CMD displayinfo 26
+PRINT           26: 'deep1'
+PRINT         File: script/threads.script(175)
+PRINT      Created: 1296 (16 ms ago)
+PRINT       Status: Paused since 1312 (0 ms)
+PRINT       Reason: None
+PRINT  Stack depth: 0 bytes, 0 max
+PRINT   Call depth: 3, 3 max
+PRINT   Call Stack: script/threads.script : deep3
+PRINT               <NO FUNCTION>
+PRINT               script/threads.script : deep2
+PRINT               script/threads.script : deep1
+PRINT 
+CMD getvar 26 counter
+GETVAR 1 5
+CMD getvar 26 counter 1
+GETVAR 1 5
+CMD getvar 26 counter 2
+GETVAR 1 5
+CMD getvar 26 counter 3
+GETVAR 1 5
+CMD getvar 26 self
+GETVAR 0 

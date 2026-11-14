@@ -1,0 +1,4 @@
+// the closing brace is missing
+void broken() {
+	float a;
+	a = 1;

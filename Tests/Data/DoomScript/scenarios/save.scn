@@ -1,0 +1,65 @@
+# save and restore: program (globals changed, a file compiled after the startup), threads in every wait state with
+# their stacks, the event queue with arguments, the script objects. The restore follows the save at once, then the
+# frames go on as if nothing happened.
+startup script/save.script
+compilefile script/ok_include.script
+spawn 1 idEntity ent_one
+spawn 2 idMover ent_mover
+spawn 3 idMover ent_turner
+spawn 4 idEntity ent_obj
+setobject 4 save_obj
+frame 1
+thread main
+frame 3
+# no event with a string argument: the original does not save the strings of the queued events (see the report)
+postevent 1 100 setValue 2.5
+postevent 1 60 setOrigin "1.5 -2 3"
+postevent 1 80 addInts 3 4
+postevent 1 50 activate 2
+dump threads
+dump stacks
+dump events
+dump entities
+dump globals
+save
+restore
+dump threads
+dump stacks
+dump events
+dump entities
+dump globals
+frame 3
+save
+frame 2
+dump threads
+restore
+dump threads
+frame 12
+dump threads
+dump entities
+dump globals
+killthread paused_one
+frame 1
+dump threads
+# an empty state
+save
+restore
+dump threads
+thread main
+frame 2
+# the save of another program: the checksum does not match. The entities go away first (their objects belong
+# to the program) and the save has no threads.
+remove 1
+remove 2
+remove 3
+remove 4
+startup script/save.script
+compilefile script/ok_include.script
+callnow touch
+dump globals
+frame 1
+save
+startup script/save_other.script
+restore
+dump threads
+dump globals

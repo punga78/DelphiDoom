@@ -1,0 +1,17 @@
+# smallest scenario: startup, one text, one thread
+startup -
+compiletext smoke 0 <<EOF
+float g = 3;
+void main() {
+	sys.println( "hello " + ( g + 1 ) );
+	sys.wait( 0.05 );
+	sys.println( "after wait" );
+}
+EOF
+dump program
+dump disasm
+thread main
+dump threads
+dump events
+frame 6
+dump threads

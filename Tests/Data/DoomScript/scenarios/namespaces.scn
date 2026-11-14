@@ -1,0 +1,25 @@
+# namespaces: nested and reopened, the :: operator, functions found by their full name
+startup script/namespaces.script
+dump program
+callnow main
+dump globals
+findfunction f
+findfunction outer::of
+findfunction outer::inner::inf
+findfunction outer::inner::g
+findfunction outer::late
+findfunction inner::inf
+findfunction outer::nothing
+findfunction nothing::f
+findfunction outer
+findfunction a
+findfunction outer::ns_obj::show
+findfunction ns_obj::show
+findfunction println
+findfunction outer::
+thread outer::inner::inf
+frame 1
+spawn 1 idEntity ent_ns
+setobject 1 ns_obj
+frame 1
+callnow useObject

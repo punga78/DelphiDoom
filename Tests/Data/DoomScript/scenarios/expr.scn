@@ -1,0 +1,24 @@
+# expressions: operators, precedences, constant folding, compound assignments
+startup script/expr.script
+dump program
+dump disasm
+spawn 1 idEntity ent_one
+spawn 2 idEntity ent_two
+callnow arithmetic
+dump globals
+callnow precedence
+dump globals
+callnow comparisons
+dump globals
+callnow logic
+dump globals
+callnow vectors
+dump globals
+callnow compound
+dump globals
+callnow folding
+dump globals
+callnow stringops
+dump globals
+callnow main
+dump globals

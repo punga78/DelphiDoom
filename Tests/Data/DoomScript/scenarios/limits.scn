@@ -1,0 +1,55 @@
+# the limits of the program: bytes of globals (196608), functions (3072), statements (81920).
+# The big texts are generated: "genfile" repeats its text with '@' replaced by the index.
+startup -
+
+# 1500 strings fit (192000 bytes and the first 524 of the startup)
+genfile script/gen_strings_ok.script 1500 <<EOF
+string s@;
+EOF
+compilefile script/gen_strings_ok.script
+restart
+
+# 1600 do not
+genfile script/gen_strings.script 1600 <<EOF
+string s@;
+EOF
+compilefile script/gen_strings.script
+restart
+
+# the scriptEvents are functions too: 3100 more are too many
+genfile script/gen_functions.script 3100 <<EOF
+void f@() { }
+EOF
+compilefile script/gen_functions.script
+restart
+
+# 2500 functions fit
+genfile script/gen_functions_ok.script 2500 <<EOF
+float f@( float p ) { return p + @; }
+EOF
+compilefile script/gen_functions_ok.script
+findfunction f0
+findfunction f2499
+findfunction f2500
+restart
+
+# 2800 functions of 31 statements each
+genfile script/gen_statements.script 2800 <<EOF
+void g@() { a = a + 1; a = a + 2; a = a + 3; a = a + 4; a = a + 5; a = a + 6; a = a + 7; a = a + 8; a = a + 9; a = a + 10; a = a + 11; a = a + 12; a = a + 13; a = a + 14; a = a + 15; }
+EOF
+compiletext statements 0 <<EOF
+float a;
+#include "script/gen_statements.script"
+EOF
+restart
+
+# after the limits the program still works
+compiletext after 0 <<EOF
+float a = 2;
+void main() {
+	a = a * 21;
+	sys.println( "a=" + a );
+}
+EOF
+callnow main
+dump globals

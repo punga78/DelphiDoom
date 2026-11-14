@@ -1,0 +1,6 @@
+// an included file without errors
+float included_value = 5;
+
+void included_function() {
+	sys.println( "included_function " + included_value );
+}

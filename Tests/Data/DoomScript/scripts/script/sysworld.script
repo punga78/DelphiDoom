@@ -1,0 +1,175 @@
+// the system events that touch the game: every one reaches a stub of the host
+
+float	f0, f1, f2;
+vector	v0, v1;
+string	s0, s1;
+entity	e0, e1;
+
+void sigHandler() {
+	sys.println( "signal handler runs" );
+}
+
+void sigHandler2() {
+	sys.println( "second handler runs" );
+	sys.wait( 0.05 );
+	sys.println( "second handler after wait" );
+}
+
+void cvars() {
+	sys.setcvar( "my_cvar", "my value" );
+	s0 = sys.getcvar( "my_cvar" );
+	s1 = sys.getcvar( "unknown_cvar" );
+	sys.println( "cvars '" + s0 + "' '" + s1 + "'" );
+	sys.setcvar( "number", 12.5 );
+	f0 = sys.strToFloat( sys.getcvar( "number" ) );
+	sys.println( "number " + f0 );
+}
+
+void spawning() {
+	// the spawn args of the thread
+	sys.setSpawnArg( "name", "spawned_one" );
+	sys.setSpawnArg( "color", "1 0.5 0" );
+	sys.setSpawnArg( "health", "75" );
+	sys.setSpawnArg( "Health", "80" );
+	s0 = sys.SpawnString( "name", "nobody" );
+	s1 = sys.SpawnString( "missing", "nobody" );
+	f0 = sys.SpawnFloat( "health", 1 );
+	f1 = sys.SpawnFloat( "missing", 1.5 );
+	v0 = sys.SpawnVector( "color", '9 9 9' );
+	v1 = sys.SpawnVector( "missing", '1 2 3' );
+	sys.println( "spawn args " + s0 + " " + s1 + " " + f0 + " " + f1 + " " + v0 + " " + v1 );
+	e0 = sys.spawn( "idMover" );
+	sys.println( "spawned " + e0.getName() + " color=" + e0.getKey( "color" ) + " classname=" + e0.getKey( "classname" ) );
+	// spawn cleared the args
+	s0 = sys.SpawnString( "name", "nobody" );
+	e1 = sys.spawn( "idEntity" );
+	sys.println( "spawned " + e1.getName() + " after '" + s0 + "'" );
+	e1 = sys.spawn( "not_a_class" );
+	if ( !e1 ) sys.println( "unknown class gives null" );
+	sys.copySpawnArgs( e0 );
+	sys.setSpawnArg( "name", "copy_of_one" );
+	e1 = sys.spawn( "idEntity" );
+	sys.println( "copied " + e1.getName() + " color=" + e1.getKey( "color" ) );
+	sys.setSpawnArg( "scriptobject", "world_obj" );
+	sys.setSpawnArg( "name", "with_object" );
+	e1 = sys.spawn( "idEntity" );
+	sys.println( "with object " + e1.getName() );
+}
+
+void finding() {
+	e0 = sys.getEntity( "ent_one" );
+	e1 = sys.getEntity( "ENT_ONE" );
+	if ( e0 == $ent_one && e1 == e0 ) sys.println( "found ent_one" );
+	e0 = sys.getEntity( "nobody" );
+	if ( !e0 ) sys.println( "nobody is null" );
+	e0 = sys.getEntity( "*2" );
+	sys.println( "entity 2 is " + e0.getName() );
+	e0 = sys.getEntity( "*3" );
+	if ( !e0 ) sys.println( "entity 3 is null" );
+	e0 = sys.getEntity( "*0x" );
+	e0 = sys.getEntity( "*4095" );
+}
+
+void persistent() {
+	sys.setPersistantArg( "level", "7" );
+	sys.setPersistantArg( "spot", "1 2 3" );
+	sys.setPersistantArg( "who", "me" );
+	s0 = sys.getPersistantString( "who" );
+	s1 = sys.getPersistantString( "missing" );
+	f0 = sys.getPersistantFloat( "level" );
+	f1 = sys.getPersistantFloat( "missing" );
+	v0 = sys.getPersistantVector( "spot" );
+	v1 = sys.getPersistantVector( "missing" );
+	sys.println( "persistent " + s0 + " '" + s1 + "' " + f0 + " " + f1 + " " + v0 + " " + v1 );
+	sys.clearPersistantArgs();
+	s0 = sys.getPersistantString( "who" );
+	sys.println( "cleared '" + s0 + "'" );
+}
+
+void tracing() {
+	f0 = sys.getTraceFraction();
+	v0 = sys.getTraceEndPos();
+	e0 = sys.getTraceEntity();
+	sys.println( "no trace yet " + f0 + " " + v0 + " " + sys.getTraceNormal() + " '" + sys.getTraceJoint() + "' '" + sys.getTraceBody() + "'" );
+	f0 = sys.tracePoint( '0 0 0', '100 0 0', 1, $ent_one );
+	sys.println( "tracePoint " + f0 + " " + sys.getTraceFraction() + " " + sys.getTraceEndPos() + " " + sys.getTraceNormal() );
+	f1 = sys.trace( '0 0 0', '0 100 0', '0 0 0', '0 0 0', 3, $ent_one );
+	f2 = sys.trace( '0 0 0', '0 0 100', '-1 -1 -1', '1 1 1', 5.9, $ent_two );
+	sys.println( "trace " + f1 + " " + f2 );
+	// the entity to skip is an 'e' argument: null ends the thread
+	f1 = sys.tracePoint( '0 0 0', '1 0 0', 1, $null_entity );
+	sys.println( "never" );
+}
+
+void tracing2() {
+	f0 = sys.tracePoint( '0 0 0', '100 0 0', 1, $ent_two );
+	e0 = sys.getTraceEntity();
+	sys.println( "hit " + f0 + " " + sys.getTraceEndPos() + " " + sys.getTraceNormal() + " " + e0.getName() + " '" + sys.getTraceJoint() + "' '" + sys.getTraceBody() + "'" );
+}
+
+void screen() {
+	sys.fadeIn( '1 0.5 0.25', 2 );
+	sys.fadeOut( '0 0 0', 0.5 );
+	sys.fadeTo( '1 1 1', 0.75, 1.5 );
+	f0 = sys.influenceActive();
+	sys.println( "influence " + f0 );
+	sys.setCamera( $ent_cam );
+	sys.firstPerson();
+	sys.music( "music_shader" );
+	sys.setShaderParm( 3, 0.5 );
+	sys.cacheSoundShader( "sound_shader" );
+	sys.radiusDamage( '1 2 3', $ent_one, $ent_two, $null_entity, "damage_def", 0.5 );
+	sys.radiusDamage( '1 2 3', $null_entity, $null_entity, $ent_one, "damage_def", 1 );
+	sys.debugLine( '1 0 0', '0 0 0', '1 1 1', 0.5 );
+	sys.debugArrow( '0 1 0', '0 0 0', '1 1 1', 4.5, 1 );
+	sys.debugCircle( '0 0 1', '1 2 3', '0 0 1', 16, 8, 2 );
+	sys.debugBounds( '1 1 0', '-1 -1 -1', '1 1 1', 0.25 );
+	sys.say( "text with \"quotes\"" );
+	sys.trigger( $ent_one );
+	sys.trigger( $null_entity );
+}
+
+void screenText() {
+	sys.drawText( "hello", '1 2 3', 0.5, '1 1 1', 1, 0.5 );
+}
+
+void cameraErrors() {
+	sys.setCamera( $ent_one );
+}
+
+void cameraErrors2() {
+	sys.setCamera( $null_entity );
+}
+
+void shaderParmError() {
+	sys.setShaderParm( 12, 1 );
+}
+
+void signals() {
+	sys.onSignal( SIG_TRIGGER, $ent_one, "sigHandler" );
+	sys.onSignal( SIG_TOUCH, $ent_one, "sigHandler2" );
+	sys.onSignal( SIG_TOUCH, $ent_two, "sigHandler" );
+	sys.clearSignalThread( SIG_TOUCH, $ent_two );
+	sys.println( "signals set" );
+	sys.pause();
+	sys.println( "never: the thread was reused by the signal" );
+}
+
+void signalErrors1() { sys.onSignal( SIG_TRIGGER, $null_entity, "sigHandler" ); }
+void signalErrors2() { sys.onSignal( 10, $ent_one, "sigHandler" ); }
+void signalErrors3() { sys.onSignal( -1, $ent_one, "sigHandler" ); }
+void signalErrors4() { sys.onSignal( SIG_TRIGGER, $ent_one, "no_such_function" ); }
+void signalErrors5() { sys.clearSignalThread( SIG_TRIGGER, $null_entity ); }
+void signalErrors6() { sys.clearSignalThread( 99, $ent_one ); }
+void entityRange() { e0 = sys.getEntity( "*4096" ); }
+void entityRange2() { e0 = sys.getEntity( "*-1" ); }
+
+object world_obj {
+	float	started;
+	void	init();
+};
+
+void world_obj::init() {
+	started = 1;
+	sys.println( "world_obj::init on " + getName() );
+}
