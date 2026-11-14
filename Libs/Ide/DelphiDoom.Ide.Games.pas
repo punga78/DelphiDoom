@@ -19,10 +19,15 @@ type
     /// <summary>Doom, Heretic, Hexen, Strife, Radix and Mars3D are the games a project accepts</summary>
     class function IsKnown(const AName: string): Boolean; static;
     /// <summary>
-    ///   The line of the game box: doom 0, heretic 1, hexen 2, strife 3. Any other game (radix
-    ///   and mars have no entry) shows the first line
+    ///   The line of the game box: doom 0, heretic 1, hexen 2, strife 3, radix 4, mars 5 (the
+    ///   entries of the box of the main window). Any other name shows the first line
     /// </summary>
     class function BoxIndex(const AName: string): Integer; static;
+    /// <summary>
+    ///   The game whose script compiler (ddc_<game>.dll) compiles the scripts of a project.
+    ///   Radix runs on the engine of Doom and has no compiler of its own: the one of Doom
+    /// </summary>
+    class function CompilerGame(const AName: string): string; static;
   end;
 
 implementation
@@ -54,8 +59,19 @@ begin
     Result := 2
   else if AName = 'strife' then
     Result := 3
+  else if AName = 'radix' then
+    Result := 4
+  else if AName = 'mars' then
+    Result := 5
   else
     Result := 0;
+end;
+
+class function TIdeGames.CompilerGame(const AName: string): string;
+begin
+  Result := Normalize(AName);
+  if Result = 'radix' then
+    Result := 'doom';
 end;
 
 end.

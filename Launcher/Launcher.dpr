@@ -6,6 +6,7 @@ uses
   DelphiDoom.Platform.DataFolder in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.pas',
   DelphiDoom.Platform.DataFolder.Disk in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Disk.pas',
   DelphiDoom.Platform.DataFolder.Factory in '..\Libs\Platform\DelphiDoom.Platform.DataFolder.Factory.pas',
+  DelphiDoom.Launcher.Engines in '..\Libs\Launcher\DelphiDoom.Launcher.Engines.pas',
   Forms,
   Launcher_main in '..\Launcher\Launcher_main.pas' {Form1},
   Launcher_utils in '..\Launcher\Launcher_utils.pas',

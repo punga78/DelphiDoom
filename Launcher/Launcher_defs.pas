@@ -8,6 +8,7 @@ type
     ge_heretic,
     ge_hexen,
     ge_strife,
+    ge_radix, // the order is the one of TLauncherEngines and of the radio group of the engines
     NUMGAMEENGINES,
     ge_unknown
   );
@@ -136,6 +137,8 @@ type
     gt_custom97,
     gt_custom98,
     gt_custom99,
+    // after the custom games: a Launcher.ini written before Radix keeps its custom games in their places
+    gt_radix,
     NUMGAMETYPES
   );
 
@@ -185,7 +188,7 @@ type
   Pdefault_t = ^default_t;
 
 const
-  NUMDEFAULTS = 30;
+  NUMDEFAULTS = 31;
 
   defaults: array[0..NUMDEFAULTS - 1] of default_t = (
     (name: 'Directories';
@@ -219,6 +222,13 @@ const
     (name: 'strife_path';
      location: @gamepaths[Ord(ge_strife)];
      defaultsvalue: 'strife\';
+     defaultivalue: 0;
+     defaultbvalue: false;
+     _type: tString),
+
+    (name: 'radix_path';
+     location: @gamepaths[Ord(ge_radix)];
+     defaultsvalue: 'radix\';
      defaultivalue: 0;
      defaultbvalue: false;
      _type: tString),
@@ -513,6 +523,11 @@ begin
     inc(idx);
   end;
 
+  gameinfo[Ord(gt_radix)].description := 'Radix: Beyond the Void';
+  gameinfo[Ord(gt_radix)].mainwad := 'RADIX.DAT';
+  gameinfo[Ord(gt_radix)].pwad := '';
+  gameinfo[Ord(gt_radix)].extracmdline := '';
+  gameinfo[Ord(gt_radix)].gameengine := ge_radix;
 end;
 
 procedure M_LoadDefaults(const defaultfile: string);
@@ -562,14 +577,9 @@ var
       if Pos(UpperCase('gameengine='), UpperCase(token)) <> 1 then
         exit;
       token := Copy(token, 12, length(token) - 11);
-      if token = '0' then
-        gi.gameengine := gameengine_t(0)
-      else if token = '1' then
-        gi.gameengine := gameengine_t(1)
-      else if token = '2' then
-        gi.gameengine := gameengine_t(2)
-      else if token = '3' then
-        gi.gameengine := gameengine_t(3);
+      // another number (the "unknown" of a file of any version) leaves the engine of the default
+      if (length(token) = 1) and (token[1] >= '0') and (Ord(token[1]) - Ord('0') < Ord(NUMGAMEENGINES)) then
+        gi.gameengine := gameengine_t(Ord(token[1]) - Ord('0'));
     end;
   end;
 
