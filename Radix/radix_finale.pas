@@ -64,6 +64,8 @@ uses
   d_delphi,
   g_game,
   hu_stuff,
+  s_sound,
+  sounddata,
   v_data,
   v_video,
   w_wad;
@@ -114,6 +116,8 @@ var
   lumpname: string;
   lump: integer;
 begin
+  S_ChangeMusic(Ord(mus_intro), true);
+
   sprintf(lumpname, 'EndEpisode%dText', [gameepisode]);
   lump := W_CheckNumForName(lumpname);
   if lump >= 0 then

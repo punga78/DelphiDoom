@@ -67,6 +67,10 @@ type
     procedure DovrebbeUnireTuttiILumpRadixinfEIlPrimoVince;
     [Test]
     procedure DovrebbeRileggereDopoReset;
+    [Test]
+    procedure ISuoniDiDoomDelMotoreDovrebberoEssereISuoniDiRadix;
+    [Test]
+    procedure UnSuonoDiDoomSenzaIlSuoSuonoDiRadixNonDovrebbeAvereAlias;
   end;
 
 implementation
@@ -260,6 +264,32 @@ begin
   FAliases.Reset;
   Assert.AreEqual('RADIX026', Resolve('Later'));
   Assert.AreEqual(3, FLumpsObject.TextReads);
+end;
+
+procedure TTestRadixEngineLumpAliases.ISuoniDiDoomDelMotoreDovrebberoEssereISuoniDiRadix;
+begin
+  // the sounds of RADIX.DAT that the translator wrote: move and stop of a surface, the click, the teleport
+  FLumpsObject.Add('DS_00002', '');
+  FLumpsObject.Add('DS_00003', '');
+  FLumpsObject.Add('DS_00014', '');
+  FLumpsObject.Add('DS_00017', '');
+  Assert.AreEqual('DS_00002', Resolve('DSPSTART'));
+  Assert.AreEqual('DS_00002', Resolve('dsstnmov'));
+  Assert.AreEqual('DS_00003', Resolve('DSPSTOP'));
+  Assert.AreEqual('DS_00014', Resolve('DSTELEPT'));
+  Assert.AreEqual('DS_00017', Resolve('DSPISTOL'));
+  Assert.AreEqual('DS_00017', Resolve('DSSWTCHN'));
+  Assert.AreEqual('DS_00017', Resolve('DSSWTCHX'));
+  // a sound of Doom that Rad-X gave no sound of Radix
+  Assert.AreEqual('<none>', Resolve('DSSHOTGN'));
+end;
+
+procedure TTestRadixEngineLumpAliases.UnSuonoDiDoomSenzaIlSuoSuonoDiRadixNonDovrebbeAvereAlias;
+begin
+  // a RADIX.DAT without the sound of the explosion
+  FLumpsObject.Add('DS_00002', '');
+  Assert.AreEqual('<none>', Resolve('DSRXPLOD'));
+  Assert.AreEqual('DS_00002', Resolve('DSPSTART'));
 end;
 
 end.

@@ -307,13 +307,32 @@ end;
 //==============================================================================
 //
 // A_AmbientSoundFV
-// Missing: the "full volume" of S_StartSound of Rad-X; the sound of the engine
-// fades with the distance as the one of A_AmbientSound
+// The sound at full volume wherever the listener is. S_StartSound of Rad-X had
+// a "full volume" flag; in the engine of today a sound without a place is at
+// full volume: the thing of the sound is born as for A_AmbientSound (the state
+// of the game stays the one of Rad-X) and the sound is played without a place
 //
 //==============================================================================
 procedure A_AmbientSoundFV(actor: Pmobj_t);
+var
+  dx, dy: fixed_t;
+  snd: string;
 begin
-  A_AmbientSound(actor);
+  if not P_CheckStateParams(actor, 3) then
+    exit;
+
+  dx := actor.state.params.FixedVal[0];
+  dy := actor.state.params.FixedVal[1];
+
+  snd := actor.state.params.StrVal[2];
+  if snd = '' then
+    exit;
+
+  if m_ambient = -1 then
+    m_ambient := Info_GetMobjNumForName(STR_AMBIENTSOUND);
+  if m_ambient <> -1 then
+    P_SpawnMobj(actor.x + dx, actor.y + dy, ONFLOATZ, m_ambient);
+  S_StartSound(nil, snd);
 end;
 
 //==============================================================================

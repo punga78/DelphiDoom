@@ -76,6 +76,7 @@ uses
   radix_pickups,
   radix_weapons,
   radix_controls,
+  radix_pilotsound,
   radix_statelog,
   DelphiDoom.Radix.Control.Rules,
   DelphiDoom.Radix.Flight.Model,
@@ -291,6 +292,8 @@ begin
         RX_PilotFindsSecret(p);
         RX_PilotInventoryTick(p);
         RX_PilotWeaponsTick(p);
+        RX_PilotEngineSound(i, p, RX_PlayerState(p));
+        RX_PilotSiren(i, p, RX_PlayerState(p));
       end;
     end;
   RX_StateLogTick;
@@ -319,6 +322,7 @@ begin
   // a level that starts (a saved game puts its count back after this)
   ZeroMemory(@radixwallhits, SizeOf(radixwallhits));
   ZeroMemory(@pilotlastmoves, SizeOf(pilotlastmoves));
+  RX_PilotSoundsReset;
 
   pilot := Z_Malloc(SizeOf(radixpilot_t), PU_LEVSPEC, nil);
   P_AddThinker(@pilot.thinker);

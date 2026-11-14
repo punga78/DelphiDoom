@@ -243,6 +243,7 @@ uses
   radix_briefing in 'radix_briefing.pas',
   radix_finale in 'radix_finale.pas',
   radix_wipe in 'radix_wipe.pas',
+  radix_pilotsound in 'radix_pilotsound.pas',
   DelphiDoom.Radix.Briefing.Types in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Types.pas',
   DelphiDoom.Radix.Briefing.Script in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Script.pas',
   DelphiDoom.Radix.Briefing.Player in '..\Libs\Radix\DelphiDoom.Radix.Briefing.Player.pas',

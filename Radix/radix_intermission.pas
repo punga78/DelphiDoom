@@ -72,6 +72,8 @@ uses
   d_event,
   g_game,
   mn_font,
+  s_sound,
+  sounddata,
   v_data,
   v_video,
   w_wad,
@@ -157,6 +159,10 @@ begin
   end;
 
   inc(in_tic);
+
+  if in_tic = 1 then
+    // intermission music
+    S_ChangeMusic(Ord(mus_intro), true);
 
   // the key that ended the level is still down in the first tics
   if in_tic > TICRATE div 2 then
