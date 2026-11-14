@@ -13,13 +13,12 @@ Origine: Pascal Script di RemObjects (Carlo Kok), nella versione adattata dal pr
 | `ps_compiler` | compilatore Pascal -> bytecode |
 | `ps_runtime` | interprete del bytecode (chiamate native con `x86.inc`/`x64.inc`) |
 | `uPSPreProcessor` | preprocessore (`{$I}`, `{$IFDEF}`...) |
-| `uPSDisassembly` | disassemblatore del bytecode |
 | `uPSC_dateutils`, `uPSR_dateutils` | funzioni di data per compilatore e runtime |
-| `uPSC_dll`, `uPSR_dll` | chiamate a DLL esterne |
 | `PascalScript.inc`, `eDefines.inc`, `x86.inc`, `x64.inc`, `arm.inc`, `powerpc.inc` | opzioni di compilazione e assembler per le chiamate native |
 
 ## Modifiche locali
 
+- (issue #221) `uPSC_dll`, `uPSR_dll` (chiamate a DLL esterne) e `uPSDisassembly` sono passati a `Libs\ScriptHost` (git mv, nessuna modifica al codice): il nucleo non usa piu' `ScriptHost` ne' `Ddc` e il ciclo `PascalScript` - `ScriptHost` - `Ddc` non c'e' piu'; resta solo l'uso di `d_delphi` (#224);
 - le unit `ps_defs` e `ps_keywords` includono `Doom32.inc` (opzioni di codice del progetto);
 - in `ps_compiler` i 13 `asm int 3` (solo `DEBUG`) sono `PS_DebugBreak` (chiama `DebugBreak` di kernel32);
 - `ps_runtime` usa `x86.inc`/`x64.inc` (`asm`) per le chiamate native, con un ramo per `CPUX64` (il motore le usa solo da `Libs\OpenGl\Legacy\mdl_script_proclist.pas`, `RegisterDelphiFunction`; vedi `docs\PENDING_ISSUES.md`);
