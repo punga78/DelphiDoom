@@ -66,6 +66,12 @@ type
     function IsDemoPlayback: Boolean;
     function IsPaused: Boolean;
     function GameTic: Integer;
+    function Skill: Integer;
+    function Episode: Integer;
+    function Map: Integer;
+    function Deathmatch: Integer;
+    function ConsolePlayer: Integer;
+    function MaxPlayers: Integer;
   end;
 
   /// <summary>The warnings and the output as they were written, with nothing added</summary>
@@ -277,6 +283,36 @@ end;
 function TFakeContext.GameTic: Integer;
 begin
   Result := 0;
+end;
+
+function TFakeContext.Skill: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeContext.Episode: Integer;
+begin
+  Result := 1;
+end;
+
+function TFakeContext.Map: Integer;
+begin
+  Result := 1;
+end;
+
+function TFakeContext.Deathmatch: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeContext.ConsolePlayer: Integer;
+begin
+  Result := 0;
+end;
+
+function TFakeContext.MaxPlayers: Integer;
+begin
+  Result := 4;
 end;
 
 { TFakeLog }

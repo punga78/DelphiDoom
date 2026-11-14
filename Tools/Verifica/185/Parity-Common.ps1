@@ -176,6 +176,8 @@ function Invoke-ParityEntry {
     [string]$Extra = '',
     [int]$TimeoutSeconds = 300
   )
+  # a macchina carica una demo puo' superare il limite: DD_PARITY_TIMEOUT (secondi) lo alza
+  if ($env:DD_PARITY_TIMEOUT) { $TimeoutSeconds = [int]$env:DD_PARITY_TIMEOUT }
   $demo = $Entry.Demo
   if ($Entry.ContainsKey('Auto')) {
     $demo = $Entry.Short

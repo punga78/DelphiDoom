@@ -175,6 +175,7 @@ uses
   g_game,
   p_common,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_tick,
   p_pspr,
   p_playertrace,
@@ -185,6 +186,7 @@ uses
   p_3dfloors, // JVAL: Slopes
   p_spec,
   p_map,
+  DelphiDoom.Engine.World.MapRules,
   p_mapinfo,
   p_maputl,
   udmf_telept,

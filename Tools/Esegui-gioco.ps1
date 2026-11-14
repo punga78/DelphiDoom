@@ -48,7 +48,11 @@ try {
   Remove-Item -LiteralPath $crash -ErrorAction SilentlyContinue
 
   $process = Start-Process -FilePath $Exe -ArgumentList $Arguments -WorkingDirectory $WorkDir -PassThru
-  try { $process.PriorityClass = 'BelowNormal' } catch { }
+  # priorita' bassa per non disturbare; a macchina carica (piu' agenti che compilano) il gioco non avanza:
+  # DD_GAME_PRIORITY=Normal la alza (con l'orologio virtuale della parita' l'esito non dipende dalla priorita')
+  $priority = 'BelowNormal'
+  if ($env:DD_GAME_PRIORITY) { $priority = $env:DD_GAME_PRIORITY }
+  try { $process.PriorityClass = $priority } catch { }
 
   $run = [Diagnostics.Stopwatch]::StartNew()
   if ($StopWhenExited) {

@@ -24,11 +24,18 @@ type
     function IsDemoPlayback: Boolean;
     function IsPaused: Boolean;
     function GameTic: Integer;
+    function Skill: Integer;
+    function Episode: Integer;
+    function Map: Integer;
+    function Deathmatch: Integer;
+    function ConsolePlayer: Integer;
+    function MaxPlayers: Integer;
   end;
 
 implementation
 
 uses
+  doomdef,
 {$IFDEF HEXEN}
   g_demo,
 {$ENDIF}
@@ -66,6 +73,44 @@ function TEngineGameContext.GameTic: Integer;
 begin
   // qualified: inside the class "gametic" would be this very method
   Result := g_game.gametic;
+end;
+
+function TEngineGameContext.Skill: Integer;
+begin
+  Result := Ord(gameskill);
+end;
+
+function TEngineGameContext.Episode: Integer;
+begin
+{$IFDEF STRIFE}
+  // Strife has no episodes (and no gameepisode)
+  Result := 1;
+{$ELSE}
+  Result := gameepisode;
+{$ENDIF}
+end;
+
+function TEngineGameContext.Map: Integer;
+begin
+  Result := gamemap;
+end;
+
+function TEngineGameContext.Deathmatch: Integer;
+begin
+  // qualified: inside the class "deathmatch" would be this very method
+  Result := g_game.deathmatch;
+end;
+
+function TEngineGameContext.ConsolePlayer: Integer;
+begin
+  // qualified, as above
+  Result := g_game.consoleplayer;
+end;
+
+function TEngineGameContext.MaxPlayers: Integer;
+begin
+  // qualified, as above
+  Result := doomdef.MAXPLAYERS;
 end;
 
 end.

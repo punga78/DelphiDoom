@@ -2,6 +2,8 @@
 
 Aggiornato dalla #163: tolte le routine senza alcun riferimento (13 righe delle tabelle e le voci corrispondenti delle sezioni in fondo); il resto e invariato.
 
+Aggiornato dalla #185 (passo 2c-1): `p_map` e in copia unica in `Base\p_map.pas`; cio che era proprio di un gioco sta in `<Gioco>\DelphiDoom.Engine.World.MapRules.pas` (`TMapGameRules` e le routine proprie) e le liste dei settori toccati in `Base\p_secnodes.pas`. Dove le tabelle dicono `Doom\p_map`, `Heretic\p_map`, `Hexen\p_map` o `Strife\p_map` si legga una di queste unit: i conteggi non sono stati rigenerati.
+
 Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono citate nei `Libs\<Nome>\CLAUDE.md` (indice in `CLAUDE.md`) come facciata sopra una libreria di `Libs\`), con le funzioni pubbliche e i loro chiamanti. Serve a decidere quali migrare a mano. Rigenerato dal sorgente (master 0f6ff81c) dopo le ondate 1 (#132-#137), 2 (#145) e 3-4 (#142-#144, #146, #148-#156, #41, #48, #83) della fase 2: le unit tolte restano nell'elenco con la nota di chi ne ha preso il posto; dalle ondate 3 e 4 sono entrate le facciate dei thinker (luci, porte, pavimenti, soffitti, piattaforme, teletrasporti), dei thread (`i_threads`, `mt_utils`) e del midi stream (`i_midi_new`). Il conteggio e stato rifatto con uno script che, applicato al commit 094a89bd, riproduce le tabelle del file precedente (572 righe su 573 uguali: `I_Warning` dava una chiamata in meno).
 
 **Come leggerlo**
@@ -158,6 +160,18 @@ Elenco delle unit storiche che erano facciate (hanno una `*_Configure*` o sono c
 ### `Base\deh_base.pas` (facciata sopra `Libs\Dehacked` e `Libs\TableExport`, #185 fetta 1b)
 
 **Facciata (#185)**: i sette `DEH_Save*` chiamano `ITableExportSaver` (dato da `DEH_ConfigureExport`, che ha un parametro in piu'), `DEH_ParseFile` prende i nomi da `TDehackedFileNames`, `DEH_AmmoType`/`DEH_WeaponType`/`DEH_PlayerClass` il prefisso da `TDehackedTokenName`, `DEH_CStringToString`/`DEH_StringValue` chiamano `TDehackedText`. Restano nell'unit i lump e i PAK (`DEH_ParseLumpName*`, `DEH_ParseLumpNum`, il flusso del file), la stampa a console e il registro delle azioni. Righe 1321 -> 1204 (le funzioni d'appoggio dei salvataggi ne aggiungono una cinquantina).
+
+### `Base\f_wipe.pas` (facciata sopra `Libs\Imaging`, #185 chiusura della fase 1)
+
+**Facciata (#185)**: `wipe_StartScreen`, `wipe_EndScreen`, `wipe_Ticker` (e `wipe_ClearMemory`, `w_screen32`, `WIPESCREENWIDTH/HEIGHT` negli eseguibili OpenGL) hanno le firme di prima. Il melt (`wipe_initMelt`, `wipe_doMelt`) e' `TImagingMeltWipe` di `Libs\Imaging`, che lavora sui buffer del motore con `StartOnBuffers`; lo da' `ComposeImaging` con `wipe_Configure` (senza configurazione `I_Error` al primo wipe). Restano nell'unit la lettura dello schermo (`I_ReadScreen32`, `I_ReverseScreen`), i due buffer e lo stato "wipe in corso". Strife non usa l'unit (`Strife\f_fade.pas`). Righe 354 -> 260.
+
+### `Base\s_sound.pas` (regole in `Libs\Audio`, #185 chiusura della fase 1)
+
+**In parte facciata (#185)**: `S_AdjustSoundParams` chiama `TSfxAttenuation.Adjust` (la regola per gioco del livello 8 resta qui, e' un booleano passato alla classe), `S_GetChannel` chiama `TSfxChannelPicker.Pick` e poi ferma e riempie il canale, i ritocchi del pitch di `S_StartSoundAtVolume` chiamano `TSfxAttenuation.PerturbPitch`, la lista dei nomi mp3 di `S_DoChangeMusic` e' `TExternalMusicNames.Candidates` (`S_GetListFromAlias` non c'e' piu'). Sono classi di funzioni statiche: non c'e' una `S_Configure*` nuova, le costanti e le due tabelle (`R_PointToAngle2`, `finesine`) le riempie `S_Init` in `sound_attenuation`. Restano nell'unit, perche' legati ai record del motore e diversi per gioco: `S_StartSoundAtVolume`, `S_StartVoiceAtVolume`, `S_UpdateSounds`, `S_StopChannel`, la ricerca del lump della musica, `S_DefaultMusicForMap`, `S_Init`, `S_PrecacheSounds`, i comandi di console. Righe 2297 -> 2135.
+
+### `Base\am_map.pas`: `AM_drawFline` (#185 chiusura della fase 1)
+
+**Delegata (#185)**: nel renderer software `AM_drawFline` riempie un `TAutomapRasterTarget` (buffer a 8 o a 32 bit, larghezza, finestra della vista per l'overlay) e chiama `TAutomapLineRasterizer.Draw8/Draw32` di `Libs\Automap`; il ramo OpenGL (`gld_AddAutomapLine`) non cambia. Righe 2315 -> 2263.
 
 ### `Base\mt_utils.pas`, `Base\c_utils.pas`, `Base\d_notifications.pas` (#185, fetta 1e)
 
@@ -1413,7 +1427,7 @@ Nessun chiamante esterno ma usate internamente: si possono togliere dalla sezion
 - `Hexen\m_menu.pas`: M_StringWidth2, M_WriteText2
 - `Hexen\p_enemy.pas`: A_AccelBalls, A_CastSorcererSpell, A_DecelBalls, A_FiredSpawnRock, A_KSpiritSeeker, A_KSpiritWeave, A_SlowBalls, A_SorcOffense1, A_SorcOffense2, A_SorcUpdateBallAngle, A_StopBalls, A_WraithFX4, DragonSeek, FaceMovementDirection, KoraxFire1, KoraxFire2, KoraxFire3, KoraxFire4, KoraxFire5, KoraxFire6, KSpiritInit, P_CheckMeleeRange2, P_CheckMissileRange, P_NewChaseDir, P_UpdateMorphedMonster
 - `Hexen\p_inter.pas`: P_ActiveMinotaur, P_AutoUseHealth, P_GiveKey, P_HideSpecialThing, P_MinotaurSlam, P_MorphMonster, P_PoisonPlayer, P_SetDormantArtifact, P_SpawnDroppedMobj, P_TryPickupArtifact, P_TryPickupWeapon, P_TryPickupWeaponPiece
-- `Hexen\p_map.pas`: PIT_ChangeSector, PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine, P_ThingHeightClip
+- `Base\p_map.pas` (copia unica dalla #185, passo 2c-1; prima `Hexen\p_map.pas`): PIT_CheckLine, PIT_CheckOnmobjZ, PIT_RadiusAttack, PTR_ShootTraverse, PTR_SlideTraverse, PTR_UseTraverse, P_FakeZMovement, P_HitSlideLine; `Hexen\DelphiDoom.Engine.World.MapRules.pas`: PIT_ThrustStompThing, PTR_BounceTraverse, PTR_PuzzleItemTraverse (PIT_ChangeSector e P_ThingHeightClip ora hanno chiamanti fuori dalla unit)
 - `Hexen\p_mobj.pas`: P_FloorBounceMissile, P_PlayerLandedOnThing, P_SpawnMissileAngleZSpeed, P_ZMovement
 - `Hexen\p_pspr.pas`: A_CHolyWeave, A_MLightningAttack2, P_AdjustPlayerAngle, P_CheckMana, P_CHolyFindTarget, P_CHolySeekerMissile, P_CHolyTailFollow, P_CHolyTailRemove, P_FireWeapon, P_MStaffSpawn, P_MStaffSpawn2
 - `Hexen\p_spec.pas`: EVH_LineSearchForPuzzleItem

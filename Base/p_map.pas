@@ -1,15 +1,8 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
+//  DelphiDoom is a source port of the game Doom and it is
+//  based on original Linux Doom as published by "id Software"
 //  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -30,6 +23,13 @@
 // DESCRIPTION:
 //  Movement, collision handling.
 //  Shooting and aiming.
+//
+//  One copy for Doom, Heretic, Hexen and Strife (issue #185, step 2c-1): what
+//  a game does differently is in TMapGameRules, in the unit
+//  DelphiDoom.Engine.World.MapRules of the folder of the game (chosen by the
+//  project: static calls, no virtual call and no interface in this path).
+//  The routines only one game has are in that unit too; the lists of the
+//  sectors a thing touches (Doom, Strife) are in p_secnodes.
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -104,7 +104,8 @@ procedure P_UseLines(player: Pplayer_t);
 // P_RadiusAttack
 //
 //==============================================================================
-procedure P_RadiusAttack(spot: Pmobj_t; source: Pmobj_t; const damage: integer);
+procedure P_RadiusAttack(spot: Pmobj_t; source: Pmobj_t; const damage: integer;
+  const distance: integer = 0; const dmsource: boolean = true);
 
 //==============================================================================
 //
@@ -136,10 +137,38 @@ procedure P_SlideMove(mo: Pmobj_t);
 
 //==============================================================================
 //
+// P_CheckOnmobj
+//
+//==============================================================================
+function P_CheckOnmobj(thing: Pmobj_t): Pmobj_t;
+
+//==============================================================================
+//
 // P_TestMobjLocation
 //
 //==============================================================================
 function P_TestMobjLocation(mobj: Pmobj_t): boolean;
+
+//==============================================================================
+//
+// P_ThingsInSameZ
+//
+//==============================================================================
+function P_ThingsInSameZ(const A, B: Pmobj_t): boolean;
+
+//==============================================================================
+//
+// P_ThingHeightClip
+//
+//==============================================================================
+function P_ThingHeightClip(thing: Pmobj_t): boolean;
+
+//==============================================================================
+//
+// PIT_CheckThing
+//
+//==============================================================================
+function PIT_CheckThing(thing: Pmobj_t): boolean;
 
 var
   linetarget: Pmobj_t;  // who got hit (or NULL)
@@ -163,12 +192,6 @@ var
 // so missiles don't explode against sky hack walls
   ceilingline: Pline_t;
 
-// haleyjd 20110203: [STRIFE] New global
-// "blockingline" tracks the linedef responsible for blocking motion of an mobj
-// for purposes of doing impact special activation by missiles. Suspiciously
-// similar to the solution used by Raven in Heretic and Hexen.
-  blockingline: Pline_t;
-
   attackrange: fixed_t;
 
 //==============================================================================
@@ -176,39 +199,34 @@ var
 // P_SectorJumpOverhead
 //
 //==============================================================================
-function P_SectorJumpOverhead(const s: Psector_t): integer;
-
-//==============================================================================
-// P_CreateSecNodeList
-//
-// Boom compatibility
-//
-//==============================================================================
-procedure P_CreateSecNodeList(thing: Pmobj_t; x, y: fixed_t);
-
-//==============================================================================
-//
-// P_DelSecnode
-//
-//==============================================================================
-function P_DelSecnode(node: Pmsecnode_t): Pmsecnode_t;
+function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
 
 var
   tmbbox: array[0..3] of fixed_t;
-  sector_list: Pmsecnode_t;
-
-//==============================================================================
-//
-// P_CheckPositionZ
-//
-//==============================================================================
-function P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean;
 
 // JVAL: 3d Floors move from implementation section to interface
 var
   tmthing: Pmobj_t;
   tmx: fixed_t; // JVAL: Slopes - move from implementation section to interface
   tmy: fixed_t; // JVAL: Slopes - move from implementation section to interface
+
+// Moved from the implementation section: the rules of the game
+// (DelphiDoom.Engine.World.MapRules, one unit per game folder) read and write them
+var
+  tmflags: integer;
+
+  bestslidefrac: fixed_t;
+  bestslideline: Pline_t;
+  slidemo: Pmobj_t;
+
+  shootthing: Pmobj_t;
+  // Height if not aiming up or down
+  // ???: use slope for monsters?
+  shootz: fixed_t;
+  la_damage: integer;
+
+  crushchange: boolean;
+  nofit: boolean;
 
 implementation
 
@@ -221,6 +239,7 @@ uses
   info_common,
   info_rnd,
   p_common,
+  p_gravity,
   p_setup,
   p_maputl,
   p_inter,
@@ -229,46 +248,21 @@ uses
   p_sight,
   p_3dfloors, // JVAL: 3d Floors
   p_slopes, // JVAL: Slopes
-  p_switch,
   p_tick,
-  p_enemy,
   p_sounds,
-  p_udmf,
-  udmf_spec,
   ps_main,  // JVAL: Script Events
   r_main,
   r_sky,
   r_intrpl,
   r_translations,
-  z_zone;
-
-var
-  tmflags: integer;
-
-//==============================================================================
-// P_CheckForPushSpecial
-//
-// CheckForPushSpecial
-//
-//==============================================================================
-procedure P_CheckForPushSpecial(line: Pline_t; side: integer; mobj: Pmobj_t);
-begin
-  if line.special <> 0 then
-  begin
-    if mobj.flags5_ex and MF5_EX_PUSHWALL <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_PUSH)
-    else if mobj.flags5_ex and MF5_EX_IMPACT <> 0 then
-      P_ActivateLine(line, mobj, side, ULAC_IMPACT);
-  end;
-end;
+  z_zone,
+  DelphiDoom.Engine.World.MapRules;
 
 //==============================================================================
 //
 // TELEPORT MOVE
 //
 // PIT_StompThing
-//
-// [STRIFE] haleyjd 09/15/10: Modified so monsters can telestomp.
 //
 //==============================================================================
 function PIT_StompThing(thing: Pmobj_t): boolean;
@@ -334,11 +328,7 @@ begin
     exit;
   end;
 
-  // [STRIFE] monsters DO stomp things, on all levels
-  // Basically, one thing involved must be a player.
-  // Monsters can telefrag players, and players can telefrag monsters, but
-  // monsters cannot telefrag other monsters.
-  if not ((tmthing.player <> nil) or (thing.player <> nil)) then
+  if not TMapGameRules.CanStomp(thing) then
   begin
     result := false;
     exit;
@@ -353,9 +343,6 @@ end;
 //
 // P_TeleportMove
 //
-// [STRIFE]
-// haleyjd 09/15/10: Modified to set thing z position.
-//
 //==============================================================================
 function P_TeleportMove(thing: Pmobj_t; x, y: fixed_t): boolean;
 var
@@ -365,7 +352,7 @@ var
   yh: integer;
   bx: integer;
   by: integer;
-  newsubsec: Psubsector_t;
+  newsec: Psector_t;
   r: fixed_t;
 begin
   // kill anything occupying the position
@@ -381,7 +368,7 @@ begin
   tmbbox[BOX_RIGHT] := x + r;
   tmbbox[BOX_LEFT] := x - r;
 
-  newsubsec := R_PointInSubsector(x, y);
+  newsec := TMapGameRules.PointInSector(x, y);
   ceilingline := nil;
 
   // The base floor/ceiling is from the subsector
@@ -389,12 +376,12 @@ begin
   // Any contacted lines the step closer together
   // will adjust them.
   //**tmdropoffz := newsubsec.sector.floorheight;
-  tmdropoffz := P_FloorHeight(newsubsec.sector, x, y); // JVAL: Slopes
+  tmdropoffz := P_FloorHeight(newsec, x, y); // JVAL: Slopes
   tmfloorz := tmdropoffz;
 
   //**tmceilingz := newsubsec.sector.ceilingheight + P_SectorJumpOverhead(newsubsec.sector);
-  tmceilingz := P_CeilingHeight(newsubsec.sector, x, y) + P_SectorJumpOverhead(newsubsec.sector);  // JVAL: Slopes
-  tmfloorpic := newsubsec.sector.floorpic;
+  tmceilingz := P_CeilingHeight(newsec, x, y) + P_SectorJumpOverhead(newsec, thing.player);  // JVAL: Slopes
+  tmfloorpic := newsec.floorpic;
 
   inc(validcount);
   numspechit := 0;
@@ -431,14 +418,15 @@ begin
   thing.ceilingz := tmceilingz;
   thing.x := x;
   thing.y := y;
-  thing.z := tmfloorz; // haleyjd 09/15/10: [STRIFE] Rogue added a z-set here
+  if TMapGameRules.TeleportSetsZ then
+    thing.z := tmfloorz;
 
   P_SetThingPosition(thing);
 
   if thing.player = viewplayer then
     R_SetInterpolateSkipTicks(1);
 
-  thing.flags2_ex := thing.flags2_ex or MF2_EX_JUSTAPPEARED;
+  TMapGameRules.MarkJustAppeared(thing);
   thing.intrplcnt := 0;
 
   result := true;
@@ -482,6 +470,7 @@ begin
 
   if ld.backsector = nil then
   begin
+    TMapGameRules.BlastedHitsWall(tmthing);
     P_CheckForPushSpecial(ld, 0, tmthing);
     result := false;  // one sided line
     tmbounceline := ld;
@@ -489,70 +478,11 @@ begin
   end;
 
   if tmthing.flags and MF_MISSILE = 0 then
-  begin
-    if G_PlayingEngineVersion <= VERSION206 then
+    if not TMapGameRules.CheckLineBlocking(ld) then
     begin
-      // villsa [STRIFE] include jumpover flag
-      if (ld.flags and ML_BLOCKING <> 0) and
-         ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
-      begin
-        if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        begin
-          P_CheckForPushSpecial(ld, 0, tmthing);
-          result := false;  // explicitly blocking everything
-          tmbounceline := ld;
-          exit;
-        end;
-      end;
-
-      // villsa [STRIFE] exclude floaters from blockmonster lines
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-         (tmthing.flags and MF_FLOAT = 0) then
-      begin
-        result := false;  // block monsters only
-        tmbounceline := ld;
-        exit;
-      end;
-
-      // villsa [STRIFE]
-      if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
-      begin
-        result := false;  // block floaters only
-        tmbounceline := ld;
-        exit;
-      end;
-    end
-    else
-    begin
-      // villsa [STRIFE] include jumpover flag
-      if (ld.flags and ML_BLOCKING <> 0) and
-         ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
-      begin
-        P_CheckForPushSpecial(ld, 0, tmthing);
-        result := false;  // explicitly blocking everything
-        tmbounceline := ld;
-        exit;
-      end;
-
-      // villsa [STRIFE] exclude floaters from blockmonster lines
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-           (tmthing.flags and MF_FLOAT = 0) then
-        begin
-          result := false;  // block monsters only
-          tmbounceline := ld;
-          exit;
-        end;
-
-      // villsa [STRIFE]
-      if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
-      begin
-        result := false;  // block floaters only
-        tmbounceline := ld;
-        exit;
-      end;
+      result := false;
+      exit;
     end;
-  end;
 
   // set openrange, opentop, openbottom
   P_LineOpening(ld, true);
@@ -635,6 +565,7 @@ begin
 
   if ld.backsector = nil then
   begin
+    TMapGameRules.BlastedHitsWall(tmthing);
     P_CheckForPushSpecial(ld, 0, tmthing);
     result := false;  // one sided line
     tmbounceline := ld;
@@ -642,52 +573,11 @@ begin
   end;
 
   if tmthing.flags and MF_MISSILE = 0 then
-  begin
-    // villsa [STRIFE] include jumpover flag
-    if (ld.flags and ML_BLOCKING <> 0) and
-       ((ld.flags and ML_JUMPOVER = 0) or (tmfloorz + (32 * FRACUNIT) > tmthing.z)) then
+    if not TMapGameRules.CheckLineBlockingTM(ld) then
     begin
-      if ld.flags and ML_BLOCKING <> 0 then
-      begin
-        result := false;  // explicitly blocking everything
-        tmbounceline := ld;
-        exit;
-      end;
-    end;
-
-    // villsa [STRIFE] exclude floaters from blockmonster lines
-    if G_PlayingEngineVersion <= VERSION206 then
-    begin
-      if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-         (tmthing.flags and MF_FLOAT = 0) then
-      begin
-          P_CheckForPushSpecial(ld, 0, tmthing);
-        result := false;  // block monsters only
-        tmbounceline := ld;
-        exit;
-      end;
-    end
-    else
-    begin
-      if tmthing.flags3_ex and MF3_EX_NOBLOCKMONST = 0 then
-        if (tmthing.player = nil) and (ld.flags and ML_BLOCKMONSTERS <> 0) and
-           (tmthing.flags and MF_FLOAT = 0) then
-        begin
-          result := false;  // block monsters only
-          tmbounceline := ld;
-          exit;
-        end;
-    end;
-
-    // villsa [STRIFE]
-    if (ld.flags and ML_BLOCKFLOATERS <> 0) and (tmthing.flags and MF_FLOAT <> 0) then
-    begin
-      result := false;  // block floaters only
-      tmbounceline := ld;
+      result := false;
       exit;
     end;
-
-  end;
 
   // set openrange, opentop, openbottom
 {  if G_PlayingEngineVersion >= VERSION205 then
@@ -732,75 +622,25 @@ end;
 
 //==============================================================================
 //
-// JVAL: 20220313 - New function
-// P_ThingHeightOffsZ
-//
-//==============================================================================
-function P_ThingHeightOffsZ(const mo: Pmobj_t): fixed_t;
-begin
-  if mo.flags and MF_SPAWNCEILING <> 0 then
-    result := mo.height
-  else
-    result := 0;
-end;
-
-//==============================================================================
-//
-// JVAL: 20200308 - New function
-// P_ThingsInSameZ206
-//
-//==============================================================================
-function P_ThingsInSameZ206(const A, B: Pmobj_t): boolean;
-var
-  Az1, Az2, Bz1, Bz2: fixed_t;
-begin
-  Az1 := A.z - A.height div 2;
-  if Az1 < A.floorz then
-    Az1 := A.floorz;
-  Az2 := Az1 + A.height;
-  if Az2 > A.ceilingz then
-  begin
-    Az2 := A.ceilingz;
-    Az1 := Az2 - A.height;
-    if Az1 < A.floorz then
-      Az1 := A.floorz;
-  end;
-
-  Bz1 := B.z - B.height div 2;
-  if Bz1 < B.floorz then
-    Bz1 := B.floorz;
-  Bz2 := Bz1 + B.height;
-  if Bz2 > B.ceilingz then
-  begin
-    Bz2 := B.ceilingz;
-    Bz1 := Bz2 - B.height;
-    if Bz1 < B.floorz then
-      Bz1 := B.floorz;
-  end;
-
-  result :=
-    IsIntegerInRange(Az1, Bz1, Bz2) or
-    IsIntegerInRange(Az2, Bz1, Bz2) or
-    IsIntegerInRange(Bz1, Az1, Az2) or
-    IsIntegerInRange(Bz2, Az1, Az2);
-end;
-
-//==============================================================================
-//
 // P_ThingsInSameZ
 //
 //==============================================================================
 function P_ThingsInSameZ(const A, B: Pmobj_t): boolean;
 var
   Az1, Az2, Bz1, Bz2: fixed_t;
-begin
-  if G_PlayingEngineVersion < VERSION207 then
+
+  function _getheightoffs(const mo: Pmobj_t): fixed_t;
   begin
-    result := P_ThingsInSameZ206(A, B);
-    exit;
+    if (G_PlayingEngineVersion < VERSION207) or TMapGameRules.KeepsOldSameZ(A, B) then
+      result := mo.height div 2
+    else if mo.flags and MF_SPAWNCEILING <> 0 then
+      result := mo.height
+    else
+      result := 0;
   end;
 
-  Az1 := A.z - P_ThingHeightOffsZ(A);
+begin
+  Az1 := A.z - _getheightoffs(A);
   if Az1 < A.floorz then
     Az1 := A.floorz;
   Az2 := Az1 + A.height;
@@ -812,7 +652,7 @@ begin
       Az1 := A.floorz;
   end;
 
-  Bz1 := B.z - P_ThingHeightOffsZ(B);
+  Bz1 := B.z - _getheightoffs(B);
   if Bz1 < B.floorz then
     Bz1 := B.floorz;
   Bz2 := Bz1 + B.height;
@@ -824,11 +664,18 @@ begin
       Bz1 := B.floorz;
   end;
 
-  result :=
-    IsIntegerInRange(Az1, Bz1 + 1, Bz2 - 1) or
-    IsIntegerInRange(Az2, Bz1 + 1, Bz2 - 1) or
-    IsIntegerInRange(Bz1, Az1 + 1, Az2 - 1) or
-    IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1);
+  if (G_PlayingEngineVersion < VERSION207) or TMapGameRules.KeepsOldSameZ(A, B) then
+    result :=
+      IsIntegerInRange(Az1, Bz1, Bz2) or
+      IsIntegerInRange(Az2, Bz1, Bz2) or
+      IsIntegerInRange(Bz1, Az1, Az2) or
+      IsIntegerInRange(Bz2, Az1, Az2)
+  else
+    result :=
+      IsIntegerInRange(Az1, Bz1 + 1, Bz2 - 1) or
+      IsIntegerInRange(Az2, Bz1 + 1, Bz2 - 1) or
+      IsIntegerInRange(Bz1, Az1 + 1, Az2 - 1) or
+      IsIntegerInRange(Bz2, Az1 + 1, Az2 - 1)
 end;
 
 //==============================================================================
@@ -839,9 +686,6 @@ end;
 function PIT_CheckThing(thing: Pmobj_t): boolean;
 var
   blockdist: fixed_t;
-  solid: boolean;
-  damage: integer;
-  pushfactor: fixed_t;
 begin
   if thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE) = 0 then
   begin
@@ -923,7 +767,7 @@ begin
   end;
 
   // JVAL: 3d Floors
-  if G_PlayingEngineVersion >= VERSION122 then
+  if G_PlayingEngineVersion >= TMapGameRules.SlopesVersion then
   begin
     if (tmthing.player <> nil) or (thing.player <> nil) then
       if tmfloorz <> thing.floorz then
@@ -942,169 +786,7 @@ begin
       end;
   end;
 
-  // villsa [STRIFE] see if it went over / under
-  if thing.height + thing.z < tmthing.z then
-  begin
-    result := true;    // overhead
-    exit;
-  end;
-
-  // villsa [STRIFE] see if it went over / under
-  if tmthing.z + tmthing.height < thing.z then
-  begin
-    result := true;    // underneath
-    exit;
-  end;
-
-  // missiles can hit other things
-  if tmthing.flags and MF_MISSILE <> 0 then
-  begin
-    if (thing.flags_ex and MF_EX_GHOST <> 0) and (tmthing.flags_ex and MF_EX_THRUGHOST <> 0) then
-    begin
-      result := true;
-      exit;
-    end;
-
-    // villsa [STRIFE] updated to strife version
-    if (tmthing.target <> nil) and (
-       (tmthing.target._type = thing._type) or
-       // JVAL: 20211126 - Inherited actors do not hurt each other
-       (Info_GetInheritance(tmthing.target.info) = Info_GetInheritance(thing.info))) then
-    begin
-      if (G_PlayingEngineVersion <= VERSION206) or P_ProjectileImmune(thing, tmthing.target) then
-      begin
-        // Don't hit same species as originator.
-        if thing = tmthing.target then
-        begin
-          result := true;
-          exit;
-        end;
-
-        if (thing._type <> Ord(MT_PLAYER)) and (thing.flags2_ex and MF2_EX_MISSILEHURTSPECIES = 0) then
-        begin
-          // Explode, but do no damage.
-          // Let players missile other players.
-          result := false;
-          exit;
-        end;
-      end;
-    end;
-
-    if thing.flags and MF_SHOOTABLE = 0 then
-    begin
-      // didn't do any damage
-      result := thing.flags and MF_SOLID = 0;
-      exit;
-    end;
-
-    if tmthing.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
-      if thing.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
-      begin
-        result := true;
-        exit;
-      end;
-
-    if tmthing.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
-      if thing.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
-      begin
-        result := true;
-        exit;
-      end;
-
-    // haleyjd 09/01/10: [STRIFE] Spectral check:
-    // Missiles cannot hit SPECTRAL entities unless the missiles are also
-    // flagged as SPECTRAL.
-    if (thing.flags and MF_SPECTRAL <> 0) and (tmthing.flags and MF_SPECTRAL = 0) then
-    begin
-      result := true; // keep going
-      exit;
-    end;
-
-    // mbf21: ripper projectile
-    if tmthing.flags4_ex and MF4_EX_RIP <> 0 then
-    begin
-      damage := ((P_Random and 3) + 2) * tmthing.info.damage;
-      if (thing.flags and MF_NOBLOOD = 0) and
-         (thing.flags_ex and MF_EX_INVULNERABLE = 0) then
-      begin
-        if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-          P_SpawnBlueBlood(tmthing.x, tmthing.y, tmthing.z, damage)
-        else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-          P_SpawnGreenBlood(tmthing.x, tmthing.y, tmthing.z, damage)
-        else
-          P_SpawnBlood(tmthing.x, tmthing.y, tmthing.z, damage, thing);
-      end;
-
-      A_RipSound1(tmthing);
-
-      P_DamageMobj(thing, tmthing, tmthing.target, damage);
-
-      // JVAL: Pushable things
-      if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-      begin // Push thing
-        pushfactor := thing.pushfactor;
-        if pushfactor <= 0 then
-        begin
-          thing.momx := thing.momx + tmthing.momx div 4;
-          thing.momy := thing.momy + tmthing.momy div 4;
-        end
-        else
-        begin
-          thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-          thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-        end;
-      end;
-
-      numspechit := 0;
-
-      result := true;
-      exit;
-    end;
-
-    // damage / explode
-    if tmthing.flags3_ex and MF3_EX_ABSOLUTEDAMAGE <> 0 then
-      damage := tmthing.info.damage
-    else if tmthing.flags3_ex and MF3_EX_DOOMDAMAGE <> 0 then
-      damage := ((P_Random mod 8) + 1) * tmthing.info.damage
-    else
-    // haleyjd 09/01/10: [STRIFE] Modified missile damage formula
-      damage := ((P_Random and 3) + 1) * tmthing.info.damage;
-    P_DamageMobj(thing, tmthing, tmthing.target, damage);
-
-    // don't traverse any more
-    result := false;
-    exit;
-  end;
-
-  // JVAL: Pushable things
-  if (thing.flags2_ex and MF2_EX_PUSHABLE <> 0) and (tmthing.flags2_ex and MF2_EX_CANNOTPUSH = 0) then
-  begin // Push thing
-    pushfactor := thing.pushfactor;
-    if pushfactor <= 0 then
-    begin
-      thing.momx := thing.momx + tmthing.momx div 4;
-      thing.momy := thing.momy + tmthing.momy div 4;
-    end
-    else
-    begin
-      thing.momx := thing.momx + FixedMul(tmthing.momx, pushfactor);
-      thing.momy := thing.momy + FixedMul(tmthing.momy, pushfactor);
-    end;
-  end;
-
-  // check for special pickup
-  if thing.flags and MF_SPECIAL <> 0 then
-  begin
-    solid := thing.flags and MF_SOLID <> 0;
-    if tmthing.player <> nil then   // villsa [STRIFE] no longer checks MF_PICKUP flag
-    begin
-      // can remove thing
-      P_TouchSpecialThing(thing, tmthing);
-    end;
-    result := not solid;
-  end
-  else
-    result := thing.flags and MF_SOLID = 0;
+  result := TMapGameRules.CheckThingContact(thing);
 end;
 
 //
@@ -1136,9 +818,6 @@ end;
 //  speciallines[]
 //  numspeciallines
 //
-// haleyjd 20110203:
-// [STRIFE] Modified to clear blockingline in advance of P_BlockLinesIterator
-//
 //==============================================================================
 function P_CheckPosition(thing: Pmobj_t; x, y: fixed_t): boolean;
 var
@@ -1148,7 +827,6 @@ var
   yh: integer;
   bx: integer;
   by: integer;
-  newsubsec: Psubsector_t;
   newsec: Psector_t;
   msec: Psector_t;
   r: fixed_t;
@@ -1165,11 +843,9 @@ begin
   tmbbox[BOX_RIGHT] := x + r;
   tmbbox[BOX_LEFT] := x - r;
 
-  newsubsec := R_PointInSubsector(x, y);
-  newsec := newsubsec.sector;
+  newsec := TMapGameRules.PointInSector(x, y);
 
-  // [STRIFE] clear blockingline (see P_XYMovement, P_BlockLinesIterator)
-  blockingline := nil;
+  TMapGameRules.BeginCheckPosition;
   ceilingline := nil;
 
   // The base floor / ceiling is from the subsector
@@ -1179,7 +855,7 @@ begin
   // JVAL 20191209 - Fix 3d floor problems with A_SpawnItem & A_SpawnItemEx
   tmdropoffz := P_3dFloorHeight(newsec, x, y, thing.z); // JVAL: Slopes
   tmfloorz := tmdropoffz;
-  tmceilingz := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsubsec.sector);
+  tmceilingz := P_3dCeilingHeight(newsec, x, y, thing.z) + P_SectorJumpOverhead(newsec, thing.player);
 
   tmbounceline := nil;
 
@@ -1197,7 +873,7 @@ begin
   inc(validcount);
   numspechit := 0;
 
-  if tmflags and MF_NOCLIP <> 0 then
+  if TMapGameRules.NoClipSkipsThings(tmflags) then
   begin
     result := true;
     exit;
@@ -1223,6 +899,7 @@ begin
     yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
   end;
 
+  TMapGameRules.ClearBlockingThing;
   for bx := xl to xh do
     for by := yl to yh do
       if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
@@ -1232,6 +909,13 @@ begin
       end;
 
   // check lines
+  if TMapGameRules.NoClipSkipsLines(tmflags) then
+  begin
+    result := true;
+    exit;
+  end;
+
+  TMapGameRules.ClearBlockingThing;
   if internalblockmapformat then
   begin
     xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
@@ -1248,7 +932,7 @@ begin
   end;
 
   // JVAL: Slopes
-  if G_PlayingEngineVersion >= VERSION122 then
+  if G_PlayingEngineVersion >= TMapGameRules.SlopesVersion then
   begin
     for bx := xl to xh do
       for by := yl to yh do
@@ -1274,9 +958,220 @@ end;
 
 //==============================================================================
 //
+// P_FakeZMovement
+//
+//     Fake the zmovement so that we can check if a move is legal
+//
+//==============================================================================
+procedure P_FakeZMovement(mo: Pmobj_t);
+var
+  dist: integer;
+  delta: integer;
+begin
+//
+// adjust height
+//
+  mo.z := mo.z + mo.momz;
+  if(mo.flags and MF_FLOAT <> 0) and (mo.target <> nil) then
+  begin  // float down towards target if too close
+    if not TMapGameRules.IsSkullFlying(mo) and (mo.flags and MF_INFLOAT = 0) then
+    begin
+      dist := P_AproxDistance(mo.x - mo.target.x, mo.y - mo.target.y);
+      delta := mo.target.z + (mo.height div 2) - mo.z;
+      if (delta < 0) and (dist < -delta * 3) then
+        mo.z := mo.z - P_FloatSpeed(mo)
+      else if (delta > 0) and (dist < delta * 3) then
+        mo.z := mo.z + P_FloatSpeed(mo);
+    end;
+  end;
+  if TMapGameRules.FlightBobs(mo) then
+    if (mo.player <> nil) and (mo.z > mo.floorz) and (leveltime and 2 <> 0) then
+      mo.z := mo.z + finesine[(FINEANGLES div 20 * leveltime div 4) and FINEMASK];
+
+//
+// clip movement
+//
+  if mo.z <= mo.floorz then
+  begin // Hit the floor
+    mo.z := mo.floorz;
+    if mo.momz < 0 then
+      mo.momz := 0;
+    if TMapGameRules.IsSkullFlying(mo) then // The skull slammed into something
+      mo.momz := -mo.momz;
+    if (mo.info.crashstate <> 0) and (mo.flags and MF_CORPSE <> 0) then
+      exit;
+  end
+  else if TMapGameRules.HasLowGravity(mo) then
+  begin
+    if mo.momz = 0 then
+      mo.momz := -(P_GetMobjGravity(mo) div 8) * 2
+    else
+      mo.momz := mo.momz - P_GetMobjGravity(mo) div 8;
+  end
+  else if mo.flags and MF_NOGRAVITY = 0 then
+  begin
+    if mo.momz = 0 then
+      mo.momz := -P_GetMobjGravity(mo) * 2
+    else
+      mo.momz := mo.momz - P_GetMobjGravity(mo);
+  end
+  else if mo.flags2_ex and MF2_EX_MEDIUMGRAVITY <> 0 then
+  begin
+    if mo.momz = 0 then
+      mo.momz := -(P_GetMobjGravity(mo) div 8) * 4
+    else
+      mo.momz := mo.momz - P_GetMobjGravity(mo) div 4;
+  end;
+
+  if mo.z + mo.height > mo.ceilingz then
+  begin  // hit the ceiling
+    if mo.momz > 0 then
+      mo.momz := 0;
+    mo.z := mo.ceilingz - mo.height;
+    if TMapGameRules.IsSkullFlying(mo) then // the skull slammed into something
+      mo.momz := -mo.momz;
+  end;
+end;
+
+var
+  onmobj: Pmobj_t; //generic global onmobj...used for landing on pods/players
+
+//==============================================================================
+//
+// PIT_CheckOnmobjZ
+//
+//==============================================================================
+function PIT_CheckOnmobjZ(thing: Pmobj_t): boolean;
+var
+  blockdist: fixed_t;
+begin
+  if thing.flags and (MF_SOLID or MF_SPECIAL or MF_SHOOTABLE) = 0 then
+  begin // Can't hit thing
+    result := true;
+    exit;
+  end;
+
+  blockdist := thing.radius + tmthing.radius;
+  if (abs(thing.x - tmx) >= blockdist) or (abs(thing.y - tmy) >= blockdist) then
+  begin // Didn't hit thing
+    result := true;
+    exit;
+  end;
+
+  if thing = tmthing then
+  begin // Don't clip against self
+    result := true;
+    exit;
+  end;
+
+  if tmthing.z > thing.z + thing.height then
+  begin
+    result := true;
+    exit;
+  end
+  else if tmthing.z + tmthing.height < thing.z then
+  begin // under thing
+    result := true;
+    exit;
+  end;
+
+  result := thing.flags and MF_SOLID = 0;
+  if not result then
+    onmobj := thing;
+
+end;
+
+//==============================================================================
+//
+// P_CheckOnmobj(mobj_t *thing)
+//
+//     Checks if the new Z position is legal
+//
+//==============================================================================
+function P_CheckOnmobj(thing: Pmobj_t): Pmobj_t;
+var
+  xl, xh, yl, yh, bx, by: integer;
+  newsec: Psector_t;
+  x: fixed_t;
+  y: fixed_t;
+  oldmo: mobj_t;
+  r: fixed_t;
+begin
+  x := thing.x;
+  y := thing.y;
+  tmthing := thing;
+  tmflags := thing.flags;
+  oldmo := thing^; // save the old mobj before the fake zmovement
+  P_FakeZMovement(tmthing);
+
+  tmx := x;
+  tmy := y;
+
+  r := tmthing.radius;
+  tmbbox[BOX_TOP] := y + r;
+  tmbbox[BOX_BOTTOM] := y - r;
+  tmbbox[BOX_RIGHT] := x + r;
+  tmbbox[BOX_LEFT] := x - r;
+
+  newsec := TMapGameRules.PointInSector(x, y);
+  ceilingline := nil;
+
+//
+// the base floor / ceiling is from the subsector that contains the
+// point.  Any contacted lines the step closer together will adjust them
+//
+  tmfloorz := P_FloorHeight(newsec, x, y);  // JVAL: Slopes
+  tmdropoffz := tmfloorz;
+  tmceilingz := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
+
+  inc(validcount);
+  numspechit := 0;
+
+  if tmflags and MF_NOCLIP <> 0 then
+  begin
+    result := nil;
+    exit;
+  end;
+
+//
+// check things first, possibly picking things up
+// the bounding box is extended by MAXRADIUS because mobj_ts are grouped
+// into mapblocks based on their origin point, and can overlap into adjacent
+// blocks by up to MAXRADIUS units
+//
+  if internalblockmapformat then
+  begin
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
+  end
+  else
+  begin
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
+  end;
+
+  for bx := xl to xh do
+    for by := yl to yh do
+      if not P_BlockThingsIterator(bx, by, PIT_CheckOnmobjZ) then
+      begin
+        tmthing^ := oldmo;
+        result := onmobj;
+        exit;
+      end;
+
+  tmthing^ := oldmo;
+  result := nil;
+end;
+
+//==============================================================================
+//
 // P_TryMove
 // Attempt to move to a new position,
-// crossing special lines.
+// crossing special lines unless MF_TELEPORT is set.
 //
 //==============================================================================
 function P_TryMove(thing: Pmobj_t; x, y: fixed_t): boolean;
@@ -1296,8 +1191,9 @@ var
   var
     numSpecHitTemp: integer;
   begin
-    if thing.flags and MF_NOCLIP = 0 then
+    if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
     begin
+      TMapGameRules.BlastedHitsWall(tmthing);
       numSpecHitTemp := numspechit;
       while numSpecHitTemp > 0 do
       begin
@@ -1313,10 +1209,13 @@ var
 begin
   floatok := false;
   if not P_CheckPosition(thing, x, y) then
-  begin
-    result := false;  // solid wall or thing
-    exit;
-  end;
+    if not TMapGameRules.StepsOnBlockingThing(thing) then
+    begin
+      if TMapGameRules.PushesLinesWhenBlocked then
+        pushline;
+      result := false;  // solid wall or thing
+      exit;
+    end;
 
   if thing.flags and MF_NOCLIP = 0 then
   begin
@@ -1329,15 +1228,22 @@ begin
 
     floatok := true;
 
-    if tmceilingz - thing.z < thing.height then
+    if not TMapGameRules.IgnoresCeilingFit(thing) and
+       (tmceilingz - thing.z < thing.height) then
     begin
       pushline;
       result := false;  // mobj must lower itself to fit
       exit;
     end;
 
-    // villsa [STRIFE] non-robots are limited to 16 unit step height
-    if (thing.flags and MF_NOBLOOD = 0) and (tmfloorz - thing.z > 16 * FRACUNIT) then
+    if TMapGameRules.FlightBlocked(thing) then
+    begin
+      pushline;
+      result := false;
+      exit;
+    end;
+
+    if TMapGameRules.StepTooHighOnFoot(thing) then
     begin
       result := false;
       exit;
@@ -1373,15 +1279,15 @@ begin
       if (thing.flags2_ex and MF2_EX_JUMPUP <> 0) and (N_Random > 20) then
         jumpupmargin := jumpupmargin + 32 * FRACUNIT;
 
-    if  tmfloorz - thing.z > jumpupmargin then
+    if not TMapGameRules.IgnoresStepHeight(thing) and
+       (tmfloorz - thing.z > jumpupmargin) then
     begin
       pushline;
       result := false;  // too big a step up
       exit;
     end;
 
-    // villsa [STRIFE] special case for missiles
-    if (thing.flags and MF_MISSILE <> 0) and (tmfloorz - thing.z > 4 * FRACUNIT) then
+    if TMapGameRules.MissileStepTooHigh(thing) then
     begin
       result := false;
       exit;
@@ -1399,30 +1305,30 @@ begin
           dropoffmargin := dropoffmargin * FRACUNIT;
       end
       else
-        dropoffmargin := 32 * FRACUNIT; // haleyjd 20110204 [STRIFE]: dropoff height changed 24 -> 32
+        dropoffmargin := TMapGameRules.DropoffHeight;
     end;
 
     // JVAL: Version 204
     if G_PlayingEngineVersion >= VERSION204 then
       if (thing.flags2_ex and MF2_EX_JUMPDOWN <> 0) and (N_Random > 20) then
-        dropoffmargin := dropoffmargin + 112 * FRACUNIT;
+        dropoffmargin := dropoffmargin + TMapGameRules.JumpDownMargin;
 
     if (thing.flags and (MF_DROPOFF or MF_FLOAT) = 0) and
-       (tmfloorz - tmdropoffz > dropoffmargin) then
+       (tmfloorz - tmdropoffz > dropoffmargin) and
+       not TMapGameRules.IgnoresDropoff(thing) then
     begin
       result := false;  // don't stand over a dropoff
       exit;
     end;
 
     // JVAL: Version 204
-    if G_PlayingEngineVersion >= VERSION204 then
-      if (thing.flags2_ex and MF2_EX_CANTLEAVEFLOORPIC <> 0) and
-         ((tmfloorpic <> Psubsector_t(thing.subsector).sector.floorpic) or
-           (tmfloorz - thing.z <> 0)) then
-      begin // must stay within a sector of a certain floor type
-        result := false;
-        exit;
-      end;
+    if TMapGameRules.CannotLeaveFloorPic(thing) and
+       ((tmfloorpic <> Psubsector_t(thing.subsector).sector.floorpic) or
+         (tmfloorz - thing.z <> 0)) then
+    begin // must stay within a sector of a certain floor type
+      result := false;
+      exit;
+    end;
 
   end;
 
@@ -1438,6 +1344,7 @@ begin
   thing.floorz := tmfloorz;
   thing.ceilingz := tmceilingz;
 
+  TMapGameRules.StoreFloorPic(thing);
   thing.x := x;
   thing.y := y;
 
@@ -1463,17 +1370,10 @@ begin
   end;
 
   // JVAL: Slopes - 3d Floors SOS -> Get right P_GetThingFloorType()
-  if thing.flags and MF_FEETCLIPPED <> 0 then
-  begin
-    if (thing.z = Psubsector_t(thing.subsector).sector.floorheight) and
-       (P_GetThingFloorType(thing) > FLOOR_SOLID) then
-      thing.floorclip := FOOTCLIPSIZE
-    else
-      thing.floorclip := 0;
-  end;
+  TMapGameRules.UpdateFloorClip(thing);
 
   // if any special lines were hit, do the effect
-  if thing.flags and MF_NOCLIP = 0 then
+  if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
   begin
     while numspechit > 0 do
     begin
@@ -1490,108 +1390,10 @@ begin
             PS_EventCrossLine(thing, pDiff(ld, lines, SizeOf(line_t)), oldside);
 
         if ld.special <> 0 then
-        begin
-          P_CrossSpecialLine(pDiff(ld, lines, SizeOf(line_t)), oldside, thing);
-          if thing.player <> nil then
-          begin
-            P_ActivateLine(ld, thing, oldside, ULAC_CROSS);
-          end
-          else if thing.flags5_ex and MF5_EX_MCROSS <> 0 then
-          begin
-            P_ActivateLine(ld, thing, oldside, ULAC_MCROSS);
-          end
-          else if thing.flags5_ex and MF5_EX_PCROSS <> 0 then
-          begin
-            P_ActivateLine(ld, thing, oldside, ULAC_PCROSS);
-          end;
-        end;
+          TMapGameRules.CrossSpecialLine(ld, oldside, thing);
       end;
     end;
   end;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// P_CheckPositionZ
-//
-// villsa [STRIFE] new function
-// Check colliding things on top of one another; ie., 3D Object Clipping
-//
-//==============================================================================
-function P_CheckPositionZ(thing: Pmobj_t; height: fixed_t): boolean;
-var
-  x, y, z: fixed_t;
-  xl, xh, yl, yh, bx, by: integer;
-  newsubsec: Psubsector_t;
-  r: fixed_t;
-begin
-  x := thing.x;
-  y := thing.y;
-  z := thing.z;
-
-  thing.z := height;
-
-  tmthing := thing;
-  tmflags := thing.flags;
-  tmx := x;
-  tmy := y;
-
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
-
-  ceilingline := nil;
-  newsubsec := thing.subsector;
-
-  // The base floor / ceiling is from the subsector
-  // that contains the point.
-  // Any contacted lines the step closer together
-  // will adjust them.
-
-  // JVAL: Slopes
-  tmfloorz := P_FloorHeight(newsubsec.sector, x, y);
-  tmdropoffz := tmfloorz;
-  tmceilingz := P_CeilingHeight(newsubsec.sector, x, y);
-
-  if tmflags and MF_NOCLIP <> 0 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // Check things first, possibly picking things up.
-  // The bounding box is extended by MAXRADIUS
-  // because mobj_ts are grouped into mapblocks
-  // based on their origin point, and can overlap
-  // into adjacent blocks by up to MAXRADIUS units.
-
-  if internalblockmapformat then
-  begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx) - MAXRADIUS);
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx) + MAXRADIUS);
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy) - MAXRADIUS);
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy) + MAXRADIUS);
-  end
-  else
-  begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx - MAXRADIUS);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx + MAXRADIUS);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy - MAXRADIUS);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy + MAXRADIUS);
-  end;
-
-  for bx := xl to xh do
-    for by := yl to yh do
-      if not P_BlockThingsIterator(bx, by, PIT_CheckThing) then
-      begin
-        tmthing.z := z;
-        result := false;
-        exit;
-      end;
 
   result := true;
 end;
@@ -1619,11 +1421,13 @@ begin
 
   thing.floorz := tmfloorz;
   thing.ceilingz := tmceilingz;
+  TMapGameRules.StoreFloorPic(thing);
 
   if onfloor then
   begin
     // walking monsters rise and fall with the floor
-    thing.z := thing.floorz;
+    if TMapGameRules.SnapsToFloor(thing) then
+      thing.z := thing.floorz;
   end
   else
   begin
@@ -1640,12 +1444,6 @@ end;
 // Allows the player to slide along any angled walls.
 //
 var
-  bestslidefrac: fixed_t;
-
-  bestslideline: Pline_t;
-
-  slidemo: Pmobj_t;
-
   tmxmove: fixed_t;
   tmymove: fixed_t;
 
@@ -1710,8 +1508,6 @@ end;
 //
 // PTR_SlideTraverse
 //
-// [STRIFE] Modified for smaller step-up height
-//
 //==============================================================================
 function PTR_SlideTraverse(intr: Pintercept_t): boolean;
 var
@@ -1769,8 +1565,7 @@ begin
     margin := 0
   else
   begin
-    // villsa [STRIFE] change from 24 to 16
-    margin := 16 * FRACUNIT;
+    margin := TMapGameRules.SlideStepMargin;
     if G_PlayingEngineVersion >= VERSION207 then
       if slidemo.info.maxstepheight > 0 then
       begin
@@ -1911,14 +1706,6 @@ end;
 // P_LineAttack
 //
 var
-  shootthing: Pmobj_t;
-
-// Height if not aiming up or down
-// ???: use slope for monsters?
-  shootz: fixed_t;
-
-  la_damage: integer;
-
   aimslope: fixed_t;
 
   aim_flags_mask2_ex: integer;  // JVAL: 20220111 - MBF21
@@ -2024,6 +1811,12 @@ begin
     exit;
   end;
 
+  if TMapGameRules.SkipsAimAt(th) then
+  begin
+    result := true;
+    exit;
+  end;
+
   // check angles to see if the thing can be aimed at
   dist := FixedMul(attackrange, intr.frac);
   thingtopslope := FixedDiv(th.z + th.height - shootz, dist);
@@ -2059,8 +1852,6 @@ end;
 //
 // PTR_ShootTraverse
 //
-// [STRIFE] Changes for Spectres and Mauler puff/damage inflictor
-//
 //==============================================================================
 function PTR_ShootTraverse(intr: Pintercept_t): boolean;
 var
@@ -2070,7 +1861,6 @@ var
   frac: fixed_t;
   li: Pline_t;
   th: Pmobj_t;
-  th2: Pmobj_t;
   slope: fixed_t;
   dist: fixed_t;
   thingtopslope: fixed_t;
@@ -2151,7 +1941,9 @@ var
           exit;
         end;
       // JVAL: Spawn puff to lower textures.
-        if G_NeedsCompatibilityMode then
+        // Doom spawns the puff out of the compatibility mode and always stops the shot here;
+        // the other games spawn it in the compatibility mode, and only then the shot stops here
+        if G_NeedsCompatibilityMode = TMapGameRules.SkyHackPuffInCompatibility then
         begin
           P_SaveRandom;
           zoffs := (li.backsector.ceilingheight - z) * P_Random div 256;
@@ -2162,18 +1954,15 @@ var
           result := false;
           exit;
         end;
+        if not TMapGameRules.SkyHackPuffInCompatibility then
+        begin
+          result := false;
+          exit;
+        end;
       end;
     end;
-
-    // villsa [STRIFE]
-    if la_damage > 0 then
-    begin
-      // villsa [STRIFE] Test against Mauler attack range
-      if attackrange <> 2112 * FRACUNIT then
-        P_SpawnPuff(x, y, z)  // Spawn bullet puffs.
-      else
-        P_SpawnMobj(x, y, z, Ord(MT_STRIFEPUFF3));
-    end;
+    // Spawn bullet puffs.
+    TMapGameRules.SpawnWallPuff(x, y, z);
 
     // don't go any farther
     result := false;
@@ -2189,10 +1978,7 @@ begin
         PS_EventShootLine(shootthing, pDiff(li, lines, SizeOf(line_t)), P_PointOnLineSide(shootthing.x, shootthing.y, li));
 
     if li.special <> 0 then
-    begin
-      P_ShootSpecialLine(shootthing, li);
-      P_ActivateLine(li, shootthing, 0, ULAC_IMPACT);
-    end;
+      TMapGameRules.ShootSpecialLine(shootthing, li);
 
     if li.flags and ML_TWOSIDED = 0 then
     begin
@@ -2250,10 +2036,9 @@ begin
     exit;
   end;
 
-  // haleyjd 09/18/10: [STRIFE] Corrected - not MVIS, but SPECTRAL.
-  if th.flags and MF_SPECTRAL <> 0 then
+  if TMapGameRules.ShotPassesThrough(th) then
   begin
-    result := true; // is a spectral entity
+    result := true;
     exit;
   end;
 
@@ -2301,35 +2086,8 @@ begin
   y := trace.y + FixedMul(trace.dy, frac);
   z := shootz + FixedMul(aimslope, FixedMul(frac, attackrange));
 
-  // villsa [STRIFE] Check for Mauler attack range
-  if attackrange = 2112 * FRACUNIT then
-  begin
-    th2 := P_SpawnMobj(x, y, z, Ord(MT_STRIFEPUFF3));
-    th2.momz := -FRACUNIT;
-    P_DamageMobj(th, th2, shootthing, la_damage);
-    result := false;
-    exit;
-  end;
-
-  // Spawn bullet puffs or blood spots,
-  // depending on target type.
-  if intr.d.thing.flags and MF_NOBLOOD <> 0 then
-    P_SpawnSparkPuff(x, y, z) // villsa [STRIFE] call spark puff function instead
-  else
-  begin
-  // JVAL 18/09/2009 Added Blue and Green blood spawners
-    if intr.d.thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-      P_SpawnBlueBlood(x, y, z, la_damage)
-    else if intr.d.thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-      P_SpawnGreenBlood(x, y, z, la_damage)
-    else
-      P_SpawnBlood(x, y, z, la_damage, intr.d.thing);
-  end;
-
-  P_DamageMobj(th, shootthing, shootthing, la_damage);
-
-  // don't go any farther
-  result := false;
+  // Puff or blood, and the damage: never goes any farther
+  result := TMapGameRules.ShotHitsThing(intr, th, x, y, z);
 end;
 
 //==============================================================================
@@ -2351,7 +2109,7 @@ begin
 
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := t1.z + (t1.height div 2) + 8 * FRACUNIT;
+  shootz := TMapGameRules.AimOriginZ(t1);
 
   // can't shoot outside view angles
   topslope := (100 * FRACUNIT) div 160;
@@ -2367,11 +2125,8 @@ begin
 
   if linetarget <> nil then
     result := aimslope
-  // villsa [STRIFE] checks for player pitch
-  else if t1.player <> nil then
-    result := (Pplayer_t(t1.player).lookdir * FRACUNIT) div 160
   else
-    result := 0;
+    result := TMapGameRules.NoTargetSlope(t1);
 end;
 
 //==============================================================================
@@ -2379,8 +2134,6 @@ end;
 // P_LineAttack
 // If damage == 0, it is just a test trace
 // that will leave linetarget set.
-//
-// [STRIFE] Modified to check lines only if damage <= 0 (see P_RadiusAttack)
 //
 //==============================================================================
 procedure P_LineAttack(t1: Pmobj_t; angle: angle_t;
@@ -2398,15 +2151,12 @@ begin
   la_damage := damage;
   x2 := t1.x + FixedInt(distance) * finecosine[angle];
   y2 := t1.y + FixedInt(distance) * finesine[angle];
-  shootz := t1.z + _SHR1(t1.height) + 8 * FRACUNIT;
+  shootz := TMapGameRules.AttackOriginZ(t1);
   attackrange := distance;
   aimslope := slope;
 
-  // villsa [STRIFE] test lines only if damage is <= 0
-  if damage >= 1 then
-    P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES or PT_ADDTHINGS, PTR_ShootTraverse)
-  else
-    P_PathTraverse(t1.x, t1.y, x2, y2, PT_ADDLINES, PTR_ShootTraverse);
+  if P_PathTraverse(t1.x, t1.y, x2, y2, TMapGameRules.LineAttackFlags(damage), PTR_ShootTraverse) then
+    TMapGameRules.LineAttackMissed(t1, x2, y2, slope, distance);
 end;
 
 //
@@ -2437,24 +2187,18 @@ begin
     P_LineOpening(li, true);
     if openrange <= 0 then
     begin
-      S_StartSound(usething, Ord(sfx_noway));
+      TMapGameRules.UseBlockedByWall(usething);
       // can't use through a wall
       result := false;
       exit;
     end;
+    TMapGameRules.UseNonSpecialLine(usething);
     // not a special line, but keep checking
     result := true;
     exit;
   end;
 
-  P_UseSpecialLine(usething, li, side);
-  P_ActivateLine(intr.d.line, usething, 0, ULAC_USE);
-
-  // can't use for than one special line in a row
-  //WAS can't use for than one special line in a row
-  //jff 3/21/98 NOW multiple use allowed with enabling line flag
-
-  result := not G_NeedsCompatibilityMode and ((li.flags and ML_PASSUSE) <> 0);
+  result := TMapGameRules.UseSpecialLine(usething, li, side);
 end;
 
 //==============================================================================
@@ -2571,8 +2315,6 @@ var
 // "bombsource" is the creature
 // that caused the explosion at "bombspot".
 //
-// [STRIFE] Modified for Spectral and Inquisitor exclusions
-//
 //==============================================================================
 function PIT_RadiusAttack(thing: Pmobj_t): boolean;
 var
@@ -2592,17 +2334,8 @@ begin
     exit;
   end;
 
-  // haleyjd 10/04/10: Spectrals are not damaged by blast radii
-  if thing.flags and MF_SPECTRAL <> 0 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // Bosses take no damage from concussion.
-  // villsa [STRIFE] unused
-  // - haleyjd: INQUISITOR
-  if thing._type = Ord(MT_INQUISITOR) then
+  // The bosses of the game take no damage from concussion.
+  if TMapGameRules.IsConcussionProof(thing) then
   begin
     result := true;
     exit;
@@ -2630,6 +2363,12 @@ begin
       result := true;
       exit;
     end;
+  end;
+
+  if TMapGameRules.OutOfBlast(thing, bombspot, bombsource) then
+  begin
+    result := true;
+    exit;
   end;
 
   if bombsource <> nil then
@@ -2681,7 +2420,7 @@ begin
   if P_CheckSight(thing, bombspot) then
   begin
     // must be in direct path
-    P_DamageMobj(thing, bombspot, bombsource, bombdamage - dist);
+    P_DamageMobj(thing, bombspot, bombsource, TMapGameRules.BlastDamage(thing, bombdamage, dist));
   end;
 
   result := true;
@@ -2692,11 +2431,9 @@ end;
 // P_RadiusAttack
 // Source is the creature that caused the explosion at spot.
 //
-// [STRIFE] Modified to emit "test" tracers which can shatter glass screens
-//          and windows.
-//
 //==============================================================================
-procedure P_RadiusAttack(spot: Pmobj_t; source: Pmobj_t; const damage: integer);
+procedure P_RadiusAttack(spot: Pmobj_t; source: Pmobj_t; const damage: integer;
+  const distance: integer = 0; const dmsource: boolean = true);
 var
   x: integer;
   y: integer;
@@ -2725,19 +2462,13 @@ begin
   bombspot := spot;
   bombsource := source;
   bombdamage := damage;
+  TMapGameRules.SetBlastExtent(distance, dmsource);
 
   for y := yl to yh do
     for x := xl to xh do
       P_BlockThingsIterator(x, y, PIT_RadiusAttack);
 
-  // villsa [STRIFE] Send out 0 damage tracers to shatter nearby glass.
-  spot.z := spot.z + 32 * FRACUNIT;
-  P_LineAttack(spot, 0,      dist, 1, 0);
-  P_LineAttack(spot, ANG90,  dist, 1, 0);
-  P_LineAttack(spot, ANG180, dist, 1, 0);
-  P_LineAttack(spot, ANG270, dist, 1, 0);
-  spot.z := spot.z - 32 * FRACUNIT;
-
+  TMapGameRules.AfterRadiusAttack(spot, dist);
 end;
 
 //==============================================================================
@@ -2781,14 +2512,7 @@ begin
     for x := xl to xh do
       P_BlockThingsIterator(x, y, PIT_RadiusAttack);
 
-  // villsa [STRIFE] Send out 0 damage tracers to shatter nearby glass.
-  spot.z := spot.z + 32 * FRACUNIT;
-  P_LineAttack(spot, 0,      dist, 1, 0);
-  P_LineAttack(spot, ANG90,  dist, 1, 0);
-  P_LineAttack(spot, ANG180, dist, 1, 0);
-  P_LineAttack(spot, ANG270, dist, 1, 0);
-  spot.z := spot.z - 32 * FRACUNIT;
-
+  TMapGameRules.AfterRadiusAttack(spot, dist);
 end;
 
 //==============================================================================
@@ -2937,129 +2661,6 @@ end;
 //  the way it was and call P_ChangeSector again
 //  to undo the changes.
 //
-var
-  crushchange: boolean;
-  nofit: boolean;
-
-//==============================================================================
-//
-// PIT_ChangeSector
-//
-// [STRIFE] Changes to crushing behavior
-//
-//==============================================================================
-function PIT_ChangeSector(thing: Pmobj_t): boolean;
-var
-  mo: Pmobj_t;
-  plr: Pplayer_t;
-begin
-  if P_ThingHeightClip(thing) then
-  begin
-    // keep checking
-    result := true;
-    exit;
-  end;
-
-  // JVAL: 20200329 - New flag, can not be crushed by sector
-  if thing.flags3_ex and MF3_EX_NOCRUSH <> 0 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // crunch bodies to giblets
-  if thing.health <= 0 then
-  begin
-    // villsa [STRIFE] do something with the player
-    if thing.player <> nil then
-      if Psubsector_t(thing.subsector).sector.ceilingdata <> nil then
-      begin
-        nofit := true;
-        result := false;
-        exit;
-      end;
-
-    if G_PlayingEngineVersion >= VERSION207 then
-    begin
-      if (thing.flags4_ex and MF4_EX_DONTGIB = 0) and (thing.info.crushstate > 0) then
-      begin
-        if thing.state <> @states[thing.info.crushstate] then
-        begin
-          P_SetMobjState(thing, statenum_t(thing.info.crushstate));
-          if thing.bloodcolor <> 0 then
-            R_SetMobjBloodTranslation(thing, thing.bloodcolor);
-        end;
-        thing.flags4_ex := thing.flags4_ex or MF4_EX_DONTGIB;
-      end
-      else if thing.flags4_ex and MF4_EX_DONTGIB = 0 then
-        A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
-    end
-    else
-      A_BodyParts(thing); // villsa [STRIFE] spit out meat/junk stuff
-
-    thing.flags := thing.flags and not MF_SOLID;
-    thing.height := 0;
-    thing.radius := 0;
-
-    // keep checking
-    result := true;
-    exit;
-  end;
-
-  // crunch dropped items
-  if thing.flags and MF_DROPPED <> 0 then
-  begin
-    P_RemoveMobj(thing);
-
-    // keep checking
-    result := true;
-    exit;
-  end;
-
-  if thing.flags and MF_SHOOTABLE = 0 then
-  begin
-    // assume it is bloody gibs or something
-    result := true;
-    exit;
-  end;
-
-  nofit := true;
-
-  if crushchange and (leveltime and 3 = 0) then
-  begin
-    P_DamageMobj(thing, nil, nil, 10);
-
-    if (thing.flags and MF_NOBLOOD <> 0) or
-       (thing.flags_ex and MF_EX_INVULNERABLE <> 0) then
-    begin
-      result := true;
-      exit;
-    end;
-
-    plr := thing.player;
-    if plr <> nil then
-     if plr.cheats and CF_GODMODE <> 0 then
-     begin
-       result := true;
-       exit;
-     end;
-
-    // spray blood in a random direction
-    // JVAL: player with custom blood color :)
-    if thing.flags2_ex and MF2_EX_BLUEBLOOD <> 0 then
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLUEBLOOD))
-    else if thing.flags2_ex and MF2_EX_GREENBLOOD <> 0 then
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_GREENBLOOD))
-    else
-      mo := P_SpawnMobj(thing.x, thing.y, thing.z + thing.height div 2, Ord(MT_BLOOD_DEATH));
-
-    mo.momx := _SHL(P_Random - P_Random, 12);
-    mo.momy := _SHL(P_Random - P_Random, 12);
-  end;
-
-  // keep checking (crush other things)
-  result := true;
-end;
 
 //==============================================================================
 // P_DoChangeSector
@@ -3072,51 +2673,17 @@ var
   x: integer;
   y: integer;
   pbox: PIntegerArray;
-  n: Pmsecnode_t;
 begin
-  if G_NeedsCompatibilityMode then
+  // The games with the lists of the things of a sector (Boom) walk those lists, out of the
+  // compatibility mode; the others, and the compatibility mode, walk the blockmap
+  if not TMapGameRules.ChangeSectorByThingList(sector) then
   begin
     // re-check heights for all things near the moving sector
     pbox := @sector.blockbox;
     for x := pbox[BOX_LEFT] to pbox[BOX_RIGHT] do
       for y := pbox[BOX_BOTTOM] to pbox[BOX_TOP] do
         P_BlockThingsIterator(x, y, PIT_ChangeSector);
-  end
-  else
-  begin
-    // killough 4/4/98: scan list front-to-back until empty or exhausted,
-    // restarting from beginning after each thing is processed. Avoids
-    // crashes, and is sure to examine all things in the sector, and only
-    // the things which are in the sector, until a steady-state is reached.
-    // Things can arbitrarily be inserted and removed and it won't mess up.
-    //
-    // killough 4/7/98: simplified to avoid using complicated counter
-
-    // Mark all things invalid
-
-    n := sector.touching_thinglist;
-    while n <> nil do
-    begin
-      n.visited := false;
-      n := n.m_snext;
-    end;
-
-    repeat
-      n := sector.touching_thinglist;
-      while n <> nil do
-      begin
-        if not n.visited then
-        begin
-          n.visited := true;  // mark thing as processed
-          if n.m_thing.flags and MF_NOBLOCKMAP = 0 then//jff 4/7/98 don't do these
-            PIT_ChangeSector(n.m_thing);    // process it
-          break;
-        end;
-        n := n.m_snext;
-      end;
-    until n = nil;
   end;
-
 end;
 
 //==============================================================================
@@ -3131,7 +2698,7 @@ begin
   nofit := false;
   crushchange := crunch;
 
-  if (G_PlayingEngineVersion >= VERSION122) and (sector.num_saffectees > 0) then
+  if (G_PlayingEngineVersion >= TMapGameRules.SlopesVersion) and (sector.num_saffectees > 0) then
   begin
     for i := 0 to sector.num_saffectees - 1 do
       P_DoChangeSector(@sectors[sector.saffectees[i]], crunch);
@@ -3148,7 +2715,7 @@ end;
 // JVAL Allow jumps in sectors with sky ceiling.... (7/8/2007)
 //
 //==============================================================================
-function P_SectorJumpOverhead(const s: Psector_t): integer;
+function P_SectorJumpOverhead(const s: Psector_t; const p: Pplayer_t = nil): integer;
 begin
   // JVAL: 3d floors
   if s.midsec >= 0 then
@@ -3158,6 +2725,13 @@ begin
   end;
 
   if s.ceilingpic = skyflatnum then
+  begin
+    if p <> nil then
+      if TMapGameRules.HasFlightPower(p) then
+      begin
+        result := 0;
+        exit;
+      end;
     if not G_NeedsCompatibilityMode then
     begin
       // JVAL: 20200107 - No just overhead for version > 205
@@ -3167,236 +2741,8 @@ begin
         result := 0;
       exit;
     end;
+  end;
   result := 0;
-end;
-
-// phares 3/16/98
-//
-// P_AddSecnode() searches the current list to see if this sector is
-// already there. If not, it adds a sector node at the head of the list of
-// sectors this object appears in. This is called when creating a list of
-// nodes that will get linked in later. Returns a pointer to the new node.
-//
-//==============================================================================
-function P_AddSecnode(s: Psector_t; thing: Pmobj_t; nextnode: Pmsecnode_t): Pmsecnode_t;
-var
-  node: Pmsecnode_t;
-begin
-  node := nextnode;
-  while node <> nil do
-  begin
-    if node.m_sector = s then // Already have a node for this sector?
-    begin
-      node.m_thing := thing; // Yes. Setting m_thing says 'keep it'.
-      result := nextnode;
-      exit;
-    end;
-    // JVAL: 20200105 - Prevent infinite loop
-    if node.m_tnext = nextnode then
-      node.m_tnext := nil;
-    node := node.m_tnext;
-  end;
-
-  // Couldn't find an existing node for this sector. Add one at the head
-  // of the list.
-
-  node := Z_Malloc(SizeOf(msecnode_t), PU_LEVEL, nil);
-
-  // killough 4/4/98, 4/7/98: mark new nodes unvisited.
-  node.visited := false;
-
-  node.m_sector := s;       // sector
-  node.m_thing := thing;    // mobj
-  node.m_tprev := nil;      // prev node on Thing thread
-  node.m_tnext := nextnode; // next node on Thing thread
-  if nextnode <> nil then
-    nextnode.m_tprev := node; // set back link on Thing
-
-  // Add new node at head of sector thread starting at s.touching_thinglist
-
-  node.m_sprev := nil;    // prev node on sector thread
-  node.m_snext := s.touching_thinglist; // next node on sector thread
-  if s.touching_thinglist <> nil then
-    node.m_snext.m_sprev := node;
-  s.touching_thinglist := node;
-  result := node;
-end;
-
-// P_DelSecnode() deletes a sector node from the list of
-// sectors this object appears in. Returns a pointer to the next node
-// on the linked list, or nil.
-//
-//==============================================================================
-function P_DelSecnode(node: Pmsecnode_t): Pmsecnode_t;
-var
-  tp: Pmsecnode_t;  // prev node on thing thread
-  tn: Pmsecnode_t;  // next node on thing thread
-  sp: Pmsecnode_t;  // prev node on sector thread
-  sn: Pmsecnode_t;  // next node on sector thread
-begin
-  if node <> nil then
-  begin
-
-    // Unlink from the Thing thread. The Thing thread begins at
-    // sector_list and not from mobj_t.touching_sectorlist.
-
-    tp := node.m_tprev;
-    tn := node.m_tnext;
-    if tp <> nil then
-      tp.m_tnext := tn;
-    if tn <> nil then
-      tn.m_tprev := tp;
-
-    // Unlink from the sector thread. This thread begins at
-    // sector_t.touching_thinglist.
-
-    sp := node.m_sprev;
-    sn := node.m_snext;
-    if sp <> nil then
-      sp.m_snext := sn
-    else
-      node.m_sector.touching_thinglist := sn;
-    if sn <> nil then
-      sn.m_sprev := sp;
-
-    Z_Free(node);
-    result := tn;
-  end
-  else
-    result := nil;
-end;  // phares 3/13/98
-
-// phares 3/14/98
-//
-// PIT_GetSectors
-// Locates all the sectors the object is in by looking at the lines that
-// cross through it. You have already decided that the object is allowed
-// at this location, so don't bother with checking impassable or
-// blocking lines.
-//
-//==============================================================================
-function PIT_GetSectors(ld: Pline_t): boolean;
-begin
-  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
-     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
-     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
-     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  // This line crosses through the object.
-
-  // Collect the sector(s) from the line and add to the
-  // sector_list you're examining. If the Thing ends up being
-  // allowed to move to this position, then the sector_list
-  // will be attached to the Thing's mobj_t at touching_sectorlist.
-
-  sector_list := P_AddSecnode(ld.frontsector, tmthing, sector_list);
-
-  // Don't assume all lines are 2-sided, since some Things
-  // like MT_TFOG are allowed regardless of whether their radius takes
-  // them beyond an impassable linedef.
-
-  // killough 3/27/98, 4/4/98:
-  // Use sidedefs instead of 2s flag to determine two-sidedness.
-
-  if ld.backsector <> nil then
-    if ld.backsector <> ld.frontsector then
-      sector_list := P_AddSecnode(ld.backsector, tmthing, sector_list);
-
-  result := true;
-end;
-
-// phares 3/14/98
-//
-// P_CreateSecNodeList alters/creates the sector_list that shows what sectors
-// the object resides in.
-//
-//==============================================================================
-procedure P_CreateSecNodeList(thing: Pmobj_t; x, y: fixed_t);
-var
-  xl: integer;
-  xh: integer;
-  yl: integer;
-  yh: integer;
-  bx: integer;
-  by: integer;
-  node: Pmsecnode_t;
-  r: fixed_t;
-begin
-  // First, clear out the existing m_thing fields. As each node is
-  // added or verified as needed, m_thing will be set properly. When
-  // finished, delete all nodes where m_thing is still nil. These
-  // represent the sectors the Thing has vacated.
-
-  node := sector_list;
-  while node <> nil do
-  begin
-    node.m_thing := nil;
-    node := node.m_tnext;
-  end;
-
-  tmthing := thing;
-  tmflags := thing.flags;
-
-  tmx := x;
-  tmy := y;
-
-  r := tmthing.radius;
-  tmbbox[BOX_TOP] := y + r;
-  tmbbox[BOX_BOTTOM] := y - r;
-  tmbbox[BOX_RIGHT] := x + r;
-  tmbbox[BOX_LEFT] := x - r;
-
-  inc(validcount); // used to make sure we only process a line once
-
-  if internalblockmapformat then
-  begin
-    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
-    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
-    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
-    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
-  end
-  else
-  begin
-    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
-    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
-    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
-    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
-  end;
-
-  for bx := xl to xh do
-    for by := yl to yh do
-      P_BlockLinesIterator(bx, by, PIT_GetSectors);
-
-  // Add the sector of the (x,y) point to sector_list.
-
-  sector_list := P_AddSecnode(Psubsector_t(thing.subsector).sector, thing, sector_list);
-
-  // Now delete any nodes that won't be used. These are the ones where
-  // m_thing is still nil.
-
-  node := sector_list;
-  while node <> nil do
-  begin
-    if node.m_thing = nil then
-    begin
-      if node = sector_list then
-        sector_list := node.m_tnext;
-      node := P_DelSecnode(node);
-    end
-    else
-      node := node.m_tnext;
-  end;
-
 end;
 
 //==============================================================================
@@ -3409,9 +2755,13 @@ end;
 //
 //==============================================================================
 function P_TestMobjLocation(mobj: Pmobj_t): boolean;
+var
+  flags: integer;
 begin
+  flags := TMapGameRules.SuspendPickup(mobj);
   if P_CheckPosition(mobj, mobj.x, mobj.y) then
   begin // XY is ok, now check Z
+    TMapGameRules.RestorePickup(mobj, flags);
     if (mobj.z < mobj.floorz) or
        (mobj.z + mobj.height > mobj.ceilingz) then
     begin // Bad Z
@@ -3421,8 +2771,8 @@ begin
     result := true;
     exit;
   end;
+  TMapGameRules.RestorePickup(mobj, flags);
   result := false;
 end;
 
 end.
-

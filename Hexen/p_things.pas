@@ -198,6 +198,7 @@ uses
   info,
   m_fixed,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_mobj_h,
   p_sounds,
   p_map,

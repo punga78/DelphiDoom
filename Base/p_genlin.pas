@@ -331,7 +331,6 @@ implementation
 uses
   d_delphi,
   doomdef,
-  g_game,
   m_fixed,
   m_rnd,
   p_ceilng,
@@ -343,7 +342,10 @@ uses
   p_tick,
   sounddata,
   s_sound,
-  z_zone;
+  z_zone,
+  DelphiDoom.Thinkers.Door.Types,
+  DelphiDoom.Engine.Door.Kinds,
+  DelphiDoom.Engine.Generalized.Rules;
 
 //////////////////////////////////////////////////////////
 //
@@ -1032,14 +1034,14 @@ manual_stair:
         if (Igno = 0) and (tsec.floorpic <> texture) then
           continue;
 
-        if G_IsOldDemoPlaying then // jff 6/19/98 prevent double stepsize
+        if GenStairsStepBeforeLockout then // jff 6/19/98 prevent double stepsize
           height := height + floor.direction * stairsize;
 
         //jff 2/26/98 special lockout condition for retriggering
         if P_SectorActive(floor_special, tsec) or (tsec.stairlock <> 0) then
           continue;
 
-        if not G_IsOldDemoPlaying then // jff 6/19/98 increase height AFTER continue
+        if not GenStairsStepBeforeLockout then // jff 6/19/98 increase height AFTER continue
           height := height + floor.direction * stairsize;
 
         // jff 2/26/98
@@ -1257,44 +1259,39 @@ manual_locked:
       Ord(SpeedNormal):
         begin
           if Kind <> 0 then
-            door._type := genOpen
+            door._type := DoorKindFromNeutral(TDoorKind.GenOpen)
           else
-            door._type := genRaise;
+            door._type := DoorKindFromNeutral(TDoorKind.GenRaise);
           door.speed := VDOORSPEED * 2;
         end;
       Ord(SpeedFast):
         begin
           if Kind <> 0 then
-            door._type := genBlazeOpen
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeOpen)
           else
-            door._type := genBlazeRaise;
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeRaise);
           door.speed := VDOORSPEED * 4;
         end;
       Ord(SpeedTurbo):
         begin
           if Kind <> 0 then
-            door._type := genBlazeOpen
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeOpen)
           else
-            door._type := genBlazeRaise;
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeRaise);
           door.speed := VDOORSPEED * 8;
         end;
     else
       begin
         if Kind <> 0 then
-          door._type := genOpen
+          door._type := DoorKindFromNeutral(TDoorKind.GenOpen)
         else
-          door._type := genRaise;
+          door._type := DoorKindFromNeutral(TDoorKind.GenRaise);
         door.speed := VDOORSPEED;
       end;
     end;
 
-    // killough 4/15/98: fix generalized door opening sounds
-    // (previously they always had the blazing door close sound)
-
-    if door.speed >= VDOORSPEED * 4 then
-      S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn))  // killough 4/15/98
-    else
-      S_StartSound(@door.sector.soundorg, Ord(sfx_doropn));
+    // the opening sound of the game (killough 4/15/98 in Doom)
+    GenDoorStartOpenSound(door.sector, door.speed);
 
     if manual then
       exit;
@@ -1402,9 +1399,9 @@ manual_door:
           if door.topheight <> sec.ceilingheight then
             S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
           if Sped >= Ord(SpeedFast) then
-            door._type := genBlazeRaise
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeRaise)
           else
-            door._type := genRaise;
+            door._type := DoorKindFromNeutral(TDoorKind.GenRaise);
         end;
 
       Ord(ODoor):
@@ -1414,31 +1411,31 @@ manual_door:
           if door.topheight <> sec.ceilingheight then
             S_StartSound(@door.sector.soundorg, Ord(sfx_bdopn));
           if Sped >= Ord(SpeedFast) then
-            door._type := genBlazeOpen
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeOpen)
           else
-            door._type := genOpen;
+            door._type := DoorKindFromNeutral(TDoorKind.GenOpen);
         end;
 
       ord(CdODoor):
         begin
           door.topheight := sec.ceilingheight;
           door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
+          GenDoorStartCloseSound(door.sector);
           if Sped >= Ord(SpeedFast) then
-            door._type := genBlazeCdO
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeCdO)
           else
-            door._type := genCdO;
+            door._type := DoorKindFromNeutral(TDoorKind.GenCdO);
         end;
 
       Ord(CDoor):
         begin
           door.topheight := P_FindLowestCeilingSurrounding(sec) - 4 * FRACUNIT;
           door.direction := -1;
-          S_StartSound(@door.sector.soundorg, Ord(sfx_dorcls));
+          GenDoorStartCloseSound(door.sector);
           if Sped >= Ord(SpeedFast) then
-            door._type := genBlazeClose
+            door._type := DoorKindFromNeutral(TDoorKind.GenBlazeClose)
           else
-            door._type := genClose;
+            door._type := DoorKindFromNeutral(TDoorKind.GenClose);
         end;
 
     end;

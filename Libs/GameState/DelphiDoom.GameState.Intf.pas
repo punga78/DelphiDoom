@@ -27,6 +27,18 @@ type
     function IsPaused: Boolean;
     /// <summary>The tic of the game</summary>
     function GameTic: Integer;
+    /// <summary>The skill of the game as a number, 0 the easiest (the order of skill_t)</summary>
+    function Skill: Integer;
+    /// <summary>The episode of the map, from 1; always 1 in a game without episodes</summary>
+    function Episode: Integer;
+    /// <summary>The number of the map, from 1</summary>
+    function Map: Integer;
+    /// <summary>0 when it is not a deathmatch, otherwise the kind of deathmatch (1, 2...)</summary>
+    function Deathmatch: Integer;
+    /// <summary>The player that takes the events and is displayed, from 0</summary>
+    function ConsolePlayer: Integer;
+    /// <summary>How many players the game can have at most</summary>
+    function MaxPlayers: Integer;
   end;
 
 implementation

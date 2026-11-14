@@ -197,6 +197,12 @@ uses
   p_3dfloors,
   p_slopes,
   p_map,
+{$IF NOT (DEFINED(HERETIC) OR DEFINED(HEXEN))}
+  p_secnodes,
+{$ENDIF}
+{$IFDEF STRIFE}
+  DelphiDoom.Engine.World.MapRules,
+{$ENDIF}
 {$IFDEF HEXEN}
   p_sight,
 {$ENDIF}

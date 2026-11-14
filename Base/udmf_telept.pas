@@ -69,6 +69,7 @@ uses
   m_rnd,
   p_map,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_local,
   s_sound,
   sounddata,

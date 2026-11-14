@@ -161,6 +161,7 @@ uses
   p_inter,
   p_maputl,
   p_mobj,
+  DelphiDoom.Engine.World.MobjRules,
   p_setup,
   p_sounds,
   p_spec,
