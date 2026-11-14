@@ -78,6 +78,7 @@ implementation
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.IdLib.Math.Vec4, DelphiDoom.Gui.Window, DelphiDoom.Gui.Window.Types,
+  DelphiDoom.Tests.Gui.DrawFakes,
   DelphiDoom.Gui.Interpolator, DelphiDoom.Gui.Rectangle, DelphiDoom.Gui.Regs.Intf, DelphiDoom.Gui.Window.Intf;
 
 procedure TTestGuiWindowScripts.Start(const AText: AnsiString);
@@ -300,8 +301,9 @@ end;
 procedure TTestGuiWindowScripts.ResetCinematicsChiamaIlGioco;
 begin
   Start('windowDef Desktop { background "movie" onActivate { resetCinematics } }');
+  FWorld.UserInterface.Context.Materials := TGuiHarnessMaterials.Create(FWorld.Lines);
   FWorld.UserInterface.Activate(True, 77);
-  Assert.AreEqual('host cinematic movie 77', FWorld.Lines[0]);
+  Assert.AreEqual('M movie reset 77', FWorld.Lines[0]);
 end;
 
 procedure TTestGuiWindowScripts.SetConGuiPrefissoCreaUnaVariabileDelloStato;

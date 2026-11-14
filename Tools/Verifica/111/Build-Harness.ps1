@@ -29,6 +29,8 @@ Patch "$i\Str.cpp" { param($t) $t.Replace('static idDynamicBlockAlloc<char, 1<<1
 Patch "$i\Parser.cpp" { param($t) ($t -replace 'token\[7\] = ''\\0'';', '' -replace 'token\[10\] = ''\\0'';', '' -replace 'token\[8\] = ''\\0'';', '' -replace 'free\(curtime\);', '') }
 Patch "$i\CmdArgs.cpp" { param($t) ($t -replace 'if \( idLib::cvarSystem \) \{\s*token = idLib::cvarSystem->GetCVarString\( token.c_str\(\) \);\s*\}', '') }
 Patch "$i\math\Simd_Generic.cpp" { param($t) $t.Replace('register double', 'double') }
+# idMath::SinCos reads its reference arguments in MS inline assembly, which bcc32c does not do right: the C path (sinf, cosf) instead
+Patch "$i\math\Math.h" { param($t) [regex]::Replace($t, '(ID_INLINE void idMath::SinCos\( float a, float &s, float &c \) \{\r?\n)#ifdef _WIN32', '$1#if 0') }
 Patch "$i\hashing\MD5.cpp" { param($t) $t.Replace('register unsigned', 'unsigned') }
 Patch "$i\Token.h" { param($t) $t -replace 'ID_INLINE idToken::idToken\( void \) \{\s*\}', 'ID_INLINE idToken::idToken( void ) { type = 0; subtype = 0; line = 0; linesCrossed = 0; flags = 0; intvalue = 0; floatvalue = 0; }' }
 
@@ -78,7 +80,7 @@ function Compile($f) {
   Push-Location "$Work\neo\$dir"
   $o = "$Work\obj\" + ($dir -replace '\\', '_') + "_$name.o"
   $ErrorActionPreference = 'Continue'
-  $out = & $B -c -w- -Xclang -target-feature -Xclang +sse2 -Xclang -mfpmath -Xclang sse -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
+  $out = & $B -c -w- -Xclang -target-feature -Xclang +sse2 -Xclang -target-feature -Xclang +avx -Xclang -mfpmath -Xclang sse -D_HAS_NOEXCEPT_FUNCTION_TYPE=0 -I..\idlib "-o$o" "$name.cpp" 2>&1
   if ($LASTEXITCODE -ne 0) { Write-Host "== $f FAILED"; $out | Select-String 'error' | Select-Object -First 10 | ForEach-Object { $_.Line }; throw "compile $f" }
   Pop-Location
 }

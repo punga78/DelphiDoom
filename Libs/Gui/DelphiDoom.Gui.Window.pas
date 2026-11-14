@@ -25,7 +25,8 @@ uses
   DelphiDoom.Gui.WinVar.Rectangle, DelphiDoom.Gui.Regs.Types, DelphiDoom.Gui.Regs.Intf,
   DelphiDoom.Gui.Regs.Store, DelphiDoom.Gui.Regs.RegisterList, DelphiDoom.Gui.Regs.Evaluator,
   DelphiDoom.Gui.Regs.Parser, DelphiDoom.Gui.Script, DelphiDoom.Gui.Script.Parser,
-  DelphiDoom.Gui.Window.TimeLineEvent, DelphiDoom.Gui.Window.NamedEvent, DelphiDoom.Gui.Window.Transition;
+  DelphiDoom.Gui.Window.TimeLineEvent, DelphiDoom.Gui.Window.NamedEvent, DelphiDoom.Gui.Window.Transition,
+  DelphiDoom.Gui.Material.Intf;
 
 type
   TGuiWindow = class;
@@ -76,6 +77,10 @@ type
     FShear: TIdVec2;
     FXOffset: Single;
     FYOffset: Single;
+    FActualX: Single;
+    FActualY: Single;
+    FBackground: IGuiMaterial;
+    FBackgroundFor: AnsiString;
     FForceAspectWidth: Single;
     FForceAspectHeight: Single;
     FMatScaleX: Single;
@@ -153,7 +158,6 @@ type
     function GetDesktop: IGuiWindowNode;
     function GetStore: TGuiExpressionStore;
   protected
-    property Context: TGuiContext read FContext;
     /// <summary>idWindow::ParseInternalVar: the keys that are not registers; the subclasses add their own</summary>
     function ParseInternalVar(const AName: AnsiString; const ASource: TIdParser): Boolean; virtual;
     /// <summary>idWindow::PostParse: the subclasses finish their state here</summary>
@@ -217,7 +221,23 @@ type
     procedure RunNamedEvent(const AEventName: AnsiString);
     procedure Activate(const AActivate: Boolean; var AAct: AnsiString);
     procedure Trigger;
-    procedure StateChanged(const ARedraw: Boolean);
+    procedure StateChanged(const ARedraw: Boolean); virtual;
+    /// <summary>idWindow::Redraw: the window and its children, with time events (the desktop), clipping and the transform</summary>
+    procedure Redraw(const AX, AY: Single); virtual;
+    /// <summary>idWindow::Draw: the text of the window (the subclasses draw their own content)</summary>
+    procedure Draw(const ATime: Integer; const AX, AY: Single); virtual;
+    /// <summary>idWindow::DrawBackground: the back color and the material</summary>
+    procedure DrawBackground(const ARect: TGuiRectangle); virtual;
+    /// <summary>The rectangles move by an offset (drawRect, clientRect and textRect of Redraw)</summary>
+    procedure OffsetRects(const AX, AY: Single);
+    procedure UpdateBackgroundCinematic;
+    /// <summary>The material of the background: found by name when the name changed, nil for an empty name</summary>
+    function GetBackground: IGuiMaterial;
+    property Context: TGuiContext read FContext;
+    property ActualX: Single read FActualX write FActualX;
+    property ActualY: Single read FActualY write FActualY;
+    property XOffset: Single read FXOffset;
+    property YOffset: Single read FYOffset;
     procedure ClientToScreen(var ARect: TGuiRectangle);
     procedure ScreenToClient(var ARect: TGuiRectangle);
     procedure Warning(const AText: string);
@@ -284,7 +304,8 @@ implementation
 
 uses
   System.SysUtils, DelphiDoom.IdLib.Text.Token, DelphiDoom.IdLib.Text.Types, DelphiDoom.IdLib.Text.Strings,
-  DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Gui.WinVar.Int, DelphiDoom.Gui.Regs.Register;
+  DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Gui.WinVar.Int, DelphiDoom.Gui.Regs.Register,
+  DelphiDoom.Gui.Window.Painter;
 
 type
   TGuiRegisterEntry = record
@@ -1355,6 +1376,8 @@ begin
   CalcClientRect(0, 0);
   FDrawRect.Offset(AX, AY);
   FClientRect.Offset(AX, AY);
+  FActualX := FDrawRect.X;
+  FActualY := FDrawRect.Y;
   for LIndex := 0 to FDrawWindows.Count - 1 do
     if not FDrawWindows[LIndex].IsSimple then
       FDrawWindows[LIndex].Window.CalcRects(FClientRect.X + FXOffset, FClientRect.Y + FYOffset);
@@ -1440,9 +1463,12 @@ begin
 end;
 
 procedure TGuiWindow.ResetCinematics;
+var
+  LMaterial: IGuiMaterial;
 begin
-  if Assigned(FContext.GameHost) and (FBackgroundName.AsText <> '') then
-    FContext.GameHost.ResetCinematic(FBackgroundName.AsText, FContext.Time);
+  LMaterial := GetBackground;
+  if Assigned(LMaterial) then
+    LMaterial.ResetCinematicTime(FContext.Time);
 end;
 
 procedure TGuiWindow.ResetTime(const ATime: Integer);
@@ -1616,7 +1642,60 @@ begin
     EvalRegs;
   for LIndex := 0 to FDrawWindows.Count - 1 do
     if not FDrawWindows[LIndex].IsSimple then
-      FDrawWindows[LIndex].Window.StateChanged(ARedraw);
+      FDrawWindows[LIndex].Window.StateChanged(ARedraw)
+    else if ARedraw then
+      FDrawWindows[LIndex].Window.UpdateBackgroundCinematic;
+  if ARedraw then
+  begin
+    if (FFlags and WIN_DESKTOP) <> 0 then
+      Redraw(0.0, 0.0);
+    UpdateBackgroundCinematic;
+  end;
+end;
+
+procedure TGuiWindow.UpdateBackgroundCinematic;
+var
+  LMaterial: IGuiMaterial;
+begin
+  LMaterial := GetBackground;
+  if Assigned(LMaterial) and (LMaterial.GetCinematicLength <> 0) then
+    LMaterial.UpdateCinematic(FContext.Time);
+end;
+
+function TGuiWindow.GetBackground: IGuiMaterial;
+begin
+  if (not Assigned(FContext.Materials)) or (FBackgroundName.AsText = '') then
+    Exit(nil);
+  if (not Assigned(FBackground)) or (FBackgroundFor <> FBackgroundName.AsText) then
+  begin
+    FBackgroundFor := FBackgroundName.AsText;
+    FBackground := FContext.Materials.FindMaterial(FBackgroundFor);
+    if not FBackground.IsDefaulted then
+      FBackground.SetGuiSort;
+  end;
+  Result := FBackground;
+end;
+
+procedure TGuiWindow.OffsetRects(const AX, AY: Single);
+begin
+  FDrawRect.Offset(AX, AY);
+  FClientRect.Offset(AX, AY);
+  FTextRect.Offset(AX, AY);
+end;
+
+procedure TGuiWindow.Redraw(const AX, AY: Single);
+begin
+  TGuiWindowPainter.Redraw(Self, AX, AY);
+end;
+
+procedure TGuiWindow.Draw(const ATime: Integer; const AX, AY: Single);
+begin
+  TGuiWindowPainter.DrawText(Self);
+end;
+
+procedure TGuiWindow.DrawBackground(const ARect: TGuiRectangle);
+begin
+  TGuiWindowPainter.DrawBackground(Self, ARect);
 end;
 
 function TGuiWindow.Interactive: Boolean;

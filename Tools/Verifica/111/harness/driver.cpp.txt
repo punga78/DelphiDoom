@@ -321,6 +321,10 @@ int main(int argc, char **argv) {
 					printf("act \"%s\"\n", esc(r).c_str());
 				} else if (w[0] == "trigger") {
 					gui->Trigger(atoi(w[1].c_str()));
+				} else if (w[0] == "redraw") {
+					gui->Redraw(atoi(w[1].c_str()));
+				} else if (w[0] == "guicursor") {
+					gui->SetCursor(F(w[1]), F(w[2]));
 				} else if (w[0] == "dc") {
 					dcOp(w, rest);
 				} else if (w[0] == "cvar") {

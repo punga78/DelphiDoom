@@ -14,9 +14,10 @@ uses
 
 type
   /// <summary>
-  ///   Runs Tests\Data\Gui\draw\draw.input.txt with TGuiDrawContext and compares what it sends to the renderer, the
-  ///   results of the text calls and the warnings with draw.golden.txt: the answer of the real
-  ///   ui\DeviceContext.cpp of Doom 3 (and of RegisterFont of renderer\tr_font.cpp), made by Tools\Verifica\111
+  ///   Runs Tests\Data\Gui\draw\*.input.txt with the classes of Libs\Gui and compares what they send to the renderer,
+  ///   the results of the text calls and the warnings with the golden: the answer of the real ui\DeviceContext.cpp,
+  ///   Window.cpp, SimpleWindow.cpp and UserInterface.cpp of Doom 3 (and of RegisterFont of renderer\tr_font.cpp),
+  ///   made by Tools\Verifica\111
   /// </summary>
   [TestFixture]
   [Category('GuiDraw')]
@@ -27,6 +28,10 @@ type
     procedure IScenariDelDeviceContextCoincidonoConIlCpp;
     [Test]
     procedure IlGoldenDelDeviceContextHaTuttiICasi;
+    [Test]
+    procedure IScenariDelDisegnoDelleFinestreCoincidonoConIlCpp;
+    [Test]
+    procedure IlGoldenDelDisegnoDelleFinestreHaTuttiICasi;
   end;
 
 implementation
@@ -42,6 +47,17 @@ end;
 procedure TTestGuiDrawParity.IlGoldenDelDeviceContextHaTuttiICasi;
 begin
   Assert.AreEqual(11, TGuiHarnessCompare.CountCases('draw\draw.golden.txt'));
+end;
+
+procedure TTestGuiDrawParity.IScenariDelDisegnoDelleFinestreCoincidonoConIlCpp;
+begin
+  // the rotation of a window uses sinf and cosf: the C library of the compiler of the reference is one ULP off in places
+  TGuiHarnessCompare.Check('draw\redraw.input.txt', 'draw\redraw.golden.txt', 'redraw_transform', 4);
+end;
+
+procedure TTestGuiDrawParity.IlGoldenDelDisegnoDelleFinestreHaTuttiICasi;
+begin
+  Assert.AreEqual(5, TGuiHarnessCompare.CountCases('draw\redraw.golden.txt'));
 end;
 
 initialization

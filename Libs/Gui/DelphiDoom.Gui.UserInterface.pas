@@ -39,6 +39,7 @@ type
     FDesktop: TGuiWindow;
     FInteractive: Boolean;
     FStrict: Boolean;
+    FLoading: Boolean;
     function GetTime: Integer;
     function GetActive: Boolean;
     function GetSourceFile: AnsiString;
@@ -60,6 +61,8 @@ type
     function InitFromFile(const AName: AnsiString; const ARebuild: Boolean = True): Boolean;
     /// <summary>Time and the events of the windows of a frame (what Redraw does for the desktop, without the drawing)</summary>
     procedure RunFrame(const ATime: Integer);
+    /// <summary>idUserInterfaceLocal::Redraw: the desktop is drawn with the screen (640 by 480) as the first clipping rectangle</summary>
+    procedure Redraw(const ATime: Integer);
     procedure HandleNamedEvent(const AEventName: AnsiString);
     procedure StateChanged(const ATime: Integer; const ARedraw: Boolean);
     /// <summary>Activate: the commands that the windows left for the game</summary>
@@ -156,6 +159,7 @@ begin
   if AName = '' then
     Exit(False);
   FContext.SourceFile := AName;
+  FLoading := True;
   if ARebuild or (not Assigned(FDesktop)) then
   begin
     FContext.Desktop := nil;
@@ -201,6 +205,7 @@ begin
     LParser.Free;
   end;
   FInteractive := FDesktop.Interactive;
+  FLoading := False;
   Result := True;
 end;
 
@@ -209,6 +214,19 @@ begin
   FContext.Time := ATime;
   if Assigned(FDesktop) then
     FDesktop.RunTimeEvents(ATime);
+end;
+
+procedure TGuiUserInterface.Redraw(const ATime: Integer);
+begin
+  if Assigned(FContext.Cvars) and (FContext.Cvars.GetInteger('r_skipGuiShaders') > 5) then
+    Exit;
+  if (not FLoading) and Assigned(FDesktop) and Assigned(FContext.DrawContext) then
+  begin
+    FContext.Time := ATime;
+    FContext.DrawContext.PushClipRect(0, 0, 640, 480);
+    FDesktop.Redraw(0, 0);
+    FContext.DrawContext.PopClipRect;
+  end;
 end;
 
 procedure TGuiUserInterface.HandleNamedEvent(const AEventName: AnsiString);

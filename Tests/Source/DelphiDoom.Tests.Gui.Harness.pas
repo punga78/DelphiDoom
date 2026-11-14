@@ -57,7 +57,9 @@ type
   TGuiHarnessCompare = class
   public
     /// <summary>The names are relative to Tests\Data\Gui; a difference writes the actual text next to the executable</summary>
-    class procedure Check(const AInputName, AGoldenName: string); static;
+    class procedure Check(const AInputName, AGoldenName: string; const AUlpCases: string = ''; const AUlps: Integer = 0); static;
+    /// <summary>Two lines of floats as bits (hex words) that differ by at most AUlps in each word</summary>
+    class function SameWithinUlps(const AGolden, AActual: string; const AUlps: Integer): Boolean; static;
     /// <summary>The number of cases ("## " lines) of a golden</summary>
     class function CountCases(const AGoldenName: string): Integer; static;
   end;
@@ -178,6 +180,9 @@ begin
   Supports(FLogRef, IIdLibLog, LLog);
   FInterface := TGuiUserInterface.Create(FFiles, LLog, TGuiWindowFactory.Create,
     TGuiWindowFakeHost.Create(FLines), nil, nil, FDrawContext);
+  FInterface.Context.DrawContext := FDrawContext;
+  FInterface.Context.Materials := FMaterials;
+  FInterface.Context.Cvars := FCvars;
 end;
 
 procedure TGuiHarnessRunner.RunDeviceContext(const AText: string; const AWords: TArray<string>);
@@ -341,6 +346,13 @@ begin
   end
   else if LWords[0] = 'trigger' then
     FInterface.Trigger(StrToInt(LWords[1]))
+  else if LWords[0] = 'redraw' then
+    FInterface.Redraw(StrToInt(LWords[1]))
+  else if LWords[0] = 'guicursor' then
+  begin
+    FInterface.Context.CursorX := Number(LWords[1]);
+    FInterface.Context.CursorY := Number(LWords[2]);
+  end
   else if LWords[0] = 'dc' then
     RunDeviceContext(AText, LWords)
   else if LWords[0] = 'cvar' then
@@ -408,12 +420,14 @@ end;
 
 { TGuiHarnessCompare }
 
-class procedure TGuiHarnessCompare.Check(const AInputName, AGoldenName: string);
+class procedure TGuiHarnessCompare.Check(const AInputName, AGoldenName: string; const AUlpCases: string;
+  const AUlps: Integer);
 var
   LInput: TStringList;
   LGolden: TStringList;
   LRunner: TGuiHarnessRunner;
   LIndex: Integer;
+  LCase: string;
 begin
   LInput := TStringList.Create;
   LGolden := TStringList.Create;
@@ -429,7 +443,11 @@ begin
         LRunner.Lines.SaveToFile(ChangeFileExt(ParamStr(0), '.actual.txt'));
         Assert.Fail('The run ends at line ' + IntToStr(LIndex + 1) + ', the golden has ' + IntToStr(LGolden.Count));
       end;
-      if LGolden[LIndex] <> LRunner.Lines[LIndex] then
+      if LGolden[LIndex].StartsWith('## ') then
+        LCase := Copy(LGolden[LIndex], 4, MaxInt);
+      if (LGolden[LIndex] <> LRunner.Lines[LIndex]) and
+        not ((AUlps > 0) and (Pos(',' + LCase + ',', ',' + AUlpCases + ',') > 0) and
+        SameWithinUlps(LGolden[LIndex], LRunner.Lines[LIndex], AUlps)) then
       begin
         LRunner.Lines.SaveToFile(ChangeFileExt(ParamStr(0), '.actual.txt'));
         Assert.Fail(Format('Line %d: golden [%s] actual [%s]', [LIndex + 1, LGolden[LIndex], LRunner.Lines[LIndex]]));
@@ -442,6 +460,29 @@ begin
     LRunner.Free;
     LGolden.Free;
     LInput.Free;
+  end;
+end;
+
+class function TGuiHarnessCompare.SameWithinUlps(const AGolden, AActual: string; const AUlps: Integer): Boolean;
+var
+  LGolden, LActual: TArray<string>;
+  LIndex: Integer;
+  LA, LB: Int64;
+begin
+  LGolden := AGolden.Split([' ']);
+  LActual := AActual.Split([' ']);
+  Result := (Length(LGolden) = Length(LActual)) and (Length(LGolden) > 1);
+  if not Result then
+    Exit;
+  for LIndex := 0 to High(LGolden) do
+  begin
+    if LGolden[LIndex] = LActual[LIndex] then
+      Continue;
+    if (Length(LGolden[LIndex]) <> 8) or (Length(LActual[LIndex]) <> 8) or
+      not TryStrToInt64('$' + LGolden[LIndex], LA) or not TryStrToInt64('$' + LActual[LIndex], LB) then
+      Exit(False);
+    if Abs(LA - LB) > AUlps then
+      Exit(False);
   end;
 end;
 

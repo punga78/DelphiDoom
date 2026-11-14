@@ -19,7 +19,7 @@ interface
 
 uses
   DelphiDoom.IdLib.Core.Intf, DelphiDoom.Scanner.IdDict, DelphiDoom.Gui.Regs.Types, DelphiDoom.Gui.Regs.Intf,
-  DelphiDoom.Gui.Window.Intf;
+  DelphiDoom.Gui.Window.Intf, DelphiDoom.Gui.Cvars.Intf, DelphiDoom.Gui.Material.Intf, DelphiDoom.Gui.DrawContext;
 
 type
   /// <summary>
@@ -42,6 +42,15 @@ type
     Language: IGuiLanguage;
     Tables: IGuiTables;
     Fonts: IGuiFontLookup;
+    /// <summary>The device context the windows draw with (not owned); nil: nothing is drawn</summary>
+    DrawContext: TGuiDrawContext;
+    Materials: IGuiMaterialLookup;
+    Cvars: IGuiCvars;
+    /// <summary>The mouse cursor of the gui (CursorX and CursorY)</summary>
+    CursorX: Single;
+    CursorY: Single;
+    /// <summary>The static text buffer of idWindow::DebugDraw: it is never cleared</summary>
+    DebugBuffer: AnsiString;
     /// <summary>The registers of the last evaluation and the window that made it (idWindow::EvalRegs statics)</summary>
     EvalRegisters: TGuiRegisters;
     LastEvalWindow: TObject;
