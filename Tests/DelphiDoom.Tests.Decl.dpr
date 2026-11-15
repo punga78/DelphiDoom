@@ -187,6 +187,7 @@ uses
   DelphiDoom.Tests.Decl.Q3Shader in 'Source\DelphiDoom.Tests.Decl.Q3Shader.pas',
   DelphiDoom.Tests.Decl.Q3ShaderGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderGolden.pas',
   DelphiDoom.Tests.Decl.Q3ShaderCalcSupport in 'Source\DelphiDoom.Tests.Decl.Q3ShaderCalcSupport.pas',
+  DelphiDoom.Tests.Decl.Q3ShaderCollapse in 'Source\DelphiDoom.Tests.Decl.Q3ShaderCollapse.pas',
   DelphiDoom.Tests.Decl.Q3ShaderCalcGolden in 'Source\DelphiDoom.Tests.Decl.Q3ShaderCalcGolden.pas',
   DelphiDoom.Tests.Decl.Q3ShaderSprites in 'Source\DelphiDoom.Tests.Decl.Q3ShaderSprites.pas',
   DelphiDoom.Tests.Decl.Q3ShaderCalc in 'Source\DelphiDoom.Tests.Decl.Q3ShaderCalc.pas',

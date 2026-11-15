@@ -163,8 +163,8 @@ type
   end;
 
   /// <summary>
-  ///   textureBundle_t (the first bundle: the second one is only used by the multitexture collapse of the
-  ///   renderer, which is not ported). An image is a name, never loaded; an empty name is "no image".
+  ///   textureBundle_t (a stage has two: the second one only exists after the multitexture collapse, see
+  ///   <c>TQ3ShaderStage.Bundle2</c>). An image is a name, never loaded; an empty name is "no image".
   ///   "$whiteimage" and "$lightmap" are the names of the images the renderer makes itself; the image of
   ///   a <c>videoMap</c> is "$scratch" (the renderer's scratch image).
   /// </summary>

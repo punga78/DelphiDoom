@@ -235,6 +235,12 @@ type
     ///   renderer shares as tr.externalVisData). A lump of 1 to 7 bytes is an EBspFileException
     /// </summary>
     function Load(const ALump: TBytes; const ATreeClusters: Integer): TBspVisibility;
+    /// <summary>
+    ///   The same from a file that was read: the cluster count, the row size and the rows are those of
+    ///   <c>IBspFile</c> (the array is shared, not copied: it is what the collision model of the engine keeps too),
+    ///   only the "novis" row is new
+    /// </summary>
+    function LoadFromFile(const AFile: IBspFile; const ATreeClusters: Integer): TBspVisibility;
   end;
 
   /// <summary>Turns the model back into the bytes of a .bsp file</summary>

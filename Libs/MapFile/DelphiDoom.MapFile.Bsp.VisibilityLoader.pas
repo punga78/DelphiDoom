@@ -28,8 +28,16 @@ type
   ///   32-byte rows of 255 instead: another length, not the same data).
   /// </summary>
   TBspVisibilityLoader = class(TInterfacedObject, IBspVisibilityLoader)
+  strict private
+    class function Novis(const ATreeClusters: Integer): TBytes; static;
   public
+    /// <summary>
+    ///   Decodes a lump that is not in an <c>IBspFile</c> (the two integers are read here as
+    ///   <c>TBspFile</c> reads them; unlike it a lump of 1 to 7 bytes is an error). A caller that has the
+    ///   file uses <c>LoadFromFile</c>, which decodes nothing
+    /// </summary>
     function Load(const ALump: TBytes; const ATreeClusters: Integer): TBspVisibility;
+    function LoadFromFile(const AFile: IBspFile; const ATreeClusters: Integer): TBspVisibility;
   end;
 
 implementation
@@ -49,19 +57,39 @@ resourcestring
 
 { TBspVisibilityLoader }
 
-function TBspVisibilityLoader.Load(const ALump: TBytes; const ATreeClusters: Integer): TBspVisibility;
+class function TBspVisibilityLoader.Novis(const ATreeClusters: Integer): TBytes;
 var
   LLength, LIndex: Integer;
 begin
   if (ATreeClusters < 0) or (ATreeClusters > MAX_CLUSTERS) then
     raise EBspFileException.CreateFmt(SVisTooManyClusters, [ATreeClusters]);
+  LLength := (ATreeClusters + 63) and not 63;
+  SetLength(Result, LLength);
+  for LIndex := 0 to LLength - 1 do
+    Result[LIndex] := 255;
+end;
+
+function TBspVisibilityLoader.LoadFromFile(const AFile: IBspFile; const ATreeClusters: Integer): TBspVisibility;
+begin
+  Result.Novis := Novis(ATreeClusters);
+  if AFile.Lumps[LUMP_VISIBILITY].FileLen = 0 then
+  begin
+    Result.NumClusters := ATreeClusters;
+    Result.ClusterBytes := 0;
+    Result.Vis := nil;
+    Exit;
+  end;
+  Result.NumClusters := AFile.NumClusters;
+  Result.ClusterBytes := AFile.ClusterBytes;
+  Result.Vis := AFile.Visibility;
+end;
+
+function TBspVisibilityLoader.Load(const ALump: TBytes; const ATreeClusters: Integer): TBspVisibility;
+begin
+  Result.Novis := Novis(ATreeClusters);
   Result.NumClusters := ATreeClusters;
   Result.ClusterBytes := 0;
   Result.Vis := nil;
-  LLength := (ATreeClusters + 63) and not 63;
-  SetLength(Result.Novis, LLength);
-  for LIndex := 0 to LLength - 1 do
-    Result.Novis[LIndex] := 255;
 
   if Length(ALump) = 0 then
     Exit;

@@ -594,6 +594,12 @@ begin
   Assert.IsTrue(Length(LFile.Visibility) > 0);
   Assert.IsTrue(CompareMem(@LFile.Visibility[0], @LVisibility.Vis[0], Length(LFile.Visibility)));
   Assert.AreEqual<Integer>(Length(LFile.Visibility), Length(LVisibility.Vis));
+  // from the file nothing is decoded: the rows are the very same array
+  LVisibility := TBspFactory.CreateVisibilityLoader.LoadFromFile(LFile, 2);
+  Assert.AreEqual<Integer>(LFile.NumClusters, LVisibility.NumClusters);
+  Assert.AreEqual<Integer>(LFile.ClusterBytes, LVisibility.ClusterBytes);
+  Assert.IsTrue(Pointer(LFile.Visibility) = Pointer(LVisibility.Vis));
+  Assert.AreEqual<Integer>(64, Length(LVisibility.Novis));
 end;
 
 procedure TTestBspSurfaceLoaders.DovrebbeDareLaRigaNovisDi255ArrotondataA64;
