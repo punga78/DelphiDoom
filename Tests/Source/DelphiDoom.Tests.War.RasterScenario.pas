@@ -25,7 +25,7 @@ type
     function Run(ASeed: Cardinal; AMode: Integer): TWarImageBlitter;
     /// <summary>
     ///   The scenarios of the lines (lineScenario of sdl_raster_ref.c, 40 lines of SDL_RenderLine): mode bits 1 = partial
-    ///   alpha, 2 = all inside the screen, 4 = integer ends, 8 = short lines. An oblique line with a coordinate in (-1, 0)
+    ///   alpha, 2 = all inside the screen, 4 = integer ends, 8 = short lines, 16 = up to 2000 pixels outside the screen. An oblique line with a coordinate in (-1, 0)
     ///   is moved by one pixel (SDL draws it another way: not kept)
     /// </summary>
     function RunLines(ASeed: Cardinal; AMode: Integer): TWarImageBlitter;
@@ -335,6 +335,13 @@ begin
     begin
       LX2 := LX1 + Fraction(LEndX mod (6 * 4 * 2) - 6 * 4, 4);
       LY2 := LY1 + Fraction(LEndY mod (6 * 4 * 2) - 6 * 4, 4);
+    end;
+    if (AMode and 16) <> 0 then
+    begin
+      LX1 := Fraction(LStartX * 8 - 1200 * 4, 4);
+      LY1 := Fraction(LStartY * 8 - 800 * 4, 4);
+      LX2 := Fraction(LEndX * 8 - 1200 * 4, 4);
+      LY2 := Fraction(LEndY * 8 - 800 * 4, 4);
     end;
     if LKind = 0 then
       LY2 := LY1

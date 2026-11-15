@@ -297,7 +297,7 @@ static void colorBlend(int flip, int m)
 }
 
 /* le linee: SDL_RenderLine (SDL_BLENDMODE_BLEND) con estremi float. modo (bit): 1 = alfa parziali; 2 = tutto dentro lo schermo;
-   4 = estremi interi; 8 = solo linee corte (le frecce del debug: fino a 6 pixel). Il generatore e' scritto due volte (qui e in
+   4 = estremi interi; 16 = fino a 2000 pixel fuori dallo schermo; 8 = solo linee corte (le frecce del debug: fino a 6 pixel). Il generatore e' scritto due volte (qui e in
    Tests\Source\DelphiDoom.Tests.War.RasterScenario.pas) */
 static void lineScenario(unsigned seed, int dump)
 {
@@ -317,6 +317,7 @@ static void lineScenario(unsigned seed, int dump)
         float qx = fq(bx - 40 * 4, 4), qy = fq(by - 30 * 4, 4);
         if (gMode & 2) { px = fq(ax % (300 * 4), 4); py = fq(ay % (180 * 4), 4); qx = fq(bx % (300 * 4), 4); qy = fq(by % (180 * 4), 4); }
         if (gMode & 8) { qx = px + fq(bx % (6 * 4 * 2) - 6 * 4, 4); qy = py + fq(by % (6 * 4 * 2) - 6 * 4, 4); }
+        if (gMode & 16) { px = fq(ax * 8 - 1200 * 4, 4); py = fq(ay * 8 - 800 * 4, 4); qx = fq(bx * 8 - 1200 * 4, 4); qy = fq(by * 8 - 800 * 4, 4); }
         if (kind == 0) qy = py;
         else if (kind == 1) qx = px;
         else if (kind == 2) qy = py + (qx - px);

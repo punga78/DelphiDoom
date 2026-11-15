@@ -17,7 +17,7 @@ foreach ($case in @(@(0, 400), @(2, 200), @(28, 200), @(46, 200))) {
   foreach ($l in (& $exe $case[1] $case[0])) { $lines.Add($l) }
 }
 # le linee (SDL_RenderLine), sempre opache: sezioni "L modo conteggio" (vedi lineScenario in sdl_raster_ref.c)
-foreach ($case in @(@(0, 400), @(2, 200), @(4, 200), @(8, 200), @(10, 200), @(14, 200))) {
+foreach ($case in @(@(0, 400), @(2, 200), @(4, 200), @(8, 200), @(10, 200), @(14, 200), @(16, 200), @(20, 200))) {
   $lines.Add("L $($case[0]) $($case[1])")
   foreach ($l in (& $exe lines $case[1] $case[0])) { $lines.Add($l) }
 }
