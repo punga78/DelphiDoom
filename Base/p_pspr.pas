@@ -87,6 +87,36 @@ procedure A_Light0(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
+// P_DropWeapon
+// The player died, so put the weapon away.
+//
+//==============================================================================
+procedure P_DropWeapon(player: Pplayer_t);
+
+//==============================================================================
+//
+// A_ReFire
+// The player can re fire the weapon without lowering it entirely.
+//
+//==============================================================================
+procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Lower
+// Lowers current weapon, and changes weapon at bottom.
+//
+//==============================================================================
+procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
+
+//==============================================================================
+//
+// A_Raise
+//
+//==============================================================================
+procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
+//==============================================================================
+//
 // P_SetupPsprites
 //
 //==============================================================================
@@ -103,6 +133,8 @@ implementation
 
 uses
   d_delphi,
+  d_event,
+  doomdef,
   i_system,
   info,
   p_common,
@@ -171,6 +203,100 @@ begin
   player.extralight := 0;
 end;
 
+//==============================================================================
+//
+// P_DropWeapon
+// The player died, so put the weapon away.
+//
+//==============================================================================
+procedure P_DropWeapon(player: Pplayer_t);
+begin
+  P_SetPsprite(player, Ord(ps_weapon), TPspriteGameRules.DropWeaponState(player));
+end;
+
+//==============================================================================
+//
+// A_ReFire
+// The player can re fire the weapon without lowering it entirely.
+//
+//==============================================================================
+procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  // check for fire
+  //  (if a weaponchange is pending, let it go through instead)
+  if (player.cmd.buttons and BT_ATTACK <> 0) and
+     (player.pendingweapon = wp_nochange) and
+     (player.health > 0) then
+  begin
+    player.refire := player.refire + 1;
+    P_FireWeapon(player);
+  end
+  else
+  begin
+    player.refire := 0;
+    TPspriteGameRules.CheckSupplies(player);
+  end;
+end;
+
+//==============================================================================
+//
+// A_Lower
+// Lowers current weapon, and changes weapon at bottom.
+//
+//==============================================================================
+procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  if TPspriteGameRules.StaysLowered(player) then
+    psp.sy := WEAPONBOTTOM
+  else
+    psp.sy := psp.sy + LOWERSPEED;
+
+  // Is already down.
+  if psp.sy < WEAPONBOTTOM then
+    exit;
+
+  // Player is dead.
+  if player.playerstate = PST_DEAD then
+  begin
+    psp.sy := WEAPONBOTTOM;
+    // don't bring weapon back up
+    exit;
+  end;
+
+  // The old weapon has been lowered off the screen,
+  // so change the weapon and start raising it
+  if player.health = 0 then
+  begin
+    // Player is dead, so keep the weapon off screen.
+    P_SetPsprite(player, Ord(ps_weapon), S_NULL);
+    exit;
+  end;
+
+  TPspriteGameRules.AfterLowered(player);
+
+  player.readyweapon := player.pendingweapon;
+
+  P_BringUpWeapon(player);
+end;
+
+//==============================================================================
+//
+// A_Raise
+//
+//==============================================================================
+procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
+begin
+  psp.sy := psp.sy - RAISESPEED;
+
+  if psp.sy > WEAPONTOP then // Not raised all the way yet
+    exit;
+
+  psp.sy := WEAPONTOP;
+
+  // The weapon has been raised all the way,
+  //  so change to the ready state.
+  P_SetPsprite(player, Ord(ps_weapon), TPspriteGameRules.RaisedState(player));
+end;
 //==============================================================================
 //
 // P_SetupPsprites

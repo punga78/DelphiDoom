@@ -50,13 +50,6 @@ procedure P_SetPspriteNF(player: Pplayer_t; position: integer; stnum: statenum_t
 
 //==============================================================================
 //
-// P_DropWeapon
-//
-//==============================================================================
-procedure P_DropWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
 // P_CheckMana
 //
 //==============================================================================
@@ -68,27 +61,6 @@ function P_CheckMana(player: Pplayer_t): boolean;
 //
 //==============================================================================
 procedure P_FireWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
-// A_ReFire
-//
-//==============================================================================
-procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Lower
-//
-//==============================================================================
-procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Raise
-//
-//==============================================================================
-procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -476,6 +448,7 @@ var
 //
 //==============================================================================
 procedure P_BringUpWeapon(player: Pplayer_t);
+
 type
   /// <summary>
   ///   What Hexen does in the weapon sprite code of p_pspr (issue #185, step 2f-3). The routines that
@@ -488,7 +461,18 @@ type
   public
     /// <summary>What comes after the weapon sprites moved (Strife: the targeter)</summary>
     class procedure AfterMovePsprites(const player: Pplayer_t); static;
+    /// <summary>The state the weapon of the player goes down to (P_DropWeapon)</summary>
+    class function DropWeaponState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The state the weapon goes to when it is raised all the way (A_Raise)</summary>
+    class function RaisedState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The weapon goes down at once, not by steps (the player is a chicken or a pig)</summary>
+    class function StaysLowered(const player: Pplayer_t): boolean; static;
+    /// <summary>What A_Lower does when the weapon is down and before the new one comes up (Doom: the choice of the weapon of mbf21)</summary>
+    class procedure AfterLowered(const player: Pplayer_t); static;
+    /// <summary>What A_ReFire does when the player does not fire again: the check of the ammo, or of the mana</summary>
+    class procedure CheckSupplies(const player: Pplayer_t); static;
   end;
+
 implementation
 
 uses
@@ -532,15 +516,6 @@ uses
   v_data,
   v_video,
   z_zone;
-
-//==============================================================================
-//
-// TPspriteGameRules.AfterMovePsprites
-//
-//==============================================================================
-class procedure TPspriteGameRules.AfterMovePsprites(const player: Pplayer_t);
-begin
-end;
 
 //---------------------------------------------------------------------------
 //
@@ -614,20 +589,6 @@ begin
   player.psprites[Ord(ps_weapon)].sy := WEAPONBOTTOM;
 
   P_SetPsprite(player, Ord(ps_weapon), newstate);
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC P_DropWeapon
-//
-// The player died, so put the weapon away.
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure P_DropWeapon(player: Pplayer_t);
-begin
-  P_SetPsprite(player, Ord(ps_weapon), statenum_t(WeaponInfo[Ord(player.readyweapon), Ord(player._class)].downstate))
 end;
 
 //---------------------------------------------------------------------------
@@ -730,98 +691,6 @@ begin
 
   P_SetPsprite(player, Ord(ps_weapon), attackState);
   P_NoiseAlert(player.mo, player.mo);
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC A_ReFire
-//
-// The player can re fire the weapon without lowering it entirely.
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  // check for fire
-  //  (if a weaponchange is pending, let it go through instead)
-  if (player.cmd.buttons and BT_ATTACK <> 0) and
-     (player.pendingweapon = wp_nochange) and
-     (player.health > 0) then
-  begin
-    player.refire := player.refire + 1;
-    P_FireWeapon(player);
-  end
-  else
-  begin
-    player.refire := 0;
-    P_CheckMana(player);
-  end;
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC A_Lower
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  if player.morphTics <> 0 then
-    psp.sy := WEAPONBOTTOM
-  else
-    psp.sy := psp.sy + LOWERSPEED;
-
-  // Is already down.
-  if psp.sy < WEAPONBOTTOM then
-    exit;
-
-  // Player is dead.
-  if player.playerstate = PST_DEAD then
-  begin
-    psp.sy := WEAPONBOTTOM;
-    // don't bring weapon back up
-    exit;
-  end;
-
-  // The old weapon has been lowered off the screen,
-  // so change the weapon and start raising it
-  if player.health = 0 then
-  begin
-    // Player is dead, so keep the weapon off screen.
-    P_SetPsprite(player, Ord(ps_weapon), S_NULL);
-    exit;
-  end;
-
-  player.readyweapon := player.pendingweapon;
-
-  P_BringUpWeapon(player);
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC A_Raise
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  psp.sy := psp.sy - RAISESPEED;
-
-  if psp.sy > WEAPONTOP then // Not raised all the way yet
-    exit;
-
-  psp.sy := WEAPONTOP;
-
-  if (player._class = PCLASS_FIGHTER) and
-     (player.readyweapon = WP_SECOND) and
-     (player.mana[Ord(MANA_1)] <> 0) then
-    P_SetPsprite(player, Ord(ps_weapon), S_FAXEREADY_G)
-  else
-    P_SetPsprite(player, Ord(ps_weapon),
-      statenum_t(WeaponInfo[Ord(player.readyweapon), Ord(player._class)].readystate));
 end;
 
 //---------------------------------------------------------------------------
@@ -2532,12 +2401,66 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------
 //
-// PROC P_SetupPsprites
+// TPspriteGameRules.AfterMovePsprites
 //
-// Called at start of level for each player
+//==============================================================================
+class procedure TPspriteGameRules.AfterMovePsprites(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
 //
-//------------------------------------------------------------------------
+// TPspriteGameRules.DropWeaponState
 //
+//==============================================================================
+class function TPspriteGameRules.DropWeaponState(const player: Pplayer_t): statenum_t;
+begin
+  result := statenum_t(WeaponInfo[Ord(player.readyweapon), Ord(player._class)].downstate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.RaisedState
+//
+//==============================================================================
+class function TPspriteGameRules.RaisedState(const player: Pplayer_t): statenum_t;
+begin
+  if (player._class = PCLASS_FIGHTER) and
+     (player.readyweapon = WP_SECOND) and
+     (player.mana[Ord(MANA_1)] <> 0) then
+    result := S_FAXEREADY_G
+  else
+    result := statenum_t(WeaponInfo[Ord(player.readyweapon), Ord(player._class)].readystate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.StaysLowered
+//
+//==============================================================================
+class function TPspriteGameRules.StaysLowered(const player: Pplayer_t): boolean;
+begin
+  result := player.morphTics <> 0;
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.AfterLowered
+//
+//==============================================================================
+class procedure TPspriteGameRules.AfterLowered(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.CheckSupplies
+//
+//==============================================================================
+class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
+begin
+  P_CheckMana(player);
+end;
+
 end.
