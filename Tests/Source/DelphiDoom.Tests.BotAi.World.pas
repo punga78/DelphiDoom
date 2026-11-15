@@ -99,7 +99,11 @@ begin
     Link(5, 4, TRAVEL_WALKOFFLEDGE, 55, Vec(270, 32, 4), Vec(240, 32, 0)),
     Link(5, 6, TRAVEL_ELEVATOR, 110, Vec(300, 32, 4), Vec(330, 32, 50), 1, 0),
     Link(6, 5, TRAVEL_FUNCBOB, 120, Vec(330, 32, 4), Vec(300, 32, 4), (1 shl 16) or 2, (340 shl 16) or 370),
-    Link(6, 1, TRAVEL_TELEPORT, 30, Vec(350, 32, 4), Vec(32, 32, 4))];
+    Link(6, 1, TRAVEL_TELEPORT, 30, Vec(350, 32, 4), Vec(32, 32, 4)),
+    // func_bobbing on the y axis (spawn flags 2, a negative start) and on the z axis (spawn flags 4, an end that
+    // is negative in 16 bits): only the way the bobbing mover is measured changes
+    Link(4, 5, TRAVEL_FUNCBOB, 95, Vec(230, 32, 4), Vec(270, 32, 4), (2 shl 16) or 2, (Integer(-20) shl 16) or 30),
+    Link(3, 5, TRAVEL_FUNCBOB, 96, Vec(170, 32, 4), Vec(270, 32, 4), (4 shl 16) or 2, (10 shl 16) or $FFF6)];
   LReach := TList<TAasReachability>.Create;
   try
     LReach.Add(Default(TAasReachability));

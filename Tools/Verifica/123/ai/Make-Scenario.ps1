@@ -398,6 +398,21 @@ foreach ($mx in @(@(300, 6, (Goal @(352, 32, 5) 6)), @(345, 6, (Goal @(288, 32, 
     }
 }
 A 'clearsolids'
+Rem 'func_bobbing on the y and the z axis (the areas 4 and 3 lead to the area 5 only through them)'
+$ONLYBOB = 2 + 524288 + 1048576 + 16777216
+A 'solid|31|325|10|-40|375|50|0'
+foreach ($bobpos in @(@(230, 32, 5), @(170, 32, 5), @(255, 32, 5), @(150, 32, 30))) {
+    foreach ($bx in @(345, 372)) {
+        A "entity|31|1|4|2|$bx|32|-12|$bx|32|-12|0|0"
+        A 'mvreset|1'
+        MoveTo $bobpos @(0, 0, 0) $ONLYBOB (Goal @(288, 32, 5) 5)
+        MoveTo $bobpos @(0, 0, 0) $ONLYBOB (Goal @(288, 32, 5) 5) 2
+        MoveTo @(($bobpos[0] + 20), 32, 40) @(40, 0, 10) $ONLYBOB (Goal @(288, 32, 5) 5)
+        A "mvsim|1|$CLIENT|6|0.1|$($bobpos -join '|')|$ONLYBOB|$(Goal @(288, 32, 5) 5)"
+    }
+}
+A 'clearsolids'
+A 'entity|31|1|4|2|345|32|-12|345|32|-12|0|0'
 Rem 'the weapon jumps: at the start, looking down, then in the air close to and far from the end'
 foreach ($w in @(@(30, (Goal @(288, 32, 5) 5)), @(160, (Goal @(352, 32, 5) 6)))) {
     foreach ($yaw in @(0, 3, 90)) {
