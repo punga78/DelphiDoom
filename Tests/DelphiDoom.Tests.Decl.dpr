@@ -53,6 +53,16 @@ uses
   DelphiDoom.Console.CmdSystem.Buffer in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Buffer.pas',
   DelphiDoom.Console.CmdSystem.System in '..\Libs\Console\DelphiDoom.Console.CmdSystem.System.pas',
   DelphiDoom.Console.CmdSystem.Completions in '..\Libs\Console\DelphiDoom.Console.CmdSystem.Completions.pas',
+  DelphiDoom.Console.Text in '..\Libs\Console\DelphiDoom.Console.Text.pas',
+  DelphiDoom.Console.Types in '..\Libs\Console\DelphiDoom.Console.Types.pas',
+  DelphiDoom.Console.Intf in '..\Libs\Console\DelphiDoom.Console.Intf.pas',
+  DelphiDoom.Console.Numbers in '..\Libs\Console\DelphiDoom.Console.Numbers.pas',
+  DelphiDoom.Console.MaskMatcher in '..\Libs\Console\DelphiDoom.Console.MaskMatcher.pas',
+  DelphiDoom.Console.CVar.Types in '..\Libs\Console\DelphiDoom.Console.CVar.Types.pas',
+  DelphiDoom.Console.CVar.Context in '..\Libs\Console\DelphiDoom.Console.CVar.Context.pas',
+  DelphiDoom.Console.CVar.Variable in '..\Libs\Console\DelphiDoom.Console.CVar.Variable.pas',
+  DelphiDoom.Console.CVar.Intf in '..\Libs\Console\DelphiDoom.Console.CVar.Intf.pas',
+  DelphiDoom.Console.CVar.System in '..\Libs\Console\DelphiDoom.Console.CVar.System.pas',
   DelphiDoom.Decl.Types in '..\Libs\Decl\DelphiDoom.Decl.Types.pas',
   DelphiDoom.Decl.Source.Intf in '..\Libs\Decl\DelphiDoom.Decl.Source.Intf.pas',
   DelphiDoom.Decl.Statistics.Intf in '..\Libs\Decl\DelphiDoom.Decl.Statistics.Intf.pas',
@@ -144,6 +154,7 @@ uses
   DelphiDoom.Decl.Console.Intf in '..\Libs\Decl\DelphiDoom.Decl.Console.Intf.pas',
   DelphiDoom.Decl.Console.TypeCommands in '..\Libs\Decl\DelphiDoom.Decl.Console.TypeCommands.pas',
   DelphiDoom.Decl.Huffman.Frequencies in '..\Libs\Decl\DelphiDoom.Decl.Huffman.Frequencies.pas',
+  DelphiDoom.Decl.Console.ShowCVar in '..\Libs\Decl\DelphiDoom.Decl.Console.ShowCVar.pas',
   DelphiDoom.Decl.Console.Commands in '..\Libs\Decl\DelphiDoom.Decl.Console.Commands.pas',
   DelphiDoom.Decl.Factory in '..\Libs\Decl\DelphiDoom.Decl.Factory.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
@@ -178,6 +189,7 @@ uses
   DelphiDoom.Tests.Decl.GameFsManager in 'Source\DelphiDoom.Tests.Decl.GameFsManager.pas',
   DelphiDoom.Tests.Decl.ConsoleCommands in 'Source\DelphiDoom.Tests.Decl.ConsoleCommands.pas',
   DelphiDoom.Tests.Decl.HuffmanFrequencies in 'Source\DelphiDoom.Tests.Decl.HuffmanFrequencies.pas',
+  DelphiDoom.Tests.Decl.ShowCVar in 'Source\DelphiDoom.Tests.Decl.ShowCVar.pas',
   DelphiDoom.Tests.Decl.MaterialSave in 'Source\DelphiDoom.Tests.Decl.MaterialSave.pas';
 
 var
