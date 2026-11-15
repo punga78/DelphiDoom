@@ -63,6 +63,8 @@ type
     [Test]
     procedure DovrebbeNumerareLePosizioniDaUno;
     [Test]
+    procedure DovrebbeDareLaClassificaDiTutteLeAutoInOrdineDiPosizione;
+    [Test]
     procedure DovrebbeFarCorrereLeAutoDelComputer;
     [Test]
     procedure DovrebbeUsareIlComandoDelGiocatoreSoloPerLaSuaAuto;
@@ -241,6 +243,21 @@ begin
   for LIndex := 0 to 3 do
     Inc(LSum, FController.Cars[LIndex].RacePosition);
   Assert.AreEqual(10, LSum);
+end;
+
+procedure TTestRacingRaceController.DovrebbeDareLaClassificaDiTutteLeAutoInOrdineDiPosizione;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to 3 do
+    FController.AddCar(GridCar(LIndex, LIndex = 0));
+  Run(1, RACING_START_TIC + 100, 0);
+  Assert.AreEqual(4, Length(FController.Standings));
+  for LIndex := 0 to 3 do
+    Assert.AreEqual<Cardinal>(FController.Standings[LIndex].Key,
+      FController.Cars[FController.Standings[LIndex].Index].Key);
+  for LIndex := 0 to 3 do
+    Assert.AreEqual(LIndex + 1, FController.Cars[FController.Standings[LIndex].Index].RacePosition);
 end;
 
 procedure TTestRacingRaceController.DovrebbeFarCorrereLeAutoDelComputer;

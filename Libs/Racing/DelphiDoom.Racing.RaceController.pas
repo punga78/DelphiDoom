@@ -74,6 +74,7 @@ type
     FHasFinalScore: Boolean;
     FInputs: TArray<TRacingPositionInput>;
     FTouching: TArray<Boolean>;
+    FStandings: TArray<TRacingPositionItem>;
     FCollisions: Boolean;
     procedure UpdateTimeline(ALevelTime: Integer);
     procedure UpdatePositions;
@@ -101,6 +102,8 @@ type
     /// <summary>The car with the given index, to copy its fields to and from the object of the game</summary>
     property Cars[AIndex: Integer]: PRacingCarState read GetCar;
     property Count: Integer read FCount;
+    /// <summary>The cars from the first to the last as the last tic found them (Index is the car, FinishTime the tic of the end of the race or 0)</summary>
+    property Standings: TArray<TRacingPositionItem> read FStandings;
     /// <summary>The cars that touch push each other away and bump (on by default)</summary>
     property Collisions: Boolean read FCollisions write FCollisions;
     /// <summary>The index of the car of the player, -1 if there is none</summary>
@@ -240,6 +243,7 @@ begin
     FInputs[LIndex].Y := FCars[LIndex].Y;
   end;
   LItems := FTrack.CalculatePositions(Copy(FInputs, 0, FCount));
+  FStandings := LItems;
   for LIndex := 0 to High(LItems) do
     FCars[LItems[LIndex].Index].RacePosition := LIndex + 1;
 end;

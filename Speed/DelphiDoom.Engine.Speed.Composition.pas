@@ -32,6 +32,8 @@ uses
   speed_hud,
   speed_saveg,
   speed_controls,
+  speed_menu,
+  m_menu,
   g_game,
   DelphiDoom.Engine.Parity.PilotCommand,
   speed_intermission;
@@ -41,6 +43,8 @@ begin
   W_ConfigureConverter(TEngineSpeedDataConverter.Create(ALog));
   // the gauge, the lap, the position and the time of the race in the place of the status bar of Doom
   ST_ConfigureReplacement(SH_HudDrawer);
+  // the menu of the new race (course, car, laps, transmission, kind of game, skill)
+  M_ConfigureExtension(SH_MenuExtension);
   // the gear keys in the ticcmd (the transmission is manual with -manual or speed_transmission 1)
   G_ConfigureTiccmdExtension(SH_TiccmdKeys);
   // the state of the race in a file beside each saved game of the engine
