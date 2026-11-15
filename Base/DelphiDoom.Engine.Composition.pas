@@ -333,6 +333,7 @@ uses
   DelphiDoom.Engine.GlScene.WallCollector,
   DelphiDoom.Engine.GlScene.WallPainter,
   DelphiDoom.Engine.GlScene.FlatPainter,
+  DelphiDoom.Engine.GlScene.ModelPainter,
   DelphiDoom.Engine.GlScene.SpritePainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
   DelphiDoom.Engine.GlScene.LightMarker,
@@ -1396,7 +1397,7 @@ begin
   gld_ConfigureWallPainter(LWallPainter);
   LFlatPainter := TEngineGlSceneFlatPainter.Create;
   gld_ConfigureFlatPainter(LFlatPainter);
-  LSpritePainter := TEngineGlSceneSpritePainter.Create;
+  LSpritePainter := TEngineGlSceneSpritePainter.Create(TEngineGlSceneModelPainter.Create);
   gld_ConfigureSpritePainter(LSpritePainter);
   // the drawer only walks the list: the owner of the painters is still gl_render
   gld_ConfigureSceneDrawer(TEngineGlSceneDrawer.Create(gld_SceneDrawList, LWalls, LWallPainter,

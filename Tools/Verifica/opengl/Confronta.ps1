@@ -23,7 +23,11 @@ param(
   [string[]]$Scenario = @(),
   # more arguments for every run, e.g. -More "-glautomap" (the automap open: textured, grid, one mark)
   [string]$More = "",
-  [switch]$WithMonsters
+  [switch]$WithMonsters,
+  # the PK3 of Tests\Data\ModelsGl (Make-ModelPk3.ps1) of the game: every state of the game is the MD2 cube, so the
+  # draw of the models (gld_DrawModels) is in the flow. Adds -devparm (external files are refused by the shareware
+  # versions otherwise) and, if -Seconds is not given, 300 seconds (the MODELDEF has up to 2845 states)
+  [switch]$Models
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -43,6 +47,13 @@ switch ($Game) {
 }
 # fixed state: no monsters, no sound, no interpolation, no mouse (the view would follow the cursor), a window;\r\n# the program clock is a virtual one (HarnessGl_Clock): one tic per frame, so the speed of the machine does not matter
 if ($Scenario.Count -gt 0) { $runs = $Scenario }
+if ($Models) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  $modelPack = Join-Path $here "Tests\Data\ModelsGl\zmdl_$letter.pk3"
+  if (-not (Test-Path $modelPack)) { throw "Pacchetto dei modelli non trovato: $modelPack (Make-ModelPk3.ps1)" }
+  $More = "$More -devparm -file $modelPack"
+  if (-not $PSBoundParameters.ContainsKey('Seconds')) { $Seconds = 300 }
+}
 $monsters = if ($WithMonsters) { "" } else { "-nomonsters " }
 $extra = "$More ${monsters}-nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"
 

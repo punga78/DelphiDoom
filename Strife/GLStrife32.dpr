@@ -1317,6 +1317,7 @@ uses
   DelphiDoom.Engine.GlScene.WallCollector in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallCollector.pas',
   DelphiDoom.Engine.GlScene.WallPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallPainter.pas',
   DelphiDoom.Engine.GlScene.FlatPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatPainter.pas',
+  DelphiDoom.Engine.GlScene.ModelPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.ModelPainter.pas',
   DelphiDoom.Engine.GlScene.SpritePainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpritePainter.pas',
   DelphiDoom.Engine.GlScene.SceneDrawer in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SceneDrawer.pas',
   DelphiDoom.Engine.GlScene.LightMarker in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightMarker.pas',
