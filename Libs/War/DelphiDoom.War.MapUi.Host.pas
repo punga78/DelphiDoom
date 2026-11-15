@@ -60,7 +60,12 @@ type
     FFlash: TWarFlashStatus;
     FRealTime: Double;
     FAudio: IWarMapAudio;
+    /// <summary>The same audio when it knows places, else nil: the sounds with a place then have none</summary>
+    FAudioAt: IWarMapAudioAt;
     procedure Flash(const AText: AnsiString);
+    function IsAudible(const APosition: TWarVec2): Boolean;
+    procedure PlaySoundAt(AAudioId: Integer; const APosition: TWarVec2);
+    procedure PlayRandomSoundAt(AFromId, AToId: Integer; const APosition: TWarVec2);
   public
     /// <summary>Nothing is owned; the selection, the fog and the sprites belong to the scene, which must outlive this object</summary>
     constructor Create(const AUnits: IWarUnitCatalog);
@@ -115,6 +120,7 @@ end;
 procedure TWarMapHost.Detach;
 begin
   FAudio := nil;
+  FAudioAt := nil;
   FSelection := nil;
   FFog := nil;
   FSprites := nil;
@@ -170,18 +176,18 @@ begin
   // we_takeDamage: the sound of a death: a spider or a scorpion, a catapult (one of the sounds of a collapse, drawn), or a
   // dying man of the humans or of the orcs (a unit of no race is an orc)
   if (AUnitType = WAR_UNIT_SCORPION) or (AUnitType = WAR_UNIT_SPIDER) then
-    PlaySound(WAR_SND_DEAD_SPIDER_SCORPION)
+    PlaySoundAt(WAR_SND_DEAD_SPIDER_SCORPION, APosition)
   else if (AUnitType = WAR_UNIT_CATAPULT_HUMANS) or (AUnitType = WAR_UNIT_CATAPULT_ORCS) then
-    PlayRandomSound(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST)
+    PlayRandomSoundAt(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST, APosition)
   else if TWarUnitClassifier.RaceOf(AUnitType) = wraHumans then
-    PlaySound(WAR_SND_HUMAN_DEAD)
+    PlaySoundAt(WAR_SND_HUMAN_DEAD, APosition)
   else
-    PlaySound(WAR_SND_ORC_DEAD);
+    PlaySoundAt(WAR_SND_ORC_DEAD, APosition);
 end;
 
 procedure TWarMapHost.BuildingCollapsing(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
 begin
-  PlayRandomSound(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST);
+  PlayRandomSoundAt(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST, APosition);
 end;
 
 procedure TWarMapHost.BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
@@ -190,7 +196,7 @@ end;
 
 procedure TWarMapHost.TreeChopped(const APosition: TWarVec2);
 begin
-  PlayRandomSound(WAR_SND_TREE_CHOPPING_FIRST, WAR_SND_TREE_CHOPPING_LAST);
+  PlayRandomSoundAt(WAR_SND_TREE_CHOPPING_FIRST, WAR_SND_TREE_CHOPPING_LAST, APosition);
 end;
 
 procedure TWarMapHost.AttackSound(const APosition: TWarVec2; ASoundStep: Integer);
@@ -199,36 +205,36 @@ begin
   // step (the lightning) has no sound and makes no entity
   case ASoundStep of
     WAR_ACTION_STEP_SOUND_SWORD:
-      PlayRandomSound(WAR_SND_SWORD_ATTACK_FIRST, WAR_SND_SWORD_ATTACK_LAST);
+      PlayRandomSoundAt(WAR_SND_SWORD_ATTACK_FIRST, WAR_SND_SWORD_ATTACK_LAST, APosition);
     WAR_ACTION_STEP_SOUND_FIST:
-      PlaySound(WAR_SND_FIST_ATTACK);
+      PlaySoundAt(WAR_SND_FIST_ATTACK, APosition);
     WAR_ACTION_STEP_SOUND_FIREBALL:
-      PlaySound(WAR_SND_FIREBALL);
+      PlaySoundAt(WAR_SND_FIREBALL, APosition);
     WAR_ACTION_STEP_SOUND_CATAPULT:
-      PlaySound(WAR_SND_CATAPULT_ROCK_FIRED);
+      PlaySoundAt(WAR_SND_CATAPULT_ROCK_FIRED, APosition);
     WAR_ACTION_STEP_SOUND_ARROW:
-      PlaySound(WAR_SND_ARROW_SPEAR);
+      PlaySoundAt(WAR_SND_ARROW_SPEAR, APosition);
   end;
 end;
 
 procedure TWarMapHost.ArrowHit(const APosition: TWarVec2);
 begin
-  PlaySound(WAR_SND_ARROW_SPEAR_HIT);
+  PlaySoundAt(WAR_SND_ARROW_SPEAR_HIT, APosition);
 end;
 
 procedure TWarMapHost.Explosion(const APosition: TWarVec2; ARainOfFire: Boolean);
 begin
-  PlaySound(WAR_SND_CATAPULT_FIRE_EXPLOSION);
+  PlaySoundAt(WAR_SND_CATAPULT_FIRE_EXPLOSION, APosition);
 end;
 
 procedure TWarMapHost.SpellCast(const APosition: TWarVec2);
 begin
-  PlaySound(WAR_SND_NORMAL_SPELL);
+  PlaySoundAt(WAR_SND_NORMAL_SPELL, APosition);
 end;
 
 procedure TWarMapHost.SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
 begin
-  PlaySound(WAR_SND_DEAD_SPIDER_SCORPION);
+  PlaySoundAt(WAR_SND_DEAD_SPIDER_SCORPION, APosition);
 end;
 
 function TWarMapHost.UnitFrames(AUnitType: Integer): Integer;
@@ -254,6 +260,30 @@ end;
 procedure TWarMapHost.AttachAudio(const AAudio: IWarMapAudio);
 begin
   FAudio := AAudio;
+  if not Supports(AAudio, IWarMapAudioAt, FAudioAt) then
+    FAudioAt := nil;
+end;
+
+function TWarMapHost.IsAudible(const APosition: TWarVec2): Boolean;
+begin
+  // wa_createAudioWithPosition: with the fog of war on, a place that is not visible makes no sound
+  Result := (not Assigned(FFog)) or (not FFog.Enabled) or FFog.IsPositionVisible(APosition.X, APosition.Y);
+end;
+
+procedure TWarMapHost.PlaySoundAt(AAudioId: Integer; const APosition: TWarVec2);
+begin
+  if Assigned(FAudioAt) then
+    FAudioAt.PlaySoundAt(AAudioId, APosition.X, APosition.Y, IsAudible(APosition))
+  else
+    PlaySound(AAudioId);
+end;
+
+procedure TWarMapHost.PlayRandomSoundAt(AFromId, AToId: Integer; const APosition: TWarVec2);
+begin
+  if Assigned(FAudioAt) then
+    FAudioAt.PlayRandomSoundAt(AFromId, AToId, APosition.X, APosition.Y, IsAudible(APosition))
+  else
+    PlayRandomSound(AFromId, AToId);
 end;
 
 procedure TWarMapHost.PlaySound(AAudioId: Integer);

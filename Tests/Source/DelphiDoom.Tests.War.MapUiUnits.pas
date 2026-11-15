@@ -68,6 +68,14 @@ type
     [Test]
     procedure DovrebbeDareSempreLoStessoSpriteDiUnRecord;
     [Test]
+    procedure DovrebbeSuonareUnSuonoConPostoSoloSeSiSente;
+    [Test]
+    procedure DovrebbeEstrarreIlNumeroAncheSeIlSuonoNonSiSente;
+    [Test]
+    procedure DovrebbeSuonareSenzaPostoSeLUscitaNonConosceIPosti;
+    [Test]
+    procedure DovrebbeNonFareSuonareCioCheStaNellaNebbia;
+    [Test]
     procedure DovrebbeSvuotareIlPannelloDeiComandi;
     [Test]
     procedure DovrebbePassareAlleOrecchieDelGiocoISuoniEIFotogrammi;
@@ -86,7 +94,7 @@ uses
   DelphiDoom.War.Model.Context, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.Host,
   DelphiDoom.War.MapUi.Intf, DelphiDoom.War.Text.Types, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.MapUi.Sprites, DelphiDoom.War.MapUi.Census,
   DelphiDoom.War.Map.Factory, DelphiDoom.War.Model.Construction.Intf, DelphiDoom.War.MapUi.Launcher,
-  DelphiDoom.War.Ui.Game, DelphiDoom.War.MapUi.Hud,
+  DelphiDoom.War.Ui.Game, DelphiDoom.War.MapUi.Hud, DelphiDoom.War.Model.Combat.Intf,
   DelphiDoom.Tests.War.UiFakes, DelphiDoom.Tests.War.MapSupport;
 
 type
@@ -104,6 +112,31 @@ type
     procedure Play(AAudioId: Integer; ALoop: Boolean);
     procedure StopMusic;
   end;
+
+  /// <summary>The same with places: it writes down the sounds that have one and the viewport it is told</summary>
+  TSpyPositionalAudio = class(TSpySceneAudio, IWarPositionalAudio)
+  public
+    PlacedIds: TArray<Integer>;
+    PlacedX: TArray<Single>;
+    PlacedY: TArray<Single>;
+    ViewportWidth: Single;
+    procedure PlayAt(AAudioId: Integer; AX, AY: Single);
+    procedure SetViewport(AX, AY, AWidth, AHeight: Single);
+  end;
+
+{ TSpyPositionalAudio }
+
+procedure TSpyPositionalAudio.PlayAt(AAudioId: Integer; AX, AY: Single);
+begin
+  PlacedIds := PlacedIds + [AAudioId];
+  PlacedX := PlacedX + [AX];
+  PlacedY := PlacedY + [AY];
+end;
+
+procedure TSpyPositionalAudio.SetViewport(AX, AY, AWidth, AHeight: Single);
+begin
+  ViewportWidth := AWidth;
+end;
 
 { TSpySceneAudio }
 
@@ -609,6 +642,150 @@ begin
   finally
     LWithout := nil;
     LAudio := nil;
+    LWorld.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeSuonareUnSuonoConPostoSoloSeSiSente;
+var
+  LWorld: TObject;
+  LContext: TWarModelContext;
+  LRandomRef: IWarRandom;
+  LSpy: TSpyPositionalAudio;
+  LSpyRef: IWarSceneAudio;
+  LAudio: IWarMapAudioAt;
+  LBefore: Integer;
+begin
+  LRandomRef := TCountingRandom.Create;
+  LSpy := TSpyPositionalAudio.Create;
+  LSpyRef := LSpy;
+  LContext := NewContext(LRandomRef, LWorld);
+  try
+    LAudio := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef, LSpyRef) as IWarMapAudioAt;
+    LBefore := LContext.Pool.EntityCount;
+    LAudio.PlaySoundAt(485, 100, 200, True);
+    Assert.AreEqual(LBefore + 1, LContext.Pool.EntityCount, 'l''entita'' del suono');
+    Assert.AreEqual<Integer>(1, Length(LSpy.PlacedIds));
+    Assert.AreEqual(485, LSpy.PlacedIds[0]);
+    Assert.AreEqual<Single>(100, LSpy.PlacedX[0]);
+    Assert.AreEqual<Single>(200, LSpy.PlacedY[0]);
+    Assert.AreEqual<Integer>(0, Length(LSpy.Ids), 'non suona senza posto');
+    // con la nebbia accesa un posto non visibile non fa ne'' entita'' ne'' suono (wa_createAudioWithPosition ritorna NULL)
+    LAudio.PlaySoundAt(486, 5, 5, False);
+    Assert.AreEqual(LBefore + 1, LContext.Pool.EntityCount);
+    Assert.AreEqual<Integer>(1, Length(LSpy.PlacedIds));
+  finally
+    LAudio := nil;
+    LWorld.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeEstrarreIlNumeroAncheSeIlSuonoNonSiSente;
+var
+  LWorld: TObject;
+  LContext: TWarModelContext;
+  LRandom: TCountingRandom;
+  LRandomRef: IWarRandom;
+  LSpy: TSpyPositionalAudio;
+  LSpyRef: IWarSceneAudio;
+  LAudio: IWarMapAudioAt;
+  LBefore: Integer;
+begin
+  LRandom := TCountingRandom.Create;
+  LRandomRef := LRandom;
+  LSpy := TSpyPositionalAudio.Create;
+  LSpyRef := LSpy;
+  LContext := NewContext(LRandomRef, LWorld);
+  try
+    LAudio := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef, LSpyRef) as IWarMapAudioAt;
+    LBefore := LContext.Pool.EntityCount;
+    // randomi e'' un argomento della chiamata: il numero esce prima che si guardi il posto
+    LAudio.PlayRandomSoundAt(520, 524, 5, 5, False);
+    Assert.AreEqual(1, LRandom.Calls);
+    Assert.AreEqual(LBefore, LContext.Pool.EntityCount);
+    Assert.AreEqual<Integer>(0, Length(LSpy.PlacedIds));
+    LAudio.PlayRandomSoundAt(520, 524, 5, 5, True);
+    Assert.AreEqual(2, LRandom.Calls);
+    Assert.AreEqual(LBefore + 1, LContext.Pool.EntityCount);
+    Assert.AreEqual(520, LSpy.PlacedIds[0], 'il primo della serie: il generatore finto da'' 0');
+  finally
+    LAudio := nil;
+    LWorld.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeSuonareSenzaPostoSeLUscitaNonConosceIPosti;
+var
+  LWorld: TObject;
+  LContext: TWarModelContext;
+  LRandomRef: IWarRandom;
+  LSpy: TSpySceneAudio;
+  LSpyRef: IWarSceneAudio;
+  LAudio: IWarMapAudioAt;
+begin
+  LRandomRef := TCountingRandom.Create;
+  LSpy := TSpySceneAudio.Create;
+  LSpyRef := LSpy;
+  LContext := NewContext(LRandomRef, LWorld);
+  try
+    LAudio := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef, LSpyRef) as IWarMapAudioAt;
+    LAudio.PlaySoundAt(485, 100, 200, True);
+    Assert.AreEqual<Integer>(1, Length(LSpy.Ids), 'suona come un suono senza posto');
+    Assert.AreEqual(485, LSpy.Ids[0]);
+  finally
+    LAudio := nil;
+    LWorld.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeNonFareSuonareCioCheStaNellaNebbia;
+var
+  LWorld: TObject;
+  LContext: TWarModelContext;
+  LRandomRef: IWarRandom;
+  LSpy: TSpyPositionalAudio;
+  LSpyRef: IWarSceneAudio;
+  LAudio: IWarMapAudio;
+  LFog: TWarFogOfWar;
+  LObject: TWarMapHost;
+  LHost: IInterface;
+  LPosition: TWarVec2;
+  LBefore: Integer;
+begin
+  LRandomRef := TCountingRandom.Create;
+  LSpy := TSpyPositionalAudio.Create;
+  LSpyRef := LSpy;
+  LContext := NewContext(LRandomRef, LWorld);
+  LFog := TWarFogOfWar.Create;
+  LObject := TWarMapHost.Create(nil);
+  LHost := LObject;
+  try
+    LAudio := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef, LSpyRef);
+    LObject.Attach(LContext.Selection, LFog, nil);
+    LObject.AttachAudio(LAudio);
+    LPosition.X := 100;
+    LPosition.Y := 100;
+    LBefore := LContext.Pool.EntityCount;
+    // la nebbia e'' accesa e nessuno ha visto quella tegola: un pugno laggiu'' non si sente e non e'' un''entita''
+    (LObject as IWarCombatEvents).AttackSound(LPosition, WAR_ACTION_STEP_SOUND_FIST);
+    Assert.AreEqual(LBefore, LContext.Pool.EntityCount);
+    Assert.AreEqual<Integer>(0, Length(LSpy.PlacedIds));
+    // senza nebbia si sente, col suo posto
+    LFog.Enabled := False;
+    (LObject as IWarCombatEvents).AttackSound(LPosition, WAR_ACTION_STEP_SOUND_FIST);
+    Assert.AreEqual(LBefore + 1, LContext.Pool.EntityCount);
+    Assert.AreEqual<Integer>(1, Length(LSpy.PlacedIds));
+    Assert.AreEqual<Single>(100, LSpy.PlacedX[0]);
+    // con la nebbia accesa e la tegola vista si sente
+    LFog.Enabled := True;
+    LFog.SetState(5, 5, 3, 3, wtsVisible);
+    (LObject as IWarCombatEvents).AttackSound(LPosition, WAR_ACTION_STEP_SOUND_FIST);
+    Assert.AreEqual(LBefore + 2, LContext.Pool.EntityCount);
+  finally
+    LObject.Detach;
+    LAudio := nil;
+    LHost := nil;
+    LFog.Free;
     LWorld.Free;
   end;
 end;

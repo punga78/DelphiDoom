@@ -18,7 +18,7 @@ type
   ///   wave goes to the mixer of the effects and a song to the music player. A sound that cannot be played (not a
   ///   sound, not decodable) is counted and skipped: a missing sound must not stop the game
   /// </summary>
-  TWarSceneAudio = class(TInterfacedObject, IWarSceneAudio)
+  TWarSceneAudio = class(TInterfacedObject, IWarSceneAudio, IWarPositionalAudio)
   strict private
     FLibrary: IWarAudioLibrary;
     FMixer: IWarSoundMixer;
@@ -33,6 +33,13 @@ type
     constructor Create(const ALibrary: IWarAudioLibrary; const AMixer: IWarSoundMixer; const AMusic: IWarMusicPlayer);
     procedure Play(AAudioId: Integer; ALoop: Boolean);
     procedure StopMusic;
+    /// <summary>
+    ///   A sound with a place on the map: the mixer plays it at the volume that the place has for the viewport (a song has
+    ///   no place and is not played here)
+    /// </summary>
+    procedure PlayAt(AAudioId: Integer; AX, AY: Single);
+    /// <summary>The rectangle of the map on screen (map->camera.viewport), which the mixer reads at every block it mixes</summary>
+    procedure SetViewport(AX, AY, AWidth, AHeight: Single);
     /// <summary>
     ///   Gives the volumes and the switches of the settings to the mixer and the player, and silences both while the
     ///   game is changing scene (AudioEnabled false), as the callback of the original does
@@ -95,6 +102,27 @@ begin
     on EWarException do
       Inc(FFailures);
   end;
+end;
+
+procedure TWarSceneAudio.PlayAt(AAudioId: Integer; AX, AY: Single);
+begin
+  if FMuted then
+    Exit;
+  try
+    if FLibrary.KindOf(AAudioId) = wakWave then
+    begin
+      FMixer.PlayAt(AAudioId, AX, AY, False);
+      Inc(FSoundsStarted);
+    end;
+  except
+    on EWarException do
+      Inc(FFailures);
+  end;
+end;
+
+procedure TWarSceneAudio.SetViewport(AX, AY, AWidth, AHeight: Single);
+begin
+  FMixer.SetViewport(AX, AY, AWidth, AHeight);
 end;
 
 procedure TWarSceneAudio.StopMusic;

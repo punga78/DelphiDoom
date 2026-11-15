@@ -88,7 +88,7 @@ const
   ///   place on the map makes no entity when the fog of war hides the place (wa_createAudioWithPosition), so the ids of
   ///   the entities that come after are not the ones of version 1
   /// </summary>
-  WAR_SAVE_MODEL_VERSION = 1;
+  WAR_SAVE_MODEL_VERSION = 2;
   /// <summary>The bit of TWarSaveHeader.Flags that says the game played the introduction after the logo</summary>
   WAR_SAVE_FLAG_INTRODUCTION = 1;
   /// <summary>The most events one frame can hold</summary>
