@@ -306,6 +306,7 @@ uses
   p_secnodes,
   p_maputl,
   p_mobjlist,
+  DelphiDoom.Thinkers.RespawnQueue,
   p_tick,
   p_pspr,
   p_setup,
@@ -1235,32 +1236,32 @@ class procedure TMobjGameRules.BeforeRemove(mobj: Pmobj_t);
 var
   _type: word;
   options: smallint;
+  queue: TRespawnQueue<mapthing_t>;
+  newest: TRespawnQueue<mapthing_t>.PSlot;
+  oldest: TRespawnQueue<mapthing_t>.PSlot;
 begin
   if ((mobj.flags and MF_SPECIAL) <> 0) and
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
-    itemrespawnque[iquehead] := mobj.spawnpoint;
-    itemrespawntime[iquehead] := leveltime + 30 * TICRATE;  // [STRIFE]
+    queue := P_World.ItemRespawn;
+    newest := queue.Reserve(mobj.spawnpoint, leveltime + 30 * TICRATE);  // [STRIFE]
 
     // [STRIFE] haleyjd 20130915
     // -random parameter affects the behavior of respawning items here.
-    if randomparm and (iquehead <> iquetail) then
+    if randomparm and not queue.IsEmpty then
     begin
-      _type := itemrespawnque[iquehead]._type;
-      options := itemrespawnque[iquehead].options;
+      oldest := queue.Oldest;
+      _type := newest._type;
+      options := newest.options;
 
-      // swap the type and options of iquehead and iquetail
-      itemrespawnque[iquehead]._type := itemrespawnque[iquetail]._type;
-      itemrespawnque[iquehead].options := itemrespawnque[iquetail].options;
-      itemrespawnque[iquetail]._type := _type;
-      itemrespawnque[iquetail].options := options;
+      // swap the type and options of the head and of the tail
+      newest._type := oldest._type;
+      newest.options := oldest.options;
+      oldest._type := _type;
+      oldest.options := options;
     end;
 
-    iquehead := (iquehead + 1) and (ITEMQUESIZE - 1);
-
-    // lose one off the end?
-    if iquehead = iquetail then
-      iquetail := (iquetail + 1) and (ITEMQUESIZE - 1);
+    queue.Commit;
   end;
 end;
 

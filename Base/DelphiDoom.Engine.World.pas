@@ -14,6 +14,8 @@ interface
 uses
   DelphiDoom.MathCore.Intf,
   DelphiDoom.Thinkers.List,
+  DelphiDoom.Thinkers.RespawnQueue,
+  doomdata,
   d_think;
 
 type
@@ -45,6 +47,7 @@ type
     FThinkers: TThinkerList;
     FTime: TEngineWorldTime;
     FRandom: IGameRandom;
+    FItemRespawn: TRespawnQueue<mapthing_t>;
   public
     /// <param name="AThinkerCap">The head of the list of the thinkers (it stays where the saved games look for it)</param>
     /// <param name="ATime">Where the time of the level is kept; only TimerGame may be nil</param>
@@ -60,6 +63,8 @@ type
     property Thinkers: TThinkerList read FThinkers;
     property Time: TEngineWorldTime read FTime;
     property Random: IGameRandom read FRandom;
+    /// <summary>The items that come back in a deathmatch 2 game (not written in the saved games)</summary>
+    property ItemRespawn: TRespawnQueue<mapthing_t> read FItemRespawn;
   end;
 
 implementation
@@ -130,10 +135,12 @@ begin
   LHooks.RunsWhenFrozen := WorldThinkerRunsWhenFrozen;
   // thinker_t and TThinkerNode have the same layout: three pointers
   FThinkers := TThinkerList.Create(PThinkerNode(AThinkerCap), LHooks);
+  FItemRespawn := TRespawnQueue<mapthing_t>.Create;
 end;
 
 destructor TEngineWorld.Destroy;
 begin
+  FItemRespawn.Free;
   FThinkers.Free;
   inherited;
 end;

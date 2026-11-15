@@ -403,8 +403,7 @@ begin
   SpawnDeathmatchPlayers;
 
   // clear special respawning que
-  iquehead := 0;
-  iquetail := 0;
+  P_World.ItemRespawn.Clear;
 end;
 
 procedure TLevelLoader.FinishLevel;

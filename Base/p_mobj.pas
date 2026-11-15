@@ -234,16 +234,8 @@ procedure MObj_Init;
 //==============================================================================
 procedure MObj_ShutDown;
 
-const
-// Time interval for item respawning.
-  ITEMQUESIZE = 128;
-
-var
-  iquehead: integer; // Initialized at p_setup
-  iquetail: integer; // Initialized at p_setup
-  // The rules of the game put the items in the queue (TMobjGameRules.BeforeRemove)
-  itemrespawnque: array[0..ITEMQUESIZE - 1] of mapthing_t;
-  itemrespawntime: array[0..ITEMQUESIZE - 1] of integer;
+// The queue of the items that respawn is World.ItemRespawn (DelphiDoom.Engine.World):
+// the rules of the game put the items in it (TMobjGameRules.BeforeRemove)
 
 //==============================================================================
 //
@@ -276,6 +268,7 @@ uses
   DelphiDoom.Engine.World.MapRules,
   p_maputl,
   p_mobjlist,
+  DelphiDoom.Thinkers.RespawnQueue,
   p_tick,
   p_pspr,
   p_setup,
@@ -1111,20 +1104,23 @@ var
   mo: Pmobj_t;
   mthing: Pmapthing_t;
   i: integer;
+  queue: TRespawnQueue<mapthing_t>;
 begin
   // only respawn items in deathmatch
   if deathmatch <> 2 then
     exit; //
 
+  queue := P_World.ItemRespawn;
+
   // nothing left to respawn?
-  if iquehead = iquetail then
+  if queue.IsEmpty then
     exit;
 
   // wait at least 30 seconds
-  if TMobjGameRules.ItemRespawnWaits(itemrespawntime[iquetail]) then
+  if TMobjGameRules.ItemRespawnWaits(queue.OldestTime) then
     exit;
 
-  mthing := @itemrespawnque[iquetail];
+  mthing := Pmapthing_t(queue.Oldest);
 
   x := mthing.x * FRACUNIT;
   y := mthing.y * FRACUNIT;
@@ -1153,7 +1149,7 @@ begin
     mo.angle := ANG45 * (mthing.angle div 45);
 
   // pull it from the que
-  iquetail := (iquetail + 1) and (ITEMQUESIZE - 1);
+  queue.DropOldest;
 end;
 
 //==============================================================================
