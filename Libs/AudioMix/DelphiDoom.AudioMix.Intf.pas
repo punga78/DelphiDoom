@@ -37,6 +37,23 @@ type
     function Mix(ADestination: Pointer; ACount: Integer): Boolean;
   end;
 
+  /// <summary>
+  ///   A synthesizer of MIDI messages: the part of a MIDI device that makes the sound. A sequencer sends the messages,
+  ///   the mixer asks for the samples, which are added to the buffer of the caller
+  /// </summary>
+  IPcmMidiSynth = interface
+    ['{F40B6A29-D1E3-47C5-9A80-B7E25C3D1964}']
+    /// <summary>A channel message (status with the channel, two data bytes)</summary>
+    procedure Send(AStatus, AData1, AData2: Byte);
+    /// <summary>All the sounds stop and the controllers go back to the start</summary>
+    procedure Reset;
+    /// <summary>
+    ///   Adds ABytes bytes (a multiple of 4) of 16 bit stereo samples to ABuffer, saturating at 16 bits;
+    ///   EAudioMixException when ABytes is not a positive multiple of 4
+    /// </summary>
+    procedure Render(ABuffer: PSmallInt; ABytes: Integer);
+  end;
+
 implementation
 
 end.

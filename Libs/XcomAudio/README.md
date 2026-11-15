@@ -4,7 +4,7 @@ Issue #176. Il mixer (i canali di SDL_mixer), il player della musica (la parte m
 
 | Unit | Ruolo |
 |---|---|
-| `DelphiDoom.XcomAudio.Intf` | `IXcomMusicTrack`, `IXcomMusicSink`, `IXcomMusicSettings`, `IXcomAdlibSongs`, `IXcomMixerMeter`, `IXcomSampleDecoder`, `IXcomChannelMixer`, `IXcomMusicFormatLoader`, `IXcomMusicPreparation`, `IXcomMidiSynth` |
+| `DelphiDoom.XcomAudio.Intf` | `IXcomMusicTrack`, `IXcomMusicSink`, `IXcomMusicSettings`, `IXcomAdlibSongs`, `IXcomMixerMeter`, `IXcomSampleDecoder`, `IXcomChannelMixer`, `IXcomMusicFormatLoader`, `IXcomMusicPreparation` |
 | `DelphiDoom.XcomAudio.Types` | formati di musica, costanti, eccezione |
 | `DelphiDoom.XcomAudio.SndfileDecoder` | `IXcomSampleDecoder` su `ISndfile` (`Libs\Sound`): WAV, OGG, FLAC, AIFF... a 16 bit stereo |
 | `DelphiDoom.XcomAudio.Mp3Decoder` | `IXcomSampleDecoder` su `IMp3` (`Libs\Mp3`) |
@@ -14,7 +14,7 @@ Issue #176. Il mixer (i canali di SDL_mixer), il player della musica (la parte m
 | `DelphiDoom.XcomAudio.DigitalTrack` | brano digitale (FLAC, OGG, MP3, WAV): decodificato a `Prepare`, liberato a `Stop` |
 | `DelphiDoom.XcomAudio.TrackerTrack` | brano MOD/S3M/XM/IT sul sequencer di `Libs\Mikmod`, senza dispositivo |
 | `DelphiDoom.XcomAudio.GmConverter` | una voce di `GM.CAT` come file MIDI (`GMCatFile::loadMIDI`) |
-| `DelphiDoom.XcomAudio.MidiSynth` | sintetizzatore software semplice (32 voci, 4 forme d'onda, rumore per la batteria) |
+| `DelphiDoom.AudioMix.MidiSynth` (in `Libs\AudioMix`, prima `XcomAudio.MidiSynth`) | sintetizzatore software semplice (32 voci, 4 forme d'onda, rumore per la batteria), `IPcmMidiSynth` |
 | `DelphiDoom.XcomAudio.MidiTrack` | brano MIDI: `TMidiSequenceLoader` di `Libs\Midi` e il sintetizzatore |
 | `DelphiDoom.XcomAudio.AdlibMusicLoader` / `.DigitalMusicLoader` / `.TrackerMusicLoader` / `.MidiMusicLoader` | un formato di musica ciascuno (`IXcomMusicFormatLoader`) |
 | `DelphiDoom.XcomAudio.MusicPlayer` | regole `musics:`, ordine dei formati, `playMusic` |

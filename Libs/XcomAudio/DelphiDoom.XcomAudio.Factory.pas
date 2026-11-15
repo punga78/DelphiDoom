@@ -46,7 +46,7 @@ uses
   DelphiDoom.XcomAudio.MusicPlayer, DelphiDoom.XcomAudio.CatSongs, DelphiDoom.XcomAudio.OptionsSettings,
   DelphiDoom.XcomAudio.SndfileDecoder, DelphiDoom.XcomAudio.Mp3Decoder, DelphiDoom.XcomAudio.AdlibMusicLoader,
   DelphiDoom.XcomAudio.DigitalMusicLoader, DelphiDoom.XcomAudio.TrackerMusicLoader,
-  DelphiDoom.XcomAudio.MidiMusicLoader, DelphiDoom.XcomAudio.MidiSynth;
+  DelphiDoom.XcomAudio.MidiMusicLoader, DelphiDoom.AudioMix.Intf, DelphiDoom.AudioMix.MidiSynth;
 
 class function TXcomAudioFactory.CreateSoundDecoder: IXcomSampleDecoder;
 begin
@@ -62,10 +62,10 @@ class function TXcomAudioFactory.CreateLoaders(const ASettings: IXcomMusicSettin
   ARate: Integer): TArray<IXcomMusicFormatLoader>;
 var
   LSound: IXcomSampleDecoder;
-  LSynth: IXcomMidiSynth;
+  LSynth: IPcmMidiSynth;
 begin
   LSound := CreateSoundDecoder;
-  LSynth := TXcomMidiSynth.Create(ARate);
+  LSynth := TPcmMidiSynth.Create(ARate);
   Result := [
     TXcomDigitalMusicLoader.Create(mfFlac, '.flac', 'FLAC', LSound, ARate),
     TXcomDigitalMusicLoader.Create(mfOgg, '.ogg', 'OGG', LSound, ARate),

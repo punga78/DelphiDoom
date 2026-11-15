@@ -11,7 +11,7 @@ unit DelphiDoom.XcomAudio.MidiTrack;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Midi.Types, DelphiDoom.XcomAudio.Intf;
+  System.SysUtils, DelphiDoom.Midi.Types, DelphiDoom.AudioMix.Intf, DelphiDoom.XcomAudio.Intf;
 
 type
   /// <summary>
@@ -27,7 +27,7 @@ type
     var
       FMidi: TBytes;
       FRate: Integer;
-      FSynth: IXcomMidiSynth;
+      FSynth: IPcmMidiSynth;
       FEvents: TArray<TMidiSequenceEvent>;
       FDivision: Word;
       FPrepared: Boolean;
@@ -45,7 +45,7 @@ type
     /// <param name="AMidi">The bytes of the MIDI file</param>
     /// <param name="ARate">The rate of the mixer</param>
     /// <param name="ASynth">Plays the notes; EArgumentNilException when nil</param>
-    constructor Create(const AMidi: TBytes; ARate: Integer; const ASynth: IXcomMidiSynth);
+    constructor Create(const AMidi: TBytes; ARate: Integer; const ASynth: IPcmMidiSynth);
     /// <summary>True when the bytes start like a MIDI file (SDL_mixer detects it by "MThd")</summary>
     class function Accepts(const AData: TBytes): Boolean; static;
     function Format: string;
@@ -62,7 +62,7 @@ implementation
 uses
   System.Math, DelphiDoom.Midi.SequenceLoader, DelphiDoom.XcomAudio.Types;
 
-constructor TXcomMidiTrack.Create(const AMidi: TBytes; ARate: Integer; const ASynth: IXcomMidiSynth);
+constructor TXcomMidiTrack.Create(const AMidi: TBytes; ARate: Integer; const ASynth: IPcmMidiSynth);
 begin
   inherited Create;
   if not Assigned(ASynth) then

@@ -59,7 +59,7 @@ Moduli          IdTech1 (Base + le librerie id)   IdTech3/4 (porte)   Giochi (Xc
 
 I moduli dipendono dagli strati, mai il contrario né tra loro. Oggi la regola è già rispettata da quasi tutte le librerie (fatto 1); mancano i quattro difetti del punto 5.
 
-**Aggiornamento #228**: AudioMix (L2 Servizi, solo RTL) e' il mixing software comune a XcomAudio, War e Greed (lista di voci con lucchetto, strategie di voce e di ricampionamento, saturazione a 16 bit; i campioni dei tre giochi sono rimasti identici byte per byte; il sintetizzatore MIDI e' la seconda fetta); vedi Libs\AudioMix\CLAUDE.md.
+**Aggiornamento #228**: AudioMix (L2 Servizi, solo RTL) e' il mixing software comune a XcomAudio, War e Greed (lista di voci con lucchetto, strategie di voce e di ricampionamento, saturazione a 16 bit; i campioni dei tre giochi sono rimasti identici byte per byte; seconda fetta: sintetizzatore MIDI `TPcmMidiSynth` spostato da XcomAudio e `TPcmLevelMeter` di picco/RMS al posto di due cicli duplicati in Xcom e Greed); vedi Libs\AudioMix\CLAUDE.md.
 
 ## 5. Che cosa correggere prima di muovere cartelle
 

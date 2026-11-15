@@ -50,6 +50,7 @@ uses
   DelphiDoom.AudioMix.Intf in '..\Libs\AudioMix\DelphiDoom.AudioMix.Intf.pas',
   DelphiDoom.AudioMix.VoiceList in '..\Libs\AudioMix\DelphiDoom.AudioMix.VoiceList.pas',
   DelphiDoom.AudioMix.NearestRateVoice in '..\Libs\AudioMix\DelphiDoom.AudioMix.NearestRateVoice.pas',
+  DelphiDoom.AudioMix.LevelMeter in '..\Libs\AudioMix\DelphiDoom.AudioMix.LevelMeter.pas',
   DelphiDoom.Greed.Sound.Intf in '..\Libs\Greed\DelphiDoom.Greed.Sound.Intf.pas',
   DelphiDoom.Greed.AudioDevice in '..\Libs\Greed\DelphiDoom.Greed.AudioDevice.pas',
   DelphiDoom.Greed.TrigTables in '..\Libs\Greed\DelphiDoom.Greed.TrigTables.pas',

@@ -17,7 +17,7 @@ uses
   DelphiDoom.XcomEngine.Music.Intf, DelphiDoom.XcomEngine.Options, DelphiDoom.XcomAudio.Intf,
   DelphiDoom.XcomAudio.Types, DelphiDoom.XcomAudio.Mixer, DelphiDoom.XcomAudio.ManualOutput,
   DelphiDoom.XcomAudio.Factory, DelphiDoom.XcomAudio.Mp3Decoder, DelphiDoom.XcomAudio.TrackerTrack,
-  DelphiDoom.XcomAudio.GmConverter, DelphiDoom.XcomAudio.MidiSynth, DelphiDoom.XcomAudio.MidiTrack,
+  DelphiDoom.XcomAudio.GmConverter, DelphiDoom.AudioMix.MidiSynth, DelphiDoom.XcomAudio.MidiTrack,
   DelphiDoom.XcomAudio.DigitalTrack, DelphiDoom.XcomEngine.Types, DelphiDoom.Tests.XcomEngine.World,
   DelphiDoom.Tests.XcomEngine.OptionsScreens, DelphiDoom.Tests.XcomEngine.AudioFakes,
   DelphiDoom.Tests.XcomEngine.AudioFiles, DelphiDoom.Tests.Mp3.Samples, DelphiDoom.Tests.Sound.FlacFile,
@@ -106,50 +106,6 @@ type
     procedure IlRiverberoVaATrenta;
     [Test]
     procedure IlFileConvertitoSiLeggeEDaLaStessaDurata;
-  end;
-
-  [TestFixture]
-  [Category('XcomAudio')]
-  TTestXcomMidiSynth = class
-  strict private
-    FSynth: TXcomMidiSynth;
-    FRef: IXcomMidiSynth;
-    function Render(AFrames: Integer): TArray<SmallInt>;
-  public
-    [Setup]
-    procedure Setup;
-    [Test]
-    procedure SenzaNoteSuonaSilenzio;
-    [Test]
-    procedure UnaNotaSuonaEPoiSiSpegneAlRilascio;
-    [Test]
-    procedure UnaNotaConVelocitaZeroEUnNoteOff;
-    [Test]
-    procedure UnaNotaPiuAltaOscillaPiuVelocemente;
-    [Test]
-    procedure IlVolumeDelCanaleScalaIlSuono;
-    [Test]
-    procedure IlPanoramaSpostaIlSuonoAlLatoGiusto;
-    [Test]
-    procedure IlPitchBendCambiaLaFrequenza;
-    [Test]
-    procedure TutteLeNoteSpenteTaceSubito;
-    [Test]
-    procedure TutteLeNoteRilasciateSiSpengonoDaSole;
-    [Test]
-    procedure LaBatteriaSuonaSulCanaleDieciESiSpegneDaSola;
-    [Test]
-    procedure OltreLeVociDisponibiliSiRubaLaPiuVecchia;
-    [Test]
-    procedure IlResetFaTacere;
-    [Test]
-    procedure IlRenderSommaAlBufferEdECompreso;
-    [Test]
-    procedure UnaRichiestaNonMultiplaDiQuattroDaEccezione;
-    [Test]
-    procedure UnRateNonValidoDaEccezione;
-    [Test]
-    procedure OgniFamigliaDiPatchProduceSuono;
   end;
 
   [TestFixture]
@@ -781,7 +737,7 @@ var
   LSamples: TArray<SmallInt>;
 begin
   // 96 ticks of 24 per quarter note at 120 per minute are two seconds: two notes of two seconds, then the tail of one
-  LTrack := TXcomMidiTrack.Create(TXcomGmConverter.Convert(TAudioFiles.GmEntry), RATE, TXcomMidiSynth.Create(RATE));
+  LTrack := TXcomMidiTrack.Create(TXcomGmConverter.Convert(TAudioFiles.GmEntry), RATE, TPcmMidiSynth.Create(RATE));
   LTrack.Start(0);
   LSamples := RenderTo(LTrack, RATE div 2, 1);
   Assert.IsTrue(TAudioFiles.Rms(LSamples) > 50);
@@ -789,261 +745,6 @@ begin
   Assert.IsTrue(LTrack.IsPlaying);
   RenderTo(LTrack, RATE, 1);
   Assert.IsFalse(LTrack.IsPlaying);
-end;
-
-{ TTestXcomMidiSynth }
-
-procedure TTestXcomMidiSynth.Setup;
-begin
-  FSynth := TXcomMidiSynth.Create(RATE);
-  FRef := FSynth;
-end;
-
-function TTestXcomMidiSynth.Render(AFrames: Integer): TArray<SmallInt>;
-begin
-  SetLength(Result, AFrames * 2);
-  // the synthesizer adds to the buffer: it starts from silence
-  FillChar(Result[0], AFrames * 4, 0);
-  FRef.Render(@Result[0], AFrames * 4);
-end;
-
-procedure TTestXcomMidiSynth.SenzaNoteSuonaSilenzio;
-begin
-  Assert.AreEqual(0.0, TAudioFiles.Rms(Render(1000)), 1e-9);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-end;
-
-procedure TTestXcomMidiSynth.UnaNotaSuonaEPoiSiSpegneAlRilascio;
-begin
-  FRef.Send($90, 60, 100);
-  Assert.AreEqual(1, FSynth.ActiveVoices);
-  Assert.IsTrue(TAudioFiles.Rms(Render(2000)) > 50);
-  FRef.Send($80, 60, 0);
-  // the release lasts 0.05 s or more: after half a second the voice is gone
-  Render(RATE div 2);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-  Assert.AreEqual(0.0, TAudioFiles.Rms(Render(1000)), 1e-9);
-end;
-
-procedure TTestXcomMidiSynth.UnaNotaConVelocitaZeroEUnNoteOff;
-begin
-  FRef.Send($90, 60, 100);
-  FRef.Send($90, 60, 0);
-  Render(RATE div 2);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-end;
-
-procedure TTestXcomMidiSynth.UnaNotaPiuAltaOscillaPiuVelocemente;
-var
-  LLow: TArray<SmallInt>;
-  LHigh: TArray<SmallInt>;
-
-  function Crossings(const ASamples: TArray<SmallInt>): Integer;
-  var
-    LIndex: Integer;
-  begin
-    Result := 0;
-    for LIndex := 1 to Length(ASamples) div 2 - 1 do
-      if (ASamples[(LIndex - 1) * 2] < 0) <> (ASamples[LIndex * 2] < 0) then
-        Inc(Result);
-  end;
-
-begin
-  // a triangle wave of the piano family: the crossings of zero follow the frequency (110 and 440 Hz)
-  FRef.Send($90, 45, 100);
-  LLow := Render(RATE);
-  FRef.Send($B0, 120, 0);
-  FRef.Send($90, 69, 100);
-  LHigh := Render(RATE);
-  Assert.IsTrue(Crossings(LHigh) > Crossings(LLow) * 3, Format('%d %d', [Crossings(LLow), Crossings(LHigh)]));
-end;
-
-procedure TTestXcomMidiSynth.IlVolumeDelCanaleScalaIlSuono;
-var
-  LFull: Double;
-  LHalf: Double;
-begin
-  FRef.Send($90, 60, 100);
-  LFull := TAudioFiles.Rms(Render(2000));
-  FRef.Send($B0, 120, 0);
-  FRef.Send($B0, 7, 50);
-  FRef.Send($90, 60, 100);
-  LHalf := TAudioFiles.Rms(Render(2000));
-  Assert.IsTrue(LHalf < LFull * 0.7, Format('%f %f', [LFull, LHalf]));
-  Assert.IsTrue(LHalf > 0);
-  // the expression of the channel counts as well
-  FRef.Send($B0, 120, 0);
-  FRef.Send($B0, 7, 100);
-  FRef.Send($B0, 11, 0);
-  FRef.Send($90, 60, 100);
-  Assert.AreEqual(0.0, TAudioFiles.Rms(Render(2000)), 1e-9);
-end;
-
-procedure TTestXcomMidiSynth.IlPanoramaSpostaIlSuonoAlLatoGiusto;
-var
-  LSamples: TArray<SmallInt>;
-  LLeft: Double;
-  LRight: Double;
-  LIndex: Integer;
-begin
-  FRef.Send($B0, 10, 0);
-  FRef.Send($90, 60, 100);
-  LSamples := Render(2000);
-  LLeft := 0;
-  LRight := 0;
-  for LIndex := 0 to 1999 do
-  begin
-    LLeft := LLeft + Abs(LSamples[LIndex * 2]);
-    LRight := LRight + Abs(LSamples[LIndex * 2 + 1]);
-  end;
-  Assert.IsTrue(LLeft > 10 * LRight + 1, Format('pan 0: %f %f', [LLeft, LRight]));
-  FRef.Send($B0, 120, 0);
-  FRef.Send($B0, 10, 127);
-  FRef.Send($90, 60, 100);
-  LSamples := Render(2000);
-  LLeft := 0;
-  LRight := 0;
-  for LIndex := 0 to 1999 do
-  begin
-    LLeft := LLeft + Abs(LSamples[LIndex * 2]);
-    LRight := LRight + Abs(LSamples[LIndex * 2 + 1]);
-  end;
-  Assert.IsTrue(LRight > 10 * LLeft + 1, Format('pan 127: %f %f', [LLeft, LRight]));
-end;
-
-procedure TTestXcomMidiSynth.IlPitchBendCambiaLaFrequenza;
-var
-  LPlain: TArray<SmallInt>;
-  LBent: TArray<SmallInt>;
-
-  function Crossings(const ASamples: TArray<SmallInt>): Integer;
-  var
-    LIndex: Integer;
-  begin
-    Result := 0;
-    for LIndex := 1 to Length(ASamples) div 2 - 1 do
-      if (ASamples[(LIndex - 1) * 2] < 0) <> (ASamples[LIndex * 2] < 0) then
-        Inc(Result);
-  end;
-
-begin
-  FRef.Send($90, 60, 100);
-  LPlain := Render(RATE);
-  FRef.Send($B0, 120, 0);
-  // the highest bend: two semitones up
-  FRef.Send($E0, $7F, $7F);
-  FRef.Send($90, 60, 100);
-  LBent := Render(RATE);
-  Assert.IsTrue(Crossings(LBent) > Crossings(LPlain));
-end;
-
-procedure TTestXcomMidiSynth.TutteLeNoteSpenteTaceSubito;
-begin
-  FRef.Send($90, 60, 100);
-  FRef.Send($90, 64, 100);
-  FRef.Send($B0, 120, 0);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-  Assert.AreEqual(0.0, TAudioFiles.Rms(Render(500)), 1e-9);
-end;
-
-procedure TTestXcomMidiSynth.TutteLeNoteRilasciateSiSpengonoDaSole;
-begin
-  FRef.Send($90, 60, 100);
-  FRef.Send($90, 64, 100);
-  FRef.Send($B0, 123, 0);
-  Assert.AreEqual(2, FSynth.ActiveVoices);
-  Render(RATE);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-end;
-
-procedure TTestXcomMidiSynth.LaBatteriaSuonaSulCanaleDieciESiSpegneDaSola;
-var
-  LSamples: TArray<SmallInt>;
-begin
-  // a kick (a falling sine), a snare and a hat: noise that dies by itself, a note off does not matter
-  FRef.Send($99, 36, 110);
-  FRef.Send($99, 38, 110);
-  FRef.Send($99, 42, 110);
-  LSamples := Render(500);
-  Assert.IsTrue(TAudioFiles.Rms(LSamples) > 100);
-  FRef.Send($89, 36, 0);
-  Render(RATE);
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-end;
-
-procedure TTestXcomMidiSynth.OltreLeVociDisponibiliSiRubaLaPiuVecchia;
-var
-  LIndex: Integer;
-begin
-  for LIndex := 0 to 39 do
-    FRef.Send($90, 40 + LIndex, 100);
-  Assert.AreEqual(32, FSynth.ActiveVoices);
-  // with released voices the steal takes one of them: the voices that sound stay 32
-  FRef.Send($80, 40 + 39, 0);
-  FRef.Send($90, 100, 100);
-  Assert.AreEqual(32, FSynth.ActiveVoices);
-  Assert.IsTrue(TAudioFiles.Rms(Render(500)) > 10);
-end;
-
-procedure TTestXcomMidiSynth.IlResetFaTacere;
-begin
-  FRef.Send($90, 60, 100);
-  FRef.Send($B0, 7, 10);
-  FRef.Reset;
-  Assert.AreEqual(0, FSynth.ActiveVoices);
-  // the controllers are back to the start: a new note has the full volume
-  FRef.Send($90, 60, 100);
-  Assert.IsTrue(TAudioFiles.Rms(Render(2000)) > 50);
-end;
-
-procedure TTestXcomMidiSynth.IlRenderSommaAlBufferEdECompreso;
-var
-  LBuffer: TArray<SmallInt>;
-  LIndex: Integer;
-begin
-  SetLength(LBuffer, 400);
-  for LIndex := 0 to 399 do
-    LBuffer[LIndex] := 32000;
-  FRef.Send($90, 60, 127);
-  FRef.Send($90, 64, 127);
-  FRef.Send($90, 67, 127);
-  FRef.Render(@LBuffer[0], 1600);
-  // it adds to what is there: a wrap-around past 16 bits would lower the RMS
-  Assert.IsTrue(TAudioFiles.Rms(LBuffer) > 25000);
-end;
-
-procedure TTestXcomMidiSynth.UnaRichiestaNonMultiplaDiQuattroDaEccezione;
-var
-  LBuffer: TArray<SmallInt>;
-begin
-  SetLength(LBuffer, 8);
-  Assert.WillRaise(
-    procedure
-    begin
-      FRef.Render(@LBuffer[0], 6);
-    end, EXcomAudioException);
-end;
-
-procedure TTestXcomMidiSynth.UnRateNonValidoDaEccezione;
-begin
-  Assert.WillRaise(
-    procedure
-    begin
-      TXcomMidiSynth.Create(0);
-    end, EArgumentOutOfRangeException);
-end;
-
-procedure TTestXcomMidiSynth.OgniFamigliaDiPatchProduceSuono;
-var
-  LFamily: Integer;
-begin
-  for LFamily := 0 to 15 do
-  begin
-    FRef.Send($B0, 120, 0);
-    FRef.Send($C0, LFamily * 8, 0);
-    FRef.Send($90, 60, 100);
-    Assert.IsTrue(TAudioFiles.Rms(Render(1000)) > 20, 'family ' + IntToStr(LFamily));
-  end;
 end;
 
 { TTestXcomMidiTrack }
@@ -1055,7 +756,7 @@ end;
 
 function TTestXcomMidiTrack.NewTrack(const AMidi: TBytes): IXcomMusicTrack;
 begin
-  Result := TXcomMidiTrack.Create(AMidi, RATE, TXcomMidiSynth.Create(RATE));
+  Result := TXcomMidiTrack.Create(AMidi, RATE, TPcmMidiSynth.Create(RATE));
 end;
 
 procedure TTestXcomMidiTrack.UnFileMidiSiRiconoscePerLaIntestazione;
@@ -2017,7 +1718,6 @@ initialization
   TDUnitX.RegisterTestFixture(TTestXcomMp3Decoder);
   TDUnitX.RegisterTestFixture(TTestXcomTrackerTrack);
   TDUnitX.RegisterTestFixture(TTestXcomGmConverter);
-  TDUnitX.RegisterTestFixture(TTestXcomMidiSynth);
   TDUnitX.RegisterTestFixture(TTestXcomMidiTrack);
   TDUnitX.RegisterTestFixture(TTestXcomMusicFormats);
   TDUnitX.RegisterTestFixture(TTestXcomMixerChannels);

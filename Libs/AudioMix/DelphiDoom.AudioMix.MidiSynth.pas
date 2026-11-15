@@ -1,12 +1,12 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom audio library - a simple software synthesizer for the MIDI  }
+{  DelphiDoom: audio mix library - a simple software synthesizer for the MIDI   }
 {  music (no sound bank: a few waveforms with an envelope, noise for the drums) }
-{  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
-{  Libs\XcomFormats\README.md for the license of this unit                      }
+{  Moved from XcomAudio (issue #228): the one MIDI synthesizer of the           }
+{  repository, written for OpenXcom (the OpenXcom Developers), GPL v3 or later  }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.XcomAudio.MidiSynth;
+unit DelphiDoom.AudioMix.MidiSynth;
 
 // The noise of the drums is a linear congruential generator that wraps around on purpose
 {$Q-}
@@ -15,16 +15,16 @@ unit DelphiDoom.XcomAudio.MidiSynth;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomAudio.Intf;
+  System.SysUtils, DelphiDoom.AudioMix.Intf;
 
 type
   /// <summary>
-  ///   IXcomMidiSynth with 32 voices. The sound of a melodic patch is chosen by its family (piano, organ, strings,
+  ///   IPcmMidiSynth with 32 voices. The sound of a melodic patch is chosen by its family (piano, organ, strings,
   ///   brass...) among four waveforms and an envelope; channel 10 plays the drums as noise or a falling sine. It is not
   ///   a General MIDI sound bank (the music of GM.CAT is written for one): it makes the notes, the volumes, the pans
   ///   and the pitch bends of the song audible without a device or a bank
   /// </summary>
-  TXcomMidiSynth = class(TInterfacedObject, IXcomMidiSynth)
+  TPcmMidiSynth = class(TInterfacedObject, IPcmMidiSynth)
   strict private
     type
       TWaveform = (wfSine, wfTriangle, wfSaw, wfSquare);
@@ -83,9 +83,9 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.XcomAudio.Types;
+  System.Math, DelphiDoom.AudioMix.Types, DelphiDoom.AudioMix.Saturation;
 
-constructor TXcomMidiSynth.Create(ARate: Integer);
+constructor TPcmMidiSynth.Create(ARate: Integer);
 begin
   inherited Create;
   if ARate <= 0 then
@@ -94,7 +94,7 @@ begin
   Reset;
 end;
 
-procedure TXcomMidiSynth.Reset;
+procedure TPcmMidiSynth.Reset;
 var
   LIndex: Integer;
 begin
@@ -110,7 +110,7 @@ begin
   end;
 end;
 
-function TXcomMidiSynth.ActiveVoices: Integer;
+function TPcmMidiSynth.ActiveVoices: Integer;
 var
   LIndex: Integer;
 begin
@@ -120,7 +120,7 @@ begin
       Inc(Result);
 end;
 
-function TXcomMidiSynth.FreeVoice: Integer;
+function TPcmMidiSynth.FreeVoice: Integer;
 var
   LIndex: Integer;
   LOldest: Integer;
@@ -147,7 +147,7 @@ begin
     end;
 end;
 
-procedure TXcomMidiSynth.Configure(var AVoice: TVoice; AProgram: Integer);
+procedure TPcmMidiSynth.Configure(var AVoice: TVoice; AProgram: Integer);
 var
   LFamily: Integer;
 begin
@@ -231,7 +231,7 @@ begin
   end;
 end;
 
-procedure TXcomMidiSynth.NoteOn(AChannel, ANote, AVelocity: Integer);
+procedure TPcmMidiSynth.NoteOn(AChannel, ANote, AVelocity: Integer);
 var
   LIndex: Integer;
 begin
@@ -274,7 +274,7 @@ begin
   end;
 end;
 
-procedure TXcomMidiSynth.NoteOff(AChannel, ANote: Integer);
+procedure TPcmMidiSynth.NoteOff(AChannel, ANote: Integer);
 var
   LIndex: Integer;
 begin
@@ -289,7 +289,7 @@ begin
     end;
 end;
 
-procedure TXcomMidiSynth.AllNotes(AChannel: Integer; AImmediately: Boolean);
+procedure TPcmMidiSynth.AllNotes(AChannel: Integer; AImmediately: Boolean);
 var
   LIndex: Integer;
 begin
@@ -301,7 +301,7 @@ begin
         FVoices[LIndex].Released := True;
 end;
 
-procedure TXcomMidiSynth.Control(AChannel, AController, AValue: Integer);
+procedure TPcmMidiSynth.Control(AChannel, AController, AValue: Integer);
 begin
   case AController of
     7:
@@ -322,7 +322,7 @@ begin
   end;
 end;
 
-procedure TXcomMidiSynth.Send(AStatus, AData1, AData2: Byte);
+procedure TPcmMidiSynth.Send(AStatus, AData1, AData2: Byte);
 var
   LChannel: Integer;
 begin
@@ -341,13 +341,13 @@ begin
   end;
 end;
 
-function TXcomMidiSynth.BendedIncrement(const AVoice: TVoice): Double;
+function TPcmMidiSynth.BendedIncrement(const AVoice: TVoice): Double;
 begin
   // two semitones up or down
   Result := AVoice.Increment * Power(2, ((FChannels[AVoice.Channel].Bend - 8192) / 8192) * 2 / 12);
 end;
 
-function TXcomMidiSynth.Sample(var AVoice: TVoice): Single;
+function TPcmMidiSynth.Sample(var AVoice: TVoice): Single;
 var
   LWave: Single;
   LStep: Single;
@@ -416,7 +416,7 @@ begin
   Result := LWave * AVoice.Level * AVoice.Gain;
 end;
 
-procedure TXcomMidiSynth.Render(ABuffer: PSmallInt; ABytes: Integer);
+procedure TPcmMidiSynth.Render(ABuffer: PSmallInt; ABytes: Integer);
 var
   LFrames: Integer;
   LFrame: Integer;
@@ -429,7 +429,7 @@ var
   LSum: Integer;
 begin
   if (ABytes <= 0) or ((ABytes and 3) <> 0) then
-    raise EXcomAudioException.Create(SXcomBufferNotWhole);
+    raise EAudioMixException.Create(SAudioMixBufferNotWhole);
   LFrames := ABytes div 4;
   for LFrame := 0 to LFrames - 1 do
   begin
@@ -452,10 +452,10 @@ begin
         LRight := LRight + LValue * Sin(LPan * Pi / 2);
       end;
     LSum := Integer(ABuffer^) + Round(LLeft * 32767);
-    ABuffer^ := SmallInt(EnsureRange(LSum, -32768, 32767));
+    ABuffer^ := TPcmSaturation.Clamp(LSum);
     Inc(ABuffer);
     LSum := Integer(ABuffer^) + Round(LRight * 32767);
-    ABuffer^ := SmallInt(EnsureRange(LSum, -32768, 32767));
+    ABuffer^ := TPcmSaturation.Clamp(LSum);
     Inc(ABuffer);
   end;
 end;

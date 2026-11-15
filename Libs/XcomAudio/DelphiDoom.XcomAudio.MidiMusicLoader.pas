@@ -11,8 +11,8 @@ unit DelphiDoom.XcomAudio.MidiMusicLoader;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.Xcom.Intf, DelphiDoom.XcomAudio.Intf,
-  DelphiDoom.XcomAudio.Types;
+  System.SysUtils, DelphiDoom.XcomEngine.Resources.Intf, DelphiDoom.Xcom.Intf, DelphiDoom.AudioMix.Intf,
+  DelphiDoom.XcomAudio.Intf, DelphiDoom.XcomAudio.Types;
 
 type
   /// <summary>
@@ -23,13 +23,13 @@ type
   strict private
     FFormat: TXcomMusicFormat;
     FRate: Integer;
-    FSynth: IXcomMidiSynth;
+    FSynth: IPcmMidiSynth;
     FResources: IXcomResources;
     FCatalog: IXcomCatArchive;
   public
     /// <param name="AFormat">mfGm or mfMidi</param>
     /// <param name="ASynth">The synthesizer the tracks share; EArgumentNilException when nil</param>
-    constructor Create(AFormat: TXcomMusicFormat; ARate: Integer; const ASynth: IXcomMidiSynth);
+    constructor Create(AFormat: TXcomMusicFormat; ARate: Integer; const ASynth: IPcmMidiSynth);
     function Format: TXcomMusicFormat;
     procedure Reload(const AResources: IXcomResources);
     function Load(const ARule: TXcomMusicRule): IXcomMusicTrack;
@@ -40,7 +40,7 @@ implementation
 uses
   DelphiDoom.Xcom.Types, DelphiDoom.Xcom.CatArchive,DelphiDoom.XcomAudio.GmConverter, DelphiDoom.XcomAudio.MidiTrack;
 
-constructor TXcomMidiMusicLoader.Create(AFormat: TXcomMusicFormat; ARate: Integer; const ASynth: IXcomMidiSynth);
+constructor TXcomMidiMusicLoader.Create(AFormat: TXcomMusicFormat; ARate: Integer; const ASynth: IPcmMidiSynth);
 begin
   inherited Create;
   if not Assigned(ASynth) then
