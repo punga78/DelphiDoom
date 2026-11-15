@@ -21,7 +21,7 @@ uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.War.Render.Types, DelphiDoom.War.Map.Game,
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.Commands.Selection,
   DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Camera,
-  DelphiDoom.War.MapUi.Picker;
+  DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.CommandState;
 
 type
   /// <summary>
@@ -45,7 +45,9 @@ type
     FStartY: Single;
     FRect: TWarRectF;
     FSuppressOnRelease: Boolean;
+    FCommandState: TWarMapCommandState;
     procedure SelectFromList(const ACandidates: TList<Integer>);
+    function TakeSuppress: Boolean;
   public
     /// <summary>Nothing is owned</summary>
     constructor Create(const AMap: TWarGameMap; const AContext: TWarModelContext; const AMachine: TWarStateMachine;
@@ -61,6 +63,11 @@ type
     function IsDragging: Boolean;
     /// <summary>A rectangle that is not worth a drag: the click that gave an order must not select on release</summary>
     property SuppressOnRelease: Boolean read FSuppressOnRelease write FSuppressOnRelease;
+    /// <summary>
+    ///   The command that waits for a target, if the map has one: a new selection (not the same single entity) clears it and
+    ///   the click that gave an order does not select on release. Not owned; without it the selection works as before
+    /// </summary>
+    property CommandState: TWarMapCommandState read FCommandState write FCommandState;
     property DragRect: TWarRectF read FRect;
     property DragStatus: TWarDragStatus read FStatus;
   end;
@@ -198,7 +205,33 @@ begin
         FAudio.BuildingSelected(LSlot);
     end;
   end;
+  // if the new selected entity is the same one the command stays, otherwise it is cleared
+  if Assigned(FCommandState) then
+  begin
+    if (ACandidates.Count = 1) and (FContext.Selection.Count = 1) then
+    begin
+      if FContext.Selection[0] <> FContext.Pool.Slots[ACandidates[0]]^.Id then
+        FCommandState.Clear;
+    end
+    else
+      FCommandState.Clear;
+  end;
   FSelecting.Select(ACandidates.ToArray);
+end;
+
+function TWarMapSelecting.TakeSuppress: Boolean;
+begin
+  // suppressSelectionOnRelease: asked once, then forgotten
+  if Assigned(FCommandState) then
+  begin
+    Result := FCommandState.SuppressSelectionOnRelease;
+    FCommandState.SuppressSelectionOnRelease := False;
+  end
+  else
+  begin
+    Result := FSuppressOnRelease;
+    FSuppressOnRelease := False;
+  end;
 end;
 
 procedure TWarMapSelecting.UpdateSelection(const AInput: IWarUiInput);
@@ -219,11 +252,8 @@ begin
   // while it scrolled last frame, or the mouse still drags, nothing is selected: it is done when the mouse is released
   if FCamera.WasScrolling or (FStatus <> wdsReleased) then
     Exit;
-  if FSuppressOnRelease then
-  begin
-    FSuppressOnRelease := False;
+  if TakeSuppress then
     Exit;
-  end;
   LCandidates := TList<Integer>.Create;
   try
     if (FRect.Width >= WAR_MAPUI_DRAG_THRESHOLD) or (FRect.Height >= WAR_MAPUI_DRAG_THRESHOLD) then

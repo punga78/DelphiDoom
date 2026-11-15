@@ -48,7 +48,11 @@ type
     [Test]
     procedure DovrebbeDareIComandiDiBaseAiMaghiSenzaIncantesimi;
     [Test]
-    procedure DovrebbeLasciareVuotoPerGliEdificiEPerChiHaIncantesimi;
+    procedure DovrebbeDareLAddestramentoDellaCasermaESoloIlFanteSenzaSegheria;
+    [Test]
+    procedure DovrebbeMostrareSoloAnnullaPerUnEdificioInCostruzioneEPerChiHaUnComandoInAttesa;
+    [Test]
+    procedure DovrebbeMostrareIMenuDellEdificioPerIlContadinoCheCostruisce;
     [Test]
     procedure DovrebbeLasciareVuotoSenzaSelezione;
   end;
@@ -58,7 +62,7 @@ implementation
 uses
   DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Factory,
   DelphiDoom.War.Model.Commands.Types, DelphiDoom.War.Sound.SeededRandom, DelphiDoom.War.Ui.Types,
-  DelphiDoom.War.MapUi.UnitNames.Data;
+  DelphiDoom.War.MapUi.UnitNames.Data, DelphiDoom.War.MapUi.CommandData.Data;
 
 { TTestWarMapUiPanel }
 
@@ -144,15 +148,18 @@ begin
   Select([Spawn(WAR_UNIT_ARCHER, 0)]);
   Assert.AreEqual(WAR_PORTRAIT_ARROW_3, FResult.Slots[2].FrameIndex);
   Select([Spawn(WAR_UNIT_CONJURER, 0)]);
-  // a spell that was researched is not ported: the panel is empty
-  FWorld.Context.Players[0]^.Upgrades[3].Allowed := 2;
-  FWorld.Context.Players[0]^.Upgrades[3].Level := 1;
+  Assert.AreEqual(3, Count, 'senza ricerche il mago ha tre bottoni');
+  // a spell that was researched (and is allowed) is a fourth button, with the portrait of the spell
+  FWorld.Context.Players[0]^.Features[WAR_FEATURE_SPELL_RAIN_OF_FIRE div 2] := 1;
+  FWorld.Context.Players[0]^.Upgrades[WAR_UPGRADE_RAIN_OF_FIRE div 2].Allowed := 1;
+  FWorld.Context.Players[0]^.Upgrades[WAR_UPGRADE_RAIN_OF_FIRE div 2].Level := 1;
   Select([Spawn(WAR_UNIT_CONJURER, 0)]);
-  Assert.AreEqual(0, Count);
+  Assert.AreEqual(4, Count);
+  Assert.AreEqual(WAR_COMMAND_SPELL_RAIN_OF_FIRE, FResult.Slots[3].Command);
+  Assert.AreEqual(WAR_PORTRAIT_RAIN_OF_FIRE, FResult.Slots[3].FrameIndex);
   FWorld.Context.Players[0]^.Race := wraOrcs;
   FWorld.Context.Players[0]^.Upgrades[WAR_UPGRADE_SHIELD div 2].Level := 1;
   FWorld.Context.Players[0]^.Upgrades[WAR_UPGRADE_AXES div 2].Level := 2;
-  FWorld.Context.Players[0]^.Upgrades[3].Level := 0;
   Select([Spawn(WAR_UNIT_GRUNT, 0)]);
   Assert.AreEqual(WAR_PORTRAIT_SHIELD_2_ORCS, FResult.Slots[1].FrameIndex);
   Assert.AreEqual(WAR_PORTRAIT_AXE_3, FResult.Slots[2].FrameIndex);
@@ -248,16 +255,78 @@ begin
   Assert.AreEqual(WAR_PORTRAIT_HOLY_LANCE, FResult.Slots[2].FrameIndex);
 end;
 
-procedure TTestWarMapUiPanel.DovrebbeLasciareVuotoPerGliEdificiEPerChiHaIncantesimi;
+procedure TTestWarMapUiPanel.DovrebbeDareLAddestramentoDellaCasermaESoloIlFanteSenzaSegheria;
 var
   LSlot: Integer;
 begin
   LSlot := FWorld.Entities.CreateBuilding(WAR_UNIT_BARRACKS_HUMANS, 20, 20, 0, False);
   Assert.AreNotEqual(0, LSlot);
   Select([FWorld.Context.Pool.Slots[LSlot]^.Id]);
-  Assert.AreEqual(0, Count, 'gli edifici non sono portati');
+  Assert.AreEqual(1, Count);
+  Assert.AreEqual(WAR_CMD_TRAIN_FOOTMAN, FResult.Slots[0].Command);
+  Assert.AreEqual(WAR_PORTRAIT_FOOTMAN, FResult.Slots[0].FrameIndex);
+  Assert.AreEqual('TRAIN FOOTMAN', string(FResult.Slots[0].Tooltip));
+  Assert.AreEqual(FWorld.Context.Database.GetUnitStats(WAR_UNIT_FOOTMAN).GoldCost, FResult.Slots[0].Gold);
+  // the archer needs a lumber mill, the catapult a blacksmith, the knight a stable too
+  FWorld.Entities.CreateBuilding(WAR_UNIT_LUMBERMILL_HUMANS, 24, 20, 0, False);
+  Select([FWorld.Context.Pool.Slots[LSlot]^.Id]);
+  Assert.AreEqual(2, Count);
+  Assert.AreEqual(WAR_CMD_TRAIN_ARCHER, FResult.Slots[1].Command);
+  // a footman and a barracks have nothing in common
   Select([Spawn(WAR_UNIT_FOOTMAN, 0), FWorld.Context.Pool.Slots[LSlot]^.Id]);
   Assert.AreEqual(0, Count);
+end;
+
+procedure TTestWarMapUiPanel.DovrebbeMostrareSoloAnnullaPerUnEdificioInCostruzioneEPerChiHaUnComandoInAttesa;
+var
+  LSlot: Integer;
+  LId: Word;
+begin
+  LSlot := FWorld.Entities.CreateBuilding(WAR_UNIT_BARRACKS_HUMANS, 20, 20, 0, True);
+  Assert.AreNotEqual(0, LSlot);
+  Select([FWorld.Context.Pool.Slots[LSlot]^.Id]);
+  Assert.AreEqual(1, Count);
+  Assert.IsTrue(FResult.SlotsActive[5]);
+  Assert.AreEqual(WAR_COMMAND_CANCEL, FResult.Slots[5].Command);
+  Assert.AreEqual(WAR_PORTRAIT_CANCEL, FResult.Slots[5].FrameIndex);
+  Assert.AreEqual(3, FResult.Slots[5].HighlightCount);
+  // a footman with a command waiting: cancel only
+  LId := Spawn(WAR_UNIT_FOOTMAN, 0);
+  FWorld.Context.Selection.Assign([LId]);
+  FPanel.Update(FResult, WAR_COMMAND_ATTACK);
+  Assert.AreEqual(1, Count);
+  Assert.AreEqual(WAR_COMMAND_CANCEL, FResult.Slots[5].Command);
+end;
+
+procedure TTestWarMapUiPanel.DovrebbeMostrareIMenuDellEdificioPerIlContadinoCheCostruisce;
+var
+  LId: Word;
+begin
+  LId := Spawn(WAR_UNIT_PEASANT, 0);
+  FWorld.Context.Selection.Assign([LId]);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_BASIC);
+  Assert.AreEqual(WAR_CMD_BUILD_FARM_HUMANS, FResult.Slots[0].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_BARRACKS_HUMANS, FResult.Slots[2].Command);
+  Assert.IsFalse(FResult.SlotsActive[1], 'senza la capacita'' della segheria');
+  Assert.AreEqual(WAR_COMMAND_CANCEL, FResult.Slots[5].Command);
+  Assert.AreEqual(FWorld.Context.Database.GetBuildingStats(WAR_UNIT_FARM_HUMANS).GoldCost, FResult.Slots[0].Gold);
+  Assert.AreEqual(FWorld.Context.Database.GetBuildingStats(WAR_UNIT_FARM_HUMANS).WoodCost, FResult.Slots[0].Wood);
+  FWorld.Context.Players[0]^.Features[WAR_FEATURE_UNIT_LUMBER_MILL_HUMANS div 2] := 1;
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_BASIC);
+  Assert.AreEqual(WAR_CMD_BUILD_LUMBERMILL_HUMANS, FResult.Slots[1].Command);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_ADVANCED);
+  Assert.AreEqual(WAR_CMD_BUILD_BLACKSMITH_HUMANS, FResult.Slots[0].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_CHURCH, FResult.Slots[1].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_STABLE, FResult.Slots[2].Command);
+  Assert.IsFalse(FResult.SlotsActive[3], 'la torre vuole la fucina');
+  // the orcs: the first button of the advanced menu is the barracks, as in the original
+  FWorld.Context.Players[0]^.Race := wraOrcs;
+  LId := Spawn(WAR_UNIT_PEON, 0);
+  FWorld.Context.Selection.Assign([LId]);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_ADVANCED);
+  Assert.AreEqual(WAR_CMD_BUILD_BARRACKS_ORCS, FResult.Slots[0].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_TEMPLE, FResult.Slots[1].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_KENNEL, FResult.Slots[2].Command);
 end;
 
 procedure TTestWarMapUiPanel.DovrebbeLasciareVuotoSenzaSelezione;

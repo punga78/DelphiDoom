@@ -37,8 +37,9 @@ type
     constructor Create(const ATransform: TWarRenderTransform);
     /// <summary>
     ///   wfont_renderSingleSpriteText: a text in one line at (AX, AY), aligned in the bounds if they are not zero, with the
-    ///   highlight of the parameters. EWarException if the highlight goes past the end of the text (the original read
-    ///   the memory after it) or a character has no glyph
+    ///   highlight of the parameters. A highlight that goes past the end of the text draws the blank glyph of the character 0
+    ///   for each character it goes past (the original reads the zeros of its buffer); EWarException if the highlight
+    ///   starts before the text or a character has no glyph
     /// </summary>
     procedure RenderSingle(const AText: AnsiString; AX, AY: Single; const AParams: TWarFontParams);
     /// <summary>wfont_renderMultiSpriteText: a text in lines, wrapped, trimmed and aligned as the parameters say</summary>
@@ -74,7 +75,10 @@ begin
   Result := AX;
   if ACount <= 0 then
     Exit;
-  if (AIndex < 0) or (AIndex + ACount > Length(AText)) then
+  // a span that goes past the end of the text (the tooltip of a price has a highlight of the text of the status, which is longer
+  // than the number): the original reads the bytes of its buffer after the number, which are zeros, and draws the glyph of the
+  // character 0 (the first one, the blank) for each of them. Before the start of the text it reads before the buffer
+  if AIndex < 0 then
     raise EWarException.CreateFmt(SWarTextOutside, [ACount, AIndex, Length(AText)]);
   LAdvance := AFont.Advance;
   FTransform.Save;
@@ -85,7 +89,10 @@ begin
     LScaled := Result * AScale;
     if (ABoundingsX > 0) and (LScaled > ABoundingsX) then
       Break;
-    LChar := AText[AIndex + LIndex + 1];
+    if AIndex + LIndex < Length(AText) then
+      LChar := AText[AIndex + LIndex + 1]
+    else
+      LChar := #0;
     if LChar = #10 then
     begin
       // a single text span is one line: the line feeds are spaces

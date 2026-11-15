@@ -35,6 +35,8 @@ type
     [TestCase('Ordini col clic destro', 'map_orders')]
     [TestCase('Partita lunga', 'map_long')]
     [TestCase('Pausa', 'map_pause')]
+    [TestCase('Addestrare con i bottoni di un edificio', 'map_cmd_train')]
+    [TestCase('Costruire con il contadino', 'map_cmd_build')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
   end;
 

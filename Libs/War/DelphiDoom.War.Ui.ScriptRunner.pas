@@ -71,9 +71,29 @@ begin
 end;
 
 function TWarUiScriptRunner.FormatG(AValue: Single): string;
+var
+  LValue: Double;
+  LText: string;
+  LDigits: string;
+  LIndex: Integer;
+  LTail: Boolean;
 begin
-  // printf("%.9g"): nine significant digits, no trailing zeros
-  Result := Format('%.9g', [Double(AValue)], TFormatSettings.Invariant);
+  // printf("%.9g"): nine significant digits, no trailing zeros. printf rounds the exact value to the even digit when it is
+  // half way (157.0390625 is 157.039062), Format rounds it up: a value that is exactly half way and has an even ninth digit is
+  // brought down a little
+  LValue := AValue;
+  LText := Format('%.17e', [LValue], TFormatSettings.Invariant);
+  LDigits := Copy(LText, 1, 1) + Copy(LText, 3, 16);
+  if (Length(LDigits) >= 10) and (LDigits[10] = '5') and (((Ord(LDigits[9]) - Ord('0')) mod 2) = 0) then
+  begin
+    LTail := False;
+    for LIndex := 11 to Length(LDigits) do
+      if LDigits[LIndex] <> '0' then
+        LTail := True;
+    if not LTail then
+      LValue := LValue * (1 - 1E-13);
+  end;
+  Result := Format('%.9g', [LValue], TFormatSettings.Invariant);
 end;
 
 procedure TWarUiScriptRunner.TraceBlit(const ABlit: TWarBlit);
@@ -272,13 +292,20 @@ end;
 
 procedure TWarUiScriptRunner.Run(const ALines: TArray<string>);
 var
+  LIndex: Integer;
   LLine: string;
 begin
-  for LLine in ALines do
+  for LIndex := 0 to High(ALines) do
   begin
+    LLine := ALines[LIndex];
     if (LLine = '') or (LLine[1] = '#') then
       Continue;
-    RunCommand(LLine);
+    try
+      RunCommand(LLine);
+    except
+      on E: Exception do
+        raise EWarException.CreateFmt('%s (line %d of the script: %s)', [E.Message, LIndex + 1, LLine]);
+    end;
   end;
 end;
 

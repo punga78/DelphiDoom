@@ -25,7 +25,8 @@ uses
   DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.Sprites,
   DelphiDoom.War.MapUi.Renderer, DelphiDoom.War.MapUi.Hud, DelphiDoom.War.MapUi.Host, DelphiDoom.War.MapUi.Census,
   DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Selecting,
-  DelphiDoom.War.MapUi.CommandPanel;
+  DelphiDoom.War.MapUi.CommandPanel, DelphiDoom.War.MapUi.CommandState, DelphiDoom.War.MapUi.CommandRunner,
+  DelphiDoom.War.MapUi.CommandPreview;
 
 type
   /// <summary>What the scene of a map is made from: the level and its tileset, the tables and the services of the game</summary>
@@ -65,6 +66,9 @@ type
     FPicker: TWarMapPicker;
     FSelecting: TWarMapSelecting;
     FCommandBuilder: TWarMapCommandPanel;
+    FCommandState: TWarMapCommandState;
+    FCommandRunner: TWarMapCommandRunner;
+    FCommandPreview: TWarMapCommandPreview;
     FAudio: IWarMapAudio;
     FCensus: IWarCensus;
     FPanels: TWarMapPanels;
@@ -73,7 +77,6 @@ type
     FPlaying: Boolean;
     FResult: TWarLevelResult;
     FObjectivesTime: Single;
-    FSuppressMinimap: Boolean;
     FMouseScrollSpeed: Integer;
     FKeyScrollSpeed: Integer;
     FGameSpeed: Integer;
@@ -83,6 +86,8 @@ type
     procedure UpdateMapCursor;
     procedure UpdateRightClick;
     procedure FillSelection(var AView: TWarHudView);
+    procedure UpdateCamera;
+    procedure StatusOfBuilding(ASlot: Integer);
     function CursorOnMap: Integer;
     function MapSpeedScale: Single;
   public
@@ -108,7 +113,8 @@ implementation
 uses
   DelphiDoom.War.Model.Factory, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context,
   DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.Commands.Types,
-  DelphiDoom.War.Sound.Factory, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.Ui.Imui, System.Math;
+  DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.State.Types, DelphiDoom.War.MapUi.CommandCatalog,
+  DelphiDoom.War.MapUi.CommandCursor, DelphiDoom.War.Sound.Factory, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.Ui.Imui, System.Math;
 
 { TWarMapScene }
 
@@ -177,6 +183,11 @@ begin
   FHost.AttachAudio(FAudio);
   FSelecting := TWarMapSelecting.Create(FMap, FBinding.World.Context, FBinding.World.Machine, FCamera, FPicker,
     FBinding.Commands.Selecting, FAudio);
+  FCommandState := TWarMapCommandState.Create;
+  FSelecting.CommandState := FCommandState;
+  FCommandRunner := TWarMapCommandRunner.Create(FBinding.World.Context, FBinding.Commands, FCamera, FCommandState);
+  FCommandPreview := TWarMapCommandPreview.Create(FSetup.Services.Canvas.Transform, FCamera, FBinding.World.Context,
+    FBinding.Commands, FCommandState);
   FCommandBuilder := TWarMapCommandPanel.Create(FBinding.World.Context);
   // wmui_createMapUI makes the entity of the minimap; then the music, which is an entity too (not in the demo)
   FBinding.World.Context.Pool.CreateEntity(WAR_ENTITY_MINIMAP, True);
@@ -196,6 +207,9 @@ begin
   FreeAndNil(FRenderer);
   FreeAndNil(FHud);
   FreeAndNil(FSelecting);
+  FreeAndNil(FCommandPreview);
+  FreeAndNil(FCommandRunner);
+  FreeAndNil(FCommandState);
   FreeAndNil(FCommandBuilder);
   FAudio := nil;
   FreeAndNil(FPicker);
@@ -213,6 +227,38 @@ procedure TWarMapScene.HandleTextInput(const AText: AnsiString);
 begin
 end;
 
+procedure TWarMapScene.StatusOfBuilding(ASlot: Integer);
+var
+  LMachine: TWarStateMachine;
+  LEntity: PWarEntity;
+  LState: PWarStateBase;
+  LCost: Single;
+begin
+  // updateStatus for a selected building: what it trains or researches, or what the repair would cost
+  LMachine := FBinding.World.Machine;
+  LEntity := FBinding.World.Context.Pool.Slots[ASlot];
+  if LMachine.Contains(ASlot, WAR_STATE_TRAIN) or LMachine.HasPending(ASlot, WAR_STATE_TRAIN) then
+  begin
+    // wst_getTrainState looks in the stack only: the original stops on a request that did not start yet, here the line stays
+    LState := LMachine.FindState(ASlot, WAR_STATE_TRAIN);
+    if Assigned(LState) then
+      FStatus.Text := TWarCommandCatalog.Base(TWarCommandCatalog.CommandOfUnit(PWarStateTrain(LState)^.UnitToBuild)).Tooltip2;
+  end
+  else if LMachine.Contains(ASlot, WAR_STATE_UPGRADE) or LMachine.HasPending(ASlot, WAR_STATE_UPGRADE) then
+  begin
+    LState := LMachine.FindState(ASlot, WAR_STATE_UPGRADE);
+    if Assigned(LState) then
+      FStatus.Text := TWarCommandCatalog.Base(
+        TWarCommandCatalog.CommandOfUpgrade(PWarStateUpgrade(LState)^.UpgradeToBuild)).Tooltip2;
+  end
+  else if LEntity^.UnitData.Hp < LEntity^.UnitData.MaxHp then
+  begin
+    // 12% of the damage, in gold and lumber
+    LCost := (LEntity^.UnitData.MaxHp - LEntity^.UnitData.Hp) * Single(0.12);
+    FStatus.Text := AnsiString(Format('FULL REPAIRS WILL COST %d GOLD & LUMBER', [Ceil(LCost)]));
+  end;
+end;
+
 procedure TWarMapScene.UpdateStatus;
 var
   LFlash: TWarFlashStatus;
@@ -220,7 +266,6 @@ var
   LIndex: Integer;
   LSlot: Integer;
   LEntity: PWarEntity;
-  LCost: Single;
 begin
   // updateStatus: the status line is cleared, then the message that flashes, if it still lasts
   FStatus.Text := '';
@@ -249,15 +294,7 @@ begin
       Continue;
     LEntity := LContext.Pool.Slots[LSlot];
     if TWarUnitClassifier.IsBuilding(LEntity^.UnitData.UnitType) then
-    begin
-      if (not (FBinding.World.Machine.IsActive(LSlot, WAR_STATE_TRAIN) or
-        FBinding.World.Machine.IsActive(LSlot, WAR_STATE_UPGRADE))) and
-        (LEntity^.UnitData.Hp < LEntity^.UnitData.MaxHp) then
-      begin
-        LCost := (LEntity^.UnitData.MaxHp - LEntity^.UnitData.Hp) * Single(0.12);
-        FStatus.Text := AnsiString(Format('FULL REPAIRS WILL COST %d GOLD & LUMBER', [Ceil(LCost)]));
-      end;
-    end
+      StatusOfBuilding(LSlot)
     else if TWarUnitClassifier.IsWorker(LEntity^.UnitData.UnitType) and
       (((LEntity^.UnitData.ResourceKind = wrkGold) or (LEntity^.UnitData.ResourceKind = wrkWood)) and
       (LEntity^.UnitData.Amount = WAR_MODEL_MAX_CARRY)) then
@@ -288,31 +325,42 @@ begin
   FPlaying := False;
 end;
 
-procedure TWarMapScene.UpdatePaused;
+procedure TWarMapScene.UpdateCamera;
 var
   LContext: TWarCameraContext;
   LHost: IWarSceneHost;
+  LSuppress: Boolean;
 begin
-  // wmap_updateMapPaused: updateViewport and updateStatus (the debug shortcuts are not ported)
+  // updateViewport: what the camera reads of the map besides the mouse (the drag, the command that waits, the flag of the minimap)
   LHost := FSetup.Services.Host;
-  if (not Assigned(FCamera)) or (not FPlaying) then
-    Exit;
   LContext.Dragging := FSelecting.IsDragging;
-  LContext.CommandActive := False;
+  LContext.CommandActive := FCommandState.Pending;
   LContext.CheatsOpen := False;
   LContext.ScreenWidth := LHost.OriginalWidth;
   LContext.ScreenHeight := LHost.OriginalHeight;
   LContext.RealDeltaTime := LHost.RealDeltaTime;
   LContext.MouseScrollSpeed := FMouseScrollSpeed;
   LContext.KeyScrollSpeed := FKeyScrollSpeed;
-  FCamera.Update(FSetup.Services.Input, LContext, FSuppressMinimap);
+  LSuppress := FCommandState.SuppressMinimapViewportOnRelease;
+  FCamera.Update(FSetup.Services.Input, LContext, LSuppress);
+  FCommandState.SuppressMinimapViewportOnRelease := LSuppress;
+end;
+
+procedure TWarMapScene.UpdatePaused;
+var
+  LHost: IWarSceneHost;
+begin
+  // wmap_updateMapPaused: updateViewport and updateStatus (the debug shortcuts are not ported)
+  LHost := FSetup.Services.Host;
+  if (not Assigned(FCamera)) or (not FPlaying) then
+    Exit;
+  UpdateCamera;
   FHost.SetRealTime(LHost.RealTime);
   UpdateStatus;
 end;
 
 procedure TWarMapScene.Update;
 var
-  LContext: TWarCameraContext;
   LHost: IWarSceneHost;
   LDelta: Single;
   LScale: Single;
@@ -320,18 +368,13 @@ begin
   LHost := FSetup.Services.Host;
   if not FPlaying then
     Exit;
-  LContext.Dragging := FSelecting.IsDragging;
-  LContext.CommandActive := False;
-  LContext.CheatsOpen := False;
-  LContext.ScreenWidth := LHost.OriginalWidth;
-  LContext.ScreenHeight := LHost.OriginalHeight;
-  LContext.RealDeltaTime := LHost.RealDeltaTime;
-  LContext.MouseScrollSpeed := FMouseScrollSpeed;
-  LContext.KeyScrollSpeed := FKeyScrollSpeed;
-  FCamera.Update(FSetup.Services.Input, LContext, FSuppressMinimap);
+  // the real time of this frame, before anything can ask for a message of the status line (the command of a click does)
+  FHost.SetRealTime(LHost.RealTime);
+  UpdateCamera;
   FSelecting.UpdateDragRect(FSetup.Services.Input);
-  // no command waits for a click, so what the left button does is select
-  FSelecting.UpdateSelection(FSetup.Services.Input);
+  // only the clicks that no command takes select: some commands run with the click that selects
+  if not FCommandRunner.Execute(FSetup.Services.Input) then
+    FSelecting.UpdateSelection(FSetup.Services.Input);
   FSelecting.UpdateGroups(FSetup.Services.Input);
   FBinding.World.Context.ViewportTop := FCamera.Y;
   // the real time of the game and the length of this tic of the game (wg_beginFrame)
@@ -343,7 +386,7 @@ begin
   FBinding.World.Context.Clock^.GlobalSpeed := LHost.GlobalSpeed;
   FBinding.World.Context.Clock^.GameSpeed := FGameSpeed;
   FBinding.Tick(LDelta);
-  FCommandBuilder.Update(FCommandPanel);
+  FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);
   UpdateRightClick;
   UpdateStatus;
   UpdateObjectives;
@@ -360,7 +403,15 @@ var
 begin
   // updateCommandFromRightClick with no command waiting: an order to what is selected
   LInput := FSetup.Services.Input;
-  if (not LInput.IsButtonJustPressed(wmbRight)) or (FBinding.World.Context.Selection.Count = 0) then
+  if not LInput.IsButtonJustPressed(wmbRight) then
+    Exit;
+  // with a command waiting the right click cancels it
+  if FCommandState.Pending then
+  begin
+    FCommandRunner.CancelWithRightClick;
+    Exit;
+  end;
+  if FBinding.World.Context.Selection.Count = 0 then
     Exit;
   if WarRectContains(FPanels.MapPanel, LInput.PositionX, LInput.PositionY) then
   begin
@@ -430,6 +481,7 @@ begin
     FSetup.Services.Canvas.Transform.StrokeRect(FSelecting.DragRect, WAR_MAPUI_GREEN_SELECTION);
     FSetup.Services.Canvas.Transform.Restore;
   end;
+  FCommandPreview.Render(FSetup.Services.Input);
   FRenderer.RenderMinimap(FPanels.MinimapPanel.X, FPanels.MinimapPanel.Y);
   FillSelection(LView);
   LView.Race := LPlayer.Race;
@@ -440,6 +492,9 @@ begin
   LView.MenuOpen := False;
   LView.CheatsOpen := False;
   FHud.RenderHud(LView, LClicks);
+  // the click handler of a button runs while the HUD is drawn: it chooses the command (or cancels), the next update executes it
+  if LClicks.Command >= 0 then
+    FCommandRunner.ClickCommand(FCommandPanel.Slots[LClicks.Command].Command);
   FSetup.Services.Canvas.Transform.Restore;
 end;
 
@@ -510,6 +565,7 @@ var
   LImui: TWarImui;
   LDirX: Single;
   LDirY: Single;
+  LCursor: Integer;
 begin
   // updateMapCursor: the cursor follows what the mouse is on
   LInput := FSetup.Services.Input;
@@ -525,9 +581,15 @@ begin
     Exit;
   end;
   if WarRectContains(FPanels.MapPanel, LInput.PositionX, LInput.PositionY) then
-    LImui.ChangeCursorType(CursorOnMap)
+  begin
+    // a command that waits has its cursor; with none (or one that does not choose) it is what is under the mouse
+    LCursor := TWarCommandCursor.OverMap(FCommandState.CommandType);
+    if LCursor < 0 then
+      LCursor := CursorOnMap;
+    LImui.ChangeCursorType(LCursor);
+  end
   else if WarRectContains(FPanels.MinimapPanel, LInput.PositionX, LInput.PositionY) then
-    LImui.ChangeCursorType(WAR_CURSOR_ARROW)
+    LImui.ChangeCursorType(TWarCommandCursor.OverMinimap(FCommandState.CommandType))
   else
   begin
     // at the edge of the screen the arrow points where the map scrolls

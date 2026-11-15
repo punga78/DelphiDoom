@@ -116,7 +116,10 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_select.script'); Golden = 'ui.map_select.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_orders.script'); Golden = 'ui.map_orders.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_long.script'); Golden = 'ui.map_long.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_pause.script'); Golden = 'ui.map_pause.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_pause.script'); Golden = 'ui.map_pause.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i comandi con bersaglio e i bottoni del pannello (parte C): addestrare, costruire
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_train.script'); Golden = 'ui.map_cmd_train.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_build.script'); Golden = 'ui.map_cmd_build.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

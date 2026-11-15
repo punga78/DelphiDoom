@@ -1,0 +1,71 @@
+# Costruire con un contadino (umani 1): si seleziona, si apre il menu col tasto B, si sceglie la fattoria col tasto F e si
+# muove il mouse (il fantasma e' grigio su una tegola libera e rosso su una che non lo e'); un clic su una tegola non
+# libera suona l'annullamento e il comando resta; ESC e il clic destro lo annullano; un clic su una tegola libera mette
+# l'edificio e il contadino va a costruirlo (200 fotogrammi dopo)
+campaign human 1
+move 190 100
+run 10 1
+move 176 99
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 175
+run 3 1
+key b down
+run 2 1
+key b up
+run 4 1
+move 18 125
+run 3 1
+key f down
+run 2 1
+key f up
+run 3 1
+move 110 60
+run 3 1
+move 125 70
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 230 60
+run 3 1
+key esc down
+run 2 1
+key esc up
+run 4 1
+key b down
+run 2 1
+key b up
+run 3 1
+move 18 125
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 230 60
+run 3 1
+rbutton down
+run 2 1
+rbutton up
+run 4 1
+key b down
+run 2 1
+key b up
+run 3 1
+key f down
+run 2 1
+key f up
+run 3 1
+move 230 60
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 180 100
+run 200 4

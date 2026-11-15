@@ -1,0 +1,46 @@
+# Bottoni del pannello di un edificio (umani 1): si seleziona il municipio, si passa il mouse sui bottoni (suggerimenti con i
+# prezzi), si addestra un contadino col bottone (la riga di stato dice "TRAINING A PEASANT"), si prova il tasto P mentre
+# lavora, lo si annulla col bottone di annullamento, si riaddestra col tasto rapido e si lascia finire
+campaign human 1
+move 190 100
+run 10 1
+move 150 130
+run 3 1
+move 190 135
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 130
+run 3 1
+move 52 130
+run 3 1
+move 18 153
+run 3 1
+move 52 153
+run 3 1
+move 18 130
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 150 130
+run 20 1
+key p down
+run 2 1
+key p up
+run 5 1
+move 52 176
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 5 1
+move 150 130
+run 3 1
+key p down
+run 2 1
+key p up
+run 3 1
+run 300 4
