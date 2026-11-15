@@ -41,6 +41,7 @@ uses
   DelphiDoom.Cinematic.Jpeg.Intf,
   DelphiDoom.Cinematic.Jpeg.Factory,
   DelphiDoom.Jpeg.Intf,
+  DelphiDoom.Jpeg.Types,
   DelphiDoom.Jpeg.Decoder,
   DelphiDoom.Tests.Cinematic.Support;
 
@@ -55,7 +56,7 @@ begin
   LData := TRoqTestData.ReadJpeg('encoder-48x48-c3-q100.jpg');
   SetLength(LExpected, 48 * 48 * 3);
   Assert.AreEqual(DDJPEG_OK, TJpegDecoder.Decode(@LData[0], Length(LData), @LExpected[0],
-    Length(LExpected), LInfo));
+    Length(LExpected), LInfo, TJpegDecodeOptions.Doom3));
   LActual := TRoqJpegFactory.CreateDecoder.Decode(LData, LWidth, LHeight);
   Assert.AreEqual(48, LWidth);
   Assert.AreEqual(48, LHeight);
@@ -71,7 +72,8 @@ var
 begin
   LData := TRoqTestData.ReadJpeg('encoder-33x17-c1-q50.jpg');
   SetLength(LRaw, 33 * 17);
-  Assert.AreEqual(DDJPEG_OK, TJpegDecoder.Decode(@LData[0], Length(LData), @LRaw[0], Length(LRaw), LInfo));
+  Assert.AreEqual(DDJPEG_OK, TJpegDecoder.Decode(@LData[0], Length(LData), @LRaw[0], Length(LRaw), LInfo,
+    TJpegDecodeOptions.Doom3));
   Assert.AreEqual(1, LInfo.Components);
   LActual := TRoqJpegFactory.CreateDecoder.Decode(LData, LWidth, LHeight);
   Assert.AreEqual(33, LWidth);

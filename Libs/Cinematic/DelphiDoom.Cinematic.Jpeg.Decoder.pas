@@ -16,10 +16,11 @@ uses
 
 type
   /// <summary>
-  ///   <c>IRoqJpegDecoder</c> on <c>TJpegDecoder</c> of <c>Libs\Jpeg</c> (libjpeg 6b). The settings are
-  ///   those of the library, not the ones of Doom 3 (<c>JDCT_FASTEST</c>, no fancy upsampling): the
-  ///   pixels can differ from Doom 3 by a few levels. A gray image (one component) becomes RGB with
-  ///   three equal bytes
+  ///   <c>IRoqJpegDecoder</c> on <c>TJpegDecoder</c> of <c>Libs\Jpeg</c> with the settings of
+  ///   <c>JPEGBlit</c> of Doom 3 (<c>TJpegDecodeOptions.Doom3</c>: floating point IDCT, which is what
+  ///   <c>JDCT_FASTEST</c> means in its jconfig.h, no fancy upsampling, red-green-blue order): the pixels
+  ///   are those of the jpeg-6 of Doom 3 (parity in <c>DelphiDoom.Tests.Jpeg.Doom3Parity</c>). A gray
+  ///   image (one component) becomes RGB with three equal bytes
   /// </summary>
   TRoqJpegDecoder = class(TInterfacedObject, IRoqJpegDecoder)
   public
@@ -31,6 +32,7 @@ implementation
 uses
   DelphiDoom.Cinematic.Types,
   DelphiDoom.Jpeg.Intf,
+  DelphiDoom.Jpeg.Types,
   DelphiDoom.Jpeg.Decoder;
 
 resourcestring
@@ -58,7 +60,7 @@ begin
   if (LInfo.Components <> 1) and (LInfo.Components <> 3) then
     raise ERoqInvalidDataException.CreateFmt(SJpegComponents, [LInfo.Components]);
   SetLength(LRaw, LInfo.Width * LInfo.Height * LInfo.Components);
-  LCode := TJpegDecoder.Decode(@AData[0], Length(AData), @LRaw[0], Length(LRaw), LInfo);
+  LCode := TJpegDecoder.Decode(@AData[0], Length(AData), @LRaw[0], Length(LRaw), LInfo, TJpegDecodeOptions.Doom3);
   if LCode <> DDJPEG_OK then
     raise ERoqInvalidDataException.CreateFmt(SJpegInvalid, [LCode]);
   AWidth := LInfo.Width;

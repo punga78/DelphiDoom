@@ -15,7 +15,7 @@ uses
   System.SysUtils, DelphiDoom.Jpeg.BitReader, DelphiDoom.Jpeg.ByteSource,
   DelphiDoom.Jpeg.ComponentBuffers, DelphiDoom.Jpeg.EntropyDecoder,
   DelphiDoom.Jpeg.Frame, DelphiDoom.Jpeg.InverseDct, DelphiDoom.Jpeg.MarkerReader,
-  DelphiDoom.Jpeg.McuTarget, DelphiDoom.Jpeg.ProgressiveDecoder;
+  DelphiDoom.Jpeg.McuTarget, DelphiDoom.Jpeg.ProgressiveDecoder, DelphiDoom.Jpeg.Types;
 
 type
   /// <summary>
@@ -42,6 +42,7 @@ type
     FEntropy: IJpegEntropyDecoder;
     FProgressive: TJpegProgressiveDecoder;
     FBuffers: TArray<TJpegComponentBuffers>;
+    FOptions: TJpegDecodeOptions;
     function GetWidth: Integer;
     function GetHeight: Integer;
     function GetOutputComponents: Integer;
@@ -76,6 +77,11 @@ type
     /// </exception>
     procedure Decompress(AOutput: PByte; AStride: Integer);
 
+    /// <summary>
+    ///   The settings that are not the default of libjpeg (fast DCT, upsampling): set before
+    ///   <c>Decompress</c>. The default is the accurate DCT and the smooth upsampling
+    /// </summary>
+    property Options: TJpegDecodeOptions read FOptions write FOptions;
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
 
@@ -93,7 +99,7 @@ uses
   DelphiDoom.Jpeg.ColorConverter, DelphiDoom.Jpeg.ColorConverterFactory,
   DelphiDoom.Jpeg.RowRenderer, DelphiDoom.Jpeg.SampleTarget,
   DelphiDoom.Jpeg.SequentialDecoder, DelphiDoom.Jpeg.SlowInverseDct,
-  DelphiDoom.Jpeg.Types;
+  DelphiDoom.Jpeg.FloatInverseDct;
 
 {$POINTERMATH ON}
 
@@ -102,6 +108,7 @@ uses
 constructor TJpegDecompressor.Create(AData: Pointer; ASize: Integer);
 begin
   inherited Create;
+  FOptions := TJpegDecodeOptions.Default;
   FSource := TJpegByteSource.Create(AData, ASize);
   FFrame := TJpegFrame.Create;
   FMarkers := TJpegMarkerReader.Create(FSource, FFrame);
@@ -252,7 +259,7 @@ var
 begin
   // The choices that can fail, in the order that libjpeg makes them: the
   // conversion of the colors, the upsampling, the coding
-  LConverter := TJpegColorConverterFactory.Select(FFrame);
+  LConverter := TJpegColorConverterFactory.Select(FFrame, FOptions.RgbOrder);
 
   FreeBuffers;
   SetLength(FBuffers, FFrame.ComponentCount);
@@ -263,9 +270,12 @@ begin
       LComponent^.HeightInBlocks);
   end;
 
-  LRenderer := TJpegRowRenderer.Create(FFrame, FBuffers, LConverter);
+  LRenderer := TJpegRowRenderer.Create(FFrame, FBuffers, LConverter, FOptions.FancyUpsampling);
   try
-    LInverseDct := TJpegSlowInverseDct.Create;
+    if FOptions.FastInverseDct then
+      LInverseDct := TJpegFloatInverseDct.Create
+    else
+      LInverseDct := TJpegSlowInverseDct.Create;
 
     if FFrame.IsArithmetic then
       EJpegDecodeException.Fail(jdeArithmeticCoding);

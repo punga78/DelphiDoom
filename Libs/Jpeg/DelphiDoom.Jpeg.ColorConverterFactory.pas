@@ -34,7 +34,7 @@ type
     class function OutputComponentsOf(AFrame: TJpegFrame): Integer; static;
 
     /// <exception cref="EJpegDecodeException">There is no conversion</exception>
-    class function Select(AFrame: TJpegFrame): IJpegColorConverter; static;
+    class function Select(AFrame: TJpegFrame; ARgbOrder: Boolean = False): IJpegColorConverter; static;
   end;
 
 implementation
@@ -53,13 +53,13 @@ begin
     Result := 3;
 end;
 
-class function TJpegColorConverterFactory.Select(AFrame: TJpegFrame): IJpegColorConverter;
+class function TJpegColorConverterFactory.Select(AFrame: TJpegFrame; ARgbOrder: Boolean): IJpegColorConverter;
 begin
   case AFrame.ColorSpace of
     jcsGrayscale:
       Result := TJpegGrayConverter.Create;
     jcsYCbCr:
-      Result := TJpegYccConverter.Create;
+      Result := TJpegYccConverter.Create(ARgbOrder);
     jcsRgb:
       Result := TJpegRgbConverter.Create;
   else

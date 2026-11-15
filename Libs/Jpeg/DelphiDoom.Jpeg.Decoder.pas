@@ -11,7 +11,7 @@ unit DelphiDoom.Jpeg.Decoder;
 interface
 
 uses
-  DelphiDoom.Jpeg.Intf;
+  DelphiDoom.Jpeg.Intf, DelphiDoom.Jpeg.Types;
 
 type
   /// <summary>
@@ -25,7 +25,7 @@ type
   TJpegDecoder = class
   private
     class function Run(ASource: Pointer; ASourceSize: Cardinal; out AInfo: TJpegInfo;
-      ADest: Pointer; ADestSize: Cardinal; ADecodePixels: Boolean): Integer; static;
+      ADest: Pointer; ADestSize: Cardinal; ADecodePixels: Boolean; const AOptions: TJpegDecodeOptions): Integer; static;
   public
     /// <summary>
     ///   Version of the library whose decoder this is
@@ -46,13 +46,19 @@ type
     /// </summary>
     /// <returns>DDJPEG_OK or the code of the error found</returns>
     class function Decode(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
-      ADestSize: Cardinal; out AInfo: TJpegInfo): Integer; static;
+      ADestSize: Cardinal; out AInfo: TJpegInfo): Integer; overload; static;
+    /// <summary>
+    ///   Like <c>Decode</c> with other settings than the default of libjpeg (the fast DCT and the plain
+    ///   upsampling of Doom 3: <c>TJpegDecodeOptions.Doom3</c>). Not part of the DLL contract
+    /// </summary>
+    class function Decode(ASource: Pointer; ASourceSize: Cardinal; ADest: Pointer;
+      ADestSize: Cardinal; out AInfo: TJpegInfo; const AOptions: TJpegDecodeOptions): Integer; overload; static;
   end;
 
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Jpeg.Decompressor, DelphiDoom.Jpeg.Types;
+  System.SysUtils, DelphiDoom.Jpeg.Decompressor;
 
 const
   LIBRARY_VERSION: PAnsiChar = '6b';
@@ -66,7 +72,7 @@ end;
 
 class function TJpegDecoder.Run(ASource: Pointer; ASourceSize: Cardinal;
   out AInfo: TJpegInfo; ADest: Pointer; ADestSize: Cardinal;
-  ADecodePixels: Boolean): Integer;
+  ADecodePixels: Boolean; const AOptions: TJpegDecodeOptions): Integer;
 var
   LDecompressor: TJpegDecompressor;
   LRowStride: Integer;
@@ -77,6 +83,7 @@ begin
 
   Result := DDJPEG_OK;
   LDecompressor := TJpegDecompressor.Create(ASource, Integer(ASourceSize));
+  LDecompressor.Options := AOptions;
   try
     try
       LDecompressor.ReadHeader;
@@ -104,13 +111,19 @@ end;
 class function TJpegDecoder.ReadInfo(ASource: Pointer; ASourceSize: Cardinal;
   out AInfo: TJpegInfo): Integer;
 begin
-  Result := Run(ASource, ASourceSize, AInfo, nil, 0, False);
+  Result := Run(ASource, ASourceSize, AInfo, nil, 0, False, TJpegDecodeOptions.Default);
 end;
 
 class function TJpegDecoder.Decode(ASource: Pointer; ASourceSize: Cardinal;
   ADest: Pointer; ADestSize: Cardinal; out AInfo: TJpegInfo): Integer;
 begin
-  Result := Run(ASource, ASourceSize, AInfo, ADest, ADestSize, True);
+  Result := Run(ASource, ASourceSize, AInfo, ADest, ADestSize, True, TJpegDecodeOptions.Default);
+end;
+
+class function TJpegDecoder.Decode(ASource: Pointer; ASourceSize: Cardinal;
+  ADest: Pointer; ADestSize: Cardinal; out AInfo: TJpegInfo; const AOptions: TJpegDecodeOptions): Integer;
+begin
+  Result := Run(ASource, ASourceSize, AInfo, ADest, ADestSize, True, AOptions);
 end;
 
 end.

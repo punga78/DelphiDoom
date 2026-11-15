@@ -64,6 +64,7 @@ uses
   DelphiDoom.Cinematic.Factory,
   DelphiDoom.Cinematic.Jpeg.Factory,
   DelphiDoom.Jpeg.Intf,
+  DelphiDoom.Jpeg.Types,
   DelphiDoom.Jpeg.Decoder,
   DelphiDoom.Tests.Cinematic.Support;
 
@@ -330,7 +331,8 @@ var
 begin
   LData := TRoqTestData.ReadJpeg('encoder-48x48-c3-q100.jpg');
   SetLength(LRaw, 48 * 48 * 3);
-  Assert.AreEqual(DDJPEG_OK, TJpegDecoder.Decode(@LData[0], Length(LData), @LRaw[0], Length(LRaw), LInfo));
+  Assert.AreEqual(DDJPEG_OK, TJpegDecoder.Decode(@LData[0], Length(LData), @LRaw[0], Length(LRaw), LInfo,
+    TJpegDecodeOptions.Doom3));
   LBuilder := TRoqTestBuilder.Create;
   try
     LBuilder.Info(48, 48);
