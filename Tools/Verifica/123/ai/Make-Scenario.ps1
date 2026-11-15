@@ -369,6 +369,49 @@ foreach ($t in $types) {
     MoveTo $t.a @(0, 0, 0) $t.f $t.g 4
     A "mvsim|1|$CLIENT|8|0.1|$($t.o -join '|')|$($t.f)|$($t.g)"
 }
+Rem 'a sweep of positions and move flags around the start of every travel type (the distances decide the speeds)'
+foreach ($t in $types) {
+    A 'mvreset|1'
+    MoveTo $t.o @(0, 0, 0) $t.f $t.g
+    foreach ($mf in @(0, 2, 514)) {
+        foreach ($dx in @(-70, -35, -12, 0, 8, 30, 70)) {
+            foreach ($z in @(5, 30, 70)) {
+                MoveTo @(($t.o[0] + $dx), 32, $z) @(0, 0, 0) $t.f $t.g $mf
+                A "mvgoal|1|$CLIENT|$($t.f)|$($t.g)"
+            }
+        }
+    }
+}
+Rem 'standing on the plat of the elevator and on the func_bobbing: a sweep of heights and places'
+A 'entity|30|1|4|1|300|32|-12|300|32|-12|0|0'
+A 'entity|31|1|4|2|345|32|-12|345|32|-12|0|0'
+A 'solid|30|280|10|-40|320|50|0'
+A 'solid|31|325|10|-40|375|50|0'
+foreach ($mx in @(@(300, 6, (Goal @(352, 32, 5) 6)), @(345, 6, (Goal @(288, 32, 5) 5)), @(350, 6, (Goal @(288, 32, 5) 5)))) {
+    foreach ($z in @(-8, -2, 4, 10, 30)) {
+        foreach ($dx in @(0, 12, 40)) {
+            A 'mvreset|1'
+            MoveTo @(($mx[0] + $dx), 32, $z) @(0, 0, 0) $NOTELEPORT $mx[2]
+            MoveTo @(($mx[0] + $dx), 32, $z) @(0, 0, 0) $NOTELEPORT $mx[2] 2
+            MoveTo @(($mx[0] + $dx), 32, $z) @(0, 0, 0) $FLAGS $mx[2] 2
+        }
+    }
+}
+A 'clearsolids'
+Rem 'the weapon jumps: at the start, looking down, then in the air close to and far from the end'
+foreach ($w in @(@(30, (Goal @(288, 32, 5) 5)), @(160, (Goal @(352, 32, 5) 6)))) {
+    foreach ($yaw in @(0, 3, 90)) {
+        A 'mvreset|1'
+        A "mvinit|1|$($w[0])|32|4|0|0|0|0|0|24|1|3|0.1|2|90|$yaw|0|0"
+        A "mvgoal|1|$CLIENT|$FLAGS|$($w[1])"
+        A "eareset|$CLIENT"
+        foreach ($air in @(@(20, 40, 100, 0, 50), @(60, 60, 0, 0, -50), @(120, 90, 200, 20, 10), @(2, 30, 20, 0, 5))) {
+            A "mvinit|1|$($w[0] + $air[0])|32|$($air[1])|$($air[2])|$($air[3])|$($air[4])|0|0|24|1|3|0.1|2|90|$yaw|0|0"
+            A "mvgoal|1|$CLIENT|$FLAGS|$($w[1])"
+            A "eareset|$CLIENT"
+        }
+    }
+}
 Rem 'in the air above the map, with a layer of water under it: the finish of every travel type'
 A 'clearliquids'
 A 'liquid|32|0|0|150|450|64|180'
@@ -408,8 +451,8 @@ foreach ($n in @('elevator', 'funcbob')) {
 }
 Rem 'the bot on the movers: the plat down, the func_bobbing at the start and at the end'
 A 'entity|30|1|4|1|300|32|-12|300|32|-12|0|0'
-A 'solid|30|280|10|-40|320|50|-20'
-A 'solid|31|325|10|-40|375|50|-20'
+A 'solid|30|280|10|-40|320|50|0'
+A 'solid|31|325|10|-40|375|50|0'
 foreach ($bobx in @(350, 345, 372, 400)) {
     A "entity|31|1|4|2|$bobx|32|-12|$bobx|32|-12|0|0"
     A 'mvreset|1'
@@ -430,7 +473,7 @@ A "mvgoal|1|$CLIENT|$FLAGS|$(Goal @(352, 32, 5) 6)"
 A 'clearsolids'
 A 'entity|31|1|4|2|345|32|-12|345|32|-12|0|0'
 Rem 'a bot on top of things'
-A 'solid|30|280|10|-40|320|50|-20'
+A 'solid|30|280|10|-40|320|50|0'
 A 'solid|60|0|10|-40|60|50|-20'
 A 'entity|60|1|1|3|30|32|-10|30|32|-10|0|0'
 A 'entity|61|1|1|4|130|32|-10|130|32|-10|0|0'

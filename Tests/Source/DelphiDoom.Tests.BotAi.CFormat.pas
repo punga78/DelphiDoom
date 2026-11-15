@@ -27,6 +27,10 @@ type
     procedure DovrebbeScrivereNanEInfinitiComeIlRuntimeDelC;
     [Test]
     procedure DovrebbeScrivereUnInteroConSegno;
+    [Test]
+    procedure DovrebbeScrivereUnDecimaleArrotondandoAlPariSeEAMeta;
+    [Test]
+    procedure DovrebbeScrivereUnDecimaleConSegnoNanEInfiniti;
   end;
 
 implementation
@@ -66,6 +70,26 @@ procedure TTestBotCFormat.DovrebbeScrivereUnInteroConSegno;
 begin
   Assert.AreEqual('-12', string(TBotCFormat.Int(-12)));
   Assert.AreEqual('0', string(TBotCFormat.Int(0)));
+end;
+
+procedure TTestBotCFormat.DovrebbeScrivereUnDecimaleArrotondandoAlPariSeEAMeta;
+begin
+  // printf rounds the exact value of the double: x.25 and x.75 are exact, so they go to the even decimal
+  Assert.AreEqual('0.2', string(TBotCFormat.Fixed1(0.25)));
+  Assert.AreEqual('0.8', string(TBotCFormat.Fixed1(0.75)));
+  Assert.AreEqual('1.2', string(TBotCFormat.Fixed1(1.25)));
+  Assert.AreEqual('-0.2', string(TBotCFormat.Fixed1(-0.25)));
+  Assert.AreEqual('-0.8', string(TBotCFormat.Fixed1(-0.75)));
+  Assert.AreEqual('1.5', string(TBotCFormat.Fixed1(1.5)));
+  Assert.AreEqual('0.3', string(TBotCFormat.Fixed1(0.26)));
+end;
+
+procedure TTestBotCFormat.DovrebbeScrivereUnDecimaleConSegnoNanEInfiniti;
+begin
+  Assert.AreEqual('-0.0', string(TBotCFormat.Fixed1(-0.0001)));
+  Assert.AreEqual('nan', string(TBotCFormat.Fixed1(NaN)));
+  Assert.AreEqual('inf', string(TBotCFormat.Fixed1(Infinity)));
+  Assert.AreEqual('-inf', string(TBotCFormat.Fixed1(NegInfinity)));
 end;
 
 end.
