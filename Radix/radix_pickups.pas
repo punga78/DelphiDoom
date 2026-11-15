@@ -77,6 +77,15 @@ procedure RX_PilotInventoryTick(const p: Pplayer_t);
 //==============================================================================
 function RX_ActorTouchDamage(const mobjtype: integer): integer;
 
+//==============================================================================
+//
+// RX_ActorCanDamageWalls
+// MF3_EX_CANDAMAGEWALLS of Rad-X: the missile of this kind of thing damages the
+// walls that it explodes against
+//
+//==============================================================================
+function RX_ActorCanDamageWalls(const mobjtype: integer): boolean;
+
 implementation
 
 uses
@@ -102,8 +111,9 @@ uses
 
 const
   BONUSADD = 6;
-  // "-radixthruspecies": the actors with MF3_EX_DONTBLOCKSPECIES get MF3_EX_THRUSPECIES of the engine
-  THRUSPECIES_OPTION = '-radixthruspecies';
+  // "-radixblockspecies": the actors with MF3_EX_DONTBLOCKSPECIES do not get MF3_EX_THRUSPECIES of the
+  // engine (they do by default)
+  THRUSPECIES_OPTION = '-radixblockspecies';
 
   neutronlevelmessages: array[0..MAXNEUTRONCANNONLEVEL - 1] of string = (
     '',
@@ -148,10 +158,9 @@ begin
   if radix_actors = nil then
     I_Error('RX_InitActors(): RX_ConfigureActors() was not called');
 
-  // Off unless it is asked (for the tests): with the enemies that come together and the damage to
-  // the craft that is still an approximation (MF_EX_FIRERESIST in the place of the scale of
-  // P_DamageMobj of Rad-X) the pilot of e1m1.script dies in the last hall
-  thruspecies := M_CheckParm(THRUSPECIES_OPTION) > 0;
+  // On, as in Rad-X, now that the damage to the craft is the scale of P_DamageMobj of Rad-X (the
+  // option turns it off, for the comparison)
+  thruspecies := M_CheckParm(THRUSPECIES_OPTION) = 0;
 
   SetLength(radixmobjinfo, nummobjtypes);
   SetLength(radixmobjhasinfo, nummobjtypes);
@@ -186,6 +195,20 @@ begin
     exit;
   if radixmobjhasinfo[mobjtype] then
     result := radixmobjinfo[mobjtype].TouchDamage;
+end;
+
+//==============================================================================
+//
+// RX_ActorCanDamageWalls
+//
+//==============================================================================
+function RX_ActorCanDamageWalls(const mobjtype: integer): boolean;
+begin
+  result := false;
+  if (mobjtype < 0) or (mobjtype >= Length(radixmobjhasinfo)) then
+    exit;
+  if radixmobjhasinfo[mobjtype] then
+    result := TRadixActorFlag.CanDamageWalls in radixmobjinfo[mobjtype].Flags;
 end;
 
 //==============================================================================

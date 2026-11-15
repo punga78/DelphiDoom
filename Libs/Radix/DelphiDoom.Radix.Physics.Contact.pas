@@ -41,6 +41,13 @@ type
     ///   range, within the range (included) with it
     /// </summary>
     class function InPatrolRange(ALimited: Boolean; ADistance, APatrolRange: Integer): Boolean; static;
+    /// <summary>
+    ///   True when a line stops a missile (the walls that can be shot): a one sided line always;
+    ///   a two sided one when the missile does not fit in its opening, which goes from the higher
+    ///   floor to the lower ceiling of its two sectors (the panel under an opening is a target)
+    /// </summary>
+    class function LineStopsMissile(ATwoSided: Boolean; AMissileZ, AMissileHeight, AFrontFloor, ABackFloor,
+      AFrontCeiling, ABackCeiling: Integer): Boolean; static;
   end;
 
 implementation
@@ -75,6 +82,25 @@ end;
 class function TRadixContactRules.InPatrolRange(ALimited: Boolean; ADistance, APatrolRange: Integer): Boolean;
 begin
   Result := not ALimited or (ADistance <= APatrolRange);
+end;
+
+class function TRadixContactRules.LineStopsMissile(ATwoSided: Boolean; AMissileZ, AMissileHeight, AFrontFloor,
+  ABackFloor, AFrontCeiling, ABackCeiling: Integer): Boolean;
+var
+  LFloor, LCeiling: Integer;
+begin
+  if not ATwoSided then
+  begin
+    Result := True;
+    Exit;
+  end;
+  LFloor := AFrontFloor;
+  if ABackFloor > LFloor then
+    LFloor := ABackFloor;
+  LCeiling := AFrontCeiling;
+  if ABackCeiling < LCeiling then
+    LCeiling := ABackCeiling;
+  Result := (AMissileZ < LFloor) or (Int64(AMissileZ) + AMissileHeight > LCeiling);
 end;
 
 end.

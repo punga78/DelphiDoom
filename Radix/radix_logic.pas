@@ -462,7 +462,6 @@ begin
     exit;
 
   RX_RunForceFields; // JVAL: 20200429 - Forcefields
-  RX_TrackShots;
   RX_IdleExplodeTick; // JVAL: 20200503 - P_VelocityHandler
   RX_RunTriggers; // JVAL: 20200305 - Run radix triggers
   RX_RunActions;  // JVAL: 20200305 - Run radix actions
@@ -558,7 +557,6 @@ begin
   radixnamedlevel := 0;
 
   RX_MarkMissileWalls;
-  RX_InitWalls;
   RX_InitForceFields; // JVAL: 20200429 - Initalize forcefields
 
   RX_SpawnLevelLogicThinker;

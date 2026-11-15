@@ -321,6 +321,7 @@ uses
   p_maputl in '..\Base\p_maputl.pas',
   p_mobj in '..\Base\p_mobj.pas',
   DelphiDoom.Engine.World.MobjRules in '..\Doom\DelphiDoom.Engine.World.MobjRules.pas',
+  DelphiDoom.Engine.World.PhysicsExtension in 'DelphiDoom.Engine.World.PhysicsExtension.pas',
   DelphiDoom.Engine.World.Respawner in '..\Base\DelphiDoom.Engine.World.Respawner.pas',
   DelphiDoom.Engine.World.MissileSpawner in '..\Base\DelphiDoom.Engine.World.MissileSpawner.pas',
   DelphiDoom.Engine.World.PlayerSpawner in '..\Base\DelphiDoom.Engine.World.PlayerSpawner.pas',

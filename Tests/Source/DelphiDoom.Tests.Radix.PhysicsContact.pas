@@ -57,6 +57,18 @@ type
     [TestCase('fuori', 'True,4097,4096,False')]
     procedure UnNemicoDovrebbeCercareSoloNelSuoRaggioDiPattuglia(ALimited: Boolean; ADistance, ARange: Integer;
       AExpected: Boolean);
+    [Test]
+    // two sided, z, height, front floor, back floor, front ceiling, back ceiling, expected
+    [TestCase('a un lato ferma sempre', 'False,500,8,0,0,0,0,True')]
+    [TestCase('nell apertura passa', 'True,490,8,352,480,640,512,False')]
+    [TestCase('sotto il pannello ferma', 'True,400,8,352,480,640,512,True')]
+    [TestCase('appena sopra il pannello passa', 'True,480,8,352,480,640,512,False')]
+    [TestCase('sopra l apertura ferma', 'True,505,8,352,480,640,512,True')]
+    [TestCase('contro il soffitto passa', 'True,504,8,352,480,640,512,False')]
+    [TestCase('settore chiuso ferma', 'True,512,8,352,512,640,512,True')]
+    [TestCase('senza traboccare', 'True,2147483647,8,0,0,2147483647,2147483647,True')]
+    procedure UnaLineaDovrebbeFermareUnMissileSoloSeNonCiPassa(ATwoSided: Boolean; AZ, AHeight, AFrontFloor,
+      ABackFloor, AFrontCeiling, ABackCeiling: Integer; AExpected: Boolean);
   end;
 
 implementation
@@ -91,6 +103,13 @@ procedure TTestRadixPhysicsContact.UnNemicoDovrebbeCercareSoloNelSuoRaggioDiPatt
   ARange: Integer; AExpected: Boolean);
 begin
   Assert.AreEqual(AExpected, TRadixContactRules.InPatrolRange(ALimited, ADistance, ARange));
+end;
+
+procedure TTestRadixPhysicsContact.UnaLineaDovrebbeFermareUnMissileSoloSeNonCiPassa(ATwoSided: Boolean; AZ, AHeight,
+  AFrontFloor, ABackFloor, AFrontCeiling, ABackCeiling: Integer; AExpected: Boolean);
+begin
+  Assert.AreEqual(AExpected, TRadixContactRules.LineStopsMissile(ATwoSided, AZ, AHeight, AFrontFloor, ABackFloor,
+    AFrontCeiling, ABackCeiling));
 end;
 
 initialization

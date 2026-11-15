@@ -278,6 +278,7 @@ uses
   p_local,
   p_map,
   DelphiDoom.Engine.World.MapRules,
+  DelphiDoom.Engine.World.PhysicsExtension,
   p_secnodes,
   p_maputl,
   p_mobjlist,
@@ -1236,12 +1237,25 @@ begin
   if mo.player <> nil then
   begin
     if not P_LadderMove(mo) then
+    begin
       P_SlideMove(mo); // try to slide along it
+      // a game with the physics of its own counts the hit against the wall (Radix)
+      if TPhysicsExtension.Enabled then
+        TPhysicsExtension.PlayerHitWall(mo, ptryx, ptryy);
+    end;
   end
   // JVAL: 20210209 - Sliding monsters
   else if (mo.flags3_ex and (MF3_EX_SLIDING or MF3_EX_SLIDEONWALLS) <> 0) or (mo.flags and MF_SLIDE <> 0) and (mo.flags and MF_MISSILE = 0) then
   begin
     P_SlideMove(mo); // try to slide along it
+  end
+  // a game with the physics of its own: a wall that can be shot is not a mirror, the missile
+  // explodes against it and damages it (Radix)
+  else if TPhysicsExtension.Enabled and (mo.flags and MF_MISSILE <> 0) and
+          TPhysicsExtension.MissileBlocked(mo) then
+  begin
+    P_ExplodeMissile(mo);
+    TPhysicsExtension.MissileExploded(mo);
   end
   // JVAL: 20211121 - New bounce on walls mechanics
   else if (G_PlayingEngineVersion >= VERSION207) and (mo.flags3_ex and MF3_EX_WALLBOUNCE <> 0) and (tmbounceline <> nil) then
@@ -1283,7 +1297,13 @@ begin
         end;
       end;
     end;
+    // a game with the physics of its own looks at the line that stopped the missile before the
+    // explosion, and damages it after (Radix)
+    if TPhysicsExtension.Enabled then
+      TPhysicsExtension.MissileBlocked(mo);
     P_ExplodeMissile(mo);
+    if TPhysicsExtension.Enabled then
+      TPhysicsExtension.MissileExploded(mo);
   end
   else
   begin
