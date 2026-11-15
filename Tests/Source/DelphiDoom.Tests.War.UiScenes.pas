@@ -677,8 +677,8 @@ begin
   try
     with TWarUiScriptRunner.Create(FGame, LOutput, nil) do
     try
-      Assert.WillRaise(procedure begin Run(['campaign human 1']); end, EWarException);
-      Assert.WillRaise(procedure begin Run(['custom 150']); end, EWarException);
+      // campaign and custom are accepted now (the map exists); a mission that is not in the campaign is not
+      Assert.WillRaise(procedure begin Run(['campaign human 99']); end, EWarException);
       Assert.WillRaise(procedure begin Run(['scene download']); end, EWarException);
       Assert.WillRaise(procedure begin Run(['frobnicate']); end, EWarException);
       Assert.WillRaise(procedure begin Run(['key banana down']); end, EWarException);

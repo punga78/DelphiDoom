@@ -563,7 +563,7 @@ begin
     Assert.AreEqual<Integer>(0, LSprites.Black.Pixels[0]);
     Assert.AreEqual<Integer>(64, LSprites.Minimap.Width);
     LSprites.SetMinimapPixels(TBytes.Create(1, 2, 3, 4));
-    Assert.AreEqual(4, Length(LSprites.Minimap.Pixels));
+    Assert.AreEqual<Integer>(4, Length(LSprites.Minimap.Pixels));
     LA := LSprites.Get(300);
     LB := LSprites.Get(300);
     Assert.IsTrue(LA = LB, 'lo stesso oggetto');
@@ -767,13 +767,17 @@ begin
   LLauncherRef := LLauncher;
   Assert.WillRaise(
     procedure
+    var
+      LScene: IWarScene;
     begin
-      LLauncherRef.CreateCampaignMap(1);
+      LScene := LLauncherRef.CreateCampaignMap(1);
     end, EWarException);
   Assert.WillRaise(
     procedure
+    var
+      LScene: IWarScene;
     begin
-      LLauncherRef.CreateCustomMap(1, 0, 0);
+      LScene := LLauncherRef.CreateCustomMap(1, 0, 0);
     end, EWarException);
 end;
 
