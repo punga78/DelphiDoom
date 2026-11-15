@@ -11,7 +11,8 @@ unit DelphiDoom.Xmi.Midi.ByteReader;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  DelphiDoom.Bytes.Reader;
 
 type
   /// <summary>
@@ -20,37 +21,15 @@ type
   TXmiVarLengthStatus = (Complete, Overflow, EndOfData);
 
   /// <summary>
-  ///   A cursor over a block of bytes. It copies nothing: the block must stay
-  ///   alive while the reader is used
+  ///   A cursor over a part of a block of bytes (TByteReader of Libs\Bytes, created with the
+  ///   start and the length of the part): ReadByte raises EXmiDataException at the end of the
+  ///   part. It copies nothing: the block must stay alive while the reader is used. It adds
+  ///   the variable length numbers of MIDI and XMI
   /// </summary>
-  TXmiByteReader = class
-  private
-    FData: TBytes;
-    FStart: Integer;
-    FEnd: Integer;
-    FPosition: Integer;
-    function GetAtEnd: Boolean;
+  TXmiByteReader = class(TByteReader)
+  protected
+    procedure RaiseOverrun(ACount: Integer); override;
   public
-    /// <param name="AStart">First byte of the part to read</param>
-    /// <param name="ACount">Number of bytes of the part to read</param>
-    constructor Create(const AData: TBytes; AStart, ACount: Integer);
-
-    /// <summary>
-    ///   Reads a byte; raises EXmiDataException at the end of the data
-    /// </summary>
-    function ReadByte: Byte;
-
-    /// <summary>
-    ///   Number of bytes still to read
-    /// </summary>
-    function Remaining: Integer;
-
-    /// <summary>
-    ///   Moves the cursor back by one byte (after looking at a byte that
-    ///   belongs to the next element)
-    /// </summary>
-    procedure StepBack;
-
     /// <summary>
     ///   MIDI number: seven bits per byte, the most significant first, the
     ///   last byte without the high bit
@@ -63,8 +42,6 @@ type
     ///   is not consumed
     /// </summary>
     function ReadXmiDelay(out AValue: UInt64): TXmiVarLengthStatus;
-
-    property AtEnd: Boolean read GetAtEnd;
   end;
 
 implementation
@@ -78,42 +55,9 @@ const
 
 { TXmiByteReader }
 
-constructor TXmiByteReader.Create(const AData: TBytes; AStart, ACount: Integer);
+procedure TXmiByteReader.RaiseOverrun(ACount: Integer);
 begin
-  inherited Create;
-  if (AStart < 0) or (ACount < 0) or (AStart > Length(AData)) or
-     (AStart + ACount > Length(AData)) then
-    raise EArgumentOutOfRangeException.Create('The part is outside the data');
-
-  FData := AData;
-  FStart := AStart;
-  FEnd := AStart + ACount;
-  FPosition := AStart;
-end;
-
-function TXmiByteReader.GetAtEnd: Boolean;
-begin
-  Result := FPosition >= FEnd;
-end;
-
-function TXmiByteReader.Remaining: Integer;
-begin
-  Result := FEnd - FPosition;
-end;
-
-function TXmiByteReader.ReadByte: Byte;
-begin
-  if FPosition >= FEnd then
-    raise EXmiDataException.Create('Unexpected end of the data');
-
-  Result := FData[FPosition];
-  Inc(FPosition);
-end;
-
-procedure TXmiByteReader.StepBack;
-begin
-  if FPosition > FStart then
-    Dec(FPosition);
+  raise EXmiDataException.Create('Unexpected end of the data');
 end;
 
 function TXmiByteReader.ReadMidiNumber(out AValue: UInt64): TXmiVarLengthStatus;
@@ -122,7 +66,7 @@ var
   LBits: Integer;
 begin
   AValue := 0;
-  if FPosition >= FEnd then
+  if AtEnd then
     Exit(TXmiVarLengthStatus.EndOfData);
 
   LByte := ReadByte;
@@ -130,7 +74,7 @@ begin
   AValue := LByte and 127;
   while (LByte shr 7) = 1 do
   begin
-    if FPosition >= FEnd then
+    if AtEnd then
       Exit(TXmiVarLengthStatus.EndOfData);
 
     LByte := ReadByte;
@@ -149,14 +93,14 @@ var
   LByte: Byte;
 begin
   AValue := 0;
-  if FPosition >= FEnd then
+  if AtEnd then
     Exit(TXmiVarLengthStatus.EndOfData);
 
   LByte := ReadByte;
   while LByte = $7F do
   begin
     AValue := AValue + LByte;
-    if FPosition >= FEnd then
+    if AtEnd then
       Exit(TXmiVarLengthStatus.EndOfData);
 
     LByte := ReadByte;

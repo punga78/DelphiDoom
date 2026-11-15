@@ -10,7 +10,7 @@ unit DelphiDoom.Xcom.BdyDecoder;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.BinaryReader, DelphiDoom.Xcom.Image,
+  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Bytes.StreamReader, DelphiDoom.Xcom.Image,
   DelphiDoom.Xcom.Intf;
 
 type
@@ -31,7 +31,7 @@ implementation
 
 function TXcomBdyDecoder.Decode(const ABytes: TBytes; AWidth, AHeight: Integer): TXcomImage;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LDataByte: Byte;
   LPixelCount: Integer;
   LX: Integer;
@@ -40,7 +40,7 @@ var
   LIndex: Integer;
 begin
   Result := TXcomImage.Create(AWidth, AHeight);
-  LReader := TXcomBinaryReader.Create(ABytes);
+  LReader := TByteStreamReader.Create(ABytes);
   try
     LDataByte := 0;
     LX := 0;

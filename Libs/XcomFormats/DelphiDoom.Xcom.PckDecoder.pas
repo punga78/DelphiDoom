@@ -10,7 +10,7 @@ unit DelphiDoom.Xcom.PckDecoder;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.BinaryReader, DelphiDoom.Xcom.Image,
+  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Bytes.StreamReader, DelphiDoom.Xcom.Image,
   DelphiDoom.Xcom.Intf;
 
 type
@@ -55,7 +55,7 @@ end;
 function TXcomPckDecoder.Decode(const APck, ATab: TBytes; AWidth, AHeight: Integer): TArray<TXcomImage>;
 var
   LFrames: Integer;
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LFrame: Integer;
   LImage: TXcomImage;
   LX: Integer;
@@ -69,7 +69,7 @@ begin
   if LFrames > MAX_FRAMES then
     raise EXcomDataException.CreateFmt(SXcomTooManyFrames, [LFrames, MAX_FRAMES]);
   SetLength(Result, LFrames);
-  LReader := TXcomBinaryReader.Create(APck);
+  LReader := TByteStreamReader.Create(APck);
   try
     LValue := 0;
     for LFrame := 0 to LFrames - 1 do

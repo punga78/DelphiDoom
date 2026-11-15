@@ -749,6 +749,8 @@ uses
   DelphiDoom.Voxel.Types in '..\Libs\Voxel\DelphiDoom.Voxel.Types.pas',
   DelphiDoom.Voxel.Intf in '..\Libs\Voxel\DelphiDoom.Voxel.Intf.pas',
   DelphiDoom.Voxel.Colors in '..\Libs\Voxel\DelphiDoom.Voxel.Colors.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Voxel.ByteReader in '..\Libs\Voxel\DelphiDoom.Voxel.ByteReader.pas',
   DelphiDoom.Voxel.KvxPalette in '..\Libs\Voxel\DelphiDoom.Voxel.KvxPalette.pas',
   DelphiDoom.Voxel.Model in '..\Libs\Voxel\DelphiDoom.Voxel.Model.pas',

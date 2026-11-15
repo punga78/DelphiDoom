@@ -1,6 +1,6 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: tracker - reads the bytes of a module file                      }
+{  DelphiDoom: Tracker library - reader of the numbers and text of a module    }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
@@ -11,39 +11,27 @@ unit DelphiDoom.Tracker.ByteReader;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  DelphiDoom.Bytes.Reader;
 
 type
   /// <summary>
   ///   Reads numbers and text from a block of bytes. A read past the end
-  ///   raises ETrackerException: a truncated module is an error, not a crash
+  ///   raises ETrackerException: a truncated module is an error, not a crash.
+  ///   The cursor is the common TByteReader of Libs\Bytes (little endian ReadWord and ReadCardinal,
+  ///   big endian ReadWordBE); this class adds the text and the truncating block, and gives it the
+  ///   exception of this library
   /// </summary>
-  TTrackerByteReader = class
-  private
-    FData: TBytes;
-    FPosition: Integer;
-    procedure Need(const ACount: Integer);
-    function GetSize: Integer;
+  TTrackerByteReader = class(TByteReader)
+  protected
+    procedure RaiseOverrun(ACount: Integer); override;
   public
-    constructor Create(const AData: TBytes);
-
-    procedure Seek(const APosition: Integer);
-    procedure Skip(const ACount: Integer);
-    function ReadByte: Byte;
-    /// <summary>Little endian</summary>
-    function ReadWord: Word;
-    function ReadCardinal: Cardinal;
-    /// <summary>Big endian</summary>
-    function ReadWordBE: Word;
+    /// <summary>Moves the cursor; a position outside the data is an error</summary>
+    procedure Seek(APosition: Integer); override;
     /// <summary>Text of ACount bytes, up to the first zero, with no trailing spaces</summary>
     function ReadText(const ACount: Integer): string;
     /// <summary>Raw bytes; fewer if the data ends and ATruncate is true</summary>
     function ReadBytes(const ACount: Integer; const ATruncate: Boolean = False): TBytes;
-    function Remaining: Integer;
-
-    property Position: Integer read FPosition;
-    property Size: Integer read GetSize;
-    property Data: TBytes read FData;
   end;
 
 implementation
@@ -56,68 +44,16 @@ const
 
 { TTrackerByteReader }
 
-constructor TTrackerByteReader.Create(const AData: TBytes);
+procedure TTrackerByteReader.RaiseOverrun(ACount: Integer);
 begin
-  inherited Create;
-  FData := AData;
+  raise ETrackerException.Create(STruncated);
 end;
 
-function TTrackerByteReader.GetSize: Integer;
+procedure TTrackerByteReader.Seek(APosition: Integer);
 begin
-  Result := Length(FData);
-end;
-
-procedure TTrackerByteReader.Need(const ACount: Integer);
-begin
-  if (ACount < 0) or (FPosition + ACount > Length(FData)) then
+  if (APosition < 0) or (APosition > Size) then
     raise ETrackerException.Create(STruncated);
-end;
-
-function TTrackerByteReader.Remaining: Integer;
-begin
-  Result := Length(FData) - FPosition;
-end;
-
-procedure TTrackerByteReader.Seek(const APosition: Integer);
-begin
-  if (APosition < 0) or (APosition > Length(FData)) then
-    raise ETrackerException.Create(STruncated);
-  FPosition := APosition;
-end;
-
-procedure TTrackerByteReader.Skip(const ACount: Integer);
-begin
-  Need(ACount);
-  Inc(FPosition, ACount);
-end;
-
-function TTrackerByteReader.ReadByte: Byte;
-begin
-  Need(1);
-  Result := FData[FPosition];
-  Inc(FPosition);
-end;
-
-function TTrackerByteReader.ReadWord: Word;
-begin
-  Need(2);
-  Result := FData[FPosition] or (FData[FPosition + 1] shl 8);
-  Inc(FPosition, 2);
-end;
-
-function TTrackerByteReader.ReadCardinal: Cardinal;
-begin
-  Need(4);
-  Result := Cardinal(FData[FPosition]) or (Cardinal(FData[FPosition + 1]) shl 8) or
-    (Cardinal(FData[FPosition + 2]) shl 16) or (Cardinal(FData[FPosition + 3]) shl 24);
-  Inc(FPosition, 4);
-end;
-
-function TTrackerByteReader.ReadWordBE: Word;
-begin
-  Need(2);
-  Result := (FData[FPosition] shl 8) or FData[FPosition + 1];
-  Inc(FPosition, 2);
+  inherited Seek(APosition);
 end;
 
 function TTrackerByteReader.ReadText(const ACount: Integer): string;
@@ -129,12 +65,12 @@ begin
   Result := '';
   for LIndex := 0 to ACount - 1 do
   begin
-    LChar := FData[FPosition + LIndex];
+    LChar := Data[Position + LIndex];
     if LChar = 0 then
       Break;
     Result := Result + Char(LChar);
   end;
-  Inc(FPosition, ACount);
+  Skip(ACount);
   Result := TrimRight(Result);
 end;
 
@@ -143,14 +79,9 @@ var
   LCount: Integer;
 begin
   LCount := ACount;
-  if ATruncate and (FPosition + LCount > Length(FData)) then
-    LCount := Length(FData) - FPosition;
-  Need(LCount);
-  SetLength(Result, LCount);
-  if LCount > 0 then
-    Move(FData[FPosition], Result[0], LCount);
-  Inc(FPosition, LCount);
+  if ATruncate and (Position + LCount > Size) then
+    LCount := Size - Position;
+  Result := ReadBlock(LCount);
 end;
 
 end.
-

@@ -6,17 +6,17 @@
 {  (no code of OpenXcom in this unit)                                           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Tests.Xcom.BinaryReader;
+unit DelphiDoom.Tests.Bytes.StreamReader;
 
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Xcom.BinaryReader;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Bytes.StreamReader;
 
 type
   [TestFixture]
-  [Category('xcom')]
-  TTestXcomBinaryReader = class(TObject)
+  [Category('bytes')]
+  TTestBytesStreamReader = class(TObject)
   public
     [Test]
     procedure DovrebbeLeggereIByteInSequenza;
@@ -44,14 +44,14 @@ type
 
 implementation
 
-{ TTestXcomBinaryReader }
+{ TTestBytesStreamReader }
 
-procedure TTestXcomBinaryReader.DovrebbeLeggereIByteInSequenza;
+procedure TTestBytesStreamReader.DovrebbeLeggereIByteInSequenza;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LValue: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([1, 2]);
+  LReader := TByteStreamReader.Create([1, 2]);
   try
     LValue := 0;
     Assert.IsTrue(LReader.ReadByte(LValue));
@@ -65,12 +65,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeLasciareIlValoreSeIByteFiniscono;
+procedure TTestBytesStreamReader.DovrebbeLasciareIlValoreSeIByteFiniscono;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LValue: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([7]);
+  LReader := TByteStreamReader.Create([7]);
   try
     LValue := 0;
     LReader.ReadByte(LValue);
@@ -82,12 +82,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeLeggereUnaParolaLittleEndian;
+procedure TTestBytesStreamReader.DovrebbeLeggereUnaParolaLittleEndian;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LValue: Word;
 begin
-  LReader := TXcomBinaryReader.Create([$34, $12]);
+  LReader := TByteStreamReader.Create([$34, $12]);
   try
     LValue := 0;
     Assert.IsTrue(LReader.ReadWord(LValue));
@@ -97,12 +97,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeCopiareSoloIlByteBassoDiUnaParolaTroncata;
+procedure TTestBytesStreamReader.DovrebbeCopiareSoloIlByteBassoDiUnaParolaTroncata;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LValue: Word;
 begin
-  LReader := TXcomBinaryReader.Create([$AB]);
+  LReader := TByteStreamReader.Create([$AB]);
   try
     LValue := $FFFE;
     Assert.IsFalse(LReader.ReadWord(LValue));
@@ -112,13 +112,13 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeFallireSempreDopoIlPrimoFallimento;
+procedure TTestBytesStreamReader.DovrebbeFallireSempreDopoIlPrimoFallimento;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LWord: Word;
   LByte: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([1, 2, 3]);
+  LReader := TByteStreamReader.Create([1, 2, 3]);
   try
     LWord := 0;
     LByte := 0;
@@ -132,11 +132,11 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeDareIlProssimoByteSenzaLeggerlo;
+procedure TTestBytesStreamReader.DovrebbeDareIlProssimoByteSenzaLeggerlo;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
 begin
-  LReader := TXcomBinaryReader.Create([9, 8]);
+  LReader := TByteStreamReader.Create([9, 8]);
   try
     Assert.AreEqual(9, LReader.Peek);
     Assert.AreEqual(0, LReader.Position);
@@ -145,12 +145,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeDareMenoUnoAllaFineEDopoUnFallimento;
+procedure TTestBytesStreamReader.DovrebbeDareMenoUnoAllaFineEDopoUnFallimento;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LByte: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([9]);
+  LReader := TByteStreamReader.Create([9]);
   try
     LByte := 0;
     LReader.ReadByte(LByte);
@@ -162,12 +162,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeSpostarsiConSeek;
+procedure TTestBytesStreamReader.DovrebbeSpostarsiConSeek;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LByte: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([1, 2, 3]);
+  LReader := TByteStreamReader.Create([1, 2, 3]);
   try
     LByte := 0;
     LReader.Seek(2);
@@ -178,12 +178,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeIgnorareSeekDopoUnFallimento;
+procedure TTestBytesStreamReader.DovrebbeIgnorareSeekDopoUnFallimento;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LByte: Byte;
 begin
-  LReader := TXcomBinaryReader.Create([1]);
+  LReader := TByteStreamReader.Create([1]);
   try
     LByte := 0;
     LReader.ReadByte(LByte);
@@ -195,12 +195,12 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeLeggereUnBloccoVuotoSenzaFallire;
+procedure TTestBytesStreamReader.DovrebbeLeggereUnBloccoVuotoSenzaFallire;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LByte: Byte;
 begin
-  LReader := TXcomBinaryReader.Create(nil);
+  LReader := TByteStreamReader.Create(nil);
   try
     LByte := 0;
     Assert.IsTrue(LReader.ReadBlock(LByte, 0));
@@ -210,11 +210,11 @@ begin
   end;
 end;
 
-procedure TTestXcomBinaryReader.DovrebbeDareLaDimensione;
+procedure TTestBytesStreamReader.DovrebbeDareLaDimensione;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
 begin
-  LReader := TXcomBinaryReader.Create([1, 2, 3, 4]);
+  LReader := TByteStreamReader.Create([1, 2, 3, 4]);
   try
     Assert.AreEqual(4, LReader.Size);
   finally
@@ -223,6 +223,6 @@ begin
 end;
 
 initialization
-  TDUnitX.RegisterTestFixture(TTestXcomBinaryReader);
+  TDUnitX.RegisterTestFixture(TTestBytesStreamReader);
 
 end.

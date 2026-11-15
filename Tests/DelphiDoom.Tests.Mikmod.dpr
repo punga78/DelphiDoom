@@ -20,6 +20,8 @@ uses
   DelphiDoom.Mikmod.Loader in '..\Libs\Mikmod\DelphiDoom.Mikmod.Loader.pas',
   DelphiDoom.Mikmod.Provider in '..\Libs\Mikmod\DelphiDoom.Mikmod.Provider.pas',
   DelphiDoom.Tracker.Types in '..\Libs\Mikmod\DelphiDoom.Tracker.Types.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Tracker.ByteReader in '..\Libs\Mikmod\DelphiDoom.Tracker.ByteReader.pas',
   DelphiDoom.Tracker.Loader.ProTracker in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.ProTracker.pas',
   DelphiDoom.Tracker.Loader.S3m in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.S3m.pas',

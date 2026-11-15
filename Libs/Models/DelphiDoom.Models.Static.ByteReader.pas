@@ -19,21 +19,21 @@ unit DelphiDoom.Models.Static.ByteReader;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  DelphiDoom.Bytes.Reader;
 
 type
   /// <summary>
   ///   A cursor on a block of bytes with the readers of the IFF formats (big endian). Reading
   ///   past the end raises EStaticModelException with the offset. It replaces idFile and the
-  ///   "flen" error counter of the original.
+  ///   "flen" error counter of the original. The cursor is the common TByteReader of Libs\Bytes;
+  ///   this class adds the names of the original readers (getU1, getU2, ...) and the strings, and
+  ///   gives it the exception of this library
   /// </summary>
-  TStaticByteReader = class
-  strict private
-    FData: TBytes;
-    FPosition: Integer;
-    procedure Need(const ACount: Integer);
+  TStaticByteReader = class(TByteReader)
+  protected
+    procedure RaiseOverrun(ACount: Integer); override;
   public
-    constructor Create(const AData: TBytes);
     function ReadU1: Byte;
     function ReadU2: Word;
     function ReadU4: Cardinal;
@@ -53,10 +53,6 @@ type
     function ReadFixedString(const ACount: Integer): AnsiString;
     /// <summary>The bytes of a block</summary>
     function ReadBytes(const ACount: Integer): TBytes;
-    procedure Skip(const ACount: Integer);
-    function Size: Integer;
-    function Remaining: Integer;
-    property Position: Integer read FPosition write FPosition;
   end;
 
 implementation
@@ -66,41 +62,26 @@ uses
 
 { TStaticByteReader }
 
-constructor TStaticByteReader.Create(const AData: TBytes);
-begin
-  inherited Create;
-  FData := AData;
-end;
-
-procedure TStaticByteReader.Need(const ACount: Integer);
+procedure TStaticByteReader.RaiseOverrun(ACount: Integer);
 begin
   if ACount < 0 then
-    raise EStaticModelException.CreateAtOffset(Format(SStaticNegativeSize, [ACount, FPosition]), FPosition);
-  if (FPosition < 0) or (FPosition + ACount > Length(FData)) or (FPosition + ACount < FPosition) then
-    raise EStaticModelException.CreateAtOffset(Format(SStaticTruncated, [ACount, FPosition, Length(FData)]),
-      FPosition);
+    raise EStaticModelException.CreateAtOffset(Format(SStaticNegativeSize, [ACount, Position]), Position);
+  raise EStaticModelException.CreateAtOffset(Format(SStaticTruncated, [ACount, Position, Size]), Position);
 end;
 
 function TStaticByteReader.ReadU1: Byte;
 begin
-  Need(1);
-  Result := FData[FPosition];
-  Inc(FPosition);
+  Result := ReadByte;
 end;
 
 function TStaticByteReader.ReadU2: Word;
 begin
-  Need(2);
-  Result := (Word(FData[FPosition]) shl 8) or FData[FPosition + 1];
-  Inc(FPosition, 2);
+  Result := ReadWordBE;
 end;
 
 function TStaticByteReader.ReadU4: Cardinal;
 begin
-  Need(4);
-  Result := (Cardinal(FData[FPosition]) shl 24) or (Cardinal(FData[FPosition + 1]) shl 16) or
-    (Cardinal(FData[FPosition + 2]) shl 8) or FData[FPosition + 3];
-  Inc(FPosition, 4);
+  Result := ReadCardinalBE;
 end;
 
 function TStaticByteReader.ReadF4: Single;
@@ -137,44 +118,38 @@ function TStaticByteReader.ReadS0(out ASize: Integer): AnsiString;
 var
   LStart, LEnd, LLength: Integer;
 begin
-  LStart := FPosition;
+  LStart := Position;
   LEnd := LStart;
   while True do
   begin
-    if LEnd >= Length(FData) then
-      raise EStaticModelException.CreateAtOffset(Format(SStaticTruncated, [1, LEnd, Length(FData)]), LEnd);
-    if FData[LEnd] = 0 then
+    if LEnd >= Size then
+      raise EStaticModelException.CreateAtOffset(Format(SStaticTruncated, [1, LEnd, Size]), LEnd);
+    if Data[LEnd] = 0 then
       Break;
     Inc(LEnd);
   end;
   LLength := LEnd - LStart;
   if LLength = 0 then
   begin
-    Need(2);
-    Inc(FPosition, 2);
+    Skip(2);
     ASize := 2;
     Exit('');
   end;
   // the string with its zero is padded to an even number of bytes
   ASize := LLength + 1 + ((LLength + 1) and 1);
   Need(ASize);
-  SetString(Result, PAnsiChar(@FData[LStart]), LLength);
-  Inc(FPosition, ASize);
+  SetString(Result, PAnsiChar(@Data[LStart]), LLength);
+  Skip(ASize);
 end;
 
 function TStaticByteReader.ReadLeInt16: SmallInt;
 begin
-  Need(2);
-  Result := SmallInt(Word(FData[FPosition]) or (Word(FData[FPosition + 1]) shl 8));
-  Inc(FPosition, 2);
+  Result := ReadSmallInt;
 end;
 
 function TStaticByteReader.ReadLeInt32: Integer;
 begin
-  Need(4);
-  Result := Integer(Cardinal(FData[FPosition]) or (Cardinal(FData[FPosition + 1]) shl 8) or
-    (Cardinal(FData[FPosition + 2]) shl 16) or (Cardinal(FData[FPosition + 3]) shl 24));
-  Inc(FPosition, 4);
+  Result := ReadInteger;
 end;
 
 function TStaticByteReader.ReadLeSingle: Single;
@@ -191,35 +166,15 @@ var
 begin
   Need(ACount);
   LLength := 0;
-  while (LLength < ACount) and (FData[FPosition + LLength] <> 0) do
+  while (LLength < ACount) and (Data[Position + LLength] <> 0) do
     Inc(LLength);
-  SetString(Result, PAnsiChar(@FData[FPosition]), LLength);
-  Inc(FPosition, ACount);
+  SetString(Result, PAnsiChar(@Data[Position]), LLength);
+  Skip(ACount);
 end;
 
 function TStaticByteReader.ReadBytes(const ACount: Integer): TBytes;
 begin
-  Need(ACount);
-  SetLength(Result, ACount);
-  if ACount > 0 then
-    Move(FData[FPosition], Result[0], ACount);
-  Inc(FPosition, ACount);
-end;
-
-procedure TStaticByteReader.Skip(const ACount: Integer);
-begin
-  Need(ACount);
-  Inc(FPosition, ACount);
-end;
-
-function TStaticByteReader.Size: Integer;
-begin
-  Result := Length(FData);
-end;
-
-function TStaticByteReader.Remaining: Integer;
-begin
-  Result := Length(FData) - FPosition;
+  Result := ReadBlock(ACount);
 end;
 
 end.

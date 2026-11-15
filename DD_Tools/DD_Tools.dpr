@@ -124,6 +124,8 @@ uses
   DelphiDoom.VoxelEditor.Operations in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Operations.pas',
   DelphiDoom.VoxelEditor.Rotator in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Rotator.pas',
   DelphiDoom.VoxelEditor.Quantizer in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Quantizer.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.VoxelEditor.ByteReader in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.ByteReader.pas',
   DelphiDoom.VoxelEditor.Format.SlabPalette in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.SlabPalette.pas',
   DelphiDoom.VoxelEditor.Format.Ddvox in '..\Libs\VoxelEditor\DelphiDoom.VoxelEditor.Format.Ddvox.pas',
