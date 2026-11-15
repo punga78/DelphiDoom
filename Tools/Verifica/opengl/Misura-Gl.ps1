@@ -15,7 +15,9 @@ param(
   [double]$Limit = 5,
   [int]$Seconds = 300,
   # the PK3 of Tests\Data\ModelsGl of the game (every state of the game is the MD2 cube; adds -devparm)
-  [switch]$Models
+  [switch]$Models,
+  # the PK3 of Tests\Data\LightsGl of the game (a GLDEFS with a dynamic light on three sprites out of four; adds -devparm)
+  [switch]$Lights
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -29,6 +31,16 @@ $modelArguments = ""
 if ($Models) {
   $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
   $modelArguments = " -devparm -file " + (Join-Path $here "Tests\Data\ModelsGl\zmdl_$letter.pk3")
+}
+if ($Lights) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  $iniSource = Join-Path $binDir "$($Game.Substring(2))32.ini"
+  New-Item -ItemType Directory -Force (Join-Path $here 'harness_out') | Out-Null
+  $lightIni = Join-Path $here "harness_out\lights_$Game.ini"
+  $iniText = [System.IO.File]::ReadAllText($iniSource)
+  $iniText = $iniText -replace '(?m)^uselightboost=\d', 'uselightboost=1' -replace '(?m)^gl_drawshadows=\d', 'gl_drawshadows=1'
+  [System.IO.File]::WriteAllText($lightIni, $iniText)
+  $modelArguments += " -devparm -file " + (Join-Path $here "Tests\Data\LightsGl\zlgt_$letter.pk3") + " -config $lightIni"
 }
 
 function Test-Busy {

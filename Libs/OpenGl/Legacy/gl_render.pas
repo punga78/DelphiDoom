@@ -51,6 +51,8 @@ uses
   DelphiDoom.Engine.GlScene.WallPainter,
   DelphiDoom.Engine.GlScene.FlatPainter,
   DelphiDoom.Engine.GlScene.SpritePainter,
+  DelphiDoom.Engine.GlScene.LightSorter,
+  DelphiDoom.Engine.GlScene.LightPainter,
   DelphiDoom.Engine.GlScene.SceneDrawer,
   DelphiDoom.Engine.GlScene.SpriteCollector;
 
@@ -153,17 +155,17 @@ procedure gld_ConfigureSceneDrawer(const ADrawer: TEngineGlSceneDrawer);
 
 //==============================================================================
 //
-// gld_SortDlights
+// gld_ConfigureLightSorter
 //
 //==============================================================================
-procedure gld_SortDlights;
+procedure gld_ConfigureLightSorter(const ASorter: TEngineGlSceneLightSorter);
 
 //==============================================================================
 //
-// gld_DrawDLights
+// gld_ConfigureLightPainter
 //
 //==============================================================================
-procedure gld_DrawDLights;
+procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
 
 //==============================================================================
 //
@@ -1429,6 +1431,10 @@ var
   gld_spritepainter: TEngineGlSceneSpritePainter = nil;
   // draws the scene of the frame with the painters, given by the composition root (gld_ConfigureSceneDrawer)
   gld_scenedrawer: TEngineGlSceneDrawer = nil;
+  // sorts the dynamic lights of the frame, given by the composition root (gld_ConfigureLightSorter)
+  gld_lightsorter: TEngineGlSceneLightSorter = nil;
+  // draws the dynamic lights of the frame, given by the composition root (gld_ConfigureLightPainter)
+  gld_lightpainter: TEngineGlSceneLightPainter = nil;
   // collects the sprites of the frame, given by the composition root (gld_ConfigureSpriteCollector)
   gld_sprites: TEngineGlSceneSpriteCollector = nil;
 
@@ -1595,6 +1601,30 @@ begin
   if gld_scenedrawer <> ADrawer then
     gld_scenedrawer.Free;
   gld_scenedrawer := ADrawer;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureLightSorter
+//
+//==============================================================================
+procedure gld_ConfigureLightSorter(const ASorter: TEngineGlSceneLightSorter);
+begin
+  if gld_lightsorter <> ASorter then
+    gld_lightsorter.Free;
+  gld_lightsorter := ASorter;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureLightPainter
+//
+//==============================================================================
+procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
+begin
+  if gld_lightpainter <> APainter then
+    gld_lightpainter.Free;
+  gld_lightpainter := APainter;
 end;
 
 //==============================================================================
@@ -1881,6 +1911,7 @@ begin
   gld_walls.BeginFrame(rendermarker, yaw, zCamera);
   gld_wallpainter.BeginFrame(xCamera, yCamera, zCamera);
   gld_spritepainter.BeginFrame(inv_yaw);
+  gld_lightpainter.BeginFrame(inv_yaw);
   numdlitems := 0;
 
   if gl_renderwireframe then
@@ -2225,167 +2256,6 @@ begin
   glColor3f(1.0, 1.0, 1.0);
 end;
 
-const
-  COS16TABLE: array[0..16] of float = (
-    1.0000000000,
-    0.9238795042,
-    0.7071067691,
-    0.3826834261,
-   -0.0000000000,
-   -0.3826834261,
-   -0.7071067691,
-   -0.9238795042,
-   -1.0000000000,
-   -0.9238795042,
-   -0.7071067691,
-   -0.3826834261,
-    0.0000000000,
-    0.3826834261,
-    0.7071067691,
-    0.9238795042,
-    1.0000000000
-   );
-
-  SIN16TABLE: array[0..16] of float = (
-    0.0000000000,
-    0.3826834261,
-    0.7071067691,
-    0.9238795042,
-    1.0000000000,
-    0.9238795042,
-    0.7071067691,
-    0.3826834261,
-   -0.0000000000,
-   -0.3826834261,
-   -0.7071067691,
-   -0.9238795042,
-   -1.0000000000,
-   -0.9238795042,
-   -0.7071067691,
-   -0.3826834261,
-    0.0000000000
-   );
-
-//==============================================================================
-//
-//  gld_DrawDLight()
-//  JVAL: Draw a single dynamic light
-//
-//==============================================================================
-procedure gld_DrawDLight(const pdls: Pdlsortitem_t);
-var
-  i: integer;
-  sz: float;
-begin
-  glPushMatrix;
-  glTranslatef(pdls.x, pdls.y, pdls.z);
-  glRotatef(inv_yaw, 0.0, 1.0, 0.0);
-
-  sz := pdls.l.radius;
-//  if GL_CheckVisibility(pdls.x, pdls.y, pdls.z, 2 * sz) then
-  begin
-    glBegin(GL_TRIANGLE_FAN);
-      glColor4f(pdls.l.r * 0.2, pdls.l.g * 0.2, pdls.l.b * 0.2, 0.1);
-      glVertex3f(0.0, 0.0, 0.05);
-      glColor4f(0.0, 0.0, 0.0, 0.1);
-      for i := 0 to 16 do
-        glVertex3f(sz * COS16TABLE[i], sz * SIN16TABLE[i], 0.05);
-    glEnd;
-  end;
-
-  glPopMatrix;
-end;
-
-//==============================================================================
-//
-//  gld_SortDlights()
-//  JVAL: Sort the dynamic lights according to square distance of camera
-//        (note: closer light is first!)
-//
-//==============================================================================
-procedure gld_SortDlights;
-
-  procedure qsort(l, r: Integer);
-  var
-    i, j: Integer;
-    tmp: dlsortitem_t;
-    squaredist: float;
-  begin
-    repeat
-      i := l;
-      j := r;
-      squaredist := dlbuffer[(l + r) shr 1].squaredist;
-      repeat
-        while dlbuffer[i].squaredist < squaredist do
-          inc(i);
-        while dlbuffer[j].squaredist > squaredist do
-          dec(j);
-        if i <= j then
-        begin
-          tmp := dlbuffer[i];
-          dlbuffer[i] := dlbuffer[j];
-          dlbuffer[j] := tmp;
-          inc(i);
-          dec(j);
-        end;
-      until i > j;
-      if l < j then
-        qsort(l, j);
-      l := i;
-    until i >= r;
-  end;
-
-begin
-  if numdlitems > 0 then
-    qsort(0, numdlitems - 1);
-end;
-
-//==============================================================================
-//
-//  gld_DrawDLights()
-//  JVAL: Draw the marked dynamic lights
-//
-//==============================================================================
-procedure gld_DrawDLights;
-var
-  pdls: Pdlsortitem_t;
-  lastitem: dlsortitem_t;
-begin
-  if not uselightboost then
-    exit;
-
-  if numdlitems = 0 then
-    exit;
-
-  glMatrixMode(GL_MODELVIEW);
-  glDepthMask(False);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_ALPHA_TEST);
-  glBlendFunc(GL_ONE, GL_ONE);
-
-  ZeroMemory(@lastitem, SizeOf(dlsortitem_t));
-  // Draw each light in order
-  pdls := @dlbuffer[numdlitems];
-  while NativeInt(pdls) <> NativeInt(dlbuffer) do
-  begin
-    dec(pdls);
-    if (pdls.l <> lastitem.l) or
-       (pdls.x <> lastitem.x) or
-       (pdls.y <> lastitem.y) or
-       (pdls.z <> lastitem.z) then
-    begin
-      gld_DrawDLight(pdls);
-      lastitem := pdls^;
-    end;
-  end;
-
-  glDepthMask(True);
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_ALPHA_TEST);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-end;
-
 //==============================================================================
 //
 // gld_AddSprite
@@ -2580,6 +2450,10 @@ begin
     I_Error('gld_PreprocessLevel(): the flat painter is not configured (ComposeEngine was not called)');
   if gld_spritepainter = nil then
     I_Error('gld_PreprocessLevel(): the sprite painter is not configured (ComposeEngine was not called)');
+  if gld_lightsorter = nil then
+    I_Error('gld_PreprocessLevel(): the light sorter is not configured (ComposeEngine was not called)');
+  if gld_lightpainter = nil then
+    I_Error('gld_PreprocessLevel(): the light painter is not configured (ComposeEngine was not called)');
   if gld_scenedrawer = nil then
     I_Error('gld_PreprocessLevel(): the scene drawer is not configured (ComposeEngine was not called)');
 
@@ -2654,6 +2528,8 @@ finalization
   // the collectors use the draw list: they go first
   gld_ConfigureSpriteCollector(nil);
   gld_ConfigureSceneDrawer(nil);
+  gld_ConfigureLightPainter(nil);
+  gld_ConfigureLightSorter(nil);
   gld_ConfigureSpritePainter(nil);
   gld_ConfigureFlatPainter(nil);
   gld_ConfigureWallPainter(nil);
