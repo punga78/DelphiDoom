@@ -110,6 +110,7 @@ type
     function Scenario(const AName: string; const AList: TArray<Cardinal>; AFromDirectory: Boolean;
       const AServer: IGamePureServer): string;
     function NewServer: IGamePureServer;
+    function NewCodeServer: IGamePureServer;
   public
     [Setup]
     procedure Setup;
@@ -124,6 +125,10 @@ type
     procedure DovrebbeLeggereIChecksumComeLoSscanfDelCodiceOriginale;
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelCodiceOriginale;
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelCodiceOriginaleConIlPakDelCodiceDiGioco;
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelCodiceOriginaleSuSetRestartChecksums;
   end;
 
 implementation
@@ -655,6 +660,131 @@ begin
   Expect(Scenario('lock-one', [$22, 0], False, LLock));
   Expect(Scenario('lock-extend', [$33, $22, 0], False, LLock));
   Assert.AreEqual<Integer>(Length(LLines), LIndex, 'every scenario of the golden was run');
+end;
+
+function TTestGamePureParity.NewCodeServer: IGamePureServer;
+var
+  LPacks, LAddons: TArray<IGamePack>;
+begin
+  // the packs of NewServer, then the code paks: 77 holds the DLL, 88 does not (both "always" by their names)
+  LPacks := [Pack('pak001.pk4', $11, False, False), Pack('x2.pk4', $22, False, True), Pack('x3.pk4', $33, False, False),
+    TFakeGamePack.Create('x4.pk4', $44, ['a.gui']), Pack('pak005.pk4', $55, True, False),
+    TFakeGamePack.Create('pak077.pk4', $77, ['gamex86.dll']), TFakeGamePack.Create('pak088.pk4', $88, ['a.txt'])];
+  LAddons := [Pack('x6.pk4', $66, True, False)];
+  Result := TGamePureServer.Create(TFakeFileSystemState.Create(LPacks, LAddons));
+end;
+
+procedure TTestGamePureParity.DovrebbeDareLeStesseRisposteDelCodiceOriginaleConIlPakDelCodiceDiGioco;
+type
+  TDllCase = record
+    Name: string;
+    List: TArray<Cardinal>;
+    FromDirectory: Boolean;
+    Game: Cardinal;
+  end;
+var
+  LLines: TArray<string>;
+  LCases: TArray<TDllCase>;
+  LIndex: Integer;
+  LServer: IGamePureServer;
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+  LReply: TGamePureReply;
+  LActual: string;
+
+  function Make(const AName: string; const AList: TArray<Cardinal>; AFromDir: Boolean; AGame: Cardinal): TDllCase;
+  begin
+    Result.Name := AName;
+    Result.List := AList;
+    Result.FromDirectory := AFromDir;
+    Result.Game := AGame;
+  end;
+
+begin
+  LLines := GoldenLines('dll ');
+  LCases := [
+    Make('no-code', [$11, $22, $55, $77, $88, 0], False, 0),
+    Make('same-code', [$11, $22, $55, $77, $88, 0], False, $70),
+    Make('same-code-fromdir', [$11, $22, $55, $77, $88, 0], True, $70),
+    Make('other-code', [$11, $22, $55, $77, $88, 0], False, $77),
+    Make('code-without-dll', [$11, $22, $55, $77, $88, 0], False, $88),
+    Make('code-not-installed', [$11, $22, $55, $77, $88, 0], False, $99),
+    Make('other-code-assets-missing', [$11, $AA, $22, $55, $77, $88, 0], False, $77),
+    Make('same-code-assets-missing', [$11, $AA, $22, $55, $77, $88, 0], False, $70),
+    Make('not-installed-assets-missing', [$11, $AA, $22, $55, $77, $88, 0], False, $99),
+    Make('empty-list', [0], False, $77)];
+  Assert.AreEqual<Integer>(Length(LCases), Length(LLines), 'every scenario of the golden');
+  for LIndex := 0 to High(LCases) do
+  begin
+    LServer := NewCodeServer;
+    LServer.SetGamePakChecksum($70);
+    LMissingGame := 0;
+    LReply := LServer.SetPureServerChecksumsWithGamePak(LCases[LIndex].List, LCases[LIndex].Game, 'gamex86.dll',
+      LMissing, LMissingGame, LCases[LIndex].FromDirectory);
+    LActual := Format('dll %s reply=%d missing=%s gamemissing=%s gamepak=%s server=%s',
+      [LCases[LIndex].Name, Ord(LReply), FormatList(LMissing), LowerCase(IntToHex(LMissingGame, 1)),
+      LowerCase(IntToHex(LServer.GetGamePakChecksum, 1)), FormatList(LServer.GetPureServerChecksums)]);
+    Assert.AreEqual(LLines[LIndex], LActual);
+  end;
+end;
+
+procedure TTestGamePureParity.DovrebbeDareLeStesseRisposteDelCodiceOriginaleSuSetRestartChecksums;
+type
+  TRestartCase = record
+    Name: string;
+    List: TArray<Cardinal>;
+    Game: Cardinal;
+  end;
+var
+  LLines: TArray<string>;
+  LCases: TArray<TRestartCase>;
+  LIndex: Integer;
+  LServer: IGamePureServer;
+  LFatal: Boolean;
+  LActual: string;
+  LRestart: string;
+  LGame: Cardinal;
+
+  function Make(const AName: string; const AList: TArray<Cardinal>; AGame: Cardinal): TRestartCase;
+  begin
+    Result.Name := AName;
+    Result.List := AList;
+    Result.Game := AGame;
+  end;
+
+begin
+  LLines := GoldenLines('restart ');
+  LCases := [Make('plain', [$11, $22, 0], $77), Make('addon-searched', [$55, $11, 0], $70),
+    Make('addon-left-out', [$66, $11, 0], $70), Make('addon-again', [$66, $22, 0], $71),
+    Make('unknown', [$11, $99, 0], $72), Make('empty', [0], $73)];
+  Assert.AreEqual<Integer>(Length(LCases), Length(LLines), 'every scenario of the golden');
+  // one server for all: the addons are remembered from one call to the next (the original never clears them)
+  LServer := NewCodeServer;
+  for LIndex := 0 to High(LCases) do
+  begin
+    LFatal := False;
+    try
+      // the list given without its closing zero: the Delphi call takes the checksums up to the zero
+      LServer.SetRestartChecksums(Copy(LCases[LIndex].List, 0, Length(LCases[LIndex].List) - 1), LCases[LIndex].Game);
+    except
+      on EGameFsException do
+        LFatal := True;
+    end;
+    if LFatal then
+    begin
+      LRestart := '';
+      LGame := 0;
+    end
+    else
+    begin
+      LRestart := FormatList(LServer.RestartChecksums);
+      LGame := LServer.RestartGamePakChecksum;
+    end;
+    LActual := Format('restart %s fatal=%d restart=%s addons=%s game=%s',
+      [LCases[LIndex].Name, Ord(LFatal), LRestart, FormatList(LServer.RestartAddonChecksums),
+      LowerCase(IntToHex(LGame, 1))]);
+    Assert.AreEqual(LLines[LIndex], LActual);
+  end;
 end;
 
 initialization

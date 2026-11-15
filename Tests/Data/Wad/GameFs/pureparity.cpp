@@ -134,7 +134,7 @@ static int PackStatus(const vector<string> &names, const string &pakFilename) {
 	return 1;
 }
 
-struct Pack { unsigned int checksum; bool addon; bool addon_search; bool referenced; int status; };
+struct Pack { unsigned int checksum; bool addon; bool addon_search; bool referenced; int status; bool hasDll; };
 static vector<Pack *> searchPacks;
 static vector<Pack *> addonPacks;
 static vector<Pack *> serverPaks;
@@ -215,9 +215,72 @@ static void PrintServer() {
 	for (size_t i = 0; i < serverPaks.size(); i++) printf("%s%x", i ? "," : "", serverPaks[i]->checksum);
 }
 
-static Pack MakePack(unsigned int checksum, bool addon, bool addon_search, bool referenced, int status) {
-	Pack p; p.checksum = checksum; p.addon = addon; p.addon_search = addon_search; p.referenced = referenced; p.status = status;
+static Pack MakePack(unsigned int checksum, bool addon, bool addon_search, bool referenced, int status, bool hasDll = false) {
+	Pack p; p.checksum = checksum; p.addon = addon; p.addon_search = addon_search; p.referenced = referenced; p.status = status; p.hasDll = hasDll;
 	return p;
+}
+
+// ---- the game code pak (issue #236): the DLL block of SetPureServerChecksums and SetRestartChecksums, verbatim
+// from FileSystem.cpp; "the pak has the DLL" replaces the walk of the hash chain with FilenameCompare, and the
+// fatal error of SetRestartChecksums is a flag
+static int gamePakChecksum = 0;
+static vector<int> restartChecksums;
+static vector<int> addonChecksums;
+static int restartGamePakChecksum = 0;
+static bool restartFatal = false;
+
+// the loop of SetPureServerChecksums above, then the DLL part. 0 ok, 1 restart, 2 missing, 3 no dll
+static int SetPureServerChecksumsDll(const int *pureChecksums, bool loadedFileFromDir, int _gamePakChecksum, vector<int> &missing, int *missingGamePakChecksum) {
+	int reply = SetPureServerChecksums(pureChecksums, loadedFileFromDir, missing);
+	// SetPureServerChecksums answered 0 for an empty list without reading the code pak: the original returns there too
+	if (pureChecksums[0] == 0) return reply;
+	int imissing = (int)missing.size();
+	*missingGamePakChecksum = 0;
+	// DLL checksuming
+	if (!_gamePakChecksum) {
+		// server doesn't have knowledge of code we can use ( OS issue )
+		return 3;
+	}
+	if (_gamePakChecksum != gamePakChecksum) {
+		// current DLL is wrong, search for a pak with the approriate checksum
+		Pack *pack = GetPackForChecksum(_gamePakChecksum, false);
+		if (!pack) {
+			*missingGamePakChecksum = _gamePakChecksum;
+			return 2;
+		}
+		// if assets paks are missing, don't try any of the DLL restart / NODLL
+		if (imissing) return 2;
+		// make sure there is a valid DLL for us
+		if (pack->hasDll) {
+			gamePakChecksum = _gamePakChecksum;
+			return 1;
+		}
+		return 3;
+	}
+	return reply;
+}
+
+static void SetRestartChecksums(const int *pureChecksums, int gamePak) {
+	restartChecksums.clear();
+	restartFatal = false;
+	int i = 0;
+	while (pureChecksums[i]) {
+		Pack *pack = GetPackForChecksum(pureChecksums[i], true);
+		if (!pack) {
+			restartFatal = true;
+			return;
+		}
+		bool found = false;
+		for (size_t k = 0; k < addonChecksums.size(); k++) if (addonChecksums[k] == (int)pack->checksum) found = true;
+		if (pack->addon && !found) addonChecksums.push_back(pack->checksum);
+		restartChecksums.push_back(pureChecksums[i]);
+		i++;
+	}
+	restartGamePakChecksum = gamePak;
+}
+
+static void PrintList(const vector<int> &v) {
+	for (size_t i = 0; i < v.size(); i++) printf("%s%x", i ? "," : "", v[i]);
 }
 
 static void Scenario(const char *name, const int *list, bool fromDir) {
@@ -289,6 +352,57 @@ int main() {
 		serverPaks.clear(); Scenario("lock-one", first, false);
 		int second[] = { 0x33, 0x22, 0 };
 		Scenario("lock-extend", second, false);
+	}
+
+	// the game code (issue #236): the loaded code pak is 0x70; 0x77 holds the DLL, 0x88 does not
+	Pack p7 = MakePack(0x77, false, false, false, 2, true);
+	Pack p8 = MakePack(0x88, false, false, false, 2, false);
+	searchPacks.push_back(&p7); searchPacks.push_back(&p8);
+	struct DllCase { const char *name; int list[8]; bool fromDir; int game; };
+	const DllCase dll[] = {
+		{ "no-code", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0 },
+		{ "same-code", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x70 },
+		{ "same-code-fromdir", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, true, 0x70 },
+		{ "other-code", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x77 },
+		{ "code-without-dll", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x88 },
+		{ "code-not-installed", { 0x11, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x99 },
+		{ "other-code-assets-missing", { 0x11, 0xaa, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x77 },
+		{ "same-code-assets-missing", { 0x11, 0xaa, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x70 },
+		{ "not-installed-assets-missing", { 0x11, 0xaa, 0x22, 0x55, 0x77, 0x88, 0 }, false, 0x99 },
+		{ "empty-list", { 0 }, false, 0x77 },
+	};
+	for (size_t c = 0; c < sizeof(dll) / sizeof(dll[0]); c++) {
+		vector<int> missing;
+		int missingGame = 0;
+		gamePakChecksum = 0x70;
+		serverPaks.clear();
+		int reply = SetPureServerChecksumsDll(dll[c].list, dll[c].fromDir, dll[c].game, missing, &missingGame);
+		printf("dll %s reply=%d missing=", dll[c].name, reply);
+		PrintList(missing);
+		printf(" gamemissing=%x gamepak=%x", missingGame, gamePakChecksum);
+		PrintServer();
+		printf("\n");
+	}
+
+	// SetRestartChecksums
+	{
+		struct RestartCase { const char *name; int list[6]; int game; };
+		const RestartCase rc[] = {
+			{ "plain", { 0x11, 0x22, 0 }, 0x77 },
+			{ "addon-searched", { 0x55, 0x11, 0 }, 0x70 },
+			{ "addon-left-out", { 0x66, 0x11, 0 }, 0x70 },
+			{ "addon-again", { 0x66, 0x22, 0 }, 0x71 },
+			{ "unknown", { 0x11, 0x99, 0 }, 0x72 },
+			{ "empty", { 0 }, 0x73 },
+		};
+		for (size_t c = 0; c < sizeof(rc) / sizeof(rc[0]); c++) {
+			SetRestartChecksums(rc[c].list, rc[c].game);
+			printf("restart %s fatal=%d restart=", rc[c].name, restartFatal ? 1 : 0);
+			if (!restartFatal) PrintList(restartChecksums);
+			printf(" addons=");
+			PrintList(addonChecksums);
+			printf(" game=%x\n", restartFatal ? 0 : restartGamePakChecksum);
+		}
 	}
 	return 0;
 }
