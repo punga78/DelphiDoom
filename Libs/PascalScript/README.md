@@ -29,3 +29,5 @@ Origine: Pascal Script di RemObjects (Carlo Kok), nella versione adattata dal pr
 ## Come si usa
 
 I progetti la raggiungono con `in '..\Libs\PascalScript\x.pas'` nei `.dpr`; i `.dproj` dei giochi hanno `..\Libs\PascalScript` nel `DCC_UnitSearchPath` perché i file `.inc` si includono a catena (`PascalScript.inc` -> `eDefines.inc`) e il compilatore li cerca lì. Il collegamento al motore sta in `Libs\ScriptHost`; la DLL `DDScript` (`Libs\Script`) ne usa il compilatore e l'interprete.
+
+- (issue #224) Il nucleo non usa piu' `d_delphi` ne' `Doom32.inc`: `PascalScriptCodegen.inc` (interruttori di generazione del codice) sostituisce `Doom32.inc` in `ps_defs` e `ps_keywords`; `Libs\Script\Shim` e' stata cancellata.

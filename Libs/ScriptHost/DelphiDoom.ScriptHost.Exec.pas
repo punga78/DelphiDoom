@@ -9,7 +9,7 @@
 {                                                                              }
 {******************************************************************************}
 
-{$I Doom32.inc}
+{$I PascalScriptCodegen.inc}
 
 unit DelphiDoom.ScriptHost.Exec;
 {$I PascalScript.inc}

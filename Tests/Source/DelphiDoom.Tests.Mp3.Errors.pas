@@ -33,15 +33,13 @@ type
     [Test]
     procedure DovrebbeScrivereCodiceETestoNelMessaggio;
     [Test]
-    procedure DovrebbeFermareIlDecoderConLErroreDelloShim;
-    [Test]
-    procedure DovrebbeLiberareConIlFreeAndNilDelloShim;
+    procedure DovrebbeFermareIlDecoderConUnaEccezione;
   end;
 
 implementation
 
 uses
-  mp3_OBuffer, i_system, d_delphi;
+  mp3_OBuffer;
 
 { TTestMp3Errors }
 
@@ -87,26 +85,16 @@ begin
   end;
 end;
 
-procedure TTestMp3Errors.DovrebbeFermareIlDecoderConLErroreDelloShim;
+procedure TTestMp3Errors.DovrebbeFermareIlDecoderConUnaEccezione;
 begin
-  // the shim of i_system: an error of the decoder is an exception, a warning goes to the debugger
+  // an error of the decoder is an exception (the engine used to end the program)
   Assert.WillRaise(
     procedure
     begin
       TOBuffer_Wave_Failure;
     end,
     Exception);
-  I_Warning('mp3 test');
-  I_Sleep(0);
 end;
 
-procedure TTestMp3Errors.DovrebbeLiberareConIlFreeAndNilDelloShim;
-var
-  LObject: TObject;
-begin
-  LObject := TObject.Create;
-  d_delphi.FreeAndNil(LObject);
-  Assert.IsNull(LObject);
-end;
 
 end.

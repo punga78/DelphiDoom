@@ -11,7 +11,7 @@ unit DelphiDoom.Mp3.Stream;
 interface
 
 uses
-  d_delphi;
+  mp3_Source;
 
 type
   /// <summary>
@@ -25,7 +25,7 @@ type
   ///   stream keeps no history). Seeking backwards is possible only inside the
   ///   bytes still retained
   /// </remarks>
-  TMp3FeedStream = class(TDStream)
+  TMp3FeedStream = class(TMp3Source)
   private
     FData: TArray<Byte>;
     FCount: Integer;

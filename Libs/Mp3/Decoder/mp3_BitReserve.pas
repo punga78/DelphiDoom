@@ -24,7 +24,7 @@
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
 
-{$I Doom32.inc}
+{$I Mp3Codegen.inc}
 
 (*
  *  File:     $RCSfile: BitReserve.pas,v $

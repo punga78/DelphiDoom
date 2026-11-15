@@ -64,6 +64,7 @@ uses
   gl_lights in '..\Libs\OpenGl\Legacy\gl_lights.pas',
   mp3_SynthFilter in '..\Libs\Mp3\Decoder\mp3_SynthFilter.pas',
   mp3_BitReserve in '..\Libs\Mp3\Decoder\mp3_BitReserve.pas',
+  mp3_Source in '..\Libs\Mp3\Decoder\mp3_Source.pas',
   mp3_BitStream in '..\Libs\Mp3\Decoder\mp3_BitStream.pas',
   mp3_CRC in '..\Libs\Mp3\Decoder\mp3_CRC.pas',
   mp3_Header in '..\Libs\Mp3\Decoder\mp3_Header.pas',

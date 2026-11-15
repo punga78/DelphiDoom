@@ -503,8 +503,6 @@ function WideLowerCase(const S: WideString): WideString;
 
 implementation
 
-uses
-  d_delphi;
 
 {$IFDEF DELPHI3UP }
 resourceString

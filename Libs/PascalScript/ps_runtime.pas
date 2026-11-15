@@ -1420,7 +1420,6 @@ function IDispatchInvoke(Self: IDispatch; PropertySet: Boolean; const Name: TbtS
 implementation
 
 uses
-  d_delphi,
   TypInfo {$IFDEF DELPHI3UP}{$IFNDEF FPC}{$IFNDEF KYLIX} , ComObj {$ENDIF}{$ENDIF}{$ENDIF}{$IFDEF PS_FPC_HAS_COM}, ComObj{$ENDIF};
 
 {$IFDEF DELPHI3UP }

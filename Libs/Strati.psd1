@@ -179,11 +179,6 @@
   # Massimo = numero di unit di arrivo distinte coperte: piu' unit e' una violazione nuova,
   # meno unit e' una eccezione da ridurre. Ciclo = insieme di aree che si usano a vicenda.
   Eccezioni = @(
-    # --- #224: Common fuori dal nucleo ---
-    @{ Da = 'Libs\PascalScript'; A = 'Common'; Massimo = 1; Issue = 224
-       Motivo = 'ps_compiler, ps_runtime e ps_utils usano d_delphi' }
-    @{ Da = 'Libs\ScriptHost'; A = 'Common'; Massimo = 1; Issue = 224
-       Motivo = 'le unit del compilatore e del dll di Pascal Script usano d_delphi' }
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
     @{ Da = 'Libs\Speed'; A = 'Libs\Racing'; Massimo = 2; Issue = 226
        Motivo = 'ActorDefinitions, CarSpriteBuilder e SkyTextures di SpeedHaste32 (motore id Tech 1) usano Racing.Types e Racing.CarData (auto e piste, strato Giochi): Speed32 e SpeedHaste32 stanno nella stessa area, da separare quando si spostano le cartelle' }

@@ -51,7 +51,6 @@ function UnloadProc(Caller: TPSExec; p: TPSExternalProcRec; Global, Stack: TPSSt
 implementation
 
 uses
-  d_delphi,
   ps_dll,
   {$IFDEF UNIX}
   Unix, baseunix, dynlibs, termio, sockets;

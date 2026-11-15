@@ -13,8 +13,8 @@ unit DelphiDoom.Mp3.Native;
 // This unit drives them from the caller's thread instead: the input is a
 // TMp3FeedStream filled by Feed, the output a TMp3PcmBuffer, and a frame is
 // handed to the decoder only when all of its bytes have arrived. Besides
-// Libs\Mp3\Decoder, it needs only the stand-ins of Libs\Mp3\Shim in place of d_delphi
-// and i_system, so that the DLL does not drag the rest of the engine.
+// LibsMp3Decoder it needs nothing of Base or Common (issue #224: TMp3Source
+// replaces TDStream), so the DLL does not drag the rest of the engine.
 
 interface
 

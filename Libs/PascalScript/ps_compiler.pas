@@ -1363,7 +1363,6 @@ const
 implementation
 
 uses
-  d_delphi,
   {$IFDEF DELPHI5}
   ComObj,
   {$ENDIF}

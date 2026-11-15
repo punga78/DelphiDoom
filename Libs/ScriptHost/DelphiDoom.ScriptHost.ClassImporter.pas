@@ -8,7 +8,7 @@
 {                                                                              }
 {******************************************************************************}
 
-{$I Doom32.inc}
+{$I PascalScriptCodegen.inc}
 
 unit DelphiDoom.ScriptHost.ClassImporter;
 {$I PascalScript.inc}
