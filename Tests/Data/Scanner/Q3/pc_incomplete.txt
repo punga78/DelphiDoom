@@ -1,0 +1,2 @@
+#define F(a) a
+F(1

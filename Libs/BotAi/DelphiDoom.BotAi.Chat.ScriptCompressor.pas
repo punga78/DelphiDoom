@@ -17,6 +17,7 @@ type
   ///   Takes out the comments and the extra white space of a script: line and block comments go, every
   ///   run of spaces and tabs is one space, every run of line ends is one line feed (so the line
   ///   numbers of the messages are those of the compressed text), quoted strings are copied as they are.
+  ///   The code is TQ3ScriptCompressor of Libs\Scanner (issue #236: one copy for the whole library)
   /// </summary>
   TBotScriptCompressor = class
   public
@@ -26,97 +27,14 @@ type
 
 implementation
 
+uses
+  DelphiDoom.Scanner.Q3.Compressor;
+
 { TBotScriptCompressor }
 
 class function TBotScriptCompressor.Compress(const AText: AnsiString): AnsiString;
-var
-  LLength: Integer;
-  LIn: Integer;
-  LOut: Integer;
-  LChar: AnsiChar;
-  LNewLine: Boolean;
-  LWhiteSpace: Boolean;
-
-  function At(const AIndex: Integer): AnsiChar;
-  begin
-    if AIndex <= LLength then
-      Result := AText[AIndex]
-    else
-      Result := #0;
-  end;
-
 begin
-  LLength := Pos(#0, AText) - 1;
-  if LLength < 0 then
-    LLength := Length(AText);
-  SetLength(Result, LLength);
-  LIn := 1;
-  LOut := 0;
-  LNewLine := False;
-  LWhiteSpace := False;
-  while At(LIn) <> #0 do
-  begin
-    LChar := At(LIn);
-    if (LChar = '/') and (At(LIn + 1) = '/') then
-    begin
-      while (At(LIn) <> #0) and (At(LIn) <> #10) do
-        Inc(LIn);
-    end
-    else if (LChar = '/') and (At(LIn + 1) = '*') then
-    begin
-      while (At(LIn) <> #0) and ((At(LIn) <> '*') or (At(LIn + 1) <> '/')) do
-        Inc(LIn);
-      if At(LIn) <> #0 then
-        Inc(LIn, 2);
-    end
-    else if (LChar = #10) or (LChar = #13) then
-    begin
-      LNewLine := True;
-      Inc(LIn);
-    end
-    else if (LChar = ' ') or (LChar = #9) then
-    begin
-      LWhiteSpace := True;
-      Inc(LIn);
-    end
-    else
-    begin
-      // a pending line end is written (and counts as white space)
-      if LNewLine then
-      begin
-        Inc(LOut);
-        Result[LOut] := #10;
-        LNewLine := False;
-        LWhiteSpace := False;
-      end;
-      if LWhiteSpace then
-      begin
-        Inc(LOut);
-        Result[LOut] := ' ';
-        LWhiteSpace := False;
-      end;
-      Inc(LOut);
-      Result[LOut] := LChar;
-      Inc(LIn);
-      // quoted strings are copied as they are
-      if LChar = '"' then
-      begin
-        while (At(LIn) <> #0) and (At(LIn) <> '"') do
-        begin
-          Inc(LOut);
-          Result[LOut] := At(LIn);
-          Inc(LIn);
-        end;
-        if At(LIn) = '"' then
-        begin
-          Inc(LOut);
-          Result[LOut] := '"';
-          Inc(LIn);
-        end;
-      end;
-    end;
-  end;
-  SetLength(Result, LOut);
+  Result := TQ3ScriptCompressor.Compress(AText);
 end;
 
 end.

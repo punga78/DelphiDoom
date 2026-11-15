@@ -1,0 +1,6 @@
+#define S(x) #x
+S() S(  a   b  )
+#define T(x, y) x ## y ## 1
+T(a,b)
+#define U(a) # b
+U(1)

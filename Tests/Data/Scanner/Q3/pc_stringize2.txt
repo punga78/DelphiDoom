@@ -1,0 +1,3 @@
+#define S(x) #x
+#define W(x) S(x)
+S(hello world) S(a + b) S("q") W(5)

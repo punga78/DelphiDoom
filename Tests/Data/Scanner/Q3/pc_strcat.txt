@@ -1,0 +1,5 @@
+tok "str1" "str2" "str3" x
+#define S "def"
+"pre" S "post"
+"a"
+"b" y

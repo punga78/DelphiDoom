@@ -1,0 +1,2 @@
+#evalfloat 7 % 2
+x

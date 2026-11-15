@@ -28,6 +28,7 @@ uses
   DelphiDoom.BotAi.Chat.RandomList in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.RandomList.pas',
   DelphiDoom.BotAi.Chat.Tables in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Tables.pas',
   DelphiDoom.BotAi.Chat.Text in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.Text.pas',
+  DelphiDoom.Scanner.Q3.Compressor in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Compressor.pas',
   DelphiDoom.BotAi.Chat.ScriptCompressor in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptCompressor.pas',
   DelphiDoom.BotAi.Chat.ScriptFileSystem in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptFileSystem.pas',
   DelphiDoom.BotAi.Chat.ScriptLog in '..\Libs\BotAi\DelphiDoom.BotAi.Chat.ScriptLog.pas',

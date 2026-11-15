@@ -1,0 +1,6 @@
+"hello" "a\tb" "esc \x41\x4a\x4A" "dec \065\066" "q \" q" 'a' 'ab' '\n' 'x' "con" "cat" "multi" /*c*/ "line"
+"two"
+"strings" name "a" // comment
+"b" "\\ \' \? \a \b \f \r \v" ""
+"" "" ""
+'single' 'quoted' "mixed" 'x'

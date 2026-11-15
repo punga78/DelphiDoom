@@ -1,0 +1,7 @@
+__LINE__ x
+  __FILE__
+#define L __LINE__
+L
+#define __FILE__ other
+#undef __LINE__
+__LINE__

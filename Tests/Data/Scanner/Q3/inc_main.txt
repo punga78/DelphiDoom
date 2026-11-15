@@ -1,0 +1,5 @@
+before
+#include "inc_a.txt"
+middle
+#include <inc_b.txt>
+after

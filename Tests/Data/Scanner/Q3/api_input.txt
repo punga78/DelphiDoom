@@ -1,0 +1,2 @@
+foo 12 -7 "str" ( 3.5 -2.25 x y z abc 'c' 0x10 }
+next 5 6
