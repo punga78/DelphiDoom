@@ -56,6 +56,10 @@ type
     /// <summary>What comes after the movement and the look (Heretic, Hexen: the flight)</summary>
     class procedure AfterMove(const player: Pplayer_t; const cmd: Pticcmd_t); static;
     /// <summary>The death of the player (only when OwnsDeathThink)</summary>
+    /// <summary>The slot of the inventory has nothing in it (Hexen only checks: a safety)</summary>
+    class function SlotIsEmpty(const player: Pplayer_t; const slot: integer): boolean; static;
+    /// <summary>The artifact slot that the compaction left free is cleared (Hexen)</summary>
+    class procedure ClearFreedSlot(const player: Pplayer_t); static;
     class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
@@ -89,24 +93,10 @@ type
 
 //==============================================================================
 //
-// P_PlayerNextArtifact
-//
-//==============================================================================
-procedure P_PlayerNextArtifact(player: Pplayer_t);
-
-//==============================================================================
-//
 // P_PlayerUseArtifact
 //
 //==============================================================================
 procedure P_PlayerUseArtifact(player: Pplayer_t; arti: artitype_t);
-
-//==============================================================================
-//
-// P_GetPlayerNum
-//
-//==============================================================================
-function P_GetPlayerNum(player: Pplayer_t): integer;
 
 //==============================================================================
 //
@@ -121,13 +111,6 @@ function P_UndoPlayerChicken(player: Pplayer_t): boolean;
 //
 //==============================================================================
 function P_UseArtifact(player: Pplayer_t; arti: artitype_t): boolean;
-
-//==============================================================================
-//
-// P_PlayerRemoveArtifact
-//
-//==============================================================================
-procedure P_PlayerRemoveArtifact(player: Pplayer_t; slot: integer);
 
 implementation
 
@@ -164,7 +147,8 @@ uses
   s_sound,
   p_user,
   DelphiDoom.Engine.World.PlayerThinker,
-  DelphiDoom.Engine.World.PlayerColormap;
+  DelphiDoom.Engine.World.PlayerColormap,
+  DelphiDoom.Engine.World.PlayerArtifacts;
 
 
 //----------------------------------------------------------------------------
@@ -248,70 +232,6 @@ end;
 //
 //----------------------------------------------------------------------------
 //
-//==============================================================================
-procedure P_PlayerNextArtifact(player: Pplayer_t);
-begin
-  if player = @players[consoleplayer] then
-  begin
-    dec(inv_ptr);
-    if inv_ptr < 6 then
-    begin
-      dec(curpos);
-      if curpos < 0 then
-        curpos := 0;
-    end;
-    if inv_ptr < 0 then
-    begin
-      inv_ptr := player.inventorySlotNum - 1;
-      if inv_ptr < 6 then
-        curpos := inv_ptr
-      else
-        curpos := 6;
-    end;
-
-    player.readyArtifact := artitype_t(player.inventory[inv_ptr]._type);
-  end;
-end;
-
-//----------------------------------------------------------------------------
-//
-// PROC P_PlayerRemoveArtifact
-//
-//----------------------------------------------------------------------------
-//
-//==============================================================================
-procedure P_PlayerRemoveArtifact(player: Pplayer_t; slot: integer);
-var
-  i: integer;
-begin
-  dec(player.artifactCount);
-  dec(player.inventory[slot].count);
-  if player.inventory[slot].count = 0 then
-  begin // Used last of a type - compact the artifact list
-    player.readyArtifact := arti_none;
-    player.inventory[slot]._type := Ord(arti_none);
-    for i := slot + 1 to player.inventorySlotNum - 1 do
-      player.inventory[i - 1] := player.inventory[i];
-
-    dec(player.inventorySlotNum);
-    if player = @players[consoleplayer] then
-    begin // Set position markers and get next readyArtifact
-      dec(inv_ptr);
-      if inv_ptr < 6 then
-      begin
-        dec(curpos);
-        if curpos < 0 then
-          curpos := 0;
-      end;
-      if inv_ptr >= player.inventorySlotNum then
-        inv_ptr := player.inventorySlotNum - 1;
-      if inv_ptr < 0 then
-        inv_ptr := 0;
-      player.readyArtifact := artitype_t(player.inventory[inv_ptr]._type);
-    end;
-  end;
-end;
-
 //----------------------------------------------------------------------------
 //
 // PROC P_PlayerUseArtifact
@@ -476,20 +396,6 @@ end;
 //----------------------------------------------------------------------------
 //
 //==============================================================================
-function P_GetPlayerNum(player: Pplayer_t): integer;
-var
-  i: integer;
-begin
-  for i := 0 to MAXPLAYERS - 1 do
-    if player = @players[i] then
-    begin
-      result := i;
-      exit;
-    end;
-
-  result := 0;
-end;
-
 //----------------------------------------------------------------------------
 //
 // FUNC P_UndoPlayerChicken
@@ -948,6 +854,25 @@ end;
 //
 //==============================================================================
 class procedure TUserGameRules.AtEnd(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TUserGameRules.SlotIsEmpty
+//
+//==============================================================================
+class function TUserGameRules.SlotIsEmpty(const player: Pplayer_t; const slot: integer): boolean;
+begin
+  result := false;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.ClearFreedSlot
+//
+//==============================================================================
+class procedure TUserGameRules.ClearFreedSlot(const player: Pplayer_t);
 begin
 end;
 

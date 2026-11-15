@@ -578,6 +578,7 @@ uses
 {$IFDEF HEXEN}
   p_user,
   DelphiDoom.Engine.World.UserRules,
+  DelphiDoom.Engine.World.PlayerArtifacts,
 {$ENDIF}
    // JVAL: 3d floors
   {$IFNDEF OPENGL}

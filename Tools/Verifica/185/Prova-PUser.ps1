@@ -93,6 +93,14 @@ $Expansions = @(
   @{ R = 'P_PlayerThink'; F = 'TPlayerColormap.Standard(player);'; D = '<<C:TPlayerColormap.Standard>>'; Strife = $null
      Note = 'il colore di Doom e Heretic e'' un metodo di TPlayerColormap (stesso testo)' }
   @{ R = 'P_PlayerThink'; F = 'TUserGameRules.AtEnd(player);'; D = '<<B:AtEnd>>' }
+
+  # --- gli artefatti di Heretic e Hexen (Base\DelphiDoom.Engine.World.PlayerArtifacts.pas) ---
+  @{ R = 'P_GetPlayerNum'; F = 'for i := 0 to MAXPLAYERS - 1 do if player = @players[i] then begin result := i; exit; end;'; D = $null
+     Hexen = 'for i := 0 to MAXPLAYERS - 1 do begin if player = @players[i] then begin result := i; exit; end; end;'
+     Note = 'Hexen scriveva un "begin ... end" attorno al solo if del for: stesso significato' }
+  @{ R = 'P_PlayerRemoveArtifact'; F = 'if TUserGameRules.SlotIsEmpty(player, slot) then exit;'; D = ''; Hexen = 'if player.inventory[slot].count = 0 then exit;'
+     Note = 'la guardia "slot vuoto" e'' una regola (SlotIsEmpty): solo Hexen la aveva' }
+  @{ R = 'P_PlayerRemoveArtifact'; F = 'TUserGameRules.ClearFreedSlot(player);'; D = '<<B:ClearFreedSlot>>' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
@@ -108,7 +116,7 @@ $Methods = @{
 
 $Alias = @{ 'Doom|P_PlayerThink' = 'TPlayerThinker.Think'; 'Heretic|P_PlayerThink' = 'TPlayerThinker.Think'; 'Strife|P_PlayerThink' = 'TPlayerThinker.Think' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas', 'Base\DelphiDoom.Engine.World.PlayerThinker.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas', 'Base\DelphiDoom.Engine.World.PlayerThinker.pas', 'Base\DelphiDoom.Engine.World.PlayerArtifacts.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.UserRules.pas' -Class 'TUserGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Extra @{ S = 'Base\p_user.pas'; C = 'Base\DelphiDoom.Engine.World.PlayerColormap.pas' }
 exit $bad

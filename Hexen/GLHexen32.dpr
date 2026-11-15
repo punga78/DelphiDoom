@@ -214,6 +214,7 @@ uses
   p_things in '..\Hexen\p_things.pas',
   p_tick in '..\Base\p_tick.pas',
   p_user in '..\Base\p_user.pas',
+  DelphiDoom.Engine.World.PlayerArtifacts in '..\Base\DelphiDoom.Engine.World.PlayerArtifacts.pas',
   DelphiDoom.Engine.World.UserRules in '..\Hexen\DelphiDoom.Engine.World.UserRules.pas',
   po_man in '..\Base\po_man.pas',
   r_bsp in '..\Base\r_bsp.pas',

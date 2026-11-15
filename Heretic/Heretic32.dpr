@@ -276,6 +276,7 @@ uses
   p_user in '..\Base\p_user.pas',
   DelphiDoom.Engine.World.PlayerThinker in '..\Base\DelphiDoom.Engine.World.PlayerThinker.pas',
   DelphiDoom.Engine.World.PlayerColormap in '..\Base\DelphiDoom.Engine.World.PlayerColormap.pas',
+  DelphiDoom.Engine.World.PlayerArtifacts in '..\Base\DelphiDoom.Engine.World.PlayerArtifacts.pas',
   DelphiDoom.Engine.World.UserRules in '..\Heretic\DelphiDoom.Engine.World.UserRules.pas',
   r_bsp in '..\Base\r_bsp.pas',
   r_cache_main in '..\Base\r_cache_main.pas',
