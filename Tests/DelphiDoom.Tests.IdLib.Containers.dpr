@@ -30,6 +30,7 @@ uses
   DelphiDoom.Tests.IdLib.Containers.Cases in 'Source\DelphiDoom.Tests.IdLib.Containers.Cases.pas',
   DelphiDoom.Tests.IdLib.Containers.ListCases in 'Source\DelphiDoom.Tests.IdLib.Containers.ListCases.pas',
   DelphiDoom.Tests.IdLib.Containers.ListFixture in 'Source\DelphiDoom.Tests.IdLib.Containers.ListFixture.pas',
+  DelphiDoom.Tests.IdLib.Containers.ListPointers in 'Source\DelphiDoom.Tests.IdLib.Containers.ListPointers.pas',
   DelphiDoom.Tests.IdLib.Containers.Fixture in 'Source\DelphiDoom.Tests.IdLib.Containers.Fixture.pas';
 
 var

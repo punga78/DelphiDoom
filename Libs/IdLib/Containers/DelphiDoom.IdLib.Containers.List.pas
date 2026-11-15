@@ -22,6 +22,8 @@ const
   SIdListBadIndex = 'idList: index %d is outside the list (%d elements)';
   SIdListBadSize = 'idList: bad size %d';
   SIdListBadGranularity = 'idList: the granularity must be positive';
+  SIdListNoAllocator = 'idList: the allocator is missing';
+  SIdListNotObjects = 'idList: DeleteContents needs a list of objects';
 
 type
   /// <summary>
@@ -35,9 +37,9 @@ type
   ///   one of the type, the C++ uses <c>operator==</c>); <c>Sort</c> takes a comparison (default: the
   ///   order of the type, the C++ uses <c>*a - *b</c>) and is not stable, as <c>qsort</c>; the C++ asserts
   ///   (index out of range, negative size) are <c>EIdLibException</c>; <c>Alloc</c> returns the index of the
-  ///   new element (Delphi has no reference result); not ported: <c>Ptr</c>, <c>Find</c> by pointer,
-  ///   <c>IndexOf</c> by pointer, <c>FindNull</c> and <c>DeleteContents</c> (they are for pointer lists;
-  ///   a list of objects is freed by its owner), and the memory statistics.</para>
+  ///   new element (Delphi has no reference result); the functions for lists of pointers are<c>FindNull</c>,
+  ///   <c>DeleteContents</c> (a list of objects), <c>AssureSizeAlloc</c> and <c>Ptr</c>; not ported: <c>Find</c> and 
+  ///   <c>IndexOf</c> by pointer (an element is compared by value) and the memory statistics.</para>
   /// </summary>
   TIdList<T> = class
   strict private
@@ -75,6 +77,26 @@ type
     procedure AssureSize(const ANewSize: Integer); overload;
     /// <summary>idList::AssureSize(newSize, initValue): the new elements get the value</summary>
     procedure AssureSize(const ANewSize: Integer; const AInitValue: T); overload;
+    /// <summary>
+    ///   idList::AssureSizeAlloc: as <c>AssureSize</c>, and every new element, up to the allocated size, is made by
+    ///   the allocator (a list of pointers or objects)
+    /// </summary>
+    procedure AssureSizeAlloc(const ANewSize: Integer; const AAllocator: TFunc<T>);
+    /// <summary>
+    ///   idList::FindNull: the index of the first element that is nil (the default value of the type: a nil
+    ///   object, interface or pointer, a zero), -1 when there is none
+    /// </summary>
+    function FindNull: Integer;
+    /// <summary>
+    ///   idList::DeleteContents: frees every element of a list of objects, then empties the list (<c>AClear</c>) or
+    ///   sets the used elements to nil. <c>EIdLibException</c> when the elements are not objects
+    /// </summary>
+    procedure DeleteContents(const AClear: Boolean);
+    /// <summary>
+    ///   idList::Ptr: the address of the first element (the array of the list, valid until the next change of
+    ///   the allocation), nil when nothing is allocated
+    /// </summary>
+    function Ptr: Pointer;
     /// <summary>idList::Alloc: the slot of a new element at the end (it keeps what was there, zero after a resize); its index</summary>
     function Alloc: Integer;
     /// <summary>idList::Append: the index of the new element</summary>
@@ -105,7 +127,7 @@ type
 implementation
 
 uses
-  System.Generics.Collections;
+  System.Generics.Collections, System.TypInfo;
 
 { TIdList<T> }
 
@@ -281,6 +303,61 @@ begin
   FNum := LNewNum;
 end;
 
+procedure TIdList<T>.AssureSizeAlloc(const ANewSize: Integer; const AAllocator: TFunc<T>);
+var
+  LNewNum: Integer;
+  LNewSize: Integer;
+  LIndex: Integer;
+begin
+  if not Assigned(AAllocator) then
+    raise EIdLibException.Create(SIdListNoAllocator);
+  LNewNum := ANewSize;
+  if ANewSize > FSize then
+  begin
+    LNewSize := RoundedUp(ANewSize);
+    FNum := FSize;
+    Resize(LNewSize);
+    for LIndex := FNum to LNewSize - 1 do
+      FItems[LIndex] := AAllocator();
+  end;
+  FNum := LNewNum;
+end;
+
+function TIdList<T>.FindNull: Integer;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to FNum - 1 do
+  begin
+    if FComparer.Equals(FItems[LIndex], Default(T)) then
+      Exit(LIndex);
+  end;
+  Result := -1;
+end;
+
+procedure TIdList<T>.DeleteContents(const AClear: Boolean);
+var
+  LIndex: Integer;
+begin
+  if GetTypeKind(T) <> tkClass then
+    raise EIdLibException.Create(SIdListNotObjects);
+  for LIndex := 0 to FNum - 1 do
+  begin
+    // a nil element is skipped, as delete of a null pointer is
+    TObject(PPointer(@FItems[LIndex])^).Free;
+    PPointer(@FItems[LIndex])^ := nil;
+  end;
+  if AClear then
+    Clear;
+end;
+
+function TIdList<T>.Ptr: Pointer;
+begin
+  if System.Length(FItems) = 0 then
+    Result := nil
+  else
+    Result := @FItems[0];
+end;
 procedure TIdList<T>.AssureSize(const ANewSize: Integer; const AInitValue: T);
 var
   LNewNum: Integer;
