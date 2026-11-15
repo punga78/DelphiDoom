@@ -36,6 +36,7 @@ uses
   dglOpenGL,
   d_player,
   gl_defs,
+  gl_types,
   r_defs,
   r_visplanes,
   m_fixed,
@@ -47,6 +48,10 @@ uses
   DelphiDoom.Engine.GlScene.Types,
   DelphiDoom.Engine.GlScene.FlatCollector,
   DelphiDoom.Engine.GlScene.WallCollector,
+  DelphiDoom.Engine.GlScene.WallPainter,
+  DelphiDoom.Engine.GlScene.FlatPainter,
+  DelphiDoom.Engine.GlScene.SpritePainter,
+  DelphiDoom.Engine.GlScene.SceneDrawer,
   DelphiDoom.Engine.GlScene.SpriteCollector;
 
 //==============================================================================
@@ -120,6 +125,90 @@ procedure gld_ConfigureWallCollector(const ACollector: TEngineGlSceneWallCollect
 
 //==============================================================================
 //
+// gld_ConfigureWallPainter
+//
+//==============================================================================
+procedure gld_ConfigureWallPainter(const APainter: TEngineGlSceneWallPainter);
+
+//==============================================================================
+//
+// gld_ConfigureFlatPainter
+//
+//==============================================================================
+procedure gld_ConfigureFlatPainter(const APainter: TEngineGlSceneFlatPainter);
+
+//==============================================================================
+//
+// gld_ConfigureSpritePainter
+//
+//==============================================================================
+procedure gld_ConfigureSpritePainter(const APainter: TEngineGlSceneSpritePainter);
+
+//==============================================================================
+//
+// gld_ConfigureSceneDrawer
+//
+//==============================================================================
+procedure gld_ConfigureSceneDrawer(const ADrawer: TEngineGlSceneDrawer);
+
+//==============================================================================
+//
+// gld_SortDlights
+//
+//==============================================================================
+procedure gld_SortDlights;
+
+//==============================================================================
+//
+// gld_DrawDLights
+//
+//==============================================================================
+procedure gld_DrawDLights;
+
+//==============================================================================
+//
+// gld_DrawModels
+//
+//==============================================================================
+procedure gld_DrawModels(sprite: PGLSprite);
+
+//==============================================================================
+//
+// gld_DrawVoxels
+//
+//==============================================================================
+procedure gld_DrawVoxels(sprite: PGLSprite);
+
+//==============================================================================
+//
+// gld_CalcLightLevel
+//
+//==============================================================================
+function gld_CalcLightLevel(lightlevel: integer): float;
+
+//==============================================================================
+//
+// gld_StaticLightAlpha
+//
+//==============================================================================
+procedure gld_StaticLightAlpha(light: float; alpha: float);
+
+//==============================================================================
+//
+// gld_StartFog
+//
+//==============================================================================
+procedure gld_StartFog;
+
+//==============================================================================
+//
+// gld_StartWhiteFog
+//
+//==============================================================================
+procedure gld_StartWhiteFog;
+
+//==============================================================================
+//
 // gld_ConfigureSpriteCollector
 //
 // The class that collects the sprites of a frame (gld_AddSprite): gl_render owns it from then on.
@@ -173,6 +262,12 @@ var
   extra_green: float = 0.0;
   extra_blue: float = 0.0;
   extra_alpha: float = 0.0;
+
+  // the vertexes and texture coordinates of the flats, and the list of the loops of all the sectors:
+  // filled when the level is loaded, read by the painters of the scene
+  gld_vertexes: PGLVertexArray = nil;
+  gld_texcoords: PGLTexcoordArray = nil;
+  sectorloops: PGLSectorArray = nil;
 
 //==============================================================================
 //
@@ -343,7 +438,6 @@ uses
   gl_tex,
   gl_sky,
   gl_lights,
-  gl_types,
   r_dynlights,
   gl_models,
   gl_voxels,
@@ -391,13 +485,6 @@ procedure gld_ConfigureDynamicLights(const ACache: IDynLightRenderCache);
 begin
   gl_dynlights := ACache;
 end;
-
-{$IFDEF DEBUG}
-var
-  rendered_visplanes,
-  rendered_segs,
-  rendered_vissprites: integer;
-{$ENDIF}
 
 {*
  * lookuptable for lightvalues
@@ -1318,8 +1405,6 @@ end;
 var
   gld_max_vertexes: integer = 0;
   gld_num_vertexes: integer = 0;
-  gld_vertexes: PGLVertexArray = nil;
-  gld_texcoords: PGLTexcoordArray = nil;
 
 //==============================================================================
 //
@@ -1336,44 +1421,6 @@ begin
   end;
 end;
 
-{* GLLoopDef is the struct for one loop. A loop is a list of vertexes
- * for triangles, which is calculated by the gluTesselator in gld_PrecalculateSector
- * and in gld_PreprocessCarvedFlat
- *}
-
-type
-  GLLoopDef = record
-    mode: TGLenum;        // GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN
-    vertexcount: integer; // number of vertexes in this loop
-    vertexindex: integer; // index into vertex list
-  end;
-  PGLLoopDef = ^GLLoopDef;
-  GLLoopDefArray = array[0..$FFFF] of GLLoopDef;
-  PGLLoopDefArray = ^GLLoopDefArray;
-
-// GLSector is the struct for a sector with a list of loops.
-
-  GLSector = record
-    loopcount: integer;     // number of loops for this sector
-    loops: PGLLoopDefArray; // the loops itself
-    list: GLuint;
-    listtexscale: float;
-  end;
-  PGLSector = ^GLSector;
-  GLSectorArray = array[0..$FFFF] of GLSector;
-  PGLSectorArray = ^GLSectorArray;
-
-  GLSubSector = record
-    loop: GLLoopDef; // the loops itself
-  end;
-
-type
-  gl_strip_coords_t = record
-    v: array[0..3] of array [0..2] of GLfloat;
-    t: array[0..3] of array [0..1] of GLfloat;
-  end;
-  Pgl_strip_coords_t = ^gl_strip_coords_t;
-
 var
   // the walls, flats and sprites of the frame (Libs\GlScene), given by the composition root (gld_ConfigureDrawList)
   gld_drawlist: TGlSceneDrawList = nil;
@@ -1381,11 +1428,16 @@ var
   gld_flats: TEngineGlSceneFlatCollector = nil;
   // collects the walls of the frame, given by the composition root (gld_ConfigureWallCollector)
   gld_walls: TEngineGlSceneWallCollector = nil;
+  // draws the walls of the frame, given by the composition root (gld_ConfigureWallPainter)
+  gld_wallpainter: TEngineGlSceneWallPainter = nil;
+  // draws the flats of the frame, given by the composition root (gld_ConfigureFlatPainter)
+  gld_flatpainter: TEngineGlSceneFlatPainter = nil;
+  // draws the sprites of the frame, given by the composition root (gld_ConfigureSpritePainter)
+  gld_spritepainter: TEngineGlSceneSpritePainter = nil;
+  // draws the scene of the frame with the painters, given by the composition root (gld_ConfigureSceneDrawer)
+  gld_scenedrawer: TEngineGlSceneDrawer = nil;
   // collects the sprites of the frame, given by the composition root (gld_ConfigureSpriteCollector)
   gld_sprites: TEngineGlSceneSpriteCollector = nil;
-
-// this is the list for all sectors to the loops
-  sectorloops: PGLSectorArray;
 
   rendermarker: byte = 0;
 
@@ -1502,6 +1554,54 @@ begin
   if gld_walls <> ACollector then
     gld_walls.Free;
   gld_walls := ACollector;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureWallPainter
+//
+//==============================================================================
+procedure gld_ConfigureWallPainter(const APainter: TEngineGlSceneWallPainter);
+begin
+  if gld_wallpainter <> APainter then
+    gld_wallpainter.Free;
+  gld_wallpainter := APainter;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureFlatPainter
+//
+//==============================================================================
+procedure gld_ConfigureFlatPainter(const APainter: TEngineGlSceneFlatPainter);
+begin
+  if gld_flatpainter <> APainter then
+    gld_flatpainter.Free;
+  gld_flatpainter := APainter;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureSpritePainter
+//
+//==============================================================================
+procedure gld_ConfigureSpritePainter(const APainter: TEngineGlSceneSpritePainter);
+begin
+  if gld_spritepainter <> APainter then
+    gld_spritepainter.Free;
+  gld_spritepainter := APainter;
+end;
+
+//==============================================================================
+//
+// gld_ConfigureSceneDrawer
+//
+//==============================================================================
+procedure gld_ConfigureSceneDrawer(const ADrawer: TEngineGlSceneDrawer);
+begin
+  if gld_scenedrawer <> ADrawer then
+    gld_scenedrawer.Free;
+  gld_scenedrawer := ADrawer;
 end;
 
 //==============================================================================
@@ -1786,6 +1886,8 @@ begin
   gld_drawlist.BeginFrame(rendermarker);
   gld_flats.BeginFrame(rendermarker);
   gld_walls.BeginFrame(rendermarker, yaw, zCamera);
+  gld_wallpainter.BeginFrame(xCamera, yCamera, zCamera);
+  gld_spritepainter.BeginFrame(inv_yaw);
   numdlitems := 0;
 
   if gl_renderwireframe then
@@ -1909,564 +2011,6 @@ begin
     glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
 end;
 
-(*****************
- *               *
- * Walls         *
- *               *
- *****************)
-
-//==============================================================================
-// gld_SetupFloodStencil
-//
-//==========================================================================
-//
-// Flood gaps with the back side's ceiling/floor texture
-// This requires a stencil because the projected plane interferes with
-// the depth buffer
-//
-//==========================================================================
-//
-//==============================================================================
-procedure gld_SetupFloodStencil(const wall: PGLWall);
-var
-  recursion: integer;
-begin
-  recursion := 0;
-
-  // Create stencil
-  glStencilFunc(GL_EQUAL, recursion, $FFFFFFFF);  // create stencil
-  glStencilOp(GL_KEEP, GL_KEEP, GL_INCR); // increment stencil of valid pixels
-  glColorMask(false, false, false, false); // don't write to the graphics buffer
-  glDisable(GL_TEXTURE_2D);
-  glColor3f(1, 1, 1);
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(true);
-
-  glBegin(GL_TRIANGLE_FAN);
-    glVertex3f(wall.glseg.x1, wall.ytop, wall.glseg.z1);
-    glVertex3f(wall.glseg.x1, wall.ybottom, wall.glseg.z1);
-    glVertex3f(wall.glseg.x2, wall.ybottom, wall.glseg.z2);
-    glVertex3f(wall.glseg.x2, wall.ytop, wall.glseg.z2);
-  glEnd();
-
-  glStencilFunc(GL_EQUAL, recursion + 1, $FFFFFFFF); // draw sky into stencil
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);   // this stage doesn't modify the stencil
-
-  glColorMask(true, true, true, true); // don't write to the graphics buffer
-  glEnable(GL_TEXTURE_2D);
-//  glDisable(GL_DEPTH_TEST);
-  glDepthMask(false);
-end;
-
-//==============================================================================
-//
-// gld_ClearFloodStencil
-//
-//==============================================================================
-procedure gld_ClearFloodStencil(const wall: PGLWall);
-var
-  recursion: integer;
-begin
-  recursion := 0;
-
-  glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-  glDisable(GL_TEXTURE_2D);
-  glColorMask(false, false, false, false); // don't write to the graphics buffer
-  glColor3f(1, 1, 1);
-
-  glBegin(GL_TRIANGLE_FAN);
-    glVertex3f(wall.glseg.x1, wall.ytop, wall.glseg.z1);
-    glVertex3f(wall.glseg.x1, wall.ybottom, wall.glseg.z1);
-    glVertex3f(wall.glseg.x2, wall.ybottom, wall.glseg.z2);
-    glVertex3f(wall.glseg.x2, wall.ytop, wall.glseg.z2);
-  glEnd();
-
-  // restore old stencil op.
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-  glStencilFunc(GL_EQUAL, recursion, $FFFFFFFF);
-  glEnable(GL_TEXTURE_2D);
-  glColorMask(true, true, true, true);
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(true);
-end;
-
-//==============================================================================
-// gld_SetupFloodedPlaneCoords
-//
-// Calculation of the coordinates of the gap
-//
-//==============================================================================
-procedure gld_SetupFloodedPlaneCoords(const wall: PGLWall; const c: Pgl_strip_coords_t);
-var
-  prj_fac1, prj_fac2: float;
-  k: float;
-  ytop, ybottom, planez: float;
-begin
-  if wall.flag = GLDWF_TOPFLUD then
-  begin
-    ytop := wall.ybottom;
-    ybottom := wall.ytop;
-    planez := wall.ybottom;
-  end
-  else
-  begin
-    ytop := wall.ytop;
-    ybottom := wall.ybottom;
-    planez := wall.ytop;
-  end;
-
-  prj_fac1 := (ytop - zCamera) / (ytop - zCamera);
-  prj_fac2 := (ytop - zCamera) / (ybottom - zCamera);
-
-  c.v[0][0] := xCamera + prj_fac1 * (wall.glseg.x1 - xCamera);
-  c.v[0][1] := planez;
-  c.v[0][2] := yCamera + prj_fac1 * (wall.glseg.z1 - yCamera);
-
-  c.v[1][0] := xCamera + prj_fac2 * (wall.glseg.x1 - xCamera);
-  c.v[1][1] := planez;
-  c.v[1][2] := yCamera + prj_fac2 * (wall.glseg.z1 - yCamera);
-
-  c.v[2][0] := xCamera + prj_fac1 * (wall.glseg.x2 - xCamera);
-  c.v[2][1] := planez;
-  c.v[2][2] := yCamera + prj_fac1 * (wall.glseg.z2 - yCamera);
-
-  c.v[3][0] := xCamera + prj_fac2 * (wall.glseg.x2 - xCamera);
-  c.v[3][1] := planez;
-  c.v[3][2] := yCamera + prj_fac2 * (wall.glseg.z2 - yCamera);
-
-  k := 0.5;
-
-  c.t[0][0] := -c.v[0][0] / k;
-  c.t[0][1] := -c.v[0][2] / k;
-
-  c.t[1][0] := -c.v[1][0] / k;
-  c.t[1][1] := -c.v[1][2] / k;
-
-  c.t[2][0] := -c.v[2][0] / k;
-  c.t[2][1] := -c.v[2][2] / k;
-
-  c.t[3][0] := -c.v[3][0] / k;
-  c.t[3][1] := -c.v[3][2] / k;
-end;
-
-//==============================================================================
-//
-// gld_SetupFloodedPlaneLight
-//
-//==============================================================================
-procedure gld_SetupFloodedPlaneLight(const wall: PGLWall);
-var
-  light: float;
-begin
-  if wall.glseg.backsector <> nil then
-  begin
-    light := gld_CalcLightLevel(wall.glseg.backsector.lightlevel + (extralight shr 5));
-    gld_StaticLightAlpha(light, wall.alpha);
-  end
-  else
-    gld_StaticLightAlpha(wall.light, wall.alpha);
-end;
-
-//==============================================================================
-//
-// gld_DrawTriangleStrip
-//
-//==============================================================================
-procedure gld_DrawTriangleStrip(const c: Pgl_strip_coords_t);
-begin
-  glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(c.t[0][0], c.t[0][1]);
-    glVertex3f(c.v[0][0], c.v[0][1], c.v[0][2]);
-    glTexCoord2f(c.t[1][0], c.t[1][1]);
-    glVertex3f(c.v[1][0], c.v[1][1], c.v[1][2]);
-    glTexCoord2f(c.t[2][0], c.t[2][1]);
-    glVertex3f(c.v[2][0], c.v[2][1], c.v[2][2]);
-    glTexCoord2f(c.t[3][0], c.t[3][1]);
-    glVertex3f(c.v[3][0], c.v[3][1], c.v[3][2]);
-  glEnd();
-end;
-
-//==============================================================================
-//
-// gld_StartFog
-//
-//==============================================================================
-procedure gld_StartFog; forward;
-
-//==============================================================================
-//
-// gld_StartWhiteFog
-//
-//==============================================================================
-procedure gld_StartWhiteFog; forward;
-
-//==============================================================================
-//
-// gld_DrawWall
-//
-//==============================================================================
-procedure gld_DrawWall(wall: PGLWall; const fblend: boolean);
-var
-  seg: PGLSeg;
-  floorheight: float;
-  ceilingheight: float;
-  theight: float;
-  frontslope: Boolean;
-  backslope: Boolean;
-  vm: float;
-  A: array[0..3] of GLVertexUV;
-  iA: integer;
-  c: gl_strip_coords_t;
-  didwhitefog: boolean; // JVAL: Mars fog sectors
-
-  procedure ADD_A_COORD(const au, av: float);
-  begin
-    A[iA].u := au;
-    A[iA].v := av;
-  end;
-
-  procedure ADD_A_XYZ(const ax, ay, az: float);
-  begin
-    A[iA].x := ax;
-    A[iA].y := ay;
-    A[iA].z := az;
-  end;
-
-  procedure RENDER_A_SIMPLE;
-  var
-    ii: integer;
-  begin
-    if iA < 3 then
-      Exit;
-
-    glBegin(GL_TRIANGLE_STRIP);
-      for ii := 0 to iA - 1 do
-      begin
-        glTexCoord2f(A[ii].u, A[ii].v);
-        glVertex3f(A[ii].x, A[ii].y, A[ii].z);
-      end;
-    glEnd;
-  end;
-
-  procedure RENDER_A;
-  var
-    ii: integer;
-  begin
-    if (iA < 4) or not wall.doublelight then
-    begin
-      RENDER_A_SIMPLE;
-      Exit;
-    end;
-
-    if (wall.ymid <= A[0].y) and
-       (wall.ymid >= A[1].y) and
-       (wall.ymid <= A[2].y) and
-       (wall.ymid >= A[3].y) then
-    begin
-      theight := wall.gltexture.buffer_height / MAP_COEFF;
-      vm := wall.vt + (wall.ytop - wall.ymid) / theight;
-
-      glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(A[0].u, A[0].v);
-        glVertex3f(A[0].x, A[0].y, A[0].z);
-        glTexCoord2f(A[1].u, vm);
-        glVertex3f(A[1].x, wall.ymid, A[1].z);
-        glTexCoord2f(A[2].u, A[2].v);
-        glVertex3f(A[2].x, A[2].y, A[2].z);
-        glTexCoord2f(A[3].u, vm);
-        glVertex3f(A[3].x, wall.ymid, A[3].z);
-      glEnd;
-
-      gld_StaticLightAlpha(wall.light2, wall.alpha);
-
-      glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(A[0].u, vm);
-        glVertex3f(A[0].x, wall.ymid, A[0].z);
-        glTexCoord2f(A[1].u, A[1].v);
-        glVertex3f(A[1].x, A[1].y, A[1].z);
-        glTexCoord2f(A[2].u, vm);
-        glVertex3f(A[2].x, wall.ymid, A[2].z);
-        glTexCoord2f(A[3].u, A[3].v);
-        glVertex3f(A[3].x, A[3].y, A[3].z);
-
-        glTexCoord2f(wall.ul, vm);
-        glVertex3f(seg.x1, wall.ymid, seg.z1);
-        glTexCoord2f(wall.ul, wall.vb);
-        glVertex3f(seg.x1, wall.ybottom, seg.z1);
-        glTexCoord2f(wall.ur, vm);
-        glVertex3f(seg.x2, wall.ymid, seg.z2);
-        glTexCoord2f(wall.ur, wall.vb);
-        glVertex3f(seg.x2, wall.ybottom, seg.z2);
-      glEnd;
-    end
-    else
-    begin
-      glBegin(GL_TRIANGLE_STRIP);
-        for ii := 0 to iA - 1 do
-        begin
-          glTexCoord2f(A[ii].u, A[ii].v);
-          glVertex3f(A[ii].x, A[ii].y, A[ii].z);
-        end;
-      glEnd;
-    end;
-  end;
-
-  procedure WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-  begin
-    if wall.whitefog then
-    begin
-      gld_StartWhiteFog;
-      didwhitefog := true;
-    end;
-  end;
-
-  procedure WALL_WHITEFOG_2; // JVAL: Mars fog sectors
-  begin
-    if wall.whitefog2 then
-    begin
-      gld_StartWhiteFog;
-      didwhitefog := true;
-    end;
-  end;
-
-  procedure WALL_WHITEFOG_STOP;  // JVAL: Mars fog sectors
-  begin
-    if didwhitefog then
-    begin
-      gld_StartFog;
-      didwhitefog := false;
-    end;
-  end;
-
-begin
-  if not gl_drawsky and (wall.flag >= GLDWF_SKY) then
-    exit;
-
-  if wall.gltexture.index = 0 then
-    exit;
-
-  if wall.blend <> fblend then
-    exit;
-
-  didwhitefog := false;
-
-  if (wall.flag = GLDWF_TOPFLUD) or (wall.flag = GLDWF_BOTFLUD) then
-  begin
-    gld_BindFlat(wall.gltexture, -1);
-
-    gld_SetupFloodStencil(wall);
-    gld_SetupFloodedPlaneCoords(wall, @c);
-    gld_SetupFloodedPlaneLight(wall);
-    WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-    gld_DrawTriangleStrip(@c);
-    WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-    gld_ClearFloodStencil(wall);
-
-    exit;
-  end;
-
-  gld_BindTexture(wall.gltexture);
-  if wall.flag >= GLDWF_SKY then
-  begin
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    if wall.flag = GLDWF_SKYFLIP then
-      glScalef(-128.0 * wall.gltexture.inv_buffer_width, 200.0 / 320.0 * 2.0, 1.0)
-    else
-      glScalef(128.0 * wall.gltexture.inv_buffer_width, 200.0 / 320.0 * 2.0, 1.0);
-    glTranslatef(wall.skyyaw, wall.skyymid, 0.0);
-
-    seg := wall.glseg;
-
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex3f(seg.x1, wall.ytop, seg.z1);
-      glVertex3f(seg.x1, wall.ybottom, seg.z1);
-      glVertex3f(seg.x2, wall.ytop, seg.z2);
-      glVertex3f(seg.x2, wall.ybottom, seg.z2);
-    glEnd;
-
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-  end
-  else
-  begin
-    gld_StaticLightAlpha(wall.light, wall.alpha);
-    seg := wall.glseg;
-
-    if wall.blend then
-      glDepthMask(false)
-    else
-      glDisable(GL_BLEND);
-
-    frontslope := seg.frontsector.renderflags and SRF_SLOPED <> 0;
-    if seg.backsector = nil then
-      backslope := false
-    else
-      backslope := seg.backsector.renderflags and SRF_SLOPED <> 0;
-
-    if frontslope and (wall.flag = GLDWF_M1S) then
-    begin
-      theight := wall.gltexture.buffer_height / MAP_COEFF;
-
-      iA := 0;
-
-      floorheight := gld_FloorHeight(seg.frontsector, seg.x1, seg.z1);
-      ceilingheight := gld_CeilingHeight(seg.frontsector, seg.x1, seg.z1);
-
-      if ceilingheight - floorheight > GLEPSILON then
-      begin
-        ADD_A_COORD(wall.ul, wall.vt + (wall.ytop - ceilingheight) / theight);
-        ADD_A_XYZ(seg.x1, ceilingheight, seg.z1);
-        Inc(iA);
-      end;
-
-      ADD_A_COORD(wall.ul, wall.vt + (wall.ytop - floorheight) / theight);
-      ADD_A_XYZ(seg.x1, floorheight, seg.z1);
-      Inc(iA);
-
-      floorheight := gld_FloorHeight(seg.frontsector, seg.x2, seg.z2);
-      ceilingheight := gld_CeilingHeight(seg.frontsector, seg.x2, seg.z2);
-
-      if ceilingheight - floorheight > GLEPSILON then
-      begin
-        ADD_A_COORD(wall.ur, wall.vt + (wall.ytop - ceilingheight) / theight);
-        ADD_A_XYZ(seg.x2, ceilingheight, seg.z2);
-        Inc(iA);
-      end;
-
-      ADD_A_COORD(wall.ur, wall.vt + (wall.ytop - floorheight) / theight);
-      ADD_A_XYZ(seg.x2, floorheight, seg.z2);
-      Inc(iA);
-
-      WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-      RENDER_A;
-      WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-    end
-    else if (frontslope or backslope) and (wall.flag = GLDWF_BOT) then
-    begin
-      theight := wall.gltexture.buffer_height / MAP_COEFF;
-
-      iA := 0;
-
-      floorheight := gld_FloorHeight(seg.frontsector, seg.x1, seg.z1);
-      ceilingheight := gld_FloorHeight(seg.backsector, seg.x1, seg.z1);
-
-      if ceilingheight - floorheight > GLEPSILON then
-      begin
-        ADD_A_COORD(wall.ul, wall.vt + (wall.ytop - ceilingheight) / theight);
-        ADD_A_XYZ(seg.x1, ceilingheight, seg.z1);
-        Inc(iA);
-      end;
-
-      ADD_A_COORD(wall.ul, wall.vt + (wall.ytop - floorheight) / theight);
-      ADD_A_XYZ(seg.x1, floorheight, seg.z1);
-      Inc(iA);
-
-      floorheight := gld_FloorHeight(seg.frontsector, seg.x2, seg.z2);
-      ceilingheight := gld_FloorHeight(seg.backsector, seg.x2, seg.z2);
-
-      if ceilingheight - floorheight > GLEPSILON then
-      begin
-        ADD_A_COORD(wall.ur, wall.vt + (wall.ytop - ceilingheight) / theight);
-        ADD_A_XYZ(seg.x2, ceilingheight, seg.z2);
-        Inc(iA);
-      end;
-
-      ADD_A_COORD(wall.ur, wall.vt + (wall.ytop - floorheight) / theight);
-      ADD_A_XYZ(seg.x2, floorheight, seg.z2);
-      Inc(iA);
-
-      WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-      RENDER_A;
-      WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-    end
-    else if (frontslope or backslope) and (wall.flag = GLDWF_TOP) then
-    begin
-      theight := wall.gltexture.buffer_height / MAP_COEFF;
-
-      WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-      glBegin(GL_TRIANGLE_STRIP);
-        floorheight := gld_CeilingHeight(seg.frontsector, seg.x1, seg.z1);
-        ceilingheight := gld_CeilingHeight(seg.backsector, seg.x1, seg.z1);
-
-        glTexCoord2f(wall.ul, wall.vt + (wall.ytop - ceilingheight) / theight);
-        glVertex3f(seg.x1, ceilingheight, seg.z1);
-        glTexCoord2f(wall.ul, wall.vt + (wall.ytop - floorheight) / theight);
-        glVertex3f(seg.x1, floorheight, seg.z1);
-
-        floorheight := gld_CeilingHeight(seg.frontsector, seg.x2, seg.z2);
-        ceilingheight := gld_CeilingHeight(seg.backsector, seg.x2, seg.z2);
-
-        glTexCoord2f(wall.ur, wall.vt + (wall.ytop - ceilingheight) / theight);
-        glVertex3f(seg.x2, ceilingheight, seg.z2);
-        glTexCoord2f(wall.ur, wall.vt + (wall.ytop - floorheight) / theight);
-        glVertex3f(seg.x2, floorheight, seg.z2);
-      glEnd;
-      WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-    end
-    else
-    begin
-      if not wall.doublelight or (wall.ymid < wall.ybottom) or (wall.ymid > wall.ytop) then
-      begin
-        WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-        glBegin(GL_TRIANGLE_STRIP);
-          glTexCoord2f(wall.ul, wall.vt);
-          glVertex3f(seg.x1, wall.ytop, seg.z1);
-          glTexCoord2f(wall.ul, wall.vb);
-          glVertex3f(seg.x1, wall.ybottom, seg.z1);
-          glTexCoord2f(wall.ur, wall.vt);
-          glVertex3f(seg.x2, wall.ytop, seg.z2);
-          glTexCoord2f(wall.ur, wall.vb);
-          glVertex3f(seg.x2, wall.ybottom, seg.z2);
-        glEnd;
-        WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-      end
-      else
-      begin
-        theight := wall.gltexture.buffer_height / MAP_COEFF;
-        vm := wall.vt + (wall.ytop - wall.ymid) / theight;
-
-        WALL_WHITEFOG_1; // JVAL: Mars fog sectors
-
-        glBegin(GL_TRIANGLE_STRIP);
-          glTexCoord2f(wall.ul, wall.vt);
-          glVertex3f(seg.x1, wall.ytop, seg.z1);
-          glTexCoord2f(wall.ul, vm);
-          glVertex3f(seg.x1, wall.ymid, seg.z1);
-          glTexCoord2f(wall.ur, wall.vt);
-          glVertex3f(seg.x2, wall.ytop, seg.z2);
-          glTexCoord2f(wall.ur, vm);
-          glVertex3f(seg.x2, wall.ymid, seg.z2);
-        glEnd;
-
-        WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-
-        WALL_WHITEFOG_2; // JVAL: Mars fog sectors
-
-        gld_StaticLightAlpha(wall.light2, wall.alpha);
-
-        glBegin(GL_TRIANGLE_STRIP);
-          glTexCoord2f(wall.ul, vm);
-          glVertex3f(seg.x1, wall.ymid, seg.z1);
-          glTexCoord2f(wall.ul, wall.vb);
-          glVertex3f(seg.x1, wall.ybottom, seg.z1);
-          glTexCoord2f(wall.ur, vm);
-          glVertex3f(seg.x2, wall.ymid, seg.z2);
-          glTexCoord2f(wall.ur, wall.vb);
-          glVertex3f(seg.x2, wall.ybottom, seg.z2);
-        glEnd;
-
-        WALL_WHITEFOG_STOP; // JVAL: Mars fog sectors
-      end;
-    end;
-
-    if wall.blend then
-      glDepthMask(true)
-    else
-      glEnable(GL_BLEND)
-  end;
-end;
-
 //==============================================================================
 //
 // gld_AddWall
@@ -2485,266 +2029,6 @@ end;
 procedure gld_PreprocessSegs;
 begin
   gld_walls.BeginLevel(numsegs);
-end;
-
-(*****************
- *               *
- * Flats         *
- *               *
- *****************)
-
-var
-  rippletexmatrix: array[0..15] of TGLfloat;
-  ripplelastfrac: Integer = -1;
-
-//==============================================================================
-//
-// gld_MakeRippleMatrix
-//
-//==============================================================================
-procedure gld_MakeRippleMatrix;
-var
-  rsin, rcos: TGLfloat;
-  frac: integer;
-begin
-  frac := leveltime and 63;
-  if ripplelastfrac = frac then
-    exit;
-
-  ripplelastfrac := frac;
-
-  rsin := 0.01 * Sin(frac / 64 * 2 * __glPi);
-  rcos := 0.01 * Cos(frac / 64 * 2 * __glPi);
-
-  rippletexmatrix[0 + 4 * 0] := 1;
-  rippletexmatrix[0 + 4 * 1] := rsin;
-  rippletexmatrix[0 + 4 * 2] := rsin;
-  rippletexmatrix[0 + 4 * 3] := 0;
-
-  rippletexmatrix[1 + 4 * 0] := rcos;
-  rippletexmatrix[1 + 4 * 1] := 1;
-  rippletexmatrix[1 + 4 * 2] := rcos;
-  rippletexmatrix[1 + 4 * 3] := 0;
-
-  rippletexmatrix[2 + 4 * 0] := 0;
-  rippletexmatrix[2 + 4 * 1] := 0;
-  rippletexmatrix[2 + 4 * 2] := 1;
-  rippletexmatrix[2 + 4 * 3] := 0;
-
-  rippletexmatrix[3 + 4 * 0] := 0;
-  rippletexmatrix[3 + 4 * 1] := 0;
-  rippletexmatrix[3 + 4 * 2] := 0;
-  rippletexmatrix[3 + 4 * 3] := 1;
-end;
-
-//==============================================================================
-//
-// gld_DrawFlat
-//
-//==============================================================================
-procedure gld_DrawFlat(flat: PGLFlat);
-var
-  loopnum, i: integer; // current loop number
-  currentloop: PGLLoopDef; // the current loop
-  ftexturescale: float;
-  glsec: PGLSector;
-  sec: Psector_t;
-  fz: float;
-begin
-  if flat.sectornum < 0 then
-    exit;
-
-  ftexturescale := flat.gltexture.texturescale;
-  glsec := @sectorloops[flat.sectornum];
-  sec := @sectors[flat.sectornum];
-  if glsec.list = 0 then
-  begin
-    if glsec.loopcount > 0 then
-    begin
-      glsec.list := glGenLists(1);
-
-      if glsec.list > 0 then
-      begin
-        glNewList(glsec.list, GL_COMPILE);
-
-        for loopnum := 0 to glsec.loopcount - 1 do
-        begin
-          // set the current loop
-          currentloop := @glsec.loops[loopnum];
-          glBegin(currentloop.mode);
-          for i := currentloop.vertexindex to currentloop.vertexindex + currentloop.vertexcount - 1 do
-          begin
-            glTexCoord2f(gld_texcoords[i].u * ftexturescale, gld_texcoords[i].v * ftexturescale);
-            glVertex3fv(@gld_vertexes[i]);
-          end;
-          glEnd;
-        end;
-
-        glEndList;
-
-        glsec.listtexscale := ftexturescale;
-
-        if G_PlayingEngineVersion < VERSIONSLOPES then
-          Z_Free(glsec.loops);  // JVAL: Slopes
-      end
-      else
-        glsec.list := GL_BAD_LIST;
-    end
-    else
-      glsec.list := GL_BAD_LIST;
-  end;
-
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glTranslatef(0, flat.z * MAP_COEFF / (LIGHTMAPSIZEY * LIGHTMAPUNIT), 0);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  if flat.whitefog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-
-  if flat.ripple and not gl_old_ripple_effect then
-    gld_BindFlat(flat.gltexture, leveltime and 31)
-  else
-    gld_BindFlat(flat.gltexture, -1);
-  gld_StaticLight(flat.light);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  fz := flat.z;
-  glTranslatef(0.0, fz, 0.0);
-  {$IFNDEF HERETIC}
-  if flat.hasoffset then
-  begin
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glTranslatef(flat.uoffs * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.width{$ENDIF},
-                 flat.voffs * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.height{$ENDIF},
-                 0.0);
-  end;
-  {$ENDIF}
-
-  glActiveTextureARB(GL_TEXTURE0_ARB);
-
-  if flat.hasangle then
-  begin
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glTranslatef(
-      flat.anglex * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.width{$ENDIF},
-      -flat.angley * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.height{$ENDIF},
-      0.0);
-    glRotatef(flat.angle, 0, 0, 1);
-    glTranslatef(
-      -flat.anglex * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.width{$ENDIF},
-      flat.angley * ftexturescale {$IFDEF HEXEN}* 64 / flat.gltexture.height{$ENDIF},
-      0.0);
-  end;
-
-  if flat.ripple and gl_old_ripple_effect then
-  begin
-    gld_MakeRippleMatrix;
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glMultMatrixf(@rippletexmatrix);
-  end;
-
-  if not flat.ceiling and (sec.renderflags and SRF_SLOPEFLOOR <> 0) then
-  begin
-    // go through all loops of this sector
-    for loopnum := 0 to glsec.loopcount - 1 do
-    begin
-      currentloop := @glsec.loops[loopnum];
-      glBegin(currentloop.mode);
-      for i := currentloop.vertexindex to currentloop.vertexindex + currentloop.vertexcount - 1 do
-      begin
-        glTexCoord2f(gld_texcoords[i].u * ftexturescale, gld_texcoords[i].v * ftexturescale);
-        glVertex3f(gld_vertexes[i].x, gld_FloorHeight(sec, gld_vertexes[i].x, gld_vertexes[i].z) - fz, gld_vertexes[i].z)
-      end;
-      glEnd;
-    end;
-  end
-  else if flat.ceiling and (sec.renderflags and SRF_SLOPECEILING <> 0) then
-  begin
-    // go through all loops of this sector
-    for loopnum := 0 to glsec.loopcount - 1 do
-    begin
-      currentloop := @glsec.loops[loopnum];
-      glBegin(currentloop.mode);
-      for i := currentloop.vertexindex to currentloop.vertexindex + currentloop.vertexcount - 1 do
-      begin
-        glTexCoord2f(gld_texcoords[i].u * ftexturescale, gld_texcoords[i].v * ftexturescale);
-        glVertex3f(gld_vertexes[i].x, gld_CeilingHeight(sec, gld_vertexes[i].x, gld_vertexes[i].z) - fz, gld_vertexes[i].z)
-      end;
-      glEnd;
-    end;
-  end
-  else
-  begin
-    // JVAL: Call the precalced list if available
-    if (glsec.list <> GL_BAD_LIST) and (glsec.listtexscale = flat.gltexture.texturescale) then
-      glCallList(glsec.list)
-    else if ftexturescale = 1.0 then
-    begin
-    // go through all loops of this sector
-      for loopnum := 0 to glsec.loopcount - 1 do
-      begin
-          // set the current loop
-        currentloop := @glsec.loops[loopnum];
-        glDrawArrays(currentloop.mode, currentloop.vertexindex, currentloop.vertexcount);
-      end;
-    end
-    else
-    begin
-      for loopnum := 0 to glsec.loopcount - 1 do
-      begin
-        currentloop := @glsec.loops[loopnum];
-        glBegin(currentloop.mode);
-        for i := currentloop.vertexindex to currentloop.vertexindex + currentloop.vertexcount - 1 do
-        begin
-          glTexCoord2f(gld_texcoords[i].u * ftexturescale, gld_texcoords[i].v * ftexturescale);
-          glVertex3fv(@gld_vertexes[i]);
-        end;
-        glEnd;
-      end;
-    end;
-  end;
-  if flat.ripple and gl_old_ripple_effect then
-  begin
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-  end;
-
-  glActiveTextureARB(GL_TEXTURE0_ARB);
-  if flat.hasangle then
-  begin
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  {$IFNDEF HERETIC}
-  if flat.hasoffset then
-  begin
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-  end;
-  {$ENDIF}
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  if flat.whitefog then gld_StartFog;  // JVAL: Mars fog sectors
-
-  glPopMatrix;
 end;
 
 //==============================================================================
@@ -3209,168 +2493,6 @@ begin
   glColor3f(1.0, 1.0, 1.0);
 end;
 
-//==============================================================================
-//
-// gld_DrawSprite
-//
-//==============================================================================
-procedure gld_DrawSprite(sprite: PGLSprite);
-const
-  DROPPED_ZOFFS = -0.04;
-var
-  haswhitefog: boolean; // JVAL: Mars fog sectors
-begin
-  haswhitefog := Psubsector_t(sprite.mo.subsector).sector.renderflags and SRF_FOG <> 0;
-
-  if gl_drawmodels and (sprite.models <> nil) then
-  begin
-    if haswhitefog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-    gld_DrawModels(sprite);
-    if haswhitefog then gld_StartFog; // JVAL: Mars fog sectors
-    exit;
-  end;
-
-  if gl_drawvoxels and (sprite.voxels <> nil) then
-  begin
-    if haswhitefog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-    gld_DrawVoxels(sprite);
-    if haswhitefog then gld_StartFog; // JVAL: Mars fog sectors
-    exit;
-  end;
-
-  if haswhitefog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glTranslatef(sprite.x * MAP_COEFF / (LIGHTMAPSIZEX * LIGHTMAPUNIT),
-                 sprite.y * MAP_COEFF / (LIGHTMAPSIZEY * LIGHTMAPUNIT),
-                 sprite.z * MAP_COEFF / (LIGHTMAPSIZEZ * LIGHTMAPUNIT));
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glTranslatef(sprite.x, sprite.y, sprite.z);
-  glRotatef(inv_yaw, 0.0, 1.0, 0.0);
-
-  // JVAL
-  // Draw light effects (only if not invulnerability)
-  if uselightboost then
-    if not lightdeflumppresent then
-      if players[displayplayer].fixedcolormap <> 32 then
-      // JVAL: Use old color effects only if LIGHTDEF lump not found
-        if sprite.flags and GLS_LIGHT <> 0 then
-        begin
-          if sprite.flags and GLS_WHITELIGHT <> 0 then
-            gld_SetUplight(1.0, 1.0, 1.0)
-          else if sprite.flags and GLS_REDLIGHT <> 0 then
-            gld_SetUplight(1.0, 0.0, 0.0)
-          else if sprite.flags and GLS_GREENLIGHT <> 0 then
-            gld_SetUplight(0.0, 1.0, 0.0)
-          else if sprite.flags and GLS_BLUELIGHT <> 0 then
-            gld_SetUplight(0.0, 0.0, 1.0)
-          else if sprite.flags and GLS_YELLOWLIGHT <> 0 then
-            gld_SetUplight(1.0, 1.0, 0.0);
-          glBegin(GL_TRIANGLE_STRIP);
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(2.0 * sprite.x1, 2.0 * sprite.y1, 0.01);
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(2.0 * sprite.x2, 2.0 * sprite.y1, 0.01);
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(2.0 * sprite.x1, 2.0 * sprite.y2, 0.01);
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(2.0 * sprite.x2, 2.0 * sprite.y2, 0.01);
-          glEnd;
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glAlphaFunc(GL_GEQUAL, 0.5);
-        end;
-
-  gld_BindPatch(sprite.gltexture, sprite.cm);
-
-  if sprite.flags and GLS_SHADOW <> 0 then
-  begin
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.1);
-    glColor4f(0.2, 0.2, 0.2, 0.33);
-  end
-  else
-  begin
-    if sprite.flags and GLS_TRANSPARENT <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-    end
-    else if sprite.flags and GLS_ADDITIVE <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    end
-    else if sprite.flags and GLS_SUBTRACTIVE <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-    end
-    else
-      gld_StaticLight(sprite.light);
-  end;
-  glBegin(GL_TRIANGLE_STRIP);
-  {$IFDEF HEXEN}
-  if sprite.mo.flags2 and MF2_DROPPED <> 0 then
-  {$ELSE}
-  if sprite.mo.flags and MF_DROPPED <> 0 then
-  {$ENDIF}
-  begin
-    glTexCoord2f(sprite.ul, sprite.vt);
-    glVertex3f(sprite.x1, sprite.y1, DROPPED_ZOFFS);
-    glTexCoord2f(sprite.ur, sprite.vt);
-    glVertex3f(sprite.x2, sprite.y1, DROPPED_ZOFFS);
-    glTexCoord2f(sprite.ul, sprite.vb);
-    glVertex3f(sprite.x1, sprite.y2, DROPPED_ZOFFS);
-    glTexCoord2f(sprite.ur, sprite.vb);
-    glVertex3f(sprite.x2, sprite.y2, DROPPED_ZOFFS);
-  end
-  else
-  begin
-    glTexCoord2f(sprite.ul, sprite.vt);
-    glVertex3f(sprite.x1, sprite.y1, 0.0);
-    glTexCoord2f(sprite.ur, sprite.vt);
-    glVertex3f(sprite.x2, sprite.y1, 0.0);
-    glTexCoord2f(sprite.ul, sprite.vb);
-    glVertex3f(sprite.x1, sprite.y2, 0.0);
-    glTexCoord2f(sprite.ur, sprite.vb);
-    glVertex3f(sprite.x2, sprite.y2, 0.0);
-  end;
-  glEnd;
-
-  glPopMatrix;
-
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  if sprite.flags and (GLS_SHADOW or GLS_TRANSPARENT or GLS_ADDITIVE or GLS_SUBTRACTIVE) <> 0 then
-  begin
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.5);
-    if sprite.flags and GLS_SUBTRACTIVE <> 0 then
-      glBlendEquation(GL_FUNC_ADD);
-  end;
-  glColor3f(1.0, 1.0, 1.0);
-
-  if haswhitefog then gld_StartFog; // JVAL: Mars fog sectors
-end;
-
 const
   COS16TABLE: array[0..16] of float = (
     1.0000000000,
@@ -3666,243 +2788,12 @@ end;
 
 //==============================================================================
 //
-// gld_DrawWalls
-//
-//==============================================================================
-procedure gld_DrawWalls(const wallrange: integer; const fblend: boolean);
-var
-  i, j, k, count: integer;
-  pglitem: PGlSceneRun;
-  walls: PGLWallArray;
-begin
-  // the blocks do not move while the frame is drawn
-  walls := gld_drawlist.Walls;
-  for i := gld_drawlist.LastRun downto 0 do
-  begin
-    pglitem := @gld_drawlist.Runs[i];
-    if pglitem.Kind = gskWall then
-    begin
-      count := 0;
-      for k := GLDWF_TOP to wallrange do
-      begin
-        if count >= pglitem.Count then
-          continue;
-        if gl_drawsky and (k >= GLDWF_SKY) then
-        begin
-          gld_PauseLightmap;
-          if gl_shared_texture_palette then
-            glDisable(GL_SHARED_TEXTURE_PALETTE_EXT);
-          glEnable(GL_TEXTURE_GEN_S);
-          glEnable(GL_TEXTURE_GEN_T);
-          glEnable(GL_TEXTURE_GEN_Q);
-          glDisable(GL_FOG);
-          glColor4fv(@gl_whitecolor);
-        end;
-        for j := pglitem.Count - 1 downto 0 do
-          if walls[j + pglitem.First].flag = k then
-          begin
-            {$IFDEF DEBUG}
-            inc(rendered_segs);
-            {$ENDIF}
-            inc(count);
-            gld_DrawWall(@walls[j + pglitem.First], fblend);
-          end;
-        if gl_drawsky and (k >= GLDWF_SKY) then
-        begin
-          gld_ResumeLightmap;
-          gld_StartFog;
-          glDisable(GL_TEXTURE_GEN_Q);
-          glDisable(GL_TEXTURE_GEN_T);
-          glDisable(GL_TEXTURE_GEN_S);
-          if gl_shared_texture_palette then
-            glEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
-        end;
-      end;
-    end;
-  end;
-end;
-
-//==============================================================================
-//
 // gld_DrawScene
 //
 //==============================================================================
 procedure gld_DrawScene(player: Pplayer_t);
-var
-  i, j, k: integer;
-  max_scale: fixed_t;
-  wallrange: integer;
-  pglitem: PGlSceneRun;
-  wall: PGLWall;
-  seg: PGLSeg;
-  walls: PGLWallArray;
-  flats: PGLFlatArray;
-  sprites: PGLSpriteArray;
 begin
-  // the blocks do not move while the frame is drawn
-  walls := gld_drawlist.Walls;
-  flats := gld_drawlist.Flats;
-  sprites := gld_drawlist.Sprites;
-
-  if zaxisshift then
-  begin
-    wallrange := GLDWF_BOTFLUD;
-    if not gl_stencilsky and gld_walls.SkyMet then
-    begin
-      if pitch <= -35.0 then
-        gld_DrawSky(true, false)
-      else if pitch >= 35.0 then
-        gld_DrawSky(false, true)
-      else
-        gld_DrawSky(true, true);
-    end;
-  end
-  else
-    wallrange := GLDWF_SKYFLIP;
-
-  // Sort the dynamic lights
-  gld_SortDlights;
-
-  gl_uselightmaps := gl_uselightmaps and canuselightmaps;
-
-  if gl_uselightmaps then
-    gld_ActivateLightmap;
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-  gld_StartFog;
-
-{$IFDEF DEBUG}
-  rendered_visplanes := 0;
-  rendered_segs := 0;
-  rendered_vissprites := 0;
-{$ENDIF}
-
-  glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
-  glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
-
-  // Floors and ceilings
-  glDisable(GL_BLEND);
-  for i := gld_drawlist.LastRun downto 0 do
-  begin
-    pglitem := @gld_drawlist.Runs[i];
-    if pglitem.Kind = gskFlat then
-    begin
-      {$IFDEF DEBUG}
-      rendered_visplanes := rendered_visplanes + pglitem.Count;
-      {$ENDIF}
-      for j := pglitem.Count - 1 downto 0 do
-        gld_DrawFlat(@flats[j + pglitem.First]);
-    end;
-  end;
-  glEnable(GL_BLEND);
-
-  gld_DrawWalls(wallrange, false);
-
-//  glCullFace(GL_BACK);
-  // Walls
-  // Sprites
-  if gld_drawlist.SpriteCount > 100 then
-  begin
-    for i := 0 to gld_drawlist.SpriteCount - 1 do
-    begin
-      {$IFDEF DEBUG}
-      inc(rendered_vissprites);
-      {$ENDIF}
-      gld_DrawSprite(@sprites[i]);
-    end;
-  end
-  else for i := gld_drawlist.LastRun downto 0 do
-  begin
-    pglitem := @gld_drawlist.Runs[i];
-    if pglitem.Kind = gskSprite then
-    begin
-      repeat
-        max_scale := MAXINT;
-        k := -1;
-        for j := pglitem.Count - 1 downto 0 do
-          if sprites[j + pglitem.First].scale < max_scale then
-          begin
-            max_scale := sprites[j + pglitem.First].scale;
-            k := j + pglitem.First;
-          end;
-        if k >= 0 then
-        begin
-          {$IFDEF DEBUG}
-          inc(rendered_vissprites);
-          {$ENDIF}
-          gld_DrawSprite(@sprites[k]);
-          sprites[k].scale := MAXINT;
-        end;
-      until max_scale = MAXINT;
-    end;
-  end;
-
-  gld_DrawWalls(GLDWF_BOTFLUD, true);
-
-  if gl_uselightmaps then
-    gld_DeActivateLightmap;
-
-  glDisable(GL_FOG);
-
-  gld_DrawDLights;
-
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
-
-  if zaxisshift then
-  begin
-    if gl_drawsky and gld_walls.SkyMet then
-    begin
-
-      if gl_stencilsky then
-      begin
-        glClear(GL_STENCIL_BUFFER_BIT); // Clear the stencil buffer the first time
-        glEnable(GL_STENCIL_TEST);      // Turn on the stencil buffer test
-        glDisable(GL_TEXTURE_2D);
-        glColor4f(1.0, 1.0, 1.0, 1.0);
-        glStencilFunc(GL_ALWAYS, 1, 1); // Setup the stencil buffer to write
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);  // a 1 everywhere the plane is.
-
-        for j := 0 to gld_drawlist.WallCount - 1 do
-          if walls[j].flag >= GLDWF_SKY then
-          begin
-            wall := @walls[j];
-            seg := wall.glseg;
-            glBegin(GL_TRIANGLE_STRIP);
-              glVertex3f(seg.x1, wall.ytop, seg.z1);
-              glVertex3f(seg.x1, wall.ybottom, seg.z1);
-              glVertex3f(seg.x2, wall.ytop, seg.z2);
-              glVertex3f(seg.x2, wall.ybottom, seg.z2);
-            glEnd;
-          end;
-
-        glStencilFunc(GL_EQUAL, 1, 1);          // Set the stencil buffer to update
-        glStencilOp(GL_KEEP, GL_KEEP, GL_INCR); // only where it finds a 1 from the plane and increment the buffer
-
-        glEnable(GL_TEXTURE_2D);
-
-        glDisable(GL_DEPTH_TEST);
-        if pitch <= -35.0 then
-          gld_DrawSky(true, false)
-        else if pitch >= 35.0 then
-          gld_DrawSky(false, true)
-        else
-          gld_DrawSky(true, true);
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_STENCIL_TEST); // Turn off the stencil buffer test
-
-      end;
-    end;
-  end;
-
-{$IFDEF DEBUG}
-  printf('rendered_visplanes := %d'#13#10'rendered_segs := %d'#13#10'rendered_vissprites := %d'#13#10#13#10,
-        [rendered_visplanes, rendered_segs, rendered_vissprites]);
-{$ENDIF}
-
+  gld_scenedrawer.Draw(pitch);
 end;
 
 {$IFDEF DOOM}
@@ -3951,6 +2842,14 @@ begin
     I_Error('gld_PreprocessLevel(): the wall collector is not configured (ComposeEngine was not called)');
   if gld_sprites = nil then
     I_Error('gld_PreprocessLevel(): the sprite collector is not configured (ComposeEngine was not called)');
+  if gld_wallpainter = nil then
+    I_Error('gld_PreprocessLevel(): the wall painter is not configured (ComposeEngine was not called)');
+  if gld_flatpainter = nil then
+    I_Error('gld_PreprocessLevel(): the flat painter is not configured (ComposeEngine was not called)');
+  if gld_spritepainter = nil then
+    I_Error('gld_PreprocessLevel(): the sprite painter is not configured (ComposeEngine was not called)');
+  if gld_scenedrawer = nil then
+    I_Error('gld_PreprocessLevel(): the scene drawer is not configured (ComposeEngine was not called)');
 
   // preload graphics
   // JVAL
@@ -4022,6 +2921,10 @@ initialization
 finalization
   // the collectors use the draw list: they go first
   gld_ConfigureSpriteCollector(nil);
+  gld_ConfigureSceneDrawer(nil);
+  gld_ConfigureSpritePainter(nil);
+  gld_ConfigureFlatPainter(nil);
+  gld_ConfigureWallPainter(nil);
   gld_ConfigureWallCollector(nil);
   gld_ConfigureFlatCollector(nil);
   gld_ConfigureDrawList(nil);

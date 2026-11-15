@@ -331,6 +331,10 @@ uses
   DelphiDoom.GlScene.Factory,
   DelphiDoom.Engine.GlScene.FlatCollector,
   DelphiDoom.Engine.GlScene.WallCollector,
+  DelphiDoom.Engine.GlScene.WallPainter,
+  DelphiDoom.Engine.GlScene.FlatPainter,
+  DelphiDoom.Engine.GlScene.SpritePainter,
+  DelphiDoom.Engine.GlScene.SceneDrawer,
   DelphiDoom.Engine.GlScene.LightMarker,
   DelphiDoom.Engine.GlScene.SpriteCollector,
   DelphiDoom.Engine.GlAutomap.Painter,
@@ -1377,11 +1381,26 @@ begin
 end;
 
 procedure ComposeGlScene;
+var
+  LWalls: TEngineGlSceneWallCollector;
+  LWallPainter: TEngineGlSceneWallPainter;
+  LFlatPainter: TEngineGlSceneFlatPainter;
+  LSpritePainter: TEngineGlSceneSpritePainter;
 begin
   // classes and not interfaces: gl_render calls them for every wall, flat and sprite of a frame, and owns them
   gld_ConfigureDrawList(TGlSceneFactory.CreateDrawList(gld_SceneItemSizes));
   gld_ConfigureFlatCollector(TEngineGlSceneFlatCollector.Create(gld_SceneDrawList, gld_LightTable));
-  gld_ConfigureWallCollector(TEngineGlSceneWallCollector.Create(gld_SceneDrawList, gld_LightTable, gld_FlatCollector));
+  LWalls := TEngineGlSceneWallCollector.Create(gld_SceneDrawList, gld_LightTable, gld_FlatCollector);
+  gld_ConfigureWallCollector(LWalls);
+  LWallPainter := TEngineGlSceneWallPainter.Create;
+  gld_ConfigureWallPainter(LWallPainter);
+  LFlatPainter := TEngineGlSceneFlatPainter.Create;
+  gld_ConfigureFlatPainter(LFlatPainter);
+  LSpritePainter := TEngineGlSceneSpritePainter.Create;
+  gld_ConfigureSpritePainter(LSpritePainter);
+  // the drawer only walks the list: the owner of the painters is still gl_render
+  gld_ConfigureSceneDrawer(TEngineGlSceneDrawer.Create(gld_SceneDrawList, LWalls, LWallPainter,
+    LFlatPainter, LSpritePainter));
 end;
 
 procedure ComposeOpenGl(const APreprocessor: IScriptTextPreprocessor);

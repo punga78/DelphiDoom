@@ -24,6 +24,7 @@ interface
 
 uses
   d_delphi,
+  dglOpenGL,
   m_fixed,
   r_defs,
   p_mobj_h,
@@ -127,6 +128,35 @@ type
   PGLSprite = ^GLSprite;
   GLSpriteArray = array[0..$FFFF] of GLSprite;
   PGLSpriteArray = ^GLSpriteArray;
+
+type
+// GLLoopDef is the struct for one loop. A loop is a list of vertexes for triangles
+// (it was in the implementation of gl_render.pas)
+
+  GLLoopDef = record
+    mode: TGLenum;        // GL_TRIANGLES, GL_TRIANGLE_STRIP or GL_TRIANGLE_FAN
+    vertexcount: integer; // number of vertexes in this loop
+    vertexindex: integer; // index into vertex list
+  end;
+  PGLLoopDef = ^GLLoopDef;
+  GLLoopDefArray = array[0..$FFFF] of GLLoopDef;
+  PGLLoopDefArray = ^GLLoopDefArray;
+
+// GLSector is the struct for a sector with a list of loops.
+
+  GLSector = record
+    loopcount: integer;     // number of loops for this sector
+    loops: PGLLoopDefArray; // the loops itself
+    list: GLuint;
+    listtexscale: float;
+  end;
+  PGLSector = ^GLSector;
+  GLSectorArray = array[0..$FFFF] of GLSector;
+  PGLSectorArray = ^GLSectorArray;
+
+  GLSubSector = record
+    loop: GLLoopDef; // the loops itself
+  end;
 
 implementation
 
