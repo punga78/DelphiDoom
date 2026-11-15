@@ -322,6 +322,8 @@ uses
   DelphiDoom.War.MapUi.Hud in '..\Libs\War\DelphiDoom.War.MapUi.Hud.pas',
   DelphiDoom.War.Map.CustomGame in '..\Libs\War\DelphiDoom.War.Map.CustomGame.pas',
   DelphiDoom.War.Level.CustomLevel in '..\Libs\War\DelphiDoom.War.Level.CustomLevel.pas',
+  DelphiDoom.War.Render.ColorList.Data in '..\Libs\War\DelphiDoom.War.Render.ColorList.Data.pas',
+  DelphiDoom.War.MapUi.DebugProjectiles in '..\Libs\War\DelphiDoom.War.MapUi.DebugProjectiles.pas',
   DelphiDoom.War.MapUi.DebugNearUnits in '..\Libs\War\DelphiDoom.War.MapUi.DebugNearUnits.pas',
   DelphiDoom.War.MapUi.DebugView in '..\Libs\War\DelphiDoom.War.MapUi.DebugView.pas',
   DelphiDoom.War.MapUi.Editing in '..\Libs\War\DelphiDoom.War.MapUi.Editing.pas',

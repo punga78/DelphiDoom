@@ -62,6 +62,7 @@ type
     [TestCase('Disegno di debug delle unita'' e delle animazioni', 'map_debug_units')]
     [TestCase('Disegno di debug dei testi: riquadri dei glifi e contorni', 'map_debug_font')]
     [TestCase('Disegno di debug delle unita'' vicine e delle celle della griglia', 'map_debug_near')]
+    [TestCase('Disegno di debug dei proiettili: riquadri e righe', 'map_debug_projectiles')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the
