@@ -23,7 +23,8 @@ uses
   d_delphi,
   dglOpenGL,
   DelphiDoom.Engine.GlScene.Types,
-  DelphiDoom.Engine.GlScene.ModelPainter;
+  DelphiDoom.Engine.GlScene.ModelPainter,
+  DelphiDoom.Engine.GlScene.VoxelPainter;
 
 type
   /// <summary>
@@ -44,9 +45,11 @@ type
   strict private
     FInverseYaw: float;
     FModelPainter: TEngineGlSceneModelPainter;
+    FVoxelPainter: TEngineGlSceneVoxelPainter;
   public
-    /// <summary>A painter that gives the sprites with a model to AModelPainter, which it owns</summary>
-    constructor Create(const AModelPainter: TEngineGlSceneModelPainter);
+    /// <summary>A painter that gives the sprites with a model to AModelPainter and those with a voxel to AVoxelPainter, which it owns</summary>
+    constructor Create(const AModelPainter: TEngineGlSceneModelPainter;
+      const AVoxelPainter: TEngineGlSceneVoxelPainter);
     destructor Destroy; override;
     /// <summary>A new frame: the inverse yaw of the view in degrees</summary>
     procedure BeginFrame(const AInverseYaw: float);
@@ -77,16 +80,21 @@ uses
 
 { TEngineGlSceneSpritePainter }
 
-constructor TEngineGlSceneSpritePainter.Create(const AModelPainter: TEngineGlSceneModelPainter);
+constructor TEngineGlSceneSpritePainter.Create(const AModelPainter: TEngineGlSceneModelPainter;
+  const AVoxelPainter: TEngineGlSceneVoxelPainter);
 begin
   inherited Create;
   if not Assigned(AModelPainter) then
     raise EArgumentNilException.Create('AModelPainter');
+  if not Assigned(AVoxelPainter) then
+    raise EArgumentNilException.Create('AVoxelPainter');
   FModelPainter := AModelPainter;
+  FVoxelPainter := AVoxelPainter;
 end;
 
 destructor TEngineGlSceneSpritePainter.Destroy;
 begin
+  FVoxelPainter.Free;
   FModelPainter.Free;
   inherited Destroy;
 end;
@@ -113,7 +121,7 @@ begin
   if gl_drawvoxels and (ASprite.voxels <> nil) then
   begin
     if LHasWhiteFog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-    gld_DrawVoxels(ASprite);
+    FVoxelPainter.Draw(ASprite);
     if LHasWhiteFog then gld_StartFog; // JVAL: Mars fog sectors
     Exit;
   end;

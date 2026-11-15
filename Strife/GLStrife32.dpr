@@ -1337,6 +1337,7 @@ uses
   DelphiDoom.Engine.GlScene.WallPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallPainter.pas',
   DelphiDoom.Engine.GlScene.FlatPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatPainter.pas',
   DelphiDoom.Engine.GlScene.ModelPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.ModelPainter.pas',
+  DelphiDoom.Engine.GlScene.VoxelPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.VoxelPainter.pas',
   DelphiDoom.Engine.GlScene.SpritePainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpritePainter.pas',
   DelphiDoom.Engine.GlScene.LightSorter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightSorter.pas',
   DelphiDoom.Engine.GlScene.LightPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightPainter.pas',
