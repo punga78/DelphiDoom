@@ -280,7 +280,7 @@ begin
   if Assigned(FSetup.Services.DebugRender) then
   begin
     FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender,
-      FBinding.World.Context);
+      FBinding.World.Context, FCamera);
     FRenderer.DebugView := FDebugView;
   end;
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);
@@ -650,6 +650,9 @@ begin
   if Assigned(FDebugView) then
     FDebugView.EndUpdate(FEditing.Mode in [wemRainOfFire, wemPoisonCloud, wemRaiseDead]);
   UpdateDebugShortcuts;
+  // updateFlowFieldDebug (the map that is paused does not have it)
+  if Assigned(FDebugView) then
+    FDebugView.UpdateClicks(FSetup.Services.Input);
   UpdateObjectives;
 end;
 

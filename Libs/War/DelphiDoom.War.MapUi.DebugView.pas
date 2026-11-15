@@ -18,7 +18,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Transform, DelphiDoom.War.Map.PathGrid,
-  DelphiDoom.War.Model.Context, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.DebugNearUnits;
+  DelphiDoom.War.Model.Context, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Camera,
+  DelphiDoom.War.MapUi.DebugNearUnits, DelphiDoom.War.MapUi.DebugFlowField;
 
 type
   /// <summary>
@@ -34,13 +35,14 @@ type
     FGrid: TWarPathGrid;
     FFlags: IWarDebugRender;
     FNearUnits: TWarDebugNearUnits;
+    FFlowField: TWarDebugFlowField;
     procedure RenderPassableInfo;
     procedure RenderMapGrid;
     procedure RenderSpatialGrid;
   public
     /// <summary>The context of the model is where the drawings of the units read them; nothing is owned</summary>
     constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender;
-      const AContext: TWarModelContext);
+      const AContext: TWarModelContext; const ACamera: TWarMapCamera);
     destructor Destroy; override;
     /// <summary>
     ///   The start of an update of the map that plays: clearNearUnitsDebug (a box shown by a click of editing lasts one frame)
@@ -51,8 +53,10 @@ type
     ///   editing is one of the spells (rain of fire, poison cloud, raise dead)
     /// </summary>
     procedure EndUpdate(AEditingSpell: Boolean);
-    /// <summary>renderPassableInfo, renderMapGrid, renderSpatialGrid and renderNearUnitsDebug, in this order</summary>
+    /// <summary>renderPassableInfo, renderMapGrid, renderSpatialGrid, renderFlowField and renderNearUnitsDebug, in this order</summary>
     procedure Render;
+    /// <summary>updateFlowFieldDebug: the click that chooses the goal of the flow field that is drawn</summary>
+    procedure UpdateClicks(const AInput: IWarUiInput);
     /// <summary>The near units of the debug drawing, where a click of editing sets the box of its spell</summary>
     property NearUnits: TWarDebugNearUnits read FNearUnits;
     /// <summary>context->debugRender.flags[AFlag]: the renderer reads the flags of the drawings that are part of a unit or an animation</summary>
@@ -62,7 +66,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types;
+  DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Path.Intf;
 
 const
   /// <summary>MAP_GRID_TILE_SIZE: tiles of a side of a cell of the grid of the units</summary>
@@ -73,17 +77,24 @@ const
 { TWarMapDebugView }
 
 constructor TWarMapDebugView.Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid;
-  const AFlags: IWarDebugRender; const AContext: TWarModelContext);
+  const AFlags: IWarDebugRender; const AContext: TWarModelContext; const ACamera: TWarMapCamera);
+var
+  LSource: IWarFlowFieldSource;
 begin
   inherited Create;
   FTransform := ATransform;
   FGrid := AGrid;
   FFlags := AFlags;
   FNearUnits := TWarDebugNearUnits.Create(ATransform, AContext, AFlags);
+  // the flow fields are the ones of the movement of the units (a model with no steering has none: the click does nothing)
+  if not Supports(AContext.Steering, IWarFlowFieldSource, LSource) then
+    LSource := nil;
+  FFlowField := TWarDebugFlowField.Create(ATransform, AGrid, AFlags, ACamera, LSource);
 end;
 
 destructor TWarMapDebugView.Destroy;
 begin
+  FFlowField.Free;
   FNearUnits.Free;
   inherited Destroy;
 end;
@@ -154,7 +165,13 @@ begin
     RenderMapGrid;
   if FFlags.Flag[wdrSpatialGrid] then
     RenderSpatialGrid;
+  FFlowField.Render;
   FNearUnits.Render;
+end;
+
+procedure TWarMapDebugView.UpdateClicks(const AInput: IWarUiInput);
+begin
+  FFlowField.Update(AInput);
 end;
 
 end.

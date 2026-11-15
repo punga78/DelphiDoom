@@ -21,7 +21,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.State.Types,
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.Intf,
-  DelphiDoom.War.Model.Rvo, DelphiDoom.War.Path.FlowFields;
+  DelphiDoom.War.Model.Rvo, DelphiDoom.War.Path.FlowFields, DelphiDoom.War.Path.FlowField, DelphiDoom.War.Path.Intf;
 
 type
   /// <summary>
@@ -32,7 +32,7 @@ type
   ///   from the grid of the units of the tic before (Context.UnitGrid) with their position of now and the velocity that
   ///   their move state kept. The two passes loop over the moving units themselves (TWarMoveState.ForEachActive)
   /// </summary>
-  TWarFlowSteering = class(TInterfacedObject, IWarMovementSteering)
+  TWarFlowSteering = class(TInterfacedObject, IWarMovementSteering, IWarFlowFieldSource)
   strict private
     FMachine: TWarStateMachine;
     FContext: TWarModelContext;
@@ -52,6 +52,8 @@ type
     procedure UpdateAdjustedVelocities;
     procedure RefreshFlowField(const AGoalPosition: TWarVec2);
     procedure PlanMove(const ATargetPosition: TWarVec2);
+    /// <summary>IWarFlowFieldSource: wpath_computeFlowField, for the debug drawing of the flow field</summary>
+    function ComputeFlowField(ATileX, ATileY: Integer): TWarFlowField;
     /// <summary>
     ///   wrvo_gatherNeighbours for a unit at ACentre within ARadius pixels, in the order of the original (cells by row,
     ///   the last unit put in a cell first, at most 16); the result is the list that the avoidance gets
@@ -65,7 +67,7 @@ implementation
 
 uses
   System.Math, DelphiDoom.War.Types, DelphiDoom.War.Map.Grid, DelphiDoom.War.Model.UnitGeometry,
-  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.State.Move, DelphiDoom.War.Path.FlowField;
+  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.State.Move;
 
 const
   // MOVE_BASE_RVO_RADIUS_PX, MOVE_RECOVERY_RVO_RADIUS_PX (MEGA_TILE_WIDTH * 0.45f and * 0.60f), SEARCH_RADIUS_PX (* 5.0f)
@@ -109,6 +111,11 @@ var
 begin
   LTile := TWarModelMath.MapToTile(ATargetPosition);
   FFields.Compute(Trunc(LTile.X), Trunc(LTile.Y));
+end;
+
+function TWarFlowSteering.ComputeFlowField(ATileX, ATileY: Integer): TWarFlowField;
+begin
+  Result := FFields.Compute(ATileX, ATileY);
 end;
 
 procedure TWarFlowSteering.RefreshFlowField(const AGoalPosition: TWarVec2);

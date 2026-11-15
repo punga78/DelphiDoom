@@ -153,7 +153,8 @@ $script:Groups = @(
       # i flag restanti del disegno di debug (#197, ultima fetta): font, near-units, projectiles, flow-field, rvo, state-machine
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_font.script'); Golden = 'ui.map_debug_font.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_near.script'); Golden = 'ui.map_debug_near.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_projectiles.script'); Golden = 'ui.map_debug_projectiles.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_projectiles.script'); Golden = 'ui.map_debug_projectiles.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_flow.script'); Golden = 'ui.map_debug_flow.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.
