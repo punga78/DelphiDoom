@@ -567,6 +567,10 @@ uses
   DelphiDoom.Palette.ScreenPalette,
   DelphiDoom.Video.PreserveTables,
   DelphiDoom.Video.ScreenLayout,
+  DelphiDoom.Video.Stretch,
+  DelphiDoom.Video.ScreenOps,
+  DelphiDoom.Video.PatchPainter,
+  DelphiDoom.Video.RectCopy,
   w_wad,
   z_zone;
 
@@ -902,20 +906,12 @@ procedure V_CopyRect8(
   preserve: boolean);
 var
   src: PByteArray;
-  dest: PByte;
   destA: PByteArray;
   destw: integer;
   desth: integer;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  l: LongWord;
-  b: byte;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
@@ -931,134 +927,27 @@ begin
 
       desty := V_PreserveY(desty);
 
-      fracy := srcy * FRACUNIT;
-      fracystep := FRACUNIT * height div desth;
+      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      params.Source := System.PByte(screens[srcscrn]);
+      params.Destination := screens[destscrn];
+      params.SourcePitch := swidth;
+      params.DestinationPitch := dwidth;
+      params.SourceX := srcx;
+      params.DestinationX := destx;
+      params.DestinationY := desty;
+      params.DestinationWidth := destw;
+      params.DestinationHeight := desth;
+      params.FracY := srcy * FRACUNIT;
+      params.FracYStep := FRACUNIT * height div desth;
+      params.Index := 0;
+      params.IndexCount := 1;
 
       if swidth = 320 then
-        case widthintmultiplier of
-          2: // Width: 640
-            begin
-              destw := destw div 2;
-              for row := desty to desty + desth - 1 do
-              begin
-                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  b := src[col];
-                  PWord(dest)^ := precal8_toword[b];
-                  inc(dest, 2);
-                  inc(col);
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          4: // Width: 1280
-            begin
-              destw := destw div 4;
-              for row := desty to desty + desth - 1 do
-              begin
-                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  b := src[col];
-                  PLongWord(dest)^ := precal8_tolong[b];
-                  inc(dest, 4);
-                  inc(col);
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          6: // Width: 1920
-            begin
-              destw := destw div 6;
-              for row := desty to desty + desth - 1 do
-              begin
-                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  b := src[col];
-                  PLongWord(dest)^ := precal8_tolong[b];
-                  inc(dest, 4);
-                  PWord(dest)^ := precal8_toword[b];
-                  inc(dest, 2);
-                  inc(col);
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          8: // Width: 2560
-            begin
-              destw := destw div 8;
-              for row := desty to desty + desth - 1 do
-              begin
-                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  b := src[col];
-                  l := precal8_tolong[b];
-                  PLongWord(dest)^ := l;
-                  inc(dest, 4);
-                  PLongWord(dest)^ := l;
-                  inc(dest, 4);
-                  inc(col);
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-         12: // Width: 3840
-            begin
-              destw := destw div 12;
-              for row := desty to desty + desth - 1 do
-              begin
-                dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  b := src[col];
-                  l := precal8_tolong[b];
-                  PLongWord(dest)^ := l;
-                  inc(dest, 4);
-                  PLongWord(dest)^ := l;
-                  inc(dest, 4);
-                  PLongWord(dest)^ := l;
-                  inc(dest, 4);
-                  inc(col);
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
+        if TVideoRectCopy.ExpandRows8(widthintmultiplier, params, @precal8_toword[0], @precal8_tolong[0]) then
+          Exit;
 
-        end;
-
-      fracxstep := FRACUNIT * width div destw;
-
-      for row := desty to desty + desth - 1 do
-      begin
-        fracx := 0;
-        dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        for col := 0 to destw - 1 do
-        begin
-          dest^ := src[LongWord(fracx) shr FRACBITS];
-          inc(dest);
-          fracx := fracx + fracxstep;
-        end;
-        fracy := fracy + fracystep;
-      end;
+      params.FracXStep := FRACUNIT * width div destw;
+      TVideoRectCopy.StretchRows8(params);
     end;
   end
   else
@@ -1095,20 +984,12 @@ procedure V_CopyRect8_MT(
   preserve: boolean);
 var
   src: PByteArray;
-  dest: PByte;
   destA: PByteArray;
   destw: integer;
   desth: integer;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  l: LongWord;
-  b: byte;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
@@ -1124,152 +1005,27 @@ begin
 
       desty := V_PreserveY(desty);
 
-      fracy := srcy * FRACUNIT;
-      fracystep := FRACUNIT * height div desth;
+      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      params.Source := System.PByte(screens[srcscrn]);
+      params.Destination := screens[destscrn];
+      params.SourcePitch := swidth;
+      params.DestinationPitch := dwidth;
+      params.SourceX := srcx;
+      params.DestinationX := destx;
+      params.DestinationY := desty;
+      params.DestinationWidth := destw;
+      params.DestinationHeight := desth;
+      params.FracY := srcy * FRACUNIT;
+      params.FracYStep := FRACUNIT * height div desth;
+      params.Index := idx;
+      params.IndexCount := numidxs;
 
       if swidth = 320 then
-        case widthintmultiplier of
-          2: // Width: 640
-            begin
-              destw := destw div 2;
-              for row := desty to desty + desth - 1 do
-              begin
-                if row mod numidxs = idx then
-                begin
-                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                  col := 0;
-                  while col < destw do
-                  begin
-                    b := src[col];
-                    PWord(dest)^ := precal8_toword[b];
-                    inc(dest, 2);
-                    inc(col);
-                  end;
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          4: // Width: 1280
-            begin
-              destw := destw div 4;
-              for row := desty to desty + desth - 1 do
-              begin
-                if row mod numidxs = idx then
-                begin
-                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                  col := 0;
-                  while col < destw do
-                  begin
-                    b := src[col];
-                    PLongWord(dest)^ := precal8_tolong[b];
-                    inc(dest, 4);
-                    inc(col);
-                  end;
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          6: // Width: 1920
-            begin
-              destw := destw div 6;
-              for row := desty to desty + desth - 1 do
-              begin
-                if row mod numidxs = idx then
-                begin
-                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                  col := 0;
-                  while col < destw do
-                  begin
-                    b := src[col];
-                    PLongWord(dest)^ := precal8_tolong[b];
-                    inc(dest, 4);
-                    PWord(dest)^ := precal8_toword[b];
-                    inc(dest, 2);
-                    inc(col);
-                  end;
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-          8: // Width: 2560
-            begin
-              destw := destw div 8;
-              for row := desty to desty + desth - 1 do
-              begin
-                if row mod numidxs = idx then
-                begin
-                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                  col := 0;
-                  while col < destw do
-                  begin
-                    b := src[col];
-                    l := precal8_tolong[b];
-                    PLongWord(dest)^ := l;
-                    inc(dest, 4);
-                    PLongWord(dest)^ := l;
-                    inc(dest, 4);
-                    inc(col);
-                  end;
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
-         12: // Width: 3840
-            begin
-              destw := destw div 12;
-              for row := desty to desty + desth - 1 do
-              begin
-                if row mod numidxs = idx then
-                begin
-                  dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-                  src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                  col := 0;
-                  while col < destw do
-                  begin
-                    b := src[col];
-                    l := precal8_tolong[b];
-                    PLongWord(dest)^ := l;
-                    inc(dest, 4);
-                    PLongWord(dest)^ := l;
-                    inc(dest, 4);
-                    PLongWord(dest)^ := l;
-                    inc(dest, 4);
-                    inc(col);
-                  end;
-                end;
-                fracy := fracy + fracystep;
-              end;
-              Exit;
-            end;
+        if TVideoRectCopy.ExpandRows8(widthintmultiplier, params, @precal8_toword[0], @precal8_tolong[0]) then
+          Exit;
 
-        end;
-
-      fracxstep := FRACUNIT * width div destw;
-
-      for row := desty to desty + desth - 1 do
-      begin
-        if row mod numidxs = idx then
-        begin
-          fracx := 0;
-          dest := PByte(NativeInt(screens[destscrn]) + dwidth * row + destx);
-          src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-          for col := 0 to destw - 1 do
-          begin
-            dest^ := src[LongWord(fracx) shr FRACBITS];
-            inc(dest);
-            fracx := fracx + fracxstep;
-          end;
-        end;
-        fracy := fracy + fracystep;
-      end;
+      params.FracXStep := FRACUNIT * width div destw;
+      TVideoRectCopy.StretchRows8(params);
     end;
   end
   else
@@ -1304,21 +1060,14 @@ procedure V_CopyRect32(
   desty: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PLongWord;
   destw: integer;
   desth: integer;
   fracxstep: fixed_t;
   fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  ldest: LongWord;
-  ldest64: twolongwords_t;
   pv: boolean;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
@@ -1350,173 +1099,27 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    fracy := srcy * FRACUNIT;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := fracystep;
+    params.FracXStep := fracxstep;
+    params.Index := 0;
+    params.IndexCount := 1;
 
     if pv and (swidth = 320) then
-      case widthintmultiplier of
-        2: // Width: 640
-          begin
-            destw := destw div 2;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest := videopal[src[col]];
-                dest^ := ldest;
-                inc(dest);
-                dest^ := ldest;
-                inc(dest);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-  // JVAL: Unused if we use stallhack to prevent 1280 width
-       4: // Width: 1280
-          begin
-            destw := destw div 4;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest64.longword1 := videopal[src[col]];
-                ldest64.longword2 := ldest64.longword1;
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        5: // Width: 1600
-          begin
-            destw := destw div 5;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest64.longword1 := videopal[src[col]];
-                ldest64.longword2 := ldest64.longword1;
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                dest^ := ldest64.longword1;
-                inc(dest);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        6: // Width: 1920
-          begin
-            destw := destw div 6;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest64.longword1 := videopal[src[col]];
-                ldest64.longword2 := ldest64.longword1;
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        8: // Width: 2560
-          begin
-            destw := destw div 8;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest64.longword1 := videopal[src[col]];
-                ldest64.longword2 := ldest64.longword1;
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-       12: // Width: 3840
-          begin
-            destw := destw div 12;
-            for row := desty to desty + desth - 1 do
-            begin
-              dest := @screen32[dwidth * row + destx];
-              src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-              col := 0;
-              while col < destw do
-              begin
-                ldest64.longword1 := videopal[src[col]];
-                ldest64.longword2 := ldest64.longword1;
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                PInt64(dest)^ := PInt64(@ldest64)^;
-                inc(dest, 2);
-                inc(col);
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-      end;
+      if TVideoRectCopy.ExpandRows32(widthintmultiplier, params, System.PLongWord(@videopal[0])) then
+        Exit;
 
-    for row := desty to desty + desth - 1 do
-    begin
-      fracx := 0;
-      dest := @screen32[dwidth * row + destx];
-      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-      for col := 0 to destw - 1 do
-      begin
-        dest^ := videopal[src[LongWord(fracx) shr FRACBITS]];
-        inc(dest);
-        fracx := fracx + fracxstep;
-      end;
-      fracy := fracy + fracystep;
-    end;
+    TVideoRectCopy.StretchRows32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
@@ -1536,21 +1139,14 @@ procedure V_CopyRect32_MT(
   desty: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PLongWord;
   destw: integer;
   desth: integer;
   fracxstep: fixed_t;
   fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  ldest: LongWord;
-  ldest64: twolongwords_t;
   pv: boolean;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
@@ -1582,194 +1178,27 @@ begin
       fracystep := FRACUNIT;
     end;
 
-    fracy := srcy * FRACUNIT;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := fracystep;
+    params.FracXStep := fracxstep;
+    params.Index := idx;
+    params.IndexCount := numidxs;
 
     if pv and (swidth = 320) then
-      case widthintmultiplier of
-        2: // Width: 640
-          begin
-            destw := destw div 2;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest := videopal[src[col]];
-                  dest^ := ldest;
-                  inc(dest);
-                  dest^ := ldest;
-                  inc(dest);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-  // JVAL: Unused if we use stallhack to prevent 1280 width
-       4: // Width: 1280
-          begin
-            destw := destw div 4;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest64.longword1 := videopal[src[col]];
-                  ldest64.longword2 := ldest64.longword1;
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        5: // Width: 1600
-          begin
-            destw := destw div 5;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest64.longword1 := videopal[src[col]];
-                  ldest64.longword2 := ldest64.longword1;
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  dest^ := ldest64.longword1;
-                  inc(dest);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        6: // Width: 1920
-          begin
-            destw := destw div 6;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest64.longword1 := videopal[src[col]];
-                  ldest64.longword2 := ldest64.longword1;
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-        8: // Width: 2560
-          begin
-            destw := destw div 8;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest64.longword1 := videopal[src[col]];
-                  ldest64.longword2 := ldest64.longword1;
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-       12: // Width: 3840
-          begin
-            destw := destw div 12;
-            for row := desty to desty + desth - 1 do
-            begin
-              if row mod numidxs = idx then
-              begin
-                dest := @screen32[dwidth * row + destx];
-                src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-                col := 0;
-                while col < destw do
-                begin
-                  ldest64.longword1 := videopal[src[col]];
-                  ldest64.longword2 := ldest64.longword1;
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  PInt64(dest)^ := PInt64(@ldest64)^;
-                  inc(dest, 2);
-                  inc(col);
-                end;
-              end;
-              fracy := fracy + fracystep;
-            end;
-            Exit;
-          end;
-      end;
+      if TVideoRectCopy.ExpandRows32(widthintmultiplier, params, System.PLongWord(@videopal[0])) then
+        Exit;
 
-    for row := desty to desty + desth - 1 do
-    begin
-      if row mod numidxs = idx then
-      begin
-        fracx := 0;
-        dest := @screen32[dwidth * row + destx];
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        for col := 0 to destw - 1 do
-        begin
-          dest^ := videopal[src[LongWord(fracx) shr FRACBITS]];
-          inc(dest);
-          fracx := fracx + fracxstep;
-        end;
-      end;
-      fracy := fracy + fracystep;
-    end;
+    TVideoRectCopy.StretchRows32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
@@ -2915,18 +2344,7 @@ begin
   else
     cnt := count;
   src := PByte(@screen32[ofs]);
-  while cnt > 0 do
-  begin
-    src^ := src^ shr 1;
-    inc(src);
-    src^ := src^ shr 1;
-    inc(src);
-    src^ := src^ shr 1;
-    inc(src);
-    src^ := src^ or $80;
-    inc(src);
-    dec(cnt);
-  end;
+  TVideoScreenOps.ShadeOpaque32(System.PByte(src), cnt);
 end;
 {$ELSE}
 
@@ -2963,74 +2381,12 @@ begin
     if R_BatchColorShade_AMD(src, cnt) then
       exit;
 
-    while cnt > 16 do
-    begin
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-
-      dec(cnt, 16);
-    end;
-
-    while cnt > 4 do
-    begin
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-      src^ := src^ shr 1;
-      inc(src);
-
-      dec(cnt, 4);
-    end;
-
-    while cnt > 0 do
-    begin
-      src^ := src^ shr 1;
-      inc(src);
-      dec(cnt);
-    end;
+    TVideoScreenOps.Shade32(System.PByte(src), cnt);
   end
   else
   begin
     cmap := @{$IFDEF DOOM_OR_STRIFE}def_colormaps{$ELSE}colormaps{$ENDIF}[(NUMCOLORMAPS div 2) * 256];
-    while cnt > 0 do
-    begin
-      src^ := cmap[src^];
-      inc(src);
-      dec(cnt);
-    end;
+    TVideoScreenOps.ShadeIndexed(System.PByte(src), System.PByte(cmap), cnt);
   end;
 end;
 {$ENDIF}
@@ -3055,31 +2411,7 @@ begin
     cnt := V_GetScreenWidth(srcscrn) * V_GetScreenHeight(srcscrn)
   else
     cnt := size;
-  while cnt > 4 do
-  begin
-    if PLongWord(src)^ = 0 then
-    begin
-      inc(dest, 4);
-      inc(src, 4);
-      dec(cnt, 4)
-    end
-    else
-    begin
-      if src^ <> 0 then
-        dest^ := src^;
-      inc(dest);
-      inc(src);
-      dec(cnt);
-    end;
-  end;
-  while cnt > 0 do
-  begin
-    if src^ <> 0 then
-      dest^ := src^;
-    inc(dest);
-    inc(src);
-    dec(cnt);
-  end;
+  TVideoScreenOps.CopyTransparent8(System.PByte(src), System.PByte(dest), cnt);
 end;
 
 //==============================================================================
@@ -3102,14 +2434,7 @@ begin
     cnt := V_GetScreenWidth(srcscrn) * V_GetScreenHeight(srcscrn)
   else
     cnt := size;
-  while cnt > 0 do
-  begin
-    if src^ <> 0 then
-      dest^ := videopal[src^];
-    inc(dest);
-    inc(src);
-    dec(cnt);
-  end;
+  TVideoScreenOps.CopyTransparent32(System.PByte(src), System.PLongWord(dest), System.PLongWord(@videopal[0]), cnt);
 end;
 
 //==============================================================================
@@ -3181,13 +2506,7 @@ begin
     cnt := count;
 
   approx := V_FindAproxColorIndex(@curpal, $0, 1);
-  while cnt > 0 do
-  begin
-    if src^ = 0 then
-      src^ := approx;
-    inc(src);
-    dec(cnt);
-  end;
+  TVideoScreenOps.RemoveTransparency(System.PByte(src), approx, cnt);
 end;
 
 //==============================================================================
@@ -3244,47 +2563,13 @@ begin
     y := y - patch.topoffset;
     x := x - patch.leftoffset;
 
-    col := 0;
-
     desttop := PByte(NativeInt(screens[scrn]) + y * swidth + x);
 
     w := patch.width;
 
-    while col < w do
-    begin
-      column := Pcolumn_t(NativeInt(patch) + patch.columnofs[col]);
-      delta := 0;
-      tallpatch := false;
-    // step through the posts in a column
-      while column.topdelta <> $ff do
-      begin
-        source := PByte(NativeInt(column) + 3);
-        delta := delta + column.topdelta;
-        dest := PByte(NativeInt(desttop) + delta * swidth);
-        count := column.length;
-
-        while count > 0 do
-        begin
-          dest^ := v_translation[source^];
-          inc(source);
-          inc(dest, swidth);
-          dec(count);
-        end;
-        if not tallpatch then
-        begin
-          prevdelta := column.topdelta;
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-          if column.topdelta > prevdelta then
-            delta := 0
-          else
-            tallpatch := true;
-        end
-        else
-          column := Pcolumn_t(NativeInt(column) + column.length + 4);
-      end;
-      inc(col);
-      inc(desttop);
-    end;
+    // the walk of the posts is TVideoPatchPainter (Libs\Video)
+    TVideoPatchPainter.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), w, System.PByte(desttop), swidth,
+      PVideoByteRow(v_translation), false);
 
   end
 ////////////////////////////////////////////////////
@@ -4626,60 +3911,18 @@ end;
 //==============================================================================
 procedure V_DrawPatchFlipped(x, y: integer; scrn: integer; patch: Ppatch_t);
 var
-  count: integer;
-  col: integer;
-  column: Pcolumn_t;
   desttop: PByte;
-  dest: PByte;
-  source: PByte;
   w: integer;
-  delta, prevdelta: integer;
-  tallpatch: boolean;
 begin
   y := y - patch.topoffset;
   x := x - patch.leftoffset;
-
-  col := 0;
 
   desttop := PByte(NativeInt(screens[scrn]) + y * 320 + x);
 
   w := patch.width;
 
-  while col < w do
-  begin
-    column := Pcolumn_t(NativeInt(patch) + patch.columnofs[w - 1 - col]);
-    delta := 0;
-    tallpatch := false;
-  // step through the posts in a column
-    while column.topdelta <> $ff do
-    begin
-      source := PByte(NativeInt(column) + 3);
-      delta := delta + column.topdelta;
-      dest := PByte(NativeInt(desttop) + delta * 320);
-      count := column.length;
-
-      while count > 0 do
-      begin
-        dest^ := v_translation[source^];
-        inc(source);
-        inc(dest, 320);
-        dec(count);
-      end;
-      if not tallpatch then
-      begin
-        prevdelta := column.topdelta;
-        column := Pcolumn_t(NativeInt(column) + column.length + 4);
-        if column.topdelta > prevdelta then
-          delta := 0
-        else
-          tallpatch := true;
-      end
-      else
-        column := Pcolumn_t(NativeInt(column) + column.length + 4);
-    end;
-    inc(col);
-    inc(desttop);
-  end;
+  TVideoPatchPainter.DrawColumns8(System.PByte(patch), PVideoIntegerRow(@patch.columnofs[0]), w, System.PByte(desttop), 320,
+    PVideoByteRow(v_translation), true);
 end;
 
 //==============================================================================
@@ -4689,30 +3932,14 @@ end;
 //==============================================================================
 procedure V_ScaleBuffer8(var FData: pointer; const FWidth, FHeight: integer; const AWidth, AHeight: integer);
 var
-  xs, ys, xi, yi, x, y: integer;
   newimage: pointer;
-  edi, esi: PByteArray;
 begin
   if (AWidth = FWidth) and (AHeight = FHeight) then
     exit;
 
-  xi := (FWidth shl 16) div AWidth;
-  yi := (FHeight shl 16) div AHeight;
   newimage := malloc(AWidth * AHeight);
-  edi := newimage;
-  ys := 0;
-  for y := 0 to AHeight - 1 do
-  begin
-    esi := @PByteArray(FData)[(ys shr 16) * fWidth];
-    xs := 0;
-    for x := 0 to AWidth - 1 do
-    begin
-      edi[x] := esi[xs shr 16];
-      xs := xs + xi;
-    end;
-    edi := @edi[AWidth];
-    ys := ys + yi;
-  end;
+  // The scaling loop is TVideoStretch (Libs\Video)
+  TVideoStretch.ScaleNearest8(PVideoByteRow(FData), PVideoByteRow(newimage), FWidth, FHeight, AWidth, AHeight);
   memfree(FData, FWidth * FHeight);
   FData := newimage;
 end;
@@ -5294,7 +4521,7 @@ begin
   w := V_GetScreenWidth(SCN_FG);
   h := V_GetScreenHeight(SCN_FG);
 
-  pct := round((1 - (4 / 3) / (w / h)) * 100);
+  pct := TVideoStretch.WidePercentage(w, h);
   if (pct <= 0) or (pct >= 100) then
     exit;
 
@@ -5308,8 +4535,7 @@ begin
     pl := @screen32[x * w];
     for y := 0 to start - 1 do
       bufl[y] := $FF000000;
-    for y := start to stop do
-      bufl[y] := pl[ibetween(w * (y - start) div (stop - start + 1), 0, w - 1)];
+    TVideoStretch.StretchRow32(PVideoLongWordRow(pl), PVideoLongWordRow(bufl), w, start, stop);
     for y := stop + 1 to w - 1 do
       bufl[y] := $FF000000;
     memcpy(pl, bufl, w * SizeOf(LongWord));
@@ -5327,7 +4553,7 @@ end;
 //==============================================================================
 procedure V_FullScreenStretch;
 var
-  x, y: integer;
+  x: integer;
   bufb, pb: PByteArray;
   bufl, pl: PLongWordArray;
   start, stop: integer;
@@ -5336,7 +4562,7 @@ begin
   if not intermissionstretch then
     exit;
 
-  pct := round((1 - (4 / 3) / (SCREENWIDTH / SCREENHEIGHT)) * 100);
+  pct := TVideoStretch.WidePercentage(SCREENWIDTH, SCREENHEIGHT);
   if (pct <= 0) or (pct >= 100) then
     exit;
 
@@ -5350,8 +4576,7 @@ begin
     for x := 0 to SCREENHEIGHT - 1 do
     begin
       pl := @screen32[x * SCREENWIDTH];
-      for y := start to stop do
-        bufl[y] := pl[ibetween(SCREENWIDTH * (y - start) div (stop - start + 1), 0, SCREENWIDTH - 1)];
+      TVideoStretch.StretchRow32(PVideoLongWordRow(pl), PVideoLongWordRow(bufl), SCREENWIDTH, start, stop);
       memcpy(pl, bufl, SCREENWIDTH * SizeOf(LongWord));
     end;
 
@@ -5369,8 +4594,7 @@ begin
     for x := 0 to SCREENHEIGHT - 1 do
     begin
       pb := @screens[SCN_FG][x * SCREENWIDTH];
-      for y := start to stop do
-        bufb[y] := pb[ibetween(SCREENWIDTH * (y - start) div (stop - start + 1), 0, SCREENWIDTH - 1)];
+      TVideoStretch.StretchRow8(PVideoByteRow(pb), PVideoByteRow(bufb), SCREENWIDTH, start, stop);
       memcpy(pb, bufb, SCREENWIDTH * SizeOf(byte));
     end;
 
@@ -5406,7 +4630,7 @@ begin
   w := V_GetScreenWidth(SCN_FG);
   h := V_GetScreenHeight(SCN_FG);
 
-  pct := round((1 - (4 / 3) / (w / h)) * 100);
+  pct := TVideoStretch.WidePercentage(w, h);
 
   if (pct <= 0) or (pct >= 100) or (screenblocks > 10) then
   //   if not (amstate = am_only) then
@@ -5423,8 +4647,7 @@ begin
     pl := @screen32[x * w];
     for y := 0 to start - 1 do
       bufl[y] := $FF000000;
-    for y := start to stop do
-      bufl[y] := $FF000000 or pl[ibetween(w * (y - start) div (stop - start + 1), 0, w - 1)];
+    TVideoStretch.StretchRow32Opaque(PVideoLongWordRow(pl), PVideoLongWordRow(bufl), w, start, stop);
     for y := stop + 1 to w - 1 do
       bufl[y] := $FF000000;
     memcpy(pl, bufl, w * SizeOf(LongWord));
@@ -5448,7 +4671,7 @@ end;
 //==============================================================================
 procedure V_StatusBarStretch;
 var
-  x, y: integer;
+  x: integer;
   pct: integer;
   bufb, pb: PByteArray;
   bufl, pl: PLongWordArray;
@@ -5461,7 +4684,7 @@ begin
   if wide_stbar <> 320 then
     exit;
 
-  pct := round((1 - (4 / 3) / (SCREENWIDTH / SCREENHEIGHT)) * 100);
+  pct := TVideoStretch.WidePercentage(SCREENWIDTH, SCREENHEIGHT);
 
   if (pct <= 0) or (pct >= 100) or (screenblocks > 10) then
   //   if not (amstate = am_only) then
@@ -5480,8 +4703,7 @@ begin
     for x := V_PreserveY(ST_Y) to SCREENHEIGHT - 1 do
     begin
       pl := @screen32[x * SCREENWIDTH];
-      for y := start to stop do
-        bufl[y] := pl[ibetween(SCREENWIDTH * (y - start) div (stop - start + 1), 0, SCREENWIDTH - 1)];
+      TVideoStretch.StretchRow32(PVideoLongWordRow(pl), PVideoLongWordRow(bufl), SCREENWIDTH, start, stop);
       memcpy(pl, bufl, SCREENWIDTH * SizeOf(LongWord));
     end;
 
@@ -5499,8 +4721,7 @@ begin
     for x := V_PreserveY(ST_Y) to SCREENHEIGHT - 1 do
     begin
       pb := @screens[SCN_FG][x * SCREENWIDTH];
-      for y := start to stop do
-        bufb[y] := pb[ibetween(SCREENWIDTH * (y - start) div (stop - start + 1), 0, SCREENWIDTH - 1)];
+      TVideoStretch.StretchRow8(PVideoByteRow(pb), PVideoByteRow(bufb), SCREENWIDTH, start, stop);
       memcpy(pb, bufb, SCREENWIDTH * SizeOf(byte));
     end;
 
