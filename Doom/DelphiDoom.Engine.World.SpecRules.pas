@@ -109,73 +109,10 @@ procedure P_MobjInSpecialSector(mo: Pmobj_t);
 
 //==============================================================================
 //
-// twoSided
-//
-//==============================================================================
-function twoSided(sector: integer; line: integer): boolean;
-
-//==============================================================================
-//
-// twoSidedS
-//
-//==============================================================================
-function twoSidedS(sector: Psector_t; line: integer): boolean;
-
-//==============================================================================
-//
-// P_FindHighestFloorSurrounding
-//
-//==============================================================================
-function P_FindHighestFloorSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindNextHighestFloor
-//
-//==============================================================================
-function P_FindNextHighestFloor(sec: Psector_t; currentheight: integer): fixed_t;
-
-//==============================================================================
-//
-// P_FindLowestCeilingSurrounding
-//
-//==============================================================================
-function P_FindLowestCeilingSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindHighestCeilingSurrounding
-//
-//==============================================================================
-function P_FindHighestCeilingSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindSectorFromLineTag
-//
-//==============================================================================
-function P_FindSectorFromLineTag(line: Pline_t; start: integer): integer;
-
-//==============================================================================
-//
-// P_FindSectorFromLineTag2
-//
-//==============================================================================
-function P_FindSectorFromLineTag2(line: Pline_t; var start: integer): integer;
-
-//==============================================================================
-//
 // P_FindLineFromLineTag2
 //
 //==============================================================================
 function P_FindLineFromLineTag2(line: Pline_t; var start: integer): integer;
-
-//==============================================================================
-//
-// getNextSector
-//
-//==============================================================================
-function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
 
 //==============================================================================
 // P_SectorActive
@@ -282,6 +219,31 @@ procedure P_SpawnPushers;
 //
 //==============================================================================
 function P_GetPushThing(const snum: integer): Pmobj_t;
+
+type
+  /// <summary>
+  ///   What Doom does differently in the sector utilities of Base\p_spec.pas (issue #185, step 2g)
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TSpecGameRules = class sealed
+  public
+    /// <summary>The line is two-sided when ML_TWOSIDED is set (otherwise when it has a second side)</summary>
+    class function TwoSidedByFlag: boolean; static;
+    /// <summary>getNextSector works as in the original game: no neighbour through a one-sided line</summary>
+    class function NextSectorCompatible: boolean; static;
+    /// <summary>The height where P_FindHighestFloorSurrounding starts from</summary>
+    class function HighestFloorStart: fixed_t; static;
+    /// <summary>The height where P_FindLowestCeilingSurrounding starts from</summary>
+    class function LowestCeilingStart: fixed_t; static;
+    /// <summary>The height where P_FindHighestCeilingSurrounding starts from</summary>
+    class function HighestCeilingStart: fixed_t; static;
+    /// <summary>How many adjoining sectors P_FindNextHighestFloor accepts</summary>
+    class function AdjoiningSectorsLimit: integer; static;
+    /// <summary>The tag of the sectors that the line refers to (Hexen: the first argument of the special)</summary>
+    class function LineSectorTag(line: Pline_t): integer; static;
+  end;
 
 implementation
 
@@ -548,161 +510,6 @@ end;
 
 //==============================================================================
 //
-// twoSided()
-// Given the sector number and the line number,
-//  it will tell you whether the line is two-sided or not.
-//
-//==============================================================================
-function twoSided(sector: integer; line: integer): boolean;
-begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := sectors[sector].lines[line].sidenum[1] <> -1
-  else
-    result := sectors[sector].lines[line].flags and ML_TWOSIDED <> 0;
-end;
-
-//==============================================================================
-//
-// twoSidedS
-//
-//==============================================================================
-function twoSidedS(sector: Psector_t; line: integer): boolean;
-begin
-  result := sector.lines[line].sidenum[1] <> -1
-end;
-
-//==============================================================================
-//
-// getNextSector()
-// Return sector_t * of sector next to current.
-// NULL if not two-sided line
-//
-//==============================================================================
-function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
-var
-  oldcompatibility: boolean;
-begin
-  oldcompatibility := false;
-  if G_PlayingEngineVersion <= VERSION115 then
-  begin
-    oldcompatibility := true;
-    if line.flags and ML_TWOSIDED = 0 then
-    begin
-      result := nil;
-      exit;
-    end;
-  end;
-
-  if line.frontsector = sec then
-  begin
-    if oldcompatibility or (line.backsector <> sec) then
-      result := line.backsector
-    else
-      result := nil;
-    exit;
-  end;
-
-  result := line.frontsector;
-end;
-
-//==============================================================================
-//
-// P_FindHighestFloorSurrounding()
-// FIND HIGHEST FLOOR HEIGHT IN SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindHighestFloorSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := -32000 * FRACUNIT
-  else
-    result := -500 * FRACUNIT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.floorheight > result then
-        result := other.floorheight;
-  end;
-end;
-
-//
-// P_FindNextHighestFloor
-// FIND NEXT HIGHEST FLOOR IN SURROUNDING SECTORS
-// Note: this should be doable w/o a fixed array.
-
-// 20 adjoining sectors max!  // JVAL changed to 64
-const
-  MAX_ADJOINING_SECTORS = 64; // JVAL was = 20
-
-//==============================================================================
-//
-// P_FindNextHighestFloor
-//
-//==============================================================================
-function P_FindNextHighestFloor(sec: Psector_t; currentheight: integer): fixed_t;
-var
-  i: integer;
-  h: integer;
-  check: Pline_t;
-  other: Psector_t;
-  height: fixed_t;
-  heightlist: array[0..MAX_ADJOINING_SECTORS] of fixed_t;
-  maxsecs: integer;
-begin
-  if G_NeedsCompatibilityMode then
-    maxsecs := 20
-  else
-    maxsecs := MAX_ADJOINING_SECTORS;
-  height := currentheight;
-
-  h := 0;
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-    begin
-      if other.floorheight > height then
-      begin
-        heightlist[h] := other.floorheight;
-        inc(h);
-      end;
-
-      // Check for overflow. Exit.
-      if h >= maxsecs then
-      begin
-        I_Warning('P_FindNextHighestFloor(): Sector with more than %d adjoining sectors.'#13#10, [maxsecs]);
-        break;
-      end;
-    end;
-  end;
-
-  // Find lowest height in list
-  if h = 0 then
-  begin
-    result := currentheight;
-    exit;
-  end;
-
-  result := heightlist[0];
-
-  // Range checking?
-  for i := 1 to h - 1 do
-    if heightlist[i] < result then
-      result := heightlist[i];
-end;
-
-//==============================================================================
-//
 // P_FindNextLowestFloor()
 //
 // Passed a sector and a floor height, returns the fixed point value
@@ -825,62 +632,6 @@ begin
     inc(i);
   end;
   result := currentheight;
-end;
-
-//==============================================================================
-// P_FindLowestCeilingSurrounding
-//
-// FIND LOWEST CEILING IN THE SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindLowestCeilingSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := 32000 * FRACUNIT
-  else
-    result := MAXINT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.ceilingheight < result then
-        result := other.ceilingheight;
-  end;
-end;
-
-//==============================================================================
-// P_FindHighestCeilingSurrounding
-//
-// FIND HIGHEST CEILING IN THE SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindHighestCeilingSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := -32000 * FRACUNIT
-  else
-    result := 0;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.ceilingheight > result then
-        result := other.ceilingheight;
-  end;
 end;
 
 //==============================================================================
@@ -1072,47 +823,6 @@ begin
     inc(i);
   end;
   result := nil;
-end;
-
-//==============================================================================
-// P_FindSectorFromLineTag
-//
-// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-//
-//==============================================================================
-function P_FindSectorFromLineTag(line: Pline_t; start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numsectors - 1 do
-    if sectors[i].tag = line.tag then
-    begin
-      result := i;
-      exit;
-    end;
-
-  result := -1;
-end;
-
-//==============================================================================
-//
-// P_FindSectorFromLineTag2
-//
-//==============================================================================
-function P_FindSectorFromLineTag2(line: Pline_t; var start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numsectors - 1 do
-    if sectors[i].tag = line.tag then
-    begin
-      result := i;
-      start := result;
-      exit;
-    end;
-
-  result := -1;
-  start := -1;
 end;
 
 //==============================================================================
@@ -3714,5 +3424,85 @@ begin
   end;
 end;
 
-end.
+//==============================================================================
+//
+// TSpecGameRules.TwoSidedByFlag
+//
+//==============================================================================
+class function TSpecGameRules.TwoSidedByFlag: boolean;
+begin
+  result := G_PlayingEngineVersion <= VERSION115;
+end;
 
+//==============================================================================
+//
+// TSpecGameRules.NextSectorCompatible
+//
+//==============================================================================
+class function TSpecGameRules.NextSectorCompatible: boolean;
+begin
+  result := G_PlayingEngineVersion <= VERSION115;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.HighestFloorStart
+//
+//==============================================================================
+class function TSpecGameRules.HighestFloorStart: fixed_t;
+begin
+  if G_PlayingEngineVersion > VERSION115 then
+    result := -32000 * FRACUNIT
+  else
+    result := -500 * FRACUNIT;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.LowestCeilingStart
+//
+//==============================================================================
+class function TSpecGameRules.LowestCeilingStart: fixed_t;
+begin
+  if G_PlayingEngineVersion > VERSION115 then
+    result := 32000 * FRACUNIT
+  else
+    result := MAXINT;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.HighestCeilingStart
+//
+//==============================================================================
+class function TSpecGameRules.HighestCeilingStart: fixed_t;
+begin
+  if G_PlayingEngineVersion > VERSION115 then
+    result := -32000 * FRACUNIT
+  else
+    result := 0;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.AdjoiningSectorsLimit
+//
+//==============================================================================
+class function TSpecGameRules.AdjoiningSectorsLimit: integer;
+begin
+  if G_NeedsCompatibilityMode then
+    result := 20
+  else
+    result := MAX_ADJOINING_SECTORS;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.LineSectorTag
+//
+//==============================================================================
+class function TSpecGameRules.LineSectorTag(line: Pline_t): integer;
+begin
+  result := line.tag;
+end;
+end.
