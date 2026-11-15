@@ -175,6 +175,15 @@ type
     procedure UpdatePaused;
   end;
 
+  /// <summary>
+  ///   A scene that the scripts of the harness can change from outside: the commands that only a map understands ("unit",
+  ///   "upgrade", "feature", "gold", "fog", "spawn"). False if the command is not one of the scene
+  /// </summary>
+  IWarScriptedScene = interface
+    ['{4C9E7A12-6B35-4D80-8A57-D1F2E09B3C64}']
+    function ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
+  end;
+
   /// <summary>A scene: the functions of a WarSceneDescriptor</summary>
   IWarScene = interface
     ['{1B6F83D0-E4A7-4259-8C1E-9A5D70C32B68}']

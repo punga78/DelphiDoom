@@ -37,7 +37,15 @@ type
     [TestCase('Pausa', 'map_pause')]
     [TestCase('Addestrare con i bottoni di un edificio', 'map_cmd_train')]
     [TestCase('Costruire con il contadino', 'map_cmd_build')]
+    [TestCase('Ordini dai bottoni e dai tasti', 'map_cmd_orders')]
+    [TestCase('Municipio, fucina, chiesa e caserma', 'map_cmd_town')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
+    /// <summary>
+    ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the
+    ///   hashes of a script, to compare with the C while a difference is looked for; without them it does nothing
+    /// </summary>
+    [Test]
+    procedure DovrebbeScrivereLeImprontedelloScriptDiProva;
   end;
 
 implementation
@@ -119,6 +127,41 @@ begin
     LGolden.Free;
     LScript.Free;
   end;
+end;
+
+procedure TTestWarMapUiParity.DovrebbeScrivereLeImprontedelloScriptDiProva;
+var
+  LGame: TWarUiGame;
+  LScript: TStringList;
+  LOutput: TStringList;
+  LLines: TArray<string>;
+  LIndex: Integer;
+begin
+  if (GetEnvironmentVariable('DELPHIDOOM_WAR_RUNSCRIPT') = '') or
+    (GetEnvironmentVariable('DELPHIDOOM_WAR_RUNSCRIPT_OUT') = '') then
+    Exit;
+  TWarRealData.RequireDataWar;
+  LScript := TStringList.Create;
+  try
+    LScript.LoadFromFile(GetEnvironmentVariable('DELPHIDOOM_WAR_RUNSCRIPT'));
+    SetLength(LLines, LScript.Count);
+    for LIndex := 0 to LScript.Count - 1 do
+      LLines[LIndex] := LScript[LIndex];
+    LGame := TWarUiRig.CreateRealMapGame;
+    try
+      LOutput := TWarUiRig.RunScript(LGame, LLines, nil);
+      try
+        LOutput.SaveToFile(GetEnvironmentVariable('DELPHIDOOM_WAR_RUNSCRIPT_OUT'));
+      finally
+        LOutput.Free;
+      end;
+    finally
+      LGame.Free;
+    end;
+  finally
+    LScript.Free;
+  end;
+  Assert.Pass;
 end;
 
 initialization

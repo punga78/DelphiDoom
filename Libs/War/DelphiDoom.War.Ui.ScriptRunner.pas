@@ -58,7 +58,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Campaign.Catalog;
+  DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Campaign.Catalog, DelphiDoom.War.Ui.Intf, DelphiDoom.War.Sound.SeededRandom;
 
 { TWarUiScriptRunner }
 
@@ -186,6 +186,8 @@ begin
     FGame.Manager.RunFrame(LDelta);
     if (AEvery > 0) and ((LIndex + 1) mod AEvery = 0) then
       WriteHash;
+    if GetEnvironmentVariable('DELPHIDOOM_WAR_RNGTRACE') <> '' then
+      FOutput.Add(Format('D %d %s', [FGame.Manager.FrameCount, LowerCase(IntToHex(TWarSeededRandom.LastState, 8))]));
     FGame.Manager.BeginInputFrame;
   end;
 end;
@@ -202,6 +204,7 @@ var
   LRace: TWarRace;
   LMapType: Integer;
   LCampaigns: IWarCampaigns;
+  LScripted: IWarScriptedScene;
 begin
   LParts := ALine.Split([' '], TStringSplitOptions.ExcludeEmpty);
   LCommand := LParts[0];
@@ -286,7 +289,8 @@ begin
     else
       FGame.Canvas.Transform.Trace := nil;
   end
-  else
+  else if not (Assigned(FGame.Manager.Scene) and Supports(FGame.Manager.Scene, IWarScriptedScene, LScripted) and
+    LScripted.ScriptCommand(LCommand, Copy(LParts, 1, MaxInt))) then
     raise EWarException.CreateFmt('Unknown command in the script: %s', [LCommand]);
 end;
 

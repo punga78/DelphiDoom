@@ -52,7 +52,7 @@ type
   ///   the original: the camera, what the player asks for, the model (the computer player, every state, the actions, the
   ///   projectiles, the spells and the fog), then the panel of the commands, the status bar and the objectives
   /// </summary>
-  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene)
+  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene)
   strict private
     FSetup: TWarMapSceneSetup;
     FHost: IWarMapHost;
@@ -101,6 +101,11 @@ type
     procedure Render;
     procedure Leave;
     procedure HandleTextInput(const AText: AnsiString);
+    /// <summary>
+    ///   The commands of the scripts of the harness that change the map: unit TYPE X Y PLAYER (a unit at rest on the tile under
+    ///   the point of the screen), upgrade INDEX ALLOWED LEVEL, feature INDEX VALUE, gold GOLD WOOD (of the player 0)
+    /// </summary>
+    function ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
     property Camera: TWarMapCamera read FCamera;
     property Map: TWarGameMap read FMap;
     property Binding: TWarMapBinding read FBinding;
@@ -225,6 +230,56 @@ end;
 
 procedure TWarMapScene.HandleTextInput(const AText: AnsiString);
 begin
+end;
+
+function TWarMapScene.ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
+var
+  LMapX: Single;
+  LMapY: Single;
+  LTileX: Single;
+  LTileY: Single;
+  LSlot: Integer;
+  LPlayer: PWarPlayerInfo;
+begin
+  Result := True;
+  if not Assigned(FBinding) then
+    Exit(False);
+  LPlayer := FBinding.World.Context.Players[0];
+  if ACommand = 'unit' then
+  begin
+    FCamera.ScreenToMap(StrToFloat(AArguments[1], TFormatSettings.Invariant),
+      StrToFloat(AArguments[2], TFormatSettings.Invariant), LMapX, LMapY);
+    TWarMapCamera.MapToTile(LMapX, LMapY, LTileX, LTileY);
+    LSlot := FBinding.World.Entities.CreateUnit(StrToInt(AArguments[0]), Trunc(LTileX), Trunc(LTileY),
+      StrToInt(AArguments[3]), wrkNone, 0, True);
+    if LSlot = 0 then
+      raise EWarException.Create('The pool of entities is full');
+    FBinding.World.Entities.SetInitialIdle(LSlot);
+  end
+  else if ACommand = 'building' then
+  begin
+    FCamera.ScreenToMap(StrToFloat(AArguments[1], TFormatSettings.Invariant),
+      StrToFloat(AArguments[2], TFormatSettings.Invariant), LMapX, LMapY);
+    TWarMapCamera.MapToTile(LMapX, LMapY, LTileX, LTileY);
+    LSlot := FBinding.World.Entities.CreateBuilding(StrToInt(AArguments[0]), Trunc(LTileX), Trunc(LTileY),
+      StrToInt(AArguments[3]), False);
+    if LSlot = 0 then
+      raise EWarException.Create('The building could not be created');
+  end
+  else if ACommand = 'upgrade' then
+  begin
+    LPlayer^.Upgrades[StrToInt(AArguments[0]) div 2].Allowed := StrToInt(AArguments[1]);
+    LPlayer^.Upgrades[StrToInt(AArguments[0]) div 2].Level := StrToInt(AArguments[2]);
+  end
+  else if ACommand = 'feature' then
+    LPlayer^.Features[StrToInt(AArguments[0]) div 2] := StrToInt(AArguments[1])
+  else if ACommand = 'gold' then
+  begin
+    LPlayer^.Gold := StrToInt(AArguments[0]);
+    LPlayer^.Wood := StrToInt(AArguments[1]);
+  end
+  else
+    Result := False;
 end;
 
 procedure TWarMapScene.StatusOfBuilding(ASlot: Integer);
@@ -370,6 +425,7 @@ begin
     Exit;
   // the real time of this frame, before anything can ask for a message of the status line (the command of a click does)
   FHost.SetRealTime(LHost.RealTime);
+  FBinding.World.Context.RealTime := LHost.RealTime;
   UpdateCamera;
   FSelecting.UpdateDragRect(FSetup.Services.Input);
   // only the clicks that no command takes select: some commands run with the click that selects

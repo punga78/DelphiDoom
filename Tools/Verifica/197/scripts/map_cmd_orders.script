@@ -1,0 +1,74 @@
+# Comandi con bersaglio dai bottoni e dai tasti (umani 1): due fanti (comando "unit" dell'harness), si seleziona un fante, si
+# manda con muovi (M) e un clic sulla mappa, con attacca (A) e un clic sul minimap, con muovi e un clic sul minimap (la
+# camera non lo segue), ferma (S, senza clic); si prova che il clic che da' l'ordine non seleziona e che un clic su una
+# tegola con un altro fante lo seleziona; il contadino con raccogli (H) e ripara (R) su niente e sul municipio
+campaign human 1
+move 190 100
+run 10 1
+unit 0 150 125 0
+unit 0 215 125 0
+run 5 1
+move 150 128
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key m down
+run 2 1
+key m up
+run 4 1
+move 230 60
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 60 3
+move 215 128
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 4 1
+move 30 40
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 150 100
+run 90 3
+key s down
+run 2 1
+key s up
+run 10 2
+move 176 99
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key h down
+run 2 1
+key h up
+run 3 1
+move 230 40
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key r down
+run 2 1
+key r up
+run 3 1
+move 190 135
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 60 3

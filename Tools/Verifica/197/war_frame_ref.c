@@ -42,6 +42,9 @@ static refu32 lcgNext(refu32* state)
 
 static Sint32 war_ref_rand(Sint32 n)
 {
+    /* per cercare chi estrae: WAR_REF_RNGWHO=1 scrive l'indirizzo di chi chiama (addr2line con una compilazione -g) */
+    if (getenv("WAR_REF_RNGWHO"))
+        fprintf(stderr, "rand %p %p %p\n", __builtin_return_address(0), __builtin_return_address(1), __builtin_return_address(2));
     return n <= 0 ? 0 : (Sint32)(lcgNext(&gGameState) % (refu32)n);
 }
 
@@ -256,6 +259,7 @@ int main(int argc, char** argv)
 {
     /* argv[1] = script; il resto = parametri di war1 (--race human --mission 1 ...) per wg_parseCommandLine */
     if (argc < 2) { fprintf(stderr, "uso: war_frame_ref script\n"); return 1; }
+    if (getenv("WAR_REF_RNGWHO")) fprintf(stderr, "main %p\n", (void*)main);
     FILE* f = fopen(argv[1], "r");
     if (!f) { fprintf(stderr, "script non trovato\n"); return 1; }
 
@@ -327,6 +331,9 @@ int main(int argc, char** argv)
                 /* le transizioni dei tasti valgono per un solo fotogramma (wg_beginInputFrame del giro dopo) */
                 if (every > 0 && (i + 1) % every == 0)
                     printf("H %d %08x\n", context->frameCount, frameHash());
+                /* per cercare una differenza: WAR_REF_RNGTRACE=1 scrive lo stato del generatore a ogni fotogramma (non e' nei golden) */
+                if (getenv("WAR_REF_RNGTRACE"))
+                    printf("D %d %08x\n", context->frameCount, gGameState);
                 wg_beginInputFrame(context);
             }
         }
@@ -346,6 +353,48 @@ int main(int argc, char** argv)
                 WarEntity* e = we_createUnit(context, CREATE_UNIT_ARGS_INIT(.type = WAR_UNIT_FOOTMAN, .x = x, .y = y, .player = 0, .addToMap = true));
                 we_setInitialIdleState(context, e);
             }
+        }
+        else if (!strcmp(cmd, "unit") && context->map)
+        {
+            /* parte C (comandi con bersaglio, incantesimi): "unit TIPO SX SY GIOCATORE": un'unita' (numero di WarUnitType) sulla tegola
+               sotto il punto SX SY dello schermo, ferma */
+            char a3[64] = {0};
+            sscanf(line, "%*s %*s %*s %63s", a3);
+            vec2 point = wmap_screenToMapCoordinatesV(context, vec2f((f32)atof(a2), (f32)atof(a3)));
+            char a4[64] = {0};
+            sscanf(line, "%*s %*s %*s %*s %63s", a4);
+            vec2 tile = wmap_mapToTileCoordinatesV(point);
+            WarEntity* e = we_createUnit(context, CREATE_UNIT_ARGS_INIT(.type = (WarUnitType)atoi(a1), .x = (s32)tile.x, .y = (s32)tile.y, .player = (u8)atoi(a4), .addToMap = true));
+            we_setInitialIdleState(context, e);
+        }
+        else if (!strcmp(cmd, "building") && context->map)
+        {
+            /* "building TIPO SX SY GIOCATORE": un edificio finito (we_createBuilding) con l'angolo sulla tegola sotto il punto */
+            char a3[64] = {0}, a4[64] = {0};
+            sscanf(line, "%*s %*s %*s %63s %63s", a3, a4);
+            vec2 point = wmap_screenToMapCoordinatesV(context, vec2f((f32)atof(a2), (f32)atof(a3)));
+            vec2 tile = wmap_mapToTileCoordinatesV(point);
+            we_createBuilding(context, CREATE_UNIT_ARGS_INIT(.type = (WarUnitType)atoi(a1), .x = (s32)tile.x, .y = (s32)tile.y, .player = (u8)atoi(a4), .isGoingToBuild = false));
+        }
+        else if (!strcmp(cmd, "upgrade") && context->map)
+        {
+            /* "upgrade INDICE PERMESSO LIVELLO": miglioramento (WarUpgradeType) del giocatore 0 */
+            char a3[64] = {0};
+            sscanf(line, "%*s %*s %*s %63s", a3);
+            WarPlayerInfo* p = &context->map->players[0];
+            p->upgrades[atoi(a1) / 2].allowed = (u8)atoi(a2);
+            p->upgrades[atoi(a1) / 2].level = (u8)atoi(a3);
+        }
+        else if (!strcmp(cmd, "feature") && context->map)
+        {
+            /* "feature INDICE VALORE": capacita' (WarFeatureType) del giocatore 0 */
+            context->map->players[0].features[atoi(a1) / 2] = (u8)atoi(a2);
+        }
+        else if (!strcmp(cmd, "gold") && context->map)
+        {
+            /* "gold ORO LEGNA": le risorse del giocatore 0 */
+            context->map->players[0].gold = atoi(a1);
+            context->map->players[0].wood = atoi(a2);
         }
         else if (!strcmp(cmd, "time") || !strcmp(cmd, "timerender"))
         {

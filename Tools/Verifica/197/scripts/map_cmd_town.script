@@ -1,0 +1,131 @@
+# Municipio, fucina, chiesa e caserma (umani 1, comandi "building", "feature", "upgrade" e "gold" dell'harness): strada con piu'
+# clic e clic destro che annulla, muro con ESC, addestramento senza oro (messaggio che lampeggia), miglioramento della
+# fucina (spade: "RESEARCHING WEAPONRY") annullato col bottone, ricerca della chiesa con i prezzi nei suggerimenti
+campaign human 1
+move 190 100
+run 10 1
+feature 42 1
+building 46 215 50 0
+building 36 130 62 0
+building 34 235 150 0
+upgrade 2 2 0
+upgrade 18 2 0
+feature 30 1
+upgrade 12 1 0
+run 3 1
+move 190 135
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 52 130
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 140 165
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 156 165
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 172 168
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 205 172
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+rbutton down
+run 2 1
+rbutton up
+run 4 1
+move 18 153
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 150 150
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 160 112
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+key esc down
+run 2 1
+key esc up
+run 5 1
+gold 100 100
+key p down
+run 2 1
+key p up
+run 20 2
+gold 2000 2000
+move 216 75
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 130
+run 3 1
+move 52 130
+run 3 1
+move 18 130
+lbutton down
+run 2 1
+lbutton up
+run 30 3
+move 52 176
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 2
+move 148 80
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 130
+run 3 1
+move 52 130
+run 3 1
+move 18 130
+lbutton down
+run 2 1
+lbutton up
+run 40 4
+move 252 168
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 130
+run 3 1
+key p down
+run 2 1
+key p up
+run 60 3

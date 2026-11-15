@@ -22,6 +22,12 @@ type
     FState: Cardinal;
     function NextBits: Cardinal;
   public
+    class var
+      /// <summary>
+      ///   The state after the last draw of any generator: an aid to find where two runs part (the script runner writes it when
+      ///   DELPHIDOOM_WAR_RNGTRACE is set); nothing reads it for the game
+      /// </summary>
+      LastState: Cardinal;
     constructor Create(ASeed: Cardinal);
     function Below(ALimit: Integer): Integer;
   end;
@@ -44,6 +50,7 @@ function TWarSeededRandom.NextBits: Cardinal;
 begin
   // the linear congruential generator of Numerical Recipes; the high bits are the good ones
   FState := FState * 1664525 + 1013904223;
+  LastState := FState;
   Result := FState shr 8;
 end;
 
