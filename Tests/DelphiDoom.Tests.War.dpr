@@ -363,6 +363,7 @@ uses
   DelphiDoom.Tests.War.MapUiCheats in 'Source\DelphiDoom.Tests.War.MapUiCheats.pas',
   DelphiDoom.Tests.War.MapUiCustom in 'Source\DelphiDoom.Tests.War.MapUiCustom.pas',
   DelphiDoom.Tests.War.RenderLines in 'Source\DelphiDoom.Tests.War.RenderLines.pas',
+  DelphiDoom.Tests.War.DebugRender in 'Source\DelphiDoom.Tests.War.DebugRender.pas',
   DelphiDoom.Tests.War.RenderCopy in 'Source\DelphiDoom.Tests.War.RenderCopy.pas',
   DelphiDoom.Tests.War.Render in 'Source\DelphiDoom.Tests.War.Render.pas',
   DelphiDoom.Tests.War.Text in 'Source\DelphiDoom.Tests.War.Text.pas',
