@@ -31,6 +31,8 @@ type
     Volume: Single;
     Enabled: Boolean;
     Silenced: Boolean;
+    PlacedX: TList<Single>;
+    ViewportWidth: Single;
     constructor Create;
     destructor Destroy; override;
     function Play(ASoundIndex: Integer; ALoop: Boolean): Integer;
@@ -85,6 +87,8 @@ type
     [Test]
     procedure DovrebbeMandareUnBranoAlPlayerConIlCiclo;
     [Test]
+    procedure DovrebbeMandareAlMixerUnSuonoConPostoEIlViewport;
+    [Test]
     procedure DovrebbeFermareLaMusica;
     [Test]
     procedure DovrebbeContareUnIdCheNonSiPuoSuonareESaltarlo;
@@ -136,10 +140,12 @@ begin
   inherited Create;
   Played := TList<Integer>.Create;
   Loops := TList<Boolean>.Create;
+  PlacedX := TList<Single>.Create;
 end;
 
 destructor TAppFakeMixer.Destroy;
 begin
+  PlacedX.Free;
   Loops.Free;
   Played.Free;
   inherited Destroy;
@@ -154,6 +160,7 @@ end;
 
 function TAppFakeMixer.PlayAt(ASoundIndex: Integer; AX, AY: Single; ALoop: Boolean): Integer;
 begin
+  PlacedX.Add(AX);
   Result := Play(ASoundIndex, ALoop);
 end;
 
@@ -167,6 +174,7 @@ end;
 
 procedure TAppFakeMixer.SetViewport(AX, AY, AWidth, AHeight: Single);
 begin
+  ViewportWidth := AWidth;
 end;
 
 procedure TAppFakeMixer.SetVolume(AVolume: Single; AEnabled: Boolean);
@@ -270,6 +278,29 @@ begin
   Assert.IsTrue(FMixer.Loops[1]);
   Assert.AreEqual(2, FAudio.SoundsStarted);
   Assert.AreEqual<Integer>(0, FMusic.Songs.Count);
+end;
+
+procedure TTestWarAppSceneAudio.DovrebbeMandareAlMixerUnSuonoConPostoEIlViewport;
+var
+  LPositional: IWarPositionalAudio;
+begin
+  LPositional := FAudio;
+  LPositional.SetViewport(10, 20, 240, 176);
+  Assert.AreEqual<Single>(240, FMixer.ViewportWidth);
+  LPositional.PlayAt(10, 300, 40);
+  Assert.AreEqual<Integer>(1, FMixer.Played.Count);
+  Assert.AreEqual<Single>(300, FMixer.PlacedX[0]);
+  Assert.AreEqual(1, FAudio.SoundsStarted);
+  // un brano non ha un posto: non suona qui
+  LPositional.PlayAt(1, 300, 40);
+  Assert.AreEqual<Integer>(1, FMixer.Played.Count);
+  Assert.AreEqual<Integer>(0, FMusic.Songs.Count);
+  // un id che non e'' un suono si conta e si salta
+  LPositional.PlayAt(99, 0, 0);
+  Assert.AreEqual(1, FAudio.Failures);
+  FAudio.Muted := True;
+  LPositional.PlayAt(10, 0, 0);
+  Assert.AreEqual<Integer>(1, FMixer.Played.Count, 'muto non suona');
 end;
 
 procedure TTestWarAppSceneAudio.DovrebbeMandareUnBranoAlPlayerConIlCiclo;

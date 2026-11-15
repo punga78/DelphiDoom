@@ -70,6 +70,7 @@ type
     class procedure DrawProjectile(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
     class procedure DrawAnimations(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
     /// <summary>The animations of an entity that are running, each in its own place and size (renderUnit and renderAnimation)</summary>
+    procedure DrawUnitInfo(AFrameWidth, AFrameHeight, AUnitWidth, AUnitHeight: Single);
     procedure DrawRunningAnimations(AEntity: PWarEntity);
     procedure RenderTile(ATileIndex, AX, AY: Integer);
     procedure DrawSprite(const ASprite: IWarUiSprite; AScaleX, AScaleY: Single);
@@ -434,6 +435,8 @@ begin
   LHalf := 0.5;
   ARenderer.FTransform.Translate(LHalf * LUnitWidth, LHalf * LUnitHeight);
   ARenderer.FTransform.Translate(LEntity^.Position.X, LEntity^.Position.Y);
+  if Assigned(ARenderer.FDebugView) and ARenderer.FDebugView.IsOn(wdrUnitInfo) then
+    ARenderer.DrawUnitInfo(LFrameWidth, LFrameHeight, LUnitWidth, LUnitHeight);
   if LSpriteEnabled and (LVisible or LEntity^.UnitData.HasBeenSeen) then
   begin
     ARenderer.FTransform.Save;
@@ -492,6 +495,32 @@ begin
   ARenderer.DrawSprite(LSprite, LScale, 1);
 end;
 
+procedure TWarMapRenderer.DrawUnitInfo(AFrameWidth, AFrameHeight, AUnitWidth, AUnitHeight: Single);
+var
+  LRect: TWarRectF;
+  LPositionX: Single;
+  LPositionY: Single;
+begin
+  // renderUnit with WAR_DEBUG_RENDER_UNIT_INFO: the frame, the rectangle of the sprite in it and its centre (one pixel)
+  LRect.X := 0;
+  LRect.Y := 0;
+  LRect.Width := AFrameWidth;
+  LRect.Height := AFrameHeight;
+  FTransform.FillRect(LRect, WAR_MAPUI_UNIT_FRAME);
+  LPositionX := 0.5 * (AFrameWidth - AUnitWidth);
+  LPositionY := 0.5 * (AFrameHeight - AUnitHeight);
+  LRect.X := LPositionX;
+  LRect.Y := LPositionY;
+  LRect.Width := AUnitWidth;
+  LRect.Height := AUnitHeight;
+  FTransform.FillRect(LRect, WAR_MAPUI_GRAY_TRANSPARENT);
+  LRect.X := LPositionX + 0.5 * AUnitWidth;
+  LRect.Y := LPositionY + 0.5 * AUnitHeight;
+  LRect.Width := 1;
+  LRect.Height := 1;
+  FTransform.FillRect(LRect, WAR_MAPUI_UNIT_CENTER);
+end;
+
 procedure TWarMapRenderer.DrawRunningAnimations(AEntity: PWarEntity);
 const
   // WAR_BUILDING_DAMAGE_1_RESOURCE, WAR_BUILDING_DAMAGE_2_RESOURCE, WAR_BUILDING_COLLAPSE_RESOURCE, WAR_EXPLOSION_RESOURCE,
@@ -518,6 +547,7 @@ var
   LHalf: Single;
   LValue: Single;
   LFrameIndex: Integer;
+  LDebugRect: TWarRectF;
 begin
   for LIndex := 0 to AEntity^.AnimationCount - 1 do
   begin
@@ -581,6 +611,15 @@ begin
     FTransform.Save;
     FTransform.Translate(LOffsetX, LOffsetY);
     FTransform.Scale(LScaleX, LScaleY);
+    if Assigned(FDebugView) and FDebugView.IsOn(wdrUnitAnimations) then
+    begin
+      // the size of the original sprite of the animation
+      LDebugRect.X := 0;
+      LDebugRect.Y := 0;
+      LDebugRect.Width := LSprite.FrameWidth;
+      LDebugRect.Height := LSprite.FrameHeight;
+      FTransform.FillRect(LDebugRect, WAR_MAPUI_GRAY_TRANSPARENT);
+    end;
     // the animation time (0..1) says which of its frames is shown; the explosion of the rain of fire has the frames 3 to 5
     LValue := LAnimation^.AnimTime * LAnimation^.FramesCount;
     LFrameIndex := Trunc(LValue);

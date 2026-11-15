@@ -77,6 +77,8 @@ type
     FCommandRunner: TWarMapCommandRunner;
     FCommandPreview: TWarMapCommandPreview;
     FAudio: IWarMapAudio;
+    /// <summary>The output of the sounds when it knows places: it is told which part of the map is on screen</summary>
+    FPositional: IWarPositionalAudio;
     FCensus: IWarCensus;
     FPanels: TWarMapPanels;
     FCommandPanel: TWarCommandPanel;
@@ -286,6 +288,8 @@ begin
   FAudio := TWarMapAudio.Create(FBinding.World.Context, TWarSoundFactory.CreatePicker(FSetup.Random), FSetup.Random,
     FSetup.Services.Audio);
   FHost.AttachAudio(FAudio);
+  if not Supports(FSetup.Services.Audio, IWarPositionalAudio, FPositional) then
+    FPositional := nil;
   FSelecting := TWarMapSelecting.Create(FMap, FBinding.World.Context, FBinding.World.Machine, FCamera, FPicker,
     FBinding.Commands.Selecting, FAudio);
   FCommandState := TWarMapCommandState.Create;
@@ -570,6 +574,9 @@ begin
   LSuppress := FCommandState.SuppressMinimapViewportOnRelease;
   FCamera.Update(FSetup.Services.Input, LContext, LSuppress);
   FCommandState.SuppressMinimapViewportOnRelease := LSuppress;
+  // map->camera.viewport, which audioDataCallback reads to give a sound with a place its volume
+  if Assigned(FPositional) then
+    FPositional.SetViewport(FCamera.X, FCamera.Y, FMap.Viewport.Width, FMap.Viewport.Height);
 end;
 
 procedure TWarMapScene.UpdatePaused;

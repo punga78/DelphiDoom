@@ -34,6 +34,25 @@ type
   end;
 
   /// <summary>
+  ///   The sounds that have a place on the map (wa_createAudioWithPosition, wa_createAudioRandomWithPosition): the blows, the
+  ///   deaths, the collapses, the chopping, the spells. Apart from IWarMapAudio so that an audio that does not know places
+  ///   (a fake) still works: the host then falls back to the sounds with no place
+  /// </summary>
+  IWarMapAudioAt = interface(IWarMapAudio)
+    ['{3B7D4E19-6A82-4C05-9F3E-D1A8C52B0E74}']
+    /// <summary>
+    ///   The original makes no entity and plays nothing when the fog of war is on and the place is not visible (AAudible
+    ///   False); the host says whether the place is audible, because it knows the fog
+    /// </summary>
+    procedure PlaySoundAt(AAudioId: Integer; AX, AY: Single; AAudible: Boolean);
+    /// <summary>
+    ///   The sound is drawn before the place is looked at (randomi is an argument of the call in the original), so a sound
+    ///   that is not audible still takes its number from the generator
+    /// </summary>
+    procedure PlayRandomSoundAt(AFromId, AToId: Integer; AX, AY: Single; AAudible: Boolean);
+  end;
+
+  /// <summary>
   ///   What the menus of the map ask of the scene when a button leaves the map (war_map_menu.c): the other scene or map that
   ///   comes next, always after a second of black (wg_setNextScene and wg_setNextMap with a delay of 1)
   /// </summary>

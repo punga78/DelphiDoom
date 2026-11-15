@@ -100,6 +100,7 @@ begin
   Result.DataSize := LHeader.DataSize;
   Result.StartRace := LHeader.StartRace;
   Result.StartMission := LHeader.StartMission;
+  Result.Introduction := LHeader.Flags and WAR_SAVE_FLAG_INTRODUCTION <> 0;
   SetLength(Result.Frames, Integer(LHeader.FrameCount));
   LOffset := SizeOf(LHeader);
   LEvents := 0;

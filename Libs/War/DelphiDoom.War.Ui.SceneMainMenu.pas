@@ -20,7 +20,8 @@ uses
 type
   /// <summary>
   ///   The main menu: three panels (the main one, the single player one and the custom game one), drawn with imui. The
-  ///   buttons "Load existing game" and "Replay introduction" do nothing (as in the original). The main menu has no
+  ///   buttons "Load existing game" and "Replay introduction" do nothing in the original: here the first loads when the
+  ///   program loads games, and the second plays the introduction when the services have animations (the port's own). The main menu has no
   ///   update of its own: the cheat panel and the animations are updated. Defect of the original kept: with the cheat
   ///   panel open the hotkeys of the buttons still work (the original only turns them off in a map)
   /// </summary>
@@ -122,8 +123,10 @@ begin
   if Services.Imui.TextButton('btnMenuLoad', TWarUiWidgets.MenuButton('Load existing game', 104, 105, wkL, False)) then
     if Assigned(Services.Sessions) then
       Services.Sessions.RequestLoad;
-  // not implemented in the original: inert
-  Services.Imui.TextButton('btnMenuReplayIntro', TWarUiWidgets.MenuButton('Replay introduction', 104, 125, wkR, False));
+  // not implemented in the original (inert): the port plays the introduction when the game has its animations
+  if Services.Imui.TextButton('btnMenuReplayIntro', TWarUiWidgets.MenuButton('Replay introduction', 104, 125, wkR, False)) then
+    if Assigned(Services.Cinematics) then
+      Services.Host.SetNextScene(Services.Scenes.CreateIntroduction, 0.3);
   if Services.Imui.TextButton('btnMenuQuit', TWarUiWidgets.MenuButton('Quit', 104, 165, wkQ, False)) then
     Services.Host.RequestQuit;
 end;

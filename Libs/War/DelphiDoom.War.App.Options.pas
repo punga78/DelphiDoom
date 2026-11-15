@@ -26,6 +26,11 @@ type
     Headless: Boolean;
     /// <summary>-nosound: the window has no sound device (a headless run has none anyway)</summary>
     NoSound: Boolean;
+    /// <summary>
+    ///   -nointro: the logo goes on to the menu. Without it a game in a window that starts from the title (no -play, no
+    ///   -load, no -script, not headless) plays the introduction after the logo (the animations are the port's own)
+    /// </summary>
+    NoIntroduction: Boolean;
     /// <summary>-script: a file of the commands of Tools\Verifica\197 (scene, campaign, move, key, run ...)</summary>
     ScriptPath: string;
     /// <summary>-shot: the last picture is saved as a PNG when the program ends</summary>

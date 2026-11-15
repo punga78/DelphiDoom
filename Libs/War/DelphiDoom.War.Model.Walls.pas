@@ -44,6 +44,11 @@ type
     ///   the level draws, with the most hit points
     /// </summary>
     procedure AddFromConstruct(const AConstruct: TWarLevelConstruct);
+    /// <summary>
+    ///   we_removeWallPiece: the piece leaves the wall and the pieces after it move one place down (the order of the rest is kept);
+    ///   used by the cheat "Edit walls" only. EWarException if there is no such piece
+    /// </summary>
+    procedure Remove(AIndex: Integer);
     /// <summary>we_hasWallPieceAtPosition</summary>
     function HasPieceAt(ATileX, ATileY: Integer): Boolean;
     /// <summary>we_getWallPieceAtPosition: the index of the first piece of the tile, -1 if there is none</summary>
@@ -94,6 +99,20 @@ begin
   FLine.AddPiece(ATileX, ATileY, APlayer);
   Result := FCount;
   Inc(FCount);
+end;
+
+procedure TWarWalls.Remove(AIndex: Integer);
+var
+  LPiece: PWarWallPiece;
+  LCell: TWarLinePiece;
+  LIndex: Integer;
+begin
+  LPiece := GetPiece(AIndex);
+  if FLine.TryGetPieceAt(LPiece^.TileX, LPiece^.TileY, LCell) then
+    FLine.RemovePiece(LCell);
+  for LIndex := AIndex to FCount - 2 do
+    FPieces[LIndex] := FPieces[LIndex + 1];
+  Dec(FCount);
 end;
 
 procedure TWarWalls.AddFromConstruct(const AConstruct: TWarLevelConstruct);

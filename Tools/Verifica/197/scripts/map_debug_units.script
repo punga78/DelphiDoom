@@ -1,0 +1,80 @@
+# Disegno di debug delle unita' e delle animazioni (umani 1, due eserciti come in map_war_melee, e un assedio con pioggia di fuoco): i
+# tasti Ctrl+Maiusc+I (unit-info: il fotogramma, il rettangolo dello sprite e il suo centro di ogni unita') e Ctrl+Maiusc+U
+# (unit-animations: il fotogramma dell'animazione di ogni animazione che gira), accesi e spenti mentre si combatte
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+unit 0 150 90 0
+unit 0 160 100 0
+unit 8 150 110 0
+unit 1 215 95 1
+unit 1 222 105 1
+unit 9 225 90 1
+run 5 1
+key ctrl down
+key shift down
+run 1 1
+key i down
+run 1 1
+key i up
+run 3 1
+key ctrl up
+key shift up
+run 20 2
+move 120 70
+run 3 1
+lbutton down
+run 2 1
+move 175 125
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 218 98
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 200 2
+key ctrl down
+key shift down
+run 1 1
+key u down
+run 1 1
+key u up
+run 3 1
+key ctrl up
+key shift up
+run 300 3
+key ctrl down
+key shift down
+run 1 1
+key i down
+run 1 1
+key i up
+run 3 1
+key ctrl up
+key shift up
+run 200 3
+key ctrl down
+key shift down
+run 1 1
+key u down
+run 1 1
+key u up
+run 3 1
+key ctrl up
+key shift up
+run 40 2

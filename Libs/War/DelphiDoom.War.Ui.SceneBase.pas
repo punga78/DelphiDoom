@@ -14,7 +14,8 @@ unit DelphiDoom.War.Ui.SceneBase;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf,
+  System.SysUtils, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Cinematic.Intf, DelphiDoom.War.Ui.Types,
+  DelphiDoom.War.Ui.Intf,
   DelphiDoom.War.Ui.Canvas, DelphiDoom.War.Ui.Imui, DelphiDoom.War.Ui.Animations, DelphiDoom.War.Ui.CheatsPanel;
 
 type
@@ -39,6 +40,13 @@ type
     DebugRender: IWarDebugRender;
     /// <summary>The program that saves and loads (the Save and Load buttons of the menus); may be nil (they do nothing)</summary>
     Sessions: IWarSessionRequests;
+    /// <summary>
+    ///   The animations of the game (the port's own: the original plays none); may be nil (the button "Replay introduction"
+    ///   does nothing, as in the original)
+    /// </summary>
+    Cinematics: IWarCinematicDirector;
+    /// <summary>The logo goes on to the introduction and not to the main menu (needs Cinematics)</summary>
+    IntroductionAfterLogo: Boolean;
   end;
 
   /// <summary>

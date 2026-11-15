@@ -51,7 +51,13 @@ end;
 procedure TWarSceneBlizzard.DoUpdate;
 begin
   if Services.Host.RealTime >= FEndRealTime then
-    Services.Host.SetNextScene(Services.Scenes.CreateMainMenu, 0.3);
+  begin
+    // the introduction is the port's own (a game with animations that is asked to play it); the original goes to the menu
+    if Services.IntroductionAfterLogo and Assigned(Services.Cinematics) then
+      Services.Host.SetNextScene(Services.Scenes.CreateIntroduction, 0.3)
+    else
+      Services.Host.SetNextScene(Services.Scenes.CreateMainMenu, 0.3);
+  end;
 end;
 
 procedure TWarSceneBlizzard.DoRender;

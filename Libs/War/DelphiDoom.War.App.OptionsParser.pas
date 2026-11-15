@@ -157,6 +157,8 @@ begin
       AOptions.Headless := True
     else if LName = '-nosound' then
       AOptions.NoSound := True
+    else if LName = '-nointro' then
+      AOptions.NoIntroduction := True
     else if LName = '-audiostats' then
       AOptions.AudioStatistics := True
     else if (LName = '-help') or (LName = '-?') or (LName = '/?') then

@@ -48,6 +48,10 @@ const
   WAR_MAPUI_WHITE_SELECTION: TWarRgba = (R: 199; G: 199; B: 199; A: 255);
   /// <summary>WAR_COLOR_BLUE_INVULNERABLE (0xFFC70000)</summary>
   WAR_MAPUI_BLUE_INVULNERABLE: TWarRgba = (R: 0; G: 0; B: 199; A: 255);
+  /// <summary>WAR_COLOR_RGBA(0, 0, 128, 128): the frame of a unit in the debug drawing</summary>
+  WAR_MAPUI_UNIT_FRAME: TWarRgba = (R: 0; G: 0; B: 128; A: 128);
+  /// <summary>WAR_COLOR_RGB(255, 0, 0): the centre of the sprite of a unit in the debug drawing</summary>
+  WAR_MAPUI_UNIT_CENTER: TWarRgba = (R: 255; G: 0; B: 0; A: 255);
   /// <summary>WAR_COLOR_GRAY_TRANSPARENT (0x80808080) and WAR_COLOR_RED_TRANSPARENT (0x80000080)</summary>
   WAR_MAPUI_GRAY_TRANSPARENT: TWarRgba = (R: 128; G: 128; B: 128; A: 128);
   WAR_MAPUI_RED_TRANSPARENT: TWarRgba = (R: 128; G: 0; B: 0; A: 128);

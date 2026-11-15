@@ -48,8 +48,9 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
   `TWarMapScene` implementa), il Save della fine della mappa e "Load existing game" del menu principale chiedono di salvare o
   caricare; senza (i golden, gli script) fanno cio' che facevano, niente. Il salvataggio e il caricamento si fanno **tra due
   fotogrammi** (`TWarRunner`), mai dentro uno.
-- **`TWarMapAudio` ha ora un'uscita opzionale** (`IWarSceneAudio`, ultimo parametro del costruttore): suona il suono scelto (senza
-  posizione sulla mappa). Le estrazioni e le entita' sono quelle di prima, con o senza uscita: i golden non cambiano.
+- **`TWarMapAudio` ha ora un'uscita opzionale** (`IWarSceneAudio`, ultimo parametro del costruttore): suona il suono scelto; con la
+  posizione sulla mappa se l'uscita la conosce (vedi sotto, #238). Le estrazioni sono quelle di prima, con o senza uscita; le entita'
+  dei suoni con posto cambiano solo con la nebbia accesa (nessun suono nella nebbia). I golden non cambiano.
 - Il mouse di una finestra e' diviso per la scala (`TWarSessionEventSink`): il gioco vuole pixel di 320 x 200.
 - Una finestra senza mouse (`-headless`) mette il mouse al centro con un evento registrato nella storia; senza, la mappa scorre
   verso l'angolo (0, 0).
@@ -58,8 +59,26 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
 - Leak: il `.dpr` ha `ReportMemoryLeaksOnShutdown := True` sotto `{$IFDEF DEBUG}`; in un'applicazione console scrive "Unexpected
   Memory Leak" su stderr (non apre finestre): una esecuzione senza finestra con niente su stderr non ha perdite.
 
+## Introduzione e suoni con posto (issue #238)
+
+- **Introduzione**: `TWarSceneCinematics` (`Libs\War`, `wstCinematics` in coda a `TWarSceneType`) suona `CAVE1, CAVE2, CAVE3, TITLE`
+  con il `IWarCinematicDirector` dei servizi (`TWarSceneServices.Cinematics`; nil = come l'originale, il bottone non fa niente).
+  Lo fa il composition root da `TFlicSceneFactory` sulla cartella di `DATA.WAR` (file `*.WAR`) e dal mixer, con un generatore a
+  parte per i suoni scelti (quello del gioco non si tocca). **L'ordine e' del port, non dell'originale.** Dopo il logo il gioco
+  va all'introduzione solo se `TWarSessionStart.Introduction` (bit 0 di `TWarSaveHeader.Flags`, che era `Reserved` a 0: un
+  salvataggio vecchio e' un gioco senza introduzione, stesso formato, `WAR_SAVE_FORMAT_VERSION` resta 1). Il tempo di una
+  animazione e' il tempo reale del gioco (nella storia), quindi il rigioco e' uguale; le voci passano dal mixer e non da
+  `IWarSceneAudio`, percio' durante il rigioco il composition root silenzia il mixer e alla fine fa `StopAll`. Un salvataggio
+  fatto con l'introduzione vuole i file `CAVE*.WAR` al caricamento (se mancano la sequenza si salta e il rigioco diverge: non
+  rilevato).
+- **Suoni con posto**: `IWarMapAudioAt` (`MapUi.Intf`) e `IWarPositionalAudio` (`Ui.Intf`, di `TWarSceneAudio`: `PlayAt` e
+  `SetViewport` del mixer, che ha la parita' sul C in `audio.position`). `TWarMapHost` passa il posto di colpi, morti, crolli,
+  tagli, frecce, esplosioni e incantesimi; la scena dice al mixer la vista a ogni `UpdateCamera` (`map->camera.viewport`). Come
+  il C: **con la nebbia accesa un suono con posto non visibile non fa ne' entita' ne' suono** (`wa_createAudioWithPosition`
+  ritorna NULL; per i casuali il numero e' estratto lo stesso, prima), quindi `WAR_SAVE_MODEL_VERSION` e' 2. **Non e' parita' da golden**: e' letto nel C e provato da test con finti (`MapUiUnits`); nessuno script del 197 manda un suono nella nebbia (i 44 golden sono uguali prima e dopo). L'uscita del C e'
+  mono: c'e' il volume, **non c'e' il pan** (non inventato).
+
 ## Non fatto
 
-Musica (sintetizzatore muto: il SoundFont del remake non ha licenza dichiarata), suoni con la posizione sulla mappa, filmati
-nel gestore delle scene (la sequenza delle introduzioni e "Replay introduction"), schermo intero, selezione della risoluzione,
+Musica (sintetizzatore muto: il SoundFont del remake non ha licenza dichiarata), schermo intero, selezione della risoluzione,
 salvataggi multipli (uno slot rapido; `-save`/`-load` per i file), umani 4 (livello 123: il C si ferma su un `assert`).

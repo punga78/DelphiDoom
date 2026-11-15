@@ -34,7 +34,11 @@ type
     /// <summary>The mission asked for with -play: the race (1 humans, 2 orcs) or 0 for the title</summary>
     StartRace: Byte;
     StartMission: Byte;
-    Reserved: Word;
+    /// <summary>
+    ///   Bit 0 (WAR_SAVE_FLAG_INTRODUCTION): the game went from the logo to the introduction. A file made before this
+    ///   field had a meaning has 0 here, and that is the game it played (the logo, then the menu)
+    /// </summary>
+    Flags: Word;
     FrameCount: Cardinal;
     EventCount: Cardinal;
   end;
@@ -69,6 +73,8 @@ type
     DataSize: Cardinal;
     StartRace: Byte;
     StartMission: Byte;
+    /// <summary>The game started with the introduction after the logo (the flag of the header)</summary>
+    Introduction: Boolean;
     Frames: TArray<TWarSaveFrame>;
   end;
 
@@ -77,8 +83,14 @@ const
   WAR_SAVE_MAGIC: array[0..7] of AnsiChar = ('W', 'A', 'R', '1', 'S', 'A', 'V', #26);
   /// <summary>The layout of the file; it changes when this unit changes</summary>
   WAR_SAVE_FORMAT_VERSION = 1;
-  /// <summary>It changes when the rules of the game change in a way that makes an old game play differently</summary>
-  WAR_SAVE_MODEL_VERSION = 1;
+  /// <summary>
+  ///   It changes when the rules of the game change in a way that makes an old game play differently. 2: a sound that has a
+  ///   place on the map makes no entity when the fog of war hides the place (wa_createAudioWithPosition), so the ids of
+  ///   the entities that come after are not the ones of version 1
+  /// </summary>
+  WAR_SAVE_MODEL_VERSION = 2;
+  /// <summary>The bit of TWarSaveHeader.Flags that says the game played the introduction after the logo</summary>
+  WAR_SAVE_FLAG_INTRODUCTION = 1;
   /// <summary>The most events one frame can hold</summary>
   WAR_SAVE_MAX_EVENTS_PER_FRAME = 4096;
 

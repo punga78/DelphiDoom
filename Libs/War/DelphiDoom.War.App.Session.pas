@@ -154,6 +154,7 @@ begin
   LContent.DataSize := FDataSize;
   LContent.StartRace := FStart.Race;
   LContent.StartMission := FStart.Mission;
+  LContent.Introduction := FStart.Introduction;
   LContent.Frames := FFrames.ToArray;
   Result := TWarSaveWriter.Write(LContent);
 end;
@@ -170,6 +171,7 @@ begin
   LStart.Seed := LContent.Seed;
   LStart.Race := LContent.StartRace;
   LStart.Mission := LContent.StartMission;
+  LStart.Introduction := LContent.Introduction;
   LGame := FBuilder(LStart, FRequestsRef);
   if Assigned(FBeforeReplay) then
     FBeforeReplay();

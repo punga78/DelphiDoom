@@ -73,6 +73,17 @@ type
     procedure StopMusic;
   end;
 
+  /// <summary>
+  ///   What the audio does beyond IWarSceneAudio for the sounds of a map: a sound with a place on the map (pixels), and the
+  ///   rectangle of the map that is on screen, which decides how loud such a sound is (audioDataCallback of the original). The
+  ///   output of the original is mono: there is a volume and no pan. Apart so that an audio that has no places stays valid
+  /// </summary>
+  IWarPositionalAudio = interface
+    ['{C85A2F43-0E91-47D6-B3A7-5E10D9F6824B}']
+    procedure PlayAt(AAudioId: Integer; AX, AY: Single);
+    procedure SetViewport(AX, AY, AWidth, AHeight: Single);
+  end;
+
   /// <summary>The settings of the game that the cheats change (fields of WarContext)</summary>
   IWarGameSettings = interface
     ['{F2A9B5C1-6D30-47E8-8B14-C07E3A5D92F6}']
@@ -170,6 +181,12 @@ type
     ['{8C41E7B2-D95A-4F03-A168-3B2E0F9D74C5}']
     function CreateBlizzard: IWarScene;
     function CreateMainMenu: IWarScene;
+    /// <summary>
+    ///   The introduction of the game, which goes on to the main menu: the original has the button "Replay introduction" and
+    ///   no code behind it, so this scene is the port's own. A game whose services have no animations (Cinematics) never
+    ///   asks for it: the scene would have nothing to play and would go straight on
+    /// </summary>
+    function CreateIntroduction: IWarScene;
     /// <summary>A briefing of the humans or the orcs for a campaign map</summary>
     function CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;
   end;

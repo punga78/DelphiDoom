@@ -88,6 +88,8 @@ begin
   LHeader.DataSize := AContent.DataSize;
   LHeader.StartRace := AContent.StartRace;
   LHeader.StartMission := AContent.StartMission;
+  if AContent.Introduction then
+    LHeader.Flags := WAR_SAVE_FLAG_INTRODUCTION;
   LHeader.FrameCount := Cardinal(Length(AContent.Frames));
   LEvents := 0;
   LSize := SizeOf(LHeader) + SizeOf(Cardinal);
