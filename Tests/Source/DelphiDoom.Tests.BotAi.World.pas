@@ -89,7 +89,7 @@ begin
     Link(1, 5, TRAVEL_ROCKETJUMP, 75, Vec(30, 32, 4), Vec(280, 32, 4)),
     Link(2, 1, TRAVEL_WATERJUMP, 60, Vec(90, 32, 4), Vec(60, 32, 16)),
     Link(2, 3, TRAVEL_SWIM, 70, Vec(100, 32, 4), Vec(140, 32, 4)),
-    Link(2, 6, TRAVEL_GRAPPLEHOOK, 65, Vec(110, 32, 4), Vec(350, 32, 4)),
+    Link(2, 6, TRAVEL_GRAPPLEHOOK, 65, Vec(110, 32, 4), Vec(125, 32, 4)),
     Link(3, 2, TRAVEL_BARRIERJUMP, 80, Vec(150, 32, 4), Vec(120, 32, 16)),
     Link(3, 4, TRAVEL_JUMP, 90, Vec(170, 32, 4), Vec(205, 32, 4)),
     Link(3, 6, TRAVEL_BFGJUMP, 85, Vec(160, 32, 4), Vec(340, 32, 4)),

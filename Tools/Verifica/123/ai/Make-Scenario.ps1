@@ -504,16 +504,17 @@ A 'mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0'
 Rem 'the grapple hook: look at the end, fire, let it pull, lose it'
 $GOAL6 = (Goal @(352, 32, 5) 6)
 $GOAL1 = (Goal @(32, 32, 5) 1)
+foreach ($gf in @(64, 128, 192, 256)) {
 foreach ($offhand in @(0, 1)) {
     A "libvar|offhandgrapple|$offhand"
     A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
     A 'mvreset|1'
-    A "mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0"
+    A "mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0"
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
-    A 'mvinit|1|140|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|64'
+    A "mvinit|1|140|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|$gf"
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
     A 'time|60'
@@ -523,30 +524,69 @@ foreach ($offhand in @(0, 1)) {
     A 'time|61'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
-    A 'mvinit|1|330|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|64'
+    A "mvinit|1|330|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|$gf"
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
     A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
     A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
-    A 'mvinit|1|110|32|20|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A 'mvinit|1|110|32|20|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
     A 'solid|55|150|20|-10|160|45|60'
-    A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A 'mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
     A "eareset|$CLIENT"
     A 'clearsolids'
     A 'mvreset|1'
-    A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
+    # fire the hook first, so that the active branch runs with the hook missile, without it, hooked, far and near
+    A 'mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
-    A 'mvinit|1|90|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A "eareset|$CLIENT"
+    foreach ($px in @(110, 140, 300, 340)) {
+        foreach ($pz in @(4, 20)) {
+            A "mvinit|1|$px|32|$pz|0|0|0|0|0|0|1|3|0.1|2|0|0|0|$gf"
+            A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+            A "eareset|$CLIENT"
+            A 'time|62'
+            A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+            A "eareset|$CLIENT"
+            A 'time|65'
+            A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+            A "eareset|$CLIENT"
+        }
+    }
+    # the hook is lost: no missile, the time goes by, the hook is reset and fired again
+    A 'mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A 'entityclear'
+    foreach ($tm in @(70, 71, 80, 81, 82)) {
+        A "time|$tm"
+        A "mvinit|1|140|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0"
+        A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+        A "eareset|$CLIENT"
+    }
+    A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
+    A 'mvinit|1|340|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A 'mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A 'solid|55|112|20|-10|118|45|60'
+    A 'mvinit|1|110|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A 'clearsolids'
+    A 'mvinit|1|90|32|4|0|0|0|0|0|0|1|3|0.1|2|0|0|0|0'
     A "mvgoal|1|$CLIENT|$FLAGS|$GOAL1"
     A "eareset|$CLIENT"
 }
+}
 A 'libvar|offhandgrapple|0'
-A 'entityclear'Rem 'jump pads found without knowing'
+A 'entityclear'
+Rem 'jump pads found without knowing'
 A 'mvreset|1'
 MoveTo @(60, 32, 5) @(0, 0, 0) $FLAGS (Goal @(352, 32, 5) 6)
 Init @(150, 32, 40) @(200, 0, 100)
