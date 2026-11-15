@@ -40,7 +40,8 @@ implementation
 uses
   DelphiDoom.War.Types, DelphiDoom.War.Ui.Input, DelphiDoom.War.Ui.Canvas, DelphiDoom.War.Ui.Imui,
   DelphiDoom.War.Ui.SpriteLoader, DelphiDoom.War.Ui.GameSettings, DelphiDoom.War.Ui.SettingsCheatEffects,
-  DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.Ui.SceneManager, DelphiDoom.War.Ui.SceneFactory;
+  DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.Ui.SceneManager, DelphiDoom.War.Ui.SceneFactory,
+  DelphiDoom.War.MapUi.Intf;
 
 { TWarUiFactory }
 
@@ -65,6 +66,7 @@ var
   LManager: TWarSceneManager;
   LScenes: TWarSceneFactory;
   LServices: TWarSceneServices;
+  LTarget: IWarMapServicesTarget;
 begin
   LInput := TWarUiInput.Create;
   // the first reference counts: without it the object would be freed when a temporary reference goes
@@ -83,6 +85,10 @@ begin
   LServices.Effects := TWarSettingsCheatEffects.Create(LSettings, AAudio, AIsDemo);
   LServices.Scenes := nil;
   LScenes := TWarSceneFactory.Create(LServices);
+  // a maker of maps that draws with this interface needs the services too (the map is made after them)
+  LServices.Scenes := LScenes;
+  if Supports(AMapLauncher, IWarMapServicesTarget, LTarget) then
+    LTarget.AttachServices(LServices);
   // from here the game owns them all
   Result := TWarUiGame.Create(LInput, LCanvas, LImui, LSettings, LManager, LScenes);
 end;

@@ -299,6 +299,8 @@ begin
   LBlit := MakeBlit(ASource, ADestination, AScaleX, AScaleY);
   if Assigned(FBlits) then
     FBlits.Add(LBlit);
+  if Assigned(FTrace) then
+    FTrace.TraceBlit(LBlit);
   FTarget.Draw(ATexture, LBlit);
 end;
 

@@ -107,7 +107,12 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\briefing_enter.script'); Golden = 'ui.briefing_enter.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\cheats.script'); Golden = 'ui.cheats.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\cursor.script'); Golden = 'ui.cursor.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\pause.script'); Golden = 'ui.pause.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\pause.script'); Golden = 'ui.pause.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # la mappa (parte B): entrata, camera, mappe di campagna delle due razze
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_enter.script'); Golden = 'ui.map_enter.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_still.script'); Golden = 'ui.map_still.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_scroll.script'); Golden = 'ui.map_scroll.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_orc.script'); Golden = 'ui.map_orc.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

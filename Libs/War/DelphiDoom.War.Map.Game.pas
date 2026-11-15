@@ -80,6 +80,8 @@ type
     property Grid: TWarPathGrid read FGrid;
     property Fog: TWarFogOfWar read FFog;
     property Minimap: TWarMinimap read FMinimap;
+    /// <summary>wmap_setMapTileIndex: where a change of a tile of the map is written (the map owns it)</summary>
+    property Painter: IWarTilePainter read FPainter;
     property Forests: TWarMapForests read FForests;
     property Road: TWarLine read FRoad;
     property Wall: TWarLine read FWall;

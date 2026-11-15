@@ -1,0 +1,4 @@
+# Entrata nella mappa della campagna (umani 1) con il mouse nell'angolo (0, 0): la mappa scorre verso l'alto a sinistra fino
+# al bordo; 200 fotogrammi (passa il primo secondo, quando si cominciano a controllare gli obiettivi)
+campaign human 1
+run 200 1

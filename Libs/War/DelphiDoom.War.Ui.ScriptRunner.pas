@@ -57,6 +57,9 @@ type
 
 implementation
 
+uses
+  DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Campaign.Catalog;
+
 { TWarUiScriptRunner }
 
 constructor TWarUiScriptRunner.Create(const AGame: TWarUiGame; const AOutput, ATraceOutput: TStrings);
@@ -176,6 +179,9 @@ var
   LStream: TFileStream;
   LPixels: TBytes;
   LButton: TWarMouseButton;
+  LRace: TWarRace;
+  LMapType: Integer;
+  LCampaigns: IWarCampaigns;
 begin
   LParts := ALine.Split([' '], TStringSplitOptions.ExcludeEmpty);
   LCommand := LParts[0];
@@ -201,8 +207,20 @@ begin
     else
       FGame.Manager.SetNextScene(FGame.Scenes.CreateBriefing(wraOrcs, StrToInt(LArg2)), 0);
   end
-  else if (LCommand = 'campaign') or (LCommand = 'custom') then
-    raise EWarException.CreateFmt('The command %s needs the map, that is not in this part of the game', [LCommand])
+  else if LCommand = 'campaign' then
+  begin
+    // wmap_createMap and wg_setNextMap with no delay (the map is entered in the next update, as wg_updateGame does)
+    if LArg1 = 'human' then
+      LRace := wraHumans
+    else
+      LRace := wraOrcs;
+    LCampaigns := TWarCampaigns.Create;
+    if not LCampaigns.TryGetMapType(LRace, StrToInt(LArg2), LMapType) then
+      raise EWarException.Create('The mission is not in the campaign');
+    FGame.Manager.SetNextCampaignMap(LMapType, 0);
+  end
+  else if LCommand = 'custom' then
+    FGame.Manager.SetNextCustomMap(StrToInt(LArg1), 0, 0, 0)
   else if LCommand = 'move' then
     FGame.Input.SetPosition(Number(LArg1), Number(LArg2))
   else if (LCommand = 'lbutton') or (LCommand = 'rbutton') then
