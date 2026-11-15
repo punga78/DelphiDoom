@@ -159,6 +159,7 @@ uses
   DelphiDoom.Decl.Q3Shader.Calc.Intf in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Calc.Intf.pas',
   DelphiDoom.Decl.Q3Shader.Calc.Remapper in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Calc.Remapper.pas',
   DelphiDoom.Decl.Q3Shader.Calc.Kit in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Calc.Kit.pas',
+  DelphiDoom.Decl.Q3Shader.Calc.StageColors in '..\Libs\Decl\DelphiDoom.Decl.Q3Shader.Calc.StageColors.pas',
   DelphiDoom.Decl.StandardTypes in '..\Libs\Decl\DelphiDoom.Decl.StandardTypes.pas',
   DelphiDoom.Decl.Source.GameFs in '..\Libs\Decl\DelphiDoom.Decl.Source.GameFs.pas',
   DelphiDoom.Decl.Console.Intf in '..\Libs\Decl\DelphiDoom.Decl.Console.Intf.pas',
