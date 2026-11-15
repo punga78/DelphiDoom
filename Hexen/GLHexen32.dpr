@@ -676,7 +676,7 @@ uses
   gl_models in '..\Libs\OpenGl\Legacy\gl_models.pas',
   gl_lightmaps in '..\Libs\OpenGl\Legacy\gl_lightmaps.pas',
   gl_shadows in '..\Libs\OpenGl\Legacy\gl_shadows.pas',
-  dglOpenGL in '..\Libs\OpenGl\Binding\dglOpenGL.pas',
+  dglOpenGL in '..\Libs\OpenGlBinding\dglOpenGL.pas',
   r_dynlights in '..\Base\r_dynlights.pas',
   sc_tokens in '..\Base\sc_tokens.pas',
   i_tmp in '..\Base\i_tmp.pas',

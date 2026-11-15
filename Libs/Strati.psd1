@@ -73,7 +73,8 @@
     'Libs\Serializer' = 'L2'
     # L3
     'Libs\GameHost' = 'L3'
-    'Libs\OpenGl\Binding' = 'L3'
+    'Libs\OpenGlBinding' = 'L3'
+    'Libs\OpenGlBinding\Recorder' = 'L3'
     'Libs\PascalScript' = 'L3'
     'Libs\Script' = 'L3'
     'Libs\ScriptHost' = 'L3'
@@ -112,7 +113,6 @@
     'Libs\GlScene' = 'IdTech1'
     'Libs\GlTexture' = 'IdTech1'
     'Libs\OpenGl\Legacy' = 'IdTech1'
-    'Libs\OpenGl\Recorder' = 'IdTech1'
     'Libs\EngineSystem' = 'IdTech1'
     'Libs\GameState' = 'IdTech1'
     'Libs\GameData' = 'IdTech1'

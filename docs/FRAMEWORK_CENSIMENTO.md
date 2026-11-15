@@ -15,11 +15,11 @@ Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, 
 
 1. **Le librerie sono pulite.** Su 105, solo 5 dipendono da codice fuori da `Libs\`: `ScriptHost` (28 unit di `Base`, 11 dei giochi id), `OpenGl\Legacy` (54 di `Base`, 11 dei giochi id), `Ddc` (4 e 3), `Mp3` (1 di `Base`, 1 di `Common`) e `PascalScript` (1 di `Common`). Tutto il resto dipende solo da altre librerie o da nulla.
 2. **Il nucleo condiviso esiste già ed è dimostrato.** Chiusura transitiva delle librerie usate dai consumatori non-id (`OpenXcom`, `Keen`, `Greed`, `Speed`, `Libs\Xcom*`, `Keen`, `Greed`, `Racing`, `GameHost`, `War`) contro quelle usate dal lato id (`Base`, `Common`, i quattro giochi, `Radix`):
-   - **usate da entrambi (23)**: Audio, Clock, CommandLine, GameData, Input, Logging, M2m, MathCore, Midi, Mikmod, Mp3, Ogg, OpenGl\Binding, Palette, Platform, Png, Scanner, Sndfile, Sound, Speed, Video, Wad, Zlib;
+   - **usate da entrambi (23)**: Audio, Clock, CommandLine, GameData, Input, Logging, M2m, MathCore, Midi, Mikmod, Mp3, Ogg, OpenGlBinding, Palette, Platform, Png, Scanner, Sndfile, Sound, Speed, Video, Wad, Zlib;
    - **solo non-id (23)**: GameHost, Greed, Keen, Opl, Racing, War, Yaml e le 16 `Xcom*` (XcomMod, XcomFormats, XcomSave, XcomSurface, XcomUi, XcomEngine, XcomAudio, XcomMenu, XcomGeoscape, XcomBasescape, XcomStrategy, XcomBattle, XcomBattlescape, XcomBattleStates, XcomDebriefing, XcomUfopaedia);
    - **solo id (50)**: Acs, Actions, ActorDef, Automap, Blockmap, Configuration, Console, Ddc, Definitions, Dehacked, DynLights, Endoom, EngineSystem, GameState, GlAutomap, GlLevel, GlMath, GlScene, GlTexture, Glbsp, Hud, IdTech, Imaging, Info, Iwad, Jpeg, MapInfo, Models, MusInfo, Net, Nodes, Obituary, OpenGl\Legacy, Parity, PascalScript, Radix, Renderer, Screenshot, ScriptHost, Serializer, Specials, TableExport, Texture, TextureDefs, Thinkers, Threading, Udmf, Voxel, Xmi, Zone;
-   - **non raggiunte (11)**: Collision, Geometry, IdLib (porte di id Tech 4, senza chiamanti), Ide, ToolsCore, EndoomEditor, Font, FontEditor, VoxelEditor (strumenti), Script (la DLL `DDScript`, caricata a runtime) e OpenGl\Recorder.
-3. **`GameHost` poggia sul framework giusto.** Dipende solo da `Logging` e da `OpenGl\Binding` (`dglOpenGL`, una sola unit): il binding di OpenGL è generico, il renderer storico (`OpenGl\Legacy`, 39000 righe, 54 unit di `Base`) no. La cartella `Libs\OpenGl` però mette le due cose insieme.
+   - **non raggiunte (11)**: Collision, Geometry, IdLib (porte di id Tech 4, senza chiamanti), Ide, ToolsCore, EndoomEditor, Font, FontEditor, VoxelEditor (strumenti), Script (la DLL `DDScript`, caricata a runtime) e OpenGlBinding\Recorder.
+3. **`GameHost` poggia sul framework giusto.** Dipende solo da `Logging` e da `OpenGlBinding` (`dglOpenGL`, una sola unit): il binding di OpenGL è generico, il renderer storico (`OpenGl\Legacy`, 39000 righe, 54 unit di `Base`) no. La cartella `Libs\OpenGl` però mette le due cose insieme.
 4. **Tre cicli veri tra librerie** (Delphi li tollera con i `uses` di `implementation`, ma sono difetti di stratificazione):
    - `PascalScript` ↔ `ScriptHost` ↔ `Ddc` (`ps_dll`, `ps_import` stanno in `ScriptHost` e sono usate dal nucleo);
    - `Sndfile` ↔ `Sound` (`Sound` usa `delphidoom.sndfile.intf`, `Sndfile` usa `delphidoom.sound.factory`): **ciclo rotto (issue #222)**: il punto d'incontro e' `DelphiDoom.Sndfile.Factory.Intf` (`ISndfileFactory`); `Sndfile` non cita piu' nessuna unit di `Sound`, la dipendenza va solo da `Sound` a `Sndfile` (prova: `Tools\Verifica\222\Controlla-Cicli.ps1`);
@@ -35,7 +35,7 @@ Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, 
 | **Fondazione** (nessun legame con un gioco) | Logging, Platform, Clock, Threading, Zlib, Yaml, MathCore*, Configuration*, CommandLine | *miste: vedi sotto |
 | **Formati e codec** | Png, Jpeg, Ogg, Mp3, Sndfile, Sound, Mikmod, Xmi, M2m, Midi, Opl, Imaging, Palette*, Wad*, Texture | `Wad` è anche il VFS generico (WAD, PAK, ZIP, cartelle) |
 | **Servizi di runtime** | Audio, Input, Video*, Console*, Screenshot, Scanner, Serializer, Zone | `Zone` e `Serializer` sono i servizi di id Tech 1 (zone memory, savegame) |
-| **Piattaforma di gioco** | GameHost, OpenGl\Binding | già framework: l'esempio da seguire |
+| **Piattaforma di gioco** | GameHost, OpenGlBinding | già framework: l'esempio da seguire |
 | **Scripting** | PascalScript, Script, ScriptHost, Ddc | `ScriptHost` e `Ddc` sono motore, non libreria (28 e 4 unit di `Base`) |
 | **id Tech 1** | Acs, Actions, ActorDef, Automap, Blockmap, Definitions, Dehacked, DynLights, Endoom, Glbsp, Hud, Info, Iwad, MapInfo, MusInfo, Net, Nodes, Obituary, Renderer, Specials, TableExport, TextureDefs, Thinkers, Udmf, Voxel, Models, GlAutomap, GlLevel, GlMath, GlScene, GlTexture, OpenGl\Legacy, EngineSystem, GameState, GameData, IdTech, Parity, Radix | `GameData` e `Speed` sono dei fork id (Mars3D, Rad-X, Speed Haste) |
 | **id Tech 3 e 4 (porte)** | IdLib, Collision, Geometry | nessun chiamante nel motore |
@@ -52,7 +52,7 @@ Una unit usa solo gli strati sotto di sé (chi sta a destra del `|` non dipende 
 L0 Fondazione   Logging Platform Clock Threading Zlib Yaml MathCore(generico) GameMath(id Tech 1, L0) Configuration(formato) CommandLine
 L1 Formati      Png Jpeg Ogg Mp3 Sndfile+Sound Mikmod Xmi M2m Midi Opl Imaging Palette Wad(VFS) Texture
 L2 Servizi      Audio Input Video Console Screenshot Scanner Serializer
-L3 Piattaforma  GameHost OpenGl\Binding           (Scripting: PascalScript Script Ddc, opzionale)
+L3 Piattaforma  GameHost OpenGlBinding           (Scripting: PascalScript Script Ddc, opzionale)
 -----------------------------------------------------------------------------------------------
 Moduli          IdTech1 (Base + le librerie id)   IdTech3/4 (porte)   Giochi (Xcom* Keen Greed War Racing)   Strumenti
 ```
@@ -63,7 +63,7 @@ I moduli dipendono dagli strati, mai il contrario né tra loro. Oggi la regola �
 
 ## 5. Che cosa correggere prima di muovere cartelle
 
-1. **Dividere `Libs\OpenGl`**: `Binding` (una unit, strato L3) e `Legacy` (renderer, modulo id Tech 1). Costo basso: `GameHost` usa una sola unit.
+1. **Dividere `Libs\OpenGl`** (fatto, #220): `Libs\OpenGlBinding` (`dglOpenGL` e il registratore, strato L3) e `Libs\OpenGl\Legacy` (renderer, modulo id Tech 1). Costo basso: `GameHost` usa una sola unit.
 2. **Portare `ScriptHost` e `Ddc` sul lato motore** o separare in `ScriptHost` ciò che è generico (registro delle funzioni, serializzatore) da ciò che usa `Base` (28 unit). Rompe anche il primo ciclo (con `ps_dll` e `ps_import` nel nucleo).
 3. **Rompere gli altri due cicli**: `Sndfile`↔`Sound` (spostare il punto di incontro in una `*.Intf`) e `XcomGeoscape`↔`XcomBasescape`↔`XcomStrategy` (estrarre le interfacce condivise).
 4. **Togliere `Common` dal nucleo**: fatto con la #224 (vedi "Esito della #224").
@@ -120,7 +120,7 @@ La strada B del punto 6 e' fatta: manifesto `Libs\Strati.psd1` (spiegato in `Lib
 | modulo Giochi | 23 (3 cartelle di prodotto, 20 librerie) | 1100 |
 | modulo Strumenti | 10 (3 cartelle di prodotto, 7 librerie) | 175 |
 
-**Violazioni nuove: 0. Eccezioni dichiarate: 9** (tutte coppie di aree, nessun ciclo; erano 14 prima della #221): #224 2 (`Common` da `PascalScript` e `ScriptHost`), #225 4 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` e `Libs\Greed` -> `Net`; `Palette` -> `Video` tolta dalla seconda fetta della #225), #226 1 (`Speed` -> `Racing`), #229 1 (`Opl` -> `XcomFormats`). I cicli `Sndfile`-`Sound` (#222) e `XcomStrategy`-`XcomGeoscape`-`XcomBasescape` (#223) non ci sono piu'; non servono eccezioni per #220 (`OpenGl\Binding` e `OpenGl\Legacy` sono gia' aree distinte).
+**Violazioni nuove: 0. Eccezioni dichiarate: 9** (tutte coppie di aree, nessun ciclo; erano 14 prima della #221): #224 2 (`Common` da `PascalScript` e `ScriptHost`), #225 4 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` e `Libs\Greed` -> `Net`; `Palette` -> `Video` tolta dalla seconda fetta della #225), #226 1 (`Speed` -> `Racing`), #229 1 (`Opl` -> `XcomFormats`). I cicli `Sndfile`-`Sound` (#222) e `XcomStrategy`-`XcomGeoscape`-`XcomBasescape` (#223) non ci sono piu'; non servono eccezioni per #220 (`OpenGlBinding` e `OpenGl\Legacy` sono gia' aree distinte).
 
 **Che cosa ha mostrato che il censimento non diceva**: (1) `IdLib` e `Geometry` (nessuna dipendenza) sono ormai la base di `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net`, `Models`: nel manifesto stanno in L0, non nel modulo id Tech 4; con loro `Cinematic` e `Compression` sono L1 e `Models` L2. (2) Le librerie miste con un uso fuori regola sono `Console`, `Palette`, `Net` (non era nell'elenco di #225: va aggiunta), `Opl` e la cartella `Speed` (due programmi insieme). (3) `Mp3` nasconde con la `Shim` unit di `Base` e `Common` (6 usi; quella di `Script` non nasconde nessun uso): non sono archi, ma restano il contenuto di #224. (4) `ScriptHost` usa 30 unit di `Base` (il censimento ne contava 28) e 9 dei giochi id; `Ddc` 4 e 3. **Corretto dalla #221 (2026-11-14)**: vedi "Esito della #221" sotto.
 

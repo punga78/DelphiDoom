@@ -679,7 +679,7 @@ uses
   DelphiDoom.Zlib.Engine in '..\Libs\Zlib\DelphiDoom.Zlib.Engine.pas',
   DelphiDoom.Zlib.Client in '..\Libs\Zlib\DelphiDoom.Zlib.Client.pas',
   DelphiDoom.Zlib.Provider in '..\Libs\Zlib\DelphiDoom.Zlib.Provider.pas',
-  dglOpenGL in '..\Libs\OpenGl\Binding\dglOpenGL.pas',
+  dglOpenGL in '..\Libs\OpenGlBinding\dglOpenGL.pas',
   r_dynlights in '..\Base\r_dynlights.pas',
   sc_tokens in '..\Base\sc_tokens.pas',
   i_tmp in '..\Base\i_tmp.pas',

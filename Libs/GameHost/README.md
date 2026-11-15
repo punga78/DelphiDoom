@@ -6,7 +6,7 @@ Il testo di riferimento sta in [CLAUDE.md](CLAUDE.md).
 
 ## Progetto
 
-La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Logging` (`ILog`) e `Libs\OpenGl\Binding\dglOpenGL` (di terzi, non modificato). Ogni gioco tiene in casa propria gli **adattatori** verso i suoi contratti.
+La libreria **non dipende da nessun gioco**: conosce solo `Winapi`, `Libs\Logging` (`ILog`) e `Libs\OpenGlBinding\dglOpenGL` (di terzi, non modificato). Ogni gioco tiene in casa propria gli **adattatori** verso i suoi contratti.
 
 | Unit | Ruolo |
 |---|---|

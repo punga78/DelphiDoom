@@ -37,18 +37,18 @@ function Replace-Once([string]$text, [string]$old, [string]$new) {
 }
 
 $units = @(
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Types',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Session',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
-  'Libs\OpenGl\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Types',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Intf',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Fnv',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.PixelFormats',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.ClientArrays',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Encoder',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.CallRecorder',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.HookTable',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Installer',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Session',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Thunks',
+  'Libs\OpenGlBinding\Recorder\DelphiDoom.OpenGl.Recorder.Hook'
 )
 $unitLines = ''
 foreach ($u in $units) {
@@ -81,7 +81,7 @@ Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
-  Replace-Once $t "    TEngineInputGate.Create, TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineInputGate.Create), TEngineScreenSize.Create,"
+  Replace-Once $t "    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineParityInputGate.Create(TEngineInputGate.Create, AParity)), TEngineScreenSize.Create,"
 }
 
 Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)

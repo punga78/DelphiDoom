@@ -23,9 +23,9 @@ New-Item -ItemType Directory -Force $out | Out-Null
 if ($Which -eq 'Old') {
   if ($OldTree -eq '') { throw 'Serve -OldTree per il vecchio' }
   $tree = (Resolve-Path $OldTree).Path
-  New-Item -ItemType Directory -Force (Join-Path $tree 'Libs\OpenGl\Recorder') | Out-Null
+  New-Item -ItemType Directory -Force (Join-Path $tree 'Libs\OpenGlBinding\Recorder') | Out-Null
   New-Item -ItemType Directory -Force (Join-Path $tree 'Tools\Verifica\opengl') | Out-Null
-  Copy-Item (Join-Path $here 'Libs\OpenGl\Recorder\*.pas') (Join-Path $tree 'Libs\OpenGl\Recorder') -Force
+  Copy-Item (Join-Path $here 'Libs\OpenGlBinding\Recorder\*.pas') (Join-Path $tree 'Libs\OpenGlBinding\Recorder') -Force
   Copy-Item (Join-Path $PSScriptRoot 'HarnessGl.pas') (Join-Path $tree 'Tools\Verifica\opengl') -Force
 } else {
   $tree = $here
@@ -46,7 +46,7 @@ try {
     $errors = @(Select-String -Path $log -Pattern '\berror\b|\[Fatal Error\]|Fatal:' -CaseSensitive:$false)
     Write-Host "== $Which $project : $($errors.Count) error lines (see $tree\$log)"
     $errors | Select-Object -First 15 | ForEach-Object { Write-Host $_.Line }
-    $exe = "bin\$folder\$project.exe"
+    $exe = "bin\Win32\Release\$folder\$project.exe"
     if ($errors.Count -eq 0 -and (Test-Path $exe)) {
       $target = Join-Path $out "${g}_GL_$($Which.ToUpper()).exe"
       Copy-Item $exe $target -Force

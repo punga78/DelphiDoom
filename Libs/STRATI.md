@@ -14,7 +14,7 @@ Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regol
 | `L0` | Fondazione | Clock CommandLine Configuration GameMath Geometry IdLib Logging MathCore Platform Threading Yaml Zlib |
 | `L1` | Formati e codec | Cinematic Compression Flic Imaging Jpeg M2m Midi Mikmod Mp3 Ogg Opl Palette Png Sndfile Sound Texture Wad Xmi |
 | `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
-| `L3` | Piattaforma e scripting | GameHost OpenGl\Binding PascalScript Script ScriptHost Ddc |
+| `L3` | Piattaforma e scripting | GameHost OpenGlBinding OpenGlBinding\Recorder PascalScript Script ScriptHost Ddc |
 | `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (49 aree, con `ScriptEngine`) |
 | `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile NetQ3 Pmove Qvm |
 | `Giochi` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*`, e le cartelle `Keen`, `Greed`, `OpenXcom` |
@@ -26,7 +26,7 @@ Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` 
 - `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Giochi`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
 - `Palette` e' in **L1** e non usa piu' `Video` (L2): `IPaletteConverter` e `TPaletteConverter` (gamma e impacchettamento in `$00RRGGBB`, nessuna dipendenza dal video) sono passati da `Video` a `Palette` come `DelphiDoom.Palette.Intf` e `DelphiDoom.Palette.Converter` (#225, seconda fetta); `Video` usa `Palette`. `Input` e `Video` non hanno altro da separare dal censimento: vedi `docs\FRAMEWORK_CENSIMENTO.md`.
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
-- `Libs\OpenGl` e' diviso in sottocartelle gia' nel manifesto: `Binding` (L3, usato da `GameHost`) e `Legacy`/`Recorder` (modulo `IdTech1`); #220 resta la divisione in due librerie vere.
+- `Libs\OpenGl` e' stato diviso (#220): `Libs\OpenGlBinding` (L3: `dglOpenGL.pas` e il registratore di chiamate in `Recorder`, usati da `GameHost`) e `Libs\OpenGl\Legacy` (modulo `IdTech1`, il renderer di Doom).
 - `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `Libs\ScriptEngine` (modulo `IdTech1`).
 
 ## Come si usa
