@@ -6,7 +6,7 @@ Descrizione, tabella C -> Pascal, difetti e differenze: [README.md](README.md). 
 
 Unit `DelphiDoom.Pmove.*`, una classe per unit, percorso freddo (nessun chiamante nel motore di Doom). `TPmoveFactory.CreateMover(IPmoveTrace, ...)` / `CreateForMap(IQ3CollisionModel)` -> `IPmove.Execute(var TPmove)`.
 Le classi condividono un `TPmoveState` (i globali `pm`, `pml`, `c_pmove`); le parti sono oggetti semplici (`TPmoveParts` li costruisce e li libera, i movimenti sono `TSingletonImplementation`: non contati, mai un riferimento a interfaccia e uno a oggetto sulla stessa istanza che li possiede).
-`Libs\Collision` non e' toccata (l'adattatore `TPmoveCollisionTrace` sta qui); `TQ3PlayerState` e `TQ3UserCmd` sono quelli di `Libs\Net`.
+`Libs\Collision` non e' toccata (l'adattatore `TPmoveCollisionTrace` sta qui); `TQ3PlayerState` e `TQ3UserCmd` sono quelli di `Libs\NetQ3` (spostati da `Libs\Net` nella #237: l'eccezione di strato `Pmove -> Net` non c'e' piu').
 
 ### Virgola mobile: come si ottiene l'identita' bit per bit (Win32 x87 e Win64 SSE)
 

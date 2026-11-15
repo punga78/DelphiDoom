@@ -123,6 +123,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Mp3** — Decoder MP3 (MPEG-1/2 layer III). [CLAUDE.md](Libs/Mp3/CLAUDE.md), [README.md](Libs/Mp3/README.md) (paragrafo in `Libs\Zlib`)
 - **MusInfo** — Lettura del lump MUSINFO. [CLAUDE.md](Libs/MusInfo/CLAUDE.md), [README.md](Libs/MusInfo/README.md)
 - **Net** — Trasporto UDP, protocollo dei pacchetti e sincronizzazione dei ticcmd; messaggi a bit di idTech 4 (`idBitMsg`, #98). [CLAUDE.md](Libs/Net/CLAUDE.md), [README.md](Libs/Net/README.md) (paragrafo in `Libs\DynLights`)
+- **NetQ3** — Rete di Quake III / id Tech 3 (`DelphiDoom.Net.Q3.*`: messaggi, Huffman, netchan, codec, info string, parser dei messaggi del server, demo `.dm_68`), spostata da `Libs\Net` nella #237 (modulo `IdTech4`; la usa `Libs\Pmove`). [CLAUDE.md](Libs/NetQ3/CLAUDE.md), [README.md](Libs/NetQ3/README.md)
 - **Nodes** — Lettura dei nodi di una mappa (nodi GL, GWA di glBSP, nodi originali) e WAD per glBSP. [CLAUDE.md](Libs/Nodes/CLAUDE.md), [README.md](Libs/Nodes/README.md)
 - **Obituary** — Testo dei necrologi e tabella dei generi. [CLAUDE.md](Libs/Obituary/CLAUDE.md), [README.md](Libs/Obituary/README.md)
 - **Ogg** — Contenitore Ogg (port di libogg 1.3.x). [CLAUDE.md](Libs/Ogg/CLAUDE.md), [README.md](Libs/Ogg/README.md) (paragrafo in `Libs\Zlib`)
