@@ -906,6 +906,54 @@ Verifica: golden 44/44 a 8 bit e 27/27 a 32 bit UGUALI, `Prova-PUser.ps1` 0 dive
 
 **Resta** (par. 13, riga 6 chiusa): le routine "proprie con ragione" della tabella (i grandi `case`, `P_InitPicAnims` con i suoi dati, `P_ChangeSwitchTexture`). Prossima fetta: **i thinker rimasti** (riga 7: `Heretic\p_floor`, `p_plats`, `p_lights`, `p_telept`, `p_doors`, `udmf_ceilng`, `udmf_floor`).
 
+### 11.11 Passo 2f-6: i thinker rimasti (ramo `worktree-agent-a269c6875ef56b391`, partito da `748ee6f2c`, 2026-11-15)
+
+**Censimento** (`Confronta-Copie.ps1 -Unit <unit> -Games ...`, al commit di partenza; righe non vuote Doom/Heretic/Strife salvo dove detto):
+
+| Unit | Copie | Esito del confronto | Decisione |
+|---|---|---|---|
+| `p_lights` | Doom 347, Heretic 340, Strife 364 | 4 routine *uguali* (`T_*`), 7 *parametriche* (differenza di 2-6 righe: `sector.special := 0` contro `and not 31`, controllo del settore occupato, `procedure` contro `function`); Strife = Doom (il flicker di Strife e' gia' una strategia, `TLightStrifeFlickerRules`) | **fatta**: `Base\p_lights.pas` per i tre giochi, due regole in `TSpecGameRules` |
+| `p_plats` | Doom 246, Heretic 227, Strife 253 | Doom e Strife *uguali* in tutte le routine; Heretic *parametrica* con differenze vere (`EV_DoPlat` 17 righe, `P_ActivateInStasis` 17, `EV_StopPlat` 22: `specialdata` al posto di `floordata`, ricerca del settore con `P_FindSectorFromLineTag` e non `...Tag2`, niente `toggleUpDn`, procedure) | **fatta per Doom e Strife** (`Base\p_plats.pas`); Heretic resta (ragione sotto) |
+| `p_telept` | Doom 403, Heretic 222, Strife 409 | `EV_SilentTeleport` e `EV_SilentLineTeleport` *uguali* tra Doom e Strife (212 righe); `EV_Teleport` *propria* in ogni gioco (Strife ha `flags`, non scarta i missili e non azzera `z`; Heretic ha `P_Teleport`) | **fatta**: le due silenziose in `DelphiDoom.Engine.World.SilentTeleport`; `EV_Teleport` resta |
+| `p_doors` | Doom 397, Heretic 287, Strife 1338 | solo `T_VerticalDoor`, `P_SpawnDoorCloseIn30` e `P_SpawnDoorRaiseIn5Mins` quasi uguali (2-3 righe); `EV_DoLockedDoor` (139 righe di differenza), `EV_VerticalDoor` (164), `EV_DoDoor` (9) e le porte scorrevoli, i campi di forza e i dialoghi (600 righe) sono di Strife | **lasciata** (ragione sotto) |
+| `Heretic\p_floor` | 413 | le 4 routine non hanno altra copia (Heretic e' l'unico con `specialdata` per i pavimenti) | **lasciata** (ragione sotto) |
+| `p_extra` | Doom 1099, Heretic 554, Hexen 502, Strife 778 | 12 *uguali*, 18 *parametriche*, 8 *proprie*: sono azioni degli stati (`A_*`), non thinker | **fuori dalla riga 7**: candidata a una fetta a parte (le azioni di `Libs\Actions`) |
+| `udmf_ceilng`, `udmf_floor` | gia' in copia unica | ripetono la struttura di `p_ceilng`/`p_floor` con altri generi e altro elenco (par. 11.1) | **lasciate**: non sono copie per gioco |
+| `p_things`, `p_anim`, `p_mapinfo` (Hexen), `p_ambient` (Heretic), `p_dialog` (Strife) | una copia | *proprie* (ACS, animazioni di Hexen, suoni ambientali, dialoghi) | nulla da unificare |
+
+**Perche' alcune restano.**
+
+- `Heretic\p_plats`: il settore di Heretic ha un solo campo `specialdata` per qualunque thinker, quello di Doom e Strife tre (`floordata`, `ceilingdata`, `lightingdata`) e il controllo del settore occupato e' `P_SectorActive(floor_special, ...)`; `plattype_e` di Heretic non ha `toggleUpDn` e `EV_DoPlat` non ha il ramo che risveglia le piattaforme in stasi; `EV_StopPlat` e' una procedura. Metterle in una sola unit vuol dire cinque regole (campo del settore, controllo, ricerca per tag, ramo `toggleUpDn`, tipo di ritorno) per un guadagno di 227 righe e il rischio di toccare la stasi delle piattaforme di Heretic, che il corpus non esercita.
+- `p_doors`: la parte comune e' meno di 80 righe; il resto e' di Strife (chiavi, dialoghi, porte scorrevoli, campi di forza) o di Doom (porte bloccate con i messaggi di Boom). `T_VerticalDoor` di Doom e' gia' sottile (`DoorTickClassic` di `Libs\Thinkers`). Rimandata: ha senso solo con la fetta dei dialoghi di Strife.
+- `Heretic\p_floor`: da portare su `TFloorMachine` (serve `raiseBuildStep` e il modello di `lowerAndChange` nel profilo, par. 11.1); tocca `Libs\Thinkers` e i suoi test di parita', e il guadagno e' nullo (nessun'altra copia): e' un passo a parte.
+
+**Forma.** Le regole per gioco stanno in `TSpecGameRules` (esiste in tutti i giochi, nessuna unit nuova da elencare nei `.dpr`):
+
+| Regola | Doom | Heretic | Strife |
+|---|---|---|---|
+| `SectorSpecialAfterLight(special)` | `special and not 31` | `0` (le sue speciali di vento e correnti stanno sopra il 31: non sono la stessa cosa) | `special and not 31` |
+| `LightingBusy(sec)` | `P_SectorActive(lighting_special, sec)` | `sec.specialdata <> nil` | `P_SectorActive(lighting_special, sec)` |
+
+`Base\p_lights.pas` non ha `uses` di `SectorSearch` (Heretic non la compila). Le regole sono chiamate per settore alla creazione di una luce o a una linea attraversata, mai per tic ne' per pixel; `T_FireFlicker`, `T_LightFlash`, `T_StrobeFlash`, `T_Glow` sono invariate. La famiglia dei teletrasporti silenziosi e' una unit di `Base\` compilata solo dai giochi che la usano (Doom, Strife, Radix, Speed), come `FrictionPushers`; `SpecRules` e `SwitchRules` di Doom e Strife la nominano nelle `uses`. Il `FUDGEFACTOR` che Strife dichiarava e non usava e' sparito con il testo spostato.
+
+**Firme.** Una sola cambiata, **solo per Heretic e in modo compatibile**: `EV_StartLightStrobing`, `EV_TurnTagLightsOff` e `EV_LightTurnOn` erano procedure e ora sono le funzioni di Doom (`result` 0 o 1); i chiamanti le usano come istruzione e nessuno prende l'indirizzo (verificato con `grep @EV_`). Come `P_ActivateInStasisCeiling` nel par. 11.1.
+
+**Passi** (un commit ciascuno, `refs #185`; dopo ognuno `Verifica-Ridotta.ps1` 4 su 4 UGUALE a 8 bit):
+
+| Passo | Commit | Cosa |
+|---|---|---|
+| 2f-6a | `1699d8692` | `p_lights` in `Base\` per Doom, Heretic e Strife; due regole; `Prova-PThinkers.ps1` |
+| 2f-6b | `0af82ee2d` | `p_plats` per Doom e Strife; teletrasporti silenziosi in `DelphiDoom.Engine.World.SilentTeleport`; prova meccanica estesa |
+
+**Prova meccanica** (`Prova-PThinkers.ps1` contro `748ee6f2c`, **nessuna DIVERSA**): `p_lights` Doom 11 routine (6 UGUALE, 5 DICHIARATA), Strife idem, Heretic 11 (4 UGUALE, 4 DICHIARATA, 3 NON TESTUALE: le tre `EV_*` da procedura a funzione); `p_plats` Doom e Strife 6 su 6 UGUALE; `p_telept` Doom e Strife 3 su 3 UGUALE (le due silenziose in `SilentTeleport`, `EV_Teleport` propria nella unit del gioco).
+
+**Riuso, esteso, creato.** *Riusato*: `TSpecGameRules` e `SpecRules` di ogni gioco (nessuna unit di regole nuova), lo schema della famiglia di `Base\` (`FrictionPushers`, `SectorSearch`), `Libs\Thinkers` e i suoi adattatori (`Light.*`, `Plat`, `Teleport.*`: la logica pura era gia' li', le facciate le chiamano come prima), `Prova-Common.ps1`. *Esteso*: `TSpecGameRules` (due regole). *Creato*: `Base\p_lights.pas`, `Base\p_plats.pas` (i testi di Doom, con `git mv`), `Base\DelphiDoom.Engine.World.SilentTeleport.pas`, `Prova-PThinkers.ps1`. Nessun test DUnitX nuovo: le facciate sono legate ai record del motore (la prova e' quella meccanica sul testo e i golden); la logica pura ha gia' i suoi test in `Libs\Thinkers`.
+
+**Righe** (non vuote; `p_lights` + `p_plats` + `p_telept`): 2811 -> **1767** (-1044): prima 347 + 340 + 364, 246 + 227 + 253, 403 + 222 + 409; ora `Base\p_lights` 349, `Base\p_plats` 248 + `Heretic\p_plats` 227, `SilentTeleport` 283 + `p_telept` 188 (Doom), 222 (Heretic), 193 (Strife), piu' circa 57 righe di regole in `SpecRules`.
+
+**Differenze dal vecchio.** Nessuna voluta nel comportamento (oltre al tipo di ritorno delle tre `EV_*` di Heretic). Costo: due chiamate statiche in piu' per luce creata.
+
+**Resta.** `Heretic\p_plats` (cinque regole, stasi non esercitata dal corpus), `p_doors` (con i dialoghi di Strife), `Heretic\p_floor` (porta su `TFloorMachine`), `p_extra` (azioni, fetta a parte). Prossima: **stadio 2 dello stato** (riga 8) e **`g_game`** (riga 9, bloccata finche' i salvataggi non sono liberi).
 ## 12. Fase 1: censimento di chiusura (#185, 2026-11-14)
 
 Fatto prima di scrivere codice, su `c4ce14f1`, leggendo per intero la sezione `implementation` di ogni unit. Le routine sono divise in **delega** (una o poche righe verso un oggetto di `Libs\` o di `Base\DelphiDoom.Engine.*`, piu' il controllo "non configurato"), **logica** (cicli, calcoli, stato in globali della unit) e **dati**. Le righe tra parentesi sono righe di corpo, contate dalla firma all'`end`.
@@ -1009,7 +1057,7 @@ Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime 
 | 4 | ~~**2f-3 `p_pspr`**~~ **fatta** (par. 11.8, 2026-11-15): `Base\p_pspr.pas` per i quattro giochi (7280 -> 6760 righe): `P_SetPsprite`, `P_SetupPsprites`, `P_MovePsprites`, `A_Light0`, `P_DropWeapon`, `A_ReFire`, `A_Lower`, `A_Raise` con `TPspriteGameRules` (`PspriteRules` per gioco) | - | - | Restano proprie con la ragione scritta: `P_BringUpWeapon`, `P_CheckAmmo`, `P_FireWeapon`, `A_WeaponReady` e le armi di ogni gioco. Misura a coppie non conclusiva (par. 11.8). Prossima: `p_enemy` (riga 5) |
 | 5 | ~~**2f-4 `p_enemy`**~~ **fatta** (par. 11.9, 2026-11-15): `Base\p_enemy.pas` per i quattro giochi (18139 -> 17365 righe con le unit nuove): `P_RecursiveSound`, `P_NoiseAlert`, `P_MeleeRange`, `P_TryWalk`, `P_LookForTargets`, `P_Move` (Hexen ha la propria), `P_NewChaseDir`, `A_FaceTarget` con `TEnemyGameRules` (`EnemyRules` per gioco) | - | - | Restano proprie con la ragione scritta: `P_LookForPlayers`, `A_Look`, `P_DoChase`, `A_Chase`, `P_CheckMeleeRange`, `P_CheckMissileRange`, `A_Pain`, `A_Fall`, `P_Massacre` e le azioni di ogni mostro e gioco. Prossima: `p_spec` e `p_switch` (riga 6) |
 | 6 | ~~**2g `p_spec` e `p_switch`** con `Libs\Specials`~~ **fatta** (par. 11.10, 2026-11-15): `Base\p_spec.pas` e `Base\p_switch.pas` per i quattro giochi (14766 -> 13678 righe non vuote con le unit nuove): le utilita' dei settori con `TSpecGameRules`, `FrictionPushers` e `SectorSearch` (Doom e Strife) in `Base\`, i tipi in `p_spec_h` per gioco, il vecchio testo in `SpecRules` e `SwitchRules` | - | - | Restano proprie con la ragione scritta: i grandi `case` (`P_CrossSpecialLinePtr`, `P_ShootSpecialLine`, `P_PlayerInSpecialSector`, `P_UpdateSpecials`, `P_SpawnSpecials`, `P_UseSpecialLine`), `P_InitPicAnims`, `P_ChangeSwitchTexture`, le routine di Hexen (ACS). `Libs\Specials` non usata (par. 11.10). Prossima: i thinker rimasti (riga 7) |
-| 7 | **Thinker rimasti** (par. 10.6, 2e-1 finita) | `Heretic\p_floor` 411; `p_plats` 272/256/279; `p_lights` 387/382/404; `p_telept` 460/246/463; `p_doors` 394/286/1335; `udmf_ceilng`, `udmf_floor` | 3-4 | `Libs\Thinkers` ha gia' i profili e gli adattatori; `p_doors` di Strife e' tre volte quello di Doom (dialoghi, porte che chiedono una chiave); i record dei thinker non si toccano (salvataggi) |
+| 7 | ~~**Thinker rimasti**~~ **fatta in parte** (par. 11.11, 2026-11-15): p_lights (Doom, Heretic, Strife), p_plats (Doom, Strife) e i teletrasporti silenziosi (Doom, Strife) in Base\ con regole in TSpecGameRules; restano con la ragione scritta Heretic\p_plats, p_doors, Heretic\p_floor, p_extra (azioni, fetta a parte) (par. 10.6, 2e-1 finita) | `Heretic\p_floor` 411; `p_plats` 272/256/279; `p_lights` 387/382/404; `p_telept` 460/246/463; `p_doors` 394/286/1335; `udmf_ceilng`, `udmf_floor` | 3-4 | `Libs\Thinkers` ha gia' i profili e gli adattatori; `p_doors` di Strife e' tre volte quello di Doom (dialoghi, porte che chiedono una chiave); i record dei thinker non si toccano (salvataggi) |
 | 8 | **Stadio 2 dello stato** (par. 10.3) per i globali che i salvataggi non scrivono (`tm*`, `spechit`, le variabili di `p_mobj`) | circa 120 globali | 2 | il punto piu' pericoloso e' `@thinkercap`; si fa solo per cio' che `p_saveg`/`sv_save` non toccano; il resto con la 9 |
 | 9 | **2h `g_game`** (sessione, demo, rete) e salvataggi (`Libs\Serializer`) | 3894/3632/2439/3505; `p_saveg`, `sv_save` | 5-6 | **bloccata finche' i salvataggi non sono liberi**; il rischio piu' alto di tutta la fase 2: demo, rete e salvataggi byte per byte; serve un corpus di salvataggi vecchi che si caricano |
 | 10 | **2b** (`p_maputl`, `p_sight`, `p_slopes`, `p_3dfloors` come servizi del mondo) | gia' in copia unica | 1 | pura forma: il mondo li espone; si fa quando i chiamanti sono gia' sul mondo |
