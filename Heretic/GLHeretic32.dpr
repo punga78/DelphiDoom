@@ -1324,6 +1324,8 @@ uses
   DelphiDoom.Engine.GlScene.FlatPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatPainter.pas',
   DelphiDoom.Engine.GlScene.ModelPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.ModelPainter.pas',
   DelphiDoom.Engine.GlScene.SpritePainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpritePainter.pas',
+  DelphiDoom.Engine.GlScene.LightSorter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightSorter.pas',
+  DelphiDoom.Engine.GlScene.LightPainter in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightPainter.pas',
   DelphiDoom.Engine.GlScene.SceneDrawer in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SceneDrawer.pas',
   DelphiDoom.Engine.GlScene.LightMarker in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.LightMarker.pas',
   DelphiDoom.Engine.GlScene.SpriteCollector in '..\Libs\OpenGl\Legacy\DelphiDoom.Engine.GlScene.SpriteCollector.pas',

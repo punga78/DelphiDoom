@@ -26,7 +26,9 @@ uses
   DelphiDoom.Engine.GlScene.WallCollector,
   DelphiDoom.Engine.GlScene.WallPainter,
   DelphiDoom.Engine.GlScene.FlatPainter,
-  DelphiDoom.Engine.GlScene.SpritePainter;
+  DelphiDoom.Engine.GlScene.SpritePainter,
+  DelphiDoom.Engine.GlScene.LightSorter,
+  DelphiDoom.Engine.GlScene.LightPainter;
 
 type
   /// <summary>
@@ -46,6 +48,8 @@ type
     FWallPainter: TEngineGlSceneWallPainter;
     FFlatPainter: TEngineGlSceneFlatPainter;
     FSpritePainter: TEngineGlSceneSpritePainter;
+    FLightSorter: TEngineGlSceneLightSorter;
+    FLightPainter: TEngineGlSceneLightPainter;
     {$IFDEF DEBUG}
     FRenderedVisplanes: Integer;
     FRenderedSegs: Integer;
@@ -59,7 +63,8 @@ type
     /// <exception cref="EArgumentNilException">A dependency is nil</exception>
     constructor Create(const ADrawList: TGlSceneDrawList; const AWalls: TEngineGlSceneWallCollector;
       const AWallPainter: TEngineGlSceneWallPainter; const AFlatPainter: TEngineGlSceneFlatPainter;
-      const ASpritePainter: TEngineGlSceneSpritePainter);
+      const ASpritePainter: TEngineGlSceneSpritePainter; const ALightSorter: TEngineGlSceneLightSorter;
+      const ALightPainter: TEngineGlSceneLightPainter);
     /// <summary>Draws the scene; APitch is the pitch of the view in degrees</summary>
     procedure Draw(const APitch: float);
   end;
@@ -83,7 +88,8 @@ uses
 
 constructor TEngineGlSceneDrawer.Create(const ADrawList: TGlSceneDrawList;
   const AWalls: TEngineGlSceneWallCollector; const AWallPainter: TEngineGlSceneWallPainter;
-  const AFlatPainter: TEngineGlSceneFlatPainter; const ASpritePainter: TEngineGlSceneSpritePainter);
+  const AFlatPainter: TEngineGlSceneFlatPainter; const ASpritePainter: TEngineGlSceneSpritePainter;
+  const ALightSorter: TEngineGlSceneLightSorter; const ALightPainter: TEngineGlSceneLightPainter);
 begin
   inherited Create;
   if not Assigned(ADrawList) then
@@ -96,11 +102,17 @@ begin
     raise EArgumentNilException.Create('AFlatPainter');
   if not Assigned(ASpritePainter) then
     raise EArgumentNilException.Create('ASpritePainter');
+  if not Assigned(ALightSorter) then
+    raise EArgumentNilException.Create('ALightSorter');
+  if not Assigned(ALightPainter) then
+    raise EArgumentNilException.Create('ALightPainter');
   FDrawList := ADrawList;
   FWalls := AWalls;
   FWallPainter := AWallPainter;
   FFlatPainter := AFlatPainter;
   FSpritePainter := ASpritePainter;
+  FLightSorter := ALightSorter;
+  FLightPainter := ALightPainter;
 end;
 
 procedure TEngineGlSceneDrawer.DrawWalls(const AWallRange: Integer; const ABlend: Boolean);
@@ -232,7 +244,7 @@ begin
     LWallRange := GLDWF_SKYFLIP;
 
   // Sort the dynamic lights
-  gld_SortDlights;
+  FLightSorter.Sort;
 
   gl_uselightmaps := gl_uselightmaps and canuselightmaps;
 
@@ -316,7 +328,7 @@ begin
 
   glDisable(GL_FOG);
 
-  gld_DrawDLights;
+  FLightPainter.Draw;
 
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);

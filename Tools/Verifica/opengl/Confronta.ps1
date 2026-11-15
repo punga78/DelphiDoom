@@ -27,7 +27,10 @@ param(
   # the PK3 of Tests\Data\ModelsGl (Make-ModelPk3.ps1) of the game: every state of the game is the MD2 cube, so the
   # draw of the models (gld_DrawModels) is in the flow. Adds -devparm (external files are refused by the shareware
   # versions otherwise) and, if -Seconds is not given, 300 seconds (the MODELDEF has up to 2845 states)
-  [switch]$Models
+  [switch]$Models,
+  # the PK3 of Tests\Data\LightsGl (Make-LightPk3.ps1) of the game: a GLDEFS that gives a dynamic light (point, flicker,
+  # pulse) to three sprites out of four, so the lights (gld_SortDlights, gld_DrawDLights) are in the flow. Adds -devparm
+  [switch]$Lights
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -53,6 +56,21 @@ if ($Models) {
   if (-not (Test-Path $modelPack)) { throw "Pacchetto dei modelli non trovato: $modelPack (Make-ModelPk3.ps1)" }
   $More = "$More -devparm -file $modelPack"
   if (-not $PSBoundParameters.ContainsKey('Seconds')) { $Seconds = 300 }
+}
+if ($Lights) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  $lightPack = Join-Path $here "Tests\Data\LightsGl\zlgt_$letter.pk3"
+  if (-not (Test-Path $lightPack)) { throw "Pacchetto delle luci non trovato: $lightPack (Make-LightPk3.ps1)" }
+  # the lights are drawn only with uselightboost=1 (0 in the .ini of the games): a copy of the .ini of the game with it
+  # on, and gl_drawshadows=1 (the sprites without a light get the shadow, the other kind of item of the same buffer)
+  $iniSource = Join-Path $BinDir "${folder}32.ini"
+  if (-not (Test-Path $iniSource)) { throw "File .ini non trovato: $iniSource" }
+  New-Item -ItemType Directory -Force (Join-Path $here 'harness_out') | Out-Null
+  $lightIni = Join-Path $here "harness_out\lights_$Game.ini"
+  $iniText = [System.IO.File]::ReadAllText($iniSource)
+  $iniText = $iniText -replace '(?m)^uselightboost=\d', 'uselightboost=1' -replace '(?m)^gl_drawshadows=\d', 'gl_drawshadows=1'
+  [System.IO.File]::WriteAllText($lightIni, $iniText)
+  $More = "$More -devparm -file $lightPack -config $lightIni"
 }
 $monsters = if ($WithMonsters) { "" } else { "-nomonsters " }
 $extra = "$More ${monsters}-nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"
@@ -127,6 +145,20 @@ function Compare-Records([string]$Title, [string]$A, [string]$B, [string]$NameA,
   return $false
 }
 
+# The dynamic lights (gld_DrawDLights) are discs: glBegin(GL_TRIANGLE_FAN) ($0006) and a colour; the shadows of the
+# sprites (gld_GetDynamicShadow) are the discs whose red and blue are 0
+function Get-LightCounts([string]$Path) {
+  $lines = [System.IO.File]::ReadAllLines($Path)
+  $discs = 0; $shadows = 0; $lists = 0
+  for ($i = 0; $i -lt $lines.Length - 1; $i++) {
+    if ($lines[$i] -ceq 'glBegin($0006)') {
+      $discs++
+      if ($lines[$i + 1] -match '^glColor4f\(#00000000,#[0-9A-F]+,#00000000,') { $shadows++ }
+    }
+  }
+  return "    dischi (glBegin GL_TRIANGLE_FAN): $discs, ombre $shadows, luci $($discs - $shadows)"
+}
+
 $work = Join-Path $here "harness_out\glrecord\$Game"
 Remove-Item $work -Recurse -Force -ErrorAction SilentlyContinue
 $different = 0
@@ -162,6 +194,7 @@ try {
         }
       }
       if (-not (Compare-Records "[$Game] $arguments $name RISULTATO (vecchio contro nuovo)" $a $b 'vecchio' 'nuovo')) { $different++ }
+      Write-Host (Get-LightCounts $b)
     }
   }
 }
