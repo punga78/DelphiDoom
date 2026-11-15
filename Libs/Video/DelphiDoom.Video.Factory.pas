@@ -13,6 +13,7 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.CommandLine.Intf,
+  DelphiDoom.Palette.Intf,
   DelphiDoom.Video.Types,
   DelphiDoom.Video.Intf;
 
@@ -43,7 +44,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Video.PaletteConverter, DelphiDoom.Video.SizeLimiter,
+  DelphiDoom.Palette.Converter, DelphiDoom.Video.SizeLimiter,
   DelphiDoom.Video.MemoryStallHack, DelphiDoom.Video.WindowsDisplayMetrics,
   DelphiDoom.Video.Services, DelphiDoom.Video.DisplayModeCatalog,
   DelphiDoom.Video.WindowsDisplayModeSource, DelphiDoom.Video.ScreenSizeResolver,

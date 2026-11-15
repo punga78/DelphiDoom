@@ -32,7 +32,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Keen.EgaPalette, DelphiDoom.Video.Intf, DelphiDoom.Video.Factory;
+  DelphiDoom.Keen.EgaPalette, DelphiDoom.Palette.Intf, DelphiDoom.Video.Intf, DelphiDoom.Video.Factory;
 
 { TTestKeenEgaPalette }
 

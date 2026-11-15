@@ -11,7 +11,7 @@ unit DelphiDoom.Palette.Unpacker;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf, DelphiDoom.Video.Intf;
+  System.SysUtils, DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf;
 
 type
   /// <summary>

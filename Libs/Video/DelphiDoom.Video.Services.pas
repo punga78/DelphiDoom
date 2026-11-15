@@ -11,7 +11,7 @@ unit DelphiDoom.Video.Services;
 interface
 
 uses
-  DelphiDoom.Video.Intf;
+  DelphiDoom.Palette.Intf, DelphiDoom.Video.Intf;
 
 type
   TVideoServices = class(TInterfacedObject, IVideoServices)

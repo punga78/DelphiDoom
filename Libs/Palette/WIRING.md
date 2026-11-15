@@ -2,8 +2,8 @@
 
 La libreria costruisce palette, colormap e tabelle di traduzione dei colori **come classi pure**: ingresso = byte
 di lump o parametri, uscita = `TBytes` / `TArray<Cardinal>` / `TArray<Integer>`. Non conosce `curpal`, `colormaps`,
-`screens[]`, la zone memory né nessun globale del renderer. Dipende solo da `System.*` e da `Libs\Video`
-(`IPaletteConverter`, riusato da `TPaletteUnpacker`: non si duplica il convertitore a `$00RRGGBB`). Il collegamento
+`screens[]`, la zone memory né nessun globale del renderer. Dipende solo da `System.*`
+(`IPaletteConverter`, ora della stessa libreria e riusato da `TPaletteUnpacker`: non si duplica il convertitore a `$00RRGGBB`). Il collegamento
 non è stato fatto (non era compito di questo lavoro): qui sotto c'è cosa serve. Nessun file esistente è stato modificato.
 
 ## 1. Unit da aggiungere ai `.dpr`
@@ -36,7 +36,7 @@ usano `V_*`). `DelphiDoom.Video.*` ci sono già. Righe:
 (`PlayerTranslations.Heretic`/`Strife` si possono compilare ovunque: non hanno `{$IFDEF}`; il composition root sceglie.)
 
 Riga da aggiungere in `Tools\build.bat`, alla fine della lista `TESTS`: ` Tests\DelphiDoom.Tests.Palette`.
-Il progetto di test (`Tests\DelphiDoom.Tests.Palette.dpr/.dproj`) cerca `..\Libs\Palette;..\Libs\Video`.
+Il progetto di test (`Tests\DelphiDoom.Tests.Palette.dpr/.dproj`) cerca `..\Libs\Palette;..\Libs\Video` (`Palette` non usa piu' `Video`; il progetto ha ancora le unit di `Video` perche' i test provano il convertitore con `TVideoFactory`).
 
 ## 2. Cosa sostituisce cosa
 

@@ -1,13 +1,13 @@
 # Libs\Video
 
-Parte del video indipendente dall'API grafica: palette, limiti, catalogo dei modi, risoluzione.
+Parte del video indipendente dall'API grafica: limiti, catalogo dei modi, risoluzione.
 
 Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
 
 ## Contenuto
 
 - Unit nella cartella: 11 (nome a punti `DelphiDoom.Video.*`).
-- Interfacce dichiarate: `IDisplayMetrics`, `IDisplayModeCatalog`, `IDisplayModeSource`, `IMemoryStallHack`, `IPaletteConverter`, `IScreenSizeResolver`, `ISizeLimiter`, `IVideoServices`.
+- Interfacce dichiarate: `IDisplayMetrics`, `IDisplayModeCatalog`, `IDisplayModeSource`, `IMemoryStallHack`, `IScreenSizeResolver`, `ISizeLimiter`, `IVideoServices`.
 - Punto di creazione delle classi: `DelphiDoom.Video.Factory`.
 
 ## Prova

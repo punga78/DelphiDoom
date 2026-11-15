@@ -1,17 +1,17 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: video library - the palette converter                            }
+{  DelphiDoom: palette library - the palette converter                          }
 {  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
 {                                                                              }
 {  Licensed under the GNU General Public License, version 2 or later           }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Video.PaletteConverter;
+unit DelphiDoom.Palette.Converter;
 
 interface
 
 uses
-  DelphiDoom.Video.Intf;
+  DelphiDoom.Palette.Intf;
 
 type
   TPaletteConverter = class(TInterfacedObject, IPaletteConverter)

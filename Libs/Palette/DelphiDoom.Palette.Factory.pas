@@ -11,7 +11,7 @@ unit DelphiDoom.Palette.Factory;
 interface
 
 uses
-  DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf, DelphiDoom.Video.Intf;
+  DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the palette library</summary>
