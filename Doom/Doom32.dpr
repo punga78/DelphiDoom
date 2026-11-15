@@ -1007,6 +1007,8 @@ uses
   DelphiDoom.Imaging.ThumbnailBuilder in '..\Libs\Imaging\DelphiDoom.Imaging.ThumbnailBuilder.pas',
   DelphiDoom.Imaging.SaveThumbnail in '..\Libs\Imaging\DelphiDoom.Imaging.SaveThumbnail.pas',
   DelphiDoom.Imaging.Factory in '..\Libs\Imaging\DelphiDoom.Imaging.Factory.pas',
+  DelphiDoom.Imaging.ColorPatchBuilder in '..\Libs\Imaging\DelphiDoom.Imaging.ColorPatchBuilder.pas',
+  DelphiDoom.Imaging.PatchWriter in '..\Libs\Imaging\DelphiDoom.Imaging.PatchWriter.pas',
   DelphiDoom.Renderer.Types in '..\Libs\Renderer\DelphiDoom.Renderer.Types.pas',
   DelphiDoom.Renderer.Intf in '..\Libs\Renderer\DelphiDoom.Renderer.Intf.pas',
   DelphiDoom.Renderer.TextureLookup in '..\Libs\Renderer\DelphiDoom.Renderer.TextureLookup.pas',

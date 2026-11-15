@@ -35,6 +35,7 @@ interface
 
 uses
   d_delphi,
+  DelphiDoom.Imaging.Intf,
   DelphiDoom.Engine.Texture.Intf;
 
 //==============================================================================
@@ -44,6 +45,15 @@ uses
 //
 //==============================================================================
 procedure W_ConfigureSpriteTextures(const AFiles: IEngineTextureFiles);
+
+//==============================================================================
+//
+// W_ConfigureSpritePatches
+// The writer of the patches of the sprites that are images, given by the
+// composition root
+//
+//==============================================================================
+procedure W_ConfigureSpritePatches(const ABuilder: IImagingColorPatchBuilder);
 
 //==============================================================================
 //
@@ -77,6 +87,7 @@ implementation
 uses
   i_system,
   r_defs,
+  DelphiDoom.Imaging.Types,
   DelphiDoom.Engine.Texture.Item,
   DelphiDoom.Texture.Types,
   v_video,
@@ -194,145 +205,69 @@ begin
   spritecache.Free;
 end;
 
-type
-  patchheader_t = packed record
-    width: smallint; // bounding box size
-    height: smallint;
-    leftoffset: smallint; // pixels to the left of origin
-    topoffset: smallint;  // pixels below the origin
-  end;
+var
+  sprite_patchbuilder: IImagingColorPatchBuilder = nil;
+
+//==============================================================================
+//
+// W_ConfigureSpritePatches
+//
+//==============================================================================
+procedure W_ConfigureSpritePatches(const ABuilder: IImagingColorPatchBuilder);
+begin
+  sprite_patchbuilder := ABuilder;
+end;
 
 //==============================================================================
 //
 // W_TextureAsPatch
+// The patch is written by IImagingColorPatchBuilder (Libs\Imaging): this
+// function only gathers the colors of the texture and the default palette
 //
 //==============================================================================
 function W_TextureAsPatch(const tex: PTexture; const tag: integer; const user: pointer): pointer;
 var
-  m, fs: TDMemoryStream;
-  patch: patchheader_t;
-  column: column_t;
-  columnofs: TDNumberList;
-  columndata: TDByteList;
-  x, y: integer;
-  c: LongWord;
-  i: integer;
+  colors: TImagingPixels;
+  palette: TImagingPixels;
+  patch: TArray<Byte>;
   col: PLongWordArray;
   w, h: integer;
-  lastdelta: integer;
-
-  procedure flashcolumnend;
-  begin
-    column.topdelta := 255;
-    column.length := 0;
-    m.Write(column, SizeOf(column_t));
-  end;
-
-  procedure flashcolumndata;
-  var
-    bb: byte;
-    realdelta: integer;
-    restdelta: integer;
-  begin
-    if columndata.Count > 0 then
-    begin
-      realdelta := y - columndata.Count;
-      if realdelta >= 254 then
-      begin
-        if lastdelta < 254 then
-        begin
-          restdelta := realdelta - 254;
-          column.topdelta := 254;
-          column.length := 0;
-          m.Write(column, SizeOf(column_t));
-          bb := 0;
-          m.Write(bb, SizeOf(bb));
-          m.Write(bb, SizeOf(bb));
-        end
-        else
-          restdelta := realdelta - lastdelta;
-        while restdelta >= 255 do
-        begin
-          restdelta := restdelta - 254;
-          column.topdelta := 254;
-          column.length := 0;
-          m.Write(column, SizeOf(column_t));
-          bb := 0;
-          m.Write(bb, SizeOf(bb));
-          m.Write(bb, SizeOf(bb));
-        end;
-        column.topdelta := restdelta;
-      end
-      else
-        column.topdelta := y - columndata.Count;
-      lastdelta := realdelta;
-      column.length := columndata.Count;
-      m.Write(column, SizeOf(column_t));
-      bb := 0;
-      m.Write(bb, SizeOf(bb));
-      m.Write(columndata.List^, columndata.Count);
-      m.Write(bb, SizeOf(bb));
-      columndata.FastClear;
-    end;
-  end;
-
+  x, y: integer;
 begin
+  if sprite_patchbuilder = nil then
+    I_Error('W_TextureAsPatch(): the sprite patch builder is not configured');
+
   tex.SetDefaultAlphaChannel;
 
-  m := TDMemoryStream.Create;
-  fs := TDMemoryStream.Create;
-  columnofs := TDNumberList.Create;
-  columndata := TDByteList.Create;
-  try
-    w := tex.GetWidth;
-    h := tex.GetHeight;
-    patch.width := w;
-    patch.height := h;
-    patch.leftoffset := tex.LeftOffset;
-    patch.topoffset := tex.TopOffset;
-    fs.Write(patch, SizeOf(patchheader_t));
-
-    col := malloc(h * SizeOf(LongWord));
-    for x := 0 to w - 1 do
-    begin
-      columnofs.Add(m.Position + SizeOf(patchheader_t) + w * SizeOf(integer));
-      columndata.FastClear;
-      tex.GetColumn32(x, h, col);
-      lastdelta := -1;
-      for y := 0 to h - 1 do
-      begin
-        c := col[y];
-        if c and $FFFFFF = 0 then
-        begin
-          flashcolumndata;
-          continue;
-        end;
-        if columndata.Count = 128 then
-          flashcolumndata;
-        columndata.Add(V_FindAproxColorIndex(default_palette, c))
-      end;
-      flashcolumndata;
-      flashcolumnend;
-    end;
-    memfree(pointer(col), h * SizeOf(LongWord));
-
-    for i := 0 to columnofs.Count - 1 do
-    begin
-      x := columnofs.Numbers[i];
-      fs.Write(x, SizeOf(integer));
-    end;
-
-    result := Z_Malloc(fs.Size + m.Size, tag, user);
-
-    memcpy(result, fs.Memory, fs.Size);
-    memcpy(pointer(NativeInt(result) + fs.Size), m.Memory, m.Size);
-
-  finally
-    m.Free;
-    columnofs.Free;
-    columndata.Free;
-    fs.Free;
+  w := tex.GetWidth;
+  h := tex.GetHeight;
+  SetLength(colors, w * h);
+  col := malloc(h * SizeOf(LongWord));
+  for x := 0 to w - 1 do
+  begin
+    tex.GetColumn32(x, h, col);
+    for y := 0 to h - 1 do
+      colors[y * w + x] := col[y];
   end;
+  memfree(pointer(col), h * SizeOf(LongWord));
+
+  SetLength(palette, IMAGING_PALETTE_SIZE);
+  memcpy(@palette[0], default_palette, IMAGING_PALETTE_SIZE * SizeOf(LongWord));
+
+  try
+    patch := sprite_patchbuilder.Build(colors, w, h, tex.LeftOffset, tex.TopOffset, palette,
+      IMAGING_SPRITE_POST_LENGTH);
+  except
+    on E: EImagingException do
+    begin
+      I_Warning('W_TextureAsPatch(): %s'#13#10, [E.Message]);
+      result := nil;
+      exit;
+    end;
+  end;
+
+  result := Z_Malloc(Length(patch), tag, user);
+  memcpy(result, @patch[0], Length(patch));
 end;
 
 //==============================================================================
