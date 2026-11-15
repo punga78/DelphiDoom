@@ -34,6 +34,7 @@ type
     [TestCase('Selezione', 'map_select')]
     [TestCase('Ordini col clic destro', 'map_orders')]
     [TestCase('Partita lunga', 'map_long')]
+    [TestCase('Pausa', 'map_pause')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
   end;
 

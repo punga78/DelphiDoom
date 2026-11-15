@@ -215,11 +215,18 @@ begin
 end;
 
 procedure TWarSceneManager.UpdateGame;
+var
+  LPausable: IWarPausableScene;
 begin
   if FInput.IsKeyHeld(wkCtrl) and (not FInput.IsKeyHeld(wkShift)) and FInput.IsKeyJustReleased(wkP) then
     FPaused := not FPaused;
   if FPaused then
+  begin
+    // allow what the scene does while the simulation is frozen (the map scrolls)
+    if Supports(FScene, IWarPausableScene, LPausable) then
+      LPausable.UpdatePaused;
     Exit;
+  end;
   if Assigned(FNextScene) then
   begin
     FSettings.AudioEnabled := False;

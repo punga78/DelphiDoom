@@ -166,6 +166,15 @@ type
     function CreateCustomMap(AMapIndex, APlayerRace, AEnemyRace: Integer): IWarScene;
   end;
 
+  /// <summary>
+  ///   A scene that does something while the game is paused (Ctrl+P): wmap_updateMapPaused, the map that still scrolls
+  ///   and shows its status. A scene that does not implement it does nothing then
+  /// </summary>
+  IWarPausableScene = interface
+    ['{8F3A61C7-5D2E-4B94-A0B8-17C94E6D3F52}']
+    procedure UpdatePaused;
+  end;
+
   /// <summary>A scene: the functions of a WarSceneDescriptor</summary>
   IWarScene = interface
     ['{1B6F83D0-E4A7-4259-8C1E-9A5D70C32B68}']

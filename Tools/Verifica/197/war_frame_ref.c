@@ -330,6 +330,55 @@ int main(int argc, char** argv)
                 wg_beginInputFrame(context);
             }
         }
+        else if (!strcmp(cmd, "fog"))
+        {
+            /* prova delle prestazioni: la nebbia spenta (tutta la mappa si disegna) */
+            if (context->map) context->map->fowEnabled = !strcmp(a1, "on");
+        }
+        else if (!strcmp(cmd, "spawn"))
+        {
+            /* prova delle prestazioni: N fanti del giocatore 0, fermi, su una griglia di tegole di tutta la mappa */
+            int n = atoi(a1);
+            for (int i = 0; i < n; i++)
+            {
+                s32 x = 1 + (i * 3) % 62;
+                s32 y = 1 + ((i * 3) / 62) * 3 % 62;
+                WarEntity* e = we_createUnit(context, CREATE_UNIT_ARGS_INIT(.type = WAR_UNIT_FOOTMAN, .x = x, .y = y, .player = 0, .addToMap = true));
+                we_setInitialIdleState(context, e);
+            }
+        }
+        else if (!strcmp(cmd, "time") || !strcmp(cmd, "timerender"))
+        {
+            /* prova delle prestazioni: N fotogrammi (con "timerender" solo il disegno); una riga TIME con minimo, mediana e media in microsecondi */
+            int n = atoi(a1);
+            int renderOnly = !strcmp(cmd, "timerender");
+            double* t = (double*)malloc(sizeof(double) * (size_t)n);
+            double sum = 0;
+            for (int i = 0; i < n; i++)
+            {
+                Uint64 t0 = SDL_GetPerformanceCounter();
+                if (renderOnly)
+                {
+                    beginFrame(context);
+                    wg_renderGame(context);
+                    context->frameCount++;
+                }
+                else
+                {
+                    beginFrame(context);
+                    wg_updateGame(context);
+                    wg_renderGame(context);
+                    context->frameCount++;
+                }
+                Uint64 t1 = SDL_GetPerformanceCounter();
+                t[i] = (double)(t1 - t0) * 1e6 / (double)SDL_GetPerformanceFrequency();
+                sum += t[i];
+                wg_beginInputFrame(context);
+            }
+            for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) if (t[j] < t[i]) { double x = t[i]; t[i] = t[j]; t[j] = x; }
+            printf("TIME %s %d min %.1f median %.1f mean %.1f\n", cmd, n, t[0], t[n / 2], sum / n);
+            free(t);
+        }
         else if (!strcmp(cmd, "hash"))
         {
             printf("H %d %08x\n", context->frameCount, frameHash());

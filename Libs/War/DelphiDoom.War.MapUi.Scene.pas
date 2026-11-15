@@ -51,7 +51,7 @@ type
   ///   the original: the camera, what the player asks for, the model (the computer player, every state, the actions, the
   ///   projectiles, the spells and the fog), then the panel of the commands, the status bar and the objectives
   /// </summary>
-  TWarMapScene = class(TInterfacedObject, IWarScene)
+  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene)
   strict private
     FSetup: TWarMapSceneSetup;
     FHost: IWarMapHost;
@@ -91,6 +91,8 @@ type
     function GetSceneType: TWarSceneType;
     procedure Enter;
     procedure Update;
+    /// <summary>wmap_updateMapPaused: the camera and the status, nothing else moves</summary>
+    procedure UpdatePaused;
     procedure Render;
     procedure Leave;
     procedure HandleTextInput(const AText: AnsiString);
@@ -284,6 +286,28 @@ begin
   end;
   // the map is over: nothing plays (the menu of the end is the part of the interface that is not here yet)
   FPlaying := False;
+end;
+
+procedure TWarMapScene.UpdatePaused;
+var
+  LContext: TWarCameraContext;
+  LHost: IWarSceneHost;
+begin
+  // wmap_updateMapPaused: updateViewport and updateStatus (the debug shortcuts are not ported)
+  LHost := FSetup.Services.Host;
+  if (not Assigned(FCamera)) or (not FPlaying) then
+    Exit;
+  LContext.Dragging := FSelecting.IsDragging;
+  LContext.CommandActive := False;
+  LContext.CheatsOpen := False;
+  LContext.ScreenWidth := LHost.OriginalWidth;
+  LContext.ScreenHeight := LHost.OriginalHeight;
+  LContext.RealDeltaTime := LHost.RealDeltaTime;
+  LContext.MouseScrollSpeed := FMouseScrollSpeed;
+  LContext.KeyScrollSpeed := FKeyScrollSpeed;
+  FCamera.Update(FSetup.Services.Input, LContext, FSuppressMinimap);
+  FHost.SetRealTime(LHost.RealTime);
+  UpdateStatus;
 end;
 
 procedure TWarMapScene.Update;
