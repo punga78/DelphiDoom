@@ -81,7 +81,7 @@ Edit-File 'Base\DelphiDoom.Engine.Composition.pas' {
   param($t)
   $t = Replace-Once $t "implementation$crlf${crlf}uses$crlf" "implementation$crlf${crlf}uses$crlf  HarnessGl,$crlf"
   $t = Replace-Once $t "  I_ConfigureClock(LClock);$crlf" "  LClock := HarnessGl_Clock(LClock);$crlf  I_ConfigureClock(LClock);$crlf"
-  Replace-Once $t "    TEngineInputGate.Create, TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineInputGate.Create), TEngineScreenSize.Create,"
+  Replace-Once $t "    TEngineParityInputGate.Create(TEngineInputGate.Create, AParity), TEngineScreenSize.Create," "    HarnessGl_InputGate(TEngineParityInputGate.Create(TEngineInputGate.Create, AParity)), TEngineScreenSize.Create,"
 }
 
 Edit-File 'Base\DelphiDoom.Engine.Level.Loader.pas' {  param($t)
