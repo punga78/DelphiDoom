@@ -41,6 +41,7 @@
     'Libs\Yaml' = 'L0'
     'Libs\MathCore' = 'L0'
     'Libs\GameMath' = 'L0'
+    'Libs\NetTransport' = 'L0'
     'Libs\Configuration' = 'L0'
     'Libs\CommandLine' = 'L0'
     # L1
@@ -186,10 +187,6 @@
     # --- #225: librerie miste (la parte generica va separata da quella di Doom) ---
     @{ Da = 'Libs\Speed'; A = 'Libs\Racing'; Massimo = 2; Issue = 226
        Motivo = 'ActorDefinitions, CarSpriteBuilder e SkyTextures di SpeedHaste32 (motore id Tech 1) usano Racing.Types e Racing.CarData (auto e piste, strato Giochi): Speed32 e SpeedHaste32 stanno nella stessa area, da separare quando si spostano le cartelle' }
-    @{ Da = 'Libs\Greed'; A = 'Libs\Net'; Massimo = 1; Issue = 225
-       Motivo = 'Greed usa il trasporto UDP di Net, che e'' misto con il protocollo dei ticcmd di Doom (Net non e'' nell''elenco di #225: da aggiungere)' }
-    @{ Da = 'Greed'; A = 'Libs\Net'; Massimo = 4; Issue = 225
-       Motivo = 'DelphiDoom.Greed.Composition usa il trasporto UDP di Net (come sopra)' }
     # --- #226: cartella di prodotto mista ---
     @{ Da = 'Speed'; A = 'Libs\Racing'; Massimo = 9; Issue = 226
        Motivo = 'la cartella Speed ha Speed32 (corse, usa Racing) e SpeedHaste32 (motore id): da separare quando si spostano le cartelle' }

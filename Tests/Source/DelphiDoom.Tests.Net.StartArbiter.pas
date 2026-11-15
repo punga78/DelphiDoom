@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Net.StartArbiter;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Types, DelphiDoom.Net.Intf,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf,
   DelphiDoom.Tests.Net.Fakes, DelphiDoom.Tests.Net.TicSync;
 
 type

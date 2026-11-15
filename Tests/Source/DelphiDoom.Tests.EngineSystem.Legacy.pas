@@ -18,7 +18,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.EngineSystem.Types, DelphiDoom.EngineSystem.Intf,
-  DelphiDoom.Net.Types, DelphiDoom.Platform.Intf, d_delphi;
+  DelphiDoom.Net.Transport.Types, DelphiDoom.Platform.Intf, d_delphi;
 
 type
   /// <summary>I_InitNetwork and CheckIfDrone of i_net.pas</summary>

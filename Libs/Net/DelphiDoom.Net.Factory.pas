@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.Clock.Intf, DelphiDoom.Logging.Intf, DelphiDoom.GameState.Intf,
-  DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
+  DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
 
 type
   /// <summary>The only place that knows the classes behind the interfaces of the net library</summary>

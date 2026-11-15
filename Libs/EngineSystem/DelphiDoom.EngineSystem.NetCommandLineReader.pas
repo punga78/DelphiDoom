@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Console.Numbers, DelphiDoom.Net.Types, DelphiDoom.Net.NodeListParser;
+  DelphiDoom.Console.Numbers, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.NodeListParser;
 
 { TNetCommandLineReader }
 

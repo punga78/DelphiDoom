@@ -11,7 +11,7 @@ unit DelphiDoom.Net.Types;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, DelphiDoom.Net.Transport.Types;
 
 const
   /// <summary>Tics kept for every player and for the local commands (BACKUPTICS of the engine)</summary>
@@ -20,8 +20,6 @@ const
   NET_MAX_NODES = 8;
   /// <summary>Bytes of a packet before the commands: checksum, 4 bytes, flags</summary>
   NET_PACKET_HEADER_SIZE = 12;
-  /// <summary>Port of the engine when -port is not given (IPPORT_USERRESERVED + $1d)</summary>
-  NET_DEFAULT_PORT = 5000 + $1D;
   /// <summary>The low byte of tic numbers is the only one that travels</summary>
   NET_TIC_WRAP = 256;
   /// <summary>Packets that are ignored after a retransmit request was accepted (CRESENDCOUNT)</summary>
@@ -44,9 +42,6 @@ const
   NET_PLAYER_DRONE = $80;
 
 type
-  /// <summary>Every failure of the net library; the engine turns it into I_Error</summary>
-  ENetException = class(Exception);
-
   /// <summary>The other computer runs another version of the engine</summary>
   ENetVersionMismatchException = class(ENetException);
 
@@ -76,14 +71,6 @@ type
     function IsRetransmit: Boolean;
     function IsSetup: Boolean;
     function IsKill: Boolean;
-  end;
-
-  /// <summary>Where another computer is: a name or a dotted address, and a port</summary>
-  TNetNodeAddress = record
-    Host: string;
-    /// <summary>True: Host is a dotted address (written ".1.2.3.4" in the arguments), no name lookup</summary>
-    IsLiteral: Boolean;
-    Port: Word;
   end;
 
   /// <summary>What every computer of the game must agree on, sent by the key player in the start packets</summary>

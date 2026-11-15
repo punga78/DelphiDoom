@@ -37,6 +37,7 @@ unit i_net;
 interface
 
 uses
+  DelphiDoom.Net.Transport.Types,
   DelphiDoom.Net.Types,
   DelphiDoom.EngineSystem.Intf;
 

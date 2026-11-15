@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Net.NodeListParser;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Types, DelphiDoom.Net.NodeListParser;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.NodeListParser;
 
 type
   [TestFixture]

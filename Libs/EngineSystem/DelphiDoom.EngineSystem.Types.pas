@@ -14,7 +14,7 @@ unit DelphiDoom.EngineSystem.Types;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Net.Types;
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Net.Transport.Types;
 
 type
   /// <summary>Raised for what the caller got wrong when it builds a class of the library</summary>

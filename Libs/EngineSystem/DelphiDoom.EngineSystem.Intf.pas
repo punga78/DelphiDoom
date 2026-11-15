@@ -14,7 +14,7 @@ unit DelphiDoom.EngineSystem.Intf;
 interface
 
 uses
-  DelphiDoom.EngineSystem.Types, DelphiDoom.Mikmod.Client, DelphiDoom.Net.Types;
+  DelphiDoom.EngineSystem.Types, DelphiDoom.Mikmod.Client, DelphiDoom.Net.Transport.Types;
 
 type
   /// <summary>Reads what the command line says about the network game</summary>

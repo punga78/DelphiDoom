@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, DUnitX.TestFramework, DelphiDoom.Clock.Intf, DelphiDoom.Logging.Intf,
-  DelphiDoom.GameState.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Tests.Net.Fakes;
+  DelphiDoom.GameState.Intf, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Tests.Net.Fakes;
 
 type
   /// <summary>One computer of a game, with a fake of everything it depends on</summary>

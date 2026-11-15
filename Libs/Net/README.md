@@ -1,6 +1,6 @@
 # Libs\Net
 
-Trasporto UDP, protocollo dei pacchetti e sincronizzazione dei ticcmd.
+Protocollo dei pacchetti e sincronizzazione dei ticcmd di Doom. Il trasporto UDP (`INetTransport`, Winsock, elenco dei computer) e' in [Libs\NetTransport](../NetTransport/README.md) (#225, quarta fetta).
 
 Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
 

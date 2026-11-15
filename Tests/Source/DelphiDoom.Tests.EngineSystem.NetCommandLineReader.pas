@@ -66,7 +66,7 @@ type
 implementation
 
 uses
-  DelphiDoom.CommandLine.Factory, DelphiDoom.Net.Types,
+  DelphiDoom.CommandLine.Factory, DelphiDoom.Net.Transport.Types,
   DelphiDoom.EngineSystem.Factory, DelphiDoom.EngineSystem.NetCommandLineReader,
   DelphiDoom.Tests.EngineSystem.Legacy;
 
