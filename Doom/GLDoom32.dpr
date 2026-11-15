@@ -156,6 +156,7 @@ uses
   DelphiDoom.Automap.LineClipper in '..\Libs\Automap\DelphiDoom.Automap.LineClipper.pas',
   DelphiDoom.Automap.Rotation in '..\Libs\Automap\DelphiDoom.Automap.Rotation.pas',
   DelphiDoom.Automap.LineRasterizer in '..\Libs\Automap\DelphiDoom.Automap.LineRasterizer.pas',
+  DelphiDoom.Automap.Shapes in '..\Libs\Automap\DelphiDoom.Automap.Shapes.pas',
   DelphiDoom.Automap.View in '..\Libs\Automap\DelphiDoom.Automap.View.pas',
   DelphiDoom.Automap.Marks in '..\Libs\Automap\DelphiDoom.Automap.Marks.pas',
   DelphiDoom.Automap.Factory in '..\Libs\Automap\DelphiDoom.Automap.Factory.pas',
