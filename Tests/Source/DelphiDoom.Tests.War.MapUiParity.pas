@@ -53,6 +53,10 @@ type
     [TestCase('Sconfitta: Ok e briefing della stessa mappa', 'map_gameover_lose')]
     [TestCase('Fine della demo: Ides of march e ultima mappa', 'map_demo_end')]
     [TestCase('Salto di mappa con Human e Orc', 'map_skip')]
+    [TestCase('Dal menu principale a una partita personalizzata e al suo menu F10', 'map_custom_menu')]
+    [TestCase('Partita personalizzata sulla palude e sconfitta', 'map_custom_swamp')]
+    [TestCase('Partita personalizzata sulla foresta e ricomincia', 'map_custom_forest')]
+    [TestCase('Disegno di debug: griglie e caselle che non si passano', 'map_debug')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

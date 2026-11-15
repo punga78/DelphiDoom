@@ -138,7 +138,13 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_win.script'); Golden = 'ui.map_gameover_win.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_lose.script'); Golden = 'ui.map_gameover_lose.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_demo_end.script'); Golden = 'ui.map_demo_end.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_skip.script'); Golden = 'ui.map_skip.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_skip.script'); Golden = 'ui.map_skip.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # le partite personalizzate: dal menu col mouse, e "custom N" dell'harness
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_menu.script'); Golden = 'ui.map_custom_menu.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_swamp.script'); Golden = 'ui.map_custom_swamp.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_forest.script'); Golden = 'ui.map_custom_forest.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # il disegno di debug (flag, griglie, caselle che non si passano)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug.script'); Golden = 'ui.map_debug.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

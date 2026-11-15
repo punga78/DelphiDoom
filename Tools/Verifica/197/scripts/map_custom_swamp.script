@@ -1,0 +1,32 @@
+# Partita personalizzata dell'harness ("custom N": razze a caso con il generatore, opzioni predefinite) su una mappa della
+# palude: camera, scorrimento, il computer che gioca per 20 secondi, una sconfitta (Crushing defeat) il cui Ok porta al
+# menu principale e non a un briefing
+custom 156
+move 190 100
+run 60 1
+move 316 100
+run 40 2
+move 190 100
+run 20 1
+key right down
+run 40 2
+key right up
+key down down
+run 40 2
+key down up
+run 600 20
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Crushing defeat
+key enter down
+run 1 1
+key enter up
+run 6 1
+move 150 108
+run 3 1
+key o down
+run 1 1
+key o up
+run 90 1

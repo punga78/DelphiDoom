@@ -35,7 +35,8 @@ type
   strict private
     FCatalog: IWarUnitCatalog;
     function CreatePlayers(const AInfo: TWarLevelInfo): TArray<TWarPlayerInfo>;
-    function CreateViewport(const AInfo: TWarLevelInfo): TWarViewport;
+    function CreateViewport(const AInfo: TWarLevelInfo; AHasCameraStart: Boolean; ACameraCenterX,
+      ACameraCenterY: Integer): TWarViewport;
   public
     constructor Create(const ACatalog: IWarUnitCatalog);
     /// <summary>
@@ -43,7 +44,13 @@ type
     ///   512 x 256 pixels of 4 bytes). EWarException if a starting unit has a type the tables do not know, a map is
     ///   short or a tile of the visual map is not in the image. The caller frees the map
     /// </summary>
-    function Build(const ALevel: IWarLevel; const ATilesetPixels: TBytes): TWarGameMap;
+    function Build(const ALevel: IWarLevel; const ATilesetPixels: TBytes): TWarGameMap; overload;
+    /// <summary>
+    ///   The same for a custom game: the camera starts with the point AX, AY (in pixels of the map) in the middle of the screen,
+    ///   if AHasCameraStart (initCamera with map->hasCustomCameraStart); the start of the level otherwise
+    /// </summary>
+    function Build(const ALevel: IWarLevel; const ATilesetPixels: TBytes; AHasCameraStart: Boolean; ACameraCenterX,
+      ACameraCenterY: Integer): TWarGameMap; overload;
   end;
 
 implementation
@@ -58,11 +65,34 @@ begin
   FCatalog := ACatalog;
 end;
 
-function TWarMapBuilder.CreateViewport(const AInfo: TWarLevelInfo): TWarViewport;
+function TWarMapBuilder.CreateViewport(const AInfo: TWarLevelInfo; AHasCameraStart: Boolean; ACameraCenterX,
+  ACameraCenterY: Integer): TWarViewport;
+var
+  LStartX: Integer;
+  LStartY: Integer;
 begin
-  // initCamera (a level that is not a custom game starts where the level says)
-  Result.X := AInfo.StartX * WAR_MEGA_TILE_SIZE;
-  Result.Y := AInfo.StartY * WAR_MEGA_TILE_SIZE;
+  // initCamera: a custom game starts with its point in the middle of the screen (kept inside the map), the other
+  // levels where the level says
+  if AHasCameraStart then
+  begin
+    LStartX := ACameraCenterX - WAR_MAP_VIEWPORT_WIDTH div 2;
+    LStartY := ACameraCenterY - WAR_MAP_VIEWPORT_HEIGHT div 2;
+    if LStartX < 0 then
+      LStartX := 0;
+    if LStartX > WAR_MAP_TILES_WIDTH * WAR_MEGA_TILE_SIZE - WAR_MAP_VIEWPORT_WIDTH then
+      LStartX := WAR_MAP_TILES_WIDTH * WAR_MEGA_TILE_SIZE - WAR_MAP_VIEWPORT_WIDTH;
+    if LStartY < 0 then
+      LStartY := 0;
+    if LStartY > WAR_MAP_TILES_HEIGHT * WAR_MEGA_TILE_SIZE - WAR_MAP_VIEWPORT_HEIGHT then
+      LStartY := WAR_MAP_TILES_HEIGHT * WAR_MEGA_TILE_SIZE - WAR_MAP_VIEWPORT_HEIGHT;
+    Result.X := LStartX;
+    Result.Y := LStartY;
+  end
+  else
+  begin
+    Result.X := AInfo.StartX * WAR_MEGA_TILE_SIZE;
+    Result.Y := AInfo.StartY * WAR_MEGA_TILE_SIZE;
+  end;
   Result.Width := WAR_MAP_VIEWPORT_WIDTH;
   Result.Height := WAR_MAP_VIEWPORT_HEIGHT;
 end;
@@ -91,6 +121,12 @@ begin
 end;
 
 function TWarMapBuilder.Build(const ALevel: IWarLevel; const ATilesetPixels: TBytes): TWarGameMap;
+begin
+  Result := Build(ALevel, ATilesetPixels, False, 0, 0);
+end;
+
+function TWarMapBuilder.Build(const ALevel: IWarLevel; const ATilesetPixels: TBytes; AHasCameraStart: Boolean;
+  ACameraCenterX, ACameraCenterY: Integer): TWarGameMap;
 var
   LInfo: TWarLevelInfo;
   LPassable: TArray<Word>;
@@ -129,7 +165,7 @@ begin
     LGrid := nil;
     LFog := nil;
     LMinimap := nil;
-    Result.SetViewport(CreateViewport(LInfo));
+    Result.SetViewport(CreateViewport(LInfo, AHasCameraStart, ACameraCenterX, ACameraCenterY));
     LForests := TWarMapForests.Create(Result.Grid, Result.Fog, LPainter, LInfo.TilesetType);
     Result.AttachForests(LForests);
     LMap := Result;

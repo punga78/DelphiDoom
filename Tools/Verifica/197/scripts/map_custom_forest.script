@@ -1,0 +1,27 @@
+# Partita personalizzata dell'harness su una mappa della foresta (custom 150): camera sulla prima unita' del giocatore, la
+# nebbia che si apre, selezione e ordini col mouse, ricomincia dal menu F10 (le stesse unita' di partenza)
+custom 150
+move 190 100
+run 60 1
+move 190 100
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+move 220 130
+rbutton down
+run 2 1
+rbutton up
+run 120 4
+key f10 down
+run 1 1
+key f10 up
+run 3 1
+key r down
+run 1 1
+key r up
+run 3 1
+key r down
+run 1 1
+key r up
+run 150 3

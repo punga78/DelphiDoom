@@ -1,0 +1,145 @@
+# Disegno di debug della mappa (umani 1): il trucco "Debug render" (status, un nome, un nome con 0 o 1, un nome che non c'e',
+# un valore sbagliato, senza argomento: il nome che manca prende l'ultimo flag, e da "unit-info" in poi ogni nome accende il
+# flag prima del suo) e i tasti Ctrl+Maiusc+lettera; si disegnano passable-info (le caselle che non si passano), map-grid
+# (le righe fra le caselle) e spatial-grid (le righe fra le celle della griglia delle unita'), con la camera che scorre
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render passable-info
+key enter down
+run 1 1
+key enter up
+run 12 1
+key right down
+run 25 1
+key right up
+key down down
+run 20 1
+key down up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text debug render map-grid 1
+key enter down
+run 1 1
+key enter up
+run 12 1
+key left down
+run 17 1
+key left up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render spatial-grid
+key enter down
+run 1 1
+key enter up
+run 12 1
+key up down
+run 13 1
+key up up
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render passable-info 0
+key enter down
+run 1 1
+key enter up
+run 8 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render map-grid
+key enter down
+run 1 1
+key enter up
+run 8 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render foo
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render rvo 7
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render unit-info
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key ctrl down
+key shift down
+run 1 1
+key g down
+run 1 1
+key g up
+run 3 1
+key p down
+run 1 1
+key p up
+run 3 1
+key s down
+run 1 1
+key s up
+run 3 1
+key ctrl up
+key shift up
+run 3 1
+key right down
+run 30 1
+key right up
+key down down
+run 25 1
+key down up
+run 4 1

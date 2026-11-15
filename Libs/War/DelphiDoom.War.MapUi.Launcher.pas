@@ -46,7 +46,7 @@ type
 implementation
 
 uses
-  DelphiDoom.War.MapUi.Scene;
+  DelphiDoom.War.Map.CustomGame, DelphiDoom.War.Level.CustomLevel, DelphiDoom.War.MapUi.Scene;
 
 resourcestring
   SWarLauncherNoServices = 'The maker of the maps has not been given the services of the game';
@@ -88,12 +88,41 @@ begin
   LSetup.Random := FRandom;
   LSetup.MapType := AMapType;
   LSetup.UnsignedDirections := FUnsignedDirections;
+  LSetup.HasCameraStart := False;
+  LSetup.CameraCenterX := 0;
+  LSetup.CameraCenterY := 0;
   Result := TWarMapScene.Create(LSetup);
 end;
 
 function TWarMapLauncher.CreateCustomMap(AMapIndex, APlayerRace, AEnemyRace: Integer): IWarScene;
+var
+  LSetup: TWarMapSceneSetup;
+  LLevel: IWarLevel;
+  LOptions: TWarCustomGameOptions;
+  LGame: TWarCustomGame;
 begin
-  raise EWarException.Create('The custom games are not ported yet');
+  if not FHasServices then
+    raise EWarException.Create(SWarLauncherNoServices);
+  // wmap_createCustomMap: the draws of the game happen here, when the map is asked for (not when it is entered)
+  LLevel := FLevels.Load(AMapIndex);
+  LOptions := Default(TWarCustomGameOptions);
+  LOptions.Enabled := True;
+  LOptions.PlayerRace := TWarRace(APlayerRace);
+  LOptions.EnemyRace := TWarRace(AEnemyRace);
+  LOptions.StartConfigurationIndex := -1;
+  LGame := TWarCustomGameMaker.Make(LLevel, LOptions, FUnits, FRandom);
+  LSetup.Services := FServices;
+  LSetup.Level := TWarCustomLevel.Create(LLevel, LGame.Info);
+  LSetup.TilesetPixels := FGraphics.GetTileset(LLevel.Info.TilesetIndex).Pixels;
+  LSetup.Units := FUnits;
+  LSetup.Objectives := FObjectives;
+  LSetup.Random := FRandom;
+  LSetup.MapType := AMapIndex;
+  LSetup.UnsignedDirections := FUnsignedDirections;
+  LSetup.HasCameraStart := LGame.HasCameraStart;
+  LSetup.CameraCenterX := LGame.CameraCenterX;
+  LSetup.CameraCenterY := LGame.CameraCenterY;
+  Result := TWarMapScene.Create(LSetup);
 end;
 
 end.

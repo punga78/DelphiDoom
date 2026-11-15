@@ -24,7 +24,7 @@ uses
   DelphiDoom.War.Level.Types, DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Transform, DelphiDoom.War.Map.Types,
   DelphiDoom.War.Map.Game, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine,
   DelphiDoom.War.Graphics.Types, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Types,
-  DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.Sprites;
+  DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.Sprites, DelphiDoom.War.MapUi.DebugView;
 
 type
   TWarMapRenderer = class;
@@ -52,6 +52,7 @@ type
     FUnitComparer: IComparer<Integer>;
     FProjectileComparer: IComparer<Integer>;
     FTilesetForest: Boolean;
+    FDebugView: TWarMapDebugView;
     /// <summary>The renderFuncs of we_renderEntity: a procedure by type of entity (nil: nothing to draw)</summary>
     class var FDrawTable: array[0..WAR_ENTITY_TYPE_COUNT - 1] of TWarEntityDraw;
     class constructor CreateDrawTable;
@@ -83,6 +84,8 @@ type
     procedure RenderUnitSelection;
     /// <summary>renderMinimap of the minimap entity: the pixels, then the window on the map</summary>
     procedure RenderMinimap(AX, AY: Single);
+    /// <summary>The debug drawing of the ground that RenderPanel draws under the units (not owned; nil: none)</summary>
+    property DebugView: TWarMapDebugView read FDebugView write FDebugView;
   end;
 
 implementation
@@ -753,6 +756,9 @@ begin
   RenderEntitiesOfType(WAR_ENTITY_ROAD);
   RenderEntitiesOfType(WAR_ENTITY_WALL);
   RenderEntitiesOfType(WAR_ENTITY_FOREST);
+  // the debug drawing of the ground (the flags of the cheats), under the units
+  if Assigned(FDebugView) then
+    FDebugView.Render;
   RenderEntitiesOfType(WAR_ENTITY_UNIT);
   RenderUnitSelection;
   RenderEntitiesOfType(WAR_ENTITY_PROJECTILE);

@@ -25,6 +25,7 @@ type
     destructor Destroy; override;
     procedure TraceBlit(const ABlit: TWarBlit);
     procedure TraceRect(const ARect: TWarRectF; const AColor: TWarRgba; AStroke: Boolean);
+    procedure TraceLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
   end;
 
   /// <summary>An input for the mouse: the left button held, just pressed or just released, Control, and the position</summary>
@@ -128,6 +129,11 @@ procedure TTraceCollector.TraceBlit(const ABlit: TWarBlit);
 begin
   Lines.Add(Format('T %d %d > %d %d a%d', [Round(ABlit.Source.X), Round(ABlit.Source.Y), Round(ABlit.Destination.X),
     Round(ABlit.Destination.Y), ABlit.Color.A]));
+end;
+
+procedure TTraceCollector.TraceLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
+begin
+  Lines.Add(Format('L %d,%d,%d', [AColor.R, AColor.G, AColor.B]));
 end;
 
 procedure TTraceCollector.TraceRect(const ARect: TWarRectF; const AColor: TWarRgba; AStroke: Boolean);

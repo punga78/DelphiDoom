@@ -53,6 +53,7 @@ type
     procedure RunFile(const APath: string);
     procedure TraceBlit(const ABlit: TWarBlit);
     procedure TraceRect(const ARect: TWarRectF; const AColor: TWarRgba; AStroke: Boolean);
+    procedure TraceLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
   end;
 
 implementation
@@ -131,6 +132,12 @@ begin
     LKind := 'F';
   FTraceOutput.Add(Format('%s %s %s %s %s c%d,%d,%d,%d', [LKind, FormatG(ARect.X), FormatG(ARect.Y),
     FormatG(ARect.Width), FormatG(ARect.Height), AColor.R, AColor.G, AColor.B, AColor.A]));
+end;
+
+procedure TWarUiScriptRunner.TraceLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
+begin
+  FTraceOutput.Add(Format('L %s %s %s %s c%d,%d,%d,%d', [FormatG(AX1), FormatG(AY1), FormatG(AX2), FormatG(AY2), AColor.R,
+    AColor.G, AColor.B, AColor.A]));
 end;
 
 function TWarUiScriptRunner.Fnv1a: Cardinal;

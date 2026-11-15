@@ -56,6 +56,11 @@ type
     procedure FillRect(const ARect: TWarRectF; const AColor: TWarRgba);
     /// <summary>SDL_RenderRect with the blend mode SDL_BLENDMODE_BLEND (wr_strokeRect): one pixel of outline</summary>
     procedure StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);
+    /// <summary>
+    ///   SDL_RenderLine with the blend mode SDL_BLENDMODE_BLEND (wr_strokeLine) for a line along a row or a column (the
+    ///   grids of the debug drawing); an oblique line is EWarException (not ported)
+    /// </summary>
+    procedure StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
     property Width: Integer read FWidth;
     property Height: Integer read FHeight;
     /// <summary>The pixels, row by row, R G B A</summary>
@@ -350,6 +355,27 @@ begin
     Exit;
   for LRow := Max(Min(AY1, AY2), 0) to Min(Max(AY1, AY2), FHeight - 1) do
     BlendLinePixel((LRow * FWidth + AX) * WAR_PIXEL_SIZE, AColor);
+end;
+
+procedure TWarImageBlitter.StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
+var
+  LX1: Integer;
+  LY1: Integer;
+  LX2: Integer;
+  LY2: Integer;
+begin
+  // SDL_RenderLine: each end is cut to an int as the ends of SDL_RenderRect are; both ends are drawn. Only the lines that
+  // stay on a row or a column are drawn (the grids of the debug drawing): an oblique one is EWarException
+  LX1 := Floor(AX1);
+  LY1 := Floor(AY1);
+  LX2 := Floor(AX2);
+  LY2 := Floor(AY2);
+  if LY1 = LY2 then
+    DrawLineHorizontal(LX1, LX2, LY1, AColor)
+  else if LX1 = LX2 then
+    DrawLineVertical(LX1, LY1, LY2, AColor)
+  else
+    raise EWarException.Create(SWarRenderObliqueLine);
 end;
 
 procedure TWarImageBlitter.StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);

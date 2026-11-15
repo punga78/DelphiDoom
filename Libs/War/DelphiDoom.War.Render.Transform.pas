@@ -32,6 +32,8 @@ type
     procedure TraceBlit(const ABlit: TWarBlit);
     /// <summary>A rectangle filled (AStroke false) or outlined, after the transform, with its color and alpha</summary>
     procedure TraceRect(const ARect: TWarRectF; const AColor: TWarRgba; AStroke: Boolean);
+    /// <summary>A line, after the transform, with its color and alpha</summary>
+    procedure TraceLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
   end;
 
   /// <summary>
@@ -71,6 +73,8 @@ type
     procedure FillRect(const ARect: TWarRectF; const AColor: TWarRgba);
     /// <summary>wr_strokeRect: the same for the outline</summary>
     procedure StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);
+    /// <summary>wr_strokeLine: the two points are transformed (offset plus scale times the point); EWarException for an oblique line</summary>
+    procedure StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
     /// <summary>wr_save; EWarException if the 32 states are used (the original asserts)</summary>
     procedure Save;
     /// <summary>wr_restore; EWarException if there is no state to go back to</summary>
@@ -162,6 +166,31 @@ begin
   if Assigned(FTrace) then
     FTrace.TraceRect(LRect, LColor, True);
   FTarget.StrokeRect(LRect, LColor);
+end;
+
+procedure TWarRenderTransform.StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
+var
+  LX1: Single;
+  LY1: Single;
+  LX2: Single;
+  LY2: Single;
+  LColor: TWarRgba;
+begin
+  if not Assigned(FTarget) then
+    raise EWarException.Create(SWarRenderNoTarget);
+  // wr_renderTransformPoint: the offset plus the point times the scale, one operation at a time
+  LX1 := AX1 * FStates[FTop].ScaleX;
+  LX1 := FStates[FTop].OffsetX + LX1;
+  LY1 := AY1 * FStates[FTop].ScaleY;
+  LY1 := FStates[FTop].OffsetY + LY1;
+  LX2 := AX2 * FStates[FTop].ScaleX;
+  LX2 := FStates[FTop].OffsetX + LX2;
+  LY2 := AY2 * FStates[FTop].ScaleY;
+  LY2 := FStates[FTop].OffsetY + LY2;
+  LColor := StateColor(AColor);
+  if Assigned(FTrace) then
+    FTrace.TraceLine(LX1, LY1, LX2, LY2, LColor);
+  FTarget.StrokeLine(LX1, LY1, LX2, LY2, LColor);
 end;
 
 function TWarRenderTransform.TransformRect(const ARect: TWarRectF): TWarRectF;

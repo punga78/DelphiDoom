@@ -27,7 +27,7 @@ uses
   DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Selecting,
   DelphiDoom.War.MapUi.CommandPanel, DelphiDoom.War.MapUi.CommandState, DelphiDoom.War.MapUi.CommandRunner,
   DelphiDoom.War.MapUi.CommandPreview, DelphiDoom.War.MapUi.Menu, DelphiDoom.War.MapUi.MenuView,
-  DelphiDoom.War.Ui.CheatsPanel, DelphiDoom.War.MapUi.CheatEffects;
+  DelphiDoom.War.Ui.CheatsPanel, DelphiDoom.War.MapUi.CheatEffects, DelphiDoom.War.MapUi.DebugView;
 
 type
   /// <summary>What the scene of a map is made from: the level and its tileset, the tables and the services of the game</summary>
@@ -45,6 +45,10 @@ type
     ///   keeps north), which is what the reference of the parity is; False is MSVC
     /// </summary>
     UnsignedDirections: Boolean;
+    /// <summary>A custom game starts with the camera on its first unit (map->hasCustomCameraStart and the center)</summary>
+    HasCameraStart: Boolean;
+    CameraCenterX: Integer;
+    CameraCenterY: Integer;
   end;
 
   /// <summary>
@@ -64,6 +68,7 @@ type
     FCamera: TWarMapCamera;
     FSprites: TWarMapSprites;
     FRenderer: TWarMapRenderer;
+    FDebugView: TWarMapDebugView;
     FHud: TWarMapHud;
     FPicker: TWarMapPicker;
     FSelecting: TWarMapSelecting;
@@ -250,7 +255,8 @@ begin
   FHost := LHost;
   LBuilder := TWarMapBuilder.Create(FSetup.Units);
   try
-    FMap := LBuilder.Build(FSetup.Level, FSetup.TilesetPixels);
+    FMap := LBuilder.Build(FSetup.Level, FSetup.TilesetPixels, FSetup.HasCameraStart, FSetup.CameraCenterX,
+      FSetup.CameraCenterY);
   finally
     LBuilder.Free;
   end;
@@ -267,6 +273,11 @@ begin
   FCamera := TWarMapCamera.Create(FPanels, FMap.Viewport.X, FMap.Viewport.Y);
   FRenderer := TWarMapRenderer.Create(FSetup.Services.Canvas.Transform, FMap, FBinding.World.Context,
     FBinding.World.Machine, FSprites, FCamera);
+  if Assigned(FSetup.Services.DebugRender) then
+  begin
+    FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender);
+    FRenderer.DebugView := FDebugView;
+  end;
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);
   FPicker := TWarMapPicker.Create(FMap, FBinding.World.Context, FBinding.World.Machine);
   // the sounds that the model asks for and that the player's choices make: entities of the pool and numbers drawn
@@ -304,6 +315,7 @@ begin
   if Assigned(FSetup.Services.Imui) then
     FSetup.Services.Imui.SetMapPanel(False, 0, 0);
   FreeAndNil(FRenderer);
+  FreeAndNil(FDebugView);
   FreeAndNil(FHud);
   FreeAndNil(FMenuView);
   FreeAndNil(FMenu);
@@ -785,9 +797,13 @@ begin
 end;
 
 procedure TWarMapScene.RestartMap;
+var
+  LScene: IWarScene;
 begin
-  // wmap_createMap of the same level and wg_setNextMap after a second
-  FSetup.Services.Host.SetNextCampaignMap(FSetup.MapType, 1.0);
+  // wmap_createMap of the same level (a custom game keeps its units and its camera) and wg_setNextMap after a second; the
+  // setup is the same, so the level is too: its maps are as the first game left them
+  LScene := TWarMapScene.Create(FSetup);
+  FSetup.Services.Host.SetNextScene(LScene, 1.0);
 end;
 
 procedure TWarMapScene.ContinueAfterGameOver;
