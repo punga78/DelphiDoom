@@ -30,7 +30,9 @@ type
     [TestCase('Entrata nella mappa degli umani 1', 'map_enter')]
     [TestCase('Mappa ferma con il mouse al centro', 'map_still')]
     [TestCase('Scorrimento della camera', 'map_scroll')]
-    [TestCase('Mappe degli orchi e degli umani', 'map_orc')]    procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
+    [TestCase('Mappe degli orchi e degli umani', 'map_orc')]
+    [TestCase('Selezione', 'map_select')]
+    procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
   end;
 
 implementation

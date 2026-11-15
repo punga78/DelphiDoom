@@ -1,0 +1,46 @@
+# Selezione sulla mappa (umani 1): clic su un'unita', clic nel vuoto, rettangolo, Ctrl, gruppi (Ctrl+1 e 1), clic sul
+# minimap; il pannello d'informazione (ritratto, nome, barra della vita) e quello dei comandi delle unita'
+campaign human 1
+move 190 100
+run 5 1
+move 176 99
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 60
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 100 30
+lbutton down
+run 2 1
+move 200 90
+run 2 1
+move 280 180
+run 3 1
+lbutton up
+run 6 1
+key ctrl down
+key 1 down
+run 1 1
+key 1 up
+key ctrl up
+run 3 1
+move 120 60
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key 1 down
+run 1 1
+key 1 up
+run 6 1
+move 241 99
+key ctrl down
+lbutton down
+run 2 1
+lbutton up
+key ctrl up
+run 6 1

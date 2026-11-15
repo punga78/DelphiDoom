@@ -21,11 +21,30 @@ uses
   DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Imui, DelphiDoom.War.MapUi.Types;
 
 type
+  /// <summary>One of the first four selected entities as the information panel shows it (a missing entity is not Valid)</summary>
+  TWarHudSelected = record
+    Valid: Boolean;
+    UnitType: Integer;
+    Hp: Integer;
+    MaxHp: Integer;
+    Mana: Integer;
+    MaxMana: Integer;
+    IsDude: Boolean;
+    IsMagic: Boolean;
+    IsBuilding: Boolean;
+    /// <summary>unit->building: a building that is being built</summary>
+    UnderConstruction: Boolean;
+    BuildPercent: Single;
+  end;
+
   /// <summary>What renderHUD reads and does not draw by itself: the player, the panel, the status line and the cheat panel</summary>
   TWarHudView = record
     Race: TWarRace;
     Gold: Integer;
     Wood: Integer;
+    /// <summary>MIN(selected, 4): how many of Selected are in use</summary>
+    SelectedCount: Integer;
+    Selected: array[0..3] of TWarHudSelected;
     Panel: TWarCommandPanel;
     Status: TWarStatusLine;
     /// <summary>map->menuState != WAR_MENU_STATE_NONE</summary>
@@ -52,6 +71,10 @@ type
     function ByRace(ARace: TWarRace; AHumans, AOrcs: Integer): Integer;
     procedure DrawImage(const AId: AnsiString; AResource: Integer; AX, AY: Single);
     procedure DrawText(const AId, AText: AnsiString; AX, AY: Single; AHighlightIndex, AHighlightCount: Integer);
+    procedure DrawRect(const AId: AnsiString; AX, AY: Single; AWidth, AHeight: Integer; const AColor: TWarRgba);
+    procedure DrawFrame(const AId: AnsiString; AResource: Integer; AX, AY: Single; AFrame: Integer);
+    function LifeColor(APercent: Single): TWarRgba;
+    procedure RenderSelectionInfo(const AView: TWarHudView);
   public
     constructor Create(const AImui: TWarImui; const APanels: TWarMapPanels);
     /// <summary>renderStaticPanels: the frame of the interface and the two icons of the resources</summary>
@@ -61,6 +84,9 @@ type
   end;
 
 implementation
+
+uses
+  DelphiDoom.War.MapUi.UnitNames.Data;
 
 { TWarMapHud }
 
@@ -105,6 +131,129 @@ begin
   FImui.Text(AId, LArgs);
 end;
 
+procedure TWarMapHud.DrawRect(const AId: AnsiString; AX, AY: Single; AWidth, AHeight: Integer; const AColor: TWarRgba);
+var
+  LArgs: TWarUiRectArgs;
+begin
+  LArgs := TWarUiRectArgs.Default;
+  LArgs.PositionX := AX;
+  LArgs.PositionY := AY;
+  LArgs.SizeX := AWidth;
+  LArgs.SizeY := AHeight;
+  LArgs.Color := AColor;
+  FImui.Rect(AId, LArgs);
+end;
+
+procedure TWarMapHud.DrawFrame(const AId: AnsiString; AResource: Integer; AX, AY: Single; AFrame: Integer);
+var
+  LArgs: TWarUiImageArgs;
+begin
+  LArgs := TWarUiImageArgs.Default;
+  LArgs.SpriteRef := AResource;
+  LArgs.PositionX := AX;
+  LArgs.PositionY := AY;
+  FImui.ImageFrame(AId, LArgs, AFrame);
+end;
+
+function TWarMapHud.LifeColor(APercent: Single): TWarRgba;
+const
+  RED_THRESHOLD: Single = 0.35;
+  YELLOW_THRESHOLD: Single = 0.70;
+begin
+  // the bar is green, yellow (a cyan: see WAR_COLOR_YELLOW) up to 70 percent, red up to 35
+  Result := WAR_MAPUI_GREEN;
+  if APercent <= RED_THRESHOLD then
+    Result := WAR_MAPUI_RED
+  else if APercent <= YELLOW_THRESHOLD then
+    Result := WAR_COLOR_YELLOW;
+end;
+
+function UnitNameOf(AUnitType: Integer): AnsiString;
+var
+  LIndex: Integer;
+begin
+  Result := '';
+  for LIndex := 0 to High(WAR_UNIT_NAMES) do
+    if WAR_UNIT_NAMES[LIndex].UnitType = AUnitType then
+      Exit(WAR_UNIT_NAMES[LIndex].Name);
+end;
+
+function PortraitOf(AUnitType: Integer): Integer;
+var
+  LIndex: Integer;
+begin
+  Result := 0;
+  for LIndex := 0 to High(WAR_UNIT_NAMES) do
+    if WAR_UNIT_NAMES[LIndex].UnitType = AUnitType then
+      Exit(WAR_UNIT_NAMES[LIndex].Portrait);
+end;
+
+procedure TWarMapHud.RenderSelectionInfo(const AView: TWarHudView);
+const
+  PORTRAIT_X: array[1..4] of Integer = (4, 38, 4, 38);
+  PORTRAIT_Y: array[1..4] of Integer = (1, 1, 23, 23);
+  LIFE_X: array[1..4] of Integer = (4, 38, 4, 38);
+  LIFE_Y: array[1..4] of Integer = (17, 17, 39, 39);
+var
+  LBottom: TWarRectF;
+  LSelected: TWarHudSelected;
+  LFrame: Integer;
+  LIndex: Integer;
+  LPercent: Single;
+  LStep: Single;
+  LBackground: Integer;
+begin
+  LBottom := FPanels.LeftBottom;
+  LBackground := ByRace(AView.Race, 360, 359);
+  if AView.SelectedCount = 1 then
+  begin
+    LSelected := AView.Selected[0];
+    if not LSelected.Valid then
+      Exit;
+    // the background by what is selected: 0 a unit, 1 a unit that casts, 2 a building under construction
+    LFrame := 0;
+    if LSelected.IsDude and LSelected.IsMagic then
+      LFrame := 1
+    else if LSelected.IsBuilding and LSelected.UnderConstruction then
+      LFrame := 2;
+    DrawFrame('imgUnitInfo', LBackground, LBottom.X + 2, LBottom.Y + 0, LFrame);
+    DrawFrame('imgUnitPortrait0', 361, LBottom.X + 6, LBottom.Y + 4, PortraitOf(LSelected.UnitType));
+    DrawText('txtUnitName', UnitNameOf(LSelected.UnitType), LBottom.X + 6, LBottom.Y + 26, WAR_NO_HIGHLIGHT, 0);
+    LPercent := Single(LSelected.Hp) / LSelected.MaxHp;
+    LStep := LPercent * 27;
+    DrawRect('rectLifeBar0', LBottom.X + 37, LBottom.Y + 20, Trunc(LStep), 3, LifeColor(LPercent));
+    if LSelected.IsDude and LSelected.IsMagic then
+    begin
+      LPercent := Single(LSelected.Mana) / LSelected.MaxMana;
+      LStep := LPercent * 27;
+      DrawRect('rectMagicBar', LBottom.X + 37, LBottom.Y + 9, Trunc(LStep), 3, WAR_MAPUI_GREEN);
+    end;
+    if LSelected.IsBuilding and LSelected.UnderConstruction then
+    begin
+      LStep := LSelected.BuildPercent * 64;
+      DrawRect('rectPercentBar', LBottom.X + 4, LBottom.Y + 37, Trunc(LStep), 5, WAR_MAPUI_GREEN);
+      DrawFrame('rectPercentText', 410, LBottom.X + 15, LBottom.Y + 37, 0);
+    end;
+  end
+  else if AView.SelectedCount > 1 then
+  begin
+    DrawFrame('imgUnitInfo', LBackground, LBottom.X + 2, LBottom.Y + 0, AView.SelectedCount + 1);
+    DrawFrame('imgUnitInfoLife', LBackground, LBottom.X + 3, LBottom.Y + 16, AView.SelectedCount + 4);
+    for LIndex := 1 to AView.SelectedCount do
+    begin
+      LSelected := AView.Selected[LIndex - 1];
+      if not LSelected.Valid then
+        Continue;
+      DrawFrame(AnsiString('imgUnitPortrait' + IntToStr(LIndex)), 361, LBottom.X + PORTRAIT_X[LIndex],
+        LBottom.Y + PORTRAIT_Y[LIndex], PortraitOf(LSelected.UnitType));
+      LPercent := Single(LSelected.Hp) / LSelected.MaxHp;
+      LStep := LPercent * 27;
+      DrawRect(AnsiString('rectLifeBar' + IntToStr(LIndex)), LBottom.X + LIFE_X[LIndex], LBottom.Y + LIFE_Y[LIndex],
+        Trunc(LStep), 3, LifeColor(LPercent));
+    end;
+  end;
+end;
+
 procedure TWarMapHud.RenderStaticPanels(ARace: TWarRace);
 var
   LTop: Single;
@@ -139,6 +288,8 @@ begin
     WAR_NO_HIGHLIGHT, 0);
   DrawText('txtWood', AnsiString(Format('LUMBER:%6d', [AView.Wood])), FPanels.TopPanel.X + 24,
     FPanels.TopPanel.Y + 2, WAR_NO_HIGHLIGHT, 0);
+  // the information of what is selected
+  RenderSelectionInfo(AView);
   // the command panel (only when no menu is open)
   if not AView.MenuOpen then
   begin

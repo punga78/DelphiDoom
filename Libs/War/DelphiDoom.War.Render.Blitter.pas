@@ -309,7 +309,15 @@ begin
   // every pixel of the outline is blended once (a rectangle of 1 or 0 pixels is drawn several times by SDL: not kept,
   // nobody in the game draws a translucent outline)
   if (LX1 < LX0) or (LY1 < LY0) then
+  begin
+    // a rectangle with no area (the one that the mouse drags before it moves): the line strip still goes from corner to
+    // corner, backwards, so a small square of pixels around the corner is drawn (SDL_RenderLines of the five points)
+    DrawLineHorizontal(Min(LX0, LX1), Max(LX0, LX1), LY0, AColor);
+    DrawLineVertical(LX1, Min(LY0, LY1), Max(LY0, LY1), AColor);
+    DrawLineHorizontal(Min(LX0, LX1), Max(LX0, LX1), LY1, AColor);
+    DrawLineVertical(LX0, Min(LY0, LY1), Max(LY0, LY1), AColor);
     Exit;
+  end;
   DrawLineHorizontal(LX0, LX1, LY0, AColor);
   if LY1 > LY0 then
     DrawLineHorizontal(LX0, LX1, LY1, AColor);

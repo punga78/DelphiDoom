@@ -19,7 +19,7 @@ interface
 uses
   System.SysUtils, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Selection,
   DelphiDoom.War.Model.Gather.Intf, DelphiDoom.War.Model.Construction.Intf, DelphiDoom.War.Map.Intf,
-  DelphiDoom.War.Map.Fog, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Sprites;
+  DelphiDoom.War.Map.Fog, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Sprites;
 
 type
   /// <summary>The message that the status bar flashes for a while: the text and the real time it ends</summary>
@@ -38,6 +38,8 @@ type
     procedure SetRealTime(AValue: Double);
     function GetFlash: TWarFlashStatus;
     procedure SetFlash(const AValue: TWarFlashStatus);
+    /// <summary>Where the sounds that the model asks for go (not owned by the host: nil is silence)</summary>
+    procedure AttachAudio(const AAudio: IWarMapAudio);
   end;
 
   /// <summary>
@@ -55,6 +57,7 @@ type
     FUnits: IWarUnitCatalog;
     FFlash: TWarFlashStatus;
     FRealTime: Double;
+    FAudio: IWarMapAudio;
     procedure Flash(const AText: AnsiString);
   public
     /// <summary>Nothing is owned; the selection, the fog and the sprites belong to the scene, which must outlive this object</summary>
@@ -78,6 +81,7 @@ type
     procedure SetRealTime(AValue: Double);
     function GetFlash: TWarFlashStatus;
     procedure SetFlash(const AValue: TWarFlashStatus);
+    procedure AttachAudio(const AAudio: IWarMapAudio);
   end;
 
 implementation
@@ -102,6 +106,7 @@ end;
 
 procedure TWarMapHost.Detach;
 begin
+  FAudio := nil;
   FSelection := nil;
   FFog := nil;
   FSprites := nil;
@@ -188,16 +193,27 @@ begin
   Result := FSprites.Get(WAR_BUILDING_CONSTRUCTION_RESOURCES[LIndex]).FrameCount;
 end;
 
+procedure TWarMapHost.AttachAudio(const AAudio: IWarMapAudio);
+begin
+  FAudio := AAudio;
+end;
+
 procedure TWarMapHost.PlaySound(AAudioId: Integer);
 begin
+  if Assigned(FAudio) then
+    FAudio.PlaySound(AAudioId);
 end;
 
 procedure TWarMapHost.PlayRandomSound(AFromId, AToId: Integer);
 begin
+  if Assigned(FAudio) then
+    FAudio.PlayRandomSound(AFromId, AToId);
 end;
 
 procedure TWarMapHost.Acknowledge(APlayer: Integer);
 begin
+  if Assigned(FAudio) then
+    FAudio.Acknowledge(APlayer);
 end;
 
 function TWarMapHost.IsTileKnown(ATileX, ATileY: Integer): Boolean;
