@@ -123,6 +123,7 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_orders.script'); Golden = 'ui.map_cmd_orders.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_town.script'); Golden = 'ui.map_cmd_town.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_extra.script'); Golden = 'ui.map_cmd_extra.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cursors.script'); Golden = 'ui.map_cursors.golden.txt'; NeedsData = $true; WorkDir = $true },
       # combattimento e incantesimi: proiettili, animazioni, suoni come entita' (parte C, punto 2)
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_melee.script'); Golden = 'ui.map_war_melee.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_siege.script'); Golden = 'ui.map_war_siege.golden.txt'; NeedsData = $true; WorkDir = $true },

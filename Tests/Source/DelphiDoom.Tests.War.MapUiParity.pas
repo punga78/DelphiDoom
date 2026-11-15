@@ -40,6 +40,7 @@ type
     [TestCase('Ordini dai bottoni e dai tasti', 'map_cmd_orders')]
     [TestCase('Municipio, fucina, chiesa e caserma', 'map_cmd_town')]
     [TestCase('Altri comandi: raccogli, ripara, guarigione, minimap, muro, cursori', 'map_cmd_extra')]
+    [TestCase('Cursori con la mira sulla mappa', 'map_cursors')]
     [TestCase('Due eserciti: colpi, frecce, morti', 'map_war_melee')]
     [TestCase('Assedio: pietre, esplosioni, fuoco e crollo', 'map_war_siege')]
     [TestCase('Incantesimi degli umani', 'map_spells')]

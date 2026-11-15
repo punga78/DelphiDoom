@@ -106,6 +106,15 @@ type
     ///   the point of the screen), upgrade INDEX ALLOWED LEVEL, feature INDEX VALUE, gold GOLD WOOD (of the player 0)
     /// </summary>
     function ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
+    /// <summary>
+    ///   The map is over with that result (what the objectives, the menu of the game and the cheats of victory and defeat
+    ///   say): the next update stops it
+    /// </summary>
+    procedure Conclude(AResult: TWarLevelResult);
+    /// <summary>The speed of the game (WarMapSpeed 0..4, 2 is normal): it scales the time of the game of every frame</summary>
+    property GameSpeed: Integer read FGameSpeed write FGameSpeed;
+    /// <summary>The line of the status bar of this frame (the message, what the selection says), without the tooltip</summary>
+    property StatusText: AnsiString read FStatus.Text;
     property Camera: TWarMapCamera read FCamera;
     property Map: TWarGameMap read FMap;
     property Binding: TWarMapBinding read FBinding;
@@ -233,6 +242,11 @@ end;
 
 procedure TWarMapScene.HandleTextInput(const AText: AnsiString);
 begin
+end;
+
+procedure TWarMapScene.Conclude(AResult: TWarLevelResult);
+begin
+  FResult := AResult;
 end;
 
 function TWarMapScene.ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;

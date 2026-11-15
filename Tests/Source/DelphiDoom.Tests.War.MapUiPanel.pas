@@ -412,6 +412,7 @@ end;
 procedure TTestWarMapUiPanel.DovrebbeMostrareIMenuDellEdificioPerIlContadinoCheCostruisce;
 var
   LId: Word;
+  LSlot: Integer;
 begin
   LId := Spawn(WAR_UNIT_PEASANT, 0);
   FWorld.Context.Selection.Assign([LId]);
@@ -430,6 +431,30 @@ begin
   Assert.AreEqual(WAR_CMD_BUILD_CHURCH, FResult.Slots[1].Command);
   Assert.AreEqual(WAR_CMD_BUILD_STABLE, FResult.Slots[2].Command);
   Assert.IsFalse(FResult.SlotsActive[3], 'la torre vuole la fucina');
+  FWorld.Context.Players[0]^.Features[WAR_FEATURE_UNIT_LUMBER_MILL_ORCS div 2] := 1;
+  FWorld.Context.Players[0]^.Race := wraOrcs;
+  LId := Spawn(WAR_UNIT_PEON, 0);
+  FWorld.Context.Selection.Assign([LId]);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_BASIC);
+  Assert.AreEqual(WAR_CMD_BUILD_FARM_ORCS, FResult.Slots[0].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_LUMBERMILL_ORCS, FResult.Slots[1].Command);
+  Assert.AreEqual(WAR_CMD_BUILD_BARRACKS_ORCS, FResult.Slots[2].Command);
+  FWorld.Entities.CreateBuilding(WAR_UNIT_BLACKSMITH_ORCS, 30, 30, 0, False);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_ADVANCED);
+  Assert.AreEqual(WAR_CMD_BUILD_TOWER_ORCS, FResult.Slots[3].Command, 'la torre degli orchi vuole la fucina');
+  FWorld.Context.Players[0]^.Race := wraHumans;
+  FWorld.Entities.CreateBuilding(WAR_UNIT_BLACKSMITH_HUMANS, 34, 30, 0, False);
+  LId := Spawn(WAR_UNIT_PEASANT, 0);
+  FWorld.Context.Selection.Assign([LId]);
+  FPanel.Update(FResult, WAR_COMMAND_BUILD_ADVANCED);
+  Assert.AreEqual(WAR_CMD_BUILD_TOWER_HUMANS, FResult.Slots[3].Command, 'la torre degli umani vuole la fucina');
+  // an unfinished building offers only the cancel
+  LSlot := FWorld.Entities.CreateBuilding(WAR_UNIT_FARM_HUMANS, 38, 30, 0, True);
+  FWorld.Context.Pool.Slots[LSlot]^.UnitData.Building := True;
+  FWorld.Context.Selection.Assign([FWorld.Context.Pool.Slots[LSlot]^.Id]);
+  FPanel.Update(FResult);
+  Assert.AreEqual(WAR_CMD_CANCEL, FResult.Slots[5].Command);
+  FWorld.Context.Players[0]^.Race := wraOrcs;
   // the orcs: the first button of the advanced menu is the barracks, as in the original
   FWorld.Context.Players[0]^.Race := wraOrcs;
   LId := Spawn(WAR_UNIT_PEON, 0);

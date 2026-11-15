@@ -1,0 +1,76 @@
+# Cursori sulla mappa (umani 1, comandi "unit" e "feature" dell'harness): con un contadino selezionato la mira gialla sulla
+# miniera e sugli alberi, con un fante la mira rossa sul nemico e sul muro, la lente sulle unita' amiche e sugli edifici, la
+# freccia sul bosco; il municipio costruisce un pezzo di muro; ai quattro angoli le frecce in diagonale
+campaign human 1
+move 190 100
+run 10 1
+feature 42 1
+move 190 135
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 153
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 215 60
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+key esc down
+run 2 1
+key esc up
+run 4 1
+unit 2 150 90 0
+unit 0 170 90 0
+unit 1 240 100 1
+run 5 1
+move 150 93
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 300 98
+run 3 1
+move 130 40
+run 3 1
+move 100 60
+run 3 1
+move 190 140
+run 3 1
+move 170 93
+run 3 1
+move 170 93
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 240 103
+run 3 1
+move 218 70
+run 3 1
+move 190 140
+run 3 1
+move 150 93
+run 3 1
+move 100 40
+run 3 1
+move 74 14
+run 3 1
+move 316 14
+run 3 1
+move 74 186
+run 3 1
+move 316 186
+run 3 1
+move 190 14
+run 3 1
+move 2 100
+run 3 1
