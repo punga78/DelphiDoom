@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: geometry library - the 3D vector (idVec3)                       }
 {                                                                              }
@@ -56,7 +56,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Geometry.FloatMath;
+  DelphiDoom.IdLib.Math.Vec3;
 
 { TGeoVec3 }
 
@@ -143,161 +143,51 @@ begin
   Z := 0;
 end;
 
+// The functions below are the ones of TIdVec3 (Libs\IdLib\Math): the two records have the same
+// layout (three Single), so they are called through a typecast and exist once.
+
 function TGeoVec3.Compare(const A: TGeoVec3): Boolean;
 begin
-  Result := (X = A.X) and (Y = A.Y) and (Z = A.Z);
+  Result := TIdVec3(Self) = TIdVec3(A);
 end;
 
 function TGeoVec3.Compare(const A: TGeoVec3; AEpsilon: Single): Boolean;
 begin
-  Result := (TGeoMath.Fabs(X - A.X) <= AEpsilon) and
-    (TGeoMath.Fabs(Y - A.Y) <= AEpsilon) and
-    (TGeoMath.Fabs(Z - A.Z) <= AEpsilon);
+  Result := TIdVec3(Self).Compare(TIdVec3(A), AEpsilon);
 end;
 
 function TGeoVec3.Dot(const A: TGeoVec3): Single;
 begin
-  Result := X * A.X + Y * A.Y + Z * A.Z;
+  Result := TIdVec3(Self) * TIdVec3(A);
 end;
 
 function TGeoVec3.Cross(const A: TGeoVec3): TGeoVec3;
 begin
-  Result.X := Y * A.Z - Z * A.Y;
-  Result.Y := Z * A.X - X * A.Z;
-  Result.Z := X * A.Y - Y * A.X;
+  TIdVec3(Result) := TIdVec3(Self).Cross(TIdVec3(A));
 end;
 
 function TGeoVec3.Length: Single;
 begin
-  Result := TGeoMath.Sqrt(X * X + Y * Y + Z * Z);
+  Result := TIdVec3(Self).Length;
 end;
 
 function TGeoVec3.LengthSqr: Single;
 begin
-  Result := X * X + Y * Y + Z * Z;
+  Result := TIdVec3(Self).LengthSqr;
 end;
 
 function TGeoVec3.NormalizeSelf: Single;
-var
-  LSqrLength: Single;
-  LInvLength: Single;
 begin
-  LSqrLength := X * X + Y * Y + Z * Z;
-  LInvLength := TGeoMath.InvSqrt(LSqrLength);
-  X := X * LInvLength;
-  Y := Y * LInvLength;
-  Z := Z * LInvLength;
-  Result := LInvLength * LSqrLength;
+  Result := TIdVec3(Self).Normalize;
 end;
 
 function TGeoVec3.FixDegenerateNormal: Boolean;
 begin
-  Result := False;
-  if X = 0 then
-  begin
-    if Y = 0 then
-    begin
-      if Z > 0 then
-      begin
-        if Z <> 1 then
-        begin
-          Z := 1;
-          Result := True;
-        end;
-      end
-      else if Z <> -1 then
-      begin
-        Z := -1;
-        Result := True;
-      end;
-      Exit;
-    end
-    else if Z = 0 then
-    begin
-      if Y > 0 then
-      begin
-        if Y <> 1 then
-        begin
-          Y := 1;
-          Result := True;
-        end;
-      end
-      else if Y <> -1 then
-      begin
-        Y := -1;
-        Result := True;
-      end;
-      Exit;
-    end;
-  end
-  else if Y = 0 then
-  begin
-    if Z = 0 then
-    begin
-      if X > 0 then
-      begin
-        if X <> 1 then
-        begin
-          X := 1;
-          Result := True;
-        end;
-      end
-      else if X <> -1 then
-      begin
-        X := -1;
-        Result := True;
-      end;
-      Exit;
-    end;
-  end;
-  if TGeoMath.Fabs(X) = 1 then
-  begin
-    if (Y <> 0) or (Z <> 0) then
-    begin
-      Y := 0;
-      Z := 0;
-      Result := True;
-    end;
-  end
-  else if TGeoMath.Fabs(Y) = 1 then
-  begin
-    if (X <> 0) or (Z <> 0) then
-    begin
-      X := 0;
-      Z := 0;
-      Result := True;
-    end;
-  end
-  else if TGeoMath.Fabs(Z) = 1 then
-  begin
-    if (X <> 0) or (Y <> 0) then
-    begin
-      X := 0;
-      Y := 0;
-      Result := True;
-    end;
-  end;
+  Result := TIdVec3(Self).FixDegenerateNormal;
 end;
 
 procedure TGeoVec3.NormalVectors(out ALeft, ADown: TGeoVec3);
-var
-  LDistance: Single;
 begin
-  LDistance := X * X + Y * Y;
-  if LDistance = 0 then
-  begin
-    ALeft.X := 1;
-    ALeft.Y := 0;
-    ALeft.Z := 0;
-  end
-  else
-  begin
-    LDistance := TGeoMath.InvSqrt(LDistance);
-    ALeft.X := -Y * LDistance;
-    ALeft.Y := X * LDistance;
-    ALeft.Z := 0;
-  end;
-  ADown := ALeft.Cross(Self);
+  TIdVec3(Self).NormalVectors(TIdVec3(ALeft), TIdVec3(ADown));
 end;
-
 end.
