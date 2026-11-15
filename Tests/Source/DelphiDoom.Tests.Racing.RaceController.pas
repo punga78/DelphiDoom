@@ -252,7 +252,7 @@ begin
   for LIndex := 0 to 3 do
     FController.AddCar(GridCar(LIndex, LIndex = 0));
   Run(1, RACING_START_TIC + 100, 0);
-  Assert.AreEqual(4, Length(FController.Standings));
+  Assert.AreEqual<Integer>(4, Length(FController.Standings));
   for LIndex := 0 to 3 do
     Assert.AreEqual<Cardinal>(FController.Standings[LIndex].Key,
       FController.Cars[FController.Standings[LIndex].Index].Key);

@@ -66,8 +66,8 @@ uses
 
 procedure TTestRacingCarData.DovrebbeAvereQuaranteAuto;
 begin
-  Assert.AreEqual(40, Length(RACING_CAR_DATA));
-  Assert.AreEqual(RACING_CAR_COUNT, Length(RACING_CAR_DATA));
+  Assert.AreEqual<Integer>(40, Length(RACING_CAR_DATA));
+  Assert.AreEqual<Integer>(RACING_CAR_COUNT, Length(RACING_CAR_DATA));
 end;
 
 procedure TTestRacingCarData.DovrebbeAvereLeFormulaPrimaELeAutoDiSerieDopo;

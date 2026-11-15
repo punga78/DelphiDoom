@@ -171,7 +171,7 @@ var
   LBumps: TArray<TRacingBump>;
 begin
   LBumps := TRacingCarCollisions.Resolve([@FA], nil, LAfter);
-  Assert.AreEqual(0, Length(LBumps));
+  Assert.AreEqual<Integer>(0, Length(LBumps));
   Assert.AreEqual<Integer>(0, FA.MomentumX);
 end;
 
