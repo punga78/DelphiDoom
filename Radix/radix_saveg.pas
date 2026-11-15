@@ -162,7 +162,6 @@ var
   i, j: integer;
   rp: Pradixplayer_t;
   lp: Pradixlevelplayer_t;
-  tracked: trackedshot_tArray;
 begin
   result := Default(TRadixSaveState);
   result.Episode := gameepisode;
@@ -237,18 +236,9 @@ begin
     result.Walls[i].Trigger := radixwallinfo[i].Trigger;
   end;
 
-  tracked := RX_GetTrackedShots;
-  SetLength(result.Shots, Length(tracked));
-  for i := 0 to Length(tracked) - 1 do
-  begin
-    result.Shots[i].Key := tracked[i].key;
-    result.Shots[i].X := tracked[i].x;
-    result.Shots[i].Y := tracked[i].y;
-    result.Shots[i].OldX := tracked[i].oldx;
-    result.Shots[i].OldY := tracked[i].oldy;
-    result.Shots[i].MomX := tracked[i].momx;
-    result.Shots[i].MomY := tracked[i].momy;
-  end;
+  // the shots that were in flight are no more kept (the walls are damaged where a missile
+  // explodes); the field stays in the file so that a saved game of before still loads
+  result.Shots := nil;
 end;
 
 //==============================================================================
@@ -262,7 +252,6 @@ var
   i, j: integer;
   rp: Pradixplayer_t;
   lp: Pradixlevelplayer_t;
-  tracked: trackedshot_tArray;
 begin
   if (state.Episode <> gameepisode) or (state.Map <> gamemap) then
     raise ERadixException.CreateFmt('the state is of the level %d of the episode %d, the saved game of %d of %d',
@@ -340,20 +329,6 @@ begin
     radixwallinfo[i].HitPoints := state.Walls[i].HitPoints;
     radixwallinfo[i].Trigger := state.Walls[i].Trigger;
   end;
-  // the walls that can still be shot, then the shots (RX_InitWalls forgets them)
-  RX_InitWalls;
-  SetLength(tracked, Length(state.Shots));
-  for i := 0 to Length(tracked) - 1 do
-  begin
-    tracked[i].key := state.Shots[i].Key;
-    tracked[i].x := state.Shots[i].X;
-    tracked[i].y := state.Shots[i].Y;
-    tracked[i].oldx := state.Shots[i].OldX;
-    tracked[i].oldy := state.Shots[i].OldY;
-    tracked[i].momx := state.Shots[i].MomX;
-    tracked[i].momy := state.Shots[i].MomY;
-  end;
-  RX_SetTrackedShots(tracked);
 end;
 
 //==============================================================================

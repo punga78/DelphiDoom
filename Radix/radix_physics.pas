@@ -21,20 +21,19 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  Radix: the part of the physics of Rad-X that can run from the thinkers of
-//  the level, without the movement code of the engine (p_mobj, p_map, p_inter
-//  are not touched). The rules are the classes DelphiDoom.Radix.Physics.* of
-//  Libs\Radix:
-//   - a craft that hits a floor or a ceiling, or lands (RX_PlaneHitFloor and
-//     the penalty of P_HitFloor of Rad-X): sound, smoke, count of the hits of
-//     the debriefing;
-//   - the things with a touch damage that a craft moves into (PIT_CheckThing
-//     of Rad-X);
-//   - the missiles that explode when they stand still (P_VelocityHandler of
-//     Rad-X, A_IdleExplode).
-//  What needs a call inside the movement of the engine (the hits against the
-//  walls, the bounces, the scale of the damage, the force fields of the
-//  sectors) is listed in Libs\Radix\CLAUDE.md.
+//  Radix: the physics of Rad-X. The rules are the classes
+//  DelphiDoom.Radix.Physics.* of Libs\Radix. Two parts:
+//   - what runs from the thinkers of the level: a craft that hits a floor or
+//     a ceiling, or lands (RX_PlaneHitFloor and the penalty of P_HitFloor of
+//     Rad-X): sound, smoke, count of the hits of the debriefing; the missiles
+//     that explode when they stand still (P_VelocityHandler of Rad-X,
+//     A_IdleExplode);
+//   - what the movement code of the engine asks for through
+//     DelphiDoom.Engine.World.PhysicsExtension (the version of Radix\): a
+//     craft that is blocked by a wall (RX_PlayerHitsWall) and the touch damage
+//     of two things that overlap (RX_ThingTouched, PIT_CheckThing of Rad-X).
+//  What is not hooked yet (the bounces, the force fields of the sectors, the
+//  move in steps...) is listed in Libs\Radix\CLAUDE.md.
 //
 //------------------------------------------------------------------------------
 
@@ -45,7 +44,9 @@ unit radix_physics;
 interface
 
 uses
-  d_player;
+  d_player,
+  m_fixed,
+  p_mobj_h;
 
 var
   // The part of radixwallhits of each craft that comes from the hits against floors and ceilings and
@@ -70,21 +71,32 @@ procedure RX_PilotImpacts(const pnum: integer; const p: Pplayer_t);
 
 //==============================================================================
 //
-// RX_PilotTouchDamage
-// To call at every tic for a living craft: the things with a touch damage that
-// the craft is moving into are damaged
-//
-//==============================================================================
-procedure RX_PilotTouchDamage(const p: Pplayer_t);
-
-//==============================================================================
-//
 // RX_IdleExplodeTick
 // To call at every tic: the missiles that A_IdleExplode has marked explode
 // when they are slow enough
 //
 //==============================================================================
 procedure RX_IdleExplodeTick;
+
+//==============================================================================
+//
+// RX_PlayerHitsWall
+// The move of a craft was blocked by a wall and the engine has slid it along it
+// (PIT_CheckLine and P_XYMovement of Rad-X: RX_PlaneHitWall): a hit for the
+// score, the sound and, one time out of two, a puff of smoke. The place that
+// was tried is tryx, tryy
+//
+//==============================================================================
+procedure RX_PlayerHitsWall(const p: Pplayer_t; const tryx, tryy: fixed_t);
+
+//==============================================================================
+//
+// RX_ThingTouched
+// A thing that moves (toucher) overlaps another one: the touch damage of each
+// of the two (PIT_CheckThing of Rad-X), with the other as the inflictor
+//
+//==============================================================================
+procedure RX_ThingTouched(const thing, toucher: Pmobj_t);
 
 implementation
 
@@ -94,13 +106,11 @@ uses
   doomdef,
   g_game,
   info_common,
-  m_fixed,
   m_rnd,
   tables,
   p_local,
   p_maputl,
   p_mobj,
-  p_mobj_h,
   p_inter,
   p_params,
   p_setup,
@@ -209,6 +219,20 @@ end;
 
 //==============================================================================
 //
+// RX_InitSmokeIds
+//
+//==============================================================================
+procedure RX_InitSmokeIds;
+begin
+  if id_hitsmoke1 = -2 then
+  begin
+    id_hitsmoke1 := Info_GetMobjNumForName('MT_RADIXDRONEHITWALLSMOKE1');
+    id_hitsmoke2 := Info_GetMobjNumForName('MT_RADIXDRONEHITWALLSMOKE2');
+  end;
+end;
+
+//==============================================================================
+//
 // RX_SpawnHitSmoke
 // _spawn_burner_smoke_floor of RX_PlaneHitFloor: a ring of smoke around the
 // craft, on the floor (dir < 0) or under the ceiling
@@ -226,11 +250,7 @@ var
   mo: Pmobj_t;
   rnd: integer;
 begin
-  if id_hitsmoke1 = -2 then
-  begin
-    id_hitsmoke1 := Info_GetMobjNumForName('MT_RADIXDRONEHITWALLSMOKE1');
-    id_hitsmoke2 := Info_GetMobjNumForName('MT_RADIXDRONEHITWALLSMOKE2');
-  end;
+  RX_InitSmokeIds;
   if (id_hitsmoke1 < 0) or (id_hitsmoke2 < 0) or (num_hit_smokes <= 0) then
     exit;
 
@@ -299,6 +319,22 @@ end;
 
 //==============================================================================
 //
+// RX_InRadixSector
+// The sector comes from RADIX.DAT (RSF_RADIXSECTOR): the hits make the sound of
+// scraping there
+//
+//==============================================================================
+function RX_InRadixSector(const sec: Psector_t): boolean;
+var
+  secid: integer;
+begin
+  secid := RX_SectorIndex(sec);
+  result := (secid >= 0) and (secid < Length(radixsectorinfo)) and
+    (radixsectorinfo[secid].Flags and RSF_RADIXSECTOR <> 0);
+end;
+
+//==============================================================================
+//
 // RX_PilotImpacts
 // Rad-X called RX_PlaneHitFloor at the start of P_MobjThinker of the craft,
 // with the height it had moved in the tic before; here the thinker of the
@@ -310,7 +346,6 @@ var
   last: ^pilotimpact_t;
   pmo: Pmobj_t;
   sec: Psector_t;
-  secid: integer;
   velx, vely, velz: fixed_t;
   onfloor, onceiling: boolean;
   radixsector: boolean;
@@ -339,9 +374,7 @@ begin
     // JVAL: 20200428 - inc wall count to use in score
     penalty := TRadixCraftImpactRules.LandingPenalty(last.z > pmo.floorz, onfloor, RX_PlainFloor(pmo));
 
-    secid := RX_SectorIndex(sec);
-    radixsector := (secid >= 0) and (secid < Length(radixsectorinfo)) and
-      (radixsectorinfo[secid].Flags and RSF_RADIXSECTOR <> 0);
+    radixsector := RX_InRadixSector(sec);
     impact := TRadixCraftImpactRules.PlaneHit(last.planehittics,
       onfloor, P_GetThingFloorType(pmo) = FLOOR_SOLID,
       onceiling, flats[sec.ceilingpic].terraintype = FLOOR_SOLID,
@@ -362,71 +395,6 @@ begin
   last.x := pmo.x;
   last.y := pmo.y;
   last.z := pmo.z;
-end;
-
-var
-  touchcraft: Pmobj_t;
-  touchx, touchy: fixed_t;
-
-//==============================================================================
-//
-// PIT_RadixTouchDamage
-// JVAL: 20200417 - Touch damage (touching thing)
-//
-//==============================================================================
-function PIT_RadixTouchDamage(thing: Pmobj_t): boolean;
-var
-  damage: integer;
-begin
-  result := true;
-  if thing = touchcraft then
-    exit;
-
-  damage := TRadixDamageRules.TouchDamage(thing.flags and MF_SHOOTABLE <> 0, thing.health,
-    RX_ActorTouchDamage(thing._type), false, true);
-  if damage = 0 then
-    exit;
-
-  if not TRadixContactRules.BoxesTouch(thing.x - touchx, thing.y - touchy, thing.radius, touchcraft.radius) then
-    exit;
-  if not TRadixContactRules.HeightsTouch(touchcraft.z, touchcraft.height, thing.z, thing.height) then
-    exit;
-
-  P_DamageMobj(thing, touchcraft, touchcraft.target, damage);
-end;
-
-//==============================================================================
-//
-// RX_PilotTouchDamage
-// Rad-X damaged the thing in PIT_CheckThing, for every place the engine tried
-// to move the craft to. Here: once a tic, for the place the craft goes to with
-// its momentum (a solid thing stops the craft before their boxes overlap, so
-// the place the craft is in would never touch it). A thing that moves into a
-// craft that stands still is not seen
-//
-//==============================================================================
-procedure RX_PilotTouchDamage(const p: Pplayer_t);
-var
-  xl, xh, yl, yh: integer;
-  bx, by: integer;
-  r: fixed_t;
-  pmo: Pmobj_t;
-begin
-  pmo := p.mo;
-  if (pmo.momx = 0) and (pmo.momy = 0) then
-    exit;
-
-  touchcraft := pmo;
-  touchx := pmo.x + TRadixMovementRules.ClampMomentum(pmo.momx, false);
-  touchy := pmo.y + TRadixMovementRules.ClampMomentum(pmo.momy, false);
-  r := pmo.radius + MAXRADIUS;
-  xl := MapBlockIntX(int64(touchx) - r - int64(bmaporgx));
-  xh := MapBlockIntX(int64(touchx) + r - int64(bmaporgx));
-  yl := MapBlockIntY(int64(touchy) - r - int64(bmaporgy));
-  yh := MapBlockIntY(int64(touchy) + r - int64(bmaporgy));
-  for bx := xl to xh do
-    for by := yl to yh do
-      P_BlockThingsIterator(bx, by, PIT_RadixTouchDamage);
 end;
 
 //==============================================================================
@@ -501,6 +469,110 @@ begin
   idlemissiles := tmp;
   numprevidlemissiles := numidlemissiles;
   numidlemissiles := 0;
+end;
+
+//==============================================================================
+//
+// RX_PlayerHitsWall
+// RX_PlaneHitWall of Rad-X: one hit for the score; the sound when the one before
+// has ended; one time out of two a puff of smoke between the craft and the place
+// that was tried, with the speed the craft had in the tic before. A random
+// number for each statement: the order must not depend on the compiler
+//
+//==============================================================================
+procedure RX_PlayerHitsWall(const p: Pplayer_t; const tryx, tryy: fixed_t);
+var
+  pnum: integer;
+  pmo: Pmobj_t;
+  last: ^pilotimpact_t;
+  impact: TRadixImpact;
+  gate: integer;
+  kind: integer;
+  heightrnd: integer;
+  first, second: integer;
+  smokeid: integer;
+  velx, vely, velz: fixed_t;
+  mo: Pmobj_t;
+begin
+  pnum := pDiff(p, @players[0], SizeOf(players[0]));
+  if (pnum < 0) or (pnum >= MAXPLAYERS) then
+    exit;
+  pmo := p.mo;
+  if pmo = nil then
+    exit;
+
+  last := @pilotimpacts[pnum];
+  if last.mo <> pmo then
+  begin
+    // a new body: where it is now is where it was
+    last.mo := pmo;
+    last.x := pmo.x;
+    last.y := pmo.y;
+    last.z := pmo.z;
+    last.planehittics := 0;
+  end;
+
+  gate := Sys_Random;
+  impact := TRadixCraftImpactRules.WallHit(last.planehittics, false,
+    RX_InRadixSector(Psubsector_t(pmo.subsector).sector), gate);
+  inc(radixwallhits[pnum], impact.Penalty);
+  RX_ImpactSound(pnum, pmo, impact);
+
+  if impact.Smokes <= 0 then
+    exit;
+  RX_InitSmokeIds;
+  if (id_hitsmoke1 < 0) or (id_hitsmoke2 < 0) then
+    exit;
+
+  kind := Sys_Random;
+  if kind < 128 then
+    smokeid := id_hitsmoke1
+  else
+    smokeid := id_hitsmoke2;
+  heightrnd := Sys_Random;
+  mo := P_SpawnMobj(pmo.x div 2 + tryx div 2, pmo.y div 2 + tryy div 2,
+    pmo.z + (pmo.height div 256 * heightrnd), smokeid);
+  velx := pmo.x - last.x;
+  vely := pmo.y - last.y;
+  velz := pmo.z - last.z;
+  first := Sys_Random;
+  second := Sys_Random;
+  mo.momx := velx + (first - second) * 64;
+  first := Sys_Random;
+  second := Sys_Random;
+  mo.momy := vely + (first - second) * 64;
+  first := Sys_Random;
+  second := Sys_Random;
+  mo.momz := velz + (first - second) * 64;
+end;
+
+//==============================================================================
+//
+// RX_TouchDamageOf
+// The touch damage that a thing takes from the one that touches it
+//
+//==============================================================================
+procedure RX_TouchDamageOf(const target, toucher: Pmobj_t);
+var
+  damage: integer;
+begin
+  damage := TRadixDamageRules.TouchDamage(target.flags and MF_SHOOTABLE <> 0, target.health,
+    RX_ActorTouchDamage(target._type), false, toucher.player <> nil);
+  if damage > 0 then
+    P_DamageMobj(target, toucher, toucher.target, damage);
+end;
+
+//==============================================================================
+//
+// RX_ThingTouched
+//
+//==============================================================================
+procedure RX_ThingTouched(const thing, toucher: Pmobj_t);
+begin
+  RX_TouchDamageOf(thing, toucher);
+  // the damage above may have killed the toucher
+  if toucher.health > 0 then
+    RX_TouchDamageOf(toucher, thing);
 end;
 
 end.

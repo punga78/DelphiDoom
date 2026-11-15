@@ -57,7 +57,41 @@ hunt 400
 # the access panel (wall 696): shot, it switches the force field off and opens the secret corridor
 goto -2150 -1500 z 420 fight timeout 1500
 face -1855 -1568
-hold 150 fire
+# The panel is the wall below the opening of a two sided line (floors 352 and 480): a shot above
+# 480 goes through. The craft that fires drifts up or down, so it goes back to the height before
+# each short burst (as in e1m1.script)
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
+climb 400
+hold 12 fire
 heal 95 1000
 save 0
 hold 3

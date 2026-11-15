@@ -215,6 +215,7 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.Engine.World.PhysicsExtension,
   doomdata,
   doomstat,
   g_game,
@@ -804,6 +805,10 @@ begin
 
   // JVAL: Pushable things
   P_PushByContact(thing);
+
+  // a game with the physics of its own (Radix: touch damage)
+  if TPhysicsExtension.Enabled then
+    TPhysicsExtension.ThingContact(thing, tmthing);
 
   // check for special pickup
   result := P_ContactPickup(thing);

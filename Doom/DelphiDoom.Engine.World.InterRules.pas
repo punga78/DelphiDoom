@@ -86,6 +86,7 @@ implementation
 uses
   c_cmds,
   d_delphi,
+  DelphiDoom.Engine.World.PhysicsExtension,
   info_h,
   info,
   m_fixed,
@@ -1010,8 +1011,14 @@ begin
     exit;
 
   player := target.player;
-  if (player <> nil) and (gameskill = sk_baby) then
-    damage := _SHR1(damage); // take half damage in trainer mode
+  if player <> nil then
+  begin
+    // a game with its own scale of the damage to a player replaces the trainer mode (Radix)
+    if TPhysicsExtension.Enabled then
+      damage := TPhysicsExtension.PlayerDamage(target, inflictor, damage)
+    else if gameskill = sk_baby then
+      damage := _SHR1(damage); // take half damage in trainer mode
+  end;
 
   if (inflictor <> nil) and (target.flags_ex and MF_EX_FIRERESIST <> 0) then
   begin

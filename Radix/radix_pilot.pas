@@ -89,11 +89,9 @@ type
   end;
   Pradixpilot_t = ^radixpilot_t;
 
-  // where a craft was and how fast it went at the end of the tic before
+  // the body a craft had at the end of the tic before
   pilotlastmove_t = record
     mo: Pmobj_t;
-    x, y: fixed_t;
-    momx, momy: fixed_t;
   end;
 
 const
@@ -104,31 +102,21 @@ var
 
 //==============================================================================
 //
-// RX_PilotCountsWallHit
-// Rad-X counted a hit in P_XYMovement when the move of a craft failed; the
-// movement of the engine is not touched here: a craft that has made less than
-// half of the way of its speed was stopped by something
+// RX_PilotStartup
+// The hits of a craft against the walls are counted where the engine blocks the move
+// (TPhysicsExtension.PlayerHitWall); here only the message of a craft at the start of a level
+// (P_SpawnPlayer of Rad-X)
 //
 //==============================================================================
-procedure RX_PilotCountsWallHit(const pnum: integer; const p: Pplayer_t);
+procedure RX_PilotStartup(const pnum: integer; const p: Pplayer_t);
 var
   last: ^pilotlastmove_t;
 begin
   last := @pilotlastmoves[pnum];
-  if last.mo = p.mo then
-  begin
-    if TRadixFlightModel.IsStopped(last.momx, last.momy, p.mo.x - last.x, p.mo.y - last.y) then
-      inc(radixwallhits[pnum]);
-  end
-  // a craft at the start of a level: the message of P_SpawnPlayer of Rad-X (a saved game that is
-  // loaded has a new body too, later in the level)
-  else if leveltime <= STARTUPMESSAGETICS then
+  // a saved game that is loaded has a new body too, later in the level
+  if (last.mo <> p.mo) and (leveltime <= STARTUPMESSAGETICS) then
     p._message := ShortString(TRadixMessages.StartUp(gameepisode, gamemap));
   last.mo := p.mo;
-  last.x := p.mo.x;
-  last.y := p.mo.y;
-  last.momx := p.mo.momx;
-  last.momy := p.mo.momy;
 end;
 
 //==============================================================================
@@ -177,11 +165,9 @@ begin
   p.cheats := p.cheats or CF_LOWGRAVITY;
   pmo.flags := pmo.flags or MF_NOGRAVITY;
 
-  // P_DamageMobj of Rad-X scaled what hits a craft: damage * (1 + skill) div 5, then
-  // * (128 + P_Random) div 384 (about a quarter of the damage at "easy", a half at "hard").
-  // P_DamageMobj of Doom has only the half damage of a thing that resists fire: without it
-  // one laser (10 * 1..8) took up to 80 of the 100 points of the shield
-  pmo.flags_ex := pmo.flags_ex or MF_EX_FIRERESIST;
+  // what hits a craft is scaled by the skill and by a random factor in TInterGameRules.DamageMobj
+  // (the hook ScalesPlayerDamage of DelphiDoom.Engine.World.PhysicsExtension), as in P_DamageMobj
+  // of Rad-X: the approximation that stood here (MF_EX_FIRERESIST, half the damage) is gone
 
   has_mj := rp.radixpowers[Ord(rpu_maneuverjets)] > 0;
   pmo.momx := TRadixFlightModel.Drag(pmo.momx, has_mj);
@@ -287,11 +273,10 @@ begin
       end;
       if p.playerstate = PST_LIVE then
       begin
-        RX_PilotCountsWallHit(i, p);
+        RX_PilotStartup(i, p);
         RX_PilotImpacts(i, p);
         RX_PilotFly(p, RX_PlayerState(p));
         RX_PilotControls(p, RX_PlayerState(p));
-        RX_PilotTouchDamage(p);
         RX_PilotFindsSecret(p);
         RX_PilotInventoryTick(p);
         RX_PilotWeaponsTick(p);

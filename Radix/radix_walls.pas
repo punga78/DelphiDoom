@@ -10,14 +10,12 @@
 {  flags and the trigger of a wall (fields of the line_t of Rad-X) are the     }
 {  ones of RMAP in radixwallinfo.                                              }
 {                                                                              }
-{  Rad-X damaged a wall from P_XYMovement, when a missile was stopped by a     }
-{  line, and from the hitscan trace. The movement code of the engine is not    }
-{  touched here: RX_TrackShots, run every tic by the thinker of the level,     }
-{  remembers the missiles of the players that fly and, when one of them has    }
-{  exploded, looks for the wall that can be shot in front of it. Not ported:   }
-{  the damage of a hitscan shot, the lines with the specials 286..290 of       }
-{  Rad-X (RWF_SHOOTABLE), the flag MF3_EX_CANDAMAGEWALLS (every missile of a   }
-{  player damages the walls)                                                   }
+{  Rad-X damaged a wall from P_ExplodeMissile, when a missile was stopped by   }
+{  a line: the rule is TPhysicsExtension.MissileHitLine of                     }
+{  TMobjGameRules.BlockedMove (issue #169; the guess that stood here, a        }
+{  tracker of the shots of the players run by the level thinker, is gone).     }
+{  Not ported: the damage of a hitscan shot, the lines with the specials       }
+{  286..290 of Rad-X (RWF_SHOOTABLE)                                           }
 {                                                                              }
 {******************************************************************************}
 
@@ -27,14 +25,9 @@ unit radix_walls;
 
 interface
 
-//==============================================================================
-//
-// RX_InitWalls
-// To call when the level is loaded, after the walls that fire missiles are
-// marked: finds the walls that can be shot and forgets the shots
-//
-//==============================================================================
-procedure RX_InitWalls;
+uses
+  p_mobj_h,
+  r_defs;
 
 //==============================================================================
 //
@@ -69,37 +62,23 @@ procedure RX_DamageLine(const lineid: integer; const damage: integer);
 
 //==============================================================================
 //
-// RX_TrackShots
-// Every tic: the missiles of the players that have exploded damage the wall in
-// front of them
+// RX_MissileTargetLine
+// The line that has stopped a missile, when it is a wall that can be shot: a
+// one sided line (tmbounceline) or a two sided one that closes the opening
+// (ceilingline: the walls of Radix are closed sectors); nil for any other
 //
 //==============================================================================
-procedure RX_TrackShots;
-
-type
-  trackedshot_t = record
-    key: LongWord;
-    x, y: integer;        // where it is now (fixed_t)
-    oldx, oldy: integer;  // where it was a tic ago (where it is now, for a new shot)
-    momx, momy: integer;
-  end;
-  trackedshot_tArray = array of trackedshot_t;
+function RX_MissileTargetLine(const mo: Pmobj_t): Pline_t;
 
 //==============================================================================
 //
-// RX_GetTrackedShots
-// The shots of the players that were flying at the last tic, for a saved game
+// RX_MissileHitsLine
+// A missile has exploded against a line (tmbounceline of P_XYMovement): when the
+// kind of the missile can damage walls the line takes the damage of the missile
+// times 1..3 (P_ExplodeMissile of Rad-X)
 //
 //==============================================================================
-function RX_GetTrackedShots: trackedshot_tArray;
-
-//==============================================================================
-//
-// RX_SetTrackedShots
-// The shots of a saved game in the place of the ones that are tracked
-//
-//==============================================================================
-procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
+procedure RX_MissileHitsLine(const mo: Pmobj_t; const line: Pline_t);
 
 implementation
 
@@ -109,18 +88,21 @@ uses
   m_fixed,
   m_rnd,
   tables,
-  p_mobj_h,
   p_mobj,
+  p_map,
   p_maputl,
   p_setup,
   p_tick,
-  r_defs,
   r_main,
   radix_codepointers,
   radix_logic,
   radix_map_extra,
+  radix_pickups,
+  p_local,
+  DelphiDoom.MathCore.Types,
   DelphiDoom.Radix.LevelLogic.Types,
-  DelphiDoom.Radix.Action.Rules;
+  DelphiDoom.Radix.Action.Rules,
+  DelphiDoom.Radix.Physics.Contact;
 
 const
   WALLEXPLOSIONOFFSET = 24;
@@ -128,17 +110,6 @@ const
 const
   LEF_DELAY = 0;
   LEF_NODELAY = 1;
-
-const
-  // how far past its own step and radius an exploded shot reaches a wall (map units)
-  SHOTREACHMARGIN = 16;
-
-var
-  shootablelines: array of integer;
-  shots: trackedshot_tArray;
-  numshots: integer = 0;
-  prevshots: trackedshot_tArray;
-  numprevshots: integer = 0;
 
 //==============================================================================
 //
@@ -176,29 +147,6 @@ begin
   if radixwallinfo[lineid].Flags and (RWF_ACTIVATETRIGGER or RWF_MISSILEWALL) = 0 then
     exit;
   result := radixwallinfo[lineid].HitPoints > 0;
-end;
-
-//==============================================================================
-//
-// RX_InitWalls
-//
-//==============================================================================
-procedure RX_InitWalls;
-var
-  i: integer;
-  cnt: integer;
-begin
-  numshots := 0;
-  numprevshots := 0;
-  SetLength(shootablelines, numlines);
-  cnt := 0;
-  for i := 0 to numlines - 1 do
-    if RX_ShootableLine(i) then
-    begin
-      shootablelines[cnt] := i;
-      inc(cnt);
-    end;
-  SetLength(shootablelines, cnt);
 end;
 
 //==============================================================================
@@ -327,186 +275,101 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// RX_ShotPassesLine
-// True when the shot is in the opening of a two sided line
-//
-//==============================================================================
-function RX_ShotPassesLine(const mo: Pmobj_t; const l: Pline_t): boolean;
 var
-  top, bottom: fixed_t;
+  targetmissile: Pmobj_t;
+  targetline: Pline_t;
+
+//==============================================================================
+//
+// PIT_RadixTargetLine
+// A line of the tried place of a missile that can be shot and that stops it: a
+// one sided line, or a two sided one whose opening does not hold the missile
+// (the panel under the opening of a two sided line is how Radix makes a target)
+//
+//==============================================================================
+function PIT_RadixTargetLine(ld: Pline_t): boolean;
 begin
-  result := false;
-  if (l.backsector = nil) or (l.frontsector = nil) then
+  result := true;
+  if (tmbbox[BOX_RIGHT] <= ld.bbox[BOX_LEFT]) or
+     (tmbbox[BOX_LEFT] >= ld.bbox[BOX_RIGHT]) or
+     (tmbbox[BOX_TOP] <= ld.bbox[BOX_BOTTOM]) or
+     (tmbbox[BOX_BOTTOM] >= ld.bbox[BOX_TOP]) then
     exit;
-  top := l.frontsector.ceilingheight;
-  if l.backsector.ceilingheight < top then
-    top := l.backsector.ceilingheight;
-  bottom := l.frontsector.floorheight;
-  if l.backsector.floorheight > bottom then
-    bottom := l.backsector.floorheight;
-  result := (mo.z >= bottom) and (mo.z + mo.height <= top);
+
+  if P_BoxOnLineSide(@tmbbox, ld) <> -1 then
+    exit;
+
+  if not RX_ShootableLine(pDiff(ld, @lines[0], SizeOf(line_t))) then
+    exit;
+
+  if (ld.backsector <> nil) and (ld.frontsector <> nil) then
+  begin
+    if not TRadixContactRules.LineStopsMissile(true, targetmissile.z, targetmissile.height,
+      ld.frontsector.floorheight, ld.backsector.floorheight,
+      ld.frontsector.ceilingheight, ld.backsector.ceilingheight) then
+      exit; // the missile is in the opening
+  end;
+
+  targetline := ld;
+  result := false;
 end;
 
 //==============================================================================
 //
-// RX_ShotHitsWall
-// A missile of a player has exploded: the first wall that can be shot on its
-// way, within its last step from where it was seen flying, is damaged
+// RX_MissileTargetLine
+// PIT_CheckLine of Rad-X remembered the line that stopped a move (tmline,
+// tmbounceline) for any kind of line; the engine knows only the one sided ones,
+// so the lines of the place that was tried are looked at again, once, for the
+// missile that was stopped
 //
 //==============================================================================
-procedure RX_ShotHitsWall(const mo: Pmobj_t; const shot: trackedshot_t);
+function RX_MissileTargetLine(const mo: Pmobj_t): Pline_t;
 var
-  i: integer;
-  lineid: integer;
-  l: Pline_t;
-  best: integer;
-  bestdist: double;
-  dist: double;
-  reach: double;
-  speed: double;
-  flown: double;
-  px, py, dx, dy: double;
-  rnd: integer;
+  xl, xh, yl, yh: integer;
+  bx, by: integer;
 begin
-  // The way of the shot starts where it was two tics before it exploded: a fast and small
-  // shot (56 units a tic, radius 13: the engine moves it 28 units at a time) goes through a
-  // one sided wall and explodes against the next one, inside the solid part of the map
-  px := shot.oldx / FRACUNIT;
-  py := shot.oldy / FRACUNIT;
-  dx := shot.momx / FRACUNIT;
-  dy := shot.momy / FRACUNIT;
-  speed := sqrt(dx * dx + dy * dy);
-  if speed <= 0.0 then
-    exit;
-  flown := sqrt(sqr(shot.x / FRACUNIT - px) + sqr(shot.y / FRACUNIT - py));
-  reach := flown + speed + mo.radius / FRACUNIT + SHOTREACHMARGIN;
-
-  best := -1;
-  bestdist := reach;
-  for i := 0 to Length(shootablelines) - 1 do
+  targetmissile := mo;
+  targetline := nil;
+  if internalblockmapformat then
   begin
-    lineid := shootablelines[i];
-    if not RX_ShootableLine(lineid) then
-      continue;
-    l := @lines[lineid];
-    if not TRadixActionRules.WallOnPath(px, py, px + dx / speed * reach, py + dy / speed * reach,
-         l.v1.x / FRACUNIT, l.v1.y / FRACUNIT, l.v2.x / FRACUNIT, l.v2.y / FRACUNIT,
-         mo.radius / FRACUNIT, dist) then
-      continue;
-    if dist > bestdist then
-      continue;
-    if RX_ShotPassesLine(mo, l) then
-      continue;
-    best := lineid;
-    bestdist := dist;
+    xl := MapBlockIntX(int64(tmbbox[BOX_LEFT]) - int64(bmaporgx));
+    xh := MapBlockIntX(int64(tmbbox[BOX_RIGHT]) - int64(bmaporgx));
+    yl := MapBlockIntY(int64(tmbbox[BOX_BOTTOM]) - int64(bmaporgy));
+    yh := MapBlockIntY(int64(tmbbox[BOX_TOP]) - int64(bmaporgy));
+  end
+  else
+  begin
+    xl := MapBlockInt(tmbbox[BOX_LEFT] - bmaporgx);
+    xh := MapBlockInt(tmbbox[BOX_RIGHT] - bmaporgx);
+    yl := MapBlockInt(tmbbox[BOX_BOTTOM] - bmaporgy);
+    yh := MapBlockInt(tmbbox[BOX_TOP] - bmaporgy);
   end;
 
-  if best < 0 then
+  inc(validcount);
+  for bx := xl to xh do
+    for by := yl to yh do
+      if not P_BlockLinesIterator(bx, by, PIT_RadixTargetLine) then
+      begin
+        result := targetline;
+        exit;
+      end;
+  result := nil;
+end;
+
+//==============================================================================
+//
+// RX_MissileHitsLine
+//
+//==============================================================================
+procedure RX_MissileHitsLine(const mo: Pmobj_t; const line: Pline_t);
+var
+  rnd: integer;
+begin
+  if not RX_ActorCanDamageWalls(mo._type) then
     exit;
 
   rnd := (P_Random mod 3) + 1;
-  RX_DamageLine(best, mo.info.damage * rnd);
-end;
-
-//==============================================================================
-//
-// RX_RememberShot
-//
-//==============================================================================
-procedure RX_RememberShot(const mo: Pmobj_t);
-var
-  i: integer;
-begin
-  if numshots >= Length(shots) then
-    SetLength(shots, numshots + 64);
-  shots[numshots].key := mo.key;
-  shots[numshots].x := mo.x;
-  shots[numshots].y := mo.y;
-  shots[numshots].oldx := mo.x;
-  shots[numshots].oldy := mo.y;
-  for i := 0 to numprevshots - 1 do
-    if prevshots[i].key = mo.key then
-    begin
-      shots[numshots].oldx := prevshots[i].x;
-      shots[numshots].oldy := prevshots[i].y;
-      break;
-    end;
-  shots[numshots].momx := mo.momx;
-  shots[numshots].momy := mo.momy;
-  inc(numshots);
-end;
-
-//==============================================================================
-//
-// RX_TrackShots
-//
-//==============================================================================
-procedure RX_TrackShots;
-var
-  think: Pthinker_t;
-  mo: Pmobj_t;
-  i: integer;
-  tmp: trackedshot_tArray;
-begin
-  // a level without walls to shoot has nothing to track
-  if Length(shootablelines) = 0 then
-    exit;
-
-  numshots := 0;
-  think := thinkercap.next;
-  while think <> @thinkercap do
-  begin
-    if @think._function.acp1 = @P_MobjThinker then
-    begin
-      mo := Pmobj_t(think);
-      if mo.flags and MF_MISSILE <> 0 then
-      begin
-        if (mo.target <> nil) and (mo.target.player <> nil) then
-          if (mo.momx <> 0) or (mo.momy <> 0) then
-            RX_RememberShot(mo);
-      end
-      else if numprevshots > 0 then
-      begin
-        for i := 0 to numprevshots - 1 do
-          if prevshots[i].key = mo.key then
-          begin
-            RX_ShotHitsWall(mo, prevshots[i]);
-            break;
-          end;
-      end;
-    end;
-    think := think.next;
-  end;
-
-  tmp := prevshots;
-  prevshots := shots;
-  shots := tmp;
-  numprevshots := numshots;
-  numshots := 0;
-end;
-
-//==============================================================================
-//
-// RX_GetTrackedShots
-//
-//==============================================================================
-function RX_GetTrackedShots: trackedshot_tArray;
-begin
-  result := Copy(prevshots, 0, numprevshots);
-end;
-
-//==============================================================================
-//
-// RX_SetTrackedShots
-//
-//==============================================================================
-procedure RX_SetTrackedShots(const saved: trackedshot_tArray);
-begin
-  prevshots := Copy(saved);
-  numprevshots := Length(prevshots);
-  numshots := 0;
+  RX_DamageLine(pDiff(line, @lines[0], SizeOf(line_t)), mo.info.damage * rnd);
 end;
 
 end.
