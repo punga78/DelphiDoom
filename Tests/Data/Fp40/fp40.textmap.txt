@@ -1,0 +1,368 @@
+namespace = "doom";
+thing
+{
+x = 128;
+y = 256;
+angle = 0;
+type = 1;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 700;
+y = 256;
+angle = 180;
+type = 44;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 700;
+y = 512;
+angle = 180;
+type = 45;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 700;
+y = 768;
+angle = 180;
+type = 46;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 900;
+y = 384;
+angle = 0;
+type = 2028;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 900;
+y = 640;
+angle = 0;
+type = 2035;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 300;
+y = 700;
+angle = 0;
+type = 2028;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+thing
+{
+x = 380;
+y = 300;
+angle = 0;
+type = 2035;
+skill1 = true;
+skill2 = true;
+skill3 = true;
+skill4 = true;
+skill5 = true;
+single = true;
+coop = true;
+dm = true;
+}
+vertex
+{
+x = 0;
+y = 0;
+}
+vertex
+{
+x = 512;
+y = 0;
+}
+vertex
+{
+x = 1024;
+y = 0;
+}
+vertex
+{
+x = 1024;
+y = 1024;
+}
+vertex
+{
+x = 512;
+y = 1024;
+}
+vertex
+{
+x = 0;
+y = 1024;
+}
+vertex
+{
+x = 2000;
+y = 0;
+}
+vertex
+{
+x = 2000;
+y = 64;
+}
+vertex
+{
+x = 2064;
+y = 64;
+}
+vertex
+{
+x = 2064;
+y = 0;
+}
+sidedef
+{
+sector = 0;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 0;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 0;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 0;
+texturemiddle = "-";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 1;
+texturemiddle = "-";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 1;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 1;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 1;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 2;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 2;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 2;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+sidedef
+{
+sector = 2;
+texturemiddle = "BROWN1";
+texturetop = "BROWN1";
+texturebottom = "BROWN1";
+}
+linedef
+{
+v1 = 0;
+v2 = 5;
+sidefront = 0;
+blocking = true;
+}
+linedef
+{
+v1 = 5;
+v2 = 4;
+sidefront = 1;
+blocking = true;
+}
+linedef
+{
+v1 = 1;
+v2 = 0;
+sidefront = 2;
+blocking = true;
+}
+linedef
+{
+v1 = 4;
+v2 = 1;
+sidefront = 3;
+sideback = 4;
+twosided = true;
+}
+linedef
+{
+v1 = 4;
+v2 = 3;
+sidefront = 5;
+blocking = true;
+}
+linedef
+{
+v1 = 3;
+v2 = 2;
+sidefront = 6;
+blocking = true;
+}
+linedef
+{
+v1 = 2;
+v2 = 1;
+sidefront = 7;
+blocking = true;
+}
+linedef
+{
+v1 = 6;
+v2 = 7;
+sidefront = 8;
+blocking = true;
+special = 281;
+id = 2;
+}
+linedef
+{
+v1 = 7;
+v2 = 8;
+sidefront = 9;
+blocking = true;
+}
+linedef
+{
+v1 = 8;
+v2 = 9;
+sidefront = 10;
+blocking = true;
+}
+linedef
+{
+v1 = 9;
+v2 = 6;
+sidefront = 11;
+blocking = true;
+}
+sector
+{
+heightfloor = 0;
+heightceiling = 256;
+texturefloor = "FLOOR4_8";
+textureceiling = "CEIL3_5";
+lightlevel = 200;
+floorplane_a = -0.195655757;
+floorplane_b = -0.068479515;
+floorplane_c = 0.978278785;
+floorplane_d = 0;
+ceilingplane_a = -0.099459415;
+ceilingplane_b = 0.029837825;
+ceilingplane_c = -0.994594153;
+ceilingplane_d = 254.616103136;
+}
+sector
+{
+heightfloor = 0;
+heightceiling = 256;
+texturefloor = "FLOOR0_1";
+textureceiling = "CEIL3_5";
+lightlevel = 200;
+id = 2;
+}
+sector
+{
+heightfloor = 64;
+heightceiling = 128;
+texturefloor = "FLAT1";
+textureceiling = "FLAT1";
+lightlevel = 220;
+}

@@ -1,0 +1,37 @@
+# Issue #40: un giro nella mappa fp40.wad (Make-Mappa-Virgola.ps1) per vedere pendenze, pavimento 3D e voxel.
+# Un comando di sguardo (look) vale solo con zaxisshift=1; senza, il giocatore guarda dritto.
+hold 12
+shot 1
+hold 25 look 6
+shot 2
+hold 25 look -6
+shot 3
+hold 6 center
+goto 330 300 timeout 400
+shot 4
+hold 20 look 4 turn 2
+shot 5
+goto 380 760 timeout 500
+hold 18 look -3 turn -2
+shot 6
+goto 470 512 timeout 500
+hold 15 look 5
+shot 7
+goto 760 512 timeout 600
+hold 10 center
+shot 8
+face 700 256 timeout 200
+hold 12 look 4
+shot 9
+face 700 768 timeout 200
+hold 12 look -4
+shot 10
+goto 900 300 timeout 600
+hold 25 look 7
+shot 11
+hold 25 turn 3 look -5
+shot 12
+goto 600 900 timeout 600
+hold 20 center
+shot 13
+hold 20

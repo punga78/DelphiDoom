@@ -12,24 +12,22 @@ unit DelphiDoom.EngineSystem.WindowsCrashLogger;
 // crash.txt next to the executable. It uses only Windows API calls and objects that were made
 // when the logger was installed, so it works even if the heap is corrupted.
 //
-// A Win32 logger: the registers of the report are the ones of the x86 context. On Win64 Install
-// does nothing (no crash.txt) until the report has a 64 bit form.
+// At 32 bit the report has the registers of the x86 context and walks the EBP chain
+// (TCrashReportWriter). At 64 bit (issue #40) it has the registers of the x64 context, the return
+// addresses that the unwinder of Windows finds (RtlVirtualUnwind: x64 code has no frame pointer
+// chain) and a stack scan (TCrashReportWriter64).
 
 interface
 
-{$IFDEF CPUX86}
 uses
   Winapi.Windows;
-{$ENDIF}
 
-{$IFDEF CPUX86}
 type
   /// <summary>What the unhandled exception filter receives (EXCEPTION_POINTERS)</summary>
   PCrashExceptionInfo = ^TExceptionPointers;
 
 const
   CRASH_EXECUTE_HANDLER = 1;
-{$ENDIF}
 
 type
   /// <summary>Installs the unhandled exception filter that writes the crash report</summary>
@@ -40,33 +38,96 @@ type
     ///   executable when AFileName is empty. Calling it again changes the file
     /// </summary>
     class procedure Install(const AFileName: string = ''); static;
-{$IFDEF CPUX86}
     /// <summary>
     ///   Writes the report of AInfo to the file of the installed logger; false if the logger is not
     ///   installed or the file cannot be created. The filter calls it; the tests call it with a made-up exception
     /// </summary>
     class function Report(AInfo: PCrashExceptionInfo): Boolean; static;
-{$ENDIF}
     /// <summary>Puts back the filter that was there before Install</summary>
     class procedure Uninstall; static;
   end;
 
 implementation
 
-{$IFDEF CPUX86}
 uses
-  DelphiDoom.EngineSystem.Types, DelphiDoom.EngineSystem.Intf,
-  DelphiDoom.EngineSystem.CrashReportWriter, DelphiDoom.EngineSystem.FileCrashSink,
-  DelphiDoom.EngineSystem.WindowsCrashMemory;
+  DelphiDoom.EngineSystem.Types, DelphiDoom.EngineSystem.Intf, DelphiDoom.EngineSystem.FileCrashSink,
+{$IFDEF CPUX86}
+  DelphiDoom.EngineSystem.CrashReportWriter, DelphiDoom.EngineSystem.WindowsCrashMemory;
+{$ELSE}
+  DelphiDoom.EngineSystem.CrashReportWriter64, DelphiDoom.EngineSystem.WindowsCrashMemory64;
+{$ENDIF}
 
 var
   // made by Install: the filter must not allocate when it runs
   GSink: ICrashFileSink = nil;
+{$IFDEF CPUX86}
   GWriter: TCrashReportWriter = nil;
+{$ELSE}
+  GWriter: TCrashReportWriter64 = nil;
+  GMemory: ICrashMemory64 = nil;
+{$ENDIF}
   GPath: array[0..MAX_PATH] of AnsiChar;
   GPathReady: Boolean = False;
   GCrashing: LongInt = 0;
   GPrevious: TFNTopLevelExceptionFilter = nil;
+
+{$IFNDEF CPUX86}
+type
+  PRuntimeFunctionEntry = Pointer;
+
+const
+  UNW_FLAG_NHANDLER = 0;
+
+// kernel32 exports them; the RTL does not declare them
+function RtlLookupFunctionEntry(AControlPc: UInt64; var AImageBase: UInt64;
+  AHistoryTable: Pointer): PRuntimeFunctionEntry; stdcall; external kernel32;
+
+function RtlVirtualUnwind(AHandlerType: DWORD; AImageBase, AControlPc: UInt64;
+  AFunctionEntry: PRuntimeFunctionEntry; var AContext: TContext; var AHandlerData: Pointer;
+  var AEstablisherFrame: UInt64; AContextPointers: Pointer): Pointer; stdcall; external kernel32;
+
+// The return addresses of the crashed code, innermost first, by unwinding a copy of the context
+// with the unwind data of the executable. A function without unwind data is a leaf: its return
+// address is at the top of the stack. Nothing is allocated.
+procedure CollectFrames(AContext: PContext; var ASnapshot: TCrashSnapshot64);
+var
+  LContext: TContext;
+  LEntry: PRuntimeFunctionEntry;
+  LUnwindBase: UInt64;
+  LHandlerData: Pointer;
+  LEstablisher: UInt64;
+  LPreviousStack: UInt64;
+  LIndex: Integer;
+begin
+  LContext := AContext^;
+  ASnapshot.FrameCount := 0;
+  for LIndex := 0 to CRASH_MAX_FRAMES_64 - 1 do
+  begin
+    LPreviousStack := LContext.Rsp;
+    LUnwindBase := 0;
+    LEntry := RtlLookupFunctionEntry(LContext.Rip, LUnwindBase, nil);
+    if LEntry = nil then
+    begin
+      if not GMemory.IsReadable(LContext.Rsp, 8) then
+        Break;
+      LContext.Rip := GMemory.ReadQWord(LContext.Rsp);
+      Inc(LContext.Rsp, 8);
+    end
+    else
+    begin
+      LHandlerData := nil;
+      LEstablisher := 0;
+      RtlVirtualUnwind(UNW_FLAG_NHANDLER, LUnwindBase, LContext.Rip, LEntry, LContext,
+        LHandlerData, LEstablisher, nil);
+    end;
+    // the end of the chain, or a stack that does not go up: stop
+    if (LContext.Rip = 0) or (LContext.Rsp <= LPreviousStack) then
+      Break;
+    ASnapshot.Frames[ASnapshot.FrameCount] := LContext.Rip;
+    Inc(ASnapshot.FrameCount);
+  end;
+end;
+{$ENDIF}
 
 function CrashFilter(AInfo: PCrashExceptionInfo): LongInt; stdcall;
 begin
@@ -86,7 +147,12 @@ begin
   if not Assigned(GWriter) then
   begin
     GSink := TFileCrashSink.Create;
+{$IFDEF CPUX86}
     GWriter := TCrashReportWriter.Create(GSink, TWindowsCrashMemory.Create);
+{$ELSE}
+    GMemory := TWindowsCrashMemory64.Create;
+    GWriter := TCrashReportWriter64.Create(GSink, GMemory);
+{$ENDIF}
   end;
 
   GPathReady := False;
@@ -127,7 +193,11 @@ end;
 class function TWindowsCrashLogger.Report(AInfo: PCrashExceptionInfo): Boolean;
 var
   LFile: THandle;
+{$IFDEF CPUX86}
   LSnapshot: TCrashSnapshot;
+{$ELSE}
+  LSnapshot: TCrashSnapshot64;
+{$ENDIF}
   LNtHeaders: PImageNtHeaders;
   LContext: PContext;
   LRecord: PExceptionRecord;
@@ -140,6 +210,7 @@ begin
   if LFile = INVALID_HANDLE_VALUE then
     Exit;
 
+{$IFDEF CPUX86}
   LSnapshot.ImageBase := Cardinal(GetModuleHandle(nil));
   LNtHeaders := PImageNtHeaders(NativeUInt(LSnapshot.ImageBase) +
     NativeUInt(PImageDosHeader(NativeUInt(LSnapshot.ImageBase))._lfanew));
@@ -161,6 +232,39 @@ begin
   LSnapshot.Edx := LContext.Edx;
   LSnapshot.Esi := LContext.Esi;
   LSnapshot.Edi := LContext.Edi;
+{$ELSE}
+  FillChar(LSnapshot, SizeOf(LSnapshot), 0);
+  LSnapshot.ImageBase := UInt64(GetModuleHandle(nil));
+  LNtHeaders := PImageNtHeaders(NativeUInt(LSnapshot.ImageBase) +
+    NativeUInt(PImageDosHeader(NativeUInt(LSnapshot.ImageBase))._lfanew));
+  LSnapshot.ImageSize := LNtHeaders.OptionalHeader.SizeOfImage;
+  LContext := AInfo.ContextRecord;
+  LRecord := AInfo.ExceptionRecord;
+  LSnapshot.ExceptionCode := LRecord.ExceptionCode;
+  LSnapshot.ExceptionAddress := UInt64(LRecord.ExceptionAddress);
+  LSnapshot.ThreadId := GetCurrentThreadId;
+  LSnapshot.ParameterCount := LRecord.NumberParameters;
+  LSnapshot.Parameter0 := LRecord.ExceptionInformation[0];
+  LSnapshot.Parameter1 := LRecord.ExceptionInformation[1];
+  LSnapshot.Rip := LContext.Rip;
+  LSnapshot.Rsp := LContext.Rsp;
+  LSnapshot.Rbp := LContext.Rbp;
+  LSnapshot.Rax := LContext.Rax;
+  LSnapshot.Rbx := LContext.Rbx;
+  LSnapshot.Rcx := LContext.Rcx;
+  LSnapshot.Rdx := LContext.Rdx;
+  LSnapshot.Rsi := LContext.Rsi;
+  LSnapshot.Rdi := LContext.Rdi;
+  LSnapshot.R8 := LContext.R8;
+  LSnapshot.R9 := LContext.R9;
+  LSnapshot.R10 := LContext.R10;
+  LSnapshot.R11 := LContext.R11;
+  LSnapshot.R12 := LContext.R12;
+  LSnapshot.R13 := LContext.R13;
+  LSnapshot.R14 := LContext.R14;
+  LSnapshot.R15 := LContext.R15;
+  CollectFrames(LContext, LSnapshot);
+{$ENDIF}
 
   GSink.SetTarget(LFile);
   GWriter.Write(LSnapshot);
@@ -177,20 +281,5 @@ begin
   end;
   GCrashing := 0;
 end;
-
-{$ELSE}
-
-{ TWindowsCrashLogger }
-
-class procedure TWindowsCrashLogger.Install(const AFileName: string);
-begin
-  // no report for a 64 bit process yet
-end;
-
-class procedure TWindowsCrashLogger.Uninstall;
-begin
-end;
-
-{$ENDIF}
 
 end.

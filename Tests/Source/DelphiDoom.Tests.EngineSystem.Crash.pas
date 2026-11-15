@@ -31,6 +31,16 @@ type
     function ReadDWord(AAddress: Cardinal): Cardinal;
   end;
 
+  /// <summary>A 64 bit memory made of the qwords that the test puts in it</summary>
+  TFakeCrashMemory64 = class(TInterfacedObject, ICrashMemory64)
+  public
+    Words: TDictionary<UInt64, UInt64>;
+    constructor Create;
+    destructor Destroy; override;
+    function IsReadable(AAddress: UInt64; ASize: Cardinal): Boolean;
+    function ReadQWord(AAddress: UInt64): UInt64;
+  end;
+
   [TestFixture]
   [Category('enginesystem')]
   TTestCrashReportWriter = class(TObject)
@@ -71,6 +81,40 @@ type
 
   [TestFixture]
   [Category('enginesystem')]
+  TTestCrashReportWriter64 = class(TObject)
+  private
+    FSink: TFakeCrashSink;
+    FSinkRef: ICrashSink;
+    FMemory: TFakeCrashMemory64;
+    FMemoryRef: ICrashMemory64;
+    function Snapshot: TCrashSnapshot64;
+    function Report(const ASnapshot: TCrashSnapshot64): string;
+  public
+    [Setup]
+    procedure Setup;
+    [TearDown]
+    procedure TearDown;
+
+    [Test]
+    procedure DovrebbeScrivereLIntestazioneEIRegistri;
+    [Test]
+    procedure DovrebbeScrivereLaViolazioneDiAccessoSoloSeLoE;
+    [Test]
+    procedure DovrebbeDireSeLIndirizzoEFuoriDallImmagine;
+    [Test]
+    procedure DovrebbeScrivereGliIndirizziDellaCatenaDiUnwind;
+    [Test]
+    procedure DovrebbeScrivereAlPiuTrentaduePassi;
+    [Test]
+    procedure DovrebbeCercareNelloStackSoloIndirizziDiCodice;
+    [Test]
+    procedure DovrebbeLeggereAlPiuCinquecentododiciParole;
+    [Test]
+    procedure DovrebbeDareErroreSeMancaUnaDipendenza;
+  end;
+
+  [TestFixture]
+  [Category('enginesystem')]
   TTestWindowsCrashLogger = class(TObject)
   public
 {$IFDEF CPUX86}
@@ -80,16 +124,27 @@ type
     procedure DovrebbeScrivereLoStessoRapportoDelVecchioFiltro;
     [Test]
     procedure DovrebbeDireFalsoSeIlFileNonSiCrea;
-{$ELSE}
-    [Test]
-    procedure DovrebbeNonInstallareNessunFiltroASessantaquattroBit;
 {$ENDIF}
+    [Test]
+    procedure DovrebbeScrivereIlRapportoDiUnCrashVero;
+    [Test]
+    procedure DovrebbeDireFalsoSeIlFileNonSiCreaConUnContestoVuoto;
   end;
+
+/// <summary>
+///   When the program was started as a crash probe (CRASH_PROBE_SWITCH and a file name) installs the
+///   crash logger, crashes with an access violation in a thread of the system and never returns;
+///   otherwise it does nothing. The project of the tests calls it before it runs the fixtures
+/// </summary>
+procedure RunCrashProbeIfRequested;
+
+const
+  CRASH_PROBE_SWITCH = '-crashprobe';
 
 implementation
 
 uses
-  System.IOUtils, DelphiDoom.EngineSystem.CrashReportWriter,
+  System.IOUtils, DelphiDoom.EngineSystem.CrashReportWriter, DelphiDoom.EngineSystem.CrashReportWriter64,
   Winapi.Windows, DelphiDoom.EngineSystem.WindowsCrashLogger
 {$IFDEF CPUX86}
   , DelphiDoom.Tests.EngineSystem.LegacyCrash
@@ -358,6 +413,239 @@ begin
   Assert.AreEqual(CRASH_STACK_DWORDS, LCount);
 end;
 
+function Hex16(AValue: UInt64): string;
+begin
+  Result := IntToHex(AValue, 16) + ' ';
+end;
+
+{ TFakeCrashMemory64 }
+
+constructor TFakeCrashMemory64.Create;
+begin
+  inherited Create;
+  Words := TDictionary<UInt64, UInt64>.Create;
+end;
+
+destructor TFakeCrashMemory64.Destroy;
+begin
+  Words.Free;
+  inherited Destroy;
+end;
+
+function TFakeCrashMemory64.IsReadable(AAddress: UInt64; ASize: Cardinal): Boolean;
+var
+  LOffset: Cardinal;
+begin
+  Result := True;
+  LOffset := 0;
+  while LOffset < ASize do
+  begin
+    if not Words.ContainsKey(AAddress + LOffset) then
+      Result := False;
+    Inc(LOffset, 8);
+  end;
+end;
+
+function TFakeCrashMemory64.ReadQWord(AAddress: UInt64): UInt64;
+begin
+  Result := Words[AAddress];
+end;
+
+{ TTestCrashReportWriter64 }
+
+procedure TTestCrashReportWriter64.Setup;
+begin
+  FSink := TFakeCrashSink.Create;
+  FSinkRef := FSink;
+  FMemory := TFakeCrashMemory64.Create;
+  FMemoryRef := FMemory;
+end;
+
+procedure TTestCrashReportWriter64.TearDown;
+begin
+  FMemoryRef := nil;
+  FSinkRef := nil;
+end;
+
+function TTestCrashReportWriter64.Snapshot: TCrashSnapshot64;
+begin
+  Result := Default(TCrashSnapshot64);
+  Result.ImageBase := $0000000140000000;
+  Result.ImageSize := $00100000;
+  Result.ExceptionCode := $C0000094;
+  Result.ExceptionAddress := $0000000140012345;
+  Result.ThreadId := 77;
+  Result.Rip := $0000000140012345;
+  Result.Rsp := $000000000019F000;
+end;
+
+function TTestCrashReportWriter64.Report(const ASnapshot: TCrashSnapshot64): string;
+var
+  LWriter: TCrashReportWriter64;
+begin
+  LWriter := TCrashReportWriter64.Create(FSinkRef, FMemoryRef);
+  try
+    LWriter.Write(ASnapshot);
+  finally
+    LWriter.Free;
+  end;
+  Result := string(FSink.Text);
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeScrivereLIntestazioneEIRegistri;
+var
+  LSnapshot: TCrashSnapshot64;
+  LExpected: string;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.Rax := $1111111111111111;
+  LSnapshot.R8 := $8888888888888888;
+  LSnapshot.R15 := $FFFFFFFFFFFFFFFF;
+  LExpected := 'DelphiDoom crash report (64 bit)'#13#10 +
+    'ExceptionCode   ' + Hex16($C0000094) + #13#10 +
+    'ExceptionAddr   ' + Hex16($0000000140012345) + #13#10 +
+    'ImageBase       ' + Hex16($0000000140000000) + #13#10 +
+    'ImageSize       ' + Hex16($00100000) + #13#10 +
+    'ThreadId        ' + Hex16(77) + #13#10 +
+    'Addr-ImageBase  ' + Hex16($00012345) + #13#10 +
+    'RIP ' + Hex16($0000000140012345) + #13#10 +
+    'RSP ' + Hex16($000000000019F000) + #13#10 +
+    'RBP ' + Hex16(0) + #13#10 +
+    'RAX ' + Hex16($1111111111111111) + #13#10 +
+    'RBX ' + Hex16(0) + #13#10 +
+    'RCX ' + Hex16(0) + #13#10 +
+    'RDX ' + Hex16(0) + #13#10 +
+    'RSI ' + Hex16(0) + #13#10 +
+    'RDI ' + Hex16(0) + #13#10 +
+    'R8  ' + Hex16($8888888888888888) + #13#10 +
+    'R9  ' + Hex16(0) + #13#10 +
+    'R10 ' + Hex16(0) + #13#10 +
+    'R11 ' + Hex16(0) + #13#10 +
+    'R12 ' + Hex16(0) + #13#10 +
+    'R13 ' + Hex16(0) + #13#10 +
+    'R14 ' + Hex16(0) + #13#10 +
+    'R15 ' + Hex16($FFFFFFFFFFFFFFFF) + #13#10 +
+    #13#10'Unwind chain (return address - ImageBase):'#13#10 +
+    #13#10'Stack scan (code addresses - ImageBase):'#13#10;
+  Assert.AreEqual(LExpected, Report(LSnapshot));
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeScrivereLaViolazioneDiAccessoSoloSeLoE;
+var
+  LSnapshot: TCrashSnapshot64;
+begin
+  LSnapshot := Snapshot;
+  Assert.AreEqual(0, Pos('AV operation', Report(LSnapshot)));
+  FSink.Text := '';
+  LSnapshot.ExceptionCode := CRASH_EXCEPTION_ACCESS_VIOLATION;
+  LSnapshot.ParameterCount := 2;
+  LSnapshot.Parameter0 := 1;
+  LSnapshot.Parameter1 := $00007FF700001000;
+  Assert.IsTrue(Pos('AV operation    ' + Hex16(1) + #13#10'AV address      ' + Hex16($00007FF700001000),
+    Report(LSnapshot)) > 0);
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeDireSeLIndirizzoEFuoriDallImmagine;
+var
+  LSnapshot: TCrashSnapshot64;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.ExceptionAddress := $00007FFA77000000;
+  Assert.IsTrue(Pos('Addr is outside the executable image'#13#10, Report(LSnapshot)) > 0);
+  Assert.AreEqual(0, Pos('Addr-ImageBase', string(FSink.Text)));
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeScrivereGliIndirizziDellaCatenaDiUnwind;
+var
+  LSnapshot: TCrashSnapshot64;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.FrameCount := 3;
+  LSnapshot.Frames[0] := $0000000140001234;
+  LSnapshot.Frames[1] := $00007FFA77001234;
+  LSnapshot.Frames[2] := $00000001400FFFFF;
+  Assert.IsTrue(Pos(#13#10'Unwind chain (return address - ImageBase):'#13#10'  ' + Hex16($1234) + #13#10 +
+    '  (outside) ' + Hex16($00007FFA77001234) + #13#10'  ' + Hex16($FFFFF) + #13#10, Report(LSnapshot)) > 0);
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeScrivereAlPiuTrentaduePassi;
+var
+  LSnapshot: TCrashSnapshot64;
+  LText: string;
+  LCount: Integer;
+  LPosition: Integer;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.FrameCount := 1000;
+  for LCount := 0 to CRASH_MAX_FRAMES_64 - 1 do
+    LSnapshot.Frames[LCount] := $0000000140001000;
+  LText := Report(LSnapshot);
+  LCount := 0;
+  LPosition := Pos('  ' + Hex16($1000) + #13#10, LText);
+  while LPosition > 0 do
+  begin
+    Inc(LCount);
+    LPosition := Pos('  ' + Hex16($1000) + #13#10, LText, LPosition + 1);
+  end;
+  Assert.AreEqual<Integer>(CRASH_MAX_FRAMES_64, LCount);
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeCercareNelloStackSoloIndirizziDiCodice;
+var
+  LSnapshot: TCrashSnapshot64;
+  LText: string;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.Rsp := $5000;
+  FMemory.Words.Add($5000, $0000000140000FFF);
+  FMemory.Words.Add($5008, $0000000140001000);
+  FMemory.Words.Add($5010, $00000001400FFFFF);
+  FMemory.Words.Add($5018, $0000000140100000);
+  FMemory.Words.Add($5020, 5);
+  // a value that looks like a 32 bit address of the image must not count: the image is above 4 GB
+  FMemory.Words.Add($5028, $0000000000401000);
+  LText := Report(LSnapshot);
+  Assert.IsTrue(Pos(#13#10'Stack scan (code addresses - ImageBase):'#13#10'  ' + Hex16($1000) + #13#10'  ' +
+    Hex16($FFFFF) + #13#10, LText) > 0);
+  Assert.AreEqual(0, Pos(Hex16($FFF) + #13#10, Copy(LText, Pos('Stack scan', LText), MaxInt)));
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeLeggereAlPiuCinquecentododiciParole;
+var
+  LSnapshot: TCrashSnapshot64;
+  LIndex: Integer;
+  LText: string;
+  LCount: Integer;
+  LPosition: Integer;
+begin
+  LSnapshot := Snapshot;
+  LSnapshot.Rsp := $5000;
+  for LIndex := 0 to 599 do
+    FMemory.Words.Add($5000 + UInt64(LIndex) * 8, $0000000140001000);
+  LText := Report(LSnapshot);
+  LCount := 0;
+  LPosition := Pos('  ' + Hex16($1000) + #13#10, LText);
+  while LPosition > 0 do
+  begin
+    Inc(LCount);
+    LPosition := Pos('  ' + Hex16($1000) + #13#10, LText, LPosition + 1);
+  end;
+  Assert.AreEqual<Integer>(CRASH_STACK_QWORDS, LCount);
+end;
+
+procedure TTestCrashReportWriter64.DovrebbeDareErroreSeMancaUnaDipendenza;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      TCrashReportWriter64.Create(nil, FMemoryRef).Free;
+    end, EArgumentNilException);
+  Assert.WillRaise(
+    procedure
+    begin
+      TCrashReportWriter64.Create(FSinkRef, nil).Free;
+    end, EArgumentNilException);
+end;
 { TTestWindowsCrashLogger }
 
 {$IFDEF CPUX86}
@@ -461,33 +749,113 @@ begin
   end;
 end;
 
-{$ELSE}
+{$ENDIF}
 
-procedure TTestWindowsCrashLogger.DovrebbeNonInstallareNessunFiltroASessantaquattroBit;
 var
-  LBefore: TFNTopLevelExceptionFilter;
-  LAfter: TFNTopLevelExceptionFilter;
-  LFileName: string;
+  // a variable, so that the compiler cannot see that the address is a bad one
+  GProbeTarget: NativeUInt = $DEAD0000;
+
+procedure CrashProbeLevel;
 begin
-  // The report is made of the registers of the x86 context (TWindowsCrashLogger.Report exists in
-  // the 32 bit build only), so the three tests of the report cannot run here. What the library
-  // says for a 64 bit process is that Install does nothing: the filter of the process stays the
-  // same and no file is made.
-  LFileName := TPath.Combine(TPath.GetTempPath, 'enginesystem_crash_64.txt');
+  PInteger(GProbeTarget)^ := 1;
+end;
+
+function CrashProbeThread(AParameter: Pointer): DWORD; stdcall;
+begin
+  CrashProbeLevel;
+  Result := 0;
+end;
+
+procedure RunCrashProbeIfRequested;
+var
+  LThread: THandle;
+  LThreadId: DWORD;
+begin
+  if (ParamCount <> 2) or (ParamStr(1) <> CRASH_PROBE_SWITCH) then
+    Exit;
+  TWindowsCrashLogger.Install(ParamStr(2));
+  // a thread of the system, not of the RTL: nothing of Delphi catches the access violation and
+  // it reaches the unhandled exception filter, as a crash of the game does
+  LThread := CreateThread(nil, 0, @CrashProbeThread, nil, 0, LThreadId);
+  WaitForSingleObject(LThread, INFINITE);
+  ExitProcess(0);
+end;
+
+procedure TTestWindowsCrashLogger.DovrebbeScrivereIlRapportoDiUnCrashVero;
+var
+  LFileName: string;
+  LCommand: string;
+  LStartup: TStartupInfo;
+  LProcess: TProcessInformation;
+  LExitCode: DWORD;
+  LText: string;
+{$IFDEF CPUX64}
+  LLine: string;
+  LInChain: Boolean;
+  LFoundInImage: Boolean;
+{$ENDIF}
+begin
+  LFileName := TPath.Combine(TPath.GetTempPath, 'enginesystem_crash_real_' + IntToStr(SizeOf(Pointer) * 8) + '.txt');
   System.SysUtils.DeleteFile(LFileName);
-  LBefore := SetUnhandledExceptionFilter(nil);
-  SetUnhandledExceptionFilter(LBefore);
-  TWindowsCrashLogger.Install(LFileName);
+  LCommand := '"' + ParamStr(0) + '" ' + CRASH_PROBE_SWITCH + ' "' + LFileName + '"';
+  UniqueString(LCommand);
+  FillChar(LStartup, SizeOf(LStartup), 0);
+  LStartup.cb := SizeOf(LStartup);
+  Assert.IsTrue(CreateProcess(nil, PChar(LCommand), nil, nil, False, CREATE_NO_WINDOW, nil, nil, LStartup,
+    LProcess), 'the probe starts');
   try
-    LAfter := SetUnhandledExceptionFilter(nil);
-    SetUnhandledExceptionFilter(LAfter);
-    Assert.IsTrue(LBefore = LAfter, 'the filter of the process');
-    Assert.IsFalse(FileExists(LFileName));
+    Assert.AreEqual<Cardinal>(WAIT_OBJECT_0, WaitForSingleObject(LProcess.hProcess, 30000), 'the probe ends');
+    GetExitCodeProcess(LProcess.hProcess, LExitCode);
+    Assert.AreEqual<Cardinal>(CRASH_EXCEPTION_ACCESS_VIOLATION, LExitCode, 'exit code of the crash');
+  finally
+    CloseHandle(LProcess.hThread);
+    CloseHandle(LProcess.hProcess);
+  end;
+  try
+    Assert.IsTrue(FileExists(LFileName), 'crash.txt of the probe');
+    LText := TFile.ReadAllText(LFileName, TEncoding.ANSI);
+    Assert.IsTrue(Pos('DelphiDoom crash report', LText) = 1);
+    Assert.IsTrue(Pos('AV address      ' + IntToHex(NativeUInt($DEAD0000), SizeOf(NativeUInt) * 2), LText) > 0,
+      'address of the access violation');
+    Assert.IsTrue(Pos('Addr-ImageBase  ', LText) > 0, 'the crash is in the image');
+{$IFDEF CPUX64}
+    // the return addresses of the unwinder: the caller of the faulting function is in the image too
+    LInChain := False;
+    LFoundInImage := False;
+    for LLine in LText.Split([#13#10]) do
+    begin
+      if LLine.StartsWith('Unwind chain') then
+        LInChain := True
+      else if LLine.StartsWith('Stack scan') then
+        LInChain := False
+      else if LInChain and LLine.StartsWith('  ') and not LLine.StartsWith('  (outside)') then
+        LFoundInImage := True;
+    end;
+    Assert.IsTrue(LFoundInImage, 'a return address inside the image in the unwind chain');
+{$ELSE}
+    Assert.IsTrue(Pos('EBP chain', LText) > 0);
+{$ENDIF}
+  finally
+    System.SysUtils.DeleteFile(LFileName);
+  end;
+end;
+
+procedure TTestWindowsCrashLogger.DovrebbeDireFalsoSeIlFileNonSiCreaConUnContestoVuoto;
+var
+  LPointers: TExceptionPointers;
+  LRecord: TExceptionRecord;
+  LContext: TContext;
+begin
+  FillChar(LRecord, SizeOf(LRecord), 0);
+  FillChar(LContext, SizeOf(LContext), 0);
+  LPointers.ExceptionRecord := @LRecord;
+  LPointers.ContextRecord := @LContext;
+  TWindowsCrashLogger.Install(TPath.Combine(TPath.GetTempPath, 'enginesystem_missing\x\crash.txt'));
+  try
+    Assert.IsFalse(TWindowsCrashLogger.Report(@LPointers));
   finally
     TWindowsCrashLogger.Uninstall;
   end;
 end;
-
-{$ENDIF}
 
 end.
