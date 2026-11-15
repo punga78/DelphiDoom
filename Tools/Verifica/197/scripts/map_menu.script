@@ -1,0 +1,155 @@
+# Menu F10 en la mappa: il bottone Menu, il mouse su ogni bottone, Opzioni con tutte le frecce e Ok, Cancella, Obiettivi,
+# Ricomincia e Annulla, Continua (la mappa riparte con la velocita' scelta)
+campaign human 1
+move 190 100
+run 20 1
+# il bottone Menu del pannello in basso a sinistra, col mouse sopra e poi premuto
+move 30 192
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+# il mouse su ogni bottone del menu principale (Save e Load non fanno niente)
+move 125 62
+run 2 1
+move 183 62
+run 2 1
+move 150 83
+run 2 1
+move 150 103
+run 2 1
+move 150 123
+run 2 1
+move 120 148
+run 2 1
+move 190 148
+run 2 1
+# Opzioni: i valori iniziali, poi ogni freccia due volte (la prima oltre il limite a un estremo)
+move 150 83
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 90 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 74
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 74
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 91
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 91
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 108
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 108
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 125
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 125
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+# Cancella: le modifiche si perdono
+move 190 152
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+# Opzioni di nuovo (i valori di prima), poi si rifa' qualche modifica e si preme Ok
+key o down
+run 1 1
+key o up
+run 3 1
+move 220 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 90 74
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 220 125
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+key o down
+run 1 1
+key o up
+run 4 1
+# Obiettivi e ritorno al menu col tasto M
+key j down
+run 1 1
+key j up
+run 4 1
+move 150 143
+run 2 1
+key m down
+run 1 1
+key m up
+run 3 1
+# Ricomincia: la domanda e Annulla (tasto C)
+key r down
+run 1 1
+key r up
+run 4 1
+move 100 110
+run 2 1
+key c down
+run 1 1
+key c up
+run 3 1
+# Continua col tasto C: la mappa riparte
+key c down
+run 1 1
+key c up
+run 40 1

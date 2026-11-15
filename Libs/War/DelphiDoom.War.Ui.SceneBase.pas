@@ -33,6 +33,8 @@ type
     Campaigns: IWarCampaigns;
     Effects: IWarCheatEffects;
     Scenes: IWarSceneFactory;
+    /// <summary>The settings of the game (the volumes that the menu of the map changes); may be nil</summary>
+    Settings: IWarGameSettings;
   end;
 
   /// <summary>

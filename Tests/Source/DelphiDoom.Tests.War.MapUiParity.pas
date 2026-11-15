@@ -45,6 +45,9 @@ type
     [TestCase('Assedio: pietre, esplosioni, fuoco e crollo', 'map_war_siege')]
     [TestCase('Incantesimi degli umani', 'map_spells')]
     [TestCase('Incantesimi degli orchi', 'map_spells_orc')]
+    [TestCase('Menu F10: opzioni, obiettivi, ricomincia', 'map_menu')]
+    [TestCase('Menu F10: uscire, Menu torna al menu principale', 'map_menu_quit')]
+    [TestCase('Menu F10: ricomincia la mappa con le velocita'' di prima', 'map_menu_restart')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

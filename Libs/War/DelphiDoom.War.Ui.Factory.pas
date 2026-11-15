@@ -84,6 +84,7 @@ begin
   LServices.Campaigns := ACampaigns;
   LServices.Effects := TWarSettingsCheatEffects.Create(LSettings, AAudio, AIsDemo);
   LServices.Scenes := nil;
+  LServices.Settings := LSettings;
   LScenes := TWarSceneFactory.Create(LServices);
   // a maker of maps that draws with this interface needs the services too (the map is made after them)
   LServices.Scenes := LScenes;

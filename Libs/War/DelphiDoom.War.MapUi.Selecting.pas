@@ -55,6 +55,11 @@ type
       const AAudio: IWarMapAudio);
     /// <summary>updateDragRect</summary>
     procedure UpdateDragRect(const AInput: IWarUiInput);
+    /// <summary>
+    ///   What wmap_updateMap does while the map does not play (a menu is open): the drag is forgotten, with no start and an
+    ///   empty rectangle
+    /// </summary>
+    procedure ResetDrag;
     /// <summary>updateSelection</summary>
     procedure UpdateSelection(const AInput: IWarUiInput);
     /// <summary>updateSelectionGroups (not while the cheat panel is open)</summary>
@@ -97,6 +102,14 @@ end;
 function TWarMapSelecting.IsDragging: Boolean;
 begin
   Result := FStatus <> wdsNone;
+end;
+
+procedure TWarMapSelecting.ResetDrag;
+begin
+  FStatus := wdsNone;
+  FStartX := 0;
+  FStartY := 0;
+  FRect := Default(TWarRectF);
 end;
 
 procedure TWarMapSelecting.UpdateDragRect(const AInput: IWarUiInput);

@@ -62,7 +62,8 @@ begin
   FCheatsEnabled := True;
   FMusicEnabled := True;
   FSoundEnabled := True;
-  FGlobalScale := 1;
+  // wg_initGame: the window starts at three times the size of the game
+  FGlobalScale := 3;
   FGlobalSpeed := 1;
   FMusicVolume := 1;
   FSoundVolume := 1;

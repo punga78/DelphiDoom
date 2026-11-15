@@ -152,6 +152,11 @@ static bool initHeadless(WarContext* context, int argc, char** argv)
     wr_init(context);
     context->transitionEndRealTime = 0.0;
     context->cheatsEnabled = true;
+    /* wa_initAudio (che qui non c'e') parte con musica e suoni accesi a pieno volume: il menu delle opzioni della mappa li mostra */
+    context->musicEnabled = true;
+    context->soundEnabled = true;
+    context->musicVolume = 1.0f;
+    context->soundVolume = 1.0f;
     context->__mutex = SDL_CreateMutex();
 
     context->fontSprites[0] = wfont_loadFontSprite(context, wsv_fromCString("./war1_font_1.png"));

@@ -36,7 +36,11 @@ const
   WAR_CURSOR_ARROW_LEFT = 277;
   WAR_CURSOR_ARROW_UP_LEFT = 278;
   /// <summary>WAR_SPEED_NORMAL of war_enums.h (WarMapSpeed: slowest 0 ... fastest 4)</summary>
+  WAR_SPEED_SLOWEST = 0;
+  WAR_SPEED_SLOW = 1;
   WAR_SPEED_NORMAL = 2;
+  WAR_SPEED_FASTER = 3;
+  WAR_SPEED_FASTEST = 4;
 
   /// <summary>WAR_COLOR_GREEN_SELECTION, WAR_COLOR_RED_SELECTION, WAR_COLOR_WHITE_SELECTION (packed ABGR words of war_color.h)</summary>
   WAR_MAPUI_GREEN_SELECTION: TWarRgba = (R: 0; G: 199; B: 0; A: 255);
@@ -54,6 +58,21 @@ const
 type
   /// <summary>WarMapDragStatus</summary>
   TWarDragStatus = (wdsNone, wdsStarted, wdsActive, wdsReleased);
+
+  /// <summary>WarMapMenuState: which menu of the map is open (the original keeps it in map->menuState)</summary>
+  TWarMenuState = (wmsNone, wmsMain, wmsOptions, wmsObjectives, wmsRestart, wmsGameOver, wmsQuit, wmsDemoEnd);
+
+  /// <summary>
+  ///   WarMapSettings: the speed of the game and of the scrolling (WarMapSpeed 0..4) and the volumes (0..100) that the options
+  ///   menu of the map shows and changes
+  /// </summary>
+  TWarMapSettings = record
+    GameSpeed: Integer;
+    MouseScrollSpeed: Integer;
+    KeyScrollSpeed: Integer;
+    MusicVolume: Integer;
+    SoundVolume: Integer;
+  end;
 
   /// <summary>
   ///   The panels of the map (map->ui): where the interface and the map are on the screen of 320 x 200. All are fixed

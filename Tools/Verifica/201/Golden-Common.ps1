@@ -128,7 +128,11 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_melee.script'); Golden = 'ui.map_war_melee.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_siege.script'); Golden = 'ui.map_war_siege.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells.script'); Golden = 'ui.map_spells.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells_orc.script'); Golden = 'ui.map_spells_orc.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells_orc.script'); Golden = 'ui.map_spells_orc.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i menu della mappa (parte D): F10, opzioni, obiettivi, ricomincia
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu.script'); Golden = 'ui.map_menu.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_quit.script'); Golden = 'ui.map_menu_quit.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_restart.script'); Golden = 'ui.map_menu_restart.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

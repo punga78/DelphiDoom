@@ -26,7 +26,7 @@ uses
   DelphiDoom.War.MapUi.Renderer, DelphiDoom.War.MapUi.Hud, DelphiDoom.War.MapUi.Host, DelphiDoom.War.MapUi.Census,
   DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Selecting,
   DelphiDoom.War.MapUi.CommandPanel, DelphiDoom.War.MapUi.CommandState, DelphiDoom.War.MapUi.CommandRunner,
-  DelphiDoom.War.MapUi.CommandPreview;
+  DelphiDoom.War.MapUi.CommandPreview, DelphiDoom.War.MapUi.Menu, DelphiDoom.War.MapUi.MenuView;
 
 type
   /// <summary>What the scene of a map is made from: the level and its tileset, the tables and the services of the game</summary>
@@ -52,7 +52,7 @@ type
   ///   the original: the camera, what the player asks for, the model (the computer player, every state, the actions, the
   ///   projectiles, the spells and the fog), then the panel of the commands, the status bar and the objectives
   /// </summary>
-  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene)
+  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene, IWarMapMenuHost)
   strict private
     FSetup: TWarMapSceneSetup;
     FHost: IWarMapHost;
@@ -74,12 +74,15 @@ type
     FPanels: TWarMapPanels;
     FCommandPanel: TWarCommandPanel;
     FStatus: TWarStatusLine;
-    FPlaying: Boolean;
+    FMenu: TWarMapMenu;
+    FMenuView: TWarMapMenuView;
     FResult: TWarLevelResult;
     FObjectivesTime: Single;
-    FMouseScrollSpeed: Integer;
-    FKeyScrollSpeed: Integer;
-    FGameSpeed: Integer;
+    function GetGameSpeed: Integer;
+    procedure SetGameSpeed(AValue: Integer);
+    function GetPlaying: Boolean;
+    function WindowScale: Single;
+    function ObjectivesText: AnsiString;
     procedure UpdateObjectives;
     procedure UpdateStatus;
     procedure RenderMapUi;
@@ -112,13 +115,23 @@ type
     /// </summary>
     procedure Conclude(AResult: TWarLevelResult);
     /// <summary>The speed of the game (WarMapSpeed 0..4, 2 is normal): it scales the time of the game of every frame</summary>
-    property GameSpeed: Integer read FGameSpeed write FGameSpeed;
+    property GameSpeed: Integer read GetGameSpeed write SetGameSpeed;
+    /// <summary>wmm_handleRestartRestart: the same map again, after a second of black</summary>
+    procedure RestartMap;
+    /// <summary>wmm_handleGameOverContinue: the next briefing after a win, the same one after a defeat, the main menu for the others</summary>
+    procedure ContinueAfterGameOver;
+    /// <summary>wmm_handleQuitMenu and wmm_handleDemoEndMenu</summary>
+    procedure ReturnToMainMenu;
+    /// <summary>wmm_handleQuitQuit</summary>
+    procedure QuitGame;
+    /// <summary>The menus of the map (map->menuState, map->playing, map->settings)</summary>
+    property Menu: TWarMapMenu read FMenu;
     /// <summary>The line of the status bar of this frame (the message, what the selection says), without the tooltip</summary>
     property StatusText: AnsiString read FStatus.Text;
     property Camera: TWarMapCamera read FCamera;
     property Map: TWarGameMap read FMap;
     property Binding: TWarMapBinding read FBinding;
-    property Playing: Boolean read FPlaying;
+    property Playing: Boolean read GetPlaying;
     property Result: TWarLevelResult read FResult;
   end;
 
@@ -150,14 +163,44 @@ begin
   Result := wstMap;
 end;
 
+function TWarMapScene.GetGameSpeed: Integer;
+begin
+  Result := FMenu.Settings.GameSpeed;
+end;
+
+procedure TWarMapScene.SetGameSpeed(AValue: Integer);
+var
+  LSettings: TWarMapSettings;
+begin
+  LSettings := FMenu.Settings;
+  LSettings.GameSpeed := AValue;
+  FMenu.Settings := LSettings;
+end;
+
+function TWarMapScene.GetPlaying: Boolean;
+begin
+  Result := Assigned(FMenu) and FMenu.Playing;
+end;
+
+function TWarMapScene.WindowScale: Single;
+begin
+  // the window is the size of the game times the scale of the settings (three at the start of the game)
+  Result := 3;
+  if Assigned(FSetup.Services.Settings) then
+    Result := FSetup.Services.Settings.GlobalScale;
+end;
+
 function TWarMapScene.MapSpeedScale: Single;
+var
+  LSpeed: Integer;
 begin
   // wg_beginFrame: the speed of the map scales the time of the game
   Result := 1;
-  if FGameSpeed < WAR_SPEED_NORMAL then
-    Result := 1.0 - (WAR_SPEED_NORMAL - FGameSpeed) * Single(0.25)
-  else if FGameSpeed > WAR_SPEED_NORMAL then
-    Result := 1.0 + (FGameSpeed - WAR_SPEED_NORMAL) * Single(0.5);
+  LSpeed := FMenu.Settings.GameSpeed;
+  if LSpeed < WAR_SPEED_NORMAL then
+    Result := 1.0 - (WAR_SPEED_NORMAL - LSpeed) * Single(0.25)
+  else if LSpeed > WAR_SPEED_NORMAL then
+    Result := 1.0 + (LSpeed - WAR_SPEED_NORMAL) * Single(0.5);
 end;
 
 procedure TWarMapScene.Enter;
@@ -165,13 +208,11 @@ var
   LBuilder: TWarMapBuilder;
   LHost: TWarMapHost;
 begin
-  // wmap_enterMap
-  FPlaying := True;
+  // wmap_enterMap: the map plays, nothing is open and every speed is normal
+  FMenu := TWarMapMenu.Create(Self, FSetup.Services.Settings);
+  FMenuView := TWarMapMenuView.Create(FSetup.Services.Imui, FPanels, FMenu);
   FResult := wlrNone;
   FObjectivesTime := 1;
-  FGameSpeed := WAR_SPEED_NORMAL;
-  FMouseScrollSpeed := WAR_SPEED_NORMAL;
-  FKeyScrollSpeed := WAR_SPEED_NORMAL;
   LHost := TWarMapHost.Create(FSetup.Units);
   FHost := LHost;
   LBuilder := TWarMapBuilder.Create(FSetup.Units);
@@ -223,6 +264,8 @@ begin
     FSetup.Services.Imui.SetMapPanel(False, 0, 0);
   FreeAndNil(FRenderer);
   FreeAndNil(FHud);
+  FreeAndNil(FMenuView);
+  FreeAndNil(FMenu);
   FreeAndNil(FSelecting);
   FreeAndNil(FCommandPreview);
   FreeAndNil(FCommandRunner);
@@ -393,8 +436,13 @@ begin
     FResult := LResult;
     Exit;
   end;
-  // the map is over: nothing plays (the menu of the end is the part of the interface that is not here yet)
-  FPlaying := False;
+  // the map is over: nothing plays and the menu of the end opens (the one of the demo after the last map of the demo)
+  FMenu.Playing := False;
+  if (FResult = wlrWin) and Assigned(FSetup.Services.Campaigns) and
+    FSetup.Services.Campaigns.IsDemoLastLevel(FSetup.MapType) then
+    FMenu.ShowDemoEnd(True)
+  else
+    FMenu.ShowGameOver(True);
 end;
 
 procedure TWarMapScene.UpdateCamera;
@@ -411,8 +459,8 @@ begin
   LContext.ScreenWidth := LHost.OriginalWidth;
   LContext.ScreenHeight := LHost.OriginalHeight;
   LContext.RealDeltaTime := LHost.RealDeltaTime;
-  LContext.MouseScrollSpeed := FMouseScrollSpeed;
-  LContext.KeyScrollSpeed := FKeyScrollSpeed;
+  LContext.MouseScrollSpeed := FMenu.Settings.MouseScrollSpeed;
+  LContext.KeyScrollSpeed := FMenu.Settings.KeyScrollSpeed;
   LSuppress := FCommandState.SuppressMinimapViewportOnRelease;
   FCamera.Update(FSetup.Services.Input, LContext, LSuppress);
   FCommandState.SuppressMinimapViewportOnRelease := LSuppress;
@@ -424,7 +472,7 @@ var
 begin
   // wmap_updateMapPaused: updateViewport and updateStatus (the debug shortcuts are not ported)
   LHost := FSetup.Services.Host;
-  if (not Assigned(FCamera)) or (not FPlaying) then
+  if (not Assigned(FCamera)) or (not FMenu.Playing) then
     Exit;
   UpdateCamera;
   FHost.SetRealTime(LHost.RealTime);
@@ -438,8 +486,12 @@ var
   LScale: Single;
 begin
   LHost := FSetup.Services.Host;
-  if not FPlaying then
+  if not FMenu.Playing then
+  begin
+    // a menu is open (or the map is over): the drag of the mouse is forgotten and nothing else moves
+    FSelecting.ResetDrag;
     Exit;
+  end;
   // the real time of this frame, before anything can ask for a message of the status line (the command of a click does)
   FHost.SetRealTime(LHost.RealTime);
   FBinding.World.Context.RealTime := LHost.RealTime;
@@ -457,7 +509,7 @@ begin
   LScale := LScale * MapSpeedScale;
   LDelta := LHost.RealDeltaTime * LScale;
   FBinding.World.Context.Clock^.GlobalSpeed := LHost.GlobalSpeed;
-  FBinding.World.Context.Clock^.GameSpeed := FGameSpeed;
+  FBinding.World.Context.Clock^.GameSpeed := FMenu.Settings.GameSpeed;
   FBinding.Tick(LDelta);
   FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);
   UpdateRightClick;
@@ -562,13 +614,63 @@ begin
   LView.Wood := FBinding.World.Context.Players[0]^.Wood;
   LView.Panel := FCommandPanel;
   LView.Status := FStatus;
-  LView.MenuOpen := False;
+  LView.MenuOpen := FMenu.State <> wmsNone;
   LView.CheatsOpen := False;
   FHud.RenderHud(LView, LClicks);
   // the click handler of a button runs while the HUD is drawn: it chooses the command (or cancels), the next update executes it
   if LClicks.Command >= 0 then
     FCommandRunner.ClickCommand(FCommandPanel.Slots[LClicks.Command].Command);
+  // the button of the menu opens it, and the menu is drawn in this same frame
+  if LClicks.Menu then
+    FMenu.OpenMain;
+  FMenuView.Render(LPlayer.Race, FResult, ObjectivesText, Round(FSetup.Services.Host.OriginalWidth * WindowScale),
+    Round(FSetup.Services.Host.OriginalHeight * WindowScale));
   FSetup.Services.Canvas.Transform.Restore;
+end;
+
+function TWarMapScene.ObjectivesText: AnsiString;
+begin
+  // wcamp_getCampaignData(wmap_getCampaignMapTypeByLevelInfoIndex(map->levelInfoIndex)).objectives
+  Result := '';
+  if Assigned(FSetup.Services.Campaigns) then
+    Result := FSetup.Services.Campaigns.GetData(FSetup.Services.Campaigns.MapTypeOfLevel(FSetup.MapType)).Objectives;
+end;
+
+procedure TWarMapScene.RestartMap;
+begin
+  // wmap_createMap of the same level and wg_setNextMap after a second
+  FSetup.Services.Host.SetNextCampaignMap(FSetup.MapType, 1.0);
+end;
+
+procedure TWarMapScene.ContinueAfterGameOver;
+var
+  LRace: TWarRace;
+begin
+  if FSetup.Level.Info.CustomMap or (FSetup.MapType < WAR_CAMPAIGN_HUMANS_01) or (FSetup.MapType > WAR_CAMPAIGN_ORCS_12) then
+  begin
+    ReturnToMainMenu;
+    Exit;
+  end;
+  LRace := FMap.Players[0].Race;
+  case FResult of
+    wlrWin:
+      FSetup.Services.Host.SetNextScene(FSetup.Services.Scenes.CreateBriefing(LRace, FSetup.MapType + 2), 1.0);
+    wlrLose:
+      FSetup.Services.Host.SetNextScene(FSetup.Services.Scenes.CreateBriefing(LRace, FSetup.MapType), 1.0);
+  else
+    // "It shouldn't reach here": the original logs it and stops on an assert
+    raise EWarException.CreateFmt('The menu of the end is open and the result is %d', [Ord(FResult)]);
+  end;
+end;
+
+procedure TWarMapScene.ReturnToMainMenu;
+begin
+  FSetup.Services.Host.SetNextScene(FSetup.Services.Scenes.CreateMainMenu, 1.0);
+end;
+
+procedure TWarMapScene.QuitGame;
+begin
+  FSetup.Services.Host.RequestQuit;
 end;
 
 function TWarMapScene.CursorOnMap: Integer;
@@ -643,7 +745,7 @@ begin
   // updateMapCursor: the cursor follows what the mouse is on
   LInput := FSetup.Services.Input;
   LImui := FSetup.Services.Imui;
-  if not FPlaying then
+  if not FMenu.Playing then
   begin
     LImui.ChangeCursorType(WAR_CURSOR_ARROW);
     Exit;

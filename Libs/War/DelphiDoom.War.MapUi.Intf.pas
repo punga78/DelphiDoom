@@ -34,6 +34,22 @@ type
   end;
 
   /// <summary>
+  ///   What the menus of the map ask of the scene when a button leaves the map (war_map_menu.c): the other scene or map that
+  ///   comes next, always after a second of black (wg_setNextScene and wg_setNextMap with a delay of 1)
+  /// </summary>
+  IWarMapMenuHost = interface
+    ['{5B8E2F71-C3A4-4D06-9E18-7A4D0C26B953}']
+    /// <summary>wmm_handleRestartRestart: the same map from the start</summary>
+    procedure RestartMap;
+    /// <summary>wmm_handleGameOverContinue: the next briefing, the same briefing again or the main menu</summary>
+    procedure ContinueAfterGameOver;
+    /// <summary>wmm_handleQuitMenu and wmm_handleDemoEndMenu: the main menu</summary>
+    procedure ReturnToMainMenu;
+    /// <summary>wmm_handleQuitQuit: the game ends</summary>
+    procedure QuitGame;
+  end;
+
+  /// <summary>
   ///   What a maker of maps (an IWarMapLauncher) that draws with the interface of the game implements besides: the game
   ///   gives it the services (the input, the canvas, the immediate interface, the sprites) once it has made them, because the
   ///   map is made after them and needs them
