@@ -13,7 +13,7 @@ interface
 
 uses
   System.SysUtils, System.SyncObjs, DelphiDoom.Logging.Intf, DelphiDoom.AudioMix.NearestRateVoice,
-  DelphiDoom.AudioMix.VoiceList, DelphiDoom.Greed.Sound.Intf;
+  DelphiDoom.AudioMix.VoiceList, DelphiDoom.AudioMix.LevelMeter, DelphiDoom.Greed.Sound.Intf;
 
 const
   /// <summary>The rate of the samples that the mixer makes, if the caller has no other</summary>
@@ -109,6 +109,7 @@ type
     FLog: ILog;
     FLock: TCriticalSection;
     FVoices: TPcmVoiceList;
+    FMeter: TPcmLevelMeter;
     FSong: ISong;
     FSums: TArray<Integer>;
     FSongSamples: TArray<SmallInt>;
@@ -187,10 +188,12 @@ begin
   FLog := ALog;
   FLock := TCriticalSection.Create;
   FVoices := TPcmVoiceList.Create;
+  FMeter := TPcmLevelMeter.Create;
 end;
 
 destructor TGreedPcmMixer.Destroy;
 begin
+  FMeter.Free;
   FVoices.Free;
   FLock.Free;
   inherited Destroy;
@@ -329,14 +332,11 @@ begin
         Inc(FStatistics.ClippedSamples);
         LValue := EnsureRange(LValue, Low(SmallInt), High(SmallInt));
       end;
-      if Abs(LValue) > FStatistics.Peak then
-        FStatistics.Peak := Min(Abs(LValue), High(SmallInt));
       LOutput^ := SmallInt(LValue);
       Inc(LOutput);
     end;
-    for LIndex := 0 to LFrames - 1 do
-      if (FSums[LIndex * 2] <> 0) or (FSums[LIndex * 2 + 1] <> 0) then
-        Inc(FStatistics.FramesWithSound);
+    // peak and frames with sound are those of the output: a sum that is not zero is not zero after the cut either
+    FMeter.Measure(PSmallInt(ABuffer), LFrames);
     Inc(FStatistics.FramesRendered, LFrames);
   finally
     FLock.Leave;
@@ -353,6 +353,8 @@ begin
   FLock.Enter;
   try
     Result := FStatistics;
+    Result.Peak := Min(FMeter.Peak, High(SmallInt));
+    Result.FramesWithSound := FMeter.FramesWithSound;
     Result.ActiveEffects := FVoices.Count;
     Result.SongPlaying := Assigned(FSong);
   finally

@@ -29,6 +29,7 @@ type
 
 resourcestring
   SAudioMixBadFormat = 'Cannot resample %d channels of %d bits';
+  SAudioMixBufferNotWhole = 'The buffer size must be a multiple of 4 bytes (16 bit samples, left and right)';
 
 implementation
 

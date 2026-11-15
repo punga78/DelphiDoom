@@ -12,7 +12,7 @@ interface
 
 uses
   System.SysUtils, System.SyncObjs, DelphiDoom.XcomEngine.Intf, DelphiDoom.XcomAudio.Intf,
-  DelphiDoom.AudioMix.StereoChannelVoice;
+  DelphiDoom.AudioMix.StereoChannelVoice, DelphiDoom.AudioMix.LevelMeter;
 
 type
   /// <summary>
@@ -49,8 +49,7 @@ type
       FMusicVolume: Single;
       FTemp: TArray<SmallInt>;
       FStats: TXcomMixerStatistics;
-      FSumSquares: Double;
-      FSampleCount: Int64;
+      FMeter: TPcmLevelMeter;
       FOpen: Boolean;
     procedure Start(AIndex: Integer; const ASamples: TArray<SmallInt>; ALoops: Integer; ABaked: Boolean);
   public
@@ -102,6 +101,7 @@ begin
   FRate := ARate;
   FDecoder := ADecoder;
   FLock := TCriticalSection.Create;
+  FMeter := TPcmLevelMeter.Create;
   FMusicVolume := 1;
   // Game::setVolume without a battle: the ambience is half of the sounds
   FAmbientVolume := 0.5;
@@ -120,6 +120,7 @@ begin
   FTrack := nil;
   for LIndex := 0 to CHANNEL_COUNT - 1 do
     FChannels[LIndex].Free;
+  FMeter.Free;
   FLock.Free;
   inherited Destroy;
 end;
@@ -371,9 +372,6 @@ procedure TXcomMixer.Render(ABuffer: PByte; ABytes: Integer);
 var
   LCount: Integer;
   LChannel: Integer;
-  LPointer: PSmallInt;
-  LIndex: Integer;
-  LValue: Integer;
 begin
   if (ABytes <= 0) or ((ABytes and 3) <> 0) then
     raise EXcomAudioException.Create(SXcomBufferNotWhole);
@@ -391,16 +389,7 @@ begin
     end;
     for LChannel := 0 to CHANNEL_COUNT - 1 do
       FChannels[LChannel].Render(PSmallInt(ABuffer), LCount, FChannelVolume[LChannel] / MAX_VOLUME, FSilenced);
-    LPointer := PSmallInt(ABuffer);
-    for LIndex := 0 to LCount - 1 do
-    begin
-      LValue := LPointer^;
-      FSumSquares := FSumSquares + Double(LValue) * LValue;
-      if Abs(LValue) > FStats.Peak then
-        FStats.Peak := Abs(LValue);
-      Inc(LPointer);
-    end;
-    Inc(FSampleCount, LCount);
+    FMeter.Measure(PSmallInt(ABuffer), ABytes div 4);
     Inc(FStats.RenderedBytes, ABytes);
   finally
     FLock.Leave;
@@ -412,8 +401,8 @@ begin
   FLock.Enter;
   try
     Result := FStats;
-    if FSampleCount > 0 then
-      Result.Rms := Sqrt(FSumSquares / FSampleCount);
+    Result.Peak := FMeter.Peak;
+    Result.Rms := FMeter.Rms;
   finally
     FLock.Leave;
   end;

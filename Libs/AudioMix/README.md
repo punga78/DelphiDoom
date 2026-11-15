@@ -1,13 +1,13 @@
 # Libs\AudioMix
 
-Mixing audio software comune a `XcomAudio`, `War` e `Greed` (issue #228): lista di voci con lucchetto, strategie di voce e di ricampionamento su un solo contratto, somma con saturazione a 16 bit. Non e' per Doom (`Libs\Audio` usa DirectSound).
+Mixing audio software comune a `XcomAudio`, `War` e `Greed` (issue #228): lista di voci con lucchetto, strategie di voce e di ricampionamento su un solo contratto, somma con saturazione a 16 bit, misuratore di livello (picco, RMS, frame con suono) e sintetizzatore MIDI software. `Libs\Audio` (Doom) usa gia' la lista di voci e la saturazione.
 
 Il testo di riferimento (contratto, confronto riga per riga dei tre mixer, cosa e' migrato e cosa no) sta in [CLAUDE.md](CLAUDE.md).
 
 ## Contenuto
 
-- Unit nella cartella: 9 (nome a punti `DelphiDoom.AudioMix.*`): `Types`, `Intf`, `Saturation`, `VoiceList`, `FixedPointResampler`, `FramePositionResampler`, `UnsignedMonoVoice`, `StereoChannelVoice`, `NearestRateVoice`.
-- Interfacce dichiarate: `IPcmVoice`, `IPcmResampler`.
+- Unit nella cartella: 11 (nome a punti `DelphiDoom.AudioMix.*`): `Types`, `Intf`, `Saturation`, `VoiceList`, `LevelMeter`, `MidiSynth`, `FixedPointResampler`, `FramePositionResampler`, `UnsignedMonoVoice`, `StereoChannelVoice`, `NearestRateVoice`.
+- Interfacce dichiarate: `IPcmVoice`, `IPcmResampler`, `IPcmMidiSynth`.
 - Nessuna dipendenza da `Base\`, dai giochi o da altre librerie: solo la RTL.
 
 ## Prova
@@ -17,4 +17,4 @@ Il testo di riferimento (contratto, confronto riga per riga dei tre mixer, cosa 
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
-- Usata da: `Libs\XcomAudio`, `Libs\War`, `Libs\Greed`.
+- Usata da: `Libs\XcomAudio`, `Libs\War`, `Libs\Greed`, `Libs\Audio`.

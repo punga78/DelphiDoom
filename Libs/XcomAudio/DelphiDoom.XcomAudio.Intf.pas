@@ -113,17 +113,6 @@ type
     function Load(const ARule: TXcomMusicRule): IXcomMusicTrack;
   end;
 
-  /// <summary>A synthesizer of MIDI messages (the part of the device that makes the sound of the MIDI music)</summary>
-  IXcomMidiSynth = interface
-    ['{F40B6A29-D1E3-47C5-9A80-B7E25C3D1964}']
-    /// <summary>A channel message (status with the channel, two data bytes)</summary>
-    procedure Send(AStatus, AData1, AData2: Byte);
-    /// <summary>All the sounds stop and the controllers go back to the start</summary>
-    procedure Reset;
-    /// <summary>Adds ABytes bytes (a multiple of 4) of 16 bit stereo samples to ABuffer</summary>
-    procedure Render(ABuffer: PSmallInt; ABytes: Integer);
-  end;
-
   /// <summary>What the music player asks of the mixer (the music part of SDL_mixer)</summary>
   IXcomMusicSink = interface
     ['{2D8A4F63-90B1-4E75-8C32-A5E1F7B6D084}']
