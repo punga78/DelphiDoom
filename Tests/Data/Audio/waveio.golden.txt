@@ -1,0 +1,97 @@
+## read and seek in a wave file
+> open a.wav
+ret=0
+ size=10 mem=20 base=44 cksize=20
+> read 8
+read ret=8 got=8 hash=77043D3D
+> read 4
+read ret=4 got=4 hash=6C1014A5
+> seek 6
+seek ret=0
+> read 4
+read ret=4 got=4 hash=44B1B7B1
+> seek 100
+seek ret=0
+> read 4
+read ret=0 got=0 hash=811C9DC5
+> reset
+reset ret=0
+> read 100
+read ret=20 got=20 hash=3109CEC5
+> read 100
+read ret=0 got=0 hash=811C9DC5
+> seek 0
+seek ret=0
+> read 3
+read ret=3 got=3 hash=C1A2B2AA
+## a read does not stop at the end of the data chunk
+> open b.wav
+ret=0
+ size=5 mem=10 base=44 cksize=10
+> read 100
+read ret=16 got=16 hash=B9CDD358
+> read 100
+read ret=0 got=0 hash=811C9DC5
+> reset
+reset ret=0
+> read 12
+read ret=12 got=12 hash=2DDB4460
+> seek 8
+seek ret=0
+> read 100
+read ret=8 got=8 hash=16465340
+## a file that is not there or not a wave
+> open missing.wav
+ret=-1
+> read 4
+read ret=-1 got=-777 hash=811C9DC5
+> seek 2
+seek ret=-1
+> reset
+reset ret=-1
+> open junk.wav
+ret=-1
+> read 4
+read ret=-1 got=-777 hash=811C9DC5
+> seek 0
+seek ret=-1
+## samples in memory
+> mem 10
+ret=0 size=5 mem=10
+> read 4
+read ret=4 got=4 hash=83546319
+> reset
+reset ret=0
+> read 100
+read ret=10 got=10 hash=EDAEDB38
+> read 100
+read ret=0 got=0 hash=811C9DC5
+> seek 0
+seek ret=-1
+> read 3
+read ret=3 got=3 hash=7EA6A43B
+> reset
+reset ret=0
+> read 0
+read ret=0 got=0 hash=811C9DC5
+> close
+close ret=0
+> mem 0
+ret=0 size=0 mem=0
+> read 4
+read ret=0 got=0 hash=811C9DC5
+## a file after another
+> open c.wav
+ret=0
+ size=4 mem=8 base=44 cksize=8
+> read 3
+read ret=3 got=3 hash=6A66F4EB
+> close
+close ret=0
+> read 3
+read ret=-1 got=-777 hash=811C9DC5
+> open c.wav
+ret=0
+ size=4 mem=8 base=44 cksize=8
+> read 8
+read ret=8 got=8 hash=6C98A98D

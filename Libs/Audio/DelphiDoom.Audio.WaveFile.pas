@@ -51,7 +51,7 @@ type
     FRealTimeDecoding: Boolean;
 
     function OpenOgg(const AName: string; out AFormat: TWaveFormat): Integer;
-    function ReadOgg(ABuffer: Pointer; ASizeToRead: Integer; out ASizeRead: Integer): Integer;
+    function ReadOgg(ABuffer: Pointer; ASizeToRead: Integer; var ASizeRead: Integer): Integer;
   public
     /// <summary>The name with its extension replaced by .ogg (idStr::SetFileExtension)</summary>
     class function OggName(const AName: string): string; static;
@@ -69,9 +69,10 @@ type
     function OpenFromMemory(AData: Pointer; ASize: Integer; const AFormat: TWaveFormat): Integer;
     /// <summary>
     ///   <c>idWaveFile::Read</c>: up to ASizeToRead bytes of the samples from the current position into ABuffer;
-    ///   the result and ASizeRead are the bytes read, -1 if nothing is open (or the buffer is nil)
+    ///   the result and ASizeRead are the bytes read; -1 if nothing is open (or the buffer is nil), and then ASizeRead
+    ///   is left as it was (pdwSizeRead is not written)
     /// </summary>
-    function Read(ABuffer: Pointer; ASizeToRead: Integer; out ASizeRead: Integer): Integer;
+    function Read(ABuffer: Pointer; ASizeToRead: Integer; var ASizeRead: Integer): Integer;
     /// <summary><c>idWaveFile::Seek</c>: a byte offset from the start of the samples</summary>
     function Seek(AOffset: Integer): Integer;
     /// <summary><c>idWaveFile::ResetFile</c>: back to the start of the samples</summary>
@@ -236,7 +237,7 @@ begin
   Result := 0;
 end;
 
-function TWaveFile.ReadOgg(ABuffer: Pointer; ASizeToRead: Integer; out ASizeRead: Integer): Integer;
+function TWaveFile.ReadOgg(ABuffer: Pointer; ASizeToRead: Integer; var ASizeRead: Integer): Integer;
 var
   LTotal: Integer;
   LBlock: Integer;
@@ -265,11 +266,10 @@ begin
   Result := ASizeRead;
 end;
 
-function TWaveFile.Read(ABuffer: Pointer; ASizeToRead: Integer; out ASizeRead: Integer): Integer;
+function TWaveFile.Read(ABuffer: Pointer; ASizeToRead: Integer; var ASizeRead: Integer): Integer;
 var
   LAvailable: Integer;
 begin
-  ASizeRead := 0;
   if FHasOgg then
     Exit(ReadOgg(ABuffer, ASizeToRead, ASizeRead));
   if FFromMemory then

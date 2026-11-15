@@ -150,6 +150,7 @@ uses
   DelphiDoom.Tests.Audio.WaveHeader in 'Source\DelphiDoom.Tests.Audio.WaveHeader.pas',
   DelphiDoom.Tests.Audio.WaveFile in 'Source\DelphiDoom.Tests.Audio.WaveFile.pas',
   DelphiDoom.Tests.Audio.WaveFileSystem in 'Source\DelphiDoom.Tests.Audio.WaveFileSystem.pas',
+  DelphiDoom.Tests.Audio.WaveFileGolden in 'Source\DelphiDoom.Tests.Audio.WaveFileGolden.pas',
   DelphiDoom.Tests.Audio.SoundSampleCache in 'Source\DelphiDoom.Tests.Audio.SoundSampleCache.pas',
   DelphiDoom.Tests.Audio.D3 in 'Source\DelphiDoom.Tests.Audio.D3.pas',
   DelphiDoom.Tests.Audio.SoundCacheCatalog in 'Source\DelphiDoom.Tests.Audio.SoundCacheCatalog.pas',
