@@ -433,6 +433,7 @@ uses
   nd_main,
   gl_automap,
   gl_lightmaps,
+  DelphiDoom.Engine.GlLightmap.Types,
   gl_clipper,
   gl_shadows,
   gl_slopes,

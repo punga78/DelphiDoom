@@ -91,7 +91,8 @@ if ($Lights) {
   $iniText = [System.IO.File]::ReadAllText($iniSource)
   $iniText = $iniText -replace '(?m)^uselightboost=\d', 'uselightboost=1' -replace '(?m)^gl_drawshadows=\d', 'gl_drawshadows=1'
   [System.IO.File]::WriteAllText($lightIni, $iniText)
-  $More = "$More -devparm -file $lightPack -config $lightIni"
+  # with -Voxels too, the two packs are the arguments of one -file
+  if ($Voxels) { $More = "$More $lightPack -config $lightIni" } else { $More = "$More -devparm -file $lightPack -config $lightIni" }
 }
 $monsters = if ($WithMonsters) { "" } else { "-nomonsters " }
 $extra = "$More ${monsters}-nomusic -nosound -nointerpolate -nomouse -nojoystick -windowed -glrecord $Tics -glrecordstart $StartTic"

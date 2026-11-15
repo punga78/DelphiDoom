@@ -73,6 +73,7 @@ uses
   gl_types,
   gl_lights,
   gl_lightmaps,
+  DelphiDoom.Engine.GlLightmap.Types,
   gl_models,
   gl_voxels,
   gl_render,

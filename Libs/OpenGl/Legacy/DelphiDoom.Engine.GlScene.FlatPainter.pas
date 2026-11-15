@@ -61,6 +61,7 @@ uses
   gl_defs,
   gl_types,
   gl_lightmaps,
+  DelphiDoom.Engine.GlLightmap.Types,
   gl_render,
   gl_slopes,
   gl_tex;
