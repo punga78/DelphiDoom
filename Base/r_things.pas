@@ -39,7 +39,8 @@ uses
   doomdef,
   p_mobj_h,
   m_fixed,
-  r_defs;
+  r_defs,
+  DelphiDoom.Renderer.Intf;
 
 var
   // JVAL Note about visprites
@@ -78,6 +79,13 @@ procedure R_AddSprites(sec: Psector_t);
 //
 //==============================================================================
 procedure R_InitSprites(namelist: PIntegerArray);
+
+//==============================================================================
+//
+// R_ConfigureSpriteDefs
+//
+//==============================================================================
+procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);
 
 //==============================================================================
 //
@@ -238,6 +246,7 @@ procedure R_ExecuteSpriteCache(const cache: Pvisspritecache_t);
 implementation
 
 uses
+  DelphiDoom.Renderer.Types,
 {$IFNDEF CPUX86}
   DelphiDoom.MathCore.X87Double,
 {$ENDIF}
@@ -298,79 +307,18 @@ uses
 //
 // INITIALIZATION FUNCTIONS
 //
-const
-  MAXFRAMES = 29; // Maximun number of frames in sprite
-
 var
-  sprtemp: array[0..MAXFRAMES - 1] of spriteframe_t;
-  maxframe: integer;
-  spritename: string;
+  sprite_defs: IRendererSpriteDefs;
 
 //==============================================================================
 //
-// R_InstallSpriteLump
-// Local function for R_InitSprites.
+// R_ConfigureSpriteDefs
+// The builder of the sprite definitions of Libs\Renderer, given by the composition root
 //
 //==============================================================================
-procedure R_InstallSpriteLump(lump: integer;
-  frame: LongWord; rotation: LongWord; flipped: boolean);
-var
-  r: integer;
+procedure R_ConfigureSpriteDefs(const ASpriteDefs: IRendererSpriteDefs);
 begin
-  if (frame >= MAXFRAMES) or (rotation > 32) then // JVAL: Up to 32 sprite rotations
-    I_DevError('R_InstallSpriteLump(): Bad frame characters in lump %d (frame = %d, rotation = %d)'#13#10, [lump, frame, rotation]);
-
-  if integer(frame) > maxframe then
-    maxframe := frame;
-
-  if rotation = 0 then
-  begin
-    // the lump should be used for all rotations
-    if sprtemp[frame].rotate = 0 then
-      I_DevWarning('R_InitSprites(): Sprite %s frame %s has multip rot=0 lump'#13#10,
-        [spritename, Chr(Ord('A') + frame)]);
-
-    if sprtemp[frame].rotate in [1..3] then // JVAL: Up to 32 sprite rotations
-      I_DevWarning('R_InitSprites(): Sprite %s frame %s has rotations and a rot=0 lump'#13#10,
-        [spritename, Chr(Ord('A') + frame)]);
-
-    sprtemp[frame].rotate := 0;
-    for r := 0 to 7 do
-    begin
-      sprtemp[frame].lump[r] := lump - firstspritelump;
-      sprtemp[frame].flip[r] := flipped;
-    end;
-    exit;
-  end;
-
-  // the lump is only used for one rotation
-  if sprtemp[frame].rotate = 0 then
-    I_DevWarning('R_InitSprites(): Sprite %s frame %s has rotations and a rot=0 lump'#13#10,
-      [spritename, Chr(Ord('A') + frame)]);
-
-  // JVAL: Up to 32 sprite rotations
-  if rotation in [1..8] then
-    if sprtemp[frame].rotate = -1 then
-      if sprtemp[frame].rotate < 1 then
-        sprtemp[frame].rotate := 1;
-
-  if rotation in [9..16] then
-    if (sprtemp[frame].rotate = -1) or (sprtemp[frame].rotate = 1) then
-      if sprtemp[frame].rotate < 2 then
-        sprtemp[frame].rotate := 2;
-
-  if rotation in [17..32] then
-    if (sprtemp[frame].rotate = -1) or (sprtemp[frame].rotate = 1) or (sprtemp[frame].rotate = 2) then
-      sprtemp[frame].rotate := 3;
-
-  // make 0 based
-  dec(rotation);
-  if sprtemp[frame].lump[rotation] <> -1 then
-    I_DevWarning('R_InitSprites(): Sprite %s : %s : %s has two lumps mapped to it'#13#10,
-      [spritename, Chr(Ord('A') + frame), decide(rotation > 9, Chr(Ord('A') + rotation - 10), Chr(Ord('1') + rotation))]); // JVAL: Up to 32 sprite rotations
-
-  sprtemp[frame].lump[rotation] := lump - firstspritelump;
-  sprtemp[frame].flip[rotation] := flipped;
+  sprite_defs := ASpriteDefs;
 end;
 
 //==============================================================================
@@ -384,56 +332,22 @@ end;
 // Only called at startup.
 //
 // Sprite lump names are 4 characters for the actor,
-//  a letter for the frame, and a number for the rotation.
+//  a letter for the frame and a number for the rotation.
 // A sprite that is flippable will have an additional
 //  letter/number appended.
 // The rotation character can be 0 to signify no rotations.
 //
+// The frames are built by TRendererSpriteDefs; here they are copied to the
+//  tables of the zone memory that the renderer reads.
+//
 //==============================================================================
 procedure R_InitSpriteDefs(namelist: PIntegerArray);
-
-  procedure sprtempreset;
-  var
-    i: integer;
-    j: integer;
-  begin
-    for i := 0 to MAXFRAMES - 1 do
-    begin
-      sprtemp[i].rotate := -1;
-      for j := 0 to 31 do // JVAL: Up to 32 sprite rotations
-      begin
-        sprtemp[i].lump[j] := -1;
-        sprtemp[i].flip[j] := false;
-      end;
-    end;
-  end;
-
-  // JVAL: Up to 32 sprite rotations
-  function rotationfromchar(const ch: AnsiChar): integer;
-  begin
-    if ch in ['0'..'9'] then
-    begin
-      result := Ord(ch) - Ord('0');
-      exit;
-    end;
-    if ch in ['A'..'W'] then
-    begin
-      result := Ord(ch) - Ord('A') + 10;
-      exit;
-    end;
-    result := 33; // will trigger error
-  end;
-
 var
+  names: TArray<Integer>;
+  defs: TArray<TRendererSpriteDefinition>;
   i: integer;
-  l: integer;
-  intname: integer;
-  lname8: name8_t;
-  frame: integer;
-  rotation: integer;
-  start: integer;
-  finish: integer;
-  patched: integer;
+  j: integer;
+  k: integer;
 begin
   // count the number of sprite names
 
@@ -444,111 +358,43 @@ begin
   if numspritespresent = 0 then
     exit;
 
+  if not Assigned(sprite_defs) then
+    I_Error('R_InitSpriteDefs(): R_ConfigureSpriteDefs() was not called');
+
   sprites := Z_Malloc(numspritespresent * SizeOf(spritedef_t), PU_STATIC, nil);
   ZeroMemory(sprites, numspritespresent * SizeOf(spritedef_t));
 
-  start := firstspritelump - 1;
-  finish := lastspritelump + 1;
+  SetLength(names, numspritespresent);
+  for i := 0 to numspritespresent - 1 do
+    names[i] := namelist[i];
 
-  // scan all the lump names for each of the names,
-  //  noting the highest frame letter.
-  // Just compare 4 characters as ints
+  try
+    defs := sprite_defs.Build(names);
+  except
+    on E: ERendererException do
+      I_Error('%s', [E.Message]);
+  end;
+
   for i := 0 to numspritespresent - 1 do
   begin
-    spritename := Chr(namelist[i] and $FF) + Chr((namelist[i] shr 8) and $FF) + Chr((namelist[i] shr 16) and $FF) + Chr((namelist[i] shr 24) and $FF);
-
-    sprtempreset;
-
-    maxframe := -1;
-    intname := namelist[i];
-
-    // scan the lumps,
-    //  filling in the frames for whatever is found
-    for l := start + 1 to finish - 1 do
-    begin
-      if spritepresent[l - firstspritelump] then
-      begin
-        lname8.s := W_GetNameForNum(l);
-        if lname8.x[0] = intname then // JVAL
-        begin
-          frame := Ord(lname8.s[4]) - Ord('A');
-          rotation := rotationfromchar(lname8.s[5]); // JVAL: Up to 32 sprite rotations
-
-          if modifiedgame then
-            patched := W_GetNumForName(lname8.s)
-          else
-            patched := l;
-
-          R_InstallSpriteLump(patched, frame, rotation, false);
-
-          if lname8.s[6] <> #0 then
-          begin
-            frame := Ord(lname8.s[6]) - Ord('A');
-            rotation := rotationfromchar(lname8.s[7]); // JVAL: Up to 32 sprite rotations
-            R_InstallSpriteLump(l, frame, rotation, true);
-          end;
-        end;
-      end;
-    end;
-
-    // check the frames that were found for completeness
-    if maxframe = -1 then
-    begin
-      sprites[i].numframes := 0;
+    sprites[i].numframes := Length(defs[i].Frames);
+    if sprites[i].numframes = 0 then
       continue;
-    end;
 
-    inc(maxframe);
-
-    for frame := 0 to maxframe - 1 do
+    // allocate space for the frames present and copy them to it
+    sprites[i].spriteframes :=
+      Z_Malloc(sprites[i].numframes * SizeOf(spriteframe_t), PU_STATIC, nil);
+    for j := 0 to sprites[i].numframes - 1 do
     begin
-      case sprtemp[frame].rotate of
-        -1:
-          begin
-            // no rotations were found for that frame at all
-            // JVAL: Changed from I_Error to I_Warning
-            I_Warning('R_InitSprites(): No patches found for %s frame %s'#13#10,
-              [spritename, Chr(frame + Ord('A'))]);
-          end;
-         0:
-          begin
-            // only the first rotation is needed
-          end;
-         1:
-          begin
-            // must have all 8 frames
-            for rotation := 0 to 7 do
-              if sprtemp[frame].lump[rotation] = -1 then
-                I_Error('R_InitSprites(): Sprite %s frame %s is missing rotations',
-                  [spritename, Chr(frame + Ord('A'))]);
-          end;
-         2: // JVAL: Up to 32 sprite rotations
-          begin
-            // must have all 16 frames
-            for rotation := 0 to 15 do
-              if sprtemp[frame].lump[rotation] = -1 then
-                I_Error('R_InitSprites(): Sprite %s frame %s is missing rotations',
-                  [spritename, Chr(frame + Ord('A'))]);
-          end;
-         3: // JVAL: Up to 32 sprite rotations
-          begin
-            // must have all 32 frames
-            for rotation := 0 to 31 do
-              if sprtemp[frame].lump[rotation] = -1 then
-                I_Error('R_InitSprites(): Sprite %s frame %s is missing rotations',
-                  [spritename, Chr(frame + Ord('A'))]);
-          end;
+      sprites[i].spriteframes[j].rotate := defs[i].Frames[j].Rotate;
+      for k := 0 to 31 do
+      begin
+        sprites[i].spriteframes[j].lump[k] := defs[i].Frames[j].Lump[k];
+        sprites[i].spriteframes[j].flip[k] := defs[i].Frames[j].Flip[k];
       end;
     end;
-
-    // allocate space for the frames present and copy sprtemp to it
-    sprites[i].numframes := maxframe;
-    sprites[i].spriteframes :=
-      Z_Malloc(maxframe * SizeOf(spriteframe_t), PU_STATIC, nil);
-    memcpy(sprites[i].spriteframes, @sprtemp, maxframe * SizeOf(spriteframe_t));
   end;
 end;
-
 var
   negosize: Integer = 0;
 

@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Renderer.Fakes;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Renderer.Intf,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Renderer.Types, DelphiDoom.Renderer.Intf,
   DelphiDoom.Logging.Intf;
 
 type
@@ -43,6 +43,24 @@ type
     class function ReadInt(const ABytes: TBytes; AOffset: Integer): Integer; static;
     /// <summary>Walks the posts from AOffset to the $FF as R_GenerateLookup did</summary>
     class function CountPosts(const ABytes: TBytes; AOffset: Integer): Integer; static;
+  end;
+
+  /// <summary>The lumps of a WAD made of names, as the lump directory of the engine answers</summary>
+  TFakeLumpDirectory = class(TInterfacedObject, IRendererLumpDirectory)
+  public
+    Names: TArray<string>;
+    function LumpCount: Integer;
+    function LumpName(ALump: Integer): TRendererLumpName;
+    function FirstLumpNamed(const AName: string): Integer;
+    function LastLumpNamed(const AName: string): Integer;
+    procedure Add(const AName: string);
+  end;
+
+  /// <summary>The headers of sprite lumps: the width and the offsets come from the number of the lump</summary>
+  TFakeSpriteHeaders = class(TInterfacedObject, IRendererSpriteHeaders)
+  public
+    Reads: TArray<Integer>;
+    procedure Header(ALump: Integer; out AWidth, ALeftOffset, ATopOffset: Integer);
   end;
 
   TFakePatchSource = class;
@@ -115,6 +133,60 @@ end;
 procedure TFakeLog.Error(const AText: string);
 begin
   FOthers.Add(AText);
+end;
+
+{ TFakeLumpDirectory }
+
+procedure TFakeLumpDirectory.Add(const AName: string);
+begin
+  SetLength(Names, Length(Names) + 1);
+  Names[High(Names)] := AName;
+end;
+
+function TFakeLumpDirectory.LumpCount: Integer;
+begin
+  Result := Length(Names);
+end;
+
+function TFakeLumpDirectory.LumpName(ALump: Integer): TRendererLumpName;
+var
+  LIndex: Integer;
+begin
+  FillChar(Result, SizeOf(Result), 0);
+  for LIndex := 1 to Length(Names[ALump]) do
+    Result[LIndex - 1] := AnsiChar(Names[ALump][LIndex]);
+end;
+
+function TFakeLumpDirectory.FirstLumpNamed(const AName: string): Integer;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(Names) do
+    if Names[LIndex] = AName then
+      Exit(LIndex);
+  Result := -1;
+end;
+
+function TFakeLumpDirectory.LastLumpNamed(const AName: string): Integer;
+var
+  LIndex: Integer;
+begin
+  for LIndex := High(Names) downto 0 do
+    if Names[LIndex] = AName then
+      Exit(LIndex);
+  Result := -1;
+end;
+
+{ TFakeSpriteHeaders }
+
+procedure TFakeSpriteHeaders.Header(ALump: Integer; out AWidth, ALeftOffset,
+  ATopOffset: Integer);
+begin
+  SetLength(Reads, Length(Reads) + 1);
+  Reads[High(Reads)] := ALump;
+  AWidth := (ALump * 7) mod 300 - 20;
+  ALeftOffset := (ALump * 13) mod 200 - 100;
+  ATopOffset := (ALump * 31) mod 250 - 50;
 end;
 
 { TFakePatchBytes }

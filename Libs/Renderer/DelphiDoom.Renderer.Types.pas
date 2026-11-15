@@ -16,6 +16,12 @@ uses
 const
   /// <summary>One in the fixed point of the engine (16.16)</summary>
   RENDERER_FRACUNIT = 65536;
+  /// <summary>The number of fine angles of a full circle (the index of the tables of the tangents)</summary>
+  RENDERER_FINEANGLES = 8192;
+  /// <summary>How many binary angles a fine angle has (the angles are 32 bit: a full circle is 2^32)</summary>
+  RENDERER_ANGLE_TO_FINE_UNIT = 1 shl 19;
+  /// <summary>90 degrees as a binary angle</summary>
+  RENDERER_ANGLE_90 = $40000000;
   /// <summary>
   ///   A level whose sectors span more than this from the lowest floor to the highest ceiling
   ///   needs the renderer of tall walls
@@ -51,6 +57,69 @@ type
     Patches: TArray<TRendererTexturePatch>;
   end;
 
+  /// <summary>The name of a lump: eight bytes, padded with zeros (an 8 characters name has no zero)</summary>
+  TRendererLumpName = array[0..7] of AnsiChar;
+
+  /// <summary>One frame of a sprite: for each of the 32 view rotations, the lump to draw and whether it is flipped</summary>
+  TRendererSpriteFrame = record
+    /// <summary>-1 no lump yet, 0 one lump for all the rotations, 1 eight rotations, 2 sixteen, 3 thirty-two</summary>
+    Rotate: Integer;
+    /// <summary>The lump of the rotation, relative to the first sprite lump (-1 when there is none)</summary>
+    Lump: array[0..31] of Integer;
+    Flip: array[0..31] of Boolean;
+  end;
+
+  /// <summary>The frames that the lumps of the WAD give to a sprite name</summary>
+  TRendererSpriteDefinition = record
+    /// <summary>The frames from A to the last one found (empty when no lump has the name)</summary>
+    Frames: TArray<TRendererSpriteFrame>;
+  end;
+
+  /// <summary>
+  ///   The grid that tells, for the cells of the map that lie in one subsector only, which
+  ///   subsector it is (the precalculated point in subsector of the renderer)
+  /// </summary>
+  TRendererSubsectorGrid = record
+    /// <summary>The lowest x and y of the vertexes, in fixed point: the corner of the first cell</summary>
+    MinX: Int64;
+    MinY: Int64;
+    /// <summary>The number of cells of a row and of a column</summary>
+    Width: Int64;
+    Height: Int64;
+    /// <summary>Row by row, the number of the subsector of the cell, or -1 when the cell is not in one subsector only</summary>
+    Cells: TArray<Integer>;
+    /// <summary>How many cells have a subsector</summary>
+    HitCount: Integer;
+    /// <summary>The biggest absolute coordinate of the vertexes, in map units</summary>
+    MaxBound: Integer;
+  end;
+
+  /// <summary>A run of consecutive lumps: from the first to the last, both included</summary>
+  TRendererLumpRange = record
+    First: Integer;
+    Last: Integer;
+  end;
+
+  /// <summary>What the renderer keeps of the header of every sprite lump of the WAD</summary>
+  TRendererSpriteTable = record
+    /// <summary>One entry per lump of the range: the width of the patch in fixed point</summary>
+    Width: TArray<Integer>;
+    /// <summary>The left offset of the patch in fixed point</summary>
+    LeftOffset: TArray<Integer>;
+    /// <summary>The top offset of the patch in fixed point</summary>
+    TopOffset: TArray<Integer>;
+    /// <summary>The lump is a sprite (not a marker, and inside a sprite section)</summary>
+    Present: TArray<Boolean>;
+  end;
+  /// <summary>The tables that map the angles of the view to the columns of the screen and back</summary>
+  TRendererTextureMapping = record
+    /// <summary>For each fine angle of the half circle in front, the next greatest column after it (0 to the view width)</summary>
+    ViewAngleToX: TArray<Integer>;
+    /// <summary>For each column from 0 to the view width, the smallest view angle that maps to it (a binary angle)</summary>
+    XToViewAngle: TArray<Cardinal>;
+    /// <summary>The angle of the left edge of the view (the first of XToViewAngle)</summary>
+    ClipAngle: Cardinal;
+  end;
   /// <summary>How high and how low the sectors of a level go</summary>
   TRendererHeightRange = record
     /// <summary>The lowest floor height, in fixed point (MaxInt without sectors)</summary>

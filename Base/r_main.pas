@@ -51,7 +51,8 @@ uses
   DelphiDoom.DynLights.Intf,
   DelphiDoom.Imaging.Intf,
   DelphiDoom.Palette.Intf,
-  DelphiDoom.Palette.Types;
+  DelphiDoom.Palette.Types,
+  DelphiDoom.Renderer.Intf;
 
 const
 //
@@ -205,6 +206,13 @@ procedure R_RenderPlayerView(player: Pplayer_t);
 //
 //==============================================================================
 procedure R_ConfigureLightTables(const ACalculator: ILightTableCalculator);
+
+//==============================================================================
+//
+// R_ConfigureTextureMapping
+//
+//==============================================================================
+procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);
 
 //==============================================================================
 //
@@ -565,6 +573,7 @@ uses
   g_game,
 {$ENDIF}
   DelphiDoom.MathCore.Types,
+  DelphiDoom.Renderer.Types,
 {$IFNDEF CPUX86}
   DelphiDoom.MathCore.X87Double,
   DelphiDoom.Renderer.X87,
@@ -1441,6 +1450,18 @@ end;
 
 var
   oldfocallength: fixed_t = -1;
+  texture_mapping: IRendererTextureMappingBuilder = nil;
+
+//==============================================================================
+//
+// R_ConfigureTextureMapping
+// The builder of the tables of the view angles of Libs\Renderer, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureTextureMapping(const ABuilder: IRendererTextureMappingBuilder);
+begin
+  texture_mapping := ABuilder;
+end;
 
 //==============================================================================
 //
@@ -1451,9 +1472,9 @@ procedure R_InitTextureMapping;
 var
   i: integer;
   x: integer;
-  t: integer;
   focallength: fixed_t;
-  an: angle_t;
+  tangents: TArray<Integer>;
+  tables: TRendererTextureMapping;
 begin
   // Use tangent table to generate viewangletox:
   //  viewangletox will give the next greatest x
@@ -1472,45 +1493,27 @@ begin
     exit;
   oldfocallength := focallength;
 
-  for i := 0 to FINEANGLES div 2 - 1 do
-  begin
-    if finetangent[i] > FRACUNIT * 2 then
-      t := -1
-    else if finetangent[i] < -FRACUNIT * 2 then
-      t := viewwidth + 1
-    else
-    begin
-      t := FixedMul(finetangent[i], focallength);
-      t := (centerxfrac - t + (FRACUNIT - 1)) div FRACUNIT;
+  if texture_mapping = nil then
+    I_Error('R_InitTextureMapping(): R_ConfigureTextureMapping() was not called');
 
-      if t < -1 then
-        t := -1
-      else if t > viewwidth + 1 then
-        t := viewwidth + 1;
-    end;
-    viewangletox[i] := t;
+  SetLength(tangents, FINEANGLES div 2);
+  for i := 0 to FINEANGLES div 2 - 1 do
+    tangents[i] := finetangent[i];
+
+  // The tables are built by TRendererTextureMappingBuilder; here they are copied to the
+  //  arrays that the renderer reads.
+  try
+    tables := texture_mapping.Build(focallength, centerxfrac, viewwidth, tangents);
+  except
+    on E: ERendererException do
+      I_Error('%s', [E.Message]);
   end;
 
-  // Scan viewangletox[] to generate xtoviewangle[]:
-  //  xtoviewangle will give the smallest view angle
-  //  that maps to x.
+  for i := 0 to FINEANGLES div 2 - 1 do
+    viewangletox[i] := tables.ViewAngleToX[i];
   for x := 0 to viewwidth do
-  begin
-    an := 0;
-    while viewangletox[an] > x do
-      inc(an);
-    xtoviewangle[x] := an * ANGLETOFINEUNIT - ANG90;
-  end;
-
-  // Take out the fencepost cases from viewangletox.
-  for i := 0 to FINEANGLES div 2 - 1 do
-  begin
-    if viewangletox[i] = -1 then
-      viewangletox[i] := 0
-    else if viewangletox[i] = viewwidth + 1 then
-      viewangletox[i] := viewwidth;
-  end;
-  clipangle := xtoviewangle[0];
+    xtoviewangle[x] := tables.XToViewAngle[x];
+  clipangle := tables.ClipAngle;
 end;
 
 var

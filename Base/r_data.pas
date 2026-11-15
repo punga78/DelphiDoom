@@ -156,6 +156,16 @@ procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
 
 //==============================================================================
 //
+// R_ConfigureLumpRanges
+// The finder of the ranges of the flats and of the sprites and the reader of the
+// sprite headers (R_InitFlats, R_InitSpriteLumps)
+//
+//==============================================================================
+procedure R_ConfigureLumpRanges(const ARanges: IRendererLumpRanges;
+  const ASpriteTable: IRendererSpriteTableBuilder);
+
+//==============================================================================
+//
 // R_FreeMemory
 //
 //==============================================================================
@@ -372,6 +382,8 @@ var
   composite_painter: IImagingColumnPainter = nil;
   composite_rebuilder: IImagingColumnRebuilder = nil;
   texture_lookup: IRendererTextureLookup = nil;
+  lump_ranges: IRendererLumpRanges = nil;
+  sprite_table_builder: IRendererSpriteTableBuilder = nil;
   // the last index found for a name of a flat or of a texture (one table for both, as the
   // old global hash of m_hash): every answer is checked against flats[] or textures[]
   name_hash: IStringHashTable = nil;
@@ -396,6 +408,20 @@ end;
 procedure R_ConfigureTextureLookup(const ALookup: IRendererTextureLookup);
 begin
   texture_lookup := ALookup;
+end;
+
+//==============================================================================
+//
+// R_ConfigureLumpRanges
+// The finder of the ranges of the flats and of the sprites and the reader of the
+// sprite headers, given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureLumpRanges(const ARanges: IRendererLumpRanges;
+  const ASpriteTable: IRendererSpriteTableBuilder);
+begin
+  lump_ranges := ARanges;
+  sprite_table_builder := ASpriteTable;
 end;
 
 //==============================================================================
@@ -1374,18 +1400,19 @@ end;
 procedure R_InitFlats;
 var
   i: integer;
-  lump: integer;
   flat: Pflat_t;
+  range: TRendererLumpRange;
 begin
-  firstflat := W_GetFirstNumForName('F_START') + 1;
-  lump := W_CheckFirstNumForName('FF_START') + 1;
-  if lump > 0 then
-    if lump < firstflat then
-      firstflat := lump;
-  lastflat := W_GetNumForName('F_END') - 1;
-  lump := W_CheckNumForName('FF_END');
-  if lump > lastflat then
-    lastflat := lump;
+  if lump_ranges = nil then
+    I_Error('R_InitFlats(): R_ConfigureLumpRanges() was not called');
+  try
+    range := lump_ranges.FlatRange;
+  except
+    on E: ERendererException do
+      I_Error('%s', [E.Message]);
+  end;
+  firstflat := range.First;
+  lastflat := range.Last;
   numflats := lastflat - firstflat + 1;
 
   // Create translation table for global animation.
@@ -1423,40 +1450,25 @@ end;
 procedure R_InitSpriteLumps;
 var
   i: integer;
-  in_loop: boolean;
-  patch: Ppatch_t;
-  tmp: integer;
-  lumpname: string;
+  range: TRendererLumpRange;
+  table: TRendererSpriteTable;
 begin
   if not Assigned(voxel_sprites) then
     I_Error('R_InitSpriteLumps(): the voxel sprites are not configured (call ComposeEngine first)');
   voxel_sprites.Generate;
 
-  firstspritelump := 0;
-  for i := 0 to W_NumLumps - 1 do
-  begin
-    lumpname := char8tostring(W_GetNameForNum(i));
-    if (lumpname = 'S_START') or (lumpname = 'SS_START') then
-    begin
-      firstspritelump := i + 1;
-      break;
-    end;
-  end;
+  if (lump_ranges = nil) or (sprite_table_builder = nil) then
+    I_Error('R_InitSpriteLumps(): R_ConfigureLumpRanges() was not called');
 
-  lastspritelump := W_GetNumForName('S_END') - 1;
-  tmp := W_CheckNumForName('SS_END');
-  if tmp > 0 then
-  begin
-    dec(tmp);
-    if lastspritelump < tmp then
-      lastspritelump := tmp;
+  try
+    range := lump_ranges.SpriteRange;
+  except
+    on E: ERendererException do
+      I_Error('%s', [E.Message]);
   end;
+  firstspritelump := range.First;
+  lastspritelump := range.Last;
 
-  if lastspritelump < firstspritelump then
-  begin
-    I_Warning('R_InitSpriteLumps(): WAD files have missplaced sprite markers (start=%d, end=%d)'#13#10, [firstspritelump, lastspritelump]);
-    lastspritelump := W_NumLumps;
-  end;
   W_InitSprites; // JVAL: Images as sprites
   numspritelumps := lastspritelump - firstspritelump + 1;
   spritewidth := malloc(numspritelumps * SizeOf(fixed_t));
@@ -1464,31 +1476,15 @@ begin
   spritetopoffset := malloc(numspritelumps * SizeOf(fixed_t));
   spritepresent := malloc(numspritelumps * SizeOf(boolean));
 
-  in_loop := true;
-
+  table := sprite_table_builder.Build(range);
   for i := 0 to numspritelumps - 1 do
   begin
-    spritewidth[i] := 0;
-    spriteoffset[i] := 0;
-    spritetopoffset[i] := 0;
-    spritepresent[i] := false;
-    lumpname := char8tostring(W_GetNameForNum(firstspritelump + i));
-    if (lumpname = 'SS_START') or (lumpname = 'S_START') then
-      in_loop := true
-    else if (lumpname = 'SS_END') or (lumpname = 'S_END') then
-      in_loop := false
-    else if in_loop then
-    begin
-      patch := W_CacheSpriteNum(firstspritelump + i, nil, PU_STATIC); // JVAL: Images as sprites
-      spritewidth[i] := patch.width * FRACUNIT;
-      spriteoffset[i] := patch.leftoffset * FRACUNIT;
-      spritetopoffset[i] := patch.topoffset * FRACUNIT;
-      spritepresent[i] := true;
-      Z_ChangeTag(patch, PU_CACHE);
-    end;
+    spritewidth[i] := table.Width[i];
+    spriteoffset[i] := table.LeftOffset[i];
+    spritetopoffset[i] := table.TopOffset[i];
+    spritepresent[i] := table.Present[i];
   end;
 end;
-
 //==============================================================================
 // R_SafeFreeMemory
 //

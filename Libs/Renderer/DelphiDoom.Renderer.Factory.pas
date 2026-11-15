@@ -22,14 +22,59 @@ type
     class function CreateTextureLookup(const APatchSource: IRendererPatchSource;
       const ALog: ILog): IRendererTextureLookup; static;
     class function CreateLevelPrecalc: IRendererLevelPrecalc; static;
+    class function CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder; static;
+    class function CreateTextureMappingBuilder: IRendererTextureMappingBuilder; static;
+    /// <param name="ADirectory">The lumps of the WAD</param>
+    /// <param name="ALog">Where the warnings go</param>
+    class function CreateLumpRanges(const ADirectory: IRendererLumpDirectory;
+      const ALog: ILog): IRendererLumpRanges; static;
+    /// <param name="ADirectory">The lumps of the WAD</param>
+    /// <param name="AHeaders">The headers of the sprite lumps</param>
+    class function CreateSpriteTableBuilder(const ADirectory: IRendererLumpDirectory;
+      const AHeaders: IRendererSpriteHeaders): IRendererSpriteTableBuilder; static;
+    /// <param name="ASource">The sprite lumps of the WAD</param>
+    /// <param name="ALog">Where the warnings go</param>
+    class function CreateSpriteDefs(const ASource: IRendererSpriteSource;
+      const ALog: ILog): IRendererSpriteDefs; static;
   end;
 
 implementation
 
 uses
-  DelphiDoom.Renderer.TextureLookup, DelphiDoom.Renderer.LevelPrecalc;
+  DelphiDoom.Renderer.TextureLookup, DelphiDoom.Renderer.LevelPrecalc,
+  DelphiDoom.Renderer.SpriteDefs, DelphiDoom.Renderer.SubsectorGrid, DelphiDoom.Renderer.LumpRanges,
+  DelphiDoom.Renderer.SpriteTable, DelphiDoom.Renderer.TextureMapping;
 
 { TRendererFactory }
+
+class function TRendererFactory.CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder;
+begin
+  Result := TRendererSubsectorGridBuilder.Create;
+end;
+
+class function TRendererFactory.CreateTextureMappingBuilder: IRendererTextureMappingBuilder;
+begin
+  Result := TRendererTextureMappingBuilder.Create;
+end;
+
+class function TRendererFactory.CreateLumpRanges(const ADirectory: IRendererLumpDirectory;
+  const ALog: ILog): IRendererLumpRanges;
+begin
+  Result := TRendererLumpRanges.Create(ADirectory, ALog);
+end;
+
+class function TRendererFactory.CreateSpriteTableBuilder(
+  const ADirectory: IRendererLumpDirectory;
+  const AHeaders: IRendererSpriteHeaders): IRendererSpriteTableBuilder;
+begin
+  Result := TRendererSpriteTableBuilder.Create(ADirectory, AHeaders);
+end;
+
+class function TRendererFactory.CreateSpriteDefs(const ASource: IRendererSpriteSource;
+  const ALog: ILog): IRendererSpriteDefs;
+begin
+  Result := TRendererSpriteDefs.Create(ASource, ALog);
+end;
 
 class function TRendererFactory.CreateTextureLookup(const APatchSource: IRendererPatchSource;
   const ALog: ILog): IRendererTextureLookup;

@@ -171,8 +171,13 @@ uses
   r_patch,
   r_segs2,
 {$ENDIF}
+  DelphiDoom.Renderer.Intf,
   DelphiDoom.Renderer.Factory,
   DelphiDoom.Engine.Renderer.PatchSource,
+  DelphiDoom.Engine.Renderer.SpriteSource,
+  DelphiDoom.Engine.Renderer.SubsectorLocator,
+  DelphiDoom.Engine.Renderer.LumpDirectory,
+  DelphiDoom.Engine.Renderer.SpriteHeaders,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -264,6 +269,8 @@ uses
   DelphiDoom.Engine.TextureDefs.LumpSource,
   DelphiDoom.Engine.TextureDefs.FlatCatalog,
   r_data,
+  r_things,
+  r_subsectors,
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Factory,
@@ -1165,9 +1172,20 @@ begin
 end;
 
 procedure ComposeRenderer(const ALog: ILog);
+var
+  LDirectory: IRendererLumpDirectory;
 begin
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
+  R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
+    TEngineRendererSpriteSource.Create, ALog));
+  R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
+    TEngineRendererSubsectorLocator.Create);
+  R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
+  LDirectory := TEngineRendererLumpDirectory.Create;
+  R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
+    TRendererFactory.CreateSpriteTableBuilder(LDirectory,
+      TEngineRendererSpriteHeaders.Create));
 {$IFNDEF OPENGL}
   R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}
