@@ -48,6 +48,11 @@ type
     [TestCase('Menu F10: opzioni, obiettivi, ricomincia', 'map_menu')]
     [TestCase('Menu F10: uscire, Menu torna al menu principale', 'map_menu_quit')]
     [TestCase('Menu F10: ricomincia la mappa con le velocita'' di prima', 'map_menu_restart')]
+    [TestCase('Trucchi sulla mappa: pannello, effetti, volumi, modi di modifica', 'map_cheats')]
+    [TestCase('Vittoria: menu della fine e briefing della mappa dopo', 'map_gameover_win')]
+    [TestCase('Sconfitta: Ok e briefing della stessa mappa', 'map_gameover_lose')]
+    [TestCase('Fine della demo: Ides of march e ultima mappa', 'map_demo_end')]
+    [TestCase('Salto di mappa con Human e Orc', 'map_skip')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

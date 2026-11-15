@@ -26,7 +26,8 @@ uses
   DelphiDoom.War.MapUi.Renderer, DelphiDoom.War.MapUi.Hud, DelphiDoom.War.MapUi.Host, DelphiDoom.War.MapUi.Census,
   DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Selecting,
   DelphiDoom.War.MapUi.CommandPanel, DelphiDoom.War.MapUi.CommandState, DelphiDoom.War.MapUi.CommandRunner,
-  DelphiDoom.War.MapUi.CommandPreview, DelphiDoom.War.MapUi.Menu, DelphiDoom.War.MapUi.MenuView;
+  DelphiDoom.War.MapUi.CommandPreview, DelphiDoom.War.MapUi.Menu, DelphiDoom.War.MapUi.MenuView,
+  DelphiDoom.War.Ui.CheatsPanel, DelphiDoom.War.MapUi.CheatEffects;
 
 type
   /// <summary>What the scene of a map is made from: the level and its tileset, the tables and the services of the game</summary>
@@ -52,7 +53,8 @@ type
   ///   the original: the camera, what the player asks for, the model (the computer player, every state, the actions, the
   ///   projectiles, the spells and the fog), then the panel of the commands, the status bar and the objectives
   /// </summary>
-  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene, IWarMapMenuHost)
+  TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene, IWarMapMenuHost,
+    IWarMapCheatTarget)
   strict private
     FSetup: TWarMapSceneSetup;
     FHost: IWarMapHost;
@@ -76,6 +78,10 @@ type
     FStatus: TWarStatusLine;
     FMenu: TWarMapMenu;
     FMenuView: TWarMapMenuView;
+    FCheats: TWarCheatsPanel;
+    FEffects: IWarCheatEffects;
+    FEditMode: TWarMapEditMode;
+    FEditUnitType: Integer;
     FResult: TWarLevelResult;
     FObjectivesTime: Single;
     function GetGameSpeed: Integer;
@@ -83,6 +89,9 @@ type
     function GetPlaying: Boolean;
     function WindowScale: Single;
     function ObjectivesText: AnsiString;
+    function CheatsOpen: Boolean;
+    procedure UpdateAddUnit;
+    procedure UpdateDebugShortcuts;
     procedure UpdateObjectives;
     procedure UpdateStatus;
     procedure RenderMapUi;
@@ -93,6 +102,7 @@ type
     procedure StatusOfBuilding(ASlot: Integer);
     function CursorOnMap: Integer;
     function MapSpeedScale: Single;
+    function GameDelta: Single;
   public
     constructor Create(const ASetup: TWarMapSceneSetup);
     destructor Destroy; override;
@@ -126,6 +136,19 @@ type
     procedure QuitGame;
     /// <summary>The menus of the map (map->menuState, map->playing, map->settings)</summary>
     property Menu: TWarMapMenu read FMenu;
+    /// <summary>The cheat line of the map (map->status.cheatStatus)</summary>
+    property Cheats: TWarCheatsPanel read FCheats;
+    /// <summary>IWarMapCheatTarget: the map is over with a victory or a defeat (the same as Conclude)</summary>
+    procedure ConcludeMap(AResult: TWarLevelResult);
+    /// <summary>IWarMapCheatTarget: wcheat_applyEndCheat</summary>
+    procedure ShowDemoEnd;
+    /// <summary>IWarMapCheatTarget: wcheat_applyFogOfWarCheat</summary>
+    procedure ToggleFog;
+    /// <summary>IWarMapCheatTarget: wcheat_applySkipHumanCheat and wcheat_applySkipOrcCheat</summary>
+    procedure SkipToBriefing(ARace: TWarRace; AMapType: Integer);
+    /// <summary>IWarMapCheatTarget: map->editing</summary>
+    procedure SetEditing(AMode: TWarMapEditMode; AUnitType: Integer);
+    function GetEditMode: TWarMapEditMode;
     /// <summary>The line of the status bar of this frame (the message, what the selection says), without the tooltip</summary>
     property StatusText: AnsiString read FStatus.Text;
     property Camera: TWarMapCamera read FCamera;
@@ -190,6 +213,16 @@ begin
     Result := FSetup.Services.Settings.GlobalScale;
 end;
 
+function TWarMapScene.GameDelta: Single;
+var
+  LScale: Single;
+begin
+  // wg_beginFrame: the time of the frame times the speed of the game and the one of the map
+  LScale := FSetup.Services.Host.GlobalSpeed;
+  LScale := LScale * MapSpeedScale;
+  Result := FSetup.Services.Host.RealDeltaTime * LScale;
+end;
+
 function TWarMapScene.MapSpeedScale: Single;
 var
   LSpeed: Integer;
@@ -247,6 +280,14 @@ begin
   FCommandPreview := TWarMapCommandPreview.Create(FSetup.Services.Canvas.Transform, FCamera, FBinding.World.Context,
     FBinding.Commands, FCommandState);
   FCommandBuilder := TWarMapCommandPanel.Create(FBinding.World.Context);
+  // the cheats of the map; the ones of the settings (music, sound, scale, speed) are the next effects, as before the map.
+  // wmui_createMapUI also makes the cheat line: enabled, closed, empty
+  FEditMode := wemNone;
+  FEffects := TWarMapCheatEffects.Create(FBinding.World.Context, FBinding.World.Economy, Self,
+    FSetup.Services.Settings, FSetup.Services.DebugRender, FSetup.Services.Effects);
+  FCheats := TWarCheatsPanel.Create(FSetup.Services.Host, FSetup.Services.Input, FSetup.Services.Imui,
+    FSetup.Services.Canvas, FEffects);
+  FCheats.Enable;
   // wmui_createMapUI makes the entity of the minimap; then the music, which is an entity too (not in the demo)
   FBinding.World.Context.Pool.CreateEntity(WAR_ENTITY_MINIMAP, True);
   if not FSetup.Services.Host.IsDemo then
@@ -266,6 +307,8 @@ begin
   FreeAndNil(FHud);
   FreeAndNil(FMenuView);
   FreeAndNil(FMenu);
+  FreeAndNil(FCheats);
+  FEffects := nil;
   FreeAndNil(FSelecting);
   FreeAndNil(FCommandPreview);
   FreeAndNil(FCommandRunner);
@@ -285,11 +328,86 @@ end;
 
 procedure TWarMapScene.HandleTextInput(const AText: AnsiString);
 begin
+  // appendCheatTextInput: the characters go to the cheat line if it is open
+  if Assigned(FCheats) then
+    FCheats.AppendTextInput(AText);
+end;
+
+function TWarMapScene.CheatsOpen: Boolean;
+begin
+  Result := Assigned(FCheats) and FCheats.Enabled and FCheats.Visible;
 end;
 
 procedure TWarMapScene.Conclude(AResult: TWarLevelResult);
 begin
   FResult := AResult;
+end;
+
+procedure TWarMapScene.ConcludeMap(AResult: TWarLevelResult);
+begin
+  Conclude(AResult);
+end;
+
+procedure TWarMapScene.ShowDemoEnd;
+begin
+  // wcheat_applyEndCheat
+  FMenu.Playing := False;
+  FMenu.ShowDemoEnd(True);
+end;
+
+procedure TWarMapScene.ToggleFog;
+begin
+  FMap.Fog.Enabled := not FMap.Fog.Enabled;
+end;
+
+procedure TWarMapScene.SkipToBriefing(ARace: TWarRace; AMapType: Integer);
+begin
+  FSetup.Services.Host.SetNextScene(FSetup.Services.Scenes.CreateBriefing(ARace, AMapType), 1.0);
+end;
+
+procedure TWarMapScene.SetEditing(AMode: TWarMapEditMode; AUnitType: Integer);
+begin
+  FEditMode := AMode;
+  if AMode = wemAddUnit then
+    FEditUnitType := AUnitType;
+end;
+
+function TWarMapScene.GetEditMode: TWarMapEditMode;
+begin
+  Result := FEditMode;
+end;
+
+procedure TWarMapScene.UpdateAddUnit;
+var
+  LInput: IWarUiInput;
+  LMapX: Single;
+  LMapY: Single;
+  LTileX: Single;
+  LTileY: Single;
+  LRace: TWarRace;
+  LIndex: Integer;
+  LSlot: Integer;
+begin
+  // updateAddUnit: a click on the map puts the unit of the cheat on the tile, for the first player of its race
+  if FEditMode <> wemAddUnit then
+    Exit;
+  LInput := FSetup.Services.Input;
+  if (not LInput.IsButtonJustPressed(wmbLeft)) or (not WarRectContains(FPanels.MapPanel, LInput.PositionX, LInput.PositionY)) then
+    Exit;
+  FCamera.ScreenToMap(LInput.PositionX, LInput.PositionY, LMapX, LMapY);
+  TWarMapCamera.MapToTile(LMapX, LMapY, LTileX, LTileY);
+  if FMap.Grid.GetTileEntityId(Trunc(LTileX), Trunc(LTileY)) <> 0 then
+    Exit;
+  LRace := TWarUnitClassifier.RaceOf(FEditUnitType);
+  for LIndex := 0 to FBinding.World.Context.PlayersCount - 1 do
+    if FBinding.World.Context.Players[LIndex]^.Race = LRace then
+    begin
+      LSlot := FBinding.World.Entities.CreateUnit(FEditUnitType, Trunc(LTileX), Trunc(LTileY),
+        FBinding.World.Context.Players[LIndex]^.Index, wrkNone, 0, True);
+      if LSlot <> 0 then
+        FBinding.World.Entities.SetInitialIdle(LSlot);
+      Break;
+    end;
 end;
 
 function TWarMapScene.ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
@@ -381,13 +499,20 @@ var
   LIndex: Integer;
   LSlot: Integer;
   LEntity: PWarEntity;
+  LCheatLine: AnsiString;
 begin
-  // updateStatus: the status line is cleared, then the message that flashes, if it still lasts
+  // updateStatus: the status line is cleared, then the cheat line (which takes the status line if it is open), then the
+  // message that flashes, if it still lasts
   FStatus.Text := '';
   FStatus.HighlightIndex := WAR_NO_HIGHLIGHT;
   FStatus.HighlightCount := 0;
   FStatus.Gold := 0;
   FStatus.Wood := 0;
+  if FCheats.UpdateOnMap(LCheatLine) then
+  begin
+    FStatus.Text := LCheatLine;
+    Exit;
+  end;
   LFlash := FHost.GetFlash;
   if LFlash.Enabled then
   begin
@@ -455,7 +580,7 @@ begin
   LHost := FSetup.Services.Host;
   LContext.Dragging := FSelecting.IsDragging;
   LContext.CommandActive := FCommandState.Pending;
-  LContext.CheatsOpen := False;
+  LContext.CheatsOpen := CheatsOpen;
   LContext.ScreenWidth := LHost.OriginalWidth;
   LContext.ScreenHeight := LHost.OriginalHeight;
   LContext.RealDeltaTime := LHost.RealDeltaTime;
@@ -475,21 +600,31 @@ begin
   if (not Assigned(FCamera)) or (not FMenu.Playing) then
     Exit;
   UpdateCamera;
+  UpdateDebugShortcuts;
   FHost.SetRealTime(LHost.RealTime);
   UpdateStatus;
+end;
+
+procedure TWarMapScene.UpdateDebugShortcuts;
+begin
+  // updateDebugRenderShortcuts: only with the cheats on
+  if Assigned(FSetup.Services.DebugRender) and ((not Assigned(FSetup.Services.Settings)) or
+    FSetup.Services.Settings.CheatsEnabled) then
+    FSetup.Services.DebugRender.UpdateShortcuts(FSetup.Services.Input);
 end;
 
 procedure TWarMapScene.Update;
 var
   LHost: IWarSceneHost;
   LDelta: Single;
-  LScale: Single;
 begin
   LHost := FSetup.Services.Host;
   if not FMenu.Playing then
   begin
-    // a menu is open (or the map is over): the drag of the mouse is forgotten and nothing else moves
+    // a menu is open (or the map is over): the drag of the mouse is forgotten and nothing else moves; but the time of the
+    // game goes on (wg_beginFrame adds it whatever the map does), so what waits for a time has it passed when the map plays
     FSelecting.ResetDrag;
+    FBinding.World.AdvanceClock(GameDelta);
     Exit;
   end;
   // the real time of this frame, before anything can ask for a message of the status line (the command of a click does)
@@ -500,20 +635,24 @@ begin
   // only the clicks that no command takes select: some commands run with the click that selects
   if not FCommandRunner.Execute(FSetup.Services.Input) then
     FSelecting.UpdateSelection(FSetup.Services.Input);
-  FSelecting.UpdateGroups(FSetup.Services.Input);
+  FSelecting.UpdateGroups(FSetup.Services.Input, CheatsOpen);
   FBinding.World.Context.ViewportTop := FCamera.Y;
   // the real time of the game and the length of this tic of the game (wg_beginFrame)
   FHost.SetRealTime(LHost.RealTime);
   FBinding.World.Context.RealTime := LHost.RealTime;
-  LScale := LHost.GlobalSpeed;
-  LScale := LScale * MapSpeedScale;
-  LDelta := LHost.RealDeltaTime * LScale;
+  LDelta := GameDelta;
   FBinding.World.Context.Clock^.GlobalSpeed := LHost.GlobalSpeed;
   FBinding.World.Context.Clock^.GameSpeed := FMenu.Settings.GameSpeed;
-  FBinding.Tick(LDelta);
+  // a tic of the model, with the clicks of the cheats of editing between the states and the rest (updateAddUnit is there)
+  FBinding.World.AdvanceClock(LDelta);
+  FBinding.World.Update;
+  UpdateAddUnit;
+  FBinding.World.FinishTic;
+  FBinding.SyncUnits;
   FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);
   UpdateRightClick;
   UpdateStatus;
+  UpdateDebugShortcuts;
   UpdateObjectives;
 end;
 
@@ -615,7 +754,16 @@ begin
   LView.Panel := FCommandPanel;
   LView.Status := FStatus;
   LView.MenuOpen := FMenu.State <> wmsNone;
-  LView.CheatsOpen := False;
+  LView.CheatsOpen := CheatsOpen;
+  LView.CheatCursorX := FCheats.CursorX;
+  LView.CheatFeedback := '';
+  if FCheats.Enabled and FCheats.Feedback then
+    LView.CheatFeedback := FCheats.FeedbackText;
+  LView.CheatDebugText := '';
+  if FCheats.Enabled and FCheats.DebugTextActive then
+    LView.CheatDebugText := FCheats.DebugText;
+  LView.OriginalWidth := FSetup.Services.Host.OriginalWidth;
+  LView.OriginalHeight := FSetup.Services.Host.OriginalHeight;
   FHud.RenderHud(LView, LClicks);
   // the click handler of a button runs while the HUD is drawn: it chooses the command (or cancels), the next update executes it
   if LClicks.Command >= 0 then

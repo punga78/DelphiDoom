@@ -64,6 +64,13 @@ type
   /// <summary>WarMainMenuPanel</summary>
   TWarMenuPanel = (wmpMain, wmpSinglePlayer, wmpCustomGame);
 
+  /// <summary>
+  ///   WarDebugRenderFlag of war_enums.h: what the debug drawing of the map can show (the order of the original, which has
+  ///   UNIT_PATHS between the passable info and the unit info)
+  /// </summary>
+  TWarDebugRenderFlag = (wdrMapGrid, wdrSpatialGrid, wdrNearUnits, wdrPassableInfo, wdrUnitPaths, wdrUnitInfo,
+    wdrUnitAnimations, wdrMapAnimations, wdrFont, wdrProjectiles, wdrFlowField, wdrRvo, wdrStateMachine);
+
   /// <summary>The state of a button or a key: held and the transitions of this frame (WarInputState)</summary>
   TWarInputState = record
     Held: Boolean;

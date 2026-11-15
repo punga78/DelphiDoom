@@ -107,6 +107,24 @@ type
   end;
 
   /// <summary>
+  ///   context->debugRender of the original: which of the debug drawings of the map are on. They belong to the game, not to a
+  ///   map: they stay on from one map to the next
+  /// </summary>
+  IWarDebugRender = interface
+    ['{7D3B9E54-A1C2-4F68-B05D-2E8F46A1C973}']
+    function GetFlag(AFlag: TWarDebugRenderFlag): Boolean;
+    procedure SetFlag(AFlag: TWarDebugRenderFlag; AValue: Boolean);
+    /// <summary>
+    ///   wcheat_applyDebugRenderCheat after the check of the cheats: "status", or a name and an optional 0 or 1; the text of
+    ///   the feedback
+    /// </summary>
+    function ApplyCheat(const AArgument: AnsiString): AnsiString;
+    /// <summary>updateDebugRenderShortcuts: Ctrl and Shift held, and a key that was just pressed toggles its flag</summary>
+    procedure UpdateShortcuts(const AInput: IWarUiInput);
+    property Flag[AFlag: TWarDebugRenderFlag]: Boolean read GetFlag write SetFlag;
+  end;
+
+  /// <summary>
   ///   What a cheat does that is not in the panel. The cheats that change a setting of the game are in
   ///   TWarSettingsCheatEffects; the ones that need a map (gold, spells, god mode...) are the part of the game that is
   ///   not here and are a no-op when there is no map, as they are in the original

@@ -132,7 +132,13 @@ $script:Groups = @(
       # i menu della mappa (parte D): F10, opzioni, obiettivi, ricomincia
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu.script'); Golden = 'ui.map_menu.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_quit.script'); Golden = 'ui.map_menu_quit.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_restart.script'); Golden = 'ui.map_menu_restart.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_restart.script'); Golden = 'ui.map_menu_restart.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i trucchi sulla mappa e la fine della mappa (parte D)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cheats.script'); Golden = 'ui.map_cheats.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_win.script'); Golden = 'ui.map_gameover_win.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_lose.script'); Golden = 'ui.map_gameover_lose.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_demo_end.script'); Golden = 'ui.map_demo_end.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_skip.script'); Golden = 'ui.map_skip.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

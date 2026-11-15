@@ -51,6 +51,15 @@ type
     MenuOpen: Boolean;
     /// <summary>cheatStatus.enabled and visible: the hot keys of the buttons are off</summary>
     CheatsOpen: Boolean;
+    /// <summary>cheatStatus->cursorX: where the cursor of the cheat line is in the bottom panel, negative for none</summary>
+    CheatCursorX: Single;
+    /// <summary>The feedback of the last cheat, while it lasts (an empty text is none)</summary>
+    CheatFeedback: AnsiString;
+    /// <summary>The debug text, shown when there is no feedback (an empty text is none)</summary>
+    CheatDebugText: AnsiString;
+    /// <summary>originalWindowWidth and originalWindowHeight: the box of the debug text</summary>
+    OriginalWidth: Integer;
+    OriginalHeight: Integer;
   end;
 
   /// <summary>What was clicked in the HUD this frame (the buttons answer the frame they are clicked)</summary>
@@ -75,6 +84,7 @@ type
     procedure DrawFrame(const AId: AnsiString; AResource: Integer; AX, AY: Single; AFrame: Integer);
     function LifeColor(APercent: Single): TWarRgba;
     procedure RenderSelectionInfo(const AView: TWarHudView);
+    procedure RenderCheatLine(const AView: TWarHudView);
   public
     constructor Create(const AImui: TWarImui; const APanels: TWarMapPanels);
     /// <summary>renderStaticPanels: the frame of the interface and the two icons of the resources</summary>
@@ -338,6 +348,43 @@ begin
   if (not FImui.ShowTooltip) and (AView.Status.Text <> '') then
     FImui.DeferTooltip(AView.Status.Text, AView.Status.HighlightIndex, AView.Status.HighlightCount, AView.Status.Gold,
       AView.Status.Wood);
+  RenderCheatLine(AView);
+end;
+
+procedure TWarMapHud.RenderCheatLine(const AView: TWarHudView);
+var
+  LText: TWarUiTextArgs;
+begin
+  // the cursor of the cheat line (a rectangle of 1 x 7 where the typing goes), while the line is open
+  if AView.CheatsOpen and (AView.CheatCursorX >= 0) then
+    DrawRect('rectStatusCursor', FPanels.BottomPanel.X + AView.CheatCursorX, FPanels.BottomPanel.Y + 4, 1, 7,
+      WAR_COLOR_WHITE);
+  // the feedback of the cheat (in a cyan: see WAR_COLOR_YELLOW), or the debug text when there is no feedback
+  if AView.CheatFeedback <> '' then
+  begin
+    LText := TWarUiTextArgs.Default;
+    LText.PositionX := FPanels.BottomPanel.X + 15;
+    LText.PositionY := FPanels.BottomPanel.Y - 20;
+    LText.FontIndex := 1;
+    LText.FontSize := 8;
+    LText.FontColor := WAR_COLOR_YELLOW;
+    LText.Text := AView.CheatFeedback;
+    FImui.Text('txtCheatFeedback', LText);
+  end
+  else if AView.CheatDebugText <> '' then
+  begin
+    LText := TWarUiTextArgs.Default;
+    LText.PositionX := FPanels.BottomPanel.X + 15;
+    LText.PositionY := FPanels.BottomPanel.Y - 36;
+    LText.BoundingsX := AView.OriginalWidth - 15;
+    LText.BoundingsY := AView.OriginalHeight;
+    LText.FontIndex := 1;
+    LText.FontSize := 6;
+    LText.FontColor := WAR_COLOR_YELLOW;
+    LText.Multiline := True;
+    LText.Text := AView.CheatDebugText;
+    FImui.Text('txtDebugFeedback', LText);
+  end;
 end;
 
 end.

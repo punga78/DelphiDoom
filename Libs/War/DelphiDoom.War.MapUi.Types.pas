@@ -59,6 +59,10 @@ type
   /// <summary>WarMapDragStatus</summary>
   TWarDragStatus = (wdsNone, wdsStarted, wdsActive, wdsReleased);
 
+  /// <summary>WarMapEditMode: what a click on the map does when the cheats "Edit", "Add unit", "Rain of fire", ... are on</summary>
+  TWarMapEditMode = (wemNone, wemTrees, wemWalls, wemRoads, wemRuins, wemRainOfFire, wemPoisonCloud, wemRaiseDead,
+    wemAddUnit);
+
   /// <summary>WarMapMenuState: which menu of the map is open (the original keeps it in map->menuState)</summary>
   TWarMenuState = (wmsNone, wmsMain, wmsOptions, wmsObjectives, wmsRestart, wmsGameOver, wmsQuit, wmsDemoEnd);
 

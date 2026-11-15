@@ -63,7 +63,7 @@ type
     /// <summary>updateSelection</summary>
     procedure UpdateSelection(const AInput: IWarUiInput);
     /// <summary>updateSelectionGroups (not while the cheat panel is open)</summary>
-    procedure UpdateGroups(const AInput: IWarUiInput);
+    procedure UpdateGroups(const AInput: IWarUiInput; ACheatsOpen: Boolean = False);
     /// <summary>isMapDragging</summary>
     function IsDragging: Boolean;
     /// <summary>A rectangle that is not worth a drag: the click that gave an order must not select on release</summary>
@@ -317,7 +317,7 @@ begin
   end;
 end;
 
-procedure TWarMapSelecting.UpdateGroups(const AInput: IWarUiInput);
+procedure TWarMapSelecting.UpdateGroups(const AInput: IWarUiInput; ACheatsOpen: Boolean);
 const
   DIGITS: array[0..8] of TWarKey = (wk1, wk2, wk3, wk4, wk5, wk6, wk7, wk8, wk9);
 var
@@ -326,6 +326,9 @@ var
   LIndex: Integer;
   LSlot: Integer;
 begin
+  // the digits that are typed in the cheat line are not groups
+  if ACheatsOpen then
+    Exit;
   for LGroup := 0 to 8 do
   begin
     if not AInput.IsKeyJustPressed(DIGITS[LGroup]) then

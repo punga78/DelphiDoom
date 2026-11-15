@@ -35,6 +35,8 @@ type
     Scenes: IWarSceneFactory;
     /// <summary>The settings of the game (the volumes that the menu of the map changes); may be nil</summary>
     Settings: IWarGameSettings;
+    /// <summary>The flags of the debug drawing, which belong to the game; may be nil (nothing is drawn)</summary>
+    DebugRender: IWarDebugRender;
   end;
 
   /// <summary>

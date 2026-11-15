@@ -40,6 +40,7 @@ implementation
 uses
   DelphiDoom.War.Types, DelphiDoom.War.Ui.Input, DelphiDoom.War.Ui.Canvas, DelphiDoom.War.Ui.Imui,
   DelphiDoom.War.Ui.SpriteLoader, DelphiDoom.War.Ui.GameSettings, DelphiDoom.War.Ui.SettingsCheatEffects,
+  DelphiDoom.War.Ui.DebugRender,
   DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.Ui.SceneManager, DelphiDoom.War.Ui.SceneFactory,
   DelphiDoom.War.MapUi.Intf;
 
@@ -85,6 +86,7 @@ begin
   LServices.Effects := TWarSettingsCheatEffects.Create(LSettings, AAudio, AIsDemo);
   LServices.Scenes := nil;
   LServices.Settings := LSettings;
+  LServices.DebugRender := TWarDebugRender.Create;
   LScenes := TWarSceneFactory.Create(LServices);
   // a maker of maps that draws with this interface needs the services too (the map is made after them)
   LServices.Scenes := LScenes;

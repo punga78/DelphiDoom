@@ -50,6 +50,7 @@ type
     procedure ApplyCheat(const AText: AnsiString);
     procedure HandleEditKeys;
     procedure ComputeCursor;
+    procedure ComputeMapCursor(const AStatusText: AnsiString);
   public
     constructor Create(const AHost: IWarSceneHost; const AInput: IWarUiInput; const AImui: TWarImui;
       const ACanvas: TWarUiCanvas; const AEffects: IWarCheatEffects);
@@ -65,6 +66,14 @@ type
     procedure AppendTextInput(const AText: AnsiString);
     /// <summary>wcheatp_updateCheatsPanel</summary>
     procedure Update;
+    /// <summary>
+    ///   The part of updateStatus of the map that is the panel: the feedback that expires, the line of the panel
+    ///   (Enter applies it, Escape closes it, the keys edit it) and Enter that opens it. True when the panel took the status
+    ///   line of this frame (it is open: the status line is "MSG: " and what was typed, and nothing after it of updateStatus
+    ///   runs; or it was just closed); AStatusText is that line. On a map the cursor is at the end of the whole line, wherever
+    ///   the cursor of the text is (a defect of the original kept)
+    /// </summary>
+    function UpdateOnMap(out AStatusText: AnsiString): Boolean;
     /// <summary>wcheatp_renderCheatsPanel</summary>
     procedure Render;
     property Enabled: Boolean read FEnabled;
@@ -74,6 +83,8 @@ type
     property Feedback: Boolean read FFeedback;
     property FeedbackText: AnsiString read FFeedbackText;
     property CursorX: Single read FCursorX;
+    property DebugTextActive: Boolean read FDebugTextActive;
+    property DebugText: AnsiString read FDebugText;
   end;
 
 implementation
@@ -234,6 +245,48 @@ begin
   LTyped := TWarTextLayout.MeasureSingle(FText, FPosition, LParams);
   LSum := 2 + LPrefix.X;
   FCursorX := LSum + LTyped.X;
+end;
+
+procedure TWarCheatsPanel.ComputeMapCursor(const AStatusText: AnsiString);
+var
+  LParams: TWarFontParams;
+  LSize: TWarTextSize;
+begin
+  LParams := Default(TWarFontParams);
+  LParams.FontSize := 6;
+  LParams.FontData := FCanvas.FontData(0);
+  LSize := TWarTextLayout.MeasureSingle(AStatusText, Length(AStatusText), LParams);
+  FCursorX := 2 + LSize.X;
+end;
+
+function TWarCheatsPanel.UpdateOnMap(out AStatusText: AnsiString): Boolean;
+begin
+  AStatusText := '';
+  Result := False;
+  if not FEnabled then
+    Exit;
+  if FFeedback then
+  begin
+    if FHost.RealTime >= FFeedbackEndRealTime then
+      FFeedback := False;
+  end;
+  if FVisible then
+  begin
+    if FInput.IsKeyJustReleased(wkEsc) or FInput.IsKeyJustReleased(wkEnter) then
+    begin
+      if FInput.IsKeyJustReleased(wkEnter) then
+        ApplyCheat(FText);
+      SetVisible(False);
+      Exit(True);
+    end;
+    HandleEditKeys;
+    AStatusText := 'MSG: ' + FText;
+    ComputeMapCursor(AStatusText);
+    Exit(True);
+  end;
+  FCursorX := -1;
+  if FInput.IsKeyJustReleased(wkEnter) then
+    SetVisible(True);
 end;
 
 procedure TWarCheatsPanel.Update;

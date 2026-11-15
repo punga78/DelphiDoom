@@ -11,7 +11,7 @@ unit DelphiDoom.War.MapUi.Intf;
 interface
 
 uses
-  DelphiDoom.War.Ui.SceneBase;
+  DelphiDoom.War.Level.Types, DelphiDoom.War.Campaign.Types, DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.MapUi.Types;
 
 type
   /// <summary>
@@ -47,6 +47,26 @@ type
     procedure ReturnToMainMenu;
     /// <summary>wmm_handleQuitQuit: the game ends</summary>
     procedure QuitGame;
+  end;
+
+  /// <summary>
+  ///   What the cheats that need the map ask of it (war_cheats.c: the ones that end the map, change the fog, send the player to
+  ///   another map or choose what a click on the map does). The gold, the spells, the upgrades, the god mode and the speed
+  ///   are the model's and the cheats reach them themselves
+  /// </summary>
+  IWarMapCheatTarget = interface
+    ['{2F61A8D9-4C73-4E05-9B1A-6D3E70C85F42}']
+    /// <summary>map->result = WAR_LEVEL_RESULT_WIN or LOSE: the map ends in the same update</summary>
+    procedure ConcludeMap(AResult: TWarLevelResult);
+    /// <summary>The end cheat: the map stops and the menu of the end of the demo opens</summary>
+    procedure ShowDemoEnd;
+    /// <summary>map->fowEnabled = !map->fowEnabled</summary>
+    procedure ToggleFog;
+    /// <summary>The skip cheats: the briefing of a map of the campaign after a second</summary>
+    procedure SkipToBriefing(ARace: TWarRace; AMapType: Integer);
+    /// <summary>map->editing.mode and pendingUnitType</summary>
+    procedure SetEditing(AMode: TWarMapEditMode; AUnitType: Integer);
+    function GetEditMode: TWarMapEditMode;
   end;
 
   /// <summary>

@@ -1,0 +1,21 @@
+# Fine della mappa con una sconfitta (orchi 1, il trucco "Crushing defeat"): "You failed to archieve victory..." con il
+# solo bottone Ok (anche col tasto O), che porta al briefing della stessa mappa
+campaign orc 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Crushing defeat
+key enter down
+run 1 1
+key enter up
+run 6 1
+move 150 108
+run 3 1
+key o down
+run 1 1
+key o up
+run 90 1
+run 60 30
