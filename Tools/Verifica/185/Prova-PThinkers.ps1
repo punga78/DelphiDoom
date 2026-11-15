@@ -48,4 +48,18 @@ if ($Units -contains 'p_lights') {
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions -NotTextual $NotTextual
 }
 
+if ($Units -contains 'p_plats') {
+  # Doom e Strife: nessuna regola, le due copie erano uguali (Heretic resta nella sua unit)
+  $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_plats' `
+    -BaseFiles 'Base\p_plats.pas' `
+    -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions @()
+}
+
+if ($Units -contains 'p_telept') {
+  # le routine silenziose di Doom e Strife sono in Base; EV_Teleport (propria di ogni gioco) resta nella unit del gioco
+  $bad += Invoke-Prova -Root $root -Base $Base -Games @('Doom', 'Strife') -Unit 'p_telept' `
+    -BaseFiles 'Base\DelphiDoom.Engine.World.SilentTeleport.pas' `
+    -RulesUnit 'p_telept.pas' -Class 'TSpecGameRules' -Expansions @()
+}
+
 exit $bad

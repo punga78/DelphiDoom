@@ -177,6 +177,7 @@ uses
   p_doors,
   p_floor,
   p_telept,
+  DelphiDoom.Engine.World.SilentTeleport,
   p_genlin,
   p_map,
   p_maputl,
