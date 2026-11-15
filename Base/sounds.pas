@@ -36,7 +36,8 @@ interface
 
 uses
   d_delphi,
-  DelphiDoom.ActorDef.Intf;
+  DelphiDoom.ActorDef.Intf,
+  DelphiDoom.Audio.Sound.Intf;
 
 //==============================================================================
 //
@@ -47,6 +48,16 @@ uses
 //
 //==============================================================================
 procedure S_ConfigureSoundAliases(const AResolver: IActorDefSoundResolver);
+
+//==============================================================================
+//
+// S_ConfigureMusicNumbers
+//
+// The rules of the numbers of the songs (TMusicNumberResolver of Libs\Audio), given by
+// the composition root; without them S_GetMusicNumForName stops with I_Error
+//
+//==============================================================================
+procedure S_ConfigureMusicNumbers(const AResolver: IMusicNumberResolver);
 
 //==============================================================================
 //
@@ -100,6 +111,18 @@ uses
 var
   // given by the composition root (S_ConfigureSoundAliases)
   sound_aliases: IActorDefSoundResolver = nil;
+  // given by the composition root (S_ConfigureMusicNumbers)
+  music_numbers: IMusicNumberResolver = nil;
+
+//==============================================================================
+//
+// S_ConfigureMusicNumbers
+//
+//==============================================================================
+procedure S_ConfigureMusicNumbers(const AResolver: IMusicNumberResolver);
+begin
+  music_numbers := AResolver;
+end;
 
 //==============================================================================
 //
@@ -461,61 +484,10 @@ end;
 //
 //==============================================================================
 function S_GetMusicNumForName(const mus_name: string): integer;
-var
-  i: integer;
-  name: string;
-  check: string;
-  pmus: Pmusicinfo_t;
 begin
-  result := atoi(mus_name, -1);
-  if (result >= 0) and (result < nummusic) and (itoa(result) = mus_name) then
-    exit;
-
-  if mus_name = '' then
-  begin
-    I_Warning('S_GetMusicNumForName(): No music name specified, using default'#13#10);
-    result := 0;
-    exit;
-  end;
-
-  name := strupper(mus_name);
-  for i := 1 to nummusic - 1 do
-  begin
-    check := strupper(S_music[i].name);
-    if (check = name) or ('D_' + check = name) then
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-
-  // JVAL: Not found, we will add a new sound
-
-  if nummusic >= MAX_MUS - 1 then // JVAL: Limit exceeded, we will use default music :(
-  begin
-    I_Warning('S_GetMusicNumForName(): Can not add "%s" music, limit of %d music lumps exceeded'#13#10, [mus_name, nummusic]);
-    result := 0;
-    exit;
-  end;
-
-  // JVAL: Register the new music
-
-  if Pos1('D_', name) then
-    name := Copy(name, 3, Length(name) - 2);
-  if name = '' then // JVAL: Normally this should not happen!
-  begin
-    I_Warning('S_GetMusicNumForName(): No sound name specified, using default'#13#10);
-    result := 0;
-    exit;
-  end;
-
-  result := nummusic;
-  pmus := @S_Music[result];
-  pmus.name := name;
-  pmus.lumpnum := W_CheckNumForName('D_' + name);
-  if pmus.lumpnum < 0 then
-    pmus.lumpnum := W_CheckNumForName(name);
-  inc(nummusic);
+  if music_numbers = nil then
+    I_Error('S_GetMusicNumForName(): the music numbers are not configured (ComposeEngine was not called)');
+  result := music_numbers.NumberForName(mus_name);
 end;
 
 end.

@@ -60,12 +60,13 @@ uses
   i_system,
   m_argv,
   DelphiDoom.MathCore.Sha1,
+  DelphiDoom.Audio.Pk3SoundNames,
   w_pak,
   w_wad,
   w_wadwriter;
 
 var
-  s_names: TDStringList;
+  s_names: TPk3SoundNames;
   // given by the composition root (S_ConfigurePK3Sounds)
   s_tempfiles: ITempFiles = nil;
 
@@ -99,41 +100,8 @@ const
 //
 //==============================================================================
 procedure S_AddFileName(const filename: string);
-var
-  check: string;
-  name: string;
-  ext: string;
-  doadd: Boolean;
 begin
-  check := strupper(filename);
-  ext := fext(check);
-  if (ext = '.WAV') or (ext = '.OGG') or (ext = '.FLAC') or (ext = '.OGA') or
-    (ext = '.AU') or (ext = '.VOC') or (ext = '.SND') then
-  begin
-    check := fname(check);
-    name := firstword_ch(check, '.');
-    if Length(name) > 2 then
-      if Pos1('DS', name) then
-        Delete(name, 1, 2);
-    if Length(name) <= 8 then
-      if s_names.IndexOf(name) < 0 then
-      begin
-        doadd := true;
-        if W_CheckNumForName(name) >= 0 then
-          doadd := false
-        else if Length(name) <= 6 then
-        begin
-          name := 'DS' + name;
-          if W_CheckNumForName(name) >= 0 then
-            doadd := false;
-        end;
-        // 'pistol.wav' and 'pistol.ogg' give the same lump: once is enough (the list
-        // keeps the name with the 'DS' prefix, so the first test did not see it)
-        if doadd then
-          if s_names.IndexOf(name) < 0 then
-            s_names.Add(name);
-      end;
-  end;
+  s_names.AddFile(filename);
 end;
 
 //==============================================================================
@@ -147,20 +115,26 @@ var
   wadfilename: string;
   i: integer;
   mem: TDMemoryStream;
+  lumpnames: TArray<string>;
 begin
   if s_tempfiles = nil then
     I_Error('W_InitPK3Sounds(): the temporary files were not configured');
 
-  s_names := TDStringList.Create;
+  s_names := TPk3SoundNames.Create(
+    function(const AName: string): Integer
+    begin
+      Result := W_CheckNumForName(AName);
+    end);
 
   PAK_FileNameIterator(@S_AddFileName);
 
-  if s_names.Count > 0 then
+  lumpnames := s_names.Names;
+  if Length(lumpnames) > 0 then
   begin
     wad := TWadWriter.Create;
 
-    for i := 0 to s_names.Count - 1 do
-      wad.AddData(s_names.Strings[i], @DSSTUBLUMP, SizeOf(DSSTUBLUMP));
+    for i := 0 to Length(lumpnames) - 1 do
+      wad.AddData(lumpnames[i], @DSSTUBLUMP, SizeOf(DSSTUBLUMP));
 
     mem := TDMemoryStream.Create;
 

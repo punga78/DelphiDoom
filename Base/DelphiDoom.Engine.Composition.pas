@@ -410,6 +410,8 @@ uses
   DelphiDoom.Audio.Intf,
   DelphiDoom.Audio.Factory,
   DelphiDoom.Audio.Mixer,
+  DelphiDoom.Audio.MusicNumberResolver,
+  DelphiDoom.Engine.Audio.MusicTable,
   DelphiDoom.GameHost.Win.PcmOutput,
   DelphiDoom.Engine.Audio.WaveOutDevice,
   DelphiDoom.Engine.Audio.SfxSampleSource,
@@ -691,6 +693,15 @@ begin
       end;
       Result := TAudioFactory.CreateSfxPlayer(LDevice, TEngineSfxSampleSource.Create(ALog), ALog);
     end);
+  // the rules of the numbers of the songs on the table of the engine
+  S_ConfigureMusicNumbers(
+    TMusicNumberResolver.Create(
+      TEngineMusicTable.Create,
+      function(const AName: string): Integer
+      begin
+        Result := W_CheckNumForName(AName);
+      end,
+      ALog));
 end;
 
 procedure ComposeMusic(const ATempFiles: ITempFiles; const ACommandLine: ICommandLine;
