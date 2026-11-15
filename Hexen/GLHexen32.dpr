@@ -256,6 +256,7 @@ uses
   DelphiDoom.Jpeg.ProgressiveDecoder in '..\Libs\Jpeg\DelphiDoom.Jpeg.ProgressiveDecoder.pas',
   DelphiDoom.Jpeg.InverseDct in '..\Libs\Jpeg\DelphiDoom.Jpeg.InverseDct.pas',
   DelphiDoom.Jpeg.SlowInverseDct in '..\Libs\Jpeg\DelphiDoom.Jpeg.SlowInverseDct.pas',
+  DelphiDoom.Jpeg.FloatInverseDct in '..\Libs\Jpeg\DelphiDoom.Jpeg.FloatInverseDct.pas',
   DelphiDoom.Jpeg.ComponentBuffers in '..\Libs\Jpeg\DelphiDoom.Jpeg.ComponentBuffers.pas',
   DelphiDoom.Jpeg.RowUpsampler in '..\Libs\Jpeg\DelphiDoom.Jpeg.RowUpsampler.pas',
   DelphiDoom.Jpeg.ReplicatingUpsampler in '..\Libs\Jpeg\DelphiDoom.Jpeg.ReplicatingUpsampler.pas',

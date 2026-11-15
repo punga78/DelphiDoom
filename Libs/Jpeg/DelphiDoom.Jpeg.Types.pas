@@ -51,6 +51,27 @@ const
 
 type
   /// <summary>
+  ///   Settings of the decoder that are not the default of libjpeg. <c>Default</c> is what the engine
+  ///   uses: accurate integer inverse DCT and smooth (fancy) upsampling of the chroma. <c>Doom3</c> is
+  ///   what Doom 3 sets for its video frames (<c>JDCT_FASTEST</c>, no fancy upsampling)
+  /// </summary>
+  TJpegDecodeOptions = record
+    /// <summary>The floating point inverse DCT (jidctflt.c) instead of the accurate integer one (jidctint.c)</summary>
+    FastInverseDct: Boolean;
+    /// <summary>The triangle filter on the chroma of 4:2:0 and 4:2:2 images (do_fancy_upsampling)</summary>
+    FancyUpsampling: Boolean;
+    /// <summary>
+    ///   YCbCr images come out as red, green, blue (the order of libjpeg) and not blue, green, red (a Windows
+    ///   bitmap, the default of this library). The RGB images always keep the order of the stream
+    /// </summary>
+    RgbOrder: Boolean;
+    /// <summary>The settings of libjpeg 6b by default: accurate DCT, fancy upsampling</summary>
+    class function Default: TJpegDecodeOptions; static;
+    /// <summary>The settings of the JPEG frames of Doom 3 (JPEGBlit): fast (float) DCT, no fancy upsampling, red-green-blue order</summary>
+    class function Doom3: TJpegDecodeOptions; static;
+  end;
+
+  /// <summary>
   ///   The 64 coefficients of a block of the DCT, in natural order
   /// </summary>
   TJpegBlock = array[0..JPEG_DCT_SIZE2 - 1] of Integer;
@@ -192,6 +213,22 @@ implementation
 
 uses
   DelphiDoom.Jpeg.Intf;
+
+{ TJpegDecodeOptions }
+
+class function TJpegDecodeOptions.Default: TJpegDecodeOptions;
+begin
+  Result.FastInverseDct := False;
+  Result.FancyUpsampling := True;
+  Result.RgbOrder := False;
+end;
+
+class function TJpegDecodeOptions.Doom3: TJpegDecodeOptions;
+begin
+  Result.FastInverseDct := True;
+  Result.FancyUpsampling := False;
+  Result.RgbOrder := True;
+end;
 
 const
   ERROR_TEXTS: array[TJpegDecodeError] of string = (

@@ -41,6 +41,8 @@ type
     function Args: AnsiString;
     function ArgsFrom(AIndex: Integer): AnsiString;
     function Cmd: AnsiString;
+    function ArgvBuffer(AIndex, ABufferLength: Integer): AnsiString;
+    function ArgsBuffer(ABufferLength: Integer): AnsiString;
   end;
 
 implementation
@@ -188,6 +190,20 @@ end;
 function TQ3CommandArguments.Cmd: AnsiString;
 begin
   Result := FCommand;
+end;
+
+function TQ3CommandArguments.ArgvBuffer(AIndex, ABufferLength: Integer): AnsiString;
+begin
+  if ABufferLength < 1 then
+    raise EQ3ConsoleException.Create(SQ3ConsoleBufferTooSmall);
+  Result := Copy(Argv(AIndex), 1, ABufferLength - 1);
+end;
+
+function TQ3CommandArguments.ArgsBuffer(ABufferLength: Integer): AnsiString;
+begin
+  if ABufferLength < 1 then
+    raise EQ3ConsoleException.Create(SQ3ConsoleBufferTooSmall);
+  Result := Copy(Args, 1, ABufferLength - 1);
 end;
 
 end.

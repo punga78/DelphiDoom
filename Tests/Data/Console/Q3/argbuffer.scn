@@ -1,0 +1,44 @@
+# Cmd_ArgvBuffer and Cmd_ArgsBuffer: the string cut to the buffer length minus one
+init
+tok	one two "three four" five
+argvbuf	0	1
+argvbuf	2	1
+argvbuf	9	1
+argsbuf	1
+argvbuf	0	2
+argvbuf	2	2
+argvbuf	9	2
+argsbuf	2
+argvbuf	0	3
+argvbuf	2	3
+argvbuf	9	3
+argsbuf	3
+argvbuf	0	4
+argvbuf	2	4
+argvbuf	9	4
+argsbuf	4
+argvbuf	0	5
+argvbuf	2	5
+argvbuf	9	5
+argsbuf	5
+argvbuf	0	8
+argvbuf	2	8
+argvbuf	9	8
+argsbuf	8
+argvbuf	0	13
+argvbuf	2	13
+argvbuf	9	13
+argsbuf	13
+argvbuf	0	64
+argvbuf	2	64
+argvbuf	9	64
+argsbuf	64
+tok	
+argvbuf	0	5
+argsbuf	5
+tok	cmd abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij
+argvbuf	1	1
+argvbuf	1	100
+argvbuf	1	401
+argsbuf	401
+argsbuf	1000

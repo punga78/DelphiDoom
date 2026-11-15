@@ -46,7 +46,7 @@ type
     ///   The sampling factors of a component do not divide those of the largest
     /// </exception>
     constructor Create(AFrame: TJpegFrame; const ABuffers: TArray<TJpegComponentBuffers>;
-      const AConverter: IJpegColorConverter);
+      const AConverter: IJpegColorConverter; AFancyUpsampling: Boolean = True);
 
     /// <summary>
     ///   Writes the pixels of the row ARow of the image into AOutput
@@ -63,7 +63,7 @@ uses
 { TJpegRowRenderer }
 
 constructor TJpegRowRenderer.Create(AFrame: TJpegFrame;
-  const ABuffers: TArray<TJpegComponentBuffers>; const AConverter: IJpegColorConverter);
+  const ABuffers: TArray<TJpegComponentBuffers>; const AConverter: IJpegColorConverter; AFancyUpsampling: Boolean);
 var
   LIndex: Integer;
   LComponent: PJpegComponentInfo;
@@ -97,7 +97,7 @@ begin
             (LComponent^.Vertical = LVerticalOut) then
     begin
       // Half the width
-      if LComponent^.DownsampledWidth > 2 then
+      if (LComponent^.DownsampledWidth > 2) and AFancyUpsampling then
         FMethods[LIndex] := TJpegFancyUpsamplerH2V1.Create(LComponent^.DownsampledWidth)
       else
         FMethods[LIndex] := TJpegReplicatingUpsampler.Create(2, AFrame.ImageWidth);
@@ -107,7 +107,7 @@ begin
     begin
       // Half the width and half the height
       FVerticalExpansion[LIndex] := 2;
-      if LComponent^.DownsampledWidth > 2 then
+      if (LComponent^.DownsampledWidth > 2) and AFancyUpsampling then
       begin
         FMethods[LIndex] := TJpegFancyUpsamplerH2V2.Create(LComponent^.DownsampledWidth);
         FSmoothsVertically[LIndex] := True;

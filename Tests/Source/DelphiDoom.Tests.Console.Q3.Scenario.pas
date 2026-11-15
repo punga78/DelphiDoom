@@ -16,7 +16,9 @@ interface
 uses
   System.SysUtils, System.Classes, DelphiDoom.Scanner.IdCNumbers, DelphiDoom.Console.Q3.Types,
   DelphiDoom.Console.Q3.CVar, DelphiDoom.Console.Q3.Intf, DelphiDoom.Console.Q3.Factory,
-  DelphiDoom.Tests.Console.Q3.Fakes;
+  DelphiDoom.Console.Q3.Field.Types, DelphiDoom.Console.Q3.Field.Intf, DelphiDoom.Console.Q3.Field.Editor,
+  DelphiDoom.Console.Q3.Field.History, DelphiDoom.Console.Q3.Field.Completer, DelphiDoom.Console.Q3.ConsoleInput,
+  DelphiDoom.Net.Q3.ConsoleInfoWriter, DelphiDoom.Tests.Console.Q3.Fakes, DelphiDoom.Tests.Console.Q3.FieldHost;
 
 type
   TQ3ScenarioPlayer = class
@@ -27,6 +29,12 @@ type
     FFilesIntf: IQ3FileSystem;
     FConsole: TQ3Console;
     FOutput: TStringList;
+    FHost: TFakeQ3FieldHost;
+    FHostIntf: IQ3KeyState;
+    FEditor: TQ3FieldEditor;
+    FHistory: TQ3FieldHistory;
+    FCompleter: TQ3FieldCompleter;
+    FInput: TQ3ConsoleInput;
     FVmCvars: array[0..15] of TQ3VmCvar;
     class function Escape(const AText: AnsiString): string; static;
     class function Unescape(const AText: string): AnsiString; static;
@@ -37,9 +45,12 @@ type
     procedure PrintCVar(AVar: TQ3CVar);
     procedure PrintVm(const APrefix: string; const AVm: TQ3VmCvar);
     procedure RunOperation(const AFields: TArray<AnsiString>);
+    function RunFieldOperation(const AOperation: string; const AFields: TArray<AnsiString>): Boolean;
+    procedure DumpField;
   public
     /// <summary>The lines of the scenario file, as the driver writes them (the caller frees the list)</summary>
-    function Run(const AFileName: string): TStringList;
+    /// <summary>With ARealInfoWriter the info strings use TQ3InfoString of Libs\Net (limits and all), not the simple fake</summary>
+    function Run(const AFileName: string; ARealInfoWriter: Boolean = False): TStringList;
   end;
 
 implementation
@@ -206,6 +217,10 @@ begin
     FOutput.Add('C: ' + Escape(FConsole.Arguments.Cmd));
     FOutput.Add('O: [' + string(FConsole.Arguments.Argv(99)) + ']');
   end
+  else if LOperation = 'argvbuf' then
+    FOutput.Add('X: ' + Escape(FConsole.Arguments.ArgvBuffer(StrToInt(string(AFields[1])), StrToInt(string(AFields[2])))))
+  else if LOperation = 'argsbuf' then
+    FOutput.Add('X: ' + Escape(FConsole.Arguments.ArgsBuffer(StrToInt(string(AFields[1])))))
   else if LOperation = 'file' then
     FFiles.AddFile(AFields[1], AFields[2])
   else if LOperation = 'get' then
@@ -271,11 +286,105 @@ begin
     FConsole.CVars.Update(FVmCvars[LSlot]);
     PrintVm('Y: ', FVmCvars[LSlot]);
   end
-  else
+  else if not RunFieldOperation(LOperation, AFields) then
     raise Exception.CreateFmt('Unknown operation %s', [LOperation]);
 end;
 
-function TQ3ScenarioPlayer.Run(const AFileName: string): TStringList;
+procedure TQ3ScenarioPlayer.DumpField;
+var
+  LField: TQ3EditField;
+begin
+  LField := FInput.Field;
+  FOutput.Add('K: ' + Escape(AnsiString(Format('%d|%d|%d|%d|%d|%d|', [LField.Cursor, LField.Scroll,
+    LField.WidthInChars, Ord(FEditor.Overstrike), FHistory.NextLine, FHistory.CurrentLine])) + LField.Text));
+end;
+
+function TQ3ScenarioPlayer.RunFieldOperation(const AOperation: string; const AFields: TArray<AnsiString>): Boolean;
+var
+  LField: TQ3EditField;
+  LIndex: Integer;
+  LText: AnsiString;
+begin
+  Result := True;
+  if AOperation = 'keydown' then
+    FHost.SetKey(StrToInt(string(AFields[1])), True)
+  else if AOperation = 'keyup' then
+    FHost.SetKey(StrToInt(string(AFields[1])), False)
+  else if AOperation = 'fclear' then
+  begin
+    LField := FInput.Field;
+    LField.Clear;
+    FInput.Field := LField;
+  end
+  else if AOperation = 'fkey' then
+  begin
+    LField := FInput.Field;
+    FEditor.KeyDownEvent(LField, StrToInt(string(AFields[1])));
+    FInput.Field := LField;
+    DumpField;
+  end
+  else if AOperation = 'fchar' then
+  begin
+    FInput.Character(StrToInt(string(AFields[1])));
+    DumpField;
+  end
+  else if AOperation = 'ftext' then
+  begin
+    LText := AFields[1];
+    for LIndex := 1 to Length(LText) do
+      FInput.Character(Ord(LText[LIndex]));
+    DumpField;
+  end
+  else if AOperation = 'ckey' then
+  begin
+    FInput.Key(StrToInt(string(AFields[1])));
+    DumpField;
+  end
+  else if AOperation = 'fcomplete' then
+  begin
+    LField := FInput.Field;
+    FCompleter.Complete(LField);
+    FInput.Field := LField;
+    DumpField;
+  end
+  else if AOperation = 'fset' then
+  begin
+    LField := FInput.Field;
+    LField.Clear;
+    LField.Assign(Copy(AFields[1], 1, Q3_MAX_EDIT_LINE - 1));
+    LField.Cursor := StrToInt(string(AFields[2]));
+    LField.Scroll := StrToInt(string(AFields[3]));
+    FInput.Field := LField;
+    DumpField;
+  end
+  else if AOperation = 'fwidth' then
+  begin
+    FInput.FieldWidth := StrToInt(string(AFields[1]));
+    LField := FInput.Field;
+    LField.WidthInChars := FInput.FieldWidth;
+    FInput.Field := LField;
+  end
+  else if AOperation = 'fstate' then
+    FHost.SetConnection(StrToInt(string(AFields[1])) <> 0, StrToInt(string(AFields[1])) = 0)
+  else if AOperation = 'clip' then
+    FHost.SetClipboard(AFields[1])
+  else if AOperation = 'noclip' then
+    FHost.ClearClipboard
+  else if AOperation = 'hdump' then
+  begin
+    for LIndex := 0 to Q3_COMMAND_HISTORY - 1 do
+    begin
+      LField := FHistory.Slot(LIndex);
+      if (LField.Text = '') and (LField.Cursor = 0) and (LField.Scroll = 0) then
+        Continue;
+      FOutput.Add('H: ' + Escape(AnsiString(Format('%d|%d|%d|%d|', [LIndex, LField.Cursor, LField.Scroll,
+        LField.WidthInChars])) + LField.Text));
+    end;
+  end
+  else
+    Result := False;
+end;
+function TQ3ScenarioPlayer.Run(const AFileName: string; ARealInfoWriter: Boolean): TStringList;
 var
   LLines: TStringList;
   LLine: string;
@@ -284,6 +393,7 @@ var
   LFields: TArray<AnsiString>;
   LIndex: Integer;
   LShown: string;
+  LWriter: IQ3InfoStringWriter;
 begin
   Result := TStringList.Create;
   FOutput := Result;
@@ -291,8 +401,17 @@ begin
   FLogIntf := FLog;
   FFiles := TFakeQ3Files.Create;
   FFilesIntf := FFiles;
-  FConsole := TQ3Console.Create(FLogIntf, FFilesIntf, TFakeQ3Unhandled.Create(FLogIntf),
-    TFakeQ3InfoWriter.Create(FLogIntf));
+  if ARealInfoWriter then
+    LWriter := TQ3ConsoleInfoWriter.Create(FLogIntf)
+  else
+    LWriter := TFakeQ3InfoWriter.Create(FLogIntf);
+  FConsole := TQ3Console.Create(FLogIntf, FFilesIntf, TFakeQ3Unhandled.Create(FLogIntf), LWriter);
+  FHost := TFakeQ3FieldHost.Create(FLogIntf);
+  FHostIntf := FHost;
+  FEditor := TQ3FieldEditor.Create(FHost, FHost);
+  FHistory := TQ3FieldHistory.Create;
+  FCompleter := TQ3FieldCompleter.Create(FConsole.Arguments, FConsole.Commands, FConsole.CVars, FLogIntf);
+  FInput := TQ3ConsoleInput.Create(FConsole.Buffer, FEditor, FHistory, FCompleter, FLogIntf, FHost, FHost, FHost);
   LLines := TStringList.Create;
   try
     // the bytes of the file are the characters, one to one
@@ -316,6 +435,12 @@ begin
     end;
   finally
     LLines.Free;
+    FInput.Free;
+    FCompleter.Free;
+    FHistory.Free;
+    FEditor.Free;
+    FHostIntf := nil;
+    FHost := nil;
     FConsole.Free;
     FConsole := nil;
     FFilesIntf := nil;

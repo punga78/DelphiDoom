@@ -1,4 +1,4 @@
-﻿{******************************************************************************}
+{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the 3D models library (DUnitX)                    }
 {                                                                              }
@@ -127,6 +127,12 @@ uses
   DelphiDoom.Models.Static.TangentDeriver in '..\Libs\Models\DelphiDoom.Models.Static.TangentDeriver.pas',
   DelphiDoom.Models.Md5.SurfaceBuilder in '..\Libs\Models\DelphiDoom.Models.Md5.SurfaceBuilder.pas',
   DelphiDoom.Models.Source.Intf in '..\Libs\Models\DelphiDoom.Models.Source.Intf.pas',
+  DelphiDoom.Wad.Fs.Types in '..\Libs\Wad\DelphiDoom.Wad.Fs.Types.pas',
+  DelphiDoom.Wad.Fs.Intf in '..\Libs\Wad\DelphiDoom.Wad.Fs.Intf.pas',
+  DelphiDoom.Models.Source.GameFileSystem in '..\Libs\Models\DelphiDoom.Models.Source.GameFileSystem.pas',
+  DelphiDoom.Models.Dynamic.Types in '..\Libs\Models\DelphiDoom.Models.Dynamic.Types.pas',
+  DelphiDoom.Models.Dynamic.SpriteModel in '..\Libs\Models\DelphiDoom.Models.Dynamic.SpriteModel.pas',
+  DelphiDoom.Models.Dynamic.BeamModel in '..\Libs\Models\DelphiDoom.Models.Dynamic.BeamModel.pas',
   DelphiDoom.Models.Anim.Types in '..\Libs\Models\DelphiDoom.Models.Anim.Types.pas',
   DelphiDoom.Models.Anim.Intf in '..\Libs\Models\DelphiDoom.Models.Anim.Intf.pas',
   DelphiDoom.Models.Anim.Anim in '..\Libs\Models\DelphiDoom.Models.Anim.Anim.pas',
@@ -217,7 +223,8 @@ uses
   DelphiDoom.Tests.Models.I3dPalette in 'Source\DelphiDoom.Tests.Models.I3dPalette.pas',
   DelphiDoom.Tests.Models.I3dTireAnimator in 'Source\DelphiDoom.Tests.Models.I3dTireAnimator.pas',
   DelphiDoom.Tests.Models.I3dCorrections in 'Source\DelphiDoom.Tests.Models.I3dCorrections.pas',
-  DelphiDoom.Tests.Models.I3dMeshBuilder in 'Source\DelphiDoom.Tests.Models.I3dMeshBuilder.pas';
+  DelphiDoom.Tests.Models.I3dMeshBuilder in 'Source\DelphiDoom.Tests.Models.I3dMeshBuilder.pas',
+  DelphiDoom.Tests.Models.Dynamic in 'Source\DelphiDoom.Tests.Models.Dynamic.pas';
 
 var
   Runner: ITestRunner;

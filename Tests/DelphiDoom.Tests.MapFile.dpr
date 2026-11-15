@@ -40,7 +40,8 @@ uses
   DelphiDoom.Tests.MapFile.ProcSample in 'Source\DelphiDoom.Tests.MapFile.ProcSample.pas',
   DelphiDoom.Tests.MapFile.ProcValidator in 'Source\DelphiDoom.Tests.MapFile.ProcValidator.pas',
   DelphiDoom.Tests.MapFile.ProcWriter in 'Source\DelphiDoom.Tests.MapFile.ProcWriter.pas',
-  DelphiDoom.Tests.MapFile.Writer in 'Source\DelphiDoom.Tests.MapFile.Writer.pas';
+  DelphiDoom.Tests.MapFile.Writer in 'Source\DelphiDoom.Tests.MapFile.Writer.pas',
+  DelphiDoom.Tests.MapFile.PatchTessellator in 'Source\DelphiDoom.Tests.MapFile.PatchTessellator.pas';
 
 var
   Runner: ITestRunner;

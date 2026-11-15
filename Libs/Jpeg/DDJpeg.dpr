@@ -27,6 +27,7 @@ uses
   DelphiDoom.Jpeg.ProgressiveDecoder in 'DelphiDoom.Jpeg.ProgressiveDecoder.pas',
   DelphiDoom.Jpeg.InverseDct in 'DelphiDoom.Jpeg.InverseDct.pas',
   DelphiDoom.Jpeg.SlowInverseDct in 'DelphiDoom.Jpeg.SlowInverseDct.pas',
+  DelphiDoom.Jpeg.FloatInverseDct in 'DelphiDoom.Jpeg.FloatInverseDct.pas',
   DelphiDoom.Jpeg.ComponentBuffers in 'DelphiDoom.Jpeg.ComponentBuffers.pas',
   DelphiDoom.Jpeg.RowUpsampler in 'DelphiDoom.Jpeg.RowUpsampler.pas',
   DelphiDoom.Jpeg.ReplicatingUpsampler in 'DelphiDoom.Jpeg.ReplicatingUpsampler.pas',

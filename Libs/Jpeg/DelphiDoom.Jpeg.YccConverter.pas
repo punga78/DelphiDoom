@@ -28,9 +28,11 @@ type
     FCrToRed: array[0..255] of Integer;
     FCbToBlue: array[0..255] of Integer;
     FCrToGreen: array[0..255] of Integer;
+    FRgbOrder: Boolean;
     FCbToGreen: array[0..255] of Integer;
   public
-    constructor Create;
+    /// <summary>ARgbOrder writes red, green, blue (libjpeg order) instead of blue, green, red (a Windows bitmap)</summary>
+    constructor Create(ARgbOrder: Boolean = False);
 
     procedure ConvertRow(const ARows: array of PByte; AOutput: PByte; AWidth: Integer);
     function OutputComponents: Integer;
@@ -76,12 +78,13 @@ begin
       FLimit[LIndex] := Byte(LIndex - 256);
 end;
 
-constructor TJpegYccConverter.Create;
+constructor TJpegYccConverter.Create(ARgbOrder: Boolean);
 var
   LIndex: Integer;
   LCentered: Integer;
 begin
   inherited Create;
+  FRgbOrder := ARgbOrder;
   // The tables are indexed by Cb and Cr, whose zero is at 128
   for LIndex := 0 to 255 do
   begin
@@ -107,6 +110,21 @@ begin
   LY := ARows[0];
   LCb := ARows[1];
   LCr := ARows[2];
+  if FRgbOrder then
+  begin
+    for LColumn := 0 to AWidth - 1 do
+    begin
+      LLuma := LY[LColumn];
+      LBlue := LCb[LColumn];
+      LRed := LCr[LColumn];
+      AOutput[2] := FLimit[LLuma + FCbToBlue[LBlue] + 256];
+      AOutput[1] := FLimit[LLuma + ArithmeticShiftRight(FCbToGreen[LBlue] + FCrToGreen[LRed],
+        SCALE_BITS) + 256];
+      AOutput[0] := FLimit[LLuma + FCrToRed[LRed] + 256];
+      Inc(AOutput, 3);
+    end;
+    Exit;
+  end;
   for LColumn := 0 to AWidth - 1 do
   begin
     LLuma := LY[LColumn];
