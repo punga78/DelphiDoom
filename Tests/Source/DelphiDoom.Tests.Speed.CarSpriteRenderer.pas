@@ -102,7 +102,7 @@ procedure TTestSpeedTriangleRasterizer.DovrebbePartireTuttoTrasparente;
 var
   LIndex: Integer;
 begin
-  Assert.AreEqual(16 * 16, Length(FRasterizer.Pixels));
+  Assert.AreEqual<Integer>(16 * 16, Length(FRasterizer.Pixels));
   for LIndex := 0 to High(FRasterizer.Pixels) do
     Assert.AreEqual<Integer>(TRANSPARENT_INDEX, FRasterizer.Pixels[LIndex]);
 end;
@@ -143,7 +143,7 @@ begin
   FRasterizer.DrawFlat(Vertex(-20, -20, 1), Vertex(40, -20, 1), Vertex(-20, 40, 1), 6);
   Assert.AreEqual<Integer>(6, FRasterizer.Pixels[0]);
   Assert.AreEqual<Integer>(6, FRasterizer.Pixels[5 * 16 + 5]);
-  Assert.AreEqual(16 * 16, Length(FRasterizer.Pixels));
+  Assert.AreEqual<Integer>(16 * 16, Length(FRasterizer.Pixels));
 end;
 
 procedure TTestSpeedTriangleRasterizer.DovrebbeLeggereLaTexturePassandoDallaMappaDeiColori;

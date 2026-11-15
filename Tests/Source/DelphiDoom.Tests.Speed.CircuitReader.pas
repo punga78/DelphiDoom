@@ -132,7 +132,7 @@ var
   LName: string;
 begin
   LName := StringOfChar('X', 100);
-  Assert.AreEqual(64, Length(FReader.Parse('1 Circuit Name "' + LName + '" Number 1')[0].Name));
+  Assert.AreEqual<Integer>(64, Length(FReader.Parse('1 Circuit Name "' + LName + '" Number 1')[0].Name));
 end;
 
 procedure TTestSpeedCircuitReader.DovrebbeLasciareaZeroICampiCheMancano;

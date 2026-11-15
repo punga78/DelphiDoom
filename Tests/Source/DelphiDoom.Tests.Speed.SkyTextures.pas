@@ -144,7 +144,7 @@ begin
   FWad.AddLump('MOUNT1', Patch(32, 35, 61));
   AddCircuit('E1M2', 'NUBES1', 'MOUNT1');
   LEntries := TSpeedSkyTextures.Append(FWad, FPatches, TRANSPARENT_INDEX);
-  Assert.AreEqual(2, Length(LEntries));
+  Assert.AreEqual<Integer>(2, Length(LEntries));
   Assert.AreEqual('E1M1', LEntries[0].Level);
   Assert.AreEqual('SKYE1M1', LEntries[0].Texture);
   Assert.AreEqual('SKYE1M2', LEntries[1].Texture);
@@ -230,7 +230,7 @@ begin
   FWad.AddLump('NUBES0', Patch(32, 70, 40));
   FWad.AddLump('MOUNT0', Patch(32, 49, 60));
   AddCircuit('E1M1', 'NUBES0', 'MOUNT0');
-  Assert.AreEqual(0, Length(TSpeedSkyTextures.Append(FWad, FPatches, TRANSPARENT_INDEX)));
+  Assert.AreEqual<Integer>(0, Length(TSpeedSkyTextures.Append(FWad, FPatches, TRANSPARENT_INDEX)));
   Assert.AreEqual(-1, FWad.IndexOf('TEXTURE3'));
 end;
 
@@ -238,7 +238,7 @@ procedure TTestSpeedSkyTextures.NonDovrebbeFareUnaTexturePerUnaPistaSenzaImmagin
 begin
   FWad.AddLump('PNAMES', Pnames(['WALL1']));
   AddCircuit('E1M1', 'NUBES0', 'MOUNT0');
-  Assert.AreEqual(0, Length(TSpeedSkyTextures.Append(FWad, FPatches, TRANSPARENT_INDEX)));
+  Assert.AreEqual<Integer>(0, Length(TSpeedSkyTextures.Append(FWad, FPatches, TRANSPARENT_INDEX)));
   Assert.AreEqual(-1, FWad.IndexOf('TEXTURE3'));
 end;
 

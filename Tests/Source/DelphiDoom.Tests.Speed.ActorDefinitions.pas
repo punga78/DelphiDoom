@@ -268,7 +268,7 @@ begin
   try
     LWad := TGameDataFactory.CreateWadComposer;
     LNames := LBuilder.Build(TSpeedFactory.OpenContainer(LPath), LWad);
-    Assert.AreEqual(RACING_CAR_COUNT, Length(LNames));
+    Assert.AreEqual<Integer>(RACING_CAR_COUNT, Length(LNames));
     Assert.AreEqual('', LNames[0]);
     Assert.AreEqual(0, LWad.Count, 'nessun lump senza PLAYPAL e COLORMAP');
   finally

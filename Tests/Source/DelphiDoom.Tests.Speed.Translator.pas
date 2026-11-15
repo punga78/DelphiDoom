@@ -200,7 +200,7 @@ begin
   LPak := Translate(TJclBuilder.SyntheticGame);
   LActual := Dump(FWad, LPak);
   LGolden := ReadGolden('translation.synthetic.golden.txt');
-  Assert.AreEqual(Length(LGolden), Length(LActual), 'number of lines');
+  Assert.AreEqual<Integer>(Length(LGolden), Length(LActual), 'number of lines');
   for LIndex := 0 to High(LGolden) do
     Assert.AreEqual(LGolden[LIndex], LActual[LIndex], 'line ' + IntToStr(LIndex));
 end;
@@ -222,7 +222,7 @@ begin
   LPak := FTranslator.Translate(TSpeedFactory.OpenContainer(LPath), FWad);
   LActual := Dump(FWad, LPak);
   LGolden := ReadGolden('translation.shareware.golden.txt');
-  Assert.AreEqual(Length(LGolden), Length(LActual), 'number of lines');
+  Assert.AreEqual<Integer>(Length(LGolden), Length(LActual), 'number of lines');
   for LIndex := 0 to High(LGolden) do
     Assert.AreEqual(LGolden[LIndex], LActual[LIndex], 'line ' + IntToStr(LIndex));
 end;
