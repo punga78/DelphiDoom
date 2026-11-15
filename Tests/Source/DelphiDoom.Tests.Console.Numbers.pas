@@ -33,6 +33,14 @@ type
     procedure TestParseInteger(const AText: string; AExpected: Integer);
     [Test]
     procedure TestParseIntegerOfEmptyTextIsZero;
+    [TestCase('numero', '12,-1,12')]
+    [TestCase('zero', '0,-1,0')]
+    [TestCase('esadecimale', '0x10,-1,16')]
+    [TestCase('cancelletto', '#7,-1,7')]
+    [TestCase('non numero', 'abc,-1,-1')]
+    [TestCase('0x senza cifre', '0x,-1,-1')]
+    [TestCase('cifre sbagliate', '#zz,5,5')]
+    procedure TestParseIntegerWithDefault(const AText: string; ADefault, AExpected: Integer);
     [TestCase('true', 'TRUE,True')]
     [TestCase('on', 'on,True')]
     [TestCase('yes', 'Yes,True')]
@@ -62,6 +70,12 @@ end;
 procedure TTestConsoleNumbers.TestParseIntegerOfEmptyTextIsZero;
 begin
   Assert.AreEqual(0, TConsoleNumbers.ParseInteger(''), 'dovrebbe dare 0');
+end;
+
+procedure TTestConsoleNumbers.TestParseIntegerWithDefault(const AText: string; ADefault, AExpected: Integer);
+begin
+  Assert.AreEqual(AExpected, TConsoleNumbers.ParseInteger(AText, ADefault),
+    'dovrebbe leggere ' + AText + ' come atoi(testo, default)');
 end;
 
 procedure TTestConsoleNumbers.TestEvaluateBoolean(const AText: string; AExpected: Boolean);

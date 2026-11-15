@@ -18,7 +18,9 @@ type
     ///   What Val reads, plus "0x" and "-0x" with hexadecimal digits and "#" with decimal
     ///   digits; what is not a number gives 0
     /// </summary>
-    class function ParseInteger(const AText: string): Integer; static;
+    class function ParseInteger(const AText: string): Integer; overload; static;
+    /// <summary>As above, but what is not a number gives ADefault</summary>
+    class function ParseInteger(const AText: string; ADefault: Integer): Integer; overload; static;
     /// <summary>TRUE, ON, YES, 1 and FALSE, OFF, NO, 0 in any case; anything else is ADefault</summary>
     class function EvaluateBoolean(const AText: string; ADefault: Boolean): Boolean; static;
   end;
@@ -35,6 +37,11 @@ const
 { TConsoleNumbers }
 
 class function TConsoleNumbers.ParseInteger(const AText: string): Integer;
+begin
+  Result := ParseInteger(AText, 0);
+end;
+
+class function TConsoleNumbers.ParseInteger(const AText: string; ADefault: Integer): Integer;
 var
   LCode: Integer;
   LOther: Integer;
@@ -42,7 +49,7 @@ begin
   Val(AText, Result, LCode);
   if LCode = 0 then
     Exit;
-  LOther := 0;
+  LOther := ADefault;
   if TConsoleText.StartsWith('0x', AText) then
     Val('$' + Copy(AText, 3, Length(AText) - 2), LOther, LCode)
   else if TConsoleText.StartsWith('-0x', AText) then
@@ -55,7 +62,7 @@ begin
   if LCode = 0 then
     Result := LOther
   else
-    Result := 0;
+    Result := ADefault;
 end;
 
 class function TConsoleNumbers.EvaluateBoolean(const AText: string; ADefault: Boolean): Boolean;

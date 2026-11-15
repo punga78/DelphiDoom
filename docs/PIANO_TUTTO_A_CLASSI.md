@@ -1068,6 +1068,25 @@ Stima per `v_video` + `i_video`: 9-10 giorni di agente, a macchina scarica per l
 | `i_main` + `i_mainwindow` + `i_startup` (finestra e schermata di avvio, insieme a `gl_main`) | 2-3 giorni |
 | restano storiche per decisione | `w_wad` (cache e directory del motore), `w_pak`, `w_wadreader`, `w_wadwriter`, `z_zone`, `v_data`, `v_displaymode`, i tipi `d_*` |
 
+### 12.5 Fetta 1f: censimento delle copie e `w_utils` (ramo `worktree-agent-ae6cd4b2bc747dee4`, partito da `991ccfd96`, 2026-11-15)
+
+**Censimento delle copie per gioco** (prima di scrivere codice; `Confronta-Copie.ps1` confronta le copie nelle cartelle dei giochi, quindi qui serve solo a dire che non ce ne sono). Tutte le unit della fase 1 hanno **una sola copia, in `Base\`**: `v_video`, `i_video`, `am_map`, `am_textured`, `i_startup`, `i_main`, `i_mainwindow`, `w_sprite`, `w_utils`, `sounds`, `s_pk3sounds`, `s_sound`, `v_displaymode`, `f_wipe` (nessun `Doom\x.pas`, `Heretic\x.pas`, `Hexen\x.pas`, `Strife\x.pas`; l'unico altro file con il nome e' lo stub `Tools\Verifica\175-world\stubs\i_video.pas`). Quindi **non c'e' copia da unificare** e la strategia statica per gioco non serve: la differenza tra i giochi e' gia' fatta di `{$IFDEF}` dentro la copia unica (62 nei cicli di `am_map`, 90 in `v_video`: par. 12.1 e 12.3). Il lavoro della fase 1 e' portare la logica in classi di `Libs\`, e cio' che e' redditizio e sicuro e' il freddo con le direttive di gioco assenti.
+
+| Unit | Direttive di gioco | Caldo | Redditizia e sicura? |
+|---|---|---|---|
+| `w_utils` | nessuna | no | **si': fatta qui** |
+| `w_sprite` (`W_TextureAsPatch`) | nessuna | no (il corpus non la esercita) | si', ma serve estendere `TImagingPatchWriter` (altezza 255, spezzamento a 128) con un confronto vecchio/nuovo: non fatta in questo giro |
+| `v_video` fetta 1 (palette) | poche | no (a ogni cambio di palette) | si', mezza giornata; i golden coprono i lampi: prossima |
+| `sounds`, `s_pk3sounds` | 4 rami di gioco | no | no, aspetta la 2i (tabelle `S_sfx`/`S_music`) |
+| `i_main`, `i_mainwindow`, `i_startup` | `{$IFDEF}` di finestra | no | no: finestra, nessun golden (par. 12.1) |
+| `am_map`, `am_textured`, `v_video` 3-5, `i_video` | molte | si' | no ora: regole per gioco e misura a coppie (par. 12.3) |
+
+**Fatto: `w_utils`** (207 -> 83 righe, facciata). I quattro comandi `lumpsize, lumplength, lumplen`, `lumpnum, checknumforname`, `numlumps`, `savelumptodisk` sono `TConsoleLumpCommands` (`Libs\Console\DelphiDoom.Console.LumpCommands.pas`, 204 righe, stesso schema di `TConsoleUtilityCommands` della fetta 1e: gruppo `IConsoleCommandGroup` con `Register`, creato da `TConsoleFactory.CreateLumpCommands`). **Riusato**: `ICommandRegistry`, `IConsoleOutput`, `IConsoleCommandGroup`, `TConsoleFactory`, `ILog` (il vecchio `I_Warning` era `engine_log.Warning`), `IEngineLumps` (gia' la vista del motore sui lump), `IEngineFiles` e `ISaveFileNames` (il vecchio `M_SaveFileName`). **Esteso**: `Console.Intf` con `IConsoleLumpSource` e `IConsoleLumpFiles` (contratti piccoli, a `TBytes`: il vecchio `Z_Malloc` + `W_ReadLump` + `Z_Free` era un buffer da comando di console, non percorso caldo); `TConsoleNumbers.ParseInteger(testo, default)` (il vecchio `atoi(name, -1)`; l'overload a un parametro lo richiama con 0). **Creato**: gli adattatori `TEngineConsoleLumpSource` e `TEngineConsoleLumpFiles` in `Base\` (66 e 61 righe) e le due righe di composizione in `ComposePlatform`, che ora riceve log, registro e lump (`W_ConfigureFiles` non esiste piu': l'unico chiamante era il composition root; la facciata ha `W_ConfigureLumpCommands`, senza configurazione `I_Error` come `c_utils`). `W_RegisterUtilityCommands` ha la firma di prima. Le due unit nuove sono nei 14 `.dpr` che elencano `DelphiDoom.Engine.Console.FileLister`.
+
+**Difetti decisi** (par. 12.1 li aveva indicati): (1) `printf('Lump %s does not exist'#13#10)` senza argomenti sceglie l'overload a un parametro e scriveva il `%s` **letterale**; ora scrive il nome (`Lump NOSUCH does not exist`). (2) `printf('Lump %s num = %d', [lump])` dava a `%s` un intero: `FmtStr` di Delphi lo rifiuta con `EConvertError` (non provato a runtime nel vecchio eseguibile) e `lumpnum NOME` non poteva funzionare; ora scrive `Lump NOME num = N`. Corretti, non conservati: nessuno dei due puo' essere un comportamento voluto, e il secondo era un comando rotto. Test di regressione `DovrebbeDireCheIlLumpNonEsisteConIlSuoNome` e `DovrebbeDareIlNumeroDelLumpConIlSuoNome`. Gli altri testi sono uguali alla lettera. Il lump di lunghezza 0 non passa piu' per `Z_Malloc(0)` ma per un `TBytes` vuoto (puntatore nil, lunghezza 0).
+
+**Test**: `Tests\DelphiDoom.Tests.Console` 409 -> 431 (15 in `DelphiDoom.Tests.Console.LumpCommands`, 7 casi di `ParseInteger` con default), 431 su 431 a Win32.
+
 ## 13. Fette successive della #185: elenco ordinato (2026-11-14, dopo la 2c-4)
 
 Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime sono giorni di agente (una fetta di `Libs\` costa 35-50 minuti di sviluppo e 1-2 ore di verifica quando il lock dei giochi e' conteso: i giorni qui contano la lettura delle copie, la forma delle regole e le prove, non la sola scrittura). Le righe sono quelle dei file attuali (Doom/Heretic/Hexen/Strife). **Regola di ogni fetta**: tabella di confronto con `Confronta-Copie.ps1`, regole per gioco con il testo vecchio alla lettera, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni passo, corpus intero una volta, build dei dieci giochi, Doom32 e Strife32 a Win64, misura a coppie a macchina scarica.
@@ -1092,7 +1111,7 @@ Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime 
 
 | # | Fetta | Stima | Note |
 |---|---|---|---|
-| 1 | `w_utils` (comandi di console in `Libs\Console`) | mezza giornata | tre `printf` con meno argomenti del formato: decidere se conservare |
+| 1 | ~~`w_utils` (comandi di console in `Libs\Console`)~~ **fatta** (par. 12.5, 2026-11-15) | - | I due `printf` difettosi sono corretti, con test di regressione |
 | 2 | `w_sprite` (`W_TextureAsPatch` in `Libs\Imaging`) | 1 | pura; il corpus non la esercita (sprite PNG esterni) |
 | 3 | `v_video` fette 1 e 2 (palette, schermi e misure) | 1,5 | fredda; i lampi di palette li coprono i golden |
 | 4 | `sounds`, regola dei nomi di `s_pk3sounds`, colla di `s_sound`, con la 2i | 2 | scrive le tabelle `S_sfx`/`S_music` |

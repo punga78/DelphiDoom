@@ -31,7 +31,7 @@ unit w_utils;
 interface
 
 uses
-  DelphiDoom.Engine.Platform.Intf;
+  DelphiDoom.Console.Intf;
 
 //==============================================================================
 //
@@ -42,152 +42,30 @@ procedure W_RegisterUtilityCommands;
 
 //==============================================================================
 //
-// W_ConfigureFiles
-// The files, given by the composition root
+// W_ConfigureLumpCommands
+// The group of the commands lumpsize, lumpnum, numlumps and savelumptodisk
+// (composition root)
 //
 //==============================================================================
-procedure W_ConfigureFiles(const AFiles: IEngineFiles);
+procedure W_ConfigureLumpCommands(const AGroup: IConsoleCommandGroup);
 
 implementation
 
 uses
-  d_delphi,
-  c_cmds,
-  i_system,
-  m_argv,
-  w_wad,
-  z_zone;
+  i_system;
 
 var
   // given by the composition root
-  w_files_ref: IEngineFiles = nil;
+  lump_commands: IConsoleCommandGroup = nil;
 
 //==============================================================================
 //
-// W_ConfigureFiles
+// W_ConfigureLumpCommands
 //
 //==============================================================================
-procedure W_ConfigureFiles(const AFiles: IEngineFiles);
+procedure W_ConfigureLumpCommands(const AGroup: IConsoleCommandGroup);
 begin
-  w_files_ref := AFiles;
-end;
-
-//==============================================================================
-//
-// W_Files
-//
-//==============================================================================
-function W_Files: IEngineFiles;
-begin
-  if w_files_ref = nil then
-    I_Error('W_ConfigureFiles() was not called: the files are missing');
-  result := w_files_ref;
-end;
-
-
-//==============================================================================
-//
-// W_CmdLumpLen
-//
-//==============================================================================
-procedure W_CmdLumpLen(const name: string);
-var
-  lump: integer;
-  len: integer;
-begin
-  if name = '' then
-  begin
-    printf('Please specify the lump name'#13#10);
-    exit;
-  end;
-
-  lump := atoi(name, -1);
-  if lump = -1 then
-    lump := W_CheckNumForName(name);
-  if lump = -1 then
-    printf('Lump %s does not exist'#13#10)
-  else
-  begin
-    len := W_LumpLength(lump);
-    printf('Lump %s size = %dKB (%d bytes)'#13#10, [name, len div 1024, len]);
-  end;
-end;
-
-//==============================================================================
-//
-// W_CmdCheckNumForName
-//
-//==============================================================================
-procedure W_CmdCheckNumForName(const name: string);
-var
-  lump: integer;
-begin
-  if name = '' then
-  begin
-    printf('Please specify the lump name'#13#10);
-    exit;
-  end;
-
-  lump := W_CheckNumForName(name);
-  if lump = -1 then
-    printf('Lump %s does not exist'#13#10)
-  else
-    printf('Lump %s num = %d'#13#10, [lump]);
-end;
-
-//==============================================================================
-//
-// W_CmdNumLumps
-//
-//==============================================================================
-procedure W_CmdNumLumps;
-begin
-  printf('%d total lumps'#13#10, [W_NumLumps]);
-end;
-
-//==============================================================================
-//
-// W_CmdSaveLumpToDisk
-//
-//==============================================================================
-procedure W_CmdSaveLumpToDisk(const lumpname: string; const filename: string);
-var
-  fname: string;
-  p: pointer;
-  lump: integer;
-  len: integer;
-begin
-  if (lumpname = '') or (filename = '') then
-  begin
-    printf('Usage is:'#13#10);
-    printf('  savelumptodisk [lumpname] [filename]'#13#10);
-    exit;
-  end;
-
-  if CharPos('.', filename) = 0 then
-    fname := filename + '.lmp'
-  else
-    fname := filename;
-
-  fname := M_SaveFileName(fname);
-
-  lump := W_CheckNumForName(lumpname);
-  if lump = -1 then
-  begin
-    printf('Lump %s not found.'#13#10, [lumpname]);
-    exit;
-  end;
-
-  len := W_LumpLength(lump);
-  p := Z_Malloc(len, PU_STATIC, nil);
-  W_ReadLump(lump, p);
-
-  if W_Files.WriteFile(fname, p, len) then
-    printf('Lump %s saved to file %s (%d bytes).'#13#10, [lumpname, fname, len])
-  else
-    I_Warning('Can not save lump %s to file %s.'#13#10, [lumpname, fname]);
-
-  Z_Free(p);
+  lump_commands := AGroup;
 end;
 
 //==============================================================================
@@ -197,11 +75,9 @@ end;
 //==============================================================================
 procedure W_RegisterUtilityCommands;
 begin
-  C_AddCmd('lumpsize, lumplength, lumplen', @W_CmdLumpLen);
-  C_AddCmd('lumpnum, checknumforname', @W_CmdCheckNumForName);
-  C_AddCmd('numlumps', @W_CmdNumLumps);
-  C_AddCmd('savelumptodisk', @W_CmdSaveLumpToDisk);
+  if lump_commands = nil then
+    I_Error('W_RegisterUtilityCommands(): The lump commands are not configured (ComposeEngine was not called)');
+  lump_commands.Register;
 end;
 
 end.
-

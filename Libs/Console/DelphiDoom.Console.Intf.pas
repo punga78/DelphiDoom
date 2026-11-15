@@ -11,7 +11,7 @@ unit DelphiDoom.Console.Intf;
 interface
 
 uses
-  DelphiDoom.Console.Types;
+  System.SysUtils, DelphiDoom.Console.Types;
 
 type
   /// <summary>Where the text of the console goes: the engine writes it on the screen (printf)</summary>
@@ -106,6 +106,28 @@ type
   IConsoleBrowser = interface
     ['{8E40B7D2-3A1C-49F6-B5E9-0D2C71A84F63}']
     procedure OpenWebPage(const AAddress: string);
+  end;
+
+  /// <summary>The lumps of the directory, as the lump commands (lumpsize, lumpnum...) see them</summary>
+  IConsoleLumpSource = interface
+    ['{6B1D94A3-2E7F-4C08-B5A6-3F9C0D81E274}']
+    /// <summary>The number of lumps of the directory</summary>
+    function Count: Integer;
+    /// <summary>The last lump with the name, -1 if there is none</summary>
+    function CheckNumForName(const AName: string): Integer;
+    /// <summary>The length in bytes of the lump</summary>
+    function LengthOf(ALump: Integer): Integer;
+    /// <summary>The bytes of the lump</summary>
+    function ReadBytes(ALump: Integer): TBytes;
+  end;
+
+  /// <summary>Where "savelumptodisk" writes: the folder of the saves and the disk</summary>
+  IConsoleLumpFiles = interface
+    ['{D40E7C15-9A62-4B3D-8F21-A7B6C95E0318}']
+    /// <summary>The name in the folder where the engine keeps its saves</summary>
+    function SaveFileName(const AFileName: string): string;
+    /// <summary>Writes the bytes to the file; false if it fails</summary>
+    function WriteFile(const AFileName: string; const AData: TBytes): Boolean;
   end;
 
   /// <summary>A group of commands that register themselves in the registry they were made with</summary>

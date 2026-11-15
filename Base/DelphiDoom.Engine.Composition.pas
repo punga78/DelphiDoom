@@ -178,6 +178,8 @@ uses
   DelphiDoom.Engine.Console.Output,
   DelphiDoom.Engine.Console.FileSystem,
   DelphiDoom.Engine.Console.FileLister,
+  DelphiDoom.Engine.Console.LumpSource,
+  DelphiDoom.Engine.Console.LumpFiles,
   DelphiDoom.Engine.Console.Browser,
   DelphiDoom.Engine.Console.Startup,
   DelphiDoom.Engine.Console.VariableSource,
@@ -1195,7 +1197,8 @@ end;
 
 // The temporary files are one object for the whole engine: who makes one receives it, and
 // i_tmp deletes them all at the shut down
-function ComposePlatform(const AStore: IFileStore; const ASaveFileNames: ISaveFileNames;
+function ComposePlatform(const ALog: ILog; const ARegistry: ICommandRegistry;
+  const AStore: IFileStore; const ASaveFileNames: ISaveFileNames; const ALumps: IEngineLumps;
   const AZone: IZoneAllocator; const AShutdown: IEngineShutdown): ITempFiles;
 var
   LFiles: IEngineFiles;
@@ -1212,7 +1215,10 @@ begin
 {$ENDIF}
   PS_ConfigureVariables(TEngineScriptVariablesFiles.Create(LFiles),
     TEngineScriptVariablesFailure.Create);
-  W_ConfigureFiles(LFiles);
+  // lumpsize, lumpnum, numlumps and savelumptodisk
+  W_ConfigureLumpCommands(TConsoleFactory.CreateLumpCommands(ARegistry, TEngineConsoleOutput.Create,
+    TEngineConsoleLumpSource.Create(ALumps), TEngineConsoleLumpFiles.Create(LFiles, ASaveFileNames),
+    ALog));
   Result := TPlatformFactory.CreateTempFiles(TEngineTempDirectory.Create(ASaveFileNames), AStore);
   I_ConfigureTempFiles(Result);
   I_ConfigurePlatform(TPlatformFactory.CreateServices);
@@ -1717,7 +1723,7 @@ begin
   LConsole := ComposeConsole(LLog, LContext, LCommandLine, LSaveFileNames, LLumps, LSettings,
     LRegistry, LInterpreter);
   LDefaults := ComposeDefaults(LRegistry, LInterpreter, LCommandLine, LSettings);
-  LTempFiles := ComposePlatform(LStore, LSaveFileNames, LZone, LShutdown);
+  LTempFiles := ComposePlatform(LLog, LRegistry, LStore, LSaveFileNames, LLumps, LZone, LShutdown);
   LPreprocessor := ComposeScanner(LLog, LDefaults, LLumps, LZone, LShutdown, LTempFiles, LEvaluator);
   ComposeScriptHost(LLog, LContext, LConsole, LDefaults, LRandom, LPakFiles, LTempFiles);
   ComposeThreading;

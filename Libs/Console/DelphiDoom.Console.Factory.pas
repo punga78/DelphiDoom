@@ -41,6 +41,10 @@ type
     class function CreateUtilityCommands(const ARegistry: ICommandRegistry;
       const AOutput: IConsoleOutput; const AFiles: IConsoleFileLister;
       const ABrowser: IConsoleBrowser; const AInterpreter: IConsoleInterpreter): IConsoleCommandGroup; static;
+    /// <summary>The group of lumpsize, lumpnum, numlumps and savelumptodisk (Register adds them)</summary>
+    class function CreateLumpCommands(const ARegistry: ICommandRegistry;
+      const AOutput: IConsoleOutput; const ALumps: IConsoleLumpSource;
+      const AFiles: IConsoleLumpFiles; const ALog: ILog): IConsoleCommandGroup; static;
     class function CreateCommandQueue(const AInterpreter: IConsoleInterpreter): TConsoleCommandQueue; static;
     class function CreateHistory: TConsoleHistory; static;
     class function CreateCompleter(const ARegistry: ICommandRegistry;
@@ -57,7 +61,8 @@ implementation
 
 uses
   DelphiDoom.Console.CommandRegistry, DelphiDoom.Console.Interpreter,
-  DelphiDoom.Console.ScriptRunner, DelphiDoom.Console.UtilityCommands;
+  DelphiDoom.Console.ScriptRunner, DelphiDoom.Console.UtilityCommands,
+  DelphiDoom.Console.LumpCommands;
 
 { TConsoleFactory }
 
@@ -96,6 +101,13 @@ class function TConsoleFactory.CreateUtilityCommands(const ARegistry: ICommandRe
   const ABrowser: IConsoleBrowser; const AInterpreter: IConsoleInterpreter): IConsoleCommandGroup;
 begin
   Result := TConsoleUtilityCommands.Create(ARegistry, AOutput, AFiles, ABrowser, AInterpreter);
+end;
+
+class function TConsoleFactory.CreateLumpCommands(const ARegistry: ICommandRegistry;
+  const AOutput: IConsoleOutput; const ALumps: IConsoleLumpSource;
+  const AFiles: IConsoleLumpFiles; const ALog: ILog): IConsoleCommandGroup;
+begin
+  Result := TConsoleLumpCommands.Create(ARegistry, AOutput, ALumps, AFiles, ALog);
 end;
 
 class function TConsoleFactory.CreateAutoExec(const AStartup: IConsoleStartupSource;
