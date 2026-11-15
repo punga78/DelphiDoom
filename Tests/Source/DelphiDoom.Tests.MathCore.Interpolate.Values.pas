@@ -360,7 +360,7 @@ begin
       LTime := LIndex * 12.5;
       LValue3 := LVec3Curve.GetCurrentValue(LTime);
       LValueX := LVecXCurve.GetCurrentValue(LTime);
-      Assert.AreEqual(3, Length(LValueX));
+      Assert.AreEqual<Integer>(3, Length(LValueX));
       for LComponent := 0 to 2 do
       begin
         // the same arithmetic on the same floats: the same bits
@@ -415,7 +415,7 @@ begin
   LA := TIdVecXValue.Create(1.0, 2.0, 3.0, 4.0);
   LB := TIdVecXValue.Create(0.5, 0.5, 0.5, 0.5);
   LResult := LArithmetic.Add(LA, LB);
-  Assert.AreEqual(4, Length(LResult));
+  Assert.AreEqual<Integer>(4, Length(LResult));
   Assert.AreEqual(1.5, LResult[0], Eps);
   LResult := LArithmetic.Subtract(LA, LB);
   Assert.AreEqual(3.5, LResult[3], Eps);
