@@ -16,6 +16,12 @@ uses
 const
   /// <summary>One in the fixed point of the engine (16.16)</summary>
   RENDERER_FRACUNIT = 65536;
+  /// <summary>The number of fine angles of a full circle (the index of the tables of the tangents)</summary>
+  RENDERER_FINEANGLES = 8192;
+  /// <summary>How many binary angles a fine angle has (the angles are 32 bit: a full circle is 2^32)</summary>
+  RENDERER_ANGLE_TO_FINE_UNIT = 1 shl 19;
+  /// <summary>90 degrees as a binary angle</summary>
+  RENDERER_ANGLE_90 = $40000000;
   /// <summary>
   ///   A level whose sectors span more than this from the lowest floor to the highest ceiling
   ///   needs the renderer of tall walls
@@ -104,6 +110,15 @@ type
     TopOffset: TArray<Integer>;
     /// <summary>The lump is a sprite (not a marker, and inside a sprite section)</summary>
     Present: TArray<Boolean>;
+  end;
+  /// <summary>The tables that map the angles of the view to the columns of the screen and back</summary>
+  TRendererTextureMapping = record
+    /// <summary>For each fine angle of the half circle in front, the next greatest column after it (0 to the view width)</summary>
+    ViewAngleToX: TArray<Integer>;
+    /// <summary>For each column from 0 to the view width, the smallest view angle that maps to it (a binary angle)</summary>
+    XToViewAngle: TArray<Cardinal>;
+    /// <summary>The angle of the left edge of the view (the first of XToViewAngle)</summary>
+    ClipAngle: Cardinal;
   end;
   /// <summary>How high and how low the sectors of a level go</summary>
   TRendererHeightRange = record

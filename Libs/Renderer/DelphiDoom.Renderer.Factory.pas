@@ -23,6 +23,7 @@ type
       const ALog: ILog): IRendererTextureLookup; static;
     class function CreateLevelPrecalc: IRendererLevelPrecalc; static;
     class function CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder; static;
+    class function CreateTextureMappingBuilder: IRendererTextureMappingBuilder; static;
     /// <param name="ADirectory">The lumps of the WAD</param>
     /// <param name="ALog">Where the warnings go</param>
     class function CreateLumpRanges(const ADirectory: IRendererLumpDirectory;
@@ -42,13 +43,18 @@ implementation
 uses
   DelphiDoom.Renderer.TextureLookup, DelphiDoom.Renderer.LevelPrecalc,
   DelphiDoom.Renderer.SpriteDefs, DelphiDoom.Renderer.SubsectorGrid, DelphiDoom.Renderer.LumpRanges,
-  DelphiDoom.Renderer.SpriteTable;
+  DelphiDoom.Renderer.SpriteTable, DelphiDoom.Renderer.TextureMapping;
 
 { TRendererFactory }
 
 class function TRendererFactory.CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder;
 begin
   Result := TRendererSubsectorGridBuilder.Create;
+end;
+
+class function TRendererFactory.CreateTextureMappingBuilder: IRendererTextureMappingBuilder;
+begin
+  Result := TRendererTextureMappingBuilder.Create;
 end;
 
 class function TRendererFactory.CreateLumpRanges(const ADirectory: IRendererLumpDirectory;

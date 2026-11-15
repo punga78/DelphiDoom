@@ -24,8 +24,11 @@ uses
   DelphiDoom.Renderer.SubsectorGrid in '..\Libs\Renderer\DelphiDoom.Renderer.SubsectorGrid.pas',
   DelphiDoom.Renderer.LumpRanges in '..\Libs\Renderer\DelphiDoom.Renderer.LumpRanges.pas',
   DelphiDoom.Renderer.SpriteTable in '..\Libs\Renderer\DelphiDoom.Renderer.SpriteTable.pas',
+  DelphiDoom.Renderer.TextureMapping in '..\Libs\Renderer\DelphiDoom.Renderer.TextureMapping.pas',
   DelphiDoom.Renderer.LevelPrecalc in '..\Libs\Renderer\DelphiDoom.Renderer.LevelPrecalc.pas',
   DelphiDoom.Renderer.Factory in '..\Libs\Renderer\DelphiDoom.Renderer.Factory.pas',
+  DelphiDoom.MathCore.Types in '..\Libs\GameMath\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.FixedMath in '..\Libs\GameMath\DelphiDoom.MathCore.FixedMath.pas',
   DelphiDoom.MathCore.SoftExtended in '..\Libs\MathCore\DelphiDoom.MathCore.SoftExtended.pas',
   DelphiDoom.MathCore.X87Double in '..\Libs\GameMath\DelphiDoom.MathCore.X87Double.pas',
   DelphiDoom.Renderer.X87 in '..\Libs\Renderer\DelphiDoom.Renderer.X87.pas',
@@ -37,6 +40,7 @@ uses
   DelphiDoom.Tests.Renderer.SubsectorGrid in 'Source\DelphiDoom.Tests.Renderer.SubsectorGrid.pas',
   DelphiDoom.Tests.Renderer.LumpRanges in 'Source\DelphiDoom.Tests.Renderer.LumpRanges.pas',
   DelphiDoom.Tests.Renderer.SpriteTable in 'Source\DelphiDoom.Tests.Renderer.SpriteTable.pas',
+  DelphiDoom.Tests.Renderer.TextureMapping in 'Source\DelphiDoom.Tests.Renderer.TextureMapping.pas',
   DelphiDoom.Tests.Renderer.LevelPrecalc in 'Source\DelphiDoom.Tests.Renderer.LevelPrecalc.pas';
 
 var

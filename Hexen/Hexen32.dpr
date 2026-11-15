@@ -999,6 +999,7 @@ uses
   DelphiDoom.Renderer.SubsectorGrid in '..\Libs\Renderer\DelphiDoom.Renderer.SubsectorGrid.pas',
   DelphiDoom.Renderer.LumpRanges in '..\Libs\Renderer\DelphiDoom.Renderer.LumpRanges.pas',
   DelphiDoom.Renderer.SpriteTable in '..\Libs\Renderer\DelphiDoom.Renderer.SpriteTable.pas',
+  DelphiDoom.Renderer.TextureMapping in '..\Libs\Renderer\DelphiDoom.Renderer.TextureMapping.pas',
   DelphiDoom.Renderer.LevelPrecalc in '..\Libs\Renderer\DelphiDoom.Renderer.LevelPrecalc.pas',
   DelphiDoom.Renderer.Factory in '..\Libs\Renderer\DelphiDoom.Renderer.Factory.pas',
   DelphiDoom.Texture.Types in '..\Libs\Texture\DelphiDoom.Texture.Types.pas',

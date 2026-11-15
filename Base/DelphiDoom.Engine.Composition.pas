@@ -1180,6 +1180,7 @@ begin
     TEngineRendererSpriteSource.Create, ALog));
   R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
+  R_ConfigureTextureMapping(TRendererFactory.CreateTextureMappingBuilder);
   LDirectory := TEngineRendererLumpDirectory.Create;
   R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
     TRendererFactory.CreateSpriteTableBuilder(LDirectory,

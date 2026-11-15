@@ -154,6 +154,19 @@ type
     /// </summary>
     function Build(const ARange: TRendererLumpRange): TRendererSpriteTable;
   end;
+  /// <summary>Builds the tables that map the angles of the view to the columns of the screen</summary>
+  IRendererTextureMappingBuilder = interface
+    ['{6B1F4A93-D8C2-4E57-A09B-3F7E15C2D840}']
+    /// <summary>
+    ///   viewangletox (the next greatest column after a view angle) and xtoviewangle (the
+    ///   smallest view angle that maps to a column), from the focal length in fixed point,
+    ///   the horizontal centre of the view in fixed point and the width of the view. Raises
+    ///   ERendererException when the table of the tangents is too short or the width negative
+    /// </summary>
+    /// <param name="AFineTangent">The tangents of the fine angles of the half circle in front, in fixed point</param>
+    function Build(AFocalLength, ACenterXFrac, AViewWidth: Integer;
+      const AFineTangent: TArray<Integer>): TRendererTextureMapping;
+  end;
   /// <summary>The calculations on the whole level that the software renderer does when the level is loaded</summary>
   IRendererLevelPrecalc = interface
     ['{17D9A8E3-B462-4C50-93F7-0E5A2C86D1B9}']
