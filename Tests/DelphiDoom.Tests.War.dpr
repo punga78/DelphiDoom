@@ -42,6 +42,8 @@ uses
   DelphiDoom.War.Font.Metrics in '..\Libs\War\DelphiDoom.War.Font.Metrics.pas',
   DelphiDoom.Xmi.Intf in '..\Libs\Xmi\DelphiDoom.Xmi.Intf.pas',
   DelphiDoom.Xmi.Midi.Types in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Types.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Xmi.Midi.ByteReader in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.ByteReader.pas',
   DelphiDoom.Xmi.Midi.Track in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Track.pas',
   DelphiDoom.Xmi.Midi.Song in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Song.pas',

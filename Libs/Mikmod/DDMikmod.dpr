@@ -16,6 +16,8 @@ library DDMikmod;
 uses
   DelphiDoom.Mikmod.Intf in 'DelphiDoom.Mikmod.Intf.pas',
   DelphiDoom.Tracker.Types in 'DelphiDoom.Tracker.Types.pas',
+  DelphiDoom.Bytes.Types in '..\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Tracker.ByteReader in 'DelphiDoom.Tracker.ByteReader.pas',
   DelphiDoom.Tracker.Loader.ProTracker in 'DelphiDoom.Tracker.Loader.ProTracker.pas',
   DelphiDoom.Tracker.Loader.S3m in 'DelphiDoom.Tracker.Loader.S3m.pas',

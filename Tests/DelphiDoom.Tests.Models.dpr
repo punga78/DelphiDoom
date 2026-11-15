@@ -82,6 +82,8 @@ uses
   DelphiDoom.Models.Static.Intf in '..\Libs\Models\DelphiDoom.Models.Static.Intf.pas',
   DelphiDoom.Models.Static.Model in '..\Libs\Models\DelphiDoom.Models.Static.Model.pas',
   DelphiDoom.Models.Static.Numbers in '..\Libs\Models\DelphiDoom.Models.Static.Numbers.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Models.Static.ByteReader in '..\Libs\Models\DelphiDoom.Models.Static.ByteReader.pas',
   DelphiDoom.Models.Static.VectorSubset in '..\Libs\Models\DelphiDoom.Models.Static.VectorSubset.pas',
   DelphiDoom.Models.Static.VertexWelder in '..\Libs\Models\DelphiDoom.Models.Static.VertexWelder.pas',

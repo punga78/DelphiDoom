@@ -142,6 +142,8 @@ uses
   DelphiDoom.Tests.Radix.BriefingScript in 'Source\DelphiDoom.Tests.Radix.BriefingScript.pas',
   DelphiDoom.Tests.Radix.BriefingPlayer in 'Source\DelphiDoom.Tests.Radix.BriefingPlayer.pas',
   DelphiDoom.Tracker.Types in '..\Libs\Mikmod\DelphiDoom.Tracker.Types.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Tracker.ByteReader in '..\Libs\Mikmod\DelphiDoom.Tracker.ByteReader.pas',
   DelphiDoom.Tracker.Loader.ProTracker in '..\Libs\Mikmod\DelphiDoom.Tracker.Loader.ProTracker.pas',
   DelphiDoom.Tests.Radix.Audio in 'Source\DelphiDoom.Tests.Radix.Audio.pas',

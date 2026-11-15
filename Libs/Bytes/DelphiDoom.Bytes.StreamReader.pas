@@ -1,12 +1,12 @@
 {******************************************************************************}
 {                                                                              }
-{  DelphiDoom: xcom formats library - a sequential reader with the habits of    }
+{  DelphiDoom: bytes library - a sequential reader with the habits of           }
 {  the std::ifstream that OpenXcom reads its files with                         }
 {  Derived from OpenXcom (the OpenXcom Developers), GPL v3 or later: see        }
 {  Libs\XcomFormats\README.md for the license of this unit                      }
 {                                                                              }
 {******************************************************************************}
-unit DelphiDoom.Xcom.BinaryReader;
+unit DelphiDoom.Bytes.StreamReader;
 
 interface
 
@@ -21,7 +21,7 @@ type
   ///   check what they read, so a file that ends early gives them "the old value of the variable": the decoders
   ///   of this library keep the same variables to give the same pixels
   /// </summary>
-  TXcomBinaryReader = class
+  TByteStreamReader = class
   strict private
     FBytes: TBytes;
     FPosition: Integer;
@@ -47,20 +47,20 @@ type
 
 implementation
 
-{ TXcomBinaryReader }
+{ TByteStreamReader }
 
-constructor TXcomBinaryReader.Create(const ABytes: TBytes);
+constructor TByteStreamReader.Create(const ABytes: TBytes);
 begin
   inherited Create;
   FBytes := ABytes;
 end;
 
-function TXcomBinaryReader.GetSize: Integer;
+function TByteStreamReader.GetSize: Integer;
 begin
   Result := Length(FBytes);
 end;
 
-function TXcomBinaryReader.ReadBlock(var ABuffer; ACount: Integer): Boolean;
+function TByteStreamReader.ReadBlock(var ABuffer; ACount: Integer): Boolean;
 var
   LAvailable: Integer;
   LCopied: Integer;
@@ -81,25 +81,25 @@ begin
     FFailed := True;
 end;
 
-function TXcomBinaryReader.ReadByte(var AValue: Byte): Boolean;
+function TByteStreamReader.ReadByte(var AValue: Byte): Boolean;
 begin
   Result := ReadBlock(AValue, 1);
 end;
 
-function TXcomBinaryReader.ReadWord(var AValue: Word): Boolean;
+function TByteStreamReader.ReadWord(var AValue: Word): Boolean;
 begin
   // Delphi on x86 and x64 is little endian: the first byte read is the low one, as in the C++ on the same CPUs
   Result := ReadBlock(AValue, 2);
 end;
 
-function TXcomBinaryReader.Peek: Integer;
+function TByteStreamReader.Peek: Integer;
 begin
   if FFailed or (FPosition >= Length(FBytes)) then
     Exit(-1);
   Result := FBytes[FPosition];
 end;
 
-procedure TXcomBinaryReader.Seek(APosition: Integer);
+procedure TByteStreamReader.Seek(APosition: Integer);
 begin
   if not FFailed then
     FPosition := APosition;

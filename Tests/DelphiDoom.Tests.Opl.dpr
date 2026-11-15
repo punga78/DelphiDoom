@@ -17,6 +17,8 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Archive.Intf in '..\Libs\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
   DelphiDoom.Xcom.Types in '..\Libs\XcomFormats\DelphiDoom.Xcom.Types.pas',
   DelphiDoom.Xcom.Intf in '..\Libs\XcomFormats\DelphiDoom.Xcom.Intf.pas',
   DelphiDoom.Xcom.CatArchive in '..\Libs\XcomFormats\DelphiDoom.Xcom.CatArchive.pas',

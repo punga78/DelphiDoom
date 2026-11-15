@@ -11,7 +11,7 @@ unit DelphiDoom.XcomAdlib.Factory;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xcom.Intf, DelphiDoom.Opl.Intf, DelphiDoom.Opl.Factory, DelphiDoom.XcomAdlib.Intf,
+  System.SysUtils, DelphiDoom.Bytes.Archive.Intf, DelphiDoom.Opl.Intf, DelphiDoom.Opl.Factory, DelphiDoom.XcomAdlib.Intf,
   DelphiDoom.XcomAdlib.RegisterWriter, DelphiDoom.XcomAdlib.Sequencer, DelphiDoom.XcomAdlib.Player,
   DelphiDoom.XcomAdlib.CatSource;
 
@@ -26,7 +26,7 @@ type
     /// <summary>A player on the two chips given</summary>
     class function CreatePlayer(const ALeft, ARight: IOplChip; ARate: Integer): IXcomAdlibPlayer; overload; static;
     /// <summary>The songs of a CAT container</summary>
-    class function CreateCatSource(const AArchive: IXcomCatArchive): IXcomAdlibMusicSource; static;
+    class function CreateCatSource(const AArchive: ICatArchive): IXcomAdlibMusicSource; static;
   end;
 
 implementation
@@ -45,7 +45,7 @@ begin
     TXcomAdlibSequencer.Create(TXcomAdlibRegisterWriter.Create(ALeft, ARight)), ARate);
 end;
 
-class function TXcomAdlibFactory.CreateCatSource(const AArchive: IXcomCatArchive): IXcomAdlibMusicSource;
+class function TXcomAdlibFactory.CreateCatSource(const AArchive: ICatArchive): IXcomAdlibMusicSource;
 begin
   Result := TXcomCatAdlibSource.Create(AArchive);
 end;

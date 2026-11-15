@@ -1,0 +1,61 @@
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: unit tests of the bytes library (DUnitX)                         }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
+program DelphiDoom.Tests.Bytes;
+
+{$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
+
+uses
+  System.SysUtils,
+  DUnitX.Loggers.Console,
+  DUnitX.Loggers.Xml.NUnit,
+  DUnitX.TestFramework,
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Archive.Intf in '..\Libs\Bytes\DelphiDoom.Bytes.Archive.Intf.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
+  DelphiDoom.Bytes.StreamReader in '..\Libs\Bytes\DelphiDoom.Bytes.StreamReader.pas',
+  DelphiDoom.Tests.Bytes.Reader in 'Source\DelphiDoom.Tests.Bytes.Reader.pas',
+  DelphiDoom.Tests.Bytes.StreamReader in 'Source\DelphiDoom.Tests.Bytes.StreamReader.pas';
+
+var
+  Runner: ITestRunner;
+  Results: IRunResults;
+  Logger: ITestLogger;
+  NUnitLogger: ITestLogger;
+
+begin
+  try
+    TDUnitX.CheckCommandLine;
+    Runner := TDUnitX.CreateRunner;
+    Runner.UseRTTI := True;
+    Runner.FailsOnNoAsserts := False;
+
+    Logger := TDUnitXConsoleLogger.Create(True);
+    Runner.AddLogger(Logger);
+    NUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
+    Runner.AddLogger(NUnitLogger);
+
+    Results := Runner.Execute;
+    if not Results.AllPassed then
+      System.ExitCode := EXIT_ERRORS;
+
+    {$IFNDEF CI}
+    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
+    begin
+      System.Write('Done.. press <Enter> key to quit.');
+      System.Readln;
+    end;
+    {$ENDIF}
+  except
+    on E: Exception do
+    begin
+      System.Writeln(E.ClassName, ': ', E.Message);
+      System.ExitCode := 1;
+    end;
+  end;
+end.

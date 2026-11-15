@@ -19,6 +19,8 @@ uses
   DelphiDoom.Xmi.Midi.Types in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Types.pas',
   DelphiDoom.Xmi.Midi.Track in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Track.pas',
   DelphiDoom.Xmi.Midi.Song in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.Song.pas',
+  DelphiDoom.Bytes.Types in '..\Libs\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Libs\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Xmi.Midi.ByteReader in '..\Libs\Xmi\DelphiDoom.Xmi.Midi.ByteReader.pas',
   DelphiDoom.Xmi.Iff in '..\Libs\Xmi\DelphiDoom.Xmi.Iff.pas',
   DelphiDoom.Xmi.Reader.SystemEvent in '..\Libs\Xmi\DelphiDoom.Xmi.Reader.SystemEvent.pas',

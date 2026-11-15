@@ -10,7 +10,7 @@ unit DelphiDoom.Xcom.SpkDecoder;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.BinaryReader, DelphiDoom.Xcom.Image,
+  System.SysUtils, DelphiDoom.Xcom.Types, DelphiDoom.Bytes.StreamReader, DelphiDoom.Xcom.Image,
   DelphiDoom.Xcom.Intf;
 
 type
@@ -31,7 +31,7 @@ implementation
 
 function TXcomSpkDecoder.Decode(const ABytes: TBytes; AWidth, AHeight: Integer): TXcomImage;
 var
-  LReader: TXcomBinaryReader;
+  LReader: TByteStreamReader;
   LFlag: Word;
   LValue: Byte;
   LX: Integer;
@@ -39,7 +39,7 @@ var
   LIndex: Integer;
 begin
   Result := TXcomImage.Create(AWidth, AHeight);
-  LReader := TXcomBinaryReader.Create(ABytes);
+  LReader := TByteStreamReader.Create(ABytes);
   try
     LFlag := 0;
     LValue := 0;

@@ -36,7 +36,7 @@ Letti riga per riga. **Decisione: `TGreedFliDecoder` resta com'e'** (non e' unif
 ## Fuori dalla fetta
 
 - **`TXcomLbmReader`** (283 righe, IFF PBM/ILBM) **resta in `Libs\XcomFormats`**: segue le stranezze di **SDL_image 1.2.12** (larghezza arrotondata a 16, piano di maschera contato come un bit, CMAP ripetuta, PBM completato di nero) con parita' su 600 file e 53 `.LBM` veri; metterlo in una libreria "generica" senza quel contesto lo farebbe sembrare un lettore IFF generale e non lo e'. Un posto comune lo avra' se nasce un secondo consumatore che ne vuole il comportamento. **Duplicazione da elencare**: `Keen.Shape` (`Libs\Keen`) ha un lettore ILBM proprio (la parte ILBM di `LoadLIBShape`: piani, `ByteRun1`, intestazione `BitMapHeader`, numeri big endian per il gioco): non unificato.
-- Il **lettore di byte comune** e' la fetta 2 della #229 e non e' fatto.
+- Il **lettore di byte comune** (fetta 2 della #229) e' in `Libs\Bytes` (`TByteReader`, `TByteStreamReader`, ex `TXcomBinaryReader`): vedi `Libs\Bytes\CLAUDE.md`. Il decoder FLI/FLC non lo usa (legge dal buffer con i suoi controlli e la parita' e' provata cosi').
 
 ## Test
 

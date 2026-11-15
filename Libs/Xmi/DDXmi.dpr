@@ -18,6 +18,8 @@ uses
   DelphiDoom.Xmi.Midi.Types in 'DelphiDoom.Xmi.Midi.Types.pas',
   DelphiDoom.Xmi.Midi.Track in 'DelphiDoom.Xmi.Midi.Track.pas',
   DelphiDoom.Xmi.Midi.Song in 'DelphiDoom.Xmi.Midi.Song.pas',
+  DelphiDoom.Bytes.Types in '..\Bytes\DelphiDoom.Bytes.Types.pas',
+  DelphiDoom.Bytes.Reader in '..\Bytes\DelphiDoom.Bytes.Reader.pas',
   DelphiDoom.Xmi.Midi.ByteReader in 'DelphiDoom.Xmi.Midi.ByteReader.pas',
   DelphiDoom.Xmi.Iff in 'DelphiDoom.Xmi.Iff.pas',
   DelphiDoom.Xmi.Reader.SystemEvent in 'DelphiDoom.Xmi.Reader.SystemEvent.pas',
