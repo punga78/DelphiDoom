@@ -4,7 +4,7 @@
 
 Port in Delphi di **Commander Keen in Keen Dreams** (id Software 1991, sorgenti C per Borland C++ 2.0 / DOS 16 bit, rilasciati nel 2014 da Javier M. Chavez, **GPL v2 o successiva**; i dati di gioco restano proprietari e non sono nel repository). Issue #165.
 
-Non e' un gioco del motore Doom: ha il suo eseguibile (`Keen\Keen32.dpr`, composition root `Keen\DelphiDoom.Keen.Composition.pas`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration` (Keen non e' id Tech 1). Riusa `Libs\Video` (`IPaletteConverter`), `Libs\Png` (`TPngClient`), `Libs\Platform` (`IFileStore`) e `Libs\MathCore` (CRC nei test).
+Non e' un gioco del motore Doom: ha il suo eseguibile (`Keen\Keen32.dpr`, composition root `Keen\DelphiDoom.Keen.Composition.pas`) e **non tocca** `ComposeEngine` ne' `TIdTechGeneration` (Keen non e' id Tech 1). Riusa `Libs\Palette` (`IPaletteConverter`, ex `Libs\Video` fino alla #225), `Libs\Png` (`TPngClient`), `Libs\Platform` (`IFileStore`) e `Libs\MathCore` (CRC nei test).
 
 ## Stato: fette K0-K7 e il motore dei livelli di K8 (`Reference\_analisi\xgreed-keen.md`)
 

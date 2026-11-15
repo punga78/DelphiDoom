@@ -11,19 +11,9 @@ unit DelphiDoom.Video.Intf;
 interface
 
 uses
-  DelphiDoom.Video.Types;
+  DelphiDoom.Video.Types, DelphiDoom.Palette.Intf;
 
 type
-  /// <summary>From the palette of the game (256 colors of R, G, B) to colors of the screen</summary>
-  IPaletteConverter = interface
-    ['{4B7E2D91-A5C8-4F03-9E16-D70B3A8C5E42}']
-    /// <summary>
-    ///   Every color goes through the gamma table (256 bytes) and is packed as $00RRGGBB.
-    ///   ASource has 256 * 3 bytes, ADest 256 values
-    /// </summary>
-    procedure Convert(ASource: PByte; AGamma: PByte; ADest: PCardinal);
-  end;
-
   /// <summary>The size of the main screen of the computer</summary>
   IDisplayMetrics = interface
     ['{F1A83C60-27D5-4B9E-8C34-0E65B9D17A28}']

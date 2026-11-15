@@ -14,6 +14,16 @@ uses
   System.SysUtils, DelphiDoom.Palette.Types;
 
 type
+  /// <summary>From the palette of the game (256 colors of R, G, B) to colors of the screen</summary>
+  IPaletteConverter = interface
+    ['{4B7E2D91-A5C8-4F03-9E16-D70B3A8C5E42}']
+    /// <summary>
+    ///   Every color goes through the gamma table (256 bytes) and is packed as $00RRGGBB.
+    ///   ASource has 256 * 3 bytes, ADest 256 values
+    /// </summary>
+    procedure Convert(ASource: PByte; AGamma: PByte; ADest: PCardinal);
+  end;
+
   /// <summary>The nearest color of a palette</summary>
   IColorMatcher = interface
     ['{6D2A8F31-4B97-4C05-A1E3-5F70C9B2D814}']

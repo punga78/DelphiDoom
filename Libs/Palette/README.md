@@ -6,8 +6,8 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 
 ## Contenuto
 
-- Unit nella cartella: 21 (nome a punti `DelphiDoom.Palette.*`).
-- Interfacce dichiarate: `IColorMatcher`, `IColormapPreparer`, `IGammaTables`, `ILightTableCalculator`, `IPaletteBufferFixer`, `IPaletteBuilder`, `IPaletteUnpacker`, `IPlayerTranslations`.
+- Unit nella cartella: 23 (nome a punti `DelphiDoom.Palette.*`).
+- Interfacce dichiarate: `IColorMatcher`, `IColormapPreparer`, `IPaletteConverter` (con `TPaletteConverter` in `DelphiDoom.Palette.Converter`, dal 2026-11-15: prima era di `Video`), `IGammaTables`, `ILightTableCalculator`, `IPaletteBufferFixer`, `IPaletteBuilder`, `IPaletteUnpacker`, `IPlayerTranslations`.
 - Punto di creazione delle classi: `DelphiDoom.Palette.Factory`.
 
 ## Prova

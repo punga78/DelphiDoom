@@ -16,7 +16,7 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   DelphiDoom.Video.Intf in '..\Libs\Video\DelphiDoom.Video.Intf.pas',
-  DelphiDoom.Video.PaletteConverter in '..\Libs\Video\DelphiDoom.Video.PaletteConverter.pas',
+  DelphiDoom.Palette.Converter in '..\Libs\Palette\DelphiDoom.Palette.Converter.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',
   DelphiDoom.Video.WindowsDisplayMetrics in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayMetrics.pas',

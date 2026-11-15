@@ -188,8 +188,6 @@
        Motivo = 'Pmove usa TQ3PlayerState e TQ3UserCmd di DelphiDoom.Net.Q3.Types: Net e'' mista (trasporto e protocollo di Doom e Quake III) e i tipi di Quake III vanno in un''area id Tech 3' }
     @{ Da = 'Libs\Console'; A = 'Libs\GameState'; Massimo = 1; Issue = 225
        Motivo = 'Console (registro dei comandi, generico) usa IGameContext (gioco in corso, di Doom) in Factory e VariableCommands' }
-    @{ Da = 'Libs\Palette'; A = 'Libs\Video'; Massimo = 1; Issue = 225
-       Motivo = 'Palette usa DelphiDoom.Video.Intf (limiti e modi video) in Factory e Unpacker' }
     @{ Da = 'Libs\Greed'; A = 'Libs\Net'; Massimo = 1; Issue = 225
        Motivo = 'Greed usa il trasporto UDP di Net, che e'' misto con il protocollo dei ticcmd di Doom (Net non e'' nell''elenco di #225: da aggiungere)' }
     @{ Da = 'Greed'; A = 'Libs\Net'; Massimo = 4; Issue = 225

@@ -24,6 +24,7 @@ Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` 
 
 - `IdLib` e `Geometry` stanno in **L0**: non hanno nessuna dipendenza e li usano `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net` e `Models` (nel censimento erano porte senza chiamanti).
 - `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Giochi`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
+- `Palette` e' in **L1** e non usa piu' `Video` (L2): `IPaletteConverter` e `TPaletteConverter` (gamma e impacchettamento in `$00RRGGBB`, nessuna dipendenza dal video) sono passati da `Video` a `Palette` come `DelphiDoom.Palette.Intf` e `DelphiDoom.Palette.Converter` (#225, seconda fetta); `Video` usa `Palette`. `Input` e `Video` non hanno altro da separare dal censimento: vedi `docs\FRAMEWORK_CENSIMENTO.md`.
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
 - `Libs\OpenGl` e' diviso in sottocartelle gia' nel manifesto: `Binding` (L3, usato da `GameHost`) e `Legacy`/`Recorder` (modulo `IdTech1`); #220 resta la divisione in due librerie vere.
 - `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `Libs\ScriptEngine` (modulo `IdTech1`).
@@ -47,7 +48,7 @@ Uscita **0**: nessuna violazione nuova e nessuna eccezione da aggiornare. **1**:
 
 ### Eccezioni
 
-Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 8 (tutte coppie, nessun ciclo; quelle di #224 sono state tolte): #225 (`Console` -> `GameState`, `Palette` -> `Video`, `Greed` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
+Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 7 (tutte coppie, nessun ciclo; quelle di #224 e `Palette` -> `Video` sono state tolte): #225 (`Console` -> `GameState`, `Greed` -> `Net`, piu' `Pmove` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
 
 ## Metodo e limiti
 

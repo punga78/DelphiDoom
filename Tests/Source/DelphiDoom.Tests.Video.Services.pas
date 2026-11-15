@@ -10,7 +10,8 @@ unit DelphiDoom.Tests.Video.Services;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Video.Intf;
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Palette.Intf,
+  DelphiDoom.Video.Intf;
 
 type
   TFakeDisplayMetrics = class(TInterfacedObject, IDisplayMetrics)
