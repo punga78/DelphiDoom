@@ -58,6 +58,8 @@ begin
   FOptions := AOptions;
   // the fields of a new object are zero: the Com_Memset of R_FindShader
   FData.Name := AName;
+  // R_FindShader of a plain image: LIGHTMAP_NONE
+  FData.LightmapIndex := -1;
 end;
 
 function TQ3ShaderContext.Data: PQ3ShaderData;

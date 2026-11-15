@@ -135,6 +135,9 @@ type
   /// <summary>cullType_t</summary>
   TQ3CullType = (ctFrontSided, ctBackSided, ctTwoSided);
 
+  /// <summary>shader.multitextureEnv of the collapse: none, GL_MODULATE or GL_ADD</summary>
+  TQ3MultitextureEnv = (meNone, meModulate, meAdd);
+
   /// <summary>fogPass_t</summary>
   TQ3FogPass = (fpNone, fpEqual, fpLE);
 
@@ -183,6 +186,8 @@ type
   TQ3ShaderStage = record
     Active: Boolean;
     Bundle: TQ3TextureBundle;
+    /// <summary>bundle[1]: the second texture of a stage that the multitexture collapse made</summary>
+    Bundle2: TQ3TextureBundle;
     RgbWave: TQ3WaveForm;
     RgbGen: TQ3ColorGen;
     AlphaWave: TQ3WaveForm;
@@ -244,18 +249,31 @@ type
     NumUnfoggedPasses: Integer;
     Stages: array[0..Q3_MAX_SHADER_STAGES - 1] of TQ3ShaderStage;
     ClampTime: Single;
+    /// <summary>shader.multitextureEnv: how the collapsed stage combines its two bundles (none if it is not collapsed)</summary>
+    MultitextureEnv: TQ3MultitextureEnv;
+    /// <summary>shader.lightmapIndex (LIGHTMAP_NONE, -1, unless the renderer says otherwise)</summary>
+    LightmapIndex: Integer;
     HasSun: Boolean;
     SunLight: array[0..2] of Single;
     SunDirection: array[0..2] of Single;
   end;
 
   /// <summary>
-  ///   What the renderer cvars change in the reading of a shader (<c>r_detailTextures</c>); the other
-  ///   cvars of <c>FinishShader</c> (<c>r_vertexLight</c>, the multitexture collapse) are not ported
+  ///   What the renderer cvars and the video card change in the reading of a shader
+  ///   (<c>r_detailTextures</c>, <c>r_vertexLight</c>, the multitexture extensions)
   /// </summary>
   TQ3ShaderOptions = record
     /// <summary>r_detailTextures (default 1): false drops the stages marked <c>detail</c></summary>
     DetailTextures: Boolean;
+    /// <summary>
+    ///   r_vertexLight with r_uiFullScreen off (or a Permedia 2): <c>VertexLightingCollapse</c> leaves one
+    ///   pass (default off)
+    /// </summary>
+    VertexLight: Boolean;
+    /// <summary>qglActiveTextureARB is there: <c>CollapseMultitexture</c> may join two stages (default off)</summary>
+    MultitextureAvailable: Boolean;
+    /// <summary>glConfig.textureEnvAddAvailable: GL_ADD collapses are allowed (default off)</summary>
+    TextureEnvAddAvailable: Boolean;
     class function Standard: TQ3ShaderOptions; static;
   end;
 
@@ -269,6 +287,7 @@ implementation
 
 class function TQ3ShaderOptions.Standard: TQ3ShaderOptions;
 begin
+  Result := Default(TQ3ShaderOptions);
   Result.DetailTextures := True;
 end;
 
