@@ -44,7 +44,7 @@ implementation
 uses
   DelphiDoom.War.Types, DelphiDoom.War.Ui.Input, DelphiDoom.War.Ui.Canvas, DelphiDoom.War.Ui.Imui,
   DelphiDoom.War.Ui.SpriteLoader, DelphiDoom.War.Ui.GameSettings, DelphiDoom.War.Ui.SettingsCheatEffects,
-  DelphiDoom.War.Ui.DebugRender,
+  DelphiDoom.War.Ui.DebugRender, DelphiDoom.War.Text.Intf,
   DelphiDoom.War.Ui.SceneBase, DelphiDoom.War.Ui.SceneManager, DelphiDoom.War.Ui.SceneFactory,
   DelphiDoom.War.MapUi.Intf;
 
@@ -94,6 +94,8 @@ begin
   LServices.Scenes := nil;
   LServices.Settings := LSettings;
   LServices.DebugRender := TWarDebugRender.Create;
+  // the flag "font" is read by the text of every scene: the same object, through the small interface of the text renderer
+  LCanvas.SetTextDebug(LServices.DebugRender as IWarTextDebug);
   LServices.Sessions := ASessions;
   LServices.Cinematics := ACinematics;
   LServices.IntroductionAfterLogo := AIntroductionAfterLogo;

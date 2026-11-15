@@ -242,6 +242,7 @@ uses
   DelphiDoom.War.Render.Transform in '..\Libs\War\DelphiDoom.War.Render.Transform.pas',
   DelphiDoom.War.Render.Blitter in '..\Libs\War\DelphiDoom.War.Render.Blitter.pas',
   DelphiDoom.War.Text.Types in '..\Libs\War\DelphiDoom.War.Text.Types.pas',
+  DelphiDoom.War.Text.Intf in '..\Libs\War\DelphiDoom.War.Text.Intf.pas',
   DelphiDoom.War.Text.Layout in '..\Libs\War\DelphiDoom.War.Text.Layout.pas',
   DelphiDoom.War.Text.Renderer in '..\Libs\War\DelphiDoom.War.Text.Renderer.pas',
   DelphiDoom.War.Sprite.Sheet in '..\Libs\War\DelphiDoom.War.Sprite.Sheet.pas',

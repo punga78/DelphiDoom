@@ -60,6 +60,7 @@ type
     [TestCase('Modi con un clic: aggiungi unita'', pioggia di fuoco, nube, risuscita', 'map_edit')]
     [TestCase('Modi che cambiano il terreno: alberi, muri, strade, rovine', 'map_edit_terrain')]
     [TestCase('Disegno di debug delle unita'' e delle animazioni', 'map_debug_units')]
+    [TestCase('Disegno di debug dei testi: riquadri dei glifi e contorni', 'map_debug_font')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the
