@@ -142,6 +142,7 @@ uses
   r_hires,
   v_data,
   v_video,
+  DelphiDoom.Video.BlitSlices,
   DelphiDoom.Video.Types;
 
 var
@@ -412,7 +413,10 @@ end;
 //==============================================================================
 procedure I_BlitBuffer;
 var
-  p1, p2, p3, p4, p5, p6, p7, p8: finishupdate8param_t;
+  p: array[0..7] of finishupdate8param_t;
+  slicecount: integer;
+  slice: TVideoBlitSlice;
+  i: integer;
 begin
   if (hMainWnd = 0) or (screens[SCN_FG] = nil) or (screen32 = nil) then
     exit;
@@ -423,83 +427,50 @@ begin
   begin
     if usemultithread then
     begin
-      if I_GetNumCPUs <= 2 then
+      // The bounds of the slices are TVideoBlitSlices (Libs\Video); the conversion loops stay here
+      slicecount := TVideoBlitSlices.SliceCount(I_GetNumCPUs);
+      for i := 0 to slicecount - 1 do
       begin
-        p1.start := 0;
-        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 2) and not 3;
-        p2.start := p1.finish + 1;
-        p2.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-        MT_Execute(
-          @I_FinishUpdate8_64a, @p1,
-          @I_FinishUpdate8_64a, @p2
-        );
-      end
-      else if I_GetNumCPUs <= 4 then
-      begin
-        p1.start := 0;
-        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
-        p2.start := p1.finish + 1;
-        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 3) and not 3;
-        p3.start := p2.finish + 1;
-        p3.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-        MT_Execute(
-          @I_FinishUpdate8_64a, @p1,
-          @I_FinishUpdate8_64a, @p2,
-          @I_FinishUpdate8_64a, @p3
-        );
-      end
-      else if I_GetNumCPUs <= 6 then
-      begin
-        p1.start := 0;
-        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-        p2.start := p1.finish + 1;
-        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-        p3.start := p2.finish + 1;
-        p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 4) and not 3;
-        p4.start := p3.finish + 1;
-        p4.finish := SCREENWIDTH * SCREENHEIGHT - 1;
-        MT_Execute(
-          @I_FinishUpdate8_64a, @p1,
-          @I_FinishUpdate8_64a, @p2,
-          @I_FinishUpdate8_64a, @p3,
-          @I_FinishUpdate8_64a, @p4
-        );
-      end
+        slice := TVideoBlitSlices.Slice(SCREENWIDTH * SCREENHEIGHT, slicecount, i);
+        p[i].start := slice.Start;
+        p[i].finish := slice.Finish;
+      end;
+      case slicecount of
+        2:
+          MT_Execute(
+            @I_FinishUpdate8_64a, @p[0],
+            @I_FinishUpdate8_64a, @p[1]
+          );
+        3:
+          MT_Execute(
+            @I_FinishUpdate8_64a, @p[0],
+            @I_FinishUpdate8_64a, @p[1],
+            @I_FinishUpdate8_64a, @p[2]
+          );
+        4:
+          MT_Execute(
+            @I_FinishUpdate8_64a, @p[0],
+            @I_FinishUpdate8_64a, @p[1],
+            @I_FinishUpdate8_64a, @p[2],
+            @I_FinishUpdate8_64a, @p[3]
+          );
       else
-      begin
-        p1.start := 0;
-        p1.finish := (SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p2.start := p1.finish + 1;
-        p2.finish := (2 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p3.start := p2.finish + 1;
-        p3.finish := (3 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p4.start := p3.finish + 1;
-        p4.finish := (4 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p5.start := p4.finish + 1;
-        p5.finish := (5 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p6.start := p5.finish + 1;
-        p6.finish := (6 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p7.start := p6.finish + 1;
-        p7.finish := (7 * SCREENWIDTH * SCREENHEIGHT div 8) and not 3;
-        p8.start := p7.finish + 1;
-        p8.finish := SCREENWIDTH * SCREENHEIGHT - 1;
         MT_Execute(
-          @I_FinishUpdate8_64a, @p1,
-          @I_FinishUpdate8_64a, @p2,
-          @I_FinishUpdate8_64a, @p3,
-          @I_FinishUpdate8_64a, @p4,
-          @I_FinishUpdate8_64a, @p5,
-          @I_FinishUpdate8_64a, @p6,
-          @I_FinishUpdate8_64a, @p7,
-          @I_FinishUpdate8_64a, @p8
+          @I_FinishUpdate8_64a, @p[0],
+          @I_FinishUpdate8_64a, @p[1],
+          @I_FinishUpdate8_64a, @p[2],
+          @I_FinishUpdate8_64a, @p[3],
+          @I_FinishUpdate8_64a, @p[4],
+          @I_FinishUpdate8_64a, @p[5],
+          @I_FinishUpdate8_64a, @p[6],
+          @I_FinishUpdate8_64a, @p[7]
         );
-      end
+      end;
     end
     else
       I_FinishUpdate8_64;
   end;
 end;
-
 //==============================================================================
 //
 // I_FinishUpdate
