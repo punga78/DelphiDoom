@@ -369,6 +369,33 @@ foreach ($t in $types) {
     MoveTo $t.a @(0, 0, 0) $t.f $t.g 4
     A "mvsim|1|$CLIENT|8|0.1|$($t.o -join '|')|$($t.f)|$($t.g)"
 }
+Rem 'in the air above the map, with a layer of water under it: the finish of every travel type'
+A 'clearliquids'
+A 'liquid|32|0|0|150|450|64|180'
+foreach ($t in $types) {
+    A 'mvreset|1'
+    MoveTo $t.o @(0, 0, 0) $t.f $t.g
+    foreach ($z in @(200, 170)) {
+        MoveTo @($t.o[0], 32, $z) @(0, 0, -50) $t.f $t.g
+        MoveTo @(($t.o[0] + 12), 32, $z) @(30, 10, 0) $t.f $t.g
+        MoveTo @(($t.o[0] + 12), 32, $z) @(30, 10, 0) $t.f $t.g 16
+    }
+}
+A 'clearliquids'
+Rem 'a layer of water under the bots of the area 2 (a box of the scenario): finishing a water jump and a swim'
+A 'clearliquids'
+A 'liquid|32|60|0|-10|130|64|20'
+foreach ($mf in @(0, 16)) {
+    foreach ($z in @(5, 12, 40)) {
+        A 'mvreset|1'
+        MoveTo @(90, 32, $z) @(0, 0, 0) $FLAGS (Goal @(32, 32, 5) 1) $mf
+        MoveTo @(90, 32, 40) @(80, 0, 20) $FLAGS (Goal @(32, 32, 5) 1) $mf
+        MoveTo @(100, 32, 40) @(-60, 20, -30) $FLAGS (Goal @(32, 32, 5) 1) $mf
+        MoveTo @(100, 32, 40) @(0, 0, 0) $FLAGS (Goal @(160, 32, 5) 3) $mf
+        A "mvsim|1|$CLIENT|8|0.1|90|32|$z|$FLAGS|32|32|5|1|0|0|0"
+    }
+}
+A 'clearliquids'
 Rem 'the same with the movers away from their start (the plat up, the func_bobbing far from its start)'
 A 'entity|30|1|4|1|300|32|30|300|32|30|0|0'
 A 'entity|31|1|4|2|420|32|-12|420|32|-12|0|0'

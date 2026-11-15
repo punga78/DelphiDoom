@@ -227,6 +227,9 @@ static int Stub_Seek(fileHandle_t f, long offset, int origin) { if (f == 63) g_a
 #define MAXENTS 64
 static struct { int ent; vec3_t mins, maxs; } solids[MAXSOLIDS];
 static int numsolids;
+#define MAXLIQUIDS 8
+static struct { int contents; vec3_t mins, maxs; } liquids[MAXLIQUIDS];
+static int numliquids;
 static struct { vec3_t mins, maxs, origin; } models[MAXMODELS];
 static aas_entityinfo_t ents[MAXENTS];
 static char *entitydata = "";
@@ -300,6 +303,12 @@ static int Twin_PointContents(vec3_t point)
 		if (aasworld.areasettings[areanum].contents & AREACONTENTS_WATER) contents |= CONTENTS_WATER;
 		if (aasworld.areasettings[areanum].contents & AREACONTENTS_LAVA) contents |= CONTENTS_LAVA;
 		if (aasworld.areasettings[areanum].contents & AREACONTENTS_SLIME) contents |= CONTENTS_SLIME;
+	}
+	for (areanum = 0; areanum < numliquids; areanum++)
+	{
+		if (point[0] >= liquids[areanum].mins[0] && point[0] <= liquids[areanum].maxs[0] &&
+			point[1] >= liquids[areanum].mins[1] && point[1] <= liquids[areanum].maxs[1] &&
+			point[2] >= liquids[areanum].mins[2] && point[2] <= liquids[areanum].maxs[2]) contents |= liquids[areanum].contents;
 	}
 	return contents;
 }

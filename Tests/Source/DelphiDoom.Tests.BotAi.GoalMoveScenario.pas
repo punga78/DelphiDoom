@@ -41,10 +41,13 @@ type
     FSampler: IAasSampler;
     FTracer: IAasTracer;
     FSolids: TArray<TTwinSolid>;
+    FLiquids: TArray<TTwinSolid>;
   public
     constructor Create(const AFile: IAasFile; const ASampler: IAasSampler; const ATracer: IAasTracer);
     procedure AddSolid(const ASolid: TTwinSolid);
     procedure ClearSolids;
+    procedure AddLiquid(const ALiquid: TTwinSolid);
+    procedure ClearLiquids;
     function PointContents(const APoint: TVec3): Integer;
     function Trace(const AStart: TVec3; const AMins, AMaxs: PVec3; const AEnd: TVec3; const APassEnt,
       AContentMask: Integer): TAasBspTrace;
@@ -196,6 +199,17 @@ begin
   FSolids[High(FSolids)] := ASolid;
 end;
 
+procedure TTwinBsp.AddLiquid(const ALiquid: TTwinSolid);
+begin
+  SetLength(FLiquids, Length(FLiquids) + 1);
+  FLiquids[High(FLiquids)] := ALiquid;
+end;
+
+procedure TTwinBsp.ClearLiquids;
+begin
+  FLiquids := nil;
+end;
+
 procedure TTwinBsp.ClearSolids;
 begin
   FSolids := nil;
@@ -204,6 +218,7 @@ end;
 function TTwinBsp.PointContents(const APoint: TVec3): Integer;
 var
   LAreaNum: Integer;
+  LIndex: Integer;
 begin
   Result := 0;
   LAreaNum := FSampler.PointAreaNum(APoint);
@@ -216,6 +231,12 @@ begin
     if (FFile.AreaSettings[LAreaNum].Contents and AREACONTENTS_SLIME) <> 0 then
       Result := Result or BSP_CONTENTS_SLIME;
   end;
+  // the liquids of the scenario: the entity of the record is the contents
+  for LIndex := 0 to High(FLiquids) do
+    if (APoint[0] >= FLiquids[LIndex].Mins[0]) and (APoint[0] <= FLiquids[LIndex].Maxs[0]) and
+      (APoint[1] >= FLiquids[LIndex].Mins[1]) and (APoint[1] <= FLiquids[LIndex].Maxs[1]) and
+      (APoint[2] >= FLiquids[LIndex].Mins[2]) and (APoint[2] <= FLiquids[LIndex].Maxs[2]) then
+      Result := Result or FLiquids[LIndex].Entity;
 end;
 
 function TTwinBsp.Trace(const AStart: TVec3; const AMins, AMaxs: PVec3; const AEnd: TVec3; const APassEnt,
@@ -838,6 +859,15 @@ begin
   end
   else if LCommand = 'clearsolids' then
     FBspObject.ClearSolids
+  else if LCommand = 'liquid' then
+  begin
+    LSolid.Entity := Num(1);
+    LSolid.Mins := VectorArg(2);
+    LSolid.Maxs := VectorArg(5);
+    FBspObject.AddLiquid(LSolid);
+  end
+  else if LCommand = 'clearliquids' then
+    FBspObject.ClearLiquids
   else if LCommand = 'entity' then
   begin
     LInfo := Default(TAasEntityInfo);

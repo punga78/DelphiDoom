@@ -122,6 +122,14 @@ static void run_command(void)
 		numsolids++;
 	}
 	else if (!strcmp(c, "clearsolids")) numsolids = 0;
+	else if (!strcmp(c, "liquid"))
+	{
+		if (numliquids >= MAXLIQUIDS) { fprintf(fo, "too many liquids\n"); exit(3); }
+		liquids[numliquids].contents = (int) num(1);
+		vnum(2, liquids[numliquids].mins); vnum(5, liquids[numliquids].maxs);
+		numliquids++;
+	}
+	else if (!strcmp(c, "clearliquids")) numliquids = 0;
 	else if (!strcmp(c, "entity"))
 	{
 		aas_entityinfo_t *e;
