@@ -1,0 +1,4 @@
+#define FROM_A 11
+in_a FROM_A
+#ifdef OPEN
+in_a_open

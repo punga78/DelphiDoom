@@ -1,0 +1,9 @@
+a // c1
+b /* x
+y */ c
+  d	e   // tail
+/* one */ f /* two */ g
+h//no space
+i/*
+*/j
+k / l /m

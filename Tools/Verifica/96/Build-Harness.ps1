@@ -95,6 +95,14 @@ Write-Text (Join-Path $dir 'idlib\bv\Frustum.h') ($fr.Replace('private:', 'publi
 Build $dir @('math\Angles', 'bv\Bounds', 'bv\Box', 'bv\Frustum', 'math\Math', 'math\Matrix', 'math\Plane', 'math\Pluecker',
 	'math\Quat', 'math\Rotation', 'bv\Sphere', 'math\Vector', 'geometry\Winding') 'frustum-main.cpp' (Join-Path $root 'Tests\Data\Geometry\frustum.golden.txt')
 
+# trace model harness (issue #236, part A): octahedron, dodecahedron, cone and cylinder of idTraceModel
+$dir = New-Copy 'trm'
+$math = Read-Text (Join-Path $dir 'idlib\math\Math.h')
+Write-Text (Join-Path $dir 'idlib\math\Math.h') ([regex]::Replace($math, '#ifdef _WIN32(\r?\n\t_asm \{)', '#if 0$1'))
+Build $dir @('math\Math', 'math\Vector', 'math\Plane', 'math\Pluecker', 'math\Simd_Generic', 'geometry\TraceModel',
+	'geometry\Winding', 'geometry\JointTransform', 'geometry\DrawVert', 'bv\Bounds', 'bv\Sphere', 'bv\Box', 'math\Matrix',
+	'math\Angles', 'math\Quat', 'math\Rotation') 'trm-main.cpp' (Join-Path $root 'Tests\Data\Geometry\trm.golden.txt')
+
 # swept spline harness (issue #236, part A): same copy and patches as the surface harness, plus Surface_SweptSpline.cpp
 $dir = New-Copy 'swept'
 $math = Read-Text (Join-Path $dir 'idlib\math\Math.h')

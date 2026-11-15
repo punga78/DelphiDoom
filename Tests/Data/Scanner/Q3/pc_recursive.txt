@@ -1,0 +1,4 @@
+#define LOOP LOOP + 1
+#define OK 5
+LOOP
+OK

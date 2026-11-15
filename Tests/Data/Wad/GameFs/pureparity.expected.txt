@@ -61,3 +61,19 @@ pure never-pak-asked reply=0 missing= server=44,11,22,55
 pure swapped reply=1 missing= server=22,11,22,55
 pure lock-one reply=1 missing= server=22,11,22,55
 pure lock-extend reply=1 missing= server=33,22,11,22,55
+dll no-code reply=3 missing= gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll same-code reply=0 missing= gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll same-code-fromdir reply=1 missing= gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll other-code reply=1 missing= gamemissing=0 gamepak=77 server=11,22,55,77,88
+dll code-without-dll reply=3 missing= gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll code-not-installed reply=2 missing= gamemissing=99 gamepak=70 server=11,22,55,77,88
+dll other-code-assets-missing reply=2 missing=aa gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll same-code-assets-missing reply=2 missing=aa gamemissing=0 gamepak=70 server=11,22,55,77,88
+dll not-installed-assets-missing reply=2 missing=aa gamemissing=99 gamepak=70 server=11,22,55,77,88
+dll empty-list reply=0 missing= gamemissing=0 gamepak=70 server=
+restart plain fatal=0 restart=11,22 addons= game=77
+restart addon-searched fatal=0 restart=55,11 addons=55 game=70
+restart addon-left-out fatal=0 restart=66,11 addons=55,66 game=70
+restart addon-again fatal=0 restart=66,22 addons=55,66 game=71
+restart unknown fatal=1 restart= addons=55,66 game=0
+restart empty fatal=0 restart= addons=55,66 game=73

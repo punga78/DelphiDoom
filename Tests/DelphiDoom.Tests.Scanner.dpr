@@ -65,6 +65,22 @@ uses
   DelphiDoom.Tests.Scanner.IdParser.Golden in 'Source\DelphiDoom.Tests.Scanner.IdParser.Golden.pas',
   DelphiDoom.Tests.Scanner.IdDict in 'Source\DelphiDoom.Tests.Scanner.IdDict.pas',
   DelphiDoom.Tests.Scanner.IdDictLister in 'Source\DelphiDoom.Tests.Scanner.IdDictLister.pas',
+  DelphiDoom.Scanner.Q3.Types in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Types.pas',
+  DelphiDoom.Scanner.Q3.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Intf.pas',
+  DelphiDoom.Scanner.Q3.Compressor in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Compressor.pas',
+  DelphiDoom.Scanner.Q3.Punctuations in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Punctuations.pas',
+  DelphiDoom.Scanner.Q3.Script in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Script.pas',
+  DelphiDoom.Scanner.Q3.ScriptLoader.Intf in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.ScriptLoader.Intf.pas',
+  DelphiDoom.Scanner.Q3.ScriptLoader in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.ScriptLoader.pas',
+  DelphiDoom.Scanner.Q3.TokenNode in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.TokenNode.pas',
+  DelphiDoom.Scanner.Q3.Define in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Define.pas',
+  DelphiDoom.Scanner.Q3.DefineHash in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.DefineHash.pas',
+  DelphiDoom.Scanner.Q3.GlobalDefines in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.GlobalDefines.pas',
+  DelphiDoom.Scanner.Q3.Expression in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Expression.pas',
+  DelphiDoom.Scanner.Q3.Source in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.Source.pas',
+  DelphiDoom.Scanner.Q3.SourceHandles in '..\Libs\Scanner\DelphiDoom.Scanner.Q3.SourceHandles.pas',
+  DelphiDoom.Tests.Scanner.Q3.Values in 'Source\DelphiDoom.Tests.Scanner.Q3.Values.pas',
+  DelphiDoom.Tests.Scanner.Q3.Golden in 'Source\DelphiDoom.Tests.Scanner.Q3.Golden.pas',
   DelphiDoom.Tests.Scanner.IdDictCommands in 'Source\DelphiDoom.Tests.Scanner.IdDictCommands.pas';
 
 var

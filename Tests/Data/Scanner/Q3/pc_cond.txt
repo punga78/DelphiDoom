@@ -1,0 +1,49 @@
+#define A 1
+#define B 0
+#ifdef A
+a_defined
+#else
+a_not
+#endif
+#ifndef A
+x_not_a
+#else
+x_else
+#endif
+#ifdef NOPE
+no1
+#elif A
+elif_taken
+#else
+no2
+#endif
+#if A && !B
+and_ok
+#endif
+#if (A + 2) * 3 == 9
+math_ok
+#endif
+#if defined(A) && !defined B
+defined_ok
+#endif
+#if 1 ? 0 : 1
+tern_no
+#else
+tern_else
+#endif
+#if 10 / 3 == 3 && 10 % 3 == 1 && (1 << 4) == 16 && (256 >> 2) == 64
+ops_ok
+#endif
+#if (6 & 3) == 2 && (6 | 3) == 7 && (6 ^ 3) == 5 && ~0 == -1
+bits_ok
+#endif
+#if -3 + 5 == 2 && 7 - 2 > 4 && 3 <= 3 && 3 >= 4 || 1
+neg_ok
+#endif
+#if 0
+skipped text
+#if 1
+nested_skipped
+#endif
+#endif
+done

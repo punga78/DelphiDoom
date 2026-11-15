@@ -1,0 +1,5 @@
+#define A(x) x
+#define B A(1)
+B B
+#define C(x,y) x+y
+C(,2) C(1,)

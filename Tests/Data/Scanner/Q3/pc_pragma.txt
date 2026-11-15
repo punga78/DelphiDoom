@@ -1,0 +1,4 @@
+#pragma once
+x y
+#line 5
+z

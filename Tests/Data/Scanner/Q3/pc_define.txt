@@ -1,0 +1,18 @@
+#define FOO 42
+#define BAR (FOO + 1)
+#define EMPTYARGS()
+#define ADD(a, b) ((a) + (b))
+#define CAT(a, b) a ## b
+#define NAME_VAL 7
+#define MULTI first \
+  second
+FOO BAR
+ADD(1, 2) ADD((3), (4 + 5))
+CAT(NAME_, VAL) CAT(x, 12)
+MULTI
+int x = FOO;
+__LINE__ __FILE__
+#undef FOO
+FOO
+#define BAR other
+BAR

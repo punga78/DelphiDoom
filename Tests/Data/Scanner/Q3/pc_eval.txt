@@ -1,0 +1,8 @@
+#define N 5
+#eval N * 2 + 1
+#eval 3 - 10
+#evalfloat 1.5 * 2
+#evalfloat 1 - 3.5
+#evalfloat 0.125
+#evalfloat 2.675
+x

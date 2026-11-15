@@ -1,0 +1,6 @@
+#define D 9
+foo D bar baz
+(1) + "s" x \n y
+line2 z
+#define E(a) a+a
+E(2) tail

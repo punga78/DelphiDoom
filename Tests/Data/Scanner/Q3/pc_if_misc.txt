@@ -1,0 +1,9 @@
+#if 1.5 > 1
+f1
+#endif
+#if 6 % 4 == 2
+f2
+#endif
+#if 1 ++ 2
+f3
+#endif

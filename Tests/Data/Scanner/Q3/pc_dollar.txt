@@ -1,0 +1,9 @@
+#define N 5
+$evalint(N + 3)
+$evalint(1 - 6)
+$evalfloat(2.5 * 2.5)
+$evalfloat(0.0 - 1.255)
+$evalint((2 + 3) * (4 - 1))
+$evalint(defined(N) + defined(M))
+$evalint(1 << 3)
+x

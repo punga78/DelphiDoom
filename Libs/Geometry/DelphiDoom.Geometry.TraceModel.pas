@@ -6,9 +6,9 @@
 {  Doom 3 GPL Source Code. Copyright (C) 1999-2011 id Software LLC, a ZeniMax  }
 {  Media company. Doom 3 Source Code: GNU General Public License version 3     }
 {  with additional terms. This unit is a derived work (GPL v3).                }
-{  Not ported: octahedron, dodecahedron, cone, bone, Rotate, Shrink, Compare,  }
-{  silhouette edges and mass properties (nothing in the collision code uses    }
-{  them).                                                                      }
+{  Not ported: Rotate, Shrink, Compare, silhouette edges and mass properties   }
+{  (nothing in the collision code uses them). Octahedron, dodecahedron and     }
+{  cone: issue #236, checked against the real TraceModel.cpp.                  }
 {                                                                              }
 {******************************************************************************}
 unit DelphiDoom.Geometry.TraceModel;
@@ -74,6 +74,18 @@ type
     procedure SetupBox(const ABounds: TGeoBounds);
     /// <summary>Cylinder approximation with an axis along Z (idTraceModel::SetupCylinder)</summary>
     procedure SetupCylinder(const ABounds: TGeoBounds; ANumSides: Integer);
+    /// <summary>Octahedron in the bounds (idTraceModel::SetupOctahedron and InitOctahedron)</summary>
+    procedure SetupOctahedron(const ABounds: TGeoBounds); overload;
+    /// <summary>The origin is placed at the center of the octahedron (idTraceModel::SetupOctahedron(size))</summary>
+    procedure SetupOctahedron(ASize: Single); overload;
+    /// <summary>Dodecahedron in the bounds (idTraceModel::SetupDodecahedron and InitDodecahedron)</summary>
+    procedure SetupDodecahedron(const ABounds: TGeoBounds); overload;
+    /// <summary>The origin is placed at the center of the dodecahedron</summary>
+    procedure SetupDodecahedron(ASize: Single); overload;
+    /// <summary>Cone with its axis along Z (idTraceModel::SetupCone; fewer than 2 sides become 3, as in the C++)</summary>
+    procedure SetupCone(const ABounds: TGeoBounds; ANumSides: Integer); overload;
+    /// <summary>The origin is placed at the apex of the cone (idTraceModel::SetupCone(height, width, sides))</summary>
+    procedure SetupCone(AHeight, AWidth: Single; ANumSides: Integer); overload;
     /// <summary>Bone: a small double pyramid with its axis along Z (idTraceModel::SetupBone and InitBone)</summary>
     procedure SetupBone(ALength, AWidth: Single);
     /// <summary>Arbitrary convex polygon, without volume (idTraceModel::SetupPolygon)</summary>
@@ -93,6 +105,8 @@ uses
 
 const
   SHARP_EDGE_DOT: Single = -0.7;
+  /// <summary>idMath::TWO_PI as a float</summary>
+  TWO_PI_SINGLE: Single = 6.283185307179586;
 
 { TTraceModel }
 
@@ -290,6 +304,306 @@ begin
   IsConvex := True;
 
   GenerateEdgeNormals;
+end;
+
+procedure TTraceModel.SetupOctahedron(const ABounds: TGeoBounds);
+const
+  EdgeVerts: array[1..12, 0..1] of Integer = ((4, 0), (0, 2), (2, 4), (2, 1), (1, 4), (1, 3), (3, 4), (3, 0),
+    (5, 2), (0, 5), (5, 1), (5, 3));
+  PolyEdges: array[0..7, 0..2] of Integer = ((1, 2, 3), (-3, 4, 5), (-5, 6, 7), (-7, 8, -1), (9, -2, 10),
+    (11, -4, -9), (12, -6, -11), (-10, -8, -12));
+var
+  LIndex: Integer;
+  LEdge: Integer;
+  LE0: Integer;
+  LE1: Integer;
+  LV0: Integer;
+  LV1: Integer;
+  LV2: Integer;
+  LHalf: TGeoVec3;
+begin
+  if Kind <> tmkOctahedron then
+  begin
+    // InitOctahedron
+    Kind := tmkOctahedron;
+    NumVerts := 6;
+    NumEdges := 12;
+    NumPolys := 8;
+    for LEdge := 1 to 12 do
+    begin
+      Edges[LEdge].V[0] := EdgeVerts[LEdge, 0];
+      Edges[LEdge].V[1] := EdgeVerts[LEdge, 1];
+    end;
+    // all edges of a polygon go counter clockwise
+    for LIndex := 0 to 7 do
+    begin
+      Polys[LIndex].NumEdges := 3;
+      for LEdge := 0 to 2 do
+        Polys[LIndex].Edges[LEdge] := PolyEdges[LIndex, LEdge];
+    end;
+    IsConvex := True;
+  end;
+
+  Offset := (ABounds.Mins + ABounds.Maxs) * 0.5;
+  LHalf.X := ABounds.Maxs.X - Offset.X;
+  LHalf.Y := ABounds.Maxs.Y - Offset.Y;
+  LHalf.Z := ABounds.Maxs.Z - Offset.Z;
+  // set vertices
+  Verts[0].SetValues(Offset.X + LHalf.X, Offset.Y, Offset.Z);
+  Verts[1].SetValues(Offset.X - LHalf.X, Offset.Y, Offset.Z);
+  Verts[2].SetValues(Offset.X, Offset.Y + LHalf.Y, Offset.Z);
+  Verts[3].SetValues(Offset.X, Offset.Y - LHalf.Y, Offset.Z);
+  Verts[4].SetValues(Offset.X, Offset.Y, Offset.Z + LHalf.Z);
+  Verts[5].SetValues(Offset.X, Offset.Y, Offset.Z - LHalf.Z);
+  // set polygons
+  for LIndex := 0 to NumPolys - 1 do
+  begin
+    LE0 := Polys[LIndex].Edges[0];
+    LE1 := Polys[LIndex].Edges[1];
+    LV0 := Edges[Abs(LE0)].V[Ord(LE0 < 0)];
+    LV1 := Edges[Abs(LE0)].V[Ord(LE0 >= 0)];
+    LV2 := Edges[Abs(LE1)].V[Ord(LE1 >= 0)];
+    // polygon plane
+    Polys[LIndex].Normal := (Verts[LV1] - Verts[LV0]).Cross(Verts[LV2] - Verts[LV0]);
+    Polys[LIndex].Normal.NormalizeSelf;
+    Polys[LIndex].Dist := Polys[LIndex].Normal.Dot(Verts[LV0]);
+    // polygon bounds
+    Polys[LIndex].Bounds.Mins := Verts[LV0];
+    Polys[LIndex].Bounds.Maxs := Verts[LV0];
+    Polys[LIndex].Bounds.AddPoint(Verts[LV1]);
+    Polys[LIndex].Bounds.AddPoint(Verts[LV2]);
+  end;
+  // trm bounds
+  Bounds := ABounds;
+
+  GenerateEdgeNormals;
+end;
+
+procedure TTraceModel.SetupOctahedron(ASize: Single);
+var
+  LHalfSize: Single;
+  LBounds: TGeoBounds;
+begin
+  LHalfSize := ASize * 0.5;
+  LBounds.Mins.SetValues(-LHalfSize, -LHalfSize, -LHalfSize);
+  LBounds.Maxs.SetValues(LHalfSize, LHalfSize, LHalfSize);
+  SetupOctahedron(LBounds);
+end;
+
+procedure TTraceModel.SetupDodecahedron(const ABounds: TGeoBounds);
+const
+  EdgeVerts: array[1..30, 0..1] of Integer = ((0, 8), (8, 9), (9, 4), (4, 16), (16, 0), (16, 17), (17, 2),
+    (2, 12), (12, 0), (2, 10), (10, 3), (3, 13), (13, 12), (9, 5), (5, 15), (15, 14), (14, 4), (3, 19), (19, 18),
+    (18, 1), (1, 13), (7, 11), (11, 6), (6, 14), (15, 7), (1, 8), (18, 5), (6, 17), (11, 10), (19, 7));
+  PolyEdges: array[0..11, 0..4] of Integer = ((1, 2, 3, 4, 5), (-5, 6, 7, 8, 9), (-8, 10, 11, 12, 13),
+    (14, 15, 16, 17, -3), (18, 19, 20, 21, -12), (22, 23, 24, -16, 25), (-9, -13, -21, 26, -1),
+    (-26, -20, 27, -14, -2), (-4, -17, -24, 28, -6), (-23, 29, -10, -7, -28), (-25, -15, -27, -19, 30),
+    (-30, -18, -11, -29, -22));
+var
+  LIndex: Integer;
+  LEdge: Integer;
+  LE: array[0..3] of Integer;
+  LV0: Integer;
+  LV1: Integer;
+  LV2: Integer;
+  LV3: Integer;
+  LV4: Integer;
+  LS: Single;
+  LD: Single;
+  LA: TGeoVec3;
+  LB: TGeoVec3;
+  LC: TGeoVec3;
+begin
+  if Kind <> tmkDodecahedron then
+  begin
+    // InitDodecahedron
+    Kind := tmkDodecahedron;
+    NumVerts := 20;
+    NumEdges := 30;
+    NumPolys := 12;
+    for LEdge := 1 to 30 do
+    begin
+      Edges[LEdge].V[0] := EdgeVerts[LEdge, 0];
+      Edges[LEdge].V[1] := EdgeVerts[LEdge, 1];
+    end;
+    // all edges of a polygon go counter clockwise
+    for LIndex := 0 to 11 do
+    begin
+      Polys[LIndex].NumEdges := 5;
+      for LEdge := 0 to 4 do
+        Polys[LIndex].Edges[LEdge] := PolyEdges[LIndex, LEdge];
+    end;
+    IsConvex := True;
+  end;
+
+  // 1.0f / ( 3.0f ) ^ 0.5f, ( ( 3.0f - ( 5.0f ) ^ 0.5f ) / 6.0f ) ^ 0.5f, ( ( 3.0f + ( 5.0f ) ^ 0.5f ) / 6.0f ) ^ 0.5f
+  LA.SetValues(0.5773502691896257, 0.5773502691896257, 0.5773502691896257);
+  LB.SetValues(0.3568220897730899, 0.3568220897730899, 0.3568220897730899);
+  LC.SetValues(0.9341723589627156, 0.9341723589627156, 0.9341723589627156);
+  LD := 0.5 / LC.X;
+  LS := (ABounds.Maxs.X - ABounds.Mins.X) * LD;
+  LA.X := LA.X * LS;
+  LB.X := LB.X * LS;
+  LC.X := LC.X * LS;
+  LS := (ABounds.Maxs.Y - ABounds.Mins.Y) * LD;
+  LA.Y := LA.Y * LS;
+  LB.Y := LB.Y * LS;
+  LC.Y := LC.Y * LS;
+  LS := (ABounds.Maxs.Z - ABounds.Mins.Z) * LD;
+  LA.Z := LA.Z * LS;
+  LB.Z := LB.Z * LS;
+  LC.Z := LC.Z * LS;
+
+  Offset := (ABounds.Mins + ABounds.Maxs) * 0.5;
+  // set vertices
+  Verts[0].SetValues(Offset.X + LA.X, Offset.Y + LA.Y, Offset.Z + LA.Z);
+  Verts[1].SetValues(Offset.X + LA.X, Offset.Y + LA.Y, Offset.Z - LA.Z);
+  Verts[2].SetValues(Offset.X + LA.X, Offset.Y - LA.Y, Offset.Z + LA.Z);
+  Verts[3].SetValues(Offset.X + LA.X, Offset.Y - LA.Y, Offset.Z - LA.Z);
+  Verts[4].SetValues(Offset.X - LA.X, Offset.Y + LA.Y, Offset.Z + LA.Z);
+  Verts[5].SetValues(Offset.X - LA.X, Offset.Y + LA.Y, Offset.Z - LA.Z);
+  Verts[6].SetValues(Offset.X - LA.X, Offset.Y - LA.Y, Offset.Z + LA.Z);
+  Verts[7].SetValues(Offset.X - LA.X, Offset.Y - LA.Y, Offset.Z - LA.Z);
+  Verts[8].SetValues(Offset.X + LB.X, Offset.Y + LC.Y, Offset.Z);
+  Verts[9].SetValues(Offset.X - LB.X, Offset.Y + LC.Y, Offset.Z);
+  Verts[10].SetValues(Offset.X + LB.X, Offset.Y - LC.Y, Offset.Z);
+  Verts[11].SetValues(Offset.X - LB.X, Offset.Y - LC.Y, Offset.Z);
+  Verts[12].SetValues(Offset.X + LC.X, Offset.Y, Offset.Z + LB.Z);
+  Verts[13].SetValues(Offset.X + LC.X, Offset.Y, Offset.Z - LB.Z);
+  Verts[14].SetValues(Offset.X - LC.X, Offset.Y, Offset.Z + LB.Z);
+  Verts[15].SetValues(Offset.X - LC.X, Offset.Y, Offset.Z - LB.Z);
+  Verts[16].SetValues(Offset.X, Offset.Y + LB.Y, Offset.Z + LC.Z);
+  Verts[17].SetValues(Offset.X, Offset.Y - LB.Y, Offset.Z + LC.Z);
+  Verts[18].SetValues(Offset.X, Offset.Y + LB.Y, Offset.Z - LC.Z);
+  Verts[19].SetValues(Offset.X, Offset.Y - LB.Y, Offset.Z - LC.Z);
+
+  // set polygons
+  for LIndex := 0 to NumPolys - 1 do
+  begin
+    for LEdge := 0 to 3 do
+      LE[LEdge] := Polys[LIndex].Edges[LEdge];
+    LV0 := Edges[Abs(LE[0])].V[Ord(LE[0] < 0)];
+    LV1 := Edges[Abs(LE[0])].V[Ord(LE[0] >= 0)];
+    LV2 := Edges[Abs(LE[1])].V[Ord(LE[1] >= 0)];
+    LV3 := Edges[Abs(LE[2])].V[Ord(LE[2] >= 0)];
+    LV4 := Edges[Abs(LE[3])].V[Ord(LE[3] >= 0)];
+    // polygon plane
+    Polys[LIndex].Normal := (Verts[LV1] - Verts[LV0]).Cross(Verts[LV2] - Verts[LV0]);
+    Polys[LIndex].Normal.NormalizeSelf;
+    Polys[LIndex].Dist := Polys[LIndex].Normal.Dot(Verts[LV0]);
+    // polygon bounds
+    Polys[LIndex].Bounds.Mins := Verts[LV0];
+    Polys[LIndex].Bounds.Maxs := Verts[LV0];
+    Polys[LIndex].Bounds.AddPoint(Verts[LV1]);
+    Polys[LIndex].Bounds.AddPoint(Verts[LV2]);
+    Polys[LIndex].Bounds.AddPoint(Verts[LV3]);
+    Polys[LIndex].Bounds.AddPoint(Verts[LV4]);
+  end;
+  // trm bounds
+  Bounds := ABounds;
+
+  GenerateEdgeNormals;
+end;
+
+procedure TTraceModel.SetupDodecahedron(ASize: Single);
+var
+  LHalfSize: Single;
+  LBounds: TGeoBounds;
+begin
+  LHalfSize := ASize * 0.5;
+  LBounds.Mins.SetValues(-LHalfSize, -LHalfSize, -LHalfSize);
+  LBounds.Maxs.SetValues(LHalfSize, LHalfSize, LHalfSize);
+  SetupDodecahedron(LBounds);
+end;
+
+procedure TTraceModel.SetupCone(const ABounds: TGeoBounds; ANumSides: Integer);
+var
+  LIndex: Integer;
+  LN: Integer;
+  LII: Integer;
+  LAngle: Single;
+  LHalfSize: TGeoVec3;
+begin
+  LN := ANumSides;
+  if LN < 2 then
+    LN := 3;
+  if LN + 1 > MAX_TRACEMODEL_VERTS then
+    LN := MAX_TRACEMODEL_VERTS - 1;
+  if LN * 2 > MAX_TRACEMODEL_EDGES then
+    LN := MAX_TRACEMODEL_EDGES div 2;
+  if LN + 1 > MAX_TRACEMODEL_POLYS then
+    LN := MAX_TRACEMODEL_POLYS - 1;
+
+  Kind := tmkCone;
+  NumVerts := LN + 1;
+  NumEdges := LN * 2;
+  NumPolys := LN + 1;
+  Offset := (ABounds.Mins + ABounds.Maxs) * 0.5;
+  LHalfSize := ABounds.Maxs - Offset;
+  Verts[LN].SetValues(0, 0, LHalfSize.Z + Offset.Z);
+  for LIndex := 0 to LN - 1 do
+  begin
+    // verts
+    // idMath::TWO_PI * i / n: a float for each operation
+    LAngle := TWO_PI_SINGLE;
+    LAngle := LAngle * LIndex;
+    LAngle := LAngle / LN;
+    Verts[LIndex].X := Cos(Double(LAngle)) * LHalfSize.X + Offset.X;
+    Verts[LIndex].Y := Sin(Double(LAngle)) * LHalfSize.Y + Offset.Y;
+    Verts[LIndex].Z := -LHalfSize.Z + Offset.Z;
+    // edges
+    LII := LIndex + 1;
+    Edges[LII].V[0] := LIndex;
+    Edges[LII].V[1] := LII mod LN;
+    Edges[LN + LII].V[0] := LIndex;
+    Edges[LN + LII].V[1] := LN;
+    // vertical polygon edges
+    Polys[LIndex].NumEdges := 3;
+    Polys[LIndex].Edges[0] := LII;
+    Polys[LIndex].Edges[1] := LN + (LII mod LN) + 1;
+    Polys[LIndex].Edges[2] := -(LN + LII);
+    // bottom polygon edges
+    Polys[LN].Edges[LIndex] := -(LN - LIndex);
+  end;
+  // bottom polygon numEdges
+  Polys[LN].NumEdges := LN;
+
+  // polygons
+  for LIndex := 0 to LN - 1 do
+  begin
+    // polygon plane
+    Polys[LIndex].Normal := (Verts[(LIndex + 1) mod LN] - Verts[LIndex]).Cross(Verts[LN] - Verts[LIndex]);
+    Polys[LIndex].Normal.NormalizeSelf;
+    Polys[LIndex].Dist := Polys[LIndex].Normal.Dot(Verts[LIndex]);
+    // polygon bounds
+    Polys[LIndex].Bounds.Clear;
+    Polys[LIndex].Bounds.AddPoint(Verts[LIndex]);
+    Polys[LIndex].Bounds.AddPoint(Verts[(LIndex + 1) mod LN]);
+    Polys[LIndex].Bounds.AddPoint(Verts[LN]);
+  end;
+  // bottom polygon plane
+  Polys[LN].Normal.SetValues(0, 0, -1);
+  Polys[LN].Dist := -ABounds.Mins.Z;
+  // trm bounds
+  Bounds := ABounds;
+  // bottom polygon bounds
+  Polys[LN].Bounds := Bounds;
+  Polys[LN].Bounds.Maxs.Z := Bounds.Mins.Z;
+  // convex model
+  IsConvex := True;
+
+  GenerateEdgeNormals;
+end;
+
+procedure TTraceModel.SetupCone(AHeight, AWidth: Single; ANumSides: Integer);
+var
+  LHalfWidth: Single;
+  LBounds: TGeoBounds;
+begin
+  LHalfWidth := AWidth * 0.5;
+  LBounds.Mins.SetValues(-LHalfWidth, -LHalfWidth, -AHeight);
+  LBounds.Maxs.SetValues(LHalfWidth, LHalfWidth, 0);
+  SetupCone(LBounds, ANumSides);
 end;
 
 procedure TTraceModel.SetupBone(ALength, AWidth: Single);

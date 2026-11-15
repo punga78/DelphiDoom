@@ -1,0 +1,5 @@
+start
+#include "inc_c.txt"
+FROM_C
+#include <inc_c.txt>
+end
