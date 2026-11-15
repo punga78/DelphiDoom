@@ -157,7 +157,8 @@ uses
   DelphiDoom.Tests.BotAi.GoalMoveScenario in 'Source\DelphiDoom.Tests.BotAi.GoalMoveScenario.pas',
   DelphiDoom.Tests.BotAi.GoalMoveParity in 'Source\DelphiDoom.Tests.BotAi.GoalMoveParity.pas',
   DelphiDoom.Tests.BotAi.Ea in 'Source\DelphiDoom.Tests.BotAi.Ea.pas',
-  DelphiDoom.Tests.BotAi.WorldUnits in 'Source\DelphiDoom.Tests.BotAi.WorldUnits.pas';
+  DelphiDoom.Tests.BotAi.WorldUnits in 'Source\DelphiDoom.Tests.BotAi.WorldUnits.pas',
+  DelphiDoom.Tests.BotAi.GoalConfig in 'Source\DelphiDoom.Tests.BotAi.GoalConfig.pas';
 
 var
   Runner: ITestRunner;
