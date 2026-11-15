@@ -28,11 +28,12 @@ type
     class function CreateGame(const AArchive: IWarArchive; const ACatalog: IWarCatalog;
       const AGraphics: IWarGraphics; const AMetrics: IWarFontMetrics; const AFontImages: TArray<TWarImage>;
       const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio; const AMapLauncher: IWarMapLauncher;
-      AWidth, AHeight: Integer): TWarUiGame; static;
+      AWidth, AHeight: Integer; const ASessions: IWarSessionRequests = nil): TWarUiGame; static;
     /// <summary>The same on sprites that a fake gives (no archive)</summary>
     class function CreateGameOnSprites(const ASprites: IWarUiSprites; const AMetrics: IWarFontMetrics;
       const AFontImages: TArray<TWarImage>; const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio;
-      const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer): TWarUiGame; static;
+      const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer;
+      const ASessions: IWarSessionRequests = nil): TWarUiGame; static;
   end;
 
 implementation
@@ -49,15 +50,16 @@ uses
 class function TWarUiFactory.CreateGame(const AArchive: IWarArchive; const ACatalog: IWarCatalog;
   const AGraphics: IWarGraphics; const AMetrics: IWarFontMetrics; const AFontImages: TArray<TWarImage>;
   const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio; const AMapLauncher: IWarMapLauncher;
-  AWidth, AHeight: Integer): TWarUiGame;
+  AWidth, AHeight: Integer; const ASessions: IWarSessionRequests): TWarUiGame;
 begin
   Result := CreateGameOnSprites(TWarUiSpriteLoader.Create(AGraphics, ACatalog), AMetrics, AFontImages, ACampaigns,
-    AAudio, AMapLauncher, AArchive.FileType = wftDemo, AWidth, AHeight);
+    AAudio, AMapLauncher, AArchive.FileType = wftDemo, AWidth, AHeight, ASessions);
 end;
 
 class function TWarUiFactory.CreateGameOnSprites(const ASprites: IWarUiSprites; const AMetrics: IWarFontMetrics;
   const AFontImages: TArray<TWarImage>; const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio;
-  const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer): TWarUiGame;
+  const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer;
+  const ASessions: IWarSessionRequests): TWarUiGame;
 var
   LInput: TWarUiInput;
   LInputRef: IWarUiInput;
@@ -87,6 +89,7 @@ begin
   LServices.Scenes := nil;
   LServices.Settings := LSettings;
   LServices.DebugRender := TWarDebugRender.Create;
+  LServices.Sessions := ASessions;
   LScenes := TWarSceneFactory.Create(LServices);
   // a maker of maps that draws with this interface needs the services too (the map is made after them)
   LServices.Scenes := LScenes;

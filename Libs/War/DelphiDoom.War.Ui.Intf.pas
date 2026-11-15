@@ -202,6 +202,17 @@ type
     function ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
   end;
 
+  /// <summary>
+  ///   What the buttons Save and Load of the menus ask of the program (the original has the buttons and no handler):
+  ///   the program saves or loads its quick slot between two frames, never in the middle of one. May be nil in the
+  ///   services of a game: then the buttons do nothing, as in the original
+  /// </summary>
+  IWarSessionRequests = interface
+    ['{7A4E1C58-92D3-4B06-AF71-3E8D05B2C9F4}']
+    procedure RequestSave;
+    procedure RequestLoad;
+  end;
+
   /// <summary>A scene: the functions of a WarSceneDescriptor</summary>
   IWarScene = interface
     ['{1B6F83D0-E4A7-4259-8C1E-9A5D70C32B68}']

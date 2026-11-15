@@ -37,6 +37,8 @@ type
     Settings: IWarGameSettings;
     /// <summary>The flags of the debug drawing, which belong to the game; may be nil (nothing is drawn)</summary>
     DebugRender: IWarDebugRender;
+    /// <summary>The program that saves and loads (the Save and Load buttons of the menus); may be nil (they do nothing)</summary>
+    Sessions: IWarSessionRequests;
   end;
 
   /// <summary>
