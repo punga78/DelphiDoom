@@ -14,7 +14,9 @@ uses
   DelphiDoom.IdLib.Core.Intf,
   DelphiDoom.Models.Md5.Intf,
   DelphiDoom.Models.Source.Intf,
-  DelphiDoom.Models.Anim.Intf;
+  DelphiDoom.Models.Anim.Intf,
+  DelphiDoom.Models.Anim.Blend.Types,
+  DelphiDoom.Models.Anim.Animator;
 
 type
   /// <summary>The only place that knows the classes behind the contracts of the animations</summary>
@@ -32,6 +34,11 @@ type
       const AAnims: TArray<IMd5Anim>): IAnim; static;
     /// <summary>A lookup that accepts everything</summary>
     class function CreatePermissiveLookup: IModelDefGameLookup; static;
+    /// <summary>
+    ///   An animator (idAnimator) with no model: ALog gets the warnings, ARandom (nil: always 0)
+    ///   gives the random start of the animations that cycle from a random time. The caller frees it.
+    /// </summary>
+    class function CreateAnimator(const ALog: IIdLibLog; const ARandom: TAnimRandomFloat): TAnimator; static;
   end;
 
 implementation
@@ -70,6 +77,11 @@ end;
 class function TAnimFactory.CreatePermissiveLookup: IModelDefGameLookup;
 begin
   Result := TModelDefPermissiveLookup.Create;
+end;
+
+class function TAnimFactory.CreateAnimator(const ALog: IIdLibLog; const ARandom: TAnimRandomFloat): TAnimator;
+begin
+  Result := TAnimator.Create(ALog, ARandom);
 end;
 
 end.

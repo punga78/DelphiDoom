@@ -141,6 +141,10 @@ uses
   DelphiDoom.Models.Anim.FrameCommandParser in '..\Libs\Models\DelphiDoom.Models.Anim.FrameCommandParser.pas',
   DelphiDoom.Models.Anim.ModelDefParser in '..\Libs\Models\DelphiDoom.Models.Anim.ModelDefParser.pas',
   DelphiDoom.Models.Anim.PermissiveLookup in '..\Libs\Models\DelphiDoom.Models.Anim.PermissiveLookup.pas',
+  DelphiDoom.Models.Anim.Blend.Types in '..\Libs\Models\DelphiDoom.Models.Anim.Blend.Types.pas',
+  DelphiDoom.Models.Anim.FrameCommandCaller in '..\Libs\Models\DelphiDoom.Models.Anim.FrameCommandCaller.pas',
+  DelphiDoom.Models.Anim.Blend in '..\Libs\Models\DelphiDoom.Models.Anim.Blend.pas',
+  DelphiDoom.Models.Anim.Animator in '..\Libs\Models\DelphiDoom.Models.Anim.Animator.pas',
   DelphiDoom.Models.Anim.Factory in '..\Libs\Models\DelphiDoom.Models.Anim.Factory.pas',
   DelphiDoom.MathCore.Patch.Types in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.Types.pas',
   DelphiDoom.MathCore.Patch.VertexMath in '..\Libs\MathCore\DelphiDoom.MathCore.Patch.VertexMath.pas',
@@ -224,6 +228,9 @@ uses
   DelphiDoom.Tests.Models.I3dTireAnimator in 'Source\DelphiDoom.Tests.Models.I3dTireAnimator.pas',
   DelphiDoom.Tests.Models.I3dCorrections in 'Source\DelphiDoom.Tests.Models.I3dCorrections.pas',
   DelphiDoom.Tests.Models.I3dMeshBuilder in 'Source\DelphiDoom.Tests.Models.I3dMeshBuilder.pas',
+  DelphiDoom.Tests.Models.AnimatorSupport in 'Source\DelphiDoom.Tests.Models.AnimatorSupport.pas',
+  DelphiDoom.Tests.Models.AnimBlend in 'Source\DelphiDoom.Tests.Models.AnimBlend.pas',
+  DelphiDoom.Tests.Models.Animator in 'Source\DelphiDoom.Tests.Models.Animator.pas',
   DelphiDoom.Tests.Models.Dynamic in 'Source\DelphiDoom.Tests.Models.Dynamic.pas';
 
 var
