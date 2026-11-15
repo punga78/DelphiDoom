@@ -785,6 +785,7 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
   p_doors,
+  p_spec_h,
   p_spec,
   p_inter,
   DelphiDoom.Engine.World.InterRules,

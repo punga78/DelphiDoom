@@ -107,6 +107,7 @@ uses
   p_inter,
   DelphiDoom.Engine.World.SpecialRespawn,
   p_common,
+  p_spec_h,
   p_spec,
   info_common,
   info_export,

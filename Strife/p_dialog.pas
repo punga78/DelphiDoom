@@ -207,6 +207,7 @@ uses
   p_enemy,
   DelphiDoom.Engine.World.EnemyRules,
   p_doors,
+  p_spec_h,
   p_spec,
   p_map,
   p_user,

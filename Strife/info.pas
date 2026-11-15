@@ -132,6 +132,7 @@ uses
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
   p_mobj_h,
+  p_spec_h,
   p_spec,
   info_common,
   info_export,

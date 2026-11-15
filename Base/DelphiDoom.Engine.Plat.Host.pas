@@ -39,6 +39,7 @@ implementation
 
 uses
   r_defs,
+  p_spec_h,
   p_spec,
   p_tick,
   p_floor,

@@ -55,6 +55,7 @@ uses
 {$IFDEF DOOM}
   g_game,
 {$ENDIF}
+  p_spec_h,
   p_spec,
   s_sound,
   sounddata;

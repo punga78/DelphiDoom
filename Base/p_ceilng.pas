@@ -35,6 +35,7 @@ interface
 
 uses
   z_zone,
+  p_spec_h,
   p_spec,
   r_defs,
   s_sound,

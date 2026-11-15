@@ -34,6 +34,9 @@ unit p_plats;
 interface
 
 uses
+  DelphiDoom.Engine.World.SectorSearch,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_defs;
 

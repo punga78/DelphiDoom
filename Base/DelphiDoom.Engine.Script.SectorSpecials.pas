@@ -45,6 +45,7 @@ implementation
 
 uses
   System.SysUtils,
+  p_spec_h,
   p_spec,
   {$IFDEF HEXEN}
   p_anim,

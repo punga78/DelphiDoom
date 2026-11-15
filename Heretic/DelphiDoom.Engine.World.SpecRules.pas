@@ -34,7 +34,7 @@
 
 {$I Doom32.inc}
 
-unit p_spec;
+unit DelphiDoom.Engine.World.SpecRules;
 
 interface
 
@@ -44,13 +44,8 @@ uses
   d_player,
   d_think,
   p_mobj_h,
-  r_defs;
-
-//
-// End-level timer (-TIMER option)
-//
-
-//      Define values for map objects
+  r_defs,
+  p_spec_h;
 
 //==============================================================================
 // P_InitPicAnims
@@ -114,79 +109,10 @@ procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; co
 
 //==============================================================================
 //
-// twoSided
-//
-//==============================================================================
-function twoSided(sector: integer; line: integer): boolean;
-
-//==============================================================================
-//
 // getSector
 //
 //==============================================================================
 function getSector(currentSector: integer; line: integer; side: integer): Psector_t;
-
-//==============================================================================
-//
-// getSide
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-
-//==============================================================================
-//
-// P_FindLowestFloorSurrounding
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindHighestFloorSurrounding
-//
-//==============================================================================
-function P_FindHighestFloorSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindNextHighestFloor
-//
-//==============================================================================
-function P_FindNextHighestFloor(sec: Psector_t; currentheight: integer): fixed_t;
-
-//==============================================================================
-//
-// P_FindLowestCeilingSurrounding
-//
-//==============================================================================
-function P_FindLowestCeilingSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindHighestCeilingSurrounding
-//
-//==============================================================================
-function P_FindHighestCeilingSurrounding(sec: Psector_t): fixed_t;
-
-//==============================================================================
-//
-// P_FindSectorFromLineTag
-//
-//==============================================================================
-function P_FindSectorFromLineTag(line: Pline_t; start: integer): integer;
-
-//==============================================================================
-//
-// P_FindMinSurroundingLight
-//
-//==============================================================================
-
-//==============================================================================
-//
-// getNextSector
-//
-//==============================================================================
-function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
 
 //==============================================================================
 // EV_DoDonut
@@ -196,368 +122,35 @@ function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
 //==============================================================================
 function EV_DoDonut(line: Pline_t): integer;
 
-//
-// P_LIGHTS
-//
 type
-  fireflicker_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
+  /// <summary>
+  ///   What Heretic does differently in the sector utilities of Base\p_spec.pas (issue #185, step 2g)
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TSpecGameRules = class sealed
+  public
+    /// <summary>The line is two-sided when ML_TWOSIDED is set (otherwise when it has a second side)</summary>
+    class function TwoSidedByFlag: boolean; static;
+    /// <summary>getNextSector works as in the original game: no neighbour through a one-sided line</summary>
+    class function NextSectorCompatible: boolean; static;
+    /// <summary>The height where P_FindHighestFloorSurrounding starts from</summary>
+    class function HighestFloorStart: fixed_t; static;
+    /// <summary>The height where P_FindLowestCeilingSurrounding starts from</summary>
+    class function LowestCeilingStart: fixed_t; static;
+    /// <summary>The height where P_FindHighestCeilingSurrounding starts from</summary>
+    class function HighestCeilingStart: fixed_t; static;
+    /// <summary>How many adjoining sectors P_FindNextHighestFloor accepts</summary>
+    class function AdjoiningSectorsLimit: integer; static;
+    /// <summary>The tag of the sectors that the line refers to (Hexen: the first argument of the special)</summary>
+    class function LineSectorTag(line: Pline_t): integer; static;
   end;
-  Pfireflicker_t = ^fireflicker_t;
-
-  lightflash_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
-    maxtime: integer;
-    mintime: integer;
-  end;
-  Plightflash_t = ^lightflash_t;
-
-  strobe_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    minlight: integer;
-    maxlight: integer;
-    darktime: integer;
-    brighttime: integer;
-  end;
-  Pstrobe_t = ^strobe_t;
-
-  glow_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    minlight: integer;
-    maxlight: integer;
-    direction: integer;
-  end;
-  Pglow_t = ^glow_t;
-
-const
-  GLOWSPEED = 8;
-  STROBEBRIGHT = 5;
-  FASTDARK = 15;
-  SLOWDARK = 35;
-
-type
-  bwhere_e = (
-    top,
-    middle,
-    bottom
-  );
-
-  button_t = record
-    line: Pline_t;
-    where: bwhere_e;
-    btexture: integer;
-    btimer: integer;
-    soundorg: Pmobj_t;
-  end;
-  Pbutton_t = ^button_t;
-
-const
-  MAXSWITCHES = 50; // max # of wall switches in a level
-  MAXBUTTONS = 16;  // 4 players, 4 buttons each at once, max.
-  BUTTONTIME = 35;  // 1 second, in ticks.
-
-type
-//
-// P_PLATS
-//
-  plat_e = (
-    up,
-    down,
-    waiting,
-    in_stasis,
-
-    // JVAL: 20220214 - Added UDMF plat status
-    PLAT_UP,
-    PLAT_DOWN,
-    PLAT_WAITING
-  );
-
-  plattype_e = (
-    perpetualRaise,
-    downWaitUpStay,
-    raiseAndChange,
-    raiseToNearestAndChange,
-    blazeDWUS,
-
-    // JVAL: 20220214 - Added UDMF plat types
-    PLAT_PERPETUALRAISE,
-    PLAT_DOWNWAITUPSTAY,
-    PLAT_DOWNBYVALUEWAITUPSTAY,
-    PLAT_UPWAITDOWNSTAY,
-    PLAT_UPBYVALUEWAITDOWNSTAY,
-    // JVAL: 20220227 - Added new plat types
-    PLAT_PERPETUALRAISELIP,
-    PLAT_DOWNWAITUPSTAYLIP,
-    PLAT_UPNEARESTWAITDOWNSTAY
-  );
-
-  plat_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    speed: fixed_t;
-    low: fixed_t;
-    high: fixed_t;
-    wait: integer;
-    count: integer;
-    status: plat_e;
-    oldstatus: plat_e;
-    crush: boolean;
-    tag: integer;
-    _type: plattype_e;
-  end;
-  Pplat_t = ^plat_t;
-
-const
-  PLATWAIT = 3;
-  PLATSPEED = FRACUNIT;
-  MAXPLATS = 512;  // JVAL Originally was 30
-
-type
-//
-// P_DOORS
-//
-  vldoor_e = (
-    normal,
-    close30ThenOpen,
-    close,
-    open,
-    raiseIn5Mins,
-
-    // JVAL: 20220214 - Added UDMF door types
-    DREV_NORMAL,
-    DREV_CLOSE30THENOPEN,
-    DREV_CLOSE,
-    DREV_OPEN,
-    DREV_RAISEIN5MINS,
-    // JVAL: 20220227 - Added new door types
-    DREV_CLOSEWAITTHENOPEN
-  );
-
-  vldoor_t = record
-    thinker: thinker_t;
-    _type: vldoor_e;
-    sector: Psector_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-
-    // 1 = up, 0 = waiting at top, -1 = down
-    direction: integer;
-
-    // tics to wait at the top
-    topwait: integer;
-    // (keep in case a door going down is reset)
-    // when it reaches 0, start going down
-    topcountdown: integer;
-  end;
-  Pvldoor_t = ^vldoor_t;
-
-const
-  VDOORSPEED = FRACUNIT * 2;
-  VDOORWAIT = 150;
-
-type
-//
-// P_CEILNG
-//
-  ceiling_e = (
-    lowerToFloor,
-    raiseToHighest,
-    lowerAndCrush,
-    crushAndRaise,
-    fastCrushAndRaise,
-
-    // JVAL: 20220214 - Added UDMF ceiling types
-    CLEV_LOWERTOFLOOR,
-    CLEV_RAISETOHIGHEST,
-    CLEV_LOWERANDCRUSH,
-    CLEV_CRUSHANDRAISE,
-    CLEV_LOWERBYVALUE,
-    CLEV_RAISEBYVALUE,
-    CLEV_CRUSHRAISEANDSTAY,
-    CLEV_MOVETOVALUETIMES8,
-    // JVAL: 20220227 - Added new ceiling types
-    CLEV_LOWERTOMAXFLOOR,
-    CLEV_LOWERTOLOWEST,
-    CLEV_MOVETOVALUEANDCRUSH,
-    CLEV_MOVETOVALUE,
-    CLEV_LOWERBYVALUETIMES8,
-    CLEV_RAISEBYVALUETIMES8,
-    CLEV_RAISETOHIGHESTFLOOR
-  );
-
-  ceiling_t = record
-    thinker: thinker_t;
-    _type: ceiling_e;
-    sector: Psector_t;
-    bottomheight: fixed_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-    crush: boolean;
-    // 1 = up, 0 = waiting, -1 = down
-    direction: integer;
-
-    // ID
-    tag: integer;
-    olddirection: integer;
-  end;
-  Pceiling_t = ^ceiling_t;
-
-const
-  CEILSPEED = FRACUNIT;
-  MAXCEILINGS = 128; // JVAL 20210130 - Old value was 30
-
-type
-//
-// P_FLOOR
-//
-  floor_e = (
-    lowerFloor,         // lower floor to highest surrounding floor
-    lowerFloorToLowest, // lower floor to lowest surrounding floor
-    turboLower,         // lower floor to highest surrounding floor VERY FAST
-    raiseFloor,         // raise floor to lowest surrounding CEILING
-    raiseFloorToNearest,// raise floor to next highest surrounding floor
-    raiseToTexture,     // raise floor to shortest height texture around it
-    lowerAndChange,     // lower floor to lowest surrounding floor and change
-                        // floorpic
-    raiseFloor24,
-    raiseFloor24AndChange,
-    raiseFloorCrush,
-    donutRaise,
-    raiseBuildStep, // One step of a staircase
-
-    // JVAL: 20220214 - Added UDMF floor types
-    FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
-    FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
-    FLEV_LOWERFLOORBYVALUE,
-    FLEV_RAISEFLOOR,            // raise floor to lowest surrounding CEILING
-    FLEV_RAISEFLOORTONEAREST,   // raise floor to next highest surrounding floor
-    FLEV_RAISEFLOORBYVALUE,
-    FLEV_RAISEFLOORCRUSH,
-    FLEV_RAISEBUILDSTEP,        // One step of a staircase
-    FLEV_RAISEBYVALUETIMES8,
-    FLEV_LOWERBYVALUETIMES8,
-    FLEV_LOWERTIMES8INSTANT,
-    FLEV_RAISETIMES8INSTANT,
-    FLEV_MOVETOVALUETIMES8,
-    FLEV_RAISETOTEXTURE,
-    // JVAL: 20220227 - Added new floor types
-    FLEV_LOWERFLOORTOHIGHEST,
-    FLEV_LOWERFLOORTOLOWESTCEILING,
-    FLEV_MOVETOVALUE,
-    FLEV_RAISEFLOORCRUSHDOOM,
-    FLEV_RAISEFLOORTOCEILING,
-    FLEV_RAISETOLOWESTCEILING,
-    FLEV_RAISEFLOORBYVALUETIMES8,
-    FLEV_RAISETOCEILING,
-    FLEV_FLOORTOCEILINGINSTANT
-  );
-
-  floormove_t206 = record
-    thinker: thinker_t;
-    _type: floor_e;
-    crush: boolean;
-    sector: Psector_t;
-    direction: integer;
-    newspecial: integer;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-  end;
-  Pfloormove_t206 = ^floormove_t206;
-
-  floormove_t = record
-    thinker: thinker_t;
-    _type: floor_e;
-    crush: boolean;
-    sector: Psector_t;
-    direction: integer;
-    newspecial: integer;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-    delayCount: integer;
-    delayTotal: integer;
-    stairsDelayHeight: fixed_t;
-    stairsDelayHeightDelta: fixed_t;
-    resetHeight: fixed_t;
-    resetDelay: smallint;
-    resetDelayCount: smallint;
-    textureChange: byte;
-  end;
-  Pfloormove_t = ^floormove_t;
-
-  pillar_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    ceilingSpeed: integer;
-    floorSpeed: integer;
-    floordest: integer;
-    ceilingdest: integer;
-    direction: integer;
-    crush: boolean;
-  end;
-  Ppillar_t = ^pillar_t;
-
-  floorWaggle_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    originalHeight: fixed_t;
-    accumulator: fixed_t;
-    accDelta: fixed_t;
-    targetScale: fixed_t;
-    scale: fixed_t;
-    scaleDelta: fixed_t;
-    ticker: integer;
-    state: integer;
-  end;
-  PfloorWaggle_t = ^floorWaggle_t;
-
-const
-  FLOORSPEED = FRACUNIT;
-
-type
-  result_e = (
-    ok,
-    crushed,
-    pastdest,
-
-    // JVAL: 20220214 - Added UDMF Result types
-    RES_OK,
-    RES_CRUSHED,
-    RES_PASTDEST
-  );
-
-  stairs_e = (
-    STAIRS_NORMAL,
-    STAIRS_SYNC,
-    STAIRS_PHASED
-  );
-
-//==============================================================================
-//
-// P_FindSectorFromLineTag2
-//
-//==============================================================================
-function P_FindSectorFromLineTag2(line: Pline_t; var start: integer): integer;
-
-const
-  ORIG_FRICTION = $E800;          // original value
-  CROUCH_FRICTION_FACTOR = 1536;  // JVAL: 20211101 - Crouch
 
 implementation
 
 uses
+  p_spec,
   d_delphi,
   doomdata,
   h_strings,
@@ -572,6 +165,7 @@ uses
   g_game,
   p_setup,
   p_inter,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_ceilng,
   p_plats,
@@ -720,21 +314,6 @@ end;
 
 //==============================================================================
 //
-// UTILITIES
-//
-// getSide()
-// Will return a side_t*
-//  given the number of the current sector,
-//  the line number, and the side (0/1) that you want.
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-begin
-  result := @sides[(sectors[currentSector].lines[line]).sidenum[side]];
-end;
-
-//==============================================================================
-//
 // getSector()
 // Will return a sector_t*
 //  given the number of the current sector,
@@ -744,215 +323,6 @@ end;
 function getSector(currentSector: integer; line: integer; side: integer): Psector_t;
 begin
   result := sides[(sectors[currentSector].lines[line]).sidenum[side]].sector;
-end;
-
-//==============================================================================
-//
-// twoSided()
-// Given the sector number and the line number,
-//  it will tell you whether the line is two-sided or not.
-//
-//==============================================================================
-function twoSided(sector: integer; line: integer): boolean;
-begin
-  result := (sectors[sector].lines[line]).flags and ML_TWOSIDED <> 0;
-end;
-
-//==============================================================================
-//
-// getNextSector()
-// Return sector_t * of sector next to current.
-// NULL if not two-sided line
-//
-//==============================================================================
-function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
-begin
-  if (line.flags and ML_TWOSIDED) = 0 then
-    result := nil
-  else
-  begin
-    if line.frontsector = sec then
-      result := line.backsector
-    else
-      result := line.frontsector;
-  end;
-end;
-
-//==============================================================================
-//
-// P_FindLowestFloorSurrounding()
-// FIND LOWEST FLOOR HEIGHT IN SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  result := sec.floorheight;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.floorheight < result then
-        result := other.floorheight;
-  end;
-end;
-
-//==============================================================================
-//
-// P_FindHighestFloorSurrounding()
-// FIND HIGHEST FLOOR HEIGHT IN SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindHighestFloorSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion >= VERSION207 then
-    result := -32000 * FRACUNIT
-  else
-    result := -500 * FRACUNIT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.floorheight > result then
-        result := other.floorheight;
-  end;
-end;
-
-//
-// P_FindNextHighestFloor
-// FIND NEXT HIGHEST FLOOR IN SURROUNDING SECTORS
-// Note: this should be doable w/o a fixed array.
-
-// 20 adjoining sectors max!  // JVAL changed to 64
-const
-  MAX_ADJOINING_SECTORS = 64; // JVAL was = 20
-
-//==============================================================================
-//
-// P_FindNextHighestFloor
-//
-//==============================================================================
-function P_FindNextHighestFloor(sec: Psector_t; currentheight: integer): fixed_t;
-var
-  i: integer;
-  h: integer;
-  check: Pline_t;
-  other: Psector_t;
-  height: fixed_t;
-  heightlist: array[0..MAX_ADJOINING_SECTORS] of fixed_t;
-  maxsecs: integer;
-begin
-  if G_NeedsCompatibilityMode then
-    maxsecs := 20
-  else
-    maxsecs := MAX_ADJOINING_SECTORS;
-  height := currentheight;
-
-  h := 0;
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-    begin
-      if other.floorheight > height then
-      begin
-        heightlist[h] := other.floorheight;
-        inc(h);
-      end;
-
-      // Check for overflow. Exit.
-      if h >= maxsecs then
-      begin
-        I_Warning('P_FindNextHighestFloor(): Sector with more than %d adjoining sectors.'#13#10, [maxsecs]);
-        break;
-      end;
-    end;
-  end;
-
-  // Find lowest height in list
-  if h = 0 then
-  begin
-    result := currentheight;
-    exit;
-  end;
-
-  result := heightlist[0];
-
-  // Range checking?
-  for i := 1 to h - 1 do
-    if heightlist[i] < result then
-      result := heightlist[i];
-end;
-
-//==============================================================================
-// P_FindLowestCeilingSurrounding
-//
-// FIND LOWEST CEILING IN THE SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindLowestCeilingSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion > VERSION207 then
-    result := 32000 * FRACUNIT
-  else
-    result := MAXINT;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.ceilingheight < result then
-        result := other.ceilingheight;
-  end;
-end;
-
-//==============================================================================
-// P_FindHighestCeilingSurrounding
-//
-// FIND HIGHEST CEILING IN THE SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindHighestCeilingSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  if G_PlayingEngineVersion > VERSION114 then
-    result := -32000 * FRACUNIT
-  else
-    result := 0;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.ceilingheight > result then
-        result := other.ceilingheight;
-  end;
 end;
 
 //==============================================================================
@@ -993,26 +363,6 @@ begin
           result := textureheight[side.bottomtexture];
     end;
 
-end;
-
-//==============================================================================
-// P_FindSectorFromLineTag
-//
-// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-//
-//==============================================================================
-function P_FindSectorFromLineTag(line: Pline_t; start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numsectors - 1 do
-    if sectors[i].tag = line.tag then
-    begin
-      result := i;
-      exit;
-    end;
-
-  result := -1;
 end;
 
 //==============================================================================
@@ -1797,28 +1147,6 @@ begin
 end;
 
 //==============================================================================
-// P_FindSectorFromLineTag2
-//
-// SPECIAL SPAWNING
-//
-//==============================================================================
-function P_FindSectorFromLineTag2(line: Pline_t; var start: integer): integer;
-var
-  i: integer;
-begin
-  for i := start + 1 to numsectors - 1 do
-    if sectors[i].tag = line.tag then
-    begin
-      result := i;
-      start := result;
-      exit;
-    end;
-
-  result := -1;
-  start := -1;
-end;
-
-//==============================================================================
 //
 // P_SpawnSpecials
 // After the map has been loaded, scan for specials
@@ -2037,5 +1365,85 @@ begin
     end;
 end;
 
-end.
+//==============================================================================
+//
+// TSpecGameRules.TwoSidedByFlag
+//
+//==============================================================================
+class function TSpecGameRules.TwoSidedByFlag: boolean;
+begin
+  result := true;
+end;
 
+//==============================================================================
+//
+// TSpecGameRules.NextSectorCompatible
+//
+//==============================================================================
+class function TSpecGameRules.NextSectorCompatible: boolean;
+begin
+  result := true;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.HighestFloorStart
+//
+//==============================================================================
+class function TSpecGameRules.HighestFloorStart: fixed_t;
+begin
+  if G_PlayingEngineVersion >= VERSION207 then
+    result := -32000 * FRACUNIT
+  else
+    result := -500 * FRACUNIT;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.LowestCeilingStart
+//
+//==============================================================================
+class function TSpecGameRules.LowestCeilingStart: fixed_t;
+begin
+  if G_PlayingEngineVersion > VERSION207 then
+    result := 32000 * FRACUNIT
+  else
+    result := MAXINT;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.HighestCeilingStart
+//
+//==============================================================================
+class function TSpecGameRules.HighestCeilingStart: fixed_t;
+begin
+  if G_PlayingEngineVersion > VERSION114 then
+    result := -32000 * FRACUNIT
+  else
+    result := 0;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.AdjoiningSectorsLimit
+//
+//==============================================================================
+class function TSpecGameRules.AdjoiningSectorsLimit: integer;
+begin
+  if G_NeedsCompatibilityMode then
+    result := 20
+  else
+    result := MAX_ADJOINING_SECTORS;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.LineSectorTag
+//
+//==============================================================================
+class function TSpecGameRules.LineSectorTag(line: Pline_t): integer;
+begin
+  result := line.tag;
+end;
+end.

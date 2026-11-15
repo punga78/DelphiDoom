@@ -35,6 +35,7 @@ unit p_plats;
 interface
 
 uses
+  p_spec_h,
   p_spec,
   r_defs;
 

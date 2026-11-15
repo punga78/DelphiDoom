@@ -123,6 +123,7 @@ uses
   p_map,
   p_setup,
   p_mobj_h,
+  p_spec_h,
   p_spec,
   r_main;
 

@@ -17,6 +17,7 @@ unit DelphiDoom.Engine.Floor.Thinker;
 interface
 
 uses
+  p_spec_h,
   p_spec,
   DelphiDoom.Thinkers.Plane.Types,
   DelphiDoom.Thinkers.Floor.Types;

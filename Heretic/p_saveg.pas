@@ -189,6 +189,7 @@ uses
   p_mobjlist,
   p_tick,
   p_maputl,
+  p_spec_h,
   p_spec,
   p_ceilng,
   p_doors,

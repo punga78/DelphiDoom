@@ -38,6 +38,7 @@ unit p_lights;
 interface
 
 uses
+  p_spec_h,
   p_spec,
   r_defs,
   z_zone;

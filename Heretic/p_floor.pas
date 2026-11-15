@@ -36,6 +36,8 @@ interface
 
 uses
   z_zone,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   m_fixed,
   r_defs,

@@ -240,6 +240,8 @@ uses
   DelphiDoom.Engine.World.PlayerArtifacts,
   DelphiDoom.Engine.World.SpecialRespawn,
   DelphiDoom.Engine.World.MinotaurSlam,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_acs,
   ps_main, // JVAL: Script Events

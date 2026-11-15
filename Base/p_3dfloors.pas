@@ -127,6 +127,7 @@ uses
   doomdef,
   p_setup,
   p_slopes,
+  p_spec_h,
   p_spec,
   r_main;
 
