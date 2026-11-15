@@ -65,6 +65,7 @@ uses
   DelphiDoom.Obituary.Genders,
   p_pspr,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   r_renderstyle,
   DelphiDoom.Palette.TranslationBlood,
   sounddata,

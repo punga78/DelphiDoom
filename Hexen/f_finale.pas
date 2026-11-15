@@ -88,6 +88,7 @@ uses
   d_player,
   hu_stuff,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   s_sound,
   sounddata,
   v_data,

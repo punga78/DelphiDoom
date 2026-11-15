@@ -128,6 +128,7 @@ uses
   p_setup,
   p_enemy,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_user,
   DelphiDoom.Engine.World.UserRules,
   p_pspr,

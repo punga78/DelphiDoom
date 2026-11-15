@@ -67,6 +67,7 @@ uses
   doomdef,
   g_game,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_mobj_h,
   p_user,
 {$IFDEF DOOM_OR_STRIFE}

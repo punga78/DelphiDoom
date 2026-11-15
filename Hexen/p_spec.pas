@@ -503,6 +503,7 @@ uses
   p_mapinfo,
   p_setup,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_switch,
   udmf_ceilng,
   udmf_plats,

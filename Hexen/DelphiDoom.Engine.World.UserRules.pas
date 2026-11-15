@@ -186,6 +186,7 @@ uses
   p_maputl,
   udmf_telept,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_enemy,
   r_main,
   r_defs,

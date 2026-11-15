@@ -114,6 +114,7 @@ uses
   p_pspr,
   p_mobj_h,
   p_inter,
+  DelphiDoom.Engine.World.SpecialRespawn,
   p_extra,
   p_user,
   DelphiDoom.Engine.World.UserRules,

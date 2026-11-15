@@ -817,6 +817,7 @@ uses
   p_doors,
   p_spec,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_sounds,
   p_dialog,
   p_udmf,

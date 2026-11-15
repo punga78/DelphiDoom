@@ -151,6 +151,7 @@ uses
   st_lib,
   hu_lib,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_setup,
   p_enemy,
   p_mobj_h,

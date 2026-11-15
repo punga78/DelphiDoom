@@ -57,6 +57,7 @@ uses
   st_stuff,
   {$ENDIF}
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   sounddata;
 
 { TEngineExportSettings }

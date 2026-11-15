@@ -493,6 +493,7 @@ uses
   p_enemy,
   p_map,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_maputl,
   r_main,
   r_defs,

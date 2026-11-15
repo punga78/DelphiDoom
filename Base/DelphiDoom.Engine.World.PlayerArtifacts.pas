@@ -40,6 +40,13 @@ function P_GetPlayerNum(player: Pplayer_t): integer;
 //==============================================================================
 procedure P_PlayerRemoveArtifact(player: Pplayer_t; slot: integer);
 
+//==============================================================================
+//
+// P_AutoUseHealth
+//
+//==============================================================================
+procedure P_AutoUseHealth(player: Pplayer_t; saveHealth: integer);
+
 implementation
 
 uses
@@ -131,4 +138,74 @@ begin
   end;
 end;
 
+//==============================================================================
+//
+// P_AutoUseHealth
+//
+//==============================================================================
+procedure P_AutoUseHealth(player: Pplayer_t; saveHealth: integer);
+var
+  i: integer;
+  count: integer;
+  normalCount: integer;
+  normalSlot: integer;
+  superCount: integer;
+  superSlot: integer;
+begin
+  normalCount := 0;
+  superCount := 0;
+  normalSlot := 0;
+  superSlot := 0;
+
+  for i := 0 to player.inventorySlotNum - 1 do
+  begin
+    if player.inventory[i]._type = Ord(arti_health) then
+    begin
+      normalSlot := i;
+      normalCount := player.inventory[i].count;
+    end
+    else if player.inventory[i]._type = Ord(arti_superhealth) then
+    begin
+      superSlot := i;
+      superCount := player.inventory[i].count;
+    end;
+  end;
+
+  if (gameskill = sk_baby) and (normalCount * 25 >= saveHealth) then
+  begin // Use quartz flasks
+    count := (saveHealth + 24) div 25;
+    for i := 0 to count - 1 do
+    begin
+      player.health := player.health + 25;
+      P_PlayerRemoveArtifact(player, normalSlot);
+    end;
+  end
+  else if superCount * 100 >= saveHealth then
+  begin // Use mystic urns
+    count := (saveHealth + 99) div 100;
+    for i := 0 to count - 1 do
+    begin
+      player.health := player.health + 100;
+      P_PlayerRemoveArtifact(player, superSlot);
+    end;
+  end
+  else if (gameskill = sk_baby) and (superCount * 100 + normalCount * 25 >= saveHealth) then
+  begin // Use mystic urns and quartz flasks
+    count := (saveHealth + 24) div 25;
+    saveHealth := saveHealth - count * 25;
+    for i := 0 to count - 1 do
+    begin
+      player.health := player.health + 25;
+      P_PlayerRemoveArtifact(player, normalSlot);
+    end;
+    count := (saveHealth + 99) div 100;
+    for i := 0 to count - 1 do
+    begin
+      player.health := player.health + 100;
+      P_PlayerRemoveArtifact(player, normalSlot);
+    end;
+  end;
+
+  player.mo.health := player.health;
+end;
 end.

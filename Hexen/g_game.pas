@@ -414,6 +414,7 @@ uses
   p_mobj_h,
   p_mobj,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_map,
   p_user,
   DelphiDoom.Engine.World.UserRules,

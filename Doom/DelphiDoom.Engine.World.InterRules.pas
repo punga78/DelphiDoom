@@ -1,35 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiDoom is a source port of the game Doom and it is
-//  based on original Linux Doom as published by "id Software"
-//  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Handling interactions (i.e., collisions).
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Doom for items and damage (p_inter)       }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_inter;
+unit DelphiDoom.Engine.World.InterRules;
 
 interface
 
@@ -53,32 +33,11 @@ uses
 //==============================================================================
 function P_GivePower(player: Pplayer_t; power: integer): boolean;
 
-//==============================================================================
-//
-// P_TouchSpecialThing
-//
-//==============================================================================
-procedure P_TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
-
-//==============================================================================
-//
-// P_DamageMobj
-//
-//==============================================================================
-procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
   maxammo: array[0..Ord(NUMAMMO) - 1] of integer = (200, 50, 300, 50);
   clipammo: array[0..Ord(NUMAMMO) - 1] of integer = (10, 4, 20, 1);
-
-//==============================================================================
-//
-// P_CmdSuicide
-//
-//==============================================================================
-procedure P_CmdSuicide;
 
 var
   p_maxhealth: integer = 200;
@@ -91,6 +50,36 @@ var
   p_maxarmor: integer = 200;
   p_greenarmorclass: integer = 1;
   p_bluearmorclass: integer = 2;
+
+type
+  /// <summary>
+  ///   What Doom does in the item and damage code of p_inter (issue #185, step 2f-2). The routines that
+  ///   are the same in the games are in Base\p_inter.pas; the ones that only this game has stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TInterGameRules = class sealed
+  public
+    const
+      /// <summary>P_GiveArmor accepts a negative armor type, that is given only to a player with no armor (Strife)</summary>
+      AllowsNegativeArmor = False;
+      /// <summary>P_GiveBody is the method GiveBody of the rules (Strife: the stamina and the medic of the Front)</summary>
+      OwnsGiveBody = False;
+      /// <summary>A dropped thing scatters on the floor with a random momentum from this engine version on (P_SpawnDroppedMobj)</summary>
+      DroppedScatterVersion = VERSION117;
+
+    /// <summary>The player touches a special thing (pickup); the body of P_TouchSpecialThing</summary>
+    class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
+    /// <summary>Damages both enemies and players; the body of P_DamageMobj</summary>
+    class procedure DamageMobj(target, inflictor, source: Pmobj_t; damage: integer); static;
+    /// <summary>The highest health a player can be given by P_GiveBody</summary>
+    class function MaxPlayerHealth(player: Pplayer_t): integer; static;
+    /// <summary>The game is in the compatibility mode: the dropped things do not fall</summary>
+    class function NeedsCompatibility: boolean; static;
+    /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
+    class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
+  end;
 
 implementation
 
@@ -112,7 +101,9 @@ uses
   r_defs,
   r_main,
   udmf_spec,
-  tables;
+  tables,
+  p_inter,
+  DelphiDoom.Engine.World.PickupGivers;
 
 const
   BONUSADD = 6;
@@ -321,52 +312,6 @@ end;
 
 //==============================================================================
 //
-// P_GiveBody
-// Returns false if the body isn't needed at all
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
-begin
-  if player.health >= mobjinfo[Ord(MT_PLAYER)].spawnhealth then
-  begin
-    result := false;
-    exit;
-  end;
-
-  player.health := player.health + num;
-  if player.health > mobjinfo[Ord(MT_PLAYER)].spawnhealth then
-    player.health := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
-  player.mo.health := player.health;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// P_GiveArmor
-// Returns false if the armor is worse
-// than the current armor.
-//
-//==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: integer): boolean;
-var
-  hits: integer;
-begin
-  hits := armortype * 100;
-  if player.armorpoints >= hits then
-  begin
-    result := false;  // don't pick up
-    exit;
-  end;
-
-  player.armortype := armortype;
-  player.armorpoints := hits;
-
-  result := true;
-end;
-
-//==============================================================================
-//
 // P_GiveCard
 //
 //==============================================================================
@@ -437,7 +382,7 @@ end;
 // P_TouchSpecialThing
 //
 //==============================================================================
-procedure P_TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
+class procedure TInterGameRules.TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
 var
   player: Pplayer_t;
   i: integer;
@@ -880,29 +825,6 @@ begin
 end;
 
 //==============================================================================
-// P_SpawnDroppedMobj
-//
-// KillMobj
-//
-//==============================================================================
-function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
-begin
-  result := P_SpawnMobj(x, y, z, _type);
-  result.flags := result.flags or MF_DROPPED; // special versions of items
-  // JVAL Dropped items fall down to floor.
-  if not G_NeedsCompatibilityMode then
-  begin
-    result.z := result.z + 32 * FRACUNIT;
-    result.momz := 4 * FRACUNIT;
-    if G_PlayingEngineVersion >= VERSION117 then
-    begin
-      result.momx := 64 * N_Random;
-      result.momy := 64 * N_Random;
-    end;
-  end;
-end;
-
-//==============================================================================
 //
 // P_KillMobj
 //
@@ -1049,7 +971,7 @@ end;
 // and other environmental stuff.
 //
 //==============================================================================
-procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
+class procedure TInterGameRules.DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 var
   ang: angle_t;
   saved: integer;
@@ -1083,25 +1005,8 @@ begin
     target.momz := 0;
   end;
 
-  if inflictor <> nil then
-  begin
-    if inflictor.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
-    begin
-      if target.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
-        exit;
-      if target.flags3_ex and MF3_EX_FREEZEDAMAGERESIST <> 0 then
-        if damage > 1 then
-          damage := _SHR1(damage);
-    end;
-    if inflictor.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
-    begin
-      if target.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
-        exit;
-      if target.flags4_ex and MF4_EX_FLAMEDAMAGERESIST <> 0 then
-        if damage > 1 then
-          damage := _SHR1(damage);
-    end;
-  end;
+  if not P_DamageFlagFilter(target, inflictor, damage) then
+    exit;
 
   player := target.player;
   if (player <> nil) and (gameskill = sk_baby) then
@@ -1230,35 +1135,32 @@ end;
 
 //==============================================================================
 //
-// P_CmdSuicide
+// TInterGameRules.MaxPlayerHealth
 //
 //==============================================================================
-procedure P_CmdSuicide;
+class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
 begin
-  if demoplayback then
-  begin
-    I_Warning('P_CmdSuicide(): You can''t suicide during demo playback.'#13#10);
-    exit;
-  end;
-  if demorecording then
-  begin
-    I_Warning('P_CmdSuicide(): You can''t suicide during demo recording.'#13#10);
-    exit;
-  end;
+  result := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
+end;
 
-  if (gamestate = GS_LEVEL) and (players[consoleplayer].mo <> nil) then
-  begin
-    if players[consoleplayer].health > 0 then
-    begin
-      C_ExecuteCmd('closeconsole');
-      P_DamageMobj(players[consoleplayer].mo, nil, nil, 1000);
-      players[consoleplayer]._message := 'You give up too easy';
-    end
-    else
-      printf('You''re already dead.'#13#10);
-  end
-  else
-    I_Warning('P_CmdSuicide(): You can''t suicide if you aren''t playing.'#13#10);
+//==============================================================================
+//
+// TInterGameRules.NeedsCompatibility
+//
+//==============================================================================
+class function TInterGameRules.NeedsCompatibility: boolean;
+begin
+  result := G_NeedsCompatibilityMode;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.GiveBody
+//
+//==============================================================================
+class function TInterGameRules.GiveBody(player: Pplayer_t; num: integer): boolean;
+begin
+  result := false;
 end;
 
 end.

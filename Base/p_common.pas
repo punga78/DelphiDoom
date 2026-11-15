@@ -2435,6 +2435,7 @@ uses
   p_extra,
   p_friends,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_local,
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,

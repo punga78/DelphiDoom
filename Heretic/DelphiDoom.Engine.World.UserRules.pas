@@ -140,6 +140,7 @@ uses
   p_map,
   p_telept,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   r_main,
   r_defs,
   sb_bar,

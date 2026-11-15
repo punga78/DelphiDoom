@@ -66,6 +66,7 @@ uses
   p_pspr,
   p_pspr_h,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   r_renderstyle,
   DelphiDoom.Palette.TranslationBlood,
   sounddata,
