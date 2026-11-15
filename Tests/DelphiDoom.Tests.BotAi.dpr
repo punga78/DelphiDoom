@@ -133,6 +133,9 @@ uses
   DelphiDoom.BotAi.Move.Types in '..\Libs\BotAi\DelphiDoom.BotAi.Move.Types.pas',
   DelphiDoom.BotAi.Move.Vars in '..\Libs\BotAi\DelphiDoom.BotAi.Move.Vars.pas',
   DelphiDoom.BotAi.Move.VectorMath in '..\Libs\BotAi\DelphiDoom.BotAi.Move.VectorMath.pas',
+  DelphiDoom.BotAi.Facade.Intf in '..\Libs\BotAi\DelphiDoom.BotAi.Facade.Intf.pas',
+  DelphiDoom.BotAi.Facade.Bundle in '..\Libs\BotAi\DelphiDoom.BotAi.Facade.Bundle.pas',
+  DelphiDoom.BotAi.Facade.Factory in '..\Libs\BotAi\DelphiDoom.BotAi.Facade.Factory.pas',
   DelphiDoom.BotAi.World.AasWorld in '..\Libs\BotAi\DelphiDoom.BotAi.World.AasWorld.pas',
   DelphiDoom.BotAi.World.EntitySource in '..\Libs\BotAi\DelphiDoom.BotAi.World.EntitySource.pas',
   DelphiDoom.BotAi.World.Intf in '..\Libs\BotAi\DelphiDoom.BotAi.World.Intf.pas',
@@ -158,7 +161,8 @@ uses
   DelphiDoom.Tests.BotAi.GoalMoveParity in 'Source\DelphiDoom.Tests.BotAi.GoalMoveParity.pas',
   DelphiDoom.Tests.BotAi.Ea in 'Source\DelphiDoom.Tests.BotAi.Ea.pas',
   DelphiDoom.Tests.BotAi.WorldUnits in 'Source\DelphiDoom.Tests.BotAi.WorldUnits.pas',
-  DelphiDoom.Tests.BotAi.GoalConfig in 'Source\DelphiDoom.Tests.BotAi.GoalConfig.pas';
+  DelphiDoom.Tests.BotAi.GoalConfig in 'Source\DelphiDoom.Tests.BotAi.GoalConfig.pas',
+  DelphiDoom.Tests.BotAi.Facade in 'Source\DelphiDoom.Tests.BotAi.Facade.pas';
 
 var
   Runner: ITestRunner;
