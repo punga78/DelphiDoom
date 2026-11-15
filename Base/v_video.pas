@@ -563,6 +563,8 @@ uses
   r_flatinfo,
   r_aspect,
   DelphiDoom.Texture.PatchInspector,
+  DelphiDoom.Palette.NearestColor,
+  DelphiDoom.Palette.ScreenPalette,
   w_wad,
   z_zone;
 
@@ -5041,40 +5043,13 @@ end;
 //
 //==============================================================================
 procedure V_SetPalette(const palette: PByteArray);
-var
-  dest: PLongWord;
-{$IFNDEF OPENGL}
-  {$IFDEF HEXEN}
-  destsk: PLongWord;
-  {$ENDIF}
-{$ENDIF}
-  src: PByteArray;
-  curgamma: PByteArray;
 begin
-  dest := @videopal[0];
-{$IFNDEF OPENGL}
-  {$IFDEF HEXEN}
-  destsk := @skvideopal[0];
-  {$ENDIF}
-{$ENDIF}
-  src := palette;
-  curgamma := @gammatable[usegamma];
-  while NativeUInt(src) < NativeUInt(@palette[256 * 3]) do
-  begin
-    dest^ := (LongWord(curgamma[src[0]]) shl 16) or
-             (LongWord(curgamma[src[1]]) shl 8) or
-             (LongWord(curgamma[src[2]])) or $FF000000;
-    {$IFNDEF OPENGL}
-    {$IFDEF HEXEN}
-    destsk^ := dest^;
-    inc(destsk);
-    {$ENDIF}
-    {$ENDIF}
-    inc(dest);
-    src := PByteArray(NativeInt(src) + 3);
-  end;
+  // The conversion of the 256 colors is TScreenPalette (Libs\Palette)
+  TScreenPalette.Convert(System.PByte(palette), System.PByte(@gammatable[usegamma]), PCardinal(@videopal[0]),
+    SCREEN_PALETTE_OPAQUE);
 {$IFNDEF OPENGL}
 {$IFDEF HEXEN}
+  memcpy(@skvideopal[0], @videopal[0], SizeOf(skvideopal));
   skvideopal[0] := 0;
 {$ENDIF}
 {$ENDIF}
@@ -5101,11 +5076,7 @@ end;
 procedure V_CalcColorMapPalette;
 var
   p: pointer;
-  dest: PLongWord;
-  src: PByteArray;
-  curgamma: PByteArray;
   palette: PByteArray;
-  i: integer;
 begin
   if customcolormap = nil then
   begin
@@ -5116,19 +5087,8 @@ begin
   p := W_CacheLumpNum(lu_palette, PU_STATIC);
   palette := PByteArray(NativeInt(p) + st_palette * 768);
 
-  dest := @cvideopal[0];
-  curgamma := @gammatable[usegamma];
-
-  i := 0;
-  while i < 256 do
-  begin
-    src := @palette[3 * customcolormap.colormap[i]];
-    dest^ := (LongWord(curgamma[src[0]]) shl 16) or
-             (LongWord(curgamma[src[1]]) shl 8) or
-             (LongWord(curgamma[src[2]])) or $FF000000;
-    inc(dest);
-    inc(i);
-  end;
+  TScreenPalette.ConvertThroughColormap(System.PByte(palette), System.PByte(customcolormap.colormap),
+    System.PByte(@gammatable[usegamma]), PCardinal(@cvideopal[0]), SCREEN_PALETTE_OPAQUE);
 
   cvideopal[0] := cvideopal[0] and $FFFFFF;
   recalctables32needed := true;
@@ -5146,7 +5106,6 @@ end;
 procedure V_InitDefaultPalette;
 var
   playpal: PByteArray;
-  i: integer;
 begin
   if default_palette <> nil then
     exit;
@@ -5154,8 +5113,7 @@ begin
   default_palette := Z_Malloc(256 * SizeOf(LongWord), PU_STATIC, nil);
 
   playpal := V_ReadPalette(PU_STATIC);
-  for i := 0 to 255 do
-    default_palette[i] := _SHL(playpal[i * 3], 16) or _SHL(playpal[i * 3 + 1], 8) or playpal[i * 3 + 2];
+  TScreenPalette.Unpack(System.PByte(playpal), PCardinal(default_palette));
 end;
 
 var
@@ -5413,39 +5371,8 @@ end;
 //==============================================================================
 function V_FindAproxColorIndex(const pal: PLongWordArray; const c: LongWord;
   const start: integer = 0; const finish: integer = 255): integer;
-var
-  r, g, b: integer;
-  rc, gc, bc: integer;
-  dr, dg, db: integer;
-  i: integer;
-  cc: LongWord;
-  dist: LongWord;
-  mindist: LongWord;
 begin
-  r := c and $FF;
-  g := (c shr 8) and $FF;
-  b := (c shr 16) and $FF;
-  result := start;
-  mindist := LongWord($ffffffff);
-  for i := start to finish do
-  begin
-    cc := pal[i];
-    rc := cc and $FF;
-    gc := (cc shr 8) and $FF;
-    bc := (cc shr 16) and $FF;
-    dr := r - rc;
-    dg := g - gc;
-    db := b - bc;
-    dist := dr * dr + dg * dg + db * db;
-    if dist < mindist then
-    begin
-      result := i;
-      if dist = 0 then
-        exit
-      else
-        mindist := dist;
-    end;
-  end;
+  result := TNearestColor.Find(PCardinal(pal), c, start, finish);
 end;
 
 //==============================================================================
@@ -5455,41 +5382,8 @@ end;
 //==============================================================================
 function V_FindAproxColorIndexExcluding(const pal: PLongWordArray; const c: LongWord;
   const start: integer = 0; const finish: integer = 255; const exclude: integer = -1): integer;
-var
-  r, g, b: integer;
-  rc, gc, bc: integer;
-  dr, dg, db: integer;
-  i: integer;
-  cc: LongWord;
-  dist: LongWord;
-  mindist: LongWord;
 begin
-  r := c and $FF;
-  g := (c shr 8) and $FF;
-  b := (c shr 16) and $FF;
-  result := start;
-  mindist := LongWord($ffffffff);
-  for i := start to finish do
-  begin
-    if i = exclude then
-      continue;
-    cc := pal[i];
-    rc := cc and $FF;
-    gc := (cc shr 8) and $FF;
-    bc := (cc shr 16) and $FF;
-    dr := r - rc;
-    dg := g - gc;
-    db := b - bc;
-    dist := dr * dr + dg * dg + db * db;
-    if dist < mindist then
-    begin
-      result := i;
-      if dist = 0 then
-        exit
-      else
-        mindist := dist;
-    end;
-  end;
+  result := TNearestColor.Find(PCardinal(pal), c, start, finish, exclude);
 end;
 
 {$IFDEF OPENGL}

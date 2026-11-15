@@ -19,6 +19,13 @@ const
   IMAGING_FRACUNIT = 1 shl IMAGING_FRACBITS;
   /// <summary>The topdelta that closes a column of posts</summary>
   IMAGING_POST_END = $FF;
+  /// <summary>Pixels of the longest post that W_TextureAsPatch writes for a sprite that is an image</summary>
+  IMAGING_SPRITE_POST_LENGTH = 128;
+  /// <summary>
+  ///   From this row a post of a tall column (the DeePsea format) is written as a distance from the previous
+  ///   post, with empty posts of this topdelta that move the origin
+  /// </summary>
+  IMAGING_TALL_POST_ROW = 254;
   /// <summary>Side of the base flat, and its number of pixels</summary>
   IMAGING_FLAT_SIDE = 64;
   IMAGING_FLAT_PIXELS = IMAGING_FLAT_SIDE * IMAGING_FLAT_SIDE;
@@ -160,6 +167,8 @@ resourcestring
   SImagingBadFactor = 'The factor of the expansion is not valid';
   SImagingPatchPictureSize = 'The picture of the patch has a negative size, is higher than 255 or is wider than 32767';
   SImagingPatchPictureTooSmall = 'The picture of the patch has fewer pixels than its size says';
+  SImagingTallPatchSize = 'The picture of the patch has a negative size or is larger than 32767';
+  SImagingPatchPostLength = 'A post of a patch has from 1 to 255 pixels';
   SImagingBadWipeSettings = 'The settings of the wipe are not valid';
   SImagingWipeNotStarted = 'The wipe has not been started';
   SImagingWipeBufferSize = 'A buffer of the wipe is smaller than the screen';

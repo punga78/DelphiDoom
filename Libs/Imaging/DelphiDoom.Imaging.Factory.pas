@@ -35,6 +35,8 @@ type
     class function CreateWallScale(const ASines: IImagingSineTable = nil): IImagingWallScale; static;
     /// <param name="AColors">The search of the nearest color of the palette</param>
     class function CreateThumbnailBuilder(const AColors: IImagingColorIndex): IImagingThumbnailBuilder; static;
+    /// <param name="AColors">The search of the nearest color of the palette</param>
+    class function CreateColorPatchBuilder(const AColors: IImagingColorIndex): IImagingColorPatchBuilder; static;
   end;
 
 implementation
@@ -46,7 +48,8 @@ uses
   DelphiDoom.Imaging.SpanGrower, DelphiDoom.Imaging.ColumnExpander,
   DelphiDoom.Imaging.HiResTables, DelphiDoom.Imaging.MeltWipe,
   DelphiDoom.Imaging.SineTable, DelphiDoom.Imaging.WallScale,
-  DelphiDoom.Imaging.ThumbnailBuilder;
+  DelphiDoom.Imaging.ThumbnailBuilder, DelphiDoom.Imaging.PatchWriter,
+  DelphiDoom.Imaging.ColorPatchBuilder;
 
 { TImagingFactory }
 
@@ -121,6 +124,12 @@ class function TImagingFactory.CreateThumbnailBuilder(
   const AColors: IImagingColorIndex): IImagingThumbnailBuilder;
 begin
   Result := TImagingThumbnailBuilder.Create(AColors);
+end;
+
+class function TImagingFactory.CreateColorPatchBuilder(
+  const AColors: IImagingColorIndex): IImagingColorPatchBuilder;
+begin
+  Result := TImagingColorPatchBuilder.Create(TImagingPatchWriter.Create, AColors);
 end;
 
 end.

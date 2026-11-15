@@ -58,6 +58,12 @@ type
     procedure DovrebbeRifiutareUnaDimensioneNegativaOTroppoGrande;
     [Test]
     procedure DovrebbeRifiutareUnaImmagineConMenoPixelDelleDimensioni;
+    [Test]
+    procedure DovrebbeRifiutareUnPostLungoZeroOLungoPiuDi255NelleColonneAlte;
+    [Test]
+    procedure DovrebbeRifiutareUnaImmagineAltaConMenoPixelODimensioniGrandi;
+    [Test]
+    procedure DovrebbeScrivereLaStessaPatchDiBuildConLeColonneBasseSenzaSpezzare;
   end;
 
 implementation
@@ -306,6 +312,71 @@ begin
       SetLength(LPixels, 5);
       FWriter.Build(LPixels, 3, 2, False);
     end, EImagingException);
+end;
+
+procedure TTestImagingPatchWriter.DovrebbeRifiutareUnPostLungoZeroOLungoPiuDi255NelleColonneAlte;
+var
+  LImage: TImagingPatchImage;
+begin
+  LImage.Width := 1;
+  LImage.Height := 1;
+  LImage.LeftOffset := 0;
+  LImage.TopOffset := 0;
+  SetLength(LImage.Pixels, 1);
+  SetLength(LImage.Opaque, 1);
+  Assert.WillRaise(
+    procedure
+    begin
+      FWriter.BuildTall(LImage, 0);
+    end, EImagingException);
+  Assert.WillRaise(
+    procedure
+    begin
+      FWriter.BuildTall(LImage, 256);
+    end, EImagingException);
+end;
+
+procedure TTestImagingPatchWriter.DovrebbeRifiutareUnaImmagineAltaConMenoPixelODimensioniGrandi;
+var
+  LImage: TImagingPatchImage;
+begin
+  LImage.Width := 2;
+  LImage.Height := 2;
+  SetLength(LImage.Pixels, 4);
+  SetLength(LImage.Opaque, 3);
+  Assert.WillRaise(
+    procedure
+    begin
+      FWriter.BuildTall(LImage, 128);
+    end, EImagingException);
+  LImage.Width := 32768;
+  Assert.WillRaise(
+    procedure
+    begin
+      FWriter.BuildTall(LImage, 128);
+    end, EImagingException);
+end;
+
+procedure TTestImagingPatchWriter.DovrebbeScrivereLaStessaPatchDiBuildConLeColonneBasseSenzaSpezzare;
+var
+  LImage: TImagingPatchImage;
+  LPixels: TBytes;
+  LIndex: Integer;
+begin
+  SetLength(LPixels, 12 * 20);
+  for LIndex := 0 to High(LPixels) do
+    LPixels[LIndex] := Byte(1 + LIndex mod 200);
+  LImage.Width := 12;
+  LImage.Height := 20;
+  LImage.LeftOffset := 6;
+  LImage.TopOffset := 20;
+  LImage.Pixels := LPixels;
+  SetLength(LImage.Opaque, Length(LPixels));
+  for LIndex := 0 to High(LPixels) do
+    LImage.Opaque[LIndex] := $FF;
+  Assert.AreEqual<string>(
+    Digest(FWriter.Build(LPixels, 12, 20, False, 6, 20)),
+    Digest(FWriter.BuildTall(LImage, 255)));
 end;
 
 end.

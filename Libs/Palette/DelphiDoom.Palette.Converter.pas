@@ -23,26 +23,15 @@ type
 
 implementation
 
+uses
+  DelphiDoom.Palette.ScreenPalette;
+
 { TPaletteConverter }
 
 procedure TPaletteConverter.Convert(ASource: PByte; AGamma: PByte; ADest: PCardinal);
-var
-  LIndex: Integer;
-  LRed: Byte;
-  LGreen: Byte;
-  LBlue: Byte;
 begin
-  for LIndex := 0 to COLOR_COUNT - 1 do
-  begin
-    LRed := (AGamma + ASource^)^;
-    Inc(ASource);
-    LGreen := (AGamma + ASource^)^;
-    Inc(ASource);
-    LBlue := (AGamma + ASource^)^;
-    Inc(ASource);
-    ADest^ := (Cardinal(LRed) shl 16) or (Cardinal(LGreen) shl 8) or Cardinal(LBlue);
-    Inc(ADest);
-  end;
+  // the colors without alpha: the same loop that the engine runs on the screen palettes
+  TScreenPalette.Convert(ASource, AGamma, ADest, 0);
 end;
 
 end.

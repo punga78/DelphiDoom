@@ -206,6 +206,29 @@ type
       ATopOffset: Integer): TBytes; overload;
     /// <summary>The same with the offsets that DD_FONT used by default: half of the width and the height</summary>
     function Build(const APixels: TBytes; AWidth, AHeight: Integer; ASolid: Boolean): TBytes; overload;
+    /// <summary>
+    ///   The patch of W_TextureAsPatch (issue #242): the opaque pixels of AImage (Opaque is not 0), which may be
+    ///   index 0, in posts of at most AMaxPostLength pixels (1..255); a column can be taller than 254 rows: from
+    ///   the row 254 the top deltas are written as distances from the previous post, with empty posts of top
+    ///   delta 254 that move the origin (the format of the tall patches). The width and the height go up to
+    ///   32767; a size out of it, a post length out of 1..255 or an image with fewer pixels than its size says
+    ///   raises EImagingException
+    /// </summary>
+    function BuildTall(const AImage: TImagingPatchImage; AMaxPostLength: Integer): TBytes;
+  end;
+
+  /// <summary>A patch of Doom from a picture of 32 bit colors (issue #242: W_TextureAsPatch)</summary>
+  IImagingColorPatchBuilder = interface
+    ['{7A3D5E18-B2C4-4F69-8E01-5C97D4A2B6F3}']
+    /// <summary>
+    ///   AColors has AHeight rows of AWidth colors ($AABBGGRR or $AARRGGBB: only "no red, green or blue" is
+    ///   looked at, which is transparent whatever the alpha). The other colors become the nearest of APalette
+    ///   (256 colors; index 0 included, it is an opaque pixel). The posts are at most AMaxPostLength pixels long
+    ///   (IMAGING_SPRITE_POST_LENGTH for the sprites). A picture with fewer colors than its size says or a
+    ///   palette with fewer than 256 raises EImagingException
+    /// </summary>
+    function Build(const AColors: TImagingPixels; AWidth, AHeight, ALeftOffset, ATopOffset: Integer;
+      const APalette: TImagingPixels; AMaxPostLength: Integer): TBytes;
   end;
 
 implementation

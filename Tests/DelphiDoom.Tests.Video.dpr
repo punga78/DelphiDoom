@@ -20,6 +20,7 @@ uses
   DelphiDoom.Video.Types in '..\Libs\Video\DelphiDoom.Video.Types.pas',
   DelphiDoom.Video.Intf in '..\Libs\Video\DelphiDoom.Video.Intf.pas',
   DelphiDoom.Palette.Converter in '..\Libs\Palette\DelphiDoom.Palette.Converter.pas',
+  DelphiDoom.Palette.ScreenPalette in '..\Libs\Palette\DelphiDoom.Palette.ScreenPalette.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',
   DelphiDoom.Video.WindowsDisplayMetrics in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayMetrics.pas',

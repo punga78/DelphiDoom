@@ -1144,6 +1144,8 @@ begin
 {$ENDIF}
   R_ConfigureMenuThumbnail(TImagingFactory.CreateThumbnailBuilder(
     TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
+  W_ConfigureSpritePatches(TImagingFactory.CreateColorPatchBuilder(
+    TEngineImagingColorIndex.Create(TPaletteFactory.CreateColorMatcher)));
 end;
 
 procedure ComposeRenderer(const ALog: ILog);

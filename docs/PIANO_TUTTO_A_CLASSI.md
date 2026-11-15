@@ -1,4 +1,4 @@
-﻿# Piano: tutto a classi, anche il percorso caldo
+# Piano: tutto a classi, anche il percorso caldo
 
 Issue #185. Decisione dell'utente del 2026-11-12: **tutto il codice storico del motore diventa a classi, compreso il percorso caldo** (renderer software e OpenGL, thinker, logica di gioco, salvataggi). Sostituisce la regola "codice storico per scelta" di `CLAUDE.md` e di `docs\PENDING_ISSUES.md`. Restano valide le quattro regole del 2026-11-07: compatibilità byte per byte (salvataggi, demo, rete), copertura almeno al 90% per libreria, prestazioni entro il 5% sui percorsi caldi, ordine dal freddo al caldo.
 
@@ -1087,6 +1087,14 @@ Stima per `v_video` + `i_video`: 9-10 giorni di agente, a macchina scarica per l
 
 **Test**: `Tests\DelphiDoom.Tests.Console` 409 -> 431 (15 in `DelphiDoom.Tests.Console.LumpCommands`, 7 casi di `ParseInteger` con default), 431 su 431 a Win32.
 
+### 12.6 Fette 1g e 1h: `v_video` palette (#241) e `W_TextureAsPatch` (#242) (2026-11-15)
+
+**#241, `v_video` fetta 1.** Nel `v_video` la logica fredda di palette era `V_SetPalette` (gamma e pacchetto `$FFRRGGBB`), `V_CalcColorMapPalette` (palette vista da una colormap personalizzata), `V_InitDefaultPalette` e i due `V_FindAproxColorIndex*`. Tutto in due classi statiche di `Libs\Palette`: `TScreenPalette` (`Convert`, `ConvertThroughColormap`, `Unpack`) e `TNearestColor` (`Find`, con e senza indice escluso). **Riusato**: `TColorMatcher` e `TPaletteConverter` ora le chiamano (una sola copia del ciclo; il controllo dell'intervallo resta in `TColorMatcher`). **Perche' statiche e non interfacce**: la ricerca del colore piu' vicino gira per pixel nella conversione delle immagini PK3 e delle tabelle di trasparenza (il vecchio "non collegato di proposito" del CLAUDE.md di `Libs\Palette` era per le copie di 1 KB a chiamata): su un `PCardinal` della tabella del motore non copia nulla e non chiama interfacce. In `v_video` restano le direttive di gioco della facciata (copia `skvideopal` di Hexen, trasparente di `videopal[0]` in Doom e Strife) e i globali. Nessun difetto del vecchio codice. **Non toccato** (fetta 2): `V_Init`/`V_ReInit` (tabelle di misure e schermi), `V_CalcPreserveTables`, `V_ScreensSize`, e tutto cio' che disegna (caldo).
+
+**#242, `W_TextureAsPatch`.** Facciata di `Base\w_sprite.pas` sopra `IImagingColorPatchBuilder` (`TImagingColorPatchBuilder`: colori a 32 bit -> indici con `IImagingColorIndex`, poi `TImagingPatchWriter`). **Esteso**: `IImagingPatchWriter.BuildTall(TImagingPatchImage, lunghezza massima del post)` per colonne piu' alte di 254 righe (formato delle patch alte: distanze dal post precedente e post vuoti di top delta 254) e post spezzati a 128 (`IMAGING_SPRITE_POST_LENGTH`); l'indice 0 e' un pixel opaco, la trasparenza e' dell'immagine (`TImagingPatchImage.Opaque`), come nel vecchio. **Parita'**: il testo vecchio e' copiato nel test (con il `for` la cui variabile e' letta dopo il ciclo) e le colonne sono uguali byte per byte su altezze 1..1500 (254, 255, 256, 600, 1500, buchi oltre 254, post pieni di 128/129/256) e 60 immagini casuali, a Win32 e a Win64 (il valore di `y` dopo il `for` e' lo stesso nei due compilatori). Difetto del vecchio, corretto: un lato oltre 32767 scriveva un'intestazione troncata a `smallint`; ora `EImagingException` e la facciata da' `I_Warning` e `nil`. Il corpus dei golden non esercita il caso (nessuno sprite PNG nei WAD di prova): la verifica e' quella dei test, non una partita.
+
+**Verifica**: Palette 116 test e Imaging 239, Win32 e Win64; `build.bat giochi Release` e `strumenti Release` con gli avvisi di prima (Doom32 381, Heretic32 305, Hexen32 200, Strife32 413); `strati` 0 violazioni nuove; Doom32 e Strife32 Win64 compilano; verifica ridotta dei golden UGUALE dopo #241 e dopo #242 (8 bit per i quattro giochi, 32 bit per Doom e Strife) e corpus intero sul ramo UGUALE (44 voci a 8 bit, 27 a 32 bit); `Radix32 -warp 1 1` parte e resta in vita 40 secondi senza `crash.txt` ne' errori. **Non verificato**: il flusso delle chiamate GL (i GL compilano; la modifica e' aritmetica di palette provata dai test), la misura a coppie delle prestazioni (non sono percorsi caldi), una partita vera con sprite PNG.
+
 ## 13. Fette successive della #185: elenco ordinato (2026-11-14, dopo la 2c-4)
 
 Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime sono giorni di agente (una fetta di `Libs\` costa 35-50 minuti di sviluppo e 1-2 ore di verifica quando il lock dei giochi e' conteso: i giorni qui contano la lettura delle copie, la forma delle regole e le prove, non la sola scrittura). Le righe sono quelle dei file attuali (Doom/Heretic/Hexen/Strife). **Regola di ogni fetta**: tabella di confronto con `Confronta-Copie.ps1`, regole per gioco con il testo vecchio alla lettera, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni passo, corpus intero una volta, build dei dieci giochi, Doom32 e Strife32 a Win64, misura a coppie a macchina scarica.
@@ -1112,8 +1120,8 @@ Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime 
 | # | Fetta | Stima | Note |
 |---|---|---|---|
 | 1 | ~~`w_utils` (comandi di console in `Libs\Console`)~~ **fatta** (par. 12.5, 2026-11-15) | - | I due `printf` difettosi sono corretti, con test di regressione |
-| 2 | `w_sprite` (`W_TextureAsPatch` in `Libs\Imaging`) | 1 | pura; il corpus non la esercita (sprite PNG esterni) |
-| 3 | `v_video` fette 1 e 2 (palette, schermi e misure) | 1,5 | fredda; i lampi di palette li coprono i golden |
+| 2 | ~~`w_sprite` (`W_TextureAsPatch` in `Libs\Imaging`)~~ **fatta** (par. 12.6, 2026-11-15, #242) | - | `TImagingPatchWriter.BuildTall` + `TImagingColorPatchBuilder`; parita' sul testo vecchio copiato (il corpus non la esercita) |
+| 3 | `v_video` fetta 1 (palette) **fatta** (par. 12.6, #241); resta la fetta 2 (schermi e misure) | 0,5 | `TScreenPalette` e `TNearestColor` in `Libs\Palette`; i lampi di palette li coprono i golden |
 | 4 | `sounds`, regola dei nomi di `s_pk3sounds`, colla di `s_sound`, con la 2i | 2 | scrive le tabelle `S_sfx`/`S_music` |
 | 5 | `i_main`, `i_mainwindow`, `i_startup` con `gl_main` | 2-3 | finestra: nessun golden copre fuoco, icona e schermo intero |
 | 6 | `v_video` fette 3-5 (patch, rettangoli, pagine) e `i_video` (blit) | 7-8 | caldo: misura a coppie; varianti OpenGL restano rami della facciata |
