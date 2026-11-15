@@ -22,7 +22,8 @@ uses
   System.SysUtils,
   d_delphi,
   dglOpenGL,
-  DelphiDoom.Engine.GlScene.Types;
+  DelphiDoom.Engine.GlScene.Types,
+  DelphiDoom.Engine.GlScene.ModelPainter;
 
 type
   /// <summary>
@@ -42,7 +43,11 @@ type
       DROPPED_ZOFFS = -0.04;
   strict private
     FInverseYaw: float;
+    FModelPainter: TEngineGlSceneModelPainter;
   public
+    /// <summary>A painter that gives the sprites with a model to AModelPainter, which it owns</summary>
+    constructor Create(const AModelPainter: TEngineGlSceneModelPainter);
+    destructor Destroy; override;
     /// <summary>A new frame: the inverse yaw of the view in degrees</summary>
     procedure BeginFrame(const AInverseYaw: float);
     /// <summary>Draws the sprite</summary>
@@ -72,6 +77,20 @@ uses
 
 { TEngineGlSceneSpritePainter }
 
+constructor TEngineGlSceneSpritePainter.Create(const AModelPainter: TEngineGlSceneModelPainter);
+begin
+  inherited Create;
+  if not Assigned(AModelPainter) then
+    raise EArgumentNilException.Create('AModelPainter');
+  FModelPainter := AModelPainter;
+end;
+
+destructor TEngineGlSceneSpritePainter.Destroy;
+begin
+  FModelPainter.Free;
+  inherited Destroy;
+end;
+
 procedure TEngineGlSceneSpritePainter.BeginFrame(const AInverseYaw: float);
 begin
   FInverseYaw := AInverseYaw;
@@ -86,7 +105,7 @@ begin
   if gl_drawmodels and (ASprite.models <> nil) then
   begin
     if LHasWhiteFog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
-    gld_DrawModels(ASprite);
+    FModelPainter.Draw(ASprite);
     if LHasWhiteFog then gld_StartFog; // JVAL: Mars fog sectors
     Exit;
   end;

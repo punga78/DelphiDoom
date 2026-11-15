@@ -13,7 +13,9 @@ param(
   [int]$Pairs = 5,
   [double]$MaxSpread = 3,
   [double]$Limit = 5,
-  [int]$Seconds = 300
+  [int]$Seconds = 300,
+  # the PK3 of Tests\Data\ModelsGl of the game (every state of the game is the MD2 cube; adds -devparm)
+  [switch]$Models
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -23,6 +25,11 @@ if (-not (Test-Path $runner)) { $runner = Join-Path $here 'Tools\Esegui-gioco.ps
 $folder = $Game.Substring(2)
 $binDir = Join-Path $common "bin\$folder"
 $exeName = "${Game}32"
+$modelArguments = ""
+if ($Models) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  $modelArguments = " -devparm -file " + (Join-Path $here "Tests\Data\ModelsGl\zmdl_$letter.pk3")
+}
 
 function Test-Busy {
   $busy = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^(dcc32|dcc64|msbuild|rsvars|bds)$' })
@@ -36,7 +43,7 @@ function Measure-One([string]$Version) {
   Remove-Item $log -Force -ErrorAction SilentlyContinue
   try {
     & powershell -NoProfile -File $runner -Exe $copy -WorkDir $binDir -Seconds $Seconds -StopWhenExited `
-      -Arguments "-iwad $Iwad -timedemo $Demo -windowed -nosound -nomusic -nomouse -nojoystick -nointerpolate" | Out-Null
+      -Arguments "-iwad $Iwad -timedemo $Demo -windowed -nosound -nomusic -nomouse -nojoystick -nointerpolate$modelArguments" | Out-Null
   }
   finally {
     Remove-Item $copy -Force -ErrorAction SilentlyContinue

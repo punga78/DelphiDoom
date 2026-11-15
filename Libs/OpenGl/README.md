@@ -49,4 +49,6 @@ E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5)
 
 Fetta 10: il disegno della scena (muri, flat, sprite e l'ordine delle serie) e' fatto da `Legacy\DelphiDoom.Engine.GlScene.WallPainter`, `...FlatPainter`, `...SpritePainter` e `...SceneDrawer`, classi chiamate direttamente (nessuna interfaccia per elemento) con le stesse chiamate GL di prima.
 
+Fetta 11: il disegno dei modelli (`gld_DrawModels`) e' `Legacy\DelphiDoom.Engine.GlScene.ModelPainter`, classe chiamata direttamente dallo sprite painter. Si prova con `Tests\Data\ModelsGl` (PK3 sintetici con un cubo MD2 legato a ogni stato del gioco) e `Confronta.ps1 -Models`.
+
 Le unit del motore che le usano (`DelphiDoom.Engine.Models.Definition*`, `DelphiDoom.Engine.GlLevel.*`) stanno in `Legacy\` perche' leggono i globali del renderer. Dettagli e verifiche di ogni fetta in `CLAUDE.md`.
