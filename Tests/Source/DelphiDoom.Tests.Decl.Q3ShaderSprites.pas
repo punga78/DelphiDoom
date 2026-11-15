@@ -40,6 +40,8 @@ type
     [Test]
     procedure DovrebbeDareLaTabellaDellaNebbiaCheVaDaZeroAUno;
     [Test]
+    procedure DovrebbeRifiutareUnaCoordinataDiNebbiaNan;
+    [Test]
     procedure DovrebbeDareAlphaZeroAlSpecularDiUnVertexDietro;
     [Test]
     procedure DovrebbeUsareLAmbienteSeLaLuceNonArriva;
@@ -177,6 +179,25 @@ begin
     Assert.AreEqual(Double(0), Double(LFog.FogFactor(0, 0.5)));
     Assert.AreEqual(Double(0), Double(LFog.FogFactor(0.5, 0)));
     Assert.AreEqual(Double(1), Double(LFog.FogFactor(5, 1)));
+  finally
+    LFog.Free;
+  end;
+end;
+
+procedure TTestQ3ShaderSprites.DovrebbeRifiutareUnaCoordinataDiNebbiaNan;
+var
+  LFog: TQ3FogCalc;
+  LNan: Single;
+begin
+  LFog := TQ3FogCalc.Create;
+  try
+    // the original indexes fogTable[INT_MIN] here; it is an error
+    PCardinal(@LNan)^ := $7FC00000;
+    Assert.WillRaise(
+      procedure
+      begin
+        LFog.FogFactor(LNan, 1);
+      end, EDeclQ3ShaderCalcException);
   finally
     LFog.Free;
   end;

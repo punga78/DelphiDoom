@@ -49,7 +49,7 @@ type
 implementation
 
 uses
-  DelphiDoom.Decl.Q3Shader.Calc.FloatMask;
+  System.Math, DelphiDoom.Decl.Q3Shader.Calc.FloatMask;
 
 const
   SNoFog = 'the surface is in the fog %d, which the world does not have';
@@ -78,9 +78,14 @@ var
   LS, LT, LTerm: Single;
   LDouble: Double;
   LIndex: Integer;
+  LMask: IInterface;
 begin
+  LMask := TQ3FloatMask.Enter;
   LS := ACoordinateS;
   LT := ACoordinateT;
+  // the original goes on and indexes fogTable[INT_MIN]
+  if IsNan(LS) or IsNan(LT) then
+    raise EDeclQ3ShaderCalcException.Create('the fog texture coordinates are not numbers');
   // s -= 1.0/512: the subtraction is a double, the result goes back to a float
   LDouble := Double(LS) - 1.0 / 512;
   LS := LDouble;

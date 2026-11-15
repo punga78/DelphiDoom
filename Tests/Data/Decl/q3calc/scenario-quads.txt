@@ -30,14 +30,14 @@ quads 6 41
 deformgeo 7
 quads 1 1
 deformgeo 7
-# --- text0..7 (a space is skipped, characters above 127 use the second half of the font)
+# --- text0..7
 viewparms 0 0 0 1 0 0 0 1 0 0 0 1 0
 entityworld
 quads 1 3
 text 0 Quake3
 deformgeo 8
 quads 1 4
-text 1 A_B
+text 1 A_B~
 deformgeo 9
 quads 1 5
 text 2
