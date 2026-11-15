@@ -77,6 +77,26 @@ type
     procedure DovrebbeRispondereRestartSeUnFileVieneDaUnaCartella;
     [Test]
     procedure DovrebbeRispondereRestartPerUnAddonFuoriDallaLista;
+    [Test]
+    procedure ConIlPakDelCodiceDovrebbeRispondereNoDllSeIlServerNonHaCodice;
+    [Test]
+    procedure ConIlPakDelCodiceDovrebbeRispondereMissingSeIlPakNonCe;
+    [Test]
+    procedure ConIlPakDelCodiceDovrebbeRispondereMissingSeMancanoAnchePakDiRisorse;
+    [Test]
+    procedure ConIlPakDelCodiceDovrebbeRispondereRestartEImparareIlPak;
+    [Test]
+    procedure ConIlPakDelCodiceSenzaLaDllDovrebbeRispondereNoDll;
+    [Test]
+    procedure ConIlPakDelCodiceCaricatoDovrebbeDareLaRispostaSemplice;
+    [Test]
+    procedure ConIlPakDelCodiceDovrebbeSvuotareConUnaListaVuota;
+    [Test]
+    procedure DovrebbeDareIlPakDelCodiceDiUnSistemaOperativo;
+    [Test]
+    procedure SetRestartChecksumsDovrebbeRicordarePakEAddon;
+    [Test]
+    procedure SetRestartChecksumsDovrebbeRifiutareUnChecksumSenzaPak;
   end;
 
   [TestFixture]
@@ -326,6 +346,145 @@ begin
   Assert.AreEqual<Cardinal>($66, FServer.ServerPacks[0].Checksum);
 end;
 
+const
+  DLL_NAME = 'gamex86.dll';
+
+procedure TTestGamePureServer.ConIlPakDelCodiceDovrebbeRispondereNoDllSeIlServerNonHaCodice;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  Assert.AreEqual(Ord(TGamePureReply.NoDll),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], 0, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Cardinal>(0, LMissingGame);
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceDovrebbeRispondereMissingSeIlPakNonCe;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  FServer.SetGamePakChecksum($99);
+  Assert.AreEqual(Ord(TGamePureReply.Missing),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], $AA, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Cardinal>($AA, LMissingGame);
+  Assert.AreEqual<Integer>(0, Length(LMissing));
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceDovrebbeRispondereMissingSeMancanoAnchePakDiRisorse;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11), Pack('pak002.pk4', $22, False, False, ['a.txt', DLL_NAME])], nil);
+  FServer.SetGamePakChecksum($99);
+  // $77 is not installed: assets missing, so no restart even though the code pak is there
+  Assert.AreEqual(Ord(TGamePureReply.Missing),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$77, $11], $22, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Integer>(1, Length(LMissing));
+  Assert.AreEqual<Cardinal>($77, LMissing[0]);
+  Assert.AreEqual<Cardinal>(0, LMissingGame);
+  Assert.AreEqual<Cardinal>($99, FServer.GetGamePakChecksum, 'the loaded code pak is unchanged');
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceDovrebbeRispondereRestartEImparareIlPak;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11), Pack('pak002.pk4', $22, False, False, ['a.txt', 'GameX86.DLL'])], nil);
+  FServer.SetGamePakChecksum($99);
+  Assert.AreEqual(Ord(TGamePureReply.Restart),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], $22, DLL_NAME, LMissing, LMissingGame)));
+  // the name is compared without case, as FilenameCompare does
+  Assert.AreEqual<Cardinal>($22, FServer.GetGamePakChecksum);
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceSenzaLaDllDovrebbeRispondereNoDll;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11), Pack('pak002.pk4', $22)], nil);
+  FServer.SetGamePakChecksum($99);
+  Assert.AreEqual(Ord(TGamePureReply.NoDll),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], $22, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Cardinal>($99, FServer.GetGamePakChecksum);
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceCaricatoDovrebbeDareLaRispostaSemplice;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  FServer.SetGamePakChecksum($22);
+  Assert.AreEqual(Ord(TGamePureReply.Ok),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], $22, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual(Ord(TGamePureReply.Restart),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11], $22, DLL_NAME, LMissing, LMissingGame, True)));
+  Assert.AreEqual(Ord(TGamePureReply.Missing),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$11, $55], $22, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Cardinal>($55, LMissing[0]);
+  // a wrong order is a restart
+  Start([Pack('pak001.pk4', $11), Pack('pak002.pk4', $44)], nil);
+  FServer.SetGamePakChecksum($22);
+  Assert.AreEqual(Ord(TGamePureReply.Restart),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([$44, $11], $22, DLL_NAME, LMissing, LMissingGame)));
+end;
+
+procedure TTestGamePureServer.ConIlPakDelCodiceDovrebbeSvuotareConUnaListaVuota;
+var
+  LMissing: TArray<Cardinal>;
+  LMissingGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  FServer.UpdatePureServerChecksums;
+  Assert.AreEqual(Ord(TGamePureReply.Ok),
+    Ord(FServer.SetPureServerChecksumsWithGamePak([0], $22, DLL_NAME, LMissing, LMissingGame)));
+  Assert.AreEqual<Integer>(0, Length(FServer.ServerPacks));
+end;
+
+procedure TTestGamePureServer.DovrebbeDareIlPakDelCodiceDiUnSistemaOperativo;
+var
+  LChecksums: TArray<Cardinal>;
+  LGame: Cardinal;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  FServer.UpdatePureServerChecksums;
+  FServer.SetGamePakChecksum($99);
+  FServer.SetGamePakForOS([$A1, $A2, 0]);
+  LChecksums := FServer.GetPureServerChecksumsForOS(1, LGame);
+  Assert.AreEqual<Integer>(1, Length(LChecksums));
+  Assert.AreEqual<Cardinal>($A2, LGame);
+  FServer.GetPureServerChecksumsForOS(-1, LGame);
+  Assert.AreEqual<Cardinal>($99, LGame, 'the loaded one');
+  FServer.GetPureServerChecksumsForOS(7, LGame);
+  Assert.AreEqual<Cardinal>(0, LGame, 'unknown system');
+end;
+
+procedure TTestGamePureServer.SetRestartChecksumsDovrebbeRicordarePakEAddon;
+begin
+  Start([Pack('pak001.pk4', $11)], [Pack('addon.pk4', $66, True)]);
+  FServer.SetRestartChecksums([$66, $11, 0, $77], $22);
+  Assert.AreEqual<Integer>(2, Length(FServer.RestartChecksums), 'the list ends at the zero');
+  Assert.AreEqual<Cardinal>($66, FServer.RestartChecksums[0]);
+  Assert.AreEqual<Integer>(1, Length(FServer.RestartAddonChecksums));
+  Assert.AreEqual<Cardinal>($66, FServer.RestartAddonChecksums[0]);
+  Assert.AreEqual<Cardinal>($22, FServer.RestartGamePakChecksum);
+  // a new call replaces the list, the addon is not added twice
+  FServer.SetRestartChecksums([$66], $23);
+  Assert.AreEqual<Integer>(1, Length(FServer.RestartChecksums));
+  Assert.AreEqual<Integer>(1, Length(FServer.RestartAddonChecksums));
+end;
+
+procedure TTestGamePureServer.SetRestartChecksumsDovrebbeRifiutareUnChecksumSenzaPak;
+begin
+  Start([Pack('pak001.pk4', $11)], nil);
+  Assert.WillRaise(procedure begin FServer.SetRestartChecksums([$11, $77], 0); end, EGameFsException);
+end;
 { TTestGamePureParity }
 
 procedure TTestGamePureParity.Setup;
