@@ -1,0 +1,6 @@
+# Il logo della Blizzard (3 s), la pausa di 0,3 s senza disegno e il menu: 260 fotogrammi, un hash per fotogramma
+scene blizzard
+run 260 1
+# il cursore si muove sul menu
+move 100 50
+run 3 1

@@ -1,0 +1,141 @@
+# Il pannello dei trucchi del menu: si apre con Invio, la digitazione, le frecce, Canc, Backspace, Home, Fine, Tab, i limiti
+# di lunghezza, i trucchi che cambiano le impostazioni col loro messaggio (3 s), quelli che non fanno nulla senza mappa
+scene menu
+run 5 1
+text prima che sia aperto
+run 1 1
+key enter down
+key enter up
+run 2 1
+text Hello World
+run 2 1
+key left down
+key left up
+run 1 1
+key left down
+key left up
+run 1 1
+text X
+run 1 1
+key backspace down
+key backspace up
+run 1 1
+key delete down
+key delete up
+run 1 1
+key home down
+key home up
+run 1 1
+text >
+run 1 1
+key end down
+key end up
+run 1 1
+key right down
+key right up
+run 1 1
+key tab down
+key tab up
+run 1 1
+text 0123456789012345678901234567890123456789
+run 2 1
+key tab down
+key tab up
+run 1 1
+key tab down
+key tab up
+run 1 1
+key tab down
+key tab up
+run 1 1
+key tab down
+key tab up
+run 1 1
+key tab down
+key tab up
+run 1 1
+key tab down
+key tab up
+run 2 1
+key esc down
+key esc up
+run 2 1
+key enter down
+key enter up
+run 1 1
+text Corwin of Amber
+run 1 1
+key enter down
+key enter up
+run 2 1
+run 200 10
+key enter down
+key enter up
+run 1 1
+text Music on
+key enter down
+key enter up
+run 3 1
+key enter down
+key enter up
+run 1 1
+text CORWIN OF AMBER
+key enter down
+key enter up
+run 3 1
+run 100 10
+key enter down
+key enter up
+run 1 1
+text Music vol 47
+key enter down
+key enter up
+run 3 1
+run 100 10
+key enter down
+key enter up
+run 1 1
+text Scale 9
+key enter down
+key enter up
+run 3 1
+run 100 10
+key enter down
+key enter up
+run 1 1
+text Pot of gold
+key enter down
+key enter up
+run 3 1
+key enter down
+key enter up
+run 1 1
+text xyz
+key enter down
+key enter up
+run 3 1
+key enter down
+key enter up
+run 1 1
+text Sound off
+key enter down
+key enter up
+run 3 1
+key enter down
+key enter up
+run 1 1
+text Speed 3
+key enter down
+key enter up
+run 3 1
+# con il pannello aperto i tasti rapidi del menu funzionano ancora (difetto dell'originale)
+key enter down
+key enter up
+run 1 1
+text ab
+run 1 1
+key s down
+key s up
+run 3 1
+move 150 90
+run 2 1

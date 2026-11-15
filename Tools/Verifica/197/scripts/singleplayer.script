@@ -1,0 +1,37 @@
+# Menu di un giocatore: ci si arriva col clic su Start a new game, si percorre col mouse, si torna con Cancel e con il tasto c
+scene menu
+run 4 1
+move 150 90
+lbutton down
+run 1 1
+lbutton up
+run 4 1
+move 150 90
+run 2 1
+move 150 110
+run 2 1
+move 150 130
+run 2 1
+move 140 170
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key s down
+key s up
+run 4 1
+key c down
+key c up
+run 4 1
+key s down
+key s up
+run 3 1
+move 150 130
+lbutton down
+run 1 1
+lbutton up
+run 3 1
+key c down
+key c up
+run 3 1

@@ -1,0 +1,43 @@
+# Menu principale: il mouse su ogni bottone, premuto, trascinato fuori e rilasciato, i bottoni inerti e i tasti rapidi
+scene menu
+run 5 1
+move 150 90
+run 3 1
+move 150 110
+run 2 1
+move 150 130
+run 2 1
+move 150 170
+run 2 1
+move 104 85
+run 1 1
+move 215 100
+run 1 1
+move 216 101
+run 1 1
+move 150 110
+lbutton down
+run 3 1
+move 300 190
+run 2 1
+lbutton up
+run 3 1
+move 150 130
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+key l down
+run 1 1
+key l up
+run 2 1
+key r down
+key r up
+run 2 1
+key x down
+key x up
+run 2 1
+rbutton down
+run 1 1
+rbutton up
+run 2 1

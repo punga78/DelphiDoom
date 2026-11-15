@@ -23,6 +23,18 @@ uses
 
 type
   /// <summary>
+  ///   Where every drawing call of the renderer is told, for the tools that compare the drawing with the original
+  ///   (the trace of the harness of Tools\Verifica\197): the blits that reach the canvas and the fills and outlines
+  /// </summary>
+  IWarRenderTrace = interface
+    ['{E5A3B719-04C2-4D8F-96B1-7C20D4F8A3E5}']
+    /// <summary>A texture drawn: after the transform, with the color mod and the alpha mod of the blit</summary>
+    procedure TraceBlit(const ABlit: TWarBlit);
+    /// <summary>A rectangle filled (AStroke false) or outlined, after the transform, with its color and alpha</summary>
+    procedure TraceRect(const ARect: TWarRectF; const AColor: TWarRgba; AStroke: Boolean);
+  end;
+
+  /// <summary>
   ///   The stack of transforms of the renderer and what an image drawn through it becomes: instead of calling SDL,
   ///   SubImage adds a TWarBlit to the list it was given. Every operation is one float (Single) operation, rounded as
   ///   the original rounds it
@@ -34,6 +46,9 @@ type
     FBlits: TList<TWarBlit>;
     FTarget: TWarImageBlitter;
     FColor: TWarRgba;
+    FTexture: TWarImage;
+    FHasTexture: Boolean;
+    FTrace: IWarRenderTrace;
     function MakeBlit(const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single): TWarBlit;
     function TransformRect(const ARect: TWarRectF): TWarRectF;
     function StateColor(const AColor: TWarRgba): TWarRgba;
@@ -66,6 +81,14 @@ type
     procedure Scale(AScaleX, AScaleY: Single);
     /// <summary>wr_globalAlpha</summary>
     procedure GlobalAlpha(AAlpha: Single);
+    /// <summary>
+    ///   The image the next SubImage calls draw from (the texture of the sprite or of the font that wr_subImage is
+    ///   given). With a target and a texture SubImage draws; without a texture it draws nothing, as wr_subImage with a
+    ///   NULL texture
+    /// </summary>
+    procedure SetTexture(const ATexture: TWarImage);
+    /// <summary>No texture: SubImage only adds to the list, if there is one</summary>
+    procedure ClearTexture;
     /// <summary>SDL_SetTextureColorMod of the image the next blits use</summary>
     procedure SetColorMod(ARed, AGreen, ABlue: Byte);
     /// <summary>
@@ -73,6 +96,8 @@ type
     ///   negative total scale flips the image; a negative scale of the state moves the origin of the rectangle
     /// </summary>
     procedure SubImage(const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single);
+    /// <summary>Told of every drawing call that reaches the canvas (nil: nobody)</summary>
+    property Trace: IWarRenderTrace read FTrace write FTrace;
     /// <summary>The state in use</summary>
     function CurrentState: TWarRenderState;
     /// <summary>States saved above the first</summary>
@@ -120,6 +145,8 @@ begin
     raise EWarException.Create(SWarRenderNoTarget);
   LRect := TransformRect(ARect);
   LColor := StateColor(AColor);
+  if Assigned(FTrace) then
+    FTrace.TraceRect(LRect, LColor, False);
   FTarget.FillRect(LRect, LColor);
 end;
 
@@ -132,6 +159,8 @@ begin
     raise EWarException.Create(SWarRenderNoTarget);
   LRect := TransformRect(ARect);
   LColor := StateColor(AColor);
+  if Assigned(FTrace) then
+    FTrace.TraceRect(LRect, LColor, True);
   FTarget.StrokeRect(LRect, LColor);
 end;
 
@@ -240,6 +269,24 @@ begin
   LBlit := MakeBlit(ASource, ADestination, AScaleX, AScaleY);
   if Assigned(FBlits) then
     FBlits.Add(LBlit);
+  if Assigned(FTarget) and FHasTexture then
+  begin
+    if Assigned(FTrace) then
+      FTrace.TraceBlit(LBlit);
+    FTarget.Draw(FTexture, LBlit);
+  end;
+end;
+
+procedure TWarRenderTransform.SetTexture(const ATexture: TWarImage);
+begin
+  FTexture := ATexture;
+  FHasTexture := Length(ATexture.Pixels) > 0;
+end;
+
+procedure TWarRenderTransform.ClearTexture;
+begin
+  FTexture := Default(TWarImage);
+  FHasTexture := False;
 end;
 
 procedure TWarRenderTransform.SubImageOf(const ATexture: TWarImage; const ASource, ADestination: TWarRectF;

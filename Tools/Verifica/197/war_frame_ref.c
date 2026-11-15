@@ -234,6 +234,7 @@ static WarKeys keyFromName(const char* n)
         {"f1", WAR_KEY_F1}, {"f2", WAR_KEY_F2}, {"f3", WAR_KEY_F3}, {"f4", WAR_KEY_F4}, {"f5", WAR_KEY_F5},
         {"f6", WAR_KEY_F6}, {"f7", WAR_KEY_F7}, {"f8", WAR_KEY_F8}, {"f9", WAR_KEY_F9}, {"f10", WAR_KEY_F10},
         {"f11", WAR_KEY_F11}, {"f12", WAR_KEY_F12},
+        {"delete", WAR_KEY_DELETE}, {"home", WAR_KEY_HOME}, {"end", WAR_KEY_END}, {"insert", WAR_KEY_INSERT},
     };
     for (size_t i = 0; i < sizeof(table) / sizeof(table[0]); i++)
         if (strcmp(table[i].name, n) == 0) return table[i].key;
