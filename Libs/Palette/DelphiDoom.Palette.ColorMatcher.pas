@@ -11,7 +11,8 @@ unit DelphiDoom.Palette.ColorMatcher;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf;
+  System.SysUtils, DelphiDoom.Palette.Types, DelphiDoom.Palette.Intf,
+  DelphiDoom.Palette.NearestColor;
 
 type
   /// <summary>V_BestColor and V_FindAproxColorIndex, without the engine</summary>
@@ -66,42 +67,11 @@ end;
 
 function TColorMatcher.FindApproximateIndex(const AColors: TArray<Cardinal>; AColor: Cardinal;
   ALow, AHigh: Integer): Integer;
-var
-  LIndex: Integer;
-  LRed: Integer;
-  LGreen: Integer;
-  LBlue: Integer;
-  LDeltaRed: Integer;
-  LDeltaGreen: Integer;
-  LDeltaBlue: Integer;
-  LColor: Cardinal;
-  LDistance: Cardinal;
-  LMinimum: Cardinal;
 begin
   if (ALow < 0) or (AHigh < ALow) or (Length(AColors) <= AHigh) then
     raise EPaletteException.CreateFmt(SPaletteRangeInvalid, [ALow, AHigh]);
 
-  // the original names the low byte "red" for both colors: the distance is the same as with RGB
-  LRed := AColor and $FF;
-  LGreen := (AColor shr 8) and $FF;
-  LBlue := (AColor shr 16) and $FF;
-  Result := ALow;
-  LMinimum := Cardinal($FFFFFFFF);
-  for LIndex := ALow to AHigh do
-  begin
-    LColor := AColors[LIndex];
-    LDeltaRed := LRed - Integer(LColor and $FF);
-    LDeltaGreen := LGreen - Integer((LColor shr 8) and $FF);
-    LDeltaBlue := LBlue - Integer((LColor shr 16) and $FF);
-    LDistance := Cardinal(LDeltaRed * LDeltaRed + LDeltaGreen * LDeltaGreen + LDeltaBlue * LDeltaBlue);
-    if LDistance < LMinimum then
-    begin
-      Result := LIndex;
-      if LDistance = 0 then
-        Exit;
-      LMinimum := LDistance;
-    end;
-  end;
+  Result := TNearestColor.Find(@AColors[0], AColor, ALow, AHigh);
 end;
 
 end.

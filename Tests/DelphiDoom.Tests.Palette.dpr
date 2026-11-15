@@ -17,6 +17,7 @@ uses
   DUnitX.TestFramework,
   DelphiDoom.Video.Intf in '..\Libs\Video\DelphiDoom.Video.Intf.pas',
   DelphiDoom.Palette.Converter in '..\Libs\Palette\DelphiDoom.Palette.Converter.pas',
+  DelphiDoom.Palette.ScreenPalette in '..\Libs\Palette\DelphiDoom.Palette.ScreenPalette.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',
   DelphiDoom.Video.WindowsDisplayMetrics in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayMetrics.pas',
@@ -27,6 +28,7 @@ uses
   DelphiDoom.Palette.GammaData in '..\Libs\Palette\DelphiDoom.Palette.GammaData.pas',
   DelphiDoom.Palette.Profiles in '..\Libs\Palette\DelphiDoom.Palette.Profiles.pas',
   DelphiDoom.Palette.ColorMatcher in '..\Libs\Palette\DelphiDoom.Palette.ColorMatcher.pas',
+  DelphiDoom.Palette.NearestColor in '..\Libs\Palette\DelphiDoom.Palette.NearestColor.pas',
   DelphiDoom.Palette.Builder in '..\Libs\Palette\DelphiDoom.Palette.Builder.pas',
   DelphiDoom.Palette.TranslationBuilder in '..\Libs\Palette\DelphiDoom.Palette.TranslationBuilder.pas',
   DelphiDoom.Palette.PlayerTranslations.Doom in '..\Libs\Palette\DelphiDoom.Palette.PlayerTranslations.Doom.pas',
@@ -54,7 +56,9 @@ uses
   DelphiDoom.Tests.Font.Scenarios in 'Source\DelphiDoom.Tests.Font.Scenarios.pas',
   DelphiDoom.Palette.ColorRegionLumps in '..\Libs\Palette\DelphiDoom.Palette.ColorRegionLumps.pas',
   DelphiDoom.Tests.Palette.ColorRegionLumps in 'Source\DelphiDoom.Tests.Palette.ColorRegionLumps.pas',
-  DelphiDoom.Tests.Palette.GamePalettes in 'Source\DelphiDoom.Tests.Palette.GamePalettes.pas';
+  DelphiDoom.Tests.Palette.GamePalettes in 'Source\DelphiDoom.Tests.Palette.GamePalettes.pas',
+  DelphiDoom.Tests.Palette.NearestColor in 'Source\DelphiDoom.Tests.Palette.NearestColor.pas',
+  DelphiDoom.Tests.Palette.ScreenPalette in 'Source\DelphiDoom.Tests.Palette.ScreenPalette.pas';
 
 var
   Runner: ITestRunner;
