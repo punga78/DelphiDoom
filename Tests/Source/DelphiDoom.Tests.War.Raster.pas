@@ -131,12 +131,14 @@ var
   LParts: TArray<string>;
   LSeen: Integer;
   LDifferent: Integer;
+  LLines: Boolean;
 begin
   LGolden := TStringList.Create;
   LScenario := TRasterScenario.Create;
   try
     LGolden.LoadFromFile(TWarRealData.GoldenPath('raster.golden.txt'));
     LMode := 0;
+    LLines := False;
     LSeen := 0;
     LDifferent := 0;
     for LLine := 0 to LGolden.Count - 1 do
@@ -144,12 +146,16 @@ begin
       if LGolden[LLine] = '' then
         Continue;
       LParts := LGolden[LLine].Split([' ']);
-      if LParts[0] = 'M' then
+      if (LParts[0] = 'M') or (LParts[0] = 'L') then
       begin
         LMode := StrToInt(LParts[1]);
+        LLines := LParts[0] = 'L';
         Continue;
       end;
-      LCanvas := LScenario.Run(StrToInt(LParts[1]), LMode);
+      if LLines then
+        LCanvas := LScenario.RunLines(StrToInt(LParts[1]), LMode)
+      else
+        LCanvas := LScenario.Run(StrToInt(LParts[1]), LMode);
       try
         Inc(LSeen);
         if LowerCase(IntToHex(TRasterScenario.Hash(LCanvas), 8)) <> LParts[2] then
@@ -158,7 +164,7 @@ begin
         LCanvas.Free;
       end;
     end;
-    Assert.IsTrue(LSeen >= 1000, 'Pochi scenari nel golden');
+    Assert.IsTrue(LSeen >= 2400, 'Pochi scenari nel golden');
     Assert.AreEqual(0, LDifferent, 'Scenari con pixel diversi da quelli della SDL');
   finally
     LScenario.Free;

@@ -23,6 +23,12 @@ type
   public
     /// <summary>Runs the scenario of the seed and mode on the canvas, that the caller owns</summary>
     function Run(ASeed: Cardinal; AMode: Integer): TWarImageBlitter;
+    /// <summary>
+    ///   The scenarios of the lines (lineScenario of sdl_raster_ref.c, 40 lines of SDL_RenderLine): mode bits 1 = partial
+    ///   alpha, 2 = all inside the screen, 4 = integer ends, 8 = short lines. An oblique line with a coordinate in (-1, 0)
+    ///   is moved by one pixel (SDL draws it another way: not kept)
+    /// </summary>
+    function RunLines(ASeed: Cardinal; AMode: Integer): TWarImageBlitter;
     /// <summary>The hash of the scenario as sdl_raster_ref.exe prints it: per row FNV-1a, folded as h = row xor (h * 31)</summary>
     class function Hash(const ACanvas: TWarImageBlitter): Cardinal; static;
   end;
@@ -280,6 +286,94 @@ begin
           Result.StrokeRect(LRect, LColor);
       end;
     end;
+  end;
+end;
+
+function TRasterScenario.RunLines(ASeed: Cardinal; AMode: Integer): TWarImageBlitter;
+var
+  LColor: TWarRgba;
+  LOperation: Integer;
+  LStartX: Integer;
+  LStartY: Integer;
+  LKind: Integer;
+  LEndX: Integer;
+  LEndY: Integer;
+  LPartial: Integer;
+  LX1: Single;
+  LY1: Single;
+  LX2: Single;
+  LY2: Single;
+  LAlpha: Integer;
+begin
+  Result := TWarImageBlitter.Create(320, 200);
+  FState := ASeed * 2654435761 + 777;
+  LColor.R := Byte(Next(256));
+  LColor.G := Byte(Next(256));
+  LColor.B := Byte(Next(256));
+  LColor.A := 255;
+  Result.Clear(LColor);
+  for LOperation := 0 to 39 do
+  begin
+    LStartX := Next(400 * 4);
+    LStartY := Next(260 * 4);
+    LKind := Next(8);
+    LEndX := Next(400 * 4);
+    LEndY := Next(260 * 4);
+    LPartial := Next(8);
+    LX1 := Fraction(LStartX - 40 * 4, 4);
+    LY1 := Fraction(LStartY - 30 * 4, 4);
+    LX2 := Fraction(LEndX - 40 * 4, 4);
+    LY2 := Fraction(LEndY - 30 * 4, 4);
+    if (AMode and 2) <> 0 then
+    begin
+      LX1 := Fraction(LStartX mod (300 * 4), 4);
+      LY1 := Fraction(LStartY mod (180 * 4), 4);
+      LX2 := Fraction(LEndX mod (300 * 4), 4);
+      LY2 := Fraction(LEndY mod (180 * 4), 4);
+    end;
+    if (AMode and 8) <> 0 then
+    begin
+      LX2 := LX1 + Fraction(LEndX mod (6 * 4 * 2) - 6 * 4, 4);
+      LY2 := LY1 + Fraction(LEndY mod (6 * 4 * 2) - 6 * 4, 4);
+    end;
+    if LKind = 0 then
+      LY2 := LY1
+    else if LKind = 1 then
+      LX2 := LX1
+    else if LKind = 2 then
+      LY2 := LY1 + (LX2 - LX1)
+    else if LKind = 3 then
+      LY2 := LY1 - (LX2 - LX1);
+    if (AMode and 4) <> 0 then
+    begin
+      LX1 := Trunc(LX1);
+      LY1 := Trunc(LY1);
+      LX2 := Trunc(LX2);
+      LY2 := Trunc(LY2);
+    end;
+    if (LX1 <> LX2) and (LY1 <> LY2) then
+    begin
+      if (LX1 > -1) and (LX1 < 0) then
+        LX1 := LX1 - 1;
+      if (LY1 > -1) and (LY1 < 0) then
+        LY1 := LY1 - 1;
+      if (LX2 > -1) and (LX2 < 0) then
+        LX2 := LX2 - 1;
+      if (LY2 > -1) and (LY2 < 0) then
+        LY2 := LY2 - 1;
+    end;
+    LColor.R := Byte(Next(256));
+    LColor.G := Byte(Next(256));
+    LColor.B := Byte(Next(256));
+    // ca = rnd(2) ? 128 : rnd(256): the second number is drawn only when the first is 0
+    if Next(2) <> 0 then
+      LAlpha := 128
+    else
+      LAlpha := Next(256);
+    if ((AMode and 1) = 0) or (LPartial < 4) then
+      LAlpha := 255;
+    LColor.A := Byte(LAlpha);
+    Result.StrokeLine(LX1, LY1, LX2, LY2, LColor);
   end;
 end;
 

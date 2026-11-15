@@ -296,8 +296,92 @@ static void colorBlend(int flip, int m)
     }
 }
 
+/* le linee: SDL_RenderLine (SDL_BLENDMODE_BLEND) con estremi float. modo (bit): 1 = alfa parziali; 2 = tutto dentro lo schermo;
+   4 = estremi interi; 8 = solo linee corte (le frecce del debug: fino a 6 pixel). Il generatore e' scritto due volte (qui e in
+   Tests\Source\DelphiDoom.Tests.War.RasterScenario.pas) */
+static void lineScenario(unsigned seed, int dump)
+{
+    makeRenderer();
+    gState = seed * 2654435761u + 777u;
+    unsigned cr, cg, cb, ca;
+    SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_NONE);
+    cr = rnd(256); cg = rnd(256); cb = rnd(256);
+    SDL_SetRenderDrawColor(gRenderer, (Uint8)cr, (Uint8)cg, (Uint8)cb, 255);
+    SDL_RenderClear(gRenderer);
+    for (int o = 0; o < 40; o++)
+    {
+        int ax = rnd(400 * 4), ay = rnd(260 * 4), kind = rnd(8);
+        int bx = rnd(400 * 4), by = rnd(260 * 4);
+        int sa = rnd(8);
+        float px = fq(ax - 40 * 4, 4), py = fq(ay - 30 * 4, 4);
+        float qx = fq(bx - 40 * 4, 4), qy = fq(by - 30 * 4, 4);
+        if (gMode & 2) { px = fq(ax % (300 * 4), 4); py = fq(ay % (180 * 4), 4); qx = fq(bx % (300 * 4), 4); qy = fq(by % (180 * 4), 4); }
+        if (gMode & 8) { qx = px + fq(bx % (6 * 4 * 2) - 6 * 4, 4); qy = py + fq(by % (6 * 4 * 2) - 6 * 4, 4); }
+        if (kind == 0) qy = py;
+        else if (kind == 1) qx = px;
+        else if (kind == 2) qy = py + (qx - px);
+        else if (kind == 3) qy = py - (qx - px);
+        if (gMode & 4) { px = (float)(int)px; py = (float)(int)py; qx = (float)(int)qx; qy = (float)(int)qy; }
+        /* una linea obliqua con una coordinata in (-1, 0) la SDL la disegna in un altro modo (non portato): si sposta */
+        if (px != qx && py != qy)
+        {
+            if (px > -1 && px < 0) px -= 1;
+            if (py > -1 && py < 0) py -= 1;
+            if (qx > -1 && qx < 0) qx -= 1;
+            if (qy > -1 && qy < 0) qy -= 1;
+        }
+        cr = rnd(256); cg = rnd(256); cb = rnd(256);
+        ca = rnd(2) ? 128 : rnd(256);
+        if (!(gMode & 1) || sa < 4) ca = 255;
+        SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(gRenderer, (Uint8)cr, (Uint8)cg, (Uint8)cb, (Uint8)ca);
+        if (getenv("RTRACE")) fprintf(stderr, "L%d %.4f %.4f %.4f %.4f c %u,%u,%u,%u\n", kind, px, py, qx, qy, cr, cg, cb, ca);
+        SDL_RenderLine(gRenderer, px, py, qx, qy);
+    }
+    SDL_Surface* o = SDL_RenderReadPixels(gRenderer, NULL);
+    if (dump)
+    {
+        _setmode(_fileno(stdout), _O_BINARY);
+        for (int y = 0; y < o->h; y++) fwrite((Uint8*)o->pixels + (size_t)y * o->pitch, 1, 4 * o->w, stdout);
+    }
+    else
+    {
+        unsigned h = 2166136261u;
+        for (int y = 0; y < o->h; y++) h = fnv((Uint8*)o->pixels + (size_t)y * o->pitch, 4 * o->w) ^ (h * 31);
+        printf("R %u %08x\n", seed, h);
+    }
+    SDL_DestroySurface(o);
+}
+
+/* la forma di una linea x1 y1 x2 y2 con colore bianco e alfa A su nero: il canale rosso di una finestra 24 x 12 */
+static void lineShape(float x1, float y1, float x2, float y2, int a)
+{
+    makeRenderer();
+    SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_NONE);
+    SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, (Uint8)a);
+    SDL_RenderLine(gRenderer, x1, y1, x2, y2);
+    SDL_Rect area = { 0, 0, 24, 12 };
+    SDL_Surface* o = SDL_RenderReadPixels(gRenderer, &area);
+    for (int j = 0; j < 12; j++)
+    {
+        for (int i = 0; i < 24; i++)
+        {
+            unsigned v = ((unsigned*)((Uint8*)o->pixels + j * o->pitch))[i] & 255;
+            printf("%4u", v);
+        }
+        printf("\n");
+    }
+    SDL_DestroySurface(o);
+}
+
 int main(int argc, char** argv)
 {
+    if (argc >= 7 && !strcmp(argv[1], "lineshape")) { lineShape((float)atof(argv[2]), (float)atof(argv[3]), (float)atof(argv[4]), (float)atof(argv[5]), atoi(argv[6])); return 0; }
+    if (argc >= 3 && !strcmp(argv[1], "lines")) { int n = atoi(argv[2]); gMode = argc >= 4 ? atoi(argv[3]) : 0; for (int i = 1; i <= n; i++) lineScenario((unsigned)i, 0); return 0; }
+    if (argc >= 3 && !strcmp(argv[1], "lineone")) { gMode = argc >= 4 ? atoi(argv[3]) : 0; lineScenario((unsigned)atoi(argv[2]), 1); return 0; }
     if (argc >= 4 && !strcmp(argv[1], "colorblend")) { colorBlend(atoi(argv[2]), atoi(argv[3])); return 0; }
     if (argc >= 6 && !strcmp(argv[1], "shape")) { strokeShape((float)atof(argv[2]), (float)atof(argv[3]), (float)atof(argv[4]), (float)atof(argv[5])); return 0; }
     if (argc >= 2 && !strcmp(argv[1], "fill")) { fillTable(0); return 0; }
