@@ -328,6 +328,7 @@ uses
   p_user,
   DelphiDoom.Engine.World.UserRules,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_enemy,
   p_sounds,
   p_3dfloors, // JVAL: 3d floors

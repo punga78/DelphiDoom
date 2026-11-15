@@ -116,6 +116,7 @@ uses
   p_setup,
   p_enemy,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_umapinfo,
   r_defs,
   r_data,

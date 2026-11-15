@@ -103,6 +103,7 @@ uses
   p_pspr,
   p_mobj_h,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_common,
   p_spec,
   info_common,

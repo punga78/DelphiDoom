@@ -1,35 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiDoom is a source port of the game Doom and it is
-//  based on original Linux Doom as published by "id Software"
-//  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Handling interactions (i.e., collisions).
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Doom for items and damage (p_inter)       }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_inter;
+unit DelphiDoom.Engine.World.InterRules;
 
 interface
 
@@ -53,32 +33,11 @@ uses
 //==============================================================================
 function P_GivePower(player: Pplayer_t; power: integer): boolean;
 
-//==============================================================================
-//
-// P_TouchSpecialThing
-//
-//==============================================================================
-procedure P_TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
-
-//==============================================================================
-//
-// P_DamageMobj
-//
-//==============================================================================
-procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
   maxammo: array[0..Ord(NUMAMMO) - 1] of integer = (200, 50, 300, 50);
   clipammo: array[0..Ord(NUMAMMO) - 1] of integer = (10, 4, 20, 1);
-
-//==============================================================================
-//
-// P_CmdSuicide
-//
-//==============================================================================
-procedure P_CmdSuicide;
 
 var
   p_maxhealth: integer = 200;
@@ -91,6 +50,22 @@ var
   p_maxarmor: integer = 200;
   p_greenarmorclass: integer = 1;
   p_bluearmorclass: integer = 2;
+
+type
+  /// <summary>
+  ///   What Doom does in the item and damage code of p_inter (issue #185, step 2f-2). The routines that
+  ///   are the same in the games are in Base\p_inter.pas; the ones that only this game has stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TInterGameRules = class sealed
+  public
+    /// <summary>The player touches a special thing (pickup); the body of P_TouchSpecialThing</summary>
+    class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
+    /// <summary>Damages both enemies and players; the body of P_DamageMobj</summary>
+    class procedure DamageMobj(target, inflictor, source: Pmobj_t; damage: integer); static;
+  end;
 
 implementation
 
@@ -112,7 +87,8 @@ uses
   r_defs,
   r_main,
   udmf_spec,
-  tables;
+  tables,
+  p_inter;
 
 const
   BONUSADD = 6;
@@ -437,7 +413,7 @@ end;
 // P_TouchSpecialThing
 //
 //==============================================================================
-procedure P_TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
+class procedure TInterGameRules.TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t);
 var
   player: Pplayer_t;
   i: integer;
@@ -1049,7 +1025,7 @@ end;
 // and other environmental stuff.
 //
 //==============================================================================
-procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
+class procedure TInterGameRules.DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 var
   ang: angle_t;
   saved: integer;
@@ -1226,39 +1202,6 @@ begin
         P_SetMobjState(target, statenum_t(target.info.seestate));
     end;
   end;
-end;
-
-//==============================================================================
-//
-// P_CmdSuicide
-//
-//==============================================================================
-procedure P_CmdSuicide;
-begin
-  if demoplayback then
-  begin
-    I_Warning('P_CmdSuicide(): You can''t suicide during demo playback.'#13#10);
-    exit;
-  end;
-  if demorecording then
-  begin
-    I_Warning('P_CmdSuicide(): You can''t suicide during demo recording.'#13#10);
-    exit;
-  end;
-
-  if (gamestate = GS_LEVEL) and (players[consoleplayer].mo <> nil) then
-  begin
-    if players[consoleplayer].health > 0 then
-    begin
-      C_ExecuteCmd('closeconsole');
-      P_DamageMobj(players[consoleplayer].mo, nil, nil, 1000);
-      players[consoleplayer]._message := 'You give up too easy';
-    end
-    else
-      printf('You''re already dead.'#13#10);
-  end
-  else
-    I_Warning('P_CmdSuicide(): You can''t suicide if you aren''t playing.'#13#10);
 end;
 
 end.

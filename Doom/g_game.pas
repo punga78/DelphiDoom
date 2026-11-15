@@ -569,6 +569,7 @@ uses
   p_mobj_h,
   p_mobj,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_map,
   DelphiDoom.Engine.World.MapRules,
   p_acs,

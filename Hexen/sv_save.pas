@@ -186,6 +186,7 @@ uses
   udmf_doors,
   p_pspr_h,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_tick,
   p_mobj,
   p_mobjlist,

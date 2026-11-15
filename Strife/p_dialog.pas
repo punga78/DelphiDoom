@@ -202,6 +202,7 @@ uses
   p_mobj_h,
   p_mobj,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_enemy,
   p_doors,
   p_spec,

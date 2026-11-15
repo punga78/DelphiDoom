@@ -139,6 +139,7 @@ uses
   p_pspr,
   p_pspr_h,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_local,
   p_setup,    // JVAL: 3d Floors
   p_slopes,   // JVAL: Slopes

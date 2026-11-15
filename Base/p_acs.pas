@@ -181,6 +181,7 @@ uses
   m_rnd,
   p_tick,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_spec,
   p_setup,
   p_mobj,

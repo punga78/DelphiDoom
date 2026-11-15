@@ -401,6 +401,7 @@ uses
   DelphiDoom.Engine.World.MapRules,
   p_tick,
   p_inter,
+  DelphiDoom.Engine.World.InterRules,
   p_enemy,
   p_maputl,
   p_local,
