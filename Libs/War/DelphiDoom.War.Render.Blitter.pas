@@ -36,9 +36,12 @@ type
     FWidth: Integer;
     FHeight: Integer;
     FPixels: TBytes;
+    /// <summary>The canvas was cleared with an opaque colour, so the alpha of every pixel is 255 (blends keep it)</summary>
+    FOpaque: Boolean;
     procedure BlendPixel(AOffset: Integer; ARed, AGreen, ABlue, AAlpha: Integer); inline;
     procedure BlendLinePixel(AOffset: Integer; const AColor: TWarRgba); inline;
     procedure BlendPacked(AOffset: Integer; ARed, AGreen, ABlue, AAlpha: Cardinal);
+    procedure DrawCopy(const ASource: TWarImage; ASourceX, ASourceY, ADestX, ADestY, AWidth, AHeight: Integer);
     procedure BlendSum(AOffset: Integer; ARed, AGreen, ABlue, AAlpha: Integer);
     procedure DrawLineHorizontal(AX1, AX2, AY: Integer; const AColor: TWarRgba);
     procedure DrawLineVertical(AX, AY1, AY2: Integer; const AColor: TWarRgba);
@@ -75,6 +78,8 @@ procedure TWarImageBlitter.Clear(const AColor: TWarRgba);
 var
   LIndex: Integer;
 begin
+  // every blend of an opaque canvas leaves it opaque (alpha + 255 * (255 - alpha) / 255 is 255): a copy then needs no read
+  FOpaque := AColor.A = 255;
   for LIndex := 0 to FWidth * FHeight - 1 do
   begin
     FPixels[LIndex * 4] := AColor.R;
@@ -154,6 +159,58 @@ begin
   FPixels[AOffset + 3] := Byte(AColor.A + (FPixels[AOffset + 3] * LInverse) div 255);
 end;
 
+procedure TWarImageBlitter.DrawCopy(const ASource: TWarImage; ASourceX, ASourceY, ADestX, ADestY, AWidth, AHeight: Integer);
+var
+  LRow: Integer;
+  LColumn: Integer;
+  LSource: PCardinal;
+  LDest: PCardinal;
+  LValue: Cardinal;
+  LAlpha: Cardinal;
+begin
+  // BlendPacked for every pixel of a rectangle that is copied as it is: the pixel is one word, an opaque one replaces the
+  // colour of the canvas (its alpha stays), a transparent one is skipped and the rest is blended
+  for LRow := 0 to AHeight - 1 do
+  begin
+    LSource := PCardinal(@ASource.Pixels[((ASourceY + LRow) * ASource.Width + ASourceX) * WAR_PIXEL_SIZE]);
+    LDest := PCardinal(@FPixels[((ADestY + LRow) * FWidth + ADestX) * WAR_PIXEL_SIZE]);
+    LColumn := 0;
+    if FOpaque then
+      // four opaque pixels in a row (the usual terrain) go as they are
+      while LColumn + 3 < AWidth do
+      begin
+        if (PCardinal(NativeUInt(LSource))^ and PCardinal(NativeUInt(LSource) + 4)^ and
+          PCardinal(NativeUInt(LSource) + 8)^ and PCardinal(NativeUInt(LSource) + 12)^) shr 24 <> 255 then
+          Break;
+        PCardinal(NativeUInt(LDest))^ := PCardinal(NativeUInt(LSource))^;
+        PCardinal(NativeUInt(LDest) + 4)^ := PCardinal(NativeUInt(LSource) + 4)^;
+        PCardinal(NativeUInt(LDest) + 8)^ := PCardinal(NativeUInt(LSource) + 8)^;
+        PCardinal(NativeUInt(LDest) + 12)^ := PCardinal(NativeUInt(LSource) + 12)^;
+        Inc(LSource, 4);
+        Inc(LDest, 4);
+        Inc(LColumn, 4);
+      end;
+    while LColumn < AWidth do
+    begin
+      Inc(LColumn);
+      LValue := LSource^;
+      LAlpha := LValue shr 24;
+      if LAlpha = 255 then
+      begin
+        if FOpaque then
+          LDest^ := LValue
+        else
+          LDest^ := (LDest^ and $FF000000) or (LValue and $00FFFFFF);
+      end
+      else if LAlpha <> 0 then
+        BlendPacked(Integer(NativeUInt(LDest) - NativeUInt(@FPixels[0])), LValue and $FF, (LValue shr 8) and $FF,
+          (LValue shr 16) and $FF, LAlpha);
+      Inc(LSource);
+      Inc(LDest);
+    end;
+  end;
+end;
+
 procedure TWarImageBlitter.Draw(const ASource: TWarImage; const ABlit: TWarBlit);
 var
   LSourceX: Integer;
@@ -206,6 +263,13 @@ begin
     LFlipped := ABlit.FlipHorizontal or ABlit.FlipVertical;
     LPacked := (not LFlipped) and (((LSourceWidth = LDestWidth) and (LSourceHeight = LDestHeight)) or (LDestX < 0) or
       (LDestY < 0) or (LDestX + LDestWidth > FWidth) or (LDestY + LDestHeight > FHeight));
+  end;
+  // the common case: a 1:1 copy that is all inside the canvas goes pixel by pixel on pointers (the same packed blit)
+  if LPacked and (LSourceWidth = LDestWidth) and (LSourceHeight = LDestHeight) and (LDestX >= 0) and (LDestY >= 0) and
+    (LDestX + LDestWidth <= FWidth) and (LDestY + LDestHeight <= FHeight) then
+  begin
+    DrawCopy(ASource, LSourceX, LSourceY, LDestX, LDestY, LDestWidth, LDestHeight);
+    Exit;
   end;
   // the nearest scale of SDL_Blit_Slow: 16.16 steps starting in the middle of the first pixel
   LStepX := (LSourceWidth shl 16) div LDestWidth;

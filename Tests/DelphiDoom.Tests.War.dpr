@@ -331,6 +331,7 @@ uses
   DelphiDoom.Tests.War.MapUiWorld in 'Source\DelphiDoom.Tests.War.MapUiWorld.pas',
   DelphiDoom.Tests.War.MapUiUnits in 'Source\DelphiDoom.Tests.War.MapUiUnits.pas',
   DelphiDoom.Tests.War.MapUiBench in 'Source\DelphiDoom.Tests.War.MapUiBench.pas',
+  DelphiDoom.Tests.War.MapUiCommands in 'Source\DelphiDoom.Tests.War.MapUiCommands.pas',
   DelphiDoom.Tests.War.Render in 'Source\DelphiDoom.Tests.War.Render.pas',
   DelphiDoom.Tests.War.Text in 'Source\DelphiDoom.Tests.War.Text.pas',
   DelphiDoom.Tests.War.RenderParity in 'Source\DelphiDoom.Tests.War.RenderParity.pas',

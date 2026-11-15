@@ -232,10 +232,12 @@ begin
         LIndex := LVisual[LY * WAR_MAP_TILES_WIDTH + LX];
         LSource.X := (LIndex mod WAR_TILESET_TILES_PER_ROW) * TILE_SIZE;
         LSource.Y := (LIndex div WAR_TILESET_TILES_PER_ROW) * TILE_SIZE;
-        FTransform.Save;
-        FTransform.Translate(LX * TILE_SIZE, LY * TILE_SIZE);
+        // the original translates to the tile and draws at (0, 0); with the scale of the state at 1 the sum of the offset and
+        // the position of the tile is the same single float, so the tile is drawn where it is without the save, the
+        // translation and the restore
+        LDestination.X := LX * TILE_SIZE;
+        LDestination.Y := LY * TILE_SIZE;
         FTransform.SubImageOf(FSprites.Tileset, LSource, LDestination, 1, 1);
-        FTransform.Restore;
       end;
     end;
 end;

@@ -54,6 +54,10 @@ type
     [Test]
     procedure DovrebbeMostrareIMenuDellEdificioPerIlContadinoCheCostruisce;
     [Test]
+    procedure DovrebbeDareITuttiIComandiDegliEdificiConLeCapacitaEIMiglioramenti;
+    [Test]
+    procedure DovrebbeDareLeImmaginiDeiMiglioramentiEIlCostoDelSecondoLivello;
+    [Test]
     procedure DovrebbeLasciareVuotoSenzaSelezione;
   end;
 
@@ -284,6 +288,7 @@ var
 begin
   LSlot := FWorld.Entities.CreateBuilding(WAR_UNIT_BARRACKS_HUMANS, 20, 20, 0, True);
   Assert.AreNotEqual(0, LSlot);
+  FWorld.Context.Pool.Slots[LSlot]^.UnitData.Building := True;
   Select([FWorld.Context.Pool.Slots[LSlot]^.Id]);
   Assert.AreEqual(1, Count);
   Assert.IsTrue(FResult.SlotsActive[5]);
@@ -296,6 +301,112 @@ begin
   FPanel.Update(FResult, WAR_COMMAND_ATTACK);
   Assert.AreEqual(1, Count);
   Assert.AreEqual(WAR_COMMAND_CANCEL, FResult.Slots[5].Command);
+end;
+
+procedure TTestWarMapUiPanel.DovrebbeDareITuttiIComandiDegliEdificiConLeCapacitaEIMiglioramenti;
+var
+  LNext: Integer;
+  LPlayer: PWarPlayerInfo;
+
+  function Pick(AType: Integer): string;
+  var
+    LSlot: Integer;
+    LIndex: Integer;
+  begin
+    // the commands of a building of the type, one number each (0 where there is no button)
+    Inc(LNext, 4);
+    LSlot := FWorld.Entities.CreateBuilding(AType, 4 + (LNext mod 56), 4 + (LNext div 56) * 4, 0, False);
+    Assert.AreNotEqual(0, LSlot);
+    FWorld.Context.Selection.Assign([FWorld.Context.Pool.Slots[LSlot]^.Id]);
+    FPanel.Update(FResult);
+    Result := '';
+    for LIndex := 0 to 5 do
+      if FResult.SlotsActive[LIndex] then
+        Result := Result + IntToStr(FResult.Slots[LIndex].Command) + ' '
+      else
+        Result := Result + '0 ';
+    Result := Trim(Result);
+  end;
+
+  procedure Allow(AFeature, AUpgrade, AAllowed, ALevel: Integer);
+  begin
+    LPlayer^.Features[AFeature div 2] := 1;
+    LPlayer^.Upgrades[AUpgrade div 2].Allowed := AAllowed;
+    LPlayer^.Upgrades[AUpgrade div 2].Level := ALevel;
+  end;
+
+begin
+  LPlayer := FWorld.Context.Players[0];
+  // the humans: the three researches of a tower, the upgrades of the buildings that have one
+  Allow(WAR_FEATURE_SPELL_SCORPION, WAR_UPGRADE_SCORPIONS, 1, 0);
+  Allow(WAR_FEATURE_SPELL_RAIN_OF_FIRE, WAR_UPGRADE_RAIN_OF_FIRE, 1, 0);
+  Allow(WAR_FEATURE_SPELL_WATER_ELEMENTAL, WAR_UPGRADE_WATER_ELEMENTAL, 1, 0);
+  Assert.AreEqual(Format('%d %d %d %d 0 0', [WAR_CMD_TRAIN_CONJURER, WAR_CMD_UPGRADE_SCORPION, WAR_CMD_UPGRADE_RAIN_OF_FIRE,
+    WAR_CMD_UPGRADE_WATER_ELEMENTAL]), Pick(WAR_UNIT_TOWER_HUMANS));
+  LPlayer^.Upgrades[WAR_UPGRADE_ARROWS div 2].Allowed := 2;
+  Assert.AreEqual(Format('%d 0 0 0 0 0', [WAR_CMD_UPGRADE_ARROWS]), Pick(WAR_UNIT_LUMBERMILL_HUMANS));
+  LPlayer^.Upgrades[WAR_UPGRADE_HORSES div 2].Allowed := 2;
+  Assert.AreEqual(Format('%d 0 0 0 0 0', [WAR_CMD_UPGRADE_HORSES]), Pick(WAR_UNIT_STABLE));
+  // the barracks need the buildings that open the units: the archer wants the lumber mill, the catapult the blacksmith and
+  // the knight the stable too
+  Assert.AreEqual(Format('%d %d 0 0 0 0', [WAR_CMD_TRAIN_FOOTMAN, WAR_CMD_TRAIN_ARCHER]), Pick(WAR_UNIT_BARRACKS_HUMANS));
+  Pick(WAR_UNIT_BLACKSMITH_HUMANS);
+  Assert.AreEqual(Format('%d %d %d %d 0 0', [WAR_CMD_TRAIN_FOOTMAN, WAR_CMD_TRAIN_ARCHER, WAR_CMD_TRAIN_CATAPULT_HUMANS,
+    WAR_CMD_TRAIN_KNIGHT]), Pick(WAR_UNIT_BARRACKS_HUMANS));
+  // a farm that is built has no buttons (its text is the food)
+  Assert.AreEqual('0 0 0 0 0 0', Pick(WAR_UNIT_FARM_HUMANS));
+  // the orcs
+  LPlayer^.Race := wraOrcs;
+  Allow(WAR_FEATURE_SPELL_SPIDER, WAR_UPGRADE_SPIDERS, 1, 0);
+  Allow(WAR_FEATURE_SPELL_POISON_CLOUD, WAR_UPGRADE_POISON_CLOUD, 1, 0);
+  Allow(WAR_FEATURE_SPELL_DAEMON, WAR_UPGRADE_DAEMON, 1, 0);
+  Assert.AreEqual(Format('%d %d %d %d 0 0', [WAR_CMD_TRAIN_WARLOCK, WAR_CMD_UPGRADE_SPIDER, WAR_CMD_UPGRADE_POISON_CLOUD,
+    WAR_CMD_UPGRADE_DAEMON]), Pick(WAR_UNIT_TOWER_ORCS));
+  Allow(WAR_FEATURE_SPELL_RAISE_DEAD, WAR_UPGRADE_RAISE_DEAD, 1, 0);
+  Allow(WAR_FEATURE_SPELL_DARK_VISION, WAR_UPGRADE_DARK_VISION, 1, 0);
+  Allow(WAR_FEATURE_SPELL_UNHOLY_ARMOR, WAR_UPGRADE_UNHOLY_ARMOR, 1, 0);
+  Assert.AreEqual(Format('%d %d %d %d 0 0', [WAR_CMD_TRAIN_NECROLYTE, WAR_CMD_UPGRADE_RAISE_DEAD,
+    WAR_CMD_UPGRADE_DARK_VISION, WAR_CMD_UPGRADE_UNHOLY_ARMOR]), Pick(WAR_UNIT_TEMPLE));
+  LPlayer^.Upgrades[WAR_UPGRADE_SPEARS div 2].Allowed := 2;
+  Assert.AreEqual(Format('%d 0 0 0 0 0', [WAR_CMD_UPGRADE_SPEARS]), Pick(WAR_UNIT_LUMBERMILL_ORCS));
+  LPlayer^.Upgrades[WAR_UPGRADE_WOLVES div 2].Allowed := 2;
+  Assert.AreEqual(Format('%d 0 0 0 0 0', [WAR_CMD_UPGRADE_WOLVES]), Pick(WAR_UNIT_KENNEL));
+  LPlayer^.Upgrades[WAR_UPGRADE_AXES div 2].Allowed := 2;
+  LPlayer^.Upgrades[WAR_UPGRADE_SHIELD div 2].Allowed := 2;
+  Assert.AreEqual(Format('%d %d 0 0 0 0', [WAR_CMD_UPGRADE_AXES, WAR_CMD_UPGRADE_SHIELD_ORCS]), Pick(WAR_UNIT_BLACKSMITH_ORCS));
+  // the barracks of the orcs: the spearman, the catapult and the raider come with their buildings
+  Assert.AreEqual(Format('%d %d %d %d 0 0', [WAR_CMD_TRAIN_GRUNT, WAR_CMD_TRAIN_SPEARMAN, WAR_CMD_TRAIN_CATAPULT_ORCS,
+    WAR_CMD_TRAIN_RAIDER]), Pick(WAR_UNIT_BARRACKS_ORCS), 'con la segheria, la fucina e il canile');
+end;
+
+procedure TTestWarMapUiPanel.DovrebbeDareLeImmaginiDeiMiglioramentiEIlCostoDelSecondoLivello;
+var
+  LPlayer: PWarPlayerInfo;
+  LId: Word;
+begin
+  LPlayer := FWorld.Context.Players[0];
+  // the costs: the first level of a research and then the second
+  LPlayer^.Upgrades[WAR_UPGRADE_SWORDS div 2].Allowed := 2;
+  LPlayer^.Upgrades[WAR_UPGRADE_SWORDS div 2].Level := 1;
+  LId := FWorld.Entities.CreateBuilding(WAR_UNIT_BLACKSMITH_HUMANS, 20, 20, 0, False);
+  FWorld.Context.Selection.Assign([FWorld.Context.Pool.Slots[LId]^.Id]);
+  FPanel.Update(FResult);
+  Assert.AreEqual(WAR_PORTRAIT_SWORD_3, FResult.Slots[0].FrameIndex, 'la spada del secondo livello');
+  Assert.AreEqual(FWorld.Context.Database.GetUpgradeStats(WAR_UPGRADE_SWORDS).GoldCost2, FResult.Slots[0].Gold);
+  // the weapon of a footman: the arrow of an archer at level 1, the axe and the shields by level
+  LPlayer^.Upgrades[WAR_UPGRADE_ARROWS div 2].Level := 1;
+  Select([Spawn(WAR_UNIT_ARCHER, 0)]);
+  Assert.AreEqual(WAR_PORTRAIT_ARROW_2, FResult.Slots[2].FrameIndex);
+  LPlayer^.Upgrades[WAR_UPGRADE_SHIELD div 2].Level := 1;
+  Select([Spawn(WAR_UNIT_FOOTMAN, 0)]);
+  Assert.AreEqual(WAR_PORTRAIT_SHIELD_2_HUMANS, FResult.Slots[1].FrameIndex);
+  LPlayer^.Race := wraOrcs;
+  LPlayer^.Upgrades[WAR_UPGRADE_SHIELD div 2].Level := 2;
+  Select([Spawn(WAR_UNIT_GRUNT, 0)]);
+  Assert.AreEqual(WAR_PORTRAIT_SHIELD_3_ORCS, FResult.Slots[1].FrameIndex);
+  LPlayer^.Upgrades[WAR_UPGRADE_SPEARS div 2].Level := 1;
+  Select([Spawn(WAR_UNIT_SPEARMAN, 0)]);
+  Assert.AreEqual(WAR_PORTRAIT_SPEAR_2, FResult.Slots[2].FrameIndex);
 end;
 
 procedure TTestWarMapUiPanel.DovrebbeMostrareIMenuDellEdificioPerIlContadinoCheCostruisce;
