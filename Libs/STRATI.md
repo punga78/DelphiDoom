@@ -48,7 +48,7 @@ Uscita **0**: nessuna violazione nuova e nessuna eccezione da aggiornare. **1**:
 
 ### Eccezioni
 
-Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 7 (tutte coppie, nessun ciclo; quelle di #224 e `Palette` -> `Video` sono state tolte): #225 (`Console` -> `GameState`, `Greed` -> `Net`, piu' `Pmove` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
+Le eccezioni stanno in `Eccezioni` e dichiarano i **difetti noti**: `Da`, `A`, `Massimo` (numero di unit di arrivo distinte coperte), `Issue` (la issue che la toglie) e `Motivo`; oppure un `Ciclo`. Un uso fuori regola coperto e' "eccezione nota"; oltre `Massimo` e' una violazione nuova; senza piu' usi (o con meno unit) l'eccezione e' stantia e va tolta o ridotta insieme alla correzione. Oggi: 6 (tutte coppie, nessun ciclo; quelle di #224, `Palette` -> `Video` e `Console` -> `GameState` sono state tolte): #225 (`Greed` -> `Net`, piu' `Pmove` -> `Net`), #226 (`Speed` -> `Racing`), #229 (`Opl` -> `XcomFormats`).
 
 ## Metodo e limiti
 

@@ -108,7 +108,11 @@ begin
   FVersion := FSource.AddString('version', [], 'v1');
   FAutoRun := FSource.AddBoolean('autorun', [camNetwork], True);
   FRegistry := TConsoleFactory.CreateRegistry;
-  FCommands := TConsoleFactory.CreateVariableCommands(FRegistry, FSourceIntf, FOutputIntf, FLog, FGameIntf);
+  FCommands := TConsoleFactory.CreateVariableCommands(FRegistry, FSourceIntf, FOutputIntf, FLog,
+    function: Boolean
+    begin
+      Result := FGameIntf.IsNetGame;
+    end);
 end;
 
 procedure TTestConsoleVariableCommands.TearDown;

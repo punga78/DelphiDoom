@@ -1002,7 +1002,11 @@ begin
     TConsoleFactory.CreateStandardCommands(ARegistry, LOutput, LRunner),
     TConsoleFactory.CreateAutoExec(TEngineConsoleStartup.Create(ACommandLine, ASaveFileNames, ALumps),
       LRunner, LOutput, AppTitle),
-    TConsoleFactory.CreateVariableCommands(ARegistry, LVariables, LOutput, ALog, AGame),
+    TConsoleFactory.CreateVariableCommands(ARegistry, LVariables, LOutput, ALog,
+      function: Boolean
+      begin
+        Result := AGame.IsNetGame;
+      end),
     TConsoleFactory.CreateCommandQueue(AInterpreter),
     TConsoleFactory.CreateInputLine(']', AInterpreter, LOutput, TConsoleFactory.CreateHistory,
       TConsoleFactory.CreateCompleter(ARegistry, LVariables)),

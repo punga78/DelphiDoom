@@ -11,7 +11,7 @@ unit DelphiDoom.Console.Factory;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.GameState.Intf, DelphiDoom.Console.Intf,
+  DelphiDoom.Logging.Intf, DelphiDoom.Console.Types, DelphiDoom.Console.Intf,
   DelphiDoom.Console.AutoExec, DelphiDoom.Console.CommandQueue, DelphiDoom.Console.CheatTable,
   DelphiDoom.Console.CheatSequence, DelphiDoom.Console.Completer, DelphiDoom.Console.History,
   DelphiDoom.Console.InputLine, DelphiDoom.Console.StandardCommands,
@@ -31,7 +31,7 @@ type
       const ALog: ILog): IConsoleScriptRunner; static;
     class function CreateVariableCommands(const ARegistry: ICommandRegistry;
       const AVariables: IConsoleVariableSource; const AOutput: IConsoleOutput; const ALog: ILog;
-      const AGame: IGameContext): TConsoleVariableCommands; static;
+      const ANetGame: TConsoleNetGameQuery): TConsoleVariableCommands; static;
     class function CreateStandardCommands(const ARegistry: ICommandRegistry;
       const AOutput: IConsoleOutput; const ARunner: IConsoleScriptRunner): TConsoleStandardCommands; static;
     class function CreateAutoExec(const AStartup: IConsoleStartupSource;
@@ -80,9 +80,9 @@ end;
 
 class function TConsoleFactory.CreateVariableCommands(const ARegistry: ICommandRegistry;
   const AVariables: IConsoleVariableSource; const AOutput: IConsoleOutput; const ALog: ILog;
-  const AGame: IGameContext): TConsoleVariableCommands;
+  const ANetGame: TConsoleNetGameQuery): TConsoleVariableCommands;
 begin
-  Result := TConsoleVariableCommands.Create(ARegistry, AVariables, AOutput, ALog, AGame);
+  Result := TConsoleVariableCommands.Create(ARegistry, AVariables, AOutput, ALog, ANetGame);
 end;
 
 class function TConsoleFactory.CreateStandardCommands(const ARegistry: ICommandRegistry;

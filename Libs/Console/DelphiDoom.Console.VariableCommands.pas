@@ -11,7 +11,7 @@ unit DelphiDoom.Console.VariableCommands;
 interface
 
 uses
-  DelphiDoom.Logging.Intf, DelphiDoom.GameState.Intf, DelphiDoom.Console.Intf;
+  DelphiDoom.Logging.Intf, DelphiDoom.Console.Types, DelphiDoom.Console.Intf;
 
 type
   /// <summary>
@@ -24,7 +24,7 @@ type
     FVariables: IConsoleVariableSource;
     FOutput: IConsoleOutput;
     FLog: ILog;
-    FGame: IGameContext;
+    FNetGame: TConsoleNetGameQuery;
     function CanSet(const AVariable: IConsoleVariable): Boolean;
     function SettableNames: TArray<string>;
     function AllNames: TArray<string>;
@@ -32,7 +32,8 @@ type
     procedure UnknownCommand;
   public
     constructor Create(const ARegistry: ICommandRegistry; const AVariables: IConsoleVariableSource;
-      const AOutput: IConsoleOutput; const ALog: ILog; const AGame: IGameContext);
+      const AOutput: IConsoleOutput; const ALog: ILog;
+      const ANetGame: TConsoleNetGameQuery);
     procedure GetVariable(const AName: string);
     /// <summary>AValue is the rest of the line: it may have spaces</summary>
     procedure SetVariable(const AName, AValue: string);
@@ -44,7 +45,7 @@ type
 implementation
 
 uses
-  System.SysUtils, DelphiDoom.Console.Types, DelphiDoom.Console.Text, DelphiDoom.Console.Numbers,
+  System.SysUtils, DelphiDoom.Console.Text, DelphiDoom.Console.Numbers,
   DelphiDoom.Console.MaskMatcher;
 
 const
@@ -55,7 +56,7 @@ const
 
 constructor TConsoleVariableCommands.Create(const ARegistry: ICommandRegistry;
   const AVariables: IConsoleVariableSource; const AOutput: IConsoleOutput; const ALog: ILog;
-  const AGame: IGameContext);
+  const ANetGame: TConsoleNetGameQuery);
 begin
   inherited Create;
   if not Assigned(ARegistry) then
@@ -66,18 +67,18 @@ begin
     raise EArgumentNilException.Create('AOutput');
   if not Assigned(ALog) then
     raise EArgumentNilException.Create('ALog');
-  if not Assigned(AGame) then
-    raise EArgumentNilException.Create('AGame');
+  if not Assigned(ANetGame) then
+    raise EArgumentNilException.Create('ANetGame');
   FRegistry := ARegistry;
   FVariables := AVariables;
   FOutput := AOutput;
   FLog := ALog;
-  FGame := AGame;
+  FNetGame := ANetGame;
 end;
 
 function TConsoleVariableCommands.CanSet(const AVariable: IConsoleVariable): Boolean;
 begin
-  if FGame.IsNetGame then
+  if FNetGame() then
     Result := camNetwork in AVariable.Access
   else
     Result := camSinglePlayer in AVariable.Access;

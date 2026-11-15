@@ -134,7 +134,11 @@ begin
   Tag('MixedCase', 'edge');
 
   FVariableCommands := TConsoleFactory.CreateVariableCommands(FRegistry, FVariablesIntf,
-    FOutputIntf, LLog, FGameIntf);
+    FOutputIntf, LLog,
+    function: Boolean
+    begin
+      Result := FGameIntf.IsNetGame;
+    end);
   FStandardCommands := TConsoleFactory.CreateStandardCommands(FRegistry, FOutputIntf, FRunner);
   FVariableCommands.Register;
   FStandardCommands.Register;
