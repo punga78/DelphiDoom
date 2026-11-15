@@ -20,6 +20,9 @@ type
   /// </summary>
   TConsoleCommandHandler = reference to procedure(const AParam1, AParam2: string);
 
+  /// <summary>Tells whether the game is a network game now (the answer changes while it runs)</summary>
+  TConsoleNetGameQuery = reference to function: Boolean;
+
   /// <summary>The type of a console variable</summary>
   TConsoleVariableKind = (
     cvkInteger,

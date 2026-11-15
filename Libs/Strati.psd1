@@ -186,8 +186,6 @@
        Motivo = 'ActorDefinitions, CarSpriteBuilder e SkyTextures di SpeedHaste32 (motore id Tech 1) usano Racing.Types e Racing.CarData (auto e piste, strato Giochi): Speed32 e SpeedHaste32 stanno nella stessa area, da separare quando si spostano le cartelle' }
     @{ Da = 'Libs\Pmove'; A = 'Libs\Net'; Massimo = 1; Issue = 225
        Motivo = 'Pmove usa TQ3PlayerState e TQ3UserCmd di DelphiDoom.Net.Q3.Types: Net e'' mista (trasporto e protocollo di Doom e Quake III) e i tipi di Quake III vanno in un''area id Tech 3' }
-    @{ Da = 'Libs\Console'; A = 'Libs\GameState'; Massimo = 1; Issue = 225
-       Motivo = 'Console (registro dei comandi, generico) usa IGameContext (gioco in corso, di Doom) in Factory e VariableCommands' }
     @{ Da = 'Libs\Greed'; A = 'Libs\Net'; Massimo = 1; Issue = 225
        Motivo = 'Greed usa il trasporto UDP di Net, che e'' misto con il protocollo dei ticcmd di Doom (Net non e'' nell''elenco di #225: da aggiungere)' }
     @{ Da = 'Greed'; A = 'Libs\Net'; Massimo = 4; Issue = 225
