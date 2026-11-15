@@ -32,13 +32,6 @@ uses
 //==============================================================================
 function P_GivePower(player: Pplayer_t; power: integer): boolean;
 
-//==============================================================================
-//
-// P_GiveBody
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -122,6 +115,12 @@ type
   TInterGameRules = class sealed
   public
     const
+      /// <summary>P_GiveArmor accepts a negative armor type, that is given only to a player with no armor (Strife)</summary>
+      AllowsNegativeArmor = False;
+      /// <summary>P_GiveBody is the method GiveBody of the rules (Strife: the stamina and the medic of the Front)</summary>
+      OwnsGiveBody = False;
+      /// <summary>A dropped thing scatters on the floor with a random momentum from this engine version on (P_SpawnDroppedMobj)</summary>
+      DroppedScatterVersion = VERSION207;
       /// <summary>The dice of the damage of a charging Maulotaur (P_MinotaurSlam)</summary>
       MinotaurSlamDice = 6;
 
@@ -131,6 +130,12 @@ type
     class procedure DamageMobj(target, inflictor, source: Pmobj_t; damage: integer); static;
     /// <summary>What a pickup does when it comes back, before it is drawn again (the mace of Heretic goes to a new place)</summary>
     class procedure RepositionSpecial(thing: Pmobj_t); static;
+    /// <summary>The highest health a player can be given by P_GiveBody</summary>
+    class function MaxPlayerHealth(player: Pplayer_t): integer; static;
+    /// <summary>The game is in the compatibility mode: the dropped things do not fall</summary>
+    class function NeedsCompatibility: boolean; static;
+    /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
+    class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
 
 implementation
@@ -163,7 +168,8 @@ uses
   sb_bar,
   udmf_spec,
   tables,
-  p_inter;
+  p_inter,
+  DelphiDoom.Engine.World.PickupGivers;
 
 const
   BONUSADD = 6;
@@ -284,59 +290,6 @@ begin
   end;
 
   result := gaveweapon or gaveammo;
-end;
-
-//==============================================================================
-//
-// P_GiveBody
-// Returns false if the body isn't needed at all
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
-var
-  maxhealth: integer;
-begin
-  if player.chickenTics <> 0 then
-    maxhealth := p_maxchickenhealth
-  else
-    maxhealth := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
-
-  if player.health >= maxhealth then
-  begin
-    result := false;
-    exit;
-  end;
-
-  player.health := player.health + num;
-  if player.health > maxhealth then
-    player.health := maxhealth;
-  player.mo.health := player.health;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// P_GiveArmor
-// Returns false if the armor is worse
-// than the current armor.
-//
-//==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: integer): boolean;
-var
-  hits: integer;
-begin
-  hits := armortype * 100;
-  if player.armorpoints >= hits then
-  begin
-    result := false;  // don't pick up
-    exit;
-  end;
-
-  player.armortype := armortype;
-  player.armorpoints := hits;
-
-  result := true;
 end;
 
 //==============================================================================
@@ -1134,29 +1087,6 @@ begin
 end;
 
 //==============================================================================
-// P_SpawnDroppedMobj
-//
-// KillMobj
-//
-//==============================================================================
-function P_SpawnDroppedMobj(x, y, z: fixed_t; _type: integer): Pmobj_t;
-begin
-  result := P_SpawnMobj(x, y, z, _type);
-  result.flags := result.flags or MF_DROPPED; // special versions of items
-  // JVAL Dropped items fall down to floor.
-  if not compatibilitymode then
-  begin
-    result.z := result.z + 32 * FRACUNIT;
-    result.momz := 4 * FRACUNIT;
-    if G_PlayingEngineVersion >= VERSION207 then
-    begin
-      result.momx := 64 * N_Random;
-      result.momy := 64 * N_Random;
-    end;
-  end;
-end;
-
-//==============================================================================
 //
 // P_KillMobj
 //
@@ -1629,6 +1559,39 @@ begin
   begin // Do random mace placement
     P_RepositionMace(thing);
   end;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.MaxPlayerHealth
+//
+//==============================================================================
+class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
+begin
+  if player.chickenTics <> 0 then
+    result := p_maxchickenhealth
+  else
+    result := mobjinfo[Ord(MT_PLAYER)].spawnhealth;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.NeedsCompatibility
+//
+//==============================================================================
+class function TInterGameRules.NeedsCompatibility: boolean;
+begin
+  result := compatibilitymode;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.GiveBody
+//
+//==============================================================================
+class function TInterGameRules.GiveBody(player: Pplayer_t; num: integer): boolean;
+begin
+  result := false;
 end;
 
 end.

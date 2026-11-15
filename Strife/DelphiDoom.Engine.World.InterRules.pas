@@ -57,13 +57,6 @@ function P_GiveCard(player: Pplayer_t; card: card_t): boolean;
 
 //==============================================================================
 //
-// P_GiveArmor
-//
-//==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: integer): boolean;
-
-//==============================================================================
-//
 // P_GiveAmmo
 //
 //==============================================================================
@@ -75,13 +68,6 @@ function P_GiveAmmo(player: Pplayer_t; ammo: ammotype_t; num: integer): boolean;
 //
 //==============================================================================
 function P_GiveWeapon(player: Pplayer_t; weapon: weapontype_t; dropped: boolean): boolean;
-
-//==============================================================================
-//
-// P_GiveBody
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
 
 //==============================================================================
 //
@@ -100,10 +86,24 @@ type
   /// </remarks>
   TInterGameRules = class sealed
   public
+    const
+      /// <summary>P_GiveArmor accepts a negative armor type, that is given only to a player with no armor (Strife)</summary>
+      AllowsNegativeArmor = True;
+      /// <summary>P_GiveBody is the method GiveBody of the rules (Strife: the stamina and the medic of the Front)</summary>
+      OwnsGiveBody = True;
+      /// <summary>A dropped thing scatters on the floor with a random momentum from this engine version on (P_SpawnDroppedMobj)</summary>
+      DroppedScatterVersion = VERSION207;
+
     /// <summary>The player touches a special thing (pickup); the body of P_TouchSpecialThing</summary>
     class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
     /// <summary>Damages both enemies and players; the body of P_DamageMobj</summary>
     class procedure DamageMobj(target, inflictor, source: Pmobj_t; damage: integer); static;
+    /// <summary>The highest health a player can be given by P_GiveBody</summary>
+    class function MaxPlayerHealth(player: Pplayer_t): integer; static;
+    /// <summary>The game is in the compatibility mode: the dropped things do not fall</summary>
+    class function NeedsCompatibility: boolean; static;
+    /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
+    class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
 
 implementation
@@ -138,7 +138,8 @@ uses
   r_main,
   udmf_spec,
   tables,
-  p_inter;
+  p_inter,
+  DelphiDoom.Engine.World.PickupGivers;
 
 const
   BONUSADD = 6;
@@ -328,7 +329,7 @@ end;
 // villsa [STRIFE] a lot of changes have been added for stamina
 //
 //==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
+class function TInterGameRules.GiveBody(player: Pplayer_t; num: integer): boolean;
 var
   maxhealth: integer;
   healing: integer;
@@ -394,44 +395,6 @@ begin
         mo.health := player.health;
     end;
   end;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// P_GiveArmor
-// Returns false if the armor is worse
-// than the current armor.
-//
-// [STRIFE] Modified for Strife armor items
-//
-//==============================================================================
-function P_GiveArmor(player: Pplayer_t; armortype: integer): boolean;
-var
-  hits: integer;
-begin
-  // villsa [STRIFE]
-  if armortype < 0 then
-  begin
-    if player.armorpoints <> 0 then
-    begin
-      result := false;
-      exit;
-    end;
-
-    armortype := -armortype;
-  end;
-
-  hits := armortype * 100;
-  if player.armorpoints >= hits then
-  begin
-    result := false;  // don't pick up
-    exit;
-  end;
-
-  player.armortype := armortype;
-  player.armorpoints := hits;
 
   result := true;
 end;
@@ -1499,6 +1462,26 @@ begin
       end;
     end;
 
+end;
+
+//==============================================================================
+//
+// TInterGameRules.MaxPlayerHealth
+//
+//==============================================================================
+class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
+begin
+  result := mobjinfo[Ord(MT_PLAYER)].spawnhealth + player.stamina;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.NeedsCompatibility
+//
+//==============================================================================
+class function TInterGameRules.NeedsCompatibility: boolean;
+begin
+  result := G_NeedsCompatibilityMode;
 end;
 
 end.

@@ -42,6 +42,7 @@ unit p_inter;
 interface
 
 uses
+  d_player,
   p_mobj_h;
 
 //==============================================================================
@@ -61,6 +62,14 @@ procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 
 //==============================================================================
 //
+// P_GiveBody
+// Returns false if the body isn't needed at all
+//
+//==============================================================================
+function P_GiveBody(player: Pplayer_t; num: integer): boolean;
+
+//==============================================================================
+//
 // P_CmdSuicide
 //
 //==============================================================================
@@ -71,7 +80,6 @@ implementation
 uses
   c_cmds,
   d_delphi,
-  d_player,
   doomdef,
   doomstat,
 {$IFDEF HEXEN}
@@ -99,6 +107,42 @@ end;
 procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 begin
   TInterGameRules.DamageMobj(target, inflictor, source, damage);
+end;
+
+//==============================================================================
+//
+// GiveBodyUpTo
+// Gives num health points, up to maxhealth
+//
+//==============================================================================
+function GiveBodyUpTo(player: Pplayer_t; num: integer; maxhealth: integer): boolean;
+begin
+  if player.health >= maxhealth then
+  begin
+    result := false;
+    exit;
+  end;
+
+  player.health := player.health + num;
+  if player.health > maxhealth then
+    player.health := maxhealth;
+  player.mo.health := player.health;
+
+  result := true;
+end;
+
+//==============================================================================
+//
+// P_GiveBody
+// Returns false if the body isn't needed at all
+//
+//==============================================================================
+function P_GiveBody(player: Pplayer_t; num: integer): boolean;
+begin
+  if TInterGameRules.OwnsGiveBody then
+    result := TInterGameRules.GiveBody(player, num)
+  else
+    result := GiveBodyUpTo(player, num, TInterGameRules.MaxPlayerHealth(player));
 end;
 
 //==============================================================================

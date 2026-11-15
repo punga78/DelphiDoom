@@ -272,6 +272,7 @@ uses
   p_genlin in '..\Base\p_genlin.pas',
   p_inter in '..\Base\p_inter.pas',
   DelphiDoom.Engine.World.InterRules in '..\Doom\DelphiDoom.Engine.World.InterRules.pas',
+  DelphiDoom.Engine.World.PickupGivers in '..\Base\DelphiDoom.Engine.World.PickupGivers.pas',
   p_lights in '..\Doom\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',

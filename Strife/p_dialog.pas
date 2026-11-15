@@ -203,6 +203,7 @@ uses
   p_mobj,
   p_inter,
   DelphiDoom.Engine.World.InterRules,
+  DelphiDoom.Engine.World.PickupGivers,
   p_enemy,
   p_doors,
   p_spec,

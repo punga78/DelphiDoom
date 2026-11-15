@@ -41,13 +41,6 @@ function P_MaxPlayerHealth(player: Pplayer_t): integer;
 
 //==============================================================================
 //
-// P_GiveBody
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
-
-//==============================================================================
-//
 // P_GiveKey
 //
 //==============================================================================
@@ -203,6 +196,8 @@ type
   TInterGameRules = class sealed
   public
     const
+      /// <summary>P_GiveBody is the method GiveBody of the rules (Strife: the stamina and the medic of the Front)</summary>
+      OwnsGiveBody = False;
       /// <summary>The dice of the damage of a charging Maulotaur (P_MinotaurSlam)</summary>
       MinotaurSlamDice = 4;
 
@@ -212,6 +207,10 @@ type
     class procedure DamageMobj(target: Pmobj_t; inflictor: Pmobj_t; source: Pmobj_t; damage: integer); static;
     /// <summary>What a pickup does when it comes back, before it is drawn again (the mace of Heretic goes to a new place)</summary>
     class procedure RepositionSpecial(thing: Pmobj_t); static;
+    /// <summary>The highest health a player can be given by P_GiveBody</summary>
+    class function MaxPlayerHealth(player: Pplayer_t): integer; static;
+    /// <summary>The body of P_GiveBody when OwnsGiveBody</summary>
+    class function GiveBody(player: Pplayer_t; num: integer): boolean; static;
   end;
 
 implementation
@@ -325,33 +324,6 @@ begin
       result := p_maxmorphhealth;
     end;
   end;
-end;
-
-//==============================================================================
-//
-// P_GiveBody
-// Returns false if the body isn't needed at all
-//
-//==============================================================================
-function P_GiveBody(player: Pplayer_t; num: integer): boolean;
-var
-  maxhealth: integer;
-begin
-
-  maxhealth := P_MaxPlayerHealth(player);
-
-  if player.health >= maxhealth then
-  begin
-    result := false;
-    exit;
-  end;
-
-  player.health := player.health + num;
-  if player.health > maxhealth then
-    player.health := maxhealth;
-  player.mo.health := player.health;
-
-  result := true;
 end;
 
 //==============================================================================
@@ -2457,6 +2429,26 @@ end;
 //==============================================================================
 class procedure TInterGameRules.RepositionSpecial(thing: Pmobj_t);
 begin
+end;
+
+//==============================================================================
+//
+// TInterGameRules.MaxPlayerHealth
+//
+//==============================================================================
+class function TInterGameRules.MaxPlayerHealth(player: Pplayer_t): integer;
+begin
+  result := P_MaxPlayerHealth(player);
+end;
+
+//==============================================================================
+//
+// TInterGameRules.GiveBody
+//
+//==============================================================================
+class function TInterGameRules.GiveBody(player: Pplayer_t; num: integer): boolean;
+begin
+  result := false;
 end;
 
 end.

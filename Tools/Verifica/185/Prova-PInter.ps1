@@ -34,21 +34,32 @@ $Expansions = @(
   # --- 2f-2b: la famiglia di Heretic e Hexen (Base\DelphiDoom.Engine.World.SpecialRespawn e MinotaurSlam) ---
   @{ R = 'A_RestoreSpecialThing1'; F = 'TInterGameRules.RepositionSpecial(thing);'; D = '<<B:RepositionSpecial>>' }
   @{ R = 'P_MinotaurSlam'; F = 'HITDICE(TInterGameRules.MinotaurSlamDice)'; Heretic = 'HITDICE(6)'; Hexen = 'HITDICE(4)' }
+
+  # --- 2f-2c: P_GiveArmor e P_SpawnDroppedMobj (Base\DelphiDoom.Engine.World.PickupGivers) ---
+  @{ R = 'P_GiveArmor'; F = 'if TInterGameRules.AllowsNegativeArmor and (armortype < 0) then begin if player.armorpoints <> 0 then begin result := false; exit; end; armortype := -armortype; end;'; D = ''
+     Strife = 'if armortype < 0 then begin if player.armorpoints <> 0 then begin result := false; exit; end; armortype := -armortype; end;'
+     Note = 'il ramo dell''armatura negativa (AllowsNegativeArmor) e'' solo di Strife: negli altri giochi non c''e''' }
+  @{ R = 'P_SpawnDroppedMobj'; F = 'if not TInterGameRules.NeedsCompatibility then'; Doom = 'if not G_NeedsCompatibilityMode then'; Heretic = 'if not compatibilitymode then' }
+  @{ R = 'P_SpawnDroppedMobj'; F = 'if G_PlayingEngineVersion >= TInterGameRules.DroppedScatterVersion then'; Doom = 'if G_PlayingEngineVersion >= VERSION117 then'; Heretic = 'if G_PlayingEngineVersion >= VERSION207 then' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
 $NotTextual = @{
+  'Doom|P_GiveBody' = 'GiveBodyUpTo e'' il vecchio testo con maxhealth come parametro; il valore e'' MaxPlayerHealth, cioe'' mobjinfo[Ord(MT_PLAYER)].spawnhealth (l''espressione che il vecchio testo scriveva tre volte, senza effetti collaterali)'
+  'Heretic|P_GiveBody' = 'GiveBodyUpTo e'' il vecchio testo con maxhealth come parametro; MaxPlayerHealth e'' il vecchio if/else (pollo: p_maxchickenhealth, altrimenti spawnhealth), valutato una volta all''inizio come prima'
+  'Hexen|P_GiveBody' = 'come Heretic: MaxPlayerHealth e'' P_MaxPlayerHealth(player), valutata una volta all''inizio come prima'
 }
 
 # le routine che sono metodi delle regole: testo vecchio con l'intestazione del metodo
 $Methods = @{
+  'Strife|P_GiveBody' = 'GiveBody'
   'P_TouchSpecialThing' = 'TouchSpecialThing'
   'P_DamageMobj' = 'DamageMobj'
 }
 
-$Alias = @{}
+$Alias = @{ 'Hexen|P_GiveArmor' = 'P_GiveArmor#hexen'; 'Hexen|P_SpawnDroppedMobj' = 'P_SpawnDroppedMobj#hexen' }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_inter' -BaseFiles 'Base\p_inter.pas', 'Base\DelphiDoom.Engine.World.SpecialRespawn.pas', 'Base\DelphiDoom.Engine.World.MinotaurSlam.pas', 'Base\DelphiDoom.Engine.World.PlayerArtifacts.pas' `
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_inter' -BaseFiles 'Base\p_inter.pas', 'Base\DelphiDoom.Engine.World.SpecialRespawn.pas', 'Base\DelphiDoom.Engine.World.MinotaurSlam.pas', 'Base\DelphiDoom.Engine.World.PlayerArtifacts.pas', 'Base\DelphiDoom.Engine.World.PickupGivers.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.InterRules.pas' -Class 'TInterGameRules' -Expansions $Expansions `
   -NotTextual $NotTextual -Methods $Methods -Alias $Alias
 exit $bad

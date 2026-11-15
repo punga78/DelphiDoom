@@ -252,6 +252,7 @@ uses
   p_floor in '..\Base\p_floor.pas',
   p_inter in '..\Base\p_inter.pas',
   DelphiDoom.Engine.World.InterRules in '..\Strife\DelphiDoom.Engine.World.InterRules.pas',
+  DelphiDoom.Engine.World.PickupGivers in '..\Base\DelphiDoom.Engine.World.PickupGivers.pas',
   p_lights in '..\Strife\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',
