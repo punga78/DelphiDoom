@@ -72,6 +72,7 @@ uses
   doomdef,
   doomstat,
   d_player,
+  p_tick,
   g_game,
   p_mobj_h,
   p_mobj,
@@ -142,8 +143,7 @@ procedure TStrifeLevelRules.ResetStatistics;
 var
   LPlayer: Integer;
 begin
-  totalkills := 0;
-  totalsecret := 0;
+  P_World.Totals.Clear;
 
   for LPlayer := 0 to MAXPLAYERS - 1 do
   begin

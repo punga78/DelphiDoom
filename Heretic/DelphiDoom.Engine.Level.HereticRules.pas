@@ -72,6 +72,7 @@ uses
   doomdef,
   doomstat,
   d_player,
+  p_tick,
   g_game,
   p_mobj_h,
   p_mobj,
@@ -139,9 +140,7 @@ procedure THereticLevelRules.ResetStatistics;
 var
   LPlayer: Integer;
 begin
-  totalkills := 0;
-  totalitems := 0;
-  totalsecret := 0;
+  P_World.Totals.Clear;
 
   wminfo.maxfrags := 0;
   wminfo.partime := 180;

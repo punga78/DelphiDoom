@@ -13,10 +13,13 @@ interface
 
 uses
   DelphiDoom.MathCore.Intf,
+  DelphiDoom.Thinkers.BodyQueue,
   DelphiDoom.Thinkers.List,
+  DelphiDoom.Thinkers.LevelTotals,
   DelphiDoom.Thinkers.RespawnQueue,
   doomdata,
-  d_think;
+  d_think,
+  p_mobj_h;
 
 type
   /// <summary>
@@ -48,6 +51,9 @@ type
     FTime: TEngineWorldTime;
     FRandom: IGameRandom;
     FItemRespawn: TRespawnQueue<mapthing_t>;
+    FPlayerCorpses: TBodyQueue;
+    FTotals: TLevelTotals;
+    FEnemyCorpses: TBodyQueue;
   public
     /// <param name="AThinkerCap">The head of the list of the thinkers (it stays where the saved games look for it)</param>
     /// <param name="ATime">Where the time of the level is kept; only TimerGame may be nil</param>
@@ -65,6 +71,19 @@ type
     property Random: IGameRandom read FRandom;
     /// <summary>The items that come back in a deathmatch 2 game (not written in the saved games)</summary>
     property ItemRespawn: TRespawnQueue<mapthing_t> read FItemRespawn;
+    /// <summary>The corpses of the players left on the spawn spots (bodyque of g_game); emptied when the things of a level are spawned</summary>
+    property PlayerCorpses: TBodyQueue read FPlayerCorpses;
+    /// <summary>The corpses added by A_AddPlayerCorpse (Heretic and Hexen): a queue of its own, never emptied between levels, as before</summary>
+    property EnemyCorpses: TBodyQueue read FEnemyCorpses;
+    /// <summary>The monsters, items and secret sectors of the level (totalkills, totalitems, totalsecret; not written in the saved games)</summary>
+    property Totals: TLevelTotals read FTotals;
+
+    /// <summary>Keeps the corpse of a player left on a spawn spot and removes the oldest one if the queue is full</summary>
+    procedure AddPlayerCorpse(AMobj: Pmobj_t);
+    /// <summary>Keeps a corpse added by an action and removes the oldest one if the queue is full</summary>
+    procedure AddEnemyCorpse(AMobj: Pmobj_t);
+    /// <summary>Forgets the corpses of the spawn spots (the things of a new level are spawned)</summary>
+    procedure ClearPlayerCorpses;
   end;
 
 implementation
@@ -72,7 +91,6 @@ implementation
 uses
   System.SysUtils,
   p_mobj,
-  p_mobj_h,
   p_mobjlist,
   z_zone;
 
@@ -136,13 +154,43 @@ begin
   // thinker_t and TThinkerNode have the same layout: three pointers
   FThinkers := TThinkerList.Create(PThinkerNode(AThinkerCap), LHooks);
   FItemRespawn := TRespawnQueue<mapthing_t>.Create;
+  FPlayerCorpses := TBodyQueue.Create;
+  FEnemyCorpses := TBodyQueue.Create;
+  FTotals := TLevelTotals.Create;
 end;
 
 destructor TEngineWorld.Destroy;
 begin
+  FTotals.Free;
+  FEnemyCorpses.Free;
+  FPlayerCorpses.Free;
   FItemRespawn.Free;
   FThinkers.Free;
   inherited;
+end;
+
+procedure TEngineWorld.AddPlayerCorpse(AMobj: Pmobj_t);
+var
+  LEvicted: Pointer;
+begin
+  // too many corpses: remove an old one
+  LEvicted := FPlayerCorpses.Add(AMobj);
+  if LEvicted <> nil then
+    P_RemoveMobj(LEvicted);
+end;
+
+procedure TEngineWorld.AddEnemyCorpse(AMobj: Pmobj_t);
+var
+  LEvicted: Pointer;
+begin
+  LEvicted := FEnemyCorpses.Add(AMobj);
+  if LEvicted <> nil then
+    P_RemoveMobj(LEvicted);
+end;
+
+procedure TEngineWorld.ClearPlayerCorpses;
+begin
+  FPlayerCorpses.Clear;
 end;
 
 procedure TEngineWorld.RunThinkers;

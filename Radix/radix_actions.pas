@@ -2301,7 +2301,7 @@ var
 begin
   parms := radixkillratio_p(@action.params);
 
-  runtrigger := TRadixActionRules.KillRatioReached(totalradixkills, totalkills,
+  runtrigger := TRadixActionRules.KillRatioReached(totalradixkills, P_World.Totals.Kills,
     players[radixplayer].killcount, parms.percentage);
 
   if not runtrigger and (leveltime and 31 = 0) then
@@ -2320,7 +2320,7 @@ begin
       end;
       think := think.next;
     end;
-    runtrigger := TRadixActionRules.KillRatioReachedByLiving(totalradixkills, living, totalkills,
+    runtrigger := TRadixActionRules.KillRatioReachedByLiving(totalradixkills, living, P_World.Totals.Kills,
       parms.percentage);
   end;
 
@@ -2575,7 +2575,7 @@ begin
       if sectors[secid].special and SECRET_MASK = 0 then
       begin
         sectors[secid].special := sectors[secid].special or SECRET_MASK; // JVAL: 20200311 -> Use BOOM generalized type
-        inc(totalsecret);
+        P_World.Totals.CountSecret;
       end;
   end;
 

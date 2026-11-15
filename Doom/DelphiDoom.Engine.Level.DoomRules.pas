@@ -171,9 +171,7 @@ procedure TDoomLevelRules.ResetStatistics;
 var
   LPlayer: Integer;
 begin
-  totalkills := 0;
-  totalitems := 0;
-  totalsecret := 0;
+  P_World.Totals.Clear;
 
   wminfo.maxfrags := 0;
   wminfo.partime := 180;

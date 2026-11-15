@@ -56,6 +56,7 @@ uses
   r_defs,
   r_main,
   i_system,
+  p_tick,
   g_game,
   d_main,
   m_rnd,
@@ -258,7 +259,7 @@ begin
   if result.tics > 0 then
     result.tics := 1 + (P_Random mod result.tics);
   if result.flags and MF_COUNTKILL <> 0 then
-    inc(totalkills);
+    P_World.Totals.CountKill;
   TMobjGameRules.CountItem(result);
 
   if result.flags2_ex and MF2_EX_PRECISESPAWNANGLE <> 0 then

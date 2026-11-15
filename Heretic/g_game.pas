@@ -290,13 +290,11 @@ var
   displayplayer: integer; // view being displayed
   gametic: integer;
 
-  totalkills, totalitems, totalsecret: integer; // for intermission
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
   gameskill: skill_t;
 
-  bodyqueslot: integer;
 
   precache: boolean; // if true, load all graphics at start
 
@@ -788,12 +786,6 @@ var
 
 var
   usearti: boolean = true;
-
-const
-  BODYQUESIZE  = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
 
 //==============================================================================
 //
@@ -2032,10 +2024,7 @@ begin
   players[playernum].mo.flags2 := players[playernum].mo.flags2 or MF2_PASSMOBJ;
 
   // flush an old corpse if needed
-  if bodyqueslot >= BODYQUESIZE then
-    P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-  bodyque[bodyqueslot mod BODYQUESIZE] := players[playernum].mo;
-  inc(bodyqueslot);
+  P_World.AddPlayerCorpse(players[playernum].mo);
 
   // spawn a teleport fog
   {$IFDEF FPC}
@@ -2266,9 +2255,9 @@ begin
 frommapinfo:
   wminfo.nextmapinfo := G_LookupMapinfo(wminfo.nextep + 1, wminfo.next + 1);
 
-  wminfo.maxkills := totalkills;
-  wminfo.maxitems := totalitems;
-  wminfo.maxsecret := totalsecret;
+  wminfo.maxkills := P_World.Totals.Kills;
+  wminfo.maxitems := P_World.Totals.Items;
+  wminfo.maxsecret := P_World.Totals.Secrets;
   wminfo.maxfrags := 0;
 
   wminfo.pnum := consoleplayer;

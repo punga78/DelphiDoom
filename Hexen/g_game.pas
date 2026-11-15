@@ -224,13 +224,11 @@ var
   displayplayer: integer; // view being displayed
   gametic: integer;
 
-  totalkills, totalitems, totalsecret: integer; // for intermission
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
   gameskill: skill_t;
 
-  bodyqueslot: integer;
 
   precache: boolean = true; // if true, load all graphics at start
 
@@ -637,12 +635,6 @@ var
 
 var
   usearti: boolean = true;
-
-const
-  BODYQUESIZE  = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
 
 //==============================================================================
 //
@@ -1740,10 +1732,7 @@ begin
   players[playernum].mo.flags2 := players[playernum].mo.flags2 or MF2_PASSMOBJ;
 
   // flush an old corpse if needed
-  if bodyqueslot >= BODYQUESIZE then
-    P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-  bodyque[bodyqueslot mod BODYQUESIZE] := players[playernum].mo;
-  inc(bodyqueslot);
+  P_World.AddPlayerCorpse(players[playernum].mo);
 
   // spawn a teleport fog
   {$IFDEF FPC}

@@ -297,13 +297,11 @@ var
   displayplayer: integer; // view being displayed
   gametic: integer;
 
-  totalkills, totalsecret: integer; // for intermission
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
   gameskill: skill_t = sk_medium;
 
-  bodyqueslot: integer;
 
   precache: boolean; // if true, load all graphics at start
 
@@ -832,12 +830,6 @@ var
 
   savegameslot: integer;
   savedescription: string;
-
-const
-  BODYQUESIZE  = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
 
 //==============================================================================
 //
@@ -1765,10 +1757,7 @@ begin
   // flush an old corpse if needed
   if not G_NeedsCompatibilityMode then
   begin
-    if bodyqueslot >= BODYQUESIZE then
-      P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-    bodyque[bodyqueslot mod BODYQUESIZE] := players[playernum].mo;
-    inc(bodyqueslot);
+    P_World.AddPlayerCorpse(players[playernum].mo);
   end;
 
   // spawn a teleport fog

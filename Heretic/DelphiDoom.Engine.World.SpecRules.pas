@@ -1232,7 +1232,7 @@ begin
      9:
       begin
         // SECRET SECTOR
-        inc(totalsecret);
+        P_World.Totals.CountSecret;
       end;
 
     10:

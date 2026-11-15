@@ -380,7 +380,7 @@ end;
 
 procedure TLevelLoader.SpawnThings(AMapLump: Integer);
 begin
-  bodyqueslot := 0;
+  P_World.ClearPlayerCorpses;
   po_NumPolyobjs := 0;
   deathmatch_p := 0;
   FRules.BeforeThings;
