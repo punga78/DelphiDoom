@@ -387,11 +387,32 @@ static void deliver(int seq) {
 	he = FNV_START;
 	for (i = 0; i < cl.snap.numEntities; i++)
 		he = fnvu(he, (const byte *)&cl.parseEntities[(cl.snap.parseEntitiesNum + i) & (MAX_PARSE_ENTITIES - 1)], sizeof(entityState_t));
-	printf("demo.snap %d valid=%d flags=%d time=%d msg=%d delta=%d scn=%d ne=%d pen=%d area=%08x ps=%08x ents=%08x\n",
+	printf("demo.snap %d valid=%d flags=%d time=%d msg=%d delta=%d scn=%d ne=%d pen=%d area=%08x ps=%08x ents=%08x ct=%d ping=%d\n",
 		msgIndex, cl.snap.valid, cl.snap.snapFlags, cl.snap.serverTime, cl.snap.messageNum, cl.snap.deltaNum,
 		cl.snap.serverCommandNum, cl.snap.numEntities, cl.snap.parseEntitiesNum,
-		fnvu(FNV_START, cl.snap.areamask, MAX_MAP_AREA_BYTES), fnvu(FNV_START, (const byte *)&cl.snap.ps, sizeof(playerState_t)), he);
+		fnvu(FNV_START, cl.snap.areamask, MAX_MAP_AREA_BYTES), fnvu(FNV_START, (const byte *)&cl.snap.ps, sizeof(playerState_t)), he, cl.snap.ps.commandTime, cl.snap.ping);
 	msgIndex++;
+}
+
+/* the sending half of the client (input of the parser; the lines are in the golden before the message they apply to) */
+static void setClient(int reliableSequence, int outgoingSequence, int realtime) {
+	clc.reliableSequence = reliableSequence;
+	clc.netchan.outgoingSequence = outgoingSequence;
+	cls.realtime = realtime;
+	printf("demo.client %d %d %d\n", reliableSequence, outgoingSequence, realtime);
+}
+
+static void setOut(int index, int cmdNumber, int serverTime, int realtime) {
+	cl.outPackets[index & PACKET_MASK].p_cmdNumber = cmdNumber;
+	cl.outPackets[index & PACKET_MASK].p_serverTime = serverTime;
+	cl.outPackets[index & PACKET_MASK].p_realtime = realtime;
+	printf("demo.out %d %d %d %d\n", index, cmdNumber, serverTime, realtime);
+}
+
+/* the 32 packets of the ring: server time n * step + base, real time 7000 + 3 * n */
+static void fillOut(int base, int step) {
+	int n;
+	for (n = 0; n < PACKET_BACKUP; n++) setOut(n, n, base + step * n, 7000 + 3 * n);
 }
 
 /* one snapshot message: deltaFrom is the message number the server deltas from (0 = nothing) */
@@ -490,5 +511,38 @@ int main(void) {
 	hist[81 & PACKET_MASK] = current;
 	deliver(81);
 	sendSnapshot(82, 81, 1, 0, 1);
+	/* the reliable acknowledge of a message is seq * 3: it is kept at the edge of the window (rs - 64) and clamped below it */
+	setClient(313, 0, 0);
+	sendSnapshot(83, 82, 1, 0, 1);
+	setClient(317, 0, 0);
+	sendSnapshot(84, 83, 1, 0, 1);
+	setClient(100, 0, 0);
+	sendSnapshot(85, 84, 1, 0, 1);
+	setClient(2147483647, 0, 0);
+	sendSnapshot(86, 85, 1, 0, 1);
+	/* the ping: the first packet, newest first, with a server time not after the command time; none is 999 */
+	/* the command time of these snapshots is negative: server time 0 is after it (999), -2000000000 is not (the newest packet) */
+	setClient(0, 40, 9000);
+	fillOut(0, 0);
+	sendSnapshot(87, 86, 1, 0, 1);
+	fillOut(-2000000000, 0);
+	sendSnapshot(88, 87, 1, 0, 1);
+	/* an increasing server time: the search goes back from the newest packet to the first one at or before the command time */
+	for (i = 0; i < 6; i++) {
+		setClient(0, i * 5, 9000 + i * 100);
+		fillOut(-1700000000, 20000000);
+		sendSnapshot(89 + i, 88 + i, 1, 0, 1);
+	}
+	/* a gamestate clears the packets: the snapshot after it finds only zeros */
+	startMessage(1000);
+	writeGamestate(30, 3, 5, 0);
+	MSG_WriteByte(&msg, svc_EOF);
+	deliver(95);
+	evolve(1);
+	startMessage(1003);
+	emitSnapshot(96, 0, 4, NULL);
+	MSG_WriteByte(&msg, svc_EOF);
+	hist[96 & PACKET_MASK] = current;
+	deliver(96);
 	return 0;
 }

@@ -13,6 +13,7 @@ Rete di Quake III Arena (id Tech 3), port a classi di `qcommon` (GPL v2 o succes
   `TQ3ServerMessageParser` (`cl_parse.c`: server command, gamestate, snapshot delta-compressi) con il sink `IQ3ServerMessageSink`,
   `TQ3DemoReader` (contenitore `.dm_68`). Senza chiamanti nel motore; parita sul C con `q3info-golden.txt` e `q3demo-golden.txt`
   (`Tools\Verifica\121\build-info.sh`, `build-demo.sh`). Dettagli e cosa resta: [CLAUDE.md](CLAUDE.md).
+- **Rete di Quake III, terza fetta** (#237): il clamp di `reliableAcknowledge` e il ping dello snapshot di `cl_parse.c` (`TQ3ServerMessageParser.ReliableSequence`, `OutgoingSequence`, `RealTime`, `SetOutPacket`, `TQ3Snapshot.Ping`), con parita' sul C nello stesso golden della demo.
 
 ## Prova
 

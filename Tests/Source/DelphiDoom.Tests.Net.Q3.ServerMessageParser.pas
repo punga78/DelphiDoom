@@ -55,6 +55,12 @@ type
     procedure DovrebbeRifiutareArgomentiNil;
     [Test]
     procedure DovrebbeLeggereUnMessaggioConSoloNopEFine;
+    [TestCase('al limite della finestra', '106,42')]
+    [TestCase('dentro la finestra', '50,42')]
+    [TestCase('sequenza zero', '0,42')]
+    [TestCase('un passo oltre la finestra', '107,107')]
+    [TestCase('molto oltre', '2147483647,2147483647')]
+    procedure DovrebbeLimitareLAcknowledgeAllaSequenzaDelleCommandeInVolo(ASequence, AExpected: Integer);
     [Test]
     procedure DovrebbeRifiutareUnComandoSconosciuto;
     [Test]
@@ -211,6 +217,21 @@ begin
   Assert.AreEqual(42, FParser.ReliableAcknowledge);
   Assert.AreEqual(1, FSinkObject.Events.Count);
   Assert.AreEqual('ack 42', FSinkObject.Events[0]);
+end;
+
+procedure TTestQ3ServerMessageParser.DovrebbeLimitareLAcknowledgeAllaSequenzaDelleCommandeInVolo(ASequence,
+  AExpected: Integer);
+var
+  LWriter: TQ3Message;
+begin
+  // NewWriter acknowledges 42; CL_ParseServerMessage clamps it to clc.reliableSequence when it is more than
+  // MAX_RELIABLE_COMMANDS behind
+  FParser.ReliableSequence := ASequence;
+  LWriter := NewWriter;
+  LWriter.WriteByte(Q3_SVC_NOP);
+  Parse(LWriter);
+  Assert.AreEqual(AExpected, FParser.ReliableAcknowledge);
+  Assert.AreEqual('ack ' + IntToStr(AExpected), FSinkObject.Events[0]);
 end;
 
 procedure TTestQ3ServerMessageParser.DovrebbeRifiutareUnComandoSconosciuto;
@@ -457,23 +478,57 @@ var
   LPlayerHash: Cardinal;
   LEntityHash: Cardinal;
   LLength: Integer;
+  LActions: TStringList;
+  LPending: string;
 
   procedure WriteInteger(AValue: Integer);
   begin
     LStream.WriteBuffer(AValue, 4);
   end;
 
+  // the lines of the golden before a message set the sending half of the client (reliable sequence, clock, packets)
+  procedure ApplyClient(const AActions: string);
+  var
+    LAction: string;
+    LWords: TArray<string>;
+    LPacket: TQ3OutPacket;
+  begin
+    for LAction in AActions.Split(['|'], TStringSplitOptions.ExcludeEmpty) do
+    begin
+      LWords := LAction.Split([' ']);
+      if LWords[0] = 'demo.client' then
+      begin
+        FParser.ReliableSequence := StrToInt(LWords[1]);
+        FParser.OutgoingSequence := StrToInt(LWords[2]);
+        FParser.RealTime := StrToInt(LWords[3]);
+      end
+      else
+      begin
+        LPacket.CmdNumber := StrToInt(LWords[2]);
+        LPacket.ServerTime := StrToInt(LWords[3]);
+        LPacket.RealTime := StrToInt(LWords[4]);
+        FParser.SetOutPacket(StrToInt(LWords[1]), LPacket);
+      end;
+    end;
+  end;
+
 begin
   LTerminator := 0;
   LExpected := TStringList.Create;
+  LActions := TStringList.Create;
   LStream := TMemoryStream.Create;
   LSorted := TList<Integer>.Create;
   try
+    LPending := '';
     LLines := TFile.ReadAllLines(TPath.GetFullPath(TPath.Combine(TPath.GetDirectoryName(ParamStr(0)),
       '..\..\..\..\Tests\Data\Net\q3demo-golden.txt')));
     for LLine in LLines do
-      if LLine.StartsWith('demo.message ') then
+      if LLine.StartsWith('demo.client ') or LLine.StartsWith('demo.out ') then
+        LPending := LPending + LLine + '|'
+      else if LLine.StartsWith('demo.message ') then
       begin
+        LActions.Add(LPending);
+        LPending := '';
         LBytes := HexToBytes(Copy(LLine, Pos('hex=', LLine) + 4, MaxInt));
         WriteInteger(StrToInt(Copy(LLine, Pos('seq=', LLine) + 4, Pos(' len=', LLine) - Pos('seq=', LLine) - 4)));
         WriteInteger(Length(LBytes));
@@ -492,6 +547,7 @@ begin
       begin
         FLogObject.Clear;
         LFailed := False;
+        ApplyClient(LActions[LIndex]);
         try
           FParser.ParseMessage(LData, Length(LData), LSequence);
         except
@@ -542,9 +598,10 @@ begin
           LEntityHash := HashUpdate(LEntityHash, LEntity, SizeOf(LEntity));
         LLength := LSnapshot.NumEntities;
         Assert.AreEqual(Format('demo.snap %d valid=%d flags=%d time=%d msg=%d delta=%d scn=%d ne=%d pen=%d ' +
-          'area=%.8x ps=%.8x ents=%.8x', [LIndex, Ord(LSnapshot.Valid), LSnapshot.SnapFlags, LSnapshot.ServerTime,
+          'area=%.8x ps=%.8x ents=%.8x ct=%d ping=%d', [LIndex, Ord(LSnapshot.Valid), LSnapshot.SnapFlags, LSnapshot.ServerTime,
           LSnapshot.MessageNum, LSnapshot.DeltaNum, LSnapshot.ServerCommandNum, LLength,
-          LSnapshot.ParseEntitiesNum, SnapshotAreaHash(LSnapshot), LPlayerHash, LEntityHash]),
+          LSnapshot.ParseEntitiesNum, SnapshotAreaHash(LSnapshot), LPlayerHash, LEntityHash,
+          LSnapshot.PlayerState.CommandTime, LSnapshot.Ping]),
           LExpected[LIndex * 5 + 4], 'messaggio ' + IntToStr(LIndex));
         Inc(LIndex);
       end;
@@ -556,6 +613,7 @@ begin
   finally
     LSorted.Free;
     LStream.Free;
+    LActions.Free;
     LExpected.Free;
   end;
 end;
