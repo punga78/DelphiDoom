@@ -389,6 +389,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.Input.KeyboardLayout,
   c_cmds,
   z_zone,
   doomdata,
@@ -1493,120 +1494,45 @@ end;
 //
 //==============================================================================
 procedure G_SetKeyboardMode(const mode: integer);
+var
+  layout: TKeyboardLayout;
 begin
-  if mode = 0 then
+  if TKeyboardLayouts.TryGet(klHexen, mode, layout) then
   begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 173;
-    key_down := 175;
-    key_strafeleft := 44;
-    key_straferight := 46;
-    key_jump := 97;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 122;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 1 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 119;
-    key_down := 115;
-    key_strafeleft := 97;
-    key_straferight := 100;
-    key_jump := 101;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 113;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 2 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 101;
-    key_down := 100;
-    key_strafeleft := 115;
-    key_straferight := 102;
-    key_jump := 97;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 122;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('l');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
+    key_right := layout.Right;
+    key_left := layout.Left;
+    key_up := layout.Up;
+    key_down := layout.Down;
+    key_strafeleft := layout.StrafeLeft;
+    key_straferight := layout.StrafeRight;
+    key_jump := layout.Jump;
+    key_crouch := layout.Crouch;
+    key_fire := layout.Fire;
+    key_use := layout.Use;
+    key_strafe := layout.Strafe;
+    key_speed := layout.Speed;
+    key_lookup := layout.LookUp;
+    key_lookdown := layout.LookDown;
+    key_lookcenter := layout.LookCenter;
+    key_lookright := layout.LookRight;
+    key_lookleft := layout.LookLeft;
+    key_lookforward := layout.LookForward;
+    key_flyup := layout.FlyUp;
+    key_flydown := layout.FlyDown;
+    key_flycenter := layout.FlyCenter;
+    key_invleft := layout.InventoryLeft;
+    key_invright := layout.InventoryRight;
+    key_weapon0 := layout.Weapons[0];
+    key_weapon1 := layout.Weapons[1];
+    key_weapon2 := layout.Weapons[2];
+    key_weapon3 := layout.Weapons[3];
+    AM_GOBIGKEY := layout.AutomapBig;
+    AM_FOLLOWKEY := layout.AutomapFollow;
+    AM_GRIDKEY := layout.AutomapGrid;
+    AM_ROTATEKEY := layout.AutomapRotate;
+    AM_TEXTUREDAUTOMAP := layout.AutomapTextured;
+    AM_MARKKEY := layout.AutomapMark;
+    AM_CLEARMARKKEY := layout.AutomapClearMarks;
   end;
 end;
 

@@ -540,6 +540,9 @@ procedure G_ConfigureSaveGameExtension(const saveproc, loadproc: savegameextensi
 implementation
 
 uses
+  DelphiDoom.MapInfo.LevelProgression,
+  DelphiDoom.MapInfo.MapName,
+  DelphiDoom.Input.KeyboardLayout,
   c_cmds,
   d_check,
   z_zone,
@@ -1737,115 +1740,44 @@ end;
 //
 //==============================================================================
 procedure G_SetKeyboardMode(const mode: integer);
+var
+  layout: TKeyboardLayout;
 begin
-  if mode = 0 then
+  if TKeyboardLayouts.TryGet(klDoom, mode, layout) then
   begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 173;
-    key_down := 175;
-    key_strafeleft := 44;
-    key_straferight := 46;
-    key_jump := 97;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 122;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 198;
-    key_lookleft := 200;
-    key_lookforward := 13;
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    key_weapon4 := Ord('5');
-    key_weapon5 := Ord('6');
-    key_weapon6 := Ord('7');
-    key_weapon7 := Ord('8');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 1 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 119;
-    key_down := 115;
-    key_strafeleft := 97;
-    key_straferight := 100;
-    key_jump := 101;
-    key_crouch := 113;  // JVAL: 20211101 - Crouch
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 198;
-    key_lookleft := 200;
-    key_lookforward := 13;
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    key_weapon4 := Ord('5');
-    key_weapon5 := Ord('6');
-    key_weapon6 := Ord('7');
-    key_weapon7 := Ord('8');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 2 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 101;
-    key_down := 100;
-    key_strafeleft := 115;
-    key_straferight := 102;
-    key_jump := 97;
-    key_crouch := 122;  // JVAL: 20211101 - Crouch
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 198;
-    key_lookleft := 200;
-    key_lookforward := 13;
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    key_weapon4 := Ord('5');
-    key_weapon5 := Ord('6');
-    key_weapon6 := Ord('7');
-    key_weapon7 := Ord('8');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('l');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
+    key_right := layout.Right;
+    key_left := layout.Left;
+    key_up := layout.Up;
+    key_down := layout.Down;
+    key_strafeleft := layout.StrafeLeft;
+    key_straferight := layout.StrafeRight;
+    key_jump := layout.Jump;
+    key_crouch := layout.Crouch;
+    key_fire := layout.Fire;
+    key_use := layout.Use;
+    key_strafe := layout.Strafe;
+    key_speed := layout.Speed;
+    key_lookup := layout.LookUp;
+    key_lookdown := layout.LookDown;
+    key_lookcenter := layout.LookCenter;
+    key_lookright := layout.LookRight;
+    key_lookleft := layout.LookLeft;
+    key_lookforward := layout.LookForward;
+    key_weapon0 := layout.Weapons[0];
+    key_weapon1 := layout.Weapons[1];
+    key_weapon2 := layout.Weapons[2];
+    key_weapon3 := layout.Weapons[3];
+    key_weapon4 := layout.Weapons[4];
+    key_weapon5 := layout.Weapons[5];
+    key_weapon6 := layout.Weapons[6];
+    key_weapon7 := layout.Weapons[7];
+    AM_GOBIGKEY := layout.AutomapBig;
+    AM_FOLLOWKEY := layout.AutomapFollow;
+    AM_GRIDKEY := layout.AutomapGrid;
+    AM_ROTATEKEY := layout.AutomapRotate;
+    AM_TEXTUREDAUTOMAP := layout.AutomapTextured;
+    AM_MARKKEY := layout.AutomapMark;
+    AM_CLEARMARKKEY := layout.AutomapClearMarks;
   end;
 end;
 
@@ -2186,44 +2118,8 @@ begin
   end;
 
   // wminfo.next is 0 biased, unlike gamemap
-  if gamemode = commercial then
-  begin
-    if secretexit then
-    begin
-      case gamemap of
-         2: if customgame = cg_bfg2 then wminfo.next := 32 else wminfo.next := gamemap;
-        15: wminfo.next := 30;
-        31: wminfo.next := 31;
-      end
-    end
-    else
-    begin
-      case gamemap of
-        31,
-        32: wminfo.next := 15;
-        33: if customgame = cg_bfg2 then wminfo.next := 2 else wminfo.next := gamemap;
-      else
-        wminfo.next := gamemap;
-      end;
-    end
-  end
-  else
-  begin
-    if secretexit then
-      wminfo.next := 8  // go to secret level
-    else if gamemap = 9 then
-    begin
-      // returning from secret level
-      case gameepisode of
-        1: wminfo.next := 3;
-        2: wminfo.next := 5;
-        3: wminfo.next := 6;
-        4: wminfo.next := 2;
-      end
-    end
-    else
-      wminfo.next := gamemap; // go to next level
-  end;
+  TLevelProgression.DoomNextMap(gamemode = commercial, secretexit, customgame = cg_bfg2,
+    gameepisode, gamemap, wminfo.next);
 
   if gamemode = commercial then
     wminfo.partime := TICRATE * cpars[gamemap - 1]
@@ -2297,16 +2193,8 @@ begin
     // if nothing applied, use the defaults.
   end;
 
-  if gamemode = commercial then
-  begin
-    if secretexit then
-    begin
-      if gamemap in [15, 31, 6, 11, 20, 30] then
-        F_StartFinale
-    end
-    else if gamemap in [6, 11, 20, 30] then
-      F_StartFinale;
-  end;
+  if (gamemode = commercial) and TLevelProgression.DoomCommercialFinale(secretexit, gamemap) then
+    F_StartFinale;
 end;
 
 //==============================================================================
@@ -3719,9 +3607,9 @@ var
   i: integer;
 begin
   if gamemode = commercial then
-    sprintf(lumpname, 'MAP%.2d', [map])
+    lumpname := TMapName.NumberedName(map)
   else
-    sprintf(lumpname, 'E%dM%d', [episode, map]);
+    lumpname := TMapName.EpisodeName(episode, map);
 
   for i := 0 to u_mapinfo.mapcount - 1 do
     if lumpname = u_mapinfo.maps[i].mapname then
@@ -3748,38 +3636,8 @@ end;
 function G_ValidateMapName(const amap: string; const pepi, pmapnum: PInteger): boolean;
 var
   epi, mapnum: integer;
-  len: integer;
-  map: string;
 begin
-  result := false;
-  len := Length(amap);
-  if not len in [4, 5] then
-    exit;
-
-  epi := 0;
-  mapnum := 0;
-  map := strupper(amap);
-
-  if (map[1] = 'E') and (map[3] = 'M') then
-  begin
-    if len = 4 then
-    begin
-      if not isdigit(map[2]) then
-        exit;
-      epi := atoi(map[2]);
-      mapnum := atoi(map[4]);
-      result := IsIntegerInRange(epi, 1, 8) and IsIntegerInRange(mapnum, 1, 9);
-    end;
-  end
-  else if (map[1] = 'M') and (map[2] = 'A') and (map[3] = 'P') then
-  begin
-    if len = 5 then
-    begin
-      mapnum := atoi(map[4] + map[5]);
-      result := IsIntegerInRange(mapnum, 1, 99);
-    end;
-  end;
-
+  result := TMapName.TryParse(amap, TMapName.DoomRules, epi, mapnum);
   if result then
   begin
     if pepi <> nil then

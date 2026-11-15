@@ -658,6 +658,7 @@ uses
   DelphiDoom.Thinkers.Plane.Waggle in '..\Libs\Thinkers\DelphiDoom.Thinkers.Plane.Waggle.pas',
   DelphiDoom.Thinkers.List in '..\Libs\Thinkers\DelphiDoom.Thinkers.List.pas',
   DelphiDoom.Thinkers.BodyQueue in '..\Libs\Thinkers\DelphiDoom.Thinkers.BodyQueue.pas',
+  DelphiDoom.Input.KeyboardLayout in '..\Libs\Input\DelphiDoom.Input.KeyboardLayout.pas',
   DelphiDoom.Thinkers.LevelTotals in '..\Libs\Thinkers\DelphiDoom.Thinkers.LevelTotals.pas',
   DelphiDoom.Thinkers.RespawnQueue in '..\Libs\Thinkers\DelphiDoom.Thinkers.RespawnQueue.pas',
   DelphiDoom.Engine.World in '..\Base\DelphiDoom.Engine.World.pas',
