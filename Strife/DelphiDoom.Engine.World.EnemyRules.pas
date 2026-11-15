@@ -1,44 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiStrife is a source port of the game Strife.
-//
-//  Based on:
-//    - Linux Doom by "id Software"
-//    - Chocolate Strife by "Simon Howard"
-//    - DelphiDoom by "Jim Valavanis"
-//
-//  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2005 Simon Howard
-//  Copyright (C) 2010 James Haley, Samuel Villarreal
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Enemy thinking, AI.
-//  Action Pointer Functions
-//  that are associated with states/frames.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Strife for the enemies (p_enemy)          }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_enemy;
+unit DelphiDoom.Engine.World.EnemyRules;
 
 interface
 
@@ -70,13 +41,6 @@ procedure A_Look(actor: Pmobj_t);
 //
 //==============================================================================
 procedure A_Chase(actor: Pmobj_t);
-
-//==============================================================================
-//
-// A_FaceTarget
-//
-//==============================================================================
-procedure A_FaceTarget(actor: Pmobj_t);
 
 //==============================================================================
 //
@@ -717,31 +681,10 @@ procedure P_DoChase(actor: Pmobj_t; const fast: boolean);
 
 //==============================================================================
 //
-// P_NoiseAlert
-//
-//==============================================================================
-procedure P_NoiseAlert(target: Pmobj_t; emmiter: Pmobj_t);
-
-//==============================================================================
-//
 // P_CheckMeleeRange
 //
 //==============================================================================
 function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
-
-//==============================================================================
-//
-// P_TryWalk
-//
-//==============================================================================
-function P_TryWalk(actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_Move
-//
-//==============================================================================
-function P_Move(actor: Pmobj_t): boolean;
 
 //==============================================================================
 //
@@ -771,23 +714,50 @@ procedure P_DestroyConverter;
 //==============================================================================
 procedure P_DoPunchAlert(puncher: Pmobj_t; punchee: Pmobj_t);
 
+//==============================================================================
+//
+// P_LookForPlayers
+//
+//==============================================================================
+function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+
 type
-  dirtype_t = (
-    DI_EAST,
-    DI_NORTHEAST,
-    DI_NORTH,
-    DI_NORTHWEST,
-    DI_WEST,
-    DI_SOUTHWEST,
-    DI_SOUTH,
-    DI_SOUTHEAST,
-    DI_NODIR,
-    NUMDIRS
-  );
+  /// <summary>
+  ///   What Strife does in the enemy code of p_enemy (issue #185, step 2f-4). The routines that
+  ///   are the same in the games are in Base\p_enemy.pas; the actions of the monsters stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TEnemyGameRules = class sealed
+  public
+    const
+      /// <summary>P_Move is a method of the rules (Hexen: the blasted monsters and the way the specials are tried)</summary>
+      OwnsMove = False;
+      /// <summary>The message of the error of P_Move for a movedir that is not a direction</summary>
+      WeirdMoveDirMessage = 'P_Move(): Weird actor.movedir = %d';
+
+    /// <summary>The special lines that the move bumped into are used (Doom, Heretic, Strife: scripts and use of the line)</summary>
+    class function UseSpecialLines(actor: Pmobj_t): boolean; static;
+    /// <summary>The aim of a monster that turns to its target is blurred by an invisible target (A_FaceTarget)</summary>
+    class procedure BlurAim(actor: Pmobj_t); static;
+    /// <summary>The move of the monster (only when OwnsMove)</summary>
+    class function Move(actor: Pmobj_t): boolean; static;
+    /// <summary>What P_Move does when the monster did not float and moved (Strife: the feet clip with the terrain)</summary>
+    class procedure ClearFloating(actor: Pmobj_t); static;
+    /// <summary>P_NewChaseDir was called with no target (Strife: back to the spawn state, the others stop with an error)</summary>
+    class procedure NoTarget(actor: Pmobj_t); static;
+    /// <summary>The monster with a missile attack may back away from the melee attacker (Doom: not the skull and its heirs)</summary>
+    class function CanBackAway(actor: Pmobj_t): boolean; static;
+    /// <summary>The weapon in the hand of the player makes the monsters flee from the melee (WPF_FLEEMELEE)</summary>
+    class function FleesMeleeWeapon(player: Pplayer_t): boolean; static;
+  end;
 
 implementation
 
 uses
+  p_enemy,
+  DelphiDoom.Engine.World.EnemyMoveSpecials,
   d_delphi,
   doomdata,
   deh_main,
@@ -827,16 +797,6 @@ uses
   r_main,
   r_translations;
 
-const
-  opposite: array[0..8] of dirtype_t = (
-    DI_WEST, DI_SOUTHWEST, DI_SOUTH, DI_SOUTHEAST,
-    DI_EAST, DI_NORTHEAST, DI_NORTH, DI_NORTHWEST, DI_NODIR
-  );
-
-  diags: array[0..3] of dirtype_t = (
-    DI_NORTHWEST, DI_NORTHEAST, DI_SOUTHWEST, DI_SOUTHEAST
-  );
-
 //==============================================================================
 //
 // A_Fall
@@ -867,78 +827,6 @@ end;
 // Most monsters are spawned unaware of all players,
 // but some can be made preaware
 //
-
-//
-// Called by P_NoiseAlert.
-// Recursively traverse adjacent sectors,
-// sound blocking lines cut off traversal.
-//
-
-var
-  soundtarget: Pmobj_t;
-
-//==============================================================================
-//
-// P_RecursiveSound
-//
-//==============================================================================
-procedure P_RecursiveSound(sec: Psector_t; soundblocks: integer);
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  // wake up all monsters in this sector
-  if (sec.validcount = validcount) and
-     (sec.soundtraversed <= soundblocks + 1) then
-    exit; // already flooded
-
-  sec.validcount := validcount;
-  sec.soundtraversed := soundblocks + 1;
-  sec.soundtarget := soundtarget;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    if check.flags and ML_TWOSIDED = 0 then
-      continue;
-    // JVAL: 20200407 - Avoid false ML_TWOSIDED flag
-    if (check.sidenum[1] < 0) or (check.sidenum[0] < 0) then
-      continue;
-
-    P_LineOpening(check, false);
-
-    if openrange <= 0 then
-      continue; // closed door
-
-    if sides[check.sidenum[0]].sector = sec then
-      other := sides[check.sidenum[1]].sector
-    else
-      other := sides[check.sidenum[0]].sector;
-
-    if check.flags and ML_SOUNDBLOCK <> 0 then
-    begin
-      if soundblocks = 0 then
-        P_RecursiveSound(other, 1);
-    end
-    else
-      P_RecursiveSound(other, soundblocks);
-  end;
-end;
-
-//==============================================================================
-//
-// P_NoiseAlert
-// If a monster yells at a player,
-// it will alert other monsters to the player.
-//
-//==============================================================================
-procedure P_NoiseAlert(target: Pmobj_t; emmiter: Pmobj_t);
-begin
-  soundtarget := target;
-  inc(validcount);
-  P_RecursiveSound(Psubsector_t(emmiter.subsector).sector, 0);
-end;
 
 //==============================================================================
 //
@@ -1017,20 +905,6 @@ begin
     end;
     rover := rover.sprev;
   end;
-end;
-
-//==============================================================================
-//
-// P_MeleeRange
-//
-//==============================================================================
-function P_MeleeRange(actor: Pmobj_t): fixed_t;
-begin
-  result := actor.info.meleerange;
-  if result = 0 then
-    result := MELEERANGE
-  else if result < FRACUNIT then
-    result := result * FRACUNIT;
 end;
 
 //==============================================================================
@@ -1247,299 +1121,6 @@ begin
                           actor.y - actor.target.y) - 64 * FRACUNIT;
 
   result := dist < 200 * FRACUNIT;
-end;
-
-//==============================================================================
-//
-// P_Move
-// Move in the current direction,
-// returns false if the move is blocked.
-//
-// [STRIFE]
-// villsa/haleyjd 09/05/10: Modified for terrain types and 3D object
-// clipping. xspeed & yspeed constants are verified to be unmodified
-//
-//==============================================================================
-function P_Move(actor: Pmobj_t): boolean;
-var
-  tryx: fixed_t;
-  tryy: fixed_t;
-  ld: Pline_t;
-  try_ok: boolean;
-  ret1, ret2: boolean;
-begin
-  if actor.movedir = Ord(DI_NODIR) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if Ord(actor.movedir) >= 8 then
-    I_Error('P_Move(): Weird actor.movedir = %d', [Ord(actor.movedir)]);
-
-  tryx := actor.x + actor.info.speed * xspeed[actor.movedir];
-  tryy := actor.y + actor.info.speed * yspeed[actor.movedir];
-
-  try_ok := P_TryMove(actor, tryx, tryy);
-
-  if not try_ok then
-  begin
-    // open any specials
-    if (actor.flags and MF_FLOAT <> 0) and floatok then
-    begin
-      // must adjust height
-      if actor.z < tmfloorz then
-        actor.z := actor.z + P_FloatSpeed(actor)
-      else
-        actor.z := actor.z - P_FloatSpeed(actor);
-
-      actor.flags := actor.flags or MF_INFLOAT;
-      result := true;
-      exit;
-    end;
-
-    if numspechit = 0 then
-    begin
-      result := false;
-      exit;
-    end;
-
-    actor.movedir := Ord(DI_NODIR);
-    result := false;
-    while numspechit > 0 do
-    begin
-      dec(numspechit);
-      ld := spechit[numspechit];
-
-      if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
-        if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), P_PointOnLineSide(actor.x, actor.y, ld));
-
-      // if the special is not a door
-      // that can be opened,
-      // return false
-      ret1 := P_ActivateLine(ld, actor, 0, ULAC_USE);
-      ret2 := P_UseSpecialLine(actor, ld, 0);
-      result := ret1 or ret2;
-    end;
-    exit;
-  end
-  else
-  begin
-    actor.flags := actor.flags and not (MF_INFLOAT or MF_FEETCLIPPED);
-    // villsa [STRIFE]
-    if P_GetTerrainType(actor) <> FLOOR_SOLID then
-    begin
-      actor.flags := actor.flags or MF_FEETCLIPPED;
-      actor.floorclip := FOOTCLIPSIZE;
-    end
-    else
-      actor.floorclip := 0;
-  end;
-
-  if actor.flags and MF_FLOAT = 0 then
-  begin
-    if actor.z > actor.floorz then
-      P_HitFloor(actor);
-    actor.z := actor.floorz;  // JVAL: CHOCO removes this
-  end;
-
-  result := true;
-end;
-
-//==============================================================================
-// P_TryWalk
-//
-// TryWalk
-// Attempts to move actor on
-// in its current (ob->moveangle) direction.
-// If blocked by either a wall or an actor
-// returns FALSE
-// If move is either clear or blocked only by a door,
-// returns TRUE and sets...
-// If a door is in the way,
-// an OpenDoor call is made to start it opening.
-//
-//==============================================================================
-function P_TryWalk(actor: Pmobj_t): boolean;
-begin
-  if not P_Move(actor) then
-    result := false
-  else
-  begin
-    actor.movecount := P_Random and 15;
-    result := true;
-  end;
-end;
-
-//==============================================================================
-//
-// P_NewChaseDir
-//
-//==============================================================================
-procedure P_NewChaseDir(actor: Pmobj_t);
-var
-  deltax: fixed_t;
-  deltay: fixed_t;
-  target: Pmobj_t;
-  d: array[0..2] of dirtype_t;
-  olddir: dirtype_t;
-  turnaround: dirtype_t;
-  idx: integer;
-  dist: fixed_t;
-
-  procedure _DoNewChaseDir;
-  var
-    tdir: dirtype_t;
-  begin
-    if deltax > 10 * FRACUNIT then
-      d[1] := DI_EAST
-    else if deltax < -10 * FRACUNIT then
-      d[1] := DI_WEST
-    else
-      d[1] := DI_NODIR;
-
-    if deltay < -10 * FRACUNIT then
-      d[2] := DI_SOUTH
-    else if deltay > 10 * FRACUNIT then
-      d[2] := DI_NORTH
-    else
-      d[2] := DI_NODIR;
-
-    // try direct route
-    if (d[1] <> DI_NODIR) and (d[2] <> DI_NODIR) then
-    begin
-      if deltay < 0 then
-        idx := 2
-      else
-        idx := 0;
-      if deltax > 0 then
-        inc(idx);
-      actor.movedir := Ord(diags[idx]);
-      if (actor.movedir <> Ord(turnaround)) and P_TryWalk(actor) then
-        exit;
-    end;
-
-    // try other directions
-    if (P_Random > 200) or (abs(deltay) > abs(deltax)) then
-    begin
-      tdir := d[1];
-      d[1] := d[2];
-      d[2] := tdir;
-    end;
-
-    if d[1] = turnaround then
-      d[1] := DI_NODIR;
-    if d[2] = turnaround then
-      d[2] := DI_NODIR;
-
-    if d[1] <> DI_NODIR then
-    begin
-      actor.movedir := Ord(d[1]);
-      if P_TryWalk(actor) then
-        exit; // either moved forward or attacked
-    end;
-
-    if d[2] <> DI_NODIR then
-    begin
-      actor.movedir := Ord(d[2]);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    // there is no direct path to the player,
-    // so pick another direction.
-    if olddir <> DI_NODIR then
-    begin
-      actor.movedir := Ord(olddir);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    // randomly determine direction of search
-    if P_Random and 1 <> 0 then
-    begin
-      for tdir := DI_EAST to DI_SOUTHEAST do
-      begin
-        if tdir <> turnaround then
-        begin
-          actor.movedir := Ord(tdir);
-          if P_TryWalk(actor) then
-            exit;
-        end;
-      end;
-    end
-    else
-    begin
-      for tdir := DI_SOUTHEAST downto DI_EAST do
-      begin
-        if tdir <> turnaround then
-        begin
-          actor.movedir := Ord(tdir);
-          if P_TryWalk(actor) then
-            exit;
-        end;
-      end;
-    end;
-
-    if turnaround <> DI_NODIR then
-    begin
-      actor.movedir := Ord(turnaround);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    actor.movedir := Ord(DI_NODIR); // can not move
-  end;
-
-begin
-  target := actor.target;
-  // villsa [STRIFE] don't bomb out and instead set spawnstate
-  if target = nil then
-  begin
-    P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
-    exit;
-  end;
-
-  olddir := dirtype_t(actor.movedir);
-  turnaround := opposite[Ord(olddir)];
-
-  deltax := target.x - actor.x;
-  deltay := target.y - actor.y;
-
-  actor.strafecount := 0;
-
-  // JVAL: 20210209 - MF3_EX_CAUSEFEAR & MF3_EX_NOFEAR flags
-  if target.flags3_ex and MF3_EX_CAUSEFEAR <> 0 then
-    if actor.flags3_ex and MF3_EX_NOFEAR <> 0 then
-      actor.flags2_ex := actor.flags2_ex or MF2_EX_FRIGHTENED;
-
-  if actor.flags2_ex and MF2_EX_FRIGHTENED <> 0 then
-  begin
-    deltax := -deltax;
-    deltay := -deltay;
-  end
-  else if (target.health > 0) and (actor.flags4_ex and MF4_EX_BACKINGMELEE <> 0) and not P_BothFriends(actor, actor.target) then
-  begin
-    if G_PlayingEngineVersion >= VERSION207 then
-    begin
-      dist := P_AproxDistance(deltax, deltay);
-      if (actor.info.missilestate <> 0) and
-        (((target.info.missilestate = 0) and (dist < P_MeleeRange(target) * 2)) or
-         ((target.player <> nil) and (dist < P_MeleeRange(target) * 3) and
-          (weaponinfo[Ord(Pplayer_t(target.player).readyweapon)].mbf21bits and WPF_FLEEMELEE <> 0))) then
-      begin// Back away from melee attacker
-        actor.strafecount := P_Random and 15;
-        deltax := -deltax;
-        deltay := -deltay;
-      end;
-    end;
-  end;
-
-  _DoNewChaseDir;
-
-  if actor.strafecount > 0 then
-    actor.movecount := actor.strafecount;
 end;
 
 //==============================================================================
@@ -1768,24 +1349,6 @@ begin
   end;
 
   result := false;
-end;
-
-//==============================================================================
-//
-// P_LookForTargets
-//
-//==============================================================================
-function P_LookForTargets(actor: Pmobj_t; allaround: boolean): boolean;
-begin
-  if actor.flags2_ex and MF2_EX_FRIEND <> 0 then
-  begin
-    result := P_LookForMonsters(actor);
-    if not result then
-      if P_Random < 200 then
-        result := P_LookForPlayers(actor, true);
-  end
-  else
-    result := P_LookForPlayers(actor, allaround);
 end;
 
 //==============================================================================
@@ -2146,33 +1709,6 @@ end;
 procedure A_Chase(actor: Pmobj_t);
 begin
   P_DoChase(actor, false);
-end;
-
-//==============================================================================
-//
-// A_FaceTarget
-//
-// [STRIFE]
-// haleyjd 09/05/10: Handling for visibility-modifying flags.
-//
-//==============================================================================
-procedure A_FaceTarget(actor: Pmobj_t);
-begin
-  if actor.target = nil then
-    exit;
-
-  actor.flags := actor.flags and not MF_AMBUSH;
-
-  actor.angle :=
-    R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
-
-  if actor.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
-  begin
-    if actor.target.flags and MF_SHADOW <> 0 then
-      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 22)
-    else if actor.target.flags and MF_MVIS <> 0 then
-      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 23);
-  end;
 end;
 
 //==============================================================================
@@ -4541,6 +4077,91 @@ begin
     end;
    think := think.next;
   end;
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.Move
+//
+//==============================================================================
+class function TEnemyGameRules.Move(actor: Pmobj_t): boolean;
+begin
+  result := false; // not used: P_Move of p_enemy does the move
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.BlurAim
+//
+//==============================================================================
+class procedure TEnemyGameRules.BlurAim(actor: Pmobj_t);
+begin
+  if actor.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
+  begin
+    if actor.target.flags and MF_SHADOW <> 0 then
+      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 22)
+    else if actor.target.flags and MF_MVIS <> 0 then
+      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 23);
+  end;
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.UseSpecialLines
+//
+//==============================================================================
+class function TEnemyGameRules.UseSpecialLines(actor: Pmobj_t): boolean;
+begin
+  result := TEnemyMoveSpecials.UseHitLines(actor);
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.ClearFloating
+//
+//==============================================================================
+class procedure TEnemyGameRules.ClearFloating(actor: Pmobj_t);
+begin
+  actor.flags := actor.flags and not (MF_INFLOAT or MF_FEETCLIPPED);
+  // villsa [STRIFE]
+  if P_GetTerrainType(actor) <> FLOOR_SOLID then
+  begin
+    actor.flags := actor.flags or MF_FEETCLIPPED;
+    actor.floorclip := FOOTCLIPSIZE;
+  end
+  else
+    actor.floorclip := 0;
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.NoTarget
+//
+//==============================================================================
+class procedure TEnemyGameRules.NoTarget(actor: Pmobj_t);
+begin
+  // villsa [STRIFE] don't bomb out and instead set spawnstate
+  P_SetMobjState(actor, statenum_t(actor.info.spawnstate));
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.CanBackAway
+//
+//==============================================================================
+class function TEnemyGameRules.CanBackAway(actor: Pmobj_t): boolean;
+begin
+  result := true;
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.FleesMeleeWeapon
+//
+//==============================================================================
+class function TEnemyGameRules.FleesMeleeWeapon(player: Pplayer_t): boolean;
+begin
+  result := weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_FLEEMELEE <> 0;
 end;
 
 end.

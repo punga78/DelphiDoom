@@ -205,6 +205,7 @@ uses
   DelphiDoom.Engine.World.InterRules,
   DelphiDoom.Engine.World.PickupGivers,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_doors,
   p_spec,
   p_map,

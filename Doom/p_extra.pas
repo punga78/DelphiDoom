@@ -289,6 +289,7 @@ uses
   r_defs,
   m_rnd,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_mobj,
   p_inter,
   p_user,

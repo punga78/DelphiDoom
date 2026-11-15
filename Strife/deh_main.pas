@@ -137,6 +137,7 @@ uses
   ps_main,
   p_mobj,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_extra,
   p_common,
   p_pspr,

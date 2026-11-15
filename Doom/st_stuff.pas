@@ -173,6 +173,7 @@ uses
   DelphiDoom.Engine.World.InterRules,
   p_setup,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_umapinfo,
   d_player,
   r_defs,

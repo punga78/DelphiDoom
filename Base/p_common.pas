@@ -2432,6 +2432,7 @@ uses
   info_rnd,
   p_aaptr,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_extra,
   p_friends,
   p_inter,

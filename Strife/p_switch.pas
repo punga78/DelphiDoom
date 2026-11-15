@@ -96,6 +96,7 @@ uses
   p_telept,
   p_mobj,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   i_system,
   doomdef,
   g_game,

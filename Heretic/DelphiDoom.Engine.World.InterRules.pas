@@ -163,6 +163,7 @@ uses
   DelphiDoom.Engine.World.SpecialRespawn,
   DelphiDoom.Engine.World.MinotaurSlam,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   ps_main, // JVAL: Script Events
   r_defs,
   r_main,

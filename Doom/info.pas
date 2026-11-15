@@ -120,6 +120,7 @@ implementation
 uses
   m_argv,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
   p_mobj_h,

@@ -403,6 +403,7 @@ uses
   p_inter,
   DelphiDoom.Engine.World.InterRules,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_maputl,
   p_local,
   r_main,

@@ -127,6 +127,7 @@ uses
   p_mobj_h,
   p_setup,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_inter,
   DelphiDoom.Engine.World.InterRules,
   p_user,

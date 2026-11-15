@@ -81,6 +81,7 @@ uses
   p_switch,
   p_ambient,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,
   po_man,

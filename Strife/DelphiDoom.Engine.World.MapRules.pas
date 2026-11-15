@@ -226,6 +226,7 @@ uses
   p_switch,
   p_tick,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_sounds,
   p_udmf,
   udmf_spec,

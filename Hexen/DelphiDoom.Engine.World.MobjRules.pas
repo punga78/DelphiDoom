@@ -330,6 +330,7 @@ uses
   p_inter,
   DelphiDoom.Engine.World.InterRules,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_sounds,
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes
