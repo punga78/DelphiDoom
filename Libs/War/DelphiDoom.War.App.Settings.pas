@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: war library - the settings that the program keeps               }
 {                                                                              }
@@ -47,7 +47,8 @@ const
   /// <summary>The name of the settings file, next to the program</summary>
   WAR_SETTINGS_FILE_NAME = 'Warcraft32.ini';
   WAR_SETTINGS_TITLE = 'Warcraft32';
-  WAR_SETTINGS_VERSION = 100;
+  // the versions that Libs\Configuration accepts start at 1.10 (CONFIGURATION_OLDEST_VERSION)
+  WAR_SETTINGS_VERSION = 110;
 
 implementation
 
@@ -105,7 +106,9 @@ var
   LText: string;
 begin
   ASettings := Standard;
-  Result := (Length(ALines) > 0) and AFormat.AcceptsHeader(ALines[0], WAR_SETTINGS_VERSION);
+  // the format checks the version of the header, not whose file it is
+  Result := (Length(ALines) > 0) and ALines[0].StartsWith('[' + WAR_SETTINGS_TITLE + ' ') and
+    AFormat.AcceptsHeader(ALines[0], WAR_SETTINGS_VERSION);
   if not Result then
     Exit;
   LDocument := AFormat.Parse(ALines);

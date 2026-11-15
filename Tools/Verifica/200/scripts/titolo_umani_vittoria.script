@@ -1,0 +1,45 @@
+# Warcraft32 (#200): dal logo della Blizzard alla vittoria della prima missione degli umani, solo col mouse e la tastiera.
+# Il logo (260 fotogrammi) porta da solo al menu principale; "Start a new game" e "Human campaign" (ogni cambio di scena
+# ha un secondo di nero, 60 fotogrammi), il briefing (Invio lo salta), la mappa; il trucco "Yours truly" (il giocatore
+# vince) apre il menu "You are victorious!" e Continue porta al briefing della missione dopo.
+scene blizzard
+run 300 100
+move 150 90
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 70 35
+# Human campaign
+move 150 111
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+# il secondo di nero e il briefing
+run 100 50
+key enter down
+run 2 1
+key enter up
+# il secondo di nero e la mappa
+run 100 50
+move 190 100
+run 60 30
+# il trucco: Invio apre la riga dei trucchi, il testo, Invio
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Yours truly
+key enter down
+run 1 1
+key enter up
+run 10 5
+# il menu della vittoria: Continue
+move 250 108
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 100 50
+hash

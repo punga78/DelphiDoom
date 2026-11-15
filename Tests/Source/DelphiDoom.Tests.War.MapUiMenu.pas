@@ -26,6 +26,15 @@ type
     procedure QuitGame;
   end;
 
+  /// <summary>A host that also saves and loads games (the program does)</summary>
+  TMenuSessionsSpy = class(TMenuHostSpy, IWarMapMenuSessions)
+  public
+    Saves: Integer;
+    Loads: Integer;
+    procedure SaveGame;
+    procedure LoadGame;
+  end;
+
   /// <summary>The state of the menus of the map and what their buttons do (war_map_menu.c)</summary>
   [TestFixture]
   [Category('war')]
@@ -56,6 +65,10 @@ type
     procedure DovrebbeDireAlHostCosaFannoIBottoniCheLasciano;
     [Test]
     procedure DovrebbeNonFareNienteSenzaHostEConSalva;
+    [Test]
+    procedure DovrebbeChiedereAlHostCheSalvaICaricamentiESalvataggi;
+    [Test]
+    procedure DovrebbeLasciareISalvataggiComeNelOriginaleSeIlHostNonLiFa;
     [Test]
     procedure DovrebbeRiprendereQuandoSiChiudeIlMenuDellaFine;
     [Test]
@@ -224,6 +237,49 @@ begin
   Assert.AreEqual(2, FHost.Continues);
   Assert.AreEqual(1, FHost.MainMenus);
   Assert.AreEqual(1, FHost.Quits);
+end;
+
+procedure TMenuSessionsSpy.SaveGame;
+begin
+  Inc(Saves);
+end;
+
+procedure TMenuSessionsSpy.LoadGame;
+begin
+  Inc(Loads);
+end;
+
+procedure TTestWarMapMenu.DovrebbeChiedereAlHostCheSalvaICaricamentiESalvataggi;
+var
+  LSpy: TMenuSessionsSpy;
+  LSpyRef: IWarMapMenuHost;
+  LMenu: TWarMapMenu;
+begin
+  LSpy := TMenuSessionsSpy.Create;
+  LSpyRef := LSpy;
+  LMenu := TWarMapMenu.Create(LSpyRef, nil);
+  try
+    LMenu.SaveGame;
+    LMenu.LoadGame;
+    LMenu.LoadGame;
+    LMenu.SaveAfterGameOver;
+    Assert.AreEqual(2, LSpy.Saves);
+    Assert.AreEqual(2, LSpy.Loads);
+    Assert.AreEqual(0, LSpy.Restarts, 'salvare non fa altro');
+  finally
+    LMenu.Free;
+    LSpyRef := nil;
+  end;
+end;
+
+procedure TTestWarMapMenu.DovrebbeLasciareISalvataggiComeNelOriginaleSeIlHostNonLiFa;
+begin
+  FMenu.SaveGame;
+  FMenu.LoadGame;
+  FMenu.SaveAfterGameOver;
+  Assert.AreEqual(0, FHost.Restarts);
+  Assert.AreEqual(0, FHost.Quits);
+  Assert.IsTrue(FMenu.Playing);
 end;
 
 procedure TTestWarMapMenu.DovrebbeNonFareNienteSenzaHostEConSalva;

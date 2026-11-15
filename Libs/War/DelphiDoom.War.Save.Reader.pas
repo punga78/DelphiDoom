@@ -117,7 +117,7 @@ begin
     begin
       Move(ABytes[LOffset], LRecord, SizeOf(LRecord));
       Inc(LOffset, SizeOf(LRecord));
-      if LRecord.Kind > Ord(High(TGameHostEventKind)) then
+      if Integer(LRecord.Kind) > Ord(High(TGameHostEventKind)) then
         raise EWarSaveException.CreateFmt(SWarSaveEventKind, [LRecord.Kind]);
       Result.Frames[LFrame].Events[LEvent] := RecordToEvent(LRecord);
     end;

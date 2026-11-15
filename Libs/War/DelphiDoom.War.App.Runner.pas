@@ -137,12 +137,9 @@ begin
     Inc(FLoads);
     Say(Format(SWarRunLoaded, [FSession.FrameCount]));
   except
-    on E: EWarSaveException do
-    begin
-      Inc(FLoadErrors);
-      Say(Format(SWarRunLoadFailed, [E.Message]));
-    end;
-    on E: EInOutError do
+    // the old frames are played again by the game itself: whatever it raises (a mission that the model cannot play,
+    // a file that cannot be read) leaves the game that was running where it was
+    on E: Exception do
     begin
       Inc(FLoadErrors);
       Say(Format(SWarRunLoadFailed, [E.Message]));

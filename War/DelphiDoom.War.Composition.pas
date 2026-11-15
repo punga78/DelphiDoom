@@ -170,7 +170,6 @@ begin
   SetLength(FImages, 2);
   for LFont := 0 to 1 do
   begin
-    LStream := nil;
     LPath := TWarDataLocator.FindFont(LFont, LFontFolders, LExists);
     if LPath = '' then
       raise EWarException.CreateFmt(SWarNoFont, [Format('war1_font_%d.png', [LFont + 1]),
@@ -308,6 +307,7 @@ var
   LClock: IClock;
   LFrames: Integer;
   LCenter: TGameHostEvent;
+  LTimer: ITimerResolutionLease;
 begin
   LStart := Default(TWarSessionStart);
   LStart.Seed := FOptions.Seed;
@@ -381,6 +381,8 @@ begin
           if not LAudio.Open then
             Say('No sound device: the game is played without sound');
         end;
+        // a wait of a millisecond lasts a millisecond, not the 15 of the default timer: the loop waits for 1/60 of a second
+        LTimer := TClockFactory.AcquireTimerResolution(1);
         LClock := TClockFactory.CreateClock(TLogFactory.CreateLog(nil, nil));
         LRunner := TWarRunner.Create(LSession, LPresenter, LClock,
           function: Boolean
