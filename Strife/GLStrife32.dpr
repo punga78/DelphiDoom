@@ -738,7 +738,7 @@ uses
   r_aspect in '..\Base\r_aspect.pas',
   i_threads in '..\Base\i_threads.pas',
   r_colormaps in '..\Base\r_colormaps.pas',
-  r_diher in '..\Strife\r_diher.pas',
+  r_diher in '..\Base\r_diher.pas',
   DelphiDoom.Zone.Types in '..\Libs\Zone\DelphiDoom.Zone.Types.pas',
   DelphiDoom.Zone.Intf in '..\Libs\Zone\DelphiDoom.Zone.Intf.pas',
   DelphiDoom.Zone.Allocator in '..\Libs\Zone\DelphiDoom.Zone.Allocator.pas',

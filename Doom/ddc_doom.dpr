@@ -780,7 +780,7 @@ uses
   r_batchcolumn in '..\Base\r_batchcolumn.pas',
   r_batchsky in '..\Base\r_batchsky.pas',
   r_colormaps in '..\Base\r_colormaps.pas',
-  r_diher in '..\Doom\r_diher.pas',
+  r_diher in '..\Base\r_diher.pas',
   r_ripple in '..\Base\r_ripple.pas',
   DelphiDoom.Zone.Types in '..\Libs\Zone\DelphiDoom.Zone.Types.pas',
   DelphiDoom.Zone.Intf in '..\Libs\Zone\DelphiDoom.Zone.Intf.pas',
