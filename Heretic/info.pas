@@ -99,6 +99,7 @@ implementation
 
 uses
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_gender,
   p_pspr,
   DelphiDoom.Engine.World.PspriteRules,

@@ -162,6 +162,7 @@ uses
   info,
   m_rnd,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_mobj,
   p_inter,
   p_map,

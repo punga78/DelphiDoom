@@ -57,6 +57,7 @@ uses
   p_mobj,
   p_mobj_h,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_extra,
   p_common,
   p_gender,

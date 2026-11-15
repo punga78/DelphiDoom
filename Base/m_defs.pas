@@ -51,6 +51,7 @@ uses
 {$IF DEFINED(DOOM)}
   p_local,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_map,
   DelphiDoom.Engine.World.MapRules,
 {$ELSEIF DEFINED(STRIFE)}

@@ -1,38 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiHexen is a source port of the game Hexen and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Hexen source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Enemy thinking, AI.
-//  Action Pointer Functions
-//  that are associated with states/frames.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Hexen for the enemies (p_enemy)           }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_enemy;
+unit DelphiDoom.Engine.World.EnemyRules;
 
 interface
 
@@ -53,13 +30,6 @@ function P_Massacre: integer;
 //
 //==============================================================================
 procedure P_NewChaseDir(actor: Pmobj_t);
-
-//==============================================================================
-//
-// P_NoiseAlert
-//
-//==============================================================================
-procedure P_NoiseAlert(target: Pmobj_t; emmiter: Pmobj_t);
 
 //==============================================================================
 //
@@ -1176,13 +1146,6 @@ function P_Move(actor: Pmobj_t): boolean;
 
 //==============================================================================
 //
-// P_TryWalk
-//
-//==============================================================================
-function P_TryWalk(actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
 // P_UpdateMorphedMonster
 //
 //==============================================================================
@@ -1209,9 +1172,17 @@ type
     NUMDIRS
   );
 
+//==============================================================================
+//
+// P_LookForPlayers
+//
+//==============================================================================
+function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
+
 implementation
 
 uses
+  p_enemy,
   d_delphi,
   doomdata,
   d_think,
@@ -1292,87 +1263,6 @@ begin
     end;
    think := think.next;
   end;
-end;
-
-var
-  soundtarget: Pmobj_t;
-
-//==============================================================================
-//
-// P_RecursiveSound
-//
-//==============================================================================
-procedure P_RecursiveSound(sec: Psector_t; soundblocks: integer);
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  // wake up all monsters in this sector
-  if (sec.validcount = validcount) and
-     (sec.soundtraversed <= soundblocks + 1) then
-    exit; // already flooded
-
-  sec.validcount := validcount;
-  sec.soundtraversed := soundblocks + 1;
-  sec.soundtarget := soundtarget;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    if check.flags and ML_TWOSIDED = 0 then
-      continue;
-    // JVAL: 20200407 - Avoid false ML_TWOSIDED flag
-    if (check.sidenum[1] < 0) or (check.sidenum[0] < 0) then
-      continue;
-
-    P_LineOpening(check, false);
-
-    if openrange <= 0 then
-      continue; // closed door
-
-    if sides[check.sidenum[0]].sector = sec then
-      other := sides[check.sidenum[1]].sector
-    else
-      other := sides[check.sidenum[0]].sector;
-
-    if check.flags and ML_SOUNDBLOCK <> 0 then
-    begin
-      if soundblocks = 0 then
-        P_RecursiveSound(other, 1);
-    end
-    else
-      P_RecursiveSound(other, soundblocks);
-  end;
-end;
-
-//==============================================================================
-//
-// PROC P_NoiseAlert
-//
-// If a monster yells at a player, it will alert other monsters to the
-// player.
-//
-//==============================================================================
-procedure P_NoiseAlert(target: Pmobj_t; emmiter: Pmobj_t);
-begin
-  soundtarget := target;
-  inc(validcount);
-  P_RecursiveSound(Psubsector_t(emmiter.subsector).sector, 0);
-end;
-
-//==============================================================================
-//
-// P_MeleeRange
-//
-//==============================================================================
-function P_MeleeRange(actor: Pmobj_t): fixed_t;
-begin
-  result := actor.info.meleerange;
-  if result = 0 then
-    result := MELEERANGE
-  else if result < FRACUNIT then
-    result := result * FRACUNIT;
 end;
 
 //==============================================================================
@@ -1670,27 +1560,6 @@ end;
 
 //==============================================================================
 //
-// FUNC P_TryWalk
-//
-// Attempts to move actor in its current (ob.moveangle) direction.
-// If blocked by either a wall or an actor returns FALSE.
-// If move is either clear of block only by a door, returns TRUE and sets.
-// If a door is in the way, an OpenDoor call is made to start it opening.
-//
-//==============================================================================
-function P_TryWalk(actor: Pmobj_t): boolean;
-begin
-  if not P_Move(actor) then
-    result := false
-  else
-  begin
-    actor.movecount := P_Random and 15;
-    result := true;
-  end;
-end;
-
-//==============================================================================
-//
 // P_NewChaseDir
 //
 //==============================================================================
@@ -1955,24 +1824,6 @@ begin
   end;
 
   result := false;
-end;
-
-//==============================================================================
-//
-// P_LookForTargets
-//
-//==============================================================================
-function P_LookForTargets(actor: Pmobj_t; allaround: boolean): boolean;
-begin
-  if actor.flags2_ex and MF2_EX_FRIEND <> 0 then
-  begin
-    result := P_LookForMonsters(actor);
-    if not result then
-      if P_Random < 200 then
-        result := P_LookForPlayers(actor, true);
-  end
-  else
-    result := P_LookForPlayers(actor, allaround);
 end;
 
 //==============================================================================

@@ -504,6 +504,7 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_map,
   DelphiDoom.Engine.World.MapRules,
   p_inter,

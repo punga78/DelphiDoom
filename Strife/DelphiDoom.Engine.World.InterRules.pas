@@ -132,6 +132,7 @@ uses
   p_floor,
   p_spec,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_user,
   DelphiDoom.Engine.World.UserRules,
   ps_main, // JVAL: Script Events

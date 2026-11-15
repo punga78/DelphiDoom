@@ -191,6 +191,7 @@ uses
   p_mobj,
   p_mobjlist,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_map,
   p_params,
   p_levelinfo,

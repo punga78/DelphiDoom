@@ -189,6 +189,7 @@ uses
   p_inter,
   DelphiDoom.Engine.World.InterRules,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   r_main,
   r_defs,
   r_hires,

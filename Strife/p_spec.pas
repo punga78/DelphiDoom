@@ -933,6 +933,7 @@ uses
   p_maputl,
   p_dialog,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_mobj,
   p_user,
   p_scroll,

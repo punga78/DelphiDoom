@@ -217,6 +217,7 @@ uses
   p_tick,
   p_mobj,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_map,
   p_inter,
   p_user,

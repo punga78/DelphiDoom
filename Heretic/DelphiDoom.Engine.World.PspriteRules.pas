@@ -452,6 +452,7 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_map,
   p_inter,
   DelphiDoom.Engine.World.InterRules,

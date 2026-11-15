@@ -295,6 +295,7 @@ uses
   p_common,
   p_ambient,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes
   po_man,

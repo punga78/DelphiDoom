@@ -81,6 +81,7 @@ uses
   p_spec,
   p_switch,
   p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
   p_mapinfo,
   p_anim,
   r_data,
