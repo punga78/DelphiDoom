@@ -54,6 +54,7 @@ uses
   g_game,
   {$IFDEF DOOM}
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   st_stuff,
   {$ENDIF}
   p_inter,

@@ -121,6 +121,7 @@ uses
   m_argv,
   p_enemy,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_mobj_h,
   p_extra,
   p_gender,

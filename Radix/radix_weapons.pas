@@ -181,6 +181,7 @@ uses
   tables,
   p_tick,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_inter,
   p_local,
   p_map,
@@ -200,7 +201,7 @@ const
   // Doom has no bit for it, a custom parameter of the mobj goes with it also in the savegames)
   S_PARAM_NOTORPEDOSPLIT = 'RADIXNOPHASETORPEDOSPLIT';
 
-  // WEAPONBOTTOM of p_pspr (not exported): a weapon that comes up starts from here
+  // WEAPONBOTTOM of p_pspr (exported by p_pspr since step 2f-3; here a local copy of its value): a weapon that comes up starts from here
   WEAPONBOTTOM = (32 + 96) * FRACUNIT;
 
 //==============================================================================

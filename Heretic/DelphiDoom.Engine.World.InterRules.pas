@@ -154,6 +154,7 @@ uses
   p_obituaries,
   p_3dfloors,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_pspr_h,
   p_tick,
   p_user,

@@ -132,6 +132,7 @@ uses
   p_user,
   DelphiDoom.Engine.World.UserRules,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   r_defs,
   r_data,
   r_draw,

@@ -2440,6 +2440,7 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_map,
   p_maputl,
   p_params,

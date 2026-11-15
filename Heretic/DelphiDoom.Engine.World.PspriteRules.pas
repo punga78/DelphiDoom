@@ -1,38 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiHeretic is a source port of the game Heretic and it is
-//  based on original Linux Doom as published by "id Software", on
-//  Heretic source as published by "Raven" software and DelphiDoom
-//  as published by Jim Valavanis.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Sprite animation.
-//  Weapon sprite animation, weapon objects.
-//  Action functions for weapons.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Heretic for the weapon sprites (p_pspr)   }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_pspr;
+unit DelphiDoom.Engine.World.PspriteRules;
 
 interface
 
@@ -58,24 +35,10 @@ const
 
 //==============================================================================
 //
-// P_DropWeapon
-//
-//==============================================================================
-procedure P_DropWeapon(player: Pplayer_t);
-
-//==============================================================================
-//
 // A_WeaponReady
 //
 //==============================================================================
 procedure A_WeaponReady(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_ReFire
-//
-//==============================================================================
-procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
@@ -331,52 +294,10 @@ procedure A_BeakReady(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
-// A_Lower
-//
-//==============================================================================
-procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Raise
-//
-//==============================================================================
-procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// A_Light0
-//
-//==============================================================================
-procedure A_Light0(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_SetupPsprites
-//
-//==============================================================================
-procedure P_SetupPsprites(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_MovePsprites
-//
-//==============================================================================
-procedure P_MovePsprites(player: Pplayer_t);
-
-//==============================================================================
-//
 // P_UpdateBeak
 //
 //==============================================================================
 procedure P_UpdateBeak(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
-// P_SetPsprite
-//
-//==============================================================================
-procedure P_SetPsprite(player: Pplayer_t; position: integer; stnum: statenum_t);
 
 //==============================================================================
 //
@@ -466,9 +387,49 @@ var
     0          // beak
   );
 
+//==============================================================================
+//
+// P_BringUpWeapon
+// Starts bringing the pending weapon up from the bottom of the screen
+//
+//==============================================================================
+procedure P_BringUpWeapon(player: Pplayer_t);
+
+//==============================================================================
+//
+// P_FireWeapon
+//
+//==============================================================================
+procedure P_FireWeapon(player: Pplayer_t);
+
+type
+  /// <summary>
+  ///   What Heretic does in the weapon sprite code of p_pspr (issue #185, step 2f-3). The routines that
+  ///   are the same in the games are in Base\p_pspr.pas; the weapons and what depends on the record of the player stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TPspriteGameRules = class sealed
+  public
+    /// <summary>What comes after the weapon sprites moved (Strife: the targeter)</summary>
+    class procedure AfterMovePsprites(const player: Pplayer_t); static;
+    /// <summary>The state the weapon of the player goes down to (P_DropWeapon)</summary>
+    class function DropWeaponState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The state the weapon goes to when it is raised all the way (A_Raise)</summary>
+    class function RaisedState(const player: Pplayer_t): statenum_t; static;
+    /// <summary>The weapon goes down at once, not by steps (the player is a chicken or a pig)</summary>
+    class function StaysLowered(const player: Pplayer_t): boolean; static;
+    /// <summary>What A_Lower does when the weapon is down and before the new one comes up (Doom: the choice of the weapon of mbf21)</summary>
+    class procedure AfterLowered(const player: Pplayer_t); static;
+    /// <summary>What A_ReFire does when the player does not fire again: the check of the ammo, or of the mana</summary>
+    class procedure CheckSupplies(const player: Pplayer_t); static;
+  end;
+
 implementation
 
 uses
+  p_pspr,
   d_delphi,
   g_game,
   i_system,
@@ -500,18 +461,6 @@ uses
   s_sound,
 // Data.
   sounddata;
-
-//
-// Adjust weapon bottom and top
-//
-
-const
-  WEAPONTOP = 32 * FRACUNIT;
-  WEAPONBOTTOM = WEAPONTOP + 96 * FRACUNIT;
-
-const
-  LOWERSPEED = 6 * FRACUNIT;
-  RAISESPEED = 6 * FRACUNIT;
 
 const
   FLAME_THROWER_TICS = 10 * TICRATE;
@@ -610,65 +559,6 @@ begin
 
   spot := P_Random mod MaceSpotCount;
   P_SpawnMobj(MaceSpots[spot].x, MaceSpots[spot].y, ONFLOORZ, Ord(MT_WMACE));
-end;
-
-//
-// P_SetPsprite
-//
-const
-  PSPR_CYCLE_LIMIT = 1000000;
-
-//==============================================================================
-//
-// P_SetPsprite
-//
-//==============================================================================
-procedure P_SetPsprite(player: Pplayer_t; position: integer; stnum: statenum_t);
-var
-  psp: Ppspdef_t;
-  state: Pstate_t;
-  cycle_counter: integer;
-begin
-  cycle_counter := 0;
-  psp := @player.psprites[position];
-  repeat
-    if Ord(stnum) = 0 then
-    begin
-      // object removed itself
-      psp.state := nil;
-      break;
-    end;
-
-    state := @states[Ord(stnum)];
-    psp.state := state;
-    psp.tics := P_TicsFromState(state); // could be 0
-
-    // coordinate set
-    if state.misc1 <> 0 then
-      psp.sx := state.misc1 * FRACUNIT;
-
-    if state.misc2 <> 0 then
-      psp.sy := state.misc2 * FRACUNIT;
-
-    // Call action routine.
-    // Modified handling.
-    if Assigned(state.action.acp2) then
-    begin
-      if state.params <> nil then
-        state.params.actor := player.mo;
-      state.action.acp2(player, psp);
-      if psp.state = nil then
-        break;
-    end;
-
-    stnum := psp.state.nextstate;
-
-    inc(cycle_counter);
-    if cycle_counter > PSPR_CYCLE_LIMIT then
-      I_Error('P_SetPsprite(): Infinite state cycle detected in player sprites (readyweapon=%d, pendinfweapon=%d)!',
-        [Ord(player.readyweapon), Ord(player.pendingweapon)]);
-  until psp.tics <> 0;
-  // an initial state of 0 could cycle through
 end;
 
 //==============================================================================
@@ -807,20 +697,6 @@ end;
 
 //==============================================================================
 //
-// P_DropWeapon
-// Player died, so put the weapon away.
-//
-//==============================================================================
-procedure P_DropWeapon(player: Pplayer_t);
-begin
-  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
-    P_SetPsprite(player, Ord(ps_weapon), statenum_t(wpnlev2info[Ord(player.readyweapon)].downstate))
-  else
-    P_SetPsprite(player, Ord(ps_weapon), statenum_t(wpnlev1info[Ord(player.readyweapon)].downstate));
-end;
-
-//==============================================================================
-//
 // A_WeaponReady
 // The player can fire the weapon
 // or change to another weapon at this time.
@@ -880,71 +756,6 @@ begin
   psp.sy := WEAPONTOP + FixedMul(player.bob, finesine[angle]);
 end;
 
-//==============================================================================
-//
-// A_ReFire
-// The player can re-fire the weapon
-// without lowering it entirely.
-//
-//==============================================================================
-procedure A_ReFire(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  // check for fire
-  //  (if a weaponchange is pending, let it go through instead)
-  if (player.cmd.buttons and BT_ATTACK <> 0) and
-     (player.pendingweapon = wp_nochange) and
-     (player.health > 0) then
-  begin
-    player.refire := player.refire + 1;
-    P_FireWeapon(player);
-  end
-  else
-  begin
-    player.refire := 0;
-    P_CheckAmmo(player);
-  end;
-end;
-
-//==============================================================================
-//
-// A_Lower
-// Lowers current weapon,
-//  and changes weapon at bottom.
-//
-//==============================================================================
-procedure A_Lower(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  if player.chickenTics <> 0 then
-    psp.sy := WEAPONBOTTOM
-  else
-    psp.sy := psp.sy + LOWERSPEED;
-
-  // Is already down.
-  if psp.sy < WEAPONBOTTOM then
-    exit;
-
-  // Player is dead.
-  if player.playerstate = PST_DEAD then
-  begin
-    psp.sy := WEAPONBOTTOM;
-    // don't bring weapon back up
-    exit;
-  end;
-
-  // The old weapon has been lowered off the screen,
-  // so change the weapon and start raising it
-  if player.health = 0 then
-  begin
-    // Player is dead, so keep the weapon off screen.
-    P_SetPsprite(player, Ord(ps_weapon), S_NULL);
-    exit;
-  end;
-
-  player.readyweapon := player.pendingweapon;
-
-  P_BringUpWeapon(player);
-end;
-
 //---------------------------------------------------------------------------
 //
 // PROC A_BeakRaise
@@ -956,32 +767,6 @@ procedure A_BeakRaise(player: Pplayer_t; psp: Ppspdef_t);
 begin
   psp.sy := WEAPONTOP;
   P_SetPsprite(player, Ord(ps_weapon), statenum_t(wpnlev1info[Ord(player.readyweapon)].readystate));
-end;
-
-//==============================================================================
-//
-// A_Raise
-//
-//==============================================================================
-procedure A_Raise(player: Pplayer_t; psp: Ppspdef_t);
-var
-  newstate: statenum_t;
-begin
-  psp.sy := psp.sy - RAISESPEED;
-
-  if psp.sy > WEAPONTOP then // Not raised all the way yet
-    exit;
-
-  psp.sy := WEAPONTOP;
-
-  // The weapon has been raised all the way,
-  //  so change to the ready state.
-  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
-    newstate := statenum_t(wpnlev2info[Ord(player.readyweapon)].readystate)
-  else
-    newstate := statenum_t(wpnlev1info[Ord(player.readyweapon)].readystate);
-
-  P_SetPsprite(player, Ord(ps_weapon), newstate);
 end;
 
 //****************************************************************************
@@ -1993,70 +1778,6 @@ begin
 end;
 
 //==============================================================================
-// A_Light0
-//
-// ?
-//
-//==============================================================================
-procedure A_Light0(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  player.extralight := 0;
-end;
-
-//==============================================================================
-//
-// P_SetupPsprites
-// Called at start of level for each player.
-//
-//==============================================================================
-procedure P_SetupPsprites(player: Pplayer_t);
-var
-  i: integer;
-begin
-  // remove all psprites
-  for i := 0 to Ord(NUMPSPRITES) - 1 do
-    player.psprites[i].state := nil;
-
-  // spawn the gun
-  player.pendingweapon := player.readyweapon;
-  P_BringUpWeapon(player);
-end;
-
-//==============================================================================
-//
-// P_MovePsprites
-// Called every tic by player thinking routine.
-//
-//==============================================================================
-procedure P_MovePsprites(player: Pplayer_t);
-var
-  i: integer;
-  psp: Ppspdef_t;
-  state: Pstate_t;
-begin
-  for i := 0 to Ord(NUMPSPRITES) - 1 do
-  begin
-    psp := @player.psprites[i];
-    // a null state means not active
-    state := psp.state;
-    if state <> nil then
-    begin
-      // drop tic count and possibly change state
-      // a -1 tic count never changes
-      if psp.tics <> -1 then
-      begin
-        psp.tics := psp.tics - 1;
-        if psp.tics = 0 then
-          P_SetPsprite(player, i, psp.state.nextstate);
-      end;
-    end;
-  end;
-
-  player.psprites[Ord(ps_flash)].sx := player.psprites[Ord(ps_weapon)].sx;
-  player.psprites[Ord(ps_flash)].sy := player.psprites[Ord(ps_weapon)].sy;
-end;
-
-//==============================================================================
 //
 // P_UpdateBeak
 //
@@ -2125,6 +1846,70 @@ begin
   player.readyweapon := weapon;
   player.psprites[Ord(ps_weapon)].sy := WEAPONBOTTOM;
   P_SetPsprite(player, Ord(ps_weapon), statenum_t(wpnlev1info[Ord(weapon)].upstate));
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.AfterMovePsprites
+//
+//==============================================================================
+class procedure TPspriteGameRules.AfterMovePsprites(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.DropWeaponState
+//
+//==============================================================================
+class function TPspriteGameRules.DropWeaponState(const player: Pplayer_t): statenum_t;
+begin
+  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
+    result := statenum_t(wpnlev2info[Ord(player.readyweapon)].downstate)
+  else
+    result := statenum_t(wpnlev1info[Ord(player.readyweapon)].downstate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.RaisedState
+//
+//==============================================================================
+class function TPspriteGameRules.RaisedState(const player: Pplayer_t): statenum_t;
+begin
+  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
+    result := statenum_t(wpnlev2info[Ord(player.readyweapon)].readystate)
+  else
+    result := statenum_t(wpnlev1info[Ord(player.readyweapon)].readystate);
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.StaysLowered
+//
+//==============================================================================
+class function TPspriteGameRules.StaysLowered(const player: Pplayer_t): boolean;
+begin
+  result := player.chickenTics <> 0;
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.AfterLowered
+//
+//==============================================================================
+class procedure TPspriteGameRules.AfterLowered(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TPspriteGameRules.CheckSupplies
+//
+//==============================================================================
+class procedure TPspriteGameRules.CheckSupplies(const player: Pplayer_t);
+begin
+  P_CheckAmmo(player);
 end;
 
 end.

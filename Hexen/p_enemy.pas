@@ -1240,6 +1240,7 @@ uses
   p_spec,
   p_inter,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_pspr_h,
   p_sounds,
   udmf_telept,

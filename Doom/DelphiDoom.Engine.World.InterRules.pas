@@ -97,6 +97,7 @@ uses
   p_obituaries,
   p_3dfloors,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   ps_main, // JVAL: Script Events
   r_defs,
   r_main,
