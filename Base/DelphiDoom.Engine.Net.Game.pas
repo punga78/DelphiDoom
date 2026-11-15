@@ -18,6 +18,7 @@ uses
   DelphiDoom.Clock.Intf,
   DelphiDoom.Logging.Intf,
   DelphiDoom.GameState.Intf,
+  DelphiDoom.Net.Transport.Intf,
   DelphiDoom.Net.Intf,
   DelphiDoom.Engine.Console.Intf,
   DelphiDoom.Engine.Net.Intf,
@@ -95,6 +96,7 @@ uses
   g_demo,
 {$ENDIF}
   g_game,
+  DelphiDoom.Net.Transport.Types,
   DelphiDoom.Net.Types,
   DelphiDoom.Net.Factory;
 

@@ -17,7 +17,7 @@ unit DelphiDoom.Greed.Net.Session;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Intf, DelphiDoom.Greed.Types, DelphiDoom.Greed.Intf, DelphiDoom.Greed.SaveTypes,
+  System.SysUtils, DelphiDoom.Net.Transport.Intf, DelphiDoom.Greed.Types, DelphiDoom.Greed.Intf, DelphiDoom.Greed.SaveTypes,
   DelphiDoom.Greed.Random, DelphiDoom.Greed.Game.Intf, DelphiDoom.Greed.Game.State, DelphiDoom.Greed.Net.Types,
   DelphiDoom.Greed.Net.Intf, DelphiDoom.Greed.Net.PacketBuffer;
 

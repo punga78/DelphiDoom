@@ -10,7 +10,7 @@ unit DelphiDoom.Tests.Greed.NetFakes;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.Net.Intf;
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Net.Transport.Intf;
 
 type
   TFakeGreedNet = class;

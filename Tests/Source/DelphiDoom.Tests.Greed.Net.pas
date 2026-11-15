@@ -11,7 +11,7 @@ unit DelphiDoom.Tests.Greed.Net;
 interface
 
 uses
-  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Intf, DelphiDoom.Greed.Net.Types,
+  System.SysUtils, DUnitX.TestFramework, DelphiDoom.Net.Transport.Intf, DelphiDoom.Greed.Net.Types,
   DelphiDoom.Greed.Net.Intf, DelphiDoom.Greed.Net.PacketBuffer, DelphiDoom.Greed.Net.Session,
   DelphiDoom.Tests.Greed.GameFakes, DelphiDoom.Tests.Greed.NetFakes;
 

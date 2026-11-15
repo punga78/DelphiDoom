@@ -11,7 +11,7 @@ unit DelphiDoom.Net.ConsistencyTracker;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
+  System.SysUtils, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
 
 type
   /// <summary>

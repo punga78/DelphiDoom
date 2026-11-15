@@ -8,14 +8,16 @@ cosa resta nel motore, cosa si può cancellare.
 Dipendenze già nei progetti: `Libs\Logging` (Types, Intf), `Libs\Clock` (Intf), `Libs\GameState` (Intf).
 
 ```
+DelphiDoom.Net.Transport.Types      in 'Libs\NetTransport\DelphiDoom.Net.Transport.Types.pas'
+DelphiDoom.Net.Transport.Intf       in 'Libs\NetTransport\DelphiDoom.Net.Transport.Intf.pas'
 DelphiDoom.Net.Types                in 'Libs\Net\DelphiDoom.Net.Types.pas'
 DelphiDoom.Net.Intf                 in 'Libs\Net\DelphiDoom.Net.Intf.pas'
 DelphiDoom.Net.PacketCodec          in 'Libs\Net\DelphiDoom.Net.PacketCodec.pas'
 DelphiDoom.Net.TicSync              in 'Libs\Net\DelphiDoom.Net.TicSync.pas'
 DelphiDoom.Net.ConsistencyTracker   in 'Libs\Net\DelphiDoom.Net.ConsistencyTracker.pas'
 DelphiDoom.Net.StartArbiter         in 'Libs\Net\DelphiDoom.Net.StartArbiter.pas'
-DelphiDoom.Net.NodeListParser       in 'Libs\Net\DelphiDoom.Net.NodeListParser.pas'
-DelphiDoom.Net.WinsockTransport     in 'Libs\Net\DelphiDoom.Net.WinsockTransport.pas'
+DelphiDoom.Net.NodeListParser       in 'Libs\NetTransport\DelphiDoom.Net.NodeListParser.pas'
+DelphiDoom.Net.WinsockTransport     in 'Libs\NetTransport\DelphiDoom.Net.WinsockTransport.pas'
 DelphiDoom.Net.Factory              in 'Libs\Net\DelphiDoom.Net.Factory.pas'
 ```
 

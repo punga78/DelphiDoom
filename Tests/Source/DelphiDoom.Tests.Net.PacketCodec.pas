@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IOUtils, System.Generics.Collections, DUnitX.TestFramework,
-  DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Net.PacketCodec;
+  DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Net.PacketCodec;
 
 type
   /// <summary>

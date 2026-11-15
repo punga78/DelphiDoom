@@ -12,7 +12,7 @@ unit DelphiDoom.Greed.Net.Factory;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Intf, DelphiDoom.Greed.Game, DelphiDoom.Greed.Net.Types,
+  System.SysUtils, DelphiDoom.Net.Transport.Intf, DelphiDoom.Greed.Game, DelphiDoom.Greed.Net.Types,
   DelphiDoom.Greed.Net.Intf;
 
 type

@@ -11,7 +11,7 @@ unit DelphiDoom.Net.WinsockTransport;
 interface
 
 uses
-  System.SysUtils, Winapi.Winsock, DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
+  System.SysUtils, Winapi.Winsock, DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf;
 
 type
   /// <summary>

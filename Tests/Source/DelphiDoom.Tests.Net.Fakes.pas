@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.Clock.Intf, DelphiDoom.GameState.Intf,
-  DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
+  DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.Types, DelphiDoom.Net.Intf;
 
 type
   TFakeNetTransport = class;

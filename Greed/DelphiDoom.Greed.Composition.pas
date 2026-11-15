@@ -149,7 +149,7 @@ uses
   DelphiDoom.Greed.HostMouse, DelphiDoom.Input.Intf, DelphiDoom.Input.Factory,
   DelphiDoom.GameHost.Events.Intf, DelphiDoom.GameHost.MouseState, DelphiDoom.GameHost.EventFanOut,
   DelphiDoom.GameHost.KeyState, DelphiDoom.GameHost.Win.Window, DelphiDoom.GameHost.Factory,
-  DelphiDoom.Net.Types, DelphiDoom.Net.Intf, DelphiDoom.Net.NodeListParser, DelphiDoom.Net.WinsockTransport,
+  DelphiDoom.Net.Transport.Types, DelphiDoom.Net.Transport.Intf, DelphiDoom.Net.NodeListParser, DelphiDoom.Net.WinsockTransport,
   DelphiDoom.Greed.Net.Types, DelphiDoom.Greed.Net.Intf, DelphiDoom.Greed.Net.Factory;
 
 const

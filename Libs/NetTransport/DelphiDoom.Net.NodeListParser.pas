@@ -11,7 +11,7 @@ unit DelphiDoom.Net.NodeListParser;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Net.Types;
+  System.SysUtils, DelphiDoom.Net.Transport.Types;
 
 type
   /// <summary>
