@@ -826,6 +826,86 @@ Verifica: golden 44/44 a 8 bit e 27/27 a 32 bit UGUALI, `Prova-PUser.ps1` 0 dive
 **Resta** (par. 13, riga 5 chiusa): le routine "proprie con ragione" della tabella. Prossima fetta: `p_spec` e `p_switch` (riga 6).
 
 
+### 11.10 Passo 2g: `p_spec` e `p_switch` (ramo `worktree-agent-a57431419c2cd8ef4`, partito da `aecc33fcd`, 2026-11-15)
+
+**Forma.** `Base\p_spec.pas` e `Base\p_switch.pas` sono uniche per i quattro giochi (Radix32 e SpeedHaste32 compilano quelle di `Base\` e le unit di `Doom\`). Diversamente dalle fette 2f, qui la unit ha **piu' pezzi per gioco**, perche' l'interfaccia del vecchio `p_spec` era soprattutto tipi: i record dei thinker salvati (`plat_t`, `vldoor_t`, `ceiling_t`, `floormove_t`, `friction_t`, `pusher_t`, i `*_t115` e `*_t206` dei vecchi formati, `slidedoor_t` di Strife) e gli enum con i nomi nudi (`up`, `down`, `open`, `close`, `normal`, `top`, `middle`, `bottom`), che cambiano membri per gioco.
+
+| Unit | Dove | Contenuto |
+|---|---|---|
+| `p_spec_h` | `Doom\`, `Heretic\`, `Hexen\`, `Strife\` (stesso nome) | il testo dei tipi, costanti e variabili dell'interfaccia del vecchio `p_spec`, alla lettera (come `p_pspr_h`) |
+| `DelphiDoom.Engine.World.SpecRules` | idem | il vecchio `p_spec` (`git mv`) senza le routine spostate, piu' `TSpecGameRules` (classe `sealed` di metodi statici, nessuna chiamata virtuale ne' a interfaccia) |
+| `DelphiDoom.Engine.World.SwitchRules` | idem | il vecchio `p_switch` (`git mv`) senza `buttonlist` e `P_StartButton` |
+| `p_spec`, `p_switch` | `Base\` | le routine uguali o parametriche (tabella sotto) |
+| `DelphiDoom.Engine.World.FrictionPushers` | `Base\` | `T_Friction`, `T_Pusher`, `P_SpawnFriction`, `P_SpawnPushers`, `P_GetPushThing` (517 righe uguali in Doom e Strife; compilata solo da Doom, Strife, Radix e Speed) |
+| `DelphiDoom.Engine.World.SectorSearch` | `Base\` | le ricerche nei settori che hanno solo Doom e Strife (identiche): `P_FindNextLowestFloor`, `P_FindNextLowestCeiling`, `P_FindNextHighestCeiling`, `P_FindShortestTextureAround`, `P_FindShortestUpperAround`, `P_FindModelFloorSector`, `P_FindModelCeilingSector`, `P_FindLineFromLineTag2`, `P_SectorActive`; il `getSector` di Doom e Strife (con il controllo su `sidenum`) e' privato qui |
+
+**Chiamanti.** Nei consumatori `p_spec` diventa `p_spec_h`, [regole se servono], `p_spec` **nella stessa posizione** (un nome nudo di enum come `top` o `open` non cambia unit risolta: l'ordine delle `uses` decide); le regole (`SpecRules`, `SwitchRules`) e le unit di famiglia solo dove il file nomina una routine che esportano. `Base\DelphiDoom.Engine.Ceiling.Thinker` (compilata anche da Heretic) include `SectorSearch` sotto `{$IFNDEF HERETIC}`, come gia' faceva per `P_SectorActive`. I 14 `.dpr` elencano `p_spec_h`, `p_spec`, `SpecRules`, `SwitchRules` (gli 8 di Doom e Strife anche le due unit di famiglia). I file di `Tools\Verifica\149..154` e `harness` (che hanno `p_spec` nelle `uses`) non sono toccati: nessun progetto del repository li compila.
+
+**Passi** (un commit ciascuno, `refs #185`; dopo ognuno `Verifica-Ridotta.ps1` 4 su 4 UGUALE a 8 bit):
+
+| Passo | Commit | Cosa |
+|---|---|---|
+| 2g-a | `3a5f3aff8` | cablaggio: `p_spec` -> `SpecRules` + `p_spec_h` (script che spezza interfaccia e tipi), 79 chiamanti, 14 `.dpr`; `Base\p_spec` con `getSide` e `P_FindLowestFloorSurrounding` |
+| 2g-b | `c9172e8cd` | le utilita' dei settori con `TSpecGameRules`; `Prova-PSpec.ps1` |
+| 2g-c | `49bdd49fc` | `FrictionPushers` e `SectorSearch` (Doom e Strife) |
+| 2g-d | `a5d9dc00c` | `p_switch`: `buttonlist` e `P_StartButton` in Base; `SwitchRules` |
+
+**Regole (`TSpecGameRules`).** Sono le differenze dei dati, scritte nella stessa forma `if ... then result := ... else result := ...` del vecchio testo, cosi' che la prova meccanica le ricostruisca alla lettera:
+
+| Regola | Doom | Heretic | Hexen | Strife |
+|---|---|---|---|---|
+| `TwoSidedByFlag` (`twoSided`: flag o secondo lato) | `G_PlayingEngineVersion <= VERSION115` | vera | falsa | falsa |
+| `NextSectorCompatible` (`getNextSector`) | `<= VERSION115` | vera | vera | `G_NeedsCompatibilityMode` |
+| `HighestFloorStart` | `> VERSION115` (-32000 o -500) | `>= VERSION207` | `>= VERSION207` | -32000 |
+| `LowestCeilingStart` | `> VERSION115` (32000 o `MAXINT`) | `> VERSION207` | `MAXINT` | 32000 |
+| `HighestCeilingStart` | `> VERSION115` (-32000 o 0) | `> VERSION114` | `> VERSION141` | -32000 |
+| `AdjoiningSectorsLimit` (`P_FindNextHighestFloor`) | 20 se `G_NeedsCompatibilityMode`, altrimenti 64 | idem | idem | 64 |
+| `LineSectorTag` (`P_FindSectorFromLineTag`, `...Tag2`) | `line.tag` | `line.tag` | `line.arg1` | `line.tag` |
+
+**Tabella delle routine** (`Confronta-Copie.ps1 -Unit p_spec`; `Prova-PSpec.ps1` contro `aecc33fcd`: **nessuna DIVERSA**; Doom 39 routine di `p_spec` (30 UGUALE, 5 DICHIARATA, 4 NON TESTUALE), Heretic 21 (13, 4, 4), Hexen 22 (15, 4, 3), Strife 37 (29, 4, 4); `p_switch`: tutte UGUALE):
+
+| Routine | Giochi | Dove ora | Ragione |
+|---|---|---|---|
+| `getSide`, `P_FindLowestFloorSurrounding`, `twoSidedS` | 4 (`twoSidedS` Doom e Strife) | `Base\p_spec.pas` | uguali (`twoSidedS` di Doom senza `;` finale) |
+| `twoSided`, `getNextSector` | 4 | `Base\p_spec.pas` | parametriche: `TwoSidedByFlag` e `NextSectorCompatible`. La forma e' diversa dal vecchio (rami scambiati; Heretic e Hexen sono la forma di Doom con `oldcompatibility` sempre vera): NON TESTUALE, l'equivalenza e' scritta in `Prova-PSpec.ps1` |
+| `P_FindHighestFloorSurrounding`, `P_FindLowest/HighestCeilingSurrounding`, `P_FindNextHighestFloor` | 4 | `Base\p_spec.pas` | parametriche: la soglia di versione e il limite dei settori adiacenti (DICHIARATA) |
+| `P_FindSectorFromLineTag`, `P_FindSectorFromLineTag2` | Doom, Heretic, Strife (la seconda anche Hexen) | `Base\p_spec.pas` | il tag e' letto una volta con `LineSectorTag` prima del ciclo (stessa condizione a ogni giro). `P_FindSectorFromLineTag` esiste ora anche in Hexen, dove non e' mai chiamata |
+| `MAX_ADJOINING_SECTORS` | 4 (64 ovunque) | `Base\p_spec.pas` | costante uguale |
+| friction e pusher (8 routine) | Doom, Strife | `FrictionPushers` | uguali (517 righe). `T_Friction` e `T_Pusher` restano definite **una sola volta**: `p_saveg` ne confronta e assegna l'indirizzo, e le vede da `uses` |
+| ricerche nei settori (9 routine + `getSector`) | Doom, Strife | `SectorSearch` | uguali |
+| `P_FindShortestTextureAround` | Heretic | `SpecRules` | propria: `twoSided` (flag) al posto di `twoSidedS` |
+| `getSector` | Heretic | `SpecRules` | propria: senza il controllo `sidenum >= 0` (quella di Doom e Strife torna `nil`); non unificata per non cambiare il comportamento su una mappa con `ML_TWOSIDED` senza secondo lato |
+| `P_InitPicAnims` | Doom, Strife (uguali), Heretic (diversa) | `SpecRules` | duplicata con ragione: Heretic ha tabella fissa e flat diversi; Doom e Strife tengono `anims`, `lastanim` e le tabelle fisse nella unit, che `P_UpdateSpecials` legge: portarla in Base vuol dire spostare i dati e le due routine insieme (fetta dei dati, 2i) |
+| `P_CrossSpecialLinePtr`, `P_ShootSpecialLine`, `P_PlayerInSpecialSector`, `P_UpdateSpecials`, `P_SpawnSpecials` | per gioco | `SpecRules` | proprie: i grandi `case` degli special (1002/407/1341, 161/33/167, 143/91/72/127, 100/101/32/97, 277/209/107/269 righe nei quattro giochi). Spezzarli in regole sposterebbe solo il testo: ogni ramo e' uno special di quel gioco (Doom e Strife linee generalizzate e Boom, Heretic vento e correnti, Hexen script e ACS). `P_CrossSpecialLine*` ha `bossaction` in Doom e non negli altri (firma diversa) |
+| `P_CanUnlockGenDoor`, `P_CheckTag`, `P_MobjInSpecialSector` | Doom (le prime due Strife, diversa) | `SpecRules` | proprie |
+| `P_ExecuteLineSpecial`, `P_ActivateLine`, `EVH_*`, `CheckedLockedDoor`, `P_FindSectorFromTag*`, `P_PlayerOnSpecialFlat`, `P_FindLine` | Hexen | `SpecRules` | esistono solo in Hexen (ACS e special estesi) |
+| `P_InitLava`, `EV_DoDonut` | Heretic (`P_InitLava` anche Hexen) | `SpecRules` | proprie |
+| `P_StartButton`, `buttonlist` | 4 | `Base\p_switch.pas` | uguali; `P_StartButton` era privata e ora e' esportata (la usano le `SwitchRules`) |
+| `P_ChangeSwitchTexture` | 4 | `SwitchRules` | quattro forme: Doom e Heretic differiscono solo per il suono (`sfx_swtchn` e l'uscita, o `sfx_switch`), Hexen prende suono e origine da `alphSwitchList`, Strife ha i vetri, i suoni per interruttore e la trasmittente delle miniere. Una regola `SwitchSound` per la sola coppia Doom/Heretic toglierebbe 55 righe ma obbligherebbe `switchlist` e `numswitches` (privati in tre giochi) a diventare pubblici: rimandata |
+| `P_UseSpecialLine` | Doom, Heretic, Strife | `SwitchRules` | proprie: grandi `case` (1113/303/1372 righe), firma diversa in Strife |
+| `P_InitSwitchList`, `P_SpawnBrokenGlass`, `P_MoveWall` | per gioco | `SwitchRules` | proprie |
+
+**`Libs\Specials`.** Non usata: il registro (`ISpecialRegistry`) e' collegato solo a `P_ExecuteLineSpecial` di UDMF (`Base\udmf_spec.pas`, per i giochi che non sono Hexen) con gestori `reference to function`. I grandi `case` di `P_CrossSpecialLinePtr`, `P_ShootSpecialLine` e `P_UseSpecialLine` sono chiamati a ogni linea attraversata, colpita o usata e leggono i campi dei record del motore: trasformarli in gestori registrati vorrebbe dire una chiamata di chiusura per linea e riscrivere 3000 righe per gioco. Non fatto; il registro resta com'e'.
+
+**Riuso, esteso, creato.** *Riusato*: lo schema di 11.6-11.9 (regole statiche per gioco, `p_pspr_h` come precedente per la unit dei tipi), `Prova-Common.ps1`, `Confronta-Copie.ps1`, `Verifica-Ridotta.ps1`. *Esteso*: nulla in `Libs\` (`Libs\Thinkers` e `p_scroll`, `p_ceilng`, `p_genlin`, `p_floor` di Base erano gia' in copia unica e usano le stesse routine, solo con le `uses` aggiornate). *Creato*: `Base\p_spec.pas`, `Base\p_switch.pas`, `FrictionPushers`, `SectorSearch`, le quattro `p_spec_h`, `SpecRules` e `SwitchRules` (il vecchio testo), `Tools\Verifica\185\Prova-PSpec.ps1`.
+
+**Righe** (righe non vuote, `p_spec` + `p_switch`): 14766 -> **13678** (-1088): prima 3866 + 1153 (Doom), 1802 + 478 (Heretic), 1538 + 194 (Hexen), 3997 + 1738 (Strife); ora `Base\p_spec.pas` 372, `p_switch.pas` 81, `FrictionPushers` 566, `SectorSearch` 454, `p_spec_h` 534 + 370 + 292 + 580, `SpecRules` 2243 + 1281 + 1108 + 2343, `SwitchRules` 1126 + 451 + 166 + 1711. Il guadagno e' nelle 517 righe di friction e pusher e nelle nove ricerche in due copie, nelle quindici routine di `p_spec` che erano quattro copie e in `P_StartButton`; i tipi (1776 righe) sono solo spostati.
+
+**Differenze dal vecchio.** Nessuna voluta nel comportamento. Costo: ogni utilita' dei settori con una soglia (`P_FindHighestFloorSurrounding`, le due dei soffitti, `getNextSector`, `twoSided`, `P_FindNextHighestFloor`, i due `P_FindSectorFromLineTag*`) ha una chiamata statica in piu' alla regola (una `class function` con un solo confronto, per evento di un settore o di una linea, nessuna per pixel, colonna o thinker); `P_FindSectorFromLineTag*` legge il tag una volta prima del ciclo (stessa condizione). Hexen ha ora anche `P_FindSectorFromLineTag`, `twoSidedS` e le altre utilita' di Base che non usa (il linker le scarta se non chiamate).
+
+**Verifica.**
+
+- Build Release Win32 dei dieci giochi (`Tools\build.bat giochi Release`, dopo l'ultimo commit di codice): errori 0, avvisi 381/381/385/331/305/255/200/150/413/340 (Doom32, Radix32, SpeedHaste32, GLDoom32, Heretic32, GLHeretic32, Hexen32, GLHexen32, Strife32, GLStrife32), **uguali alla base**. `strumenti Release`: 14 su 14. Doom32 e Strife32 Release Win64 compilano (416 e 453 avvisi, uguali). `Tools\build.bat strati`: 0 violazioni nuove (8 eccezioni dichiarate).
+- Prova meccanica `Prova-PSpec.ps1` (contro `aecc33fcd`): nessuna DIVERSA.
+- `Verifica-Ridotta.ps1`: 4 su 4 UGUALE a 8 bit dopo ciascuno dei quattro passi.
+- Layout dei salvataggi (`Tools\Verifica\40\Prova-Layout.ps1 -Game Doom,Strife`, 32 e 64 bit contro i golden `Tests\Data\SaveLayout`): uscita 0 (i record dei thinker hanno cambiato unit, non campi).
+- Golden (cartella `C:\ddparity`, eseguibili del ramo finale): **corpus intero 44 su 44 UGUALE a 8 bit** e **44 su 44 UGUALE a 32 bit** (`Confronta-Golden.ps1 -Modes 8` e `-Modes 32`, senza filtri).
+- Radix32 (`Tools\Verifica\169\Prova-Radix.ps1`, `RADIX.DAT`, `-warp 1 1`): carica E1M1 (90 colori), nessun `crash.txt`, `Doom32_stderr.txt` senza `I_Error` (solo gli avvisi `P_InitSwitchList(): Unknown texture` e `Disk busy lump not found!`, non confrontati con la base); SpeedHaste32 (`SPEEDH.JCL`, `-warp 1 1`): la gara parte (350 colori), nessun `crash.txt`. Il processo non esce alla chiusura e lo strumento lo termina (`STILL RUNNING: killed`, come nei passi 2f).
+- **Misura a coppie**: **NON conclusiva** (`Misura-Coppie.ps1`, Doom32 `demo1`, 7 coppie, vecchio = Doom32 di `aecc33fcd` estratto con `git archive` in `C:\ddmisura185\base` e compilato a parte; `-DataRoot` sulla `bin` del repository principale perche' `Misura-Giro.ps1` cerca i dati in `<radice>\bin\Doom`, che in un worktree non esiste). Win32 modo 8: mediane +0,50%, minimi +0,00%; modo 32: mediane +3,93%, minimi +5,56%; entrambe **rifiutate dallo strumento** (dispersione del vecchio 29,90% e 32,54%, macchina occupata da altri agenti: CPU 24,7% dopo l'esecuzione a 32 bit). Win64 non misurato. Il codice toccato (utilita' dei settori e special) e' per evento di settore o di linea, non per pixel, colonna o thinker: da rifare a macchina scarica.
+- **Non verificato**: il ramo delle demo vecchie (`G_PlayingEngineVersion <= VERSION115`) per `twoSided`, `getNextSector` e le soglie, non esercitato dal corpus; i pusher e la friction di Doom e Strife (le demo del corpus non hanno sempre special di quel tipo); salvataggi veri; Win64 a runtime oltre il layout; i giochi OpenGL; Radix32 e SpeedHaste32 giocati con la tastiera; nessun test DUnitX scritto (le unit sono legate ai record del motore: la prova e' la prova meccanica sul testo e i golden).
+
+**Resta** (par. 13, riga 6 chiusa): le routine "proprie con ragione" della tabella (i grandi `case`, `P_InitPicAnims` con i suoi dati, `P_ChangeSwitchTexture`). Prossima fetta: **i thinker rimasti** (riga 7: `Heretic\p_floor`, `p_plats`, `p_lights`, `p_telept`, `p_doors`, `udmf_ceilng`, `udmf_floor`).
+
 ## 12. Fase 1: censimento di chiusura (#185, 2026-11-14)
 
 Fatto prima di scrivere codice, su `c4ce14f1`, leggendo per intero la sezione `implementation` di ogni unit. Le routine sono divise in **delega** (una o poche righe verso un oggetto di `Libs\` o di `Base\DelphiDoom.Engine.*`, piu' il controllo "non configurato"), **logica** (cicli, calcoli, stato in globali della unit) e **dati**. Le righe tra parentesi sono righe di corpo, contate dalla firma all'`end`.
@@ -928,7 +1008,7 @@ Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime 
 | 3 | ~~**2f-2 `p_inter`**~~ **fatta** (par. 11.7, 2026-11-15): `Base\p_inter.pas` (`P_CmdSuicide`, `P_GiveBody`, `P_DamageFlagFilter`) con `TInterGameRules` per gioco, `PickupGivers` (`P_GiveArmor`, `P_SpawnDroppedMobj`), `SpecialRespawn`, `MinotaurSlam` e `P_AutoUseHealth` in `PlayerArtifacts`; `P_DamageMobj`, `P_KillMobj` e `P_TouchSpecialThing` restano propri con la ragione scritta | - | - | I punti 1 e 3 di Rad-X stanno ora nel metodo `DamageMobj` di `Doom\DelphiDoom.Engine.World.InterRules.pas` (firma di `P_DamageMobj` invariata). Prossima: `p_pspr` (riga 4) |
 | 4 | ~~**2f-3 `p_pspr`**~~ **fatta** (par. 11.8, 2026-11-15): `Base\p_pspr.pas` per i quattro giochi (7280 -> 6760 righe): `P_SetPsprite`, `P_SetupPsprites`, `P_MovePsprites`, `A_Light0`, `P_DropWeapon`, `A_ReFire`, `A_Lower`, `A_Raise` con `TPspriteGameRules` (`PspriteRules` per gioco) | - | - | Restano proprie con la ragione scritta: `P_BringUpWeapon`, `P_CheckAmmo`, `P_FireWeapon`, `A_WeaponReady` e le armi di ogni gioco. Misura a coppie non conclusiva (par. 11.8). Prossima: `p_enemy` (riga 5) |
 | 5 | ~~**2f-4 `p_enemy`**~~ **fatta** (par. 11.9, 2026-11-15): `Base\p_enemy.pas` per i quattro giochi (18139 -> 17365 righe con le unit nuove): `P_RecursiveSound`, `P_NoiseAlert`, `P_MeleeRange`, `P_TryWalk`, `P_LookForTargets`, `P_Move` (Hexen ha la propria), `P_NewChaseDir`, `A_FaceTarget` con `TEnemyGameRules` (`EnemyRules` per gioco) | - | - | Restano proprie con la ragione scritta: `P_LookForPlayers`, `A_Look`, `P_DoChase`, `A_Chase`, `P_CheckMeleeRange`, `P_CheckMissileRange`, `A_Pain`, `A_Fall`, `P_Massacre` e le azioni di ogni mostro e gioco. Prossima: `p_spec` e `p_switch` (riga 6) |
-| 6 | **2g `p_spec` e `p_switch`** con `Libs\Specials` | 4333/2041/1771/4496 e 1312/550/224/1956; 50 routine: 19 uguali, 19 parametriche | 4-5 | `P_CrossSpecialLine`, `P_ShootSpecialLine`, `P_UseSpecialLine` sono grandi `case`; UDMF; i giochi con le linee generalizzate (Doom, Strife) hanno rami che il corpus esercita poco |
+| 6 | ~~**2g `p_spec` e `p_switch`** con `Libs\Specials`~~ **fatta** (par. 11.10, 2026-11-15): `Base\p_spec.pas` e `Base\p_switch.pas` per i quattro giochi (14766 -> 13678 righe non vuote con le unit nuove): le utilita' dei settori con `TSpecGameRules`, `FrictionPushers` e `SectorSearch` (Doom e Strife) in `Base\`, i tipi in `p_spec_h` per gioco, il vecchio testo in `SpecRules` e `SwitchRules` | - | - | Restano proprie con la ragione scritta: i grandi `case` (`P_CrossSpecialLinePtr`, `P_ShootSpecialLine`, `P_PlayerInSpecialSector`, `P_UpdateSpecials`, `P_SpawnSpecials`, `P_UseSpecialLine`), `P_InitPicAnims`, `P_ChangeSwitchTexture`, le routine di Hexen (ACS). `Libs\Specials` non usata (par. 11.10). Prossima: i thinker rimasti (riga 7) |
 | 7 | **Thinker rimasti** (par. 10.6, 2e-1 finita) | `Heretic\p_floor` 411; `p_plats` 272/256/279; `p_lights` 387/382/404; `p_telept` 460/246/463; `p_doors` 394/286/1335; `udmf_ceilng`, `udmf_floor` | 3-4 | `Libs\Thinkers` ha gia' i profili e gli adattatori; `p_doors` di Strife e' tre volte quello di Doom (dialoghi, porte che chiedono una chiave); i record dei thinker non si toccano (salvataggi) |
 | 8 | **Stadio 2 dello stato** (par. 10.3) per i globali che i salvataggi non scrivono (`tm*`, `spechit`, le variabili di `p_mobj`) | circa 120 globali | 2 | il punto piu' pericoloso e' `@thinkercap`; si fa solo per cio' che `p_saveg`/`sv_save` non toccano; il resto con la 9 |
 | 9 | **2h `g_game`** (sessione, demo, rete) e salvataggi (`Libs\Serializer`) | 3894/3632/2439/3505; `p_saveg`, `sv_save` | 5-6 | **bloccata finche' i salvataggi non sono liberi**; il rischio piu' alto di tutta la fase 2: demo, rete e salvataggi byte per byte; serve un corpus di salvataggi vecchi che si caricano |
