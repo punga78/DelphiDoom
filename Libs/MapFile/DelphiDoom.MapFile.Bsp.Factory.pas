@@ -37,6 +37,17 @@ type
     class function CreateLightGridLoader(const ALog: IIdLibLog = nil): IBspLightGridLoader; static;
     /// <summary>R_LoadNodesAndLeafs and R_SetParent</summary>
     class function CreateTreeLoader: IBspTreeLoader; static;
+    /// <summary>
+    ///   ParseFace; the colour shift is r_mapOverBrightBits - overbrightBits (1 by default); the
+    ///   log (may be nil) gets the MAX_FACE_POINTS warning
+    /// </summary>
+    class function CreateFaceLoader(const AColorShift: Integer = 1; const ALog: IIdLibLog = nil): IBspFaceLoader; static;
+    /// <summary>ParseTriSurf</summary>
+    class function CreateTriangleLoader(const AColorShift: Integer = 1): IBspTriangleLoader; static;
+    /// <summary>ParseFlare</summary>
+    class function CreateFlareLoader: IBspFlareLoader; static;
+    /// <summary>R_LoadVisibility</summary>
+    class function CreateVisibilityLoader: IBspVisibilityLoader; static;
     /// <summary>The writer; the file system is only needed to write files by name</summary>
     class function CreateWriter(const AFileSystem: IIdLibFileSystem = nil): IBspWriter; static;
   end;
@@ -47,7 +58,28 @@ uses
   DelphiDoom.MapFile.Bsp.LodFixer, DelphiDoom.MapFile.Bsp.PatchLoader, DelphiDoom.MapFile.Bsp.PatchStitcher,
   DelphiDoom.MapFile.Bsp.Reader, DelphiDoom.MapFile.Bsp.Validator, DelphiDoom.MapFile.Bsp.LightmapLoader,
   DelphiDoom.MapFile.Bsp.LightGridLoader, DelphiDoom.MapFile.Bsp.TreeLoader, DelphiDoom.MapFile.Bsp.Writer,
-  DelphiDoom.MathCore.Patch.Factory;
+  DelphiDoom.MapFile.Bsp.FaceLoader, DelphiDoom.MapFile.Bsp.TriangleLoader, DelphiDoom.MapFile.Bsp.FlareLoader,
+  DelphiDoom.MapFile.Bsp.VisibilityLoader, DelphiDoom.MathCore.Patch.Factory;
+
+class function TBspFactory.CreateFaceLoader(const AColorShift: Integer; const ALog: IIdLibLog): IBspFaceLoader;
+begin
+  Result := TBspFaceLoader.Create(AColorShift, ALog);
+end;
+
+class function TBspFactory.CreateTriangleLoader(const AColorShift: Integer): IBspTriangleLoader;
+begin
+  Result := TBspTriangleLoader.Create(AColorShift);
+end;
+
+class function TBspFactory.CreateFlareLoader: IBspFlareLoader;
+begin
+  Result := TBspFlareLoader.Create;
+end;
+
+class function TBspFactory.CreateVisibilityLoader: IBspVisibilityLoader;
+begin
+  Result := TBspVisibilityLoader.Create;
+end;
 
 class function TBspFactory.CreateLightmapLoader: IBspLightmapLoader;
 begin

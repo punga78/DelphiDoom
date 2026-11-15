@@ -13,3 +13,9 @@ for v in 0 1 2; do
 done
 "$OUT/bspgen.exe" extras "$OUT/variant0.bsp" > "$HERE/../../../Tests/Data/MapFile/bsp_render.golden.txt"
 echo "written $GOLDEN"
+# third slice (#237): ParseFace, ParseTriSurf, ParseFlare, R_LoadVisibility
+SURF=$HERE/../../../Tests/Data/MapFile/bsp_surfaces.golden.txt
+"$OUT/bspgen.exe" surfs "$OUT/variant0.bsp" > "$SURF"
+"$OUT/bspgen.exe" surfsbad 0 >> "$SURF" || true
+"$OUT/bspgen.exe" surfsbad 1 >> "$SURF" || true
+echo "written $SURF"

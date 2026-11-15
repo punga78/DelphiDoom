@@ -28,6 +28,7 @@ uses
   DelphiDoom.Tests.MapFile.BspReader in 'Source\DelphiDoom.Tests.MapFile.BspReader.pas',
   DelphiDoom.Tests.MapFile.BspRender in 'Source\DelphiDoom.Tests.MapFile.BspRender.pas',
   DelphiDoom.Tests.MapFile.BspSample in 'Source\DelphiDoom.Tests.MapFile.BspSample.pas',
+  DelphiDoom.Tests.MapFile.BspSurfaces in 'Source\DelphiDoom.Tests.MapFile.BspSurfaces.pas',
   DelphiDoom.Tests.MapFile.BspValidator in 'Source\DelphiDoom.Tests.MapFile.BspValidator.pas',
   DelphiDoom.Tests.MapFile.BspWriter in 'Source\DelphiDoom.Tests.MapFile.BspWriter.pas',
   DelphiDoom.Tests.MapFile.Dump in 'Source\DelphiDoom.Tests.MapFile.Dump.pas',
