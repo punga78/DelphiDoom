@@ -685,7 +685,7 @@ uses
   DelphiDoom.Wad.ReloadableSource in '..\Base\DelphiDoom.Wad.ReloadableSource.pas',
   w_wad in '..\Base\w_wad.pas',
   z_zone in '..\Base\z_zone.pas',
-  dglOpenGL in '..\Libs\OpenGl\Binding\dglOpenGL.pas',
+  dglOpenGL in '..\Libs\OpenGlBinding\dglOpenGL.pas',
   p_genlin in '..\Base\p_genlin.pas',
   p_scroll in '..\Base\p_scroll.pas',
   r_dynlights in '..\Base\r_dynlights.pas',

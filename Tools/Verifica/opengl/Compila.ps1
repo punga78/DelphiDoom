@@ -23,9 +23,9 @@ New-Item -ItemType Directory -Force $out | Out-Null
 if ($Which -eq 'Old') {
   if ($OldTree -eq '') { throw 'Serve -OldTree per il vecchio' }
   $tree = (Resolve-Path $OldTree).Path
-  New-Item -ItemType Directory -Force (Join-Path $tree 'Libs\OpenGl\Recorder') | Out-Null
+  New-Item -ItemType Directory -Force (Join-Path $tree 'Libs\OpenGlBinding\Recorder') | Out-Null
   New-Item -ItemType Directory -Force (Join-Path $tree 'Tools\Verifica\opengl') | Out-Null
-  Copy-Item (Join-Path $here 'Libs\OpenGl\Recorder\*.pas') (Join-Path $tree 'Libs\OpenGl\Recorder') -Force
+  Copy-Item (Join-Path $here 'Libs\OpenGlBinding\Recorder\*.pas') (Join-Path $tree 'Libs\OpenGlBinding\Recorder') -Force
   Copy-Item (Join-Path $PSScriptRoot 'HarnessGl.pas') (Join-Path $tree 'Tools\Verifica\opengl') -Force
 } else {
   $tree = $here

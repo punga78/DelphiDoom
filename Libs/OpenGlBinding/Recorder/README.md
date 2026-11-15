@@ -1,4 +1,4 @@
-# Libs\OpenGl\Recorder
+# Libs\OpenGlBinding\Recorder
 
 Registratore delle chiamate OpenGL, criterio di parità per le fette del renderer OpenGL.
 
