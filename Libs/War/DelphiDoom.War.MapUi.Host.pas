@@ -46,8 +46,9 @@ type
   /// <summary>
   ///   The ears of the model in the game of the map: it tells the game when to flash a message (wmui_setFlashStatus), when
   ///   an entity leaves the selection, and it answers what the states of building and training ask (how many frames an image
-  ///   has, whether a tile is known). The sounds are not played here: the audio is the part of the game that is not ported
-  ///   (it stays behind IWarSceneAudio, with the tracks of the music), so a sound asked for is nothing. Not counted by
+  ///   has, whether a tile is known). The sounds are not played here: they go to the IWarMapAudio that the scene attaches
+  ///   (which makes their entities and, with an output, plays them); the ones with a place on the map go to IWarMapAudioAt
+  ///   with whether the fog of war lets the place be heard. Without an audio a sound asked for is nothing. Not counted by
   ///   reference users: the scene owns it
   /// </summary>
   TWarMapHost = class(TInterfacedObject, IWarMapHost, IWarModelEvents, IWarGatherEvents, IWarConstructionHost,

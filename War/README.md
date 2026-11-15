@@ -103,10 +103,11 @@ con `TWarRunner`. Nessun `{$IFDEF}`.
 ## Non fatto / limiti
 
 - **Musica**: i brani si leggono (XMI -> MIDI) e si seguono, ma il sintetizzatore e' quello muto (il SoundFont del remake non ha una
-  licenza dichiarata): non si sente musica. Gli effetti si sentono (mixer di `Libs\War` sull'uscita waveOut a 44100 Hz), senza posizione
-  sulla mappa (volume uguale a ogni distanza).
-- I **filmati** (CAVE1, introduzioni, finali) non sono nel gestore delle scene: la sequenza delle introduzioni e' ancora da
-  collegare (`Libs\War` ha il director e `Libs\Cinematic` il decoder).
+  licenza dichiarata): non si sente musica. Gli effetti si sentono (mixer di `Libs\War` sull'uscita waveOut a 44100 Hz), con la posizione
+  sulla mappa per colpi, morti, crolli, tagli, frecce, esplosioni e incantesimi (volume pieno nella vista, poi cala tra 120 e 200 pixel dal
+  centro come nel C; il C e' mono: il pan non esiste; con la nebbia accesa un suono nella nebbia non si sente).
+- I **filmati**: l'introduzione (CAVE1..TITLE, vedi sopra) e' nel gestore delle scene; i **finali** (HFINALE, OFINALE), `WIN`, `LOSE` e i
+  filmati delle mappe (HMAP, OMAP: non sono sul disco) **non sono ancora collegati** alle scene di fine campagna e della mappa.
 - **Missione 4 degli umani**: il livello 123 ha unita' (`WAR_UNIT_WOUNDED`) senza dati nelle tabelle, e il C si ferma con un `assert`:
   qui e' `EWarException` e il programma esce con codice 1 dicendo quale (`Libs\War\CLAUDE.md`).
 - Non provati: **l'ascolto** (l'uscita waveOut si apre e consuma i buffer, `-audiostats` li conta, ma nessuno ha sentito i

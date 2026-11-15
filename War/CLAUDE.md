@@ -48,8 +48,9 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
   `TWarMapScene` implementa), il Save della fine della mappa e "Load existing game" del menu principale chiedono di salvare o
   caricare; senza (i golden, gli script) fanno cio' che facevano, niente. Il salvataggio e il caricamento si fanno **tra due
   fotogrammi** (`TWarRunner`), mai dentro uno.
-- **`TWarMapAudio` ha ora un'uscita opzionale** (`IWarSceneAudio`, ultimo parametro del costruttore): suona il suono scelto (senza
-  posizione sulla mappa). Le estrazioni e le entita' sono quelle di prima, con o senza uscita: i golden non cambiano.
+- **`TWarMapAudio` ha ora un'uscita opzionale** (`IWarSceneAudio`, ultimo parametro del costruttore): suona il suono scelto; con la
+  posizione sulla mappa se l'uscita la conosce (vedi sotto, #238). Le estrazioni sono quelle di prima, con o senza uscita; le entita'
+  dei suoni con posto cambiano solo con la nebbia accesa (nessun suono nella nebbia). I golden non cambiano.
 - Il mouse di una finestra e' diviso per la scala (`TWarSessionEventSink`): il gioco vuole pixel di 320 x 200.
 - Una finestra senza mouse (`-headless`) mette il mouse al centro con un evento registrato nella storia; senza, la mappa scorre
   verso l'angolo (0, 0).
@@ -74,7 +75,7 @@ stato (pool delle entita', stati, mappa, nebbia, muri, IA, generatore): non fatt
   `SetViewport` del mixer, che ha la parita' sul C in `audio.position`). `TWarMapHost` passa il posto di colpi, morti, crolli,
   tagli, frecce, esplosioni e incantesimi; la scena dice al mixer la vista a ogni `UpdateCamera` (`map->camera.viewport`). Come
   il C: **con la nebbia accesa un suono con posto non visibile non fa ne' entita' ne' suono** (`wa_createAudioWithPosition`
-  ritorna NULL; per i casuali il numero e' estratto lo stesso, prima), quindi `WAR_SAVE_MODEL_VERSION` e' 2. L'uscita del C e'
+  ritorna NULL; per i casuali il numero e' estratto lo stesso, prima), quindi `WAR_SAVE_MODEL_VERSION` e' 2. **Non e' parita' da golden**: e' letto nel C e provato da test con finti (`MapUiUnits`); nessuno script del 197 manda un suono nella nebbia (i 44 golden sono uguali prima e dopo). L'uscita del C e'
   mono: c'e' il volume, **non c'e' il pan** (non inventato).
 
 ## Non fatto

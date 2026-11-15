@@ -27,8 +27,10 @@ type
   ///   The audio of the original as the model sees it: each sound is an entity of the pool (it takes an id and a slot and
   ///   nobody removes it, as in a game with no audio device) and a sound picked among several draws from the generator of
   ///   the game, in the order of the original. With an output (the scenes' IWarSceneAudio, given by a program that has a
-  ///   sound device) the sound that was chosen is also played, without a place on the map (the volume does not follow the
-  ///   camera); the draws, and so the game, are the same with or without it
+  ///   sound device) the sound that was chosen is also played; if the output knows places (IWarPositionalAudio) a sound that
+  ///   has one plays at the volume that the camera gives it. The draws and the entities are the same with or without an
+  ///   output; a sound with a place that the fog of war hides (IWarMapAudioAt, AAudible False) makes no entity and plays
+  ///   nothing, as wa_createAudioWithPosition does, but a random one still draws its number
   /// </summary>
   TWarMapAudio = class(TInterfacedObject, IWarMapAudio, IWarMapAudioAt)
   strict private
