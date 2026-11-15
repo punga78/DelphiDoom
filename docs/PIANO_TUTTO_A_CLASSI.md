@@ -1174,11 +1174,11 @@ Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime 
 |---|---|---|---|
 | 1 | ~~`w_utils` (comandi di console in `Libs\Console`)~~ **fatta** (par. 12.5, 2026-11-15) | - | I due `printf` difettosi sono corretti, con test di regressione |
 | 2 | ~~`w_sprite` (`W_TextureAsPatch` in `Libs\Imaging`)~~ **fatta** (par. 12.6, 2026-11-15, #242) | - | `TImagingPatchWriter.BuildTall` + `TImagingColorPatchBuilder`; parita' sul testo vecchio copiato (il corpus non la esercita) |
-| 3 | `v_video` fetta 1 (palette) **fatta** (par. 12.6, #241); resta la fetta 2 (schermi e misure) | 0,5 | `TScreenPalette` e `TNearestColor` in `Libs\Palette`; i lampi di palette li coprono i golden |
+| 3 | `v_video` fetta 1 (palette) **fatta** (par. 12.6, #241) e fetta 2 (schermi e misure) **fatta** (par. 12.8, #246) | - | `TScreenPalette` e `TNearestColor` in `Libs\Palette`; `TVideoPreserveTables` e `TVideoScreenLayout` in `Libs\Video` |
 | 4 | ~~`sounds`, regola dei nomi di `s_pk3sounds`~~ **fatta** (par. 12.7, #243); resta la colla di `s_sound` | 0,5 | tabelle `S_sfx`/`S_music` dati, regole in `Libs\Audio` |
 | 5 | `i_main`, `i_mainwindow`, `i_startup` con `gl_main` | 2-3 | finestra: nessun golden copre fuoco, icona e schermo intero |
-| 6 | `v_video` fette 3-5 (patch, rettangoli, pagine) e `i_video` (blit) | 7-8 | caldo: misura a coppie; varianti OpenGL restano rami della facciata |
-| 7 | `am_map` (dopo le regole per gioco) e `am_textured` | 5-7 | 62 direttive di gioco nei cicli; `am_textured` va con la 3e |
+| 6 | `v_video` fette 3-5 (patch, rettangoli, pagine) e `i_video` (blit) **fatte in parte** (par. 12.8, #246): cicli di `V_CopyRect`, `V_CopyRectTransparent` ed `Ex`, `V_DrawPatch8` e `Flipped`, stiramenti, ombreggiature, fette del blit. **Restano** `V_DrawPatch32`, `V_DrawPatchTransparent8/32`, `V_DrawPatchZoomed8/32` e il ramo stirato di `V_DrawPatch8` | 3-4 | stesso schema (kernel statico su puntatori, parita' sul testo vecchio, dimensioni dal `.map`); la difficolta' e' che l'operazione sul pixel sta nel ciclo dei post |
+| 7 | `am_map`: forme **fatte** (par. 12.8, `TAutomapShapes`); restano griglia, muri, giocatori, cose, sfondo e tasti con le regole per gioco `TAutomapGameRules`, e `am_textured` | 4-6 | 62 direttive di gioco nei cicli; l'automap non e' nelle demo del corpus: serve prima un golden dell'automap (un tasto nel pilota automatico) |
 
 ### 13.3 Fasi 3, 4, 5
 
