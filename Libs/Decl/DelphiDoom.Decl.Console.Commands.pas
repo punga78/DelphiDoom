@@ -21,7 +21,8 @@ interface
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf, DelphiDoom.IdLib.Text.CmdArgs,
   DelphiDoom.Console.CmdSystem.Types, DelphiDoom.Console.CmdSystem.Intf, DelphiDoom.Console.CmdSystem.Completions,
-  DelphiDoom.Decl.Intf, DelphiDoom.Decl.Console.Intf, DelphiDoom.Decl.Console.TypeCommands;
+  DelphiDoom.Decl.Intf, DelphiDoom.Decl.Console.Intf, DelphiDoom.Decl.Console.TypeCommands,
+  DelphiDoom.Decl.Huffman.Frequencies;
 
 type
   /// <summary>
@@ -29,8 +30,9 @@ type
   ///   <c>idCmdSystem</c> profile of <c>Libs\Console</c>), in the order of <c>idDeclManagerLocal::Init</c>:
   ///   <c>listDecls</c>, <c>reloadDecls</c>, <c>touch</c>, the <c>list&lt;Type&gt;</c> commands and the
   ///   <c>print&lt;Type&gt;</c> commands, all <c>CMD_FL_SYSTEM</c>. The object owns the helpers the commands
-  ///   call and must live as long as the commands do. Not ported: <c>listHuffmanFrequencies</c> (the manager does
-  ///   not compress the text of the decls).
+  ///   call and must live as long as the commands do. <c>listHuffmanFrequencies</c> comes last (the manager does
+  ///   not compress the text of the decls: it prints the shipped table of frequencies, ratio 100%, see
+  ///   <c>TDeclHuffmanFrequencies</c>).
   /// </summary>
   TDeclConsoleCommands = class
   strict private
@@ -40,6 +42,7 @@ type
     FSoundMute: IDeclSoundMute;
     FTypeCommands: TObjectList<TDeclTypeCommands>;
     FListCompletion: TCmdCompletions;
+    FHuffman: TDeclHuffmanFrequencies;
     procedure Print(const AText: string);
     procedure AddTypeCommands(const AType: Integer);
   public
@@ -61,6 +64,10 @@ type
     procedure ReloadDecls(const AArgs: TIdCmdArgs);
     /// <summary>TouchDecl_f: <c>touch &lt;type&gt; &lt;name&gt;</c> finds the decl (parsing it and marking it referenced)</summary>
     procedure Touch(const AArgs: TIdCmdArgs);
+    /// <summary>ListHuffmanFrequencies_f: the ratio and the table of frequencies as C++ source</summary>
+    procedure ListHuffmanFrequencies(const AArgs: TIdCmdArgs);
+    /// <summary>The frequencies the command prints (owned here): count the text of the decls into them to refresh the table</summary>
+    property Huffman: TDeclHuffmanFrequencies read FHuffman;
   end;
 
 implementation
@@ -126,10 +133,12 @@ begin
   FTypeCommands := TObjectList<TDeclTypeCommands>.Create(True);
   // listDeclStrings
   FListCompletion := TCmdCompletions.Create(['current', 'all', 'ever']);
+  FHuffman := TDeclHuffmanFrequencies.Create;
 end;
 
 destructor TDeclConsoleCommands.Destroy;
 begin
+  FHuffman.Free;
   FListCompletion.Free;
   FTypeCommands.Free;
   inherited Destroy;
@@ -162,6 +171,13 @@ begin
   for LIndex := Low(TYPE_COMMANDS) to High(TYPE_COMMANDS) do
     FCommands.AddCommand(TYPE_COMMANDS[LIndex].PrintName, FTypeCommands[LIndex].Print, CMD_FL_SYSTEM,
       TYPE_COMMANDS[LIndex].PrintDescription, FTypeCommands[LIndex].CompleteName);
+  FCommands.AddCommand('listHuffmanFrequencies', ListHuffmanFrequencies, CMD_FL_SYSTEM,
+    'lists decl text character frequencies');
+end;
+
+procedure TDeclConsoleCommands.ListHuffmanFrequencies(const AArgs: TIdCmdArgs);
+begin
+  FHuffman.List(FLog);
 end;
 
 procedure TDeclConsoleCommands.ListDecls(const AArgs: TIdCmdArgs);

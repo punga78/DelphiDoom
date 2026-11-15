@@ -35,7 +35,14 @@ type
       FState: IGameFileSystemInspector;
       FServerPacks: TList<IGamePack>;
       FStatus: TDictionary<IGamePack, TGamePureStatus>;
+      FGamePakChecksum: Cardinal;
+      FGamePakForOS: TArray<Cardinal>;
+      FRestartChecksums: TList<Cardinal>;
+      FRestartAddonChecksums: TList<Cardinal>;
+      FRestartGamePakChecksum: Cardinal;
     function IsAddonNotSearched(const APack: IGamePack): Boolean;
+    function MatchChecksums(const AChecksums: TArray<Cardinal>; out AMissing: TArray<Cardinal>;
+      out ACleared: Boolean): Boolean;
   public
     /// <summary>EArgumentNilException when the file system is nil</summary>
     constructor Create(const AState: IGameFileSystemInspector);
@@ -48,6 +55,17 @@ type
       ALoadedFileFromDir: Boolean = False): TGamePureReply;
     function GetPackForChecksum(AChecksum: Cardinal; ASearchAddons: Boolean = False): IGamePack;
     function GetPackStatus(const APack: IGamePack): TGamePureStatus;
+    function GetGamePakChecksum: Cardinal;
+    procedure SetGamePakChecksum(AChecksum: Cardinal);
+    procedure SetGamePakForOS(const AChecksums: TArray<Cardinal>);
+    function SetPureServerChecksumsWithGamePak(const AChecksums: TArray<Cardinal>; AGamePakChecksum: Cardinal;
+      const ADllName: string; out AMissing: TArray<Cardinal>; out AMissingGamePak: Cardinal;
+      ALoadedFileFromDir: Boolean = False): TGamePureReply;
+    function GetPureServerChecksumsForOS(AOS: Integer; out AGamePakChecksum: Cardinal): TArray<Cardinal>;
+    procedure SetRestartChecksums(const AChecksums: TArray<Cardinal>; AGamePakChecksum: Cardinal);
+    function RestartChecksums: TArray<Cardinal>;
+    function RestartAddonChecksums: TArray<Cardinal>;
+    function RestartGamePakChecksum: Cardinal;
   end;
 
 implementation
@@ -58,6 +76,7 @@ uses
 const
   SNilState = 'TGamePureServer.Create: the file system is nil';
   SMaxPureExceeded = 'MAX_PURE_PAKS ( 128 ) exceeded';
+  SNoPakForChecksum = 'SetRestartChecksums failed: no pak for checksum 0x%x';
 
 { TGamePureServer }
 
@@ -69,10 +88,14 @@ begin
   FState := AState;
   FServerPacks := TList<IGamePack>.Create;
   FStatus := TDictionary<IGamePack, TGamePureStatus>.Create;
+  FRestartChecksums := TList<Cardinal>.Create;
+  FRestartAddonChecksums := TList<Cardinal>.Create;
 end;
 
 destructor TGamePureServer.Destroy;
 begin
+  FRestartAddonChecksums.Free;
+  FRestartChecksums.Free;
   FStatus.Free;
   FServerPacks.Free;
   inherited Destroy;
@@ -149,14 +172,15 @@ begin
       Exit(True);
 end;
 
-function TGamePureServer.SetPureServerChecksums(const AChecksums: TArray<Cardinal>; out AMissing: TArray<Cardinal>;
-  ALoadedFileFromDir: Boolean): TGamePureReply;
+function TGamePureServer.MatchChecksums(const AChecksums: TArray<Cardinal>; out AMissing: TArray<Cardinal>;
+  out ACleared: Boolean): Boolean;
 var
   LCount, LServerIndex, LLocalIndex: Integer;
   LPack: IGamePack;
-  LSuccess, LCanPrepend: Boolean;
+  LCanPrepend: Boolean;
 begin
   AMissing := nil;
+  ACleared := False;
   // the list ends at the first zero checksum, as the array of the original does
   LCount := 0;
   while (LCount < Length(AChecksums)) and (AChecksums[LCount] <> 0) do
@@ -164,12 +188,13 @@ begin
   if LCount = 0 then
   begin
     ClearPureChecksums;
-    Exit(TGamePureReply.Ok);
+    ACleared := True;
+    Exit(True);
   end;
   if FServerPacks.Count = 0 then
     // there was no pure lockdown yet - lock to what we already have
     UpdatePureServerChecksums;
-  LSuccess := True;
+  Result := True;
   LCanPrepend := True;
   LServerIndex := 0;
   LLocalIndex := 0;
@@ -186,7 +211,7 @@ begin
     LPack := GetPackForChecksum(AChecksums[LServerIndex], True);
     // an addon pak that is not on the search list: a restart including it is required
     if Assigned(LPack) and LPack.IsAddon and IsAddonNotSearched(LPack) then
-      LSuccess := False;
+      Result := False;
     if Assigned(LPack) then
     begin
       if LCanPrepend then
@@ -198,7 +223,7 @@ begin
       end
       else
       begin
-        LSuccess := False;
+        Result := False;
         // advance the server checksums only
         Inc(LServerIndex);
       end;
@@ -206,7 +231,7 @@ begin
     else
     begin
       // didn't find a matching checksum
-      LSuccess := False;
+      Result := False;
       SetLength(AMissing, Length(AMissing) + 1);
       AMissing[High(AMissing)] := AChecksums[LServerIndex];
       Inc(LServerIndex);
@@ -214,7 +239,17 @@ begin
   end;
   // some extra pak files are referenced at the end of our local list
   if LLocalIndex < FServerPacks.Count then
-    LSuccess := False;
+    Result := False;
+end;
+
+function TGamePureServer.SetPureServerChecksums(const AChecksums: TArray<Cardinal>; out AMissing: TArray<Cardinal>;
+  ALoadedFileFromDir: Boolean): TGamePureReply;
+var
+  LSuccess, LCleared: Boolean;
+begin
+  LSuccess := MatchChecksums(AChecksums, AMissing, LCleared);
+  if LCleared then
+    Exit(TGamePureReply.Ok);
   // we reply to missing before the last check
   if Length(AMissing) > 0 then
     Exit(TGamePureReply.Missing);
@@ -226,4 +261,111 @@ begin
     Result := TGamePureReply.Restart;
 end;
 
+function TGamePureServer.GetGamePakChecksum: Cardinal;
+begin
+  Result := FGamePakChecksum;
+end;
+
+procedure TGamePureServer.SetGamePakChecksum(AChecksum: Cardinal);
+begin
+  FGamePakChecksum := AChecksum;
+end;
+
+procedure TGamePureServer.SetGamePakForOS(const AChecksums: TArray<Cardinal>);
+begin
+  FGamePakForOS := Copy(AChecksums);
+end;
+
+function TGamePureServer.SetPureServerChecksumsWithGamePak(const AChecksums: TArray<Cardinal>;
+  AGamePakChecksum: Cardinal; const ADllName: string; out AMissing: TArray<Cardinal>;
+  out AMissingGamePak: Cardinal; ALoadedFileFromDir: Boolean): TGamePureReply;
+var
+  LSuccess, LCleared: Boolean;
+  LPack: IGamePack;
+begin
+  AMissingGamePak := 0;
+  LSuccess := MatchChecksums(AChecksums, AMissing, LCleared);
+  if LCleared then
+    Exit(TGamePureReply.Ok);
+  // DLL checksuming: the server has no knowledge of code we can use (an operating system issue)
+  if AGamePakChecksum = 0 then
+    Exit(TGamePureReply.NoDll);
+  if AGamePakChecksum <> FGamePakChecksum then
+  begin
+    // the current code is wrong: search all the paks, the pure list is not relevant here
+    LPack := GetPackForChecksum(AGamePakChecksum);
+    if not Assigned(LPack) then
+    begin
+      AMissingGamePak := AGamePakChecksum;
+      Exit(TGamePureReply.Missing);
+    end;
+    // if assets paks are missing, do not try the restart or the NODLL answer
+    if Length(AMissing) > 0 then
+      Exit(TGamePureReply.Missing);
+    // make sure there is a valid DLL for us
+    if LPack.FindEntry(ADllName) >= 0 then
+    begin
+      // this will be used to extract the DLL in pure mode
+      FGamePakChecksum := AGamePakChecksum;
+      Exit(TGamePureReply.Restart);
+    end;
+    Exit(TGamePureReply.NoDll);
+  end;
+  // we reply to missing after the DLL check so it can be part of the list
+  if Length(AMissing) > 0 then
+    Exit(TGamePureReply.Missing);
+  if ALoadedFileFromDir then
+    LSuccess := False;
+  if LSuccess then
+    Result := TGamePureReply.Ok
+  else
+    Result := TGamePureReply.Restart;
+end;
+
+function TGamePureServer.GetPureServerChecksumsForOS(AOS: Integer; out AGamePakChecksum: Cardinal): TArray<Cardinal>;
+begin
+  Result := GetPureServerChecksums;
+  if AOS < 0 then
+    AGamePakChecksum := FGamePakChecksum
+  else if AOS < Length(FGamePakForOS) then
+    AGamePakChecksum := FGamePakForOS[AOS]
+  else
+    AGamePakChecksum := 0;
+end;
+
+procedure TGamePureServer.SetRestartChecksums(const AChecksums: TArray<Cardinal>; AGamePakChecksum: Cardinal);
+var
+  LIndex: Integer;
+  LPack: IGamePack;
+begin
+  FRestartChecksums.Clear;
+  for LIndex := 0 to High(AChecksums) do
+  begin
+    if AChecksums[LIndex] = 0 then
+      Break;
+    LPack := GetPackForChecksum(AChecksums[LIndex], True);
+    if not Assigned(LPack) then
+      raise EGameFsException.CreateFmt(SNoPakForChecksum, [AChecksums[LIndex]]);
+    // can't mark it pure if we're not even gonna search it
+    if LPack.IsAddon and not FRestartAddonChecksums.Contains(LPack.Checksum) then
+      FRestartAddonChecksums.Add(LPack.Checksum);
+    FRestartChecksums.Add(AChecksums[LIndex]);
+  end;
+  FRestartGamePakChecksum := AGamePakChecksum;
+end;
+
+function TGamePureServer.RestartChecksums: TArray<Cardinal>;
+begin
+  Result := FRestartChecksums.ToArray;
+end;
+
+function TGamePureServer.RestartAddonChecksums: TArray<Cardinal>;
+begin
+  Result := FRestartAddonChecksums.ToArray;
+end;
+
+function TGamePureServer.RestartGamePakChecksum: Cardinal;
+begin
+  Result := FRestartGamePakChecksum;
+end;
 end.

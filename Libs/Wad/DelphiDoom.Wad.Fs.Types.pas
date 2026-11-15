@@ -88,14 +88,16 @@ type
     /// <summary>PURE_NEVER: only files that never count (guis, languages, voice over, fonts...)</summary>
     Never);
 
-  /// <summary>fsPureReply_t (without PURE_NODLL: the game code pak is not ported)</summary>
+  /// <summary>fsPureReply_t</summary>
   TGamePureReply = (
     /// <summary>PURE_OK: the pure list is the one of the server</summary>
     Ok,
     /// <summary>PURE_RESTART: a restart in pure mode is needed</summary>
     Restart,
     /// <summary>PURE_MISSING: some paks the server uses are not installed</summary>
-    Missing);
+    Missing,
+    /// <summary>PURE_NODLL: the server has no game code we can use, or its pak has no code for us</summary>
+    NoDll);
 
   /// <summary>Where a file is written: the cvar the original reads the base folder from (fs_savepath if it is empty)</summary>
   TGameWriteBase = (

@@ -71,10 +71,16 @@ uses
   DelphiDoom.Texture.Dds.Writer in '..\Libs\Texture\DelphiDoom.Texture.Dds.Writer.pas',
   DelphiDoom.Texture.Decoder.Dds in '..\Libs\Texture\DelphiDoom.Texture.Decoder.Dds.pas',
   DelphiDoom.Texture.Tga.IdReader in '..\Libs\Texture\DelphiDoom.Texture.Tga.IdReader.pas',
+  DelphiDoom.Texture.IdImage.Intf in '..\Libs\Texture\DelphiDoom.Texture.IdImage.Intf.pas',
+  DelphiDoom.Texture.IdImage.Bmp in '..\Libs\Texture\DelphiDoom.Texture.IdImage.Bmp.pas',
+  DelphiDoom.Texture.IdImage.Pcx in '..\Libs\Texture\DelphiDoom.Texture.IdImage.Pcx.pas',
+  DelphiDoom.Texture.IdImage.Loader in '..\Libs\Texture\DelphiDoom.Texture.IdImage.Loader.pas',
+  DelphiDoom.Texture.IdImage.JpegViaBitmap in '..\Libs\Texture\DelphiDoom.Texture.IdImage.JpegViaBitmap.pas',
   DelphiDoom.Tests.IdImages.Golden in 'Source\DelphiDoom.Tests.IdImages.Golden.pas',
   DelphiDoom.Tests.Texture.DdsBlockDecoder in 'Source\DelphiDoom.Tests.Texture.DdsBlockDecoder.pas',
   DelphiDoom.Tests.Texture.DdsReader in 'Source\DelphiDoom.Tests.Texture.DdsReader.pas',
   DelphiDoom.Tests.Texture.DdsWriter in 'Source\DelphiDoom.Tests.Texture.DdsWriter.pas',
+  DelphiDoom.Tests.Texture.IdImageLoader in 'Source\DelphiDoom.Tests.Texture.IdImageLoader.pas',
   DelphiDoom.Tests.Texture.TgaIdReader in 'Source\DelphiDoom.Tests.Texture.TgaIdReader.pas';
 
 
