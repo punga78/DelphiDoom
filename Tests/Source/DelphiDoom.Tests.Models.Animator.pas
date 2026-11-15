@@ -177,8 +177,10 @@ begin
   Assert.AreEqual<Integer>(MD5_INVALID_JOINT, FAnimator.GetFirstChild(0));
   Assert.WillRaise(
     procedure
+    var
+      LIgnored: Integer;
     begin
-      FAnimator.GetChannelForJoint(0);
+      LIgnored := FAnimator.GetChannelForJoint(0);
     end, EAnimException);
   // nothing happens
   FAnimator.PlayAnim(ANIMCHANNEL_ALL, 1, 0, 0);
@@ -502,7 +504,7 @@ var
   LJoints: TArray<TMd5JointMat>;
 begin
   LJoints := FWorld.ModelDef.SetupJoints(False, LModelBounds);
-  Assert.AreEqual(2, Length(LJoints));
+  Assert.AreEqual<Integer>(2, Length(LJoints));
   Assert.IsTrue(FAnimator.GetBounds(0, LBounds));
   Assert.AreEqual(LModelBounds.Mins.X, LBounds.Mins.X, 0.0);
   Assert.AreEqual(LModelBounds.Maxs.Z, LBounds.Maxs.Z, 0.0);
@@ -542,8 +544,10 @@ begin
   Assert.AreEqual<Integer>(ANIMCHANNEL_ALL, FAnimator.GetChannelForJoint(1));
   Assert.WillRaise(
     procedure
+    var
+      LIgnored: Integer;
     begin
-      FAnimator.GetChannelForJoint(7);
+      LIgnored := FAnimator.GetChannelForJoint(7);
     end, EAnimException);
 end;
 

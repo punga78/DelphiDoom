@@ -473,14 +473,19 @@ begin
 end;
 
 procedure TTestStaticLwo.DovrebbeRifiutareLwobConUnMessaggio;
+var
+  LRaised: Boolean;
 begin
   // an LWOB is read now (lwGetObject5): without a single chunk there is nothing to read
-  Assert.WillRaise(
-    procedure
-    begin
-      Load(TLwoFileBuilder.Join([TBytes(BytesOf(AnsiString('FORM'))), TLwoFileBuilder.U4(4),
-        TBytes(BytesOf(AnsiString('LWOB')))]));
-    end, EStaticModelException);
+  LRaised := False;
+  try
+    Load(TLwoFileBuilder.Join([TBytes(BytesOf(AnsiString('FORM'))), TLwoFileBuilder.U4(4),
+      TBytes(BytesOf(AnsiString('LWOB')))]));
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'empty LWOB');
 end;
 
 procedure TTestStaticLwo.DovrebbeRifiutareUnChunkTroncatoDandoLOffset;
@@ -690,7 +695,7 @@ begin
   Assert.AreEqual<Integer>(3, Length(LObject.Tags));
   Assert.AreEqual<Integer>(3, Length(LObject.Surfaces));
   Assert.AreEqual('TEX/A', string(LObject.Surfaces[1].Name));
-  Assert.AreEqual(4, Length(LObject.Layers[0].Points));
+  Assert.AreEqual<Integer>(4, Length(LObject.Layers[0].Points));
   // four triangles, the quad, the polygon with the negative surface and the last one
   Assert.AreEqual<Integer>(7, Length(LObject.Layers[0].Polygons));
   Assert.AreEqual<Integer>(4, Length(LObject.Layers[0].Polygons[4].Verts));
@@ -706,25 +711,32 @@ end;
 procedure TTestStaticLwo.DovrebbeRifiutareUnLwobTroncatoOConIndiciFuoriDaiPunti;
 var
   LData: TBytes;
+  LRaised: Boolean;
 begin
   LData := BuildCubeLwob(-1, 0);
   SetLength(LData, 150);
-  Assert.WillRaise(
-    procedure
-    begin
-      Load(LData);
-    end, EStaticModelException);
+  LRaised := False;
+  try
+    Load(LData);
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'truncated');
   // a polygon that uses a point that is not there
   LData := LwobForm([
     TLwoFileBuilder.Chunk('PNTS', TLwoFileBuilder.Join([TLwoFileBuilder.F4(0), TLwoFileBuilder.F4(0), TLwoFileBuilder.F4(0)])),
     TLwoFileBuilder.Chunk('SRFS', TLwoFileBuilder.S0('a')),
     TLwoFileBuilder.Chunk('POLS', TLwoFileBuilder.Join([TLwoFileBuilder.U2(3), TLwoFileBuilder.U2(0), TLwoFileBuilder.U2(1),
       TLwoFileBuilder.U2(2), TLwoFileBuilder.U2(1)]))]);
-  Assert.WillRaise(
-    procedure
-    begin
-      Load(LData);
-    end, EStaticModelException);
+  LRaised := False;
+  try
+    Load(LData);
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'point out of range');
 end;
 
 initialization
