@@ -1094,13 +1094,7 @@ begin
      (mobj._type <> Ord(MT_INV)) and
      (mobj._type <> Ord(MT_INS)) then
   begin
-    itemrespawnque[iquehead] := mobj.spawnpoint;
-    itemrespawntime[iquehead] := leveltime;
-    iquehead := (iquehead + 1) and (ITEMQUESIZE - 1);
-
-    // lose one off the end?
-    if iquehead = iquetail then
-      iquetail := (iquetail + 1) and (ITEMQUESIZE - 1);
+    P_World.ItemRespawn.Add(mobj.spawnpoint, leveltime);
   end;
 end;
 

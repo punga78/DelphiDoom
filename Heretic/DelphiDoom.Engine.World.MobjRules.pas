@@ -1410,13 +1410,7 @@ begin
   if ((mobj.flags and MF_SPECIAL) <> 0) and
      ((mobj.flags and MF_DROPPED) = 0) then
   begin
-    itemrespawnque[iquehead] := mobj.spawnpoint;
-    itemrespawntime[iquehead] := leveltime;
-    iquehead := (iquehead + 1) and (ITEMQUESIZE - 1);
-
-    // lose one off the end?
-    if iquehead = iquetail then
-      iquetail := (iquetail + 1) and (ITEMQUESIZE - 1);
+    P_World.ItemRespawn.Add(mobj.spawnpoint, leveltime);
   end;
 end;
 

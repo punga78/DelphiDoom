@@ -118,6 +118,15 @@ function P_WorldTime: TEngineWorldTime;
 //==============================================================================
 procedure P_ConfigureWorld(const AWorld: TEngineWorld);
 
+//==============================================================================
+//
+// P_World
+// The world of the level, for the classes and the rules of the games that keep
+// their state in it (I_Error if P_ConfigureWorld() was not called)
+//
+//==============================================================================
+function P_World: TEngineWorld;
+
 implementation
 
 uses
