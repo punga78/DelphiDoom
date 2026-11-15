@@ -326,6 +326,7 @@ uses
   p_setup,
   p_common,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   p_inter,
   p_enemy,
   p_sounds,

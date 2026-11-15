@@ -528,6 +528,7 @@ uses
   i_video,
   {$ENDIF}
   p_user,
+  DelphiDoom.Engine.World.UserRules,
   r_hires,
   info,
 //

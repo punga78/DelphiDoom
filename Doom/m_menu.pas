@@ -389,6 +389,7 @@ uses
   p_map,
   DelphiDoom.Engine.World.MapRules,
   p_user,
+  DelphiDoom.Engine.World.PlayerExtras,
   p_adjust,
   p_obituaries,
   p_playertrace,

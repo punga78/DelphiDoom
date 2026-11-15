@@ -2448,6 +2448,9 @@ uses
   p_switch,
   p_tick,
   p_user,
+{$IFDEF HEXEN}
+  DelphiDoom.Engine.World.UserRules,
+{$ENDIF}
   psi_globals,
   r_renderstyle,
   r_defs,

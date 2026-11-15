@@ -75,6 +75,8 @@ function Get-Part {
     if ($v -lt 0 -or $v -gt $b) { return '' }
     return Get-Normalized $Lines[($v + 1)..($b - 1)]
   }
+  # una regola con il corpo vuoto ("begin" e "end;" di fila): l'intervallo andrebbe all'indietro
+  if ($b + 1 -gt $Lines.Length - 2) { return '' }
   Get-Normalized $Lines[($b + 1)..($Lines.Length - 2)]
 }
 
@@ -119,7 +121,7 @@ function Invoke-Prova {
 
     $expand = {
       param([string]$text)
-      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9]+)((?:\|(?:strip|lead|exit|ret|map)=[^|]*?)*)>>', {
+      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9\.]+)((?:\|(?:strip|lead|exit|ret|map)=[^|]*?)*)>>', {
           param($m)
           $kind = $m.Groups[1].Value; $name = $m.Groups[2].Value
           if ($kind -eq 'B' -or $kind -eq 'V') { $lines = $gameRoutines["$Class.$name"] } else { $lines = $extraSets[$kind][$name] }

@@ -190,6 +190,8 @@ Le regole della fisica di Rad-X sono classi pure di `Libs\Radix` (`DelphiDoom.Ra
 
 Ordine consigliato all'unione con la #185: 1 (la navetta prende ancora il danno sbagliato a "easy" e a "nightmare"), 11 e 13 (tolgono l'euristica dei muri), 7 (urti veri al posto dell'approssimazione), 3, 5-6, 10, 12, 9, 8, 2. A ogni punto: il golden di Doom (`d1_demo1`, 8 bit) deve restare UGUALE e `e1m1.script` deve finire al debriefing.
 
+**Dopo la 2f-1 (`p_user`, 2026-11-15)**: nessuna firma dei punti di aggancio e' cambiata. `P_PlayerThink`, `P_CalcHeight` e `P_Thrust` sono ancora in `p_user`, ora `Base\p_user.pas` (la unit `p_user` e' la stessa per tutti i giochi; Radix32 e SpeedHaste32 prendono le regole di `Doom\DelphiDoom.Engine.World.UserRules.pas`). Dove sta ora cio' che un aggancio al giocatore toccherebbe: il pensiero del giocatore e' `TPlayerThinker.Think` (`Base\DelphiDoom.Engine.World.PlayerThinker.pas`), i punti di estensione sono i metodi `BeforeMove`, `AfterSector`, `ChangeWeapon`, `CountDown`, `Colormap` di `TUserGameRules`; il movimento (`P_MovePlayer`) e' in `Base\p_user.pas` con il movimento a comando nella regola `MoveByCommand`; la gravita' del giocatore e il volo dell'altezza in `P_CalcHeight` (regole `FlyBobs`, `AdjustViewZ`, `ClampViewZ`). Le regole del fork sul giocatore (postbruciatore, volo su e giu') restano nei thinker di `Radix\`.
+
 ## Cosa resta (2026-11-14)
 
 In ordine di importanza per arrivare a "E1M1 giocabile dall'inizio alla fine":

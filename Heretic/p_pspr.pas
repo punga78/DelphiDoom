@@ -473,6 +473,8 @@ uses
   g_game,
   i_system,
   p_user,
+  DelphiDoom.Engine.World.UserRules,
+  DelphiDoom.Engine.World.PlayerArtifacts,
   info,
 //
 // Needs to include the precompiled
