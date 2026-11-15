@@ -178,6 +178,7 @@ uses
   p_setup,
   p_inter,
   DelphiDoom.Engine.World.InterRules,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   udmf_ceilng,
   udmf_plats,

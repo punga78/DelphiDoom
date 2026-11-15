@@ -2450,6 +2450,7 @@ uses
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_tick,
   p_user,

@@ -30,7 +30,7 @@
 
 {$I Doom32.inc}
 
-unit p_switch;
+unit DelphiDoom.Engine.World.SwitchRules;
 
 interface
 
@@ -62,12 +62,10 @@ procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
 //==============================================================================
 function P_UseSpecialLine(thing: Pmobj_t; line: Pline_t; side: integer; const bossaction: boolean = false): boolean;
 
-var
-  buttonlist: array[0..MAXBUTTONS - 1] of button_t;
-
 implementation
 
 uses
+  p_switch,
   doomdata,
   m_fixed,
   p_setup,
@@ -138,37 +136,6 @@ begin
       inc(index);
     end;
   end;
-end;
-
-//==============================================================================
-// P_StartButton
-//
-// Start a button counting down till it turns off.
-//
-//==============================================================================
-procedure P_StartButton(line: Pline_t; w: bwhere_e; texture: integer; time: integer);
-var
-  i: integer;
-begin
-  // See if button is already pressed
-  for i := 0 to MAXBUTTONS - 1 do
-    if (buttonlist[i].btimer <> 0) and (buttonlist[i].line = line) then
-      exit;
-
-  for i := 0 to MAXBUTTONS - 1 do
-  begin
-    if buttonlist[i].btimer = 0 then
-    begin
-      buttonlist[i].line := line;
-      buttonlist[i].where := w;
-      buttonlist[i].btexture := texture;
-      buttonlist[i].btimer := time;
-      buttonlist[i].soundorg := Pmobj_t(@line.frontsector.soundorg);
-      exit;
-    end;
-  end;
-
-  I_Error('P_StartButton(): no button slots left!');
 end;
 
 //==============================================================================

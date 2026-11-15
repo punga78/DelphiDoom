@@ -692,6 +692,7 @@ uses
   p_setup,
   p_local,
   p_sight,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_tick,
   p_mobj,

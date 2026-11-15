@@ -80,4 +80,8 @@ if ($others.Count -gt 0) {
     -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
     -NotTextual $NotTextual -Maps $Maps
 }
+# p_switch: P_StartButton e' l'unica routine in Base, il resto e' del gioco (nessuna regola da espandere)
+$bad += Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_switch' `
+  -BaseFiles 'Base\p_switch.pas' `
+  -RulesUnit 'DelphiDoom.Engine.World.SwitchRules.pas' -Class 'TSwitchGameRules' -Expansions @()
 exit $bad

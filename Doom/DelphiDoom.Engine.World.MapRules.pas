@@ -235,6 +235,7 @@ uses
   p_sight,
   p_3dfloors, // JVAL: 3d Floors
   p_slopes, // JVAL: Slopes
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_tick,
   p_sounds,

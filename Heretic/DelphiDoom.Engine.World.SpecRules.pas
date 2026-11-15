@@ -165,6 +165,7 @@ uses
   g_game,
   p_setup,
   p_inter,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_ceilng,
   p_plats,

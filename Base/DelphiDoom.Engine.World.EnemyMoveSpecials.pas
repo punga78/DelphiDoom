@@ -40,6 +40,7 @@ uses
   p_map,
   p_maputl,
   p_setup,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_udmf,
   ps_main,

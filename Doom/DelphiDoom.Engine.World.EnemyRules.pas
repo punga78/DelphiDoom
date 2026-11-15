@@ -506,6 +506,7 @@ uses
   p_maputl,
   p_setup,
   p_sight,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   p_tick,
   p_mobj,

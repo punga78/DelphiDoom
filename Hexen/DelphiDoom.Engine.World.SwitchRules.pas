@@ -27,7 +27,7 @@
 
 {$I Doom32.inc}
 
-unit p_switch;
+unit DelphiDoom.Engine.World.SwitchRules;
 
 interface
 
@@ -51,12 +51,10 @@ procedure P_InitSwitchList;
 //==============================================================================
 procedure P_ChangeSwitchTexture(line: Pline_t; useAgain: boolean);
 
-var
-  buttonlist: array[0..MAXBUTTONS - 1] of button_t;
-
 implementation
 
 uses
+  p_switch,
   p_setup,
   i_system,
   s_sound,
@@ -125,37 +123,6 @@ begin
     switchlist[index] := R_CheckTextureNumForName(alphSwitchList[i].name2); // JVAL: was R_TextureNumForName
     inc(index);
   end;
-end;
-
-//==============================================================================
-// P_StartButton
-//
-// Start a button counting down till it turns off.
-//
-//==============================================================================
-procedure P_StartButton(line: Pline_t; w: bwhere_e; texture: integer; time: integer);
-var
-  i: integer;
-begin
-  // See if button is already pressed
-  for i := 0 to MAXBUTTONS - 1 do
-    if (buttonlist[i].btimer <> 0) and (buttonlist[i].line = line) then
-      exit;
-
-  for i := 0 to MAXBUTTONS - 1 do
-  begin
-    if buttonlist[i].btimer = 0 then
-    begin
-      buttonlist[i].line := line;
-      buttonlist[i].where := w;
-      buttonlist[i].btexture := texture;
-      buttonlist[i].btimer := time;
-      buttonlist[i].soundorg := Pmobj_t(@line.frontsector.soundorg);
-      exit;
-    end;
-  end;
-
-  I_Error('P_StartButton(): no button slots left!');
 end;
 
 //==============================================================================

@@ -80,6 +80,7 @@ uses
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
+  DelphiDoom.Engine.World.SwitchRules,
   p_switch,
   po_man,
   DelphiDoom.Engine.Level.TransparentLines,
