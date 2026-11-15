@@ -36,6 +36,8 @@ type
     FLength: Single;
     FPitch: Single;
     FTransparent: Byte;
+    FTextureSource: ISpeedTextureSource;
+    procedure ApplyTextures(const ARenderer: TSpeedCarSpriteRenderer; ACar: Integer);
     function Transpose(const AImage: TSpeedCarSpriteImage): TBytes;
     function SpriteNameOf(ACar: Integer): string;
   public
@@ -53,6 +55,15 @@ type
     /// </summary>
     /// <returns>The sprite name of each car, or an empty text for the cars that have no picture</returns>
     function Build(const AContainer: ISpeedContainer; const AWad: IGameWadComposer): TArray<string>;
+    /// <summary>
+    ///   Draws the scenery models of the circuits (XPR040..XPR090: buildings, stands, billboards) from the
+    ///   eight sides at the size of the model, as the sprites XPhh (hh = the type of the thing in
+    ///   hexadecimal: XPR05A is the thing 90) and writes the ACTORDEF of their actors
+    /// </summary>
+    /// <returns>The ACTORDEF text of the scenery that has a picture (empty when there is none)</returns>
+    /// <summary>Where the textures that the table of the cars names (f_1_4_01_03.png...) are read from; without it the cars get the colors of a variant</summary>
+    property TextureSource: ISpeedTextureSource read FTextureSource write FTextureSource;
+    function BuildScenery(const AContainer: ISpeedContainer; const AWad: IGameWadComposer): string;
   end;
 
 implementation
@@ -109,6 +120,26 @@ begin
       Result[LColumn * AImage.Height + LRow] := AImage.Pixels[LRow * AImage.Width + LColumn];
 end;
 
+procedure TSpeedCarSpriteBuilder.ApplyTextures(const ARenderer: TSpeedCarSpriteRenderer; ACar: Integer);
+var
+  LPairs: array[0..1, 0..1] of string;
+  LIndex, LWidth, LHeight, LTexture: Integer;
+  LRgba: TBytes;
+begin
+  LPairs[0, 0] := RACING_CAR_DATA[ACar].OriginalTexture1;
+  LPairs[0, 1] := RACING_CAR_DATA[ACar].Texture1;
+  LPairs[1, 0] := RACING_CAR_DATA[ACar].OriginalTexture2;
+  LPairs[1, 1] := RACING_CAR_DATA[ACar].Texture2;
+  for LIndex := 0 to 1 do
+  begin
+    if LPairs[LIndex, 1] = '' then
+      Continue;
+    LTexture := ARenderer.TextureIndexOf(LPairs[LIndex, 0]);
+    if (LTexture >= 0) and FTextureSource.TryLoad(LPairs[LIndex, 1], LWidth, LHeight, LRgba) then
+      ARenderer.OverrideTexture(LTexture, ARenderer.ToPalette(LRgba, LWidth, LHeight));
+  end;
+end;
+
 function TSpeedCarSpriteBuilder.Build(const AContainer: ISpeedContainer;
   const AWad: IGameWadComposer): TArray<string>;
 const
@@ -120,7 +151,7 @@ var
   LFailed: TList<string>;
   LRenderer: TSpeedCarSpriteRenderer;
   LPlayPal, LColorMap, LModel: TBytes;
-  LCar, LStep: Integer;
+  LCar, LStep, LVariant: Integer;
   LImage: TSpeedCarSpriteImage;
   LModelName: string;
 begin
@@ -164,9 +195,17 @@ begin
         end;
         LRenderers.Add(LModelName, LRenderer);
       end;
+      LVariant := LCar mod SPEED_CAR_VARIANTS;
+      LRenderer.ClearTextureOverrides;
+      if Assigned(FTextureSource) then
+      begin
+        // the textures of the data: true colors, no variant
+        LVariant := 0;
+        ApplyTextures(LRenderer, LCar);
+      end;
       for LStep := 0 to High(ROTATIONS) do
       begin
-        LImage := LRenderer.Render(ROTATIONS[LStep], LCar mod SPEED_CAR_VARIANTS);
+        LImage := LRenderer.Render(ROTATIONS[LStep], LVariant);
         AWad.AddLump(SpriteNameOf(LCar) + FRAME + SUFFIXES[LStep],
           FPatches.FromColumns(Transpose(LImage), LImage.Width, LImage.Height, False, LImage.LeftOffset,
             LImage.TopOffset));
@@ -177,6 +216,83 @@ begin
   finally
     LRenderers.Free;
     LFailed.Free;
+  end;
+end;
+
+function TSpeedCarSpriteBuilder.BuildScenery(const AContainer: ISpeedContainer;
+  const AWad: IGameWadComposer): string;
+const
+  ROTATIONS: array[0..4] of Integer = (1, 2, 3, 4, 5);
+  SUFFIXES: array[0..4] of string = ('1', '2A8', '3A7', '4A6', '5');
+  // the models of the fork are drawn at 0.0122 map units for each unit of the mesh; the pictures use two pixels
+  // for each map unit (the actor has Scale 0.5, as the cars do)
+  MAP_UNITS_PER_MESH_UNIT = 0.01220703125;
+  PIXELS_PER_MAP_UNIT = 2;
+var
+  LRenderer: TSpeedCarSpriteRenderer;
+  LPlayPal, LColorMap, LModel: TBytes;
+  LIndex, LStep, LType: Integer;
+  LName, LSprite: string;
+  LImage: TSpeedCarSpriteImage;
+  LText: TStringBuilder;
+  LAny: Boolean;
+begin
+  if not Assigned(AContainer) then
+    raise EArgumentNilException.Create('AContainer');
+  if not Assigned(AWad) then
+    raise EArgumentNilException.Create('AWad');
+  Result := '';
+  if (AWad.IndexOf(PLAYPAL_LUMP) < 0) or (AWad.IndexOf(COLORMAP_LUMP) < 0) then
+    Exit;
+  LPlayPal := AWad.LumpData[AWad.IndexOf(PLAYPAL_LUMP)];
+  LColorMap := AWad.LumpData[AWad.IndexOf(COLORMAP_LUMP)];
+  LText := TStringBuilder.Create;
+  try
+    LAny := False;
+    for LIndex := 0 to AContainer.Count - 1 do
+    begin
+      LName := UpperCase(AContainer.Entries[LIndex].Name);
+      if not (LName.StartsWith('XPR') and LName.EndsWith('.I3D') and (Length(LName) = 10)) then
+        Continue;
+      LType := StrToIntDef('$' + Copy(LName, 4, 3), -1);
+      if (LType < 0) or not AContainer.TryRead(AContainer.Entries[LIndex].Name, LModel) then
+        Continue;
+      LRenderer := TSpeedCarSpriteRenderer.Create(FParser, FRenderer, FMeshFactory(), LPlayPal, LColorMap,
+        FTransparent, FAxes, FLength, FPitch);
+      try
+        LRenderer.FixedScale := MAP_UNITS_PER_MESH_UNIT * PIXELS_PER_MAP_UNIT;
+        try
+          LRenderer.Load(LModel);
+        except
+          on EModelsException do
+            Continue;
+        end;
+        if not LAny then
+          AWad.AddMarker(SPRITE_START);
+        LAny := True;
+        LSprite := Format('XP%.2X', [LType and $FF]);
+        for LStep := 0 to High(ROTATIONS) do
+        begin
+          LImage := LRenderer.Render(ROTATIONS[LStep], 0);
+          AWad.AddLump(LSprite + FRAME + SUFFIXES[LStep],
+            FPatches.FromColumns(Transpose(LImage), LImage.Width, LImage.Height, False, LImage.LeftOffset,
+              LImage.TopOffset));
+        end;
+        LText.Append('ACTOR SpeedScenery').Append(IntToHex(LType, 2)).Append(' ').Append(LType).Append(#13#10);
+        LText.Append('{'#13#10'  Radius 16'#13#10'  Height 16'#13#10'  +NOBLOCKMAP'#13#10);
+        LText.Append('  Scale ').Append(FloatToStr(MAP_UNITS_PER_MESH_UNIT / LRenderer.PixelsPerMeshUnit,
+          TFormatSettings.Invariant)).Append(#13#10);
+        LText.Append('  States'#13#10'  {'#13#10'  Spawn:'#13#10'    ').Append(LSprite).Append(' A -1'#13#10);
+        LText.Append('    Stop'#13#10'  }'#13#10'}'#13#10);
+      finally
+        LRenderer.Free;
+      end;
+    end;
+    if LAny then
+      AWad.AddMarker(SPRITE_END);
+    Result := LText.ToString;
+  finally
+    LText.Free;
   end;
 end;
 

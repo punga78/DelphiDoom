@@ -79,15 +79,17 @@ uses
   speed_race,
   speed_text,
   DelphiDoom.Racing.Types,
+  DelphiDoom.Racing.Intf,
   DelphiDoom.Racing.CarData,
   DelphiDoom.Racing.TextFormat,
   DelphiDoom.Speed.MapInfoReader;
 
 const
   STAGE_RESULT = 0;
-  STAGE_LAP_RECORDS = 1;
-  STAGE_COURSE_RECORDS = 2;
-  LAST_STAGE = 2;
+  STAGE_CLASSIFICATION = 1;
+  STAGE_LAP_RECORDS = 2;
+  STAGE_COURSE_RECORDS = 3;
+  STAGE_CHAMPIONSHIP = 4;
   // the key that ended the level is still down in the first tics
   INPUT_DELAY_TICS = TICRATE div 2;
   MAPDATA_LUMP = 'MAPDATA';
@@ -95,12 +97,58 @@ const
   LABEL_FONT = SPEED_FONT_A;
   VALUE_FONT = SPEED_FONT_B;
 
+type
+  championshipcourse_t = record
+    done: boolean;
+    position: integer;
+    time: integer;
+  end;
+
 var
   in_tic: integer = 0;
   in_stage: integer = 0;
   in_stage_tic: integer = 0;
   in_score: TRacingScore;
   in_hasscore: boolean = false;
+  in_struct: Pwbstartstruct_t = nil;
+  // what the player did in the courses of the championship so far
+  champion: array[1..RACING_MAX_MAPS] of championshipcourse_t;
+
+//==============================================================================
+//
+// SH_IsChampionship
+//
+//==============================================================================
+function SH_IsChampionship: boolean;
+begin
+  Result := (SH_RaceSettings <> nil) and (SH_RaceSettings.GameType = TRacingGameType.Championship);
+end;
+
+//==============================================================================
+//
+// SH_LastStage
+// The screens: the result, the classification, the lap records and the course records, and for a
+// championship its table
+//
+//==============================================================================
+function SH_LastStage: integer;
+begin
+  if SH_IsChampionship then
+    Result := STAGE_CHAMPIONSHIP
+  else
+    Result := STAGE_COURSE_RECORDS;
+end;
+
+//==============================================================================
+//
+// SH_ChampionshipGoesOn
+// A championship goes on to the next course when the data have it
+//
+//==============================================================================
+function SH_ChampionshipGoesOn: boolean;
+begin
+  Result := SH_IsChampionship and (W_CheckNumForName(Format('E%dM%d', [in_score.Episode, in_score.Map + 1])) >= 0);
+end;
 
 //==============================================================================
 //
@@ -153,6 +201,16 @@ begin
       in_score := SH_Race.FinalScore;
       in_hasscore := true;
     end;
+  in_struct := wbstartstruct;
+  if in_hasscore and SH_IsChampionship and (in_score.Map >= 1) and (in_score.Map <= RACING_MAX_MAPS) then
+  begin
+    // a championship begins at its first course: the table of before is forgotten
+    if in_score.Map = 1 then
+      ZeroMemory(@champion, SizeOf(champion));
+    champion[in_score.Map].done := true;
+    champion[in_score.Map].position := in_score.RacePosition;
+    champion[in_score.Map].time := in_score.TotalTime;
+  end;
   // the table has already taken the result when the race ended
   SH_SaveRecords;
 end;
@@ -164,10 +222,17 @@ end;
 //==============================================================================
 procedure SH_Intermission_Next;
 begin
-  if (in_stage < LAST_STAGE) and in_hasscore then
+  if (in_stage < SH_LastStage) and in_hasscore then
   begin
     inc(in_stage);
     in_stage_tic := 0;
+  end
+  else if in_hasscore and SH_ChampionshipGoesOn and (in_struct <> nil) then
+  begin
+    // the next course of the championship: the level after this one
+    printf('SH_Intermission_Next: the next course of the championship'#13#10);
+    in_struct.next := in_score.Map;
+    G_WorldDone;
   end
   else
   begin
@@ -317,12 +382,86 @@ end;
 
 //==============================================================================
 //
+// SH_DrawChampionship
+// The courses of the championship that have been raced: the rank and the time of the player
+//
+//==============================================================================
+procedure SH_DrawChampionship;
+var
+  i, y, total: integer;
+  name: string;
+begin
+  V_DrawPatchFullScreenTMP320x200('MBG_RECO');
+  SH_DrawTextCenter(160, 28, 'Championship', LABEL_FONT, SCN_TMP);
+  SH_DrawText(18, 55, 'Course', LABEL_FONT, SCN_TMP);
+  SH_DrawText(165, 55, 'Rank', LABEL_FONT, SCN_TMP);
+  SH_DrawText(232, 55, 'Time', LABEL_FONT, SCN_TMP);
+  total := 0;
+  y := 68;
+  for i := 1 to RACING_MAX_MAPS do
+    if champion[i].done then
+    begin
+      name := SH_MapNameOf(in_score.Episode, i);
+      if Length(name) > 20 then
+        SetLength(name, 20);
+      SH_DrawText(18, y, IntToStr(i) + ' ' + name, VALUE_FONT, SCN_TMP);
+      SH_DrawTextRight(215, y, TRacingTextFormat.RacePosition(champion[i].position), VALUE_FONT, SCN_TMP);
+      SH_DrawText(232, y,TRacingTextFormat.TicsToTime(champion[i].time), VALUE_FONT, SCN_TMP);
+      total := total + champion[i].time;
+      y := y + 10;
+    end;
+  SH_DrawText(18, y + 6, 'Total time', LABEL_FONT, SCN_TMP);
+  SH_DrawText(232, y + 6,TRacingTextFormat.TicsToTime(total), LABEL_FONT, SCN_TMP);
+end;
+
+//==============================================================================
+//
+// SH_DrawClassification
+// All the cars of the race, first to last, with the time of those that finished
+//
+//==============================================================================
+procedure SH_DrawClassification;
+var
+  i, y, font: integer;
+  standings: TArray<TRacingPositionItem>;
+  car: PRacingCarState;
+  text: string;
+begin
+  V_DrawPatchFullScreenTMP320x200('MBG_RECO');
+  SH_DrawTextCenter(160, 8, 'Race classification', LABEL_FONT, SCN_TMP);
+  if SH_Race = nil then
+    exit;
+  standings := SH_Race.Standings;
+  for i := 0 to High(standings) do
+  begin
+    car := SH_Race.Cars[standings[i].Index];
+    y := 26 + i * 8;
+    if car.IsPlayer then
+      font := LABEL_FONT
+    else
+      font := VALUE_FONT;
+    SH_DrawTextRight(22, y, IntToStr(i + 1), font, SCN_TMP);
+    SH_DrawText(28, y, RACING_CAR_DATA[car.CarInfo].Name, font, SCN_TMP);
+    if car.IsPlayer then
+      SH_DrawText(130, y, 'YOU', LABEL_FONT, SCN_TMP);
+    if standings[i].FinishTime > 0 then
+      text := TRacingTextFormat.TicsToTime(standings[i].FinishTime)
+    else
+      text := Format('lap %d', [car.LapsCompleted + 1]);
+    SH_DrawTextRight(300, y, text, font, SCN_TMP);
+  end;
+end;
+
+//==============================================================================
+//
 // SH_Intermission_Drawer
 //
 //==============================================================================
 procedure SH_Intermission_Drawer;
 begin
   case in_stage of
+    STAGE_CLASSIFICATION: SH_DrawClassification;
+    STAGE_CHAMPIONSHIP: SH_DrawChampionship;
     STAGE_LAP_RECORDS: SH_DrawRecords(false);
     STAGE_COURSE_RECORDS: SH_DrawRecords(true);
   else

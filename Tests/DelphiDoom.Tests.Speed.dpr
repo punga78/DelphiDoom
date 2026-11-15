@@ -72,7 +72,8 @@ uses
   DelphiDoom.Tests.Speed.RaceSimulation in 'Source\DelphiDoom.Tests.Speed.RaceSimulation.pas',
   DelphiDoom.Speed.DoomFontAliases in '..\Libs\Speed\DelphiDoom.Speed.DoomFontAliases.pas',
   DelphiDoom.Engine.Wad.Converter.Intf in '..\Base\DelphiDoom.Engine.Wad.Converter.Intf.pas',
-  DelphiDoom.Engine.Speed.DataConverter in '..\Base\DelphiDoom.Engine.Speed.DataConverter.pas',
+  DelphiDoom.Engine.Speed.TextureFiles in '..\Base\DelphiDoom.Engine.Speed.TextureFiles.pas',
+  DelphiDoom.Engine.Speed.DataConverter in'..\Base\DelphiDoom.Engine.Speed.DataConverter.pas',
   DelphiDoom.Tests.Speed.DoomFontAliases in 'Source\DelphiDoom.Tests.Speed.DoomFontAliases.pas',
   DelphiDoom.Tests.Speed.EngineDataConverter in 'Source\DelphiDoom.Tests.Speed.EngineDataConverter.pas',
   DelphiDoom.Speed.MapInfoReader in '..\Libs\Speed\DelphiDoom.Speed.MapInfoReader.pas',
@@ -86,7 +87,9 @@ uses
   DelphiDoom.Tests.Speed.ActorDefinitions in 'Source\DelphiDoom.Tests.Speed.ActorDefinitions.pas',
   DelphiDoom.Speed.SkyTextures in '..\Libs\Speed\DelphiDoom.Speed.SkyTextures.pas',
   DelphiDoom.Speed.UmapInfoBuilder in '..\Libs\Speed\DelphiDoom.Speed.UmapInfoBuilder.pas',
-  DelphiDoom.Tests.Speed.SkyTextures in 'Source\DelphiDoom.Tests.Speed.SkyTextures.pas';
+  DelphiDoom.Tests.Speed.SkyTextures in 'Source\DelphiDoom.Tests.Speed.SkyTextures.pas',
+  DelphiDoom.Speed.WorldActors in '..\Libs\Speed\DelphiDoom.Speed.WorldActors.pas',
+  DelphiDoom.Tests.Speed.WorldActors in 'Source\DelphiDoom.Tests.Speed.WorldActors.pas';
 
 var
   Runner: ITestRunner;

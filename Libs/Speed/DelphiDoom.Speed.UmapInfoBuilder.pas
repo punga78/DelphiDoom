@@ -79,6 +79,11 @@ begin
                 LSky := ASkies[LSkyIndex].Texture;
             if LSky <> '' then
               LBuilder.Append('  skytexture = "').Append(LSky.Replace('"', '')).Append('"').Append(#13#10);
+            // the music of the circuit (D_E1M1..) and of the screens after the race (D_INTER)
+            if AWad.IndexOf('D_' + LName) >= 0 then
+              LBuilder.Append('  music = "D_').Append(LName).Append('"').Append(#13#10);
+            if AWad.IndexOf('D_INTER') >= 0 then
+              LBuilder.Append('  intermusic = "D_INTER"').Append(#13#10);
             LBuilder.Append('}').Append(#13#10);
             Break;
           end;

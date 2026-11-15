@@ -38,7 +38,7 @@ implementation
 
 uses
   DelphiDoom.GameData.Intf, DelphiDoom.GameData.Factory, DelphiDoom.Speed.Intf,
-  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures,
+  DelphiDoom.Speed.DoomFontAliases, DelphiDoom.Speed.DoomPictureAliases, DelphiDoom.Speed.ActorDefinitions, DelphiDoom.Speed.CarSpriteBuilder, DelphiDoom.Speed.UmapInfoBuilder, DelphiDoom.Speed.SkyTextures, DelphiDoom.Speed.WorldActors, DelphiDoom.Engine.Speed.TextureFiles, System.IOUtils,
   DelphiDoom.Speed.Factory;
 
 const
@@ -61,6 +61,9 @@ var
   LSprites: TSpeedCarSpriteBuilder;
   LCarSprites: TArray<string>;
   LMapInfo: string;
+  LExtras: string;
+  LTextures: TEngineSpeedTextureFiles;
+  LTexturesReference: ISpeedTextureSource;
 begin
   AWad := nil;
   try
@@ -77,12 +80,19 @@ begin
   // the cars, the start and the cameras of the circuits (the engine reads the lump ACTORDEF)
   // the cars are 3D models: the software renderer shows them as sprites drawn once from five sides
   LSprites := TSpeedFactory.CreateCarSpriteBuilder;
+  // the cars of the fork have their own PNG textures: TEXTURES\ beside the container, when it is there
+  LTextures := TEngineSpeedTextureFiles.Create(TPath.Combine(ExtractFilePath(ExpandFileName(AFileName)), 'TEXTURES'));
+  LTexturesReference := LTextures;
+  if LTextures.HasFiles then
+    LSprites.TextureSource := LTextures;
   try
     LCarSprites := LSprites.Build(LContainer, LWad);
+    LExtras := LSprites.BuildScenery(LContainer, LWad);
   finally
     LSprites.Free;
   end;
-  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites)));
+  LWad.AddLump(ACTOR_DEFINITIONS_LUMP, TEncoding.ASCII.GetBytes(TSpeedActorDefinitions.Build(LCarSprites,
+    LExtras + TSpeedWorldActors.Scenery(LWad) + TSpeedWorldActors.Particles(LWad))));
   // the name and the sky of every circuit
   LMapInfo := TSpeedUmapInfoBuilder.Build(LWad, TSpeedFactory.AppendSkyTextures(LWad));
   if LMapInfo <> '' then

@@ -28,6 +28,7 @@ type
     procedure SpawnParticle(AKind: TRacingParticleKind; AX, AY, AZ, AMomentumX, AMomentumY: TFixed);
     function PlayEngineSound(AFormula: Boolean; AFraction: Integer): Integer;
     function PlayBrakeSound(AX, AY, AZ: TFixed): Integer;
+    procedure SelectCar(AKey: Cardinal);
     property Particles: Integer read FParticles;
     property EngineSounds: Integer read FEngineSounds;
     property BrakeSounds: Integer read FBrakeSounds;
@@ -51,6 +52,10 @@ function TSpeedSimEffects.PlayEngineSound(AFormula: Boolean; AFraction: Integer)
 begin
   Inc(FEngineSounds);
   Result := ENGINE_SOUND_TICS;
+end;
+
+procedure TSpeedSimEffects.SelectCar(AKey: Cardinal);
+begin
 end;
 
 function TSpeedSimEffects.PlayBrakeSound(AX, AY, AZ: TFixed): Integer;

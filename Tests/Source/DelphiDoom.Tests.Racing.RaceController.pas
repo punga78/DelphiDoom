@@ -27,6 +27,7 @@ type
     procedure RaceStarted;
     procedure LapCompleted(const AScore: TRacingScore; AIsRecord: Boolean);
     procedure RaceFinished(const AScore: TRacingScore; AWon: Boolean);
+    procedure Collision(AKeyA, AKeyB: Cardinal);
     procedure LeaveLevel;
     property Lines: TStringList read FLines;
     property Tic: Integer read FTic write FTic;
@@ -61,6 +62,8 @@ type
     procedure DovrebbeContareIlTempoDiGaraDalVia;
     [Test]
     procedure DovrebbeNumerareLePosizioniDaUno;
+    [Test]
+    procedure DovrebbeDareLaClassificaDiTutteLeAutoInOrdineDiPosizione;
     [Test]
     procedure DovrebbeFarCorrereLeAutoDelComputer;
     [Test]
@@ -114,6 +117,11 @@ end;
 procedure TFakeRaceEvents.RaceFinished(const AScore: TRacingScore; AWon: Boolean);
 begin
   FLines.Add(Format('%d finished %d', [FTic, Ord(AWon)]));
+end;
+
+procedure TFakeRaceEvents.Collision(AKeyA, AKeyB: Cardinal);
+begin
+  FLines.Add(Format('%d collision', [FTic]));
 end;
 
 procedure TFakeRaceEvents.LeaveLevel;
@@ -235,6 +243,21 @@ begin
   for LIndex := 0 to 3 do
     Inc(LSum, FController.Cars[LIndex].RacePosition);
   Assert.AreEqual(10, LSum);
+end;
+
+procedure TTestRacingRaceController.DovrebbeDareLaClassificaDiTutteLeAutoInOrdineDiPosizione;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to 3 do
+    FController.AddCar(GridCar(LIndex, LIndex = 0));
+  Run(1, RACING_START_TIC + 100, 0);
+  Assert.AreEqual(4, Length(FController.Standings));
+  for LIndex := 0 to 3 do
+    Assert.AreEqual<Cardinal>(FController.Standings[LIndex].Key,
+      FController.Cars[FController.Standings[LIndex].Index].Key);
+  for LIndex := 0 to 3 do
+    Assert.AreEqual(LIndex + 1, FController.Cars[FController.Standings[LIndex].Index].RacePosition);
 end;
 
 procedure TTestRacingRaceController.DovrebbeFarCorrereLeAutoDelComputer;

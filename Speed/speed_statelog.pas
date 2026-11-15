@@ -117,9 +117,9 @@ begin
   for i := 0 to controller.Count - 1 do
   begin
     car := controller.Cars[i];
-    line := line + Format(' | %s%d p%d l%d x%d y%d v%d', [
+    line := line + Format(' | %s%d p%d l%d x%d y%d v%d g%d', [
       decide(car.IsPlayer, 'P', 'c'), i, car.RacePosition, car.LapsCompleted,
-      car.X div 65536, car.Y div 65536, car.EngineSpeed div RACING_KMH_TO_FIXED]);
+      car.X div 65536, car.Y div 65536, car.EngineSpeed div RACING_KMH_TO_FIXED, car.Gear]);
   end;
   writeln(statelog_file, line);
   flush(statelog_file);

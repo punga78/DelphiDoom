@@ -19,7 +19,7 @@ unit DelphiDoom.Speed.CarSpriteRenderer;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Models.I3d.Intf, DelphiDoom.Models.I3d.Types,
+  System.SysUtils, System.Generics.Collections, DelphiDoom.Models.I3d.Intf, DelphiDoom.Models.I3d.Types,
   DelphiDoom.Speed.TriangleRasterizer;
 
 const
@@ -54,6 +54,13 @@ type
     Pixels: TBytes;
   end;
 
+  /// <summary>A texture already in the colors of the game: indexes of the palette, row after row</summary>
+  TSpeedPalettePicture = record
+    Width: Integer;
+    Height: Integer;
+    Pixels: TBytes;
+  end;
+
   TSpeedCarSpriteRenderer = class
   strict private
     FParser: II3dParser;
@@ -64,10 +71,13 @@ type
     FAxes: TSpeedModelAxes;
     FPixelsPerUnit: Single;
     FLength: Single;
+    FFixedScale: Single;
     FPitch: Single;
     FModel: II3dModel;
     FColorMaps: array[0..SPEED_CAR_VARIANTS - 1] of TBytes;
     FShadeMaps: array[0..16] of TBytes;
+    FOverrides: TDictionary<Integer, TSpeedPalettePicture>;
+    FIdentity: TBytes;
     function NearestColor(ARed, AGreen, ABlue: Integer): Byte;
     procedure BuildColorMaps;
     procedure BuildShadeMaps(const AColorMap: TBytes);
@@ -80,12 +90,20 @@ type
     /// <param name="APitch">How high the eye looks from, in degrees over the horizon</param>
     /// <exception cref="EArgumentNilException">A service is nil</exception>
     /// <exception cref="EArgumentException">A palette is too short</exception>
+    destructor Destroy; override;
     constructor Create(const AParser: II3dParser; const ARenderer: II3dModelRenderer;
       const AMesh: II3dMeshBuilder; const APlayPal, AColorMap: TBytes; ATransparent: Byte;
       const AAxes: TSpeedModelAxes; ALength, APitch: Single);
     /// <summary>Loads a model: the next pictures are of it</summary>
     /// <exception cref="EModelsException">The file is not a model</exception>
     procedure Load(const AModelBytes: TBytes);
+    /// <summary>The position in the textures of the loaded model of the texture that a material names, -1 if none</summary>
+    function TextureIndexOf(const ATextureName: string): Integer;
+    /// <summary>A picture in the place of a texture of the model, until ClearTextureOverrides</summary>
+    procedure OverrideTexture(ATextureIndex: Integer; const APicture: TSpeedPalettePicture);
+    procedure ClearTextureOverrides;
+    /// <summary>The colors of the game that are nearest to the pixels of a picture of 4 bytes (R, G, B, A) each</summary>
+    function ToPalette(const ARgba: TBytes; AWidth, AHeight: Integer): TSpeedPalettePicture;
     /// <summary>
     ///   The picture of the loaded car seen as the rotation 1..8 of a sprite of Doom (1: the car comes
     ///   at the viewer, 5: it goes away, counterclockwise) with the colors of a variant (0..5)
@@ -93,6 +111,10 @@ type
     function Render(ARotation, AVariant: Integer): TSpeedCarSpriteImage;
     /// <summary>The longest side of the loaded model in the units of its mesh (to find the axes)</summary>
     function Extent(AAxis: Integer; out AMinimum, AMaximum: Single): Boolean;
+    /// <summary>Pixels for each unit of the mesh when the picture keeps the size of the model (0: the length of the car is fixed)</summary>
+    property FixedScale: Single read FFixedScale write FFixedScale;
+    /// <summary>The pixels for each unit of the mesh that the last picture used</summary>
+    property PixelsPerMeshUnit: Single read FPixelsPerUnit;
   end;
 
 implementation
@@ -114,6 +136,8 @@ const
   AMBIENT_LIGHT = 0.55;
   PADDING = 2;
   TRANSLUCENT_LIMIT = 0.99;
+  // a patch is at most 255 rows high
+  MAX_PICTURE_PIXELS = 170;
   // the direction of the light in the axes of the car: front, left, up
   LIGHT_FRONT = 0.35;
   LIGHT_LEFT = 0.35;
@@ -124,6 +148,8 @@ const
 constructor TSpeedCarSpriteRenderer.Create(const AParser: II3dParser; const ARenderer: II3dModelRenderer;
   const AMesh: II3dMeshBuilder; const APlayPal, AColorMap: TBytes; ATransparent: Byte;
   const AAxes: TSpeedModelAxes; ALength, APitch: Single);
+var
+  LCounter: Integer;
 begin
   inherited Create;
   if not Assigned(AParser) then
@@ -144,6 +170,10 @@ begin
   FAxes := AAxes;
   FLength := ALength;
   FPitch := APitch * Pi / 180;
+  FOverrides := TDictionary<Integer, TSpeedPalettePicture>.Create;
+  SetLength(FIdentity, 256);
+  for LCounter := 0 to 255 do
+    FIdentity[LCounter] := Byte(LCounter);
   BuildColorMaps;
   BuildShadeMaps(AColorMap);
 end;
@@ -221,6 +251,64 @@ begin
   FRenderer.Render(FModel, FMesh, LPlacement, -1, LTires);
 end;
 
+destructor TSpeedCarSpriteRenderer.Destroy;
+begin
+  FOverrides.Free;
+  inherited Destroy;
+end;
+
+function TSpeedCarSpriteRenderer.TextureIndexOf(const ATextureName: string): Integer;
+var
+  LMaterial: Integer;
+begin
+  Result := -1;
+  if FModel = nil then
+    Exit;
+  LMaterial := FModel.FindMaterialByTextureName(ATextureName);
+  if LMaterial >= 0 then
+    Result := FModel.Materials[LMaterial].TextureIndex;
+end;
+
+procedure TSpeedCarSpriteRenderer.OverrideTexture(ATextureIndex: Integer; const APicture: TSpeedPalettePicture);
+begin
+  FOverrides.AddOrSetValue(ATextureIndex, APicture);
+end;
+
+procedure TSpeedCarSpriteRenderer.ClearTextureOverrides;
+begin
+  FOverrides.Clear;
+end;
+
+function TSpeedCarSpriteRenderer.ToPalette(const ARgba: TBytes; AWidth, AHeight: Integer): TSpeedPalettePicture;
+var
+  LIndex: Integer;
+  LCache: TDictionary<Cardinal, Byte>;
+  LKey: Cardinal;
+  LColor: Byte;
+begin
+  Result.Width := AWidth;
+  Result.Height := AHeight;
+  SetLength(Result.Pixels, AWidth * AHeight);
+  if Length(ARgba) < AWidth * AHeight * 4 then
+    Exit;
+  LCache := TDictionary<Cardinal, Byte>.Create;
+  try
+    for LIndex := 0 to AWidth * AHeight - 1 do
+    begin
+      LKey := Cardinal(ARgba[LIndex * 4]) or (Cardinal(ARgba[LIndex * 4 + 1]) shl 8) or
+        (Cardinal(ARgba[LIndex * 4 + 2]) shl 16);
+      if not LCache.TryGetValue(LKey, LColor) then
+      begin
+        LColor := NearestColor(ARgba[LIndex * 4], ARgba[LIndex * 4 + 1], ARgba[LIndex * 4 + 2]);
+        LCache.Add(LKey, LColor);
+      end;
+      Result.Pixels[LIndex] := LColor;
+    end;
+  finally
+    LCache.Free;
+  end;
+end;
+
 function TSpeedCarSpriteRenderer.Extent(AAxis: Integer; out AMinimum, AMaximum: Single): Boolean;
 var
   LBatch, LVertex: Integer;
@@ -265,7 +353,7 @@ type
 var
   LAngle, LCosPitch, LSinPitch: Single;
   LView, LRight, LScreenUp: TVector;
-  LMinX, LMaxX, LMinY, LMaxY, LMinF, LMaxF, LMinL, LMaxL, LMinU: Single;
+  LMinX, LMaxX, LMinY, LMaxY, LMinF, LMaxF, LMinL, LMaxL, LMinU, LMaxU, LLargest: Single;
   LScale: Single;
   LRasterizer: TSpeedTriangleRasterizer;
   LBatch, LVertex, LCorner, LLevel: Integer;
@@ -277,6 +365,9 @@ var
   LBatchData: TI3dMeshBatch;
   LTexture: TI3dTexture;
   LFlatColor: Byte;
+  LOverridden: Boolean;
+  LPicture: TSpeedPalettePicture;
+  LMap: TBytes;
   LOriginX, LOriginY: Single;
   LColorMap: TBytes;
 
@@ -345,7 +436,7 @@ begin
   Normalize(LScreenUp);
 
   // the car in its own axes, and how big it is
-  LMinF := MaxSingle; LMaxF := -MaxSingle; LMinL := MaxSingle; LMaxL := -MaxSingle; LMinU := MaxSingle;
+  LMinF := MaxSingle; LMaxF := -MaxSingle; LMinL := MaxSingle; LMaxL := -MaxSingle; LMinU := MaxSingle; LMaxU := -MaxSingle;
   for LBatch := 0 to FMesh.BatchCount - 1 do
     for LVertex := 0 to High(FMesh.Batches[LBatch].Vertices) do
     begin
@@ -353,10 +444,20 @@ begin
       LMinF := Min(LMinF, LCar[0]); LMaxF := Max(LMaxF, LCar[0]);
       LMinL := Min(LMinL, LCar[1]); LMaxL := Max(LMaxL, LCar[1]);
       LMinU := Min(LMinU, LCar[2]);
+      LMaxU := Max(LMaxU, LCar[2]);
     end;
-  if LMaxF <= LMinF then
+  if (LMaxF < LMinF) or ((FFixedScale <= 0) and (LMaxF = LMinF)) then
     raise EInvalidOpException.Create(SSpeedCarNoModel);
-  FPixelsPerUnit := FLength / (LMaxF - LMinF);
+  if FFixedScale > 0 then
+  begin
+    // a scenery model: its own size, reduced when the picture would be taller than a patch can be
+    FPixelsPerUnit := FFixedScale;
+    LLargest := Max(LMaxF - LMinF, Max(LMaxL - LMinL, LMaxU - LMinU)) * FPixelsPerUnit;
+    if LLargest > MAX_PICTURE_PIXELS then
+      FPixelsPerUnit := FPixelsPerUnit * MAX_PICTURE_PIXELS / LLargest;
+  end
+  else
+    FPixelsPerUnit := FLength / (LMaxF - LMinF);
   LScale := FPixelsPerUnit;
   // the center of the car on the ground is the origin
 
@@ -394,8 +495,18 @@ begin
       // the shadow of the car under it is a translucent face: a picture on the ground draws its own
       if LBatchData.Alpha < TRANSLUCENT_LIMIT then
         Continue;
+      LOverridden := False;
       if LBatchData.Textured and (LBatchData.TextureIndex >= 0) then
-        LTexture := FModel.Textures[LBatchData.TextureIndex]
+      begin
+        LTexture := FModel.Textures[LBatchData.TextureIndex];
+        if FOverrides.TryGetValue(LBatchData.TextureIndex, LPicture) then
+        begin
+          LTexture.Width := LPicture.Width;
+          LTexture.Height := LPicture.Height;
+          LTexture.Pixels := LPicture.Pixels;
+          LOverridden := True;
+        end;
+      end
       else
         LTexture := Default(TI3dTexture);
       LFlatColor := NearestColor(Round(LBatchData.Red * 255), Round(LBatchData.Green * 255),
@@ -426,9 +537,13 @@ begin
         LLength := LNormal[0] * LIGHT_FRONT + LNormal[1] * LIGHT_LEFT + LNormal[2] * LIGHT_UP;
         LShade := AMBIENT_LIGHT + (1 - AMBIENT_LIGHT) * Max(0, LLength);
         LLevel := Round((1 - Min(1, LShade)) * SHADE_LEVELS);
+        if LOverridden then
+          LMap := FIdentity
+        else
+          LMap := LColorMap;
         if LBatchData.Textured and (Length(LTexture.Pixels) > 0) then
           LRasterizer.DrawTextured(LRaster[0], LRaster[1], LRaster[2], LTexture.Pixels, LTexture.Width,
-            LTexture.Height, LColorMap, FShadeMaps[LLevel])
+            LTexture.Height, LMap, FShadeMaps[LLevel])
         else
           LRasterizer.DrawFlat(LRaster[0], LRaster[1], LRaster[2], FShadeMaps[LLevel][LFlatColor]);
         Inc(LVertex, 3);

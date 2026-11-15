@@ -84,7 +84,7 @@ var
 begin
   if SH_Race = nil then
     exit;
-  bytes := TRacingSaveGameCodec.Encode(SH_Race);
+  bytes := TRacingSaveGameCodec.Encode(SH_Race, SH_Random);
   stream := TFileStream.Create(filename + SIDE_FILE_EXTENSION, fmCreate);
   try
     stream.WriteBuffer(bytes[0], Length(bytes));
@@ -124,7 +124,7 @@ begin
   finally
     stream.Free;
   end;
-  if not TRacingSaveGameCodec.Decode(SH_Race, bytes) then
+  if not TRacingSaveGameCodec.Decode(SH_Race, bytes, SH_Random) then
     SH_RaceLog('Speed Haste: the state of the race in ' + name + ' is not of this level: the race starts again');
 end;
 

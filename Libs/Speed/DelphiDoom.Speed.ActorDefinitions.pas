@@ -41,7 +41,8 @@ type
     ///   sprites yet (they are invisible)
     /// </param>
     /// <exception cref="EArgumentException">The array has neither zero nor 40 names, or a name is not four characters</exception>
-    class function Build(const ACarSprites: TArray<string>): string; static;
+    /// <param name="AExtras">More ACTORDEF text (the scenery, the particles) put after the actors of the race</param>
+    class function Build(const ACarSprites: TArray<string>; const AExtras: string = ''): string; static;
   end;
 
 implementation
@@ -58,7 +59,7 @@ const
 
 { TSpeedActorDefinitions }
 
-class function TSpeedActorDefinitions.Build(const ACarSprites: TArray<string>): string;
+class function TSpeedActorDefinitions.Build(const ACarSprites: TArray<string>; const AExtras: string): string;
 var
   LBuilder: TStringBuilder;
   LIndex: Integer;
@@ -124,6 +125,7 @@ begin
     LBuilder.Append('    Stop').Append(NEW_LINE);
     LBuilder.Append('  }').Append(NEW_LINE);
     LBuilder.Append('}').Append(NEW_LINE);
+    LBuilder.Append(AExtras);
     Result := LBuilder.ToString;
   finally
     LBuilder.Free;

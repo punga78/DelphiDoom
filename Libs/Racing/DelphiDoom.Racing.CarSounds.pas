@@ -58,6 +58,7 @@ begin
       LFraction := TRacingMath.Clamp(ACar.Rpm * 10 div RACING_MAX_RPM, 0, 9)
     else
       LFraction := 0;
+    FEffects.SelectCar(ACar.Key);
     ASoundCountdown := FEffects.PlayEngineSound(
       RACING_CAR_DATA[ACar.CarInfo].CarType = TRacingCarType.Formula, LFraction);
   end;
@@ -74,7 +75,10 @@ begin
   if ACar.BrakeSoundCountdown <= 0 then
   begin
     if ACar.CarBrake > 0 then
+    begin
+      FEffects.SelectCar(ACar.Key);
       ACar.BrakeSoundCountdown := FEffects.PlayBrakeSound(ACar.BrakeSoundX, ACar.BrakeSoundY, ACar.BrakeSoundZ);
+    end;
   end
   else
     Dec(ACar.BrakeSoundCountdown);

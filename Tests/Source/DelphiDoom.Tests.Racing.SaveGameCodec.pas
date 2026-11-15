@@ -42,6 +42,10 @@ type
     [Test]
     procedure DovrebbeFarContinuareLaGaraComeSeNonSiFosseFermata;
     [Test]
+    procedure DovrebbeRimettereIlPuntoDeiNumeriCasualiDelSistema;
+    [Test]
+    procedure DovrebbeFarContinuareIlCasualeComeSeNonSiFosseFermato;
+    [Test]
     procedure DovrebbeRifiutareByteTroppoCorti;
     [Test]
     procedure DovrebbeRifiutareUnaFirmaSbagliata;
@@ -54,7 +58,8 @@ type
 implementation
 
 uses
-  DelphiDoom.MathCore.Types, DelphiDoom.Racing.Factory, DelphiDoom.Racing.SaveGameCodec,
+  DelphiDoom.MathCore.Types, DelphiDoom.MathCore.Intf, DelphiDoom.MathCore.Factory, DelphiDoom.Racing.Factory,
+  DelphiDoom.Racing.SaveGameCodec,
   DelphiDoom.Tests.Racing.Scenarios;
 
 { TTestRacingSaveGameCodec }
@@ -178,18 +183,48 @@ var
   LIndex: Integer;
 begin
   Run(FControllerA, 1, 500);
-  Assert.IsTrue(TRacingSaveGameCodec.Decode(FControllerB, TRacingSaveGameCodec.Encode(FControllerA)));
+  Assert.IsTrue(TRacingSaveGameCodec.Decode(FControllerB,
+    TRacingSaveGameCodec.Encode(FControllerA, FWorldA.Random), FWorldB.Random));
   Run(FControllerA, 501, 800);
   Run(FControllerB, 501, 800);
   for LIndex := 0 to 2 do
   begin
-    // the random numbers of the ground (the grip of the dirt) are not in the state: the cars go on
-    // along the same road, not along the same line to the last bit (about 20 units in 300 tics)
-    Assert.IsTrue(Abs(Int64(FControllerA.Cars[LIndex].X) - FControllerB.Cars[LIndex].X) < 1500000, 'x ' + IntToStr(LIndex));
-    Assert.IsTrue(Abs(Int64(FControllerA.Cars[LIndex].Y) - FControllerB.Cars[LIndex].Y) < 1500000, 'y ' + IntToStr(LIndex));
+    // with the random numbers of the ground in the state the cars go on along the same line, bit for bit
+    Assert.AreEqual(FControllerA.Cars[LIndex].X, FControllerB.Cars[LIndex].X, 'x ' + IntToStr(LIndex));
+    Assert.AreEqual(FControllerA.Cars[LIndex].Y, FControllerB.Cars[LIndex].Y, 'y ' + IntToStr(LIndex));
+    Assert.AreEqual(FControllerA.Cars[LIndex].EngineSpeed, FControllerB.Cars[LIndex].EngineSpeed);
     Assert.AreEqual(FControllerA.Cars[LIndex].LapsCompleted, FControllerB.Cars[LIndex].LapsCompleted);
     Assert.AreEqual(FControllerA.Cars[LIndex].RacePosition, FControllerB.Cars[LIndex].RacePosition);
   end;
+end;
+
+procedure TTestRacingSaveGameCodec.DovrebbeRimettereIlPuntoDeiNumeriCasualiDelSistema;
+var
+  LFrom, LTo: IGameRandom;
+begin
+  LFrom := TMathCoreFactory.CreateGameRandom;
+  LTo := TMathCoreFactory.CreateGameRandom;
+  LFrom.SystemSeed := 7;
+  LFrom.SystemIndex := 1234;
+  LTo.SystemSeed := 1;
+  LTo.SystemIndex := 5;
+  Assert.IsTrue(TRacingSaveGameCodec.Decode(FControllerB, TRacingSaveGameCodec.Encode(FControllerA, LFrom), LTo));
+  Assert.AreEqual(7, LTo.SystemSeed);
+  Assert.AreEqual(1234, LTo.SystemIndex);
+end;
+
+procedure TTestRacingSaveGameCodec.DovrebbeFarContinuareIlCasualeComeSeNonSiFosseFermato;
+var
+  LFrom, LTo: IGameRandom;
+  LIndex: Integer;
+begin
+  LFrom := TMathCoreFactory.CreateGameRandom;
+  LTo := TMathCoreFactory.CreateGameRandom;
+  for LIndex := 1 to 50 do
+    LFrom.NextSystem;
+  Assert.IsTrue(TRacingSaveGameCodec.Decode(FControllerB, TRacingSaveGameCodec.Encode(FControllerA, LFrom), LTo));
+  for LIndex := 1 to 20 do
+    Assert.AreEqual(LFrom.NextSystem, LTo.NextSystem);
 end;
 
 procedure TTestRacingSaveGameCodec.DovrebbeRifiutareByteTroppoCorti;
