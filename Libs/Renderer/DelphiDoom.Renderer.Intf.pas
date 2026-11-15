@@ -110,6 +110,50 @@ type
       const ALocator: IRendererSubsectorLocator): TRendererSubsectorGrid;
   end;
 
+  /// <summary>The directory of the lumps of the WAD, as the ranges of flats and sprites see it</summary>
+  IRendererLumpDirectory = interface
+    ['{B7E20A4C-96D1-4F83-8C5A-3D0E71F4A862}']
+    function LumpCount: Integer;
+    function LumpName(ALump: Integer): TRendererLumpName;
+    /// <summary>The first lump with the name, or -1</summary>
+    function FirstLumpNamed(const AName: string): Integer;
+    /// <summary>The last lump with the name (the one that wins in a patched game), or -1</summary>
+    function LastLumpNamed(const AName: string): Integer;
+  end;
+
+  /// <summary>Where the flats and the sprites are in the lumps of the WAD</summary>
+  IRendererLumpRanges = interface
+    ['{4D9A63F1-E208-4B7C-95A3-C1F6082E7B54}']
+    /// <summary>
+    ///   The lumps between F_START and F_END (and the FF_ ones when they reach farther).
+    ///   Raises ERendererException when a marker that the game needs is missing, with the text
+    ///   of the engine error
+    /// </summary>
+    function FlatRange: TRendererLumpRange;
+    /// <summary>
+    ///   The lumps between S_START (or SS_START) and S_END (or SS_END). Warns when the
+    ///   markers are misplaced; raises ERendererException when S_END is missing
+    /// </summary>
+    function SpriteRange: TRendererLumpRange;
+  end;
+
+  /// <summary>The header of a sprite lump: size and offsets of the patch</summary>
+  IRendererSpriteHeaders = interface
+    ['{91C5E8B2-3A47-4D06-B1F9-6E24D80C7A35}']
+    /// <summary>Reads the header and releases the lump (the engine caches it as static meanwhile)</summary>
+    procedure Header(ALump: Integer; out AWidth, ALeftOffset, ATopOffset: Integer);
+  end;
+
+  /// <summary>Reads the headers of the sprite lumps once, so that the renderer does not cache a sprite just to know its size</summary>
+  IRendererSpriteTableBuilder = interface
+    ['{2F8B1D7E-C493-4A60-8E15-B7D90A3C56F1}']
+    /// <summary>
+    ///   For every lump of the range: the width and the offsets of the patch in fixed point,
+    ///   and whether it is a sprite. The markers are not sprites, and the lumps outside a
+    ///   section between a start and an end marker are not either
+    /// </summary>
+    function Build(const ARange: TRendererLumpRange): TRendererSpriteTable;
+  end;
   /// <summary>The calculations on the whole level that the software renderer does when the level is loaded</summary>
   IRendererLevelPrecalc = interface
     ['{17D9A8E3-B462-4C50-93F7-0E5A2C86D1B9}']

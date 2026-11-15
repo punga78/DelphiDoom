@@ -171,10 +171,13 @@ uses
   r_patch,
   r_segs2,
 {$ENDIF}
+  DelphiDoom.Renderer.Intf,
   DelphiDoom.Renderer.Factory,
   DelphiDoom.Engine.Renderer.PatchSource,
   DelphiDoom.Engine.Renderer.SpriteSource,
   DelphiDoom.Engine.Renderer.SubsectorLocator,
+  DelphiDoom.Engine.Renderer.LumpDirectory,
+  DelphiDoom.Engine.Renderer.SpriteHeaders,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -1168,6 +1171,8 @@ begin
 end;
 
 procedure ComposeRenderer(const ALog: ILog);
+var
+  LDirectory: IRendererLumpDirectory;
 begin
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
@@ -1175,6 +1180,10 @@ begin
     TEngineRendererSpriteSource.Create, ALog));
   R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
     TEngineRendererSubsectorLocator.Create);
+  LDirectory := TEngineRendererLumpDirectory.Create;
+  R_ConfigureLumpRanges(TRendererFactory.CreateLumpRanges(LDirectory, ALog),
+    TRendererFactory.CreateSpriteTableBuilder(LDirectory,
+      TEngineRendererSpriteHeaders.Create));
 {$IFNDEF OPENGL}
   R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}

@@ -88,6 +88,23 @@ type
     MaxBound: Integer;
   end;
 
+  /// <summary>A run of consecutive lumps: from the first to the last, both included</summary>
+  TRendererLumpRange = record
+    First: Integer;
+    Last: Integer;
+  end;
+
+  /// <summary>What the renderer keeps of the header of every sprite lump of the WAD</summary>
+  TRendererSpriteTable = record
+    /// <summary>One entry per lump of the range: the width of the patch in fixed point</summary>
+    Width: TArray<Integer>;
+    /// <summary>The left offset of the patch in fixed point</summary>
+    LeftOffset: TArray<Integer>;
+    /// <summary>The top offset of the patch in fixed point</summary>
+    TopOffset: TArray<Integer>;
+    /// <summary>The lump is a sprite (not a marker, and inside a sprite section)</summary>
+    Present: TArray<Boolean>;
+  end;
   /// <summary>How high and how low the sectors of a level go</summary>
   TRendererHeightRange = record
     /// <summary>The lowest floor height, in fixed point (MaxInt without sectors)</summary>
