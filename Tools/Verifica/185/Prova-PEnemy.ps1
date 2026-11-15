@@ -45,6 +45,9 @@ $Expansions = @(
   @{ R = 'P_Move'; F = 'else TEnemyGameRules.ClearFloating(actor);'; D = 'else <<B:ClearFloating>>'
      Strife = 'else begin <<B:ClearFloating>> end;' }
 
+  # A_FaceTarget: lo sfocamento della mira contro un bersaglio invisibile (Strife ha anche MF_MVIS e altri shift)
+  @{ R = 'A_FaceTarget'; F = 'TEnemyGameRules.BlurAim(actor);'; D = '<<B:BlurAim>>' }
+
   # P_NewChaseDir: bersaglio nullo, chi puo' arretrare dal corpo a corpo, arma che fa fuggire
   @{ R = 'P_NewChaseDir'; F = 'if target = nil then begin TEnemyGameRules.NoTarget(actor); exit; end;'
      D = 'if target = nil then <<B:NoTarget>>'

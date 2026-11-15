@@ -55,13 +55,6 @@ procedure A_Chase(actor: Pmobj_t);
 
 //==============================================================================
 //
-// A_FaceTarget
-//
-//==============================================================================
-procedure A_FaceTarget(actor: Pmobj_t);
-
-//==============================================================================
-//
 // A_PosAttack
 //
 //==============================================================================
@@ -473,6 +466,8 @@ type
 
     /// <summary>The special lines that the move bumped into are used (Doom, Heretic, Strife: scripts and use of the line)</summary>
     class function UseSpecialLines(actor: Pmobj_t): boolean; static;
+    /// <summary>The aim of a monster that turns to its target is blurred by an invisible target (A_FaceTarget)</summary>
+    class procedure BlurAim(actor: Pmobj_t); static;
     /// <summary>The move of the monster (only when OwnsMove)</summary>
     class function Move(actor: Pmobj_t): boolean; static;
     /// <summary>What P_Move does when the monster did not float and moved (Strife: the feet clip with the terrain)</summary>
@@ -1167,26 +1162,6 @@ begin
     P_DoChaseVanilla(actor)
   else
     P_DoChase(actor, false);
-end;
-
-//==============================================================================
-//
-// A_FaceTarget
-//
-//==============================================================================
-procedure A_FaceTarget(actor: Pmobj_t);
-begin
-  if actor.target = nil then
-    exit;
-
-  actor.flags := actor.flags and not MF_AMBUSH;
-
-  actor.angle :=
-    R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
-
-  if actor.target.flags and MF_SHADOW <> 0 then
-    if actor.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
-      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 21);
 end;
 
 //==============================================================================
@@ -2988,6 +2963,18 @@ end;
 class function TEnemyGameRules.Move(actor: Pmobj_t): boolean;
 begin
   result := false; // not used: P_Move of p_enemy does the move
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.BlurAim
+//
+//==============================================================================
+class procedure TEnemyGameRules.BlurAim(actor: Pmobj_t);
+begin
+  if actor.target.flags and MF_SHADOW <> 0 then
+    if actor.flags2_ex and MF2_EX_SEEINVISIBLE = 0 then
+      actor.angle := actor.angle + _SHLW(P_Random - P_Random, 21);
 end;
 
 //==============================================================================

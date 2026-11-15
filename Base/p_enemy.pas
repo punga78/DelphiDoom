@@ -75,6 +75,13 @@ function P_TryWalk(actor: Pmobj_t): boolean;
 //==============================================================================
 function P_LookForTargets(actor: Pmobj_t; allaround: boolean): boolean;
 
+//==============================================================================
+//
+// A_FaceTarget
+//
+//==============================================================================
+procedure A_FaceTarget(actor: Pmobj_t);
+
 type
   dirtype_t = (
     DI_EAST,
@@ -338,6 +345,24 @@ begin
     result := TEnemyGameRules.Move(actor)
   else
     result := P_MoveDefault(actor);
+end;
+
+//==============================================================================
+//
+// A_FaceTarget
+//
+//==============================================================================
+procedure A_FaceTarget(actor: Pmobj_t);
+begin
+  if actor.target = nil then
+    exit;
+
+  actor.flags := actor.flags and not MF_AMBUSH;
+
+  actor.angle :=
+    R_PointToAngle2(actor.x, actor.y, actor.target.x, actor.target.y);
+
+  TEnemyGameRules.BlurAim(actor);
 end;
 
 //==============================================================================
