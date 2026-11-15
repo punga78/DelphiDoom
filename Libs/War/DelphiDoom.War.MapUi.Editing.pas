@@ -19,7 +19,8 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.World,
-  DelphiDoom.War.Map.Game, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Camera;
+  DelphiDoom.War.Map.Game, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Camera,
+  DelphiDoom.War.MapUi.DebugNearUnits;
 
 type
   /// <summary>
@@ -36,6 +37,7 @@ type
     FCamera: TWarMapCamera;
     FMode: TWarMapEditMode;
     FUnitType: Integer;
+    FNearUnits: TWarDebugNearUnits;
     procedure AddUnit(AX, AY: Integer);
     procedure RainOfFire(const ATile: TWarVec2);
     procedure PoisonCloud(const ATile: TWarVec2);
@@ -53,6 +55,11 @@ type
     procedure Update(const AInput: IWarUiInput);
     property Mode: TWarMapEditMode read FMode;
     property UnitType: Integer read FUnitType;
+    /// <summary>
+    ///   Where the spells of editing show the box of their radius (castDebugRainOfFire, castDebugPoisonCloud,
+    ///   castDebugRaiseDead: setNearUnitsDebugParams); nil: nowhere. Not owned
+    /// </summary>
+    property NearUnits: TWarDebugNearUnits read FNearUnits write FNearUnits;
   end;
 
 implementation
@@ -102,6 +109,9 @@ end;
 
 procedure TWarMapEditing.RainOfFire(const ATile: TWarVec2);
 begin
+  // NEAR_RAIN_OF_FIRE_RADIUS of war.h is 1
+  if Assigned(FNearUnits) then
+    FNearUnits.SetParams(ATile, 1);
   TWarSpells.RainOfFire(FWorld.Context, TWarModelMath.TileToMap(ATile, True));
 end;
 
@@ -113,6 +123,9 @@ begin
   TWarSpells.SpawnPoisonCloud(FWorld.Context, ATile, FWorld.Context.SpellStats(WAR_SPELL_POISON_CLOUD).Time);
   if Assigned(FWorld.Context.SpellEvents) then
     FWorld.Context.SpellEvents.SpellCast(LPosition);
+  // the radius of the damage of the cloud
+  if Assigned(FNearUnits) then
+    FNearUnits.SetParams(ATile, 2);
 end;
 
 procedure TWarMapEditing.RaiseDead(const ATile: TWarVec2);
@@ -124,6 +137,8 @@ var
   LPosition: TWarVec2;
   LSkeleton: Integer;
 begin
+  if Assigned(FNearUnits) then
+    FNearUnits.SetParams(ATile, 4);
   LNear := TList<Integer>.Create;
   try
     FWorld.Context.Combat.CollectNearUnits(ATile, 4, LNear);

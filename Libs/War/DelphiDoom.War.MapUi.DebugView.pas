@@ -18,29 +18,43 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Transform, DelphiDoom.War.Map.PathGrid,
-  DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf;
+  DelphiDoom.War.Model.Context, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.DebugNearUnits;
 
 type
   /// <summary>
   ///   What the debug flags of the map draw on the ground, between the forests and the units: the tiles that nothing can
-  ///   cross (passable-info), the lines between the tiles (map-grid) and the lines between the cells of the grid of the
-  ///   units (spatial-grid). Unit-info and unit-animations are drawn by the renderer with the unit and the animation (it asks
-  ///   IsOn); near-units, map-animations (the original draws nothing for it), font, projectiles, flow-field, rvo and
-  ///   state-machine are the part of the debug drawing that is not ported
+  ///   cross (passable-info), the lines between the tiles (map-grid), the lines between the cells of the grid of the
+  ///   units (spatial-grid) and the units near a tile (near-units, TWarDebugNearUnits). Unit-info and unit-animations are
+  ///   drawn by the renderer with the unit and the animation (it asks IsOn); map-animations is a flag the original does
+  ///   not draw anything for
   /// </summary>
   TWarMapDebugView = class
   strict private
     FTransform: TWarRenderTransform;
     FGrid: TWarPathGrid;
     FFlags: IWarDebugRender;
+    FNearUnits: TWarDebugNearUnits;
     procedure RenderPassableInfo;
     procedure RenderMapGrid;
     procedure RenderSpatialGrid;
   public
-    /// <summary>Nothing is owned</summary>
-    constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender);
-    /// <summary>renderPassableInfo, renderMapGrid and renderSpatialGrid, in this order</summary>
+    /// <summary>The context of the model is where the drawings of the units read them; nothing is owned</summary>
+    constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender;
+      const AContext: TWarModelContext);
+    destructor Destroy; override;
+    /// <summary>
+    ///   The start of an update of the map that plays: clearNearUnitsDebug (a box shown by a click of editing lasts one frame)
+    /// </summary>
+    procedure BeginUpdate;
+    /// <summary>
+    ///   The end of the update, after the status line: refreshSelectedUnitNearUnitsDebug; AEditingSpell is whether the mode of
+    ///   editing is one of the spells (rain of fire, poison cloud, raise dead)
+    /// </summary>
+    procedure EndUpdate(AEditingSpell: Boolean);
+    /// <summary>renderPassableInfo, renderMapGrid, renderSpatialGrid and renderNearUnitsDebug, in this order</summary>
     procedure Render;
+    /// <summary>The near units of the debug drawing, where a click of editing sets the box of its spell</summary>
+    property NearUnits: TWarDebugNearUnits read FNearUnits;
     /// <summary>context->debugRender.flags[AFlag]: the renderer reads the flags of the drawings that are part of a unit or an animation</summary>
     function IsOn(AFlag: TWarDebugRenderFlag): Boolean;
   end;
@@ -59,12 +73,29 @@ const
 { TWarMapDebugView }
 
 constructor TWarMapDebugView.Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid;
-  const AFlags: IWarDebugRender);
+  const AFlags: IWarDebugRender; const AContext: TWarModelContext);
 begin
   inherited Create;
   FTransform := ATransform;
   FGrid := AGrid;
   FFlags := AFlags;
+  FNearUnits := TWarDebugNearUnits.Create(ATransform, AContext, AFlags);
+end;
+
+destructor TWarMapDebugView.Destroy;
+begin
+  FNearUnits.Free;
+  inherited Destroy;
+end;
+
+procedure TWarMapDebugView.BeginUpdate;
+begin
+  FNearUnits.Clear;
+end;
+
+procedure TWarMapDebugView.EndUpdate(AEditingSpell: Boolean);
+begin
+  FNearUnits.RefreshSelected(AEditingSpell);
 end;
 
 procedure TWarMapDebugView.RenderPassableInfo;
@@ -123,6 +154,7 @@ begin
     RenderMapGrid;
   if FFlags.Flag[wdrSpatialGrid] then
     RenderSpatialGrid;
+  FNearUnits.Render;
 end;
 
 end.

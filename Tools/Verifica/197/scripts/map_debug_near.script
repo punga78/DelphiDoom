@@ -1,0 +1,157 @@
+# Disegno di debug delle unita' vicine (umani 1): il flag "near-units" (Ctrl+Maiusc+N) disegna il riquadro della ricerca delle
+# unita' vicine a quella selezionata (raggio 5) e il riquadro di ognuna che trova; con "spatial-grid" (Ctrl+Maiusc+S) anche le
+# celle della griglia che la ricerca visita; i modi "Rain of fire", "Poison cloud" e "Raise dead" mostrano il riquadro del loro
+# raggio (1, 2 e 4) per il fotogramma del clic
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+unit 0 150 90 0
+unit 0 160 100 0
+unit 8 150 110 0
+unit 1 215 95 1
+unit 1 222 105 1
+unit 9 225 90 1
+run 5 1
+key ctrl down
+key shift down
+run 1 1
+key n down
+run 1 1
+key n up
+run 3 1
+key ctrl up
+key shift up
+move 176 99
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+move 150 92
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+key ctrl down
+key shift down
+run 1 1
+key s down
+run 1 1
+key s up
+run 3 1
+key ctrl up
+key shift up
+run 12 1
+move 224 97
+lbutton down
+run 2 1
+lbutton up
+run 12 1
+move 120 70
+lbutton down
+run 2 1
+move 175 125
+run 2 1
+lbutton up
+run 12 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 218 98
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 60 2
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 215 100
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 12 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Poison cloud
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 160 100
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 12 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Poison cloud
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Raise dead
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 222 105
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 12 1
+key ctrl down
+key shift down
+run 1 1
+key s down
+run 1 1
+key s up
+run 3 1
+key ctrl up
+key shift up
+run 20 1
+key ctrl down
+key shift down
+run 1 1
+key n down
+run 1 1
+key n up
+run 3 1
+key ctrl up
+key shift up
+run 20 1
