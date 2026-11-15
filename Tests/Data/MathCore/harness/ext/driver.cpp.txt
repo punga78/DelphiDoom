@@ -179,8 +179,86 @@ static void testEigenGeneral(int cases) {
 	}
 }
 
+
+// ---------------------------------------------------------------- extrapolate and interpolate
+static float ur() { return (float)((rnext() >> 8) / 16777216.0); }
+template<class T> struct Ops;
+template<> struct Ops<float> { static int dim() { return 1; } static float get(const float &v, int) { return v; } static float make(const float *c) { return c[0]; } };
+template<> struct Ops<idVec3> { static int dim() { return 3; } static float get(const idVec3 &v, int i) { return v[i]; } static idVec3 make(const float *c) { return idVec3(c[0], c[1], c[2]); } };
+template<class T> static void putT(const T &v) { for (int i = 0; i < Ops<T>::dim(); i++) P(Ops<T>::get(v, i)); }
+
+static void timesAround(float start, float len, float *t) {
+	t[0] = start - 50.0f; t[1] = start; t[2] = start + len * 0.25f; t[3] = start + len * 0.5f;
+	t[4] = start + len * 0.75f; t[5] = start + len; t[6] = start + len + 80.0f; t[7] = start + len * (0.1f + 0.8f * ur());
+}
+template<class T> static void testExtrapolateT(const char *prefix, int cases) {
+	static const int kinds[] = { EXTRAPOLATION_NONE, EXTRAPOLATION_LINEAR, EXTRAPOLATION_ACCELLINEAR, EXTRAPOLATION_DECELLINEAR, EXTRAPOLATION_ACCELSINE, EXTRAPOLATION_DECELSINE };
+	for (int c = 0; c < cases; c++) {
+		int kind = kinds[c % 6]; if ((c / 6) % 2) kind |= EXTRAPOLATION_NOSTOP;
+		float start = rf(500.0f) + 600.0f, len = (c % 7 == 6) ? 0.0f : 200.0f + ur() * 2000.0f;
+		float sv[3] = { rf(5.0f), rf(5.0f), rf(5.0f) }, bs[3] = { rf(3.0f), rf(3.0f), rf(3.0f) }, sp[3] = { rf(3.0f), rf(3.0f), rf(3.0f) };
+		float t[8]; timesAround(start, len, t);
+		float in[1 + 2 + 9 + 8]; int k = 0; in[k++] = (float)kind; in[k++] = start; in[k++] = len;
+		for (int i = 0; i < 3; i++) in[k++] = sv[i]; for (int i = 0; i < 3; i++) in[k++] = bs[i]; for (int i = 0; i < 3; i++) in[k++] = sp[i];
+		for (int i = 0; i < 8; i++) in[k++] = t[i];
+		printf("%s", prefix); PV(in, k); printf(" |");
+		idExtrapolate<T> e; e.Init(start, len, Ops<T>::make(sv), Ops<T>::make(bs), Ops<T>::make(sp), (extrapolation_t)kind);
+		for (int i = 0; i < 8; i++) {
+			T v = e.GetCurrentValue(t[i]); putT(v); T v2 = e.GetCurrentValue(t[i]); putT(v2); T s = e.GetCurrentSpeed(t[i]); putT(s);
+			PI(e.IsDone(t[i]));
+		}
+		P(e.GetEndTime()); P(e.GetDuration()); P(e.GetStartTime()); PI(e.GetExtrapolationType());
+		e.SetStartTime(start + 10.0f); T v = e.GetCurrentValue(start + 10.0f + len * 0.5f); putT(v);
+		e.SetStartValue(Ops<T>::make(bs)); v = e.GetCurrentValue(start + 10.0f + len * 0.5f); putT(v);
+		printf("\n");
+	}
+}
+template<class T> static void testInterpolateT(const char *prefix, int cases) {
+	for (int c = 0; c < cases; c++) {
+		float start = rf(500.0f) + 600.0f, len = (c % 9 == 8) ? 0.0f : 100.0f + ur() * 1500.0f;
+		float sv[3] = { rf(5.0f), rf(5.0f), rf(5.0f) }, ev[3] = { rf(5.0f), rf(5.0f), rf(5.0f) };
+		float t[8]; timesAround(start, len, t);
+		float in[2 + 6 + 8]; int k = 0; in[k++] = start; in[k++] = len;
+		for (int i = 0; i < 3; i++) in[k++] = sv[i]; for (int i = 0; i < 3; i++) in[k++] = ev[i];
+		for (int i = 0; i < 8; i++) in[k++] = t[i];
+		printf("%s", prefix); PV(in, k); printf(" |");
+		idInterpolate<T> ip; ip.Init(start, len, Ops<T>::make(sv), Ops<T>::make(ev));
+		for (int i = 0; i < 8; i++) { T v = ip.GetCurrentValue(t[i]); putT(v); T v2 = ip.GetCurrentValue(t[i]); putT(v2); PI(ip.IsDone(t[i])); }
+		P(ip.GetEndTime()); P(ip.GetDuration()); P(ip.GetStartTime());
+		ip.SetStartTime(start + 5.0f); ip.SetDuration(len * 0.5f + 1.0f); ip.SetStartValue(Ops<T>::make(ev)); ip.SetEndValue(Ops<T>::make(sv));
+		T v = ip.GetCurrentValue(start + 5.0f + len * 0.25f); putT(v);
+		printf("\n");
+	}
+}
+template<class T, class I> static void testAccelDecelT(const char *prefix, int cases) {
+	for (int c = 0; c < cases; c++) {
+		float start = rf(500.0f) + 600.0f, len = (c % 11 == 10) ? 0.0f : 300.0f + ur() * 2000.0f;
+		float accel = (c % 5 == 1) ? 0.0f : len * (0.1f + 0.5f * ur()), decel = (c % 5 == 2) ? 0.0f : len * (0.1f + 0.5f * ur());
+		if (c % 5 == 3) { accel = len * 0.7f; decel = len * 0.7f; }   // accel + decel > duration
+		float sv[3] = { rf(5.0f), rf(5.0f), rf(5.0f) }, ev[3] = { rf(5.0f), rf(5.0f), rf(5.0f) };
+		float t[8]; timesAround(start, len, t);
+		float in[4 + 6 + 8]; int k = 0; in[k++] = start; in[k++] = accel; in[k++] = decel; in[k++] = len;
+		for (int i = 0; i < 3; i++) in[k++] = sv[i]; for (int i = 0; i < 3; i++) in[k++] = ev[i];
+		for (int i = 0; i < 8; i++) in[k++] = t[i];
+		printf("%s", prefix); PV(in, k); printf(" |");
+		I ip; ip.Init(start, accel, decel, len, Ops<T>::make(sv), Ops<T>::make(ev));
+		for (int i = 0; i < 8; i++) { T v = ip.GetCurrentValue(t[i]); putT(v); T s = ip.GetCurrentSpeed(t[i]); putT(s); PI(ip.IsDone(t[i])); }
+		P(ip.GetEndTime()); P(ip.GetDuration()); P(ip.GetAcceleration()); P(ip.GetDeceleration()); P(ip.GetStartTime());
+		ip.SetStartTime(start + 7.0f); T v = ip.GetCurrentValue(start + 7.0f + len * 0.5f); putT(v);
+		ip.SetStartValue(Ops<T>::make(ev)); v = ip.GetCurrentValue(start + 7.0f + len * 0.3f); putT(v);
+		ip.SetEndValue(Ops<T>::make(sv)); v = ip.GetCurrentValue(start + 7.0f + len * 0.9f); putT(v);
+		printf("\n");
+	}
+}
 int main(int argc, char **argv) {
 	idMath::Init(); setvbuf(stdout, 0, _IONBF, 0);
+	if (argc > 1 && !strcmp(argv[1], "interp")) {
+		testExtrapolateT<float>("EXf", 36); testExtrapolateT<idVec3>("EXv", 36);
+		testInterpolateT<float>("IPf", 27); testInterpolateT<idVec3>("IPv", 27);
+		testAccelDecelT<float, idInterpolateAccelDecelLinear<float> >("ALf", 33); testAccelDecelT<idVec3, idInterpolateAccelDecelLinear<idVec3> >("ALv", 33);
+		testAccelDecelT<float, idInterpolateAccelDecelSine<float> >("ASf", 33); testAccelDecelT<idVec3, idInterpolateAccelDecelSine<idVec3> >("ASv", 33);
+		return 0;
+	}
 	testLuUpdate(6);
 	testQr(6);
 	testSvd(4);
