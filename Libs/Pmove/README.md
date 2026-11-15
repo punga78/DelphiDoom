@@ -18,7 +18,7 @@ che produce il golden sta in `Reference\`, ignorato da git, e `Tools\Verifica\12
 responsabilita': ha uno stato (il giocatore), il tempo, gli eventi, le animazioni e le armi, e **dal mondo vuole solo due risposte** (`trace` e
 `pointcontents`), che arrivano da un'interfaccia piccola (`IPmoveTrace`). Tenerlo fuori fa si' che il movimento si provi con un mondo finto (il golden), con
 il modello di una mappa (`TPmoveCollisionTrace` sopra `IQ3CollisionModel`) o con quello che un gioco compone (mondo piu' entita': il server di Quake III aggiunge
-mover e corpi al trace del mondo). `Libs\Collision` non e' stata toccata. Riusa e non duplica: `TQ3PlayerState` e `TQ3UserCmd` di `Libs\Net`
+mover e corpi al trace del mondo). `Libs\Collision` non e' stata toccata. Riusa e non duplica: `TQ3PlayerState` e `TQ3UserCmd` di `Libs\NetQ3`
 (`Net.Q3.Types`, i record verificati sul C), `TQ3Vec3`, `TQ3Trace`, `TQ3Math.AngleVectors` e `TQ3Math.Dot` di `Libs\Collision` (gia' provate sul C), le costanti delle animazioni di
 `Libs\Models` (`Models.Q3Player.Types`, le stesse del `TQ3PlayerAnimator`), `ILog` di `Libs\Logging`; nei test `TTestFnv`, `TTestFiles`, `TTestSkip`
 (`Tests.Shared.*`) e `BitsOfFloat`/`FloatOfBits`/`BuildRoomBsp` di `Tests.Collision.Q3Support`.

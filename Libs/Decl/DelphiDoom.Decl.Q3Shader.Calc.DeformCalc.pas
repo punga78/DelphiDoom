@@ -42,9 +42,9 @@ type
     /// <summary>RB_CalcMoveVertexes: <c>deformVertexes move</c></summary>
     procedure CalcMoveVertexes(const ADeform: TQ3DeformStage; var ATess: TQ3ShaderTess);
     /// <summary>
-    ///   The <c>switch</c> of RB_DeformTessGeometry for one stage. False for the deformations that need the
-    ///   renderer (<c>projectionShadow</c>, <c>autosprite</c>, <c>autosprite2</c>, <c>text0..7</c>: they build
-    ///   quads from the view and the entity): nothing is done.
+    ///   The <c>switch</c> of RB_DeformTessGeometry for one stage, the sprites, the text and the projection
+    ///   shadow included (they read the view, the entity and the texts of <c>TQ3ShaderTess</c>). False only for
+    ///   a deformation that the original does not know.
     /// </summary>
     function Apply(const ADeform: TQ3DeformStage; var ATess: TQ3ShaderTess): Boolean;
   end;
@@ -52,7 +52,8 @@ type
 implementation
 
 uses
-  DelphiDoom.Decl.Q3Shader.Calc.FloatMask;
+  DelphiDoom.Decl.Q3Shader.Calc.FloatMask, DelphiDoom.Decl.Q3Shader.Calc.SpriteDeform,
+  DelphiDoom.Decl.Q3Shader.Calc.ShadowDeform;
 
 constructor TQ3DeformCalc.Create(const AWaves: TQ3WaveEvaluator; const ATables: TQ3FuncTables;
   const ANoise: TQ3Noise);
@@ -202,6 +203,14 @@ begin
       CalcBulgeVertexes(ADeform, ATess);
     dfMove:
       CalcMoveVertexes(ADeform, ATess);
+    dfProjectionShadow:
+      TQ3ShadowDeform.Apply(ATess);
+    dfAutoSprite:
+      TQ3SpriteDeform.AutoSprite(ATess);
+    dfAutoSprite2:
+      TQ3SpriteDeform.AutoSprite2(ATess);
+    dfText0..dfText7:
+      TQ3SpriteDeform.DeformText(ATess, ATess.Texts[Ord(ADeform.Deformation) - Ord(dfText0)]);
   else
     Result := False;
   end;

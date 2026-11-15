@@ -17,13 +17,17 @@ unit DelphiDoom.Decl.Q3Shader.Calc.Types;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.IdLib.Core.Exceptions;
+  System.SysUtils, DelphiDoom.IdLib.Core.Exceptions, DelphiDoom.Collision.Q3.Types;
 
 const
   /// <summary>FUNCTABLE_SIZE: the length of the sine, square, triangle and sawtooth tables</summary>
   Q3_FUNCTABLE_SIZE = 1024;
   /// <summary>FUNCTABLE_MASK</summary>
   Q3_FUNCTABLE_MASK = Q3_FUNCTABLE_SIZE - 1;
+  /// <summary>FOG_TABLE_SIZE: the entries of the fog density table (tr.fogTable)</summary>
+  Q3_FOG_TABLE_SIZE = 256;
+  /// <summary>The deformations that write text: <c>backEnd.refdef.text[8]</c></summary>
+  Q3_MAX_DEFORM_TEXTS = 8;
 
 type
   /// <summary>One of the function tables (tr.sinTable ...), Q3_FUNCTABLE_SIZE values</summary>
@@ -37,6 +41,46 @@ type
     Present: Boolean;
     ShaderRGBA: array[0..3] of Byte;
     ShaderTexCoord: array[0..1] of Single;
+    /// <summary>`backEnd.currentEntity == &tr.worldEntity`: the world, drawn in the view space itself</summary>
+    IsWorld: Boolean;
+    /// <summary>e.nonNormalizedAxes</summary>
+    NonNormalizedAxes: Boolean;
+    /// <summary>e.axis: the axes of the entity (the autosprite divides by the length of the first one)</summary>
+    Axis: array[0..2] of TQ3Vec3;
+    /// <summary>e.shadowPlane: the height of the floor under an entity (projection shadows)</summary>
+    ShadowPlane: Single;
+    /// <summary>ambientLight, directedLight and lightDir of the entity (R_SetupEntityLighting), for the vertex lighting</summary>
+    AmbientLight: TQ3Vec3;
+    DirectedLight: TQ3Vec3;
+    LightDirection: TQ3Vec3;
+    /// <summary>ambientLightInt: the ambient light as the four bytes RGBA that a vertex takes when the light does not reach it</summary>
+    AmbientLightInt: Cardinal;
+  end;
+
+  /// <summary><c>backEnd.viewParms</c>: the view the surface is drawn from</summary>
+  TQ3ViewParms = record
+    /// <summary>or.origin</summary>
+    Origin: TQ3Vec3;
+    /// <summary>or.axis: forward, left and up</summary>
+    Axis: array[0..2] of TQ3Vec3;
+    IsMirror: Boolean;
+  end;
+
+  /// <summary><c>backEnd.or</c>: the orientation of the entity being drawn (the world has the identity)</summary>
+  TQ3Orientation = record
+    Origin: TQ3Vec3;
+    Axis: array[0..2] of TQ3Vec3;
+    /// <summary>modelMatrix: 16 floats, column-major as OpenGL</summary>
+    ModelMatrix: array[0..15] of Single;
+  end;
+
+  /// <summary><c>fog_t</c>: what the fog functions read (the volume of a fog of the world)</summary>
+  TQ3Fog = record
+    /// <summary>tcScale: the scale of the texture coordinates by the thickness of the fog</summary>
+    TcScale: Single;
+    HasSurface: Boolean;
+    /// <summary>surface: the plane of the fog surface (normal and distance)</summary>
+    Surface: array[0..3] of Single;
   end;
 
   /// <summary>
@@ -57,6 +101,22 @@ type
     /// <summary>backEnd.or.viewOrigin</summary>
     ViewOrigin: array[0..2] of Single;
     Entity: TQ3EntityShading;
+    /// <summary>tess.numIndexes: the indexes in use, six per quad for the sprites</summary>
+    NumIndexes: Integer;
+    /// <summary>tess.indexes (glIndex_t)</summary>
+    Indexes: TArray<Integer>;
+    /// <summary>tess.vertexColors: four bytes RGBA per vertex</summary>
+    VertexColors: TBytes;
+    /// <summary>tess.fogNum: the fog of the world that the surface is in (an index in Fogs)</summary>
+    FogNumber: Integer;
+    /// <summary>tr.world->fogs</summary>
+    Fogs: TArray<TQ3Fog>;
+    /// <summary>backEnd.viewParms</summary>
+    View: TQ3ViewParms;
+    /// <summary>backEnd.or</summary>
+    Orientation: TQ3Orientation;
+    /// <summary>backEnd.refdef.text: the strings of the <c>deformVertexes text0..7</c> deformations</summary>
+    Texts: array[0..Q3_MAX_DEFORM_TEXTS - 1] of AnsiString;
   end;
 
   /// <summary>

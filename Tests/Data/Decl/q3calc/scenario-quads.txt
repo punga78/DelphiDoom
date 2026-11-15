@@ -1,0 +1,123 @@
+# Quad stamp, sprite, text, shadow, fog and vertex lighting functions (issue #237): tr_shade_calc.c with the view,
+# the entity and the fog of the world. Commands: see q3calc.c (viewparms, orient, modelmatrix, entityworld,
+# entityaxes, entitylight, quads, text, fog, fognum, fogtable, fogfactor, fogtc, fogmod, specalpha, diffuse, deformgeo).
+# --- autosprite in the world, then mirrored in an entity with scaled axes, then with an axis of length 0
+viewparms 100 200 50 0.6 0.8 0 -0.8 0.6 0 0 0 1 0
+orient 5 6 7 1 0 0 0 1 0 0 0 1
+entityworld
+quads 3 11
+deformgeo 6
+viewparms 100 200 50 0.36 0.48 0.8 -0.8 0.6 0 -0.48 -0.64 0.6 1
+orient 5 6 7 0 1 0 0 0 1 1 0 0
+entityaxes 1 2 0 0 0 3 0 0 0 4 0
+quads 4 5
+deformgeo 6
+entityaxes 1 0 0 0 0 1 0 0 0 1 0
+quads 2 17
+deformgeo 6
+entityaxes 0 1 0 0 0 1 0 0 0 1 0
+quads 5 23
+deformgeo 6
+# --- autosprite2: world and entity
+viewparms 0 0 0 0 1 0 -1 0 0 0 0 1 0
+entityworld
+quads 4 31
+deformgeo 7
+viewparms 7 8 9 0.36 0.48 0.8 -0.8 0.6 0 -0.48 -0.64 0.6 0
+orient 5 6 7 0 1 0 0 0 1 1 0 0
+entityaxes 0 1 0 0 0 1 0 0 0 1 0
+quads 6 41
+deformgeo 7
+quads 1 1
+deformgeo 7
+# --- text0..7
+viewparms 0 0 0 1 0 0 0 1 0 0 0 1 0
+entityworld
+quads 1 3
+text 0 Quake3
+deformgeo 8
+quads 1 4
+text 1 A_B~
+deformgeo 9
+quads 1 5
+text 2
+deformgeo 10
+quads 1 6
+text 7 x
+deformgeo 15
+# --- projection shadow: a long shadow and a short light
+orient 5 6 7 0.8 0.6 0 -0.6 0.8 0 0 0 1
+entityaxes 0 1 0 0 0 1 0 0 0 1 12
+entitylight 0 0 0 0 0 0 0 0 1 0
+verts 6 9
+deformgeo 5
+entitylight 0 0 0 0 0 0 0.6 0 0.8 0
+verts 6 10
+deformgeo 5
+entitylight 0 0 0 0 0 0 0.9 0.3 0.1 0
+verts 6 12
+deformgeo 5
+orient 5 6 7 0.8 0.6 0.1 -0.6 0.8 0 0 0.1 1
+entityaxes 0 1 0 0 0 1 0 0 0 1 -3
+entitylight 0 0 0 0 0 0 0.3 -0.5 0.2 0
+verts 6 13
+deformgeo 5
+# --- the fog table and the factor
+fogtable
+fogfactor 0 0
+fogfactor 0.002 0
+fogfactor 0.002 0.03125
+fogfactor 0.5 0.5
+fogfactor 0.5 1
+fogfactor 1 0.9
+fogfactor 3 1
+fogfactor -1 1
+fogfactor 0.004 0.97
+fogfactor 0.003 0.5
+fogfactor 0.0022 0.1
+fogfactor 0.0045 0.05
+fogfactor 0.0021 0.9
+# --- fog on a surface: eye inside, eye outside, rotated surface
+viewparms 0 0 50 1 0 0 0 1 0 0 0 1 0
+orient 5 6 7 1 0 0 0 1 0 0 0 1
+modelmatrix 1 0 0 0 0 1 0 0 0 0 1 0 5 6 7 1
+fog 1 0.003 1 0 0 1 -100
+fognum 1
+view 0 0 50
+verts 8 4
+fogtc
+fogmod colors
+fogmod alphas
+fogmod rgbas
+view 0 0 -300
+fogtc
+fogmod colors
+fogmod alphas
+fogmod rgbas
+viewparms 30 -40 80 0 1 0 -1 0 0 0 0 1 0
+orient 10 20 30 0.6 0.8 0 -0.8 0.6 0 0 0 1
+modelmatrix 0.6 0.8 0 0 -0.8 0.6 0 0 0 0 1 0 10 20 30 1
+fog 2 0.002 1 0.3 0.4 0.5 -20
+fognum 2
+view 30 -40 80
+verts 12 15
+fogtc
+fogmod rgbas
+view -200 300 -500
+fogtc
+fogmod colors
+# --- vertex lighting
+entitylight 20 30 40 100 120 140 0 0 1 ff804020
+verts 10 2
+diffuse
+entitylight 200 220 240 300 320 340 0.6 0.8 0 ff804020
+verts 10 3
+diffuse
+view 10 20 30
+specalpha
+view -2000 3000 500
+verts 10 5
+specalpha
+view -960 1980 96
+verts 6 7
+specalpha

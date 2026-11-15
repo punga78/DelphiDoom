@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_Define>TESTINSIGHT_OFF;$(DCC_Define)</DCC_Define>
-        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Console;..\Libs\Net;..\Libs\Wad;..\Libs\Logging;..\Libs\GameState;..\Libs\IdLib\Core;..\Libs\IdLib\Text;..\Libs\IdLib\Math;..\Libs\IdLib\Containers;..\Libs\IdLib\Hashing;..\Libs\Scanner;..\Libs\MathCore;..\Libs\GameMath;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\..\Skema\SupervisioneNats\lib\DUnitX\Source;..\Libs\Console;..\Libs\Net;..\Libs\NetQ3;..\Libs\Wad;..\Libs\Logging;..\Libs\GameState;..\Libs\IdLib\Core;..\Libs\IdLib\Text;..\Libs\IdLib\Math;..\Libs\IdLib\Containers;..\Libs\IdLib\Hashing;..\Libs\Scanner;..\Libs\MathCore;..\Libs\GameMath;.\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IncludePath>..\Libs\Sndfile;..\..\Skema\SupervisioneNats\lib\DUnitX\Source;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
         <DCC_ExeOutput>..\bin\$(Platform)\$(Config)\Tests</DCC_ExeOutput>

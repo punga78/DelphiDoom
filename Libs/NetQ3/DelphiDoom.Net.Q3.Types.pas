@@ -47,6 +47,8 @@ const
 
   /// <summary>PACKET_BACKUP: the snapshots a client keeps to delta from</summary>
   Q3_PACKET_BACKUP = 32;
+  /// <summary>MAX_RELIABLE_COMMANDS: the reliable commands in flight (a power of two)</summary>
+  Q3_MAX_RELIABLE_COMMANDS = 64;
   /// <summary>MAX_PARSE_ENTITIES: the ring of entity states of the client (it holds PACKET_BACKUP frames)</summary>
   Q3_MAX_PARSE_ENTITIES = 2048;
   /// <summary>MAX_MAP_AREA_BYTES: the bit vector of area visibility of a snapshot</summary>
@@ -292,9 +294,18 @@ type
     NumEntities: Integer;
     ParseEntitiesNum: Integer;
     ServerCommandNum: Integer;
+    /// <summary>clSnapshot_t.ping: milliseconds from the command that the snapshot acknowledges (999 when none is found)</summary>
+    Ping: Integer;
     Entities: TArray<TQ3EntityState>;
   end;
   PQ3Snapshot = ^TQ3Snapshot;
+
+  /// <summary>outPacket_t: what the client remembers of a usercmd packet it sent, to compute the ping of a snapshot</summary>
+  TQ3OutPacket = record
+    CmdNumber: Integer;
+    ServerTime: Integer;
+    RealTime: Integer;
+  end;
 
   /// <summary>
   ///   netField_t: a field of a state that the delta sends. Offset is in bytes from the start of the record,

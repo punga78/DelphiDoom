@@ -21,7 +21,7 @@ uses
   DelphiDoom.Logging.Intf in '..\Libs\Logging\DelphiDoom.Logging.Intf.pas',
   DelphiDoom.Logging.Log in '..\Libs\Logging\DelphiDoom.Logging.Log.pas',
   DelphiDoom.Logging.Recorder in '..\Libs\Logging\DelphiDoom.Logging.Recorder.pas',
-  DelphiDoom.Net.Q3.Types in '..\Libs\Net\DelphiDoom.Net.Q3.Types.pas',
+  DelphiDoom.Net.Q3.Types in '..\Libs\NetQ3\DelphiDoom.Net.Q3.Types.pas',
   DelphiDoom.Collision.Q3.Types in '..\Libs\Collision\DelphiDoom.Collision.Q3.Types.pas',
   DelphiDoom.Collision.Q3.Intf in '..\Libs\Collision\DelphiDoom.Collision.Q3.Intf.pas',
   DelphiDoom.Collision.Q3.Math in '..\Libs\Collision\DelphiDoom.Collision.Q3.Math.pas',

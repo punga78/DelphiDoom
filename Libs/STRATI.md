@@ -16,7 +16,7 @@ Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regol
 | `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
 | `L3` | Piattaforma e scripting | GameHost OpenGl\Binding PascalScript Script ScriptHost Ddc |
 | `IdTech1` (modulo) | id Tech 1 | `Base`, `Common`, `Doom`, `Heretic`, `Hexen`, `Strife`, `Radix`, `Speed` (cartelle) e le librerie `Acs` ... `Zone` (49 aree, con `ScriptEngine`) |
-| `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile Pmove Qvm |
+| `IdTech4` (modulo) | Porte di id Tech 3 e 4 | Aas BotAi Collision Decl DoomScript Gui MapFile NetQ3 Pmove Qvm |
 | `Giochi` (modulo) | Giochi non id | Keen Greed War Racing, le 16 `Xcom*`, e le cartelle `Keen`, `Greed`, `OpenXcom` |
 | `Strumenti` (modulo) | Strumenti | Ide ToolsCore EndoomEditor Font FontEditor VoxelEditor Launcher e le cartelle `DD_IDE`, `DD_Tools`, `Launcher` |
 

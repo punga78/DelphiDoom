@@ -28,8 +28,9 @@ type
   ///   commands, gamestate (configstrings and baselines) and snapshots delta-compressed against the previous
   ///   ones. It owns the state that <c>cl_parse.c</c> keeps in <c>cl</c> and <c>clc</c> to undo the deltas: the
   ///   baselines, the ring of entity states and the last 32 snapshots; what it decodes goes to the sink.
-  ///   The codecs and the sink are not owned. Not ported (they belong to a running client): the ping of a
-  ///   snapshot, the pure server checks and file system of a download, the cvars the gamestate sets,
+  ///   The codecs and the sink are not owned. The state of the sending half of the client that the parser needs
+  ///   (the reliable sequence, the packets sent and the clock: ReliableSequence, OutgoingSequence, RealTime,
+  ///   SetOutPacket) is input. Not ported (they belong to a running client): the pure server checks and file system of a download, the cvars the gamestate sets,
   ///   <c>cl_shownet</c>
   /// </summary>
   TQ3ServerMessageParser = class
@@ -50,6 +51,10 @@ type
     FClientNum: Integer;
     FChecksumFeed: Integer;
     FReliableAcknowledge: Integer;
+    FReliableSequence: Integer;
+    FOutgoingSequence: Integer;
+    FRealTime: Integer;
+    FOutPackets: array[0..Q3_PACKET_BACKUP - 1] of TQ3OutPacket;
     FSnapshotCount: Integer;
     procedure Report(const AText: string);
     procedure RaiseServerError(const AText: string);
@@ -71,6 +76,8 @@ type
       APlayerCodec: TQ3PlayerStateCodec; const ASink: IQ3ServerMessageSink; const ALog: ILog = nil);
     /// <summary>CL_ClearState (the part of it that the parser uses): baselines, entities and snapshots are forgotten</summary>
     procedure ClearState;
+    /// <summary>cl.outPackets[AIndex and PACKET_MASK]: the client records what it sends here (ClearState forgets them, like the memset of cl)</summary>
+    procedure SetOutPacket(AIndex: Integer; const APacket: TQ3OutPacket);
     /// <summary>
     ///   CL_ParseServerMessage: parses one message (the bytes of a demo message or of a received datagram
     ///   after the netchan header). <c>AServerMessageSequence</c> is <c>clc.serverMessageSequence</c>, the number
@@ -86,6 +93,12 @@ type
     property ClientNum: Integer read FClientNum;
     property ChecksumFeed: Integer read FChecksumFeed;
     property ReliableAcknowledge: Integer read FReliableAcknowledge;
+    /// <summary>clc.reliableSequence: the number of the last reliable command the client sent (input; 0 by default). A message that acknowledges a sequence older than MAX_RELIABLE_COMMANDS behind it is clamped to it</summary>
+    property ReliableSequence: Integer read FReliableSequence write FReliableSequence;
+    /// <summary>clc.netchan.outgoingSequence: the sequence of the next packet the client sends (input), from which the ping looks back</summary>
+    property OutgoingSequence: Integer read FOutgoingSequence write FOutgoingSequence;
+    /// <summary>cls.realtime: the client clock in milliseconds (input), the end of the ping interval</summary>
+    property RealTime: Integer read FRealTime write FRealTime;
     /// <summary>The characters of the configstrings of the last gamestate, with the leading NUL (cl.gameState.dataCount; 0 before the first gamestate)</summary>
     property GameStateChars: Integer read FGameStateChars;
     /// <summary>How many valid snapshots were parsed</summary>
@@ -148,6 +161,12 @@ begin
   FillChar(FCurrentSnapshot, SizeOf(FCurrentSnapshot), 0);
   FParseEntitiesNum := 0;
   FGameStateChars := 0;
+  FillChar(FOutPackets, SizeOf(FOutPackets), 0);
+end;
+
+procedure TQ3ServerMessageParser.SetOutPacket(AIndex: Integer; const APacket: TQ3OutPacket);
+begin
+  FOutPackets[AIndex and (Q3_PACKET_BACKUP - 1)] := APacket;
 end;
 
 function TQ3ServerMessageParser.ParseEntity(AIndex: Integer): PQ3EntityState;
@@ -260,6 +279,8 @@ var
   LLength: Integer;
   LAreaMask: TBytes;
   LOldMessageNum: Integer;
+  LIndex: Integer;
+  LPacketNumber: Integer;
 begin
   // read into a temporary snapshot: it is kept only if it is valid
   Finalize(LNew);
@@ -318,6 +339,18 @@ begin
   begin
     FSnapshots[LOldMessageNum and (Q3_PACKET_BACKUP - 1)].Valid := False;
     Inc(LOldMessageNum);
+  end;
+
+  // the ping: the first packet (newest first) that the snapshot already acknowledges
+  LNew.Ping := 999;
+  for LIndex := 0 to Q3_PACKET_BACKUP - 1 do
+  begin
+    LPacketNumber := (FOutgoingSequence - 1 - LIndex) and (Q3_PACKET_BACKUP - 1);
+    if LNew.PlayerState.CommandTime >= FOutPackets[LPacketNumber].ServerTime then
+    begin
+      LNew.Ping := FRealTime - FOutPackets[LPacketNumber].RealTime;
+      Break;
+    end;
   end;
 
   FCurrentSnapshot := LNew;
@@ -424,6 +457,9 @@ begin
     LMessage.CurSize := ALength;
     LMessage.Bitstream;
     FReliableAcknowledge := LMessage.ReadLong;
+    // an acknowledge older than the commands in flight can only be garbage
+    if FReliableAcknowledge < FReliableSequence - Q3_MAX_RELIABLE_COMMANDS then
+      FReliableAcknowledge := FReliableSequence;
     FSink.ReliableAcknowledge(FReliableAcknowledge);
     while True do
     begin

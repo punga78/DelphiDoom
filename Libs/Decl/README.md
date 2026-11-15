@@ -128,3 +128,18 @@ LCalc.TexCoords.Compute(LStage.Bundle, LTess, LTexCoords);   // tcGen e tcMod
 ```
 
 Parita' esatta (bit a bit, a 32 e a 64 bit) con le vere funzioni di Quake III compilate con gcc; nebbia, illuminazione dei vertici e gli autosprite non sono portati. Dettagli, difetti e differenze: [CLAUDE.md](CLAUDE.md).
+
+## Sprite, testo, ombra, nebbia e luce dei vertici (issue #237)
+
+Dal C di `renderer\tr_shade_calc.c`, `tr_surface.c`, `tr_shadows.c` e `tr_image.c` di Quake III, a classi sui buffer di `TQ3ShaderTess` (percorso freddo, nessun chiamante nel motore):
+
+| C | Pascal |
+|---|---|
+| `RB_AddQuadStampExt`, `RB_AddQuadStamp` | `TQ3QuadStamp.AddExt`, `.Add` |
+| `AutospriteDeform`, `Autosprite2Deform`, `DeformText` | `TQ3SpriteDeform.AutoSprite`, `.AutoSprite2`, `.DeformText` |
+| `RB_ProjectionShadowDeform` | `TQ3ShadowDeform.Apply` |
+| `R_InitFogTable`, `R_FogFactor`, `RB_CalcFogTexCoords`, `RB_CalcModulateColorsByFog`, `...AlphasByFog`, `...RGBAsByFog` | `TQ3FogCalc` (`Create`, `FogFactor`, `CalcFogTexCoords`, `CalcModulateColors`, `CalcModulateAlphas`, `CalcModulateRGBAs`) |
+| `RB_CalcSpecularAlpha`, `RB_CalcDiffuseColor` | `TQ3LightCalc.CalcSpecularAlpha`, `.CalcDiffuseColor` |
+| `RB_DeformTessGeometry` (i rami nuovi) | `TQ3DeformCalc.Apply` |
+
+Differenze volute: buffer corti, quad che non entrano, vertici non multipli di 4, entita' mancante e nebbia che il mondo non ha sono `EDeclQ3ShaderCalcException` (il C legge fuori o dereferenzia nullo); una coordinata di nebbia NaN o fuori dalla tabella e' la stessa eccezione (il C indicizza `fogTable` con `INT_MIN`); `fogDepthVector` non inizializzato (nebbia senza superficie) e' zero. Parita' e prove: `Tests\Data\Decl\README.md`, [CLAUDE.md](CLAUDE.md).
