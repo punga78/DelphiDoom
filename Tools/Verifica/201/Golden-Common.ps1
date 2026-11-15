@@ -121,7 +121,12 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_train.script'); Golden = 'ui.map_cmd_train.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_build.script'); Golden = 'ui.map_cmd_build.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_orders.script'); Golden = 'ui.map_cmd_orders.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_town.script'); Golden = 'ui.map_cmd_town.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_town.script'); Golden = 'ui.map_cmd_town.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # combattimento e incantesimi: proiettili, animazioni, suoni come entita' (parte C, punto 2)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_melee.script'); Golden = 'ui.map_war_melee.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_siege.script'); Golden = 'ui.map_war_siege.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells.script'); Golden = 'ui.map_spells.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells_orc.script'); Golden = 'ui.map_spells_orc.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

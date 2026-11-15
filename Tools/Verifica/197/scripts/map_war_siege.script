@@ -1,0 +1,29 @@
+# Assedio (umani 1): una catapulta e un arciere contro una caserma degli orchi e un soldato ("unit" e "building" dell'harness);
+# le pietre (proiettili), le esplosioni, il fuoco del danno sull'edificio, il crollo, le macerie, i suoni di ognuno e i
+# corpi; si seleziona con un rettangolo e si attacca la caserma col tasto A e un clic
+campaign human 1
+move 190 100
+run 10 1
+building 35 210 70 1
+unit 4 140 110 0
+unit 8 150 125 0
+unit 1 215 125 1
+run 5 1
+move 125 95
+run 3 1
+lbutton down
+run 2 1
+move 170 135
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 225 85
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 900 4

@@ -19,7 +19,8 @@ interface
 uses
   System.SysUtils, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Selection,
   DelphiDoom.War.Model.Gather.Intf, DelphiDoom.War.Model.Construction.Intf, DelphiDoom.War.Map.Intf,
-  DelphiDoom.War.Map.Fog, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Sprites;
+  DelphiDoom.War.Map.Fog, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Sprites,
+  DelphiDoom.War.Model.Combat.Intf;
 
 type
   /// <summary>The message that the status bar flashes for a while: the text and the real time it ends</summary>
@@ -49,7 +50,8 @@ type
   ///   (it stays behind IWarSceneAudio, with the tracks of the music), so a sound asked for is nothing. Not counted by
   ///   reference users: the scene owns it
   /// </summary>
-  TWarMapHost = class(TInterfacedObject, IWarMapHost, IWarModelEvents, IWarGatherEvents, IWarConstructionHost)
+  TWarMapHost = class(TInterfacedObject, IWarMapHost, IWarModelEvents, IWarGatherEvents, IWarConstructionHost,
+    IWarCombatEvents, IWarSpellEvents)
   strict private
     FSelection: TWarSelection;
     FFog: TWarFogOfWar;
@@ -71,6 +73,11 @@ type
     procedure BuildingCollapsing(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
     procedure BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
     procedure TreeChopped(const APosition: TWarVec2);
+    procedure AttackSound(const APosition: TWarVec2; ASoundStep: Integer);
+    procedure ArrowHit(const APosition: TWarVec2);
+    procedure Explosion(const APosition: TWarVec2; ARainOfFire: Boolean);
+    procedure SpellCast(const APosition: TWarVec2);
+    procedure SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
     function UnitFrames(AUnitType: Integer): Integer;
     function ConstructionFrames(AUnitType: Integer): Integer;
     procedure PlaySound(AAudioId: Integer);
@@ -87,7 +94,8 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Map.Types, DelphiDoom.War.Model.BuildingResources.Data;
+  DelphiDoom.War.Map.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.BuildingResources.Data,
+  DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Sound.Ids;
 
 { TWarMapHost }
 
@@ -159,10 +167,21 @@ end;
 
 procedure TWarMapHost.UnitDied(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
 begin
+  // we_takeDamage: the sound of a death: a spider or a scorpion, a catapult (one of the sounds of a collapse, drawn), or a
+  // dying man of the humans or of the orcs (a unit of no race is an orc)
+  if (AUnitType = WAR_UNIT_SCORPION) or (AUnitType = WAR_UNIT_SPIDER) then
+    PlaySound(WAR_SND_DEAD_SPIDER_SCORPION)
+  else if (AUnitType = WAR_UNIT_CATAPULT_HUMANS) or (AUnitType = WAR_UNIT_CATAPULT_ORCS) then
+    PlayRandomSound(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST)
+  else if TWarUnitClassifier.RaceOf(AUnitType) = wraHumans then
+    PlaySound(WAR_SND_HUMAN_DEAD)
+  else
+    PlaySound(WAR_SND_ORC_DEAD);
 end;
 
 procedure TWarMapHost.BuildingCollapsing(AEntityId: Word; AUnitType: Integer; const APosition: TWarVec2);
 begin
+  PlayRandomSound(WAR_SND_BUILDING_COLLAPSE_FIRST, WAR_SND_BUILDING_COLLAPSE_LAST);
 end;
 
 procedure TWarMapHost.BuildingDamaged(AEntityId: Word; AHpPercent: Integer);
@@ -171,6 +190,45 @@ end;
 
 procedure TWarMapHost.TreeChopped(const APosition: TWarVec2);
 begin
+  PlayRandomSound(WAR_SND_TREE_CHOPPING_FIRST, WAR_SND_TREE_CHOPPING_LAST);
+end;
+
+procedure TWarMapHost.AttackSound(const APosition: TWarVec2; ASoundStep: Integer);
+begin
+  // wa_playAttackSound: the sword is one of three (drawn); the fist, the fireball, the catapult and the arrow are one; any other
+  // step (the lightning) has no sound and makes no entity
+  case ASoundStep of
+    WAR_ACTION_STEP_SOUND_SWORD:
+      PlayRandomSound(WAR_SND_SWORD_ATTACK_FIRST, WAR_SND_SWORD_ATTACK_LAST);
+    WAR_ACTION_STEP_SOUND_FIST:
+      PlaySound(WAR_SND_FIST_ATTACK);
+    WAR_ACTION_STEP_SOUND_FIREBALL:
+      PlaySound(WAR_SND_FIREBALL);
+    WAR_ACTION_STEP_SOUND_CATAPULT:
+      PlaySound(WAR_SND_CATAPULT_ROCK_FIRED);
+    WAR_ACTION_STEP_SOUND_ARROW:
+      PlaySound(WAR_SND_ARROW_SPEAR);
+  end;
+end;
+
+procedure TWarMapHost.ArrowHit(const APosition: TWarVec2);
+begin
+  PlaySound(WAR_SND_ARROW_SPEAR_HIT);
+end;
+
+procedure TWarMapHost.Explosion(const APosition: TWarVec2; ARainOfFire: Boolean);
+begin
+  PlaySound(WAR_SND_CATAPULT_FIRE_EXPLOSION);
+end;
+
+procedure TWarMapHost.SpellCast(const APosition: TWarVec2);
+begin
+  PlaySound(WAR_SND_NORMAL_SPELL);
+end;
+
+procedure TWarMapHost.SummonExpired(const APosition: TWarVec2; AUnitType: Integer);
+begin
+  PlaySound(WAR_SND_DEAD_SPIDER_SCORPION);
 end;
 
 function TWarMapHost.UnitFrames(AUnitType: Integer): Integer;

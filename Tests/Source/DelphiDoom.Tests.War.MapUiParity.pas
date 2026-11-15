@@ -39,6 +39,10 @@ type
     [TestCase('Costruire con il contadino', 'map_cmd_build')]
     [TestCase('Ordini dai bottoni e dai tasti', 'map_cmd_orders')]
     [TestCase('Municipio, fucina, chiesa e caserma', 'map_cmd_town')]
+    [TestCase('Due eserciti: colpi, frecce, morti', 'map_war_melee')]
+    [TestCase('Assedio: pietre, esplosioni, fuoco e crollo', 'map_war_siege')]
+    [TestCase('Incantesimi degli umani', 'map_spells')]
+    [TestCase('Incantesimi degli orchi', 'map_spells_orc')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

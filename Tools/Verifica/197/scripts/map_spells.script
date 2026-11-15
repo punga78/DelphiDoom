@@ -1,0 +1,72 @@
+# Incantesimi (umani 1, comandi "unit", "upgrade", "feature" dell'harness): un mago con pioggia di fuoco e scorpioni, un
+# chierico con guarigione e vista lontana; il tasto dell'incantesimo e un clic sulla mappa o sul minimap (cursore a mira),
+# gli effetti (pioggia di fuoco, evocazione, guarigione, vista che apre la nebbia), il nemico che brucia
+campaign human 1
+move 190 100
+run 10 1
+feature 38 1
+upgrade 8 1 1
+feature 36 1
+upgrade 6 1 1
+feature 30 1
+upgrade 12 1 1
+feature 32 1
+upgrade 14 1 1
+unit 10 150 100 0
+unit 12 165 105 0
+unit 1 215 100 1
+unit 1 225 110 1
+run 5 1
+move 150 102
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 218 104
+run 3 1
+key r down
+run 2 1
+key r up
+run 4 1
+lbutton down
+run 2 1
+lbutton up
+run 150 3
+move 150 102
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key o down
+run 2 1
+key o up
+run 120 3
+move 165 107
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 30 30
+run 3 1
+key f down
+run 2 1
+key f up
+run 4 1
+lbutton down
+run 2 1
+lbutton up
+run 60 3
+move 160 107
+run 3 1
+key h down
+run 2 1
+key h up
+run 3 1
+move 150 100
+lbutton down
+run 2 1
+lbutton up
+run 120 3

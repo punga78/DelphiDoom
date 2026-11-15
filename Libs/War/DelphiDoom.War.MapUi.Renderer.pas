@@ -66,6 +66,10 @@ type
     class procedure DrawRuin(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
     class procedure DrawForest(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
     class procedure DrawUnit(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
+    class procedure DrawProjectile(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
+    class procedure DrawAnimations(const ARenderer: TWarMapRenderer; ASlot: Integer); static;
+    /// <summary>The animations of an entity that are running, each in its own place and size (renderUnit and renderAnimation)</summary>
+    procedure DrawRunningAnimations(AEntity: PWarEntity);
     procedure RenderTile(ATileIndex, AX, AY: Integer);
     procedure DrawSprite(const ASprite: IWarUiSprite; AScaleX, AScaleY: Single);
   public
@@ -101,6 +105,10 @@ begin
   FDrawTable[WAR_ENTITY_RUIN] := TWarMapRenderer.DrawRuin;
   FDrawTable[WAR_ENTITY_FOREST] := TWarMapRenderer.DrawForest;
   FDrawTable[WAR_ENTITY_UNIT] := TWarMapRenderer.DrawUnit;
+  FDrawTable[WAR_ENTITY_PROJECTILE] := TWarMapRenderer.DrawProjectile;
+  // renderAnimation draws the poison clouds too (they are an entity with an animation)
+  FDrawTable[WAR_ENTITY_POISON_CLOUD] := TWarMapRenderer.DrawAnimations;
+  FDrawTable[WAR_ENTITY_ANIMATION] := TWarMapRenderer.DrawAnimations;
 end;
 
 constructor TWarMapRenderer.Create(const ATransform: TWarRenderTransform; const AMap: TWarGameMap;
@@ -445,6 +453,155 @@ begin
     LSprite.UpdateImage(LEntity^.SpriteFrame);
     ARenderer.DrawSprite(LSprite, LEntity^.ScaleX, 1);
     ARenderer.FTransform.Restore;
+  end;
+  // the animations of the unit (the damage and the collapse of a building) while any of its tiles is in sight
+  if LEntity^.HasAnimations and LVisible then
+    ARenderer.DrawRunningAnimations(LEntity);
+end;
+
+class procedure TWarMapRenderer.DrawProjectile(const ARenderer: TWarMapRenderer; ASlot: Integer);
+const
+  // projectilesData: the image of each type of projectile (WAR_PROJECTILE_ARROW ...)
+  PROJECTILE_RESOURCES: array[0..WAR_PROJECTILE_TYPE_COUNT - 1] of Integer = (349, 348, 347, 358, 357, 351);
+var
+  LEntity: PWarEntity;
+  LSprite: IWarUiSprite;
+  LFrame: TWarSpriteFrame;
+  LValue: Single;
+  LScale: Single;
+begin
+  // renderProjectile (without the debug lines)
+  LEntity := ARenderer.FContext.Pool.Slots[ASlot];
+  if not LEntity^.HasProjectile then
+    Exit;
+  LSprite := ARenderer.FSprites.Get(PROJECTILE_RESOURCES[LEntity^.Projectile.ProjectileType]);
+  LFrame := LSprite.GetFrame(LEntity^.Projectile.FrameIndex);
+  LScale := 1;
+  if LEntity^.Projectile.FlipX then
+    LScale := -1;
+  ARenderer.FTransform.Translate(-Single(LFrame.Dx), -Single(LFrame.Dy));
+  LValue := -0.5;
+  ARenderer.FTransform.Translate(LValue * LFrame.Width, LValue * LFrame.Height);
+  ARenderer.FTransform.Translate(LEntity^.Position.X, LEntity^.Position.Y);
+  LSprite.UpdateImage(LEntity^.Projectile.FrameIndex);
+  ARenderer.DrawSprite(LSprite, LScale, 1);
+end;
+
+procedure TWarMapRenderer.DrawRunningAnimations(AEntity: PWarEntity);
+const
+  // WAR_BUILDING_DAMAGE_1_RESOURCE, WAR_BUILDING_DAMAGE_2_RESOURCE, WAR_BUILDING_COLLAPSE_RESOURCE, WAR_EXPLOSION_RESOURCE,
+  // WAR_RAIN_OF_FIRE_EXPLOSION_RESOURCE, WAR_SPELL_RESOURCE, WAR_POISON_CLOUD_RESOURCE (by the kind of animation)
+  ANIMATION_RESOURCES: array[WAR_ANIMATION_LITTLE_DAMAGE..WAR_ANIMATION_POISON_CLOUD] of Integer = (352, 353, 356, 354,
+    351, 355, 350);
+var
+  LIndex: Integer;
+  LAnimation: PWarAnimation;
+  LSprite: IWarUiSprite;
+  LUnitSprite: IWarUiSprite;
+  LFrameWidth: Single;
+  LFrameHeight: Single;
+  LUnitWidth: Single;
+  LUnitHeight: Single;
+  LCenterX: Single;
+  LCenterY: Single;
+  LOffsetX: Single;
+  LOffsetY: Single;
+  LScaleX: Single;
+  LScaleY: Single;
+  LAnimWidth: Single;
+  LAnimHeight: Single;
+  LHalf: Single;
+  LValue: Single;
+  LFrameIndex: Integer;
+begin
+  for LIndex := 0 to AEntity^.AnimationCount - 1 do
+  begin
+    LAnimation := @AEntity^.Animations[LIndex];
+    if LAnimation^.Status <> WAR_ANIM_RUNNING then
+      Continue;
+    LSprite := FSprites.Get(ANIMATION_RESOURCES[LAnimation^.Kind]);
+    LScaleX := 1;
+    LScaleY := 1;
+    LHalf := 0.5;
+    // the size of the frame of the unit and of its sprite (the unit's own image, not the animation's)
+    LFrameWidth := 0;
+    LFrameHeight := 0;
+    if AEntity^.HasUnit then
+    begin
+      if AEntity^.HasSprite and AEntity^.SpriteEnabled then
+      begin
+        LUnitSprite := FSprites.Get(AEntity^.SpriteResource);
+        LFrameWidth := LUnitSprite.FrameWidth;
+        LFrameHeight := LUnitSprite.FrameHeight;
+      end;
+      LUnitWidth := AEntity^.UnitData.SizeX * TILE_SIZE;
+      LUnitHeight := AEntity^.UnitData.SizeY * TILE_SIZE;
+    end
+    else
+    begin
+      LUnitWidth := 0;
+      LUnitHeight := 0;
+    end;
+    case LAnimation^.Kind of
+      WAR_ANIMATION_LITTLE_DAMAGE, WAR_ANIMATION_HUGE_DAMAGE:
+        begin
+          // wu_getUnitSpriteCenter - (frameWidth / 2, frameHeight) with the integer division of the original
+          LCenterX := LHalf * (LFrameWidth - LUnitWidth);
+          LCenterY := LHalf * (LFrameHeight - LUnitHeight);
+          LCenterX := LCenterX + LHalf * LUnitWidth;
+          LCenterY := LCenterY + LHalf * LUnitHeight;
+          LOffsetX := LCenterX - (LSprite.FrameWidth div 2);
+          LOffsetY := LCenterY - LSprite.FrameHeight;
+        end;
+      WAR_ANIMATION_COLLAPSE:
+        begin
+          LAnimWidth := LSprite.FrameWidth;
+          LAnimHeight := LSprite.FrameHeight;
+          // the scale of the explosion with respect to the size of the building
+          LScaleX := LUnitWidth / LAnimWidth;
+          LScaleY := LScaleX;
+          LOffsetX := LHalf * (LFrameWidth - LUnitWidth);
+          LValue := LAnimHeight * LScaleX;
+          LValue := LValue - LUnitHeight;
+          LOffsetY := LHalf * (LFrameHeight - LUnitHeight);
+          LOffsetY := LOffsetY - LValue;
+        end;
+    else
+      // the effects: the centre of the effect is the position it was given
+      LValue := LHalf * LSprite.FrameWidth;
+      LOffsetX := LAnimation^.Position.X - LValue;
+      LValue := LHalf * LSprite.FrameHeight;
+      LOffsetY := LAnimation^.Position.Y - LValue;
+    end;
+    FTransform.Save;
+    FTransform.Translate(LOffsetX, LOffsetY);
+    FTransform.Scale(LScaleX, LScaleY);
+    // the animation time (0..1) says which of its frames is shown; the explosion of the rain of fire has the frames 3 to 5
+    LValue := LAnimation^.AnimTime * LAnimation^.FramesCount;
+    LFrameIndex := Trunc(LValue);
+    if LFrameIndex < 0 then
+      LFrameIndex := 0;
+    if LFrameIndex > LAnimation^.FramesCount - 1 then
+      LFrameIndex := LAnimation^.FramesCount - 1;
+    if LAnimation^.Kind = WAR_ANIMATION_RAIN_OF_FIRE_EXPLOSION then
+      Inc(LFrameIndex, 3);
+    LSprite.UpdateImage(LFrameIndex);
+    DrawSprite(LSprite, 1, 1);
+    FTransform.Restore;
+  end;
+end;
+
+class procedure TWarMapRenderer.DrawAnimations(const ARenderer: TWarMapRenderer; ASlot: Integer);
+var
+  LEntity: PWarEntity;
+begin
+  // renderAnimation: the entities of the effects have no position of their own
+  LEntity := ARenderer.FContext.Pool.Slots[ASlot];
+  if LEntity^.HasAnimations then
+  begin
+    if LEntity^.HasTransform then
+      ARenderer.FTransform.Translate(LEntity^.Position.X, LEntity^.Position.Y);
+    ARenderer.DrawRunningAnimations(LEntity);
   end;
 end;
 

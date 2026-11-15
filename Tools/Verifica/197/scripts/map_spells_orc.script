@@ -1,0 +1,77 @@
+# Incantesimi degli orchi (orchi 1, comandi "unit", "upgrade", "feature" dell'harness): uno stregone con la nube di veleno
+# (P) e i ragni (R), un accolito con l'armatura profana (U) e il risveglio dei morti (R sui corpi dopo la lotta); i nemici
+# sono fanti degli umani
+campaign orc 1
+move 190 100
+run 10 1
+feature 39 1
+upgrade 9 1 1
+feature 37 1
+upgrade 7 1 1
+feature 35 1
+upgrade 17 1 1
+feature 31 1
+upgrade 13 1 1
+unit 11 150 100 0
+unit 13 165 105 0
+unit 0 215 100 1
+unit 0 225 110 1
+unit 0 220 120 1
+run 5 1
+move 150 102
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 218 104
+run 3 1
+key p down
+run 2 1
+key p up
+run 4 1
+lbutton down
+run 2 1
+lbutton up
+run 150 3
+move 150 102
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key r down
+run 2 1
+key r up
+run 200 4
+move 165 107
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 150 102
+run 3 1
+key u down
+run 2 1
+key u up
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 60 3
+move 165 107
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 5 1
+move 220 110
+key r down
+run 2 1
+key r up
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 150 3

@@ -119,7 +119,7 @@ uses
   DelphiDoom.War.Model.Factory, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Context,
   DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry, DelphiDoom.War.Model.Commands.Types,
   DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Model.State.Types, DelphiDoom.War.MapUi.CommandCatalog,
-  DelphiDoom.War.MapUi.CommandCursor, DelphiDoom.War.Sound.Factory, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.Ui.Imui, System.Math;
+  DelphiDoom.War.MapUi.CommandCursor, DelphiDoom.War.Model.Combat.Intf, DelphiDoom.War.Sound.Factory, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.Ui.Imui, System.Math;
 
 { TWarMapScene }
 
@@ -176,6 +176,9 @@ begin
   FBinding := TWarModelFactory.CreateMapBinding(FMap, FSetup.Random, FHost as IWarModelEvents,
     FHost as IWarConstructionHost, FSetup.UnsignedDirections);
   FHost.Attach(FBinding.World.Context.Selection, FMap.Fog, FSprites);
+  // the blows, the impacts and the spells tell the host, which makes their sounds (entities of the pool and numbers drawn)
+  FBinding.World.Context.CombatEvents := FHost as IWarCombatEvents;
+  FBinding.World.Context.SpellEvents := FHost as IWarSpellEvents;
   // wai_initAIPlayers: for now the player 1 is the only computer player
   FAi := TWarModelFactory.AttachComputerPlayers(FBinding.World, [1]);
   FCamera := TWarMapCamera.Create(FPanels, FMap.Viewport.X, FMap.Viewport.Y);
