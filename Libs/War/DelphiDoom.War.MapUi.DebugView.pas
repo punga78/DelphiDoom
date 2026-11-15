@@ -20,7 +20,7 @@ uses
   System.SysUtils, DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Transform, DelphiDoom.War.Map.PathGrid,
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf,
   DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.DebugNearUnits, DelphiDoom.War.MapUi.DebugFlowField,
-  DelphiDoom.War.MapUi.DebugRvo;
+  DelphiDoom.War.MapUi.DebugRvo, DelphiDoom.War.MapUi.DebugStateMachine, DelphiDoom.War.Ui.Canvas;
 
 type
   /// <summary>
@@ -38,13 +38,17 @@ type
     FNearUnits: TWarDebugNearUnits;
     FFlowField: TWarDebugFlowField;
     FRvo: TWarDebugRvo;
+    FStateMachine: TWarDebugStateMachine;
+    FContext: TWarModelContext;
+    FMachine: TWarStateMachine;
     procedure RenderPassableInfo;
     procedure RenderMapGrid;
     procedure RenderSpatialGrid;
   public
     /// <summary>The context of the model is where the drawings of the units read them; nothing is owned</summary>
     constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender;
-      const AContext: TWarModelContext; const AMachine: TWarStateMachine; const ACamera: TWarMapCamera);
+      const AContext: TWarModelContext; const AMachine: TWarStateMachine; const ACamera: TWarMapCamera;
+      const ACanvas: TWarUiCanvas);
     destructor Destroy; override;
     /// <summary>
     ///   The start of an update of the map that plays: clearNearUnitsDebug (a box shown by a click of editing lasts one frame)
@@ -57,6 +61,8 @@ type
     procedure EndUpdate(AEditingSpell: Boolean);
     /// <summary>renderPassableInfo, renderMapGrid, renderSpatialGrid, renderFlowField and renderNearUnitsDebug, in this order</summary>
     procedure Render;
+    /// <summary>The text of the cheat line for the selected unit (wstdbg_updateDebugText); empty when there is none</summary>
+    function StateText: AnsiString;
     /// <summary>renderRvoDebug: what is drawn over the units, the projectiles and the animations (under the fog)</summary>
     procedure RenderOverUnits;
     /// <summary>updateFlowFieldDebug: the click that chooses the goal of the flow field that is drawn</summary>
@@ -70,7 +76,8 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Path.Intf;
+  DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Path.Intf,
+  DelphiDoom.War.MapUi.DebugStateText, DelphiDoom.War.Model.EntityPool;
 
 const
   /// <summary>MAP_GRID_TILE_SIZE: tiles of a side of a cell of the grid of the units</summary>
@@ -82,11 +89,13 @@ const
 
 constructor TWarMapDebugView.Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid;
   const AFlags: IWarDebugRender; const AContext: TWarModelContext; const AMachine: TWarStateMachine;
-  const ACamera: TWarMapCamera);
+  const ACamera: TWarMapCamera; const ACanvas: TWarUiCanvas);
 var
   LSource: IWarFlowFieldSource;
 begin
   inherited Create;
+  FContext := AContext;
+  FMachine := AMachine;
   FTransform := ATransform;
   FGrid := AGrid;
   FFlags := AFlags;
@@ -96,10 +105,12 @@ begin
     LSource := nil;
   FFlowField := TWarDebugFlowField.Create(ATransform, AGrid, AFlags, ACamera, LSource);
   FRvo := TWarDebugRvo.Create(ATransform, AContext, AMachine, AFlags);
+  FStateMachine := TWarDebugStateMachine.Create(ATransform, ACanvas, AContext, AMachine, AFlags);
 end;
 
 destructor TWarMapDebugView.Destroy;
 begin
+  FStateMachine.Free;
   FRvo.Free;
   FFlowField.Free;
   FNearUnits.Free;
@@ -174,6 +185,21 @@ begin
     RenderSpatialGrid;
   FFlowField.Render;
   FNearUnits.Render;
+  FStateMachine.Render;
+end;
+
+function TWarMapDebugView.StateText: AnsiString;
+var
+  LSlot: Integer;
+begin
+  // wstdbg_updateDebugText: empty unless the flag is on and exactly one entity is selected
+  Result := '';
+  if (not FFlags.Flag[wdrStateMachine]) or (FContext.Selection.Count <> 1) then
+    Exit;
+  LSlot := FContext.Pool.FindSlot(FContext.Selection[0]);
+  if LSlot < 0 then
+    Exit;
+  Result := TWarDebugStateText.Build(FContext, FMachine, LSlot);
 end;
 
 procedure TWarMapDebugView.RenderOverUnits;

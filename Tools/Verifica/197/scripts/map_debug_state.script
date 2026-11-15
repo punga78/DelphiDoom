@@ -1,0 +1,128 @@
+# Disegno e testo di debug della macchina a stati (umani 1): il flag "state-machine" (Ctrl+Maiusc+T) per la sola unita' selezionata
+# disegna sulla mappa cio' che fa lo stato attivo (il riquadro della ricerca e il nemico vicino di chi sta fermo, il percorso di chi
+# cammina, il bersaglio e la portata di chi attacca o insegue, la miniera, il bosco e il municipio di chi raccoglie, con le
+# etichette) e scrive nella riga dei trucchi la pila degli stati (nome, campi e richiesta in attesa); la mappa e' scoperta
+# con "Sally Shears" per mandare i contadini alla miniera e al bosco
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Sally Shears
+key enter down
+run 1 1
+key enter up
+run 4 1
+key ctrl down
+key shift down
+run 1 1
+key t down
+run 1 1
+key t up
+run 3 1
+key ctrl up
+key shift up
+unit 0 140 80 0
+unit 8 150 100 0
+unit 1 230 110 1
+unit 1 236 122 1
+run 5 1
+move 141 81
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+png C:/ddframe197/st1.png
+move 120 130
+rbutton down
+run 2 1
+rbutton up
+run 10 1
+png C:/ddframe197/st2.png
+run 40 2
+move 151 101
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 232 114
+lbutton down
+run 2 1
+lbutton up
+run 10 1
+png C:/ddframe197/st3.png
+run 60 2
+move 176 99
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 305 97
+rbutton down
+run 2 1
+rbutton up
+run 12 1
+png C:/ddframe197/st4.png
+run 100 4
+png C:/ddframe197/st5.png
+run 200 5
+move 160 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 285 28
+rbutton down
+run 2 1
+rbutton up
+run 12 1
+png C:/ddframe197/st6.png
+run 150 5
+png C:/ddframe197/st7.png
+run 150 5
+move 151 101
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 141 81
+rbutton down
+run 2 1
+rbutton up
+run 30 2
+move 190 135
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 18 130
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 20 2
+key ctrl down
+key shift down
+run 1 1
+key t down
+run 1 1
+key t up
+run 3 1
+key ctrl up
+key shift up
+run 10 1

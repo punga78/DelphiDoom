@@ -97,6 +97,7 @@ type
     function ObjectivesText: AnsiString;
     function CheatsOpen: Boolean;
     procedure UpdateDebugShortcuts;
+    procedure UpdateDebugText;
     procedure UpdateObjectives;
     procedure UpdateStatus;
     procedure RenderMapUi;
@@ -280,7 +281,7 @@ begin
   if Assigned(FSetup.Services.DebugRender) then
   begin
     FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender,
-      FBinding.World.Context, FBinding.World.Machine, FCamera);
+      FBinding.World.Context, FBinding.World.Machine, FCamera, FSetup.Services.Canvas);
     FRenderer.DebugView := FDebugView;
   end;
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);
@@ -594,6 +595,18 @@ begin
   UpdateDebugShortcuts;
   FHost.SetRealTime(LHost.RealTime);
   UpdateStatus;
+  UpdateDebugText;
+end;
+
+procedure TWarMapScene.UpdateDebugText;
+var
+  LText: AnsiString;
+begin
+  // wstdbg_updateDebugText: the text of the state machine of the selected unit, or nothing
+  LText := '';
+  if Assigned(FDebugView) then
+    LText := FDebugView.StateText;
+  FCheats.SetDebugText(LText);
 end;
 
 procedure TWarMapScene.UpdateDebugShortcuts;
@@ -646,6 +659,7 @@ begin
   FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);
   UpdateRightClick;
   UpdateStatus;
+  UpdateDebugText;
   // refreshSelectedUnitNearUnitsDebug, after the status line and before the shortcuts
   if Assigned(FDebugView) then
     FDebugView.EndUpdate(FEditing.Mode in [wemRainOfFire, wemPoisonCloud, wemRaiseDead]);
