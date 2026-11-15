@@ -1,0 +1,178 @@
+# Altri comandi con bersaglio (umani 1, comandi "unit", "feature", "upgrade" dell'harness): il contadino con raccogli (H) e
+# ripara (R) su terra e sul municipio, il chierico con guarigione (H) e invisibilita' (I) sul fante, il fante con muovi (M) e
+# attacca (A) sul minimap (la camera non lo segue), il muro del municipio con ESC, i cursori con un nemico sotto il mouse e
+# ai quattro bordi dello schermo
+campaign human 1
+move 190 100
+run 10 1
+feature 42 1
+feature 30 1
+upgrade 12 1 1
+feature 34 1
+upgrade 16 1 1
+move 190 135
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 18 153
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 215 60
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 231 60
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+key esc down
+run 2 1
+key esc up
+run 4 1
+move 190 2
+unit 2 150 90 0
+unit 12 130 105 0
+unit 0 140 125 0
+unit 1 240 100 1
+unit 0 120 150 0
+run 3 1
+move 120 150
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 30 40
+run 3 1
+key m down
+run 2 1
+key m up
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 40 50
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 10 1
+run 5 1
+move 150 93
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key h down
+run 2 1
+key h up
+run 3 1
+move 120 70
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 20 2
+move 150 93
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key r down
+run 2 1
+key r up
+run 3 1
+move 190 135
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 30 3
+move 130 105
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key h down
+run 2 1
+key h up
+run 3 1
+move 140 125
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 130 105
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key i down
+run 2 1
+key i up
+run 3 1
+move 140 125
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 30 3
+move 140 125
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 240 103
+run 3 1
+move 30 40
+run 3 1
+key m down
+run 2 1
+key m up
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 125
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 40 50
+lbutton down
+run 2 1
+lbutton up
+run 20 2
+run 10 2
+move 318 100
+run 10 2
+move 190 198
+run 10 2
+move 2 100
+run 10 2

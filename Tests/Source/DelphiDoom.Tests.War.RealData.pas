@@ -29,6 +29,15 @@ type
     class function GoldenPath(const AName: string): string; static;
     /// <summary>Marks the running test as ignored (ETestIgnored) if DATA.WAR is not here; else returns its path</summary>
     class function RequireDataWar: string; static;
+    /// <summary>A file of the repository (a path from its root), found from the folder of the program</summary>
+    class function RepoPath(const ARelative: string): string; static;
+    /// <summary>
+    ///   The PNG of a font of the remake (war1_font_1.png, war1_font_2.png: Reference\war1\assets, not in the repository);
+    ///   empty if it is not on this machine
+    /// </summary>
+    class function FontPath(AFont: Integer): string; static;
+    /// <summary>Marks the running test as ignored if the PNG of a font is not here; else returns its path</summary>
+    class function RequireFont(AFont: Integer): string; static;
   end;
 
 implementation
@@ -72,6 +81,47 @@ end;
 class function TWarRealData.GoldenPath(const AName: string): string;
 begin
   Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\Tests\Data\War\' + AName);
+end;
+
+class function TWarRealData.RepoPath(const ARelative: string): string;
+begin
+  Result := TPath.GetFullPath(ExtractFilePath(ParamStr(0)) + '..\..\..\..\' + ARelative);
+end;
+
+class function TWarRealData.FontPath(AFont: Integer): string;
+var
+  LName: string;
+  LCurrent: string;
+  LParent: string;
+  LData: string;
+begin
+  LName := Format('war1_font_%d.png', [AFont + 1]);
+  // beside DATA.WAR: Reference\_dati\warcraft\DATA\DATA.WAR and Reference\war1\assets
+  LData := Search;
+  if LData <> '' then
+  begin
+    Result := TPath.GetFullPath(ExtractFilePath(LData) + '..\..\..\war1\assets\' + LName);
+    if TFile.Exists(Result) then
+      Exit;
+  end;
+  Result := '';
+  LCurrent := ExtractFilePath(ParamStr(0));
+  while LCurrent <> '' do
+  begin
+    if TFile.Exists(TPath.Combine(LCurrent, 'Reference\war1\assets\' + LName)) then
+      Exit(TPath.Combine(LCurrent, 'Reference\war1\assets\' + LName));
+    LParent := ExtractFileDir(ExcludeTrailingPathDelimiter(LCurrent));
+    if (LParent = '') or (LParent = ExcludeTrailingPathDelimiter(LCurrent)) then
+      Break;
+    LCurrent := IncludeTrailingPathDelimiter(LParent);
+  end;
+end;
+
+class function TWarRealData.RequireFont(AFont: Integer): string;
+begin
+  Result := FontPath(AFont);
+  if Result = '' then
+    raise ETestIgnored.Create('I PNG dei font del remake (Reference\war1\assets) non ci sono su questo PC: prova ignorata');
 end;
 
 class function TWarRealData.RequireDataWar: string;

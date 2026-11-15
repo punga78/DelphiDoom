@@ -1,0 +1,24 @@
+# Il cursore a vari punti dello schermo, anche fuori (il punto caldo sta nel record del cursore) e con il tasto destro premuto
+scene menu
+run 3 1
+move 0 0
+run 1 1
+move 319 199
+run 1 1
+move 160 100
+run 1 1
+move 160.9 100.9
+run 1 1
+move -5 300
+run 1 1
+move 320 200
+run 1 1
+move 7 190
+run 1 1
+move 312 3
+run 1 1
+rbutton down
+move 100 60
+run 2 1
+rbutton up
+run 2 1

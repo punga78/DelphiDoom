@@ -1,0 +1,35 @@
+# Uscita dalla mappa col menu F10: Quit chiede conferma, il mouse sui tre bottoni, Annulla; il tasto Q (esce: l'harness non
+# ha una finestra e il gioco va avanti), Menu torna al menu principale dopo un secondo di nero
+campaign human 1
+move 190 100
+run 25 1
+key f10 down
+run 1 1
+key f10 up
+run 4 1
+key q down
+run 1 1
+key q up
+run 4 1
+move 60 108
+run 2 1
+move 155 108
+run 2 1
+move 250 108
+run 2 1
+key c down
+run 1 1
+key c up
+run 3 1
+key q down
+run 1 1
+key q up
+run 3 1
+key q down
+run 1 1
+key q up
+run 3 1
+key m down
+run 1 1
+key m up
+run 80 1

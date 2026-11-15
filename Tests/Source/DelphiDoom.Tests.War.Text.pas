@@ -88,7 +88,7 @@ type
     [Test]
     procedure DovrebbeColorareTuttoConLEvidenziazioneTotale;
     [Test]
-    procedure DovrebbeSollevareEccezioneSeLEvidenziazioneVaOltreIlTesto;
+    procedure DisegnaIlVuotoSeLEvidenziazioneVaOltreIlTesto;
     [Test]
     procedure DovrebbeTrattareGliAcapoComeSpaziInUnaRiga;
     [Test]
@@ -426,22 +426,18 @@ begin
   Assert.AreEqual<Integer>(200, FBlits[1].Color.R);
 end;
 
-procedure TTestWarTextRenderer.DovrebbeSollevareEccezioneSeLEvidenziazioneVaOltreIlTesto;
+procedure TTestWarTextRenderer.DisegnaIlVuotoSeLEvidenziazioneVaOltreIlTesto;
 begin
+  // il C legge gli zeri del suo buffer dopo il testo e disegna il glifo del carattere 0 per ognuno
   FParams.HighlightIndex := 1;
   FParams.HighlightCount := 5;
-  Assert.WillRaise(
-    procedure
-    begin
-      FRenderer.RenderSingle('ABC', 0, 0, FParams);
-    end, EWarException);
+  FRenderer.RenderSingle('ABC', 0, 0, FParams);
+  Assert.AreEqual<Integer>(6, FBlits.Count, 'A, B, C e tre zeri');
+  FBlits.Clear;
   FParams.HighlightIndex := 9;
   FParams.HighlightCount := 0;
-  Assert.WillRaise(
-    procedure
-    begin
-      FRenderer.RenderSingle('ABC', 0, 0, FParams);
-    end, EWarException);
+  FRenderer.RenderSingle('ABC', 0, 0, FParams);
+  Assert.AreEqual<Integer>(9, FBlits.Count, 'tre lettere e sei zeri');
 end;
 
 procedure TTestWarTextRenderer.DovrebbeTrattareGliAcapoComeSpaziInUnaRiga;

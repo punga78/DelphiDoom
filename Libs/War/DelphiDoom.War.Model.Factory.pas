@@ -16,7 +16,7 @@ uses
   DelphiDoom.War.Sound.Intf, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.World,
   DelphiDoom.War.Model.Selection, DelphiDoom.War.Model.Commands.Intf, DelphiDoom.War.Model.Commands.Dispatcher,
   DelphiDoom.War.Map.Game, DelphiDoom.War.Map.PathGrid, DelphiDoom.War.Map.Fog, DelphiDoom.War.Model.MapBinding,
-  DelphiDoom.War.Ai.Players;
+  DelphiDoom.War.Ai.Players, DelphiDoom.War.Model.Construction.Intf;
 
 type
   /// <summary>
@@ -73,7 +73,8 @@ type
     ///   owned and must outlive the binding
     /// </summary>
     class function CreateMapBinding(const AMap: TWarGameMap; const ARandom: IWarRandom;
-      const AEvents: IWarModelEvents = nil): TWarMapBinding; static;
+      const AEvents: IWarModelEvents = nil; const AHost: IWarConstructionHost = nil;
+      AUnsignedDirections: Boolean = False): TWarMapBinding; static;
   end;
 
 implementation
@@ -118,7 +119,7 @@ begin
 end;
 
 class function TWarModelFactory.CreateMapBinding(const AMap: TWarGameMap; const ARandom: IWarRandom;
-  const AEvents: IWarModelEvents): TWarMapBinding;
+  const AEvents: IWarModelEvents; const AHost: IWarConstructionHost; AUnsignedDirections: Boolean): TWarMapBinding;
 var
   LWorld: TWarModelWorld;
   LGather: TWarGatherWorld;
@@ -127,6 +128,10 @@ var
   LCommands: TWarCommands;
 begin
   LWorld := CreateWorld(ARandom, TWarGridOccupancy.Create(AMap.Grid), AEvents);
+  // the host of building and training and the way the directions turn are asked for before the units are made
+  if Assigned(AHost) then
+    LWorld.Context.ConstructionHost := AHost;
+  LWorld.Context.UnsignedDirections := AUnsignedDirections;
   // the game map has paths and avoidance: the units walk around the trees, the buildings and each other
   AttachFlowSteering(LWorld, AMap.Grid);
   // and the fog of the map is what the units of the model see, at the end of every tic

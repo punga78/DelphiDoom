@@ -1,0 +1,10 @@
+# Prova delle prestazioni (solo per i tempi, non ha un golden): la mappa degli umani 1 con 400 fanti fermi e la nebbia spenta,
+# come TTestWarMapUiBench; si misurano 200 fotogrammi interi e 200 disegni. Il C si compila con -O1 e -O2 (Compila-FrameRef.ps1 -Opt)
+campaign human 1
+move 190 100
+run 2 1
+fog off
+spawn 400
+run 5 0
+time 200
+timerender 200

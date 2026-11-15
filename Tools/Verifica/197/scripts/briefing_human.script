@@ -1,0 +1,12 @@
+# Briefing degli umani, missioni 1 e 2: il testo che scorre e le quattro animazioni; finisce col clic (poi la pausa di un secondo)
+briefing human 117
+run 400 1
+briefing human 119
+run 250 1
+briefing human 117
+run 100 1
+move 160 100
+lbutton down
+run 1 1
+lbutton up
+run 30 1

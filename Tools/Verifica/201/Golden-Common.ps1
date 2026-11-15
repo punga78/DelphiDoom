@@ -92,7 +92,60 @@ $script:Groups = @(
       @{ Exe = 'war_model_ref.exe'; Args = @('ai-tables'); Golden = 'ai.tables.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('ai', '8'); Golden = 'ai.scenarios.golden.txt'; NeedsData = $false },
       @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'ai', '5', '1200'); Golden = 'ai.dump.golden.txt'; NeedsData = $false },
-      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'ai', '6', '2999'); Golden = 'ai.dump2.golden.txt'; NeedsData = $false }) }
+      @{ Exe = 'war_model_ref.exe'; Args = @('dump', 'ai', '6', '2999'); Golden = 'ai.dump2.golden.txt'; NeedsData = $false }) },
+  # issue #197 (war_frame_ref.c): il remake INTERO con la SDL3 vera, gli script di Tools\Verifica\197\scripts; "H n impronta" per
+  # fotogramma. Il programma cerca ./DATA.WAR e i PNG dei font nella cartella corrente: WorkDir = $true lo lancia dalla cartella
+  # della compilazione ({SCRIPTS197} e' la cartella degli script)
+  @{ Name = '197 render'; Dir = '197'; Script = 'Compila-FrameRef.ps1'; Jobs = @(
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\blizzard.script'); Golden = 'ui.blizzard.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\menu.script'); Golden = 'ui.menu.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\singleplayer.script'); Golden = 'ui.singleplayer.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\customgame.script'); Golden = 'ui.customgame.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\briefing_human.script'); Golden = 'ui.briefing_human.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\briefing_orc.script'); Golden = 'ui.briefing_orc.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\briefing_end.script'); Golden = 'ui.briefing_end.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\briefing_enter.script'); Golden = 'ui.briefing_enter.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\cheats.script'); Golden = 'ui.cheats.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\cursor.script'); Golden = 'ui.cursor.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\pause.script'); Golden = 'ui.pause.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # la mappa (parte B): entrata, camera, mappe di campagna delle due razze
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_enter.script'); Golden = 'ui.map_enter.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_still.script'); Golden = 'ui.map_still.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_scroll.script'); Golden = 'ui.map_scroll.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_orc.script'); Golden = 'ui.map_orc.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_select.script'); Golden = 'ui.map_select.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_orders.script'); Golden = 'ui.map_orders.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_long.script'); Golden = 'ui.map_long.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_pause.script'); Golden = 'ui.map_pause.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i comandi con bersaglio e i bottoni del pannello (parte C): addestrare, costruire
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_train.script'); Golden = 'ui.map_cmd_train.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_build.script'); Golden = 'ui.map_cmd_build.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_orders.script'); Golden = 'ui.map_cmd_orders.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_town.script'); Golden = 'ui.map_cmd_town.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cmd_extra.script'); Golden = 'ui.map_cmd_extra.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cursors.script'); Golden = 'ui.map_cursors.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # combattimento e incantesimi: proiettili, animazioni, suoni come entita' (parte C, punto 2)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_melee.script'); Golden = 'ui.map_war_melee.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_war_siege.script'); Golden = 'ui.map_war_siege.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells.script'); Golden = 'ui.map_spells.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_spells_orc.script'); Golden = 'ui.map_spells_orc.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i menu della mappa (parte D): F10, opzioni, obiettivi, ricomincia
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu.script'); Golden = 'ui.map_menu.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_quit.script'); Golden = 'ui.map_menu_quit.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_menu_restart.script'); Golden = 'ui.map_menu_restart.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i trucchi sulla mappa e la fine della mappa (parte D)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_cheats.script'); Golden = 'ui.map_cheats.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_win.script'); Golden = 'ui.map_gameover_win.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_gameover_lose.script'); Golden = 'ui.map_gameover_lose.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_demo_end.script'); Golden = 'ui.map_demo_end.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_skip.script'); Golden = 'ui.map_skip.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # le partite personalizzate: dal menu col mouse, e "custom N" dell'harness
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_menu.script'); Golden = 'ui.map_custom_menu.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_swamp.script'); Golden = 'ui.map_custom_swamp.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_forest.script'); Golden = 'ui.map_custom_forest.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # il disegno di debug (flag, griglie, caselle che non si passano)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug.script'); Golden = 'ui.map_debug.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_edit.script'); Golden = 'ui.map_edit.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.
@@ -119,9 +172,16 @@ function Build-Group($Group, [string]$Root) {
 # Esegue un job e da' le righe che il programma scrive; $null se serve il DATA.WAR e non c'e'.
 function Invoke-Job($Job, [string]$BuildDir, [string]$DataWar) {
   if ($Job.NeedsData -and (-not $DataWar -or -not (Test-Path $DataWar))) { return $null }
-  $arguments = @($Job.Args | ForEach-Object { if ($_ -eq '{DATA}') { $DataWar } else { $_ } })
-  $lines = & (Join-Path $BuildDir $Job.Exe) @arguments
-  if ($LASTEXITCODE -ne 0) { throw "$($Job.Exe) $($arguments -join ' ') e' uscito con $LASTEXITCODE" }
+  $scripts197 = Join-Path $script:Verifica '197\scripts'
+  $arguments = @($Job.Args | ForEach-Object { if ($_ -eq '{DATA}') { $DataWar } else { $_ -replace '\{SCRIPTS197\}', $scripts197 } })
+  # WorkDir: il programma cerca i suoi file (DATA.WAR, PNG dei font) nella cartella corrente, che e' quella della compilazione
+  if ($Job.WorkDir) { Push-Location $BuildDir }
+  try {
+    $lines = & (Join-Path $BuildDir $Job.Exe) @arguments
+    if ($LASTEXITCODE -ne 0) { throw "$($Job.Exe) $($arguments -join ' ') e' uscito con $LASTEXITCODE" }
+  } finally {
+    if ($Job.WorkDir) { Pop-Location }
+  }
   , @($lines)
 }
 

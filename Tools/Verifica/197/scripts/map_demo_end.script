@@ -1,0 +1,38 @@
+# Fine della demo: il trucco "Ides of march" (umani 1) apre il menu "Thanks for playing!" (testo in font 1 corpo 7), Menu
+# porta al menu principale; poi la seconda mappa (umani 2 e' l'ultima della demo) con "Yours truly" apre lo stesso menu
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Ides of march
+key enter down
+run 1 1
+key enter up
+run 6 1
+move 150 148
+run 3 1
+key m down
+run 1 1
+key m up
+run 90 1
+campaign human 2
+move 190 100
+run 25 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Yours truly
+key enter down
+run 1 1
+key enter up
+run 8 1
+move 150 148
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 80 1

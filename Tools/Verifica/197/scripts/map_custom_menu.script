@@ -1,0 +1,128 @@
+# Menu principale -> partita personalizzata (razze, mappa col mouse) -> la mappa: Ok, un secondo di nero, la mappa personalizzata con la camera sulla prima unita' del giocatore, gli obiettivi di una mappa personalizzata nel menu F10, ricomincia (stesse unita') e Continue dopo la vittoria (a un menu, non a un briefing)
+scene menu
+run 3 1
+key s down
+key s up
+run 2 1
+key u down
+key u up
+run 3 1
+move 165 105
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+move 165 105
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 105
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 105
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 105
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 165 125
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 125
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 125
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 240 145
+lbutton down
+run 1 1
+lbutton up
+run 1 1
+lbutton down
+run 1 1
+lbutton up
+run 1 1
+lbutton down
+run 1 1
+lbutton up
+run 1 1
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 165 145
+lbutton down
+run 1 1
+lbutton up
+run 1 1
+lbutton down
+run 1 1
+lbutton up
+run 2 1
+move 150 170
+run 2 1
+move 105 170
+run 2 1
+move 185 170
+run 2 1
+key c down
+key c up
+run 3 1
+key u down
+key u up
+run 3 1
+key o down
+key o up
+run 100 2
+move 190 100
+run 30 1
+key f10 down
+run 1 1
+key f10 up
+run 3 1
+key j down
+run 1 1
+key j up
+run 5 1
+key m down
+run 1 1
+key m up
+run 3 1
+key r down
+run 1 1
+key r up
+run 3 1
+key r down
+run 1 1
+key r up
+run 100 2
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Yours truly
+key enter down
+run 1 1
+key enter up
+run 6 1
+move 250 108
+run 2 1
+key c down
+run 1 1
+key c up
+run 100 2

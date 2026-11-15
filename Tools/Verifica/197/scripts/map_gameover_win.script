@@ -1,0 +1,34 @@
+# Fine della mappa con una vittoria (umani 1, il trucco "Yours truly"): la mappa si ferma, il menu "You are victorious!" con
+# Save (che non fa niente) e Continue, il mouse sopra, Continue porta al briefing della mappa dopo (umani 2) dopo un secondo
+# di nero
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Yours truly
+key enter down
+run 1 1
+key enter up
+run 6 1
+move 60 108
+run 3 1
+move 250 108
+run 3 1
+move 60 108
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+key s down
+run 1 1
+key s up
+run 4 1
+move 250 108
+lbutton down
+run 2 1
+lbutton up
+run 90 1
+run 60 30

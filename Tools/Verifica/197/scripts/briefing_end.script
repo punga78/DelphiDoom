@@ -1,0 +1,4 @@
+# Il briefing della prima missione degli umani finisce da solo dopo 24 s (e la pausa di un secondo prima della mappa)
+briefing human 117
+run 1450 1
+run 20 1

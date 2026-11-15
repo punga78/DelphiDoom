@@ -62,6 +62,18 @@ type
     ///   next row (as in the original); one past the last row is EWarException
     /// </summary>
     procedure Compose(const AFog: TWarFogOfWar; const AUnits: TList<TWarMapUnit>);
+    /// <summary>
+    ///   The first half of renderMinimap, for a game that draws the units from its own list (issue #197): the frame takes
+    ///   the terrain of the tiles in sight or in fog, black elsewhere
+    /// </summary>
+    procedure BeginFrame(const AFog: TWarFogOfWar);
+    /// <summary>
+    ///   The painting of one unit of renderMinimap: its tiles take the color (a unit past the right edge wraps to the next
+    ///   row, one past the last row is EWarException)
+    /// </summary>
+    procedure PaintUnit(ATileX, ATileY, ASizeX, ASizeY: Integer; const AColor: TWarMinimapColor);
+    /// <summary>wu_getUnitColorOnMinimap by the type and the player of the unit</summary>
+    class function UnitColorOf(AUnitType: Integer; APlayer: Byte): TWarMinimapColor; static;
     /// <summary>wu_getUnitColorOnMinimap: the town halls are yellow, the player green, the other three players red, the rest gray</summary>
     class function UnitColor(const AUnit: TWarMapUnit): TWarMinimapColor; static;
     /// <summary>The frame that is shown (frames[0])</summary>
@@ -164,24 +176,24 @@ begin
   PutPixel(FTerrain, LIndex, LColor.R, LColor.G, LColor.B, 255);
 end;
 
-class function TWarMinimap.UnitColor(const AUnit: TWarMapUnit): TWarMinimapColor;
+class function TWarMinimap.UnitColorOf(AUnitType: Integer; APlayer: Byte): TWarMinimapColor;
 begin
   Result.R := 211;
   Result.G := 211;
   Result.B := 211;
-  if (AUnit.UnitType = WAR_UNIT_TOWNHALL_HUMANS) or (AUnit.UnitType = WAR_UNIT_TOWNHALL_ORCS) then
+  if (AUnitType = WAR_UNIT_TOWNHALL_HUMANS) or (AUnitType = WAR_UNIT_TOWNHALL_ORCS) then
   begin
     Result.R := 255;
     Result.G := 255;
     Result.B := 0;
   end
-  else if AUnit.Player = 0 then
+  else if APlayer = 0 then
   begin
     Result.R := 0;
     Result.G := 199;
     Result.B := 0;
   end
-  else if AUnit.Player < 4 then
+  else if APlayer < 4 then
   begin
     Result.R := 199;
     Result.G := 0;
@@ -189,14 +201,14 @@ begin
   end;
 end;
 
-procedure TWarMinimap.Compose(const AFog: TWarFogOfWar; const AUnits: TList<TWarMapUnit>);
+class function TWarMinimap.UnitColor(const AUnit: TWarMapUnit): TWarMinimapColor;
+begin
+  Result := UnitColorOf(AUnit.UnitType, AUnit.Player);
+end;
+
+procedure TWarMinimap.BeginFrame(const AFog: TWarFogOfWar);
 var
   LIndex: Integer;
-  LUnit: TWarMapUnit;
-  LColor: TWarMinimapColor;
-  LX: Integer;
-  LY: Integer;
-  LPixel: Integer;
   LTile: TWarMapTile;
 begin
   // copy the terrain where the player has seen
@@ -208,23 +220,38 @@ begin
     else
       PutPixel(FFrame, LIndex, 0, 0, 0, 255);
   end;
+end;
+
+procedure TWarMinimap.PaintUnit(ATileX, ATileY, ASizeX, ASizeY: Integer; const AColor: TWarMinimapColor);
+var
+  LX: Integer;
+  LY: Integer;
+  LPixel: Integer;
+begin
+  for LY := 0 to ASizeY - 1 do
+    for LX := 0 to ASizeX - 1 do
+    begin
+      LPixel := (ATileY + LY) * WAR_MINIMAP_SIZE + (ATileX + LX);
+      if (LPixel < 0) or (LPixel >= WAR_MINIMAP_SIZE * WAR_MINIMAP_SIZE) then
+        raise EWarException.CreateFmt(SWarMapPixelOutside, [LPixel]);
+      FFrame[LPixel * 4 + 0] := AColor.R;
+      FFrame[LPixel * 4 + 1] := AColor.G;
+      FFrame[LPixel * 4 + 2] := AColor.B;
+    end;
+end;
+
+procedure TWarMinimap.Compose(const AFog: TWarFogOfWar; const AUnits: TList<TWarMapUnit>);
+var
+  LUnit: TWarMapUnit;
+begin
+  BeginFrame(AFog);
   for LUnit in AUnits do
   begin
     if LUnit.IsGone or (LUnit.UnitType = WAR_UNIT_HUMAN_CORPSE) or (LUnit.UnitType = WAR_UNIT_ORC_CORPSE) then
       Continue;
     if not (AFog.IsUnitPartiallyIn(LUnit, wtsVisible) or LUnit.HasBeenSeen) then
       Continue;
-    LColor := UnitColor(LUnit);
-    for LY := 0 to LUnit.SizeY - 1 do
-      for LX := 0 to LUnit.SizeX - 1 do
-      begin
-        LPixel := (LUnit.TileY + LY) * WAR_MINIMAP_SIZE + (LUnit.TileX + LX);
-        if (LPixel < 0) or (LPixel >= WAR_MINIMAP_SIZE * WAR_MINIMAP_SIZE) then
-          raise EWarException.CreateFmt(SWarMapPixelOutside, [LPixel]);
-        FFrame[LPixel * 4 + 0] := LColor.R;
-        FFrame[LPixel * 4 + 1] := LColor.G;
-        FFrame[LPixel * 4 + 2] := LColor.B;
-      end;
+    PaintUnit(LUnit.TileX, LUnit.TileY, LUnit.SizeX, LUnit.SizeY, UnitColor(LUnit));
   end;
 end;
 

@@ -1,0 +1,8 @@
+# Mappa della campagna degli orchi (1) e poi la seconda degli umani: il pannello e la minimappa di un'altra razza
+campaign orc 1
+move 190 100
+run 60 1
+campaign human 2
+run 60 1
+campaign orc 2
+run 60 1

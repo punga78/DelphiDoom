@@ -1,0 +1,31 @@
+# Due eserciti (umani 1, comando "unit" dell'harness): fanti e un arciere contro due soldati e un lanciere degli orchi; si
+# selezionano i nostri con un rettangolo e si attacca col tasto A e un clic; si guardano proiettili (frecce e lance), colpi,
+# morti, corpi, il suono di ogni colpo (un'entita' e un numero estratto) e le animazioni per 700 fotogrammi
+campaign human 1
+move 190 100
+run 10 1
+unit 0 150 90 0
+unit 0 160 100 0
+unit 8 150 110 0
+unit 1 215 95 1
+unit 1 222 105 1
+unit 9 225 90 1
+run 5 1
+move 120 70
+run 3 1
+lbutton down
+run 2 1
+move 175 125
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 218 98
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 600 3

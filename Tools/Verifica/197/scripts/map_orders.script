@@ -1,0 +1,33 @@
+# Ordini col clic destro (umani 1): si seleziona un'unita' e si manda in un punto della mappa, poi tutte le unita' in un altro, e
+# un clic destro sul minimap; si guarda cosa fanno i 300 fotogrammi dopo (percorsi, animazioni, nebbia che si apre, il suono
+# del riconoscimento che prende un'entita' e un numero)
+campaign human 1
+move 190 100
+run 5 1
+move 176 99
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 250 60
+rbutton down
+run 2 1
+rbutton up
+run 120 1
+move 100 30
+lbutton down
+run 2 1
+move 290 185
+run 2 1
+lbutton up
+run 4 1
+move 150 170
+rbutton down
+run 2 1
+rbutton up
+run 150 1
+move 30 40
+rbutton down
+run 2 1
+rbutton up
+run 150 1

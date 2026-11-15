@@ -1,0 +1,4 @@
+# Mappa della campagna (umani 1) con il mouse al centro della mappa: nessuno scorrimento, nebbia, unita', minimappa, pannello
+campaign human 1
+move 190 100
+run 40 1

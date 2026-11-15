@@ -1,0 +1,27 @@
+# Pausa con Ctrl+P: le animazioni e il testo del briefing si fermano, il tempo reale va avanti, poi si riprende
+briefing human 117
+run 30 1
+key ctrl down
+key p down
+run 1 1
+key p up
+run 2 1
+key ctrl up
+run 40 1
+key ctrl down
+key p down
+run 1 1
+key p up
+run 2 1
+key ctrl up
+run 30 1
+# Ctrl+Shift+P non mette in pausa
+key ctrl down
+key shift down
+key p down
+run 1 1
+key p up
+run 2 1
+key shift up
+key ctrl up
+run 10 1

@@ -359,7 +359,8 @@ begin
   FBlitter.Draw(FSource, FBlit);
   // the red pixel at half opacity over blue
   Assert.AreEqual<Integer>(128, Pixel(1, 1).R);
-  Assert.AreEqual<Integer>(100, Pixel(1, 1).B);
+  // SDL: 0 * 128 / 255 + 200 * 127 / 255 = 99 (every product is cut on its own)
+  Assert.AreEqual<Integer>(99, Pixel(1, 1).B);
   Assert.AreEqual<Integer>(255, Pixel(1, 1).A);
   // a source pixel with no alpha leaves what is there
   FSource.Pixels[3] := 0;

@@ -1,0 +1,304 @@
+# Trucchi sulla mappa (umani 1): il pannello si apre con Invio nella barra in basso ("MSG: ..." e il cursore), si scrive con
+# "text", si corregge con le frecce, Home, End, Canc, Backspace e Tab, Esc lo chiude senza applicare, Invio applica; il
+# messaggio dura tre secondi. Oro e legna, incantesimi (un mago con i suoi bottoni) e miglioramenti, la nebbia che si
+# spegne e si riaccende, trucchi che non fanno niente o che non esistono, "Corwin of Amber" che li spegne e li riaccende,
+# volumi (le opzioni del menu F10 li mostrano), velocita' del gioco, modi di modifica con i loro messaggi, un'unita'
+# aggiunta con un clic
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 3 1
+text Pot of gol
+run 2 1
+key left down
+run 1 1
+key left up
+run 1 1
+text Z
+run 1 1
+key backspace down
+run 1 1
+key backspace up
+run 1 1
+key home down
+run 1 1
+key home up
+run 1 1
+key delete down
+run 1 1
+key delete up
+run 1 1
+text P
+run 1 1
+key end down
+run 1 1
+key end up
+run 1 1
+text d
+run 2 1
+key enter down
+run 1 1
+key enter up
+run 8 1
+run 190 10
+# Esc chiude senza applicare; un tasto di scorrimento non muove la mappa con la barra aperta
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Sally Shears
+key right down
+run 6 1
+key right up
+run 2 1
+key esc down
+run 1 1
+key esc up
+run 4 1
+# Tab, e i caratteri che non si possono scrivere (il pannello e' pieno a 31)
+key enter down
+run 1 1
+key enter up
+run 2 1
+key tab down
+run 1 1
+key tab up
+run 1 1
+text 0123456789012345678901234567890123456789
+run 3 1
+key esc down
+run 1 1
+key esc up
+run 4 1
+# la nebbia si spegne e si riaccende
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Sally Shears
+key enter down
+run 1 1
+key enter up
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text sally shears
+key enter down
+run 1 1
+key enter up
+run 20 1
+# un trucco che non esiste, uno con la differenza di maiuscole, "Hurry up guys" e "There can be only one"
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Trucco che non c'e'
+key enter down
+run 1 1
+key enter up
+run 5 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Hurry up guys
+key enter down
+run 1 1
+key enter up
+run 5 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text There can be only one
+key enter down
+run 1 1
+key enter up
+run 5 1
+# incantesimi e miglioramenti, e un mago con i suoi bottoni
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Eye of newt
+key enter down
+run 1 1
+key enter up
+run 3 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Iron forge
+key enter down
+run 1 1
+key enter up
+run 3 1
+unit 10 150 100 0
+unit 0 160 105 0
+run 5 1
+move 150 102
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 10 1
+move 40 160
+run 4 1
+# "Corwin of Amber" spegne i trucchi: l'oro non cresce piu'; di nuovo e si riaccendono
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Corwin of Amber
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Pot of gold
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text corwin of amber
+key enter down
+run 1 1
+key enter up
+run 6 1
+# volumi e velocita': Music vol 25, Sound vol 50, Speed 3 (il gioco corre) e Scale 2
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Music vol 25
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Sound vol 50
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Speed 3
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Scale 2
+key enter down
+run 1 1
+key enter up
+run 30 1
+# i volumi nel menu F10 (Opzioni)
+key f10 down
+run 1 1
+key f10 up
+run 3 1
+key o down
+run 1 1
+key o up
+run 4 1
+key c down
+run 1 1
+key c up
+run 3 1
+key c down
+run 1 1
+key c up
+run 10 1
+# i modi di modifica e i loro messaggi
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit trees
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit off
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit footman
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 200 120
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit town hall orcs
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit off
+key enter down
+run 1 1
+key enter up
+run 60 5

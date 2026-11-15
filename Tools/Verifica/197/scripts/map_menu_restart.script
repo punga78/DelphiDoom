@@ -1,0 +1,40 @@
+# Ricomincia la mappa dal menu F10: prima si cambia la velocita' del gioco (Faster) nelle opzioni, poi Ricomincia chiede
+# conferma e riparte la stessa mappa dopo un secondo di nero con le velocita' di prima (normali)
+campaign human 1
+move 190 100
+run 25 1
+key f10 down
+run 1 1
+key f10 up
+run 3 1
+key o down
+run 1 1
+key o up
+run 3 1
+move 220 57
+lbutton down
+run 2 1
+lbutton up
+run 2 1
+key o down
+run 1 1
+key o up
+run 3 1
+key c down
+run 1 1
+key c up
+run 30 1
+key f10 down
+run 1 1
+key f10 up
+run 3 1
+key r down
+run 1 1
+key r up
+run 3 1
+move 80 108
+run 2 1
+key r down
+run 1 1
+key r up
+run 80 1

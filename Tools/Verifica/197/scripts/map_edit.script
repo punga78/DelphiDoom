@@ -1,0 +1,165 @@
+# Modi dei trucchi che agiscono con un clic sulla mappa (umani 1): "Add unit" (un fante, un grugnito del nemico, un cadavere di
+# umano, una cosa che non si puo' mettere dove c'e' gia' qualcosa), "Rain of fire", "Poison cloud" e "Raise dead" (lo
+# scheletro nasce dove c'e' il cadavere); un modo si spegne con lo stesso trucco o con "Add unit off"
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit footman
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 200 110
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit grunt
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 240 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 250 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit corpse humans
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 170 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 20 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Add unit off
+key enter down
+run 1 1
+key enter up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 245 115
+lbutton down
+run 2 1
+lbutton up
+run 120 4
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Poison cloud
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 245 115
+lbutton down
+run 2 1
+lbutton up
+run 120 4
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Poison cloud
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Raise dead
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 172 128
+lbutton down
+run 2 1
+lbutton up
+run 60 3
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Raise dead
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit roads
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit nothing
+key enter down
+run 1 1
+key enter up
+run 60 4

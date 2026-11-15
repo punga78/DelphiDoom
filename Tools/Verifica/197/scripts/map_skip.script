@@ -1,0 +1,33 @@
+# Salto di mappa con i trucchi "Human N" e "Orc N" (umani 1): solo 1 e 2 sono permessi (3 e 0 non fanno niente), il
+# briefing della mappa arriva dopo un secondo di nero; "Orc 2" da una mappa degli orchi
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Human 3
+key enter down
+run 1 1
+key enter up
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Orc 0
+key enter down
+run 1 1
+key enter up
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Orc 2
+key enter down
+run 1 1
+key enter up
+run 90 1
+run 40 20
