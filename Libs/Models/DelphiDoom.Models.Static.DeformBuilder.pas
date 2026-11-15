@@ -17,6 +17,7 @@ unit DelphiDoom.Models.Static.DeformBuilder;
 interface
 
 uses
+  DelphiDoom.IdLib.Core.Intf,
   DelphiDoom.Models.Static.Types,
   DelphiDoom.Models.Static.Deform.Types;
 
@@ -25,7 +26,7 @@ type
   ///   Builds the deform info of a mesh (R_BuildDeformInfo): the silhouette remap of the
   ///   vertexes with the same position, the duplication of the vertexes that are used by both
   ///   texture polarities, the pairs of duplicated vertexes and, if asked, the dominant
-  ///   triangles. The silhouette edges are not built. It has no state.
+  ///   triangles, and the silhouette edges. It has no state.
   /// </summary>
   TStaticDeformBuilder = class
   strict private
@@ -45,7 +46,7 @@ type
     ///   a vertex are taken in the order they appear: it matters only for equal areas.
     /// </summary>
     class function Build(const AVerts: TArray<TStaticDrawVert>; const AIndexes: TArray<Integer>;
-      const AUseUnsmoothedTangents: Boolean): TStaticDeformInfo; static;
+      const AUseUnsmoothedTangents: Boolean; const ALog: IIdLibLog = nil): TStaticDeformInfo; static;
     /// <summary>R_CreateSilIndexes: every index replaced by the first vertex with the same position</summary>
     class function CreateSilIndexes(const AVerts: TArray<TStaticDrawVert>;
       const AIndexes: TArray<Integer>): TArray<Integer>; static;
@@ -71,7 +72,8 @@ uses
   System.Generics.Collections,
   System.Generics.Defaults,
   DelphiDoom.IdLib.Containers.HashIndex,
-  DelphiDoom.IdLib.Math.Vec3;
+  DelphiDoom.IdLib.Math.Vec3,
+  DelphiDoom.Models.Static.SilEdgeBuilder;
 
 { TStaticDeformBuilder }
 
@@ -327,16 +329,19 @@ begin
 end;
 
 class function TStaticDeformBuilder.Build(const AVerts: TArray<TStaticDrawVert>;
-  const AIndexes: TArray<Integer>; const AUseUnsmoothedTangents: Boolean): TStaticDeformInfo;
+  const AIndexes: TArray<Integer>; const AUseUnsmoothedTangents: Boolean; const ALog: IIdLibLog): TStaticDeformInfo;
 var
   LVerts: TArray<TStaticDrawVert>;
   LIndexes: TArray<Integer>;
+  LPerfectHull: Boolean;
 begin
   RangeCheckIndexes(Length(AVerts), AIndexes);
   LVerts := Copy(AVerts);
   LIndexes := Copy(AIndexes);
   Result.NumSourceVerts := Length(AVerts);
   Result.SilIndexes := CreateSilIndexes(LVerts, LIndexes);
+  // the edges are not removed when they are coplanar: they can deform to silhouettes
+  Result.SilEdges := TStaticSilEdgeBuilder.Identify(Result.SilIndexes, LPerfectHull, ALog);
   DuplicateMirroredVertexes(LVerts, LIndexes, Result.MirroredVerts);
   Result.NumOutputVerts := Length(LVerts);
   Result.DupVerts := CreateDupVerts(Length(LVerts), LIndexes, Result.SilIndexes);

@@ -1,0 +1,6 @@
+# label kind file merge fast  (the LWOB files of the issue #236, made by BuildCubeLwob and BuildMultiLwob of StaticBuilders)
+cube.lwob lwo cube.lwob 1 0
+cube_flag.lwob lwo cube_flag.lwob 1 0
+cube_sman.lwob lwo cube_sman.lwob 1 0
+multi.lwob lwo multi.lwob 1 0
+multi.lwob.nomerge lwo multi.lwob 0 0

@@ -44,6 +44,11 @@ type
     [TestCase('superfici unite lwo', 'merge.lwo,merge.lwo,1,0')]
     [TestCase('superfici separate lwo', 'merge.lwo.nomerge,merge.lwo,0,0')]
     [TestCase('gruppi di smussatura lwo', 'groups.lwo,groups.lwo,1,0')]
+    [TestCase('cubo lwob', 'cube.lwob,cube.lwob,1,0')]
+    [TestCase('cubo lwob con il flag di smussatura', 'cube_flag.lwob,cube_flag.lwob,1,0')]
+    [TestCase('cubo lwob con SMAN', 'cube_sman.lwob,cube_sman.lwob,1,0')]
+    [TestCase('lwob con tre superfici', 'multi.lwob,multi.lwob,1,0')]
+    [TestCase('lwob con tre superfici separate', 'multi.lwob.nomerge,multi.lwob,0,0')]
     [TestCase('cubo ase', 'cube.ase,cube.ase,1,0')]
     [TestCase('cubo ase fast', 'cube.ase.fast,cube.ase,1,1')]
     [TestCase('cubo ase con normali', 'cube_normals.ase,cube_normals.ase,1,0')]
@@ -134,7 +139,12 @@ begin
   LOptions := TStaticLoadOptions.Default;
   LOptions.MergeSurfaces := AMerge <> 0;
   LOptions.FastLoad := AFast <> 0;
-  LLoader := TStaticModelFactory.CreateLoaderFor(AFile, LOptions);
+  // an LWOB has the extension .lwo in the game: the loader is chosen by it, the data file has another
+  // name only to tell the two formats apart in the repository
+  if ExtractFileExt(AFile) = '.lwob' then
+    LLoader := TStaticModelFactory.CreateLoaderFor(ChangeFileExt(AFile, '.lwo'), LOptions)
+  else
+    LLoader := TStaticModelFactory.CreateLoaderFor(AFile, LOptions);
   LModel := LLoader.Load(StaticDataFile(AFile), AFile);
 
   Assert.AreEqual(StrToInt(Text(ACase + ' surfaces')), LModel.NumSurfaces, ACase + ': surfaces');

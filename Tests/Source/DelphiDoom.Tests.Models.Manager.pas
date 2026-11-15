@@ -22,7 +22,7 @@ uses
 
 type
   /// <summary>
-  ///   R_CleanupTriangles (without the silhouette edges) and the default cube against the real
+  ///   R_CleanupTriangles (the silhouette edges have their own test) and the default cube against the real
   ///   functions of tr_trisurf.cpp and Model.cpp compiled with bcc32c (Tests\Data\Models\deform)
   /// </summary>
   [TestFixture]

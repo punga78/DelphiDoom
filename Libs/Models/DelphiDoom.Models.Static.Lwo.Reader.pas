@@ -29,9 +29,11 @@ type
   /// <summary>
   ///   Reads a LightWave 6 object (FORM LWO2): layers with points, polygons and vertex maps, the
   ///   tags and the surfaces. As lwGetObject it also computes the normals of the polygons and of
-  ///   their vertexes (smoothing groups and angle of the surface). Not read: LWOB (LightWave 5),
-  ///   envelopes (ENVL), clips (CLIP) and everything in a surface but its colour and smoothing
-  ///   angle. It has no state.
+  ///   their vertexes (smoothing groups and angle of the surface). An LWOB (FORM LWOB, LightWave 5)
+  ///   is read as lwGetObject5 does: one layer, the points, the polygons with the surface number,
+  ///   the surface names (SRFS) and the colour and smoothing of every SURF. Not read: envelopes
+  ///   (ENVL), clips (CLIP) and everything in a surface but its colour and smoothing angle (the
+  ///   engine does not use the other channels). It has no state.
   /// </summary>
   TLwoReader = class
   public
@@ -316,6 +318,125 @@ begin
   AState.Obj.Surfaces[High(AState.Obj.Surfaces)] := LSurface;
 end;
 
+/// <summary>
+///   lwGetPolygons5: the POLS chunk of an LWOB. Every polygon is its vertex count (2 bytes), the
+///   point indexes (2 bytes each) and the surface (a signed 2 byte number, 1 based; a negative one
+///   is followed by the count of the detail polygons, which are not read as polygons). The original
+///   reads beyond the chunk when it is cut short; here it is an error.
+/// </summary>
+procedure ReadPolygons5(var AState: TReadState; const AChunk: TBytes; const AOffset: Integer);
+var
+  LReader: TStaticByteReader;
+  LCount, LIndex, LVert, LNumVerts, LSurface, LOld, LPosition: Integer;
+begin
+  if Length(AChunk) = 0 then
+    Exit;
+  LReader := TStaticByteReader.Create(AChunk);
+  try
+    // count the polygons first, so that a damaged chunk raises before anything is added
+    LCount := 0;
+    LPosition := 0;
+    while LPosition < Length(AChunk) do
+    begin
+      if LPosition + 2 > Length(AChunk) then
+        Fail(Id('P', 'O', 'L', 'S'), 'a polygon is cut short', AOffset);
+      LReader.Position := LPosition;
+      LNumVerts := LReader.ReadU2;
+      Inc(LPosition, 2 + 2 * LNumVerts);
+      if LPosition + 2 > Length(AChunk) then
+        Fail(Id('P', 'O', 'L', 'S'), 'a polygon is cut short', AOffset);
+      LReader.Position := LPosition;
+      LSurface := SmallInt(LReader.ReadU2);
+      Inc(LPosition, 2);
+      // detail polygons
+      if LSurface < 0 then
+        Inc(LPosition, 2);
+      Inc(LCount);
+    end;
+    LReader.Position := 0;
+    LOld := Length(AState.Obj.Layers[AState.Current].Polygons);
+    AState.PolygonOffset := LOld;
+    SetLength(AState.Obj.Layers[AState.Current].Polygons, LOld + LCount);
+    for LIndex := 0 to LCount - 1 do
+      with AState.Obj.Layers[AState.Current].Polygons[LOld + LIndex] do
+      begin
+        LNumVerts := LReader.ReadU2;
+        Kind := Id('F', 'A', 'C', 'E');
+        Flags := 0;
+        SetLength(Verts, LNumVerts);
+        for LVert := 0 to LNumVerts - 1 do
+          Verts[LVert].Index := LReader.ReadU2 + AState.PointOffset;
+        LSurface := SmallInt(LReader.ReadU2);
+        if LSurface < 0 then
+        begin
+          LSurface := -LSurface;
+          LReader.Skip(2);
+        end;
+        Surf := LSurface - 1;
+      end;
+  finally
+    LReader.Free;
+  end;
+end;
+
+/// <summary>
+///   lwGetSurface5: a SURF chunk of an LWOB. The sub chunks are an id and a 2 byte size; the colour
+///   is 3 bytes, the flags have the smoothing bit (4, which sets the angle to 1.56207) and SMAN is a
+///   float. The textures, shaders and the other channels are skipped.
+/// </summary>
+procedure ReadSurface5(var AState: TReadState; const AChunk: TBytes; const AOffset: Integer);
+var
+  LReader: TStaticByteReader;
+  LSurface: TLwoSurface;
+  LSize, LSubSize, LStart, LRead: Integer;
+  LSubId: Cardinal;
+  LFlags: Word;
+  LValue: Single;
+begin
+  LSurface.Red := 0.78431;
+  LSurface.Green := 0.78431;
+  LSurface.Blue := 0.78431;
+  LSurface.Smooth := 0;
+  LReader := TStaticByteReader.Create(AChunk);
+  try
+    LSurface.Name := LReader.ReadS0(LSize);
+    while LReader.Position < Length(AChunk) do
+    begin
+      LSubId := LReader.ReadU4;
+      LSubSize := LReader.ReadU2;
+      LSubSize := LSubSize + (LSubSize and 1);
+      LStart := LReader.Position;
+      if LSubId = Id('C', 'O', 'L', 'R') then
+      begin
+        LValue := LReader.ReadU1;
+        LSurface.Red := LValue / 255.0;
+        LValue := LReader.ReadU1;
+        LSurface.Green := LValue / 255.0;
+        LValue := LReader.ReadU1;
+        LSurface.Blue := LValue / 255.0;
+      end
+      else if LSubId = Id('F', 'L', 'A', 'G') then
+      begin
+        LFlags := LReader.ReadU2;
+        if (LFlags and 4) <> 0 then
+          LSurface.Smooth := 1.56207;
+      end
+      else if LSubId = Id('S', 'M', 'A', 'N') then
+        LSurface.Smooth := LReader.ReadF4;
+      LRead := LReader.Position - LStart;
+      if LRead > LSubSize then
+        Fail(Id('S', 'U', 'R', 'F'), 'a sub chunk is too short', AOffset);
+      LReader.Position := LStart + LSubSize;
+      if LReader.Position > Length(AChunk) then
+        Fail(Id('S', 'U', 'R', 'F'), 'a sub chunk is out of the chunk', AOffset);
+    end;
+  finally
+    LReader.Free;
+  end;
+  SetLength(AState.Obj.Surfaces, Length(AState.Obj.Surfaces) + 1);
+  AState.Obj.Surfaces[High(AState.Obj.Surfaces)] := LSurface;
+end;
+
 function SurfaceNamed(const AObject: TLwoObject; const AName: AnsiString): Integer;
 begin
   for Result := 0 to High(AObject.Surfaces) do
@@ -518,6 +639,7 @@ var
   LId, LType: Cardinal;
   LFormSize, LChunkSize, LChunkStart: Integer;
   LChunk: TBytes;
+  LIsLwob: Boolean;
 begin
   LReader := TStaticByteReader.Create(AData);
   try
@@ -528,13 +650,15 @@ begin
     LType := LReader.ReadU4;
     if LId <> Id('F', 'O', 'R', 'M') then
       raise EStaticModelException.CreateAtOffset(SStaticLwoNotLwo, 12);
-    if LType = Id('L', 'W', 'O', 'B') then
-      raise EStaticModelException.CreateAtOffset(SStaticLwoLwob, 12);
-    if LType <> Id('L', 'W', 'O', '2') then
+    // an LWOB (LightWave 5) is read by lwGetObject5, which has one layer and no vertex maps
+    LIsLwob := LType = Id('L', 'W', 'O', 'B');
+    if (not LIsLwob) and (LType <> Id('L', 'W', 'O', '2')) then
       raise EStaticModelException.CreateAtOffset(SStaticLwoNotLwo, 12);
 
     Initialize(LState);
     SetLength(LState.Obj.Layers, 1);
+    if LIsLwob then
+      LState.Obj.LayerCount := 1;
     LId := LReader.ReadU4;
     LChunkSize := Integer(LReader.ReadU4);
     while True do
@@ -544,7 +668,19 @@ begin
         raise EStaticModelException.CreateAtOffset(Format(SStaticNegativeSize, [LChunkSize, LChunkStart]), LChunkStart);
       LChunkSize := LChunkSize + (LChunkSize and 1);
       LChunk := LReader.ReadBytes(LChunkSize);
-      if LId = Id('L', 'A', 'Y', 'R') then
+      if LIsLwob then
+      begin
+        if LId = Id('P', 'N', 'T', 'S') then
+          ReadPoints(LState, LChunk)
+        else if LId = Id('P', 'O', 'L', 'S') then
+          ReadPolygons5(LState, LChunk, LChunkStart)
+        else if LId = Id('S', 'R', 'F', 'S') then
+          ReadTags(LState, LChunk)
+        else if LId = Id('S', 'U', 'R', 'F') then
+          ReadSurface5(LState, LChunk, LChunkStart);
+        // every other chunk (CRVS, PCHS, SRFS of the details...) is skipped
+      end
+      else if LId = Id('L', 'A', 'Y', 'R') then
         ReadLayer(LState, LChunk, LId, LChunkStart)
       else if LId = Id('P', 'N', 'T', 'S') then
         ReadPoints(LState, LChunk)

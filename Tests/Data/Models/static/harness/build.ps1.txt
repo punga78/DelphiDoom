@@ -1,0 +1,59 @@
+# Issues #105 and #236 (part B): rebuilds static.golden.txt with the REAL Model_lwo.cpp, Model_ase.cpp and the conversion
+# of Model.cpp of Doom 3 (the same program that the README of Tests\Data\Models\static describes), in C:\harness\static.
+#
+#   - renderer\driver.cpp, renderer\precompiled.h (the stub of idlib): the two files of this folder;
+#   - renderer\Model_lwo.cpp/.h, Model_ase.cpp/.h: copies of Reference\doom3\neo\renderer (read only);
+#   - renderer\convert.inc = Model.cpp from "typedef struct matchVert_s" to the end of ConvertLWOToModelSurfaces,
+#     renderer\merge.inc = R_MergeSurfaceList and R_MergeTriangles of tr_trisurf.cpp;
+#   - idlib\: a copy of Reference\doom3\neo\idlib, whose precompiled.h is replaced by the stub.
+# bcc32c is used WITHOUT -std=c++14. The jobs are "label kind file merge fast", one per line (the LWOB files of
+# Tests\Data\Models\static were added by the issue #236). Where the C++ leaves memory uninitialized the harness uses zeroes.
+param([string]$Repo = 'C:\Progetti\DelphiDoom', [string]$Reference = 'C:\Progetti\DelphiDoom\Reference',
+      [string]$Work = 'C:\harness\static')
+$ErrorActionPreference = 'Continue'   # bcc32c writes a warning on stderr at every call: the exit codes are checked
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+$ren = "$Reference\doom3\neo\renderer"
+$src = "$Repo\Tests\Data\Models\static"
+New-Item -ItemType Directory -Force "$Work\renderer" | Out-Null
+if (-not (Test-Path "$Work\idlib")) { Copy-Item "$Reference\doom3\neo\idlib" "$Work\idlib" -Recurse }
+Copy-Item "$src\harness\precompiled.h.txt" "$Work\idlib\precompiled.h" -Force
+Copy-Item "$src\harness\driver.cpp.txt" "$Work\renderer\driver.cpp" -Force
+foreach ($n in 'Model_lwo.cpp', 'Model_lwo.h', 'Model_ase.cpp', 'Model_ase.h') { Copy-Item "$ren\$n" "$Work\renderer\$n" -Force }
+
+function Cut([string]$file, [string]$startPattern, [string]$endPattern) {
+  $lines = Get-Content $file
+  $s = -1; $e = -1
+  for ($i = 0; $i -lt $lines.Count; $i++) {
+    if ($s -lt 0 -and $lines[$i] -match $startPattern) { $s = $i }
+    elseif ($s -ge 0 -and $lines[$i] -match $endPattern) { $e = $i; break }
+  }
+  if ($s -lt 0 -or $e -lt 0) { throw "not found: $startPattern / $endPattern" }
+  return $lines[$s..$e]
+}
+# convert.inc: up to the "}" that closes ConvertLWOToModelSurfaces, which is followed by the header of ConvertLWOToASE
+$model = Get-Content "$ren\Model.cpp"
+$start = 0; while ($model[$start] -notmatch '^typedef struct matchVert_s') { $start++ }
+$toAse = 0; while ($model[$toAse] -notmatch '^idRenderModelStatic::ConvertLWOToASE') { $toAse++ }
+$end = $toAse - 1; while ($model[$end] -ne '}') { $end-- }
+Set-Content "$Work\renderer\convert.inc" $model[$start..$end] -Encoding ascii
+$tri = Get-Content "$ren\tr_trisurf.cpp"
+$m1 = 0; while ($tri[$m1] -notmatch '^srfTriangles_t\s+\*R_MergeSurfaceList') { $m1++ }
+$m2 = 0; while ($tri[$m2] -notmatch '^srfTriangles_t\s+\*R_MergeTriangles') { $m2++ }
+$m2e = $m2; while ($tri[$m2e] -ne '}') { $m2e++ }
+Set-Content "$Work\renderer\merge.inc" ($tri[$m1..($m2e)]) -Encoding ascii
+
+$jobs = @(
+  'cube.lwo lwo cube.lwo 1 0', 'cube.lwo.fast lwo cube.lwo 1 1', 'cube_smooth.lwo lwo cube_smooth.lwo 1 0',
+  'cube_colors.lwo lwo cube_colors.lwo 1 0', 'weld.lwo lwo weld.lwo 1 0', 'weld.lwo.fast lwo weld.lwo 1 1',
+  'merge.lwo lwo merge.lwo 1 0', 'merge.lwo.nomerge lwo merge.lwo 0 0', 'groups.lwo lwo groups.lwo 1 0',
+  'cube.ase ase cube.ase 1 0', 'cube.ase.fast ase cube.ase 1 1', 'cube_normals.ase ase cube_normals.ase 1 0',
+  'two_objects.ase ase two_objects.ase 1 0', 'two_objects.ase.nomerge ase two_objects.ase 0 0', 'colors.ase ase colors.ase 1 0')
+$jobs += Get-Content "$src\harness\jobs_lwob.txt" | Where-Object { $_ -and $_ -notmatch '^#' }
+$jobLines = $jobs | ForEach-Object { $parts = $_ -split ' '; "$($parts[0]) $($parts[1]) $src\$($parts[2]) $($parts[3]) $($parts[4])" }
+Set-Content "$Work\jobs.txt" $jobLines -Encoding ascii
+
+Set-Location "$Work\renderer"
+$out = & $B -w -I. -I..\idlib -o "$Work\drv.exe" driver.cpp Model_lwo.cpp Model_ase.cpp ..\idlib\containers\HashIndex.cpp ..\idlib\math\Math.cpp 2>&1
+$out | Select-String 'error' | Select-Object -First 15 | ForEach-Object { $_.Line }
+if (-not (Test-Path "$Work\drv.exe")) { throw 'build failed' }
+& "$Work\drv.exe" "$Work\jobs.txt" | Set-Content "$src\static.golden.txt" -Encoding UTF8

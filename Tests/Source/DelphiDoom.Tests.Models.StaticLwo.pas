@@ -13,7 +13,9 @@ uses
   System.SysUtils,
   DUnitX.TestFramework,
   DelphiDoom.Models.Static.Types,
-  DelphiDoom.Models.Static.Intf;
+  DelphiDoom.Models.Static.Intf,
+  DelphiDoom.Models.Static.Lwo.Types,
+  DelphiDoom.Models.Static.Lwo.Reader;
 
 type
   [TestFixture]
@@ -82,6 +84,12 @@ type
     procedure DovrebbeSaltareICapitoliSconosciutiEQuelliDiSuperficieNonUsati;
     [Test]
     procedure DovrebbeLeggereIlCuboDelFileDiDati;
+    [Test]
+    procedure DovrebbeLeggereIFileLwobDiDati;
+    [Test]
+    procedure DovrebbeLeggereLeSuperficiELePosizioniDiUnLwob;
+    [Test]
+    procedure DovrebbeRifiutareUnLwobTroncatoOConIndiciFuoriDaiPunti;
   end;
 
 implementation
@@ -465,9 +473,19 @@ begin
 end;
 
 procedure TTestStaticLwo.DovrebbeRifiutareLwobConUnMessaggio;
+var
+  LRaised: Boolean;
 begin
-  CheckFails(TLwoFileBuilder.Join([TBytes(BytesOf(AnsiString('FORM'))), TLwoFileBuilder.U4(4),
-    TBytes(BytesOf(AnsiString('LWOB')))]), 'LWOB');
+  // an LWOB is read now (lwGetObject5): without a single chunk there is nothing to read
+  LRaised := False;
+  try
+    Load(TLwoFileBuilder.Join([TBytes(BytesOf(AnsiString('FORM'))), TLwoFileBuilder.U4(4),
+      TBytes(BytesOf(AnsiString('LWOB')))]));
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'empty LWOB');
 end;
 
 procedure TTestStaticLwo.DovrebbeRifiutareUnChunkTroncatoDandoLOffset;
@@ -651,6 +669,74 @@ begin
   LModel := Load(LData);
   Assert.AreEqual(24, LModel.TotalVerts);
   Assert.IsTrue(TArrayEquals(LData, BuildCubeLwo(0)), 'the data file is the one of the builder');
+end;
+
+procedure TTestStaticLwo.DovrebbeLeggereIFileLwobDiDati;
+begin
+  Assert.IsTrue(TArrayEquals(StaticDataFile('cube.lwob'), BuildCubeLwob(-1, 0)), 'cube.lwob');
+  Assert.IsTrue(TArrayEquals(StaticDataFile('cube_flag.lwob'), BuildCubeLwob(4, 0)), 'cube_flag.lwob');
+  Assert.IsTrue(TArrayEquals(StaticDataFile('cube_sman.lwob'), BuildCubeLwob(0, 1.2)), 'cube_sman.lwob');
+  Assert.IsTrue(TArrayEquals(StaticDataFile('multi.lwob'), BuildMultiLwob), 'multi.lwob');
+  Assert.AreEqual(24, Load(StaticDataFile('cube.lwob')).TotalVerts);
+end;
+
+procedure TTestStaticLwo.DovrebbeLeggereLeSuperficiELePosizioniDiUnLwob;
+var
+  LReader: TLwoReader;
+  LObject: TLwoObject;
+begin
+  LReader := TLwoReader.Create;
+  try
+    LObject := LReader.Read(BuildMultiLwob);
+  finally
+    LReader.Free;
+  end;
+  Assert.AreEqual<Integer>(1, LObject.LayerCount);
+  Assert.AreEqual<Integer>(3, Length(LObject.Tags));
+  Assert.AreEqual<Integer>(3, Length(LObject.Surfaces));
+  Assert.AreEqual('TEX/A', string(LObject.Surfaces[1].Name));
+  Assert.AreEqual<Integer>(4, Length(LObject.Layers[0].Points));
+  // four triangles, the quad, the polygon with the negative surface and the last one
+  Assert.AreEqual<Integer>(7, Length(LObject.Layers[0].Polygons));
+  Assert.AreEqual<Integer>(4, Length(LObject.Layers[0].Polygons[4].Verts));
+  Assert.AreEqual<Cardinal>($46414345, LObject.Layers[0].Polygons[0].Kind);
+  // the surface of a polygon is its number minus one, whatever its sign
+  Assert.AreEqual<Integer>(2, LObject.Layers[0].Polygons[5].Surf);
+  // the colour is the byte over 255; the flag 4 sets the smoothing angle
+  Assert.AreEqual(1.0, LObject.Surfaces[0].Red, 0.0);
+  Assert.AreEqual(0.0, LObject.Surfaces[0].Smooth, 0.0);
+  Assert.AreEqual(1.56207, LObject.Surfaces[2].Smooth, 0.00001);
+end;
+
+procedure TTestStaticLwo.DovrebbeRifiutareUnLwobTroncatoOConIndiciFuoriDaiPunti;
+var
+  LData: TBytes;
+  LRaised: Boolean;
+begin
+  LData := BuildCubeLwob(-1, 0);
+  SetLength(LData, 150);
+  LRaised := False;
+  try
+    Load(LData);
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'truncated');
+  // a polygon that uses a point that is not there
+  LData := LwobForm([
+    TLwoFileBuilder.Chunk('PNTS', TLwoFileBuilder.Join([TLwoFileBuilder.F4(0), TLwoFileBuilder.F4(0), TLwoFileBuilder.F4(0)])),
+    TLwoFileBuilder.Chunk('SRFS', TLwoFileBuilder.S0('a')),
+    TLwoFileBuilder.Chunk('POLS', TLwoFileBuilder.Join([TLwoFileBuilder.U2(3), TLwoFileBuilder.U2(0), TLwoFileBuilder.U2(1),
+      TLwoFileBuilder.U2(2), TLwoFileBuilder.U2(1)]))]);
+  LRaised := False;
+  try
+    Load(LData);
+  except
+    on EStaticModelException do
+      LRaised := True;
+  end;
+  Assert.IsTrue(LRaised, 'point out of range');
 end;
 
 initialization
