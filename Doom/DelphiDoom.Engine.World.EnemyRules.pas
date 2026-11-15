@@ -433,13 +433,6 @@ function P_CheckMeleeRange(actor: Pmobj_t; const factor: Integer = 1): boolean;
 
 //==============================================================================
 //
-// P_Move
-//
-//==============================================================================
-function P_Move(actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
 // P_Massacre
 //
 //==============================================================================
@@ -452,20 +445,6 @@ procedure P_Massacre;
 //==============================================================================
 procedure A_TurretChase(actor: Pmobj_t);
 
-type
-  dirtype_t = (
-    DI_EAST,
-    DI_NORTHEAST,
-    DI_NORTH,
-    DI_NORTHWEST,
-    DI_WEST,
-    DI_SOUTHWEST,
-    DI_SOUTH,
-    DI_SOUTHEAST,
-    DI_NODIR,
-    NUMDIRS
-  );
-
 var
   continueafterplayerdeath: boolean;
 
@@ -476,10 +455,41 @@ var
 //==============================================================================
 function P_LookForPlayers(actor: Pmobj_t; allaround: boolean): boolean;
 
+type
+  /// <summary>
+  ///   What Doom does in the enemy code of p_enemy (issue #185, step 2f-4). The routines that
+  ///   are the same in the games are in Base\p_enemy.pas; the actions of the monsters stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TEnemyGameRules = class sealed
+  public
+    const
+      /// <summary>P_Move is a method of the rules (Hexen: the blasted monsters and the way the specials are tried)</summary>
+      OwnsMove = False;
+      /// <summary>The message of the error of P_Move for a movedir that is not a direction</summary>
+      WeirdMoveDirMessage = 'P_Move(): Weird actor->movedir = %d';
+
+    /// <summary>The special lines that the move bumped into are used (Doom, Heretic, Strife: scripts and use of the line)</summary>
+    class function UseSpecialLines(actor: Pmobj_t): boolean; static;
+    /// <summary>The move of the monster (only when OwnsMove)</summary>
+    class function Move(actor: Pmobj_t): boolean; static;
+    /// <summary>What P_Move does when the monster did not float and moved (Strife: the feet clip with the terrain)</summary>
+    class procedure ClearFloating(actor: Pmobj_t); static;
+    /// <summary>P_NewChaseDir was called with no target (Strife: back to the spawn state, the others stop with an error)</summary>
+    class procedure NoTarget(actor: Pmobj_t); static;
+    /// <summary>The monster with a missile attack may back away from the melee attacker (Doom: not the skull and its heirs)</summary>
+    class function CanBackAway(actor: Pmobj_t): boolean; static;
+    /// <summary>The weapon in the hand of the player makes the monsters flee from the melee (WPF_FLEEMELEE)</summary>
+    class function FleesMeleeWeapon(player: Pplayer_t): boolean; static;
+  end;
+
 implementation
 
 uses
   p_enemy,
+  DelphiDoom.Engine.World.EnemyMoveSpecials,
   d_delphi,
   doomdata,
   d_think,
@@ -516,16 +526,6 @@ uses
   psi_globals,
   r_defs,
   r_main;
-
-const
-  opposite: array[0..8] of dirtype_t = (
-    DI_WEST, DI_SOUTHWEST, DI_SOUTH, DI_SOUTHEAST,
-    DI_EAST, DI_NORTHEAST, DI_NORTH, DI_NORTHWEST, DI_NODIR
-  );
-
-  diags: array[0..3] of dirtype_t = (
-    DI_NORTHWEST, DI_NORTHEAST, DI_SOUTHWEST, DI_SOUTHEAST
-  );
 
 //==============================================================================
 //
@@ -692,257 +692,6 @@ begin
     result := false
   else
     result := true;
-end;
-
-//==============================================================================
-//
-// P_Move
-// Move in the current direction,
-// returns false if the move is blocked.
-//
-//==============================================================================
-function P_Move(actor: Pmobj_t): boolean;
-var
-  tryx: fixed_t;
-  tryy: fixed_t;
-  ld: Pline_t;
-  try_ok: boolean;
-  ret1, ret2: boolean;
-begin
-  if actor.movedir = Ord(DI_NODIR) then
-  begin
-    result := false;
-    exit;
-  end;
-
-  if Ord(actor.movedir) >= 8 then
-    I_Error('P_Move(): Weird actor->movedir = %d', [Ord(actor.movedir)]);
-
-  tryx := actor.x + actor.info.speed * xspeed[actor.movedir];
-  tryy := actor.y + actor.info.speed * yspeed[actor.movedir];
-
-  try_ok := P_TryMove(actor, tryx, tryy);
-
-  if not try_ok then
-  begin
-    // open any specials
-    if (actor.flags and MF_FLOAT <> 0) and floatok then
-    begin
-      // must adjust height
-      if actor.z < tmfloorz then
-        actor.z := actor.z + P_FloatSpeed(actor)
-      else
-        actor.z := actor.z - P_FloatSpeed(actor);
-
-      actor.flags := actor.flags or MF_INFLOAT;
-      result := true;
-      exit;
-    end;
-
-    if numspechit = 0 then
-    begin
-      result := false;
-      exit;
-    end;
-
-    actor.movedir := Ord(DI_NODIR);
-    result := false;
-    while numspechit > 0 do
-    begin
-      dec(numspechit);
-      ld := spechit[numspechit];
-
-      if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
-        if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then
-          PS_EventUseLine(actor, pDiff(ld, lines, SizeOf(line_t)), P_PointOnLineSide(actor.x, actor.y, ld));
-
-      // if the special is not a door
-      // that can be opened,
-      // return false
-      ret1 := P_ActivateLine(ld, actor, 0, ULAC_USE);
-      ret2 := P_UseSpecialLine(actor, ld, 0);
-      result := ret1 or ret2;
-    end;
-    exit;
-  end
-  else
-    actor.flags := actor.flags and not MF_INFLOAT;
-
-  if actor.flags and MF_FLOAT = 0 then
-  begin
-    if actor.z > actor.floorz then
-      P_HitFloor(actor);
-    actor.z := actor.floorz;
-  end;
-
-  result := true;
-end;
-
-//==============================================================================
-//
-// P_NewChaseDir
-//
-//==============================================================================
-procedure P_NewChaseDir(actor: Pmobj_t);
-var
-  deltax: fixed_t;
-  deltay: fixed_t;
-  target: Pmobj_t;
-  d: array[0..2] of dirtype_t;
-  olddir: dirtype_t;
-  turnaround: dirtype_t;
-  idx: integer;
-  dist: fixed_t;
-
-  procedure _DoNewChaseDir;
-  var
-    tdir: dirtype_t;
-  begin
-    if deltax > 10 * FRACUNIT then
-      d[1] := DI_EAST
-    else if deltax < -10 * FRACUNIT then
-      d[1] := DI_WEST
-    else
-      d[1] := DI_NODIR;
-
-    if deltay < -10 * FRACUNIT then
-      d[2] := DI_SOUTH
-    else if deltay > 10 * FRACUNIT then
-      d[2] := DI_NORTH
-    else
-      d[2] := DI_NODIR;
-
-    // try direct route
-    if (d[1] <> DI_NODIR) and (d[2] <> DI_NODIR) then
-    begin
-      if deltay < 0 then
-        idx := 2
-      else
-        idx := 0;
-      if deltax > 0 then
-        inc(idx);
-      actor.movedir := Ord(diags[idx]);
-      if (actor.movedir <> Ord(turnaround)) and P_TryWalk(actor) then
-        exit;
-    end;
-
-    // try other directions
-    if (P_Random > 200) or (abs(deltay) > abs(deltax)) then
-    begin
-      tdir := d[1];
-      d[1] := d[2];
-      d[2] := tdir;
-    end;
-
-    if d[1] = turnaround then
-      d[1] := DI_NODIR;
-    if d[2] = turnaround then
-      d[2] := DI_NODIR;
-
-    if d[1] <> DI_NODIR then
-    begin
-      actor.movedir := Ord(d[1]);
-      if P_TryWalk(actor) then
-        exit; // either moved forward or attacked
-    end;
-
-    if d[2] <> DI_NODIR then
-    begin
-      actor.movedir := Ord(d[2]);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    // there is no direct path to the player,
-    // so pick another direction.
-    if olddir <> DI_NODIR then
-    begin
-      actor.movedir := Ord(olddir);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    // randomly determine direction of search
-    if P_Random and 1 <> 0 then
-    begin
-      for tdir := DI_EAST to DI_SOUTHEAST do
-      begin
-        if tdir <> turnaround then
-        begin
-          actor.movedir := Ord(tdir);
-          if P_TryWalk(actor) then
-            exit;
-        end;
-      end;
-    end
-    else
-    begin
-      for tdir := DI_SOUTHEAST downto DI_EAST do
-      begin
-        if tdir <> turnaround then
-        begin
-          actor.movedir := Ord(tdir);
-          if P_TryWalk(actor) then
-            exit;
-        end;
-      end;
-    end;
-
-    if turnaround <> DI_NODIR then
-    begin
-      actor.movedir := Ord(turnaround);
-      if P_TryWalk(actor) then
-        exit;
-    end;
-
-    actor.movedir := Ord(DI_NODIR); // can not move
-  end;
-
-begin
-  target := actor.target;
-  if target = nil then
-    I_Error('P_NewChaseDir(): called with no target');
-
-  olddir := dirtype_t(actor.movedir);
-  turnaround := opposite[Ord(olddir)];
-
-  deltax := target.x - actor.x;
-  deltay := target.y - actor.y;
-
-  actor.strafecount := 0;
-
-  // JVAL: 20210209 - MF3_EX_CAUSEFEAR & MF3_EX_NOFEAR flags
-  if target.flags3_ex and MF3_EX_CAUSEFEAR <> 0 then
-    if actor.flags3_ex and MF3_EX_NOFEAR <> 0 then
-      actor.flags2_ex := actor.flags2_ex or MF2_EX_FRIGHTENED;
-
-  if actor.flags2_ex and MF2_EX_FRIGHTENED <> 0 then
-  begin
-    deltax := -deltax;
-    deltay := -deltay;
-  end
-  else if (target.health > 0) and (actor.flags4_ex and MF4_EX_BACKINGMELEE <> 0) and not P_BothFriends(actor, actor.target) then
-  begin
-    if G_PlayingEngineVersion >= VERSION207 then
-    begin
-      dist := P_AproxDistance(deltax, deltay);
-      if (actor.info.missilestate <> 0) and
-         ((actor._type <> Ord(MT_SKULL)) or (Info_GetInheritance(actor.info) <> Ord(MT_SKULL))) and
-        (((target.info.missilestate = 0) and (dist < P_MeleeRange(target) * 2)) or
-         ((target.player <> nil) and (dist < P_MeleeRange(target) * 3) and
-          (weaponinfo[Ord(Pplayer_t(target.player).readyweapon)].mbf21bits and WPF_FLEEMELEE <> 0))) then
-      begin// Back away from melee attacker
-        actor.strafecount := P_Random and 15;
-        deltax := -deltax;
-        deltay := -deltay;
-      end;
-    end;
-  end;
-
-  _DoNewChaseDir;
-
-  if actor.strafecount > 0 then
-    actor.movecount := actor.strafecount;
 end;
 
 //==============================================================================
@@ -3229,6 +2978,66 @@ begin
   // make active sound
   if (actor.info.activesound <> 0) and (P_Random < 3) then
     A_ActiveSound(actor, actor);
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.Move
+//
+//==============================================================================
+class function TEnemyGameRules.Move(actor: Pmobj_t): boolean;
+begin
+  result := false; // not used: P_Move of p_enemy does the move
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.UseSpecialLines
+//
+//==============================================================================
+class function TEnemyGameRules.UseSpecialLines(actor: Pmobj_t): boolean;
+begin
+  result := TEnemyMoveSpecials.UseHitLines(actor);
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.ClearFloating
+//
+//==============================================================================
+class procedure TEnemyGameRules.ClearFloating(actor: Pmobj_t);
+begin
+  actor.flags := actor.flags and not MF_INFLOAT;
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.NoTarget
+//
+//==============================================================================
+class procedure TEnemyGameRules.NoTarget(actor: Pmobj_t);
+begin
+  I_Error('P_NewChaseDir(): called with no target');
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.CanBackAway
+//
+//==============================================================================
+class function TEnemyGameRules.CanBackAway(actor: Pmobj_t): boolean;
+begin
+  result := (actor._type <> Ord(MT_SKULL)) or (Info_GetInheritance(actor.info) <> Ord(MT_SKULL));
+end;
+
+//==============================================================================
+//
+// TEnemyGameRules.FleesMeleeWeapon
+//
+//==============================================================================
+class function TEnemyGameRules.FleesMeleeWeapon(player: Pplayer_t): boolean;
+begin
+  result := weaponinfo[Ord(player.readyweapon)].mbf21bits and WPF_FLEEMELEE <> 0;
 end;
 
 end.

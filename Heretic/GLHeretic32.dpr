@@ -246,6 +246,7 @@ uses
   p_doors in '..\Heretic\p_doors.pas',
   p_enemy in '..\Base\p_enemy.pas',
   DelphiDoom.Engine.World.EnemyRules in '..\Heretic\DelphiDoom.Engine.World.EnemyRules.pas',
+  DelphiDoom.Engine.World.EnemyMoveSpecials in '..\Base\DelphiDoom.Engine.World.EnemyMoveSpecials.pas',
   p_extra in '..\Heretic\p_extra.pas',
   p_floor in '..\Heretic\p_floor.pas',
   p_inter in '..\Base\p_inter.pas',
