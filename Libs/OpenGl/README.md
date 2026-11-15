@@ -1,24 +1,26 @@
 # Libs\OpenGl (issue #177)
 
+> **Divisione (issue #220):** il binding (`dglOpenGL.pas`) e il registratore di chiamate stanno ora in [`Libs\OpenGlBinding`](../OpenGlBinding/README.md) (strato L3, senza dipendenze dal motore); qui resta il renderer di id Tech 1 (`Legacy\`, modulo `IdTech1`). I nomi delle unit non sono cambiati.
+
 > Note per Claude e paragrafi di dettaglio (issue #178): [CLAUDE.md](CLAUDE.md).
 
 Qui sta tutto cio' che prima era nella cartella `OPENGL\` della radice (che non esiste piu). Il piano per svuotarla fetta per fetta e `docs\OPENGL_PIANO.md`.
 
 | Cartella | Contenuto |
 |---|---|
-| `Binding\` | `dglOpenGL.pas`: binding OpenGL di terzi (Mike Lischke, Dominique Louis e altri), con la sua licenza nell'intestazione. Non si riformatta e non si modifica. |
-| `Recorder\` | il registratore delle chiamate GL (fetta 1): classi pure con test, thunk generati. Vedi sotto. |
+| `Legacy\` | le altre unit del renderer di Doom (vedi sotto). |
+| (fuori da qui) | **`Libs\OpenGlBinding`** (issue #220): `dglOpenGL.pas`, il binding OpenGL di terzi (strato L3, usato anche da `Libs\GameHost`), e `Recorder\`, il registratore delle chiamate GL. Non dipendono dal motore di Doom. |
 | `Legacy\` | le altre 26 unit (`gl_*.pas`, `mdl_*.pas`, `DelphiDoom.Engine.Models.Renderer.pas`): codice procedurale del renderer OpenGL, con stato globale. Il nome dice che si svuotera: ogni fetta del piano sposta le sue unit nella libreria nuova. |
 
 Regole:
 
-- Le unit (tranne gl_voxels.pas, fetta 2: l'ottimizzatore di mesh e in Libs\Voxel) non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Libs\OpenGl\Binding\dglOpenGL.pas`.
+- Le unit (tranne gl_voxels.pas, fetta 2: l'ottimizzatore di mesh e in Libs\Voxel) non hanno cambiato nome ne contenuto: i quattro `GL*32.dpr` le citano con `..\Libs\OpenGl\Legacy\...` e `..\Libs\OpenGlBinding\dglOpenGL.pas`.
 - Le chiamate GL restano chiamate dirette a `dglOpenGL`; le interfacce stanno a granularita di fotogramma, mai per vertice o per chiamata.
 - Le unit di `Legacy` seguono la regola del codice storico (niente rinomina ne riformattazione in massa).
 
 ## Recorder: il registratore delle chiamate GL (fetta 1)
 
-E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5): ogni fetta che sposta codice di disegno deve dare, con lo stesso stato di gioco, **lo stesso flusso di chiamate GL**. Sta in `Libs\OpenGl\Recorder` e **non cambia nulla nelle build normali**: e compilato nei giochi solo con `GLRECORD` (lo fanno gli script di `Tools\Verifica\opengl`); `dglOpenGL.pas` e il motore non sono toccati.
+E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5): ogni fetta che sposta codice di disegno deve dare, con lo stesso stato di gioco, **lo stesso flusso di chiamate GL**. Sta in `Libs\OpenGlBinding\Recorder` (spostato da `Libs\OpenGl\Recorder` con la #220) e **non cambia nulla nelle build normali**: e compilato nei giochi solo con `GLRECORD` (lo fanno gli script di `Tools\Verifica\opengl`); `dglOpenGL.pas` e il motore non sono toccati.
 
 | Unit | Ruolo |
 |---|---|
@@ -35,7 +37,7 @@ E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5)
 
 **Cosa e coperto (contenuto con impronta):** `glColor4fv`, `glTexCoord2fv`, `glVertex3fv`, `glMultMatrixf/d`, `glFogfv` (4 float per `GL_FOG_COLOR`, 1 per gli altri), `glTexGenfv`, `glDeleteTextures`; i pixel di `glTexImage2D/3D`, `glTexSubImage2D/3D` e `gluBuild2DMipmaps` (righe senza padding, con l'allineamento di `glPixelStorei`; solo formati e tipi di OpenGL 1.1: RGB, RGBA, BGR, BGRA, luminanza, indice, con tipi byte, short, int, float, double); la palette di `glColorTableEXT`; gli elementi che `glDrawArrays` disegna dagli array di `glVertexPointer` e `glTexCoordPointer` (seguendo `glEnable/DisableClientState`). **Non coperto:** i puntatori di uscita (`glGet*`, `glGenTextures`, `glReadPixels`: solo `nil`/`ptr`), i pixel con tipi impacchettati o con `GL_UNPACK_ROW_LENGTH`/skip/altezza immagine diversi da 0 (solo `ptr`), i valori restituiti dalle funzioni, `glGetString`. **Limite:** i nomi delle texture e delle liste sono quelli del driver; se una fetta cambia l'ordine di creazione, il flusso cambia (e giusto che si veda).
 
-**Harness** (`Tools\Verifica\opengl`): `HarnessGl.pas` con `-glrecord <n>` (n tic consecutivi, il primo fotogramma di ogni tic, a partire da `-glrecordstart` = 35) scrive `glrecord_<MAPPA>.txt` ed esce con `Halt(0)`; `hook-gl.patch` lo aggancia ai quattro `GL*32.dpr`; `Compila.ps1 -Which Old|New` costruisce gli eseguibili, `Confronta.ps1 -Game GLDoom|GLHeretic|GLHexen|GLStrife` li esegue (vecchio due volte per il rumore, poi il nuovo) e stampa UGUALE o DIVERSO. Test: `Tests\DelphiDoom.Tests.OpenGl` (124).
+**Harness** (`Tools\Verifica\opengl`): `HarnessGl.pas` con `-glrecord <n>` (n tic consecutivi, il primo fotogramma di ogni tic, a partire da `-glrecordstart` = 35) scrive `glrecord_<MAPPA>.txt` ed esce con `Halt(0)`; `hook-gl.patch` lo aggancia ai quattro `GL*32.dpr`; `Compila.ps1 -Which Old|New` costruisce gli eseguibili, `Confronta.ps1 -Game GLDoom|GLHeretic|GLHexen|GLStrife` li esegue (vecchio due volte per il rumore, poi il nuovo) e stampa UGUALE o DIVERSO. Test: `Tests\DelphiDoom.Tests.OpenGl` (185 con le fette del renderer).
 ## Librerie nate da `Legacy` (issue #177)
 
 | Libreria | Fetta | Contenuto |

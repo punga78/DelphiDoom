@@ -46,7 +46,7 @@ try {
     $errors = @(Select-String -Path $log -Pattern '\berror\b|\[Fatal Error\]|Fatal:' -CaseSensitive:$false)
     Write-Host "== $Which $project : $($errors.Count) error lines (see $tree\$log)"
     $errors | Select-Object -First 15 | ForEach-Object { Write-Host $_.Line }
-    $exe = "bin\$folder\$project.exe"
+    $exe = "bin\Win32\Release\$folder\$project.exe"
     if ($errors.Count -eq 0 -and (Test-Path $exe)) {
       $target = Join-Path $out "${g}_GL_$($Which.ToUpper()).exe"
       Copy-Item $exe $target -Force

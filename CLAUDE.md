@@ -126,7 +126,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Nodes** — Lettura dei nodi di una mappa (nodi GL, GWA di glBSP, nodi originali) e WAD per glBSP. [CLAUDE.md](Libs/Nodes/CLAUDE.md), [README.md](Libs/Nodes/README.md)
 - **Obituary** — Testo dei necrologi e tabella dei generi. [CLAUDE.md](Libs/Obituary/CLAUDE.md), [README.md](Libs/Obituary/README.md)
 - **Ogg** — Contenitore Ogg (port di libogg 1.3.x). [CLAUDE.md](Libs/Ogg/CLAUDE.md), [README.md](Libs/Ogg/README.md) (paragrafo in `Libs\Zlib`)
-- **OpenGl** — Binding OpenGL di terzi e unit del renderer OpenGL storico. [CLAUDE.md](Libs/OpenGl/CLAUDE.md), [README.md](Libs/OpenGl/README.md)
+- **OpenGl** — Unit del renderer OpenGL storico di id Tech 1 (`Legacy\`); il binding e il registratore di chiamate sono in `Libs\OpenGlBinding` (#220). [CLAUDE.md](Libs/OpenGl/CLAUDE.md), [README.md](Libs/OpenGl/README.md)
 - **Palette** — Palette, colormap e tabelle di traduzione come classi pure; dal 2026-11-15 (issue #225, seconda fetta) ha anche `IPaletteConverter`/`TPaletteConverter` (`DelphiDoom.Palette.Intf` e `DelphiDoom.Palette.Converter`, prima in `Video`) e non usa piu' `Video`. [CLAUDE.md](Libs/Palette/CLAUDE.md), [README.md](Libs/Palette/README.md)
 - **Parity** — Strumenti di parita' del motore (issue #185, fase 0 di `docs\PIANO_TUTTO_A_CLASSI.md`): impronta dello stato per tic (`-statehash`), impronta del fotogramma (`-framehash`, `-framedump`), pilota automatico per registrare demo (`-autodemo`), orologio e input ripetibili, golden e misura a coppie; si usano con `Tools\Verifica\185` e `Tools\Misura-Coppie.ps1`, istruzioni in `docs\PARITA_MOTORE.md`. [CLAUDE.md](Libs/Parity/CLAUDE.md), [README.md](Libs/Parity/README.md)
 - **PascalScript** — Nucleo di Pascal Script (di terzi, modificato). [CLAUDE.md](Libs/PascalScript/CLAUDE.md), [README.md](Libs/PascalScript/README.md) (paragrafo in `Libs\ScriptHost`)
@@ -174,7 +174,7 @@ Librerie (CLAUDE.md di dettaglio, README):
 - **Xmi** — Convertitore XMI/CMF in MIDI. [CLAUDE.md](Libs/Xmi/CLAUDE.md), [README.md](Libs/Xmi/README.md) (paragrafo in `Libs\Zlib`)
 - **Zlib** — Compressione e decompressione zlib (sopra `System.ZLib`). [CLAUDE.md](Libs/Zlib/CLAUDE.md), [README.md](Libs/Zlib/README.md)
 - **Zone** — Allocatore della zone memory a classi. [CLAUDE.md](Libs/Zone/CLAUDE.md), [README.md](Libs/Zone/README.md)
-- **OpenGl/Recorder** — Registratore delle chiamate OpenGL, criterio di parità per le fette del renderer OpenGL. [CLAUDE.md](Libs/OpenGl/Recorder/CLAUDE.md), [README.md](Libs/OpenGl/Recorder/README.md)
+- **OpenGlBinding** — Binding OpenGL di terzi (`dglOpenGL.pas`, strato L3, usato anche da `GameHost`) e registratore delle chiamate OpenGL (`Recorder\`, criterio di parità per le fette del renderer OpenGL); separati da `Libs\OpenGl` con la #220. [CLAUDE.md](Libs/OpenGlBinding/CLAUDE.md), [README.md](Libs/OpenGlBinding/README.md), [Recorder](Libs/OpenGlBinding/Recorder/CLAUDE.md)
 
 ## Stile del codice
 

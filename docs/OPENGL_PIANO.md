@@ -1,5 +1,7 @@
 # Piano: far sparire `OPENGL\` (issue da aprire, dopo la #172/#173)
 
+> **Nota (issue #220):** dopo questo piano `Libs\OpenGl\Binding` e `Libs\OpenGl\Recorder` sono stati spostati in `Libs\OpenGlBinding` (`dglOpenGL.pas` e `Recorder\`); `Libs\OpenGl\Legacy` e' rimasta dov'e'. I percorsi sotto sono quelli del momento in cui il piano e' stato scritto.
+
 Analisi in sola lettura sul sorgente di `master` (de35da0c, 2026-11-09). Conteggi fatti con `wc`, `grep`, `awk` sulla cartella `OPENGL\` (non nelle copie sotto `.claude\worktrees` ne in `Reference\`). Dove un numero e una stima lo dico. Nessun file di codice e stato toccato, nessuna build, nessun gioco avviato.
 
 Letti prima: `CLAUDE.md` e, nei `CLAUDE.md` di libreria, le sezioni `Libs\GlMath`, `Libs\Models`, `Libs\Renderer`, `Libs\Texture`, `Libs\DynLights`, `Libs\Renderer\README.md`, `Libs\Models\README.md`, `Libs\GlMath\README.md`, `docs\FACCIATE.md`, `docs\PENDING_ISSUES.md`, `docs\SCRIPTHOST_PIANO.md` (modello di questo piano) e la storia dei commit `8cbf7812` + `96c83939` (come e stata spostata `SCRIPT\`).
