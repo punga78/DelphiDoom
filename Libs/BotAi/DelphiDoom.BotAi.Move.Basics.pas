@@ -108,7 +108,6 @@ var
   LLimit: Single;
 begin
   // do gap checking
-  LStartZ := AOrigin[2];
   // this enables walking down stairs more fluidly
   LStart := AOrigin;
   LEnd := AOrigin;

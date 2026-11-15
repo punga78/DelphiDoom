@@ -104,7 +104,6 @@ begin
   LStart := AReach.StartPoint;
   LEnd := AReach.EndPoint;
   LType := AVOID_CLEAR;
-  LSquaredDist := 0;
   for LIndex := 0 to ANumSpots - 1 do
   begin
     LSquaredRadius := ASpots[LIndex].Radius * ASpots[LIndex].Radius;
