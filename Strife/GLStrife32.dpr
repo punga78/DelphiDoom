@@ -282,6 +282,8 @@ uses
   p_spec_h in '..\Strife\p_spec_h.pas',
   p_spec in '..\Base\p_spec.pas',
   DelphiDoom.Engine.World.SpecRules in '..\Strife\DelphiDoom.Engine.World.SpecRules.pas',
+  DelphiDoom.Engine.World.FrictionPushers in '..\Base\DelphiDoom.Engine.World.FrictionPushers.pas',
+  DelphiDoom.Engine.World.SectorSearch in '..\Base\DelphiDoom.Engine.World.SectorSearch.pas',
   p_switch in '..\Strife\p_switch.pas',
   p_telept in '..\Strife\p_telept.pas',
   p_tick in '..\Base\p_tick.pas',

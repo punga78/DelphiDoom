@@ -213,6 +213,7 @@ uses
   p_mobjlist,
   p_tick,
   p_maputl,
+  DelphiDoom.Engine.World.FrictionPushers,
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,

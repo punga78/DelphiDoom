@@ -43,6 +43,7 @@ interface
 uses
   doomdef,
   p_mobj_h,
+  DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,

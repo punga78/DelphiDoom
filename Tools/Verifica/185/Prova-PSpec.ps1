@@ -64,8 +64,20 @@ $NotTextual = @{
   'Hexen|P_FindSectorFromLineTag2'   = 'il tag e'' letto una volta con la regola LineSectorTag (line.arg1 in Hexen)'
 }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_spec' `
-  -BaseFiles 'Base\p_spec.pas' `
-  -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Maps $Maps
+# Doom e Strife usano anche le due unit di famiglia (friction e pusher, ricerche nei settori); Heretic e Hexen solo Base\p_spec.pas
+$bad = 0
+$family = @($Games | Where-Object { $_ -in 'Doom', 'Strife' })
+$others = @($Games | Where-Object { $_ -notin 'Doom', 'Strife' })
+if ($family.Count -gt 0) {
+  $bad += Invoke-Prova -Root $root -Base $Base -Games $family -Unit 'p_spec' `
+    -BaseFiles 'Base\p_spec.pas', 'Base\DelphiDoom.Engine.World.FrictionPushers.pas', 'Base\DelphiDoom.Engine.World.SectorSearch.pas' `
+    -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
+    -NotTextual $NotTextual -Maps $Maps
+}
+if ($others.Count -gt 0) {
+  $bad += Invoke-Prova -Root $root -Base $Base -Games $others -Unit 'p_spec' `
+    -BaseFiles 'Base\p_spec.pas' `
+    -RulesUnit 'DelphiDoom.Engine.World.SpecRules.pas' -Class 'TSpecGameRules' -Expansions $Expansions `
+    -NotTextual $NotTextual -Maps $Maps
+}
 exit $bad

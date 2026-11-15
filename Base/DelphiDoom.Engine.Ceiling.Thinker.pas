@@ -17,6 +17,9 @@ unit DelphiDoom.Engine.Ceiling.Thinker;
 interface
 
 uses
+{$IFNDEF HERETIC}
+  DelphiDoom.Engine.World.SectorSearch,
+{$ENDIF}
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
