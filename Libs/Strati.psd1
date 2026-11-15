@@ -39,6 +39,7 @@
     'Libs\Zlib' = 'L0'
     'Libs\Yaml' = 'L0'
     'Libs\MathCore' = 'L0'
+    'Libs\GameMath' = 'L0'
     'Libs\Configuration' = 'L0'
     'Libs\CommandLine' = 'L0'
     # L1

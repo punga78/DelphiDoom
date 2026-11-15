@@ -265,7 +265,7 @@ end.
 
 $programma = @{ menu = 'MenuParity'; fli = 'FliParity'; intro = 'IntroParity' }[$Parte]
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$libs = 'Greed', 'Input', 'Platform', 'MathCore', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
+$libs = 'Greed', 'Input', 'Platform', 'MathCore', 'GameMath', 'Logging', 'Clock', 'Video', 'Png', 'Zlib' | ForEach-Object { "$radice\Libs\$_" }
 $primo = ''
 if ($Parte -eq 'intro') { $primo = "$uscita\intro;" }
 $u = "$primo$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-hud\stubs;$PSScriptRoot\..\175-render\stubs;$Riferimento\Greed;$Riferimento\Base;" + ($libs -join ';') + ";$radice\Tests\Source"

@@ -92,7 +92,7 @@ $arma = "var`r`n  weaponlump: integer = 0;`r`n  numweaponlumps: integer = 0;`r`n
 Set-Content "$uscita\session\utils.pas" ((Get-Content "$PSScriptRoot\utils.head.txt" -Raw) + $globali + (Get-Content "$PSScriptRoot\utils.mid.txt" -Raw) + $nome + $sprite + $mappa + $salva + $nuova + $rinasce + $arma + "end.`r`n")
 
 $dcc = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\dcc32.exe'
-$comuni = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-spawn\stubs;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
+$comuni = "$PSScriptRoot\stubs;$uscita\src;$PSScriptRoot\..\175-spawn\stubs;$Riferimento\Greed;$Riferimento\Base;$radice\Libs\Greed;$radice\Libs\Platform;$radice\Libs\MathCore;$radice\Libs\GameMath;$radice\Libs\Logging;$radice\Libs\Clock;$radice\Tests\Source"
 # -CC: xGreed.inc dichiara {$APPTYPE GUI}, gli harness sono programmi da console
 & $dcc -B -Q -CC -H- -W- "-U$comuni" "-I$Riferimento" "-N0$uscita\dcu_e" "-E$uscita" "-NSSystem;Winapi" "$PSScriptRoot\EventsGolden.dpr" | Select-String 'Error|Fatal'
 if ($LASTEXITCODE -ne 0) { exit 1 }
