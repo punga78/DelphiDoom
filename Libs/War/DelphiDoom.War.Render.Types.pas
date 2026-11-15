@@ -61,7 +61,8 @@ type
 
 resourcestring
   SWarRenderStackFull = 'The render state stack is full (%d states)';
-  SWarRenderStackEmpty = 'The render state stack has no state to restore';
+  SWarRenderNoTarget = 'The render transform has no canvas to draw on';
+  SWarRenderStackEmpty ='The render state stack has no state to restore';
   SWarRenderImageSize = 'The image has %d bytes, %d x %d pixels need %d';
 
 implementation

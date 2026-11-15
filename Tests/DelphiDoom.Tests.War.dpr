@@ -246,6 +246,8 @@ uses
   DelphiDoom.Tests.War.Render in 'Source\DelphiDoom.Tests.War.Render.pas',
   DelphiDoom.Tests.War.Text in 'Source\DelphiDoom.Tests.War.Text.pas',
   DelphiDoom.Tests.War.RenderParity in 'Source\DelphiDoom.Tests.War.RenderParity.pas',
+  DelphiDoom.Tests.War.RasterScenario in 'Source\DelphiDoom.Tests.War.RasterScenario.pas',
+  DelphiDoom.Tests.War.Raster in 'Source\DelphiDoom.Tests.War.Raster.pas',
   DelphiDoom.Tests.War.MapSupport in 'Source\DelphiDoom.Tests.War.MapSupport.pas',
   DelphiDoom.Tests.War.MapUnits in 'Source\DelphiDoom.Tests.War.MapUnits.pas',
   DelphiDoom.Tests.War.MapPathGrid in 'Source\DelphiDoom.Tests.War.MapPathGrid.pas',

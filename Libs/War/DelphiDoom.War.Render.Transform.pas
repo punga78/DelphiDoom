@@ -18,7 +18,8 @@ unit DelphiDoom.War.Render.Transform;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, DelphiDoom.War.Types, DelphiDoom.War.Render.Types;
+  System.SysUtils, System.Generics.Collections, DelphiDoom.War.Types, DelphiDoom.War.Graphics.Types,
+  DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Blitter;
 
 type
   /// <summary>
@@ -31,10 +32,30 @@ type
     FStates: array[0..WAR_MAX_RENDER_STATE_STACK - 1] of TWarRenderState;
     FTop: Integer;
     FBlits: TList<TWarBlit>;
+    FTarget: TWarImageBlitter;
     FColor: TWarRgba;
+    function MakeBlit(const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single): TWarBlit;
+    function TransformRect(const ARect: TWarRectF): TWarRectF;
+    function StateColor(const AColor: TWarRgba): TWarRgba;
   public
     /// <summary>The list receives the blits (it is not owned); wr_init: one state at the origin, scale 1 and fully opaque</summary>
-    constructor Create(const ABlits: TList<TWarBlit>);
+    constructor Create(const ABlits: TList<TWarBlit>); overload;
+    /// <summary>
+    ///   The blits are drawn on ATarget (not owned) as they are made, without a list: the way the renderer of the
+    ///   game works (no allocation, no call through an interface for every image)
+    /// </summary>
+    constructor Create(const ATarget: TWarImageBlitter); overload;
+    /// <summary>wr_init: back to one state at the origin, scale 1, fully opaque and a white color mod (every frame starts so)</summary>
+    procedure Reset;
+    /// <summary>
+    ///   wr_subImage on a texture: the blit is made as SubImage makes it and drawn on the target (and added to the list, if
+    ///   there is one). EWarException if there is no target
+    /// </summary>
+    procedure SubImageOf(const ATexture: TWarImage; const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single);
+    /// <summary>wr_fillRect: the rectangle is transformed (a negative size moves the origin) and filled blending the color, its alpha times the state alpha</summary>
+    procedure FillRect(const ARect: TWarRectF; const AColor: TWarRgba);
+    /// <summary>wr_strokeRect: the same for the outline</summary>
+    procedure StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);
     /// <summary>wr_save; EWarException if the 32 states are used (the original asserts)</summary>
     procedure Save;
     /// <summary>wr_restore; EWarException if there is no state to go back to</summary>
@@ -66,6 +87,19 @@ constructor TWarRenderTransform.Create(const ABlits: TList<TWarBlit>);
 begin
   inherited Create;
   FBlits := ABlits;
+  Reset;
+end;
+
+constructor TWarRenderTransform.Create(const ATarget: TWarImageBlitter);
+begin
+  inherited Create;
+  FTarget := ATarget;
+  Reset;
+end;
+
+procedure TWarRenderTransform.Reset;
+begin
+  FTop := 0;
   FStates[0].OffsetX := 0;
   FStates[0].OffsetY := 0;
   FStates[0].ScaleX := 1;
@@ -75,6 +109,70 @@ begin
   FColor.G := 255;
   FColor.B := 255;
   FColor.A := 255;
+end;
+
+procedure TWarRenderTransform.FillRect(const ARect: TWarRectF; const AColor: TWarRgba);
+var
+  LRect: TWarRectF;
+  LColor: TWarRgba;
+begin
+  if not Assigned(FTarget) then
+    raise EWarException.Create(SWarRenderNoTarget);
+  LRect := TransformRect(ARect);
+  LColor := StateColor(AColor);
+  FTarget.FillRect(LRect, LColor);
+end;
+
+procedure TWarRenderTransform.StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);
+var
+  LRect: TWarRectF;
+  LColor: TWarRgba;
+begin
+  if not Assigned(FTarget) then
+    raise EWarException.Create(SWarRenderNoTarget);
+  LRect := TransformRect(ARect);
+  LColor := StateColor(AColor);
+  FTarget.StrokeRect(LRect, LColor);
+end;
+
+function TWarRenderTransform.TransformRect(const ARect: TWarRectF): TWarRectF;
+var
+  LScaleX: Single;
+  LScaleY: Single;
+  LStepX: Single;
+  LStepY: Single;
+begin
+  // renderTransformRect: a negative size flips the origin
+  LScaleX := FStates[FTop].ScaleX;
+  LScaleY := FStates[FTop].ScaleY;
+  LStepX := ARect.X * LScaleX;
+  LStepY := ARect.Y * LScaleY;
+  Result.X := FStates[FTop].OffsetX + LStepX;
+  Result.Y := FStates[FTop].OffsetY + LStepY;
+  Result.Width := ARect.Width * LScaleX;
+  Result.Height := ARect.Height * LScaleY;
+  if Result.Width < 0 then
+  begin
+    LStepX := Result.X + Result.Width;
+    Result.X := LStepX;
+    Result.Width := -Result.Width;
+  end;
+  if Result.Height < 0 then
+  begin
+    LStepY := Result.Y + Result.Height;
+    Result.Y := LStepY;
+    Result.Height := -Result.Height;
+  end;
+end;
+
+function TWarRenderTransform.StateColor(const AColor: TWarRgba): TWarRgba;
+var
+  LAlpha: Single;
+begin
+  // wr_renderSetDrawColor: (u8)(color.a * alpha)
+  Result := AColor;
+  LAlpha := AColor.A * FStates[FTop].Alpha;
+  Result.A := Byte(Trunc(LAlpha));
 end;
 
 procedure TWarRenderTransform.Save;
@@ -137,6 +235,28 @@ end;
 
 procedure TWarRenderTransform.SubImage(const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single);
 var
+  LBlit: TWarBlit;
+begin
+  LBlit := MakeBlit(ASource, ADestination, AScaleX, AScaleY);
+  if Assigned(FBlits) then
+    FBlits.Add(LBlit);
+end;
+
+procedure TWarRenderTransform.SubImageOf(const ATexture: TWarImage; const ASource, ADestination: TWarRectF;
+  AScaleX, AScaleY: Single);
+var
+  LBlit: TWarBlit;
+begin
+  if not Assigned(FTarget) then
+    raise EWarException.Create(SWarRenderNoTarget);
+  LBlit := MakeBlit(ASource, ADestination, AScaleX, AScaleY);
+  if Assigned(FBlits) then
+    FBlits.Add(LBlit);
+  FTarget.Draw(ATexture, LBlit);
+end;
+
+function TWarRenderTransform.MakeBlit(const ASource, ADestination: TWarRectF; AScaleX, AScaleY: Single): TWarBlit;
+var
   LState: TWarRenderState;
   LCombinedX: Single;
   LCombinedY: Single;
@@ -149,14 +269,13 @@ var
   LDestWidth: Single;
   LDestHeight: Single;
   LOpacity: Single;
-  LBlit: TWarBlit;
 begin
   LState := FStates[FTop];
   // combine the per-call scale with the render-state scale
   LCombinedX := LState.ScaleX * AScaleX;
   LCombinedY := LState.ScaleY * AScaleY;
-  LBlit.FlipHorizontal := LCombinedX < 0;
-  LBlit.FlipVertical := LCombinedY < 0;
+  Result.FlipHorizontal := LCombinedX < 0;
+  Result.FlipVertical := LCombinedY < 0;
   if LCombinedX < 0 then
     LAbsX := -LCombinedX
   else
@@ -183,15 +302,14 @@ begin
     LDestY := LStepY;
   end;
   LOpacity := LState.Alpha * 255;
-  LBlit.Source := ASource;
-  LBlit.Destination.X := LDestX;
-  LBlit.Destination.Y := LDestY;
-  LBlit.Destination.Width := LDestWidth;
-  LBlit.Destination.Height := LDestHeight;
-  LBlit.Color := FColor;
+  Result.Source := ASource;
+  Result.Destination.X := LDestX;
+  Result.Destination.Y := LDestY;
+  Result.Destination.Width := LDestWidth;
+  Result.Destination.Height := LDestHeight;
+  Result.Color := FColor;
   // (u8)(alpha * 255): the number is cut to its integer part and to the low 8 bits
-  LBlit.Color.A := Byte(Trunc(LOpacity));
-  FBlits.Add(LBlit);
+  Result.Color.A := Byte(Trunc(LOpacity));
 end;
 
 end.
