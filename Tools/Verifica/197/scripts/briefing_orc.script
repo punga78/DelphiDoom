@@ -1,10 +1,10 @@
 # Briefing degli orchi, missioni 1 e 2: il testo che scorre e le tre animazioni; finisce con lo spazio (poi la pausa di un secondo)
 briefing orc 118
-run 400 4
+run 400 1
 briefing orc 120
-run 250 3
+run 250 1
 briefing orc 118
-run 100 2
+run 100 1
 key space down
 run 1 1
 key space up

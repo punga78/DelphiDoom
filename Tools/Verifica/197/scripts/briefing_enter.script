@@ -1,6 +1,6 @@
 # Il briefing degli orchi finisce con Invio (poi la pausa di un secondo prima della mappa)
 briefing orc 120
-run 60 3
+run 60 1
 key enter down
 run 1 1
 key enter up

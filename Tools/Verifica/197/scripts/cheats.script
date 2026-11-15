@@ -68,7 +68,7 @@ run 1 1
 key enter down
 key enter up
 run 2 1
-run 200 10
+run 200 1
 key enter down
 key enter up
 run 1 1
@@ -83,7 +83,7 @@ text CORWIN OF AMBER
 key enter down
 key enter up
 run 3 1
-run 100 10
+run 100 1
 key enter down
 key enter up
 run 1 1
@@ -91,7 +91,7 @@ text Music vol 47
 key enter down
 key enter up
 run 3 1
-run 100 10
+run 100 1
 key enter down
 key enter up
 run 1 1
@@ -99,7 +99,7 @@ text Scale 9
 key enter down
 key enter up
 run 3 1
-run 100 10
+run 100 1
 key enter down
 key enter up
 run 1 1

@@ -67,7 +67,9 @@ begin
   LGame := TWarUiRig.CreateRealGame(nil, nil);
   LTrace := TStringList.Create;
   try
-    LOutput := TWarUiRig.RunScript(LGame, ['trace on'] + ALines, LTrace);
+    // and the pixels of the last frame, to compare with the ones of the C (Confronta-Pixel.ps1)
+    LOutput := TWarUiRig.RunScript(LGame, ['trace on'] + ALines + ['rgba ' + IncludeTrailingPathDelimiter(LFolder) + AName
+      + '.delphi.rgba'], LTrace);
     LOutput.Free;
     LTrace.SaveToFile(IncludeTrailingPathDelimiter(LFolder) + AName + '.delphi.trace.txt');
   finally
