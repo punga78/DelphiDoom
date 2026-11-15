@@ -47,4 +47,6 @@ E il criterio di parita principale del piano (`docs\OPENGL_PIANO.md`, sezione 5)
 | `Libs\GlTexture` | 5 | buffer delle texture: patch, flat, ripple, trasparenza, palette (classi statiche a freddo) |
 | `Libs\GlLevel` | 4 (parte pura) | carving dei flat dal BSP (`IGlFlatCarver`) con mondo e sink iniettati |
 
+Fetta 10: il disegno della scena (muri, flat, sprite e l'ordine delle serie) e' fatto da `Legacy\DelphiDoom.Engine.GlScene.WallPainter`, `...FlatPainter`, `...SpritePainter` e `...SceneDrawer`, classi chiamate direttamente (nessuna interfaccia per elemento) con le stesse chiamate GL di prima.
+
 Le unit del motore che le usano (`DelphiDoom.Engine.Models.Definition*`, `DelphiDoom.Engine.GlLevel.*`) stanno in `Legacy\` perche' leggono i globali del renderer. Dettagli e verifiche di ogni fetta in `CLAUDE.md`.
