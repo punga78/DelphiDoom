@@ -333,6 +333,7 @@ uses
   DelphiDoom.Tests.War.MapUiBench in 'Source\DelphiDoom.Tests.War.MapUiBench.pas',
   DelphiDoom.Tests.War.MapUiCommands in 'Source\DelphiDoom.Tests.War.MapUiCommands.pas',
   DelphiDoom.Tests.War.MapUiScene in 'Source\DelphiDoom.Tests.War.MapUiScene.pas',
+  DelphiDoom.Tests.War.RenderCopy in 'Source\DelphiDoom.Tests.War.RenderCopy.pas',
   DelphiDoom.Tests.War.Render in 'Source\DelphiDoom.Tests.War.Render.pas',
   DelphiDoom.Tests.War.Text in 'Source\DelphiDoom.Tests.War.Text.pas',
   DelphiDoom.Tests.War.RenderParity in 'Source\DelphiDoom.Tests.War.RenderParity.pas',

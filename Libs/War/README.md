@@ -615,3 +615,68 @@ Tutto cio' che l'originale non ha (sopra). L'IA del gioco DOS (ondate, difesa, b
 - **Script e prove**: `Tools\Verifica\197\scripts\*.script` sono letti dal C (`war_frame_ref.c`) e da `TWarUiScriptRunner`; `Registra-GoldenUi.ps1` riscrive i golden (solo se il C cambia di proposito), `Confronta-Traccia.ps1` confronta le chiamate di disegno quando un'impronta differisce. Vedi `docs\PARITA_WAR.md`.
 - **Non portato**: scena di download (rete), audio (dietro un'interfaccia), i trucchi che vogliono la mappa, il tooltip raggiungibile solo con una mappa (la mappa e' in parte: vedi sotto). Difetti del C conservati e differenze volute: `Libs\War\CLAUDE.md`.
 - **La mappa di gioco (issue #197, parte B)**, `DelphiDoom.War.MapUi.*`: `TWarMapScene` (entrata, aggiornamento, disegno, pausa), `TWarMapRenderer` (terreno, strade, muri, rovine, foreste, unita' ordinate come il C, selezione, nebbia in due passate, minimappa), `TWarMapCamera`, `TWarMapPicker`, `TWarMapSelecting`, `TWarMapCommandPanel`, `TWarMapHud`, `TWarMapHost`, `TWarMapAudio`, `TWarMapLauncher`. Si prova con `campaign human|orc N` negli script di `Tools\Verifica\197\scripts\map_*.script`: **3533 fotogrammi, zero differenze dal C vero, a Win32 e a Win64** (test `TTestWarMapUiParity`, 8). **Non portato**: i comandi con bersaglio e il comando in attesa (costruzione con anteprima, incantesimi), il pannello dei comandi degli edifici, il menu F10, i trucchi sulla mappa, le partite personalizzate, animazioni, proiettili e nuvole di veleno. Vedi `Libs\War\CLAUDE.md` e `docs\PARITA_WAR.md`.
+## Comandi con bersaglio, edifici, combattimento disegnato e prestazioni (issue #197, parte C)
+
+La mappa di gioco della parte B ora **comanda e combatte**: i bottoni del pannello fanno il loro lavoro (anche quelli degli edifici), i comandi che aspettano un bersaglio si eseguono col clic o col tasto rapido, si costruisce con l'anteprima del fantasma, si addestra e si migliora con la riga di stato, gli incantesimi partono con il cursore a mira, e proiettili, animazioni, nuvole di veleno, danni e crolli si vedono. Il riferimento e' lo stesso della parte B: il remake in C intero con la SDL3 vera (`Tools\Verifica\197\war_frame_ref.c`). **10 script, 2065 impronte, zero differenze a Win32 e a Win64.**
+
+### Mappa nome C -> classe
+
+| C | Delphi (`DelphiDoom.War.MapUi.*`) |
+|---|---|
+| `map->commandState`, `consumeCommand` | `TWarMapCommandState`: il comando in attesa, `Consume`, `Clear`, i due flag del rilascio (selezione e camera) |
+| la parte del mouse di `wcmd_executeCommand`; i click handler dei bottoni (`wcmd_train*`, `wcmd_upgrade*`, `wcmd_build*`, `move`, `wcmd_stop`, `wcmd_cancel`...) | `TWarMapCommandRunner`: `Execute` (quale clic esegue quale comando e cosa consuma), `ClickCommand`, `CancelWithRightClick`; l'ordine vero lo da' `TWarCommands` del modello |
+| `wu_getUnitCommands`, `wu_getUnitCommandData`, `updateCommandButtons` | `TWarMapCommandPanel` (con il comando in attesa: i menu `BUILD_BASIC/ADVANCED`, `CANCEL`, tutti gli edifici, gli incantesimi ricercati) |
+| `commandsBaseData`, `commandMappings`, `upgradesData`, `spellData`, `WarFeatureType`, i numeri dei comandi | `CommandData.Data` (**generato** da `Tools\Verifica\197\Make-WarCommandData.ps1`) e `TWarCommandCatalog` (le ricerche di `wu_getCommandMapping*`) |
+| `renderCommand` | `TWarMapCommandPreview` (rettangolo grigio o rosso: `we_checkRectToBuild`) |
+| il ramo dei comandi di `updateMapCursor` | `TWarCommandCursor` (mira rossa, gialla, freccia; sulla mappa e sul minimap) |
+| il testo dell'addestramento e della ricerca di `updateStatus` | `TWarMapScene.StatusOfBuilding` |
+| `renderProjectile`; `renderAnimation`; le animazioni di `renderUnit` | `TWarMapRenderer.DrawProjectile`, `DrawAnimations`, `DrawRunningAnimations` |
+| `wa_playAttackSound`, i suoni di morte, crollo, ceppo, esplosione, freccia, incantesimo | `TWarMapHost` come `IWarCombatEvents` e `IWarSpellEvents`: un'entita' del pool e, dove il C ne sceglie uno fra piu', il numero estratto |
+| il blit 1:1 di SDL (`BlitRGBtoRGBPixelAlpha`) per una copia dentro la tela | `TWarImageBlitter.DrawCopy` |
+
+### Script (`Tools\Verifica\197\scripts`)
+
+| Script | Fotogrammi | Cosa prova |
+|---|---|---|
+| `map_cmd_train` | 158 | municipio: suggerimenti dei bottoni con i prezzi, addestrare con il bottone e il tasto P (il secondo ordine e' ignorato), annullare, "TRAINING A PEASANT" |
+| `map_cmd_build` | 148 | contadino: menu B e F, il fantasma grigio e rosso, il clic su una tegola occupata (suono di annullamento, il comando resta), ESC e clic destro, costruire, "NOT ENOUGH LUMBER" |
+| `map_cmd_orders` | 168 | due fanti: muovi, attacca, ferma, raccogli, ripara dai tasti; il clic che da' l'ordine non seleziona |
+| `map_cmd_town` | 207 | municipio con strada e muro, addestramento senza oro (messaggio che lampeggia), fucina (spade, "RESEARCHING WEAPONRY") e chiesa (guarigione) con i prezzi |
+| `map_cmd_extra` | 288 | fante con muovi e attacca sul minimap (la camera non lo segue), contadino con raccogli e ripara, chierico con guarigione e invisibilita', muro con ESC, cursori ai bordi |
+| `map_cursors` | 109 | la mira sulla miniera, sugli alberi, sul nemico e sul muro, la lente, le frecce ai quattro angoli |
+| `map_war_melee` | 236 | due eserciti: colpi, frecce e lance, morti, il suono di ogni colpo e il numero estratto |
+| `map_war_siege` | 261 | catapulta e arciere contro una caserma: pietre, esplosioni, fuoco del danno, crollo, macerie |
+| `map_spells`, `map_spells_orc` | 232, 258 | pioggia di fuoco, scorpioni, guarigione, vista lontana; nube di veleno, ragni, armatura profana, risveglio dei morti |
+
+I comandi dell'harness aggiunti a `war_frame_ref.c` (e che `TWarMapScene.ScriptCommand` capisce, via `IWarScriptedScene`): `unit TIPO X Y GIOCATORE` e `building TIPO X Y GIOCATORE` (X e Y sono un punto dello schermo, il tipo e' il numero di `WarUnitType`), `upgrade INDICE PERMESSO LIVELLO`, `feature INDICE VALORE`, `gold ORO LEGNA` (sempre del giocatore 0). Come per la parte A, i golden sono prodotti dalla versione modificata dell'harness.
+
+### Difetti del C conservati (ognuno coperto da uno script)
+
+- Il menu avanzato dei contadini orchi elenca la caserma al primo posto, non la fucina.
+- Un'unita' di una razza che non e' del giocatore non ha comandi.
+- Per le strade e i muri il comando non si consuma (si possono mettere piu' pezzi), ma `suppressSelectionOnRelease` lo accende solo `consumeCommand`: il rilascio del clic seleziona quello che c'e' sotto.
+- L'ordine di addestramento dato a un edificio che gia' addestra e' ignorato (`wst_canSubmitTransition`), il tasto e il fotogramma del pannello restano.
+- Il suggerimento di un bottone con il prezzo disegna il numero con l'evidenziazione del testo del suggerimento (indice 6, 8, 9): oltre la fine del numero il C legge gli zeri del suo buffer e disegna il glifo del carattere 0 (vuoto); `TWarTextRenderer` fa lo stesso (invece di `EWarException`, come nella parte A).
+
+### Differenze volute (ognuna con un test)
+
+- Il testo dell'addestramento di un edificio con la richiesta ancora in coda resta vuoto (il C legge lo stato dalla pila e usa un puntatore nullo).
+- Un addestramento o un miglioramento con piu' di un edificio selezionato (un `assert` del C) si consuma senza eseguire.
+- Il "segui" con un edificio selezionato e un clic destro su di lui: il C da' l'ordine all'edificio e fa il riconoscimento (un numero casuale), poi si fermerebbe su un `assert`; il modello non lo da' (`TWarMovementCommands.Follow`). Gli script non lo fanno.
+- Le animazioni del danno e del crollo prendono la dimensione del fotogramma dell'unita' al momento del disegno (il C la legge alla creazione: e' la stessa finche' l'edificio non cambia immagine).
+
+### Come si cerca una differenza
+
+`Confronta-Golden.ps1 -Solo 197` rifa il C e confronta; se un'impronta differisce: `DELPHIDOOM_WAR_UI_DUMP` e `Confronta-Traccia.ps1` / `Confronta-Pixel.ps1` (come nella parte A); `DELPHIDOOM_WAR_RUNSCRIPT=<script>` + `DELPHIDOOM_WAR_RUNSCRIPT_OUT=<file>` fanno scrivere a `MapUiParity` le impronte di Delphi per uno script qualunque; **se i pixel divergono dopo un po' e la traccia non dice perche'**, il generatore dei numeri e' quasi sempre la causa: `WAR_REF_RNGTRACE=1` (C) e `DELPHIDOOM_WAR_RNGTRACE=1` (Delphi) scrivono lo stato del generatore a ogni fotogramma (righe `D n stato`) e la prima riga diversa e' il fotogramma dove un numero e' estratto da una parte sola; `WAR_REF_RNGWHO=1` con una compilazione `gcc -g -O0 -fno-omit-frame-pointer` e `addr2line` (l'indirizzo di `main` e' stampato per spostare la base) dice la funzione del C che ha estratto.
+
+### Prestazioni
+
+Win32 Release, una mappa con 400 fanti fermi e la nebbia spenta (4096 tegole), 200 fotogrammi, minimo di 4 esecuzioni ciascuno, macchina scarica (variazione sotto il 2%): il disegno costa **1,91-1,92 ms** per fotogramma (prima della parte C 2,45), il C `-O1` 1,89-1,90 ms (**+1%**; il C `-O2` costava 1,69 nella misura precedente: +13%, non rifatta). Cio' che ha dato il tempo: la copia 1:1 dentro la tela con parole di 4 byte e quattro pixel opachi per volta se la tela e' opaca (`DrawCopy`; una tela pulita con alfa 255 resta a 255: `FOpaque`), e le tegole del terreno disegnate senza `Save`/`Translate`/`Restore` (con la scala dello stato a 1 la destinazione e' lo stesso `Single`). Il blit generale non e' cambiato; `RenderCopy` prova che il percorso diretto e quello pixel per pixel danno gli stessi byte per ogni alfa.
+
+### Numeri
+
+`DelphiDoom.Tests.War`: **1548 test, 1547 passati, 1 ignorato (la prova dei PNG, di prima), 0 falliti a Win32 e a Win64** (erano 1466). Copertura (CodeCoverage Debug Win32 sulle fixture `MapUi*`, `Ui*`, `Raster`, `Text`, `Render*`): `CommandState` 100%, `CommandCatalog` 100%, `CommandCursor` 100%, `CommandPreview` 100%, `CommandPanel` 100%, `Host` 100%, `Hud` 100%, `Audio` 100%, `Blitter` 100%, `CommandRunner` 100%, `Selecting` 99%, `Renderer` 99%, `Scene` 97%, `ScriptRunner` 95%. Le righe che mancano sono difensive (la riserva delle entita' piena, un'entita' che non nasce, le rovine delle paludi, il clamp del fotogramma di un'animazione) o aspettano il menu F10.
+
+### Non portato (e perche')
+
+Il **menu F10** (`war_map_menu.c`, `renderMenus`: opzioni, obiettivi, ricomincia, fine, game over, velocita', volumi; `menuState` non esiste; `TWarMapScene.GameSpeed` e `Conclude` sono il punto dove si collega), i **trucchi sulla mappa** (`war_cheats.c`: gli effetti che vogliono la mappa) e il **debug render**, le **partite personalizzate** (`wmap_createCustomMap`, `custom N`: opzioni predefinite, sorteggio con `SDL_rand`, il centro della camera, le razze) e la scena menu -> partita -> mappa. Sono pezzi grandi e nessuno si prova con uno script finche' non e' portato; `custom` e `scene download` danno ancora `EWarException` nell'esecutore.

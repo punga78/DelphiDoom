@@ -40,9 +40,37 @@ key esc up
 run 4 1
 move 190 2
 unit 2 150 90 0
-unit 12 175 90 0
-unit 0 200 90 0
+unit 12 130 105 0
+unit 0 140 125 0
 unit 1 240 100 1
+unit 0 120 150 0
+run 3 1
+move 120 150
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 4 1
+move 30 40
+run 3 1
+key m down
+run 2 1
+key m up
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 40 50
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 10 1
 run 5 1
 move 150 93
 run 3 1
@@ -76,7 +104,7 @@ lbutton down
 run 2 1
 lbutton up
 run 30 3
-move 175 93
+move 130 105
 run 3 1
 lbutton down
 run 2 1
@@ -86,13 +114,13 @@ key h down
 run 2 1
 key h up
 run 3 1
-move 200 93
+move 140 125
 run 3 1
 lbutton down
 run 2 1
 lbutton up
 run 6 1
-move 175 93
+move 130 105
 run 3 1
 lbutton down
 run 2 1
@@ -102,13 +130,13 @@ key i down
 run 2 1
 key i up
 run 3 1
-move 200 93
+move 140 125
 run 3 1
 lbutton down
 run 2 1
 lbutton up
 run 30 3
-move 200 93
+move 140 125
 run 3 1
 lbutton down
 run 2 1
@@ -126,7 +154,7 @@ lbutton down
 run 2 1
 lbutton up
 run 6 1
-move 200 93
+move 140 125
 run 3 1
 lbutton down
 run 2 1
