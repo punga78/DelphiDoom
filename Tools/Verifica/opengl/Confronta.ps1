@@ -1,4 +1,4 @@
-﻿# TEMPORARY HARNESS (issue #177): runs <Game>_GL_OLD.exe twice and <Game>_GL_NEW.exe once (Compila.ps1) on a
+# TEMPORARY HARNESS (issue #177): runs <Game>_GL_OLD.exe twice and <Game>_GL_NEW.exe once (Compila.ps1) on a
 # list of maps and compares the GL calls they recorded (glrecord_<MAP>.txt):
 #   old against old  = the noise: it has to be identical, otherwise the comparison with the new one means nothing
 #   old against new  = the result
@@ -30,7 +30,15 @@ param(
   [switch]$Models,
   # the PK3 of Tests\Data\LightsGl (Make-LightPk3.ps1) of the game: a GLDEFS that gives a dynamic light (point, flicker,
   # pulse) to three sprites out of four, so the lights (gld_SortDlights, gld_DrawDLights) are in the flow. Adds -devparm
-  [switch]$Lights
+  [switch]$Lights,
+  # the PK3 of Tests\Data\VoxelsGl (Make-VoxelPk3.ps1) of the game: every state of the game is a voxel (VOXELDEF), so the
+  # draw of the voxels (gld_DrawVoxels) is in the flow. Adds -devparm. -Variant p: the Doom pack with spin and angle offset.
+  # Can be given with -Lights (the lightmap of the voxels, gld_CalculateLightmapSTD, needs both)
+  [switch]$Voxels,
+  [string]$VoxelVariant = '',
+  # a folder without a dot in the path where the PK3 of the voxels is copied: the engine takes the extension of -file from the first
+  # dot of the path, so a tree under a folder like .claude\worktrees is refused as an invalid WAD
+  [string]$PackDir = ''
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -55,6 +63,19 @@ if ($Models) {
   $modelPack = Join-Path $here "Tests\Data\ModelsGl\zmdl_$letter.pk3"
   if (-not (Test-Path $modelPack)) { throw "Pacchetto dei modelli non trovato: $modelPack (Make-ModelPk3.ps1)" }
   $More = "$More -devparm -file $modelPack"
+  if (-not $PSBoundParameters.ContainsKey('Seconds')) { $Seconds = 300 }
+}
+if ($Voxels) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  if ($VoxelVariant -ne '') { $letter = $VoxelVariant }
+  $voxelPack = Join-Path $here "Tests\Data\VoxelsGl\zvox_$letter.pk3"
+  if (-not (Test-Path $voxelPack)) { throw "Pacchetto dei voxel non trovato: $voxelPack (Make-VoxelPk3.ps1)" }
+  if ($PackDir -ne '') {
+    New-Item -ItemType Directory -Force $PackDir | Out-Null
+    Copy-Item $voxelPack $PackDir -Force
+    $voxelPack = Join-Path $PackDir (Split-Path -Leaf $voxelPack)
+  }
+  $More = "$More -devparm -file $voxelPack"
   if (-not $PSBoundParameters.ContainsKey('Seconds')) { $Seconds = 300 }
 }
 if ($Lights) {
