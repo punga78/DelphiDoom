@@ -1,4 +1,4 @@
-# Piano: tutto a classi, anche il percorso caldo
+﻿# Piano: tutto a classi, anche il percorso caldo
 
 Issue #185. Decisione dell'utente del 2026-11-12: **tutto il codice storico del motore diventa a classi, compreso il percorso caldo** (renderer software e OpenGL, thinker, logica di gioco, salvataggi). Sostituisce la regola "codice storico per scelta" di `CLAUDE.md` e di `docs\PENDING_ISSUES.md`. Restano valide le quattro regole del 2026-11-07: compatibilità byte per byte (salvataggi, demo, rete), copertura almeno al 90% per libreria, prestazioni entro il 5% sui percorsi caldi, ordine dal freddo al caldo.
 
@@ -668,6 +668,18 @@ Cinque commit di codice, uno per tappa (`a1b80dbc` A, `8ae4d843` B, `bf0ef59c` D
 - **Non verificato**: salvataggi (non toccati, non provati), rete, deathmatch, difficolta' 4-5 e `-nomonsters` (il corpus non li esercita; per loro la prova e' la tabella di confronto e il controllo dei nomi), UDMF con gravita' e salute, `P_HitFloor` fuori dal corpus (i quattro terreni), apparizione delle cose di Heretic con le liste (`P_AddMaceSpot`, spot dei boss, suoni ambientali: in E1M1 di Heretic ci sono i suoni ambientali, le mazze solo nelle mappe dell'episodio), rinascita dei mostri; giochi OpenGL, SpeedHaste32 e ogni eseguibile Win64 compilati e non avviati.
 
 **Resta** (par. 13, riga 1 chiusa): le routine "duplicate con ragione" di questa tabella; le variabili globali di `p_mobj` (`iquehead`, `iquetail`, la coda) nel contesto del mondo (stadio 1 del par. 10.3, fetta 8); i test di unita' delle unit delle regole (richiedono il mondo finto della fetta 8). Prossima fetta della fase 2: **`p_user`** (par. 13.1 riga 2).
+
+### 11.6 Passo 2f-1: `p_user` (ramo `worktree-agent-a33357092270d4118`, 2026-11-15)
+
+`Base\p_user.pas` e' l'unica unit `p_user` per i quattro giochi; la differenza dei giochi e' la strategia calda `TUserGameRules` (classe `sealed` di metodi statici in `<Gioco>\DelphiDoom.Engine.World.UserRules.pas`). Da 6382 a 5402 righe (-980): 1364 in `Base\`, 4038 nelle quattro `UserRules`.
+
+- **Copia unica per tutti**: `P_Thrust`, `P_CalcHeight`, `P_CalcHeight205`, `P_SlopesCalcHeight`, `P_MovePlayer`.
+- **Doom, Heretic, Strife**: `P_DeathThink`, `P_PlayerThink` (`PlayerThinker`, `PlayerColormap`).
+- **Doom e Strife**: `P_GetMoveFactor`, `A_PlayerBreath`, `P_AngleTarget`, `P_PlayerFaceMobj` (`PlayerExtras`).
+- **Heretic e Hexen**: `P_PlayerNextArtifact`, `P_GetPlayerNum`, `P_PlayerRemoveArtifact` (`PlayerArtifacts`).
+- **Restano duplicate** (record e regole di gioco diversi): `P_PlayerThink` e `P_DeathThink` di Hexen, il movimento a comando (`MoveByCommand`), il volo di Heretic e Hexen (`AfterMove`, candidato a una fetta futura), `P_UseArtifact`, `P_PlayerUseArtifact`, `P_ArtiTele`.
+
+Verifica: golden 44/44 a 8 bit e 27/27 a 32 bit UGUALI, `Prova-PUser.ps1` 0 diverse; misura a coppie non conclusiva (macchina carica), da rifare.
 
 ### 11.7 Passo 2f-2: `p_inter` (ramo `worktree-agent-a0caca430f9e3d1ff`, partito da `5348560dc`, 2026-11-15)
 
