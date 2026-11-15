@@ -143,6 +143,7 @@ uses
   DelphiDoom.Decl.Source.GameFs in '..\Libs\Decl\DelphiDoom.Decl.Source.GameFs.pas',
   DelphiDoom.Decl.Console.Intf in '..\Libs\Decl\DelphiDoom.Decl.Console.Intf.pas',
   DelphiDoom.Decl.Console.TypeCommands in '..\Libs\Decl\DelphiDoom.Decl.Console.TypeCommands.pas',
+  DelphiDoom.Decl.Huffman.Frequencies in '..\Libs\Decl\DelphiDoom.Decl.Huffman.Frequencies.pas',
   DelphiDoom.Decl.Console.Commands in '..\Libs\Decl\DelphiDoom.Decl.Console.Commands.pas',
   DelphiDoom.Decl.Factory in '..\Libs\Decl\DelphiDoom.Decl.Factory.pas',
   DelphiDoom.Tests.Scanner.IdFakes in 'Source\DelphiDoom.Tests.Scanner.IdFakes.pas',
@@ -176,6 +177,7 @@ uses
   DelphiDoom.Tests.Decl.GameFileSource in 'Source\DelphiDoom.Tests.Decl.GameFileSource.pas',
   DelphiDoom.Tests.Decl.GameFsManager in 'Source\DelphiDoom.Tests.Decl.GameFsManager.pas',
   DelphiDoom.Tests.Decl.ConsoleCommands in 'Source\DelphiDoom.Tests.Decl.ConsoleCommands.pas',
+  DelphiDoom.Tests.Decl.HuffmanFrequencies in 'Source\DelphiDoom.Tests.Decl.HuffmanFrequencies.pas',
   DelphiDoom.Tests.Decl.MaterialSave in 'Source\DelphiDoom.Tests.Decl.MaterialSave.pas';
 
 var

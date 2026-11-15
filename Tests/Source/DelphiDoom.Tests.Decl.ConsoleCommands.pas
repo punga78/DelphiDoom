@@ -246,7 +246,7 @@ var
   LIndex: Integer;
 begin
   LInfos := FCommands.Commands;
-  Assert.AreEqual<Integer>(27, Length(LInfos));
+  Assert.AreEqual<Integer>(28, Length(LInfos));
   LNames := TStringList.Create;
   try
     // the last command registered is the first of the list
@@ -257,7 +257,7 @@ begin
       'listTables,listMaterials,listSkins,listSoundShaders,listEntityDefs,listFX,listParticles,listAF,' +
       'listPDAs,listEmails,listVideos,listAudios,' +
       'printTable,printMaterial,printSkin,printSoundShader,printEntityDef,printFX,printParticle,printAF,' +
-      'printPDA,printEmail,printVideo,printAudio',
+      'printPDA,printEmail,printVideo,printAudio,listHuffmanFrequencies',
       LNames.CommaText.Replace('"', ''));
   finally
     LNames.Free;
@@ -293,9 +293,11 @@ begin
       Assert.AreEqual('prints an Video', string(LInfo.Description));
     if LInfo.Name = 'printPDA' then
       Assert.AreEqual('prints an PDA', string(LInfo.Description));
+    if LInfo.Name = 'listHuffmanFrequencies' then
+      Assert.AreEqual('lists decl text character frequencies', string(LInfo.Description));
     Inc(LFound);
   end;
-  Assert.AreEqual(27, LFound);
+  Assert.AreEqual(28, LFound);
 end;
 
 procedure TTestDeclConsoleCommands.DovrebbeElencareLeDichiarazioniDelTipo;
