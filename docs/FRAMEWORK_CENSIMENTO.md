@@ -42,14 +42,14 @@ Numeri: 105 cartelle di `Libs\` (2261 `.pas`), `Base\` 404 unit e 164329 righe, 
 | **Giochi non id** | Keen, Greed, War, Racing, 16 `Xcom*` | su `GameHost` e nucleo, senza `Base` |
 | **Strumenti** | Ide, ToolsCore, EndoomEditor, Font, FontEditor, VoxelEditor | |
 
-Librerie **miste** da guardare una per una (la parte generica va separata da quella di Doom): `MathCore` (23553 righe: fixed point e tabelle di Doom accanto a hash e CRC), `Wad`, `Palette`, `Video`, `Input`, `Console`, `Audio`, `Configuration`.
+Librerie **miste** da guardare una per una (la parte generica va separata da quella di Doom): ~~`MathCore`~~ (separata nella prima fetta della #225: `GameMath`, vedi "Esito della #225"), `Wad`, `Palette`, `Video`, `Input`, `Console`, `Audio`, `Configuration`.
 
 ## 4. Strati proposti
 
 Una unit usa solo gli strati sotto di sé (chi sta a destra del `|` non dipende da chi sta a sinistra):
 
 ```
-L0 Fondazione   Logging Platform Clock Threading Zlib Yaml MathCore(generico) Configuration(formato) CommandLine
+L0 Fondazione   Logging Platform Clock Threading Zlib Yaml MathCore(generico) GameMath(id Tech 1, L0) Configuration(formato) CommandLine
 L1 Formati      Png Jpeg Ogg Mp3 Sndfile+Sound Mikmod Xmi M2m Midi Opl Imaging Palette Wad(VFS) Texture
 L2 Servizi      Audio Input Video Console Screenshot Scanner Serializer
 L3 Piattaforma  GameHost OpenGl\Binding           (Scripting: PascalScript Script Ddc, opzionale)
@@ -135,3 +135,10 @@ Regola d'uso dalla #226 in poi: spostare una cartella (o correggere un difetto) 
 ## Esito della #224 (2026-11-15)
 
 - `Libs\PascalScript`, `Libs\ScriptHost` e `Libs\Mp3` non usano piu' nulla di `Common` ne' di `Base`. **PascalScript e ScriptHost**: `d_delphi` non serviva (la sola funzione usata, `CharPos`, e' gia' sostituita da `ps_utils.PSCharPos`; `TDoomCompiler.unitnames`, mai letta, e' una `TStringList` al posto di `TDStringList`); `Doom32.inc` e' sostituito da `Libs\PascalScript\PascalScriptCodegen.inc` (solo gli interruttori di generazione del codice; lo usa anche `ddc_base`). **Mp3**: `TMp3Source` (`Libs\Mp3\Decoder\mp3_Source.pas`) al posto di `TDStream`, `FreeAndNil`, `TByteArray` e `Sleep` dalla RTL, `I_Error` e' `raise Exception.Create(...)` come nello shim (nel motore prima chiudeva il programma: sono il `TBitReserve` che non si crea e il guasto del dispositivo d'uscita, percorsi mai visti), `Mp3Codegen.inc` al posto di `Doom32.inc`. Cancellate `Libs\Mp3\Shim` (3 unit) e `Libs\Script\Shim` (2 file). Eccezioni tolte da `Libs\Strati.psd1`: 2 (da 10 a 8); usi risolti da una cartella `Shim`: da 6 a 0; violazioni nuove: 0.
+
+## Esito della #225, prima fetta: `MathCore` diviso (2026-11-15)
+
+- **Taglio**: nuova libreria `Libs\GameMath` (strato **L0**, riga in `Aree` di `Libs\Strati.psd1`) con le 19 unit di id Tech 1 di `MathCore`, spostate con `git mv` e **non rinominate** (restano `DelphiDoom.MathCore.*`: nessun `uses` cambia): `Types`, `FixedMath`, `Trigonometry`, le cinque `Table*` trigonometriche, `BoundingBox`, `VectorMath`, `X87Double`, `PixelBatch`, e il generatore casuale di Doom con `Intf`, `GameRandom`, `TableRandom`, `TableSysRandom`, `SystemEntropySource`, `StringHashTable`, `Factory`. In `MathCore` restano le parti generiche: `Crc32`, `TableCrc32`, `Sha1`, `IntegerStack`, `IntegerQueue`, `MemoryFill`, `SoftExtended`, `Float.*` (id Tech 4), `Patch.*` (Quake III).
+- **Perche' L0 e non il modulo `IdTech1`**: la virgola fissa la usano anche Greed, Racing e Keen (modulo `Giochi`), che non possono usare un modulo. **Perche' questi file**: `Types` e' usata solo da unit di id Tech 1 e `GameRandom` usa `Trigonometry`; tenere `Intf`/`GameRandom` in `MathCore` avrebbe fatto un ciclo tra le due librerie. `GameMath` usa `MathCore`, mai il contrario (controllo degli strati: 0 violazioni nuove, nessuna eccezione nuova).
+- **Percorsi**: 41 `.dpr` (elenchi `in`), 30 `.dproj` (`DCC_UnitSearchPath` con `..\Libs\GameMath`) e gli script di `Tools\Verifica` con `Libs\MathCore` nel percorso sono aggiornati; il progetto di test `DelphiDoom.Tests.MathCore` resta uno (dividerlo e' lavoro successivo).
+- **Resta della #225**: `Wad`, `Palette` (eccezione verso `Video`), `Video`, `Input`, `Console` (eccezione verso `GameState`), `Audio`, `Configuration`, e le eccezioni `Pmove` -> `Net` e `Greed` -> `Net` (`Net` e' mista).

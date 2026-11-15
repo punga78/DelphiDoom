@@ -11,7 +11,7 @@ Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regol
 
 | Strato | Titolo | Aree (`Libs\` salvo dove scritto) |
 |---|---|---|
-| `L0` | Fondazione | Clock CommandLine Configuration Geometry IdLib Logging MathCore Platform Threading Yaml Zlib |
+| `L0` | Fondazione | Clock CommandLine Configuration GameMath Geometry IdLib Logging MathCore Platform Threading Yaml Zlib |
 | `L1` | Formati e codec | Cinematic Compression Flic Imaging Jpeg M2m Midi Mikmod Mp3 Ogg Opl Palette Png Sndfile Sound Texture Wad Xmi |
 | `L2` | Servizi di runtime | Audio AudioMix Console Input Models Scanner Screenshot Serializer Video |
 | `L3` | Piattaforma e scripting | GameHost OpenGl\Binding PascalScript Script ScriptHost Ddc |
@@ -23,6 +23,7 @@ Il dato letto dallo script e' `Libs\Strati.psd1`; questo file ne spiega le regol
 Differenze dal censimento (`docs\FRAMEWORK_CENSIMENTO.md`), motivate dai `uses` di oggi:
 
 - `IdLib` e `Geometry` stanno in **L0**: non hanno nessuna dipendenza e li usano `MathCore`, `Scanner`, `Wad`, `Imaging`, `Audio`, `Console`, `Net` e `Models` (nel censimento erano porte senza chiamanti).
+- `MathCore` e' stata divisa (#225, prima fetta): la parte generica (CRC, SHA-1, `Float.*`, `Patch.*`) resta in `MathCore`, la matematica di id Tech 1 (virgola fissa, tabelle, generatore casuale di Doom, `X87Double`) e' in `GameMath`, **L0 e non modulo** perche' la usano anche `Greed`, `Racing` e `Keen` (modulo `Giochi`). Le unit hanno ancora il nome `DelphiDoom.MathCore.*`. `GameMath` usa `MathCore`, mai il contrario.
 - `Cinematic` e `Compression` stanno in **L1** (formati; il censimento li dava gia' come L1 Formati), `Models` in **L2** (formato dei modelli, usa `Scanner`; lo usa `Qvm`).
 - `Libs\OpenGl` e' diviso in sottocartelle gia' nel manifesto: `Binding` (L3, usato da `GameHost`) e `Legacy`/`Recorder` (modulo `IdTech1`); #220 resta la divisione in due librerie vere.
 - `ScriptHost` e `Ddc` sono in L3 (scripting generico) e **non usano piu' il motore** (#221): il collegamento a id Tech 1 e' `Libs\ScriptEngine` (modulo `IdTech1`).

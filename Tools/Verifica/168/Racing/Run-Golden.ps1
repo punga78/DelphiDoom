@@ -21,6 +21,7 @@ $inc = Join-Path $Work 'inc'
 $units = @(
   (Join-Path $root 'Libs\Racing'),
   (Join-Path $root 'Libs\MathCore'),
+  (Join-Path $root 'Libs\GameMath'),
   (Join-Path $root 'Tests\Source'),
   $here,
   $inc

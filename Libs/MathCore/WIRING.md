@@ -1,5 +1,7 @@
 # Libs\MathCore - come collegarla al motore (issue #75, parte della #45)
 
+> Dal 2026-11-15 (issue #225) le unit di id Tech 1 citate qui (virgola fissa, tabelle, generatore casuale, hash dei nomi, vettori, bbox, `X87Double`, `PixelBatch`, `Intf`, `Factory`) stanno in `Libs\GameMath`, con gli stessi nomi `DelphiDoom.MathCore.*`.
+
 La libreria dà in classi le parti pure e senza stato di `Base\m_fixed.pas`, `tables.pas` (tabelle trigonometriche e
 funzioni degli angoli), `m_vectors.pas`, `m_bbox.pas`, `m_rnd.pas`, `m_stack.pas`, `m_hash.pas`, `m_crc32.pas` e `m_sha1.pas`.
 Non conosce il motore: dipende solo da `System.*`. La parità con il vecchio codice è provata da 101 test
@@ -78,25 +80,25 @@ La serie dei numeri è la stessa del vecchio: **le demo e i savegame esistenti r
 Dipende da cosa si collega. Per il solo random, SHA-1, CRC e hash (tutti i progetti di gioco e i `ddc_*` che oggi hanno `m_rnd`, `m_sha1`, `m_crc32`, `m_hash`):
 
 ```
-  DelphiDoom.MathCore.Types in 'Libs\MathCore\DelphiDoom.MathCore.Types.pas',
-  DelphiDoom.MathCore.Intf in 'Libs\MathCore\DelphiDoom.MathCore.Intf.pas',
-  DelphiDoom.MathCore.TableRandom in 'Libs\MathCore\DelphiDoom.MathCore.TableRandom.pas',
-  DelphiDoom.MathCore.TableSysRandom in 'Libs\MathCore\DelphiDoom.MathCore.TableSysRandom.pas',
+  DelphiDoom.MathCore.Types in 'Libs\GameMath\DelphiDoom.MathCore.Types.pas',
+  DelphiDoom.MathCore.Intf in 'Libs\GameMath\DelphiDoom.MathCore.Intf.pas',
+  DelphiDoom.MathCore.TableRandom in 'Libs\GameMath\DelphiDoom.MathCore.TableRandom.pas',
+  DelphiDoom.MathCore.TableSysRandom in 'Libs\GameMath\DelphiDoom.MathCore.TableSysRandom.pas',
   DelphiDoom.MathCore.TableCrc32 in 'Libs\MathCore\DelphiDoom.MathCore.TableCrc32.pas',
-  DelphiDoom.MathCore.TableFineSine in 'Libs\MathCore\DelphiDoom.MathCore.TableFineSine.pas',
-  DelphiDoom.MathCore.TableFineTangent in 'Libs\MathCore\DelphiDoom.MathCore.TableFineTangent.pas',
-  DelphiDoom.MathCore.TableTanToAngle in 'Libs\MathCore\DelphiDoom.MathCore.TableTanToAngle.pas',
-  DelphiDoom.MathCore.TableTanToAngleEx in 'Libs\MathCore\DelphiDoom.MathCore.TableTanToAngleEx.pas',
-  DelphiDoom.MathCore.TableFixedSine in 'Libs\MathCore\DelphiDoom.MathCore.TableFixedSine.pas',
-  DelphiDoom.MathCore.FixedMath in 'Libs\MathCore\DelphiDoom.MathCore.FixedMath.pas',
-  DelphiDoom.MathCore.Trigonometry in 'Libs\MathCore\DelphiDoom.MathCore.Trigonometry.pas',
+  DelphiDoom.MathCore.TableFineSine in 'Libs\GameMath\DelphiDoom.MathCore.TableFineSine.pas',
+  DelphiDoom.MathCore.TableFineTangent in 'Libs\GameMath\DelphiDoom.MathCore.TableFineTangent.pas',
+  DelphiDoom.MathCore.TableTanToAngle in 'Libs\GameMath\DelphiDoom.MathCore.TableTanToAngle.pas',
+  DelphiDoom.MathCore.TableTanToAngleEx in 'Libs\GameMath\DelphiDoom.MathCore.TableTanToAngleEx.pas',
+  DelphiDoom.MathCore.TableFixedSine in 'Libs\GameMath\DelphiDoom.MathCore.TableFixedSine.pas',
+  DelphiDoom.MathCore.FixedMath in 'Libs\GameMath\DelphiDoom.MathCore.FixedMath.pas',
+  DelphiDoom.MathCore.Trigonometry in 'Libs\GameMath\DelphiDoom.MathCore.Trigonometry.pas',
   DelphiDoom.MathCore.IntegerStack in 'Libs\MathCore\DelphiDoom.MathCore.IntegerStack.pas',
-  DelphiDoom.MathCore.GameRandom in 'Libs\MathCore\DelphiDoom.MathCore.GameRandom.pas',
-  DelphiDoom.MathCore.SystemEntropySource in 'Libs\MathCore\DelphiDoom.MathCore.SystemEntropySource.pas',
-  DelphiDoom.MathCore.StringHashTable in 'Libs\MathCore\DelphiDoom.MathCore.StringHashTable.pas',
+  DelphiDoom.MathCore.GameRandom in 'Libs\GameMath\DelphiDoom.MathCore.GameRandom.pas',
+  DelphiDoom.MathCore.SystemEntropySource in 'Libs\GameMath\DelphiDoom.MathCore.SystemEntropySource.pas',
+  DelphiDoom.MathCore.StringHashTable in 'Libs\GameMath\DelphiDoom.MathCore.StringHashTable.pas',
   DelphiDoom.MathCore.Crc32 in 'Libs\MathCore\DelphiDoom.MathCore.Crc32.pas',
   DelphiDoom.MathCore.Sha1 in 'Libs\MathCore\DelphiDoom.MathCore.Sha1.pas',
-  DelphiDoom.MathCore.Factory in 'Libs\MathCore\DelphiDoom.MathCore.Factory.pas',
+  DelphiDoom.MathCore.Factory in 'Libs\GameMath\DelphiDoom.MathCore.Factory.pas',
 ```
 
 (GameRandom usa Trigonometry per gli angoli hitscan e Trigonometry usa FixedMath e le cinque tabelle trigonometriche; per TVectorMath, TBoundingBoxMath e TIntegerQueue aggiungere

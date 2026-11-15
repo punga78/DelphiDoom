@@ -1,14 +1,13 @@
 # Libs\MathCore
 
-Parti pure di generatore casuale, hash, CRC, SHA-1, tabelle trigonometriche, aritmetica fixed, vettori e bbox.
+Parti generiche di CRC, SHA-1, pile e code di interi, `Extended` in software e matematica in virgola mobile di id Tech 4 e Quake III. **La parte di id Tech 1** (generatore casuale e tabella dei nomi di Doom, tabelle trigonometriche, aritmetica fixed, vettori e bbox, `X87Double`, `PixelBatch`) e' in [`Libs\GameMath`](../GameMath/README.md) dalla issue #225, con gli stessi nomi di unit.
 
 Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178) sta in [CLAUDE.md](CLAUDE.md).
 
 ## Contenuto
 
-- Unit nella cartella: 24 (nome a punti `DelphiDoom.MathCore.*`).
-- Interfacce dichiarate: `IEntropySource`, `IGameRandom`, `IStringHashTable`.
-- Punto di creazione delle classi: `DelphiDoom.MathCore.Factory`.
+- Unit nella cartella: 87 (nome a punti `DelphiDoom.MathCore.*`; 19 unit di id Tech 1 sono passate a `Libs\GameMath`).
+- Interfacce e factory (`IEntropySource`, `IGameRandom`, `IStringHashTable`, `TMathCoreFactory`): in `Libs\GameMath`.
 
 ## Prova
 
