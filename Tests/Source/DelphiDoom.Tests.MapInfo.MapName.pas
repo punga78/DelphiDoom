@@ -30,6 +30,8 @@ type
     [Test]
     procedure DovrebbeEssereUgualeAlVecchioCodiceDiStrifeSuTuttiINomiBrevi;
     [Test]
+    procedure DovrebbeEssereUgualeAlVecchioCodiceDelComandoNewGame;
+    [Test]
     procedure DovrebbeRifiutareUnNomeVuoto;
     [Test]
     procedure DovrebbeLasciareInvariatiIRisultatiSeIlNomeERifiutato;
@@ -113,8 +115,17 @@ begin
   end;
 end;
 
+type
+  TOldGameMode = (shareware, registered, commercial, retail);
+
+var
+  gamemode: TOldGameMode;
+
 // The old G_ValidateMapName of the three games, copied as they were
 {$I old_mn.inc}
+
+// The old code of G_CmdNewGame of Doom, Heretic and Strife that reads the arguments, copied as it was
+{$I old_ca.inc}
 
 { TTestMapInfoMapName }
 
@@ -187,6 +198,51 @@ end;
 procedure TTestMapInfoMapName.DovrebbeEssereUgualeAlVecchioCodiceDiStrifeSuTuttiINomiBrevi;
 begin
   CompareAll(TMapName.StrifeRules, 2, 1);
+end;
+
+procedure TTestMapInfoMapName.DovrebbeEssereUgualeAlVecchioCodiceDelComandoNewGame;
+const
+  ARGUMENTS1: array[0..23] of string = ('1', '7', '12', 'map05', 'MAP32', 'Map1', 'e1m3', 'E2M9',
+    'e1m', 'E1M1x', '0x10', '#7', '-0x1', 'abc', 'MAP#5', ' 5', 'E', 'M', 'e9m9', 'MAP', 'e1', '$A',
+    'MAP0x', '3.5');
+  ARGUMENTS2: array[0..5] of string = ('', '3', '0', 'x', '12', '0x2');
+var
+  LArgument1, LArgument2: string;
+  LOldEpisode, LOldMap, LNewEpisode, LNewMap: Integer;
+  LNumbered: Boolean;
+  LGame: Integer;
+begin
+  for LArgument1 in ARGUMENTS1 do
+    for LArgument2 in ARGUMENTS2 do
+      for LGame := 0 to 3 do
+      begin
+        LOldEpisode := -77;
+        LOldMap := -77;
+        // 0 Doom 2, 1 Doom episodes, 2 Heretic, 3 Strife
+        case LGame of
+          0:
+            begin
+              gamemode := commercial;
+              OldDoomCmdNewGame(LArgument1, LArgument2, LOldEpisode, LOldMap);
+            end;
+          1:
+            begin
+              gamemode := retail;
+              OldDoomCmdNewGame(LArgument1, LArgument2, LOldEpisode, LOldMap);
+            end;
+          2: OldHereticCmdNewGame(LArgument1, LArgument2, LOldEpisode, LOldMap);
+        else
+          OldStrifeCmdNewGame(LArgument1, LArgument2, LOldEpisode, LOldMap);
+          LOldEpisode := 0; // Strife has no episodes
+        end;
+        LNumbered := LGame in [0, 3];
+        TMapName.FromArguments(LNumbered, LArgument1, LArgument2, LNewEpisode, LNewMap);
+        if LGame = 3 then
+          LNewEpisode := 0;
+        if (LOldEpisode <> LNewEpisode) or (LOldMap <> LNewMap) then
+          Assert.Fail(Format('"%s" "%s" gioco %d: vecchio %d %d, nuovo %d %d',
+            [LArgument1, LArgument2, LGame, LOldEpisode, LOldMap, LNewEpisode, LNewMap]));
+      end;
 end;
 
 procedure TTestMapInfoMapName.DovrebbeRifiutareUnNomeVuoto;

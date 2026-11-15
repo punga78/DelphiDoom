@@ -540,6 +540,8 @@ procedure G_ConfigureSaveGameExtension(const saveproc, loadproc: savegameextensi
 implementation
 
 uses
+  DelphiDoom.Input.EventScaling,
+  DelphiDoom.Serializer.SaveGameName,
   DelphiDoom.MapInfo.LevelProgression,
   DelphiDoom.MapInfo.MapName,
   DelphiDoom.Input.KeyboardLayout,
@@ -1419,7 +1421,6 @@ end;
 //==============================================================================
 function G_Responder(ev: Pevent_t): boolean;
 var
-  bmask: integer;
   i: integer;
 begin
   if gamestate = GS_ENDOOM then
@@ -1521,8 +1522,8 @@ begin
           mousebuttons[0] := ev.data1 and 1 <> 0;
           mousebuttons[1] := ev.data1 and 2 <> 0;
           mousebuttons[2] := ev.data1 and 4 <> 0;
-          mousex := mousex + ((ev.data2 * (mouseSensitivity + 5)) div 10) * mouseSensitivityX div 5;
-          mousey := mousey + ((ev.data3 * (mouseSensitivity + 5)) div 10) * mouseSensitivityY div 5;
+          mousex := mousex + TInputEventScaling.MouseMotion(ev.data2, mouseSensitivity, mouseSensitivityX);
+          mousey := mousey + TInputEventScaling.MouseMotion(ev.data3, mouseSensitivity, mouseSensitivityY);
         end
         else
         begin
@@ -1540,12 +1541,7 @@ begin
       begin
         if usejoystick then
         begin
-          bmask := 1;
-          for i := 0 to NUMJOYBUTTONS - 1 do
-          begin
-            joybuttons[i] := (ev.data1 and bmask) <> 0;
-            bmask := bmask * 2;
-          end;
+          TInputEventScaling.JoystickButtons(ev.data1, @joybuttons[0], NUMJOYBUTTONS);
           joyxmove := ev.data2;
           joyymove := ev.data3;
         end
@@ -2219,23 +2215,8 @@ end;
 //
 //==============================================================================
 function G_GetSaveName(name: string): string;
-var
-  i: integer;
 begin
-  result := '';
-  for i := 0 to Ord(load_end) - 1 do
-  begin
-    if name = itoa(i) then
-    begin
-      sprintf(result, D_GetSavePath + SAVEGAMENAME + '%s.dsg', [name]);
-      exit;
-    end;
-  end;
-
-  if strupper(Copy(name, length(name) - 3, 4)) <> '.DSG' then
-    result := name + '.DSG'
-  else
-    result := name;
+  result := TSaveGameName.Resolve(name, Ord(load_end), D_GetSavePath + SAVEGAMENAME);
 end;
 
 //
@@ -2651,7 +2632,6 @@ end;
 procedure G_CmdNewGame(const parm1, parm2: string);
 var
   epsd, map: integer;
-  mapname: string;
 begin
   if parm1 = '' then
   begin
@@ -2659,31 +2639,7 @@ begin
     exit;
   end;
 
-  mapname := strupper(parm1);
-
-  if gamemode = commercial then
-  begin
-    epsd := 0;
-    map := atoi(parm1);
-    if (mapname[1] = 'M') then
-      if length(mapname) = 5 then
-        if (mapname[2] = 'A') and
-           (mapname[3] = 'P') then
-          map := atoi(mapname[4] + mapname[5]);
-  end
-  else
-  begin
-    epsd := atoi(parm1);
-    map := atoi(parm2);
-    if parm2 = '' then
-      if (mapname[1] = 'E') then
-        if length(mapname) = 4 then
-          if (mapname[3] = 'M') then
-          begin
-            epsd := atoi(mapname[2]);
-            map := atoi(mapname[4]);
-          end;
-  end;
+  TMapName.FromArguments(gamemode = commercial, parm1, parm2, epsd, map);
 
   if W_CheckNumForName(P_GetMapName(epsd, map)) > -1 then
   begin

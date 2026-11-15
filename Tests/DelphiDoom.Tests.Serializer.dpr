@@ -25,12 +25,14 @@ uses
   DelphiDoom.Serializer.DiskLayouts in '..\Libs\Serializer\DelphiDoom.Serializer.DiskLayouts.pas',
   DelphiDoom.Serializer.DiskRecordWriter in '..\Libs\Serializer\DelphiDoom.Serializer.DiskRecordWriter.pas',
   DelphiDoom.Serializer.Factory in '..\Libs\Serializer\DelphiDoom.Serializer.Factory.pas',
+  DelphiDoom.Serializer.SaveGameName in '..\Libs\Serializer\DelphiDoom.Serializer.SaveGameName.pas',
   DelphiDoom.Tests.Serializer.Fakes in 'Source\DelphiDoom.Tests.Serializer.Fakes.pas',
   DelphiDoom.Tests.Serializer.RecordSerializer in 'Source\DelphiDoom.Tests.Serializer.RecordSerializer.pas',
   DelphiDoom.Tests.Serializer.Golden in 'Source\DelphiDoom.Tests.Serializer.Golden.pas',
   DelphiDoom.Tests.Serializer.DiskLayout in 'Source\DelphiDoom.Tests.Serializer.DiskLayout.pas',
   DelphiDoom.Tests.Serializer.DiskRecordWriter in 'Source\DelphiDoom.Tests.Serializer.DiskRecordWriter.pas',
-  DelphiDoom.Tests.Serializer.MemoryStream in 'Source\DelphiDoom.Tests.Serializer.MemoryStream.pas';
+  DelphiDoom.Tests.Serializer.MemoryStream in 'Source\DelphiDoom.Tests.Serializer.MemoryStream.pas',
+  DelphiDoom.Tests.Serializer.SaveGameName in 'Source\DelphiDoom.Tests.Serializer.SaveGameName.pas';
 
 var
   Runner: ITestRunner;

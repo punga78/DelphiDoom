@@ -389,6 +389,7 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.Input.EventScaling,
   DelphiDoom.Input.KeyboardLayout,
   c_cmds,
   z_zone,
@@ -1202,7 +1203,6 @@ var
 //==============================================================================
 function G_Responder(ev: Pevent_t): boolean;
 var
-  bmask: integer;
   i: integer;
   plr: Pplayer_t;
 begin
@@ -1358,8 +1358,8 @@ begin
           mousebuttons[0] := ev.data1 and 1 <> 0;
           mousebuttons[1] := ev.data1 and 2 <> 0;
           mousebuttons[2] := ev.data1 and 4 <> 0;
-          mousex := mousex + ((ev.data2 * (mouseSensitivity + 5)) div 10) * mouseSensitivityX div 5;
-          mousey := mousey + ((ev.data3 * (mouseSensitivity + 5)) div 10) * mouseSensitivityY div 5;
+          mousex := mousex + TInputEventScaling.MouseMotion(ev.data2, mouseSensitivity, mouseSensitivityX);
+          mousey := mousey + TInputEventScaling.MouseMotion(ev.data3, mouseSensitivity, mouseSensitivityY);
         end
         else
         begin
@@ -1377,12 +1377,7 @@ begin
       begin
         if usejoystick then
         begin
-          bmask := 1;
-          for i := 0 to NUMJOYBUTTONS - 1 do
-          begin
-            joybuttons[i] := (ev.data1 and bmask) <> 0;
-            bmask := bmask * 2;
-          end;
+          TInputEventScaling.JoystickButtons(ev.data1, @joybuttons[0], NUMJOYBUTTONS);
           joyxmove := ev.data2;
           joyymove := ev.data3;
         end
