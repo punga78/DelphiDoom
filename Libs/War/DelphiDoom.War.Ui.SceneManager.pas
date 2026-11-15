@@ -60,6 +60,8 @@ type
     FOriginalHeight: Integer;
     procedure LeaveCurrent;
   public
+    /// <summary>The scenes are released first: they hold this manager (not counted) as their host</summary>
+    destructor Destroy; override;
     /// <summary>The input, canvas and imui are not owned. The map launcher may be nil: a map is then an empty screen</summary>
     constructor Create(const ASettings: IWarGameSettings; const AInput: TWarUiInput; const ACanvas: TWarUiCanvas;
       const AImui: TWarImui; const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AOriginalWidth,
@@ -121,6 +123,13 @@ begin
   FIsDemo := AIsDemo;
   FOriginalWidth := AOriginalWidth;
   FOriginalHeight := AOriginalHeight;
+end;
+
+destructor TWarSceneManager.Destroy;
+begin
+  FScene := nil;
+  FNextScene := nil;
+  inherited Destroy;
 end;
 
 function TWarSceneManager.GetRealTime: Double;

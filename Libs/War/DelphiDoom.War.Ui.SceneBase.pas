@@ -65,6 +65,10 @@ type
     procedure Render;
     procedure Leave; virtual;
     procedure HandleTextInput(const AText: AnsiString);
+    /// <summary>The cheat panel of the scene (enabled only by the scenes that create it)</summary>
+    property CheatsPanel: TWarCheatsPanel read FPanel;
+    /// <summary>The animations of the scene</summary>
+    property SceneAnimations: TWarUiAnimations read FAnimations;
   end;
 
 implementation

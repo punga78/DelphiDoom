@@ -47,6 +47,8 @@ type
     function IsKeyJustReleased(AKey: TWarKey): Boolean;
     function GetPositionX: Single;
     function GetPositionY: Single;
+    property PositionX: Single read GetPositionX;
+    property PositionY: Single read GetPositionY;
   end;
 
 implementation

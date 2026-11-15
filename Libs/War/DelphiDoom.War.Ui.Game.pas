@@ -63,7 +63,9 @@ end;
 
 destructor TWarUiGame.Destroy;
 begin
-  // the scene that runs is freed first: it holds services
+  // the factory lets go of the manager (its host, not counted), then the manager releases the scene that runs: that one
+  // holds the manager and the factory
+  FScenes.Detach;
   FManager.Free;
   FScenes.Free;
   FImui.Free;

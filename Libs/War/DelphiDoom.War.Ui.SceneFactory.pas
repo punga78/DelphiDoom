@@ -32,6 +32,11 @@ type
     function CreateBlizzard: IWarScene;
     function CreateMainMenu: IWarScene;
     function CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;
+    /// <summary>
+    ///   Lets go of the services: the owner calls it before it frees the manager, that is the host the services hold
+    ///   (not counted), so no reference is released on an object that is gone. The factory makes no scene after this
+    /// </summary>
+    procedure Detach;
   end;
 
 implementation
@@ -47,6 +52,11 @@ begin
   FServices := AServices;
   // the scenes that start scenes ask this factory
   FServices.Scenes := Self;
+end;
+
+procedure TWarSceneFactory.Detach;
+begin
+  FServices := Default(TWarSceneServices);
 end;
 
 function TWarSceneFactory.CreateBlizzard: IWarScene;
