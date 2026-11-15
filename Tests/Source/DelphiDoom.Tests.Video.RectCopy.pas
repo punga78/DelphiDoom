@@ -43,6 +43,12 @@ type
     procedure DovrebbeStirareConIlPixelPiuVicinoA32Bit;
     [Test]
     procedure DovrebbeDisegnareSoloLeRigheDelFiloNelloStiramento;
+    [Test]
+    procedure DovrebbeStirareConTrasparenzaA8Bit;
+    [Test]
+    procedure DovrebbeCopiareUnoAUnoConTrasparenzaConIlFilo;
+    [Test]
+    procedure DovrebbeStirareConTrasparenzaA32BitComeIlVecchioCodice;
   end;
 
 implementation
@@ -247,6 +253,148 @@ begin
       Assert.AreEqual<Integer>(MARK8, LScreen[LRow * LPitch + 3], 'row ' + IntToStr(LRow));
 end;
 
+procedure TTestVideoRectCopy.DovrebbeStirareConTrasparenzaA8Bit;
+var
+  LRow, LColumn, LPitch, LSourceRow, LDestWidth, LIndex: Integer;
+  LScreen: TBytes;
+  LParams: TVideoRectCopyParams;
+  LPixel: Byte;
+begin
+  for LIndex := 0 to High(FSource) do
+    if LIndex mod 3 = 0 then
+      FSource[LIndex] := 0;
+  LDestWidth := 19;
+  LPitch := 3 + LDestWidth + 4;
+  SetLength(LScreen, LPitch * (DEST_ROWS + 4));
+  FillChar(LScreen[0], Length(LScreen), MARK8);
+  LParams := Params(1, @LScreen[0], LPitch, 0, 1);
+  LParams.DestinationWidth := LDestWidth;
+  LParams.FracXStep := FRACUNIT * SRC_WIDTH div LDestWidth;
+  TVideoRectCopy.StretchRowsTransparent8(LParams);
+  for LRow := 0 to DEST_ROWS - 1 do
+  begin
+    LSourceRow := (LRow * LParams.FracYStep) div FRACUNIT;
+    for LColumn := 0 to LDestWidth - 1 do
+    begin
+      LPixel := SourcePixel(LSourceRow, (LColumn * LParams.FracXStep) div FRACUNIT);
+      if LPixel = 0 then
+        Assert.AreEqual<Integer>(MARK8, LScreen[(2 + LRow) * LPitch + 3 + LColumn])
+      else
+        Assert.AreEqual<Integer>(LPixel, LScreen[(2 + LRow) * LPitch + 3 + LColumn]);
+    end;
+  end;
+end;
+
+procedure TTestVideoRectCopy.DovrebbeCopiareUnoAUnoConTrasparenzaConIlFilo;
+var
+  LIndex, LRow, LColumn, LPitch: Integer;
+  LScreen: TBytes;
+  LPixel: Byte;
+begin
+  for LIndex := 0 to High(FSource) do
+    if LIndex mod 4 = 1 then
+      FSource[LIndex] := 0;
+  LPitch := 20;
+  for LIndex := 0 to 2 do
+  begin
+    SetLength(LScreen, LPitch * (SRC_HEIGHT + 2));
+    FillChar(LScreen[0], Length(LScreen), MARK8);
+    // the rows count down: the row of the source r is the number SRC_HEIGHT - r
+    TVideoRectCopy.CopyRowsTransparent8(@FSource[0], @LScreen[0], SRC_WIDTH, LPitch, SRC_WIDTH, SRC_HEIGHT, LIndex, 3);
+    for LRow := 0 to SRC_HEIGHT - 1 do
+      for LColumn := 0 to SRC_WIDTH - 1 do
+      begin
+        LPixel := SourcePixel(LRow, LColumn);
+        if ((SRC_HEIGHT - LRow) mod 3 = LIndex) and (LPixel <> 0) then
+          Assert.AreEqual<Integer>(LPixel, LScreen[LRow * LPitch + LColumn])
+        else
+          Assert.AreEqual<Integer>(MARK8, LScreen[LRow * LPitch + LColumn]);
+      end;
+  end;
+end;
+
+// The loop of V_CopyRectTransparent32 before TVideoRectCopy, with its skip of four zero pixels
+procedure OldTransparent32(const ASource: PByte; const ADest: PLongWord; const APalette: PLongWord;
+  const ASourcePitch, ADestPitch, ASourceX, ADestX, ADestY, ADestW, ADestH, AFracY, AFracYStep, AFracXStep: Integer);
+type
+  TBytes0 = array[0..MaxInt div 2 - 1] of Byte;
+  PBytes0 = ^TBytes0;
+  TLongs0 = array[0..MaxInt div 8 - 1] of LongWord;
+  PLongs0 = ^TLongs0;
+var
+  src: PBytes0;
+  dest: PLongs0;
+  destw, destw1, row, col, fracx, fracy, fracxstep4: Integer;
+  psrcl: PLongWord;
+  srcb: Byte;
+begin
+  destw1 := ADestW and $3;
+  fracxstep4 := 4 * AFracXStep;
+  fracy := AFracY;
+  destw := ADestW - destw1;
+  for row := ADestY to ADestY + ADestH - 1 do
+  begin
+    fracx := 0;
+    dest := PLongs0(NativeInt(ADest) + (ADestPitch * row + ADestX) * 4);
+    src := PBytes0(NativeInt(ASource) + ASourcePitch * (fracy div 65536) + ASourceX);
+    col := 0;
+    while col < destw do
+    begin
+      psrcl := @src[LongWord(fracx) shr 16];
+      if psrcl^ = 0 then
+      begin
+        Inc(col, 4);
+        fracx := fracx + fracxstep4;
+      end
+      else
+      begin
+        srcb := PByte(psrcl)^;
+        if srcb <> 0 then
+          dest[col] := PLongs0(APalette)[srcb];
+        Inc(col);
+        fracx := fracx + AFracXStep;
+      end;
+    end;
+    for col := destw to destw + destw1 - 1 do
+    begin
+      srcb := src[LongWord(fracx) shr 16];
+      if srcb <> 0 then
+        dest[col] := PLongs0(APalette)[srcb];
+      fracx := fracx + AFracXStep;
+    end;
+    fracy := fracy + AFracYStep;
+  end;
+end;
+
+procedure TTestVideoRectCopy.DovrebbeStirareConTrasparenzaA32BitComeIlVecchioCodice;
+var
+  LIndex, LDestWidth, LPitch: Integer;
+  LExpected, LActual: array of LongWord;
+  LParams: TVideoRectCopyParams;
+begin
+  // runs of zero pixels exercise the skip of four
+  for LIndex := 0 to High(FSource) do
+    if (LIndex mod 8) < 5 then
+      FSource[LIndex] := 0;
+  for LDestWidth in [8, 11, 16, 19, 23] do
+  begin
+    LPitch := 3 + LDestWidth + 4;
+    SetLength(LExpected, LPitch * (DEST_ROWS + 4));
+    SetLength(LActual, LPitch * (DEST_ROWS + 4));
+    for LIndex := 0 to High(LExpected) do
+    begin
+      LExpected[LIndex] := MARK32;
+      LActual[LIndex] := MARK32;
+    end;
+    LParams := Params(1, @LActual[0], LPitch, 0, 1);
+    LParams.DestinationWidth := LDestWidth;
+    LParams.FracXStep := FRACUNIT * SRC_WIDTH div LDestWidth;
+    OldTransparent32(@FSource[0], @LExpected[0], @FPalette[0], SRC_WIDTH, LPitch, 0, 3, 2, LDestWidth, DEST_ROWS,
+      0, LParams.FracYStep, LParams.FracXStep);
+    TVideoRectCopy.StretchRowsTransparent32(LParams, @FPalette[0]);
+    Assert.IsTrue(CompareMem(@LExpected[0], @LActual[0], Length(LExpected) * SizeOf(LongWord)), 'width ' + IntToStr(LDestWidth));
+  end;
+end;
 initialization
   TDUnitX.RegisterTestFixture(TTestVideoRectCopy);
 

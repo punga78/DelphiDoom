@@ -1105,6 +1105,49 @@ Stima per `v_video` + `i_video`: 9-10 giorni di agente, a macchina scarica per l
 
 **Verifica**: `build.bat giochi Release` e `strumenti Release` con gli avvisi di prima (Doom32 381, Heretic32 305, Hexen32 200, Strife32 413, Radix32 381, SpeedHaste32 385, GL 331/255/150/340); `strati` 0 violazioni nuove; Doom32, Hexen32 e Strife32 compilano a Win64; verifica ridotta UGUALE dopo ogni passo e corpus intero sul ramo UGUALE (44 voci a 8 bit, 44 a 32 bit); un PK3 con suoni (`zpktest.pk3` su Freedoom 2) crea ancora `pk3sounds_*.wad` con `DSZPKFLC`, `DSZPKOGG`, `DSZPKWAV`, vivo dopo 25 s, `stderr` vuoto; `Radix32 -warp 1 1` e `SpeedHaste32 -warp 1` vivi dopo 40 s senza `crash.txt`. **Non verificato**: Heretic32 a Win64 (non compilato), i GL a runtime, musica e suoni ascoltati (`-nosound`), una SNDINFO a runtime nei giochi diversi da Doom (coperta dai test sul testo vecchio, non da una partita), la misura a coppie (non e' percorso caldo).
 
+### 12.8 Fase 1 calda: `v_video`, `i_video`, `am_map` (#246, 2026-11-15)
+
+**Regola applicata.** Ogni routine che gira per pixel, colonna o riga resta una routine **senza interfacce ne' chiamate virtuali**: la logica fredda (misure, tabelle, forme, limiti delle fette) e' in classi di `Libs\`, i cicli caldi sono **metodi statici di classi `sealed` su puntatori** (nessuna allocazione, nessuna chiamata dentro il ciclo, una chiamata statica per riga o per buffer). Dove la copia e' una sola in `Base\` (par. 12.5) e la differenza tra i giochi e' una costante (stile della freccia dell'automap) non servono unit `<X>GameRules` per gioco: una sola direttiva `{$IF}` sceglie lo stile al posto di venti.
+
+**Costo, provato.** Per ogni passo le dimensioni delle routine prima e dopo, dal `.map` di `Doom32` Win32 Release (indirizzi consecutivi delle publics; "prima" = eseguibile costruito da `master` in `bin\`):
+
+| Routine | Prima | Dopo (facciata + classe) |
+|---|---:|---:|
+| `V_CopyRect8`, `_MT`, `V_CopyRect32`, `_MT` | 1252 + 1344 + 1528 + 1632 = 5756 | 376 + 392 + 324 + 328 = 1420, piu' `ExpandRows8` 1108, `ExpandRows32` 1592, `StretchRows8` 152, `StretchRows32` 176: **4448 (-23%)** |
+| `V_CopyRectTransparent8/32`, `_MT`, `Ex8/32`, `_MT` | 420 + 444 + 464 + 480 + 244 + 260 + 348 + 364 = 3024 | 320 + 328 + 284 + 288 + 172 + 176 + 172 + 176 = 1916, piu' `StretchRowsTransparent8` 180, `CopyRowsTransparent8` 112, `StretchRowsTransparent32` 360: **2568 (-15%)** |
+| `V_DrawPatch8` e `V_DrawPatchFlipped` | 704 + 248 = 952 | 560 + 76 = 636, piu' `DrawColumns8` 228: 864 |
+| `V_ScaleBuffer8` | 204 | 84 + `ScaleNearest8` 144 = 228 |
+| `V_FullScreenStretch`, `V_StatusBarStretch` (software) | 628 + 780 | 428 + 584, piu' `StretchRow8` 96 e `StretchRow32` 92 |
+| `V_ShadeScreen` | 368 | 148 + `Shade32` 212 + `ShadeIndexed` 24 |
+| `V_CopyScreenTransparent8`, `32`, `V_RemoveTransparency` | 140 + 112 + 88 | 80 + 84 + 84, piu' 64 + 52 + 20 |
+| `I_BlitBuffer` | 896 | 328, piu' `TVideoBlitSlices` 116 (i cicli `I_FinishUpdate8_64*` non cambiano) |
+| `AM_Init` | 1172 | 264, piu' `TAutomapShapes` 1568 (cold: gira una volta) |
+| `V_PreserveX` (2 forme), `V_PreserveY`, `V_CalcPreserveTables`, `V_Init`, `V_ScreensSize` | 48 + 212 + 48 + 244 + 204 + 96 | 16 + 32 + 16 + 88 + 196 + 88, piu' `MapX` 28 + 100, `MapY` 32, `Calculate` 236, `Resolve` 8, `ByteSize` 48 |
+
+I cicli sono il testo di prima: nessuna differenza di istruzioni per pixel. Un solo punto cambia in meglio: `ibetween` di `d_delphi` era una chiamata **per pixel** nei due stiramenti della barra e dell'intermezzo, ora e' un confronto in linea. Nessuna misura a coppie (non fatta, vedi il compito: la fa la sessione di misura a macchina scarica; "vecchio" = `c6c8903c`).
+
+**Passi** (tag `ondata-notte-246-N`):
+
+1. **Fetta 2, schermi e misure.** `TVideoPreserveTables` (`Libs\Video\DelphiDoom.Video.PreserveTables`: le tre tabelle `preserveX`, `preserveX426`, `preserveY` e i moltiplicatori; un solo corpo per software e OpenGL, il bersaglio e' un parametro di `Calculate` e il ramo "schermo uguale alla sorgente" e' la tabella stessa, `trunc(i * 320 / 320) = i`) e `TVideoScreenLayout` (`Resolve`, `ByteSize`, `GlDrawSize`: venti righe di `V_Init` e `V_ScreensSize`). `V_PreserveX/Y` e `V_CalcPreserveTables` sono facciate; i cicli di copia leggono gli stessi `widthintmultiplier` e `heightintmultiplier`.
+2. **`I_BlitBuffer`.** `TVideoBlitSlices` (`SliceCount` per processore, `Slice`: stessa formula `(n * W * H div k) and not 3`, provata contro il testo vecchio per 2 e 8 fette); la regia di `MT_Execute` resta.
+3. **`am_map`, forme.** `TAutomapShapes` (`Libs\Automap`): le quasi 300 righe di `AM_Init` su freccia, freccia dell'imbroglio, triangoli, chiave e figura della traccia, uno stile `assDoom`/`assRaven` al posto di venti `{$IF}`; parita' sul testo vecchio copiato nel test per i due stili. Restano in `am_map.pas`: griglia, muri, giocatori, cose, segni, sfondo, tasti, e `am_textured` (vedi sotto).
+4. **Cicli caldi di `v_video`** (un solo commit, perche' le modifiche sono nello stesso file): `TVideoStretch` (`StretchRow8/32`, `StretchRow32Opaque`, `ScaleNearest8`, `WidePercentage`: i quattro stiramenti di `V_FullScreenStretch` e `V_StatusBarStretch`, software e OpenGL, e `V_ScaleBuffer8`), `TVideoScreenOps` (`CopyTransparent8/32`, `Shade32`, `ShadeIndexed`, `ShadeOpaque32`, `RemoveTransparency`: `V_CopyScreenTransparent*`, `V_ShadeScreen`, `V_ShadeBackground`, `V_RemoveTransparency`), `TVideoPatchPainter` (`DrawColumns8`: il ciclo delle colonne di `V_DrawPatch8` e di `V_DrawPatchFlipped`, una copia sola) e `TVideoRectCopy` (`ExpandRows8/32`, `StretchRows8/32`, `StretchRowsTransparent8/32`, `CopyRowsTransparent8`: le quattro copie di `V_CopyRect`, di `V_CopyRectTransparent` e di `V_CopyRectTransparentEx` (8, 8_MT, 32, 32_MT) diventano una per profondita', con il filo `(Index, IndexCount)` come parametro: `IndexCount = 1` salta il `mod`). Test di parita': copia del testo vecchio dove il testo si poteva eseguire da solo (stiramenti, patch, scala), e oracolo indipendente (pixel ripetuto, pixel piu' vicino con i passi 16.16) dove il vecchio testo non era isolabile.
+
+**Cosa resta, e perche'.**
+
+| Routine | Perche' resta in `v_video` / `am_map` |
+|---|---|
+| `V_DrawPatch32`, `V_DrawPatchTransparent8/32` e `_MT`, `V_DrawPatchZoomed8/32` | le varianti differiscono per l'operazione sul pixel (colori a 32 bit con la palette e la traduzione, trasparenza con tabella, ingrandimento con passi frazionari) **dentro** il ciclo dei post: un solo ciclo con l'operazione passata come parametro vorrebbe una chiamata per pixel; un ciclo per variante e' il testo di prima senza guadagno. Resta il ramo "stirato" di `V_DrawPatch8` (passo frazionario) per lo stesso motivo. |
+| `I_FinishUpdate8_64`, `_64a`, `I_SetPalette64` | il testo e' gia' il ciclo (una `Int64` per due pixel): niente da togliere; restano i tipi e `curpal64` di `i_video` |
+| `AM_drawWalls`, `AM_drawThings`, `AM_drawPlayers`, `AM_drawGrid`, `AM_clearFB`, `AM_Responder` | 62 direttive di gioco nei cicli (colori, flag, tipi di linea, Heretic e Hexen disegnano lo sfondo in modo diverso): vanno con le regole per gioco `TAutomapGameRules` (stesso schema di `TMapGameRules`: unit omonime nelle cartelle dei giochi), con test di parita' per gioco che i golden **non** danno (l'automap non e' nelle demo del corpus); **non fatto** in questo giro per non cambiare senza prova |
+| `am_textured` | riempimento a scanline dei sottosettori, legge `flats`, colormap e settori come il renderer dei piani: va con le fette del renderer (#247) |
+| `V_PageDrawer`, `V_TileScreen8`, `V_DrawPatchFullScreenTMP*` | tiepidi, gia' composti da chiamate a `V_DrawPatch` e a `TVideoStretch`; il testo che resta e' regia sui lump |
+| `V_Init`/`V_ReInit`/`V_ShutDown` | la parte di calcolo e' in `TVideoScreenLayout`; `malloc` e `screens[]` sono globali del motore |
+
+**Difetti.** Nessuno corretto in questo giro. Visti e lasciati: (a) `V_StatusBarStretch` software riempie i bordi con `aprox_black` a 8 bit e a 32 bit lascia quelli del buffer azzerato (`mallocz`) come prima; (b) i bordi di `V_FullScreenStretch` OpenGL sono `0xFF000000`, non il colore nero della palette. Cambia, in meglio e senza effetto sui pixel, solo la chiamata a `ibetween` per pixel (ora un confronto in linea).
+
+**Verifica.** Vedi il par. 12.9.
+
 ## 13. Fette successive della #185: elenco ordinato (2026-11-14, dopo la 2c-4)
 
 Ordine di esecuzione consigliato; ogni ondata di agenti ne prende una. Le stime sono giorni di agente (una fetta di `Libs\` costa 35-50 minuti di sviluppo e 1-2 ore di verifica quando il lock dei giochi e' conteso: i giorni qui contano la lettura delle copie, la forma delle regole e le prove, non la sola scrittura). Le righe sono quelle dei file attuali (Doom/Heretic/Hexen/Strife). **Regola di ogni fetta**: tabella di confronto con `Confronta-Copie.ps1`, regole per gioco con il testo vecchio alla lettera, prova meccanica (`Prova-Common.ps1`), `Verifica-Ridotta.ps1` a ogni passo, corpus intero una volta, build dei dieci giochi, Doom32 e Strife32 a Win64, misura a coppie a macchina scarica.

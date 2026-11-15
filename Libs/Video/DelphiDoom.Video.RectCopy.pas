@@ -63,6 +63,21 @@ type
     class procedure StretchRows8(const AParams: TVideoRectCopyParams); static;
     /// <summary>Copies stretching the width to DestinationWidth (nearest pixel), 32 bit through the palette</summary>
     class procedure StretchRows32(const AParams: TVideoRectCopyParams; const APalette: PLongWord); static;
+    /// <summary>
+    ///   As StretchRows8 but a pixel that is 0 leaves the destination as it is (a masked picture)
+    /// </summary>
+    class procedure StretchRowsTransparent8(const AParams: TVideoRectCopyParams); static;
+    /// <summary>
+    ///   Copies AHeight rows of AWidth pixels one to one, skipping the pixels that are 0; only the
+    ///   rows whose countdown number (AHeight, AHeight - 1, ...) mod ACount is AIndex (ACount 1: all)
+    /// </summary>
+    class procedure CopyRowsTransparent8(const ASource, ADestination: PByte; const ASourcePitch,
+      ADestinationPitch, AWidth, AHeight, AIndex, ACount: Integer); static;
+    /// <summary>
+    ///   As StretchRows32 but a pixel that is 0 leaves the destination as it is, and four source
+    ///   pixels that are all 0 are skipped at once (the masked picture of a 32 bit screen)
+    /// </summary>
+    class procedure StretchRowsTransparent32(const AParams: TVideoRectCopyParams; const APalette: PLongWord); static;
   end;
 
 implementation
@@ -82,6 +97,9 @@ type
 
   PByteRow = ^TByteRow;
   TByteRow = array[0..MaxInt div 2 - 1] of Byte;
+
+  PLongWordRow4 = ^TLongWordRow4;
+  TLongWordRow4 = array[0..MaxInt div 8 - 1] of LongWord;
 
 { TVideoRectCopy }
 
@@ -456,5 +474,120 @@ begin
     LFracY := LFracY + AParams.FracYStep;
   end;
 end;
+class procedure TVideoRectCopy.StretchRowsTransparent8(const AParams: TVideoRectCopyParams);
+var
+  LRow: Integer;
+  LCol: Integer;
+  LFracX: Integer;
+  LFracY: Integer;
+  LDestination: PByteRow;
+  LSource: PByteRow;
+  LPixel: Byte;
+begin
+  LFracY := AParams.FracY;
+  for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
+  begin
+    if (AParams.IndexCount = 1) or (LRow mod AParams.IndexCount = AParams.Index) then
+    begin
+      LFracX := 0;
+      LDestination := PByteRow(NativeInt(AParams.Destination) + AParams.DestinationPitch * LRow + AParams.DestinationX);
+      LSource := PByteRow(NativeInt(AParams.Source) + AParams.SourcePitch * (LFracY div FRACUNIT) + AParams.SourceX);
+      for LCol := 0 to AParams.DestinationWidth - 1 do
+      begin
+        LPixel := LSource[LongWord(LFracX) shr FRACBITS];
+        if LPixel <> 0 then
+          LDestination[LCol] := LPixel;
+        LFracX := LFracX + AParams.FracXStep;
+      end;
+    end;
+    LFracY := LFracY + AParams.FracYStep;
+  end;
+end;
 
+class procedure TVideoRectCopy.CopyRowsTransparent8(const ASource, ADestination: PByte; const ASourcePitch,
+  ADestinationPitch, AWidth, AHeight, AIndex, ACount: Integer);
+var
+  LCol: Integer;
+  LHeight: Integer;
+  LSource: PByteRow;
+  LDestination: PByteRow;
+  LPixel: Byte;
+begin
+  LSource := PByteRow(ASource);
+  LDestination := PByteRow(ADestination);
+  LHeight := AHeight;
+  while LHeight > 0 do
+  begin
+    if (ACount = 1) or (LHeight mod ACount = AIndex) then
+    begin
+      for LCol := 0 to AWidth - 1 do
+      begin
+        LPixel := LSource[LCol];
+        if LPixel <> 0 then
+          LDestination[LCol] := LPixel;
+      end;
+    end;
+    LSource := PByteRow(NativeInt(LSource) + ASourcePitch);
+    LDestination := PByteRow(NativeInt(LDestination) + ADestinationPitch);
+    Dec(LHeight);
+  end;
+end;
+
+class procedure TVideoRectCopy.StretchRowsTransparent32(const AParams: TVideoRectCopyParams;
+  const APalette: PLongWord);
+var
+  LRow: Integer;
+  LCol: Integer;
+  LFracX: Integer;
+  LFracY: Integer;
+  LFracXStep4: Integer;
+  LWidth: Integer;
+  LTail: Integer;
+  LDestination: PLongWordRow4;
+  LSource: PByteRow;
+  LPixel: Byte;
+  LGroup: PLongWord;
+begin
+  LTail := AParams.DestinationWidth and $3;
+  LWidth := AParams.DestinationWidth - LTail;
+  LFracXStep4 := 4 * AParams.FracXStep;
+  LFracY := AParams.FracY;
+  for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
+  begin
+    if (AParams.IndexCount = 1) or (LRow mod AParams.IndexCount = AParams.Index) then
+    begin
+      LFracX := 0;
+      LDestination := PLongWordRow4(NativeInt(AParams.Destination) +
+        (AParams.DestinationPitch * LRow + AParams.DestinationX) * SizeOf(LongWord));
+      LSource := PByteRow(NativeInt(AParams.Source) + AParams.SourcePitch * (LFracY div FRACUNIT) + AParams.SourceX);
+      LCol := 0;
+      while LCol < LWidth do
+      begin
+        LGroup := PLongWord(@LSource[LongWord(LFracX) shr FRACBITS]);
+        if LGroup^ = 0 then
+        begin
+          Inc(LCol, 4);
+          LFracX := LFracX + LFracXStep4;
+        end
+        else
+        begin
+          LPixel := PByte(LGroup)^;
+          if LPixel <> 0 then
+            LDestination[LCol] := PLongWordRow(APalette)[LPixel];
+          Inc(LCol);
+          LFracX := LFracX + AParams.FracXStep;
+        end;
+      end;
+
+      for LCol := LWidth to LWidth + LTail - 1 do
+      begin
+        LPixel := LSource[LongWord(LFracX) shr FRACBITS];
+        if LPixel <> 0 then
+          LDestination[LCol] := PLongWordRow(APalette)[LPixel];
+        LFracX := LFracX + AParams.FracXStep;
+      end;
+    end;
+    LFracY := LFracY + AParams.FracYStep;
+  end;
+end;
 end.

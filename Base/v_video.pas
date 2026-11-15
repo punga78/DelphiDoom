@@ -1444,19 +1444,11 @@ procedure V_CopyRectTransparent8(
   destscrn: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PByteArray;
   destw: integer;
   desth: integer;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
-  srcb: byte;
   swidth: integer;
   dwidth: integer;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
@@ -1472,46 +1464,29 @@ begin
 
       desty := V_PreserveY(desty);
 
-      fracy := srcy * FRACUNIT;
-      fracxstep := FRACUNIT * width div destw;
-      fracystep := FRACUNIT * height div desth;
-
-      for row := desty to desty + desth - 1 do
-      begin
-        fracx := 0;
-        dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
-        // Source is a 320 width screen
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        for col := 0 to destw - 1 do
-        begin
-          srcb := src[LongWord(fracx) shr FRACBITS];
-          if srcb <> 0 then
-            dest[col] := srcb;
-          fracx := fracx + fracxstep;
-        end;
-        fracy := fracy + fracystep;
-      end;
+      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      params.Source := System.PByte(screens[srcscrn]);
+      params.Destination := screens[destscrn];
+      params.SourcePitch := swidth;
+      params.DestinationPitch := dwidth;
+      params.SourceX := srcx;
+      params.DestinationX := destx;
+      params.DestinationY := desty;
+      params.DestinationWidth := destw;
+      params.DestinationHeight := desth;
+      params.FracY := srcy * FRACUNIT;
+      params.FracYStep := FRACUNIT * height div desth;
+      params.FracXStep := FRACUNIT * width div destw;
+      params.Index := 0;
+      params.IndexCount := 1;
+      TVideoRectCopy.StretchRowsTransparent8(params);
     end;
   end
   else
-  begin
-
-    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
-    dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
-
-    while height > 0 do
-    begin
-      for col := 0 to width - 1 do
-      begin
-        srcb := src[col];
-        if srcb <> 0 then
-          dest[col] := srcb;
-      end;
-      src := PByteArray(NativeInt(src) + swidth);
-      dest := PByteArray(NativeInt(dest) + dwidth);
-      dec(height);
-    end;
-  end;
+    TVideoRectCopy.CopyRowsTransparent8(
+      System.PByte(NativeInt(screens[srcscrn]) + swidth * srcy + srcx),
+      System.PByte(NativeInt(screens[destscrn]) + dwidth * desty + destx),
+      swidth, dwidth, width, height, 0, 1);
 end;
 
 //==============================================================================
@@ -1531,19 +1506,11 @@ procedure V_CopyRectTransparent8_MT(
   destscrn: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PByteArray;
   destw: integer;
   desth: integer;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
-  srcb: byte;
   swidth: integer;
   dwidth: integer;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
@@ -1559,52 +1526,29 @@ begin
 
       desty := V_PreserveY(desty);
 
-      fracy := srcy * FRACUNIT;
-      fracxstep := FRACUNIT * width div destw;
-      fracystep := FRACUNIT * height div desth;
-
-      for row := desty to desty + desth - 1 do
-      begin
-        if row mod numidxs = idx then
-        begin
-          fracx := 0;
-          dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
-          // Source is a 320 width screen
-          src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-          for col := 0 to destw - 1 do
-          begin
-            srcb := src[LongWord(fracx) shr FRACBITS];
-            if srcb <> 0 then
-              dest[col] := srcb;
-            fracx := fracx + fracxstep;
-          end;
-        end;
-        fracy := fracy + fracystep;
-      end;
+      // The loops over the rows are TVideoRectCopy (Libs\Video)
+      params.Source := System.PByte(screens[srcscrn]);
+      params.Destination := screens[destscrn];
+      params.SourcePitch := swidth;
+      params.DestinationPitch := dwidth;
+      params.SourceX := srcx;
+      params.DestinationX := destx;
+      params.DestinationY := desty;
+      params.DestinationWidth := destw;
+      params.DestinationHeight := desth;
+      params.FracY := srcy * FRACUNIT;
+      params.FracYStep := FRACUNIT * height div desth;
+      params.FracXStep := FRACUNIT * width div destw;
+      params.Index := idx;
+      params.IndexCount := numidxs;
+      TVideoRectCopy.StretchRowsTransparent8(params);
     end;
   end
   else
-  begin
-
-    src := PByteArray(NativeInt(screens[srcscrn]) + swidth * srcy + srcx);
-    dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * desty + destx);
-
-    while height > 0 do
-    begin
-      if height mod numidxs = idx then
-      begin
-        for col := 0 to width - 1 do
-        begin
-          srcb := src[col];
-          if srcb <> 0 then
-            dest[col] := srcb;
-        end;
-      end;
-      src := PByteArray(NativeInt(src) + swidth);
-      dest := PByteArray(NativeInt(dest) + dwidth);
-      dec(height);
-    end;
-  end;
+    TVideoRectCopy.CopyRowsTransparent8(
+      System.PByte(NativeInt(screens[srcscrn]) + swidth * srcy + srcx),
+      System.PByte(NativeInt(screens[destscrn]) + dwidth * desty + destx),
+      swidth, dwidth, width, height, idx, numidxs);
 end;
 
 //==============================================================================
@@ -1622,27 +1566,20 @@ procedure V_CopyRectTransparent32(
   desty: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PLongWordArray;
   destw: integer;
-  destw1: integer;
   desth: integer;
   fracxstep: fixed_t;
-  fracxstep4: fixed_t;
   fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  srcb: byte;
-  psrcl: PLongWord;
+  pv: boolean;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
 
-  if V_NeedsPreserve(SCN_FG, srcscrn, preserve) then
+  pv := V_NeedsPreserve(SCN_FG, srcscrn, preserve);
+  if pv then
   begin
     destw := V_PreserveW(destx, width);
     desth := V_PreserveH(desty, height);
@@ -1652,61 +1589,38 @@ begin
     destw := width;
     desth := height;
   end;
-  destw1 := destw and $3;
 
   if (destw <> 0) and (desth <> 0) then
   begin
-    if V_NeedsPreserve(SCN_FG, srcscrn, preserve) then
+    if pv then
     begin
       destx := V_PreserveX(destx);
       desty := V_PreserveY(desty);
       fracxstep := FRACUNIT * width div destw;
       fracystep := FRACUNIT * height div desth;
-      fracxstep4 := 4 * fracxstep;
     end
     else
     begin
       fracxstep := FRACUNIT;
       fracystep := FRACUNIT;
-      fracxstep4 := 4 * FRACUNIT;
     end;
-    fracy := srcy * FRACUNIT;
 
-    destw := destw - destw1;
-    for row := desty to desty + desth - 1 do
-    begin
-      fracx := 0;
-      dest := @screen32[dwidth * row + destx];
-      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-      col := 0;
-      while col < destw do
-      begin
-        psrcl := @src[LongWord(fracx) shr FRACBITS];
-        if psrcl^ = 0 then
-        begin
-          inc(col, 4);
-          fracx := fracx + fracxstep4;
-        end
-        else
-        begin
-          srcb := PByte(psrcl)^;
-          if srcb <> 0 then
-            dest[col] := videopal[srcb];
-          inc(col);
-          fracx := fracx + fracxstep;
-        end;
-      end;
-
-      for col := destw to destw + destw1 - 1 do
-      begin
-        srcb := src[LongWord(fracx) shr FRACBITS];
-        if srcb <> 0 then
-          dest[col] := videopal[srcb];
-        fracx := fracx + fracxstep;
-      end;
-
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := fracystep;
+    params.FracXStep := fracxstep;
+    params.Index := 0;
+    params.IndexCount := 1;
+    TVideoRectCopy.StretchRowsTransparent32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
@@ -1726,27 +1640,20 @@ procedure V_CopyRectTransparent32_MT(
   desty: integer;
   preserve: boolean);
 var
-  src: PByteArray;
-  dest: PLongWordArray;
   destw: integer;
-  destw1: integer;
   desth: integer;
   fracxstep: fixed_t;
-  fracxstep4: fixed_t;
   fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  srcb: byte;
-  psrcl: PLongWord;
+  pv: boolean;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
 
-  if V_NeedsPreserve(SCN_FG, srcscrn, preserve) then
+  pv := V_NeedsPreserve(SCN_FG, srcscrn, preserve);
+  if pv then
   begin
     destw := V_PreserveW(destx, width);
     desth := V_PreserveH(desty, height);
@@ -1756,64 +1663,38 @@ begin
     destw := width;
     desth := height;
   end;
-  destw1 := destw and $3;
 
   if (destw <> 0) and (desth <> 0) then
   begin
-    if V_NeedsPreserve(SCN_FG, srcscrn, preserve) then
+    if pv then
     begin
       destx := V_PreserveX(destx);
       desty := V_PreserveY(desty);
       fracxstep := FRACUNIT * width div destw;
       fracystep := FRACUNIT * height div desth;
-      fracxstep4 := 4 * fracxstep;
     end
     else
     begin
       fracxstep := FRACUNIT;
       fracystep := FRACUNIT;
-      fracxstep4 := 4 * FRACUNIT;
     end;
-    fracy := srcy * FRACUNIT;
 
-    destw := destw - destw1;
-    for row := desty to desty + desth - 1 do
-    begin
-      if row mod numidxs = idx then
-      begin
-        fracx := 0;
-        dest := @screen32[dwidth * row + destx];
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        col := 0;
-        while col < destw do
-        begin
-          psrcl := @src[LongWord(fracx) shr FRACBITS];
-          if psrcl^ = 0 then
-          begin
-            inc(col, 4);
-            fracx := fracx + fracxstep4;
-          end
-          else
-          begin
-            srcb := PByte(psrcl)^;
-            if srcb <> 0 then
-              dest[col] := videopal[srcb];
-            inc(col);
-            fracx := fracx + fracxstep;
-          end;
-        end;
-
-        for col := destw to destw + destw1 - 1 do
-        begin
-          srcb := src[LongWord(fracx) shr FRACBITS];
-          if srcb <> 0 then
-            dest[col] := videopal[srcb];
-          fracx := fracx + fracxstep;
-        end;
-      end;
-
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := fracystep;
+    params.FracXStep := fracxstep;
+    params.Index := idx;
+    params.IndexCount := numidxs;
+    TVideoRectCopy.StretchRowsTransparent32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
@@ -1948,41 +1829,30 @@ procedure V_CopyRectTransparentEx8(
   destw: integer;
   desth: integer);
 var
-  src: PByteArray;
-  dest: PByteArray;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
-  srcb: byte;
   swidth: integer;
   dwidth: integer;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
   if (destw <> 0) and (desth <> 0) then
   begin
-    fracy := srcy * FRACUNIT;
-    fracxstep := FRACUNIT * width div destw;
-    fracystep := FRACUNIT * height div desth;
-
-    for row := desty to desty + desth - 1 do
-    begin
-      fracx := 0;
-      dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
-      // Source is a 320 width screen
-      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-      for col := 0 to destw - 1 do
-      begin
-        srcb := src[LongWord(fracx) shr FRACBITS];
-        if srcb <> 0 then
-          dest[col] := srcb;
-        fracx := fracx + fracxstep;
-      end;
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := screens[destscrn];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := FRACUNIT * height div desth;
+    params.FracXStep := FRACUNIT * width div destw;
+    params.Index := 0;
+    params.IndexCount := 1;
+    TVideoRectCopy.StretchRowsTransparent8(params);
   end;
 end;
 
@@ -2004,44 +1874,30 @@ procedure V_CopyRectTransparentEx8_MT(
   destw: integer;
   desth: integer);
 var
-  src: PByteArray;
-  dest: PByteArray;
-  fracxstep: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
-  srcb: byte;
   swidth: integer;
   dwidth: integer;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(destscrn);
   if (destw <> 0) and (desth <> 0) then
   begin
-    fracy := srcy * FRACUNIT;
-    fracxstep := FRACUNIT * width div destw;
-    fracystep := FRACUNIT * height div desth;
-
-    for row := desty to desty + desth - 1 do
-    begin
-      if row mod numidxs = idx then
-      begin
-        fracx := 0;
-        dest := PByteArray(NativeInt(screens[destscrn]) + dwidth * row + destx);
-        // Source is a 320 width screen
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        for col := 0 to destw - 1 do
-        begin
-          srcb := src[LongWord(fracx) shr FRACBITS];
-          if srcb <> 0 then
-            dest[col] := srcb;
-          fracx := fracx + fracxstep;
-        end;
-      end;
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := screens[destscrn];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := FRACUNIT * height div desth;
+    params.FracXStep := FRACUNIT * width div destw;
+    params.Index := idx;
+    params.IndexCount := numidxs;
+    TVideoRectCopy.StretchRowsTransparent8(params);
   end;
 end;
 
@@ -2061,66 +1917,30 @@ procedure V_CopyRectTransparentEx32(
   destw: integer;
   desth: integer);
 var
-  src: PByteArray;
-  dest: PLongWordArray;
-  destw1: integer;
-  fracxstep: fixed_t;
-  fracxstep4: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  srcb: byte;
-  psrcl: PLongWord;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
-  destw1 := destw and $3;
   if (destw <> 0) and (desth <> 0) then
   begin
-    fracxstep := FRACUNIT * width div destw;
-    fracystep := FRACUNIT * height div desth;
-    fracxstep4 := 4 * fracxstep;
-    fracy := srcy * FRACUNIT;
-
-    destw := destw - destw1;
-    for row := desty to desty + desth - 1 do
-    begin
-      fracx := 0;
-      dest := @screen32[dwidth * row + destx];
-      src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-      col := 0;
-      while col < destw do
-      begin
-        psrcl := @src[LongWord(fracx) shr FRACBITS];
-        if psrcl^ = 0 then
-        begin
-          inc(col, 4);
-          fracx := fracx + fracxstep4;
-        end
-        else
-        begin
-          srcb := PByte(psrcl)^;
-          if srcb <> 0 then
-            dest[col] := videopal[srcb];
-          inc(col);
-          fracx := fracx + fracxstep;
-        end;
-      end;
-
-      for col := destw to destw + destw1 - 1 do
-      begin
-        srcb := src[LongWord(fracx) shr FRACBITS];
-        if srcb <> 0 then
-          dest[col] := videopal[srcb];
-        fracx := fracx + fracxstep;
-      end;
-
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := FRACUNIT * height div desth;
+    params.FracXStep := FRACUNIT * width div destw;
+    params.Index := 0;
+    params.IndexCount := 1;
+    TVideoRectCopy.StretchRowsTransparent32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
@@ -2141,69 +1961,30 @@ procedure V_CopyRectTransparentEx32_MT(
   destw: integer;
   desth: integer);
 var
-  src: PByteArray;
-  dest: PLongWordArray;
-  destw1: integer;
-  fracxstep: fixed_t;
-  fracxstep4: fixed_t;
-  fracystep: fixed_t;
-  fracx: fixed_t;
-  fracy: fixed_t;
-  col: integer;
-  row: integer;
   swidth: integer;
   dwidth: integer;
-  srcb: byte;
-  psrcl: PLongWord;
+  params: TVideoRectCopyParams;
 begin
   swidth := V_GetScreenWidth(srcscrn);
   dwidth := V_GetScreenWidth(SCN_FG);
-  destw1 := destw and $3;
   if (destw <> 0) and (desth <> 0) then
   begin
-    fracxstep := FRACUNIT * width div destw;
-    fracystep := FRACUNIT * height div desth;
-    fracxstep4 := 4 * fracxstep;
-    fracy := srcy * FRACUNIT;
-
-    destw := destw - destw1;
-    for row := desty to desty + desth - 1 do
-    begin
-      if row mod numidxs = idx then
-      begin
-        fracx := 0;
-        dest := @screen32[dwidth * row + destx];
-        src := PByteArray(NativeInt(screens[srcscrn]) + swidth * (fracy div FRACUNIT) + srcx);
-        col := 0;
-        while col < destw do
-        begin
-          psrcl := @src[LongWord(fracx) shr FRACBITS];
-          if psrcl^ = 0 then
-          begin
-            inc(col, 4);
-            fracx := fracx + fracxstep4;
-          end
-          else
-          begin
-            srcb := PByte(psrcl)^;
-            if srcb <> 0 then
-              dest[col] := videopal[srcb];
-            inc(col);
-            fracx := fracx + fracxstep;
-          end;
-        end;
-
-        for col := destw to destw + destw1 - 1 do
-        begin
-          srcb := src[LongWord(fracx) shr FRACBITS];
-          if srcb <> 0 then
-            dest[col] := videopal[srcb];
-          fracx := fracx + fracxstep;
-        end;
-      end;
-
-      fracy := fracy + fracystep;
-    end;
+    // The loops over the rows are TVideoRectCopy (Libs\Video)
+    params.Source := System.PByte(screens[srcscrn]);
+    params.Destination := @screen32[0];
+    params.SourcePitch := swidth;
+    params.DestinationPitch := dwidth;
+    params.SourceX := srcx;
+    params.DestinationX := destx;
+    params.DestinationY := desty;
+    params.DestinationWidth := destw;
+    params.DestinationHeight := desth;
+    params.FracY := srcy * FRACUNIT;
+    params.FracYStep := FRACUNIT * height div desth;
+    params.FracXStep := FRACUNIT * width div destw;
+    params.Index := idx;
+    params.IndexCount := numidxs;
+    TVideoRectCopy.StretchRowsTransparent32(params, System.PLongWord(@videopal[0]));
   end;
 end;
 
