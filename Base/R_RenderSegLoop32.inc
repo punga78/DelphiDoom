@@ -252,7 +252,7 @@ begin
         begin
           dc_yl := r.ceilingheight[0];
           dc_yh := r.floorheight[0];
-          dc_lightlevel := r.lightlevel[0];
+          dc_lightlevel := Integer(r.lightlevel[0]);
           {$IFDEF RENDERSEGOPTIMIZED}
           R_StoreWallColumn32(@midwalls32);
           if totalclip then
@@ -265,7 +265,7 @@ begin
           {$ENDIF}
           dc_yl := r.ceilingheight[1];
           dc_yh := r.floorheight[1];
-          dc_lightlevel := r.lightlevel[1];
+          dc_lightlevel := Integer(r.lightlevel[1]);
 
           {$IFDEF RENDERSEGOPTIMIZED}
           if totalclip then
@@ -360,7 +360,7 @@ begin
             begin
               dc_yl := r.ceilingheight[0];
               dc_yh := r.floorheight[0];
-              dc_lightlevel := r.lightlevel[0];
+              dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
               R_StoreWallColumn32(@upperwalls32);
@@ -374,7 +374,7 @@ begin
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
-              dc_lightlevel := r.lightlevel[1];
+              dc_lightlevel := Integer(r.lightlevel[1]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then
@@ -506,7 +506,7 @@ begin
             begin
               dc_yl := r.ceilingheight[0];
               dc_yh := r.floorheight[0];
-              dc_lightlevel := r.lightlevel[0];
+              dc_lightlevel := Integer(r.lightlevel[0]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
               R_StoreWallColumn32(@lowerwalls32);
@@ -520,7 +520,7 @@ begin
               {$ENDIF}
               dc_yl := r.ceilingheight[1];
               dc_yh := r.floorheight[1];
-              dc_lightlevel := r.lightlevel[1];
+              dc_lightlevel := Integer(r.lightlevel[1]);
 
               {$IFDEF RENDERSEGOPTIMIZED}
               if totalclip then

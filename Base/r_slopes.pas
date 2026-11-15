@@ -98,6 +98,8 @@ implementation
 
 uses
   d_delphi,
+  DelphiDoom.MathCore.X87Double,
+  DelphiDoom.Renderer.X87,
   doomdata,
   doomdef,
   doomtype,
@@ -376,15 +378,27 @@ begin
   for x := x1 to x2 do
   begin
     if x = xleft then
+{$IFDEF CPUX86}
       distance := Abs(Round(zleft / screenDX))
+{$ELSE}
+      distance := Abs(TX87Double.RoundQuotient(zleft, screenDX))
+{$ENDIF}
     else if x = xright then
+{$IFDEF CPUX86}
       distance := Abs(Round(zright / screenDX))
+{$ELSE}
+      distance := Abs(TX87Double.RoundQuotient(zright, screenDX))
+{$ENDIF}
     else
     begin
       Theta := x - xleft;
       rTheta := screenDX - Theta;
 
+{$IFDEF CPUX86}
       distance := Abs(Round(1.0 / (rTheta * inv_zleft + Theta * inv_zright)));
+{$ELSE}
+      distance := Abs(TRendererX87.SlopeInverseDistance(rTheta, Theta, inv_zleft, inv_zright));
+{$ENDIF}
     end;
 
     len := FixedMul(distance, distscale[x]);
@@ -527,15 +541,27 @@ begin
     if (x = x1) or (x = x2) or (x mod SLOPESRECALCSTEP = 0) then
     begin
       if x = xleft then
+{$IFDEF CPUX86}
         distance := Abs(Round(zleft / ScreenDX))
+{$ELSE}
+        distance := Abs(TX87Double.RoundQuotient(zleft, ScreenDX))
+{$ENDIF}
       else if x = xright then
+{$IFDEF CPUX86}
         distance := Abs(Round(zright / ScreenDX))
+{$ELSE}
+        distance := Abs(TX87Double.RoundQuotient(zright, ScreenDX))
+{$ENDIF}
       else
       begin
         Theta := x - xleft;
         rTheta := screenDX - Theta;
 
+{$IFDEF CPUX86}
         distance := Abs(Round(1.0 / (rTheta * inv_zleft + Theta * inv_zright)));
+{$ELSE}
+        distance := Abs(TRendererX87.SlopeInverseDistance(rTheta, Theta, inv_zleft, inv_zright));
+{$ENDIF}
       end;
 
       len := FixedMul(distance, distscale[x]);
@@ -703,15 +729,27 @@ begin
     if (x = x1) or (x = x2) or (x mod ANGLESLOPESRECALCSTEP = 0) then
     begin
       if x = xleft then
+{$IFDEF CPUX86}
         distance := Abs(Round(zleft / screenDX))
+{$ELSE}
+        distance := Abs(TX87Double.RoundQuotient(zleft, screenDX))
+{$ENDIF}
       else if x = xright then
+{$IFDEF CPUX86}
         distance := Abs(Round(zright / screenDX))
+{$ELSE}
+        distance := Abs(TX87Double.RoundQuotient(zright, screenDX))
+{$ENDIF}
       else
       begin
         Theta := x - xleft;
         rTheta := screenDX - Theta;
 
+{$IFDEF CPUX86}
         distance := Abs(Round(1.0 / (rTheta * inv_zleft + Theta * inv_zright)));
+{$ELSE}
+        distance := Abs(TRendererX87.SlopeInverseDistance(rTheta, Theta, inv_zleft, inv_zright));
+{$ENDIF}
       end;
 
       len := FixedMul(distance, distscale[x]);

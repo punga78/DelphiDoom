@@ -75,6 +75,16 @@ type
     class function LightSquareDistance(const AX, AY, AZ, ALightX, ALightY, ALightZ: Single): Single; static;
     /// <summary>w of R_DrawVisLight: 2 * ARadius * AWidthFactor / ADefaultWidthFactor stored in a Single</summary>
     class function LightWidth(const ARadius: Single; AWidthFactor, ADefaultWidthFactor: Integer): Single; static;
+    /// <summary>
+    ///   distance of the per pixel slope spans (r_slopes): Round(1.0 / (ARTheta * AInverseLeft + ATheta *
+    ///   AInverseRight)), the two inverses are Single. Always the exact way; 0 when the sum is 0 (the FPU gives
+    ///   the integer indefinite, whose low 32 bits are 0)
+    /// </summary>
+    class function SlopeInverseDistanceExact(ARTheta, ATheta: Integer; const AInverseLeft, AInverseRight: Single): Integer;
+      static;
+    /// <summary>The same; the native result is used when it is certainly the one of the FPU</summary>
+    class function SlopeInverseDistance(ARTheta, ATheta: Integer; const AInverseLeft, AInverseRight: Single): Integer;
+      static;
   end;
 
 implementation
@@ -242,5 +252,41 @@ begin
   Result := (TSoftExtended.FromInt64(2) * TSoftExtended.FromDouble(ARadius) * TSoftExtended.FromInt64(AWidthFactor) /
     TSoftExtended.FromInt64(ADefaultWidthFactor)).ToSingle;
 end;
+
+class function TRendererX87.SlopeInverseDistanceExact(ARTheta, ATheta: Integer;
+  const AInverseLeft, AInverseRight: Single): Integer;
+var
+  LSum: TSoftExtended;
+begin
+  // the products have at most 34 bits: they are exact; the sum is rounded to the 64 bits of the FPU
+  LSum := TSoftExtended.FromInt64(ARTheta) * TSoftExtended.FromDouble(AInverseLeft) +
+    TSoftExtended.FromInt64(ATheta) * TSoftExtended.FromDouble(AInverseRight);
+  if LSum.IsZero then
+    Exit(0);
+  Result := Integer((TSoftExtended.FromInt64(1) / LSum).Round);
+end;
+
+class function TRendererX87.SlopeInverseDistance(ARTheta, ATheta: Integer;
+  const AInverseLeft, AInverseRight: Single): Integer;
+{$IF SizeOf(Extended) > SizeOf(Double)}
+begin
+  Result := Round(1.0 / (ARTheta * AInverseLeft + ATheta * AInverseRight));
+end;
+{$ELSE}
+var
+  LValue: Double;
+begin
+  // each product is exact in a Double and the sum is rounded to the nearest: the native quotient is within
+  // 2^-52 of the exact one, and so is the one of the FPU
+  LValue := ARTheta * Double(AInverseLeft) + ATheta * Double(AInverseRight);
+  if LValue <> 0 then
+  begin
+    LValue := 1.0 / LValue;
+    if TX87Double.CanRound(LValue, Abs(LValue)) then
+      Exit(Round(LValue));
+  end;
+  Result := SlopeInverseDistanceExact(ARTheta, ATheta, AInverseLeft, AInverseRight);
+end;
+{$IFEND}
 
 end.

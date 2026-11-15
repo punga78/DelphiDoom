@@ -96,6 +96,49 @@ type
   end;
 
 const
+  /// <summary>How many return addresses the 64 bit report keeps</summary>
+  CRASH_MAX_FRAMES_64 = 32;
+
+type
+  /// <summary>
+  ///   What the unhandled exception filter knows about the crash of a 64 bit process: the
+  ///   addresses and the registers are 64 bit values and the return addresses were found by the
+  ///   caller (there is no frame pointer chain to follow on x64: the unwinder of Windows walks the stack)
+  /// </summary>
+  TCrashSnapshot64 = record
+    ExceptionCode: Cardinal;
+    ThreadId: Cardinal;
+    ImageSize: Cardinal;
+    /// <summary>The number of parameters of the exception record, and the first two</summary>
+    ParameterCount: Cardinal;
+    ExceptionAddress: UInt64;
+    ImageBase: UInt64;
+    Parameter0: UInt64;
+    Parameter1: UInt64;
+    Rip: UInt64;
+    Rsp: UInt64;
+    Rbp: UInt64;
+    Rax: UInt64;
+    Rbx: UInt64;
+    Rcx: UInt64;
+    Rdx: UInt64;
+    Rsi: UInt64;
+    Rdi: UInt64;
+    R8: UInt64;
+    R9: UInt64;
+    R10: UInt64;
+    R11: UInt64;
+    R12: UInt64;
+    R13: UInt64;
+    R14: UInt64;
+    R15: UInt64;
+    /// <summary>How many of Frames are filled</summary>
+    FrameCount: Cardinal;
+    /// <summary>The return addresses, innermost first</summary>
+    Frames: array[0..CRASH_MAX_FRAMES_64 - 1] of UInt64;
+  end;
+
+const
   /// <summary>MIDI player of the engine (snd_uselegacymidiplayer): never the legacy one, the stream</summary>
   MIDI_PLAYER_STREAM = 0;
   /// <summary>The player that goes through the MCI sequencer of Windows</summary>

@@ -41,7 +41,7 @@ type
     count: integer;
     floorheight: array[0..1] of integer;
     ceilingheight: array[0..1] of integer;
-    lightlevel: array[0..1] of integer;
+    lightlevel: array[0..1] of NativeInt; // in the 8 bit seg loop it carries a colormap pointer (#40)
     fog: array[0..1] of boolean;  // JVAL: Mars fog sectors
   end;
   Pmidsiderange_t = ^midsiderange_t;
@@ -51,8 +51,8 @@ type
 // R_SubtractRange
 //
 //==============================================================================
-procedure R_SubtractRange(const floorheight1, ceilingheight1, lightlevel1: integer;
-                          const floorheight2, ceilingheight2, lightlevel2: integer;
+procedure R_SubtractRange(const floorheight1, ceilingheight1: integer; const lightlevel1: NativeInt;
+                          const floorheight2, ceilingheight2: integer; const lightlevel2: NativeInt;
                           const r: Pmidsiderange_t; var totalclip: boolean);
 
 implementation
@@ -68,8 +68,8 @@ uses
 // Note floor is greater from ceiling :)
 //
 //==============================================================================
-procedure R_SubtractRange(const floorheight1, ceilingheight1, lightlevel1: integer;
-                          const floorheight2, ceilingheight2, lightlevel2: integer;
+procedure R_SubtractRange(const floorheight1, ceilingheight1: integer; const lightlevel1: NativeInt;
+                          const floorheight2, ceilingheight2: integer; const lightlevel2: NativeInt;
                           const r: Pmidsiderange_t; var totalclip: boolean);
 begin
   r.floorheight[0] := MinI(ceilingheight2, floorheight1);

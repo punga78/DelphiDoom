@@ -97,7 +97,13 @@ type
     class function Sqrt(const A: TFixed): TFixed; static;
     /// <summary>The integer part of a 16.16 number held in 64 bits (the old FixedInt64)</summary>
     class function Int64ToInteger(const X: Int64): Integer; static;
-    /// <summary>Round(a / 65536 * b) in floating point on 64 bits (the old FixedMul64)</summary>
+    /// <summary>
+    ///   Round(a / 65536 * b) of the old FixedMul64, in integers (no floating point, so 32 and 64 bit give the
+    ///   same number). The old code did it in the Extended of the x87 (64 bits of mantissa): the product is
+    ///   exact up to 63 bits and it is rounded once to the nearest even; beyond that the product is rounded
+    ///   to 64 significant bits first and then to the integer (two roundings, done here on purpose). When
+    ///   the result does not fit in an Int64 the x87 gives the integer indefinite, Low(Int64), and so does this
+    /// </summary>
     class function Mul64(const A, B: Int64): Int64; static;
     /// <summary>
     ///   Double(Extended(A) / Extended(B)) as the 32 bit FPU computes it: the quotient is rounded to 64
@@ -118,6 +124,121 @@ implementation
 uses
   System.Math;
 {$IFEND}
+
+// The 128 bit product of two unsigned 64 bit numbers, as four 32 bit parts
+procedure Multiply64x64(const A, B: UInt64; out AHigh, ALow: UInt64);
+var
+  LA0, LA1, LB0, LB1: UInt64;
+  LP00, LP01, LP10, LP11: UInt64;
+  LMiddle: UInt64;
+begin
+  LA0 := A and $FFFFFFFF;
+  LA1 := A shr 32;
+  LB0 := B and $FFFFFFFF;
+  LB1 := B shr 32;
+  LP00 := LA0 * LB0;
+  LP01 := LA0 * LB1;
+  LP10 := LA1 * LB0;
+  LP11 := LA1 * LB1;
+  // the sum of the three terms that weigh 2^32 cannot overflow 64 bits
+  LMiddle := (LP00 shr 32) + (LP01 and $FFFFFFFF) + (LP10 and $FFFFFFFF);
+  ALow := (LP00 and $FFFFFFFF) or (LMiddle shl 32);
+  AHigh := LP11 + (LP01 shr 32) + (LP10 shr 32) + (LMiddle shr 32);
+end;
+
+function BitLength(AValue: UInt64): Integer;
+begin
+  Result := 0;
+  while AValue <> 0 do
+  begin
+    Inc(Result);
+    AValue := AValue shr 1;
+  end;
+end;
+
+// AValue / 2^AShift rounded to the nearest, a half to the even one; AShift is 1..63
+function ShiftRightRounded(AValue: UInt64; AShift: Integer): UInt64;
+var
+  LRemainder: UInt64;
+  LHalf: UInt64;
+begin
+  Result := AValue shr AShift;
+  LRemainder := AValue and ((UInt64(1) shl AShift) - 1);
+  LHalf := UInt64(1) shl (AShift - 1);
+  if (LRemainder > LHalf) or ((LRemainder = LHalf) and Odd(Result)) then
+    Inc(Result);
+end;
+
+// The product of A and B divided by 65536 with the roundings of the x87 (see TFixedMath.Mul64)
+function WideMul64(const A, B: Int64): Int64;
+var
+  LAbsA, LAbsB: UInt64;
+  LHigh, LLow: UInt64;
+  LBits: Integer;
+  LDrop: Integer;
+  LShift: Integer;
+  LRemainder: UInt64;
+  LHalf: UInt64;
+  LCarry: Boolean;
+  LQuotient: UInt64;
+begin
+  if A < 0 then
+    LAbsA := UInt64(0) - UInt64(A)
+  else
+    LAbsA := UInt64(A);
+  if B < 0 then
+    LAbsB := UInt64(0) - UInt64(B)
+  else
+    LAbsB := UInt64(B);
+  Multiply64x64(LAbsA, LAbsB, LHigh, LLow);
+
+  // 2^80 / 2^16 = 2^64: it does not fit in an Int64, whatever the roundings
+  if LHigh >= $10000 then
+    Exit(Low(Int64));
+
+  if LHigh <> 0 then
+    LBits := 64 + BitLength(LHigh)
+  else
+    LBits := BitLength(LLow);
+
+  LCarry := False;
+  LDrop := 0;
+  if LBits > 64 then
+  begin
+    // first rounding: to the 64 significant bits of the mantissa (LDrop is 1..16)
+    LDrop := LBits - 64;
+    LRemainder := LLow and ((UInt64(1) shl LDrop) - 1);
+    LHalf := UInt64(1) shl (LDrop - 1);
+    LLow := (LLow shr LDrop) or (LHigh shl (64 - LDrop));
+    if (LRemainder > LHalf) or ((LRemainder = LHalf) and Odd(LLow)) then
+    begin
+      Inc(LLow);
+      LCarry := LLow = 0;
+    end;
+  end;
+
+  // second rounding: the mantissa is worth mantissa * 2^LDrop / 2^16 (LShift is 0..16)
+  LShift := 16 - LDrop;
+  if LCarry then
+  begin
+    // the mantissa became 2^64
+    if LShift = 0 then
+      Exit(Low(Int64));
+    LQuotient := UInt64(1) shl (64 - LShift);
+  end
+  else if LShift = 0 then
+    LQuotient := LLow
+  else
+    LQuotient := ShiftRightRounded(LLow, LShift);
+
+  // 2^63 is Low(Int64) when it is negative and the integer indefinite when it is positive: the same
+  if LQuotient >= UInt64(1) shl 63 then
+    Exit(Low(Int64));
+  if (A < 0) <> (B < 0) then
+    Result := -Int64(LQuotient)
+  else
+    Result := Int64(LQuotient);
+end;
 
 { TFixedMath }
 
@@ -414,7 +535,7 @@ var
   LQuotient: Int64;
   LRemainder: Int64;
 begin
-  if (Abs(A) < $80000000) and (Abs(B) < $80000000) then
+  if (A > -$80000000) and (A < $80000000) and (B > -$80000000) and (B < $80000000) then
   begin
     // The old code computed Round(a / 65536 * b) with the 64 bits of mantissa of the 32 bit FPU,
     // which hold the product (at most 62 bits) exactly: the result is the exact product divided
@@ -432,7 +553,7 @@ begin
     Result := LQuotient;
   end
   else
-    Result := Round(A / FIXED_ONE * B);
+    Result := WideMul64(A, B);
 end;
 
 class function TFixedMath.ExtendedQuotient(const A, B: Double): Double;

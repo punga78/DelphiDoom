@@ -274,7 +274,7 @@ begin
 
   R_GetDCs(texnum, 0); // JVAL Also precache external texture if not loaded
 
-  lightnum := _SHR(ds.midsiderange.lightlevel[0], LIGHTSEGSHIFT) + extralight;
+  lightnum := _SHR(Integer(ds.midsiderange.lightlevel[0]), LIGHTSEGSHIFT) + extralight;
 
   if r_fakecontrast then
     inc(lightnum, curline.fakecontrastlight);
@@ -449,8 +449,8 @@ begin
 
   R_GetDCs(texnum, 0); // JVAL Also precache external texture if not loaded
 
-  lightnum[0] := _SHR(ds.midsiderange.lightlevel[0], LIGHTSEGSHIFT) + extralight;
-  lightnum[1] := _SHR(ds.midsiderange.lightlevel[1], LIGHTSEGSHIFT) + extralight;
+  lightnum[0] := _SHR(Integer(ds.midsiderange.lightlevel[0]), LIGHTSEGSHIFT) + extralight;
+  lightnum[1] := _SHR(Integer(ds.midsiderange.lightlevel[1]), LIGHTSEGSHIFT) + extralight;
 
   if r_fakecontrast then
   begin
@@ -683,7 +683,7 @@ begin
 
   R_GetDCs(texnum, 0); // JVAL Also precache external texture if not loaded
 
-  lightnum := _SHR(ds.midsiderange.lightlevel[0], LIGHTSEGSHIFT) + extralight;
+  lightnum := _SHR(Integer(ds.midsiderange.lightlevel[0]), LIGHTSEGSHIFT) + extralight;
 
   if r_fakecontrast then
     inc(lightnum, curline.fakecontrastlight);
@@ -837,8 +837,8 @@ begin
 
   R_GetDCs(texnum, 0); // JVAL Also precache external texture if not loaded
 
-  lightnum[0] := _SHR(ds.midsiderange.lightlevel[0], LIGHTSEGSHIFT) + extralight;
-  lightnum[1] := _SHR(ds.midsiderange.lightlevel[1], LIGHTSEGSHIFT) + extralight;
+  lightnum[0] := _SHR(Integer(ds.midsiderange.lightlevel[0]), LIGHTSEGSHIFT) + extralight;
+  lightnum[1] := _SHR(Integer(ds.midsiderange.lightlevel[1]), LIGHTSEGSHIFT) + extralight;
 
   if r_fakecontrast then
   begin

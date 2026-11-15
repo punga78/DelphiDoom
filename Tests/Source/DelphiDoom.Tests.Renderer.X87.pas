@@ -45,6 +45,8 @@ type
     procedure DovrebbeDareDistanzaELarghezzaDiUnaLuce;
     [Test]
     procedure DovrebbeDareSenoECosenoDiUnAngoloInSingle;
+    [Test]
+    procedure DovrebbeDareLaDistanzaDiUnaPendenzaPerPixel;
   end;
 
 implementation
@@ -410,6 +412,46 @@ begin
   end;
 end;
 
+procedure TTestRendererX87.DovrebbeDareLaDistanzaDiUnaPendenzaPerPixel;
+const
+  COUNT = 600000;
+var
+  LRandom: TRandomSource;
+  LFingerprint: TFingerprint;
+  LIndex: Integer;
+  LScreenDX, LTheta, LRTheta: Integer;
+  LLeftWorld, LRightWorld: Integer;
+  LInverseLeft, LInverseRight: Single;
+  LResult, LExact: Integer;
+begin
+  // r_slopes: distance := Abs(Round(1.0 / (rTheta * inv_zleft + Theta * inv_zright))) with Single inverses
+  LRandom.State := 9090;
+  LFingerprint := TFingerprint.Create;
+  try
+    for LIndex := 0 to COUNT - 1 do
+    begin
+      // one draw per statement: the order of evaluation of the arguments differs between the two compilers
+      LScreenDX := 2 + Integer(LRandom.Next mod 2400);
+      LTheta := 1 + Integer(LRandom.Next mod Cardinal(LScreenDX - 1));
+      LRTheta := LScreenDX - LTheta;
+      LLeftWorld := 1 + Integer(LRandom.Next mod (1 shl (8 + LIndex mod 17)));
+      LRightWorld := 1 + Integer(LRandom.Next mod (1 shl (8 + LIndex mod 17)));
+      LInverseLeft := 1.0 / Single(Int64(LLeftWorld) * LScreenDX);
+      LInverseRight := 1.0 / Single(Int64(LRightWorld) * LScreenDX);
+      LResult := TRendererX87.SlopeInverseDistance(LRTheta, LTheta, LInverseLeft, LInverseRight);
+      LExact := TRendererX87.SlopeInverseDistanceExact(LRTheta, LTheta, LInverseLeft, LInverseRight);
+      Assert.AreEqual(LExact, LResult, Format('case %d', [LIndex]));
+      {$IF SizeOf(Extended) > SizeOf(Double)}
+      Assert.AreEqual(Integer(Round(1.0 / (LRTheta * LInverseLeft + LTheta * LInverseRight))), LExact,
+        Format('case %d against the FPU', [LIndex]));
+      {$IFEND}
+      LFingerprint.AddInteger(LExact);
+    end;
+    Assert.AreEqual('6903B9AF79E0BE5A/600000', LFingerprint.ToHex);
+  finally
+    LFingerprint.Free;
+  end;
+end;
 procedure TTestRendererX87.DovrebbeDareSenoECosenoDiUnAngoloInSingle;
 const
   COUNT = 100000;

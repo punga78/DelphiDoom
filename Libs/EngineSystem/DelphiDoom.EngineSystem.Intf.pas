@@ -156,6 +156,13 @@ type
     function ReadDWord(AAddress: Cardinal): Cardinal;
   end;
 
+  /// <summary>What can be read of the memory of a 64 bit program at the time of the crash</summary>
+  ICrashMemory64 = interface
+    ['{7A2E94C1-5D08-4B3F-A6E7-31C8F0B9D254}']
+    function IsReadable(AAddress: UInt64; ASize: Cardinal): Boolean;
+    function ReadQWord(AAddress: UInt64): UInt64;
+  end;
+
 implementation
 
 end.
