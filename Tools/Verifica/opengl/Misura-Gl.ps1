@@ -17,7 +17,9 @@ param(
   # the PK3 of Tests\Data\ModelsGl of the game (every state of the game is the MD2 cube; adds -devparm)
   [switch]$Models,
   # the PK3 of Tests\Data\LightsGl of the game (a GLDEFS with a dynamic light on three sprites out of four; adds -devparm)
-  [switch]$Lights
+  [switch]$Lights,
+  # the PK3 of Tests\Data\VoxelsGl of the game (every state of the game is a voxel; adds -devparm)
+  [switch]$Voxels
 )
 $ErrorActionPreference = 'Stop'
 $here = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
@@ -31,6 +33,10 @@ $modelArguments = ""
 if ($Models) {
   $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
   $modelArguments = " -devparm -file " + (Join-Path $here "Tests\Data\ModelsGl\zmdl_$letter.pk3")
+}
+if ($Voxels) {
+  $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]
+  $modelArguments += " -devparm -file " + (Join-Path $here "Tests\Data\VoxelsGl\zvox_$letter.pk3")
 }
 if ($Lights) {
   $letter = @{ GLDoom = 'd'; GLHeretic = 'h'; GLHexen = 'x'; GLStrife = 's' }[$Game]

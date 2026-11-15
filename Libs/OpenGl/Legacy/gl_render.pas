@@ -169,13 +169,6 @@ procedure gld_ConfigureLightPainter(const APainter: TEngineGlSceneLightPainter);
 
 //==============================================================================
 //
-// gld_DrawVoxels
-//
-//==============================================================================
-procedure gld_DrawVoxels(sprite: PGLSprite);
-
-//==============================================================================
-//
 // gld_CalcLightLevel
 //
 //==============================================================================
@@ -440,6 +433,7 @@ uses
   nd_main,
   gl_automap,
   gl_lightmaps,
+  DelphiDoom.Engine.GlLightmap.Types,
   gl_clipper,
   gl_shadows,
   gl_slopes,
@@ -2070,191 +2064,6 @@ end;
  * Sprites       *
  *               *
  *****************)
-
-//==============================================================================
-//
-// gld_DrawVoxel
-//
-//==============================================================================
-procedure gld_DrawVoxel(sprite: PGLSprite; const idx: integer);
-var
-  info: Pvoxelstate_t;
-  voxelinf: Pvoxelmanageritem_t;
-  restoreblend: Boolean;
-  restoreequation: Boolean;
-  anglediff, spinang: angle_t;
-begin
-  info := @voxelstates[idx];
-
-  restoreblend := false;
-  restoreequation := false;
-
-  if sprite.flags and GLS_SHADOW <> 0 then
-  begin
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.1);
-    glColor4f(0.2, 0.2, 0.2, 0.33);
-    restoreblend := true;
-  end
-  else
-  begin
-    if sprite.flags and GLS_TRANSPARENT <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      restoreblend := true;
-    end
-    else if sprite.flags and GLS_ADDITIVE <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      restoreblend := true;
-    end
-    else if sprite.flags and GLS_SUBTRACTIVE <> 0 then
-    begin
-      gld_StaticLightAlpha(sprite.light, sprite.alpha);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-      restoreblend := true;
-      restoreequation := true;
-    end
-
-{    else if info.transparency < 0.9999 then
-    begin
-      gld_StaticLightAlpha(sprite.light, info.transparency);
-      glAlphaFunc(GL_GEQUAL, 0.01);
-      restoreblend := true;
-    end}
-    else
-      gld_StaticLight(sprite.light);
-  end;
-
-  last_gltexture := nil;
-//  glBindTexture(GL_TEXTURE_2D, 0);
-
-  voxelinf := @voxelmanager.items[info.voxelidx];
-  // the model is made with the voxel (VX_AddVoxel): it is nil only after VX_VoxelsDone
-  if voxelinf.voxel = nil then
-  begin
-    I_Warning('gld_DrawVoxel(): Can not load voxel %s'#13#10, [voxelinf.name]);
-    if restoreblend then
-      glAlphaFunc(GL_GEQUAL, 0.01);
-    if restoreequation then
-      glBlendEquation(GL_FUNC_ADD);
-    exit;
-  end;
-  {$IFDEF DEBUG}
-  printf('**drawing voxel %d'#13#10, [idx]);
-  {$ENDIF}
-
-  anglediff := voxelinf.angleoffset * ANG1;
-  {$IFDEF HEXEN}
-  if sprite.mo.flags2 and MF2_DROPPED <> 0 then
-  {$ELSE}
-  if sprite.mo.flags and MF_DROPPED <> 0 then
-  {$ENDIF}
-      spinang := voxelinf.droppedspin
-    else
-      spinang := voxelinf.placedspin;
-  if spinang <> 0 then
-  begin
-    if not isgamesuspended then
-      spinang := Round(((leveltime + ticfrac / FRACUNIT) / TICRATE * spinang) * (ANGLE_MAX / 360))
-    else
-      spinang := Round((leveltime / TICRATE * spinang) * (ANGLE_MAX / 360));
-  end;
-  anglediff := spinang - anglediff;
-
-  voxelinf.voxel.Draw(info.frame, anglediff);
-
-  if restoreblend then
-    glAlphaFunc(GL_GEQUAL, 0.01);
-  if restoreequation then
-    glBlendEquation(GL_FUNC_ADD);
-end;
-
-//==============================================================================
-//
-// gld_DrawVoxels
-//
-//==============================================================================
-procedure gld_DrawVoxels(sprite: PGLSprite);
-var
-  i: integer;
-begin
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix;
-    glTranslatef(sprite.x * MAP_COEFF / (LIGHTMAPSIZEX * LIGHTMAPUNIT),
-                 sprite.y * MAP_COEFF / (LIGHTMAPSIZEY * LIGHTMAPUNIT),
-                 sprite.z * MAP_COEFF / (LIGHTMAPSIZEZ * LIGHTMAPUNIT));
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glTranslatef(sprite.x, sprite.y, sprite.z);
-  glRotatef(sprite.mo.angle / (ANGLE_MAX / 360.0) - 90.0, 0.0, 1.0, 0.0);
-
-  // JVAL
-  // Draw light effects (only if not invulnerability)
-  if uselightboost then
-    if not lightdeflumppresent then
-      if players[displayplayer].fixedcolormap <> 32 then
-      // JVAL: Use old color effects only if LIGHTDEF lump not found
-        if sprite.flags and GLS_LIGHT <> 0 then
-        begin
-          if sprite.flags and GLS_WHITELIGHT <> 0 then
-            gld_SetUplight(1.0, 1.0, 1.0)
-          else if sprite.flags and GLS_REDLIGHT <> 0 then
-            gld_SetUplight(1.0, 0.0, 0.0)
-          else if sprite.flags and GLS_GREENLIGHT <> 0 then
-            gld_SetUplight(0.0, 1.0, 0.0)
-          else if sprite.flags and GLS_BLUELIGHT <> 0 then
-            gld_SetUplight(0.0, 0.0, 1.0)
-          else if sprite.flags and GLS_YELLOWLIGHT <> 0 then
-            gld_SetUplight(1.0, 1.0, 0.0);
-          glBegin(GL_TRIANGLE_STRIP);
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(2.0 * sprite.x1, 2.0 * sprite.y1, 0.01);
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(2.0 * sprite.x2, 2.0 * sprite.y1, 0.01);
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(2.0 * sprite.x1, 2.0 * sprite.y2, 0.01);
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(2.0 * sprite.x2, 2.0 * sprite.y2, 0.01);
-          glEnd;
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glAlphaFunc(GL_GEQUAL, 0.5);
-        end;
-
-  for i := 0 to sprite.voxels.Count - 1 do
-    gld_DrawVoxel(sprite, sprite.voxels.Numbers[i]);
-
-  glPopMatrix;
-
-  if gl_uselightmaps then
-  begin
-    glActiveTextureARB(GL_TEXTURE1_ARB);
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-  end;
-
-  if sprite.flags and (GLS_SHADOW or GLS_TRANSPARENT or GLS_ADDITIVE or GLS_SUBTRACTIVE) <> 0 then
-  begin
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.5);
-    if sprite.flags and GLS_SUBTRACTIVE <> 0 then
-      glBlendEquation(GL_FUNC_ADD);
-  end;
-  glColor3f(1.0, 1.0, 1.0);
-end;
 
 //==============================================================================
 //
