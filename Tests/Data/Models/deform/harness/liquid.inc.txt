@@ -1,0 +1,152 @@
+// Issue #236 (part B): the REAL idRenderModelLiquid of Doom 3 (renderer\Model_liquid.cpp, cut by build.ps1.txt into
+// liquid_cut.inc) on the real R_BuildDeformInfo, R_DeriveTangents and idParser of the harness. The parts of the renderer
+// that the file uses are stubs: the material is a name, the "view" is a time, "parser.LoadFile" reads g_liquidText.
+#include "math/Angles.h"
+#include "math/Quat.h"
+#include "math/Rotation.h"
+#include "bv/Sphere.h"
+#include "bv/Bounds.h"
+
+#define SEC2MS( t )				( ( int )( ( t ) * 1000 ) )
+#define LEXFL_ALLOWPATHNAMES		0x0100
+#define LEXFL_NOSTRINGESCAPECHARS	0x0004
+
+// idToken and idParser are stand-ins: this harness has a minimal idStr (see precompiled.h.txt), which the real
+// Token.h and Lexer.h cannot use. They split the text at white space (a quoted string is one token, without the
+// quotes) and read numbers with atoi and atof; the lexical details of the real parser have their own parity
+// (Tests\Data\Decl, Libs\Scanner). What is real here is every line of Model_liquid.cpp.
+extern char g_parserWarning[512];
+class idToken {
+public:
+	std::string s;
+	int Icmp(const char *c) const { std::string a = s, b = c; for (size_t i = 0; i < a.size(); i++) a[i] = (char)tolower((unsigned char)a[i]); for (size_t i = 0; i < b.size(); i++) b[i] = (char)tolower((unsigned char)b[i]); return a.compare(b); }
+	const char *c_str() const { return s.c_str(); }
+	operator const char *() const { return s.c_str(); }
+};
+class idParser {
+public:
+	std::vector<std::string> tokens; size_t at; std::string fileName;
+	idParser(int flags) : at(0) {}
+	bool LoadMemory(const char *text, int length, const char *name) {
+		fileName = name; std::string t(text, length); size_t i = 0;
+		while (i < t.size()) {
+			if (isspace((unsigned char)t[i])) { i++; continue; }
+			if (t[i] == '"') { size_t j = t.find('"', i + 1); tokens.push_back(t.substr(i + 1, j - i - 1)); i = j + 1; }
+			else { size_t j = i; while (j < t.size() && !isspace((unsigned char)t[j])) j++; tokens.push_back(t.substr(i, j - i)); i = j; }
+		}
+		return true;
+	}
+	bool ReadToken(idToken *token) { if (at >= tokens.size()) return false; token->s = tokens[at++]; return true; }
+	int ParseInt() { return at < tokens.size() ? atoi(tokens[at++].c_str()) : 0; }
+	float ParseFloat() { return at < tokens.size() ? (float)atof(tokens[at++].c_str()) : 0.0f; }
+	void Warning(const char *fmt, ...) { va_list a; va_start(a, fmt); vsprintf(g_parserWarning, fmt, a); va_end(a); }
+};
+
+struct idMaterial { idStr name; };
+typedef struct modelSurface_s { int id; const idMaterial *shader; srfTriangles_t *geometry; } modelSurface_t;
+struct renderView_s { int time; };
+struct viewDef_s { renderView_s renderView; };
+struct renderEntity_s { int unused; };
+typedef enum { DM_STATIC, DM_CACHED, DM_CONTINUOUS } dynamicModel_t;
+
+class idRenderModelStatic {
+public:
+	idStr name; ID_TIME_T timeStamp; idBounds bounds; idList<modelSurface_t> surfaces; bool defaulted;
+	idRenderModelStatic() : timeStamp(0), defaulted(false) {}
+	virtual ~idRenderModelStatic() {}
+	void MakeDefaultModel() { defaulted = true; }
+	int AddSurface(modelSurface_t s) { return surfaces.Append(s); }
+};
+typedef idRenderModelStatic idRenderModel;
+
+struct idDeclManagerStub { const idMaterial *FindMaterial(const char *n) { idMaterial *m = new idMaterial; if (n) m->name = n; return m; } } theDeclManager, *declManager = &theDeclManager;
+struct cvarFalse { bool GetBool() const { return false; } } r_useDeferredTangents;
+static const char *g_liquidText = "";
+srfTriangles_t *R_AllocStaticTriSurf() { return (srfTriangles_t *)calloc(1, sizeof(srfTriangles_t)); }
+
+// the class of Model_local.h, everything public
+class idRenderModelLiquid : public idRenderModelStatic {
+public:
+	idRenderModelLiquid();
+	virtual void InitFromFile( const char *fileName );
+	virtual dynamicModel_t IsDynamicModel() const;
+	virtual idRenderModel *InstantiateDynamicModel( const struct renderEntity_s *ent, const struct viewDef_s *view, idRenderModel *cachedModel );
+	virtual idBounds Bounds( const struct renderEntity_s *ent ) const;
+	virtual void Reset();
+	void IntersectBounds( const idBounds &bounds, float displacement );
+	modelSurface_t GenerateSurface( float lerp );
+	void WaterDrop( int x, int y, float *page );
+	void Update( void );
+	int verts_x; int verts_y; float scale_x; float scale_y; int time; int liquid_type; int update_tics; int seed;
+	idRandom random;
+	const idMaterial *shader;
+	struct deformInfo_s *deformInfo;
+	float density; float drop_height; int drop_radius; float drop_delay;
+	idList<float> pages; float *page1; float *page2;
+	idList<idDrawVert> verts;
+	int nextDropTime;
+};
+
+#include "liquid_cut.inc"
+
+static void F2(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
+
+static void PrintSurface(const char *label, int k, int t, srfTriangles_t *tri, bool full) {
+	printf("LIQ %s t%d | %d %d %d\n", label, k, t, tri->numVerts, tri->numIndexes);
+	printf("LIQ %s t%d z |", label, k); for (int i = 0; i < tri->numVerts; i++) F2(tri->verts[i].xyz.z); printf("\n");
+	printf("LIQ %s t%d bounds |", label, k); for (int a = 0; a < 2; a++) { F2(tri->bounds[a].x); F2(tri->bounds[a].y); F2(tri->bounds[a].z); } printf("\n");
+	if (full) {
+		printf("LIQ %s t%d normals |", label, k);
+		for (int i = 0; i < tri->numVerts; i++) { F2(tri->verts[i].normal.x); F2(tri->verts[i].normal.y); F2(tri->verts[i].normal.z); F2(tri->verts[i].tangents[0].x); F2(tri->verts[i].tangents[0].y); F2(tri->verts[i].tangents[0].z); F2(tri->verts[i].tangents[1].x); F2(tri->verts[i].tangents[1].y); F2(tri->verts[i].tangents[1].z); }
+		printf("\n");
+	}
+}
+
+// A case: the text of the file, the times, the times that print the normals and tangents too, and an optional
+// IntersectBounds before the time index "intersectAt" (-1: none)
+static void LiquidCase(const char *label, const char *text, const int *times, int numTimes, int fullMask, int intersectAt) {
+	g_liquidText = text;
+	idRenderModelLiquid *m = new idRenderModelLiquid;
+	m->deformInfo = 0;
+	g_parserWarning[0] = 0;
+	m->InitFromFile("test.liquid");
+	if (g_parserWarning[0]) { printf("LIQ %s warning | %s\n", label, g_parserWarning); g_parserWarning[0] = 0; }
+	printf("LIQ %s text |", label); for (const char *p = text; *p; p++) { if (*p == '\n') putchar(' '); else putchar(*p); } printf("\n");
+	printf("LIQ %s init | %d %d %d %d %d\n", label, m->defaulted ? 1 : 0, m->verts_x, m->verts_y, m->update_tics, m->liquid_type);
+	if (m->defaulted) { delete m; return; }
+	printf("LIQ %s dims |", label); F2(m->scale_x); F2(m->scale_y); F2(m->density); F2(m->drop_height); F2(m->drop_delay); printf(" %d %d %d\n", m->drop_radius, m->seed, m->deformInfo ? 1 : 0);
+	printf("LIQ %s modelbounds |", label); for (int a = 0; a < 2; a++) { F2(m->bounds[a].x); F2(m->bounds[a].y); F2(m->bounds[a].z); } printf("\n");
+	printf("LIQ %s shader | %s\n", label, m->shader->name.c_str());
+	printf("LIQ %s times |", label); for (int k = 0; k < numTimes; k++) printf(" %d", times[k]); printf("\n");
+	for (int k = 0; k < numTimes; k++) {
+		if (k == intersectAt) {
+			idBounds b; b[0] = idVec3(m->scale_x * 2.5f, m->scale_y * 3.5f, -2.0f); b[1] = idVec3(m->scale_x * 6.5f, m->scale_y * 7.25f, 1.5f);
+			m->IntersectBounds(b, 0.0f);
+			printf("LIQ %s intersect | %d", label, k); for (int a = 0; a < 2; a++) { F2(b[a].x); F2(b[a].y); F2(b[a].z); } printf("\n");
+		}
+		viewDef_s view; view.renderView.time = times[k];
+		idRenderModel *r = m->InstantiateDynamicModel(0, &view, 0);
+		PrintSurface(label, k, times[k], r->surfaces[0].geometry, ((fullMask >> k) & 1) != 0);
+		printf("LIQ %s t%d state | %d %d\n", label, k, m->time, m->nextDropTime);
+	}
+	delete m;
+}
+
+static void LiquidMain() {
+	static const int T1[] = { 0, 20, 33, 40, 70, 200, 1000, 1007, 5000 };
+	LiquidCase("typeA", "size_x 64 size_y 48 verts_x 10 verts_y 8 liquid_type 1 density 0.95 drop_height 3 drop_radius 2 drop_delay 0.5 shader \"textures/water\" update_rate 30 seed 7", T1, 9, 0x0A1, -1);
+	static const int T2[] = { 10, 100, 133, 250, 251, 900, 12000 };
+	LiquidCase("typeB", "size_x 80 size_y 80 verts_x 12 verts_y 12 liquid_type 2 density 0.9 drop_height 2.5 drop_radius 3 drop_delay 0.25 shader textures/slime update_rate 20 seed 12345", T2, 7, 0x41, -1);
+	static const int T3[] = { 0, 34, 68, 300, 600, 604, 1500 };
+	LiquidCase("typeC", "verts_x 9 verts_y 7 size_x 50 size_y 30 liquid_type 3 density 0.99 drop_height 1.5 drop_radius 1 drop_delay 2 update_rate 60 seed 3", T3, 7, 0x11, -1);
+	static const int T4[] = { 33, 66, 99, 132, 165, 198, 231 };
+	LiquidCase("intersect", "size_x 100 size_y 100 verts_x 11 verts_y 11 liquid_type 1 density 0.96 drop_height 4 drop_radius 2 drop_delay 0.1 seed 5", T4, 7, 0x44, 3);
+	static const int T5[] = { 0, 50, 5000, 5100, 4000 };
+	LiquidCase("defaults", "verts_x 6 verts_y 6 size_x 10 size_y 10", T5, 5, 0x03, -1);
+	static const int T6[] = { 0 };
+	LiquidCase("badverts", "verts_x 1", T6, 1, 0, -1);
+	LiquidCase("badtype", "liquid_type 9", T6, 1, 0, -1);
+	LiquidCase("badrate", "update_rate 100", T6, 1, 0, -1);
+	LiquidCase("badrate0", "update_rate 0", T6, 1, 0, -1);
+	LiquidCase("unknown", "verts_x 8 foo 3", T6, 1, 0, -1);
+}

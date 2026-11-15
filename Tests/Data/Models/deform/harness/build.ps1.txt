@@ -1,8 +1,9 @@
-# Issues #104, #105 and #236 (part B): rebuilds the two goldens of the deform parity with the REAL code of Doom 3.
+# Issues #104, #105 and #236 (part B): rebuilds the goldens of the deform parity with the REAL code of Doom 3.
 #
 #   deform.golden.txt      R_BuildDeformInfo, R_CleanupTriangles, tangents, face planes (the lines without the SIL prefix)
 #   deform_sil.golden.txt  R_IdentifySilEdges: the lines with the SIL prefix (silhouette edges and the warnings)
 #
+#   liquid.golden.txt      the REAL idRenderModelLiquid (Model_liquid.cpp, liquid.inc.txt): the lines with the LIQ prefix
 # part1..part4 and simd/cubeface are line ranges of Reference\doom3\neo\renderer\tr_trisurf.cpp and of
 # idlib\math\Simd_Generic.cpp (Reference is read only); part4.inc is made here from tr_trisurf.cpp (R_DefineEdge,
 # SilEdgeSort and R_IdentifySilEdges with the statics they use). The idlib objects are those of C:\harness\d3 (Str, Heap,
@@ -17,7 +18,7 @@ New-Item -ItemType Directory -Force $Work | Out-Null
 if (-not (Test-Path "$Work\idlib")) { Copy-Item "$IdlibSource\idlib" "$Work\idlib" -Recurse }
 Copy-Item "$src\precompiled.h.txt" "$Work\idlib\precompiled.h" -Force
 Copy-Item "$src\driver.cpp.txt" "$Work\idlib\driver.cpp" -Force
-foreach ($n in 'part1', 'part2', 'part3', 'simd', 'cubeface') { Copy-Item "$src\$n.inc.txt" "$Work\idlib\$n.inc" -Force }
+foreach ($n in 'part1', 'part2', 'part3', 'simd', 'cubeface', 'liquid') { Copy-Item "$src\$n.inc.txt" "$Work\idlib\$n.inc" -Force }
 
 # part4: the statics of tr_trisurf.cpp, R_DefineEdge, SilEdgeSort, R_IdentifySilEdges
 $lines = Get-Content "$Reference\doom3\neo\renderer\tr_trisurf.cpp"
@@ -30,6 +31,15 @@ $edgeEnd = $identify; while ($lines[$edgeEnd] -ne '}') { $edgeEnd++ }
 $part4 = $lines[$first..$lastStatic] + '' + $lines[$edgeStart..$edgeEnd]
 Set-Content "$Work\idlib\part4.inc" $part4 -Encoding ascii
 
+# liquid_cut.inc: Model_liquid.cpp of Doom 3 from the first #define to the end, with two changes that the stubs need:
+# the parser reads g_liquidText instead of a file, and the bounds of the surface are copied by element
+$liq = Get-Content "$Reference\doom3\neo\renderer\Model_liquid.cpp"
+$ls = 0; while ($liq[$ls] -notmatch '^#define LIQUID_MAX_SKIP_FRAMES') { $ls++ }
+$cut = ($liq[$ls..($liq.Count - 1)]) -join "`r`n"
+$cut = $cut.Replace('parser.LoadFile( fileName )', 'parser.LoadMemory( g_liquidText, (int)strlen( g_liquidText ), fileName )')
+$cut = $cut.Replace('staticModel->bounds = surf.geometry->bounds;', 'staticModel->bounds[0] = surf.geometry->bounds[0]; staticModel->bounds[1] = surf.geometry->bounds[1];')
+Set-Content "$Work\idlib\liquid_cut.inc" $cut -Encoding ascii
+
 New-Item -ItemType Directory -Force "$Work\obj" | Out-Null
 Set-Location "$Work\idlib"
 $out = & $B -c -w- -I. "-o$Work\obj\driver.o" driver.cpp 2>&1
@@ -39,5 +49,6 @@ $objs = Get-ChildItem "$IdlibSource\obj\*.o" | Where-Object { $_.Name -notmatch 
 $out = & $B -o "$Work\deform.exe" "$Work\obj\driver.o" @objs 2>&1
 if ($LASTEXITCODE -ne 0) { $out | Select-Object -First 20; throw 'link failed' }
 $all = & "$Work\deform.exe"
-$all | Where-Object { $_ -notmatch '^SIL ' } | Set-Content "$Repo\Tests\Data\Models\deform\deform.golden.txt" -Encoding UTF8
+$all | Where-Object { $_ -match '^LIQ ' } | Set-Content "$Repo\Tests\Data\Models\deform\liquid.golden.txt" -Encoding UTF8
+$all | Where-Object { $_ -notmatch '^(SIL|LIQ) ' } | Set-Content "$Repo\Tests\Data\Models\deform\deform.golden.txt" -Encoding UTF8
 $all | Where-Object { $_ -match '^SIL ' } | Set-Content "$Repo\Tests\Data\Models\deform\deform_sil.golden.txt" -Encoding UTF8

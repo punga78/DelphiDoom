@@ -18,7 +18,8 @@ idFileSystem *fileSystem = 0;
 void idLib::Error(const char *, ...) { abort(); }
 void idLib::Warning(const char *, ...) {}
 void idCommon::Printf(const char *fmt, ...) {}
-void idCommon::Warning(const char *fmt, ...) {}
+char g_parserWarning[512];	// the last Warning (idParser::Warning: "file '%s', line %d: ..."): LiquidCase writes it
+void idCommon::Warning(const char *fmt, ...) { va_list a; va_start(a, fmt); vsprintf(g_parserWarning, fmt, a); va_end(a); }
 static char g_warning[256];	// the last DWarning (R_IdentifySilEdges: "%i duplicated edge directions, %i tripled edges"): PrintSil writes it
 void idCommon::DWarning(const char *fmt, ...) { va_list a; va_start(a, fmt); vsprintf(g_warning, fmt, a); va_end(a); }
 void idCommon::Error(const char *fmt, ...) { printf("ERROR %s\n", fmt); abort(); }
@@ -34,14 +35,14 @@ void idFileSystem::FreeFile(void *b) {}
 const char *idFileSystem::OSPathToRelativePath(const char *p) { return p; }
 static idSIMDStub theSimd; idSIMDStub *SIMDProcessor = &theSimd;
 
-struct { struct { int c_tangentIndexes; } pc; } tr;
+struct { struct { int c_tangentIndexes; int c_deformedSurfaces; int c_deformedVerts; int c_deformedIndexes; } pc; } tr;
 struct cvar { bool GetBool() const { return true; } } r_useSilRemap;
 
 typedef struct srfTriangles_s {
 	int numVerts; int numIndexes; idDrawVert *verts; int *indexes; int *silIndexes;
 	int numMirroredVerts; int *mirroredVerts; int numDupVerts; int *dupVerts;
 	int numSilEdges; silEdge_t *silEdges; dominantTri_t *dominantTris; idPlane *facePlanes;
-	bool tangentsCalculated; bool facePlanesCalculated; bool perfectHull; idVec3 bounds[2];
+	bool deformedSurface; bool tangentsCalculated; bool facePlanesCalculated; bool perfectHull; idVec3 bounds[2];
 } srfTriangles_t;
 
 template<class T> struct TAlloc { T *Alloc(int n) { return (T *)calloc(n + 1, sizeof(T)); } void Free(T *p) { free(p); } };
@@ -88,6 +89,7 @@ void R_DeriveUnsmoothedTangents(srfTriangles_t *tri);
 #include "part3.inc"
 #include "cubeface.inc"
 #include "part4.inc"
+#include "liquid.inc"
 
 static void F(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
 static void I(int i) { printf(" %d", i); }
@@ -135,7 +137,7 @@ static unsigned lcg = 12345u; static float rnd() { lcg = lcg * 1664525u + 101390
 	// distinct areas for the triangles of a vertex: the order of equal ones is not defined by qsort
 	for (int k = 0; k < 3; k++) for (int i = 0; i < cases[k].nv; i++) { float *v = cases[k].xyzst[i]; if (k == 0 && i == 6) { for (int c = 0; c < 3; c++) v[c] = cases[0].xyzst[0][c]; continue; } v[0] += rnd() * 0.4f; v[1] += rnd() * 0.4f; v[2] += rnd() * 0.4f; }
 }
-int main() { idMath::Init(); silEdges = (silEdge_t *)malloc(MAX_SIL_EDGES * sizeof(silEdge_t));
+int main() { idMath::Init(); silEdges = (silEdge_t *)malloc(MAX_SIL_EDGES * sizeof(silEdge_t)); LiquidMain();
 	build(); perturb();
 	for (int k = 0; k < 3; k++) {
 		Case &cs = cases[k];
