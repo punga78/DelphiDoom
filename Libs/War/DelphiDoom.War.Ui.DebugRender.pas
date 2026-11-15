@@ -18,7 +18,7 @@ unit DelphiDoom.War.Ui.DebugRender;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf;
+  System.SysUtils, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.Text.Intf;
 
 type
   /// <summary>
@@ -27,12 +27,14 @@ type
   ///   of the units that has no name), so from "unit-info" on a name toggles the flag before the one it names
   ///   ("state-machine" toggles the rvo, "rvo" the flow field...) and the last flag has no name: an empty one finds it
   /// </summary>
-  TWarDebugRender = class(TInterfacedObject, IWarDebugRender)
+  TWarDebugRender = class(TInterfacedObject, IWarDebugRender, IWarTextDebug)
   strict private
     FFlags: array[TWarDebugRenderFlag] of Boolean;
     function FlagOfName(const AName: AnsiString; out AFlag: TWarDebugRenderFlag): Boolean;
     function NameOf(AFlag: TWarDebugRenderFlag): AnsiString;
   public
+    /// <summary>IWarTextDebug: the flag "font", read by the text renderer of every scene</summary>
+    function IsFontOutlineOn: Boolean;
     function GetFlag(AFlag: TWarDebugRenderFlag): Boolean;
     procedure SetFlag(AFlag: TWarDebugRenderFlag; AValue: Boolean);
     function ApplyCheat(const AArgument: AnsiString): AnsiString;
@@ -54,6 +56,11 @@ const
 function TWarDebugRender.GetFlag(AFlag: TWarDebugRenderFlag): Boolean;
 begin
   Result := FFlags[AFlag];
+end;
+
+function TWarDebugRender.IsFontOutlineOn: Boolean;
+begin
+  Result := FFlags[wdrFont];
 end;
 
 procedure TWarDebugRender.SetFlag(AFlag: TWarDebugRenderFlag; AValue: Boolean);

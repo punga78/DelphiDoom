@@ -45,6 +45,8 @@ type
     procedure BlendSum(AOffset: Integer; ARed, AGreen, ABlue, AAlpha: Integer);
     procedure DrawLineHorizontal(AX1, AX2, AY: Integer; const AColor: TWarRgba);
     procedure DrawLineVertical(AX, AY1, AY2: Integer; const AColor: TWarRgba);
+    procedure PlotLinePoint(AX, AY: Integer; const AColor: TWarRgba); inline;
+    procedure DrawLineWalk(AX1, AY1, AX2, AY2: Integer; const AColor: TWarRgba);
   public
     /// <summary>A transparent canvas of AWidth x AHeight pixels</summary>
     constructor Create(AWidth, AHeight: Integer);
@@ -57,8 +59,10 @@ type
     /// <summary>SDL_RenderRect with the blend mode SDL_BLENDMODE_BLEND (wr_strokeRect): one pixel of outline</summary>
     procedure StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);
     /// <summary>
-    ///   SDL_RenderLine with the blend mode SDL_BLENDMODE_BLEND (wr_strokeLine) for a line along a row or a column (the
-    ///   grids of the debug drawing); an oblique line is EWarException (not ported)
+    ///   SDL_RenderLine with the blend mode SDL_BLENDMODE_BLEND (wr_strokeLine): both ends are drawn. Along a row or a
+    ///   column the ends are cut with floor; any other line is cut with (int) and walked one pixel at a time (4-connected,
+    ///   from the end with the smaller x). Same pixels as the real SDL3 when the alpha is 255, except for an oblique line
+    ///   with a coordinate in (-1, 0), that SDL draws another way (not kept)
     /// </summary>
     procedure StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
     property Width: Integer read FWidth;
@@ -357,25 +361,97 @@ begin
     BlendLinePixel((LRow * FWidth + AX) * WAR_PIXEL_SIZE, AColor);
 end;
 
+procedure TWarImageBlitter.PlotLinePoint(AX, AY: Integer; const AColor: TWarRgba);
+begin
+  if (AX >= 0) and (AX < FWidth) and (AY >= 0) and (AY < FHeight) then
+    BlendLinePixel((AY * FWidth + AX) * WAR_PIXEL_SIZE, AColor);
+end;
+
+procedure TWarImageBlitter.DrawLineWalk(AX1, AY1, AX2, AY2: Integer; const AColor: TWarRgba);
+var
+  LTemp: Integer;
+  LDeltaX: Integer;
+  LDeltaY: Integer;
+  LStepY: Integer;
+  LX: Integer;
+  LY: Integer;
+  LCountX: Integer;
+  LCountY: Integer;
+begin
+  // the line of the software renderer of SDL3: always walked from the end with the smaller x, one pixel at a time and never
+  // along a diagonal (dx + dy + 1 pixels); the next step is along x when the line crosses the next column before the
+  // next row, (0.5 + countX) / dx < (0.5 + countY) / dy, and along y when it is a tie
+  if AX1 > AX2 then
+  begin
+    LTemp := AX1;
+    AX1 := AX2;
+    AX2 := LTemp;
+    LTemp := AY1;
+    AY1 := AY2;
+    AY2 := LTemp;
+  end;
+  LDeltaX := AX2 - AX1;
+  LDeltaY := Abs(AY2 - AY1);
+  if AY2 > AY1 then
+    LStepY := 1
+  else
+    LStepY := -1;
+  LX := AX1;
+  LY := AY1;
+  LCountX := 0;
+  LCountY := 0;
+  PlotLinePoint(LX, LY, AColor);
+  while (LCountX < LDeltaX) or (LCountY < LDeltaY) do
+  begin
+    if Int64(1 + 2 * LCountX) * LDeltaY < Int64(1 + 2 * LCountY) * LDeltaX then
+    begin
+      Inc(LX);
+      Inc(LCountX);
+    end
+    else
+    begin
+      Inc(LY, LStepY);
+      Inc(LCountY);
+    end;
+    PlotLinePoint(LX, LY, AColor);
+  end;
+end;
+
 procedure TWarImageBlitter.StrokeLine(AX1, AY1, AX2, AY2: Single; const AColor: TWarRgba);
+const
+  // the cut to an int of a float beyond this is undefined in C; the line is far outside the canvas anyway
+  LIMIT = 1000000;
 var
   LX1: Integer;
   LY1: Integer;
   LX2: Integer;
   LY2: Integer;
 begin
-  // SDL_RenderLine: each end is cut to an int as the ends of SDL_RenderRect are; both ends are drawn. Only the lines that
-  // stay on a row or a column are drawn (the grids of the debug drawing): an oblique one is EWarException
-  LX1 := Floor(AX1);
-  LY1 := Floor(AY1);
-  LX2 := Floor(AX2);
-  LY2 := Floor(AY2);
-  if LY1 = LY2 then
-    DrawLineHorizontal(LX1, LX2, LY1, AColor)
-  else if LX1 = LX2 then
-    DrawLineVertical(LX1, LY1, LY2, AColor)
-  else
-    raise EWarException.Create(SWarRenderObliqueLine);
+  AX1 := Max(-LIMIT, Min(LIMIT, AX1));
+  AY1 := Max(-LIMIT, Min(LIMIT, AY1));
+  AX2 := Max(-LIMIT, Min(LIMIT, AX2));
+  AY2 := Max(-LIMIT, Min(LIMIT, AY2));
+  // SDL_RenderLine: a line along a row or a column (the same float for both ends) is cut to ints with floor and drawn as
+  // a rectangle of one pixel (the grids of the debug drawing); any other line is cut with (int), toward zero, and walked.
+  // Not kept: an oblique line with a coordinate in (-1, 0) (SDL draws it another way), and the pixels that SDL blends
+  // more than once when the alpha is less than 255 (the debug drawing is always opaque)
+  if (AX1 = AX2) or (AY1 = AY2) then
+  begin
+    LX1 := Floor(AX1);
+    LY1 := Floor(AY1);
+    LX2 := Floor(AX2);
+    LY2 := Floor(AY2);
+    if LY1 = LY2 then
+      DrawLineHorizontal(LX1, LX2, LY1, AColor)
+    else
+      DrawLineVertical(LX1, LY1, LY2, AColor);
+    Exit;
+  end;
+  LX1 := Trunc(AX1);
+  LY1 := Trunc(AY1);
+  LX2 := Trunc(AX2);
+  LY2 := Trunc(AY2);
+  DrawLineWalk(LX1, LY1, LX2, LY2, AColor);
 end;
 
 procedure TWarImageBlitter.StrokeRect(const ARect: TWarRectF; const AColor: TWarRgba);

@@ -60,6 +60,12 @@ type
     [TestCase('Modi con un clic: aggiungi unita'', pioggia di fuoco, nube, risuscita', 'map_edit')]
     [TestCase('Modi che cambiano il terreno: alberi, muri, strade, rovine', 'map_edit_terrain')]
     [TestCase('Disegno di debug delle unita'' e delle animazioni', 'map_debug_units')]
+    [TestCase('Disegno di debug dei testi: riquadri dei glifi e contorni', 'map_debug_font')]
+    [TestCase('Disegno di debug delle unita'' vicine e delle celle della griglia', 'map_debug_near')]
+    [TestCase('Disegno di debug dei proiettili: riquadri e righe', 'map_debug_projectiles')]
+    [TestCase('Disegno di debug del campo di flusso: frecce', 'map_debug_flow')]
+    [TestCase('Disegno di debug dell''evitamento: frecce della velocita''', 'map_debug_rvo')]
+    [TestCase('Disegno e testo di debug della macchina a stati', 'map_debug_state')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

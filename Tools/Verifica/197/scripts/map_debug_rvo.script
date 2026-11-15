@@ -1,0 +1,77 @@
+# Disegno di debug dell'evitamento fra unita' (umani 1): il flag "rvo" (Ctrl+Maiusc+R) disegna sopra le unita' che camminano una
+# freccia verde per la velocita' scelta e una gialla per quella preferita (asta e punta, righe oblique con estremi float); due
+# gruppi di fanti si incrociano mandati con il clic destro in versi opposti, e si spegne il flag mentre camminano
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key ctrl down
+key shift down
+run 1 1
+key r down
+run 1 1
+key r up
+run 3 1
+key ctrl up
+key shift up
+unit 0 130 100 0
+unit 0 138 108 0
+unit 0 130 116 0
+unit 0 138 124 0
+unit 0 250 100 0
+unit 0 258 108 0
+unit 0 250 116 0
+unit 0 258 124 0
+run 6 1
+move 118 90
+lbutton down
+run 2 1
+move 150 135
+run 2 1
+lbutton up
+run 4 1
+move 280 112
+rbutton down
+run 2 1
+rbutton up
+run 3 1
+move 238 90
+lbutton down
+run 2 1
+move 275 135
+run 2 1
+lbutton up
+run 4 1
+move 120 112
+rbutton down
+run 2 1
+rbutton up
+run 80 2
+key ctrl down
+key shift down
+run 1 1
+key r down
+run 1 1
+key r up
+run 3 1
+key ctrl up
+key shift up
+run 40 2
+key ctrl down
+key shift down
+run 1 1
+key r down
+run 1 1
+key r up
+run 3 1
+key ctrl up
+key shift up
+run 60 2

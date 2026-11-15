@@ -1,0 +1,75 @@
+# Disegno di debug del campo di flusso (umani 1): il flag "flow-field" (Ctrl+Maiusc+W); un clic sinistro sulla mappa fa il campo
+# della casella e lo disegna (una freccia ciano per ogni casella della finestra che non e' fissa e ha una direzione: asta e due
+# tratti della punta, righe oblique con estremi float); si fa scorrere la camera, si manda una unita' alla casella (il campo
+# e' lo stesso di quello che le unita' tengono e si rifa'), poi un altro clic e si spegne il flag
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key ctrl down
+key shift down
+run 1 1
+key w down
+run 1 1
+key w up
+run 3 1
+key ctrl up
+key shift up
+move 230 90
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+move 190 130
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+key right down
+run 14 1
+key right up
+key down down
+run 12 1
+key down up
+run 4 1
+move 120 100
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+move 176 99
+lbutton down
+run 2 1
+lbutton up
+run 8 1
+move 100 140
+run 2 1
+rbutton down
+run 2 1
+rbutton up
+run 60 3
+move 150 60
+lbutton down
+run 2 1
+lbutton up
+run 12 1
+key ctrl down
+key shift down
+run 1 1
+key w down
+run 1 1
+key w up
+run 3 1
+key ctrl up
+key shift up
+run 10 1

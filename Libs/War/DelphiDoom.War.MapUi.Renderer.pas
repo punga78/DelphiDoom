@@ -95,7 +95,8 @@ uses
   System.Math, DelphiDoom.War.Map.Fog, DelphiDoom.War.Autotile.Types, DelphiDoom.War.Autotile.Data,
   DelphiDoom.War.Autotile.Line, DelphiDoom.War.Autotile.Ruins, DelphiDoom.War.Map.Forest, DelphiDoom.War.Map.Minimap,
   DelphiDoom.War.Model.Construction.Types, DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry,
-  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.EntityPool, DelphiDoom.War.Model.Walls, DelphiDoom.War.Model.Selection;
+  DelphiDoom.War.Model.Math, DelphiDoom.War.Model.EntityPool, DelphiDoom.War.Model.Walls, DelphiDoom.War.Model.Selection,
+  DelphiDoom.War.MapUi.DebugProjectiles;
 
 const
   TILE_SIZE = WAR_MEGA_TILE_SIZE;
@@ -478,12 +479,14 @@ var
   LValue: Single;
   LScale: Single;
 begin
-  // renderProjectile (without the debug lines)
+  // renderProjectile
   LEntity := ARenderer.FContext.Pool.Slots[ASlot];
   if not LEntity^.HasProjectile then
     Exit;
   LSprite := ARenderer.FSprites.Get(PROJECTILE_RESOURCES[LEntity^.Projectile.ProjectileType]);
   LFrame := LSprite.GetFrame(LEntity^.Projectile.FrameIndex);
+  if Assigned(ARenderer.FDebugView) and ARenderer.FDebugView.IsOn(wdrProjectiles) then
+    TWarDebugProjectiles.Draw(ARenderer.FTransform, LEntity, LSprite, LFrame);
   LScale := 1;
   if LEntity^.Projectile.FlipX then
     LScale := -1;
@@ -803,6 +806,9 @@ begin
   RenderEntitiesOfType(WAR_ENTITY_PROJECTILE);
   RenderEntitiesOfType(WAR_ENTITY_POISON_CLOUD);
   RenderEntitiesOfType(WAR_ENTITY_ANIMATION);
+  // renderRvoDebug: over everything but the fog
+  if Assigned(FDebugView) then
+    FDebugView.RenderOverUnits;
   RenderFog;
   FTransform.Restore;
 end;

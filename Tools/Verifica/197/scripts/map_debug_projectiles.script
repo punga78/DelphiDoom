@@ -1,0 +1,96 @@
+# Disegno di debug dei proiettili (umani 1): il flag "projectiles" (Ctrl+Maiusc+J) disegna per ogni proiettile il riquadro del
+# suo sprite (grigio), quello del fotogramma (rosso), e una riga dal punto di partenza a quello di arrivo con un pixel viola
+# per estremo; si vedono le pietre della catapulta e le frecce dell'assedio di map_war_siege e la pioggia di fuoco (righe lunghe,
+# dall'alto della mappa), con il flag acceso e spento mentre volano
+campaign human 1
+move 190 100
+run 10 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Debug render status
+key enter down
+run 1 1
+key enter up
+run 6 1
+key ctrl down
+key shift down
+run 1 1
+key j down
+run 1 1
+key j up
+run 3 1
+key ctrl up
+key shift up
+building 35 210 70 1
+unit 4 140 110 0
+unit 8 150 125 0
+unit 1 215 125 1
+run 5 1
+move 125 95
+run 3 1
+lbutton down
+run 2 1
+move 170 135
+run 2 1
+lbutton up
+run 4 1
+key a down
+run 2 1
+key a up
+run 3 1
+move 225 85
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 200 2
+key ctrl down
+key shift down
+run 1 1
+key j down
+run 1 1
+key j up
+run 3 1
+key ctrl up
+key shift up
+run 120 4
+key ctrl down
+key shift down
+run 1 1
+key j down
+run 1 1
+key j up
+run 3 1
+key ctrl up
+key shift up
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 215 100
+run 2 1
+lbutton down
+run 2 1
+lbutton up
+run 3 1
+move 150 80
+lbutton down
+run 2 1
+lbutton up
+run 60 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Rain of fire
+key enter down
+run 1 1
+key enter up
+run 100 2

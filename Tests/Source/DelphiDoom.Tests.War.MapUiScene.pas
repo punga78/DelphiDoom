@@ -338,10 +338,16 @@ var
   LOutput: TStringList;
   LCount: Integer;
 begin
-  // the debug text of the cheat line is drawn when there is no feedback
-  FScene.Cheats.SetDebugText('debug');
-  Run(['run 200 100']);
+  // the debug text of the cheat line is the one of the state machine of the selected unit (wstdbg_updateDebugText writes it,
+  // or clears it, at every update: a text set by hand does not last a frame) and is drawn when there is no feedback
+  Run(['key enter down', 'run 1 1', 'key enter up', 'run 2 1', 'text Debug render status', 'key enter down', 'run 1 1',
+    'key enter up', 'run 6 1', 'key ctrl down', 'key shift down', 'run 1 1', 'key t down', 'run 1 1', 'key t up', 'run 3 1',
+    'key ctrl up', 'key shift up', 'move 176 99', 'lbutton down', 'run 2 1', 'lbutton up', 'run 6 1']);
   Assert.IsTrue(FScene.Cheats.DebugTextActive);
+  Assert.IsTrue(Pos('depth=', string(FScene.Cheats.DebugText)) > 0, 'the stack of the selected unit');
+  Run(['key ctrl down', 'key shift down', 'run 1 1', 'key t down', 'run 1 1', 'key t up', 'run 3 1', 'key ctrl up',
+    'key shift up', 'run 2 1']);
+  Assert.IsFalse(FScene.Cheats.DebugTextActive, 'the flag is off: no text');
   // the lines of the debug drawing and the state of the generator go in the trace and the output of the runner
   LTrace := TStringList.Create;
   try

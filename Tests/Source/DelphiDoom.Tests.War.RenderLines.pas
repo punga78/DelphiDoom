@@ -38,7 +38,9 @@ type
     [Test]
     procedure DovrebbeFondereUnColoreTrasparente;
     [Test]
-    procedure DovrebbeRifiutareUnaRigaObliqua;
+    procedure DovrebbePercorrereUnaRigaObliquaUnPixelAllaVolta;
+    [Test]
+    procedure DovrebbePartireDallEstremitaConLaXMinore;
     [Test]
     procedure DovrebbeTrasformareIPuntiConLoStatoELaScala;
     [Test]
@@ -151,7 +153,7 @@ end;
 
 procedure TTestWarRenderLines.DovrebbeTagliareLeEstremitaAdIntero;
 begin
-  // each end is the floor of the float: 3.9 is 3 and -0.5 is -1 (outside)
+  // a line along a row cuts each end with floor: -0.5 is -1 (outside); an oblique one cuts with (int): 3.9 is 3
   FBlitter.StrokeLine(3.9, 1.7, 6.2, 1.2, Red);
   Assert.AreEqual(255, PixelRed(3, 1));
   Assert.AreEqual(255, PixelRed(6, 1));
@@ -190,13 +192,40 @@ begin
   Assert.AreEqual(128, PixelRed(2, 1));
 end;
 
-procedure TTestWarRenderLines.DovrebbeRifiutareUnaRigaObliqua;
+procedure TTestWarRenderLines.DovrebbePercorrereUnaRigaObliquaUnPixelAllaVolta;
+var
+  LX: Integer;
+  LY: Integer;
+  LCount: Integer;
 begin
-  Assert.WillRaise(
-    procedure
-    begin
-      FBlitter.StrokeLine(1, 1, 5, 4, Red);
-    end, EWarException);
+  // the pixels of the real SDL3 for (1, 1) to (8, 8): one pixel at a time, never along a diagonal (dx + dy + 1 = 15)
+  FBlitter.StrokeLine(1, 1, 8, 8, Red);
+  LCount := 0;
+  for LY := 0 to 9 do
+    for LX := 0 to 19 do
+      if PixelRed(LX, LY) = 255 then
+      begin
+        Inc(LCount);
+        Assert.IsTrue((LX = LY) or (LX = LY - 1), 'x ' + IntToStr(LX) + ' y ' + IntToStr(LY));
+      end;
+  Assert.AreEqual(15, LCount);
+  Assert.AreEqual(255, PixelRed(1, 1));
+  Assert.AreEqual(0, PixelRed(0, 1));
+  Assert.AreEqual(255, PixelRed(1, 2));
+  Assert.AreEqual(255, PixelRed(8, 8));
+end;
+
+procedure TTestWarRenderLines.DovrebbePartireDallEstremitaConLaXMinore;
+begin
+  // (20, 8) to (1, 1) is walked from (1, 1): the rows of the real SDL3 are 1-2, 2-5, 5-8, 8-10, 10-13, 13-16, 16-19, 19-20
+  FBlitter.StrokeLine(20, 8, 1, 1, Red);
+  Assert.AreEqual(255, PixelRed(1, 1));
+  Assert.AreEqual(255, PixelRed(2, 1));
+  Assert.AreEqual(0, PixelRed(3, 1));
+  Assert.AreEqual(255, PixelRed(2, 2));
+  Assert.AreEqual(255, PixelRed(5, 2));
+  Assert.AreEqual(0, PixelRed(6, 2));
+  Assert.AreEqual(255, PixelRed(19, 8));
 end;
 
 procedure TTestWarRenderLines.DovrebbeTrasformareIPuntiConLoStatoELaScala;

@@ -97,6 +97,7 @@ type
     function ObjectivesText: AnsiString;
     function CheatsOpen: Boolean;
     procedure UpdateDebugShortcuts;
+    procedure UpdateDebugText;
     procedure UpdateObjectives;
     procedure UpdateStatus;
     procedure RenderMapUi;
@@ -279,7 +280,8 @@ begin
     FBinding.World.Machine, FSprites, FCamera);
   if Assigned(FSetup.Services.DebugRender) then
   begin
-    FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender);
+    FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender,
+      FBinding.World.Context, FBinding.World.Machine, FCamera, FSetup.Services.Canvas);
     FRenderer.DebugView := FDebugView;
   end;
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);
@@ -301,6 +303,8 @@ begin
   // the cheats of the map; the ones of the settings (music, sound, scale, speed) are the next effects, as before the map.
   // wmui_createMapUI also makes the cheat line: enabled, closed, empty
   FEditing := TWarMapEditing.Create(FBinding.World, FMap, FCamera);
+  if Assigned(FDebugView) then
+    FEditing.NearUnits := FDebugView.NearUnits;
   FEffects := TWarMapCheatEffects.Create(FBinding.World.Context, FBinding.World.Economy, Self,
     FSetup.Services.Settings, FSetup.Services.DebugRender, FSetup.Services.Effects);
   FCheats := TWarCheatsPanel.Create(FSetup.Services.Host, FSetup.Services.Input, FSetup.Services.Imui,
@@ -591,6 +595,18 @@ begin
   UpdateDebugShortcuts;
   FHost.SetRealTime(LHost.RealTime);
   UpdateStatus;
+  UpdateDebugText;
+end;
+
+procedure TWarMapScene.UpdateDebugText;
+var
+  LText: AnsiString;
+begin
+  // wstdbg_updateDebugText: the text of the state machine of the selected unit, or nothing
+  LText := '';
+  if Assigned(FDebugView) then
+    LText := FDebugView.StateText;
+  FCheats.SetDebugText(LText);
 end;
 
 procedure TWarMapScene.UpdateDebugShortcuts;
@@ -618,6 +634,9 @@ begin
   // the real time of this frame, before anything can ask for a message of the status line (the command of a click does)
   FHost.SetRealTime(LHost.RealTime);
   FBinding.World.Context.RealTime := LHost.RealTime;
+  // clearNearUnitsDebug: before everything else of the update
+  if Assigned(FDebugView) then
+    FDebugView.BeginUpdate;
   UpdateCamera;
   FSelecting.UpdateDragRect(FSetup.Services.Input);
   // only the clicks that no command takes select: some commands run with the click that selects
@@ -640,7 +659,14 @@ begin
   FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);
   UpdateRightClick;
   UpdateStatus;
+  UpdateDebugText;
+  // refreshSelectedUnitNearUnitsDebug, after the status line and before the shortcuts
+  if Assigned(FDebugView) then
+    FDebugView.EndUpdate(FEditing.Mode in [wemRainOfFire, wemPoisonCloud, wemRaiseDead]);
   UpdateDebugShortcuts;
+  // updateFlowFieldDebug (the map that is paused does not have it)
+  if Assigned(FDebugView) then
+    FDebugView.UpdateClicks(FSetup.Services.Input);
   UpdateObjectives;
 end;
 

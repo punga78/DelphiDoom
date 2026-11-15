@@ -43,8 +43,9 @@ type
   end;
 
   /// <summary>
-  ///   WarStateMove. The debug fields of the avoidance (the candidates of the velocity and their collisions) are not
-  ///   kept: they only feed the debug drawing of the original
+  ///   WarStateMove. Of the debug fields of the avoidance only the position of the unit when it chose its velocity and the
+  ///   number of candidates are kept (rvoPosition, rvoNumCandidates: the debug drawing of the avoidance draws the arrows
+  ///   of the units that have candidates); the candidates themselves and their collisions are not kept
   /// </summary>
   TWarStateMove = record
     Base: TWarStateBase;
@@ -58,6 +59,10 @@ type
     ProgressWaypointIndex: Integer;
     RvoPreferredVelocity: TWarVec2;
     RvoAdjustedVelocity: TWarVec2;
+    /// <summary>rvoPosition: the center of the unit when the avoidance chose its velocity; zero when it did not</summary>
+    RvoPosition: TWarVec2;
+    /// <summary>rvoNumCandidates: the velocities tried by the avoidance this tic (0 when it did not run)</summary>
+    RvoNumCandidates: Integer;
   end;
 
   PWarStateMove = ^TWarStateMove;

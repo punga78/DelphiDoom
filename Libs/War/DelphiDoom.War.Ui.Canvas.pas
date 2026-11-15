@@ -17,7 +17,8 @@ interface
 uses
   System.SysUtils, DelphiDoom.War.Types, DelphiDoom.War.Graphics.Types, DelphiDoom.War.Render.Types,
   DelphiDoom.War.Render.Blitter, DelphiDoom.War.Render.Transform, DelphiDoom.War.Font.Types,
-  DelphiDoom.War.Font.Intf, DelphiDoom.War.Text.Types, DelphiDoom.War.Text.Renderer, DelphiDoom.War.Ui.Types,
+  DelphiDoom.War.Font.Intf, DelphiDoom.War.Text.Types, DelphiDoom.War.Text.Intf, DelphiDoom.War.Text.Renderer,
+  DelphiDoom.War.Ui.Types,
   DelphiDoom.War.Ui.Intf;
 
 type
@@ -46,6 +47,8 @@ type
     /// <summary>wfont_renderSingleSpriteText or wfont_renderMultiSpriteText with the image of the font of the parameters</summary>
     procedure RenderText(const AText: AnsiString; AX, AY: Single; AFontIndex: Integer; const AParams: TWarFontParams;
       AMultiline: Boolean);
+    /// <summary>Where the texts read the debug flag "font" (nil: off)</summary>
+    procedure SetTextDebug(const ADebug: IWarTextDebug);
     property Transform: TWarRenderTransform read FTransform;
     property Blitter: TWarImageBlitter read FBlitter;
   end;
@@ -71,6 +74,11 @@ begin
   FTransform.Free;
   FBlitter.Free;
   inherited Destroy;
+end;
+
+procedure TWarUiCanvas.SetTextDebug(const ADebug: IWarTextDebug);
+begin
+  FTextRenderer.Debug := ADebug;
 end;
 
 procedure TWarUiCanvas.Clear;

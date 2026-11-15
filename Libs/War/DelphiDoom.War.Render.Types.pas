@@ -64,7 +64,6 @@ resourcestring
   SWarRenderNoTarget = 'The render transform has no canvas to draw on';
   SWarRenderStackEmpty ='The render state stack has no state to restore';
   SWarRenderImageSize = 'The image has %d bytes, %d x %d pixels need %d';
-  SWarRenderObliqueLine = 'A line that is not along a row or a column is not ported (only the grids of the debug drawing are)';
 
 implementation
 

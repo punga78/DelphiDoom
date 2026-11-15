@@ -19,17 +19,20 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Types, DelphiDoom.War.Font.Types, DelphiDoom.War.Render.Types,
-  DelphiDoom.War.Render.Transform, DelphiDoom.War.Text.Types;
+  DelphiDoom.War.Render.Transform, DelphiDoom.War.Text.Types, DelphiDoom.War.Text.Intf;
 
 type
   /// <summary>
   ///   The drawing of a text with the glyphs of a font image: each glyph becomes a blit (a part of the image of the font
   ///   and where it goes, in the color of the text) in the transform it was given. The image of the font is not
-  ///   needed here: the pixels are put by TWarImageBlitter
+  ///   needed here: the pixels are put by TWarImageBlitter. With the debug flag "font" on (IWarTextDebug) the box of every
+  ///   glyph is filled in green and every text and every line of a text is outlined
   /// </summary>
   TWarTextRenderer = class
   strict private
     FTransform: TWarRenderTransform;
+    FDebug: IWarTextDebug;
+    function OutlineOn: Boolean; inline;
     function RenderSpan(const AText: AnsiString; AIndex, ACount: Integer; AX, AY: Single; const AColor: TWarRgba;
       const AFont: TWarFontData; ABoundingsX, AScale: Single): Single;
   public
@@ -44,6 +47,8 @@ type
     procedure RenderSingle(const AText: AnsiString; AX, AY: Single; const AParams: TWarFontParams);
     /// <summary>wfont_renderMultiSpriteText: a text in lines, wrapped, trimmed and aligned as the parameters say</summary>
     procedure RenderMulti(const AText: AnsiString; AX, AY: Single; const AParams: TWarFontParams);
+    /// <summary>Where the flag "font" is read (nil: off, as the original with no debug flag)</summary>
+    property Debug: IWarTextDebug read FDebug write FDebug;
   end;
 
 implementation
@@ -51,12 +56,22 @@ implementation
 uses
   DelphiDoom.War.Text.Layout;
 
+const
+  /// <summary>WAR_COLOR_GREEN_SELECTION (0xFF00C700) and WAR_COLOR_RED_SELECTION (0xFF0000C7) as bytes R G B A</summary>
+  GREEN_SELECTION: TWarRgba = (R: 0; G: 199; B: 0; A: 255);
+  RED_SELECTION: TWarRgba = (R: 199; G: 0; B: 0; A: 255);
+
 { TWarTextRenderer }
 
 constructor TWarTextRenderer.Create(const ATransform: TWarRenderTransform);
 begin
   inherited Create;
   FTransform := ATransform;
+end;
+
+function TWarTextRenderer.OutlineOn: Boolean;
+begin
+  Result := Assigned(FDebug) and FDebug.IsFontOutlineOn;
 end;
 
 function TWarTextRenderer.RenderSpan(const AText: AnsiString; AIndex, ACount: Integer; AX, AY: Single;
@@ -120,6 +135,8 @@ begin
       LDestination.Y := AY;
       LDestination.Width := LGlyph.Width;
       LDestination.Height := LGlyph.Height;
+      if OutlineOn then
+        FTransform.FillRect(LDestination, GREEN_SELECTION);
       if LChar <> ' ' then
         FTransform.SubImage(LSource, LDestination, 1, 1);
       LWidth := LGlyph.Width;
@@ -141,6 +158,7 @@ var
   LLength: Integer;
   LX: Single;
   LColor: TWarRgba;
+  LOutline: TWarRectF;
 begin
   LLineHeight := AParams.FontData.LineHeight;
   LScale := AParams.FontSize / LLineHeight;
@@ -155,6 +173,14 @@ begin
     FTransform.Translate(LOffset.X, LOffset.Y);
   end;
   FTransform.Scale(LScale, LScale);
+  if OutlineOn then
+  begin
+    LOutline.X := 0;
+    LOutline.Y := 0;
+    LOutline.Width := LTextSize.X / LScale;
+    LOutline.Height := 1.5;
+    FTransform.StrokeRect(LOutline, GREEN_SELECTION);
+  end;
   if AParams.HighlightIndex >= 0 then
   begin
     LX := RenderSpan(AText, 0, AParams.HighlightIndex, 0, 0, AParams.FontColor, AParams.FontData, AParams.BoundingsX,
@@ -196,6 +222,7 @@ var
   LHighlightIndex: Integer;
   LHighlightCount: Integer;
   LColor: TWarRgba;
+  LOutline: TWarRectF;
 begin
   LLineHeightOfFont := AParams.FontData.LineHeight;
   LScale := AParams.FontSize / LLineHeightOfFont;
@@ -210,6 +237,14 @@ begin
   LOffset := TWarTextLayout.AlignmentOffset(AParams.HorizontalAlign, AParams.VerticalAlign, AParams.BoundingsX,
     AParams.BoundingsY, LTextSize);
   FTransform.Translate(LOffset.X, LOffset.Y);
+  if OutlineOn then
+  begin
+    LOutline.X := 0;
+    LOutline.Y := 0;
+    LOutline.Width := LTextSize.X;
+    LOutline.Height := LTextSize.Y;
+    FTransform.StrokeRect(LOutline, RED_SELECTION);
+  end;
   LLineStart := 0;
   for LLine := 0 to High(LLines) do
   begin
@@ -224,6 +259,14 @@ begin
     FTransform.Translate(LLineAlign, 0);
     FTransform.Scale(LScale, LScale);
     FTransform.Translate(0, LLineY);
+    if OutlineOn then
+    begin
+      LOutline.X := 0;
+      LOutline.Y := 0;
+      LOutline.Width := LLines[LLine].Width / LScale;
+      LOutline.Height := LRowHeight;
+      FTransform.StrokeRect(LOutline, GREEN_SELECTION);
+    end;
     if (AParams.HighlightIndex >= LLineStart) and (AParams.HighlightIndex < LLineStart + LLineLength) then
     begin
       LHighlightIndex := AParams.HighlightIndex - LLineStart;
