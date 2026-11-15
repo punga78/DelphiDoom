@@ -28,8 +28,9 @@ type
   ///   spelling is kept, as the key pool does), values with regard to it; both are sorted without regard
   ///   to case (<c>idStr::Icmp</c>). The output goes to the injected log, one line per string and a count
   ///   <c>%5d keys</c> or <c>%5d values</c>.
-  ///   <para>Differences: <c>ShowMemoryUsage_f</c> (the sizes of the pools) is not ported, there are no pools;
-  ///   the original sorts with <c>qsort</c>, which is not stable: values that differ only in case come out
+  ///   <para>Differences: <c>ShowMemoryUsage_f</c> prints the same two lines, but the sizes are not those of the
+  ///   pools (there are no pools): they are an estimate, the bytes of the distinct strings (text and terminator)
+  ///   plus a pointer each, which is what a pool would at least hold; the original sorts with <c>qsort</c>, which is not stable: values that differ only in case come out
   ///   here in the order they were first met; the command registration (<c>cmdSystem</c>) is the caller's.</para>
   /// </summary>
   TIdDictLister = class
@@ -46,6 +47,8 @@ type
     procedure ListKeys(const ADictionaries: array of TIdDict);
     /// <summary>idDict::ListValues_f</summary>
     procedure ListValues(const ADictionaries: array of TIdDict);
+    /// <summary>idDict::ShowMemoryUsage_f: <c>%5d KB in %d keys</c> and <c>%5d KB in %d values</c> (estimated sizes, see above)</summary>
+    procedure ShowMemoryUsage(const ADictionaries: array of TIdDict);
   end;
 
 implementation
@@ -167,4 +170,25 @@ begin
   Print(LStrings, '%5d values');
 end;
 
+procedure TIdDictLister.ShowMemoryUsage(const ADictionaries: array of TIdDict);
+  function Bytes(const AStrings: TArray<AnsiString>): Int64;
+  var
+    LIndex: Integer;
+  begin
+    Result := 0;
+    for LIndex := 0 to High(AStrings) do
+    begin
+      Inc(Result, Length(AStrings[LIndex]) + 1 + SizeOf(Pointer));
+    end;
+  end;
+var
+  LKeys, LValues: TArray<AnsiString>;
+begin
+  if not Assigned(FLog) then
+    Exit;
+  LKeys := Distinct(ADictionaries, True);
+  LValues := Distinct(ADictionaries, False);
+  FLog.Printf(Format('%5d KB in %d keys', [Bytes(LKeys) shr 10, Length(LKeys)]) + #10);
+  FLog.Printf(Format('%5d KB in %d values', [Bytes(LValues) shr 10, Length(LValues)]) + #10);
+end;
 end.
