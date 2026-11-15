@@ -42,6 +42,8 @@ type
     procedure Printf(const AMessage: string);
     procedure Warning(const AMessage: string);
     function Text: string;
+    /// <summary>Forgets the warnings kept so far</summary>
+    procedure Clear;
     property Count: Integer read FCount;
   end;
 
@@ -189,6 +191,12 @@ end;
 function TRecordingLog.Text: string;
 begin
   Result := FWarnings.ToString;
+end;
+
+procedure TRecordingLog.Clear;
+begin
+  FWarnings.Clear;
+  FCount := 0;
 end;
 
 { TFakeGameLookup }

@@ -5,7 +5,7 @@
 #include <math.h>
 
 typedef struct dominantTri_s dominantTri_t;
-typedef struct { int v1, v2, nextSilEdge; } silEdge_t;
+typedef struct silEdge_s { int p1, p2; int v1, v2; } silEdge_t;
 typedef int glIndex_t;
 #define VPCALL
 #define idSIMD_Generic idSIMDReal
@@ -19,7 +19,8 @@ void idLib::Error(const char *, ...) { abort(); }
 void idLib::Warning(const char *, ...) {}
 void idCommon::Printf(const char *fmt, ...) {}
 void idCommon::Warning(const char *fmt, ...) {}
-void idCommon::DWarning(const char *fmt, ...) {}
+static char g_warning[256];	// the last DWarning (R_IdentifySilEdges: "%i duplicated edge directions, %i tripled edges"): PrintSil writes it
+void idCommon::DWarning(const char *fmt, ...) { va_list a; va_start(a, fmt); vsprintf(g_warning, fmt, a); va_end(a); }
 void idCommon::Error(const char *fmt, ...) { printf("ERROR %s\n", fmt); abort(); }
 void idCommon::FatalError(const char *fmt, ...) { abort(); }
 void *Mem_Alloc(const int size) { return calloc(1, size); }
@@ -56,7 +57,7 @@ void *R_ClearedStaticAlloc(int n) { return calloc(1, n); }
 void *R_StaticAlloc(int n) { return malloc(n); }
 void R_StaticFree(void *p) { free(p); }
 void R_RangeCheckIndexes(const srfTriangles_t *) {}
-void R_IdentifySilEdges(srfTriangles_t *, bool) {}
+void R_IdentifySilEdges(srfTriangles_t *tri, bool omitCoplanarEdges);	// the real one, in part4.inc
 
 typedef struct deformInfo_s {
 	int numSourceVerts; int numOutputVerts; int numMirroredVerts; int *mirroredVerts;
@@ -86,9 +87,29 @@ void R_DeriveUnsmoothedTangents(srfTriangles_t *tri);
 #include "part2.inc"
 #include "part3.inc"
 #include "cubeface.inc"
+#include "part4.inc"
 
 static void F(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
 static void I(int i) { printf(" %d", i); }
+
+// The edges of a surface: the count, whether the hull is perfect (-1: not known), whether the list is sorted by
+// (p1, p2) as qsort left it, then the edges in a canonical order (p1, p2, v1, v2): the order qsort gives to edges
+// with the same two planes is not defined, so the golden does not keep it.
+static void PrintSil(const char *tag, int n, const silEdge_t *e, int perfect) {
+	std::vector<silEdge_t> v(e, e + n);
+	int sorted = 1;
+	for (int i = 1; i < n; i++) if (e[i].p1 < e[i - 1].p1 || (e[i].p1 == e[i - 1].p1 && e[i].p2 < e[i - 1].p2)) sorted = 0;
+	for (int i = 1; i < n; i++) for (int j = i; j > 0; j--) {
+		const silEdge_t &a = v[j - 1], &b = v[j];
+		bool swap = b.p1 < a.p1 || (b.p1 == a.p1 && (b.p2 < a.p2 || (b.p2 == a.p2 && (b.v1 < a.v1 || (b.v1 == a.v1 && b.v2 < a.v2)))));
+		if (!swap) break;
+		silEdge_t t = v[j]; v[j] = v[j - 1]; v[j - 1] = t;
+	}
+	printf("SIL %s | %d %d %d", tag, n, perfect, sorted);
+	for (int i = 0; i < n; i++) { I(v[i].p1); I(v[i].p2); I(v[i].v1); I(v[i].v2); }
+	printf("\n");
+	if (g_warning[0]) { printf("SIL %s warning | %s\n", tag, g_warning); g_warning[0] = 0; }
+}
 
 struct Case { const char *name; int nv; float xyzst[64][5]; int ni; int idx[128]; };
 static Case cases[3];
@@ -114,7 +135,7 @@ static unsigned lcg = 12345u; static float rnd() { lcg = lcg * 1664525u + 101390
 	// distinct areas for the triangles of a vertex: the order of equal ones is not defined by qsort
 	for (int k = 0; k < 3; k++) for (int i = 0; i < cases[k].nv; i++) { float *v = cases[k].xyzst[i]; if (k == 0 && i == 6) { for (int c = 0; c < 3; c++) v[c] = cases[0].xyzst[0][c]; continue; } v[0] += rnd() * 0.4f; v[1] += rnd() * 0.4f; v[2] += rnd() * 0.4f; }
 }
-int main() { idMath::Init();
+int main() { idMath::Init(); silEdges = (silEdge_t *)malloc(MAX_SIL_EDGES * sizeof(silEdge_t));
 	build(); perturb();
 	for (int k = 0; k < 3; k++) {
 		Case &cs = cases[k];
@@ -125,6 +146,7 @@ int main() { idMath::Init();
 		for (int unsm = 0; unsm < 2; unsm++) {
 			deformInfo_t *d = R_BuildDeformInfo(cs.nv, src, cs.ni, cs.idx, unsm != 0);
 			printf("%s %d deform | %d %d %d %d\n", cs.name, unsm, d->numSourceVerts, d->numOutputVerts, d->numMirroredVerts, d->numDupVerts);
+			{ char tag[64]; sprintf(tag, "%s deform %d", cs.name, unsm); PrintSil(tag, d->numSilEdges, d->silEdges, -1); }
 			printf("%s %d mirrored |", cs.name, unsm); for (int i = 0; i < d->numMirroredVerts; i++) I(d->mirroredVerts[i]); printf("\n");
 			printf("%s %d dup |", cs.name, unsm); for (int i = 0; i < d->numDupVerts * 2; i++) I(d->dupVerts[i]); printf("\n");
 			printf("%s %d idx |", cs.name, unsm); for (int i = 0; i < d->numIndexes; i++) I(d->indexes[i]); printf("\n");
@@ -163,6 +185,7 @@ int main() { idMath::Init();
 			R_CleanupTriangles(&tri, createNormals, true, unsm);
 			printf("%s cleanup %d %d | %d %d %d %d\n", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0, tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
 			printf("%s cleanup %d %d idx |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
+			{ char tag[64]; sprintf(tag, "%s cleanup %d %d", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); PrintSil(tag, tri.numSilEdges, tri.silEdges, tri.perfectHull ? 1 : 0); }
 			printf("%s cleanup %d %d bounds |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
 			printf("%s cleanup %d %d verts |", cs.name, createNormals ? 1 : 0, unsm ? 1 : 0);
 			for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
@@ -180,12 +203,43 @@ int main() { idMath::Init();
 		AddCubeFace(&tri, idVec3(-1, -1, 1), idVec3(1, -1, 1), idVec3(1, -1, -1), idVec3(-1, -1, -1));
 		AddCubeFace(&tri, idVec3(-1, 1, 1), idVec3(-1, 1, -1), idVec3(1, 1, -1), idVec3(1, 1, 1));
 		R_CleanupTriangles(&tri, true, true, false);
+		PrintSil("default cleanup", tri.numSilEdges, tri.silEdges, tri.perfectHull ? 1 : 0);
 		printf("default | %d %d %d %d\n", tri.numVerts, tri.numIndexes, tri.numMirroredVerts, tri.numDupVerts);
 		printf("default idx |"); for (int i = 0; i < tri.numIndexes; i++) I(tri.indexes[i]); printf("\n");
 		printf("default bounds |"); for (int k = 0; k < 2; k++) { F(tri.bounds[k].x); F(tri.bounds[k].y); F(tri.bounds[k].z); } printf("\n");
 		printf("default verts |");
 		for (int i = 0; i < tri.numVerts; i++) { F(tri.verts[i].xyz.x); F(tri.verts[i].xyz.y); F(tri.verts[i].xyz.z); F(tri.verts[i].st.x); F(tri.verts[i].st.y); F(tri.verts[i].normal.x); F(tri.verts[i].normal.y); F(tri.verts[i].normal.z); F(tri.verts[i].tangents[0].x); F(tri.verts[i].tangents[0].y); F(tri.verts[i].tangents[0].z); F(tri.verts[i].tangents[1].x); F(tri.verts[i].tangents[1].y); F(tri.verts[i].tangents[1].z); }
 		printf("\n");
+	}
+	{
+		// The silhouette edges alone, on index lists that stress R_DefineEdge: open and closed surfaces, an edge used
+		// by three triangles, two triangles that use an edge in the same direction, a degenerate triangle, and
+		// random soups (the vertexes are the silIndexes: no vertex data is needed).
+		struct Soup { const char *name; int n; int idx[240]; };
+		static Soup soups[16];
+		int ns = 0;
+		soups[ns].name = "single"; { int a[] = {0,1,2}; soups[ns].n = 3; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "pair"; { int a[] = {0,1,2, 2,1,3}; soups[ns].n = 6; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "tetra"; { int a[] = {0,2,1, 0,1,3, 1,2,3, 2,0,3}; soups[ns].n = 12; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "tripled"; { int a[] = {0,1,2, 1,0,3, 0,1,4, 1,0,5}; soups[ns].n = 12; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "duplicated"; { int a[] = {0,1,2, 0,1,3, 1,0,4}; soups[ns].n = 9; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "degenerate"; { int a[] = {0,0,1, 1,2,2, 3,4,5, 5,4,3}; soups[ns].n = 12; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		soups[ns].name = "empty"; soups[ns].n = 0; ns++;
+		soups[ns].name = "collide"; { int a[] = {0,1024,1, 1024,0,2, 1,2,1024, 2,1023,1, 1023,2,3}; soups[ns].n = 15; memcpy(soups[ns].idx, a, sizeof(a)); } ns++;
+		static unsigned int seed = 99u;
+		for (int s = 0; s < 4; s++) {
+			Soup &sp = soups[ns]; sp.name = (s == 0) ? "soup0" : (s == 1) ? "soup1" : (s == 2) ? "soup2" : "soup3";
+			int verts = 6 + s * 4; sp.n = 3 * (10 + s * 10);
+			for (int i = 0; i < sp.n; i++) { seed = seed * 1664525u + 1013904223u; sp.idx[i] = (int)((seed >> 8) % verts); }
+			ns++;
+		}
+		for (int s = 0; s < ns; s++) {
+			srfTriangles_t t; memset(&t, 0, sizeof(t));
+			t.numIndexes = soups[s].n; t.silIndexes = soups[s].idx;
+			R_IdentifySilEdges(&t, false);
+			printf("SIL in %s |", soups[s].name); for (int i = 0; i < soups[s].n; i++) I(soups[s].idx[i]); printf("\n");
+			PrintSil(soups[s].name, t.numSilEdges, t.silEdges, t.perfectHull ? 1 : 0);
+		}
 	}
 	return 0;
 }

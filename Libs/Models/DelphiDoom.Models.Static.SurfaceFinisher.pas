@@ -16,6 +16,7 @@ unit DelphiDoom.Models.Static.SurfaceFinisher;
 interface
 
 uses
+  DelphiDoom.IdLib.Core.Intf,
   DelphiDoom.Models.Static.Triangles;
 
 type
@@ -33,7 +34,7 @@ type
     ///   in range (EStaticModelException). GenerateNormals is kept as it is.
     /// </summary>
     class function Cleanup(const ATriangles: TStaticTriangles; const ACreateNormals,
-      AUseUnsmoothedTangents: Boolean): TStaticTriangles; static;
+      AUseUnsmoothedTangents: Boolean; const ALog: IIdLibLog = nil): TStaticTriangles; static;
     /// <summary>R_ReverseTriangles: the normals flip and the first two indexes of each triangle swap</summary>
     class function Reverse(const ATriangles: TStaticTriangles): TStaticTriangles; static;
   end;
@@ -45,18 +46,21 @@ uses
   DelphiDoom.Models.Static.Types,
   DelphiDoom.Models.Static.Deform.Types,
   DelphiDoom.Models.Static.DeformBuilder,
-  DelphiDoom.Models.Static.TangentDeriver;
+  DelphiDoom.Models.Static.TangentDeriver,
+  DelphiDoom.Models.Static.SilEdgeBuilder;
 
 { TStaticSurfaceFinisher }
 
 class function TStaticSurfaceFinisher.Cleanup(const ATriangles: TStaticTriangles; const ACreateNormals,
-  AUseUnsmoothedTangents: Boolean): TStaticTriangles;
+  AUseUnsmoothedTangents: Boolean; const ALog: IIdLibLog): TStaticTriangles;
 var
   LVerts: TArray<TStaticDrawVert>;
   LIndexes, LSilIndexes, LMirrored, LDupVerts: TArray<Integer>;
   LDominant: TArray<TStaticDominantTri>;
   LIndex, LKept: Integer;
   LA, LB, LC: Integer;
+  LSilEdges: TArray<TStaticSilEdge>;
+  LPerfectHull: Boolean;
 begin
   TStaticDeformBuilder.RangeCheckIndexes(Length(ATriangles.Verts), ATriangles.Indexes);
   LVerts := Copy(ATriangles.Verts);
@@ -86,6 +90,9 @@ begin
   SetLength(LIndexes, LKept);
   SetLength(LSilIndexes, LKept);
 
+  // the silhouette edges (R_IdentifySilEdges); the coplanar ones are not removed (the original does not either)
+  LSilEdges := TStaticSilEdgeBuilder.Identify(LSilIndexes, LPerfectHull, ALog);
+
   // bust vertexes that share a mirrored edge into separate vertexes
   TStaticDeformBuilder.SplitMirroredVertexes(LVerts, LIndexes, LMirrored);
   LDupVerts := TStaticDeformBuilder.FindDupVerts(Length(LVerts), LIndexes, LSilIndexes);
@@ -106,6 +113,8 @@ begin
   Result.Verts := LVerts;
   Result.Indexes := LIndexes;
   Result.GenerateNormals := ATriangles.GenerateNormals;
+  Result.SilEdges := LSilEdges;
+  Result.PerfectHull := LPerfectHull;
 end;
 
 class function TStaticSurfaceFinisher.Reverse(const ATriangles: TStaticTriangles): TStaticTriangles;

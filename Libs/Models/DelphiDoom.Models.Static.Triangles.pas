@@ -18,19 +18,27 @@ interface
 uses
   System.SysUtils,
   DelphiDoom.Geometry.Bounds,
-  DelphiDoom.Models.Static.Types;
+  DelphiDoom.Models.Static.Types,
+  DelphiDoom.Models.Static.Deform.Types;
 
 type
   /// <summary>
   ///   The geometry of a surface (the part of srfTriangles_t that the loaders fill): vertexes and
   ///   indexes of triangles. A value: the arrays are shared until written. Not ported: the derived
-  ///   data of the renderer (silhouette edges, planes, shadow vertexes, caches).
+  ///   data of the renderer (planes, shadow vertexes, caches).
   /// </summary>
   TStaticTriangles = record
     Verts: TArray<TStaticDrawVert>;
     Indexes: TArray<Integer>;
     /// <summary>The normals have to be derived (srfTriangles_t::generateNormals)</summary>
     GenerateNormals: Boolean;
+    /// <summary>
+    ///   The silhouette edges that R_CleanupTriangles identifies (silEdges); empty for a surface
+    ///   that was not cleaned up
+    /// </summary>
+    SilEdges: TArray<TStaticSilEdge>;
+    /// <summary>Every silhouette edge has two sides (perfectHull); meaningful with SilEdges</summary>
+    PerfectHull: Boolean;
     function NumVerts: Integer;
     function NumIndexes: Integer;
     /// <summary>R_BoundTriSurf: the box of the positions (cleared if there are no vertexes)</summary>

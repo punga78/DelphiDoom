@@ -28,12 +28,24 @@ type
   end;
 
   /// <summary>
+  ///   An edge between two vertexes and the two triangles that share it (silEdge_t): P1 and P2 are
+  ///   triangle numbers, P2 is the number of triangles when the edge has only one side
+  /// </summary>
+  TStaticSilEdge = record
+    P1: Integer;
+    P2: Integer;
+    V1: Integer;
+    V2: Integer;
+  end;
+
+  /// <summary>
   ///   What a surface that deforms every frame keeps from its construction (deformInfo_t): the
   ///   indexes, the silhouette remap, the vertexes that are shared by mirrored texture polarities,
-  ///   the vertexes with the same position and the dominant triangles. Not ported: the silhouette
-  ///   edges (<c>R_IdentifySilEdges</c>, they only serve the shadow volumes).
+  ///   the vertexes with the same position, the dominant triangles and the silhouette edges.
   /// </summary>
   TStaticDeformInfo = record
+    /// <summary>The silhouette edges of the surface before the mirrored vertexes are split (silEdges)</summary>
+    SilEdges: TArray<TStaticSilEdge>;
     /// <summary>The vertexes the mesh gives (before the mirror seam is duplicated)</summary>
     NumSourceVerts: Integer;
     /// <summary>The vertexes the surface has after the duplication of the mirrored ones</summary>
