@@ -20,6 +20,8 @@ type
     /// <summary>1 humans, 2 orcs: the mission of the campaign that the game goes to at once; 0 = from the title</summary>
     Race: Byte;
     Mission: Byte;
+    /// <summary>The logo goes on to the introduction and not to the menu (the animations are the port's own)</summary>
+    Introduction: Boolean;
   end;
 
   /// <summary>

@@ -16,7 +16,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Intf, DelphiDoom.War.Graphics.Intf, DelphiDoom.War.Graphics.Types,
-  DelphiDoom.War.Font.Intf, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Audio.Intf, DelphiDoom.War.Music.Intf,
+  DelphiDoom.War.Font.Intf, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Cinematic.Intf, DelphiDoom.War.Audio.Intf,
+  DelphiDoom.War.Music.Intf,
   DelphiDoom.War.Ui.Intf, DelphiDoom.War.Ui.Game, DelphiDoom.War.App.Options, DelphiDoom.War.App.Settings,
   DelphiDoom.War.App.SceneAudio, DelphiDoom.War.App.SessionTypes;
 
@@ -44,6 +45,9 @@ type
     FSceneAudioObject: TWarSceneAudio;
     FSettings: TWarAppSettings;
     FDataSize: Cardinal;
+    /// <summary>The folder of DATA.WAR: the animations (CAVE1.WAR and the others) are files next to it</summary>
+    FDataFolder: string;
+    FCinematics: IWarCinematicDirector;
     constructor Create(const AOptions: TWarAppOptions; const AExecutableFolder: string; const AWrite: TProc<string>);
     procedure Say(const AText: string);
     function SettingsPath: string;
@@ -82,7 +86,8 @@ uses
   DelphiDoom.War.Ui.ScriptRunner, DelphiDoom.War.MapUi.Launcher, DelphiDoom.War.App.DataLocator,
   DelphiDoom.War.App.Intf, DelphiDoom.War.App.Session, DelphiDoom.War.App.Runner,
   DelphiDoom.War.App.UiSessionGame, DelphiDoom.War.App.SessionEventSink, DelphiDoom.War.App.FrameConverter,
-  DelphiDoom.War.HostWindow, DelphiDoom.War.HostAudio, DelphiDoom.War.FileSaveStorage;
+  DelphiDoom.War.HostWindow, DelphiDoom.War.HostAudio, DelphiDoom.War.FileSaveStorage,
+  DelphiDoom.War.Cinematic.Factory, DelphiDoom.War.Sound.Factory, DelphiDoom.Cinematic.Flic.SceneFactory;
 
 resourcestring
   SWarNoDataWar = 'DATA.WAR of Warcraft: Orcs & Humans was not found. The game is not in this program: give the folder ' +
@@ -180,6 +185,7 @@ begin
   LStream := TFileStream.Create(LPath, fmOpenRead or fmShareDenyNone);
   try
     FDataSize := Cardinal(LStream.Size);
+    FDataFolder := ExtractFilePath(LPath);
   finally
     LStream.Free;
   end;
@@ -202,6 +208,10 @@ begin
   FMusic := TWarMusicFactory.CreatePlayer(TWarMusicFactory.CreateSilentSynth, TWarMusicFactory.CreateTimeline(LLog));
   FSceneAudioObject := TWarSceneAudio.Create(FLibrary, FMixer, FMusic);
   FSceneAudio := FSceneAudioObject;
+  // the animations are files of the DOS game next to DATA.WAR (CAVE1.WAR...); a missing one is skipped. Their voices play on
+  // the mixer, and a generator of their own picks the ones that are events of the game, so the game's one is not touched
+  FCinematics := TWarCinematicFactory.CreateDirector(TFlicSceneFactory.CreateMaker(TFlicSceneFactory.CreateFolderSource(
+    FDataFolder, '.WAR')), FMixer, TWarSoundFactory.CreatePicker(TWarSeededRandom.Create(1)));
 end;
 
 procedure TWarComposition.LoadSettings;
@@ -229,7 +239,7 @@ begin
   LLauncher := TWarMapLauncher.Create(TWarLevelFactory.CreateLevelLoader(FArchive, FCatalog), FGraphics,
     TWarMapFactory.CreateUnitCatalog, TWarLevelFactory.CreateObjectives, TWarSeededRandom.Create(AStart.Seed), True);
   Result := TWarUiFactory.CreateGame(FArchive, FCatalog, FGraphics, FMetrics, FImages, FCampaigns, FSceneAudio,
-    LLauncher, PICTURE_WIDTH, PICTURE_HEIGHT, ARequests);
+    LLauncher, PICTURE_WIDTH, PICTURE_HEIGHT, ARequests, FCinematics, AStart.Introduction);
   FSettings.ApplyTo(Result.Settings);
 end;
 
@@ -269,6 +279,8 @@ begin
     raise EWarException.Create(SWarScriptWithSave);
   LStart := Default(TWarSessionStart);
   LStart.Seed := FOptions.Seed;
+  // a script drives the game as the harness of the C does: no animations of the port, "Replay introduction" stays inert
+  FCinematics := nil;
   LGame := MakeUiGame(LStart, nil);
   try
     LOutput := TStringList.Create;
@@ -316,6 +328,10 @@ begin
     LStart.Race := Byte(Ord(FOptions.PlayRace));
     LStart.Mission := Byte(FOptions.PlayMission);
   end;
+  // the introduction after the logo: a game in a window that starts from the title and is not loaded (a loaded game has its own
+  // flag in the file)
+  LStart.Introduction := (not FOptions.NoIntroduction) and (not FOptions.Headless) and (FOptions.PlayMission = 0) and
+    (FOptions.LoadPath = '');
   LStorage := TWarFileSaveStorage.Create(QuickSlotPath);
   LSession := TWarSession.Create(
     function(const AStart: TWarSessionStart; const ARequests: IWarSessionRequests): IWarSessionGame
@@ -325,9 +341,14 @@ begin
     procedure
     begin
       FSceneAudioObject.Muted := True;
+      // the voices of the animations play on the mixer and not through the scene audio: nothing is heard while old frames
+      // are played again, and what they started is stopped at the end
+      FMixer.SetSilenced(True);
     end,
     procedure
     begin
+      FMixer.StopAll;
+      FMixer.SetSilenced(False);
       FSceneAudioObject.Muted := False;
     end);
   try

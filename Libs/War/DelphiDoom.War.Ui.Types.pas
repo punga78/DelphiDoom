@@ -58,8 +58,11 @@ type
   /// <summary>WarMouseButtons</summary>
   TWarMouseButton = (wmbLeft, wmbRight);
 
-  /// <summary>WarSceneType, in the order of the original (the download scene is not ported)</summary>
-  TWarSceneType = (wstDownload, wstBlizzard, wstMainMenu, wstBriefing, wstMap);
+  /// <summary>
+  ///   WarSceneType, in the order of the original (the download scene is not ported); wstCinematics is the port's own, at
+  ///   the end (the animations of the game: the original has no such scene)
+  /// </summary>
+  TWarSceneType = (wstDownload, wstBlizzard, wstMainMenu, wstBriefing, wstMap, wstCinematics);
 
   /// <summary>WarMainMenuPanel</summary>
   TWarMenuPanel = (wmpMain, wmpSinglePlayer, wmpCustomGame);

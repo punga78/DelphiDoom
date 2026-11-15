@@ -31,6 +31,7 @@ type
     constructor Create(const AServices: TWarSceneServices);
     function CreateBlizzard: IWarScene;
     function CreateMainMenu: IWarScene;
+    function CreateIntroduction: IWarScene;
     function CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;
     /// <summary>
     ///   Lets go of the services: the owner calls it before it frees the manager, that is the host the services hold
@@ -42,7 +43,8 @@ type
 implementation
 
 uses
-  DelphiDoom.War.Ui.SceneBlizzard, DelphiDoom.War.Ui.SceneMainMenu, DelphiDoom.War.Ui.SceneBriefing;
+  DelphiDoom.War.Ui.SceneBlizzard, DelphiDoom.War.Ui.SceneMainMenu, DelphiDoom.War.Ui.SceneBriefing,
+  DelphiDoom.War.Ui.SceneCinematics;
 
 { TWarSceneFactory }
 
@@ -67,6 +69,11 @@ end;
 function TWarSceneFactory.CreateMainMenu: IWarScene;
 begin
   Result := TWarSceneMainMenu.Create(FServices);
+end;
+
+function TWarSceneFactory.CreateIntroduction: IWarScene;
+begin
+  Result := TWarSceneCinematics.Create(FServices, WAR_INTRODUCTION_ANIMATIONS);
 end;
 
 function TWarSceneFactory.CreateBriefing(ARace: TWarRace; AMapType: Integer): IWarScene;

@@ -34,8 +34,19 @@ Mouse e tastiera come nell'originale (e nel remake). In piu', di questo programm
 | Invio | la riga dei trucchi (`Yours truly` = vittoria, `Crushing defeat` = sconfitta, ...) |
 
 `-play human|orc N` va subito alla missione N della campagna; `-scale N` (1..8) la dimensione della finestra; `-nosound` niente
-uscita audio. Le impostazioni (volumi di musica ed effetti, accesi o spenti) sono in `Warcraft32.ini` accanto al programma e si
+uscita audio; `-nointro` salta l'introduzione. Le impostazioni (volumi di musica ed effetti, accesi o spenti) sono in `Warcraft32.ini` accanto al programma e si
 riscrivono quando si chiude la finestra.
+
+## Introduzione (issue #238)
+
+Scelta del port: il remake ha il bottone `Replay introduction` e nessun codice dietro, e non suona nessun filmato. Dopo il logo,
+in una finestra che parte dal titolo (senza `-play`, `-load`, `-script`, `-headless`), il gioco suona `CAVE1`, `CAVE2` (in ciclo
+finche' non si preme un tasto), `CAVE3` (la porta, con il suo suono) e `TITLE` ("Welcome to the World of Warcraft"), poi il
+menu. Un tasto (non Maiusc, Ctrl, Alt) o un clic salta la animazione che gira, `Esc` salta tutto il resto; un file che manca o
+che non e' un'animazione si salta. `Replay introduction` nel menu principale la suona di nuovo; senza i file `CAVE*.WAR` accanto
+a `DATA.WAR` il bottone resta inerte, come nell'originale. **Non vista in una finestra vera**: provata con i fotogrammi veri dei
+file (`DelphiDoom.Tests.War.UiCinematics`) e con finti. Le voci delle narrazioni `WAR_INTRO_1..4` non sono assegnate (nessuno ha
+ascoltato il gioco DOS).
 
 ## Salvataggio e caricamento (il remake non li ha)
 

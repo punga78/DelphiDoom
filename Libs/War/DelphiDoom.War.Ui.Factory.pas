@@ -15,7 +15,8 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Intf, DelphiDoom.War.Graphics.Intf, DelphiDoom.War.Graphics.Types,
-  DelphiDoom.War.Font.Intf, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Ui.Intf, DelphiDoom.War.Ui.Game;
+  DelphiDoom.War.Font.Intf, DelphiDoom.War.Campaign.Intf, DelphiDoom.War.Cinematic.Intf, DelphiDoom.War.Ui.Intf,
+  DelphiDoom.War.Ui.Game;
 
 type
   /// <summary>The only place that knows the concrete classes of the interface and the scenes</summary>
@@ -28,12 +29,14 @@ type
     class function CreateGame(const AArchive: IWarArchive; const ACatalog: IWarCatalog;
       const AGraphics: IWarGraphics; const AMetrics: IWarFontMetrics; const AFontImages: TArray<TWarImage>;
       const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio; const AMapLauncher: IWarMapLauncher;
-      AWidth, AHeight: Integer; const ASessions: IWarSessionRequests = nil): TWarUiGame; static;
+      AWidth, AHeight: Integer; const ASessions: IWarSessionRequests = nil;
+      const ACinematics: IWarCinematicDirector = nil; AIntroductionAfterLogo: Boolean = False): TWarUiGame; static;
     /// <summary>The same on sprites that a fake gives (no archive)</summary>
     class function CreateGameOnSprites(const ASprites: IWarUiSprites; const AMetrics: IWarFontMetrics;
       const AFontImages: TArray<TWarImage>; const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio;
       const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer;
-      const ASessions: IWarSessionRequests = nil): TWarUiGame; static;
+      const ASessions: IWarSessionRequests = nil; const ACinematics: IWarCinematicDirector = nil;
+      AIntroductionAfterLogo: Boolean = False): TWarUiGame; static;
   end;
 
 implementation
@@ -50,16 +53,18 @@ uses
 class function TWarUiFactory.CreateGame(const AArchive: IWarArchive; const ACatalog: IWarCatalog;
   const AGraphics: IWarGraphics; const AMetrics: IWarFontMetrics; const AFontImages: TArray<TWarImage>;
   const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio; const AMapLauncher: IWarMapLauncher;
-  AWidth, AHeight: Integer; const ASessions: IWarSessionRequests): TWarUiGame;
+  AWidth, AHeight: Integer; const ASessions: IWarSessionRequests; const ACinematics: IWarCinematicDirector;
+  AIntroductionAfterLogo: Boolean): TWarUiGame;
 begin
   Result := CreateGameOnSprites(TWarUiSpriteLoader.Create(AGraphics, ACatalog), AMetrics, AFontImages, ACampaigns,
-    AAudio, AMapLauncher, AArchive.FileType = wftDemo, AWidth, AHeight, ASessions);
+    AAudio, AMapLauncher, AArchive.FileType = wftDemo, AWidth, AHeight, ASessions, ACinematics, AIntroductionAfterLogo);
 end;
 
 class function TWarUiFactory.CreateGameOnSprites(const ASprites: IWarUiSprites; const AMetrics: IWarFontMetrics;
   const AFontImages: TArray<TWarImage>; const ACampaigns: IWarCampaigns; const AAudio: IWarSceneAudio;
   const AMapLauncher: IWarMapLauncher; AIsDemo: Boolean; AWidth, AHeight: Integer;
-  const ASessions: IWarSessionRequests): TWarUiGame;
+  const ASessions: IWarSessionRequests; const ACinematics: IWarCinematicDirector;
+  AIntroductionAfterLogo: Boolean): TWarUiGame;
 var
   LInput: TWarUiInput;
   LInputRef: IWarUiInput;
@@ -90,6 +95,8 @@ begin
   LServices.Settings := LSettings;
   LServices.DebugRender := TWarDebugRender.Create;
   LServices.Sessions := ASessions;
+  LServices.Cinematics := ACinematics;
+  LServices.IntroductionAfterLogo := AIntroductionAfterLogo;
   LScenes := TWarSceneFactory.Create(LServices);
   // a maker of maps that draws with this interface needs the services too (the map is made after them)
   LServices.Scenes := LScenes;
