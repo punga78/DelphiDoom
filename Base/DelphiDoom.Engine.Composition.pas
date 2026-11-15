@@ -411,6 +411,8 @@ uses
   DelphiDoom.Audio.Factory,
   DelphiDoom.Audio.Mixer,
   DelphiDoom.Audio.MusicNumberResolver,
+  DelphiDoom.Audio.SfxNumberResolver,
+  DelphiDoom.Engine.Audio.SfxTable,
   DelphiDoom.Engine.Audio.MusicTable,
   DelphiDoom.GameHost.Win.PcmOutput,
   DelphiDoom.Engine.Audio.WaveOutDevice,
@@ -1533,7 +1535,16 @@ begin
     APreprocessor, ARegistry, ALumps);
   LLumps := LLumpsObject;
   D_ConfigureActorDef(LLumps);
-  S_ConfigureSoundAliases(LAliases);
+  // the rules of the numbers of the sounds: the table of the game (its own unit in the folder
+  // of each game) and the aliases that the ACTORDEF lumps fill
+  S_ConfigureSoundNumbers(
+    TSfxNumberResolver.Create(
+      TEngineSfxTable.Create,
+      function(const AName: string): string
+      begin
+        Result := LAliases.Resolve(AName);
+      end,
+      ALog));
 end;
 
 procedure ComposeTableExport(const ACommandLine: ICommandLine);

@@ -296,12 +296,15 @@ begin
 end;
 
 procedure TTestAudioMusicNumberResolver.DovrebbeLanciareSeMancaUnaDipendenza;
+var
+  LNoTable: IMusicTable;
 begin
   Build(4, 1);
+  LNoTable := nil;
   Assert.WillRaise(
     procedure
     begin
-      TMusicNumberResolver.Create(nil,
+      TMusicNumberResolver.Create(LNoTable,
         function(const AName: string): Integer
         begin
           Result := -1;
@@ -349,7 +352,7 @@ begin
           LOld.S_AddFileName(LFile, LOldNames);
           LNew.AddFile(LFile);
           LActual := LNew.Names;
-          Assert.AreEqual(LOldNames.Count, Length(LActual), 'count after ' + LFile);
+          Assert.AreEqual<Integer>(LOldNames.Count, Length(LActual), 'count after ' + LFile);
           for LIndex := 0 to LOldNames.Count - 1 do
             Assert.AreEqual(LOldNames[LIndex], LActual[LIndex], 'name after ' + LFile);
         end;
@@ -445,11 +448,14 @@ begin
 end;
 
 procedure TTestAudioPk3SoundNames.DovrebbeLanciareSeMancaIlRicercatore;
+var
+  LFinder: TSoundLumpFinder;
 begin
+  LFinder := nil;
   Assert.WillRaise(
     procedure
     begin
-      TPk3SoundNames.Create(nil);
+      TPk3SoundNames.Create(LFinder);
     end, EArgumentNilException);
 end;
 

@@ -24,6 +24,10 @@
 //   Created by the sound utility written by Dave Taylor.
 //   Kept as a sample, DOOM2  sounds. Frozen.
 //
+//   The tables S_sfx and S_music are data (sounddata.pas); the numbers of sounds and
+//   songs come from the rules of Libs\Audio (TSfxNumberResolver, TMusicNumberResolver),
+//   that the composition root gives here
+//
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
 //------------------------------------------------------------------------------
@@ -36,18 +40,18 @@ interface
 
 uses
   d_delphi,
-  DelphiDoom.ActorDef.Intf,
   DelphiDoom.Audio.Sound.Intf;
 
 //==============================================================================
 //
-// S_ConfigureSoundAliases
+// S_ConfigureSoundNumbers
 //
-// The aliases of SNDINFO (the table that the ACTORDEF lumps fill), given by the
-// composition root; without it S_GetSoundNumForName stops with I_Error
+// The rules of the numbers of the sounds (TSfxNumberResolver of Libs\Audio, on the
+// table of the game and the aliases of SNDINFO that the ACTORDEF lumps fill), given
+// by the composition root; without them S_GetSoundNumForName stops with I_Error
 //
 //==============================================================================
-procedure S_ConfigureSoundAliases(const AResolver: IActorDefSoundResolver);
+procedure S_ConfigureSoundNumbers(const AResolver: ISfxNumberResolver);
 
 //==============================================================================
 //
@@ -106,13 +110,24 @@ implementation
 uses
   i_system,
   sounddata,
-  w_wad;
+  w_wad,
+  DelphiDoom.Audio.SfxRandomGroup;
 
 var
-  // given by the composition root (S_ConfigureSoundAliases)
-  sound_aliases: IActorDefSoundResolver = nil;
+  // given by the composition root (S_ConfigureSoundNumbers)
+  sound_numbers: ISfxNumberResolver = nil;
   // given by the composition root (S_ConfigureMusicNumbers)
   music_numbers: IMusicNumberResolver = nil;
+
+//==============================================================================
+//
+// S_ConfigureSoundNumbers
+//
+//==============================================================================
+procedure S_ConfigureSoundNumbers(const AResolver: ISfxNumberResolver);
+begin
+  sound_numbers := AResolver;
+end;
 
 //==============================================================================
 //
@@ -126,203 +141,14 @@ end;
 
 //==============================================================================
 //
-// S_ConfigureSoundAliases
-//
-//==============================================================================
-procedure S_ConfigureSoundAliases(const AResolver: IActorDefSoundResolver);
-begin
-  sound_aliases := AResolver;
-end;
-
-//==============================================================================
-//
-// S_SoundAlias
-//
-//==============================================================================
-function S_SoundAlias(const snd: string): string;
-begin
-  if sound_aliases = nil then
-    I_Error('S_SoundAlias(): the sound aliases are not configured (ComposeEngine was not called)');
-  result := sound_aliases.Resolve(snd);
-end;
-
-{$IFDEF DOOM}
-var
-  lastfreesfx: integer = 1;
-
-{$ENDIF}
-//==============================================================================
-//
 // S_GetSoundNumForName
 //
 //==============================================================================
 function S_GetSoundNumForName(const sfx_name: string): integer;
-var
-  i: integer;
-  name: string;
-{$IFNDEF HEXEN}
-  check: string;
-{$ENDIF}
-  sfx: Psfxinfo_t;
-{$IFDEF DOOM}
-  isnumber: boolean;
-{$ENDIF}
 begin
-  result := atoi(sfx_name, -1);
-{$IFDEF DOOM}
-  isnumber := itoa(result) = sfx_name;
-  if isnumber then
-  begin
-    if (result >= 0) and (result < numsfx) and isnumber then
-      if S_sfx[result].name <> '' then
-        exit;
-
-    if (result >= 500) and (result < 700) then
-      if S_sfx[result].name = 'fre' + IntToStrZfill(3, result) then // DEHEXTRA
-      begin
-        if numsfx <= result then
-          numsfx := result + 1;
-        sfx := @S_sfx[result];
-        sfx.name := 'fre' + IntToStrZfill(3, result);
-        sfx.singularity := false;
-        sfx.priority := 72;
-        sfx.link := nil;
-        sfx.pitch := -1;
-        sfx.volume := -1;
-        sfx.data := nil;
-        sfx.usefulness := 0;
-        sfx.lumpnum := -1; // JVAL: was = 0;
-        sfx.randomsoundlist := nil;
-        exit;
-      end;
-  end;
-{$ELSE}
-  if (result >= 0) and (result < numsfx) and (itoa(result) = sfx_name) then
-    exit;
-{$ENDIF}
-
-  if sfx_name = '' then
-  begin
-    I_Warning('S_GetSoundNumForName(): No sound name specified, using default'#13#10);
-{$IF DEFINED(HERETIC)}
-    result := Ord(sfx_gldhit);
-{$ELSEIF DEFINED(HEXEN)}
-    result := Ord(SFX_CHAT);
-{$ELSEIF DEFINED(STRIFE)}
-    result := Ord(sfx_mtalht);
-{$ELSE}
-    result := Ord(sfx_pistol);
-{$ENDIF}
-    exit;
-  end;
-
-  name := strupper(S_SoundAlias(sfx_name));
-  for i := 1 to numsfx - 1 do
-  begin
-{$IFDEF HEXEN}
-    sfx := @S_sfx[i];
-    if (strupper(sfx.tagname) = name) or (strupper(sfx.name) = name) or ('DS' + strupper(sfx.name) = name) then
-{$ELSE}
-    check := strupper(S_sfx[i].name);
-    if (check = name) or ('DS' + check = name) then
-{$ENDIF}
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-
-{$IFDEF DOOM}
-  // JVAL: Not found, trying to find an empty slot
-  for i := lastfreesfx to numsfx - 1 do
-    if S_sfx[i].name = '' then
-    begin
-      result := i;
-      lastfreesfx := i + 1;
-      sfx := @S_sfx[result];
-      sfx.name := name;
-      sfx.singularity := false;
-      sfx.priority := 72;
-      sfx.link := nil;
-      sfx.pitch := -1;
-      sfx.volume := -1;
-      sfx.data := nil;
-      sfx.usefulness := 0;
-      sfx.lumpnum := -1; // JVAL: was = 0;
-      sfx.randomsoundlist := nil;
-      exit;
-    end;
-{$ELSE}
-  // JVAL: Not found, we will add a new sound
-{$ENDIF}
-
-{$IF DEFINED(DOOM)}
-  // JVAL: Not found, we will add a new sound
-  if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default pistol sound :(
-{$ELSEIF DEFINED(STRIFE)}
-  if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default pistol sound :(
-{$ELSE}
-  if numsfx >= MAX_NUMSFX - 1 then // JVAL: Limit exceeded, we will use default sound :(
-{$ENDIF}
-  begin
-    I_Warning('S_GetSoundNumForName(): Can not add %s sound, limit of %d sounds exceeded'#13#10, [sfx_name, numsfx]);
-{$IF DEFINED(HERETIC)}
-    result := Ord(sfx_gldhit);
-{$ELSEIF DEFINED(HEXEN)}
-    result := Ord(SFX_CHAT);
-{$ELSEIF DEFINED(STRIFE)}
-    result := Ord(sfx_mtalht);
-{$ELSE}
-    result := Ord(sfx_pistol);
-{$ENDIF}
-    exit;
-  end;
-
-  // JVAL: Register the new sound
-
-  if Pos1('DS', name) then
-    name := Copy(name, 3, Length(name) - 2);
-  if name = '' then // JVAL: Normally this should not happen!
-  begin
-    I_Warning('S_GetSoundNumForName(): No sound name specified, using default'#13#10);
-{$IF DEFINED(HERETIC)}
-    result := Ord(sfx_gldhit);
-{$ELSEIF DEFINED(HEXEN)}
-    result := Ord(SFX_CHAT);
-{$ELSEIF DEFINED(STRIFE)}
-    result := Ord(sfx_mtalht);
-{$ELSE}
-    result := Ord(sfx_pistol);
-{$ENDIF}
-    exit;
-  end;
-
-  result := numsfx;
-  sfx := @S_sfx[result];
-{$IFDEF HEXEN}
-  sfx.tagname := sfx_name;
-{$ENDIF}
-  sfx.name := name;
-{$IFNDEF HEXEN}
-  sfx.singularity := false;
-{$ENDIF}
-  sfx.priority := 72;
-{$IFNDEF HEXEN}
-  sfx.link := nil;
-{$ENDIF}
-  sfx.pitch := -1;
-{$IFNDEF HEXEN}
-  sfx.volume := -1;
-{$ENDIF}
-  sfx.data := nil;
-  sfx.usefulness := 0;
-  sfx.lumpnum := -1; // JVAL: was = 0;
-{$IFDEF HEXEN}
-  sfx.numchannels := 1;
-  sfx.changePitch := false;
-{$ENDIF}
-  sfx.randomsoundlist := nil;
-  inc(numsfx);
+  if sound_numbers = nil then
+    I_Error('S_GetSoundNumForName(): the sound numbers are not configured (ComposeEngine was not called)');
+  result := sound_numbers.NumberForName(sfx_name);
 end;
 
 //==============================================================================
@@ -332,14 +158,10 @@ end;
 //==============================================================================
 function S_GetSoundNameForNum(const sfx_num: integer): string;
 begin
-  if (sfx_num < 0) or (sfx_num >= numsfx) then
-  begin
-    result := '';
-    exit;
-  end;
-
+  if sound_numbers = nil then
+    I_Error('S_GetSoundNameForNum(): the sound numbers are not configured (ComposeEngine was not called)');
   // JVAL: strupper -> for safety
-  result := strupper(S_sfx[sfx_num].name);
+  result := sound_numbers.NameForNumber(sfx_num);
 end;
 
 //==============================================================================
@@ -359,17 +181,16 @@ end;
 // Random sound list is saved not only to the sfx_num, but also to other sounds numbers
 // of the same 'random' group
 // Check WAD for presence of lumps
+// The names and lumps of the group are TSfxRandomGroup; the list of numbers is here,
+// because it is shared by the records of the table
 //
 //==============================================================================
 function S_GetRandomSoundList(const sfx_num: integer): TDNumberList;
 var
   sfxname: string;
-  sfxname1: string;
-  sfxname2: string;
-  sfxname3: string;
   sfxnum: integer;
-  check: integer;
-  c: char;
+  members: TArray<TSfxRandomMember>;
+  i: integer;
 begin
   sfxname := S_GetSoundNameForNum(sfx_num);
   if sfxname = '' then
@@ -386,51 +207,24 @@ begin
   if result.Count > 0 then
     exit;
 
-  check := Ord(sfxname[Length(sfxname)]);
-  if (check < Ord('0')) or (check > Ord('9')) then
+  if not TSfxRandomGroup.IsGroupName(sfxname) then
   begin
     result.Add(sfx_num);  // This sound for sure!
     exit;
   end;
 
-  // JVAL: look first for 'ds....' sound names
-  if Pos1('DS', sfxname) then
-  begin
-    sfxname1 := sfxname;
-    sfxname2 := Copy(sfxname, 3, Length(sfxname) - 2)
-  end
-  else
-  begin
-    sfxname1 := 'DS' + sfxname;
-    sfxname2 := sfxname;
-  end;
-  sfxname3 := '';
-  if Length(sfxname1) > 8 then
-    SetLength(sfxname1, 8);
-  if Length(sfxname2) > 8 then
-    SetLength(sfxname2, 8);
-  for c := '0' to '9' do
-  begin
-    sfxname1[Length(sfxname1)] := c;
-    check := W_CheckNumForName(sfxname1);
-    if check = -1 then
+  members := TSfxRandomGroup.Members(sfxname,
+    function(const AName: string): Integer
     begin
-      sfxname2[Length(sfxname2)] := c;
-      check := W_CheckNumForName(sfxname2);
-      if check >= 0 then
-        sfxname3 := sfxname2;
-    end
-    else
-      sfxname3 := sfxname1;
-
-    if check >= 0 then
-    begin
-      sfxnum := S_GetSoundNumForName(sfxname3);
-      result.Add(sfxnum);
-      S_sfx[sfxnum].lumpnum := check; // Save the lump number
-      if S_sfx[sfxnum].randomsoundlist = nil then
-        S_sfx[sfxnum].randomsoundlist := result;
-    end;
+      Result := W_CheckNumForName(AName);
+    end);
+  for i := 0 to Length(members) - 1 do
+  begin
+    sfxnum := S_GetSoundNumForName(members[i].Name);
+    result.Add(sfxnum);
+    S_sfx[sfxnum].lumpnum := members[i].LumpNumber; // Save the lump number
+    if S_sfx[sfxnum].randomsoundlist = nil then
+      S_sfx[sfxnum].randomsoundlist := result;
   end;
 end;
 
@@ -491,4 +285,3 @@ begin
 end;
 
 end.
-

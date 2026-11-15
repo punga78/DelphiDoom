@@ -31,6 +31,8 @@ uses
   DelphiDoom.Audio.SoundNames in '..\Libs\Audio\DelphiDoom.Audio.SoundNames.pas',
   DelphiDoom.Audio.MusicNumberResolver in '..\Libs\Audio\DelphiDoom.Audio.MusicNumberResolver.pas',
   DelphiDoom.Audio.Pk3SoundNames in '..\Libs\Audio\DelphiDoom.Audio.Pk3SoundNames.pas',
+  DelphiDoom.Audio.SfxNumberResolver in '..\Libs\Audio\DelphiDoom.Audio.SfxNumberResolver.pas',
+  DelphiDoom.Audio.SfxRandomGroup in '..\Libs\Audio\DelphiDoom.Audio.SfxRandomGroup.pas',
   DelphiDoom.Audio.SfxPlayer in '..\Libs\Audio\DelphiDoom.Audio.SfxPlayer.pas',
   DelphiDoom.Audio.MusicPlayer in '..\Libs\Audio\DelphiDoom.Audio.MusicPlayer.pas',
   DelphiDoom.Audio.ExternalMusicCache in '..\Libs\Audio\DelphiDoom.Audio.ExternalMusicCache.pas',
@@ -176,6 +178,7 @@ uses
   DelphiDoom.Tests.Audio.OldMusicNames in 'Source\DelphiDoom.Tests.Audio.OldMusicNames.pas',
   DelphiDoom.Tests.Audio.OldSoundTables in 'Source\DelphiDoom.Tests.Audio.OldSoundTables.pas',
   DelphiDoom.Tests.Audio.MusicNumberResolver in 'Source\DelphiDoom.Tests.Audio.MusicNumberResolver.pas',
+  DelphiDoom.Tests.Audio.SfxNumberResolver in 'Source\DelphiDoom.Tests.Audio.SfxNumberResolver.pas',
   DelphiDoom.Tests.Audio.ExternalMusicNames in 'Source\DelphiDoom.Tests.Audio.ExternalMusicNames.pas',
   DelphiDoom.Tests.Audio.SfxAttenuation in 'Source\DelphiDoom.Tests.Audio.SfxAttenuation.pas',
   DelphiDoom.Tests.Audio.ChannelPicker in 'Source\DelphiDoom.Tests.Audio.ChannelPicker.pas';
