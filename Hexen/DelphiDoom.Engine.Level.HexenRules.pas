@@ -78,6 +78,8 @@ uses
   p_mobj,
   p_tick,
   p_setup,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_switch,
   p_enemy,

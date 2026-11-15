@@ -80,6 +80,8 @@ uses
   DelphiDoom.Engine.World.MobjRules,
   p_mobj_h,
   p_setup,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_tick,
   {$IFDEF HEXEN}

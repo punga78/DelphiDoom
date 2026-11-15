@@ -510,6 +510,8 @@ uses
   p_tick,
   p_mobj,
   p_doors,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_inter,
   p_pspr,

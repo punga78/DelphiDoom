@@ -37,6 +37,8 @@ uses
   d_delphi,
   r_defs,
   p_mobj_h,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec;
 
 //==============================================================================

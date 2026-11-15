@@ -41,6 +41,8 @@ unit p_plats;
 interface
 
 uses
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_defs;
 

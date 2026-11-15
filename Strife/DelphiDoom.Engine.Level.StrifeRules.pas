@@ -77,6 +77,8 @@ uses
   p_mobj,
   p_setup,
   udmf_spec,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_switch,
   po_man,

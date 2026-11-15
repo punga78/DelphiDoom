@@ -130,6 +130,7 @@ uses
   p_dialog,
   p_doors,
   p_floor,
+  p_spec_h,
   p_spec,
   p_enemy,
   DelphiDoom.Engine.World.EnemyRules,

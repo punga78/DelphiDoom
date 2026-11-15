@@ -335,6 +335,7 @@ uses
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes
   po_man,
+  p_spec_h,
   p_spec,
   p_params,
   p_ladder,

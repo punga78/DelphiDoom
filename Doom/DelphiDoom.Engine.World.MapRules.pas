@@ -229,6 +229,8 @@ uses
   p_inter,
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_sight,
   p_3dfloors, // JVAL: 3d Floors

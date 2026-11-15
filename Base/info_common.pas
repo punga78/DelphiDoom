@@ -304,6 +304,7 @@ uses
   i_system,
   m_fixed,
   p_common,
+  p_spec_h,
   p_spec,
   info,
   DelphiDoom.Info.SpriteNames;

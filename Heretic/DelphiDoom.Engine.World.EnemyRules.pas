@@ -697,6 +697,8 @@ uses
   p_mobj,
   DelphiDoom.Engine.World.MobjRules,
   p_pspr_h,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_inter,
   p_sounds,

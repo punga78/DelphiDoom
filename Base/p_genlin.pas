@@ -338,6 +338,8 @@ uses
   p_floor,
   p_plats,
   p_setup,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_tick,
   sounddata,

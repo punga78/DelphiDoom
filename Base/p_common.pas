@@ -2447,6 +2447,8 @@ uses
   p_params,
   p_setup,
   p_sight,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_switch,
   p_tick,

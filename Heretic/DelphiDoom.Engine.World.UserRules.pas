@@ -137,6 +137,7 @@ uses
   p_setup,    // JVAL: 3d Floors
   p_slopes,   // JVAL: Slopes
   p_3dfloors, // JVAL: Slopes
+  p_spec_h,
   p_spec,
   p_map,
   p_telept,

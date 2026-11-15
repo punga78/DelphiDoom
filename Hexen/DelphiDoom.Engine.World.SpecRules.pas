@@ -27,7 +27,7 @@
 
 {$I Doom32.inc}
 
-unit p_spec;
+unit DelphiDoom.Engine.World.SpecRules;
 
 interface
 
@@ -39,7 +39,8 @@ uses
   p_local,
   p_mobj_h,
   p_tick,
-  r_defs;
+  r_defs,
+  p_spec_h;
 
 //==============================================================================
 // getNextSector
@@ -64,20 +65,6 @@ function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
 //
 //==============================================================================
 function twoSided(sector: integer; line: integer): boolean;
-
-//==============================================================================
-//
-// getSide
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-
-//==============================================================================
-//
-// P_FindLowestFloorSurrounding
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
 
 //==============================================================================
 //
@@ -155,6 +142,7 @@ function EVH_LineSearchForPuzzleItem(line: Pline_t; args: PByteArray; mo: Pmobj_
 //
 //==============================================================================
 function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
+
   side: integer; mo: Pmobj_t): boolean;
 
 //==============================================================================
@@ -163,6 +151,7 @@ function P_ExecuteLineSpecial(special: integer; args: PByteArray; line: Pline_t;
 //
 //==============================================================================
 function P_ActivateLine(line: Pline_t; mo: Pmobj_t; side: integer;
+
   activationType: integer): boolean;
 
 //==============================================================================
@@ -200,284 +189,6 @@ procedure P_SpawnSpecials;
 //==============================================================================
 function P_FindLine(lineTag: integer; searchPosition: PInteger): Pline_t;
 
-//
-// P_LIGHTS
-//
-type
-  fireflicker_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
-  end;
-
-  lightflash_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
-    maxtime: integer;
-    mintime: integer;
-  end;
-
-  strobe_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    minlight: integer;
-    maxlight: integer;
-    darktime: integer;
-    brighttime: integer;
-  end;
-
-  glow_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    minlight: integer;
-    maxlight: integer;
-    direction: integer;
-  end;
-
-type
-  bwhere_e = (
-    SWTCH_TOP,
-    SWTCH_MIDDLE,
-    SWTCH_BOTTOM
-  );
-
-  button_t = record
-    line: Pline_t;
-    where: bwhere_e;
-    btexture: integer;
-    btimer: integer;
-    soundorg: Pmobj_t;
-  end;
-
-const
-  // max # of wall switches in a level
-  MAXSWITCHES = 50;
-
-  // 4 players, 4 buttons each at once, max.
-  MAXBUTTONS = 16;
-
-  // 1 second, in ticks.
-  BUTTONTIME = 35;
-
-type
-//
-// P_PLATS
-//
-  plat_e = (
-    PLAT_UP,
-    PLAT_DOWN,
-    PLAT_WAITING
-  );
-
-  plattype_e = (
-    PLAT_PERPETUALRAISE,
-    PLAT_DOWNWAITUPSTAY,
-    PLAT_DOWNBYVALUEWAITUPSTAY,
-    PLAT_UPWAITDOWNSTAY,
-    PLAT_UPBYVALUEWAITDOWNSTAY,
-    // JVAL: 20220227 - Added new plat types
-    PLAT_PERPETUALRAISELIP,
-    PLAT_DOWNWAITUPSTAYLIP,
-    PLAT_UPNEARESTWAITDOWNSTAY
-  );
-
-  plat_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    speed: fixed_t;
-    low: fixed_t;
-    high: fixed_t;
-    wait: integer;
-    count: integer;
-    status: plat_e;
-    oldstatus: plat_e;
-    crush: boolean;
-    tag: integer;
-    _type: plattype_e;
-  end;
-  Pplat_t = ^plat_t;
-
-const
-  MAXPLATS = 512;  // JVAL Originally was 30
-
-type
-//
-// P_DOORS
-//
-  vldoor_e = (
-    DREV_NORMAL,
-    DREV_CLOSE30THENOPEN,
-    DREV_CLOSE,
-    DREV_OPEN,
-    DREV_RAISEIN5MINS,
-    // JVAL: 20220227 - Added new door types
-    DREV_CLOSEWAITTHENOPEN
-  );
-
-  vldoor_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    _type: vldoor_e;
-    topheight: fixed_t;
-    speed: fixed_t;
-
-    // 1 = up, 0 = waiting at top, -1 = down
-    direction: integer;
-
-    // tics to wait at the top
-    topwait: integer;
-    // (keep in case a door going down is reset)
-    // when it reaches 0, start going down
-    topcountdown: integer;
-  end;
-  Pvldoor_t = ^vldoor_t;
-
-type
-//
-// P_CEILNG
-//
-  ceiling_e = (
-    CLEV_LOWERTOFLOOR,
-    CLEV_RAISETOHIGHEST,
-    CLEV_LOWERANDCRUSH,
-    CLEV_CRUSHANDRAISE,
-    CLEV_LOWERBYVALUE,
-    CLEV_RAISEBYVALUE,
-    CLEV_CRUSHRAISEANDSTAY,
-    CLEV_MOVETOVALUETIMES8,
-    // JVAL: 20220227 - Added new ceiling types
-    CLEV_LOWERTOMAXFLOOR,
-    CLEV_LOWERTOLOWEST,
-    CLEV_MOVETOVALUEANDCRUSH,
-    CLEV_MOVETOVALUE,
-    CLEV_LOWERBYVALUETIMES8,
-    CLEV_RAISEBYVALUETIMES8,
-    CLEV_RAISETOHIGHESTFLOOR
-  );
-
-  ceiling_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    _type: ceiling_e;
-    bottomheight: fixed_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-    crush: boolean;
-    // 1 = up, 0 = waiting, -1 = down
-    direction: integer;
-
-    // ID
-    tag: integer;
-    olddirection: integer;
-  end;
-  Pceiling_t = ^ceiling_t;
-
-const
-  MAXCEILINGS = 128; // JVAL 20210130 - Old value was 30
-
-type
-//
-// P_FLOOR
-//
-  floor_e = (
-    FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
-    FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
-    FLEV_LOWERFLOORBYVALUE,
-    FLEV_RAISEFLOOR,            // raise floor to lowest surrounding CEILING
-    FLEV_RAISEFLOORTONEAREST,   // raise floor to next highest surrounding floor
-    FLEV_RAISEFLOORBYVALUE,
-    FLEV_RAISEFLOORCRUSH,
-    FLEV_RAISEBUILDSTEP,        // One step of a staircase
-    FLEV_RAISEBYVALUETIMES8,
-    FLEV_LOWERBYVALUETIMES8,
-    FLEV_LOWERTIMES8INSTANT,
-    FLEV_RAISETIMES8INSTANT,
-    FLEV_MOVETOVALUETIMES8,
-    FLEV_RAISETOTEXTURE,
-    // JVAL: 20220227 - Added new floor types
-    FLEV_LOWERFLOORTOHIGHEST,
-    FLEV_LOWERFLOORTOLOWESTCEILING,
-    FLEV_MOVETOVALUE,
-    FLEV_RAISEFLOORCRUSHDOOM,
-    FLEV_RAISEFLOORTOCEILING,
-    FLEV_RAISETOLOWESTCEILING,
-    FLEV_RAISEFLOORBYVALUETIMES8,
-    FLEV_RAISETOCEILING,
-    FLEV_FLOORTOCEILINGINSTANT
-  );
-
-  floormove_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    _type: floor_e;
-    crush: boolean;
-    direction: integer;
-    newspecial: integer;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-    delayCount: integer;
-    delayTotal: integer;
-    stairsDelayHeight: fixed_t;
-    stairsDelayHeightDelta: fixed_t;
-    resetHeight: fixed_t;
-    resetDelay: smallint;
-    resetDelayCount: smallint;
-    textureChange: byte;
-  end;
-  Pfloormove_t = ^floormove_t;
-
-  pillar_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    ceilingSpeed: integer;
-    floorSpeed: integer;
-    floordest: integer;
-    ceilingdest: integer;
-    direction: integer;
-    crush: boolean;
-  end;
-  Ppillar_t = ^pillar_t;
-
-  floorWaggle_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    originalHeight: fixed_t;
-    accumulator: fixed_t;
-    accDelta: fixed_t;
-    targetScale: fixed_t;
-    scale: fixed_t;
-    scaleDelta: fixed_t;
-    ticker: integer;
-    state: integer;
-  end;
-  PfloorWaggle_t = ^floorWaggle_t;
-
-const
-  FLOORSPEED = FRACUNIT;
-
-type
-  result_e = (
-    RES_OK,
-    RES_CRUSHED,
-    RES_PASTDEST
-  );
-
-  stairs_e = (
-    STAIRS_NORMAL,
-    STAIRS_SYNC,
-    STAIRS_PHASED
-  );
-
-var
-  LavaInflictor: mobj_t;
-
 //==============================================================================
 //
 // P_FindSectorFromLineTag2
@@ -485,13 +196,10 @@ var
 //==============================================================================
 function P_FindSectorFromLineTag2(line: Pline_t; var start: integer): integer;
 
-const
-  ORIG_FRICTION = $E800;          // original value
-  CROUCH_FRICTION_FACTOR = 1536;  // JVAL: 20211101 - Crouch
-
 implementation
 
 uses
+  p_spec,
   a_action,
   xn_strings,
   doomdef,
@@ -540,19 +248,6 @@ end;
 
 //==============================================================================
 //
-// getSide()
-// Will return a side_t*
-//  given the number of the current sector,
-//  the line number, and the side (0/1) that you want.
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-begin
-  result := @sides[(sectors[currentSector].lines[line]).sidenum[side]];
-end;
-
-//==============================================================================
-//
 // twoSided()
 // Given the sector number and the line number,
 //  it will tell you whether the line is two-sided or not.
@@ -579,31 +274,6 @@ begin
       result := line.backsector
     else
       result := line.frontsector;
-  end;
-end;
-
-//==============================================================================
-// P_FindLowestFloorSurrounding
-//
-//      FIND LOWEST FLOOR HEIGHT IN SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  result := sec.floorheight;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.floorheight < result then
-        result := other.floorheight;
   end;
 end;
 

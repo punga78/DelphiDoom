@@ -314,6 +314,8 @@ uses
   p_3dfloors, // JVAL: 3d floors
   p_slopes, // JVAL: Slopes
   po_man,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_inter,
   p_params,

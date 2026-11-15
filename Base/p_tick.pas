@@ -135,6 +135,8 @@ uses
   p_animdefs,
 {$ENDIF}
   p_user,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_mobj,
   p_mobj_h,

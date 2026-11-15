@@ -133,6 +133,8 @@ implementation
 
 uses
   p_tick,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   {$IFNDEF HEXEN}
   udmf_spec,

@@ -81,6 +81,8 @@ uses
   p_tick,
   p_mobj,
   p_map,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_user,
   r_main,

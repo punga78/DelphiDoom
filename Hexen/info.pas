@@ -120,6 +120,7 @@ uses
   p_extra,
   p_user,
   DelphiDoom.Engine.World.UserRules,
+  p_spec_h,
   p_spec,
   p_common,
   info_common,

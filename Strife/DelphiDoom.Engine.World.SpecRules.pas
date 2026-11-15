@@ -1,8 +1,15 @@
 //------------------------------------------------------------------------------
 //
-//  DelphiDoom is a source port of the game Doom and it is
-//  based on original Linux Doom as published by "id Software"
+//  DelphiStrife is a source port of the game Strife.
+//
+//  Based on:
+//    - Linux Doom by "id Software"
+//    - Chocolate Strife by "Simon Howard"
+//    - DelphiDoom by "Jim Valavanis"
+//
 //  Copyright (C) 1993-1996 by id Software, Inc.
+//  Copyright (C) 2005 Simon Howard
+//  Copyright (C) 2010 James Haley, Samuel Villarreal
 //  Copyright (C) 2004-2022 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
@@ -33,7 +40,7 @@
 
 {$I Doom32.inc}
 
-unit p_spec;
+unit DelphiDoom.Engine.World.SpecRules;
 
 interface
 
@@ -44,13 +51,8 @@ uses
   d_think,
   p_local,
   p_mobj_h,
-  r_defs;
-
-//
-// End-level timer (-TIMER option)
-//
-
-//      Define values for map objects
+  r_defs,
+  p_spec_h;
 
 //==============================================================================
 // P_InitPicAnims
@@ -89,14 +91,14 @@ procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
 // P_CrossSpecialLine
 //
 //==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
 
 //==============================================================================
 //
 // P_CrossSpecialLinePtr
 //
 //==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
 
 //==============================================================================
 //
@@ -104,13 +106,6 @@ procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; co
 //
 //==============================================================================
 procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
-
-//==============================================================================
-//
-// P_MobjInSpecialSector
-//
-//==============================================================================
-procedure P_MobjInSpecialSector(mo: Pmobj_t);
 
 //==============================================================================
 //
@@ -125,20 +120,6 @@ function twoSided(sector: integer; line: integer): boolean;
 //
 //==============================================================================
 function twoSidedS(sector: Psector_t; line: integer): boolean;
-
-//==============================================================================
-//
-// getSide
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-
-//==============================================================================
-//
-// P_FindLowestFloorSurrounding
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
 
 //==============================================================================
 //
@@ -191,558 +172,10 @@ function P_FindLineFromLineTag2(line: Pline_t; var start: integer): integer;
 
 //==============================================================================
 //
-// P_FindMinSurroundingLight
-//
-//==============================================================================
-
-//==============================================================================
-//
 // getNextSector
 //
 //==============================================================================
 function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
-
-//
-// P_LIGHTS
-//
-type
-  fireflicker_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
-  end;
-  Pfireflicker_t = ^fireflicker_t;
-
-  lightflash_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    maxlight: integer;
-    minlight: integer;
-    maxtime: integer;
-    mintime: integer;
-  end;
-  Plightflash_t = ^lightflash_t;
-
-  strobe_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    count: integer;
-    minlight: integer;
-    maxlight: integer;
-    darktime: integer;
-    brighttime: integer;
-  end;
-  Pstrobe_t = ^strobe_t;
-
-  glow_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    minlight: integer;
-    maxlight: integer;
-    direction: integer;
-  end;
-  Pglow_t = ^glow_t;
-
-const
-  GLOWSPEED = 8;
-  STROBEBRIGHT = 5;
-  FASTDARK = 15;
-  SLOWDARK = 35;
-
-type
-  bwhere_e = (
-    top,
-    middle,
-    bottom
-  );
-
-  button_t = record
-    line: Pline_t;
-    where: bwhere_e;
-    btexture: integer;
-    btimer: integer;
-    soundorg: Pmobj_t;
-  end;
-  Pbutton_t = ^button_t;
-
-const
-  // 4 players, 4 buttons each at once, max.
-  MAXBUTTONS = 16;
-
-  // 1 second, in ticks.
-  BUTTONTIME = 35;
-
-type
-  change_e = (
-    trigChangeOnly,
-    numChangeOnly
-  );
-
-type
-//
-// P_PLATS
-//
-  plat_e = (
-    up,
-    down,
-    waiting,
-    in_stasis,
-
-    // JVAL: 20220214 - Added UDMF plat status
-    PLAT_UP,
-    PLAT_DOWN,
-    PLAT_WAITING
-  );
-
-  plattype_e = (
-    perpetualRaise,
-    downWaitUpStay,
-    raiseAndChange,
-    raiseToNearestAndChange,
-    blazeDWUS,
-    genLift,      //jff added to support generalized Plat types
-    genPerpetual,
-    toggleUpDn,   //jff 3/14/98 added to support instant toggle type
-
-    // JVAL: 20220214 - Added UDMF plat types
-    PLAT_PERPETUALRAISE,
-    PLAT_DOWNWAITUPSTAY,
-    PLAT_DOWNBYVALUEWAITUPSTAY,
-    PLAT_UPWAITDOWNSTAY,
-    PLAT_UPBYVALUEWAITDOWNSTAY,
-    // JVAL: 20220227 - Added new plat types
-    PLAT_PERPETUALRAISELIP,
-    PLAT_DOWNWAITUPSTAYLIP,
-    PLAT_UPNEARESTWAITDOWNSTAY
-  );
-
-  plat_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    speed: fixed_t;
-    low: fixed_t;
-    high: fixed_t;
-    wait: integer;
-    count: integer;
-    status: plat_e;
-    oldstatus: plat_e;
-    crush: boolean;
-    tag: integer;
-    _type: plattype_e;
-  end;
-  Pplat_t = ^plat_t;
-
-const
-  PLATWAIT = 3;
-  PLATSPEED = FRACUNIT;
-  MAXPLATS = 512;  // JVAL Originally was 30
-
-type
-//
-// P_DOORS
-//
-  vldoor_e = (
-    normal,
-    close30ThenOpen,
-    close,
-    open,
-    raiseIn5Mins,
-    blazeRaise,
-    blazeOpen,
-    blazeClose,
-
-    //jff 02/05/98 add generalize door types
-    genRaise,
-    genBlazeRaise,
-    genOpen,
-    genBlazeOpen,
-    genClose,
-    genBlazeClose,
-    genCdO,
-    genBlazeCdO,
-
-    // JVAL: 20220214 - Added UDMF door types
-    DREV_NORMAL,
-    DREV_CLOSE30THENOPEN,
-    DREV_CLOSE,
-    DREV_OPEN,
-    DREV_RAISEIN5MINS,
-    // JVAL: 20220227 - Added new door types
-    DREV_CLOSEWAITTHENOPEN
-  );
-
-  vldoor_t115 = record
-    thinker: thinker_t;
-    _type: vldoor_e;
-    sector: Psector_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-
-    // 1 = up, 0 = waiting at top, -1 = down
-    direction: integer;
-
-    // tics to wait at the top
-    topwait: integer;
-    // (keep in case a door going down is reset)
-    // when it reaches 0, start going down
-    topcountdown: integer;
-  end;
-  Pvldoor_t115 = ^vldoor_t115;
-
-  vldoor_t = record
-    thinker: thinker_t;
-    _type: vldoor_e;
-    sector: Psector_t;
-    line: Pline_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-
-    // 1 = up, 0 = waiting at top, -1 = down
-    direction: integer;
-
-    // tics to wait at the top
-    topwait: integer;
-    // (keep in case a door going down is reset)
-    // when it reaches 0, start going down
-    topcountdown: integer;
-  end;
-  Pvldoor_t = ^vldoor_t;
-
-const
-  VDOORSPEED = FRACUNIT * 2;
-  VDOORWAIT = 150;
-
-type
-//
-// P_CEILNG
-//
-  ceiling_e = (
-    lowerToFloor,
-    raiseToHighest,
-    lowerToLowest,
-    lowerToMaxFloor,
-    lowerAndCrush,
-    crushAndRaise,
-    fastCrushAndRaise,
-    silentCrushAndRaise,
-
-    //jff 02/04/98 add types for generalized ceiling mover
-    genCeiling,
-    genCeilingChg,
-    genCeilingChg0,
-    genCeilingChgT,
-
-    //jff 02/05/98 add types for generalized ceiling mover
-    genCrusher,
-    genSilentCrusher,
-
-    // JVAL: 20220214 - Added UDMF ceiling types
-    CLEV_LOWERTOFLOOR,
-    CLEV_RAISETOHIGHEST,
-    CLEV_LOWERANDCRUSH,
-    CLEV_CRUSHANDRAISE,
-    CLEV_LOWERBYVALUE,
-    CLEV_RAISEBYVALUE,
-    CLEV_CRUSHRAISEANDSTAY,
-    CLEV_MOVETOVALUETIMES8,
-    // JVAL: 20220227 - Added new ceiling types
-    CLEV_LOWERTOMAXFLOOR,
-    CLEV_LOWERTOLOWEST,
-    CLEV_MOVETOVALUEANDCRUSH,
-    CLEV_MOVETOVALUE,
-    CLEV_LOWERBYVALUETIMES8,
-    CLEV_RAISEBYVALUETIMES8,
-    CLEV_RAISETOHIGHESTFLOOR
-  );
-
-  ceiling_t115 = record
-    thinker: thinker_t;
-    _type: ceiling_e;
-    sector: Psector_t;
-    bottomheight: fixed_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-    crush: boolean;
-    // 1 = up, 0 = waiting, -1 = down
-    direction: integer;
-
-    // ID
-    tag: integer;
-    olddirection: integer;
-  end;
-  Pceiling_t115 = ^ceiling_t115;
-
-  ceiling_t = record
-    thinker: thinker_t;
-    _type: ceiling_e;
-    sector: Psector_t;
-    bottomheight: fixed_t;
-    topheight: fixed_t;
-    speed: fixed_t;
-    oldspeed: fixed_t; // JVAL BOOM compatibility
-    crush: boolean;
-    // 1 = up, 0 = waiting, -1 = down
-    direction: integer;
-  //jff 02/04/98 add these to support ceiling changers
-    newspecial: integer;
-    oldspecial: smallint; //jff 3/14/98 add to fix bug in change transfers // JVAL SOS mayby integer
-    texture: smallint; // JVAL BOOM compatibility
-    // ID
-    tag: integer;
-    olddirection: integer;
-  end;
-  Pceiling_t = ^ceiling_t;
-
-const
-  CEILSPEED = FRACUNIT;
-  MAXCEILINGS = 128; // JVAL 20210130 - Old value was 30
-
-type
-//
-// P_FLOOR
-//
-  floor_e = (
-    // lower floor to highest surrounding floor
-    lowerFloor,
-
-    // lower floor to lowest surrounding floor
-    lowerFloorToLowest,
-
-    // lower floor to highest surrounding floor VERY FAST
-    turboLower,
-
-    // raise floor to lowest surrounding CEILING
-    raiseFloor,
-
-    // raise floor to next highest surrounding floor
-    raiseFloorToNearest,
-
-    //jff 02/03/98 lower floor to next lowest neighbor
-    lowerFloorToNearest,
-
-    //jff 02/03/98 lower floor 24 absolute
-    lowerFloor24,
-
-    //jff 02/03/98 lower floor 32 absolute
-    lowerFloor32Turbo,
-
-    // raise floor to shortest height texture around it
-    raiseToTexture,
-
-    // lower floor to lowest surrounding floor
-    //  and change floorpic
-    lowerAndChange,
-
-    raiseFloor24,
-
-    //jff 02/03/98 raise floor 32 absolute
-    raiseFloor32Turbo,
-
-    raiseFloor24AndChange,
-    raiseFloorCrush,
-
-    // raise to next highest floor, turbo-speed
-    raiseFloorTurbo,
-    donutRaise,
-    raiseFloor512,
-
-    //jff 02/04/98  add types for generalized floor mover
-    genFloor,
-    genFloorChg,
-    genFloorChg0,
-    genFloorChgT,
-
-    //new types for stair builders
-    buildStair,
-    genBuildStair,
-
-    // JVAL: 20220214 - Added UDMF floor types
-    FLEV_LOWERFLOOR,            // lower floor to highest surrounding floor
-    FLEV_LOWERFLOORTOLOWEST,    // lower floor to lowest surrounding floor
-    FLEV_LOWERFLOORBYVALUE,
-    FLEV_RAISEFLOOR,            // raise floor to lowest surrounding CEILING
-    FLEV_RAISEFLOORTONEAREST,   // raise floor to next highest surrounding floor
-    FLEV_RAISEFLOORBYVALUE,
-    FLEV_RAISEFLOORCRUSH,
-    FLEV_RAISEBUILDSTEP,        // One step of a staircase
-    FLEV_RAISEBYVALUETIMES8,
-    FLEV_LOWERBYVALUETIMES8,
-    FLEV_LOWERTIMES8INSTANT,
-    FLEV_RAISETIMES8INSTANT,
-    FLEV_MOVETOVALUETIMES8,
-    FLEV_RAISETOTEXTURE,
-    // JVAL: 20220227 - Added new floor types
-    FLEV_LOWERFLOORTOHIGHEST,
-    FLEV_LOWERFLOORTOLOWESTCEILING,
-    FLEV_MOVETOVALUE,
-    FLEV_RAISEFLOORCRUSHDOOM,
-    FLEV_RAISEFLOORTOCEILING,
-    FLEV_RAISETOLOWESTCEILING,
-    FLEV_RAISEFLOORBYVALUETIMES8,
-    FLEV_RAISETOCEILING,
-    FLEV_FLOORTOCEILINGINSTANT
-  );
-
-  stair_e = (
-    build8, // slowly build by 8
-    turbo16 // quickly build by 16
-  );
-
-  floormove_t115 = record
-    thinker: thinker_t;
-    _type: floor_e;
-    crush: boolean;
-    sector: Psector_t;
-    direction: integer;
-    newspecial: integer;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-  end;
-  Pfloormove_t115 = ^floormove_t115;
-
-  floormove_t206 = record
-    thinker: thinker_t;
-    _type: floor_e;
-    crush: boolean;
-    sector: Psector_t;
-    direction: integer;
-    newspecial: integer;
-    oldspecial: smallint;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-  end;
-  Pfloormove_t206 = ^floormove_t206;
-
-  floormove_t = record
-    thinker: thinker_t;
-    _type: floor_e;
-    crush: boolean;
-    sector: Psector_t;
-    direction: integer;
-    newspecial: integer;
-    oldspecial: smallint;
-    texture: smallint;
-    floordestheight: fixed_t;
-    speed: fixed_t;
-    delayCount: integer;
-    delayTotal: integer;
-    stairsDelayHeight: fixed_t;
-    stairsDelayHeightDelta: fixed_t;
-    resetHeight: fixed_t;
-    resetDelay: smallint;
-    resetDelayCount: smallint;
-    textureChange: byte;
-  end;
-  Pfloormove_t = ^floormove_t;
-
-  elevator_e = (
-    elevateUp,
-    elevateDown,
-    elevateCurrent
-  );
-
-  elevator_t = record
-    thinker: thinker_t;
-    _type: elevator_e;
-    sector: Psector_t;
-    direction: integer;
-    floordestheight: fixed_t;
-    ceilingdestheight: fixed_t;
-    speed: fixed_t;
-  end;
-  Pelevator_t = ^elevator_t;
-
-// phares 3/12/98: added new model of friction for ice/sludge effects
-
-  friction_t = record
-    thinker: thinker_t;   // Thinker structure for friction
-    friction: integer;    // friction value (E800 = normal)
-    movefactor: integer;  // inertia factor when adding to momentum
-    affectee: integer;    // Number of affected sector
-  end;
-  Pfriction_t = ^friction_t;
-
-// phares 3/20/98: added new model of Pushers for push/pull effects
-
-  pushertype_e = (
-    p_push,
-    p_pull,
-    p_wind,
-    p_current
-  );
-
-  pusher_t = record
-    thinker: thinker_t;   // Thinker structure for Pusher
-    _type: pushertype_e;
-    source: Pmobj_t;      // Point source if point pusher
-    x_mag: integer;       // X Strength
-    y_mag: integer;       // Y Strength
-    magnitude: integer;   // Vector strength for point pusher
-    radius: integer;      // Effective radius for point pusher
-    x, y: integer;        // X of point source if point pusher
-    affectee: integer;    // Number of affected sector
-  end;
-  Ppusher_t = ^pusher_t;
-
-  pillar_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    ceilingSpeed: integer;
-    floorSpeed: integer;
-    floordest: integer;
-    ceilingdest: integer;
-    direction: integer;
-    crush: boolean;
-  end;
-  Ppillar_t = ^pillar_t;
-
-  floorWaggle_t = record
-    thinker: thinker_t;
-    sector: Psector_t;
-    originalHeight: fixed_t;
-    accumulator: fixed_t;
-    accDelta: fixed_t;
-    targetScale: fixed_t;
-    scale: fixed_t;
-    scaleDelta: fixed_t;
-    ticker: integer;
-    state: integer;
-  end;
-  PfloorWaggle_t = ^floorWaggle_t;
-
-const
-  ELEVATORSPEED = 4 * FRACUNIT;
-  FLOORSPEED = FRACUNIT;
-
-type
-  result_e = (
-    ok,
-    crushed,
-    pastdest,
-
-    // JVAL: 20220214 - Added UDMF Result types
-    RES_OK,
-    RES_CRUSHED,
-    RES_PASTDEST
-  );
-
-  stairs_e = (
-    STAIRS_NORMAL,
-    STAIRS_SYNC,
-    STAIRS_PHASED
-  );
-
-// JVAL: BOOM compatibility
-  special_e = (
-    floor_special,
-    ceiling_special,
-    lighting_special
-  );
 
 //==============================================================================
 // P_SectorActive
@@ -810,13 +243,6 @@ function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
 
 //==============================================================================
 //
-// P_CheckTag
-//
-//==============================================================================
-function P_CheckTag(line: Pline_t): boolean;
-
-//==============================================================================
-//
 // T_Friction
 //
 //==============================================================================
@@ -828,15 +254,6 @@ procedure T_Friction(f: Pfriction_t);
 //
 //==============================================================================
 procedure T_Pusher(p: Ppusher_t);
-
-type
-  linefunc_t = function (line: Pline_t): integer;
-
-const
-  MORE_FRICTION_MOMENTUM = 15000; // mud factor based on momentum
-  ORIG_FRICTION = $E800;          // original value
-  ORIG_FRICTION_FACTOR = 2048;    // original value
-  CROUCH_FRICTION_FACTOR = 1536;  // JVAL: 20211101 - Crouch
 
 //==============================================================================
 //
@@ -862,10 +279,13 @@ function P_GetPushThing(const snum: integer): Pmobj_t;
 implementation
 
 uses
+  p_spec,
   d_delphi,
+  deh_main,
   doomdata,
   d_englsh,
   i_system,
+  hu_stuff,
   z_zone,
   m_argv,
   m_rnd,
@@ -873,7 +293,6 @@ uses
   w_wad,
   r_data,
   r_main,
-  r_plane,
   r_ripple,
   info_h,
   tables,
@@ -891,6 +310,11 @@ uses
   p_genlin,
   p_map,
   p_maputl,
+  p_dialog,
+  p_enemy,
+  DelphiDoom.Engine.World.EnemyRules,
+  p_mobj,
+  p_user,
   p_scroll,
   p_common,
   p_tick,
@@ -905,7 +329,6 @@ uses
 
 //
 // Animating textures and planes
-// There is another anim_t used in wi_stuff, unrelated.
 //
 type
   anim_t = record
@@ -944,8 +367,8 @@ type
   Pwad_animdef_tArray = ^wad_animdef_tArray;
 
 const
-  MAXANIMS = 32;
-  NUMFIXEDANIMDEFS = 22;
+  MAXANIMS = 50;
+  NUMFIXEDANIMDEFS = 33;
 
 //
 // P_InitPicAnims
@@ -961,35 +384,40 @@ const
 //  the WAD file.
 //
   fixedanimdefs: array[0..NUMFIXEDANIMDEFS] of animdef_t = (
-    (istexture: false; endname: 'NUKAGE3';  startname: 'NUKAGE1';  speed: 8),
-    (istexture: false; endname: 'FWATER4';  startname: 'FWATER1';  speed: 8),
-    (istexture: false; endname: 'SWATER4';  startname: 'SWATER1';  speed: 8),
-    (istexture: false; endname: 'LAVA4';    startname: 'LAVA1';    speed: 8),
-    (istexture: false; endname: 'BLOOD3';   startname: 'BLOOD1';   speed: 8),
-
-    // DOOM II flat animations.
-    (istexture: false; endname: 'RROCK08';  startname: 'RROCK05';  speed: 8),
-    (istexture: false; endname: 'SLIME04';  startname: 'SLIME01';  speed: 8),
-    (istexture: false; endname: 'SLIME08';  startname: 'SLIME05';  speed: 8),
-    (istexture: false; endname: 'SLIME12';  startname: 'SLIME09';  speed: 8),
-
-    (istexture: true;  endname: 'BLODGR4';  startname: 'BLODGR1';  speed: 8),
-    (istexture: true;  endname: 'SLADRIP3'; startname: 'SLADRIP1'; speed: 8),
-
-    (istexture: true;  endname: 'BLODRIP4'; startname: 'BLODRIP1'; speed: 8),
-    (istexture: true;  endname: 'FIREWALL'; startname: 'FIREWALA'; speed: 8),
-    (istexture: true;  endname: 'GSTFONT3'; startname: 'GSTFONT1'; speed: 8),
-    (istexture: true;  endname: 'FIRELAVA'; startname: 'FIRELAV3'; speed: 8),
-    (istexture: true;  endname: 'FIREMAG3'; startname: 'FIREMAG1'; speed: 8),
-    (istexture: true;  endname: 'FIREBLU2'; startname: 'FIREBLU1'; speed: 8),
-    (istexture: true;  endname: 'ROCKRED3'; startname: 'ROCKRED1'; speed: 8),
-
-    (istexture: true;  endname: 'BFALL4';   startname: 'BFALL1';   speed: 8),
-    (istexture: true;  endname: 'SFALL4';   startname: 'SFALL1';   speed: 8),
-    (istexture: true;  endname: 'WFALL4';   startname: 'WFALL1';   speed: 8),
-    (istexture: true;  endname: 'DBRAIN4';  startname: 'DBRAIN1';  speed: 8),
-
-    (istexture: false; endname: '';         startname: '';         speed: 0)
+    (istexture: false; endname: 'F_SCANR8';  startname: 'F_SCANR5';  speed: 4),
+    (istexture: false; endname: 'F_WATR03';  startname: 'F_WATR01';  speed: 8),
+    (istexture: false; endname: 'F_PWATR3';  startname: 'F_PWATR1';  speed: 11),
+    (istexture: false; endname: 'F_SCANR4';  startname: 'F_SCANR1';  speed: 4),
+    (istexture: true;  endname: 'SCAN08';    startname: 'SCAN05';    speed: 4),
+    (istexture: true;  endname: 'SWTRMG03';  startname: 'SWTRMG01';  speed: 4),
+    (istexture: true;  endname: 'SCAN04';    startname: 'SCAN01';    speed: 4),
+    (istexture: true;  endname: 'COMP04';    startname: 'COMP01';    speed: 4),
+    (istexture: true;  endname: 'COMP08';    startname: 'COMP05';    speed: 6),
+    (istexture: true;  endname: 'COMP12';    startname: 'COMP09';    speed: 11),
+    (istexture: true;  endname: 'COMP16';    startname: 'COMP13';    speed: 12),
+    (istexture: true;  endname: 'COMP20';    startname: 'COMP17';    speed: 12),
+    (istexture: true;  endname: 'COMP24';    startname: 'COMP21';    speed: 12),
+    (istexture: true;  endname: 'COMP28';    startname: 'COMP25';    speed: 12),
+    (istexture: true;  endname: 'COMP32';    startname: 'COMP29';    speed: 12),
+    (istexture: true;  endname: 'COMP37';    startname: 'COMP33';    speed: 12),
+    (istexture: true;  endname: 'COMP41';    startname: 'COMP38';    speed: 12),
+    (istexture: true;  endname: 'COMP49';    startname: 'COMP42';    speed: 10),
+    (istexture: true;  endname: 'BRKGRY16';  startname: 'BRKGRY13';  speed: 10),
+    (istexture: true;  endname: 'BRNSCN04';  startname: 'BRNSCN01';  speed: 10),
+    (istexture: true;  endname: 'CONCRT12';  startname: 'CONCRT09';  speed: 11),
+    (istexture: true;  endname: 'CONCRT25';  startname: 'CONCRT22';  speed: 11),
+    (istexture: true;  endname: 'WALPMP02';  startname: 'WALPMP01';  speed: 16),
+    (istexture: true;  endname: 'WALTEK17';  startname: 'WALTEK16';  speed: 8),
+    (istexture: true;  endname: 'FORCE04';   startname: 'FORCE01';   speed: 4),
+    (istexture: true;  endname: 'FORCE08';   startname: 'FORCE05';   speed: 4),
+    (istexture: true;  endname: 'FAN02';     startname: 'FAN01';     speed: 4),
+    (istexture: false; endname: 'F_VWATR3';  startname: 'P_VWATR1';  speed: 4),
+    (istexture: false; endname: 'F_HWATR3';  startname: 'F_HWATR1';  speed: 4),
+    (istexture: false; endname: 'F_TELE2';   startname: 'F_TELE1';   speed: 4),
+    (istexture: false; endname: 'F_FAN2';    startname: 'F_FAN1';    speed: 4),
+    (istexture: false; endname: 'F_CONVY2';  startname: 'F_CONVY1';  speed: 4),
+    (istexture: false; endname: 'F_RDALN4';  startname: 'F_RDALN1';  speed: 4),
+    (istexture: false; endname: '';          startname: '';          speed: 0)
   );
 
 var
@@ -1104,21 +532,6 @@ end;
 
 //==============================================================================
 //
-// UTILITIES
-//
-// getSide()
-// Will return a side_t*
-//  given the number of the current sector,
-//  the line number, and the side (0/1) that you want.
-//
-//==============================================================================
-function getSide(currentSector: integer; line: integer; side: integer): Pside_t;
-begin
-  result := @sides[(sectors[currentSector].lines[line]).sidenum[side]];
-end;
-
-//==============================================================================
-//
 // getSector()
 // Will return a sector_t*
 //  given the number of the current sector,
@@ -1145,10 +558,7 @@ end;
 //==============================================================================
 function twoSided(sector: integer; line: integer): boolean;
 begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := sectors[sector].lines[line].sidenum[1] <> -1
-  else
-    result := sectors[sector].lines[line].flags and ML_TWOSIDED <> 0;
+  result := sectors[sector].lines[line].sidenum[1] <> -1;
 end;
 
 //==============================================================================
@@ -1158,7 +568,7 @@ end;
 //==============================================================================
 function twoSidedS(sector: Psector_t; line: integer): boolean;
 begin
-  result := sector.lines[line].sidenum[1] <> -1
+  result := sector.lines[line].sidenum[1] <> -1;
 end;
 
 //==============================================================================
@@ -1169,13 +579,9 @@ end;
 //
 //==============================================================================
 function getNextSector(line: Pline_t; sec: Psector_t): Psector_t;
-var
-  oldcompatibility: boolean;
 begin
-  oldcompatibility := false;
-  if G_PlayingEngineVersion <= VERSION115 then
+  if G_NeedsCompatibilityMode then
   begin
-    oldcompatibility := true;
     if line.flags and ML_TWOSIDED = 0 then
     begin
       result := nil;
@@ -1185,7 +591,7 @@ begin
 
   if line.frontsector = sec then
   begin
-    if oldcompatibility or (line.backsector <> sec) then
+    if G_NeedsCompatibilityMode or (line.backsector <> sec) then
       result := line.backsector
     else
       result := nil;
@@ -1193,31 +599,6 @@ begin
   end;
 
   result := line.frontsector;
-end;
-
-//==============================================================================
-//
-// P_FindLowestFloorSurrounding()
-// FIND LOWEST FLOOR HEIGHT IN SURROUNDING SECTORS
-//
-//==============================================================================
-function P_FindLowestFloorSurrounding(sec: Psector_t): fixed_t;
-var
-  i: integer;
-  check: Pline_t;
-  other: Psector_t;
-begin
-  result := sec.floorheight;
-
-  for i := 0 to sec.linecount - 1 do
-  begin
-    check := sec.lines[i];
-    other := getNextSector(check, sec);
-
-    if other <> nil then
-      if other.floorheight < result then
-        result := other.floorheight;
-  end;
 end;
 
 //==============================================================================
@@ -1232,10 +613,7 @@ var
   check: Pline_t;
   other: Psector_t;
 begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := -32000 * FRACUNIT
-  else
-    result := -500 * FRACUNIT;
+  result := -32000 * FRACUNIT;
 
   for i := 0 to sec.linecount - 1 do
   begin
@@ -1253,9 +631,8 @@ end;
 // FIND NEXT HIGHEST FLOOR IN SURROUNDING SECTORS
 // Note: this should be doable w/o a fixed array.
 
-// 20 adjoining sectors max!  // JVAL changed to 64
 const
-  MAX_ADJOINING_SECTORS = 64; // JVAL was = 20
+  MAX_ADJOINING_SECTORS = 64;
 
 //==============================================================================
 //
@@ -1272,10 +649,7 @@ var
   heightlist: array[0..MAX_ADJOINING_SECTORS] of fixed_t;
   maxsecs: integer;
 begin
-  if G_NeedsCompatibilityMode then
-    maxsecs := 20
-  else
-    maxsecs := MAX_ADJOINING_SECTORS;
+  maxsecs := MAX_ADJOINING_SECTORS;
   height := currentheight;
 
   h := 0;
@@ -1454,10 +828,7 @@ var
   check: Pline_t;
   other: Psector_t;
 begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := 32000 * FRACUNIT
-  else
-    result := MAXINT;
+  result := 32000 * FRACUNIT;
 
   for i := 0 to sec.linecount - 1 do
   begin
@@ -1482,10 +853,7 @@ var
   check: Pline_t;
   other: Psector_t;
 begin
-  if G_PlayingEngineVersion > VERSION115 then
-    result := -32000 * FRACUNIT
-  else
-    result := 0;
+  result := -32000 * FRACUNIT;
 
   for i := 0 to sec.linecount - 1 do
   begin
@@ -1764,25 +1132,44 @@ end;
 // jff 02/05/98 routine added to test for unlockability of
 //  generalized locked doors
 //
+// JVAL: Only AnyKey or AllKeys in Strife :(
+//
 //==============================================================================
 function P_CanUnlockGenDoor(line: Pline_t; player: Pplayer_t): boolean;
-var
-  skulliscard: boolean;
 begin
-  // does this line special distinguish between skulls and keys?
-  skulliscard := (line.special and LockedNKeys) shr LockedNKeysShift <> 0;
 
   // determine for each of lock type if player's keys are adequate
   case (line.special and LockedKey) shr LockedKeyShift of
 
     Ord(AnyKey):
       begin
-        if not player.cards[Ord(it_redcard)] and
-           not player.cards[Ord(it_redskull)] and
-           not player.cards[Ord(it_bluecard)] and
-           not player.cards[Ord(it_blueskull)] and
-           not player.cards[Ord(it_yellowcard)] and
-           not player.cards[Ord(it_yellowskull)] then
+        if not player.cards[Ord(key_BaseKey)] and
+           not player.cards[Ord(key_BlueCrystalKey)] and
+           not player.cards[Ord(key_BrassKey)] and
+           not player.cards[Ord(key_CatacombKey)] and
+           not player.cards[Ord(key_ChapelKey)] and
+           not player.cards[Ord(key_CoreKey)] and
+           not player.cards[Ord(key_FactoryKey)] and
+           not player.cards[Ord(key_GoldKey)] and
+           not player.cards[Ord(key_GovsKey)] and
+           not player.cards[Ord(key_IDBadge)] and
+           not player.cards[Ord(key_IDCard)] and
+           not player.cards[Ord(key_MaulerKey)] and
+           not player.cards[Ord(key_MilitaryID)] and
+           not player.cards[Ord(key_MineKey)] and
+           not player.cards[Ord(key_NewKey5)] and
+           not player.cards[Ord(key_OracleKey)] and
+           not player.cards[Ord(key_OrderKey)] and
+           not player.cards[Ord(key_Passcard)] and
+           not player.cards[Ord(key_Power1Key)] and
+           not player.cards[Ord(key_Power2Key)] and
+           not player.cards[Ord(key_Power3Key)] and
+           not player.cards[Ord(key_PrisonKey)] and
+           not player.cards[Ord(key_RedCrystalKey)] and
+           not player.cards[Ord(key_SecurityKey)] and
+           not player.cards[Ord(key_SeveredHand)] and
+           not player.cards[Ord(key_SilverKey)] and
+           not player.cards[Ord(key_WarehouseKey)] then
         begin
           player._message := PD_ANY; // Ty 03/27/98 - externalized
           S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
@@ -1791,120 +1178,37 @@ begin
         end;
       end;
 
-    Ord(RCard):
-      begin
-        if not player.cards[Ord(it_redcard)] and
-          (not skulliscard or not player.cards[Ord(it_redskull)]) then
-        begin
-          if skulliscard then
-            player._message := PD_REDK
-          else
-            player._message := PD_REDC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
-    Ord(BCard):
-      begin
-        if not player.cards[Ord(it_bluecard)] and
-          (not skulliscard or not player.cards[Ord(it_blueskull)]) then
-        begin
-          if skulliscard then
-            player._message := PD_BLUEK
-          else
-            player._message := PD_BLUEC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
-    Ord(YCard):
-      begin
-        if not player.cards[Ord(it_yellowcard)] and
-          (not skulliscard or not player.cards[Ord(it_yellowskull)]) then
-        begin
-          if skulliscard then
-            player._message := PD_YELLOWK
-          else
-            player._message := PD_YELLOWC; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
-    Ord(RSkull):
-      begin
-        if not player.cards[Ord(it_redskull)] and
-          (not skulliscard or not player.cards[Ord(it_redcard)]) then
-        begin
-          if skulliscard then
-            player._message := PD_REDK
-          else
-            player._message := PD_REDS; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
-    Ord(BSkull):
-      begin
-        if not player.cards[Ord(it_blueskull)] and
-          (not skulliscard or not player.cards[Ord(it_bluecard)]) then
-        begin
-          if skulliscard then
-            player._message := PD_BLUEK
-          else
-            player._message := PD_BLUES; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
-    Ord(YSkull):
-      begin
-        if not player.cards[Ord(it_yellowskull)] and
-          (not skulliscard or not player.cards[Ord(it_yellowcard)]) then
-        begin
-          if skulliscard then
-            player._message := PD_YELLOWK
-          else
-            player._message := PD_YELLOWS; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-      end;
-
     Ord(AllKeys):
       begin
-        if not skulliscard and
-          (not player.cards[Ord(it_redcard)] or
-           not player.cards[Ord(it_redskull)] or
-           not player.cards[Ord(it_bluecard)] or
-           not player.cards[Ord(it_blueskull)] or
-           not player.cards[Ord(it_yellowcard)] or
-           not player.cards[Ord(it_yellowskull)]) then
+        if not player.cards[Ord(key_BaseKey)] or
+           not player.cards[Ord(key_BlueCrystalKey)] or
+           not player.cards[Ord(key_BrassKey)] or
+           not player.cards[Ord(key_CatacombKey)] or
+           not player.cards[Ord(key_ChapelKey)] or
+           not player.cards[Ord(key_CoreKey)] or
+           not player.cards[Ord(key_FactoryKey)] or
+           not player.cards[Ord(key_GoldKey)] or
+           not player.cards[Ord(key_GovsKey)] or
+           not player.cards[Ord(key_IDBadge)] or
+           not player.cards[Ord(key_IDCard)] or
+           not player.cards[Ord(key_MaulerKey)] or
+           not player.cards[Ord(key_MilitaryID)] or
+           not player.cards[Ord(key_MineKey)] or
+           not player.cards[Ord(key_NewKey5)] or
+           not player.cards[Ord(key_OracleKey)] or
+           not player.cards[Ord(key_OrderKey)] or
+           not player.cards[Ord(key_Passcard)] or
+           not player.cards[Ord(key_Power1Key)] or
+           not player.cards[Ord(key_Power2Key)] or
+           not player.cards[Ord(key_Power3Key)] or
+           not player.cards[Ord(key_PrisonKey)] or
+           not player.cards[Ord(key_RedCrystalKey)] or
+           not player.cards[Ord(key_SecurityKey)] or
+           not player.cards[Ord(key_SeveredHand)] or
+           not player.cards[Ord(key_SilverKey)] or
+           not player.cards[Ord(key_WarehouseKey)] then
         begin
           player._message := PD_ALL6; // Ty 03/27/98 - externalized
-          S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
-          result := false;
-          exit;
-        end;
-        if skulliscard and
-         ((not player.cards[Ord(it_redcard)] and
-           not player.cards[Ord(it_redskull)]) or
-          (not player.cards[Ord(it_bluecard)] and
-           not player.cards[Ord(it_blueskull)]) or
-          (not player.cards[Ord(it_yellowcard)] and
-           not player.cards[Ord(it_yellowskull)])) then
-        begin
-          player._message := PD_ALL3; // Ty 03/27/98 - externalized
           S_StartSound(player.mo, Ord(sfx_oof));             // killough 3/20/98
           result := false;
           exit;
@@ -1915,111 +1219,25 @@ begin
   result := true;
 end;
 
-//==============================================================================
-//
-// P_CheckTag
-//
-// Passed a line, returns true if the tag is non-zero or the line special
-// allows no tag without harm. If compatibility, all linedef specials are
-// allowed to have zero tag.
-//
-// Note: Only line specials activated by walkover, pushing, or shooting are
-//       checked by this routine.
-//
-// jff 2/27/98 Added to check for zero tag allowed for regular special types
-//
-//==============================================================================
-function P_CheckTag(line: Pline_t): boolean;
-begin
-  // allow zero tags in compatibility mode
-  if G_PlayingEngineVersion <= VERSION115 then
-  begin
-    result := true;
-    exit;
-  end;
-
-  if line.tag <> 0 then // tag not zero, allowed
-  begin
-    result := true;
-    exit;
-  end;
-
-  case line.special of
-    1,                 // Manual door specials
-    26,
-    27,
-    28,
-    31,
-    32,
-    33,
-    34,
-    117,
-    118,
-
-    139,               // Lighting specials
-    170,
-    79,
-    35,
-    138,
-    171,
-    81,
-    13,
-    192,
-    169,
-    80,
-    12,
-    194,
-    173,
-    157,
-    104,
-    193,
-    172,
-    156,
-    17,
-
-    195,               // Thing teleporters
-    174,
-    97,
-    39,
-    126,
-    125,
-    210,
-    209,
-    208,
-    207,
-
-    11,                // Exits
-    52,
-    197,
-    51,
-    124,
-    198,
-
-    48,                // Scrolling walls
-    85:
-      begin
-        result := true;   // zero tag allowed
-        exit;
-      end;
-
-  end;
-  result := false;       // zero tag not allowed
-end;
-
-//==============================================================================
 //
 // EVENTS
 // Events are operations triggered by using, crossing,
 // or shooting special lines, or by timed thinkers.
+//
+
+var
+  crosslinestr: string;
+
+//==============================================================================
 //
 // P_CrossSpecialLine - TRIGGER
 // Called every time a thing origin is about
 //  to cross a line with a non 0 special.
 //
 //==============================================================================
-procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+procedure P_CrossSpecialLine(linenum: integer; side: integer; thing: Pmobj_t);
 begin
-  P_CrossSpecialLinePtr(@lines[linenum], side, thing, bossaction);
+  P_CrossSpecialLinePtr(@lines[linenum], side, thing);
 end;
 
 //==============================================================================
@@ -2027,583 +1245,796 @@ end;
 // P_CrossSpecialLinePtr
 //
 //==============================================================================
-procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t; const bossaction: boolean = false);
+procedure P_CrossSpecialLinePtr(line: Pline_t; side: integer; thing: Pmobj_t);
 var
   linefunc: linefunc_t;
-  oldcompatibility: boolean;
+  ok: boolean;
+  map, spot: integer;
+  sidedef: Pside_t;
+  flag: LongWord;
 begin
-  //  Triggers that other things can activate
-  if (thing.player = nil) and not bossaction then
-  begin
-    // Things that should NOT trigger specials...
-    case thing._type of
-      Ord(MT_ROCKET),
-      Ord(MT_PLASMA),
-      Ord(MT_BFG),
-      Ord(MT_TROOPSHOT),
-      Ord(MT_HEADSHOT),
-      Ord(MT_BRUISERSHOT):
-        exit;
-    end;
-
-  end;
-
-  oldcompatibility := true;
-  // generalized types not recognized if demo older than VERSION116
-  if G_PlayingEngineVersion > VERSION115 then
-  begin
-    oldcompatibility := false;
-    // pointer to line function is nil by default, set non-null if
-    // line special is walkover generalized linedef type
-    linefunc := nil;
-
-    // check each range of generalized linedefs
-    if word(line.special) >= CGENFLOORBASE then
-    begin
-      if (thing.player = nil) and not bossaction then
-        if (line.special and gen_FloorChange <> 0) or (line.special and gen_FloorModel = 0) then
-          exit;     // FloorModel is 'Allow Monsters' if FloorChange is 0
-      if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
-        exit;
-      linefunc := @EV_DoGenFloor;
-    end
-    else if word(line.special) >= CGENCEILINGBASE then
-    begin
-      if (thing.player = nil) and bossaction then
-        if (line.special and CeilingChange <> 0) or (line.special and CeilingModel = 0) then
-          exit;     // CeilingModel is 'Allow Monsters' if CeilingChange is 0
-      if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
-        exit;
-      linefunc := @EV_DoGenCeiling;
-    end
-    else if word(line.special) >= CGENDOORBASE then
-    begin
-      if (thing.player = nil) and not bossaction then
-      begin
-        if line.special and DoorMonster = 0 then
-          exit;                    // monsters disallowed from this door
-        if line.flags and ML_SECRET <> 0 then // they can't open secret doors either
-          exit;
-      end;
-      if line.tag = 0 then //3/2/98 move outside the monster check
-        exit;
-      linefunc := @EV_DoGenDoor;
-    end
-    else if word(line.special) >= CGENLOCKEDBASE then
-    begin
-      if (thing.player = nil) or bossaction then
-        exit;                     // monsters disallowed from unlocking doors
-      if (line.special and TriggerType = Ord(WalkOnce)) or (line.special and TriggerType = Ord(WalkMany)) then
-      begin //jff 4/1/98 check for being a walk type before reporting door type
-        if not P_CanUnlockGenDoor(line, thing.player) then
-          exit;
-      end
-      else
-        exit;
-      linefunc := @EV_DoGenLockedDoor;
-    end
-    else if word(line.special) >= CGENLIFTBASE then
-    begin
-      if (thing.player = nil) and not bossaction then
-        if line.special and LiftMonster = 0 then
-          exit; // monsters disallowed
-      if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
-        exit;
-      linefunc := @EV_DoGenLift;
-    end
-    else if word(line.special) >= CGENSTAIRSBASE then
-    begin
-      if (thing.player = nil) and not bossaction then
-        if line.special and StairMonster = 0 then
-          exit; // monsters disallowed
-      if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
-        exit;
-      linefunc := @EV_DoGenStairs;
-    end
-    else if (G_PlayingEngineVersion > VERSION207) and (word(line.special) >= CGENCRUSHERBASE) then
-    begin
-      // haleyjd 06/09/09: This was completely forgotten in BOOM, disabling
-      // all generalized walk-over crusher types!
-      if (thing.player = nil) and not bossaction then
-        if line.special and StairMonster = 0 then
-          exit; // monsters disallowed
-      if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
-        exit;
-      linefunc := @EV_DoGenCrusher;
-    end;
-
-    if Assigned(linefunc) then // if it was a valid generalized type
-    begin
-      case (line.special and TriggerType) shr TriggerTypeShift of
-        Ord(WalkOnce):
-          begin
-            if linefunc(line) <> 0 then
-              line.special := 0;    // clear special if a walk once type
-          end;
-        Ord(WalkMany):
-          begin
-            linefunc(line);
-          end;
-      end;
-      exit;
-    end;
-  end;
-
-  if (thing.player = nil) or bossaction then
-  begin
-    case line.special of
-      39, // TELEPORT TRIGGER
-      97, // TELEPORT RETRIGGER
-     125, // TELEPORT MONSTERONLY TRIGGER
-     126, // TELEPORT MONSTERONLY RETRIGGER
-     //jff 3/5/98 add ability of monsters etc. to use teleporters
-     208, //silent thing teleporters
-     207,
-     243, //silent line-line teleporter
-     244, //jff 3/6/98 make fit within DCK's 256 linedef types
-     262, //jff 4/14/98 add monster only
-     263, //jff 4/14/98 silent thing,line,line rev types
-     264, //jff 4/14/98 plus player/monster silent line
-     265, //            reversed types
-     266,
-     267,
-     268,
-     269:
-        if bossaction then
-          exit;
-       4, // RAISE DOOR
-      10, // PLAT DOWN-WAIT-UP-STAY TRIGGER
-      88: // PLAT DOWN-WAIT-UP-STAY RETRIGGER
-        ;
-      else
-        exit;
-    end;
-  end;
-
-  if not P_CheckTag(line) then  //jff 2/27/98 disallow zero tag on some types
+  // haleyjd 09/21/10: corpses and missiles cannot activate any cross-over
+  // line types, *except* 182 (which is for the sake of missiles).
+  if (thing.flags and (MF_MISSILE or MF_CORPSE) <> 0) and (line.special <> 182) then
     exit;
+
+  //  Triggers that other things can activate
+  if thing.player = nil then
+  begin
+    ok := false;
+
+    // [STRIFE] Added several line types. Removed none.
+    case line.special of
+      97,        // TELEPORT RETRIGGER
+      185,       // haleyjd: [STRIFE] Silent Teleport (used for Converter)
+      195,       // haleyjd: [STRIFE] Silent Teleport and Change Zombie
+      231,       // haleyjd: [STRIFE] WR Teleport (Silent at Source)
+      125,       // TELEPORT MONSTERONLY TRIGGER
+      126,       // TELEPORT MONSTERONLY RETRIGGER
+      182,       // haleyjd: [STRIFE] Break glass - it's a W1 type too!
+      10,        // PLAT DOWN-WAIT-UP-STAY TRIGGER
+      39,        // TELEPORT TRIGGER
+      88,        // PLAT DOWN-WAIT-UP-STAY RETRIGGER
+      4:         // RAISE DOOR
+         ok := true;
+    end;
+    if not ok then
+      exit;
+  end;
+
+  // pointer to line function is nil by default, set non-null if
+  // line special is walkover generalized linedef type
+  linefunc := nil;
+
+  // check each range of generalized linedefs
+  if word(line.special) >= CGENFLOORBASE then
+  begin
+    if thing.player = nil then
+      if (line.special and gen_FloorChange <> 0) or (line.special and gen_FloorModel = 0) then
+        exit;     // FloorModel is 'Allow Monsters' if FloorChange is 0
+    if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
+      exit;
+    linefunc := @EV_DoGenFloor;
+  end
+  else if word(line.special) >= CGENCEILINGBASE then
+  begin
+    if thing.player = nil then
+      if (line.special and CeilingChange <> 0) or (line.special and CeilingModel = 0) then
+        exit;     // CeilingModel is 'Allow Monsters' if CeilingChange is 0
+    if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
+      exit;
+    linefunc := @EV_DoGenCeiling;
+  end
+  else if word(line.special) >= CGENDOORBASE then
+  begin
+    if thing.player = nil then
+    begin
+      if line.special and DoorMonster = 0 then
+        exit;                    // monsters disallowed from this door
+      if line.flags and ML_SECRET <> 0 then // they can't open secret doors either
+        exit;
+    end;
+    if line.tag = 0 then //3/2/98 move outside the monster check
+      exit;
+    linefunc := @EV_DoGenDoor;
+  end
+  else if word(line.special) >= CGENLOCKEDBASE then
+  begin
+    if thing.player = nil then
+      exit;                     // monsters disallowed from unlocking doors
+    if (line.special and TriggerType = Ord(WalkOnce)) or (line.special and TriggerType = Ord(WalkMany)) then
+    begin //jff 4/1/98 check for being a walk type before reporting door type
+      if not P_CanUnlockGenDoor(line, thing.player) then
+        exit;
+    end
+    else
+      exit;
+    linefunc := @EV_DoGenLockedDoor;
+  end
+  else if word(line.special) >= CGENLIFTBASE then
+  begin
+    if thing.player = nil then
+      if line.special and LiftMonster = 0 then
+        exit; // monsters disallowed
+    if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
+      exit;
+    linefunc := @EV_DoGenLift;
+  end
+  else if word(line.special) >= CGENSTAIRSBASE then
+  begin
+    if thing.player = nil then
+      if line.special and StairMonster = 0 then
+        exit; // monsters disallowed
+    if line.tag = 0 then //jff 2/27/98 all walk generalized types require tag
+      exit;
+    linefunc := @EV_DoGenStairs;
+  end;
+
+  if Assigned(linefunc) then // if it was a valid generalized type
+  begin
+    case (line.special and TriggerType) shr TriggerTypeShift of
+      Ord(WalkOnce):
+        begin
+          if linefunc(line) <> 0 then
+            line.special := 0;    // clear special if a walk once type
+        end;
+      Ord(WalkMany):
+        begin
+          linefunc(line);
+        end;
+    end;
+    exit;
+  end;
 
   // Note: could use some const's here.
   case line.special of
-  // TRIGGERS.
-  // All from here to RETRIGGERS.
-     2:
+    //
+    // TRIGGERS.
+    // All from here to RETRIGGERS.
+    //
+    230:
       begin
-        // Open Door
-        if (EV_DoDoor(line, open) <> 0) or oldcompatibility then
+        // haleyjd 09/21/10: [STRIFE] W1 Open Door if Quest
+        sidedef := @sides[line.sidenum[0]];
+        flag := (sidedef.rowoffset div FRACUNIT) - 1;
+
+        if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
+        begin
+          EV_DoDoor(line, vld_open);
           line.special := 0;
+        end;
       end;
 
-     3:
+    // fall-through:
+    2:
       begin
-        // Close Door
-        if (EV_DoDoor(line, close) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Open Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_open);
+        line.special := 0;
       end;
 
-     4:
+    227:
       begin
-        // Raise Door
-        if (EV_DoDoor(line, normal) <> 0) or oldcompatibility then
+        // haleyjd 09/21/10: [STRIFE] W1 Close Door if Quest
+        sidedef := @sides[line.sidenum[0]];
+        flag := (sidedef.rowoffset div FRACUNIT) - 1;
+
+        if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
+        begin
+          EV_DoDoor(line, vld_close);
           line.special := 0;
+        end;
       end;
 
-     5:
+    // fall-through:
+    3:
       begin
-        // Raise Floor
-        if (EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Close Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_close);
+        line.special := 0;
       end;
 
-     6:
+    4:
       begin
-        // Fast Ceiling Crush & Raise
-        if (EV_DoCeiling(line, fastCrushAndRaise) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Raise Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_normal);
+        line.special := 0;
       end;
 
-     8:
+    5:
       begin
-        // Build Stairs
-        if (EV_BuildStairs(line, build8) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Raise Floor - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, raiseFloor);
+        line.special := 0;
+      end;
+
+    6:
+      begin
+        // Fast Ceiling Crush & Raise - [STRIFE] Verified unmodified.
+        EV_DoCeiling(line, fastCrushAndRaise);
+        line.special := 0;
+      end;
+
+    8:
+      begin
+        // Build Stairs - [STRIFE] Verified unmodified.
+        EV_BuildStairs(line, build8);
+        line.special := 0;
       end;
 
     10:
       begin
-        // PlatDownWaitUp
-        if (EV_DoPlat(line, downWaitUpStay, 0) <> 0) or oldcompatibility then
-          line.special := 0;
+        // PlatDownWaitUp - [STRIFE] Verified unmodified.
+        EV_DoPlat(line, downWaitUpStay, 0);
+        line.special := 0;
       end;
 
     12:
       begin
-        // Light Turn On - brightest near
-        if (EV_LightTurnOn(line, 0) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Light Turn On - brightest near - [STRIFE] Verified unmodified.
+        EV_LightTurnOn(line, 0);
+        line.special := 0;
       end;
 
     13:
       begin
-        // Light Turn On 255
-        if (EV_LightTurnOn(line, 255) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Light Turn On 255 - [STRIFE] Verified unmodified.
+        EV_LightTurnOn(line, 255);
+        line.special := 0;
       end;
 
     16:
       begin
-        // Close Door 30
-        if (EV_DoDoor(line, close30ThenOpen) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Close Door 30 - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_close30ThenOpen);
+        line.special := 0;
       end;
 
     17:
       begin
-        // Start Light Strobing
-        if (EV_StartLightStrobing(line) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Start Light Strobing - [STRIFE] Verified unmodified.
+        EV_StartLightStrobing(line);
+        line.special := 0;
       end;
 
     19:
       begin
-        // Lower Floor
-        if (EV_DoFloor(line, lowerFloor) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Lower Floor - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, lowerFloor);
+        line.special := 0;
       end;
 
     22:
       begin
+        // villsa [STRIFE] Verified unmodified.
         // Raise floor to nearest height and change texture
-        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
-          line.special := 0;
+        EV_DoPlat(line, raiseToNearestAndChange, 0);
+        line.special := 0;
       end;
 
     25:
       begin
-        // Ceiling Crush and Raise
-        if (EV_DoCeiling(line, crushAndRaise) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Ceiling Crush and Raise - [STRIFE] Verified unmodified.
+        EV_DoCeiling(line, crushAndRaise);
+        line.special := 0;
       end;
 
     30:
       begin
-        // Raise floor to shortest texture height
+        // Raise floor to shortest texture height - [STRIFE] Verified unmodified.
         //  on either side of lines.
-        if (EV_DoFloor(line, raiseToTexture) <> 0) or oldcompatibility then
-          line.special := 0;
+        EV_DoFloor(line, raiseToTexture);
+        line.special := 0;
       end;
 
     35:
       begin
-        // Lights Very Dark
-        if (EV_LightTurnOn(line, 35) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Lights Very Dark - [STRIFE] Verified unmodified.
+        EV_LightTurnOn(line, 35);
+        line.special := 0;
       end;
 
     36:
       begin
-        // Lower Floor (TURBO)
-        if (EV_DoFloor(line, turboLower) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Lower Floor (TURBO) - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, turboLower);
+        line.special := 0;
       end;
 
     37:
       begin
-        // LowerAndChange
-        if (EV_DoFloor(line, lowerAndChange) <> 0) or oldcompatibility then
-          line.special := 0;
+        // LowerAndChange - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, lowerAndChange);
+        line.special := 0;
       end;
 
+    193:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Floor Lower to Lowest if Quest
+        sidedef := @sides[line.sidenum[0]];
+        flag := (sidedef.rowoffset div FRACUNIT) - 1; // note is fixed_t
+
+        // must have the questflag indicated in the line's y offset
+        if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
+        begin
+          EV_DoFloor(line, lowerFloorToLowest);
+          line.special := 0;
+        end;
+      end;
+
+    // fall-through:
     38:
       begin
-        // Lower Floor To Lowest
-        if (EV_DoFloor(line, lowerFloorToLowest) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Lower Floor To Lowest - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, lowerFloorToLowest);
+        line.special := 0;
       end;
 
     39:
       begin
-        // TELEPORT!
-        if (EV_Teleport(line, side, thing ) <> 0) or oldcompatibility then
-          line.special := 0;
-      end;
-
-    40:
-      begin
-        // RaiseCeilingLowerFloor
-        if oldcompatibility then
-        begin
-          EV_DoCeiling(line, raiseToHighest);
-          EV_DoFloor(line, lowerFloorToLowest);
-          line.special := 0;
-        end
-        else if EV_DoCeiling(line, raiseToHighest) <> 0 then
-          line.special := 0;
+        // TELEPORT! - [STRIFE] Verified unmodified (except for 0 flags param)
+        EV_Teleport(line, side, thing, TF_NORMAL);
+        line.special := 0;
       end;
 
     44:
       begin
-        // Ceiling Crush
-        if (EV_DoCeiling(line, lowerAndCrush) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Ceiling Crush - [STRIFE] Verified unmodified.
+        EV_DoCeiling(line, lowerAndCrush);
+        line.special := 0;
       end;
 
     52:
       begin
-        // EXIT!
-        G_ExitLevel;
+        // EXIT! - haleyjd 09/21/10: [STRIFE] Exit to level tag/100
+        G_ExitLevel(line.tag div 100);
       end;
 
     53:
       begin
-        // Perpetual Platform Raise
-        if (EV_DoPlat(line, perpetualRaise, 0) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Perpetual Platform Raise - [STRIFE] Verified unmodified.
+        EV_DoPlat(line, perpetualRaise, 0);
+        line.special := 0;
       end;
 
     54:
       begin
-        // Platform Stop
-        if (EV_StopPlat(line) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Platform Stop - [STRIFE] Verified unmodified.
+        EV_StopPlat(line);
+        line.special := 0;
       end;
 
     56:
       begin
-        // Raise Floor Crush
-        if (EV_DoFloor(line, raiseFloorCrush) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Raise Floor Crush - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, raiseFloorCrush);
+        line.special := 0;
       end;
 
     57:
       begin
-        // Ceiling Crush Stop
-        if (EV_CeilingCrushStop(line) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Ceiling Crush Stop - [STRIFE] Verified unmodified.
+        EV_CeilingCrushStop(line);
+        line.special := 0;
       end;
 
     58:
       begin
-        // Raise Floor 24
-        if (EV_DoFloor(line, raiseFloor24) <> 0) or oldcompatibility then
-          line.special := 0;
+        // [STRIFE] raiseFloor24 was modified into raiseFloor64
+        // Raise Floor 64
+        EV_DoFloor(line, raiseFloor64);
+        line.special := 0;
       end;
 
     59:
       begin
-        // Raise Floor 24 And Change
-        if (EV_DoFloor(line, raiseFloor24AndChange) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Raise Floor 24 And Change - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, raiseFloor24AndChange);
+        line.special := 0;
       end;
 
-   104:
+    104:
       begin
-        // Turn lights off in sector(tag)
-        if (EV_TurnTagLightsOff(line) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Turn lights off in sector(tag) - [STRIFE] Verified unmodified.
+        EV_TurnTagLightsOff(line);
+        line.special := 0;
       end;
 
-   108:
+    108:
       begin
-        // Blazing Door Raise (faster than TURBO!)
-        if (EV_DoDoor(line, blazeRaise) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeRaise);
+        line.special := 0;
       end;
 
-   109:
+    109:
       begin
-        // Blazing Door Open (faster than TURBO!)
-        if (EV_DoDoor(line, blazeOpen) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeOpen);
+        line.special := 0;
       end;
 
-   100:
+    100:
       begin
-        // Build Stairs Turbo 16
-        if (EV_BuildStairs(line, turbo16) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Build Stairs Turbo 16 - [STRIFE] Verified unmodified.
+        EV_BuildStairs(line, turbo16);
+        line.special := 0;
       end;
 
-   110:
+    197:
       begin
-        // Blazing Door Close (faster than TURBO!)
-        if (EV_DoDoor(line, blazeClose) <> 0) or oldcompatibility then
+        // haleyjd 09/21/10: [STRIFE] Blazing Door Close if Has Sigil B
+        if Pplayer_t(thing.player).sigiltype > 0 then
+        begin
+          EV_DoDoor(line, vld_blazeClose);
           line.special := 0;
+        end;
       end;
 
-   119:
+    // fall-through:
+    110:
       begin
-        // Raise floor to nearest surr. floor
-        if (EV_DoFloor(line, raiseFloorToNearest) <> 0) or oldcompatibility then
-          line.special := 0;
+        // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeClose);
+        line.special := 0;
       end;
 
-   121:
+    119:
       begin
+        // Raise floor to nearest surr. floor - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, raiseFloorToNearest);
+        line.special := 0;
+      end;
+
+    121:
+      begin
+        // villsa [STRIFE] Verified unmodified.
         // Blazing PlatDownWaitUpStay
-        if (EV_DoPlat(line, blazeDWUS, 0) <> 0) or oldcompatibility then
-          line.special := 0;
+        EV_DoPlat(line, blazeDWUS, 0);
+        line.special := 0;
       end;
 
-   124:
+    124:
       begin
-        // Secret EXIT
-        G_SecretExitLevel;
+        // haleyjd 09/21/10: [STRIFE] W1 Start Finale
+        // Altered from G_SecretExitLevel.
+        G_StartFinale();
       end;
 
-   125:
+    125:
       begin
-        // TELEPORT MonsterONLY
+        // TELEPORT MonsterONLY - [STRIFE] Verified unmodified
+        //    (except for 0 flags parameter)
         if thing.player = nil then
         begin
-          if (EV_Teleport(line, side, thing) <> 0) or oldcompatibility then
+          EV_Teleport(line, side, thing, TF_NORMAL);
+          line.special := 0;
+        end;
+      end;
+
+    130:
+      begin
+        // Raise Floor Turbo - [STRIFE] Verified unmodified.
+        EV_DoFloor(line, raiseFloorTurbo);
+        line.special := 0;
+      end;
+
+    141:
+      begin
+        // Silent Ceiling Crush & Raise - [STRIFE] Verified unmodified.
+        EV_DoCeiling(line, silentCrushAndRaise);
+        line.special := 0;
+      end;
+
+    174:
+      begin
+        // villsa [STRIFE] Split Open
+        EV_DoDoor(line, vld_splitOpen);
+        line.special := 0;
+      end;
+
+    183:
+      begin
+        // villsa [STRIFE] Split Raise Nearest
+        EV_DoDoor(line, vld_splitRaiseNearest);
+        line.special := 0;
+      end;
+
+    178:
+      begin
+        // haleyjd 09/24/10: [STRIFE] W1 Build Stairs Down 16
+        EV_BuildStairs(line, buildDown16);
+        line.special := 0;
+      end;
+
+    179:
+      begin
+        // haleyjd 09/25/10: [STRIFE] W1 Ceiling Lower to Floor
+        EV_DoCeiling(line, lowerToFloor);
+        line.special := 0;
+      end;
+
+    182:
+      begin
+        // haleyjd 09/21/10: [STRIFE] Break Glass
+        // 182 is a unique linetype in that it is both a G1 and a W1 linetype,
+        // but only missiles may activate it as a W1 type.
+        if thing.flags and MF_MISSILE <> 0 then
+          P_ChangeSwitchTexture(line, true); // why 1? it will be cleared anyway.
+      end;
+
+    187:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Clear Force Fields if Quest
+        sidedef := @sides[line.sidenum[0]];
+        flag := (sidedef.rowoffset div FRACUNIT) - 1; // note is fixed_t
+
+        // must have the questflag indicated in the line's y offset
+        if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
+        begin
+          // Do it!
+          EV_ClearForceFields(line);
+          line.special := 0;
+        end;
+      end;
+
+    188:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Open Door if Quest 16 (Gate Mechanism
+        // Destroyed)
+        if Pplayer_t(thing.player).questflags and QF_QUEST16 <> 0 then
+        begin
+          EV_DoDoor(line, vld_open);
+          line.special := 0;
+        end;
+      end;
+
+    196:
+      begin
+        // haleyjd 09/26/10: [STRIFE] W1 Floor Lower to Lowest if Sigil Type > 0
+        if Pplayer_t(thing.player).sigiltype > 0 then
+        begin
+            EV_DoFloor(line, lowerFloorToLowest);
             line.special := 0;
         end;
       end;
 
-   130:
+    200:
       begin
-        // Raise Floor Turbo
-        if (EV_DoFloor(line, raiseFloorTurbo) <> 0) or oldcompatibility then
+        // haleyjd 09/21/10: [STRIFE] W1 Open Door if Sigil Owned
+        if Pplayer_t(thing.player).weaponowned[Ord(wp_sigil)] then
+        begin
+          EV_DoDoor(line, vld_open);
           line.special := 0;
+        end;
       end;
 
-   141:
+    201,
+    202:
       begin
-        // Silent Ceiling Crush & Raise
-        if (EV_DoCeiling(line, silentCrushAndRaise) <> 0) or oldcompatibility then
-          line.special := 0;
+        // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective (First Side Only)
+        if (side <> 1) or (line.special = 202) then
+          // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective (Tag = VOC/LOG #)
+          // must be consoleplayer
+          if thing.player = @players[consoleplayer] then
+            // must have comm unit
+            if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
+            begin
+              // load voice
+              S_StartVoice('VOC' + itoa(line.tag));
+
+              // load objective
+              P_GiveObjective('LOG' + itoa(line.tag), 0);
+
+              // Put up a message
+              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message...');
+
+              line.special := 0;
+            end;
       end;
 
-  // RETRIGGERS.  All from here till end.
+    210:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective if Flamethrower????
+        // I don't think this is actually used anywhere o_O
+        // must be player 1...
+        if thing.player = @players[0] then
+          // must have comm unit
+          if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
+            // must have... the flamethrower?!
+            if Pplayer_t(thing.player).weaponowned[Ord(wp_flame)] then
+            begin
+              // load voice
+              S_StartVoice('VOC' + itoa(line.tag));
+
+              // load objective
+              P_GiveObjective('LOG' + itoa(line.tag), 0);
+
+              // Put up a message
+              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message from BlackBird...');
+              line.special := 0;
+            end;
+      end;
+
+    212:
+      begin
+        // haleyjd 09/25/10: [STRIFE] W1 Floor Lower to Lowest if Have Flamethrower
+        if Pplayer_t(thing.player).weaponowned[Ord(wp_flame)] then
+        begin
+            EV_DoFloor(line, lowerFloorToLowest);
+            line.special := 0;
+        end;
+      end;
+
+    215:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Voiced Objective if Quest (Tag/100, Tag%100)
+        // must be player 1...
+        if thing.player = @players[0] then
+          // must have comm unit
+          if Pplayer_t(thing.player).powers[Ord(pw_communicator)] <> 0 then
+            if (line.tag = 0) or
+               (Pplayer_t(thing.player).questflags and _SHLW(1, line.tag mod 100 - 1) <> 0) then // test for questflag
+            begin
+              // start voice
+              S_StartVoice('VOC' + itoa(line.tag div 100));
+
+              // give objective
+              P_GiveObjective('LOG' + itoa(line.tag div 100), 0);
+
+              // Put up a message
+              Pplayer_t(thing.player)._message := DEH_GetString('Incoming Message from BlackBird...');
+              line.special := 0;
+            end;
+      end;
+
+    204:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Change Music (unused!)
+        if thing.player = @players[0] then
+        begin
+          S_ChangeMusic(line.tag, true);
+          line.special := 0;
+        end;
+      end;
+
+    228:
+      begin
+        // haleyjd 09/21/10: [STRIFE] W1 Entity Voice?
+        if Pplayer_t(thing.player).questflags and QF_QUEST24 <> 0 then // Not killed Macil??? // STRIFE-TODO: verify...
+        begin
+          if Pplayer_t(thing.player).questflags and QF_QUEST28 = 0 then // ????? STRIFE-TODO
+            S_StartVoice('VOC128')
+          else
+            S_StartVoice('VOC130');
+
+          line.special := 0;
+        end;
+      end;
+
+      //
+      // RETRIGGERS.  All from here till end.
+      //
     72:
       begin
-        // Ceiling Crush
+        // Ceiling Crush - [STRIFE] Verified unmodified.
         EV_DoCeiling(line, lowerAndCrush);
       end;
 
     73:
       begin
-        // Ceiling Crush and Raise
+        // Ceiling Crush and Raise - [STRIFE] Verified unmodified.
         EV_DoCeiling(line, crushAndRaise);
       end;
 
     74:
       begin
-        // Ceiling Crush Stop
+        // Ceiling Crush Stop - [STRIFE] Verified unmodified.
         EV_CeilingCrushStop(line);
       end;
 
     75:
       begin
-        // Close Door
-        EV_DoDoor(line, close);
+        // Close Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_close);
       end;
 
     76:
       begin
-        // Close Door 30
-        EV_DoDoor(line, close30ThenOpen);
+        // Close Door 30 - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_close30ThenOpen);
       end;
 
     77:
       begin
-        // Fast Ceiling Crush & Raise
+        // Fast Ceiling Crush & Raise - [STRIFE] Verified unmodified.
         EV_DoCeiling(line, fastCrushAndRaise);
       end;
 
     79:
       begin
-        // Lights Very Dark
+        // Lights Very Dark - [STRIFE] Verified unmodified.
         EV_LightTurnOn(line, 35);
       end;
 
     80:
       begin
-        // Light Turn On - brightest near
+        // Light Turn On - brightest near - [STRIFE] Verified unmodified.
         EV_LightTurnOn(line, 0);
       end;
 
     81:
       begin
-        // Light Turn On 255
+        // Light Turn On 255 - [STRIFE] Verified unmodified.
         EV_LightTurnOn(line, 255);
       end;
 
     82:
       begin
-        // Lower Floor To Lowest
+        // Lower Floor To Lowest - [STRIFE] Verified unmodified.
         EV_DoFloor(line, lowerFloorToLowest);
       end;
 
     83:
       begin
-        // Lower Floor
+        // Lower Floor - [STRIFE] Verified unmodified.
         EV_DoFloor(line, lowerFloor);
       end;
 
     84:
       begin
-        // LowerAndChange
+        // LowerAndChange - [STRIFE] Verified unmodified.
         EV_DoFloor(line, lowerAndChange);
       end;
 
     86:
       begin
-        // Open Door
-        EV_DoDoor(line, open);
+        // Open Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_open);
       end;
 
     87:
       begin
-        // Perpetual Platform Raise
+        // Perpetual Platform Raise - [STRIFE] Verified unmodified.
         EV_DoPlat(line, perpetualRaise, 0);
       end;
 
     88:
       begin
-        // PlatDownWaitUp
+        // PlatDownWaitUp - [STRIFE] Verified unmodified.
         EV_DoPlat(line, downWaitUpStay, 0);
       end;
 
     89:
       begin
-        // Platform Stop
+        // Platform Stop - [STRIFE] Verified unmodified.
         EV_StopPlat(line);
+      end;
+
+    216:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Raise Door if Quest
+        sidedef := @sides[line.sidenum[0]];
+        flag := (sidedef.rowoffset div FRACUNIT) - 1; // note is fixed_t.
+
+        if Pplayer_t(thing.player).questflags and _SHLW(1, flag) <> 0 then
+          EV_DoDoor(line, vld_normal);
       end;
 
     90:
       begin
-        // Raise Door
-        EV_DoDoor(line, normal);
+        // Raise Door - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_normal);
       end;
 
     91:
       begin
-        // Raise Floor
+        // Raise Floor - [STRIFE] Verified unmodified.
         EV_DoFloor(line, raiseFloor);
       end;
 
     92:
       begin
-        // Raise Floor 24
-        EV_DoFloor(line, raiseFloor24);
+        // [STRIFE] raiseFloor24 changed to raiseFloor64
+        // Raise Floor 64
+        EV_DoFloor(line, raiseFloor64);
       end;
 
     93:
       begin
-        // Raise Floor 24 And Change
+        // Raise Floor 24 And Change - [STRIFE] Verified unmodified.
         EV_DoFloor(line, raiseFloor24AndChange);
       end;
 
     94:
       begin
-        // Raise Floor Crush
+        // Raise Floor Crush - [STRIFE] Verified unmodified.
         EV_DoFloor(line, raiseFloorCrush);
       end;
 
     95:
       begin
+        // villsa [STRIFE] Verified unmodified.
         // Raise floor to nearest height
         // and change texture.
         EV_DoPlat(line, raiseToNearestAndChange, 0);
@@ -2611,68 +2042,194 @@ begin
 
     96:
       begin
-        // Raise floor to shortest texture height
+        // Raise floor to shortest texture height - [STRIFE] Verified unmodified.
         // on either side of lines.
         EV_DoFloor(line, raiseToTexture);
       end;
 
     97:
       begin
-        // TELEPORT!
-        EV_Teleport(line, side, thing);
+        // TELEPORT! - [STRIFE] Verified unmodified (except for 0 flags param)
+        EV_Teleport(line, side, thing, TF_NORMAL);
       end;
 
     98:
       begin
-        // Lower Floor (TURBO)
+        // Lower Floor (TURBO) - [STRIFE] Verified unmodified.
         EV_DoFloor(line, turboLower);
       end;
 
-   105:
+    105:
       begin
-        // Blazing Door Raise (faster than TURBO!)
-        EV_DoDoor(line, blazeRaise);
+        // Blazing Door Raise (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeRaise);
       end;
 
-   106:
+    106:
       begin
-        // Blazing Door Open (faster than TURBO!)
-        EV_DoDoor(line, blazeOpen);
+        // Blazing Door Open (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeOpen);
       end;
 
-   107:
+    107:
       begin
-        // Blazing Door Close (faster than TURBO!)
-        EV_DoDoor(line, blazeClose);
+        // Blazing Door Close (faster than TURBO!) - [STRIFE] Verified unmodified.
+        EV_DoDoor(line, vld_blazeClose);
       end;
 
-   120:
+    120:
       begin
+        // villsa [STRIFE] Verified unmodified.
         // Blazing PlatDownWaitUpStay.
         EV_DoPlat(line, blazeDWUS, 0);
       end;
 
-   126:
+    126:
       begin
-        // TELEPORT MonsterONLY.
+        // TELEPORT MonsterONLY. - [STRIFE] Verified unmodified (except for 0 flags param)
         if thing.player = nil then
-          EV_Teleport(line, side, thing);
+            EV_Teleport(line, side, thing, TF_NORMAL);
       end;
 
-   128:
+    128:
       begin
-        // Raise To Nearest Floor
+        // Raise To Nearest Floor - [STRIFE] Verified unmodified.
         EV_DoFloor(line, raiseFloorToNearest);
       end;
 
-   129:
+    129:
       begin
-        // Raise Floor Turbo
+        // Raise Floor Turbo - [STRIFE] Verified unmodified.
         EV_DoFloor(line, raiseFloorTurbo);
       end;
+
+    186,
+    145:
+      begin
+        // haleyjd [STRIFE] Exit Level to Spot, First Side Only
+        if (side = 0) or (line.special = 145) then
+        begin
+          // haleyjd [STRIFE] Exit Level to Spot
+          thing.momx := 0;
+          thing.momy := 0;
+          thing.momz := 0;
+
+          map := line.tag div 100;
+          spot := line.tag mod 100;
+
+          if Pplayer_t(thing.player).weaponowned[Ord(wp_sigil)] then
+          begin
+            if map = 3 then
+              map := 30
+            else if map = 7 then
+              map := 10;
+          end;
+
+          Pplayer_t(thing.player)._message := 'Entering' + Copy(mapnames[map - 1], 9, length(mapnames[map - 1]) - 8);
+
+          if netgame and (deathmatch <> 0) then
+          begin
+            if levelTimer and (levelTimeCount <> 0) then
+            begin
+              crosslinestr := itoa((levelTimeCount div TICRATE) div 60) + ' min left';
+              exit;
+            end;
+
+            // raise switch from floor
+            EV_DoFloor(line, raiseFloor64);
+          end
+          else
+          begin
+            // normal single-player exit
+
+            // BUG: Here is the opening for a flaming player to cross past
+            // the exit line and hit a deathmatch switch ;) It's not so much
+            // that this is incorrect, as that they forgot to add such a
+            // check to the other kind of exit lines too ;)
+            if Pplayer_t(thing.player).health <= 0 then
+              exit;
+
+            G_RiftExitLevel(map, spot, thing.angle);
+          end;
+        end;
+      end;
+
+    175:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Raise Alarm if < 16 Above Floor
+        if thing.z < thing.floorz + 16 * FRACUNIT then
+          P_NoiseAlert(Pplayer_t(thing.player).mo, Pplayer_t(thing.player).mo);
+      end;
+
+    198,
+    150:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Raise Alarm if No Guard Uniform
+        if (P_PlayerHasItem(thing.player, MT_QUEST_GUARD_UNIFORM) = 0) or (line.special = 150) then
+        begin
+          // haleyjd 09/21/10: [STRIFE] WR Raise Alarm
+          P_NoiseAlert(Pplayer_t(thing.player).mo, Pplayer_t(thing.player).mo);
+        end;
+      end;
+
+    208:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Raise Alarm if Have Flamethrower
+        // O_o - this is definitely unused. Was an entire flamethrower quest
+        // cut out of the game before release?
+        if Pplayer_t(thing.player).weaponowned[Ord(wp_flame)] then
+          P_NoiseAlert(Pplayer_t(thing.player).mo, Pplayer_t(thing.player).mo);
+      end;
+
+    206:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Raise Alarm if Have Chalice
+        // This *is* used, inside the Tavern in Tarnhill. Oddly there is also
+        // one just randomly placed outside the entrance to the Power Station.
+        if P_PlayerHasItem(thing.player, MT_INV_CHALICE) <> 0 then
+          P_NoiseAlert(Pplayer_t(thing.player).mo, Pplayer_t(thing.player).mo);
+      end;
+
+    184:
+      begin
+        // villsa [STRIFE] plat up wait down stay
+        if EV_DoPlat(line, upWaitDownStay, 0) <> 0 then
+          P_ChangeSwitchTexture(line, true); // In P_CrossSpecialLine? Copypasta error? // JVAL: SOS
+      end;
+
+    185:
+      begin
+        // haleyjd 09/21/10: [STRIFE] Silent Teleport (used for Converter)
+        EV_Teleport(line, side, thing, TF_FULLSILENCE);
+      end;
+
+    195:
+      begin
+        // haleyjd 09/21/10: [STRIFE] Silent Teleport and Change Zombie
+        EV_Teleport(line, side, thing, TF_FULLSILENCE);
+        P_SetMobjState(thing, S_AGRD_00); // 419
+      end;
+
+    203:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Change Music
+        if thing.player = @players[0] then
+          S_ChangeMusic(line.tag, true);
+      end;
+
+    231:
+      begin
+        // haleyjd 09/21/10: [STRIFE] WR Teleport (Silent at Source)
+        EV_Teleport(line, side, thing, TF_SRCSILENCE);
+      end;
+
+        // haleyjd 09/21/10: Moved one-time-use lines up above with the others.
   else
     begin
-      if not oldcompatibility then
+    // JVAL: Obviously some of the following do not work :(
+    //  (OR EVEN WORSE CAUSE BIG PROBLEMS)
+      if not G_NeedsCompatibilityMode then
+        IF FALSE THEN
         case line.special of
           // Extended walk once triggers
 
@@ -2684,13 +2241,13 @@ begin
                 line.special := 0;
             end;
 
-          143:
+{          143:
             begin
               // Raise Floor 24 and change
               // 143 W1  EV_DoPlat(raiseAndChange,24)
               if EV_DoPlat(line,raiseAndChange, 24) <> 0 then
                 line.special := 0;
-            end;
+            end;                  }
 
           144:
             begin
@@ -3045,13 +2602,10 @@ end;
 procedure P_ShootSpecialLine(thing: Pmobj_t; line: Pline_t);
 var
   linefunc: linefunc_t;
-  oldcompatibility: boolean;
 begin
-  oldcompatibility := true;
-  // generalized types not recognized if demo older than VERSION116
-  if G_PlayingEngineVersion > VERSION115 then
+  // generalized types
+  if not G_NeedsCompatibilityMode then
   begin
-    oldcompatibility := false;
     // pointer to line function is nil by default, set non-null if
     // line special is walkover generalized linedef type
     linefunc := nil;
@@ -3154,51 +2708,60 @@ begin
   if thing.player = nil then
     case line.special of
       46: ; // OPEN DOOR IMPACT
+     182: ; // villsa [STRIFE] for windows
     else
       exit;
     end;
-
-  if not P_CheckTag(line) then  //jff 2/27/98 disallow zero tag on some types
-    exit;
 
   case line.special of
     24:
       begin
         // RAISE FLOOR
-        if (EV_DoFloor(line, raiseFloor) <> 0) or oldcompatibility then
+        if (EV_DoFloor(line, raiseFloor) <> 0) or G_NeedsCompatibilityMode then
           P_ChangeSwitchTexture(line, false);
       end;
 
     46:
       begin
         // OPEN DOOR
-        EV_DoDoor(line, open);
+        EV_DoDoor(line, vld_open);
         P_ChangeSwitchTexture(line, true);
       end;
 
     47:
       begin
         // RAISE FLOOR NEAR AND CHANGE
-        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or oldcompatibility then
+        if (EV_DoPlat(line, raiseToNearestAndChange, 0) <> 0) or G_NeedsCompatibilityMode then
           P_ChangeSwitchTexture(line, false);
       end;
+
+    180:
+      begin
+        // haleyjd 09/22/10: [STRIFE] G1 Raise Floor 512 & Change
+        EV_DoFloor(line, raiseFloor512AndChange);
+        P_ChangeSwitchTexture(line, false);
+      end;
+
+    182:
+      begin
+        // villsa [STRIFE] G1 Break Glass
+        //   haleyjd: note that 182 is also a W1 type in P_CrossSpecialLine, but
+        //   can only be activated in that manner by an MF_MISSILE object.
+        P_ChangeSwitchTexture(line, false);
+      end;
+
   else
     begin
-      if not oldcompatibility then
+      if not G_NeedsCompatibilityMode then
+        IF FALSE THEN
         case line.special of
          197:
           begin
             // Exit to next level
             P_ChangeSwitchTexture(line, false);
-            G_ExitLevel;
+            G_ExitLevel(0);
           end;
 
-         198:
-          begin
-            // Exit to secret level
-            P_ChangeSwitchTexture(line, false);
-            G_SecretExitLevel;
-          end;
         end;
     end;
   end;
@@ -3210,10 +2773,14 @@ end;
 // Called every tic frame
 //  that the player origin is in a special sector
 //
+// [STRIFE] Modified for new sector types and changes to old ones.
+//
 //==============================================================================
 procedure P_PlayerInSpecialSector(player: Pplayer_t; const sector: Psector_t; const height: fixed_t);  // JVAL: 3d Floors
 var
-  i: integer;
+  tagval: integer;
+  force: fixed_t;
+  angle: angle_t;
 begin
   // Falling, not all the way down yet?
   if player.mo.z <> height then
@@ -3225,32 +2792,34 @@ begin
       begin
         // HELLSLIME DAMAGE
         if player.powers[Ord(pw_ironfeet)] = 0 then
-          if leveltime and $1f = 0 then
-            P_DamageMobj(player.mo, nil, nil, 10);
+          // [STRIFE] +2 to nukagecount
+          inc(player.nukagecount, 2);
       end;
 
+    16:
+      begin
+        // HELLSLIME DAMAGE
+        if player.powers[Ord(pw_ironfeet)] = 0 then
+          // [STRIFE] +2 to nukagecount
+          inc(player.nukagecount, 4);
+      end;
+
+     4,
      7:
       begin
         // NUKAGE DAMAGE
+        // [STRIFE] Immediate 5 damage every 31 tics
         if player.powers[Ord(pw_ironfeet)] = 0 then
           if leveltime and $1f = 0 then
             P_DamageMobj(player.mo, nil, nil, 5);
       end;
 
-    16, // SUPER HELLSLIME DAMAGE
-     4: // STROBE HURT
-      begin
-        if (player.powers[Ord(pw_ironfeet)] = 0) or
-           (P_Random < 5) then
-          if leveltime and $1f = 0 then
-            P_DamageMobj(player.mo, nil, nil, 20);
-      end;
-
      9:
       begin
         // SECRET SECTOR
-        inc(player.secretcount);
         player._message := MSGSECRETSECTOR;
+        if player = @players[consoleplayer] then
+          S_StartSound(nil, Ord(sfx_yeah));
         sector.special := 0;
       end;
 
@@ -3263,84 +2832,64 @@ begin
           P_DamageMobj(player.mo, nil, nil, 20);
 
         if player.health <= 10 then
-          G_ExitLevel;
+          G_ExitLevel(0);
+      end;
+
+    15:
+      begin
+        // haleyjd 08/30/10: [STRIFE] "Instant" Death sector
+        P_DamageMobj(player.mo, nil, nil, 999);
       end;
 
     18:
       begin
-      // JVAL : Don't draw floor (bridge)
+        // haleyjd 08/30/10: [STRIFE] Water current
+        tagval := sector.tag - 100;
+
+        if player.cheats and CF_NOCLIP <> 0 then
+          exit;
+
+        force := (tagval mod 10) * 4096;
+        angle := (tagval div 10) * $20000000;
+
+        P_Thrust(player, angle, force);
       end;
   end;
 
   if sector.special >= 32 then  // BOOM sector specials
   begin
-    if sector.special and DEATH_MASK <> 0 then
-    begin
-      case (sector.special and DAMAGE_MASK) shr DAMAGE_SHIFT of
-        0:
-          begin
-            if (player.powers[Ord(pw_invulnerability)] = 0) and (player.powers[Ord(pw_ironfeet)] = 0) then
-              P_DamageMobj(player.mo, nil, nil, 10000);
-          end;
+    case (sector.special and DAMAGE_MASK) shr DAMAGE_SHIFT of
+      0: // no damage
+        begin
+        end;
 
-        1:
-          begin
-            P_DamageMobj(player.mo, nil, nil, 10000);
-          end;
+      1: // 2/5 damage per 31 ticks
+        begin
+          if player.powers[Ord(pw_ironfeet)] = 0 then
+            if leveltime and $1f = 0 then
+              P_DamageMobj(player.mo, nil, nil, 5);
+        end;
 
-        2:
-          begin
-            for i := 0 to MAXPLAYERS - 1 do
-              if playeringame[i] then
-                P_DamageMobj(players[i].mo, nil, nil, 10000);
-            G_ExitLevel;
-          end;
+      2: // 5/10 damage per 31 ticks
+        begin
+          if player.powers[Ord(pw_ironfeet)] = 0 then
+            if leveltime and $1f = 0 then
+              P_DamageMobj(player.mo, nil, nil, 10);
+        end;
 
-        3:
+      3: // 10/20 damage per 31 ticks
+        begin
+          if (player.powers[Ord(pw_ironfeet)] = 0) or
+             (N_Random < 5) then  // take damage even with suit
           begin
-            for i := 0 to MAXPLAYERS - 1 do
-              if playeringame[i] then
-                P_DamageMobj(players[i].mo, nil, nil, 10000);
-            G_SecretExitLevel;
+            if leveltime and $1f = 0 then
+              P_DamageMobj(player.mo, nil, nil, 20);
           end;
-      end
-    end
-    else
-    begin
-      case (sector.special and DAMAGE_MASK) shr DAMAGE_SHIFT of
-        0: // no damage
-          begin
-          end;
-
-        1: // 2/5 damage per 31 ticks
-          begin
-            if player.powers[Ord(pw_ironfeet)] = 0 then
-              if leveltime and $1f = 0 then
-                P_DamageMobj(player.mo, nil, nil, 5);
-          end;
-
-        2: // 5/10 damage per 31 ticks
-          begin
-            if player.powers[Ord(pw_ironfeet)] = 0 then
-              if leveltime and $1f = 0 then
-                P_DamageMobj(player.mo, nil, nil, 10);
-          end;
-
-        3: // 10/20 damage per 31 ticks
-          begin
-            if (player.powers[Ord(pw_ironfeet)] = 0) or
-               (N_Random < 5) then  // take damage even with suit
-            begin
-              if leveltime and $1f = 0 then
-                P_DamageMobj(player.mo, nil, nil, 20);
-            end;
-          end;
-      end;
+        end;
     end;
 
     if sector.special and SECRET_MASK <> 0 then
     begin
-      inc(player.secretcount);
       player._message := MSGSECRETSECTOR;
       sector.special := sector.special and not SECRET_MASK;
       if sector.special < 32 then // if all extended bits clear,
@@ -3355,51 +2904,16 @@ begin
   end;
 end;
 
-//==============================================================================
-//
-// P_MobjInSpecialSector
-//
-//==============================================================================
-procedure P_MobjInSpecialSector(mo: Pmobj_t);
-var
-  sec: Psector_t;
-begin
-  if mo.player <> nil then
-    exit;
-
-  if mo.z <> mo.floorz then
-    exit;
-
-  if mo.flags and MF_SHOOTABLE = 0 then
-    exit;
-
-  if mo.flags and MF_FLOAT <> 0 then
-    exit;
-
-  sec := Psubsector_t(mo.subsector).sector;
-  if sec.midsec >= 0 then
-    if mo.floorz = sec.ceilingheight then
-      sec := @sectors[sec.midsec]; // JVAL: 3d Floors
-
-  if sec.special and KILL_MONSTERS_MASK <> 0 then
-    P_DamageMobj(mo, nil, nil, 10000);
-end;
-
 var
   numlinespecials: smallint;
   linespeciallist: array[0..MAXLINEANIMS - 1] of Pline_t;
 
+//==============================================================================
 //
 // P_UpdateSpecials
 // Animate planes, scroll walls, etc.
 //
-var
-  levelTimer: boolean;
-  levelTimeCount: integer;
-
-//==============================================================================
-//
-// P_UpdateSpecials
+// [STRIFE] Modifications to support multiple scrolling line types.
 //
 //==============================================================================
 procedure P_UpdateSpecials;
@@ -3414,9 +2928,9 @@ begin
   // LEVEL TIMER
   if levelTimer then
   begin
-    dec(levelTimeCount);
-    if levelTimeCount = 0 then
-      G_ExitLevel;
+    if levelTimeCount > 0 then  // [STRIFE] Does not allow to go negative
+      dec(levelTimeCount);
+
   end;
 
   // ANIMATE FLATS AND TEXTURES GLOBALLY
@@ -3441,15 +2955,12 @@ begin
     line := linespeciallist[i];
     case line.special of
       48: inc(sides[line.sidenum[0]].textureoffset, FRACUNIT);
-    // JVAL
-    // Added new line specials for scrolling
-      85: dec(sides[line.sidenum[0]].textureoffset, FRACUNIT);
-     273: inc(sides[line.sidenum[0]].rowoffset, FRACUNIT);  // Scroll Texture Up
-     274: dec(sides[line.sidenum[0]].rowoffset, FRACUNIT);  // Scroll Texture Down
-     275: inc(sides[line.sidenum[0]].textureoffset, 2 * FRACUNIT);
-     276: dec(sides[line.sidenum[0]].textureoffset, 2 * FRACUNIT);
-     277: inc(sides[line.sidenum[0]].rowoffset, 2 * FRACUNIT);  // Scroll Texture Up (Fast)
-     278: dec(sides[line.sidenum[0]].rowoffset, 2 * FRACUNIT);  // Scroll Texture Down Fast)
+     142: // haleyjd 09/25/10 [STRIFE] Scroll Up Slow
+          inc(sides[line.sidenum[0]].rowoffset, FRACUNIT);
+     143: // haleyjd 09/25/10 [STRIFE] Scroll Down Fast (3 Units/Tic)
+          dec(sides[line.sidenum[0]].rowoffset, 3 * FRACUNIT);
+     149: // haleyjd 09/25/10 [STRIFE] Scroll Down Slow
+          dec(sides[line.sidenum[0]].rowoffset, FRACUNIT);
 
      UDMF_SPECIAL_START + 100: // Scroll_Texture_Left
         sides[line.sidenum[0]].textureoffset := sides[line.sidenum[0]].textureoffset + _SHL(line.arg1, 10);
@@ -3522,9 +3033,6 @@ var
   s, sec: integer;
   ang: angle_t;
 begin
-  if W_CheckNumForName('texture2') < 0 then
-    gameepisode := 1; // ???
-
   // See if -TIMER needs to be used.
   levelTimer := false;
 
@@ -3642,7 +3150,7 @@ begin
   for i := 0 to numlines - 1 do
   begin
     case lines[i].special of
-      48, 85, 273, 274, 275, 276, 277, 278,
+      48, 142, 143, 149,  // JVAL: Strife Scrolling specials
       UDMF_SPECIAL_START + 100,
       UDMF_SPECIAL_START + 101,
       UDMF_SPECIAL_START + 102,
@@ -3710,14 +3218,6 @@ begin
           s := -1;
           while P_FindSectorFromLineTag2(@lines[i], s) >= 0 do
             sectors[s].ceilinglightsec := sec;
-        end;
-
-      271,  // Regular sky
-      272:  // Same, only flipped
-        begin
-          s := -1;
-          while P_FindSectorFromLineTag2(@lines[i], s) >= 0 do
-            sectors[s].sky := i or PL_SKYFLAT;
         end;
       // JVAL: ripple effect to tagged sectors floor
       279:
@@ -3790,6 +3290,9 @@ begin
           end;
         end;
     end;
+
+  // villsa [STRIFE]
+  P_InitSlidingDoorFrames;
 end;
 
 //==============================================================================

@@ -38,6 +38,8 @@ uses
   z_zone,
   m_fixed,
   p_mobj_h,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_defs,
   s_sound,

@@ -38,6 +38,8 @@ unit p_lights;
 interface
 
 uses
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_defs,
   z_zone;

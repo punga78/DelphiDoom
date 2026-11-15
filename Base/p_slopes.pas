@@ -123,6 +123,8 @@ uses
   p_map,
   p_setup,
   p_mobj_h,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   r_main;
 

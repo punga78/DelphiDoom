@@ -127,6 +127,7 @@ uses
   p_extra,
   p_gender,
   p_common,
+  p_spec_h,
   p_spec,
   info_common,
   info_export,

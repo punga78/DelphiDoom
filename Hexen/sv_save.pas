@@ -179,6 +179,7 @@ uses
   p_acs,
   DelphiDoom.Acs.Machine.Types,
   p_maputl,
+  p_spec_h,
   p_spec,
   udmf_plats,
   udmf_ceilng,

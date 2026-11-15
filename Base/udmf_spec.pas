@@ -164,6 +164,8 @@ uses
   DelphiDoom.Engine.World.MobjRules,
   p_setup,
   p_sounds,
+  p_spec_h,
+  DelphiDoom.Engine.World.SpecRules,
   p_spec,
   p_switch,
   p_tick,
