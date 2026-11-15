@@ -25,6 +25,9 @@
 //  Muzzle flash?
 //  The thinkers stay records in the zone memory (the savegames copy them as
 //  they are); what they compute is in Libs\Thinkers (DelphiDoom.Thinkers.Light.*).
+//  One copy for Doom, Heretic and Strife: what differs (the sector special after
+//  the light is spawned, the check of a sector already busy) is in
+//  TSpecGameRules (DelphiDoom.Engine.World.SpecRules of each game).
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
@@ -37,7 +40,6 @@ unit p_lights;
 interface
 
 uses
-  DelphiDoom.Engine.World.SectorSearch,
   p_spec_h,
   DelphiDoom.Engine.World.SpecRules,
   p_spec,
@@ -161,7 +163,7 @@ var
 begin
   // Note that we are resetting sector attributes.
   // Nothing special about it during gameplay.
-  sector.special := sector.special and not 31; // clear non-generalized sector type
+  sector.special := TSpecGameRules.SectorSpecialAfterLight(sector.special);
 
   flick := Z_Malloc(SizeOf(fireflicker_t), PU_LEVSPEC, nil);
 
@@ -207,7 +209,7 @@ var
   count: integer;
 begin
   // nothing special about it during gameplay
-  sector.special := sector.special and not 31; // clear non-generalized sector type
+  sector.special := TSpecGameRules.SectorSpecialAfterLight(sector.special);
 
   flash := Z_Malloc(SizeOf(lightflash_t), PU_LEVSPEC, nil);
 
@@ -267,7 +269,7 @@ begin
   flash.minlight := minlight;
 
   // nothing special about it during gameplay
-  sector.special := sector.special and not 31; // clear non-generalized sector type
+  sector.special := TSpecGameRules.SectorSpecialAfterLight(sector.special);
 
   flash.count := count;
 end;
@@ -292,7 +294,7 @@ begin
     begin
       result := 1;
       sec := @sectors[secnum];
-      if not P_SectorActive(lighting_special, sec) then
+      if not TSpecGameRules.LightingBusy(sec) then
         P_SpawnStrobeFlash(sec, SLOWDARK, 0);
     end;
   until secnum < 0;
@@ -384,7 +386,7 @@ begin
   g.thinker._function.acp1 := @T_Glow;
   g.direction := direction;
 
-  sector.special := sector.special and not 31; // clear non-generalized sector type
+  sector.special := TSpecGameRules.SectorSpecialAfterLight(sector.special);
 end;
 
 end.

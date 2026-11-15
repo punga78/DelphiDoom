@@ -260,7 +260,7 @@ uses
   DelphiDoom.Engine.World.InterRules in '..\Doom\DelphiDoom.Engine.World.InterRules.pas',
   DelphiDoom.Engine.World.PspriteRules in '..\Doom\DelphiDoom.Engine.World.PspriteRules.pas',
   DelphiDoom.Engine.World.PickupGivers in '..\Base\DelphiDoom.Engine.World.PickupGivers.pas',
-  p_lights in '..\Doom\p_lights.pas',
+  p_lights in '..\Base\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',
   DelphiDoom.Engine.World.MapRules in '..\Doom\DelphiDoom.Engine.World.MapRules.pas',

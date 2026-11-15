@@ -280,7 +280,7 @@ uses
   DelphiDoom.Engine.World.InterRules in '..\Strife\DelphiDoom.Engine.World.InterRules.pas',
   DelphiDoom.Engine.World.PspriteRules in '..\Strife\DelphiDoom.Engine.World.PspriteRules.pas',
   DelphiDoom.Engine.World.PickupGivers in '..\Base\DelphiDoom.Engine.World.PickupGivers.pas',
-  p_lights in '..\Strife\p_lights.pas',
+  p_lights in '..\Base\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',
   DelphiDoom.Engine.World.MapRules in '..\Strife\DelphiDoom.Engine.World.MapRules.pas',
