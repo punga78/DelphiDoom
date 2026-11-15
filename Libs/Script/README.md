@@ -158,3 +158,5 @@ Nulla è stato compilato. Punti da guardare per primi:
 5. L'errore a runtime di una divisione per zero dipende dalla mappatura delle eccezioni hardware di Delphi: nel test `TestRuntimeErrorIsReported` il risultato atteso è `SCRIPT_ERROR_RUNTIME`.
 6. Dopo un errore a runtime lo stato dell'interprete non viene rimesso a punto: dopo `SCRIPT_ERROR_RUNTIME` conviene ricaricare il bytecode prima di nuove chiamate.
 7. I test dei file `*.dll` si saltano se `bin\Win32\Release\Libs\DDScript.dll` non esiste (come per le altre librerie).
+
+> **Nota (issue #224)**: le sezioni sopra sullo shim (`Libs\Script\Shim`: `d_delphi` con `CharPos`, `Doom32.inc` ridotto) descrivono la situazione di prima: la cartella `Shim` e' stata cancellata, il nucleo non usa piu' `d_delphi` (usa `PSCharPos`) e include `PascalScriptCodegen.inc`.

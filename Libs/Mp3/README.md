@@ -18,3 +18,5 @@ Il testo di riferimento (paragrafi spostati dal CLAUDE.md di radice, issue #178)
 ## Legami
 
 - Indice delle librerie e regole generali: [CLAUDE.md di radice](../../CLAUDE.md).
+
+(issue #224) La libreria non ha piu' la cartella `Shim` e non usa `Base` ne' `Common`: vedi `CLAUDE.md`.
