@@ -1,0 +1,28 @@
+# Issue #236 (part B, #107): writes proc_parse.golden.txt with the REAL ParseNodes, ParseInterAreaPortals and SetupAreaRefs
+# of Doom 3 (renderer\RenderWorld_load.cpp, read only). The idlib objects are those of C:\harness\d3 (real idStr, idLexer,
+# idPlane, idVec3); idWinding is compiled here. The work folder is a copy: C:\harness\d3 is not touched.
+param([string]$Repo = 'C:\Progetti\DelphiDoom', [string]$Reference = 'C:\Progetti\DelphiDoom\Reference',
+      [string]$Work = 'C:\harness\procparse', [string]$Source = 'C:\harness\d3')
+$ErrorActionPreference = 'Continue'
+$B = 'C:\Program Files (x86)\Embarcadero\Studio\22.0\bin\bcc32c.exe'
+if (-not (Test-Path "$Work\idlib")) { Copy-Item "$Source\idlib" "$Work\idlib" -Recurse }
+$lines = Get-Content "$Reference\doom3\neo\renderer\RenderWorld_load.cpp"
+function Cut([string]$start) {
+  $s = 0; while ($lines[$s] -notmatch $start) { $s++ }
+  $e = $s; while ($lines[$e] -ne '}') { $e++ }
+  return $lines[$s..$e]
+}
+$inc = (Cut '^void idRenderWorldLocal::SetupAreaRefs') + (Cut '^void idRenderWorldLocal::ParseInterAreaPortals') + (Cut '^void idRenderWorldLocal::ParseNodes')
+Set-Content "$Work\idlib\parse_original.inc" $inc -Encoding ascii
+Copy-Item "$Repo\Tests\Data\MapFile\harness\procparse_driver.cpp.txt" "$Work\idlib\driver.cpp" -Force
+Set-Location "$Work\idlib"
+New-Item -ItemType Directory -Force "$Work\obj" | Out-Null
+$out = & $B -c -w- -I. "-o$Work\obj\driver.o" driver.cpp 2>&1
+$out | Select-String 'error' | Select-Object -First 10 | ForEach-Object { $_.Line }
+Set-Content "$Work\idlib\wind.cpp" @('#include "precompiled.h"', '#define MIN_WORLD_COORD (-128*1024)', '#define MAX_WORLD_COORD (128*1024)', '#define MAX_WORLD_SIZE (MAX_WORLD_COORD - MIN_WORLD_COORD)', '#include "geometry/Winding.h"', '#include "geometry/Winding.cpp"') -Encoding ascii
+$out = & $B -c -w- -I. "-o$Work\obj\Winding.o" wind.cpp 2>&1
+$out | Select-String 'error' | Select-Object -First 10 | ForEach-Object { $_.Line }
+$objs = Get-ChildItem "$Source\obj\*.o" | Where-Object { $_.Name -notmatch '^(driver|AAS)' } | ForEach-Object { $_.FullName }
+$out = & $B -o "$Work\procparse.exe" "$Work\obj\driver.o" "$Work\obj\Winding.o" @objs 2>&1
+$out | Select-String 'error|undefined|unresolved' | Select-Object -First 10 | ForEach-Object { $_.Line }
+& "$Work\procparse.exe" | Set-Content "$Repo\Tests\Data\MapFile\proc_parse.golden.txt" -Encoding UTF8

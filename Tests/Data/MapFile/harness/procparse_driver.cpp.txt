@@ -1,0 +1,103 @@
+// Issue #236 (part B, #107): the REAL idRenderWorldLocal::ParseNodes, ParseInterAreaPortals and SetupAreaRefs of Doom 3
+// (cut out of renderer\RenderWorld_load.cpp by procparse_build.ps1.txt into parse_original.inc) on the real idLexer and
+// idWinding. The class around them is the minimum they need. Each case is the text after the keyword; a lexer error is
+// "error" (the stub of common->Error throws).
+#include "precompiled.h"
+#include "geometry/Winding.h"
+
+idSys *idLib::sys = 0;
+idCommon *idLib::common = 0;
+idFileSystem *idLib::fileSystem = 0;
+idCommon *common = 0;
+idFileSystem *fileSystem = 0;
+struct ErrorThrown { };
+void idLib::Error(const char *, ...) { throw ErrorThrown(); }
+void idLib::Warning(const char *, ...) {}
+#include "math/Simd_Generic.h"
+static idSIMD_Generic simdGeneric; idSIMDProcessor *SIMDProcessor = &simdGeneric;
+bool Swap_IsBigEndian(void) { return false; }
+void idCommon::Printf(const char *, ...) {}
+void idCommon::Warning(const char *, ...) {}
+void idCommon::DWarning(const char *, ...) {}
+void idCommon::Error(const char *, ...) { throw ErrorThrown(); }
+void idCommon::FatalError(const char *, ...) { throw ErrorThrown(); }
+idFile *idFileSystem::OpenFileRead(const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileRead(const char *) { return 0; }
+idFile *idFileSystem::OpenFileWrite(const char *, const char *) { return 0; }
+idFile *idFileSystem::OpenExplicitFileWrite(const char *) { return 0; }
+void idFileSystem::CloseFile(idFile *) {}
+int idFileSystem::ReadFile(const char *, void **, long *) { return -1; }
+void idFileSystem::FreeFile(void *) {}
+
+#define AREANUM_SOLID -1
+typedef struct areaReference_s { struct areaReference_s *areaNext, *areaPrev; } areaReference_t;
+typedef struct { idPlane plane; int children[2]; int commonChildrenArea; } areaNode_t;
+struct doublePortal_s; struct portal_s;
+typedef struct portal_s { int intoArea; idWinding *w; idPlane plane; struct portal_s *next; struct doublePortal_s *doublePortal; } portal_t;
+typedef struct doublePortal_s { portal_t *portals[2]; int blockingBits; int renderWorld; } doublePortal_t;
+typedef struct { int areaNum; int connectedAreas[2]; portal_t *portals; areaReference_t entityRefs; areaReference_t lightRefs; } portalArea_t;
+struct idScreenRect { int a[4]; };
+static void *R_ClearedStaticAlloc(int n) { return calloc(1, n); }
+
+class idRenderWorldLocal {
+public:
+	areaNode_t *areaNodes; int numAreaNodes; portalArea_t *portalAreas; int numPortalAreas; int connectedAreaNum;
+	idScreenRect *areaScreenRect; doublePortal_t *doublePortals; int numInterAreaPortals;
+	idRenderWorldLocal() { memset(this, 0, sizeof(*this)); }
+	void SetupAreaRefs();
+	void ParseInterAreaPortals( idLexer *src );
+	void ParseNodes( idLexer *src );
+};
+#include "parse_original.inc"
+
+static void F(float f) { unsigned u; memcpy(&u, &f, 4); printf(" #%08x", u); }
+
+static void Case(const char *name, const char *text, bool portals) {
+	idLexer lex(LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
+	lex.LoadMemory(text, (int)strlen(text), name);
+	idRenderWorldLocal w;
+	try {
+		if (portals) w.ParseInterAreaPortals(&lex); else w.ParseNodes(&lex);
+	} catch (ErrorThrown &) { printf("PROC %s error |\n", name); return; }
+	if (!portals) {
+		printf("PROC %s nodes | %d\n", name, w.numAreaNodes);
+		for (int i = 0; i < w.numAreaNodes; i++) {
+			printf("PROC %s n%d |", name, i);
+			for (int k = 0; k < 4; k++) F(w.areaNodes[i].plane[k]);
+			printf(" %d %d\n", w.areaNodes[i].children[0], w.areaNodes[i].children[1]);
+		}
+		return;
+	}
+	printf("PROC %s portals | %d %d\n", name, w.numPortalAreas, w.numInterAreaPortals);
+	for (int i = 0; i < w.numInterAreaPortals; i++) for (int s = 0; s < 2; s++) {
+		portal_t *p = w.doublePortals[i].portals[s];
+		printf("PROC %s p%d_%d | %d %d", name, i, s, p->intoArea, p->w->GetNumPoints());
+		for (int j = 0; j < p->w->GetNumPoints(); j++) { F((*p->w)[j][0]); F((*p->w)[j][1]); F((*p->w)[j][2]); }
+		printf("\nPROC %s p%d_%d plane |", name, i, s);
+		for (int k = 0; k < 4; k++) F(p->plane[k]);
+		printf("\n");
+	}
+	for (int a = 0; a < w.numPortalAreas; a++) {
+		int n = 0; for (portal_t *p = w.portalAreas[a].portals; p; p = p->next) n++;
+		printf("PROC %s a%d | %d", name, a, n);
+		for (portal_t *p = w.portalAreas[a].portals; p; p = p->next) printf(" %d", p->intoArea);
+		printf("\n");
+	}
+}
+
+int main() {
+	idLib::common = 0; idMath::Init();
+	Case("nodes", "{ 3 ( 1 0 0 -5 ) 1 2 ( 0 1 0 12.5 ) -1 -2 ( 0 0 1 .25 ) 2 -3 }", false);
+	Case("nodes0", "{ 0 }", false);
+	Case("nodesneg", "{ -1 }", false);
+	Case("nodesnoclose", "{ 1 ( 1 0 0 0 ) 1 2", false);
+	Case("nodesbadplane", "{ 1 ( 1 0 0 ) 1 2 }", false);
+	Case("nodesexp", "{ 1 ( 1e-5 -0 0.5 2.5e1 ) 0 -1 }", false);
+	Case("portals", "{ 3 2 4 0 1 ( 0 0 0 ) ( 64 0 0 ) ( 64 64 0 ) ( 0 64 0 ) 3 1 2 ( 0 0 8 ) ( 16 0 8 ) ( 0 16 8 ) }", true);
+	Case("portals3", "{ 4 3 3 0 1 ( 0 0 0 ) ( 8 0 0 ) ( 0 8 0 ) 3 0 2 ( 0 0 0 ) ( 0 8 0 ) ( 0 0 8 ) 3 3 0 ( 1 1 1 ) ( 2 5 1 ) ( 7 2 3 ) }", true);
+	Case("portalsnone", "{ 2 0 }", true);
+	Case("portalsbadareas", "{ -1 0 }", true);
+	Case("portalsbadportals", "{ 1 -2 }", true);
+	Case("portalsnoclose", "{ 1 0", true);
+	return 0;
+}

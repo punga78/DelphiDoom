@@ -36,6 +36,7 @@ uses
   DelphiDoom.Tests.MapFile.Q3Writer in 'Source\DelphiDoom.Tests.MapFile.Q3Writer.pas',
   DelphiDoom.Tests.MapFile.Reader in 'Source\DelphiDoom.Tests.MapFile.Reader.pas',
   DelphiDoom.Tests.MapFile.ProcAreaLocator in 'Source\DelphiDoom.Tests.MapFile.ProcAreaLocator.pas',
+  DelphiDoom.Tests.MapFile.ProcParseParity in 'Source\DelphiDoom.Tests.MapFile.ProcParseParity.pas',
   DelphiDoom.Tests.MapFile.ProcReader in 'Source\DelphiDoom.Tests.MapFile.ProcReader.pas',
   DelphiDoom.Tests.MapFile.ProcSample in 'Source\DelphiDoom.Tests.MapFile.ProcSample.pas',
   DelphiDoom.Tests.MapFile.ProcValidator in 'Source\DelphiDoom.Tests.MapFile.ProcValidator.pas',
