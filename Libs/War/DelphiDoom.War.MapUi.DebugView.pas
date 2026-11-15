@@ -24,8 +24,9 @@ type
   /// <summary>
   ///   What the debug flags of the map draw on the ground, between the forests and the units: the tiles that nothing can
   ///   cross (passable-info), the lines between the tiles (map-grid) and the lines between the cells of the grid of the
-  ///   units (spatial-grid). The other flags (near-units, unit-info, unit-animations, map-animations, font, projectiles,
-  ///   flow-field, rvo, state-machine) change nothing here: they are the part of the debug drawing that is not ported
+  ///   units (spatial-grid). Unit-info and unit-animations are drawn by the renderer with the unit and the animation (it asks
+  ///   IsOn); near-units, map-animations (the original draws nothing for it), font, projectiles, flow-field, rvo and
+  ///   state-machine are the part of the debug drawing that is not ported
   /// </summary>
   TWarMapDebugView = class
   strict private
@@ -40,6 +41,8 @@ type
     constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender);
     /// <summary>renderPassableInfo, renderMapGrid and renderSpatialGrid, in this order</summary>
     procedure Render;
+    /// <summary>context->debugRender.flags[AFlag]: the renderer reads the flags of the drawings that are part of a unit or an animation</summary>
+    function IsOn(AFlag: TWarDebugRenderFlag): Boolean;
   end;
 
 implementation
@@ -105,6 +108,11 @@ begin
   for LIndex := 1 to WAR_MAP_TILES_HEIGHT div GRID_CELL_TILES - 1 do
     FTransform.StrokeLine(0, LIndex * GRID_CELL_TILES * WAR_MEGA_TILE_SIZE, WAR_MAP_TILES_WIDTH * WAR_MEGA_TILE_SIZE,
       LIndex * GRID_CELL_TILES * WAR_MEGA_TILE_SIZE, SPATIAL_COLOR);
+end;
+
+function TWarMapDebugView.IsOn(AFlag: TWarDebugRenderFlag): Boolean;
+begin
+  Result := FFlags.Flag[AFlag];
 end;
 
 procedure TWarMapDebugView.Render;

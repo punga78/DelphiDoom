@@ -1,0 +1,1038 @@
+# Modi 'Edit trees', 'Edit walls', 'Edit roads' e 'Edit ruins': un clic sulla mappa pianta o abbatte un albero, mette o toglie un
+# pezzo di muro, di strada o di rovine. Ogni modo clicca una fila di punti due volte (la seconda volta toglie cio' che la prima ha messo
+# o abbatte gli alberi che ci sono), poi si spegne con 'Edit off'
+campaign human 1
+move 190 100
+run 20 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit trees
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit off
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit walls
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit off
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit roads
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit off
+key enter down
+run 1 1
+key enter up
+run 4 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit ruins
+key enter down
+run 1 1
+key enter up
+run 4 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 116 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 132 40
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 148 56
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 164 72
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 88
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 196 104
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 212 120
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 228 136
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 244 152
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 260 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 100 168
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 120 150
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 140 130
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 160 110
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 180 90
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 200 70
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 220 50
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 240 30
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 280 60
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 110 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 100
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+move 126 116
+lbutton down
+run 2 1
+lbutton up
+run 6 1
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Edit off
+key enter down
+run 1 1
+key enter up
+run 4 1

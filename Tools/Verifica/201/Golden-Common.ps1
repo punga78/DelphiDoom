@@ -145,7 +145,11 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_forest.script'); Golden = 'ui.map_custom_forest.golden.txt'; NeedsData = $true; WorkDir = $true },
       # il disegno di debug (flag, griglie, caselle che non si passano)
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug.script'); Golden = 'ui.map_debug.golden.txt'; NeedsData = $true; WorkDir = $true },
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_edit.script'); Golden = 'ui.map_edit.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_edit.script'); Golden = 'ui.map_edit.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # i modi che cambiano il terreno con un clic (alberi, muri, strade, rovine; #238)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_edit_terrain.script'); Golden = 'ui.map_edit_terrain.golden.txt'; NeedsData = $true; WorkDir = $true },
+      # unit-info e unit-animations del disegno di debug (#238)
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug_units.script'); Golden = 'ui.map_debug_units.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

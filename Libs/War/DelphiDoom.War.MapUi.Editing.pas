@@ -25,8 +25,9 @@ type
   /// <summary>
   ///   What a click on the map does while one of the cheats of editing is on (map->editing): "Add unit" puts the unit on the
   ///   tile for the first player of its race, "Rain of fire" and "Poison cloud" cast the spell on the tile and "Raise dead"
-  ///   turns the corpses near it into skeletons of the player (all without mana). The modes that change the ground
-  ///   (trees, walls, roads and ruins of "Edit") are not ported: they are set and shown, and the click does nothing
+  ///   turns the corpses near it into skeletons of the player (all without mana). The modes that change the ground (trees,
+  ///   walls, roads and ruins of "Edit": updateTreesEdit, updateWallsEdit, updateRoadsEdit, updateRuinsEdit) plant or fell a
+  ///   tree and add or remove a piece of the wall, the road or the ruins on the tile that is clicked
   /// </summary>
   TWarMapEditing = class
   strict private
@@ -39,6 +40,10 @@ type
     procedure RainOfFire(const ATile: TWarVec2);
     procedure PoisonCloud(const ATile: TWarVec2);
     procedure RaiseDead(const ATile: TWarVec2);
+    procedure EditTree(AX, AY: Integer);
+    procedure EditWall(AX, AY: Integer);
+    procedure EditRoad(AX, AY: Integer);
+    procedure EditRuin(AX, AY: Integer);
   public
     /// <summary>Nothing is owned</summary>
     constructor Create(const AWorld: TWarModelWorld; const AMap: TWarGameMap; const ACamera: TWarMapCamera);
@@ -55,7 +60,8 @@ implementation
 uses
   DelphiDoom.War.Ui.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Model.Math, DelphiDoom.War.Model.Animations, DelphiDoom.War.Model.Spells,
   DelphiDoom.War.Model.Context, DelphiDoom.War.Model.UnitClassifier, DelphiDoom.War.Model.UnitGeometry,
-  DelphiDoom.War.Model.EntityPool;
+  DelphiDoom.War.Model.EntityPool, DelphiDoom.War.Map.Forest, DelphiDoom.War.Autotile.Types, DelphiDoom.War.Model.Walls,
+  DelphiDoom.War.Model.Construction.Types, DelphiDoom.War.Map.Types;
 
 { TWarMapEditing }
 
@@ -142,13 +148,84 @@ begin
   end;
 end;
 
+procedure TWarMapEditing.EditTree(AX, AY: Integer);
+var
+  LId: Word;
+  LForest: TWarMapForest;
+  LTree: TWarTree;
+begin
+  // updateTreesEdit: a tile with no entity gets a tree of the editing forest; a tree of a forest is chopped down (all its wood);
+  // whatever else stands there (a unit, a building) is left alone. The tiles of the trees are decided again in both cases
+  LId := FMap.Grid.GetTileEntityId(AX, AY);
+  if LId = 0 then
+  begin
+    FMap.Forests.PlantTree(FMap.Forests.EditingForest, AX, AY);
+    FMap.Forests.DetermineAllTiles;
+  end
+  else
+  begin
+    LForest := FMap.Forests.FindForest(LId);
+    if Assigned(LForest) and LForest.TryGetTreeAt(AX, AY, LTree) then
+    begin
+      FMap.Forests.ChopTree(LForest, AX, AY, WAR_TREE_MAX_WOOD);
+      FMap.Forests.DetermineAllTiles;
+    end;
+  end;
+end;
+
+procedure TWarMapEditing.EditWall(AX, AY: Integer);
+var
+  LWalls: TWarWalls;
+  LIndex: Integer;
+begin
+  // updateWallsEdit: a new piece with all its hit points, or the piece that is there goes (and its tile is free)
+  LWalls := FWorld.Context.Walls;
+  LIndex := LWalls.IndexAt(AX, AY);
+  if LIndex < 0 then
+  begin
+    LIndex := LWalls.Add(AX, AY, 0);
+    LWalls[LIndex]^.Hp := WAR_WALL_MAX_HP;
+    LWalls[LIndex]^.MaxHp := WAR_WALL_MAX_HP;
+  end
+  else
+  begin
+    FMap.Grid.SetFreeTiles(AX, AY, 1, 1);
+    LWalls.Remove(LIndex);
+  end;
+  LWalls.DetermineTypes;
+end;
+
+procedure TWarMapEditing.EditRoad(AX, AY: Integer);
+var
+  LPiece: TWarLinePiece;
+begin
+  // updateRoadsEdit
+  if FWorld.Context.Roads.TryGetPieceAt(AX, AY, LPiece) then
+    FWorld.Context.Roads.RemovePiece(LPiece)
+  else
+    FWorld.Context.Roads.AddPiece(AX, AY, 0);
+  FWorld.Context.Roads.DetermineTypes;
+end;
+
+procedure TWarMapEditing.EditRuin(AX, AY: Integer);
+var
+  LPiece: TWarRuinPiece;
+begin
+  // updateRuinsEdit: a square of two by two pieces, or the piece that is there goes
+  if FWorld.Context.Ruins.TryGetPieceAt(AX, AY, LPiece) then
+    FWorld.Context.Ruins.RemovePiece(LPiece)
+  else
+    FWorld.Context.Ruins.AddSquare(AX, AY, 2);
+  FWorld.Context.Ruins.DetermineTypes;
+end;
+
 procedure TWarMapEditing.Update(const AInput: IWarUiInput);
 var
   LMapX: Single;
   LMapY: Single;
   LTile: TWarVec2;
 begin
-  if FMode in [wemNone, wemTrees, wemWalls, wemRoads, wemRuins] then
+  if FMode = wemNone then
     Exit;
   if (not AInput.IsButtonJustPressed(wmbLeft)) or
     (not WarRectContains(FCamera.Panels.MapPanel, AInput.PositionX, AInput.PositionY)) then
@@ -156,6 +233,10 @@ begin
   FCamera.ScreenToMap(AInput.PositionX, AInput.PositionY, LMapX, LMapY);
   TWarMapCamera.MapToTile(LMapX, LMapY, LTile.X, LTile.Y);
   case FMode of
+    wemTrees: EditTree(Trunc(LTile.X), Trunc(LTile.Y));
+    wemWalls: EditWall(Trunc(LTile.X), Trunc(LTile.Y));
+    wemRoads: EditRoad(Trunc(LTile.X), Trunc(LTile.Y));
+    wemRuins: EditRuin(Trunc(LTile.X), Trunc(LTile.Y));
     wemAddUnit: AddUnit(Trunc(LTile.X), Trunc(LTile.Y));
     wemRainOfFire: RainOfFire(LTile);
     wemPoisonCloud: PoisonCloud(LTile);
