@@ -74,6 +74,7 @@ uses
   p_floor,
   p_genlin,
   p_telept,
+  DelphiDoom.Engine.World.SilentTeleport,
   i_system,
   doomdef,
   g_game,

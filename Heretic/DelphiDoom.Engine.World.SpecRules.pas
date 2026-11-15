@@ -145,6 +145,10 @@ type
     class function AdjoiningSectorsLimit: integer; static;
     /// <summary>The tag of the sectors that the line refers to (Hexen: the first argument of the special)</summary>
     class function LineSectorTag(line: Pline_t): integer; static;
+    /// <summary>The special that a sector keeps once a light thinker has been spawned on it</summary>
+    class function SectorSpecialAfterLight(special: integer): integer; static;
+    /// <summary>A light thinker is already running on the sector</summary>
+    class function LightingBusy(sec: Psector_t): boolean; static;
   end;
 
 implementation
@@ -1445,5 +1449,26 @@ end;
 class function TSpecGameRules.LineSectorTag(line: Pline_t): integer;
 begin
   result := line.tag;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.SectorSpecialAfterLight
+//
+//==============================================================================
+class function TSpecGameRules.SectorSpecialAfterLight(special: integer): integer;
+begin
+  // Heretic clears every bit: its wind and current specials are above 31
+  result := 0;
+end;
+
+//==============================================================================
+//
+// TSpecGameRules.LightingBusy
+//
+//==============================================================================
+class function TSpecGameRules.LightingBusy(sec: Psector_t): boolean;
+begin
+  result := sec.specialdata <> nil;
 end;
 end.

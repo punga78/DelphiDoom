@@ -259,7 +259,7 @@ uses
   DelphiDoom.Engine.World.PickupGivers in '..\Base\DelphiDoom.Engine.World.PickupGivers.pas',
   DelphiDoom.Engine.World.SpecialRespawn in '..\Base\DelphiDoom.Engine.World.SpecialRespawn.pas',
   DelphiDoom.Engine.World.MinotaurSlam in '..\Base\DelphiDoom.Engine.World.MinotaurSlam.pas',
-  p_lights in '..\Heretic\p_lights.pas',
+  p_lights in '..\Base\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',
   DelphiDoom.Engine.World.MapRules in '..\Heretic\DelphiDoom.Engine.World.MapRules.pas',

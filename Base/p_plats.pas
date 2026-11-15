@@ -22,6 +22,8 @@
 //
 // DESCRIPTION:
 //  Plats (i.e. elevator platforms) code, raising/lowering.
+//  One copy for Doom and Strife (Heretic keeps Heretic\p_plats: its sectors have
+//  a single specialdata, no toggle platforms and procedures instead of functions).
 //
 //------------------------------------------------------------------------------
 //  Site  : https://sourceforge.net/projects/delphidoom/
