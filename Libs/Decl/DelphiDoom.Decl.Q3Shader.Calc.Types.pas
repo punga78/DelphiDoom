@@ -81,6 +81,8 @@ type
     HasSurface: Boolean;
     /// <summary>surface: the plane of the fog surface (normal and distance)</summary>
     Surface: array[0..3] of Single;
+    /// <summary>colorInt: the colour of the fog as the four bytes RGBA that <c>rgbGen fog</c> writes</summary>
+    ColorInt: Cardinal;
   end;
 
   /// <summary>

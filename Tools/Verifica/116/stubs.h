@@ -103,8 +103,8 @@ static struct {
 } ri = { stub_malloc, (void *(*)(int, ...))stub_malloc, stub_free, stub_printf, stub_error };
 
 typedef struct { int isSky; } shader_t;
-static shader_t g_shader;
-static struct { int overbrightBits; shader_t *defaultShader; int numLightmaps; image_t *lightmaps[256]; } tr = { 1, &g_shader };
+static shader_t g_shader, g_other;
+static struct { int overbrightBits; shader_t *defaultShader; int numLightmaps; image_t *lightmaps[256]; byte *externalVisData; } tr = { 1, &g_shader };
 
 typedef struct {
 	int viewCount;
@@ -115,5 +115,5 @@ typedef struct {
 
 static shader_t *ShaderForShaderNum(int shaderNum, int lightmapNum) {
 	(void)shaderNum; (void)lightmapNum;
-	return &g_shader;
+	return &g_other;
 }

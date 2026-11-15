@@ -32,6 +32,7 @@ type
     procedure Find(const AName: string);
     procedure Dump(const AShader: IDeclQ3Shader);
     procedure DumpWave(var ALine: string; const AWave: TQ3WaveForm);
+    procedure DumpBundle(const ABundle: TQ3TextureBundle; const APrefix: string);
     class function Bits(const AValue: Single): string; static;
   public
     constructor Create(const ADataFolder: string);
@@ -63,9 +64,16 @@ type
   strict private
     function DataFolder: string;
     class function SameLine(const AExpected, AActual: string): Boolean; static;
+    procedure Compare(const AScenarioFile, AGoldenFile: string);
   public
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroTrShaderC;
+    /// <summary>
+    ///   q3collapse.golden.txt: the shaders of e_collapse.shader read with r_vertexLight and with the multitexture
+    ///   extensions on and off (VertexLightingCollapse and CollapseMultitexture of the real tr_shader.c)
+    /// </summary>
+    [Test]
+    procedure DovrebbeCollassareGliStageComeIlVeroFinishShader;
   end;
 
 implementation
@@ -128,10 +136,9 @@ end;
 procedure TQ3ShaderGoldenRunner.Dump(const AShader: IDeclQ3Shader);
 var
   LData: TQ3ShaderData;
-  LIndex, LImage, LMod, LCell: Integer;
-  LLine, LImages: string;
+  LIndex: Integer;
+  LLine: string;
   LStage: TQ3ShaderStage;
-  LMods: TQ3TexMod;
 
   function Name(const AValue: AnsiString): string;
   begin
@@ -166,6 +173,9 @@ begin
   if LData.HasSun then
     FOutput.Add('sun' + Bits(LData.SunLight[0]) + Bits(LData.SunLight[1]) + Bits(LData.SunLight[2]) +
       Bits(LData.SunDirection[0]) + Bits(LData.SunDirection[1]) + Bits(LData.SunDirection[2]));
+  // the collapses of FinishShader: only for a shader that was collapsed
+  if LData.MultitextureEnv <> meNone then
+    FOutput.Add('mtenv ' + IntToStr(Ord(LData.MultitextureEnv)));
   FOutput.Add('deforms ' + IntToStr(LData.NumDeforms));
   for LIndex := 0 to LData.NumDeforms - 1 do
   begin
@@ -193,33 +203,47 @@ begin
     LLine := LLine + ' alphawave';
     DumpWave(LLine, LStage.AlphaWave);
     FOutput.Add(LLine);
-    FOutput.Add(Format(' bundle tcgen=%d lightmap=%s video=%s anims=%d speed', [Ord(LStage.Bundle.TcGen),
-      Flag(LStage.Bundle.IsLightmap), Flag(LStage.Bundle.IsVideoMap), LStage.Bundle.NumImageAnimations]) +
-      Bits(LStage.Bundle.ImageAnimationSpeed) + ' images');
-    LImages := '';
-    for LImage := 0 to Max(LStage.Bundle.NumImageAnimations, 1) - 1 do
-      if LStage.Bundle.IsLightmap then
-        LImages := LImages + ' $lightmap'
-      else
-        LImages := LImages + ' ' + Name(LStage.Bundle.ImageNames[LImage]);
-    // the line of the bundle and its images are one line in the original
-    FOutput[FOutput.Count - 1] := FOutput[FOutput.Count - 1] + LImages;
-    LLine := ' tcvec';
-    for LCell := 0 to 5 do
-      LLine := LLine + Bits(LStage.Bundle.TcGenVectors[LCell div 3, LCell mod 3]);
+    DumpBundle(LStage.Bundle, '');
+    // the second bundle only exists in a stage that the multitexture collapse made
+    if (LIndex = 0) and (LData.MultitextureEnv <> meNone) then
+      DumpBundle(LStage.Bundle2, 'b2:');
+  end;
+end;
+
+procedure TQ3ShaderGoldenRunner.DumpBundle(const ABundle: TQ3TextureBundle; const APrefix: string);
+var
+  LImage, LMod, LCell: Integer;
+  LLine, LImages: string;
+  LMods: TQ3TexMod;
+begin
+  FOutput.Add(Format(' %sbundle tcgen=%d lightmap=%d video=%d anims=%d speed', [APrefix, Ord(ABundle.TcGen),
+    Ord(ABundle.IsLightmap), Ord(ABundle.IsVideoMap), ABundle.NumImageAnimations]) +
+    Bits(ABundle.ImageAnimationSpeed) + ' images');
+  LImages := '';
+  for LImage := 0 to Max(ABundle.NumImageAnimations, 1) - 1 do
+    if ABundle.IsLightmap then
+      LImages := LImages + ' $lightmap'
+    else if ABundle.ImageNames[LImage] = '' then
+      LImages := LImages + ' -'
+    else
+      LImages := LImages + ' ' + string(ABundle.ImageNames[LImage]);
+  // the line of the bundle and its images are one line in the original
+  FOutput[FOutput.Count - 1] := FOutput[FOutput.Count - 1] + LImages;
+  LLine := ' ' + APrefix + 'tcvec';
+  for LCell := 0 to 5 do
+    LLine := LLine + Bits(ABundle.TcGenVectors[LCell div 3, LCell mod 3]);
+  FOutput.Add(LLine);
+  FOutput.Add(' ' + APrefix + 'texmods ' + IntToStr(ABundle.NumTexMods));
+  for LMod := 0 to ABundle.NumTexMods - 1 do
+  begin
+    LMods := ABundle.TexMods[LMod];
+    LLine := Format('  %smod %d type=%d', [APrefix, LMod, Ord(LMods.ModType)]);
+    DumpWave(LLine, LMods.Wave);
+    for LCell := 0 to 3 do
+      LLine := LLine + Bits(LMods.Matrix[LCell div 2, LCell mod 2]);
+    LLine := LLine + Bits(LMods.Translate[0]) + Bits(LMods.Translate[1]) + Bits(LMods.Scale[0]) +
+      Bits(LMods.Scale[1]) + Bits(LMods.Scroll[0]) + Bits(LMods.Scroll[1]) + Bits(LMods.RotateSpeed);
     FOutput.Add(LLine);
-    FOutput.Add(' texmods ' + IntToStr(LStage.Bundle.NumTexMods));
-    for LMod := 0 to LStage.Bundle.NumTexMods - 1 do
-    begin
-      LMods := LStage.Bundle.TexMods[LMod];
-      LLine := Format('  mod %d type=%d', [LMod, Ord(LMods.ModType)]);
-      DumpWave(LLine, LMods.Wave);
-      for LCell := 0 to 3 do
-        LLine := LLine + Bits(LMods.Matrix[LCell div 2, LCell mod 2]);
-      LLine := LLine + Bits(LMods.Translate[0]) + Bits(LMods.Translate[1]) + Bits(LMods.Scale[0]) +
-        Bits(LMods.Scale[1]) + Bits(LMods.Scroll[0]) + Bits(LMods.Scroll[1]) + Bits(LMods.RotateSpeed);
-      FOutput.Add(LLine);
-    end;
   end;
 end;
 
@@ -264,6 +288,7 @@ end;
 function TQ3ShaderGoldenRunner.Run(const AScenario: TStrings): TStringList;
 var
   LLine: string;
+  LMultitexture: Integer;
 begin
   for LLine in AScenario do
   begin
@@ -272,6 +297,19 @@ begin
     else if StartsStr('detail ', LLine) then
     begin
       FOptions.DetailTextures := StrToInt(Copy(LLine, 8, MaxInt)) <> 0;
+      Rebuild;
+    end
+    else if StartsStr('vertexlight ', LLine) then
+    begin
+      FOptions.VertexLight := StrToInt(Copy(LLine, 13, MaxInt)) <> 0;
+      Rebuild;
+    end
+    else if StartsStr('multitexture ', LLine) then
+    begin
+      // 0: no extension, 1: qglActiveTextureARB, 2: and GL_ADD
+      LMultitexture := StrToInt(Copy(LLine, 14, MaxInt));
+      FOptions.MultitextureAvailable := LMultitexture <> 0;
+      FOptions.TextureEnvAddAvailable := LMultitexture = 2;
       Rebuild;
     end
     else if StartsStr('find ', LLine) then
@@ -390,6 +428,16 @@ begin
 end;
 
 procedure TTestQ3ShaderGolden.DovrebbeDareLeStesseRisposteDelVeroTrShaderC;
+begin
+  Compare('scenario.txt', 'q3shader.golden.txt');
+end;
+
+procedure TTestQ3ShaderGolden.DovrebbeCollassareGliStageComeIlVeroFinishShader;
+begin
+  Compare('scenario-collapse.txt', 'q3collapse.golden.txt');
+end;
+
+procedure TTestQ3ShaderGolden.Compare(const AScenarioFile, AGoldenFile: string);
 var
   LScenario, LGolden: TStringList;
   LRunner: TQ3ShaderGoldenRunner;
@@ -400,8 +448,8 @@ begin
   LGolden := TStringList.Create;
   LRunner := TQ3ShaderGoldenRunner.Create(DataFolder);
   try
-    LScenario.LoadFromFile(DataFolder + 'scenario.txt', TEncoding.ANSI);
-    LGolden.LoadFromFile(DataFolder + 'q3shader.golden.txt', TEncoding.ANSI);
+    LScenario.LoadFromFile(DataFolder + AScenarioFile, TEncoding.ANSI);
+    LGolden.LoadFromFile(DataFolder + AGoldenFile, TEncoding.ANSI);
     LActual := LRunner.Run(LScenario);
     for LIndex := 0 to LGolden.Count - 1 do
       if (LIndex >= LActual.Count) or (not SameLine(LGolden[LIndex], LActual[LIndex])) then

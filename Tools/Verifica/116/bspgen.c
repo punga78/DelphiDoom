@@ -28,6 +28,9 @@ typedef struct {
 	int numDecisionNodes;
 	msurface_t **marksurfaces;
 	int numClusters;
+	int clusterBytes;
+	byte *novis;
+	byte *vis;
 	bmodel_t *bmodels;
 	vec3_t lightGridOrigin;
 	vec3_t lightGridSize;
@@ -38,6 +41,8 @@ typedef struct {
 static world_t s_worldData;
 
 #include "bsp_world.inc"
+#include "bsp_surf.inc"
+#include "bsp_surf2.inc"
 
 /* the lightmap textures: R_CreateImage only keeps the FNV-1a hash of the 128 x 128 x 4 bytes it is given */
 static unsigned g_imgHash[256];
@@ -564,7 +569,214 @@ static int extras(const char *path) {
 		header.lumps[LUMP_LEAFS].fileofs, header.lumps[LUMP_LEAFS].filelen);
 	return 0;
 }
+/* ------------------------------------------------------------------ third slice (#237) ---- */
+/* ParseFace, ParseTriSurf, ParseFlare and R_LoadVisibility: the real functions of tr_bsp.c on the surfaces of a
+   BSP and on cases built here with a fixed seed (the input of every case is printed in hexadecimal so that the
+   Delphi test does not need the generator) */
+
+static void hex_line(const char *tag, const void *p, int n) {
+	const unsigned char *b = (const unsigned char *)p;
+	int i;
+	printf("%s", tag);
+	for (i = 0; i < n; i++) printf("%s%02x", i == 0 ? " " : "", b[i]);
+	printf("\n");
+}
+
+static void print_shader(const msurface_t *s) {
+	printf("surf fog %d shader %s\n", s->fogIndex, s->shader == tr.defaultShader ? "default" : "found");
+}
+
+static void print_face(const msurface_t *s) {
+	const srfSurfaceFace_t *cv = (const srfSurfaceFace_t *)s->data;
+	const int *idx = (const int *)((const byte *)cv + cv->ofsIndices);
+	int i, j;
+	print_shader(s);
+	printf("face type %d points %d indices %d plane %08x %08x %08x %08x ptype %d sb %d\n", cv->surfaceType, cv->numPoints,
+		cv->numIndices, bits(cv->plane.normal[0]), bits(cv->plane.normal[1]), bits(cv->plane.normal[2]),
+		bits(cv->plane.dist), cv->plane.type, cv->plane.signbits);
+	for (i = 0; i < cv->numPoints; i++) {
+		printf("fp %d", i);
+		for (j = 0; j < 7; j++) printf(" %08x", bits(cv->points[i][j]));
+		printf(" %02x%02x%02x%02x\n", ((byte *)&cv->points[i][7])[0], ((byte *)&cv->points[i][7])[1],
+			((byte *)&cv->points[i][7])[2], ((byte *)&cv->points[i][7])[3]);
+	}
+	printf("fi");
+	for (i = 0; i < cv->numIndices; i++) printf(" %d", idx[i]);
+	printf("\n");
+}
+
+static void print_tri(const msurface_t *s) {
+	const srfTriangles_t *t = (const srfTriangles_t *)s->data;
+	int i;
+	print_shader(s);
+	printf("tri type %d verts %d indexes %d mins %08x %08x %08x maxs %08x %08x %08x\n", t->surfaceType, t->numVerts,
+		t->numIndexes, bits(t->bounds[0][0]), bits(t->bounds[0][1]), bits(t->bounds[0][2]), bits(t->bounds[1][0]),
+		bits(t->bounds[1][1]), bits(t->bounds[1][2]));
+	for (i = 0; i < t->numVerts; i++) {
+		const drawVert_t *v = &t->verts[i];
+		printf("tv %d %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %02x%02x%02x%02x\n", i, bits(v->xyz[0]),
+			bits(v->xyz[1]), bits(v->xyz[2]), bits(v->st[0]), bits(v->st[1]), bits(v->lightmap[0]), bits(v->lightmap[1]),
+			bits(v->normal[0]), bits(v->normal[1]), bits(v->normal[2]), v->color[0], v->color[1], v->color[2], v->color[3]);
+	}
+	printf("ti");
+	for (i = 0; i < t->numIndexes; i++) printf(" %d", t->indexes[i]);
+	printf("\n");
+}
+
+static void print_flare(const msurface_t *s) {
+	const srfFlare_t *f = (const srfFlare_t *)s->data;
+	print_shader(s);
+	printf("flare type %d origin %08x %08x %08x color %08x %08x %08x normal %08x %08x %08x\n", f->surfaceType,
+		bits(f->origin[0]), bits(f->origin[1]), bits(f->origin[2]), bits(f->color[0]), bits(f->color[1]),
+		bits(f->color[2]), bits(f->normal[0]), bits(f->normal[1]), bits(f->normal[2]));
+}
+
+static void parse_one(dsurface_t *ds, drawVert_t *dv, int *di) {
+	msurface_t out;
+	memset(&out, 0, sizeof(out));
+	switch (ds->surfaceType) {
+	case MST_PLANAR: ParseFace(ds, dv, &out, di); print_face(&out); break;
+	case MST_TRIANGLE_SOUP: ParseTriSurf(ds, dv, &out, di); print_tri(&out); break;
+	case MST_FLARE: ParseFlare(ds, dv, &out, di); print_flare(&out); break;
+	}
+}
+
+static float rf(void) {
+	unsigned r = next_random();
+	switch (r % 16) {
+	case 0: return 0.0f;
+	case 1: return -0.0f;
+	case 2: return 1.0f;
+	case 3: return -1.0f;
+	default: { unsigned q = next_random() >> 8; return ((int)q - 8388608) / 997.0f; }
+	}
+}
+
+static void fill_surface(dsurface_t *ds, int type, int firstVert, int numVerts, int firstIndex, int numIndexes, int normalKind) {
+	int i, j;
+	memset(ds, 0, sizeof(*ds));
+	ds->shaderNum = (int)(next_random() % 3);
+	ds->fogNum = (int)(next_random() % 5) - 1;
+	ds->surfaceType = type;
+	ds->firstVert = firstVert; ds->numVerts = numVerts;
+	ds->firstIndex = firstIndex; ds->numIndexes = numIndexes;
+	ds->lightmapNum = (int)(next_random() % 4) - 1;
+	for (i = 0; i < 3; i++) ds->lightmapOrigin[i] = rf();
+	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) ds->lightmapVecs[i][j] = rf();
+	switch (normalKind) {
+	case 0: ds->lightmapVecs[2][0] = 1; ds->lightmapVecs[2][1] = 0; ds->lightmapVecs[2][2] = 0; break;
+	case 1: ds->lightmapVecs[2][0] = 0; ds->lightmapVecs[2][1] = 1; ds->lightmapVecs[2][2] = 0; break;
+	case 2: ds->lightmapVecs[2][0] = 0; ds->lightmapVecs[2][1] = 0; ds->lightmapVecs[2][2] = 1; break;
+	case 3: ds->lightmapVecs[2][0] = -1; ds->lightmapVecs[2][1] = 0; ds->lightmapVecs[2][2] = 0; break;
+	}
+}
+
+static void fill_verts(drawVert_t *v, int n) {
+	int i, j;
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < 3; j++) v[i].xyz[j] = rf();
+		for (j = 0; j < 2; j++) v[i].st[j] = rf();
+		for (j = 0; j < 2; j++) v[i].lightmap[j] = rf();
+		for (j = 0; j < 3; j++) v[i].normal[j] = rf();
+		for (j = 0; j < 4; j++) v[i].color[j] = (unsigned char)(next_random() >> 9);
+	}
+}
+
+static void synth_case(int index, int type, int numVerts, int numIndexes, int normalKind, int mob, int obb, int firstVert, int firstIndex, int badIndex) {
+	dsurface_t ds;
+	drawVert_t *dv = calloc(firstVert + numVerts + 3, sizeof(drawVert_t));
+	int *di = calloc(firstIndex + numIndexes + 3, sizeof(int));
+	int i;
+	r_mapOverBrightBits_storage.integer = mob; tr.overbrightBits = obb;
+	fill_surface(&ds, type, firstVert, numVerts, firstIndex, numIndexes, normalKind);
+	fill_verts(dv, firstVert + numVerts + 3);
+	for (i = 0; i < firstIndex + numIndexes + 3; i++) di[i] = numVerts > 0 ? (int)(next_random() % numVerts) : 0;
+	if (badIndex) di[firstIndex + numIndexes / 2] = badIndex > 0 ? numVerts + 5 : -3;
+	printf("case %d type %d shift %d verts %d firstvert %d indexes %d firstindex %d\n", index, type, mob - obb, numVerts,
+		firstVert, numIndexes, firstIndex);
+	hex_line("in surface", &ds, sizeof(ds));
+	hex_line("in verts", dv, (firstVert + numVerts + 3) * (int)sizeof(drawVert_t));
+	hex_line("in indexes", di, (firstIndex + numIndexes + 3) * 4);
+	parse_one(&ds, dv, di);
+	free(dv); free(di);
+}
+
+static void vis_case(const char *tag, int treeClusters, const unsigned char *lump, int len) {
+	lump_t l;
+	l.fileofs = 0; l.filelen = len;
+	fileBase = (byte *)lump;
+	s_worldData.numClusters = treeClusters;
+	s_worldData.vis = NULL; s_worldData.novis = NULL; s_worldData.clusterBytes = 0;
+	printf("vis %s tree %d\n", tag, treeClusters);
+	if (len) hex_line("in lump", lump, len);
+	R_LoadVisibility(&l);
+	printf("visout clusters %d bytes %d novis %d %08x vis %d %08x\n", s_worldData.numClusters, s_worldData.clusterBytes,
+		(treeClusters + 63) & ~63, fnv_bytes(s_worldData.novis, (treeClusters + 63) & ~63),
+		len ? len - 8 : 0, len ? fnv_bytes(s_worldData.vis, len - 8) : 0u);
+}
+
+static int surfs(const char *path) {
+	FILE *f = fopen(path, "rb");
+	unsigned char *buf, scratch[8 + 3 * 8];
+	long size;
+	dheader_t header;
+	dsurface_t *ds;
+	drawVert_t *dv;
+	int *di;
+	int i, count, tree = 0;
+	static const int faceVerts[] = { 3, 4, 5, 12, 64, 65, 70 };
+	if (!f) return 1;
+	fseek(f, 0, SEEK_END); size = ftell(f); fseek(f, 0, SEEK_SET);
+	buf = malloc(size);
+	fread(buf, 1, size, f);
+	fclose(f);
+	header = *(dheader_t *)buf;
+	ds = (dsurface_t *)(buf + header.lumps[LUMP_SURFACES].fileofs);
+	count = header.lumps[LUMP_SURFACES].filelen / sizeof(dsurface_t);
+	dv = (drawVert_t *)(buf + header.lumps[LUMP_DRAWVERTS].fileofs);
+	di = (int *)(buf + header.lumps[LUMP_DRAWINDEXES].fileofs);
+	{
+		dleaf_t *leafs = (dleaf_t *)(buf + header.lumps[LUMP_LEAFS].fileofs);
+		int n = header.lumps[LUMP_LEAFS].filelen / sizeof(dleaf_t);
+		for (i = 0; i < n; i++) if (leafs[i].cluster >= tree) tree = leafs[i].cluster + 1;
+	}
+	printf("file surfaces %d\n", count);
+	for (i = 0; i < count; i++) {
+		printf("filesurf %d\n", i);
+		parse_one(&ds[i], dv, di);
+	}
+	vis_case("file", tree, buf + header.lumps[LUMP_VISIBILITY].fileofs, header.lumps[LUMP_VISIBILITY].filelen);
+
+	g_seed = 0x237A5EEDu;
+	for (i = 0; i < 14; i++)
+		synth_case(i, MST_PLANAR, faceVerts[i % 7], (faceVerts[i % 7] - 2) * 3, i % 5, i % 3 ? 2 : 3, i % 3 ? 1 : 0, i % 4, i % 3, 0);
+	for (i = 0; i < 6; i++)
+		synth_case(100 + i, MST_TRIANGLE_SOUP, i == 0 ? 0 : 1 + i * 5, i == 0 ? 0 : 6 + i * 3, 4, 2, 1, i % 3, i, 0);
+	for (i = 0; i < 4; i++)
+		synth_case(200 + i, MST_FLARE, 1, 0, i % 5, 2, 1, 0, 0, 0);
+
+	memset(scratch, 0, sizeof(scratch));
+	vis_case("empty5", 5, scratch, 0);
+	vis_case("empty70", 70, scratch, 0);
+	vis_case("empty0", 0, scratch, 0);
+	{ int *h = (int *)scratch; h[0] = 3; h[1] = 8; for (i = 0; i < 24; i++) scratch[8 + i] = (unsigned char)(i * 37 + 11); }
+	vis_case("three", 3, scratch, 32);
+	{ int *h = (int *)scratch; h[0] = 1; h[1] = 4; }
+	vis_case("one", 0, scratch, 12);
+	{ int *h = (int *)scratch; h[0] = 0; h[1] = 0; }
+	vis_case("header", 10, scratch, 8);
+	return 0;
+}
+
+static int surfs_bad(int which) {
+	g_seed = 0x237BAD00u + which;
+	synth_case(900 + which, MST_TRIANGLE_SOUP, 5, 9, 4, 2, 1, 1, 2, which == 0 ? 1 : -1);
+	return 0;
+}
+
 int main(int argc, char **argv) {
+	if (argc >= 3 && !strcmp(argv[1], "surfs")) return surfs(argv[2]);
+	if (argc >= 3 && !strcmp(argv[1], "surfsbad")) return surfs_bad(atoi(argv[2]));
 	if (argc >= 4 && !strcmp(argv[1], "write")) return write_bsp(atoi(argv[2]), argv[3]);
 	if (argc >= 3 && !strcmp(argv[1], "read")) return read_bsp(argv[2]);
 	if (argc >= 3 && !strcmp(argv[1], "extras")) return extras(argv[2]);

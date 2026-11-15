@@ -17,14 +17,15 @@ unit DelphiDoom.Decl.Q3Shader.Finisher;
 interface
 
 uses
-  DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Context;
+  DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Context, DelphiDoom.Decl.Q3Shader.VertexLightCollapse,
+  DelphiDoom.Decl.Q3Shader.MultitextureCollapse;
 
 type
   /// <summary>
-  ///   FinishShader without what is the renderer's: the <c>VertexLightingCollapse</c> (cvar <c>r_vertexLight</c>),
-  ///   <c>CollapseMultitexture</c> (needs the multitexture extension of the video card), the stage iterator
-  ///   function, <c>GeneratePermanentShader</c> without the fog pass (the tables of the renderer, the sorted
-  ///   list), the lightmap index of the surface
+  ///   FinishShader without what is the renderer's: the stage iterator function and
+  ///   <c>GeneratePermanentShader</c> without the fog pass (the tables of the renderer, the sorted list).
+  ///   <c>VertexLightingCollapse</c> (option <c>VertexLight</c>) and <c>CollapseMultitexture</c> (option
+  ///   <c>MultitextureAvailable</c>) are in their own units.
   /// </summary>
   TQ3ShaderFinisher = class sealed
   public
@@ -42,7 +43,9 @@ var
   LIndex: Integer;
   LStageData: PQ3ShaderStage;
   LBlendSrcBits, LBlendDstBits: Cardinal;
+  LHasLightmapStage: Boolean;
 begin
+  LHasLightmapStage := False;
   LData := AContext.Data;
 
   // set sky stuff appropriate
@@ -88,6 +91,7 @@ begin
     begin
       if LStageData.Bundle.TcGen = tgBad then
         LStageData.Bundle.TcGen := tgLightmap;
+      LHasLightmapStage := True;
     end
     else
     begin
@@ -128,6 +132,22 @@ begin
   // opaque alpha tested shaders that have later blend passes
   if LData.Sort = 0 then
     LData.Sort := SS_OPAQUE;
+
+  // if we are in r_vertexLight mode, never use a lightmap texture
+  if (LStage > 1) and AContext.Options.VertexLight then
+  begin
+    TQ3ShaderVertexLightCollapse.Apply(LData^);
+    LStage := 1;
+    LHasLightmapStage := False;
+  end;
+
+  // look for multitexture potential
+  if (LStage > 1) and TQ3ShaderMultitextureCollapse.Apply(LData^, AContext.Options) then
+    Dec(LStage);
+
+  // a shader with a lightmap but without a lightmap stage has no lightmap (the original only says so to developers)
+  if (LData.LightmapIndex >= 0) and (not LHasLightmapStage) then
+    LData.LightmapIndex := -1;
 
   // compute number of passes
   LData.NumUnfoggedPasses := LStage;

@@ -19,7 +19,7 @@ interface
 
 uses
   DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types, DelphiDoom.Decl.Q3Shader.Calc.FuncTables,
-  DelphiDoom.Decl.Q3Shader.Calc.WaveEvaluator;
+  DelphiDoom.Decl.Q3Shader.Calc.WaveEvaluator, DelphiDoom.Decl.Q3Shader.Calc.FogCalc;
 
 type
   /// <summary>
@@ -31,9 +31,15 @@ type
   strict private
     FWaves: TQ3WaveEvaluator;
     FTables: TQ3FuncTables;
+    FFog: TQ3FogCalc;
   public
     /// <summary>The evaluator and the tables are not owned</summary>
     constructor Create(const AWaves: TQ3WaveEvaluator; const ATables: TQ3FuncTables);
+    /// <summary>
+    ///   The fog of the world that <c>tcGen fog</c> asks (not owned; without one <c>tgFog</c> is an
+    ///   <c>EDeclQ3ShaderCalcException</c>)
+    /// </summary>
+    property Fog: TQ3FogCalc read FFog write FFog;
     /// <summary>RB_CalcStretchTexCoords</summary>
     procedure CalcStretch(const AWave: TQ3WaveForm; const AShaderTime: Single; const ANumVertexes: Integer;
       var ATexCoords: TArray<Single>);
@@ -57,8 +63,8 @@ type
     /// <summary>
     ///   The texture coordinate half of ComputeTexCoords for one bundle: <c>tcGen</c>, then each <c>tcMod</c>
     ///   in order (a <c>tmNone</c> ends the list). <c>tgBad</c> leaves the buffer as it is and applies no
-    ///   <c>tcMod</c>. <c>tgFog</c> needs the fog volume of the world, which is not ported:
-    ///   <c>EDeclQ3ShaderCalcException</c>, like an <c>entity</c> modifier without an entity.
+    ///   <c>tcMod</c>. <c>tgFog</c> goes to the fog of the world (<c>Fog</c>; without one it is an
+    ///   <c>EDeclQ3ShaderCalcException</c>, like an <c>entity</c> modifier without an entity).
     /// </summary>
     procedure Compute(const ABundle: TQ3TextureBundle; const ATess: TQ3ShaderTess;
       var ATexCoords: TArray<Single>);
@@ -308,7 +314,11 @@ begin
           end;
       end;
     tgFog:
-      raise EDeclQ3ShaderCalcException.Create(SFogNotPorted);
+      begin
+        if not Assigned(FFog) then
+          raise EDeclQ3ShaderCalcException.Create(SFogNotPorted);
+        FFog.CalcFogTexCoords(ATess, ATexCoords);
+      end;
     tgEnvironmentMapped:
       CalcEnvironment(ATess, ATexCoords);
   else

@@ -31,6 +31,12 @@ type
     procedure DovrebbeDareLeStesseRisposteDelVeroTrShadeCalcC;
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroTrShadeCalcCPerSpriteTestoOmbraNebbiaELuce;
+    /// <summary>
+    ///   q3calc-stage.golden.txt: ComputeColors (every colour and alpha generation, the fade by fog) and the
+    ///   fog texture coordinates of ComputeTexCoords of the real tr_shade.c
+    /// </summary>
+    [Test]
+    procedure DovrebbeDareLeStesseRisposteDelVeroComputeColorsEComputeTexCoords;
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroRRemapShaderC;
   end;
@@ -92,6 +98,25 @@ begin
     LScenario.LoadFromFile(DataFolder + 'q3calc\scenario-quads.txt', TEncoding.ANSI);
     LGolden.LoadFromFile(DataFolder + 'q3calc\q3calc-quads.golden.txt', TEncoding.ANSI);
     Compare(LGolden, LRunner.Run(LScenario), 'q3calc-quads');
+  finally
+    LRunner.Free;
+    LGolden.Free;
+    LScenario.Free;
+  end;
+end;
+
+procedure TTestQ3ShaderCalcGolden.DovrebbeDareLeStesseRisposteDelVeroComputeColorsEComputeTexCoords;
+var
+  LScenario, LGolden: TStringList;
+  LRunner: TQ3CalcGoldenRunner;
+begin
+  LScenario := TStringList.Create;
+  LGolden := TStringList.Create;
+  LRunner := TQ3CalcGoldenRunner.Create;
+  try
+    LScenario.LoadFromFile(DataFolder + 'q3calc\scenario-stage.txt', TEncoding.ANSI);
+    LGolden.LoadFromFile(DataFolder + 'q3calc\q3calc-stage.golden.txt', TEncoding.ANSI);
+    Compare(LGolden, LRunner.Run(LScenario), 'q3calc-stage');
   finally
     LRunner.Free;
     LGolden.Free;

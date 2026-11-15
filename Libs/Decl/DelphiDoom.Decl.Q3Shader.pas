@@ -158,6 +158,7 @@ end;
 procedure TDeclQ3Shader.FreeData;
 begin
   FData := Default(TQ3ShaderData);
+  FData.LightmapIndex := -1;
 end;
 
 function TDeclQ3Shader.Size: NativeInt;

@@ -51,6 +51,21 @@ block() { awk -v s="$1" 'NR>=s { print } NR>=s && /^}/ { exit }' "$BSP"; }
   block "$(line '^void R_LoadLightGrid' "$BSP")"
 } > "$OUT/bsp_load.inc"
 sed -n '664,688p' "$CODE/renderer/tr_local.h" > "$OUT/bsp_nodes.inc"
+# third slice (#237): the structs and macros of the surfaces, then ParseFace, ParseTriSurf, ParseFlare and
+# R_LoadVisibility, cut out of the originals (a block ends at its first "}" in column 0)
+QM=$CODE/game/q_math.c
+{
+  sed -n '326p;541p;597p' "$CODE/renderer/tr_local.h"
+  sed -n '994,1006p' "$CODE/game/q_shared.h"
+  sed -n '562,567p;598,611p;615,632p' "$CODE/renderer/tr_local.h"
+  awk -v s="$(line '^void SetPlaneSignbits' "$QM")" 'NR>=s { print } NR>=s && /^}/ { exit }' "$QM"
+} > "$OUT/bsp_surf.inc"
+{
+  block "$(line '^static.void R_LoadVisibility' "$BSP")"
+  block "$(line '^static void ParseFace' "$BSP")"
+  block "$(line '^static void ParseTriSurf' "$BSP")"
+  block "$(line '^static void ParseFlare' "$BSP")"
+} > "$OUT/bsp_surf2.inc"
 cp "$HERE/stubs.h" "$HERE/bspgen.c" "$OUT/"
 "$KIT/gcc.exe" -O1 -w -ffp-contract=off -o "$OUT/bspgen.exe" "$OUT/bspgen.c" -lm
 echo "built in $OUT"

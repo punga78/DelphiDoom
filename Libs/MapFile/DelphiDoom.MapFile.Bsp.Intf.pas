@@ -193,6 +193,56 @@ type
       const APlaneCount: Integer): TBspRenderTree;
   end;
 
+  /// <summary>ParseFace of tr_bsp.c: a planar surface</summary>
+  IBspFaceLoader = interface
+    ['{4D1B7E92-A06C-4F35-8E21-C9B3D70A5F18}']
+    /// <summary>
+    ///   The face of a surface of type MST_PLANAR: the vertices at FirstVert (the first 64 only,
+    ///   with a warning and the default shader if there are more) with the colour shifted, the
+    ///   indexes at FirstIndex, and the plane taken from the third lightmap vector. A shader
+    ///   number outside AShaderCount, or vertices or indexes outside the arrays, are an
+    ///   EBspFileException
+    /// </summary>
+    function Parse(const ASurface: TBspSurface; const AVerts: TArray<TBspDrawVert>;
+      const AIndexes: TArray<Integer>; const AShaderCount: Integer): TBspFaceSurface;
+  end;
+
+  /// <summary>ParseTriSurf of tr_bsp.c: a triangle soup</summary>
+  IBspTriangleLoader = interface
+    ['{8F36C0A4-1B97-4D5E-92A8-6E47B1D3C025}']
+    /// <summary>
+    ///   The vertices with the colour shifted, their bounds and the indexes; an index outside
+    ///   the vertices is an EBspFileException ("Bad index in triangle surface")
+    /// </summary>
+    function Parse(const ASurface: TBspSurface; const AVerts: TArray<TBspDrawVert>;
+      const AIndexes: TArray<Integer>; const AShaderCount: Integer): TBspTriangleSurface;
+  end;
+
+  /// <summary>ParseFlare of tr_bsp.c: a flare</summary>
+  IBspFlareLoader = interface
+    ['{2E84A5D7-C3F1-4096-B7DA-50E9F18C6B32}']
+    /// <summary>The origin, the colour and the normal, taken from the lightmap fields of the surface</summary>
+    function Parse(const ASurface: TBspSurface; const AShaderCount: Integer): TBspFlareSurface;
+  end;
+
+  /// <summary>R_LoadVisibility of tr_bsp.c</summary>
+  IBspVisibilityLoader = interface
+    ['{B1C7F530-6A82-4E9D-A04B-D3752E96F8C1}']
+    /// <summary>
+    ///   The "no visibility" row for the clusters the tree has, then, if the lump is not empty,
+    ///   the cluster count and row size of the lump and its rows. The result is the same as
+    ///   the visibility of IBspFile (and of the collision model of the engine, which the
+    ///   renderer shares as tr.externalVisData). A lump of 1 to 7 bytes is an EBspFileException
+    /// </summary>
+    function Load(const ALump: TBytes; const ATreeClusters: Integer): TBspVisibility;
+    /// <summary>
+    ///   The same from a file that was read: the cluster count, the row size and the rows are those of
+    ///   <c>IBspFile</c> (the array is shared, not copied: it is what the collision model of the engine keeps too),
+    ///   only the "novis" row is new
+    /// </summary>
+    function LoadFromFile(const AFile: IBspFile; const ATreeClusters: Integer): TBspVisibility;
+  end;
+
   /// <summary>Turns the model back into the bytes of a .bsp file</summary>
   IBspWriter = interface
     ['{3B90D6C2-E4A1-4875-8F27-D1C5A09E6B38}']

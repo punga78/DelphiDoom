@@ -15,7 +15,8 @@
      tcgen <identity|texture|lightmap|vector|env>, tcvec <ax ay az bx by bz>, clearmods
      texmod turb|stretch <func> <base> <amp> <phase> <freq> | scroll <s> <t> | scale <s> <t> | rotate <degs>
             | transform <m00> <m01> <m10> <m11> <t0> <t1> | entity
-     compute                               ComputeTexCoords on the stage built so far
+     compute                               ComputeTexCoords on the stage built so far (tcgen also takes fog)
+     vcolors <seed>, portalrange <f>, stagegen <rgbGen> <alphaGen> <acff> <r g b a> <rgbwave> <alphawave>, stagecolors (ComputeColors, #237)
    The dump: every float as the hexadecimal bits, bytes as numbers. */
 #include <stdio.h>
 #include <stdlib.h>
@@ -157,7 +158,7 @@ static void command(char *line) {
 	printf("\n");
 	if (!strcmp(tok[0], "shadertime")) tess.shaderTime = (float)atof(tok[1]);
 	else if (!strcmp(tok[0], "time")) backEnd.refdef.time = atoi(tok[1]);
-	else if (!strcmp(tok[0], "identity")) tr.identityLight = (float)atof(tok[1]);
+	else if (!strcmp(tok[0], "identity")) { tr.identityLight = (float)atof(tok[1]); tr.identityLightByte = 255 * tr.identityLight; }
 	else if (!strcmp(tok[0], "view")) {
 		backEnd.or.viewOrigin[0] = (float)atof(tok[1]);
 		backEnd.or.viewOrigin[1] = (float)atof(tok[2]);
@@ -269,6 +270,7 @@ static void command(char *line) {
 		f->tcScale = (float)atof(tok[2]);
 		f->hasSurface = atoi(tok[3]);
 		for (i = 0; i < 4; i++) f->surface[i] = (float)atof(tok[4 + i]);
+		if (n > 8) f->colorInt = (unsigned)strtoul(tok[8], NULL, 16);
 		tr.world = &g_world;
 		g_world.fogs = g_fogs;
 	}
@@ -323,6 +325,7 @@ static void command(char *line) {
 		if (!strcmp(tok[1], "identity")) b->tcGen = TCGEN_IDENTITY;
 		else if (!strcmp(tok[1], "texture")) b->tcGen = TCGEN_TEXTURE;
 		else if (!strcmp(tok[1], "lightmap")) b->tcGen = TCGEN_LIGHTMAP;
+		else if (!strcmp(tok[1], "fog")) b->tcGen = TCGEN_FOG;
 		else if (!strcmp(tok[1], "vector")) b->tcGen = TCGEN_VECTOR;
 		else b->tcGen = TCGEN_ENVIRONMENT_MAPPED;
 	}
@@ -351,6 +354,33 @@ static void command(char *line) {
 		}
 		else if (!strcmp(tok[1], "entity")) t->type = TMOD_ENTITY_TRANSLATE;
 	}
+	else if (!strcmp(tok[0], "vcolors")) {
+		/* tess.vertexColors from the generator, for the vertex colour generations (#237) */
+		int v, k;
+		g_seed = (unsigned)atoi(tok[1]);
+		for (v = 0; v < tess.numVertexes; v++) for (k = 0; k < 4; k++) tess.vertexColors[v][k] = (byte)(next_r() & 255);
+	}
+	else if (!strcmp(tok[0], "portalrange")) g_shader.portalRange = (float)atof(tok[1]);
+	else if (!strcmp(tok[0], "stagegen")) {
+		/* stagegen <rgbGen> <alphaGen> <adjustColorsForFog> <r g b a> <rgbWave: 5 numbers> <alphaWave: 5 numbers> */
+		g_stage.rgbGen = (colorGen_t)atoi(tok[1]);
+		g_stage.alphaGen = (alphaGen_t)atoi(tok[2]);
+		g_stage.adjustColorsForFog = (acff_t)atoi(tok[3]);
+		for (i = 0; i < 4; i++) g_stage.constantColor[i] = (byte)atoi(tok[4 + i]);
+		fillwave(&g_stage.rgbWave, tok + 8);
+		fillwave(&g_stage.alphaWave, tok + 13);
+	}
+	else if (!strcmp(tok[0], "stagecolors")) {
+		/* ComputeColors on the stage built so far, on a buffer that has a known content (#237) */
+		unsigned char *c = (unsigned char *)tess.svars.colors;
+		for (i = 0; i < tess.numVertexes * 4; i++) c[i] = (byte)((i * 37 + 11) & 255);
+		R_InitFogTable();
+		tess.shader = &g_shader;
+		if (setjmp(g_drop) == 0) {
+			ComputeColors(&g_stage);
+			dump_colors(" result", c, 4);
+		} else printf(" error\n");
+	}
 	else if (!strcmp(tok[0], "compute")) {
 		memset(tess.svars.texcoords, 0, sizeof(tess.svars.texcoords[0][0]) * tess.numVertexes);
 		if (setjmp(g_drop) == 0) {
@@ -373,6 +403,7 @@ int main(int argc, char **argv) {
 	init_tables();
 	R_NoiseInit();
 	tr.identityLight = 1.0f;
+	tr.identityLightByte = 255;
 	g_stage.bundle[0].tcGen = TCGEN_TEXTURE;
 	g_stage.bundle[0].texMods = g_mods;
 	while (fgets(line, sizeof(line), f)) {

@@ -15,7 +15,8 @@ interface
 uses
   DelphiDoom.Decl.Q3Shader.Calc.FuncTables, DelphiDoom.Decl.Q3Shader.Calc.Noise,
   DelphiDoom.Decl.Q3Shader.Calc.WaveEvaluator, DelphiDoom.Decl.Q3Shader.Calc.ColorCalc,
-  DelphiDoom.Decl.Q3Shader.Calc.TexCoordCalc, DelphiDoom.Decl.Q3Shader.Calc.DeformCalc, DelphiDoom.Decl.Q3Shader.Calc.FogCalc;
+  DelphiDoom.Decl.Q3Shader.Calc.TexCoordCalc, DelphiDoom.Decl.Q3Shader.Calc.DeformCalc, DelphiDoom.Decl.Q3Shader.Calc.FogCalc,
+  DelphiDoom.Decl.Q3Shader.Calc.StageColors;
 
 type
   /// <summary>
@@ -32,6 +33,7 @@ type
     FTexCoords: TQ3TexCoordCalc;
     FDeforms: TQ3DeformCalc;
     FFog: TQ3FogCalc;
+    FStageColors: TQ3StageColors;
   public
     constructor Create;
     destructor Destroy; override;
@@ -43,6 +45,8 @@ type
     property Deforms: TQ3DeformCalc read FDeforms;
     /// <summary>The fog of the world: density table, texture coordinates and the modulation of colors</summary>
     property Fog: TQ3FogCalc read FFog;
+    /// <summary>ComputeColors: the colour and alpha generation of a stage, with the fog adjustment</summary>
+    property StageColors: TQ3StageColors read FStageColors;
   end;
 
 implementation
@@ -57,10 +61,13 @@ begin
   FTexCoords := TQ3TexCoordCalc.Create(FWaves, FTables);
   FDeforms := TQ3DeformCalc.Create(FWaves, FTables, FNoise);
   FFog := TQ3FogCalc.Create;
+  FTexCoords.Fog := FFog;
+  FStageColors := TQ3StageColors.Create(FColors, FFog);
 end;
 
 destructor TQ3ShaderCalc.Destroy;
 begin
+  FStageColors.Free;
   FFog.Free;
   FDeforms.Free;
   FTexCoords.Free;

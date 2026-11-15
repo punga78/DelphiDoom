@@ -4,6 +4,8 @@
    stub: the images only remember their name, the file system is a folder, the cvars are numbers.
    Scenario lines (one command each, read from the file of the second argument):
      detail 0|1       r_detailTextures
+     vertexlight 0|1  r_vertexLight (VertexLightingCollapse), the shaders are read again
+     multitexture 0|1|2  no multitexture | qglActiveTextureARB | and GL_ADD (CollapseMultitexture), read again
      scan             ScanAndLoadShaderFiles (the .shader files of <root>/scripts, sorted by name)
      find <name>      R_FindShader(name, LIGHTMAP_NONE, qtrue) and a dump of what it returns
      internal         CreateInternalShaders ("<default>" is index 0, "<stencil shadow>" index 1)
@@ -25,13 +27,13 @@ refimport_t ri;
 backEndData_t *backEndData[SMP_FRAMES];
 void (APIENTRY *qglActiveTextureARB)(GLenum texture) = NULL;
 
-static cvar_t cv_detail, cv_zero;
+static cvar_t cv_detail, cv_zero, cv_vertexlight;
 cvar_t *r_detailTextures = &cv_detail;
 cvar_t *r_ignoreFastPath = &cv_zero;
 cvar_t *r_printShaders = &cv_zero;
 cvar_t *r_smp = &cv_zero;
 cvar_t *r_uiFullScreen = &cv_zero;
-cvar_t *r_vertexLight = &cv_zero;
+cvar_t *r_vertexLight = &cv_vertexlight;
 
 static char g_root[512];
 static jmp_buf g_drop;
@@ -158,6 +160,28 @@ static void wave(const waveForm_t *w) {
 	bits(w->base); bits(w->amplitude); bits(w->phase); bits(w->frequency);
 }
 
+static void dump_bundle(const textureBundle_t *b, const char *p) {
+	int k, m;
+	printf(" %sbundle tcgen=%d lightmap=%d video=%d anims=%d speed", p, (int)b->tcGen, b->isLightmap, b->isVideoMap,
+		b->numImageAnimations);
+	bits(b->imageAnimationSpeed);
+	printf(" images");
+	for (k = 0; k < (b->numImageAnimations > 0 ? b->numImageAnimations : 1); k++)
+		printf(" %s", b->isLightmap ? "$lightmap" : (b->image[k] ? b->image[k]->imgName : "-"));
+	printf("\n");
+	printf(" %stcvec", p); for (k = 0; k < 6; k++) bits(b->tcGenVectors[k / 3][k % 3]); printf("\n");
+	printf(" %stexmods %d\n", p, b->numTexMods);
+	for (k = 0; k < b->numTexMods; k++) {
+		const texModInfo_t *t = &b->texMods[k];
+		printf("  %smod %d type=%d", p, k, (int)t->type);
+		wave(&t->wave);
+		for (m = 0; m < 4; m++) bits(t->matrix[m / 2][m % 2]);
+		bits(t->translate[0]); bits(t->translate[1]); bits(t->scale[0]); bits(t->scale[1]);
+		bits(t->scroll[0]); bits(t->scroll[1]); bits(t->rotateSpeed);
+		printf("\n");
+	}
+}
+
 static void dump(const shader_t *s, int sunSet) {
 	int i, k, m;
 	printf("shader %s\n", s->name);
@@ -176,6 +200,8 @@ static void dump(const shader_t *s, int sunSet) {
 		printf("sun"); bits(tr.sunLight[0]); bits(tr.sunLight[1]); bits(tr.sunLight[2]);
 		bits(tr.sunDirection[0]); bits(tr.sunDirection[1]); bits(tr.sunDirection[2]); printf("\n");
 	}
+	/* the collapses of FinishShader (#237): only when the shader was collapsed */
+	if (s->multitextureEnv) printf("mtenv %d\n", s->multitextureEnv == GL_ADD ? 2 : 1);
 	printf("deforms %d\n", s->numDeforms);
 	for (i = 0; i < MAX_SHADER_DEFORMS && i < s->numDeforms; i++) {
 		const deformStage_t *d = &s->deforms[i];
@@ -191,24 +217,9 @@ static void dump(const shader_t *s, int sunSet) {
 			(int)st->rgbGen, (int)st->alphaGen, st->stateBits, (int)st->adjustColorsForFog, st->constantColor[0],
 			st->constantColor[1], st->constantColor[2], st->constantColor[3]);
 		printf(" rgbwave"); wave(&st->rgbWave); printf(" alphawave"); wave(&st->alphaWave); printf("\n");
-		printf(" bundle tcgen=%d lightmap=%d video=%d anims=%d speed", (int)b->tcGen, b->isLightmap, b->isVideoMap,
-			b->numImageAnimations);
-		bits(b->imageAnimationSpeed);
-		printf(" images");
-		for (k = 0; k < (b->numImageAnimations > 0 ? b->numImageAnimations : 1); k++)
-			printf(" %s", b->isLightmap ? "$lightmap" : (b->image[k] ? b->image[k]->imgName : "-"));
-		printf("\n");
-		printf(" tcvec"); for (k = 0; k < 6; k++) bits(b->tcGenVectors[k / 3][k % 3]); printf("\n");
-		printf(" texmods %d\n", b->numTexMods);
-		for (k = 0; k < b->numTexMods; k++) {
-			const texModInfo_t *t = &b->texMods[k];
-			printf("  mod %d type=%d", k, (int)t->type);
-			wave(&t->wave);
-			for (m = 0; m < 4; m++) bits(t->matrix[m / 2][m % 2]);
-			bits(t->translate[0]); bits(t->translate[1]); bits(t->scale[0]); bits(t->scale[1]);
-			bits(t->scroll[0]); bits(t->scroll[1]); bits(t->rotateSpeed);
-			printf("\n");
-		}
+		dump_bundle(b, "");
+		/* the second bundle only exists in a stage that the multitexture collapse made (#237) */
+		if (i == 0 && s->multitextureEnv) dump_bundle(&st->bundle[1], "b2:");
 	}
 }
 
@@ -253,6 +264,18 @@ int main(int argc, char **argv) {
 		int n = (int)strlen(line);
 		while (n > 0 && (line[n - 1] == '\n' || line[n - 1] == '\r')) line[--n] = 0;
 		if (!strncmp(line, "detail ", 7)) cv_detail.integer = atoi(line + 7);
+		else if (!strncmp(line, "vertexlight ", 12)) {
+			/* r_vertexLight: the shaders read from now on are collapsed to one pass (#237) */
+			cv_vertexlight.integer = atoi(line + 12);
+			memset(hashTable, 0, sizeof(hashTable));
+		}
+		else if (!strncmp(line, "multitexture ", 13)) {
+			/* multitexture 0|1|2: no ARB extension | ARB | ARB and GL_ADD (#237) */
+			int mt = atoi(line + 13);
+			qglActiveTextureARB = mt ? (void (APIENTRY *)(GLenum))1 : NULL;
+			glConfig.textureEnvAddAvailable = (mt == 2);
+			memset(hashTable, 0, sizeof(hashTable));
+		}
 		else if (!strcmp(line, "scan")) ScanAndLoadShaderFiles();
 		else if (!strcmp(line, "internal")) {
 			/* CreateInternalShaders: "<default>" is index 0, "<stencil shadow>" index 1 */

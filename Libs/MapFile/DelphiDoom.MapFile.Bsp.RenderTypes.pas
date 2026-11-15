@@ -11,7 +11,7 @@ unit DelphiDoom.MapFile.Bsp.RenderTypes;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Geometry.Vec3;
+  System.SysUtils, DelphiDoom.Geometry.Vec3, DelphiDoom.MapFile.Bsp.ColorShift, DelphiDoom.MapFile.Bsp.Types;
 
 type
   /// <summary>
@@ -60,6 +60,65 @@ type
     InverseSize: TGeoVec3;
     Bounds: array[0..2] of Integer;
     Data: TBytes;
+  end;
+
+  /// <summary>
+  ///   A point of a planar face (the eight floats of srfSurfaceFace_t.points): position, texture
+  ///   and lightmap coordinates, and the colour with the overbright shift applied
+  /// </summary>
+  TBspFacePoint = record
+    Xyz: array[0..2] of Single;
+    St: array[0..1] of Single;
+    Lightmap: array[0..1] of Single;
+    Color: TBspColor;
+  end;
+
+  /// <summary>ParseFace: srfSurfaceFace_t of a planar surface (MST_PLANAR) and its msurface_t fields</summary>
+  TBspFaceSurface = record
+    /// <summary>msurface_t.fogIndex: the fog number of the file plus one</summary>
+    FogIndex: Integer;
+    /// <summary>The shader number of the file</summary>
+    ShaderNum: Integer;
+    /// <summary>True when the renderer must use tr.defaultShader (MAX_FACE_POINTS exceeded)</summary>
+    UsesDefaultShader: Boolean;
+    /// <summary>At most MAX_FACE_POINTS (64) points</summary>
+    Points: TArray<TBspFacePoint>;
+    Indexes: TArray<Integer>;
+    /// <summary>The plane, from the third lightmap vector: normal, distance, type (0..3) and sign bits</summary>
+    PlaneNormal: array[0..2] of Single;
+    PlaneDist: Single;
+    PlaneType: Byte;
+    PlaneSignBits: Byte;
+  end;
+
+  /// <summary>ParseTriSurf: srfTriangles_t of a triangle soup (MST_TRIANGLE_SOUP)</summary>
+  TBspTriangleSurface = record
+    FogIndex: Integer;
+    ShaderNum: Integer;
+    Verts: TArray<TBspDrawVert>;
+    Indexes: TArray<Integer>;
+    /// <summary>The bounds of the vertices (99999 and -99999 when there are none)</summary>
+    Mins: array[0..2] of Single;
+    Maxs: array[0..2] of Single;
+  end;
+
+  /// <summary>ParseFlare: srfFlare_t (MST_FLARE)</summary>
+  TBspFlareSurface = record
+    FogIndex: Integer;
+    ShaderNum: Integer;
+    Origin: array[0..2] of Single;
+    Color: array[0..2] of Single;
+    Normal: array[0..2] of Single;
+  end;
+
+  /// <summary>R_LoadVisibility: what the world keeps of the visibility lump</summary>
+  TBspVisibility = record
+    NumClusters: Integer;
+    ClusterBytes: Integer;
+    /// <summary>The rows after the two integers (empty when the lump is empty)</summary>
+    Vis: TBytes;
+    /// <summary>The "no visibility" row: (clusters + 63) and not 63 bytes of 255</summary>
+    Novis: TBytes;
   end;
 
 implementation

@@ -17,7 +17,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, DelphiDoom.IdLib.Core.Intf,
   DelphiDoom.Decl.Q3Shader.Types, DelphiDoom.Decl.Q3Shader.Calc.Types, DelphiDoom.Decl.Q3Shader.Calc.Intf,
-  DelphiDoom.Decl.Q3Shader.Calc.Kit;
+  DelphiDoom.Decl.Q3Shader.Calc.Kit, DelphiDoom.Decl.Q3Shader.Calc.StageColors;
 
 type
   TFakeShaderEntry = record
@@ -52,6 +52,8 @@ type
     FOutput: TStringList;
     FTess: TQ3ShaderTess;
     FIdentityLight: Single;
+    FPortalRange: Single;
+    FStage: TQ3ShaderStage;
     FBundle: TQ3TextureBundle;
     FSeed: Cardinal;
     function NextRandom: Integer;
@@ -465,6 +467,9 @@ begin
     LFog.HasSurface := StrToInt(ATokens[3]) <> 0;
     for LIndex := 0 to 3 do
       LFog.Surface[LIndex] := Number(ATokens[4 + LIndex]);
+    LFog.ColorInt := 0;
+    if Length(ATokens) > 8 then
+      LFog.ColorInt := Cardinal(StrToInt64('$' + ATokens[8]));
     FTess.Fogs[LNumber] := LFog;
   end
   else if LName = 'fognum' then
@@ -530,6 +535,7 @@ var
   LTexCoords: TArray<Single>;
   LMod: TQ3TexMod;
   LValue, LClamped: Single;
+  LLighting: TQ3StageLighting;
 begin
   LTokens := SplitLine(ALine);
   if Length(LTokens) = 0 then
@@ -640,6 +646,8 @@ begin
       FBundle.TcGen := tgLightmap
     else if LTokens[1] = 'vector' then
       FBundle.TcGen := tgVector
+    else if LTokens[1] = 'fog' then
+      FBundle.TcGen := tgFog
     else
       FBundle.TcGen := tgEnvironmentMapped;
   end
@@ -701,6 +709,46 @@ begin
     (LName = 'fogtc') or (LName = 'fogmod') or (LName = 'specalpha') or (LName = 'diffuse') or
     (LName = 'deformgeo') then
     CommandQuads(LTokens)
+  else if LName = 'vcolors' then
+  begin
+    // tess.vertexColors for the vertex colour generations
+    FSeed := Cardinal(StrToInt64(LTokens[1]));
+    if Length(FTess.VertexColors) < FTess.NumVertexes * 4 then
+      SetLength(FTess.VertexColors, FTess.NumVertexes * 4);
+    for LIndex := 0 to FTess.NumVertexes * 4 - 1 do
+      FTess.VertexColors[LIndex] := RandomByte;
+  end
+  else if LName = 'portalrange' then
+    FPortalRange := Number(LTokens[1])
+  else if LName = 'stagegen' then
+  begin
+    FillChar(FStage, SizeOf(FStage), 0);
+    FStage.RgbGen := TQ3ColorGen(StrToInt(LTokens[1]));
+    FStage.AlphaGen := TQ3AlphaGen(StrToInt(LTokens[2]));
+    FStage.AdjustColorsForFog := TQ3AdjustColorsForFog(StrToInt(LTokens[3]));
+    for LIndex := 0 to 3 do
+      FStage.ConstantColor[LIndex] := Byte(StrToInt(LTokens[4 + LIndex]));
+    FStage.RgbWave := Wave(LTokens, 8);
+    FStage.AlphaWave := Wave(LTokens, 13);
+  end
+  else if LName = 'stagecolors' then
+  begin
+    // ComputeColors on a buffer that has a known content
+    SetLength(LColors, FTess.NumVertexes * 4);
+    for LIndex := 0 to High(LColors) do
+      LColors[LIndex] := Byte((LIndex * 37 + 11) and 255);
+    LLighting.IdentityLight := FIdentityLight;
+    LValue := 255 * FIdentityLight;
+    LLighting.IdentityLightByte := Byte(Trunc(LValue));
+    LLighting.PortalRange := FPortalRange;
+    try
+      FKit.StageColors.Compute(FStage, FTess, LLighting, LColors);
+      DumpColors(LColors, 4);
+    except
+      on EDeclQ3ShaderCalcException do
+        FOutput.Add(' error');
+    end;
+  end
   else if LName = 'compute' then
   begin
     SetLength(LTexCoords, FTess.NumVertexes * 2);
