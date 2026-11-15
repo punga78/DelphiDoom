@@ -32,6 +32,8 @@ type
     [TestCase('Scorrimento della camera', 'map_scroll')]
     [TestCase('Mappe degli orchi e degli umani', 'map_orc')]
     [TestCase('Selezione', 'map_select')]
+    [TestCase('Ordini col clic destro', 'map_orders')]
+    [TestCase('Partita lunga', 'map_long')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
   end;
 

@@ -1,0 +1,25 @@
+# Una partita lunga con le sole mani del computer: 2400 fotogrammi (40 secondi) di una mappa degli umani e di una degli orchi,
+# con ordini ai lavoratori (si selezionano tutti e si mandano in giro, anche sul minimap)
+campaign human 1
+move 190 100
+run 60 1
+move 100 30
+lbutton down
+run 2 1
+move 290 185
+run 2 1
+lbutton up
+run 4 1
+move 260 40
+rbutton down
+run 2 1
+rbutton up
+run 600 1
+move 40 50
+rbutton down
+run 2 1
+rbutton up
+run 800 1
+campaign orc 2
+move 190 100
+run 600 1
