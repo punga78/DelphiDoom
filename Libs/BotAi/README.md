@@ -1,6 +1,6 @@
 # Libs\BotAi
 
-Port a classi dell'IA dei bot di **Quake III Arena** (`code\botlib`, GPL v2 o successiva, id Software). Prima fetta (issue #124): la **chat dei bot** (`be_ai_chat.c`). Seconda fetta (issue #123, vedi "Caratteri, pesi fuzzy, armi e strutture" piu' sotto): **caratteri** (`be_ai_char.c`), **pesi fuzzy** (`be_ai_weight.c`), **armi** (`be_ai_weap.c`), la lettura di strutture dei file di configurazione (`l_struct.c`) e le variabili della libreria complete (`l_libvar.c`). La libreria non ha chiamanti nel motore (percorso freddo). Le altre parti di botlib (#123 resta con obiettivi `be_ai_goal.c` e `be_ai_gen.c`; #122: AAS; movimento) si aggiungono nella stessa cartella: `DelphiDoom.BotAi.Types`, `Import.Intf` (`IBotImport`, `IBotFileSource`, `IBotRandom`, `IBotLibVars`), `LibVars.Intf` (`IBotLibVarStore`), `Random.MsvcRand`, `LibVars.Table`, `Exceptions` e `Text.CFormat` sono comuni; la chat sta in `DelphiDoom.BotAi.Chat.*`, le strutture in `Struct.*`, i caratteri in `Character.*`, i pesi in `Weight.*`, le armi in `Weapon.*`.
+Port a classi dell'IA dei bot di **Quake III Arena** (`code\botlib`, GPL v2 o successiva, id Software). Prima fetta (issue #124): la **chat dei bot** (`be_ai_chat.c`). Seconda fetta (issue #123, vedi "Caratteri, pesi fuzzy, armi e strutture" piu' sotto): **caratteri** (`be_ai_char.c`), **pesi fuzzy** (`be_ai_weight.c`), **armi** (`be_ai_weap.c`), la lettura di strutture dei file di configurazione (`l_struct.c`) e le variabili della libreria complete (`l_libvar.c`). La libreria non ha chiamanti nel motore (percorso freddo). Terza fetta (#123, vedi "Obiettivi, movimento, azioni elementari e selezione genetica"): `be_ai_goal.c`, `be_ai_move.c`, `be_ai_gen.c` e `be_ea.c`, con la facciata `TBotAiFactory`. L'AAS e' in `Libs\Aas` (#122). Il codice comune sta nella stessa cartella: `DelphiDoom.BotAi.Types`, `Import.Intf` (`IBotImport`, `IBotFileSource`, `IBotRandom`, `IBotLibVars`), `LibVars.Intf` (`IBotLibVarStore`), `Random.MsvcRand`, `LibVars.Table`, `Exceptions` e `Text.CFormat` sono comuni; la chat sta in `DelphiDoom.BotAi.Chat.*`, le strutture in `Struct.*`, i caratteri in `Character.*`, i pesi in `Weight.*`, le armi in `Weapon.*`.
 
 ## Uso
 
@@ -144,10 +144,79 @@ LBest := LWeapons.ChooseBestFightWeapon(LState, Inventory);   // TArray<Integer>
 
 `Tools\Verifica\123` (vedi `LEGGIMI.md`) compila con gcc di `w64devkit` il vero `be_ai_char.c`, `be_ai_weight.c`, `be_ai_weap.c`, `l_struct.c`, `l_libvar.c`, `l_script.c` e `l_precomp.c` con stub minimi e `botgen.c`. `Tests\Data\BotAi\botscenario.txt` (variabili, 24 file di struttura con ogni tipo di campo e ogni errore, pesi con switch annidati, bilanciamenti, evoluzione e incrocio, caratteri con ogni percorso della cache e del default, armi e proiettili con tutti gli errori, stati) e `botscenario.golden.txt` sono l'uscita del C (4058 righe); `botscenario_alt.txt` su `alt1` (default con la sola skill 5) e `alt2` (senza default) in `botscenario_alt1.golden.txt` e `botscenario_alt2.golden.txt` (2175 e 2712 righe, compresi NaN e il pool di 64 caratteri pieno). `TBotAiScenarioRunner` rifa lo scenario con le classi Delphi e confronta riga per riga, con i float come bit: **zero differenze** (Win32 e Win64). Tolleranza: nessuna. In piu', con `DELPHIDOOM_OA_PARITY` (vedi `LEGGIMI.md`), 13751 righe sui file veri di OpenArena 0.8.8 (tutti i caratteri a 5 skill, tutti i `*_w.c` e `*_i.c`, le armi): zero differenze, tranne `sergei_c.c` (escluso, vedi sopra).
 
+## Obiettivi, movimento, azioni elementari e selezione genetica (issue #123, seconda parte)
+
+Percorso freddo: nessun chiamante nel motore. `be_ai_goal.c`, `be_ai_move.c`, `be_ai_gen.c` e `be_ea.c` (+ le `AAS_*` che chiamano, in `Libs\Aas`) sono a classi con gli **handle del C** (stati 1..64). Il gioco e' dietro interfacce: `IBotImport` (`Print`, `LogWrite`, `Time`, `Command`), `IBotFileSource`, `IBotLibVarStore`, `IBotRandom`, `IBotAasWorld` (l'AAS caricata e le entita': `World.*`) e `IBotElementaryActions` (gli ingressi `bot_input_t` per client: `Ea.*`). La facciata `TBotAiFactory.CreateAi` (`Facade.Factory`) e' l'unico posto che conosce le classi e da' un `IBotAi` con `Characters`, `Chat`, `Weights`, `Weapons`, `Goals`, `Moves`, `Genetics`, `Actions`.
+
+```pascal
+LAi := TBotAiFactory.CreateAi(Import, Files, LibVars, Random, World, MaxClients, Developer);
+LAi.Goals.Setup;  LAi.Moves.Setup;                        // max_levelitems, max_iteminfo, ...
+LGoal := LAi.Goals.AllocGoalState(Client);                // 1..64
+LAi.Goals.LoadItemWeights(LGoal, 'bots/sarge_i.c');
+LAi.Goals.ChooseLTGItem(LGoal, Origin, Inventory, TravelFlags, LItemGoal);
+LMove := LAi.Moves.AllocMoveState;
+LResult := LAi.Moves.MoveToGoal(LMove, @LItemGoal, TravelFlags);   // bot_moveresult_t
+LInput := LAi.Actions.GetInput(Client, 0.1);                       // bot_input_t
+```
+
+### Mappa C -> Delphi
+
+| C | Delphi |
+|---|---|
+| `itemconfig_t`, `iteminfo_t` (236 byte, layout del C), `LoadItemConfig` | `TBotItemConfig`, `TBotItemInfo` (`Goal.ItemConfig`, `Goal.Types`), `TBotItemConfigLoader` sopra `TBotChatSource` e `TBotStructReader` |
+| `iteminfo_fields` e le altre definizioni di struttura | `TBotItemDefinitions` |
+| `levelitem_t`, `levelitems`, `freelevelitems`, `itemtargets` (lista e heap) | `TBotLevelItems` (`Goal.LevelItems`) |
+| `BotInitInfoEntities`, `BotInitLevelItems`, `BotGoalName` e le entita' del BSP (`info_*`, `target_location`, `info_camp`) | `TBotInfoEntities`, `TBotLevelItemInitializer` (`Goal.ItemInitializer`) |
+| `BotUpdateEntityItems` | `TBotEntityItemUpdater` (`Goal.EntityItems`) |
+| `BotChooseLTGItem`, `BotChooseNBGItem` (peso fuzzy e tempo di viaggio AAS, `BotGoalForLevelItem`) | `TBotGoalChooser` (`Goal.Chooser`) |
+| `bot_goalstate_t`, pila degli obiettivi (`MAX_GOALSTACK`), `avoidgoals`, `BotPushGoal`, `BotPopGoal`, `BotAvoidGoalTime`, `BotSetAvoidGoalTime`, `BotTouchingGoal`, `BotItemGoalInVisButNotVisible`, `BotGetLevelItemGoal`, `BotGetNextCampSpotGoal`, `BotGetMapLocationGoal`, `BotLoadItemWeights`, `BotInterbreedGoalFuzzyLogic`, `BotMutateGoalFuzzyLogic`, `BotSetupGoalAI` e gli altri `Bot*GoalState` | `IBotGoalSystem` / `TBotGoalSystem` (`Goal.System`, `Goal.State`, `Goal.Context`), creato da `TBotGoalFactory` |
+| `bot_movestate_t`, `bot_initmove_t`, `bot_moveresult_t`, `MFL_*`, `MOVERESULT_*` | `TBotMoveState`, `TBotInitMove`, `TBotMoveResult` e le costanti (`Move.Types`, `Move.State`) |
+| `BotMoveToGoal` e `BotMoveInGoalArea` | `TBotMoveSystem.MoveToGoal` (`Move.System`) |
+| `BotTravel_*` e `BotFinishTravel_*` per ogni tipo (walk, crouch, barrier jump, swim, water jump, walk off ledge, jump, ladder, teleport, elevator, func bobbing, grapple hook, rocket jump, BFG jump, jump pad) | una classe per unit, `Move.Travel.*` (derivata da `TBotTravelBase`, contratto `IBotTravelType`); il registro e' un dizionario per tipo in `Move.Factory` (al posto del grande `switch`) |
+| `BotCheckBlocked`, `BotOnTopOfEntity`, `BotCheckBarrierJump`, `BotGapDistance`, `BotAirControl`, `AngleDiff` | `TBotMoveBasics` (`Move.Basics`) |
+| `BotOnMover`, `MoverDown`, `MoverBottomCenter`, `BotFuncBobStartEnd` | `TBotMovers` (`Move.Movers`) |
+| `BotAddToAvoidReach`, `BotAddAvoidSpot`, `BotAvoidSpots`, `BotResetAvoidReach`, `BotResetLastAvoidReach` | `TBotAvoidSpotChecker` (`Move.AvoidSpots`) e `TBotMoveSystem` |
+| `BotReachabilityArea`, `BotFuzzyPointReachabilityArea` | `TBotReachabilityLocator` (`Move.Locator`, `IBotReachabilityLocator`) |
+| `BotGetReachabilityToGoal` | `TBotReachabilityChooser` (`Move.ReachChooser`) |
+| `BotMovementViewTarget`, `BotPredictVisiblePosition`, `BotAddToTarget` | `TBotMovePredictor` (`Move.Predictor`) |
+| `BotMoveInDirection`, `BotSetBrushModelTypes` | `TBotMoveSystem`, `TBotBrushModelTypes` (`Move.ModelTypes`) |
+| variabili `sv_*`, `weapindex_*`, `entitytypemissile`, `offhandgrapple`, `cmd_grappleon` ... | `TBotMoveVars` (`Move.Vars`): si leggono a ogni uso, come i puntatori del C |
+| macro di vettori (`VectorMA`, `VectorNormalize`, `Vector2Angles`, ...) | `TBotVectorMath` (`Move.VectorMath`), con l'aritmetica `float` o `double` del C |
+| `GeneticParentsAndChildSelection`, `GeneticSelection` | `TBotGeneticSelector` (`IBotGenetics`) |
+| `EA_*` (28 funzioni) e `botinputs` | `TBotElementaryActions` (`IBotElementaryActions`, `Ea.*`) |
+| `AAS_*` usate (vedi `Libs\Aas\CLAUDE.md`) | `IBotAasWorld` (`World.*`): `TBotAasWorld` raccoglie le parti dell'AAS caricata, `TBotAasEntitySource` adatta `TAasEntityTable` |
+
+**Non portato** (#123): `BotSaveGoalFuzzyLogic` e' una chiamata che non scrive (`WriteWeightConfig` e' commentata nel C: si controlla solo l'handle), `EA_EndRegular` (vuota nel C), le funzioni di disegno e diagnostica (`AAS_DebugLine`, `AAS_ShowReachability`, `BotDumpGoalStack` scrive il testo ma non disegna), `BotShutdownGoalAI`/`BotShutdownMoveAI` si chiamano `Shutdown`. Non c'e' un collegamento a un gioco (`IBotImport` del motore): resta della #123 solo quello.
+
+### Difetti del C conservati (servono per dare le stesse risposte)
+
+- **Costanti `double`**: `avoidtime - t * 0.009` e `weight / (t * 0.01)` (`BotChooseLTGItem`, `BotChooseNBGItem`) e `M_PI` sono in `Double`; gli altri `float` sono `Single` con ogni operazione assegnata a una variabile `Single` (SSE).
+- `BotGoalForLevelItem`/`BotGetLevelItemGoal`: **somma le `mins` alle `mins`** (non le `maxs`).
+- **`BotInitLevelItems`**: l'ultima entita' della mappa e' la prima della lista (il C inserisce in testa); l'ordine decide a pari peso.
+- **Avoid spot** (`BotAvoidSpots`): la distanza dalla fine della raggiungibilita' si calcola e si scarta; il difetto del ramo `else` e' conservato (`Move.AvoidSpots`).
+- **Elevatore** e func_bobbing: il controllo `abs(origin[2] - end[2]) < sv_maxbarrier` usa `abs` intera; `BotMoveToGoal` controlla `MOVERESULT_ONTOPOF_FUNCBOB` due volte (non cambia nulla); `BotTravel_FuncBobbing` manda `dir` e non `hordir`; senza entita' del modello usa un'origine non inizializzata (qui azzerata).
+- **BFG jump**: il test della vista usa gli angoli ideali prima di scriverli (il C li legge dal risultato, che il pilota C ora azzera: `BotClearMoveResult`).
+- **Selezione genetica**: `GeneticSelection` calcola `select = random() * sum` e non lo usa; il numero casuale si consuma comunque.
+- `BotWalk`/finish: `BotFinishTravel_Walk` non e' mai usato, in aria si chiama `BotTravel_Walk`.
+- `BotMoveInGoalArea` e `BotMoveToGoal` conservano gli ordini di valutazione dei float del C (visto con Win64: `Tools\Verifica\123\ai` e gli `Single` espliciti).
+
+### Differenze volute (difetti del C corretti, ognuna con un test)
+
+1. `BotSetBrushModelTypes` con `modelnum == MAX_MODELS` passava il controllo e scriveva dopo la tabella: ora e' fuori intervallo (e il pilota C ha la stessa correzione, dichiarata in `build.sh`).
+2. `BotResetLastAvoidReach` leggeva `avoidreachtries[MAX_AVOIDREACH]`, una voce dopo l'array: legge quella che azzera (correzione anche nel pilota C).
+3. `BotInitLevelItems` con `max_levelitems` 0 scriveva prima dello heap; `InitLevelItemHeap` con 0 voci e' gestito.
+4. `BotClearMoveResult` lascia `weapon`, `movedir` e `ideal_viewangles` come li aveva lo stack: sono azzerati (anche nel pilota C).
+5. Un numero di cliente fuori dalla tabella delle azioni, un indice di oggetto fuori dalla tabella, un handle che non esiste, un `BotInterbreedGoalFuzzyLogic` o un `BotFreeItemWeights` su stati senza pesi (il C legge fuori o lascia puntatori pendenti): `EBotAiException` o nessun effetto con l'avviso del C (`FreeItemWeights` azzera tutti e due i puntatori).
+6. `GeneticSelection` con un `random()` esattamente 1.0 leggeva `rankings[numranks]`: l'indice e' l'ultimo.
+
+### Parita' col C (seconda parte)
+
+`Tools\Verifica\123\ai` (vedi `LEGGIMI.md`) compila il vero `be_ai_goal.c`, `be_ai_move.c`, `be_ai_gen.c`, `be_ea.c` sopra il vero `be_aas_*.c` con gcc di `w64devkit`. `Tests\Data\BotAi\goal\goalmove.txt` (scritto da `Make-Scenario.ps1`: oggetti, scelte dell'obiettivo e tempi di viaggio, pile, oggetti a tempo, ogni tipo di viaggio a terra, in aria, in acqua, sull'elevatore e sul func_bobbing, grapple hook attivo e perso, salti con le armi, avoid spot, `mvsim` con la simulazione a tic, selezione genetica, azioni elementari) e `goalmove.golden.txt` (l'uscita del C: scelte, tempi, pile, ingressi per tic, i float come bit) sono lo stesso scenario eseguito dal pilota C e da `TGoalMoveScenario` (Delphi, mondo gemello). **Zero differenze** (Win32 e Win64). Tolleranza: nessuna. La parita' prova la logica; il mondo e' l'AAS di prova con scatole solide e liquidi, non un BSP vero (prova delle `AAS_*` sul BSP: `Libs\Aas`).
+
 ## Prove
 
-`Tests\DelphiDoom.Tests.BotAi` (170 test: 63 della chat, 107 di #123, di cui 8 sui file di OpenArena che si ignorano se mancano; copertura 98%, ogni unit >= 90%; Win32 e Win64). Parita': `Tests\Data\BotAi\scenario.txt` (269 comandi: testo, setup, sinonimi, match, costruzione dei messaggi, file di chat, risposte, invio, coda della console, handle, cache, file con errori) e `chat.golden.txt` sono l'uscita del **vero** `be_ai_chat.c` + `l_script.c` + `l_precomp.c` compilati con gcc di `Reference\_dati\_strumenti\w64devkit` con stub minimi (`Tools\Verifica\124`); `TBotScenarioRunner` rifa lo scenario con le classi Delphi e confronta riga per riga (stampe a ogni livello, log, comandi, messaggi, variabili, handle). Zero differenze. I file di chat di `Tests\Data\BotAi\botfiles` sono scritti per i test (nessun file di Quake III nel repository). Tolleranza in virgola mobile: nessuna sui numeri casuali (stessa sequenza di `rand`); i pesi dei sinonimi sono `Single` come `float` e sono letti da un `Double` (il C da un `long double`: uguali per i pesi con poche cifre).
+`Tests\DelphiDoom.Tests.BotAi` (192 test; 8 si ignorano senza i file di OpenArena; copertura 95%, 124 unit; Win32 e Win64): le unit di #123 della prima parte (170 test, vedi sotto) piu' la parita' del movimento (`TTestBotGoalMoveParity`), le azioni elementari (`TTestBotElementaryActions`), le parti del mondo (`TTestBotWorldUnits`), il file degli oggetti con errori e 300 file alterati con seme fisso (`TTestBotItemConfigLoader`), la facciata (`TTestBotAiFacade`) e `Fixed1`. Le unit sotto il 90% sono quasi tutte `Move.Travel.*`: i rami che restano (WeaponJump, WalkOffLedge, JumpPad, Base) sono casi di posizione e velocita' che lo scenario non ha ancora (vedi `CLAUDE.md`). Prima parte (#123, caratteri, pesi, armi): `Tests\DelphiDoom.Tests.BotAi` (170 test: 63 della chat, 107 di #123, di cui 8 sui file di OpenArena che si ignorano se mancano; copertura 98%, ogni unit >= 90%; Win32 e Win64). Parita': `Tests\Data\BotAi\scenario.txt` (269 comandi: testo, setup, sinonimi, match, costruzione dei messaggi, file di chat, risposte, invio, coda della console, handle, cache, file con errori) e `chat.golden.txt` sono l'uscita del **vero** `be_ai_chat.c` + `l_script.c` + `l_precomp.c` compilati con gcc di `Reference\_dati\_strumenti\w64devkit` con stub minimi (`Tools\Verifica\124`); `TBotScenarioRunner` rifa lo scenario con le classi Delphi e confronta riga per riga (stampe a ogni livello, log, comandi, messaggi, variabili, handle). Zero differenze. I file di chat di `Tests\Data\BotAi\botfiles` sono scritti per i test (nessun file di Quake III nel repository). Tolleranza in virgola mobile: nessuna sui numeri casuali (stessa sequenza di `rand`); i pesi dei sinonimi sono `Single` come `float` e sono letti da un `Double` (il C da un `long double`: uguali per i pesi con poche cifre).
 
 ## Cosa manca
 
-`#123` (resta `be_ai_goal.c`, obiettivi e oggetti, e `be_ai_gen.c`: useranno `IBotImport`, `IBotLibVarStore`, `TBotWeightCache` e `TBotChatSource`), `#122` AAS e movimento; il collegamento a un gioco (nel `IBotImport` di `ComposeEngine`) non c'e': nessun chiamante. I file di OpenArena 0.8.8 (`botfiles` di `pak6-misc.pk3`, GPL v2) sono letti da `TTestBotOpenArena` (setup e chat dei 24 bot senza errori; variabile `DELPHIDOOM_OPENARENA` o `Reference\openarena`); i file di chat di Quake III non sono nel repository.
+Il collegamento a un gioco (`IBotImport` e `IBotAasWorld` di `ComposeEngine`, `bot_input_t` verso il ticcmd del motore): nessun chiamante. Coprire i rami di posizione che lo scenario non ha ancora (Move.Travel.WeaponJump, WalkOffLedge, JumpPad, Base: sotto il 90%) e la prova delle AAS_* su un BSP vero. I file di OpenArena 0.8.8 (`botfiles` di `pak6-misc.pk3`, GPL v2) sono letti da `TTestBotOpenArena` (setup e chat dei 24 bot senza errori; variabile `DELPHIDOOM_OPENARENA` o `Reference\openarena`); i file di chat di Quake III non sono nel repository.
