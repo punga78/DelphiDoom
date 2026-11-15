@@ -82,6 +82,7 @@ uses
   p_ambient,
   p_enemy,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   po_man,
   r_data,
   DelphiDoom.Engine.Level.TransparentLines;

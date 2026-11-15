@@ -130,6 +130,7 @@ uses
   DelphiDoom.Engine.World.MobjRules,
   p_tick,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_local,
   p_playertrace,
   p_friends,

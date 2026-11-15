@@ -64,6 +64,7 @@ uses
   p_gender,
   DelphiDoom.Obituary.Genders,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_pspr_h,
   p_inter,
   DelphiDoom.Engine.World.InterRules,

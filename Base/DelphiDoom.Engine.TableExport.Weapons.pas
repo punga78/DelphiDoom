@@ -36,10 +36,12 @@ uses
   {$IFDEF HERETIC}
   p_pspr_h,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   {$ENDIF}
   {$IFDEF HEXEN}
   p_pspr_h,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   {$ENDIF}
   info_h;
 

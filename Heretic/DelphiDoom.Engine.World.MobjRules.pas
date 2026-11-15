@@ -290,6 +290,7 @@ uses
   p_mobjlist,
   p_tick,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_setup,
   p_common,
   p_ambient,

@@ -125,6 +125,7 @@ uses
   p_mobj,
   p_obituaries,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_pspr_h,
   p_dialog,
   p_doors,

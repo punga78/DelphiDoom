@@ -101,6 +101,7 @@ uses
   p_enemy,
   p_gender,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_mobj_h,
   p_inter,
   DelphiDoom.Engine.World.SpecialRespawn,

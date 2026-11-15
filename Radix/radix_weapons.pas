@@ -181,6 +181,7 @@ uses
   tables,
   p_tick,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_inter,
   p_local,
   p_map,

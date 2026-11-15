@@ -536,6 +536,7 @@ uses
   p_spec,
   p_inter,
   p_pspr,
+  DelphiDoom.Engine.World.PspriteRules,
   p_sounds,
   p_udmf,
   udmf_spec,

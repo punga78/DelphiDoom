@@ -1,37 +1,15 @@
-//------------------------------------------------------------------------------
-//
-//  DelphiDoom is a source port of the game Doom and it is
-//  based on original Linux Doom as published by "id Software"
-//  Copyright (C) 1993-1996 by id Software, Inc.
-//  Copyright (C) 2004-2022 by Jim Valavanis
-//
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, inc., 59 Temple Place - Suite 330, Boston, MA
-//  02111-1307, USA.
-//
-// DESCRIPTION:
-//  Sprite animation.
-//  Weapon sprite animation, weapon objects.
-//  Action functions for weapons.
-//
-//------------------------------------------------------------------------------
-//  Site  : https://sourceforge.net/projects/delphidoom/
-//------------------------------------------------------------------------------
-
+{******************************************************************************}
+{                                                                              }
+{  DelphiDoom: engine - the rules of Doom for the weapon sprites (p_pspr)      }
+{  Copyright (C) 1993-1996 by id Software, Inc.                                }
+{  Copyright (C) 2004-2022 by Jim Valavanis (original DelphiDoom)              }
+{                                                                              }
+{  Licensed under the GNU General Public License, version 2 or later           }
+{                                                                              }
+{******************************************************************************}
 {$I Doom32.inc}
 
-unit p_pspr;
+unit DelphiDoom.Engine.World.PspriteRules;
 
 interface
 
@@ -167,13 +145,6 @@ procedure A_FireCGun(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
-// A_Light0
-//
-//==============================================================================
-procedure A_Light0(player: Pplayer_t; psp: Ppspdef_t);
-
-//==============================================================================
-//
 // A_Light1
 //
 //==============================================================================
@@ -202,27 +173,6 @@ procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
 
 //==============================================================================
 //
-// P_SetupPsprites
-//
-//==============================================================================
-procedure P_SetupPsprites(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_MovePsprites
-//
-//==============================================================================
-procedure P_MovePsprites(player: Pplayer_t);
-
-//==============================================================================
-//
-// P_SetPsprite
-//
-//==============================================================================
-procedure P_SetPsprite(player: Pplayer_t; position: integer; stnum: statenum_t);
-
-//==============================================================================
-//
 // P_CheckAmmo
 //
 //==============================================================================
@@ -232,9 +182,30 @@ var
 // plasma cells for a bfg attack
   p_bfgcells: integer = 40;
 
+//==============================================================================
+//
+// P_BringUpWeapon
+// Starts bringing the pending weapon up from the bottom of the screen
+//
+//==============================================================================
+procedure P_BringUpWeapon(player: Pplayer_t);
+type
+  /// <summary>
+  ///   What Doom does in the weapon sprite code of p_pspr (issue #185, step 2f-3). The routines that
+  ///   are the same in the games are in Base\p_pspr.pas; the weapons and what depends on the record of the player stay here
+  /// </summary>
+  /// <remarks>
+  ///   Class of static methods, chosen by the project: no virtual call, no interface
+  /// </remarks>
+  TPspriteGameRules = class sealed
+  public
+    /// <summary>What comes after the weapon sprites moved (Strife: the targeter)</summary>
+    class procedure AfterMovePsprites(const player: Pplayer_t); static;
+  end;
 implementation
 
 uses
+  p_pspr,
   d_delphi,
   g_game,
   i_system,
@@ -265,75 +236,13 @@ uses
 // Data.
   sounddata;
 
-//
-// Adjust weapon bottom and top
-//
-
-const
-  WEAPONTOP = 32 * FRACUNIT;
-  WEAPONBOTTOM = WEAPONTOP + 96 * FRACUNIT;
-
-const
-  LOWERSPEED = 6 * FRACUNIT;
-  RAISESPEED = 6 * FRACUNIT;
-
-//
-// P_SetPsprite
-//
-const
-  PSPR_CYCLE_LIMIT = 1000000;
-
 //==============================================================================
 //
-// P_SetPsprite
+// TPspriteGameRules.AfterMovePsprites
 //
 //==============================================================================
-procedure P_SetPsprite(player: Pplayer_t; position: integer; stnum: statenum_t);
-var
-  psp: Ppspdef_t;
-  state: Pstate_t;
-  cycle_counter: integer;
+class procedure TPspriteGameRules.AfterMovePsprites(const player: Pplayer_t);
 begin
-  cycle_counter := 0;
-  psp := @player.psprites[position];
-  repeat
-    if Ord(stnum) = 0 then
-    begin
-      // object removed itself
-      psp.state := nil;
-      break;
-    end;
-
-    state := @states[Ord(stnum)];
-    psp.state := state;
-    psp.tics := P_TicsFromState(state); // could be 0
-
-    // coordinate set
-    if state.misc1 <> 0 then
-      psp.sx := state.misc1 * FRACUNIT;
-
-    if state.misc2 <> 0 then
-      psp.sy := state.misc2 * FRACUNIT;
-
-    // Call action routine.
-    // Modified handling.
-    if Assigned(state.action.acp2) then
-    begin
-      if state.params <> nil then
-        state.params.actor := player.mo;
-      state.action.acp2(player, psp);
-      if psp.state = nil then
-        break;
-    end;
-
-    stnum := psp.state.nextstate;
-
-    inc(cycle_counter);
-    if cycle_counter > PSPR_CYCLE_LIMIT then
-      I_Error('P_SetPsprite(): Infinite state cycle detected in player sprites (readyweapon=%d, pendinfweapon=%d)!',
-        [Ord(player.readyweapon), Ord(player.pendingweapon)]);
-  until psp.tics <> 0;
-  // an initial state of 0 could cycle through
 end;
 
 //
@@ -1055,17 +964,6 @@ begin
 end;
 
 //==============================================================================
-// A_Light0
-//
-// ?
-//
-//==============================================================================
-procedure A_Light0(player: Pplayer_t; psp: Ppspdef_t);
-begin
-  player.extralight := 0;
-end;
-
-//==============================================================================
 //
 // A_Light1
 //
@@ -1137,59 +1035,6 @@ end;
 procedure A_BFGsound(player: Pplayer_t; psp: Ppspdef_t);
 begin
   S_StartSound(player.mo, Ord(sfx_bfg));
-end;
-
-//==============================================================================
-//
-// P_SetupPsprites
-// Called at start of level for each player.
-//
-//==============================================================================
-procedure P_SetupPsprites(player: Pplayer_t);
-var
-  i: integer;
-begin
-  // remove all psprites
-  for i := 0 to Ord(NUMPSPRITES) - 1 do
-    player.psprites[i].state := nil;
-
-  // spawn the gun
-  player.pendingweapon := player.readyweapon;
-  P_BringUpWeapon(player);
-end;
-
-//==============================================================================
-//
-// P_MovePsprites
-// Called every tic by player thinking routine.
-//
-//==============================================================================
-procedure P_MovePsprites(player: Pplayer_t);
-var
-  i: integer;
-  psp: Ppspdef_t;
-  state: Pstate_t;
-begin
-  for i := 0 to Ord(NUMPSPRITES) - 1 do
-  begin
-    psp := @player.psprites[i];
-    // a null state means not active
-    state := psp.state;
-    if state <> nil then
-    begin
-      // drop tic count and possibly change state
-      // a -1 tic count never changes
-      if psp.tics <> -1 then
-      begin
-        psp.tics := psp.tics - 1;
-        if psp.tics = 0 then
-          P_SetPsprite(player, i, psp.state.nextstate);
-      end;
-    end;
-  end;
-
-  player.psprites[Ord(ps_flash)].sx := player.psprites[Ord(ps_weapon)].sx;
-  player.psprites[Ord(ps_flash)].sy := player.psprites[Ord(ps_weapon)].sy;
 end;
 
 end.
