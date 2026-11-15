@@ -1,0 +1,2577 @@
+>srand|1
+>gen|10|20|30|40|50
+GEN 1 4 3 1
+>gen|5|-1|-1|7|-1|9|2
+GEN 1 6 5 0
+>gen|1|2
+P2|GeneticParentsAndChildSelection: too few valid bots\x0A
+GEN 0 0 0 0
+>gen|0|0|0|0
+GEN 1 1 3 0
+>gen|3|3|3|3|3|3
+GEN 1 5 4 0
+>gen|-1|-1|-1|-1
+P2|GeneticParentsAndChildSelection: too few valid bots\x0A
+GEN 0 0 0 0
+>gen|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|134|135|136|137|138|139|140|141|142|143|144|145|146|147|148|149|150|151|152|153|154|155|156|157|158|159|160|161|162|163|164|165|166|167|168|169|170|171|172|173|174|175|176|177|178|179|180|181|182|183|184|185|186|187|188|189|190|191|192|193|194|195|196|197|198|199|200|201|202|203|204|205|206|207|208|209|210|211|212|213|214|215|216|217|218|219|220|221|222|223|224|225|226|227|228|229|230|231|232|233|234|235|236|237|238|239|240|241|242|243|244|245|246|247|248|249|250|251|252|253|254|255|256|257
+P2|GeneticParentsAndChildSelection: too many bots\x0A
+GEN 0 0 0 0
+>gen|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0|1|2|3|4
+GEN 1 255 254 253
+>gensel|3|0|0|5
+SEL 3
+>gensel|0|0|0
+SEL 0
+>gensel|-1|-1|-1
+SEL 0
+>gensel|1
+SEL 0
+>gensel
+SEL 0
+>gensel|-1|4|-1
+SEL 1
+>gensel|0.5|0.25|0|0
+SEL 1
+>easetup|64
+RC 0
+>developer|1
+>libvar|sv_mapChecksum|305419896
+>srand|7
+>time|0
+>loadaas|botworld.aas
+P1|trying to load maps/bots.aas\x0A
+LOAD 0
+AAS 7 2 1 17
+>loadaas|missing.aas
+FILE missing.aas missing
+>ttable|33324990
+TT 1 1 60 55 143 85 158
+TT 2 98 1 107 206 183 106
+TT 3 128 90 1 100 204 95
+TT 4 48 99 53 1 111 141
+TT 5 114 165 119 66 1 121
+TT 6 40 92 86 174 116 1
+>ttable|2
+TT 1 1 0 0 0 0 0
+TT 2 0 1 0 0 0 0
+TT 3 0 0 1 0 0 0
+TT 4 0 0 0 1 0 0
+TT 5 0 0 0 0 1 0
+TT 6 0 0 0 0 0 1
+>ttable|1572866
+TT 1 1 60 0 0 0 0
+TT 2 0 1 0 0 0 0
+TT 3 0 0 1 0 0 0
+TT 4 48 99 0 1 0 0
+TT 5 0 0 0 0 1 0
+TT 6 0 0 0 0 0 1
+>entdata|{\n"message" "goal and move test"\n"classname" "worldspawn"\n}\n{\n"classname" "func_plat"\n"model" "*1"\n}\n{\n"classname" "func_bobbing"\n"model" "*2"\n}\n{\n"classname" "func_door"\n"model" "*3"\n}\n{\n"classname" "func_static"\n"model" "*4"\n}\n{\n"classname" "func_plat"\n"model" "*256"\n}\n{\n"classname" "func_door"\n"model" "*-5"\n}\n{\n"classname" "func_static"\n}\n{\n"classname" "func_train"\n"model" "*5"\n}\n{\n"classname" "item_armor_body"\n"origin" "170 32 5"\n}\n{\n"classname" "item_health"\n"origin" "230 32 5"\n}\n{\n"classname" "item_quad"\n"origin" "350 32 5"\n}\n{\n"classname" "weapon_rocketlauncher"\n"origin" "40 32 5"\n}\n{\n"classname" "ammo_rockets"\n"origin" "100 32 5"\n}\n{\n"origin" "60 32 5"\n"classname" "item_botroam"\n"weight" "2.5"\n}\n{\n"classname" "item_flag_red"\n"origin" "10 32 5"\n}\n{\n"classname" "item_armor_body"\n}\n{\n"origin" "200 32 50"\n"classname" "item_health"\n"spawnflags" "1"\n}\n{\n"origin" "30 32 5"\n"classname" "item_health"\n"spawnflags" "1"\n}\n{\n"origin" "220 40 5"\n"notfree" "1"\n"classname" "item_health"\n}\n{\n"notteam" "1"\n"origin" "225 40 5"\n"classname" "item_health"\n}\n{\n"origin" "215 40 5"\n"classname" "item_health"\n"notsingle" "1"\n}\n{\n"origin" "210 40 5"\n"notbot" "1"\n"classname" "item_health"\n}\n{\n"classname" "item_unweighted"\n"origin" "340 40 5"\n}\n{\n"message" "Red Base"\n"origin" "40 20 5"\n"classname" "target_location"\n}\n{\n"message" "Blue Base"\n"origin" "330 20 5"\n"classname" "target_location"\n}\n{\n"weight" "1.5"\n"wait" "10"\n"random" "3"\n"range" "300"\n"origin" "170 20 5"\n"classname" "info_camp"\n"message" "camp a"\n}\n{\n"weight" "0.5"\n"wait" "5"\n"random" "1"\n"range" "100"\n"origin" "235 20 5"\n"classname" "info_camp"\n"message" "camp b"\n}\n{\n"message" "camp in solid"\n"origin" "-100 32 5"\n"classname" "info_camp"\n}\n
+>model|1|-32|-32|-4|32|32|4|0|0|0
+>model|2|-16|-16|-2|16|16|2|0|0|0
+>model|3|-8|-8|-8|8|8|8|0|0|0
+>model|31|-1|-1|-1|1|1|1|0|0|0
+>world|32|32|5
+WO 1 0 0 1 1
+>world|32|32|0
+WO 1 0 0 0 1
+>world|32|32|8
+WO 1 0 0 1 1
+>world|32|32|40
+WO 0 0 0 1 1
+>world|100|32|5
+WO 0 1 0 2 2
+>world|100|32|40
+WO 0 1 0 2 2
+>world|160|32|5
+WO 1 0 0 3 3
+>world|224|32|5
+WO 1 0 0 4 4
+>world|224|32|30
+WO 0 0 0 4 4
+>world|288|32|5
+WO 1 0 0 5 5
+>world|352|32|5
+WO 1 1 0 6 6
+>world|352|32|8
+WO 1 1 0 6 6
+>world|500|32|5
+WO 1 1 0 6 6
+>world|-20|32|5
+WO 1 0 0 1 1
+>world|32|90|5
+WO 0 0 0 0 0
+>libvar|g_gametype|0
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>libvar|max_iteminfo|1
+>goalsetup
+P3|file items.c, line 13: more than 1 item info defined\x0A\x0A
+P4|couldn't load item config\x0A
+RC 10
+>libvar|max_iteminfo|256
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>time|10
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P1|ammo_rockets in solid at (100.0 32.0 5.0)\x0A
+L|entity item_flag_red unknown item\x0D\x0A
+P3|item item_armor_body without origin\x0A
+L|item item_health reachable from jumppad area 0\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+P1|found 12 level items\x0A
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43520000 #42200000 #3e800000 GA 4 GO #43520000 #42200000 #3e800000 E 0 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #40a00000 GA 1 GO #41f00000 #42000000 #40a00000 E 0 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 0 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 0 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 0 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 12
+>gsalloc|11
+H 1
+>gsalloc|12
+H 2
+>gsalloc|13
+H 3
+>gsweights|1|bots/goal_i.c
+P1|loaded bots/goal_i.c\x0A
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>gsweights|2|bots/goal2_i.c
+P1|loaded bots/goal2_i.c\x0A
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>gsweights|3|bots/missing_i.c
+P3|counldn't load bots/missing_i.c\x0A
+P4|couldn't load weights\x0A
+RC 9
+>gsweights|9|bots/goal_i.c
+P4|invalid goal state 9\x0A
+RC 9
+>gsltg|1|40|32|5|33324990|0|50|100|60|1|0|20
+LTG 1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gsltg|3|40|32|5|33324990|0|50
+LTG 0
+TOP 0
+>entity|1|1|2|11|170|32|0.25|170|32|0.25|0|0
+>entity|2|1|2|12|230|32|0.25|230|32|0.25|0|0
+>entity|3|1|2|14|350|32|0.25|350|32|0.25|0|0
+>entity|4|1|2|13|40|32|0.25|40|32|0.25|0|0
+>entity|5|1|2|15|60|32|0.25|60|32|0.25|0|0
+>entity|6|1|2|12|30|32|0.25|30|32|0.25|0|0
+>entity|7|1|3|13|10|10|10|10|10|10|0|0
+>entity|8|1|2|12|500|500|0|500|500|1|0|0
+>entity|9|0|2|12|230|32|0.25|230|32|0.25|0|0
+>entity|10|1|2|0|230|32|0.25|230|32|0.25|0|0
+>goalupdate
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>gsltg|1|40|32|5|33324990|0|50|100|60|1|0|20
+LTG 1
+TOP 1
+ G O #42200000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 4 NUM 4 F 1 I 2
+>gstop|1
+TOP 1
+ G O #42200000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 4 NUM 4 F 1 I 2
+>gsdumpstack|1
+L|1: Roam
+L|2: Rocket Launcher
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+>gspop|1
+>gsltg|1|40|32|5|33324990|0|75|100|60|1|0|20
+LTG 1
+TOP 1
+ G O #41f00000 #42000000 #3e800000 A 1 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 6 NUM 7 F 1 I 1
+>gstop|1
+TOP 1
+ G O #41f00000 #42000000 #3e800000 A 1 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 6 NUM 7 F 1 I 1
+>gsdumpstack|1
+L|1: Roam
+L|2: Health
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+>gspop|1
+>gsltg|1|40|32|5|33324990|0|100|100|100|1|0|20
+LTG 1
+TOP 1
+ G O #43af0000 #42000000 #3e800000 A 6 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 3 NUM 3 F 1 I 3
+>gstop|1
+TOP 1
+ G O #43af0000 #42000000 #3e800000 A 6 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 3 NUM 3 F 1 I 3
+>gsdumpstack|1
+L|1: Roam
+L|2: Quad Damage
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+L|avoid goal Quad Damage, number 3 for 30.000000 seconds
+>gspop|1
+>gsltg|1|40|32|5|33324990|0|0|0|0|0|0|0
+LTG 1
+TOP 1
+ G O #432a0000 #42000000 #3e800000 A 3 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 1 NUM 1 F 1 I 0
+>gstop|1
+TOP 1
+ G O #432a0000 #42000000 #3e800000 A 3 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 1 NUM 1 F 1 I 0
+>gsdumpstack|1
+L|1: Roam
+L|2: Heavy Armor
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+L|avoid goal Quad Damage, number 3 for 30.000000 seconds
+L|avoid goal Heavy Armor, number 1 for 25.000000 seconds
+>gspop|1
+>gsltg|1|40|32|5|33324990|0|200|0|0|0|0|20
+LTG 0
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gstop|1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gsdumpstack|1
+L|1: Roam
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+L|avoid goal Quad Damage, number 3 for 30.000000 seconds
+L|avoid goal Heavy Armor, number 1 for 25.000000 seconds
+>gspop|1
+>gsltg|1|40|32|5|33324990|0|50|100|60|0|0|0
+LTG 0
+TOP 0
+>gstop|1
+TOP 0
+>gsdumpstack|1
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+L|avoid goal Quad Damage, number 3 for 30.000000 seconds
+L|avoid goal Heavy Armor, number 1 for 25.000000 seconds
+>gspop|1
+>gsltg|1|300|32|5|33324990|0|50|100|60
+LTG 0
+TOP 0
+>gsltg|2|300|32|5|33324990|0|50|100|60
+LTG 1
+TOP 1
+ G O #42200000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 4 NUM 4 F 1 I 2
+>gsltg|2|300|32|5|33324990|0|50|100|60
+LTG 1
+TOP 1
+ G O #432a0000 #42000000 #3e800000 A 3 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 1 NUM 1 F 1 I 0
+>gsltg|1|0|0|0|33324990|0|50|100|60
+LTG 0
+TOP 0
+>gsltg|1|40|32|5|1572866|0|50|100|60
+LTG 0
+TOP 0
+>gsltg|1|40|32|5|0|0|50|100|60
+LTG 0
+TOP 0
+>gsltg|1|40|32|5|33324990|0|50|100|60
+LTG 0
+TOP 0
+>gsltg|1|40|32|5|33324990|0|50|100|60
+LTG 0
+TOP 0
+>gsnbg|1|40|32|5|33324990|500|0|0|50|100|60
+NBG 0
+TOP 0
+>gsnbg|1|40|32|5|33324990|500|1|0|50|100|60
+P3|AAS_AreaTravelTimeToGoalArea: goalareanum 0 out of range\x0A
+NBG 0
+TOP 0
+>gsnbg|1|40|32|5|33324990|5|1|0|50|100|60
+P3|AAS_AreaTravelTimeToGoalArea: goalareanum 0 out of range\x0A
+NBG 0
+TOP 0
+>gsnbg|2|40|32|5|33324990|500|1|0|50|100|60
+NBG 1
+TOP 1
+ G O #41f00000 #42000000 #3e800000 A 1 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 6 NUM 7 F 1 I 1
+>gsnbg|2|200|32|5|33324990|500|0|0|50|100|60
+NBG 1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 5 NUM 6 F 3 I 5
+>gsnbg|3|200|32|5|33324990|500|0|0|50|100|60
+NBG 0
+TOP 0
+>gsnbg|2|0|0|0|33324990|500|0|0|50|100|60
+NBG 1
+TOP 1
+ G O #43af0000 #42000000 #3e800000 A 6 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 3 NUM 3 F 1 I 3
+>gstop|1
+TOP 0
+>gssecond|1
+SECOND 0
+>gsdumpstack|1
+>gsavoid|1|1
+AV T #41c80000
+>gsavoid|1|2
+AV T #00000000
+>gsavoid|1|3
+AV T #41f00000
+>gsavoid|1|99
+AV T #00000000
+>gssetavoid|1|3|20
+>gssetavoid|1|4|-1
+>gssetavoid|1|99|-1
+>gssetavoid|1|2|-1
+>gsavoid|1|3
+AV T #41a00000
+>gsavoid|1|4
+AV T #41200000
+>gsdumpavoid|1
+L|avoid goal Roam, number 6 for 30.000000 seconds
+L|avoid goal Rocket Launcher, number 4 for 10.000000 seconds
+L|avoid goal Health, number 7 for 35.000000 seconds
+L|avoid goal Quad Damage, number 3 for 20.000000 seconds
+L|avoid goal Heavy Armor, number 1 for 25.000000 seconds
+L|avoid goal Health, number 2 for 35.000000 seconds
+>time|12
+>gsavoid|1|3
+AV T #41900000
+>gsremoveavoid|1|3
+>gsavoid|1|3
+AV T #00000000
+>gsresetavoid|1
+>gsdumpavoid|1
+>gsname|1|40
+NAME Heavy Armor
+>gsname|2|5
+NAME Heal
+>gsname|3|1
+NAME 
+>gsname|999|40
+NAME 
+>gsname|4|40
+NAME Rocket Launcher
+>gsempty|1
+>gspush|1|10|32|5|3|1|1|1|0
+>gspush|1|20|32|5|3|1|2|1|0
+>gspush|1|30|32|5|3|1|3|1|0
+>gspush|1|40|32|5|3|1|4|1|0
+>gspush|1|50|32|5|3|1|5|1|0
+>gspush|1|60|32|5|3|1|6|1|0
+>gspush|1|70|32|5|3|1|7|1|0
+>gspush|1|80|32|5|3|1|8|1|0
+P3|goal heap overflow\x0A
+L|1: Heavy Armor
+L|2: Health
+L|3: Quad Damage
+L|4: Rocket Launcher
+L|5: Rockets
+L|6: Roam
+L|7: Health
+>gspush|1|90|32|5|3|1|9|1|0
+P3|goal heap overflow\x0A
+L|1: Heavy Armor
+L|2: Health
+L|3: Quad Damage
+L|4: Rocket Launcher
+L|5: Rockets
+L|6: Roam
+L|7: Health
+>gsdumpstack|1
+L|1: Heavy Armor
+L|2: Health
+L|3: Quad Damage
+L|4: Rocket Launcher
+L|5: Rockets
+L|6: Roam
+L|7: Health
+>gstop|1
+TOP 1
+ G O #428c0000 #42000000 #40a00000 A 3 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 1 NUM 7 F 1 I 0
+>gssecond|1
+SECOND 1
+ G O #42700000 #42000000 #40a00000 A 3 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 1 NUM 6 F 1 I 0
+>gstouch|1|90|32|5
+TOUCH 1
+>gstouch|1|200|32|5
+TOUCH 0
+>gsvis|1|1|10|32|5
+VIS 0
+>gsvis|1|1|-10|32|5
+VIS 0
+>gsvis|1|1|10|32|50
+VIS 0
+>gspop|1
+>gspop|1
+>gsempty|1
+>gspop|1
+>gstop|1
+TOP 0
+>gssecond|1
+SECOND 0
+>gsnbg|1|0|0|0|33324990|500|0|0
+NBG 1
+TOP 1
+ G O #42200000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 4 NUM 4 F 1 I 2
+>gstouch|1|90|32|5
+TOUCH 0
+>gsvis|1|1|10|32|5
+VIS 0
+>gsreset|1
+>gsreset|0
+P4|goal state handle 0 out of range\x0A
+>gsreset|99
+P4|goal state handle 99 out of range\x0A
+>gsfree|0
+P4|goal state handle 0 out of range\x0A
+>gsfree|99
+P4|goal state handle 99 out of range\x0A
+>gsfree|3
+>gsfree|3
+P4|invalid goal state handle 3\x0A
+>gstop|3
+P4|invalid goal state 3\x0A
+TOP 0
+>gslevelgoal|-1|Health
+LG 10
+ G O #43570000 #42200000 #3e800000 A 4 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 0 NUM 10 F 1 I 0
+>gslevelgoal|-1|health
+LG 10
+ G O #43570000 #42200000 #3e800000 A 4 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 0 NUM 10 F 1 I 0
+>gslevelgoal|-1|Rockets
+LG 5
+ G O #42c80000 #42000000 #40a00000 A 2 N #c1200000 #c1200000 #c1200000 X #41200000 #41200000 #41200000 E 0 NUM 5 F 1 I 0
+>gslevelgoal|-1|Unweighted
+LG 12
+ G O #43aa0000 #42200000 #3e800000 A 6 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 12 F 1 I 0
+>gslevelgoal|-1|Roam
+LG 6
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 5 NUM 6 F 1 I 0
+>gslevelgoal|-1|Nothing
+LG -1
+>gslevelgoal|2|health
+LG -1
+>gslevelgoal|3|health
+LG 2
+ G O #43660000 #42000000 #3e800000 A 4 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 0 NUM 2 F 1 I 0
+>gslevelgoal|99|health
+LG -1
+>gslevelgoal|1|Quad Damage
+LG -1
+>gsloc|Red Base
+LOC 1
+ G O #42200000 #41a00000 #40a00000 A 1 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gsloc|blue base
+LOC 1
+ G O #43a50000 #41a00000 #40a00000 A 6 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gsloc|none
+LOC 0
+>gscamp|-1
+CAMP 1
+ G O #c2c80000 #42000000 #40a00000 A 1 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gscamp|0
+CAMP 1
+ G O #c2c80000 #42000000 #40a00000 A 1 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gscamp|1
+CAMP 2
+ G O #436b0000 #41a00000 #40a00000 A 4 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gscamp|2
+CAMP 3
+ G O #432a0000 #41a00000 #40a00000 A 3 N #c1000000 #c1000000 #c1000000 X #41000000 #41000000 #41000000 E 0 NUM 0 F 0 I 0
+>gscamp|3
+CAMP 0
+>entity|20|1|2|13|200|32|0.5|200|32|0.5|0|0
+>time|14
+>goalupdate
+>golist
+LI 32 2 0 W #00000000 O #43480000 #42000000 #3f000000 GA 4 GO #43480000 #42000000 #3f000000 E 20 T #42300000
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>entity|21|1|2|13|130|32|0.5|130|32|0.5|0|0
+>goalupdate
+>golist
+LI 32 2 0 W #00000000 O #43480000 #42000000 #3f000000 GA 4 GO #43480000 #42000000 #3f000000 E 20 T #42300000
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>gsltg|2|130|32|0.5|33324990|0|0|0|0|0
+LTG 1
+TOP 1
+ G O #43480000 #42000000 #3f000000 A 4 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 20 NUM 32 F 5 I 2
+>entity|20|1|2|11|200|32|0.5|200|32|0.5|0|0
+>entity|1|1|2|11|172|32|0.25|172|32|0.25|0|0
+>goalupdate
+>golist
+LI 32 0 0 W #00000000 O #43480000 #42000000 #3f000000 GA 4 GO #43480000 #42000000 #3f000000 E 20 T #42300000
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432c0000 #42000000 #3e800000 GA 3 GO #432c0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>entity|4|1|2|13|41|32|0.25|40|32|0.25|0|0
+>goalupdate
+>time|50
+>goalupdate
+>golist
+LI 32 0 0 W #00000000 O #43480000 #42000000 #3f000000 GA 4 GO #43480000 #42000000 #3f000000 E 20 T #42a00000
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432c0000 #42000000 #3e800000 GA 3 GO #432c0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>entityclear
+>goalupdate
+>golist
+LI 32 0 0 W #00000000 O #43480000 #42000000 #3f000000 GA 4 GO #43480000 #42000000 #3f000000 E 20 T #42a00000
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 2 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #3e800000 GA 1 GO #41f00000 #42000000 #3e800000 E 6 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 5 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 4 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 3 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432c0000 #42000000 #3e800000 GA 3 GO #432c0000 #42000000 #3e800000 E 1 T #00000000
+LIN 12
+>gsalloc|14
+H 3
+>gsweights|3|bots/goal_i.c
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>gsbreed|1|2|3
+P3|cannot interbreed weight configs, unequal next\x0A
+P3|cannot interbreed weight configs, unequal next\x0A
+P3|cannot interbreed weight configs, unequal next\x0A
+>gsbreed|2|1|3
+>gsmutate|1
+>gsmutate|3
+>gsfreeweights|1
+>gsfreeweights|1
+>gsweights|1|bots/goal_i.c
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>gsmutate|1
+>gsfree|1
+>gsfree|2
+>gsfree|3
+>libvar|g_gametype|2
+>gsshutdown
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>time|10
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P1|ammo_rockets in solid at (100.0 32.0 5.0)\x0A
+L|entity item_flag_red unknown item\x0D\x0A
+P3|item item_armor_body without origin\x0A
+L|item item_health reachable from jumppad area 0\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+P1|found 12 level items\x0A
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43520000 #42200000 #3e800000 GA 4 GO #43520000 #42200000 #3e800000 E 0 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #40a00000 GA 1 GO #41f00000 #42000000 #40a00000 E 0 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 0 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 0 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 0 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 12
+>gsalloc|21
+H 1
+>gsweights|1|bots/goal_i.c
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>entity|1|1|2|11|170|32|0.25|170|32|0.25|0|0
+>entity|2|1|2|12|230|32|0.25|230|32|0.25|0|0
+>entity|3|1|2|14|350|32|0.25|350|32|0.25|0|0
+>entity|31|1|2|12|220|40|0.25|220|40|0.25|0|0
+>entity|32|1|2|12|225|40|0.25|225|40|0.25|0|0
+>entity|33|1|2|12|215|40|0.25|215|40|0.25|0|0
+>entity|34|1|2|12|210|40|0.25|210|40|0.25|0|0
+>entity|35|1|2|12|340|40|0.25|340|40|0.25|0|0
+>goalupdate
+>gsltg|1|40|32|5|33324990|0|50|100|60
+LTG 1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gslevelgoal|-1|Health
+LG 47
+ G O #43aa0000 #42200000 #3e800000 A 6 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 35 NUM 47 F 5 I 0
+>gsfree|1
+>entityclear
+>libvar|g_gametype|3
+>gsshutdown
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>time|10
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P1|ammo_rockets in solid at (100.0 32.0 5.0)\x0A
+L|entity item_flag_red unknown item\x0D\x0A
+P3|item item_armor_body without origin\x0A
+L|item item_health reachable from jumppad area 0\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+P1|found 12 level items\x0A
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43520000 #42200000 #3e800000 GA 4 GO #43520000 #42200000 #3e800000 E 0 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #40a00000 GA 1 GO #41f00000 #42000000 #40a00000 E 0 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 0 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 0 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 0 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 12
+>gsalloc|21
+H 1
+>gsweights|1|bots/goal_i.c
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>entity|1|1|2|11|170|32|0.25|170|32|0.25|0|0
+>entity|2|1|2|12|230|32|0.25|230|32|0.25|0|0
+>entity|3|1|2|14|350|32|0.25|350|32|0.25|0|0
+>entity|31|1|2|12|220|40|0.25|220|40|0.25|0|0
+>entity|32|1|2|12|225|40|0.25|225|40|0.25|0|0
+>entity|33|1|2|12|215|40|0.25|215|40|0.25|0|0
+>entity|34|1|2|12|210|40|0.25|210|40|0.25|0|0
+>entity|35|1|2|12|340|40|0.25|340|40|0.25|0|0
+>goalupdate
+>gsltg|1|40|32|5|33324990|0|50|100|60
+LTG 1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gslevelgoal|-1|Health
+LG 47
+ G O #43aa0000 #42200000 #3e800000 A 6 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 35 NUM 47 F 5 I 0
+>gsfree|1
+>entityclear
+>libvar|g_gametype|4
+>gsshutdown
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>time|10
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P1|ammo_rockets in solid at (100.0 32.0 5.0)\x0A
+L|entity item_flag_red unknown item\x0D\x0A
+P3|item item_armor_body without origin\x0A
+L|item item_health reachable from jumppad area 0\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+P1|found 12 level items\x0A
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43520000 #42200000 #3e800000 GA 4 GO #43520000 #42200000 #3e800000 E 0 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #40a00000 GA 1 GO #41f00000 #42000000 #40a00000 E 0 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 0 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 0 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 0 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 12
+>gsalloc|21
+H 1
+>gsweights|1|bots/goal_i.c
+L|item info 6 "item_unweighted" has no fuzzy weight\x0D\x0A
+RC 0
+>entity|1|1|2|11|170|32|0.25|170|32|0.25|0|0
+>entity|2|1|2|12|230|32|0.25|230|32|0.25|0|0
+>entity|3|1|2|14|350|32|0.25|350|32|0.25|0|0
+>entity|31|1|2|12|220|40|0.25|220|40|0.25|0|0
+>entity|32|1|2|12|225|40|0.25|225|40|0.25|0|0
+>entity|33|1|2|12|215|40|0.25|215|40|0.25|0|0
+>entity|34|1|2|12|210|40|0.25|210|40|0.25|0|0
+>entity|35|1|2|12|340|40|0.25|340|40|0.25|0|0
+>goalupdate
+>gsltg|1|40|32|5|33324990|0|50|100|60
+LTG 1
+TOP 1
+ G O #42700000 #42000000 #3e800000 A 1 N #c1700000 #c1700000 #c1700000 X #41700000 #41700000 #41700000 E 0 NUM 6 F 3 I 5
+>gslevelgoal|-1|Health
+LG 47
+ G O #43aa0000 #42200000 #3e800000 A 6 N #c1400000 #c1400000 #c1400000 X #41400000 #41400000 #41400000 E 35 NUM 47 F 5 I 0
+>gsfree|1
+>entityclear
+>libvar|g_gametype|0
+>gsshutdown
+>libvar|max_levelitems|2
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P4|out of level items\x0A
+>golist
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 2
+>libvar|max_levelitems|256
+>libvar|itemconfig|nothere.c
+>goalsetup
+P3|counldn't load nothere.c\x0A
+P4|couldn't load item config\x0A
+RC 10
+>libvar|itemconfig|items.c
+>goalsetup
+P1|loaded items.c\x0A
+RC 0
+>goalinit
+P1|2 map locations\x0A
+P1|3 camp spots\x0A
+L|item ammo_rockets has modelindex 0
+L|entity worldspawn unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_bobbing unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_plat unknown item\x0D\x0A
+L|entity func_door unknown item\x0D\x0A
+L|entity func_static unknown item\x0D\x0A
+L|entity func_train unknown item\x0D\x0A
+P1|ammo_rockets in solid at (100.0 32.0 5.0)\x0A
+L|entity item_flag_red unknown item\x0D\x0A
+P3|item item_armor_body without origin\x0A
+L|item item_health reachable from jumppad area 0\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity target_location unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+L|entity info_camp unknown item\x0D\x0A
+P1|found 12 level items\x0A
+>golist
+LI 12 6 0 W #00000000 O #43aa0000 #42200000 #3e800000 GA 6 GO #43aa0000 #42200000 #3e800000 E 0 T #00000000
+LI 11 1 8 W #00000000 O #43520000 #42200000 #3e800000 GA 4 GO #43520000 #42200000 #3e800000 E 0 T #00000000
+LI 10 1 4 W #00000000 O #43570000 #42200000 #3e800000 GA 4 GO #43570000 #42200000 #3e800000 E 0 T #00000000
+LI 9 1 2 W #00000000 O #43610000 #42200000 #3e800000 GA 4 GO #43610000 #42200000 #3e800000 E 0 T #00000000
+LI 8 1 1 W #00000000 O #435c0000 #42200000 #3e800000 GA 4 GO #435c0000 #42200000 #3e800000 E 0 T #00000000
+LI 7 1 0 W #00000000 O #41f00000 #42000000 #40a00000 GA 1 GO #41f00000 #42000000 #40a00000 E 0 T #00000000
+LI 6 5 16 W #40200000 O #42700000 #42000000 #3e800000 GA 1 GO #42700000 #42000000 #3e800000 E 0 T #00000000
+LI 5 4 0 W #00000000 O #42c80000 #42000000 #40a00000 GA 2 GO #42c80000 #42000000 #40a00000 E 0 T #00000000
+LI 4 2 0 W #00000000 O #42200000 #42000000 #3e800000 GA 1 GO #42200000 #42000000 #3e800000 E 0 T #00000000
+LI 3 3 0 W #00000000 O #43af0000 #42000000 #3e800000 GA 6 GO #43af0000 #42000000 #3e800000 E 0 T #00000000
+LI 2 1 0 W #00000000 O #43660000 #42000000 #3e800000 GA 4 GO #43660000 #42000000 #3e800000 E 0 T #00000000
+LI 1 0 0 W #00000000 O #432a0000 #42000000 #3e800000 GA 3 GO #432a0000 #42000000 #3e800000 E 0 T #00000000
+LIN 12
+>mvsetup
+P1|entity func_plat model number out of range\x0A
+P1|entity func_door model number out of range\x0A
+RC 0
+>mvalloc
+H 1
+>mvalloc
+H 2
+>mvfree|2
+>mvfree|2
+P4|invalid move state 2\x0A
+>mvfree|0
+P4|move state handle 0 out of range\x0A
+>mvreset|7
+P4|invalid move state 7\x0A
+>mvarea|32|32|5|3
+AREA 1
+>mvarea|32|32|50|3
+AREA 1
+>mvarea|500|32|5|3
+AREA 6
+>mvarea|0|0|0|3
+AREA 0
+>mvfuzzy|32|32|5
+AREA 1
+>mvfuzzy|32|32|200
+AREA 0
+>mvfuzzy|-20|32|5
+AREA 1
+>mvfuzzy|64|32|5
+AREA 1
+>mvfuzzy|96|32|2
+AREA 2
+>entity|30|1|4|1|300|32|-12|300|32|-12|0|0
+>entity|31|1|4|2|330|32|-12|330|32|-12|0|0
+>mvreset|1
+>mvreset|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|60|32|40|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|60|32|40|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|60|32|40|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvsim|1|3|8|0.1|40|32|5|33324990|100|32|5|2|0|0|0
+TIC 0 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 1 O #427f0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 2 O #41be0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 128 W 0
+TIC 3 O #427f0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 4 O #41be0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 128 W 0
+TIC 5 O #427f0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 6 O #41be0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 128 W 0
+TIC 7 O #427f0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>mvreset|1
+>mvinit|1|32|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|32|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|70|32|50|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f0bd835 #00000000 #bf566da6 V #c3978e40 #00000000 #00000000
+ IN T #3dcccccd D #3f0bd835 #00000000 #bf566da6 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|70|32|50|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f0bd835 #00000000 #bf566da6 V #c3978e40 #00000000 #00000000
+ IN T #3dcccccd D #3f0bd835 #00000000 #bf566da6 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvinit|1|70|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f0bd835 #00000000 #bf566da6 V #c3978e40 #00000000 #00000000
+ IN T #3dcccccd D #3f0bd835 #00000000 #bf566da6 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>eareset|3
+>mvsim|1|3|8|0.1|32|32|5|33324990|160|32|5|3|0|0|0
+TIC 0 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 1 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 2 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 3 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 4 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 5 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 6 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+TIC 7 O #42000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43c80000 V #00000000 #00000000 #00000000 A 0 W 0
+>mvreset|1
+>mvinit|1|30|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|30|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|60|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 12 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|60|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 12 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|60|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 12 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|30|32|5|33324990|288|32|5|5|0|0|0
+TIC 0 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 1 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 2 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 3 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 4 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 5 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 6 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 7 O #41f00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 12 FL 24 W 5 D #00000000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>mvreset|1
+>mvinit|1|90|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bee62706 #00000000 #3f64ad7a V #c27d263b #43340000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>eareset|3
+>mvinit|1|90|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf659919 #00000000 #3ee2751f V #c1d20174 #43340000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>eareset|3
+>mvinit|1|90|32|20|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf1cdb0d #00000000 #3f4a513d V #c250dae1 #43340000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>eareset|3
+>mvinit|1|90|32|20|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf52cf08 #00000000 #3f113e5c V #c20a43c4 #43340000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>eareset|3
+>mvinit|1|90|32|20|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf5df840 #00000000 #beff1270 V #c3a50f57 #43340000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|90|32|5|33324990|32|32|5|1|0|0|0
+TIC 0 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bef3f0d3 #00000000 #3f61137a V #c2762f87 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 1 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf09726d #00000000 #3f57f917 V #c2661ba4 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 2 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf36a741 #00000000 #3f335ed5 V #c231ebfa #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 3 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf63beb0 #00000000 #3ee9d2a2 V #c1d96325 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 4 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf7fcde4 #00000000 #3d2023ff V #c00f66e2 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 5 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf686fff #00000000 #bed68ee5 V #c3a79cc6 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 6 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf0de0fe #00000000 #3f551678 V #c2615fa0 #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+TIC 7 O #42b40000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 9 FL 1 W 0 D #bf45f0fd #00000000 #3f2257c8 V #c21d6daf #43340000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 544 W 5
+>mvreset|1
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|100|32|20|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|100|32|20|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|100|32|20|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|100|32|5|33324990|160|32|5|3|0|0|0
+TIC 0 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 1 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 2 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 3 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 4 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 5 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 6 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 7 O #42c80000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #bf800000 V #c3870000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>mvreset|1
+>mvinit|1|110|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|110|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|110|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3ae1da9 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #42d00000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|110|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3ae1da9 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #42d00000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|110|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3ae1da9 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #42d00000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|110|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 1 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 2 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 3 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 4 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 5 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 6 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 7 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 5
+>mvreset|1
+>mvinit|1|150|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 16 W 5
+>eareset|3
+>mvinit|1|150|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 128 W 5
+>eareset|3
+>mvinit|1|150|32|40|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|150|32|40|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|150|32|40|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|150|32|5|33324990|100|32|5|2|0|0|0
+TIC 0 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 1 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 128 W 5
+TIC 2 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 3 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 128 W 5
+TIC 4 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 5 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 128 W 5
+TIC 6 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 7 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 4 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 128 W 5
+>mvreset|1
+>mvinit|1|170|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|170|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|180|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|180|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvinit|1|180|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 5
+>eareset|3
+>mvsim|1|3|8|0.1|170|32|5|33324990|224|32|5|4|0|0|0
+TIC 0 O #432a0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 1 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f7fffff #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 2 O #433e0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 128 W 5
+TIC 3 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 5
+TIC 4 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #42c00000 V #42b40000 #00000000 #00000000 A 128 W 5
+TIC 5 O #4351999a #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #42666660 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 6 O #43575c29 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #420a3d70 V #42b40000 #00000000 #00000000 A 0 W 5
+TIC 7 O #435ad0e5 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f7fffff #00000000 #00000000 S #41a5e360 V #42b40000 #00000000 #00000000 A 0 W 5
+>mvreset|1
+>mvinit|1|160|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 17 W 9
+>eareset|3
+>mvinit|1|160|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 129 W 9
+>eareset|3
+>mvinit|1|180|32|40|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|180|32|40|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 0 W 0 D #3f7fea77 #bcd1fb71 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f7fea77 #bcd1fb71 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|180|32|40|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|160|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 17 W 9
+TIC 1 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 2 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 17 W 9
+TIC 3 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 4 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 17 W 9
+TIC 5 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 6 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 17 W 9
+TIC 7 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+>mvreset|1
+>mvinit|1|200|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+>eareset|3
+>mvinit|1|200|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+>eareset|3
+>mvinit|1|200|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|200|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|200|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|160|32|5|3|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|200|32|5|33324990|160|32|5|3|0|0|0
+TIC 0 O #43480000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 3 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 1 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|240|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>eareset|3
+>mvinit|1|240|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>eareset|3
+>mvinit|1|240|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>eareset|3
+>mvinit|1|240|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>eareset|3
+>mvinit|1|240|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|240|32|5|33324990|288|32|5|5|0|0|0
+TIC 0 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 1 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 2 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 3 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 4 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 5 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 6 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 7 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f44aa27 #00000000 #3f23e320 V #c28865ae #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>mvreset|1
+>mvinit|1|270|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|270|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|270|32|25|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|270|32|25|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf7ec9dd #bdc7019e #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf7ec9dd #bdc7019e #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|270|32|25|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|224|32|5|4|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|270|32|5|33324990|224|32|5|4|0|0|0
+TIC 0 O #43870000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 7 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43700000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #42800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #4369999a #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf7fffff #00000000 #00000000 S #421999a0 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #4365c290 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #41b85200 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #436374bd #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #415d2f40 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #436212d8 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #436212d8 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #436212d8 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f72dcea #00000000 #bea1e89c S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f72dcea #00000000 #bea1e89c S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f72dcea #00000000 #bea1e89c S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|300|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #43960000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43d0d1b0 #42000000 #427f46c2
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6cb #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6cb #00000000 #bf2ad84e S #43b045ee V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43c3b103 #42000000 #42212a74
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6ca #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6ca #00000000 #bf2ad84e S #4353871d V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43bbd09b #42000000 #41d16625
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c8 #00000000 #bf2ad853 V #c39f116c #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c8 #00000000 #bf2ad853 S #42fdd550 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43b716c3 #42000000 #418da3b0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c3 #00000000 #bf2ad858 V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c3 #00000000 #bf2ad858 S #42984cc4 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43b440db #42000000 #4149f7a0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6bb #00000000 #bf2ad861 V #c39f116a #43340000 #00000000
+ I T #3dcccccd D #bf3ea6bb #00000000 #bf2ad861 S #4236c280 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43b28d50 #42000000 #41192e2c
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6b4 #00000000 #bf2ad866 V #c39f1169 #43340000 #00000000
+ I T #3dcccccd D #bf3ea6b4 #00000000 #bf2ad866 S #41db4fc0 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43b187fd #42000000 #40f7d102
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c0 #00000000 #bf2ad85b V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c0 #00000000 #bf2ad85b S #41839650 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|330|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #bf800000 S #43341998 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #bf800000 S #43341998 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #c1d00000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #c1d00000 S #436e3176 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #c1d00000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #c1d00000 S #436e3176 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #c1d00000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #c1d00000 S #436e3176 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|330|32|5|33323966|288|32|5|5|0|0|0
+TIC 0 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43a50000 #42000000 #40a00000
+ R F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|350|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|350|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|350|32|30|80|0|20|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|350|32|30|-60|20|-30|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|350|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|4
+>mvgoal|1|3|33324990|32|32|5|1|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|350|32|5|33324990|32|32|5|1|0|0|0
+TIC 0 O #43af0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #00000000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43af0000 #42000000 #3e800000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>entity|30|1|4|1|300|32|30|300|32|30|0|0
+>entity|31|1|4|2|480|32|-12|480|32|-12|0|0
+>mvreset|1
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f72dcea #00000000 #bea1e89c S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|300|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #43960000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43d0d1b0 #42000000 #427f46c2
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6cb #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6cb #00000000 #bf2ad84e S #43b045ee V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43c3b103 #42000000 #42212a74
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6ca #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6ca #00000000 #bf2ad84e S #4353871d V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43bbd09b #42000000 #41d16625
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c8 #00000000 #bf2ad853 V #c39f116c #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c8 #00000000 #bf2ad853 S #42fdd550 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43b716c3 #42000000 #418da3b0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c3 #00000000 #bf2ad858 V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c3 #00000000 #bf2ad858 S #42984cc4 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43b440db #42000000 #4149f7a0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6bb #00000000 #bf2ad861 V #c39f116a #43340000 #00000000
+ I T #3dcccccd D #bf3ea6bb #00000000 #bf2ad861 S #4236c280 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43b28d50 #42000000 #41192e2c
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6b4 #00000000 #bf2ad866 V #c39f1169 #43340000 #00000000
+ I T #3dcccccd D #bf3ea6b4 #00000000 #bf2ad866 S #41db4fc0 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43b187fd #42000000 #40f7d102
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c0 #00000000 #bf2ad85b V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c0 #00000000 #bf2ad85b S #41839650 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|330|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #bf800000 S #43341998 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|30|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #c1d00000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #c1d00000 S #436e3176 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|330|32|5|33323966|288|32|5|5|0|0|0
+TIC 0 O #43a50000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #c1f00000 #00000000 #bf800000 S #43341998 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #4337dffb #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf7fffff #00000000 #00000000 S #4386aff4 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #431ceffe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 3 O #4344effe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f6cf5ff #00000000 #3ec1c205 V #c24b3c80 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 640 W 9
+TIC 4 O #4344effe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f6cf5ff #00000000 #3ec1c205 V #c24b3c80 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 5 O #4344effe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f6cf5ff #00000000 #3ec1c205 V #c24b3c80 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 6 O #4344effe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f6cf5ff #00000000 #3ec1c205 V #c24b3c80 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+TIC 7 O #4344effe #42000000 #3e0443a9
+ R F 0 T 0 B 0 BE 0 TT 6 FL 1 W 0 D #3f6cf5ff #00000000 #3ec1c205 V #c24b3c80 #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 512 W 9
+>solid|30|280|10|-40|320|50|-20
+>solid|31|440|10|-40|520|50|-20
+>mvreset|1
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|480|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf800000 #00000000 #00000000 V #80000000 #43340000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|300|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #43960000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43d0d1b0 #42000000 #427f46c2
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6cb #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6cb #00000000 #bf2ad84e S #43b045ee V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43c3b103 #42000000 #42212a74
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6ca #00000000 #bf2ad84e V #c39f116d #43340000 #00000000
+ I T #3dcccccd D #bf3ea6ca #00000000 #bf2ad84e S #4353871d V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43bbd09b #42000000 #41d16625
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c8 #00000000 #bf2ad853 V #c39f116c #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c8 #00000000 #bf2ad853 S #42fdd550 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43b716c3 #42000000 #418da3b0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c3 #00000000 #bf2ad858 V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c3 #00000000 #bf2ad858 S #42984cc4 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43b440db #42000000 #4149f7a0
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6bb #00000000 #bf2ad861 V #c39f116a #43340000 #00000000
+ I T #3dcccccd D #bf3ea6bb #00000000 #bf2ad861 S #4236c280 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43b28d50 #42000000 #41192e2c
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6b4 #00000000 #bf2ad866 V #c39f1169 #43340000 #00000000
+ I T #3dcccccd D #bf3ea6b4 #00000000 #bf2ad866 S #41db4fc0 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43b187fd #42000000 #40f7d102
+ R F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #bf3ea6c0 #00000000 #bf2ad85b V #c39f116b #43340000 #00000000
+ I T #3dcccccd D #bf3ea6c0 #00000000 #bf2ad85b S #41839650 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|330|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 19 FL 2 W 0 D #c1f00000 #00000000 #bf800000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #c1f00000 #00000000 #bf800000 S #43341998 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #42400000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|480|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33323966|288|32|5|5|0|0|0
+RES F 0 T 2 B 0 BE 0 TT 19 FL 6 W 0 D #bf7ffe8c #00000000 #bbda72d0 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|8|0.1|300|32|5|33323966|288|32|5|5|0|0|0
+TIC 0 O #43960000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #42400000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #4393999a #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #41e66680 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #439228f6 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #418a3d80 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43914bc7 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #4125e380 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #4390c711 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #4390c711 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #4390c711 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #4390c711 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>clearsolids
+>solid|30|280|10|-40|320|50|-20
+>solid|60|0|10|-40|60|50|-20
+>entity|60|1|1|3|30|32|-10|30|32|-10|0|0
+>entity|61|1|1|4|130|32|-10|130|32|-10|0|0
+>entity|62|1|1|2|230|32|-10|230|32|-10|0|0
+>entity|63|1|1|9|330|32|-10|330|32|-10|0|0
+>solid|61|90|10|-40|170|50|-20
+>solid|62|190|10|-40|270|50|-20
+>solid|63|290|10|-40|370|50|-20
+>mvreset|1
+>mvinit|1|30|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|130|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 13 FL 24 W 9 D #3f800000 #00000000 #00000000 V #42b40000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43160000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|230|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 2 B 0 BE 0 TT 19 FL 4 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43b40000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|330|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #42b00000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|60|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|300|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 11 FL 0 W 0 D #41f00000 #00000000 #41700000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #41f00000 #00000000 #41700000 S #43493f02 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvarea|30|32|5|3
+AREA 1
+>mvarea|130|32|5|3
+AREA 3
+>mvarea|230|32|5|3
+AREA 5
+>mvarea|300|32|5|3
+AREA 6
+>clearsolids
+>entityclear
+>solid|50|100|20|-10|120|45|60
+>entity|50|1|1|0|100|32|0|100|32|0|0|0
+>mvreset|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #00000000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>clearsolids
+>mvreset|1
+>mvgoal|1|3|33324990|0|0|0|0|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #00000000 #00000000 #00000000 V #c3870000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|120|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #42a00000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|120|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 8 FL 2 W 0 D #3f800000 #00000000 #00000000 V #80000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #42a00000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|500|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|120|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #bf7ffe8c #00000000 #bbda72d0 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf7ffe8c #00000000 #bbda72d0 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|-20|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|120|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 2 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|120|32|5|7|0|0|0
+P3|AAS_AreaTravelTimeToGoalArea: goalareanum 7 out of range\x0A
+P3|AAS_AreaTravelTimeToGoalArea: goalareanum 7 out of range\x0A
+P3|AAS_AreaTravelTimeToGoalArea: goalareanum 7 out of range\x0A
+RES F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|0|120|32|5|2|0|0|0
+RES F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvgoal|1|3|33324990|null
+RES F 1 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvgoal|99|3|33324990|100|32|5|2|0|0|0
+P4|move state handle 99 out of range\x0A
+RES F 0 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvinit|99|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+P4|move state handle 99 out of range\x0A
+>mvdir|99|3|1|0|0|200|1
+P4|move state handle 99 out of range\x0A
+DIR 0
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvavoidspot|1|72|32|5|20|1
+>mvavoidspot|1|60|32|5|20|2
+>mvavoidspot|1|0|0|0|0|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 256 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvresetavoid|1
+>mvresetlast|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvavoidspot|1|0|0|0|0|0
+>mvresetlast|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|100|32|5|2|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvresetavoid|1
+>mvresetlast|1
+>mvavoidspot|1|10|32|5|15|1
+>mvavoidspot|1|20|32|5|15|1
+>mvavoidspot|1|30|32|5|15|1
+>mvavoidspot|1|40|32|5|15|1
+>mvavoidspot|1|50|32|5|15|1
+>mvavoidspot|1|60|32|5|15|1
+>mvavoidspot|1|70|32|5|15|1
+>mvavoidspot|1|80|32|5|15|1
+>mvavoidspot|1|90|32|5|15|1
+>mvavoidspot|1|100|32|5|15|1
+>mvavoidspot|1|110|32|5|15|1
+>mvavoidspot|1|120|32|5|15|1
+>mvavoidspot|1|130|32|5|15|1
+>mvavoidspot|1|140|32|5|15|1
+>mvavoidspot|1|150|32|5|15|1
+>mvavoidspot|1|160|32|5|15|1
+>mvavoidspot|1|170|32|5|15|1
+>mvavoidspot|1|180|32|5|15|1
+>mvavoidspot|1|190|32|5|15|1
+>mvavoidspot|1|200|32|5|15|1
+>mvavoidspot|1|210|32|5|15|1
+>mvavoidspot|1|220|32|5|15|1
+>mvavoidspot|1|230|32|5|15|1
+>mvavoidspot|1|240|32|5|15|1
+>mvavoidspot|1|250|32|5|15|1
+>mvavoidspot|1|260|32|5|15|1
+>mvavoidspot|1|270|32|5|15|1
+>mvavoidspot|1|280|32|5|15|1
+>mvavoidspot|1|290|32|5|15|1
+>mvavoidspot|1|300|32|5|15|1
+>mvavoidspot|1|310|32|5|15|1
+>mvavoidspot|1|320|32|5|15|1
+>mvavoidspot|1|330|32|5|15|1
+>mvavoidspot|1|340|32|5|15|1
+>mvavoidspot|1|0|0|0|0|0
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|1
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|1
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|1
+DIR 1
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|0|1|0|300|2
+DIR 1
+ IN T #3dcccccd D #00000000 #3f800000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 128 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|0|1|0|300|2
+DIR 1
+ IN T #3dcccccd D #00000000 #3f800000 #00000000 S #43960000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|0|1|0|300|2
+DIR 1
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|4
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 16 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|4
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 128 W 9
+>eareset|3
+>mvinit|1|40|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|200|4
+DIR 1
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|100|0
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #42c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|100|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|100|0
+DIR 1
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #42c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|100|0
+DIR 1
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|40|32|50|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvdir|1|3|1|0|0|100|0
+DIR 1
+ IN T #3dcccccd D #00000000 #00000000 #00000000 S #00000000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|40|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvview|1|33324990|5|352|32|5|6|0|0|0
+VT 1 T #420c278a #42000000 #408c278a
+>mvview|1|33324990|50|352|32|5|6|0|0|0
+VT 1 T #431d5f4d #42000000 #4195b8fe
+>mvview|1|33324990|200|352|32|5|6|0|0|0
+VT 1 T #43200000 #42000000 #40800000
+>mvview|1|33324990|800|352|32|5|6|0|0|0
+VT 1 T #43200000 #42000000 #40800000
+>mvview|7|33324990|50|352|32|5|6|0|0|0
+P4|invalid move state 7\x0A
+VT 0 T #00000000 #00000000 #00000000
+>mvreset|1
+>mvview|1|33324990|50|352|32|5|6|0|0|0
+VT 0 T #00000000 #00000000 #00000000
+>mvpredict|40|32|5|1|33324990|352|32|5|6|0|0|0
+PV 1 T #43160000 #42000000 #42700000
+>mvpredict|100|32|5|2|33324990|352|32|5|6|0|0|0
+PV 1 T #43af0000 #42000000 #40800000
+>mvpredict|224|32|5|4|33324990|352|32|5|6|0|0|0
+PV 1 T #43480000 #42000000 #40800000
+>mvpredict|500|32|5|0|33324990|352|32|5|6|0|0|0
+PV 0 T #00000000 #00000000 #00000000
+>mvpredict|40|32|5|1|33324990|352|32|5|0|0|0|0
+PV 0 T #00000000 #00000000 #00000000
+>mvpredict|40|32|5|1|33324990|352|32|5|6|0|0|0
+PV 1 T #43160000 #42000000 #42700000
+>mvpredict|352|32|5|6|33324990|352|32|5|6|0|0|0
+PV 0 T #00000000 #00000000 #00000000
+>mvpredict|40|32|5|1|0|352|32|5|6|0|0|0
+PV 0 T #00000000 #00000000 #00000000
+>mvreset|1
+>mvsim|1|3|30|0.1|40|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 9 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 10 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 11 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 12 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 13 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 14 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 15 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 16 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 17 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 18 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 19 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 20 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 21 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 22 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 23 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 24 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 25 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 26 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 27 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 28 O #42200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 29 O #00000000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvsim|1|3|30|0.1|352|32|5|33324990|40|32|5|1|0|0|0
+TIC 0 O #43b00000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 10 FL 2 W 0 D #bf64f92e #00000000 #bee4f92e V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf64f92e #00000000 #bee4f92e S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 9 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 10 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 11 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 12 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 13 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 14 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 15 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 16 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 17 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 18 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 19 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 20 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 21 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 22 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 23 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 24 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 25 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 26 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 27 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 28 O #43b52e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 29 O #43ab2e50 #42000000 #3e393e4a
+ R F 0 T 0 B 0 BE 0 TT 10 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3dcccccd D #3f800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvsim|1|3|20|0.05|130|32|5|33324990|32|32|5|1|0|0|0
+TIC 0 O #43020000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #43160000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f7fffff #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 2 O #432a0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #43480000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 3 O #43200000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 4 O #43340000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #437a0000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 5 O #43278000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 6 O #433b8000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf7fffff #00000000 #00000000 S #438fc000 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 7 O #432d2000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #4357a000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #43225800 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 9 O #43365800 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf7fffff #00000000 #00000000 S #4382dc00 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 10 O #43294200 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 11 O #433d4200 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #43942500 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 12 O #432e7180 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf7fffff #00000000 #00000000 S #435e3780 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 13 O #43235520 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 14 O #43375520 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #438554d0 V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 15 O #4329ffd8 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 16 O #433dffd8 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #4395ff9c V #42b40000 #00000000 #00000000 A 128 W 9
+TIC 17 O #432effe2 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf800000 #00000000 #00000000 S #4360ff6a V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 18 O #4323bfea #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #3f7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #3f7fffff #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 16 W 9
+TIC 19 O #4337bfea #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 5 FL 0 W 0 D #bf7fffff #00000000 #00000000 V #00000000 #00000000 #00000000
+ I T #3d4ccccd D #bf7fffff #00000000 #00000000 S #43865fc9 V #42b40000 #00000000 #00000000 A 128 W 9
+>mvreset|1
+>libvar|offhandgrapple|1
+>mvinit|1|110|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|110|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|110|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>entity|40|1|3|0|200|32|30|200|32|30|10|0
+>mvinit|1|110|32|20|0|0|0|0|0|24|1|3|0.1|2|0|0|0|64
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3af44d3 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #42800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 9 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 10 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 11 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 1 W 0 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>libvar|offhandgrapple|0
+>mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 9 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 10 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 11 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>entity|40|1|3|0|200|32|30|200|32|30|10|0
+>mvinit|1|110|32|20|0|0|0|0|0|24|1|3|0.1|2|0|0|0|64
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3af44d3 #00000000 #00000000
+ IN T #3dcccccd D #00000000 #00000000 #bf800000 S #42800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0
+TIC 0 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 1 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 2 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 3 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 4 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 5 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 6 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 7 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 8 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 9 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 10 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+TIC 11 O #42dc0000 #42000000 #40a00000
+ R F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #00000000 #00000000 #bf800000 V #c3b106cd #00000000 #00000000
+ I T #3dcccccd D #00000000 #00000000 #bf800000 S #40800000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|60|32|5|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #bf800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #bf800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>mvinit|1|150|32|40|200|0|100|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 18 FL 0 W 0 D #3f800000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #3f800000 #00000000 #00000000 S #43c80000 V #42b40000 #00000000 #00000000 A 0 W 9
+>mvinit|1|120|32|40|100|0|50|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+RES F 0 T 0 B 0 BE 0 TT 14 FL 17 W 10 D #be89089e #00000000 #bf76a91d V #c3acb087 #00000000 #00000000
+ IN T #3dcccccd D #be89089e #00000000 #bf76a91d S #431573cc V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|150|32|40|100|0|100|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+P1|client 3 didn't find jumppad reachability\x0A
+RES F 0 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #be89089e #00000000 #bf76a91d S #431573cc V #42b40000 #00000000 #00000000 A 0 W 9
+>mvreset|1
+>mvinit|1|150|32|40|100|0|100|0|0|24|1|3|0.1|2|0|0|0|0
+>mvgoal|1|3|33324990|352|32|5|6|0|0|0
+P1|client 3 didn't find jumppad reachability\x0A
+RES F 0 T 0 B 0 BE 0 TT 0 FL 0 W 0 D #00000000 #00000000 #00000000 V #00000000 #00000000 #00000000
+ IN T #3dcccccd D #be89089e #00000000 #bf76a91d S #431573cc V #42b40000 #00000000 #00000000 A 0 W 9
+>eainput|3|0.5
+IN T #3f000000 D #be89089e #00000000 #bf76a91d S #431573cc V #42b40000 #00000000 #00000000 A 0 W 9
+>eareset|3
+>eareset|3
+>mvfree|1

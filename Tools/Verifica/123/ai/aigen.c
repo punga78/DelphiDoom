@@ -116,7 +116,7 @@ FILE *Log_FileStruct(void) { return NULL; }
 
 static void Stub_Command(int client, char *command)
 {
-	fprintf(fo, "C|%d|", client);
+	fprintf(fo, "E|%d|", client);
 	print_escaped(fo, command);
 	fputc('\n', fo);
 }
@@ -367,7 +367,7 @@ static int unescape(char *s)
 	return (int) (w - s);
 }
 
-#define MAXARGS 80
+#define MAXARGS 400
 static char *args[MAXARGS];
 static int numargs;
 
@@ -438,10 +438,12 @@ static int load_aas(const char *name)
 	if (code != BLERR_NOERROR) return code;
 	aasworld.loaded = qtrue;
 	aasworld.initialized = qtrue;
+	/* no entity is linked into the areas (the Delphi tracer has none either) */
+	aasworld.arealinkedentities = (aas_link_t **) calloc(aasworld.numareas + 1, sizeof(aas_link_t *));
 	AAS_InitSettings();
 	routingcachesize = 0;
 	AAS_InitRouting();
-	AAS_InitAlternativeRouting();
+
 	fprintf(fo, "AAS %d %d %d %d\n", aasworld.numareas, aasworld.numclusters, aasworld.numportals, aasworld.reachabilitysize);
 	return code;
 }
@@ -455,6 +457,7 @@ int main(int argc, char **argv)
 	FILE *f;
 	char line[8192];
 	fo = stdout;
+	setvbuf(stdout, NULL, _IONBF, 0);
 	if (argc < 3) { printf("usage: aigen <data folder> <scenario file>\n"); return 1; }
 	datafolder = argv[1];
 	botimport.Print = Stub_Print;

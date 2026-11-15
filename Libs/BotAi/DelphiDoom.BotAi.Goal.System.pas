@@ -91,6 +91,8 @@ type
     procedure FreeItemWeights(const AHandle: Integer);
     function ItemConfig: TBotItemConfig;
     function LevelItemCount: Integer;
+    /// <summary>What the goal AI shares (the level items, the camp spots ...), for the tools and the tests</summary>
+    function Context: TBotGoalContext;
   end;
 
 implementation
@@ -691,7 +693,7 @@ begin
     Exit;
   if Assigned(LState.ItemWeightConfig) then
     FWeights.FreeWeightConfig(LState.ItemWeightConfig);
-  // the original leaves the pointers dangling
+  // the original frees the index and leaves both pointers dangling (a goal chosen afterwards reads freed memory)
   LState.ItemWeightConfig := nil;
   LState.ItemWeightIndex := nil;
 end;
@@ -704,6 +706,11 @@ end;
 function TBotGoalSystem.LevelItemCount: Integer;
 begin
   Result := FContext.NumLevelItems;
+end;
+
+function TBotGoalSystem.Context: TBotGoalContext;
+begin
+  Result := FContext;
 end;
 
 end.

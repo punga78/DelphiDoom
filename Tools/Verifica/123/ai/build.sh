@@ -67,7 +67,7 @@ sed -n "$(line '^void AAS_ProjectPointOntoVector' "$CODE/botlib/be_aas_main.c"),
 } > "$WORK/areareach.inc"
 cp "$HERE/aigen.c" "$HERE/commands.inc" "$WORK/"
 # -ffp-contract=off: every float operation is rounded on its own
-"$KIT/gcc.exe" -O1 -w -ffp-contract=off -D_USE_32BIT_TIME_T -Wno-error=incompatible-pointer-types -DBOTLIB \
+"$KIT/gcc.exe" -O1 -g -w -ffp-contract=off -D_USE_32BIT_TIME_T -Wno-error=incompatible-pointer-types -DBOTLIB \
   -I"$WORK" -I"$WORK/botlib" -o "$OUT/aigen.exe" "$WORK/aigen.c" "$WORK/botlib/l_struct.c" \
   "$WORK/botlib/l_libvar.c" "$WORK/botlib/l_script.c" "$WORK/botlib/l_precomp.c" -lm
 echo "built in $OUT"
