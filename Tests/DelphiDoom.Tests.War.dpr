@@ -335,6 +335,7 @@ uses
   DelphiDoom.Tests.War.UiScenes in 'Source\DelphiDoom.Tests.War.UiScenes.pas',
   DelphiDoom.Tests.War.UiCinematics in 'Source\DelphiDoom.Tests.War.UiCinematics.pas',
   DelphiDoom.Tests.War.ModelWallsRemove in 'Source\DelphiDoom.Tests.War.ModelWallsRemove.pas',
+  DelphiDoom.Tests.War.MapUiEditing in 'Source\DelphiDoom.Tests.War.MapUiEditing.pas',
   DelphiDoom.Tests.War.UiHost in 'Source\DelphiDoom.Tests.War.UiHost.pas',
   DelphiDoom.Tests.War.UiRig in 'Source\DelphiDoom.Tests.War.UiRig.pas',
   DelphiDoom.Tests.War.UiParity in 'Source\DelphiDoom.Tests.War.UiParity.pas',
