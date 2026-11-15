@@ -351,13 +351,13 @@ $types = @(
     @{ n = 'crouch'; o = @(200, 32, 5); g = (Goal @(160, 32, 5) 3); f = $FLAGS; a = @(200, 32, 30) },
     @{ n = 'ladder'; o = @(240, 32, 5); g = (Goal @(288, 32, 5) 5); f = $FLAGS; a = @(240, 32, 30) },
     @{ n = 'walkoffledge'; o = @(270, 32, 5); g = (Goal @(224, 32, 5) 4); f = $FLAGS; a = @(270, 32, 25) },
-    @{ n = 'elevator'; o = @(300, 32, 5); g = (Goal @(352, 32, 5) 6); f = $FLAGS; a = @(300, 32, 30) },
-    @{ n = 'funcbob'; o = @(330, 32, 5); g = (Goal @(288, 32, 5) 5); f = $NOTELEPORT; a = @(330, 32, 30) },
+    @{ n = 'elevator'; o = @(262, 32, 5); g = (Goal @(352, 32, 5) 6); f = $FLAGS; a = @(262, 32, 30) },
+    @{ n = 'funcbob'; o = @(380, 32, 5); g = (Goal @(288, 32, 5) 5); f = $NOTELEPORT; a = @(380, 32, 30) },
     @{ n = 'teleport'; o = @(350, 32, 5); g = (Goal @(32, 32, 5) 1); f = $FLAGS; a = @(350, 32, 30) }
 )
-# the movers of the map (models 1 and 2): where they are
+# the movers of the map (models 1 and 2): where they are (down and at the start of their way)
 A 'entity|30|1|4|1|300|32|-12|300|32|-12|0|0'
-A 'entity|31|1|4|2|330|32|-12|330|32|-12|0|0'
+A 'entity|31|1|4|2|345|32|-12|345|32|-12|0|0'
 A 'mvreset|1'
 foreach ($t in $types) {
     Rem "travel type $($t.n)"
@@ -369,9 +369,9 @@ foreach ($t in $types) {
     MoveTo $t.a @(0, 0, 0) $t.f $t.g 4
     A "mvsim|1|$CLIENT|8|0.1|$($t.o -join '|')|$($t.f)|$($t.g)"
 }
-Rem 'the same with the movers away from their start, and the bot on the mover'
+Rem 'the same with the movers away from their start (the plat up, the func_bobbing far from its start)'
 A 'entity|30|1|4|1|300|32|30|300|32|30|0|0'
-A 'entity|31|1|4|2|480|32|-12|480|32|-12|0|0'
+A 'entity|31|1|4|2|420|32|-12|420|32|-12|0|0'
 foreach ($n in @('elevator', 'funcbob')) {
     $t = $types | Where-Object { $_.n -eq $n }
     A 'mvreset|1'
@@ -379,17 +379,29 @@ foreach ($n in @('elevator', 'funcbob')) {
     MoveTo $t.a @(0, 0, 0) $t.f $t.g
     A "mvsim|1|$CLIENT|8|0.1|$($t.o -join '|')|$($t.f)|$($t.g)"
 }
+Rem 'the bot on the movers: the plat down, the func_bobbing at the start and at the end'
+A 'entity|30|1|4|1|300|32|-12|300|32|-12|0|0'
 A 'solid|30|280|10|-40|320|50|-20'
-A 'solid|31|440|10|-40|520|50|-20'
-foreach ($n in @('elevator', 'funcbob')) {
-    $t = $types | Where-Object { $_.n -eq $n }
+A 'solid|31|325|10|-40|375|50|-20'
+foreach ($bobx in @(350, 345, 372, 400)) {
+    A "entity|31|1|4|2|$bobx|32|-12|$bobx|32|-12|0|0"
     A 'mvreset|1'
-    MoveTo $t.o @(0, 0, 0) $t.f $t.g
-    MoveTo @(300, 32, 5) @(0, 0, 0) $t.f $t.g
-    MoveTo @(480, 32, 5) @(0, 0, 0) $t.f $t.g
-    A "mvsim|1|$CLIENT|8|0.1|300|32|5|$($t.f)|$($t.g)"
+    MoveTo @(350, 32, 5) @(0, 0, 0) $NOTELEPORT (Goal @(288, 32, 5) 5)
+    MoveTo @(350, 32, 5) @(0, 0, 0) $NOTELEPORT (Goal @(288, 32, 5) 5)
+    A "mvsim|1|$CLIENT|8|0.1|350|32|5|$NOTELEPORT|$(Goal @(288, 32, 5) 5)"
+    Init @(350, 32, 40) @(0, 0, 10)
+    A "mvgoal|1|$CLIENT|$NOTELEPORT|$(Goal @(288, 32, 5) 5)"
 }
+foreach ($pos in @(@(300, 32, 5), @(285, 32, 5), @(300, 32, 25), @(300, 32, 40))) {
+    A 'mvreset|1'
+    MoveTo $pos @(0, 0, 0) $FLAGS (Goal @(352, 32, 5) 6)
+    MoveTo $pos @(0, 0, 0) $FLAGS (Goal @(352, 32, 5) 6)
+    A "mvsim|1|$CLIENT|8|0.1|$($pos -join '|')|$FLAGS|$(Goal @(352, 32, 5) 6)"
+}
+Init @(300, 32, 40) @(0, 0, 10)
+A "mvgoal|1|$CLIENT|$FLAGS|$(Goal @(352, 32, 5) 6)"
 A 'clearsolids'
+A 'entity|31|1|4|2|345|32|-12|345|32|-12|0|0'
 Rem 'a bot on top of things'
 A 'solid|30|280|10|-40|320|50|-20'
 A 'solid|60|0|10|-40|60|50|-20'
@@ -489,7 +501,52 @@ A 'mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0'
 A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
 MoveTo @(110, 32, 20) @(0, 0, 0) $FLAGS (Goal @(352, 32, 5) 6) 64
 A 'mvsim|1|3|12|0.1|110|32|5|33324990|352|32|5|6|0|0|0'
-Rem 'jump pads found without knowing'
+Rem 'the grapple hook: look at the end, fire, let it pull, lose it'
+$GOAL6 = (Goal @(352, 32, 5) 6)
+$GOAL1 = (Goal @(32, 32, 5) 1)
+foreach ($offhand in @(0, 1)) {
+    A "libvar|offhandgrapple|$offhand"
+    A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
+    A 'mvreset|1'
+    A "mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0"
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'mvinit|1|140|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|64'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'time|60'
+    A 'entityclear'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'time|61'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'mvinit|1|330|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|64'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'entity|40|1|3|0|200|32|30|200|32|30|10|0'
+    A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|0|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'mvinit|1|110|32|20|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'solid|55|150|20|-10|160|45|60'
+    A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A "eareset|$CLIENT"
+    A 'clearsolids'
+    A 'mvreset|1'
+    A 'mvinit|1|110|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL6"
+    A 'mvinit|1|90|32|4|0|0|0|0|0|24|1|3|0.1|2|-354.29|0|0|0'
+    A "mvgoal|1|$CLIENT|$FLAGS|$GOAL1"
+    A "eareset|$CLIENT"
+}
+A 'libvar|offhandgrapple|0'
+A 'entityclear'Rem 'jump pads found without knowing'
 A 'mvreset|1'
 MoveTo @(60, 32, 5) @(0, 0, 0) $FLAGS (Goal @(352, 32, 5) 6)
 Init @(150, 32, 40) @(200, 0, 100)

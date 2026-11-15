@@ -97,8 +97,8 @@ begin
     Link(4, 5, TRAVEL_LADDER, 100, Vec(240, 32, 4), Vec(270, 32, 30)),
     Link(4, 1, TRAVEL_WALK, 35, Vec(200, 32, 4), Vec(40, 32, 4)),
     Link(5, 4, TRAVEL_WALKOFFLEDGE, 55, Vec(270, 32, 4), Vec(240, 32, 0)),
-    Link(5, 6, TRAVEL_ELEVATOR, 110, Vec(300, 32, 4), Vec(330, 32, 20), 1, 0),
-    Link(6, 5, TRAVEL_FUNCBOB, 120, Vec(330, 32, 4), Vec(300, 32, 4), (1 shl 16) or 2, (100 shl 16) or 200),
+    Link(5, 6, TRAVEL_ELEVATOR, 110, Vec(300, 32, 4), Vec(330, 32, 50), 1, 0),
+    Link(6, 5, TRAVEL_FUNCBOB, 120, Vec(330, 32, 4), Vec(300, 32, 4), (1 shl 16) or 2, (340 shl 16) or 370),
     Link(6, 1, TRAVEL_TELEPORT, 30, Vec(350, 32, 4), Vec(32, 32, 4))];
   LReach := TList<TAasReachability>.Create;
   try
