@@ -248,6 +248,8 @@ uses
   p_floor in '..\Heretic\p_floor.pas',
   p_inter in '..\Base\p_inter.pas',
   DelphiDoom.Engine.World.InterRules in '..\Heretic\DelphiDoom.Engine.World.InterRules.pas',
+  DelphiDoom.Engine.World.SpecialRespawn in '..\Base\DelphiDoom.Engine.World.SpecialRespawn.pas',
+  DelphiDoom.Engine.World.MinotaurSlam in '..\Base\DelphiDoom.Engine.World.MinotaurSlam.pas',
   p_lights in '..\Heretic\p_lights.pas',
   p_local in '..\Base\p_local.pas',
   p_map in '..\Base\p_map.pas',

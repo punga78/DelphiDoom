@@ -34,13 +34,6 @@ function P_GiveMana(player: Pplayer_t; mana: manatype_t; num: integer): boolean;
 
 //==============================================================================
 //
-// P_HideSpecialThing
-//
-//==============================================================================
-procedure P_HideSpecialThing(thing: Pmobj_t);
-
-//==============================================================================
-//
 // P_MaxPlayerHealth
 //
 //==============================================================================
@@ -69,34 +62,6 @@ function P_GivePower(player: Pplayer_t; power: powertype_t): boolean;
 
 //==============================================================================
 //
-// A_RestoreArtifact
-//
-//==============================================================================
-procedure A_RestoreArtifact(arti: Pmobj_t);
-
-//==============================================================================
-//
-// A_RestoreSpecialThing1
-//
-//==============================================================================
-procedure A_RestoreSpecialThing1(thing: Pmobj_t);
-
-//==============================================================================
-//
-// A_RestoreSpecialThing2
-//
-//==============================================================================
-procedure A_RestoreSpecialThing2(thing: Pmobj_t);
-
-//==============================================================================
-//
-// P_MinotaurSlam
-//
-//==============================================================================
-procedure P_MinotaurSlam(source: Pmobj_t; target: Pmobj_t);
-
-//==============================================================================
-//
 // P_MorphPlayer
 //
 //==============================================================================
@@ -115,13 +80,6 @@ function P_ActiveMinotaur(master: Pplayer_t): Pmobj_t;
 //
 //==============================================================================
 function P_MorphMonster(actor: Pmobj_t): boolean;
-
-//==============================================================================
-//
-// P_AutoUseHealth
-//
-//==============================================================================
-procedure P_AutoUseHealth(player: Pplayer_t; saveHealth: integer);
 
 //==============================================================================
 //
@@ -244,10 +202,16 @@ type
   /// </remarks>
   TInterGameRules = class sealed
   public
+    const
+      /// <summary>The dice of the damage of a charging Maulotaur (P_MinotaurSlam)</summary>
+      MinotaurSlamDice = 4;
+
     /// <summary>The player touches a special thing (pickup); the body of P_TouchSpecialThing</summary>
     class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
     /// <summary>Damages both enemies and players; the body of P_DamageMobj</summary>
     class procedure DamageMobj(target: Pmobj_t; inflictor: Pmobj_t; source: Pmobj_t; damage: integer); static;
+    /// <summary>What a pickup does when it comes back, before it is drawn again (the mace of Heretic goes to a new place)</summary>
+    class procedure RepositionSpecial(thing: Pmobj_t); static;
   end;
 
 implementation
@@ -274,6 +238,8 @@ uses
   p_user,
   DelphiDoom.Engine.World.UserRules,
   DelphiDoom.Engine.World.PlayerArtifacts,
+  DelphiDoom.Engine.World.SpecialRespawn,
+  DelphiDoom.Engine.World.MinotaurSlam,
   p_spec,
   p_acs,
   ps_main, // JVAL: Script Events
@@ -336,18 +302,6 @@ begin
     P_SetPsprite(player, Ord(ps_weapon), S_FAXEREADY_G);
 
   result := true;
-end;
-
-//==============================================================================
-//
-// PROC P_HideSpecialThing
-//
-//==============================================================================
-procedure P_HideSpecialThing(thing: Pmobj_t);
-begin
-  thing.flags := thing.flags and not MF_SPECIAL;
-  thing.flags2 := thing.flags2 or MF2_DONTDRAW;
-  P_SetMobjState(thing, S_HIDESPECIAL1);
 end;
 
 //==============================================================================
@@ -496,62 +450,6 @@ begin
     player.powers[Ord(power)] := 1;
     result := true;
   end;
-end;
-
-//==============================================================================
-//
-// PROC A_RestoreArtifact
-//
-//==============================================================================
-procedure A_RestoreArtifact(arti: Pmobj_t);
-begin
-  arti.flags := arti.flags or MF_SPECIAL;
-  P_SetMobjState(arti, statenum_t(arti.info.spawnstate));
-  S_StartSound(arti, Ord(SFX_RESPAWN));
-end;
-
-//==============================================================================
-//
-// PROC A_RestoreSpecialThing1
-//
-// Make a special thing visible again.
-//
-//==============================================================================
-procedure A_RestoreSpecialThing1(thing: Pmobj_t);
-begin
-  thing.flags2 := thing.flags2 and not MF2_DONTDRAW;
-  S_StartSound(thing, Ord(SFX_RESPAWN));
-end;
-
-//==============================================================================
-//
-// PROC A_RestoreSpecialThing2
-//
-//==============================================================================
-procedure A_RestoreSpecialThing2(thing: Pmobj_t);
-begin
-  thing.flags := thing.flags or MF_SPECIAL;
-  P_SetMobjState(thing, statenum_t(thing.info.spawnstate));
-end;
-
-//==============================================================================
-//
-// FUNC P_MinotaurSlam
-//
-//==============================================================================
-procedure P_MinotaurSlam(source: Pmobj_t; target: Pmobj_t);
-var
-  angle: angle_t;
-  thrust: fixed_t;
-begin
-  angle := R_PointToAngle2(source.x, source.y, target.x, target.y);
-  angle := angle shr ANGLETOFINESHIFT;
-  thrust := 16 * FRACUNIT + (P_Random * 1024);
-  target.momx := target.momx + FixedMul(thrust, finecosine[angle]);
-  target.momy := target.momy + FixedMul(thrust, finesine[angle]);
-  P_DamageMobj(target, nil, nil, HITDICE(4));
-  if target.player <> nil then
-    target.reactiontime := 14 + (P_Random and 7);
 end;
 
 //==============================================================================
@@ -746,77 +644,6 @@ begin
   end;
 
   result := true;
-end;
-
-//==============================================================================
-//
-// PROC P_AutoUseHealth
-//
-//==============================================================================
-procedure P_AutoUseHealth(player: Pplayer_t; saveHealth: integer);
-var
-  i: integer;
-  count: integer;
-  normalCount: integer;
-  normalSlot: integer;
-  superCount: integer;
-  superSlot: integer;
-begin
-  normalCount := 0;
-  superCount := 0;
-  normalSlot := 0;
-  superSlot := 0;
-
-  for i := 0 to player.inventorySlotNum - 1 do
-  begin
-    if player.inventory[i]._type = Ord(arti_health) then
-    begin
-      normalSlot := i;
-      normalCount := player.inventory[i].count;
-    end
-    else if player.inventory[i]._type = Ord(arti_superhealth) then
-    begin
-      superSlot := i;
-      superCount := player.inventory[i].count;
-    end;
-  end;
-
-  if (gameskill = sk_baby) and (normalCount * 25 >= saveHealth) then
-  begin // Use quartz flasks
-    count := (saveHealth + 24) div 25;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 25;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-  end
-  else if superCount * 100 >= saveHealth then
-  begin // Use mystic urns
-    count := (saveHealth + 99) div 100;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 100;
-      P_PlayerRemoveArtifact(player, superSlot);
-    end;
-  end
-  else if (gameskill = sk_baby) and (superCount * 100 + normalCount * 25 >= saveHealth) then
-  begin // Use mystic urns and quartz flasks
-    count := (saveHealth + 24) div 25;
-    saveHealth := saveHealth - count * 25;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 25;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-    count := (saveHealth + 99) div 100;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 100;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-  end;
-
-  player.mo.health := player.health;
 end;
 
 //==============================================================================
@@ -2621,6 +2448,15 @@ begin
   player._message := '';
   player.ultimateMessage := false;
   player.yellowMessage := false;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.RepositionSpecial
+//
+//==============================================================================
+class procedure TInterGameRules.RepositionSpecial(thing: Pmobj_t);
+begin
 end;
 
 end.

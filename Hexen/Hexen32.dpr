@@ -188,6 +188,8 @@ uses
   udmf_floor in '..\Base\udmf_floor.pas',
   p_inter in '..\Base\p_inter.pas',
   DelphiDoom.Engine.World.InterRules in '..\Hexen\DelphiDoom.Engine.World.InterRules.pas',
+  DelphiDoom.Engine.World.SpecialRespawn in '..\Base\DelphiDoom.Engine.World.SpecialRespawn.pas',
+  DelphiDoom.Engine.World.MinotaurSlam in '..\Base\DelphiDoom.Engine.World.MinotaurSlam.pas',
   udmf_telept in '..\Base\udmf_telept.pas',
   udmf_lights in '..\Base\udmf_lights.pas',
   p_local in '..\Base\p_local.pas',

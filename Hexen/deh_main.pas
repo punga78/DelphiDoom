@@ -129,6 +129,7 @@ uses
   p_pspr_h,
   p_inter,
   DelphiDoom.Engine.World.InterRules,
+  DelphiDoom.Engine.World.SpecialRespawn,
   p_user,
   DelphiDoom.Engine.World.UserRules,
   p_musinfo,

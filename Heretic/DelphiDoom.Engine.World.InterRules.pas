@@ -39,28 +39,6 @@ function P_GivePower(player: Pplayer_t; power: integer): boolean;
 //==============================================================================
 function P_GiveBody(player: Pplayer_t; num: integer): boolean;
 
-//==============================================================================
-// A_RestoreArtifact
-//
-// Actions
-//
-//==============================================================================
-procedure A_RestoreArtifact(arti: Pmobj_t);
-
-//==============================================================================
-//
-// A_RestoreSpecialThing1
-//
-//==============================================================================
-procedure A_RestoreSpecialThing1(thing: Pmobj_t);
-
-//==============================================================================
-//
-// A_RestoreSpecialThing2
-//
-//==============================================================================
-procedure A_RestoreSpecialThing2(thing: Pmobj_t);
-
 const
 // a weapon is found with two clip loads,
 // a big item has five clip loads
@@ -143,10 +121,16 @@ type
   /// </remarks>
   TInterGameRules = class sealed
   public
+    const
+      /// <summary>The dice of the damage of a charging Maulotaur (P_MinotaurSlam)</summary>
+      MinotaurSlamDice = 6;
+
     /// <summary>The player touches a special thing (pickup); the body of P_TouchSpecialThing</summary>
     class procedure TouchSpecialThing(special: Pmobj_t; toucher: Pmobj_t); static;
     /// <summary>Damages both enemies and players; the body of P_DamageMobj</summary>
     class procedure DamageMobj(target, inflictor, source: Pmobj_t; damage: integer); static;
+    /// <summary>What a pickup does when it comes back, before it is drawn again (the mace of Heretic goes to a new place)</summary>
+    class procedure RepositionSpecial(thing: Pmobj_t); static;
   end;
 
 implementation
@@ -170,6 +154,8 @@ uses
   p_user,
   DelphiDoom.Engine.World.UserRules,
   DelphiDoom.Engine.World.PlayerArtifacts,
+  DelphiDoom.Engine.World.SpecialRespawn,
+  DelphiDoom.Engine.World.MinotaurSlam,
   p_enemy,
   ps_main, // JVAL: Script Events
   r_defs,
@@ -520,88 +506,6 @@ end;
 
 //---------------------------------------------------------------------------
 //
-// PROC A_RestoreArtifact
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_RestoreArtifact(arti: Pmobj_t);
-begin
-  arti.flags := arti.flags or MF_SPECIAL;
-  P_SetMobjState(arti, statenum_t(arti.info.spawnstate));
-  S_StartSound(arti, Ord(sfx_respawn));
-end;
-
-//----------------------------------------------------------------------------
-//
-// PROC P_HideSpecialThing
-//
-//----------------------------------------------------------------------------
-//
-//==============================================================================
-procedure P_HideSpecialThing(thing: Pmobj_t);
-begin
-  thing.flags := thing.flags and not MF_SPECIAL;
-  thing.flags2 := thing.flags2 or MF2_DONTDRAW;
-  P_SetMobjState(thing, S_HIDESPECIAL1);
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC A_RestoreSpecialThing1
-//
-// Make a special thing visible again.
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_RestoreSpecialThing1(thing: Pmobj_t);
-begin
-  if thing._type = Ord(MT_WMACE) then
-  begin // Do random mace placement
-    P_RepositionMace(thing);
-  end;
-  thing.flags2 := thing.flags2 and not MF2_DONTDRAW;
-  S_StartSound(thing, Ord(sfx_respawn));
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC A_RestoreSpecialThing2
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure A_RestoreSpecialThing2(thing: Pmobj_t);
-begin
-  thing.flags := thing.flags or MF_SPECIAL;
-  P_SetMobjState(thing, statenum_t(thing.info.spawnstate));
-end;
-
-//---------------------------------------------------------------------------
-//
-// FUNC P_MinotaurSlam
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure P_MinotaurSlam(source: Pmobj_t; target: Pmobj_t);
-var
-  angle: angle_t;
-  thrust: fixed_t;
-begin
-  angle := R_PointToAngle2(source.x, source.y, target.x, target.y);
-  angle := angle shr ANGLETOFINESHIFT;
-  thrust := 16 * FRACUNIT + (P_Random * 1024);
-  target.momx := target.momx + FixedMul(thrust, finecosine[angle]);
-  target.momy := target.momy + FixedMul(thrust, finesine[angle]);
-  P_DamageMobj(target, nil, nil, HITDICE(6));
-  if target.player <> nil then
-    target.reactiontime := 14 + (P_Random and 7);
-end;
-
-//---------------------------------------------------------------------------
-//
 // FUNC P_TouchWhirlwind
 //
 //---------------------------------------------------------------------------
@@ -767,79 +671,6 @@ begin
     end;
   end;
   result := false;
-end;
-
-//---------------------------------------------------------------------------
-//
-// PROC P_AutoUseHealth
-//
-//---------------------------------------------------------------------------
-//
-//==============================================================================
-procedure P_AutoUseHealth(player: Pplayer_t; saveHealth: integer);
-var
-  i: integer;
-  count: integer;
-  normalCount: integer;
-  normalSlot: integer;
-  superCount: integer;
-  superSlot: integer;
-begin
-  normalCount := 0;
-  superCount := 0;
-  normalSlot := 0;
-  superSlot := 0;
-
-  for i := 0 to player.inventorySlotNum - 1 do
-  begin
-    if player.inventory[i]._type = Ord(arti_health) then
-    begin
-      normalSlot := i;
-      normalCount := player.inventory[i].count;
-    end
-    else if player.inventory[i]._type = Ord(arti_superhealth) then
-    begin
-      superSlot := i;
-      superCount := player.inventory[i].count;
-    end;
-  end;
-
-  if (gameskill = sk_baby) and (normalCount * 25 >= saveHealth) then
-  begin // Use quartz flasks
-    count := (saveHealth + 24) div 25;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 25;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-  end
-  else if superCount * 100 >= saveHealth then
-  begin // Use mystic urns
-    count := (saveHealth + 99) div 100;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 100;
-      P_PlayerRemoveArtifact(player, superSlot);
-    end;
-  end
-  else if (gameskill = sk_baby) and (superCount * 100 + normalCount * 25 >= saveHealth) then
-  begin // Use mystic urns and quartz flasks
-    count := (saveHealth + 24) div 25;
-    saveHealth := saveHealth - count * 25;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 25;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-    count := (saveHealth + 99) div 100;
-    for i := 0 to count - 1 do
-    begin
-      player.health := player.health + 100;
-      P_PlayerRemoveArtifact(player, normalSlot);
-    end;
-  end;
-
-  player.mo.health := player.health;
 end;
 
 //==============================================================================
@@ -1785,6 +1616,19 @@ begin
 //  BorderTopRefresh = true;
   if ultmsg then
     ultimatemsg := true;
+end;
+
+//==============================================================================
+//
+// TInterGameRules.RepositionSpecial
+//
+//==============================================================================
+class procedure TInterGameRules.RepositionSpecial(thing: Pmobj_t);
+begin
+  if thing._type = Ord(MT_WMACE) then
+  begin // Do random mace placement
+    P_RepositionMace(thing);
+  end;
 end;
 
 end.

@@ -130,6 +130,7 @@ uses
   p_pspr_h,
   p_inter,
   DelphiDoom.Engine.World.InterRules,
+  DelphiDoom.Engine.World.SpecialRespawn,
   p_musinfo,
   p_sounds,
   p_simpledialog,
