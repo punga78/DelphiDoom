@@ -35,6 +35,11 @@ type
     [TestCase('un mezzo grande', '123456.75,123456.8')]
     [TestCase('negativo che arrotonda a zero', '-0.04,-0.0')]
     [TestCase('negativo con un quarto', '-0.25,-0.2')]
+    [TestCase('trentacinque centesimi', '0.35,0.3')]
+    [TestCase('quarantacinque centesimi', '0.45,0.5')]
+    [TestCase('zero', '0,0.0')]
+    [TestCase('un numero molto grande', '10000000000,10000000000.0')]
+    [TestCase('un numero minuscolo', '1E-5,0.0')]
     procedure DovrebbeScrivereUnDecimaleComePrintf(const AValue, AExpected: string);
     [Test]
     procedure DovrebbeRiempireIlTestoACaratteriAllaDestra;

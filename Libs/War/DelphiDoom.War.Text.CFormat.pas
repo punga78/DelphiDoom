@@ -19,8 +19,7 @@ interface
 
 type
   /// <summary>
-  ///   What the text of the debug of the state machine needs of printf: a number with one decimal (proved equal to
-  ///   SDL_snprintf of the real SDL3 on 200000 values: an exact half goes to the even decimal) and a text padded to the right
+  ///   What the text of the debug of the state machine needs of printf: a number with one decimal (the same as SDL_snprintf of the real SDL3, which is the C library: 200000 values; an exact half goes to the even decimal) and a text padded to the right
   /// </summary>
   TWarCFormat = class
   public
@@ -39,9 +38,14 @@ uses
 
 class function TWarCFormat.Fixed1(AValue: Double): AnsiString;
 var
-  LQuarters: Double;
-  LTenths: Double;
-  LLow: Double;
+  LBits: UInt64;
+  LExponent: Integer;
+  LMantissa: UInt64;
+  LShift: Integer;
+  LTenths: UInt64;
+  LRemainder: UInt64;
+  LHalf: UInt64;
+  LNegative: Boolean;
 begin
   if IsNan(AValue) then
     Exit('nan');
@@ -51,25 +55,46 @@ begin
       Exit('inf');
     Exit('-inf');
   end;
-  LQuarters := Abs(AValue) * 4;
-  if (LQuarters < 4.0E15) and (Frac(LQuarters) = 0) and Odd(Trunc(LQuarters)) then
+  // the exact value of the double is mantissa * 2^exponent: the tenths are rounded with integers (an exact half goes to the
+  // even tenth, as printf does), so the same text comes out at 32 and 64 bit (FloatToStrF does not: it rounds a decimal
+  // of 15 digits on Win64)
+  LBits := PUInt64(@AValue)^;
+  LNegative := (LBits shr 63) <> 0;
+  LExponent := Integer((LBits shr 52) and $7FF);
+  LMantissa := LBits and $000FFFFFFFFFFFFF;
+  if LExponent = 0 then
+    LExponent := -1074
+  else
   begin
-    // exactly half way (0.25, 0.75, 1.25 ...): to the even decimal
-    LTenths := Abs(AValue) * 10;
-    LLow := Floor(LTenths);
-    if Odd(Trunc(LLow)) then
-      LLow := LLow + 1;
-    Result := AnsiString(FloatToStrF(LLow / 10, ffFixed, 18, 1, TFormatSettings.Invariant));
-    if AValue < 0 then
-      Result := '-' + Result;
-    Exit;
+    LMantissa := LMantissa or (UInt64(1) shl 52);
+    LExponent := LExponent - 1075;
   end;
-  Result := AnsiString(FloatToStrF(AValue, ffFixed, 18, 1, TFormatSettings.Invariant));
-  // printf keeps the sign of a negative number that rounds to zero
-  if (PInt64(@AValue)^ < 0) and (Copy(Result, 1, 1) <> '-') then
+  LMantissa := LMantissa * 10;
+  if LExponent >= 0 then
+  begin
+    // 2^6 times the mantissa of 57 bits would overflow: so big a number is written by the library
+    if LExponent > 6 then
+      Exit(AnsiString(FloatToStrF(AValue, ffFixed, 18, 1, TFormatSettings.Invariant)));
+    LTenths := LMantissa shl LExponent;
+  end
+  else
+  begin
+    LShift := -LExponent;
+    if LShift >= 58 then
+      LTenths := 0
+    else
+    begin
+      LTenths := LMantissa shr LShift;
+      LRemainder := LMantissa and ((UInt64(1) shl LShift) - 1);
+      LHalf := UInt64(1) shl (LShift - 1);
+      if (LRemainder > LHalf) or ((LRemainder = LHalf) and Odd(LTenths)) then
+        Inc(LTenths);
+    end;
+  end;
+  Result := AnsiString(UIntToStr(LTenths div 10) + '.' + UIntToStr(LTenths mod 10));
+  if LNegative then
     Result := '-' + Result;
 end;
-
 class function TWarCFormat.PadRight(const AText: AnsiString; AWidth: Integer): AnsiString;
 begin
   Result := AText;
