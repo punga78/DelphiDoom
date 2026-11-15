@@ -94,3 +94,14 @@ $fr = Read-Text (Join-Path $dir 'idlib\bv\Frustum.h')
 Write-Text (Join-Path $dir 'idlib\bv\Frustum.h') ($fr.Replace('private:', 'public:'))
 Build $dir @('math\Angles', 'bv\Bounds', 'bv\Box', 'bv\Frustum', 'math\Math', 'math\Matrix', 'math\Plane', 'math\Pluecker',
 	'math\Quat', 'math\Rotation', 'bv\Sphere', 'math\Vector', 'geometry\Winding') 'frustum-main.cpp' (Join-Path $root 'Tests\Data\Geometry\frustum.golden.txt')
+
+# swept spline harness (issue #236, part A): same copy and patches as the surface harness, plus Surface_SweptSpline.cpp
+$dir = New-Copy 'swept'
+$math = Read-Text (Join-Path $dir 'idlib\math\Math.h')
+Write-Text (Join-Path $dir 'idlib\math\Math.h') ([regex]::Replace($math, '#ifdef _WIN32(\r?\n\t_asm \{)', '#if 0$1'))
+$surf = Read-Text (Join-Path $dir 'idlib\geometry\Surface.cpp')
+$surf = $surf.Replace('( numEdgeSplitVertexes * 4 ) );', '( numEdgeSplitVertexes * 4 ) + 512 );').Replace('( numEdgeSplitVertexes << 2 ) );', '( numEdgeSplitVertexes << 2 ) + 512 );').Replace('( maxOnPlaneEdges + 1 )', '( maxOnPlaneEdges + 513 )')
+Write-Text (Join-Path $dir 'idlib\geometry\Surface.cpp') $surf
+Build $dir @('math\Math', 'math\Vector', 'math\Plane', 'math\Pluecker', 'math\Simd_Generic', 'geometry\Winding',
+	'geometry\Winding2D', 'geometry\Surface', 'geometry\Surface_SweptSpline', 'geometry\JointTransform', 'geometry\DrawVert',
+	'bv\Bounds', 'bv\Sphere', 'bv\Box', 'math\Matrix', 'math\Angles', 'math\Quat', 'math\Rotation') 'swept-main.cpp' (Join-Path $root 'Tests\Data\Geometry\swept.golden.txt')
