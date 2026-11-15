@@ -1124,7 +1124,7 @@ Stima per `v_video` + `i_video`: 9-10 giorni di agente, a macchina scarica per l
 | `AM_Init` | 1172 | 264, piu' `TAutomapShapes` 1568 (cold: gira una volta) |
 | `V_PreserveX` (2 forme), `V_PreserveY`, `V_CalcPreserveTables`, `V_Init`, `V_ScreensSize` | 48 + 212 + 48 + 244 + 204 + 96 | 16 + 32 + 16 + 88 + 196 + 88, piu' `MapX` 28 + 100, `MapY` 32, `Calculate` 236, `Resolve` 8, `ByteSize` 48 |
 
-I cicli sono il testo di prima: nessuna differenza di istruzioni per pixel. Un solo punto cambia in meglio: `ibetween` di `d_delphi` era una chiamata **per pixel** nei due stiramenti della barra e dell'intermezzo, ora e' un confronto in linea. Nessuna misura a coppie (non fatta, vedi il compito: la fa la sessione di misura a macchina scarica; "vecchio" = `c6c8903c`).
+I cicli sono il testo di prima, ma **si e' misurata la dimensione delle routine, non le istruzioni per pixel**. Differenze note da guardare nella sessione di misura: (a) nei kernel `StretchRow*`, `StretchRows*` e `StretchRowsTransparent*` il passo (`FracXStep`) si legge dal record `const` a ogni pixel, e non da una variabile locale in un registro; (b) le tabelle (palette, traduzione, `precal8_toword` e `_tolong`) arrivano come parametri e non come indirizzi globali; (c) il saltare per filo e' un confronto per riga (`IndexCount = 1` salta il `mod`). Un solo punto cambia in meglio: `ibetween` di `d_delphi` era una chiamata **per pixel** nei due stiramenti della barra e dell'intermezzo, ora e' un confronto in linea. Nessuna misura a coppie (non fatta, vedi il compito: la fa la sessione di misura a macchina scarica; "vecchio" = `c6c8903c`).
 
 **Passi** (tag `ondata-notte-246-N`):
 

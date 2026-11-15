@@ -39,234 +39,35 @@ const
   PLAYERRADIUS = AUTOMAP_PLAYERRADIUS;
   MAPUNIT = AUTOMAP_MAPUNIT;
 
-// The text below is the one of AM_Init of Base\am_map.pas before the shapes became
-// TAutomapShapes, once for each family of games (the {$IF}s resolved by hand)
+// The text below is the raw one of AM_Init of Base\am_map.pas before the shapes became
+// TAutomapShapes (commit 1e049049), compiled once for each family of games with its own {$IF}s
+{$UNDEF HERETIC}
+{$UNDEF HEXEN}
 procedure OldShapesDoom(var player_arrow, cheat_player_arrow, triangle_guy, thintriangle_guy, traceplayer_guy,
   keysquare: TShapeLines);
 var
   pl: PAutomapLine;
 begin
   pl := @player_arrow[0];
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7);
-  pl.b.y := 0;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7);
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7);
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
-
-////////////////////////////////////////////////////////////////////////////////
-
-  pl := @cheat_player_arrow[0];
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7);
-  pl.b.y := 0;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7);
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7);
-  pl.a.y := 0;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.a.y := 0;
-  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.x := 0;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
-
-  inc(pl);
-  pl.a.x := 0;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.x := 0;
-  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 4;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 7;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 32;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7 - ((8 * PLAYERRADIUS) div 7) div 32;
-
-  inc(pl);
-  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 32;
-  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 7 - ((8 * PLAYERRADIUS) div 7) div 32;
-  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 10;
-  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7;
-
-////////////////////////////////////////////////////////////////////////////////
-
-  pl := @triangle_guy[0];
-  pl.a.x := round(-0.867 * MAPUNIT);
-  pl.a.y := round(-0.5 * MAPUNIT);
-  pl.b.x := round(0.867 * MAPUNIT);
-  pl.b.y := round(-0.5 * MAPUNIT);
-
-  inc(pl);
-  pl.a.x := round(0.867 * MAPUNIT);
-  pl.a.y := round(-0.5 * MAPUNIT);
-  pl.b.x := 0;
-  pl.b.y := MAPUNIT;
-
-  inc(pl);
-  pl.a.x := 0;
-  pl.a.y := MAPUNIT;
-  pl.b.x := round(-0.867 * MAPUNIT);
-  pl.b.y := round(-0.5 * MAPUNIT);
-
-////////////////////////////////////////////////////////////////////////////////
-
-  pl := @thintriangle_guy[0];
-  pl.a.x := round(-0.5 * MAPUNIT);
-  pl.a.y := round(-0.7 * MAPUNIT);
-  pl.b.x := MAPUNIT;
-  pl.b.y := 0;
-
-  inc(pl);
-  pl.a.x := MAPUNIT;
-  pl.a.y := 0;
-  pl.b.x := round(-0.5 * MAPUNIT);
-  pl.b.y := round(0.7 * MAPUNIT);
-
-  inc(pl);
-  pl.a.x := round(-0.5 * MAPUNIT);
-  pl.a.y := round(0.7 * MAPUNIT);
-  pl.b.x := round(-0.5 * MAPUNIT);
-  pl.b.y := round(-0.7 * MAPUNIT);
-
-////////////////////////////////////////////////////////////////////////////////
-
-  pl := @traceplayer_guy[0];
-  pl.a.x := 0;
-  pl.a.y := round(-0.7 * MAPUNIT);
-  pl.b.x := round(0.7 * MAPUNIT);
-  pl.b.y := 0;
-
-  inc(pl);
-  pl.a.x := 0;
-  pl.a.y := round(0.7 * MAPUNIT);
-  pl.b.x := round(0.7 * MAPUNIT);
-  pl.b.y := 0;
-
-  inc(pl);
-  pl.a.x := 0;
-  pl.a.y := 0;
-  pl.b.x := round(0.7 * MAPUNIT);
-  pl.b.y := 0;
-
-////////////////////////////////////////////////////////////////////////////////
-end;
-
-procedure OldShapesRaven(var player_arrow, cheat_player_arrow, triangle_guy, thintriangle_guy, traceplayer_guy,
-  keysquare: TShapeLines);
-var
-  pl: PAutomapLine;
-begin
-  pl := @player_arrow[0];
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
   pl.a.y := 0;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.b.x := 0;
   pl.b.y := 0;
 
   inc(pl);
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
   pl.b.x := ((8 * PLAYERRADIUS) div 7);
   pl.b.y := 0;
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
   pl.b.x := ((8 * PLAYERRADIUS) div 7);
@@ -276,9 +77,15 @@ begin
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
   pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
   pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
@@ -288,31 +95,66 @@ begin
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
   pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
   pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
 
   inc(pl);
   pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.y := ((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
   pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
   pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
   pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+{$ENDIF}
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.b.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
 
   inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
   pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+{$ENDIF}
   pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -453,6 +295,7 @@ begin
   pl.b.y := round(-0.7 * MAPUNIT);
 
 ////////////////////////////////////////////////////////////////////////////////
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
   pl := @keysquare[0];
   pl.a.x := 0;
   pl.a.y := 0;
@@ -502,6 +345,7 @@ begin
   pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
 
 ////////////////////////////////////////////////////////////////////////////////
+{$ENDIF}
 
   pl := @traceplayer_guy[0];
   pl.a.x := 0;
@@ -524,7 +368,332 @@ begin
 ////////////////////////////////////////////////////////////////////////////////
 end;
 
-{ TTestAutomapShapes }
+{$DEFINE HERETIC}
+procedure OldShapesRaven(var player_arrow, cheat_player_arrow, triangle_guy, thintriangle_guy, traceplayer_guy,
+  keysquare: TShapeLines);
+var
+  pl: PAutomapLine;
+begin
+  pl := @player_arrow[0];
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
+  pl.a.y := 0;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.x := 0;
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
+  pl.b.x := ((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+{$ENDIF}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 4;
+{$ELSE}
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+{$ENDIF}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+{$ENDIF}
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
+
+  inc(pl);
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+{$ENDIF}
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 8;
+{$ELSE}
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+{$ENDIF}
+
+////////////////////////////////////////////////////////////////////////////////
+
+  pl := @cheat_player_arrow[0];
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7);
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) - ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) + 3 * ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) + ((8 * PLAYERRADIUS) div 7) div 8;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 2 + ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.x := 0;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 6;
+
+  inc(pl);
+  pl.a.x := 0;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.x := 0;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 4;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 7;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 32;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7 - ((8 * PLAYERRADIUS) div 7) div 32;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 32;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 7 - ((8 * PLAYERRADIUS) div 7) div 32;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 6 + ((8 * PLAYERRADIUS) div 7) div 10;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 7;
+
+////////////////////////////////////////////////////////////////////////////////
+
+  pl := @triangle_guy[0];
+  pl.a.x := round(-0.867 * MAPUNIT);
+  pl.a.y := round(-0.5 * MAPUNIT);
+  pl.b.x := round(0.867 * MAPUNIT);
+  pl.b.y := round(-0.5 * MAPUNIT);
+
+  inc(pl);
+  pl.a.x := round(0.867 * MAPUNIT);
+  pl.a.y := round(-0.5 * MAPUNIT);
+  pl.b.x := 0;
+  pl.b.y := MAPUNIT;
+
+  inc(pl);
+  pl.a.x := 0;
+  pl.a.y := MAPUNIT;
+  pl.b.x := round(-0.867 * MAPUNIT);
+  pl.b.y := round(-0.5 * MAPUNIT);
+
+////////////////////////////////////////////////////////////////////////////////
+
+  pl := @thintriangle_guy[0];
+  pl.a.x := round(-0.5 * MAPUNIT);
+  pl.a.y := round(-0.7 * MAPUNIT);
+  pl.b.x := MAPUNIT;
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := MAPUNIT;
+  pl.a.y := 0;
+  pl.b.x := round(-0.5 * MAPUNIT);
+  pl.b.y := round(0.7 * MAPUNIT);
+
+  inc(pl);
+  pl.a.x := round(-0.5 * MAPUNIT);
+  pl.a.y := round(0.7 * MAPUNIT);
+  pl.b.x := round(-0.5 * MAPUNIT);
+  pl.b.y := round(-0.7 * MAPUNIT);
+
+////////////////////////////////////////////////////////////////////////////////
+{$IF DEFINED(HERETIC) OR DEFINED(HEXEN)}
+  pl := @keysquare[0];
+  pl.a.x := 0;
+  pl.a.y := 0;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := -((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := ((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);  // handle part type thing
+  pl.a.x := ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := ((8 * PLAYERRADIUS) div 7) div 2;
+  pl.b.x := 0;
+  pl.b.y := 0;
+
+  inc(pl);  // stem
+  pl.a.x := 0;
+  pl.a.y := 0;
+  pl.b.x := -((8 * PLAYERRADIUS) div 7);
+  pl.b.y := 0;
+
+  inc(pl);  // end lockpick part
+  pl.a.x := -((8 * PLAYERRADIUS) div 7);
+  pl.a.y :=  0;
+  pl.b.x :=  -((8 * PLAYERRADIUS) div 7);
+  pl.b.y :=  -((8 * PLAYERRADIUS) div 7) div 2;
+
+  inc(pl);
+  pl.a.x := -3 * ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.a.y := 0;
+  pl.b.x := -3 * ((8 * PLAYERRADIUS) div 7) div 4;
+  pl.b.y := -((8 * PLAYERRADIUS) div 7) div 4;
+
+////////////////////////////////////////////////////////////////////////////////
+{$ENDIF}
+
+  pl := @traceplayer_guy[0];
+  pl.a.x := 0;
+  pl.a.y := round(-0.7 * MAPUNIT);
+  pl.b.x := round(0.7 * MAPUNIT);
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := 0;
+  pl.a.y := round(0.7 * MAPUNIT);
+  pl.b.x := round(0.7 * MAPUNIT);
+  pl.b.y := 0;
+
+  inc(pl);
+  pl.a.x := 0;
+  pl.a.y := 0;
+  pl.b.x := round(0.7 * MAPUNIT);
+  pl.b.y := 0;
+
+////////////////////////////////////////////////////////////////////////////////
+end;
+{$UNDEF HERETIC}
 
 procedure CompareLines(const AExpected, AActual: TShapeLines; const AName: string);
 var

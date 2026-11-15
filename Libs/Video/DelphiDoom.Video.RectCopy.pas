@@ -425,9 +425,11 @@ var
   LCol: Integer;
   LFracX: Integer;
   LFracY: Integer;
+  LFracXStep: Integer;
   LDestination: PByte;
   LSource: PByte;
 begin
+  LFracXStep := AParams.FracXStep;
   LFracY := AParams.FracY;
   for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
   begin
@@ -440,7 +442,7 @@ begin
       begin
         LDestination^ := PByteRow(LSource)[LongWord(LFracX) shr FRACBITS];
         Inc(LDestination);
-        LFracX := LFracX + AParams.FracXStep;
+        LFracX := LFracX + LFracXStep;
       end;
     end;
     LFracY := LFracY + AParams.FracYStep;
@@ -453,9 +455,11 @@ var
   LCol: Integer;
   LFracX: Integer;
   LFracY: Integer;
+  LFracXStep: Integer;
   LDestination: PLongWord;
   LSource: PByte;
 begin
+  LFracXStep := AParams.FracXStep;
   LFracY := AParams.FracY;
   for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
   begin
@@ -468,7 +472,7 @@ begin
       begin
         LDestination^ := PLongWordRow(APalette)[PByteRow(LSource)[LongWord(LFracX) shr FRACBITS]];
         Inc(LDestination);
-        LFracX := LFracX + AParams.FracXStep;
+        LFracX := LFracX + LFracXStep;
       end;
     end;
     LFracY := LFracY + AParams.FracYStep;
@@ -480,10 +484,12 @@ var
   LCol: Integer;
   LFracX: Integer;
   LFracY: Integer;
+  LFracXStep: Integer;
   LDestination: PByteRow;
   LSource: PByteRow;
   LPixel: Byte;
 begin
+  LFracXStep := AParams.FracXStep;
   LFracY := AParams.FracY;
   for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
   begin
@@ -497,7 +503,7 @@ begin
         LPixel := LSource[LongWord(LFracX) shr FRACBITS];
         if LPixel <> 0 then
           LDestination[LCol] := LPixel;
-        LFracX := LFracX + AParams.FracXStep;
+        LFracX := LFracX + LFracXStep;
       end;
     end;
     LFracY := LFracY + AParams.FracYStep;
@@ -540,6 +546,7 @@ var
   LCol: Integer;
   LFracX: Integer;
   LFracY: Integer;
+  LFracXStep: Integer;
   LFracXStep4: Integer;
   LWidth: Integer;
   LTail: Integer;
@@ -551,6 +558,7 @@ begin
   LTail := AParams.DestinationWidth and $3;
   LWidth := AParams.DestinationWidth - LTail;
   LFracXStep4 := 4 * AParams.FracXStep;
+  LFracXStep := AParams.FracXStep;
   LFracY := AParams.FracY;
   for LRow := AParams.DestinationY to AParams.DestinationY + AParams.DestinationHeight - 1 do
   begin
@@ -575,7 +583,7 @@ begin
           if LPixel <> 0 then
             LDestination[LCol] := PLongWordRow(APalette)[LPixel];
           Inc(LCol);
-          LFracX := LFracX + AParams.FracXStep;
+          LFracX := LFracX + LFracXStep;
         end;
       end;
 
@@ -584,7 +592,7 @@ begin
         LPixel := LSource[LongWord(LFracX) shr FRACBITS];
         if LPixel <> 0 then
           LDestination[LCol] := PLongWordRow(APalette)[LPixel];
-        LFracX := LFracX + AParams.FracXStep;
+        LFracX := LFracX + LFracXStep;
       end;
     end;
     LFracY := LFracY + AParams.FracYStep;
