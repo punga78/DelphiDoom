@@ -11,7 +11,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, DelphiDoom.Xcom.Types, DelphiDoom.Xcom.Palette, DelphiDoom.Xcom.Image,
-  DelphiDoom.Xcom.Map;
+  DelphiDoom.Xcom.Map, DelphiDoom.Bytes.Archive.Intf;
 
 type
   /// <summary>
@@ -64,19 +64,11 @@ type
     function OffsetOf(AIndex: Integer): Integer;
   end;
 
-  /// <summary>A .CAT file: an index of entries, each with a name that starts it (CatFile)</summary>
-  IXcomCatArchive = interface
-    ['{4C97E1D5-3A82-4B06-95F7-E0D18A6C2B39}']
-    function GetCount: Integer;
-    function GetEntry(AIndex: Integer): TXcomCatEntry;
-    /// <summary>
-    ///   The bytes of an entry (CatFile::load). The entry starts with a name (a length byte of at most 56 and the
-    ///   name): it is skipped, unless AKeepName. The size of the index is the size of what follows the name
-    /// </summary>
-    function Load(AIndex: Integer; AKeepName: Boolean = False): TBytes;
-    property Count: Integer read GetCount;
-    property Entries[AIndex: Integer]: TXcomCatEntry read GetEntry;
-  end;
+  /// <summary>
+  ///   A .CAT file: an index of entries, each with a name that starts it (CatFile). The contract lives in
+  ///   Libs\Bytes (DelphiDoom.Bytes.Archive.Intf), where the Adlib music of Libs\Opl can use it too
+  /// </summary>
+  IXcomCatArchive = ICatArchive;
 
   IXcomMapReader = interface
     ['{0E5B7A93-C1F4-48D6-A279-6B3D80E5F1C2}']

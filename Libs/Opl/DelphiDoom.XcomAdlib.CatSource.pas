@@ -11,15 +11,15 @@ unit DelphiDoom.XcomAdlib.CatSource;
 interface
 
 uses
-  System.SysUtils, DelphiDoom.Xcom.Intf, DelphiDoom.XcomAdlib.Intf;
+  System.SysUtils, DelphiDoom.Bytes.Archive.Intf, DelphiDoom.XcomAdlib.Intf;
 
 type
   /// <summary>The songs of an Adlib container: the entries of a CAT file, each with the name skipped</summary>
   TXcomCatAdlibSource = class(TInterfacedObject, IXcomAdlibMusicSource)
   strict private
-    FArchive: IXcomCatArchive;
+    FArchive: ICatArchive;
   public
-    constructor Create(const AArchive: IXcomCatArchive);
+    constructor Create(const AArchive: ICatArchive);
     function TrackCount: Integer;
     function LoadTrack(AIndex: Integer): TBytes;
     function LoadTrackWithName(AIndex: Integer): TBytes;
@@ -29,7 +29,7 @@ implementation
 
 { TXcomCatAdlibSource }
 
-constructor TXcomCatAdlibSource.Create(const AArchive: IXcomCatArchive);
+constructor TXcomCatAdlibSource.Create(const AArchive: ICatArchive);
 begin
   inherited Create;
   FArchive := AArchive;

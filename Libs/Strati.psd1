@@ -34,6 +34,7 @@
     'Libs\Geometry' = 'L0'
     'Libs\Logging' = 'L0'
     'Libs\Platform' = 'L0'
+    'Libs\Bytes' = 'L0'
     'Libs\Clock' = 'L0'
     'Libs\Threading' = 'L0'
     'Libs\Zlib' = 'L0'
@@ -189,9 +190,6 @@
        Motivo = 'Greed usa il trasporto UDP di Net, che e'' misto con il protocollo dei ticcmd di Doom (Net non e'' nell''elenco di #225: da aggiungere)' }
     @{ Da = 'Greed'; A = 'Libs\Net'; Massimo = 4; Issue = 225
        Motivo = 'DelphiDoom.Greed.Composition usa il trasporto UDP di Net (come sopra)' }
-    # --- #229: unit comuni dei formati e dei lettori di byte ---
-    @{ Da = 'Libs\Opl'; A = 'Libs\XcomFormats'; Massimo = 1; Issue = 229
-       Motivo = 'CatSource e Factory dell''Adlib usano DelphiDoom.Xcom.Intf (lettura di archivi CAT): il contratto va in una libreria comune' }
     # --- #226: cartella di prodotto mista ---
     @{ Da = 'Speed'; A = 'Libs\Racing'; Massimo = 9; Issue = 226
        Motivo = 'la cartella Speed ha Speed32 (corse, usa Racing) e SpeedHaste32 (motore id): da separare quando si spostano le cartelle' }

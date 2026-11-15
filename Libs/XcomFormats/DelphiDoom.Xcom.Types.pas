@@ -11,7 +11,8 @@ unit DelphiDoom.Xcom.Types;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  DelphiDoom.Bytes.Types;
 
 const
   /// <summary>Colors of an X-Com palette in PALETTES.DAT (a 8 bit image)</summary>
@@ -218,11 +219,8 @@ type
     Texture: Integer;
   end;
 
-  /// <summary>An entry of the index that starts a CAT file: where the entry is and how long it is</summary>
-  TXcomCatEntry = packed record
-    Offset: Cardinal;
-    Size: Cardinal;
-  end;
+  /// <summary>An entry of the index that starts a CAT file (declared in Libs\Bytes: TCatEntry)</summary>
+  TXcomCatEntry = TCatEntry;
 
 implementation
 
