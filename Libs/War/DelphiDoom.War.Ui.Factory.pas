@@ -71,34 +71,20 @@ begin
   LInputRef := LInput;
   LSettings := TWarGameSettings.Create;
   LCanvas := TWarUiCanvas.Create(AWidth, AHeight, AMetrics, AFontImages);
-  try
-    LImui := TWarImui.Create(LCanvas, LInputRef, ASprites, AAudio);
-    try
-      LManager := TWarSceneManager.Create(LSettings, LInput, LCanvas, LImui, AMapLauncher, AIsDemo, AWidth, AHeight);
-      try
-        LServices.Host := LManager;
-        LServices.Input := LInputRef;
-        LServices.Imui := LImui;
-        LServices.Canvas := LCanvas;
-        LServices.Audio := AAudio;
-        LServices.Sprites := ASprites;
-        LServices.Campaigns := ACampaigns;
-        LServices.Effects := TWarSettingsCheatEffects.Create(LSettings, AAudio, AIsDemo);
-        LServices.Scenes := nil;
-        LScenes := TWarSceneFactory.Create(LServices);
-        Result := TWarUiGame.Create(LInput, LCanvas, LImui, LSettings, LManager, LScenes);
-      except
-        LManager.Free;
-        raise;
-      end;
-    except
-      LImui.Free;
-      raise;
-    end;
-  except
-    LCanvas.Free;
-    raise;
-  end;
+  LImui := TWarImui.Create(LCanvas, LInputRef, ASprites, AAudio);
+  LManager := TWarSceneManager.Create(LSettings, LInput, LCanvas, LImui, AMapLauncher, AIsDemo, AWidth, AHeight);
+  LServices.Host := LManager;
+  LServices.Input := LInputRef;
+  LServices.Imui := LImui;
+  LServices.Canvas := LCanvas;
+  LServices.Audio := AAudio;
+  LServices.Sprites := ASprites;
+  LServices.Campaigns := ACampaigns;
+  LServices.Effects := TWarSettingsCheatEffects.Create(LSettings, AAudio, AIsDemo);
+  LServices.Scenes := nil;
+  LScenes := TWarSceneFactory.Create(LServices);
+  // from here the game owns them all
+  Result := TWarUiGame.Create(LInput, LCanvas, LImui, LSettings, LManager, LScenes);
 end;
 
 end.

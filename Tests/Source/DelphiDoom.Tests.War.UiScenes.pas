@@ -104,6 +104,10 @@ type
     procedure DovrebbeScrivereLeChiamateDiDisegnoNellaTraccia;
     [Test]
     procedure DovrebbeScrivereIPixelDelFotogramma;
+    [Test]
+    procedure DovrebbeScrivereLeChiamateRovesciateEIContorniNellaTraccia;
+    [Test]
+    procedure DovrebbeLeggereUnScriptDaUnFile;
   end;
 
 implementation
@@ -658,7 +662,7 @@ begin
     Assert.IsTrue(LOutput[0].StartsWith('H 2 '));
     Assert.IsTrue(LOutput[1].StartsWith('H 4 '));
     Assert.IsTrue(LOutput[2].StartsWith('H 5 '));
-    Assert.AreEqual(8, Length(LOutput[2]) - Length('H 5 '));
+    Assert.AreEqual<Integer>(8, Length(LOutput[2]) - Length('H 5 '));
     Assert.AreEqual(LOutput[2].Substring(4), LOutput[3].Substring(4), 'hash e'' lo stesso del fotogramma corrente');
   finally
     LOutput.Free;
@@ -727,7 +731,71 @@ begin
       Free;
     end;
     LBytes := TFile.ReadAllBytes(LPath);
-    Assert.AreEqual(320 * 200 * 4, Length(LBytes));
+    Assert.AreEqual<Integer>(320 * 200 * 4, Length(LBytes));
+    DeleteFile(LPath);
+  finally
+    LOutput.Free;
+  end;
+end;
+
+procedure TTestWarUiScenes.DovrebbeScrivereLeChiamateRovesciateEIContorniNellaTraccia;
+var
+  LOutput: TStringList;
+  LTrace: TStringList;
+  LRect: TWarRectF;
+  LColor: TWarRgba;
+  LSprite: IWarUiSprite;
+begin
+  LOutput := TStringList.Create;
+  LTrace := TStringList.Create;
+  try
+    with TWarUiScriptRunner.Create(FGame, LOutput, LTrace) do
+    try
+      Run(['trace on']);
+      LSprite := FSprites.CreateSprite(5);
+      LRect.X := 0;
+      LRect.Y := 0;
+      LRect.Width := 16;
+      LRect.Height := 16;
+      LColor := WAR_COLOR_WHITE;
+      FGame.Canvas.Transform.Save;
+      FGame.Canvas.Transform.Scale(-1, -1);
+      FGame.Canvas.Transform.SetTexture(LSprite.Texture);
+      FGame.Canvas.Transform.SubImage(LRect, LRect, 1, 1);
+      FGame.Canvas.Transform.ClearTexture;
+      FGame.Canvas.Transform.StrokeRect(LRect, LColor);
+      FGame.Canvas.Transform.Restore;
+      Assert.AreEqual(2, LTrace.Count);
+      // a negative scale of the state moves the origin back by the size
+      Assert.IsTrue(LTrace[0].StartsWith('R 0 0 16 16 > -16 -16 16 16 '), LTrace[0]);
+      Assert.IsTrue(LTrace[0].EndsWith(' b1 f3'), LTrace[0]);
+      Assert.IsTrue(LTrace[1].StartsWith('S '), LTrace[1]);
+      Run(['trace off']);
+    finally
+      Free;
+    end;
+  finally
+    LTrace.Free;
+    LOutput.Free;
+  end;
+end;
+
+procedure TTestWarUiScenes.DovrebbeLeggereUnScriptDaUnFile;
+var
+  LOutput: TStringList;
+  LPath: string;
+begin
+  LOutput := TStringList.Create;
+  LPath := ChangeFileExt(ParamStr(0), '.script.tmp');
+  try
+    TFile.WriteAllText(LPath, '# prova'#13#10'scene menu'#13#10'run 2 1'#13#10, TEncoding.ASCII);
+    with TWarUiScriptRunner.Create(FGame, LOutput, nil) do
+    try
+      RunFile(LPath);
+    finally
+      Free;
+    end;
+    Assert.AreEqual(2, LOutput.Count);
     DeleteFile(LPath);
   finally
     LOutput.Free;

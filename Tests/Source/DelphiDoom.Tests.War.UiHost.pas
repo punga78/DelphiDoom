@@ -348,7 +348,7 @@ begin
   LSprite := LLoader.CreateSprite(216);
   Assert.AreEqual(2, LSprite.FrameWidth);
   Assert.AreEqual(1, LSprite.FrameCount);
-  Assert.AreEqual(8, Length(LSprite.Texture.Pixels), 'un''immagine ha gia'' i pixel');
+  Assert.AreEqual<Integer>(8, Length(LSprite.Texture.Pixels), 'un''immagine ha gia'' i pixel');
   Assert.AreEqual(1, Integer(LSprite.Texture.Pixels[0]));
   LSprite := LLoader.CreateSprite(263);
   Assert.AreEqual(1, LSprite.FrameWidth);
@@ -420,7 +420,7 @@ var
 begin
   LSprites := TFakeUiSprites.Create;
   LSprite := LSprites.CreateSprite(1000);
-  Assert.AreEqual(16 * 16 * 4, Length(LSprite.Texture.Pixels));
+  Assert.AreEqual<Integer>(16 * 16 * 4, Length(LSprite.Texture.Pixels));
   Assert.AreEqual(0, Integer(LSprite.Texture.Pixels[3]));
   Assert.AreEqual(3, LSprite.FrameCount);
   try

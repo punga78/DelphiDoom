@@ -34,7 +34,7 @@ type
     function MapText(AMap: Integer): AnsiString;
     function MenuButton(const AText: AnsiString; AX, AY: Single; AHotKey: TWarKey; ASmall: Boolean): TWarUiTextButtonArgs;
     function ArrowButton(AX, AY: Single; ARight: Boolean): TWarUiImageButtonArgs;
-    procedure Label_(const AId, AText: AnsiString; AX, AY, AWidth: Single; AAlign: TWarTextAlignment);
+    procedure Caption(const AId, AText: AnsiString; AX, AY, AWidth: Single; AAlign: TWarTextAlignment);
     procedure RenderMain;
     procedure RenderSinglePlayer;
     procedure RenderCustomGame;
@@ -137,7 +137,7 @@ begin
   Result.PositionY := AY;
 end;
 
-procedure TWarSceneMainMenu.Label_(const AId, AText: AnsiString; AX, AY, AWidth: Single; AAlign: TWarTextAlignment);
+procedure TWarSceneMainMenu.Caption(const AId, AText: AnsiString; AX, AY, AWidth: Single; AAlign: TWarTextAlignment);
 var
   LText: TWarUiTextArgs;
 begin
@@ -197,12 +197,12 @@ end;
 
 procedure TWarSceneMainMenu.RenderCustomGame;
 begin
-  Label_('txtYourRaceLabel', 'Your race:', 40, 105, 100, wtaRight);
-  Label_('txtEnemyRaceLabel', 'Enemy race:', 40, 125, 100, wtaRight);
-  Label_('txtMapLabel', 'Map:', 40, 145, 100, wtaRight);
-  Label_('txtYourRace', RaceText(FYourRace), 180, 105, 50, wtaCenter);
-  Label_('txtEnemyRace', RaceText(FEnemyRace), 180, 125, 50, wtaCenter);
-  Label_('txtMap', MapText(FCustomMap), 180, 145, 50, wtaCenter);
+  Caption('txtYourRaceLabel', 'Your race:', 40, 105, 100, wtaRight);
+  Caption('txtEnemyRaceLabel', 'Enemy race:', 40, 125, 100, wtaRight);
+  Caption('txtMapLabel', 'Map:', 40, 145, 100, wtaRight);
+  Caption('txtYourRace', RaceText(FYourRace), 180, 105, 50, wtaCenter);
+  Caption('txtEnemyRace', RaceText(FEnemyRace), 180, 125, 50, wtaCenter);
+  Caption('txtMap', MapText(FCustomMap), 180, 145, 50, wtaCenter);
   if Services.Imui.ImageButton('btnYourRaceLeft', ArrowButton(160, 103, False)) then
     if FYourRace > wraNeutral then
       FYourRace := Pred(FYourRace);

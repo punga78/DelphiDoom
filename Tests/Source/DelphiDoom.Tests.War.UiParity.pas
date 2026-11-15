@@ -23,6 +23,7 @@ type
   TTestWarUiParity = class(TObject)
   private
     procedure CheckScript(const AName: string);
+    procedure DumpTrace(const AName: string; const ALines: TArray<string>);
   public
     [Test]
     procedure DovrebbeDareGliStessiFotogrammiDelLogoDellaBlizzard;
@@ -50,6 +51,30 @@ uses
   DelphiDoom.War.Ui.Game, DelphiDoom.Tests.War.RealData, DelphiDoom.Tests.War.UiRig;
 
 { TTestWarUiParity }
+
+procedure TTestWarUiParity.DumpTrace(const AName: string; const ALines: TArray<string>);
+var
+  LFolder: string;
+  LGame: TWarUiGame;
+  LTrace: TStringList;
+  LOutput: TStringList;
+begin
+  // when a frame differs: the trace of the drawing calls of the whole script, to compare with the one of the C
+  // (Tools\Verifica\197\Confronta-Traccia.ps1), in the folder of the variable DELPHIDOOM_WAR_UI_DUMP if it is set
+  LFolder := GetEnvironmentVariable('DELPHIDOOM_WAR_UI_DUMP');
+  if LFolder = '' then
+    Exit;
+  LGame := TWarUiRig.CreateRealGame(nil, nil);
+  LTrace := TStringList.Create;
+  try
+    LOutput := TWarUiRig.RunScript(LGame, ['trace on'] + ALines, LTrace);
+    LOutput.Free;
+    LTrace.SaveToFile(IncludeTrailingPathDelimiter(LFolder) + AName + '.delphi.trace.txt');
+  finally
+    LTrace.Free;
+    LGame.Free;
+  end;
+end;
 
 procedure TTestWarUiParity.CheckScript(const AName: string);
 var
@@ -86,6 +111,8 @@ begin
             if LFirst = '' then
               LFirst := Format('riga %d: C "%s", Delphi "%s"', [LIndex + 1, LGolden[LIndex], LOutput[LIndex]]);
           end;
+        if LDifferent > 0 then
+          DumpTrace(AName, LLines);
         Assert.AreEqual(0, LDifferent, Format('Fotogrammi diversi in %s su %d; la prima: %s', [AName, LGolden.Count,
           LFirst]));
       finally

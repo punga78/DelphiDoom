@@ -51,6 +51,10 @@ type
     [Test]
     procedure DovrebbeRifiutareUnFontCheNonEsiste;
     [Test]
+    procedure DovrebbeCentrareUnIconaSenzaSfondoAlLatoOpposto;
+    [Test]
+    procedure DovrebbeRifiutareIlTestoSuUnFontCheNonHaLImmagine;
+    [Test]
     procedure DovrebbeFarScattareUnBottoneAlRilascioSuDiLui;
     [Test]
     procedure DovrebbeNonFarScattareUnBottoneRilasciatoFuoriDaLui;
@@ -259,6 +263,36 @@ begin
           FGame.Imui.Text('t', LText);
         end);
     end, EWarException);
+end;
+
+procedure TTestWarUiImui.DovrebbeCentrareUnIconaSenzaSfondoAlLatoOpposto;
+var
+  LArgs: TWarUiImageButtonArgs;
+begin
+  FSprites.SetSize(1001, 4, 4);
+  LArgs := TWarUiImageButtonArgs.Default;
+  LArgs.PositionX := 50;
+  LArgs.PositionY := 50;
+  LArgs.Foreground := 1001;
+  LArgs.ForegroundFrameIndex := 0;
+  Frame(procedure
+    begin
+      FGame.Imui.ImageButton('b', LArgs);
+    end);
+  // no background: the offset is half of minus the size of the icon, so it goes 2 up and to the left
+  Assert.AreEqual(1001 and 255, Pixel(48, 48, 0));
+  Assert.AreEqual(0, Pixel(52, 52, 0));
+end;
+
+procedure TTestWarUiImui.DovrebbeRifiutareIlTestoSuUnFontCheNonHaLImmagine;
+begin
+  try
+    FGame.Canvas.RenderText('a', 0, 0, 5, Default(TWarFontParams), False);
+  except
+    on E: EWarException do
+      Exit;
+  end;
+  Assert.Fail('Un font senza immagine non disegna');
 end;
 
 procedure TTestWarUiImui.DovrebbeFarScattareUnBottoneAlRilascioSuDiLui;
@@ -479,7 +513,7 @@ begin
     begin
       FGame.Imui.ImageButton('b', LArgs);
       Assert.IsTrue(FGame.Imui.ShowTooltip);
-      Assert.AreEqual(255, Length(FGame.Imui.TooltipText));
+      Assert.AreEqual<Integer>(255, Length(FGame.Imui.TooltipText));
     end);
   Assert.AreEqual(0, Pixel(75, 194, 0), 'senza mappa non si disegna');
   FGame.Imui.SetMapPanel(True, 0, 188);

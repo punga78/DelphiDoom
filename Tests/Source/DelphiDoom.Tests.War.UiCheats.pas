@@ -49,6 +49,9 @@ type
     [TestCase('oltre i 32 bit', '2147483648,0,False')]
     [TestCase('il minimo', '-2147483648,-2147483648,True')]
     [TestCase('solo 0x', '0x,0,False')]
+    [TestCase('il minimo a 64 bit', '-9223372036854775808,0,False')]
+    [TestCase('oltre i 64 bit', '9223372036854775808,0,False')]
+    [TestCase('un po'' oltre il 32 bit negativo', '-2147483649,0,False')]
     procedure DovrebbeLeggereUnIntero(const AText: string; AExpected: Integer; AOk: Boolean);
     [Test]
     procedure DovrebbeTrovareUnTruccoSenzaArgomentoSoloSeEIdenticoSenzaMaiuscole;
@@ -204,7 +207,7 @@ begin
   // the start is enough: "Scaled" is Scale with the argument "d"
   Assert.IsTrue(TWarCheatTable.Match('Scaled', LDescriptor, LArgument));
   Assert.AreEqual<AnsiString>('d', LArgument);
-  Assert.AreEqual(24, Length(TWarCheatTable.Descriptors));
+  Assert.AreEqual<Integer>(24, Length(TWarCheatTable.Descriptors));
 end;
 
 procedure TTestWarUiCheats.DovrebbeScegliereIlPrimoDellaTabellaEMusicVolPrimaDiMusic;
@@ -293,6 +296,11 @@ begin
   Assert.AreEqual<AnsiString>('Global speed set to 3', LEffects.Apply('Speed', '3'));
   Assert.AreEqual(3, RoundInt(LSettings.GlobalSpeed));
   Assert.AreEqual<AnsiString>('Global speed set to 1', LEffects.Apply('Speed', '-4'));
+  Assert.AreEqual<AnsiString>('Global speed set to 5', LEffects.Apply('Speed', '9'));
+  LSettings.SetMusicVolume(-1);
+  Assert.AreEqual(0, RoundInt(LSettings.MusicVolume));
+  LSettings.SetSoundVolume(2);
+  Assert.AreEqual(1, RoundInt(LSettings.SoundVolume));
   // the setters themselves never go under 1 (scale, speed) and stay between 0 and 1 (the volumes)
   LSettings.SetGlobalSpeed(0.5);
   Assert.AreEqual(1, RoundInt(LSettings.GlobalSpeed));
@@ -388,11 +396,11 @@ var
 begin
   OpenPanel;
   FGame.Manager.HandleTextInput(AnsiString(StringOfChar('a', 40)));
-  Assert.AreEqual(31, Length(FPanel.Text), 'i caratteri si fermano a 31');
+  Assert.AreEqual<Integer>(31, Length(FPanel.Text), 'i caratteri si fermano a 31');
   for LIndex := 1 to 10 do
     PressKey(wkTab);
   // the Tab is checked against 40: it goes in while the line has at most 38 characters
-  Assert.AreEqual(39, Length(FPanel.Text));
+  Assert.AreEqual<Integer>(39, Length(FPanel.Text));
 end;
 
 procedure TTestWarUiCheats.DovrebbeTagliareLaRigaDiUscitaA39Caratteri;
@@ -403,7 +411,7 @@ begin
   FGame.Manager.HandleTextInput(AnsiString(StringOfChar('b', 31)));
   for LIndex := 1 to 5 do
     PressKey(wkTab);
-  Assert.AreEqual(36, Length(FPanel.Text));
+  Assert.AreEqual<Integer>(36, Length(FPanel.Text));
   // "MSG: " and the text are cut to 39 characters in the line that is drawn: no exception, the frame is drawn
   Tick(2);
   Assert.IsTrue(FPanel.CursorX > 0);
