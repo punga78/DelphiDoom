@@ -93,7 +93,6 @@ resourcestring
   SStaticTruncated = 'The model is truncated: %d bytes needed at the offset %d, the file has %d';
   SStaticNegativeSize = 'The model has a negative size (%d) at the offset %d';
   SStaticLwoNotLwo = 'The file is not a LightWave object (FORM/LWO2 expected)';
-  SStaticLwoLwob = 'The LWOB format (LightWave 5) is not supported';
   SStaticLwoBadChunk = 'LWO: the chunk %s is damaged (%s)';
   SStaticLwoBadPolygonTag = 'LWO: the polygon tag %d does not exist (%d polygons)';
   SStaticLwoBadPoint = 'LWO: the point %d does not exist (%d points)';

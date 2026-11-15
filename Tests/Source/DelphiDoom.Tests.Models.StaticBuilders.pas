@@ -95,6 +95,23 @@ function BuildMergeLwo: TBytes;
 /// <summary>The cube smoothed at 1.6 radians with smoothing groups that alternate by polygon</summary>
 function BuildGroupsLwo: TBytes;
 
+/// <summary>
+///   The cube as an LWOB (LightWave 5) file: PNTS, SRFS, POLS (the surface number after every
+///   polygon) and one SURF with the colour (128, 64, 255), skipped DIFF, LUMI and GLOS, the flags
+///   (AFlags, not written when negative) and the smoothing angle (not written when 0)
+/// </summary>
+function BuildCubeLwob(const AFlags: Integer; const ASmooth: Single): TBytes;
+
+/// <summary>A FORM LWOB with the chunks given (each already with its header)</summary>
+function LwobForm(const AChunks: array of TBytes): TBytes;
+
+/// <summary>
+///   Three surfaces ("tex/a", "TEX/A", "tex/b": the first two are the same without case), four
+///   triangles, a quad, a polygon with a negative surface number (details follow it) and the
+///   second one of those details; the third surface has the smoothing flag
+/// </summary>
+function BuildMultiLwob: TBytes;
+
 /// <summary>Two copies of the cube object with the same material (merged by default)</summary>
 function BuildTwoObjectsAse: AnsiString;
 
@@ -361,6 +378,90 @@ begin
   finally
     LBuilder.Free;
   end;
+end;
+
+function LwobPolygon(const AVertexes: array of Integer; const ASurface: SmallInt; const ADetails: Integer = -1): TBytes;
+var
+  LIndex: Integer;
+begin
+  Result := TLwoFileBuilder.U2(Length(AVertexes));
+  for LIndex := 0 to High(AVertexes) do
+    Result := TLwoFileBuilder.Join([Result, TLwoFileBuilder.U2(AVertexes[LIndex])]);
+  Result := TLwoFileBuilder.Join([Result, TLwoFileBuilder.U2(Word(ASurface))]);
+  // a negative surface is followed by the count of the details
+  if ADetails >= 0 then
+    Result := TLwoFileBuilder.Join([Result, TLwoFileBuilder.U2(ADetails)]);
+end;
+
+function LwobForm(const AChunks: array of TBytes): TBytes;
+var
+  LBody: TBytes;
+begin
+  LBody := TLwoFileBuilder.Join(AChunks);
+  Result := TLwoFileBuilder.Join([TBytes(BytesOf(AnsiString('FORM'))), TLwoFileBuilder.U4(4 + Length(LBody)),
+    TBytes(BytesOf(AnsiString('LWOB'))), LBody]);
+end;
+
+function LwobSubChunk(const AId: AnsiString; const AData: TBytes): TBytes;
+begin
+  Result := TLwoFileBuilder.Join([TBytes(BytesOf(AId)), TLwoFileBuilder.U2(Length(AData)), AData]);
+end;
+
+function LwobSurface(const AName: AnsiString; const ARed, AGreen, ABlue: Byte; const AFlags: Integer;
+  const ASmooth: Single): TBytes;
+begin
+  Result := TLwoFileBuilder.Join([TLwoFileBuilder.S0(AName),
+    LwobSubChunk('COLR', TBytes.Create(ARed, AGreen, ABlue, 0)),
+    // sub chunks that the reader skips (DIFF 1.0, LUMI 0, GLOS 40)
+    LwobSubChunk('DIFF', TLwoFileBuilder.U2(256)),
+    LwobSubChunk('LUMI', TLwoFileBuilder.U2(0)),
+    LwobSubChunk('GLOS', TLwoFileBuilder.U2(40))]);
+  if AFlags >= 0 then
+    Result := TLwoFileBuilder.Join([Result, LwobSubChunk('FLAG', TLwoFileBuilder.U2(AFlags))]);
+  if ASmooth > 0 then
+    Result := TLwoFileBuilder.Join([Result, LwobSubChunk('SMAN', TLwoFileBuilder.F4(ASmooth))]);
+  Result := TLwoFileBuilder.Chunk('SURF', Result);
+end;
+
+function LwobPoints(const ACoordinates: array of Single): TBytes;
+var
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(ACoordinates) do
+    Result := TLwoFileBuilder.Join([Result, TLwoFileBuilder.F4(ACoordinates[LIndex])]);
+  Result := TLwoFileBuilder.Chunk('PNTS', Result);
+end;
+
+function BuildCubeLwob(const AFlags: Integer; const ASmooth: Single): TBytes;
+var
+  LPolygons: TBytes;
+  LIndex: Integer;
+begin
+  for LIndex := 0 to High(CUBE_TRIANGLES) do
+    LPolygons := TLwoFileBuilder.Join([LPolygons,
+      LwobPolygon([CUBE_TRIANGLES[LIndex][0], CUBE_TRIANGLES[LIndex][1], CUBE_TRIANGLES[LIndex][2]], 1)]);
+  Result := LwobForm([LwobPoints(CUBE_POINTS),
+    TLwoFileBuilder.Chunk('SRFS', TLwoFileBuilder.S0('textures/test/cube')),
+    TLwoFileBuilder.Chunk('POLS', LPolygons),
+    LwobSurface('textures/test/cube', 128, 64, 255, AFlags, ASmooth)]);
+end;
+
+function BuildMultiLwob: TBytes;
+var
+  LPolygons: TBytes;
+begin
+  LPolygons := TLwoFileBuilder.Join([
+    LwobPolygon([0, 1, 2], 1), LwobPolygon([1, 3, 2], 2), LwobPolygon([0, 2, 1], 3), LwobPolygon([1, 2, 3], 1),
+    LwobPolygon([0, 1, 3, 2], 1),
+    // a polygon with a negative surface number and no details, and a polygon with the other surface
+    LwobPolygon([2, 3, 0], -3, 0), LwobPolygon([3, 0, 1], 3)]);
+  Result := LwobForm([LwobPoints([0, 0, 0,  1, 0, 0,  0, 1, 0,  1, 1, 0]),
+    TLwoFileBuilder.Chunk('SRFS', TLwoFileBuilder.Join([TLwoFileBuilder.S0('tex/a'), TLwoFileBuilder.S0('TEX/A'),
+      TLwoFileBuilder.S0('tex/b')])),
+    TLwoFileBuilder.Chunk('CRVS', TBytes.Create(1, 2, 3, 4)),
+    TLwoFileBuilder.Chunk('POLS', LPolygons),
+    LwobSurface('tex/a', 255, 0, 0, -1, 0), LwobSurface('TEX/A', 0, 255, 0, -1, 0),
+    LwobSurface('tex/b', 0, 0, 255, 4, 0)]);
 end;
 
 function BuildWeldLwo: TBytes;
