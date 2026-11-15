@@ -1,6 +1,6 @@
 # Libs\OpenGl — note per Claude
 
-**Divisione (issue #220).** Il binding (`dglOpenGL.pas`) e il registratore di chiamate (`Recorder\`) sono stati spostati con `git mv` in `Libs\OpenGlBinding` (strato L3, senza dipendenze dal motore; vedi `Libs\OpenGlBinding\CLAUDE.md`); `Libs\OpenGl` e' il solo renderer di id Tech 1 (`Legacy\`, modulo `IdTech1`). Dove qui sotto si legge `Libs\OpenGl\Binding` o `Libs\OpenGl\Recorder` e' il percorso di prima della #220. I nomi delle unit non sono cambiati. La verifica (flusso GL vecchio contro nuovo) e' in fondo a questo file.
+**Divisione (issue #220).** Il binding (`dglOpenGL.pas`) e il registratore di chiamate (`Recorder\`) sono stati spostati con `git mv` in `Libs\OpenGlBinding` (strato L3, senza dipendenze dal motore; vedi `Libs\OpenGlBinding\CLAUDE.md`); `Libs\OpenGl` e' il solo renderer di id Tech 1 (`Legacy\`, modulo `IdTech1`). Dove qui sotto si legge `Libs\OpenGl\Binding` o `Libs\OpenGl\Recorder` e' il percorso di prima della #220. I nomi delle unit non sono cambiati. La verifica della divisione (flusso GL vecchio contro nuovo, numeri) e' in `Libs\OpenGlBinding\CLAUDE.md`.
 
 `Libs\OpenGl` (issue #177, fetta 0 del piano `docs\OPENGL_PIANO.md`): la cartella `OPENGL\` non esiste piu. `Binding\dglOpenGL.pas` (ora in `Libs\OpenGlBinding`, issue #220) era il binding di terzi, `Legacy\` le altre 26 unit del renderer OpenGL (procedurali, si svuotano fetta per fetta); solo spostamento, nessuna riga di codice cambiata. Vedi `Libs\OpenGl\README.md`.
 
