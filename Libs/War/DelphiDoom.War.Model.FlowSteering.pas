@@ -174,6 +174,9 @@ begin
   GatherNeighbours(LEntity^.Id, LPosition, SEARCH_RADIUS);
   AState^.RvoAdjustedVelocity := TWarRvo.ComputeNewVelocity(AState^.RvoPreferredVelocity, LPosition,
     AState^.RvoVelocity, LRadius, LSpeed, FContext.Clock^.DeltaTime, FNeighbours);
+  // what the debug drawing of the avoidance reads (rvoPosition and rvoNumCandidates; the candidates are always 34)
+  AState^.RvoPosition := LPosition;
+  AState^.RvoNumCandidates := WAR_RVO_MAX_CANDIDATES;
 end;
 
 procedure TWarFlowSteering.Neighbours(ASelfId: Word; const ACentre: TWarVec2; ARadius: Single;

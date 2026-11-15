@@ -99,6 +99,9 @@ procedure ClearVelocities(AState: PWarStateMove);
 begin
   AState^.RvoPreferredVelocity.X := 0;
   AState^.RvoPreferredVelocity.Y := 0;
+  AState^.RvoPosition.X := 0;
+  AState^.RvoPosition.Y := 0;
+  AState^.RvoNumCandidates := 0;
 end;
 
 // pass 2: an enemy that attacks the unit takes the attention of a unit that looks for attacks
@@ -195,6 +198,9 @@ begin
       AState^.RvoVelocity.Y := 0;
       AState^.RvoPreferredVelocity.X := 0;
       AState^.RvoPreferredVelocity.Y := 0;
+      AState^.RvoPosition.X := 0;
+      AState^.RvoPosition.Y := 0;
+      AState^.RvoNumCandidates := 0;
       AMachine.PopState(ASlot, WAR_CAUSE_COMPLETION, WAR_RESULT_SUCCESS);
     end;
   end;

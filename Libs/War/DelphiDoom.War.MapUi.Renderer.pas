@@ -806,6 +806,9 @@ begin
   RenderEntitiesOfType(WAR_ENTITY_PROJECTILE);
   RenderEntitiesOfType(WAR_ENTITY_POISON_CLOUD);
   RenderEntitiesOfType(WAR_ENTITY_ANIMATION);
+  // renderRvoDebug: over everything but the fog
+  if Assigned(FDebugView) then
+    FDebugView.RenderOverUnits;
   RenderFog;
   FTransform.Restore;
 end;

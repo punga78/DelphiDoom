@@ -325,6 +325,8 @@ uses
   DelphiDoom.War.Render.ColorList.Data in '..\Libs\War\DelphiDoom.War.Render.ColorList.Data.pas',
   DelphiDoom.War.MapUi.DebugProjectiles in '..\Libs\War\DelphiDoom.War.MapUi.DebugProjectiles.pas',
   DelphiDoom.War.Path.Intf in '..\Libs\War\DelphiDoom.War.Path.Intf.pas',
+  DelphiDoom.War.MapUi.DebugArrow in '..\Libs\War\DelphiDoom.War.MapUi.DebugArrow.pas',
+  DelphiDoom.War.MapUi.DebugRvo in '..\Libs\War\DelphiDoom.War.MapUi.DebugRvo.pas',
   DelphiDoom.War.MapUi.DebugFlowField in '..\Libs\War\DelphiDoom.War.MapUi.DebugFlowField.pas',
   DelphiDoom.War.MapUi.DebugNearUnits in '..\Libs\War\DelphiDoom.War.MapUi.DebugNearUnits.pas',
   DelphiDoom.War.MapUi.DebugView in '..\Libs\War\DelphiDoom.War.MapUi.DebugView.pas',

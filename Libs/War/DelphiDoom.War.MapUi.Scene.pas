@@ -280,7 +280,7 @@ begin
   if Assigned(FSetup.Services.DebugRender) then
   begin
     FDebugView := TWarMapDebugView.Create(FSetup.Services.Canvas.Transform, FMap.Grid, FSetup.Services.DebugRender,
-      FBinding.World.Context, FCamera);
+      FBinding.World.Context, FBinding.World.Machine, FCamera);
     FRenderer.DebugView := FDebugView;
   end;
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);

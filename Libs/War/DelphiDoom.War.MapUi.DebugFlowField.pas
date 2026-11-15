@@ -52,16 +52,13 @@ implementation
 
 uses
   System.Math, DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Map.Types, DelphiDoom.War.Model.Types,
-  DelphiDoom.War.Path.Types, DelphiDoom.War.MapUi.Types;
+  DelphiDoom.War.Path.Types, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.DebugArrow;
 
 const
   // the cyan of WAR_COLOR_RGB(0, 255, 255)
   ARROW_COLOR: TWarRgba = (R: 0; G: 255; B: 255; A: 255);
-  // MEGA_TILE_WIDTH * 0.35f and 3.0f
+  // MEGA_TILE_WIDTH * 0.35f
   SHAFT_FACTOR: Single = 0.35;
-  HEAD_LENGTH: Single = 3.0;
-  // PI of war_math.h is a float literal
-  SINGLE_PI: Single = 3.14159265358979323846;
 
 { TWarDebugFlowField }
 
@@ -119,10 +116,6 @@ var
   LEndPointX: Single;
   LEndPointY: Single;
   LAngle: Single;
-  LSixth: Single;
-  LArgument: Single;
-  LHeadX: Single;
-  LHeadY: Single;
   LTemp: Single;
 begin
   if not FFlags.Flag[wdrFlowField] then
@@ -146,7 +139,6 @@ begin
   LEndY := Min(LEndY, WAR_MAP_TILES_HEIGHT);
   LShaft := WAR_MEGA_TILE_SIZE;
   LShaft := LShaft * SHAFT_FACTOR;
-  LSixth := SINGLE_PI / 6.0;
   for LY := LStartY to LEndY - 1 do
     for LX := LStartX to LEndX - 1 do
     begin
@@ -163,19 +155,8 @@ begin
       LEndPointX := LCenterX + LDeltaX;
       LEndPointY := LCenterY + LDeltaY;
       FTransform.StrokeLine(LCenterX, LCenterY, LEndPointX, LEndPointY, ARROW_COLOR);
-      LAngle := ArcTan2(Single(WAR_PATH_DIR_Y[LDirection]), Single(WAR_PATH_DIR_X[LDirection]));
-      LArgument := LAngle - LSixth;
-      LHeadX := HEAD_LENGTH * Cos(LArgument);
-      LHeadX := LEndPointX - LHeadX;
-      LHeadY := HEAD_LENGTH * Sin(LArgument);
-      LHeadY := LEndPointY - LHeadY;
-      FTransform.StrokeLine(LEndPointX, LEndPointY, LHeadX, LHeadY, ARROW_COLOR);
-      LArgument := LAngle + LSixth;
-      LHeadX := HEAD_LENGTH * Cos(LArgument);
-      LHeadX := LEndPointX - LHeadX;
-      LHeadY := HEAD_LENGTH * Sin(LArgument);
-      LHeadY := LEndPointY - LHeadY;
-      FTransform.StrokeLine(LEndPointX, LEndPointY, LHeadX, LHeadY, ARROW_COLOR);
+      LAngle := TWarDebugArrow.AngleOf(WAR_PATH_DIR_X[LDirection], WAR_PATH_DIR_Y[LDirection]);
+      TWarDebugArrow.DrawHead(FTransform, LEndPointX, LEndPointY, LAngle, ARROW_COLOR);
     end;
 end;
 

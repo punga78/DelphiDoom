@@ -18,8 +18,9 @@ interface
 
 uses
   System.SysUtils, DelphiDoom.War.Render.Types, DelphiDoom.War.Render.Transform, DelphiDoom.War.Map.PathGrid,
-  DelphiDoom.War.Model.Context, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf, DelphiDoom.War.MapUi.Camera,
-  DelphiDoom.War.MapUi.DebugNearUnits, DelphiDoom.War.MapUi.DebugFlowField;
+  DelphiDoom.War.Model.Context, DelphiDoom.War.Model.StateMachine, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf,
+  DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.DebugNearUnits, DelphiDoom.War.MapUi.DebugFlowField,
+  DelphiDoom.War.MapUi.DebugRvo;
 
 type
   /// <summary>
@@ -36,13 +37,14 @@ type
     FFlags: IWarDebugRender;
     FNearUnits: TWarDebugNearUnits;
     FFlowField: TWarDebugFlowField;
+    FRvo: TWarDebugRvo;
     procedure RenderPassableInfo;
     procedure RenderMapGrid;
     procedure RenderSpatialGrid;
   public
     /// <summary>The context of the model is where the drawings of the units read them; nothing is owned</summary>
     constructor Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid; const AFlags: IWarDebugRender;
-      const AContext: TWarModelContext; const ACamera: TWarMapCamera);
+      const AContext: TWarModelContext; const AMachine: TWarStateMachine; const ACamera: TWarMapCamera);
     destructor Destroy; override;
     /// <summary>
     ///   The start of an update of the map that plays: clearNearUnitsDebug (a box shown by a click of editing lasts one frame)
@@ -55,6 +57,8 @@ type
     procedure EndUpdate(AEditingSpell: Boolean);
     /// <summary>renderPassableInfo, renderMapGrid, renderSpatialGrid, renderFlowField and renderNearUnitsDebug, in this order</summary>
     procedure Render;
+    /// <summary>renderRvoDebug: what is drawn over the units, the projectiles and the animations (under the fog)</summary>
+    procedure RenderOverUnits;
     /// <summary>updateFlowFieldDebug: the click that chooses the goal of the flow field that is drawn</summary>
     procedure UpdateClicks(const AInput: IWarUiInput);
     /// <summary>The near units of the debug drawing, where a click of editing sets the box of its spell</summary>
@@ -77,7 +81,8 @@ const
 { TWarMapDebugView }
 
 constructor TWarMapDebugView.Create(const ATransform: TWarRenderTransform; const AGrid: TWarPathGrid;
-  const AFlags: IWarDebugRender; const AContext: TWarModelContext; const ACamera: TWarMapCamera);
+  const AFlags: IWarDebugRender; const AContext: TWarModelContext; const AMachine: TWarStateMachine;
+  const ACamera: TWarMapCamera);
 var
   LSource: IWarFlowFieldSource;
 begin
@@ -90,10 +95,12 @@ begin
   if not Supports(AContext.Steering, IWarFlowFieldSource, LSource) then
     LSource := nil;
   FFlowField := TWarDebugFlowField.Create(ATransform, AGrid, AFlags, ACamera, LSource);
+  FRvo := TWarDebugRvo.Create(ATransform, AContext, AMachine, AFlags);
 end;
 
 destructor TWarMapDebugView.Destroy;
 begin
+  FRvo.Free;
   FFlowField.Free;
   FNearUnits.Free;
   inherited Destroy;
@@ -167,6 +174,11 @@ begin
     RenderSpatialGrid;
   FFlowField.Render;
   FNearUnits.Render;
+end;
+
+procedure TWarMapDebugView.RenderOverUnits;
+begin
+  FRvo.Render;
 end;
 
 procedure TWarMapDebugView.UpdateClicks(const AInput: IWarUiInput);
