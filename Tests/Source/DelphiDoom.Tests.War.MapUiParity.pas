@@ -57,6 +57,7 @@ type
     [TestCase('Partita personalizzata sulla palude e sconfitta', 'map_custom_swamp')]
     [TestCase('Partita personalizzata sulla foresta e ricomincia', 'map_custom_forest')]
     [TestCase('Disegno di debug: griglie e caselle che non si passano', 'map_debug')]
+    [TestCase('Modi con un clic: aggiungi unita'', pioggia di fuoco, nube, risuscita', 'map_edit')]
     procedure DovrebbeDareGliStessiFotogrammiDelC(const AName: string);
     /// <summary>
     ///   Not a test of the suite: with DELPHIDOOM_WAR_RUNSCRIPT (a script) and DELPHIDOOM_WAR_RUNSCRIPT_OUT set it writes the

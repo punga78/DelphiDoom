@@ -144,7 +144,8 @@ $script:Groups = @(
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_swamp.script'); Golden = 'ui.map_custom_swamp.golden.txt'; NeedsData = $true; WorkDir = $true },
       @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_custom_forest.script'); Golden = 'ui.map_custom_forest.golden.txt'; NeedsData = $true; WorkDir = $true },
       # il disegno di debug (flag, griglie, caselle che non si passano)
-      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug.script'); Golden = 'ui.map_debug.golden.txt'; NeedsData = $true; WorkDir = $true }) }
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_debug.script'); Golden = 'ui.map_debug.golden.txt'; NeedsData = $true; WorkDir = $true },
+      @{ Exe = 'war_frame_ref.exe'; Args = @('{SCRIPTS197}\map_edit.script'); Golden = 'ui.map_edit.golden.txt'; NeedsData = $true; WorkDir = $true }) }
 )
 
 # Il testo di un golden senza le differenze che non contano: BOM, fine riga (CRLF o LF), righe vuote in coda.

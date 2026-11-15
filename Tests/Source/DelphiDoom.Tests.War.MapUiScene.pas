@@ -36,13 +36,40 @@ type
     procedure DovrebbeFermarsiQuandoLaMappaFinisce;
     [Test]
     procedure DovrebbeRifiutareUnComandoDelloScriptCheNonEDellaMappa;
+    [Test]
+    procedure DovrebbeAprireIlMenuConF10ERiprendereConC;
+    [Test]
+    procedure DovrebbeAprireIlMenuDellaFineConLaVittoriaELaDemoSullUltimaMappa;
+    [Test]
+    procedure DovrebbePortareAlBriefingDopoLaFine;
+    [Test]
+    procedure DovrebbeTornareAlMenuPrincipaleDopoUnaPartitaPersonalizzata;
+    [Test]
+    procedure DovrebbeRifiutareIlProseguireSenzaUnRisultato;
+    [Test]
+    procedure DovrebbeRicominciareLaMappaEUscire;
+    [Test]
+    procedure DovrebbeFarCorrereIlTempoDelGiocoAnchePrimaDiRiprendere;
+    [Test]
+    procedure DovrebbeFarScrivereIlPannelloDeiTrucchiESpegnereIGruppi;
+    [Test]
+    procedure DovrebbeScegliereUnModoDiModificaEFarlo;
+    [Test]
+    procedure DovrebbeSpegnereLaNebbiaESaltareAUnBriefing;
+    [Test]
+    procedure DovrebbeFermarsiConIlTrucco;
+    [Test]
+    procedure DovrebbeMostrareIlTestoDiDebugEScrivereLeRigheNellaTraccia;
+    [Test]
+    procedure DovrebbeDisegnareIlDebugDelleGriglie;
   end;
 
 implementation
 
 uses
-  DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf,
-  DelphiDoom.War.Campaign.Types, DelphiDoom.War.Model.Types, DelphiDoom.Tests.War.RealData, DelphiDoom.Tests.War.UiRig;
+  Winapi.Windows, DelphiDoom.War.Types, DelphiDoom.War.Level.Types, DelphiDoom.War.Ui.Types, DelphiDoom.War.Ui.Intf,
+  DelphiDoom.War.Campaign.Types, DelphiDoom.War.Model.Types, DelphiDoom.War.MapUi.Types,
+  DelphiDoom.Tests.War.RealData, DelphiDoom.Tests.War.UiRig;
 
 { TTestWarMapUiScene }
 
@@ -141,6 +168,200 @@ begin
     begin
       Run(['comando_che_non_esiste']);
     end, EWarException);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeAprireIlMenuConF10ERiprendereConC;
+begin
+  Run(['key f10 down', 'run 1 1', 'key f10 up', 'run 3 1']);
+  Assert.IsTrue(FScene.Menu.State = wmsMain);
+  Assert.IsFalse(FScene.Playing);
+  // the mouse is dropped: no drag survives a menu
+  Run(['key c down', 'run 1 1', 'key c up', 'run 3 1']);
+  Assert.IsTrue(FScene.Menu.State = wmsNone);
+  Assert.IsTrue(FScene.Playing);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeAprireIlMenuDellaFineConLaVittoriaELaDemoSullUltimaMappa;
+begin
+  FScene.Conclude(wlrWin);
+  Run(['run 3 1']);
+  Assert.IsTrue(FScene.Menu.State = wmsGameOver);
+  Assert.IsFalse(FScene.Playing);
+  // the last map of the demo opens the menu of the end of the demo
+  FScene := nil;
+  FGame.Free;
+  FGame := TWarUiRig.CreateRealMapGame;
+  Run(['campaign human 2', 'run 5 1']);
+  FScene := FGame.Manager.Scene as TWarMapScene;
+  FScene.Conclude(wlrWin);
+  Run(['run 3 1']);
+  Assert.IsTrue(FScene.Menu.State = wmsDemoEnd);
+  // a defeat on it is the usual one
+  FScene := nil;
+  FGame.Free;
+  FGame := TWarUiRig.CreateRealMapGame;
+  Run(['campaign human 2', 'run 5 1']);
+  FScene := FGame.Manager.Scene as TWarMapScene;
+  FScene.Conclude(wlrLose);
+  Run(['run 3 1']);
+  Assert.IsTrue(FScene.Menu.State = wmsGameOver);
+end;
+
+procedure TTestWarMapUiScene.DovrebbePortareAlBriefingDopoLaFine;
+begin
+  FScene.Conclude(wlrWin);
+  Run(['run 3 1', 'key c down', 'run 1 1', 'key c up', 'run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstBriefing);
+  // a defeat shows the same briefing again (the second map after a victory, the first after a defeat)
+  FScene := nil;
+  FGame.Free;
+  FGame := TWarUiRig.CreateRealMapGame;
+  Run(['campaign orc 1', 'run 5 1']);
+  FScene := FGame.Manager.Scene as TWarMapScene;
+  FScene.Conclude(wlrLose);
+  Run(['run 3 1', 'key o down', 'run 1 1', 'key o up', 'run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstBriefing);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeTornareAlMenuPrincipaleDopoUnaPartitaPersonalizzata;
+begin
+  FScene := nil;
+  FGame.Free;
+  FGame := TWarUiRig.CreateRealMapGame;
+  Run(['custom 147', 'run 5 1']);
+  FScene := FGame.Manager.Scene as TWarMapScene;
+  FScene.Conclude(wlrWin);
+  Run(['run 3 1', 'key c down', 'run 1 1', 'key c up', 'run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstMainMenu);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeRifiutareIlProseguireSenzaUnRisultato;
+begin
+  Assert.WillRaise(
+    procedure
+    begin
+      FScene.ContinueAfterGameOver;
+    end, EWarException);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeRicominciareLaMappaEUscire;
+var
+  LBefore: TWarMapScene;
+begin
+  LBefore := FScene;
+  FScene.RestartMap;
+  Run(['run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstMap);
+  Assert.IsFalse(FGame.Manager.Scene = IWarScene(LBefore));
+  FScene := FGame.Manager.Scene as TWarMapScene;
+  Assert.IsFalse(FGame.Manager.QuitRequested);
+  FScene.QuitGame;
+  Assert.IsTrue(FGame.Manager.QuitRequested);
+  FScene.ReturnToMainMenu;
+  Run(['run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstMainMenu);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeFarCorrereIlTempoDelGiocoAnchePrimaDiRiprendere;
+var
+  LStart: Double;
+begin
+  LStart := FScene.Binding.World.Context.Clock^.GameTime;
+  Run(['key f10 down', 'run 1 1', 'key f10 up', 'run 30 30']);
+  // the menu is open: nothing is updated but the time of the game goes on, as in the original
+  Assert.IsTrue(FScene.Binding.World.Context.Clock^.GameTime - LStart > 0.4);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeFarScrivereIlPannelloDeiTrucchiESpegnereIGruppi;
+begin
+  Run(['key enter down', 'run 1 1', 'key enter up', 'run 2 1', 'text 12ab']);
+  Assert.IsTrue(FScene.Cheats.Visible);
+  Assert.AreEqual('12ab', string(FScene.Cheats.Text));
+  // the line says what it holds, in the status bar
+  Run(['run 2 1']);
+  Assert.AreEqual('MSG: 12ab', string(FScene.StatusText));
+  Run(['key esc down', 'run 1 1', 'key esc up', 'run 3 1']);
+  Assert.IsFalse(FScene.Cheats.Visible);
+  Assert.AreEqual('', string(FScene.StatusText));
+  // a text sent with the line closed is dropped
+  FScene.HandleTextInput('zzz');
+  Assert.AreEqual('', string(FScene.Cheats.Text));
+end;
+
+procedure TTestWarMapUiScene.DovrebbeScegliereUnModoDiModificaEFarlo;
+begin
+  Assert.IsTrue(FScene.GetEditMode = wemNone);
+  FScene.SetEditing(wemAddUnit, WAR_UNIT_FOOTMAN);
+  Assert.IsTrue(FScene.GetEditMode = wemAddUnit);
+  Run(['move 190 100', 'lbutton down', 'run 2 1', 'lbutton up', 'run 3 1']);
+  Assert.IsTrue(FScene.Binding.World.Context.Pool.OfType[WAR_ENTITY_UNIT].Count > 0);
+  FScene.SetEditing(wemTrees, 0);
+  Assert.IsTrue(FScene.GetEditMode = wemTrees);
+  // a mode that only edits the ground does nothing with a click, and the click is still free
+  Run(['move 190 100', 'lbutton down', 'run 2 1', 'lbutton up', 'run 3 1']);
+  FScene.SetEditing(wemRainOfFire, 0);
+  Run(['move 190 100', 'lbutton down', 'run 2 1', 'lbutton up', 'run 3 1']);
+  FScene.SetEditing(wemNone, 0);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeSpegnereLaNebbiaESaltareAUnBriefing;
+begin
+  Assert.IsTrue(FScene.Map.Fog.Enabled);
+  FScene.ToggleFog;
+  Assert.IsFalse(FScene.Map.Fog.Enabled);
+  FScene.ToggleFog;
+  Assert.IsTrue(FScene.Map.Fog.Enabled);
+  FScene.SkipToBriefing(wraOrcs, WAR_CAMPAIGN_ORCS_02);
+  Run(['run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstBriefing);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeFermarsiConIlTrucco;
+begin
+  FScene.ShowDemoEnd;
+  Assert.IsFalse(FScene.Playing);
+  Assert.IsTrue(FScene.Menu.State = wmsDemoEnd);
+  Run(['run 3 1', 'key m down', 'run 1 1', 'key m up', 'run 70 1']);
+  Assert.IsTrue(FGame.Manager.Scene.GetSceneType = wstMainMenu);
+end;
+
+procedure TTestWarMapUiScene.DovrebbeDisegnareIlDebugDelleGriglie;
+begin
+  Run(['key enter down', 'run 1 1', 'key enter up', 'run 2 1', 'text Debug render map-grid',
+    'key enter down', 'run 1 1', 'key enter up', 'run 2 1']);
+  Assert.AreEqual('map-grid on', string(FScene.Cheats.FeedbackText));
+end;
+
+procedure TTestWarMapUiScene.DovrebbeMostrareIlTestoDiDebugEScrivereLeRigheNellaTraccia;
+var
+  LTrace: TStringList;
+  LOutput: TStringList;
+  LCount: Integer;
+begin
+  // the debug text of the cheat line is drawn when there is no feedback
+  FScene.Cheats.SetDebugText('debug');
+  Run(['run 200 100']);
+  Assert.IsTrue(FScene.Cheats.DebugTextActive);
+  // the lines of the debug drawing and the state of the generator go in the trace and the output of the runner
+  LTrace := TStringList.Create;
+  try
+    Run(['key enter down', 'run 1 1', 'key enter up', 'run 2 1', 'text Debug render map-grid', 'key enter down',
+      'run 1 1', 'key enter up', 'run 2 1']);
+    Winapi.Windows.SetEnvironmentVariable('DELPHIDOOM_WAR_RNGTRACE', '1');
+    try
+      LOutput := TWarUiRig.RunScript(FGame, ['trace on', 'run 2 1', 'trace off'], LTrace);
+    finally
+      Winapi.Windows.SetEnvironmentVariable('DELPHIDOOM_WAR_RNGTRACE', nil);
+    end;
+    try
+      Assert.IsTrue(LOutput.Count > 2, 'the lines D of the generator');
+    finally
+      LOutput.Free;
+    end;
+    Assert.IsTrue(Pos('L ', LTrace.Text) > 0, 'a line of the grid in the trace');
+  finally
+    LTrace.Free;
+  end;
 end;
 
 initialization

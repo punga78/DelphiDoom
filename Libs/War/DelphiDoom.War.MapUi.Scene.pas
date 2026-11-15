@@ -27,7 +27,7 @@ uses
   DelphiDoom.War.MapUi.Picker, DelphiDoom.War.MapUi.Intf, DelphiDoom.War.MapUi.Selecting,
   DelphiDoom.War.MapUi.CommandPanel, DelphiDoom.War.MapUi.CommandState, DelphiDoom.War.MapUi.CommandRunner,
   DelphiDoom.War.MapUi.CommandPreview, DelphiDoom.War.MapUi.Menu, DelphiDoom.War.MapUi.MenuView,
-  DelphiDoom.War.Ui.CheatsPanel, DelphiDoom.War.MapUi.CheatEffects, DelphiDoom.War.MapUi.DebugView;
+  DelphiDoom.War.Ui.CheatsPanel, DelphiDoom.War.MapUi.CheatEffects, DelphiDoom.War.MapUi.DebugView, DelphiDoom.War.MapUi.Editing;
 
 type
   /// <summary>What the scene of a map is made from: the level and its tileset, the tables and the services of the game</summary>
@@ -85,8 +85,7 @@ type
     FMenuView: TWarMapMenuView;
     FCheats: TWarCheatsPanel;
     FEffects: IWarCheatEffects;
-    FEditMode: TWarMapEditMode;
-    FEditUnitType: Integer;
+    FEditing: TWarMapEditing;
     FResult: TWarLevelResult;
     FObjectivesTime: Single;
     function GetGameSpeed: Integer;
@@ -95,7 +94,6 @@ type
     function WindowScale: Single;
     function ObjectivesText: AnsiString;
     function CheatsOpen: Boolean;
-    procedure UpdateAddUnit;
     procedure UpdateDebugShortcuts;
     procedure UpdateObjectives;
     procedure UpdateStatus;
@@ -293,7 +291,7 @@ begin
   FCommandBuilder := TWarMapCommandPanel.Create(FBinding.World.Context);
   // the cheats of the map; the ones of the settings (music, sound, scale, speed) are the next effects, as before the map.
   // wmui_createMapUI also makes the cheat line: enabled, closed, empty
-  FEditMode := wemNone;
+  FEditing := TWarMapEditing.Create(FBinding.World, FMap, FCamera);
   FEffects := TWarMapCheatEffects.Create(FBinding.World.Context, FBinding.World.Economy, Self,
     FSetup.Services.Settings, FSetup.Services.DebugRender, FSetup.Services.Effects);
   FCheats := TWarCheatsPanel.Create(FSetup.Services.Host, FSetup.Services.Input, FSetup.Services.Imui,
@@ -320,6 +318,7 @@ begin
   FreeAndNil(FMenuView);
   FreeAndNil(FMenu);
   FreeAndNil(FCheats);
+  FreeAndNil(FEditing);
   FEffects := nil;
   FreeAndNil(FSelecting);
   FreeAndNil(FCommandPreview);
@@ -379,47 +378,12 @@ end;
 
 procedure TWarMapScene.SetEditing(AMode: TWarMapEditMode; AUnitType: Integer);
 begin
-  FEditMode := AMode;
-  if AMode = wemAddUnit then
-    FEditUnitType := AUnitType;
+  FEditing.SetMode(AMode, AUnitType);
 end;
 
 function TWarMapScene.GetEditMode: TWarMapEditMode;
 begin
-  Result := FEditMode;
-end;
-
-procedure TWarMapScene.UpdateAddUnit;
-var
-  LInput: IWarUiInput;
-  LMapX: Single;
-  LMapY: Single;
-  LTileX: Single;
-  LTileY: Single;
-  LRace: TWarRace;
-  LIndex: Integer;
-  LSlot: Integer;
-begin
-  // updateAddUnit: a click on the map puts the unit of the cheat on the tile, for the first player of its race
-  if FEditMode <> wemAddUnit then
-    Exit;
-  LInput := FSetup.Services.Input;
-  if (not LInput.IsButtonJustPressed(wmbLeft)) or (not WarRectContains(FPanels.MapPanel, LInput.PositionX, LInput.PositionY)) then
-    Exit;
-  FCamera.ScreenToMap(LInput.PositionX, LInput.PositionY, LMapX, LMapY);
-  TWarMapCamera.MapToTile(LMapX, LMapY, LTileX, LTileY);
-  if FMap.Grid.GetTileEntityId(Trunc(LTileX), Trunc(LTileY)) <> 0 then
-    Exit;
-  LRace := TWarUnitClassifier.RaceOf(FEditUnitType);
-  for LIndex := 0 to FBinding.World.Context.PlayersCount - 1 do
-    if FBinding.World.Context.Players[LIndex]^.Race = LRace then
-    begin
-      LSlot := FBinding.World.Entities.CreateUnit(FEditUnitType, Trunc(LTileX), Trunc(LTileY),
-        FBinding.World.Context.Players[LIndex]^.Index, wrkNone, 0, True);
-      if LSlot <> 0 then
-        FBinding.World.Entities.SetInitialIdle(LSlot);
-      Break;
-    end;
+  Result := FEditing.Mode;
 end;
 
 function TWarMapScene.ScriptCommand(const ACommand: string; const AArguments: TArray<string>): Boolean;
@@ -658,7 +622,7 @@ begin
   // a tic of the model, with the clicks of the cheats of editing between the states and the rest (updateAddUnit is there)
   FBinding.World.AdvanceClock(LDelta);
   FBinding.World.Update;
-  UpdateAddUnit;
+  FEditing.Update(FSetup.Services.Input);
   FBinding.World.FinishTic;
   FBinding.SyncUnits;
   FCommandBuilder.Update(FCommandPanel, FCommandState.CommandType);

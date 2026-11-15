@@ -680,3 +680,48 @@ Win32 Release, una mappa con 400 fanti fermi e la nebbia spenta (4096 tegole), 2
 ### Non portato (e perche')
 
 Il **menu F10** (`war_map_menu.c`, `renderMenus`: opzioni, obiettivi, ricomincia, fine, game over, velocita', volumi; `menuState` non esiste; `TWarMapScene.GameSpeed` e `Conclude` sono il punto dove si collega), i **trucchi sulla mappa** (`war_cheats.c`: gli effetti che vogliono la mappa) e il **debug render**, le **partite personalizzate** (`wmap_createCustomMap`, `custom N`: opzioni predefinite, sorteggio con `SDL_rand`, il centro della camera, le razze) e la scena menu -> partita -> mappa. Sono pezzi grandi e nessuno si prova con uno script finche' non e' portato; `custom` e `scene download` danno ancora `EWarException` nell'esecutore.
+
+## Menu F10, trucchi, fine della mappa, partite personalizzate e debug (issue #197, parte D)
+
+La mappa di gioco ora si **ferma, si apre e finisce** come nel C: il menu F10, i trucchi digitati nella barra in basso, la fine con vittoria o sconfitta (e la fine della demo), le partite personalizzate e il disegno di debug delle griglie. Riferimento: lo stesso remake in C intero con la SDL3 vera. **18 script nuovi, tutti con zero differenze** (impronte `H n FNV-1a` in `Tests\Data\War\ui.<script>.golden.txt`, gruppo `197 render` di `Golden-Common.ps1`).
+
+### Mappa nome C -> classe (`DelphiDoom.War.MapUi.*`, `Ui.*`, `Map.*`)
+
+| C | Delphi |
+|---|---|
+| `map->menuState`, `map->playing`, `map->settings`, `pendingSettings`, i `wmm_*` | `TWarMapMenu` (`MapUi.Menu`); cio' che lascia la mappa (ricomincia, continua dopo la fine, menu principale, uscita) e' `IWarMapMenuHost`, che la scena realizza |
+| `renderMenus` | `TWarMapMenuView` (`MapUi.MenuView`): legge lo stato una volta, i bottoni agiscono nello stesso fotogramma e nell'ordine del C |
+| le stesse funzioni dei bottoni di `war_scene_menu.c` | `TWarUiWidgets` (`Ui.Widgets`), condivise con `TWarSceneMainMenu` |
+| `updateStatus` (la parte del pannello dei trucchi), `appendCheatTextInput` | `TWarCheatsPanel.UpdateOnMap` (cursore alla fine di tutta la riga: difetto del C) e il disegno in `TWarMapHud.RenderCheatLine` |
+| `wcheat_apply*` che vogliono la mappa | `TWarMapCheatEffects` (`MapUi.CheatEffects`); cio' che chiede alla mappa e' `IWarMapCheatTarget`; il resto passa agli effetti delle impostazioni |
+| `context->debugRender`, `updateDebugRenderShortcuts`, `wcheat_applyDebugRenderCheat` | `TWarDebugRender` (`Ui.DebugRender`, `IWarDebugRender` nei servizi) |
+| `renderPassableInfo`, `renderMapGrid`, `renderSpatialGrid`; `wr_strokeLine` | `TWarMapDebugView`; `TWarRenderTransform.StrokeLine`, `TWarImageBlitter.StrokeLine` (solo righe lungo una riga o una colonna) |
+| `updateAddUnit`, `updateRainOfFireEdit`, `updatePoisonCloudEdit`, `updateRaiseDeadEdit` | `TWarMapEditing` (`MapUi.Editing`) |
+| `wmap_createCustomMap`, `initCamera` con `hasCustomCameraStart` | `TWarCustomGameMaker` (`Map.CustomGame`), `TWarCustomLevel` (`Level.CustomLevel`), `TWarMapBuilder.Build(..., camera)` |
+
+### Script (`Tools\Verifica\197\scripts`)
+
+`map_menu`, `map_menu_quit`, `map_menu_restart` (F10: opzioni con ogni freccia, Ok e Cancella, obiettivi, ricomincia, uscita, menu principale), `map_cheats` (pannello, tasti di modifica, oro, incantesimi, miglioramenti, nebbia, volumi, velocita', modi), `map_gameover_win`, `map_gameover_lose`, `map_demo_end`, `map_skip`, `map_custom_menu` (dal menu col mouse), `map_custom_swamp`, `map_custom_forest` (`custom N` dell'harness), `map_debug` (flag, griglie, tasti Ctrl+Maiusc), `map_edit` (aggiungi unita', pioggia di fuoco, nube, risuscita).
+
+### Trovato dai golden
+
+1. Il **tempo del gioco corre anche con il menu aperto** (`wg_beginFrame` lo somma a ogni fotogramma): chi aspetta un tempo (gli stati di riposo) lo trova passato alla ripresa. Prima il modello contava solo i tic giocati e il generatore divergeva dopo una pausa.
+2. Il **restart** non rifa' il livello: nel C riusa il record, cioe' le mappe come le ha lasciate la partita; ora la scena nuova condivide lo `IWarLevel`.
+3. Nell'harness C `wa_initAudio` non c'e': volumi e musica/suoni sono ora a 1 e accesi come nel gioco.
+
+### Difetti del C conservati (coperti da uno script e/o da un test)
+
+- Il volume nelle opzioni e' `(s32)(volume * 100)`: 35 per cento (0,35 in float) mostra 34 (calcolato in `Double`; il C dipende dal compilatore: x87 34, SSE 35).
+- Il tasto Save a fine partita non fa niente (`NOT_IMPLEMENTED` scrive una riga).
+- Il cursore della riga dei trucchi sulla mappa sta alla fine di tutto il testo, anche con Sinistra o Inizio.
+- "Add unit NOME" prende l'**indice della riga** della tabella come tipo: dalla 29a riga non e' il tipo (`church` da' un'altra unita'); il messaggio mostra il resto dell'argomento non usato dalle due parole.
+- I nomi di "Debug render" sono 12 per 13 flag: da `unit-info` in poi ogni nome accende il flag prima; il nome vuoto trova l'ultimo e si stampa `(null)`.
+- Le mappe dungeon si fermano su un `assert` del C (`war_entities.c:2085`): gli script non le usano, Delphi usa le tegole della palude.
+
+### Differenze volute
+
+- Una partita personalizzata con seme (`--seed`, `SDL_rand_r`) da' `EWarException` (non raggiungibile dal menu).
+- `Edit trees|walls|roads|ruins`: il modo e il messaggio ci sono, il clic che cambia il terreno **non e' portato**; una riga obliqua del debug (`StrokeLine`) da' `EWarException`.
+- Delle bandiere del debug si disegnano passable-info, map-grid e spatial-grid; near-units, unit-info, unit-animations, map-animations, font, projectiles, flow-field, rvo, state-machine (e il testo di debug) **non sono portati**: i flag si accendono e non cambiano il disegno.
+- La seconda `custom N` di uno script dell'harness riusa le razze risolte dalla prima: non riprodotto (gli script ne hanno una).
+- La scena di download resta non portata: il runner da' `EWarException` chiara.
