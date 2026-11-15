@@ -62,6 +62,15 @@ procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 
 //==============================================================================
 //
+// P_DamageFlagFilter
+// The flags of the inflictor and of the target that stop the damage or halve it
+// (freeze and flame damage). False: the target takes no damage
+//
+//==============================================================================
+function P_DamageFlagFilter(target, inflictor: Pmobj_t; var damage: integer): boolean;
+
+//==============================================================================
+//
 // P_GiveBody
 // Returns false if the body isn't needed at all
 //
@@ -107,6 +116,40 @@ end;
 procedure P_DamageMobj(target, inflictor, source: Pmobj_t; damage: integer);
 begin
   TInterGameRules.DamageMobj(target, inflictor, source, damage);
+end;
+
+//==============================================================================
+//
+// P_DamageFlagFilter
+// The flags of the inflictor and of the target that stop the damage or halve it
+// (freeze and flame damage). False: the target takes no damage
+//
+//==============================================================================
+function P_DamageFlagFilter(target, inflictor: Pmobj_t; var damage: integer): boolean;
+begin
+  result := false;
+
+  if inflictor <> nil then
+  begin
+    if inflictor.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then
+    begin
+      if target.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then
+        exit;
+      if target.flags3_ex and MF3_EX_FREEZEDAMAGERESIST <> 0 then
+        if damage > 1 then
+          damage := _SHR1(damage);
+    end;
+    if inflictor.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then
+    begin
+      if target.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then
+        exit;
+      if target.flags4_ex and MF4_EX_FLAMEDAMAGERESIST <> 0 then
+        if damage > 1 then
+          damage := _SHR1(damage);
+    end;
+  end;
+
+  result := true;
 end;
 
 //==============================================================================

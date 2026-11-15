@@ -41,6 +41,11 @@ $Expansions = @(
      Note = 'il ramo dell''armatura negativa (AllowsNegativeArmor) e'' solo di Strife: negli altri giochi non c''e''' }
   @{ R = 'P_SpawnDroppedMobj'; F = 'if not TInterGameRules.NeedsCompatibility then'; Doom = 'if not G_NeedsCompatibilityMode then'; Heretic = 'if not compatibilitymode then' }
   @{ R = 'P_SpawnDroppedMobj'; F = 'if G_PlayingEngineVersion >= TInterGameRules.DroppedScatterVersion then'; Doom = 'if G_PlayingEngineVersion >= VERSION117 then'; Heretic = 'if G_PlayingEngineVersion >= VERSION207 then' }
+
+  # --- 2f-2d: il filtro dei flag dell'inflictor (Base\p_inter.pas), uguale nei quattro giochi ---
+  @{ R = 'P_DamageMobj'; F = 'if not P_DamageFlagFilter(target, inflictor, damage) then exit;'
+     D = 'if inflictor <> nil then begin if inflictor.flags3_ex and MF3_EX_FREEZEDAMAGE <> 0 then begin if target.flags3_ex and MF3_EX_NOFREEZEDAMAGE <> 0 then exit; if target.flags3_ex and MF3_EX_FREEZEDAMAGERESIST <> 0 then if damage > 1 then damage := _SHR1(damage); end; if inflictor.flags3_ex and MF3_EX_FLAMEDAMAGE <> 0 then begin if target.flags3_ex and MF3_EX_NOFLAMEDAMAGE <> 0 then exit; if target.flags4_ex and MF4_EX_FLAMEDAMAGERESIST <> 0 then if damage > 1 then damage := _SHR1(damage); end; end;'
+     Note = 'il blocco del congelamento e della fiamma e'' P_DamageFlagFilter: stessi controlli nello stesso ordine, senza effetti collaterali oltre a damage (parametro per riferimento)' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
