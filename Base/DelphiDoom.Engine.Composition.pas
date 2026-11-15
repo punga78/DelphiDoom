@@ -173,6 +173,7 @@ uses
 {$ENDIF}
   DelphiDoom.Renderer.Factory,
   DelphiDoom.Engine.Renderer.PatchSource,
+  DelphiDoom.Engine.Renderer.SpriteSource,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -264,6 +265,7 @@ uses
   DelphiDoom.Engine.TextureDefs.LumpSource,
   DelphiDoom.Engine.TextureDefs.FlatCatalog,
   r_data,
+  r_things,
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Factory,
@@ -1167,6 +1169,8 @@ procedure ComposeRenderer(const ALog: ILog);
 begin
   R_ConfigureTextureLookup(TRendererFactory.CreateTextureLookup(
     TEngineRendererPatchSource.Create, ALog));
+  R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
+    TEngineRendererSpriteSource.Create, ALog));
 {$IFNDEF OPENGL}
   R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}

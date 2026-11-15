@@ -51,6 +51,24 @@ type
     Patches: TArray<TRendererTexturePatch>;
   end;
 
+  /// <summary>The name of a lump: eight bytes, padded with zeros (an 8 characters name has no zero)</summary>
+  TRendererLumpName = array[0..7] of AnsiChar;
+
+  /// <summary>One frame of a sprite: for each of the 32 view rotations, the lump to draw and whether it is flipped</summary>
+  TRendererSpriteFrame = record
+    /// <summary>-1 no lump yet, 0 one lump for all the rotations, 1 eight rotations, 2 sixteen, 3 thirty-two</summary>
+    Rotate: Integer;
+    /// <summary>The lump of the rotation, relative to the first sprite lump (-1 when there is none)</summary>
+    Lump: array[0..31] of Integer;
+    Flip: array[0..31] of Boolean;
+  end;
+
+  /// <summary>The frames that the lumps of the WAD give to a sprite name</summary>
+  TRendererSpriteDefinition = record
+    /// <summary>The frames from A to the last one found (empty when no lump has the name)</summary>
+    Frames: TArray<TRendererSpriteFrame>;
+  end;
+
   /// <summary>How high and how low the sectors of a level go</summary>
   TRendererHeightRange = record
     /// <summary>The lowest floor height, in fixed point (MaxInt without sectors)</summary>

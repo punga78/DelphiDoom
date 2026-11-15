@@ -56,6 +56,37 @@ type
       AColumnOffset: TArray<Integer>): Integer;
   end;
 
+  /// <summary>The sprite lumps of the WAD, as the builder of the sprite definitions sees them</summary>
+  IRendererSpriteSource = interface
+    ['{3C8D5E17-A2B4-4F90-8E36-D1075B9A64F2}']
+    /// <summary>The number of the first sprite lump</summary>
+    function FirstLump: Integer;
+    /// <summary>The number of the last sprite lump</summary>
+    function LastLump: Integer;
+    /// <summary>The lump is a sprite that the game can use (read at its position from FirstLump)</summary>
+    function IsPresent(ALump: Integer): Boolean;
+    function LumpName(ALump: Integer): TRendererLumpName;
+    /// <summary>
+    ///   The lump that a game with patched WADs uses for the sprite of this lump (the last one
+    ///   with the name); the lump itself when the game is not modified
+    /// </summary>
+    function PatchedLump(ALump: Integer): Integer;
+    /// <summary>Developer mode: errors about the sprite lumps are only warnings</summary>
+    function DeveloperMode: Boolean;
+  end;
+
+  /// <summary>The sprite definitions: frames and rotations of every sprite of the game</summary>
+  IRendererSpriteDefs = interface
+    ['{F61A92C8-5D07-4B3E-A4C9-2E8D703B15A6}']
+    /// <summary>
+    ///   Builds, for each sprite name (four characters packed in an integer, little endian),
+    ///   its frames from the lumps of the sprite source. Warns about the lumps that do not
+    ///   agree; raises ERendererException with the text of the engine error when the lumps
+    ///   are not consistent (a sprite with some rotations missing) and the developer mode is off
+    /// </summary>
+    function Build(const ANames: TArray<Integer>): TArray<TRendererSpriteDefinition>;
+  end;
+
   /// <summary>The calculations on the whole level that the software renderer does when the level is loaded</summary>
   IRendererLevelPrecalc = interface
     ['{17D9A8E3-B462-4C50-93F7-0E5A2C86D1B9}']
