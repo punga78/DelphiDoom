@@ -565,6 +565,8 @@ uses
   DelphiDoom.Texture.PatchInspector,
   DelphiDoom.Palette.NearestColor,
   DelphiDoom.Palette.ScreenPalette,
+  DelphiDoom.Video.PreserveTables,
+  DelphiDoom.Video.ScreenLayout,
   w_wad,
   z_zone;
 
@@ -665,9 +667,7 @@ end;
 
 // x and y translation tables for stretcing
 var
-  preserveX: array[0..319] of integer;
-  preserveX426: array[0..425] of integer;
-  preserveY: array[0..199] of integer;
+  preservetables: TVideoPreserveTables = nil;
   widthintmultiplier: Integer = 0;
   heightintmultiplier: Integer = 0;
 
@@ -700,16 +700,7 @@ end;
 //==============================================================================
 function V_PreserveX(const x: integer): integer;
 begin
-  if x <= 0 then
-    result := 0
-  else if x >= 320 then
-    result := {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF}
-{$IFNDEF OPENGL}
-  else if SCREENWIDTH = 320 then
-    result := x
-{$ENDIF}
-  else
-    result := preserveX[x];
+  result := preservetables.MapX(x);
 end;
 
 //==============================================================================
@@ -719,49 +710,8 @@ end;
 //
 //==============================================================================
 function V_PreserveX(const SCN: integer; const x: integer): integer;
-var
-  swidth: integer;
 begin
-  swidth := V_GetScreenWidth(SCN);
-  if swidth = 320 then
-  begin
-    if x <= 0 then
-      result := 0
-    else if x >= 320 then
-      result := {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF}
-  {$IFNDEF OPENGL}
-    else if SCREENWIDTH = 320 then
-      result := x
-  {$ENDIF}
-    else
-      result := preserveX[x];
-  end
-  else if swidth = 426 then
-  begin
-    if x <= 0 then
-      result := 0
-    else if x >= 426 then
-      result := {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF}
-  {$IFNDEF OPENGL}
-    else if SCREENWIDTH = 426 then
-      result := x
-  {$ENDIF}
-    else
-      result := preserveX426[x];
-  end
-  else
-  begin
-    if x <= 0 then
-      result := 0
-    else if x >= swidth then
-      result := {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF}
-  {$IFNDEF OPENGL}
-    else if SCREENWIDTH = swidth then
-      result := x
-  {$ENDIF}
-    else
-      result := trunc(x * {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF} / swidth);
-  end
+  result := preservetables.MapX(V_GetScreenWidth(SCN), x);
 end;
 
 //==============================================================================
@@ -772,16 +722,7 @@ end;
 //==============================================================================
 function V_PreserveY(const y: integer): integer;
 begin
-  if y <= 0 then
-    result := 0
-  else if y >= 200 then
-    result := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF}
-{$IFNDEF OPENGL}
-  else if SCREENHEIGHT = 200 then
-    result := y
-{$ENDIF}
-  else
-    result := preserveY[y];
+  result := preservetables.MapY(y);
 end;
 
 {$IFDEF OPENGL}
@@ -5010,29 +4951,15 @@ end;
 //
 //==============================================================================
 procedure V_CalcPreserveTables;
-var
-  i: integer;
 begin
-  // initialize translation tables
-  for i := 0 to 319 do
-    preserveX[i] := trunc(i * {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF} / 320);
-
-  for i := 0 to 425 do
-    preserveX426[i] := trunc(i * {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF} / 426);
-
-  for i := 0 to 199 do
-    preserveY[i] := trunc(i * {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF} / 200);
-
-  if {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF} mod 320 = 0 then
-    widthintmultiplier := {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF} div 320
-  else
-    widthintmultiplier := 0;
-
-  if {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF} mod 200 = 0 then
-    heightintmultiplier := {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF} div 200
-  else
-    heightintmultiplier := 0;
-
+  // The tables and the multipliers are TVideoPreserveTables (Libs\Video)
+  if preservetables = nil then
+    preservetables := TVideoPreserveTables.Create;
+  preservetables.Calculate(
+    {$IFDEF OPENGL}V_GetScreenWidth(SCN_FG){$ELSE}SCREENWIDTH{$ENDIF},
+    {$IFDEF OPENGL}V_GetScreenHeight(SCN_FG){$ELSE}SCREENHEIGHT{$ENDIF});
+  widthintmultiplier := preservetables.WidthMultiplier;
+  heightintmultiplier := preservetables.HeightMultiplier;
 end;
 
 //==============================================================================
@@ -5130,6 +5057,9 @@ var
   base: PByteArray;
   st: integer;
   pal: PByteArray;
+{$IFDEF OPENGL}
+  glsize: TVideoGlDrawSize;
+{$ENDIF}
 begin
   SCREENWIDTH32PITCH := SCREENWIDTH * SizeOf(LongWord);
   pal := V_ReadPalette(PU_STATIC);
@@ -5137,36 +5067,11 @@ begin
   Z_ChangeTag(pal, PU_CACHE);
   V_InitDefaultPalette;
 {$IFDEF OPENGL}
-  if SCREENWIDTH < 1024 then
-  begin
-    if SCREENWIDTH <= SCREENHEIGHT then
-    begin
-      GLDRAWWIDTH := 512;
-      GLDRAWHEIGHT := 512;
-    end
-    else
-    begin
-      GLDRAWWIDTH := 512;
-      GLDRAWHEIGHT := round(SCREENHEIGHT * 512 / SCREENWIDTH);
-    end;
-    GLDRAWTEXWIDTH := 512;
-    GLDRAWTEXHEIGHT := 512;
-  end
-  else
-  begin
-    if SCREENWIDTH <= SCREENHEIGHT then
-    begin
-      GLDRAWWIDTH := 1024;
-      GLDRAWHEIGHT := 1024;
-    end
-    else
-    begin
-      GLDRAWWIDTH := 1024;
-      GLDRAWHEIGHT := round(SCREENHEIGHT * 1024 / SCREENWIDTH);
-    end;
-    GLDRAWTEXWIDTH := 1024;
-    GLDRAWTEXHEIGHT := 1024;
-  end;
+  glsize := TVideoScreenLayout.GlDrawSize(SCREENWIDTH, SCREENHEIGHT);
+  GLDRAWWIDTH := glsize.Width;
+  GLDRAWHEIGHT := glsize.Height;
+  GLDRAWTEXWIDTH := glsize.TextureWidth;
+  GLDRAWTEXHEIGHT := glsize.TextureHeight;
 {$ENDIF}
   {$IFDEF DOOM_OR_STRIFE}
   for i := SCN_FG to SCN_ST do
@@ -5174,22 +5079,10 @@ begin
   for i := SCN_FG to SCN_TMP do
   {$ENDIF}
   begin
-    if FIXED_DIMENTIONS[i].width = -1 then
-    {$IFDEF OPENGL}
-      screendimentions[i].width := GLDRAWWIDTH
-    {$ELSE}
-      screendimentions[i].width := SCREENWIDTH
-    {$ENDIF}
-    else
-      screendimentions[i].width := FIXED_DIMENTIONS[i].width;
-    if FIXED_DIMENTIONS[i].height = -1 then
-    {$IFDEF OPENGL}
-      screendimentions[i].height := GLDRAWHEIGHT
-    {$ELSE}
-      screendimentions[i].height := SCREENHEIGHT
-    {$ENDIF}
-    else
-      screendimentions[i].height := FIXED_DIMENTIONS[i].height;
+    screendimentions[i].width := TVideoScreenLayout.Resolve(FIXED_DIMENTIONS[i].width,
+      {$IFDEF OPENGL}GLDRAWWIDTH{$ELSE}SCREENWIDTH{$ENDIF});
+    screendimentions[i].height := TVideoScreenLayout.Resolve(FIXED_DIMENTIONS[i].height,
+      {$IFDEF OPENGL}GLDRAWHEIGHT{$ELSE}SCREENHEIGHT{$ENDIF});
   end;
   // stick these in low dos memory on PCs
   vsize := V_ScreensSize;
@@ -5242,7 +5135,6 @@ end;
 function V_ScreensSize(const scrn: integer = -1): integer;
 var
   i: integer;
-  w, h: integer;
   il, ih: integer;
 begin
   if scrn = -1 then
@@ -5259,13 +5151,8 @@ begin
   result := 0;
   for i := il to ih do
   begin
-    w := FIXED_DIMENTIONS[i].width;
-    if w = -1 then
-      w := SCREENWIDTH;
-    h := FIXED_DIMENTIONS[i].height;
-    if h = -1 then
-      h := SCREENHEIGHT;
-    result := result + w * h * FIXED_DIMENTIONS[i].depth;
+    result := result + TVideoScreenLayout.ByteSize(FIXED_DIMENTIONS[i].width, FIXED_DIMENTIONS[i].height,
+      FIXED_DIMENTIONS[i].depth, SCREENWIDTH, SCREENHEIGHT);
   end;
 end;
 

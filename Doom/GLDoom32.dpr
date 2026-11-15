@@ -386,6 +386,8 @@ uses
   DelphiDoom.Video.Intf in '..\Libs\Video\DelphiDoom.Video.Intf.pas',
   DelphiDoom.Palette.Converter in '..\Libs\Palette\DelphiDoom.Palette.Converter.pas',
   DelphiDoom.Palette.ScreenPalette in '..\Libs\Palette\DelphiDoom.Palette.ScreenPalette.pas',
+  DelphiDoom.Video.PreserveTables in '..\Libs\Video\DelphiDoom.Video.PreserveTables.pas',
+  DelphiDoom.Video.ScreenLayout in '..\Libs\Video\DelphiDoom.Video.ScreenLayout.pas',
   DelphiDoom.Video.SizeLimiter in '..\Libs\Video\DelphiDoom.Video.SizeLimiter.pas',
   DelphiDoom.Video.MemoryStallHack in '..\Libs\Video\DelphiDoom.Video.MemoryStallHack.pas',
   DelphiDoom.Video.WindowsDisplayMetrics in '..\Libs\Video\DelphiDoom.Video.WindowsDisplayMetrics.pas',
