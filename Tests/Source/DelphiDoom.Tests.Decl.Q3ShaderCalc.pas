@@ -969,12 +969,18 @@ begin
 end;
 
 procedure TTestQ3DeformCalc.DovrebbeApplicareSoloLeDeformazioniPortate;
+var
+  LDeform: TQ3Deform;
 begin
   Assert.IsTrue(FKit.Deforms.Apply(Deform(dfNone), FTess));
-  Assert.IsFalse(FKit.Deforms.Apply(Deform(dfAutoSprite), FTess));
-  Assert.IsFalse(FKit.Deforms.Apply(Deform(dfAutoSprite2), FTess));
-  Assert.IsFalse(FKit.Deforms.Apply(Deform(dfProjectionShadow), FTess));
-  Assert.IsFalse(FKit.Deforms.Apply(Deform(dfText3), FTess));
+  // the sprite and shadow deformations now run: without the current entity they are an error, not a skip
+  FTess.Entity.Present := False;
+  for LDeform in [dfAutoSprite, dfAutoSprite2, dfProjectionShadow] do
+    Assert.WillRaise(
+      procedure
+      begin
+        FKit.Deforms.Apply(Deform(LDeform), FTess);
+      end, EDeclQ3ShaderCalcException);
 end;
 
 procedure TTestQ3DeformCalc.DovrebbeRifiutareUnOndaSenzaTabella;

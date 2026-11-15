@@ -15,7 +15,16 @@ CODE=$ROOT/Reference/quake3/code
 KIT=$ROOT/Reference/_dati/_strumenti/w64devkit/w64devkit/bin
 OUT=${1:-$HERE/out}
 mkdir -p "$OUT"
-FLAGS="-O1 -w -ffp-contract=off -std=gnu89 -DBOTLIB -DC_ONLY -D__sun__ -I$CODE/renderer -I$CODE/game -I$CODE/qcommon"
+# the functions of other renderer files that tr_shade_calc.c calls, cut out unchanged (#237): the quad stamp of
+# tr_surface.c, the projection shadow of tr_shadows.c and the fog table of tr_image.c
+{
+  sed -n '/^void RB_AddQuadStampExt/,/^}/p' "$CODE/renderer/tr_surface.c"
+  sed -n '/^void RB_AddQuadStamp(/,/^}/p' "$CODE/renderer/tr_surface.c"
+  sed -n '/^void RB_ProjectionShadowDeform/,/^}/p' "$CODE/renderer/tr_shadows.c"
+  sed -n '/^void R_InitFogTable/,/^}/p' "$CODE/renderer/tr_image.c"
+  sed -n '/^float.R_FogFactor/,/^}/p' "$CODE/renderer/tr_image.c"
+} > "$OUT/q3_extra.inc"
+FLAGS="-O1 -w -ffp-contract=off -std=gnu89 -DBOTLIB -DC_ONLY -D__sun__ -I$OUT -I$CODE/renderer -I$CODE/game -I$CODE/qcommon"
 SRC="$HERE/q3calc.c $CODE/game/q_shared.c $CODE/game/q_math.c"
 : > "$OUT/stubs.c"
 "$KIT/gcc.exe" $FLAGS -o "$OUT/q3calc.exe" $SRC "$OUT/stubs.c" -lm 2> "$OUT/link.txt" || true

@@ -63,6 +63,9 @@ type
     procedure DumpColors(const AColors: TBytes; const ABytes: Integer);
     procedure DumpTexCoords(const ATexCoords: TArray<Single>);
     procedure Command(const ALine: string);
+    procedure CommandQuads(const ATokens: TArray<string>);
+    procedure DumpGeometry;
+    function RandomByte: Byte;
   public
     constructor Create;
     destructor Destroy; override;
@@ -86,7 +89,8 @@ type
 implementation
 
 uses
-  System.Math, DelphiDoom.Decl.Q3Shader.Calc.Remapper, DelphiDoom.Decl.Q3Shader.Calc.ColorCalc;
+  System.Math, DelphiDoom.Decl.Q3Shader.Calc.Remapper, DelphiDoom.Decl.Q3Shader.Calc.ColorCalc,
+  DelphiDoom.Decl.Q3Shader.Calc.LightCalc;
 
 type
   /// <summary>ri.Printf(PRINT_WARNING): the line goes to the output as the C driver prints it</summary>
@@ -334,6 +338,187 @@ begin
     FOutput.Add(' t' + IntToStr(LIndex) + Bits(ATexCoords[LIndex * 2]) + Bits(ATexCoords[LIndex * 2 + 1]));
 end;
 
+function TQ3CalcGoldenRunner.RandomByte: Byte;
+begin
+  Result := Byte(NextRandom and 255);
+end;
+
+procedure TQ3CalcGoldenRunner.DumpGeometry;
+var
+  LIndex, LByte: Integer;
+  LLine: string;
+begin
+  FOutput.Add(Format(' geometry %d %d', [FTess.NumVertexes, FTess.NumIndexes]));
+  for LIndex := 0 to FTess.NumIndexes - 1 do
+    FOutput.Add(Format(' i%d %d', [LIndex, FTess.Indexes[LIndex]]));
+  for LIndex := 0 to FTess.NumVertexes - 1 do
+  begin
+    LLine := ' g' + IntToStr(LIndex);
+    for LByte := 0 to 2 do
+      LLine := LLine + Bits(FTess.Xyz[LIndex * 4 + LByte]);
+    for LByte := 0 to 2 do
+      LLine := LLine + Bits(FTess.Normal[LIndex * 4 + LByte]);
+    for LByte := 0 to 3 do
+      LLine := LLine + Bits(FTess.TexCoords[LIndex * 4 + LByte]);
+    for LByte := 0 to 3 do
+      LLine := LLine + ' ' + IntToStr(FTess.VertexColors[LIndex * 4 + LByte]);
+    FOutput.Add(LLine);
+  end;
+end;
+
+procedure TQ3CalcGoldenRunner.CommandQuads(const ATokens: TArray<string>);
+var
+  LName: string;
+  LIndex, LQuads, LVertex: Integer;
+  LColors: TBytes;
+  LTexCoords: TArray<Single>;
+  LDeform: TQ3DeformStage;
+  LValue: Single;
+  LFog: TQ3Fog;
+  LNumber: Integer;
+begin
+  LName := ATokens[0];
+  if LName = 'viewparms' then
+  begin
+    for LIndex := 0 to 2 do
+      FTess.View.Origin[LIndex] := Number(ATokens[1 + LIndex]);
+    for LIndex := 0 to 8 do
+      FTess.View.Axis[LIndex div 3][LIndex mod 3] := Number(ATokens[4 + LIndex]);
+    FTess.View.IsMirror := StrToInt(ATokens[13]) <> 0;
+  end
+  else if LName = 'orient' then
+  begin
+    for LIndex := 0 to 2 do
+      FTess.Orientation.Origin[LIndex] := Number(ATokens[1 + LIndex]);
+    for LIndex := 0 to 8 do
+      FTess.Orientation.Axis[LIndex div 3][LIndex mod 3] := Number(ATokens[4 + LIndex]);
+  end
+  else if LName = 'modelmatrix' then
+  begin
+    for LIndex := 0 to 15 do
+      FTess.Orientation.ModelMatrix[LIndex] := Number(ATokens[1 + LIndex]);
+  end
+  else if LName = 'entityworld' then
+  begin
+    FTess.Entity.Present := True;
+    FTess.Entity.IsWorld := True;
+    FTess.Entity.NonNormalizedAxes := False;
+  end
+  else if LName = 'entityaxes' then
+  begin
+    FTess.Entity.Present := True;
+    FTess.Entity.IsWorld := False;
+    FTess.Entity.NonNormalizedAxes := StrToInt(ATokens[1]) <> 0;
+    for LIndex := 0 to 8 do
+      FTess.Entity.Axis[LIndex div 3][LIndex mod 3] := Number(ATokens[2 + LIndex]);
+    FTess.Entity.ShadowPlane := Number(ATokens[11]);
+  end
+  else if LName = 'entitylight' then
+  begin
+    FTess.Entity.Present := True;
+    FTess.Entity.IsWorld := False;
+    for LIndex := 0 to 2 do
+    begin
+      FTess.Entity.AmbientLight[LIndex] := Number(ATokens[1 + LIndex]);
+      FTess.Entity.DirectedLight[LIndex] := Number(ATokens[4 + LIndex]);
+      FTess.Entity.LightDirection[LIndex] := Number(ATokens[7 + LIndex]);
+    end;
+    FTess.Entity.AmbientLightInt := Cardinal(StrToInt64('$' + ATokens[10]));
+  end
+  else if LName = 'quads' then
+  begin
+    LQuads := StrToInt(ATokens[1]);
+    GenerateVertexes(LQuads * 4, Cardinal(StrToInt64(ATokens[2])));
+    // the buffers of a surface: SHADER_MAX_VERTEXES and SHADER_MAX_INDEXES
+    SetLength(FTess.Xyz, 1000 * 4);
+    SetLength(FTess.Normal, 1000 * 4);
+    SetLength(FTess.TexCoords, 1000 * 4);
+    SetLength(FTess.Indexes, 6000);
+    SetLength(FTess.VertexColors, 1000 * 4);
+    FTess.NumIndexes := LQuads * 6;
+    for LIndex := 0 to LQuads - 1 do
+    begin
+      FTess.Indexes[LIndex * 6] := LIndex * 4;
+      FTess.Indexes[LIndex * 6 + 1] := LIndex * 4 + 1;
+      FTess.Indexes[LIndex * 6 + 2] := LIndex * 4 + 3;
+      FTess.Indexes[LIndex * 6 + 3] := LIndex * 4 + 3;
+      FTess.Indexes[LIndex * 6 + 4] := LIndex * 4 + 1;
+      FTess.Indexes[LIndex * 6 + 5] := LIndex * 4 + 2;
+    end;
+    for LVertex := 0 to LQuads * 4 - 1 do
+      for LIndex := 0 to 3 do
+        FTess.VertexColors[LVertex * 4 + LIndex] := RandomByte;
+  end
+  else if LName = 'text' then
+  begin
+    if Length(ATokens) > 2 then
+      FTess.Texts[StrToInt(ATokens[1])] := AnsiString(Copy(ATokens[2], 1, 31))
+    else
+      FTess.Texts[StrToInt(ATokens[1])] := '';
+  end
+  else if LName = 'fog' then
+  begin
+    LNumber := StrToInt(ATokens[1]);
+    if Length(FTess.Fogs) <= LNumber then
+      SetLength(FTess.Fogs, LNumber + 1);
+    LFog.TcScale := Number(ATokens[2]);
+    LFog.HasSurface := StrToInt(ATokens[3]) <> 0;
+    for LIndex := 0 to 3 do
+      LFog.Surface[LIndex] := Number(ATokens[4 + LIndex]);
+    FTess.Fogs[LNumber] := LFog;
+  end
+  else if LName = 'fognum' then
+    FTess.FogNumber := StrToInt(ATokens[1])
+  else if LName = 'fogtable' then
+  begin
+    LName := ' table';
+    for LIndex := 0 to Q3_FOG_TABLE_SIZE - 1 do
+      LName := LName + Bits(FKit.Fog.TableValue(LIndex));
+    FOutput.Add(LName);
+  end
+  else if LName = 'fogfactor' then
+  begin
+    LValue := FKit.Fog.FogFactor(Number(ATokens[1]), Number(ATokens[2]));
+    FOutput.Add(' factor' + Bits(LValue));
+  end
+  else if LName = 'fogtc' then
+  begin
+    FKit.Fog.CalcFogTexCoords(FTess, LTexCoords);
+    FOutput.Add(' result');
+    for LIndex := 0 to FTess.NumVertexes - 1 do
+      FOutput.Add(' t' + IntToStr(LIndex) + Bits(LTexCoords[LIndex * 2]) + Bits(LTexCoords[LIndex * 2 + 1]));
+  end
+  else if (LName = 'fogmod') or (LName = 'specalpha') or (LName = 'diffuse') then
+  begin
+    SetLength(LColors, FTess.NumVertexes * 4);
+    for LIndex := 0 to High(LColors) do
+      LColors[LIndex] := Byte((LIndex * 37 + 11) and 255);
+    if LName = 'specalpha' then
+      TQ3LightCalc.CalcSpecularAlpha(FTess, LColors)
+    else if LName = 'diffuse' then
+      TQ3LightCalc.CalcDiffuseColor(FTess, LColors)
+    else if ATokens[1] = 'colors' then
+      FKit.Fog.CalcModulateColors(FTess, LColors)
+    else if ATokens[1] = 'alphas' then
+      FKit.Fog.CalcModulateAlphas(FTess, LColors)
+    else
+      FKit.Fog.CalcModulateRGBAs(FTess, LColors);
+    DumpColors(LColors, 4);
+  end
+  else if LName = 'deformgeo' then
+  begin
+    FillChar(LDeform, SizeOf(LDeform), 0);
+    LDeform.Deformation := TQ3Deform(StrToInt(ATokens[1]));
+    try
+      FKit.Deforms.Apply(LDeform, FTess);
+      DumpGeometry;
+    except
+      on EDeclQ3ShaderCalcException do
+        FOutput.Add(' error');
+    end;
+  end;
+end;
+
 procedure TQ3CalcGoldenRunner.Command(const ALine: string);
 var
   LTokens: TArray<string>;
@@ -370,6 +555,7 @@ begin
     else
     begin
       FTess.Entity.Present := True;
+      FTess.Entity.IsWorld := False;
       for LIndex := 0 to 3 do
         FTess.Entity.ShaderRGBA[LIndex] := Byte(StrToInt(LTokens[1 + LIndex]));
       FTess.Entity.ShaderTexCoord[0] := Number(LTokens[5]);
@@ -509,6 +695,12 @@ begin
     FBundle.TexMods[FBundle.NumTexMods] := LMod;
     Inc(FBundle.NumTexMods);
   end
+  else if (LName = 'viewparms') or (LName = 'orient') or (LName = 'modelmatrix') or (LName = 'entityworld') or
+    (LName = 'entityaxes') or (LName = 'entitylight') or (LName = 'quads') or (LName = 'text') or
+    (LName = 'fog') or (LName = 'fognum') or (LName = 'fogtable') or (LName = 'fogfactor') or
+    (LName = 'fogtc') or (LName = 'fogmod') or (LName = 'specalpha') or (LName = 'diffuse') or
+    (LName = 'deformgeo') then
+    CommandQuads(LTokens)
   else if LName = 'compute' then
   begin
     SetLength(LTexCoords, FTess.NumVertexes * 2);

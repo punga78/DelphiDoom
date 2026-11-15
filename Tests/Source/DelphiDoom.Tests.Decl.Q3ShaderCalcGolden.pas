@@ -30,6 +30,8 @@ type
     [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroTrShadeCalcC;
     [Test]
+    procedure DovrebbeDareLeStesseRisposteDelVeroTrShadeCalcCPerSpriteTestoOmbraNebbiaELuce;
+    [Test]
     procedure DovrebbeDareLeStesseRisposteDelVeroRRemapShaderC;
   end;
 
@@ -71,6 +73,25 @@ begin
     LScenario.LoadFromFile(DataFolder + 'q3calc\scenario.txt', TEncoding.ANSI);
     LGolden.LoadFromFile(DataFolder + 'q3calc\q3calc.golden.txt', TEncoding.ANSI);
     Compare(LGolden, LRunner.Run(LScenario), 'q3calc');
+  finally
+    LRunner.Free;
+    LGolden.Free;
+    LScenario.Free;
+  end;
+end;
+
+procedure TTestQ3ShaderCalcGolden.DovrebbeDareLeStesseRisposteDelVeroTrShadeCalcCPerSpriteTestoOmbraNebbiaELuce;
+var
+  LScenario, LGolden: TStringList;
+  LRunner: TQ3CalcGoldenRunner;
+begin
+  LScenario := TStringList.Create;
+  LGolden := TStringList.Create;
+  LRunner := TQ3CalcGoldenRunner.Create;
+  try
+    LScenario.LoadFromFile(DataFolder + 'q3calc\scenario-quads.txt', TEncoding.ANSI);
+    LGolden.LoadFromFile(DataFolder + 'q3calc\q3calc-quads.golden.txt', TEncoding.ANSI);
+    Compare(LGolden, LRunner.Run(LScenario), 'q3calc-quads');
   finally
     LRunner.Free;
     LGolden.Free;

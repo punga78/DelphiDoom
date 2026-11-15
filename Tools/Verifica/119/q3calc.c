@@ -31,6 +31,7 @@
 #include "tr_noise.c"
 #include "tr_shade.c"
 #include "tr_shade_calc.c"
+#include "q3_extra.inc"
 
 trGlobals_t tr;
 backEndState_t backEnd;
@@ -40,6 +41,8 @@ backEndData_t *backEndData[SMP_FRAMES];
 
 static jmp_buf g_drop;
 static trRefEntity_t g_entity;
+static world_t g_world;
+static fog_t g_fogs[4];
 static shader_t g_shader;
 static shaderStage_t g_stage;
 static texModInfo_t g_mods[TR_MAX_TEXMODS];
@@ -218,8 +221,105 @@ static void command(char *line) {
 			dump_xyz(" result");
 		} else printf(" error\n");
 	}
-	else if (!strcmp(tok[0], "tcgen")) {
-		textureBundle_t *b = &g_stage.bundle[0];
+	else if (!strcmp(tok[0], "viewparms")) {
+		for (i = 0; i < 3; i++) backEnd.viewParms.or.origin[i] = (float)atof(tok[1 + i]);
+		for (i = 0; i < 9; i++) backEnd.viewParms.or.axis[i / 3][i % 3] = (float)atof(tok[4 + i]);
+		backEnd.viewParms.isMirror = atoi(tok[13]);
+	}
+	else if (!strcmp(tok[0], "orient")) {
+		for (i = 0; i < 3; i++) backEnd.or.origin[i] = (float)atof(tok[1 + i]);
+		for (i = 0; i < 9; i++) backEnd.or.axis[i / 3][i % 3] = (float)atof(tok[4 + i]);
+	}
+	else if (!strcmp(tok[0], "modelmatrix")) {
+		for (i = 0; i < 16; i++) backEnd.or.modelMatrix[i] = (float)atof(tok[1 + i]);
+	}
+	else if (!strcmp(tok[0], "entityworld")) {
+		backEnd.currentEntity = &tr.worldEntity;
+	}
+	else if (!strcmp(tok[0], "entityaxes")) {
+		backEnd.currentEntity = &g_entity;
+		g_entity.e.nonNormalizedAxes = atoi(tok[1]);
+		for (i = 0; i < 9; i++) g_entity.e.axis[i / 3][i % 3] = (float)atof(tok[2 + i]);
+		g_entity.e.shadowPlane = (float)atof(tok[11]);
+	}
+	else if (!strcmp(tok[0], "entitylight")) {
+		for (i = 0; i < 3; i++) g_entity.ambientLight[i] = (float)atof(tok[1 + i]);
+		for (i = 0; i < 3; i++) g_entity.directedLight[i] = (float)atof(tok[4 + i]);
+		for (i = 0; i < 3; i++) g_entity.lightDir[i] = (float)atof(tok[7 + i]);
+		g_entity.ambientLightInt = (int)strtoul(tok[10], NULL, 16);
+		backEnd.currentEntity = &g_entity;
+	}
+	else if (!strcmp(tok[0], "quads")) {
+		int q = atoi(tok[1]), k, v;
+		g_seed = (unsigned)atoi(tok[2]);
+		gen_verts(q * 4, (unsigned)atoi(tok[2]));
+		tess.numIndexes = q * 6;
+		for (k = 0; k < q; k++) {
+			tess.indexes[k * 6] = k * 4; tess.indexes[k * 6 + 1] = k * 4 + 1; tess.indexes[k * 6 + 2] = k * 4 + 3;
+			tess.indexes[k * 6 + 3] = k * 4 + 3; tess.indexes[k * 6 + 4] = k * 4 + 1; tess.indexes[k * 6 + 5] = k * 4 + 2;
+		}
+		for (v = 0; v < q * 4; v++) for (k = 0; k < 4; k++) tess.vertexColors[v][k] = (byte)(next_r() & 255);
+	}
+	else if (!strcmp(tok[0], "text")) {
+		memset(backEnd.refdef.text[atoi(tok[1])], 0, 32);
+		if (n > 2) strncpy(backEnd.refdef.text[atoi(tok[1])], tok[2], 31);
+	}
+	else if (!strcmp(tok[0], "fog")) {
+		fog_t *f = &g_fogs[atoi(tok[1])];
+		f->tcScale = (float)atof(tok[2]);
+		f->hasSurface = atoi(tok[3]);
+		for (i = 0; i < 4; i++) f->surface[i] = (float)atof(tok[4 + i]);
+		tr.world = &g_world;
+		g_world.fogs = g_fogs;
+	}
+	else if (!strcmp(tok[0], "fognum")) tess.fogNum = atoi(tok[1]);
+	else if (!strcmp(tok[0], "fogtable")) {
+		R_InitFogTable();
+		printf(" table");
+		for (i = 0; i < FOG_TABLE_SIZE; i++) bits(tr.fogTable[i]);
+		printf("\n");
+	}
+	else if (!strcmp(tok[0], "fogfactor")) {
+		R_InitFogTable();
+		printf(" factor"); bits(R_FogFactor((float)atof(tok[1]), (float)atof(tok[2]))); printf("\n");
+	}
+	else if (!strcmp(tok[0], "fogtc")) {
+		static float st[SHADER_MAX_VERTEXES * 2];
+		RB_CalcFogTexCoords(st);
+		printf(" result\n");
+		for (i = 0; i < tess.numVertexes; i++) { printf(" t%d", i); bits(st[i * 2]); bits(st[i * 2 + 1]); printf("\n"); }
+	}
+	else if (!strcmp(tok[0], "fogmod") || !strcmp(tok[0], "specalpha") || !strcmp(tok[0], "diffuse")) {
+		for (i = 0; i < tess.numVertexes * 4; i++) colors[i] = (byte)((i * 37 + 11) & 255);
+		R_InitFogTable();
+		if (!strcmp(tok[0], "specalpha")) RB_CalcSpecularAlpha(colors);
+		else if (!strcmp(tok[0], "diffuse")) RB_CalcDiffuseColor(colors);
+		else if (!strcmp(tok[1], "colors")) RB_CalcModulateColorsByFog(colors);
+		else if (!strcmp(tok[1], "alphas")) RB_CalcModulateAlphasByFog(colors);
+		else RB_CalcModulateRGBAsByFog(colors);
+		dump_colors(" result", colors, 4);
+	}
+	else if (!strcmp(tok[0], "deformgeo")) {
+		deformStage_t *d = &g_shader.deforms[0];
+		memset(d, 0, sizeof(*d));
+		d->deformation = (deform_t)atoi(tok[1]);
+		g_shader.numDeforms = 1;
+		tess.shader = &g_shader;
+		if (setjmp(g_drop) == 0) {
+			RB_DeformTessGeometry();
+			printf(" geometry %d %d\n", tess.numVertexes, tess.numIndexes);
+			for (i = 0; i < tess.numIndexes; i++) printf(" i%d %d\n", i, (int)tess.indexes[i]);
+			for (i = 0; i < tess.numVertexes; i++) {
+				printf(" g%d", i);
+				bits(tess.xyz[i][0]); bits(tess.xyz[i][1]); bits(tess.xyz[i][2]);
+				bits(tess.normal[i][0]); bits(tess.normal[i][1]); bits(tess.normal[i][2]);
+				bits(tess.texCoords[i][0][0]); bits(tess.texCoords[i][0][1]);
+				bits(tess.texCoords[i][1][0]); bits(tess.texCoords[i][1][1]);
+				printf(" %d %d %d %d\n", tess.vertexColors[i][0], tess.vertexColors[i][1], tess.vertexColors[i][2], tess.vertexColors[i][3]);
+			}
+		} else printf(" error\n");
+	}
+	else if (!strcmp(tok[0], "tcgen")) {		textureBundle_t *b = &g_stage.bundle[0];
 		if (!strcmp(tok[1], "identity")) b->tcGen = TCGEN_IDENTITY;
 		else if (!strcmp(tok[1], "texture")) b->tcGen = TCGEN_TEXTURE;
 		else if (!strcmp(tok[1], "lightmap")) b->tcGen = TCGEN_LIGHTMAP;
