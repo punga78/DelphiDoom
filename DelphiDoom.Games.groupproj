@@ -40,6 +40,9 @@
         <Projects Include="Greed\Greed32.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="War\Warcraft32.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Speed\Speed32.dproj">
             <Dependencies/>
         </Projects>
@@ -162,6 +165,15 @@
     <Target Name="Greed32:Make">
         <MSBuild Projects="Greed\Greed32.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Warcraft32">
+        <MSBuild Projects="War\Warcraft32.dproj"/>
+    </Target>
+    <Target Name="Warcraft32:Clean">
+        <MSBuild Projects="War\Warcraft32.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Warcraft32:Make">
+        <MSBuild Projects="War\Warcraft32.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Speed32">
         <MSBuild Projects="Speed\Speed32.dproj"/>
     </Target>
@@ -181,13 +193,13 @@
         <MSBuild Projects="OpenXcom\Xcom32.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Doom32;GLDoom32;Heretic32;GLHeretic32;Hexen32;GLHexen32;Strife32;GLStrife32;Radix32;SpeedHaste32;Keen32;Greed32;Speed32;Xcom32"/>
+        <CallTarget Targets="Doom32;GLDoom32;Heretic32;GLHeretic32;Hexen32;GLHexen32;Strife32;GLStrife32;Radix32;SpeedHaste32;Keen32;Greed32;Warcraft32;Speed32;Xcom32"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Doom32:Clean;GLDoom32:Clean;Heretic32:Clean;GLHeretic32:Clean;Hexen32:Clean;GLHexen32:Clean;Strife32:Clean;GLStrife32:Clean;Radix32:Clean;SpeedHaste32:Clean;Keen32:Clean;Greed32:Clean;Speed32:Clean;Xcom32:Clean"/>
+        <CallTarget Targets="Doom32:Clean;GLDoom32:Clean;Heretic32:Clean;GLHeretic32:Clean;Hexen32:Clean;GLHexen32:Clean;Strife32:Clean;GLStrife32:Clean;Radix32:Clean;SpeedHaste32:Clean;Keen32:Clean;Greed32:Clean;Warcraft32:Clean;Speed32:Clean;Xcom32:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Doom32:Make;GLDoom32:Make;Heretic32:Make;GLHeretic32:Make;Hexen32:Make;GLHexen32:Make;Strife32:Make;GLStrife32:Make;Radix32:Make;SpeedHaste32:Make;Keen32:Make;Greed32:Make;Speed32:Make;Xcom32:Make"/>
+        <CallTarget Targets="Doom32:Make;GLDoom32:Make;Heretic32:Make;GLHeretic32:Make;Hexen32:Make;GLHexen32:Make;Strife32:Make;GLStrife32:Make;Radix32:Make;SpeedHaste32:Make;Keen32:Make;Greed32:Make;Warcraft32:Make;Speed32:Make;Xcom32:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

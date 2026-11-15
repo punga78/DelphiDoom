@@ -89,8 +89,15 @@ type
     procedure ApplyOptions;
     /// <summary>wmm_handleRestartRestart</summary>
     procedure Restart;
-    /// <summary>wmm_handleGameOverSave: not implemented in the original, nothing happens</summary>
+    /// <summary>
+    ///   wmm_handleGameOverSave: not implemented in the original, so nothing happens unless the host saves games
+    ///   (IWarMapMenuSessions)
+    /// </summary>
     procedure SaveAfterGameOver;
+    /// <summary>The Save button of the main menu: nothing happens unless the host saves games</summary>
+    procedure SaveGame;
+    /// <summary>The Load button of the main menu: nothing happens unless the host loads games</summary>
+    procedure LoadGame;
     /// <summary>wmm_handleGameOverContinue and wmm_handleDemoEndMenu are the host's</summary>
     procedure ContinueAfterGameOver;
     /// <summary>wmm_handleQuitQuit</summary>
@@ -291,7 +298,24 @@ end;
 
 procedure TWarMapMenu.SaveAfterGameOver;
 begin
-  // NOT_IMPLEMENTED() only writes a line to stderr: the original does nothing here
+  // NOT_IMPLEMENTED() only writes a line to stderr: the original does nothing here, a host that saves games does
+  SaveGame;
+end;
+
+procedure TWarMapMenu.SaveGame;
+var
+  LSessions: IWarMapMenuSessions;
+begin
+  if Assigned(FHost) and Supports(FHost, IWarMapMenuSessions, LSessions) then
+    LSessions.SaveGame;
+end;
+
+procedure TWarMapMenu.LoadGame;
+var
+  LSessions: IWarMapMenuSessions;
+begin
+  if Assigned(FHost) and Supports(FHost, IWarMapMenuSessions, LSessions) then
+    LSessions.LoadGame;
 end;
 
 procedure TWarMapMenu.ContinueAfterGameOver;

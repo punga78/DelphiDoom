@@ -167,9 +167,11 @@ procedure TWarMapMenuView.RenderMain;
 begin
   Picture('imgMenuBackground', False);
   Title('txtMenuHeader', 'Warcraft', False);
-  // Save and Load are not implemented in the original: no handler
-  Button('btnMenuSave', 'Save', 20, 25, wkS, True);
-  Button('btnMenuLoad', 'Load', 78, 25, wkL, True);
+  // Save and Load are not implemented in the original: no handler (the menu has one if its host saves games)
+  if Button('btnMenuSave', 'Save', 20, 25, wkS, True) then
+    FMenu.SaveGame;
+  if Button('btnMenuLoad', 'Load', 78, 25, wkL, True) then
+    FMenu.LoadGame;
   if Button('btnMenuOptions', 'Options', 20, 45, wkO, False) then
     FMenu.OpenOptions;
   if Button('btnMenuObjectives', 'Objectives', 20, 65, wkJ, False) then

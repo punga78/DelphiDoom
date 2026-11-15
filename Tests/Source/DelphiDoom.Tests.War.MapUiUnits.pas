@@ -64,6 +64,8 @@ type
     [Test]
     procedure DovrebbeFareEntitaESceglierePerLeSelezioniEIlRiconoscimento;
     [Test]
+    procedure DovrebbeSuonareCioCheHaSceltoSeHaUnaUscita;
+    [Test]
     procedure DovrebbeDareSempreLoStessoSpriteDiUnRecord;
     [Test]
     procedure DovrebbeSvuotareIlPannelloDeiComandi;
@@ -93,6 +95,27 @@ type
     Calls: Integer;
     function Below(ALimit: Integer): Integer;
   end;
+
+  /// <summary>The sound of the scenes: writes down what it is asked to play</summary>
+  TSpySceneAudio = class(TInterfacedObject, IWarSceneAudio)
+  public
+    Ids: TArray<Integer>;
+    Loops: TArray<Boolean>;
+    procedure Play(AAudioId: Integer; ALoop: Boolean);
+    procedure StopMusic;
+  end;
+
+{ TSpySceneAudio }
+
+procedure TSpySceneAudio.Play(AAudioId: Integer; ALoop: Boolean);
+begin
+  Ids := Ids + [AAudioId];
+  Loops := Loops + [ALoop];
+end;
+
+procedure TSpySceneAudio.StopMusic;
+begin
+end;
 
 { TFakeInput }
 
@@ -538,6 +561,53 @@ begin
     LAudio.BuildingSelected(1);
     Assert.AreEqual(LBefore + 5, LContext.Pool.EntityCount);
   finally
+    LAudio := nil;
+    LWorld.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeSuonareCioCheHaSceltoSeHaUnaUscita;
+var
+  LWorld: TObject;
+  LContext: TWarModelContext;
+  LRandom: TCountingRandom;
+  LRandomRef: IWarRandom;
+  LSpy: TSpySceneAudio;
+  LSpyRef: IWarSceneAudio;
+  LAudio: IWarMapAudio;
+  LWithout: IWarMapAudio;
+begin
+  LRandom := TCountingRandom.Create;
+  LRandomRef := LRandom;
+  LSpy := TSpySceneAudio.Create;
+  LSpyRef := LSpy;
+  LContext := NewContext(LRandomRef, LWorld);
+  try
+    LContext.Players[0]^.Race := wraHumans;
+    LContext.Players[1]^.Race := wraOrcs;
+    LAudio := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef, LSpyRef);
+    // an effect plays once, a song (a record from 0 to 44) goes round
+    LAudio.PlaySound(485);
+    LAudio.PlaySound(0);
+    Assert.AreEqual<Integer>(2, Length(LSpy.Ids));
+    Assert.AreEqual(485, LSpy.Ids[0]);
+    Assert.IsFalse(LSpy.Loops[0]);
+    Assert.AreEqual(0, LSpy.Ids[1]);
+    Assert.IsTrue(LSpy.Loops[1]);
+    // the sound that was drawn is the one that plays (the generator gives 0: the first of the range)
+    LAudio.PlayRandomSound(520, 524);
+    Assert.AreEqual(520, LSpy.Ids[2]);
+    // an answer to an order is a sound of the table of the race
+    LContext.RealTime := 1;
+    LAudio.Acknowledge(0);
+    Assert.AreEqual<Integer>(4, Length(LSpy.Ids));
+    Assert.IsTrue(LSpy.Ids[3] >= 0);
+    // with no output nothing changes in what is drawn
+    LWithout := TWarMapAudio.Create(LContext, TWarSoundFactory.CreatePicker(LRandomRef), LRandomRef);
+    LWithout.PlaySound(485);
+    Assert.AreEqual<Integer>(4, Length(LSpy.Ids));
+  finally
+    LWithout := nil;
     LAudio := nil;
     LWorld.Free;
   end;

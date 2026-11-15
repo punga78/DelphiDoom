@@ -118,8 +118,11 @@ procedure TWarSceneMainMenu.RenderMain;
 begin
   if Services.Imui.TextButton('btnMenuSinglePlayer', TWarUiWidgets.MenuButton('Start a new game', 104, 85, wkS, False)) then
     FMenuPanel := wmpSinglePlayer; // wsc_handleMenuSinglePlayer
+  // not implemented in the original: inert, unless the program loads games (it loads its quick slot)
+  if Services.Imui.TextButton('btnMenuLoad', TWarUiWidgets.MenuButton('Load existing game', 104, 105, wkL, False)) then
+    if Assigned(Services.Sessions) then
+      Services.Sessions.RequestLoad;
   // not implemented in the original: inert
-  Services.Imui.TextButton('btnMenuLoad', TWarUiWidgets.MenuButton('Load existing game', 104, 105, wkL, False));
   Services.Imui.TextButton('btnMenuReplayIntro', TWarUiWidgets.MenuButton('Replay introduction', 104, 125, wkR, False));
   if Services.Imui.TextButton('btnMenuQuit', TWarUiWidgets.MenuButton('Quit', 104, 165, wkQ, False)) then
     Services.Host.RequestQuit;

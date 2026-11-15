@@ -58,7 +58,7 @@ type
   ///   projectiles, the spells and the fog), then the panel of the commands, the status bar and the objectives
   /// </summary>
   TWarMapScene = class(TInterfacedObject, IWarScene, IWarPausableScene, IWarScriptedScene, IWarMapMenuHost,
-    IWarMapCheatTarget)
+    IWarMapCheatTarget, IWarMapMenuSessions)
   strict private
     FSetup: TWarMapSceneSetup;
     FHost: IWarMapHost;
@@ -137,6 +137,10 @@ type
     procedure ReturnToMainMenu;
     /// <summary>wmm_handleQuitQuit</summary>
     procedure QuitGame;
+    /// <summary>The Save button: asks the program (if it saves games) to save at the end of the frame</summary>
+    procedure SaveGame;
+    /// <summary>The Load button: asks the program (if it loads games) to load at the end of the frame</summary>
+    procedure LoadGame;
     /// <summary>The menus of the map (map->menuState, map->playing, map->settings)</summary>
     property Menu: TWarMapMenu read FMenu;
     /// <summary>The cheat line of the map (map->status.cheatStatus)</summary>
@@ -279,7 +283,8 @@ begin
   FHud := TWarMapHud.Create(FSetup.Services.Imui, FPanels);
   FPicker := TWarMapPicker.Create(FMap, FBinding.World.Context, FBinding.World.Machine);
   // the sounds that the model asks for and that the player's choices make: entities of the pool and numbers drawn
-  FAudio := TWarMapAudio.Create(FBinding.World.Context, TWarSoundFactory.CreatePicker(FSetup.Random), FSetup.Random);
+  FAudio := TWarMapAudio.Create(FBinding.World.Context, TWarSoundFactory.CreatePicker(FSetup.Random), FSetup.Random,
+    FSetup.Services.Audio);
   FHost.AttachAudio(FAudio);
   FSelecting := TWarMapSelecting.Create(FMap, FBinding.World.Context, FBinding.World.Machine, FCamera, FPicker,
     FBinding.Commands.Selecting, FAudio);
@@ -758,6 +763,18 @@ begin
   Result := '';
   if Assigned(FSetup.Services.Campaigns) then
     Result := FSetup.Services.Campaigns.GetData(FSetup.Services.Campaigns.MapTypeOfLevel(FSetup.MapType)).Objectives;
+end;
+
+procedure TWarMapScene.SaveGame;
+begin
+  if Assigned(FSetup.Services.Sessions) then
+    FSetup.Services.Sessions.RequestSave;
+end;
+
+procedure TWarMapScene.LoadGame;
+begin
+  if Assigned(FSetup.Services.Sessions) then
+    FSetup.Services.Sessions.RequestLoad;
 end;
 
 procedure TWarMapScene.RestartMap;

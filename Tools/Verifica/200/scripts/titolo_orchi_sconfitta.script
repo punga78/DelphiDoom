@@ -1,0 +1,44 @@
+# Warcraft32 (#200): dal logo della Blizzard alla sconfitta della prima missione degli orchi, solo col mouse e la tastiera.
+# Come titolo_umani_vittoria.script ma "Orc campaign" e il trucco "Crushing defeat": il menu "You failed to archieve
+# victory..." ha il solo bottone Ok, che porta al briefing della stessa missione.
+scene blizzard
+run 300 100
+move 150 90
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 70 35
+# Orc campaign
+move 150 92
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+# il secondo di nero e il briefing
+run 100 50
+key enter down
+run 2 1
+key enter up
+# il secondo di nero e la mappa
+run 100 50
+move 190 100
+run 60 30
+# il trucco: Invio apre la riga dei trucchi, il testo, Invio
+key enter down
+run 1 1
+key enter up
+run 2 1
+text Crushing defeat
+key enter down
+run 1 1
+key enter up
+run 10 5
+# il menu della sconfitta: Ok
+move 150 108
+run 3 1
+lbutton down
+run 2 1
+lbutton up
+run 100 50
+hash

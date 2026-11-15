@@ -79,6 +79,17 @@ type
     procedure AttachServices(const AServices: TWarSceneServices);
   end;
 
+  /// <summary>
+  ///   What the Save and Load buttons of the menus of the map ask of the scene (the original has no handler for them).
+  ///   Optional on a host of the menus, asked for with Supports: a host that does not have it leaves the buttons as the
+  ///   original has them
+  /// </summary>
+  IWarMapMenuSessions = interface
+    ['{D8B3F162-4E79-4A0D-9C85-61A7E2F40B93}']
+    procedure SaveGame;
+    procedure LoadGame;
+  end;
+
 implementation
 
 end.

@@ -169,6 +169,7 @@
     'Speed' = 'IdTech1'
     'Keen' = 'Giochi'
     'Greed' = 'Giochi'
+    'War' = 'Giochi'
     'OpenXcom' = 'Giochi'
     'DD_IDE' = 'Strumenti'
     'DD_Tools' = 'Strumenti'

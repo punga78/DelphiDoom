@@ -1,4 +1,4 @@
-{******************************************************************************}
+﻿{******************************************************************************}
 {                                                                              }
 {  DelphiDoom: unit tests of the war library (DUnitX)                           }
 {                                                                              }
@@ -473,6 +473,44 @@ uses
   DelphiDoom.Tests.War.CinematicCatalog in 'Source\DelphiDoom.Tests.War.CinematicCatalog.pas',
   DelphiDoom.Tests.War.CinematicAudio in 'Source\DelphiDoom.Tests.War.CinematicAudio.pas',
   DelphiDoom.Tests.War.CinematicDirector in 'Source\DelphiDoom.Tests.War.CinematicDirector.pas',
+  DelphiDoom.Configuration.Types in '..\Libs\Configuration\DelphiDoom.Configuration.Types.pas',
+  DelphiDoom.Configuration.Intf in '..\Libs\Configuration\DelphiDoom.Configuration.Intf.pas',
+  DelphiDoom.Configuration.Values in '..\Libs\Configuration\DelphiDoom.Configuration.Values.pas',
+  DelphiDoom.Configuration.Document in '..\Libs\Configuration\DelphiDoom.Configuration.Document.pas',
+  DelphiDoom.Configuration.Writer in '..\Libs\Configuration\DelphiDoom.Configuration.Writer.pas',
+  DelphiDoom.Configuration.Format in '..\Libs\Configuration\DelphiDoom.Configuration.Format.pas',
+  DelphiDoom.Configuration.Item in '..\Libs\Configuration\DelphiDoom.Configuration.Item.pas',
+  DelphiDoom.Configuration.Table in '..\Libs\Configuration\DelphiDoom.Configuration.Table.pas',
+  DelphiDoom.Configuration.TableStore in '..\Libs\Configuration\DelphiDoom.Configuration.TableStore.pas',
+  DelphiDoom.Configuration.Factory in '..\Libs\Configuration\DelphiDoom.Configuration.Factory.pas',
+  DelphiDoom.Clock.Intf in '..\Libs\Clock\DelphiDoom.Clock.Intf.pas',
+  DelphiDoom.War.App.Options in '..\Libs\War\DelphiDoom.War.App.Options.pas',
+  DelphiDoom.War.App.OptionsParser in '..\Libs\War\DelphiDoom.War.App.OptionsParser.pas',
+  DelphiDoom.War.App.DataLocator in '..\Libs\War\DelphiDoom.War.App.DataLocator.pas',
+  DelphiDoom.War.App.FrameConverter in '..\Libs\War\DelphiDoom.War.App.FrameConverter.pas',
+  DelphiDoom.War.App.SceneAudio in '..\Libs\War\DelphiDoom.War.App.SceneAudio.pas',
+  DelphiDoom.War.App.Settings in '..\Libs\War\DelphiDoom.War.App.Settings.pas',
+  DelphiDoom.War.App.Intf in '..\Libs\War\DelphiDoom.War.App.Intf.pas',
+  DelphiDoom.War.App.SessionTypes in '..\Libs\War\DelphiDoom.War.App.SessionTypes.pas',
+  DelphiDoom.War.App.SessionRequests in '..\Libs\War\DelphiDoom.War.App.SessionRequests.pas',
+  DelphiDoom.War.App.Session in '..\Libs\War\DelphiDoom.War.App.Session.pas',
+  DelphiDoom.War.App.SessionEventSink in '..\Libs\War\DelphiDoom.War.App.SessionEventSink.pas',
+  DelphiDoom.War.App.Runner in '..\Libs\War\DelphiDoom.War.App.Runner.pas',
+  DelphiDoom.War.App.UiSessionGame in '..\Libs\War\DelphiDoom.War.App.UiSessionGame.pas',
+  DelphiDoom.War.Save.Types in '..\Libs\War\DelphiDoom.War.Save.Types.pas',
+  DelphiDoom.War.Save.Checksum in '..\Libs\War\DelphiDoom.War.Save.Checksum.pas',
+  DelphiDoom.War.Save.Writer in '..\Libs\War\DelphiDoom.War.Save.Writer.pas',
+  DelphiDoom.War.Save.Reader in '..\Libs\War\DelphiDoom.War.Save.Reader.pas',
+  DelphiDoom.Tests.War.AppOptionsParser in 'Source\DelphiDoom.Tests.War.AppOptionsParser.pas',
+  DelphiDoom.Tests.War.AppDataLocator in 'Source\DelphiDoom.Tests.War.AppDataLocator.pas',
+  DelphiDoom.Tests.War.AppFrameConverter in 'Source\DelphiDoom.Tests.War.AppFrameConverter.pas',
+  DelphiDoom.Tests.War.AppSettings in 'Source\DelphiDoom.Tests.War.AppSettings.pas',
+  DelphiDoom.Tests.War.AppSceneAudio in 'Source\DelphiDoom.Tests.War.AppSceneAudio.pas',
+  DelphiDoom.Tests.War.SaveFormat in 'Source\DelphiDoom.Tests.War.SaveFormat.pas',
+  DelphiDoom.Tests.War.AppSession in 'Source\DelphiDoom.Tests.War.AppSession.pas',
+  DelphiDoom.Tests.War.AppRunner in 'Source\DelphiDoom.Tests.War.AppRunner.pas',
+  DelphiDoom.Tests.War.AppSessionEventSink in 'Source\DelphiDoom.Tests.War.AppSessionEventSink.pas',
+  DelphiDoom.Tests.War.AppSessionReal in 'Source\DelphiDoom.Tests.War.AppSessionReal.pas',
   DelphiDoom.Tests.War.CinematicFiles in 'Source\DelphiDoom.Tests.War.CinematicFiles.pas';
 
 var
