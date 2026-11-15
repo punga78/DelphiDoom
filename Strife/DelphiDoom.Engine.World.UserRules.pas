@@ -38,6 +38,8 @@ type
       OwnsDeathThink = False;
       /// <summary>The jump and the crouch work out of the new engine too (Strife); the other games run them only in it</summary>
       JumpsAlways = True;
+      /// <summary>P_PlayerThink starts by leaving when the player has no thing</summary>
+      GuardsNilMobj = False;
 
     /// <summary>Sets onground, the state of the player towards the floor</summary>
     class procedure SetOnGround(const player: Pplayer_t); static;
@@ -57,6 +59,22 @@ type
     class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
+    /// <summary>What the player does before the move (Doom, Strife: turn towards a target; Heretic: the chicken)</summary>
+    class procedure BeforeMove(const player: Pplayer_t); static;
+    /// <summary>What comes after the special sectors (Heretic: the artifacts; Strife: the breath and the inventory)</summary>
+    class procedure AfterSector(const player: Pplayer_t; const cmd: Pticcmd_t); static;
+    /// <summary>The change of the weapon the buttons ask for</summary>
+    class procedure ChangeWeapon(const player: Pplayer_t; const cmd: Pticcmd_t); static;
+    /// <summary>What comes before the use of the lines (Strife: the dialogs)</summary>
+    class procedure BeforeUseLines(const player: Pplayer_t); static;
+    /// <summary>What comes before the weapon sprites move (Heretic: the chicken counter)</summary>
+    class procedure BeforePsprites(const player: Pplayer_t); static;
+    /// <summary>The counters of the powers and of the screen effects</summary>
+    class procedure CountDown(const player: Pplayer_t); static;
+    /// <summary>The colormap of the view</summary>
+    class procedure Colormap(const player: Pplayer_t); static;
+    /// <summary>The last thing of the thinker (Doom: the breath of the player)</summary>
+    class procedure AtEnd(const player: Pplayer_t); static;
     /// <summary>The thrust of P_Thrust: Heretic and Hexen weaken it on ice and keep it when flying</summary>
     class function ThrustMove(const player: Pplayer_t; const move: fixed_t): fixed_t; static;
     /// <summary>The bob of a player that flies is fixed (Heretic, Hexen)</summary>
@@ -136,265 +154,9 @@ uses
   s_sound,
   doomdef,
   p_user,
-  DelphiDoom.Engine.World.PlayerExtras;
+  DelphiDoom.Engine.World.PlayerExtras,
+  DelphiDoom.Engine.World.PlayerThinker;
 
-
-//==============================================================================
-//
-// P_PlayerThink
-//
-//==============================================================================
-class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
-var
-  cmd: Pticcmd_t;
-  newweapon: weapontype_t;
-  sec: Psector_t; // JVAL: 3d Floors
-begin
-  // fixme: do this in the cheat code
-  if player.cheats and CF_NOCLIP <> 0 then
-    player.mo.flags := player.mo.flags or MF_NOCLIP
-  else
-    player.mo.flags := player.mo.flags and not MF_NOCLIP;
-
-  // chain saw run forward
-  cmd := @player.cmd;
-  if player.mo.flags and MF_JUSTATTACKED <> 0 then
-  begin
-    cmd.angleturn := 0;
-    cmd.forwardmove := $c800 div 512;
-    cmd.sidemove := 0;
-    player.mo.flags := player.mo.flags and not MF_JUSTATTACKED;
-  end;
-
-  if player.quaketics > 0 then
-  begin
-    Dec(player.quaketics, FRACUNIT);
-    if player.quaketics < 0 then
-      player.quaketics := 0;
-  end;
-
-  if player.teleporttics > 0 then
-  begin
-    Dec(player.teleporttics, FRACUNIT);
-    if player.teleporttics < 0 then
-      player.teleporttics := 0;
-  end;
-
-  // JVAL: MARS - Retrieve Linetarget
-  P_AimLineAttack(player.mo, player.mo.angle, 16 * 64 * FRACUNIT);
-  if (player.plinetarget = nil) and (linetarget <> nil) then
-    player.pcrosstic := leveltime;
-  player.plinetarget := linetarget;
-
-  if player.playerstate = PST_DEAD then
-  begin
-    P_DeathThink(player);
-    exit;
-  end;
-
-  P_PlayerHistoryNotify(player);
-  P_HandleFriendsNearMe(player);  // JVAL: 20220107 - Handle nearby friends
-
-  P_AngleTarget(player);
-
-  // Move around.
-  // Reactiontime is used to prevent movement
-  //  for a bit after a teleport.
-  if player.mo.reactiontime <> 0 then
-    player.mo.reactiontime := player.mo.reactiontime - 1
-  else
-    P_MovePlayer(player);
-
-  P_SlopesCalcHeight(player); // JVAL: Slopes
-
-  // JVAL: 3d Floors
-  sec := Psubsector_t(player.mo.subsector).sector;
-  if sec.special <> 0 then
-    P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
-  if sec.midsec >= 0 then
-    if sectors[sec.midsec].special <> 0 then
-      P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
-
-  if not G_NeedsCompatibilityMode then
-    A_PlayerBreath(player);
-
-  // villsa [STRIFE] handle inventory input
-  if cmd.buttons2 and (BT2_HEALTH or BT2_INVUSE or BT2_INVDROP) <> 0 then
-  begin
-    if not player.inventorydown then
-    begin
-      if cmd.buttons2 and BT2_HEALTH <> 0 then
-        P_UseInventoryItem(player, Ord(SPR_FULL))
-      else if cmd.buttons2 and BT2_INVUSE <> 0 then
-        P_UseInventoryItem(player, cmd.inventory)
-      else if cmd.buttons2 and BT2_INVDROP <> 0 then
-        P_DropInventoryItem(player, cmd.inventory);
-
-      player.inventorydown := true;
-    end
-    else
-      player.inventorydown := false;
-  end;
-
-  // Check for weapon change.
-
-  // A special event has no other buttons.
-  if cmd.buttons and BT_SPECIAL <> 0 then
-    cmd.buttons := 0;
-
-  if cmd.buttons and BT_CHANGE <> 0 then
-  begin
-    // The actual changing of the weapon is done
-    //  when the weapon psprite can do it
-    //  (read: not in the middle of an attack).
-    newweapon := weapontype_t(_SHR(cmd.buttons and BT_WEAPONMASK, BT_WEAPONSHIFT));
-
-    // villsa [STRIFE] select poison bow
-    if newweapon = wp_elecbow then
-      if player.weaponowned[Ord(wp_poisonbow)] and (player.readyweapon = wp_elecbow) then
-        if player.ammo[Ord(weaponinfo[Ord(wp_poisonbow)].ammo)] > 0 then
-          newweapon := wp_poisonbow;
-
-    // villsa [STRIFE] select wp grenade launcher
-    if newweapon = wp_hegrenade then
-      if player.weaponowned[Ord(wp_wpgrenade)] and (player.readyweapon = wp_hegrenade) then
-        if player.ammo[Ord(weaponinfo[Ord(wp_wpgrenade)].ammo)] > 0 then
-          newweapon := wp_wpgrenade;
-
-    // villsa [STRIFE] select torpedo
-    if newweapon = wp_mauler then
-      if player.weaponowned[Ord(wp_torpedo)] and (player.readyweapon = wp_mauler) then
-        // haleyjd 20140924: bug fix - using wrong enum value am_cell
-        // caused this to check the missile launcher for rocket ammo
-        if player.ammo[Ord(weaponinfo[Ord(wp_torpedo)].ammo)] >= 30 then
-          newweapon := wp_torpedo;
-
-    if player.weaponowned[Ord(newweapon)] and (newweapon <> player.readyweapon) then
-    begin
-      // villsa [STRIFE] check weapon if in demo mode or not
-      if weaponinfo[Ord(newweapon)].availabledemo or not isdemoversion then
-      begin
-        if player.ammo[Ord(weaponinfo[Ord(newweapon)].ammo)] > 0 then
-          player.pendingweapon := newweapon
-        else
-        begin
-          // decide between electric bow or poison arrow
-          if (newweapon = wp_elecbow) and
-             (player.ammo[Ord(am_poisonbolts)] > 0) and
-             (player.readyweapon <> wp_poisonbow) then
-            player.pendingweapon := wp_poisonbow
-          // decide between hp grenade launcher or wp grenade launcher
-          else if (newweapon = wp_hegrenade) and
-                  (player.ammo[Ord(am_wpgrenades)] > 0) and
-                  (player.readyweapon <> wp_wpgrenade) then
-            player.pendingweapon := wp_wpgrenade
-                  // villsa [STRIFE] - no check for mauler/torpedo??
-        end;
-      end;
-    end;
-  end;
-
-  // check for use
-  if cmd.buttons and BT_USE <> 0 then
-  begin
-    if not player.usedown then
-    begin
-      P_DialogStart(player);  // villsa [STRIFE]
-      P_UseLines(player);
-      player.usedown := true;
-    end;
-  end
-  else
-    player.usedown := false;
-
-  // cycle psprites
-  P_MovePsprites(player);
-
-  // Counters, time dependend power ups.
-
-  // JVAL
-  if player.hardbreathtics > 0 then
-    player.hardbreathtics := player.hardbreathtics - 1;
-
-  // Strength counts up to diminish fade.
-  if player.powers[Ord(pw_strength)] <> 0 then
-    inc(player.powers[Ord(pw_strength)]);
-
-  // villsa [STRIFE] targeter powerup
-  if player.powers[Ord(pw_targeter)] > 0 then
-  begin
-    dec(player.powers[Ord(pw_targeter)]);
-    if player.powers[Ord(pw_targeter)] = 1 then
-    begin
-      P_SetPsprite(player, Ord(ps_targcenter), S_NULL);
-      P_SetPsprite(player, Ord(ps_targleft),   S_NULL);
-      P_SetPsprite(player, Ord(ps_targright),  S_NULL);
-    end
-    else if player.powers[Ord(pw_targeter)] - 1 < 5 * TICRATE then
-    begin
-      if player.powers[Ord(pw_targeter)] and 32 <> 0 then
-      begin
-        P_SetPsprite(player, Ord(ps_targright), S_NULL);
-        P_SetPsprite(player, Ord(ps_targleft),  S_TRGT_01);   // 11
-      end
-      else if player.powers[Ord(pw_targeter)] and 16 <> 0 then // haleyjd 20110205: missing else
-      begin
-        P_SetPsprite(player, Ord(ps_targright), S_TRGT_02);  // 12
-        P_SetPsprite(player, Ord(ps_targleft),  S_NULL);
-      end;
-    end;
-  end;
-
-  if player.powers[Ord(pw_invisibility)] > 0 then
-  begin
-    dec(player.powers[Ord(pw_invisibility)]);
-    // villsa [STRIFE] remove mvis flag as well
-    if player.powers[Ord(pw_invisibility)] = 0 then
-      player.mo.flags := player.mo.flags and not (MF_SHADOW or MF_MVIS);
-  end;
-
-  if player.powers[Ord(pw_ironfeet)] > 0 then
-  begin
-    dec(player.powers[Ord(pw_ironfeet)]);
-
-    // villsa [STRIFE] gasmask sound
-    if leveltime and $3f = 0 then
-      S_StartSound(player.mo, Ord(sfx_mask));
-  end;
-
-  if player.powers[Ord(pw_allmap)] > 1 then
-    dec(player.powers[Ord(pw_allmap)]);
-
-  // haleyjd 08/30/10: [STRIFE]
-  // Nukage count keeps track of exposure to hazardous conditions over time.
-  // After accumulating 16 total seconds or more of exposure, you will take
-  // 5 damage roughly once per second until the count drops back under 560
-  // tics.
-  if player.nukagecount > 0 then
-  begin
-    dec(player.nukagecount);
-    if leveltime and $1f = 0 then
-      if player.nukagecount > 16 * TICRATE then
-        P_DamageMobj(player.mo, nil, nil, 5);
-  end;
-
-  if player.damagecount > 0 then
-    dec(player.damagecount);
-
-  if player.bonuscount > 0 then
-    dec(player.bonuscount);
-
-  // villsa [STRIFE] checks for extralight
-  if player.extralight >= 0 then
-  begin
-    if player.cheats and CF_ONFIRE <> 0 then
-      player.fixedcolormap := 1
-    else
-      player.fixedcolormap := 0;
-  end
-  else // Sigil shock:
-    player.fixedcolormap := INVERSECOLORMAP;
-end;
 
 //==============================================================================
 //
@@ -883,6 +645,244 @@ end;
 //
 //==============================================================================
 class procedure TUserGameRules.AfterMove(const player: Pplayer_t; const cmd: Pticcmd_t);
+begin
+end;
+
+//==============================================================================
+//
+// TUserGameRules.PlayerThink
+//
+//==============================================================================
+class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
+begin
+  TPlayerThinker.Think(player);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforeMove
+//
+//==============================================================================
+class procedure TUserGameRules.BeforeMove(const player: Pplayer_t);
+begin
+  P_AngleTarget(player);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AfterSector
+//
+//==============================================================================
+class procedure TUserGameRules.AfterSector(const player: Pplayer_t; const cmd: Pticcmd_t);
+begin
+  if not G_NeedsCompatibilityMode then
+    A_PlayerBreath(player);
+
+  // villsa [STRIFE] handle inventory input
+  if cmd.buttons2 and (BT2_HEALTH or BT2_INVUSE or BT2_INVDROP) <> 0 then
+  begin
+    if not player.inventorydown then
+    begin
+      if cmd.buttons2 and BT2_HEALTH <> 0 then
+        P_UseInventoryItem(player, Ord(SPR_FULL))
+      else if cmd.buttons2 and BT2_INVUSE <> 0 then
+        P_UseInventoryItem(player, cmd.inventory)
+      else if cmd.buttons2 and BT2_INVDROP <> 0 then
+        P_DropInventoryItem(player, cmd.inventory);
+
+      player.inventorydown := true;
+    end
+    else
+      player.inventorydown := false;
+  end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.ChangeWeapon
+//
+//==============================================================================
+class procedure TUserGameRules.ChangeWeapon(const player: Pplayer_t; const cmd: Pticcmd_t);
+var
+  newweapon: weapontype_t;
+begin
+  if cmd.buttons and BT_CHANGE <> 0 then
+  begin
+    // The actual changing of the weapon is done
+    //  when the weapon psprite can do it
+    //  (read: not in the middle of an attack).
+    newweapon := weapontype_t(_SHR(cmd.buttons and BT_WEAPONMASK, BT_WEAPONSHIFT));
+
+    // villsa [STRIFE] select poison bow
+    if newweapon = wp_elecbow then
+      if player.weaponowned[Ord(wp_poisonbow)] and (player.readyweapon = wp_elecbow) then
+        if player.ammo[Ord(weaponinfo[Ord(wp_poisonbow)].ammo)] > 0 then
+          newweapon := wp_poisonbow;
+
+    // villsa [STRIFE] select wp grenade launcher
+    if newweapon = wp_hegrenade then
+      if player.weaponowned[Ord(wp_wpgrenade)] and (player.readyweapon = wp_hegrenade) then
+        if player.ammo[Ord(weaponinfo[Ord(wp_wpgrenade)].ammo)] > 0 then
+          newweapon := wp_wpgrenade;
+
+    // villsa [STRIFE] select torpedo
+    if newweapon = wp_mauler then
+      if player.weaponowned[Ord(wp_torpedo)] and (player.readyweapon = wp_mauler) then
+        // haleyjd 20140924: bug fix - using wrong enum value am_cell
+        // caused this to check the missile launcher for rocket ammo
+        if player.ammo[Ord(weaponinfo[Ord(wp_torpedo)].ammo)] >= 30 then
+          newweapon := wp_torpedo;
+
+    if player.weaponowned[Ord(newweapon)] and (newweapon <> player.readyweapon) then
+    begin
+      // villsa [STRIFE] check weapon if in demo mode or not
+      if weaponinfo[Ord(newweapon)].availabledemo or not isdemoversion then
+      begin
+        if player.ammo[Ord(weaponinfo[Ord(newweapon)].ammo)] > 0 then
+          player.pendingweapon := newweapon
+        else
+        begin
+          // decide between electric bow or poison arrow
+          if (newweapon = wp_elecbow) and
+             (player.ammo[Ord(am_poisonbolts)] > 0) and
+             (player.readyweapon <> wp_poisonbow) then
+            player.pendingweapon := wp_poisonbow
+          // decide between hp grenade launcher or wp grenade launcher
+          else if (newweapon = wp_hegrenade) and
+                  (player.ammo[Ord(am_wpgrenades)] > 0) and
+                  (player.readyweapon <> wp_wpgrenade) then
+            player.pendingweapon := wp_wpgrenade
+                  // villsa [STRIFE] - no check for mauler/torpedo??
+        end;
+      end;
+    end;
+  end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforeUseLines
+//
+//==============================================================================
+class procedure TUserGameRules.BeforeUseLines(const player: Pplayer_t);
+begin
+  P_DialogStart(player);  // villsa [STRIFE]
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforePsprites
+//
+//==============================================================================
+class procedure TUserGameRules.BeforePsprites(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TUserGameRules.CountDown
+//
+//==============================================================================
+class procedure TUserGameRules.CountDown(const player: Pplayer_t);
+begin
+  // JVAL
+  if player.hardbreathtics > 0 then
+    player.hardbreathtics := player.hardbreathtics - 1;
+
+  // Strength counts up to diminish fade.
+  if player.powers[Ord(pw_strength)] <> 0 then
+    inc(player.powers[Ord(pw_strength)]);
+
+  // villsa [STRIFE] targeter powerup
+  if player.powers[Ord(pw_targeter)] > 0 then
+  begin
+    dec(player.powers[Ord(pw_targeter)]);
+    if player.powers[Ord(pw_targeter)] = 1 then
+    begin
+      P_SetPsprite(player, Ord(ps_targcenter), S_NULL);
+      P_SetPsprite(player, Ord(ps_targleft),   S_NULL);
+      P_SetPsprite(player, Ord(ps_targright),  S_NULL);
+    end
+    else if player.powers[Ord(pw_targeter)] - 1 < 5 * TICRATE then
+    begin
+      if player.powers[Ord(pw_targeter)] and 32 <> 0 then
+      begin
+        P_SetPsprite(player, Ord(ps_targright), S_NULL);
+        P_SetPsprite(player, Ord(ps_targleft),  S_TRGT_01);   // 11
+      end
+      else if player.powers[Ord(pw_targeter)] and 16 <> 0 then // haleyjd 20110205: missing else
+      begin
+        P_SetPsprite(player, Ord(ps_targright), S_TRGT_02);  // 12
+        P_SetPsprite(player, Ord(ps_targleft),  S_NULL);
+      end;
+    end;
+  end;
+
+  if player.powers[Ord(pw_invisibility)] > 0 then
+  begin
+    dec(player.powers[Ord(pw_invisibility)]);
+    // villsa [STRIFE] remove mvis flag as well
+    if player.powers[Ord(pw_invisibility)] = 0 then
+      player.mo.flags := player.mo.flags and not (MF_SHADOW or MF_MVIS);
+  end;
+
+  if player.powers[Ord(pw_ironfeet)] > 0 then
+  begin
+    dec(player.powers[Ord(pw_ironfeet)]);
+
+    // villsa [STRIFE] gasmask sound
+    if leveltime and $3f = 0 then
+      S_StartSound(player.mo, Ord(sfx_mask));
+  end;
+
+  if player.powers[Ord(pw_allmap)] > 1 then
+    dec(player.powers[Ord(pw_allmap)]);
+
+  // haleyjd 08/30/10: [STRIFE]
+  // Nukage count keeps track of exposure to hazardous conditions over time.
+  // After accumulating 16 total seconds or more of exposure, you will take
+  // 5 damage roughly once per second until the count drops back under 560
+  // tics.
+  if player.nukagecount > 0 then
+  begin
+    dec(player.nukagecount);
+    if leveltime and $1f = 0 then
+      if player.nukagecount > 16 * TICRATE then
+        P_DamageMobj(player.mo, nil, nil, 5);
+  end;
+
+  if player.damagecount > 0 then
+    dec(player.damagecount);
+
+  if player.bonuscount > 0 then
+    dec(player.bonuscount);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.Colormap
+//
+//==============================================================================
+class procedure TUserGameRules.Colormap(const player: Pplayer_t);
+begin
+  // villsa [STRIFE] checks for extralight
+  if player.extralight >= 0 then
+  begin
+    if player.cheats and CF_ONFIRE <> 0 then
+      player.fixedcolormap := 1
+    else
+      player.fixedcolormap := 0;
+  end
+  else // Sigil shock:
+    player.fixedcolormap := INVERSECOLORMAP;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AtEnd
+//
+//==============================================================================
+class procedure TUserGameRules.AtEnd(const player: Pplayer_t);
 begin
 end;
 

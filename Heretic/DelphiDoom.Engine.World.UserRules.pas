@@ -38,6 +38,8 @@ type
       OwnsDeathThink = False;
       /// <summary>The jump and the crouch work out of the new engine too (Strife); the other games run them only in it</summary>
       JumpsAlways = False;
+      /// <summary>P_PlayerThink starts by leaving when the player has no thing</summary>
+      GuardsNilMobj = False;
 
     /// <summary>Sets onground, the state of the player towards the floor</summary>
     class procedure SetOnGround(const player: Pplayer_t); static;
@@ -57,6 +59,22 @@ type
     class procedure DeathThink(player: Pplayer_t); static;
     /// <summary>The player thinker (called every tic for every player)</summary>
     class procedure PlayerThink(player: Pplayer_t); static;
+    /// <summary>What the player does before the move (Doom, Strife: turn towards a target; Heretic: the chicken)</summary>
+    class procedure BeforeMove(const player: Pplayer_t); static;
+    /// <summary>What comes after the special sectors (Heretic: the artifacts; Strife: the breath and the inventory)</summary>
+    class procedure AfterSector(const player: Pplayer_t; const cmd: Pticcmd_t); static;
+    /// <summary>The change of the weapon the buttons ask for</summary>
+    class procedure ChangeWeapon(const player: Pplayer_t; const cmd: Pticcmd_t); static;
+    /// <summary>What comes before the use of the lines (Strife: the dialogs)</summary>
+    class procedure BeforeUseLines(const player: Pplayer_t); static;
+    /// <summary>What comes before the weapon sprites move (Heretic: the chicken counter)</summary>
+    class procedure BeforePsprites(const player: Pplayer_t); static;
+    /// <summary>The counters of the powers and of the screen effects</summary>
+    class procedure CountDown(const player: Pplayer_t); static;
+    /// <summary>The colormap of the view</summary>
+    class procedure Colormap(const player: Pplayer_t); static;
+    /// <summary>The last thing of the thinker (Doom: the breath of the player)</summary>
+    class procedure AtEnd(const player: Pplayer_t); static;
     /// <summary>The thrust of P_Thrust: Heretic and Hexen weaken it on ice and keep it when flying</summary>
     class function ThrustMove(const player: Pplayer_t; const move: fixed_t): fixed_t; static;
     /// <summary>The bob of a player that flies is fixed (Heretic, Hexen)</summary>
@@ -144,7 +162,9 @@ uses
   sb_bar,
   sounddata,
   s_sound,
-  p_user;
+  p_user,
+  DelphiDoom.Engine.World.PlayerThinker,
+  DelphiDoom.Engine.World.PlayerColormap;
 
 
 //----------------------------------------------------------------------------
@@ -181,221 +201,6 @@ begin
 
   if P_Random < 48 then // Just noise
     S_StartSound(pmo, Ord(sfx_chicact));
-end;
-
-//==============================================================================
-//
-// P_PlayerThink
-//
-//==============================================================================
-class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
-var
-  cmd: Pticcmd_t;
-  newweapon: weapontype_t;
-  sec: Psector_t; // JVAL: 3d Floors
-begin
-  // fixme: do this in the cheat code
-  if player.cheats and CF_NOCLIP <> 0 then
-    player.mo.flags := player.mo.flags or MF_NOCLIP
-  else
-    player.mo.flags := player.mo.flags and not MF_NOCLIP;
-
-  // chain saw run forward
-  cmd := @player.cmd;
-  if player.mo.flags and MF_JUSTATTACKED <> 0 then
-  begin
-    cmd.angleturn := 0;
-    cmd.forwardmove := $c800 div 512;
-    cmd.sidemove := 0;
-    player.mo.flags := player.mo.flags and not MF_JUSTATTACKED;
-  end;
-
-  if player.quaketics > 0 then
-  begin
-    Dec(player.quaketics, FRACUNIT);
-    if player.quaketics < 0 then
-      player.quaketics := 0;
-  end;
-
-  if player.teleporttics > 0 then
-  begin
-    Dec(player.teleporttics, FRACUNIT);
-    if player.teleporttics < 0 then
-      player.teleporttics := 0;
-  end;
-
-  P_AimLineAttack(player.mo, player.mo.angle, 16 * 64 * FRACUNIT);
-  if (player.plinetarget = nil) and (linetarget <> nil) then
-    player.pcrosstic := leveltime;
-  player.plinetarget := linetarget;
-
-  if player.playerstate = PST_DEAD then
-  begin
-    P_DeathThink(player);
-    exit;
-  end;
-
-  P_PlayerHistoryNotify(player);  // JVAL: 20211224 - Notify player history
-  P_HandleFriendsNearMe(player);  // JVAL: 20220107 - Handle nearby friends
-
-  if player.chickenTics <> 0 then
-    P_ChickenPlayerThink(player);
-
-  // Move around.
-  // Reactiontime is used to prevent movement
-  //  for a bit after a teleport.
-  if player.mo.reactiontime <> 0 then
-    player.mo.reactiontime := player.mo.reactiontime - 1
-  else
-    P_MovePlayer(player);
-
-  P_SlopesCalcHeight(player); // JVAL: Slopes
-
-  // JVAL: 3d Floors
-  sec := Psubsector_t(player.mo.subsector).sector;
-  if sec.special <> 0 then
-    P_PlayerInSpecialSector(player, sec, P_FloorHeight(sec, player.mo.x, player.mo.y));    // JVAL: 3d Floors
-  if sec.midsec >= 0 then
-    if sectors[sec.midsec].special <> 0 then
-      P_PlayerInSpecialSector(player, @sectors[sec.midsec], sectors[sec.midsec].ceilingheight);  // JVAL: 3d Floors
-
-  if cmd.arti <> 0 then
-  begin // Use an artifact
-    if cmd.arti = $ff then
-      P_PlayerNextArtifact(player)
-    else
-      P_PlayerUseArtifact(player, artitype_t(cmd.arti));
-  end;
-
-  // Check for weapon change.
-
-  // A special event has no other buttons.
-  if cmd.buttons and BT_SPECIAL <> 0 then
-    cmd.buttons := 0;
-
-  if cmd.buttons and BT_CHANGE <> 0 then
-  begin
-    // The actual changing of the weapon is done
-    //  when the weapon psprite can do it
-    //  (read: not in the middle of an attack).
-    newweapon := weapontype_t(_SHR(cmd.buttons and BT_WEAPONMASK, BT_WEAPONSHIFT));
-
-    if (newweapon = wp_staff) and
-       (player.weaponowned[Ord(wp_gauntlets)] <> 0) and
-       (player.readyweapon <> wp_gauntlets) then
-    begin
-      newweapon := wp_gauntlets;
-      // JVAL: If readyweapon is already the wp_gauntlets return to wp_staff
-      // Only if we don't have old compatibility mode suspended
-      if not G_NeedsCompatibilityMode then
-        if player.readyweapon = wp_gauntlets then
-          newweapon := wp_staff;
-    end;
-
-    if (player.weaponowned[Ord(newweapon)] <> 0) and
-       (newweapon <> player.readyweapon) then
-      player.pendingweapon := newweapon;
-  end;
-
-  // check for use
-  if cmd.buttons and BT_USE <> 0 then
-  begin
-    if not player.usedown then
-    begin
-      P_UseLines(player);
-      player.usedown := true;
-    end;
-  end
-  else
-    player.usedown := false;
-
-  // Chicken counter
-  if player.chickenTics <> 0 then
-  begin
-    if player.chickenPeck <> 0 then // Chicken attack counter
-      player.chickenPeck := player.chickenPeck - 3;
-
-    dec(player.chickenTics);
-    if player.chickenTics = 0 then  // Attempt to undo the chicken
-      P_UndoPlayerChicken(player);
-  end;
-
-  // cycle psprites
-  P_MovePsprites(player);
-
-  // Counters, time dependend power ups.
-
-  if player.powers[Ord(pw_invulnerability)] <> 0 then
-    player.powers[Ord(pw_invulnerability)] := player.powers[Ord(pw_invulnerability)] - 1;
-
-  if player.powers[Ord(pw_invisibility)] <> 0 then
-  begin
-    player.powers[Ord(pw_invisibility)] := player.powers[Ord(pw_invisibility)] - 1;
-    if player.powers[Ord(pw_invisibility)] = 0 then
-      player.mo.flags := player.mo.flags and not MF_SHADOW;
-  end;
-
-  if player.powers[Ord(pw_infrared)] <> 0 then
-    player.powers[Ord(pw_infrared)] := player.powers[Ord(pw_infrared)] - 1;
-
-  if player.powers[Ord(pw_flight)] <> 0 then
-  begin
-    player.powers[Ord(pw_flight)] := player.powers[Ord(pw_flight)] - 1;
-    if player.powers[Ord(pw_flight)] = 0 then
-    begin
-      if player.mo.z <> player.mo.floorz then
-        player.centering := true;
-
-      player.mo.flags2 := player.mo.flags2 and not MF2_FLY;
-      player.mo.flags := player.mo.flags and not MF_NOGRAVITY;
-    end;
-  end;
-
-  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
-  begin
-    player.powers[Ord(pw_weaponlevel2)] := player.powers[Ord(pw_weaponlevel2)] - 1;
-    if player.powers[Ord(pw_weaponlevel2)] = 0 then
-    begin
-      if((player.readyweapon = wp_phoenixrod) and
-         (player.psprites[ps_weapon].state <> @states[Ord(S_PHOENIXREADY)]) and
-         (player.psprites[ps_weapon].state <> @states[Ord(S_PHOENIXUP)])) then
-      begin
-        P_SetPsprite(player, ps_weapon, S_PHOENIXREADY);
-        player.ammo[Ord(am_phoenixrod)] := player.ammo[Ord(am_phoenixrod)] - USE_PHRD_AMMO_2;
-        player.refire := 0;
-      end
-      else if (player.readyweapon = wp_gauntlets) or
-              (player.readyweapon = wp_staff) then
-        player.pendingweapon := player.readyweapon;
-    end;
-  end;
-
-  if player.damagecount <> 0 then
-    player.damagecount := player.damagecount - 1;
-
-  if player.bonuscount <> 0 then
-    player.bonuscount := player.bonuscount - 1;
-
-  // Handling colormaps.
-  if player.powers[Ord(pw_invulnerability)] <> 0 then
-  begin
-    if (player.powers[Ord(pw_invulnerability)] > 4 * 32) or
-       (player.powers[Ord(pw_invulnerability)] and 8 <> 0) then
-      player.fixedcolormap := INVERSECOLORMAP
-    else
-      player.fixedcolormap := 0;
-  end
-  else if player.powers[Ord(pw_infrared)] <> 0 then
-  begin
-    if (player.powers[Ord(pw_infrared)] > 4 * 32) or
-       (player.powers[Ord(pw_infrared)] and 8 <> 0) then
-      // almost full bright
-      player.fixedcolormap := 1
-    else
-      player.fixedcolormap := 0;
-  end
-  else
-    player.fixedcolormap := 0;
 end;
 
 //----------------------------------------------------------------------------
@@ -967,6 +772,183 @@ begin
     if player.flyheight <> 0 then
       player.flyheight := player.flyheight div 2;
   end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.PlayerThink
+//
+//==============================================================================
+class procedure TUserGameRules.PlayerThink(player: Pplayer_t);
+begin
+  TPlayerThinker.Think(player);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforeMove
+//
+//==============================================================================
+class procedure TUserGameRules.BeforeMove(const player: Pplayer_t);
+begin
+  if player.chickenTics <> 0 then
+    P_ChickenPlayerThink(player);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AfterSector
+//
+//==============================================================================
+class procedure TUserGameRules.AfterSector(const player: Pplayer_t; const cmd: Pticcmd_t);
+begin
+  if cmd.arti <> 0 then
+  begin // Use an artifact
+    if cmd.arti = $ff then
+      P_PlayerNextArtifact(player)
+    else
+      P_PlayerUseArtifact(player, artitype_t(cmd.arti));
+  end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.ChangeWeapon
+//
+//==============================================================================
+class procedure TUserGameRules.ChangeWeapon(const player: Pplayer_t; const cmd: Pticcmd_t);
+var
+  newweapon: weapontype_t;
+begin
+  if cmd.buttons and BT_CHANGE <> 0 then
+  begin
+    // The actual changing of the weapon is done
+    //  when the weapon psprite can do it
+    //  (read: not in the middle of an attack).
+    newweapon := weapontype_t(_SHR(cmd.buttons and BT_WEAPONMASK, BT_WEAPONSHIFT));
+
+    if (newweapon = wp_staff) and
+       (player.weaponowned[Ord(wp_gauntlets)] <> 0) and
+       (player.readyweapon <> wp_gauntlets) then
+    begin
+      newweapon := wp_gauntlets;
+      // JVAL: If readyweapon is already the wp_gauntlets return to wp_staff
+      // Only if we don't have old compatibility mode suspended
+      if not G_NeedsCompatibilityMode then
+        if player.readyweapon = wp_gauntlets then
+          newweapon := wp_staff;
+    end;
+
+    if (player.weaponowned[Ord(newweapon)] <> 0) and
+       (newweapon <> player.readyweapon) then
+      player.pendingweapon := newweapon;
+  end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforeUseLines
+//
+//==============================================================================
+class procedure TUserGameRules.BeforeUseLines(const player: Pplayer_t);
+begin
+end;
+
+//==============================================================================
+//
+// TUserGameRules.BeforePsprites
+//
+//==============================================================================
+class procedure TUserGameRules.BeforePsprites(const player: Pplayer_t);
+begin
+  // Chicken counter
+  if player.chickenTics <> 0 then
+  begin
+    if player.chickenPeck <> 0 then // Chicken attack counter
+      player.chickenPeck := player.chickenPeck - 3;
+
+    dec(player.chickenTics);
+    if player.chickenTics = 0 then  // Attempt to undo the chicken
+      P_UndoPlayerChicken(player);
+  end;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.CountDown
+//
+//==============================================================================
+class procedure TUserGameRules.CountDown(const player: Pplayer_t);
+begin
+  if player.powers[Ord(pw_invulnerability)] <> 0 then
+    player.powers[Ord(pw_invulnerability)] := player.powers[Ord(pw_invulnerability)] - 1;
+
+  if player.powers[Ord(pw_invisibility)] <> 0 then
+  begin
+    player.powers[Ord(pw_invisibility)] := player.powers[Ord(pw_invisibility)] - 1;
+    if player.powers[Ord(pw_invisibility)] = 0 then
+      player.mo.flags := player.mo.flags and not MF_SHADOW;
+  end;
+
+  if player.powers[Ord(pw_infrared)] <> 0 then
+    player.powers[Ord(pw_infrared)] := player.powers[Ord(pw_infrared)] - 1;
+
+  if player.powers[Ord(pw_flight)] <> 0 then
+  begin
+    player.powers[Ord(pw_flight)] := player.powers[Ord(pw_flight)] - 1;
+    if player.powers[Ord(pw_flight)] = 0 then
+    begin
+      if player.mo.z <> player.mo.floorz then
+        player.centering := true;
+
+      player.mo.flags2 := player.mo.flags2 and not MF2_FLY;
+      player.mo.flags := player.mo.flags and not MF_NOGRAVITY;
+    end;
+  end;
+
+  if player.powers[Ord(pw_weaponlevel2)] <> 0 then
+  begin
+    player.powers[Ord(pw_weaponlevel2)] := player.powers[Ord(pw_weaponlevel2)] - 1;
+    if player.powers[Ord(pw_weaponlevel2)] = 0 then
+    begin
+      if((player.readyweapon = wp_phoenixrod) and
+         (player.psprites[ps_weapon].state <> @states[Ord(S_PHOENIXREADY)]) and
+         (player.psprites[ps_weapon].state <> @states[Ord(S_PHOENIXUP)])) then
+      begin
+        P_SetPsprite(player, ps_weapon, S_PHOENIXREADY);
+        player.ammo[Ord(am_phoenixrod)] := player.ammo[Ord(am_phoenixrod)] - USE_PHRD_AMMO_2;
+        player.refire := 0;
+      end
+      else if (player.readyweapon = wp_gauntlets) or
+              (player.readyweapon = wp_staff) then
+        player.pendingweapon := player.readyweapon;
+    end;
+  end;
+
+  if player.damagecount <> 0 then
+    player.damagecount := player.damagecount - 1;
+
+  if player.bonuscount <> 0 then
+    player.bonuscount := player.bonuscount - 1;
+end;
+
+//==============================================================================
+//
+// TUserGameRules.Colormap
+//
+//==============================================================================
+class procedure TUserGameRules.Colormap(const player: Pplayer_t);
+begin
+  TPlayerColormap.Standard(player);
+end;
+
+//==============================================================================
+//
+// TUserGameRules.AtEnd
+//
+//==============================================================================
+class procedure TUserGameRules.AtEnd(const player: Pplayer_t);
+begin
 end;
 
 end.

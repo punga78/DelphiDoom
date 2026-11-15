@@ -121,7 +121,7 @@ function Invoke-Prova {
 
     $expand = {
       param([string]$text)
-      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9]+)((?:\|(?:strip|lead|exit|ret|map)=[^|]*?)*)>>', {
+      [regex]::Replace($text, '<<([A-Z]):([A-Za-z_0-9\.]+)((?:\|(?:strip|lead|exit|ret|map)=[^|]*?)*)>>', {
           param($m)
           $kind = $m.Groups[1].Value; $name = $m.Groups[2].Value
           if ($kind -eq 'B' -or $kind -eq 'V') { $lines = $gameRoutines["$Class.$name"] } else { $lines = $extraSets[$kind][$name] }

@@ -76,6 +76,23 @@ $Expansions = @(
      Note = 'il salto e l''accovacciamento sono una procedura (P_JumpAndCrouch): in Strife stanno fuori dal blocco del nuovo motore (JumpsAlways), negli altri dentro' }
   @{ R = 'P_MovePlayer'; F = 'if TUserGameRules.JumpsAlways then P_JumpAndCrouch(player, cmd_jump, cmd_crouch);'; D = ''; Strife = '<<S:P_JumpAndCrouch>>' }
   @{ R = 'P_MovePlayer'; F = 'TUserGameRules.AfterMove(player, cmd);'; D = '<<B:AfterMove>>' }
+
+  # --- P_PlayerThink (Doom, Heretic, Strife: TPlayerThinker.Think; Hexen e' il metodo PlayerThink) ---
+  @{ R = 'P_PlayerThink'; F = 'class procedure TPlayerThinker.Think(player: Pplayer_t); var cmd: Pticcmd_t; sec: Psector_t; begin'
+     D = 'procedure P_PlayerThink(player: Pplayer_t); var cmd: Pticcmd_t; newweapon: weapontype_t; sec: Psector_t; begin'
+     Note = 'la variabile newweapon e'' ora nella regola ChangeWeapon, l''unica che la usa' }
+  @{ R = 'P_PlayerThink'; F = 'if TUserGameRules.GuardsNilMobj then if player.mo = nil then exit;'; D = 'if player.mo = nil then exit;'; Heretic = ''; Strife = ''
+     Note = 'Heretic e Strife non controllavano che il giocatore avesse una cosa (GuardsNilMobj e'' falso)' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.BeforeMove(player);'; D = '<<B:BeforeMove>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.AfterSector(player, cmd);'; D = '<<B:AfterSector>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.ChangeWeapon(player, cmd);'; D = '<<B:ChangeWeapon>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.BeforeUseLines(player);'; D = '<<B:BeforeUseLines>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.BeforePsprites(player);'; D = '<<B:BeforePsprites>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.CountDown(player);'; D = '<<B:CountDown>>' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.Colormap(player);'; D = '<<B:Colormap>>' }
+  @{ R = 'P_PlayerThink'; F = 'TPlayerColormap.Standard(player);'; D = '<<C:TPlayerColormap.Standard>>'; Strife = $null
+     Note = 'il colore di Doom e Heretic e'' un metodo di TPlayerColormap (stesso testo)' }
+  @{ R = 'P_PlayerThink'; F = 'TUserGameRules.AtEnd(player);'; D = '<<B:AtEnd>>' }
 )
 
 # le routine la cui forma unificata non si riconduce al testo vecchio per sostituzione: perche' sono equivalenti
@@ -86,10 +103,12 @@ $NotTextual = @{
 
 # le routine che sono tutte di un gioco: metodi delle regole con il testo vecchio
 $Methods = @{
-  'P_PlayerThink' = 'PlayerThink'; 'Hexen|P_DeathThink' = 'DeathThink'
+  'Hexen|P_PlayerThink' = 'PlayerThink'; 'Hexen|P_DeathThink' = 'DeathThink'
 }
 
-$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas' `
+$Alias = @{ 'Doom|P_PlayerThink' = 'TPlayerThinker.Think'; 'Heretic|P_PlayerThink' = 'TPlayerThinker.Think'; 'Strife|P_PlayerThink' = 'TPlayerThinker.Think' }
+
+$bad = Invoke-Prova -Root $root -Base $Base -Games $Games -Unit 'p_user' -BaseFiles 'Base\p_user.pas', 'Base\DelphiDoom.Engine.World.PlayerExtras.pas', 'Base\DelphiDoom.Engine.World.PlayerThinker.pas' `
   -RulesUnit 'DelphiDoom.Engine.World.UserRules.pas' -Class 'TUserGameRules' -Expansions $Expansions `
-  -NotTextual $NotTextual -Methods $Methods -Extra @{ S = 'Base\p_user.pas' }
+  -NotTextual $NotTextual -Methods $Methods -Alias $Alias -Extra @{ S = 'Base\p_user.pas'; C = 'Base\DelphiDoom.Engine.World.PlayerColormap.pas' }
 exit $bad

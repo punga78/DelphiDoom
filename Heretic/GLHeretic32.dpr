@@ -270,6 +270,8 @@ uses
   p_telept in '..\Heretic\p_telept.pas',
   p_tick in '..\Base\p_tick.pas',
   p_user in '..\Base\p_user.pas',
+  DelphiDoom.Engine.World.PlayerThinker in '..\Base\DelphiDoom.Engine.World.PlayerThinker.pas',
+  DelphiDoom.Engine.World.PlayerColormap in '..\Base\DelphiDoom.Engine.World.PlayerColormap.pas',
   DelphiDoom.Engine.World.UserRules in '..\Heretic\DelphiDoom.Engine.World.UserRules.pas',
   r_bsp in '..\Base\r_bsp.pas',
   r_data in '..\Base\r_data.pas',
