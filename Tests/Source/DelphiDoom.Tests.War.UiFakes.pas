@@ -119,6 +119,10 @@ begin
   SetSize(242, 48, 15);
   for LIndex := 425 to 431 do
     FSpriteResources.Add(LIndex);
+  // the panels of the map: the information of the selection (359, 360), the portraits (361) and the percent (410)
+  for LIndex := 359 to 361 do
+    FSpriteResources.Add(LIndex);
+  FSpriteResources.Add(410);
 end;
 
 destructor TFakeUiSprites.Destroy;

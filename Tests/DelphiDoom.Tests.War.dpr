@@ -321,6 +321,8 @@ uses
   DelphiDoom.Tests.War.UiRig in 'Source\DelphiDoom.Tests.War.UiRig.pas',
   DelphiDoom.Tests.War.UiParity in 'Source\DelphiDoom.Tests.War.UiParity.pas',
   DelphiDoom.Tests.War.MapUiParity in 'Source\DelphiDoom.Tests.War.MapUiParity.pas',
+  DelphiDoom.Tests.War.MapUiPanel in 'Source\DelphiDoom.Tests.War.MapUiPanel.pas',
+  DelphiDoom.Tests.War.MapUiWorld in 'Source\DelphiDoom.Tests.War.MapUiWorld.pas',
   DelphiDoom.Tests.War.MapUiUnits in 'Source\DelphiDoom.Tests.War.MapUiUnits.pas',
   DelphiDoom.Tests.War.MapUiBench in 'Source\DelphiDoom.Tests.War.MapUiBench.pas',
   DelphiDoom.Tests.War.Render in 'Source\DelphiDoom.Tests.War.Render.pas',

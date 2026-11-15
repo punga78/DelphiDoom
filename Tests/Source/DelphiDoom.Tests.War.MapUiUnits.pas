@@ -67,6 +67,12 @@ type
     procedure DovrebbeDareSempreLoStessoSpriteDiUnRecord;
     [Test]
     procedure DovrebbeSvuotareIlPannelloDeiComandi;
+    [Test]
+    procedure DovrebbePassareAlleOrecchieDelGiocoISuoniEIFotogrammi;
+    [Test]
+    procedure DovrebbeRifiutareLeMappeSenzaServiziEQuellePersonalizzate;
+    [Test]
+    procedure DovrebbeDisegnareLeBarreEIBottoniDelPannello;
   end;
 
 implementation
@@ -77,6 +83,8 @@ uses
   DelphiDoom.War.Sound.Factory, DelphiDoom.War.Model.Gather.Intf, DelphiDoom.War.Model.World, DelphiDoom.War.Model.Types, DelphiDoom.War.Model.Intf, DelphiDoom.War.Model.Factory,
   DelphiDoom.War.Model.Context, DelphiDoom.War.MapUi.Types, DelphiDoom.War.MapUi.Camera, DelphiDoom.War.MapUi.Host,
   DelphiDoom.War.MapUi.Intf, DelphiDoom.War.Text.Types, DelphiDoom.War.MapUi.Audio, DelphiDoom.War.MapUi.Sprites, DelphiDoom.War.MapUi.Census,
+  DelphiDoom.War.Map.Factory, DelphiDoom.War.Model.Construction.Intf, DelphiDoom.War.MapUi.Launcher,
+  DelphiDoom.War.Ui.Game, DelphiDoom.War.MapUi.Hud,
   DelphiDoom.Tests.War.UiFakes, DelphiDoom.Tests.War.MapSupport;
 
 type
@@ -581,6 +589,192 @@ begin
   Assert.IsFalse(LPanel.TextsVisible[1]);
   Assert.AreEqual('', string(LPanel.Texts[1]));
   Assert.AreEqual(WAR_NO_HIGHLIGHT, LPanel.TextsHighlightIndex[3]);
+end;
+
+type
+  TRecordingAudio = class(TInterfacedObject, IWarMapAudio)
+  public
+    Log: string;
+    procedure PlaySound(AAudioId: Integer);
+    procedure PlayRandomSound(AFromId, AToId: Integer);
+    procedure Acknowledge(APlayer: Integer);
+    procedure DudeSelected(ASlot: Integer);
+    procedure BuildingSelected(ASlot: Integer);
+  end;
+
+procedure TRecordingAudio.PlaySound(AAudioId: Integer);
+begin
+  Log := Log + 'S' + IntToStr(AAudioId) + ' ';
+end;
+
+procedure TRecordingAudio.PlayRandomSound(AFromId, AToId: Integer);
+begin
+  Log := Log + 'R' + IntToStr(AFromId) + '-' + IntToStr(AToId) + ' ';
+end;
+
+procedure TRecordingAudio.Acknowledge(APlayer: Integer);
+begin
+  Log := Log + 'A' + IntToStr(APlayer) + ' ';
+end;
+
+procedure TRecordingAudio.DudeSelected(ASlot: Integer);
+begin
+end;
+
+procedure TRecordingAudio.BuildingSelected(ASlot: Integer);
+begin
+end;
+
+procedure TTestWarMapUiUnits.DovrebbePassareAlleOrecchieDelGiocoISuoniEIFotogrammi;
+var
+  LObject: TWarMapHost;
+  LHost: IWarMapHost;
+  LHostRef: IWarConstructionHost;
+  LAudio: TRecordingAudio;
+  LAudioRef: IWarMapAudio;
+  LFake: IWarUiSprites;
+  LSprites: TWarMapSprites;
+  LFlash: TWarFlashStatus;
+begin
+  LObject := TWarMapHost.Create(TWarMapFactory.CreateUnitCatalog);
+  LHost := LObject;
+  LHostRef := LObject;
+  LAudio := TRecordingAudio.Create;
+  LAudioRef := LAudio;
+  LHost.AttachAudio(LAudioRef);
+  LHostRef.PlaySound(485);
+  LHostRef.PlayRandomSound(520, 524);
+  LHostRef.Acknowledge(1);
+  Assert.AreEqual('S485 R520-524 A1 ', LAudio.Log);
+  // the flash comes back as it was set
+  LFlash.Enabled := True;
+  LFlash.EndRealTime := 3;
+  LFlash.Text := 'X';
+  LHost.SetFlash(LFlash);
+  Assert.AreEqual('X', string(LHost.GetFlash.Text));
+  // the frames of an image are those of its record
+  LFake := TFakeUiSprites.Create;
+  LSprites := TWarMapSprites.Create(LFake, TMapFixtures.Tileset);
+  try
+    LHost.Attach(nil, nil, LSprites);
+    Assert.AreEqual(1, LHostRef.UnitFrames(WAR_UNIT_FOOTMAN));
+    Assert.AreEqual(1, LHostRef.ConstructionFrames(WAR_UNIT_FARM_HUMANS));
+    Assert.AreEqual(0, LHostRef.UnitFrames(9999), 'un tipo che non c''e''');
+    Assert.IsTrue(LHostRef.IsTileKnown(1, 1), 'senza nebbia');
+  finally
+    LHost.Detach;
+    LSprites.Free;
+  end;
+  LHostRef.PlaySound(1);
+  Assert.AreEqual('S485 R520-524 A1 ', LAudio.Log, 'staccato non sente piu'' nulla');
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeDisegnareLeBarreEIBottoniDelPannello;
+var
+  LGame: TWarUiGame;
+  LHud: TWarMapHud;
+  LView: TWarHudView;
+  LClicks: TWarHudClicks;
+  LIndex: Integer;
+
+  procedure Frame(APressed: Boolean);
+  begin
+    LGame.Input.SetButton(wmbLeft, APressed);
+    LGame.Imui.Start;
+    LHud.RenderStaticPanels(wraHumans);
+    LHud.RenderHud(LView, LClicks);
+    LGame.Imui.Finish;
+    LGame.Input.BeginFrame;
+  end;
+
+begin
+  LGame := TFakeUiRig.CreateGame(TFakeUiSprites.Create, nil, nil, False);
+  LHud := TWarMapHud.Create(LGame.Imui, TWarMapPanels.Standard);
+  try
+    LView := Default(TWarHudView);
+    LView.Race := wraOrcs;
+    LView.Gold := 1234;
+    LView.Wood := 56;
+    LView.Status.Text := 'A MESSAGE';
+    LView.Status.HighlightIndex := WAR_NO_HIGHLIGHT;
+    // a spell caster hurt to the yellow, with mana
+    LView.SelectedCount := 1;
+    LView.Selected[0].Valid := True;
+    LView.Selected[0].UnitType := WAR_UNIT_CONJURER;
+    LView.Selected[0].Hp := 50;
+    LView.Selected[0].MaxHp := 100;
+    LView.Selected[0].Mana := 40;
+    LView.Selected[0].MaxMana := 100;
+    LView.Selected[0].IsDude := True;
+    LView.Selected[0].IsMagic := True;
+    Frame(False);
+    // a unit in the red, a building under construction
+    LView.Selected[0].Hp := 20;
+    LView.Selected[0].IsMagic := False;
+    Frame(False);
+    LView.Selected[0].IsDude := False;
+    LView.Selected[0].IsBuilding := True;
+    LView.Selected[0].UnderConstruction := True;
+    LView.Selected[0].BuildPercent := 0.5;
+    LView.Selected[0].UnitType := WAR_UNIT_FARM_ORCS;
+    Frame(False);
+    // an entity that is not there; then four, one of which is not
+    LView.Selected[0].Valid := False;
+    Frame(False);
+    LView.SelectedCount := 4;
+    for LIndex := 0 to 3 do
+    begin
+      LView.Selected[LIndex].Valid := LIndex <> 2;
+      LView.Selected[LIndex].UnitType := WAR_UNIT_GRUNT;
+      LView.Selected[LIndex].Hp := 100;
+      LView.Selected[LIndex].MaxHp := 100;
+    end;
+    Frame(False);
+    // the buttons: a click on the first command and on the menu, as the immediate interface answers it
+    LView.SelectedCount := 0;
+    LView.Panel.SlotsActive[0] := True;
+    LView.Panel.Slots[0].Tooltip := 'MOVE';
+    LView.Panel.Slots[0].HighlightIndex := 0;
+    LView.Panel.Slots[0].HighlightCount := 1;
+    LView.Panel.TextsVisible[1] := True;
+    LView.Panel.Texts[1] := 'GOLD LEFT';
+    LGame.Input.SetPosition(6, 120);
+    Frame(True);
+    Frame(False);
+    Assert.AreEqual(0, LClicks.Command, 'il primo bottone dei comandi');
+    LGame.Input.SetPosition(8, 192);
+    Frame(True);
+    Frame(False);
+    Assert.IsTrue(LClicks.Menu, 'il bottone del menu');
+    // with the cheat panel open the hot keys are off; with a menu open there are no buttons
+    LView.CheatsOpen := True;
+    LView.MenuOpen := True;
+    Frame(False);
+    Assert.IsFalse(LGame.Imui.HotkeysEnabled);
+    Assert.AreEqual(-1, LClicks.Command);
+  finally
+    LHud.Free;
+    LGame.Free;
+  end;
+end;
+
+procedure TTestWarMapUiUnits.DovrebbeRifiutareLeMappeSenzaServiziEQuellePersonalizzate;
+var
+  LLauncher: TWarMapLauncher;
+  LLauncherRef: IWarMapLauncher;
+begin
+  LLauncher := TWarMapLauncher.Create(nil, nil, TWarMapFactory.CreateUnitCatalog, nil, nil, True);
+  LLauncherRef := LLauncher;
+  Assert.WillRaise(
+    procedure
+    begin
+      LLauncherRef.CreateCampaignMap(1);
+    end, EWarException);
+  Assert.WillRaise(
+    procedure
+    begin
+      LLauncherRef.CreateCustomMap(1, 0, 0);
+    end, EWarException);
 end;
 
 initialization
