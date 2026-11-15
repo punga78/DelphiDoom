@@ -174,6 +174,7 @@ uses
   DelphiDoom.Renderer.Factory,
   DelphiDoom.Engine.Renderer.PatchSource,
   DelphiDoom.Engine.Renderer.SpriteSource,
+  DelphiDoom.Engine.Renderer.SubsectorLocator,
   DelphiDoom.Console.Intf,
   DelphiDoom.Console.Factory,
   DelphiDoom.Engine.Console.Output,
@@ -266,6 +267,7 @@ uses
   DelphiDoom.Engine.TextureDefs.FlatCatalog,
   r_data,
   r_things,
+  r_subsectors,
   DelphiDoom.Palette.Types,
   DelphiDoom.Palette.Intf,
   DelphiDoom.Palette.Factory,
@@ -1171,6 +1173,8 @@ begin
     TEngineRendererPatchSource.Create, ALog));
   R_ConfigureSpriteDefs(TRendererFactory.CreateSpriteDefs(
     TEngineRendererSpriteSource.Create, ALog));
+  R_ConfigureSubsectorGrid(TRendererFactory.CreateSubsectorGridBuilder,
+    TEngineRendererSubsectorLocator.Create);
 {$IFNDEF OPENGL}
   R_ConfigureLevelPrecalc(TRendererFactory.CreateLevelPrecalc);
 {$ENDIF}

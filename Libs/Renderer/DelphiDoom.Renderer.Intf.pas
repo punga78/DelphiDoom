@@ -87,6 +87,29 @@ type
     function Build(const ANames: TArray<Integer>): TArray<TRendererSpriteDefinition>;
   end;
 
+  /// <summary>Finds the subsector of a point of the level, as the nodes of the level say</summary>
+  IRendererSubsectorLocator = interface
+    ['{8E2B47D9-1C6A-4F53-A0D8-95B3E7164C20}']
+    /// <summary>
+    ///   The number of the subsector that has the point (fixed point coordinates), or -1 when
+    ///   the point is on the side of a seg of that subsector that the point test of the
+    ///   renderer reports (a point that is not clearly inside)
+    /// </summary>
+    function Locate(AX, AY: Integer): Integer;
+  end;
+
+  /// <summary>Builds the grid of the precalculated point in subsector of a level</summary>
+  IRendererSubsectorGridBuilder = interface
+    ['{5A93C1E6-70B8-4D24-B1F7-0C6E8D2A39F5}']
+    /// <summary>
+    ///   Measures the level from its vertexes, cuts it in cells of 32 map units and, for each
+    ///   cell, asks the locator for the four corners: the cell has a subsector when they are all
+    ///   inside the same one
+    /// </summary>
+    function Build(const AVertexX, AVertexY: TArray<Integer>;
+      const ALocator: IRendererSubsectorLocator): TRendererSubsectorGrid;
+  end;
+
   /// <summary>The calculations on the whole level that the software renderer does when the level is loaded</summary>
   IRendererLevelPrecalc = interface
     ['{17D9A8E3-B462-4C50-93F7-0E5A2C86D1B9}']

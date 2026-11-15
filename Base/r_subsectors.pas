@@ -35,7 +35,8 @@ interface
 
 uses
   r_defs,
-  m_fixed;
+  m_fixed,
+  DelphiDoom.Renderer.Intf;
 
 //==============================================================================
 //
@@ -51,6 +52,14 @@ procedure R_PrecalcPointInSubSector;
 //==============================================================================
 function R_PointInSubsectorPrecalc(const x: fixed_t; const y: fixed_t): Psubsector_t;
 
+//==============================================================================
+//
+// R_ConfigureSubsectorGrid
+//
+//==============================================================================
+procedure R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
+  const ALocator: IRendererSubsectorLocator);
+
 var
   map_max_bound: integer;
 
@@ -58,6 +67,8 @@ implementation
 
 uses
   d_delphi,
+  i_system,
+  DelphiDoom.Renderer.Types,
   p_setup,
   r_main,
   z_zone;
@@ -77,8 +88,10 @@ var
   // JVAL: 20200106 - Variables made int64, prevent overflow on big maps (eg Lost Civilization - MAP04)
   p_in_ss_width: int64;
   p_in_ss_height: int64;
-  p_in_ss_minx, p_in_ss_miny, p_in_ss_maxx, p_in_ss_maxy: int64;
+  p_in_ss_minx, p_in_ss_miny: int64;
   p_in_ss_size: integer = -1;
+  grid_builder: IRendererSubsectorGridBuilder;
+  grid_locator: IRendererSubsectorLocator;
 
 //==============================================================================
 //
@@ -87,90 +100,63 @@ var
 //==============================================================================
 procedure R_PrecalcPointInSubSector;
 var
-  i, j: integer;
-  pv: Pvertex_t;
-  ss1, ss2: Psubsector_t;
-  hitcnt: integer;
-  tmp: integer;
-
-  function R_PointInSubsector_Incl(const x: fixed_t; const y: fixed_t): Psubsector_t;
-  var
-    ii: integer;
-  begin
-    result := R_PointInSubSectorClassic(x, y);
-    for ii := 0 to result.numlines - 1 do
-    begin
-      if R_PointOnSegSide(x, y, @segs[result.firstline + ii]) then
-      begin
-        result := nil;
-        exit;
-      end;
-    end;
-  end;
-
+  i: integer;
+  vertexx: TArray<Integer>;
+  vertexy: TArray<Integer>;
+  grid: TRendererSubsectorGrid;
 begin
+  if (grid_builder = nil) or (grid_locator = nil) then
+    I_Error('R_PrecalcPointInSubSector(): R_ConfigureSubsectorGrid() was not called');
+
   printf('R_PrecalcPointInSubSector: Generating matrix.'#13#10);
-  pv := @vertexes[0];
-  p_in_ss_minx := pv.x;
-  p_in_ss_miny := pv.y;
-  p_in_ss_maxx := pv.x;
-  p_in_ss_maxy := pv.y;
-  for i := 1 to numvertexes - 1 do
+
+  SetLength(vertexx, numvertexes);
+  SetLength(vertexy, numvertexes);
+  for i := 0 to numvertexes - 1 do
   begin
-    inc(pv);
-    if pv.x < p_in_ss_minx then
-      p_in_ss_minx := pv.x
-    else if pv.x > p_in_ss_maxx then
-      p_in_ss_maxx := pv.x;
-    if pv.y < p_in_ss_miny then
-      p_in_ss_miny := pv.y
-    else if pv.y > p_in_ss_maxy then
-      p_in_ss_maxy := pv.y;
+    vertexx[i] := vertexes[i].x;
+    vertexy[i] := vertexes[i].y;
   end;
 
-  map_max_bound := abs(FixedInt64(p_in_ss_minx));
-  tmp := abs(FixedInt64(p_in_ss_maxx));
-  if tmp > map_max_bound then
-    map_max_bound := tmp;
-  tmp := abs(FixedInt64(p_in_ss_miny));
-  if tmp > map_max_bound then
-    map_max_bound := tmp;
-  tmp := abs(FixedInt64(p_in_ss_maxy));
-  if tmp > map_max_bound then
-    map_max_bound := tmp;
+  try
+    grid := grid_builder.Build(vertexx, vertexy, grid_locator);
+  except
+    on E: ERendererException do
+      I_Error('%s', [E.Message]);
+  end;
 
-  p_in_ss_width := (p_in_ss_maxx - p_in_ss_minx) div POINTINSUBSECTORACCURACY + 1;
-  p_in_ss_height := (p_in_ss_maxy - p_in_ss_miny) div POINTINSUBSECTORACCURACY + 1;
+  map_max_bound := grid.MaxBound;
+  p_in_ss_minx := grid.MinX;
+  p_in_ss_miny := grid.MinY;
+  p_in_ss_width := grid.Width;
+  p_in_ss_height := grid.Height;
 
   p_in_ss_size := p_in_ss_width * p_in_ss_height;
   pointinsubsector := Z_Malloc(p_in_ss_size * SizeOf(Psubsector_t), PU_LEVEL, nil);
   ZeroMemory(pointinsubsector, p_in_ss_size * SizeOf(Psubsector_t));
 
-  hitcnt := 0;
-  for i := 0 to p_in_ss_width - 1 do
-    for j := 0 to p_in_ss_height - 1 do
-    begin
-      ss1 := R_PointInSubsector_Incl(p_in_ss_minx + i * POINTINSUBSECTORACCURACY, p_in_ss_miny + j * POINTINSUBSECTORACCURACY);
-      ss2 := R_PointInSubsector_Incl(p_in_ss_minx + i * POINTINSUBSECTORACCURACY + POINTINSUBSECTORACCURACY - 1, p_in_ss_miny + j * POINTINSUBSECTORACCURACY);
-      if (ss1 <> nil) and (ss1 = ss2) then
-      begin
-        ss2 := R_PointInSubsector_Incl(p_in_ss_minx + i * POINTINSUBSECTORACCURACY + POINTINSUBSECTORACCURACY - 1, p_in_ss_miny + j * POINTINSUBSECTORACCURACY + POINTINSUBSECTORACCURACY - 1);
-        if (ss2 <> nil) and (ss1 = ss2) then
-        begin
-          ss2 := R_PointInSubsector_Incl(p_in_ss_minx + i * POINTINSUBSECTORACCURACY, p_in_ss_miny + j * POINTINSUBSECTORACCURACY + POINTINSUBSECTORACCURACY - 1);
-          if (ss2 <> nil) and (ss1 = ss2) then
-          begin
-            pointinsubsector[j * p_in_ss_width + i] := ss2;
-            inc(hitcnt);
-          end;
-        end;
-      end;
-    end;
+  // the lookup of the renderer keeps pointers: it is read for every object
+  for i := 0 to p_in_ss_size - 1 do
+    if grid.Cells[i] >= 0 then
+      pointinsubsector[i] := @subsectors[grid.Cells[i]];
 
   printf('  Hit rate is %2.2f%s (%d/%d)'#13#10,
-    [hitcnt / (p_in_ss_width * p_in_ss_height) * 100, '%', hitcnt, p_in_ss_width * p_in_ss_height]);
+    [grid.HitCount / (p_in_ss_width * p_in_ss_height) * 100, '%', grid.HitCount, p_in_ss_width * p_in_ss_height]);
 end;
 
+//==============================================================================
+//
+// R_ConfigureSubsectorGrid
+// The builder of the grid of Libs\Renderer and the finder of the subsector of a point,
+// given by the composition root
+//
+//==============================================================================
+procedure R_ConfigureSubsectorGrid(const ABuilder: IRendererSubsectorGridBuilder;
+  const ALocator: IRendererSubsectorLocator);
+begin
+  grid_builder := ABuilder;
+  grid_locator := ALocator;
+end;
 //==============================================================================
 //
 // R_PointInSubsectorPrecalc

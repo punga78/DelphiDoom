@@ -22,6 +22,7 @@ type
     class function CreateTextureLookup(const APatchSource: IRendererPatchSource;
       const ALog: ILog): IRendererTextureLookup; static;
     class function CreateLevelPrecalc: IRendererLevelPrecalc; static;
+    class function CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder; static;
     /// <param name="ASource">The sprite lumps of the WAD</param>
     /// <param name="ALog">Where the warnings go</param>
     class function CreateSpriteDefs(const ASource: IRendererSpriteSource;
@@ -32,9 +33,14 @@ implementation
 
 uses
   DelphiDoom.Renderer.TextureLookup, DelphiDoom.Renderer.LevelPrecalc,
-  DelphiDoom.Renderer.SpriteDefs;
+  DelphiDoom.Renderer.SpriteDefs, DelphiDoom.Renderer.SubsectorGrid;
 
 { TRendererFactory }
+
+class function TRendererFactory.CreateSubsectorGridBuilder: IRendererSubsectorGridBuilder;
+begin
+  Result := TRendererSubsectorGridBuilder.Create;
+end;
 
 class function TRendererFactory.CreateSpriteDefs(const ASource: IRendererSpriteSource;
   const ALog: ILog): IRendererSpriteDefs;

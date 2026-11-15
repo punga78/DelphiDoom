@@ -69,6 +69,25 @@ type
     Frames: TArray<TRendererSpriteFrame>;
   end;
 
+  /// <summary>
+  ///   The grid that tells, for the cells of the map that lie in one subsector only, which
+  ///   subsector it is (the precalculated point in subsector of the renderer)
+  /// </summary>
+  TRendererSubsectorGrid = record
+    /// <summary>The lowest x and y of the vertexes, in fixed point: the corner of the first cell</summary>
+    MinX: Int64;
+    MinY: Int64;
+    /// <summary>The number of cells of a row and of a column</summary>
+    Width: Int64;
+    Height: Int64;
+    /// <summary>Row by row, the number of the subsector of the cell, or -1 when the cell is not in one subsector only</summary>
+    Cells: TArray<Integer>;
+    /// <summary>How many cells have a subsector</summary>
+    HitCount: Integer;
+    /// <summary>The biggest absolute coordinate of the vertexes, in map units</summary>
+    MaxBound: Integer;
+  end;
+
   /// <summary>How high and how low the sectors of a level go</summary>
   TRendererHeightRange = record
     /// <summary>The lowest floor height, in fixed point (MaxInt without sectors)</summary>
