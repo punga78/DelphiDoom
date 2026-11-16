@@ -224,13 +224,11 @@ var
   displayplayer: integer; // view being displayed
   gametic: integer;
 
-  totalkills, totalitems, totalsecret: integer; // for intermission
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
   gameskill: skill_t;
 
-  bodyqueslot: integer;
 
   precache: boolean = true; // if true, load all graphics at start
 
@@ -391,6 +389,8 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.Input.EventScaling,
+  DelphiDoom.Input.KeyboardLayout,
   c_cmds,
   z_zone,
   doomdata,
@@ -637,12 +637,6 @@ var
 
 var
   usearti: boolean = true;
-
-const
-  BODYQUESIZE  = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
 
 //==============================================================================
 //
@@ -1209,7 +1203,6 @@ var
 //==============================================================================
 function G_Responder(ev: Pevent_t): boolean;
 var
-  bmask: integer;
   i: integer;
   plr: Pplayer_t;
 begin
@@ -1365,8 +1358,8 @@ begin
           mousebuttons[0] := ev.data1 and 1 <> 0;
           mousebuttons[1] := ev.data1 and 2 <> 0;
           mousebuttons[2] := ev.data1 and 4 <> 0;
-          mousex := mousex + ((ev.data2 * (mouseSensitivity + 5)) div 10) * mouseSensitivityX div 5;
-          mousey := mousey + ((ev.data3 * (mouseSensitivity + 5)) div 10) * mouseSensitivityY div 5;
+          mousex := mousex + TInputEventScaling.MouseMotion(ev.data2, mouseSensitivity, mouseSensitivityX);
+          mousey := mousey + TInputEventScaling.MouseMotion(ev.data3, mouseSensitivity, mouseSensitivityY);
         end
         else
         begin
@@ -1384,12 +1377,7 @@ begin
       begin
         if usejoystick then
         begin
-          bmask := 1;
-          for i := 0 to NUMJOYBUTTONS - 1 do
-          begin
-            joybuttons[i] := (ev.data1 and bmask) <> 0;
-            bmask := bmask * 2;
-          end;
+          TInputEventScaling.JoystickButtons(ev.data1, @joybuttons[0], NUMJOYBUTTONS);
           joyxmove := ev.data2;
           joyymove := ev.data3;
         end
@@ -1501,120 +1489,45 @@ end;
 //
 //==============================================================================
 procedure G_SetKeyboardMode(const mode: integer);
+var
+  layout: TKeyboardLayout;
 begin
-  if mode = 0 then
+  if TKeyboardLayouts.TryGet(klHexen, mode, layout) then
   begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 173;
-    key_down := 175;
-    key_strafeleft := 44;
-    key_straferight := 46;
-    key_jump := 97;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 122;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 1 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 119;
-    key_down := 115;
-    key_strafeleft := 97;
-    key_straferight := 100;
-    key_jump := 101;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 113;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('f');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
-  end
-  else if mode = 2 then
-  begin
-    key_right := 174;
-    key_left := 172;
-    key_up := 101;
-    key_down := 100;
-    key_strafeleft := 115;
-    key_straferight := 102;
-    key_jump := 97;
-    // JVAL: 20211101 - Crouch
-    key_crouch := 122;
-    key_fire := 157;
-    key_use := 32;
-    key_strafe := 184;
-    key_speed := 182;
-    key_lookup := 197;
-    key_lookdown := 202;
-    key_lookcenter := 199;
-    key_lookright := 42;
-    key_lookleft := 47;
-    key_lookforward := 13;
-    key_flyup := 198;
-    key_flydown := 200;
-    key_flycenter := 201;
-    key_invleft := Ord('[');
-    key_invright := Ord(']');
-    key_weapon0 := Ord('1');
-    key_weapon1 := Ord('2');
-    key_weapon2 := Ord('3');
-    key_weapon3 := Ord('4');
-    AM_GOBIGKEY := Ord('o');
-    AM_FOLLOWKEY := Ord('l');
-    AM_GRIDKEY := Ord('g');
-    AM_ROTATEKEY := Ord('r');
-    AM_TEXTUREDAUTOMAP := Ord('t');
-    AM_MARKKEY := Ord('m');
-    AM_CLEARMARKKEY := Ord('c');
+    key_right := layout.Right;
+    key_left := layout.Left;
+    key_up := layout.Up;
+    key_down := layout.Down;
+    key_strafeleft := layout.StrafeLeft;
+    key_straferight := layout.StrafeRight;
+    key_jump := layout.Jump;
+    key_crouch := layout.Crouch;
+    key_fire := layout.Fire;
+    key_use := layout.Use;
+    key_strafe := layout.Strafe;
+    key_speed := layout.Speed;
+    key_lookup := layout.LookUp;
+    key_lookdown := layout.LookDown;
+    key_lookcenter := layout.LookCenter;
+    key_lookright := layout.LookRight;
+    key_lookleft := layout.LookLeft;
+    key_lookforward := layout.LookForward;
+    key_flyup := layout.FlyUp;
+    key_flydown := layout.FlyDown;
+    key_flycenter := layout.FlyCenter;
+    key_invleft := layout.InventoryLeft;
+    key_invright := layout.InventoryRight;
+    key_weapon0 := layout.Weapons[0];
+    key_weapon1 := layout.Weapons[1];
+    key_weapon2 := layout.Weapons[2];
+    key_weapon3 := layout.Weapons[3];
+    AM_GOBIGKEY := layout.AutomapBig;
+    AM_FOLLOWKEY := layout.AutomapFollow;
+    AM_GRIDKEY := layout.AutomapGrid;
+    AM_ROTATEKEY := layout.AutomapRotate;
+    AM_TEXTUREDAUTOMAP := layout.AutomapTextured;
+    AM_MARKKEY := layout.AutomapMark;
+    AM_CLEARMARKKEY := layout.AutomapClearMarks;
   end;
 end;
 
@@ -1740,10 +1653,7 @@ begin
   players[playernum].mo.flags2 := players[playernum].mo.flags2 or MF2_PASSMOBJ;
 
   // flush an old corpse if needed
-  if bodyqueslot >= BODYQUESIZE then
-    P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-  bodyque[bodyqueslot mod BODYQUESIZE] := players[playernum].mo;
-  inc(bodyqueslot);
+  P_World.AddPlayerCorpse(players[playernum].mo);
 
   // spawn a teleport fog
   {$IFDEF FPC}

@@ -297,13 +297,11 @@ var
   displayplayer: integer; // view being displayed
   gametic: integer;
 
-  totalkills, totalsecret: integer; // for intermission
 
   wminfo: wbstartstruct_t; // parms for world map / intermission
 
   gameskill: skill_t = sk_medium;
 
-  bodyqueslot: integer;
 
   precache: boolean; // if true, load all graphics at start
 
@@ -499,6 +497,8 @@ procedure G_ConfigureLevel(const ALoader: ILevelLoader);
 implementation
 
 uses
+  DelphiDoom.Input.EventScaling,
+  DelphiDoom.MapInfo.MapName,
   deh_main,
   c_cmds,
   z_zone,
@@ -832,12 +832,6 @@ var
 
   savegameslot: integer;
   savedescription: string;
-
-const
-  BODYQUESIZE  = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
 
 //==============================================================================
 //
@@ -1358,7 +1352,6 @@ end;
 //==============================================================================
 function G_Responder(ev: Pevent_t): boolean;
 var
-  bmask: integer;
   i: integer;
 begin
   if gamestate = GS_ENDOOM then
@@ -1463,8 +1456,8 @@ begin
           mousebuttons[0] := ev.data1 and 1 <> 0;
           mousebuttons[1] := ev.data1 and 2 <> 0;
           mousebuttons[2] := ev.data1 and 4 <> 0;
-          mousex := mousex + ((ev.data2 * (mouseSensitivity + 5)) div 10) * mouseSensitivityX div 5;
-          mousey := mousey + ((ev.data3 * (mouseSensitivity + 5)) div 10) * mouseSensitivityY div 5;
+          mousex := mousex + TInputEventScaling.MouseMotion(ev.data2, mouseSensitivity, mouseSensitivityX);
+          mousey := mousey + TInputEventScaling.MouseMotion(ev.data3, mouseSensitivity, mouseSensitivityY);
         end
         else
         begin
@@ -1482,12 +1475,7 @@ begin
       begin
         if usejoystick then
         begin
-          bmask := 1;
-          for i := 0 to NUMJOYBUTTONS - 1 do
-          begin
-            joybuttons[i] := (ev.data1 and bmask) <> 0;
-            bmask := bmask * 2;
-          end;
+          TInputEventScaling.JoystickButtons(ev.data1, @joybuttons[0], NUMJOYBUTTONS);
           joyxmove := ev.data2;
           joyymove := ev.data3;
         end
@@ -1765,10 +1753,7 @@ begin
   // flush an old corpse if needed
   if not G_NeedsCompatibilityMode then
   begin
-    if bodyqueslot >= BODYQUESIZE then
-      P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-    bodyque[bodyqueslot mod BODYQUESIZE] := players[playernum].mo;
-    inc(bodyqueslot);
+    P_World.AddPlayerCorpse(players[playernum].mo);
   end;
 
   // spawn a teleport fog
@@ -2556,8 +2541,7 @@ end;
 //==============================================================================
 procedure G_CmdNewGame(const parm1, parm2: string);
 var
-  map: integer;
-  mapname: string;
+  epsd, map: integer;
 begin
   if parm1 = '' then
   begin
@@ -2565,14 +2549,7 @@ begin
     exit;
   end;
 
-  mapname := strupper(parm1);
-
-  map := atoi(parm1);
-  if (mapname[1] = 'M') then
-    if length(mapname) = 5 then
-      if (mapname[2] = 'A') and
-         (mapname[3] = 'P') then
-        map := atoi(mapname[4] + mapname[5]);
+  TMapName.FromArguments(True, parm1, parm2, epsd, map);
 
   if W_CheckNumForName(P_GetMapName(map)) > -1 then
   begin
@@ -3408,7 +3385,7 @@ var
   lumpname: string;
   i: integer;
 begin
-  sprintf(lumpname, 'MAP%.2d', [map]);
+  lumpname := TMapName.NumberedName(map);
 
   for i := 0 to u_mapinfo.mapcount - 1 do
     if lumpname = u_mapinfo.maps[i].mapname then
@@ -3435,38 +3412,8 @@ end;
 function G_ValidateMapName(const amap: string; const pepi, pmapnum: PInteger): boolean;
 var
   epi, mapnum: integer;
-  len: integer;
-  map: string;
 begin
-  result := false;
-  len := Length(amap);
-  if len <> 5 then
-    exit;
-
-  epi := 0;
-  mapnum := 0;
-  map := strupper(amap);
-
-  if (map[1] = 'E') and (map[3] = 'M') then
-  begin
-    if len = 5 then
-    begin
-      if not isdigit(map[2]) then
-        exit;
-      epi := atoi(map[2]);
-      mapnum := atoi(map[4]);
-      result := IsIntegerInRange(epi, 1, 8) and IsIntegerInRange(mapnum, 1, 9);
-    end;
-  end
-  else if (map[1] = 'M') and (map[2] = 'A') and (map[3] = 'P') then
-  begin
-    if len = 5 then
-    begin
-      mapnum := atoi(map[4] + map[5]);
-      result := IsIntegerInRange(mapnum, 1, 99);
-    end;
-  end;
-
+  result := TMapName.TryParse(amap, TMapName.StrifeRules, epi, mapnum);
   if result then
   begin
     if pepi <> nil then

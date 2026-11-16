@@ -28,10 +28,14 @@ uses
   DelphiDoom.MapInfo.BossActionRule in '..\Libs\MapInfo\DelphiDoom.MapInfo.BossActionRule.pas',
   DelphiDoom.MapInfo.Loader in '..\Libs\MapInfo\DelphiDoom.MapInfo.Loader.pas',
   DelphiDoom.MapInfo.Factory in '..\Libs\MapInfo\DelphiDoom.MapInfo.Factory.pas',
+  DelphiDoom.MapInfo.MapName in '..\Libs\MapInfo\DelphiDoom.MapInfo.MapName.pas',
+  DelphiDoom.MapInfo.LevelProgression in '..\Libs\MapInfo\DelphiDoom.MapInfo.LevelProgression.pas',
   DelphiDoom.Tests.MapInfo.Fakes in 'Source\DelphiDoom.Tests.MapInfo.Fakes.pas',
   DelphiDoom.Tests.MapInfo.Corpus in 'Source\DelphiDoom.Tests.MapInfo.Corpus.pas',
   DelphiDoom.Tests.MapInfo.Parity in 'Source\DelphiDoom.Tests.MapInfo.Parity.pas',
-  DelphiDoom.Tests.MapInfo.Behavior in 'Source\DelphiDoom.Tests.MapInfo.Behavior.pas';
+  DelphiDoom.Tests.MapInfo.Behavior in 'Source\DelphiDoom.Tests.MapInfo.Behavior.pas',
+  DelphiDoom.Tests.MapInfo.MapName in 'Source\DelphiDoom.Tests.MapInfo.MapName.pas',
+  DelphiDoom.Tests.MapInfo.LevelProgression in 'Source\DelphiDoom.Tests.MapInfo.LevelProgression.pas';
 
 var
   Runner: ITestRunner;

@@ -2752,13 +2752,6 @@ begin
   end;
 end;
 
-const
-  BODYQUESIZE = 32;
-
-var
-  bodyque: array[0..BODYQUESIZE - 1] of Pmobj_t;
-  bodyqueslot: integer;
-
 //==============================================================================
 //
 // A_AddPlayerCorpse
@@ -2766,13 +2759,7 @@ var
 //==============================================================================
 procedure A_AddPlayerCorpse(actor: Pmobj_t);
 begin
-  if bodyqueslot >= BODYQUESIZE then
-  begin // Too many player corpses - remove an old one
-    P_RemoveMobj(bodyque[bodyqueslot mod BODYQUESIZE]);
-  end;
-
-  bodyque[bodyqueslot mod BODYQUESIZE] := actor;
-  inc(bodyqueslot);
+  P_World.AddEnemyCorpse(actor);
 end;
 
 //==============================================================================

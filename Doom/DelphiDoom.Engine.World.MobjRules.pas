@@ -810,7 +810,7 @@ end;
 class procedure TMobjGameRules.CountItem(mo: Pmobj_t);
 begin
   if mo.flags and MF_COUNTITEM <> 0 then
-    inc(totalitems);
+    P_World.Totals.CountItem;
 end;
 //
 // GAME SPAWN FUNCTIONS

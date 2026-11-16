@@ -2348,7 +2348,7 @@ begin
       continue;
 
     if sector.special and SECRET_MASK <> 0 then //jff 3/15/98 count extended
-      inc(totalsecret);                         // secret sectors too
+      P_World.Totals.CountSecret;                         // secret sectors too
 
     case sector.special and 31 of
      1:
@@ -2386,7 +2386,7 @@ begin
       begin
         // SECRET SECTOR
         if sector.special < 32 then //jff 3/14/98 bits don't count unless not
-          inc(totalsecret);         // a generalized sector type
+          P_World.Totals.CountSecret;         // a generalized sector type
       end;
 
     10:

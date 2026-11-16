@@ -290,12 +290,12 @@ begin
     begin
       if playeringame[i] then
       begin
-        if totalkills <> 0 then
-          killPercent[i] := players[i].killcount * 100 div totalkills;
-        if totalitems <> 0 then
-          bonusPercent[i] := players[i].itemcount* 100 div totalitems;
-        if totalsecret <> 0 then
-          secretPercent[i] := players[i].secretcount * 100 div totalsecret;
+        if P_World.Totals.Kills <> 0 then
+          killPercent[i] := players[i].killcount * 100 div P_World.Totals.Kills;
+        if P_World.Totals.Items <> 0 then
+          bonusPercent[i] := players[i].itemcount* 100 div P_World.Totals.Items;
+        if P_World.Totals.Secrets <> 0 then
+          secretPercent[i] := players[i].secretcount * 100 div P_World.Totals.Secrets;
       end;
     end;
   end
@@ -825,7 +825,7 @@ begin
   end;
   IN_DrawNumber(players[consoleplayer].killcount, 200, 65, 3);
   V_DrawPatch(237, 65, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(totalkills, 248, 65, 3);
+  IN_DrawNumber(P_World.Totals.Kills, 248, 65, 3);
 
   if intertime < 60 then
     exit;
@@ -838,7 +838,7 @@ begin
 
   IN_DrawNumber(players[consoleplayer].itemcount, 200, 90, 3);
   V_DrawPatch(237, 90, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(totalitems, 248, 90, 3);
+  IN_DrawNumber(P_World.Totals.Items, 248, 90, 3);
 
   if intertime < 90 then
     exit;
@@ -850,7 +850,7 @@ begin
   end;
   IN_DrawNumber(players[consoleplayer].secretcount, 200, 115, 3);
   V_DrawPatch(237, 115, SCN_TMP, FontBSlash, false); // V_DrawShadowedPatch
-  IN_DrawNumber(totalsecret, 248, 115, 3);
+  IN_DrawNumber(P_World.Totals.Secrets, 248, 115, 3);
 
   if intertime < 150 then
     exit;

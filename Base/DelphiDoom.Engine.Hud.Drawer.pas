@@ -460,9 +460,9 @@ begin
   if plr = nil then
     exit;
 
-  sprintf(s1, 'Kills: %d/%d', [plr.killcount, totalkills]);
-  sprintf(s2, 'Items: %d/%d', [plr.itemcount, totalitems]);
-  sprintf(s3, 'Secrets: %d/%d', [plr.secretcount, totalsecret]);
+  sprintf(s1, 'Kills: %d/%d', [plr.killcount, P_World.Totals.Kills]);
+  sprintf(s2, 'Items: %d/%d', [plr.itemcount, P_World.Totals.Items]);
+  sprintf(s3, 'Secrets: %d/%d', [plr.secretcount, P_World.Totals.Secrets]);
 
   x := XOFFS - Max3I(M_StringWidth(s1), M_StringWidth(s2), M_StringWidth(s3));
   y := YOFFS - M_StringHeight(s3);
