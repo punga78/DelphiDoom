@@ -6225,7 +6225,7 @@ begin
   tryy := actor.y + actor.info.speed * yspeed[actor.movedir];
   if not P_TryMove(actor, tryx, tryy) then
   begin // open any specials
-    if (actor.flags and MF_FLOAT <> 0) and floatok then
+    if (actor.flags and MF_FLOAT <> 0) and TMapCheck.FloatOk then
     begin
       // must adjust height
       if actor.z < TMapCheck.FloorZ then
@@ -6238,7 +6238,7 @@ begin
       exit;
     end;
 
-    if numspechit = 0 then
+    if TMapCheck.NumSpecHit = 0 then
     begin
       result := false;
       exit;
@@ -6246,10 +6246,10 @@ begin
 
     actor.movedir := Ord(DI_NODIR);
     good := false;
-    while numspechit > 0 do
+    while TMapCheck.NumSpecHit > 0 do
     begin
-      dec(numspechit);
-      ld := spechit[numspechit];
+      dec(TMapCheck.NumSpecHit);
+      ld := TMapCheck.SpecHit[TMapCheck.NumSpecHit];
 
       if ld.flags and ML_TRIGGERSCRIPTS <> 0 then
         if actor.flags2_ex and MF2_EX_DONTRUNSCRIPTS = 0 then

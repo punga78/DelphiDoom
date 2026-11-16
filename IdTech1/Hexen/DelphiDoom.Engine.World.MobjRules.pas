@@ -2527,9 +2527,9 @@ var
   function SkyExplode: boolean;
   begin
     // Explode a missile
-    if (ceilingline <> nil) and
-       (ceilingline.backsector <> nil) and
-       (ceilingline.backsector.ceilingpic = skyflatnum) then
+    if (TMapCheck.CeilingLine <> nil) and
+       (TMapCheck.CeilingLine.backsector <> nil) and
+       (TMapCheck.CeilingLine.backsector.ceilingpic = skyflatnum) then
     begin // Hack to prevent missiles exploding against the sky
       if mo._type = Ord(MT_BLOODYSKULL) then
       begin

@@ -298,7 +298,7 @@ begin
   if not try_ok then
   begin
     // open any specials
-    if (actor.flags and MF_FLOAT <> 0) and floatok then
+    if (actor.flags and MF_FLOAT <> 0) and TMapCheck.FloatOk then
     begin
       // must adjust height
       if actor.z < TMapCheck.FloorZ then
@@ -311,7 +311,7 @@ begin
       exit;
     end;
 
-    if numspechit = 0 then
+    if TMapCheck.NumSpecHit = 0 then
     begin
       result := false;
       exit;

@@ -723,7 +723,7 @@ begin
       // JVAL: Pushable things
       P_PushByContact(thing);
 
-      numspechit := 0;
+      TMapCheck.NumSpecHit := 0;
 
       result := true;
       exit;
@@ -963,7 +963,7 @@ begin
   TMapCheck.BBox[BOX_RIGHT] := x + r;
   TMapCheck.BBox[BOX_LEFT] := x - r;
 
-  ceilingline := nil;
+  TMapCheck.CeilingLine := nil;
   newsubsec := thing.subsector;
 
   // The base floor / ceiling is from the subsector

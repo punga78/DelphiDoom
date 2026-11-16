@@ -1,0 +1,9 @@
+radix_walls.RX_ValidLine                          40
+radix_walls.RX_LineHitPoints                      36
+radix_walls.RX_ShootableLine                      56
+radix_walls.RX_ExplosionParade                   540
+radix_walls.RX_LineExplosion                     280
+radix_walls.RX_DamageLine                        164
+radix_walls.PIT_RadixTargetLine                  184
+radix_walls.RX_MissileTargetLine                 352
+radix_walls.RX_MissileHitsLine                    76

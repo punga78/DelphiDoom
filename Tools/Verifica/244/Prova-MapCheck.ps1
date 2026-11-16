@@ -43,9 +43,12 @@ foreach ($rel in $files) {
   $oldText = $latin1.GetString([System.IO.File]::ReadAllBytes($tmp))
   Remove-Item -LiteralPath $tmp
   # la classe TMapCheck dichiarata in p_map.pas e' testo nuovo ammesso
-  $newText = [regex]::Replace($newText, '(?s)\r?\ntype\r?\n(?:  ///[^\r\n]*\r?\n)+  TMapCheck = class sealed.*?\r?\n  end;\r?\n', '')
+  # (anche nel testo di partenza, se il passo viene dopo quello che l'ha introdotta)
+  $classRegex = '(?s)\r?\ntype\r?\n(?:  ///[^\r\n]*\r?\n)+  TMapCheck = class sealed.*?\r?\n  end;\r?\n'
+  $newText = [regex]::Replace($newText, $classRegex, '')
+  $oldText = [regex]::Replace($oldText, $classRegex, '')
   $back = $fieldRegex.Replace($newText,{ param($m) $reverse[$m.Groups[1].Value.ToLowerInvariant()] })
-  $newLines = @($back -split "`r?`n" | Where-Object { $_ -notmatch [regex]::Escape($unit) -and $_ -notmatch 'issue #244' })
+  $newLines = @($back -split "`r?`n" | Where-Object { $_ -notmatch [regex]::Escape($unit) -and $_ -notmatch 'issue #244|in TMapCheck too' })
   $oldLines = @($oldText -split "`r?`n")
   # allineamento: ogni riga vecchia o c'e' (nello stesso ordine) o e' una dichiarazione ammessa
   $i = 0; $j = 0; $diffs = @()
@@ -61,7 +64,7 @@ foreach ($rel in $files) {
     # nei .dpr la riga dell'unit e' gia' tolta; nel resto non devono avanzare righe nuove
     foreach ($r in $rest) { $diffs += "riga nuova in coda: $r" }
   }
-  if ($diffs.Count -eq 0 -and $oldNameRegex.IsMatch($newText) -and $rel -notlike '*po_man.pas') {
+  if ($diffs.Count -eq 0 -and $oldNameRegex.IsMatch((($newText -split "`r?`n") | Where-Object { $_.TrimStart() -notmatch "^(//|{)" }) -join "`n") -and $rel -notlike '*po_man.pas') {
     $diffs += 'un nome storico compare ancora nel testo nuovo'
   }
   $total++

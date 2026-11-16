@@ -85,6 +85,14 @@ type
     class var FloorPic: integer;
     /// <summary>The line a bouncing thing has hit.</summary>
     class var BounceLine: Pline_t;
+    /// <summary>The line that lowers the ceiling, so that missiles do not explode against sky hack walls.</summary>
+    class var CeilingLine: Pline_t;
+    /// <summary>The special lines crossed by the move (a dynamic array, grown by PIT_CheckLine).</summary>
+    class var SpecHit: Pline_tPArray;
+    class var NumSpecHit: integer;
+    class var MaxSpecHit: integer;
+    /// <summary>True if the move would be ok when within FloorZ and CeilingZ.</summary>
+    class var FloatOk: boolean;
   end;
 
 //==============================================================================
@@ -228,19 +236,11 @@ function PIT_CheckThing(thing: Pmobj_t): boolean;
 var
   linetarget: Pmobj_t;  // who got hit (or NULL)
 
+// (floatok, spechit and ceilingline are in TMapCheck too)
 // If "floatok" true, move would be ok
 // if within "TMapCheck.FloorZ - TMapCheck.CeilingZ".
-  floatok: boolean;
 
 var
-  spechit: Pline_tPArray = nil;  // JVAL Now spechit is dynamic
-  maxspechit: integer = 0;
-  numspechit: integer;
-
-// keep track of the line that lowers the ceiling,
-// so missiles don't explode against sky hack walls
-  ceilingline: Pline_t;
-
   attackrange: fixed_t;
 
 //==============================================================================
@@ -406,7 +406,7 @@ begin
   TMapCheck.BBox[BOX_LEFT] := x - r;
 
   newsec := TMapGameRules.PointInSector(x, y);
-  ceilingline := nil;
+  TMapCheck.CeilingLine := nil;
 
   // The base floor/ceiling is from the subsector
   // that contains the point.
@@ -421,7 +421,7 @@ begin
   TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
-  numspechit := 0;
+  TMapCheck.NumSpecHit := 0;
 
   // stomp on any things contacted
   if internalblockmapformat then
@@ -528,7 +528,7 @@ begin
   if opentop < TMapCheck.CeilingZ then
   begin
     TMapCheck.CeilingZ := opentop;
-    ceilingline := ld;
+    TMapCheck.CeilingLine := ld;
   end;
 
   if openbottom > TMapCheck.FloorZ then
@@ -540,19 +540,19 @@ begin
   // if contacted a special line, add it to the list
   if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
   begin
-    if maxspechit = 0 then
+    if TMapCheck.MaxSpecHit = 0 then
     begin
-      maxspechit := 64;
-      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
+      TMapCheck.MaxSpecHit := 64;
+      TMapCheck.SpecHit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
     end
-    else if numspechit = maxspechit then
+    else if TMapCheck.NumSpecHit = TMapCheck.MaxSpecHit then
     begin
-      maxspechit := maxspechit + 8;
-      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
+      TMapCheck.MaxSpecHit := TMapCheck.MaxSpecHit + 8;
+      TMapCheck.SpecHit := Z_ReAlloc(TMapCheck.SpecHit, TMapCheck.MaxSpecHit * SizeOf(Pline_t), PU_STATIC, nil)
     end;
 
-    spechit[numspechit] := ld;
-    inc(numspechit);
+    TMapCheck.SpecHit[TMapCheck.NumSpecHit] := ld;
+    inc(TMapCheck.NumSpecHit);
 
   end;
 
@@ -626,7 +626,7 @@ begin
   if opentop < TMapCheck.CeilingZ then
   begin
     TMapCheck.CeilingZ := opentop;
-    ceilingline := ld;
+    TMapCheck.CeilingLine := ld;
   end;
 
   if openbottom > TMapCheck.FloorZ then
@@ -638,19 +638,19 @@ begin
   // if contacted a special line, add it to the list
   if (ld.special <> 0) or (ld.flags and ML_TRIGGERSCRIPTS <> 0) then
   begin
-    if maxspechit = 0 then
+    if TMapCheck.MaxSpecHit = 0 then
     begin
-      maxspechit := 64;
-      spechit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
+      TMapCheck.MaxSpecHit := 64;
+      TMapCheck.SpecHit := Z_Malloc(64 * SizeOf(Pline_t), PU_STATIC, nil);
     end
-    else if numspechit = maxspechit then
+    else if TMapCheck.NumSpecHit = TMapCheck.MaxSpecHit then
     begin
-      maxspechit := maxspechit + 8;
-      spechit := Z_ReAlloc(spechit, maxspechit * SizeOf(Pline_t), PU_STATIC, nil)
+      TMapCheck.MaxSpecHit := TMapCheck.MaxSpecHit + 8;
+      TMapCheck.SpecHit := Z_ReAlloc(TMapCheck.SpecHit, TMapCheck.MaxSpecHit * SizeOf(Pline_t), PU_STATIC, nil)
     end;
 
-    spechit[numspechit] := ld;
-    inc(numspechit);
+    TMapCheck.SpecHit[TMapCheck.NumSpecHit] := ld;
+    inc(TMapCheck.NumSpecHit);
 
   end;
 
@@ -931,7 +931,7 @@ begin
   newsec := TMapGameRules.PointInSector(x, y);
 
   TMapGameRules.BeginCheckPosition;
-  ceilingline := nil;
+  TMapCheck.CeilingLine := nil;
 
   // The base floor / ceiling is from the subsector
   // that contains the point.
@@ -956,7 +956,7 @@ begin
     TMapCheck.FloorPic := newsec.floorpic;
 
   inc(validcount);
-  numspechit := 0;
+  TMapCheck.NumSpecHit := 0;
 
   if TMapGameRules.NoClipSkipsThings(TMapCheck.Flags) then
   begin
@@ -1199,7 +1199,7 @@ begin
   TMapCheck.BBox[BOX_LEFT] := x - r;
 
   newsec := TMapGameRules.PointInSector(x, y);
-  ceilingline := nil;
+  TMapCheck.CeilingLine := nil;
 
 //
 // the base floor / ceiling is from the subsector that contains the
@@ -1210,7 +1210,7 @@ begin
   TMapCheck.CeilingZ := P_CeilingHeight(newsec, x, y);  // JVAL: Slopes
 
   inc(validcount);
-  numspechit := 0;
+  TMapCheck.NumSpecHit := 0;
 
   if TMapCheck.Flags and MF_NOCLIP <> 0 then
   begin
@@ -1279,12 +1279,12 @@ var
     if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
     begin
       TMapGameRules.BlastedHitsWall(TMapCheck.Thing);
-      numSpecHitTemp := numspechit;
+      numSpecHitTemp := TMapCheck.NumSpecHit;
       while numSpecHitTemp > 0 do
       begin
         dec(numSpecHitTemp);
         // see if the line was crossed
-        ld := spechit[numSpecHitTemp];
+        ld := TMapCheck.SpecHit[numSpecHitTemp];
         side := P_PointOnLineSide(thing.x, thing.y, ld);
         P_CheckForPushSpecial(ld, side, thing);
       end;
@@ -1292,7 +1292,7 @@ var
   end;
 
 begin
-  floatok := false;
+  TMapCheck.FloatOk := false;
   if not P_CheckPosition(thing, x, y) then
     if not TMapGameRules.StepsOnBlockingThing(thing) then
     begin
@@ -1311,7 +1311,7 @@ begin
       exit;
     end;
 
-    floatok := true;
+    TMapCheck.FloatOk := true;
 
     if not TMapGameRules.IgnoresCeilingFit(thing) and
        (TMapCheck.CeilingZ - thing.z < thing.height) then
@@ -1460,11 +1460,11 @@ begin
   // if any special lines were hit, do the effect
   if thing.flags and TMapGameRules.NoSpecHitFlags = 0 then
   begin
-    while numspechit > 0 do
+    while TMapCheck.NumSpecHit > 0 do
     begin
       // see if the line was crossed
-      dec(numspechit);
-      ld := spechit[numspechit];
+      dec(TMapCheck.NumSpecHit);
+      ld := TMapCheck.SpecHit[TMapCheck.NumSpecHit];
       side := P_PointOnLineSide(thing.x, thing.y, ld);
       oldside := P_PointOnLineSide(oldx, oldy, ld);
       if side <> oldside then

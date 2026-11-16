@@ -1032,7 +1032,7 @@ begin
 
       P_PushByContact(thing);
 
-      numspechit := 0;
+      TMapCheck.NumSpecHit := 0;
 
       result := true;
       exit;

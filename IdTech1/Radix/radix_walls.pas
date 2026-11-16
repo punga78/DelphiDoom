@@ -65,7 +65,7 @@ procedure RX_DamageLine(const lineid: integer; const damage: integer);
 // RX_MissileTargetLine
 // The line that has stopped a missile, when it is a wall that can be shot: a
 // one sided line (TMapCheck.BounceLine) or a two sided one that closes the opening
-// (ceilingline: the walls of Radix are closed sectors); nil for any other
+// (TMapCheck.CeilingLine: the walls of Radix are closed sectors); nil for any other
 //
 //==============================================================================
 function RX_MissileTargetLine(const mo: Pmobj_t): Pline_t;

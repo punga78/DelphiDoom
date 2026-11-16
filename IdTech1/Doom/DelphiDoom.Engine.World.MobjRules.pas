@@ -1281,14 +1281,14 @@ begin
   else if mo.flags and MF_MISSILE <> 0 then
   begin
     // explode a missile
-    if (ceilingline <> nil) and
-       (ceilingline.backsector <> nil) and
-       (ceilingline.backsector.ceilingpic = skyflatnum) then
+    if (TMapCheck.CeilingLine <> nil) and
+       (TMapCheck.CeilingLine.backsector <> nil) and
+       (TMapCheck.CeilingLine.backsector.ceilingpic = skyflatnum) then
     begin
       // Hack to prevent missiles exploding
       // against the sky.
       // Does not handle sky floors.
-      if (G_PlayingEngineVersion < VERSION207) or (mo.z > ceilingline.backsector.ceilingheight) then
+      if (G_PlayingEngineVersion < VERSION207) or (mo.z > TMapCheck.CeilingLine.backsector.ceilingheight) then
       begin
         P_RemoveMobj(mo);
         begin
