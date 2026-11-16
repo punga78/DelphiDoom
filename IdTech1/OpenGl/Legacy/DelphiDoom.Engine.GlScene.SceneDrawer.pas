@@ -80,6 +80,7 @@ uses
   gl_lightmaps,
   gl_sky,
   gl_render,
+  DelphiDoom.Engine.GlScene.Fog,
   r_dynlights,
   DelphiDoom.GlScene.Types,
   DelphiDoom.Engine.GlScene.Types;
@@ -156,7 +157,7 @@ begin
         if gl_drawsky and (LKind >= GLDWF_SKY) then
         begin
           gld_ResumeLightmap;
-          gld_StartFog;
+          TEngineGlSceneFog.Start;
           glDisable(GL_TEXTURE_GEN_Q);
           glDisable(GL_TEXTURE_GEN_T);
           glDisable(GL_TEXTURE_GEN_S);
@@ -254,7 +255,7 @@ begin
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  gld_StartFog;
+  TEngineGlSceneFog.Start;
 
   {$IFDEF DEBUG}
   FRenderedVisplanes := 0;

@@ -79,6 +79,7 @@ uses
   r_defs,
   r_main,
   gl_render,
+  DelphiDoom.Engine.GlScene.Fog,
   gl_slopes,
   gl_tex;
 
@@ -192,7 +193,7 @@ procedure TEngineGlSceneWallPainter.WhiteFogFirst(const AWall: PGLWall);
 begin
   if AWall.whitefog then
   begin
-    gld_StartWhiteFog;
+    TEngineGlSceneFog.StartWhite;
     FDidWhiteFog := True;
   end;
 end;
@@ -201,7 +202,7 @@ procedure TEngineGlSceneWallPainter.WhiteFogSecond(const AWall: PGLWall);
 begin
   if AWall.whitefog2 then
   begin
-    gld_StartWhiteFog;
+    TEngineGlSceneFog.StartWhite;
     FDidWhiteFog := True;
   end;
 end;
@@ -210,7 +211,7 @@ procedure TEngineGlSceneWallPainter.WhiteFogStop;
 begin
   if FDidWhiteFog then
   begin
-    gld_StartFog;
+    TEngineGlSceneFog.Start;
     FDidWhiteFog := False;
   end;
 end;

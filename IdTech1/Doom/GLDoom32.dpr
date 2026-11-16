@@ -1382,6 +1382,7 @@ uses
   DelphiDoom.Engine.GlScene.FlatCollector in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatCollector.pas',
   DelphiDoom.Engine.GlScene.WallCollector in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallCollector.pas',
   DelphiDoom.Engine.GlScene.WallPainter in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.WallPainter.pas',
+  DelphiDoom.Engine.GlScene.Fog in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.Fog.pas',
   DelphiDoom.Engine.GlScene.FlatPainter in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.FlatPainter.pas',
   DelphiDoom.Engine.GlScene.ModelPainter in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.ModelPainter.pas',
   DelphiDoom.Engine.GlScene.VoxelPainter in '..\OpenGl\Legacy\DelphiDoom.Engine.GlScene.VoxelPainter.pas',

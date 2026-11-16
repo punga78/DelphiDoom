@@ -477,6 +477,7 @@ uses
   DelphiDoom.GlScene.PaletteTint,
   DelphiDoom.Engine.Gl2dMode,
   DelphiDoom.Engine.GlHudPainter,
+  DelphiDoom.Engine.GlScene.Fog,
   w_wad,
   z_zone;
 
@@ -1346,69 +1347,8 @@ end;
 //
 //==============================================================================
 procedure gld_StartFog;
-var
-  FogColor: array[0..3] of TGLfloat; // JVAL: set blue fog color if underwater
 begin
-  if use_fog then
-    if players[displayplayer].fixedcolormap = 0 then
-    begin
-{$IFDEF DOOM_OR_STRIFE}
-      if customcolormap <> nil then
-      begin
-        glFogf(GL_FOG_DENSITY, customcolormap.fog_density * fog_density / 1000.0);
-
-        FogColor[0] := customcolormap.fog_r;
-        FogColor[1] := customcolormap.fog_g;
-        FogColor[2] := customcolormap.fog_b;
-        FogColor[3] := 0.0;
-      end
-      else
-      begin
-        glFogf(GL_FOG_DENSITY, fog_density / 1000.0);
-
-        FogColor[0] := 0.0;
-        FogColor[1] := 0.0;
-        FogColor[2] := 0.0;
-        FogColor[3] := 0.0;
-      end;
-
-      glFogfv(GL_FOG_COLOR, @FogColor);
-{$ENDIF}
-{$IFDEF HERETIC}
-      glFogf(GL_FOG_DENSITY, fog_density / 1000.0);
-
-      FogColor[0] := 0.0;
-      FogColor[1] := 0.0;
-      FogColor[2] := 0.0;
-      FogColor[3] := 0.0;
-
-      glFogfv(GL_FOG_COLOR, @FogColor);
-{$ENDIF}
-{$IFDEF HEXEN}
-      glFogf(GL_FOG_DENSITY, fog_density / 1000.0);
-      if LevelUseFog then
-      begin
-        FogColor[0] := 1.0;
-        FogColor[1] := 1.0;
-        FogColor[2] := 1.0;
-        FogColor[3] := 0.0;
-      end
-      else
-      begin
-        FogColor[0] := 0.0;
-        FogColor[1] := 0.0;
-        FogColor[2] := 0.0;
-        FogColor[3] := 0.0;
-      end;
-
-      glFogfv(GL_FOG_COLOR, @FogColor);
-{$ENDIF}
-
-      glEnable(GL_FOG);
-      exit;
-    end;
-
-  glDisable(GL_FOG);
+  TEngineGlSceneFog.Start;
 end;
 
 //==============================================================================
@@ -1417,43 +1357,8 @@ end;
 //
 //==============================================================================
 procedure gld_StartWhiteFog;
-var
-  FogColor: array[0..3] of TGLfloat; // JVAL: set blue fog color if underwater
 begin
-  if use_white_fog then
-    if players[displayplayer].fixedcolormap = 0 then
-    begin
-      glFogf(GL_FOG_DENSITY, white_fog_density / 1000.0);
-
-  {$IFDEF DOOM_OR_STRIFE}
-      if customcolormap <> nil then
-      begin
-        FogColor[0] := (customcolormap.fog_r + 1.0) / 2.0;
-        FogColor[1] := (customcolormap.fog_g + 1.0) / 2.0;
-        FogColor[2] := (customcolormap.fog_b + 1.0) / 2.0;
-        FogColor[3] := 0.0;
-      end
-      else
-      begin
-        FogColor[0] := 1.0;
-        FogColor[1] := 1.0;
-        FogColor[2] := 1.0;
-        FogColor[3] := 0.0;
-      end;
-  {$ENDIF}
-  {$IFDEF HERETIC_OR_HEXEN}
-      FogColor[0] := 1.0;
-      FogColor[1] := 1.0;
-      FogColor[2] := 1.0;
-      FogColor[3] := 0.0;
-  {$ENDIF}
-
-      glFogfv(GL_FOG_COLOR, @FogColor);
-      glEnable(GL_FOG);
-      exit;
-    end;
-
-  glDisable(GL_FOG);
+  TEngineGlSceneFog.StartWhite;
 end;
 
 //==============================================================================

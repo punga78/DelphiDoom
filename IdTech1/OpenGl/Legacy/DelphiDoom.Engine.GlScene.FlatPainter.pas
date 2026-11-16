@@ -63,6 +63,7 @@ uses
   gl_lightmaps,
   DelphiDoom.Engine.GlLightmap.Types,
   gl_render,
+  DelphiDoom.Engine.GlScene.Fog,
   gl_slopes,
   gl_tex;
 
@@ -170,7 +171,7 @@ begin
     glActiveTextureARB(GL_TEXTURE0_ARB);
   end;
 
-  if AFlat.whitefog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
+  if AFlat.whitefog then TEngineGlSceneFog.StartWhite;  // JVAL: Mars fog sectors
 
   if AFlat.ripple and not gl_old_ripple_effect then
     gld_BindFlat(AFlat.gltexture, leveltime and 31)
@@ -313,7 +314,7 @@ begin
     glActiveTextureARB(GL_TEXTURE0_ARB);
   end;
 
-  if AFlat.whitefog then gld_StartFog;  // JVAL: Mars fog sectors
+  if AFlat.whitefog then TEngineGlSceneFog.Start;  // JVAL: Mars fog sectors
 
   glPopMatrix;
 end;
