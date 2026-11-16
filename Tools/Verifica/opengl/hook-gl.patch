@@ -1,5 +1,5 @@
 diff --git a/IdTech1/Base/DelphiDoom.Engine.Composition.pas b/IdTech1/Base/DelphiDoom.Engine.Composition.pas
-index 849bced00..a3e29ede5 100644
+index cd7255256..7d6799444 100644
 --- a/IdTech1/Base/DelphiDoom.Engine.Composition.pas
 +++ b/IdTech1/Base/DelphiDoom.Engine.Composition.pas
 @@ -20,6 +20,7 @@ procedure ComposeEngine;
@@ -10,7 +10,7 @@ index 849bced00..a3e29ede5 100644
  {$IFDEF RADIX}
    DelphiDoom.Engine.Radix.Composition,
    DelphiDoom.Engine.Level.RadixRules,
-@@ -682,7 +683,7 @@ begin
+@@ -683,7 +684,7 @@ begin
    // Windows: the choice of DirectInput (usedirectinput) was never set by anything
    LPoller := TInputFactory.CreatePoller(TInputFactory.CreateWindowsKeyboard,
      TInputFactory.CreateWindowsMouse, TInputFactory.CreateWindowsJoystick(LWindow),
@@ -19,7 +19,7 @@ index 849bced00..a3e29ede5 100644
      TEngineKeyMap.Create,
      TEngineInputSink.Create, ALog, NUMJOYBUTTONS);
    Result := LPoller;
-@@ -1824,6 +1825,7 @@ begin
+@@ -1826,6 +1827,7 @@ begin
    LParityClock := TParityFactory.CreateSwitchClock(LClock, LParitySwitch, TICRATE);
    LClock := LParityClock;
    LParity.AttachClock(LParityClock);
@@ -48,7 +48,7 @@ index 1926acfc4..63494c4cd 100644
  
  end.
 diff --git a/IdTech1/Doom/GLDoom32.dpr b/IdTech1/Doom/GLDoom32.dpr
-index a9b9e330a..af74afc45 100644
+index 4364c1ec6..d348d8122 100644
 --- a/IdTech1/Doom/GLDoom32.dpr
 +++ b/IdTech1/Doom/GLDoom32.dpr
 @@ -57,6 +57,19 @@ uses
@@ -72,7 +72,7 @@ index a9b9e330a..af74afc45 100644
    gl_misc in '..\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\OpenGl\Legacy\gl_render.pas',
 diff --git a/IdTech1/Heretic/GLHeretic32.dpr b/IdTech1/Heretic/GLHeretic32.dpr
-index c258ecc34..bc04f7b8d 100644
+index 2d67f5c4e..5bcf9c1c5 100644
 --- a/IdTech1/Heretic/GLHeretic32.dpr
 +++ b/IdTech1/Heretic/GLHeretic32.dpr
 @@ -59,6 +59,19 @@ uses
@@ -96,7 +96,7 @@ index c258ecc34..bc04f7b8d 100644
    gl_misc in '..\OpenGl\Legacy\gl_misc.pas',
    gl_render in '..\OpenGl\Legacy\gl_render.pas',
 diff --git a/IdTech1/Hexen/GLHexen32.dpr b/IdTech1/Hexen/GLHexen32.dpr
-index 4b40088d9..dcb886951 100644
+index 7bdf6267b..6a3a7d9f4 100644
 --- a/IdTech1/Hexen/GLHexen32.dpr
 +++ b/IdTech1/Hexen/GLHexen32.dpr
 @@ -59,6 +59,19 @@ uses
@@ -147,28 +147,28 @@ index 4bd40d3ad..aca8fa264 100644
  end;
  
  end.
-diff --git a/IdTech1/OpenGl/Legacy/gl_render.pas b/IdTech1/OpenGl/Legacy/gl_render.pas
-index 821f58988..8808e40b7 100644
---- a/IdTech1/OpenGl/Legacy/gl_render.pas
-+++ b/IdTech1/OpenGl/Legacy/gl_render.pas
-@@ -416,6 +416,7 @@ procedure R_ShutDownOpenGL;
+diff --git a/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlLevel.Preprocessor.pas b/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlLevel.Preprocessor.pas
+index 66172e8af..772ab3c3e 100644
+--- a/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlLevel.Preprocessor.pas
++++ b/IdTech1/OpenGl/Legacy/DelphiDoom.Engine.GlLevel.Preprocessor.pas
+@@ -65,6 +65,7 @@ type
  implementation
  
  uses
 +  HarnessGl,
-   doomstat,
-   d_main,
-   i_system,
-@@ -1537,6 +1538,7 @@ begin
+   System.SysUtils,
+   d_delphi,
+   dglOpenGL,
+@@ -235,6 +236,7 @@ begin
      gld_Precache;
-   gld_PreprocessSectors;
-   gld_PreprocessSegs;
-+  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, gld_num_vertexes, sectorloops);
-   gld_drawlist.Release;
+   PreprocessSectors(ACarver, ASectors);
+   FWalls.BeginLevel(numsegs);
++  HarnessGl_AfterPreprocess(gld_vertexes, gld_texcoords, FNumVertexes, sectorloops);
+   FDrawList.Release;
    glTexCoordPointer(2, GL_FLOAT, 0, gld_texcoords);
    glVertexPointer(3, GL_FLOAT, 0, gld_vertexes);
 diff --git a/IdTech1/Strife/GLStrife32.dpr b/IdTech1/Strife/GLStrife32.dpr
-index 08a7b4626..0adb25d62 100644
+index 5787ea5d8..c898454d9 100644
 --- a/IdTech1/Strife/GLStrife32.dpr
 +++ b/IdTech1/Strife/GLStrife32.dpr
 @@ -57,6 +57,19 @@ uses

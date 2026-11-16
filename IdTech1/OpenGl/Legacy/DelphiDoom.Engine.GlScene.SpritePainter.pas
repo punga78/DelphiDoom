@@ -77,6 +77,7 @@ uses
   gl_models,
   gl_voxels,
   gl_render,
+  DelphiDoom.Engine.GlScene.Fog,
   gl_tex;
 
 { TEngineGlSceneSpritePainter }
@@ -113,21 +114,21 @@ begin
 
   if gl_drawmodels and (ASprite.models <> nil) then
   begin
-    if LHasWhiteFog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
+    if LHasWhiteFog then TEngineGlSceneFog.StartWhite;  // JVAL: Mars fog sectors
     FModelPainter.Draw(ASprite);
-    if LHasWhiteFog then gld_StartFog; // JVAL: Mars fog sectors
+    if LHasWhiteFog then TEngineGlSceneFog.Start; // JVAL: Mars fog sectors
     Exit;
   end;
 
   if gl_drawvoxels and (ASprite.voxels <> nil) then
   begin
-    if LHasWhiteFog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
+    if LHasWhiteFog then TEngineGlSceneFog.StartWhite;  // JVAL: Mars fog sectors
     FVoxelPainter.Draw(ASprite);
-    if LHasWhiteFog then gld_StartFog; // JVAL: Mars fog sectors
+    if LHasWhiteFog then TEngineGlSceneFog.Start; // JVAL: Mars fog sectors
     Exit;
   end;
 
-  if LHasWhiteFog then gld_StartWhiteFog;  // JVAL: Mars fog sectors
+  if LHasWhiteFog then TEngineGlSceneFog.StartWhite;  // JVAL: Mars fog sectors
 
   if gl_uselightmaps then
   begin
@@ -257,7 +258,7 @@ begin
   end;
   glColor3f(1.0, 1.0, 1.0);
 
-  if LHasWhiteFog then gld_StartFog; // JVAL: Mars fog sectors
+  if LHasWhiteFog then TEngineGlSceneFog.Start; // JVAL: Mars fog sectors
 end;
 
 end.
