@@ -63,20 +63,15 @@ procedure R_ClearPlanes;
 type
   mapplanefunc_t = procedure(const y: integer; const x1, x2: integer);
 
-//==============================================================================
-//
-// R_MapPlane
-//
-//==============================================================================
-procedure R_MapPlane(const y: integer; const x1, x2: integer);
-
-//==============================================================================
-// R_MapPlaneAngle
-//
-// JVAL: 20200221 - Texture angle
-//
-//==============================================================================
-procedure R_MapPlaneAngle(const y: integer; const x1, x2: integer);
+  /// <summary>
+  ///   R_MapPlane and R_MapPlaneAngle (JVAL: 20200221 - Texture angle) as static methods with the text and the names of
+  ///   the old procedures. They stay in this unit: in another one the registers they read are compiled worse (Tools\Verifica\247)
+  /// </summary>
+  TRendererPlaneMappers = class sealed
+  public
+    class procedure R_MapPlane(const y: integer; const x1, x2: integer); static;
+    class procedure R_MapPlaneAngle(const y: integer; const x1, x2: integer); static;
+  end;
 
 //==============================================================================
 //
@@ -360,7 +355,7 @@ end;
 // R_MapPlane
 //
 //==============================================================================
-procedure R_MapPlane(const y: integer; const x1, x2: integer);
+class procedure TRendererPlaneMappers.R_MapPlane(const y: integer; const x1, x2: integer);
 var
   distance: fixed_t;
   index: LongWord;
@@ -478,7 +473,7 @@ end;
 // JVAL: 20200221 - Texture angle
 //
 //==============================================================================
-procedure R_MapPlaneAngle(const y: integer; const x1, x2: integer);
+class procedure TRendererPlaneMappers.R_MapPlaneAngle(const y: integer; const x1, x2: integer);
 var
   distance: fixed_t;
   index: LongWord;
@@ -1788,14 +1783,14 @@ begin
 {$ENDIF}
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapPlaneAngle);
+      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @TRendererPlaneMappers.R_MapPlaneAngle);
     end;
   end
   else
   begin
     for x := pl.minx to stop do
     begin
-      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @R_MapPlane);
+      R_MakeSpans(x, pl.top[x - 1], pl.bottom[x - 1], pl.top[x], pl.bottom[x], @TRendererPlaneMappers.R_MapPlane);
     end;
   end;
 

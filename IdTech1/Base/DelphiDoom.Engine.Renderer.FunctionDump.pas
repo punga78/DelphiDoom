@@ -444,23 +444,23 @@ begin
     Exit('R_DrawFuzzColumn');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
-  if AValue = @R_DrawColumnLow_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
-  if AValue = @R_DrawColumnAverageMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMedium_BatchMT then
     Exit('R_DrawColumnAverageMedium_BatchMT');
-  if AValue = @R_DrawColumnAlphaMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT then
     Exit('R_DrawColumnAlphaMedium_BatchMT');
-  if AValue = @R_DrawColumnAddMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMedium_BatchMT then
     Exit('R_DrawColumnAddMedium_BatchMT');
-  if AValue = @R_DrawColumnSubtractMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMedium_BatchMT then
     Exit('R_DrawColumnSubtractMedium_BatchMT');
-  if AValue = @R_DrawColumnLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowestMT then
     Exit('R_DrawColumnLowestMT');
-  if AValue = @R_DrawColumnAverageLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowestMT then
     Exit('R_DrawColumnAverageLowestMT');
-  if AValue = @R_DrawColumnAddLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowestMT then
     Exit('R_DrawColumnAddLowestMT');
-  if AValue = @R_DrawColumnSubtractLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowestMT then
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
@@ -480,13 +480,13 @@ begin
     Exit('R_DrawColumnAddLow');
   if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
-  if AValue = @R_DrawColumnLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
-  if AValue = @R_DrawColumnAverageLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowMT then
     Exit('R_DrawColumnAverageLowMT');
-  if AValue = @R_DrawColumnAddLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowMT then
     Exit('R_DrawColumnAddLowMT');
-  if AValue = @R_DrawColumnSubtractLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
@@ -512,15 +512,15 @@ begin
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
-  if AValue = @R_DrawColumnMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
-  if AValue = @R_DrawColumnMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMediumMT then
     Exit('R_DrawColumnMediumMT');
-  if AValue = @R_DrawColumnAverageMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMediumMT then
     Exit('R_DrawColumnAverageMediumMT');
-  if AValue = @R_DrawColumnAddMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMediumMT then
     Exit('R_DrawColumnAddMediumMT');
-  if AValue = @R_DrawColumnSubtractMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
   if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
@@ -586,25 +586,25 @@ begin
     Exit('R_DrawYellowLightColumnHi');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
-  if AValue = @R_DrawColumnHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
-  if AValue = @R_DrawColumnAverageHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHi_BatchMT then
     Exit('R_DrawColumnAverageHi_BatchMT');
-  if AValue = @R_DrawColumnAlphaHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaHi_BatchMT then
     Exit('R_DrawColumnAlphaHi_BatchMT');
-  if AValue = @R_DrawColumnAddHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_BatchMT then
     Exit('R_DrawColumnAddHi_BatchMT');
-  if AValue = @R_DrawColumnSubtractHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHi_BatchMT then
     Exit('R_DrawColumnSubtractHi_BatchMT');
-  if AValue = @R_DrawMaskedColumnNormalMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawMaskedColumnNormalMT then
     Exit('R_DrawMaskedColumnNormalMT');
-  if AValue = @R_DrawColumnAverageHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHiMT then
     Exit('R_DrawColumnAverageHiMT');
-  if AValue = @R_DrawColumnAddHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHiMT then
     Exit('R_DrawColumnAddHiMT');
-  if AValue = @R_DrawColumnAddHi_SmallStepMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT then
     Exit('R_DrawColumnAddHi_SmallStepMT');
-  if AValue = @R_DrawColumnSubtractHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHiMT then
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');
@@ -786,23 +786,23 @@ begin
     Exit('R_DrawFuzzColumn2');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
-  if AValue = @R_DrawColumnLow_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
-  if AValue = @R_DrawColumnAverageMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMedium_BatchMT then
     Exit('R_DrawColumnAverageMedium_BatchMT');
-  if AValue = @R_DrawColumnAlphaMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT then
     Exit('R_DrawColumnAlphaMedium_BatchMT');
-  if AValue = @R_DrawColumnAddMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMedium_BatchMT then
     Exit('R_DrawColumnAddMedium_BatchMT');
-  if AValue = @R_DrawColumnSubtractMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMedium_BatchMT then
     Exit('R_DrawColumnSubtractMedium_BatchMT');
-  if AValue = @R_DrawColumnLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowestMT then
     Exit('R_DrawColumnLowestMT');
-  if AValue = @R_DrawColumnAverageLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowestMT then
     Exit('R_DrawColumnAverageLowestMT');
-  if AValue = @R_DrawColumnAddLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowestMT then
     Exit('R_DrawColumnAddLowestMT');
-  if AValue = @R_DrawColumnSubtractLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowestMT then
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
@@ -822,13 +822,13 @@ begin
     Exit('R_DrawColumnAddLow');
   if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
-  if AValue = @R_DrawColumnLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
-  if AValue = @R_DrawColumnAverageLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowMT then
     Exit('R_DrawColumnAverageLowMT');
-  if AValue = @R_DrawColumnAddLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowMT then
     Exit('R_DrawColumnAddLowMT');
-  if AValue = @R_DrawColumnSubtractLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
@@ -854,15 +854,15 @@ begin
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
-  if AValue = @R_DrawColumnMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
-  if AValue = @R_DrawColumnMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMediumMT then
     Exit('R_DrawColumnMediumMT');
-  if AValue = @R_DrawColumnAverageMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMediumMT then
     Exit('R_DrawColumnAverageMediumMT');
-  if AValue = @R_DrawColumnAddMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMediumMT then
     Exit('R_DrawColumnAddMediumMT');
-  if AValue = @R_DrawColumnSubtractMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
   if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
@@ -938,25 +938,25 @@ begin
     Exit('R_DrawYellowLightColumnHi');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
-  if AValue = @R_DrawColumnHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
-  if AValue = @R_DrawColumnAverageHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHi_BatchMT then
     Exit('R_DrawColumnAverageHi_BatchMT');
-  if AValue = @R_DrawColumnAlphaHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaHi_BatchMT then
     Exit('R_DrawColumnAlphaHi_BatchMT');
-  if AValue = @R_DrawColumnAddHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_BatchMT then
     Exit('R_DrawColumnAddHi_BatchMT');
-  if AValue = @R_DrawColumnSubtractHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHi_BatchMT then
     Exit('R_DrawColumnSubtractHi_BatchMT');
-  if AValue = @R_DrawMaskedColumnNormalMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawMaskedColumnNormalMT then
     Exit('R_DrawMaskedColumnNormalMT');
-  if AValue = @R_DrawColumnAverageHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHiMT then
     Exit('R_DrawColumnAverageHiMT');
-  if AValue = @R_DrawColumnAddHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHiMT then
     Exit('R_DrawColumnAddHiMT');
-  if AValue = @R_DrawColumnAddHi_SmallStepMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT then
     Exit('R_DrawColumnAddHi_SmallStepMT');
-  if AValue = @R_DrawColumnSubtractHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHiMT then
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');
@@ -1106,23 +1106,23 @@ begin
     Exit('R_DrawFuzzColumn');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnLow then
     Exit('R_DrawSkyColumnLow');
-  if AValue = @R_DrawColumnLow_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLow_BatchMT then
     Exit('R_DrawColumnLow_BatchMT');
-  if AValue = @R_DrawColumnAverageMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMedium_BatchMT then
     Exit('R_DrawColumnAverageMedium_BatchMT');
-  if AValue = @R_DrawColumnAlphaMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT then
     Exit('R_DrawColumnAlphaMedium_BatchMT');
-  if AValue = @R_DrawColumnAddMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMedium_BatchMT then
     Exit('R_DrawColumnAddMedium_BatchMT');
-  if AValue = @R_DrawColumnSubtractMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMedium_BatchMT then
     Exit('R_DrawColumnSubtractMedium_BatchMT');
-  if AValue = @R_DrawColumnLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowestMT then
     Exit('R_DrawColumnLowestMT');
-  if AValue = @R_DrawColumnAverageLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowestMT then
     Exit('R_DrawColumnAverageLowestMT');
-  if AValue = @R_DrawColumnAddLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowestMT then
     Exit('R_DrawColumnAddLowestMT');
-  if AValue = @R_DrawColumnSubtractLowestMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowestMT then
     Exit('R_DrawColumnSubtractLowestMT');
   if AValue = @R_StoreFlatSpan8 then
     Exit('R_StoreFlatSpan8');
@@ -1142,13 +1142,13 @@ begin
     Exit('R_DrawColumnAddLow');
   if AValue = @TRendererSubtractiveDrawers.R_DrawColumnSubtractLow then
     Exit('R_DrawColumnSubtractLow');
-  if AValue = @R_DrawColumnLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnLowMT then
     Exit('R_DrawColumnLowMT');
-  if AValue = @R_DrawColumnAverageLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageLowMT then
     Exit('R_DrawColumnAverageLowMT');
-  if AValue = @R_DrawColumnAddLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddLowMT then
     Exit('R_DrawColumnAddLowMT');
-  if AValue = @R_DrawColumnSubtractLowMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractLowMT then
     Exit('R_DrawColumnSubtractLowMT');
   if AValue = @TRendererBatchColumnDrawers.R_DrawColumnMedium_Batch then
     Exit('R_DrawColumnMedium_Batch');
@@ -1174,15 +1174,15 @@ begin
     Exit('R_DrawSlopeMedium_Ripple');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumn then
     Exit('R_DrawSkyColumn');
-  if AValue = @R_DrawColumnMedium_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMedium_BatchMT then
     Exit('R_DrawColumnMedium_BatchMT');
-  if AValue = @R_DrawColumnMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnMediumMT then
     Exit('R_DrawColumnMediumMT');
-  if AValue = @R_DrawColumnAverageMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageMediumMT then
     Exit('R_DrawColumnAverageMediumMT');
-  if AValue = @R_DrawColumnAddMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddMediumMT then
     Exit('R_DrawColumnAddMediumMT');
-  if AValue = @R_DrawColumnSubtractMediumMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT then
     Exit('R_DrawColumnSubtractMediumMT');
   if AValue = @TRendererFlat8Drawers.R_DrawSpanMediumMT then
     Exit('R_DrawSpanMediumMT');
@@ -1250,25 +1250,25 @@ begin
     Exit('R_DrawYellowLightColumnHi');
   if AValue = @TRendererColSkDrawers.R_DrawSkyColumnHi then
     Exit('R_DrawSkyColumnHi');
-  if AValue = @R_DrawColumnHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnHi_BatchMT then
     Exit('R_DrawColumnHi_BatchMT');
-  if AValue = @R_DrawColumnAverageHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHi_BatchMT then
     Exit('R_DrawColumnAverageHi_BatchMT');
-  if AValue = @R_DrawColumnAlphaHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAlphaHi_BatchMT then
     Exit('R_DrawColumnAlphaHi_BatchMT');
-  if AValue = @R_DrawColumnAddHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_BatchMT then
     Exit('R_DrawColumnAddHi_BatchMT');
-  if AValue = @R_DrawColumnSubtractHi_BatchMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHi_BatchMT then
     Exit('R_DrawColumnSubtractHi_BatchMT');
-  if AValue = @R_DrawMaskedColumnNormalMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawMaskedColumnNormalMT then
     Exit('R_DrawMaskedColumnNormalMT');
-  if AValue = @R_DrawColumnAverageHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAverageHiMT then
     Exit('R_DrawColumnAverageHiMT');
-  if AValue = @R_DrawColumnAddHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHiMT then
     Exit('R_DrawColumnAddHiMT');
-  if AValue = @R_DrawColumnAddHi_SmallStepMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT then
     Exit('R_DrawColumnAddHi_SmallStepMT');
-  if AValue = @R_DrawColumnSubtractHiMT then
+  if AValue = @TRendererSpriteDrawers.R_DrawColumnSubtractHiMT then
     Exit('R_DrawColumnSubtractHiMT');
   if AValue = @R_StoreFlatSpan32 then
     Exit('R_StoreFlatSpan32');

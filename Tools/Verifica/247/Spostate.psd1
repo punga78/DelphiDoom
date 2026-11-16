@@ -106,4 +106,34 @@
   R_DrawSpanLowMT = @{ Expression = 'TRendererFlat8Drawers.R_DrawSpanLowMT'; Unit = 'r_flat8' }
   R_DrawSpanNormalMT = @{ Expression = 'TRendererFlat32Drawers.R_DrawSpanNormalMT'; Unit = 'r_flat32' }
   R_DrawSpanNormal_RippleMT = @{ Expression = 'TRendererFlat32RippleDrawers.R_DrawSpanNormal_RippleMT'; Unit = 'r_flat32_ripple' }
+  R_DrawColumnLowMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnLowMT'; Unit = 'r_sprite' }
+  R_DrawColumnMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnMedium_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnLowestMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnLowestMT'; Unit = 'r_sprite' }
+  R_DrawColumnHi_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnHi_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAlphaHi_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAlphaHi_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddHi_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddHi_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractHiMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractHiMT'; Unit = 'r_sprite' }
+  R_DrawMaskedColumnNormalMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawMaskedColumnNormalMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractHi_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractHi_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddLowMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddLowMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddLowestMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddLowestMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageMedium_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractMedium_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageHi_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageHi_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractLowMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractLowMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddHiMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddHiMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageHiMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageHiMT'; Unit = 'r_sprite' }
+  R_DrawColumnMediumMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnMediumMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractLowestMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractLowestMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddMedium_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageLowestMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageLowestMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageLowMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageLowMT'; Unit = 'r_sprite' }
+  R_DrawColumnAverageMediumMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAverageMediumMT'; Unit = 'r_sprite' }
+  R_DrawColumnLow_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnLow_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddMediumMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddMediumMT'; Unit = 'r_sprite' }
+  R_DrawColumnAlphaMedium_BatchMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAlphaMedium_BatchMT'; Unit = 'r_sprite' }
+  R_DrawColumnSubtractMediumMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnSubtractMediumMT'; Unit = 'r_sprite' }
+  R_DrawColumnAddHi_SmallStepMT = @{ Expression = 'TRendererSpriteDrawers.R_DrawColumnAddHi_SmallStepMT'; Unit = 'r_sprite' }
+  R_MapPlane = @{ Expression = 'TRendererPlaneMappers.R_MapPlane'; Unit = 'r_plane' }
+  R_MapPlaneAngle = @{ Expression = 'TRendererPlaneMappers.R_MapPlaneAngle'; Unit = 'r_plane' }
 }
